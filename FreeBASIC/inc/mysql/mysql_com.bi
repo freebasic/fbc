@@ -1,6 +1,6 @@
 ''
 ''
-'' mysql_com -- header translation done with help from the SWIG's FB wrapper.
+'' mysql_com -- header translated with help of SWIG FB wrapper
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
@@ -69,9 +69,9 @@ end enum
 #define REFRESH_READ_LOCK 16384
 #define REFRESH_FAST 32768
 #define REFRESH_QUERY_CACHE 65536
-#define REFRESH_QUERY_CACHE_FREE &h20000
-#define REFRESH_DES_KEY_FILE &h40000
-#define REFRESH_USER_RESOURCES &h80000
+#define REFRESH_QUERY_CACHE_FREE &h20000L
+#define REFRESH_DES_KEY_FILE &h40000L
+#define REFRESH_USER_RESOURCES &h80000L
 #define CLIENT_LONG_PASSWORD 1
 #define CLIENT_FOUND_ROWS 2
 #define CLIENT_LONG_FLAG 4
@@ -169,7 +169,9 @@ declare function my_net_write alias "my_net_write" (byval net as NET ptr, byval 
 declare function net_write_command alias "net_write_command" (byval net as NET ptr, byval command as ubyte, byval packet as string, byval len as uinteger) as integer
 declare function net_real_write alias "net_real_write" (byval net as NET ptr, byval packet as string, byval len as uinteger) as integer
 declare function my_net_read alias "my_net_read" (byval net as NET ptr) as uinteger
+#ifndef sockaddr
 #define sockaddr any
+#endif
 declare function my_connect alias "my_connect" (byval s as my_socket, byval name as sockaddr ptr, byval namelen as uinteger, byval timeout as uinteger) as integer
 
 type rand_struct

@@ -1,6 +1,6 @@
 ''
 ''
-'' mysql -- header translation done with help from the SWIG's FB wrapper.
+'' mysql -- header translated with help of SWIG FB wrapper
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
@@ -38,7 +38,7 @@ end type
 #define MYSQL_FIELD st_mysql_field
 #define MYSQL_ROW byte ptr ptr
 #define MYSQL_FIELD_OFFSET uinteger
-#define my_ulonglong uinteger
+#define my_ulonglong ulongint
 
 #define MYSQL_COUNT_ERROR ( not 0)
 
