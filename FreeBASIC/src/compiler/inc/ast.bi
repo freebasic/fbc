@@ -117,6 +117,7 @@ declare sub 		astDel				( byval n as integer )
 
 declare function 	astCloneTree		( byval n as integer ) as integer
 declare sub 		astDelTree			( byval n as integer )
+declare function 	astIsTreeEqual		( byval l as integer, byval r as integer ) as integer
 
 declare function 	astGetClass			( byval n as integer ) as integer
 declare function 	astGetDataType		( byval n as integer ) as integer
@@ -190,7 +191,5 @@ declare sub 		astLoadBRANCH		( byval n as integer, vr as integer )
 declare function 	astNewIIF			( byval condexpr as integer, byval truexpr as integer, _
 										  byval falsexpr as integer ) as integer
 declare sub 		astLoadIIF			( byval n as integer, vr as integer )
-
-declare sub 		astOptimize			( byval n as integer )
 
 declare sub 		astDump1 			( byval p as integer, byval n as integer, byval isleft as integer, byval ln as integer, byval cn as integer )

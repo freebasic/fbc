@@ -1489,13 +1489,21 @@ end function
 '':::::
 function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FBSYMBOL ptr
     dim dTB(0) as FBARRAYDIM
-    dim s as FBSYMBOL ptr, alloctype as integer
+    dim s as FBSYMBOL ptr, alloctype as integer, typ as integer
 
 	symbAddArg = NULL
 
+	typ = arg->typ
+
 	select case as const arg->mode
     case FB.ARGMODE.BYVAL
-    	alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL
+    	'' byval string? it's actually an pointer to a fixed-len with unknown lenght
+    	if( typ = FB.SYMBTYPE.STRING ) then
+    		alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
+    		typ = FB.SYMBTYPE.FIXSTR
+    	else
+    		alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL
+    	end if
 	case FB.ARGMODE.BYREF
 	    alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
 	case FB.ARGMODE.BYDESC
@@ -1504,7 +1512,7 @@ function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FB
     	exit function
 	end select
 
-    s = symbAddVarEx( strpGet( arg->nameidx ), "", arg->typ, arg->subtype, 0, _
+    s = symbAddVarEx( strpGet( arg->nameidx ), "", typ, arg->subtype, 0, _
     				  0, dTB(), alloctype, arg->suffix <> INVALID, FALSE, TRUE )
 
     if( s = NULL ) then
@@ -1846,7 +1854,7 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
     	lgt = 8
 
 	case FB.SYMBTYPE.FIXSTR
-		lgt = 0									'' 0-len literal-strings
+		lgt = 0									'' 0-len literal-strings or byval as string arg
 
 	case FB.SYMBTYPE.STRING
 		lgt = FB.STRSTRUCTSIZE

@@ -772,7 +772,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
             	vregTB(vr).dtype = IR.DATATYPE.UINT
             	irEmitADDR IR.OP.DEREF, vr, vt
             	vr = vt
-			else
+			elseif( typ <> IR.VREGTYPE.PTR ) then
 				vp = irAllocVREG( IR.DATATYPE.UINT )
 				irEmitADDR IR.OP.ADDROF, vr, vp
 				vr = vp
@@ -1655,9 +1655,7 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	end if
 
 	'' result not equal destine? (can happen with DAG optimizations and floats comparations)
-	if( vr = INVALID ) then
-		res = ""
-	else
+	if( vr <> INVALID ) then
 		if( vr <> v1 ) then
 			rr = regTB(dcr)->allocate( regTB(dcr), vr )
 			tr = IR.VREGTYPE.REG
@@ -1673,10 +1671,13 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	else
 		src = ""
 	end if
+
 	irGetVRName( v1, dst )
 
 	if( vr = v1 ) then
 		res = dst
+	elseif( vr = INVALID ) then
+		res = ""
 	end if
 
 	''

@@ -2294,6 +2294,7 @@ sub emithICMP( rname as string, byval rvreg as IRVREG ptr, _
 	hPrepOperand( dname, dvreg->ofs, dvreg->dtype, dvreg->typ, dst )
 	hPrepOperand( sname, svreg->ofs, svreg->dtype, svreg->typ, src )
 
+	'' optimize "cmp" to "test"
 	dotest = FALSE
 	if( len( src ) = 0 ) then
 		dotest = TRUE
@@ -2317,8 +2318,15 @@ sub emithICMP( rname as string, byval rvreg as IRVREG ptr, _
 		outp ostr
 	end if
 
-	''!!!FIXME!!! assuming res = dst !!!FIXME!!!
-	if( (env.clopt.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) and (dvreg->typ = IR.VREGTYPE.REG) ) then
+	'' no result to be set? just branch
+	if( len( rname ) = 0 ) then
+		ostr = "j"
+		ostr += mnemonic
+		emitBRANCH ostr, label
+
+	'' can it be optimized?
+	elseif( (env.clopt.cputype >= FB.CPUTYPE.486) and (rvreg->typ = IR.VREGTYPE.REG) ) then
+
 		emitGetRegName( IR.DATATYPE.BYTE, IR.DATACLASS.INTEGER, rvreg->reg, rname8 )
 
 		'' handle EDI and ESI
@@ -2363,6 +2371,7 @@ sub emithICMP( rname as string, byval rvreg as IRVREG ptr, _
 			outp ostr
 		end if
 
+		'' convert 1 to -1 (TRUE in QB/FB)
 		ostr = "shr "
 		ostr += rname
 		ostr += ", 1"
@@ -2374,28 +2383,25 @@ sub emithICMP( rname as string, byval rvreg as IRVREG ptr, _
 		ostr += rname
 		outp ostr
 
+	'' old (and slow) boolean set
 	else
 
-		if( len( rname ) > 0 ) then
-			ostr = "mov "
-			ostr += rname
-			ostr += ", -1"
-			outp ostr
-		end if
+		ostr = "mov "
+		ostr += rname
+		ostr += ", -1"
+		outp ostr
 
 		ostr = "j"
 		ostr += mnemonic
 		emitBRANCH ostr, label
 
-		if( len( rname ) > 0 ) then
-			ostr = "xor "
-			ostr += rname
-			ostr += COMMA
-			ostr += rname
-			outp ostr
+		ostr = "xor "
+		ostr += rname
+		ostr += COMMA
+		ostr += rname
+		outp ostr
 
-			emitLabel label
-		end if
+		emitLabel label
 	end if
 
 end sub
@@ -2413,10 +2419,12 @@ sub emithFCMP( rname as string, byval rvreg as IRVREG ptr, _
 	hPrepOperand( dname, dvreg->ofs, dvreg->dtype, dvreg->typ, dst )
 	hPrepOperand( sname, svreg->ofs, svreg->dtype, svreg->typ, src )
 
+	'' do comp
 	if( svreg->typ = IR.VREGTYPE.REG ) then
 		ostr = "fcompp"
 		outp ostr
 	else
+		'' can it be optimized to ftst?
 		if( len( src ) > 0 ) then
 			if( irGetDataClass( svreg->dtype ) = IR.DATACLASS.FPOINT ) then
 				ostr = "fcomp "
@@ -2442,6 +2450,7 @@ sub emithFCMP( rname as string, byval rvreg as IRVREG ptr, _
     	iseaxfree = TRUE
 	end if
 
+    '' load fpu flags
     ostr = "fnstsw ax"
     outp ostr
 	if( len( mask ) > 0 ) then
@@ -2457,7 +2466,14 @@ sub emithFCMP( rname as string, byval rvreg as IRVREG ptr, _
 		emithPOP "eax"
 	end if
 
-	if( (env.clopt.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) ) then
+    '' no result to be set? just branch
+    if( len( rname ) = 0 ) then
+    	ostr = "j"
+    	ostr += mnemonic
+    	emitBRANCH ostr, label
+
+	'' can it be optimized?
+	elseif( env.clopt.cputype >= FB.CPUTYPE.486 ) then
 		emitGetRegName( IR.DATATYPE.BYTE, IR.DATACLASS.INTEGER, rvreg->reg, rname8 )
 
 		'' handle EDI and ESI
@@ -2490,6 +2506,7 @@ sub emithFCMP( rname as string, byval rvreg as IRVREG ptr, _
 			outp ostr
 		end if
 
+		'' convert 1 to -1 (TRUE in QB/FB)
 		ostr = "shr "
 		ostr += rname
 		ostr += ", 1"
@@ -2501,27 +2518,24 @@ sub emithFCMP( rname as string, byval rvreg as IRVREG ptr, _
 		ostr += rname
 		outp ostr
 
+	'' old (and slow) boolean set
 	else
- 	   if( len( rname ) > 0 ) then
-    		ostr = "mov "
-    		ostr += rname
-    		ostr += ", -1"
-    		outp ostr
-    	end if
+    	ostr = "mov "
+    	ostr += rname
+    	ostr += ", -1"
+    	outp ostr
 
     	ostr = "j"
     	ostr += mnemonic
     	emitBRANCH ostr, label
 
-		if( len( rname ) > 0 ) then
-			ostr = "xor "
-			ostr += rname
-			ostr += COMMA
-			ostr += rname
-			outp ostr
+		ostr = "xor "
+		ostr += rname
+		ostr += COMMA
+		ostr += rname
+		outp ostr
 
-			emitLabel label
-		end if
+		emitLabel label
 	end if
 
 end sub
@@ -3165,12 +3179,6 @@ sub hSaveAsmHeader( )
 	case FB.CPUTYPE.686
 		hWriteStr ctx.outf, TRUE,  ".arch i686"
 	end select
-
-	if( env.clopt.cputype >= FB.CPUTYPE.686 ) then
-		hWriteStr ctx.outf, FALSE, ".section .data"
-		hWriteStr ctx.outf, TRUE, ".balign 16" + NEWLINE
-		hWriteStr ctx.outf, FALSE, "fb_minus_1:" + TABCHAR + ".int" + TABCHAR + "-1"
-	end if
 
     hWriteStr ctx.outf, FALSE, ""
     hWriteStr ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"

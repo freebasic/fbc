@@ -1334,8 +1334,12 @@ end sub
 
 '':::::
 function hGetFixStrLen( byval expr as integer ) as integer
+	dim lgt as integer
 
-	hGetFixStrLen = symbGetLen( astGetSymbol( expr ) ) - 1
+	lgt = symbGetLen( astGetSymbol( expr ) ) - 1
+
+	'' if < 0 (ie: a byval as string arg), return 0, the rtlib will take care of the real lenght
+	hGetFixStrLen = iif( lgt < 0, 0, lgt )
 
 end function
 
@@ -1358,14 +1362,12 @@ function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
 	str1len = -1
 	if( hIsStrFixed( sdtype1 ) ) then
 		str1len = hGetFixStrLen( str1 )
-		if( str1len < 0 ) then str1len = 0
 	end if
 
     ''
 	str2len = -1
 	if( hIsStrFixed( sdtype2 ) ) then
 		str2len = hGetFixStrLen( str2 )
-		if( str2len < 0 ) then str2len = 0
 	end if
 
     ''
@@ -1413,14 +1415,12 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
 	str1len = -1
 	if( hIsStrFixed( sdtype1 ) ) then
 		str1len = hGetFixStrLen( str1 )
-		if( str1len < 0 ) then str1len = 0
 	end if
 
     ''
 	str2len = -1
 	if( hIsStrFixed( sdtype2 ) ) then
 		str2len = hGetFixStrLen( str2 )
-		if( str2len < 0 ) then str2len = 0
 	end if
 
     ''
@@ -1464,7 +1464,6 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( dst )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	if( astNewPARAM( proc, dst, dtype ) = INVALID ) then
     	exit function
@@ -1482,7 +1481,6 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( src )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	if( astNewPARAM( proc, src, dtype ) = INVALID ) then
     	exit function
@@ -1517,7 +1515,6 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( dst )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	if( astNewPARAM( proc, dst, dtype ) = INVALID ) then
     	exit function
@@ -1535,7 +1532,6 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( src )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	if( astNewPARAM( proc, src, dtype ) = INVALID ) then
     	exit function
@@ -1615,7 +1611,6 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( strg )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
@@ -2266,7 +2261,6 @@ function rtlDataRead( byval varexpr as integer ) as integer static
 		dtype = astGetDataType( varexpr )
 		if( hIsStrFixed( dtype ) ) then
 			lgt = hGetFixStrLen( varexpr )
-			if( lgt < 0 ) then lgt = 0
 		end if
 		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 		if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
@@ -2541,7 +2535,6 @@ function rtlMathLen( byval expr as integer ) as integer static
 		lgt = -1
 		if( hIsStrFixed( dtype ) ) then
 			lgt = hGetFixStrLen( expr )
-			if( lgt < 0 ) then lgt = 0
 		end if
 		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 		astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
@@ -3015,7 +3008,6 @@ function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer s
 	lgt = -1
 	if( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( str1 )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
@@ -3032,7 +3024,6 @@ function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer s
 	lgt = -1
 	if( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( str2 )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
@@ -3720,7 +3711,6 @@ function rtlFileLineInput( byval isfile as integer, byval expr as integer, byval
 	lgt = -1
 	if( hIsStrFixed( astGetDataType( dstexpr ) ) ) then
 		lgt = hGetFixStrLen( dstexpr )
-		if( lgt < 0 ) then lgt = 0
 	end if
 	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  		exit function
@@ -3830,7 +3820,6 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
 		lgt = -1
 		if( hIsStrFixed( astGetDataType( dstexpr ) ) ) then
 			lgt = hGetFixStrLen( dstexpr )
-			if( lgt < 0 ) then lgt = 0
 		end if
 		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 		if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then

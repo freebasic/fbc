@@ -732,38 +732,29 @@ End Sub
 
 ''::::
 sub astOptStrAssignament( byval n as integer, byval l as integer, byval r as integer ) static
-	dim rl as integer, f as integer
+	dim f as integer
 	dim optimize as integer
 
 	optimize = FALSE
 
-	'' is left side a var?
-	if( astTB(l).class = AST.NODECLASS.VAR ) then
-
-		'' is right side a bin operation?
-		if( astTB(r).class = AST.NODECLASS.BOP ) then
-
-			'' is the left child a var too?
-			rl = astTB(r).l
-			if( astTB(rl).class = AST.NODECLASS.VAR ) then
-
-				'' are both vars the same?
-				if( (astTB(rl).var.sym = astTB(l).var.sym) and (astTB(rl).var.ofs = astTB(l).var.ofs) ) then
-					optimize = TRUE
-				end if
-			end if
-		end if
+	'' is right side a bin operation?
+	if( astTB(r).class = AST.NODECLASS.BOP ) then
+		'' is left side a var?
+		select case astTB(l).class
+		case AST.NODECLASS.VAR, AST.NODECLASS.PTR, AST.NODECLASS.IDX
+			optimize = astIsTreeEqual( l, astTB(r).l )
+		end select
 	end if
 
 	if( optimize ) then
-		''	=            f()
+		''	=            f() -- concatassign
 		'' / \           / \
-		''d   +    =>   d   s
+		''d   +    =>   d   expr
 		''   / \
-		''  d   s
+		''  d   expr
 
 		astCopy n, r
-		astDel l
+		astDelTree l
 		astDel r
 
 		astUpdStrConcat astTB(n).r
@@ -775,7 +766,7 @@ sub astOptStrAssignament( byval n as integer, byval l as integer, byval r as int
 		'' / \           / \
 		''d   +    =>   d   f() -- concat (done by UpdStrConcat)
 		''   / \           / \
-		''  d   s         d   s
+		''  d   expr      d   expr
 
 		astUpdStrConcat r
 
@@ -789,7 +780,7 @@ end sub
 
 ''::::
 sub astOptAssignament( byval n as integer ) static
-	dim l as integer, r as integer, rl as integer
+	dim l as integer, r as integer
 	dim dtype as integer, dclass as integer
 
 	'' try to convert "foo = foo op expr" to "foo op= expr" (including unary ops)
@@ -808,7 +799,7 @@ sub astOptAssignament( byval n as integer ) static
 	dtype = astTB(n).dtype
 	dclass = irGetDataClass( dtype )
 
-	'' integer's only, no way to optimize with a FPU stack (x86 dep.)
+	'' integer's only, no way to optimize with a FPU stack (x86 assumption)
 	If( dclass <> IR.DATACLASS.INTEGER ) Then
 
 		'' strings?
@@ -832,9 +823,9 @@ sub astOptAssignament( byval n as integer ) static
 		exit sub
 	end if
 
-	'' is left side a var?
+	'' is left side a var, idx or ptr?
 	select case astTB(l).class
-	case AST.NODECLASS.VAR
+	case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 	case else
 		exit sub
 	end select
@@ -848,8 +839,7 @@ sub astOptAssignament( byval n as integer ) static
 
 	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a register
 	select case as const astTB(r).op
-	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE, _
-		 IR.OP.INTDIV, IR.OP.MOD, IR.OP.MUL
+	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 		exit sub
 	end select
 
@@ -858,14 +848,8 @@ sub astOptAssignament( byval n as integer ) static
 		exit sub
 	end if
 
-	'' is the left child a var too?
-	rl = astTB(r).l
-	if( astTB(rl).class <> AST.NODECLASS.VAR ) then
-		exit sub
-	end if
-
-	'' are both vars the same?
-	if( (astTB(rl).var.sym <> astTB(l).var.sym) or (astTB(rl).var.ofs <> astTB(l).var.ofs) ) then
+	'' is the left child the same?
+	if( not astIsTreeEqual( l, astTB(r).l ) ) then
 		exit sub
 	end if
 
@@ -874,12 +858,12 @@ sub astOptAssignament( byval n as integer ) static
 
 	''	=             o
 	'' / \           / \
-	''d   o     =>  d   s
+	''d   o     =>  d   expr
 	''   / \
-	''  d   s
+	''  d   expr
 
     astCopy n, r
-	astDel l
+	astDelTree l
 	astDel r
 
 end sub
@@ -890,7 +874,7 @@ end sub
 
 '':::::
 sub astUpdStrConcat( byval n as integer )
-	Dim l as integer, r as integer
+	dim l as integer, r as integer
 	dim f as integer
 
 	if( n = INVALID ) then
@@ -913,8 +897,9 @@ sub astUpdStrConcat( byval n as integer )
 		if( astTB(n).op = IR.OP.ADD ) then
 			'' strings?
 			l = astTB(n).l
-			if( irGetDataClass( astTB(l).dtype ) = IR.DATACLASS.STRING ) then
-				r = astTB(n).r
+			r = astTB(n).r
+			if( (irGetDataClass( astTB(l).dtype ) = IR.DATACLASS.STRING) or _
+				(irGetDataClass( astTB(r).dtype ) = IR.DATACLASS.STRING) ) then
 				f = rtlStrConcat( l, astTB(l).dtype, r, astTB(r).dtype )
 				astCopy n, f
 				astDel f
@@ -928,7 +913,8 @@ End Sub
 sub astUpdNodeResult( byval n as integer )
 	Dim l as integer, r as integer
 	static dt1 as integer, dt2 as integer
-	static dtype as integer, dclass as integer
+	static dc1 as integer, dc2 as integer
+	static dtype as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -985,24 +971,34 @@ sub astUpdNodeResult( byval n as integer )
 
 		'' different types?
 		if( dt1 <> dt2 ) then
-			dtype = irMaxDataType( dt1, dt2 )
 
-		    if( dtype = -1 ) then
-		    	dtype = dt1
+			dc1 = irGetDataClass( dt1 )
+			dc2 = irGetDataClass( dt2 )
+
+			'' don't check strings and byte ptr concatenations
+			if( (dc1 = IR.DATACLASS.STRING) or (dc2 = IR.DATACLASS.STRING) ) then
+				dtype = IR.DATATYPE.STRING
 
 			else
-				'' both integers and highest one is a imm? decrase its class
-				if( (irGetDataClass( dt1 ) = IR.DATACLASS.INTEGER) and _
-					(irGetDataClass( dt2 ) = IR.DATACLASS.INTEGER) ) then
-					if( dtype <> dt1 ) then
-						if( astTB(r).class = AST.NODECLASS.CONST ) then
-							astTB(r).dtype = dt1
-							dtype = dt1
-						end if
-					else
-						if( astTB(l).class = AST.NODECLASS.CONST ) then
-							astTB(l).dtype = dt2
-							dtype = dt2
+
+				dtype = irMaxDataType( dt1, dt2 )
+
+		    	if( dtype = -1 ) then
+		    		dtype = dt1
+
+				else
+					'' both integers and highest one is a imm? decrase its class
+					if( (dc1 = IR.DATACLASS.INTEGER) and (dc2 = IR.DATACLASS.INTEGER) ) then
+						if( dtype <> dt1 ) then
+							if( astTB(r).class = AST.NODECLASS.CONST ) then
+								astTB(r).dtype = dt1
+								dtype = dt1
+							end if
+						else
+							if( astTB(l).class = AST.NODECLASS.CONST ) then
+								astTB(l).dtype = dt2
+								dtype = dt2
+							end if
 						end if
 					end if
 				end if
@@ -1012,25 +1008,23 @@ sub astUpdNodeResult( byval n as integer )
 			dtype = dt1
 		end if
 
-		dclass = irGetDataClass( dtype )
-
 		select case astTB(n).op
 		'' a / b needs both operands as floats
 		case IR.OP.DIV
-			if( dclass <> IR.DATACLASS.FPOINT ) then
+			if( irGetDataClass( dtype ) <> IR.DATACLASS.FPOINT ) then
 				dtype = IR.DATATYPE.DOUBLE
 			end if
 
 		'' bitwise operations, int div (\), modulus and shift only work with integers
 		case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
 			 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
-			if( dclass <> IR.DATACLASS.INTEGER ) then
+			if( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) then
 				dtype = IR.DATATYPE.INTEGER
 			end if
 
 		'' if operands are floats and are been comparated, result must be an integer (boolean)
 		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
-			if( dclass <> IR.DATACLASS.INTEGER ) then
+			if( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) then
 				dtype = IR.DATATYPE.INTEGER
 			end if
 
@@ -1281,6 +1275,14 @@ function astCloneTree( byval n as integer ) as integer
 		astTB(nn).r = astCloneTree( p )
 	End If
 
+	'' IIF has a 3rd tree node..
+	if( astTB(n).class = AST.NODECLASS.IIF ) then
+		p = astTB(n).iif.cond
+		if( p <> INVALID ) Then
+			astTB(nn).iif.cond = astCloneTree( p )
+		end if
+	end if
+
 	astCloneTree = nn
 
 end function
@@ -1305,10 +1307,152 @@ sub astDelTree ( byval n as integer )
 		astDelTree p
 	End If
 
+	'' IIF has a 3rd tree node..
+	if( astTB(n).class = AST.NODECLASS.IIF ) then
+		p = astTB(n).iif.cond
+		if( p <> INVALID ) Then
+			astDelTree p
+		end if
+	end if
+
 	''
 	astDel n
 
 End Sub
+
+''::::
+function astIsTreeEqual( byval l as integer, byval r as integer ) as integer
+    dim pl as ASTNode ptr, pr as ASTNode ptr
+
+    astIsTreeEqual = FALSE
+
+    if( (l = INVALID) or (r = INVALID) ) then
+    	if( l = r ) then
+    		astIsTreeEqual = TRUE
+    	end if
+    	exit function
+    end if
+
+	pl = @astTB(l)
+	pr = @astTB(r)
+
+	if( pl->class <> pr->class ) then
+		exit function
+	end if
+
+	if( pl->dtype <> pr->dtype ) then
+		exit function
+	end if
+
+	if( pl->subtype <> pr->subtype ) then
+		exit function
+	end if
+
+	select case as const pl->class
+	case AST.NODECLASS.VAR
+		if( pl->var.sym <> pr->var.sym ) then
+			exit function
+		end if
+
+		if( pl->var.elm <> pr->var.elm ) then
+			exit function
+		end if
+
+		if( pl->var.ofs <> pr->var.ofs ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.CONST
+const DBL_EPSILON# = 2.2204460492503131e-016
+
+		if( abs( pl->value - pr->value ) > DBL_EPSILON ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.PTR
+		if( pl->ptr.sym <> pr->ptr.sym ) then
+			exit function
+		end if
+
+		if( pl->ptr.elm <> pr->ptr.elm ) then
+			exit function
+		end if
+
+		if( pl->ptr.ofs <> pr->ptr.ofs ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.IDX
+		if( pl->idx.ofs <> pr->idx.ofs ) then
+			exit function
+		end if
+
+		if( pl->idx.mult <> pr->idx.mult ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.BOP
+		if( pl->op <> pr->op ) then
+			exit function
+		end if
+
+		if( pl->allocres <> pr->allocres ) then
+			exit function
+		end if
+
+		if( pl->ex <> pr->ex ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.UOP
+		if( pl->op <> pr->op ) then
+			exit function
+		end if
+
+		if( pl->allocres <> pr->allocres ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.ADDR
+		if( pl->addr.sym <> pr->addr.sym ) then
+			exit function
+		end if
+
+		if( pl->addr.elm <> pr->addr.elm ) then
+			exit function
+		end if
+
+		if( pl->op <> pr->op ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.IIF
+		if( not astIsTreeEqual( pl->iif.cond, pr->iif.cond ) ) then
+			exit function
+		end if
+
+	case AST.NODECLASS.CONV
+		'' do nothing, the l child will be checked below
+
+	'' unpredictable nodes
+	case AST.NODECLASS.FUNCT, AST.NODECLASS.BRANCH, AST.NODECLASS.LOAD, AST.NODECLASS.ASSIGN
+		exit function
+
+	end select
+
+    '' check childs
+	if( not astIsTreeEqual( pl->l, pr->l ) ) then
+		exit function
+	end if
+
+	if( not astIsTreeEqual( pl->r, pr->r ) ) then
+		exit function
+	end if
+
+    ''
+	astIsTreeEqual = TRUE
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree routines
@@ -1607,7 +1751,7 @@ sub astLoad( byval n as integer, vreg as integer )
 end sub
 
 ''::::
-sub astOptimize( byval n as integer )
+private sub astOptimize( byval n as integer )
 
 	'' calls must be done in the order below
 
@@ -1627,11 +1771,29 @@ sub astOptimize( byval n as integer )
 
 	astOptToShift n
 
-	astUpdNodeResult n					'' need even when not optimizing
+end sub
 
-	astOptAssignament n                 '' ditto
+''::::
+sub astFlush( byval n as integer, vreg as integer )
 
-	astUpdStrConcat n					'' ditto
+	''
+	if( n = INVALID ) then
+		exit sub
+	end if
+
+	''
+	astOptimize n
+
+	astUpdNodeResult n
+
+	astOptAssignament n							'' needed even when not optimizing
+
+	astUpdStrConcat n
+
+    ''
+	astLoad n, vreg
+
+	astDel n
 
 end sub
 
@@ -1649,21 +1811,6 @@ function astCntFreeNodes as integer static
 	astCntFreeNodes = c
 
 end function
-
-''::::
-sub astFlush( byval n as integer, vreg as integer )
-
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	astOptimize n
-
-	astLoad n, vreg
-
-	astDel n
-
-end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' binary operations (l = left operand expression ; r = right operand expression)
@@ -1724,10 +1871,19 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
     if( (dc1 = IR.DATACLASS.STRING) or (dc2 = IR.DATACLASS.STRING) ) then
 
 		if( dc1 <> dc2 ) then
-			exit function
+			'' check if it's not a byte ptr
+			if( dc1 = IR.DATACLASS.STRING ) then
+				if( (dt2 <> IR.DATATYPE.BYTE) or (astTB(r).class <> AST.NODECLASS.PTR) ) then
+					exit function
+				end if
+			else
+				if( (dt1 <> IR.DATATYPE.BYTE) or (astTB(l).class <> AST.NODECLASS.PTR) ) then
+					exit function
+				end if
+			end if
 		end if
 
-		select case op
+		select case as const op
 		case IR.OP.ADD
 			'' check for string literals
 			if( (dt1 = IR.DATATYPE.FIXSTR) and (dt2 = IR.DATATYPE.FIXSTR) ) then
@@ -1742,6 +1898,10 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 					end if
 				end if
 			end if
+
+			'' result will be always an var-len string
+			dt1 = IR.DATATYPE.STRING
+			dt2 = IR.DATATYPE.STRING
 
 		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 			l = rtlStrCompare( l, dt1, r, dt2 )

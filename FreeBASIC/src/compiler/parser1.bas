@@ -2392,12 +2392,6 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
     			hReportParamError argc, id
     			exit function
     		end select
-    	else
-    		select case arg.typ
-    		case FB.SYMBTYPE.STRING
-    			hReportParamError argc, id
-    			exit function
-    		end select
     	end if
 
     	select case arg.typ
