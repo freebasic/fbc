@@ -62,6 +62,7 @@ static WGLDELETECONTEXT fb_wglDeleteContext;
 static HMODULE library;
 static HGLRC hglrc;
 static HDC hdc;
+static int gl_options;
 
 
 /*:::::*/
@@ -98,7 +99,11 @@ static int opengl_init(void)
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.iPixelType = PFD_TYPE_RGBA;
 	pfd.cColorBits = fb_win32.depth;
-	pfd.cDepthBits = 16;
+	pfd.cDepthBits = 32;
+	if (gl_options & HAS_STENCIL_BUFFER)
+		pfd.cStencilBits = 8;
+	if (gl_options & HAS_ACCUMULATION_BUFFER)
+		pfd.cAccumBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 	
 	hdc = GetDC(fb_win32.wnd);
@@ -241,6 +246,7 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_win32.exit = opengl_window_exit;
 	fb_win32.paint = opengl_paint;
 	fb_win32.thread = opengl_thread;
+	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 	
 	result = fb_hWin32Init(title, w, h, depth, flags);
 	if (!result)
