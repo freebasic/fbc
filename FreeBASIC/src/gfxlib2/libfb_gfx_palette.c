@@ -119,6 +119,7 @@ void fb_hRestorePalette(void)
 	int i;
 	
 	for (i = 0; i < 256; i++) {
+		fb_mode->palette[i] = fb_mode->device_palette[i];
 		fb_mode->driver->set_palette(i, (fb_mode->device_palette[i] & 0xFF),
 						(fb_mode->device_palette[i] >> 8) & 0xFF,
 						(fb_mode->device_palette[i] >> 16) & 0xFF);
@@ -144,6 +145,7 @@ static void set_color(int index, unsigned int color)
 		fb_mode->color_association[index] = color;
 	}
 	fb_mode->device_palette[index] = r | (g << 8) | (b << 16);
+	fb_mode->palette[index] = fb_mode->device_palette[index];
 	fb_mode->driver->set_palette(index, r, g, b);
 }
 
