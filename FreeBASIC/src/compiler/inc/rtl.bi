@@ -143,6 +143,8 @@ enum FBRTL_ENUM
 	FB.RTL.GFXPUT
 	FB.RTL.GFXGET
 	FB.RTL.GFXSCREENSET
+	FB.RTL.GFXBLOAD
+	FB.RTL.GFXBSAVE
 end enum
 
 const FB.RTL.MAXFUNCTIONS%		= 512
@@ -248,3 +250,5 @@ declare sub 		rtlGfxPut			( byval xexpr as integer, byval yexpr as integer, byva
 declare sub 		rtlGfxGet			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
 										  byval arrayexpr as integer, byval symbol as FBSYMBOL ptr, byval coordtype as integer )
 declare sub 		rtlGfxScreenSet		( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, byval fexpr as integer )
+declare sub		rtlGfxBload		( byval filename as integer, byval dexpr as integer )
+declare sub		rtlGfxBsave		( byval filaname as integer, byval sexpr as integer, byval lexpr as integer )

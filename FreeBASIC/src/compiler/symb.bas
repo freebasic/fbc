@@ -259,8 +259,10 @@ data "WITH"		, FB.TK.WITH		, FB.TKCLASS.KEYWORD
 data "EXPORT"	, FB.TK.EXPORT		, FB.TKCLASS.KEYWORD
 data "IMPORT"	, FB.TK.IMPORT		, FB.TKCLASS.KEYWORD
 data "LIBPATH"	, FB.TK.LIBPATH		, FB.TKCLASS.KEYWORD
+data "BLOAD"	, FB.TK.BLOAD		, FB.TKCLASS.KEYWORD
+data "BSAVE"	, FB.TK.BSAVE		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 166
+const FB.MAXKEYWORDS 		= 168
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

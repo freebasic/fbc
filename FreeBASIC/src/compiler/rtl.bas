@@ -620,6 +620,17 @@ data "fb_GfxScreen", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
+'' fb_GfxBload ( filename as string, byval dest as any ptr )
+data "fb_GfxBload", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
+						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+						FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,0
+
+'' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer )
+data "fb_GfxBsave", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
+						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+						FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -3580,6 +3591,81 @@ sub rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr
 
  	''
  	astFlush proc, vr
+
+ 	''
+#ifdef AUTOADDGFXLIBS
+ 	hAddGfxLibs
+#endif
+
+end sub
+
+'':::::
+sub rtlGfxBload( byval filename as integer, byval dexpr as integer )
+    dim proc as integer, f as FBSYMBOL ptr
+    dim reslabel as FBSYMBOL ptr
+    dim vr as integer
+
+	''
+	f = ifuncTB(FB.RTL.GFXBLOAD)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
+
+    '' filename as string
+    astNewPARAM( proc, filename, INVALID )
+
+    '' byval dexpr as integer
+    astNewPARAM( proc, dexpr, INVALID )
+
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( hMakeTmpStr )
+    	irEmitLABEL reslabel, FALSE
+    else
+    	reslabel = NULL
+    end if
+
+    ''
+    astFlush proc, vr
+
+    rtlCheckError vr, reslabel
+
+ 	''
+#ifdef AUTOADDGFXLIBS
+ 	hAddGfxLibs
+#endif
+
+end sub
+
+'':::::
+sub rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr as integer )
+    dim proc as integer, f as FBSYMBOL ptr
+    dim reslabel as FBSYMBOL ptr
+    dim vr as integer
+
+	''
+	f = ifuncTB(FB.RTL.GFXBSAVE)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
+
+    '' filename as string
+    astNewPARAM( proc, filename, INVALID )
+
+    '' byval sexpr as integer
+    astNewPARAM( proc, sexpr, INVALID )
+    
+    '' byval lexpr as integer
+    astNewPARAM( proc, lexpr, INVALID )
+
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( hMakeTmpStr )
+    	irEmitLABEL reslabel, FALSE
+    else
+    	reslabel = NULL
+    end if
+
+    ''
+    astFlush proc, vr
+
+    rtlCheckError vr, reslabel
 
  	''
 #ifdef AUTOADDGFXLIBS

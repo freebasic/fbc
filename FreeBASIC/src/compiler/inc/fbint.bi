@@ -338,6 +338,8 @@ enum FBTK_ENUM
 	FB.TK.EXPORT
 	FB.TK.IMPORT
 	FB.TK.LIBPATH
+	FB.TK.BLOAD
+	FB.TK.BSAVE
 end enum
 
 '' single char tokens

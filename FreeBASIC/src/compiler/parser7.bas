@@ -899,6 +899,64 @@ function cGfxScreen as integer
 end function
 
 '':::::
+'' GfxBload   =   BLOAD str (',' expr)?
+''
+function cGfxBload as integer
+	dim fexpr as integer, dexpr as integer
+	
+	cGfxBload = FALSE
+	
+	if( not cExpression( fexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	dexpr = INVALID
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( dexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+	end if
+	
+	''
+	rtlGfxBload fexpr, dexpr
+	
+	cGfxBload = TRUE
+	
+end function
+
+'':::::
+'' GfxBsave   =   BSAVE str ',' expr ',' expr
+''
+function cGfxBsave as integer
+	dim fexpr as integer, sexpr as integer, lexpr as integer
+	
+	cGfxBsave = FALSE
+	
+	if( not cExpression( fexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	if( not cExpression( sexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	if( not cExpression( lexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	''
+	rtlGfxBsave fexpr, sexpr, lexpr
+	
+	cGfxBsave = TRUE
+	
+end function
+
+'':::::
 function cGfxStmt as integer
 
 	cGfxStmt = FALSE
@@ -943,6 +1001,14 @@ function cGfxStmt as integer
 	case FB.TK.SCREEN
 		lexSkipToken
 		cGfxStmt = cGfxScreen
+
+	case FB.TK.BLOAD
+		lexSkipToken
+		cGfxStmt = cGfxBload
+
+	case FB.TK.BSAVE
+		lexSkipToken
+		cGfxStmt = cGfxBsave
 
 	end select
 

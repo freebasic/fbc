@@ -32,6 +32,7 @@
 #include <math.h>
 
 #include "../rtlib/fb.h"
+#include "../rtlib/fb_rterr.h"
 
 #ifdef TRUE
 #undef TRUE
