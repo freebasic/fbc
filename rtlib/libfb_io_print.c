@@ -116,7 +116,7 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
      		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1, -1 );
      	}
 	}
-	
+
 	printf( "%s", buffer );
 
 	if( scrolloff )
@@ -176,10 +176,10 @@ FBCALL void fb_PrintVoid ( int fnum, int mask )
 #ifndef WIN32
 		buffer = nl;
 #else
-    	buffer = "\n";
+    	buffer = "\n\0";
 #endif
     else if( mask & FB_PRINT_PAD )
-    	buffer = "%-14";
+    	buffer = "%-14\0";
     else
     	buffer = NULL;
 
@@ -247,7 +247,10 @@ FBCALL void fb_PrintDouble ( int fnum, double val, int mask )
 static void fb_hPrintStr( int fnum, char *s, int len, int mask )
 {
     char buffer[BUFFLEN+14+1+1], *p;
-    int chars;
+    int chars, rmask;
+    
+    rmask = mask;
+    mask = 0;
 
     while( len > 0 )
     {
@@ -265,6 +268,8 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
     			sprintf( buffer, "%-14s", s );
     		else
     			p = s;
+    			
+    		mask = rmask;
     	}
     	else
     	{
