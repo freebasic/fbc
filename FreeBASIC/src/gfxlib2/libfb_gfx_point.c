@@ -35,6 +35,9 @@ FBCALL int fb_GfxPoint(float fx, float fy)
 	if (!fb_mode)
 		return -1;
 	
+	if (fy < 0)
+		return fb_GfxCursor(fx);
+	
 	fb_hTranslateCoord(fx, fy, &x, &y);
 	
 	if ((x < fb_mode->view_x) || (y < fb_mode->view_y) ||
