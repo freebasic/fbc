@@ -16,8 +16,11 @@ type GtkTipsQueryClass as _GtkTipsQueryClass
 
 type _GtkTipsQuery
 	label as GtkLabel
-	emit_always as guint
-	in_query as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		emit_always as guint
+		in_query as guint
+	end union
 	label_inactive as zstring ptr
 	label_no_tip as zstring ptr
 	caller as GtkWidget ptr

@@ -152,8 +152,11 @@ type _GtkWidgetAuxInfo
 	y as gint
 	width as gint
 	height as gint
-	x_set as guint
-	y_set as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		x_set as guint
+		y_set as guint
+	end union
 end type
 
 type _GtkWidgetShapeInfo

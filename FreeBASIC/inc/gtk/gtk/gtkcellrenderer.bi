@@ -39,13 +39,16 @@ type _GtkCellRenderer
 	height as gint
 	xpad as guint16
 	ypad as guint16
-	mode as guint
-	visible as guint
-	is_expander as guint
-	is_expanded as guint
-	cell_background_set as guint
-	sensitive as guint
-	editing as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		mode as guint
+		visible as guint
+		is_expander as guint
+		is_expanded as guint
+		cell_background_set as guint
+		sensitive as guint
+		editing as guint
+	end union
 end type
 
 type _GtkCellRendererClass

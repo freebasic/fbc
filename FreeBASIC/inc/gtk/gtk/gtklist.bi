@@ -30,9 +30,12 @@ type _GtkList
 	anchor as gint
 	drag_pos as gint
 	anchor_state as GtkStateType
-	selection_mode as guint
-	drag_selection as guint
-	add_mode as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		selection_mode as guint
+		drag_selection as guint
+		add_mode as guint
+	end union
 end type
 
 type _GtkListClass

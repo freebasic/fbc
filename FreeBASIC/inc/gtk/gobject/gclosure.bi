@@ -24,16 +24,19 @@ type _GClosureNotifyData
 end type
 
 type _GClosure
-	ref_count as guint
-	meta_marshal as guint
-	n_guards as guint
-	n_fnotifiers as guint
-	n_inotifiers as guint
-	in_inotify as guint
-	floating as guint
-	derivative_flag as guint
-	in_marshal as guint
-	is_invalid as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		ref_count as guint
+		meta_marshal as guint
+		n_guards as guint
+		n_fnotifiers as guint
+		n_inotifiers as guint
+		in_inotify as guint
+		floating as guint
+		derivative_flag as guint
+		in_marshal as guint
+		is_invalid as guint
+	end union
 	marshal as sub cdecl(byval as GClosure ptr, byval as GValue ptr, byval as guint, byval as GValue ptr, byval as gpointer, byval as gpointer)
 	data as gpointer
 	notifiers as GClosureNotifyData ptr

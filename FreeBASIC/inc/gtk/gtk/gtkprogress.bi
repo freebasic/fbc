@@ -23,9 +23,12 @@ type _GtkProgress
 	format as zstring ptr
 	x_align as gfloat
 	y_align as gfloat
-	show_text as guint
-	activity_mode as guint
-	use_text_format as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		show_text as guint
+		activity_mode as guint
+		use_text_format as guint
+	end union
 end type
 
 type _GtkProgressClass

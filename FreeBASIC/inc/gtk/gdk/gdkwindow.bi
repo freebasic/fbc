@@ -175,12 +175,15 @@ type _GdkWindowObject
 	depth as guint8
 	resize_count as guint8
 	state as GdkWindowState
-	guffaw_gravity as guint
-	input_only as guint
-	modal_hint as guint
-	destroyed as guint
-	accept_focus as guint
-	focus_on_map as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		guffaw_gravity as guint
+		input_only as guint
+		modal_hint as guint
+		destroyed as guint
+		accept_focus as guint
+		focus_on_map as guint
+	end union
 	event_mask as GdkEventMask
 end type
 

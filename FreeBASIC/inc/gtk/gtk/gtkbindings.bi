@@ -33,8 +33,11 @@ type _GtkBindingEntry
 	keyval as guint
 	modifiers as GdkModifierType
 	binding_set as GtkBindingSet ptr
-	destroyed as guint
-	in_emission as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		destroyed as guint
+		in_emission as guint
+	end union
 	set_next as GtkBindingEntry ptr
 	hash_next as GtkBindingEntry ptr
 	signals as GtkBindingSignal ptr

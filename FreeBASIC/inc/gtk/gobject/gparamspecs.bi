@@ -136,8 +136,11 @@ type _GParamSpecString
 	cset_first as zstring ptr
 	cset_nth as zstring ptr
 	substitutor as gchar
-	null_fold_if_empty as guint
-	ensure_non_null as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		null_fold_if_empty as guint
+		ensure_non_null as guint
+	end union
 end type
 
 type _GParamSpecParam

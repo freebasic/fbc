@@ -22,11 +22,14 @@ type _GtkMenuItem
 	toggle_size as guint16
 	accelerator_width as guint16
 	accel_path as zstring ptr
-	show_submenu_indicator as guint
-	submenu_placement as guint
-	submenu_direction as guint
-	right_justify as guint
-	timer_from_keypress as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		show_submenu_indicator as guint
+		submenu_placement as guint
+		submenu_direction as guint
+		right_justify as guint
+		timer_from_keypress as guint
+	end union
 	timer as guint
 end type
 

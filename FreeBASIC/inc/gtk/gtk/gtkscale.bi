@@ -18,8 +18,11 @@ type GtkScaleClass as _GtkScaleClass
 type _GtkScale
 	range as GtkRange
 	digits as gint
-	draw_value as guint
-	value_pos as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		draw_value as guint
+		value_pos as guint
+	end union
 end type
 
 type _GtkScaleClass

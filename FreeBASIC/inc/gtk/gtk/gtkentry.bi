@@ -22,10 +22,13 @@ type GtkEntryClass as _GtkEntryClass
 type _GtkEntry
 	widget as GtkWidget
 	text as zstring ptr
-	editable as guint
-	visible as guint
-	overwrite_mode as guint
-	in_drag as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		editable as guint
+		visible as guint
+		overwrite_mode as guint
+		in_drag as guint
+	end union
 	text_length as guint16
 	text_max_length as guint16
 	text_area as GdkWindow ptr
@@ -34,18 +37,21 @@ type _GtkEntry
 	current_pos as gint
 	selection_bound as gint
 	cached_layout as PangoLayout ptr
-	cache_includes_preedit as guint
-	need_im_reset as guint
-	has_frame as guint
-	activates_default as guint
-	cursor_visible as guint
-	in_click as guint
-	is_cell_renderer as guint
-	editing_canceled as guint
-	mouse_cursor_obscured as guint
-	select_words as guint
-	select_lines as guint
-	resolved_dir as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		cache_includes_preedit as guint
+		need_im_reset as guint
+		has_frame as guint
+		activates_default as guint
+		cursor_visible as guint
+		in_click as guint
+		is_cell_renderer as guint
+		editing_canceled as guint
+		mouse_cursor_obscured as guint
+		select_words as guint
+		select_lines as guint
+		resolved_dir as guint
+	end union
 	button as guint
 	blink_timeout as guint
 	recompute_idle as guint

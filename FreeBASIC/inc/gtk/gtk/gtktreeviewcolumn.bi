@@ -53,15 +53,18 @@ type _GtkTreeViewColumn
 	sort_column_changed_signal as guint
 	sort_column_id as gint
 	sort_order as GtkSortType
-	visible as guint
-	resizable as guint
-	clickable as guint
-	dirty as guint
-	show_sort_indicator as guint
-	maybe_reordered as guint
-	reorderable as guint
-	use_resized_width as guint
-	expand as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		visible as guint
+		resizable as guint
+		clickable as guint
+		dirty as guint
+		show_sort_indicator as guint
+		maybe_reordered as guint
+		reorderable as guint
+		use_resized_width as guint
+		expand as guint
+	end union
 end type
 
 type _GtkTreeViewColumnClass

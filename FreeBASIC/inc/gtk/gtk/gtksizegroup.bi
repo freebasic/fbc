@@ -18,8 +18,11 @@ type _GtkSizeGroup
 	parent_instance as GObject
 	widgets as GSList ptr
 	mode as guint8
-	have_width as guint
-	have_height as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		have_width as guint
+		have_height as guint
+	end union
 	requisition as GtkRequisition
 end type
 

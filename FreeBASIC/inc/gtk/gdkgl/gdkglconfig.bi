@@ -34,14 +34,17 @@ type _GdkGLConfig
 	layer_plane as gint
 	n_aux_buffers as gint
 	n_sample_buffers as gint
-	is_rgba as guint
-	is_double_buffered as guint
-	as_single_mode as guint
-	is_stereo as guint
-	has_alpha as guint
-	has_depth_buffer as guint
-	has_stencil_buffer as guint
-	has_accum_buffer as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		is_rgba as guint
+		is_double_buffered as guint
+		as_single_mode as guint
+		is_stereo as guint
+		has_alpha as guint
+		has_depth_buffer as guint
+		has_stencil_buffer as guint
+		has_accum_buffer as guint
+	end union
 end type
 
 type _GdkGLConfigClass

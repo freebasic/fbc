@@ -16,8 +16,17 @@ type GtkKeySnoopFunc as function cdecl(byval as GtkWidget ptr, byval as GdkEvent
 
 declare function gtk_check_version cdecl alias "gtk_check_version" (byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as zstring ptr
 declare function gtk_parse_args cdecl alias "gtk_parse_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
+
+#ifdef FB__WIN32
+declare sub gtk_init_abi_check cdecl alias "gtk_init_abi_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval num_checks as integer, byval sizeof_GtkWindow as integer, byval sizeof_GtkBox as integer)
+declare function gtk_init_check_abi_check cdecl alias "gtk_init_check_abi_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval num_checks as integer, byval sizeof_GtkWindow as integer, byval sizeof_GtkBox as integer) as gboolean
+#define gtk_init(c,v) gtk_init_abi_check (c,v,2,len( GtkWindow ),len( GtkBox ))
+#define gtk_init_check(c,v) gtk_init_check_abi_check(c,v,2,len(GtkWindow),len(GtkBox))
+#else
 declare sub gtk_init cdecl alias "gtk_init" (byval argc as integer ptr, byval argv as byte ptr ptr ptr)
 declare function gtk_init_check cdecl alias "gtk_init_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
+#endif
+
 declare function gtk_init_with_args cdecl alias "gtk_init_with_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval parameter_string as string, byval entries as GOptionEntry ptr, byval translation_domain as string, byval error as GError ptr ptr) as gboolean
 declare function gtk_get_option_group cdecl alias "gtk_get_option_group" (byval open_default_display as gboolean) as GOptionGroup ptr
 declare sub gtk_exit cdecl alias "gtk_exit" (byval error_code as gint)

@@ -39,8 +39,11 @@ type _GtkProgressBar
 	activity_step as guint
 	activity_blocks as guint
 	pulse_fraction as gdouble
-	activity_dir as guint
-	ellipsize as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		activity_dir as guint
+		ellipsize as guint
+	end union
 end type
 
 type _GtkProgressBarClass

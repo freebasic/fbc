@@ -23,12 +23,15 @@ type _GtkSocket
 	plug_window as GdkWindow ptr
 	plug_widget as GtkWidget ptr
 	xembed_version as gshort
-	same_app as guint
-	focus_in as guint
-	have_size as guint
-	need_map as guint
-	is_mapped as guint
-	active as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		same_app as guint
+		focus_in as guint
+		have_size as guint
+		need_map as guint
+		is_mapped as guint
+		active as guint
+	end union
 	accel_group as GtkAccelGroup ptr
 	toplevel as GtkWidget ptr
 end type

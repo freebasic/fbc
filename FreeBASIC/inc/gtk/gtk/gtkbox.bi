@@ -30,10 +30,13 @@ end type
 type _GtkBoxChild
 	widget as GtkWidget ptr
 	padding as guint16
-	expand as guint
-	fill as guint
-	pack as guint
-	is_secondary as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		expand as guint
+		fill as guint
+		pack as guint
+		is_secondary as guint
+	end union
 end type
 
 declare function gtk_box_get_type cdecl alias "gtk_box_get_type" () as GType

@@ -22,9 +22,12 @@ type _GtkOldEditable
 	current_pos as guint
 	selection_start_pos as guint
 	selection_end_pos as guint
-	has_selection as guint
-	editable as guint
-	visible as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		has_selection as guint
+		editable as guint
+		visible as guint
+	end union
 	clipboard_text as zstring ptr
 end type
 

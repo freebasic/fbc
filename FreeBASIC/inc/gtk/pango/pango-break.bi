@@ -13,17 +13,20 @@
 #include once "gtk/pango/pango-item.bi"
 
 type _PangoLogAttr
-	is_line_break as guint
-	is_mandatory_break as guint
-	is_char_break as guint
-	is_white as guint
-	is_cursor_position as guint
-	is_word_start as guint
-	is_word_end as guint
-	is_sentence_boundary as guint
-	is_sentence_start as guint
-	is_sentence_end as guint
-	backspace_deletes_character as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		is_line_break as guint
+		is_mandatory_break as guint
+		is_char_break as guint
+		is_white as guint
+		is_cursor_position as guint
+		is_word_start as guint
+		is_word_end as guint
+		is_sentence_boundary as guint
+		is_sentence_start as guint
+		is_sentence_end as guint
+		backspace_deletes_character as guint
+	end union
 end type
 
 declare sub pango_break cdecl alias "pango_break" (byval text as string, byval length as integer, byval analysis as PangoAnalysis ptr, byval attrs as PangoLogAttr ptr, byval attrs_len as integer)

@@ -82,28 +82,31 @@ type _GScannerConfig
 	cset_identifier_first as zstring ptr
 	cset_identifier_nth as zstring ptr
 	cpair_comment_single as zstring ptr
-	case_sensitive as guint
-	skip_comment_multi as guint
-	skip_comment_single as guint
-	scan_comment_multi as guint
-	scan_identifier as guint
-	scan_identifier_1char as guint
-	scan_identifier_NULL as guint
-	scan_symbols as guint
-	scan_binary as guint
-	scan_octal as guint
-	scan_float as guint
-	scan_hex as guint
-	scan_hex_dollar as guint
-	scan_string_sq as guint
-	scan_string_dq as guint
-	numbers_2_int as guint
-	int_2_float as guint
-	identifier_2_string as guint
-	char_2_token as guint
-	symbol_2_token as guint
-	scope_0_fallback as guint
-	store_int64 as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		case_sensitive as guint
+		skip_comment_multi as guint
+		skip_comment_single as guint
+		scan_comment_multi as guint
+		scan_identifier as guint
+		scan_identifier_1char as guint
+		scan_identifier_NULL as guint
+		scan_symbols as guint
+		scan_binary as guint
+		scan_octal as guint
+		scan_float as guint
+		scan_hex as guint
+		scan_hex_dollar as guint
+		scan_string_sq as guint
+		scan_string_dq as guint
+		numbers_2_int as guint
+		int_2_float as guint
+		identifier_2_string as guint
+		char_2_token as guint
+		symbol_2_token as guint
+		scope_0_fallback as guint
+		store_int64 as guint
+	end union
 	padding_dummy as guint
 end type
 

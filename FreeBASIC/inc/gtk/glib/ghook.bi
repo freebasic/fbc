@@ -32,8 +32,11 @@ end enum
 
 type _GHookList
 	seq_id as gulong
-	hook_size as guint
-	is_setup as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		hook_size as guint
+		is_setup as guint
+	end union
 	hooks as GHook ptr
 	hook_memchunk as GMemChunk ptr
 	finalize_hook as GHookFinalizeFunc

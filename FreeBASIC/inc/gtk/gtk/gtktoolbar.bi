@@ -55,8 +55,11 @@ type _GtkToolbar
 	button_maxh as gint
 	style_set_connection as guint
 	icon_size_connection as guint
-	style_set as guint
-	icon_size_set as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		style_set as guint
+		icon_size_set as guint
+	end union
 end type
 
 type _GtkToolbarClass

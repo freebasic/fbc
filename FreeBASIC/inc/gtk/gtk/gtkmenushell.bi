@@ -22,12 +22,15 @@ type _GtkMenuShell
 	parent_menu_shell as GtkWidget ptr
 	button as guint
 	activate_time as guint32
-	active as guint
-	have_grab as guint
-	have_xgrab as guint
-	ignore_leave as guint
-	menu_flag as guint
-	ignore_enter as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		active as guint
+		have_grab as guint
+		have_xgrab as guint
+		ignore_leave as guint
+		menu_flag as guint
+		ignore_enter as guint
+	end union
 end type
 
 type _GtkMenuShellClass

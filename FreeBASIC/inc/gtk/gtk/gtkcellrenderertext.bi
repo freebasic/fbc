@@ -26,16 +26,19 @@ type _GtkCellRendererText
 	underline_style as PangoUnderline
 	rise as gint
 	fixed_height_rows as gint
-	strikethrough as guint
-	editable as guint
-	scale_set as guint
-	foreground_set as guint
-	background_set as guint
-	underline_set as guint
-	rise_set as guint
-	strikethrough_set as guint
-	editable_set as guint
-	calc_fixed_height as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		strikethrough as guint
+		editable as guint
+		scale_set as guint
+		foreground_set as guint
+		background_set as guint
+		underline_set as guint
+		rise_set as guint
+		strikethrough_set as guint
+		editable_set as guint
+		calc_fixed_height as guint
+	end union
 end type
 
 type _GtkCellRendererTextClass

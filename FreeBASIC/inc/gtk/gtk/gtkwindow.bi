@@ -34,26 +34,31 @@ type _GtkWindow
 	frame as GdkWindow ptr
 	group as GtkWindowGroup ptr
 	configure_request_count as guint16
-	allow_shrink as guint
-	allow_grow as guint
-	configure_notify_received as guint
-	need_default_position as guint
-	need_default_size as guint
-	position as guint
-	type as guint
-	has_user_ref_count as guint
-	has_focus as guint
-	modal as guint
-	destroy_with_parent as guint
-	has_frame as guint
-	iconify_initially as guint
-	stick_initially as guint
-	maximize_initially as guint
-	decorated as guint
-	type_hint as guint
-	gravity as guint
-	is_active as guint
-	has_toplevel_focus as guint
+
+	''!!!FIXME!!! bit-fields support is needed
+	union 
+		allow_shrink as guint
+		allow_grow as guint
+		configure_notify_received as guint
+		need_default_position as guint
+		need_default_size as guint
+		position as guint
+		type as guint
+		has_user_ref_count as guint
+		has_focus as guint
+		modal as guint
+		destroy_with_parent as guint
+		has_frame as guint
+		iconify_initially as guint
+		stick_initially as guint
+		maximize_initially as guint
+		decorated as guint
+		type_hint as guint
+		gravity as guint
+		is_active as guint
+		has_toplevel_focus as guint
+	end union
+
 	frame_left as guint
 	frame_top as guint
 	frame_right as guint

@@ -29,9 +29,12 @@ type _GtkTooltips
 	tip_label as GtkWidget ptr
 	active_tips_data as GtkTooltipsData ptr
 	tips_data_list as GList ptr
-	delay as guint
-	enabled as guint
-	have_grab as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		delay as guint
+		enabled as guint
+		have_grab as guint
+	end union
 	use_sticky_delay as guint
 	timer_tag as gint
 	last_popdown as GTimeVal

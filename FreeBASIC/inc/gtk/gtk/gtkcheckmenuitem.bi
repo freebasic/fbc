@@ -17,10 +17,13 @@ type GtkCheckMenuItemClass as _GtkCheckMenuItemClass
 
 type _GtkCheckMenuItem
 	menu_item as GtkMenuItem
-	active as guint
-	always_show_toggle as guint
-	inconsistent as guint
-	draw_as_radio as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		active as guint
+		always_show_toggle as guint
+		inconsistent as guint
+		draw_as_radio as guint
+	end union
 end type
 
 type _GtkCheckMenuItemClass

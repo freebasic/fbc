@@ -21,11 +21,14 @@ type GtkLabelSelectionInfo as _GtkLabelSelectionInfo
 type _GtkLabel
 	misc as GtkMisc
 	label as zstring ptr
-	jtype as guint
-	wrap as guint
-	use_underline as guint
-	use_markup as guint
-	ellipsize as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		jtype as guint
+		wrap as guint
+		use_underline as guint
+		use_markup as guint
+		ellipsize as guint
+	end union
 	mnemonic_keyval as guint
 	text as zstring ptr
 	attrs as PangoAttrList ptr

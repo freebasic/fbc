@@ -58,9 +58,12 @@ type GFloatIEEE754 as _GFloatIEEE754
 #define G_LOG_2_BASE_10 (0.30102999566398119521)
 
 type _GFloatIEEE754_mpn
-	mantissa as guint
-	biased_exponent as guint
-	sign as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		mantissa as guint
+		biased_exponent as guint
+		sign as guint
+	end union
 end type
 
 union _GFloatIEEE754
@@ -70,9 +73,12 @@ end union
 
 type _GDoubleIEEE754_mpn
 	mantissa_low as guint
-	mantissa_high as guint
-	biased_exponent as guint
-	sign as guint
+	''!!!FIXME!!! bit-fields support is needed
+	union
+		mantissa_high as guint
+		biased_exponent as guint
+		sign as guint
+	end union
 end type
 
 union _GDoubleIEEE754
