@@ -171,7 +171,7 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		while (end - start > 2 * PI)
 			start += 2 * PI;
 		
-		increment = 1 / (sqrt(a) * sqrt(b));
+		increment = 1 / (sqrt(a) * sqrt(b) * 1.5);
 		
 		for (; start < end + (increment / 2); start += increment) {
 			get_arc_point(start, a, b, &x1, &y1);
