@@ -216,26 +216,29 @@
 
   XOR Operator
 
-  CIRCLE Statement	(diff: can't draw arcs currently, start and end arguments are ignored)
+*****************************************************************************
+* Implemented GFX - all details at the docs/gfxlib.txt file                 * 
+*****************************************************************************
+
+  SCREEN Statement
+  CIRCLE Statement
+  DRAW Statement
+  GET (Graphics) Stmt
   LINE (Graphics) Stmt
-  POINT Function	(diff: if using the version with a single argument, call POINTCOORD() instead)
+  PCOPY Statement
+  PUT (Graphics) Stmt
+  PALETTE Statement
+  PALETTE USING Stmt
+  PAINT Statement
+  POINT Function
   PSET Statement
-  PRESET Statement	(diff: same as PSET, pixel is not XOR'ed)
+  PRESET Statement
   PMAP Function
-  SCREEN Statement	(diff: no pages optional arguments, the args are now: width, height, bpp, fullscreenflag;
-                               no support for other modes than 12 and 13 (mode 12 runs in 8 bits))
-  WINDOW Statement
+  INP Function
+  OUT Statement
   VIEW (Graphics) Stmt
-  PCOPY Statement	(diff: the from/to page arguments don't matter, works the same way as FLIP)
-  GET (Graphics) Stmt	(diff: the array index is always needed; no runtime error if coordinates are 
-                               outside clipping boundaries)
-  PUT (Graphics) Stmt	(diff: the array index is always needed; no runtime error if coordinates are 
-                               outside clipping boundaries; XOR, OR and AND modes will draw a masked 
-                               sprite, PSET and PRESET will draw a solid one)
-  PALETTE Statement		
-  PALETTE USING Stmt	(diff: the array index is always needed)
-  INP Function          (diff: only works for getting the screen palette when using the gfx module)
-  OUT Statement         (diff: only works for setting the screen palette when using the gfx module)
+  WINDOW Statement
+  WAIT Statement
 
 *****************************************************************************
 * New keywords, statements and functions (the minimal possible)             *
@@ -325,10 +328,6 @@
 * Keywords:
   ON expr GOTO|GOSUB list
 
-* Gfx:
-  PAINT Statement
-
-
 *****************************************************************************
 * Unsupported (won't be implemented unless someone else does that...)       *
 *****************************************************************************
@@ -340,12 +339,10 @@
   COM Statement         (reason: user mode apps can't access IO ports directly)
   CALL INTERRUPT Stmt   (reason: services are not the same; not needed with shared libs)
   CVDMBF Function       (reason: old and useless proprietary format)
-  CLEAR Statement       (reason: not needed anymore, stack size is defined at compile-time)
   CVSMBF Function       (reason: old and useless proprietary format)
 
   DEF FN Statement      (reason: use real functions instead, or macros when implemented)
   DEF SEG Statement     (reason: segments are not needed in 32-bit flat mode)
-  DRAW Statement        (reason: too clumsy to implement)
 
   ERDEV Function        (reason: )
   ERDEV$ Function
@@ -401,5 +398,3 @@
 
   VARSEG Function       (reason: segments are not needed in 32-bit flat mode)
   VARPTR$ Function      (reason: no PLAY, not needed)
-
-  WAIT Statement        (reason: user mode apps can't access IO ports directly)
