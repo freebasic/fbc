@@ -512,24 +512,25 @@ end function
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
 function lexReadString ( tlen as integer ) as string static
-	dim c as integer, s as string
+	dim s as string
 
 	s = ""
 
-	c = lexEatChar								'' skip open quote
+	lexEatChar									'' skip open quote
 
 	do
-		c = lexCurrentChar
-
-		select case c
+		select case lexCurrentChar
 		case 0, CHAR_CR, CHAR_LF
 			exit do
 		case CHAR_QUOTE
-			c = lexEatChar
-			exit do
-		case else
-			s = s + chr$( lexEatChar )
+			lexEatChar
+			'' check for double-quotes
+			if( lexCurrentChar <> CHAR_QUOTE ) then
+				exit do
+			end if
 		end select
+
+		s = s + chr$( lexEatChar )
 	loop
 
 	lexReadString = s

@@ -308,11 +308,13 @@ function hScapeStr( s as string ) as string 'static
 	for i = 1 to len( s )
 
 		c = mid$( s, i, 1 )
-		res = res + c
 
-		if( asc( c ) = CHAR_RSLASH ) then
+		select case asc( c )
+		case CHAR_RSLASH, CHAR_QUOTE
 			res = res + chr$( CHAR_RSLASH )
-		end if
+		end select
+
+		res = res + c
 
 	next i
 
