@@ -31,6 +31,8 @@
 #endif
 #define NAN		0x80000000
 
+#define SQRT_2		1.4142135623730950488016
+
 
 /*:::::*/
 static int parse_number(char **str)
@@ -68,8 +70,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 	if (!fb_mode)
 		return;
 
-	x = fb_mode->last_x;
-	y = fb_mode->last_y;
+	x = fb_mode->last_x + 0.5;
+	y = fb_mode->last_y + 0.5;
 
 	fb_mode->driver->lock();
 
@@ -186,7 +188,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 			case 'E': angle += PI * 0.25;
 			case 'R':
 				if ((toupper(*c) >= 'E') && (toupper(*c) <= 'H'))
-					scale = 1.414213;
+					scale = SQRT_2;
 				c++;
 				if ((value1 = parse_number(&c)) != NAN)
 					length = value1;
@@ -213,7 +215,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 			dx = x;
 			dy = y;
 
-			for (; length >= 0; length--) {
+			for (; length; length--) {
 				if (draw) {
 					ix = dx;
 					iy = dy;
@@ -229,8 +231,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				}
 			}
 			if (move) {
-				x = dx;
-				y = dy;
+				x = floor(dx) + 0.5;
+				y = floor(dy) + 0.5;
 			}
 			angle = 0.0;
 			scale = 1.0;
@@ -239,8 +241,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 		}
 	}
 
-	fb_mode->last_x = x;
-	fb_mode->last_y = y;
+	fb_mode->last_x = x - 0.5;
+	fb_mode->last_y = y - 0.5;
 
 error:
 	fb_mode->flags = flags;
