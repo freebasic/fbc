@@ -192,7 +192,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		   gfx driver which is not aware of the scanline size */
 		fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
 		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
-		fb_mode->key = (unsigned char *)calloc(1, 256);
+		fb_mode->key = (unsigned char *)calloc(1, 128);
 
 		fb_hSetupFuncs();
 

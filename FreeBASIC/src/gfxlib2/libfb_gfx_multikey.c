@@ -35,7 +35,6 @@ FBCALL int fb_GfxMultikey(int scancode)
 	if ((fb_mode) && (scancode >= 0) && (scancode < 256)) {
 		fb_mode->driver->lock();
 		result = fb_mode->key[scancode];
-		fb_mode->driver->get_key(FALSE);
 		fb_mode->driver->unlock();
 	}
 	
