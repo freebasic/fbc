@@ -99,9 +99,9 @@ int fb_hGetCh()
 	if (k == -1)
 		return -1;
 	if (k == 0x7F)
-		k = 8;
+		return 8;
 	if (k == '\n')
-		k = '\r';
+		return '\r';
 	if (k == '\e') {
 		k = fgetc(fb_con.f_in);
 		if (k == EOF)
@@ -177,6 +177,7 @@ FBSTRING *fb_ConsoleInkey( void )
 
 	return res;
 }
+
 
 /*:::::*/
 int fb_ConsoleGetkey( void )
