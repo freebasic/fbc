@@ -41,7 +41,6 @@ static void ddraw_lock(void);
 static void ddraw_unlock(void);
 static void ddraw_set_palette(int index, int r, int g, int b);
 static void ddraw_wait_vsync(void);
-static int ddraw_get_key(int wait);
 static int ddraw_get_mouse(int *x, int *y, int *z, int *buttons);
 static void ddraw_set_window_title(char *title);
 
@@ -293,8 +292,6 @@ static int private_init()
 	}
 	if (IDirectInput_CreateDevice(lpDI, &GUID_SysKeyboard, &lpDID, NULL) != DI_OK)
 		return -1;
-	if (IDirectInputDevice_SetCooperativeLevel(lpDID, wnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE) != DI_OK)
-		return -1;
 	if (IDirectInputDevice_SetDataFormat(lpDID, &c_dfDIKeyboard) != DI_OK)
 		return -1;
 	if (IDirectInputDevice_Acquire(lpDID) != DI_OK)
@@ -409,6 +406,7 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 					mode_fullscreen ^= DRIVER_FULLSCREEN;
 					private_init();
 				}
+				fb_hRestorePalette();
 				fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
 				is_active = TRUE;
 			}
@@ -527,7 +525,6 @@ error:
 /*:::::*/
 static int ddraw_init(char *title, int w, int h, int depth, int flags)
 {
-	DIRECTDRAWCREATE DirectDrawCreate;
 	HANDLE events[2];
 	long result;
 
