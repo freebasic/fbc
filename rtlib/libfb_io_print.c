@@ -127,6 +127,7 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 #ifdef DISABLE_NCURSES
 	printf( "%s", buffer );
 #else
+
 	/* scrolling */
 	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
 	{
@@ -167,9 +168,16 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
     char *buffer;
+#ifndef WIN32
+	char nl[2] = { '\n', '\0' };
+#endif
 
     if( mask & FB_PRINT_NEWLINE )
+#ifndef WIN32
+		buffer = nl;
+#else
     	buffer = "\n";
+#endif
     else if( mask & FB_PRINT_PAD )
     	buffer = "%-14";
     else
