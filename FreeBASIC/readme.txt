@@ -47,7 +47,7 @@ Most Important Features:
 
     - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER/ULONGINT).
 
-    - Strings can be fixed or variable-length (up to 2GB long).
+    - Strings can be fixed, variable-length or null-terminated (zstring's), up to 2GB long.
 
     - The LONGINT and ULONGINT data types are 64-bit wide.
 
@@ -162,9 +162,9 @@ Most Important Features:
       text = "BAR"
       print text[0]  			'' output will be 66 = ASC("B")
 
-  o Optional function arguments (numeric only):
+  o Optional function arguments (numeric and strings):
 
-      DECLARE SUB Test(A AS DOUBLE = 12.345, BYVAL B AS BYTE = 255)
+      DECLARE SUB Test(a AS DOUBLE = 12.345, BYVAL b AS BYTE = 255, BYVAL s AS STRING = "abc")
 
       Test
       Test , 128
@@ -323,7 +323,8 @@ Credits (in alphabetic order):
   o Angelo Mottola (a.mottola@libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
-    - Added build-in threads and dynlib support, besides many other runtime lib changes.
+    - Added build-in threads and dynlib support, besides many other runtime lib 
+      and compiler changes.
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
@@ -333,7 +334,8 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to DOS; port maintainer.
     - Translated the Allegro headers (W.I.P.).
     - FreeBASIC Documentation project member.
-    - Wrote the DLL and static library automation, plus resource scripts support on Windows.
+    - Wrote the DLL and static library automation, plus resource scripts 
+      support on Windows.
     - Completed the CRTDLL and DDRAW headers.
 
   o Edmond Leung (leung.edmond@gmail.com): 
@@ -394,7 +396,7 @@ Greetings:
   o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch of
     kangaroos in the middle time.
 
-  o VonGodric: author of the first (an unique at the moment) freeBASIC IDE: FBIDE (download
+  o VonGodric: author of the first (an unique at the moment) FreeBASIC IDE: FBIDE (download
     it here: http://www.hot.ee/wizgui/setup.exe) and also reported loatsa bugs (i'm getting
     tired of typing that, arf)
 
@@ -410,8 +412,6 @@ Greetings:
   o Marzec: Loads of tests, besides giving many ideas.
 
   o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of bugs found.
-
-  o Dav, WD, Alias, Urger: Beta testing.
 
   o People at Qbasicnews (too many to list, thanks all!) for all the support and feedback.
 
@@ -432,13 +432,23 @@ Links:
 
     - BASS and BASSMod: http://www.un4seen.com/
 
+    - DevIL: http://openil.sourceforge.net/
+    
     - fmod: http://www.fmod.org/
 
     - FreeImage: http://freeimage.sourceforge.net/
 
+    - GD: http://www.boutell.com/gd/
+    
     - GLUT: http://www.xmission.com/~nate/glut.html
+    
+    - IUP: http://luaforge.net/projects/iup
 
+    - LibXML: http://xmlsoft.org/
+    
     - Lua: http://www.lua.org/
+    
+    - MySQL: http://dev.mysql.com/
 
     - OpenAL: http://www.openal.org/ or http://developer.creative.com/landing.asp?cat=1&sbcat=31&top=38
 
@@ -447,6 +457,8 @@ Links:
     - SDL: http://www.libsdl.org/ (look under Libraries for SDL_net, SDL_image, SDL_ttf, etc)
 
     - SDL_gfx: http://www.ferzkopp.net/~aschiffler/Software/SDL_gfx-2.0/
+    
+    - SQLite: http://www.sqlite.org/
 
     - TinyPTC: http://www.gaffer.org/tinyptc/
     

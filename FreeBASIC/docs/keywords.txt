@@ -54,7 +54,7 @@
   $DYNAMIC Metacommand
   DATE$ Function
   DATE$ Statement       (diff: called SETDATE now; syntax is "SETDATE newdate$", not "SETDATE$ = newdate$")
-  DIR$ Function         (diff: pass "" to return the next file, pattern is not optional)
+  DIR$ Function
 
   ELSE
   ELSEIF
@@ -182,7 +182,7 @@
   SGN Function
   SWAP Statement
   SLEEP Statement       (diff: millisecond accuracy, 1 is equal to 1 msec, not 1 sec)
-  SHELL Statement       (diff: argument is not optional, pass at least "")
+  SHELL Statement
   SYSTEM Statement
   STOP Statement
   SPC Function
@@ -280,6 +280,7 @@
   CUNSG Function
   CONTINUE Statement
   CURDIR Function
+  
 
   DEALLOCATE Statement  (sub( byval src as any ptr ))
   DEFBYTE Statement
@@ -338,6 +339,8 @@
   SHL
   SHR
   STRPTR Function       (returns the pointer to string data, not to descriptor as VARPTR will with var-len strings)
+  SIZEOF Function       (returns the size of a variable or data type (with strings it will return the descriptor size,
+                         with fixed-len and zstring's it will be the allocated size )
   
   STRCAT, STRCHR, 
   STRCMP, STRCPY, 
@@ -356,11 +359,16 @@
   VA_FIRST() macro      (returns a pointer to the first variable-argument)
   VA_ARG(a,t) macro     (returns the current var-arg, a= argument, t= argument type)
   VA_NEXT(a,t) macro    (returns a pointer to the next var-arg, a= current argument, t= current argument type)
-  VAL64()		(converts a string to a long integer (64 bits))
+  VAL64()               (converts a string to a long integer (64 bits))
 
   WINDOWTITLE Statement
   WITH..END WITH        (compound statement -- won't work with field dereference "->")
   
+  ZSTRING               (a null-terminated string with a fixed size (known or not) that can be concatenated, 
+                         comparated against or assigned to/from other strings and also comparated and assigned
+                         to/from numeric types, making it really powerful if proper used -- btw, if the size
+                         is known as compile time (that's it, the zstring is not a pointer), zstrings are
+                         safer than char strings in C, as the max size won't ever be overflowed)
 
 *****************************************************************************
 * Unsupported (won't be implemented unless someone else does that...)       *

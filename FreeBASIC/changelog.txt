@@ -19,6 +19,7 @@ Version 0.13 Beta:
 - TIMER now uses the Win32 high resolution timer when available (lillo)
 - DOS port now detects if STDOUT is not the terminal and uses printf() if so, so shell I/O redirection works now
 - more clear error messages when scalars variables are been accessed as arrays and vice-versa (v1c)
+- the string argument in SHELL and DIR$ is optional now, as in QB (v1c)
 
 [added]
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
