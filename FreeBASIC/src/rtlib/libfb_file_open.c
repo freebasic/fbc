@@ -188,10 +188,16 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
 		{
 			if( (f = fopen( filename, "w+b" )) == NULL )
+			{
+				free( filename );
 				return FB_RTERROR_FILENOTFOUND;
+			}
 		}
 		else
+		{
+			free( filename );
 			return FB_RTERROR_FILENOTFOUND;
+		}
 	}
 
 	free( filename );
