@@ -28,7 +28,7 @@
 #include "fb.h"
 
 
-char *fb_dataptr = NULL;
+static char *fb_dataptr = NULL;
 
 #define FB_DATA_LINK -1
 
