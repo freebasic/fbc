@@ -16,26 +16,29 @@ option explicit
 #include once "GL/glfw.bi"
 
 #define NULL 0
+#define FALSE 0
+#define TRUE not FALSE
 
 #ifndef PI
 #define PI 3.14159265358979323846
 #endif
 
-option nokeyword width
-
 ''========================================================================
 '' Global variables
 ''========================================================================
+
+''
+dim shared as integer doredraw
 
 '' Mouse position
 dim shared as integer xpos, ypos
 
 '' Window size
-dim shared as integer width, height
+dim shared as integer width_, height
 
 '' Active view: 0 = none, 1 = upper left, 2 = upper right, 3 = lower left,
 '' 4 = lower right
-dim shared as integer active_view
+dim shared as integer active_view = 0
 
 '' Rotation around each axis
 dim shared as integer rot_x, rot_y, rot_z
@@ -51,7 +54,7 @@ dim shared as integer rot_x, rot_y, rot_z
 #define TORUS_MINOR_RES 32
 
 sub DrawTorus( )
-    static as GLuint torus_list
+    static as GLuint torus_list = 0
     dim as integer i, j, k
     dim as double s, t, x, y, z, nx, ny, nz, scale, twopi
 
@@ -103,25 +106,13 @@ end sub
 '' DrawScene() - Draw the scene (a rotating torus)
 ''========================================================================
 
-dim shared as GLfloat model_diffuse(0 to 3)
-	model_diffuse(0) = 1.0
-	model_diffuse(1) = 0.8
-	model_diffuse(2) = 0.8
-	model_diffuse(3) = 1.0
+sub DrawScene(  )
+	static as GLfloat model_diffuse(0 to 3) = 1.0, 0.8, 0.8, 1.0
+	static as GLfloat model_specular(0 to 3) = 0.6, 0.6, 0.6, 1.0
+	static as GLfloat model_shininess = 20.0
 
-dim shared as GLfloat model_specular(0 to 3)
-	model_specular(0) = 0.6
-	model_specular(1) = 0.6
-	model_specular(2) = 0.6
-	model_specular(3) = 1.0
-
-dim shared as GLfloat model_shininess  
-	model_shininess = 20.0
-
-sub DrawScene( )
-
-    glPushMatrix()
-
+    glPushMatrix( )
+    
     '' Rotate the object
     glRotatef( rot_x*0.5, 1.0, 0.0, 0.0 )
     glRotatef( rot_y*0.5, 0.0, 1.0, 0.0 )
@@ -150,14 +141,14 @@ sub DrawGrid( byval scale as single, byval steps as integer )
     dim as integer i
     dim as single x, y
 
-    glPushMatrix()
+    glPushMatrix( )
 
     '' Set background to some dark bluish grey
     glClearColor( 0.05, 0.05, 0.2, 0.0)
     glClear( GL_COLOR_BUFFER_BIT )
 
     '' Setup modelview matrix (flat XY view)
-    glLoadIdentity()
+    glLoadIdentity( )
     gluLookAt( 0.0, 0.0, 1.0, _
                0.0, 0.0, 0.0, _
                0.0, 1.0, 0.0 )
@@ -201,39 +192,22 @@ end sub
 '' DrawAllViews()
 ''========================================================================
 
-	dim shared as GLfloat light_position(0 to 3) 
-	light_position(0) = 0.0
-	light_position(1) = 8.0
-	light_position(2) = 8.0
-	light_position(3) = 1.0
-	dim shared as GLfloat light_diffuse(0 to 3) 
-	light_diffuse(0) = 1.0
-	light_diffuse(1) = 1.0
-	light_diffuse(2) = 1.0
-	light_diffuse(3) = 1.0
-	dim shared as GLfloat light_specular(0 to 3)  
-	light_specular(0) = 1.0
-	light_specular(1) = 1.0
-	light_specular(2) = 1.0
-	light_specular(3) = 1.0
-	dim shared as GLfloat light_ambient(0 to 3) 
-	light_ambient(0) = 0.2
-	light_ambient(1) = 0.2
-	light_ambient(2) = 0.3
-	light_ambient(3) = 1.0
-
 sub DrawAllViews( )
+	static as GLfloat light_position(0 to 3) = 0.0, 8.0, 8.0, 1.0
+	static as GLfloat light_diffuse(0 to 3) = 1.0, 1.0, 1.0, 1.0
+	static as GLfloat light_specular(0 to 3) = 1.0, 1.0, 1.0, 1.0
+	static as GLfloat light_ambient(0 to 3) = 0.2, 0.2, 0.3, 1.0
     dim as double aspect
 
     '' Calculate aspect of window
     if( height > 0 ) then
-        aspect = width / height
+        aspect = width_ / height
     else
         aspect = 1.0
     end if
 
     '' Clear screen
-    glClearColor( 0.0, 0.0, 0.0, 0.0)
+    glClearColor( 0.0, 0.0, 0.0, 0.0 )
     glClear( GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT )
 
     '' Enable scissor test
@@ -256,25 +230,25 @@ sub DrawAllViews( )
 
     '' Setup orthogonal projection matrix
     glMatrixMode( GL_PROJECTION )
-    glLoadIdentity()
+    glLoadIdentity( )
     glOrtho( -3.0*aspect, 3.0*aspect, -3.0, 3.0, 1.0, 50.0 )
 
     '' Upper left view (TOP VIEW)
-    glViewport( 0, height\2, width\2, height\2 )
-    glScissor( 0, height\2, width\2, height\2 )
+    glViewport( 0, height\2, width_\2, height\2 )
+    glScissor( 0, height\2, width_\2, height\2 )
     glMatrixMode( GL_MODELVIEW )
     glLoadIdentity()
     gluLookAt( 0.0, 10.0, 1e-3, _  '' Eye-position (above)
                0.0, 0.0, 0.0,   _  '' View-point
                0.0, 1.0, 0.0 )     '' Up-vector
     DrawGrid( 0.5, 12 )
-    DrawScene()
+    DrawScene( )
 
     '' Lower left view (FRONT VIEW)
-    glViewport( 0, 0, width\2, height\2 )
-    glScissor( 0, 0, width\2, height\2 )
+    glViewport( 0, 0, width_\2, height\2 )
+    glScissor( 0, 0, width_\2, height\2 )
     glMatrixMode( GL_MODELVIEW )
-    glLoadIdentity()
+    glLoadIdentity( )
     gluLookAt( 0.0, 0.0, 10.0, _   '' Eye-position (in front of)
                0.0, 0.0, 0.0,  _   '' View-point
                0.0, 1.0, 0.0 )     '' Up-vector
@@ -282,15 +256,15 @@ sub DrawAllViews( )
     DrawScene()
 
     '' Lower right view (SIDE VIEW)
-    glViewport( width\2, 0, width\2, height\2 )
-    glScissor( width\2, 0, width\2, height\2 )
+    glViewport( width_\2, 0, width_\2, height\2 )
+    glScissor( width_\2, 0, width_\2, height\2 )
     glMatrixMode( GL_MODELVIEW )
     glLoadIdentity()
     gluLookAt( 10.0, 0.0, 0.0, _   '' Eye-position (to the right)
                0.0, 0.0, 0.0,  _   '' View-point
                0.0, 1.0, 0.0 )     '' Up-vector
     DrawGrid( 0.5, 12 )
-    DrawScene()
+    DrawScene( )
 
     '' Disable line anti-aliasing
     glDisable( GL_LINE_SMOOTH )
@@ -309,12 +283,12 @@ sub DrawAllViews( )
 
     '' Setup perspective projection matrix
     glMatrixMode( GL_PROJECTION )
-    glLoadIdentity()
+    glLoadIdentity( )
     gluPerspective( 65.0, aspect, 1.0, 50.0 )
 
     '' Upper right view (PERSPECTIVE VIEW)
-    glViewport( width\2, height\2, width\2, height\2 )
-    glScissor( width\2, height\2, width\2, height\2 )
+    glViewport( width_\2, height\2, width_\2, height\2 )
+    glScissor( width_\2, height\2, width_\2, height\2 )
     glMatrixMode( GL_MODELVIEW )
     glLoadIdentity()
     gluLookAt( 3.0, 1.5, 3.0, _    '' Eye-position
@@ -330,7 +304,7 @@ sub DrawAllViews( )
     glEnable( GL_LIGHTING )
 
     '' Draw scene
-    DrawScene()
+    DrawScene( )
 
     '' Disable lighting
     glDisable( GL_LIGHTING )
@@ -347,7 +321,7 @@ sub DrawAllViews( )
 
     '' Draw a border around the active view
     if( active_view > 0 and active_view <> 2 ) then
-        glViewport( 0, 0, width, height )
+        glViewport( 0, 0, width_, height )
         glMatrixMode( GL_PROJECTION )
         glLoadIdentity()
         glOrtho( 0.0, 2.0, 0.0, 2.0, 0.0, 1.0 )
@@ -371,8 +345,10 @@ end sub
 ''========================================================================
 
 sub WindowSizeFun GLFWCALL( byval w as integer, byval h as integer )
-    width  = w
+    width_  = w
     height = iif( h > 0, h, 1 )
+    
+    doredraw = TRUE
 end sub
 
 ''========================================================================
@@ -398,6 +374,10 @@ sub MousePosFun GLFWCALL ( byval x as integer, byval y as integer )
     '' Remember mouse position
     xpos = x
     ypos = y
+    
+    if( active_view <> 0 ) then
+    	doredraw = TRUE
+    end if 
 end sub
 
 
@@ -406,21 +386,31 @@ end sub
 ''========================================================================
 
 sub MouseButtonFun GLFWCALL ( byval button as integer, byval action as integer )
+    
     '' Button clicked?
-    if( ( button = GLFW_MOUSE_BUTTON_LEFT ) and action = GLFW_PRESS ) then
-        '' Detect which of the four views was clicked
-        active_view = 1
-        if( xpos >= width\2 ) then
-            active_view += 1
-		end if            
-        if( ypos >= height\2 ) then
-            active_view += 2
+    select case button
+    case GLFW_MOUSE_BUTTON_LEFT
+    	
+    	if( action = GLFW_PRESS ) then
+        	'' Detect which of the four views was clicked
+        	active_view = 1
+        	if( xpos >= width_\2 ) then
+	            active_view += 1
+			end if            
+        	if( ypos >= height\2 ) then
+            	active_view += 2
+        	end if
+        	
+    	'' Button released?
+    	else
+        	'' Deselect any previously selected view
+        	active_view = 0
         end if
-    '' Button released?
-    elseif( button = GLFW_MOUSE_BUTTON_LEFT ) then
-        '' Deselect any previously selected view
-        active_view = 0
-    end if
+        
+        doredraw = TRUE
+    
+    end select
+    
 end sub
 
 
@@ -431,7 +421,7 @@ end sub
     dim as integer running
 
     '' Initialise GLFW
-    glfwInit()
+    glfwInit( )
 
     '' Open OpenGL window
     if( glfwOpenWindow( 500, 500, 0,0,0,0, 16,0, GLFW_WINDOW ) = 0 ) then
@@ -454,19 +444,31 @@ end sub
     glfwSetMouseButtonCallback( @MouseButtonFun )
 
     '' Main loop
+    doredraw = TRUE
+
     do
-        '' Draw all views
-        DrawAllViews()
+        if( doredraw ) then
+        	'' Draw all views
+        	DrawAllViews( )
+
+        	doredraw = FALSE
+        	
+        else
+        
+        	'' Idle process
+        	glfwSleep( 0.05 )
+        	
+        end if
 
         '' Swap buffers
-        glfwSwapBuffers()
-
+        glfwSwapBuffers( )
+        	
         '' Check if the ESC key was pressed or the window was closed
         running = (glfwGetKey( GLFW_KEY_ESC ) = 0) and _
                   (glfwGetWindowParam( GLFW_OPENED ) = 1)
     loop while( running )
 
     '' Close OpenGL window and terminate GLFW
-    glfwTerminate()
+    glfwTerminate( )
 
 	end 0
