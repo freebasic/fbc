@@ -5,9 +5,6 @@
 defint a-z
 option explicit
 
-const FALSE = 0
-const TRUE = not FALSE
-
 declare sub consumer ( byval param as integer )
 declare sub producer ( byval param as integer )
 
