@@ -1599,6 +1599,9 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 					exit function
 				end if
 				idalias = lexEatToken
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
+				idalias = "_" + idalias
+#endif
 			end if
 		end if
 

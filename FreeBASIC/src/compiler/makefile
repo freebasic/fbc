@@ -33,11 +33,11 @@ BCFLAGS := -e -c -w 1
 
 ifeq ($(PLATFORM),WIN32)
     EXE := .exe
-    LDFLAGS := -T ../../bin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
-    LDLIBS := -L../../lib -( -lcrtdll -lfb -lkernel32 -luser32 -)
+    LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDLIBS := -L../../lib/win32 -( -lcrtdll -lfb -lkernel32 -luser32 -)
     BC := ..\..\fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
-    LD := ..\..\bin\ld.exe
+    LD := ..\..\bin\win32\ld.exe
 endif
 
 ifeq ($(PLATFORM),LINUX)
@@ -51,11 +51,11 @@ endif
 
 ifeq ($(PLATFORM),DOS)
     EXE := .exe
-    LDFLAGS := -T ../../bin/i386go32.x -s ../../lib/crt0.o ../../lib/crt1.o obj/fbcentry.o
-    LDLIBS := -L../../lib -( -lfb -lc -lgcc -)
+    LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o obj/fbcentry.o
+    LDLIBS := -L../../lib/dos -( -lfb -lc -lgcc -)
     BC := ..\..\fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_DOS
-    LD := ..\..\bin\ld.exe
+    LD := ..\..\bin\dos\ld.exe
 endif
 
 main	:= fbc.bas
@@ -82,11 +82,11 @@ ifeq ($(PLATFORM),WIN32)
 	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))
 else
-    ifeq ($(PLATFORM),DOS)
+ifeq ($(OS),DOS)
 	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))
-    else
+else
 	rm -f $(TARGET)
 	rm -f $(objects)
-    endif
+endif
 endif

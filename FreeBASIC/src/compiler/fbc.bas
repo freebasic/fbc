@@ -453,7 +453,7 @@ function linkFiles as integer
 
 	'' link with crt0.o and crt1.o (C runtime init)
 	ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt0.o\" "
-	ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt1.o\" "
+	'''''ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt1.o\" "
 #endif
 
     '' set executable name

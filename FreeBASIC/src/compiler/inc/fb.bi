@@ -27,10 +27,14 @@ const INVALID		= -1
 #define FB.SIGN					"FreeBASIC v0.11b"
 
 '' paths
-#if defined(TARGET_WIN32) or defined(TARGET_DOS)
-const FB.BINPATH$				= "\\bin\\"
+#if defined(TARGET_WIN32)
+const FB.BINPATH$				= "\\bin\\win32\\"
 const FB.INCPATH$				= "\\inc\\"
-const FB.LIBPATH$				= "\\lib"
+const FB.LIBPATH$				= "\\lib\\win32"
+#elseif defined(TARGET_DOS)
+const FB.BINPATH$				= "\\bin\\dos\\"
+const FB.INCPATH$				= "\\inc\\"
+const FB.LIBPATH$				= "\\lib\\dos"
 #else
 const FB.BINPATH$				= "/bin/"
 const FB.INCPATH$				= "/inc/"
