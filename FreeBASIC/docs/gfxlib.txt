@@ -48,7 +48,7 @@ Functions reference:
 	POINT		function
 	PSET		statement
 	PUT		statement
-	RGB		function
+	RGB		macro
 	SCREEN		statement
 	SCREENCOPY	statement
 	SCREENINFO	function
@@ -1230,7 +1230,7 @@ GET, SCREEN.
 | RGB |
 +-----+
 
-Function to compute valid color value for hi/truecolor modes.
+Macro to compute valid color value for hi/truecolor modes.
 
 
 Syntax:
@@ -1244,9 +1244,12 @@ red,green,blue	Red, green and blue components ranging 0-255.
 
 Insights:
 
-The RGB function can be used to compure a valid color value for use while in
+The RGB macro can be used to compure a valid color value for use while in
 hi/truecolor modes. It returns a number in the format &hRRGGBB, where RR, GG
 and BB equals the values passed to this function, in hexadecimal format.
+Internally it's defined as:
+
+#define RGB(r,g,b)    ((cint(r) shl 16) or (cint(g) shl 8) or cint(b))
 
 
 Example:
@@ -1256,7 +1259,7 @@ See PUT example.
 
 Differences from QB:
 
-Function new in FB.
+Macro new in FB.
 
 
 See also:
