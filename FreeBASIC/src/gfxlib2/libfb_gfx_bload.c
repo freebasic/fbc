@@ -136,8 +136,7 @@ static int load_bmp(FILE *f, void *dest)
 	for (i = 0; i < (header.bfOffBits - 54) >> 2; i++) {
 		color = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
 		fgetc(f);
-		if (!dest)
-			fb_mode->device_palette[i] = color;
+		fb_mode->device_palette[i] = color;
 	}
 	
 	if (dest) {
@@ -170,8 +169,7 @@ static int load_bmp(FILE *f, void *dest)
 	}
 
 	DRIVER_LOCK();
-	if (!dest)
-		fb_hRestorePalette();
+	fb_hRestorePalette();
 	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size);
 	for (i = header.biHeight - 1; i >= 0; i--) {
