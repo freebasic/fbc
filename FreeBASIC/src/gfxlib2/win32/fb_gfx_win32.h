@@ -36,6 +36,7 @@
 typedef struct WIN32DRIVER
 {
 	HINSTANCE hinstance;
+	WNDCLASS wndclass;
 	HWND wnd;
 	HANDLE vsync_event;
 	PALETTEENTRY palette[256];
@@ -52,9 +53,10 @@ typedef struct WIN32DRIVER
 
 
 extern WIN32DRIVER fb_win32;
-
 extern GFXDRIVER fb_gfxDriverDirectDraw;
 extern GFXDRIVER fb_gfxDriverGDI;
+extern GFXDRIVER fb_gfxDriverOpenGL;
+extern const unsigned char fb_keytable[][3];
 
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

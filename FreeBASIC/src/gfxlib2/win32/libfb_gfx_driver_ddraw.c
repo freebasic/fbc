@@ -48,7 +48,8 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	driver_wait_vsync,	/* void (*wait_vsync)(void); */
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
-	fb_hWin32SetWindowTitle	/* void (*set_window_title)(char *title); */
+	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
+	NULL			/* void (*flip)(void); */
 };
 
 
@@ -120,7 +121,6 @@ static int calc_comp_height( int h )
 /*:::::*/
 static int directx_init(void)
 {
-	WNDCLASS wndclass;
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
 	DIRECTDRAWCREATE DirectDrawCreate;
 	DIRECTINPUTCREATE DirectInputCreate;
@@ -150,17 +150,11 @@ static int directx_init(void)
 	if ((!DirectInputCreate) || (DirectInputCreate(fb_win32.hinstance, 0x0300, &lpDI, NULL) != DI_OK))
 		return -1;
 
-	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
-	wndclass.lpfnWndProc = fb_hWin32WinProc;
-	wndclass.lpszClassName = fb_win32.window_class;
-	wndclass.hInstance = fb_win32.hinstance;
-
 	rect.left = rect.top = 0;
 	rect.right = fb_win32.w - 1;
 	rect.bottom = fb_win32.h - 1;
 
 	if (fb_win32.fullscreen) {
-		RegisterClass(&wndclass);
 		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, WS_POPUP | WS_VISIBLE, 0, 0,
 				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, 0, NULL);
 		if (!fb_win32.wnd)
@@ -195,9 +189,6 @@ static int directx_init(void)
 		display_offset = ((height - fb_win32.h) >> 1);
 	}
 	else {
-		wndclass.style = CS_VREDRAW | CS_HREDRAW;
-		wndclass.hCursor = LoadCursor(0, IDC_ARROW);
-		RegisterClass(&wndclass);
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
 		rect.right -= (rect.left + 1);
 		rect.bottom -= (rect.top + 1);
@@ -383,12 +374,15 @@ error:
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int flags)
 {
+	if (flags & DRIVER_OPENGL)
+		return -1;
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 	fb_win32.init = directx_init;
 	fb_win32.exit = directx_exit;
 	fb_win32.paint = directx_paint;
 	fb_win32.thread = directx_thread;
-	fb_hWin32Init(title, w, h, depth, flags);
+	
+	return fb_hWin32Init(title, w, h, depth, flags);
 }
 
 

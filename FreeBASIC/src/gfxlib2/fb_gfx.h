@@ -71,6 +71,7 @@
 #define SET_DIRTY(y,h)		{ if (fb_mode->framebuffer == fb_mode->line[0]) fb_hMemSet(fb_mode->dirty + (y), TRUE, (h)); }
 
 #define DRIVER_FULLSCREEN	0x00000001
+#define DRIVER_OPENGL		0x00000002
 
 #define HAS_MMX			0x01000000
 #define SCREEN_EXIT		0x80000000
@@ -183,6 +184,7 @@ typedef struct GFXDRIVER
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons);
 	void (*set_mouse)(int x, int y, int cursor);
 	void (*set_window_title)(char *title);
+	void (*flip)(void);
 } GFXDRIVER;
 
 

@@ -168,6 +168,8 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_mode->depth = info->depth;
 		if ((mode > 13) && ((depth == 8) || (depth == 15) || (depth == 16) || (depth == 24) || (depth == 32)))
 			fb_mode->depth = depth;
+		if (flags & DRIVER_OPENGL)
+			fb_mode->depth = MAX(16, fb_mode->depth);
 		fb_mode->default_palette = info->palette;
 		fb_mode->scanline_size = info->scanline_size;
 		fb_mode->font = (FONT *)info->font;
@@ -210,11 +212,13 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 
 		driver_name = getenv("FBGFX");
 		for (try = (driver_name ? 4 : 2); try; try--) {
-			for (driver = fb_gfx_driver_list[0]; driver; driver++) {
+			for (i = 0; fb_gfx_driver_list[i]; i++) {
+				driver = fb_gfx_driver_list[i];
 				if ((driver_name) && (try & 0x1) && (strcasecmp(driver_name, driver->name)))
 					continue;
 				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
 					break;
+				driver = NULL;
 			}
 			if (driver)
 				break;

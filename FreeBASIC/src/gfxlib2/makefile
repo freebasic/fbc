@@ -50,19 +50,20 @@ lib = $(libpath)/libfbgfx.a
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
 objects += $(patsubst %.s,obj/%.o,$(wildcard *.s))
 osdepobjs := $(patsubst $(osdeppath)/%.c,$(osdeppath)/obj/%.o,$(wildcard $(osdeppath)/*.c))
+headers := $(wildcard *.h)
+headers += $(wildcard $(osdeppath)/*.h)
 
+obj/%.o : %.c $(headers)
+	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/%.o : %.c
-	$(CC) -c $(CFLAGS) $? -o $@
-
-obj/%.o : %.s
-	$(CC) -c $(AFLAGS) $? -o $@
+obj/%.o : %.s $(headers)
+	$(CC) -c $(AFLAGS) $< -o $@
 
 $(osdeppath)/obj/%.o : $(osdeppath)/%.c
-	$(CC) -c $(CFLAGS) $? -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 
-all : $(objects) $(osdepobjs) $(lib) fb_gfx.h fb_gfx_mmx.h
+all : $(objects) $(osdepobjs) $(lib)
 
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
