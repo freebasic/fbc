@@ -1278,6 +1278,10 @@ private Function AL_MID(ByVal x As Integer, ByVal y As Integer, ByVal z As Integ
 	AL_MID = AL_MAX(x, AL_MIN(y, z))
 End Function
 
+private function key(byval keycode as integer) as ubyte
+	key = *(@al_key + keycode)
+end function
+
 ' -- random hacks --
 
 'Declare Function linear_vtable16 CDecl Alias "fb_linear_vtable16" () As GFX_VTABLE Ptr
