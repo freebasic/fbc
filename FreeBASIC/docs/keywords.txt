@@ -270,7 +270,12 @@
 
   CALLOCATE Function    (same as ALLOCATE, but clears the contents)
   CBYTE Function
+  CUBYTE Function
   CSHORT Function
+  CUSHORT Function
+  CUINT Function
+  CLNGINT Function
+  CULNGINT Function
   CSIGN Function
   CUNSG Function
   CONTINUE Statement
@@ -351,6 +356,7 @@
   VA_FIRST() macro      (returns a pointer to the first variable-argument)
   VA_ARG(a,t) macro     (returns the current var-arg, a= argument, t= argument type)
   VA_NEXT(a,t) macro    (returns a pointer to the next var-arg, a= current argument, t= current argument type)
+  VAL64()		(converts a string to a long integer (64 bits))
 
   WINDOWTITLE Statement
   WITH..END WITH        (compound statement -- won't work with field dereference "->")
