@@ -70,7 +70,7 @@ FBCALL void fb_WriteVoid ( int fnum, int mask )
     if( buffer != NULL )
     {
     	if( fnum == 0 )
-    		fb_hPrintBuffer( buffer, mask );
+    		fb_PrintBuffer( buffer, mask );
     	else
     		fb_hFilePrintBuffer( fnum, buffer );
     }
