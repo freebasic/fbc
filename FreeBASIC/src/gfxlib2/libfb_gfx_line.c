@@ -54,6 +54,19 @@ static int encode(int x, int y)
 
 
 /*:::::*/
+static int reverse_mask(int mask)
+{
+	int new_mask = 0, i;
+	
+	for (i = 0; i < 8; i++) {
+		new_mask |= (mask & (1 << i)) ? (1 << (15 - i)) : 0;
+		new_mask |= (mask & (1 << (15 - i))) ? (1 << i) : 0;
+	}
+	return new_mask;
+}
+
+
+/*:::::*/
 static int clip_line(int *x1, int *y1, int *x2, int *y2)
 {
 	int temp, code1, code2;
@@ -128,8 +141,10 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 
 		DRIVER_LOCK();
 		if (x1 == x2) {
-			if (y1 > y2)
+			if (y1 > y2) {
 				SWAP(y1, y2);
+				style = reverse_mask(style);
+			}
 			for (y = y1; y <= y2; y++) {
 				if (style & bit)
 					fb_hPutPixel(x1, y, color);
@@ -139,8 +154,10 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 			}
 		}
 		else if (y1 == y2) {
-			if (x1 > x2)
+			if (x1 > x2) {
 				SWAP(x1, x2);
+				style = reverse_mask(style);
+			}
 			if (style == 0xFFFF)
 				fb_hPixelSet(fb_mode->line[y1] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);
 			else {
