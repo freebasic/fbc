@@ -70,18 +70,19 @@ static NODE F1[] = { { '~', KEY_F1, NULL }, { 0 } },
 	    F9[] = { { '~', KEY_F9, NULL }, { 0 } },
 	    F10[] = { { '~', KEY_F10, NULL }, { 0 } },
 	    Delete[] = { { '~', KEY_DEL, NULL }, { 0 } },
+	    Home[] = { { '~', KEY_HOME, NULL }, { 0 } },
 	    End[] = { { '~', KEY_END, NULL }, { 0 } },
 	    PageUp[] = { { '~', KEY_PAGE_UP, NULL }, { 0 } },
 	    PageDown[] = { { '~', KEY_PAGE_DOWN, NULL }, { 0 } },
-	    Sub1[] = { { '~', KEY_HOME, NULL }, { '7', 0, F6 }, { '8', 0, F7 }, { '9', 0, F8 }, { 0, 0, F5 }, 
-	    	       { 0, 0, F1 }, { 0, 0, F2 }, { 0, 0, F3 }, { 0, 0, F4 }, { 0 } },
+	    Sub1[] = { { '~', KEY_HOME, NULL }, { '7', 0, F6 }, { '8', 0, F7 }, { '9', 0, F8 }, { 0, 0, F1 }, 
+	    	       { 0, 0, F2 }, { 0, 0, F3 }, { 0, 0, F4 }, { 0, 0, F5 }, { 0 } },
 	    Sub2[] = { { '~', KEY_INS, NULL }, { '0', 0, F9 }, { '1', 0, F10 }, { 0 } },
 	    SubBrace[] = { { 'A', KEY_F1, NULL }, { 'B', KEY_F2, NULL }, { 'C', KEY_F3, NULL }, { 'D', KEY_F4, NULL },
 			   { 'E', KEY_F5, NULL }, { 0 } },
 	    Console[] = { { '[', 0, SubBrace }, { 'A', KEY_UP, NULL }, { 'B', KEY_DOWN, NULL }, { 'C', KEY_RIGHT, NULL },
 	    		  { 'D', KEY_LEFT, NULL }, { '1', 0, Sub1 }, { '2', 0, Sub2 }, { '3', 0, Delete },
-	    		  { '4', 0, End }, { '5', 0, PageUp }, { '6', 0, PageDown }, { 0, KEY_TAB, NULL },
-	    		  { 0, KEY_BACKSPACE, NULL }, { 0 } },
+	    		  { '4', 0, End }, { '5', 0, PageUp }, { '6', 0, PageDown }, { 0, 0, Home },
+	    		  { 0, 0, End }, { 0, KEY_TAB, NULL }, { 0, KEY_BACKSPACE, NULL }, { 0 } },
 	    X11[] = { { 'P', KEY_F1, NULL }, { 'Q', KEY_F2, NULL }, { 'R', KEY_F3, NULL }, { 'S', KEY_F4, NULL },
 	    	      { 'F', KEY_END, NULL }, { 'H', KEY_HOME, NULL }, { 'A', KEY_UP, NULL }, { 'B', KEY_DOWN, NULL },
 	    	      { 'C', KEY_RIGHT, NULL }, { 'D', KEY_LEFT, NULL }, { 0 } },
@@ -109,21 +110,22 @@ int fb_hGetCh()
 		if (!getch_inited) {
 			if (fb_con.inited != INIT_CONSOLE) {
 				/* Fixups for X11 compatibility */
-				Sub1[4].key = '5';
-				if (fb_con.inited == INIT_ETERM) {
-					Sub1[5].key = '1';
-					Sub1[6].key = '2';
-					Sub1[7].key = '3';
-					Sub1[8].key = '4';
-				}
-				Console[11].key = 'T';
-				Console[12].key = 'K';
+				Sub1[4].key = '1';
+				Sub1[5].key = '2';
+				Sub1[6].key = '3';
+				Sub1[7].key = '4';
+				Sub1[8].key = '5';
+				Console[11].key = '7';
+				Console[12].key = '8';
+				Console[13].key = 'T';
+				Console[14].key = 'K';
 				Sequence[1].key = 'O';
 			}
 			getch_inited = TRUE;
 		}
 		node = Sequence;
 		for (;;) {
+			printf("%c", k);
 			while (node->key) {
 				if (k == node->key) {
 					if (node->code)
