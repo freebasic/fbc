@@ -23,6 +23,25 @@
 #define FB_COLOR_YELLOW    	(FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY)
 #define FB_COLOR_BWHITE    	(FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY)
 
+#elif defined(DJGPP)
+
+#define FB_COLOR_BLACK 		(0)
+#define FB_COLOR_BLUE   	(1)
+#define FB_COLOR_GREEN     	(2)
+#define FB_COLOR_CYAN   	(3)
+#define FB_COLOR_RED       	(4)
+#define FB_COLOR_MAGENTA   	(5)
+#define FB_COLOR_BROWN     	(6)
+#define FB_COLOR_WHITE     	(7)
+#define FB_COLOR_GREY   	(8)
+#define FB_COLOR_LBLUE     	(9)
+#define FB_COLOR_LGREEN    	(10) 
+#define FB_COLOR_LCYAN     	(11)
+#define FB_COLOR_LRED   	(12)
+#define FB_COLOR_LMAGENTA  	(13)
+#define FB_COLOR_YELLOW    	(14)
+#define FB_COLOR_BWHITE    	(15)
+
 #endif /* WIN32 */
 
 #endif /* __FB_COLOR_H__ */
