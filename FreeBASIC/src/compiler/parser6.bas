@@ -829,6 +829,19 @@ function cFileStmt
 				exit function
 			end select
 			lexSkipToken
+
+			if( fmode = FB.FILE.MODE.BINARY ) then
+				'' INPUT|OUTPUT
+				select case lexCurrentToken
+				case FB.TK.INPUT
+					lexSkipToken
+					fmode = FB.FILE.MODE.BINARYINPUT
+				case FB.TK.OUTPUT
+					lexSkipToken
+					fmode = FB.FILE.MODE.BINARYOUTPUT
+				end select
+			end if
+
 		else
 			fmode = FB.FILE.MODE.RANDOM
 		end if
