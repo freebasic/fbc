@@ -33,8 +33,6 @@
 #include "../fb_gfx.h"
 
 
-#define KEY_BUFFER_LEN		16
-
 #define WINDOW_CLASS_PREFIX "fbgfxclass_"
 
 static int ddraw_init(char *title, int w, int h, int depth, int flags);
@@ -57,7 +55,6 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	ddraw_unlock,		/* void (*unlock)(void); */
 	ddraw_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	ddraw_wait_vsync,	/* void (*wait_vsync)(void); */
-	ddraw_get_key,		/* int (*get_key)(int wait); */
 	ddraw_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	ddraw_set_window_title	/* void (*set_window_title)(char *title); */
 };
@@ -92,7 +89,6 @@ static PALETTEENTRY palette[256];
 static BLITTER *blitter;
 static LPDIRECTINPUT lpDI = NULL;
 static LPDIRECTINPUTDEVICE lpDID = NULL;
-static short key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
 static int mouse_buttons, mouse_wheel;
 static HWND wnd;
 static RECT rect;
@@ -448,17 +444,12 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 						key = 0;
 					break;
 			}
-			if (key) {
-				key_buffer[key_tail] = key;
-				if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) != key_head)
-					key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
-			}
+			if (key)
+				fb_hPostKey(key);
 			return 0;
 
 		case WM_CLOSE:
-			key_buffer[key_tail] = KEY_QUIT;
-			if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) != key_head)
-				key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+			fb_hPostKey(KEY_QUIT);
 			return 0;
 
 		case WM_PAINT:
@@ -611,32 +602,6 @@ static void ddraw_set_palette(int index, int r, int g, int b)
 static void ddraw_wait_vsync(void)
 {
 	IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
-}
-
-
-/*:::::*/
-static int ddraw_get_key(int wait)
-{
-	int key = 0;
-
-	if (wait) {
-		do {
-			key = ddraw_get_key(FALSE);
-			Sleep(20);
-		} while(!key);
-		return key;
-	}
-
-	ddraw_lock();
-
-	if (key_head != key_tail) {
-		key = key_buffer[key_head];
-		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
-	}
-
-	ddraw_unlock();
-
-	return key;
 }
 
 

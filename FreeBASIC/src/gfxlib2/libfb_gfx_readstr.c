@@ -60,7 +60,7 @@ char *fb_GfxReadStr(char *buffer, int maxlen)
 		}
 		move_back();
 		
-		key = fb_mode->driver->get_key(TRUE);
+		key = fb_GfxGetkey();
 		if (key < 0x100) {
 			if (key == 8) {
 				if (len > 0) {

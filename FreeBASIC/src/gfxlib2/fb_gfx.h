@@ -97,6 +97,8 @@
 #define PUT_MODE_OR		4
 #define PUT_MODE_XOR		5
 
+#define KEY_BUFFER_LEN		16
+
 #define KEY_QUIT		0x100
 #define KEY_UP			0x101
 #define KEY_DOWN		0x102
@@ -153,7 +155,6 @@ typedef struct GFXDRIVER
 	void (*unlock)(void);
 	void (*set_palette)(int index, int r, int g, int b);
 	void (*wait_vsync)(void);
-	int (*get_key)(int wait);
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons);
 	void (*set_window_title)(char *title);
 } GFXDRIVER;
@@ -194,6 +195,7 @@ extern const FONT fb_font_8x16;
 
 /* Internal functions */
 extern void fb_hSetupFuncs(void);
+extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern unsigned int fb_hMakeColor(int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);

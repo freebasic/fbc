@@ -27,10 +27,51 @@
 #include "fb_gfx.h"
 
 
+static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
+
+
+/*:::::*/
+void fb_hPostKey(int key)
+{
+	key_buffer[key_tail] = key;
+	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
+		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+	key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+}
+
+
+/*:::::*/
+static int get_key(void)
+{
+	int key = 0;
+	
+	fb_mode->driver->lock();
+	
+	if (key_head != key_tail) {
+		key = key_buffer[key_head];
+		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+	}
+	
+	fb_mode->driver->unlock();
+	
+	return key;
+}
+
+
 /*:::::*/
 int fb_GfxGetkey(void)
 {
-	return fb_mode->driver->get_key(TRUE);
+	int key = 0;
+	
+	if (!fb_mode)
+		return 0;
+	
+	do {
+		key = get_key();
+		fb_Sleep(20);
+	} while (key == 0);
+	
+	return key;
 }
 
 
@@ -42,9 +83,9 @@ FBSTRING *fb_GfxInkey(void)
 		';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D'
 	};
 	FBSTRING *res;
-	int key = fb_mode->driver->get_key(FALSE);
-	
-	if (key) {
+	int key;
+
+	if ((fb_mode) && (key = get_key())) {
 		if (key > 0xFF) {
 			key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
 			res = (FBSTRING *)fb_hStrAllocTmpDesc();
