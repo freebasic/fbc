@@ -44,8 +44,8 @@ FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
 		*(unsigned int *)src = *(unsigned int *)dst;
 		*(unsigned int *)dst = ti;
 
-		++(unsigned int *)src;
-		++(unsigned int *)dst;
+		src += sizeof(unsigned int);
+		dst += sizeof(unsigned int);
 	}
 
 	/* remainder */

@@ -46,7 +46,8 @@ static short fb_hDataRead( void )
 	if( fb_dataptr == NULL )
 		return 0;
 
-	len = *((short *)fb_dataptr)++;
+	len = *((short *)fb_dataptr);
+	fb_dataptr += sizeof(short);
 
 	/* link? */
 	while ( len == FB_DATA_LINK )
@@ -55,7 +56,8 @@ static short fb_hDataRead( void )
 		if( fb_dataptr == NULL )
 			return 0;
 
-		len = *((short *)fb_dataptr)++;
+		len = *((short *)fb_dataptr);
+		fb_dataptr += sizeof(short);
 	}
 
 	return len;

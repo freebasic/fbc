@@ -38,7 +38,7 @@ FBCALL double fb_Rnd ( int n )
 		return last_num;
 
     /* return between 0 and 1 (but never 1) */
-	last_num = (double)rand( ) / (double)(RAND_MAX+1);
+	last_num = (double)rand( ) * (1.0 / ((double)RAND_MAX+1.0));
 
 	return last_num;
 }
