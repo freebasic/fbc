@@ -677,10 +677,12 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
 	select case as const lexCurrentChar
-	case FB.TK.SGNTYPECHAR
+	'' '!' | 'F' | 'f'
+	case FB.TK.SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 		c = lexEatChar
 		typ = FB.SYMBTYPE.SINGLE
-	case FB.TK.DBLTYPECHAR
+	'' '#' | 'D' | 'd'
+	case FB.TK.DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
 		c = lexEatChar
 		typ = FB.SYMBTYPE.DOUBLE
 
@@ -1188,23 +1190,28 @@ readid:
 			select case char
 			case CHAR_LT
 				select case lexCurrentChar( TRUE )
+				'' '<='?
 				case CHAR_EQ
 					'' t.text += chr$( lexEatChar )
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
 					t.id   = FB.TK.LE
+
+				'' '<>'?
 				case CHAR_GT
 					'' t.text += chr$( lexEatChar )
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
 					t.id   = FB.TK.NE
+
 				case else
 					t.id = FB.TK.LT
 				end select
 
 			case CHAR_GT
+				'' '>='?
 				if( lexCurrentChar( TRUE ) = CHAR_EQ ) then
 					'' t.text += chr$( lexEatChar )
 					t.text[t.tlen+0] = lexEatChar( )
@@ -1216,7 +1223,16 @@ readid:
 				end if
 
 			case CHAR_EQ
-				t.id = FB.TK.EQ
+				'' '=>'?
+				if( lexCurrentChar( TRUE ) = CHAR_GT ) then
+					'' t.text += chr$( lexEatChar )
+					t.text[t.tlen+0] = lexEatChar( )
+					t.text[t.tlen+1] = 0
+					t.tlen += 1
+					t.id   = FB.TK.DBLEQ
+				else
+					t.id = FB.TK.EQ
+				end if
 			end select
 
 		'':::

@@ -1649,11 +1649,13 @@ function cSymbolDef( byval alloctype as integer, _
 		end if
 
 		'' ('=' SymbolInitializer)?
-		if( hMatch( FB.TK.EQ ) ) then
+		select case lexCurrentToken
+		case FB.TK.DBLEQ, FB.TK.EQ
+			lexSkipToken
         	if( not cSymbolInit( symbol ) ) then
         		exit function
         	end if
-		end if
+		end select
 
 		'' (DECL_SEPARATOR SymbolDef)*
 		if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
