@@ -51,7 +51,7 @@ FBCALL FBMUTEX *fb_MutexCreate( void )
 	if( !mutex )
 		return NULL;
 
-	mutex->id = CreateMutex(NULL, FALSE, NULL);
+	mutex->id = CreateSemaphore(NULL, 1, 1, NULL);
 
 	return mutex;
 }
@@ -84,5 +84,5 @@ FBCALL void fb_MutexUnlock( FBMUTEX *mutex )
 	if( (mutex < mtxTB) || (mutex >= &mtxTB[FB_MAXMUTEXES]) )
 		return;
 
-	ReleaseMutex( mutex->id );
+	ReleaseSemaphore( mutex->id, 1, NULL );
 }
