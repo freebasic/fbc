@@ -549,11 +549,12 @@ end sub
 
 '':::::
 sub irEmitCALLSUB( byval proc as integer  ) 'static
-    dim pname as string, bytes2pop as integer
+    dim pname as string, bytes2pop as integer, mode as integer
 
     irFlush										'' needed? (only if passing any param by ref?)
 
-    if( symbGetFuncMode( proc ) = FB.FUNCMODE.CDECL ) then
+    mode = symbGetFuncMode( proc )
+    if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
 		bytes2pop = symbGetArgsLen( proc )
 	else
 		bytes2pop = 0
@@ -660,12 +661,13 @@ end sub
 
 '':::::
 sub irEmitPROCEND( byval proc as integer, byval initlabel as integer, byval exitlabel as integer ) 'static
-    dim bytestopop as integer
+    dim bytestopop as integer, mode as integer
 
-	if( symbGetFuncMode( proc ) <> FB.FUNCMODE.CDECL ) then
-		bytestopop = symbGetLen( proc )
-	else
+    mode = symbGetFuncMode( proc )
+    if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
 		bytestopop = 0
+	else
+		bytestopop = symbGetLen( proc )
 	end if
 
 	irFlush
@@ -1308,7 +1310,7 @@ end sub
 
 '':::::
 sub irFlushCALL( byval op as integer, byval ex as long, byval v1 as integer, byval vr as integer ) 'static
-    dim pname as string, proc as integer, bytes2pop as integer
+    dim pname as string, proc as integer, bytes2pop as integer, mode as integer
     dim rr as integer, rdclass as integer, rdtype as integer, rtyp as integer
 
     proc = ex and &h0000FFFF&
@@ -1318,7 +1320,8 @@ sub irFlushCALL( byval op as integer, byval ex as long, byval v1 as integer, byv
     if( proc = INVALID ) then
     	bytes2pop = ex \ 65536&
     else
-    	if( symbGetFuncMode( proc ) = FB.FUNCMODE.CDECL ) then
+    	mode = symbGetFuncMode( proc )
+    	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
 			bytes2pop = ex \ 65536&
 			if( bytes2pop = 0 ) then
 				bytes2pop = symbGetArgsLen( proc )

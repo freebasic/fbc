@@ -2230,7 +2230,7 @@ sub hSaveAsmInitProc( byval asmf as integer )
     hWriteStr asmf, FALSE, "fb_moduleinit:"
 
     hWriteStr asmf, TRUE,  "finit"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + "_fb_Init@0"
+    hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_Init", 0, FALSE, FB.FUNCMODE.STDCALL )
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out were to start)
@@ -2238,7 +2238,7 @@ sub hSaveAsmInitProc( byval asmf as integer )
     if( s <> INVALID ) then
     	'if( symbGetLabelIsDeclared( s ) ) then
     		hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetVarName( s )
-    		hWriteStr asmf, TRUE,  "call" + TABCHAR + "_fb_DataRestore@4"
+    		hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_DataRestore", 4, FALSE, FB.FUNCMODE.STDCALL )
     	'end if
     end if
 
@@ -2251,7 +2251,7 @@ sub hSaveAsmFooter( byval asmf as integer )
 
     hWriteStr asmf, FALSE, ""
     hWriteStr asmf, TRUE,  "push" + TABCHAR + "0"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + "_fb_End@4"
+    hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_End", 4, FALSE, FB.FUNCMODE.STDCALL )
     hWriteStr asmf, TRUE,  "mov" + TABCHAR + "esp, ebp"
     hWriteStr asmf, TRUE,  "pop" + TABCHAR + "ebp"
     hWriteStr asmf, TRUE,  "ret"

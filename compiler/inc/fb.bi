@@ -34,13 +34,14 @@ const FB.LIBPATH$				= "\lib"
 enum FBCOMPOPT_ENUM
 	FB.COMPOPT.DEBUG
 	FB.COMPOPT.CPUTYPE
-	FB.COMPOPT.DEFINE
+	FB.COMPOPT.NOSTDCALL
 	FB.COMPOPT.ERRORCHECK
 end enum
 
 type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
 	errorcheck		as integer					'' runtime error check (def= false)
+	nostdcall		as integer
 end type
 
 

@@ -47,6 +47,7 @@ type SYMBCTX
 	vdim			as SYMBLIST
 	arg				as SYMBLIST
 	lib				as SYMBLIST
+	def             as SYMBLIST
 
 	lastlbl			as integer
 end type
@@ -77,6 +78,8 @@ declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAY
 	redim shared argTB( 0 ) as FBPROCARG
 
 	redim shared libTB( 0 ) as FBLIBRARY, libhashTB( 0 ) as HASHTB
+
+	redim shared defineTB( 0 ) as FBDEFINE, defhashTB( 0 ) as HASHTB
 
 
 '' keywords: name, id (token), class
@@ -227,8 +230,14 @@ data "UNLOCK"	, FB.TK.UNLOCK		, FB.TKCLASS.KEYWORD
 data "FIELD"	, FB.TK.FIELD		, FB.TKCLASS.KEYWORD
 data "LOCAL"	, FB.TK.LOCAL		, FB.TKCLASS.KEYWORD
 data "ERR"		, FB.TK.ERR			, FB.TKCLASS.KEYWORD
+data "DEFINE"	, FB.TK.DEFINE		, FB.TKCLASS.KEYWORD
+data "UNDEF"	, FB.TK.UNDEF		, FB.TKCLASS.KEYWORD
+data "IFDEF"	, FB.TK.IFDEF		, FB.TKCLASS.KEYWORD
+data "IFNDEF"	, FB.TK.IFNDEF		, FB.TKCLASS.KEYWORD
+data "ENDIF"	, FB.TK.ENDIF		, FB.TKCLASS.KEYWORD
+data "DEFINED"	, FB.TK.DEFINED		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 146
+const FB.MAXKEYWORDS 		= 152
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' linked-lists
@@ -668,6 +677,93 @@ sub symbDelDimNode( byval n as integer ) static
 
 end sub
 
+
+'':::::
+sub symbReallocDefineTB( byval nodes as integer ) static
+	dim i as integer
+	dim lb as integer, ub as integer
+
+	lb = ctx.def.nodes
+	ub = ctx.def.nodes + (nodes - 1)
+
+	redim preserve defineTB( 0 to ub ) as FBDEFINE
+
+	for i = lb to ub
+		defineTB(i).prv  = i-1
+		defineTB(i).nxt  = i+1
+	next i
+
+	if( lb = 0 ) then
+		defineTB(lb).prv = INVALID
+	end if
+
+	defineTB(ub).nxt = INVALID
+
+	''
+	ctx.def.nodes = ctx.def.nodes + nodes
+	ctx.def.fhead = lb
+
+end sub
+
+'':::::
+function symbNewDefineNode as integer static
+	dim n as integer, t as integer
+
+	'' realloc node list if it's full
+	if( ctx.def.fhead = INVALID ) Then
+		symbReallocDefineTB ctx.def.nodes \ 2
+	end if
+
+	'' take from free list
+	n = ctx.def.fhead
+	ctx.def.fhead = defineTB(n).nxt
+
+	'' add to used list
+	t = ctx.def.tail
+	ctx.def.tail = n
+	if( t <> INVALID ) then
+		defineTB(t).nxt = n
+	else
+		ctx.def.head = n
+	end If
+
+	defineTB(n).prv	= t
+	defineTB(n).nxt	= INVALID
+
+	''
+	symbNewDefineNode = n
+
+end function
+
+'':::::
+sub symbDelDefineNode( byval n as integer ) static
+	Dim pn as integer, nn as integer
+
+	if( n = INVALID ) then
+		exit sub
+	end if
+
+	'' remove from used list
+	pn = defineTB(n).prv
+	nn = defineTB(n).nxt
+	if( pn <> INVALID ) then
+		defineTB(pn).nxt = nn
+	else
+		ctx.def.head = nn
+	end If
+
+	if( nn <> INVALID ) then
+		defineTB(nn).prv = pn
+	else
+		ctx.def.tail = pn
+	end If
+
+	'' add to free list
+	defineTB(n).nxt = ctx.def.fhead
+	ctx.def.fhead = n
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init/end
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -742,6 +838,19 @@ sub symbInitLibs static
 end sub
 
 '':::::
+sub symbInitDefines static
+
+	ctx.def.nodes 	= 0
+	ctx.def.head	= INVALID
+	ctx.def.tail	= INVALID
+
+	symbReallocDefineTB FB.INITDEFINENODES
+
+    hashNew defhashTB(), FB.INITDEFINENODES
+
+end sub
+
+'':::::
 sub symbInit
 	dim i as integer, sname as string
 
@@ -794,6 +903,11 @@ sub symbInit
 	''
 	symbInitLibs
 
+	''
+	'' defines
+	''
+	symbInitDefines
+
     ''
     ctx.inited 	= TRUE
 
@@ -807,15 +921,19 @@ sub symbEnd
     end if
 
     ''
-    hashFree keyhashTB(), FB.MAXKEYWORDS
+    hashFree defhashTB(), FB.INITDEFINENODES
 
 	hashFree libhashTB(), FB.INITLIBNODES
+
+    hashFree keyhashTB(), FB.MAXKEYWORDS
 
 	hashFree locsymbhashTB(), FB.INITLOCSYMBOLNODES
 
     hashFree symbhashTB(), FB.INITSYMBOLNODES
 
 	''
+	erase defineTB
+
 	erase libTB
 
 	erase typelmTB
@@ -902,6 +1020,37 @@ sub symbSetLastLabel( byval l as integer ) static
 	ctx.lastlbl = l
 
 end sub
+
+
+'':::::
+function symbAddDefine( id as string, text as string ) as integer static
+    dim d as integer
+
+    symbAddDefine = INVALID
+
+    '' already exists? (done by parser already)
+    '''''d = hashLookup( id, defhashTB(), FB.INITDEFINENODES )
+    '''''if( d <> INVALID ) then
+    '''''	exit function
+    '''''end if
+
+    '' allocate new node
+    d = symbNewDefineNode
+    if( d = INVALID ) then
+    	exit function
+    end if
+
+	'' add to pool
+	defineTB(d).nameidx = strpAdd( id )
+	defineTB(d).textidx = strpAdd( text )
+
+	'' and to hash table
+	hashAdd id, d, defineTB(d).nameidx, defhashTB(), FB.INITDEFINENODES
+
+	''
+	symbAddDefine = d
+
+end function
 
 
 '':::::
@@ -1660,25 +1809,6 @@ function hCalcProcArgsLen( byval args as integer, argv() as FBPROCARG ) as integ
 end function
 
 '':::::
-function hCreateAliasName( symbol as string, byval argslen as integer, _
-						   byval toupper as integer, byval addat as integer ) as string static
-    dim nm as string
-
-	nm = "_" + symbol
-
-	if( toupper ) then
-		nm = ucase$( nm )
-	end if
-
-	if( addat ) then
-		nm = nm + "@" + ltrim$( str$( argslen ) )
-	end if
-
-	hCreateAliasName = nm
-
-end function
-
-'':::::
 function hNewArg( byval f as integer, arg as FBPROCARG ) as integer static
     dim i as integer, a as integer, n as integer
 
@@ -1789,7 +1919,7 @@ function symbAddProc( id as string, aliasname as string, libname as string, byva
     end if
 
     if( instr( aname, "@" ) = 0 ) then
-    	aname = hCreateAliasName( aname, lgt, toupper, (mode = FB.FUNCMODE.STDCALL) )
+    	aname = hCreateAliasName( aname, lgt, toupper, mode )
     end if
 
 	hSetupProc f, sname, aname, libname, typ, mode, lgt, args, argv(), declaring
@@ -1826,10 +1956,17 @@ function symbAddProcResult( byval f as integer ) as integer static
 
 end function
 
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' lookups
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function symbLookupDefine( id as string ) as integer static
+
+    symbLookupDefine = hashLookup( id, defhashTB(), FB.INITDEFINENODES )
+
+end function
+
 
 '':::::
 function symbGetUDTElmOffset( elm as integer, typesymbol as integer, typ as integer, id as string ) as integer
@@ -2327,6 +2464,20 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' getters for symbol properties
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function symbGetDefineText( byval d as integer ) as string static
+
+	symbGetDefineText = strpGet( defineTB(d).textidx )
+
+end function
+
+'':::::
+function symbGetDefineLen( byval d as integer ) as integer static
+
+	symbGetDefineLen = len( strpGet( defineTB(d).textidx ) )
+
+end function
 
 '':::::
 function symbGetLen( byval s as integer ) as integer static
@@ -2908,6 +3059,33 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function symbDelDefine( id as string ) as integer static
+    dim d as integer
+
+    symbDelDefine = FALSE
+
+    '' exists?
+    d = hashLookup( id, defhashTB(), FB.INITDEFINENODES )
+    if( d = INVALID ) then
+    	exit function
+    end if
+
+	'' del from hash table
+	hashDel id, defhashTB(), FB.INITDEFINENODES
+
+	''
+	strpDel defineTB(d).textidx
+	strpDel defineTB(d).nameidx
+
+	'' del node
+	symbDelDefineNode d
+
+	''
+	symbDelDefine = TRUE
+
+end function
 
 '':::::
 sub symbDelLabel( byval l as integer ) static

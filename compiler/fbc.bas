@@ -326,7 +326,7 @@ sub printOptions
 	print "-a <name>", "add an object file to linker's list"
 	print "-b <name>", "add a source file to compilation"
 	print "-c", "compile only, do not link"
-	'''''print "-d <name=val>", "define a preprocessor's constant"
+	print "-d <name=val>", "add a preprocessor's define"
 	print "-e", "add error checking"
 	print "-g", "add debug info (testing)"
 	print "-i <name>", "add a path to search for include files"
@@ -373,7 +373,7 @@ function processOptions as integer
 
 			select case lcase$( mid$( argv(i), 2, 1 ) )
 			'' compiler options, will be processed by processCompOptions
-			case "g", "e"
+			case "g", "e", "w"
 
 			case "c"
 				ctx.compileonly = TRUE
@@ -433,7 +433,7 @@ end function
 
 '':::::
 function processCompOptions as integer
-    dim i as integer
+    dim i as integer, p as integer
 
 	processCompOptions = FALSE
 
@@ -456,6 +456,8 @@ function processCompOptions as integer
 				ctx.debug = TRUE
 			case "e"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
+			case "w"
+				fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
 			end select
 		end if
 
@@ -464,6 +466,14 @@ function processCompOptions as integer
     '' add inc files
     for i = 0 to ctx.incs-1
     	fbcAddIncPath inclist(i)
+    next i
+
+    '' add defines
+    for i = 0 to ctx.defs-1
+    	p = instr( deflist(i), "=" )
+    	if( (p > 0) and (p < len( deflist(i) )) ) then
+    		fbcAddDefine left$( deflist(i), p-1 ), mid$( deflist(i), p+1 )
+    	end if
     next i
 
 	processCompOptions = TRUE
@@ -505,6 +515,7 @@ function listFiles as integer
 
 		if( left$( argv(i), 1 ) = "-" ) then
 			select case lcase$( mid$( argv(i), 2, 1 ) )
+			'' source files
 			case "b"
 				inplist(ctx.inps) = argv(i+1)
 				if( len( inplist(ctx.inps) ) = 0 ) then
@@ -514,6 +525,7 @@ function listFiles as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' outputs
 			case "o"
 				outlist(ctx.outs) = argv(i+1)
 				if( len( outlist(ctx.outs) ) = 0 ) then
@@ -523,6 +535,7 @@ function listFiles as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' objects
 			case "a"
 				objlist(ctx.objs) = argv(i+1)
 				if( len( objlist(ctx.objs) ) = 0 ) then
@@ -532,6 +545,7 @@ function listFiles as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' libraries
 			case "l"
 				liblist(ctx.libs) = argv(i+1)
 				if( len( liblist(ctx.libs) ) = 0 ) then
@@ -541,12 +555,23 @@ function listFiles as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' include paths
 			case "i"
 				inclist(ctx.incs) = argv(i+1)
 				if( len( inclist(ctx.incs) ) = 0 ) then
 					exit function
 				end if
 				ctx.incs = ctx.incs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' defines
+			case "d"
+				deflist(ctx.defs) = argv(i+1)
+				if( len( deflist(ctx.defs) ) = 0 ) then
+					exit function
+				end if
+				ctx.defs = ctx.defs + 1
 				argv(i) = ""
 				argv(i+1) = ""
 			end select

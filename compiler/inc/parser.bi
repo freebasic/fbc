@@ -25,6 +25,7 @@
 declare function 	cProgram				( ) as integer
 declare function 	cLine					( ) as integer
 declare function 	cSimpleLine             ( ) as integer
+declare function 	cPreProcess				( ) as integer
 declare function 	cLabel                  ( ) as integer
 declare function 	cComment                ( ) as integer
 declare function 	cDirective              ( ) as integer

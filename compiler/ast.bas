@@ -2883,7 +2883,7 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 		vreg = INVALID
 	end if
 
-	if( mode = FB.FUNCMODE.CDECL ) then
+	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
 		bytestopop = symbCalcArgsLen( proc, astTB(n).f.args )
 	else
 		bytestopop = 0

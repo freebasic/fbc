@@ -42,15 +42,15 @@ declare function 	lexLookAheadChar        ( ) as integer
 declare function 	lexReadIdentifier		( tlen as integer, typ as integer ) as string
 declare function 	lexReadNumber			( typ as integer, tlen as integer ) as string
 declare function 	lexReadString 			( tlen as integer ) as string
-declare sub 		lexNextToken 			( t as FBTOKEN, byval checkLineCont as integer = TRUE )
+declare sub 		lexNextToken 			( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE )
 
-declare function 	lexCurrentToken 		( byval checkLineCont as integer = TRUE ) as integer
-declare function 	lexCurrentTokenClass 	( byval checkLineCont as integer = TRUE ) as integer
+declare function 	lexCurrentToken 		( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer
+declare function 	lexCurrentTokenClass 	( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer
 declare function 	lexTokenText 			( ) as string
 declare function 	lexTokenType 			( ) as integer
 
-declare function 	lexEatToken 			( byval checkLineCont as integer = TRUE ) as string
-declare sub 		lexSkipToken			( byval checkLineCont as integer = TRUE )
+declare function 	lexEatToken 			( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string
+declare sub 		lexSkipToken			( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE )
 
 declare function 	lexLookAheadClass 		( byval k as integer ) as integer
 declare function 	lexLookAhead 			( byval k as integer ) as integer
@@ -58,6 +58,6 @@ declare function 	lexLookAhead 			( byval k as integer ) as integer
 declare function 	lexLineNum 				( ) as integer
 declare function 	lexColNum 				( ) as integer
 
-declare sub 		lexSkipComment			( )
+declare sub 		lexSkipLine				( )
 
 declare sub 		lexSetCurrentToken		( byval id as integer, byval class as integer )

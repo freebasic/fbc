@@ -44,9 +44,15 @@ type LEXCTX
 	colnum 			as integer
 	lasttoken 		as integer
 
-	tbufflen		as integer
-	tbuffptr		as integer
-	tbuff			as string * 8192
+	'' last #define's text
+	deftext			as string * 1024
+	defptr 			as integer
+	deflen 			as integer
+
+	'' input buffer
+	bufflen			as integer
+	buffptr			as integer
+	buff			as string * 8192
 end type
 
 '' globals
@@ -86,8 +92,10 @@ sub lexInit
 	ctx.colnum		= 1
 	ctx.lasttoken	= -1
 
-	ctx.tbufflen	= 0
-	ctx.tbuffptr	= 0
+	ctx.deflen		= 0
+
+	ctx.bufflen		= 0
+	ctx.buffptr		= 0
 
 	'' only if it's not on an inc file
 	if( env.reclevel = 0 ) then
@@ -110,30 +118,43 @@ function lexReadChar as integer static
     dim char as integer
     dim p as long
 
-	if( ctx.tbuffptr < ctx.tbufflen ) then
-		char = peek( varptr( ctx.tbuff ) + ctx.tbuffptr )
-		ctx.tbuffptr = ctx.tbuffptr + 1
+	'' any #define'd text?
+	if( ctx.deflen > 0 ) then
+
+		char = peek( varptr( ctx.deftext ) + ctx.defptr )
+		ctx.defptr = ctx.defptr + 1
+		ctx.deflen = ctx.deflen - 1
 
 	else
-		if( not eof( env.inf ) ) then
-			p = seek( env.inf )
-			get #env.inf, , ctx.tbuff
-			ctx.tbufflen = seek( env.inf ) - p
 
-			char = peek( varptr( ctx.tbuff ) )
-			ctx.tbuffptr = 1
+		'' buffer not empty?
+		if( ctx.buffptr < ctx.bufflen ) then
+			char = peek( varptr( ctx.buff ) + ctx.buffptr )
+			ctx.buffptr = ctx.buffptr + 1
+
+		'' refill buffer
 		else
-			char = 0
-		end if
-	end if
+			if( not eof( env.inf ) ) then
+				p = seek( env.inf )
+				get #env.inf, , ctx.buff
+				ctx.bufflen = seek( env.inf ) - p
 
-	'' only save current src line if it's not on an inc file
-	if( env.reclevel = 0 ) then
-		select case char
-		case 0, 13, 10
-		case else
-			curline = curline + chr$( char )
-		end select
+				char = peek( varptr( ctx.buff ) )
+				ctx.buffptr = 1
+			else
+				char = 0
+			end if
+		end if
+
+		'' only save current src line if it's not on an inc file
+		if( env.reclevel = 0 ) then
+			select case char
+			case 0, 13, 10
+			case else
+				curline = curline + chr$( char )
+			end select
+		end if
+
 	end if
 
 	lexReadChar = char
@@ -141,9 +162,23 @@ function lexReadChar as integer static
 end function
 
 '':::::
+sub lexUnreadChar static
+
+	'' buffer not empty and last char not EOF? rewind
+	if( (ctx.buffptr > 0) and (ctx.char <> 0) ) then
+		ctx.buffptr = ctx.buffptr - 1
+	end if
+
+	ctx.char 	= -1
+
+end sub
+
+'':::::
 function lexCurrentCharEx( byval skipwhitespc as integer ) as integer static
 
-    if( ctx.char = -1 ) then ctx.char = lexReadChar
+    if( ctx.char = -1 ) then
+    	ctx.char = lexReadChar
+    end if
 
     if( skipwhitespc ) then
     	do while( (ctx.char = CHAR_TAB) or (ctx.char = CHAR_SPACE) )
@@ -182,7 +217,9 @@ end function
 '':::::
 function lexLookAheadCharEx( byval skipwhitespc as integer ) as integer
 
-	if( ctx.lachar = -1 ) then ctx.lachar = lexReadChar
+	if( ctx.lachar = -1 ) then
+		ctx.lachar = lexReadChar
+	end if
 
     if( skipwhitespc ) then
     	do while( (ctx.lachar = CHAR_TAB) or (ctx.lachar = CHAR_SPACE) )
@@ -497,10 +534,12 @@ function lexReadString ( tlen as integer ) as string static
 end function
 
 '':::::
-sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE ) static
+sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) static
 	dim c as integer, linecontinuation as integer
 	dim isnumber as integer
+	dim d as integer
 
+reread:
 	t.text = ""
 	t.tlen = 0
 
@@ -592,7 +631,20 @@ readnumber:
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 readid:
 		t.text 		= lexReadIdentifier( t.tlen, t.typ )
-        t.id 		= symbLookupKeyword( left$( t.text, t.tlen ), t.class, t.typ )
+
+		if( checkDefine ) then
+			'' is it a define?
+			d = symbLookupDefine( left$( t.text, t.tlen ) )
+			if( d <> INVALID ) then
+				lexUnreadChar
+				ctx.deftext = symbGetDefineText( d )
+				ctx.deflen  = symbGetDefineLen( d )
+				ctx.defptr  = 0
+				goto reread
+        	end if
+        end if
+
+       	t.id 		= symbLookupKeyword( left$( t.text, t.tlen ), t.class, t.typ )
 
 	'':::::
 	case CHAR_QUOTE
@@ -668,18 +720,22 @@ readid:
 end sub
 
 '':::::
-function lexCurrentToken( byval checkLineCont as integer = TRUE ) as integer static
+function lexCurrentToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer static
 
-    if( ctx.tokenTB(0).id = -1 ) then lexNextToken ctx.tokenTB(0), checkLineCont
+    if( ctx.tokenTB(0).id = -1 ) then
+    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    end if
 
     lexCurrentToken = ctx.tokenTB(0).id
 
 end function
 
 '':::::
-function lexCurrentTokenClass( byval checkLineCont as integer = TRUE ) as integer static
+function lexCurrentTokenClass( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer static
 
-    if( ctx.tokenTB(0).id = -1 ) then lexNextToken ctx.tokenTB(0), checkLineCont
+    if( ctx.tokenTB(0).id = -1 ) then
+    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    end if
 
     lexCurrentTokenClass = ctx.tokenTB(0).class
 
@@ -738,7 +794,7 @@ sub hMoveKDown static
 end sub
 
 '':::::
-function lexEatToken( byval checkLineCont as integer = TRUE ) as string static
+function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string static
 
     lexEatToken = left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
 
@@ -752,7 +808,7 @@ function lexEatToken( byval checkLineCont as integer = TRUE ) as string static
 
     ''
     if( ctx.k = 0 ) then
-    	lexNextToken ctx.tokenTB(0), checkLineCont
+    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
     else
     	hMoveKDown
     end if
@@ -760,7 +816,7 @@ function lexEatToken( byval checkLineCont as integer = TRUE ) as string static
 end function
 
 '':::::
-sub lexSkipToken( byval checkLineCont as integer = TRUE ) static
+sub lexSkipToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) static
 
     if( ctx.tokenTB(0).id = FB.TK.EOL ) then
     	ctx.linenum = ctx.linenum + 1
@@ -771,7 +827,7 @@ sub lexSkipToken( byval checkLineCont as integer = TRUE ) static
 
     ''
     if( ctx.k = 0 ) then
-    	lexNextToken ctx.tokenTB(0), checkLineCont
+    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
     else
     	hMoveKDown
     end if
@@ -779,7 +835,7 @@ sub lexSkipToken( byval checkLineCont as integer = TRUE ) static
 end sub
 
 '':::::
-sub lexSkipComment static
+sub lexSkipLine static
     dim c as integer
 
     ''

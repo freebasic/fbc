@@ -39,6 +39,9 @@ declare function 	hFileExists				( filename as string ) as integer
 declare function 	hScapeStr				( s as string ) as string
 declare sub 		hClearName				( src as string )
 
+declare function 	hCreateAliasName		( symbol as string, byval argslen as integer, _
+						   					  byval toupper as integer, byval mode as integer ) as string
+
 declare function 	hStripExt				( filename as string ) as string
 declare function 	hStripPath				( filename as string ) as string
 

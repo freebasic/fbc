@@ -339,6 +339,32 @@ sub hClearName( src as string ) static
 end sub
 
 '':::::
+function hCreateAliasName( symbol as string, byval argslen as integer, _
+						   byval toupper as integer, byval mode as integer ) as string static
+    dim nm as string
+    dim addat as integer
+
+	nm = "_" + symbol
+
+	if( toupper ) then
+		nm = ucase$( nm )
+	end if
+
+    if( env.clopt.nostdcall ) then
+    	addat = FALSE
+    else
+    	addat = (mode = FB.FUNCMODE.STDCALL)
+    end if
+
+	if( addat ) then
+		nm = nm + "@" + ltrim$( str$( argslen ) )
+	end if
+
+	hCreateAliasName = nm
+
+end function
+
+'':::::
 function hStripExt( filename as string ) as string 'static
     dim p as integer, lp as integer
 

@@ -40,6 +40,9 @@ const FB.INITDIMNODES%		= 400
 
 const FB.INITLIBNODES%		= 50
 
+const FB.INITDEFINENODES%	= 500
+
+
 ''
 const FB.POINTERSIZE%		= 4%
 const FB.INTEGERSIZE%		= 4%
@@ -301,6 +304,12 @@ enum FBTK_ENUM
 	FB.TK.FIELD
 	FB.TK.LOCAL
 	FB.TK.ERR
+	FB.TK.DEFINE
+	FB.TK.UNDEF
+	FB.TK.IFDEF
+	FB.TK.IFNDEF
+	FB.TK.ENDIF
+	FB.TK.DEFINED
 end enum
 
 '' single char tokens
@@ -473,6 +482,15 @@ end type
 ''
 type FBLIBRARY
 	nameidx			as integer
+
+	prv				as integer					'' linked-list nodes
+	nxt				as integer					'' /
+end type
+
+''
+type FBDEFINE
+	nameidx			as integer
+	textidx			as integer
 
 	prv				as integer					'' linked-list nodes
 	nxt				as integer					'' /

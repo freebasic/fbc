@@ -23,6 +23,7 @@
 declare sub 		symbInit				( )
 declare sub 		symbEnd					( )
 
+declare function 	symbLookupDefine		( id as string ) as integer
 declare function 	symbLookupVar			( symbol as string, typ as integer, ofs as integer, _
 											  elm as integer, typesymbol as integer ) as integer
 declare function 	symbLookupVarEx			( symbol as string, typ as integer, ofs as integer, _
@@ -98,6 +99,9 @@ declare function 	symbGetUDTElmLen		( byval t as integer ) as integer
 declare function 	symbGetUDTElmName		( byval t as integer ) as string
 declare function 	symbGetUDTElmSubType	( byval t as integer ) as integer
 
+declare function 	symbGetDefineText		( byval d as integer ) as string
+declare function 	symbGetDefineLen		( byval d as integer ) as integer
+
 declare function 	symbCalcArgsLen			( byval f as integer, byval args as integer ) as integer
 declare function 	symbListLibs			( namelist() as string, byval index as integer ) as integer
 
@@ -109,6 +113,7 @@ declare sub 		symbSetVarDimensions	( byval s as integer, byval dims as integer )
 declare function 	symbIsProc				( id as string ) as integer
 declare function 	symbIsConst				( constname as string ) as integer
 
+declare function 	symbAddDefine			( id as string, text as string ) as integer
 declare function 	symbAddLabel			( label as string ) as integer
 declare function 	symbAddLabelEx			( label as string, byval declaring as integer ) as integer
 declare function 	symbAddVar				( symbol as string, byval typ as integer, byval subtype as integer, _
@@ -143,6 +148,7 @@ declare sub 		symbSetLastLabel		( byval l as integer )
 declare sub 		symbFreeLocalDynSymbols	( byval proc as integer, byval issub as integer )
 declare sub 		symbDelLocalSymbols		( )
 
+declare function 	symbDelDefine			( id as string ) as integer
 declare sub 		symbDelLabel			( byval l as integer )
 
 declare function 	symbCalcLen				( byval typ as integer, byval subtype as integer ) as integer

@@ -63,7 +63,7 @@ end sub
 '':::::
 sub fbcAddDefine( dname as string, dtext as string )
 
-
+    symbAddDefine( dname, dtext )
 
 end sub
 
@@ -76,6 +76,7 @@ sub hSetCtx
 
 	env.clopt.debug		= FALSE
 	env.clopt.errorcheck= FALSE
+	env.clopt.nostdcall = FALSE
 
 	env.dbglname 		= ""
 	env.dbglnum 		= 0
@@ -157,6 +158,8 @@ sub fbcSetOption ( byval opt as integer, byval value as integer )
 		env.clopt.debug = value
 	case FB.COMPOPT.ERRORCHECK
 		env.clopt.errorcheck = value
+	case FB.COMPOPT.NOSTDCALL
+		env.clopt.nostdcall = value
 	end select
 
 end sub
@@ -323,21 +326,27 @@ sub cDebugLineEnd
 end sub
 
 '':::::
-''Line            =   Label? Statement? Comment? EOL .
+''Line            =   (PreProcess | (Label? Statement?)) Comment? EOL .
 ''
 function cLine
-    dim res as integer
+    dim res as integer, ppres as integer
 
 	cDebugLineBegin
 
-    res = cLabel
-    res = cStatement
+    ppres = cPreProcess
+    if( not ppres ) then
+    	res = cLabel
+    	res = cStatement
+    end if
+
     res = cComment
 
 	if( hGetLastError = FB.ERRMSG.OK ) then
 		if( not hMatch( FB.TK.EOL ) ) then
 			if( lexCurrentToken <> FB.TK.EOF ) then
-				hReportError FB.ERRMSG.EXPECTEDEOL
+				if( not ppres ) then
+					hReportError FB.ERRMSG.EXPECTEDEOL
+				end if
 				res = FALSE
 			else
 				res = TRUE
@@ -358,15 +367,19 @@ function cLine
 end function
 
 '':::::
-''SimpleLine      =   Label? SimpleStatement? Comment? EOL .
+''SimpleLine      =   (PreProcess? | (Label? SimpleStatement?)) Comment? EOL .
 ''
 function cSimpleLine
     dim res as integer, stmtres as integer
 
     cDebugLineBegin
 
-    res = cLabel
-    stmtres = cSimpleStatement
+    stmtres = cPreProcess
+    if( not stmtres ) then
+    	res = cLabel
+    	stmtres = cSimpleStatement
+    end if
+
     res = cComment
 
 	if( hGetLastError = FB.ERRMSG.OK ) then
@@ -473,7 +486,7 @@ function cComment
     		lexSkipToken
     		res = cDirective
     	else
-    		lexSkipComment
+    		lexSkipLine
     	end if
 	end select
 
