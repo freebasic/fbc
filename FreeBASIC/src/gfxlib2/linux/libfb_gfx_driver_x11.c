@@ -79,7 +79,7 @@ static GC gc;
 static char *window_title;
 static BLITTER *blitter;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
-static int is_running, is_shm, num_modes;
+static int is_running, is_shm, num_modes, has_focus;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 static unsigned char keycode_to_scancode[256];
 
@@ -343,7 +343,7 @@ static void private_exit(void)
 static void *window_thread(void *arg)
 {
 	XEvent event;
-	int i, y, h, has_focus;
+	int i, y, h;
 	char key;
 	
 	(void)arg;
@@ -379,21 +379,18 @@ static void *window_thread(void *arg)
 			switch (event.type) {
 				
 				case Expose:
-					fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
-					fb_hMemSet(fb_mode->key, FALSE, 128);
-					break;
-				
 				case FocusIn:
+					fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
 					has_focus = TRUE;
 					break;
 				
 				case FocusOut:
+					fb_hMemSet(fb_mode->key, FALSE, 128);
 					has_focus = mouse_on = FALSE;
 					break;
 				
 				case EnterNotify:
-					if (has_focus)
-						mouse_on = TRUE;
+					mouse_on = TRUE;
 					break;
 				
 				case LeaveNotify:
@@ -424,23 +421,26 @@ static void *window_thread(void *arg)
 					break;
 				
 				case KeyPress:
-					fb_mode->key[keycode_to_scancode[event.xkey.keycode]] = TRUE;
-					if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38])) {
-						private_exit();
-						mode_fullscreen ^= DRIVER_FULLSCREEN;
-						if (private_init()) {
+					if (has_focus) {
+						fb_mode->key[keycode_to_scancode[event.xkey.keycode]] = TRUE;
+						if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38])) {
 							private_exit();
 							mode_fullscreen ^= DRIVER_FULLSCREEN;
-							private_init();
+							if (private_init()) {
+								private_exit();
+								mode_fullscreen ^= DRIVER_FULLSCREEN;
+								private_init();
+							}
+							fb_hRestorePalette();
 						}
-						fb_hRestorePalette();
+						else if (XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1)
+							fb_hPostKey(key);
 					}
-					else if (XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1)
-						fb_hPostKey(key);
 					break;
 				
 				case KeyRelease:
-					fb_mode->key[keycode_to_scancode[event.xkey.keycode]] = FALSE;
+					if (has_focus)
+						fb_mode->key[keycode_to_scancode[event.xkey.keycode]] = FALSE;
 					break;
 				
 				case ClientMessage:
@@ -542,7 +542,7 @@ static void x11_wait_vsync(void)
 /*:::::*/
 static int x11_get_mouse(int *x, int *y, int *z, int *buttons)
 {
-	if (!mouse_on)
+	if ((!mouse_on) || (!has_focus))
 		return -1;
 	
 	*x = mouse_x;
