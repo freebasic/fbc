@@ -66,3 +66,12 @@ __stdcall int fb_ErrorGetNum ( void )
 
 }
 
+
+/*:::::*/
+__stdcall void fb_ErrorSetNum ( int errnum )
+{
+
+	fb_errnum = errnum;
+
+}
+
