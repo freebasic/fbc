@@ -102,15 +102,13 @@ FBCALL double fb_hStr2Double( char *src, int len )
 		if( radix != 0 )
 			return (double)fb_hStrToInt( &p[2], len-2, radix );
 	}
-	else
-		return atof( p );
+	return atof( p );
 
 }
 
 /*:::::*/
 FBCALL double fb_VAL ( FBSTRING *str )
 {
-    int 	len;
     double	val;
 
 	if( str == NULL )

@@ -181,11 +181,10 @@ void fb_hStrDelTemp( FBSTRING *str )
 /*:::::*/
 void fb_hStrCopy( char *dst, char *src, int bytes )
 {
-	int i;
-
 	if( (src != NULL) && (bytes > 0 ) )
 	{
 #ifndef TARGET_X86
+		int i;
 
 		/* words */
 		for( i = 0; i < (bytes >> 2); i++ )

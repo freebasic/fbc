@@ -113,6 +113,7 @@ Version 0.13 Beta:
 - BEEP rtlib routine for DOS was missing (DrV)
 - BYREF AS ANY arguments when variables weren't passed would create a temp vars with the VOID type (v1c)
 - SCREEN function rtlib routine for DOS was missing (DrV)
+- SETDATE/SETTIME support under Linux was missing (lillo)
 
 
 Version 0.12 Beta:

@@ -26,7 +26,7 @@
 
 #include <malloc.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -40,7 +40,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
     char	buffer[MAX_PATH+1];
     char	*argv[256];
-    int		res;
+    int		res = 0;
 
 	char 	*argsdata;
 

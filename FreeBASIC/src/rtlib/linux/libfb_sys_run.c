@@ -26,7 +26,7 @@
 
 #include <malloc.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -38,8 +38,7 @@
 FBCALL int fb_Run ( FBSTRING *program )
 {
     char	buffer[MAX_PATH+1];
-    char 	arg0[] = "";
-    int		res;
+    int		res = 0;
 
 	if( (program != NULL) && (program->data != NULL) )
 	{

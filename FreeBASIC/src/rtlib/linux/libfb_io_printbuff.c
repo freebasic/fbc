@@ -37,7 +37,7 @@
 void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
 	int len, avail;
-	unsigned char *c = buffer, aux;
+	unsigned char *c = buffer;
 	
 	if (!fb_con.inited) {
 		printf("%s", buffer);

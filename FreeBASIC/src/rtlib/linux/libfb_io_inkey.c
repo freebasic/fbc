@@ -151,7 +151,7 @@ int fb_hGetCh()
 FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING *res;
-	int k, chars;
+	int chars;
 	int ch;
 
 	if (!fb_con.inited)

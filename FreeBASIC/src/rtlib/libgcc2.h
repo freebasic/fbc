@@ -31,7 +31,9 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 #define GCC_LIBGCC2_H
 
 #ifndef HIDE_EXPORTS
+/*
 #pragma GCC visibility push(default)
+*/
 #endif
 
 /* Permit the tm.h file to select the endianness to use just for this
@@ -397,7 +399,9 @@ extern int __parityDI2 (UDWtype);
 extern void __enable_execute_stack (void *);
 
 #ifndef HIDE_EXPORTS
+/*
 #pragma GCC visibility pop
+*/
 #endif
 
 #endif /* ! GCC_LIBGCC2_H */

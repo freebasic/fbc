@@ -30,7 +30,7 @@
 
 /* globals */
 FBSTRING fb_strNullDesc = { NULL, 0 };
-FB_FILE fb_fileTB[FB_MAX_FILES] = { NULL };
+FB_FILE fb_fileTB[FB_MAX_FILES] = { { NULL } };
 int fb_viewTopRow = -1;
 int fb_viewBotRow = -1;
 

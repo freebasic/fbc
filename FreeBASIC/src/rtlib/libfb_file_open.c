@@ -194,7 +194,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 {
 	char openmask[16];
 	char fname[MAX_PATH], *pfname;
-	FILE* f;
+	FILE* f = NULL;
 	int str_len;
 	int type, accesstype;
 

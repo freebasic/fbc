@@ -102,11 +102,10 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 		if( radix != 0 )
 			return fb_hStrRadixToLongint( &p[2], len-2, radix );
 	}
-	else
 #ifndef TARGET_DOS
-		return atoll( p );
+	return atoll( p );
 #else
-		return strtoll( p, NULL, 10 );
+	return strtoll( p, NULL, 10 );
 #endif
 
 }
@@ -114,7 +113,6 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 /*:::::*/
 FBCALL long long fb_VAL64 ( FBSTRING *str )
 {
-    int 		len;
     long long	val;
 
 	if( str == NULL )

@@ -42,7 +42,11 @@ static const char *error_msg[] = {
 /*:::::*/
 static void fb_Die( int errnum )
 {
-	printf( "\nAborting program due to runtime error %d (%s)\n", errnum, error_msg[errnum] );
+	printf( "\nAborting program due to runtime error %d", errnum );
+	if( (errnum < 0) || (errnum >= FB_RTERROR_MAX) )
+		printf( "\n" );
+	else
+		printf( " (%s)\n", error_msg[errnum] );
 
 	fb_End( errnum );
 }
@@ -63,6 +67,7 @@ void *fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
 	/* if no user handler defined, die */
 	fb_Die( errnum );
 
+	return NULL;
 }
 
 /*:::::*/
