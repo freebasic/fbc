@@ -9,6 +9,8 @@
 #ifndef __big_int_bi__
 #define __big_int_bi__
 
+#inclib "big_int"
+
 #include once "big_int/memory_manager.bi"
 
 #define BIG_INT_DIGIT_SIZE 32

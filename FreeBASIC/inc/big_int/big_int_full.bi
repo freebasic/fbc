@@ -9,6 +9,8 @@
 #ifndef __big_int_full_bi__
 #define __big_int_full_bi__
 
+#inclib "big_int"
+
 #include once "big_int/str_funcs.bi"
 #include once "big_int/service_funcs.bi"
 #include once "big_int/basic_funcs.bi"
