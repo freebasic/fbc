@@ -229,5 +229,6 @@ void fb_GfxLocate(int y, int x, int cursor);
 int fb_GfxGetX(void);
 int fb_GfxGetY(void);
 void fb_GfxPrintBuffer(char *buffer, int mask);
+char *fb_GfxReadStr(char *buffer, int maxlen);
 
 #endif

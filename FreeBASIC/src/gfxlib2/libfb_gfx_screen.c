@@ -141,6 +141,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_SetGetXProc(fb_ConsoleGetX);
 		fb_SetGetYProc(fb_ConsoleGetY);
 		fb_SetPrintBufferProc(fb_ConsolePrintBuffer);
+		fb_SetReadStrProc(fb_ConsoleReadStr);
 		fb_mode = NULL;
 	}
 	else {
@@ -153,6 +154,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_SetGetXProc(fb_GfxGetX);
 		fb_SetGetYProc(fb_GfxGetY);
 		fb_SetPrintBufferProc(fb_GfxPrintBuffer);
+		fb_SetReadStrProc(fb_GfxReadStr);
 		fb_mode = (MODE *)calloc(1, sizeof(MODE));
 	}
 
