@@ -73,6 +73,7 @@ declare function 	compileFiles 		( ) as integer
 declare function 	assembleFiles 		( ) as integer
 declare function 	linkFiles 			( ) as integer
 declare function 	archiveFiles 		( ) as integer
+declare sub			safeKill			( filename as string )
 declare function 	delFiles 			( ) as integer
 declare function 	makeImpLib 			( dllpath as string, dllname as string ) as integer
 
@@ -926,6 +927,16 @@ end function
 #endif
 
 '':::::
+sub safeKill( filename as string )
+
+	on local error goto safeKillError
+	
+	kill filename
+	
+safeKillError:
+end sub
+
+'':::::
 function delFiles as integer
 	dim i as integer
 
@@ -933,19 +944,19 @@ function delFiles as integer
 
     for i = 0 to ctx.inps-1
 		if( not ctx.preserveasm ) then
-			kill asmlist(i)
+			safeKill asmlist(i)
 		end if
 		if( not ctx.compileonly ) then
-			kill outlist(i)
+			safeKill outlist(i)
 		end if
     next i
 
 #ifdef TARGET_LINUX
 	'' delete compiled icon object
 	if( len( xpmfile ) = 0 ) then
-		kill "$$fb_icon$$.o"
+		safeKill "$$fb_icon$$.o"
 	else
-		kill hStripExt( hStripPath( xpmfile ) ) + ".o"
+		safeKill hStripExt( hStripPath( xpmfile ) ) + ".o"
 	end if
 #endif
 
