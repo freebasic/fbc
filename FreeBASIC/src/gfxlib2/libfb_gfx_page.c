@@ -47,7 +47,10 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		return;
 	else
 		dest = fb_mode->page[to_page];
-		
+	
+	if (src == dest)
+		return;
+	
 	if (dest == fb_mode->framebuffer)
 		fb_mode->driver->lock();
 	fb_hMemCpy(dest, src, fb_mode->pitch * fb_mode->h);
