@@ -21,10 +21,193 @@
  * bload.c -- BLOAD support.
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 added BMP loading support [lillo]
  *
  */
 
 #include "fb_gfx.h"
+
+#define BI_RGB		0
+#define BI_BITFIELDS	3
+
+typedef struct BMP_HEADER
+{
+	unsigned short bfType			__attribute__((packed));
+	unsigned int   bfSize			__attribute__((packed));
+	unsigned short bfReserved1		__attribute__((packed));
+	unsigned short bfReserved2		__attribute__((packed));
+	unsigned int   bfOffBits		__attribute__((packed));
+	unsigned int   biSize			__attribute__((packed));
+	unsigned int   biWidth			__attribute__((packed));
+	unsigned int   biHeight			__attribute__((packed));
+	unsigned short biPlanes			__attribute__((packed));
+	unsigned short biBitCount		__attribute__((packed));
+	unsigned int   biCompression		__attribute__((packed));
+	unsigned int   biSizeImage		__attribute__((packed));
+	unsigned int   biXPelsPerMeter		__attribute__((packed));
+	unsigned int   biYPelsPerMeter		__attribute__((packed));
+	unsigned int   biClrUsed		__attribute__((packed));
+	unsigned int   biClrImportant		__attribute__((packed));
+} BMP_HEADER;
+
+
+/*:::::*/
+static void convert_8to8(unsigned char *src, unsigned char *dest, int w)
+{
+	for (; w; w--)
+		*dest++ = *src++ & fb_mode->color_mask;
+}
+
+
+/*:::::*/
+static void convert_8to16(unsigned char *src, unsigned char *dest, int w)
+{
+	int r, g, b;
+	unsigned short *d = (unsigned short *)dest;
+	
+	for (; w; w--) {
+		r = fb_mode->device_palette[*src] & 0xFF;
+		g = (fb_mode->device_palette[*src] >> 8) & 0xFF;
+		b = (fb_mode->device_palette[*src] >> 16) & 0xFF;
+		*d++ = (b >> 3) | ((g << 3) & 0x07E0) | ((r << 8) & 0xF800);
+		src++;
+	}
+}
+
+
+/*:::::*/
+static void convert_8to32(unsigned char *src, unsigned char *dest, int w)
+{
+	int r, g, b;
+	unsigned int *d = (unsigned int *)dest;
+	
+	for (; w; w--) {
+		r = fb_mode->device_palette[*src] & 0xFF;
+		g = (fb_mode->device_palette[*src] >> 8) & 0xFF;
+		b = (fb_mode->device_palette[*src] >> 16) & 0xFF;
+		*d++ = b | (g << 8) | (r << 16);
+		src++;
+	}
+}
+
+
+/*:::::*/
+static void convert_24to16(unsigned char *src, unsigned char *dest, int w)
+{
+	unsigned short *d = (unsigned short *)dest;
+	
+	for (; w; w--) {
+		*d++ = (src[0] >> 3) | ((src[1] << 3) & 0x07E0) | ((src[2] << 8) & 0xF800);
+		src += 3;
+	}
+}
+
+
+/*:::::*/
+static void convert_24to32(unsigned char *src, unsigned char *dest, int w)
+{
+	unsigned int *d = (unsigned int *)dest;
+	
+	for (; w; w--) {
+		*d++ = *(unsigned int *)src;
+		src += 3;
+	}
+}
+
+
+/*:::::*/
+static int load_bmp(FILE *f, void *dest)
+{
+	BMP_HEADER header;
+	unsigned char *buffer, *d;
+	int result = FB_RTERROR_OK;
+	int i, j, color, rgb[3], expand, size;
+	void (*convert)(unsigned char *, unsigned char *, int);
+	
+	if (!fb_mode)
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+	
+	/* This will need adjustment if/when we port to big-endian (like PPC) machines */
+	if ((!fread(&header, 54, 1, f)) || (header.bfType != 19778) || (header.biSize != 40))
+		return FB_RTERROR_FILEIO;
+	
+	if ((header.biBitCount == 15) || (header.biBitCount == 16))
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+	for (i = 0; i < (header.bfOffBits - 54) >> 2; i++) {
+		color = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
+		fgetc(f);
+		if (!dest)
+			fb_mode->device_palette[i] = color;
+	}
+	
+	if (dest) {
+		*(unsigned short *)dest = header.biWidth << 3;
+		*(unsigned short *)(dest + 2) = header.biHeight;
+		d = (unsigned char *)dest + 4;
+	}
+	
+	expand = (header.biBitCount < 8) ? header.biBitCount : 0;
+	if (header.biCompression == BI_BITFIELDS) {
+		if ((!fread(rgb, 12, 1, f)) || (rgb[0] != 0x00FF0000))
+			return FB_RTERROR_FILEIO;
+		header.biBitCount = 24;
+	}
+	if (header.biBitCount <= 8) {
+		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
+			case 1: convert = convert_8to8;  break;
+			case 2: convert = convert_8to16; break;
+			case 3:
+			case 4: convert = convert_8to32; break;
+		}
+	}
+	else {
+		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
+			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			case 2: convert = convert_24to16; break;
+			case 3:
+			case 4: convert = convert_24to32; break;
+		}
+	}
+
+	DRIVER_LOCK();
+	if (!dest)
+		fb_hRestorePalette();
+	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
+	buffer = (unsigned char *)malloc(size);
+	for (i = header.biHeight - 1; i >= 0; i--) {
+		if (expand) {
+			color = 0;
+			for (j = 0; j < header.biWidth; j++) {
+				if (j % (8 / expand) == 0) {
+					if ((color = fgetc(f)) < 0) {
+						result = FB_RTERROR_FILEIO;
+						goto exit_error;
+					}
+				}
+				buffer[j] = color >> (8 - expand);
+				color <<= expand;
+			}
+			for (; j < size; j++)
+				fgetc(f);
+		}
+		else if (!fread(buffer, size, 1, f)) {
+			result = FB_RTERROR_FILEIO;
+			break;
+		}
+		if (dest)
+			convert(buffer, d + (i * header.biWidth * fb_mode->bpp), header.biWidth);
+		else if (i < fb_mode->h)
+			convert(buffer, fb_mode->line[i], MIN(fb_mode->w, header.biWidth));
+	}
+
+exit_error:
+	SET_DIRTY(0, fb_mode->h);
+	DRIVER_UNLOCK();
+	
+	free(buffer);
+	
+	return result;
+}
 
 
 /*:::::*/
@@ -34,6 +217,9 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	unsigned char id;
 	unsigned int data, size;
 	int result = FB_RTERROR_OK;
+	
+	if ((!dest) && (!fb_mode))
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	
 	f = fopen(filename->data, "rb");
 	if (!f) {
@@ -56,7 +242,15 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 			/* FB BSAVEd block */
 			size = fgetc(f) | (fgetc(f) << 8) | (fgetc(f) << 16) | (fgetc(f) << 24);
 			break;
-				
+		
+		case 'B':
+			/* Can be a BMP */
+			rewind(f);
+			result = load_bmp(f, dest);
+			fclose(f);
+			fb_hStrDelTemp(filename);
+			return result;
+			
 		default:
 			result = FB_RTERROR_FILEIO;
 			break;
@@ -64,20 +258,16 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	
 	if (result == FB_RTERROR_OK) {
 		if (!dest) {
-			if (!fb_mode)
-				result = FB_RTERROR_ILLEGALFUNCTIONCALL;
-			else {
-				DRIVER_LOCK();
-				size = MIN(size, fb_mode->pitch * fb_mode->h);
-				if ((!fread(fb_mode->line[0], size, 1, f)) && (!feof(f)))
-					result = FB_RTERROR_FILEIO;
-				SET_DIRTY(0, fb_mode->h);
-				if (!feof(f)) {
-					fread(fb_mode->device_palette, 1024, 1, f);
-					fb_hRestorePalette();
-				}
-				DRIVER_UNLOCK();
+			DRIVER_LOCK();
+			size = MIN(size, fb_mode->pitch * fb_mode->h);
+			if ((!fread(fb_mode->line[0], size, 1, f)) && (!feof(f)))
+				result = FB_RTERROR_FILEIO;
+			SET_DIRTY(0, fb_mode->h);
+			if (!feof(f)) {
+				fread(fb_mode->device_palette, 1024, 1, f);
+				fb_hRestorePalette();
 			}
+			DRIVER_UNLOCK();
 		}
 		else {
 			if ((!fread(dest, size, 1, f)) && (!feof(f)))

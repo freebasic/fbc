@@ -61,6 +61,7 @@ Appendix B: Default palettes
 Appendix C: Internal pixel formats
 Appendix D: About speed and size
 Appendix E: Internal drivers
+Appendix F: Hints
 
 
 
@@ -105,21 +106,32 @@ SCREENUNLOCK
 
 Pay attention that the pixel data stored in the file is in the same pixel
 format as the one used by the current video mode; see appendix C for details.
+BLOAD can also be used to load BMP files; when this is the case, if addr is
+zero, the BMP will be loaded on the screen, otherwise it'll be loaded in
+GET/PUT format into the specified addr address. In both cases the BMP pixel
+data will be converted to the current pixel format, and if the BMP has an
+associated palette this will be loaded and set as current palette.
+Loading a BMP will fail if a screen mode was not previously set, or if the
+image is a truecolor bitmap and the current gfx mode is a paletted mode.
 
 
 Example:
 
-none
+DIM image(64004) AS UBYTE
+SCREEN 13
+BLOAD "image.bmp", VARPTR(image(0))
+PUT (0,0), image
 
 
 Differences from QB:
 
-FB version supports blocks of data with sizes bigger than 64K.
+FB version supports blocks of data with sizes bigger than 64K and BMP files
+loading.
 
 
 See also:
 
-BSAVE, Appendix C.
+BSAVE, SCREEN, GET, PUT, Appendix C.
 
 
 
@@ -188,10 +200,14 @@ Statement to draw circles, ellipses or arcs.
 
 
 Syntax:
-	CIRCLE [STEP](x,y),radius[,[color][,[start][,[end][,[aspect][,F]]]]]
+	CIRCLE [buffer,][STEP](x,y),radius[,[color][,[start][,[end][,[aspect]
+								[,F]]]]]
 
 
 Argument:	Description:
+
+buffer		Buffer were drawing takes place. If omitted, drawing occurs
+		into current work page.
 
 STEP		The STEP option specify that x and y are offsets relative to
 		the current graphics cursor position.
@@ -350,10 +366,13 @@ Statement for sequenced pixel plotting.
 
 
 Syntax:
-	DRAW commands
+	DRAW [buffer,]commands
 
 
 Argument:	Description:
+
+buffer		Buffer were drawing takes place. If omitted, drawing occurs
+		into current work page.
 
 commands	String holding drawing commands, see below.
 
@@ -429,10 +448,13 @@ Statement to save a block of pixels data into an array for later use.
 
 
 Syntax:
-	GET [STEP](x1,y1)-[STEP](x2,y2), arrayname[(idx)]
+	GET [buffer,][STEP](x1,y1)-[STEP](x2,y2), arrayname[(idx)]
 
 
 Argument:	Description:
+
+buffer		Buffer were to get pixel data from. If omitted, data is taken
+		from the current work page.
 
 x1,y1,x2,y2	Coordinates of the opposite corners of the graphics blocks to
 		retrieve.
@@ -612,10 +634,13 @@ Statement for line/box drawing.
 
 
 Syntax:
-	LINE [[STEP](x1,y1)]-[STEP](x2,y2)[,[color[,[B[F]][,style]]]
+	LINE [buffer,][[STEP](x1,y1)]-[STEP](x2,y2)[,[color[,[B[F]][,style]]]
 
 
 Argument:	Description:
+
+buffer		Buffer were drawing takes place. If omitted, drawing occurs
+		into current work page.
 
 STEP		Forces given coordinate to be relative to last graphical
 		cursor position. When used before second pair of coordinates
@@ -788,10 +813,13 @@ Statement for flood-filling a screen region.
 
 
 Syntax:
-	PAINT [STEP](x,y)[,[paint][,bordercolor]]
+	PAINT [buffer,][STEP](x,y)[,[paint][,bordercolor]]
 
 
 Argument:	Description:
+
+buffer		Buffer were drawing takes place. If omitted, drawing occurs
+		into current work page.
 
 STEP		Forces given coordinate to be relative to last graphical
 		cursor position.
@@ -991,11 +1019,14 @@ Function to read a pixel color or coordinate.
 
 
 Syntax:
-	POINT(x,y)
+	POINT(x,y[,buffer])
 	POINT(func)
 
 
 Argument:	Description:
+
+buffer		Buffer were to get pixel from. If omitted, pixel is taken from
+		current work page.
 
 x,y		Coordinates of the pixel.
 
@@ -1044,10 +1075,13 @@ Statement to plot a single pixel.
 
 
 Syntax:
-	PSET [STEP](x,y) [,color]
+	PSET [buffer,][STEP](x,y) [,color]
 
 
 Argument:	Description:
+
+buffer		Buffer were drawing takes place. If omitted, drawing occurs
+		into current work page.
 
 STEP		The STEP option specify that x and y are offsets relative to
 		the current graphics cursor position.
@@ -1090,10 +1124,13 @@ Statement to draw a block of pixels previously saved by GET.
 
 
 Syntax:
-	PUT [STEP](x,y), arrayname[(idx)] [,mode]
+	PUT [buffer,][STEP](x,y), arrayname[(idx)] [,mode]
 
 
 Argument:	Description:
+
+buffer		Buffer were drawing takes place. If omitted, drawing occurs
+		into current work page.
 
 STEP		The STEP option specify that x and y are offsets relative to
 		the current graphics cursor position.
@@ -2151,13 +2188,13 @@ Win32:
 		Supports windowed mode only.
 Linux:
 	X11
-		Raw Xlib based driver. It always works, and if your program
-		runs locally, it uses the Xshm extension to provide faster
-		framebuffer access via shared memory. For fullscreen mode to
-		work, the Xvidmode extension is used; your program needs to be
-		executed locally, and corresponding modelines should be
-		supported by your X11 server, otherwise fullscreen will not be
-		available.
+		Raw Xlib based driver; it always works, providing an X11
+		server is reachable. If your program runs locally, it uses the
+		Xshm extension to provide faster framebuffer access via shared
+		memory. For fullscreen mode to work, the Xvidmode extension
+		is used; your program needs to be executed locally, and
+		corresponding modelines should be supported by your X11
+		server, otherwise fullscreen will not be available.
 
 gfxlib will always choose the best driver for your system when a new video
 mode is set via SCREEN. To override driver selection, you can set the FBGFX
@@ -2169,3 +2206,69 @@ set FBGFX=gdi
 This way gfxlib will first try to initialize a driver named "GDI"; if given
 driver fails or cannot be found, gfxlib will fallback on the usual automatic
 driver selection path.
+
+
+
+==============================================================================
+Appendix F: Hints
+==============================================================================
+
+- Other than normal arrays, GET and PUT support pointers as pixel data holder;
+  the following code will work:
+
+	TYPE FB_IMAGE FIELD = 1
+		  width AS USHORT
+		  height AS USHORT
+		  imageData(64000) AS UBYTE
+	END TYPE
+
+	DIM udt AS FB_IMAGE
+	DIM udt_ptr AS FB_IMAGE PTR
+	DIM array(16001) AS INTEGER
+	DIM array_ptr AS INTEGER PTR
+	
+	udt_ptr = @udt
+	array_ptr = @array(0)
+	
+	SCREEN 13
+	
+	' These are all equivalent to each other
+	GET (0,0)-(319,199), array
+	GET (0,0)-(319,199), array(0)
+	GET (0,0)-(319,199), @array(0)
+	GET (0,0)-(319,199), array_ptr
+	GET (0,0)-(319,199), @array_ptr[0]
+	
+	' These are also all equivalent to each other
+	GET (0,0)-(319,199), @udt
+	GET (0,0)-(319,199), udt_ptr
+	GET (0,0)-(319,199), @udt_ptr[0]
+  
+  Here we used GET for the example, but the concept applies to PUT as well.
+
+- All gfx primitives can work on GET/PUT buffers. This means you can have any
+  number of offscreen surfaces of any size where to draw your stuff, and blit
+  your buffers later onto the screen:
+
+	DIM buffer(9602) AS USHORT
+	DIM sprite(1028) AS UBYTE
+	
+	SCREEN 13
+	
+	' Since buffer is supposed to be a GET/PUT buffer, here we manually
+	' set it up so its first 4 bytes are the usual GET/PUT buffer header.
+	buffer(0) = 160 SHL 3	' Width * 8
+	buffer(1) = 120		' Height
+	
+	CIRCLE buffer, (16,16), 15, 12,,, 1, F
+	GET buffer, (0,0)-(31,31), sprite
+	PSET sprite, (16,16), 15
+	LINE buffer, (0,0)-(159,119), 2, B
+	PUT buffer, (50,50), sprite, PSET
+	PUT (80,40),buffer, PSET
+
+  When drawing onto a buffer, coordinates are affected by the most recent call
+  to WINDOW, but VIEW has no effect; clipping is set to the whole buffer area.
+  Of course the optional target buffer parameter passed to all gfx primitives
+  can be an array as well as a pointer, as in the case of GET/PUT pixel data
+  holders.

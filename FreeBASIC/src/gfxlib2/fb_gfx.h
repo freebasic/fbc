@@ -64,7 +64,7 @@
 #endif
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
-#define BYTES_PER_PIXEL(d)	(((d) + 7) / 8);
+#define BYTES_PER_PIXEL(d)	(((d) + 7) / 8)
 
 #define DRIVER_LOCK()		fb_mode->driver->lock()
 #define DRIVER_UNLOCK()		fb_mode->driver->unlock()

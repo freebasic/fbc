@@ -36,25 +36,26 @@ void fb_hPrepareTarget(void *target)
 	int i, h;
 	
 	if (target) {
-		if (target == fb_mode->last_target)
-			return;
-		fb_mode->last_target = target;
-		old_view_x = fb_mode->view_x;
-		old_view_y = fb_mode->view_y;
-		old_view_w = fb_mode->view_w;
-		old_view_h = fb_mode->view_h;
-		fb_mode->view_x = 0;
-		fb_mode->view_y = 0;
-		fb_mode->view_w = *((short *)target) >> 3;
-		fb_mode->view_h = h = *((short *)(target + 2));
-		fb_mode->target_pitch = fb_mode->view_w * fb_mode->bpp;
-		if (h > fb_mode->max_h) {
-			fb_mode->line = (unsigned char **)realloc(fb_mode->line, h * sizeof(unsigned char *));
-			fb_mode->max_h = h;
+		if (target != fb_mode->last_target) {
+			if (fb_mode->last_target == NULL) {
+				old_view_x = fb_mode->view_x;
+				old_view_y = fb_mode->view_y;
+				old_view_w = fb_mode->view_w;
+				old_view_h = fb_mode->view_h;
+			}
+			fb_mode->view_x = 0;
+			fb_mode->view_y = 0;
+			fb_mode->view_w = *((short *)target) >> 3;
+			fb_mode->view_h = h = *((short *)(target + 2));
+			fb_mode->target_pitch = fb_mode->view_w * fb_mode->bpp;
+			if (h > fb_mode->max_h) {
+				fb_mode->line = (unsigned char **)realloc(fb_mode->line, h * sizeof(unsigned char *));
+				fb_mode->max_h = h;
+			}
+			for (i = 0; i < h; i++)
+				fb_mode->line[i] = (unsigned char *)target + 4 + (i * fb_mode->target_pitch);
+			fb_mode->flags |= BUFFER_SET;
 		}
-		for (i = 0; i < h; i++)
-			fb_mode->line[i] = (unsigned char *)target + 4 + (i * fb_mode->target_pitch);
-		fb_mode->flags |= BUFFER_SET;
 	}
 	else if (fb_mode->flags & BUFFER_SET) {
 		fb_mode->view_x = old_view_x;
@@ -66,6 +67,7 @@ void fb_hPrepareTarget(void *target)
 			fb_mode->line[i] = fb_mode->page[fb_mode->work_page] + (i * fb_mode->pitch);
 		fb_mode->flags &= ~BUFFER_SET;
 	}
+	fb_mode->last_target = target;
 }
 
 
