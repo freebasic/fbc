@@ -920,7 +920,8 @@ sub astOptAssignament( byval n as integer ) static
 
 	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a register
 	select case astTB(r).op
-	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
+	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE, _
+		 IR.OP.INTDIV, IR.OP.MOD, IR.OP.MUL
 		exit sub
 	end select
 

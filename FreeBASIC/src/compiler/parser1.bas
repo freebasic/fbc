@@ -2686,13 +2686,14 @@ function cProcCallOrAssign
 end function
 
 '':::::
-''Assignment      =   LET? Variable '=' Expression
+''Assignment      =   LET? Variable BOP? '=' Expression
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
 function cAssignmentOrPtrCall
 	dim islet as integer
 	dim assgexpr as integer, expr as integer, dtype as integer
 	dim vr as integer
+	dim op as integer
 
 	cAssignmentOrPtrCall = FALSE
 
@@ -2726,6 +2727,48 @@ function cAssignmentOrPtrCall
     		exit function
     	end if
 
+        '' BOP?
+        op = INVALID
+        if( lexCurrentToken <> FB.TK.ASSIGN ) then
+        	if( lexCurrentTokenClass = FB.TKCLASS.OPERATOR ) then
+
+        		select case lexCurrentToken
+        		case FB.TK.AND
+        			op = IR.OP.AND
+        		case FB.TK.OR
+        			op = IR.OP.OR
+        		case FB.TK.XOR
+        			op = IR.OP.XOR
+				case FB.TK.EQV
+					op = IR.OP.EQV
+				case FB.TK.IMP
+					op = IR.OP.IMP
+        		case CHAR_PLUS
+        			op = IR.OP.ADD
+        		case CHAR_MINUS
+        			op = IR.OP.SUB
+        		case FB.TK.SHL
+        			op = IR.OP.SHL
+        		case FB.TK.SHR
+        			op = IR.OP.SHR
+        		case FB.TK.MOD
+        			op = IR.OP.MOD
+        		case CHAR_RSLASH
+        			op = IR.OP.INTDIV
+        		case CHAR_CARET
+        			op = IR.OP.MUL
+        		case CHAR_SLASH
+        			op = IR.OP.DIV
+        		case CHAR_CART
+        			op = IR.OP.POW
+        		end select
+
+        		if( op <> INVALID ) then
+        			lexSkipToken
+        		end if
+        	end if
+        end if
+
         '' '='
         if( not hMatch( FB.TK.ASSIGN ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEQ
@@ -2736,6 +2779,11 @@ function cAssignmentOrPtrCall
         if( not cExpression( expr ) ) then
         	hReportError FB.ERRMSG.EXPECTEDEXPRESSION
         	exit function
+        end if
+
+        '' BOP?
+        if( op <> INVALID ) then
+            expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
         end if
 
         '' do assign
