@@ -158,7 +158,7 @@ FUNC(fb_hBlit8to15BGRMMX)
 	movl DIRTY(%ebx), %edx
 	movl DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to15_rb), %mm2
-	movq (const32to15_mul_rgb), %mm3
+	movq (const32to15_mul_bgr), %mm3
 	movq (const32to15_g), %mm6
 
 LABEL(blit8to15BGR_y_loop)
