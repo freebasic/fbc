@@ -70,7 +70,7 @@ GFXDRIVER fb_gfxDriverDirectDraw =
  * driver.
  */
 typedef HRESULT (WINAPI *DIRECTDRAWCREATE)(GUID FAR *lpGUID,LPDIRECTDRAW FAR *lplpDD,IUnknown FAR *pUnkOuter);
-typedef HRESULT (WINAPI *DIRECTINPUTCREATE)(GUID FAR *lpGUID,DWORD dwVersion,LPDIRECTINPUT FAR *lplpDI,IUnknown FAR *pUnkOuter);
+typedef HRESULT (WINAPI *DIRECTINPUTCREATE)(HINSTANCE hinst,DWORD dwVersion,LPDIRECTINPUT *lplpDI,LPUNKNOWN pUnkOuter);
 
 /* Unfortunately c_dfDIKeyboard is a required global variable
  * defined in import library LIBDINPUT.A, and as we're not
@@ -175,7 +175,7 @@ static int private_init()
 	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK))
 		return -1;
-	if ((!DirectInputCreate) || (DirectInputCreate(NULL, 0x0300, &lpDI, NULL) != DI_OK))
+	if ((!DirectInputCreate) || (DirectInputCreate((HINSTANCE)GetModuleHandle(0), 0x0300, &lpDI, NULL) != DI_OK))
 		return -1;
 
 	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
