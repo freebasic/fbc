@@ -40,6 +40,17 @@ void fb_GfxClear(int mode)
 	switch (mode) {
 		
 		case 0:
+			/* Clear entire screen */
+			fb_hPixelSet(fb_mode->line[0], fb_mode->bg_color, fb_mode->w * fb_mode->h);
+			dirty = 0;
+			dirty_len = fb_mode->h;
+			break;
+		
+		case 2:
+			/* Clear text viewport if set (not supported in gfx mode) */
+		
+		case 1:
+		default:
 			/* Clear graphics viewport if set */
 			dest = fb_mode->line[fb_mode->view_y] + (fb_mode->view_x * fb_mode->bpp);
 			for (i = 0; i < fb_mode->view_h; i++) {
@@ -48,17 +59,6 @@ void fb_GfxClear(int mode)
 			}
 			dirty = fb_mode->view_y;
 			dirty_len = fb_mode->view_h;
-			break;
-		
-		case 2:
-			/* Clear text viewport if set */
-		
-		case 1:
-		default:
-			/* Clear entire screen */
-			fb_hPixelSet(fb_mode->line[0], fb_mode->bg_color, fb_mode->w * fb_mode->h);
-			dirty = 0;
-			dirty_len = fb_mode->h;
 			break;
 	}
 	SET_DIRTY(dirty, dirty_len);

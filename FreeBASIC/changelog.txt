@@ -79,6 +79,7 @@ Version 0.13 Beta:
 - double locking on Linux was causing SETMOUSE/GETMOUSE to hang programs (lillo)
 - conversion to/from fpoint to byte vars could be wrong if too complex operations were used (v1c)
 - literal values passed as parameter were not been converted at compile-time, generating bad code is some cases (v1c)
+- CLS in gfx mode now clears viewport only if previously set via VIEW (lillo)
 
 
 Version 0.12 Beta:
