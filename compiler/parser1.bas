@@ -918,7 +918,7 @@ function cTypeDecl
     dim id as string, isunion as integer, align as integer, expr as integer
     dim elements as integer, t as integer, innercnt as integer
     dim typ as integer, subtype as integer, lgt as integer
-    dim dimensions as integer, dTB(0 to 3) as FBARRAYDIM
+    dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim ename as string
     dim res as integer
 
@@ -1280,7 +1280,7 @@ function cSymbolDef( byval alloctype as integer )
     dim id as string, s as integer, addsuffix as integer
     dim typ as integer, subtype as integer, lgt as integer, ofs as integer
     dim elm as integer, typesymbol as integer
-    dim dimensions as integer, dTB(0 to 3) as FBARRAYDIM
+    dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
 
     cSymbolDef = FALSE
 
@@ -1376,8 +1376,8 @@ function cDynSymbolDef( byval alloctype as integer, byval dopreserve as integer 
     dim id as string, s as integer, addsuffix as integer, isdynamic as integer
     dim elm as integer, typesymbol as integer
     dim typ as integer, subtype as integer, lgt as integer, ofs as integer, atype as integer
-    dim dimensions as integer, dTB(0 to 3) as FBARRAYDIM
-    dim exprTB(0 to 3, 0 to 1) as integer
+    dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
+    dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
 
     cDynSymbolDef = FALSE
 
@@ -1584,6 +1584,10 @@ function cArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
     		lexSkipToken
     	end if
 
+		if( i >= FB.MAXARRAYDIMS ) then
+			hReportError FB.ERRMSG.TOOMANYDIMENSIONS
+			exit function
+		end if
 	loop
 
 	'' IDX_CLOSE
@@ -1653,6 +1657,10 @@ function cDynArrayDecl( dimensions as integer, exprTB() as integer )
     		lexSkipToken
     	end if
 
+		if( i >= FB.MAXARRAYDIMS ) then
+			hReportError FB.ERRMSG.TOOMANYDIMENSIONS
+			exit function
+		end if
 	loop
 
 	'' IDX_CLOSE

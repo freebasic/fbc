@@ -33,8 +33,8 @@
 __stdcall FBSTRING *fb_Date ( void )
 {
 	FBSTRING	*dst;
-	time_t 		rawtime;
-  	struct tm	*ptm;
+	time_t 		rawtime = { 0 };
+  	struct tm	*ptm = { 0 };
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -45,7 +45,7 @@ __stdcall FBSTRING *fb_Date ( void )
   		time( &rawtime );
   		ptm = localtime( &rawtime );
 
-        sprintf( dst->data, "%02d:%02d:%04d", ptm->tm_mday, ptm->tm_mon+1, ptm->tm_year );
+        sprintf( dst->data, "%02d-%02d-%04d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year );
 	}
 	else
 		dst = &fb_strNullDesc;

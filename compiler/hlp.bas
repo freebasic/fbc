@@ -84,8 +84,9 @@ data "Expected 'END ASM'"
 data "SUB or FUNCTION not declared"
 data "Expected ';'"
 data "Undefined label"
+data "Too many array dimensions"
 
-const FB.ERRMSGS = 48
+const FB.ERRMSGS = 49
 
 
 '':::::

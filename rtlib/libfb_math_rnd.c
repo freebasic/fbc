@@ -37,8 +37,8 @@ __stdcall double fb_Rnd ( int n )
 	if( n == 0 )
 		return last_num;
 
-
-	last_num = (double)rand( ) / (double)RAND_MAX;
+    /* return between 0 and 1 (but never 1) */
+	last_num = (double)rand( ) / (double)(RAND_MAX+1);
 
 	return last_num;
 }
