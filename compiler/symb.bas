@@ -2086,6 +2086,25 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 end function
 
 '':::::
+function symbCalcArgLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer ) as integer static
+    dim lgt as integer
+
+	select case mode
+	case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
+		lgt = FB.POINTERSIZE
+	case else
+		if( typ = FB.SYMBTYPE.STRING ) then
+			lgt = FB.POINTERSIZE
+		else
+			lgt = symbCalcLen( typ, subtype )
+		end if
+	end select
+
+	symbCalcArgLen = lgt
+
+end function
+
+'':::::
 function hCalcDiff( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as integer
     dim d as integer, diff as integer, elms as integer
 

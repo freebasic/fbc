@@ -105,6 +105,8 @@ declare function 	symbGetDefineText		( byval d as FBDEFINE ptr ) as string
 declare function 	symbGetDefineLen		( byval d as FBDEFINE ptr ) as integer
 
 declare function 	symbCalcArgsLen			( byval f as FBSYMBOL ptr, byval args as integer ) as integer
+declare function 	symbCalcArgLen			( byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer ) as integer
+
 declare function 	symbListLibs			( namelist() as string, byval index as integer ) as integer
 
 declare sub 		symbSetArgMode			( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval mode as integer )

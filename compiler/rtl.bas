@@ -993,7 +993,7 @@ sub rtlInit static
 
 			argv(a).nameidx = INVALID
 			if( argv(a).typ <> INVALID ) then
-				argv(a).lgt	= symbCalcLen( argv(a).typ, NULL )
+				argv(a).lgt	= symbCalcArgLen( argv(a).typ, NULL, argv(a).mode )
 			else
 				argv(a).lgt	= FB.POINTERSIZE
 			end if
