@@ -35,12 +35,6 @@ FBCALL int fb_GfxPsetEx (Sint16 x, Sint16 y, Uint32 color)
     }
 
     /*
-     * Get destination format
-     */
-    bpp = fb_GfxInfo.screen->format->BytesPerPixel;
-    p = (Uint8 *) fb_GfxInfo.screen->pixels + y * fb_GfxInfo.screen->pitch + x * bpp;
-
-    /*
      * Lock the surface
      */
     if (SDL_MUSTLOCK(fb_GfxInfo.screen)) {
@@ -48,6 +42,12 @@ FBCALL int fb_GfxPsetEx (Sint16 x, Sint16 y, Uint32 color)
             return (-1);
         }
     }
+
+    /*
+     * Get destination format
+     */
+    bpp = fb_GfxInfo.screen->format->BytesPerPixel;
+    p = (Uint8 *) fb_GfxInfo.screen->pixels + y * fb_GfxInfo.screen->pitch + x * bpp;
 
     if (bpp == 1)
     {

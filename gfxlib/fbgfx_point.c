@@ -27,8 +27,6 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
 
     SANITY_CHECK 0xFFFFFFFF;
 
-    bpp = fb_GfxInfo.screen->format->BytesPerPixel;
-
     fb_GfxTransCoord(x, y, &rx, &ry);
 
     /*
@@ -43,8 +41,7 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
             return DEFAULT_COLOR;
     }
 
-    /* Calculate pixel address */
-    p = (Uint8 *) fb_GfxInfo.screen->pixels + ry * fb_GfxInfo.screen->pitch + rx * bpp;
+    bpp = fb_GfxInfo.screen->format->BytesPerPixel;
 
     /*
      * Lock the surface
@@ -54,6 +51,9 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
             return (-1);
         }
     }
+
+    /* Calculate pixel address */
+    p = (Uint8 *) fb_GfxInfo.screen->pixels + ry * fb_GfxInfo.screen->pitch + rx * bpp;
 
     switch (bpp)
     {
