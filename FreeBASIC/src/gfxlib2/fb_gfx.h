@@ -33,12 +33,14 @@
 
 #include "../rtlib/fb.h"
 
-#ifndef TRUE
+#ifdef TRUE
+#undef TRUE
+#endif
 #define TRUE	-1
+#ifdef FALSE
+#undef FALSE
 #endif
-#ifndef FALSE
 #define FALSE	0
-#endif
 #ifdef PI
 #undef PI
 #endif
