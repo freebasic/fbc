@@ -188,7 +188,11 @@ FBCALL void fb_DataReadLongint( long long *dst )
 		*dst = 0;
 	else
 	{
+#ifndef TARGET_DOS
         *dst = (long long)atoll( (char *)fb_dataptr );
+#else
+		*dst = (long long)strtoll( (char *)fb_dataptr, NULL, 10 );
+#endif
 
 		fb_dataptr += len + 1;
 	}
@@ -205,7 +209,11 @@ FBCALL void fb_DataReadULongint( unsigned long long *dst )
 		*dst = 0;
 	else
 	{
+#ifndef TARGET_DOS
         *dst = (unsigned long long)atoll( (char *)fb_dataptr );
+#else
+		*dst = (unsigned long long)strtoll( (char *)fb_dataptr, NULL, 10 );
+#endif
 
 		fb_dataptr += len + 1;
 	}

@@ -114,7 +114,11 @@ FBCALL int fb_InputLongint( long long *dst )
 
 	fb_hGetNextToken( buffer, 22, FB_FALSE );
 
+#ifndef TARGET_DOS
 	*dst = (long long)atoll( buffer );
+#else
+	*dst = (long long)strtoll( buffer, NULL, 10 );
+#endif
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
