@@ -8,17 +8,17 @@
 #endif
 
 
-#if     defined(FB_WIN32)
+#if     defined(FB__WIN32)
 
-	const CLOCKS_PER_SEC = 1000
+	const CLOCKS_PER_SEC as integer = 1000
 
-#elseif defined(FB_DOS)
+#elseif defined(FB__DOS)
 
-	const CLOCKS_PER_SEC = 91
+	const CLOCKS_PER_SEC as integer = 91
 
-#elseif defined(FB_LINUX)
+#elseif defined(FB__LINUX)
 
-	const CLOCKS_PER_SEC = 1000 '' not sure if this is right - lillo?
+	const CLOCKS_PER_SEC as integer = 1000000 '' as per http://www.die.net/doc/linux/man/man3/clock.3.html - not tested
 
 #endif
 
