@@ -202,9 +202,10 @@ error:
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
+	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
+	
 	if (flags & DRIVER_OPENGL)
 		return -1;
-	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 	fb_win32.init = gdi_init;
 	fb_win32.exit = gdi_exit;
 	fb_win32.paint = gdi_paint;
