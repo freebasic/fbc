@@ -1237,16 +1237,24 @@ end function
 
 '':::::
 public function fbAddLibPath ( path as string ) as integer
+	dim i as integer
+	
 	fbAddLibPath = FALSE
 	
 	if( ( len( path ) = 0 ) or ( ctx.pths = FB_MAXARGS-1 ) ) then
 		exit function
 	end if
 	
+	fbAddLibPath = TRUE
+	
+	for i = 0 to ctx.pths
+		if( pthlist(i) = path ) then
+			exit function
+		end if
+	next i
+	
 	pthlist(ctx.pths) = path
 	ctx.pths = ctx.pths + 1
-	
-	fbAddLibPath = TRUE
 	
 end function
 
