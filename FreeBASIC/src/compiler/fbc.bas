@@ -380,7 +380,7 @@ function linkFiles as integer
 #elseif defined(TARGET_LINUX)
 
 	if( ctx.outtype = FB_OUTTYPE_EXECUTABLE) then
-		ldcline = "-dynamic-linker /lib/ld-linux.so.2 /lib/libgcc_s.so.1"
+		ldcline = "-dynamic-linker"
 	end if
 
 #elseif defined(TARGET_DOS)
@@ -807,9 +807,9 @@ function compileXpmFile as integer
 	redim outstr(0) as string
 
 	compileXpmFile = FALSE
-	
+
 	if( len( xpmfile ) = 0 ) then
-	
+
 		'' no icon supplied, provide a NULL symbol
 		iconsrc = "$$fb_icon$$.asm"
 		fo = freefile()
@@ -825,13 +825,13 @@ function compileXpmFile as integer
 		if( ctx.verbose ) then
 			print "compiling XPM icon resource: ", xpmfile
 		end if
-		
+
 		''
 		if( not hFileExists( xpmfile ) ) then
 			exit function
 		end if
 		iconsrc = hStripExt( hStripPath( xpmfile ) ) + ".asm"
-	
+
 		''
 		fi = freefile()
 		open xpmfile for input as #fi
@@ -850,11 +850,11 @@ function compileXpmFile as integer
 		close #fi
 		buffer_len = len( buffer )
 		p = sadd( buffer )
-		
+
 		''
 		do
 			select case state
-			
+
 			case STATE_OUT_STRING
 				if( *p = CHAR_QUOTE ) then
 					state = STATE_IN_STRING
@@ -862,7 +862,7 @@ function compileXpmFile as integer
 					redim preserve outstr(outstr_count) as string
 					outstr(outstr_count-1) = ""
 				end if
-			
+
 			case STATE_IN_STRING
 				if( *p = CHAR_QUOTE ) then
 					state = STATE_OUT_STRING
@@ -871,7 +871,7 @@ function compileXpmFile as integer
 				else
 					outstr(outstr_count-1) += chr$(*p)
 				end if
-			
+
 			end select
 			p += 1
 			buffer_len -= 1
@@ -879,7 +879,7 @@ function compileXpmFile as integer
 		if( state <> STATE_OUT_STRING ) then
 			exit function
 		end if
-		
+
 		''
 		fo = freefile()
 		open iconsrc for output as #fo
@@ -900,21 +900,21 @@ function compileXpmFile as integer
 		print #fo, ".long _xpm_data"
 		close #fo
 	end if
-	
+
 	'' compile icon source file
 	if( exec( "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 		kill iconsrc
 		exit function
 	end if
-	
+
 	kill iconsrc
-	
+
 	'' add to obj list
 	objlist(ctx.objs) = hStripExt( iconsrc ) + ".o"
 	ctx.objs = ctx.objs + 1
-	
+
 	compileXpmFile = TRUE
-	
+
 end function
 
 #endif
@@ -933,7 +933,7 @@ function delFiles as integer
 			kill outlist(i)
 		end if
     next i
-    
+
 #ifdef TARGET_LINUX
 	'' delete compiled icon object
 	if( len( xpmfile ) = 0 ) then
