@@ -124,20 +124,20 @@ Const POLYTYPE_MAX%			= 15
 Const POLYTYPE_ZBUF%			= 16
 
 
-#define KB_SHIFT_FLAG         0x0001
-#define KB_CTRL_FLAG          0x0002
-#define KB_ALT_FLAG           0x0004
-#define KB_LWIN_FLAG          0x0008
-#define KB_RWIN_FLAG          0x0010
-#define KB_MENU_FLAG          0x0020
-#define KB_SCROLOCK_FLAG      0x0100
-#define KB_NUMLOCK_FLAG       0x0200
-#define KB_CAPSLOCK_FLAG      0x0400
-#define KB_INALTSEQ_FLAG      0x0800
-#define KB_ACCENT1_FLAG       0x1000
-#define KB_ACCENT2_FLAG       0x2000
-#define KB_ACCENT3_FLAG       0x4000
-#define KB_ACCENT4_FLAG       0x8000
+#define KB_SHIFT_FLAG         &H0001
+#define KB_CTRL_FLAG          &H0002
+#define KB_ALT_FLAG           &H0004
+#define KB_LWIN_FLAG          &H0008
+#define KB_RWIN_FLAG          &H0010
+#define KB_MENU_FLAG          &H0020
+#define KB_SCROLOCK_FLAG      &H0100
+#define KB_NUMLOCK_FLAG       &H0200
+#define KB_CAPSLOCK_FLAG      &H0400
+#define KB_INALTSEQ_FLAG      &H0800
+#define KB_ACCENT1_FLAG       &H1000
+#define KB_ACCENT2_FLAG       &H2000
+#define KB_ACCENT3_FLAG       &H4000
+#define KB_ACCENT4_FLAG       &H8000
 
 #define KEY_A                 1
 #define KEY_B                 2
