@@ -39,11 +39,11 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 	{
         src_len = FB_STRSIZE( src );
 
-        if( (start > 0) && (start <= src_len) )
+        if( (start > 0) && (start <= src_len) && (len != 0) )
         {
         	--start;
 
-        	if( len < 1 )
+        	if( len < 0 )
         		len = src_len;
 
         	if( start + len > src_len )
