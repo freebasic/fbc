@@ -523,11 +523,14 @@ enum SYMBCLASS_ENUM
 end enum
 
 
+type FBSYMBOL_ as FBSYMBOL
+
+
 ''
 union FBVALUE
+	valuestr		as FBSYMBOL_ ptr
 	value			as double
 	value64			as longint
-	valuestr		as string
 end union
 
 ''
@@ -557,7 +560,7 @@ type FBFWDREF
 	prv				as FBFWDREF ptr				'' linked-list nodes
 	nxt				as FBFWDREF ptr				'' /
 
-	ref				as any ptr					'' FBSYMBOL ptr
+	ref				as FBSYMBOL_ ptr
 	l				as FBFWDREF ptr				'' preview
 end type
 
@@ -579,7 +582,7 @@ type FBSARRAY
 	dif				as integer
 	elms			as integer
 
-	desc			as any ptr					'' FBSYMBOL ptr
+	desc			as FBSYMBOL_ ptr
 end type
 
 type FBSCONST
@@ -590,19 +593,20 @@ end type
 type FBSUDT
 	isunion			as integer
 	elements		as integer
-	head			as any ptr					'' first element (FBSYMBOL ptr)
-	tail			as any ptr					'' last  / 		 (FBSYMBOL ptr)
+	head			as FBSYMBOL_ ptr			'' first element
+	tail			as FBSYMBOL_ ptr			'' last  /
 	ofs				as integer
 	align			as integer
+	lfldlen			as integer					'' largest field len (used with unions)
 	innerlgt		as integer					'' used with inner nameless unions
 end type
 
 type FBSUDTELM
 	ofs				as integer
-	parent			as any ptr					'' FBSYMBOL ptr
+	parent			as FBSYMBOL_ ptr
 
-	l				as any ptr					'' left (FBSYMBOL ptr)
-	r				as any ptr					'' right (FBSYMBOL ptr)
+	l				as FBSYMBOL_ ptr			'' left
+	r				as FBSYMBOL_ ptr			'' right
 end type
 
 ''
@@ -613,16 +617,16 @@ type FBSPROCARG
 	optional		as integer					'' true or false
 	optval			as FBVALUE                  '' default value
 
-	l				as any ptr					'' left  (FBSYMBOL ptr)
-	r				as any ptr					'' right (/)
+	l				as FBSYMBOL_ ptr			'' left
+	r				as FBSYMBOL_ ptr			'' right
 end type
 
 type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
 	lib				as FBLIBRARY ptr
 	args			as integer
-	arghead 		as any ptr					'' FBSYMBOL ptr
-	argtail			as any ptr                  '' /
+	arghead 		as FBSYMBOL_ ptr
+	argtail			as FBSYMBOL_ ptr
 	isdeclared		as integer					'' FALSE = just the prototype
 end type
 

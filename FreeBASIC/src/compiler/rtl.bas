@@ -1011,9 +1011,9 @@ data "inkey","fb_Inkey", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
 '' getkey ( ) as integer
 data "getkey","fb_Getkey", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
 
-'' shell ( byval cmm as string ) as integer
+'' shell ( byval cmm as string = "" ) as integer
 data "shell","system", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, TRUE,""
 
 '' name ( byval oldname as string, byval newname as string ) as integer
 data "name","rename", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 2, _
@@ -1235,7 +1235,7 @@ data ""
 '':::::
 private sub hAddIntrinsicProcs
 	dim as integer i, typ
-	dim as string pname, aname
+	dim as string pname, aname, optstr
 	dim as integer p, ptype, pmode, pargs
 	dim as integer a, atype, alen, amode, optional, ptrcnt
 	dim as FBSYMBOL ptr argtail
@@ -1253,16 +1253,18 @@ private sub hAddIntrinsicProcs
 		end if
 
 		read aname, ptype, pmode, pargs
-
 		argtail = NULL
 		for a = 0 to pargs-1
 			read atype, amode, optional
 
 			if( optional ) then
 				if( atype = IR.DATATYPE.STRING ) then
-					read optval.valuestr
+					read optstr
+					optval.valuestr = hAllocStringConst( optstr, 0 )
+
 				elseif( (atype <> IR.DATATYPE.LONGINT) and (atype <> IR.DATATYPE.ULONGINT) ) then
 					read optval.value
+
 				else
 					read optval.value64
 				end if
@@ -1282,7 +1284,7 @@ private sub hAddIntrinsicProcs
 		cntptr( ptype, typ, ptrcnt )
 		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, 0, pmode, _
 									   pargs, argtail, TRUE )
-		i = i + 1
+		i += 1
 	loop
 
 end sub
@@ -4864,7 +4866,7 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
  	if( astNewPARAM( proc, rexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
-	
+
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( hMakeTmpStr )

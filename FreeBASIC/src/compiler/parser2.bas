@@ -1154,7 +1154,6 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 					 byval procexpr as integer, byval optonly as integer ) as integer
 	dim paramexpr as integer, amode as integer, pmode as integer
 	dim typ as integer
-	dim strarg as string
 
 	cFuncParam = FALSE
 
@@ -1187,14 +1186,16 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 
 		'' create an arg
 		typ = symbGetType( arg )
-		if( (typ = IR.DATATYPE.FIXSTR) or (typ = IR.DATATYPE.STRING) or (typ = IR.DATATYPE.CHAR) ) then
-			strarg = symbGetArgOptvalStr( proc, arg )
-			paramexpr = astNewVAR( hAllocStringConst( strarg, len( strarg ) ), NULL, 0, IR.DATATYPE.FIXSTR )
-		elseif( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+		select case as const typ
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
+			paramexpr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR.DATATYPE.FIXSTR )
+
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			paramexpr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
-		else
+
+		case else
 			paramexpr = astNewCONST( symbGetArgOptval( proc, arg ), typ )
-		end if
+		end select
 
 	else
 

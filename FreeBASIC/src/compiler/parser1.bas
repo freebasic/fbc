@@ -2444,7 +2444,7 @@ function cArgDecl( byval procmode as integer, _
 	dim as integer expr, dclass, dtype, readid, mode
 	dim as integer atype, amode, alen, asuffix, optional, ptrcnt
 	dim as FBVALUE optval
-	dim as FBSYMBOL ptr subtype
+	dim as FBSYMBOL ptr subtype, sym
 
 	cArgDecl = NULL
 
@@ -2603,9 +2603,13 @@ function cArgDecl( byval procmode as integer, _
     if( hMatch( FB.TK.ASSIGN ) ) then
     	dclass = irGetDataClass( atype )
 
-    	if( (dclass <> IR.DATACLASS.INTEGER) and (dclass <> IR.DATACLASS.FPOINT) and (dclass <> IR.DATACLASS.STRING) ) then
- 	   		hReportParamError argc, id
-    		exit function
+    	if( dclass <> IR.DATACLASS.INTEGER ) then
+    		if( dclass <> IR.DATACLASS.FPOINT ) then
+    			if( dclass <> IR.DATACLASS.STRING ) then
+ 	   				hReportParamError argc, id
+    				exit function
+    			end if
+    		end if
     	end if
 
     	if( not cExpression( expr ) ) then
@@ -2613,23 +2617,44 @@ function cArgDecl( byval procmode as integer, _
     		exit function
     	end if
 
+    	dtype = astGetDataType( expr )
+    	'' not a constant?
     	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
-    		if( (astGetClass( expr ) <> AST.NODECLASS.VAR) or ( astGetDataType( expr ) <> IR.DATATYPE.FIXSTR ) ) then
+    		'' not a literal string?
+    		if( (astGetClass( expr ) <> AST.NODECLASS.VAR) or (dtype <> IR.DATATYPE.FIXSTR) ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
+				exit function
+			end if
+
+			sym = astGetSymbol( expr )
+			'' diff types or isn't it a literal string?
+			if( (dclass <> IR.DATACLASS.STRING) or (not symbGetVarInitialized( sym )) ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES
+				exit function
+			end if
+
+		else
+			'' diff types?
+			if( dclass = IR.DATACLASS.STRING ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
 		end if
 
     	optional = TRUE
-    	dtype = astGetDataType( expr )
+    	'' string?
     	if( dtype = IR.DATATYPE.FIXSTR ) then
-    		optval.valuestr = symbGetVarText( astGetSymbol( expr ) )
+    		optval.valuestr = sym
+
+    	'' longint?
     	elseif( (atype = IR.DATATYPE.LONGINT) or (atype = IR.DATATYPE.ULONGINT) ) then
 			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
     			optval.value64 = astGetValue64( expr )
     		else
     			optval.value64 = clngint( astGetValue( expr ) )
     		end if
+
+    	''
     	else
 			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
 				optval.value = cdbl( astGetValue64( expr ) )
@@ -2857,7 +2882,6 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byva
 					 expr as integer, pmode as integer, byval optonly as integer ) as integer
 	dim amode as integer
 	dim typ as integer
-	dim strarg as string
 
 	cProcParam = FALSE
 
@@ -2904,14 +2928,14 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byva
 
 		'' create an arg
 		typ = symbGetType( arg )
-		if( (typ = IR.DATATYPE.FIXSTR) or (typ = IR.DATATYPE.STRING) or (typ = IR.DATATYPE.CHAR) ) then
-			strarg = symbGetArgOptvalStr( proc, arg )
-			expr = astNewVAR( hAllocStringConst( strarg, len( strarg ) ), NULL, 0, IR.DATATYPE.FIXSTR )
-		elseif( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+		select case as const typ
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
+			expr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR.DATATYPE.FIXSTR )
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
-		else
+		case else
 			expr = astNewCONST( symbGetArgOptval( proc, arg ), typ )
-		end if
+		end select
 
 	else
 

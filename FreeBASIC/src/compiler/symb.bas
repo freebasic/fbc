@@ -1227,6 +1227,7 @@ function symbAddUDT( byval symbol as string, byval isunion as integer, byval ali
 	t->udt.tail 	= NULL
 	t->udt.ofs		= 0
 	t->udt.align	= align
+	t->udt.lfldlen	= 0
 	t->udt.innerlgt	= 0
 
 	symbAddUDT = t
@@ -1339,7 +1340,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, byval elmname as string, _
 
 	align = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
 	if( align > 0 ) then
-		t->udt.ofs 	= t->udt.ofs + align
+		t->udt.ofs += align
 	end if
 
 	e->lgt 				= lgt
@@ -1361,7 +1362,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, byval elmname as string, _
 	e->var.array.elms 	= hCalcElements( e )
 
 	'' update UDT length
-	lgt = lgt * e->var.array.elms
+	lgt *= e->var.array.elms
 
 	if( not t->udt.isunion ) then
 		if( not isinner ) then
@@ -1378,6 +1379,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, byval elmname as string, _
 			t->udt.ofs = 0
 			if( lgt > t->lgt ) then
 				t->lgt = lgt
+				t->udt.lfldlen = lgt
 			end if
 		else
 			t->udt.ofs += lgt
@@ -1424,11 +1426,12 @@ sub symbRecalcUDTSize( byval t as FBSYMBOL ptr ) static
 
 		if( not t->udt.isunion ) then
 			t->udt.ofs += lgt
-			t->lgt 		= t->udt.ofs
+			t->lgt = t->udt.ofs
 		else
 			t->udt.ofs = 0
 			if( lgt > t->lgt ) then
 				t->lgt = lgt
+				t->udt.lfldlen = lgt
 			end if
 		end if
 
@@ -1536,14 +1539,16 @@ function symbAddArg( byval symbol as string, byval tail as FBSYMBOL ptr, _
 	a->arg.mode		= mode
 	a->arg.suffix	= suffix
 	a->arg.optional	= optional
+
 	if( optional ) then
-		if( (typ = IR.DATATYPE.FIXSTR) or (typ = IR.DATATYPE.STRING) or (typ = IR.DATATYPE.CHAR) ) then
+		select case as const typ
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
 			a->arg.optval.valuestr = optval->valuestr
-		elseif( (typ <> IR.DATATYPE.LONGINT) and (typ <> IR.DATATYPE.ULONGINT) ) then
-			a->arg.optval.value	= optval->value
-		else
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			a->arg.optval.value64 = optval->value64
-		end if
+		case else
+			a->arg.optval.value	= optval->value
+		end select
 	end if
 
     symbAddArg = a
@@ -2049,9 +2054,16 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 	case FB.SYMBTYPE.USERDEF
 		if( not realsize ) then
 			lgt = subtype->lgt
+
 		else
-			e = subtype->udt.tail
-			lgt = e->var.elm.ofs + (e->lgt * e->var.array.elms)
+			if( not subtype->udt.isunion ) then
+				e = subtype->udt.tail
+				lgt = e->var.elm.ofs + (e->lgt * e->var.array.elms)
+
+			'' union, use the largest field len
+			else
+				lgt = subtype->udt.lfldlen
+			end if
 		end if
 
 	case else
@@ -2182,11 +2194,18 @@ end function
 function symbGetUDTLen( byval udt as FBSYMBOL ptr, byval realsize as integer = TRUE ) as integer static
     dim e as FBSYMBOL ptr
 
-	if( realsize ) then
-		e = udt->udt.tail
-		symbGetUDTLen = e->var.elm.ofs + (e->lgt * e->var.array.elms)
-	else
+	if( not realsize ) then
 		symbGetUDTLen = udt->lgt
+
+	else
+		if( not udt->udt.isunion ) then
+			e = udt->udt.tail
+			symbGetUDTLen = e->var.elm.ofs + (e->lgt * e->var.array.elms)
+
+		'' union, use the largest field len
+		else
+			e = udt->udt.lfldlen
+		end if
 	end if
 
 end function
@@ -2595,12 +2614,12 @@ function symbGetArgOptval64( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) 
 end function
 
 '':::::
-function symbGetArgOptvalStr( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as string static
+function symbGetArgOptvalStr( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	if( a <> NULL ) then
 		symbGetArgOptvalStr = a->arg.optval.valuestr
 	else
-		symbGetArgOptvalStr = ""
+		symbGetArgOptvalStr = NULL
 	end if
 
 end function
