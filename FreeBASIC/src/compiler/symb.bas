@@ -1401,21 +1401,14 @@ end function
 '':::::
 function symbCheckBitField( byval udt as FBSYMBOL ptr, _
 							byval typ as integer, _
+							byval lgt as integer, _
 							byval bits as integer ) as integer
 
 	if( (bits <= 0) or _
-		(bits > irGetDataBits( typ )) or _
+		(bits > lgt*8) or _
 		(typ >= FB.SYMBTYPE.SINGLE) ) then
 		return FALSE
 	end if
-
-    if( udt->udt.bitpos > 0 ) then
-    	if( udt->udt.tail->typ = typ ) then
-    		if( udt->udt.bitpos + bits > irGetDataBits( typ ) ) then
-    			return FALSE
-    		end if
-    	end if
-    end if
 
     return TRUE
 
@@ -1433,7 +1426,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 						    byval bits as integer, _
 						    byval isinner as integer ) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr e, n
+    dim as FBSYMBOL ptr e, tail
     dim as integer align, i, updateudt
     dim as string ename
 
@@ -1453,15 +1446,30 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     	e = e->var.elm.r
     loop
 
+	tail = t->udt.tail
+
     ''
+	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
+		lgt	= symbCalcLen( typ, subtype, TRUE )
+	end if
+
+    '' check if the parent ofs must be updated
     updateudt = TRUE
     if( bits > 0 ) then
     	if( t->udt.bitpos > 0 ) then
-    		if( t->udt.tail->typ <> typ ) then
+    		'' does it fit? if not, start at a new pos..
+    		if( t->udt.bitpos + bits > tail->lgt*8 ) then
     			t->udt.bitpos = 0
+    		else
+    			'' if it fits but len is different, make it the same
+    			if( lgt <> tail->lgt ) then
+    				typ = tail->typ
+    				lgt = tail->lgt
+    			end if
     		end if
     	end if
 
+		'' don't update if there are enough bits left
 		if( t->udt.bitpos <> 0 ) then
 			updateudt = FALSE
 		end if
@@ -1477,23 +1485,17 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     end if
 
 	'' add to parent's linked-list
-	n = t->udt.tail
-	e->var.elm.l 		= n
+	e->var.elm.l 		= tail
 	e->var.elm.r 		= NULL
     e->var.elm.parent	= t
 	t->udt.tail 		= e
-	if( n <> NULL ) then
-		n->var.elm.r 	= e
+	if( tail <> NULL ) then
+		tail->var.elm.r = e
 	else
 		t->udt.head 	= e
 	end if
 
     t->udt.elements	+= 1
-
-    ''
-	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
-		lgt	= symbCalcLen( typ, subtype, TRUE )
-	end if
 
 	''
 	if( updateudt ) then
@@ -1555,7 +1557,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		end if
 	end if
 
-	''
+	'' update the bit position, wrapping around
 	if( bits > 0 ) then
 		t->udt.bitpos += bits
 		t->udt.bitpos and= (irGetDataBits( typ ) - 1)

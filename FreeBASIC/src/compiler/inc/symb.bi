@@ -240,6 +240,7 @@ declare function 	symbCheckLabels 		( ) as FBSYMBOL ptr
 
 declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 											  byval typ as integer, _
+											  byval lgt as integer, _
 											  byval bits as integer ) as integer
 
 

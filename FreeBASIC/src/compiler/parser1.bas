@@ -789,7 +789,7 @@ function cElementDecl( id as string, _
 
 	''
 	if( bits <> 0 ) then
-		if( not symbCheckBitField( env.typectx.symbol, typ, bits ) ) then
+		if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
     		hReportError FB.ERRMSG.INVALIDBITFIELD, TRUE
     		exit function
 		end if
@@ -838,7 +838,7 @@ function cAsElementDecl( ) as integer
 					bits = val( lexEatToken )
 				end if
 
-				if( not symbCheckBitField( env.typectx.symbol, typ, bits ) ) then
+				if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
     				hReportError FB.ERRMSG.INVALIDBITFIELD, TRUE
     				exit function
 				end if
