@@ -2,6 +2,7 @@ Version 0.13 Beta:
 
 [fixed] CVS() was being done as CVD() (v1c)
 [fixed] inline asm now supports complete IA32 instruction set (lillo)
+[fixed] SELECT CASE and other compound statments were accepting UDT's w/o any fields given (v1c)
 
 
 Version 0.12 Beta:
