@@ -43,8 +43,7 @@ declare sub 		hClearName				( src as string )
 declare function 	hCreateAliasName		( symbol as string, byval argslen as integer, _
 						   					  byval toupper as integer, byval mode as integer ) as string
 
-declare function 	hCreateName				( symbol as string, byval typ as integer ) as string
-declare function 	hCreateNameEx			( symbol as string, byval typ as integer = INVALID, byval preservecase as integer = FALSE, _
+declare function 	hCreateName 			( symbol as string, byval typ as integer = INVALID, byval preservecase as integer = FALSE, _
 								      		  byval addunderscore as integer = TRUE, byval clearname as integer  = TRUE) as string
 
 declare function 	hStripUnderscore		( symbol as string ) as string
@@ -53,6 +52,6 @@ declare function 	hStripExt				( filename as string ) as string
 declare function 	hStripPath				( filename as string ) as string
 declare function 	hStripFilename 			( filename as string ) as string
 
-declare function 	hToPow2					( byval value as integer ) as integer
+declare function 	hToPow2					( byval value as uinteger ) as uinteger
 
 declare function 	hMakeEntryPointName		( entrypoint as string ) as string

@@ -54,7 +54,7 @@ declare sub 		emitEnd				( )
 declare function 	emitGetRegClass		( byval dclass as integer ) as REGCLASS ptr
 
 declare function 	emitOpen			( ) as integer
-declare sub 		emitClose			( )
+declare sub 		emitClose			( byval tottime as double )
 
 declare function 	emitIsKeyword		( text as string ) as integer
 declare sub 		emitASM				( s as string )

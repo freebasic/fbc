@@ -37,12 +37,9 @@ declare sub 		lexSaveCtx				( byval level as integer )
 declare sub 		lexRestoreCtx			( byval level as integer )
 
 
-declare function 	lexCurrentChar          ( ) as integer
+declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as integer
 declare function 	lexEatChar              ( ) as integer
 declare function 	lexLookAheadChar        ( ) as integer
-declare function 	lexReadIdentifier		( tlen as integer, typ as integer ) as string
-declare function 	lexReadNumber			( typ as integer, tlen as integer ) as string
-declare function 	lexReadString 			( tlen as integer ) as string
 declare sub 		lexNextToken 			( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE )
 
 declare function 	lexCurrentToken 		( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer

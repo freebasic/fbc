@@ -52,14 +52,14 @@ end type
 
 type VARNode
 	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBTYPELEMENT ptr				'' field element, if any
+	elm				as FBSYMBOL ptr					'' field element, if any
 	ofs				as integer						'' offset
 	lgt				as integer						'' length
 end type
 
 type IDXNode
 	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBTYPELEMENT ptr				'' field element, if any
+	elm				as FBSYMBOL ptr					'' field element, if any
 	ofs				as integer						'' offset
 	lgt				as integer						'' length
 	var				as integer						'' AST tb index to a VARNode
@@ -67,7 +67,7 @@ end type
 
 type PTRNode
 	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBTYPELEMENT ptr				'' field element, if any
+	elm				as FBSYMBOL ptr					'' field element, if any
 	ofs				as integer						'' offset
 end type
 
@@ -113,7 +113,7 @@ declare function 	astGetDataClass		( byval n as integer ) as integer
 declare function 	astGetDataSize		( byval n as integer ) as integer
 declare function 	astGetValue			( byval n as integer ) as double
 declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
-declare function 	astGetUDTElm		( byval n as integer ) as FBTYPELEMENT ptr
+declare function 	astGetUDTElm		( byval n as integer ) as FBSYMBOL ptr
 declare function 	astGetOffset		( byval n as integer ) as integer
 
 declare sub 		astLoad				( byval n as integer, dst as integer )
@@ -141,14 +141,14 @@ declare sub 		astLoadUOP			( byval n as integer, vr as integer )
 declare function 	astNewCONST			( byval value as double, byval dtype as integer ) as integer
 declare sub 		astLoadCONST		( byval n as integer, vr as integer )
 
-declare function 	astNewVAREx			( byval symbol as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval ofs as integer, byval dtype as integer ) as integer
+declare function 	astNewVAREx			( byval symbol as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer ) as integer
 declare function 	astNewVAR			( byval symbol as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer )  as integer
 declare sub 		astLoadVAR			( byval n as integer, vr as integer )
 
 declare function 	astNewIDX			( byval v as integer, byval i as integer, byval dtype as integer )  as integer
 declare sub 		astLoadIDX			( byval n as integer, vr as integer )
 
-declare function 	astNewPTREx			( byval s as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
+declare function 	astNewPTREx			( byval s as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
 declare function 	astNewPTR			( byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
 declare sub 		astLoadPTR			( byval n as integer, vreg as integer )
 
@@ -157,7 +157,7 @@ declare function 	astNewFUNCTPTR		( byval ptrexpr as integer, byval symbol as FB
 declare function 	astNewPARAM			( byval f as integer, byval p as integer, byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
 declare sub 		astLoadFUNCT		( byval n as integer, vr as integer )
 
-declare function 	astNewADDR			( byval op as integer, byval p as integer ) as integer
+declare function 	astNewADDR			( byval op as integer, byval p as integer, byval dtype as integer = INVALID ) as integer
 declare sub 		astLoadADDR			( byval n as integer, vr as integer )
 
 declare function 	astNewLOAD			( byval l as integer, byval dtype as integer ) as integer
