@@ -397,8 +397,8 @@ Greetings:
     kangaroos in the middle time.
 
   o VonGodric: author of the first (an unique at the moment) FreeBASIC IDE: FBIDE (download
-    it here: http://www.hot.ee/wizgui/setup.exe) and also reported loatsa bugs (i'm getting
-    tired of typing that, arf)
+    it here: http://www.hot.ee/fbide) and also reported loatsa bugs (i'm getting tired of
+    typing that, arf)
 
   o Rel: Best beta tester ever, found loads of bugs.
 
