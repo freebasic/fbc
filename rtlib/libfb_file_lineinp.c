@@ -28,6 +28,9 @@
 #include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
+#if !defined WIN32 && !defined DISABLE_NCURSES
+#include <curses.h>
+#endif
 
 #define BUFFER_LEN 1024
 
@@ -77,6 +80,18 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 	/* - */
 	do
 	{
+#if !defined WIN32 && !defined DISABLE_NCURSES
+		if( fnum == 0 ) {
+			echo();
+			nodelay(stdscr, FALSE);
+			if( getnstr( buffer, BUFFER_LEN ) == ERR )
+				break;
+			noecho();
+			nodelay(stdscr, TRUE);
+			strcat(buffer, "\n");
+		}
+		else
+#endif
 		if( fgets( buffer, BUFFER_LEN+1, f ) == NULL )
 			break;
 
