@@ -23,9 +23,9 @@ const IR.INITADDRNODES%		= 2048
 const IR.MAXDIST%			= 32767
 
 enum IRDATACLASS_ENUM
-	IR.DATACLASS.INTEGER
+	IR.DATACLASS.INTEGER                        '' must be the first
 	IR.DATACLASS.FPOINT
-	IR.DATACLASS.STRING
+	IR.DATACLASS.STRING							'' /    /  /   last
 end enum
 
 '' data types (must be in order of precision and in the other signed/non-signed!)
@@ -229,8 +229,8 @@ declare function 	irGetVRRealValue( byval vreg as integer ) as integer
 
 declare function 	irGetInverseLogOp( byval op as integer ) as integer
 
-declare sub 		irLoadVR		( byval rtype as integer, byval rclass as integer, byval reg as integer, byval vreg as integer )
-declare sub 		irStoreVR		( byval rtype as integer, byval rclass as integer, byval vreg as integer, byval reg as integer )
-declare sub 		irSetVR			( byval rtype as integer, byval rclass as integer, byval reg as integer, byval vreg as integer )
-declare sub 		irXchgTOS		( byval rtype as integer, byval rclass as integer, byval reg as integer )
+declare sub 		irLoadVR		( byval reg as integer, byval vreg as integer )
+declare sub 		irStoreVR		( byval vreg as integer, byval reg as integer )
+declare sub 		irSetVR			( byval reg as integer, byval vreg as integer )
+declare sub 		irXchgTOS		( byval reg as integer )
 

@@ -42,9 +42,10 @@ declare function 	cDynArrayDef			( id as string, idlias as string, _
 											  byval typ as integer, byval subtype as FBSYMBOL ptr, _
 											  byval lgt as integer, byval addsuffix as integer, _
 											  byval alloctype as integer, byval dopreserve as integer, _
-					   						  byval dimensions as integer, exprTB() as integer ) as integer
+					   						  byval dimensions as integer, exprTB() as integer ) as FBSYMBOL ptr
 declare function 	cStaticArrayDecl 		( dimensions as integer, dTB() as FBARRAYDIM ) as integer
 declare function 	cArrayDecl				( dimensions as integer, exprTB() as integer ) as integer
+declare function 	cSymbolInit				( byval s as FBSYMBOL ptr ) as integer
 declare function 	cSymbolType 			( typ as integer, subtype as FBSYMBOL ptr, lgt as integer ) as integer
 declare function 	cProcDecl               ( ) as integer
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer

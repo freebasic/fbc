@@ -1438,7 +1438,7 @@ function hDeclExternVar( id as string, byval typ as integer, byval subtype as FB
 end function
 
 '':::::
-''SymbolDef       =   ID ('('')' | ArrayDecl)? (AS SymbolType)?
+''SymbolDef       =   ID ('('')' | ArrayDecl)? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (DECL_SEPARATOR SymbolDef)* .
 ''
 function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
@@ -1527,7 +1527,8 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     	''
     	if( isdynamic ) then
 
-    		if( not cDynArrayDef( id, idalias, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() ) ) then
+    		symbol = cDynArrayDef( id, idalias, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() )
+    		if( symbol = NULL ) then
     			exit function
     		end if
 
@@ -1562,6 +1563,13 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 
 		end if
 
+		'' ('=' SymbolInitializer)?
+		if( hMatch( FB.TK.EQ ) ) then
+        	if( not cSymbolInit( symbol ) ) then
+        		exit function
+        	end if
+		end if
+
 		'' (DECL_SEPARATOR SymbolDef)*
 		if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
 			exit do
@@ -1579,13 +1587,13 @@ end function
 function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 					   byval subtype as FBSYMBOL ptr, byval lgt as integer, _
 					   byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
-					   byval dimensions as integer, exprTB() as integer ) as integer
+					   byval dimensions as integer, exprTB() as integer ) as FBSYMBOL ptr
     dim s as FBSYMBOL ptr
     dim res as integer
     dim atype as integer
     dim dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
 
-    cDynArrayDef = FALSE
+    cDynArrayDef = NULL
 
     atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
 
@@ -1670,7 +1678,79 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 		symbSetVarDimensions s, dimensions
 	end if
 
-    cDynArrayDef = TRUE
+    cDynArrayDef = s
+
+end function
+
+'':::::
+function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
+    dim expr as integer
+    dim litstr as integer, islitstring as integer
+    dim dimensions as integer, subtype as FBSYMBOL ptr
+    dim istatic as integer
+
+	cSymbolInit = FALSE
+
+	'' cannot initialize dynamic vars
+	if( symbGetVarIsDynamic( s ) ) then
+		hReportError FB.ERRMSG.SYNTAXERROR
+		exit function
+	end if
+
+	istatic = (symbGetAllocType( s ) and FB.ALLOCTYPE.STATIC) > 0
+
+	'dimensions =
+	'subtype =
+
+	'' 1) dimensions + low/upp bounds are known, as arrays can't be dynamic, check them..
+	'' 2) types are known too, must be checked
+	'' 3) var-len strings can't be accepted on static/mod-level
+	'' 4) fix-len strings must be padded by emit if static/mod-level
+	'' 5) the goes with same with user types
+
+	do
+
+		islitstring = FALSE
+		if( istatic or env.scope = 0 ) then
+			if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
+				islitstring = TRUE
+				litstr = strpAdd( lexEatToken )
+			end if
+		end if
+
+		if( not islitstring ) then
+			if( not cExpression( expr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+		end if
+
+		'' if static or at module level, only constants can be used as initializers
+		if( istatic or env.scope = 0 ) then
+
+			if( not islitstring ) then
+				if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+					hReportError FB.ERRMSG.EXPECTEDCONST
+					exit function
+				end if
+
+				'symbVarAddInitScalar s, astGetValue( expr )
+				astDel expr
+
+			else
+
+				'symbVarAddInitString s, litstr
+
+			end if
+
+		else
+
+			'symbVarAddInitExpression s, expr
+
+		end if
+
+	loop
+
 
 end function
 
@@ -2714,7 +2794,11 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
     end if
 
 	isfunc = FALSE
-	if( ptrexpr <> INVALID ) then
+	if( checkparents = TRUE ) then
+		if( symbGetProcArgs( proc ) = 0 ) then
+			checkparents = FALSE
+		end if
+	elseif( ptrexpr <> INVALID ) then
 		checkparents = TRUE
 	elseif( symbGetType( proc ) <> FB.SYMBTYPE.VOID ) then
 		isfunc = TRUE

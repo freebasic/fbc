@@ -16,13 +16,16 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
+'$include: 'inc\reg.bi'
+
+
 const EMIT_MAINPROC			= "fb_modulemain"
 const EMIT_LOCALPREFIX		= "L"
 
-const EMIT.VAR.OPENCHAR		= 91		'' [
-const EMIT.VAR.CLOSECHAR	= 93		'' ]
+const EMIT.VAR.OPENCHAR		= 91				'' [
+const EMIT.VAR.CLOSECHAR	= 93				'' ]
 
-const REG.MAXCLASSES%		= 2
+const EMIT.REGCLASSES		= 2					'' assuming IR.DATACLASS. will start at 0!
 
 enum EMITINTREG
 	EMIT.INTREG.EDX
@@ -47,6 +50,8 @@ end enum
 ''
 declare sub 		emitInit			( )
 declare sub 		emitEnd				( )
+
+declare function 	emitGetRegClass		( byval dclass as integer ) as REGCLASS ptr
 
 declare function 	emitOpen			( ) as integer
 declare sub 		emitClose			( )

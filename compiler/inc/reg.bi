@@ -1,3 +1,6 @@
+#ifndef REG_BI
+#define REG_BI
+
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 ''
@@ -16,41 +19,51 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
+'#ifdef TARGET_X86
+const REG.MAXREGS	= 8
+'#else
+'#endif
+
+
 type REGCLASS
-	regs			as integer
-	vreg(0 to 7) 	as integer					'' virtual register name (index)
-	nxt(0 to 7) 	as integer					'' distance of next vreg usage
-	free(0 to 7) 	as integer                  '' true or false
-	fstack(0 to 7) 	as integer					'' free regs stack
-    sp				as integer                  '' stack pointer
+
+	'' methods
+	ensure			as function ( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer
+	allocate		as function ( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer
+	allocateReg		as function ( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer ) as integer
+	free			as sub 		( byval this_ as REGCLASS ptr, byval r as integer )
+	isFree			as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
+	setOwner		as sub 		( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer )
+	getMaxRegs		as function ( byval this_ as REGCLASS ptr ) as integer
+	getFirst		as function ( byval this_ as REGCLASS ptr ) as integer
+	getNext			as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
+	getVreg			as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
+	getRealReg		as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
+
+	'' private data
+	class 						as integer
+	isstack						as integer
+	regs						as integer
+
+	vregTB(0 to REG.MAXREGS-1) 	as integer		'' virtual register name (index)
+
+	'' f/ non-stack sets only
+	nextTB(0 to REG.MAXREGS-1) 	as integer		'' distance of next vreg usage
+	freeTB(0 to REG.MAXREGS-1) 	as integer      '' true or false
+	fstack(0 to REG.MAXREGS-1) 	as integer		'' free regs stack
+    sp							as integer      '' stack pointer
+
+	'' f/ stack sets only
+	regTB(0 to REG.MAXREGS-1)	as integer		'' real register (st(#))
+	fregs						as integer      '' free regs
 end type
 
 
-type SREGCLASS
-	regs			as integer
-    fregs			as integer                  '' free regs
-	vreg(0 to 7)	as integer					'' virtual register name (index)
-	reg(0 to 7)		as integer					'' real register (st(#))
-end Type
-
-
 
 ''
 ''
 ''
-declare sub 		regInit			( byval classes as integer )
-declare sub 		regInitClass	( byval c as integer, byval regs as integer )
-declare sub 		regClear		( byval c as integer )
-declare function 	regEnsure		( byval t as integer, byval c as integer, byval vreg as integer ) as integer
-declare function 	regAllocate		( byval t as integer, byval c as integer, byval vreg as integer ) as integer
-declare function 	regAllocateReg	( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer ) as integer
-declare sub 		regSetOwner		( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer )
-declare sub 		regFree			( byval t as integer, byval c as integer, byval r as integer )
-declare function 	regIsFree		( byval typ as integer, byval class as integer, byval reg as integer ) as integer
-declare function 	regGetMaxRegs	( byval c as integer ) as integer
+declare function 	regNewClass			( byval class as integer, byval regs as integer, byval isstack as integer ) as REGCLASS ptr
+declare function 	regDelClass			( byval reg as REGCLASS ptr ) as integer
 
-declare function 	regGetFirst		( byval class as integer ) as integer
-declare function 	regGetNext		( byval class as integer, byval r as integer ) as integer
-declare function 	regGetVreg		( byval class as integer, byval r as integer ) as integer
-
-declare function 	sregGetRealReg	( byval r as integer ) as integer
+#endif '' REG_BI

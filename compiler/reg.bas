@@ -21,6 +21,7 @@
 '' obs: only works locally, can't be used between blocks
 ''
 '' chng: sep/2004 written [v1ctor]
+'' 		 jan/2005 much more modular using fake classes [v1ctor]
 
 defint a-z
 option explicit
@@ -32,124 +33,117 @@ option escape
 '$include:'inc\reg.bi'
 
 '' internals
-declare function 	regFindFarest	( byval c as integer ) as integer
-declare function 	regFindReg		( byval c as integer, byval vreg as integer ) as integer
-declare sub 		regPush			( byval c as integer, byval reg as integer )
-declare function 	regPop			( byval c as integer ) as integer
-
-declare sub 		sregInit		( byval classes as integer )
-declare sub 		sregInitClass	( byval c as integer, byval regs as integer )
-declare function 	sregFindReg		( byval vreg as integer ) as integer
-declare sub 		sregXchg		( byval t as integer, byval c as integer, byval r as integer )
-declare function 	sregEnsure		( byval t as integer, byval c as integer, byval vreg as integer ) as integer
-declare function 	sregAllocate	( byval t as integer, byval c as integer, byval vreg as integer ) as integer
-declare sub 		sregFree		( byval t as integer, byval c as integer, byval r as integer )
-declare function 	sregIsFree		( byval t as integer, byval c as integer, byval r as integer ) as integer
-declare sub 		sregSetOwner	( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer )
-declare function 	sregGetFirst	( byval class as integer ) as integer
-declare function 	sregGetNext		( byval class as integer, byval r as integer ) as integer
-declare function 	sregGetVreg		( byval class as integer, byval r as integer ) as integer
-
-
-'' globals
-	dim shared reg as REGCLASS
-	dim shared sreg as SREGCLASS
+declare sub regInitClass		( byval reg as REGCLASS ptr )
+declare sub sregInitClass		( byval reg as REGCLASS ptr )
 
 
 '':::::
-sub regPush( byval c as integer, byval r as integer ) static
-    dim sp as integer
+function regNewClass( byval class as integer, byval regs as integer, byval isstack as integer ) as REGCLASS ptr
+    dim reg as REGCLASS ptr
 
-	sp = reg.sp
-	if( sp > 0 ) then
-		sp = sp - 1
-		reg.fstack(sp) = r
-	end if
-	reg.sp = sp
+	reg = callocate( len( REGCLASS ) )
 
-end sub
+	reg->class 	= class
+	reg->regs 	= regs
+	reg->isstack= isstack
 
-'':::::
-function regPop( byval c as integer ) as integer static
-    dim sp as integer
-
-	sp = reg.sp
-	if( sp < reg.regs ) then
-		regPop = reg.fstack(sp)
-		sp = sp + 1
+	if( not reg->isstack ) then
+		regInitClass reg
 	else
-		regPop = INVALID
+		sregInitClass reg
 	end if
-	reg.sp = sp
+
+	regNewClass = reg
 
 end function
 
 '':::::
-sub regPopReg( byval c as integer, byval r as integer ) static
+function regDelClass( byval reg as REGCLASS ptr ) as integer
+
+	regDelClass = FALSE
+
+	if( reg = NULL ) then
+		exit function
+	end if
+
+	deallocate reg
+
+	regDelClass = TRUE
+
+end function
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' non-stack registers allocator
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private sub regPush( byval this_ as REGCLASS ptr, byval r as integer ) static
+    dim sp as integer
+
+	sp = this_->sp
+	if( sp > 0 ) then
+		sp = sp - 1
+		this_->fstack(sp) = r
+	end if
+	this_->sp = sp
+
+end sub
+
+'':::::
+private function regPop( byval this_ as REGCLASS ptr ) as integer static
+    dim sp as integer
+
+	sp = this_->sp
+	if( sp < this_->regs ) then
+		regPop = this_->fstack(sp)
+		sp = sp + 1
+	else
+		regPop = INVALID
+	end if
+	this_->sp = sp
+
+end function
+
+'':::::
+private sub regPopReg( byval this_ as REGCLASS ptr, byval r as integer ) static
     dim i as integer, p as integer
 
-	for i = reg.sp to reg.regs-1
-		if( reg.fstack(i) = r ) then
+	for i = this_->sp to this_->regs-1
+		if( this_->fstack(i) = r ) then
 			p = i
 			exit for
 		end if
 	next i
 
-	for i = p to reg.sp+1 step -1
-		reg.fstack(i) = reg.fstack(i-1)
+	for i = p to this_->sp+1 step -1
+		this_->fstack(i) = this_->fstack(i-1)
 	next i
 
-	reg.sp = reg.sp + 1
+	this_->sp = this_->sp + 1
 
 end sub
 
 '':::::
-sub regInit( byval classes as integer ) static
-
-    'if( class = IR.DATACLASS.FPOINT ) then
-    	sregInit classes
-    '	exit sub
-    'end if
-
-	'' do nothing, reg is not reallocable
-
-end sub
-
-'':::::
-sub regInitClass( byval c as integer, byval regs as integer ) static
-
-    if( c = IR.DATACLASS.FPOINT ) then
-    	sregInitClass c, regs
-    	exit sub
-    end if
-
-	reg.regs = regs
-
-	regClear c
-
-end sub
-
-'':::::
-sub regClear( byval c as integer ) static
+private sub regClear( byval this_ as REGCLASS ptr ) static
     dim r as integer
 
-	reg.sp		= reg.regs
+	this_->sp		= this_->regs
 
-	for r = 0 to reg.regs-1
-		reg.free(r)	= TRUE
-		reg.vreg(r) = INVALID
-		reg.nxt(r)	= 0
-		regPush c, r
+	for r = 0 to this_->regs-1
+		this_->freeTB(r)	= TRUE
+		this_->vregTB(r)	= INVALID
+		this_->nextTB(r)		= 0
+		regPush this_, r
 	next r
 
 end sub
 
 '':::::
-function regFindReg( byval c as integer, byval vreg as integer ) as integer static
+private function regFindReg( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer static
 	dim r as integer
 
-	for r = 0 to reg.regs-1
-		if( reg.vreg(r) = vreg ) then
+	for r = 0 to this_->regs-1
+		if( this_->vregTB(r) = vreg ) then
 			regFindReg = r
 			exit function
 		end if
@@ -160,35 +154,14 @@ function regFindReg( byval c as integer, byval vreg as integer ) as integer stat
 end function
 
 '':::::
-function regEnsure( byval t as integer, byval c as integer, byval vreg as integer ) as integer static
-    dim r as integer
-
-    if( c = IR.DATACLASS.FPOINT ) then
-    	regEnsure = sregEnsure( t, c, vreg )
-    	exit function
-    end if
-
-    r = regFindReg( c, vreg )
-    if( r = INVALID ) then
-    	r = regAllocate( t, c, vreg )
-    	irLoadVR t, c, r, vreg
-    else
-    	'''''irSetVR t, c, r, vreg
-    end if
-
-    regEnsure = r
-
-end function
-
-'':::::
-function regFindFarest( byval c as integer ) as integer static
+private function regFindFarest( byval this_ as REGCLASS ptr ) as integer static
     dim i as integer, r as integer, maxdist as integer
 
     maxdist = -32768
     r 	= INVALID
-    for i = 0 to reg.regs
-    	if( reg.nxt(i) > maxdist ) then
-    		maxdist = reg.nxt(i)
+    for i = 0 to this_->regs
+    	if( this_->nextTB(i) > maxdist ) then
+    		maxdist = this_->nextTB(i)
     		r = i
     	end if
     next i
@@ -198,127 +171,103 @@ function regFindFarest( byval c as integer ) as integer static
 end function
 
 '':::::
-function regAllocate( byval t as integer, byval c as integer, byval vreg as integer ) as integer static
+private function regAllocate( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer static
     dim r as integer
 
-    if( c = IR.DATACLASS.FPOINT ) then
-    	regAllocate = sregAllocate( t, c, vreg )
-    	exit function
-    end if
-
-	if( reg.sp < reg.regs ) then
-		r = regPop( c )
+	if( this_->sp < this_->regs ) then
+		r = regPop( this_ )
 	else
-		r = regFindFarest( c )
-	    irStoreVR t, c, reg.vreg(r), r
+		r = regFindFarest( this_ )
+	    irStoreVR this_->vregTB(r), r
 	end if
 
-	reg.free(r)	= FALSE
-	reg.vreg(r)	= vreg
-	reg.nxt(r)	= irGetDistance( vreg )
+	this_->freeTB(r)	= FALSE
+	this_->vregTB(r)	= vreg
+	this_->nextTB(r)	= irGetDistance( vreg )
 
 	regAllocate = r
 
 end function
 
 '':::::
-function regAllocateReg( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer ) as integer static
+private function regAllocateReg( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer ) as integer static
 
-    if( c = IR.DATACLASS.FPOINT ) then
-    	'' assuming r will be always 0 (result, TOS)
-    	regAllocateReg = sregAllocate( t, c, vreg )
-    	exit function
-    end if
+	regPopReg this_, r
 
-	regPopReg c, r
-
-	reg.free(r)	= FALSE
-	reg.vreg(r)	= vreg
-	reg.nxt(r)	= irGetDistance( vreg )
+	this_->freeTB(r)	= FALSE
+	this_->vregTB(r)	= vreg
+	this_->nextTB(r)	= irGetDistance( vreg )
 
 	regAllocateReg = r
 
 end function
 
 '':::::
-sub regSetOwner( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer )
+private function regEnsure( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer static
+    dim r as integer
 
-    if( c = IR.DATACLASS.FPOINT ) then
-    	sregSetOwner t, c, r, vreg
-    	exit sub
+    r = regFindReg( this_, vreg )
+    if( r = INVALID ) then
+    	r = regAllocate( this_, vreg )
+    	irLoadVR r, vreg
+    else
+    	'''''irSetVR r, vreg
     end if
 
-	reg.free(r)	= FALSE
-	reg.vreg(r)	= vreg
-	reg.nxt(r)	= irGetDistance( vreg )
+    regEnsure = r
+
+end function
+
+'':::::
+private sub regSetOwner( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer )
+
+	this_->freeTB(r)	= FALSE
+	this_->vregTB(r)	= vreg
+	this_->nextTB(r)	= irGetDistance( vreg )
 
 end sub
 
 '':::::
-sub regFree( byval t as integer, byval c as integer, byval r as integer ) static
+private sub regFree( byval this_ as REGCLASS ptr, byval r as integer ) static
 
-    if( c = IR.DATACLASS.FPOINT ) then
-    	sregFree t, c, r
-    	exit sub
-    end if
-
-	if( not reg.free(r) ) then
-		reg.free(r) = TRUE
-		reg.vreg(r) = INVALID
-		reg.nxt(r)  = 0
-		regPush c, r
+	if( not this_->freeTB(r) ) then
+		this_->freeTB(r) = TRUE
+		this_->vregTB(r) = INVALID
+		this_->nextTB(r) = 0
+		regPush this_, r
 	end if
 
 end sub
 
 '':::::
-function regIsFree( byval typ as integer, byval class as integer, byval r as integer ) as integer static
+private function regIsFree( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
 
-    if( class = IR.DATACLASS.FPOINT ) then
-    	regIsFree = sregIsFree( typ, class, r )
-    	exit function
-    end if
-
-	regIsFree = reg.free(r)
+	regIsFree = this_->freeTB(r)
 
 end function
 
 '':::::
-function regGetMaxRegs( byval c as integer ) as integer static
+private function regGetMaxRegs( byval this_ as REGCLASS ptr ) as integer static
 
-    if( c = IR.DATACLASS.FPOINT ) then
-    	regGetMaxRegs = sreg.regs
-    else
-    	regGetMaxRegs = reg.regs
-    end if
+    regGetMaxRegs = this_->regs
 
 end function
 
 '':::::
-function regGetFirst( byval class as integer ) as integer static
-
-    if( class = IR.DATACLASS.FPOINT ) then
-    	regGetFirst = sregGetFirst( class )
-    	exit function
-    end if
+private function regGetFirst( byval this_ as REGCLASS ptr ) as integer static
 
 	regGetFirst = 0
 
 end function
 
 '':::::
-function regGetNext( byval class as integer, byval r as integer ) as integer static
-
-    if( class = IR.DATACLASS.FPOINT ) then
-    	regGetNext = sregGetNext( class, r )
-    	exit function
-    end if
+private function regGetNext( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
 
 	regGetNext = INVALID
 
 	if( r >= 0 ) then
 		r = r + 1
-		if( r < reg.regs ) then
+		if( r < this_->regs ) then
 			regGetNext = r
 		end if
 	end if
@@ -326,55 +275,55 @@ function regGetNext( byval class as integer, byval r as integer ) as integer sta
 end function
 
 '':::::
-function regGetVreg( byval class as integer, byval r as integer ) as integer static
+private function regGetVreg( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
 
-    if( class = IR.DATACLASS.FPOINT ) then
-    	regGetVreg = sregGetVreg( class, r )
-    	exit function
-    end if
-
-	regGetVreg = reg.vreg(r)
+	regGetVreg = this_->vregTB(r)
 
 end function
 
+'':::::
+private function regGetRealReg( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
+
+	regGetRealReg = r
+
+end function
+
+'':::::
+private sub regInitClass( byval reg as REGCLASS ptr )
+
+	regClear reg
+
+	reg->ensure 	= @regEnsure
+	reg->allocate 	= @regAllocate
+	reg->allocateReg= @regAllocateReg
+	reg->free 		= @regFree
+	reg->isFree 	= @regIsFree
+	reg->setOwner 	= @regSetOwner
+	reg->getMaxRegs	= @regGetMaxRegs
+	reg->getFirst	= @regGetFirst
+	reg->getNext	= @regGetNext
+	reg->getVreg	= @regGetVreg
+	reg->getRealReg	= @regGetRealReg
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' stack register allocator
+'' stack registers allocator
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub sregInit( byval classes as integer ) Static
-
-	'' do nothing, sreg is not reallocable
-
-End Sub
-
-'':::::
-sub sregInitClass( byval c as integer, byval regs as integer ) Static
-	Dim r as integer
-
-	sreg.regs  = regs
-	sreg.fregs = regs
-
-	for r = 0 to sreg.regs-1
-		sreg.reg(r)	 = INVALID
-		sreg.vreg(r) = INVALID
-	Next r
-
-End Sub
-
-'':::::
-Function sregFindReg( byval vreg as integer ) as integer Static
+private Function sregFindReg( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer Static
 	Dim r as integer
 
 	sregFindReg = INVALID
 
-	If( sreg.fregs = sreg.regs ) Then
+	If( this_->fregs = this_->regs ) Then
 		Exit Function
 	End If
 
-	For r = 0 to sreg.regs-1
-		if( sreg.reg(r) <> INVALID ) then
-			If( sreg.vreg(r) = vreg ) Then
+	For r = 0 to this_->regs-1
+		if( this_->regTB(r) <> INVALID ) then
+			If( this_->vregTB(r) = vreg ) Then
 				sregFindReg = r
 				Exit Function
 			End If
@@ -384,55 +333,36 @@ Function sregFindReg( byval vreg as integer ) as integer Static
 End Function
 
 '':::::
-Sub sregXchg( byval t as integer, byval c as integer, byval r1 as integer ) Static
+private Sub sregXchg( byval this_ as REGCLASS ptr, byval r1 as integer ) Static
     dim i as integer, r2 as integer
 
-	irXchgTOS t, c, r1
+	irXchgTOS r1
 
 	r2 = INVALID
 
-	For i = 0 to sreg.regs-1
-		if( sreg.reg(i) = 0 ) then
+	For i = 0 to this_->regs-1
+		if( this_->regTB(i) = 0 ) then
 			r2 = i
 			exit for
 		end if
 	next i
 
-	swap sreg.reg(r1), sreg.reg(r2)
+	swap this_->regTB(r1), this_->regTB(r2)
 
 End Sub
 
 '':::::
-Function sregEnsure( byval t as integer, byval c as integer, byval vreg as integer ) as integer Static
-	Dim r as integer
-
-	r = sregFindReg( vreg )
-	If( r = INVALID ) Then
-		r = sregAllocate( t, c, vreg )
-		irLoadVR t, c, r, vreg
-	Else
-		If( sreg.reg(r) <> 0 ) Then
-			sregXchg t, c, r
-		End If
-		'''''irSetVR t, c, r, vreg
-	End If
-
-	sregEnsure = r
-
-End Function
-
-'':::::
-Function sregFindFreeReg as integer Static
+private Function sregFindFreeReg( byval this_ as REGCLASS ptr ) as integer Static
 	Dim r as integer
 
     sregFindFreeReg = INVALID
 
-    if( sreg.fregs = 0 ) then
+    if( this_->fregs = 0 ) then
     	exit function
     end if
 
-	For r = 0 to sreg.regs-1
-		if( sreg.reg(r) = INVALID ) then
+	For r = 0 to this_->regs-1
+		if( this_->regTB(r) = INVALID ) then
 			sregFindFreeReg = r
 			exit function
 		end If
@@ -441,16 +371,16 @@ Function sregFindFreeReg as integer Static
 end function
 
 '':::::
-Function sregFindLowestReg as integer Static
+private Function sregFindLowestReg( byval this_ as REGCLASS ptr ) as integer Static
 	Dim r as integer, i as integer, lowest as integer
 
 	i = INVALID
 	lowest = -32768
 
-	For r = 0 to sreg.regs-1
-		if( sreg.reg(r) <> INVALID ) then
-			if( sreg.reg(r) > lowest ) then
-				lowest = sreg.reg(r)
+	For r = 0 to this_->regs-1
+		if( this_->regTB(r) <> INVALID ) then
+			if( this_->regTB(r) > lowest ) then
+				lowest = this_->regTB(r)
 				i = r
 			end if
 		end If
@@ -461,11 +391,11 @@ Function sregFindLowestReg as integer Static
 end function
 
 '':::::
-Function sregFindTOSReg as integer Static
+private Function sregFindTOSReg( byval this_ as REGCLASS ptr ) as integer Static
 	Dim r as integer
 
-	For r = 0 to sreg.regs-1
-		if( sreg.reg(r) = 0 ) then
+	For r = 0 to this_->regs-1
+		if( this_->regTB(r) = 0 ) then
 			sregFindTOSReg = r
 			exit function
 		end If
@@ -476,116 +406,144 @@ Function sregFindTOSReg as integer Static
 end function
 
 '':::::
-Function sregAllocate( byval t as integer, byval c as integer, byval vreg as integer ) as integer Static
+private Function sregAllocate( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer Static
 	Dim r as integer, i as integer
 
-	r = sregFindFreeReg
+	r = sregFindFreeReg( this_ )
 	if( r = INVALID ) Then
 
-	    r = sregFindTOSReg
-	    irStoreVR t, c, sreg.vreg(r), r
+	    r = sregFindTOSReg( this_ )
+	    irStoreVR this_->vregTB(r), r
 
 	else
-		sreg.fregs = sreg.fregs - 1
+		this_->fregs = this_->fregs - 1
 
-		For i = 0 to sreg.regs-1
-			if( sreg.reg(i) <> INVALID ) then
-				sreg.reg(i) = sreg.reg(i) + 1
+		For i = 0 to this_->regs-1
+			if( this_->regTB(i) <> INVALID ) then
+				this_->regTB(i) = this_->regTB(i) + 1
 			end If
 		Next i
 	end If
 
-	sreg.vreg(r) = vreg
-	sreg.reg(r)  = 0
-
-	'print "alc: ";
-	'sregDump
+	this_->vregTB(r) = vreg
+	this_->regTB(r)  = 0
 
 	sregAllocate = r
 
 End Function
 
 '':::::
-sub sregFree( byval t as integer, byval c as integer, byval r as integer ) static
+private function sregAllocateReg( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer ) as integer Static
+
+	'' assuming r will be always 0 (result, TOS)
+    sregAllocateReg = sregAllocate( this_, vreg )
+    exit function
+
+end function
+
+'':::::
+private Function sregEnsure( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer Static
+	Dim r as integer
+
+	r = sregFindReg( this_, vreg )
+	If( r = INVALID ) Then
+		r = sregAllocate( this_, vreg )
+		irLoadVR r, vreg
+	Else
+		If( this_->regTB(r) <> 0 ) Then
+			sregXchg this_, r
+		End If
+		'''''irSetVR r, vreg
+	End If
+
+	sregEnsure = r
+
+End Function
+
+'':::::
+private sub sregFree( byval this_ as REGCLASS ptr, byval r as integer ) static
 	Dim i as integer, realreg as integer
 
-	if( sreg.reg(r) = INVALID ) then
+	if( this_->regTB(r) = INVALID ) then
 		exit sub
 	end if
 
-	realreg 	= sreg.reg(r)
-	sreg.reg(r) = INVALID
+	realreg 	= this_->regTB(r)
+	this_->regTB(r) = INVALID
 
-	For i = 0 to sreg.regs-1
-		if( sreg.reg(i) <> INVALID ) then
-			if( sreg.reg(i) > realreg ) then
-				sreg.reg(i) = sreg.reg(i) - 1
+	For i = 0 to this_->regs-1
+		if( this_->regTB(i) <> INVALID ) then
+			if( this_->regTB(i) > realreg ) then
+				this_->regTB(i) = this_->regTB(i) - 1
 			end if
 		end If
 	Next i
 
-	'print "dlc: ";
-	'sregDump
-
-	sreg.fregs = sreg.fregs + 1
+	this_->fregs = this_->fregs + 1
 
 end sub
 
 '':::::
-function sregIsFree( byval t as integer, byval c as integer, byval r as integer ) as integer static
+private function sregIsFree( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
 
-	sregIsFree = sreg.reg(r) = INVALID
+	sregIsFree = this_->regTB(r) = INVALID
 
 end function
 
 '':::::
-sub sregSetOwner( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer ) static
+private sub sregSetOwner( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer ) static
 
-	sreg.vreg(r) = vreg
+	this_->vregTB(r) = vreg
 
 end sub
 
 '':::::
-function sregGetRealReg( byval r as integer ) as integer static
+private function sregGetRealReg( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
 
-	sregGetRealReg = sreg.reg(r)
-
-end function
-
-'':::::
-function sregGetFirst( byval class as integer ) as integer static
-
-	sregGetFirst = sregFindTOSReg
+	sregGetRealReg = this_->regTB(r)
 
 end function
 
 '':::::
-function sregGetNext( byval class as integer, byval r as integer ) as integer static
+private function sregGetMaxRegs( byval this_ as REGCLASS ptr ) as integer static
 
-	if( r < 0 or r >= sreg.regs ) then
+    sregGetMaxRegs = this_->regs
+
+end function
+
+'':::::
+private function sregGetFirst( byval this_ as REGCLASS ptr ) as integer static
+
+	sregGetFirst = sregFindTOSReg( this_ )
+
+end function
+
+'':::::
+private function sregGetNext( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
+
+	if( r < 0 or r >= this_->regs ) then
 		sregGetNext = INVALID
 	else
-		sregGetNext = sregFindTOSReg
+		sregGetNext = sregFindTOSReg( this_ )
 	end if
 
 end function
 
 '':::::
-function sregGetVreg( byval class as integer, byval r as integer ) as integer static
+private function sregGetVreg( byval this_ as REGCLASS ptr, byval r as integer ) as integer static
 
-	sregGetVreg = sreg.vreg(r)
+	sregGetVreg = this_->vregTB(r)
 
 end function
 
-
 '':::::
-sub sregDump
+private sub sregDump( byval this_ as REGCLASS ptr )
 	dim i as integer, cnt as integer
 
 	cnt = 0
-	For i = 0 to sreg.regs-1
-		if( sreg.reg(i) <> INVALID ) then
-			print i; "="; sreg.reg(i);
+	For i = 0 to this_->regs-1
+		if( this_->regTB(i) <> INVALID ) then
+			print i; "="; this_->regTB(i);
 			cnt = cnt + 1
 		end If
 	Next i
@@ -593,4 +551,30 @@ sub sregDump
 	if( cnt > 0 ) then print
 
 end sub
+
+'':::::
+private sub sregInitClass( byval reg as REGCLASS ptr )
+	dim r as integer
+
+	reg->fregs = reg->regs
+
+	for r = 0 to reg->regs-1
+		reg->regTB(r)	= INVALID
+		reg->vregTB(r) 	= INVALID
+	Next r
+
+	reg->ensure 	= @sregEnsure
+	reg->allocate 	= @sregAllocate
+	reg->allocateReg= @sregAllocateReg
+	reg->free 		= @sregFree
+	reg->isFree 	= @sregIsFree
+	reg->setOwner 	= @sregSetOwner
+	reg->getMaxRegs	= @sregGetMaxRegs
+	reg->getFirst	= @sregGetFirst
+	reg->getNext	= @sregGetNext
+	reg->getVreg	= @sregGetVreg
+	reg->getRealReg	= @sregGetRealReg
+
+end sub
+
 
