@@ -120,6 +120,8 @@ static void gdi_exit(void)
 		free(buffer);
 	if (bitmap_info)
 		free(bitmap_info);
+	if (hdc)
+		ReleaseDC(fb_win32.wnd, hdc);
 	if (fb_win32.wnd)
 		DestroyWindow(fb_win32.wnd);
 }

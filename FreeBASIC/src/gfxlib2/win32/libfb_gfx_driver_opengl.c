@@ -126,6 +126,8 @@ static void opengl_exit(void)
 			fb_wglMakeCurrent(NULL, NULL);
 			fb_wglDeleteContext(hglrc);
 		}
+		if (hdc)
+			ReleaseDC(fb_win32.wnd, hdc);
 		if (fb_win32.fullscreen)
 			ChangeDisplaySettings(NULL, 0);
 		if (fb_win32.wnd)
@@ -185,10 +187,9 @@ static int opengl_window_init(void)
 /*:::::*/
 static void opengl_window_exit(void)
 {
-	if (fb_win32.fullscreen) {
+	if (fb_win32.fullscreen)
 		ChangeDisplaySettings(NULL, 0);
-		ShowWindow(fb_win32.wnd, SW_HIDE);
-	}
+	ShowWindow(fb_win32.wnd, SW_HIDE);
 }
 
 
