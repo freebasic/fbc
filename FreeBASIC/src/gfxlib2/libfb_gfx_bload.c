@@ -121,7 +121,7 @@ static int load_bmp(FILE *f, void *dest)
 	BMP_HEADER header;
 	unsigned char *buffer, *d;
 	int result = FB_RTERROR_OK;
-	int i, j, color, rgb[3], expand, size;
+	int i, j, color, rgb[3], expand, size, palette[256];
 	void (*convert)(unsigned char *, unsigned char *, int);
 	
 	if (!fb_mode)
@@ -134,9 +134,8 @@ static int load_bmp(FILE *f, void *dest)
 	if ((header.biBitCount == 15) || (header.biBitCount == 16))
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	for (i = 0; i < (header.bfOffBits - 54) >> 2; i++) {
-		color = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
+		palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
 		fgetc(f);
-		fb_mode->device_palette[i] = color;
 	}
 	
 	if (dest) {
@@ -169,6 +168,7 @@ static int load_bmp(FILE *f, void *dest)
 	}
 
 	DRIVER_LOCK();
+	fb_hMemCpy(fb_mode->device_palette, palette, 256 * sizeof(int));
 	fb_hRestorePalette();
 	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size);
