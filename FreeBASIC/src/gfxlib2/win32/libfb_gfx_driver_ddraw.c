@@ -34,6 +34,7 @@
 
 
 static int driver_init(char *title, int w, int h, int depth, int flags);
+static void driver_wait_vsync(void);
 
 
 GFXDRIVER fb_gfxDriverDirectDraw =
@@ -44,7 +45,7 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	fb_hWin32Lock,		/* void (*lock)(void); */
 	fb_hWin32Unlock,	/* void (*unlock)(void); */
 	fb_hWin32SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	fb_hWin32WaitVSync,	/* void (*wait_vsync)(void); */
+	driver_wait_vsync,	/* void (*wait_vsync)(void); */
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle	/* void (*set_window_title)(char *title); */
@@ -372,8 +373,6 @@ static void directx_thread(HANDLE running_event)
 		fb_hWin32Unlock();
 
 		Sleep(10);
-		IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
-		SetEvent(fb_win32.vsync_event);
 	}
 
 error:
@@ -390,4 +389,11 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_win32.paint = directx_paint;
 	fb_win32.thread = directx_thread;
 	fb_hWin32Init(title, w, h, depth, flags);
+}
+
+
+/*:::::*/
+static void driver_wait_vsync(void)
+{
+	IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
 }
