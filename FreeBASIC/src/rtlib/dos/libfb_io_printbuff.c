@@ -33,11 +33,19 @@
 
 #define TEXT_ADDR	ScreenPrimary
 
+void (*fb_ConsolePrintBufferProc) (char *buffer, int mask);
+
 /*:::::*/
 void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
-    int col, row;
-    int toprow, botrow;
+	fb_ConsolePrintBufferProc(buffer, mask);
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferConio(char * buffer, int mask)
+{
+	int col, row;
+	int toprow, botrow;
 	int cols, rows;
 	int no_scroll = FALSE;
 	int len;
@@ -71,5 +79,11 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		gotoxy(1, wherey()); /* carriage return */
 	}
 
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferPrintf(char *buffer, int mask)
+{
+	printf(buffer);
 }
 

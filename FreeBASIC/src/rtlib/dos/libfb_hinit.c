@@ -29,13 +29,18 @@
 
 #include <float.h>
 #include <conio.h>
-
+#include <unistd.h>
 
 /* globals */
 int	fb_argc;
 char **	fb_argv;
 
 extern char fb_commandline[];
+
+extern void (*fb_ConsolePrintBufferProc) (char *buffer, int mask);
+extern void fb_ConsolePrintBufferConio(char * buffer, int mask);
+extern void fb_ConsolePrintBufferPrintf(char *buffer, int mask);
+
 
 /*:::::*/
 void fb_hInit ( void )
@@ -54,5 +59,11 @@ void fb_hInit ( void )
 
 	/* turn off blink */
 	intensevideo();
+	
+	/* use cprintf() if STDOUT is the console; 
+	   otherwise (with shell I/O redirection) use printf() */
+	fb_ConsolePrintBufferProc = (isatty(1) ?
+					fb_ConsolePrintBufferConio :
+					fb_ConsolePrintBufferPrintf);
 
 }
