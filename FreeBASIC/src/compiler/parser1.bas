@@ -283,6 +283,8 @@ end function
 
 '':::::
 ''Directive       =   INCLUDE ONCE? ':' '\'' STR_LIT '\''
+''				  |   INCLIB ':' '\'' STR_LIT '\''
+''				  |   LIBPATH ':' '\'' STR_LIT '\''
 ''				  |   DYNAMIC
 ''				  |   STATIC .
 ''
@@ -304,7 +306,7 @@ function cDirective
 		env.optdynamic = FALSE
 		res = TRUE
 
-	case FB.TK.INCLUDE, FB.TK.INCLIB
+	case FB.TK.INCLUDE, FB.TK.INCLIB, FB.TK.LIBPATH
 
 		token = lexCurrentToken
 		lexSkipToken
@@ -349,6 +351,12 @@ function cDirective
 			res = fbIncludeFile( incfile, isonce )
 		case FB.TK.INCLIB
 			if( symbAddLib( incfile ) <> NULL ) then
+				res = TRUE
+			else
+				res = FALSE
+			end if
+		case FB.TK.LIBPATH
+			if( not fbAddLibPath( incfile ) ) then
 				res = TRUE
 			else
 				res = FALSE
