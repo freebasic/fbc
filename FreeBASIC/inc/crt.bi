@@ -7,6 +7,21 @@
 '$inclib: 'crtdll'
 #endif
 
+
+#if     defined(FB_WIN32)
+
+	const CLOCKS_PER_SEC = 1000
+
+#elseif defined(FB_DOS)
+
+	const CLOCKS_PER_SEC = 91
+
+#elseif defined(FB_LINUX)
+
+	const CLOCKS_PER_SEC = 1000 '' not sure if this is right - lillo?
+
+#endif
+
 type tm
 	 tm_sec		 as integer			 ' seconds after the minute - [0,59]
 	 tm_min		 as integer			 ' minutes after the hour - [0,59]
