@@ -1458,7 +1458,8 @@ Insights:
 
 You can use this function to add a double buffer to your graphics. Any SCREEN
 mode supports this function; you must supply valid page numbers otherwise
-SCREENCOPY will have no effect.
+SCREENCOPY will have no effect. If a viewport has been set with the VIEW
+statement, only the viewport area is copied, otherwise the whole page.
 If in OpenGL mode, calling this function will result in a hardware page flip,
 causing the rendered frame to be displayed; in this case the from_page and
 to_page parameters have no meaning and are always not used.
