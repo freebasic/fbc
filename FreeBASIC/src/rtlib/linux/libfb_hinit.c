@@ -170,8 +170,10 @@ void fb_hInit ( void )
 	term = getenv("TERM");
 	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
 		init = INIT_CONSOLE;
-	if ((term) && ((!strncmp(term, "xterm", 5)) || (!strncmp(term, "eterm", 5))))
+	if ((term) && (!strncmp(term, "xterm", 5)))
 		init = INIT_XTERM;
+	if ((term) && (!strncmp(term, "eterm", 5)))
+		init = INIT_ETERM;
 	if (!init)
 		return;
 	
