@@ -120,7 +120,7 @@ static void draw_arc_scanline(int y, int x1, int x2, unsigned int color, int fil
 
 
 /*:::::*/
-static void draw_ellipse(int x, int y, int a, int b, unsigned int color, int fill)
+static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int fill)
 {
 	int d, x1, y1, x2, y2;
 	int dx, dy, aq, bq, r, rx, ry;
@@ -168,8 +168,8 @@ static void draw_ellipse(int x, int y, int a, int b, unsigned int color, int fil
 /*:::::*/
 FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float aspect, float start, float end, int fill, int coord_type)
 {
-	int x, y, y1, y2, a, b, q1, q2;
-	float temp;
+	int x, y, y1, y2, q1, q2;
+	float a, b, temp;
 	
 	if (!fb_mode)
 		return;
@@ -187,12 +187,12 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		aspect = (4.0 / 3.0) * ((float)fb_mode->h / (float)fb_mode->w);
 
 	if (aspect > 1.0) {
-		a = (int)((radius / aspect) + 0.5);
-		b = (int)radius;
+		a = ((radius / aspect) + 0.5);
+		b = radius + 0.5;
 	}
 	else {
-		a = (int)radius;
-		b = (int)((radius * aspect) + 0.5);
+		a = radius + 0.5;
+		b = ((radius * aspect) + 0.5);
 	}
 	if (fb_mode->flags & WINDOW_ACTIVE) {
 		a = fabs((float)a - fb_mode->win_x) * (fb_mode->view_w - 1) / fb_mode->win_w;
@@ -203,8 +203,8 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		return;
 	
 	if ((start != 0.0) || (end != PI * 2.0)) {
-		x_start = ((x + 0.5) + (cos(fabs(start)) * (float)a));
-		y_start = ((y + 0.5) - (sin(fabs(start)) * (float)b));
+		x_start = (int)((float)x + 0.5 + (cos(fabs(start)) * (float)a));
+		y_start = (int)((float)y + 0.5 - (sin(fabs(start)) * (float)b));
 		if (start < 0.0) {
 			start = -start;
 			fb_GfxLine(x, y, x_start, y_start, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
