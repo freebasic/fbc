@@ -217,8 +217,6 @@ declare function	isspace		cdecl alias "isspace"		( byval c as integer ) as integ
 
 declare function	isupper		cdecl alias "isupper"		( byval c as integer ) as integer
 
-' isw*() use wide characters
-
 declare function	isxdigit	cdecl alias "isxdigit"		( byval c as integer ) as integer
 
 declare function	labs		cdecl alias "labs"		( byval n as long ) as long
@@ -272,7 +270,7 @@ declare sub		perror		cdecl alias "perror"		( byval s as string )
 declare function	pow		cdecl alias "pow"		( byval x as double, _
 									  byval y as double ) as double
 
-' printf() is useless without C-style optional arguments
+declare function 	printf cdecl alias "printf" ( byval format as string, ... ) as integer
 
 ' putc() uses a FILE*
 
@@ -296,7 +294,7 @@ declare function	remove		cdecl alias "remove"		( byval path as string ) as integ
 
 ' rename() already declared
 
-' scanf() is useless without C-style optional arguments
+declare function  	scanf cdecl alias "scanf" ( byval format as string, ... ) as integer
 
 ' setbuf() uses a FILE*
 
@@ -312,26 +310,24 @@ declare sub		signal		cdecl alias "signal"		( byval sig as integer, _
 
 declare function	sinh		cdecl alias "sinh"		( byval x as double ) as double
 
-' sprintf() is useless without C-style optional arguments
+declare function 	sprintf cdecl alias "sprintf" ( byval buffer as byte ptr, byval format as string, ... ) as integer
 
 declare function	sqrt		cdecl alias "sqrt"		( byval x as double ) as double
 
 declare sub		srand		cdecl alias "srand"		( byval seed as unsigned integer )
 
-' sscanf() is useless without C-style optional arguments
+declare function 	sscanf cdecl alias "sscanf" ( byval buffer as byte ptr, byval format as string, ... ) as integer
 
-' strcat() is useless in freeBASIC (use string + operator instead)
+' strcat() already declared
 
-declare function	strchr		cdecl alias "strchr"		( byval s as string, _
-									  byval c as integer ) as byte ptr
+' strchr() already declared
 
-declare function	strcmp		cdecl alias "strcmp"		( byval string1 as string, _
-									  byval string2 as string ) as integer
+' strcmp() already declared
 
 declare function	strcoll		cdecl alias "strcoll"		( byval string1 as string, _
 									  byval string2 as string ) as integer
 
-' strcpy() is useless in freeBASIC (use string = operator instead)
+' strcpy() already declared
 
 declare function	strcspn		cdecl alias "strcspn"		( byval s as string, _
 									  byval strCharSet as string ) as integer
@@ -343,27 +339,23 @@ declare function	strftime	cdecl alias "strftime"		( byval strDest as string, _
 									  byval fmt as string, _
 									  byval timeptr as tm ptr ) as integer
 
-declare function	strlen		cdecl alias "strlen"		( byval s as string ) as integer
+' strlen() already declared
 
-' strncat() is useless in freeBASIC (use string + operator instead)
+' strncat() already declared
 
-declare function	strncmp		cdecl alias "strncmp"		( byval string1 as string, _
-									  byval string2 as string, _
-									  byval count as integer ) as integer
+' strncmp() already declared
 
-' strncpy() is useless in freeBASIC (use string = operator instead)
+' strncpy() already declared
 
 declare function	strpbrk		cdecl alias "strpbrk"		( byval s as string, _
 									  byval strCharSet as string ) as byte ptr
 
-declare function	strrchr		cdecl alias "strrchr"		( byval s as string, _
-									  byval c as integer ) as byte ptr
+' strrchr() already declared
 
 declare function	strspn		cdecl alias "strspn"		( byval s as string, _
 									  byval strCharSet as string ) as integer
 
-declare function	strstr		cdecl alias "strstr"		( byval s as string, _
-									  byval strCharSet as string ) as byte ptr
+' strstr() already declared
 
 declare function	strtod		cdecl alias "strtod"		( byval nptr as string, _
 									  byval endptr as integer ptr ) as double
@@ -382,10 +374,6 @@ declare function	strxfrm		cdecl alias "strxfrm"		( byval strDest as string, _
 									  byval strSource as string, _
 									  byval count as integer ) as integer
 
-' swprintf() uses wide characters and is useless without C-style optional parameters
-
-' swscanf() uses wide characters and is useless without C-style optional parameters
-
 ' note: system() is already used for BASIC's 'SYSTEM'; renamed to system_crt
 declare function	system_crt	cdecl alias "system"		( byval cmd as string ) as integer
 
@@ -403,24 +391,6 @@ declare function	tolower		cdecl alias "tolower"		( byval c as integer ) as integ
 
 declare function	toupper		cdecl alias "toupper"		( byval c as integer ) as integer
 
-' towlower() and towupper() use wide characters
-
 ' ungetc() uses a FILE*
-
-' ungetcw() uses a FILE* and wide characters
-
-' vfprintf() uses a FILE*
-
-' vfwprintf() uses a FILE* and wide characters
-
-' vprintf() uses a structure with a string in it
-
-' vsprintf() uses a structure with a string in it
-
-' vswprintf() uses a structure with a wide-character string in it
-
-' vwprintf() uses a structure with a wide-character string in it
-
-' wcs*() wide character strings
 
 #endif ' CRT_BI
