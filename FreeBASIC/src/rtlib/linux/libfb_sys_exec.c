@@ -42,19 +42,20 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
     char	*argv[256];
     int		res;
 
+	char 	*argsdata;
+
+	char	*cmdline, *this_arg;
+   	int		i, argc = 1;
+	pid_t	pid;
+	int		status;
+
+
 	if( (program != NULL) && (program->data != NULL) )
 	{
-		char *argsdata;
-
 		if( (args == NULL) || (args->data == NULL) )
 			argsdata = "\0";
 		else
 			argsdata = args->data;
-
-		char	*cmdline, *this_arg;
-    	int		i, argc = 1;
-		pid_t	pid;
-		int		status;
 
 		/* Build argv list */
 		argv[0] = &buffer[0];
