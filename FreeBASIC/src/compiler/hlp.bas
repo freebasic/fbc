@@ -196,7 +196,7 @@ sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as i
 	else
 		print
 	end if
-	
+
 	if( ( linenum > 0 ) and ( env.clopt.showerror ) ) then
 		print
 		print lexPeekCurrentLine( token_pos )
@@ -406,6 +406,7 @@ function hScapeStr( text as string ) as string static
     dim c as integer, l as byte ptr
     dim s as byte ptr, d as byte ptr
     dim res as string
+    dim octlen as integer
 
 	s = strptr( text )
 	l = len( text )
@@ -413,30 +414,50 @@ function hScapeStr( text as string ) as string static
 	res = space$( l * 2 )
 	d = strptr( res )
 
-	l = l + s
+	l += s
+	octlen = 0
 
 	do while( s < l )
 		c = *s
-		s = s + 1
+		s += 1
 
 		select case c
 		case CHAR_RSLASH, CHAR_QUOTE
 			*d = CHAR_RSLASH
-			d = d + 1
+			d += 1
 
 		case FB.INTSCAPECHAR
 			*d = CHAR_RSLASH
-			d = d + 1
+			d += 1
 			if( s >= l ) then exit do
+
 			c = *s
-			s = s + 1
+			s += 1
+
+			'' octagonal?
+			if( c >= 1 and c <= 3 ) then
+				octlen = c
+				c = *s
+				s += 1
+			end if
+
 		end select
 
 		*d = c
-		d = d + 1
+		d += 1
+
+		'' add quote's when the octagonal escape ends
+		if( octlen > 0 ) then
+			octlen -= 1
+			if( octlen = 0 ) then
+				d[0] = CHAR_QUOTE
+				d[1] = CHAR_QUOTE
+				d += 2
+			end if
+		end if
 	loop
 
-	hScapeStr = left$( res, d - sadd( res ) )
+	hScapeStr = left$( res, d - strptr( res ) )
 
 end function
 

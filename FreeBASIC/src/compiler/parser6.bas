@@ -388,7 +388,7 @@ function cDataStmt
 				end if
 
   				typ = IR.DATATYPE.FIXSTR
-  				littext = ltrim$( str$( astGetValue( expr ) ) )
+  				littext = str$( astGetValue( expr ) )
   				litlen = len( littext )
   				astDel expr
 		    end if
@@ -852,7 +852,6 @@ function cPokeStmt
 		exit function
 	end if
 
-    astUpdNodeResult( expr1 )
     select case astGetDataClass( expr1 )
     case IR.DATACLASS.STRING
     	hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -860,7 +859,7 @@ function cPokeStmt
 	case IR.DATACLASS.FPOINT
     	expr1 = astNewCONV( INVALID, IR.DATATYPE.UINT, expr1 )
 	case else
-        if( astGetDataSize( expr1 ) < FB.POINTERSIZE ) then
+        if( astGetDataSize( expr1 ) <> FB.POINTERSIZE ) then
         	hReportError FB.ERRMSG.INVALIDDATATYPES
         	exit function
         end if
@@ -1522,7 +1521,7 @@ end function
 
 '':::::
 private function cStrCHR( funcexpr as integer ) as integer
-	dim v as integer, s as string
+	dim v as integer, s as string, o as string
 	dim i as integer, cnt as integer, exprtb(0 to 31) as integer
 	dim isconst as integer
 
@@ -1567,7 +1566,9 @@ private function cStrCHR( funcexpr as integer ) as integer
 
 			if( (v < CHAR_SPACE) or (v > 127) ) then
 				s += "\27"
-				s += oct$( v )
+				o = oct$( v )
+				s += chr$( len( o ) )
+				s += o
 			else
 				s += chr$( v )
 			end if
@@ -2024,7 +2025,6 @@ function cPeekFunct( funcexpr as integer )
 	end if
 
     ''
-    astUpdNodeResult( expr )
     select case astGetDataClass( expr )
     case IR.DATACLASS.STRING
     	hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -2032,7 +2032,7 @@ function cPeekFunct( funcexpr as integer )
 	case IR.DATACLASS.FPOINT
 		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
 	case else
-		if( astGetDataSize( expr ) < FB.POINTERSIZE ) then
+		if( astGetDataSize( expr ) <> FB.POINTERSIZE ) then
         	hReportError FB.ERRMSG.INVALIDDATATYPES
         	exit function
 		end if

@@ -51,17 +51,17 @@ type LEXCTX
 
 	'' last #define's text
 	deftext			as string * FB.MAXLITLEN
-	defptr 			as byte ptr
+	defptr 			as ubyte ptr
 	deflen 			as integer
 
 	'' last WITH's text
 	withtext		as string * FB.MAXNAMELEN
-	withptr 		as byte ptr
+	withptr 		as ubyte ptr
 	withlen 		as integer
 
 	'' input buffer
 	bufflen			as integer
-	buffptr			as byte ptr
+	buffptr			as ubyte ptr
 	buff			as string * 8192
 	filepos			as integer
 end type
@@ -779,8 +779,8 @@ private sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar
 				*ps = FB.INTSCAPECHAR
-				ps = ps + 1
-				rlen = rlen + 1
+				ps += 1
+				rlen += 1
 
 				select case lexCurrentChar
 				'' if it's a literal number, convert to octagonal
@@ -789,30 +789,36 @@ private sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 					if( nlen > 3 ) then
 						nval = left$( nval, 3 )
 					end if
+
 					nval = oct$( val( nval ) )
-					pval = sadd( nval )
+					'' save the oct len, or concatenation would fail if number chars follow
+					*ps = strlen( nval )
+					ps += 1
+					rlen += 1
+
+					pval = strptr( nval )
 					do until( *pval = 0 )
 						*ps = *pval
-						pval = pval + 1
-						ps = ps + 1
-						rlen = rlen + 1
+						ps += 1
+						rlen += 1
+						pval += 1
 					loop
-					tlen = tlen + 1
+					tlen += 1
 					continue do
 				end select
 
 			end if
 		end select
 
-		rlen = rlen + 1
+		rlen += 1
 		if( rlen > FB.MAXLITLEN ) then
 			hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
 			exit function
 		end if
 
 		*ps = lexEatChar
-		ps = ps + 1
-		tlen = tlen + 1
+		ps += 1
+		tlen += 1
 	loop
 
 	'' null-term
