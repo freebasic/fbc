@@ -1,6 +1,4 @@
 
-[ ] nameless inner type's on union's
-
 [ ] allow structs to be returned (must follow gcc's abi)
 
 [ ] make the runtime lib thread safe

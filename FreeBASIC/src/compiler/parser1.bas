@@ -698,9 +698,9 @@ function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, lg
 end function
 
 '':::::
-''TypeLine      =   (UNION Comment? SttSeparator
+''TypeLine      =   (UNION|TYPE Comment? SttSeparator
 ''					 (ElementDecl? Comment? SttSeparator)+
-''					END UNION)
+''					END UNION|TYPE)
 ''              |   (ElementDecl? Comment? SttSeparator)+ .
 ''
 function cTypeLine as integer
@@ -722,29 +722,46 @@ function cTypeLine as integer
 			lexSkipToken
 		end if
 
-		if( not hMatch( FB.TK.UNION ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDENDTYPE
-    		exit function
+		if( env.typectx.isunion ) then
+			if( not hMatch( FB.TK.TYPE ) ) then
+    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    			exit function
+			end if
+		else
+			if( not hMatch( FB.TK.UNION ) ) then
+    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    			exit function
+			end if
 		end if
 
-		env.typectx.innercnt = env.typectx.innercnt - 1
+		env.typectx.innercnt -= 1
 
 		if( env.typectx.innercnt = 0 ) then
 			symbRecalcUDTSize env.typectx.symbol
 		end if
 
 	case FB.TK.UNION
-		if( env.typectx.isunion = TRUE ) then
+		if( env.typectx.isunion ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		else
 			lexSkipToken
 		end if
 
-		env.typectx.innercnt = env.typectx.innercnt + 1
+		env.typectx.innercnt += 1
+
+	case FB.TK.TYPE
+		if( not env.typectx.isunion ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		else
+			lexSkipToken
+		end if
+
+		env.typectx.innercnt += 1
 
 	case else
-		env.typectx.elements = env.typectx.elements + 1
+		env.typectx.elements += 1
 
 		if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
 			if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _

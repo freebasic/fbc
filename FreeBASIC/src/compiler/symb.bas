@@ -1128,7 +1128,7 @@ end function
 function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
 						    byval dimensions as integer, dTB() as FBARRAYDIM, _
 						    byval typ as integer, byval subtype as FBSYMBOL ptr, byval lgt as integer, _
-						    byval isinnerunion as integer ) as FBSYMBOL ptr static
+						    byval isinner as integer ) as FBSYMBOL ptr static
     dim i as integer
     dim e as FBSYMBOL ptr, n as FBSYMBOL ptr
     dim align as integer
@@ -1160,14 +1160,14 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
 	e->var.elm.l 		= n
 	e->var.elm.r 		= NULL
     e->var.elm.parent	= t
-	t->udt.tail 	= e
+	t->udt.tail 		= e
 	if( n <> NULL ) then
 		n->var.elm.r 	= e
 	else
-		t->udt.head = e
+		t->udt.head 	= e
 	end if
 
-    t->udt.elements	= t->udt.elements + 1
+    t->udt.elements	+= 1
 
     ''
     e->typ			= typ
@@ -1203,8 +1203,8 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
 	lgt = lgt * e->var.array.elms
 
 	if( not t->udt.isunion ) then
-		if( not isinnerunion ) then
-			t->udt.ofs = t->udt.ofs + lgt
+		if( not isinner ) then
+			t->udt.ofs += lgt
 			t->lgt = t->udt.ofs
 		else
 			if( lgt > t->udt.innerlgt ) then
@@ -1213,9 +1213,14 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
 		end if
 
 	else
-		t->udt.ofs = 0
-		if( lgt > t->lgt ) then
-			t->lgt = lgt
+		if( not isinner ) then
+			t->udt.ofs = 0
+			if( lgt > t->lgt ) then
+				t->lgt = lgt
+			end if
+		else
+			t->udt.ofs += lgt
+			t->udt.innerlgt = t->udt.ofs
 		end if
 	end if
 
@@ -1250,9 +1255,18 @@ sub symbRecalcUDTSize( byval t as FBSYMBOL ptr ) static
 
 	lgt = t->udt.innerlgt
 	if( lgt > 0 ) then
-		t->udt.ofs		= t->udt.ofs + lgt
-		t->lgt 			= t->udt.ofs
-		t->udt.innerlgt 	= 0
+
+		if( not t->udt.isunion ) then
+			t->udt.ofs += lgt
+			t->lgt 		= t->udt.ofs
+		else
+			t->udt.ofs = 0
+			if( lgt > t->lgt ) then
+				t->lgt = lgt
+			end if
+		end if
+
+		t->udt.innerlgt = 0
 	end if
 
 end sub
