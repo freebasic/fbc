@@ -84,7 +84,18 @@ FBCALL int fb_Run ( FBSTRING *program )
 #ifdef WIN32
 	res = _execl( fn_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
 #else
-	res = execlp( fn_hGetShortPath( program->data, buffer, MAX_PATH ), fn_hGetShortPath( program->data, buffer, MAX_PATH ), NULL);
+	char buffer2[MAX_PATH+3];
+
+	fn_hGetShortPath( program->data, buffer, MAX_PATH );
+	res = execlp( buffer, buffer, NULL);
+	/* Ok, an error occured. Probably the file could not be found;
+	 * as a last resort, let's try in current directory.
+	 */
+	if( !strchr( buffer, '/' )) {
+		sprintf( buffer2, "./%s", buffer );
+		execlp( buffer2, buffer2, NULL );
+	}
+	exit( -1 );
 #endif
 
 	/* del if temp */
@@ -107,7 +118,18 @@ FBCALL int fb_Chain ( FBSTRING *program )
 	int status;
 	
 	if ((pid = fork()) == 0) {
-		exit( execlp( fn_hGetShortPath( program->data, buffer, MAX_PATH ), fn_hGetShortPath( program->data, buffer, MAX_PATH ), NULL) );
+		char buffer2[MAX_PATH+3];
+		
+		fn_hGetShortPath( program->data, buffer, MAX_PATH );
+		execlp( buffer, buffer, NULL );
+		/* Ok, an error occured. Probably the file could not be found;
+		 * as a last resort, let's try in current directory.
+		 */
+		if( !strchr( buffer, '/' )) {
+			sprintf( buffer2, "./%s", buffer );
+			execlp( buffer2, buffer2, NULL );
+		}
+		exit( -1 );
 	}
 	else {
 		waitpid(pid, &status, 0);
