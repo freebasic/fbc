@@ -852,6 +852,13 @@ reread:
 
 		'' line continuation?
 		case CHAR_UNDER
+
+			'' alread skipping?
+			if( islinecont ) then
+				lexEatChar
+				continue do
+			end if
+
 			'' check for line cont?
 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 
@@ -893,8 +900,10 @@ reread:
 
 		'' white-space?
 		case CHAR_TAB, CHAR_SPACE
-			if( (flags and LEXCHECK_NOWHITESPC) <> 0 ) then
-				exit do
+			if( not islinecont ) then
+				if( (flags and LEXCHECK_NOWHITESPC) <> 0 ) then
+					exit do
+				end if
 			end if
 
 			lexEatChar
@@ -904,6 +913,8 @@ reread:
 			if( not islinecont ) then
 				exit do
 			end if
+
+			lexEatChar
 		end select
 
 	loop
