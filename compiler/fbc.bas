@@ -603,7 +603,17 @@ function archiveFiles as integer
     '' if no exe file name given, assume "lib" + first source name + ".a"
     '' ( exe filename is actually lib filename for static libs )
     if( len( ctx.outname ) = 0 ) then
-       ctx.outname = hStripFilename( inplist(0) ) + "lib" + hStripPath( hStripExt( inplist(0) ) ) + ".a"
+
+		if( ctx.inps > 0 ) then
+			ctx.outname = hStripFilename( inplist(0) ) + "lib" + hStripPath( hStripExt( inplist(0) ) ) + ".a"
+		else
+			if( ctx.objs > 0 ) then
+				ctx.outname = hStripFilename( objlist(0) ) + "lib" + hStripPath( hStripExt( objlist(0) ) ) + ".a"
+			else
+				ctx.outname = "libnoname.a"
+			end if
+		end if
+
     end if
 
     arcline = "-rsc "
