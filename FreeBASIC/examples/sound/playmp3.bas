@@ -16,14 +16,17 @@ declare function 	getmp3album		( byval stream as integer ) as string
 declare sub 		printmp3tags	( byval stream as integer )
 
 	dim stream as integer
-	dim mp3table() as string, songs as integer, currsong as integer
+	dim mp3table() as string
+	dim songs as integer, currsong as integer
 	dim doexit as integer
+	dim shared streamended as integer
 	
 	''
 	songs = listmp3( command$, mp3table() )
    
 	if( songs = 0 ) then
-		print "No mp3 files found"
+		print "No mp3 files found, usage: playmp3.exe path"
+		sleep
 		end 1
 	end if
    
@@ -61,6 +64,8 @@ declare sub 		printmp3tags	( byval stream as integer )
    		'printmp3tags stream
 
    		''
+   		streamended = 0
+   		
    		FSOUND_Stream_Play( FSOUND_FREE, stream )
    
    		''
@@ -69,6 +74,7 @@ declare sub 		printmp3tags	( byval stream as integer )
         
 		dim key as string		
    		do 
+      		
       		key = inkey$ 
       		if( len( key ) > 0 ) then
       			select case ucase$( key )
@@ -82,7 +88,18 @@ declare sub 		printmp3tags	( byval stream as integer )
       				doexit = -1
       			end select
       			exit do	
+      		
+      		else
+      			
+      			if( FSOUND_Stream_GetPosition( stream ) >= FSOUND_Stream_GetLength( stream ) ) then
+      				currsong = currsong + 1
+      				if( currsong >= songs ) then currsong = 0
+      				exit do	
+      			end if      				
+
       		end if
+      		
+      		sleep 50
    		loop
    
    		FSOUND_Stream_Stop stream
@@ -91,7 +108,7 @@ declare sub 		printmp3tags	( byval stream as integer )
 
 	FSOUND_Close 
 	end
-
+	
 ''::::
 function byteptr2string( byval pbyte as byte ptr, byval lgt as integer ) as string
 	dim text as string, ptext as byte ptr
