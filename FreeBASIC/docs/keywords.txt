@@ -239,6 +239,8 @@
   VIEW (Graphics) Stmt
   WINDOW Statement
   WAIT Statement
+  BLOAD Statement
+  BSAVE Statement
 
 *****************************************************************************
 * New keywords, statements and functions (the minimal possible)             *
@@ -285,11 +287,16 @@
   EXTERN Statement     (to declare external variables: "EXTERN identifier [ALIAS "name"] [AS type]";
                         if the variable/array is found COMMON/REDIM/DIM'ed, it will declared as public)
 
+  FLIP Statement
+
   GETKEY Function
+  GETMOUSE Statement
 
   $INCLIB Directive
 
   LIB
+
+  MULTIKEY Function
 
   PRESERVE
   POKES Function
@@ -304,7 +311,14 @@
   PRIVATE Statement
 
   REALLOCATE Function   (function( byval src as any ptr, byval bytes as integer ) as any ptr)
+  RGB Function
 
+  SCREENCOPY Statement
+  SCREENINFO Function
+  SCREENLOCK Statement
+  SCREENPTR Function
+  SCREENSET Statement
+  SCREENUNLOCK Statement
   SHORT
   STDCALL
   SHL
@@ -319,6 +333,7 @@
   USHORT
   UINTEGER
 
+  WINDOWTITLE Statement
   WITH..END WITH 	(compound statement -- won't work with field dereference "->")
 
 *****************************************************************************
