@@ -34,8 +34,10 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 	int result = FB_RTERROR_OK;
 	
 	f = fopen(filename->data, "wb");
-	if (!f)
+	if (!f) {
+		fb_hStrDelTemp(filename);
 		return FB_RTERROR_FILENOTFOUND;
+	}
 	
 	fb_hPrepareTarget(NULL);
 	
@@ -60,6 +62,8 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 	else if (!fwrite(src, size, 1, f))
 		result = FB_RTERROR_FILEIO;
 	fclose(f);
+	
+	fb_hStrDelTemp(filename);
 	
 	return result;
 }

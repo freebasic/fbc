@@ -36,8 +36,10 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	int result = FB_RTERROR_OK;
 	
 	f = fopen(filename->data, "rb");
-	if (!f)
+	if (!f) {
+		fb_hStrDelTemp(filename);
 		return FB_RTERROR_FILENOTFOUND;
+	}
 	
 	fb_hPrepareTarget(NULL);
 	
@@ -83,6 +85,8 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 		}
 	}
 	fclose(f);
+	
+	fb_hStrDelTemp(filename);
 	
 	return result;
 }
