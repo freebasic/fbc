@@ -82,7 +82,7 @@ void fb_ConsoleClear( int mode )
 #ifndef DISABLE_NCURSES
     fb_ConsoleGetView( &toprow, &botrow );
 
-	if( mode == 1 )
+	if( (mode == 1) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
 	{
 		start_line = toprow - 1;
 		end_line = botrow - 1;
