@@ -25,15 +25,18 @@ CFLAGS := -O3 -I ./
 AFLAGS := -x assembler-with-cpp
 ifneq ($(WINSYSDIR),)
     CFLAGS := $(CFLAGS) -DTARGET_WIN32
+    AFLAGS += -DTARGET_WIN32
     osdeppath := win32
 	libpath = ../../lib/win32
 else
     ifeq ($(OS),DOS)
         CFLAGS := $(CFLAGS) -DTARGET_DOS
+        AFLAGS += -DTARGET_DOS
         osdeppath := dos
         libpath = ../../lib/dos
     else
         CFLAGS := $(CFLAGS) -DTARGET_LINUX
+        AFLAGS += -DTARGET_LINUX
         ifdef COMPILER
             CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
         endif
