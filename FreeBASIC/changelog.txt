@@ -65,6 +65,7 @@ Version 0.12 Beta:
 [fixed] only empty ()'s should be allowed with COMMON (v1c)
 [fixed] all quirk routines now check for invalid parameters (v1c)
 [fixed] REDIM now checks for run-time errors (out-of-mem) (v1c)
+[fixed] INPUT quirks: comma separates all items, white-spaces won't separate strings, etc (v1c)
 
 
 Version 0.11 Beta:
