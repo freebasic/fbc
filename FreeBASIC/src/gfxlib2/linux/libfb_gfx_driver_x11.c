@@ -77,7 +77,6 @@ static XShmSegmentInfo shm_info;
 static GC gc;
 static char *window_title;
 static BLITTER *blitter;
-static int dest_pitch;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
 static int is_running, is_shm, num_modes;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
@@ -159,7 +158,6 @@ static int private_init(void)
 		}
 	}
 	XFree(format);
-	dest_pitch = mode_w * BYTES_PER_PIXEL(depth);
 	if ((depth >= 24) && (visual->red_mask == 0xFF))
 		is_rgb = TRUE;
 	else if ((depth >= 15) && (visual->red_mask == 0x1F))
@@ -175,9 +173,10 @@ static int private_init(void)
 	attribs.event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
 			     PointerMotionMask | FocusChangeMask | EnterWindowMask | LeaveWindowMask | ExposureMask;
 	attribs.override_redirect = (mode_fullscreen ? True : False);
+	attribs.backing_store = NotUseful;
 	window = XCreateWindow(display, XDefaultRootWindow(display), x, y, mode_w, mode_h, 0,
-			       CopyFromParent, InputOutput, visual,
-			       CWBackPixel | CWBorderPixel | CWEventMask | CWOverrideRedirect, &attribs);
+			       XDefaultDepth(display, screen), InputOutput, visual,
+			       CWBackPixel | CWBorderPixel | CWEventMask | CWOverrideRedirect | CWBackingStore, &attribs);
 	if (!window)
 		return -1;
 	XStoreName(display, window, window_title);
@@ -233,7 +232,8 @@ static int private_init(void)
 		}
 		
 		is_shm = TRUE;
-		image = XShmCreateImage(display, visual, depth, ZPixmap, 0, &shm_info, mode_w, mode_h);
+		image = XShmCreateImage(display, visual, XDefaultDepth(display, screen),
+					ZPixmap, 0, &shm_info, mode_w, mode_h);
 		if (image) {
 			shm_info.shmid = shmget(IPC_PRIVATE, image->bytes_per_line * image->height, IPC_CREAT | 0777);
 			shm_info.shmaddr = image->data = shmat(shm_info.shmid, 0, 0);
@@ -250,7 +250,13 @@ static int private_init(void)
 		return -1;
 	if (!image) {
 		is_shm = FALSE;
-		image = XCreateImage(display, visual, depth, ZPixmap, 0, NULL, mode_w, mode_h, 32, 0);
+		image = XCreateImage(display, visual, XDefaultDepth(display, screen),
+				     ZPixmap, 0, NULL, mode_w, mode_h, 32, 0);
+		image->data = malloc(image->bytes_per_line * image->height);
+		if (!image->data) {
+			XDestroyImage(image);
+			image = NULL;
+		}
 	}
 	if (!image)
 		return -1;
@@ -298,6 +304,8 @@ static void private_exit(void)
 				shmdt(shm_info.shmaddr);
 				shmctl(shm_info.shmid, IPC_RMID, 0);
 			}
+			else
+				free(image->data);
 			XDestroyImage(image);
 		}
 		if (color_map != None)
@@ -330,7 +338,7 @@ static void *window_thread(void *arg)
 	{
 		x11_lock();
 		
-		blitter(image->data, dest_pitch);
+		blitter(image->data, image->bytes_per_line);
 		for (i = 0; i < mode_h; i++) {
 			if (fb_mode->dirty[i]) {
 				for (y = i, h = 0; (fb_mode->dirty[i]) && (i < mode_h); h++, i++)
@@ -394,8 +402,6 @@ static void *window_thread(void *arg)
 					break;
 				
 				case KeyPress:
-					if (XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1)
-						fb_hPostKey(key);
 					fb_mode->key[keycode_to_scancode[event.xkey.keycode]] = TRUE;
 					if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38])) {
 						private_exit();
@@ -407,6 +413,8 @@ static void *window_thread(void *arg)
 						}
 						fb_hRestorePalette();
 					}
+					else if (XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1)
+						fb_hPostKey(key);
 					break;
 				
 				case KeyRelease:
