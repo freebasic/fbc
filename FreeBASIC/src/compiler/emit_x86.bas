@@ -1617,38 +1617,42 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
 
 	''!!!FIXME!!! assuming res = dst !!!FIXME!!!
 	if( (env.clopt.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) and (dtype = IR.VREGTYPE.REG) ) then
-		reg = emitLookupReg( rname, ddtype )
-		rname8 = emitGetRegName( IR.DATATYPE.BYTE, IR.DATACLASS.INTEGER, reg )
-
-		'' handle EDI and ESI
-		if( right$( rname8, 1 ) <> "l" ) then
-
-   			select case dtypeTB(ddtype).size
-   			case 4
-   				edx = "edx"
-   			case 2
-   				edx = "dx"
-   			end select
-
-			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
-			if( not isedxfree ) then
-				outp "xchg " + edx + COMMA + rname
-			end if
-
-			outp "set" + mnemonic + TABCHAR + "dl"
-
-			if( not isedxfree ) then
-				outp "xchg " + edx + COMMA + rname
-			else
-				emithMOV rname, edx
-			end if
+		if( env.clopt.cputype >= FB.CPUTYPE.686 ) then
+			outp "mov" + TABCHAR + rname + ", 0"
+			outp "cmov" + mnemonic + TABCHAR + rname + ", [fb_minus_1]"
 		else
-			outp "set" + mnemonic + TABCHAR + rname8
+			reg = emitLookupReg( rname, ddtype )
+			rname8 = emitGetRegName( IR.DATATYPE.BYTE, IR.DATACLASS.INTEGER, reg )
+
+			'' handle EDI and ESI
+			if( right$( rname8, 1 ) <> "l" ) then
+
+	   			select case dtypeTB(ddtype).size
+   				case 4
+	   				edx = "edx"
+   				case 2
+   					edx = "dx"
+	   			end select
+
+				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+				if( not isedxfree ) then
+					outp "xchg " + edx + COMMA + rname
+				end if
+
+				outp "set" + mnemonic + TABCHAR + "dl"
+
+				if( not isedxfree ) then
+					outp "xchg " + edx + COMMA + rname
+				else
+					emithMOV rname, edx
+				end if
+			else
+				outp "set" + mnemonic + TABCHAR + rname8
+			end if
+
+			outp "shr " + rname + ", 1"
+			outp "sbb " + rname + COMMA + rname
 		end if
-
-		outp "shr " + rname + ", 1"
-		outp "sbb " + rname + COMMA + rname
-
 	else
 		if( len( rname ) > 0 ) then
 			outp "mov " + rname + ", -1"
@@ -2296,6 +2300,12 @@ sub hSaveAsmHeader( )
 	case FB.CPUTYPE.686
 		hWriteStr ctx.outf, TRUE,  ".arch i686"
 	end select
+
+	if( env.clopt.cputype >= FB.CPUTYPE.686 ) then
+		hWriteStr ctx.outf, FALSE, ".section .data"
+		hWriteStr ctx.outf, TRUE, ".balign 16" + NEWLINE
+		hWriteStr ctx.outf, FALSE, "fb_minus_1:" + TABCHAR + ".int" + TABCHAR + "-1"
+	end if
 
     hWriteStr ctx.outf, FALSE, ""
     hWriteStr ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"

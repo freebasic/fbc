@@ -29,7 +29,7 @@ ifeq ($(OS),DOS)
     PLATFORM = DOS
 endif
 
-BCFLAGS := -e -c -w 1 -arch 386
+BCFLAGS := -e -c -w 1 -arch 686
 
 ifeq ($(PLATFORM),WIN32)
     EXE := .exe

@@ -1036,7 +1036,7 @@ end function
 '':::::
 '' ConsoleReadXY   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
-function cConsoleReadXY as integer
+function cConsoleReadXY( funcexpr as integer ) as integer
     dim yexpr as integer, xexpr as integer, fexpr as integer
 
 	cConsoleReadXY = FALSE
@@ -1074,7 +1074,7 @@ function cConsoleReadXY as integer
 		exit function
 	end if
 	
-	rtlConsoleReadXY yexpr, xexpr, fexpr
+	funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
 
 	cConsoleReadXY = TRUE
 
@@ -1088,7 +1088,7 @@ function cGfxFunct ( funcexpr as integer ) as integer
 	select case as const lexCurrentToken
 	case FB.TK.SCREEN
 		lexSkipToken
-		cGfxFunct = cConsoleReadXY
+		cGfxFunct = cConsoleReadXY( funcexpr )
 	
 	end select
 

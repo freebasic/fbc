@@ -2605,9 +2605,8 @@ sub rtlConsoleView ( byval topexpr as integer, byval botexpr as integer )
 end sub
 
 '':::::
-sub rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as integer, byval colorflagexpr as integer )
+function rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as integer, byval colorflagexpr as integer )
 	dim proc as integer, f as FBSYMBOL ptr
-	dim vr as integer
 
 	''
 	f = ifuncTB(FB.RTL.CONSOLEREADXY)
@@ -2624,10 +2623,10 @@ sub rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as integer, by
 		colorflagexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
 	end if
 	astNewPARAM( proc, colorflagexpr, INVALID)
-	
-	astFlush proc, vr
- 
-end sub
+
+	rtlConsoleReadXY = proc
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' error

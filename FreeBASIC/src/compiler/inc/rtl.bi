@@ -236,7 +236,7 @@ declare sub 		rtlErrorSetNum		( byval errexpr as integer )
 declare sub 		rtlErrorResume		( byval isnext as integer )
 
 declare sub 		rtlConsoleView		( byval topexpr as integer, byval botexpr as integer )
-declare sub			rtlConsoleReadXY	( byval row as integer, byval column as integer, byval colorflag as integer )
+declare function	rtlConsoleReadXY	( byval row as integer, byval column as integer, byval colorflag as integer ) as integer
 
 declare sub 		rtlGfxPset			( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, byval coordtype as integer )
 declare sub 		rtlGfxLine			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
