@@ -27,7 +27,7 @@
 #include "fb_gfx.h"
 
 
-static int index = 0, shift = 2, color = 0;
+static int idx = 0, shift = 2, color = 0;
 
 
 /*:::::*/
@@ -41,12 +41,12 @@ FBCALL int fb_GfxPaletteInp(int port)
 	switch (port) {
 
 		case 0x3C9:
-			value = (fb_mode->palette[index] >> shift) & 0x3F;
+			value = (fb_mode->palette[idx] >> shift) & 0x3F;
 			shift += 8;
 			if (shift > 18) {
 				shift = 2;
-				index++;
-				index &= (fb_mode->default_palette->colors - 1);
+				idx++;
+				idx &= (fb_mode->default_palette->colors - 1);
 			}
 			break;
 	}
@@ -69,7 +69,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 
 		case 0x3C7:
 		case 0x3C8:
-			index = value;
+			idx = value;
 			shift = 2;
 			color = 0;
 			break;
@@ -97,8 +97,8 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 				}
 				shift = 2;
 				color = 0;
-				index++;
-				index &= (fb_mode->default_palette->colors - 1);
+				idx++;
+				idx &= (fb_mode->default_palette->colors - 1);
 			}
 			break;
 	}
