@@ -114,7 +114,7 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float aspect, float start, float end, int fill, int coord_type)
 {
 	int x, y, x1, y1, x2, y2;
-	float a, b, x_start, y_start, x_end, y_end, increment;
+	float a, b, x_start, y_start, x_end, y_end, points, increment;
 	
 	if (!fb_mode)
 		return;
@@ -144,7 +144,9 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		b = fabs((float)b - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
 	}
 	
-	if ((start != 0.0) || (end != PI * 2.0)) {
+	fb_mode->driver->lock();
+	
+	if ((start != 0.0) || (end != 3.141593f * 2.0)) {
 		
 		a -= 0.5;
 		b -= 0.5;
@@ -169,29 +171,29 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		while (end - start > 2 * PI)
 			start += 2 * PI;
 		
-		/* This formula devides a full circle of radius 100 into 120 segments */
-		increment = (end - start) / (radius * (((end - start) * 2) / PI) * 1.2);
+		increment = 1 / (sqrt(a) * sqrt(b));
 		
-		get_arc_point(start, a, b, &x1, &y1);
-		for (; start < end - 0.0001; start += increment) {
-			get_arc_point(start + increment, a, b, &x2, &y2);
-			fb_GfxLine(x + x1, y - y1, x + x2, y - y2, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
-			x1 = x2;
-			y1 = y2;
+		for (; start < end + (increment / 2); start += increment) {
+			get_arc_point(start, a, b, &x1, &y1);
+			x1 = x + x1;
+			y1 = y - y1;
+			if ((x1 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w) ||
+			    (y1 < fb_mode->view_y) || (y1 >= fb_mode->view_y + fb_mode->view_h))
+				continue;
+			fb_hPutPixel(x1, y1, color);
 		}
 	}
-	else {
-		fb_mode->driver->lock();
+	else
 		draw_ellipse(x, y, a, b, color, fill);
 		
-		y1 = MID(0, y - b, fb_mode->view_h - 1);
-		y2 = MID(0, y + b, fb_mode->view_h - 1);
-		if( y1 > y2 )
-			SWAP( y1, y2 );
-		fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
-		
-		fb_mode->driver->unlock();
-	}
+	y1 = MID(0, y - b, fb_mode->view_h - 1);
+	y2 = MID(0, y + b, fb_mode->view_h - 1);
+	if( y1 > y2 )
+		SWAP( y1, y2 );
+	fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
+	
+	fb_mode->driver->unlock();
+	
 	fb_mode->last_x = fx;
 	fb_mode->last_y = fy;
 }

@@ -51,7 +51,7 @@ static SPAN *add_span(SPAN **span, int *x, int y, int border_color)
 		if ((x1 == s->x1) && (x2 == s->x2))
 			return NULL;
 	}
-	s = (SPAN *)fb_hMemAlloc(sizeof(SPAN));
+	s = (SPAN *)malloc(sizeof(SPAN));
 	s->x1 = x1;
 	s->x2 = x2;
 	s->y = y;
@@ -99,9 +99,9 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 		fb_hMemCpy(data, pattern->data, MIN(256, FB_STRSIZE(pattern)));
 	
 	size = sizeof(SPAN *) * fb_mode->h;
-	fb_hMemInit(size << 3);
-	span = (SPAN **)fb_hMemAlloc(size);
+	span = (SPAN **)malloc(size);
 	fb_hMemSet(span, 0, size);
+	
 	tail = head = add_span(span, &x, y, border_color);
 	
 	/* Find all spans to paint */
@@ -135,7 +135,7 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 	
 	/* Fill spans */
 	for (y = 0; y < fb_mode->h; y++) {
-		for (s = span[y]; s; s = s->row_next) {
+		for (s = tail = span[y]; s; s = s->row_next, free(tail), tail = s) {
 			
 			dest = fb_mode->line[s->y] + (s->x1 * fb_mode->bpp);
 			
@@ -163,6 +163,7 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 			fb_mode->dirty[y] = TRUE;
 		}
 	}
+	free(span);
 	
 	fb_mode->driver->unlock();
 }

@@ -42,7 +42,7 @@
 #ifdef PI
 #undef PI
 #endif
-#define PI			3.141593f
+#define PI			3.1415926535897932384626
 #ifdef MIN
 #undef MIN
 #endif
@@ -134,9 +134,6 @@ typedef struct MODE
 	int view_x, view_y, view_w, view_h;		/* VIEW coordinates */
 	float win_x, win_y, win_w, win_h;		/* WINDOW coordinates */
 	int text_w, text_h;				/* Graphical text console size in characters */
-	void *scratch_mem;				/* Scratch memory */
-	int scratch_mem_ptr;				/* Current free pointer in scratch memory block */
-	int scratch_mem_size;				/* Size of scratch memory block */
 	char *key;					/* Keyboard states */
 	int flags;					/* Status flags */
 } MODE;
@@ -184,8 +181,6 @@ extern GFXDRIVER fb_gfxDriverDirectDraw;
 
 /* Internal functions */
 extern void fb_hSetupFuncs(void);
-extern void fb_hMemInit(int size);
-extern void *fb_hMemAlloc(int size);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern unsigned int fb_hMakeColor(int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);

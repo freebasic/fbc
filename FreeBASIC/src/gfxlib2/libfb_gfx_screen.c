@@ -123,8 +123,6 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			free(fb_mode->palette);
 		if (fb_mode->dirty)
 			free(fb_mode->dirty);
-		if (fb_mode->scratch_mem)
-			free(fb_mode->scratch_mem);
 		free(fb_mode);
 	}
 	

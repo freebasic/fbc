@@ -82,11 +82,8 @@
 #define WIN_H			116
 #define TEXT_W			120
 #define TEXT_H			124
-#define SCRATCH_MEM		128
-#define SCRATCH_MEM_PTR		132
-#define SCRATCH_MEM_SIZE	136
-#define KEY			140
-#define FLAGS			144
+#define KEY			128
+#define FLAGS			132
 
 
 #endif
