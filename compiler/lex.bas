@@ -538,6 +538,7 @@ sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval ch
 	dim c as integer, linecontinuation as integer
 	dim isnumber as integer
 	dim d as integer
+	dim token as string
 
 reread:
 	t.text = ""
@@ -634,10 +635,11 @@ readnumber:
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 readid:
 		t.text 		= lexReadIdentifier( t.tlen, t.typ )
+		token 		= left$( t.text, t.tlen )
 
 		if( checkDefine ) then
 			'' is it a define?
-			d = symbLookupDefine( left$( t.text, t.tlen ) )
+			d = symbLookupDefine( token )
 			if( d <> INVALID ) then
 				lexUnreadChar
 				ctx.deftext = symbGetDefineText( d )
@@ -647,7 +649,7 @@ readid:
         	end if
         end if
 
-       	t.id 		= symbLookupKeyword( left$( t.text, t.tlen ), t.class, t.typ )
+       	t.id 		= symbLookupKeyword( token, t.class, t.typ )
 
 	'':::::
 	case CHAR_QUOTE

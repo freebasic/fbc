@@ -40,7 +40,9 @@ declare function cPPParentExpr				( parexpr as integer, atom as string ) as inte
 
 '':::::
 function hLiteral as string
-    dim text as string
+    dim text as string, quote as string
+
+    quote = chr$( CHAR_QUOTE )
 
     text = ""
     do
@@ -49,7 +51,12 @@ function hLiteral as string
 			exit do
 		end select
 
-    	text = text + lexEatToken
+    	'' preserve quotes if it's a string literal
+    	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
+    		text = text + quote + lexEatToken + quote
+    	else
+    		text = text + lexEatToken
+    	end if
     loop
 
 	hLiteral = text

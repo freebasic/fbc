@@ -1968,7 +1968,7 @@ end function
 '':::::
 function symbLookupDefine( id as string ) as integer static
 
-    symbLookupDefine = hashLookup( id, defhashTB(), FB.INITDEFINENODES )
+    symbLookupDefine = hashLookup( ucase$( id ), defhashTB(), FB.INITDEFINENODES )
 
 end function
 

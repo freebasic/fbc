@@ -112,7 +112,7 @@ FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 
 	p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
 
-	len = (int)(p - src->data);
+	len = (int)(p - src->data) + 1;
 	if( len > 0 )
 	{
 		p = fb_hStrSkipChar( src->data, FB_STRSIZE( src ), 32 );
