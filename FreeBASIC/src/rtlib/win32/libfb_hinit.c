@@ -33,11 +33,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 CRITICAL_SECTION fb_global_mutex;
-
 #endif
-
-FB_ERRORCTX fb_errctx = { 0 };
-FB_INPCTX fb_inpctx = { 0 };
 
 
 /*:::::*/
@@ -62,6 +58,14 @@ void fb_hInit ( void )
 	fb_inpctx.s.data    = TlsAlloc();
 	fb_inpctx.s.len     = TlsAlloc();
 	fb_inpctx.s.size    = TlsAlloc();
+	
+	/* allocate thread local storage vars for print using context */
+	fb_printusgctx.chars       = TlsAlloc();
+	fb_printusgctx.ptr         = TlsAlloc();
+	fb_printusgctx.fmtstr.data = TlsAlloc();
+	fb_printusgctx.fmtstr.len  = TlsAlloc();
+	fb_printusgctx.fmtstr.size = TlsAlloc();
+
 #endif
 
 }

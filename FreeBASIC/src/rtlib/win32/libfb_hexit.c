@@ -45,6 +45,12 @@ void fb_hEnd ( int errlevel )
 	TlsFree( fb_inpctx.s.data );
 	TlsFree( fb_inpctx.s.len );
 	TlsFree( fb_inpctx.s.size );
+
+	TlsFree( fb_printusgctx.chars );
+	TlsFree( fb_printusgctx.ptr );
+	TlsFree( fb_printusgctx.fmtstr.data );
+	TlsFree( fb_printusgctx.fmtstr.len );
+	TlsFree( fb_printusgctx.fmtstr.size );
 #endif
 
 }

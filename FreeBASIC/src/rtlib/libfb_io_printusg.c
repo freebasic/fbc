@@ -31,28 +31,25 @@
 
 #define BUFFERLEN 2048
 
-typedef struct _FB_PRINTUSGCTX {
-	FBSTRING	fmtstr;
-	int			chars;
-	char		*ptr;
-} FB_PRINTUSGCTX;
-
-
 static int fb_PrintUsingFmtStr( int fnum );
-
-
-/* FIXME: not thread safe */
-static FB_PRINTUSGCTX ctx = { 0 };
 
 
 /*:::::*/
 FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 {
+	FBSTRING s;
+	
+	s.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
+	s.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
+	s.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
+	fb_StrAssign( (void *)&s, -1, fmtstr, -1, 0 );
 
-	fb_StrAssign( (void *)&ctx.fmtstr, -1, fmtstr, -1, 0 );
+	FB_TLSSET( fb_printusgctx.fmtstr.data, s.data );
+	FB_TLSSET( fb_printusgctx.fmtstr.len, s.len );
+	FB_TLSSET( fb_printusgctx.fmtstr.size, s.size );
 
-	ctx.ptr		= ctx.fmtstr.data;
-	ctx.chars	= FB_STRSIZE( &ctx.fmtstr );
+	FB_TLSSET( fb_printusgctx.ptr, s.data );
+	FB_TLSSET( fb_printusgctx.chars, FB_STRSIZE( &s ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -60,13 +57,20 @@ FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 /*:::::*/
 FBCALL int fb_PrintUsingEnd( int fnum )
 {
-
+	FBSTRING s;
+	
 	fb_PrintUsingFmtStr( fnum );
 
-	fb_StrDelete( &ctx.fmtstr );
+	s.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
+	s.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
+	s.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
+	fb_StrDelete( &s );
+	FB_TLSSET( fb_printusgctx.fmtstr.data, s.data );
+	FB_TLSSET( fb_printusgctx.fmtstr.len, s.len );
+	FB_TLSSET( fb_printusgctx.fmtstr.size, s.size );
 
-	ctx.ptr		= NULL;
-	ctx.chars	= 0;
+	FB_TLSSET( fb_printusgctx.ptr, 0 );
+	FB_TLSSET( fb_printusgctx.chars, 0 );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -74,17 +78,18 @@ FBCALL int fb_PrintUsingEnd( int fnum )
 /*:::::*/
 static int fb_PrintUsingFmtStr( int fnum )
 {
-	char 	buffer[BUFFERLEN+1];
+	char 	buffer[BUFFERLEN+1], *ptr;
 	int 	c, len;
 	int 	doexit;
 
 	len = 0;
-	if( ctx.ptr == NULL )
-		ctx.chars = 0;
+	if( FB_TLSGET( fb_printusgctx.ptr ) == 0 )
+		FB_TLSSET( fb_printusgctx.chars, 0 );
 
-	while( (ctx.chars > 0) && (len < BUFFERLEN) )
+	while( ((int)FB_TLSGET( fb_printusgctx.chars ) > 0) && (len < BUFFERLEN) )
 	{
-		c = *ctx.ptr;
+		ptr = (char *)FB_TLSGET( fb_printusgctx.ptr );
+		c = *ptr;
 
 		doexit = 0;
 		switch( c )
@@ -102,9 +107,10 @@ static int fb_PrintUsingFmtStr( int fnum )
 			break;
 
 		case '_':
-			c = *(ctx.ptr+1);
-			++ctx.ptr;
-			--ctx.chars;
+			c = *(ptr+1);
+			++ptr;
+			FB_TLSSET( fb_printusgctx.ptr, ptr );
+			FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 		}
 
 		if( doexit )
@@ -112,8 +118,8 @@ static int fb_PrintUsingFmtStr( int fnum )
 
 		buffer[len++] = (char)c;
 
-		++ctx.ptr;
-		--ctx.chars;
+		FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
+		FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 	}
 
     /* flush */
@@ -130,15 +136,16 @@ static int fb_PrintUsingFmtStr( int fnum )
 /*:::::*/
 FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 {
-	char 	buffer[BUFFERLEN+1];
+	FBSTRING aux;
+	char 	buffer[BUFFERLEN+1], *ptr;
 	int 	c, nc, lc;
 	int 	strchars, doexit, i;
 
     /* restart if needed */
-	if( ctx.chars == 0 )
+	if( FB_TLSGET( fb_printusgctx.chars ) == 0 )
 	{
-		ctx.ptr	  = ctx.fmtstr.data;
-		ctx.chars = FB_STRSIZE( &ctx.fmtstr );
+		FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.fmtstr.data ) );
+		FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.fmtstr.len ) & ~FB_TEMPSTRBIT );
 	}
 
 	/* any text first */
@@ -147,15 +154,16 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 
 	strchars = -1;
 
-	if( ctx.ptr == NULL )
-		ctx.chars = 0;
+	if( FB_TLSGET( fb_printusgctx.ptr ) == 0 )
+		FB_TLSSET( fb_printusgctx.chars, 0 );
 
-	while( ctx.chars > 0 )
+	while( (int)FB_TLSGET( fb_printusgctx.chars ) > 0 )
     {
-		c = *ctx.ptr;
+    	ptr = (char *)FB_TLSGET( fb_printusgctx.ptr );
+		c = *ptr;
 
-		if( ctx.chars > 1 )
-			nc = *(ctx.ptr+1);
+		if( (int)FB_TLSGET( fb_printusgctx.chars ) > 1 )
+			nc = *(ptr+1);
 		else
 			nc = -1;
 
@@ -167,15 +175,15 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 			buffer[1] = '\0';
 			fb_PrintFixString( fnum, buffer, 0 );
 
-			++ctx.ptr;
-			--ctx.chars;
+			FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
+			FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 			break;
 
 		case '&':
 			fb_PrintFixString( fnum, s->data, 0 );
 
-			++ctx.ptr;
-			--ctx.chars;
+			FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
+			FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 			break;
 
 		case '\\':
@@ -202,8 +210,8 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 						fb_PrintFixString( fnum, buffer, 0 );
 					}
 
-					++ctx.ptr;
-					--ctx.chars;
+					FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
+					FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 				}
 				else
 				{
@@ -225,8 +233,8 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		if( doexit )
 			break;
 
-		++ctx.ptr;
-		--ctx.chars;
+		FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
+		FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 
 		lc = c;
 	}
@@ -240,7 +248,13 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		if( mask & FB_PRINT_NEWLINE )
 			fb_PrintVoid( fnum, FB_PRINT_NEWLINE );
 
-		fb_StrDelete( &ctx.fmtstr );
+		aux.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
+		aux.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
+		aux.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
+		fb_StrDelete( &aux );
+		FB_TLSSET( fb_printusgctx.fmtstr.data, aux.data );
+		FB_TLSSET( fb_printusgctx.fmtstr.len, aux.len );
+		FB_TLSSET( fb_printusgctx.fmtstr.size, aux.size );
 	}
 
 	/* del if temp */
@@ -253,17 +267,18 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 /*:::::*/
 FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 {
-	char 	buffer[BUFFERLEN+1], *p;
+	FBSTRING s;
+	char 	buffer[BUFFERLEN+1], *p, *ptr;
 	int 	c, nc, lc, d, i, j, len, intlgt;
 	int 	doexit, padchar, intdigs, decdigs, totdigs;
 	int		adddolar, addcomma, endcomma, signatend, isexp, isneg;
 
 
     /* restart if needed */
-	if( ctx.chars == 0 )
+	if( FB_TLSGET( fb_printusgctx.chars ) == 0 )
 	{
-		ctx.ptr	  = ctx.fmtstr.data;
-		ctx.chars = FB_STRSIZE( &ctx.fmtstr );
+		FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.fmtstr.data ) );
+		FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.fmtstr.len ) & ~FB_TEMPSTRBIT );
 	}
 
 	/* any text first */
@@ -281,16 +296,17 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	lc = -1;
 
-	if( ctx.ptr == NULL )
-		ctx.chars = 0;
+	if( FB_TLSGET( fb_printusgctx.ptr ) == 0 )
+		FB_TLSSET( fb_printusgctx.chars, 0 );
 
-	while( ctx.chars > 0 )
+	while( (int)FB_TLSGET( fb_printusgctx.chars ) > 0 )
 	{
+	
+		ptr = (char *)FB_TLSGET( fb_printusgctx.ptr );
+		c = *ptr;
 
-		c = *ctx.ptr;
-
-		if( ctx.chars > 1 )
-			nc = *(ctx.ptr+1);
+		if( (int)FB_TLSGET( fb_printusgctx.chars ) > 1 )
+			nc = *(ptr+1);
 		else
 			nc = -1;
 
@@ -351,8 +367,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		if( doexit )
 			break;
 
-		++ctx.ptr;
-		--ctx.chars;
+		FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
+		FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
 
 		lc = c;
 	}
@@ -516,7 +532,13 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		if( mask & FB_PRINT_NEWLINE )
 			fb_PrintVoid( fnum, FB_PRINT_NEWLINE );
 
-		fb_StrDelete( &ctx.fmtstr );
+		s.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
+		s.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
+		s.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
+		fb_StrDelete( &s );
+		FB_TLSSET( fb_printusgctx.fmtstr.data, s.data );
+		FB_TLSSET( fb_printusgctx.fmtstr.len, s.len );
+		FB_TLSSET( fb_printusgctx.fmtstr.size, s.size );
 	}
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );

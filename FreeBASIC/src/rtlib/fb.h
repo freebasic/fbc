@@ -57,16 +57,16 @@ extern CRITICAL_SECTION fb_global_mutex;
 #  define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
 #  define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
 #  define FB_TLSENTRY				DWORD
-#  define FB_TLSSET(key,value)		TlsSetValue(key, (LPVOID)value)
-#  define FB_TLSGET(key)			TlsGetValue(key)
+#  define FB_TLSSET(key,value)		TlsSetValue((key), (LPVOID)(value))
+#  define FB_TLSGET(key)			TlsGetValue((key))
 # elif defined(TARGET_LINUX)
 #  include <pthread.h>
 extern pthread_mutex_t fb_global_mutex;
 #  define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
 #  define FB_UNLOCK()				pthread_mutex_unlock(&fb_global_mutex)
 #  define FB_TLSENTRY				pthread_key_t
-#  define FB_TLSSET(key,value)		pthread_setspecific(key, (const void *)value)
-#  define FB_TLSGET(key)			pthread_getspecific(key)
+#  define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
+#  define FB_TLSGET(key)			pthread_getspecific((key))
 # else
 #  define FB_LOCK()
 #  define FB_UNLOCK()
@@ -305,6 +305,17 @@ FBCALL void 		fb_DataReadDouble	( double *dst );
  * console
  **************************************************************************************************/
 
+typedef struct _FB_PRINTUSGCTX {
+	FB_TLSENTRY		chars;
+	FB_TLSENTRY		ptr;
+	struct {
+		FB_TLSENTRY	data;
+		FB_TLSENTRY len;
+		FB_TLSENTRY size;
+	} fmtstr;
+} FB_PRINTUSGCTX;
+
+
 #define FB_PRINT_NEWLINE 0x00000001
 #define FB_PRINT_PAD 	 0x00000002
 #define FB_PRINT_ISLAST  0x80000000
@@ -324,9 +335,9 @@ FBCALL void 		fb_DataReadDouble	( double *dst );
     else												\
     	fb_hFilePrintBuffer( fnum, buffer );
 
-
 extern int fb_viewTopRow;
 extern int fb_viewBotRow;
+extern FB_PRINTUSGCTX fb_printusgctx;
 
 
 	   void 		fb_ConsoleWidth		( int cols, int rows );
