@@ -105,6 +105,7 @@ declare function 	symbGetDefineLen		( byval d as integer ) as integer
 declare function 	symbCalcArgsLen			( byval f as integer, byval args as integer ) as integer
 declare function 	symbListLibs			( namelist() as string, byval index as integer ) as integer
 
+declare sub 		symbSetArgMode			( byval f as integer, byval a as integer, byval mode as integer )
 declare sub 		symbSetArgType			( byval f as integer, byval a as integer, byval typ as integer )
 declare sub 		symbSetArgSubType		( byval f as integer, byval a as integer, byval subtype as integer )
 declare sub 		symbSetArgName			( byval f as integer, byval a as integer, byval nameidx as integer )

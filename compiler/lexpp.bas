@@ -155,9 +155,11 @@ function lexPreProcessor as integer
 
 	'' EOL
 	if( lexCurrentToken <> FB.TK.EOL ) then
-		lexPreProcessor = FALSE
-		hReportError FB.ERRMSG.EXPECTEDEOL
-		exit function
+		if( lexCurrentToken <> FB.TK.EOF ) then
+			lexPreProcessor = FALSE
+			hReportError FB.ERRMSG.EXPECTEDEOL
+			exit function
+		end if
 	end if
 
 end function
@@ -241,7 +243,7 @@ private function ppElse as integer
 		'' ELSE
 
 		lexSkipToken
-	
+
         pptb(ctx.level).elsecnt = pptb(ctx.level).elsecnt + 1
 
         pptb(ctx.level).istrue = not pptb(ctx.level).istrue

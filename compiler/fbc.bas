@@ -648,10 +648,12 @@ sub printOptions
 #ifdef TARGET_WIN32
 	print "-s <name>", "subsystem (gui, console)"
 	print "-t <value>", "stack size in kbytes (default: 1M)"
-	print "-w", "treat stdcall calling convention as cdecl"
 #endif
 	print "-v", "verbose"
 	print "-version", "show compiler version"
+#ifdef TARGET_WIN32
+	print "-w", "treat stdcall calling convention as cdecl"
+#endif
 	print "-x <name>", "executable/library name"
 
 end sub

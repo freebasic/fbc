@@ -301,6 +301,10 @@ function lexReadIdentifier( tlen as integer, typ as integer ) as string static
 
 	tlen = len( id )
 
+	if( tlen > FB.MAXNAMELEN ) then
+		hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
+	end if
+
 end function
 
 ''::::
@@ -536,6 +540,10 @@ function lexReadString ( tlen as integer ) as string static
 	lexReadString = s
 
 	tlen = len( s )
+
+	if( tlen > FB.MAXLITLEN ) then
+		hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
+	end if
 
 end function
 

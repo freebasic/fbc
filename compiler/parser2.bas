@@ -909,7 +909,7 @@ end function
 function cFunctionCall( byval proc as integer, funcexpr as integer, byval ptrexpr as integer ) as integer
 	dim res as integer, typ as integer
 
-	cFunctionCall = INVALID
+	cFunctionCall = FALSE
 
     if( proc = INVALID ) then
     	exit function

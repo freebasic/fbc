@@ -121,7 +121,7 @@ end function
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
 function cTypeField( elm as integer, typesymbol as integer, typ as integer, idxexpr as integer, _
-					 byval isderef as integer, byval derefcnt as integer ) as integer
+					 byval isderef as integer ) as integer
     dim fields as string, ofs as integer
     dim constexpr as integer
     dim res as integer
@@ -180,8 +180,8 @@ function cTypeField( elm as integer, typesymbol as integer, typ as integer, idxe
     			exit do
     		end if
 
-			'' check for calling functions through pointers
-			if( (typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION) and (derefcnt > 0) ) then
+			'' if field isn't an array, it can be function field, exit
+			if( symbGetUDTElmDimensions( elm ) = 0 ) then
 				exit do
 			end if
 
@@ -208,7 +208,7 @@ end function
 ''DerefFields	=   (FIELDDEREF DREF* TypeField)* .
 ''
 function cDerefFields( elm as integer, typesymbol as integer, typ as integer, _
-					   varexpr as integer, byval derefcnt as integer ) as integer
+					   varexpr as integer ) as integer
 	dim dtype as integer, cnt as integer
 	dim expr as integer
 
@@ -228,7 +228,7 @@ function cDerefFields( elm as integer, typesymbol as integer, typ as integer, _
 		if( typ >= FB.SYMBTYPE.POINTER ) then typ = typ - FB.SYMBTYPE.POINTER
 
 		expr = INVALID
-		if( not cTypeField( elm, typesymbol, typ, expr, TRUE, derefcnt ) ) then
+		if( not cTypeField( elm, typesymbol, typ, expr, TRUE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -571,7 +571,7 @@ function hVarDeref( byval cnt as integer, varexpr as integer, _
 
 	hVarDeref = FALSE
 
-	if( cnt <= 0 ) then
+	if( (varexpr = INVALID) or (cnt <= 0) ) then
 		exit function
 	end if
 
@@ -595,6 +595,7 @@ end function
 
 '':::::
 ''Variable        =   DREF* ID ArrayIdx? ((TypeField|DerefField) FieldIdx?)*
+''				  |   DREF+ ID{Function} ProcParamList .
 ''
 function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval isassign as integer )
 	dim typ as integer, ofs as integer, idxexpr as integer, funcexpr as integer
@@ -617,10 +618,27 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
 		exit function
 	end if
 
-	'' lookup
 	id 	= lexTokenText
 	typ	= lexTokenType
 
+	if( not scalarsonly ) then
+		'' check for if dereferencing a function call
+		if( derefcnt > 0 ) then
+			s = symbLookupProc( id )
+			if( s <> INVALID ) then
+				lexSkipToken
+				if( not cFunctionCall( s, varexpr, INVALID ) ) then
+					exit function
+				end if
+
+				typ = symbGetType( s )
+				elm = INVALID
+				goto varderef
+        	end if
+		end if
+	end if
+
+	'' lookup
 	if( not hVarLookup( id, s, typ, ofs, elm, typesymbol ) ) then
 	    if( typesymbol = INVALID ) then
 	    	hReportError FB.ERRMSG.DUPDEFINITION
@@ -653,12 +671,7 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
 
     isbyref = (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYREF) > 0
 
-   	'' check for calling functions through pointers
-   	if( (typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION) and (derefcnt > 0) ) then
-       	isfunctionptr = TRUE
-    else
-    	isfunctionptr = FALSE
-   	end if
+    isfunctionptr = FALSE
 
     ''
     if( scalarsonly ) then
@@ -678,32 +691,36 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
     		if( lexLookahead(1) <> FB.TK.IDXCLOSECHAR ) then
 
     			'' ArrayIdx?
-    			if( elm = INVALID ) then
-    				if( (not isfunctionptr) or symbIsArray( s ) ) then
+    			if( (elm = INVALID) and (symbIsArray( s )) ) then
+    				'' '('
+    				lexSkipToken
 
-    					'' '('
-    					lexSkipToken
+    				res = cArrayIdx( s, idxexpr )
 
-    					res = cArrayIdx( s, idxexpr )
-
-						'' ')'
-    					if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
-    						hReportError FB.ERRMSG.EXPECTEDRPRNT
-    						exit function
-    					end if
+					'' ')'
+    				if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
+    					hReportError FB.ERRMSG.EXPECTEDRPRNT
+    					exit function
     				end if
+
+    			else
+   					'' check if calling functions through pointers
+   					if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+       					isfunctionptr = TRUE
+       				end if
+
     			end if
     		end if
     	end if
 
    		if( not isfunctionptr ) then
    			'' TypeField?
-   			if( cTypeField( elm, typesymbol, typ, idxexpr, FALSE, derefcnt ) ) then
+   			if( cTypeField( elm, typesymbol, typ, idxexpr, FALSE ) ) then
    				'' check for calling functions through pointers
-   				if( (typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION) and (derefcnt > 0) ) then
-	       			isfunctionptr = TRUE
-    			else
-	    			isfunctionptr = FALSE
+   				if( lexCurrentToken = CHAR_LPRNT ) then
+   					if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+	       				isfunctionptr = TRUE
+   					end if
    				end if
    			end if
    		end if
@@ -729,29 +746,21 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
 
 		if( not isfunctionptr ) then
 			'' DerefFields?
-			if( cDerefFields( elm, typesymbol, typ, varexpr, derefcnt ) ) then
+			if( cDerefFields( elm, typesymbol, typ, varexpr ) ) then
    				'' check for calling functions through pointers
-   				if( (typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION) and (derefcnt > 0) ) then
-       				isfunctionptr = TRUE
-    			else
-    				isfunctionptr = FALSE
+   				if( lexCurrentToken = CHAR_LPRNT ) then
+   					if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+	       				isfunctionptr = TRUE
+   					end if
    				end if
 			end if
 		end if
 
 	end if
 
-	if( not isfunctionptr ) then
-		'' dereference
-		if( derefcnt > 0 ) then
-			if( not hVarDeref( derefcnt, varexpr, s, elm, typ, isbyref ) ) then
-				hReportError FB.ERRMSG.EXPECTEDPOINTER
-				exit function
-			end if
-		end if
-
 	'' call function, pushing params on stack
-	else
+	if( isfunctionptr ) then
+		''
 		if( elm = INVALID ) then
 			s = symbGetSubtype( s )
 		else
@@ -770,6 +779,18 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
 				exit function
 			end if
 		    varexpr = INVALID					'' cAssignment will catch this
+		end if
+
+		typ = symbGetType( s )
+		elm = INVALID
+	end if
+
+varderef:
+	'' dereference
+	if( derefcnt > 0 ) then
+		if( not hVarDeref( derefcnt, varexpr, s, elm, typ, isbyref ) ) then
+			hReportError FB.ERRMSG.EXPECTEDPOINTER
+			exit function
 		end if
 	end if
 

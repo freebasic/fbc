@@ -2169,7 +2169,7 @@ sub emitDATAEND 'static
     '' link + NULL
     outp ".short 0xffff"
     ctx.dataend = seek( ctx.outf )
-    outp ".int 0" + space$( FB.MAXNANELEN )
+    outp ".int 0" + space$( FB.MAXNAMELEN )
 
 end sub
 

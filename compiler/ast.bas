@@ -2464,8 +2464,18 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
     '' strings?
     if( (dc1 = IR.DATACLASS.STRING) or (dc2 = IR.DATACLASS.STRING) ) then
 
+		'' both not the same?
 		if( dc1 <> dc2 ) then
-			exit function
+			'' check if it's not a byte ptr
+			if( dc1 = IR.DATACLASS.STRING ) then
+				if( (dt2 <> IR.DATATYPE.BYTE) or (astTB(r).typ <> AST.NODETYPE.PTR) ) then
+					exit function
+				end if
+			else
+				if( (dt1 <> IR.DATATYPE.BYTE) or (astTB(l).typ <> AST.NODETYPE.PTR) ) then
+					exit function
+				end if
+			end if
 		end if
 
 		astNewASSIGN = rtlStrAssign( l, r )
@@ -2474,10 +2484,12 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
 	'' UDT's?
 	elseif( (dt1 = IR.DATATYPE.USERDEF) or (dt2 = IR.DATATYPE.USERDEF) ) then
 
+		'' both not UDT's?
 		if( dt1 <> dt2 ) then
 			exit function
 		end if
 
+		'' check if it's not an UDT field
 		e = astGetVARElm( l )
 		if( e <> INVALID ) then
 			lgt = symbGetUDTELmLen( e )
@@ -2678,14 +2690,14 @@ function astNewPARAM( byval f as integer, byval p as integer, byval dtype as int
 end function
 
 '':::::
-function asthCheckStrArg( byval proc as integer, byval isrtl as integer, byval arg as integer, _
-						  byval n as integer, src as ASTTEMPSYMBOL, isexpr as integer ) as integer
+private function hCheckStrArg( byval proc as integer, byval isrtl as integer, byval arg as integer, _
+						       byval n as integer, src as ASTTEMPSYMBOL, isexpr as integer ) as integer
     dim adtype as integer, adclass as integer, amode as integer
     dim pdtype as integer, pdclass as integer, ptype as integer
     dim tempstr as integer, t as integer
 
 	''
-	asthCheckStrArg = INVALID
+	hCheckStrArg = INVALID
 
 	src.symbol = INVALID
 	isexpr = FALSE
@@ -2705,8 +2717,17 @@ function asthCheckStrArg( byval proc as integer, byval isrtl as integer, byval a
 	pdclass = irGetDataClass( pdtype )
 
    	'' if both aren't strings, skip..
-   	if( (adclass <> IR.DATACLASS.STRING) or (pdclass <> IR.DATACLASS.STRING) ) then
+   	if( adclass <> IR.DATACLASS.STRING ) then
    		exit function
+   	elseif( pdclass <> IR.DATACLASS.STRING ) then
+   		'' check if it's not a byte ptr param
+   		if( pdtype <> IR.DATATYPE.BYTE ) then
+   			exit function
+   		else
+   			if( astTB(n).typ <> AST.NODETYPE.PTR ) then
+   				exit function
+   			end if
+   		end if
    	end if
 
 
@@ -2715,14 +2736,15 @@ function asthCheckStrArg( byval proc as integer, byval isrtl as integer, byval a
 
 		'' byref arg (rtlib str args are ALWAYS byref), fixed-len param: just alloc a temp descriptor
 		'' (assuming here that no rtlib function will EVER change the strings passed as param)
-		if( pdtype = IR.DATATYPE.FIXSTR ) then
-			asthCheckStrArg = rtlStrAllocTmpDesc( n )
+		select case pdtype
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.BYTE
+			hCheckStrArg = rtlStrAllocTmpDesc( n )
 			isexpr = TRUE
 		    exit function
-		else
+		case else
 			'' all rtlib procs that accept strings will delete temps automatically
 			exit function
-		end if
+		end select
 
 	end if
 
@@ -2737,7 +2759,8 @@ function asthCheckStrArg( byval proc as integer, byval isrtl as integer, byval a
 	case FB.ARGMODE.BYREF
 
     	'' fixed-length string?
-    	if( pdtype = IR.DATATYPE.FIXSTR ) then
+    	select case pdtype
+    	case IR.DATATYPE.FIXSTR
     		'' byref and fixed: alloc a temp string, copy fixed to temp and pass temp
 			'' (ast will have to copy temp back to fixed when function returns and delete temp)
 
@@ -2749,12 +2772,17 @@ function asthCheckStrArg( byval proc as integer, byval isrtl as integer, byval a
 				src.elm	   = astGetVARElm( n )
 			end if
 
-    	else
+    	'' byte ptr?
+    	case IR.DATATYPE.BYTE
+    		'' byref and byte ptr: alloc a temp string, copy byte ptr to temp and pass temp
+
+    	'' string descriptor..
+    	case else
     		'' if not a function's result, skip..
     		if( ptype <> AST.NODETYPE.FUNCT ) then
     			exit function
             end if
-    	end if
+    	end select
 
     '' byval?
     case FB.ARGMODE.BYVAL
@@ -2780,18 +2808,118 @@ function asthCheckStrArg( byval proc as integer, byval isrtl as integer, byval a
 	astDel n
 
 	''
-	asthCheckStrArg = tempstr
+	hCheckStrArg = tempstr
+
+end function
+
+'':::::
+private sub hCallProc( byval n as integer, byval proc as integer, byval mode as integer, vreg as integer )
+    dim bytestopop as integer
+    dim dtype as integer
+    dim vr as integer, p as integer
+
+	dtype = astTB(n).dtype
+	if( dtype = IR.DATATYPE.STRING ) then dtype = IR.DATATYPE.UINT
+
+	if( dtype <> IR.DATATYPE.VOID ) then
+		vreg = irAllocVREG( dtype )
+	else
+		vreg = INVALID
+	end if
+
+	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
+		bytestopop = symbCalcArgsLen( proc, astTB(n).f.args )
+	else
+		bytestopop = 0
+	end if
+
+	'' call function or ptr
+	p = astTB(n).f.p
+	if( p = INVALID ) then
+		irEmitCALLFUNCT proc, bytestopop, vreg
+	else
+		astLoad p, vr
+		astDel p
+		irEmitCALLPTR vr, vreg, bytestopop
+	end if
+
+	'' handle string returned by functions that are actually pointers to string descriptors,
+	'' but when you do foo$ = bar$(), you are not assigning ptrs, but the contents...
+	if( astTB(n).dtype = IR.DATATYPE.STRING ) then
+		vreg = irAllocVRPTR( IR.DATATYPE.STRING, 0, vreg )
+	end if
+
+end sub
+
+'':::::
+private sub hCheckTmpStrings( byval inibase as integer )
+	dim d as integer, s as integer, t as integer
+	dim vr as integer
+
+	'' copy-back any fix-len string passed as parameter and
+	'' delete all temp strings used as parameters
+	do while( ctx.tempstrs > inibase )
+        ctx.tempstrs = ctx.tempstrs - 1
+
+		'' copy back if needed
+		d = tempstrTB(ctx.tempstrs).src.symbol
+		if( d <> INVALID ) then
+        	'' only if not a literal string passed a fixed-len
+        	if( symbGetInitialized( d ) = FALSE ) then
+        		''!!!FIXME!!! can only handle scalar fixed-len strings, not arrays (as in QB4.5)
+        		s = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
+        		d = astNewVAREx( d, tempstrTB(ctx.tempstrs).src.elm, _
+        						 tempstrTB(ctx.tempstrs).src.ofs, IR.DATATYPE.FIXSTR )
+				t = rtlStrAssign( d, s )
+				astLoad t, vr
+				astDel t
+			end if
+		end if
+
+		'' delete the temp string
+		t = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
+		t = rtlStrDelete( t )
+		astLoad t, vr
+		astDel t
+	loop
+
+end sub
+
+'':::::
+private function hCheckParam( byval proc as integer, byval isrtl as integer, byval arg as integer, _
+				              byval param as integer, pmode as integer ) as integer
+    dim tsrc as ASTTEMPSYMBOL, isexpr as integer
+    dim t as integer
+
+	'' check string parameters
+	t = hCheckStrArg( proc, isrtl, arg, astTB(param).l, tsrc, isexpr )
+
+	'' param had to be loaded to a temp string?
+	if( t <> INVALID ) then
+		if( not isexpr ) then
+			tempstrTB(ctx.tempstrs).tmp = t
+			tempstrTB(ctx.tempstrs).src = tsrc
+			ctx.tempstrs = ctx.tempstrs + 1
+			hCheckParam = astNewVAR( t, 0, IR.DATATYPE.STRING )
+		else
+			hCheckParam = t
+		end if
+		pmode = INVALID
+	else
+		hCheckParam = astTB(param).l
+		pmode = astTB(param).p.mode
+	end if
 
 end function
 
 '':::::
 sub astLoadFUNCT( byval n as integer, vreg as integer )
     dim p as integer, np as integer, pmode as integer
-    dim proc as integer, mode as integer, bytestopop as integer, isrtl as integer
+    dim proc as integer, mode as integer, isrtl as integer
     dim i as integer, inc as integer, t as integer, l as integer, dtype as integer
     dim a as integer, arg as integer, lastarg as integer, args as integer
     dim vr as integer
-    dim tempstrs_base as integer, tsrc as ASTTEMPSYMBOL, s as integer, d as integer, isexpr as integer
+    dim tempstrs_base as integer
 
 	'' execute each param and push the result
 	proc = astTB(n).f.s
@@ -2830,23 +2958,8 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 			a = lastarg
 		end if
 
-		t = asthCheckStrArg( proc, isrtl, a, astTB(p).l, tsrc, isexpr )
-
-		'' param had to be loaded to a temp string?
-		pmode = INVALID
-		if( t <> INVALID ) then
-			if( not isexpr ) then
-				tempstrTB(ctx.tempstrs).tmp = t
-				tempstrTB(ctx.tempstrs).src = tsrc
-				ctx.tempstrs = ctx.tempstrs + 1
-				l = astNewVAR( t, 0, IR.DATATYPE.STRING )
-			else
-				l = t
-			end if
-		else
-			l = astTB(p).l
-			pmode = astTB(p).p.mode
-		end if
+		'' check parameters
+		l = hCheckParam( proc, isrtl, a, p, pmode )
 
 		'' try to optimize if a constant is being pushed and the arg is a float
   		if( astTB(l).typ = AST.NODETYPE.CONST ) then
@@ -2874,63 +2987,9 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 	loop
 
 	'' return the result (same type as function ones)
-	dtype = astTB(n).dtype
-	if( dtype = IR.DATATYPE.STRING ) then dtype = IR.DATATYPE.UINT
+	hCallProc n, proc, mode, vreg
 
-	if( dtype <> IR.DATATYPE.VOID ) then
-		vreg = irAllocVREG( dtype )
-	else
-		vreg = INVALID
-	end if
-
-	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
-		bytestopop = symbCalcArgsLen( proc, astTB(n).f.args )
-	else
-		bytestopop = 0
-	end if
-
-	'' call function or ptr
-	p = astTB(n).f.p
-	if( p = INVALID ) then
-		irEmitCALLFUNCT proc, bytestopop, vreg
-	else
-		astLoad p, vr
-		astDel p
-		irEmitCALLPTR vr, vreg, bytestopop
-	end if
-
-	'' handle string returned by functions that are actually pointers to string descriptors,
-	'' but when you do foo$ = bar$(), you are not assigning ptrs, but the contents...
-	if( astTB(n).dtype = IR.DATATYPE.STRING ) then
-		vreg = irAllocVRPTR( IR.DATATYPE.STRING, 0, vreg )
-	end if
-
-
-	'' copy-back any fix-len string passed as parameter and
-	'' delete all temp strings used as parameters
-	do while( ctx.tempstrs > tempstrs_base )
-        ctx.tempstrs = ctx.tempstrs - 1
-
-		'' copy back if needed
-		d = tempstrTB(ctx.tempstrs).src.symbol
-		if( d <> INVALID ) then
-        	'' only if not a literal string passed a fixed-len
-        	if( symbGetInitialized( d ) = FALSE ) then
-        		''!!!FIXME!!! can only handle scalar fixed-len strings, not arrays (as in QB4.5)
-        		s = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
-        		d = astNewVAREx( d, tempstrTB(ctx.tempstrs).src.elm, _
-        						 tempstrTB(ctx.tempstrs).src.ofs, IR.DATATYPE.FIXSTR )
-				t = rtlStrAssign( d, s )
-				astLoad t, vr
-				astDel t
-			end if
-		end if
-
-		'' delete the temp string
-		t = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
-		t = rtlStrDelete( t )
-		astLoad t, vr
-		astDel t
-	loop
+	'' del temp strings and copy back if needed
+	hCheckTmpStrings tempstrs_base
 
 end sub

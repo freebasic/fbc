@@ -528,15 +528,6 @@ function hDoInclude( filename as string ) as integer
 		exit function
 	end if
 
-	''
-	envcopyTB(env.reclevel) = env
-	lexSaveCtx env.reclevel
-    env.reclevel	= env.reclevel + 1
-
-	env.infile		= filename
-
-	lexInit
-
 	'' open include file
 	if( not hFileExists( filename ) ) then
 
@@ -557,7 +548,16 @@ function hDoInclude( filename as string ) as integer
 		exit function
 	end if
 
+	''
+	envcopyTB(env.reclevel) = env
+	lexSaveCtx env.reclevel
+    env.reclevel	= env.reclevel + 1
 
+	env.infile		= filename
+
+	lexInit
+
+	''
 	env.inf = freefile
 	open incfile for binary as #env.inf
 
@@ -1940,6 +1940,13 @@ function cSymbolType( typ as integer, subtype as integer, lgt as integer )
 
 		'' (PTR|POINTER)?
 		if( (lexCurrentToken = FB.TK.PTR) or (lexCurrentToken = FB.TK.POINTER) ) then
+
+			'' can't be a fixed-len string
+			if( typ = FB.SYMBTYPE.FIXSTR ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			end if
+
 			lexSkipToken
 			typ = FB.SYMBTYPE.POINTER + typ
 			lgt = FB.POINTERSIZE
@@ -2665,7 +2672,7 @@ end function
 
 '':::::
 ''Assignment      =   LET? Variable '=' Expression
-''				  |	  *Variable{function ptr} ProcParamList .
+''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
 function cAssignment
 	dim islet as integer

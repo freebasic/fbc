@@ -2947,11 +2947,30 @@ function symbGetArgMode( byval f as integer, byval a as integer ) as integer sta
 end function
 
 '':::::
+sub symbSetArgMode( byval f as integer, byval a as integer, byval mode as integer ) static
+
+	if( a <> INVALID ) then
+		argTB(a).mode = mode
+	end if
+
+end sub
+
+'':::::
 function symbGetArgName( byval f as integer, byval a as integer ) as string static
 
 	symbGetArgName = strpGet( argTB(a).nameidx )
 
 end function
+
+'':::::
+sub symbSetArgName( byval f as integer, byval a as integer, byval nameidx as integer ) static
+
+	if( a <> INVALID ) then
+		strpDel argTB(a).nameidx
+		argTB(a).nameidx = nameidx
+	end if
+
+end sub
 
 '':::::
 function symbGetArgType( byval f as integer, byval a as integer ) as integer static
@@ -2974,25 +2993,6 @@ sub symbSetArgType( byval f as integer, byval a as integer, byval typ as integer
 end sub
 
 '':::::
-sub symbSetArgSubType( byval f as integer, byval a as integer, byval subtype as integer ) static
-
-	if( a <> INVALID ) then
-		argTB(a).subtype = subtype
-	end if
-
-end sub
-
-'':::::
-sub symbSetArgName( byval f as integer, byval a as integer, byval nameidx as integer ) static
-
-	if( a <> INVALID ) then
-		strpDel argTB(a).nameidx
-		argTB(a).nameidx = nameidx
-	end if
-
-end sub
-
-'':::::
 function symbGetArgSubtype( byval f as integer, byval a as integer ) as integer static
 
 	if( a <> INVALID ) then
@@ -3002,6 +3002,15 @@ function symbGetArgSubtype( byval f as integer, byval a as integer ) as integer 
 	end if
 
 end function
+
+'':::::
+sub symbSetArgSubType( byval f as integer, byval a as integer, byval subtype as integer ) static
+
+	if( a <> INVALID ) then
+		argTB(a).subtype = subtype
+	end if
+
+end sub
 
 '':::::
 function symbGetArgSuffix( byval f as integer, byval a as integer ) as integer static

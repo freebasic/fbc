@@ -24,7 +24,7 @@ type FBTOKEN
 	id				as integer
 	class			as integer
 	typ				as integer
-	text			as string * 128 'FB.MAXNANELEN
+	text			as string * FB.MAXLITLEN 	'' used by lit-strings too, can't be MAXNAMELEN
 	tlen			as integer
 end type
 

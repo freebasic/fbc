@@ -680,7 +680,7 @@ end sub
 function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as integer, byval pmode as integer ) as integer 'static
     dim vt as integer, vp as integer
     dim atype as integer, aclass as integer
-    dim ptype as integer, pclass as integer
+    dim ptype as integer, pclass as integer, psize as integer
     dim s as integer, amode as integer, typ as integer, isfixed as integer, desc as integer
 
 	irEmitPUSHPARAM = FALSE
@@ -689,9 +689,10 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 
 	'' convert param to arg type if needed
 	atype  = symbGetArgDataType( proc, arg )
-	ptype  = irGetVRDataType( vr )
 	aclass = irGetDataClass( atype )
+	ptype  = irGetVRDataType( vr )
 	pclass = irGetDataClass( ptype )
+	psize  = irGetDataSize( ptype )
 
     typ = irGetVRType( vr )
 
@@ -737,52 +738,61 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
     ''
     elseif( atype <> IR.DATATYPE.VOID ) then
 
-    	if( pclass = IR.DATACLASS.STRING ) then
-			if( aclass <> IR.DATACLASS.STRING ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
-				exit function
+    	'' string argument?
+    	if( aclass = IR.DATACLASS.STRING ) then
+			'' param not an string?
+			if( pclass <> IR.DATACLASS.STRING ) then
+				'' check if not a byte ptr
+				if( (ptype <> IR.DATATYPE.BYTE) or (typ <> IR.VREGTYPE.PTR) ) then
+					'' or if passing a ptr to a BYVAL string arg
+			    	if( (pclass <> IR.DATACLASS.INTEGER) or (amode <> FB.ARGMODE.BYVAL) or (psize <> FB.POINTERSIZE) ) then
+						hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+						exit function
+			    	end if
+			    end if
 			end if
 
-			'' byval and fixed   : pass the pointer as-is
-			'' byval and variable: pass the pointer at ofs 0 of the string descriptor
-			'' byref and variable: pass the pointer to descriptor
-			'' byref and fixed   : alloc a temp string, copy fixed to temp, pass temp,
-			''					   copy temp back to fixed when function returns, delete temp
+			'' byval and fixed/byte ptr/ptr   	: pass the pointer as-is
+			'' byval and variable				: pass the pointer at ofs 0 of the string descriptor
+			'' byref and variable				: pass the pointer to descriptor
+			'' byref and fixed/byte ptr   		: alloc a temp string, copy fixed to temp, pass temp,
+			''					   				  copy temp back to fixed when func returns, del temp
 			if( amode = FB.ARGMODE.BYVAL ) then
-				if( ptype <> IR.DATATYPE.FIXSTR ) then
-            		vt = irAllocVREG( IR.DATATYPE.UINT )
-            		vregTB(vr).dtype = IR.DATATYPE.UINT
-            		irEmitADDR IR.OP.DEREF, vr, vt
-            		vr = irAllocVRPTR( IR.DATATYPE.STRING, 0, vt )
-            		typ = IR.VREGTYPE.PTR
+
+				'' do not check byte ptr or byval ptrs
+				if( pclass = IR.DATACLASS.STRING ) then
+					amode = FB.ARGMODE.BYREF
+					'' not fixed-len? deref var-len (ptr at offset 0)
+					if( ptype <> IR.DATATYPE.FIXSTR ) then
+            			vt = irAllocVREG( IR.DATATYPE.UINT )
+            			vregTB(vr).dtype = IR.DATATYPE.UINT
+            			irEmitADDR IR.OP.DEREF, vr, vt
+            			vr = irAllocVRPTR( IR.DATATYPE.STRING, 0, vt )
+            			typ = IR.VREGTYPE.PTR
+            		end if
 				end if
 
-				amode = FB.ARGMODE.BYREF
 			end if
 
+			'' descriptor or fixed-len? get the address of
 			if( typ <> IR.VREGTYPE.PTR ) then
-				vp = irAllocVREG( IR.DATATYPE.UINT )
-				irEmitADDR IR.OP.ADDROF, vr, vp
-				vr = irAllocVRPTR( IR.DATATYPE.STRING, 0, vp )
-				typ = IR.VREGTYPE.PTR
+				if( pclass = IR.DATACLASS.STRING ) then
+					vp = irAllocVREG( IR.DATATYPE.UINT )
+					irEmitADDR IR.OP.ADDROF, vr, vp
+					vr = irAllocVRPTR( IR.DATATYPE.STRING, 0, vp )
+					typ = IR.VREGTYPE.PTR
+				end if
 			end if
 
 		else
-			'' passing a NULL to a byval string arg?
-			if( aclass = IR.DATACLASS.STRING ) then
-			    if( (pclass <> IR.DATACLASS.INTEGER) or (amode <> FB.ARGMODE.BYVAL) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
-					exit function
-			    end if
-
-	        '' passing NULL ptr to an byref arg?
-			elseif( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
-				if( pclass <> IR.DATACLASS.INTEGER ) then
+	        '' passing a BYVAL ptr to an BYREF arg?
+			if( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
+				if( (pclass <> IR.DATACLASS.INTEGER) or (psize <> FB.POINTERSIZE) ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
 					exit function
 				end if
 
-			'' udt arg? check if the same, can't convert
+			'' UDT arg? check if the same, can't convert
 			elseif( atype = IR.DATATYPE.USERDEF ) then
 				if( (ptype <> IR.DATATYPE.USERDEF) and (ptype <> IR.DATATYPE.POINTER + IR.DATATYPE.USERDEF) ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -790,7 +800,12 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 				end if
 			''
 			else
-				if( (aclass <> pclass) or (irGetDataSize( atype ) <> irGetDataSize( ptype )) ) then
+				if( (aclass <> pclass) or (irGetDataSize( atype ) <> psize) ) then
+					'' can't convert strings to other types
+					if( pclass = IR.DATACLASS.STRING ) then
+						hReportError FB.ERRMSG.INVALIDDATATYPES
+						exit function
+					end if
 					vt = irAllocVREG( atype )
 					irEmitCONVERT vt, atype, vr, ptype
 					vr = vt

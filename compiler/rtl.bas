@@ -835,6 +835,22 @@ data "rset","fb_StrRset", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 data "fre","fb_GetMemAvail", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
 				            FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
+'' allocate ( byval bytes as integer ) as any ptr
+data "allocate","malloc", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
+					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' callocate ( byval bytes as integer ) as any ptr
+data "callocate","calloc", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 2, _
+					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+'' deallocate ( byval p as any ptr ) as void
+data "deallocate","free", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
+					      FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+'' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void
+data "clear","memset", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 3, _
+					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '' beep ( ) as void
@@ -1067,7 +1083,9 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
    	dtype = astGetDataType( dst )
 
 	lgt = -1
-	if( hIsStrFixed( dtype ) ) then
+	if( dtype = IR.DATATYPE.BYTE ) then
+		lgt = 0
+	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( dst )
 		if( lgt < 0 ) then lgt = 0
 	end if
@@ -1079,7 +1097,9 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
    	dtype = astGetDataType( src )
 
 	lgt = -1
-	if( hIsStrFixed( dtype ) ) then
+	if( dtype = IR.DATATYPE.BYTE ) then
+		lgt = 0
+	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( src )
 		if( lgt < 0 ) then lgt = 0
 	end if
@@ -1142,7 +1162,9 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
    	dtype = astGetDataType( strg )
 
 	lgt = -1
-	if( hIsStrFixed( dtype ) ) then
+	if( dtype = IR.DATATYPE.BYTE ) then
+		lgt = 0
+	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( strg )
 		if( lgt < 0 ) then lgt = 0
 	end if

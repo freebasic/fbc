@@ -33,7 +33,7 @@ defint a-z
 
 '':::::
 function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBPROCARG ) as integer static
-    dim a as integer, atype as integer
+    dim a as integer, atype as integer, amode as integer
     dim arg as integer, typ as integer
 
 	hCheckArgs = FALSE
@@ -75,7 +75,8 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
     	end if
 
     	'' and mode
-    	if( argv(a).mode <> symbGetArgMode( proc, arg ) ) then
+    	amode = argv(a).mode
+    	if( amode <> symbGetArgMode( proc, arg ) ) then
 			hReportError FB.ERRMSG.PARAMTYPEMISMATCH
             exit function
     	end if
@@ -84,6 +85,14 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
     	if( strpGet( argv(a).nameidx ) <> symbGetArgName( proc, arg ) ) then
     		symbSetArgName proc, arg, argv(a).nameidx
     	end if
+
+    	'' hack! change BYVAL arg AS STRING to BYREF arg as BYTE
+    	'''''if( amode = FB.ARGMODE.BYVAL ) then
+    	'''''	if( atype = FB.SYMBTYPE.STRING ) then
+    	'''''		symbSetArgMode proc, arg, FB.ARGMODE.BYREF
+    	'''''		symbSetArgType proc, arg, FB.SYMBTYPE.BYTE
+    	'''''	end if
+    	'''''end if
 
     	arg = symbGetProcPrevArg( proc, arg )
     	a   = a + 1
