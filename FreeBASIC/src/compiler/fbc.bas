@@ -933,6 +933,15 @@ function delFiles as integer
 			kill outlist(i)
 		end if
     next i
+    
+#ifdef TARGET_LINUX
+	'' delete compiled icon object
+	if( len( xpmfile ) = 0 ) then
+		kill "$$fb_icon$$.o"
+	else
+		kill hStripExt( hStripPath( xpmfile ) ) + ".o"
+	end if
+#endif
 
     delFiles = TRUE
 
@@ -1476,7 +1485,7 @@ public function fbAddLibPath ( path as string ) as integer
 
 	fbAddLibPath = TRUE
 
-	for i = 0 to ctx.pths
+	for i = 0 to ctx.pths-1
 		if( pthlist(i) = path ) then
 			exit function
 		end if
