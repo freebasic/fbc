@@ -71,7 +71,6 @@
 		#define bmp_read24(addr)		(_farnspeekl(addr) and &HFFFFFF)
 
 		#define bmp_write24(addr, c)		_farnspokew addr, (c) and &HFFFF : _farnspokeb (addr)+2, (c) shr 16
-		void bmp_write24(unsigned long addr, int c)
 
 	#elseif defined(FB__WIN32)
 	
