@@ -32,6 +32,7 @@
 #include <sys/shm.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/xpm.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 #include <X11/extensions/XShm.h>
@@ -56,6 +57,7 @@ extern LINUXDRIVER fb_linux;
 extern GFXDRIVER fb_gfxDriverX11;
 extern GFXDRIVER fb_gfxDriverOpenGL;
 
+extern void *fb_program_icon[];
 
 extern int fb_hX11Init(char *title, int w, int h, int depth, int flags);
 extern void fb_hX11Exit(void);

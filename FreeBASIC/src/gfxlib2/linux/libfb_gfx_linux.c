@@ -263,6 +263,8 @@ int fb_hX11Init(char *title, int w, int h, int depth, int flags)
 {
 	XPixmapFormatValues *format;
 	XSetWindowAttributes attribs;
+	XWMHints hints;
+	XpmAttributes xpm_attribs;
 	XSizeHints size;
 	Pixmap pixmap;
 	XColor color;
@@ -312,6 +314,12 @@ int fb_hX11Init(char *title, int w, int h, int depth, int flags)
 	if (!fb_linux.window)
 		return -1;
 	XStoreName(fb_linux.display, fb_linux.window, title);
+	if (fb_program_icon) {
+		hints.flags = IconPixmapHint | IconMaskHint;
+		xpm_attribs.valuemask = XpmReturnAllocPixels | XpmReturnExtensions;
+		XpmCreatePixmapFromData(fb_linux.display, fb_linux.window, fb_program_icon, &hints.icon_pixmap, &hints.icon_mask, &xpm_attribs);
+		XSetWMHints(fb_linux.display, fb_linux.window, &hints);
+	}
 	size.flags = PPosition | PMinSize | PMaxSize;
 	size.x = size.y = 0;
 	size.min_width = size.max_width = fb_linux.w;
