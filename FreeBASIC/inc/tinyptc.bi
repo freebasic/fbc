@@ -22,10 +22,8 @@ declare function ptc_update	cdecl alias "ptc_update"	(byval buffer as integer pt
 declare function ptc_close	cdecl alias "ptc_close"		() as integer
 
 #ifdef FB__WIN32
-''
-'' TinyPTC uses DirectDraw, add it to libraries list to make user's life easier
-''
 '$inclib: "ddraw"
+'$inclib: "user32"
 #elseif defined(FB__LINUX)
 '$inclib: "X11"
 #endif

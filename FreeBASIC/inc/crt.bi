@@ -6,7 +6,7 @@
 ''
 
 #ifdef FB__WIN32
-'$inclib: 'crtdll'
+'$inclib: 'msvcrt'
 #endif
 
 ' typedefs
@@ -17,68 +17,68 @@
 
 #if     defined(FB__WIN32)
 
-	const CLOCKS_PER_SEC as integer = 1000
-	const RAND_MAX as integer = 32767
+	#define CLOCKS_PER_SEC  1000
+	#define RAND_MAX  32767
 
 #elseif defined(FB__DOS)
 
-	const CLOCKS_PER_SEC as integer = 91
-	const RAND_MAX as integer = 2147483647
+	#define CLOCKS_PER_SEC  91
+	#define RAND_MAX  2147483647
 
 #elseif defined(FB__LINUX)
 
-	const CLOCKS_PER_SEC as integer = 1000000 ' as per http://www.die.net/doc/linux/man/man3/clock.3.html
-	''const RAND_MAX as integer = ??? ' fixme
+	#define CLOCKS_PER_SEC  1000000 ' as per http://www.die.net/doc/linux/man/man3/clock.3.html
+	''#define RAND_MAX  ??? ' fixme
 
 #else
 	#print crt.bi: unsupported platform
 
 #endif
 
-#ifndef CRT_NO_NULL
-	const NULL as any ptr = 0
+#ifndef NULL
+	#define NULL 0
 #endif
 
 '' #if defined(FB__X86)
-	const SCHAR_MAX		as byte		=  127
-	const SCHAR_MIN		as byte		= -128
-	const UCHAR_MAX		as ubyte	=  255
-	const CHAR_BIT		as integer	=  8
-	const USHRT_MAX		as ushort	=  65535
-	const SHRT_MAX		as short	=  32767
-	const SHRT_MIN		as short	= -32768
-	const UINT_MAX		as uinteger	=  4294967295
-	const ULONG_MAX		as ulong	=  4294967295
-	const INT_MAX		as integer	=  2147483647
-	const INT_MIN		as integer	= -2147483648
-	const LONG_MAX		as long		=  2147483647
-	const LONG_MIN		as long		= -2147483648
-	const CHAR_MAX		as byte		=  127
-	const CHAR_MIN		as byte		= -128
+	#define SCHAR_MAX   127
+	#define SCHAR_MIN  -128
+	#define UCHAR_MAX   255
+	#define CHAR_BIT   8
+	#define USHRT_MAX   65535
+	#define SHRT_MAX   32767
+	#define SHRT_MIN  -32768
+	#define UINT_MAX   4294967295
+	#define ULONG_MAX   4294967295
+	#define INT_MAX   2147483647
+	#define INT_MIN  -2147483648
+	#define LONG_MAX   2147483647
+	#define LONG_MIN  -2147483648
+	#define CHAR_MAX   127
+	#define CHAR_MIN  -128
 
-	const DBL_DIG		as integer	=  15
-	const DBL_EPSILON	as double	=  2.2204460492503131e-016
-	const DBL_MANT_DIG	as integer	=  53
-	const DBL_MAX		as double	=  1.7976931348623158e+308
-	const DBL_MAX_10_EXP	as integer	=  308
-	const DBL_MAX_EXP	as integer	=  1024
-	const DBL_MIN		as double	=  2.2250738585072014e-308
-	const DBL_MIN_10_EXP	as integer	= -307
-	const DBL_MIN_EXP	as integer	= -1021
-	const DBL_RADIX		as integer	=  2
-	const DBL_ROUNDS	as integer	=  1
+	#define DBL_DIG   15
+	#define DBL_EPSILON   2.2204460492503131e-016
+	#define DBL_MANT_DIG   53
+	#define DBL_MAX   1.7976931348623158e+308
+	#define DBL_MAX_10_EXP   308
+	#define DBL_MAX_EXP   1024
+	#define DBL_MIN   2.2250738585072014e-308
+	#define DBL_MIN_10_EXP  -307
+	#define DBL_MIN_EXP  -1021
+	#define DBL_RADIX   2
+	#define DBL_ROUNDS   1
 
-	const FLT_DIG		as integer	=  6
-	const FLT_EPSILON	as single	=  1.192092896e-07
-	const FLT_MANT_DIG	as integer	=  24
-	const FLT_MAX		as single	=  3.402823466e+38
-	const FLT_MAX_10_EXP	as integer	=  38
-	const FLT_MAX_EXP	as integer	=  128
-	const FLT_MIN		as single	=  1.175494351e-38
-	const FLT_MIN_10_EXP	as integer	= -37
-	const FLT_MIN_EXP	as integer	= -125
-	const FLT_RADIX		as integer	=  2
-	const FLT_ROUNDS	as integer	=  1
+	#define FLT_DIG   6
+	#define FLT_EPSILON   1.192092896e-07
+	#define FLT_MANT_DIG   24
+	#define FLT_MAX   3.402823466e+38
+	#define FLT_MAX_10_EXP   38
+	#define FLT_MAX_EXP   128
+	#define FLT_MIN   1.175494351e-38
+	#define FLT_MIN_10_EXP  -37
+	#define FLT_MIN_EXP  -125
+	#define FLT_RADIX   2
+	#define FLT_ROUNDS   1
 '' #endif
 
 
