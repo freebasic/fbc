@@ -303,8 +303,10 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			break;
 
 		case WM_ACTIVATEAPP:
-			if (mode_fullscreen)
+			if (mode_fullscreen) {
 				is_active = (int)wParam;
+				fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
+			}
 			result = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
 
