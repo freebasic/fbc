@@ -55,12 +55,13 @@ void fb_ConsoleLocate( int row, int col, int cursor )
   		c.Y = fb_ConsoleGetY() - 1;
 
   	handle = GetStdHandle( STD_OUTPUT_HANDLE );
-  	GetConsoleCursorInfo( handle, &info );
-  	if( cursor >= 0 )
+  	if( cursor >= 0 ) {
+  		GetConsoleCursorInfo( handle, &info );
   		info.bVisible = ( cursor ? TRUE : FALSE );
+  		SetConsoleCursorInfo( handle, &info );
+  	}
 
   	SetConsoleCursorPosition( handle, c );
-  	SetConsoleCursorInfo( handle, &info );
 
 #else /* WIN32 */
 
@@ -78,7 +79,7 @@ void fb_ConsoleLocate( int row, int col, int cursor )
 		y = getcury(stdscr);
 	
 	if (cursor >= 0)
-		set_curs(cursor ? 1 : 0);
+		curs_set(cursor ? 1 : 0);
 	
 	move(y, x);
 	refresh();
