@@ -224,7 +224,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 		if (!driver) {
 			exit_proc();
-			return -1;
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 		}
 		fb_mode->driver = driver;
 		fb_mode->driver_flags = flags;
@@ -257,12 +257,12 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	const MODEINFO *info = NULL;
 	
 	if ((mode < 0) || (mode > NUM_MODES))
-		return -1;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	if (mode > 0) {
 		info = &mode_info[mode - 1];
 		if (info->w < 0)
-			return -1;
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
 	return set_mode(info, mode, depth, num_pages, flags);
 }

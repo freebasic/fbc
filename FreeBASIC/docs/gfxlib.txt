@@ -1378,7 +1378,9 @@ Gfxlib will try its best to fulfill your gfx mode requests, but if everything
 fails no mode will be set and execution will resume from the statement next
 to the SCREEN call. So you should take particular care about checking if
 SCREEN is successful; a way to do this is to test the return value of the
-SCREENPTR function, have a look at it for details.
+SCREENPTR function, have a look at it for details. Another way is just to
+check for errors with ON ERROR; SCREEN will cause an illegal function call
+error on failure.
 Once a gfx mode has been set, you can toggle fullscreen and windowed mode at
 any time by pressing ALT-ENTER, providing the system supports it. While in
 windowed mode, clicking on the window close button will return CHR$(255)+"X"
