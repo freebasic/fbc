@@ -39,11 +39,6 @@ FBCALL int fb_GfxBoxEx (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color
         y1 -= dy;
     }
 
-    if (dx < 2 || dy < 2)
-    {
-        return fb_GfxFBoxEx(x1, y1, dx, dy, color);
-    }
-
     if (fb_GfxInfo.screen->format->BitsPerPixel > 8)
     {
         /* Convert 0xRRGGBBAA to screen pixel format: */
@@ -60,6 +55,13 @@ FBCALL int fb_GfxBoxEx (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color
     else
     {
         color &= 255;
+    }
+
+    if (dx < 2 || dy < 2)
+    {
+        r.x = x1;   r.w = dx + 1;
+        r.y = y1;   r.h = dy + 1;
+        return SDL_FillRect(fb_GfxInfo.screen, &r, color);
     }
 
     r.x = x1;       r.w = dx + 1;
