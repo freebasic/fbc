@@ -21,89 +21,155 @@
  * io_inkey.c -- inkey$ function for Linux console mode apps
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
+#include "fb_linux.h"
 
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
+#define KEY_UP			(0x100 | 'H')
+#define KEY_DOWN		(0x100 | 'P')
+#define KEY_LEFT		(0x100 | 'K')
+#define KEY_RIGHT		(0x100 | 'M')
+#define KEY_INS			(0x100 | 'R')
+#define KEY_DEL			(0x100 | 'S')
+#define KEY_HOME		(0x100 | 'G')
+#define KEY_END			(0x100 | 'O')
+#define KEY_PAGE_UP		(0x100 | 'I')
+#define KEY_PAGE_DOWN		(0x100 | 'Q')
+#define KEY_F1			(0x100 | ';')
+#define KEY_F2			(0x100 | '<')
+#define KEY_F3			(0x100 | '=')
+#define KEY_F4			(0x100 | '>')
+#define KEY_F5			(0x100 | '?')
+#define KEY_F6			(0x100 | '@')
+#define KEY_F7			(0x100 | 'A')
+#define KEY_F8			(0x100 | 'B')
+#define KEY_F9			(0x100 | 'C')
+#define KEY_F10			(0x100 | 'D')
+#define KEY_TAB			'\t'
+#define KEY_BACKSPACE		8
 
 
-#ifndef DISABLE_NCURSES
+typedef struct NODE
+{
+	unsigned char key;
+	unsigned short code;
+	struct NODE *next;
+} NODE;
+
+static NODE F1[] = { { '~', KEY_F1, NULL }, { 0 } },
+	    F2[] = { { '~', KEY_F2, NULL }, { 0 } },
+	    F3[] = { { '~', KEY_F3, NULL }, { 0 } },
+	    F4[] = { { '~', KEY_F4, NULL }, { 0 } },
+	    F5[] = { { '~', KEY_F5, NULL }, { 0 } },
+	    F6[] = { { '~', KEY_F6, NULL }, { 0 } },
+	    F7[] = { { '~', KEY_F7, NULL }, { 0 } },
+	    F8[] = { { '~', KEY_F8, NULL }, { 0 } },
+	    F9[] = { { '~', KEY_F9, NULL }, { 0 } },
+	    F10[] = { { '~', KEY_F10, NULL }, { 0 } },
+	    Delete[] = { { '~', KEY_DEL, NULL }, { 0 } },
+	    End[] = { { '~', KEY_END, NULL }, { 0 } },
+	    PageUp[] = { { '~', KEY_PAGE_UP, NULL }, { 0 } },
+	    PageDown[] = { { '~', KEY_PAGE_DOWN, NULL }, { 0 } },
+	    Sub1[] = { { '~', KEY_HOME, NULL }, { '7', 0, F6 }, { '8', 0, F7 }, { '9', 0, F8 }, { 0, 0, F5 }, 
+	    	       { 0, 0, F1 }, { 0, 0, F2 }, { 0, 0, F3 }, { 0, 0, F4 }, { 0 } },
+	    Sub2[] = { { '~', KEY_INS, NULL }, { '0', 0, F9 }, { '1', 0, F10 }, { 0 } },
+	    SubBrace[] = { { 'A', KEY_F1, NULL }, { 'B', KEY_F2, NULL }, { 'C', KEY_F3, NULL }, { 'D', KEY_F4, NULL },
+			   { 'E', KEY_F5, NULL }, { 0 } },
+	    Console[] = { { '[', 0, SubBrace }, { 'A', KEY_UP, NULL }, { 'B', KEY_DOWN, NULL }, { 'C', KEY_RIGHT, NULL },
+	    		  { 'D', KEY_LEFT, NULL }, { '1', 0, Sub1 }, { '2', 0, Sub2 }, { '3', 0, Delete },
+	    		  { '4', 0, End }, { '5', 0, PageUp }, { '6', 0, PageDown }, { 0, KEY_TAB, NULL },
+	    		  { 0, KEY_BACKSPACE, NULL }, { 0 } },
+	    X11[] = { { 'P', KEY_F1, NULL }, { 'Q', KEY_F2, NULL }, { 'R', KEY_F3, NULL }, { 'S', KEY_F4, NULL },
+	    	      { 'F', KEY_END, NULL }, { 'H', KEY_HOME, NULL }, { 0 } },
+	    Sequence[] = { { '[', 0, Console }, { 0, 0, X11 }, { 0 } };
+
 
 /*:::::*/
-static int fb_hKeyCursesToQB( int key )
+int fb_hGetCh()
 {
-	switch( key )
-	{
-		case KEY_DOWN:		return 0xFF50;
-		case KEY_UP:		return 0xFF48;
-		case KEY_LEFT:		return 0xFF4B;
-		case KEY_RIGHT:		return 0xFF4D;
-		case KEY_HOME:		return 0xFF47;
-		case KEY_BACKSPACE:	return 0x0008;
-		case KEY_F(1):		return 0xFF3B;
-		case KEY_F(2):		return 0xFF3C;
-		case KEY_F(3):		return 0xFF3D;
-		case KEY_F(4):		return 0xFF3E;
-		case KEY_F(5):		return 0xFF3F;
-		case KEY_F(6):		return 0xFF40;
-		case KEY_F(7):		return 0xFF41;
-		case KEY_F(8):		return 0xFF42;
-		case KEY_F(9):		return 0xFF43;
-		case KEY_F(10):		return 0xFF44;
-		case KEY_F(11):		return 0xFF85;
-		case KEY_F(12):		return 0xFF86;
-		case KEY_DC:		return 0xFF53;
-		case KEY_IC:		return 0xFF52;
-		case KEY_NPAGE:		return 0xFF51;
-		case KEY_PPAGE:		return 0xFF49;
-		case KEY_END:		return 0xFF4F;
+	static int getch_inited = FALSE;
+	NODE *node;
+	int k;
+	
+	k = fgetc(fb_con.f_in);
+	if (k == -1)
+		return -1;
+	if (k == 0x7F)
+		k = 8;
+	if (k == '\e') {
+		k = fgetc(fb_con.f_in);
+		if (k == EOF)
+			return 27;
+		if (!getch_inited) {
+			if (fb_con.inited != INIT_CONSOLE) {
+				/* Fixups for X11 compatibility */
+				Sub1[4].key = '5';
+				if (fb_con.inited == INIT_ETERM) {
+					Sub1[5].key = '1';
+					Sub1[6].key = '2';
+					Sub1[7].key = '3';
+					Sub1[8].key = '4';
+				}
+				Console[11].key = 'T';
+				Console[12].key = 'K';
+				Sequence[1].key = 'O';
+			}
+			getch_inited = TRUE;
+		}
+		node = Sequence;
+		for (;;) {
+			while (node->key) {
+				if (k == node->key) {
+					if (node->code)
+						return node->code;
+					node = node->next;
+					break;
+				}
+				node++;
+			}
+			if (!node->key) {
+				fflush(fb_con.f_in);
+				return -1;
+			}
+			k = fgetc(fb_con.f_in);
+			if (k == EOF)
+				return -1;
+		}
 	}
-	return -1;
+	return k;
 }
-
-#endif
 
 
 /*:::::*/
 FBSTRING *fb_ConsoleInkey( void )
 {
-	FBSTRING 	 *res;
-	unsigned int k;
-	int			 chars;
-
-#ifndef DISABLE_NCURSES
+	FBSTRING *res;
+	int k, chars;
 	int ch;
-
-	if ((ch = getch()) != ERR) {
+	
+	if (!fb_con.inited)
+		return &fb_strNullDesc;
+	
+	if ((ch = fb_hGetCh()) != -1) {
 		chars = 1;
-		if (ch > 255) {
-			ch = fb_hKeyCursesToQB(ch);
-			if ((ch > 0) && (ch & 0xFF00)) {
-				chars = 2;
-				ch &= 0xFF;
-			}
+		if (ch & 0x100) {
+			chars = 2;
+			ch &= 0xFF;
 		}
-		if (ch > 0) {
+		res = (FBSTRING *)fb_hStrAllocTmpDesc();
 
-			res = (FBSTRING *)fb_hStrAllocTmpDesc();
+		fb_hStrAllocTemp(res, chars);
 
-			fb_hStrAllocTemp(res, chars);
+		if( chars > 1 )
+			res->data[0] = 255;		/* note: can't use '\0' here as in qb */
 
-			if( chars > 1 )
-				res->data[0] = 255;					/* note: can't use '\0' here as in qb */
-
-			res->data[chars-1] = (unsigned char)ch;
-			res->data[chars-0] = '\0';
-		}
-		else
-			res = &fb_strNullDesc;
+		res->data[chars-1] = (unsigned char)ch;
+		res->data[chars-0] = '\0';
 	}
 	else
-#endif
 		res = &fb_strNullDesc;
 
 	return res;
@@ -114,10 +180,11 @@ int fb_ConsoleGetkey( void )
 {
 	int k = 0;
 
-#ifndef DISABLE_NCURSES
-	while ((k = getch()) == ERR)
+	if (!fb_con.inited)
+		return fgetc(stdin);
+	
+	while ((k = fb_hGetCh()) < 0)
 		;
-#endif
 
 	return k;
 }

@@ -21,26 +21,36 @@
  * io_getsize.c -- get size (console, no gfx) function for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
-#include <stdio.h>
+#include "fb_linux.h"
 
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
 
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-    int toprow, botrow;
+    int toprow, botrow, temp;
+	struct winsize win;
 
-#ifndef DISABLE_NCURSES
-	if (cols != NULL)
-		*cols = getmaxx(stdscr);
-#endif
-
+	if (cols) {
+		if (fb_con.inited) {
+			win.ws_col=0xFFFF;
+			ioctl(fb_con.h_out, TIOCGWINSZ, &win);
+			if (win.ws_col == 0xFFFF) {
+				fputs("\e[18t", fb_con.f_out);
+				if (fscanf(fb_con.f_in, "\e[8;%d;%dt", &temp, cols) != 2)
+					*cols = 80;
+			}
+			else
+				*cols = win.ws_col;
+		}
+		else
+			*cols = 80;
+	}
+	
     if( rows != NULL )
     {
     	fb_ConsoleGetView( &toprow, &botrow );

@@ -43,7 +43,7 @@ endif
 ifeq ($(PLATFORM),LINUX)
     EXE :=
     LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
-    LDLIBS := -L../../lib -\( -lc -lm -lfb-nocurses -\)
+    LDLIBS := -L../../lib -\( -lc -lm -lfb -\)
     BC := ../../fbc
     BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
     LD := ld

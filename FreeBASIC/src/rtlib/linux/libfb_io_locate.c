@@ -21,68 +21,70 @@
  * io_locate.c -- locate (console, no gfx) function for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
+#include "fb_linux.h"
 
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
 
 /*:::::*/
 void fb_ConsoleLocate( int row, int col, int cursor )
 {
-#ifndef DISABLE_NCURSES
 	int x, y;
 
+	if (!fb_con.inited)
+		return;
+	
+	fb_ConsoleGetXY(&x, &y);
+	
 	if (col > 0)
-		x = col - 1;
-	else
-		x = getcurx(stdscr);
-
+		x = col;
 	if (row > 0)
-		y = row - 1;
-	else
-		y = getcury(stdscr);
+		y = row;
 
-	if (cursor >= 0)
-		curs_set(cursor ? 1 : 0);
-
-	move(y, x);
-	refresh();
-#endif
+	fprintf(fb_con.f_out, "\e[%d;%dH", y, x);
+	if (cursor == 0)
+		fputs("\e[?25l", fb_con.f_out);
+	else if (cursor == 1)
+		fputs("\e[?25h", fb_con.f_out);
 }
 
 
 /*:::::*/
 int fb_ConsoleGetX( void )
 {
-#ifndef DISABLE_NCURSES
-	return getcurx(stdscr) + 1;
-#else
-	return 0;
-#endif
+	int x;
+	
+	fb_ConsoleGetXY(&x, NULL);
+	return x;
 }
 
 /*:::::*/
 int fb_ConsoleGetY( void )
 {
-#ifndef DISABLE_NCURSES
-	return getcury(stdscr) + 1;
-#else
-	return 0;
-#endif
+	int y;
+	
+	fb_ConsoleGetXY(NULL, &y);
+	return y;
 }
 
 /*:::::*/
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
-#ifndef DISABLE_NCURSES
-	if (col != NULL)
-		*col = getcurx(stdscr) + 1;
-	if (row != NULL)
-		*row = getcury(stdscr) + 1;
-#endif
+	int x = 0, y = 0;
+	
+	if (fb_con.inited) {
+		/* Note we read reply from stdin, NOT from fb_con.f_in */
+		fflush(stdin);
+		fputs("\e[6n", fb_con.f_out);
+		if (fscanf(stdin, "\e[%d;%dR", &y, &x) != 2)
+			x = y = 0;
+	}
+	if (col)
+		*col = x;
+	if (row)
+		*row = y;
 }
 

@@ -21,66 +21,52 @@
  * io_printbuff.c -- low-level print to console function for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
-#include <stdio.h>
 #include "fb.h"
+#include "fb_linux.h"
 
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
+#define CTRL_ALWAYS	0x0800D101
+#define ENTER_UTF8	"\e%G"
+#define EXIT_UTF8  	"\e%@"
+
 
 /*:::::*/
 void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
-    int col, row;
-    int toprow, botrow;
-	int cols, rows;
-	int len, scrolloff = FALSE;
-	int rowsleft, rowstoscroll;
-
-	len = strlen( buffer );
-
-	fb_ConsoleGetSize( &cols, &rows );
-	fb_ConsoleGetView( &toprow, &botrow );
-	fb_ConsoleGetXY( &col, &row );
-
-#ifdef DISABLE_NCURSES
-	printf( "%s", buffer );
-#else
-
-	/* scrolling */
-	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
-	{
-		row = botrow + 1;
-		fb_ConsoleLocate(row, col, -1);
+	int len;
+	unsigned char *c = buffer;
+	
+	if (!fb_con.inited) {
+		printf("%s", buffer);
+		return;
 	}
-
-	rowstoscroll = 0;
-	if (mask & FB_PRINT_NEWLINE) {
-		buffer[len - 1] = '\0';
-		len--;
-		rowstoscroll++;
-	}
-	if (col + len - 1 > cols)
-		rowstoscroll += 1 + ((len - (cols - col + 1)) / cols);
-	if (row + rowstoscroll > fb_ConsoleGetMaxRow()) {
-		fb_ConsoleScroll((row + rowstoscroll) - fb_ConsoleGetMaxRow());
-		fb_ConsoleLocate(fb_ConsoleGetMaxRow() - rowstoscroll, col, -1);
-	}
-	else {
-		rowsleft = botrow - (row - 1);
-		if (rowstoscroll > rowsleft) {
-			fb_ConsoleScroll(rowstoscroll - rowsleft);
-			fb_ConsoleLocate(botrow - rowstoscroll + 1, col, -1);
+	
+	for (len = strlen(buffer); len; len--, c++) {
+		if (fb_con.inited == INIT_CONSOLE) {
+			if ((*c < 32) && ((CTRL_ALWAYS >> *c) & 0x1)) {
+				/* This character can't be printed, we must use unicode
+				 * Enter UTF-8 and start constructing 0xF000 code
+				 */
+				fputs(ENTER_UTF8 "\xEF\x80", fb_con.f_out);
+				/* Set the last 6 bits */
+				fputc(*c | 0x80, fb_con.f_out);
+				/* Escape UTF-8 */
+				fputs(EXIT_UTF8, fb_con.f_out);
+			}
+			else if (*c == 128 + 27)
+				/* A specially evil code: Meta+ESC, it can't be printed
+				 * Just send Unicode 0xF09B to screen
+				 */
+				fputs(ENTER_UTF8 "\xEF\x82\x9B" EXIT_UTF8, fb_con.f_out);
+			else
+				fputc(*c, fb_con.f_out);
 		}
+		else
+			fputc(*c, fb_con.f_out);
 	}
-	printw("%s", buffer);
-	if (mask & FB_PRINT_NEWLINE)
-		move(getcury(stdscr) + 1, 0);
-	refresh();
-#endif
-
+	fflush(fb_con.f_out);
 }
 

@@ -18,16 +18,22 @@
  */
 
 /*
- * libfb_io_vwupd.c -- view print update (console, no gfx) for Linux
+ * libfb_io_viewupdate.c -- view print update (console, no gfx) for Linux
  *
  * chng: jan/2005 written [DrV]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
+#include "fb_linux.h"
+
 
 /*:::::*/
-void fb_ConsoleViewUpdate( void )
+void fb_ConsoleViewUpdate(void)
 {
-	/* do nothing */
+	if (!fb_con.inited)
+		return;
+	
+	fprintf(fb_con.f_out, "\e[%d;%dr", fb_viewTopRow + 1, fb_viewBotRow + 1);
 }

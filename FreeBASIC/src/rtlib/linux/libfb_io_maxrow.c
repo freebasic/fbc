@@ -21,21 +21,30 @@
  * io_maxrow.c -- get max row (console, no gfx) for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
+#include "fb_linux.h"
 
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
 
 /*:::::*/
 int fb_ConsoleGetMaxRow( void )
 {
-#ifndef DISABLE_NCURSES
-	return getmaxy(stdscr);
-#else
-	return 0;
-#endif
+	struct winsize win;
+	int r, c;
+	
+	if (!fb_con.inited)
+		return 25;
+	
+	win.ws_row = 0xFFFF;
+	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
+	if (win.ws_row == 0xFFFF) {
+		fputs("\e[18t", fb_con.f_out);
+		if (fscanf(fb_con.f_in, "\e[8;%d;%dt", &r, &c) == 2)
+			return r;
+		return 25;
+	}
+	return win.ws_row;
 }

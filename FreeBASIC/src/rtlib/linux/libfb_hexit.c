@@ -21,23 +21,39 @@
  * exit.c -- end helper for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
-
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
+#include "fb_linux.h"
 
 /*:::::*/
 void fb_hEnd ( int errlevel )
 {
-
-#if !defined DISABLE_NCURSES
-	endwin();
-	system("echo -e \"\\033(B\"");
-#endif
-
+	int bottom;
+	
+	if (fb_con.inited) {
+		bottom = fb_ConsoleGetMaxRow();
+		if (((fb_viewTopRow != -1) || (fb_viewBotRow != -1)) &&
+		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom)))
+			/* Restore scrolling region to whole screen */
+			fprintf(fb_con.f_out, "\e[1;%dr", bottom);
+		/* Restore latin1 charset */
+		fputs("\e(B", fb_con.f_out);
+		/* Restore default attributes and color */
+		fputs("\e[0m", fb_con.f_out);
+		/* Force cursor display */
+		fputs("\E[?25h", fb_con.f_out);
+		fflush(fb_con.f_out);
+		tcsetattr(fb_con.h_out, TCSAFLUSH, &fb_con.old_term_out);
+		
+		/* Restore old console keyboard state */
+		fflush(fb_con.f_in);
+		if (fb_con.inited != INIT_CONSOLE)
+			fcntl(fb_con.h_in, F_SETFL, fb_con.old_in_flags);
+		tcsetattr(fb_con.h_in, TCSAFLUSH, &fb_con.old_term_in);
+		
+		fb_con.inited = FALSE;
+	}
 }

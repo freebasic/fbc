@@ -54,7 +54,6 @@ data "kernel32"
 #elseif defined(TARGET_LINUX)
 data "c"
 data "m"
-data "ncurses"
 #elseif defined(TARGET_DOS)
 data "c"
 data "gcc"

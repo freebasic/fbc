@@ -33,22 +33,12 @@ else
         libpath = ../../lib/dos
     else
         CFLAGS := $(CFLAGS) -DTARGET_LINUX
-        ifdef COMPILER
-            CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
-        endif
         osdeppath := linux
         libpath = ../../lib
     endif
 endif
 
 lib = $(libpath)/libfb.a
-ifeq ($(WINSYSDIR),)
-    ifneq ($(OS),DOS)
-        ifdef COMPILER
-            lib := $(libpath)/libfb-nocurses.a
-        endif
-    endif
-endif
 
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
 osdepobjs := $(patsubst $(osdeppath)/%.c,$(osdeppath)/obj/%.o,$(wildcard $(osdeppath)/*.c))

@@ -21,24 +21,55 @@
  * init.c -- libfb initialization for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
+#include "fb_linux.h"
 
-#ifndef DISABLE_NCURSES
-#include <curses.h>
 
-static color[8] = { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_CYAN,
-					COLOR_RED, COLOR_MAGENTA, COLOR_YELLOW, COLOR_WHITE };
-#endif
+FBCONSOLE fb_con = { 0 };
+
+
+static void (*old_sigabrt)(int);
+static void (*old_sigfpe) (int);
+static void (*old_sigill) (int);
+static void (*old_sigsegv)(int);
+static void (*old_sigterm)(int);
+static void (*old_sigint) (int);
+static void (*old_sigquit)(int);
+static struct termios term_out, term_in;
+static const char color_map[16]= { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
+static const unsigned char color[] =  { 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0x00, 0x00, 0xA8, 0xA8,
+					0xA8, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0xA8, 0x54, 0x00, 0xA8, 0xA8, 0xA8,
+					0x54, 0x54, 0x54, 0x54, 0x54, 0xFC, 0x54, 0xFC, 0x54, 0x54, 0xFC, 0xFC,
+					0xFC, 0x54, 0x54, 0xFC, 0x54, 0xFC, 0xFC, 0xFC, 0x54, 0xFC, 0xFC, 0xFC };
+
+
+/*:::::*/
+static void signal_handler(int sig)
+{
+	signal(SIGABRT, old_sigabrt);
+	signal(SIGFPE,  old_sigfpe);
+	signal(SIGILL,  old_sigill);
+	signal(SIGSEGV, old_sigsegv);
+	signal(SIGTERM, old_sigterm);
+	signal(SIGINT,  old_sigint);
+	signal(SIGQUIT, old_sigquit);
+	
+	fb_hEnd(1);
+	
+	raise(sig);
+}
+
 
 /*:::::*/
 void fb_hInit ( void )
 {
-	int i;
-
+	int i, init = FALSE;
+	char *tty_name, *term;
+	
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
 
@@ -50,22 +81,77 @@ void fb_hInit ( void )
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
 #endif
 
-#ifndef DISABLE_NCURSES
-	/* Init ncurses */
-	system("echo -e \"\\033(U\"");
-	initscr();
-	cbreak();
-	noecho();
-	nonl();
-	nodelay(stdscr, TRUE);
-	keypad(stdscr, TRUE);
-	scrollok(stdscr, FALSE);
-	if (has_colors() && (start_color() == OK) && (COLOR_PAIRS >= 64)) {
-		for (i = 0; i < 64; i++) {
-			if (i == 0) continue;
-			init_pair(i, color[i % 8], color[i / 8]);
-		}
+	term = getenv("TERM");
+	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
+		init = INIT_CONSOLE;
+	if ((term) && (!strncmp(term, "xterm", 5)))
+		init = INIT_XTERM;
+	if ((term) && (!strncasecmp(term, "eterm", 5)))
+		init = INIT_ETERM;
+	if (!init)
+		return;
+	
+	fb_con.h_out = fileno(stdout);
+	fb_con.h_in = fileno(stdin);
+	fb_con.f_out = stdout;
+	fb_con.f_in = stdin;
+	if (!isatty(fb_con.h_out) || !isatty(fb_con.h_in))
+		return;
+	
+	/* Output setup */
+	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
+		return;
+	memcpy(&term_out, &fb_con.old_term_out, sizeof(term_out));
+	term_out.c_oflag |= OPOST;
+	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
+		return;
+	
+	/* Input setup */
+	if (init != INIT_CONSOLE) {
+		tty_name = ttyname(fb_con.h_in);
+		if (!tty_name)
+			return;
+		fb_con.f_in = fopen(tty_name, "r+b");
+		if (!fb_con.f_in)
+			return;
+		fb_con.h_in = fileno(fb_con.f_in);
 	}
-#endif
-
+	if (tcgetattr(fb_con.h_in, &fb_con.old_term_in))
+		return;
+	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
+	/* Ignore breaks */
+	term_in.c_iflag |= (IGNBRK | BRKINT);
+	/* Disable Xon/off */
+	term_in.c_iflag &= ~(IXOFF | IXON);
+	/* Character oriented, no echo */
+	term_in.c_lflag &= ~(ICANON | ECHO);
+	/* No timeout, just don't block */
+	term_in.c_cc[VMIN] = 1;
+	term_in.c_cc[VTIME] = 0;
+	if (tcsetattr(fb_con.h_in, TCSAFLUSH, &term_in))
+		return;
+	/* Don't block */
+	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
+	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
+	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
+	
+	if (init == INIT_CONSOLE) {
+		/* Set our default palette */
+		for (i = 0; i < 16; i++)
+			fprintf(fb_con.f_out, "\e]P%1.1X%2.2X%2.2X%2.2X", color_map[i], color[i*3], color[(i*3)+1], color[(i*3)+2]);
+	}
+	fb_con.fg_color = 0x7;
+	/* Set IBM PC 437 charset */
+	fputs("\e(U", fb_con.f_out);
+	
+	/* Install signal handlers to quietly shut down */
+	old_sigabrt = signal(SIGABRT, signal_handler);
+	old_sigfpe  = signal(SIGFPE,  signal_handler);
+	old_sigill  = signal(SIGILL,  signal_handler);
+	old_sigsegv = signal(SIGSEGV, signal_handler);
+	old_sigterm = signal(SIGTERM, signal_handler);
+	old_sigint  = signal(SIGINT,  signal_handler);
+	old_sigquit = signal(SIGQUIT, signal_handler);
+	
+	fb_con.inited = init;
 }

@@ -21,45 +21,32 @@
  * io_cls.c -- cls (console, no gfx) function for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
-#include <stdio.h>
-
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
+#include "fb_linux.h"
 
 
 /*:::::*/
 void fb_ConsoleClear( int mode )
 {
-    int start_line, end_line, toprow, botrow, i;
-
-#ifndef DISABLE_NCURSES
-    fb_ConsoleGetView( &toprow, &botrow );
-
-	if( (mode == 1) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
-	{
-		start_line = toprow - 1;
-		end_line = botrow - 1;
-    }
-    else
-    {
-    	start_line = 0;
-    	end_line = getmaxy(stdscr) - 1;
-    }
-    for (; start_line <= end_line; start_line++) {
-    	move(start_line, 0);
-    	for (i = getmaxx(stdscr); i; i--)
-    	    addch(' ');
-    }
-    refresh();
-#endif
-
-    fb_ConsoleLocate( toprow, 1, -1 );
-
+	int start, end, i;
+	
+	if (!fb_con.inited)
+		return;
+	
+	fb_ConsoleGetView(&start, &end);
+	if ((mode != 1) && (mode != 0xFFFF0000)) {
+		start = 1;
+		end = fb_ConsoleGetMaxRow();
+	}
+	for (i = start; i <= end; i++) {
+		fprintf(fb_con.f_out, "\e[%d;1H", i);
+		fputs("\E[2K", fb_con.f_out);
+	}
+	fprintf(fb_con.f_out, "\e[%d;1H", start);
 }
 
 

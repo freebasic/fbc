@@ -21,54 +21,38 @@
  * io_color.c -- color (console, no gfx) function for Linux
  *
  * chng: jan/2005 written [lillo]
+ *       feb/2005 rewritten to remove ncurses dependency [lillo]
  *
  */
 
 #include "fb.h"
-#include "fb_colors.h"
-
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
-
-/* globals */
-int fb_last_bc = 0,
-	fb_last_fc = 15;
+#include "fb_linux.h"
 
 
 /*:::::*/
 void fb_ConsoleColor( int fc, int bc )
 {
-#ifndef DISABLE_NCURSES
-	int pair;
-
-	if (!has_colors())
+	const char map[8] = { 0, 4, 2, 6, 1, 5, 3, 7 };
+	
+	if (!fb_con.inited)
 		return;
-
+	
 	if (fc >= 0)
-		fb_last_fc = (fc & 0xf);
+		fb_con.fg_color = (fc & 0xF);
 	if (bc >= 0)
-		fb_last_bc = (bc & 0x7);
-
-	pair = ((fb_last_fc & 0x7) | (fb_last_bc << 3));
-	attrset(COLOR_PAIR(pair) | (fb_last_fc & 0x8 ? A_BOLD : 0));
-#endif
-
+		fb_con.bg_color = (bc & 0x7);
+	if (fb_con.inited == INIT_ETERM)
+		fprintf(fb_con.f_out, "\e[%d;%dm",
+			(fb_con.fg_color > 7 ? 90 : 30) + map[fb_con.fg_color & 0x7],
+			40 + map[fb_con.bg_color]);
+	else
+		fprintf(fb_con.f_out, "\e[%d;%d;25;%dm",
+			(fb_con.fg_color > 7 ? 1 : 22), 30 + map[fb_con.fg_color & 0x7],
+			40 + map[fb_con.bg_color]);
 }
 
 /*:::::*/
 int fb_ConsoleGetColorAtt( void )
 {
-	int res = 0;
-
-#ifndef DISABLE_NCURSES
-	attr_t attr;
-	short pair;
-
-	attr_get(&attr, &pair, NULL);
-	res = (pair & 0x7) | (attr & A_BOLD ? 0x8 : 0) | ((pair & 0x38) << 4);
-#endif
-
-	return res;
-
+	return fb_con.inited ? (fb_con.fg_color | (fb_con.bg_color << 4)) : 0x7;
 }
