@@ -178,6 +178,40 @@ FBCALL void fb_DataReadUInt( unsigned int *dst )
 }
 
 /*:::::*/
+FBCALL void fb_DataReadLongint( long long *dst )
+{
+	short len;
+
+	len = fb_hDataRead();
+
+	if( len == 0 )
+		*dst = 0;
+	else
+	{
+        *dst = (long long)atoll( (char *)fb_dataptr );
+
+		fb_dataptr += len + 1;
+	}
+}
+
+/*:::::*/
+FBCALL void fb_DataReadULongint( unsigned long long *dst )
+{
+	short len;
+
+	len = fb_hDataRead();
+
+	if( len == 0 )
+		*dst = 0;
+	else
+	{
+        *dst = (unsigned long long)atoll( (char *)fb_dataptr );
+
+		fb_dataptr += len + 1;
+	}
+}
+
+/*:::::*/
 FBCALL void fb_DataReadSingle( float *dst )
 {
 	short len;

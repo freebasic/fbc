@@ -108,6 +108,18 @@ FBCALL int fb_InputInt( int *dst )
 }
 
 /*:::::*/
+FBCALL int fb_InputLongint( long long *dst )
+{
+    char buffer[22+1];
+
+	fb_hGetNextToken( buffer, 22, FB_FALSE );
+
+	*dst = (long long)atoll( buffer );
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+/*:::::*/
 FBCALL int fb_InputSingle( float *dst )
 {
     char buffer[15+1];

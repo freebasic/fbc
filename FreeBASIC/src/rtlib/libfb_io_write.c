@@ -122,6 +122,18 @@ FBCALL void fb_WriteUInt ( int fnum, unsigned int val, int mask )
 }
 
 /*:::::*/
+FBCALL void fb_WriteLongint ( int fnum, long long val, int mask )
+{
+    FB_WRITENUM( fnum, val, mask, "%lld" )
+}
+
+/*:::::*/
+FBCALL void fb_WriteULongint ( int fnum, unsigned long long val, int mask )
+{
+    FB_WRITENUM( fnum, val, mask, "%llu" )
+}
+
+/*:::::*/
 FBCALL void fb_WriteSingle ( int fnum, float val, int mask )
 {
 	char buffer[8+1+8+1];

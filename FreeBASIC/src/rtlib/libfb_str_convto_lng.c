@@ -18,12 +18,12 @@
  */
 
 /*
- * str_convto.c -- str$ routines for int, uint
+ * str_convto_lng.c -- str$ routines for longint, ulongint
  *
  * obs.: the result string's len is being "faked" to appear as if it were shorter
  *       than the one that has to be allocated to fit _itoa and _gvct buffers.
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: mar/2005 written [v1ctor]
  *
  */
 
@@ -34,7 +34,7 @@
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_IntToStr ( int num )
+FBCALL FBSTRING *fb_LongintToStr ( long long num )
 {
 	FBSTRING 	*dst;
 
@@ -42,13 +42,13 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
+		fb_hStrAllocTemp( dst, sizeof( long long ) * 3 );
 
 		/* convert */
 #ifdef WIN32
-		_itoa( num, dst->data, 10 );
+		_i64toa( num, dst->data, 10 );
 #else
-		sprintf( dst->data, "%d", num );
+		sprintf( dst->data, "%lld", num );
 #endif
 
 		dst->len = strlen( dst->data );				/* fake len */
@@ -61,7 +61,7 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
+FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 {
 	FBSTRING 	*dst;
 
@@ -69,13 +69,13 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
+		fb_hStrAllocTemp( dst, sizeof( long long ) * 3 );
 
 		/* convert */
 #ifdef WIN32
-		_ultoa( num, dst->data, 10 );
+		_ui64toa( num, dst->data, 10 );
 #else
-		sprintf( dst->data, "%u", num );
+		sprintf( dst->data, "%llu", num );
 #endif
 
 		dst->len = strlen( dst->data );				/* fake len */

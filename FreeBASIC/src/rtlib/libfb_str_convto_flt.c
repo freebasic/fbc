@@ -18,7 +18,7 @@
  */
 
 /*
- * str_convto.c -- str$ routines for int, uint
+ * str_convto_flt.c -- str$ routines for float and double
  *
  * obs.: the result string's len is being "faked" to appear as if it were shorter
  *       than the one that has to be allocated to fit _itoa and _gvct buffers.
@@ -34,7 +34,7 @@
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_IntToStr ( int num )
+FBCALL FBSTRING *fb_FloatToStr ( float num )
 {
 	FBSTRING 	*dst;
 
@@ -42,16 +42,26 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
+		fb_hStrAllocTemp( dst, 8+8 );
 
 		/* convert */
 #ifdef WIN32
-		_itoa( num, dst->data, 10 );
+		_gcvt( (double)num, 8, dst->data );
 #else
-		sprintf( dst->data, "%d", num );
+		sprintf( dst->data, "%.8g", num );
 #endif
 
 		dst->len = strlen( dst->data );				/* fake len */
+
+		/* skip the dot at end if any */
+		if( dst->len > 0 )
+		{
+			if( dst->data[dst->len-1] == '.' )
+			{
+				dst->data[dst->len-1] = '\0';
+				--dst->len;
+			}
+		}
 		dst->len |= FB_TEMPSTRBIT;
 	}
 	else
@@ -61,7 +71,7 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
+FBCALL FBSTRING *fb_DoubleToStr ( double num )
 {
 	FBSTRING 	*dst;
 
@@ -69,16 +79,26 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
+		fb_hStrAllocTemp( dst, 16+8 );
 
 		/* convert */
 #ifdef WIN32
-		_ultoa( num, dst->data, 10 );
+		_gcvt( (double)num, 16, dst->data );
 #else
-		sprintf( dst->data, "%u", num );
+		sprintf( dst->data, "%.16g", num);
 #endif
 
 		dst->len = strlen( dst->data );				/* fake len */
+
+		/* skip the dot at end if any */
+		if( dst->len > 0 )
+		{
+			if( dst->data[dst->len-1] == '.' )
+			{
+				dst->data[dst->len-1] = '\0';
+				--dst->len;
+			}
+		}
 		dst->len |= FB_TEMPSTRBIT;
 	}
 	else
@@ -86,4 +106,6 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 
 	return dst;
 }
+
+
 
