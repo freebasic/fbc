@@ -199,7 +199,11 @@ sub emitInit
 	end if
 
 	''
+#ifdef TARGET_WIN32
 	NEWLINE = chr$( CHAR_CR ) + chr$( CHAR_LF )
+#else
+	NEWLINE = chr$( CHAR_LF )
+#endif
 
 	COMMA = ", "
 
