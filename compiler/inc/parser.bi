@@ -1,0 +1,99 @@
+''	FreeBASIC - 32-bit BASIC Compiler.
+''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+''
+''	This program is free software; you can redistribute it and/or modify
+''	it under the terms of the GNU General Public License as published by
+''	the Free Software Foundation; either version 2 of the License, or
+''	(at your option) any later version.
+''
+''	This program is distributed in the hope that it will be useful,
+''	but WITHOUT ANY WARRANTY; without even the implied warranty of
+''	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+''	GNU General Public License for more details.
+''
+''	You should have received a copy of the GNU General Public License
+''	along with this program; if not, write to the Free Software
+''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+
+
+''
+'' parser protos
+''
+
+'$include:'inc\lex.bi'
+
+declare function 	cProgram				( ) as integer
+declare function 	cLine					( ) as integer
+declare function 	cSimpleLine             ( ) as integer
+declare function 	cLabel                  ( ) as integer
+declare function 	cComment                ( ) as integer
+declare function 	cDirective              ( ) as integer
+declare function 	cStatement              ( ) as integer
+declare function 	cSimpleStatement        ( ) as integer
+declare function 	cSttSeparator 			( ) as integer
+declare function 	cDeclaration            ( ) as integer
+declare function 	cConstDecl              ( ) as integer
+declare function 	cConstAssign            ( ) as integer
+declare function 	cTypeDecl               ( ) as integer
+declare function 	cEnumDecl               ( ) as integer
+declare function 	cSymbolDecl             ( ) as integer
+declare function 	cSymbolDef 				( byval alloctype as integer ) as integer
+declare function 	cDynSymbolDef 			( byval alloctype as integer, byval dopreserve as integer ) as integer
+declare function 	cArrayDecl 				( dimensions as integer, dTB() as FBARRAYDIM ) as integer
+declare function 	cDynArrayDecl			( dimensions as integer, exprTB() as integer ) as integer
+declare function 	cSymbolType 			( typ as integer, subtype as integer, lgt as integer ) as integer
+declare function 	cProcDecl               ( ) as integer
+declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
+declare function 	cArguments              ( argc as integer, argv() as FBPROCARG, byval isproto as integer ) as integer
+declare function 	cArgDecl                ( arg as FBPROCARG, byval isproto as integer ) as integer
+declare function 	cDefDecl				( ) as integer
+declare function 	cOptDecl				( ) as integer
+declare function 	cProcCallOrAssign		( ) as integer
+declare function 	cQuirkStmt				( ) as integer
+declare function 	cCompoundStmt           ( ) as integer
+declare function 	cIfStatement			( ) as integer
+declare function 	cSingleIfStatement		( byval expr as integer ) as integer
+declare function 	cBlockIfStatement		( byval expr as integer ) as integer
+declare function 	cForStatement          	( ) as integer
+declare function 	cDoStatement           	( ) as integer
+declare function 	cWhileStatement        	( ) as integer
+declare function 	cSelectStatement       	( ) as integer
+declare function 	cCaseStatement         	( byval s as integer, byval sdtype as integer, byval exitlabel as integer ) as integer
+declare function 	cCaseExpression        	( byval s as integer, byval sdtype as integer, byval initlabel as integer, byval nextlabel as integer ) as integer
+declare function 	cCompoundStmtElm		( ) as integer
+declare function 	cProcStatement         	( ) as integer
+declare function 	cExitStatement			( ) as integer
+declare function 	cEndStatement			( ) as integer
+declare function 	cContinueStatement		( ) as integer
+declare function 	cAssignment				( ) as integer
+declare function 	cExpression				( expr as integer ) as integer
+declare function 	cLogExpression			( logexpr as integer ) as integer
+declare function 	cRelExpression			( relexpr as integer ) as integer
+declare function 	cAddExpression			( addexpr as integer ) as integer
+declare function 	cShiftExpression		( shiftexpr as integer ) as integer
+declare function 	cModExpression			( modexpr as integer ) as integer
+declare function 	cIntDivExpression		( idivexpr as integer ) as integer
+declare function 	cMultExpression			( mulexpr as integer ) as integer
+declare function 	cExpExpression 			( expexpr as integer ) as integer
+declare function 	cNegExpression			( negexpr as integer ) as integer
+declare function 	cDerefExpression		( derefexpr as integer ) as integer
+declare function 	cAddrOfExpression		( addrofexpr as integer ) as integer
+declare function 	cTypeConvExpr			( tconvexpr as integer ) as integer
+declare function 	cParentExpression		( parexpr as integer ) as integer
+declare function 	cAtom					( atom as integer ) as integer
+declare function 	cVariableEx				( varexpr as integer, byval scalarsonly as integer, byval isassign as integer ) as integer
+declare function 	cVariable				( varexpr as integer ) as integer
+declare function 	cFunction				( funcexpr as integer ) as integer
+declare function 	cQuirkFunction			( funcexpr as integer ) as integer
+declare function 	cConstant				( constexpr as integer ) as integer
+declare function 	cLiteral 				( litexpr as integer ) as integer
+declare function 	cFuncParamList			( byval proc as integer, byval procexpr as integer, byval optonly as integer ) as integer
+declare function 	cFuncParam				( byval proc as integer, byval arg as integer, byval procexpr as integer, byval optonly as integer ) as integer
+declare function 	cProcParamList			( byval proc as integer, byval procexpr as integer ) as integer
+declare function 	cProcParam				( byval proc as integer, byval arg as integer, expr as integer, pmode as integer, byval optonly as integer ) as integer
+declare function 	cAsmBlock				( ) as integer
+declare function 	cFunctionMode 			( ) as integer
+declare function 	cFunctionCall			( byval proc as integer, funcexpr as integer, byval ptrexpr as integer ) as integer
+declare function 	cProcCall				( byval proc as integer, byval ptrexpr as integer ) as integer
+
+declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
