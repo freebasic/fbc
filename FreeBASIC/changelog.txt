@@ -33,6 +33,7 @@ Version 0.12 Beta:
 [fixed] using gfx primitives on a non-visible working page was still causing screen updates (lillo)
 [fixed] BSAVE was not expecting commas as parameters separator (lillo)
 [fixed] Linux port had precision problems with the TIMER function (lillo)
+[fixed] PSET gfx primitive was not respecting default color (lillo)
 
 
 Version 0.11 Beta:
