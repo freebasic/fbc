@@ -31,4 +31,8 @@ declare function gtk_menu_bar_get_type cdecl alias "gtk_menu_bar_get_type" () as
 declare function gtk_menu_bar_new cdecl alias "gtk_menu_bar_new" () as GtkWidget ptr
 declare sub _gtk_menu_bar_cycle_focus cdecl alias "_gtk_menu_bar_cycle_focus" (byval menubar as GtkMenuBar ptr, byval dir as GtkDirectionType)
 
+#define gtk_menu_bar_append(menu,child)	gtk_menu_shell_append(menu,child)
+#define gtk_menu_bar_prepend(menu,child) gtk_menu_shell_prepend(menu,child)
+#define gtk_menu_bar_insert(menu,child,pos) gtk_menu_shell_insert(menu,child,pos)
+
 #endif

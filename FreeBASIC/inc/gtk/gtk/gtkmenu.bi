@@ -81,4 +81,8 @@ declare sub gtk_menu_attach cdecl alias "gtk_menu_attach" (byval menu as GtkMenu
 declare sub gtk_menu_set_monitor cdecl alias "gtk_menu_set_monitor" (byval menu as GtkMenu ptr, byval monitor_num as gint)
 declare function gtk_menu_get_for_attach_widget cdecl alias "gtk_menu_get_for_attach_widget" (byval widget as GtkWidget ptr) as GList ptr
 
+#define gtk_menu_append(menu,child)	gtk_menu_shell_append(menu,child)
+#define gtk_menu_prepend(menu,child) gtk_menu_shell_prepend(menu,child)
+#define gtk_menu_insert(menu,child,pos)	gtk_menu_shell_insert(menu,child,pos)
+
 #endif
