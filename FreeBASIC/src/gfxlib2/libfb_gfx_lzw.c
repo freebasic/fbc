@@ -107,7 +107,7 @@ static char *decode_string(unsigned char *buffer, int code)
 
 
 /*:::::*/
-int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
+FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
 {
 	LZW_ENTRY *e;
 	int string_code, next_code = 256;
@@ -143,7 +143,7 @@ int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_b
 
 
 /*:::::*/
-int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
+FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size)
 {
 	int next_code = 256;
 	int new_code, old_code;

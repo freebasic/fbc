@@ -231,8 +231,8 @@ extern const FONT fb_font_8x16;
 /* Internal functions */
 extern void fb_hSetupFuncs(void);
 extern void fb_hSetupData(void);
-extern int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
-extern int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
+extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
+extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern unsigned int fb_hMakeColor(int index, int r, int g, int b);

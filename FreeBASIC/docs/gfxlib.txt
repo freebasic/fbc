@@ -480,8 +480,10 @@ Insights:
 Use this function to save blocks of graphics so you can later use PUT to draw
 them. The coordinates of the block are affected by the most recent WINDOW and
 VIEW statements, and must be both inside the current clipping region set by
-VIEW. The supplied array must be large enough to hold the block you're going
-to save; the required array size depends on both the block size in pixels and
+VIEW. If the enclosed region does not entirely fit into the clipping region
+GET will have no effect and an illegal function call error will be thrown.
+The supplied array must be large enough to hold the block you're going to
+save; the required array size depends on both the block size in pixels and
 the current color depth. Use the following formula to compute the right size
 in bytes:
 
@@ -1287,7 +1289,7 @@ Statement to set current gfx mode.
 
 
 Syntax:
-	SCREEN mode[,[depth][,[num_pages][,flags]]]
+	SCREEN mode[,[depth][,[num_pages][,[flags][,refresh_rate]]]]
 
 
 Argument:	Description:
@@ -1300,6 +1302,9 @@ depth		Color depth in bits per pixel. If you omit this argument, the
 num_pages	Number of pages, see below. Default if omitted is 1.
 
 flags		Mode options, see below. Default if omitted is 0.
+
+refresh_rate	Requested refresh rate in Hz. Default if omitted is 0, which
+		lets gfxlib to pick up a working refresh rate automatically.
 
 
 Insights:
@@ -1388,6 +1393,12 @@ The stencil buffer flag has effect only when in OpenGL mode, and if set it
 requests the OpenGL context to have a stencil buffer.
 Similarly, the accumulation flag also only works when an OpenGL mode has been
 requested, and requests an accumulation buffer for it.
+The refresh_rate parameter allows to specify a desired refresh rate for the
+gfx mode to be set; this is just an hint to gfxlib, which will try to fullfil
+the request. It is not guaranteed that the mode will have specified refresh
+rate; if gfxlib can't set it, it'll fall back on the first working rate. If
+you omit this parameter or pass 0 to it, gfxlib will automatically detect and
+use the first working refresh rate for specified mode.
 Gfxlib will try its best to fulfill your gfx mode requests, but if everything
 fails no mode will be set and execution will resume from the statement next
 to the SCREEN call. So you should take particular care about checking if
@@ -1654,7 +1665,7 @@ Statement to set a custom resolution gfx mode.
 
 
 Syntax:
-	SCREENRES width,height[,[depth][,[num_pages][,flags]]]
+	SCREENRES width,height[,[depth][,[num_pages][,[flags][,refresh_rate]]]]
 
 
 Argument:	Description:
@@ -1668,6 +1679,8 @@ depth		Same as for the SCREEN statement, look at it for details.
 num_pages	Same as for the SCREEN statement, look at it for details.
 
 flags		Same as for the SCREEN statement, look at it for details.
+
+refresh_rate	Same as for the SCREEN statement, look at it for details.
 
 
 Insights:
@@ -2428,3 +2441,76 @@ Appendix F: Hints
 	SCREEN 13
 	GfxPrint "Hello world!", 112, 96, 15
 	SLEEP
+
+  Pay attention when using the internal fonts data; gfxlib stores all fonts
+  and palettes internally in a LZW compressed format to save binary space in
+  your EXEs, and decompresses the data on the first call to SCREEN. If you
+  do not call SCREEN in your programs, accessing the internal palettes and
+  fonts data will return garbage.
+
+
+- Gfxlib internally stores default fonts and palettes data in a LZW compressed
+  format, decompressing it once on the first call to SCREEN. The tiny LZW
+  codec used is not visible to the user programs not to clutter namespace, and
+  as it's not really in the scope of gfxlib to provide data compressing
+  facilities. Nonetheless, as it's there, you can access it by declaring
+  prototypes of the encode and decode routines, pointing to the correct
+  implementation inside gfxlib. Here's an example:
+
+	DECLARE FUNCTION LZW_Encode ALIAS "fb_hEncode" ( _
+					BYVAL in_buffer AS ANY PTR, _
+					BYVAL in_size AS INTEGER, _
+					BYVAL out_buffer AS ANY PTR, _
+					BYREF out_size AS INTEGER _
+				) AS INTEGER
+
+	DECLARE FUNCTION LZW_Decode ALIAS "fb_hDecode" ( _
+					BYVAL in_buffer AS ANY PTR, _
+					BYVAL in_size AS INTEGER, _
+					BYVAL out_buffer AS ANY PTR, _
+					BYREF out_size AS INTEGER _
+				) AS INTEGER
+	
+	DIM src_buffer(100000) AS UBYTE
+	DIM src_size AS INTEGER
+	DIM dest_buffer(100000) AS UBYTE
+	DIM dest_size AS INTEGER
+	
+	'' Cannot work if our program doesn't link with gfxlib
+	SCREEN 15
+	
+	src_size = 0
+	OPEN "gfxlib.txt" FOR BINARY AS #1
+	WHILE NOT EOF(1)
+		GET #1,, src_buffer(src_size)
+		src_size += 1
+	WEND
+	CLOSE #1
+	PRINT "Data size before compression:", src_size
+	GOSUB ShowData
+	
+	dest_size = 100000
+	PRINT "Compressing...";
+	LZW_Encode @src_buffer(0), src_size, @dest_buffer(0), dest_size
+	PRINT "done."
+	
+	PRINT "Data size after compression:", dest_size
+	PRINT
+	
+	src_size = 100000
+	PRINT "Decompressing...";
+	LZW_Decode @dest_buffer(0), dest_size, @src_buffer(0), src_size
+	PRINT "done."
+	
+	PRINT "Data size before decompression:", src_size
+	GOSUB ShowData
+	SLEEP
+	END
+	
+	ShowData:
+		DIM i AS INTEGER
+		PRINT "Contents: ";
+		FOR i = 3 TO 36: PRINT CHR$(src_buffer(i)); : NEXT
+		PRINT " [...]"
+		RETURN
+	
