@@ -26,7 +26,7 @@
 
 #include "fb.h"
 
-FB_LOCATEPROC 	fb_lochook  = &fb_ConsoleLocate;
+static FB_LOCATEPROC fb_lochook = &fb_ConsoleLocate;
 
 
 /*:::::*/

@@ -26,7 +26,7 @@
 
 #include "fb.h"
 
-FB_CLSPROC 	fb_clshook  = &fb_ConsoleClear;
+static FB_CLSPROC fb_clshook = &fb_ConsoleClear;
 
 
 /*:::::*/

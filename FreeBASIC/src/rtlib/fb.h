@@ -312,11 +312,12 @@ FBCALL void 		fb_WriteDouble 		( int fnum, double val, int mask );
 FBCALL void 		fb_WriteString 		( int fnum, FBSTRING *s, int mask );
 FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 
-
 	   int 			fb_ConsoleGetkey	( void );
 	   FBSTRING 	*fb_ConsoleInkey	( void );
 
 	   void 		fb_ConsolePrintBuffer( char *buffer, int mask );
+
+	   char 		*fb_ConsoleReadStr( char *buffer, int len );
 
 /**************************************************************************************************
  * files
@@ -381,7 +382,6 @@ FBCALL int 			fb_LineInput		( FBSTRING *text, FBSTRING *dst, int addquestion, in
 	   int 			fb_hFileLock		( FILE *f, unsigned int inipos, unsigned int endpos );
 	   int 			fb_hFileUnlock		( FILE *f, unsigned int inipos, unsigned int endpos );
 	   char 		*fb_hConvertPath	( char *path, int len );
-	   char 		*fb_hFileGetStr		( char *buffer, int len, FILE *f );
 
 /**************************************************************************************************
  * data/time
@@ -465,5 +465,9 @@ typedef void	  	(*FB_PRINTBUFFPROC)	( char *buffer, int mask );
 
 FBCALL void 		fb_PrintBuffer		( char *buffer, int mask );
 FBCALL FB_PRINTBUFFPROC fb_SetPrintBufferProc( FB_PRINTBUFFPROC newproc );
+
+typedef char 		*(*FB_READSTRPROC)	( char *buffer, int len );
+		char 		*fb_ReadString		( char *buffer, int len, FILE *f );
+FBCALL FB_READSTRPROC fb_SetReadStrProc	( FB_READSTRPROC newproc );
 
 #endif /*__FB_H__*/

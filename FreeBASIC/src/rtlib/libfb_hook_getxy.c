@@ -26,8 +26,8 @@
 
 #include "fb.h"
 
-FB_GETXPROC 	fb_getxhook  = &fb_ConsoleGetX;
-FB_GETYPROC 	fb_getyhook  = &fb_ConsoleGetY;
+static FB_GETXPROC fb_getxhook = &fb_ConsoleGetX;
+static FB_GETYPROC fb_getyhook = &fb_ConsoleGetY;
 
 
 /*:::::*/

@@ -26,7 +26,7 @@
 
 #include "fb.h"
 
-FB_WIDTHPROC 	fb_widhook  = &fb_ConsoleWidth;
+static FB_WIDTHPROC fb_widhook = &fb_ConsoleWidth;
 
 
 /*:::::*/

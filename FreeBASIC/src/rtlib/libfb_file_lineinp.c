@@ -78,7 +78,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 	/* - */
 	do
 	{
-		if( fb_hFileGetStr( buffer, BUFFER_LEN, f ) == NULL )
+		if( fb_ReadString( buffer, BUFFER_LEN, f ) == NULL )
 			break;
 
 		len = strlen( buffer );

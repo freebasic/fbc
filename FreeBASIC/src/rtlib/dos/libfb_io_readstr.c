@@ -18,52 +18,21 @@
  */
 
 /*
- * hook_inkey.c -- inkey$ entrypoint, default to console mode
+ * io_hgetstr - console line input function for DOS
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: jan/2005 written [DrV]
  *
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "fb.h"
 
-static FB_INKEYPROC fb_inkeyhook = &fb_ConsoleInkey;
-
-static FB_GETKEYPROC fb_getkeyhook = &fb_ConsoleGetkey;
-
-
 /*:::::*/
-FBCALL FBSTRING *fb_Inkey( void )
+char *fb_ConsoleReadStr( char *buffer, int len )
 {
 
-	return fb_inkeyhook( );
+	return fgets( buffer, len, stdin );
 
-}
-
-/*:::::*/
-FBCALL FB_INKEYPROC fb_SetInkeyProc( FB_INKEYPROC newproc )
-{
-    FB_INKEYPROC oldproc = fb_inkeyhook;
-
-    fb_inkeyhook = newproc;
-
-	return oldproc;
-}
-
-/*:::::*/
-FBCALL int fb_Getkey( void )
-{
-
-	return fb_getkeyhook( );
-
-}
-
-/*:::::*/
-FBCALL FB_GETKEYPROC fb_SetGetkeyProc( FB_GETKEYPROC newproc )
-{
-    FB_GETKEYPROC oldproc = fb_getkeyhook;
-
-    fb_getkeyhook = newproc;
-
-	return oldproc;
 }
 

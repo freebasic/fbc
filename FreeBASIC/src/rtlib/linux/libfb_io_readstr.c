@@ -18,21 +18,35 @@
  */
 
 /*
- * file_hgetstr - line input function for DOS
+ * io_hgetstr - console line input function for Linux
  *
- * chng: jan/2005 written [DrV]
+ * chng: jan/2005 written [lillo]
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
+#if !defined DISABLE_NCURSES
+#include <curses.h>
+#endif
 
 /*:::::*/
-char *fb_hFileGetStr( char *buffer, int len, FILE *f )
+char *fb_ConsoleReadStr( char *buffer, int len )
 {
 
-	return fgets( buffer, len, f );
+#if !defined DISABLE_NCURSES
+	echo( );
+	nodelay( stdscr, FALSE );
+	if( getnstr( buffer, len ) == ERR )
+		return NULL;
+	noecho( );
+	nodelay( stdscr, TRUE );
+	strcat( buffer, "\n" );
+	return buffer;
+#else
+	return fgets( buffer, len, stdin );
+#endif
 
 }
 

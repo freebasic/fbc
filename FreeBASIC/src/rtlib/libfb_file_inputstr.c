@@ -59,7 +59,16 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 		return &fb_strNullDesc;
 	}
 
-	len = fread( dst->data, 1, bytes, f );
+	if( fnum == 0 )
+	{
+		if( fb_ReadString( dst->data, bytes, f ) != NULL )
+			len = strlen( dst->data );
+		else
+			len = 0;
+	}
+	else
+		len = fread( dst->data, 1, bytes, f );
+
 	if( len != bytes )
 	{
 		dst->len = len | FB_TEMPSTRBIT;				/* fake len */

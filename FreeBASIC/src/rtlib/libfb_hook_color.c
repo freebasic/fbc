@@ -26,7 +26,7 @@
 
 #include "fb.h"
 
-FB_COLORPROC 	fb_colorhook  = &fb_ConsoleColor;
+static FB_COLORPROC fb_colorhook = &fb_ConsoleColor;
 
 
 /*:::::*/

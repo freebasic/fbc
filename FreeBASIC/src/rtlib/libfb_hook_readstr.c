@@ -18,21 +18,34 @@
  */
 
 /*
- * file_hgetstr - line input function for Windows
+ * hook_readstr.c -- input$|line input entrypoint, default to console mode
  *
  * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
+#include <stdio.h>
+
+static FB_READSTRPROC fb_readstrhook = &fb_ConsoleReadStr;
 
 /*:::::*/
-char *fb_hFileGetStr( char *buffer, int len, FILE *f )
+char *fb_ReadString( char *buffer, int len, FILE *f )
 {
 
-	return fgets( buffer, len, f );
+	if( f != stdin )
+		return fgets( buffer, len, f );
+	else
+		return fb_readstrhook( buffer, len );
 
 }
 
+/*:::::*/
+FBCALL FB_READSTRPROC fb_SetReadStrProc( FB_READSTRPROC newproc )
+{
+    FB_READSTRPROC oldproc = fb_readstrhook;
+
+    fb_readstrhook = newproc;
+
+	return oldproc;
+}

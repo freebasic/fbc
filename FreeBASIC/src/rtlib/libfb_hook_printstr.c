@@ -26,7 +26,7 @@
 
 #include "fb.h"
 
-FB_PRINTBUFFPROC 	fb_printbuffhook  = &fb_ConsolePrintBuffer;
+static FB_PRINTBUFFPROC fb_printbuffhook = &fb_ConsolePrintBuffer;
 
 
 /*:::::*/
