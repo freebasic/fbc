@@ -261,7 +261,7 @@ What FreeBASIC Isn't:
 
 Possible Additions to Later Versions:
 
-  o Macros
+  o Full debug support using GDB/Insight
 
   o TYPEDEF's
 
@@ -289,6 +289,7 @@ Credits (in alphabetic order):
   o Angelo Mottola (a.mottola@libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
+    - Added build-in threads support, besides many other runtime lib changes.
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
@@ -296,7 +297,7 @@ Credits (in alphabetic order):
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS; port maintainer.
-    - Translated the Allegro headers (W.I.P.)
+    - Translated the Allegro headers (W.I.P.).
     - FreeBASIC Documentation project member.
     - Wrote the DLL and static library automation, plus resource scripts support on Windows.
     - Completed the CRTDLL and DDRAW headers.
