@@ -86,7 +86,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	argv[0] = &buffer[0];
 	argv[1] = args->data;
 	argv[2] = NULL;
-	res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv );
+	res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), (const char **)argv );
 #else
 	char	*cmdline, *this_arg;
     int		i, argc = 1;
