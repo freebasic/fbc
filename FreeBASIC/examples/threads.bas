@@ -14,7 +14,7 @@ defint a-z
 option explicit
 
 '$include: 'win\kernel32.bi'
-'$include: 'win\crtdll.bi'
+'$include: 'crt.bi'
 
 const THREADS   = 5
 const SECS 		= 3

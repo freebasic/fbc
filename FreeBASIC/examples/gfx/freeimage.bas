@@ -23,13 +23,11 @@ declare function fibitmap2sdlsurface( byval dib as FIBITMAP Ptr ) as SDL_Surface
 	dim filename as string
 	
 	filename = Command$	
-	If( filename = "" )Then
-		Print
-      	Print "Program requires an image file to work with."
-      	Print
-      	Print "   FreeImage filename.ext"
-      	End -1
-	End If
+	if( filename = "" )Then
+	  	print "usage: freeimage.exe filename.ext"
+	  	sleep
+      	end 1
+	end if
 
 	if( left$( filename, 1 ) = "\"" ) then
 		filename = mid$( filename, 2 )
