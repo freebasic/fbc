@@ -74,6 +74,7 @@ static CRITICAL_SECTION update_lock;
 static int is_running, is_palette_changed, is_active;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
 static char *window_title;
+static int display_offset;
 static BOOL screensaver_active;
 
 
@@ -178,6 +179,7 @@ static int private_init()
 			else
 				break;
 		}
+		display_offset = ((height - mode_h) >> 1) * mode_w * BYTES_PER_PIXEL(mode_depth);
 	}
 	else {
 		wndclass.style = CS_VREDRAW | CS_HREDRAW;
@@ -196,6 +198,7 @@ static int private_init()
 			return -1;
 		if (IDirectDrawClipper_SetHWnd(lpDDC, 0, wnd) != DD_OK)
 			return -1;
+		display_offset = 0;
 	}
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = DDSD_CAPS;
@@ -401,7 +404,7 @@ static void window_thread(HANDLE running_event)
 			}
 			desc.dwSize = sizeof(desc);
 			if (IDirectDrawSurface_Lock(lpDDS_back, NULL, &desc, DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR, NULL) == DD_OK) {
-				blitter((unsigned char *)desc.lpSurface, desc.lPitch);
+				blitter((unsigned char *)desc.lpSurface + display_offset, desc.lPitch);
 				IDirectDrawSurface_Unlock(lpDDS_back, desc.lpSurface);
 				fb_hMemSet(fb_mode->dirty, FALSE, mode_h);
 			}
