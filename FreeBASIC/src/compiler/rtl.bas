@@ -666,6 +666,21 @@ data "out", "fb_GfxPaletteOut", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 data "inp", "fb_GfxPaletteInp", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 							    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+'' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void
+data "screenset", "fb_GfxSetPage", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+
+'' fb_GfxLock ( ) as void
+data "screenlock", "fb_GfxLock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+
+'' fb_GfxUnlock ( ) as void
+data "screenunlock", "fb_GfxUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+
+'' fb_GfxScreenPtr ( ) as any ptr
+data "screenptr", "fb_GfxScreenPtr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+
+
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
