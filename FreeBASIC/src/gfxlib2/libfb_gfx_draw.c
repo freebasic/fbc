@@ -43,6 +43,8 @@ static int parse_number(char **str)
 	char *c = *str;
 	int n = NAN, negative = FALSE;
 
+	while ((*c == ' ') || (*c == '\t'))
+		c++;
 	if (*c == '-') {
 		negative = TRUE;
 		c++;
@@ -182,8 +184,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 					DRIVER_LOCK();
 				}
 				if (move) {
-					x = x2;
-					y = y2;
+					x = floor(x2) + 0.5;
+					y = floor(y2) + 0.5;
 				}
 				move = draw = TRUE;
 				break;
@@ -205,17 +207,13 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 					length = 1;
 				break;
 			
-			case ' ':
-			case '\t':
+			default:
 				c++;
 				break;
-
-			default:
-				goto error;
 		}
 
 		if (length) {
-			length *= (base_scale * scale);
+			length = (int)(((float)length * (base_scale * scale)) + 0.5);
 			if (length < 0) {
 				angle += PI;
 				length = -length;
@@ -251,8 +249,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 		}
 	}
 
-	fb_mode->last_x = x - 0.5;
-	fb_mode->last_y = y - 0.5;
+	fb_mode->last_x = floor(x);
+	fb_mode->last_y = floor(y);
 
 error:
 	fb_mode->flags = flags;
