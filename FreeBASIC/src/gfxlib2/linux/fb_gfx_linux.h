@@ -57,7 +57,7 @@ extern LINUXDRIVER fb_linux;
 extern GFXDRIVER fb_gfxDriverX11;
 extern GFXDRIVER fb_gfxDriverOpenGL;
 
-extern void *fb_program_icon[];
+extern void *fb_program_icon;
 
 extern int fb_hX11Init(char *title, int w, int h, int depth, int flags);
 extern void fb_hX11Exit(void);

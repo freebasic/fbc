@@ -41,7 +41,7 @@ FBCALL int fb_GfxPaletteInp(int port)
 	switch (port) {
 
 		case 0x3C9:
-			value = (fb_mode->palette[idx] >> shift) & 0x3F;
+			value = (fb_mode->device_palette[idx] >> shift) & 0x3F;
 			shift += 8;
 			if (shift > 18) {
 				shift = 2;
