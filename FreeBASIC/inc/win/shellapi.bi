@@ -8,7 +8,9 @@
 
 'VERSION: 1.00
 
-'$include once: "win\winbase.bi"
+#include once "win\winbase.bi"
+
+#inclib "shell32"
 
 '----------------------
 '| REQUIRED CONSTANTS |
@@ -205,35 +207,35 @@ End Type
 '| API FunctionS |
 '-----------------
 
-Declare Function CommandLineToArgv Lib "shell32" Alias "CommandLineToArgvA" (ByVal lpCmdLine As String, ByRef pNumArgs As Short) As Integer
-Declare Function DoEnvironmentSubst Lib "shell32" Alias "DoEnvironmentSubstA" (ByVal szString As String, ByVal cbString As Integer) As Integer
-Declare Sub DragAcceptFiles Lib "shell32" (ByVal hwnd As Integer, ByVal fAccept As Integer)
-Declare Sub DragFinish Lib "shell32" (ByVal hDrop As Integer)
-Declare Function DragQueryFile Lib "shell32" Alias "DragQueryFileA" (ByVal HDROP As Integer, ByVal UINT As Integer, ByVal lpStr As String, ByVal ch As Integer) As Integer
-Declare Function DragQueryPoint Lib "shell32" (ByVal HDROP As Integer, ByRef lpPoint As POINTAPI) As Integer
-Declare Function DuplicateIcon Lib "shell32" (ByVal hInst As Integer, ByVal hIcon As Integer) As Integer
-Declare Function ExtractAssociatedIcon Lib "shell32" Alias "ExtractAssociatedIconA" (ByVal hInst As Integer, ByVal lpIconPath As String, ByRef lpiIcon As Integer) As Integer
-Declare Function ExtractIcon Lib "shell32" Alias "ExtractIconA" (ByVal hInst As Integer, ByVal lpszExeFileName As String, ByVal nIconIndex As Integer) As Integer
-Declare Function ExtractIconEx Lib "shell32" Alias "ExtractIconExA" (ByVal lpszFile As String, ByVal nIconIndex As Integer, ByRef phiconLarge As Integer, ByRef phiconSmall As Integer, ByVal nIcons As Integer) As Integer
-Declare Function FindExecutable Lib "shell32" Alias "FindExecutableA" (ByVal lpFile As String, ByVal lpDirectory As String, ByVal lpResult As String) As Integer
-Declare Sub SHAddToRecentDocs Lib "shell32" (ByVal uFlags As Integer, ByRef pv As Any)
-Declare Function SHAppBarMessage Lib "shell32" (ByVal dwMessage As Integer, ByRef pData As APPBARDATA) As Integer
-Declare Function SHBrowseForFolder Lib "shell32" Alias "SHBrowseForFolderA" (lpBrowseInfo As BROWSEINFO) As Integer
-Declare Sub SHChangeNotify Lib "shell32" (ByVal wEventId As Integer, ByVal uFlags As Integer, ByRef dwItem1 As Any, ByRef dwItem2 As Any)
-Declare Sub SHEmptyRecycleBin Lib "shell32" Alias "SHEmptyRecycleBinA" (ByVal hwnd As Integer, ByVal pszRootPath As String, ByVal dwFlags As Integer)
-Declare Function SHFileOperation Lib "shell32" Alias "SHFileOperationA" (ByRef lpFileOp As SHFILEOPSTRUCT) As Integer
-Declare Sub SHFreeNameMappings Lib "shell32" (ByVal hNameMappings As Integer)
-Declare Sub SHGetDesktopFolder Lib "shell32" (ByRef ppshf As Integer)
-Declare Function SHGetDiskFreeSpaceEx Lib "shell32" Alias "SHGetDiskFreeSpaceExA" (ByVal pszDirectoryName As String, ByRef pulFreeBytesAvailableToCaller As INT64, ByRef pulTotalNumberOfBytes As INT64, ByRef pulTotalNumberOfFreeBytes As INT64) As Integer
-Declare Function SHGetFileInfo Lib "shell32" Alias "SHGetFileInfoA" (ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFO, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
-Declare Sub SHGetInstanceExplorer Lib "shell32" (ByVal ppunk As Integer)
-Declare Function SHGetNewLinkInfo Lib "shell32" Alias "SHGetNewLinkInfoA" (ByVal pszLinkto As String, ByVal pszDir As String, ByVal pszName As String, ByRef pfMustCopy As Integer, ByVal uFlags As Integer) As Integer
-Declare Function SHGetPathFromIDList Lib "shell32" Alias "SHGetPathFromIDListA" (ByVal pidl As Integer, ByVal pszPath As String) As Integer
-Declare Function SHGetSpecialFolderPath Lib "shell32" Alias "SHGetSpecialFolderPathA" (ByVal hwnd As Integer, ByVal pszPath As String, ByVal csidl As Integer, ByVal fCreate As Integer) As Integer
-Declare Function SHInvokePrinterCommand Lib "shell32" Alias "SHInvokePrinterCommandA" (ByVal hwnd As Integer, ByVal uAction As Integer, ByVal lpBuf1 As String, ByVal lpBuf2 As String, ByVal fModal As Integer) As Integer
-Declare Sub SHLoadInProc Lib "shell32" (ByVal rclsid As Integer)
-Declare Function ShellAbout Lib "shell32" Alias "ShellAboutA" (ByVal hwnd As Integer, ByVal szApp As String, ByVal szOtherStuff As String, ByVal hIcon As Integer) As Integer
-Declare Function ShellExecute Lib "shell32" Alias "ShellExecuteA" (ByVal hwnd As Integer, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Integer) As Integer
-Declare Function Shell_NotifyIcon Lib "shell32" Alias "Shell_NotifyIconA" (ByVal dwMessage As Integer, ByRef lpData As NOTIFYICONDATA) As Integer
+Declare Function CommandLineToArgv Alias "CommandLineToArgvA" (ByVal lpCmdLine As String, ByRef pNumArgs As Short) As Integer
+Declare Function DoEnvironmentSubst Alias "DoEnvironmentSubstA" (ByVal szString As String, ByVal cbString As Integer) As Integer
+Declare Sub DragAcceptFiles Alias "DragAcceptFiles" (ByVal hwnd As Integer, ByVal fAccept As Integer)
+Declare Sub DragFinish Alias "DragFinish" (ByVal hDrop As Integer)
+Declare Function DragQueryFile Alias "DragQueryFileA" (ByVal HDROP As Integer, ByVal UINT As Integer, ByVal lpStr As String, ByVal ch As Integer) As Integer
+Declare Function DragQueryPoint Alias "DragQueryPoint" (ByVal HDROP As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function DuplicateIcon Alias "DuplicateIcon" (ByVal hInst As Integer, ByVal hIcon As Integer) As Integer
+Declare Function ExtractAssociatedIcon Alias "ExtractAssociatedIconA" (ByVal hInst As Integer, ByVal lpIconPath As String, ByRef lpiIcon As Integer) As Integer
+Declare Function ExtractIcon Alias "ExtractIconA" (ByVal hInst As Integer, ByVal lpszExeFileName As String, ByVal nIconIndex As Integer) As Integer
+Declare Function ExtractIconEx Alias "ExtractIconExA" (ByVal lpszFile As String, ByVal nIconIndex As Integer, ByRef phiconLarge As Integer, ByRef phiconSmall As Integer, ByVal nIcons As Integer) As Integer
+Declare Function FindExecutable Alias "FindExecutableA" (ByVal lpFile As String, ByVal lpDirectory As String, ByVal lpResult As String) As Integer
+Declare Sub SHAddToRecentDocs Alias "SHAddToRecentDocs" (ByVal uFlags As Integer, ByRef pv As Any)
+Declare Function SHAppBarMessage Alias "SHAppBarMessage" (ByVal dwMessage As Integer, ByRef pData As APPBARDATA) As Integer
+Declare Function SHBrowseForFolder Alias "SHBrowseForFolderA" (lpBrowseInfo As BROWSEINFO) As Integer
+Declare Sub SHChangeNotify Alias "SHChangeNotify" (ByVal wEventId As Integer, ByVal uFlags As Integer, ByRef dwItem1 As Any, ByRef dwItem2 As Any)
+Declare Sub SHEmptyRecycleBin Alias "SHEmptyRecycleBinA" (ByVal hwnd As Integer, ByVal pszRootPath As String, ByVal dwFlags As Integer)
+Declare Function SHFileOperation Alias "SHFileOperationA" (ByRef lpFileOp As SHFILEOPSTRUCT) As Integer
+Declare Sub SHFreeNameMappings Alias "SHFreeNameMappings" (ByVal hNameMappings As Integer)
+Declare Sub SHGetDesktopFolder Alias "SHGetDesktopFolder" (ByRef ppshf As Integer)
+Declare Function SHGetDiskFreeSpaceEx Alias "SHGetDiskFreeSpaceExA" (ByVal pszDirectoryName As String, ByRef pulFreeBytesAvailableToCaller As INT64, ByRef pulTotalNumberOfBytes As INT64, ByRef pulTotalNumberOfFreeBytes As INT64) As Integer
+Declare Function SHGetFileInfo Alias "SHGetFileInfoA" (ByVal pszPath As String, ByVal dwFileAttributes As Integer, ByRef psfi As SHFILEINFO, ByVal cbFileInfo As Integer, ByVal uFlags As Integer) As Integer
+Declare Sub SHGetInstanceExplorer Alias "SHGetInstanceExplorer" (ByVal ppunk As Integer)
+Declare Function SHGetNewLinkInfo Alias "SHGetNewLinkInfoA" (ByVal pszLinkto As String, ByVal pszDir As String, ByVal pszName As String, ByRef pfMustCopy As Integer, ByVal uFlags As Integer) As Integer
+Declare Function SHGetPathFromIDList Alias "SHGetPathFromIDListA" (ByVal pidl As Integer, ByVal pszPath As String) As Integer
+Declare Function SHGetSpecialFolderPath Alias "SHGetSpecialFolderPathA" (ByVal hwnd As Integer, ByVal pszPath As String, ByVal csidl As Integer, ByVal fCreate As Integer) As Integer
+Declare Function SHInvokePrinterCommand Alias "SHInvokePrinterCommandA" (ByVal hwnd As Integer, ByVal uAction As Integer, ByVal lpBuf1 As String, ByVal lpBuf2 As String, ByVal fModal As Integer) As Integer
+Declare Sub SHLoadInProc Alias "SHLoadInProc" (ByVal rclsid As Integer)
+Declare Function ShellAbout Alias "ShellAboutA" (ByVal hwnd As Integer, ByVal szApp As String, ByVal szOtherStuff As String, ByVal hIcon As Integer) As Integer
+Declare Function ShellExecute Alias "ShellExecuteA" (ByVal hwnd As Integer, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Integer) As Integer
+Declare Function Shell_NotifyIcon Alias "Shell_NotifyIconA" (ByVal dwMessage As Integer, ByRef lpData As NOTIFYICONDATA) As Integer
 
 #endif 'SHELLAPI

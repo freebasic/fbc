@@ -264,6 +264,9 @@
   BYTE
   BYREF
   BIN$
+  BIT macro            (foo = BIT( bar, 10 ) -- same as "foo = (bar and 10 shl 10) > 0")
+  BITSET macro         (foo = BITSET( bar, 5 ) -- same as "foo = bar or (1 shl 5)")
+  BITRESET macro       (foo = BITRESET( bar, 5 ) -- "same as foo = bar and not (1 shl 5)")
 
   CALLOCATE Function   (same as ALLOCATE, but clears the contents)
   CBYTE Function
@@ -291,11 +294,16 @@
 
   GETKEY Function
   GETMOUSE Statement
+  
+  HIBYTE macro			(foo = HIBYTE(bar) -- same as "foo = cunsg(bar) shr 8")
+  HIWORD macro			(foo = HIWORD(bar) -- same as "foo = cunsg(bar) shr 16")
 
   IIF()
   $INCLIB Directive
 
   LIB
+  LOBYTE macro			(foo = LOBYTE(bar) -- same as "foo = bar and &h000000ff")
+  LOWORD macro			(foo = LOWORD(bar) -- same as "foo = bar and &h0000ffff")
 
   MULTIKEY Function
 
@@ -336,6 +344,7 @@
 
   WINDOWTITLE Statement
   WITH..END WITH 	(compound statement -- won't work with field dereference "->")
+  
 
 *****************************************************************************
 * Unsupported (won't be implemented unless someone else does that...)       *

@@ -44,7 +44,7 @@ type fd_set
 end type
 #endif
 
-declare function __WSAFDIsSet pascal alias "__WSAFDIsSet" (byval s as SOCKET, byval set as fd_set ptr) as integer
+declare function __WSAFDIsSet alias "__WSAFDIsSet" (byval s as SOCKET, byval set as fd_set ptr) as integer
 
 #ifndef FD_CLR
 private sub FD_CLR(byval fd as integer, byval set as fd_set ptr)
@@ -129,7 +129,7 @@ type servent
 	s_port		as short
 	s_proto		as byte ptr
 end type
-type  protoent
+type protoent
 	p_name		as byte ptr
 	p_aliases	as byte ptr ptr
 	p_proto		as short
@@ -193,12 +193,6 @@ union in_addr
 	S_un_w		as S_un_w_ 
 	S_addr		as u_long
 end union
-
-#define s_host  S_un_b.s_b2
-#define s_net   S_un_b.s_b1
-#define s_imp   S_un_w.s_w2
-#define s_impno S_un_b.s_b4
-#define s_lh    S_un_b.s_b3
 
 #define IN_CLASSA(i)	((i) and &h80000000)
 #define IN_CLASSA_NET	&hff000000
@@ -427,58 +421,59 @@ end type
 #define NO_DATA	WSANO_DATA
 #define NO_ADDRESS	WSANO_ADDRESS
 
-declare function accept pascal alias "accept" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as SOCKET
-declare function bind pascal alias "bind" (byval as SOCKET, byval as sockaddr ptr, byval as integer) as integer
-declare function closesocket pascal alias "closesocket" (byval as SOCKET) as integer
-declare function connect pascal alias "connect" (byval as SOCKET, byval as sockaddr ptr, byval as integer) as integer
-declare function ioctlsocket pascal alias "ioctlsocket" (byval as SOCKET, byval as long, byval as u_long ptr) as integer
-declare function getpeername pascal alias "getpeername" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as integer
-declare function getsockname pascal alias "getsockname" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as integer
-declare function getsockopt pascal alias "getsockopt" (byval as SOCKET, byval as integer, byval as integer, byval as byte ptr, byval as integer ptr) as integer
-declare function inet_addr pascal alias "inet_addr" (byval as string) as uinteger
+declare function accept alias "accept" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as SOCKET
+declare function bind alias "bind" (byval as SOCKET, byval as sockaddr ptr, byval as integer) as integer
+declare function closesocket alias "closesocket" (byval as SOCKET) as integer
+declare function connect alias "connect" (byval as SOCKET, byval as sockaddr ptr, byval as integer) as integer
+declare function ioctlsocket alias "ioctlsocket" (byval as SOCKET, byval as long, byval as u_long ptr) as integer
+declare function getpeername alias "getpeername" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as integer
+declare function getsockname alias "getsockname" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as integer
+declare function getsockopt alias "getsockopt" (byval as SOCKET, byval as integer, byval as integer, byval as byte ptr, byval as integer ptr) as integer
+declare function inet_addr alias "inet_addr" (byval as string) as uinteger
 declare function inet_ntoa stdcall alias "inet_ntoa" (byval as in_addr) as byte ptr
-declare function listen pascal alias "listen" (byval as SOCKET, byval as integer) as integer
-declare function recv pascal alias "recv" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer) as integer
-declare function recvfrom pascal alias "recvfrom" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer, byval as sockaddr ptr, byval as integer ptr) as integer
-declare function send pascal alias "send" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer) as integer
-declare function sendto pascal alias "sendto" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer, byval as sockaddr ptr, byval as integer) as integer
-declare function setsockopt pascal alias "setsockopt" (byval as SOCKET, byval as integer, byval as integer, byval as byte ptr, byval as integer) as integer
-declare function shutdown pascal alias "shutdown" (byval as SOCKET, byval as integer) as integer
-declare function socket_ pascal alias "socket" (byval as integer, byval as integer, byval as integer) as SOCKET
+declare function listen alias "listen" (byval as SOCKET, byval as integer) as integer
+declare function recv alias "recv" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer) as integer
+declare function recvfrom alias "recvfrom" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer, byval as sockaddr ptr, byval as integer ptr) as integer
+declare function send alias "send" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer) as integer
+declare function sendto alias "sendto" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer, byval as sockaddr ptr, byval as integer) as integer
+declare function setsockopt alias "setsockopt" (byval as SOCKET, byval as integer, byval as integer, byval as byte ptr, byval as integer) as integer
+declare function shutdown alias "shutdown" (byval as SOCKET, byval as integer) as integer
+declare function opensocket alias "socket" (byval as integer, byval as integer, byval as integer) as SOCKET
 
-declare function gethostbyaddr stdcall alias "gethostbyaddr" (byval as byte ptr, byval as integer, byval as integer) as hostent ptr
-declare function gethostbyname stdcall alias "gethostbyname" (byval as string) as hostent ptr
-declare function getservbyport stdcall alias "getservbyport" (byval as integer, byval as string) as servent ptr
-declare function getservbyname stdcall alias "getservbyname" (byval as string, byval as string) as servent ptr
-declare function getprotobynumber stdcall alias "getprotobynumber" (byval as integer) as protoent ptr
-declare function getprotobyname stdcall alias "getprotobyname" (byval as string) as protoent ptr
+declare function gethostbyaddr alias "gethostbyaddr" (byval as byte ptr, byval as integer, byval as integer) as hostent ptr
+declare function gethostbyname alias "gethostbyname" (byval as string) as hostent ptr
+declare function getservbyport alias "getservbyport" (byval as integer, byval as string) as servent ptr
+declare function getservbyname alias "getservbyname" (byval as string, byval as string) as servent ptr
+declare function getprotobynumber alias "getprotobynumber" (byval as integer) as protoent ptr
+declare function getprotobyname alias "getprotobyname" (byval as string) as protoent ptr
 
-declare function WSAStartup pascal alias "WSAStartup" (byval as short, byval as LPWSADATA) as integer
-declare function WSACleanup pascal alias "WSACleanup" () as integer
-declare sub 	 WSASetLastError pascal alias "WSASetLastError" (byval as integer)
-declare function WSAGetLastError pascal alias "WSAGetLastError" () as integer
-declare function WSAIsBlocking pascal alias "WSAIsBlocking" () as integer
-declare function WSAUnhookBlockingHook pascal alias "WSAUnhookBlockingHook" () as integer
-declare function WSASetBlockingHook pascal alias "WSASetBlockingHook" (byval as sub) as sub
-declare function WSACancelBlockingCall pascal alias "WSACancelBlockingCall" () as integer
-declare function WSAAsyncGetServByName pascal alias "WSAAsyncGetServByName" (byval as integer, byval as u_int, byval as byte ptr, byval as byte ptr, byval as byte ptr, byval as integer) as integer
-declare function WSAAsyncGetServByPort pascal alias "WSAAsyncGetServByPort" (byval as integer, byval as u_int, byval as integer, byval as byte ptr, byval as byte ptr, byval as integer) as integer
-declare function WSAAsyncGetProtoByName pascal alias "WSAAsyncGetProtoByName" (byval as integer, byval as u_int, byval as byte ptr, byval as byte ptr, byval as integer) as integer
-declare function WSAAsyncGetProtoByNumber pascal alias "WSAAsyncGetProtoByNumber" (byval as integer, byval as u_int, byval as integer, byval as byte ptr, byval as integer) as integer
-declare function WSAAsyncGetHostByName pascal alias "WSAAsyncGetHostByName" (byval as integer, byval as u_int, byval as byte ptr, byval as byte ptr, byval as integer) as integer
-declare function WSAAsyncGetHostByAddr pascal alias "WSAAsyncGetHostByAddr" (byval as integer, byval as u_int, byval as byte ptr, byval as integer, byval as integer, byval as byte ptr, byval as integer) as integer
-declare function WSACancelAsyncRequest pascal alias "WSACancelAsyncRequest" (byval as integer) as integer
-declare function WSAAsyncSelect pascal alias "WSAAsyncSelect" (byval as SOCKET, byval as integer, byval as u_int, byval as long) as integer
-declare function htonl pascal alias "htonl" (byval as u_long) as u_long
-declare function ntohl pascal alias "ntohl" (byval as u_long) as u_long
-declare function htons pascal alias "htons" (byval as u_short) as u_short
-declare function ntohs pascal alias "ntohs" (byval as u_short) as u_short
-declare function select_ pascal alias "select" (byval as integer, byval as fd_set ptr, byval as fd_set ptr, byval as fd_set ptr, byval as timeval ptr) as integer
-declare function gethostname pascal alias "gethostname" (byval as byte ptr, byval as integer) as integer
+declare function WSAStartup alias "WSAStartup" (byval as short, byval as LPWSADATA) as integer
+declare function WSACleanup alias "WSACleanup" () as integer
+declare sub 	 WSASetLastError alias "WSASetLastError" (byval as integer)
+declare function WSAGetLastError alias "WSAGetLastError" () as integer
+declare function WSAIsBlocking alias "WSAIsBlocking" () as integer
+declare function WSAUnhookBlockingHook alias "WSAUnhookBlockingHook" () as integer
+declare function WSASetBlockingHook alias "WSASetBlockingHook" (byval as sub) as sub
+declare function WSACancelBlockingCall alias "WSACancelBlockingCall" () as integer
+declare function WSAAsyncGetServByName alias "WSAAsyncGetServByName" (byval as integer, byval as u_int, byval as byte ptr, byval as byte ptr, byval as byte ptr, byval as integer) as integer
+declare function WSAAsyncGetServByPort alias "WSAAsyncGetServByPort" (byval as integer, byval as u_int, byval as integer, byval as byte ptr, byval as byte ptr, byval as integer) as integer
+declare function WSAAsyncGetProtoByName alias "WSAAsyncGetProtoByName" (byval as integer, byval as u_int, byval as byte ptr, byval as byte ptr, byval as integer) as integer
+declare function WSAAsyncGetProtoByNumber alias "WSAAsyncGetProtoByNumber" (byval as integer, byval as u_int, byval as integer, byval as byte ptr, byval as integer) as integer
+declare function WSAAsyncGetHostByName alias "WSAAsyncGetHostByName" (byval as integer, byval as u_int, byval as byte ptr, byval as byte ptr, byval as integer) as integer
+declare function WSAAsyncGetHostByAddr alias "WSAAsyncGetHostByAddr" (byval as integer, byval as u_int, byval as byte ptr, byval as integer, byval as integer, byval as byte ptr, byval as integer) as integer
+declare function WSACancelAsyncRequest alias "WSACancelAsyncRequest" (byval as integer) as integer
+declare function WSAAsyncSelect alias "WSAAsyncSelect" (byval as SOCKET, byval as integer, byval as u_int, byval as long) as integer
+declare function htonl alias "htonl" (byval as u_long) as u_long
+declare function ntohl alias "ntohl" (byval as u_long) as u_long
+declare function htons alias "htons" (byval as u_short) as u_short
+declare function ntohs alias "ntohs" (byval as u_short) as u_short
+declare function selectsocket alias "select" (byval as integer, byval as fd_set ptr, byval as fd_set ptr, byval as fd_set ptr, byval as timeval ptr) as integer
+declare function gethostname alias "gethostname" (byval as byte ptr, byval as integer) as integer
 
 
 #ifndef MAKELONG
-#define MAKELONG(a,b) ((a) shl 16 or (b))
+#define MAKELONG(a,b) ((a) shl 16 or ((b) and &h0000FFFF))
+#define MAKEWORD(a,b) ((a) shl 8 or ((b) and &h000000FF))
 #endif
 
 #define WSAMAKEASYNCREPLY(b,e)	MAKELONG(b,e)
