@@ -2257,15 +2257,26 @@ Win32:
 		to always work. This is a fallback driver for when DX is not
 		installed.
 		Supports windowed mode only.
+	OpenGL
+		OpenGL driver; likely to be hardware accelerated on every system,
+		it always works.
+		Supports windowed and fullscreen modes.
 Linux:
 	X11
 		Raw Xlib based driver; it always works, providing an X11
 		server is reachable. If your program runs locally, it uses the
 		Xshm extension to provide faster framebuffer access via shared
 		memory. For fullscreen mode to work, the Xvidmode extension
-		is used; your program needs to be executed locally, and
+		is used; your X11 gfx driver must also support resolution
+		switching. Also, program needs to be executed locally, and
 		corresponding modelines should be supported by your X11
 		server, otherwise fullscreen will not be available.
+	OpenGL
+		OpenGL driver; likely to be hardware accelerated on every system,
+		it works as long as your X server is configured for OpenGL support.
+		Supports windowed and fullscreen modes, but for fullscreen to
+		work the same conditions as those requested by the raw X11 driver
+		need to be satisfied.
 
 gfxlib will always choose the best driver for your system when a new video
 mode is set via SCREEN. To override driver selection, you can set the FBGFX
