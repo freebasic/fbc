@@ -47,6 +47,10 @@ Version 0.13 Beta:
 - char 255 was seen as -1 due the unsigned to signed bug listed above, making lexSkipLine fail when that char was used inside a comment (v1c)
 - unsigned versions for READ were missing (v1c)
 - field arrays starting at offset 0 with a lbound <> 0 would cause an access to the wrong fields, 'cause a bug at parser3 (v1c)
+- some fixes to the way gfx coordinates are transformed when WINDOW is active (lillo)
+- IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported
+  in gfxlib.txt of 0.12 does not work as expected with gfxlib 0.13; if your program used it, it's time to update its
+  code from the new gfxlib.txt (lillo)
 
 
 Version 0.12 Beta:

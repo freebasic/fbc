@@ -144,6 +144,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 			if (y1 > y2) {
 				SWAP(y1, y2);
 				style = reverse_mask(style);
+				bit = 1 << ((y2 - y1) & 0xF);
 			}
 			for (y = y1; y <= y2; y++) {
 				if (style & bit)
@@ -157,6 +158,7 @@ FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2,
 			if (x1 > x2) {
 				SWAP(x1, x2);
 				style = reverse_mask(style);
+				bit = 1 << ((x2 - x1) & 0xF);
 			}
 			if (style == 0xFFFF)
 				fb_hPixelSet(fb_mode->line[y1] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);

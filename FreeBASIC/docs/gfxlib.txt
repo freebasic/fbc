@@ -2412,10 +2412,11 @@ Appendix F: Hints
 			FOR row = 0 TO fb_FontData.h-1
 				IF (buffer) THEN
 					LINE buffer, (x + 7, y + row)_
-						-(x, y + row), col,, *bits
+						-(x, y + row), col,,
+						*bits SHL 8
 				ELSE
 					LINE (x + 7, y + row)-(x, y + row),_
-						col,, *bits
+						col,, *bits SHL 8
 				END IF
 				bits += 1
 			NEXT row
