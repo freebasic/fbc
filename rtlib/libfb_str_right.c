@@ -18,7 +18,7 @@
  */
 
 /*
- * str_lfrg.c -- left$ and right$ routines
+ * str_right.c -- right$ function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -26,45 +26,6 @@
 
 #include <malloc.h>
 #include "fb.h"
-
-/*:::::*/
-FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
-{
-	FBSTRING 	*dst;
-	int 		i, len, src_len;
-	char		*s, *d;
-
-	if( (src == NULL) || (src->data == NULL) )
-		return &fb_strNullDesc;
-
-	if( chars > 0 )
-	{
-		src_len = FB_STRSIZE( src );
-		if( chars > src_len )
-			len = src_len;
-		else
-			len = chars;
-
-		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		if( dst != NULL )
-		{
-			fb_hStrAllocTemp( dst, len );
-
-			/* simple copy */
-			fb_hStrCopy( dst->data, src->data, len );
-		}
-		else
-			dst = &fb_strNullDesc;
-    }
-    else
-    	dst = &fb_strNullDesc;
-
-	/* del if temp */
-	fb_hStrDelTemp( src );
-
-	return dst;
-}
 
 /*:::::*/
 FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
@@ -76,9 +37,9 @@ FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
 	if( (src == NULL) || (src->data == NULL) )
 		return &fb_strNullDesc;
 
-	if( chars > 0 )
+	src_len = FB_STRSIZE( src );
+	if( (chars > 0) && (src_len > 0) )
     {
-		src_len = FB_STRSIZE( src );
 		if( chars > src_len )
 			len = src_len;
 		else
