@@ -178,6 +178,13 @@ data "fb_StrFill2","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
 data "fb_StrLen","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
 					 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_ASC ( str as string ) as uinteger
+data "fb_ASC", "", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
+				   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+'' fb_CHR ( byval number as uinteger ) as string
+data "fb_CHR", "", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
+				   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
+
 
 ''
 '' fb_END ( byval errlevel as integer ) as void
@@ -741,13 +748,6 @@ data "eof", "fb_FileEof", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 data "kill", "fb_FileKill", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 							FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
-'' fb_CHR ( byval number as uinteger ) as string
-data "chr","fb_CHR", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
-'' fb_ASC ( str as string ) as uinteger
-data "asc","fb_ASC", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-
 '' fb_CVD ( str as string ) as double
 data "cvd","fb_CVD", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
 					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
@@ -1111,6 +1111,8 @@ function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
     dim str1len as integer, str2len as integer
     dim s as integer
 
+	rtlStrCompare = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRCOMPARE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
@@ -1130,13 +1132,21 @@ function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
 	end if
 
     ''
-    astNewPARAM( proc, str1, sdtype1 )
+    if( astNewPARAM( proc, str1, sdtype1 ) = INVALID ) then
+    	exit function
+    end if
     lgt = astNewCONST( str1len, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, str2, sdtype2 )
+    if( astNewPARAM( proc, str2, sdtype2 ) = INVALID ) then
+    	exit function
+    end if
     lgt = astNewCONST( str2len, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
     rtlStrCompare = proc
 
@@ -1150,13 +1160,17 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
     dim str1len as integer, str2len as integer
     dim s as integer
 
+	rtlStrConcat = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRCONCAT)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 5 )
 
     '' dst as string
     tstr = symbAddTempVar( FB.SYMBTYPE.STRING )
-    astNewPARAM( proc, astNewVAR( tstr, NULL, 0, IR.DATATYPE.STRING ), IR.DATATYPE.STRING )
+    if( astNewPARAM( proc, astNewVAR( tstr, NULL, 0, IR.DATATYPE.STRING ), IR.DATATYPE.STRING ) = INVALID ) then
+    	exit function
+    end if
 
    	''
 	str1len = -1
@@ -1173,13 +1187,21 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
 	end if
 
     ''
-    astNewPARAM( proc, str1, sdtype1 )
+    if( astNewPARAM( proc, str1, sdtype1 ) = INVALID ) then
+    	exit function
+    end if
     lgt = astNewCONST( str1len, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, str2, sdtype2 )
+    if( astNewPARAM( proc, str2, sdtype2 ) = INVALID ) then
+    	exit function
+    end if
     lgt = astNewCONST( str2len, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
     rtlStrConcat = proc
 
@@ -1190,6 +1212,8 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
     dim lgt as integer, dtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
+
+	rtlStrConcatAssign = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.STRCONCATASSIGN)
@@ -1205,9 +1229,13 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
 		lgt = hGetFixStrLen( dst )
 		if( lgt < 0 ) then lgt = 0
 	end if
-	astNewPARAM( proc, dst, dtype )
+	if( astNewPARAM( proc, dst, dtype ) = INVALID ) then
+    	exit function
+    end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
    	''
    	dtype = astGetDataType( src )
@@ -1219,9 +1247,13 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
 		lgt = hGetFixStrLen( src )
 		if( lgt < 0 ) then lgt = 0
 	end if
-	astNewPARAM( proc, src, dtype )
+	if( astNewPARAM( proc, src, dtype ) = INVALID ) then
+    	exit function
+    end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	''
 	rtlStrConcatAssign = proc
@@ -1233,6 +1265,8 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
     dim lgt as integer, dtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
+
+	rtlStrAssign = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.STRASSIGN)
@@ -1248,9 +1282,13 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
 		lgt = hGetFixStrLen( dst )
 		if( lgt < 0 ) then lgt = 0
 	end if
-	astNewPARAM( proc, dst, dtype )
+	if( astNewPARAM( proc, dst, dtype ) = INVALID ) then
+    	exit function
+    end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
    	''
    	dtype = astGetDataType( src )
@@ -1262,9 +1300,13 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
 		lgt = hGetFixStrLen( src )
 		if( lgt < 0 ) then lgt = 0
 	end if
-	astNewPARAM( proc, src, dtype )
+	if( astNewPARAM( proc, src, dtype ) = INVALID ) then
+    	exit function
+    end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	''
 	rtlStrAssign = proc
@@ -1276,12 +1318,16 @@ function rtlStrDelete( byval strg as integer ) as integer static
     dim lgt as integer
     dim proc as integer, f as FBSYMBOL ptr
 
+	rtlStrDelete = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRDELETE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' str as ANY
-    astNewPARAM( proc, strg, IR.DATATYPE.STRING )
+    if( astNewPARAM( proc, strg, IR.DATATYPE.STRING ) = INVALID ) then
+    	exit function
+    end if
 
     rtlStrDelete = proc
 
@@ -1292,13 +1338,16 @@ function rtlStrAllocTmpResult( byval strg as integer ) as integer static
     dim lgt as integer
     dim proc as integer, f as FBSYMBOL ptr
 
+	rtlStrAllocTmpResult = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRALLOCTMPRES)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' src as string
-    astNewPARAM( proc, strg, IR.DATATYPE.STRING )
-
+    if( astNewPARAM( proc, strg, IR.DATATYPE.STRING ) = INVALID ) then
+    	exit function
+    end if
 
 	rtlStrAllocTmpResult = proc
 
@@ -1310,12 +1359,16 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim s as integer, lgt as integer, dtype as integer
 
+    rtlStrAllocTmpDesc = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRALLOCTMPDESC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' str as any
-    astNewPARAM( proc, strg, IR.DATATYPE.STRING )
+    if( astNewPARAM( proc, strg, IR.DATATYPE.STRING ) = INVALID ) then
+    	exit function
+    end if
 
     '' byval strlen as integer
    	dtype = astGetDataType( strg )
@@ -1328,7 +1381,9 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
 		if( lgt < 0 ) then lgt = 0
 	end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	''
 	rtlStrAllocTmpDesc = proc
@@ -1339,7 +1394,9 @@ end function
 function rtlToStr( byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
+    rtlToStr = INVALID
 
+    ''
 	select case astGetDataClass( expr )
 	case IR.DATACLASS.INTEGER
 		f = ifuncTB(FB.RTL.INT2STR)
@@ -1358,7 +1415,9 @@ function rtlToStr( byval expr as integer ) as integer static
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     ''
-    astNewPARAM( proc, expr, INVALID )
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     rtlToStr = proc
 
@@ -1369,16 +1428,24 @@ function rtlStrInstr( byval expr1 as integer, byval expr2 as integer, byval expr
 
     dim proc as integer, f as FBSYMBOL ptr
 
+	rtlStrInstr = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRINSTR)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     ''
-    astNewPARAM( proc, expr1, INVALID )
+    if( astNewPARAM( proc, expr1, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr2, INVALID )
+    if( astNewPARAM( proc, expr2, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr3, INVALID )
+    if( astNewPARAM( proc, expr3, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     rtlStrInstr = proc
 
@@ -1389,49 +1456,72 @@ function rtlStrMid( byval expr1 as integer, byval expr2 as integer, byval expr3 
 
     dim proc as integer, f as FBSYMBOL ptr
 
+    rtlStrMid = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.STRMID)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     ''
-    astNewPARAM( proc, expr1, INVALID )
+    if( astNewPARAM( proc, expr1, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr2, INVALID )
+    if( astNewPARAM( proc, expr2, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr3, INVALID )
+    if( astNewPARAM( proc, expr3, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     rtlStrMid = proc
 
 end function
 
 '':::::
-sub rtlStrAssignMid( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, byval expr4 as integer ) static
+function rtlStrAssignMid( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, _
+						  byval expr4 as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
+
+    rtlStrAssignMid = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.STRASSIGNMID)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
 
     ''
-    astNewPARAM( proc, expr1, INVALID )
+    if( astNewPARAM( proc, expr1, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr2, INVALID )
+    if( astNewPARAM( proc, expr2, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr3, INVALID )
+    if( astNewPARAM( proc, expr3, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr4, INVALID )
+    if( astNewPARAM( proc, expr4, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlStrAssignMid = proc
+
+end function
 
 '':::::
 function rtlStrFill( byval expr1 as integer, byval expr2 as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
+
+    rtlStrFill = INVALID
 
 	select case astGetDataClass( expr2 )
 	case IR.DATACLASS.INTEGER, IR.DATACLASS.FPOINT
@@ -1443,14 +1533,55 @@ function rtlStrFill( byval expr1 as integer, byval expr2 as integer ) as integer
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     ''
-    astNewPARAM( proc, expr1, INVALID )
+    if( astNewPARAM( proc, expr1, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
-    astNewPARAM( proc, expr2, INVALID )
+    if( astNewPARAM( proc, expr2, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     rtlStrFill = proc
 
 end function
 
+'':::::
+function rtlStrAsc( byval expr as integer ) as integer static
+
+    dim proc as integer, f as FBSYMBOL ptr
+
+	rtlStrAsc = INVALID
+
+	f = ifuncTB(FB.RTL.STRASC)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
+
+    ''
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    rtlStrAsc = proc
+
+end function
+
+'':::::
+function rtlStrChr( byval expr as integer ) as integer static
+
+    dim proc as integer, f as FBSYMBOL ptr
+
+	rtlStrChr = INVALID
+
+	f = ifuncTB(FB.RTL.STRCHR)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
+
+    ''
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    rtlStrChr = proc
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' arrays

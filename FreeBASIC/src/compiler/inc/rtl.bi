@@ -45,6 +45,8 @@ enum FBRTL_ENUM
 	FB.RTL.STRFILL1
 	FB.RTL.STRFILL2
 	FB.RTL.STRLEN
+	FB.RTL.STRASC
+	FB.RTL.STRCHR
 
 	FB.RTL.END
 
@@ -166,8 +168,10 @@ declare function 	rtlStrAllocTmpDesc	( byval strg as integer ) as integer
 declare function 	rtlToStr			( byval expr as integer ) as integer
 declare function 	rtlStrInstr			( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer ) as integer
 declare function 	rtlStrMid			( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer ) as integer
-declare sub 		rtlStrAssignMid		( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, byval expr4 as integer )
+declare function	rtlStrAssignMid		( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, byval expr4 as integer ) as integer
 declare function 	rtlStrFill			( byval expr1 as integer, byval expr2 as integer ) as integer
+declare function 	rtlStrAsc			( byval expr as integer ) as integer
+declare function 	rtlStrChr			( byval expr as integer ) as integer
 
 declare sub 		rtlArrayRedim		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 									  	  byval dimensions as integer, exprTB() as integer, _

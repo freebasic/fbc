@@ -2687,7 +2687,7 @@ function emitOpen
 	on local error goto eoerror
 
 	ctx.outf = freefile
-	open env.outfile for binary as #ctx.outf
+	open env.outfile for binary access read write as #ctx.outf
 
 	'' header
 	hSaveAsmHeader

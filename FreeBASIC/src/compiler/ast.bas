@@ -1744,7 +1744,7 @@ private function hStrLiteralConcat( byval l as integer, byval r as integer ) as 
 
 	hStrLiteralConcat = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
 
-	'' delete both vars if they are never access before
+	'' delete both vars if they were never accessed before
 	if( symbGetAccessCnt( ls ) = 0 ) then
 		symbDelVar ls
 	end if

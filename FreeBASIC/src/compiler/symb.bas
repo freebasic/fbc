@@ -261,8 +261,10 @@ data "IMPORT"	, FB.TK.IMPORT		, FB.TKCLASS.KEYWORD
 data "LIBPATH"	, FB.TK.LIBPATH		, FB.TKCLASS.KEYWORD
 data "BLOAD"	, FB.TK.BLOAD		, FB.TKCLASS.KEYWORD
 data "BSAVE"	, FB.TK.BSAVE		, FB.TKCLASS.KEYWORD
+data "CHR"		, FB.TK.CHR			, FB.TKCLASS.KEYWORD
+data "ASC"		, FB.TK.ASC			, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 168
+const FB.MAXKEYWORDS 		= 170
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1023,6 +1025,10 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
     dim elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr
 
 	hAllocStringConst = NULL
+
+	if( lgt < 0 ) then
+		lgt = len( sname )
+	end if
 
 	cname = "_sc_" + sname
 

@@ -329,7 +329,7 @@ function fbCompile ( infname as string, outfname as string )
 	end if
 
 	env.inf = freefile
-	open infname for binary as #env.inf
+	open infname for binary access read as #env.inf
 
 	''
 	if( not emitOpen ) then
@@ -453,7 +453,7 @@ function fbIncludeFile( filename as string, byval isonce as integer ) as integer
 
 		''
 		env.inf = freefile
-		open incfile for binary as #env.inf
+		open incfile for binary access read as #env.inf
 
 		'' parse
 		fbIncludeFile = cProgram

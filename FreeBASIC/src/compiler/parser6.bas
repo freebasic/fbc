@@ -241,9 +241,7 @@ function cMidStmt
 			exit function
 		end if
 
-		rtlStrAssignMid expr1, expr2, expr3, expr4
-
-		cMidStmt = TRUE
+		cMidStmt = rtlStrAssignMid( expr1, expr2, expr3, expr4 ) <> INVALID
 	end if
 
 end function
@@ -1383,6 +1381,7 @@ end function
 function cStringFunct( funcexpr as integer )
     dim expr1 as integer, expr2 as integer, expr3 as integer
     dim dclass as integer
+    dim s as FBSYMBOL ptr
 
 	cStringFunct = FALSE
 
@@ -1404,7 +1403,8 @@ function cStringFunct( funcexpr as integer )
 		end if
 
 		funcexpr = rtlToStr( expr1 )
-		cStringFunct = TRUE
+
+		cStringFunct = funcexpr <> INVALID
 
 	'' INSTR '(' ((Expression{int} ',' Expression{str} ',' Expression{int})|
 	''			  (Expression{str} ',' Expression{int})) ')'
@@ -1455,7 +1455,8 @@ function cStringFunct( funcexpr as integer )
 		end if
 
 		funcexpr = rtlStrInstr( expr1, expr2, expr3 )
-		cStringFunct = TRUE
+
+		cStringFunct = funcexpr <> INVALID
 
 	'' MID$ '(' Expression ',' Expression (',' Expression)? ')'
 	case FB.TK.MID
@@ -1496,7 +1497,8 @@ function cStringFunct( funcexpr as integer )
 		end if
 
 		funcexpr = rtlStrMid( expr1, expr2, expr3 )
-		cStringFunct = TRUE
+
+		cStringFunct = funcexpr <> INVALID
 
 
 	'' STRING$ '(' Expression ',' Expression{int|str} ')'
@@ -1529,8 +1531,81 @@ function cStringFunct( funcexpr as integer )
 		end if
 
 		funcexpr = rtlStrFill( expr1, expr2 )
-		cStringFunct = TRUE
 
+		cStringFunct = funcexpr <> INVALID
+
+	'' CHR$ '(' Expression ')'
+	case FB.TK.CHR
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		if( not cExpression( expr1 ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+
+		'' constant? evaluate at compile-time
+		if( astGetClass( expr1 ) = AST.NODECLASS.CONST ) then
+			funcexpr = astNewVAR( hAllocStringConst( chr$( astGetValue( expr1 ) ), -1 ), NULL, 0, IR.DATATYPE.FIXSTR )
+		    astDel expr1
+		else
+			funcexpr = rtlStrChr( expr1 )
+		end if
+
+		cStringFunct = funcexpr <> INVALID
+
+	'' ASC '(' Expression ')'
+	case FB.TK.ASC
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		if( not cExpression( expr1 ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+
+		'' constant? evaluate at compile-time
+		if( astGetClass( expr1 ) = AST.NODECLASS.VAR ) then
+			if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
+				s = astGetSymbol( expr1 )
+				if( symbGetInitialized( s ) ) then
+					funcexpr = astNewCONST( asc( symbGetVarText( s ) ), IR.DATATYPE.INTEGER )
+
+					'' delete var if it was never accessed before
+					if( symbGetAccessCnt( s ) = 0 ) then
+						symbDelVar s
+					end if
+
+		    		astDel expr1
+		    		expr1 = INVALID
+
+		    	end if
+		    end if
+		end if
+
+		if( expr1 <> INVALID ) then
+			funcexpr = rtlStrAsc( expr1 )
+		end if
+
+		cStringFunct = funcexpr <> INVALID
 	end select
 
 end function
@@ -1829,7 +1904,7 @@ function cQuirkFunction( funcexpr as integer )
 	res = FALSE
 
 	select case lexCurrentToken
-	case FB.TK.STR, FB.TK.INSTR, FB.TK.MID, FB.TK.STRING
+	case FB.TK.STR, FB.TK.INSTR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
 		res = cStringFunct( funcexpr )
 	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN
 		res = cMathFunct( funcexpr )
