@@ -158,6 +158,11 @@ function cSingleIfStatement( byval expr as integer )
 	'' branch
 	astUpdNodeResult expr
 	astUpdComp2Branch expr, nl, FALSE
+	if( expr = INVALID ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	end if
+
 	astFlush expr, vr
 
 	'' NUM_LIT | SimpleStatement*
@@ -228,6 +233,10 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 	'' branch
 	astUpdNodeResult expr
 	astUpdComp2Branch expr, nl, FALSE
+	if( expr = INVALID ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	end if
 	astFlush expr, vr
 
 	if( checkstmtsep ) then
@@ -757,8 +766,13 @@ function cDoStatement
 		else
 			isinverse = TRUE
 		end if
+
 		astUpdNodeResult expr
 		astUpdComp2Branch expr, el, isinverse
+		if( expr = INVALID ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES
+			exit function
+		end if
 		astFlush expr, vr
 
 		cl = il
@@ -831,6 +845,10 @@ function cDoStatement
 
 		astUpdNodeResult expr
 		astUpdComp2Branch expr, il, isinverse
+		if( expr = INVALID ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES
+			exit function
+		end if
 		astFlush expr, vr
 
 	else
@@ -896,6 +914,10 @@ function cWhileStatement
 	'' branch
 	astUpdNodeResult expr
 	astUpdComp2Branch expr, el, FALSE
+	if( expr = INVALID ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	end if
 	astFlush expr, vr
 
 	'' Comment?
@@ -971,6 +993,12 @@ function cSelectStatement
 
 	'' Expression
 	if( not cExpression( expr ) ) then
+		exit function
+	end if
+
+	'' can't be an UDT
+	if( astGetDataType( expr ) = IR.DATATYPE.USERDEF ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	end if
 

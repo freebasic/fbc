@@ -76,6 +76,7 @@ end type
 
 type IIFNode
 	cond			as integer						'' conditonal expression
+	falselabel 		as FBSYMBOL ptr
 end type
 
 type ASTNode

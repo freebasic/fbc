@@ -1072,12 +1072,18 @@ sub astUpdComp2Branch( n as integer, byval label as FBSYMBOL ptr, byval isinvers
 				if( astTB(n).value = 0 ) then
 					astDel n
 					n = astNewBRANCH( IR.OP.JMP, label, INVALID )
+					if( n = INVALID ) then
+						exit sub
+					end if
 				end if
 			else
 				'' branch if true
 				if( astTB(n).value <> 0 ) then
 					astDel n
 					n = astNewBRANCH( IR.OP.JMP, label, INVALID )
+					if( n = INVALID ) then
+						exit sub
+					end if
 				end if
 			end if
 
@@ -1089,7 +1095,9 @@ sub astUpdComp2Branch( n as integer, byval label as FBSYMBOL ptr, byval isinvers
 				op = IR.OP.NE
 			end if
 			n = astNewBOP( op, n, astNewCONST( 0, astTB(n).dtype ), label, FALSE )
-
+			if( n = INVALID ) then
+				exit sub
+			end if
 		end if
 
 		exit sub
@@ -3491,6 +3499,7 @@ end sub
 function astNewIIF( byval condexpr as integer, byval truexpr as integer, _
 					byval falsexpr as integer ) as integer static
     dim n as integer
+    dim falselabel as FBSYMBOL ptr
 
 	astNewIIF = INVALID
 
@@ -3519,6 +3528,14 @@ function astNewIIF( byval condexpr as integer, byval truexpr as integer, _
     	end if
     end if
 
+	falselabel = symbAddLabel( hMakeTmpStr )
+
+	astUpdNodeResult condexpr
+	astUpdComp2Branch condexpr, falselabel, FALSE
+	if( condexpr = INVALID ) then
+		exit function
+	end if
+
 	'' alloc new node
 	n = astNew( AST.NODECLASS.IIF, astTB(truexpr).dtype )
 	astNewIIF = n
@@ -3527,37 +3544,33 @@ function astNewIIF( byval condexpr as integer, byval truexpr as integer, _
 		exit function
 	end if
 
-	astTB(n).l  		= truexpr
-	astTB(n).r  		= falsexpr
-	astTB(n).iif.cond	= condexpr
+	astTB(n).l  			= truexpr
+	astTB(n).r  			= falsexpr
+	astTB(n).iif.falselabel = falselabel
+	astTB(n).iif.cond		= condexpr
 
 end function
 
 '':::::
 sub astLoadIIF( byval n as integer, vr as integer )
-    dim cond as integer, l as integer, r as integer
+    dim l as integer, r as integer
     dim vc as integer, v1 as integer
-    dim as FBSYMBOL ptr falselabel, exitlabel
+    dim exitlabel as FBSYMBOL ptr
 
-	cond = astTB(n).iif.cond
-	l  	 = astTB(n).l
-	r  	 = astTB(n).r
+	l  	 		= astTB(n).l
+	r  	 		= astTB(n).r
 
-	''
-	falselabel = symbAddLabel( hMakeTmpStr )
 	exitlabel  = symbAddLabel( hMakeTmpStr )
 
 	''
-	astUpdNodeResult cond
-	astUpdComp2Branch cond, falselabel, FALSE
-	astFlush cond, vc
+	astFlush astTB(n).iif.cond, vc
 
 	''
 	astLoad l, v1
 	irEmitLOAD IR.OP.LOAD, v1
 	irEmitBRANCH IR.OP.JMP, exitlabel
 
-    irEmitLABELNF falselabel
+    irEmitLABELNF astTB(n).iif.falselabel
 	astLoad r, v1
 	irEmitLOAD IR.OP.LOAD, v1
 
