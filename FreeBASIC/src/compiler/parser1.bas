@@ -575,7 +575,7 @@ function cConstAssign
 			hReportErrorEx FB.ERRMSG.EXPECTEDCONST, id
 			exit function
 		else
-			if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+			if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 				hReportErrorEx FB.ERRMSG.EXPECTEDCONST, id
 				exit function
 			end if
@@ -762,7 +762,7 @@ function cTypeDecl
     		exit function
     	end if
 
-		if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+		if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		end if
@@ -846,7 +846,7 @@ function cEnumConstDecl( id as string )
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		else
-			if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+			if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			end if
@@ -1088,9 +1088,9 @@ function hIsDynamic( byval dimensions as integer, exprTB() as integer ) as integ
 	end if
 
 	for i = 0 to dimensions-1
-		if( astGetType( exprTB(i, 0) ) <> AST.NODETYPE.CONST ) then
+		if( astGetClass( exprTB(i, 0) ) <> AST.NODECLASS.CONST ) then
 			exit function
-		elseif( astGetType( exprTB(i, 1) ) <> AST.NODETYPE.CONST ) then
+		elseif( astGetClass( exprTB(i, 1) ) <> AST.NODECLASS.CONST ) then
 			exit function
 		end if
 	next i
@@ -1450,7 +1450,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 		if( istatic or env.scope = 0 ) then
 
 			if( not islitstring ) then
-				if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+				if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 					hReportError FB.ERRMSG.EXPECTEDCONST
 					exit function
 				end if
@@ -1510,7 +1510,7 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		else
-			if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+			if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			end if
@@ -1528,7 +1528,7 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			else
-				if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+				if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 					hReportError FB.ERRMSG.EXPECTEDCONST
 					exit function
 				end if
@@ -1650,7 +1650,7 @@ function cConstExprValue( littext as string ) as integer
     	exit function
     end if
 
-	if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 		hReportError FB.ERRMSG.EXPECTEDCONST
 		exit function
 	end if
@@ -1663,7 +1663,7 @@ function cConstExprValue( littext as string ) as integer
 end function
 
 '':::::
-function cSymbolTypeFuncPtr as FBSYMBOL ptr
+function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 	dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, mode as integer
 	dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 	dim res as integer
@@ -1692,11 +1692,19 @@ function cSymbolTypeFuncPtr as FBSYMBOL ptr
 			exit function
 		end if
 	else
-		typ = FB.SYMBTYPE.VOID
+
+		'' if it's a function and type was not given, it can't be guessed
+		if( isfunction ) then
+			hReportError FB.ERRMSG.EXPECTEDRESTYPE
+			exit function
+		end if
+
 		subtype = NULL
+		typ = FB.SYMBTYPE.VOID
 	end if
 
-	cSymbolTypeFuncPtr = symbAddPrototype( hMakeTmpStr, "", "", typ, subtype, 0, mode, argc, argv(), TRUE )
+	cSymbolTypeFuncPtr = symbAddPrototype( hMakeTmpStr, "", "", typ, subtype, 0, mode, _
+										   argc, argv(), TRUE )
 
 end function
 
@@ -1715,7 +1723,7 @@ end function
 ''				      (PTR|POINTER)* .
 ''
 function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
-    dim isunsigned as integer
+    dim isunsigned as integer, isfunction as integer
     dim res as integer, s as FBSYMBOL ptr
     dim littext as string
     dim ptrcnt as integer
@@ -1793,12 +1801,13 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 		end if
 
 	case FB.TK.FUNCTION, FB.TK.SUB
+	    isfunction = (lexCurrentToken = FB.TK.FUNCTION)
 	    lexSkipToken
 
 		typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION
 		lgt = FB.POINTERSIZE
 
-		subtype = cSymbolTypeFuncPtr
+		subtype = cSymbolTypeFuncPtr( isfunction )
 		if( subtype = NULL ) then
 			exit function
 		end if
@@ -2205,7 +2214,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
     		exit function
     	end if
 
-    	if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+    	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		end if
@@ -2528,7 +2537,7 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
     	exit function
     end if
 
-    assg = astNewVAR( s, 0, symbGetType( s ) )
+    assg = astNewVAR( s, NULL, 0, symbGetType( s ), symbGetSubtype( s ) )
 
     assg = astNewASSIGN( assg, expr )
 
@@ -2703,7 +2712,7 @@ function cAssignmentOrPtrCall
     	end if
 
     	'' calling a FUNCTION ptr?
-    	if( astGetType( assgexpr ) = AST.NODETYPE.FUNCT ) then
+    	if( astGetClass( assgexpr ) = AST.NODECLASS.FUNCT ) then
 			'' can the result be skipped?
 			dtype = astGetDataType( assgexpr )
 			if( (irGetDataClass( dtype ) = IR.DATACLASS.FPOINT) or hIsString( dtype ) ) then

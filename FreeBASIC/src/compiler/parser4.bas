@@ -398,17 +398,6 @@ function cStoreTemp( byval vs as integer, byval dtype as integer, byval dclass a
 end function
 
 '':::::
-function cAddNode( byval v as FBSYMBOL ptr, byval dtype as integer, byval isvar as integer ) as integer static
-
-	if( isvar ) then
-		cAddNode = astNewVAR( v, 0, dtype )
-	else
-		cAddNode = astNewCONST( v, dtype )
-	end if
-
-end function
-
-'':::::
 sub cFlushBOP( byval op as integer, byval dtype as integer, _
 	 		   byval v1 as FBSYMBOL ptr, byval v1isvar as integer, _
 			   byval v2 as FBSYMBOL ptr, byval v2isvar as integer, _
@@ -418,13 +407,13 @@ sub cFlushBOP( byval op as integer, byval dtype as integer, _
 
 	'' bop
 	if( v1isvar ) then
-		expr1 = astNewVAR( v1, 0, dtype )
+		expr1 = astNewVAR( v1, NULL, 0, dtype )
 	else
 		expr1 = astNewCONST( v1, dtype )
 	end if
 
 	if( v2isvar ) then
-		expr2 = astNewVAR( v2, 0, dtype )
+		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
 		expr2 = astNewCONST( v2, dtype )
 	end if
@@ -444,10 +433,10 @@ sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	dim vr as integer
 
 	'' bop
-	expr1 = astNewVAR( v1, 0, dtype )
+	expr1 = astNewVAR( v1, NULL, 0, dtype )
 
 	if( v2isvar ) then
-		expr2 = astNewVAR( v2, 0, dtype )
+		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
 		expr2 = astNewCONST( v2, dtype )
 	end if
@@ -455,7 +444,7 @@ sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	expr = astNewBOP( op, expr1, expr2 )
 
 	'' assign
-	expr1 = astNewVAR( v1, 0, dtype )
+	expr1 = astNewVAR( v1, NULL, 0, dtype )
 
 	expr = astNewASSIGN( expr1, expr )
 
@@ -472,7 +461,7 @@ end sub
 function cForStatement
     dim res as integer, iscomplex as integer, ispositive as integer
     dim il as FBSYMBOL ptr, tl as FBSYMBOL ptr, el as FBSYMBOL ptr, cl as FBSYMBOL ptr, c2l as FBSYMBOL ptr
-    dim cnt as integer
+    dim cnt as integer, elm as FBSYMBOL ptr
     dim endc as integer, endc_isvar as integer
     dim stp as integer, stp_isvar as integer
 	dim cmp as integer, cmp_isvar as integer
@@ -487,18 +476,16 @@ function cForStatement
 	lexSkipToken
 
 	'' ID
-	if( not cVariable( idexpr ) ) then
+	if( not cVariable( idexpr, cnt, elm ) ) then
 		hReportError FB.ERRMSG.EXPECTEDVAR
 		exit function
 	end if
 
-	if( (astGetType( idexpr ) <> AST.NODETYPE.VAR) or _
-		(astGetOffset( idexpr ) <> 0) ) then
+	if( (astGetClass( idexpr ) <> AST.NODECLASS.VAR) or (elm <> NULL) ) then
 		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
 		exit function
 	end if
 
-	cnt = astGetSymbol( idexpr )
 	typ = symbGetType( cnt )
 
 	if( typ < FB.SYMBTYPE.BYTE or typ > FB.SYMBTYPE.DOUBLE ) then
@@ -1041,7 +1028,7 @@ function cSelectStatement
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( selctx.symbol, 0, selctx.dtype ), expr )
+	expr = astNewASSIGN( astNewVAR( selctx.symbol, NULL, 0, selctx.dtype ), expr )
 	if( expr = INVALID ) then
 		exit function
 	end if
@@ -1064,7 +1051,7 @@ function cSelectStatement
 
 	'' if a temp string was allocated, delete it
 	if( selctx.dtype = FB.SYMBTYPE.STRING ) then
-		expr = rtlStrDelete( astNewVAR( selctx.symbol, 0, selctx.dtype ) )
+		expr = rtlStrDelete( astNewVAR( selctx.symbol, NULL, 0, selctx.dtype ) )
 		astFlush expr, vr
 	end if
 
@@ -1202,16 +1189,16 @@ function cCaseExpression( byval s as FBSYMBOL ptr, byval sdtype as integer, byva
 	end if
 
 	if( not isrange ) then
-		v = astNewVAR( s, 0, sdtype )
+		v = astNewVAR( s, NULL, 0, sdtype )
 		expr1 = astNewBOP( op, v, expr1, initlabel, FALSE )
 
 		astFlush expr1, vr
 
 	else
-		v = astNewVAR( s, 0, sdtype )
+		v = astNewVAR( s, NULL, 0, sdtype )
 		expr1 = astNewBOP( IR.OP.LT, v, expr1, nextlabel, FALSE )
 
-		v = astNewVAR( s, 0, sdtype )
+		v = astNewVAR( s, NULL, 0, sdtype )
 		expr2 = astNewBOP( IR.OP.LE, v, expr2, initlabel, FALSE )
 
 		astFlush expr1, vr

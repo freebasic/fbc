@@ -113,8 +113,9 @@ data "Expected 'END WITH'"
 data "Illegal inside a SUB or FUNCTION"
 data "Expected array"
 data "Too many expressions"
+data "Expected explicit result type"
 
-const FB.ERRMSGS = 64
+const FB.ERRMSGS = 65
 
 
 '':::::
@@ -489,11 +490,7 @@ function hCreateProcAlias( symbol as string, byval argslen as integer, _
     dim addat as integer
 
 #ifdef TARGET_WIN32
-    if( not env.clopt.nostdcall ) then
-		nm = "_" + symbol
-	else
-		nm = symbol
-	end if
+	nm = "_" + symbol
 
     if( env.clopt.nostdcall ) then
     	addat = FALSE

@@ -538,17 +538,14 @@ function hNewSymbol( symbol as string, aliasname as string, byval class as integ
     s->subtype		= NULL
 	s->alloctype	= 0
 	s->sentinel		= NULL
+    s->initialized 	= FALSE
+    s->inittextidx 	= INVALID
 
     s->nameidx	= strpAdd( symbol )
     if( len( aliasname ) > 0 ) then
     	s->aliasidx = strpAdd( aliasname )
     else
     	s->aliasidx = INVALID
-    end if
-
-    if( class = FB.SYMBCLASS.VAR ) then
-    	s->var.initialized = FALSE
-    	s->var.inittextidx = INVALID
     end if
 
 	'' add node to local symbol table for fast deletion later
@@ -1007,13 +1004,13 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL p
 		exit function
 	end if
 
-	s->var.initialized = TRUE
+	s->initialized = TRUE
 
 	p = instr( sname, "D" )
 	if( p <> 0 ) then
 		mid$( sname, p, 1 ) = "E"
 	end if
-	s->var.inittextidx	= strpAdd( sname )
+	s->inittextidx	= strpAdd( sname )
 
 	hAllocFloatConst = s
 
@@ -1038,8 +1035,8 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
 		exit function
 	end if
 
-	s->var.initialized = TRUE
-	s->var.inittextidx = strpAdd( sname )
+	s->initialized = TRUE
+	s->inittextidx = strpAdd( sname )
 
 	'' can't fake a descriptor as the literal string passed to user procs can be modified/reused
 	's->array.desc = hCreateStringDesc( s )
@@ -1697,7 +1694,8 @@ end function
 
 
 '':::::
-function symbGetUDTElmOffset( elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, typ as integer, id as string ) as integer
+function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL ptr, _
+							  id as string ) as integer
 	dim e as FBSYMBOL ptr, ename as string
 	dim p as integer, ofs as integer, o as integer
 
@@ -1733,7 +1731,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, typ 
     				exit do
     			end if
 
-    			o = symbGetUDTElmOffset( elm, subtype, typ, mid$( id, p+1 ) )
+    			o = symbGetUDTElmOffset( elm, typ, subtype, mid$( id, p+1 ) )
     			if( o = INVALID ) then
     				exit function
     			end if
@@ -1901,7 +1899,7 @@ function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
     			subtype	= s->subtype
     			typ 	= s->typ
 
-    			ofs = symbGetUDTElmOffset( elm, subtype, typ, fields )
+    			ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )
     			if( ofs = INVALID ) then
     				hReportError FB.ERRMSG.ELEMENTNOTDEFINED
     				exit function
@@ -2320,14 +2318,14 @@ function symbGetLen( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function symbGetUDTLen( byval s as FBSYMBOL ptr, byval realUDTsize as integer = TRUE ) as integer static
+function symbGetUDTLen( byval udt as FBSYMBOL ptr, byval realsize as integer = TRUE ) as integer static
     dim e as FBSYMBOL ptr
 
-	if( realUDTsize ) then
-		e = s->udt.tail
+	if( realsize ) then
+		e = udt->udt.tail
 		symbGetUDTLen = e->elm.ofs + e->lgt
 	else
-		symbGetUDTLen = s->lgt
+		symbGetUDTLen = udt->lgt
 	end if
 
 end function
@@ -2395,7 +2393,7 @@ function symbGetInitialized( byval s as FBSYMBOL ptr ) as integer static
 	if( s = NULL ) then
 		symbGetInitialized = FALSE
 	else
-		symbGetInitialized = s->var.initialized
+		symbGetInitialized = s->initialized
 	end if
 
 end function
@@ -2403,15 +2401,21 @@ end function
 '':::::
 function symbGetIsDynamic( byval s as FBSYMBOL ptr ) as integer static
 
-	symbGetIsDynamic = (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0
+	if( s->class = FB.SYMBCLASS.UDTELM ) then
+		symbGetIsDynamic = FALSE
+	else
+		symbGetIsDynamic = (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0
+	end if
 
 end function
 
 '':::::
 function symbIsArray( byval s as FBSYMBOL ptr ) as integer static
 
+	symbIsArray = FALSE
+
 	if( s = NULL ) then
-		symbIsArray = FALSE
+		exit function
 	end if
 
 	if( (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0 ) then
@@ -2540,7 +2544,7 @@ end function
 '':::::
 function symbGetVarText( byval s as FBSYMBOL ptr ) as string static
 
-	symbGetVarText = strpGet( s->var.inittextidx )
+	symbGetVarText = strpGet( s->inittextidx )
 
 end function
 
@@ -3110,7 +3114,7 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, byval issub as integer 
 
 					if( s->array.dims > 0 ) then
 						if( (s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
-							rtlArrayErase astNewVAR( s, 0, s->typ )
+							rtlArrayErase astNewVAR( s, NULL, 0, s->typ )
 						elseif( s->typ = FB.SYMBTYPE.STRING ) then
 							rtlArrayStrErase s
 						end if
@@ -3118,7 +3122,7 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, byval issub as integer 
 					elseif( s->typ = FB.SYMBTYPE.STRING ) then
 						'' not funct's result?
 						if( s <> fres ) then
-							strg = astNewVAR( s, 0, IR.DATATYPE.STRING )
+							strg = astNewVAR( s, NULL, 0, IR.DATATYPE.STRING )
 							expr = rtlStrDelete( strg )
 							astFlush expr, vr
 						end if

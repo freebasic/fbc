@@ -85,13 +85,15 @@ declare function 	cExpExpression 			( expexpr as integer ) as integer
 declare function 	cNegExpression			( negexpr as integer ) as integer
 declare function 	cHighestPresExpr		( highexpr as integer ) as integer
 declare function 	cDerefExpression		( derefexpr as integer ) as integer
-declare function 	cAddrOfExpression		( addrofexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr ) as integer
+declare function 	cAddrOfExpression		( addrofexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr ) as integer
 declare function 	cTypeConvExpr			( tconvexpr as integer ) as integer
 declare function 	cParentExpression		( parexpr as integer ) as integer
 declare function 	cAtom					( atom as integer ) as integer
-declare function 	cVariable				( varexpr as integer, byval checkarray as integer = TRUE )
+declare function 	cVariable				( varexpr as integer, _
+											  sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
+											  byval checkarray as integer = TRUE )
 declare function 	cVarOrDeref				( varexpr as integer, byval checkarray as integer = TRUE )
-declare function 	cFunction				( funcexpr as integer ) as integer
+declare function 	cFunction				( funcexpr as integer, sym as FBSYMBOL ptr ) as integer
 declare function 	cQuirkFunction			( funcexpr as integer ) as integer
 declare function 	cConstant				( constexpr as integer ) as integer
 declare function 	cLiteral 				( litexpr as integer ) as integer
@@ -108,8 +110,9 @@ declare function 	cFunctionCall			( byval proc as FBSYMBOL ptr, funcexpr as inte
 declare function 	cProcCall				( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 											  byval checkparents as integer = FALSE ) as integer
 
-declare function 	cDerefFields			( s as FBSYMBOL ptr, elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, _
-					   						  typ as integer, varexpr as integer, byval isderef as integer, _
+declare function 	cDerefFields			( byval sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
+											  typ as integer, subtype as FBSYMBOL ptr, _
+					   						  varexpr as integer, byval isderef as integer, _
 					   						  byval checkarray as integer ) as integer
 
 declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer

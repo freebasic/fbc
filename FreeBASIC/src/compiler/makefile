@@ -54,7 +54,7 @@ ifeq ($(PLATFORM),DOS)
     LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o obj/fbcentry.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -lgcc -)
     BC := ..\..\fbc.exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_DOS
+    BCFLAGS := $(BCFLAGS) -d TARGET_DOS -nostd
     LD := ..\..\bin\dos\ld.exe
 endif
 

@@ -124,9 +124,8 @@ end function
 ''				  |   SWAP Variable, Variable .
 ''
 function cArrayStmt
-	dim s as FBSYMBOL ptr, elm as FBSYMBOL ptr
+	dim s as FBSYMBOL ptr
 	dim expr1 as integer, expr2 as integer
-	dim isarray as integer, isdynamic as integer
 
 	cArrayStmt = FALSE
 
@@ -140,27 +139,13 @@ function cArrayStmt
 		end if
 
 		'' array?
-		isarray = FALSE
-    	elm = astGetUDTElm( expr1 )
-    	if( elm <> NULL ) then
-    		if( symbGetArrayDimensions( elm ) > 0 ) then
-    			isdynamic = FALSE
-    			isarray = TRUE
-    		end if
-    	else
-    		s = astGetSymbol( expr1 )
-    		if( symbIsArray( s ) ) then
-    			isdynamic = symbGetIsDynamic( s )
-    			isarray = TRUE
-    		end if
-    	end if
-
-		if( not isarray ) then
+    	s = astGetSymbol( expr1 )
+    	if( not symbIsArray( s ) ) then
 			hReportError FB.ERRMSG.EXPECTEDARRAY
 			exit function
 		end if
 
-		if( isdynamic ) then
+		if( symbGetIsDynamic( s ) ) then
 			rtlArrayErase expr1
 		else
 			rtlArrayClear expr1
@@ -329,7 +314,7 @@ function cDataStmt
 			    	exit function
 			    end if
 
-				if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
+				if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 					hReportError FB.ERRMSG.EXPECTEDCONST
 					exit function
 				end if
@@ -650,7 +635,7 @@ function cInputStmt
     	'' STRING_LIT?
     	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
 			lgt = lexTokenTextLen
-			filestrexpr = astNewVAR( hAllocStringConst( lexEatToken, lgt ), 0, IR.DATATYPE.FIXSTR )
+			filestrexpr = astNewVAR( hAllocStringConst( lexEatToken, lgt ), NULL, 0, IR.DATATYPE.FIXSTR )
     	else
     		filestrexpr = INVALID
     	end if
@@ -787,7 +772,7 @@ function cPokeStmt
         	end if
         end select
 
-        expr1 = astNewPTR( 0, poketype, expr1 )
+        expr1 = astNewPTR( NULL, NULL, 0, expr1, poketype, NULL )
 
         expr1 = astNewASSIGN( expr1, expr2 )
 
@@ -812,7 +797,7 @@ function cFileStmt
     dim filename as integer, fmode as integer, faccess as integer, flock as integer, flen as integer
     dim res as integer, islock as integer
     dim cnt as integer
-    dim isarray as integer, e as FBSYMBOL ptr
+    dim isarray as integer
 
 	cFileStmt = FALSE
 
@@ -996,17 +981,7 @@ function cFileStmt
     	isarray = FALSE
     	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
     		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
-    			e = astGetUDTElm( expr2 )
-    			if( e <> NULL ) then
-    				if( symbGetArrayDimensions( e ) > 0 ) then
-    					isarray = TRUE
-    				end if
-    			else
-    				if( symbIsArray( astGetSymbol( expr2 ) ) ) then
-    					isarray = TRUE
-    				end if
-    			end if
-
+    			isarray = symbIsArray( astGetSymbol( expr2 ) )
     			if( isarray ) then
     				lexSkipToken
     				lexSkipToken
@@ -1053,17 +1028,7 @@ function cFileStmt
     	isarray = FALSE
     	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
     		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
-    			e = astGetUDTElm( expr2 )
-    			if( e <> NULL ) then
-    				if( symbGetArrayDimensions( e ) > 0 ) then
-    					isarray = TRUE
-    				end if
-    			else
-    				if( symbIsArray( astGetSymbol( expr2 ) ) ) then
-    					isarray = TRUE
-    				end if
-    			end if
-
+    			isarray = symbIsArray( astGetSymbol( expr2 ) )
     			if( isarray ) then
     				lexSkipToken
     				lexSkipToken
@@ -1182,7 +1147,7 @@ function cOnStmt
 
     '' on error?
 	if( expr = INVALID ) then
-		expr = astNewVAR( label, 0, IR.DATATYPE.UINT )
+		expr = astNewVAR( label, NULL, 0, IR.DATATYPE.UINT )
 		expr = astNewADDR( IR.OP.ADDROF, expr )
 		rtlErrorSetHandler expr, (islocal = TRUE)
 
@@ -1338,7 +1303,6 @@ end function
 function cArrayFunct( funcexpr as integer )
 	dim sexpr as integer
 	dim islbound as integer, expr as integer
-	dim elm as FBSYMBOL ptr
 
 	cArrayFunct = FALSE
 
@@ -1366,17 +1330,9 @@ function cArrayFunct( funcexpr as integer )
 		end if
 
 		'' array?
-		elm = astGetUDTElm( sexpr )
-		if( elm <> NULL ) then
-			if( symbGetArrayDimensions( elm ) = 0 ) then
-				hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
-				exit function
-			end if
-		else
-			if( not symbIsArray( astGetSymbol( sexpr ) ) ) then
-				hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
-				exit function
-			end if
+		if( not symbIsArray( astGetSymbol( sexpr ) ) ) then
+			hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
+			exit function
 		end if
 
 		'' (',' Expression)?
@@ -1576,7 +1532,7 @@ end function
 ''
 function cMathFunct( funcexpr as integer )
     dim expr as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, s as FBSYMBOL ptr
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, sym as FBSYMBOL ptr
 
 	cMathFunct = FALSE
 
@@ -1671,17 +1627,17 @@ function cMathFunct( funcexpr as integer )
 		end if
 
 		expr = INVALID
-		s = symbLookupUDT( lexTokenText, lgt )
-		if( s <> NULL ) then
+		sym = symbLookupUDT( lexTokenText, lgt )
+		if( sym <> NULL ) then
 			lexSkipToken
 		else
-			s = symbLookupEnum( lexTokenText )
-			if( s <> NULL ) then
+			sym = symbLookupEnum( lexTokenText )
+			if( sym <> NULL ) then
 				lexSkipToken
 				lgt = FB.INTEGERSIZE
 			else
 				if( not cSymbolType( typ, subtype, lgt ) ) then
-					if( not cFunction( expr ) ) then
+					if( not cFunction( expr, sym ) ) then
 						if( not cVarOrDeref( expr, FALSE ) ) then
 							if( not cExpression( expr ) ) then
 								hReportError FB.ERRMSG.EXPECTEDEXPRESSION
@@ -1759,7 +1715,7 @@ function cPeekFunct( funcexpr as integer )
         	end if
         end select
 
-        funcexpr = astNewPTR( 0, peektype, expr )
+        funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, NULL )
 
         '' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
         if( peektype = IR.DATATYPE.BYTE ) then

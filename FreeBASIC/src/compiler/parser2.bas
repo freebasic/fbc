@@ -502,12 +502,12 @@ end function
 ''
 function cHighestPresExpr( highexpr as integer ) as integer
     dim res as integer
-    dim symb as FBSYMBOL ptr, elm as FBSYMBOL ptr
+    dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 
 	select case lexCurrentToken
 	'' AddrOfExpression
 	case FB.TK.VARPTR, FB.TK.PROCPTR, FB.TK.ADDROFCHAR, FB.TK.SADD, FB.TK.STRPTR
-		res = cAddrOfExpression( highexpr, symb, elm )
+		res = cAddrOfExpression( highexpr, sym, elm )
 
 	'' DerefExpr
 	case FB.TK.DEREFCHAR
@@ -596,8 +596,12 @@ end function
 
 '':::::
 private function hDoDeref( byval cnt as integer, expr as integer, _
-					       byval symb as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, _
-					       byval dtype as integer ) as integer
+					       byval sym as FBSYMBOL ptr, byval elm as FBSYMBOL ptr ) as integer
+
+	dim dtype as integer, subtype as FBSYMBOL ptr
+
+	dtype   = astGetDataType( expr )
+	subtype = astGetSubType( expr )
 
 	hDoDeref = FALSE
 
@@ -612,7 +616,7 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
 		end if
 		dtype = dtype - IR.DATATYPE.POINTER
 
-		expr = astNewPTR( 0, dtype, expr )
+		expr = astNewPTR( NULL, NULL, 0, expr, dtype, NULL )
 		cnt = cnt - 1
 	loop
 
@@ -623,7 +627,7 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
     dtype = dtype - FB.SYMBTYPE.POINTER
 
     ''
-    expr = astNewPTREx( symb, elm, 0, dtype, expr )
+    expr = astNewPTR( sym, elm, 0, expr, dtype, subtype )
 
     hDoDeref = TRUE
 
@@ -632,7 +636,7 @@ end function
 '':::::
 ''ParentDeref	= 	'(' (AddrOfExpression|Variable) ('+'|'-' Expression)? ')')
 ''
-function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
+function cParentDeref( derefexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
 					   derefcnt as integer )
 
     dim s as FBSYMBOL ptr, subtype as FBSYMBOL ptr
@@ -648,35 +652,21 @@ function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSY
 	end if
 
   	'' AddrOfExpression
-	if( cAddrOfExpression( derefexpr, symbol, elm ) ) then
-		if( elm <> NULL ) then
-			s = elm
-		else
-			s = symbol
-		end if
+	if( cAddrOfExpression( derefexpr, sym, elm ) ) then
 
-		dtype = symbGetType( s )
+		dtype = astGetDataType( derefexpr )
 
 	else
 		'' Variable
-  		if( not cVariable( derefexpr ) ) then
+  		if( not cVariable( derefexpr, sym, elm ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		    exit function
 		end if
 
-		symbol = astGetSymbol( derefexpr )
-		elm    = astGetUDTElm( derefexpr )
-
-		if( elm <> NULL ) then
-			s = elm
-		else
-			s = symbol
-		end if
-
-  		dtype = symbGetType( s ) - FB.SYMBTYPE.POINTER
+  		dtype = astGetDataType( derefexpr )
   	end if
 
-	subtype = symbGetSubType( s )
+	subtype = astGetSubType( derefexpr )
 
 	'' '-' | '+'
 	select case lexCurrentToken
@@ -704,7 +694,7 @@ function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSY
 		end if
 
 		'' times length
-		lgt = symbCalcLen( dtype, subtype )
+		lgt = symbCalcLen( dtype - FB.SYMBTYPE.POINTER, subtype )
 
 		expr = astNewBOP( IR.OP.MUL, expr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
 
@@ -722,7 +712,7 @@ function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSY
 	end if
 
 	''
-	if( not cDerefFields( symbol, elm, subtype, dtype + FB.SYMBTYPE.POINTER, derefexpr, TRUE, FALSE ) ) then
+	if( not cDerefFields( sym, elm, dtype, subtype, derefexpr, TRUE, FALSE ) ) then
 		if( hGetLastError <> FB.ERRMSG.OK ) then
 			exit function
 		end if
@@ -735,13 +725,13 @@ function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSY
 end function
 
 '':::::
-''DerefExpression	= 	DREF+ (AddrOfExpression
+''DerefExpression	= 	DREF+ ( AddrOfExpression
 ''							  | Function
 ''							  | Variable
 ''							  | ParentDeref) .
 ''
 function cDerefExpression( derefexpr as integer ) as integer
-    dim symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr
+    dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
     dim derefcnt as integer
 
 	cDerefExpression = FALSE
@@ -759,34 +749,29 @@ function cDerefExpression( derefexpr as integer ) as integer
 	loop while( lexCurrentToken = FB.TK.DEREFCHAR )
 
 	'' AddrOfExpression
-	if( not cAddrOfExpression( derefexpr, symbol, elm ) ) then
+	if( not cAddrOfExpression( derefexpr, sym, elm ) ) then
+
+  		elm = NULL
 
   		'' Function
-  		if( cFunction( derefexpr ) ) then
-			symbol = astGetSymbol( derefexpr )
-			elm    = NULL
-
-  		else
+  		if( not cFunction( derefexpr, sym ) ) then
 
   			'' Variable
-  			if( cVariable( derefexpr ) ) then
-				symbol = astGetSymbol( derefexpr )
-				elm    = astGetUDTElm( derefexpr )
-
-  			else
+  			if( not cVariable( derefexpr, sym, elm ) ) then
 
                 '' ParentDeref
-  				if( not cParentDeref( derefexpr, symbol, elm, derefcnt ) ) then
+  				if( not cParentDeref( derefexpr, sym, elm, derefcnt ) ) then
   					exit function
   				end if
 
 		    end if
 		end if
+
 	end if
 
 	''
 	if( derefcnt > 0 ) then
-		if( not hDoDeref( derefcnt, derefexpr, symbol, elm, astGetDataType( derefexpr ) ) ) then
+		if( not hDoDeref( derefcnt, derefexpr, sym, elm ) ) then
 			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			exit function
 		end if
@@ -810,7 +795,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, addrofexpr as integer
 		end if
 	end if
 
-	expr = astNewVAR( proc, 0, IR.DATATYPE.UINT )
+	expr = astNewVAR( proc, NULL, 0, IR.DATATYPE.UINT )
 	addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
 
 	hProcPtrBody = TRUE
@@ -818,16 +803,13 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, addrofexpr as integer
 end function
 
 '':::::
-private function hVarPtrBody( addrofexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr ) as integer
+private function hVarPtrBody( addrofexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr ) as integer
 
 	hVarPtrBody = FALSE
 
-	if( not cVariable( addrofexpr ) ) then
+	if( not cVariable( addrofexpr, sym, elm ) ) then
 		exit function
 	end if
-
-	symbol = astGetSymbol( addrofexpr )
-	elm	   = astGetUDTElm( addrofexpr )
 
 	addrofexpr = astNewADDR( IR.OP.ADDROF, addrofexpr )
 
@@ -841,7 +823,7 @@ end function
 '' 					| 	'@' (Proc ('('')')? | Variable)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr )
+function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr )
     dim expr as integer, dtype as integer, proc as FBSYMBOL ptr
 
 	cAddrOfExpression = FALSE
@@ -856,7 +838,7 @@ function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm a
 			exit function
 		end if
 
-		if( not hVarPtrBody( addrofexpr, symbol, elm ) ) then
+		if( not hVarPtrBody( addrofexpr, sym, elm ) ) then
 			exit function
 		end if
 
@@ -893,8 +875,8 @@ function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm a
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
 		end if
-		symbol = proc
-		elm	   = NULL
+		sym = proc
+		elm	= NULL
 
 		cAddrOfExpression = TRUE
         exit function
@@ -910,11 +892,11 @@ function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm a
 			if( not hProcPtrBody( proc, addrofexpr ) ) then
 				exit function
 			end if
-			symbol = proc
-			elm	   = NULL
+			sym = proc
+			elm = NULL
 
 		else
-			if( not hVarPtrBody( addrofexpr, symbol, elm ) ) then
+			if( not hVarPtrBody( addrofexpr, sym, elm ) ) then
 				exit function
 			end if
 		end if
@@ -931,12 +913,14 @@ function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm a
 			exit function
 		end if
 
-		if( not cVariable( expr ) ) then
+		if( not cVariable( expr, sym, elm ) ) then
+			elm = NULL
 			if( not cConstant( expr ) ) then
 				if( not cLiteral( expr ) ) then
 					exit function
 				end if
 			end if
+			sym = astGetSymbol( expr )
 		end if
 
 		dtype = astGetDataType( expr )
@@ -944,9 +928,6 @@ function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm a
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
 		end if
-
-		symbol = astGetSymbol( addrofexpr )
-		elm	   = astGetUDTElm( addrofexpr )
 
 		if( hIsStrFixed( dtype ) ) then
 			addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
@@ -1009,6 +990,7 @@ end function
 ''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
 ''
 function cAtom( atom as integer )
+    dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
     dim res as integer
 
   	atom = INVALID
@@ -1019,9 +1001,9 @@ function cAtom( atom as integer )
   	elseif( lexCurrentToken = FB.TK.ID ) then
   		res = cConstant( atom )
   		if( not res ) then
-  			res = cFunction( atom )
+  			res = cFunction( atom, sym )
   			if( not res ) then
-  				res = cVariable( atom )
+  				res = cVariable( atom, sym, elm )
   			end if
   		end if
 
@@ -1054,7 +1036,7 @@ function cConstant( constexpr as integer )
   			if( irGetDataClass( typ ) = IR.DATACLASS.STRING ) then
 
 				c = hAllocStringConst( text, symbGetLen( c ) )
-				constexpr = astNewVAR( c, 0, IR.DATATYPE.FIXSTR )
+				constexpr = astNewVAR( c, NULL, 0, IR.DATATYPE.FIXSTR )
 
   			else
   				constexpr = astNewCONST( val( text ), typ )
@@ -1087,7 +1069,7 @@ function cLiteral( litexpr as integer )
 
   	case FB.TKCLASS.STRLITERAL
 		tc = hAllocStringConst( lexTokenText, lexTokenTextLen )
-		litexpr = astNewVAR( tc, 0, IR.DATATYPE.FIXSTR )
+		litexpr = astNewVAR( tc, NULL, 0, IR.DATATYPE.FIXSTR )
 
 		lexSkipToken
         cLiteral = TRUE
@@ -1279,8 +1261,8 @@ end function
 '':::::
 ''Function        =   ID ('(' ProcParamList ')')? .	 			//ambiguity w/ var!!
 ''
-function cFunction( funcexpr as integer )
-	dim id as string, f as FBSYMBOL ptr
+function cFunction( funcexpr as integer, sym as FBSYMBOL ptr )
+	dim id as string
 
 	cFunction = FALSE
 
@@ -1291,14 +1273,14 @@ function cFunction( funcexpr as integer )
 
 	id = lexTokenText
 
-	f = symbLookupProc( id )
+	sym = symbLookupProc( id )
 
-	if( f = NULL ) then
+	if( sym = NULL ) then
 		exit function
 	else
 		lexSkipToken
 	end if
 
-	cFunction = cFunctionCall( f, funcexpr, INVALID )
+	cFunction = cFunctionCall( sym, funcexpr, INVALID )
 
 end function

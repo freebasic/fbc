@@ -557,7 +557,7 @@ function cGfxPalette as integer
             exit function
         end if
 
-		if( not symbIsArray( s ) or (astGetType( arrayexpr ) <> AST.NODETYPE.IDX) ) then
+		if( not symbIsArray( s ) or (astGetClass( arrayexpr ) <> AST.NODECLASS.IDX) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -590,21 +590,21 @@ function cGfxPalette as integer
 end function
 
 '':::::
-private function hMakeArrayIndex( byval s as FBSYMBOL ptr, byval arrayexpr as integer ) as integer
+private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, byval arrayexpr as integer ) as integer
     dim idxexpr as integer
 
-    ''  argument passed by descriptor or common array?
-    if( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
+    ''  argument passed by descriptor?
+    if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
 
     	astDelTree arrayexpr
-    	arrayexpr = astNewVAR( s, 0, IR.DATATYPE.INTEGER )
-    	idxexpr = astNewPTR( FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER, arrayexpr )
+    	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, arrayexpr, IR.DATATYPE.INTEGER, NULL )
     	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
 
     '' dynamic array? (this will handle common's too)
-    elseif( symbGetIsDynamic( s ) ) then
+    elseif( symbGetIsDynamic( sym ) ) then
 
-    	idxexpr = astNewVAR( symbGetArrayDescriptor( s ), FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), NULL, FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
     	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
 
     '' static array
@@ -614,7 +614,7 @@ private function hMakeArrayIndex( byval s as FBSYMBOL ptr, byval arrayexpr as in
 
     end if
 
-    hMakeArrayIndex = astNewIDX( arrayexpr, idxexpr, INVALID )
+    hMakeArrayIndex = astNewIDX( arrayexpr, idxexpr, INVALID, NULL )
 
 end function
 
@@ -683,7 +683,7 @@ function cGfxPut as integer
 		exit function
 	end if
 
-	if( astGetType( arrayexpr ) <> AST.NODETYPE.IDX ) then
+	if( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
 		arrayexpr = hMakeArrayIndex( s, arrayexpr )
 	end if
 
@@ -842,7 +842,7 @@ function cGfxGet as integer
 		exit function
 	end if
 
-	if( astGetType( arrayexpr ) <> AST.NODETYPE.IDX ) then
+	if( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
 		arrayexpr = hMakeArrayIndex( s, arrayexpr )
 	end if
 
@@ -903,14 +903,14 @@ end function
 ''
 function cGfxBload as integer
 	dim fexpr as integer, dexpr as integer
-	
+
 	cGfxBload = FALSE
-	
+
 	if( not cExpression( fexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	dexpr = INVALID
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( dexpr ) ) then
@@ -918,12 +918,12 @@ function cGfxBload as integer
 			exit function
 		end if
 	end if
-	
+
 	''
 	rtlGfxBload fexpr, dexpr
-	
+
 	cGfxBload = TRUE
-	
+
 end function
 
 '':::::
@@ -931,19 +931,19 @@ end function
 ''
 function cGfxBsave as integer
 	dim fexpr as integer, sexpr as integer, lexpr as integer
-	
+
 	cGfxBsave = FALSE
-	
+
 	if( not cExpression( fexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	if( not cExpression( sexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	if( not cExpression( lexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
@@ -951,9 +951,9 @@ function cGfxBsave as integer
 
 	''
 	rtlGfxBsave fexpr, sexpr, lexpr
-	
+
 	cGfxBsave = TRUE
-	
+
 end function
 
 '':::::

@@ -52,7 +52,7 @@ declare function 	symbGetConstName		( byval c as FBSYMBOL ptr ) as string
 declare function 	symbGetProcName			( byval p as FBSYMBOL ptr ) as string
 declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
 declare function 	symbGetConstText		( byval c as FBSYMBOL ptr ) as string
-declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, typ as integer, id as string ) as integer
+declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL ptr, id as string ) as integer
 declare function 	symbGetArgName			( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as string
 declare function 	symbGetArgType			( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer
 declare function 	symbGetArgSubtype		( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as FBSYMBOL ptr
@@ -91,7 +91,7 @@ declare function 	symbGetArrayDiff		( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbGetArrayDimensions	( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbGetArrayDescriptor	( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function 	symbGetUDTLen			( byval s as FBSYMBOL ptr, byval realUDTsize as integer = TRUE ) as integer
+declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, byval realsize as integer = TRUE ) as integer
 
 declare function 	symbGetDefineText		( byval d as FBDEFINE ptr ) as string
 declare function 	symbGetDefineLen		( byval d as FBDEFINE ptr ) as integer

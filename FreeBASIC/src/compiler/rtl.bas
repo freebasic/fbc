@@ -1088,15 +1088,8 @@ end sub
 
 '':::::
 function hGetFixStrLen( byval expr as integer ) as integer
-	dim s as FBSYMBOL ptr, e as FBSYMBOL ptr
 
-	e = astGetUDTElm( expr )
-	if( e <> NULL ) then
-		hGetFixStrLen = symbGetLen( e ) - 1
-	else
-		s = astGetSymbol( expr )
-		hGetFixStrLen = symbGetLen( s ) - 1
-	end if
+	hGetFixStrLen = symbGetLen( astGetSymbol( expr ) ) - 1
 
 end function
 
@@ -1154,7 +1147,7 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
 
     '' dst as string
     tstr = symbAddTempVar( FB.SYMBTYPE.STRING )
-    astNewPARAM( proc, astNewVAR( tstr, 0, IR.DATATYPE.STRING ), IR.DATATYPE.STRING )
+    astNewPARAM( proc, astNewVAR( tstr, NULL, 0, IR.DATATYPE.STRING ), IR.DATATYPE.STRING )
 
    	''
 	str1len = -1
@@ -1468,7 +1461,7 @@ sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval d
 
     '' array() as ANY
     dtype =  symbGetType( s )
-	t = astNewVAR( s, 0, dtype )
+	t = astNewVAR( s, NULL, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
 	'' byval element_len as integer
@@ -1538,7 +1531,6 @@ end sub
 
 '':::::
 sub rtlArrayClear( byval arrayexpr as integer ) static
-    dim e as FBSYMBOL ptr
     dim proc as integer, f as FBSYMBOL ptr
     dim isvarlen as integer, dtype as integer
     dim vr as integer
@@ -1553,12 +1545,7 @@ sub rtlArrayClear( byval arrayexpr as integer ) static
     end if
 
 	'' byval isvarlen as integer
-	e = astGetUDTElm( arrayexpr )
-	if( e <> NULL ) then
-		dtype = symbGetType( e )
-	else
-		dtype = symbGetType( astGetSymbol( arrayexpr ) )
-	end if
+	dtype = symbGetType( astGetSymbol( arrayexpr ) )
 
     isvarlen = FALSE
 	if( hIsString( dtype ) ) then
@@ -1584,7 +1571,7 @@ sub rtlArrayStrErase( byval s as FBSYMBOL ptr ) static
 
     '' array() as ANY
     dtype = symbGetType( s )
-	t = astNewVAR( s, 0, dtype )
+	t = astNewVAR( s, NULL, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
     ''
@@ -1635,11 +1622,11 @@ sub rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 
     '' array() as ANY
     dtype =  symbGetType( s )
-	t = astNewVAR( s, 0, dtype )
+	t = astNewVAR( s, NULL, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
 	'' arraydata as any
-	t = astNewVAR( s, 0, dtype )
+	t = astNewVAR( s, NULL, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
 	'' byval element_len as integer
@@ -1667,27 +1654,26 @@ end sub
 function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMBOL ptr ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer
-    dim s as FBSYMBOL ptr, e as FBSYMBOL ptr
+    dim s as FBSYMBOL ptr
     dim d as FBVARDIM ptr
     dim dimensions as integer
 
 	s = astGetSymbol( arrayexpr )
-	e = astGetUDTElm( arrayexpr )
 
-	dimensions = symbGetArrayDimensions( e )
+	dimensions = symbGetArrayDimensions( s )
 
 	f = ifuncTB(FB.RTL.ARRAYALLOCTMPDESC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4+dimensions*2 )
 
     '' byref pdesc as any ptr
-	t = astNewVAR( pdesc, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+	t = astNewVAR( pdesc, NULL, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
     astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
 
     '' byref arraydata as any
     astNewPARAM( proc, arrayexpr, IR.DATATYPE.VOID )
 
 	'' byval element_len as integer
-	t = astNewCONST( symbGetLen( e ), IR.DATATYPE.INTEGER )
+	t = astNewCONST( symbGetLen( s ), IR.DATATYPE.INTEGER )
 	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
 
 	'' byval dimensions as integer
@@ -1695,7 +1681,7 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMB
 	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
 
 	'' ...
-    d = symbGetArrayFirstDim( e )
+    d = symbGetArrayFirstDim( s )
     do while( d <> NULL )
 		t = astNewCONST( d->lower, IR.DATATYPE.INTEGER )
 		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
@@ -1719,7 +1705,7 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as integer
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' byval pdesc as any ptr
-	t = astNewVAR( pdesc, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+	t = astNewVAR( pdesc, NULL, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
     astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
 
     rtlArrayFreeTempDesc = proc
@@ -1814,7 +1800,7 @@ sub rtlDataRestore( byval label as FBSYMBOL ptr ) static
     end if
 
     '' byval labeladdrs as void ptr
-    s = astNewVAR( s, 0, IR.DATATYPE.UINT )
+    s = astNewVAR( s, NULL, 0, IR.DATATYPE.UINT )
     label = astNewADDR( IR.OP.ADDROF, s )
 
     astNewPARAM( proc, label, INVALID )
@@ -1982,33 +1968,37 @@ function rtlMathFIX ( byval expr as integer ) as integer static
 end function
 
 '':::::
-private function hCalcExprLen( byval expr as integer, byval realUDTsize as integer = TRUE ) as integer static
-	dim lgt as integer, elm as FBSYMBOL ptr
+private function hCalcExprLen( byval expr as integer, byval realsize as integer = TRUE ) as integer static
+	dim lgt as integer, s as FBSYMBOL ptr
 
 	lgt = -1
 
 	select case astGetDataType( expr )
 	case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
 		lgt = 1
+
 	case IR.DATATYPE.SHORT, IR.DATATYPE.USHORT
 		lgt = 2
+
 	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
 		lgt = FB.INTEGERSIZE
+
 	case IR.DATATYPE.SINGLE
 		lgt = 4
+
 	case IR.DATATYPE.DOUBLE
 		lgt = 8
+
 	case is >= IR.DATATYPE.POINTER
 		lgt = FB.POINTERSIZE
+
 	case IR.DATATYPE.USERDEF
-		elm = astGetUDTElm( expr )
-		if( elm <> NULL ) then
-			'' if it's a type field that's also a type, no pad is ever added, then
-			'' readUDTsize is always true
-			lgt = symbGetUDTLen( symbGetSubtype( elm ) )
-		else
-			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( expr ) ), realUDTsize )
+		s = astGetSymbol( expr )
+		'' if it's a type field that's an udt, no pad is ever added, realsize is always TRUE
+		if( s->class = FB.SYMBCLASS.UDTELM ) then
+			realsize = TRUE
 		end if
+		lgt = symbGetUDTLen( symbGetSubtype( s ), realsize )
 	end select
 
 	hCalcExprLen = lgt
@@ -2351,7 +2341,7 @@ sub rtlMemSwap( byval dst as integer, byval src as integer ) static
 
 	'' simple type?
 	dtype = astGetDataType( dst )
-	if( (dtype <> IR.DATATYPE.USERDEF) and (astGetType( dst ) = AST.NODETYPE.VAR) ) then
+	if( (dtype <> IR.DATATYPE.USERDEF) and (astGetClass( dst ) = AST.NODECLASS.VAR) ) then
 
 		d = astGetSymbol( dst )
 		s = astGetSymbol( src )
@@ -2986,7 +2976,7 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = INVALID) ) then
-		expr = astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR )
+		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR )
 	end if
 
     astNewPARAM( proc, expr, INVALID )
@@ -3034,7 +3024,7 @@ sub rtlFileInput( byval isfile as integer, byval expr as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = INVALID) ) then
-		expr = astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR )
+		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR )
 	end if
 
 	astNewPARAM( proc, expr, INVALID )
@@ -3315,7 +3305,7 @@ sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as 
 		astNewPARAM( proc, pexpr, INVALID )
 		astNewPARAM( proc, astNewCONST( 1, IR.DATATYPE.INTEGER ), INVALID )
 	else
-    	astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR ), INVALID )
+    	astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR ), INVALID )
 		astNewPARAM( proc, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
 	end if
 
@@ -3557,7 +3547,7 @@ sub rtlGfxGet( byval x1expr as integer, byval y1expr as integer, byval x2expr as
  	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
 
  	'' array() as any
- 	arrayexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
+ 	arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
  	astNewPARAM( proc, arrayexpr, INVALID )
 
  	''

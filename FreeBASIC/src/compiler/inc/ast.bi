@@ -21,18 +21,18 @@ const AST.MAXTEMPARRAYDESCS		= 32
 
 const AST.INITNODES%			= 2048
 
-const AST.NODETYPE.CONST% 		= 1
-const AST.NODETYPE.VAR% 		= 2
-const AST.NODETYPE.BOP% 		= 3
-const AST.NODETYPE.UOP% 		= 4
-const AST.NODETYPE.IDX% 		= 5
-const AST.NODETYPE.FUNCT% 		= 6
-const AST.NODETYPE.PARAM%		= 7
-const AST.NODETYPE.PTR%			= 8
-const AST.NODETYPE.ADDR% 		= 9
-const AST.NODETYPE.ASSIGN%		= 10
-const AST.NODETYPE.CONV%		= 11
-const AST.NODETYPE.LOAD%		= 12
+const AST.NODECLASS.CONST% 		= 1
+const AST.NODECLASS.VAR% 		= 2
+const AST.NODECLASS.BOP% 		= 3
+const AST.NODECLASS.UOP% 		= 4
+const AST.NODECLASS.IDX% 		= 5
+const AST.NODECLASS.FUNCT% 		= 6
+const AST.NODECLASS.PARAM%		= 7
+const AST.NODECLASS.PTR%		= 8
+const AST.NODECLASS.ADDR% 		= 9
+const AST.NODECLASS.ASSIGN%		= 10
+const AST.NODECLASS.CONV%		= 11
+const AST.NODECLASS.LOAD%		= 12
 
 type FUNCTNode
 	sym				as FBSYMBOL ptr					'' symbol
@@ -52,13 +52,11 @@ end type
 
 type VARNode
 	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBSYMBOL ptr					'' field element, if any
+	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 	ofs				as integer						'' offset
 end type
 
 type IDXNode
-	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBSYMBOL ptr					'' field element, if any
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
 	var				as integer						'' AST tb index to a VARNode
@@ -66,7 +64,7 @@ end type
 
 type PTRNode
 	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBSYMBOL ptr					'' field element, if any
+	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 	ofs				as integer						'' offset
 end type
 
@@ -74,9 +72,10 @@ type ASTNode
 	prv				as integer						'' 'pointers' used by the allocator,
 	nxt				as integer						'' /  (can't be swapped/copied!)
 
-	typ				as integer						'' CONST, VAR, BOP, UOP, IDX, etc
+	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
 
-	dtype			as integer						'' BYTE, INTEGER, SINGLE, DOUBLE, etc
+	dtype			as integer						'' BYTE, INTEGER, SINGLE, DOUBLE, USERDEF, etc
+	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF
 
 	defined 		as integer						'' only true for constants
 	value			as double						'' /
@@ -100,20 +99,20 @@ end type
 
 declare sub 		astInit				( )
 declare sub 		astEnd				( )
-declare function 	astNew				( byval typ as integer, byval dtype as integer ) as integer
+declare function 	astNew				( byval typ as integer, byval dtype as integer, _
+										  byval subtype as FBSYMBOL ptr = NULL ) as integer
 declare sub 		astDel				( n as integer )
 
 declare function 	astCloneTree		( byval n as integer ) as integer
 declare sub 		astDelTree			( byval n as integer )
 
-declare function 	astGetType			( byval n as integer ) as integer
+declare function 	astGetClass			( byval n as integer ) as integer
 declare function 	astGetDataType		( byval n as integer ) as integer
+declare function 	astGetSubtype		( byval n as integer ) as FBSYMBOL ptr
 declare function 	astGetDataClass		( byval n as integer ) as integer
 declare function 	astGetDataSize		( byval n as integer ) as integer
 declare function 	astGetValue			( byval n as integer ) as double
 declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
-declare function 	astGetUDTElm		( byval n as integer ) as FBSYMBOL ptr
-declare function 	astGetOffset		( byval n as integer ) as integer
 
 declare sub 		astLoad				( byval n as integer, dst as integer )
 declare sub 		astBinOperation		( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr )
@@ -140,23 +139,30 @@ declare sub 		astLoadUOP			( byval n as integer, vr as integer )
 declare function 	astNewCONST			( byval value as double, byval dtype as integer ) as integer
 declare sub 		astLoadCONST		( byval n as integer, vr as integer )
 
-declare function 	astNewVAREx			( byval symbol as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer ) as integer
-declare function 	astNewVAR			( byval symbol as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer )  as integer
+declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, _
+										  byval ofs as integer, _
+										  byval dtype as integer, byval subtype as FBSYMBOL ptr = NULL ) as integer
 declare sub 		astLoadVAR			( byval n as integer, vr as integer )
 
-declare function 	astNewIDX			( byval v as integer, byval i as integer, byval dtype as integer )  as integer
+declare function 	astNewIDX			( byval v as integer, byval i as integer, _
+										  byval dtype as integer, byval subtype as FBSYMBOL ptr ) as integer
 declare sub 		astLoadIDX			( byval n as integer, vr as integer )
 
-declare function 	astNewPTREx			( byval s as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
-declare function 	astNewPTR			( byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
+declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, _
+										  byval ofs as integer, byval expr as integer, _
+										  byval dtype as integer, byval subtype as FBSYMBOL ptr ) as integer
 declare sub 		astLoadPTR			( byval n as integer, vreg as integer )
 
-declare function 	astNewFUNCT			( byval symbol as FBSYMBOL ptr, byval dtype as integer, byval args as integer ) as integer
-declare function 	astNewFUNCTPTR		( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr, byval dtype as integer, byval args as integer ) as integer
-declare function 	astNewPARAM			( byval f as integer, byval p as integer, byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
+declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, byval dtype as integer, _
+										  byval args as integer ) as integer
+declare function 	astNewFUNCTPTR		( byval ptrexpr as integer, byval sym as FBSYMBOL ptr, _
+										  byval dtype as integer, byval args as integer ) as integer
+declare function 	astNewPARAM			( byval f as integer, byval p as integer, _
+										  byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
 declare sub 		astLoadFUNCT		( byval n as integer, vr as integer )
 
-declare function 	astNewADDR			( byval op as integer, byval p as integer, byval dtype as integer = INVALID ) as integer
+declare function 	astNewADDR			( byval op as integer, byval p as integer, _
+										  byval dtype as integer = INVALID, byval subtype as FBSYMBOL ptr = NULL ) as integer
 declare sub 		astLoadADDR			( byval n as integer, vr as integer )
 
 declare function 	astNewLOAD			( byval l as integer, byval dtype as integer ) as integer

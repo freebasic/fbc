@@ -501,11 +501,6 @@ type FBSARRAY
 	desc			as any ptr					'' FBSYMBOL ptr
 end type
 
-type FBSVAR
-	initialized		as integer
-	inittextidx		as integer
-end type
-
 type FBSCONST
 	textidx			as integer
 end type
@@ -588,8 +583,10 @@ type FBSYMBOL
 	lgt				as integer
 	acccnt			as integer					'' access counter (number of lookup's)
 
+	initialized		as integer
+	inittextidx		as integer
+
 	union
-		var			as FBSVAR
 		con			as FBSCONST
 		udt			as FBSUDT
 		elm			as FBSUDTELM

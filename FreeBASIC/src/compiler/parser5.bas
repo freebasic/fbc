@@ -307,7 +307,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	'' set as temp, so any assignament or when passed as parameter to another proc
 	'' will deallocate this string)
 	if( typ = FB.SYMBTYPE.STRING ) then
-		t = astNewVAR( s, 0, IR.DATATYPE.STRING )
+		t = astNewVAR( s, NULL, 0, IR.DATATYPE.STRING )
 		n = rtlStrAllocTmpResult( t )
 		astFlush n, vr
 	else
@@ -454,7 +454,7 @@ function cProcStatement static
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
-        expr = astNewVAR( env.procerrorhnd, 0, IR.DATATYPE.UINT )
+        expr = astNewVAR( env.procerrorhnd, NULL, 0, IR.DATATYPE.UINT )
         rtlErrorSetHandler expr, FALSE
 	end if
 
