@@ -34,9 +34,9 @@ void fb_hMemInit(int size)
 		if (fb_mode->scratch_mem)
 			free(fb_mode->scratch_mem);
 		fb_mode->scratch_mem = malloc(size);
-		fb_mode->scratch_mem_ptr = 0;
 		fb_mode->scratch_mem_size = size;
 	}
+	fb_mode->scratch_mem_ptr = 0;
 }
 
 
