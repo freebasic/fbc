@@ -18,39 +18,26 @@
  */
 
 /*
- * time_tmr.c -- timer# function
+ * time_tmr.c -- linux timer# function
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <malloc.h>
-#include <time.h>
 #include "fb.h"
-
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#include <sys/time.h>
-#endif
+#include "fb_linux.h"
 
 
 /*:::::*/
-FBCALL double fb_Timer ( void )
+FBCALL double fb_Timer( void )
 {
-
-#ifdef WIN32
-	/* from msecs to secs */
-	return (double)GetTickCount( ) / 1000.0;
-#else
-	struct timeval tv;
-	
-	if (gettimeofday(&tv, NULL))
-		return 0.0;
-	return (double)tv.tv_sec + ((double)tv.tv_usec * 0.000001);
-#endif
-
+        struct timeval tv;
+        
+        if (!fb_con.start_time) {
+        	gettimeofday(&tv, NULL);
+        	fb_con.start_time = (tv.tv_sec * 1000000) + tv.tv_usec;
+        }
+        
+        gettimeofday(&tv, NULL);
+        return (double)(((tv.tv_sec * 1000000) + tv.tv_usec) - fb_con.start_time) / 1000000.0;
 }
-
-

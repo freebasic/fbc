@@ -18,45 +18,24 @@
  */
 
 /*
- * fb_linux.h -- linux specific console stuff.
+ * time_tmr.c -- win32 timer# function
  *
- * chng: jan/2005 written [lillo]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
-#ifndef __FB_LINUX_H__
-#define __FB_LINUX_H__
+#include <malloc.h>
+#include <time.h>
+#include "fb.h"
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <signal.h>
-#include <termios.h>
-#include <sys/mman.h>
-#include <sys/ioctl.h>
-
-#define INIT_CONSOLE	1
-#define INIT_XTERM	2
-#define INIT_ETERM	3
+#include <windows.h>
 
 
-typedef struct FBCONSOLE
+/*:::::*/
+FBCALL double fb_Timer ( void )
 {
-	int inited;
-	int h_out, h_in;
-	FILE *f_out, *f_in;
-	struct termios old_term_out, old_term_in;
-	int in_flags, old_in_flags;
-	int fg_color, bg_color;
-	int start_time;
-} FBCONSOLE;
-
-extern FBCONSOLE fb_con;
+	/* from msecs to secs */
+	return (double)GetTickCount( ) / 1000.0;
+}
 
 
-extern int fb_hGetCh();
-
-
-#endif
