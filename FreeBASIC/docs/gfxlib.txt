@@ -59,6 +59,7 @@ Appendix A: DOS keyboard scancodes
 Appendix B: Default palettes
 Appendix C: Internal pixel formats
 Appendix D: About speed and size
+Appendix E: Internal drivers
 
 
 
@@ -2069,6 +2070,7 @@ gfxlib:
 
 Win32:
 	user32.dll
+	gdi32.dll
 	(ddraw.dll and dinput.dll only loaded at runtime)
 Linux:
 	libX11
@@ -2076,3 +2078,48 @@ Linux:
 	libXxf86vm
 	libpthread
 
+
+
+==============================================================================
+Appendix E: Internal drivers
+==============================================================================
+
+As previously stated, gfxlib features its own tiny drivers to work on various
+systems. Here is the list of drivers:
+
+Win32:
+	DirectX
+		This driver is based on DirectDraw and DirectInput; it'll work
+		on any system that has already at least DirectX 3.0 installed.
+		Windows 98 is the minimum OS requirement; if you have Windows
+		95 this is not guaranteed to work.
+		The required DirectX DLLs are loaded at execution time, so
+		your EXE will not depend on them, being able to also run on
+		systems where DX is not installed (this driver will fail to
+		initialize there).
+		Supports windowed and fullscreen modes.
+	GDI
+		Basic Windows GDI driver; slower than DirectX, yet guaranteed
+		to always work. This is a fallback driver for when DX is not
+		installed.
+		Supports windowed mode only.
+Linux:
+	X11
+		Raw Xlib based driver. It always works, and if your program
+		runs locally, it uses the Xshm extension to provide faster
+		framebuffer access via shared memory. For fullscreen mode to
+		work, the Xvidmode extension is used; your program needs to be
+		executed locally, and corresponding modelines should be
+		supported by your X11 server, otherwise fullscreen will not be
+		available.
+
+gfxlib will always choose the best driver for your system when a new video
+mode is set via SCREEN. To override driver selection, you can set the FBGFX
+environmental variable to the name of the driver you want to be tried first:
+on Win32 for example you could do:
+
+set FBGFX=gdi
+
+This way gfxlib will first try to initialize a driver named "GDI"; if given
+driver fails or cannot be found, gfxlib will fallback on the usual automatic
+driver selection path.
