@@ -145,8 +145,8 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, int co
 		b = ((radius * aspect) + 0.5);
 	}
 	if (fb_mode->flags & WINDOW_ACTIVE) {
-		a = fabs((float)a - fb_mode->win_x) * (fb_mode->view_w - 1) / fb_mode->win_w;
-		b = fabs((float)b - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
+		a *= fb_mode->view_w / fb_mode->win_w;
+		b *= fb_mode->view_h / fb_mode->win_h;
 	}
 	
 	if ((start != 0.0) || (end != 3.141593f * 2.0)) {
