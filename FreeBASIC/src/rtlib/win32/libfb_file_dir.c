@@ -94,6 +94,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		if( dir_data.handle >= 0 )
 		{
 			dir_data.attrib = attrib | 0xFFFFFF00;
+			if( (attrib & 0x10) == 0 )
+				dir_data.attrib |= 0x20;
 			if( dir_data.data.attrib & ~dir_data.attrib )
 				name = find_next( );
 			else

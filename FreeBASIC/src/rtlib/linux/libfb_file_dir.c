@@ -201,6 +201,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			if( (!strcmp( dir_data.filespec, "*.*" )) || (!strcmp( dir_data.filespec, "*." )) )
 				strcpy( dir_data.filespec, "*" );
 			
+			if( (attrib & 0x10) == 0 )
+				attrib |= 0x20;
 			dir_data.attrib = attrib;
 			dir_data.dir = opendir( dir_data.dirname );
 			if( dir_data.dir )

@@ -51,5 +51,7 @@ int fb_hSetTime( int h, int m, int s )
    	* (_not_ on 2K/XP etc.) */
    	if ((GetVersion() & 0xFF) == 4)
 		SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
+
+	return 0;
 }
 

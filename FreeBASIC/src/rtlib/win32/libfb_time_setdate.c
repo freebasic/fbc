@@ -52,4 +52,5 @@ int fb_hSetDate( int y, int m, int d )
    	if ((GetVersion() & 0xFF) == 4)
 		SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
 
+	return 0;
 }
