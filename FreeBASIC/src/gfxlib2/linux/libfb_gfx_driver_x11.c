@@ -194,7 +194,10 @@ static int private_init(void)
 	format = XListPixmapFormats(display, &num_formats);
 	for (i = 0; i < num_formats; i++) {
 		if (format[i].depth == XDefaultDepth(display, screen)) {
-			depth = format[i].depth;
+			if (format[i].bits_per_pixel == 16)
+				depth = format[i].depth;
+			else
+				depth = format[i].bits_per_pixel;
 			break;
 		}
 	}
