@@ -30,6 +30,8 @@ static FB_INKEYPROC fb_inkeyhook = &fb_ConsoleInkey;
 
 static FB_GETKEYPROC fb_getkeyhook = &fb_ConsoleGetkey;
 
+static FB_KEYHITPROC fb_keyhithook = &fb_ConsoleKeyHit;
+
 
 /*:::::*/
 FBCALL FBSTRING *fb_Inkey( void )
@@ -63,6 +65,24 @@ FBCALL FB_GETKEYPROC fb_SetGetkeyProc( FB_GETKEYPROC newproc )
     FB_GETKEYPROC oldproc = fb_getkeyhook;
 
     fb_getkeyhook = newproc;
+
+	return oldproc;
+}
+
+/*:::::*/
+FBCALL int fb_KeyHit( void )
+{
+
+	return fb_keyhithook( );
+
+}
+
+/*:::::*/
+FBCALL FB_KEYHITPROC fb_SetKeyHitProc( FB_KEYHITPROC newproc )
+{
+    FB_KEYHITPROC oldproc = fb_keyhithook;
+
+    fb_keyhithook = newproc;
 
 	return oldproc;
 }

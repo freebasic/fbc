@@ -44,16 +44,16 @@ void fb_hPostKey(int key)
 static int get_key(void)
 {
 	int key = 0;
-	
+
 	fb_mode->driver->lock();
-	
+
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
-	
+
 	fb_mode->driver->unlock();
-	
+
 	return key;
 }
 
@@ -62,18 +62,31 @@ static int get_key(void)
 int fb_GfxGetkey(void)
 {
 	int key = 0;
-	
+
 	if (!fb_mode)
 		return 0;
-	
+
 	do {
 		key = get_key();
 		fb_Sleep(20);
 	} while (key == 0);
-	
+
 	return key;
 }
 
+/*:::::*/
+int fb_GfxKeyHit(void)
+{
+	int res;
+
+	fb_mode->driver->lock();
+
+	res = (key_head != key_tail? 1: 0);
+
+	fb_mode->driver->unlock();
+
+	return res;
+}
 
 /*:::::*/
 FBSTRING *fb_GfxInkey(void)
@@ -93,12 +106,12 @@ FBSTRING *fb_GfxInkey(void)
 			res->data[0] = 0xFF;
 			res->data[1] = code[key];
 			res->data[2] = '\0';
-			
+
 			return res;
 		}
 		else
 			return fb_CHR(key);
 	}
-	
+
 	return &fb_strNullDesc;
 }

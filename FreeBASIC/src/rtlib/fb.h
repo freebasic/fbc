@@ -76,22 +76,6 @@
 		len = strlen( (char *)s );                      		\
 	}
 
-#define FB_PRINTNUM(fnum, val, mask, type) 				\
-    char buffer[80];									\
-    													\
-    if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, "% " type "\n", val );       	\
-    else if( mask & FB_PRINT_PAD )          			\
-    	sprintf( buffer, "% -14" type, val );			\
-    else												\
-    	sprintf( buffer, "% " type, val );              \
-    													\
-    if( fnum == 0 )										\
-    	fb_PrintBuffer( buffer, mask );					\
-    else												\
-    	fb_hFilePrintBuffer( fnum, buffer );
-
-
 typedef struct _FBSTRING {
 	char		*data;							/* , must be at ofs 0! */
 	int			len;
@@ -237,7 +221,6 @@ FBCALL int 			fb_ArrayUBound		( FBARRAY *array, int dimension );
 FBCALL FBSTRING 	*fb_Command 		( void );
 FBCALL FBSTRING 	*fb_CurDir 			( void );
 FBCALL FBSTRING 	*fb_ExePath 		( void );
-FBCALL void 		fb_Sleep 			( int msecs );
 FBCALL int 			fb_Run 				( FBSTRING *program );
 FBCALL int 			fb_Chain 			( FBSTRING *program );
 FBCALL int 			fb_Exec 			( FBSTRING *program, FBSTRING *args );
@@ -279,6 +262,21 @@ FBCALL void 		fb_DataReadDouble	( double *dst );
 #define FB_PRINT_NEWLINE 0x00000001
 #define FB_PRINT_PAD 	 0x00000002
 #define FB_PRINT_ISLAST  0x80000000
+
+#define FB_PRINTNUM(fnum, val, mask, type) 				\
+    char buffer[80];									\
+    													\
+    if( mask & FB_PRINT_NEWLINE )           			\
+    	sprintf( buffer, "% " type "\n", val );       	\
+    else if( mask & FB_PRINT_PAD )          			\
+    	sprintf( buffer, "% -14" type, val );			\
+    else												\
+    	sprintf( buffer, "% " type, val );              \
+    													\
+    if( fnum == 0 )										\
+    	fb_PrintBuffer( buffer, mask );					\
+    else												\
+    	fb_hFilePrintBuffer( fnum, buffer );
 
 
 extern int fb_viewTopRow;
@@ -333,6 +331,7 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 
 	   int 			fb_ConsoleGetkey	( void );
 	   FBSTRING 	*fb_ConsoleInkey	( void );
+	   int 			fb_ConsoleKeyHit	( void );
 
 	   void 		fb_ConsolePrintBuffer( char *buffer, int mask );
 
@@ -418,9 +417,12 @@ FBCALL FBSTRING 	*fb_Time 			( void );
 FBCALL int 			fb_SetTime			( FBSTRING *time );
 FBCALL FBSTRING 	*fb_Date 			( void );
 FBCALL int 			fb_SetDate			( FBSTRING *date );
+FBCALL void 		fb_Sleep 			( int msecs );
 
 	   int 			fb_hSetTime			( int h, int m, int s );
 	   int 			fb_hSetDate			( int y, int m, int d );
+
+	   void 		fb_hSleep 			( int msecs );
 
 /**************************************************************************************************
  * error
@@ -453,11 +455,14 @@ FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_siz
 
 typedef FBSTRING 	*(*FB_INKEYPROC)	( void );
 typedef int		  	(*FB_GETKEYPROC)	( void );
+typedef int		  	(*FB_KEYHITPROC)	( void );
 
 FBCALL FBSTRING 	*fb_Inkey			( void );
 FBCALL FB_INKEYPROC fb_SetInkeyProc		( FB_INKEYPROC newproc );
 FBCALL int		 	fb_Getkey			( void );
 FBCALL FB_GETKEYPROC fb_SetGetkeyProc	( FB_GETKEYPROC newproc );
+FBCALL int		 	fb_KeyHit			( void );
+FBCALL FB_KEYHITPROC fb_SetKeyHitProc	( FB_KEYHITPROC newproc );
 
 typedef void	  	(*FB_CLSPROC)		( int mode );
 

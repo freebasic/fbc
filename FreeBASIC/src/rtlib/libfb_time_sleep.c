@@ -18,21 +18,40 @@
  */
 
 /*
- * sys_sleep.c -- sleep function for DOS
+ * time_sleep.c -- sleep function
  *
- * chng: jan/2005 written [DrV]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
 #include "fb.h"
 
-#include <unistd.h>
-
 /*:::::*/
-void fb_hSleep ( int msecs )
+FBCALL void fb_Sleep ( int msecs )
 {
 
-	usleep(msecs * 1000);
+	/* infinite? wait until any key is pressed */
+	if( msecs == -1 )
+	{
+		while( !fb_KeyHit( ) )
+			fb_hSleep( 50 );
+		return;
+	}
+
+	/* if above n-mili-seconds, check for key input, otherwise, 
+	   don't screw the precision with slow console checks */
+	if( msecs >= 100 )
+		while( msecs > 50 )
+		{
+			if( fb_KeyHit( ) )
+				return;
+
+			fb_hSleep( 50 );
+			msecs -= 50;
+		}
+
+	if( msecs > 0 )
+		fb_hSleep( msecs );
 
 }
 

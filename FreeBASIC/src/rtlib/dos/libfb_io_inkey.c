@@ -73,3 +73,12 @@ int fb_ConsoleGetkey( void )
 
 	return k;
 }
+
+/*:::::*/
+int fb_ConsoleKeyHit( void )
+{
+
+	return _conio_kbhit( );
+
+}
+

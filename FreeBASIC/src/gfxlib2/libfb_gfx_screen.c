@@ -132,6 +132,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	if (mode == 0) {
 		fb_SetInkeyProc(fb_ConsoleInkey);
 		fb_SetGetkeyProc(fb_ConsoleGetkey);
+		fb_SetKeyHitProc(fb_ConsoleKeyHit);
 		fb_SetClsProc(fb_ConsoleClear);
 		fb_SetColorProc(fb_ConsoleColor);
 		fb_SetLocateProc(fb_ConsoleLocate);
@@ -145,6 +146,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	else {
 		fb_SetInkeyProc(fb_GfxInkey);
 		fb_SetGetkeyProc(fb_GfxGetkey);
+		fb_SetKeyHitProc(fb_GfxKeyHit);
 		fb_SetClsProc(fb_GfxClear);
 		fb_SetColorProc(fb_GfxColor);
 		fb_SetLocateProc(fb_GfxLocate);
@@ -201,7 +203,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			if (c = strrchr(window_title, '.'))
 				*c = '\0';
 		}
-		
+
 		driver_name = getenv("FBGFX");
 		for (try = (driver_name ? 4 : 2); try; try--) {
 			for (driver = fb_gfx_driver_list[0]; driver; driver++) {
@@ -219,7 +221,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			else
 				flags ^= DRIVER_FULLSCREEN;
 		}
-		
+
 		if (!driver) {
 			exit_proc();
 			return -1;
@@ -253,7 +255,7 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
 	strncpy(window_title_buff, title->data, WINDOW_TITLE_SIZE - 1);
 	window_title = window_title_buff;
-	
+
 	if (fb_mode)
 		fb_mode->driver->set_window_title(window_title);
 

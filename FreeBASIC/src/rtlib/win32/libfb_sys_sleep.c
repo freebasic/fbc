@@ -30,14 +30,8 @@
 #include <windows.h>
 
 /*:::::*/
-FBCALL void fb_Sleep ( int msecs )
+void fb_hSleep ( int msecs )
 {
-
-	if( msecs == -1 )
-	{
-		fb_Getkey( );
-		return;
-	}
 
 	Sleep( msecs );
 }

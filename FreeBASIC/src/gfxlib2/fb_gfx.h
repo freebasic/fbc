@@ -261,6 +261,7 @@ extern FBCALL void fb_GfxSetMouse(int x, int y, int cursor);
 /* Runtime library hooks */
 int fb_GfxGetkey(void);
 FBSTRING *fb_GfxInkey(void);
+int fb_GfxKeyHit(void);
 void fb_GfxColor(int fg_color, int bg_color);
 void fb_GfxClear(int mode);
 void fb_GfxWidth(int w, int h);

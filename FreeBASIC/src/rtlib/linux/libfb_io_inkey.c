@@ -74,7 +74,7 @@ static NODE F1[] = { { '~', KEY_F1, NULL }, { 0 } },
 	    End[] = { { '~', KEY_END, NULL }, { 0 } },
 	    PageUp[] = { { '~', KEY_PAGE_UP, NULL }, { 0 } },
 	    PageDown[] = { { '~', KEY_PAGE_DOWN, NULL }, { 0 } },
-	    Sub1[] = { { '~', KEY_HOME, NULL }, { '7', 0, F6 }, { '8', 0, F7 }, { '9', 0, F8 }, { 0, 0, F1 }, 
+	    Sub1[] = { { '~', KEY_HOME, NULL }, { '7', 0, F6 }, { '8', 0, F7 }, { '9', 0, F8 }, { 0, 0, F1 },
 	    	       { 0, 0, F2 }, { 0, 0, F3 }, { 0, 0, F4 }, { 0, 0, F5 }, { 0 } },
 	    Sub2[] = { { '~', KEY_INS, NULL }, { '0', 0, F9 }, { '1', 0, F10 }, { 0 } },
 	    SubBrace[] = { { 'A', KEY_F1, NULL }, { 'B', KEY_F2, NULL }, { 'C', KEY_F3, NULL }, { 'D', KEY_F4, NULL },
@@ -95,7 +95,7 @@ int fb_hGetCh()
 	static int getch_inited = FALSE;
 	NODE *node;
 	int k;
-	
+
 	k = fgetc(fb_con.f_in);
 	if (k == -1)
 		return -1;
@@ -153,10 +153,10 @@ FBSTRING *fb_ConsoleInkey( void )
 	FBSTRING *res;
 	int k, chars;
 	int ch;
-	
+
 	if (!fb_con.inited)
 		return &fb_strNullDesc;
-	
+
 	if ((ch = fb_hGetCh()) != -1) {
 		chars = 1;
 		if (ch & 0x100) {
@@ -187,9 +187,20 @@ int fb_ConsoleGetkey( void )
 
 	if (!fb_con.inited)
 		return fgetc(stdin);
-	
+
 	while ((k = fb_hGetCh()) < 0)
 		;
 
 	return k;
+}
+
+/*:::::*/
+int fb_ConsoleKeyHit( void )
+{
+
+	if( !fb_con.inited )
+		return (feof(stdin)? 0: 1);
+
+	return (feof(fb_con.f_in)? 0: 1);
+
 }
