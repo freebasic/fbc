@@ -292,6 +292,7 @@ extern int fb_viewBotRow;
 FBCALL void 		fb_ConsoleGetSize	( int *cols, int *rows );
 FBCALL void 		fb_ConsoleGetXY		( int *col, int *row );
 
+FBCALL int			fb_ConsoleReadXY	( int col, int row, int colorflag );
 	   void 		fb_ConsoleColor		( int fc, int bc );
 	   int 			fb_ConsoleGetColorAtt( void );
 

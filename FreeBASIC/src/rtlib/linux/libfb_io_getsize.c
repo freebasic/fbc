@@ -32,21 +32,13 @@
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-    int toprow, botrow, temp;
-	struct winsize win;
+    int toprow, botrow;
 
+	fb_hResize();
+	
 	if (cols) {
-		if (fb_con.inited) {
-			win.ws_col=0xFFFF;
-			ioctl(fb_con.h_out, TIOCGWINSZ, &win);
-			if (win.ws_col == 0xFFFF) {
-				fputs("\e[18t", fb_con.f_out);
-				if (fscanf(fb_con.f_in, "\e[8;%d;%dt", &temp, cols) != 2)
-					*cols = 80;
-			}
-			else
-				*cols = win.ws_col;
-		}
+		if (fb_con.inited)
+			*cols = fb_con.w;
 		else
 			*cols = 80;
 	}

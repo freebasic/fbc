@@ -65,6 +65,62 @@ static void signal_handler(int sig)
 
 
 /*:::::*/
+static void console_resize(int sig)
+{
+	fb_con.resized = TRUE;
+	signal(SIGWINCH, console_resize);
+}
+
+
+/*:::::*/
+void fb_hResize()
+{
+	unsigned char *char_buffer, *attr_buffer;
+	struct winsize win;
+	int r, c, w, h;
+	
+	if ((!fb_con.inited) || (!fb_con.resized))
+		return;
+
+	win.ws_row = 0xFFFF;
+	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
+	if (win.ws_row == 0xFFFF) {
+		fputs("\e[18t", fb_con.f_out);
+		if (fscanf(fb_con.f_in, "\e[8;%d;%dt", &r, &c) == 2) {
+			win.ws_row = r;
+			win.ws_col = c;
+		}
+		else {
+			win.ws_row = 25;
+			win.ws_col = 80;
+		}
+	}
+	
+	char_buffer = calloc(1, win.ws_row * win.ws_col * 2);
+	attr_buffer = char_buffer + (win.ws_row * win.ws_col);
+	if (fb_con.char_buffer) {
+		h = (fb_con.h < win.ws_row) ? fb_con.h : win.ws_row;
+		w = (fb_con.w < win.ws_col) ? fb_con.w : win.ws_col;
+		for (r = 0; r < h; r++) {
+			memcpy(char_buffer + (r * win.ws_col), fb_con.char_buffer + (r * fb_con.w), w);
+			memcpy(attr_buffer + (r * win.ws_col), fb_con.attr_buffer + (r * fb_con.w), w);
+		}
+		free(fb_con.char_buffer);
+	}
+	fb_con.char_buffer = char_buffer;
+	fb_con.attr_buffer = attr_buffer;
+	fb_con.h = win.ws_row;
+	fb_con.w = win.ws_col;
+	
+	fflush(stdin);
+	fputs("\e[6n", fb_con.f_out);
+	fscanf(stdin, "\e[%d;%dR", &fb_con.cur_y, &fb_con.cur_x);
+	
+	fb_con.resized = FALSE;
+}
+
+
+/*:::::*/
 void fb_hInit ( void )
 {
 	int i, init = FALSE;
@@ -105,6 +161,8 @@ void fb_hInit ( void )
 	term_out.c_oflag |= OPOST;
 	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
 		return;
+	fb_con.char_buffer = NULL;
+	fb_con.resized = TRUE;
 	
 	/* Input setup */
 	if (init != INIT_CONSOLE) {
@@ -152,6 +210,9 @@ void fb_hInit ( void )
 	old_sigterm = signal(SIGTERM, signal_handler);
 	old_sigint  = signal(SIGINT,  signal_handler);
 	old_sigquit = signal(SIGQUIT, signal_handler);
+	signal(SIGWINCH, console_resize);
 	
 	fb_con.inited = init;
+
+	fb_hResize();
 }

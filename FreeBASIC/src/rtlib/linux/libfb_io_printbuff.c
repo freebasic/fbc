@@ -36,13 +36,23 @@
 /*:::::*/
 void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
-	int len;
-	unsigned char *c = buffer;
+	int len, avail;
+	unsigned char *c = buffer, aux;
 	
 	if (!fb_con.inited) {
 		printf("%s", buffer);
 		return;
 	}
+	
+	fb_hResize();
+	
+	/* ToDo: handle scrolling for internal characters/attributes buffer? */
+	len = strlen(buffer);
+	avail = (fb_con.w * fb_con.h) - (((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1);
+	if (avail < len)
+		len = avail;
+	memcpy(fb_con.char_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, buffer, len);
+	memset(fb_con.attr_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, fb_con.fg_color | (fb_con.bg_color << 4), len);
 	
 	for (len = strlen(buffer); len; len--, c++) {
 		if (fb_con.inited == INIT_CONSOLE) {
@@ -66,6 +76,14 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		}
 		else
 			fputc(*c, fb_con.f_out);
+		
+		fb_con.cur_x++;
+		if ((*c == 10) || (fb_con.cur_x >= fb_con.w)) {
+			fb_con.cur_x = 1;
+			fb_con.cur_y++;
+			if (fb_con.cur_y > fb_con.h)
+				fb_con.cur_y = fb_con.h;
+		}
 	}
 	fflush(fb_con.f_out);
 }

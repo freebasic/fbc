@@ -32,19 +32,8 @@
 /*:::::*/
 int fb_ConsoleGetMaxRow( void )
 {
-	struct winsize win;
-	int r, c;
-	
 	if (!fb_con.inited)
 		return 25;
 	
-	win.ws_row = 0xFFFF;
-	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
-	if (win.ws_row == 0xFFFF) {
-		fputs("\e[18t", fb_con.f_out);
-		if (fscanf(fb_con.f_in, "\e[8;%d;%dt", &r, &c) == 2)
-			return r;
-		return 25;
-	}
-	return win.ws_row;
+	return fb_con.h;
 }

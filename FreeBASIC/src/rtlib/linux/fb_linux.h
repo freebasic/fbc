@@ -51,12 +51,16 @@ typedef struct FBCONSOLE
 	int in_flags, old_in_flags;
 	int fg_color, bg_color;
 	int start_time;
+	int cur_x, cur_y;
+	int w, h, resized;
+	unsigned char *char_buffer, *attr_buffer;
 } FBCONSOLE;
 
 extern FBCONSOLE fb_con;
 
 
 extern int fb_hGetCh();
+extern void fb_hResize();
 
 
 #endif

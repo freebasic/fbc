@@ -45,6 +45,8 @@ void fb_ConsoleLocate( int row, int col, int cursor )
 	if (row > 0)
 		y = row;
 
+	fb_con.cur_x = x;
+	fb_con.cur_y = y;
 	fprintf(fb_con.f_out, "\e[%d;%dH", y, x);
 	if (cursor == 0)
 		fputs("\e[?25l", fb_con.f_out);
@@ -89,3 +91,17 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 		*row = y;
 }
 
+/*:::::*/
+FBCALL int fb_ConsoleReadXY( int x, int y, int colorflag)
+{
+	unsigned char *buffer = fb_con.char_buffer;
+	
+	fb_hResize();
+	
+	if ((!fb_con.inited) || (x < 1) || (x >= fb_con.w) || (y < 1) || (y >= fb_con.h))
+		return 0;
+	
+	if (colorflag)
+		buffer = fb_con.attr_buffer;
+	return buffer[((y - 1) * fb_con.w) + x - 1];
+}

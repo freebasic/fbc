@@ -37,12 +37,16 @@ void fb_ConsoleClear( int mode )
 	if (!fb_con.inited)
 		return;
 	
+	fb_hResize();
+	
 	fb_ConsoleGetView(&start, &end);
 	if ((mode != 1) && (mode != 0xFFFF0000)) {
 		start = 1;
 		end = fb_ConsoleGetMaxRow();
 	}
 	for (i = start; i <= end; i++) {
+		memset(fb_con.char_buffer + (i * fb_con.w), ' ', fb_con.w);
+		memset(fb_con.attr_buffer + (i * fb_con.w), fb_con.fg_color | (fb_con.bg_color << 4), fb_con.w);
 		fprintf(fb_con.f_out, "\e[%d;1H", i);
 		fputs("\E[2K", fb_con.f_out);
 	}
