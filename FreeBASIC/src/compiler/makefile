@@ -29,12 +29,12 @@ ifeq ($(OS),DOS)
     PLATFORM = DOS
 endif
 
-BCFLAGS := -e -c -w 1
+BCFLAGS := -e -c -w 1 -arch 386
 
 ifeq ($(PLATFORM),WIN32)
     EXE := .exe
     LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
-    LDLIBS := -L../../lib/win32 -( -lmsvcrt -lfb -lkernel32 -)
+    LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
     BC := ..\..\fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
     LD := ..\..\bin\win32\ld.exe

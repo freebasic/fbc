@@ -814,6 +814,7 @@ sub printOptions
 	print
 	print "options:"
 	print "-a <name>", "Add an object file to linker's list"
+	print "-arch <type>", "Select target architecture (def: 486)"
 	print "-b <name>", "Add a source file to compilation"
 	print "-c", "Compile only, do not link"
 	print "-d <name=val>", "Add a preprocessor's define"
@@ -884,7 +885,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "e", "ex", "w", "nostd", "nodeflibs"
+			case "arch", "e", "ex", "w", "nostd", "nodeflibs"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -991,6 +992,20 @@ function processCompOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
+			case "arch"
+				select case argv(i+1)
+				case "386"
+					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.386
+				case "486"
+					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.486
+				case "586"
+					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.586
+				case "686"
+					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.686
+				case else
+					exit function
+				end select
+
 			case "e"
 				fbSetOption FB.COMPOPT.ERRORCHECK, TRUE
 

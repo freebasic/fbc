@@ -2093,7 +2093,7 @@ sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, 
     emithPUSH "edi"
 
     ctx.procstkcleanup = seek( ctx.outf )
-    outp space$( 128 )
+   	outp space$( 180 )
 
     lname = symbGetLabelName( initlabel )
     emitLABEL lname, FALSE
@@ -2110,6 +2110,7 @@ sub emitPROCEND( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval 
     dim bytestoalloc as integer
     dim i as integer
 	dim id as string
+	dim lname as string
 
 	id = symbGetProcName( proc )
 
@@ -2136,15 +2137,39 @@ sub emitPROCEND( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval 
 
 		seek #ctx.outf, ctx.procstkcleanup
 
-		if( bytestoalloc \ 4 > 4 ) then
-			outp "lea edi, [ebp-" + ltrim$( str$( bytestoalloc ) ) + "]"
-			outp "mov ecx," + str$( bytestoalloc \ 4 )
-			outp "xor eax, eax"
-			outEx TABCHAR + "rep stosd", TRUE
+		if( env.clopt.cputype >= FB.CPUTYPE.686 ) then
+			if( bytestoalloc \ 8 > 7 ) then
+				outp "lea edi, [ebp-" + ltrim$( str$( bytestoalloc ) ) + "]"
+				outp "mov ecx," + str$( bytestoalloc \ 8 )
+				outp "pxor mm0, mm0"
+			    lname = symbGetLabelName( initlabel ) + "_init"
+			    emitLABEL lname, FALSE
+				outp "movq [edi], mm0"
+				outp "add edi, 8"
+				outp "dec ecx"
+				outp "jnz " + lname
+				outp "emms"
+			elseif( bytestoalloc \ 8 > 0 ) then
+				outp "pxor mm0, mm0"
+				for i = bytestoalloc\8 to 1 step -1
+					outp "movq [ebp-" + ltrim$( str$( i*8 ) ) + "], mm0"
+				next i
+				outp "emms"
+			end if
+			if( bytestoalloc and 4 ) then
+				outp "mov dword ptr [ebp-" + ltrim$( str$( bytestoalloc ) ) + "], 0"
+			end if
 		else
-			for i = bytestoalloc\4 to 1 step -1
-				 outp "mov dword ptr [ebp-" + ltrim$( str$( i*4 ) ) + "], 0"
-			next i
+			if( bytestoalloc \ 4 > 4 ) then
+				outp "lea edi, [ebp-" + ltrim$( str$( bytestoalloc ) ) + "]"
+				outp "mov ecx," + str$( bytestoalloc \ 4 )
+				outp "xor eax, eax"
+				outEx TABCHAR + "rep stosd", TRUE
+			else
+				for i = bytestoalloc\4 to 1 step -1
+					 outp "mov dword ptr [ebp-" + ltrim$( str$( i*4 ) ) + "], 0"
+				next i
+			end if
 		end if
 
 		seek #ctx.outf, currpos
@@ -2261,7 +2286,16 @@ sub hSaveAsmHeader( )
 	edbgHeader ctx.outf, env.infile
 
 	hWriteStr ctx.outf, TRUE,  ".intel_syntax noprefix"
-	hWriteStr ctx.outf, TRUE,  ".arch i386"
+	select case env.clopt.cputype
+	case FB.CPUTYPE.386
+		hWriteStr ctx.outf, TRUE,  ".arch i386"
+	case FB.CPUTYPE.486
+		hWriteStr ctx.outf, TRUE,  ".arch i486"
+	case FB.CPUTYPE.586
+		hWriteStr ctx.outf, TRUE,  ".arch i586"
+	case FB.CPUTYPE.686
+		hWriteStr ctx.outf, TRUE,  ".arch i686"
+	end select
 
     hWriteStr ctx.outf, FALSE, ""
     hWriteStr ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"
