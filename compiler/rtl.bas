@@ -613,7 +613,7 @@ data "date","fb_Date", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
 '' pos( ) as integer
 data "pos", "fb_ConsoleGetX", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
 '' csrlin( ) as integer
-data "csrline", "fb_ConsoleGetY", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "csrlin", "fb_ConsoleGetY", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
 '' cls( byval n as integer = 1 ) as void
 data "cls", "fb_Cls", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
