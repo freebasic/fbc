@@ -1236,22 +1236,9 @@ Dim Shared errno As Integer
 
 #define AL_RAND	rand()
 
-' MIN, MAX, and AL_MID will only work for integers, unlike Allegro's #defines...
-private Function AL_MIN(ByVal x As Integer, ByVal y As Integer) As Integer
-	If x < y Then
-		AL_MIN = x
-	Else
-		AL_MIN = y
-	End If
-End Function
+#define AL_MIN(x,y) iif( (x) <= (y), (x), (y) )
 
-private Function AL_MAX(ByVal x As Integer, ByVal y As Integer) As Integer
-	If x > y Then
-		AL_MAX = x
-	Else
-		AL_MAX = y
-	End If
-End Function
+#define AL_MAX(x,y) iif( (x) >= (y), (x), (y) )
 
 ' AL_MID is the fb equivalent of Allegro's MID
 #define AL_MID(x,y,z) AL_MAX(x, AL_MIN(y, z))
