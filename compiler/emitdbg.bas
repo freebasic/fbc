@@ -105,7 +105,12 @@ sub edbgHeader( byval asmf as integer, filename as string )
 	hWriteStr asmf, FALSE, "__stabini:"
 
 	hWriteStr asmf, TRUE, STABD + "68,0,    "
+#ifdef TARGET_WIN32
 	ctx.mainoffs = seek( asmf ) - (4+2)
+#else
+	'' under Unix newline is NL only so we need to adjust the position by 1, not 2
+	ctx.mainoffs = seek( asmf ) - (4+1)
+#endif
 
 	restore stabstdef
 	for i = 0 to STABS_TYPEDEFS-1
