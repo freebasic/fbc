@@ -20,14 +20,18 @@ end type
 
 
 type IUnknown_VTBL
-	QueryInterface 			as integer
-	AddRef 					as integer
+	QueryInterface 			as function (byval this as any ptr, byval riid as integer ptr, byval ppvObj as any ptr) as integer
+	AddRef 					as function (byval this as any ptr) as integer
 	Release 				as function (byval this as any ptr) as integer
 end type
 
 type IUnknown
 	Vtable					as IUnknown_VTBL ptr
 end type
+
+#define IUnknown_QueryInterface(this_,riid,ppvObj) 		this_->Vtable->QueryInterface(this_,riid,ppvObj)
+#define IUnknown_AddRef(this_) 							this_->Vtable->AddRef(this_)
+#define IUnknown_Release(this_) 						this_->Vtable->Release(this_)
 
 ' Flags for DirectDrawEnumerateEx
 #define DDENUM_ATTACHEDSECONDARYDEVICES	&H00000001
@@ -358,17 +362,11 @@ end type
 const DDGDI_GETHOSTIDENTIFIER = &H00000001
 
 ' "Macros" for interpretting DDEVICEIDENTIFIER2.dwWHQLLevel
-private function GET_WHQL_YEAR ( byval dwWHQLLevel as uinteger ) as uinteger
-		 GET_WHQL_YEAR = dwWHQLLevel \ &H10000
-end function
+#define GET_WHQL_YEAR(dwWHQLLevel) ((dwWHQLLevel) \ &H10000)
 
-private function GET_WHQL_MONTH ( byval dwWHQLLevel as uinteger ) as uinteger
-		 GET_WHQL_MONTH = (dwWHQLLevel \ &H100) and &H00ff
-end function
+#define GET_WHQL_MONTH(dwWHQLLevel) (((dwWHQLLevel) \ &H100) and &H00ff)
 
-private function GET_WHQL_DAY ( byval dwWHQLLevel as uinteger ) as uinteger
-		 GET_WHQL_DAY = dwWHQLLevel and &Hff
-end function
+#define GET_WHQL_DAY(dwWHQLLevel) ((dwWHQLLevel) and &Hff)
 
 type IDirectDraw_VTBL
 	' IUnknown methods
@@ -401,6 +399,31 @@ end type
 type IDirectDraw
 	Vtable					as IDirectDraw_VTBL ptr
 end type
+
+#define IDirectDraw_QueryInterface(this_,riid,ppvObj) 									this_->Vtable->QueryInterface(this_,riid,ppvObj)
+#define IDirectDraw_AddRef(this_) 														this_->Vtable->AddRef(this_)
+#define IDirectDraw_Release(this_) 														this_->Vtable->Release(this_)
+#define IDirectDraw_Compact(this_) 														this_->Vtable->Compact(this_)
+#define IDirectDraw_CreateClipper(this_,dwFlags,lplpDDClipper,pUnkOuter) 				this_->Vtable->CreateClipper(this_,dwFlags,lplpDDClipper,pUnkOuter)
+#define IDirectDraw_CreatePalette(this_,dwFlags,lpColorTable,lplpDDPalette,pUnkOuter) 	this_->Vtable->CreatePalette(this_,dwFlags,lpColorTable,lplpDDPalette,pUnkOuter)
+#define IDirectDraw_CreateSurface(this_,arg1,arg2,arg3) 								this_->Vtable->CreateSurface(this_,arg1,arg2,arg3)
+#define IDirectDraw_DuplicateSurface(this_,lpDDSurface,lplpDupDDSurface) 				this_->Vtable->DuplicateSurface(this_,lpDDSurface,lplpDupDDSurface)
+#define IDirectDraw_EnumDisplayModes(this_,dwFlags,lpDDSurfaceDesc,lpContext,lpEnumCallback) this_->Vtable->EnumDisplayModes(this_,dwFlags,lpDDSurfaceDesc,lpContext,lpEnumCallback)
+#define IDirectDraw_EnumSurfaces(this_,dwFlags,lpDDSD,lpContext,lpEnumCallback) 		this_->Vtable->EnumSurfaces(this_,dwFlags,lpDDSD,lpContext,lpEnumCallback)
+#define IDirectDraw_FlipToGDISurface(this_) 											this_->Vtable->FlipToGDISurface(this_)
+#define IDirectDraw_GetCaps(this_,lpDDDriverCaps,lpDDHELCaps) 							this_->Vtable->GetCaps(this_,lpDDDriverCaps,lpDDHELCaps)
+#define IDirectDraw_GetDisplayMode(this_,lpDDSurfaceDesc) 								this_->Vtable->GetDisplayMode(this_,lpDDSurfaceDesc)
+#define IDirectDraw_GetFourCCCodes(this_,lpNumCodeslpCodes) 							this_->Vtable->GetFourCCCodes(this_,lpNumCodeslpCodes)
+#define IDirectDraw_GetGDISurface(this_,lplpGDIDDSurface) 								this_->Vtable->GetGDISurface(this_,lplpGDIDDSurface)
+#define IDirectDraw_GetMonitorFequency(this_,lpdwFrequency) 							this_->Vtable->GetMonitorFequency(this_,lpdwFrequency)
+#define IDirectDraw_GetScanLine(this_,lpdwScanLine) 									this_->Vtable->GetScanLine(this_,lpdwScanLine)
+#define IDirectDraw_GetVerticalBlankStatus(this_,lpbIsInV) 								this_->Vtable->GetVerticalBlankStatus(this_,lpbIsInV)
+#define IDirectDraw_Initialize(this_,lpGUID) 											this_->Vtable->Initialize(this_,lpGUID)
+#define IDirectDraw_RestoreDisplayMode(this_) 											this_->Vtable->RestoreDisplayMode(this_)
+#define IDirectDraw_SetCooperativeLevel(this_,arg1,arg2) 								this_->Vtable->SetCooperativeLevel(this_,arg1,arg2)
+#define IDirectDraw_SetDisplayMode(this_,arg1,arg2,arg3) 								this_->Vtable->SetDisplayMode(this_,arg1,arg2,arg3)
+#define IDirectDraw_WaitForVerticalBlank(this_,dwFlags,hEvent) 							this_->Vtable->WaitForVerticalBlank(this_,dwFlags,hEvent)
+
 
 type IDirectDrawPalette_VTBL
 	' IUnknown methods
@@ -480,6 +503,43 @@ end type
 type IDirectDrawSurface
 	Vtable					as IDirectDrawSurface_VTBL ptr
 end type
+
+#define IDirectDrawSurface_QueryInterface(this_,riid,ppvObj) 								this_->Vtable->QueryInterface(this_,riid,ppvObj)
+#define IDirectDrawSurface_AddRef(this_) 													this_->Vtable->AddRef(this_)
+#define IDirectDrawSurface_Release(this_) 													this_->Vtable->Release(this_)
+#define IDirectDrawSurface_AddAttachedSurface(this_,lpDDSAttachedSurface) 					this_->Vtable->AddAttachedSurface(this_,lpDDSAttachedSurface)
+#define IDirectDrawSurface_AddOverlayDirtyRect(this_,lpRect) 								this_->Vtable->AddOverlayDirtyRect(this_,lpRect)
+#define IDirectDrawSurface_Blt(this_,lpDestRect,lpDDSrcSurface,lpSrcRect,dwFlags,lpDDBltFx) this_->Vtable->Blt(this_,lpDestRect,lpDDSrcSurface,lpSrcRect,dwFlags,lpDDBltFx)
+#define IDirectDrawSurface_BltBatch(this_,lpDDBltBatch,dwCount,dwFlag) 						this_->Vtable->BltBatch(this_,lpDDBltBatch,dwCount,dwFlag)
+#define IDirectDrawSurface_BltFast(this_,dwX,dwY,lpDDSrcSurface,lpSrcRect,dwTran) 			this_->Vtable->BltFast(this_,dwX,dwY,lpDDSrcSurface,lpSrcRect,dwTran)
+#define IDirectDrawSurface_DeleteAttachedSurface(this_,dwFlags,lpDDSAttachedSurface) 		this_->Vtable->DeleteAttachedSurface(this_,dwFlags,lpDDSAttachedSurface)
+#define IDirectDrawSurface_EnumAttachedSurfaces(this_,lpContext,lpEnumSurfacesCallback) 	this_->Vtable->EnumAttachedSurfaces(this_,lpContext,lpEnumSurfacesCallback)
+#define IDirectDrawSurface_EnumOverlayZOrders(this_,dwFlags,lpContext,lpfnCallback) 		this_->Vtable->EnumOverlayZOrders(this_,dwFlags,lpContext,lpfnCallback)
+#define IDirectDrawSurface_Flip(this_,arg1,arg2) 											this_->Vtable->Flip(this_,arg1,arg2)
+#define IDirectDrawSurface_GetAttachedSurface(this_,arg1,arg2) 								this_->Vtable->GetAttachedSurface(this_,arg1,arg2)
+#define IDirectDrawSurface_GetBltStatus(this_,dwFlags) 										this_->Vtable->GetBltStatus(this_,dwFlags)
+#define IDirectDrawSurface_GetCaps(this_,lpDDSCaps) 										this_->Vtable->GetCaps(this_,lpDDSCaps)
+#define IDirectDrawSurface_GetClipper(this_,lplpDDClipper) 									this_->Vtable->GetClipper(this_,lplpDDClipper)
+#define IDirectDrawSurface_GetColorKey(this_,dwFlags,lpDDColorKey) 							this_->Vtable->GetColorKey(this_,dwFlags,lpDDColorKey)
+#define IDirectDrawSurface_GetDC(this_,lphDC) 												this_->Vtable->GetDC(this_,lphDC)
+#define IDirectDrawSurface_GetFlipStatus(this_,dwFlags) 									this_->Vtable->GetFlipStatus(this_,dwFlags)
+#define IDirectDrawSurface_GetOverlayPosition(this_,lplX,lplY) 								this_->Vtable->GetOverlayPosition(this_,lplX,lplY)
+#define IDirectDrawSurface_GetPalette(this_,lplpDDPalette) 									this_->Vtable->GetPalette(this_,lplpDDPalette)
+#define IDirectDrawSurface_GetPixelFormat(this_,lpDDPixelFormat) 							this_->Vtable->GetPixelFormat(this_,lpDDPixelFormat)
+#define IDirectDrawSurface_GetSurfaceDesc(this_,lpDDSurfaceDesc) 							this_->Vtable->GetSurfaceDesc(this_,lpDDSurfaceDesc)
+#define IDirectDrawSurface_Initialize(this_,lpDD,lpDDSurfaceDesc) 							this_->Vtable->Initialize(this_,lpDD,lpDDSurfaceDesc)
+#define IDirectDrawSurface_IsLost(this_) 													this_->Vtable->IsLost(this_)
+#define IDirectDrawSurface_Lock(this_,r,arg1,arg2,arg3) 									this_->Vtable->Lock(this_,r,arg1,arg2,arg3)
+#define IDirectDrawSurface_ReleaseDC(this_,hDC) 											this_->Vtable->ReleaseDC(this_,hDC)
+#define IDirectDrawSurface_Restore(this_) 													this_->Vtable->Restore(this_)
+#define IDirectDrawSurface_SetClipper(this_,lpDDClipper) 									this_->Vtable->SetClipper(this_,lpDDClipper)
+#define IDirectDrawSurface_SetColorKey(this_,dwFlags,lpDDColorKey) 							this_->Vtable->SetColorKey(this_,dwFlags,lpDDColorKey)
+#define IDirectDrawSurface_SetOverlayPosition(this_,lX,lY) 									this_->Vtable->SetOverlayPosition(this_,lX,lY)
+#define IDirectDrawSurface_SetPalette(this_,lpDDPalette) 									this_->Vtable->SetPalette(this_,lpDDPalette)
+#define IDirectDrawSurface_Unlock(this_,r) 													this_->Vtable->Unlock(this_,r)
+#define IDirectDrawSurface_UpdateOverlay(this_,lpSrcRect,lpDDDestSurface,lpDestRect,dwFlags,lpDDOverlayFx) this_->Vtable->UpdateOverlay(this_,lpSrcRect,lpDDDestSurface,lpDestRect,dwFlags,lpDDOverlayFx)
+#define IDirectDrawSurface_UpdateOverlayDisplay(this_,dwFlags) 								this_->Vtable->UpdateOverlayDisplay(this_,dwFlags)
+#define IDirectDrawSurface_UpdateOverlayZOrder(this_,dwFlags,lpDDSReference) 				this_->Vtable->UpdateOverlayZOrder(this_,dwFlags,lpDDSReference)
 
 
 type IDirectDrawGammaControl_VTBL
