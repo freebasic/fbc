@@ -114,12 +114,39 @@ unsigned int fb_hFixColor(unsigned int color)
 
 
 /*:::::*/
-static void set_palette(int index, unsigned int color)
+static void set_color(int index, unsigned int color)
+{
+	int r, g, b;
+
+	if (fb_mode->default_palette == &fb_palette_256) {
+		r = ((color & 0x3F) * 255.0) / 63.0;
+		g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
+		b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
+	}
+	else {
+		color &= (fb_mode->default_palette->colors - 1);
+		r = (fb_mode->palette[color] & 0xFF);
+		g = (fb_mode->palette[color] >> 8) & 0xFF;
+		b = (fb_mode->palette[color] >> 16) & 0xFF;
+		fb_mode->color_association[index] = color;
+	}
+	fb_mode->device_palette[index] = r | (g << 8) | (b << 16);
+	fb_mode->driver->set_palette(index, r, g, b);
+}
+
+
+/*:::::*/
+FBCALL void fb_GfxPalette(int index, unsigned int color)
 {
 	int i, r, g, b;
 	const PALETTE *palette;
 	const unsigned char *mode_association;
+	
+	if ((!fb_mode) || (fb_mode->depth > 8))
+		return;
 
+	fb_mode->driver->lock();
+	
 	if (index < 0) {
 		palette = fb_mode->default_palette;
 		switch (fb_mode->mode_num) {
@@ -146,44 +173,20 @@ static void set_palette(int index, unsigned int color)
 			g = palette->data[(i * 3) + 1];
 			b = palette->data[(i * 3) + 2];
 			fb_mode->palette[i] = r | (g << 8) | (b << 16);
-			if (mode_association) {
-				fb_mode->color_association[i] = mode_association[i];
-				r = palette->data[fb_mode->color_association[i] * 3];
-				g = palette->data[(fb_mode->color_association[i] * 3) + 1];
-				b = palette->data[(fb_mode->color_association[i] * 3) + 2];
+			if (i < (1 << fb_mode->depth)) {
+				if (mode_association) {
+					fb_mode->color_association[i] = mode_association[i];
+					r = palette->data[fb_mode->color_association[i] * 3];
+					g = palette->data[(fb_mode->color_association[i] * 3) + 1];
+					b = palette->data[(fb_mode->color_association[i] * 3) + 2];
+				}
+				fb_mode->device_palette[i] = r | (g << 8) | (b << 16);
+				fb_mode->driver->set_palette(i, r, g, b);
 			}
-			fb_mode->device_palette[i] = r | (g << 8) | (b << 16);
-			fb_mode->driver->set_palette(i, r, g, b);
 		}
 	}
-	else if (index < 256) {
-		if (fb_mode->default_palette == &fb_palette_256) {
-			r = ((color & 0x3F) * 255.0) / 63.0;
-			g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
-			b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
-		}
-		else {
-			color &= (fb_mode->default_palette->colors - 1);
-			r = (fb_mode->palette[color] & 0xFF);
-			g = (fb_mode->palette[color] >> 8) & 0xFF;
-			b = (fb_mode->palette[color] >> 16) & 0xFF;
-			fb_mode->color_association[index] = color;
-		}
-		fb_mode->device_palette[index] = r | (g << 8) | (b << 16);
-		fb_mode->driver->set_palette(index, r, g, b);
-	}
-}
-
-
-/*:::::*/
-FBCALL void fb_GfxPalette(int index, unsigned int color)
-{
-	if ((!fb_mode) || (fb_mode->depth > 8))
-		return;
-
-	fb_mode->driver->lock();
-	
-	set_palette(index, color);
+	else
+		set_color(index, color);
 	
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 	
@@ -196,14 +199,14 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 {
 	int i;
 
-	if ((!fb_mode) || (fb_mode->depth < 4) || (fb_mode->depth > 8))
+	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
 
 	fb_mode->driver->lock();
 
 	for (i = 0; i < (1 << fb_mode->depth); i++) {
 		if (data[i] >= 0)
-			set_palette(i, data[i]);
+			set_color(i, data[i]);
 	}
 
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
