@@ -83,6 +83,21 @@ declare sub 		emitDATA			( byval litext as string, _
 
 declare sub 		emitDATAEND			( )
 
+declare sub 		emitVARINIBEGIN		( byval sym as FBSYMBOL ptr )
+
+declare sub 		emitVARINIEND		( byval sym as FBSYMBOL ptr )
+
+declare sub 		emitVARINI			( byval dtype as integer, _
+										  byval value as double )
+
+declare sub 		emitVARINI64		( byval dtype as integer, _
+										  byval value as longint )
+
+declare sub 		emitVARINISTR		( byval lgt as integer, _
+				   						  byval s as string )
+
+declare sub 		emitVARINIPAD		( byval bytes as integer )
+
 declare sub 		emitGetRegName		( byval dtype as integer, _
 										  byval dclass as integer, _
 										  byval reg as integer, _

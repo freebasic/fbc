@@ -1,4 +1,8 @@
 
+-- add UDT support to var-init
+
+-- add run-time support to var-init
+
 [ ] make the runtime lib thread safe
 
 [ ] make PUT# and GET# accept a 4th optional argument: bytes
@@ -25,8 +29,6 @@
 [ ] pointer type casting
 
 [ ] full debug support
-
-[ ] var ini  -- dim myvar as sometype = { initialvalue } -- has to support arrays and types too
 
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 

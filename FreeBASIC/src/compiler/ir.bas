@@ -892,6 +892,73 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 
 end function
 
+'':::::
+sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
+
+	irFlush
+
+	emitVARINIBEGIN sym
+
+end sub
+
+'':::::
+sub irEmitVARINIEND( byval sym as FBSYMBOL ptr ) static
+
+	emitVARINIEND sym
+
+end sub
+
+'':::::
+sub irEmitVARINI( byval dtype as integer, _
+				  byval value as double ) static
+
+	emitVARINI dtype, value
+
+end sub
+
+'':::::
+sub irEmitVARINI64( byval dtype as integer, _
+					byval value as longint ) static
+
+	emitVARINI64 dtype, value
+
+end sub
+
+'':::::
+sub irEmitVARINISTR( byval totlgt as integer, _
+				     byval s as string ) static
+
+	dim lgt as integer
+
+	'' zstring * 1?
+	if( totlgt = 0 ) then
+		emitVARINI IR.DATATYPE.BYTE, 0
+		exit sub
+	end if
+
+	''
+	lgt = len( s )
+
+	if( lgt > totlgt ) then
+		emitVARINISTR totlgt, left$( s, totlgt )
+	else
+		emitVARINISTR lgt, s
+
+		if( lgt < totlgt ) then
+			emitVARINIPAD totlgt - lgt
+		end if
+	end if
+
+end sub
+
+'':::::
+sub irEmitVARINIPAD( byval bytes as integer ) static
+
+	emitVARINIPAD bytes
+
+end sub
+
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::

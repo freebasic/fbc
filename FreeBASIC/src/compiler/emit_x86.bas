@@ -654,7 +654,7 @@ private sub outEx( byval s as string, _
 	put #ctx.outf, , s
 
 	if( updpos ) then
-		ctx.pos = ctx.pos + 1
+		ctx.pos += 1
 	end if
 
 outerror:
@@ -4613,6 +4613,63 @@ sub emitDATA ( byval litext as string, byval litlen as integer, byval typ as int
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' initializers
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
+
+	outEx "\n.section .data\n", TRUE
+
+   	if( sym->typ = FB.SYMBTYPE.DOUBLE ) then
+    	outEx ".balign 8\n", TRUE
+	else
+    	outEx ".balign 4\n", TRUE
+	end if
+
+	emitLABEL sym->alias
+
+end sub
+
+'':::::
+sub emitVARINIEND( byval sym as FBSYMBOL ptr ) static
+
+	outEx ".section .text\n\n", TRUE
+
+end sub
+
+'':::::
+sub emitVARINI( byval dtype as integer, _
+				byval value as double ) static
+
+	outp hGetTypeString( dtype ) + " " + str$( value )
+
+end sub
+
+'':::::
+sub emitVARINI64( byval dtype as integer, _
+				  byval value as longint ) static
+
+	outp hGetTypeString( dtype ) + " " + str$( value )
+
+end sub
+
+'':::::
+sub emitVARINISTR( byval lgt as integer, _
+				   byval s as string ) static
+
+	outp ".ascii \"" + s + "\\0\""
+
+end sub
+
+'':::::
+sub emitVARINIPAD( byval bytes as integer ) static
+
+	outp ".skip " + str$( bytes ) + ",0"
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' high-level
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -4789,62 +4846,70 @@ end sub
 
 '':::::
 private sub hEmitBss( ) static
-    dim s as FBSYMBOL ptr
-    dim lgt as integer, sname as string
-    dim elements as integer, alloc as string
-    dim alloctype as integer
-    dim ostr as string
+    dim as string alloc, ostr
+    dim as FBSYMBOL ptr s
+    dim as integer alloctype, elements, doemit
 
     s = symbGetFirstNode
     do while( s <> NULL )
 
-    	if( (symbGetClass( s ) = FB.SYMBCLASS.VAR) and _
-    		(not symbGetVarInitialized( s )) and _
-    		(not symbGetIsDynamic( s )) ) then
+		doemit = FALSE
 
-    	    '' don't reserve space for externals
-    	    alloctype = symbGetAlloctype( s )
-    	    if( (alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
-    	    	lgt = symbGetLen( s )
-
-    	    	'' don't add initialized string or array descriptors
-    	    	if( lgt > 0 ) then
-	    	    	elements = 1
-    	    		if( symbGetArrayDimensions( s ) > 0 ) then
-    	    			elements = hCalcElements( s )
-    	    		end if
-
-    	    		symbGetNameTo( s, sname )
-
-    	    		hEmitBssHeader
-
-    	    		if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
-    	    			if( (alloctype and FB.ALLOCTYPE.PUBLIC) <> 0 ) then
-    	    				emitPUBLIC sname
-    	    			end if
-    	    			alloc = ".lcomm"
-    	    		else
-    	    			emitPUBLIC sname
-    	    			alloc = ".comm"
-    	    		end if
-
-    	    		if( symbGetType( s ) = FB.SYMBTYPE.DOUBLE ) then
-    	    			hWriteStr ctx.outf, TRUE, ".balign 8"
-    	    		else
-    	    			hWriteStr ctx.outf, TRUE, ".balign 4"
-    	    		end if
-
-    	    		ostr = alloc
-    	    		ostr += TABCHAR
-    	    		ostr += sname
-    	    		ostr += ","
-    	    		ostr += str$( lgt * elements )
-    	    		hWriteStr ctx.outf, TRUE, ostr
-    	    	end if
+		'' var?
+		if( s->class = FB.SYMBCLASS.VAR ) then
+			'' not initialized?
+			if( not s->var.initialized ) then
+				'' not emited alreayd?
+				if( not s->var.emited ) then
+    				'' not extern?
+    				if( (s->alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
+    	    			'' not a string or array descriptor?
+    	    			if( s->lgt > 0 ) then
+    						'' not dynamic?
+    						if( not symbGetIsDynamic( s ) ) then
+    							doemit = TRUE
+    						end if
+    					end if
+    				end if
+    			end if
     		end if
     	end if
 
-    	s = symbGetNextNode( s )
+    	if( doemit ) then
+    	    alloctype = s->alloctype
+
+	    	elements = 1
+    	    if( s->var.array.dims > 0 ) then
+    	    	elements = hCalcElements( s )
+    	    end if
+
+    	    hEmitBssHeader
+
+    	    if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
+    	    	if( (alloctype and FB.ALLOCTYPE.PUBLIC) <> 0 ) then
+    	    		emitPUBLIC s->alias
+				end if
+    	    	alloc = ".lcomm"
+			else
+    	    	emitPUBLIC s->alias
+    	    	alloc = ".comm"
+    	    end if
+
+    	    if( s->typ = FB.SYMBTYPE.DOUBLE ) then
+    	    	hWriteStr ctx.outf, TRUE, ".balign 8"
+    	    else
+    	    	hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    end if
+
+    	    ostr = alloc
+    	    ostr += TABCHAR
+    	    ostr += s->alias
+    	    ostr += ","
+    	    ostr += str$( s->lgt * elements )
+    	    hWriteStr ctx.outf, TRUE, ostr
+    	end if
+
+    	s = s->nxt
     loop
 
 end sub
@@ -4866,62 +4931,72 @@ end sub
 
 '':::::
 private sub hEmitConst( ) static
-    dim s as FBSYMBOL ptr, typ as integer
-    dim sname as string, stext as string, stype as string
-    dim ostr as string
+    dim as string stext, stype, ostr
+    dim as FBSYMBOL ptr s
+    dim as integer typ, doemit
 
     s = symbGetFirstNode
     do while( s <> NULL )
 
-    	if( (symbGetClass( s ) = FB.SYMBCLASS.VAR) and (symbGetVarInitialized( s )) ) then
+    	doemit = FALSE
 
-    	    '' don't add initialized string or array descriptors
-    	    typ = symbGetType( s )
-    	    if( typ <> FB.SYMBTYPE.USERDEF ) then
-    	    	if( (symbGetLen( s ) > 0) or (symbGetType( s ) = FB.SYMBTYPE.FIXSTR) ) then
-    	    		symbGetNameTo( s, sname )
-    	    		stype = hGetTypeString( typ )
-    	    		stext = symbGetVarText( s )
-    	    		if( symbGetType( s ) = FB.SYMBTYPE.FIXSTR ) then
-    	    			stext = "\"" + hScapeStr( stext ) + "\\0\""
+    	'' var?
+    	if( s->class = FB.SYMBCLASS.VAR ) then
+    		'' initialized?
+    		if( s->var.initialized ) then
+    	    	typ = s->typ
+    	    	'' not an udt?
+    	    	if( typ <> FB.SYMBTYPE.USERDEF ) then
+					'' not string or array descriptors (fix-len's can be 0-len too)
+					if( (s->lgt > 0) or (typ = FB.SYMBTYPE.FIXSTR) ) then
+                    	doemit = TRUE
     	    		end if
-
-    	    		hEmitConstHeader
-
-    	    		if( typ = FB.SYMBTYPE.DOUBLE ) then
-    	    			hWriteStr ctx.outf, TRUE, ".balign 8"
-    	    		else
-    	    			hWriteStr ctx.outf, TRUE, ".balign 4"
-    	    		end if
-
-    	    		ostr = sname
-    	    		ostr += ":\t"
-    	    		ostr += stype
-    	    		ostr += TABCHAR
-    	    		ostr += stext
-    	    		hWriteStr ctx.outf, FALSE, ostr
     	    	end if
     	    end if
+		end if
+
+    	if( doemit ) then
+    		stype = hGetTypeString( typ )
+    	    if( typ = FB.SYMBTYPE.FIXSTR ) then
+    	    	stext = "\"" + hScapeStr( s->var.inittext ) + "\\0\""
+    	    else
+    	    	stext = s->var.inittext
+    	    end if
+
+    	    hEmitConstHeader
+
+    	    if( typ = FB.SYMBTYPE.DOUBLE ) then
+    	    	hWriteStr ctx.outf, TRUE, ".balign 8"
+    	    else
+    	    	hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    end if
+
+    	    ostr = s->alias
+    	    ostr += ":\t"
+    	    ostr += stype
+    	    ostr += TABCHAR
+    	    ostr += stext
+    	    hWriteStr ctx.outf, FALSE, ostr
     	end if
 
-    	s = symbGetNextNode( s )
+    	s = s->nxt
     loop
 
 end sub
 
 '':::::
 private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
-	dim i as integer, d as FBVARDIM ptr
-    dim dims as integer, diff as integer
-    dim sname as string, dname as string
+	dim as FBVARDIM ptr d
+    dim as integer dims, diff, i
+    dim as string sname, dname
 
     '' extern?
-    if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.EXTERN) > 0 ) then
+    if( (s->alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
     	exit sub
     end if
 
-    dims = symbGetArrayDimensions( s )
-    diff = symbGetArrayDiff( s )
+    dims = s->var.array.dims
+    diff = s->var.array.dif
     if( dims = 0 ) then
     	exit sub
     end if
@@ -4929,16 +5004,18 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     if( symbGetIsDynamic( s ) ) then
     	sname = "0"
 	else
-    	symbGetNameTo( s, sname )
+    	sname = s->alias
 	end if
 	dname = symbGetVarDscName( s )
 
     '' common?
-    if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.COMMON) > 0 ) then
-    	if( dims = -1 ) then dims = 1
+    if( (s->alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
+    	if( dims = -1 ) then
+    		dims = 1
+    	end if
     	hWriteStr ctx.outf, TRUE, ".balign 4"
     	hWriteStr ctx.outf, TRUE,  ".comm" + TABCHAR + dname + "," + _
-    					str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
+    							   str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
     	exit sub
     end if
 
@@ -4951,22 +5028,20 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	''	void		*ptr
 	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname
 	''	uint		size
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) * hCalcElements( s ) )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt * hCalcElements( s ) )
 	''	uint		element_len
-    hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
+    hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt )
 	''	uint		dimensions
 	if( dims = -1 ) then dims = 1
 	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( dims )
 
     if( not symbGetIsDynamic( s ) ) then
-    	d = symbGetArrayFirstDim( s )
+    	d = s->var.array.dimhead
     	do while( d <> NULL )
-
 			''	uint	dim_elemts
 			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->upper - d->lower + 1 )
 			''	int		dim_first
 			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->lower )
-
             '' next
 			d = d->r
     	loop
@@ -4984,20 +5059,19 @@ end sub
 
 '':::::
 private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
-    dim sname as string, dname as string
+    dim as string dname
 
-    symbGetNameTo( s, sname )
 	dname = symbGetVarDscName( s )
 
     hWriteStr ctx.outf, TRUE, ".balign 4"
     hWriteStr ctx.outf, FALSE, dname + ":"
 
 	''	void		*data
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + s->alias
 	''	int			len
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt )
 	''	int			size
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt )
 
 end sub
 
@@ -5018,25 +5092,30 @@ end sub
 
 '':::::
 private sub hEmitData( ) static
-    dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
+    dim as FBSYMBOL ptr s, d
 
     s = symbGetFirstNode
     do while( s <> NULL )
 
-    	if( symbGetClass( s ) = FB.SYMBCLASS.VAR ) then
-    	    d = symbGetArrayDescriptor( s )
+    	'' var?
+    	if( s->class = FB.SYMBCLASS.VAR ) then
+    	    '' with descriptor?
+    	    d = s->var.array.desc
     	    if( d <> NULL ) then
-    	    	hEmitDataHeader
-    	    	select case symbGetSubtype( d )
+    	    	'' subtype is an array or string descriptor?
+    	    	select case d->subtype
     	    	case FB.DESCTYPE.ARRAY
+    	    		hEmitDataHeader
     	    		hWriteArrayDesc s
+
     	    	case FB.DESCTYPE.STR
+    	    		hEmitDataHeader
     	    		hWriteStringDesc s
     	    	end select
     	    end if
     	end if
 
-    	s = symbGetNextNode( s )
+    	s = s->nxt
     loop
 
 end sub

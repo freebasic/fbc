@@ -612,6 +612,7 @@ function hNewSymbol( byval class as integer, _
 
     if( class = FB.SYMBCLASS.VAR ) then
     	s->var.suffix = suffix
+    	s->var.emited = FALSE
     end if
 
     ''
@@ -722,7 +723,8 @@ end function
 function symbAddDefine( byval symbol as string, _
 						byval text as string, _
 						byval args as integer = 0, _
-						byval arghead as FBDEFARG ptr = NULL ) as FBSYMBOL ptr static
+						byval arghead as FBDEFARG ptr = NULL, _
+						byval isargless as integer = FALSE ) as FBSYMBOL ptr static
     dim d as FBSYMBOL ptr
 
     symbAddDefine = NULL
@@ -737,6 +739,7 @@ function symbAddDefine( byval symbol as string, _
 	d->def.text 	= text
 	d->def.args		= args
 	d->def.arghead	= arghead
+	d->def.isargless= isargless
 
 	''
 	symbAddDefine = d
@@ -2058,7 +2061,7 @@ function symbLookupUDTVar( byval symbol as string, _
 	end if
 
 	'' update the access counter
-	s->acccnt = s->acccnt + 1
+	s->acccnt += 1
 
 	symbLookupUDTVar = s
 
@@ -2101,7 +2104,7 @@ function symbFindByClass( byval s as FBSYMBOL ptr, _
 
 	'' update the access counter
 	if( s <> NULL ) then
-		s->acccnt = s->acccnt + 1
+		s->acccnt += 1
 	end if
 
 	symbFindByClass = s
@@ -2151,7 +2154,7 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 
     '' update the access counter
 	if( s <> NULL ) then
-		s->acccnt = s->acccnt + 1
+		s->acccnt += 1
 	end if
 
 	symbFindBySuffix = s
@@ -2316,12 +2319,15 @@ function hCalcDiff( byval dimensions as integer, _
 end function
 
 '':::::
-function hCalcElements( byval s as FBSYMBOL ptr ) as integer static
+function hCalcElements( byval s as FBSYMBOL ptr, _
+						byval n as FBVARDIM ptr = NULL ) as integer static
     dim e as integer, d as integer
-    dim n as FBVARDIM ptr
+
+	if( n = NULL ) then
+		n = s->var.array.dimhead
+	end if
 
 	e = 1
-	n = s->var.array.dimhead
 	do while( n <> NULL )
 		d = (n->upper - n->lower) + 1
 		e = e * d

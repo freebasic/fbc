@@ -177,7 +177,8 @@ declare function 	symbAddKeyword			( byval symbol as string, byval id as integer
 declare function 	symbAddDefine			( byval symbol as string, _
 											  byval text as string, _
 											  byval args as integer = 0, _
-											  byval arghead as FBDEFARG ptr = NULL ) as FBSYMBOL ptr
+											  byval arghead as FBDEFARG ptr = NULL, _
+											  byval isargless as integer = FALSE ) as FBSYMBOL ptr
 
 declare function 	symbAddDefineArg		( byval lastarg as FBDEFARG ptr, _
 											  byval symbol as string ) as FBDEFARG ptr
@@ -320,6 +321,7 @@ declare function 	hAllocNumericConst		( byval sname as string, _
 declare function 	hAllocStringConst		( byval sname as string, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
-declare function 	hCalcElements 			( byval s as FBSYMBOL ptr ) as integer
+declare function 	hCalcElements 			( byval s as FBSYMBOL ptr, _
+											  byval n as FBVARDIM ptr = NULL ) as integer
 
 declare function 	symbCheckLabels 		( ) as FBSYMBOL ptr

@@ -200,6 +200,21 @@ declare sub 		irEmitPROCEND		( byval proc as FBSYMBOL ptr, _
 										  byval initlabel as FBSYMBOL ptr, _
 										  byval exitlabel as FBSYMBOL ptr )
 
+declare sub 		irEmitVARINIBEGIN	( byval sym as FBSYMBOL ptr )
+
+declare sub 		irEmitVARINIEND		( byval sym as FBSYMBOL ptr )
+
+declare sub 		irEmitVARINI		( byval dtype as integer, _
+										  byval value as double )
+
+declare sub 		irEmitVARINI64		( byval dtype as integer, _
+										  byval value as longint )
+
+declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
+				     					  byval s as string )
+
+declare sub 		irEmitVARINIPAD		( byval bytes as integer )
+
 declare sub 		irEmitPUSH			( byval v1 as integer )
 
 declare sub 		irEmitPUSHUDT		( byval v1 as integer, _

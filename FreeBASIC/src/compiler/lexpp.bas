@@ -145,7 +145,7 @@ end function
 ''
 function lexPreProcessor as integer
 	dim as string id, text
-	dim as integer isonce, args
+	dim as integer isonce, args, isargless
 	dim as FBDEFARG ptr arghead, lastarg
 	dim as FBSYMBOL ptr s
 
@@ -170,6 +170,7 @@ function lexPreProcessor as integer
 
     	args = 0
     	arghead = NULL
+    	isargless = FALSE
 
     	'' '('?
     	if( lexCurrentToken = CHAR_LPRNT ) then
@@ -192,6 +193,9 @@ function lexPreProcessor as integer
 					end if
 			    	lexSkipToken LEXCHECK_NODEFINE
 				loop
+
+			else
+				isargless = TRUE
 			end if
 
     		'' ')'
@@ -219,7 +223,7 @@ function lexPreProcessor as integer
     		end if
 
     	else
-    		symbAddDefine( id, text, args, arghead )
+    		symbAddDefine( id, text, args, arghead, isargless )
     	end if
 
     	lexPreProcessor = TRUE

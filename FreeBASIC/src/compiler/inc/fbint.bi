@@ -555,6 +555,7 @@ type FBSDEFINE
 	text			as string
 	args			as integer
 	arghead 		as FBDEFARG ptr
+	isargless		as integer
 end type
 
 ''
@@ -637,6 +638,8 @@ type FBSVAR
 	suffix			as integer					'' QB quirk..
 	initialized		as integer
 	inittext		as string
+
+	emited			as integer
 
 	array			as FBSARRAY
 

@@ -230,14 +230,14 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, _
 	'' no args, just load text as-is
 	else
 
-		'' '(' ')'?
-		if( lexCurrentChar = CHAR_LPRNT ) then
-			lexEatChar
-			if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-				hReportError FB.ERRMSG.EXPECTEDRPRNT
-				exit sub
+		if( s->def.isargless ) then
+			'' '(' ')'?
+			if( lexCurrentChar = CHAR_LPRNT ) then
+				if( lexLookAheadChar( TRUE ) = CHAR_RPRNT ) then
+					lexEatChar
+					lexEatChar
+				end if
 			end if
-			lexEatChar
 		end if
 
 		if( ctx.deflen = 0 ) then
