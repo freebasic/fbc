@@ -429,18 +429,39 @@ LABEL(trans1_skip_1)
 	jnc trans1_skip_2
 	addl $2, %edi
 	lodsw
-	orw %ax, %ax
+	orb %al, %al
+	jz trans1_skip_1a
+	movb %al, -2(%edi)
+	
+LABEL(trans1_skip_1a)
+	orb %ah, %ah
 	jz trans1_skip_2
-	movw %ax, -2(%edi)
+	movb %ah, -1(%edi)
 
 LABEL(trans1_skip_2)
 	shrl $1, %ecx
 	jnc trans1_skip_4
 	addl $4, %edi
 	lodsl
-	orl %eax, %eax
+	orb %al, %al
+	jz trans1_skip_2a
+	movb %al, -4(%edi)
+
+LABEL(trans1_skip_2a)
+	orb %ah, %ah
+	jz trans1_skip_2b
+	movb %ah, -3(%edi)
+
+LABEL(trans1_skip_2b)
+	shrl $16, %eax
+	orb %al, %al
+	jz trans1_skip_2c
+	movb %al, -2(%edi)
+
+LABEL(trans1_skip_2c)
+	orb %ah, %ah
 	jz trans1_skip_4
-	movl %eax, -4(%edi)
+	movb %ah, -1(%edi)
 
 LABEL(trans1_skip_4)
 	shrl $1, %ecx
@@ -539,7 +560,7 @@ LABEL(trans2_skip_1a)
 	lodsw
 	cmpw $MASK_COLOR_16, %ax
 	je trans2_skip_2
-	movl %eax, -2(%edi)
+	movw %ax, -2(%edi)
 
 LABEL(trans2_skip_2)
 	shrl $1, %ecx
