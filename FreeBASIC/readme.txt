@@ -284,46 +284,50 @@
     * "ON expr GOTO|GOSUB list" will be fixed later, it acts as "IF expr GOTO|GOSUB"
       by now
 
-    * "DIM a as someusertype, a.b as somescalar" is being allowed, the first one will be
-      used, take care..
-
 
 [Credits]
 
     * Angelo Motolla (a.mottola@libero.it) - project member:
-      - ported FreeBASIC to Linux
+      - ported FB to Linux; port maintainer
+      - developer of the gfxlib2
       - wrote many fixes and additions to the rtlib and compiler (too many to list ;)
     
-    * Sterling Christensen (sterling@engineer.com) - project member: 
-      - developer of the QB-ish GFX library
-    
-    * Daniel R. Verkamp (i_am_drv@yahoo.com): 
+    * Daniel R. Verkamp (i_am_drv@yahoo.com) - project member: 
+      - ported FB to DOS; port maintainer
+      - FreeBASIC Doc's project member
       - wrote the DLL and static lib automation
       - developed the SETDATE and SETTIME rtlib routines
       - completed the crtdll and ddraw headers
 
+    * Sterling Christensen (sterling@engineer.com) - project member: 
+      - developer of the QB-ish GFX library (replaced by gfxlib2 since version 0.11b)
+    
     * Edmond Leung (leung.edmond@gmail.com): 
-      - ported the SDL headers, including SDL_mixer and SDL_image
+      - translated the SDL headers, including SDL_mixer and SDL_image
       - wrote/ported many of the examples at the SDL dir
 
     * fsw (...@...): 
-      - ported most of the Windows API headers
+      - translated most of the Windows API headers
 
-    * Nek (dave@nodtveidt.net): 
-      - ported the Windows API headers, integrating parts of fsw's work
+    * Matthias Faust (...@...):
+      - translated the SDL_ttf header (also SDL_mixer, that unfortunately was 
+        sent by Leung some days before) and wrote the sdl_ttf demo
 
     * Marzec (...@...): 
       - wrote the sdl_bassgl, sdl_opengl and sdl_key tests at the SDL dir
-      - ported the first SDL headers (replaced by new ones since version 0.11b)
+      - translated the first SDL headers (replaced by new ones since version 0.11b)
       - wrote the first file routines for the rtlib
       - made the preliminary pre-processor, an external tool
 
+    * Nek (dave@nodtveidt.net): 
+      - translated the Windows API headers, integrating parts of fsw's work
+
     * plasma (...@...): 
-      - ported the fmod and BASS headers
+      - translated the fmod and BASS headers
       - wrote the fmod.bas test at SOUNDS dir
 
     * Rel (...@...):
-      - ported the OpenGL and GLU headers
+      - translated the OpenGL and GLU headers
       - wrote the rel-* GFX demos at the GFX dir
 
     * zydon (...@...): 
@@ -353,9 +357,6 @@
 
     * Plasma: Wrote the first FB demos for fmod and BASS. Also the register of the freebasic.net 
       domain.
-
-    * DrV: reported some serious bugs - using Sourceforge's bug tracking services, as anyone else 
-      should.
 
     * Jofers: Fitted a horse icon in just 16x16 pixels (awesome work, btw ;), also working on the
       documentation (more info at http://freebasicdoc.sourceforge.net).
@@ -391,7 +392,7 @@
 
     OpenGL: http://www.opengl.org/
 
-    SDL: http://www.libsdl.org/ (look under Projects for SDL_net, SDL_image, etc)
+    SDL: http://www.libsdl.org/ (look under Projects for SDL_net, SDL_image, SDL_ttf, etc)
 
     TinyPTC: http://www.gaffer.org/tinyptc/
 

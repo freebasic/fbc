@@ -5,6 +5,11 @@ Version 0.11 Beta:
         argument. They still optional when calling FUNCTION's and ignoring the return value, but you must 
         take care if using ()'s on the first parameter of that FUNCTION, if parents aren't used to make the 
         call to it (v1ctor)
+[chged] the internal GFX library is now the former alternative one written by lillo, many thanks to Sterling
+        for making the first version, he started working on it even before FB was released -- if you prefer to 
+        continue using it, the sources still on CVS at sf.net (src/gfxlib), just build the library and rewrite 
+        the libfbgfx.a file at \lib, it contains no PAINT or DRAW, nor low-res screen modes, but everything 
+        else stills functional - the SCREEN arguments are different, pay attention
 [chged] new OpenGL header translated by Rel to work better with pointers, there are no more BYREF arguments, 
         use @ or varptr() to get the address of variables and arrays when the argument is a BYVAL ... PTR (v1c)
 [chged] fmod and BASS headers: all BYREF arguments changed to BYVAL ... PTR to work better with pointers (v1c)
@@ -14,9 +19,7 @@ Version 0.11 Beta:
 [chged] #DEFINE now supports complex definitions like "any ptr" at right-side rule (v1c)
 [chged] pointers to pointers *MUST* now be declared as "ptr ptr ...", multiple dereferencing are only allowed on those (v1c)
 [chged] -w cmm-line option changed to -nostd (v1c)
-[chged] GFX: SCREEN mode, FullScreenFlag (if 3rd param is omitted, 2nd is interpretted as the fullScreenFlag) (Sterling)
-[chged] GFX: the cursor is now hidden in fullscreen modes (Sterling)
-[chged] GFX: when emulating a QB screen mode, solid background for text is turned on (Sterling)
+[chged] ERASE now accepts non-dynamic arrays and fills them with 0's (v1c)
 [added] escape chars (\) on string literals, use "OPTION ESCAPE" to enable -- they won't be parsed within $include $inclib (v1c)
 [added] GOTO on single-line IF's w/o THEN (v1c)
 [added] EXTERN keyword, to declare external/global variables (not the same as COMMON) (v1c)
@@ -29,6 +32,7 @@ Version 0.11 Beta:
 [added] ONCE keyword to be used by $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
 [fixed] COMMON arrays shared between different sources had different descriptor names (v1c)
 [fixed] the UDT size returned for UDT vars when using LEN() was the real-one, w/o padding (v1c)
+[fixed] LEN() can now handle arrays with no indexes given, as in QB (v1c)
 [fixed] by ref arguments now accept different data types when expressions are passed (v1c)
 [fixed] when an include file was not found, the executable would still built (v1c)
 [fixed] the --dllname cmm-line option to dlltool.exe should not contain the path (v1c)
@@ -38,8 +42,9 @@ Version 0.11 Beta:
 [fixed] SHARED with DIM|REDIM was being allowed inside procs (v1c)
 [fixed] STATIC was was being allowed outside procs (v1c)
 [fixed] indexes as "byte|short var + constant expr" could gen bad code, as var wasn't been converted to int (v1c)
-[fixed] GFX: SLEEP works now in GFX mode (Sterling)
-[fixed] GFX: INKEY$ in GFX mode now returns the same as in console for every key (Sterling)
+[fixed] loading an ubyte to a signed one storing a sbyte to an unsigned one would make a convertion at emit (v1c)
+[fixed] "DIM a as myudt, a.b as sometype" won't be allowed anymore (v1c)
+[fixed] Pre-processor would fail if comparing numbers using relational operators others than = and <> (v1c)
 
 
 Version 0.10 Beta:
