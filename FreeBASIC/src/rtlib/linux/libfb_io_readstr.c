@@ -68,7 +68,8 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 					fputc('\n', fb_con.f_out);
 			}
 		}
-	} while (k != '\n');
+	} while (k != '\r');
+	fputc('\n', fb_con.f_out);
 	buffer[pos] = '\0';
 	
 	return buffer;
