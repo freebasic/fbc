@@ -1381,7 +1381,8 @@ end function
 function cStringFunct( funcexpr as integer )
     dim expr1 as integer, expr2 as integer, expr3 as integer
     dim dclass as integer
-    dim s as FBSYMBOL ptr
+    dim sym as FBSYMBOL ptr
+    dim v as integer, s as string
 
 	cStringFunct = FALSE
 
@@ -1555,7 +1556,13 @@ function cStringFunct( funcexpr as integer )
 
 		'' constant? evaluate at compile-time
 		if( astGetClass( expr1 ) = AST.NODECLASS.CONST ) then
-			funcexpr = astNewVAR( hAllocStringConst( chr$( astGetValue( expr1 ) ), -1 ), NULL, 0, IR.DATATYPE.FIXSTR )
+			v = astGetValue( expr1 )
+			if( (v < CHAR_SPACE) or (v > 127) ) then
+				s = "\27" + oct$( v )
+			else
+				s = chr$( v )
+			end if
+			funcexpr = astNewVAR( hAllocStringConst( s, 1 ), NULL, 0, IR.DATATYPE.FIXSTR )
 		    astDel expr1
 		else
 			funcexpr = rtlStrChr( expr1 )
@@ -1585,13 +1592,13 @@ function cStringFunct( funcexpr as integer )
 		'' constant? evaluate at compile-time
 		if( astGetClass( expr1 ) = AST.NODECLASS.VAR ) then
 			if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
-				s = astGetSymbol( expr1 )
-				if( symbGetInitialized( s ) ) then
-					funcexpr = astNewCONST( asc( symbGetVarText( s ) ), IR.DATATYPE.INTEGER )
+				sym = astGetSymbol( expr1 )
+				if( symbGetInitialized( sym ) ) then
+					funcexpr = astNewCONST( asc( symbGetVarText( sym ) ), IR.DATATYPE.INTEGER )
 
 					'' delete var if it was never accessed before
-					if( symbGetAccessCnt( s ) = 0 ) then
-						symbDelVar s
+					if( symbGetAccessCnt( sym ) = 0 ) then
+						symbDelVar sym
 					end if
 
 		    		astDel expr1

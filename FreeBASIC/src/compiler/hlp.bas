@@ -367,13 +367,11 @@ function hScapeStr( text as string ) as string static
 			d = d + 1
 
 		case FB.INTSCAPECHAR
-			if( env.optescapestr ) then
-				*d = CHAR_RSLASH
-				d = d + 1
-				if( s >= l ) then exit do
-				c = *s
-				s = s + 1
-			end if
+			*d = CHAR_RSLASH
+			d = d + 1
+			if( s >= l ) then exit do
+			c = *s
+			s = s + 1
 		end select
 
 		*d = c
