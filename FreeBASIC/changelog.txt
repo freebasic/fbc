@@ -34,7 +34,7 @@ Version 0.12 Beta:
         used too (DrV)
 [added] XPM icon resource files support on Linux. As with Windows resource, just pass the .xpm file to
         the commandline and the executable will sport a fb_program_icon symbol holding the XPM data.
-        If using gfxlib, this is automatically used to set the window icon.
+        If using gfxlib, this is automatically used to set the window icon (lillo)
 [added] built-in multiplatform threading functions (lillo)
 [added] "operator =" shorthand, as in "a += b * c" (v1ctor)
 [added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
