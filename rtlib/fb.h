@@ -121,6 +121,7 @@ FBCALL FBSTRING 	*fb_FloatToStr 			( float num );
 FBCALL FBSTRING 	*fb_DoubleToStr 		( double num );
 
 FBCALL double 		fb_hStr2Double			( char *src, int len );
+	   char 		*fb_hFloat2Str			( double val, char *buffer, int precision, int addblank );
 
 
 FBCALL FBSTRING 	*fb_CHR 				( unsigned int num );
@@ -147,7 +148,6 @@ FBCALL FBSTRING 	*fb_StrFill2 			( int cnt, FBSTRING *src );
 FBCALL int 			fb_StrInstr 			( int start, FBSTRING *src, FBSTRING *patt );
 FBCALL FBSTRING 	*fb_StrMid 				( FBSTRING *src, int start, int len );
 FBCALL void 		fb_StrAssignMid 		( FBSTRING *dst, int start, int len, FBSTRING *src );
-
 
 /**************************************************************************************************
  * arrays

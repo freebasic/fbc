@@ -115,35 +115,19 @@ FBCALL void fb_WriteUInt ( int fnum, unsigned int val, int mask )
 /*:::::*/
 FBCALL void fb_WriteSingle ( int fnum, float val, int mask )
 {
-#ifdef WIN32
 	char buffer[8+1+8+1];
 
-	_gcvt( val, 8, buffer );
+	fb_WriteFixString( fnum, fb_hFloat2Str( (double)val, buffer, 8, FB_FALSE ), mask );
 
-	fb_WriteFixString( fnum, buffer, mask );
-
-#else
-
-    FB_WRITENUM( fnum, val, mask, "g" )
-
-#endif
 }
 
 /*:::::*/
 FBCALL void fb_WriteDouble ( int fnum, double val, int mask )
 {
-#ifdef WIN32
 	char buffer[16+1+8+1];
 
-	_gcvt( val, 16, buffer );
+	fb_WriteFixString( fnum, fb_hFloat2Str( val, buffer, 16, FB_FALSE ), mask );
 
-	fb_WriteFixString( fnum, buffer, mask );
-
-#else
-
-    FB_WRITENUM( fnum, val, mask, "lg" )
-
-#endif
 }
 
 /*:::::*/

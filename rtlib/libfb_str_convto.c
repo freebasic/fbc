@@ -75,7 +75,7 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 #ifdef WIN32
 		_gcvt( (double)num, 8, dst->data );
 #else
-		sprintf( dst->data, "%g", num);
+		sprintf( dst->data, "%.8g", num );
 #endif
 
 		dst->len = strlen( dst->data );				/* fake len */
@@ -112,7 +112,7 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 #ifdef WIN32
 		_gcvt( (double)num, 16, dst->data );
 #else
-		sprintf( dst->data, "%g", num);
+		sprintf( dst->data, "%.16g", num);
 #endif
 
 		dst->len = strlen( dst->data );				/* fake len */
