@@ -60,7 +60,7 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 	if( rlen != valuelen )
 	{
 		/* fill with nulls if at eof */
-		(char *)value += rlen;
+		value = (unsigned char *)value + rlen;
 		for( i = rlen; i < valuelen; i++ )
 			*(char *)value++ = 0;
 		/*return FB_FALSE*/;						/* do nothing, not an error */
