@@ -32,6 +32,8 @@ declare sub producer ( byval param as integer )
 	
 	mutexdestroy consumed
 	mutexdestroy produced
+	
+	sleep
 
 '':::::
 sub consumer ( byval param as integer )
