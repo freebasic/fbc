@@ -323,8 +323,8 @@ Credits (in alphabetic order):
   o Angelo Mottola (a.mottola@libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
-    - Added build-in threads and dynlib support, besides many other runtime lib 
-      and compiler changes.
+    - Added build-in threads and dynlib support, made the rtlib thread-safe, 
+      besides  many other runtime lib and compiler changes.
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
@@ -396,9 +396,8 @@ Greetings:
   o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch of
     kangaroos in the middle time.
 
-  o VonGodric: author of the first (an unique at the moment) FreeBASIC IDE: FBIDE (download
-    it here: http://www.hot.ee/fbide) and also reported loatsa bugs (i'm getting tired of
-    typing that, arf)
+  o VonGodric: author of the first FreeBASIC IDE: FBIDE (download it here: 
+    http://www.hot.ee/fbide/ ).
 
   o Rel: Best beta tester ever, found loads of bugs.
 
@@ -438,9 +437,13 @@ Links:
 
     - FreeImage: http://freeimage.sourceforge.net/
 
-    - GD: http://www.boutell.com/gd/
+    - GD: http://www.boutell.com/gd/ or http://gnuwin32.sourceforge.net/packages/gd.htm
     
     - GLUT: http://www.xmission.com/~nate/glut.html
+
+    - GSL: http://www.gnu.org/software/gsl/ or http://gnuwin32.sourceforge.net/packages/gsl.htm
+
+    - GRX: http://grx.gnu.de/
     
     - IUP: http://luaforge.net/projects/iup
 
@@ -464,7 +467,7 @@ Links:
     
     - TRE (Regular Expressions): http://laurikari.net/tre/
 
-    - Zlib: http://www.zlib.net/
+    - Zlib: http://www.zlib.net/ or http://gnuwin32.sourceforge.net/packages/zlib.htm
 
 
 EOF

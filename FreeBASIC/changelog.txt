@@ -30,10 +30,13 @@ Version 0.13 Beta:
 - variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
 - va_first(), va_arg() and va_next() intrinsic macros, to access variable-arguments in FB functions (v1c)
 - include file and import lib for the libxml2 library (v1c)
+- include file and import lib for the GSL library (v1c)
 - include file and import lib for the SQLite library (v1c)
 - include file and import lib for the mySQL client library (v1c)
 - include file and import lib for the DevIL library (v1c)
 - include file and import lib for the gd library (v1c)
+- include file and static lib for the GRX library (v1c)
+- include file and static lib for the zlib library (v1c)
 - PALETTE can now be called with 4 parameters, specifying new color red/green/blue components directly (lillo)
 - ENUM's can now be nameless (v1c)
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
@@ -49,6 +52,8 @@ Version 0.13 Beta:
 - the SIZEOF() intrinsic function, to return the size of any data type (v1c)
 - SCREEN/SCREENRES now accept an additional optional parameter allowing to request a specific refresh rate (lillo)
 - optional sub/function parameters can now be strings as well, as in: "declare sub test(arg as string = "default")" (lillo)
+- "FUNCTION =" can now be used to store to current function's result, as in PB (v1c)
+- function's can return UDT's now, but only for prototypes of C libs (compiled by GCC 3.x only), not internally yet (v1c)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported
