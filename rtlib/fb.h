@@ -318,8 +318,10 @@ FBCALL int 			fb_FileOpen			( FBSTRING *str, unsigned int mode, unsigned int acc
 FBCALL int 			fb_FileClose		( int fnum );
 FBCALL int 			fb_FilePut			( int fnum, long pos, void* value, unsigned int valuelen );
 FBCALL int 			fb_FilePutStr		( int fnum, long pos, FBSTRING *str );
+FBCALL int 			fb_FilePutArray		( int fnum, long pos, FBARRAY *src );
 FBCALL int 			fb_FileGet			( int fnum, long pos, void* value, unsigned int valuelen );
 FBCALL int 			fb_FileGetStr		( int fnum, long pos, FBSTRING *str );
+FBCALL int 			fb_FileGetArray		( int fnum, long pos, FBARRAY *dst );
 FBCALL int 			fb_FileEof			( int fnum );
 FBCALL long 		fb_FileTell			( int fnum );
 FBCALL int 			fb_FileSeek			( int fnum, long newpos );
@@ -342,17 +344,20 @@ FBCALL int 			fb_LineInput		( FBSTRING *text, FBSTRING *dst, int addquestion, in
 
 FBCALL double 		fb_Timer 			( void );
 FBCALL FBSTRING 	*fb_Time 			( void );
+FBCALL int 			fb_SetTime			( FBSTRING *time );
 FBCALL FBSTRING 	*fb_Date 			( void );
+FBCALL int 			fb_SetDate			( FBSTRING *date );
 
 
 /**************************************************************************************************
  * error
  **************************************************************************************************/
 
-FBCALL void 		*fb_ErrorThrow 		( int errnum );
+	   void 		*fb_ErrorThrow 		( int errnum, void *res_label, void *resnext_label );
 FBCALL void 		*fb_ErrorSetHandler ( void *newhandler );
 FBCALL int 			fb_ErrorGetNum 		( void );
-
+	   void 		*fb_ErrorResume		( void );
+	   void 		*fb_ErrorResumeNext	( void );
 
 /**************************************************************************************************
  * misc

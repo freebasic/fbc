@@ -18,7 +18,7 @@
  */
 
 /*
- *	file_get - get # function
+ *	file_put - put # function for strings
  *
  * chng: oct/2004 written [marzec/v1ctor]
  *
@@ -29,11 +29,10 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-
 /*:::::*/
-FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
+FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 {
-	int i, result;
+	int result, len;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
@@ -55,22 +54,23 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 			return FB_RTERROR_FILEIO;
 	}
 
-	/* do read */
-	if( fread( value, 1, valuelen, fb_fileTB[fnum-1].f ) != valuelen )
-	{
-		/* fill with nulls if at eof */
-		for( i = 0; i < valuelen; i++ )
-			*(char *)value++ = 0;
-		/*return FB_FALSE*/;						/* do nothing, not an error */
-	}
+	len = FB_STRSIZE( str );
 
-    /* if in random mode, reads must be of reclen */
+	/* do write */
+	if( fwrite( str->data, 1, len, fb_fileTB[fnum-1].f ) != len )
+		return FB_RTERROR_FILEIO;
+
+    /* if in random mode, writes must be of reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
 	{
-		valuelen = fb_fileTB[fnum-1].len - valuelen;
-		if( valuelen > 0 )
-			fseek( fb_fileTB[fnum-1].f, valuelen, SEEK_CUR );
+		len = fb_fileTB[fnum-1].len - len;
+		if( len > 0 )
+			fseek( fb_fileTB[fnum-1].f, len, SEEK_CUR );
 	}
+
+	/* del if temp */
+	fb_hStrDelTemp( str );
 
 	return FB_RTERROR_OK;
 }
+

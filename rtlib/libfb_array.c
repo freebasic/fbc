@@ -205,7 +205,7 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
 {
     va_list 	ap;
     int			i;
-    int			diff;
+    int			elements, diff;
     FBARRAYDIM	*p;
     int			lbTB[FB_MAXDIMENSIONS];
     int			ubTB[FB_MAXDIMENSIONS];
@@ -226,12 +226,14 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
 
     va_end( ap );
 
-    diff = fb_hCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
+    elements = fb_hCalcElements( dimensions, &lbTB[0], &ubTB[0] );
+    diff 	 = fb_hCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
     array->element_len = element_len;
     array->dimensions  = dimensions;
 
     array->ptr 	= ptr;
     array->data = array->ptr + diff;
+    array->size	= elements * element_len;
 }
 

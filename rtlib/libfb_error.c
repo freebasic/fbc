@@ -19,6 +19,10 @@
 
 /*
  *	error - runtime error handling
+ *
+ * chng: oct/2004 written [v1ctor]
+ *       jan/2005 resume support added [v1ctor]
+ *
  */
 
 #include <stdio.h>
@@ -27,23 +31,40 @@
 #include "fb_rterr.h"
 
 
-void 	*fb_errhandler	= NULL;
-int		fb_errnum 		= FB_RTERROR_OK;
+typedef struct _FB_ERRORCTX {
+	void 	*handler;
+	int		num;
+	void 	*reslbl;
+	void 	*resnxtlbl;
+} FB_ERRORCTX;
 
+/* FIXME: not thread safe */
+static FB_ERRORCTX ctx = { NULL, FB_RTERROR_OK, NULL, NULL };
 
 /*:::::*/
-FBCALL void *fb_ErrorThrow ( int errnum )
+static void fb_Die( int errnum )
 {
-
-    fb_errnum = errnum;
-
-    if( fb_errhandler != NULL )
-    	return fb_errhandler;
-
-
 	printf( "\nRuntime error: %d\n", errnum );
 
 	fb_End( errnum );
+}
+
+/*:::::*/
+void *fb_ErrorThrow ( int errnum, void *res_label, void *resnext_label )
+{
+
+    if( ctx.handler != NULL )
+    {
+    	ctx.num 		= errnum;
+    	ctx.reslbl 		= res_label;
+    	ctx.resnxtlbl 	= resnext_label;
+
+    	return ctx.handler;
+    }
+
+	/* if no user handler defined, die */
+	fb_Die( errnum );
+
 }
 
 /*:::::*/
@@ -51,9 +72,9 @@ FBCALL void *fb_ErrorSetHandler ( void *newhandler )
 {
 	void *oldhandler;
 
-    oldhandler = fb_errhandler;
+    oldhandler = ctx.handler;
 
-    fb_errhandler = newhandler;
+    ctx.handler = newhandler;
 
 	return oldhandler;
 }
@@ -62,7 +83,7 @@ FBCALL void *fb_ErrorSetHandler ( void *newhandler )
 FBCALL int fb_ErrorGetNum ( void )
 {
 
-	return fb_errnum;
+	return ctx.num;
 
 }
 
@@ -71,7 +92,41 @@ FBCALL int fb_ErrorGetNum ( void )
 FBCALL void fb_ErrorSetNum ( int errnum )
 {
 
-	fb_errnum = errnum;
+	ctx.num = errnum;
+
+}
+
+/*:::::*/
+void *fb_ErrorResume ( void )
+{
+    void *label = ctx.reslbl;
+
+	/* not defined? die */
+	if( label == NULL )
+		fb_Die( FB_RTERROR_ILLEGALRESUME );
+
+	/* don't loop forever */
+	ctx.reslbl 		= NULL;
+	ctx.resnxtlbl 	= NULL;
+
+	return label;
+
+}
+
+/*:::::*/
+void *fb_ErrorResumeNext ( void )
+{
+    void *label = ctx.resnxtlbl;
+
+	/* not defined? die */
+	if( label == NULL )
+		fb_Die( FB_RTERROR_ILLEGALRESUME );
+
+	/* don't loop forever */
+	ctx.reslbl 		= NULL;
+	ctx.resnxtlbl 	= NULL;
+
+	return label;
 
 }
 
