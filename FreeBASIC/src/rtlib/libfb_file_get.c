@@ -33,7 +33,7 @@
 /*:::::*/
 FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 {
-	int i, result;
+	int i, rlen, result;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
@@ -56,10 +56,12 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 	}
 
 	/* do read */
-	if( fread( value, 1, valuelen, fb_fileTB[fnum-1].f ) != valuelen )
+	rlen = fread( value, 1, valuelen, fb_fileTB[fnum-1].f );
+	if( rlen != valuelen )
 	{
 		/* fill with nulls if at eof */
-		for( i = 0; i < valuelen; i++ )
+		(char *)value += rlen;
+		for( i = rlen; i < valuelen; i++ )
 			*(char *)value++ = 0;
 		/*return FB_FALSE*/;						/* do nothing, not an error */
 	}
