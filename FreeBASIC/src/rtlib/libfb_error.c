@@ -30,11 +30,19 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+const char *error_msg[] = {
+	"",				/* FB_RTERROR_OK */
+	"illegal function call",	/* FB_RTERROR_ILLEGALFUNCTIONCALL */
+	"file not found",		/* FB_RTERROR_FILENOTFOUND */
+	"file I/O error",		/* FB_RTERROR_FILEIO */
+	"out of memory",		/* FB_RTERROR_OUTOFMEM */
+	"illegal resume"		/* FB_RTERROR_ILLEGALRESUME */
+};
 
 /*:::::*/
 static void fb_Die( int errnum )
 {
-	printf( "\nRuntime error: %d\n", errnum );
+	printf( "\nAborting program due to runtime error %d (%s)\n", errnum, error_msg[errnum] );
 
 	fb_End( errnum );
 }
