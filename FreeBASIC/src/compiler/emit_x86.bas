@@ -660,6 +660,10 @@ private sub hPrepOperand64( oname as string, byval vreg as IRVREG ptr, _
 	case IR.VREGTYPE.REG
 		operand1 = oname
 		emitGetRegName( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, vregTB(vreg->va).reg, operand2 )
+
+	case IR.VREGTYPE.IMM
+		operand1 = oname
+		operand2 = str$( vregTB(vreg->va).value )
 	end select
 
 end sub
@@ -1255,11 +1259,11 @@ sub emitSTORE2FLT ( dname as string, byval dvreg as IRVREG ptr, byval ddclass as
 					hPrepOperand64( sname, svreg, src, ext )
 
 					ostr = "push "
-					ostr += src
+					ostr += ext
 					outp ostr
 
 					ostr = "push "
-					ostr += ext
+					ostr += src
 					outp ostr
 
 				else
@@ -1643,11 +1647,11 @@ loadSIDI:				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS
 			    hPrepOperand64 dname, dvreg, dst, ext
 
 				ostr = "pop "
-				ostr += ext
+				ostr += dst
 				outp ostr
 
 				ostr = "pop "
-				ostr += dst
+				ostr += ext
 				outp ostr
 
 			else
@@ -1720,11 +1724,11 @@ sub emitLOAD2FLT( dname as string, byval dvreg as IRVREG ptr, byval ddclass as i
 					hPrepOperand64( sname, svreg, src, ext )
 
 					ostr = "push "
-					ostr += src
+					ostr += ext
 					outp ostr
 
 					ostr = "push "
-					ostr += ext
+					ostr += src
 					outp ostr
 
 				else
