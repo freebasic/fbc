@@ -45,6 +45,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.ERRORCHECK
 	FB.COMPOPT.OUTTYPE
 	FB.COMPOPT.RESUMEERROR
+	FB.COMPOPT.WARNINGLEVEL
 end enum
 
 type FBCMMLINEOPT
@@ -54,6 +55,7 @@ type FBCMMLINEOPT
 	nostdcall		as integer
 	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
 	resumeerr 		as integer					'' add support for RESUME (def= false)
+	warninglevel	as integer					'' def = 0
 end type
 
 
@@ -122,6 +124,11 @@ enum FBERRMSG_ENUM
 	FB.ERRMSG.PARAMTYPEMISMATCHAT
 	FB.ERRMSG.ILLEGALPARAMSPECAT
 	FB.ERRMSG.EXPECTEDENDWITH
+	FB.ERRMSG.ILLEGALINSIDEASUB
+end enum
+
+enum FBWARNINGMSG_ENUM
+	FB.WARNINGMSG.INVALIDPOINTER	= 1
 end enum
 
 '' cpu types
@@ -156,3 +163,7 @@ declare function 	fbcGetOption 	( byval opt as integer ) as integer
 declare function 	fbcListLibs		( namelist() as string, byval index as integer ) as integer
 declare sub 		fbcAddIncPath	( path as string )
 declare sub 		fbcAddDefine	( dname as string, dtext as string )
+
+declare function 	fbcIncludeFile	( filename as string ) as integer
+
+declare sub 		fbcAddDefaultLibs

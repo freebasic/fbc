@@ -2237,10 +2237,10 @@ sub hSaveAsmHeader( )
     hWriteStr ctx.outf, FALSE, NEWLINE + "#entry point"
     hWriteStr ctx.outf, FALSE, ".section .text"
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
-    hWriteStr ctx.outf, FALSE, ".globl " + "fb_" + entry + "_entry"
-    hWriteStr ctx.outf, FALSE, ".globl " + "fb_" + ucase$( entry ) + "_entry"
-    hWriteStr ctx.outf, FALSE, "fb_" + entry  + "_entry" + ":"
-    hWriteStr ctx.outf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
+    hWriteStr ctx.outf, FALSE, ".globl " + hMakeEntryPointName( entry )
+    hWriteStr ctx.outf, FALSE, ".globl " + hMakeEntryPointName( ucase$( entry ) )
+    hWriteStr ctx.outf, FALSE, hMakeEntryPointName( entry ) + ":"
+    hWriteStr ctx.outf, FALSE, hMakeEntryPointName( ucase$( entry ) ) + ":"
 #ifdef TARGET_LINUX
 	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
 		' Add small stub to get commandline under linux

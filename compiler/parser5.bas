@@ -40,18 +40,36 @@ private sub hReportParamError( byval argnum as integer, byval errnum as integer 
 end sub
 
 '':::::
-private function hCheckPrototype( byval proc as FBSYMBOL ptr, byval argc as integer, argv() as FBPROCARG ) as integer static
+private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
+								  byval proctyp as integer, byval procsubtype as FBSYMBOL ptr, _
+								  byval argc as integer, argv() as FBPROCARG ) as integer static
     dim a as integer, atype as integer, amode as integer
     dim arg as FBPROCARG ptr, typ as integer
 
 	hCheckPrototype = FALSE
 
-	''
+	'' check arg count
 	if( argc <> symbGetProcArgs( proc ) ) then
 		hReportError FB.ERRMSG.ARGCNTMISMATCH
 		exit function
 	end if
 
+	'' check return type
+	if( proctyp <> symbGetType( proc ) ) then
+		hReportError FB.ERRMSG.TYPEMISMATCH
+		exit function
+	end if
+
+	'' and sub type
+	if( procsubtype <> symbGetSubtype( proc ) ) then
+    	'' if it's a function pointer, subtypes (protos) will be different.. doesn't matter
+    	if( proctyp <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+        	hReportError FB.ERRMSG.TYPEMISMATCH
+        	exit function
+        end if
+    end if
+
+	'' check each arg
 	a = 0
 	arg = symbGetProcHeadArg( proc )
 	do while( arg <> NULL )
@@ -134,7 +152,8 @@ end function
 ''
 function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstatic as integer ) static
     dim res as integer
-    dim id as string, aliasid as string, typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
+    dim id as string, aliasid as string
+    dim typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
     dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 
 	cSubOrFuncHeader = FALSE
@@ -147,6 +166,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
 
 	typ = lexTokenType
 	id = lexEatToken
+	subtype = NULL
 
 	if( (isSub) and (typ <> INVALID) ) then
     	hReportError FB.ERRMSG.INVALIDCHARACTER
@@ -212,6 +232,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
 
     if( issub ) then
     	typ = FB.SYMBTYPE.VOID
+    	subtype = NULL
     end if
 
     if( isstatic = FALSE ) then
@@ -221,9 +242,15 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
     	end if
     end if
 
+	''
+	if( typ = INVALID ) then
+		typ = hGetDefType( id )
+	end if
+
+    ''
     proc = symbLookupProc( id )
     if( proc = NULL ) then
-    	proc = symbAddProc( id, aliasid, "", typ, mode, argc, argv() )
+    	proc = symbAddProc( id, aliasid, "", typ, subtype, mode, argc, argv() )
     	if( proc = NULL ) then
     		hReportError FB.ERRMSG.DUPDEFINITION
     		exit function
@@ -235,7 +262,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
     	end if
 
     	'' there's already a prototype for this proc, so check for conflits
-    	if( not hCheckPrototype( proc, argc, argv() ) ) then
+    	if( not hCheckPrototype( proc, typ, subtype, argc, argv() ) ) then
     		exit function
     	end if
 

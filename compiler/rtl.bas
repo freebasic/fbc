@@ -947,35 +947,6 @@ data ""
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
-deflibsdata:
-data "fb"
-#ifdef TARGET_WIN32
-data "crtdll"
-data "kernel32"
-data "user32"
-#elseif defined(TARGET_LINUX)
-data "c"
-data "m"
-data "ncurses"
-#endif
-data ""
-
-'':::::
-sub rtlAddDefaultLibs
-    dim lname as string
-
-	restore deflibsdata
-
-	do
-		read lname
-		if( len( lname ) = 0 ) then
-			exit do
-		end if
-
-		symbAddLib lname
-	loop
-
-end sub
 
 '':::::
 sub rtlInit static
@@ -985,7 +956,7 @@ sub rtlInit static
 	dim argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 
     ''
-	rtlAddDefaultLibs
+	fbcAddDefaultLibs
 
 	''
 	redim ifuncTB( 0 to FB.RTL.MAXFUNCTIONS-1 ) as FBSYMBOL ptr
@@ -1018,7 +989,7 @@ sub rtlInit static
 			end if
 		next a
 
-		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", typ, mode, args, argv(), TRUE )
+		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", typ, NULL, mode, args, argv(), TRUE )
 		i = i + 1
 	loop
 
@@ -1605,8 +1576,8 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMB
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4+dimensions*2 )
 
     '' byref pdesc as any ptr
-	t = astNewVAR( pdesc, 0, IR.DATATYPE.UINT )
-    astNewPARAM( proc, t, IR.DATATYPE.UINT )
+	t = astNewVAR( pdesc, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+    astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
 
     '' byref arraydata as any
     astNewPARAM( proc, arrayexpr, IR.DATATYPE.VOID )
@@ -1644,8 +1615,8 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as integer
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' byval pdesc as any ptr
-	t = astNewVAR( pdesc, 0, IR.DATATYPE.UINT )
-    astNewPARAM( proc, t, IR.DATATYPE.UINT )
+	t = astNewVAR( pdesc, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+    astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
 
     rtlArrayFreeTempDesc = proc
 
@@ -1907,8 +1878,8 @@ function rtlMathFIX ( byval expr as integer ) as integer static
 end function
 
 '':::::
-function hCalcExprLen( byval expr as integer, byval realUDTsize as integer = TRUE ) as integer static
-	dim lgt as integer, e as FBTYPELEMENT ptr
+private function hCalcExprLen( byval expr as integer, byval realUDTsize as integer = TRUE ) as integer static
+	dim lgt as integer, elm as FBTYPELEMENT ptr
 
 	lgt = -1
 
@@ -1926,9 +1897,11 @@ function hCalcExprLen( byval expr as integer, byval realUDTsize as integer = TRU
 	case is >= IR.DATATYPE.POINTER
 		lgt = FB.POINTERSIZE
 	case IR.DATATYPE.USERDEF
-		e = astGetUDTElm( expr )
-		if( e <> NULL ) then
-			lgt = symbGetUDTELmLen( e )
+		elm = astGetUDTElm( expr )
+		if( elm <> NULL ) then
+			'' if it's a type field that's also a type, no pad is ever added, then
+			'' readUDTsize is always true
+			lgt = symbGetUDTLen( symbGetUDTElmSubtype( elm ) )
 		else
 			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( expr ) ), realUDTsize )
 		end if

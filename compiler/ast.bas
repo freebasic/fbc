@@ -907,6 +907,12 @@ sub astOptAssignament( byval n as integer ) static
 		exit sub
 	end select
 
+	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a register
+	select case astTB(r).op
+	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
+		exit sub
+	end select
+
 	'' node result is an integer too?
 	If( irGetDataClass( astTB(r).dtype ) <> IR.DATACLASS.INTEGER ) Then
 		exit sub
@@ -1445,11 +1451,10 @@ function astNew( byval typ as integer, byval dtype as integer ) as integer stati
 	''
 	astTB(n).typ 	= typ
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	'if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 	astTB(n).dtype 	= dtype
 
 	astTB(n).defined= FALSE
-	astTB(n).value	= 0
 	astTB(n).op		= INVALID
 	astTB(n).l    	= INVALID
 	astTB(n).r    	= INVALID
@@ -2502,7 +2507,7 @@ function astNewADDR( byval op as integer, byval p as integer ) as integer static
     dim n as integer
 
 	'' alloc new node
-	n = astNew( AST.NODETYPE.ADDR, IR.DATATYPE.UINT )
+	n = astNew( AST.NODETYPE.ADDR, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
 	astNewADDR = n
 
 	if( n = INVALID ) then
@@ -2649,7 +2654,7 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
     dim n as integer
     dim dt1 as integer, dt2 as integer
     dim dc1 as integer, dc2 as integer
-    dim lgt as integer, e as FBTYPELEMENT ptr
+    dim lgt as integer, elm as FBTYPELEMENT ptr
 
 	astNewASSIGN = INVALID
 
@@ -2682,15 +2687,16 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
 	'' UDT's?
 	elseif( (dt1 = IR.DATATYPE.USERDEF) or (dt2 = IR.DATATYPE.USERDEF) ) then
 
+
 		'' both not UDT's?
 		if( dt1 <> dt2 ) then
 			exit function
 		end if
 
 		'' check if it's not an UDT field
-		e = astGetUDTElm( l )
-		if( e <> NULL ) then
-			lgt = symbGetUDTElmLen( e )
+		elm = astGetUDTElm( l )
+		if( elm <> NULL ) then
+			lgt = symbGetUDTLen( symbGetUDTElmSubtype( elm ) )
 		else
 			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( l ) ) )
 		end if
@@ -2853,6 +2859,13 @@ end function
 private sub hReportParamError( byval proc as FBSYMBOL ptr, byval f as integer )
 
 	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( astTB(f).proc.argnum+1 )
+
+end sub
+
+'':::::
+private sub hReportParamWarning( byval proc as FBSYMBOL ptr, byval f as integer, byval msgnum as integer )
+
+	hReportWarning msgnum, "at parameter: " + str$( astTB(f).proc.argnum+1 )
 
 end sub
 
@@ -3020,6 +3033,21 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 						end if
 					end select
+				end if
+
+				'' pointer checking
+				if( adtype >= IR.DATATYPE.POINTER ) then
+					if( pdtype < IR.DATATYPE.POINTER ) then
+
+						if( typ = AST.NODETYPE.CONST ) then
+							if( astTB(p).value <> 0 ) then
+								hReportParamWarning proc, f, FB.WARNINGMSG.INVALIDPOINTER
+							end if
+						else
+							hReportParamWarning proc, f, FB.WARNINGMSG.INVALIDPOINTER
+						end if
+
+					end if
 				end if
 			end if
 		end if

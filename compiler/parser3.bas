@@ -226,9 +226,10 @@ end function
 '':::::
 ''DerefFields	=   (FIELDDEREF DREF* TypeField)* .
 ''
-function cDerefFields( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ as integer, _
+function cDerefFields( s as FBSYMBOL ptr, elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, _
+					   typ as integer, _
 					   varexpr as integer, byval checkarray as integer ) as integer
-	dim dtype as integer, cnt as integer
+	dim cnt as integer
 	dim expr as integer
 
 	cDerefFields = FALSE
@@ -248,7 +249,6 @@ function cDerefFields( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ 
 			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			exit function
 		end if
-
 		typ = typ - FB.SYMBTYPE.POINTER
 
 		expr = INVALID
@@ -257,21 +257,23 @@ function cDerefFields( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ 
 			exit function
 		end if
 
-		dtype = hStyp2Dtype( typ )
-
 		'' this should be optimized by AST, when expr is a constant and varexpr is a scalar var
 		if( expr <> INVALID ) then
-            'varexpr = astNewADDR( IR.OP.ADDROF, varexpr )
 			varexpr = astNewBOP( IR.OP.ADD, varexpr, expr )
 		end if
 
-		do while( cnt > 1 )
-			varexpr = astNewPTR( 0, IR.DATATYPE.UINT, varexpr )
+		varexpr = astNewPTREx( NULL, elm, 0, hStyp2Dtype( typ ), varexpr )
+
+		do while( cnt > 0 )
+			if( typ < FB.SYMBTYPE.POINTER ) then
+				hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+				exit function
+			end if
+			typ = typ - FB.SYMBTYPE.POINTER
+
+			varexpr = astNewPTREx( NULL, elm, 0, hStyp2Dtype( typ ), varexpr )
 			cnt = cnt - 1
 		loop
-
-		if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
-		varexpr = astNewPTR( 0, dtype, varexpr )
 
 		cDerefFields = TRUE
 	loop
@@ -589,8 +591,8 @@ end function
 
 '':::::
 function hVarDeref( byval cnt as integer, varexpr as integer, _
-					byval symb as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval typ as integer, _
-					byval isbyref as integer ) as integer
+					byval symb as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, _
+					byval typ as integer ) as integer
 	dim dtype as integer
 
 	hVarDeref = FALSE
@@ -599,17 +601,22 @@ function hVarDeref( byval cnt as integer, varexpr as integer, _
 		exit function
 	end if
 
-	if( (typ < FB.SYMBTYPE.POINTER) and (not isbyref) ) then
-		exit function
-	end if
+	dtype = hStyp2Dtype( typ )
 
 	do while( cnt > 1 )
-		varexpr = astNewPTR( 0, IR.DATATYPE.UINT, varexpr )
+		if( dtype < IR.DATATYPE.POINTER ) then
+			exit function
+		end if
+		dtype = dtype - IR.DATATYPE.POINTER
+
+		varexpr = astNewPTR( 0, dtype, varexpr )
 		cnt = cnt - 1
 	loop
 
-    dtype = hStyp2Dtype( typ )
-    if( dtype > IR.DATATYPE.POINTER ) then dtype = dtype - IR.DATATYPE.POINTER
+	if( dtype < IR.DATATYPE.POINTER ) then
+		exit function
+	end if
+    dtype = dtype - FB.SYMBTYPE.POINTER
 
     varexpr = astNewPTREx( symb, elm, 0, dtype, varexpr )
 
@@ -778,7 +785,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
 	''
 	if( not isfunctionptr ) then
 		'' DerefFields?
-		cDerefFields( elm, typesymbol, typ, varexpr, checkarray )
+		cDerefFields( s, elm, typesymbol, typ, varexpr, checkarray )
 
    		'' check for calling functions through pointers
    		if( lexCurrentToken = CHAR_LPRNT ) then
@@ -818,7 +825,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
 varderef:
 	'' dereference
 	if( derefcnt > 0 ) then
-		if( not hVarDeref( derefcnt, varexpr, s, elm, typ, isbyref ) ) then
+		if( not hVarDeref( derefcnt, varexpr, s, elm, typ ) ) then
 			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			exit function
 		end if

@@ -39,6 +39,10 @@ end type
 	dim shared errctx as FBERRCTX
 	redim shared deftypeTB( 0 ) as integer
 
+''warning msgs (level, msg)
+warningdata:
+data 0, "Passing scalar as pointer"
+data -1
 
 '' error msgs
 errordata:
@@ -103,8 +107,9 @@ data "Illegal without the -ex option"
 data "Type mismatch"
 data "Illegal specification"
 data "Expected 'END WITH'"
+data "Illegal inside a SUB or FUNCTION"
 
-const FB.ERRMSGS = 61
+const FB.ERRMSGS = 62
 
 
 '':::::
@@ -182,6 +187,46 @@ function hGetLastError as integer
 	hGetLastError = errctx.lasterror
 
 end function
+
+
+'':::::
+sub hReportWarning( byval msgnum as integer, msgex as string )
+    dim i as integer
+    dim level as integer, msg as string
+
+	restore warningdata
+	i = 1
+	do
+		read level
+		if( level = -1 ) then
+			exit do
+		end if
+		read msg
+
+		if( i = msgnum ) then
+			exit do
+		end if
+		i = i + 1
+	loop
+
+	if( level < env.clopt.warninglevel ) then
+		exit sub
+	end if
+
+	print rtrim$( env.infile ); "(";
+	if( lexLineNum > 0 ) then
+		print str$( lexLineNum );
+	end if
+	print ") : warning level"; level;
+	print ": "; msg;
+	if( len( msgex ) > 0 ) then
+		print ", "; msgex
+	else
+		print
+	end if
+
+end sub
+
 
 '':::::
 function hMakeTmpStr as string static
@@ -530,3 +575,9 @@ function hToPow2( byval value as integer ) as integer static
 
 end function
 
+'':::::
+function hMakeEntryPointName( entrypoint as string ) as string
+
+	hMakeEntryPointName = "fb_" + entrypoint + "_entry"
+
+end function

@@ -984,7 +984,7 @@ function symbAddTempVar( byval typ as integer ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function hAllocFloatConst( sname as string, byval typ as integer ) as integer static
+function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, ofs as integer, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
     dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
@@ -1502,7 +1502,7 @@ end function
 
 '':::::
 private function hSetupProc( id as string, aliasname as string, libname as string, _
-				             byval typ as integer, byval mode as integer, _
+				             byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
 				             byval argc as integer, argv() as FBPROCARG, _
 			                 byval declaring as integer ) as FBSYMBOL ptr static
 
@@ -1529,6 +1529,7 @@ private function hSetupProc( id as string, aliasname as string, libname as strin
 
 	if( typ = INVALID ) then
 		typ = hGetDefType( id )
+		subtype = NULL
 	end if
 
     lgt = hCalcProcArgsLen( argc, argv() )
@@ -1556,6 +1557,7 @@ private function hSetupProc( id as string, aliasname as string, libname as strin
     f->sentinel = sentinel
 
 	f->typ		= typ
+	f->subtype	= subtype
 	f->lgt		= lgt
 
 	f->p.isdeclared = declaring
@@ -1588,7 +1590,7 @@ end function
 
 '':::::
 function symbAddPrototype( id as string, aliasname as string, libname as string, _
-						   byval typ as integer, byval mode as integer, _
+						   byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
 						   byval argc as integer, argv() as FBPROCARG, _
 						   byval isexternal as integer ) as FBSYMBOL ptr static
 
@@ -1596,7 +1598,7 @@ function symbAddPrototype( id as string, aliasname as string, libname as string,
 
     symbAddPrototype = NULL
 
-	f = hSetupProc( id, aliasname, libname, typ, mode, argc, argv(), isexternal )
+	f = hSetupProc( id, aliasname, libname, typ, subtype, mode, argc, argv(), isexternal )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -1607,14 +1609,14 @@ end function
 
 '':::::
 function symbAddProc( id as string, aliasname as string, libname as string, _
-					  byval typ as integer, byval mode as integer, _
+					  byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
 					  byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     symbAddProc = NULL
 
-	f = hSetupProc( id, aliasname, libname, typ, mode, argc, argv(), TRUE )
+	f = hSetupProc( id, aliasname, libname, typ, subtype, mode, argc, argv(), TRUE )
 	if( f = NULL ) then
 		exit function
 	end if

@@ -114,9 +114,11 @@ const QUOTE = "\""
     end if
 
     ''
-    if( (ctx.inps = 0) and (not ctx.showversion) ) then
-    	printOptions
-    	end 1
+    if( not ctx.showversion ) then
+    	if( (ctx.inps = 0) and (ctx.objs = 0) and (ctx.libs = 0) ) then
+    		printOptions
+    		end 1
+    	end if
     end if
 
     ''
@@ -140,6 +142,7 @@ const QUOTE = "\""
    	end if
 
 	if( not ctx.compileonly ) then
+
     	'' link
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
     		if( not linkFiles ) then
@@ -205,6 +208,14 @@ function compileFiles as integer
 
 	next i
 
+    '' no default libs will be added if no inp files were given
+    if( ctx.inps = 0 ) then
+   		fbcInit
+   		fbcAddDefaultLibs
+   		getLibList
+   		fbcend
+    end if
+
 	compileFiles = TRUE
 
 end function
@@ -255,6 +266,7 @@ function linkFiles as integer
 	dim i as integer, f as integer
 	dim ldcline as string
 	dim ldpath as string
+	dim entrypoint as string
 #ifdef TARGET_WIN32
 	dim libname as string, dllname as string
 #endif
@@ -263,7 +275,17 @@ function linkFiles as integer
 
 	'' if no executable name was defined, assume it's the same as the first source file
 	if( len( ctx.outname ) = 0 ) then
-		ctx.outname = hStripExt( inplist(0) )
+
+		if( ctx.inps > 0 ) then
+			ctx.outname = hStripExt( inplist(0) )
+		else
+			if( ctx.objs > 0 ) then
+				ctx.outname = hStripExt( objlist(0) )
+			else
+				ctx.outname = "noname"
+			end if
+		end if
+
 #ifdef TARGET_WIN32
 		select case ctx.outtype
 		case FB_OUTTYPE_EXECUTABLE
@@ -271,6 +293,7 @@ function linkFiles as integer
 		case FB_OUTTYPE_DYNAMICLIB
 			ctx.outname = ctx.outname + ".dll"
 		end select
+
 #elseif defined(TARGET_LINUX)
 		select case ctx.outtype
 		case FB_OUTTYPE_DYNAMICLIB
@@ -283,7 +306,18 @@ function linkFiles as integer
 	if( len( ctx.entrypoint ) = 0 ) then
 		select case ctx.outtype
 		case FB_OUTTYPE_EXECUTABLE
-			ctx.entrypoint = "fb_" + hStripPath( hStripExt( inplist(0) ) ) + "_entry"
+			if( ctx.inps > 0 ) then
+				entrypoint = hStripPath( hStripExt( inplist(0) ) )
+			else
+				if( ctx.objs > 0 ) then
+					entrypoint = hStripPath( hStripExt( objlist(0) ) )
+				else
+					entrypoint = "noentry"
+				end if
+			end if
+
+			ctx.entrypoint = hMakeEntryPointName( entrypoint )
+
 #ifdef TARGET_WIN32
 		case FB_OUTTYPE_DYNAMICLIB
             ctx.entrypoint = "_DLLMAIN"
@@ -333,8 +367,9 @@ function linkFiles as integer
     	'' don't export entry points
     	ldcline = ldcline + " --exclude-symbols DLLMAIN@12,_DLLMAIN"
     	for i = 0 to ctx.inps-1
-        	ldcline = ldcline + ",fb_" + hStripPath( hStripExt( outlist(i) ) ) + "_entry"
-        	ldcline = ldcline + ",fb_" + ucase$( hStripPath( hStripExt( outlist(i) ) ) ) + "_entry"
+        	entrypoint = hStripPath( hStripExt( outlist(i) ) )
+        	ldcline = ldcline + "," + hMakeEntryPointName( entrypoint )
+        	ldcline = ldcline + "," + hMakeEntryPointName( ucase$( entrypoint ) )
     	next i
 
     	'' don't export any symbol from rtlib
@@ -643,12 +678,16 @@ sub printOptions
 	print "-dylib", "create a shared library"
 #endif
 	print "-e", "add error checking"
+	print "-entry <name>", "set a non-standard entry point, see -m"
 	print "-ex", "add error checking with RESUME support"
 	print "-g", "add debug info (testing)"
 	print "-i <name>", "add a path to search for include files"
 	print "-l <name>", "add a library file to linker's list"
 	print "-lib", "create a static library"
-	print "-m <name>", "main file w/o .ext (entry point)"
+	print "-m <name>", "main file w/o ext, the entry point (default: 1st .bas on list)"
+#ifdef TARGET_WIN32
+	'''''print "-nostd", "treat stdcall calling convention as cdecl"
+#endif
 	print "-o <name>", "output name (in the same number as source files)"
 	print "-p <name>", "add a path to search for libraries"
 	print "-r", "do not delete the asm file(s)"
@@ -658,10 +697,8 @@ sub printOptions
 #endif
 	print "-v", "verbose"
 	print "-version", "show compiler version"
-#ifdef TARGET_WIN32
-	print "-w", "treat stdcall calling convention as cdecl"
-#endif
 	print "-x <name>", "executable/library name"
+	print "-w <value>", "set warning level"
 
 end sub
 
@@ -698,7 +735,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "e", "ex", "w"
+			case "e", "ex", "w", "nostd"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -712,6 +749,14 @@ function processOptions as integer
 			case "dylib", "dll"
 				ctx.outtype = FB_OUTTYPE_DYNAMICLIB
 				argv(i) = ""
+
+			case "entry"
+				ctx.entrypoint = argv(i+1)
+				if( len( ctx.entrypoint ) = 0 ) then
+					exit function
+				end if
+				argv(i) = ""
+				argv(i+1) = ""
 
 			case "lib"
 				ctx.outtype = FB_OUTTYPE_STATICLIB
@@ -738,7 +783,7 @@ function processOptions as integer
 				argv(i+1) = ""
 
 			case "m"
-				ctx.entrypoint = argv(i+1)
+				ctx.entrypoint = hMakeEntryPointName( hStripPath( hStripExt( argv(i+1) ) ) )
 				if( len( ctx.entrypoint ) = 0 ) then
 					exit function
 				end if
@@ -799,14 +844,19 @@ function processCompOptions as integer
 			select case mid$( argv(i), 2 )
 			case "e"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
+
 			case "ex"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
 				fbcSetOption FB.COMPOPT.RESUMEERROR, TRUE
 
-#ifdef TARGET_WIN32
 			case "w"
+				fbcSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )
+
+#ifdef TARGET_WIN32
+			case "nostd"
 				fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
 #endif
+
 			end select
 		end if
 

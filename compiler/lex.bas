@@ -46,6 +46,8 @@ type LEXCTX
 	colnum 			as integer
 	lasttoken 		as integer
 
+	reclevel 		as integer					'' PP recursion
+
 	'' last #define's text
 	deftext			as string * FB.MAXLITLEN
 	defptr 			as byte ptr
@@ -99,6 +101,9 @@ sub lexInit
 	ctx.colnum		= 1
 	ctx.lasttoken	= INVALID
 
+	ctx.reclevel	= 0
+
+	''
 	ctx.deflen		= 0
 
 	ctx.withlen		= 0
@@ -804,30 +809,29 @@ end sub
 
 '':::::
 private sub hCheckPP
-	static reclevel as integer
 
 	'' not already inside the PP? (ie: not skipping a false #IF or #ELSE)
-	if( reclevel = 0 ) then
+	if( ctx.reclevel = 0 ) then
 		'' '#' char?
 		if( ctx.tokenTB(0).id = CHAR_SHARP ) then
 			'' at beginning of line (or top of source-file)?
 			if( (ctx.lasttoken = FB.TK.EOL) or (ctx.lasttoken = INVALID) ) then
-                reclevel = reclevel + 1
+                ctx.reclevel = ctx.reclevel + 1
                 lexSkipToken
 
        			'' not a keyword? error, parser will catch it..
        			if( ctx.tokenTB(0).class <> FB.TKCLASS.KEYWORD ) then
-       				reclevel = reclevel - 1
+       				ctx.reclevel = ctx.reclevel - 1
        				exit sub
        			end if
 
        			'' pp failed? exit
        			if( not lexPreProcessor ) then
-       				reclevel = reclevel - 1
+       				ctx.reclevel = ctx.reclevel - 1
        				exit sub
        			end if
 
-				reclevel = reclevel - 1
+				ctx.reclevel = ctx.reclevel - 1
 			end if
 		end if
 	end if

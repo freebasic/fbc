@@ -868,6 +868,8 @@ end function
 function irNewVR( byval dtype as integer, byval typ as integer ) as integer 'static
 	dim v as integer
 
+	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+
 	if( ctx.vregs >= ctx.vrnodes ) then
 		irReallocVregTB ctx.vrnodes \ 2
 	end if
@@ -888,8 +890,6 @@ end function
 '':::::
 function irAllocVREG( byval dtype as integer ) as integer 'static
 	dim vr as integer
-
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	vr = irNewVR( dtype, IR.VREGTYPE.REG )
 

@@ -673,12 +673,12 @@ type FBENV
 	dbgpos 			as integer
 
 	'' options
-	optbase			as integer					'' default=0
-	optargmode		as integer					'' def    =byref
-	optexplicit		as integer					'' def    =false
-	optprocpublic	as integer					'' def    =true
-	optescapestr	as integer					'' def    =false
-	optdynamic		as integer					'' def    =false
+	optbase			as integer					'' default= 0
+	optargmode		as integer					'' def    = byref
+	optexplicit		as integer					'' def    = false
+	optprocpublic	as integer					'' def    = true
+	optescapestr	as integer					'' def    = false
+	optdynamic		as integer					'' def    = false
 
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID

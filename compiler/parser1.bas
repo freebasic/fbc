@@ -46,6 +46,19 @@ declare function cConstExprValue			( littext as string ) as integer
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+deflibsdata:
+data "fb"
+#ifdef TARGET_WIN32
+data "crtdll"
+data "kernel32"
+data "user32"
+#elseif defined(TARGET_LINUX)
+data "c"
+data "m"
+data "ncurses"
+#endif
+data ""
+
 '':::::
 sub fbcAddIncPath( path as string )
 
@@ -154,12 +167,13 @@ end function
 '':::::
 sub fbcSetDefaultOptions
 
-	env.clopt.debug		= FALSE
-	env.clopt.cputype 	= FB.DEFAULTCPUTYPE
-	env.clopt.errorcheck= FALSE
-	env.clopt.resumeerr = FALSE
-	env.clopt.nostdcall = FALSE
-	env.clopt.outtype	= FB_OUTTYPE_EXECUTABLE
+	env.clopt.debug			= FALSE
+	env.clopt.cputype 		= FB.DEFAULTCPUTYPE
+	env.clopt.errorcheck	= FALSE
+	env.clopt.resumeerr 	= FALSE
+	env.clopt.nostdcall 	= FALSE
+	env.clopt.outtype		= FB_OUTTYPE_EXECUTABLE
+	env.clopt.warninglevel 	= 0
 
 end sub
 
@@ -179,6 +193,8 @@ sub fbcSetOption ( byval opt as integer, byval value as integer )
 		env.clopt.outtype = value
 	case FB.COMPOPT.RESUMEERROR
 		env.clopt.resumeerr = value
+	case FB.COMPOPT.WARNINGLEVEL
+		env.clopt.warninglevel = value
 	end select
 
 end sub
@@ -202,6 +218,8 @@ function fbcGetOption ( byval opt as integer ) as integer
 		res = env.clopt.outtype
 	case FB.COMPOPT.RESUMEERROR
 		res = env.clopt.resumeerr
+	case FB.COMPOPT.WARNINGLEVEL
+		res = env.clopt.warninglevel
 	end select
 
 	fbcGetOption = res
@@ -290,6 +308,81 @@ end function
 function fbcListLibs( namelist() as string, byval index as integer ) as integer
 
 	fbcListLibs = symbListLibs( namelist(), index )
+
+end function
+
+'':::::
+sub fbcAddDefaultLibs
+    dim lname as string
+
+	restore deflibsdata
+
+	do
+		read lname
+		if( len( lname ) = 0 ) then
+			exit do
+		end if
+
+		symbAddLib lname
+	loop
+
+end sub
+
+''::::
+function fbcIncludeFile( filename as string ) as integer
+    dim incfile as string
+    dim i as integer
+
+	fbcIncludeFile = FALSE
+
+	if( env.reclevel >= FB.MAXINCRECLEVEL ) then
+		hReportError FB.ERRMSG.RECLEVELTOODEPTH
+		exit function
+	end if
+
+	'' open include file
+	if( not hFileExists( filename ) ) then
+
+		'' try finding it at the inc paths
+		for i = env.incpaths-1 to 0 step -1
+			incfile = incpathTB(i) + filename
+			if( hFileExists( incfile ) ) then
+				exit for
+			end if
+		next i
+
+	else
+		incfile = filename
+	end if
+
+	''
+	if( not hFileExists( incfile ) ) then
+		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + incfile + "\""
+
+	else
+		envcopyTB(env.reclevel) = env
+		lexSaveCtx env.reclevel
+    	env.reclevel	= env.reclevel + 1
+
+		env.infile		= filename
+
+		''
+		lexInit
+
+		''
+		env.inf = freefile
+		open incfile for binary as #env.inf
+
+		'' parse
+		fbcIncludeFile = cProgram
+
+		'' close it
+		close #env.inf
+
+		''
+		lexRestoreCtx env.reclevel-1
+		env = envcopyTB(env.reclevel-1)
+	end if
 
 end function
 
@@ -529,64 +622,6 @@ function cComment
 
 end function
 
-''::::
-function hDoInclude( filename as string ) as integer
-    dim incfile as string
-    dim i as integer
-
-	hDoInclude = FALSE
-
-	if( env.reclevel >= FB.MAXINCRECLEVEL ) then
-		hReportError FB.ERRMSG.RECLEVELTOODEPTH
-		exit function
-	end if
-
-	'' open include file
-	if( not hFileExists( filename ) ) then
-
-		'' try finding it at the inc paths
-		for i = env.incpaths-1 to 0 step -1
-			incfile = incpathTB(i) + filename
-			if( hFileExists( incfile ) ) then
-				exit for
-			end if
-		next i
-
-	else
-		incfile = filename
-	end if
-
-	''
-	if( not hFileExists( incfile ) ) then
-		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + incfile + "\""
-
-	else
-		envcopyTB(env.reclevel) = env
-		lexSaveCtx env.reclevel
-    	env.reclevel	= env.reclevel + 1
-
-		env.infile		= filename
-
-		''
-		lexInit
-
-		''
-		env.inf = freefile
-		open incfile for binary as #env.inf
-
-		'' parse
-		hDoInclude = cProgram
-
-		'' close it
-		close #env.inf
-
-		''
-		lexRestoreCtx env.reclevel-1
-		env = envcopyTB(env.reclevel-1)
-	end if
-
-end function
-
 '':::::
 ''Directive       =   INCLUDE ':' '\'' STR_LIT '\''
 ''				  |   DYNAMIC
@@ -644,7 +679,7 @@ function cDirective
 
 		select case token
 		case FB.TK.INCLUDE
-			res = hDoInclude( incfile )
+			res = fbcIncludeFile( incfile )
 		case FB.TK.INCLIB
 			if( symbAddLib( incfile ) <> NULL ) then
 				res = TRUE
@@ -1309,7 +1344,7 @@ function cSymbolDecl
 		case FB.TK.COMMON
 			'' can't use COMMON inside a proc
 			if( env.scope > 0 ) then
-    			hReportError FB.ERRMSG.SYNTAXERROR
+    			hReportError FB.ERRMSG.ILLEGALINSIDEASUB
     			exit function
 			end if
 
@@ -1321,7 +1356,7 @@ function cSymbolDecl
 		case FB.TK.EXTERN
 			'' can't use EXTERN inside a proc
 			if( env.scope > 0 ) then
-    			hReportError FB.ERRMSG.SYNTAXERROR
+    			hReportError FB.ERRMSG.ILLEGALINSIDEASUB
     			exit function
 			end if
 
@@ -1341,6 +1376,13 @@ function cSymbolDecl
 		'' SHARED
 		if( (alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
 			if( lexCurrentToken = FB.TK.SHARED ) then
+
+				'' can't use SHARED inside a proc
+				if( env.scope > 0 ) then
+    				hReportError FB.ERRMSG.ILLEGALINSIDEASUB
+    				exit function
+				end if
+
 				lexSkipToken
 				alloctype = alloctype or FB.ALLOCTYPE.SHARED
 			end if
@@ -1362,6 +1404,12 @@ function cSymbolDecl
 		case FB.TK.SUB, FB.TK.FUNCTION
 			exit function
 		end select
+
+		'' can't use STATIC outside a proc
+		if( env.scope = 0 ) then
+   			hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+   			exit function
+		end if
 
 		lexSkipToken
 
@@ -1964,9 +2012,10 @@ function cSymbolTypeFuncPtr as FBSYMBOL ptr
 		end if
 	else
 		typ = FB.SYMBTYPE.VOID
+		subtype = NULL
 	end if
 
-	cSymbolTypeFuncPtr = symbAddPrototype( hMakeTmpStr, "", "", typ, mode, argc, argv(), TRUE )
+	cSymbolTypeFuncPtr = symbAddPrototype( hMakeTmpStr, "", "", typ, subtype, mode, argc, argv(), TRUE )
 
 end function
 
@@ -1982,12 +2031,13 @@ end function
 ''                |   STRING ('*' NUM_LIT)?
 ''                |   USERDEFTYPE
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
-''				      (PTR|POINTER)? .
+''				      (PTR|POINTER)* .
 ''
 function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
     dim isunsigned as integer
     dim res as integer, s as FBSYMBOL ptr
     dim littext as string
+    dim ptrcnt as integer
 
 	res = FALSE
 
@@ -2107,17 +2157,26 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 			end select
 		end if
 
-		'' (PTR|POINTER)?
-		if( (lexCurrentToken = FB.TK.PTR) or (lexCurrentToken = FB.TK.POINTER) ) then
+		'' (PTR|POINTER)*
+		ptrcnt = 0
+		do
+			select case lexCurrentToken
+			case FB.TK.PTR, FB.TK.POINTER
+				lexSkipToken
+				typ = FB.SYMBTYPE.POINTER + typ
+				ptrcnt = ptrcnt + 1
+			case else
+				exit do
+			end select
+		loop
 
+        if( ptrcnt > 0 ) then
 			'' can't be a fixed-len string
 			if( typ = FB.SYMBTYPE.FIXSTR ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
 			end if
 
-			lexSkipToken
-			typ = FB.SYMBTYPE.POINTER + typ
 			lgt = FB.POINTERSIZE
 		end if
 
@@ -2202,6 +2261,7 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 
 	typ = lexTokenType
 	id = lexEatToken
+	subtype = NULL
 
 	if( (isSub) and (typ <> INVALID) ) then
     	hReportError FB.ERRMSG.INVALIDCHARACTER
@@ -2270,9 +2330,16 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 
     if( issub ) then
     	typ = FB.SYMBTYPE.VOID
+    	subtype = NULL
     end if
 
-    f = symbAddPrototype( id, aliasname, libname, typ, mode, argc, argv(), FALSE )
+	''
+	if( typ = INVALID ) then
+		typ = hGetDefType( id )
+	end if
+
+    ''
+    f = symbAddPrototype( id, aliasname, libname, typ, subtype, mode, argc, argv(), FALSE )
     if( f = NULL ) then
     	hReportError FB.ERRMSG.DUPDEFINITION
     	exit function

@@ -29,6 +29,7 @@ declare function 	hMatch					( byval token as integer ) as integer
 declare sub 		hReportErrorEx			( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
 declare sub 		hReportError			( byval errnum as integer, byval isbefore as integer = FALSE )
 declare function 	hGetLastError 			( ) as integer
+declare sub 		hReportWarning			( byval msgnum as integer, msgex as string )
 
 declare function 	hMakeTmpStr 			( ) as string
 declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
@@ -52,3 +53,4 @@ declare function 	hStripFilename 			( filename as string ) as string
 
 declare function 	hToPow2					( byval value as integer ) as integer
 
+declare function 	hMakeEntryPointName		( entrypoint as string ) as string
