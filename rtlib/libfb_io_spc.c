@@ -40,13 +40,13 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
     		newcol %= cols;
 
 		if( col > newcol )
-			fb_Locate( row+1, newcol );
+			fb_Locate( row+1, newcol, -1 );
 
 	    else if( newcol < 1 )
-    		fb_Locate( -1, 1 );
+    		fb_Locate( -1, 1, -1 );
 
     	else
-    		fb_Locate( -1, newcol );
+    		fb_Locate( -1, newcol, -1 );
     }
 }
 
@@ -68,7 +68,7 @@ FBCALL void fb_PrintSPC( int fnum, int n )
     	if( newcol > cols )
     		newcol %= cols;
 
-		fb_Locate( -1, newcol );
+		fb_Locate( -1, newcol, -1 );
 	}
 }
 

@@ -112,7 +112,7 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
      	if( rowstoscroll - rowsleft > 0 )
      	{
      		fb_ConsoleScroll( rowstoscroll - rowsleft );
-     		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1 );
+     		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1, -1 );
      	}
 	}
 

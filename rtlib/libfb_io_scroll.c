@@ -85,6 +85,6 @@ void fb_ConsoleScroll( int nrows )
 #endif /* WIN32 */
 
 
-	fb_ConsoleLocate( botrow - (nrows-1), -1 );
+	fb_ConsoleLocate( botrow - (nrows-1), -1, -1 );
 
 }

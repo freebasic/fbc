@@ -103,7 +103,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 		if( addnewline == FB_FALSE )
 		{
 			fb_ConsoleGetSize( &cols, NULL );
-			fb_ConsoleLocate( fb_ConsoleGetY( ) - 1, lastcol + (FB_STRSIZE( dst ) % cols) );
+			fb_ConsoleLocate( fb_ConsoleGetY( ) - 1, lastcol + (FB_STRSIZE( dst ) % cols), -1 );
 		}
 
 

@@ -102,7 +102,7 @@ void fb_ConsoleClear( int mode )
 #endif /* WIN32 */
 
 
-    fb_ConsoleLocate( toprow, 1 );
+    fb_ConsoleLocate( toprow, 1, -1 );
 
 }
 
