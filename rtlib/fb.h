@@ -326,6 +326,8 @@ __stdcall int 		fb_ErrorGetNum 		( void );
  **************************************************************************************************/
 
 __stdcall void 		fb_AtExit 			( void (*proc)(void) );
+
+__stdcall void 		fb_Init 			( void );
 __stdcall void 		fb_End 				( int errlevel );
 
 __stdcall void		fb_MemSwap			( unsigned char *dst, unsigned char *src, int bytes );
