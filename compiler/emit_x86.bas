@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' code generation for x86, GNU assembler (GAS) - Intel arch
+'' code generation for x86, GNU assembler (GAS/Intel arch)
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -59,6 +59,17 @@ type EMITDATATYPE
 end type
 
 ''
+const TABCHAR = "\t"
+const NEWLINE = "\r\n"
+const QUOTE   = "\""
+const COMMA   = ", "
+
+
+const EMIT.MAXRNAMES  = 8
+const EMIT.MAXRTABLES = 4
+
+
+''
 declare sub 		outp				( s as string )
 
 declare sub 		hSaveAsmHeader		( )
@@ -70,19 +81,11 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 ''
 ''globals
 	dim shared ctx as EMITCTX
-	dim shared COMMA as string
-
-const TABCHAR = "\t"
-const NEWLINE = "\r\n"
-const QUOTE   = "\""
-
-	redim shared dtypeTB( 0 ) as EMITDATATYPE
-	redim shared rnameTB( 0, 0 ) as string
+	dim shared regTB(0 to EMIT.REGCLASSES-1) as REGCLASS ptr
+	dim shared dtypeTB(0 to IR.MAXDATATYPES-1) as EMITDATATYPE
+	dim shared rnameTB(0 to EMIT.MAXRTABLES-1, 0 to EMIT.MAXRNAMES-1) as string
 
 ''
-const EMIT.MAXRNAMES  = 8
-const EMIT.MAXRTABLES = 4
-
 regnametbdata:
 data "dl","di","si","cl","bl","al","",""
 data "dx","di","si","cx","bx","ax","",""
@@ -193,45 +196,11 @@ private sub hEndKeywordsTB
 end sub
 
 '':::::
-sub emitInit
+private sub hInitRegTB
 	dim class as integer, lclass as integer
 	dim reg as integer, regs as integer
-	dim i as integer, t as integer
-
-	if( ctx.inited ) then
-		exit sub
-	end if
-
-	COMMA = ", "
-
 
 	''
-	redim dtypeTB(0 to IR.MAXDATATYPES-1) as EMITDATATYPE
-
-	restore datatypedata
-	for i = 0 to IR.MAXDATATYPES-1
-		read dtypeTB(i).class
-		read dtypeTB(i).size
-		read dtypeTB(i).rnametb
-		read dtypeTB(i).mname
-		read dtypeTB(i).iname
-	next i
-
-
-	''
-	redim rnameTB( 0 to EMIT.MAXRTABLES-1, 0 to EMIT.MAXRNAMES-1 ) as string
-
-	restore regnametbdata
-	for t = 0 to EMIT.MAXRTABLES-1
-		for i = 0 to EMIT.MAXRNAMES-1
-			read rnameTB(t, i)
-		next i
-	next t
-
-
-	''
-	regInit REG.MAXCLASSES
-
 	restore regdata
 	lclass = -1
 	regs = 0
@@ -240,7 +209,7 @@ sub emitInit
 
 		if( lclass <> class ) then
 			if( lclass <> -1 ) then
-				regInitClass lclass, regs
+				regTB(lclass) = regNewClass( lclass, regs, lclass = IR.DATACLASS.FPOINT )
 			end if
 			regs = 0
 			lclass = class
@@ -253,6 +222,47 @@ sub emitInit
 		read reg
 		regs = regs + 1
 	loop
+
+end sub
+
+'':::::
+private sub hEndRegTB
+    dim i as integer
+
+	for i = 0 to EMIT.REGCLASSES-1
+		regDelClass regTB(i)
+	next i
+
+end sub
+
+'':::::
+sub emitInit
+	dim i as integer, t as integer
+
+	if( ctx.inited ) then
+		exit sub
+	end if
+
+	''
+	restore datatypedata
+	for i = 0 to IR.MAXDATATYPES-1
+		read dtypeTB(i).class
+		read dtypeTB(i).size
+		read dtypeTB(i).rnametb
+		read dtypeTB(i).mname
+		read dtypeTB(i).iname
+	next i
+
+	''
+	restore regnametbdata
+	for t = 0 to EMIT.MAXRTABLES-1
+		for i = 0 to EMIT.MAXRNAMES-1
+			read rnameTB(t, i)
+		next i
+	next t
+
+	''
+	hInitRegTB
 
 	''
 	hInitKeywordsTB
@@ -271,17 +281,21 @@ sub emitEnd
 		exit sub
 	end if
 
-    ''regEnd
+	''
+	hEndRegTB
 
     hEndKeywordsTB
-
-    erase rnameTB
-
-	erase dtypeTB
 
 	ctx.inited = FALSE
 
 end sub
+
+'':::::
+function emitGetRegClass( byval dclass as integer ) as REGCLASS ptr
+
+	emitGetRegClass = regTB(dclass)
+
+end function
 
 '':::::
 function emitGetRegName( byval dtype as integer, byval dclass as integer, byval reg as integer ) as string 'static
@@ -296,7 +310,7 @@ function emitGetRegName( byval dtype as integer, byval dclass as integer, byval 
 
 		'' with fp, reg isn't the real reg num
 		if( dclass = IR.DATACLASS.FPOINT ) then
-			reg = sregGetRealReg( reg )
+			reg = regTB(dclass)->getRealReg( regTB(dclass), reg )
 		end if
 
 		emitGetRegName = rnameTB(t, reg)
@@ -408,13 +422,13 @@ function emitGetFreePreservReg( byval dtype as integer, byval dclass as integer 
 	end if
 
 	'' try to reuse regs that are preserved between calls
-	if( regIsFree( dtype, dclass, EMIT.INTREG.EBX ) ) then
+	if( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.EBX ) ) then
 		emitGetFreePreservReg = EMIT.INTREG.EBX
 
-	elseif( regIsFree( dtype, dclass, EMIT.INTREG.ESI ) ) then
+	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.ESI ) ) then
 		emitGetFreePreservReg = EMIT.INTREG.ESI
 
-	elseif( regIsFree( dtype, dclass, EMIT.INTREG.EDI ) ) then
+	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.EDI ) ) then
 		emitGetFreePreservReg = EMIT.INTREG.EDI
 	end if
 
@@ -636,6 +650,7 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
     dim dst as string, src as string
     dim ext as string, reg as integer
     dim ddsize as integer, sdsize as integer
+    dim isedxfree as integer
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
@@ -655,14 +670,15 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 				outp "sub esp, 4"
 				outp "fistp dword ptr [esp]"
 
-				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+				if( not isedxfree ) then
 					emithPUSH "edx"
 				end if
 
 				outp "mov dl, byte ptr [esp]"
 				outp "mov " + dst + ", dl"
 
-				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				if( not isedxfree ) then
 					emithPOP "edx"
 				end if
 
@@ -698,12 +714,13 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 				else
 					'' handle DI/SI as byte
 					if( (ddsize = 1) and right$( ext, 1 ) <> "l" ) then
-						if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+						isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+						if( not isedxfree ) then
 							emithPUSH "edx"
 						end if
 						outp "mov dx, " + ext
 						outp "mov " + dst + ", dl"
-						if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+						if( not isedxfree ) then
 							emithPOP "edx"
 						end if
 					else
@@ -719,7 +736,8 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 		'' byte source? damn..
 		if( sdsize = 1 ) then
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+			if( not isedxfree ) then
 				emithPUSH "edx"
 			end if
 
@@ -733,7 +751,7 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 			outp "fild dword ptr [esp]"
 			outp "add esp, 4"
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			if( not isedxfree ) then
 				emithPOP "edx"
 			end if
 
@@ -766,6 +784,7 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
     dim dst as string, src as string
     dim ext as string, reg as integer
     dim ddsize as integer, sdsize as integer
+    dim isedxfree as integer
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
@@ -806,7 +825,8 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 					else
 						'' handle DI/SI as byte
 						if( (ddsize = 1) and right$( dst, 1 ) <> "l" ) then
-							if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+							isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+							if( not isedxfree ) then
 								emithPUSH "edx"
 							end if
 
@@ -819,7 +839,7 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 								outp "movzx " + dst + ", dl"
 							end if
 
-							if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+							if( not isedxfree ) then
 								emithPOP "edx"
 							end if
 						else
@@ -838,7 +858,8 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 
 			'' byte destine? damn..
 			if( ddsize = 1 ) then
-				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+				if( not isedxfree ) then
 					emithPUSH "edx"
 				end if
 
@@ -847,7 +868,7 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
                 outp "pop edx"
                 outp "mov " + dst + ", dl"
 
-				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				if( not isedxfree ) then
 					emithPOP "edx"
 				end if
 
@@ -868,7 +889,8 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 	case IR.DATACLASS.FPOINT
 		'' byte source? damn..
 		if( sdsize = 1 ) then
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+			if( not isedxfree ) then
 				emithPUSH "edx"
 			end if
 
@@ -882,7 +904,7 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 			outp "fild dword ptr [esp]"
 			outp "add esp, 4"
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			if( not isedxfree ) then
 				emithPOP "edx"
 			end if
 
@@ -1019,8 +1041,8 @@ sub emithINTMUL( dst as string, byval ddtype as integer, byval ddclass as intege
     	edx = "dx"
     end if
 
-	eaxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX )
-	edxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX )
+	eaxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX )
+	edxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
 
 	edxtrashed = FALSE
 	if( (src = eax) or (stype = IR.VREGTYPE.IMM) ) then
@@ -1076,10 +1098,10 @@ function emithFindRegButSrc( src as string, byval sdtype as integer, byval sdcla
 		reg = emitLookupReg( src, sdtype )
 	end if
 
-	for i = regGetMaxRegs( sdclass )-1 to 0 step -1
+	for i = regTB(sdclass)->getMaxRegs( regTB(sdclass) )-1 to 0 step -1
 		if( i <> reg ) then
 			emithFindRegButSrc = i
-			if( regIsFree( sdtype, sdclass, i ) ) then
+			if( regTB(sdclass)->isFree( regTB(sdclass), i ) ) then
 				exit function
 			end if
 		end if
@@ -1098,7 +1120,7 @@ sub emithINTIMUL( dst as string, byval ddtype as integer, byval ddclass as integ
 		reg = emithFindRegButSrc( src, sdtype, sdclass, stype )
 		rname = emitGetRegName( sdtype, sdclass, reg )
 
-		isfree = regIsFree( sdtype, sdclass, reg )
+		isfree = regTB(sdclass)->isFree( regTB(sdclass), reg )
 
 		if( not isfree ) then emithPUSH rname
 
@@ -1193,9 +1215,9 @@ sub emitINTDIV( dname as string, byval ddtype as integer, byval ddclass as integ
 
 	ecxtrashed = FALSE
 
-	eaxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX )
-	ecxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.ECX )
-	edxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX )
+	eaxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX )
+	ecxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.ECX )
+	edxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
 
 	if( (src = eax) or (src = edx) or (stype = IR.VREGTYPE.IMM) ) then
 		ecxtrashed = TRUE
@@ -1277,9 +1299,9 @@ sub emitMOD( dname as string, byval ddtype as integer, byval ddclass as integer,
 
 	ecxtrashed = FALSE
 
-	eaxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX )
-	ecxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.ECX )
-	edxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX )
+	eaxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX )
+	ecxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.ECX )
+	edxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
 
 	if( (src = eax) or (src = edx) or (stype = IR.VREGTYPE.IMM) ) then
 		ecxtrashed = TRUE
@@ -1352,8 +1374,8 @@ sub emitSHIFT( mnemonic as string, dname as string, byval ddtype as integer, byv
 	eaxpreserved = FALSE
 	ecxpreserved = FALSE
 
-	eaxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX )
-	ecxfree = regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.ECX )
+	eaxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX )
+	ecxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.ECX )
 
    	select case dtypeTB(ddtype).size
    	case 4
@@ -1539,6 +1561,7 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
     dim dst as string, src as string
     dim dotest as integer
     dim reg as integer, rname8 as string, edx as string
+    dim isedxfree as integer
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
@@ -1573,13 +1596,14 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
    				edx = "dx"
    			end select
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+			if( not isedxfree ) then
 				outp "xchg " + edx + COMMA + rname
 			end if
 
 			outp "set" + mnemonic + TABCHAR + "dl"
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			if( not isedxfree ) then
 				outp "xchg " + edx + COMMA + rname
 			else
 				emithMOV rname, edx
@@ -1595,7 +1619,9 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
 		if( len( rname ) > 0 ) then
 			outp "mov " + rname + ", -1"
 		end if
+
 		emitBRANCH "j" + mnemonic, label, FALSE
+
 		if( len( rname ) > 0 ) then
 			outp "xor " + rname + COMMA + rname
 			emitLabel label, FALSE
@@ -1610,6 +1636,7 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
 			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
     dim dst as string, src as string
     dim reg as integer, rname8 as string
+    dim iseaxfree as integer, isedxfree as integer
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
@@ -1629,9 +1656,12 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
 	end if
 
     if( rname <> "eax" ) then
-    	if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX ) ) then
+    	iseaxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX )
+    	if( not iseaxfree ) then
     		emithPUSH "eax"
     	end if
+    else
+    	iseaxfree = TRUE
 	end if
 
     outp "fnstsw " + "ax"
@@ -1641,11 +1671,9 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
 		outp "sahf"
 	end if
 
-    if( rname <> "eax" ) then
-       	if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX ) ) then
-       		emithPOP "eax"
-       	end if
-    end if
+	if( not iseaxfree ) then
+		emithPOP "eax"
+	end if
 
 	if( (env.clopt.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) ) then
 		reg = emitLookupReg( rname, IR.DATATYPE.INTEGER )
@@ -1654,13 +1682,14 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
 		'' handle EDI and ESI
 		if( right$( rname8, 1 ) <> "l" ) then
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+			if( not isedxfree ) then
 				outp "xchg edx" + COMMA + rname
 			end if
 
 			outp "set" + mnemonic + TABCHAR + "dl"
 
-			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+			if( not isedxfree ) then
 				outp "xchg edx" + COMMA + rname
 			else
 				emithMOV rname, "edx"
@@ -1676,7 +1705,9 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
  	   if( len( rname ) > 0 ) then
     		outp "mov " + rname + ", -1"
     	end if
+
     	emitBRANCH "j" + mnemonic, label, FALSE
+
 		if( len( rname ) > 0 ) then
 			outp "xor " + rname + COMMA + rname
 			emitLabel label, FALSE
@@ -1831,7 +1862,7 @@ sub emitABS( dname as string, byval ddtype as integer, byval ddclass as integer,
 
 		reg = emithFindRegButSrc( dname, ddtype, ddclass, dtype )
 		rname = emitGetRegName( ddtype, ddclass, reg )
-		isfree = regIsFree( ddtype, ddclass, reg )
+		isfree = regTB(ddclass)->isFree( regTB(ddclass), reg )
 		if( not isfree ) then emithPUSH rname
 
 		bits = (dtypeTB(ddtype).size * 8)-1
@@ -1946,7 +1977,7 @@ sub emitPOP( sname as string, byval sdtype as integer, byval sdclass as integer,
 
 				outp "xchg eax, [esp]"
 				emithMOV src, "al"
-				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX ) ) then
+				if( not regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX ) ) then
 					emithPOP "eax"
 				else
 					outp "add esp, 4"
@@ -2127,11 +2158,7 @@ sub emitSECTION( byval section as integer ) 'static
 
 	select case section
 	case EMIT.SECTYPE.CONST
-#ifdef TARGET_LINUX
 		sname = "data"
-#else
-		sname = "const"
-#endif
 	case EMIT.SECTYPE.DATA
 		sname = "data"
 	case EMIT.SECTYPE.BSS
@@ -2389,11 +2416,7 @@ private sub hSaveAsmConst( ) 'static
     dim sname as string, stext as string, stype as string
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized constants"
-#ifdef TARGET_LINUX
 	hWriteStr ctx.outf, FALSE, ".section .data"
-#else
-    hWriteStr ctx.outf, FALSE, ".section .const"
-#endif
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
     s = symbGetFirstNode
