@@ -48,9 +48,11 @@ void fb_ConsoleClear( int mode )
 		memset(fb_con.char_buffer + (i * fb_con.w), ' ', fb_con.w);
 		memset(fb_con.attr_buffer + (i * fb_con.w), fb_con.fg_color | (fb_con.bg_color << 4), fb_con.w);
 		fprintf(fb_con.f_out, "\e[%d;1H", i);
-		fputs("\E[2K", fb_con.f_out);
+		fputs("\e[2K", fb_con.f_out);
 	}
 	fprintf(fb_con.f_out, "\e[%d;1H", start);
+	fb_con.cur_y = start;
+	fb_con.cur_x = 1;
 }
 
 
