@@ -30,15 +30,16 @@
 
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
+static void driver_exit(void);
 static void driver_flip(void);
-static int opengl_window_init(void);
-static void opengl_window_exit(void);
+static int opengl_init(void);
+static void opengl_exit(void);
 
 GFXDRIVER fb_gfxDriverOpenGL =
 {
 	"OpenGL",		/* char *name; */
 	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	fb_hWin32Exit,		/* void (*exit)(void); */
+	driver_exit,		/* void (*exit)(void); */
 	fb_hWin32Lock,		/* void (*lock)(void); */
 	fb_hWin32Unlock,	/* void (*unlock)(void); */
 	fb_hWin32SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
@@ -52,17 +53,14 @@ GFXDRIVER fb_gfxDriverOpenGL =
 
 typedef HGLRC (APIENTRY *WGLCREATECONTEXT)(HDC);
 typedef BOOL (APIENTRY *WGLMAKECURRENT)(HDC, HGLRC);
-typedef HGLRC (APIENTRY *WGLGETCURRENTCONTEXT)(VOID);
 typedef BOOL (APIENTRY *WGLDELETECONTEXT)(HGLRC);
 
 static WGLCREATECONTEXT fb_wglCreateContext;
 static WGLMAKECURRENT fb_wglMakeCurrent;
-static WGLGETCURRENTCONTEXT fb_wglGetCurrentContext;
 static WGLDELETECONTEXT fb_wglDeleteContext;
 static HMODULE library;
 static HGLRC hglrc;
 static HDC hdc;
-static int gl_options;
 
 
 /*:::::*/
@@ -73,72 +71,6 @@ static void opengl_paint(void)
 
 /*:::::*/
 static int opengl_init(void)
-{
-	PIXELFORMATDESCRIPTOR pfd;
-	int pf;
-	
-	library = (HMODULE)LoadLibrary("opengl32.dll");
-	if (!library)
-		return -1;
-
-	fb_wglCreateContext = (WGLCREATECONTEXT)GetProcAddress(library, "wglCreateContext");
-	fb_wglMakeCurrent = (WGLMAKECURRENT)GetProcAddress(library, "wglMakeCurrent");
-	fb_wglGetCurrentContext = (WGLGETCURRENTCONTEXT)GetProcAddress(library, "wglGetCurrentContext");
-	fb_wglDeleteContext = (WGLDELETECONTEXT)GetProcAddress(library, "wglDeleteContext");
-	if ((!fb_wglCreateContext) || (!fb_wglMakeCurrent) || (!fb_wglGetCurrentContext) || (!fb_wglDeleteContext))
-		return -1;
-	
-	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-				    WS_OVERLAPPEDWINDOW, 0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
-	if ((!fb_win32.wnd) || (opengl_window_init()))
-		return -1;
-	
-	fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = fb_win32.depth;
-	pfd.cDepthBits = 32;
-	if (gl_options & HAS_STENCIL_BUFFER)
-		pfd.cStencilBits = 8;
-	if (gl_options & HAS_ACCUMULATION_BUFFER)
-		pfd.cAccumBits = 32;
-	pfd.iLayerType = PFD_MAIN_PLANE;
-	
-	hdc = GetDC(fb_win32.wnd);
-	pf = ChoosePixelFormat(hdc, &pfd);
-	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd)))
-		return -1;
-	hglrc = fb_wglCreateContext(hdc);
-	if (!hglrc)
-		return -1;
-	
-	return 0;
-}
-
-
-/*:::::*/
-static void opengl_exit(void)
-{
-	if (library) {
-		if (hglrc) {
-			fb_wglMakeCurrent(NULL, NULL);
-			fb_wglDeleteContext(hglrc);
-		}
-		if (hdc)
-			ReleaseDC(fb_win32.wnd, hdc);
-		if (fb_win32.fullscreen)
-			ChangeDisplaySettings(NULL, 0);
-		if (fb_win32.wnd)
-			DestroyWindow(fb_win32.wnd);
-		FreeLibrary(library);
-	}
-}
-
-
-/*:::::*/
-static int opengl_window_init(void)
 {
 	DEVMODE mode;
 	DWORD style;
@@ -176,7 +108,7 @@ static int opengl_window_init(void)
 	SetWindowPos(fb_win32.wnd, root, x, y, rect.right - rect.left, rect.bottom - rect.top,
 		     SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 	SetForegroundWindow(fb_win32.wnd);
-	SetFocus(fb_win32.wnd);
+	UpdateWindow(fb_win32.wnd);
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	
 	return 0;
@@ -184,7 +116,7 @@ static int opengl_window_init(void)
 
 
 /*:::::*/
-static void opengl_window_exit(void)
+static void opengl_exit(void)
 {
 	if (fb_win32.fullscreen)
 		ChangeDisplaySettings(NULL, 0);
@@ -195,69 +127,123 @@ static void opengl_window_exit(void)
 /*:::::*/
 static void opengl_thread(HANDLE running_event)
 {
-	MSG message;
-	int i;
-	unsigned char keystate[256];
-	
-	if (opengl_init())
-		goto error;
-	
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
 	
 	while (fb_win32.is_running)
 	{
-		fb_hWin32Lock();
-		
-		GetKeyboardState(keystate);
-		for (i = 0; fb_keytable[i][0]; i++) {
-			if (fb_keytable[i][2])
-				fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
-								   (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
-			else
-				fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
-		}
-		
-		while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
-		
-		fb_hWin32Unlock();
-		
 		Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 		SetEvent(fb_win32.vsync_event);
 	}
-	
-error:
-	opengl_exit();
 }
 
 
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
-	int result;
+	PIXELFORMATDESCRIPTOR pfd;
+	int pf, gl_options;
+	
+	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
+
+	library	= NULL;
+	hglrc = NULL;
+	hdc = NULL;
 	
 	if (!(flags & DRIVER_OPENGL))
 		return -1;
-	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
-	fb_win32.init = opengl_window_init;
-	fb_win32.exit = opengl_window_exit;
+
+	fb_win32.init = opengl_init;
+	fb_win32.exit = opengl_exit;
 	fb_win32.paint = opengl_paint;
 	fb_win32.thread = opengl_thread;
 	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 	
-	result = fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
-	if (!result)
-		fb_wglMakeCurrent(hdc, hglrc);
+	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags))
+		return -1;
 	
-	return result;
+	library = (HMODULE)LoadLibrary("opengl32.dll");
+	if (!library)
+		return -1;
+
+	fb_wglCreateContext = (WGLCREATECONTEXT)GetProcAddress(library, "wglCreateContext");
+	fb_wglMakeCurrent = (WGLMAKECURRENT)GetProcAddress(library, "wglMakeCurrent");
+	fb_wglDeleteContext = (WGLDELETECONTEXT)GetProcAddress(library, "wglDeleteContext");
+	if ((!fb_wglCreateContext) || (!fb_wglMakeCurrent) || (!fb_wglDeleteContext))
+		return -1;
+	
+	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
+				    WS_OVERLAPPEDWINDOW, 0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
+	if (!fb_win32.wnd)
+		return -1;
+	
+	fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+	pfd.nVersion = 1;
+	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = fb_win32.depth;
+	pfd.cDepthBits = 32;
+	if (gl_options & HAS_STENCIL_BUFFER)
+		pfd.cStencilBits = 8;
+	if (gl_options & HAS_ACCUMULATION_BUFFER)
+		pfd.cAccumBits = 32;
+	pfd.iLayerType = PFD_MAIN_PLANE;
+	
+	hdc = GetDC(fb_win32.wnd);
+	pf = ChoosePixelFormat(hdc, &pfd);
+	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd)))
+		return -1;
+	hglrc = fb_wglCreateContext(hdc);
+	if (!hglrc)
+		return -1;
+	fb_wglMakeCurrent(hdc, hglrc);
+	
+	return opengl_init();
+}
+
+
+/*:::::*/
+static void driver_exit(void)
+{
+	if (library) {
+		if (hglrc) {
+			fb_wglMakeCurrent(NULL, NULL);
+			fb_wglDeleteContext(hglrc);
+		}
+		if (hdc)
+			ReleaseDC(fb_win32.wnd, hdc);
+		if (fb_win32.fullscreen)
+			ChangeDisplaySettings(NULL, 0);
+		if (fb_win32.wnd)
+			DestroyWindow(fb_win32.wnd);
+		FreeLibrary(library);
+	}
+	
+	fb_hWin32Exit();
 }
 
 
 /*:::::*/
 static void driver_flip(void)
 {
+	int i;
+	unsigned char keystate[256];
+	MSG message;
+	
+	GetKeyboardState(keystate);
+	for (i = 0; fb_keytable[i][0]; i++) {
+		if (fb_keytable[i][2])
+			fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
+							   (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
+		else
+			fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+	}
+		
+	while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+	}
+	
 	SwapBuffers(hdc);
 }
