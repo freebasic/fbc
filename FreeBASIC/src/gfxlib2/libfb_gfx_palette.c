@@ -119,7 +119,7 @@ FBCALL void fb_GfxPalette(int index, unsigned int color)
 	int i, r, g, b;
 	const unsigned char *palette;
 
-	if ((!fb_mode) || (fb_mode->depth > 8))
+	if ((!fb_mode) || (fb_mode->depth < 4) || (fb_mode->depth > 8))
 		return;
 
 	fb_mode->driver->lock();
@@ -151,7 +151,7 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 {
 	int i;
 
-	if ((!fb_mode) || (fb_mode->depth > 8))
+	if ((!fb_mode) || (fb_mode->depth < 4) || (fb_mode->depth > 8))
 		return;
 
 	fb_mode->driver->lock();
