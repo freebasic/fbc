@@ -245,7 +245,7 @@ function cGfxLine as integer
 end function
 
 '':::::
-'' GfxCircle     =   CIRCLE STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr)? )?)?)?)?
+'' GfxCircle     =   CIRCLE STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr (',' Expr)? )? )?)?)?)?
 ''
 function cGfxCircle as integer
     dim coordtype as integer, fillflag as integer
@@ -253,8 +253,6 @@ function cGfxCircle as integer
     dim radexpr as integer, iniexpr as integer, endexpr as integer, aspexpr as integer
 
 	cGfxCircle = FALSE
-
-	fillflag = FALSE
 
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
@@ -289,7 +287,7 @@ function cGfxCircle as integer
 		exit function
 	end if
 
-	'' ',' Expr - radians
+	'' ',' Expr - radius
 	if( not hMatch( CHAR_COMMA ) ) then
 		hReportError FB.ERRMSG.EXPECTEDCOMMA
 		exit function
@@ -303,6 +301,7 @@ function cGfxCircle as integer
 	aspexpr = INVALID
 	iniexpr = INVALID
 	endexpr = INVALID
+	fillflag = FALSE
 
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
@@ -325,8 +324,17 @@ function cGfxCircle as integer
             	'' (',' Expr )? - aspect
             	if( hMatch( CHAR_COMMA ) ) then
             		if( not cExpression( aspexpr ) ) then
-						hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-						exit function
+            			aspexpr = INVALID
+            		end if
+            		
+            		'' (',' Expr )? - fillflag
+            		if( hMatch( CHAR_COMMA ) ) then
+            			if( ucase$( lexTokenText ) <> "F" ) then
+							hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+							exit function
+						end if
+						lexSkipToken
+						fillflag = TRUE
             		end if
             	end if
         	end if
