@@ -41,6 +41,8 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
+static XIC xic;
+static XIM xim;
 static XF86VidModeModeInfo **modes_info;
 static Atom wm_delete_window;
 static Colormap color_map;
@@ -96,8 +98,8 @@ static const struct
 static void *window_thread(void *arg)
 {
 	XEvent event;
-	int i, y, h;
-	char key;
+	int i, y, h, k;
+	unsigned char key[8];
 	
 	(void)arg;
 	
@@ -181,21 +183,34 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(fb_mode->key, FALSE, 128);
 						}
-						else if ((XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1) && (key != 0x7F))
-							fb_hPostKey(key);
+						else if ((Xutf8LookupString(xic, &event.xkey, key, 8, NULL, NULL) == 1) && (key[0] != 0x7F))
+							fb_hPostKey(key[0]);
 						else {
 							switch (XKeycodeToKeysym(fb_linux.display, event.xkey.keycode, 0)) {
-								case XK_Up:	fb_hPostKey(KEY_UP);		break;
-								case XK_Down:	fb_hPostKey(KEY_DOWN);		break;
-								case XK_Left:	fb_hPostKey(KEY_LEFT);		break;
-								case XK_Right:	fb_hPostKey(KEY_RIGHT);		break;
-								case XK_Insert:	fb_hPostKey(KEY_INS);		break;
-								case XK_Delete: fb_hPostKey(KEY_DEL);		break;
-								case XK_Home:	fb_hPostKey(KEY_HOME);		break;
-								case XK_End:	fb_hPostKey(KEY_END);		break;
-								case XK_Page_Up:fb_hPostKey(KEY_PAGE_UP);	break;
-								case XK_Page_Down:fb_hPostKey(KEY_PAGE_DOWN);	break;
+								case XK_Up:		k = KEY_UP;		break;
+								case XK_Down:		k = KEY_DOWN; 		break;
+								case XK_Left:		k = KEY_LEFT;		break;
+								case XK_Right:		k = KEY_RIGHT;		break;
+								case XK_Insert:		k = KEY_INS;		break;
+								case XK_Delete:		k = KEY_DEL;		break;
+								case XK_Home:		k = KEY_HOME;		break;
+								case XK_End:		k = KEY_END;		break;
+								case XK_Page_Up:	k = KEY_PAGE_UP;	break;
+								case XK_Page_Down:	k = KEY_PAGE_DOWN;	break;
+								case XK_F1:		k = KEY_F(1);		break;
+								case XK_F2:		k = KEY_F(2);		break;
+								case XK_F3:		k = KEY_F(3);		break;
+								case XK_F4:		k = KEY_F(4);		break;
+								case XK_F5:		k = KEY_F(5);		break;
+								case XK_F6:		k = KEY_F(6);		break;
+								case XK_F7:		k = KEY_F(7);		break;
+								case XK_F8:		k = KEY_F(8);		break;
+								case XK_F9:		k = KEY_F(9);		break;
+								case XK_F10:		k = KEY_F(10);		break;
+								default:		k = 0;			break;
 							}
+							if (k)
+								fb_hPostKey(k);
 						}
 					}
 					break;
@@ -341,6 +356,8 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	color_map = None;
 	arrow_cursor = None;
+	xim = NULL;
+	xic = NULL;
 	fb_linux.display = XOpenDisplay(NULL);
 	if (!fb_linux.display)
 		return -1;
@@ -382,6 +399,11 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	XSetWMNormalHints(fb_linux.display, fb_linux.window, &size);
 	wm_delete_window = XInternAtom(fb_linux.display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(fb_linux.display, fb_linux.window, &wm_delete_window, 1);
+	if (!(xim = XOpenIM(fb_linux.display, NULL, NULL, NULL)))
+		return -1;
+	if (!(xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, fb_linux.window, NULL)))
+		return -1;
+	
 	if (fb_linux.visual->class == PseudoColor) {
 		color_map = XCreateColormap(fb_linux.display, XDefaultRootWindow(fb_linux.display), fb_linux.visual, AllocAll);
 		XSetWindowColormap(fb_linux.display, fb_linux.window, color_map);
@@ -461,6 +483,10 @@ void fb_hX11Exit(void)
 			XFreeColormap(fb_linux.display, color_map);
 		if (fb_linux.window != None)
 			XDestroyWindow(fb_linux.display, fb_linux.window);
+		if (xic)
+			XDestroyIC(xic);
+		if (xim)
+			XCloseIM(xim);
 		XCloseDisplay(fb_linux.display);
 	}
 
