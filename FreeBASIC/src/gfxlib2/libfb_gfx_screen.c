@@ -171,7 +171,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			default:	fb_mode->color_mask = (1 << fb_mode->depth) - 1;
 		}
 		
-		fb_mode->bpp = (fb_mode->depth + 7) / 8;
+		fb_mode->bpp = BYTES_PER_PIXEL(fb_mode->depth);
 		fb_mode->pitch = fb_mode->w * fb_mode->bpp;
 		fb_mode->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
 		for (i = 0; i < num_pages; i++)

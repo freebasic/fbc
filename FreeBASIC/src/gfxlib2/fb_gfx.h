@@ -60,6 +60,7 @@
 #endif
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
+#define BYTES_PER_PIXEL(d)	(((d) + 7) / 8);
 
 #define DRIVER_FULLSCREEN	0x00000001
 
