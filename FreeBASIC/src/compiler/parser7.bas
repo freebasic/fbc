@@ -1034,9 +1034,63 @@ function cGfxStmt as integer
 end function
 
 '':::::
+'' ConsoleReadXY   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
+''
+function cConsoleReadXY as integer
+    dim yexpr as integer, xexpr as integer, fexpr as integer
+
+	cConsoleReadXY = FALSE
+
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+	
+	if( not cExpression( yexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	if( not cExpression( xexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	fexpr = INVALID
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( fexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+	end if
+	
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+	
+	rtlConsoleReadXY yexpr, xexpr, fexpr
+
+	cConsoleReadXY = TRUE
+
+end function
+
+'':::::
 function cGfxFunct ( funcexpr as integer ) as integer
 
 	cGfxFunct = FALSE
+	
+	select case as const lexCurrentToken
+	case FB.TK.SCREEN
+		lexSkipToken
+		cGfxFunct = cConsoleReadXY
+	
+	end select
 
 end function
 

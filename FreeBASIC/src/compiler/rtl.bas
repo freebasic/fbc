@@ -366,6 +366,12 @@ data "fb_PrintUsingEnd","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 data "fb_ConsoleView","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+'' fb_ConsoleReadXY ( byval y as integer, byval x as integer, byval colorflag as integer ) as integer
+data "fb_ConsoleReadXY","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
+							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
 
 ''
 '' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void
@@ -2596,6 +2602,31 @@ sub rtlConsoleView ( byval topexpr as integer, byval botexpr as integer )
 
     astFlush proc, vr
 
+end sub
+
+'':::::
+sub rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as integer, byval colorflagexpr as integer )
+	dim proc as integer, f as FBSYMBOL ptr
+	dim vr as integer
+
+	''
+	f = ifuncTB(FB.RTL.CONSOLEREADXY)
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
+	
+	'' byval column as integer
+	astNewPARAM( proc, columnexpr, INVALID )
+	
+	'' byval row as integer
+	astNewPARAM( proc, rowexpr, INVALID )
+	
+	'' byval colorflag as integer
+	if( colorflagexpr = INVALID ) then
+		colorflagexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+	end if
+	astNewPARAM( proc, colorflagexpr, INVALID)
+	
+	astFlush proc, vr
+ 
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
