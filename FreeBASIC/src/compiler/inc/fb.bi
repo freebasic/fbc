@@ -31,6 +31,10 @@ const INVALID		= -1
 const FB.BINPATH$				= "\\bin\\"
 const FB.INCPATH$				= "\\inc\\"
 const FB.LIBPATH$				= "\\lib"
+#elseif defined(TARGET_DOS)
+const FB.BINPATH$				= "\\bin\\"
+const FB.INCPATH$				= "\\inc\\"
+const FB.LIBPATH$				= "\\lib"
 #else
 const FB.BINPATH$				= "/bin/"
 const FB.INCPATH$				= "/inc/"
