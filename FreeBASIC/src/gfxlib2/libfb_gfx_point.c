@@ -49,7 +49,10 @@ FBCALL int fb_GfxPoint(float fx, float fy)
 	fb_mode->driver->unlock();
 	
 	if (fb_mode->depth == 16)
-		color = ((color & 0x001F) << 3) | ((color & 0x07E0) << 5) | ((color & 0xF800) << 8);
+		/* approximate: for each component we also report high bits in lower bits of new value */
+		color = (((color & 0x001F) << 3) | ((color >> 2) & 0x7) |
+			 ((color & 0x07E0) << 5) | ((color >> 1) & 0x300) |
+			 ((color & 0xF800) << 8) | ((color << 3) & 0x70000));
 	
 	return color;
 }
