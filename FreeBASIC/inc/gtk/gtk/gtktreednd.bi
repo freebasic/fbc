@@ -1,0 +1,45 @@
+''
+''
+'' gtktreednd -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __gtktreednd_bi__
+#define __gtktreednd_bi__
+
+#include once "gtk/gtk/gtktreemodel.bi"
+#include once "gtk/gtk/gtkdnd.bi"
+
+type GtkTreeDragSource as _GtkTreeDragSource
+type GtkTreeDragSourceIface as _GtkTreeDragSourceIface
+
+type _GtkTreeDragSourceIface
+	g_iface as GTypeInterface
+	row_draggable as function cdecl(byval as GtkTreeDragSource ptr, byval as GtkTreePath ptr) as gboolean
+	drag_data_get as function cdecl(byval as GtkTreeDragSource ptr, byval as GtkTreePath ptr, byval as GtkSelectionData ptr) as gboolean
+	drag_data_delete as function cdecl(byval as GtkTreeDragSource ptr, byval as GtkTreePath ptr) as gboolean
+end type
+
+declare function gtk_tree_drag_source_get_type cdecl alias "gtk_tree_drag_source_get_type" () as GType
+declare function gtk_tree_drag_source_row_draggable cdecl alias "gtk_tree_drag_source_row_draggable" (byval drag_source as GtkTreeDragSource ptr, byval path as GtkTreePath ptr) as gboolean
+declare function gtk_tree_drag_source_drag_data_delete cdecl alias "gtk_tree_drag_source_drag_data_delete" (byval drag_source as GtkTreeDragSource ptr, byval path as GtkTreePath ptr) as gboolean
+declare function gtk_tree_drag_source_drag_data_get cdecl alias "gtk_tree_drag_source_drag_data_get" (byval drag_source as GtkTreeDragSource ptr, byval path as GtkTreePath ptr, byval selection_data as GtkSelectionData ptr) as gboolean
+
+type GtkTreeDragDest as _GtkTreeDragDest
+type GtkTreeDragDestIface as _GtkTreeDragDestIface
+
+type _GtkTreeDragDestIface
+	g_iface as GTypeInterface
+	drag_data_received as function cdecl(byval as GtkTreeDragDest ptr, byval as GtkTreePath ptr, byval as GtkSelectionData ptr) as gboolean
+	row_drop_possible as function cdecl(byval as GtkTreeDragDest ptr, byval as GtkTreePath ptr, byval as GtkSelectionData ptr) as gboolean
+end type
+
+declare function gtk_tree_drag_dest_get_type cdecl alias "gtk_tree_drag_dest_get_type" () as GType
+declare function gtk_tree_drag_dest_drag_data_received cdecl alias "gtk_tree_drag_dest_drag_data_received" (byval drag_dest as GtkTreeDragDest ptr, byval dest as GtkTreePath ptr, byval selection_data as GtkSelectionData ptr) as gboolean
+declare function gtk_tree_drag_dest_row_drop_possible cdecl alias "gtk_tree_drag_dest_row_drop_possible" (byval drag_dest as GtkTreeDragDest ptr, byval dest_path as GtkTreePath ptr, byval selection_data as GtkSelectionData ptr) as gboolean
+declare function gtk_tree_set_row_drag_data cdecl alias "gtk_tree_set_row_drag_data" (byval selection_data as GtkSelectionData ptr, byval tree_model as GtkTreeModel ptr, byval path as GtkTreePath ptr) as gboolean
+declare function gtk_tree_get_row_drag_data cdecl alias "gtk_tree_get_row_drag_data" (byval selection_data as GtkSelectionData ptr, byval tree_model as GtkTreeModel ptr ptr, byval path as GtkTreePath ptr ptr) as gboolean
+
+#endif
