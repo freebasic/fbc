@@ -7,7 +7,7 @@ option escape
 '$include: "win/winsock.bi"
 
 const RECVBUFFLEN = 8192
-const NEWLINE = "\n\r"
+const NEWLINE = "\r\n"
 
 declare sub 	 gethostandpath	( src as string, hostname as string, path as string )
 
@@ -69,6 +69,7 @@ declare function resolveHost	( hostname as string ) as integer
     dim sendbuffer as string
     
 	sendBuffer = "GET /" + path + " HTTP/1.0" + NEWLINE + _
+				 "Host: " + hostname + NEWLINE + _
 				 "Connection: close" + NEWLINE + _
 				 "User-Agent: GetHTTP 0.0" + NEWLINE + _
 				 + NEWLINE
