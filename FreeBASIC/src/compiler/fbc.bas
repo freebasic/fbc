@@ -154,10 +154,11 @@ const QUOTE = "\""
 
     	'' link
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
+#ifdef TARGET_WIN32
 		if (not windresFiles) then
 			end 1
 		end if
-
+#endif
     		if( not linkFiles ) then
     			end 1
     		end if
