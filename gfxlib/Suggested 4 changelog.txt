@@ -2,6 +2,7 @@
  - Fixed GetKey and Sleep (GeyKey now waits for keypress)
  - Screen QbScreenMode, FullScreenFlag
 (if third parameter is zero or omitted, second is interpretted as the fullScreenFlag)
+ - Inkey$/Getkey in graphics modes now returns the same as in console for every key on my (US English) keyboard
  - The cursor is now hidden in fullscreen modes *
  - When emulating a QB screen mode, solid background for text is turned on *
 

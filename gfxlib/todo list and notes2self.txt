@@ -1,5 +1,4 @@
 - fb_GfxPrintBuffer could probably be smaller
-- Inkey needs to check Numlock, and set scancode according to keysym
 - bc parameter on Color makes fb_GfxSetFontBg obsolete
 - what should floating point functions like pmap return for error?
 - what does locate get passed when a parameter is missing?
