@@ -125,7 +125,7 @@ End Sub
 '':::::
 Sub astOptConstRmNeg( byval n as integer, byval p as integer )
 	static tmp as ASTNODE
-	Dim l as integer, r as integer, o as integer
+	static l as integer, r as integer, o as integer
 
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
 	If( astTB(n).class = AST.NODECLASS.UOP ) Then
@@ -164,7 +164,7 @@ Sub astOptConstRmNeg( byval n as integer, byval p as integer )
 End Sub
 
 '':::::
-Sub asthConstAccumADDSUB( byval n as integer, c as double, op as integer )
+Sub asthConstAccumADDSUB( byval n as integer, c as double, byval op as integer )
 	Dim l as integer, r as integer, o as integer
 
 	If( n = INVALID ) Then
@@ -192,9 +192,9 @@ Sub asthConstAccumADDSUB( byval n as integer, c as double, op as integer )
 
 			select case o
 			case IR.OP.ADD
-				c = c + astTB(r).value
+				c += astTB(r).value
 			case IR.OP.SUB
-				c = c - astTB(r).value
+				c -= astTB(r).value
 			end select
 
 			astDel r
@@ -206,7 +206,6 @@ Sub asthConstAccumADDSUB( byval n as integer, c as double, op as integer )
 			asthConstAccumADDSUB l, c, op
 			if( o = IR.OP.SUB ) then op = -op
 			asthConstAccumADDSUB r, c, op
-			if( o = IR.OP.SUB ) then op = -op
 		End If
 	end select
 
@@ -227,8 +226,7 @@ Sub asthConstAccumMUL( byval n as integer, c as double )
 	r = astTB(n).r
     o = astTB(n).op
 
-	select case o
-	case IR.OP.MUL
+	if( o = IR.OP.MUL ) then
 		If( astTB(r).defined ) Then
 			c = c * astTB(r).value
 
@@ -241,14 +239,14 @@ Sub asthConstAccumMUL( byval n as integer, c as double )
 			asthConstAccumMUL l, c
 			asthConstAccumMUL r, c
 		End If
-	end select
+	end if
 
 End Sub
 
 '':::::
 Sub astOptConstAccum1( byval n as integer )
-	Dim l as integer, r as integer, op as integer, c as double
-	dim delnode as integer, checktype as integer
+	static l as integer, r as integer, c as double
+	static delnode as integer, checktype as integer, dtype as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -268,47 +266,53 @@ Sub astOptConstAccum1( byval n as integer )
 			select case as const astTB(n).op
 			case IR.OP.ADD
 				c = 0
-				op = 1
-				asthConstAccumADDSUB l, c, op
-				astTB(r).value = astTB(r).value + c
+				asthConstAccumADDSUB l, c, 1
+				astTB(r).value += c
 				if( astTB(r).value = 0 ) then delnode = TRUE
 
 			case IR.OP.MUL
 				c = 1
 				asthConstAccumMUL l, c
-				astTB(r).value = astTB(r).value * c
+				astTB(r).value *= c
 				if( astTB(r).value = 1 ) then delnode = TRUE
 
             case IR.OP.SUB
 				c = 0
-				op = -1
-				asthConstAccumADDSUB l, c, op
-				astTB(r).value = astTB(r).value - c
+				asthConstAccumADDSUB l, c, -1
+				astTB(r).value -= c
 				if( astTB(r).value = 0 ) then delnode = TRUE
 
 			case else
 				checktype = FALSE
 			end select
 
-			if( checktype ) then
+			'' delete node?
+			if( delnode ) then
+				astDel r
+				l = astTB(n).l
+				astCopy n, l
+				astDel l
+				astOptConstAccum1 n
+				exit sub
+
+			elseif( checktype ) then
+
 				c = astTB(r).value
 				if( c - int(c) <> 0 ) then
-					astTB(r).dtype = IR.DATATYPE.DOUBLE
+					dtype = IR.DATATYPE.DOUBLE
 				else
 					if( irIsSigned( astTB(r).dtype ) ) then
-						astTB(r).dtype = IR.DATATYPE.INTEGER
+						dtype = IR.DATATYPE.INTEGER
 					else
-						astTB(r).dtype = IR.DATATYPE.UINT
+						dtype = IR.DATATYPE.UINT
 					end if
 				end if
 
-				if( delnode ) then
-					astDel r
-					l = astTB(n).l
-					astCopy n, l
-					astDel l
-					astOptConstAccum1 n
-					exit sub
+				'' update the node data type
+				if( dtype > astTB(n).dtype ) then
+					astTB(n).dtype = dtype
+					astTB(r).dtype = dtype
+					astTB(n).l = astNewCONV( INVALID, dtype, astTB(n).l )
 				end if
 			end if
 
@@ -330,21 +334,21 @@ End Sub
 
 '':::::
 Sub astOptConstAccum2( byval n as integer )
-	Dim l as integer, r as integer, op as integer, c as double, dtype as integer
+	static l as integer, r as integer, c as double, dtype as integer, checktype as integer
 
 	'' check any ADD|SUB|MUL BOP node and then go to child leafs accumulating
 	'' any constants found there, deleting those nodes and then adding the
 	'' result to a new node, at right side of the current one
 	'' (this will handle for ex. a+1+(b+2)+(c+3), that will become a+b+c+6)
-	If( astTB(n).class = AST.NODECLASS.BOP ) Then
+	if( astTB(n).class = AST.NODECLASS.BOP ) then
+		checktype = FALSE
+
 		select case astTB(n).op
 		case IR.OP.ADD
 			if( irGetDataClass( astTB(n).dtype ) <> IR.DATACLASS.STRING ) then
 				c = 0
-				op = 1
-				asthConstAccumADDSUB astTB(n).l, c, op
-				op = 1
-				asthConstAccumADDSUB astTB(n).r, c, op
+				asthConstAccumADDSUB astTB(n).l, c, 1
+				asthConstAccumADDSUB astTB(n).r, c, 1
 				if( c <> 0 ) then
 					if( c - int(c) <> 0 ) then
 						dtype = IR.DATATYPE.DOUBLE
@@ -353,24 +357,25 @@ Sub astOptConstAccum2( byval n as integer )
 					end if
 					astTB(n).l = astNewBOP( IR.OP.ADD, astTB(n).l, astTB(n).r )
 					astTB(n).r = astNewCONST( c, dtype )
+					checktype = TRUE
 				end if
 			end if
 
-		case IR.OP.SUB
-			c = 0
-			op = -1
-			asthConstAccumADDSUB astTB(n).l, c, op
-			op = -1
-			asthConstAccumADDSUB astTB(n).r, c, op
-			if( c <> 0 ) then
-				if( c - int(c) <> 0 ) then
-					dtype = IR.DATATYPE.DOUBLE
-				else
-					dtype = IR.DATATYPE.INTEGER
-				end if
-				astTB(n).l = astNewBOP( IR.OP.SUB, astTB(n).l, astTB(n).r )
-				astTB(n).r = astNewCONST( c, dtype )
-			end if
+		'case IR.OP.SUB
+		'	c = 0
+		'	asthConstAccumADDSUB astTB(n).l, c, -1
+		'	asthConstAccumADDSUB astTB(n).r, c, -1
+		'	if( c <> 0 ) then
+		'		if( c - int(c) <> 0 ) then
+		'			dtype = IR.DATATYPE.DOUBLE
+		'		else
+		'			dtype = IR.DATATYPE.INTEGER
+		'		end if
+		'		astTB(n).l = astNewBOP( IR.OP.SUB, astTB(n).l, astTB(n).r )
+		'		astTB(n).op = IR.OP.ADD
+		'		astTB(n).r = astNewCONST( c, dtype )
+		'		checktype = TRUE
+		'	end if
 
 		case IR.OP.MUL
 			c = 1
@@ -384,20 +389,39 @@ Sub astOptConstAccum2( byval n as integer )
 				end if
 				astTB(n).l = astNewBOP( IR.OP.MUL, astTB(n).l, astTB(n).r )
 				astTB(n).r = astNewCONST( c, dtype )
+				checktype = TRUE
 			end if
         end select
-	End If
+
+		if( checktype ) then
+			'' update the node data type
+			l = astTB(n).l
+			r = astTB(n).r
+			dtype = irMaxDataType( astTB(l).dtype, astTB(r).dtype )
+			if( dtype <> INVALID ) then
+				if( dtype <> astTB(l).dtype ) then
+					astTB(n).l = astNewCONV( INVALID, dtype, l )
+				else
+					astTB(n).r = astNewCONV( INVALID, dtype, r )
+				end if
+				astTB(n).dtype = dtype
+			else
+				astTB(n).dtype = astTB(l).dtype
+			end if
+		end if
+
+	end if
 
 	'' walk
 	l = astTB(n).l
-	If( l <> INVALID ) Then
+	if( l <> INVALID ) then
 		astOptConstAccum2 l
-	End If
+	end if
 
 	r = astTB(n).r
-	If( r <> INVALID ) Then
+	if( r <> INVALID ) then
 		astOptConstAccum2 r
-	End If
+	end if
 
 End Sub
 
@@ -434,7 +458,7 @@ End Sub
 
 '':::::
 Sub astOptConstDistMUL( byval n as integer )
-	Dim l as integer, r as integer, op as integer, c as double, nn as integer, dtype as integer
+	static l as integer, r as integer, op as integer, c as double, nn as integer, dtype as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -460,8 +484,7 @@ Sub astOptConstDistMUL( byval n as integer )
 					else
 						dtype = IR.DATATYPE.INTEGER
 					end if
-					nn = astNewCONST( c, dtype )
-					nn = astNewBOP( IR.OP.ADD, n, nn )
+					nn = astNewBOP( IR.OP.ADD, n, astNewCONST( c, dtype ) )
 					astSwap n, nn
 					astTB(n).l = nn
 				end if
@@ -481,12 +504,12 @@ Sub astOptConstDistMUL( byval n as integer )
 		astOptConstDistMUL r
 	End If
 
-End Sub
+end sub
 
 '':::::
-Sub astOptConstIDX( byval n as integer )
-	dim l as integer, r as integer, op as integer, c as double, v as integer
-	dim ll as integer, lr as integer
+sub astOptConstIDX( byval n as integer )
+	static l as integer, r as integer, c as double, v as integer
+	static ll as integer, lr as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -498,8 +521,7 @@ Sub astOptConstIDX( byval n as integer )
 		l = astTB(n).l
 		if( l <> INVALID ) then
 			c = 0
-			op = 1
-			asthConstAccumADDSUB l, c, op
+			asthConstAccumADDSUB l, c, 1
 
         	if( astTB(n).class = AST.NODECLASS.IDX ) then
         		astTB(n).idx.ofs  = astTB(n).idx.ofs + cint( c )
@@ -524,7 +546,7 @@ Sub astOptConstIDX( byval n as integer )
 	if( astTB(n).class = AST.NODECLASS.IDX ) Then
 		l = astTB(n).l
 		if( l <> INVALID ) then
-			'' if top of tree = idx * lgt, and lgt < 10, save lgt and delete * node
+			'' x86 assumption: if top of tree = idx * lgt, and lgt < 10, save lgt and delete * node
 			if( astTB(l).class = AST.NODECLASS.BOP ) Then
 				if( astTB(l).op = IR.OP.MUL ) then
 					lr = astTB(l).r
@@ -545,11 +567,7 @@ Sub astOptConstIDX( byval n as integer )
 			'' convert to integer if needed
 			if( (irGetDataClass( astTB(l).dtype ) <> IR.DATACLASS.INTEGER) or _
 			    (irGetDataSize( astTB(l).dtype ) <> FB.POINTERSIZE) ) then
-				ll = astNew( INVALID, INVALID )
-				astCopy ll, l
-				ll = astNewCONV( INVALID, IR.DATATYPE.INTEGER, ll )
-				astCopy l, ll
-				astDel ll
+				astTB(n).l = astNewCONV( INVALID, IR.DATATYPE.INTEGER, l )
 			end if
 
         end if
@@ -566,15 +584,15 @@ Sub astOptConstIDX( byval n as integer )
 		astOptConstIDX r
 	End If
 
-End Sub
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' arithmetic association optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-Sub astOptAssocADD( byval n as integer )
-	Dim l as integer, r as integer, op as integer, rop as integer
+sub astOptAssocADD( byval n as integer )
+	static l as integer, r as integer, op as integer, rop as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -628,11 +646,11 @@ Sub astOptAssocADD( byval n as integer )
 		astOptAssocADD r
 	End If
 
-End Sub
+end sub
 
 '':::::
-Sub astOptAssocMUL( byval n as integer )
-	Dim l as integer, r as integer
+sub astOptAssocMUL( byval n as integer )
+	static l as integer, r as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -666,16 +684,16 @@ Sub astOptAssocMUL( byval n as integer )
 		astOptAssocMUL r
 	End If
 
-End Sub
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' other optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-Sub astOptToShift( byval n as integer )
-	Dim l as integer, r as integer
-	dim v as integer, op as integer
+sub astOptToShift( byval n as integer )
+	static l as integer, r as integer
+	static v as integer, op as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -728,7 +746,7 @@ Sub astOptToShift( byval n as integer )
 		astOptToShift r
 	End If
 
-End Sub
+end sub
 
 ''::::
 sub astOptStrAssignament( byval n as integer, byval l as integer, byval r as integer ) static
@@ -869,13 +887,13 @@ sub astOptAssignament( byval n as integer ) static
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' node type update (must be done before any loading)
+'' node type update
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 sub astUpdStrConcat( byval n as integer )
-	dim l as integer, r as integer
-	dim f as integer
+	static l as integer, r as integer
+	static f as integer
 
 	if( n = INVALID ) then
 		exit sub
@@ -908,157 +926,6 @@ sub astUpdStrConcat( byval n as integer )
 	end if
 
 End Sub
-
-''::::
-sub astUpdNodeResult( byval n as integer )
-	Dim l as integer, r as integer
-	static dt1 as integer, dt2 as integer
-	static dc1 as integer, dc2 as integer
-	static dtype as integer
-
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	'' walk
-	l = astTB(n).l
-	If( l <> INVALID ) Then
-		astUpdNodeResult l
-	End If
-
-	r = astTB(n).r
-	If( r <> INVALID ) Then
-		astUpdNodeResult r
-	End If
-
-	select case astTB(n).class
-	case AST.NODECLASS.BOP
-
-		dt1 = astTB(l).dtype
-		dt2 = astTB(r).dtype
-
-		'' convert byte to integer
-		if( irGetDataSize( dt1 ) = 1 ) then
-			if( irGetDataClass( dt2 ) = IR.DATACLASS.FPOINT ) then
-				dt1 = IR.DATATYPE.INTEGER
-			elseif( irGetDataSize( dt2 ) = 1 ) then
-				if( irIsSigned( dt1 ) ) then
-					dt1 = IR.DATATYPE.INTEGER
-				else
-					dt1 = IR.DATATYPE.UINT
-				end if
-			else
-				if( irIsSigned( dt1 ) ) then
-					dt1 = irGetSignedType( dt2 )
-				else
-					dt1 = irGetUnsignedType( dt2 )
-				end if
-			end if
-
-		end if
-
-		if( irGetDataSize( dt2 ) = 1 ) then
-			if( irGetDataClass( dt1 ) = IR.DATACLASS.FPOINT ) then
-				dt2 = IR.DATATYPE.INTEGER
-			else
-				if( irIsSigned( dt2 ) ) then
-					dt2 = irGetSignedType( dt1 )
-				else
-					dt2 = irGetUnsignedType( dt1 )
-				end if
-			end if
-		end if
-
-		'' different types?
-		if( dt1 <> dt2 ) then
-
-			dc1 = irGetDataClass( dt1 )
-			dc2 = irGetDataClass( dt2 )
-
-			'' don't check strings and byte ptr concatenations
-			if( (dc1 = IR.DATACLASS.STRING) or (dc2 = IR.DATACLASS.STRING) ) then
-				dtype = IR.DATATYPE.STRING
-
-			else
-
-				dtype = irMaxDataType( dt1, dt2 )
-
-		    	if( dtype = -1 ) then
-		    		dtype = dt1
-
-				else
-					'' both integers and highest one is a imm? decrase its class
-					if( (dc1 = IR.DATACLASS.INTEGER) and (dc2 = IR.DATACLASS.INTEGER) ) then
-						if( dtype <> dt1 ) then
-							if( astTB(r).class = AST.NODECLASS.CONST ) then
-								astTB(r).dtype = dt1
-								dtype = dt1
-							end if
-						else
-							if( astTB(l).class = AST.NODECLASS.CONST ) then
-								astTB(l).dtype = dt2
-								dtype = dt2
-							end if
-						end if
-					end if
-				end if
-			end if
-
-		else
-			dtype = dt1
-		end if
-
-		select case astTB(n).op
-		'' a / b needs both operands as floats
-		case IR.OP.DIV
-			if( irGetDataClass( dtype ) <> IR.DATACLASS.FPOINT ) then
-				dtype = IR.DATATYPE.DOUBLE
-			end if
-
-		'' bitwise operations, int div (\), modulus and shift only work with integers
-		case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
-			 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
-			if( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) then
-				dtype = IR.DATATYPE.INTEGER
-			end if
-
-		'' if operands are floats and are been comparated, result must be an integer (boolean)
-		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
-			if( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) then
-				dtype = IR.DATATYPE.INTEGER
-			end if
-
-		end select
-
-
-		astTB(n).dtype = dtype
-
-
-	case AST.NODECLASS.UOP
-
-		dtype = astTB(l).dtype
-
-		'' convert byte to integer
-		if( irGetDataSize( dtype ) = 1 ) then
-			if( irIsSigned( dtype ) ) then
-				dtype = IR.DATATYPE.INTEGER
-			else
-				dtype = IR.DATATYPE.UINT
-			end if
-		end if
-
-		'' NOT can only be done with integers
-		if( astTB(n).op = IR.OP.NOT ) then
-			if( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) then
-				dtype = IR.DATATYPE.INTEGER
-			end if
-		end if
-
-		astTB(n).dtype = dtype
-
-	end select
-
-end sub
 
 '':::::
 sub astUpdComp2Branch( n as integer, byval label as FBSYMBOL ptr, byval isinverse as integer )
@@ -1169,44 +1036,50 @@ end sub
 '':::::
 sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, _
 			   byval ln as integer, byval cn as integer )
-'   dim v as string, l as integer, c as integer
+   dim v as string, l as integer, c as integer
 
-'	v = ""
-'	select case astTB(n).class
-'	case AST.NODECLASS.BOP
-'		select case astTB(n).op
-'		case IR.OP.ADD
-'			v = "+"
-'		case IR.OP.SUB
-'			v = "-"
-'		case IR.OP.MUL
-'			v = "*"
-'		case IR.OP.DIV
-'			v = "/"
-'		case IR.OP.INTDIV
-'			v = "\"
-'		case IR.OP.AND
-'			v = "&"
-'		case IR.OP.OR
-'			v = "|"
-'		case IR.OP.XOR
-'			v = "^"
-'		end select
-'		v = "(" + v + ")"
+	v = ""
+	select case astTB(n).class
+	case AST.NODECLASS.BOP
+		select case astTB(n).op
+		case IR.OP.ADD
+			v = "+"
+		case IR.OP.SUB
+			v = "-"
+		case IR.OP.MUL
+			v = "*"
+		case IR.OP.DIV
+			v = "/"
+		case IR.OP.INTDIV
+			v = "\\"
+		case IR.OP.AND
+			v = "&"
+		case IR.OP.OR
+			v = "|"
+		case IR.OP.XOR
+			v = "^"
+		case IR.OP.SHL
+			v = "<"
+		case IR.OP.SHR
+			v = ">"
+		end select
+		v = "(" + v + ")"
 
-'	case AST.NODECLASS.UOP
-'		select case astTB(n).op
-'		case IR.OP.NEG
-'			v = "-"
-'		case IR.OP.NOT
-'			v = "!"
-'		end select
-'		v = "(" + v + ")"
+	case AST.NODECLASS.UOP
+		select case astTB(n).op
+		case IR.OP.NEG
+			v = "-"
+		case IR.OP.NOT
+			v = "!"
+		end select
+		v = "(" + v + ")"
 
-'	case AST.NODECLASS.VAR
-'		v = "[" + rtrim$( mid$( symbGetVarName( astTB(n).var.sym ), 2 ) ) + "]"
-'	case AST.NODECLASS.CONST
-'		v = "[" + ltrim$( str$( astTB(n).value ) ) + "]"
+	case AST.NODECLASS.VAR
+		v = "[" + mid$( symbGetName( astTB(n).var.sym ), 2 ) + "]"
+	case AST.NODECLASS.CONST
+		v = "<" + str$( astTB(n).value ) + ">"
+	case AST.NODECLASS.CONV
+		v = "{" + str$( astTB(n).dtype ) + "}"
 '	case AST.NODECLASS.IDX
 '		c = astTB(n).idx.sym
 '		v = "{" + rtrim$( mid$( symbGetVarName( astTB(c).idx.sym ), 2 ) ) + "}"
@@ -1216,33 +1089,33 @@ sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, 
 
 '	case AST.NODECLASS.PARAM
 '		v = "(" + ltrim$( str$( astTB(n).l ) ) + ")"
-'	end select
+	end select
 
-'	if( len( v ) > 0 and ln <= 50 ) then
+	if( len( v ) > 0 and ln <= 50 ) then
 
-		'v = ltrim$( str$( n ) ) + v
-'		if( p <> INVALID ) then
-'        	if( isleft ) then
-'        		v = v + "/"
-'        	else
-'        		v = "\" + v
-'        	end if
-'		end if
+		v = ltrim$( str$( n ) ) + v
+		if( p <> INVALID ) then
+        	if( isleft ) then
+        		v = v + "/"
+        	else
+        		v = "\\" + v
+        	end if
+		end if
 
-'		c = cn - (len(v)\2)
-'		if( c > 1 and c + len(v)\2 <= 80 ) then
-'			locate ln, c
-'			print v;
-'		end if
-'	end if
+		c = cn - (len(v)\2)
+		if( c > 1 and c + len(v)\2 <= 80 ) then
+			locate ln, c
+			print v;
+		end if
+	end if
 
-'	if( astTB(n).l <> INVALID ) then
-'		astDump1 n, astTB(n).l, TRUE, ln+2, cn-4
-'	end if
+	if( astTB(n).l <> INVALID ) then
+		astDump1 n, astTB(n).l, TRUE, ln+2, cn-4
+	end if
 
-'	if( astTB(n).r <> INVALID ) then
-'		astDump1 n, astTB(n).r, FALSE, ln+2, cn+4
-'	end if
+	if( astTB(n).r <> INVALID ) then
+		astDump1 n, astTB(n).r, FALSE, ln+2, cn+4
+	end if
 
 end sub
 
@@ -1784,8 +1657,6 @@ sub astFlush( byval n as integer, vreg as integer )
 	''
 	astOptimize n
 
-	astUpdNodeResult n
-
 	astOptAssignament n							'' needed even when not optimizing
 
 	astUpdStrConcat n
@@ -1867,18 +1738,58 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 		exit function
     end if
 
+	''::::::
+
+	'' longints?
+	if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) or _
+		(dt2 = IR.DATATYPE.LONGINT) or (dt2 = IR.DATATYPE.ULONGINT) ) then
+
+		'' !!!FIXME!!! if one oper is a double, should it have the preference? what about singles?
+
+		if( dt1 = dt2 ) then
+			dtype = dt1
+		elseif( irMaxDataType( dt1, dt2 ) = INVALID ) then
+			dtype = dt1
+		elseif( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
+			dtype = dt1
+		else
+			dtype = dt2
+		end if
+
+		select case as const op
+		case IR.OP.INTDIV
+			astNewBOP = rtlMathLongintDIV( dtype, l, dt1, r, dt2 )
+			exit function
+
+		case IR.OP.MOD
+			astNewBOP = rtlMathLongintMOD( dtype, l, dt1, r, dt2 )
+			exit function
+
+		end select
+    end if
+
+    ''::::::
+
     '' strings?
     if( (dc1 = IR.DATACLASS.STRING) or (dc2 = IR.DATACLASS.STRING) ) then
 
 		if( dc1 <> dc2 ) then
 			'' check if it's not a byte ptr
 			if( dc1 = IR.DATACLASS.STRING ) then
-				if( (dt2 <> IR.DATATYPE.BYTE) or (astTB(r).class <> AST.NODECLASS.PTR) ) then
+				if( astTB(r).class <> AST.NODECLASS.PTR ) then
 					exit function
+				elseif( dt2 <> IR.DATATYPE.BYTE ) then
+					if( dt2 <> IR.DATATYPE.UBYTE ) then
+						exit function
+					end if
 				end if
 			else
-				if( (dt1 <> IR.DATATYPE.BYTE) or (astTB(l).class <> AST.NODECLASS.PTR) ) then
+				if( astTB(l).class <> AST.NODECLASS.PTR ) then
 					exit function
+				elseif( dt1 <> IR.DATATYPE.BYTE ) then
+					if( dt1 <> IR.DATATYPE.UBYTE ) then
+						exit function
+					end if
 				end if
 			end if
 		end if
@@ -1901,20 +1812,134 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 
 			'' result will be always an var-len string
 			dt1 = IR.DATATYPE.STRING
-			dt2 = IR.DATATYPE.STRING
+			dc1 = IR.DATACLASS.STRING
+			dt2 = dt1
+			dc2 = dc1
 
 		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 			l = rtlStrCompare( l, dt1, r, dt2 )
 			r = astNewCONST( 0, IR.DATATYPE.INTEGER )
 
 			dt1 = astTB(l).dtype
+			dc1 = IR.DATACLASS.INTEGER
 			dt2 = astTB(r).dtype
+			dc2 = IR.DATACLASS.INTEGER
 
 		case else
 			exit function
 		end select
     end if
 
+    ''::::::
+
+	'' convert byte to int
+	if( irGetDataSize( dt1 ) = 1 ) then
+		if( irIsSigned( dt1 ) ) then
+			dt1 = IR.DATATYPE.INTEGER
+		else
+			dt1 = IR.DATATYPE.UINT
+		end if
+		l = astNewCONV( INVALID, dt1, l )
+	end if
+
+	if( irGetDataSize( dt2 ) = 1 ) then
+		if( irIsSigned( dt2 ) ) then
+			dt2 = IR.DATATYPE.INTEGER
+		else
+			dt2 = IR.DATATYPE.UINT
+		end if
+		r = astNewCONV( INVALID, dt2, r )
+	end if
+
+    '' convert types
+	select case as const op
+	'' flt div (/) can only operate on floats
+	case IR.OP.DIV
+
+		if( dc1 <> IR.DATACLASS.FPOINT ) then
+			dt1 = IR.DATATYPE.DOUBLE
+			l = astNewCONV( INVALID, dt1, l )
+			dc1 = IR.DATACLASS.FPOINT
+		end if
+
+		if( dc2 <> IR.DATACLASS.FPOINT ) then
+			'' x86 assumption: if it's an int var, let the FPU do it
+			if( (astTB(r).class = AST.NODECLASS.VAR) and (dt2 = IR.DATATYPE.INTEGER) ) then
+				dt2 = IR.DATATYPE.DOUBLE
+			else
+				dt2 = IR.DATATYPE.DOUBLE
+				r = astNewCONV( INVALID, dt2, r )
+			end if
+			dc2 = IR.DATACLASS.FPOINT
+		end if
+
+	'' bitwise ops, int div (\), modulus and shift can only operate on integers
+	case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
+		 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
+
+		if( dc1 <> IR.DATACLASS.INTEGER ) then
+			dt1 = IR.DATATYPE.INTEGER
+			l = astNewCONV( INVALID, dt1, l )
+			dc1 = IR.DATACLASS.INTEGER
+		end if
+
+		if( dc2 <> IR.DATACLASS.INTEGER ) then
+			dt2 = IR.DATATYPE.INTEGER
+			r = astNewCONV( INVALID, dt2, r )
+			dc2 = IR.DATACLASS.INTEGER
+		end if
+
+	end select
+
+    '' convert types to the most precise if needed
+	if( dt1 <> dt2 ) then
+
+		dtype = irMaxDataType( dt1, dt2 )
+		'' don't convert?
+		if( dtype = -1 ) then
+			dtype = dt1
+
+		else
+			'' convert the l operand?
+			if( dtype <> dt1 ) then
+				l = astNewCONV( INVALID, dtype, l )
+				dt1 = dtype
+				dc1 = dc2
+
+			'' convert the r operand..
+			else
+				'' if it's the src-operand of a shift operation, do nothing
+				if( (op = IR.OP.SHL) or (op = IR.OP.SHR) ) then
+					'' it's already an integer
+				else
+					'' x86 assumption: if it's an int var, let the FPU do it
+					if( (astTB(r).class <> AST.NODECLASS.VAR) or (dt2 <> IR.DATATYPE.INTEGER) ) then
+						r = astNewCONV( INVALID, dtype, r )
+					end if
+				end if
+				dt2 = dtype
+				dc2 = dc1
+
+			end if
+		end if
+
+	'' no conversion, type's are the same
+	else
+		dtype = dt1
+	end if
+
+	'' post check
+	select case as const op
+	'' result is always a double with pow()
+	case IR.OP.POW
+		dtype = IR.DATATYPE.DOUBLE
+
+	'' relative ops, the result is always an integer
+	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
+		dtype = IR.DATATYPE.INTEGER
+	end select
+
+	''::::::
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	if( astTB(l).defined and astTB(r).defined ) then
@@ -1966,37 +1991,7 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 			astTB(l).value = cint(astTB(l).value >= astTB(r).value)
 		end select
 
-
-		select case as const op
-		'' for a / b, result is a double
-		case IR.OP.DIV, IR.OP.POW
-			astTB(l).dtype = IR.DATATYPE.DOUBLE
-
-		'' with bitwise operations, int div (\), modulus and shift, result is an integer
-		case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
-			 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
-			if( irIsSigned( astTB(l).dtype ) ) then
-				astTB(l).dtype = IR.DATATYPE.INTEGER
-			else
-				astTB(l).dtype = IR.DATATYPE.UINT
-			end if
-
-		'' if operands are floats and are been comparated, result will be an integer (boolean)
-		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
-			if( irIsSigned( astTB(l).dtype ) ) then
-				astTB(l).dtype = IR.DATATYPE.INTEGER
-			else
-				astTB(l).dtype = IR.DATATYPE.UINT
-			end if
-
-		'' check most precise type
-		case else
-			if( astTB(l).dtype <> astTB(r).dtype ) then
-				dtype = irMaxDataType( astTB(l).dtype, astTB(r).dtype )
-				if( dtype <> -1 ) then astTB(l).dtype = dtype
-			end if
-
-		end select
+		astTB(l).dtype = dtype
 
 		''
 		astDel r
@@ -2029,28 +2024,22 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 			'' convert var ^ 2 to var * var
 			if( astTB(r).value = 2 ) then
 				select case astTB(l).class
-				case AST.NODECLASS.VAR, AST.NODECLASS.IDX
+				case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 					astDel r
 					r = astCloneTree( l )
 					op = IR.OP.MUL
-					dt2 = dt1
+					dtype = dt1
 				end select
 			end if
 		end select
 	end if
 
+	''::::::
+
 	'' handle pow
 	if( op = IR.OP.POW ) then
 		astNewBOP = rtlMathPow( l, r )
 		exit function
-	end if
-
-	'' check for different data types
-	if( dt1 <> dt2 ) then
-		dtype = irMaxDataType( dt1, dt2 )
-		if( dtype = -1 ) then dtype = dt1
-	else
-		dtype = dt1
 	end if
 
 	'' alloc new node
@@ -2061,6 +2050,7 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 		exit function
 	end if
 
+	'' fill it
 	astTB(n).op 		= op
 	astTB(n).l  		= l
 	astTB(n).r  		= r
@@ -2068,199 +2058,6 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 	astTB(n).allocres	= allocres
 
 end function
-
-'':::::
-function asthBOPConvDataType( byval op as integer, byval l as integer, byval r as integer, v1 as integer, v2 as integer ) as integer static
-    dim vt as integer
-    dim dt1 as integer, dt2 as integer
-    dim dc1 as integer, dc2 as integer
-
-	dt1 = astTB(l).dtype
-	dt2 = astTB(r).dtype
-	dc1 = irGetDataClass( dt1 )
-	dc2 = irGetDataClass( dt2 )
-	vt = INVALID
-
-	select case op
-	'' a / b needs both operands as floats
-	case IR.OP.DIV
-		if( dc1 <> IR.DATACLASS.FPOINT ) then
-			vt = irAllocVREG( IR.DATATYPE.DOUBLE )
-			irEmitCONVERT vt, IR.DATATYPE.DOUBLE, v1, dt1
-			v1 = vt
-			astTB(l).dtype = IR.DATATYPE.DOUBLE
-		end if
-
-		if( dc2 <> IR.DATACLASS.FPOINT ) then
-			'' hack! if it's an int var, let the FPU do it..
-			if( (not irIsVAR( v2 )) or (dt2 <> IR.DATATYPE.INTEGER) ) then
-				vt = irAllocVREG( IR.DATATYPE.DOUBLE )
-				irEmitCONVERT vt, IR.DATATYPE.DOUBLE, v2, dt2
-				v2 = vt
-				astTB(r).dtype = IR.DATATYPE.DOUBLE
-			end if
-		end if
-
-	'' bitwise operations, int div (\), modulus and shift only work with integers
-	case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
-		 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
-
-		if( dc1 <> IR.DATACLASS.INTEGER ) then
-			vt = irAllocVREG( IR.DATATYPE.INTEGER )
-			irEmitCONVERT vt, IR.DATATYPE.INTEGER, v1, dt1
-			v1 = vt
-			astTB(l).dtype = IR.DATATYPE.INTEGER
-		end if
-
-		if( dc2 <> IR.DATACLASS.INTEGER ) then
-			vt = irAllocVREG( IR.DATATYPE.INTEGER )
-			irEmitCONVERT vt, IR.DATATYPE.INTEGER, v2, dt2
-			v2 = vt
-			astTB(r).dtype = IR.DATATYPE.INTEGER
-		end if
-
-	end select
-
-	'' any conversion done?
-	if( vt <> INVALID ) then
-		asthBOPConvDataType = TRUE
-	else
-		asthBOPConvDataType = FALSE
-	end if
-
-end function
-
-'':::::
-sub asthBOPCheckDataType( byval l as integer, byval r as integer, v1 as integer, v2 as integer ) static
-    dim s as FBSYMBOL ptr, vt as integer, typ as integer
-    dim dt1 as integer, dt2 as integer, mpt as integer
-    dim dc1 as integer, dc2 as integer
-
-	dt1 = astTB(l).dtype
-	dt2 = astTB(r).dtype
-	dc1 = irGetDataClass( dt1 )
-	dc2 = irGetDataClass( dt2 )
-
-	'' operands with different types? convert to the most precise
-	if( dt1 <> dt2 ) then
-		mpt = irMaxDataType( dt1, dt2 )
-
-		if( mpt = INVALID ) then
-			exit sub
-		end if
-
-		if( mpt <> dt1 ) then
-			'' both integers and highest one is a imm? decrase its class
-			if( (dc1 = IR.DATACLASS.INTEGER) and (dc2 = IR.DATACLASS.INTEGER) ) then
-				if( astTB(r).class = AST.NODECLASS.CONST ) then
-					astTB(r).dtype = astTB(l).dtype
-					exit sub
-				end if
-			end if
-
-			'' if int oper is an IMM, allocate a temp var
-			if( irIsIMM( v1 ) and (dc2 = IR.DATACLASS.FPOINT) ) then
-				s = hAllocFloatConst( str$( irGetVRValue( v1 ) ), dt2 )
-				v1 = irAllocVRVAR( dt2, s, s->ofs )
-			else
-				vt = irAllocVREG( dt2 )
-				irEmitCONVERT vt, dt2, v1, dt1
-				v1 = vt
-			end if
-
-            astTB(l).dtype = dt2
-
-		else
-			'' both integers and highest one is a imm? decrase its class
-			if( (dc1 = IR.DATACLASS.INTEGER) and (dc2 = IR.DATACLASS.INTEGER) ) then
-				if( astTB(l).class = AST.NODECLASS.CONST ) then
-					astTB(l).dtype = astTB(r).dtype
-					exit sub
-				end if
-			end if
-
-			if( irIsIMM( v2 ) and (dc1 = IR.DATACLASS.FPOINT) ) then
-				s = hAllocFloatConst( str$( irGetVRValue( v2 ) ), dt1 )
-				v2 = irAllocVRVAR( dt1, s, s->ofs )
-				astTB(r).dtype = dt1
-			else
-				'' hack! if it's an int var, let the FPU do it..
-				if( (not irIsVAR( v2 )) or (dt2 <> IR.DATATYPE.INTEGER) ) then
-					vt = irAllocVREG( dt1 )
-					irEmitCONVERT vt, dt1, v2, dt2
-					v2 = vt
-					astTB(r).dtype = dt1
-				end if
-			end if
-
-		end if
-	end if
-
-end sub
-
-'':::::
-sub asthBOPConvByteDataType( byval l as integer, byval r as integer, v1 as integer, v2 as integer ) static
-    dim vt as integer, dtype as integer
-    dim dt1 as integer, ds1 as integer
-    dim dt2 as integer, ds2 as integer
-
-	dt1 = astTB(l).dtype
-	ds1 = irGetDataSize( dt1 )
-	dt2 = astTB(r).dtype
-	ds2 = irGetDataSize( dt2 )
-
-	if( ds1 = 1 ) then
-		if( irGetDataClass( dt2 ) = IR.DATACLASS.FPOINT ) then
-			dtype = IR.DATATYPE.INTEGER
-		elseif( ds2 = 1 ) then
-			if( irIsSigned( dt1 ) ) then
-				dtype = IR.DATATYPE.INTEGER
-			else
-				dtype = IR.DATATYPE.UINT
-			end if
-		else
-			if( irIsSigned( dt1 ) ) then
-				dtype = irGetSignedType( dt2 )
-			else
-				dtype = irGetUnsignedType( dt2 )
-			end if
-		end if
-
-		'' not an imm? otherwise, just incrase its class
-		if( astTB(l).class <> AST.NODECLASS.CONST ) then
-			vt = irAllocVREG( dtype )
-			irEmitCONVERT vt, dtype, v1, dt1
-	    	v1 = vt
-	    end if
-
-	    astTB(l).dtype = dtype
-	    dt1 = dtype
-
-	end if
-
-	if( ds2 = 1 ) then
-
-		if( irGetDataClass( dt1 ) = IR.DATACLASS.FPOINT ) then
-			dtype = IR.DATATYPE.INTEGER
-		else
-			if( irIsSigned( dt2 ) ) then
-				dtype = irGetSignedType( dt1 )
-			else
-				dtype = irGetUnsignedType( dt1 )
-			end if
-		end if
-
-		'' not a imm? otherwise, just incrase its class
-		if( astTB(r).class <> AST.NODECLASS.CONST ) then
-			vt = irAllocVREG( dtype )
-			irEmitCONVERT vt, dtype, v2, dt2
-			v2 = vt
-		end if
-		astTB(r).dtype = dtype
-
-	end if
-
-end sub
 
 '':::::
 sub astLoadBOP( byval n as integer, vr as integer )
@@ -2281,14 +2078,6 @@ sub astLoadBOP( byval n as integer, vr as integer )
 	astLoad l, v1
 	astLoad r, v2
 
-	'' convert data types if needed, or check if operator data types are the same
-
-	asthBOPConvByteDataType l, r, v1, v2
-
-	if( not asthBOPConvDataType( op, l, r, v1, v2 ) ) then
-		asthBOPCheckDataType l, r, v1, v2
-	end if
-
 	'' result type can be different, with boolean operations on floats
 	if( astTB(n).allocres ) then
 		vr = irAllocVREG( astTB(n).dtype )
@@ -2297,7 +2086,8 @@ sub astLoadBOP( byval n as integer, vr as integer )
 	end if
 
 	'' execute the operation
-	if( astTB(n).ex <> NULL ) then				'' hack! ex=label, vr=INV 'll gen better code at IR..
+	if( astTB(n).ex <> NULL ) then
+		'' hack! ex=label, vr being INVALID 'll gen better code at IR..
 		irEmitBOPEx op, v1, v2, INVALID, astTB(n).ex
 	else
 		irEmitBOPEx op, v1, v2, vr, NULL
@@ -2341,16 +2131,38 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 		exit function
     end if
 
+	'' convert byte to integer
+	if( irGetDataSize( dtype ) = 1 ) then
+		if( irIsSigned( dtype ) ) then
+			dtype = IR.DATATYPE.INTEGER
+		else
+			dtype = IR.DATATYPE.UINT
+		end if
+		o = astNewCONV( INVALID, dtype, o )
+	end if
+
+	select case op
+	'' NOT can only be operate on integers
+	case IR.OP.NOT
+		if( dclass <> IR.DATACLASS.INTEGER ) then
+			dtype = IR.DATATYPE.INTEGER
+			o = astNewCONV( INVALID, dtype, o )
+		end if
+
+	'' with SGN the result is always signed integer
+	case IR.OP.SGN
+		if( dclass <> IR.DATACLASS.INTEGER ) then
+			dtype = IR.DATATYPE.INTEGER
+		else
+			dtype = irGetSignedType( dtype )
+		end if
+	end select
+
 	'' constant folding
 	if( astTB(o).defined ) then
 		select case as const op
 		case IR.OP.NOT
-			astTB(o).value = not cint(astTB(o).value)
-			if( irIsSigned( dtype ) ) then
-				astTB(o).dtype = IR.DATATYPE.INTEGER
-			else
-				astTB(o).dtype = IR.DATATYPE.UINT
-			end if
+			astTB(o).value = not cint( astTB(o).value )
 
 		case IR.OP.NEG
 			astTB(o).value = - astTB(o).value
@@ -2360,8 +2172,9 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 
 		case IR.OP.SGN
 			astTB(o).value = sgn( astTB(o).value )
-			astTB(o).dtype = IR.DATATYPE.INTEGER
 		end select
+
+		astTB(o).dtype = dtype
 
 		astNewUOP = o
 		exit function
@@ -2373,9 +2186,6 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 			astNewUOP = rtlMathFSGN( o )
 			exit function
 		end if
-
-		'' the result is always signed
-		dtype = irGetSignedType( dtype )
 	end if
 
 	'' alloc new node
@@ -2395,51 +2205,6 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 end function
 
 '':::::
-function asthUOPConvDataType( byval op as integer, byval o as integer, v1 as integer ) as integer static
-    dim vt as integer
-    dim dt1 as integer, dc1 as integer
-    dim dtype as integer
-
-	dt1 = astTB(o).dtype
-	vt = INVALID
-
-	'' NOT can only be done with integers
-	if( op = IR.OP.NOT ) then
-		if( irGetDataClass( dt1 ) <> IR.DATACLASS.INTEGER ) then
-			vt = irAllocVREG( IR.DATATYPE.INTEGER )
-			irEmitCONVERT vt, IR.DATATYPE.INTEGER, v1, dt1
-			v1 = vt
-			astTB(o).dtype = IR.DATATYPE.INTEGER
-			dt1 = IR.DATATYPE.INTEGER
-		end if
-	end if
-
-	'' byte? convert to int
-	if( irGetDataSize( dt1 ) = 1 ) then
-		if( irIsSigned( dt1 ) ) then
-			dtype = IR.DATATYPE.INTEGER
-		else
-			dtype = IR.DATATYPE.UINT
-		end if
-
-		'' not a imm? otherwise, just incrase its class
-		if( astTB(o).class <> AST.NODECLASS.CONST ) then
-			vt = irAllocVREG( dtype )
-			irEmitCONVERT vt, dtype, v1, dt1
-			v1 = vt
-		end if
-		astTB(o).dtype = dtype
-	end if
-
-	if( vt <> INVALID ) then
-		asthUOPConvDataType = TRUE
-	else
-		asthUOPConvDataType = FALSE
-	end if
-
-end function
-
-'':::::
 sub astLoadUOP( byval n as integer, vr as integer )
     dim o as integer, op as integer
     dim v1 as integer
@@ -2452,10 +2217,6 @@ sub astLoadUOP( byval n as integer, vr as integer )
 	end if
 
 	astLoad o, v1
-
-	if( asthUOPConvDataType( op, o, v1 ) ) then
-		astTB(n).dtype = astTB(o).dtype
-	end if
 
 	if( astTB(n).allocres ) then
 		vr = irAllocVREG( astTB(o).dtype )
@@ -2498,14 +2259,25 @@ end function
 '':::::
 sub astLoadCONST( byval n as integer, vreg as integer ) static
 	dim s as FBSYMBOL ptr
+	dim dtype as integer
 
-  	'' if node is a float, create a temp float var (FPU can't operate on IMM's)
-  	if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.FPOINT ) then
-		s = hAllocFloatConst( str$( astTB(n).value ), astTB(n).dtype )
-		vreg = irAllocVRVAR( astTB(n).dtype, s, s->ofs )
+	dtype = astTB(n).dtype
+
+  	'' if node is a float, create a temp float var (x86 assumption)
+  	if( irGetDataClass( dtype ) = IR.DATACLASS.FPOINT ) then
+		s = hAllocNumericConst( str$( astTB(n).value ), dtype )
+		vreg = irAllocVRVAR( dtype, s, s->ofs )
 
 	else
-		vreg = irAllocVRIMM( astTB(n).dtype, cint( astTB(n).value ) )
+		'' same with longints
+		'if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			's = hAllocNumericConst( str$( astTB(n).quadval ), dtype )
+			'vreg = irAllocVRVAR( dtype, s, s->ofs )
+
+		'else
+			vreg = irAllocVRIMM( dtype, cint( astTB(n).value ) )
+		'end if
+
 	end if
 
 end sub
@@ -2816,12 +2588,20 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
 		if( dc1 <> dc2 ) then
 			'' check if it's not a byte ptr
 			if( dc1 = IR.DATACLASS.STRING ) then
-				if( (dt2 <> IR.DATATYPE.BYTE) or (astTB(r).class <> AST.NODECLASS.PTR) ) then
+				if( astTB(r).class <> AST.NODECLASS.PTR ) then
 					exit function
+				elseif( dt2 <> IR.DATATYPE.BYTE ) then
+					if( dt2 <> IR.DATATYPE.UBYTE ) then
+						exit function
+					end if
 				end if
 			else
-				if( (dt1 <> IR.DATATYPE.BYTE) or (astTB(l).class <> AST.NODECLASS.PTR) ) then
+				if( astTB(l).class <> AST.NODECLASS.PTR ) then
 					exit function
+				elseif( dt1 <> IR.DATATYPE.BYTE ) then
+					if( dt1 <> IR.DATATYPE.UBYTE ) then
+						exit function
+					end if
 				end if
 			end if
 
@@ -2892,7 +2672,6 @@ function astNewCONV( byval op as integer, byval dtype as integer, byval l as int
     	exit function
     end if
 
-    astUpdNodeResult l
     dclass = irGetDataClass( astTB(l).dtype )
 
     '' string? can't operate
@@ -2954,6 +2733,12 @@ function astNewCONV( byval op as integer, byval dtype as integer, byval l as int
 
 		case IR.DATATYPE.UINT
 			astTB(l).value = cuint( astTB(l).value )
+
+		case IR.DATATYPE.LONGINT
+			''''''astTB(l).quadval = clngint( astTB(l).value )
+
+		case IR.DATATYPE.ULONGINT
+			''''''astTB(l).quadval = culngint( astTB(l).value )
 
 		case IR.DATATYPE.SINGLE
 			astTB(l).value = csng( astTB(l).value )
@@ -3218,7 +3003,8 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			'' param not an string?
 			if( pdclass <> IR.DATACLASS.STRING ) then
 				'' check if not a byte ptr
-				if( (pdtype <> IR.DATATYPE.BYTE) or (class <> AST.NODECLASS.PTR) ) then
+				if( (class <> AST.NODECLASS.PTR) or _
+					((pdtype <> IR.DATATYPE.BYTE) and (pdtype <> IR.DATATYPE.UBYTE)) ) then
 					'' or if passing a ptr to a BYVAL string arg
 			    	if( (pdclass <> IR.DATACLASS.INTEGER) or _
 			    		(amode <> FB.ARGMODE.BYVAL) or _
@@ -3319,7 +3105,6 @@ function astNewPARAM( byval f as integer, byval p as integer, _
     dim proc as FBSYMBOL ptr
 
 	if( dtype = INVALID ) then
-		astUpdNodeResult p
 		dtype = astGetDataType( p )
 	end if
 
@@ -3407,10 +3192,10 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 	''
    	if( irGetDataClass( pdtype ) <> IR.DATACLASS.STRING ) then
    		'' check if it's not a byte ptr param
-   		if( pdtype <> IR.DATATYPE.BYTE ) then
+   		if( astTB(n).class <> AST.NODECLASS.PTR ) then
    			exit function
-   		else
-   			if( astTB(n).class <> AST.NODECLASS.PTR ) then
+   		elseif( pdtype <> IR.DATATYPE.BYTE ) then
+   			if( pdtype <> IR.DATATYPE.UBYTE ) then
    				exit function
    			end if
    		end if
@@ -3423,7 +3208,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 		'' byref arg (rtlib str args are ALWAYS byref), fixed-len param: just alloc a temp descriptor
 		'' (assuming here that no rtlib function will EVER change the strings passed as param)
 		select case pdtype
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.BYTE
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
 			hCheckStrArg = rtlStrAllocTmpDesc( n )
 			isexpr = TRUE
 		    exit function
@@ -3456,7 +3241,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 			end if
 
     	'' byte ptr?
-    	case IR.DATATYPE.BYTE
+    	case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
     		'' byref and byte ptr: alloc a temp string, copy byte ptr to temp and pass temp
 
     	'' string descriptor..
@@ -3783,7 +3568,6 @@ function astNewIIF( byval condexpr as integer, byval truexpr as integer, _
 
 	falselabel = symbAddLabel( hMakeTmpStr )
 
-	astUpdNodeResult condexpr
 	astUpdComp2Branch condexpr, falselabel, FALSE
 	if( condexpr = INVALID ) then
 		exit function
