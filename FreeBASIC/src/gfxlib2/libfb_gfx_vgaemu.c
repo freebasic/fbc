@@ -68,14 +68,9 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 	switch (port) {
 
 		case 0x3C7:
-            idx = value;
-            shift = 2;
-            color = 0;
-            break;
-
 		case 0x3C8:
 			idx = value;
-			shift = 0;
+			shift = 2;
 			color = 0;
 			break;
 
@@ -87,9 +82,9 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 					fb_GfxPalette(idx, color);
 				else {
 					fb_mode->driver->lock();
-					r = ((color & 0x3F) * 255.0) / 63.0;
-					g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
-					b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
+					r = color & 0xFF;
+					g = (color >> 8) & 0xFF;
+					b = (color >> 16) & 0xFF;
 					fb_mode->palette[idx] = r | (g << 8) | (b << 16);
 					for (i = 0; i < (1 << fb_mode->depth); i++) {
 						if (fb_mode->color_association[i] == idx) {
@@ -100,7 +95,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 					fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 					fb_mode->driver->unlock();
 				}
-				shift = 0;
+				shift = 2;
 				color = 0;
 				idx++;
 				idx &= (fb_mode->default_palette->colors - 1);
