@@ -788,7 +788,7 @@ function cDerefExpression( derefexpr as integer ) as integer
   		'' can be PEEK() or VA_ARG()..
   		if( not cQuirkFunction( derefexpr ) ) then
   			'' Function
-  			if( not cFunction( derefexpr, sym ) ) then
+  			if( not cFunction( derefexpr, sym, elm ) ) then
   				'' Variable
   				if( not cVariable( derefexpr, sym, elm ) ) then
                 	'' ParentDeref
@@ -822,7 +822,7 @@ function cDerefExpression( derefexpr as integer ) as integer
 
 			''
 			if( symbGetType( sym ) <> FB.SYMBTYPE.VOID ) then
-				if( not cFunctionCall( sym, funcexpr, derefexpr ) ) then
+				if( not cFunctionCall( sym, elm, funcexpr, derefexpr ) ) then
 					exit function
 				end if
 				derefexpr = funcexpr
@@ -882,7 +882,10 @@ end function
 '' 					| 	'@' (Proc ('('')')? | Variable)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr )
+function cAddrOfExpression( addrofexpr as integer, _
+							sym as FBSYMBOL ptr, _
+							elm as FBSYMBOL ptr )
+
     dim expr as integer, dtype as integer, s as FBSYMBOL ptr
 
 	cAddrOfExpression = FALSE
@@ -1065,7 +1068,7 @@ function cAtom( atom as integer )
   	case FB.TKCLASS.IDENTIFIER
   		res = cConstant( atom )
   		if( not res ) then
-  			res = cFunction( atom, sym )
+  			res = cFunction( atom, sym, elm )
   			if( not res ) then
   				res = cVariable( atom, sym, elm, env.varcheckarray )
   			end if
@@ -1150,8 +1153,11 @@ end function
 '':::::
 ''FuncParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
-					 byval procexpr as integer, byval optonly as integer ) as integer
+function cFuncParam( byval proc as FBSYMBOL ptr, _
+					 byval arg as FBSYMBOL ptr, _
+					 byval procexpr as integer, _
+					 byval optonly as integer ) as integer
+
 	dim paramexpr as integer, amode as integer, pmode as integer
 	dim typ as integer
 
@@ -1240,8 +1246,10 @@ end function
 '':::::
 ''FuncParamList     =    FuncParam (DECL_SEPARATOR FuncParam)* .
 ''
-function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, _
+function cFuncParamList( byval proc as FBSYMBOL ptr, _
+						 byval procexpr as integer, _
 						 byval optonly as integer ) as integer
+
     dim params as integer, args as integer, arg as FBSYMBOL ptr
 
 	cFuncParamList = FALSE
@@ -1301,18 +1309,23 @@ function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, 
 end function
 
 '':::::
-function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval ptrexpr as integer ) as integer
-	dim res as integer, typ as integer
+function cFunctionCall( byval sym as FBSYMBOL ptr, _
+						elm as FBSYMBOL ptr, _
+						funcexpr as integer, _
+						byval ptrexpr as integer ) as integer
+
+	dim as integer typ, isfuncptr
+	dim as FBSYMBOL ptr subtype
 
 	cFunctionCall = FALSE
 
-    if( proc = NULL ) then
+    if( sym = NULL ) then
     	exit function
     end if
 
-    typ = symbGetType( proc )
+    typ = symbGetType( sym )
 
-    funcexpr = astNewFUNCT( proc, typ, ptrexpr )
+    funcexpr = astNewFUNCT( sym, typ, ptrexpr )
 
 	'' is it really a function?
 	if( typ = FB.SYMBTYPE.VOID ) then
@@ -1325,7 +1338,7 @@ function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval p
 		lexSkipToken
 
 		'' ProcParamList
-		if( not cFuncParamList( proc, funcexpr, FALSE ) ) then
+		if( not cFuncParamList( sym, funcexpr, FALSE ) ) then
 			exit function
 		end if
 
@@ -1337,13 +1350,33 @@ function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval p
 
 	else
 		'' function has no args?
-		if( symbGetProcArgs( proc ) <> 0 ) then
+		if( symbGetProcArgs( sym ) <> 0 ) then
 
 			'' ProcParamList (function can have optional args)
-			if( not cFuncParamList( proc, funcexpr, TRUE ) ) then
+			if( not cFuncParamList( sym, funcexpr, TRUE ) ) then
 				exit function
 			end if
 
+		end if
+	end if
+
+	'' if function returns a pointer, check for field deref
+	elm = NULL
+	if( typ >= FB.SYMBTYPE.POINTER ) then
+    	subtype = symbGetSubType( sym )
+
+		isfuncptr = FALSE
+   		if( lexCurrentToken = CHAR_LPRNT ) then
+   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+				isfuncptr = TRUE
+   			end if
+   		end if
+
+		'' FuncPtrOrDerefFields?
+		cFuncPtrOrDerefFields( sym, elm, typ, subtype, funcexpr, isfuncptr, TRUE )
+
+		if( hGetLastError <> FB.ERRMSG.OK ) then
+			exit function
 		end if
 	end if
 
@@ -1354,7 +1387,9 @@ end function
 '':::::
 ''Function        =   ID ('(' ProcParamList ')')? .	 			//ambiguity w/ var!!
 ''
-function cFunction( funcexpr as integer, sym as FBSYMBOL ptr )
+function cFunction( funcexpr as integer, _
+					sym as FBSYMBOL ptr, _
+					elm as FBSYMBOL ptr )
 
 	cFunction = FALSE
 
@@ -1366,6 +1401,6 @@ function cFunction( funcexpr as integer, sym as FBSYMBOL ptr )
 
 	lexSkipToken
 
-	cFunction = cFunctionCall( sym, funcexpr, INVALID )
+	cFunction = cFunctionCall( sym, elm, funcexpr, INVALID )
 
 end function

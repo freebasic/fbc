@@ -17,7 +17,7 @@
 
 
 '' parser part 3 - just variables parsing.. QB quirks make it so damn
-''				   complex that a module just for it was needed..
+''				   complex that a whole module was needed..
 ''
 '' chng: sep/2004 written [v1ctor]
 ''		 oct/2004 arrays on fields [v1c]
@@ -35,6 +35,8 @@ defint a-z
 
 
 '':::::
+''FieldArray    =   '(' Expression (',' Expression)* ')' .
+''
 function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr as integer ) as integer
     dim d as FBVARDIM ptr, maxdims as integer, dims as integer
     dim expr as integer, dimexpr as integer, constexpr as integer
@@ -231,10 +233,13 @@ end function
 '':::::
 ''DerefFields	=   ((FIELDDEREF DREF* | '[' Expression ']') TypeField)* .
 ''
-function cDerefFields( byval sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
-					   typ as integer, subtype as FBSYMBOL ptr, _
+function cDerefFields( byval sym as FBSYMBOL ptr, _
+					   elm as FBSYMBOL ptr, _
+					   typ as integer, _
+					   subtype as FBSYMBOL ptr, _
 					   varexpr as integer, _
-					   byval isderef as integer, byval checkarray as integer ) as integer
+					   byval isderef as integer, _
+					   byval checkarray as integer ) as integer
 
 	dim cnt as integer, lgt as integer
 	dim expr as integer, idxexpr as integer
@@ -405,7 +410,72 @@ function cDerefFields( byval sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
 end function
 
 '':::::
-''DynArrayIdx     =   '(' Expression (DECL_SEPARATOR Expression)* ')' .
+''FuncPtrOrDeref	=   FuncPtr '(' Args? ')'
+''					|   DerefFields .
+''
+function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
+					      		elm as FBSYMBOL ptr, _
+					      		byval typ as integer, _
+					      		byval subtype as FBSYMBOL ptr, _
+					      		varexpr as integer, _
+					      		byval isfuncptr as integer, _
+					      		byval checkarray as integer ) as integer
+
+	dim as integer funcexpr
+
+	cFuncPtrOrDerefFields = FALSE
+
+	''
+	if( not isfuncptr ) then
+		'' DerefFields?
+		cDerefFields( sym, elm, typ, subtype, varexpr, FALSE, checkarray )
+
+		if( hGetLastError <> FB.ERRMSG.OK ) then
+			exit function
+		end if
+
+   		'' check for calling functions through pointers
+   		if( lexCurrentToken = CHAR_LPRNT ) then
+   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+				isfuncptr = TRUE
+   			end if
+   		end if
+	end if
+
+	'' function pointer dref? call it
+	if( isfuncptr ) then
+
+		if( elm <> NULL ) then
+			sym = elm
+		end if
+
+		sym 	= sym->subtype
+		elm 	= NULL
+		typ 	= sym->typ
+		subtype = sym->subtype
+
+		''
+		if( symbGetType( sym ) <> FB.SYMBTYPE.VOID ) then
+			if( not cFunctionCall( sym, elm, funcexpr, varexpr ) ) then
+				exit function
+			end if
+			varexpr = funcexpr
+
+		else
+			if( not cProcCall( sym, varexpr ) ) then
+				exit function
+			end if
+		    varexpr = INVALID
+		end if
+
+	end if
+
+	cFuncPtrOrDerefFields = TRUE
+
+end function
+
+'':::::
+''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as integer
     dim i as integer, dims as integer, maxdims as integer, d as FBSYMBOL ptr
@@ -497,7 +567,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 end function
 
 '':::::
-''ArgArrayIdx     =   '(' Expression (DECL_SEPARATOR Expression)* ')' .
+''ArgArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as integer
     dim i as integer, t as integer
@@ -565,7 +635,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 end function
 
 '':::::
-''ArrayIdx        =   '(' Expression (DECL_SEPARATOR Expression)* ')' .
+''ArrayIdx        =   '(' Expression (',' Expression)* ')' .
 ''
 function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
     dim d as FBVARDIM ptr, dims as integer, maxdims as integer
@@ -677,15 +747,17 @@ function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
 end function
 
 '':::::
-''Variable        =   ID ArrayIdx? ((TypeField|DerefField) FieldIdx?)*
-''				  |   ID{Function} ProcParamList .
+''Variable        =   ID ArrayIdx? ((TypeField|FuncPtrOrDerefFields) FieldIdx?)* .
 ''
-function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
+function cVariable( varexpr as integer, _
+					sym as FBSYMBOL ptr, _
+					elm as FBSYMBOL ptr, _
 					byval checkarray as integer = TRUE )
-	dim as integer typ, deftyp, ofs, idxexpr, funcexpr, dtype
+
+	dim as integer typ, deftyp, ofs, idxexpr, dtype
 	dim as FBSYMBOL ptr subtype
 	dim as string id
-	dim as integer isbyref, isfunctionptr, isbydesc, isimport, isarray
+	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
 
 	cVariable = FALSE
 
@@ -694,7 +766,7 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 		exit function
 	end if
 
-    isfunctionptr 	= FALSE
+    isfuncptr 	= FALSE
 
 	''
 	'' lookup
@@ -714,8 +786,17 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 		'' QB quirk: fixed-len strings referenced using '$' as suffix..
 		if( typ = FB.SYMBTYPE.STRING ) then
 			sym = symbFindBySuffix( lexTokenSymbol, FB.SYMBTYPE.FIXSTR, deftyp )
+			'' check zstrings too..
+			if( sym = NULL ) then
+				sym = symbFindBySuffix( lexTokenSymbol, FB.SYMBTYPE.CHAR, deftyp )
+			end if
+
 		elseif( deftyp = FB.SYMBTYPE.STRING ) then
 			sym = symbFindBySuffix( lexTokenSymbol, INVALID, FB.SYMBTYPE.FIXSTR )
+			'' check zstrings too..
+			if( sym = NULL ) then
+				sym = symbFindBySuffix( lexTokenSymbol, INVALID, FB.SYMBTYPE.CHAR )
+			end if
 		end if
 	end if
 
@@ -725,6 +806,7 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 
 	else
 
+		'' it can be also an UDT, as dots can be part of symbol names..
 		sym = symbLookupUDTVar( id, lexTokenDotPos, typ, ofs, elm, subtype )
 		if( sym = NULL ) then
 			'' add undeclared variable
@@ -732,6 +814,7 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 				exit function
 			end if
 
+			'' add undeclared var
 			if( not env.optexplicit ) then
 				if( typ = INVALID ) then
 					typ = hGetDefType( id )
@@ -791,12 +874,12 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
     		else
    				'' check if calling functions through pointers
    				if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-	   				isfunctionptr = TRUE
+	   				isfuncptr = TRUE
     			end if
 
     			'' using (...) w/ scalars?
     			if( elm = NULL ) then
-    				if( not isarray and not isfunctionptr ) then
+    				if( not isarray and not isfuncptr ) then
     					hReportError FB.ERRMSG.ARRAYNOTALLOCATED, TRUE
     					exit function
     				end if
@@ -810,15 +893,19 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
     end if
 
    	''
-   	if( not isfunctionptr ) then
+   	if( not isfuncptr ) then
 
    		'' TypeField?
    		cTypeField( elm, typ, subtype, idxexpr, FALSE, checkarray )
 
+		if( hGetLastError <> FB.ERRMSG.OK ) then
+			exit function
+		end if
+
    		'' check for calling functions through pointers
    		if( lexCurrentToken = CHAR_LPRNT ) then
    			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-	   			isfunctionptr = TRUE
+	   			isfuncptr = TRUE
    			end if
    		end if
    	end if
@@ -857,45 +944,10 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
    		varexpr = astNewPTR( sym, elm, ofs, varexpr, dtype, subtype )
 	end if
 
-	''
-	if( not isfunctionptr ) then
-		'' DerefFields?
-		cDerefFields( sym, elm, typ, subtype, varexpr, FALSE, checkarray )
+    '' FuncPtrOrDerefFields?
+	cFuncPtrOrDerefFields( sym, elm, typ, subtype, varexpr, isfuncptr, checkarray )
 
-   		'' check for calling functions through pointers
-   		if( lexCurrentToken = CHAR_LPRNT ) then
-   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-	  			isfunctionptr = TRUE
-   			end if
-   		end if
-	end if
-
-	'' function pointer dref? call it
-	if( isfunctionptr ) then
-		''
-		if( elm <> NULL ) then
-			sym = elm
-		end if
-
-		sym = symbGetSubtype( sym )
-		elm = NULL
-
-		''
-		if( symbGetType( sym ) <> FB.SYMBTYPE.VOID ) then
-			if( not cFunctionCall( sym, funcexpr, varexpr ) ) then
-				exit function
-			end if
-			varexpr = funcexpr
-
-		else
-			if( not cProcCall( sym, varexpr ) ) then
-				exit function
-			end if
-		    varexpr = INVALID
-		end if
-	end if
-
-	cVariable = TRUE
+	cVariable = (hGetLastError() = FB.ERRMSG.OK)
 
 end function
 
@@ -903,9 +955,11 @@ end function
 ''cVarOrDeref		= 	Deref | AddrOf | Variable
 ''
 function cVarOrDeref( varexpr as integer, _
-					  byval checkarray as integer, byval checkaddrof as integer )
-	dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
-	dim res as integer
+					  byval checkarray as integer, _
+					  byval checkaddrof as integer )
+
+	dim as FBSYMBOL ptr sym, elm
+	dim as integer res
 
 	res = cDerefExpression( varexpr )
 	if( not res ) then

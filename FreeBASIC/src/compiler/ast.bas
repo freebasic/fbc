@@ -62,10 +62,18 @@ end type
 
 declare function	astUpdStrConcat		( byval n as integer ) as integer
 
+declare function 	astGetUDTElm		( byval n as integer ) as FBSYMBOL ptr
+
 '' globals
 	dim shared ctx as ASTCTX
 
 	dim shared astTB( ) as ASTNODE
+
+	dim shared bitmaskTB( 0 to 32 ) as uinteger = { 0, _
+		1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65565, _
+        131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, 33554431, _
+        67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 }
+
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' constant folding optimizations
@@ -890,8 +898,9 @@ end function
 
 ''::::
 function astOptAssignament( byval n as integer ) as integer static
-	dim l as integer, r as integer
-	dim dtype as integer, dclass as integer
+	dim as integer l, r
+	dim as integer dtype, dclass
+	dim as FBSYMBOL ptr s
 
 	astOptAssignament = n
 
@@ -963,6 +972,16 @@ function astOptAssignament( byval n as integer ) as integer static
 	'' is the left child the same?
 	if( not astIsTreeEqual( l, astTB(r).l ) ) then
 		exit function
+	end if
+
+	'' isn't it a bitfield?
+	if( astTB(l).chkbitfld ) then
+		s = astGetUDTElm( l )
+		if( s <> NULL ) then
+			if( s->var.elm.bits > 0 ) then
+				exit function
+			end if
+		end if
 	end if
 
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
@@ -1053,8 +1072,7 @@ function astUpdComp2Branch( byval n as integer, _
 		'' UOP? check if it's a NOT
 		if( astTB(n).class = AST.NODECLASS.UOP ) then
 			if( astTB(n).op = IR.OP.NOT ) then
-				l = astTB(n).l
-				l = astUpdComp2Branch( l, label, isinverse = FALSE )
+				l = astUpdComp2Branch( astTB(n).l, label, isinverse = FALSE )
 				astDel n
 				return l
 			end if
@@ -1556,9 +1574,9 @@ end sub
 sub astInit static
 
 	''
-	ctx.head 		= INVALID
-	ctx.tail 		= INVALID
-	ctx.nodes		= 0
+	ctx.head 			= INVALID
+	ctx.tail 			= INVALID
+	ctx.nodes			= 0
 
     astRealloc AST.INITNODES
 
@@ -1588,7 +1606,9 @@ end sub
 function astNew( byval class as integer, _
 				 byval dtype as integer, _
 				 byval subtype as FBSYMBOL ptr = NULL ) as integer static
-	dim n as integer, t as integer
+
+	dim as integer n, t
+	dim as ASTNODE ptr p
 
 	'' realloc node list if it's full
 	if( ctx.fhead = INVALID ) then
@@ -1608,17 +1628,20 @@ function astNew( byval class as integer, _
 		ctx.head = n
 	end if
 
-	astTB(n).prv	= t
-	astTB(n).nxt	= INVALID
+	p = @astTB(n)
+
+	p->prv			= t
+	p->nxt			= INVALID
 
 	''
-	astTB(n).class 	= class
-	astTB(n).dtype 	= dtype
-	astTB(n).subtype= subtype
-	astTB(n).defined= FALSE
-	astTB(n).op		= INVALID
-	astTB(n).l    	= INVALID
-	astTB(n).r    	= INVALID
+	p->class 		= class
+	p->dtype 		= dtype
+	p->subtype		= subtype
+	p->defined		= FALSE
+	p->op			= INVALID
+	p->l    		= INVALID
+	p->r    		= INVALID
+	p->chkbitfld	= FALSE
 
 	astNew = n
 
@@ -1734,6 +1757,32 @@ function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
 	end if
 
 	astGetSymbol = s
+
+end function
+
+'':::::
+private function astGetUDTElm( byval n as integer ) as FBSYMBOL ptr static
+
+	if( n <> INVALID ) then
+		select case as const astTB(n).class
+		case AST.NODECLASS.PTR
+			return astTB(n).ptr.elm
+
+		case AST.NODECLASS.VAR
+			return astTB(n).var.elm
+
+		case AST.NODECLASS.IDX
+			n = astTB(n).r
+			if( n <> INVALID ) then
+				return astTB(n).var.elm
+			end if
+
+		case AST.NODECLASS.ADDR
+			return astTB(n).addr.elm
+		end select
+	end if
+
+	return NULL
 
 end function
 
@@ -2073,6 +2122,7 @@ function astNewBOP( byval op as integer, _
     dim as integer dt1, dt2, dtype
     dim as integer dc1, dc2
     dim as integer ispow2, doconv
+    dim as FBSYMBOL ptr s
 
 	astNewBOP = INVALID
 
@@ -2163,8 +2213,10 @@ function astNewBOP( byval op as integer, _
 			if( (dt1 = IR.DATATYPE.FIXSTR) and (dt2 = IR.DATATYPE.FIXSTR) ) then
 				if( astTB(l).class = AST.NODECLASS.VAR ) then
 					if( astTB(r).class = AST.NODECLASS.VAR ) then
-						if( symbGetVarInitialized( astGetSymbol( l ) ) ) then
-							if( symbGetVarInitialized( astGetSymbol( r ) ) ) then
+						s = astGetSymbol( l )
+						if( symbGetVarInitialized( s ) ) then
+							s = astGetSymbol( r )
+							if( symbGetVarInitialized( s ) ) then
 								astNewBOP = hStrLiteralConcat( l, r )
 								exit function
 							end if
@@ -2744,13 +2796,53 @@ function astNewVAR( byval sym as FBSYMBOL ptr, _
 		ofs += sym->ofs
 	end if
 	astTB(n).var.ofs	= ofs
+	astTB(n).chkbitfld	= elm <> NULL
+
+end function
+
+'':::::
+private function hGetBitField( byval n as integer, _
+							   byval s as FBSYMBOL ptr ) as integer static
+
+	dim as integer c
+
+	'' make a copy, the node itself can't be used or it will be deleted twice
+	c = astNew( INVALID, INVALID )
+	astCopy c, n
+
+	if( s->var.elm.bitpos > 0 ) then
+		n = astNewBOP( IR.OP.SHR, c, _
+				   	   astNewCONST( s->var.elm.bitpos, IR.DATATYPE.UINT ) )
+	else
+		n = c
+	end if
+
+	n = astNewBOP( IR.OP.AND, n, _
+				   astNewCONST( bitmaskTB(s->var.elm.bits), IR.DATATYPE.UINT ) )
+
+	return n
 
 end function
 
 '':::::
 function astLoadVAR( byval n as integer ) as integer static
+    dim as FBSYMBOL ptr s
 
-	return irAllocVRVAR( astTB(n).dtype, astTB(n).var.sym, astTB(n).var.ofs )
+	'' handle bitfields..
+	if( astTB(n).chkbitfld ) then
+		astTB(n).chkbitfld = FALSE
+		s = astTB(n).var.elm
+		if( s <> NULL ) then
+			if( s->var.elm.bits > 0 ) then
+				n = hGetBitField( n, s )
+				astLoadVAR = astLoad( n )
+				astDel n
+				exit function
+			end if
+		end if
+	end if
+
+	astLoadVAR = irAllocVRVAR( astTB(n).dtype, astTB(n).var.sym, astTB(n).var.ofs )
 
 end function
 
@@ -2781,6 +2873,7 @@ function astNewIDX( byval v as integer, _
 	astTB(n).r 			= v
 	astTB(n).idx.mult 	= 1
 	astTB(n).idx.ofs 	= 0
+	astTB(n).chkbitfld  = v <> INVALID
 
 end function
 
@@ -2825,14 +2918,31 @@ end function
 function astLoadIDX( byval n as integer ) as integer
     dim as integer v, i
     dim as integer vi, vr
+    dim as FBSYMBOL ptr s
 
 	v = astTB(n).r
-	i = astTB(n).l
-
 	if( v = INVALID ) then
 		return INVALID
 	end if
 
+	'' handle bitfields..
+	if( astTB(n).chkbitfld ) then
+		astTB(n).chkbitfld = FALSE
+		if( astTB(v).chkbitfld ) then
+			astTB(v).chkbitfld = FALSE
+			s = astTB(v).var.elm
+			if( s <> NULL ) then
+				if( s->var.elm.bits > 0 ) then
+					n = hGetBitField( n, s )
+					astLoadIDX = astLoad( n )
+					astDel n
+					exit function
+				end if
+			end if
+		end if
+	end if
+
+	i = astTB(n).l
 	if( i <> INVALID ) then
 		vi = astLoad( i )
 	else
@@ -2844,7 +2954,7 @@ function astLoadIDX( byval n as integer ) as integer
 	astDel i
 	astDel v
 
-	return vr
+	astLoadIDX = vr
 
 end function
 
@@ -2886,17 +2996,16 @@ function astNewADDR( byval op as integer, _
 	astTB(n).l  		= p
 	astTB(n).addr.sym	= sym
 	astTB(n).addr.elm	= elm
+	astTB(n).chkbitfld	= elm <> NULL
 
 end function
 
 '':::::
 function astLoadADDR( byval n as integer ) as integer
-    dim as integer p, op
+    dim as integer p
     dim as integer v1, vr
 
 	p  = astTB(n).l
-	op = astTB(n).op
-
 	if( p = INVALID ) then
 		return INVALID
 	end if
@@ -2908,7 +3017,7 @@ function astLoadADDR( byval n as integer ) as integer
 
 	vr = irAllocVREG( IR.DATATYPE.UINT )
 
-	irEmitADDR op, v1, vr
+	irEmitADDR astTB(n).op, v1, vr
 
 	astDel p
 
@@ -2943,7 +3052,6 @@ function astLoadLOAD( byval n as integer ) as integer
     dim as integer vr
 
 	l = astTB(n).l
-
 	if( l = INVALID ) then
 		return INVALID
 	end if
@@ -2983,19 +3091,33 @@ function astNewPTR( byval sym as FBSYMBOL ptr, _
 	astTB(n).ptr.sym	= sym
 	astTB(n).ptr.elm	= elm
 	astTB(n).ptr.ofs	= ofs
+	astTB(n).chkbitfld	= elm <> NULL
 
 end function
 
 '':::::
 function astLoadPTR( byval n as integer ) as integer
-    dim as integer l, ofs, dtype
+    dim as integer l, dtype
     dim as integer v1, vp, vr
+    dim as FBSYMBOL ptr s
 
-	l 	= astTB(n).l
-	ofs = astTB(n).ptr.ofs
-
+	l = astTB(n).l
 	if( l = INVALID ) then
 		return INVALID
+	end if
+
+	'' handle bitfields..
+	if( astTB(n).chkbitfld ) then
+		astTB(n).chkbitfld = FALSE
+		s = astTB(n).ptr.elm
+		if( s <> NULL ) then
+			if( s->var.elm.bits > 0 ) then
+				n = hGetBitField( n, s )
+				astLoadPTR = astLoad( n )
+				astDel n
+				exit function
+			end if
+		end if
 	end if
 
 	v1 = astLoad( l )
@@ -3014,11 +3136,11 @@ function astLoadPTR( byval n as integer ) as integer
 		vp = v1
 	end if
 
-	vr = irAllocVRPTR( dtype, ofs, vp )
+	vr = irAllocVRPTR( dtype, astTB(n).ptr.ofs, vp )
 
 	astDel l
 
-	return vr
+	astLoadPTR = vr
 
 end function
 
@@ -3132,15 +3254,43 @@ function astNewASSIGN( byval l as integer, _
 end function
 
 '':::::
+private function hSetBitField( byval l as integer, _
+							   byval r as integer, _
+							   byval s as FBSYMBOL ptr ) as integer static
+
+	l = astNewBOP( IR.OP.AND, astCloneTree( l ), _
+				   astNewCONST( bitmaskTB(s->var.elm.bits) shl s->var.elm.bitpos, IR.DATATYPE.UINT ) )
+
+	if( s->var.elm.bitpos > 0 ) then
+		r = astNewBOP( IR.OP.SHL, r, _
+				   	   astNewCONST( s->var.elm.bitpos, IR.DATATYPE.UINT ) )
+	end if
+
+	return astNewBOP( IR.OP.OR, l, r )
+
+end function
+
+'':::::
 function astLoadASSIGN( byval n as integer ) as integer
     dim as integer l, r
     dim as integer vs, vr
+    dim as FBSYMBOL ptr s
 
 	l = astTB(n).l
 	r = astTB(n).r
-
 	if( (l = INVALID) or (r = INVALID) ) then
 		return INVALID
+	end if
+
+	'' handle bitfields..
+	if( astTB(l).chkbitfld ) then
+		astTB(l).chkbitfld = FALSE
+		s = astGetUDTElm( l )
+		if( s <> NULL ) then
+			if( s->var.elm.bits > 0 ) then
+				r = hSetBitField( l, r, s )
+			end if
+		end if
 	end if
 
 	vs = astLoad( r )
@@ -4081,6 +4231,7 @@ end function
 private sub hCheckTmpStrings( byval f as integer )
     dim as integer t, copyback
     dim as ASTTEMPSTR ptr n, p
+    dim as FBSYMBOL ptr s
 
 	'' copy-back any fix-len string passed as parameter and
 	'' delete all temp strings used as parameters
@@ -4092,7 +4243,8 @@ private sub hCheckTmpStrings( byval f as integer )
         	'' only if not a literal string passed a fixed-len
         	copyback = TRUE
         	if( astTB(n->srctree).class = AST.NODECLASS.VAR ) then
-        	    copyback = symbGetVarInitialized( astGetSymbol( n->srctree ) ) = FALSE
+        	    s = astGetSymbol( n->srctree )
+        	    copyback = symbGetVarInitialized( s ) = FALSE
         	end if
 
         	if( copyback ) then

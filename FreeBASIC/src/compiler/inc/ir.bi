@@ -159,6 +159,7 @@ end type
 type IRDATATYPE
 	class		as integer						'' INTEGER, FPOINT
 	size		as integer						'' in bytes
+	bits		as integer						'' number of bits
 	signed		as integer						'' TRUE or FALSE
 	dname		as string * 7
 end type
@@ -281,31 +282,17 @@ declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, _
 										  byval pmode as integer, _
 										  byval plen as integer ) as integer
 
-declare function 	irIsIMM				( byval vreg as integer ) as integer
-
 declare function 	irIsVAR				( byval vreg as integer ) as integer
 
 declare function 	irIsIDX				( byval vreg as integer ) as integer
-
-declare function 	irIsREG				( byval vreg as integer ) as integer
-
-declare function 	irGetVRValue		( byval vreg as integer ) as integer
-
-declare function 	irGetVRDataType		( byval vreg as integer ) as integer
 
 declare function 	irGetVRDataClass	( byval vreg as integer ) as integer
 
 declare function 	irGetVRDataSize		( byval vreg as integer ) as integer
 
-declare sub 		irGetVRName			( byval vreg as integer, _
-										  vname as string )
-
 declare sub 		irGetVRNameEx		( byval vreg as integer, _
 										  byval typ as integer, _
 										  vname as string )
-
-declare function 	irGetVRType			( byval vreg as integer ) as integer
-
 
 declare function 	irMaxDataType		( byval dtype1 as integer, _
 										  byval dtype2 as integer ) as integer
@@ -313,6 +300,8 @@ declare function 	irMaxDataType		( byval dtype1 as integer, _
 declare function 	irGetDataClass  	( byval dtype as integer ) as integer
 
 declare function 	irGetDataSize		( byval dtype as integer ) as integer
+
+declare function 	irGetDataBits		( byval dtype as integer ) as integer
 
 declare function 	irIsSigned			( byval dtype as integer ) as integer
 
@@ -339,6 +328,20 @@ declare sub 		irSetVR				( byval reg as integer, _
 										  byval vreg as integer )
 
 declare sub 		irXchgTOS			( byval reg as integer )
+
+
+''
+'' macros
+''
+#define irIsREG(v) iif( vregTB(v).typ = IR.VREGTYPE.REG, TRUE, FALSE )
+
+#define irIsIMM(v) iif( vregTB(v).typ = IR.VREGTYPE.IMM, TRUE, FALSE )
+
+#define irGetVRType(v) vregTB(v).typ
+
+#define irGetVRDataType(v) vregTB(v).dtype
+
+#define irGetVRName(v,n) irGetVRNameEx( v, vregTB(v).typ, n )
 
 ''
 '' globals

@@ -741,6 +741,7 @@ function cElementDecl( id as string, _
 					   subtype as FBSYMBOL ptr, _
 					   ptrcnt as integer, _
 					   lgt as integer, _
+					   bits as integer, _
 					   dimensions as integer, _
 					   dTB() as FBARRAYDIM )
 
@@ -758,9 +759,22 @@ function cElementDecl( id as string, _
 	typ = lexTokenType
 	subtype = NULL
 	id = lexEatToken
+	bits = 0
 
 	'' ArrayDecl?
-	cStaticArrayDecl( dimensions, dTB() )
+	if( not cStaticArrayDecl( dimensions, dTB() ) ) then
+		'' ':' NUMLIT?
+		if( lexCurrentToken = CHAR_COLON ) then
+			if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
+				lexSkipToken
+				bits = val( lexEatToken )
+				if( bits <= 0 ) then
+    				hReportError FB.ERRMSG.SYNTAXERROR, TRUE
+    				exit function
+    			end if
+			end if
+		end if
+	end if
 
     '' AS SymbolType
     if( not hMatch( FB.TK.AS ) or (typ <> INVALID) ) then
@@ -773,16 +787,24 @@ function cElementDecl( id as string, _
     	exit function
     end if
 
+	''
+	if( bits <> 0 ) then
+		if( not symbCheckBitField( env.typectx.symbol, typ, bits ) ) then
+    		hReportError FB.ERRMSG.INVALIDBITFIELD, TRUE
+    		exit function
+		end if
+	end if
+
 	cElementDecl = TRUE
 
 end function
 
 '':::::
-''AsElementDecl     =   AS SymbolType ID ArrayDecl? (',' ID ArrayDecl?)*
+''AsElementDecl     =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? (',' ID (ArrayDecl | ':' NUMLIT)?)*
 ''
 function cAsElementDecl( ) as integer
     dim as FBSYMBOL ptr subtype
-    dim as integer dimensions, typ, lgt, ptrcnt
+    dim as integer dimensions, typ, lgt, ptrcnt, bits
     dim as string id
     static as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
 
@@ -804,13 +826,31 @@ function cAsElementDecl( ) as integer
     	end if
 
 	    id = lexEatToken
+	    bits = 0
 
 		'' ArrayDecl?
-		cStaticArrayDecl( dimensions, dTB() )
+		if( not cStaticArrayDecl( dimensions, dTB() ) ) then
+
+			'' ':' NUMLIT?
+			if( lexCurrentToken = CHAR_COLON ) then
+				if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
+					lexSkipToken
+					bits = val( lexEatToken )
+				end if
+
+				if( not symbCheckBitField( env.typectx.symbol, typ, bits ) ) then
+    				hReportError FB.ERRMSG.INVALIDBITFIELD, TRUE
+    				exit function
+				end if
+
+			end if
+
+		end if
+
 
 		if( symbAddUDTElement( env.typectx.symbol, id, _
 							   dimensions, dTB(), _
-							   typ, subtype, ptrcnt, lgt, _
+							   typ, subtype, ptrcnt, lgt, bits, _
 							   env.typectx.innercnt > 0 ) = NULL ) then
 				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
 				exit function
@@ -834,7 +874,7 @@ end function
 ''
 function cTypeLine as integer
     dim as FBSYMBOL ptr subtype
-    dim as integer dimensions, typ, lgt, ptrcnt
+    dim as integer dimensions, typ, lgt, ptrcnt, bits
     dim as string ename
     static as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
 
@@ -935,11 +975,11 @@ declfield:
 
 		env.typectx.elements += 1
 
-		if( cElementDecl( ename, typ, subtype, ptrcnt, lgt, dimensions, dTB() ) ) then
+		if( cElementDecl( ename, typ, subtype, ptrcnt, lgt, bits, dimensions, dTB() ) ) then
 
 			if( symbAddUDTElement( env.typectx.symbol, ename, _
 								   dimensions, dTB(), _
-								   typ, subtype, ptrcnt, lgt, _
+								   typ, subtype, ptrcnt, lgt, bits, _
 								   env.typectx.innercnt > 0 ) = NULL ) then
 				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 				exit function
@@ -1426,9 +1466,9 @@ function hDeclExternVar( id as string, byval typ as integer, byval subtype as FB
     	if( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
     		exit function
     	else
-    		symbSetAllocType symbol, (alloctype and not FB.ALLOCTYPE.EXTERN) or _
+    		symbSetAllocType( symbol, (alloctype and not FB.ALLOCTYPE.EXTERN) or _
     								 FB.ALLOCTYPE.PUBLIC or _
-    								 FB.ALLOCTYPE.SHARED
+    								 FB.ALLOCTYPE.SHARED )
     	end if
     end if
 
@@ -1440,7 +1480,9 @@ end function
 ''SymbolDef       =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
+function cSymbolDef( byval alloctype as integer, _
+					 byval dopreserve as integer = FALSE )
+
     dim id as string, idalias as string, symbol as FBSYMBOL ptr
     dim addsuffix as integer, atype as integer, isdynamic as integer, ismultdecl as integer
     dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer, ptrcnt as integer
@@ -1627,11 +1669,18 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 end function
 
 '':::::
-function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
-					   byval subtype as FBSYMBOL ptr, byval ptrcnt as integer, _
-					   byval lgt as integer, byval addsuffix as integer, _
-					   byval alloctype as integer, byval dopreserve as integer, _
-					   byval dimensions as integer, exprTB() as integer ) as FBSYMBOL ptr
+function cDynArrayDef( id as string, _
+					   idalias as string, _
+					   byval typ as integer, _
+					   byval subtype as FBSYMBOL ptr, _
+					   byval ptrcnt as integer, _
+					   byval lgt as integer, _
+					   byval addsuffix as integer, _
+					   byval alloctype as integer, _
+					   byval dopreserve as integer, _
+					   byval dimensions as integer, _
+					   exprTB() as integer ) as FBSYMBOL ptr
+
     dim s as FBSYMBOL ptr
     dim res as integer
     dim atype as integer
@@ -1668,9 +1717,9 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 					exit function
 				end if
 
-				symbSetAllocType s, (atype and not FB.ALLOCTYPE.EXTERN) or _
-    					            FB.ALLOCTYPE.PUBLIC or _
-    					            FB.ALLOCTYPE.SHARED
+				symbSetAllocType( s, (atype and not FB.ALLOCTYPE.EXTERN) or _
+    					             FB.ALLOCTYPE.PUBLIC or _
+    					             FB.ALLOCTYPE.SHARED )
 			end if
 		end if
 	end if
@@ -1716,12 +1765,12 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 	'' if COMMON, check for max dimensions used
 	if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
 		if( dimensions > symbGetArrayDimensions( s ) ) then
-			symbSetArrayDimensions s, dimensions
+			symbSetArrayDimensions( s, dimensions )
 		end if
 
 	'' or if dims = -1 (cause of "DIM|REDIM array()")
 	elseif( symbGetArrayDimensions( s ) = -1 ) then
-		symbSetArrayDimensions s, dimensions
+		symbSetArrayDimensions( s, dimensions )
 	end if
 
     cDynArrayDef = s
@@ -1839,7 +1888,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 					     byval isarray as integer ) as integer
 
     dim as integer dimensions, dimcnt, elements, elmcnt
-    dim as integer isopen, lgt, totlgt
+    dim as integer isopen, lgt, pad
     dim as FBVARDIM ptr d, ld
 
 	cSymbArrayInit = FALSE
@@ -1931,12 +1980,12 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	totlgt = sym->lgt * hCalcElements( sym )
-	if( lgt < totlgt ) then
+	pad = (sym->lgt * hCalcElements( sym )) - lgt
+	if( pad > 0 ) then
 		if( not islocal ) then
-			irEmitVARINIPAD totlgt - lgt
+			irEmitVARINIPAD pad
 		else
-			ofs += totlgt - lgt
+			ofs += pad
 		end if
 	end if
 
@@ -1950,8 +1999,8 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 					   ofs as integer, _
 					   byval islocal as integer ) as integer
 
-	dim as integer elements, elmcnt, isarray, elmofs
-    dim as FBSYMBOL ptr elm, udt
+	dim as integer elements, elmcnt, isarray, elmofs, lgt, pad
+    dim as FBSYMBOL ptr elm, lelm, udt
 
     cSymbUDTInit = FALSE
 
@@ -1963,8 +2012,12 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	udt = sym->subtype
 	elm = udt->udt.head
+	lelm = NULL
+
 	elements = udt->udt.elements
 	elmcnt = 0
+
+	lgt = 0
 
 	'' for each UDT element..
 	do
@@ -1978,7 +2031,18 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 		'' '{'?
 		isarray = hMatch( CHAR_LBRACE )
 
-		elmofs = ofs + elm->var.elm.ofs
+		elmofs = elm->var.elm.ofs
+		if( not islocal ) then
+			if( lelm <> NULL ) then
+				pad = (elmofs - lelm->var.elm.ofs) - lelm->lgt
+				if( pad > 0 ) then
+					irEmitVARINIPAD pad
+					lgt += pad
+				end if
+			end if
+		end if
+
+		elmofs += ofs
 
         if( not cSymbArrayInit( basesym, elm, elmofs, islocal, isarray ) ) then
           	exit function
@@ -1992,7 +2056,10 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 			end if
 		end if
 
+		lgt += elm->lgt
+
 		'' next
+		lelm = elm
 		elm = elm->var.elm.r
 
 	'' ','
@@ -2008,8 +2075,9 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' pad
 	if( not islocal ) then
-		if( elmcnt < elements ) then
-			irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+		pad = sym->lgt - lgt
+		if( pad > 0 ) then
+			irEmitVARINIPAD pad
 		end if
 	end if
 
@@ -2082,7 +2150,9 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
+function cStaticArrayDecl( dimensions as integer, _
+						   dTB() as FBARRAYDIM )
+
     static as integer i, expr, dtype
 
     cStaticArrayDecl = FALSE
@@ -2174,7 +2244,9 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cArrayDecl( dimensions as integer, exprTB() as integer )
+function cArrayDecl( dimensions as integer, _
+					 exprTB() as integer )
+
     dim i as integer, expr as integer
 
     cArrayDecl = FALSE
@@ -2361,11 +2433,14 @@ end function
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
 ''				      (PTR|POINTER)* .
 ''
-function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer )
+function cSymbolType( typ as integer, _
+					  subtype as FBSYMBOL ptr, _
+					  lgt as integer, _
+					  ptrcnt as integer )
+
     dim as integer isunsigned, isfunction, allowptr
     dim s as FBSYMBOL ptr
     dim text as string
-
 
 	cSymbolType = FALSE
 
@@ -2738,7 +2813,8 @@ end function
 ''Arguments       =   ArgDecl (',' ArgDecl)* .
 ''
 function cArguments( byval procmode as integer, _
-					 argc as integer, byval argtail as FBSYMBOL ptr, _
+					 argc as integer, _
+					 byval argtail as FBSYMBOL ptr, _
 					 byval isproto as integer ) as FBSYMBOL ptr
 
 	argtail = NULL
@@ -2776,8 +2852,10 @@ end sub
 ''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" (NUM_LIT|STR_LIT))? .
 ''
 function cArgDecl( byval procmode as integer, _
-				   byval argc as integer, byval argtail as FBSYMBOL ptr, _
+				   byval argc as integer, _
+				   byval argtail as FBSYMBOL ptr, _
 				   byval isproto as integer ) as FBSYMBOL ptr
+
 	dim as string id
 	dim as integer expr, dclass, dtype, readid, mode
 	dim as integer atype, amode, alen, asuffix, optional, ptrcnt
@@ -3223,8 +3301,13 @@ end function
 '':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byval param as integer, _
-					 expr as integer, pmode as integer, byval optonly as integer ) as integer
+function cProcParam( byval proc as FBSYMBOL ptr, _
+					 byval arg as FBSYMBOL ptr, _
+					 byval param as integer, _
+					 expr as integer, _
+					 pmode as integer, _
+					 byval optonly as integer ) as integer
+
 	dim amode as integer
 	dim typ as integer
 
@@ -3323,7 +3406,9 @@ end function
 '':::::
 ''ProcParamList     =    ProcParam (DECL_SEPARATOR ProcParam)* .
 ''
-function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer ) as integer
+function cProcParamList( byval proc as FBSYMBOL ptr, _
+						 byval procexpr as integer ) as integer
+
     dim p as integer, params as integer
     dim res as integer, dtype as integer
     dim args as integer, arg as FBSYMBOL ptr
@@ -3403,7 +3488,8 @@ function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer )
 end function
 
 '':::::
-function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer ) as integer static
+function hAssignFunctResult( byval proc as FBSYMBOL ptr, _
+							 byval expr as integer ) as integer static
     dim s as FBSYMBOL ptr
     dim assg as integer
 
@@ -3430,18 +3516,19 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
 end function
 
 '':::::
-function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
+function cProcCall( byval sym as FBSYMBOL ptr, _
+					byval ptrexpr as integer, _
 					byval checkparents as integer = FALSE ) as integer
 	dim procexpr as integer
 	dim typ as integer, dtype as integer
 
 	cProcCall = FALSE
 
-	procexpr = astNewFUNCT( proc, IR.DATATYPE.VOID, ptrexpr )
+	procexpr = astNewFUNCT( sym, IR.DATATYPE.VOID, ptrexpr )
 
 	if( checkparents = TRUE ) then
 		'' if the sub has no args, parents are optional
-		if( symbGetProcArgs( proc ) = 0 ) then
+		if( symbGetProcArgs( sym ) = 0 ) then
 			checkparents = FALSE
 		end if
 
@@ -3464,7 +3551,7 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	env.prntopt	= not checkparents
 
 	'' ProcParamList
-	if( not cProcParamList( proc, procexpr ) ) then
+	if( not cProcParamList( sym, procexpr ) ) then
 		exit function
 	end if
 
@@ -3472,7 +3559,7 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	if( (checkparents) or (env.prntcnt > 0) ) then
 
 		'' --parent cnt
-		env.prntcnt = env.prntcnt - 1
+		env.prntcnt -= 1
 
 		if( (not hMatch( CHAR_RPRNT )) or (env.prntcnt > 0) ) then
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
@@ -3484,7 +3571,7 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	env.prntopt	= FALSE
 
 	'' can proc's result be skipped?
-	typ = symbGetType( proc )
+	typ = symbGetType( sym )
 	if( typ <> FB.SYMBTYPE.VOID ) then
 		if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or _
 			(typ = IR.DATATYPE.STRING) ) then
@@ -3738,7 +3825,7 @@ function cAsmCode
 					'' const?
 					s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.CONST )
 				    if( s <> NULL ) then
-						text = symbGetConstText( lexTokenSymbol )
+						text = symbGetConstText( s )
 					else
 						'' var?
 						s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.VAR )

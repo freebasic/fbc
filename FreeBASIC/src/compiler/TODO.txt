@@ -1,5 +1,9 @@
 
-[ ] bitfields -- Gtk depends on them A LOT
+[ ] add checks for "intdiv 1", "sub 0", "shr 0", "shl 0", "or 0" plus "and -1" ("add" and "mul" are
+    already checked
+
+[ ] add compile-time evaluation for address of (@) -- AST will need other node type as it's
+    actually a symbol name but can't be a VAR, constant expressions will be allowed
 
 [ ] make PUT# and GET# accept a 4th optional argument: bytes
 

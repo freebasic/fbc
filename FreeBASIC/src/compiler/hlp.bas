@@ -127,8 +127,9 @@ data "Array not dimensioned"
 data "Array access, index expected"
 data "Expected 'END ENUM'"
 data "Cannot initialize dynamic arrays"
+data "Invalid bitfield"
 
-const FB.ERRMSGS = 74
+const FB.ERRMSGS = 75
 
 
 '':::::
@@ -201,7 +202,7 @@ sub hReportErrorEx( byval errnum as integer, _
 		print str$( linenum );
 	end if
 	print ") : error";
-	
+
 	if( errnum >= 0 ) then
 		print " "; str$( errnum ); ": "; msg;
 		if( len( msgex ) > 0 ) then
@@ -734,49 +735,22 @@ function hStripFilename ( byval filename as string ) as string static
 
 end function
 
-	dim shared pow2tb(0 to 63) as uinteger
-
-'':::::
-private sub hInitPow2
-	static hasinit as integer
-
-	if( hasinit ) then
-		exit sub
-	end if
-
-	pow2tb(0)  =  0: pow2tb(1)  =  0: pow2tb(2)  =  0: pow2tb(3)  = 15
-	pow2tb(4)  =  0: pow2tb(5)  =  1: pow2tb(6)  = 28: pow2tb(7)  =  0
-	pow2tb(8)  = 16: pow2tb(9)  =  0: pow2tb(10) =  0: pow2tb(11) =  0
-	pow2tb(12) =  2: pow2tb(13) = 21: pow2tb(14) = 29: pow2tb(15) =  0
-    pow2tb(16) =  0: pow2tb(17) =  0: pow2tb(18) = 19: pow2tb(19) = 17
-    pow2tb(20) = 10: pow2tb(21) =  0: pow2tb(22) = 12: pow2tb(23) =  0
-    pow2tb(24) =  0: pow2tb(25) =  3: pow2tb(26) =  0: pow2tb(27) =  6
-    pow2tb(28) =  0: pow2tb(29) = 22: pow2tb(30) = 30: pow2tb(31) =  0
-    pow2tb(32) = 14: pow2tb(33) =  0: pow2tb(34) = 27: pow2tb(35) =  0
-    pow2tb(36) =  0: pow2tb(37) =  0: pow2tb(38) = 20: pow2tb(39) =  0
-    pow2tb(40) = 18: pow2tb(41) =  9: pow2tb(42) = 11: pow2tb(43) =  0
-    pow2tb(44) =  5: pow2tb(45) =  0: pow2tb(46) =  0: pow2tb(47) = 13
-    pow2tb(48) = 26: pow2tb(49) =  0: pow2tb(50) =  0: pow2tb(51) =  8
-    pow2tb(52) =  0: pow2tb(53) =  4: pow2tb(54) =  0: pow2tb(55) = 25
-    pow2tb(56) =  0: pow2tb(57) =  7: pow2tb(58) = 24: pow2tb(59) =  0
-    pow2tb(60) = 23: pow2tb(61) =  0: pow2tb(62) = 31: pow2tb(63) =  0
-
-    hasinit = TRUE
-
-end sub
-
 '':::::
 function hToPow2( byval value as uinteger ) as uinteger static
     dim n as uinteger
 
-	'' init table
-	hInitPow2
-
-	hToPow2 = 0
+	static pow2tb(0 to 63) as uinteger = { 0, 0,  0, 15,  0,  1, 28, 0, _
+										  16, 0,  0,  0,  2, 21, 29, 0, _
+    									   0, 0, 19, 17, 10,  0, 12, 0, _
+    									   0, 3,  0,  6,  0, 22, 30, 0, _
+    									  14, 0, 27,  0,  0, 0, 20,  0, _
+    									  18, 9, 11,  0,  5, 0,  0, 13, _
+    									  26, 0,  0,  8,  0, 4,  0, 25, _
+    									  0,  7, 24,  0, 23, 0, 31,  0 }
 
 	'' don't check if it's zero
 	if( value = 0 ) then
-		exit function
+		return 0
 	end if
 
 	'' (n^(n-1)) * Harley's magic number
@@ -787,7 +761,9 @@ function hToPow2( byval value as uinteger ) as uinteger static
 
     '' is this really a power of 2?
     if( value - (1 shl n) = 0 ) then
-    	hToPow2 = n
+    	return n
+    else
+    	return 0
     end if
 
 end function

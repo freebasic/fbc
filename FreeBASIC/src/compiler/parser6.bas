@@ -1001,6 +1001,7 @@ end function
 '':::::
 private function hFilePut( byval isfunc as integer ) as integer
 	dim as integer filenum, expr1, expr2, isarray
+	dim as FBSYMBOL ptr s
 
 	hFilePut = INVALID
 
@@ -1036,7 +1037,8 @@ private function hFilePut( byval isfunc as integer ) as integer
     isarray = FALSE
     if( lexCurrentToken = CHAR_LPRNT ) then
     	if( lexLookahead(1) = CHAR_RPRNT ) then
-    		isarray = symbIsArray( astGetSymbol( expr2 ) )
+    		s = astGetSymbol( expr2 )
+    		isarray = symbIsArray( s )
     		if( isarray ) then
     			lexSkipToken
     			lexSkipToken
@@ -1055,6 +1057,7 @@ end function
 '':::::
 private function hFileGet( byval isfunc as integer ) as integer
 	dim as integer filenum, expr1, expr2, isarray
+	dim as FBSYMBOL ptr s
 
 	hFileGet = INVALID
 
@@ -1090,7 +1093,8 @@ private function hFileGet( byval isfunc as integer ) as integer
     isarray = FALSE
     if( lexCurrentToken = CHAR_LPRNT ) then
     	if( lexLookahead(1) = CHAR_RPRNT ) then
-    		isarray = symbIsArray( astGetSymbol( expr2 ) )
+    		s = astGetSymbol( expr2 )
+    		isarray = symbIsArray( s )
     		if( isarray ) then
     			lexSkipToken
     			lexSkipToken
@@ -1667,8 +1671,8 @@ end function
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
 function cArrayFunct( funcexpr as integer )
-	dim sexpr as integer
-	dim islbound as integer, expr as integer
+	dim as integer sexpr, islbound, expr
+	dim as FBSYMBOL ptr s
 
 	cArrayFunct = FALSE
 
@@ -1696,7 +1700,8 @@ function cArrayFunct( funcexpr as integer )
 		end if
 
 		'' array?
-		if( not symbIsArray( astGetSymbol( sexpr ) ) ) then
+		s = astGetSymbol( sexpr )
+		if( not symbIsArray( s ) ) then
 			hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
 			exit function
 		end if

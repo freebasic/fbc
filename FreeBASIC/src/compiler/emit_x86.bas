@@ -429,7 +429,7 @@ function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
 	dim sname as string
 
 	if( s <> NULL ) then
-		symbGetNameto( s, sname )
+		sname = symbGetName( s )
 		emitGetVarName = sname + hGetOfs( s->ofs )
 	else
 		emitGetVarName = ""

@@ -287,9 +287,9 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     	end if
 
     	''
-    	symbSetProcIsDeclared proc, TRUE
+    	symbSetProcIsDeclared( proc, TRUE )
 
-    	symbSetAllocType proc, alloctype
+    	symbSetAllocType( proc, alloctype )
     end if
 
     cSubOrFuncHeader = TRUE

@@ -53,83 +53,20 @@ declare function 	symbLookupUDTVar		( byval symbol as string, _
 
 declare function 	symbLookupProcResult	( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function 	symbGetLabelIsDeclared	( byval l as FBSYMBOL ptr ) as integer
-
 declare	function 	symbGetFirstNode 		( ) as FBSYMBOL ptr
 
 declare	function 	symbGetNextNode			( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function 	symbGetVarOfs			( byval s as FBSYMBOL ptr ) as integer
 
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 
 declare function 	symbGetVarDscName		( byval s as FBSYMBOL ptr ) as string
 
-declare function 	symbGetVarInitialized	( byval s as FBSYMBOL ptr ) as integer
-
 declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
-
-declare function 	symbGetConstText		( byval c as FBSYMBOL ptr ) as string
 
 declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, _
 											  typ as integer, _
 											  subtype as FBSYMBOL ptr, _
 											  byval fields as string ) as integer
-
-declare function 	symbGetArgMode			( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArgSuffix		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArgsLen			( byval f as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArgOptional		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArgOptval		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr ) as double
-
-declare function 	symbGetArgOptval64		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr ) as longint
-
-declare function	symbGetArgOptvalStr		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function 	symbGetFuncMode			( byval f as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetFuncDataType		( byval f as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArrayFirstDim	( byval s as FBSYMBOL ptr ) as FBVARDIM ptr
-
-declare function 	symbGetName				( byval s as FBSYMBOL ptr ) as string
-
-declare sub 		symbGetNameTo			( byval s as FBSYMBOL ptr, _
-											  sname as string )
-
-declare function 	symbGetOrgName			( byval s as FBSYMBOL ptr ) as string
-
-declare function 	symbGetAccessCnt		( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetLen				( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetType				( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetSubType			( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function 	symbGetAllocType		( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetClass			( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetIsDynamic		( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetProcIsDeclared	( byval f as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetProcArgs			( byval p as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetProcFirstArg		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function 	symbGetProcLastArg		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbGetProcPrevArg		( byval f as FBSYMBOL ptr, _
 											  byval a as FBSYMBOL ptr, _
@@ -139,22 +76,8 @@ declare function 	symbGetProcNextArg		( byval f as FBSYMBOL ptr, _
 											  byval a as FBSYMBOL ptr, _
 											  byval checkconv as integer = TRUE ) as FBSYMBOL ptr
 
-declare function 	symbGetProcHeadArg		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function 	symbGetProcTailArg		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare function 	symbGetArrayDiff		( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArrayDimensions	( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	symbGetArrayDescriptor	( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
-
 declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, _
 											  byval realsize as integer = TRUE ) as integer
-
-declare function 	symbGetDefineText		( byval d as FBSYMBOL ptr ) as string
-
-declare function 	symbGetDefineLen		( byval d as FBSYMBOL ptr ) as integer
 
 declare function 	symbCalcArgLen			( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
@@ -162,15 +85,6 @@ declare function 	symbCalcArgLen			( byval typ as integer, _
 
 declare function 	symbListLibs			( namelist() as string, _
 											  byval index as integer ) as integer
-
-declare sub 		symbSetArrayDimensions	( byval s as FBSYMBOL ptr, _
-											  byval dims as integer )
-
-declare sub 		symbSetAllocType		( byval s as FBSYMBOL ptr, _
-											  byval alloctype as integer )
-
-declare sub 		symbSetProcIsDeclared	( byval f as FBSYMBOL ptr, _
-											  byval isdeclared as integer )
 
 declare function 	symbAddKeyword			( byval symbol as string, byval id as integer, byval class as integer ) as FBSYMBOL ptr
 
@@ -236,6 +150,7 @@ declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _
 											  byval lgt as integer, _
+											  byval bits as integer, _
 											  byval isinnerunion as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddEnum				( byval symbol as string ) as FBSYMBOL ptr
@@ -311,10 +226,6 @@ declare function 	symbCalcLen				( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval realsize as integer = FALSE ) as integer
 
-declare function 	symbIsArray				( byval s as FBSYMBOL ptr ) as integer
-
-declare function 	hIsString				( byval dtype as integer ) as integer
-
 declare function 	hAllocNumericConst		( byval sname as string, _
 											  byval typ as integer ) as FBSYMBOL ptr
 
@@ -325,3 +236,92 @@ declare function 	hCalcElements 			( byval s as FBSYMBOL ptr, _
 											  byval n as FBVARDIM ptr = NULL ) as integer
 
 declare function 	symbCheckLabels 		( ) as FBSYMBOL ptr
+
+declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
+											  byval typ as integer, _
+											  byval bits as integer ) as integer
+
+
+''
+'' getters and setters as macros
+''
+
+#define symbGetAccessCnt(s) s->acccnt
+
+#define symbGetLen(s) s->lgt
+
+#define symbGetType(s) s->typ
+
+#define symbGetSubType(s) s->subtype
+
+#define symbGetClass(s) s->class
+
+#define symbGetAllocType(s) s->alloctype
+
+#define symbSetAllocType(s,t) s->alloctype = t
+
+#define symbGetDefineText(d) d->def.text
+
+#define symbGetDefineLen(d) len( d->def.text )
+
+#define symbGetVarInitialized(s) s->var.initialized
+
+#define symbGetArrayDiff(s) s->var.array.dif
+
+#define symbGetArrayDimensions(s) s->var.array.dims
+
+#define symbSetArrayDimensions(s,d) s->var.array.dims = d
+
+#define symbGetArrayDescriptor(s) s->var.array.desc
+
+#define symbGetProcArgs(f) f->proc.args
+
+#define symbGetArrayFirstDim(s) s->var.array.dimhead
+
+#define symbGetFuncMode(f) f->proc.mode
+
+#define symbGetOrgName(s) s->hashitem->name
+
+#define symbGetName(s) s->alias
+
+#define symbGetVarOfs(s) s->ofs
+
+#define symbGetConstText(c) c->con.text
+
+#define symbGetLabelIsDeclared(l) l->lbl.declared
+
+#define symbGetProcIsDeclared(f) f->proc.isdeclared
+
+#define symbSetProcIsDeclared(f,d) f->proc.isdeclared = d
+
+#define symbGetProcFirstArg(f) iif( f->proc.mode = FB.FUNCMODE.PASCAL, f->proc.arghead, f->proc.argtail )
+
+#define symbGetProcLastArg(f) iif( f->proc.mode = FB.FUNCMODE.PASCAL, f->proc.argtail, f->proc.arghead )
+
+#define symbGetProcHeadArg(f) f->proc.arghead
+
+#define symbGetProcTailArg(f) f->proc.argtail
+
+#define symbGetArgMode(f,a) iif( a = NULL, INVALID, a->arg.mode )
+
+#define symbGetArgSuffix(f,a) iif( a = NULL, INVALID, a->arg.suffix )
+
+#define symbGetArgOptional(f,a) a->arg.optional
+
+#define symbGetArgOptval(f,a) a->arg.optval.value
+
+#define symbGetArgOptval64(f,a) a->arg.optval.value64
+
+#define symbGetArgOptvalStr(f,a) a->arg.optval.valuestr
+
+#define symbGetIsDynamic(s) iif( s->class = FB.SYMBCLASS.UDTELM, FALSE, (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0 )
+
+#define symbIsArray(s) iif( (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0, TRUE, s->var.array.dims > 0 )
+
+
+#define hIsString(t) ((t = IR.DATATYPE.STRING) or (t = IR.DATATYPE.FIXSTR) or (t = IR.DATATYPE.CHAR))
+
+
+declare function symbGetLen2(byval s as FBSYMBOL ptr) as integer
+
+

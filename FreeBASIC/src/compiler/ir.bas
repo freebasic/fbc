@@ -139,25 +139,25 @@ declare sub 		irDump				( byval op as integer, _
 	dim shared vregTB( ) as IRVREG
 
 
-'' class, size, signed?, name
+'' class, size, bits, signed?, name
 datatypedata:
-data IR.DATACLASS.INTEGER, 0			 	, FALSE, "void"
-data IR.DATACLASS.INTEGER, 1			 	, TRUE , "byte"
-data IR.DATACLASS.INTEGER, 1			 	, FALSE, "ubyte"
-data IR.DATACLASS.INTEGER, 0			 	, FALSE, "char"
-data IR.DATACLASS.INTEGER, 2			 	, TRUE , "short"
-data IR.DATACLASS.INTEGER, 2			 	, FALSE, "ushort"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, TRUE , "integer"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, FALSE, "uint"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, TRUE , "quad"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, FALSE, "uquad"
-data IR.DATACLASS.FPOINT , 4             	, TRUE , "single"
-data IR.DATACLASS.FPOINT , 8			 	, TRUE , "double"
-data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, FALSE, "string"
-data IR.DATACLASS.STRING , 1			 	, FALSE, "fixstr"
-data IR.DATACLASS.INTEGER, 0			 	, FALSE, "udt"
-data IR.DATACLASS.INTEGER, 0			 	, FALSE, "func"
-data IR.DATACLASS.INTEGER, 1			 	, FALSE, "typedef"
+data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "void"
+data IR.DATACLASS.INTEGER, 1			 	, 8*1				, TRUE , "byte"
+data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "ubyte"
+data IR.DATACLASS.INTEGER, 0			 	, 8*1				, FALSE, "char"
+data IR.DATACLASS.INTEGER, 2			 	, 8*2				, TRUE , "short"
+data IR.DATACLASS.INTEGER, 2			 	, 8*2				, FALSE, "ushort"
+data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, TRUE , "integer"
+data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, FALSE, "uint"
+data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, TRUE , "quad"
+data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, FALSE, "uquad"
+data IR.DATACLASS.FPOINT , 4             	, 8*4				, TRUE , "single"
+data IR.DATACLASS.FPOINT , 8			 	, 8*8				, TRUE , "double"
+data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, 0					, FALSE, "string"
+data IR.DATACLASS.STRING , 1			 	, 8*1				, FALSE, "fixstr"
+data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "udt"
+data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "func"
+data IR.DATACLASS.INTEGER, 1			 	, 0					, FALSE, "typedef"
 
 ''op, type(binary=0,unary=1,...), cummutative, name
 opcodedata:
@@ -255,6 +255,7 @@ sub irInit
 	for i = 0 to IR.MAXDATATYPES-1
 		read dtypeTB(i).class
 		read dtypeTB(i).size
+		read dtypeTB(i).bits
 		read dtypeTB(i).signed
 		read dtypeTB(i).dname
 	next i
@@ -310,9 +311,11 @@ end sub
 '':::::
 function irGetDataClass( byval dtype as integer ) as integer static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
-	irGetDataClass = dtypeTB(dtype).class
+	return dtypeTB(dtype).class
 
 end function
 
@@ -351,8 +354,7 @@ function irMaxDataType( byval dtype1 as integer, _
     	end if
 
     case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR
-    	irMaxDataType = IR.DATATYPE.STRING
-    	exit function
+    	return IR.DATATYPE.STRING
 
     case else
     	if( dtype1 - dtype2 = -1 ) then
@@ -362,9 +364,9 @@ function irMaxDataType( byval dtype1 as integer, _
 
     '' assuming DATATYPE's are in order of precision
     if( dtype1 >= dtype2 ) then
-    	irMaxDataType = dtype1
+    	return dtype1
     else
-    	irMaxDataType = dtype2
+    	return dtype2
     end if
 
 end function
@@ -372,18 +374,33 @@ end function
 '':::::
 function irIsSigned( byval dtype as integer ) as integer static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
-	irIsSigned = dtypeTB(dtype).signed
+	return dtypeTB(dtype).signed
 
 end function
 
 '':::::
 function irGetDataSize( byval dtype as integer ) as integer static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
-	irGetDataSize = dtypeTB(dtype).size
+	return dtypeTB(dtype).size
+
+end function
+
+'':::::
+function irGetDataBits( byval dtype as integer ) as integer static
+
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
+
+	return dtypeTB(dtype).bits
 
 end function
 
@@ -397,8 +414,7 @@ function irGetSignedType( byval dtype as integer ) as integer static
 	end if
 
 	if( dtypeTB(dt).class <> IR.DATACLASS.INTEGER ) then
-		irGetSignedType = dtype
-		exit function
+		return dtype
 	end if
 
 	select case as const dt
@@ -406,7 +422,7 @@ function irGetSignedType( byval dtype as integer ) as integer static
 		dtype = dtype - 1						'' hack! assuming sign/unsig are in pairs
 	end select
 
-	irGetSignedType = dtype
+	return dtype
 
 end function
 
@@ -420,8 +436,7 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 	end if
 
 	if( dtypeTB(dt).class <> IR.DATACLASS.INTEGER ) then
-		irGetUnsignedType = dtype
-		exit function
+		return dtype
 	end if
 
 	select case as const dt
@@ -431,7 +446,7 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 		dtype = IR.DATATYPE.BYTE
 	end select
 
-	irGetUnsignedType = dtype
+	return dtype
 
 end function
 
@@ -1146,28 +1161,6 @@ function irAllocVRPTR( byval dtype as integer, _
 end function
 
 '':::::
-function irIsREG( byval vreg as integer ) as integer static
-
-	if( vregTB(vreg).typ = IR.VREGTYPE.REG ) then
-		irIsREG = TRUE
-	else
-		irIsREG = FALSE
-	end if
-
-end function
-
-'':::::
-function irIsIMM( byval vreg as integer ) as integer static
-
-	if( vregTB(vreg).typ = IR.VREGTYPE.IMM ) then
-		irIsIMM = TRUE
-	else
-		irIsIMM = FALSE
-	end if
-
-end function
-
-'':::::
 function irIsVAR( byval vreg as integer ) as integer static
 
 	irIsVAR = FALSE
@@ -1191,26 +1184,6 @@ function irIsIDX( byval vreg as integer ) as integer static
 
 end function
 
-'':::::
-function irGetVRType( byval vreg as integer ) as integer static
-
-	if( vreg = INVALID ) then
-		irGetVRType = INVALID
-	else
-		irGetVRType = vregTB(vreg).typ
-	end if
-
-end function
-
-'':::::
-function irGetVRValue( byval vreg as integer ) as integer static
-	irGetVRValue = vregTB(vreg).value
-end function
-
-'':::::
-function irGetVRDataType( byval vreg as integer ) as integer static
-	irGetVRDataType = vregTB(vreg).dtype
-end function
 
 '':::::
 function irGetVRDataClass( byval vreg as integer ) as integer static
@@ -1218,7 +1191,9 @@ function irGetVRDataClass( byval vreg as integer ) as integer static
 
 	dtype = vregTB(vreg).dtype
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
 	irGetVRDataClass = dtypeTB(dtype).class
 
@@ -1230,7 +1205,9 @@ function irGetVRDataSize( byval vreg as integer ) as integer static
 
 	dtype = vregTB(vreg).dtype
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
 	irGetVRDataSize = dtypeTB(dtype).size
 
@@ -1258,7 +1235,7 @@ sub irGetVRIndexName( byval vreg as integer, _
 	end if
 
 	if( sym <> NULL ) then
-		symbGetNameTo( sym, sname )
+		sname = symbGetName( sym )
 	else
 		sname = ""
 	end if
@@ -1280,7 +1257,7 @@ sub irGetVRNameEx( byval vreg as integer, _
 
 	select case as const typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR
-		symbGetNameTo( vregTB(vreg).sym, vname )
+		vname = symbGetName( vregTB(vreg).sym )
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
 	    irGetVRIndexName( vreg, vname )
@@ -1294,14 +1271,6 @@ sub irGetVRNameEx( byval vreg as integer, _
 		emitGetRegName( dtype, dclass, vregTB(vreg).reg, vname )
 
 	end select
-
-end sub
-
-'':::::
-sub irGetVRName( byval vreg as integer, _
-				 vname as string ) static
-
-	irGetVRNameEx( vreg, vregTB(vreg).typ, vname )
 
 end sub
 
@@ -1601,7 +1570,7 @@ sub irFlushCALL( byval op as integer, _
     	mode = symbGetFuncMode( proc )
     	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
 			if( bytes2pop = 0 ) then
-				bytes2pop = symbGetArgsLen( proc )
+				bytes2pop = symbGetLen( proc )
 			end if
 		else
 			bytes2pop = 0

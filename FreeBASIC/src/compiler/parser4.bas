@@ -1205,7 +1205,10 @@ end function
 ''CaseStatement   =    CASE (ELSE | (CaseExpression (COMMA CaseExpression)*)) Comment? SttSeparator
 ''					   SimpleLine*.
 ''
-function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval exitlabel as FBSYMBOL ptr )
+function cCaseStatement( byval s as FBSYMBOL ptr, _
+						 byval sdtype as integer, _
+						 byval exitlabel as FBSYMBOL ptr )
+
 	dim il as FBSYMBOL ptr, nl as FBSYMBOL ptr
 	dim iselse as integer, res as integer
 	dim cnt as integer, i as integer, cntbase as integer

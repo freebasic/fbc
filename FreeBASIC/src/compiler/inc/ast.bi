@@ -97,7 +97,7 @@ type IIFNode
 	falselabel 		as FBSYMBOL ptr
 end type
 
-type ASTNode
+type ASTNODE
 	prv				as integer						'' 'pointers' used by the allocator,
 	nxt				as integer						'' /  (can't be swapped/copied!)
 
@@ -115,6 +115,7 @@ type ASTNode
 	op				as integer						'' f/ BOP, UOP, ... nodes
 	allocres 		as integer						'' /
 	ex				as FBSYMBOL ptr					'' / (extra: label, etc)
+	chkbitfld		as integer
 
 	union
 		var			as VARNode

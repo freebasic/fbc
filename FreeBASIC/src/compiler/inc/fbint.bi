@@ -373,7 +373,7 @@ enum FBTK_ENUM
 	FB.TK.IFNDEF
 	FB.TK.ENDIF
 	FB.TK.DEFINED
-	
+
 	FB.TK.THREADCREATE
 
 	FB.TK.PSET
@@ -604,10 +604,13 @@ type FBSUDT
 	align			as integer
 	lfldlen			as integer					'' largest field len (used with unions)
 	innerlgt		as integer					'' used with inner nameless unions
+	bitpos			as uinteger
 end type
 
 type FBSUDTELM
 	ofs				as integer
+	bitpos			as integer
+	bits			as integer
 	parent			as FBSYMBOL_ ptr
 
 	l				as FBSYMBOL_ ptr			'' left
