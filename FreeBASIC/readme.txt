@@ -303,7 +303,7 @@ What FreeBASIC Isn't:
 
 Possible Additions to Later Versions:
 
-  o Headers for libraries like gsl, Gtk, ...
+  o Headers for libraries like Gtk, ...
 
   o Full debug support using GDB/Insight
 
@@ -431,6 +431,8 @@ Links:
 
     - BASS and BASSMod: http://www.un4seen.com/
 
+    - BIG_INT: http://chat.finalcombat.com/valyala/big_int/
+
     - DevIL: http://openil.sourceforge.net/
     
     - fmod: http://www.fmod.org/
@@ -456,6 +458,8 @@ Links:
     - OpenAL: http://www.openal.org/ or http://developer.creative.com/landing.asp?cat=1&sbcat=31&top=38
 
     - OpenGL: http://www.opengl.org/
+
+    - PDFlib: http://www.pdflib.com/ or http://gnuwin32.sourceforge.net/packages/pdflib.htm
 
     - SDL: http://www.libsdl.org/ (look under Libraries for SDL_net, SDL_image, SDL_ttf, etc)
 

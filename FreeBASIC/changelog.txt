@@ -20,6 +20,8 @@ Version 0.13 Beta:
 - DOS port now detects if STDOUT is not the terminal and uses printf() if so, so shell I/O redirection works now (DrV)
 - more clear error messages when scalars variables are been accessed as arrays and vice-versa (v1c)
 - the string argument in SHELL and DIR$ is optional now, as in QB (v1c)
+- #DEFINE won't report an error if declaring again a symbol with exactly the same text - won't work with macros (v1c)
+- #UNDEF won't report an error if un-defining an non-existent symbol (v1c)
 
 [added]
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
@@ -32,11 +34,13 @@ Version 0.13 Beta:
 - include file and import lib for the libxml2 library (v1c)
 - include file and import lib for the GSL library (v1c)
 - include file and import lib for the SQLite library (v1c)
-- include file and import lib for the mySQL client library (v1c)
+- include file and import lib for the MySQL client library (v1c)
 - include file and import lib for the DevIL library (v1c)
 - include file and import lib for the gd library (v1c)
+- include file and import lib for the zlib library (v1c
+- include file and import lib for the PDFlib library (v1c))
 - include file and static lib for the GRX library (v1c)
-- include file and static lib for the zlib library (v1c)
+- include file and static lib for the BIG_INT library (v1c)
 - PALETTE can now be called with 4 parameters, specifying new color red/green/blue components directly (lillo)
 - ENUM's can now be nameless (v1c)
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
@@ -54,6 +58,8 @@ Version 0.13 Beta:
 - optional sub/function parameters can now be strings as well, as in: "declare sub test(arg as string = "default")" (lillo)
 - "FUNCTION =" can now be used to store to current function's result, as in PB (v1c)
 - function's can return UDT's now, but only for prototypes of C libs (compiled by GCC 3.x only), not internally yet (v1c)
+- TYPE and UNION fields can now be declared as "AS sometype a, b, c, d(123)" too (v1c)
+- ENUM items can now be separated by commas too, as in "a, b, c = 2, d" (v1c)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported

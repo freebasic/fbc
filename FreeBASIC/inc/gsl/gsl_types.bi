@@ -9,4 +9,6 @@
 #ifndef __gsl_types_bi__
 #define __gsl_types_bi__
 
+#inclib "gsl"
+
 #endif
