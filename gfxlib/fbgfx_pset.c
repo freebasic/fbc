@@ -19,7 +19,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "QB_gfx_main.c"
+#include "QB_gfx_main.h"
 
 FBCALL int fb_GfxPsetEx (Sint16 x, Sint16 y, Uint32 color)
 {

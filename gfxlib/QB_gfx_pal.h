@@ -49,4 +49,7 @@ FBCALL void		fb_GfxPaletteUsing	 ( int *src );
 FBCALL void 	fb_GfxPaletteOut     ( int port, int data );
 FBCALL int 		fb_GfxPaletteInp     ( int port );
 
+/*  r, g, and b range from 0 to 255 */
+	   int 		fb_GfxPaletteEx  	(Uint8 attribute, Uint8 r, Uint8 g, Uint8 b);
+
 #endif

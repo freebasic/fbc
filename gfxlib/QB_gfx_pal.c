@@ -31,8 +31,6 @@
 
 //extern struct fb_GfxInfoStruct fb_GfxInfo;
 
-/*  r, g, and b range from 0 to 255 */
-static int fb_GfxPaletteEx  	(Uint8 attribute, Uint8 r, Uint8 g, Uint8 b);
 
 const SDL_Color fb_GfxDefaultPal[256] = {
 #include "defaultPalette.h"
@@ -92,7 +90,7 @@ FBCALL int fb_GfxPalette (Uint32 attribute, Uint32 color)
                                       (Uint8)(b * 255.0f / 63.0f + .5f) );
 }
 
-static int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
+int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
 {
     SDL_Color c;
     
