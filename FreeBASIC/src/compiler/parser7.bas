@@ -829,24 +829,21 @@ function cGfxScreen as integer
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( hexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
+			hexpr = INVALID
 		end if
-
-		'' (',' Expr )?
-		if( hMatch( CHAR_COMMA ) ) then
-			if( not cExpression( dexpr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
-
-			'' (',' Expr )?
-			if( hMatch( CHAR_COMMA ) ) then
-				if( not cExpression( fexpr ) ) then
-					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-					exit function
-				end if
-			end if
+	end if
+	
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( dexpr ) ) then
+			dexpr = INVALID
+		end if
+	end if
+	
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( fexpr ) ) then
+			fexpr = INVALID
 		end if
 	end if
 
