@@ -982,6 +982,7 @@ sub printOptions
 	print "-lib", "Create a static library"
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
 	print "-nodeflibs", "Do not include the default libraries"
+	print "-noerrline", "Do not show source line where error occured"
 #ifdef TARGET_WIN32
 	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
 	'''''print "-nounderscore", "Don't add the underscore prefix to function names"
@@ -1033,7 +1034,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "arch", "e", "ex", "w", "nodeflibs", "nostdcall", "nounderscore"
+			case "arch", "e", "ex", "w", "nodeflibs", "noerrline", "nostdcall", "nounderscore"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -1163,6 +1164,9 @@ function processCompOptions as integer
 
 			case "w"
 				fbSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )
+
+			case "noerrline"
+				fbSetOption FB.COMPOPT.SHOWERROR, FALSE
 
 #ifdef TARGET_WIN32
 			case "nostdcall"

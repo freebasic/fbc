@@ -69,3 +69,5 @@ declare sub 		lexSkipLine				( )
 declare sub 		lexSetCurrentToken		( byval id as integer, byval class as integer )
 
 declare function 	lexPreProcessor 		( ) as integer
+
+declare function	lexPeekCurrentLine		( byref token_pos as integer ) as string

@@ -224,6 +224,7 @@ sub fbSetDefaultOptions
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= TRUE
 	env.clopt.nodeflibs		= FALSE
+	env.clopt.showerror		= TRUE
 
 end sub
 
@@ -251,6 +252,8 @@ sub fbSetOption ( byval opt as integer, byval value as integer )
 		env.clopt.export = value
 	case FB.COMPOPT.NODEFLIBS
 		env.clopt.nodeflibs = value
+	case FB.COMPOPT.SHOWERROR
+		env.clopt.showerror = value
 	end select
 
 end sub
@@ -282,6 +285,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		res = env.clopt.export
 	case FB.COMPOPT.NODEFLIBS
 		res = env.clopt.nodeflibs
+	case FB.COMPOPT.SHOWERROR
+		res = env.clopt.showerror
 	end select
 
 	fbGetOption = res

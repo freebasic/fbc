@@ -1387,3 +1387,52 @@ sub lexSetCurrentToken( byval id as integer, byval class as integer )
 	ctx.tokenTB(0).class 	= class
 
 end sub
+
+'':::::
+function lexPeekCurrentLine( token_pos as integer ) as string
+	dim res as string, buffer as string * 1024
+	dim p as integer, old_p as integer
+	dim c as ubyte ptr, old_c as ubyte ptr
+	dim start as integer
+	
+	lexPeekCurrentLine = ""
+	
+	old_p = seek( env.inf )
+	p = old_p - ctx.bufflen - 512
+	token_pos = 512
+	if( p < 0 ) then
+		token_pos += p
+		p = 0
+	end if
+	seek #env.inf, p + 1
+	get #env.inf, , buffer
+	
+	start = token_pos + 1
+	c = sadd(buffer) + token_pos
+	old_c = c
+	while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
+		c = c - 1
+		start = start - 1
+	wend
+	res = ""
+	c = c + 1
+	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
+		if( *c = 9 ) then
+			token_pos += 7
+		end if
+		res += chr$(*c)
+		c = c + 1
+	wend
+	
+	c = old_c - 1
+	token_pos -= start
+	while ( ( *c = 32 ) or ( *c = 9 ) )
+		token_pos -= iif( *c = 9, 8, 1 )
+		c = c - 1
+	wend
+	token_pos -= len( lexTokenText )
+	
+	seek #env.inf, old_p
+	
+	lexPeekCurrentLine = res
+end function

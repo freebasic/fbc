@@ -164,6 +164,7 @@ end function
 '':::::
 sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
     dim i as integer, msg as string
+    dim token_pos as integer
 
 	if( linenum = 0 ) then
 		linenum = lexLineNum
@@ -194,6 +195,12 @@ sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as i
 		print ", "; msgex
 	else
 		print
+	end if
+	
+	if( ( linenum > 0 ) and ( env.clopt.showerror ) ) then
+		print
+		print lexPeekCurrentLine( token_pos )
+		print space$( token_pos ) + "^"
 	end if
 
 end sub

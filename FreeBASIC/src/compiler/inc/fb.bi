@@ -53,6 +53,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.WARNINGLEVEL
 	FB.COMPOPT.EXPORT
 	FB.COMPOPT.NODEFLIBS
+	FB.COMPOPT.SHOWERROR
 end enum
 
 type FBCMMLINEOPT
@@ -66,6 +67,7 @@ type FBCMMLINEOPT
 	warninglevel	as integer					'' (def = 0)
 	export			as integer					'' export all symbols declared as EXPORT (def= true)
 	nodeflibs		as integer					'' don't include default libs (def= false)
+	showerror		as integer					'' show line giving error (def= true)
 end type
 
 
