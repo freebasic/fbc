@@ -19,6 +19,10 @@ Version 0.11 Beta:
         compiled with VC 5/6 and Mingw (crtdll is not supported by M$ anymore), you can use the new -nostdlibs 
         option to set a different lib (like crtdll) if you really need that -- ie: plain vanilla Windows 95/osr2 
         doesn't come with msvcrt.dll installed (it can be found at M$'s site) (v1c) 
+[added] include file and import lib for the GLU library (thanks Rel for sending it) (v1c)
+[added] include file and import lib for the FreeImage library (thanks Eric) (v1c)
+[added] include file and import lib for the SDL_gfx 2.0 library (v1c)
+[added] include file and static lib for the Lua (teh C-like scripting language) library (v1c)
 [added] escape chars (\) on string literals, use "OPTION ESCAPE" to enable -- they won't be parsed within $include $inclib (v1c)
 [added] GOTO on single-line IF's w/o THEN (v1c)
 [added] EXTERN keyword, to declare external/global variables (not the same as COMMON) (v1c)
@@ -27,11 +31,9 @@ Version 0.11 Beta:
 [added] WITH..END WITH compound statement -- won't work with field dereference "->" (v1c)
 [added] warning messages when passing a scalar type to a function argument that expects a pointer (v1c)
 [added] -w cmm-line option to change the min level of warning messages shown (v1c)
-[added] include file for the GLU library (thanks Rel for sending it) (v1c)
-[added] include file for the FreeImage library (thanks Eric) (v1c)
 [added] ONCE keyword to be used with $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
 [added] UDT arguments now can be declared and passed by value too (v1c)
-[added] -nostdlibs cmm-line option, so no standard libraries are automatically linked (v1c)
+[added] -nodeflibs cmm-line option, so no standard libraries are automatically linked (v1c)
 [added] "*([@]variable +|- expression)" and "*@variable" support (v1c)
 [added] pointer indexing support, as in "myptr[idx]" (v1c)
 [fixed] COMMON arrays shared between different sources had different descriptor names (v1c)
