@@ -69,7 +69,7 @@ declare sub 		emitDATA			( litext as string, byval litlen as integer, byval dtyp
 declare sub 		emitDATAEND			( )
 
 declare function 	emitGetRegName		( byval dtype as integer, byval dclass as integer, byval reg as integer ) as string
-declare function 	emitGetIDXName		( byval lgt as integer, byval ofs as integer, idxname as string, sname as string ) as string
+declare function 	emitGetIDXName		( byval mult as integer, byval ofs as integer, idxname as string, sname as string ) as string
 
 declare function 	emitIsRegPreserved 	( byval dtype as integer, byval dclass as integer, byval reg as integer ) as integer
 declare function 	emitGetResultReg 	( byval dtype as integer, byval dclass as integer ) as integer

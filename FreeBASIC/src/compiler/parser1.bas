@@ -965,7 +965,7 @@ end function
 
 '':::::
 ''SymbolDecl      =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
-''				  |   EXTERN SymbolDef ALIAS STR_LIT
+''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
 ''
 function cSymbolDecl
@@ -1024,10 +1024,9 @@ function cSymbolDecl
 			alloctype = alloctype or FB.ALLOCTYPE.DYNAMIC
 		end if
 
-		'' SHARED
 		if( (alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
+			'' SHARED?
 			if( lexCurrentToken = FB.TK.SHARED ) then
-
 				'' can't use SHARED inside a proc
 				if( env.scope > 0 ) then
     				hReportError FB.ERRMSG.ILLEGALINSIDEASUB
@@ -1036,6 +1035,12 @@ function cSymbolDecl
 
 				lexSkipToken
 				alloctype = alloctype or FB.ALLOCTYPE.SHARED
+			end if
+
+		else
+			'' IMPORT?
+			if( hMatch( FB.TK.IMPORT ) ) then
+				alloctype = alloctype or FB.ALLOCTYPE.IMPORT
 			end if
 		end if
 
@@ -1184,10 +1189,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 					hReportError FB.ERRMSG.SYNTAXERROR
 					exit function
 				end if
-				idalias = lexEatToken
-#if defined(TARGET_WIN32) or defined(TARGET_DOS)
-				idalias = "_" + idalias
-#endif
+				idalias = hCreateDataAlias( lexEatToken, (alloctype and FB.ALLOCTYPE.IMPORT) > 0 )
 			end if
 		end if
 
@@ -1415,7 +1417,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 	'' emit must be aware that the var was already initialized..
 
 	'' '{'
-	if( not hMatch( CHAR_LBRACKET ) ) then
+	if( not hMatch( CHAR_LBRACE ) ) then
 		hReportError FB.ERRMSG.EXPECTEDLBRACKET
 		exit function
 	end if
@@ -1474,7 +1476,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' '}'
-	if( not hMatch( CHAR_RBRACKET ) ) then
+	if( not hMatch( CHAR_RBRACE ) ) then
 		hReportError FB.ERRMSG.EXPECTEDRBRACKET
 		exit function
 	end if
@@ -2191,7 +2193,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
 
     '' ('=' NUM_LIT)?
     if( hMatch( FB.TK.ASSIGN ) ) then
-    	dclass = irGetDataClass( hStyp2Dtype( arg.typ ) )
+    	dclass = irGetDataClass( arg.typ )
 
     	if( (dclass <> IR.DATACLASS.INTEGER) and (dclass <> IR.DATACLASS.FPOINT) ) then
  	   		hReportParamError argc, id
@@ -2407,7 +2409,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 
 		'' create an arg
 		expr = astNewCONST( symbGetArgDefvalue( proc, arg ), _
-							hStyp2Dtype( symbGetArgType( proc, arg ) ) )
+							symbGetArgType( proc, arg ) )
 
 	else
 
@@ -2516,7 +2518,7 @@ end function
 '':::::
 function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer ) as integer static
     dim s as FBSYMBOL ptr
-    dim assg as integer, typ as integer, dtype as integer
+    dim assg as integer
     dim vr as integer
 
     hAssignFunctResult = FALSE
@@ -2526,9 +2528,7 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
     	exit function
     end if
 
-    typ = symbGetType( s )
-    dtype = hStyp2Dtype( typ )
-    assg = astNewVAR( s, 0, dtype )
+    assg = astNewVAR( s, 0, symbGetType( s ) )
 
     assg = astNewASSIGN( assg, expr )
 
@@ -2599,9 +2599,8 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 
 	'' can proc's result be skipped?
 	typ = symbGetType( proc )
-	dtype = hStyp2Dtype( typ )
 	if( typ <> FB.SYMBTYPE.VOID ) then
-		if( (irGetDataClass( dtype ) = IR.DATACLASS.FPOINT) or hIsString( dtype ) ) then
+		if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or hIsString( typ ) ) then
 			hReportError FB.ERRMSG.VARIABLEREQUIRED
 			exit function
 		end if

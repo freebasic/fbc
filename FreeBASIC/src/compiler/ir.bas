@@ -843,7 +843,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
 		'' simple index?
 		elseif( (typ = IR.VREGTYPE.IDX) and (vregTB(vr).ofs = 0) and _
-				(vregTB(vr).s = NULL) and (vregTB(vr).lgt <= 1) ) then
+				(vregTB(vr).s = NULL) and (vregTB(vr).mult <= 1) ) then
 
 			irEmitPUSH vregTB(vr).vi
 
@@ -854,8 +854,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
 			else
 				if( not irIsVAR( vr ) and not irIsIDX( vr ) ) then
-					typ = hDtype2Stype( atype )
-					s = symbAddTempVar( typ )
+					s = symbAddTempVar( atype )
 					vt = irAllocVRVAR( atype, s, 0 )
 					irEmitSTORE vt, vr
 					vr = vt
@@ -941,7 +940,7 @@ function irAllocVRVAR( byval dtype as integer, byval symbol as FBSYMBOL ptr, byv
 end function
 
 '':::::
-function irAllocVRIDX( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval lgt as integer, byval vidx as integer ) as integer 'static
+function irAllocVRIDX( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval mult as integer, byval vidx as integer ) as integer 'static
 	dim vr as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.IDX )
@@ -952,7 +951,7 @@ function irAllocVRIDX( byval dtype as integer, byval symbol as FBSYMBOL ptr, byv
 
 	vregTB(vr).s 	= symbol
 	vregTB(vr).ofs 	= ofs
-	vregTB(vr).lgt 	= lgt
+	vregTB(vr).mult	= mult
 	vregTB(vr).vi 	= vidx
 
 end function
@@ -968,7 +967,7 @@ function irAllocVRPTR( byval dtype as integer, byval ofs as integer, byval vidx 
 	if( vr = INVALID ) then exit function
 
 	vregTB(vr).ofs 	= ofs
-	vregTB(vr).lgt 	= 1
+	vregTB(vr).mult = 1
 	vregTB(vr).vi 	= vidx
 
 end function
@@ -1985,7 +1984,7 @@ end function
 
 '':::::
 function irhGetVRIndexName( byval vreg as integer ) as string 'static
-    dim s as FBSYMBOL ptr, ofs as integer, lgt as integer, vi as integer
+    dim s as FBSYMBOL ptr, ofs as integer, mult as integer, vi as integer
     dim varname as string, idxname as string
 
 	if( vreg = INVALID ) then
@@ -1996,7 +1995,7 @@ function irhGetVRIndexName( byval vreg as integer ) as string 'static
     s  	= vregTB(vreg).s
     ofs = vregTB(vreg).ofs
     vi 	= vregTB(vreg).vi
-    lgt	= vregTB(vreg).lgt
+    mult= vregTB(vreg).mult
 
 	if( vi <> INVALID ) then
 		idxname = irGetVRName( vi )
@@ -2010,7 +2009,7 @@ function irhGetVRIndexName( byval vreg as integer ) as string 'static
 		varname = ""
 	end if
 
-	irhGetVRIndexName = emitGetIDXName( lgt, ofs, idxname, varname )
+	irhGetVRIndexName = emitGetIDXName( mult, ofs, idxname, varname )
 
 end function
 
@@ -2115,14 +2114,13 @@ end sub
 
 '':::::
 function irCreateTMPVAR( byval vreg as integer ) as string
-    dim typ as integer, vdclass as integer, vdtype as integer, vtyp as integer
+    dim vdclass as integer, vdtype as integer, vtyp as integer
 
 	irhGetVREG vreg, vdtype, vdclass, vtyp
 
 	if( vtyp <> IR.VREGTYPE.TMPVAR ) then
-		typ = hDtype2Stype( vdtype )
 		vregTB(vreg).typ	= IR.VREGTYPE.TMPVAR
-		vregTB(vreg).s		= symbAddTempVar( typ )
+		vregTB(vreg).s		= symbAddTempVar( vdtype )
 		vregTB(vreg).ofs 	= 0
 		vregTB(vreg).r		= INVALID
 	end if

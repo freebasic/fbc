@@ -483,7 +483,7 @@ function hCreateName( symbol as string, byval typ as integer = INVALID, _
 end function
 
 '':::::
-function hCreateAliasName( symbol as string, byval argslen as integer, _
+function hCreateProcAlias( symbol as string, byval argslen as integer, _
 						   byval toupper as integer, byval mode as integer ) as string static
     dim nm as string
     dim addat as integer
@@ -516,7 +516,27 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
 		hUcase nm
 	end if
 
-	hCreateAliasName = nm
+	hCreateProcAlias = nm
+
+end function
+
+'':::::
+function hCreateDataAlias( symbol as string, byval isimport as integer ) as string static
+
+#if defined(TARGET_WIN32)
+	if( isimport ) then
+		hCreateDataAlias = "__imp__" + symbol
+	else
+		hCreateDataAlias = "_" + symbol
+	end if
+
+#elseif defined(TARGET_DOS)
+	hCreateDataAlias = "_" + symbol
+
+#else
+	hCreateDataAlias = symbol
+
+#endif
 
 end function
 

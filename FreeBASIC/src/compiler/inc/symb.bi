@@ -26,7 +26,7 @@ declare sub 		symbEnd					( )
 declare function 	symbLookupSentinel		( id as string, byval class as integer, byval islocal as integer ) as FBSENTINEL ptr
 declare function 	symbLookupDefine		( id as string ) as FBDEFINE ptr
 declare function 	symbLookupVar			( symbol as string, typ as integer, ofs as integer, _
-											  elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, _
+											  elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, _
 											  byval addsuffix as integer = TRUE, _
 											  byval preservecase as integer = FALSE, _
 											  byval clearname as integer = TRUE ) as FBSYMBOL ptr
@@ -52,7 +52,7 @@ declare function 	symbGetConstName		( byval c as FBSYMBOL ptr ) as string
 declare function 	symbGetProcName			( byval p as FBSYMBOL ptr ) as string
 declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
 declare function 	symbGetConstText		( byval c as FBSYMBOL ptr ) as string
-declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, typ as integer, id as string ) as integer
+declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, typ as integer, id as string ) as integer
 declare function 	symbGetArgName			( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as string
 declare function 	symbGetArgType			( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer
 declare function 	symbGetArgSubtype		( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as FBSYMBOL ptr
@@ -167,8 +167,6 @@ declare function 	hAllocFloatConst		( sname as string, byval typ as integer ) as
 declare function 	hAllocStringConst		( sname as string, byval lgt as integer ) as FBSYMBOL ptr
 
 declare function 	hCalcElements 			( byval s as FBSYMBOL ptr ) as integer
-declare function 	hStyp2Dtype				( byval typ as integer ) as integer
-declare function 	hDtype2Stype			( byval dtype as integer ) as integer
 
 declare function 	hIsStrFixed				( byval dtype as integer ) as integer
 

@@ -54,14 +54,13 @@ type VARNode
 	sym				as FBSYMBOL ptr					'' symbol
 	elm				as FBSYMBOL ptr					'' field element, if any
 	ofs				as integer						'' offset
-	lgt				as integer						'' length
 end type
 
 type IDXNode
 	sym				as FBSYMBOL ptr					'' symbol
 	elm				as FBSYMBOL ptr					'' field element, if any
 	ofs				as integer						'' offset
-	lgt				as integer						'' length
+	mult			as integer						'' multipler
 	var				as integer						'' AST tb index to a VARNode
 end type
 

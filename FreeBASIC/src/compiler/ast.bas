@@ -547,7 +547,7 @@ Sub astOptConstIDX( byval n as integer )
 					if( astTB(lr).defined ) then
 						v = cint( astTB(lr).value )
 						if( (v < 10) and (v <> 6) and (v <> 7) ) then
-				    		astTB(n).idx.lgt = v
+				    		astTB(n).idx.mult = v
 				    		astDel lr
 
 							ll = astTB(l).l
@@ -2063,8 +2063,7 @@ sub asthBOPCheckDataType( byval l as integer, byval r as integer, v1 as integer,
 
 			'' if int oper is an IMM, allocate a temp var
 			if( irIsIMM( v1 ) and (dc2 = IR.DATACLASS.FPOINT) ) then
-				typ = hDtype2Stype( dt2 )
-				s = hAllocFloatConst( str$( irGetVRValue( v1 ) ), typ )
+				s = hAllocFloatConst( str$( irGetVRValue( v1 ) ), dt2 )
 				v1 = irAllocVRVAR( dt2, s, 0 )
 			else
 				vt = irAllocVREG( dt2 )
@@ -2084,8 +2083,7 @@ sub asthBOPCheckDataType( byval l as integer, byval r as integer, v1 as integer,
 			end if
 
 			if( irIsIMM( v2 ) and (dc1 = IR.DATACLASS.FPOINT) ) then
-				typ = hDtype2Stype( dt1 )
-				s = hAllocFloatConst( str$( irGetVRValue( v2 ) ), typ )
+				s = hAllocFloatConst( str$( irGetVRValue( v2 ) ), dt1 )
 				v2 = irAllocVRVAR( dt1, s, 0 )
 				astTB(r).dtype = dt1
 			else
@@ -2359,12 +2357,11 @@ end function
 
 '':::::
 sub astLoadCONST( byval n as integer, vreg as integer ) static
-	dim s as FBSYMBOL ptr, typ as integer
+	dim s as FBSYMBOL ptr
 
   	'' if node is a float, create a temp float var (FPU can't operate on IMM's)
   	if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.FPOINT ) then
-		typ = hDtype2Stype( astTB(n).dtype )
-		s = hAllocFloatConst( str$( astTB(n).value ), typ )
+		s = hAllocFloatConst( str$( astTB(n).value ), astTB(n).dtype )
 		vreg = irAllocVRVAR( astTB(n).dtype, s, 0 )
 
 	else
@@ -2431,7 +2428,7 @@ function astNewIDX( byval v as integer, byval i as integer, byval dtype as integ
 	end if
 
 	astTB(n).idx.var = v
-	astTB(n).idx.lgt = 1
+	astTB(n).idx.mult = 1
 	astTB(n).idx.ofs = 0
 
 	astTB(n).l 	   = i
@@ -2439,7 +2436,7 @@ function astNewIDX( byval v as integer, byval i as integer, byval dtype as integ
 end function
 
 '':::::
-function asthEmitIDX( byval v as integer, byval ofs as integer, byval lgt as integer, byval vi as integer ) as integer static
+function asthEmitIDX( byval v as integer, byval ofs as integer, byval mult as integer, byval vi as integer ) as integer static
     dim s as FBSYMBOL ptr, vs as integer, vd as integer, vt as integer, dt as integer
     dim mul as string, dif as string
     dim isdyn as integer, diff as integer
@@ -2464,11 +2461,11 @@ function asthEmitIDX( byval v as integer, byval ofs as integer, byval lgt as int
     ''
 	if( vi <> INVALID ) then
 
-		if( (lgt >= 10) or (lgt = 6) or (lgt = 7) ) then
-			lgt = 1
+		if( (mult >= 10) or (mult = 6) or (mult = 7) ) then
+			mult = 1
 		end if
 
-		vd = irAllocVRIDX( astTB(v).dtype, s, ofs, lgt, vi )
+		vd = irAllocVRIDX( astTB(v).dtype, s, ofs, mult, vi )
 
 		if( irIsIDX( vi ) or irIsVAR( vi ) ) then
 			irEmitLOAD IR.OP.LOAD, vi
@@ -2499,7 +2496,7 @@ sub astLoadIDX( byval n as integer, vr as integer )
 		vi = INVALID
 	end if
 
-    vr = asthEmitIDX( v, astTB(n).idx.ofs, astTB(n).idx.lgt, vi )
+    vr = asthEmitIDX( v, astTB(n).idx.ofs, astTB(n).idx.mult, vi )
 
 	astDel i
 	astDel v
@@ -2550,6 +2547,9 @@ sub astLoadADDR( byval n as integer, vr as integer )
 	end if
 
 	astLoad p, v1
+
+	'' !!!WRITEME!!! if v1 is already a ptr with no ofs or other attached regs,
+	'' convert it to a simple reg (not a ptr) and change type to UINT
 
 	vr = irAllocVREG( IR.DATATYPE.UINT )
 

@@ -1196,7 +1196,7 @@ function cOnStmt
 				if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 					cr = irAllocVRIMM( dtype, FALSE )
 				else
-					s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+					s = hAllocFloatConst( "0", dtype )
 					cr = irAllocVRVAR( dtype, s, 0 )
 				end if
 				irEmitCOMPBRANCHNF IR.OP.NE, vr, cr, label
@@ -1209,7 +1209,7 @@ function cOnStmt
 			if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 				cr = irAllocVRIMM( irGetVRDataType( vr ), FALSE )
 			else
-				s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+				s = hAllocFloatConst( "0", dtype )
 				cr = irAllocVRVAR( dtype, s, 0 )
 			end if
 			irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, endlabel

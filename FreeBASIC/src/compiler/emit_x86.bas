@@ -330,21 +330,21 @@ function emitGetRegName( byval dtype as integer, byval dclass as integer, byval 
 end function
 
 '':::::
-function emitGetIDXName( byval lgt as integer, byval ofs as integer, idxname as string, _
+function emitGetIDXName( byval mult as integer, byval ofs as integer, idxname as string, _
 						 sname as string ) as string
     dim scalestr as string, iname as string
     dim addone as integer
 
-	if( lgt > 1 ) then
+	if( mult > 1 ) then
 
 		addone = FALSE
-		select case lgt
+		select case mult
 		case 3, 5, 9
-			lgt = lgt - 1
+			mult = mult - 1
 			addone = TRUE
 		end select
 
-		scalestr = "*" + ltrim$( str$( lgt ) )
+		scalestr = "*" + ltrim$( str$( mult ) )
 
 		if( addone ) then
 			scalestr =  scalestr + "+" + idxname
@@ -2325,7 +2325,7 @@ private sub hSaveAsmInitProc( )
     hWriteStr ctx.outf, FALSE, "fb_moduleinit:"
 
     hWriteStr ctx.outf, TRUE,  "finit"
-    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_Init", 0, FALSE, FB.FUNCMODE.STDCALL )
+    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateProcAlias( "fb_Init", 0, FALSE, FB.FUNCMODE.STDCALL )
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)

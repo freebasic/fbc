@@ -296,12 +296,11 @@ end function
 
 '':::::
 private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
-    dim s as FBSYMBOL ptr, typ as integer, dtype as integer
+    dim s as FBSYMBOL ptr, typ as integer
     dim vr as integer, n as integer, t as integer
 
 	s = symbLookupFunctionResult( proc )
 	typ = symbGetType( s )
-	dtype = hSTyp2DType( typ )
 
 	'' if result is a string, a temp descriptor is needed, as the current one (at stack)
 	'' will be trashed when the function returns (also, the string returned will be
@@ -312,7 +311,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 		n = rtlStrAllocTmpResult( t )
 		astFlush n, vr
 	else
-		vr = irAllocVRVAR( dtype, s, 0 )
+		vr = irAllocVRVAR( typ, s, 0 )
 		irEmitLOAD IR.OP.LDFUNCRESULT, vr
 	end if
 

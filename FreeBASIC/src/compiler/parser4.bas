@@ -121,7 +121,7 @@ function cSingleIfStatement( byval expr as integer )
 		if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 			cr = irAllocVRIMM( dtype, FALSE )
 		else
-			s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+			s = hAllocFloatConst( "0", dtype )
 			cr = irAllocVRVAR( dtype, s, 0 )
 		end if
 		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nl
@@ -192,7 +192,7 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
         if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 			cr = irAllocVRIMM( dtype, FALSE )
 		else
-			s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+			s = hAllocFloatConst( "0", dtype )
 			cr = irAllocVRVAR( dtype, s, 0 )
 		end if
 		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nl
@@ -520,7 +520,7 @@ function cForStatement
 	astFlush expr, vr
 
 	'' get counter type (endc and step must be the same type)
-	dtype  = hStyp2Dtype( typ )
+	dtype  = typ
 	dclass = irGetDataClass( dtype )
 
 
@@ -760,7 +760,7 @@ function cDoStatement
 			if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 				cr = irAllocVRIMM( dtype, FALSE )
 			else
-				s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+				s = hAllocFloatConst( "0", dtype )
 				cr = irAllocVRVAR( dtype, s, 0 )
 			end if
 			irEmitCOMPBRANCHNF op, vr, cr, el
@@ -847,7 +847,7 @@ function cDoStatement
 			if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 				cr = irAllocVRIMM( dtype, FALSE )
 			else
-				s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+				s = hAllocFloatConst( "0", dtype )
 				cr = irAllocVRVAR( dtype, s, 0 )
 			end if
 			irEmitCOMPBRANCHNF op, vr, cr, il
@@ -922,7 +922,7 @@ function cWhileStatement
 		if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
 			cr = irAllocVRIMM( dtype, FALSE )
 		else
-			s = hAllocFloatConst( "0", hDtype2Stype( dtype ) )
+			s = hAllocFloatConst( "0", dtype )
 			cr = irAllocVRVAR( dtype, s, 0 )
 		end if
 		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, el
@@ -1036,7 +1036,7 @@ function cSelectStatement
 		selctx.dtype = FB.SYMBTYPE.STRING
 	end if
 
-	selctx.symbol = symbAddTempVar( hDtype2Stype( selctx.dtype ) )
+	selctx.symbol = symbAddTempVar( selctx.dtype )
 	if( selctx.symbol = NULL ) then
 		exit function
 	end if

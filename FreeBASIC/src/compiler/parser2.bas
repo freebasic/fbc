@@ -630,19 +630,122 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
 end function
 
 '':::::
-''cDerefExpression	= 	DREF+ (AddrOfExpression
+''ParentDeref	= 	'(' (AddrOfExpression|Variable) ('+'|'-' Expression)? ')')
+''
+function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
+					   derefcnt as integer )
+
+    dim s as FBSYMBOL ptr, subtype as FBSYMBOL ptr
+    dim lgt as integer, dtype as integer
+    dim op as integer, expr as integer
+
+	cParentDeref = FALSE
+
+	'' '('
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+
+  	'' AddrOfExpression
+	if( cAddrOfExpression( derefexpr, symbol, elm ) ) then
+		if( elm <> NULL ) then
+			s = elm
+		else
+			s = symbol
+		end if
+
+		dtype = symbGetType( s )
+
+	else
+		'' Variable
+  		if( not cVariable( derefexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		    exit function
+		end if
+
+		symbol = astGetSymbol( derefexpr )
+		elm    = astGetUDTElm( derefexpr )
+
+		if( elm <> NULL ) then
+			s = elm
+		else
+			s = symbol
+		end if
+
+  		dtype = symbGetType( s ) - FB.SYMBTYPE.POINTER
+  	end if
+
+	'' '-' | '+'
+	select case lexCurrentToken
+	case CHAR_MINUS
+		lexSkipToken
+		op = IR.OP.SUB
+	case CHAR_PLUS
+		lexSkipToken
+		op = IR.OP.ADD
+	case else
+		op = INVALID
+	end select
+
+	if( op <> INVALID ) then
+		if( not cExpression( expr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+
+		'' if index isn't an integer, convert
+		astUpdNodeResult( expr )
+		if( (astGetDataClass( expr ) <> IR.DATACLASS.INTEGER) or _
+			(astGetDataSize( expr ) <> FB.POINTERSIZE) ) then
+			expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )
+		end if
+
+		'' times length
+		subtype = symbGetSubType( s )
+		lgt = symbCalcLen( dtype, subtype )
+
+		expr = astNewBOP( IR.OP.MUL, expr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
+
+	end if
+
+	'' ')'
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+
+	''
+	if( op <> INVALID ) then
+		derefexpr = astNewBOP( op, derefexpr, expr )
+	end if
+
+	''
+	if( not cDerefFields( symbol, elm, subtype, dtype + FB.SYMBTYPE.POINTER, derefexpr, TRUE, FALSE ) ) then
+		if( hGetLastError <> FB.ERRMSG.OK ) then
+			exit function
+		end if
+	else
+		derefcnt = derefcnt - 1
+	end if
+
+	cParentDeref = TRUE
+
+end function
+
+'':::::
+''DerefExpression	= 	DREF+ (AddrOfExpression
 ''							  | Function
 ''							  | Variable
-''							  | '(' (AddrOfExpression|Variable) AddExpression ')')
+''							  | ParentDeref) .
 ''
 function cDerefExpression( derefexpr as integer ) as integer
-
     dim symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr
     dim derefcnt as integer
-    dim dtype as integer
 
 	cDerefExpression = FALSE
 
+	'' DREF?
 	if( lexCurrentToken <> FB.TK.DEREFCHAR ) then
 		exit function
 	end if
@@ -670,46 +773,22 @@ function cDerefExpression( derefexpr as integer ) as integer
 				elm    = astGetUDTElm( derefexpr )
 
   			else
-		    	'' '('
-		    	if( not hMatch( CHAR_LPRNT ) ) then
-		    		hReportError FB.ERRMSG.SYNTAXERROR
-		    		exit function
-		    	end if
 
-  				'' AddrOfExpression
-				if( not cAddrOfExpression( derefexpr, symbol, elm ) ) then
-
-  					'' Variable
-  					if( not cVariable( derefexpr ) ) then
-		    			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-		    			exit function
-  					end if
-
-					symbol = astGetSymbol( derefexpr )
-					elm    = astGetUDTElm( derefexpr )
-
+                '' ParentDeref
+  				if( not cParentDeref( derefexpr, symbol, elm, derefcnt ) ) then
+  					exit function
   				end if
 
-				'' AddExpression
-				if( not cAddExpression( derefexpr ) ) then
-					if( hGetLastError <> FB.ERRMSG.OK ) then
-						exit function
-					end if
-				end if
-
-		    	'' ')'
-		    	if( not hMatch( CHAR_RPRNT ) ) then
-		    		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		    		exit function
-		    	end if
 		    end if
 		end if
 	end if
 
 	''
-	if( not hDoDeref( derefcnt, derefexpr, symbol, elm, astGetDataType( derefexpr ) ) ) then
-		hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
-		exit function
+	if( derefcnt > 0 ) then
+		if( not hDoDeref( derefcnt, derefexpr, symbol, elm, astGetDataType( derefexpr ) ) ) then
+			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+			exit function
+		end if
 	end if
 
 	cDerefExpression = TRUE
@@ -957,7 +1036,7 @@ end function
 '' Constant       = ID .                                    !!ambiguity w/ var!!
 ''
 function cConstant( constexpr as integer )
-	dim res as integer, c as FBSYMBOL ptr, typ as integer, dtype as integer, expr as integer
+	dim res as integer, c as FBSYMBOL ptr, typ as integer, expr as integer
 	dim text as string
 
 	res = FALSE
@@ -970,15 +1049,14 @@ function cConstant( constexpr as integer )
 
   			text = symbGetConstText( c )
   			typ = symbGetType( c )
-  			dtype = hStyp2Dtype( typ )
 
-  			if( irGetDataClass( dtype ) = IR.DATACLASS.STRING ) then
+  			if( irGetDataClass( typ ) = IR.DATACLASS.STRING ) then
 
 				c = hAllocStringConst( text, symbGetLen( c ) )
 				constexpr = astNewVAR( c, 0, IR.DATATYPE.FIXSTR )
 
   			else
-  				constexpr = astNewCONST( val( text ), dtype )
+  				constexpr = astNewCONST( val( text ), typ )
   			end if
 
   			lexSkipToken
@@ -994,15 +1072,14 @@ end function
 ''Literal		  = NUM_LITERAL | STR_LITERAL .
 ''
 function cLiteral( litexpr as integer )
-	dim res as integer, typ as integer, dtype as integer
+	dim res as integer
 	dim tc as FBSYMBOL ptr, p as integer, expr as integer
 
 	cLiteral = FALSE
 
 	select case lexCurrentTokenClass
 	case FB.TKCLASS.NUMLITERAL
-  		dtype = hStyp2Dtype( lexTokenType )
-  		litexpr = astNewCONST( val( lexTokenText ), dtype )
+  		litexpr = astNewCONST( val( lexTokenText ), lexTokenType )
 
   		lexSkipToken
   		cLiteral = TRUE
@@ -1054,7 +1131,7 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 
 		'' create an arg
 		paramexpr = astNewCONST( symbGetArgDefvalue( proc, arg ), _
-								 hStyp2Dtype( symbGetArgType( proc, arg ) ) )
+								 symbGetArgType( proc, arg ) )
 
 	else
 
@@ -1156,9 +1233,9 @@ function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval p
 
     typ = symbGetType( proc )
     if( ptrexpr = INVALID ) then
-    	funcexpr = astNewFUNCT( proc, hStyp2Dtype( typ ), symbGetProcArgs( proc ) )
+    	funcexpr = astNewFUNCT( proc, typ, symbGetProcArgs( proc ) )
     else
-    	funcexpr = astNewFUNCTPTR( ptrexpr, proc, hStyp2Dtype( typ ), symbGetProcArgs( proc ) )
+    	funcexpr = astNewFUNCTPTR( ptrexpr, proc, typ, symbGetProcArgs( proc ) )
     end if
 
 	'' is it really a function?

@@ -745,10 +745,12 @@ reread:
 	    	if( c >= CHAR_0 and c <= CHAR_9 ) then
 				isnumber = TRUE
 			elseif( ctx.lasttoken <> CHAR_RPRNT ) then
-				if( env.withtextidx = INVALID ) then
-					isnumber = TRUE
-				else
-					iswith = TRUE
+				if( ctx.lasttoken <> CHAR_RBRACKET ) then
+					if( env.withtextidx = INVALID ) then
+						isnumber = TRUE
+					else
+						iswith = TRUE
+					end if
 				end if
 			end if
 		end if

@@ -138,7 +138,7 @@ type IRVREG
 
 	s			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
-	lgt			as integer						'' *length
+	mult		as integer						'' multipler
 	vi			as integer						'' index vreg
 
 	r			as integer						'' reg
@@ -162,7 +162,7 @@ declare sub 		irEnd				( )
 declare function 	irAllocVREG			( byval dtype as integer ) as integer
 declare function 	irAllocVRIMM		( byval dtype as integer, byval value as integer ) as integer
 declare function 	irAllocVRVAR		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer ) as integer
-declare function 	irAllocVRIDX		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval lgt as integer, byval vidx as integer ) as integer
+declare function 	irAllocVRIDX		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval mult as integer, byval vidx as integer ) as integer
 declare function 	irAllocVRPTR		( byval dtype as integer, byval ofs as integer, byval vidx as integer ) as integer
 declare sub 		irPreserveVR		( byval vreg as integer )
 declare sub 		irTrashVR			( byval vreg as integer )

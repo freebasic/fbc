@@ -122,7 +122,7 @@ end function
 '':::::
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
-function cTypeField( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, typ as integer, idxexpr as integer, _
+function cTypeField( elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, typ as integer, idxexpr as integer, _
 					 byval isderef as integer, byval checkarray as integer ) as integer
     dim fields as string, ofs as integer
     dim constexpr as integer
@@ -155,7 +155,7 @@ function cTypeField( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, typ as int
 				fields = lexTokenText
 			end if
 
-    		ofs = symbGetUDTElmOffset( elm, typesymbol, typ, fields )
+    		ofs = symbGetUDTElmOffset( elm, subtype, typ, fields )
     		if( ofs = INVALID ) then
     			hReportError FB.ERRMSG.ELEMENTNOTDEFINED
     			cTypeField = FALSE
@@ -225,37 +225,90 @@ function cTypeField( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, typ as int
 end function
 
 '':::::
-''DerefFields	=   (FIELDDEREF DREF* TypeField)* .
+''DerefFields	=   ((FIELDDEREF DREF* | '[' Expression ']') TypeField)* .
 ''
-function cDerefFields( s as FBSYMBOL ptr, elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, _
-					   typ as integer, _
-					   varexpr as integer, byval checkarray as integer ) as integer
-	dim cnt as integer
-	dim expr as integer
+function cDerefFields( s as FBSYMBOL ptr, elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, _
+					   typ as integer, varexpr as integer, byval isderef as integer, _
+					   byval checkarray as integer ) as integer
+
+	dim cnt as integer, lgt as integer
+	dim expr as integer, idxexpr as integer
+	dim isfieldderef as integer
 
 	cDerefFields = FALSE
 
-	'' (FIELDDEREF DREF* TypeField)*
-	do while( lexCurrentToken = FB.TK.FIELDDEREF )
-        lexSkipToken
+	do
 
-        '' DREF*
-        cnt = 0
-		do while( lexCurrentToken = FB.TK.DEREFCHAR )
+		idxexpr = INVALID
+		cnt		= 0
+
+        select case lexCurrentToken
+        '' (FIELDDEREF DREF* TypeField)*
+        case FB.TK.FIELDDEREF
+        	lexSkipToken
+        	isfieldderef = TRUE
+
+        	'' DREF*
+			do while( lexCurrentToken = FB.TK.DEREFCHAR )
+				lexSkipToken
+				cnt = cnt + 1
+			loop
+
+		'' '['
+		case CHAR_LBRACKET
 			lexSkipToken
-			cnt = cnt + 1
-		loop
+			isfieldderef = FALSE
+
+			'' Expression
+			if( not cExpression( idxexpr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+
+			'' if index isn't an integer, convert
+			astUpdNodeResult idxexpr
+			if( (astGetDataClass( idxexpr ) <> IR.DATACLASS.INTEGER) or _
+				(astGetDataSize( idxexpr ) <> FB.POINTERSIZE) ) then
+				idxexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, idxexpr )
+			end if
+
+			'' ']'
+			if( not hMatch( CHAR_RBRACKET ) ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				cDerefFields = FALSE
+				exit function
+			end if
+
+			'' times length
+			lgt = symbCalcLen( typ - FB.SYMBTYPE.POINTER, subtype )
+
+			idxexpr = astNewBOP( IR.OP.MUL, idxexpr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
+
+		case else
+			if( not isderef ) then
+				exit do
+			end if
+
+			isfieldderef = FALSE
+
+		end select
 
 		if( typ < FB.SYMBTYPE.POINTER ) then
 			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+			cDerefFields = FALSE
 			exit function
 		end if
 		typ = typ - FB.SYMBTYPE.POINTER
 
+		'' TypeField
 		expr = INVALID
-		if( not cTypeField( elm, typesymbol, typ, expr, TRUE, checkarray ) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-			exit function
+		if( not cTypeField( elm, subtype, typ, expr, isfieldderef, checkarray ) ) then
+			if( idxexpr = INVALID ) then
+				if( not isderef ) then
+					hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+				end if
+				exit function
+			end if
 		end if
 
 		'' this should be optimized by AST, when expr is a constant and varexpr is a scalar var
@@ -263,19 +316,28 @@ function cDerefFields( s as FBSYMBOL ptr, elm as FBSYMBOL ptr, typesymbol as FBS
 			varexpr = astNewBOP( IR.OP.ADD, varexpr, expr )
 		end if
 
-		varexpr = astNewPTREx( NULL, elm, 0, hStyp2Dtype( typ ), varexpr )
+		''
+		if( idxexpr <> INVALID ) then
+			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
+		end if
 
+		''
+		varexpr = astNewPTREx( NULL, elm, 0, typ, varexpr )
+
+		''
 		do while( cnt > 0 )
 			if( typ < FB.SYMBTYPE.POINTER ) then
 				hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+				cDerefFields = FALSE
 				exit function
 			end if
 			typ = typ - FB.SYMBTYPE.POINTER
 
-			varexpr = astNewPTREx( NULL, elm, 0, hStyp2Dtype( typ ), varexpr )
+			varexpr = astNewPTREx( NULL, elm, 0, typ, varexpr )
 			cnt = cnt - 1
 		loop
 
+		isderef = FALSE
 		cDerefFields = TRUE
 	loop
 
@@ -549,15 +611,15 @@ function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
 end function
 
 '':::::
-''Variable        =   DREF* ID ArrayIdx? ((TypeField|DerefField) FieldIdx?)*
-''				  |   DREF* ID{Function} ProcParamList .
+''Variable        =   ID ArrayIdx? ((TypeField|DerefField) FieldIdx?)*
+''				  |   ID{Function} ProcParamList .
 ''
 function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 	dim typ as integer, ofs as integer, idxexpr as integer, funcexpr as integer
 	dim s as FBSYMBOL ptr, res as integer
 	dim id as string, dtype as integer
-	dim isbyref as integer, isfunctionptr as integer, isbydesc as integer
-	dim elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr
+	dim isbyref as integer, isfunctionptr as integer, isbydesc as integer, isimport as integer
+	dim elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr
 
 	cVariable = FALSE
 
@@ -575,9 +637,9 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 	'' lookup
 	ofs 		= 0
 	elm			= NULL
-	typesymbol 	= NULL
+	subtype 	= NULL
 
-	s = symbLookupVar( id, typ, ofs, elm, typesymbol )
+	s = symbLookupVar( id, typ, ofs, elm, subtype )
 
 	'' add undeclared variable
 	if( s = NULL ) then
@@ -596,7 +658,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 				hReportError FB.ERRMSG.DUPDEFINITION
 				exit function
 			end if
-			typesymbol = symbGetSubtype( s )
+			subtype = symbGetSubtype( s )
 		else
 			hReportError FB.ERRMSG.VARIABLENOTDECLARED
 			exit function
@@ -612,6 +674,12 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 
     ''
     isbyref = (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYREF) > 0
+
+#ifdef TARGET_WIN32
+	isimport = (symbGetAllocType( s ) and FB.ALLOCTYPE.IMPORT) > 0
+#else
+	isimport = FALSE
+#endif
 
     ''
     '' check for '('')', it's not an array, just passing by desc
@@ -650,7 +718,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
    	if( not isfunctionptr ) then
 
    		'' TypeField?
-   		cTypeField( elm, typesymbol, typ, idxexpr, FALSE, checkarray )
+   		cTypeField( elm, subtype, typ, idxexpr, FALSE, checkarray )
 
    		'' check for calling functions through pointers
    		if( lexCurrentToken = CHAR_LPRNT ) then
@@ -661,10 +729,10 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
    	end if
 
    	''
-	dtype = hStyp2Dtype( typ )
+	dtype = typ
 
 	'' AST will handle descriptor pointers
-	if( not isbyref ) then
+	if( not isbyref and not isimport ) then
 		varexpr = astNewVAREx( s, elm, ofs, dtype )
 	else
 		varexpr = astNewVAREx( s, elm, 0, dtype )
@@ -675,8 +743,8 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 	else
 		'' array and no index?
 		if( not isbydesc ) then
-  				if( symbIsArray( s ) ) then
-  					if( checkarray ) then
+  			if( symbIsArray( s ) ) then
+  				if( checkarray ) then
    					hReportError FB.ERRMSG.EXPECTEDLPRNT
    					exit function
    				end if
@@ -685,7 +753,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 	end if
 
 	'' check arguments passed by reference (implicity pointer's)
-	if( isbyref ) then
+	if( isbyref or isimport ) then
    		dtype = astGetDataType( varexpr )
    		varexpr = astNewPTREx( s, elm, ofs, dtype, varexpr )
 	end if
@@ -693,7 +761,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE )
 	''
 	if( not isfunctionptr ) then
 		'' DerefFields?
-		cDerefFields( s, elm, typesymbol, typ, varexpr, checkarray )
+		cDerefFields( s, elm, subtype, typ, varexpr, FALSE, checkarray )
 
    		'' check for calling functions through pointers
    		if( lexCurrentToken = CHAR_LPRNT ) then

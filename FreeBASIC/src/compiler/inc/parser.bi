@@ -108,6 +108,10 @@ declare function 	cFunctionCall			( byval proc as FBSYMBOL ptr, funcexpr as inte
 declare function 	cProcCall				( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 											  byval checkparents as integer = FALSE ) as integer
 
+declare function 	cDerefFields			( s as FBSYMBOL ptr, elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, _
+					   						  typ as integer, varexpr as integer, byval isderef as integer, _
+					   						  byval checkarray as integer ) as integer
+
 declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
 
 declare function 	cGfxStmt 				( ) as integer
