@@ -2067,13 +2067,15 @@ Declare Function PrepareTape Lib "kernel32" (ByVal hDevice As Integer, ByVal dwO
 Declare Function PulseEvent Lib "kernel32" (ByVal hEvent As Integer) As Integer
 Declare Function PurgeComm Lib "kernel32" (ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
 
+Declare Function PeekConsoleInput alias "PeekConsoleInputA" ( byval hConsoleInput as integer, byref pirBuffer as INPUT_RECORD, byval cInRecords as integer, byref lpcRead as integer ) as integer
+
 Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (ByVal lpDeviceName As String, ByVal lpTargetPath As String, ByVal ucchMax As Integer) As Integer
 Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As INT64) As Integer
 Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As INT64) As Integer
 
 Declare Sub RaiseException Lib "kernel32" (ByVal dwExceptionCode As Integer, ByVal dwExceptionFlags As Integer, ByVal nNumberOfArguments As Integer, lpArguments As Integer)
 Declare Function ReadConsole Lib "kernel32" Alias "ReadConsoleA" (ByVal hConsoleInput As Integer, lpBuffer As ANY, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer, lpReserved As ANY) As Integer
-Declare Function ReadConsoleInput Lib "kernel32" Alias "ReadConsoleInputA" (ByVal hConsoleInput As Integer, lpBuffer As ANY, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer) As Integer
+Declare Function ReadConsoleInput Lib "kernel32" Alias "ReadConsoleInputA" (ByVal hConsoleInput As Integer, byref lpBuffer As INPUT_RECORD, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer) As Integer
 Declare Function ReadConsoleOutput Lib "kernel32" Alias "ReadConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpReadRegion As SMALL_RECT) As Integer
 Declare Function ReadConsoleOutputAttribute Lib "kernel32" (ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfAttrsRead As Integer) As Integer
 Declare Function ReadConsoleOutputCharacter Lib "kernel32" Alias "ReadConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfCharsRead As Integer) As Integer

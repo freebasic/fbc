@@ -2380,6 +2380,38 @@ Type HELPINFO Field = 1
   MousePos     As POINTAPI
 End Type
 
+
+type MOUSEINPUT
+    dx			as integer
+    dy			as integer
+    mouseData	as integer
+    dwFlags		as integer
+    time		as integer
+    dwExtraInfo	as integer ptr
+end type        
+
+type KEYBDINPUT
+    wVk			as short
+    wScan		as short
+    dwFlags		as integer
+    time		as integer
+    dwExtraInfo as integer ptr
+end type
+
+type HARDWAREINPUT
+    uMsg		as integer
+    wParamL		as short
+    wParamH		as short
+end type    
+    
+type TINPUT
+  inptype		as integer
+  union
+  	mi			as MOUSEINPUT
+  	ki			as KEYBDINPUT 
+    hi			as HARDWAREINPUT
+  end union
+end type
 '-----------------
 '| API FUNCTIONS |
 '-----------------
@@ -2732,6 +2764,7 @@ Declare Function ScrollWindow Lib "user32" (ByVal hWnd As Integer, ByVal XAmount
 Declare Function ScrollWindowEx Lib "user32" (ByVal hwnd As Integer, ByVal dx As Integer, ByVal dy As Integer, ByRef lprcScroll As RECT, ByRef lprcClip As RECT, ByVal hrgnUpdate As Integer, ByRef lprcUpdate As RECT, ByVal fuScroll As Integer) As Integer
 Declare Function SendDlgItemMessage Lib "user32" Alias "SendDlgItemMessageA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
 Declare Function SendIMEMessageEx Lib "user32" Alias "SendIMEMessageExA" (ByVal hwnd As Integer, ByVal lparam As Integer) As Integer
+Declare Function SendInput Lib "user32" (ByVal cInputs As Integer, ByRef pInputs As TINPUT, ByVal cbSize As Integer) As Integer
 Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
 Declare Function SendMessageCallback Lib "user32" Alias "SendMessageCallbackA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal lpResultCallBack As Integer, ByVal dwData As Integer) As Integer
 Declare Function SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal fuFlags As Integer, ByVal uTimeout As Integer, ByRef lpdwResult As Integer) As Integer
@@ -2847,7 +2880,6 @@ Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Integer, ByVal dx As Inte
 'Declare Function OpenInputDesktop Lib "user32" (ByVal dwFlags As Integer, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
 'Declare Function OpenWindowStation Lib "user32" Alias "OpenWindowStationA" (ByVal lpszWinSta As String, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
 'Declare Sub RegisterDeviceNotification Lib "user32" Alias "RegisterDeviceNotificationA" (ByVal hRecipient As Integer, ByRef NotificationFilter As Any, ByVal Flags As Integer)
-'Declare Function SendInput Lib "user32" (ByVal cInputs As Integer, ByRef pInputs As INPUT, ByVal cbSize As Integer) As Integer
 'Declare Sub SetWinEventHook Lib "user32" (ByVal eventMin As Integer, ByVal eventMax As Integer, ByVal hmodWinEventProc As Integer, ByRef pfnWinEventProc As WINEVENTPROC, ByVal idProcess As Integer, ByVal idThread As Integer, ByVal dwFlags As Integer)
 'Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENT) As Integer
 #endif 'USER32_BI
