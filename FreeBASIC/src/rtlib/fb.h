@@ -323,7 +323,8 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
  * files
  **************************************************************************************************/
 
-#define FB_MAX_FILES				255
+#define FB_MAX_FILES		255
+#define FB_FILE_BUFSIZE		8192
 
 #include <stdio.h>
 

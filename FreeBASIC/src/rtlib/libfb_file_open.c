@@ -202,6 +202,9 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 
 	free( filename );
 
+	/* change the default buffer size */
+	setvbuf( f, NULL, _IOFBF, FB_FILE_BUFSIZE );
+
 	/* fill struct */
 	fb_fileTB[fnum-1].f    = f;
 	fb_fileTB[fnum-1].mode = mode;
