@@ -3,15 +3,31 @@
 # needs GNU make and GCC
 #
 
+ifeq ($(OS),Windows_NT)
+    WINSYSDIR = $(SYSTEMROOT)
+    ifeq ($(WINSYSDIR),)
+        WINSYSDIR = $(SystemRoot)
+    endif
+else
+    WINSYSDIR = $(WINDIR)
+    ifeq ($(WINSYSDIR),)
+        WINSYSDIR = $(windir)
+    endif
+endif
+
 CC := gcc
-CFLAGS := -O3 
-#-fssa -- GCC's manual states it's not stable enough??
+ifneq ($(WINSYSDIR),)
+    CFLAGS := -O3
+    #-fssa -- GCC's manual states it's not stable enough??
+else
+    CFLAGS := -O3
+endif
 
 libpath = ../../lib
 lib = $(libpath)/libfbgfx.a
 
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
-          
+
 obj/%.o : %.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
@@ -23,6 +39,10 @@ $(lib) : $(objects)
 
 .PHONY : clean
 clean :
+ifneq ($(WINSYSDIR),)
 	del $(subst /,\,$(lib))
 	del $(subst /,\,$(objects))
-     
+else
+	rm -f $(lib)
+	rm -f $(objects)
+endif
