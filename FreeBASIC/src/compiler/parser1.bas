@@ -789,29 +789,36 @@ function cTypeLine as integer
 	select case as const lexCurrentToken
 	'' END?
 	case FB.TK.END
-		if( env.typectx.innercnt = 0 ) then
-			exit function
-		else
-			lexSkipToken
-		end if
+		'' isn't it a field called "end"?
+		select case lexLookAhead( 1 )
+		case FB.TK.AS, CHAR_LPRNT
+			goto declfield
 
-		if( env.typectx.isunion ) then
-			if( not hMatch( FB.TK.TYPE ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
-    			exit function
+		case else
+			if( env.typectx.innercnt = 0 ) then
+				exit function
+			else
+				lexSkipToken
 			end if
-		else
-			if( not hMatch( FB.TK.UNION ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
-    			exit function
+
+			if( env.typectx.isunion ) then
+				if( not hMatch( FB.TK.TYPE ) ) then
+	    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    				exit function
+				end if
+			else
+				if( not hMatch( FB.TK.UNION ) ) then
+    				hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    				exit function
+				end if
 			end if
-		end if
 
-		env.typectx.innercnt -= 1
+			env.typectx.innercnt -= 1
 
-		if( env.typectx.innercnt = 0 ) then
-			symbRecalcUDTSize env.typectx.symbol
-		end if
+			if( env.typectx.innercnt = 0 ) then
+				symbRecalcUDTSize env.typectx.symbol
+			end if
+		end select
 
 	'' UNION?
 	case FB.TK.UNION
