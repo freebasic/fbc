@@ -18,7 +18,11 @@ endif
 CC := gcc
 CFLAGS := -O3
 
-libpath = ../../lib
+ifneq ($(WINSYSDIR),)
+    libpath := ../../lib/win32
+else
+    libpath := ../../lib/linux
+endif
 lib = $(libpath)/libfbgfx.a
 
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
