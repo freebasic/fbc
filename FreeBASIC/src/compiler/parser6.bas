@@ -1443,8 +1443,8 @@ end function
 ''OnStmt 		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
 ''
 function cOnStmt
-	dim expr as integer
-	dim isgoto as integer, label as FBSYMBOL ptr, islocal as integer
+	dim as integer expr, isgoto, islocal, isrestore
+	dim as FBSYMBOL ptr label
 
 	cOnStmt = FALSE
 
@@ -1493,16 +1493,30 @@ function cOnStmt
 
     '' on error?
 	if( expr = INVALID ) then
-		'' Label
-		label = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
-		if( label = NULL ) then
-			label = symbAddLabel( lexTokenText, FALSE, TRUE )
-		end if
-		lexSkipToken
+		isrestore = FALSE
+		'' ON ERROR GOTO 0?
+		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+			if( lexTokenText = "0" ) then
+				lexSkipToken
+				isrestore = TRUE
+			end if
+        end if
 
-		expr = astNewVAR( label, NULL, 0, IR.DATATYPE.UINT )
-		expr = astNewADDR( IR.OP.ADDROF, expr, label )
-		rtlErrorSetHandler expr, (islocal = TRUE)
+		if( not isrestore ) then
+			'' Label
+			label = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+			if( label = NULL ) then
+				label = symbAddLabel( lexTokenText, FALSE, TRUE )
+			end if
+			lexSkipToken
+
+			expr = astNewVAR( label, NULL, 0, IR.DATATYPE.UINT )
+			expr = astNewADDR( IR.OP.ADDROF, expr, label )
+			rtlErrorSetHandler expr, (islocal = TRUE)
+
+		else
+        	rtlErrorSetHandler astNewCONST( NULL, IR.DATATYPE.UINT ), (islocal = TRUE)
+		end if
 
 		cOnStmt = TRUE
 

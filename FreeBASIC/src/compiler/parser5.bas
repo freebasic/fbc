@@ -378,7 +378,7 @@ function cProcStatement static
 	env.scope = 1
 
 	env.currproc = proc
-	env.compoundcnt = env.compoundcnt + 1
+	env.compoundcnt += 1
 
 	if( (alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then
 		env.isprocstatic = TRUE
@@ -491,7 +491,7 @@ function cProcStatement static
 	'' back to old state
 	env.procerrorhnd 		= NULL
 	env.currproc 			= NULL
-	env.compoundcnt 		= env.compoundcnt - 1
+	env.compoundcnt 		-= 1
 	env.isprocstatic 	 	= FALSE
 	env.procstmt.cmplabel 	= NULL
 	env.procstmt.endlabel 	= NULL
