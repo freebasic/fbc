@@ -249,8 +249,9 @@ data "WINDOW"	, FB.TK.WINDOW		, FB.TKCLASS.KEYWORD
 data "PALETTE"	, FB.TK.PALETTE		, FB.TKCLASS.KEYWORD
 data "SCREEN"	, FB.TK.SCREEN		, FB.TKCLASS.KEYWORD
 data "EXTERN"	, FB.TK.EXTERN		, FB.TKCLASS.KEYWORD
+data "STRPTR"	, FB.TK.STRPTR		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 160
+const FB.MAXKEYWORDS 		= 161
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

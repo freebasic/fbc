@@ -522,7 +522,7 @@ end function
 ''AddrOfExpression  =   VARPTR '(' Variable ')'
 ''					|   PROCPTR '(' Proc ('('')')? ')'
 '' 					| 	'@' (Proc ('('')')? | Variable)
-''					|   SADD '(' Variable{str}|Const{str}|Literal{str} ')'
+''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')'
 ''                  |   TypeConvExpr .
 ''
 function cAddrOfExpression( addrofexpr as integer )
@@ -600,8 +600,8 @@ function cAddrOfExpression( addrofexpr as integer )
 		cAddrOfExpression = TRUE
         exit function
 
-	'' SADD '(' Variable{str} ')'
-	case FB.TK.SADD
+	'' SADD|STRPTR '(' Variable{str} ')'
+	case FB.TK.SADD, FB.TK.STRPTR
 		lexSkipToken
 
 		if( not hMatch( CHAR_LPRNT ) ) then

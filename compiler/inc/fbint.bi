@@ -327,6 +327,7 @@ enum FBTK_ENUM
 	FB.TK.PALETTE
 	FB.TK.SCREEN
 	FB.TK.EXTERN
+	FB.TK.STRPTR
 end enum
 
 '' single char tokens
