@@ -934,16 +934,31 @@ function cGfxBsave as integer
 
 	cGfxBsave = FALSE
 
+	'' str
 	if( not cExpression( fexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
 
+	'' ','
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+	
+	'' expr
 	if( not cExpression( sexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
+	
+	'' ','
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
 
+	'' expr
 	if( not cExpression( lexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
