@@ -18,11 +18,13 @@
 '
 
 
+	option nokeyword screen, circle, line, palette, rgb
+
+
 '$include: 'crt.bi'
 
 '$inclib: "alleg"
 
-#define AL_LIB	"alleg"
 #define AL_VER	4.0
 
 ' -- constants --
@@ -433,15 +435,15 @@ Type GFX_MODE_LIST
 	mode As GFX_MODE Ptr			' pointer to the actual mode list array
 End Type
 
-Type AL_RGB					' note: this struct is called 'RGB' in Allegro docs
+Type RGB
 	r As UByte
 	g As UByte
 	b As UByte
 	filler As UByte
 End Type
 
-Type AL_PALETTE					' note: AL_RGB is called 'PALETTE' in Allegro docs and is actually a #define for an array (won't work in FB)
-	color(PAL_SIZE - 1) As AL_RGB		' fixme - this is broken
+Type PALETTE					' note: this is actually a #define for an array (won't work in FB)
+	color(PAL_SIZE - 1) As RGB		' fixme - this is broken
 End Type
 
 Type V3D					' a 3d point (fixed point version)
@@ -725,7 +727,7 @@ Declare Sub remove_keyboard CDecl Alias "remove_keyboard" ()
 Declare Sub install_keyboard_hooks CDecl Alias "install_keyboard_hooks" (ByVal keypressed As Function() As Integer, ByVal readkey As Function() As Integer)
 Declare Function poll_keyboard CDecl Alias "poll_keyboard" () As Integer
 Extern Import keyboard_needs_poll Alias "keyboard_needs_poll" As Integer
-Extern Import al_key Alias "key" As Byte 'Ptr
+Extern Import al_key Alias "key" As Byte
 Extern Import key_shifts Alias "key_shifts" As Integer
 Declare Function keypressed CDecl Alias "keypressed" () As Integer
 Declare Function readkey CDecl Alias "readkey" () As Integer
@@ -775,7 +777,7 @@ Declare Function request_video_bitmap CDecl Alias "request_video_bitmap" (ByVal 
 Declare Sub vsync CDecl Alias "vsync" ()
 
 ' bitmap objects
-Extern Import al_screen Alias "screen" As BITMAP Ptr ' note: this is called 'screen' in Allegro docs
+Extern Import screen Alias "screen" As BITMAP Ptr
 Declare Function create_bitmap CDecl Alias "create_bitmap" (ByVal w As Integer, ByVal h As Integer) as BITMAP Ptr
 Declare Function create_bitmap_ex CDecl Alias "create_bitmap_ex" (ByVal color_depth As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
 Declare Function create_sub_bitmap CDecl Alias "create_sub_bitmap" (ByVal parent As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
@@ -805,40 +807,40 @@ Declare Sub set_clip CDecl Alias "set_clip" (ByVal bmp As BITMAP Ptr, ByVal x1 A
 'Declare Function is_inside_bitmap CDecl Alias "is_inside_bitmap" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal clip As Integer) As Integer
 
 ' loading image files
-Declare Function load_bitmap CDecl Alias "load_bitmap" (ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr
-Declare Function load_bmp CDecl Alias "load_bmp" (ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr
-Declare Function load_lbm CDecl Alias "load_lbm" (ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr
-Declare Function load_pcx CDecl Alias "load_pcx" (ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr
-Declare Function load_tga CDecl Alias "load_tga" (ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr
-Declare Function save_bitmap CDecl Alias "save_bitmap" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
-Declare Function save_bmp CDecl Alias "save_bmp" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
-Declare Function save_pcx CDecl Alias "save_pcx" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
-Declare Function save_tga CDecl Alias "save_tga" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
-Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function(ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr, ByVal save As sub(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr))
+Declare Function load_bitmap CDecl Alias "load_bitmap" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_bmp CDecl Alias "load_bmp" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_lbm CDecl Alias "load_lbm" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_pcx CDecl Alias "load_pcx" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_tga CDecl Alias "load_tga" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function save_bitmap CDecl Alias "save_bitmap" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Function save_bmp CDecl Alias "save_bmp" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Function save_pcx CDecl Alias "save_pcx" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Function save_tga CDecl Alias "save_tga" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function(ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr, ByVal save As sub(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr))
 Declare Sub set_color_conversion CDecl Alias "set_color_conversion" (ByVal mode As Integer)
 Declare Function get_color_conversion CDecl Alias "get_color_conversion" () As Integer
 
 ' palette routines
-Declare Sub set_color CDecl Alias "set_color" (ByVal index As Integer, ByVal p As AL_RGB Ptr)
-Declare Sub set_palette CDecl Alias "set_palette" (ByVal p As AL_RGB Ptr)
-Declare Sub set_palette_range CDecl Alias "set_palette_range" (ByVal p As AL_RGB Ptr, ByVal from As Integer, ByVal iTo As Integer, ByVal vsync As Integer)
-Declare Sub get_color CDecl Alias "get_color" (ByVal index As Integer, ByVal p As AL_RGB Ptr)
-Declare Sub get_palette CDecl Alias "get_palette" (ByVal p As AL_RGB Ptr)
-Declare Sub get_palette_range CDecl Alias "get_palette_range" (ByVal p As AL_RGB Ptr, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_interpolate CDecl Alias "fade_interpolate" (ByVal source As AL_RGB Ptr, ByVal dest As AL_RGB Ptr, ByVal poutput As AL_RGB Ptr, ByVal pos As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_from_range CDecl Alias "fade_from_range" (ByVal source As AL_RGB Ptr, ByVal dest As AL_RGB Ptr, ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_in_range CDecl Alias "fade_in_range" (ByVal p As AL_RGB Ptr, ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
+Declare Sub set_color CDecl Alias "set_color" (ByVal index As Integer, ByVal p As RGB Ptr)
+Declare Sub set_palette CDecl Alias "set_palette" (ByVal p As RGB Ptr)
+Declare Sub set_palette_range CDecl Alias "set_palette_range" (ByVal p As RGB Ptr, ByVal from As Integer, ByVal iTo As Integer, ByVal vsync As Integer)
+Declare Sub get_color CDecl Alias "get_color" (ByVal index As Integer, ByVal p As RGB Ptr)
+Declare Sub get_palette CDecl Alias "get_palette" (ByVal p As RGB Ptr)
+Declare Sub get_palette_range CDecl Alias "get_palette_range" (ByVal p As RGB Ptr, ByVal from As Integer, ByVal iTo As Integer)
+Declare Sub fade_interpolate CDecl Alias "fade_interpolate" (ByVal source As RGB Ptr, ByVal dest As RGB Ptr, ByVal poutput As RGB Ptr, ByVal pos As Integer, ByVal from As Integer, ByVal iTo As Integer)
+Declare Sub fade_from_range CDecl Alias "fade_from_range" (ByVal source As RGB Ptr, ByVal dest As RGB Ptr, ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
+Declare Sub fade_in_range CDecl Alias "fade_in_range" (ByVal p As RGB Ptr, ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
 Declare Sub fade_out_range CDecl Alias "fade_out_range" (ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_from CDecl Alias "fade_from" (ByVal source As AL_RGB Ptr, ByVal dest As AL_RGB Ptr, ByVal speed As Integer)
-Declare Sub fade_in CDecl Alias "fade_in" (ByVal p As AL_RGB Ptr, ByVal speed As Integer)
+Declare Sub fade_from CDecl Alias "fade_from" (ByVal source As RGB Ptr, ByVal dest As RGB Ptr, ByVal speed As Integer)
+Declare Sub fade_in CDecl Alias "fade_in" (ByVal p As RGB Ptr, ByVal speed As Integer)
 Declare Sub fade_out CDecl Alias "fade_out" (ByVal speed As Integer)
-Declare Sub select_palette CDecl Alias "select_palette" (ByVal p As AL_RGB Ptr)
+Declare Sub select_palette CDecl Alias "select_palette" (ByVal p As RGB Ptr)
 Declare Sub unselect_palette CDecl Alias "unselect_palette" ()
-Declare Sub generate_332_palette CDecl Alias "generate_332_palette" (ByVal pal As AL_RGB ptr)
-Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB ptr, ByVal rsvd As String) As Integer
-Extern Import default_palette Alias "default_palette" As AL_RGB Ptr
-Extern Import black_palette Alias "black_palette" As AL_RGB Ptr
-Extern Import desktop_palette Alias "desktop_palette" As AL_RGB Ptr
+Declare Sub generate_332_palette CDecl Alias "generate_332_palette" (ByVal pal As RGB ptr)
+Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, ByVal rsvd As String) As Integer
+Extern Import default_palette Alias "default_palette" As RGB Ptr
+Extern Import black_palette Alias "black_palette" As RGB Ptr
+Extern Import desktop_palette Alias "desktop_palette" As RGB Ptr
 
 ' truecolor pixel formats
 Declare Function makecol8 CDecl Alias "makecol8" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
@@ -989,10 +991,10 @@ Extern Import scene_gap Alias "scene_gap" As Single
 Declare Sub xor_mode CDecl Alias "xor_mode" (ByVal iOn As Integer)
 Declare Sub solid_mode CDecl Alias "solid_mode" ()
 Extern Import color_map Alias "color_map" As COLOR_MAP Ptr
-Declare Sub create_trans_table CDecl Alias "create_trans_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As AL_RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As AL_RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_color_table CDecl Alias "create_color_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As AL_RGB Ptr, ByVal blend As Sub(ByVal pal As AL_RGB Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As AL_RGB Ptr), ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_blender_table CDecl Alias "create_blender_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As AL_RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_trans_table CDecl Alias "create_trans_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_color_table CDecl Alias "create_color_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal blend As Sub(ByVal pal As RGB Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As RGB Ptr), ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_blender_table CDecl Alias "create_blender_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
 Declare Sub set_trans_blender CDecl Alias "set_trans_blender" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 Declare Sub set_alpha_blender CDecl Alias "set_alpha_blender" ()
 Declare Sub set_write_alpha_blender CDecl Alias "set_write_alpha_blender" ()
@@ -1012,9 +1014,9 @@ Declare Sub set_blender_mode CDecl Alias "set_blender_mode" (ByVal b15 As sub(),
 Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 as sub(), ByVal b16 as sub(), ByVal b24 as sub(), ByVal b32 as sub(), ByVal b15x as sub(), ByVal b16x as sub(), ByVal b24x as sub(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 
 ' converting between color formats
-Declare Function bestfit_color CDecl Alias "bestfit_color" (ByVal pal As AL_RGB ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
+Declare Function bestfit_color CDecl Alias "bestfit_color" (ByVal pal As RGB ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
 Extern Import rgb_map Alias "rgb_map" As RGB_MAP Ptr
-Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As AL_RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
 Declare Sub hsv_to_rgb CDecl Alias "hsv_to_rgb" (ByVal h As Single, ByVal s As Single, ByVal v As Single, ByRef r As Integer, ByRef g As Integer, ByRef b As Integer)
 Declare Sub rgb_to_hsv CDecl Alias "rgb_to_hsv" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef h As Single, ByRef s As Single, ByRef v As Single)
 
@@ -1031,7 +1033,7 @@ Declare Function open_memory_fli CDecl Alias "open_memory_fli" (ByVal fli_data A
 Declare Sub close_fli CDecl Alias "close_fli" ()
 Declare Function next_fli_frame CDecl Alias "next_fli_frame" (ByVal iloop As Integer) As Integer
 Extern Import fli_bitmap Alias "fli_bitmap" As BITMAP Ptr
-Extern Import fli_palette Alias "fli_palette" As AL_RGB Ptr
+Extern Import fli_palette Alias "fli_palette" As RGB Ptr
 'Declare Function fli_bmp_dirty_from CDecl Alias "fb_fli_bmp_dirty_from" () As Integer
 Extern Import fli_bmp_dirty_to Alias "fli_bmp_dirty_to" As Integer
 Extern Import fli_bmp_dirty_from Alias "fli_bmp_dirty_from" As Integer

@@ -311,7 +311,7 @@ end sub
 
 
 
-   dim pal(PAL_SIZE - 1) as AL_RGB
+   dim pal(PAL_SIZE - 1) as RGB
    dim buf as string
    dim i as integer
 
@@ -375,7 +375,7 @@ end sub
       draw_ship()
 
       vsync()
-      blit(buffer, al_screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H)
+      blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H)
 
       poll_keyboard()
 
