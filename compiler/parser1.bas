@@ -2596,7 +2596,6 @@ function cAssignment
 	dim islet as integer
 	dim assg as integer, expr as integer
 	dim vr as integer
-	dim ddtype as integer, sdtype as integer
 
 	cAssignment = FALSE
 
@@ -2632,24 +2631,6 @@ function cAssignment
         end if
 
         '' do assign
-		ddtype = astGetDataType( assg )
-		sdtype = astGetDataType( expr )
-
-        '' can't store a float to a byte/char
-        if( irGetDataSize( ddtype ) = 1 ) then
-        	if( irGetDataClass( sdtype ) = IR.DATACLASS.FPOINT ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
-            	exit function
-        	end if
-
-        '' neither a byte/char to a float
-        elseif( irGetDataSize( sdtype ) = 1 ) then
-        	if( irGetDataClass( ddtype ) = IR.DATACLASS.FPOINT ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
-            	exit function
-        	end if
-        end if
-
         assg = astNewASSIGN( assg, expr )
 
         if( assg = INVALID ) then

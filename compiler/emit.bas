@@ -67,7 +67,7 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 ''globals
 	dim shared ctx as EMITCTX
 	dim shared NEWLINE as string '* 2
-	dim shared COMMAS as string '* 2
+	dim shared COMMA as string '* 2
 	dim shared TABCHAR as string '* 1
 
 	redim shared dtypeTB( 0 ) as EMITDATATYPE
@@ -80,9 +80,9 @@ const EMIT.MAXRNAMES  = 8
 const EMIT.MAXRTABLES = 4
 
 regnametbdata:
-data "al","bl","cl","dl","di","si","",""
-data "ax","bx","cx","dx","di","si","",""
-data "eax","ebx","ecx","edx","edi","esi","",""
+data "dl","di","si","cl","bl","al","",""
+data "dx","di","si","cx","bx","ax","",""
+data "edx","edi","esi","ecx","ebx","eax","",""
 data "st(0)","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"
 
 '' class, size, regnametb, mov's ptr name, init name
@@ -103,12 +103,12 @@ data IR.DATACLASS.INTEGER, FB.INTEGERSIZE, 0, "dword ptr", ""
 
 '' class,reg,name
 regdata:
-data IR.DATACLASS.INTEGER, EMIT.INTREG.EAX
-data IR.DATACLASS.INTEGER, EMIT.INTREG.EBX
-data IR.DATACLASS.INTEGER, EMIT.INTREG.ECX
 data IR.DATACLASS.INTEGER, EMIT.INTREG.EDX
 data IR.DATACLASS.INTEGER, EMIT.INTREG.EDI
 data IR.DATACLASS.INTEGER, EMIT.INTREG.ESI
+data IR.DATACLASS.INTEGER, EMIT.INTREG.ECX
+data IR.DATACLASS.INTEGER, EMIT.INTREG.EBX
+data IR.DATACLASS.INTEGER, EMIT.INTREG.EAX
 data IR.DATACLASS.FPOINT, 0: 'st(0)
 data IR.DATACLASS.FPOINT, 1: 'st(1)
 data IR.DATACLASS.FPOINT, 2: 'st(2)
@@ -205,7 +205,7 @@ sub emitInit
 	''
 	NEWLINE = chr$( CHAR_CR ) + chr$( CHAR_LF )
 
-	COMMAS = ", "
+	COMMA = ", "
 
 	TABCHAR = chr$( CHAR_TAB )
 
@@ -628,7 +628,7 @@ sub emitMOV( dname as string, byval ddtype as integer, byval ddclass as integer,
 
 	select case ddclass
 	case IR.DATACLASS.INTEGER
-		outp "mov " + dst + COMMAS + src
+		outp "mov " + dst + COMMA + src
 	case IR.DATACLASS.FPOINT
 	end select
 
@@ -646,12 +646,35 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 	ddsize = irGetDataSize( ddtype )
 
 	select case ddclass
+	'' integer destine
 	case IR.DATACLASS.INTEGER
+		'' fpoint source
 		if( sdclass = IR.DATACLASS.FPOINT ) then
-			if( ddsize = 1 ) then exit sub
 
-			outp "fistp " + dst
+			'' byte destine? damn..
+			if( ddsize = 1 ) then
 
+				outp "sub esp, 4"
+				outp "fistp dword ptr [esp]"
+
+				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+					emithPUSH "edx"
+				end if
+
+				outp "mov dl, byte ptr [esp]"
+				outp "mov " + dst + ", dl"
+
+				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+					emithPOP "edx"
+				end if
+
+				outp  "add esp, 4"
+
+            else
+				outp "fistp " + dst
+			end if
+
+		'' integer source
 		else
 
 			if( ddsize = 1 ) then
@@ -662,52 +685,75 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 
 			if( (ddsize > 1) and _
 				((stype = IR.VREGTYPE.IMM) or (ddtype = sdtype) or (irMaxDataType( ddtype, sdtype ) = INVALID)) ) then
-				outp "mov " + dst + COMMAS + src
+				outp "mov " + dst + COMMA + src
 
 			else
 				reg = emitLookupReg( src, sdtype )
 				ext = emitGetRegName( ddtype, ddclass, reg )
 				if( ddtype > sdtype ) then
 					if( irIsSigned( sdtype ) ) then
-						outp "movsx " + ext + COMMAS + src
+						outp "movsx " + ext + COMMA + src
 					else
-						outp "movzx " + ext + COMMAS + src
+						outp "movzx " + ext + COMMA + src
 					end if
-					outp "mov " + dst + COMMAS + ext
+					outp "mov " + dst + COMMA + ext
 				else
 					'' handle DI/SI as byte
 					if( (ddsize = 1) and right$( ext, 1 ) <> "l" ) then
 						if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 							emithPUSH "edx"
 						end if
-						outp "mov dx" + COMMAS + ext
-						outp "mov " + dst + COMMAS + "dl"
+						outp "mov dx, " + ext
+						outp "mov " + dst + ", dl"
 						if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 							emithPOP "edx"
 						end if
 					else
-						outp "mov " + dst + COMMAS + ext
+						outp "mov " + dst + COMMA + ext
 					end if
 				end if
 			end if
 		end if
 
+	'' fpoint destine
 	case IR.DATACLASS.FPOINT
-		if( irGetDataSize( sdtype ) = 1 ) then exit sub
 
-		if( sdclass = IR.DATACLASS.FPOINT ) then
-			outp "fstp " + dst
-		else
-			if( (stype = IR.VREGTYPE.REG) or (stype = IR.VREGTYPE.IMM) ) then
-				stk = (irGetDataSize( sdtype ) + 3) and not 3
-				outp "push " + src
-				outp "fild " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
-				outp "add " + "esp," + str$( stk )
-			else
-				outp "fild "  + src
+		'' byte source? damn..
+		if( irGetDataSize( sdtype ) = 1 ) then
+
+			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				emithPUSH "edx"
 			end if
-			outp "fstp " + dst
+
+			if( irIsSigned( sdtype ) ) then
+				outp "movsx edx, " + src
+			else
+				outp "movzx edx, " + src
+			end if
+
+			outp "push edx"
+			outp "fild dword ptr [esp]"
+			outp "add esp, 4"
+
+			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				emithPOP "edx"
+			end if
+
+		else
+			'' integer source
+			if( sdclass <> IR.DATACLASS.FPOINT ) then
+				if( (stype = IR.VREGTYPE.REG) or (stype = IR.VREGTYPE.IMM) ) then
+					stk = (irGetDataSize( sdtype ) + 3) and not 3
+					outp "push " + src
+					outp "fild " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
+					outp "add " + "esp," + str$( stk )
+				else
+					outp "fild "  + src
+				end if
+			end if
 		end if
+
+		outp "fstp " + dst
 	end select
 
 end sub
@@ -725,7 +771,9 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 	ddsize = irGetDataSize( ddtype )
 
 	select case ddclass
+	'' integer destine
 	case IR.DATACLASS.INTEGER
+		'' integer source
 		if( sdclass = IR.DATACLASS.INTEGER ) then
 
 			if( ddsize = 1 ) then
@@ -736,21 +784,21 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 
 			if( (ddsize > 1) and _
 				((ddtype = sdtype) or (irMaxDataType( ddtype, sdtype ) = INVALID)) ) then
-				outp "mov " + dst + COMMAS + src
+				outp "mov " + dst + COMMA + src
 
 			else
 				if( ddtype > sdtype ) then
 					if( irIsSigned( sdtype ) ) then
-						outp "movsx " + dst + COMMAS + src
+						outp "movsx " + dst + COMMA + src
 					else
-						outp "movzx " + dst + COMMAS + src
+						outp "movzx " + dst + COMMA + src
 					end if
 				else
 					if( stype = IR.VREGTYPE.REG ) then
 						reg = emitLookupReg( src, sdtype )
 						if( reg <> emitLookupReg( dst, ddtype ) ) then
 							ext = emitGetRegName( ddtype, ddclass, reg )
-							outp "mov " + dst + COMMAS + ext
+							outp "mov " + dst + COMMA + ext
 						end if
 					else
 						'' handle DI/SI as byte
@@ -760,12 +808,12 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 							end if
 
 							src = hPrepOperand( sname, ddtype, ddclass, stype )
-							outp "mov " + "dl" + COMMAS + src
+							outp "mov " + "dl, " + src
 
 							if( irIsSigned( sdtype ) ) then
-								outp "movsx " + dst + COMMAS + "dl"
+								outp "movsx " + dst + ", dl"
 							else
-								outp "movzx " + dst + COMMAS + "dl"
+								outp "movzx " + dst + ", dl"
 							end if
 
 							if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
@@ -773,37 +821,78 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 							end if
 						else
 							src = hPrepOperand( sname, ddtype, sdclass, stype )
-							outp "mov " + dst + COMMAS + src
+							outp "mov " + dst + COMMA + src
 						end if
 					end if
 				end if
 			end if
 
+		'' fpoint source
 		else
-			if( ddsize = 1 ) then exit sub
-
 			if( stype <> IR.VREGTYPE.REG ) then
 				outp "fld " + src
 			end if
-			stk = (ddsize + 3) and not 3
-			outp "sub esp," + str$( stk )
-			outp "fistp " + rtrim$(dtypeTB(ddtype).mname) + " [esp]"
-			outp "pop " + dst
+
+			'' byte destine? damn..
+			if( ddsize = 1 ) then
+				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+					emithPUSH "edx"
+				end if
+
+                outp "sub esp, 4"
+                outp "fistp dword ptr [esp]"
+                outp "pop edx"
+                outp "mov " + dst + ", dl"
+
+				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+					emithPOP "edx"
+				end if
+
+            else
+				stk = (ddsize + 3) and not 3
+				outp "sub esp," + str$( stk )
+				outp "fistp " + rtrim$(dtypeTB(ddtype).mname) + " [esp]"
+				outp "pop " + dst
+			end if
 		end if
 
+	'' fpoint destine
 	case IR.DATACLASS.FPOINT
-		if( irGetDataSize( sdtype ) = 1 ) then exit sub
+		'' byte source? damn..
+		if( irGetDataSize( sdtype ) = 1 ) then
+			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				emithPUSH "edx"
+			end if
 
-		if( sdclass = IR.DATACLASS.FPOINT ) then
-			outp "fld " + src
-		else
-			if( (stype = IR.VREGTYPE.REG) or (stype = IR.VREGTYPE.IMM) ) then
-				stk = (irGetDataSize( sdtype ) + 3) and not 3
-				outp "push " + src
-				outp "fild " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
-				outp "add " + "esp," + str$( stk )
+			if( irIsSigned( sdtype ) ) then
+				outp "movsx edx, " + src
 			else
-				outp "fild " + src
+				outp "movzx edx, " + src
+			end if
+
+			outp "push edx"
+			outp "fild dword ptr [esp]"
+			outp "add esp, 4"
+
+			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
+				emithPOP "edx"
+			end if
+
+        else
+			'' fpoint source
+			if( sdclass = IR.DATACLASS.FPOINT ) then
+				outp "fld " + src
+
+			'' integer source
+			else
+				if( (stype = IR.VREGTYPE.REG) or (stype = IR.VREGTYPE.IMM) ) then
+					stk = (irGetDataSize( sdtype ) + 3) and not 3
+					outp "push " + src
+					outp "fild " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
+					outp "add " + "esp," + str$( stk )
+				else
+					outp "fild " + src
+				end if
 			end if
 		end if
 	end select
@@ -841,7 +930,7 @@ sub emitADD( dname as string, byval ddtype as integer, byval ddclass as integer,
 		elseif( dodec ) then
 			outp "dec " + dst
 		else
-			outp "add " + dst + COMMAS + src
+			outp "add " + dst + COMMA + src
 		end if
 
 	case IR.DATACLASS.FPOINT
@@ -885,7 +974,7 @@ sub emitSUB( dname as string, byval ddtype as integer, byval ddclass as integer,
 		elseif( doinc ) then
 			outp "inc " + dst
 		else
-			outp "sub " + dst + COMMAS + src
+			outp "sub " + dst + COMMA + src
 		end if
 
 	case IR.DATACLASS.FPOINT
@@ -1002,13 +1091,13 @@ sub emithINTIMUL( dst as string, byval ddtype as integer, byval ddclass as integ
 		if( not isfree ) then emithPUSH rname
 
 		emithMOV rname, dst
-		outp "imul " + rname + COMMAS + src
+		outp "imul " + rname + COMMA + src
 		emithMOV dst, rname
 
 		if( not isfree ) then emithPOP rname
 
 	else
-		outp "imul " + dst + COMMAS + src
+		outp "imul " + dst + COMMA + src
 	end if
 
 end sub
@@ -1308,7 +1397,7 @@ sub emitSHIFT( mnemonic as string, dname as string, byval ddtype as integer, byv
 
 	end if
 
-	outp mnemonic + " " + dst + COMMAS + src
+	outp mnemonic + " " + dst + COMMA + src
 
 	if( isecxdestine ) then
 		emithMOV ecx, eax
@@ -1364,7 +1453,7 @@ sub emitAND( dname as string, byval ddtype as integer, byval ddclass as integer,
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
-		outp "and " + dst + COMMAS + src
+		outp "and " + dst + COMMA + src
 	end if
 
 end sub
@@ -1378,7 +1467,7 @@ sub emitOR( dname as string, byval ddtype as integer, byval ddclass as integer, 
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
-		outp "or " + dst + COMMAS + src
+		outp "or " + dst + COMMA + src
 	end if
 
 end sub
@@ -1392,7 +1481,7 @@ sub emitXOR( dname as string, byval ddtype as integer, byval ddclass as integer,
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
-		outp "xor " + dst + COMMAS + src
+		outp "xor " + dst + COMMA + src
 	end if
 
 end sub
@@ -1406,7 +1495,7 @@ sub emitEQV( dname as string, byval ddtype as integer, byval ddclass as integer,
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
-		outp "xor " + dst + COMMAS + src
+		outp "xor " + dst + COMMA + src
 		outp "not " + dst
 	end if
 
@@ -1422,7 +1511,7 @@ sub emitIMP( dname as string, byval ddtype as integer, byval ddclass as integer,
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
 		outp "not " + dst
-		outp "or " + dst + COMMAS + src
+		outp "or " + dst + COMMA + src
 	end if
 
 end sub
@@ -1452,9 +1541,9 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
 	end if
 
 	if( dotest ) then
-		outp "test " + dst + COMMAS + dst
+		outp "test " + dst + COMMA + dst
 	else
-		outp "cmp " + dst + COMMAS + src
+		outp "cmp " + dst + COMMA + src
 	end if
 
 	''!!!FIXME!!! assuming res = dst !!!FIXME!!!
@@ -1473,13 +1562,13 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
    			end select
 
 			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
-				outp "xchg " + edx + COMMAS + rname
+				outp "xchg " + edx + COMMA + rname
 			end if
 
 			outp "set" + mnemonic + TABCHAR + "dl"
 
 			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
-				outp "xchg " + edx + COMMAS + rname
+				outp "xchg " + edx + COMMA + rname
 			else
 				emithMOV rname, edx
 			end if
@@ -1487,16 +1576,16 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
 			outp "set" + mnemonic + TABCHAR + rname8
 		end if
 
-		outp "shr " + rname + COMMAS + "1"
-		outp "sbb " + rname + COMMAS + rname
+		outp "shr " + rname + ", 1"
+		outp "sbb " + rname + COMMA + rname
 
 	else
 		if( len( rname ) > 0 ) then
-			outp "mov " + rname + COMMAS + "-1"
+			outp "mov " + rname + ", -1"
 		end if
 		emitBRANCH "j" + mnemonic, label, FALSE
 		if( len( rname ) > 0 ) then
-			outp "xor " + rname + COMMAS + rname
+			outp "xor " + rname + COMMA + rname
 			emitLabel label, FALSE
 		end if
 	end if
@@ -1554,13 +1643,13 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
 		if( right$( rname8, 1 ) <> "l" ) then
 
 			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
-				outp "xchg edx" + COMMAS + rname
+				outp "xchg edx" + COMMA + rname
 			end if
 
 			outp "set" + mnemonic + TABCHAR + "dl"
 
 			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
-				outp "xchg edx" + COMMAS + rname
+				outp "xchg edx" + COMMA + rname
 			else
 				emithMOV rname, "edx"
 			end if
@@ -1568,16 +1657,16 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
 			outp "set" + mnemonic + TABCHAR + rname8
 		end if
 
-		outp "shr " + rname + COMMAS + "1"
-		outp "sbb " + rname + COMMAS + rname
+		outp "shr " + rname + ", 1"
+		outp "sbb " + rname + COMMA + rname
 
 	else
  	   if( len( rname ) > 0 ) then
-    		outp "mov " + rname + COMMAS + "-1"
+    		outp "mov " + rname + ", -1"
     	end if
     	emitBRANCH "j" + mnemonic, label, FALSE
 		if( len( rname ) > 0 ) then
-			outp "xor " + rname + COMMAS + rname
+			outp "xor " + rname + COMMA + rname
 			emitLabel label, FALSE
 		end if
 	end if
@@ -1735,10 +1824,10 @@ sub emitABS( dname as string, byval ddtype as integer, byval ddclass as integer,
 
 		bits = (dtypeTB(ddtype).size * 8)-1
 
-		outp "mov " + rname + COMMAS + dst
-		outp "sar " + rname + COMMAS + str$( bits )
-		outp "xor " + dst + COMMAS + rname
-		outp "sub " + dst + COMMAS + rname
+		outp "mov " + rname + COMMA + dst
+		outp "sar " + rname + COMMA + str$( bits )
+		outp "xor " + dst + COMMA + rname
+		outp "sub " + dst + COMMA + rname
 
 		if( not isfree ) then emithPOP rname
 
@@ -1759,11 +1848,11 @@ sub emitSGN( dname as string, byval ddtype as integer, byval ddclass as integer,
 
 		label = hMakeTmpStr
 
-		outp "cmp " + dst + COMMAS + "0"
+		outp "cmp " + dst + ", 0"
 		emitBRANCH "je", label, FALSE
-		outp "mov " + dst + COMMAS + "1"
+		outp "mov " + dst + ", 1"
 		emitBRANCH "jg", label, FALSE
-		outp "mov " + dst + COMMAS + "-1"
+		outp "mov " + dst + ", -1"
 		emitLABEL label, FALSE
 
 	end if
@@ -1843,7 +1932,7 @@ sub emitPOP( sname as string, byval sdtype as integer, byval sdclass as integer,
 				outp "pop " + src
 			else
 
-				outp "xchg eax" + COMMAS + "[esp]"
+				outp "xchg eax, [esp]"
 				emithMOV src, "al"
 				if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EAX ) ) then
 					emithPOP "eax"
@@ -1880,7 +1969,7 @@ sub emitADDROF( dname as string, byval ddtype as integer, byval ddclass as integ
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
 		if( dtype = IR.VREGTYPE.REG ) then
-			outp "lea " + dname + COMMAS + "[" + sname + "]"
+			outp "lea " + dname + ", [" + sname + "]"
 		end if
 	end if
 
@@ -1895,7 +1984,7 @@ sub emitDEREF( dname as string, byval ddtype as integer, byval ddclass as intege
 	src = hPrepOperand( sname, ddtype, ddclass, stype )
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
-		outp "mov " + dst + COMMAS + src
+		outp "mov " + dst + COMMA + src
 	end if
 
 end sub

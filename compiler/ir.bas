@@ -707,7 +707,7 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 
 			s = vregTB(vr).s
 			if( s = INVALID ) then
-				hReportError FB.ERRMSG.VARIABLENOTDECLARED
+				hReportError FB.ERRMSG.PARAMTYPEMISMATCH, TRUE
 				exit function
 			end if
 
@@ -717,7 +717,7 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 
         		desc = symbGetVarDescriptor( s )
 				if( desc = INVALID ) then
-					hReportError FB.ERRMSG.VARIABLENOTDECLARED
+					hReportError FB.ERRMSG.PARAMTYPEMISMATCH, TRUE
 					exit function
 				end if
 
