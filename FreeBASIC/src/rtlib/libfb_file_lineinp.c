@@ -38,7 +38,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 	FILE 		*f;
 	int			c, len;
 	FBSTRING	tmp = { 0 };
-	char		buffer[BUFFER_LEN+1];
+	char		buffer[BUFFER_LEN];
 	int			lastcol, cols;
 
     /* - */
@@ -100,7 +100,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 		fb_StrConcat( &tmp, dst, dst_len, (void *)buffer, len );
 		fb_StrAssign( dst, dst_len, (void *)&tmp, -1 );
 
-	} while( len == BUFFER_LEN );
+	} while( len == BUFFER_LEN-1 );
 
 	/* - */
 	if( fnum == 0 )
