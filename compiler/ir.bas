@@ -267,7 +267,7 @@ end sub
 '':::::
 function irGetDataClass( byval dtype as integer ) as integer 'static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = dtype - IR.DATATYPE.POINTER
+	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	irGetDataClass = dtypeTB(dtype).class
 
@@ -276,9 +276,9 @@ end function
 '':::::
 function irMaxDataType( byval dtype1 as integer, byval dtype2 as integer ) as integer 'static
 
-    if( dtype1 >= IR.DATATYPE.POINTER ) then dtype1 = dtype1 - IR.DATATYPE.POINTER
+    if( dtype1 >= IR.DATATYPE.POINTER ) then dtype1 = IR.DATATYPE.UINT
 
-    if( dtype2 >= IR.DATATYPE.POINTER ) then dtype2 = dtype2 - IR.DATATYPE.POINTER
+    if( dtype2 >= IR.DATATYPE.POINTER ) then dtype2 = IR.DATATYPE.UINT
 
 
     irMaxDataType = -1
@@ -307,7 +307,7 @@ end function
 '':::::
 function irIsSigned( byval dtype as integer ) as integer 'static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = dtype - IR.DATATYPE.POINTER
+	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	irIsSigned = dtypeTB(dtype).signed
 
@@ -316,7 +316,7 @@ end function
 '':::::
 function irGetDataSize( byval dtype as integer ) as integer 'static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = dtype - IR.DATATYPE.POINTER
+	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	irGetDataSize = dtypeTB(dtype).size
 
@@ -327,7 +327,7 @@ function irGetSignedType( byval dtype as integer ) as integer 'static
 	dim dt as integer
 
 	dt = dtype
-	if( dt >= IR.DATATYPE.POINTER ) then dt = dt - IR.DATATYPE.POINTER
+	if( dt >= IR.DATATYPE.POINTER ) then dt = IR.DATATYPE.UINT
 
 	if( dtypeTB(dt).class <> IR.DATACLASS.INTEGER ) then
 		irGetSignedType = dtype
@@ -348,7 +348,7 @@ function irGetUnsignedType( byval dtype as integer ) as integer 'static
 	dim dt as integer
 
 	dt = dtype
-	if( dt >= IR.DATATYPE.POINTER ) then dt = dt - IR.DATATYPE.POINTER
+	if( dt >= IR.DATATYPE.POINTER ) then dt = IR.DATATYPE.UINT
 
 	if( dtypeTB(dt).class <> IR.DATACLASS.INTEGER ) then
 		irGetUnsignedType = dtype
@@ -467,7 +467,7 @@ end sub
 '':::::
 sub irEmitCONVERT( byval v1 as integer, byval dtype1 as integer, byval v2 as integer, byval dtype2 as integer ) 'static
 
-	if( dtype1 >= IR.DATATYPE.POINTER ) then dtype1 = dtype1 - IR.DATATYPE.POINTER
+	if( dtype1 >= IR.DATATYPE.POINTER ) then dtype1 = IR.DATATYPE.UINT
 
 	select case dtypeTB(dtype1).class
 	case IR.DATACLASS.INTEGER
@@ -1050,7 +1050,7 @@ function irGetVRDataClass( byval vreg as integer ) as integer 'static
 
 	dtype = vregTB(vreg).dtype
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = dtype - IR.DATATYPE.POINTER
+	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	irGetVRDataClass = dtypeTB(dtype).class
 
@@ -1062,7 +1062,7 @@ function irGetVRDataSize( byval vreg as integer ) as integer 'static
 
 	dtype = vregTB(vreg).dtype
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = dtype - IR.DATATYPE.POINTER
+	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	irGetVRDataSize = dtypeTB(dtype).size
 
