@@ -27,7 +27,7 @@
 #ifndef __FB_GFX_MMX_H__
 #define __FB_GFX_MMX_H__
 
-#ifdef WIN32
+#if defined TARGET_WIN32 || defined TARGET_DOS
 #define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name:
 #define GLOBL(name)		_##name
 #else

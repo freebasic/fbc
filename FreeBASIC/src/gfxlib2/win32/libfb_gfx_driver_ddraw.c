@@ -363,7 +363,7 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_ACTIVATEAPP:
 			is_active = (int)wParam;
-			fb_hMemSet(fb_mode->key, FALSE, 256);
+			fb_hMemSet(fb_mode->key, FALSE, 128);
 			mouse_buttons = 0;
 			fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
 			break;
@@ -509,11 +509,9 @@ static void window_thread(HANDLE running_event)
 		if ((result == DIERR_NOTACQUIRED) || (result == DIERR_INPUTLOST))
 			IDirectInputDevice_Acquire(lpDID);
 		else {
-			for (i = 0; i < 128; i++)
-				fb_mode->key[i] = (keystate[i] & 0x80) ? TRUE : FALSE;
 			/* Simplicistic way to deal with extended scancodes */
-			for (i = 128; i < 256; i++)
-				fb_mode->key[i & 0x7F] |= (keystate[i] & 0x80) ? TRUE : FALSE;
+			for (i = 0; i < 128; i++)
+				fb_mode->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
 		}
 		
 		while (PeekMessage(&message, wnd, 0, 0, PM_REMOVE)) {
