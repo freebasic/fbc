@@ -9,6 +9,10 @@
 #ifndef __gdkgl_bi__
 #define __gdkgl_bi__
 
+#ifdef FB__WIN32
+#inclib "gdkglext-win32-1.0"
+#endif
+
 #include once "gtk/gdkgl/gdkgldefs.bi"
 #include once "gtk/gdkgl/gdkglversion.bi"
 #include once "gtk/gdkgl/gdkgltokens.bi"

@@ -12,7 +12,7 @@
 #define G_GNUC_FUNCTION ""
 #define G_GNUC_PRETTY_FUNCTION ""
 #define G_STRLOC ":__LINE__"
-#define FALSE (0)
-#define TRUE ( not (0))
+#define FALSE 0
+#define TRUE 1
 
 #endif

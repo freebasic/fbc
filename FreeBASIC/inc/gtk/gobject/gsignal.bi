@@ -102,6 +102,11 @@ declare function g_signal_accumulator_true_handled cdecl alias "g_signal_accumul
 declare sub g_signal_handlers_destroy cdecl alias "g_signal_handlers_destroy" (byval instance as gpointer)
 declare sub _g_signals_destroy cdecl alias "_g_signals_destroy" (byval itype as GType)
 
-#define g_signal_connect(i,s,c,d) g_signal_connect_data(i,s,c,d,0,0)
+#define g_signal_connect(i,s,h,d) g_signal_connect_data(i,s,h,d,0,0)
+#define g_signal_connect_after(i,s,h,d) g_signal_connect_data(i,s,h,d,NULL,G_CONNECT_AFTER)
+#define g_signal_connect_swapped(i,s,h,d) g_signal_connect_data(i,s,h,d,NULL,G_CONNECT_SWAPPED)
+#define	g_signal_handlers_disconnect_by_func(i,f,d) g_signal_handlers_disconnect_matched(i,G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA,0,0,NULL,f,d)
+#define	g_signal_handlers_block_by_func(i,f,d) g_signal_handlers_block_matched(i,G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA,0,0,NULL,f,d)
+#define	g_signal_handlers_unblock_by_func(i,f,d) g_signal_handlers_unblock_matched(i,G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA,0,0,NULL,f,d)
 
 #endif
