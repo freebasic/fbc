@@ -108,7 +108,7 @@ int fb_hGetCh()
 		if (k == EOF)
 			return 27;
 		if (!getch_inited) {
-			if (fb_con.inited != INIT_CONSOLE) {
+			if (fb_con.inited == INIT_CONSOLE) {
 				/* Fixups for X11 compatibility */
 				Sub1[4].key = '1';
 				Sub1[5].key = '2';

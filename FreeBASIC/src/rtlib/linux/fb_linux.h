@@ -40,7 +40,6 @@
 
 #define INIT_CONSOLE	1
 #define INIT_XTERM	2
-#define INIT_ETERM	3
 
 
 typedef struct FBCONSOLE

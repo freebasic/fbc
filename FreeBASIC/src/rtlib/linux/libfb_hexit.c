@@ -58,4 +58,29 @@ void fb_hEnd ( int errlevel )
 		
 		fb_con.inited = FALSE;
 	}
+
+#ifdef MULTITHREADED
+	/* Release multithreading support resources */
+	pthread_mutex_destroy(&fb_global_mutex);
+	
+	/* allocate thread local storage vars for runtime error handling */
+	pthread_key_delete(fb_errctx.handler);
+	pthread_key_delete(fb_errctx.num);
+	pthread_key_delete(fb_errctx.reslbl);
+	pthread_key_delete(fb_errctx.resnxtlbl);
+	
+	/* allocate thread local storage vars for input context */
+	pthread_key_delete(fb_inpctx.f);
+	pthread_key_delete(fb_inpctx.i);
+	pthread_key_delete(fb_inpctx.s.data);
+	pthread_key_delete(fb_inpctx.s.len);
+	pthread_key_delete(fb_inpctx.s.size);
+
+	/* allocate thread local storage vars for print using context */
+	pthread_key_delete(fb_printusgctx.chars);
+	pthread_key_delete(fb_printusgctx.ptr);
+	pthread_key_delete(fb_printusgctx.fmtstr.data);
+	pthread_key_delete(fb_printusgctx.fmtstr.len);
+	pthread_key_delete(fb_printusgctx.fmtstr.size);
+#endif
 }

@@ -57,13 +57,18 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len, 
 	{
 		if( text != NULL )
 		{
-			if( text->data != NULL )
+			if( text->data != NULL ) {
+				FB_UNLOCK();
 				fb_PrintString( 0, text, 0 );
+				FB_LOCK();
+			}
 
 			if( addquestion != FB_FALSE )
 			{
 				strcpy( buffer, "? " );
+				FB_UNLOCK();
 				fb_PrintFixString( 0, buffer, 0 );
+				FB_LOCK();
 			}
 		}
 

@@ -29,6 +29,10 @@
 #include "fb_linux.h"
 
 
+#ifdef MULTITHREADED
+pthread_mutex_t fb_global_mutex;
+#endif
+
 FBCONSOLE fb_con = { 0 };
 
 
@@ -137,13 +141,37 @@ void fb_hInit ( void )
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
 #endif
 
+#ifdef MULTITHREADED
+	/* Init multithreading support */
+	pthread_mutex_init(&fb_global_mutex, NULL);
+	
+	/* allocate thread local storage vars for runtime error handling */
+	pthread_key_create(&fb_errctx.handler,   NULL);
+	pthread_key_create(&fb_errctx.num,       NULL);
+	pthread_key_create(&fb_errctx.reslbl,    NULL);
+	pthread_key_create(&fb_errctx.resnxtlbl, NULL);
+	
+	/* allocate thread local storage vars for input context */
+	pthread_key_create(&fb_inpctx.f,         NULL);
+	pthread_key_create(&fb_inpctx.i,         NULL);
+	pthread_key_create(&fb_inpctx.s.data,    NULL);
+	pthread_key_create(&fb_inpctx.s.len,     NULL);
+	pthread_key_create(&fb_inpctx.s.size,    NULL);
+
+	/* allocate thread local storage vars for print using context */
+	pthread_key_create(&fb_printusgctx.chars,       NULL);
+	pthread_key_create(&fb_printusgctx.ptr,         NULL);
+	pthread_key_create(&fb_printusgctx.fmtstr.data, NULL);
+	pthread_key_create(&fb_printusgctx.fmtstr.len,  NULL);
+	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
+#endif
+	
+	/* Init terminal I/O */
 	term = getenv("TERM");
 	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
 		init = INIT_CONSOLE;
-	if ((term) && (!strncmp(term, "xterm", 5)))
+	if ((term) && ((!strncmp(term, "xterm", 5)) || (!strncmp(term, "eterm", 5))))
 		init = INIT_XTERM;
-	if ((term) && (!strncasecmp(term, "eterm", 5)))
-		init = INIT_ETERM;
 	if (!init)
 		return;
 	
