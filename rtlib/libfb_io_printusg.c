@@ -334,7 +334,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			if( nc == '^' || lc == '^' )
 				isexp = 1;
 			break;
-		
+
 		default:
 			doexit = 1;
 		}
@@ -349,7 +349,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	/* ------------------------------------------------------ */
-	
+
 	//
 	if( isexp )
 	{
@@ -358,7 +358,11 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 	else
 	{
-		sprintf( buffer, "%g", value );
+#ifdef WIN32
+		_gcvt( value, 16, buffer );
+#else
+		sprintf( buffer, "%lg", value );
+#endif
 		len = strlen( buffer );
 		if( buffer[len-1] == '.' )
 		{
@@ -366,7 +370,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			--len;
 		}
 	}
-	
+
 	//
 	if( buffer[0] == '-' )
 	{
@@ -429,18 +433,18 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	if( !signatend )
 	{
 		memmove( &buffer[1], buffer, strlen( buffer )+1 );
-		if( isneg )		
+		if( isneg )
 			buffer[0] = '-';
 		else
 			buffer[0] = ' ';
-			
+
 		++intlgt;
 	}
 
 	// padding
 	if( intdigs > 0 )
-	{		
-		intdigs -= intlgt;		
+	{
+		intdigs -= intlgt;
 
 		if( intdigs > 0 )
 		{
@@ -483,7 +487,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	fb_PrintFixString( fnum, buffer, 0 );
 
 	/* ------------------------------------------------------ */
-	
+
 	/* any text */
 	fb_PrintUsingFmtStr( fnum );
 

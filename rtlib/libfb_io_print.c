@@ -231,13 +231,51 @@ FBCALL void fb_PrintUInt ( int fnum, unsigned int val, int mask )
 /*:::::*/
 FBCALL void fb_PrintSingle ( int fnum, float val, int mask )
 {
+#ifdef WIN32
+	char buffer[8+1+8+1], *p;
+
+	_gcvt( val, 8, &buffer[1] );
+
+	if( buffer[1] != '-' )
+	{
+		buffer[0] = ' ';
+		p = &buffer[0];
+	}
+	else
+		p = &buffer[1];
+
+	fb_PrintFixString( fnum, p, mask );
+
+#else
+
     FB_PRINTNUM( fnum, val, mask, "g" )
+
+#endif
 }
 
 /*:::::*/
 FBCALL void fb_PrintDouble ( int fnum, double val, int mask )
 {
+#ifdef WIN32
+	char buffer[16+1+8+1], *p;
+
+	_gcvt( val, 16, &buffer[1] );
+
+	if( buffer[1] != '-' )
+	{
+		buffer[0] = ' ';
+		p = &buffer[0];
+	}
+	else
+		p = &buffer[1];
+
+	fb_PrintFixString( fnum, p, mask );
+
+#else
+
     FB_PRINTNUM( fnum, val, mask, "lg" )
+
+#endif
 }
 
 
