@@ -44,7 +44,7 @@ type FBCCTX
     defs			as integer
     incs			as integer
     pths			as integer
-	rcs			as integer
+	rcs				as integer
 
 	compileonly		as integer
 	preserveasm		as integer
@@ -80,7 +80,7 @@ declare function 	makeImpLib 			( dllpath as string, dllname as string ) as inte
 declare function 	makeMain			( o_file as string ) as integer
 #endif
 
-declare function	windresFiles		( ) as integer
+declare function	compileResFiles		( ) as integer
 
 
 ''globals
@@ -155,7 +155,7 @@ const QUOTE = "\""
     	'' link
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
 #ifdef TARGET_WIN32
-		if (not windresFiles) then
+		if (not compileResFiles) then
 			end 1
 		end if
 #endif
@@ -392,16 +392,8 @@ function linkFiles as integer
 	   		ldcline = ldcline + " --add-stdcall-alias"
     	end if
 
-		'' export all global symbols
-		ldcline = ldcline + " --export-all-symbols"
-
-    	'' don't export entry points
-    	ldcline = ldcline + " --exclude-symbols DLLMAIN@12,_DLLMAIN"
-    	for i = 0 to ctx.inps-1
-        	entrypoint = hStripPath( hStripExt( outlist(i) ) )
-        	ldcline = ldcline + "," + hMakeEntryPointName( entrypoint )
-        	ldcline = ldcline + "," + hMakeEntryPointName( ucase$( entrypoint ) )
-    	next i
+		'' export all symbols declared as EXPORT
+		ldcline = ldcline + " --export-dynamic"
 
     	'' don't export any symbol from rtlib
         ldcline = ldcline + " --exclude-libs libfb.a"
@@ -409,7 +401,7 @@ function linkFiles as integer
 #elseif defined(TARGET_LINUX)
 
 		''
-		ldcline = "-shared --export-dynamic"
+		ldcline = ldcline + " -shared --export-dynamic"
 
 #endif
 
@@ -741,43 +733,46 @@ end function
 #ifdef TARGET_WIN32
 
 '':::::
-function windresFiles as integer
+function compileResFiles as integer
 	dim i as integer, f as integer
-	dim windrespath as string, windrescline as string
+	dim rescmppath as string, rescmpcline as string
+	dim oldinclude as string
 
-	windresFiles = FALSE
+	compileResFiles = FALSE
+
+	'' change the include env var
+	oldinclude = trim$( environ$( "INCLUDE" ) )
+	setenviron "INCLUDE=" + exepath$ + FB.INCPATH + "win\\rc"
 
 	''
-	windrespath = exepath$ + FB.BINPATH + "windres.exe"
+	rescmppath = exepath$ + FB.BINPATH + "GoRC.exe"
 
-
-
-	'' set input files (.rc's) and output files (.res's)
+	'' set input files (.rc's and .res') and output files (.obj's)
 	for i = 0 to ctx.rcs-1
 
 		'' windres options
-		windrescline = "--input-format=rc -O coff"
-		windrescline = windrescline + " --include-dir=\"" + exepath$ + FB.INCPATH + "win\\rc\""
-		''windrescline = windrescline + " --preprocessor=\"" + exepath$ + FB.BINPATH + "cpp.exe\""
+		rescmpcline = "/ni /nw /o /fo \"" + hStripExt(rclist(i)) + ".obj\" " + rclist(i)
 
-		windrescline = windrescline + " -i \"" + rclist(i) + QUOTE + " -o " + QUOTE + hStripExt(rclist(i)) + ".res\" "
-
-		'' invoke windres
+		'' invoke
 		if( ctx.verbose ) then
-			print "compiling resource: ", windrescline
+			print "compiling resource: ", rescmpcline
 		end if
 
-		if( exec( windrespath, windrescline ) <> 0 ) then
+		if( exec( rescmppath, rescmpcline ) <> 0 ) then
 			exit function
 		end if
 
 		'' add to obj list
-		objlist(ctx.objs) = hStripExt(rclist(i)) + ".res"
+		objlist(ctx.objs) = hStripExt(rclist(i)) + ".obj"
 		ctx.objs = ctx.objs + 1
 	next i
 
+	'' restore the include env var
+	if( len( oldinclude ) > 0 ) then
+		setenviron "INCLUDE=" + oldinclude
+	end if
 
-	windresFiles = TRUE
+	compileResFiles = TRUE
 
 end function
 
@@ -809,7 +804,7 @@ sub printOptions
 	print
 	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
 #ifdef TARGET_WIN32
-	print " "         , "xxx.rc = resource definition, xxx.res = compiled resource (COFF)"
+	print " "         , "xxx.rc = resource script, xxx.res = compiled resource"
 #endif
 	print
 	print "options:"
@@ -836,7 +831,7 @@ sub printOptions
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
 	print "-nodeflibs", "Do not include the default libraries"
 #ifdef TARGET_WIN32
-	'''''print "-nostd", "Treat stdcall calling convention as cdecl"
+	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
 #endif
 	print "-o <name>", "Set output name (in the same number as source files)"
 	print "-p <name>", "Add a path to search for libraries"
@@ -885,7 +880,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "arch", "e", "ex", "w", "nostd", "nodeflibs"
+			case "arch", "e", "ex", "w", "nostdcall", "nodeflibs"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -1017,7 +1012,7 @@ function processCompOptions as integer
 				fbSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )
 
 #ifdef TARGET_WIN32
-			case "nostd"
+			case "nostdcall"
 				fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
 #endif
 
@@ -1188,11 +1183,11 @@ function listFiles as integer
 				liblist(ctx.libs) = argv(i)
 				ctx.libs = ctx.libs + 1
 				argv(i) = ""
-			case "o", "res"
+			case "o"
 				objlist(ctx.objs) = argv(i)
 				ctx.objs = ctx.objs + 1
 				argv(i) = ""
-			case "rc"
+			case "rc", "res"
 				rclist(ctx.rcs) = argv(i)
 				ctx.rcs = ctx.rcs + 1
 				argv(i) = ""

@@ -250,7 +250,12 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 
     '' EXPORT?
     if( hMatch( FB.TK.EXPORT ) ) then
-    	alloctype = alloctype or FB.ALLOCTYPE.EXPORT
+    	'' private?
+    	if( (alloctype and FB.ALLOCTYPE.PRIVATE) > 0 ) then
+    		hReportError FB.ERRMSG.SYNTAXERROR
+    		exit function
+    	end if
+    	alloctype = alloctype or FB.ALLOCTYPE.EXPORT or FB.ALLOCTYPE.PUBLIC
     end if
 
 	''
@@ -330,18 +335,17 @@ function cProcStatement static
 
 	cProcStatement = FALSE
 
-	alloctype = 0
-
 	'' (PRIVATE|PUBLIC)?
 	select case lexCurrentToken
 	case FB.TK.PRIVATE
+		alloctype = FB.ALLOCTYPE.PRIVATE
 		lexSkipToken
 	case FB.TK.PUBLIC
 		lexSkipToken
-		alloctype = alloctype or FB.ALLOCTYPE.PUBLIC
+		alloctype = FB.ALLOCTYPE.PUBLIC
 	case else
 		if( env.optprocpublic ) then
-			alloctype = alloctype or FB.ALLOCTYPE.PUBLIC
+			alloctype = FB.ALLOCTYPE.PUBLIC
 		end if
 	end select
 
