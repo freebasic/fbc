@@ -26,10 +26,6 @@
 
 #include "fb.h"
 
-/* globals */
-int fb_viewTopRow = -1;
-int fb_viewBotRow = -1;
-
 
 /*:::::*/
 FBCALL void fb_ConsoleView( int toprow, int botrow )

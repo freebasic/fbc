@@ -18,30 +18,29 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_print_byte.c -- print [#] function (floating point)
  *
  * chng: oct/2004 written [v1ctor]
+ *       nov/2004 fixed scrolling problem if printing at bottom/right w/o a newline [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <stdio.h>
 #include "fb.h"
 
 
-/* globals */
-FBSTRING fb_strNullDesc = { NULL, 0 };
-FB_FILE fb_fileTB[FB_MAX_FILES] = { NULL };
-int fb_viewTopRow = -1;
-int fb_viewBotRow = -1;
+/*:::::*/
+FBCALL void fb_PrintSingle ( int fnum, float val, int mask )
+{
+	char buffer[8+1+9+1];
 
+	fb_PrintFixString( fnum, fb_hFloat2Str( (double)val, buffer, 8, FB_F2A_ADDBLANK ), mask );
+}
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL void fb_PrintDouble ( int fnum, double val, int mask )
 {
+	char buffer[16+1+9+1];
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
-
+	fb_PrintFixString( fnum, fb_hFloat2Str( val, buffer, 16, FB_F2A_ADDBLANK ), mask );
 }

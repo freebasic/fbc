@@ -32,9 +32,6 @@
 static void fb_hFileCtx ( int doinit );
 
 
-/* globals */
-FB_FILE fb_fileTB[FB_MAX_FILES] = { NULL };
-
 
 /*:::::*/
 static void fb_hFileExit( void )

@@ -29,22 +29,6 @@
 #include "fb.h"
 
 
-#define FB_PRINTNUM(fnum, val, mask, type) 				\
-    char buffer[80];									\
-    													\
-    if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, "% " type "\n", val );       	\
-    else if( mask & FB_PRINT_PAD )          			\
-    	sprintf( buffer, "% -14" type, val );			\
-    else												\
-    	sprintf( buffer, "% " type, val );              \
-    													\
-    if( fnum == 0 )										\
-    	fb_PrintBuffer( buffer, mask );					\
-    else												\
-    	fb_hFilePrintBuffer( fnum, buffer );
-
-
 /*:::::*/
 FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
@@ -74,57 +58,6 @@ FBCALL void fb_PrintVoid ( int fnum, int mask )
     }
 }
 
-/*:::::*/
-FBCALL void fb_PrintByte ( int fnum, char val, int mask )
-{
-    FB_PRINTNUM( fnum, val, mask, "d" )
-}
-
-/*:::::*/
-FBCALL void fb_PrintUByte ( int fnum, unsigned char val, int mask )
-{
-    FB_PRINTNUM( fnum, val, mask, "u" )
-}
-
-/*:::::*/
-FBCALL void fb_PrintShort ( int fnum, short val, int mask )
-{
-    FB_PRINTNUM( fnum, val, mask, "hd" )
-}
-
-/*:::::*/
-FBCALL void fb_PrintUShort ( int fnum, unsigned short val, int mask )
-{
-    FB_PRINTNUM( fnum, val, mask, "hu" )
-}
-
-/*:::::*/
-FBCALL void fb_PrintInt ( int fnum, int val, int mask )
-{
-    FB_PRINTNUM( fnum, val, mask, "d" )
-}
-
-/*:::::*/
-FBCALL void fb_PrintUInt ( int fnum, unsigned int val, int mask )
-{
-    FB_PRINTNUM( fnum, val, mask, "u" )
-}
-
-/*:::::*/
-FBCALL void fb_PrintSingle ( int fnum, float val, int mask )
-{
-	char buffer[8+1+9+1];
-
-	fb_PrintFixString( fnum, fb_hFloat2Str( (double)val, buffer, 8, FB_F2A_ADDBLANK ), mask );
-}
-
-/*:::::*/
-FBCALL void fb_PrintDouble ( int fnum, double val, int mask )
-{
-	char buffer[16+1+9+1];
-
-	fb_PrintFixString( fnum, fb_hFloat2Str( val, buffer, 16, FB_F2A_ADDBLANK ), mask );
-}
 
 
 #define BUFFLEN 80*25

@@ -36,9 +36,6 @@
 #include <string.h>
 #include "fb.h"
 
-/* globals */
-FBSTRING fb_strNullDesc = { NULL, 0 };
-
 /**********
  * temp string descriptors
  **********/

@@ -76,6 +76,21 @@
 		len = strlen( (char *)s );                      		\
 	}
 
+#define FB_PRINTNUM(fnum, val, mask, type) 				\
+    char buffer[80];									\
+    													\
+    if( mask & FB_PRINT_NEWLINE )           			\
+    	sprintf( buffer, "% " type "\n", val );       	\
+    else if( mask & FB_PRINT_PAD )          			\
+    	sprintf( buffer, "% -14" type, val );			\
+    else												\
+    	sprintf( buffer, "% " type, val );              \
+    													\
+    if( fnum == 0 )										\
+    	fb_PrintBuffer( buffer, mask );					\
+    else												\
+    	fb_hFilePrintBuffer( fnum, buffer );
+
 
 typedef struct _FBSTRING {
 	char		*data;							/* , must be at ofs 0! */
