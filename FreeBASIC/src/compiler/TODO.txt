@@ -22,6 +22,8 @@
 *** yet another optimizations ***
 [ ] get hide of double fxch's (needs peephole optimization at EMIT)
 [ ] load after store elimination (at IR?)
+[ ] use CMOV when possible on 686 (maybe at IR, but probably requires peephole at EMIT)
+[ ] unreachable code removal
 
 *** future ***
 [ ] AndThen and OrElse, short-circuit versions of And and Or
