@@ -156,7 +156,7 @@ function cSingleIfStatement( byval expr as integer )
 	env.lastcompound = FB.TK.IF
 
 	'' branch
-	astUpdComp2Branch expr, nl, FALSE
+	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = INVALID ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
@@ -230,7 +230,7 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 	cIfStmtBody = FALSE
 
 	'' branch
-	astUpdComp2Branch expr, nl, FALSE
+	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = INVALID ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
@@ -414,21 +414,35 @@ end function
 '':::::
 private function cStoreTemp( byval expr as integer, _
 							 byval dtype as integer, byval dclass as integer, _
-					 		 byval typ as integer, value as double ) as FBSYMBOL ptr static
+					 		 value as double, value64 as longint ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
-    dim v as integer, vr as integer
+    dim as integer v, vr, exprdtype
 
 	cStoreTemp = NULL
 
 	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
-		s = symbAddTempVar( typ )
+		s = symbAddTempVar( dtype )
 		if( s = NULL ) then
 			exit function
 		end if
 		v = astNewVAR( s, NULL, 0, dtype )
 		astFlush astNewASSIGN( v, expr ), vr
 	else
-		value = astGetValue( expr )
+		exprdtype = astGetDataType( expr )
+		if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
+			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+				value64 = astGetValue64( expr )
+			else
+				value = cdbl( astGetValue64( expr ) )
+			end if
+		else
+			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+				value64 = clngint( astGetValue( expr ) )
+			else
+				value = astGetValue( expr )
+			end if
+		end if
+
 		astDel expr
 		s = NULL
 	end if
@@ -439,8 +453,8 @@ end function
 
 '':::::
 private sub cFlushBOP( byval op as integer, byval dtype as integer, _
-	 		   		   byval v1 as FBSYMBOL ptr, byval v1value as double, _
-			   		   byval v2 as FBSYMBOL ptr, byval v2value as double, _
+	 		   		   byval v1 as FBSYMBOL ptr, byval v1value as double, byval v1value64 as longint, _
+			   		   byval v2 as FBSYMBOL ptr, byval v2value as double, byval v2value64 as longint, _
 			   		   byval ex as FBSYMBOL ptr ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 	dim vr as integer
@@ -449,13 +463,21 @@ private sub cFlushBOP( byval op as integer, byval dtype as integer, _
 	if( v1 <> NULL ) then
 		expr1 = astNewVAR( v1, NULL, 0, dtype )
 	else
-		expr1 = astNewCONST( v1value, dtype )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			expr1 = astNewCONST64( v1value64, dtype )
+		else
+			expr1 = astNewCONST( v1value, dtype )
+		end if
 	end if
 
 	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
-		expr2 = astNewCONST( v2value, dtype )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			expr2 = astNewCONST64( v2value64, dtype )
+		else
+			expr2 = astNewCONST( v2value, dtype )
+		end if
 	end if
 
 	expr = astNewBOP( op, expr1, expr2, ex, FALSE )
@@ -468,7 +490,7 @@ end sub
 '':::::
 private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	 		       		   byval v1 as FBSYMBOL PTR, _
-			       		   byval v2 as FBSYMBOL PTR, byval v2value as double ) static
+			       		   byval v2 as FBSYMBOL PTR, byval v2value as double, byval v2value64 as longint ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 	dim vr as integer
 
@@ -478,7 +500,11 @@ private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
-		expr2 = astNewCONST( v2value, dtype )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			expr2 = astNewCONST64( v2value64, dtype )
+		else
+			expr2 = astNewCONST( v2value, dtype )
+		end if
 	end if
 
 	expr = astNewBOP( op, expr1, expr2 )
@@ -502,11 +528,11 @@ function cForStatement
     dim as integer iscomplex, ispositive
     dim as FBSYMBOL ptr il, tl, el, cl, c2l
     dim cnt as FBSYMBOL ptr, elm as FBSYMBOL ptr
-    dim endc as FBSYMBOL ptr, endc_value as double
-    dim stp as FBSYMBOL ptr, stp_value as double
+    dim endc as FBSYMBOL ptr, endc_value as double, endc_value64 as longint
+    dim stp as FBSYMBOL ptr, stp_value as double, stp_value64 as longint
     dim vr as integer
     dim as integer idexpr, expr
-    dim as integer dtype, dclass, typ
+    dim as integer dtype, dclass, typ, exprdtype
     dim oldforstmt as FBCMPSTMT, lastcompstmt as integer
 
 	cForStatement = FALSE
@@ -527,7 +553,7 @@ function cForStatement
 
 	typ = symbGetType( cnt )
 
-	if( typ < FB.SYMBTYPE.BYTE or typ > FB.SYMBTYPE.DOUBLE ) then
+	if( (typ < FB.SYMBTYPE.BYTE) or (typ > FB.SYMBTYPE.DOUBLE) ) then
 		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
 		exit function
 	end if
@@ -564,7 +590,7 @@ function cForStatement
 	end if
 
 	'' store end condition into a temp var
-	endc = cStoreTemp( expr, dtype, dclass, typ, endc_value )
+	endc = cStoreTemp( expr, dtype, dclass, endc_value, endc_value64 )
 
 	'' STEP
 	ispositive 	= TRUE
@@ -576,8 +602,13 @@ function cForStatement
 		end if
 
 		'' store step into a temp var
+		exprdtype = astGetDataType( expr )
 		if( astGetClass( expr ) = AST.NODECLASS.CONST ) then
-			ispositive = (astGetValue( expr ) >= 0)
+			if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
+				ispositive = (astGetValue64( expr ) >= 0)
+			else
+				ispositive = (astGetValue( expr ) >= 0)
+			end if
 		else
 			iscomplex = TRUE
 		end if
@@ -592,13 +623,30 @@ function cForStatement
 			astFlush astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ), vr
 
 		else
-			stp_value = astGetValue( expr )
+            '' get costant step
+            if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
+				if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+					stp_value64 = astGetValue64( expr )
+				else
+					stp_value = cdbl( astGetValue64( expr ) )
+				end if
+			else
+				if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+					stp_value64 = clngint( astGetValue( expr ) )
+				else
+					stp_value = astGetValue( expr )
+				end if
+			end if
 			astDel expr
 			stp = NULL
 		end if
 
 	else
-		stp_value = 1.0
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			stp_value64 = 1
+		else
+			stp_value = 1.0
+		end if
 		stp = NULL
 	end if
 
@@ -660,7 +708,7 @@ function cForStatement
 	irEmitLABEL cl, FALSE
 
 	'' counter += step
-	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, stp_value
+	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, stp_value, stp_value64
 
 	'' test label
 	irEmitLABEL tl, FALSE
@@ -669,10 +717,10 @@ function cForStatement
 
 		if( ispositive ) then
     		'' counter <= end cond?
-			cFlushBOP IR.OP.LE, dtype, cnt, TRUE, endc, endc_value, il
+			cFlushBOP IR.OP.LE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
     	else
     		'' counter >= end cond?
-			cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_value, il
+			cFlushBOP IR.OP.GE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
     	end if
 
 		c2l = NULL
@@ -680,16 +728,16 @@ function cForStatement
 		c2l = symbAddLabel( hMakeTmpStr )
 
     	'' test step sign and branch
-		cFlushBOP IR.OP.GE, dtype, stp, stp_value, 0, FALSE, c2l
+		cFlushBOP IR.OP.GE, dtype, stp, stp_value, stp_value64, NULL, 0, 0, c2l
 
     	'' negative, loop if >=
-		cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_value, il
+		cFlushBOP IR.OP.GE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
 		'' exit loop
 		astFlush astNewBRANCH( IR.OP.JMP, el ), vr
     	'' control label
     	irEmitLABELNF c2l
     	'' positive, loop if <=
-		cFlushBOP IR.OP.LE, dtype, cnt, TRUE, endc, endc_value, il
+		cFlushBOP IR.OP.LE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
     end if
 
     '' end label (loop exit)
@@ -765,7 +813,7 @@ function cDoStatement
 			isinverse = TRUE
 		end if
 
-		astUpdComp2Branch expr, el, isinverse
+		expr = astUpdComp2Branch( expr, el, isinverse )
 		if( expr = INVALID ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
@@ -840,7 +888,7 @@ function cDoStatement
 			isinverse = FALSE
 		end if
 
-		astUpdComp2Branch expr, il, isinverse
+		expr = astUpdComp2Branch( expr, il, isinverse )
 		if( expr = INVALID ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
@@ -908,7 +956,7 @@ function cWhileStatement
 	end if
 
 	'' branch
-	astUpdComp2Branch expr, el, FALSE
+	expr = astUpdComp2Branch( expr, el, FALSE )
 	if( expr = INVALID ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
@@ -1301,7 +1349,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 						    byval sym as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr, _
 						    minval as uinteger, maxval as uinteger, deflabel as FBSYMBOL ptr ) as integer
 
-	dim expr1 as integer, expr2 as integer
+	dim expr1 as integer, expr2 as integer, dtype as integer
 	dim value as uinteger, tovalue as uinteger
 	dim label as FBSYMBOL ptr
 	dim vr as integer
@@ -1334,7 +1382,12 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				exit function
 			end if
 
-			value = astGetValue( expr1 )
+			dtype = astGetDataType( expr1 )
+			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+				value = cuint( astGetValue64( expr1 ) )
+			else
+				value = cuint( astGetValue( expr1 ) )
+			end if
 			astDel expr1
 
 			'' TO?
@@ -1348,7 +1401,12 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 					exit function
 				end if
 
-				tovalue = astGetValue( expr2 )
+				dtype = astGetDataType( expr2 )
+				if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+					tovalue = cuint( astGetValue64( expr2 ) )
+				else
+					tovalue = cuint( astGetValue( expr2 ) )
+				end if
 				astDel expr2
 
 				for value = value to tovalue

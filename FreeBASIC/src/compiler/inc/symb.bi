@@ -59,6 +59,7 @@ declare function 	symbGetArgSuffix		( byval f as FBSYMBOL ptr, byval a as FBPROC
 declare function 	symbGetArgsLen			( byval f as FBSYMBOL ptr ) as integer
 declare function 	symbGetArgOptional		( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer
 declare function 	symbGetArgDefvalue		( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as double
+declare function 	symbGetArgDefvalue64	( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as longint
 declare function 	symbGetFuncMode			( byval f as FBSYMBOL ptr ) as integer
 declare function 	symbGetFuncDataType		( byval f as FBSYMBOL ptr ) as integer
 

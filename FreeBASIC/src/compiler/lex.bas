@@ -484,10 +484,11 @@ end sub
 ''                | 'O' OCTDIG+
 ''                | 'B' BINDIG+
 ''
-private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
+private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer, isneg as integer ) static
 	dim v as uinteger, c as uinteger
-	dim tb(0 to 31) as integer, i as integer
+	dim tb(0 to 63) as integer, i as integer
 
+	isneg = FALSE
 	v = 0
 
 	select case as const lexCurrentChar
@@ -542,8 +543,8 @@ private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 	'' int to ascii
 	if( v = 0 ) then
 		*pnum = CHAR_0
-		pnum = pnum + 1
-		tlen = tlen + 1
+		pnum += 1
+		tlen += 1
 
 	else
 
@@ -551,9 +552,10 @@ private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 		if( (v and &h80000000) > 0 ) then
 			v = -v
 
+			isneg = TRUE
 			*pnum = CHAR_MINUS
-			pnum = pnum + 1
-			tlen = tlen + 1
+			pnum += 1
+			tlen += 1
 		end if
 
 		i = 0
@@ -566,8 +568,8 @@ private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 		do while( i > 0 )
 			i = i - 1
 			*pnum = CHAR_0 + tb(i)
-			pnum = pnum + 1
-			tlen = tlen + 1
+			pnum += 1
+			tlen += 1
 		loop
 	end if
 
@@ -660,11 +662,13 @@ end sub
 private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer, _
 				   		   byval flags as LEXCHECK_ENUM ) static
 	dim c as uinteger
-	dim isfloat as integer
+	dim isfloat as integer, isneg as integer
 
 	isfloat = FALSE
-	typ = INVALID
-	*pnum = 0
+	isneg	= FALSE
+	typ 	= INVALID
+	*pnum 	= 0
+	tlen 	= 0
 
 	c = lexEatChar
 
@@ -672,32 +676,49 @@ private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integ
 	'' integer part
 	case CHAR_0 to CHAR_9
 
-		*pnum = c
-		pnum = pnum + 1
-		tlen = 1
+		if( c <> CHAR_0 ) then
+			*pnum = c
+			pnum += 1
+			tlen += 1
+		end if
 
 		do
 			c = lexCurrentChar
 			select case as const c
-			case CHAR_0 to CHAR_9
+			case CHAR_0
+				lexEatChar
+				if( tlen > 0 ) then
+					*pnum = CHAR_0
+					pnum += 1
+					tlen += 1
+				end if
+
+			case CHAR_1 to CHAR_9
 				*pnum = lexEatChar
-				pnum = pnum + 1
-				tlen = tlen + 1
+				pnum += 1
+				tlen += 1
 
 			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 				isfloat = TRUE
 				if( c = CHAR_DOT ) then
 					c = lexEatChar
 					*pnum = CHAR_DOT
-					pnum = pnum + 1
-					tlen = tlen + 1
+					pnum += 1
+					tlen += 1
 				end if
 				lexReadFloatNumber pnum, tlen, typ
 				exit do
+
 			case else
 				exit do
 			end select
 		loop
+
+		if( tlen = 0 ) then
+			*pnum = CHAR_0
+			pnum += 1
+			tlen = 1
+		end if
 
 	'' fractional part
 	case CHAR_DOT
@@ -711,7 +732,7 @@ private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integ
 	'' hex, oct, bin
 	case CHAR_AMP
 		tlen = 0
-		lexReadNonDecNumber pnum, tlen
+		lexReadNonDecNumber pnum, tlen, isneg
 	end select
 
 	'' null-term
@@ -720,24 +741,61 @@ private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integ
 	'' check suffix type
 	if( not isfloat ) then
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+
 			select case as const lexCurrentChar
-			case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
+			'' 'L' | 'l'
+			case CHAR_LUPP, CHAR_LLOW
+				lexEatChar
 				typ = FB.SYMBTYPE.INTEGER
-			case FB.TK.SGNTYPECHAR
+
+				'' 'LL'?
+				c = lexCurrentChar
+				if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
+					lexEatChar
+					typ = FB.SYMBTYPE.LONGINT
+				end if
+
+			'' '%' | '&'
+			case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
+				lexEatChar
+
+				typ = FB.SYMBTYPE.INTEGER
+				if( not isneg ) then
+					if( tlen > 10 ) then
+						typ = FB.SYMBTYPE.LONGINT
+					end if
+				else
+					if( tlen > 11 ) then
+						typ = FB.SYMBTYPE.LONGINT
+					end if
+				end if
+
+			'' '!' | 'F' | 'f'
+			case FB.TK.SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
+				lexEatChar
 				typ = FB.SYMBTYPE.SINGLE
-			case FB.TK.DBLTYPECHAR
+
+			'' '#' | 'D' | 'd'
+			case FB.TK.DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
+				lexEatChar
 				typ = FB.SYMBTYPE.DOUBLE
 			end select
 
-			if( typ <> INVALID ) then
-				c = lexEatChar
-			end if
 		end if
 	end if
 
 	if( typ = INVALID ) then
 		if( not isfloat ) then
 			typ = FB.SYMBTYPE.INTEGER
+			if( not isneg ) then
+				if( tlen > 10 ) then
+					typ = FB.SYMBTYPE.LONGINT
+				end if
+			else
+				if( tlen > 11 ) then
+					typ = FB.SYMBTYPE.LONGINT
+				end if
+			end if
 		else
 			typ = FB.SYMBTYPE.DOUBLE
 		end if

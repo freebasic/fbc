@@ -150,7 +150,7 @@ type IRVREG
 	vi			as integer						'' index vreg
 	va			as integer						'' aux vreg (used with longint's)
 
-	value		as integer						'' imm value
+	value		as integer						'' imm value (high word of longint's at va->value)
 end type
 
 type IRDATATYPE
@@ -168,6 +168,7 @@ declare sub 		irEnd				( )
 
 declare function 	irAllocVREG			( byval dtype as integer ) as integer
 declare function 	irAllocVRIMM		( byval dtype as integer, byval value as integer ) as integer
+declare function 	irAllocVRIMM64		( byval dtype as integer, byval value as longint ) as integer
 declare function 	irAllocVRVAR		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer ) as integer
 declare function 	irAllocVRIDX		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval mult as integer, byval vidx as integer ) as integer
 declare function 	irAllocVRPTR		( byval dtype as integer, byval ofs as integer, byval vidx as integer ) as integer

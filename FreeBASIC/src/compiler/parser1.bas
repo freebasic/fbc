@@ -500,7 +500,7 @@ function cDeclaration
 	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON, FB.TK.EXTERN, FB.TK.STATIC
 		res = cSymbolDecl
 	case FB.TK.DEFBYTE, FB.TK.DEFUBYTE, FB.TK.DEFSHORT, FB.TK.DEFUSHORT, FB.TK.DEFINT, FB.TK.DEFLNG, _
-		 FB.TK.DEFUINT, FB.TK.DEFSNG, FB.TK.DEFDBL, FB.TK.DEFSTR
+		 FB.TK.DEFUINT, FB.TK.DEFSNG, FB.TK.DEFDBL, FB.TK.DEFSTR, FB.TK.DEFLNGINT, FB.TK.DEFULNGINT
 		res = cDefDecl
 	case FB.TK.OPTION
 		res = cOptDecl
@@ -544,8 +544,9 @@ end function
 ''ConstAssign     =   ID (AS SymbolType)? ASSIGN ConstExpression .
 ''
 function cConstAssign
-    dim id as string, typ as integer, subtype as FBSYMBOL ptr, lgt as integer
-    dim value as double, c as integer
+    dim id as string, valtext as string
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer
+    dim value as double, c as integer, dtype as integer
     dim expr as integer
     dim sym as FBSYMBOL ptr
 
@@ -629,25 +630,38 @@ function cConstAssign
 			exit function
 		end if
 
-		'' QB quirks..
-		value = astGetValue( expr )
-		astDel expr
+		dtype = astGetDataType( expr )
+		if( (dtype <> IR.DATATYPE.LONGINT) and (dtype <> IR.DATATYPE.ULONGINT) ) then
+			'' QB quirks..
+			value = astGetValue( expr )
 
-		if( value - int( value ) <> 0 ) then
-			if( typ = INVALID ) then
-				typ = FB.SYMBTYPE.DOUBLE
+			if( value - int( value ) <> 0 ) then
+				if( typ = INVALID ) then
+					typ = FB.SYMBTYPE.DOUBLE
+				else
+					if( typ = FB.SYMBTYPE.INTEGER ) then
+						value = int( value )
+					end if
+				end if
 			else
-				if( typ = FB.SYMBTYPE.INTEGER ) then
-					value = int( value )
+				if( typ = INVALID ) then
+					typ = hGetDefType( id )
 				end if
 			end if
-		else
-			if( typ = INVALID ) then
-				typ = hGetDefType( id )
-			end if
-		end if
 
-		if( symbAddConst( id, typ, str$( value ), 0 ) = NULL ) then
+			valtext = str$( value )
+
+		'' longints..
+		else
+			valtext = str$( astGetValue64( expr ) )
+			if( typ = INVALID ) then
+				typ = dtype
+			end if
+        end if
+
+		astDel expr
+
+		if( symbAddConst( id, typ, valtext, 0 ) = NULL ) then
     		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
@@ -854,6 +868,11 @@ function cTypeDecl
 		end if
 
   		align = cint( astGetValue( expr ) )
+  		if( align < 0 ) then
+  			align = FB.INTEGERSIZE
+  		elseif( align > FB.INTEGERSIZE*4 ) then
+  			align = FB.INTEGERSIZE*4
+  		end if
   		astDel expr
 
 	else
@@ -914,7 +933,7 @@ end function
 ''EnumConstDecl     =   ID (ASSIGN ConstExpression)? .
 ''
 function cEnumConstDecl( id as string )
-    dim expr as integer
+    static as integer expr, dtype
 
 	cEnumConstDecl = FALSE
 
@@ -938,7 +957,12 @@ function cEnumConstDecl( id as string )
 			end if
 		end if
 
-		env.enumctx.value = cint( astGetValue( expr ) )
+		dtype = astGetDataType( expr )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			env.enumctx.value = cint( astGetValue64( expr ) )
+		else
+			env.enumctx.value = cint( astGetValue( expr ) )
+		end if
 		astDel expr
 
     end if
@@ -1186,17 +1210,36 @@ end function
 
 ''::::
 sub hMakeArrayDimTB( byval dimensions as integer, exprTB() as integer, dTB() as FBARRAYDIM )
-    dim i as integer
+    static as integer i, expr, dtype
 
 	if( dimensions = -1 ) then
 		exit function
 	end if
 
 	for i = 0 to dimensions-1
-		dTB(i).lower = cint( astGetValue( exprTB(i, 0) ) )
-		dTB(i).upper = cint( astGetValue( exprTB(i, 1) ) )
-		astDel exprTB(i, 0)
-		astDel exprTB(i, 1)
+		'' lower bound
+		expr = exprTB(i, 0)
+
+		dtype = astGetDataType( expr )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			dTB(i).lower = cint( astGetValue64( expr ) )
+		else
+			dTB(i).lower = cint( astGetValue( expr ) )
+		end if
+
+		astDel expr
+
+		'' upper bound
+		expr = exprTB(i, 1)
+
+		dtype = astGetDataType( expr )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			dTB(i).upper = cint( astGetValue64( expr ) )
+		else
+			dTB(i).upper = cint( astGetValue( expr ) )
+		end if
+
+		astDel expr
 	next i
 
 end sub
@@ -1620,10 +1663,8 @@ end function
 ''				      ')' .
 ''
 function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
-    dim res as integer
-    dim i as integer, expr as integer
+    static as integer i, expr, dtype
 
-    res = FALSE
     cStaticArrayDecl = FALSE
 
     dimensions = 0
@@ -1646,7 +1687,12 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 			end if
 		end if
 
-		dTB(i).lower = astGetValue( expr )
+		dtype = astGetDataType( expr )
+		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+			dTB(i).lower = cint( astGetValue64( expr ) )
+		else
+			dTB(i).lower = cint( astGetValue( expr ) )
+		end if
 		astDel expr
 
         '' TO
@@ -1664,7 +1710,12 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 				end if
 			end if
 
-			dTB(i).upper = astGetValue( expr )
+			dtype = astGetDataType( expr )
+			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+				dTB(i).upper = cint( astGetValue64( expr ) )
+			else
+				dTB(i).upper = cint( astGetValue( expr ) )
+			end if
 			astDel expr
 
     	else
@@ -1689,13 +1740,12 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 	loop
 
 	'' IDX_CLOSE
-    res = TRUE
     if( not hMatch( CHAR_RPRNT ) ) then
     	hReportError FB.ERRMSG.EXPECTEDRPRNT
-    	res = FALSE
+    	exit function
     end if
 
-	cStaticArrayDecl = res
+	cStaticArrayDecl = TRUE
 
 end function
 
@@ -1760,7 +1810,7 @@ end function
 
 ''::::
 function cConstExprValue( littext as string ) as integer
-    dim expr as integer
+    dim as integer expr, dtype
 
     cConstExprValue = FALSE
 
@@ -1774,7 +1824,13 @@ function cConstExprValue( littext as string ) as integer
 		exit function
 	end if
 
-  	littext = ltrim$( str$( astGetValue( expr ) ) )
+	dtype = astGetDataType( expr )
+	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+		littext = str$( cint( astGetValue64( expr ) ) )
+	else
+		littext = str$( cint( astGetValue( expr ) ) )
+  	end if
+
   	astDel expr
 
   	cConstExprValue = TRUE
@@ -2247,7 +2303,7 @@ end sub
 function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPROCARG, _
 				   byval isproto as integer ) as integer
 	dim id as string, mode as integer
-	dim expr as integer, dclass as integer
+	dim expr as integer, dclass as integer, dtype as integer
 	dim readid as integer
 
 	cArgDecl = FALSE
@@ -2433,12 +2489,29 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
 		end if
 
     	arg.optional = TRUE
-    	arg.defvalue = astGetValue( expr )
+    	dtype = astGetDataType( expr )
+    	if( (arg.typ = IR.DATATYPE.LONGINT) or (arg.typ = IR.DATATYPE.ULONGINT) ) then
+			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+    			arg.defvalue64 = astGetValue64( expr )
+    		else
+    			arg.defvalue64 = clngint( astGetValue( expr ) )
+    		end if
+    	else
+			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+				arg.defvalue = cdbl( astGetValue64( expr ) )
+			else
+    			arg.defvalue = astGetValue( expr )
+    		end if
+    	end if
     	astDel expr
 
     else
     	arg.optional = FALSE
-        arg.defvalue = 0.0
+        if( (arg.typ <> IR.DATATYPE.LONGINT) and (arg.typ <> IR.DATATYPE.ULONGINT) ) then
+        	arg.defvalue = 0.0
+        else
+        	arg.defvalue64 = 0
+        end if
     end if
 
     cArgDecl = TRUE
@@ -2469,6 +2542,12 @@ function cDefDecl
 		typ = FB.SYMBTYPE.INTEGER
 	case FB.TK.DEFUINT
 		typ = FB.SYMBTYPE.UINT
+	case FB.TK.DEFLNGINT
+		typ = FB.SYMBTYPE.LONGINT
+	case FB.TK.DEFULNGINT
+		typ = FB.SYMBTYPE.ULONGINT
+	case FB.TK.DEFUSHORT
+		typ = FB.SYMBTYPE.USHORT
 	case FB.TK.DEFSNG
 		typ = FB.SYMBTYPE.SINGLE
 	case FB.TK.DEFDBL
@@ -2644,6 +2723,7 @@ end function
 function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval param as integer, _
 					 expr as integer, pmode as integer, byval optonly as integer ) as integer
 	dim amode as integer
+	dim typ as integer
 
 	cProcParam = FALSE
 
@@ -2689,8 +2769,12 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 		end if
 
 		'' create an arg
-		expr = astNewCONST( symbGetArgDefvalue( proc, arg ), _
-							symbGetArgType( proc, arg ) )
+		typ = symbGetArgType( proc, arg )
+		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+			expr = astNewCONST64( symbGetArgDefvalue64( proc, arg ), typ )
+		else
+			expr = astNewCONST( symbGetArgDefvalue( proc, arg ), typ )
+		end if
 
 	else
 

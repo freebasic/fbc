@@ -660,9 +660,20 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 	id			= lexTokenText
     if( typ = INVALID ) then
     	deftyp = hGetDefType( id )
+    else
+    	deftyp = INVALID
     end if
 
 	sym = symbFindBySuffix( lexTokenSymbol, typ, deftyp )
+	if( sym = NULL ) then
+		'' QB quirk: fixed-len strings referenced using '$' as suffix..
+		if( typ = FB.SYMBTYPE.STRING ) then
+			sym = symbFindBySuffix( lexTokenSymbol, FB.SYMBTYPE.FIXSTR, deftyp )
+		elseif( deftyp = FB.SYMBTYPE.STRING ) then
+			sym = symbFindBySuffix( lexTokenSymbol, INVALID, FB.SYMBTYPE.FIXSTR )
+		end if
+	end if
+
 	if( sym <> NULL ) then
 		typ 	= sym->typ
 		subtype = sym->subtype

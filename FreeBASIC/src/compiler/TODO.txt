@@ -1,6 +1,4 @@
 
-[ ] when bootstrapping, add longint constant handling for Lex and AST -- use .valquad, not .value
-
 [ ] allow structs to be returned (must follow gcc's abi) -- how to handle foo = bar() if bar()
     actually returns a ptr to the hidden argument passed? and worst.. GCC will return ANY struct
     <= 8 bytes in EAX:EDX (and with an unique FP field in ST(0)!), what means things will become

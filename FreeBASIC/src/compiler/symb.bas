@@ -103,16 +103,18 @@ data "AS"		, FB.TK.AS			, FB.TKCLASS.KEYWORD
 data "DECLARE"	, FB.TK.DECLARE		, FB.TKCLASS.KEYWORD
 data "GOTO"		, FB.TK.GOTO		, FB.TKCLASS.KEYWORD
 data "GOSUB"	, FB.TK.GOSUB		, FB.TKCLASS.KEYWORD
-data "DEFINT"	, FB.TK.DEFINT		, FB.TKCLASS.KEYWORD
-data "DEFLNG"	, FB.TK.DEFLNG		, FB.TKCLASS.KEYWORD
-data "DEFSNG"	, FB.TK.DEFSNG		, FB.TKCLASS.KEYWORD
-data "DEFDBL"	, FB.TK.DEFDBL		, FB.TKCLASS.KEYWORD
-data "DEFSTR"	, FB.TK.DEFSTR		, FB.TKCLASS.KEYWORD
 data "DEFBYTE"	, FB.TK.DEFBYTE		, FB.TKCLASS.KEYWORD
 data "DEFUBYTE"	, FB.TK.DEFUBYTE	, FB.TKCLASS.KEYWORD
 data "DEFSHORT"	, FB.TK.DEFSHORT	, FB.TKCLASS.KEYWORD
 data "DEFUSHORT", FB.TK.DEFUSHORT	, FB.TKCLASS.KEYWORD
+data "DEFINT"	, FB.TK.DEFINT		, FB.TKCLASS.KEYWORD
 data "DEFUINT"	, FB.TK.DEFUINT		, FB.TKCLASS.KEYWORD
+data "DEFLNG"	, FB.TK.DEFLNG		, FB.TKCLASS.KEYWORD
+data "DEFLONGINT", FB.TK.DEFLNGINT	, FB.TKCLASS.KEYWORD
+data "DEFULONGINT", FB.TK.DEFULNGINT, FB.TKCLASS.KEYWORD
+data "DEFSNG"	, FB.TK.DEFSNG		, FB.TKCLASS.KEYWORD
+data "DEFDBL"	, FB.TK.DEFDBL		, FB.TKCLASS.KEYWORD
+data "DEFSTR"	, FB.TK.DEFSTR		, FB.TKCLASS.KEYWORD
 data "CONST"	, FB.TK.CONST		, FB.TKCLASS.KEYWORD
 data "FOR"		, FB.TK.FOR			, FB.TKCLASS.KEYWORD
 data "STEP"		, FB.TK.STEP		, FB.TKCLASS.KEYWORD
@@ -1374,7 +1376,13 @@ private function hNewArg( byval f as FBSYMBOL ptr, arg as FBPROCARG ) as FBPROCA
 	a->mode		= arg.mode
 	a->suffix	= arg.suffix
 	a->optional	= arg.optional
-	a->defvalue	= arg.defvalue
+	if( a->optional ) then
+		if( (a->typ <> IR.DATATYPE.LONGINT) and (a->typ <> IR.DATATYPE.ULONGINT) ) then
+			a->defvalue	= arg.defvalue
+		else
+			a->defvalue64 = arg.defvalue64
+		end if
+	end if
 
     hNewArg = a
 
@@ -2501,6 +2509,17 @@ function symbGetArgDefvalue( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr )
 		symbGetArgDefvalue = a->defvalue
 	else
 		symbGetArgDefvalue = 0.0
+	end if
+
+end function
+
+'':::::
+function symbGetArgDefvalue64( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as longint static
+
+	if( a <> NULL ) then
+		symbGetArgDefvalue64 = a->defvalue64
+	else
+		symbGetArgDefvalue64 = 0
 	end if
 
 end function

@@ -398,26 +398,23 @@ sub irhLoadIDX( byval vreg as integer, byval typ as integer )
 end sub
 
 '':::::
-sub irhGetVREG( byval vreg as integer, dtype as integer, dclass as integer, typ as integer ) static
-
-	if( vreg <> INVALID ) then
-		typ	= vregTB(vreg).typ
-
-		dtype = vregTB(vreg).dtype
-		if( dtype >= IR.DATATYPE.POINTER ) then
-			dtype  = IR.DATATYPE.UINT
-			dclass = IR.DATACLASS.INTEGER
-		else
-			dclass = dtypeTB(dtype).class
-		end if
-
-	else
-		typ    = INVALID
-		dtype  = INVALID
-		dclass = INVALID
+#define irhGetVREG(vreg,dtype,dclass,typ) 			_
+	if( vreg <> INVALID ) then 						: _
+		typ = vregTB(vreg).typ 						: _
+                                                	: _
+		dtype = vregTB(vreg).dtype					: _
+		if( dtype >= IR.DATATYPE.POINTER ) then		: _
+			dtype  = IR.DATATYPE.UINT				: _
+			dclass = IR.DATACLASS.INTEGER			: _
+		else										: _
+			dclass = dtypeTB(dtype).class			: _
+		end if										: _
+													: _
+	else											: _
+		typ    = INVALID							: _
+		dtype  = INVALID							: _
+		dclass = INVALID							: _
 	end if
-
-end sub
 
 '':::::
 function irGetInverseLogOp( byval op as integer ) as integer static
@@ -819,11 +816,13 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
 			else
 				'' byref arg and it's not a var? create a temp one..
-				if( not irIsVAR( vr ) and not irIsIDX( vr ) ) then
-					s = symbAddTempVar( atype )
-					vt = irAllocVRVAR( atype, s, s->ofs )
-					irEmitSTORE vt, vr
-					vr = vt
+				if( not irIsVAR( vr ) ) then
+					if( not irIsIDX( vr ) ) then
+						s = symbAddTempVar( atype )
+						vt = irAllocVRVAR( atype, s, s->ofs )
+						irEmitSTORE vt, vr
+						vr = vt
+					end if
 				end if
 
 				vp = irAllocVREG( IR.DATATYPE.UINT )
@@ -900,6 +899,33 @@ function irAllocVRIMM( byval dtype as integer, byval value as integer ) as integ
 	end if
 
 	vregTB(vr).value = value
+
+	'' longint?
+	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+		 vregTB(vr).va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IMM )
+		 vregTB(vregTB(vr).va).value = 0
+	end if
+
+end function
+
+'':::::
+function irAllocVRIMM64( byval dtype as integer, byval value as longint ) as integer static
+	dim vr as integer
+
+	vr = irNewVR( dtype, IR.VREGTYPE.IMM )
+
+	irAllocVRIMM64 = vr
+
+	if( vr = INVALID ) then
+		exit function
+	end if
+
+	vregTB(vr).value = cuint( value )
+
+	'' aux
+	vregTB(vr).va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IMM )
+
+	vregTB(vregTB(vr).va).value = cint( value shr 32 )
 
 end function
 
@@ -1116,10 +1142,11 @@ sub irGetVRNameEx( byval vreg as integer, byval typ as integer, vname as string 
 	    irGetVRIndexName( vreg, vname )
 
 	case IR.VREGTYPE.IMM
+		dtype = vregTB(vreg).dtype
 		vname = str$( vregTB(vreg).value )
 
 	case IR.VREGTYPE.REG
-		irhGetVREG vreg, dtype, dclass, typ
+		irhGetVREG( vreg, dtype, dclass, typ )
 		emitGetRegName( dtype, dclass, vregTB(vreg).reg, vname )
 
 	end select
@@ -1178,9 +1205,9 @@ sub irReuse( byval i as integer ) static
 	v2   = tacTB(i).v2
 	vr   = tacTB(i).vr
 
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG v2, dt2, dc2, t2
-    irhGetVREG vr, dtr, dcr, tr
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( v2, dt2, dc2, t2 )
+    irhGetVREG( vr, dtr, dcr, tr )
 
 	select case opTB(op).typ
 	case IR.OPTYPE.UNARY
@@ -1376,7 +1403,7 @@ private sub irhPreserveRegs( byval ptrvreg as integer = INVALID ) static
 
 				'' get the attached vreg
 				vr = regTB(class)->getVreg( regTB(class), r )
-                irhGetVREG vr, dtype, dclass, typ
+                irhGetVREG( vr, dtype, dclass, typ )
 
         		'' if reg is not preserved between calls
         		if( not emitIsRegPreserved( dtype, dclass, r ) ) then
@@ -1444,7 +1471,7 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
     	end if
 
 		'' load pointer
-		irhGetVREG v1, rdtype, rdclass, rtyp
+		irhGetVREG( v1, rdtype, rdclass, rtyp )
 		irhLoadIDX v1, rtyp
 		if( rtyp = IR.VREGTYPE.REG ) then
 			rr = regTB(rdclass)->ensure( regTB(rdclass), v1 )
@@ -1466,7 +1493,7 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
 
 	'' load result
 	if( vr <> INVALID ) then
-		irhGetVREG vr, rdtype, rdclass, rtyp
+		irhGetVREG( vr, rdtype, rdclass, rtyp )
 
 		emitGetResultReg( rdtype, rdclass, rr, rr2 )
 
@@ -1492,7 +1519,7 @@ sub irFlushSTACK( byval op as integer, byval v1 as integer, byval ex as integer 
 	dim as integer r1, t1, dt1, dc1
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
+	irhGetVREG( v1, dt1, dc1, t1 )
 
 	irhLoadIDX v1, t1
 
@@ -1529,8 +1556,8 @@ sub irFlushUOP( byval op as integer, byval v1 as integer, byval vr as integer ) 
 	dim as integer va
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG vr, dtr, dcr, tr
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( vr, dtr, dcr, tr )
 
 	irhLoadIDX v1, t1
 	irhLoadIDX vr, tr
@@ -1603,9 +1630,9 @@ sub irFlushBOP( byval op as integer, byval v1 as integer, byval v2 as integer, b
 	dim as integer va
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG v2, dt2, dc2, t2
-	irhGetVREG vr, dtr, dcr, tr
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( v2, dt2, dc2, t2 )
+	irhGetVREG( vr, dtr, dcr, tr )
 
 	irhLoadIDX v1, t1
 	irhLoadIDX v2, t2
@@ -1724,9 +1751,9 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	dim as integer doload
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG v2, dt2, dc2, t2
-	irhGetVREG vr, dtr, dcr, tr
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( v2, dt2, dc2, t2 )
+	irhGetVREG( vr, dtr, dcr, tr )
 
 	irhLoadIDX v1, t1
 	irhLoadIDX v2, t2
@@ -1852,8 +1879,8 @@ sub irFlushSTORE( byval op as integer, byval v1 as integer, byval v2 as integer 
 	dim as integer va
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG v2, dt2, dc2, t2
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( v2, dt2, dc2, t2 )
 
 	irhLoadIDX v1, t1
 	irhLoadIDX v2, t2
@@ -1892,7 +1919,7 @@ sub irFlushLOAD( byval op as integer, byval v1 as integer ) static
 	dim as integer va
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
+	irhGetVREG( v1, dt1, dc1, t1 )
 
 	irhLoadIDX v1, t1
 
@@ -1961,8 +1988,8 @@ sub irFlushCONVERT( byval op as integer, byval v1 as integer, byval v2 as intege
 	dim as integer va
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG v2, dt2, dc2, t2
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( v2, dt2, dc2, t2 )
 
 	irhLoadIDX v1, t1
 	irhLoadIDX v2, t2
@@ -1984,9 +2011,11 @@ sub irFlushCONVERT( byval op as integer, byval v1 as integer, byval v2 as intege
 			exit sub
 		end if
 
-		'' not if it's a longint
-		if( (dt2 <> IR.DATATYPE.LONGINT) and (dt2 <> IR.DATATYPE.ULONGINT) ) then
-			if( irGetDistance( v2 ) = IR.MAXDIST ) then
+		'' it's an integer, check if used again
+		if( irGetDistance( v2 ) = IR.MAXDIST ) then
+			'' don't reuse if it's a longint
+			if( (irGetDataSize( dt1 ) <> FB.INTEGERSIZE*2) and _
+				(irGetDataSize( dt2 ) <> FB.INTEGERSIZE*2) ) then
 				reuse = TRUE
 			end if
 		end if
@@ -2046,8 +2075,8 @@ sub irFlushADDR( byval op as integer, byval v1 as integer, byval vr as integer )
 	dim as integer rr, tr, dtr, dcr
 
 	''
-	irhGetVREG v1, dt1, dc1, t1
-	irhGetVREG vr, dtr, dcr, tr
+	irhGetVREG( v1, dt1, dc1, t1 )
+	irhGetVREG( vr, dtr, dcr, tr )
 
 	irhLoadIDX v1, t1
 	irhLoadIDX vr, tr
@@ -2141,7 +2170,7 @@ sub irhFreeREG( byval vreg as integer, byval force as integer = FALSE )
 	end if
 
 	if( freereg ) then
-    	irhGetVREG vreg, rdtype, rdclass, rtyp
+    	irhGetVREG( vreg, rdtype, rdclass, rtyp )
 		regTB(rdclass)->free( regTB(rdclass), reg )
 		vregTB(vreg).reg = INVALID
 	end if

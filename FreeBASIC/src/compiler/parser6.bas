@@ -387,9 +387,15 @@ function cDataStmt
 					exit function
 				end if
 
-  				typ = IR.DATATYPE.FIXSTR
-  				littext = str$( astGetValue( expr ) )
+  				typ = astGetDataType( expr )
+  				if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+  					littext = str$( astGetValue64( expr ) )
+  				else
+  					littext = str$( astGetValue( expr ) )
+  				end if
   				litlen = len( littext )
+
+  				typ = IR.DATATYPE.FIXSTR
   				astDel expr
 		    end if
 
@@ -1521,9 +1527,8 @@ end function
 
 '':::::
 private function cStrCHR( funcexpr as integer ) as integer
-	dim v as integer, s as string, o as string
-	dim i as integer, cnt as integer, exprtb(0 to 31) as integer
-	dim isconst as integer
+	dim as string s, o
+	dim as integer v, i, cnt, isconst, dtype, exprtb(0 to 31), expr
 
 	cStrCHR = FALSE
 
@@ -1562,7 +1567,13 @@ private function cStrCHR( funcexpr as integer ) as integer
 		s = ""
 
 		for i = 0 to cnt-1
-			v = astGetValue( exprtb(i) )
+  			expr = exprtb(i)
+  			dtype = astGetDataType( expr )
+  			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+  				v = cint( astGetValue64( expr ) )
+			else
+				v = cint( astGetValue( expr ) )
+			end if
 
 			if( (v < CHAR_SPACE) or (v > 127) ) then
 				s += "\27"
@@ -1573,7 +1584,7 @@ private function cStrCHR( funcexpr as integer ) as integer
 				s += chr$( v )
 			end if
 
-			astDel exprtb(i)
+			astDel expr
 		next i
 
 		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR.DATATYPE.FIXSTR )
@@ -1590,8 +1601,8 @@ end function
 
 '':::::
 private function cStrASC( funcexpr as integer ) as integer
-    dim expr1 as integer, posexpr as integer, p as integer
-    dim sym as FBSYMBOL ptr
+    dim as integer expr1, posexpr, p, dtype
+    dim as FBSYMBOL ptr sym
 
 	cStrASC = FALSE
 
@@ -1630,7 +1641,14 @@ private function cStrASC( funcexpr as integer ) as integer
 				'' pos is an constant too?
 				if( posexpr <> INVALID ) then
 					if( astGetClass( posexpr ) = AST.NODECLASS.CONST ) then
-						p = astGetValue( posexpr )
+
+  						dtype = astGetDataType( posexpr )
+  						if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+							p = cint( astGetValue64( posexpr ) )
+						else
+							p = cint( astGetValue( posexpr ) )
+						end if
+
 						if( p < 0 ) then
 							p = 0
 						end if

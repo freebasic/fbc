@@ -1048,7 +1048,11 @@ function cConstant( constexpr as integer )
 			constexpr = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
 
   		else
-  			constexpr = astNewCONST( val( text ), typ )
+  			if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+  				constexpr = astNewCONST64( val64( text ), typ )
+  			else
+  				constexpr = astNewCONST( val( text ), typ )
+  			end if
   		end if
 
   		lexSkipToken
@@ -1065,12 +1069,18 @@ end function
 function cLiteral( litexpr as integer )
 	dim res as integer
 	dim tc as FBSYMBOL ptr, p as integer, expr as integer
+	dim typ as integer
 
 	cLiteral = FALSE
 
 	select case lexCurrentTokenClass
 	case FB.TKCLASS.NUMLITERAL
-  		litexpr = astNewCONST( val( lexTokenText ), lexTokenType )
+  		typ = lexTokenType
+  		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+			litexpr = astNewCONST64( val64( lexTokenText ), typ )
+		else
+			litexpr = astNewCONST( val( lexTokenText ), typ )
+  		end if
 
   		lexSkipToken
   		cLiteral = TRUE
@@ -1091,7 +1101,7 @@ end function
 function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval procexpr as integer, _
 					 byval optonly as integer ) as integer
 	dim paramexpr as integer, amode as integer, pmode as integer
-	dim dtype as integer
+	dim typ as integer
 
 	cFuncParam = FALSE
 
@@ -1123,8 +1133,12 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 		end if
 
 		'' create an arg
-		paramexpr = astNewCONST( symbGetArgDefvalue( proc, arg ), _
-								 symbGetArgType( proc, arg ) )
+		typ = symbGetArgType( proc, arg )
+		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+			paramexpr = astNewCONST64( symbGetArgDefvalue64( proc, arg ), typ )
+		else
+			paramexpr = astNewCONST( symbGetArgDefvalue( proc, arg ), typ )
+		end if
 
 	else
 

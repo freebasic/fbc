@@ -911,6 +911,9 @@ data "ucase","fb_UCASE", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
 '' fb_VAL ( str as string ) as double
 data "val","fb_VAL", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
 					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+'' fb_VAL64 ( str as string ) as longint
+data "val64","fb_VAL64", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.STDCALL, 1, _
+					     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' cos CDECL ( byval rad as double ) as double
 data "cos","cos", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
@@ -1266,7 +1269,7 @@ private sub hAddIntrinsicProcs
 	dim i as integer, a as integer
 	dim p as integer, pname as string, aname as string
 	dim args as integer, typ as integer, mode as integer
-	dim argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
+	dim argv(0 to FB_MAXPROCARGS-1) as FBPROCARG, atype as integer
 
 	''
 	redim ifuncTB( 0 to FB.RTL.MAXFUNCTIONS-1 ) as FBSYMBOL ptr
@@ -1282,15 +1285,21 @@ private sub hAddIntrinsicProcs
 		read aname, typ, mode, args
 
 		for a = 0 to args-1
-			read argv(a).typ, argv(a).mode, argv(a).optional
+			read atype, argv(a).mode, argv(a).optional
+
+			argv(a).typ = atype
 
 			if( argv(a).optional ) then
-				read argv(a).defvalue
+				if( (atype <> IR.DATATYPE.LONGINT) and (atype <> IR.DATATYPE.ULONGINT) ) then
+					read argv(a).defvalue
+				else
+					read argv(a).defvalue64
+				end if
 			end if
 
 			argv(a).nameidx = INVALID
-			if( argv(a).typ <> INVALID ) then
-				argv(a).lgt	= symbCalcArgLen( argv(a).typ, NULL, argv(a).mode )
+			if( atype <> INVALID ) then
+				argv(a).lgt	= symbCalcArgLen( atype, NULL, argv(a).mode )
 			else
 				argv(a).lgt	= FB.POINTERSIZE
 			end if

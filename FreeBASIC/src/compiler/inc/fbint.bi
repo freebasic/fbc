@@ -121,6 +121,8 @@ const CHAR_NULL   	= 00, _
       CHAR_FLOW    	= 102, _
       CHAR_HUPP    	= 72, _
       CHAR_HLOW    	= 104, _
+      CHAR_LUPP    	= 76, _
+      CHAR_LLOW  	= 108, _
       CHAR_OUPP    	= 79, _
       CHAR_OLOW    	= 111, _
       CHAR_ZUPP    	= 90, _
@@ -241,6 +243,8 @@ enum FBTK_ENUM
 	FB.TK.DEFSHORT
 	FB.TK.DEFUSHORT
 	FB.TK.DEFUINT
+	FB.TK.DEFLNGINT
+	FB.TK.DEFULNGINT
 
 	FB.TK.DECLARE
 	FB.TK.CONST
@@ -585,6 +589,7 @@ type FBPROCARG
 
 	optional		as integer					'' true or false
 	defvalue		as double					'' default value
+	defvalue64		as longint
 
 	l				as FBPROCARG ptr			'' left
 	r				as FBPROCARG ptr			'' right
