@@ -9,7 +9,13 @@
 #ifndef __gtk_bi__
 #define __gtk_bi__
 
+#ifdef FB__WIN32
 #inclib "gtk-win32-2.0"
+#elseif defined(FB__LINUX)
+#inclib "gtk-x11-2.0"
+#else
+#error Platform not supported!
+#endif
 
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkaboutdialog.bi"

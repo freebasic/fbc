@@ -141,7 +141,8 @@ end function
 ''               |   '#'PRINT LITERAL*
 ''				 |   '#'INCLUDE ONCE? LIT_STR
 ''				 |   '#'INCLIB LIT_STR
-''				 |	 '#'LIBPATH LIT_STR .
+''				 |	 '#'LIBPATH LIT_STR
+''				 |	 '#'ERROR LIT_STR .
 ''
 function lexPreProcessor as integer
 	dim as string id, text
@@ -260,6 +261,12 @@ function lexPreProcessor as integer
 		lexSkipToken
 		print hLiteral
 		lexPreProcessor = TRUE
+	
+	'' ERROR LITERAL*
+	case FB.TK.ERROR
+		lexSkipToken
+		hReportErrorEx -1, hLiteral
+		exit function
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB.TK.INCLUDE

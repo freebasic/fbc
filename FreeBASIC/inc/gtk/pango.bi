@@ -10,7 +10,14 @@
 #define __pango_bi__
 
 #inclib "pango-1.0"
+
+#ifdef FB__WIN32
 #inclib "pangowin32-1.0"
+#elseif defined(FB__LINUX)
+#inclib "pangox-1.0"
+#else
+#error Platform not supported!
+#endif
 
 #include once "gtk/pango/pango-attributes.bi"
 #include once "gtk/pango/pango-break.bi"

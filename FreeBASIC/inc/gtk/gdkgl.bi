@@ -11,6 +11,10 @@
 
 #ifdef FB__WIN32
 #inclib "gdkglext-win32-1.0"
+#elseif defined(FB__LINUX)
+#inclib "gdkglext-x11-1.0"
+#else
+#error Platform not supported!
 #endif
 
 #include once "gtk/gdkgl/gdkgldefs.bi"

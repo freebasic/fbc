@@ -185,30 +185,37 @@ sub hReportErrorEx( byval errnum as integer, _
 		ctx.lastline  = linenum
 	end if
 
-	restore errordata
-	for i = 0 to FB.ERRMSGS-1
-		read msg
-		if( (i+1) = errnum ) then
-			exit for
-		end if
-	next i
+	if( errnum >= 0 ) then
+		restore errordata
+		for i = 0 to FB.ERRMSGS-1
+			read msg
+			if( (i+1) = errnum ) then
+				exit for
+			end if
+		next i
+	end if
 
 	print rtrim$( env.infile ); "(";
 	if( linenum > 0 ) then
 		print str$( linenum );
 	end if
-	print ") : error ";
-	print str$( errnum ); ": "; msg;
-	if( len( msgex ) > 0 ) then
-		print ", "; msgex
-	else
-		print
-	end if
+	print ") : error";
+	
+	if( errnum >= 0 ) then
+		print " "; str$( errnum ); ": "; msg;
+		if( len( msgex ) > 0 ) then
+			print ", "; msgex
+		else
+			print
+		end if
 
-	if( ( linenum > 0 ) and ( env.clopt.showerror ) ) then
-		print
-		print lexPeekCurrentLine( token_pos )
-		print token_pos
+		if( ( linenum > 0 ) and ( env.clopt.showerror ) ) then
+			print
+			print lexPeekCurrentLine( token_pos )
+			print token_pos
+		end if
+	else
+		print ": "; msgex
 	end if
 
 end sub

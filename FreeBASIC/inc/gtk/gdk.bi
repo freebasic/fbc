@@ -9,7 +9,13 @@
 #ifndef __gdk_bi__
 #define __gdk_bi__
 
+#ifdef FB__WIN32
 #inclib "gdk-win32-2.0"
+#elseif defined(FB__LINUX)
+#inclib "gdk-x11-2.0"
+#else
+#error Platform not supported!
+#endif
 
 #include once "gtk/gdk/gdkcolor.bi"
 #include once "gtk/gdk/gdkcursor.bi"
