@@ -66,23 +66,23 @@ Declare Function TTF_SizeText SDLCALL alias "TTF_SizeText" (byval font as TTF_Fo
 Declare Function TTF_SizeUTF8 SDLCALL alias "TTF_SizeUTF8" (byval font as TTF_Font, byval text as string, byval w as integer ptr, byval h as integer ptr) as integer
 Declare Function TTF_SizeUNICODE SDLCALL alias "TTF_SizeUNICODE" (byval font as TTF_Font, byval text as Uint16 ptr, byval w as integer ptr, byval h as integer ptr) as integer
 
-Declare Function TTF_RenderText_Solid SDLCALL alias "TTF_RenderText_Solid" (byval font as TTF_Font, byval text as string, byval fg as uinteger) as SDL_Surface ptr
-Declare Function TTF_RenderUTF8_Solid SDLCALL alias "TTF_RenderUTF8_Solid" (byval font as TTF_Font, byval text as string, byval fg as uinteger) as SDL_Surface ptr
-Declare Function TTF_RenderUNICODE_Solid SDLCALL alias "TTF_RenderUNICODE_Solid" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as uinteger) as SDL_Surface ptr
+Declare Function TTF_RenderText_Solid SDLCALL alias "TTF_RenderText_Solid" (byval font as TTF_Font, byval text as string, byval fg as SDL_Color) as SDL_Surface ptr
+Declare Function TTF_RenderUTF8_Solid SDLCALL alias "TTF_RenderUTF8_Solid" (byval font as TTF_Font, byval text as string, byval fg as SDL_Color) as SDL_Surface ptr
+Declare Function TTF_RenderUNICODE_Solid SDLCALL alias "TTF_RenderUNICODE_Solid" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
 
-Declare Function TTF_RenderGlyph_Solid SDLCALL alias "TTF_RenderGlyph_Solid" (byval font as TTF_Font, byval ch as Uint16, byval fg as uinteger) as SDL_Surface ptr
+Declare Function TTF_RenderGlyph_Solid SDLCALL alias "TTF_RenderGlyph_Solid" (byval font as TTF_Font, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
 
-Declare Function TTF_RenderText_Shaded SDLCALL alias "TTF_RenderText_Shaded" (byval font as TTF_Font, byval text as string, byval fg as uinteger, byval bg as uinteger) as SDL_Surface ptr
-Declare Function TTF_RenderUTF8_Shaded SDLCALL alias "TTF_RenderUTF8_Shaded" (byval font as TTF_Font, byval text as string, byval fg as uinteger, byval bg as uinteger) as SDL_Surface ptr
-Declare Function TTF_RenderUNICODE_Shaded SDLCALL alias "TTF_RenderUNICODE_Shaded" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as uinteger, byval bg as uinteger) as SDL_Surface ptr
+Declare Function TTF_RenderText_Shaded SDLCALL alias "TTF_RenderText_Shaded" (byval font as TTF_Font, byval text as string, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+Declare Function TTF_RenderUTF8_Shaded SDLCALL alias "TTF_RenderUTF8_Shaded" (byval font as TTF_Font, byval text as string, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+Declare Function TTF_RenderUNICODE_Shaded SDLCALL alias "TTF_RenderUNICODE_Shaded" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
 
-Declare Function TTF_RenderGlyph_Shaded SDLCALL alias "TTF_RenderGlyph_Shaded" (byval font as TTF_Font, byval ch as Uint16, byval fg as uinteger, byval bg as uinteger) as SDL_Surface ptr
+Declare Function TTF_RenderGlyph_Shaded SDLCALL alias "TTF_RenderGlyph_Shaded" (byval font as TTF_Font, byval ch as Uint16, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
 
-Declare Function TTF_RenderText_Blended SDLCALL alias "TTF_RenderText_Blended" (byval font as TTF_Font, byval text as string, byval fg as uinteger) as SDL_Surface ptr
-Declare Function TTF_RenderUTF8_Blended SDLCALL alias "TTF_RenderUTF8_Blended" (byval font as TTF_Font, byval text as string, byval fg as uinteger) as SDL_Surface ptr
-Declare Function TTF_RenderUNICODE_Blended SDLCALL alias "TTF_RenderUNICODE_Blended" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as uinteger) as SDL_Surface ptr
+Declare Function TTF_RenderText_Blended SDLCALL alias "TTF_RenderText_Blended" (byval font as TTF_Font, byval text as string, byval fg as SDL_Color) as SDL_Surface ptr
+Declare Function TTF_RenderUTF8_Blended SDLCALL alias "TTF_RenderUTF8_Blended" (byval font as TTF_Font, byval text as string, byval fg as SDL_Color) as SDL_Surface ptr
+Declare Function TTF_RenderUNICODE_Blended SDLCALL alias "TTF_RenderUNICODE_Blended" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
 
-Declare Function TTF_RenderGlyph_Blended SDLCALL alias "TTF_RenderGlyph_Blended" (byval font as TTF_Font, byval ch as Uint16, byval fg as uinteger) as SDL_Surface ptr
+Declare Function TTF_RenderGlyph_Blended SDLCALL alias "TTF_RenderGlyph_Blended" (byval font as TTF_Font, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
 
 Declare Sub TTF_CloseFont SDLCALL alias "TTF_CloseFont" (byval font as TTF_Font)
 Declare Sub TTF_Quit SDLCALL alias "TTF_Quit" ()

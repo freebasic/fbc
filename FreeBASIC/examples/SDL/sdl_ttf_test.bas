@@ -17,12 +17,13 @@ const FONTSIZE	 = 36			'' in points
 const FONTTEXT	 = "tff!"
 
 declare sub drawtext( byval video as SDL_Surface ptr, _
-			  		  byval x as integer, byval y as integer, byval clr as uinteger, _
+			  		  byval x as integer, byval y as integer, byval clr as SDL_Color, _
 			  		  text as string, byval font as TTF_Font )
 
    
 	dim video as SDL_Surface ptr
 	dim event as SDL_Event
+   	dim clr as SDL_Color
    	dim Font1 as TTF_Font
 
    
@@ -60,7 +61,10 @@ declare sub drawtext( byval video as SDL_Surface ptr, _
    	
    	do
       	for i = 1 to 25
-      		drawtext video, rnd*(SCR_WIDTH+w*2)-w, rnd*(SCR_HEIGHT+h*2)-h, rnd*(256^3), FONTTEXT, Font1
+      		clr.r = rnd*256
+      		clr.g = rnd*256
+      		clr.b = rnd*256
+      		drawtext video, rnd*(SCR_WIDTH+w*2)-w, rnd*(SCR_HEIGHT+h*2)-h, clr, FONTTEXT, Font1
       	next i
    
       	SDL_Flip video
@@ -87,10 +91,11 @@ end sub
 
 '':::::
 sub drawtext( byval video as SDL_Surface ptr, _
-			  byval x as integer, byval y as integer, byval clr as uinteger, _
+			  byval x as integer, byval y as integer, byval clr as SDL_Color, _
 			  text as string, byval font as TTF_Font ) static
       
       dim surface as SDL_Surface ptr
+      dim rgbcolor as SDL_Color
       
       surface = TTF_RenderText_Solid( font, text, clr )
       BlitImage video, x, y, surface
