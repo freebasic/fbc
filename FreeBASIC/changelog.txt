@@ -32,6 +32,8 @@ Version 0.13 Beta:
 - typedefs with forward referencing support, as in C (but the syntax is "TYPE Name AS SymbolType") (v1c)
 - the ZSTRING type, null-terminated strings with fixed-length but that can be dereferenced and returned by functions (v1c)
 - variable-initializers, as in "DIM foo AS INTEGER = 123", "DIM bar(2) AS DOUBLE = { 1, 2, 3 }", etc (v1c)
+- field-dereference on function's returning pointers to UDT's as in "foo(arg1)->bar(arg2)->a.b.c" (v1c)
+- bitfields, same syntax as in C: "foo : 4 as integer", "bar : 1 as integer", etc (v1c)
 - on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
 - inline string indexing as in "char = somestring[idx]" (V1c)
 - variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
@@ -47,6 +49,7 @@ Version 0.13 Beta:
 - include file and import lib for the zlib library (v1c
 - include file and import lib for the PDFlib Lite library (v1c)
 - include file and import lib for the ODE library (v1c)
+- include file and import lib for the Newton library (v1c)
 - include file and import lib for the cryptlib library (v1c)
 - include file and static lib for the GRX library (v1c)
 - include file and static lib for the BIG_INT library (v1c)

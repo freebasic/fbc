@@ -65,7 +65,7 @@ Most Important Features:
 
     - OpenAL, Fmod, BASS: 2D and 3D sound systems, including support for mod, mp3, ogg, etc
 
-    - ODE - Open Dynamics Engine: library for simulating rigid body dynamics
+    - ODE and Newton - dynamics engines: libraries for simulating rigid body dynamics
 
     - DirectX and the Windows API (W.I.P.)
 
@@ -202,6 +202,27 @@ Most Important Features:
       DIM mytypearray(0 to 1) as MYTYPE = { ( "a", 1, 2.0 ), ( "b", 3, 4.0 ) }
 
       DIM localvar AS INTEGER = a + b * d
+
+  o Bit fields:
+
+      TYPE mytype
+          flag_0 : 1 as integer
+          flag_1 : 1 as integer
+          flag_2 : 1 as integer
+      END TYPE
+
+      DIM t AS mytype
+
+      t.flag_0 = 1
+      t.flag_1 = 0
+      t.flag_2 = 1
+
+      PRINT "All flags ON? ";
+      IF ( t.flag_0 AND t.flag_1 AND t.flag_2 ) THEN
+	PRINT "TRUE"
+      ELSE
+        PRINT "FALSE"
+      END IF
 
   o Optional function arguments (numeric and strings):
 
@@ -507,6 +528,8 @@ Links:
     - Mini-XML: http://www.easysw.com/~mike/mxml/
     
     - MySQL: http://dev.mysql.com/
+
+    - Newton: http://www.physicsengine.com/
 
     - ODE: http://ode.org/
 
