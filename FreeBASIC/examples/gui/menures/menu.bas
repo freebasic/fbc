@@ -1,67 +1,32 @@
 ''
-'' menu demo
+'' menu demo, using a resource script this time
+''
+'' compile as: fbc menu.bas menures.rc -s gui
 ''
 
 defint a-z
 option explicit
 option private
 
-'$include once:'win\kernel32.bi'
-'$include once:'win\user32.bi'
-'$include once:'win\gdi32.bi'
+'$include once: 'win\kernel32.bi'
+'$include once: 'win\user32.bi'
+'$include once: 'win\gdi32.bi'
 
-''
-'' internal structs
-''
-type TMENU
-	hnd		as integer
-end type
+'$include: "menures.bi"
 
-type TMENUITEM
-	title	as string
-	id		as integer
-end type
-
-''
-'' menu ID's
-''
-const MENUID_BASE		= 100
-
-enum MENUID_ENUM
-	MENUID_FILE_NEW		= MENUID_BASE
-	MENUID_FILE_OPEN
-	MENUID_FILE_EXIT
-	MENUID_PROJECT_NEW
-	MENUID_PROJECT_OPEN
-	MENUID_FILE_CLOSE
-    MENUID_EDIT_UNDO
-    MENUID_EDIT_REDO
-    MENUID_EDIT_CUT
-    MENUID_EDIT_COPY
-    MENUID_SEARCH_FIND
-    MENUID_SEARCH_FINDNEXT
-    MENUID_SEARCH_FINDPREV
-    MENUID_SEARCH_REPLACE
-end enum
-
-const MAXMENUS			= 10
-const MAXMENUITEMS 		= 50
-
-
-declare sub init_menus( byval hWnd as integer )                                  
-                                  
+declare sub 			init_menus	( )
 
 declare function        WinMain     ( byval hInstance as long, _
                                       byval hPrevInstance as long, _
                                       szCmdLine as string, _
                                       byval iCmdShow as integer ) as integer
 
-	''
-	'' globals
-	''
-	dim shared submenuTB(0 to MAXMENUS) as TMENU
-	dim shared menuitemTB(0 to MAXMENUITEMS-1) as TMENUITEM
-
+''
+'' globals
+''
+	dim shared menutitleTB(0 to 99) as string
+                                  
+                                  
     ''
     '' Entry point    
     ''
@@ -85,7 +50,7 @@ function WndProc ( byval hWnd as long, _
     dim pnt as PAINTSTRUCT
     dim hDC as long
     
-    static lastmenuid  as integer
+    static lastmenuid as integer
     dim wmId as integer, wmEvent as integer
     dim menu as integer
     
@@ -97,11 +62,10 @@ function WndProc ( byval hWnd as long, _
     select case ( message )
        
         ''
-        '' window created
+        ''
         ''        
         case WM_CREATE            
-            '' create and show the menus
-            init_menus hWnd
+            init_menus
             exit function
         
     	''
@@ -118,7 +82,7 @@ function WndProc ( byval hWnd as long, _
 			''
 			select case wmId
 			'' quit
-			case MENUID_FILE_EXIT
+			case IDM_FILE_EXIT
 				PostMessage hWnd, WM_CLOSE, 0, 0
 				exit function
 			end select
@@ -141,7 +105,7 @@ function WndProc ( byval hWnd as long, _
             
             if( lastmenuid <> 0 ) then
             	DrawText hDC, "Last menu selected: id(" + str$( lastmenuid ) + ") title(" _
-            				  + menuitemTB(lastmenuid-MENUID_BASE).title + ")", -1, rct, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+            				  + menutitleTB(lastmenuid-IDM_BASE) + ")", -1, rct, DT_SINGLELINE or DT_CENTER or DT_VCENTER
             end if
             
             EndPaint hWnd, pnt
@@ -166,12 +130,31 @@ function WndProc ( byval hWnd as long, _
     
     ''
     '' Message doesn't concern us, send it to the default handler
+    '' and get result
     ''
     WndProc = DefWindowProc( hWnd, message, wParam, lParam )    
     
 end function
 
-
+sub init_menus()
+	''
+	'' create a table with menu titles 
+	''
+	menutitleTB(IDM_FILE_NEW-IDM_BASE) 			= TITLEM_FILE_NEW
+	menutitleTB(IDM_FILE_OPEN-IDM_BASE) 		= TITLEM_FILE_OPEN
+	menutitleTB(IDM_FILE_EXIT-IDM_BASE) 		= TITLEM_FILE_EXIT
+	menutitleTB(IDM_PROJECT_NEW-IDM_BASE) 		= TITLEM_PROJECT_NEW
+	menutitleTB(IDM_PROJECT_OPEN-IDM_BASE) 		= TITLEM_PROJECT_OPEN
+	menutitleTB(IDM_FILE_CLOSE-IDM_BASE) 		= TITLEM_FILE_CLOSE
+	menutitleTB(IDM_EDIT_UNDO-IDM_BASE) 		= TITLEM_EDIT_UNDO
+	menutitleTB(IDM_EDIT_REDO-IDM_BASE) 		= TITLEM_EDIT_REDO
+	menutitleTB(IDM_EDIT_CUT-IDM_BASE) 			= TITLEM_EDIT_CUT
+	menutitleTB(IDM_EDIT_COPY-IDM_BASE) 		= TITLEM_EDIT_COPY
+	menutitleTB(IDM_SEARCH_FIND-IDM_BASE) 		= TITLEM_SEARCH_FIND
+	menutitleTB(IDM_SEARCH_FINDNEXT-IDM_BASE) 	= TITLEM_SEARCH_FINDNEXT
+	menutitleTB(IDM_SEARCH_FINDPREV-IDM_BASE) 	= TITLEM_SEARCH_FINDPREV
+	menutitleTB(IDM_SEARCH_REPLACE-IDM_BASE) 	= TITLEM_SEARCH_REPLACE
+end sub
 
 
 '' ::::::::
@@ -196,7 +179,7 @@ function WinMain ( byval hInstance as long, _
      ''
      '' Setup window class
      ''
-     szAppName = "Menu Test"
+     szAppName = "MenuResource"
      
      with wcls
      	.style         = CS_HREDRAW or CS_VREDRAW
@@ -207,7 +190,7 @@ function WinMain ( byval hInstance as long, _
      	.hIcon         = LoadIcon( null, IDI_APPLICATION )
      	.hCursor       = LoadCursor( null, IDC_ARROW )
      	.hbrBackground = GetStockObject( WHITE_BRUSH )
-     	.lpszMenuName  = null
+     	.lpszMenuName  = IDC_MAINMENU
      	.lpszClassName = strptr( szAppName )
      end with
      
@@ -216,7 +199,7 @@ function WinMain ( byval hInstance as long, _
      '' Register the window class     
      ''     
      if ( RegisterClass( wcls ) = false ) then
-        MessageBox null, "Failed to register the window class", szAppName, MB_ICONERROR               
+        MessageBox null, "Could not register the window class", szAppName, MB_ICONERROR               
         exit function
     end if
     
@@ -226,29 +209,35 @@ function WinMain ( byval hInstance as long, _
     '' Create the window and show it
     ''
     hWnd = CreateWindowEx( 0, _
-    			 szAppName, _
-                         "Menu test", _
-                          WS_OVERLAPPEDWINDOW, _
-                          CW_USEDEFAULT, _
-                          CW_USEDEFAULT, _
-                          CW_USEDEFAULT, _
-                          CW_USEDEFAULT, _
-                          null, _
-                          null, _
-                          hInstance, _
-                          null )
+    			 		   szAppName, _
+                           "Menu Resource Test", _
+                           WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, _
+                           CW_USEDEFAULT, _
+                           CW_USEDEFAULT, _
+                           CW_USEDEFAULT, _
+                           CW_USEDEFAULT, _
+                           null, _
+                           null, _
+                           hInstance, _
+                           null )
                           
 
     ShowWindow   hWnd, iCmdShow
     UpdateWindow hWnd
      
 
+	dim hAccelTable as long
+	
+	hAccelTable = LoadAccelerators(hInstance, IDC_MAINMENU)
+
     ''
     '' Process windows messages
     ''
     while ( GetMessage( wMsg, null, 0, 0 ) <> false )    
-        TranslateMessage wMsg
-        DispatchMessage  wMsg
+		if( TranslateAccelerator( wMsg.hwnd, hAccelTable, wMsg ) = 0 ) then
+        	TranslateMessage wMsg
+        	DispatchMessage  wMsg
+        end if
     wend
     
     
@@ -259,80 +248,8 @@ function WinMain ( byval hInstance as long, _
 
 end function
 
-'':::::
-sub menu_insert( byval hmenu as integer, byval submenu as integer, title as string, byval flags as integer = 0 )
-    
-    with submenuTB(submenu)
-    
-    	.hnd 	= CreatePopupMenu 
-    
-    	InsertMenu hmenu, submenu, MF_BYPOSITION Or MF_POPUP Or MF_STRING or flags, .hnd, ByVal title
-    	
-    end with
-    
-end sub
 
-'':::::
-sub menu_append( byval submenu as integer, byval id as integer, title as string, byval flags as integer = 0 )
-    
-    with menuitemTB(id-MENUID_BASE) 
-    
-    	.id = id
-    	.title = title
-    	
-    	AppendMenu submenuTB(submenu).hnd, MF_STRING or flags, id, Byval title
-    	
-    end with
-   
-end sub
 
-'':::::
-sub menu_separator( byval submenu as integer )
 
-    AppendMenu submenuTB(submenu).hnd, MF_SEPARATOR, 0, Byval NULL
-   
-end sub
 
-'':::::
-sub init_menus( byval hWnd as integer )
-	dim menu as integer
- 	
- 	menu = CreateMenu 
- 	
- 	'' File
- 	menu_insert menu, 0, "&File"
-    
-    menu_append 0, MENUID_FILE_NEW, "&New"
-    menu_append 0, MENUID_FILE_OPEN, "&Open..." 
 
-	menu_insert submenuTB(0).hnd, 3, "&Project"
-    menu_append 3, MENUID_PROJECT_NEW, "&New" 
-	menu_append 3, MENUID_PROJECT_OPEN, "&Open..." 
-    
-    menu_append 0, MENUID_FILE_CLOSE, "&Close" 
-    menu_separator 0
-    menu_append 0, MENUID_FILE_EXIT, "&Exit"
-    
-	'' Edit
- 	menu_insert menu, 1, "&Edit"
- 	
-    menu_append 1, MENUID_EDIT_UNDO, "&Undo" 
-    menu_append 1, MENUID_EDIT_REDO, "&Redo" 
-    menu_separator 1
-    menu_append 1, MENUID_EDIT_CUT, "&Cut" 
-    menu_append 1, MENUID_EDIT_COPY, "C&opy" 
-
- 	'' Search
- 	menu_insert menu, 2, "&Search"
-
-    menu_append 2, MENUID_SEARCH_FIND, "&Find"
-    menu_append 2, MENUID_SEARCH_FINDNEXT, "Find &Next"
-    menu_append 2, MENUID_SEARCH_FINDPREV, "Find &Prev"
-    menu_append 2, MENUID_SEARCH_REPLACE, "&Replace", MF_MENUBARBREAK
-
-    ''
-    SetMenu hWnd, menu 
-    
-    DrawMenuBar hWnd
-    
-end sub
