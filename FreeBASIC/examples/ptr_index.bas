@@ -1,5 +1,5 @@
 ''
-'' pointer indexing
+'' pointer indexing example
 '' 
 
 option explicit

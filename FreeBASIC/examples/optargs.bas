@@ -1,4 +1,6 @@
-
+''
+'' optional arguments test
+''
 
 declare sub foo( byval arg1 as double = 1, byval arg2 as integer = -2 )
 

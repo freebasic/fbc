@@ -1,3 +1,6 @@
+''
+'' WITH test
+''
 
 type MYTYPE
 	c			as integer

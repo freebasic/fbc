@@ -1,3 +1,6 @@
+''
+'' peek for multiple data types test
+''
 
  	dim p as any ptr
  	

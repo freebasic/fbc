@@ -1,3 +1,7 @@
+''
+'' forward type definitions test
+''
+
 type foo as bar
 
 type sometype

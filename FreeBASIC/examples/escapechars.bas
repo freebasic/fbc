@@ -1,3 +1,6 @@
+''
+'' escape sequences test
+''
 
 option escape
 

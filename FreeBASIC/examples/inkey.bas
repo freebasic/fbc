@@ -1,4 +1,6 @@
-
+''
+'' simple inkey$ test
+''
 
 	do
 		k$ = inkey$

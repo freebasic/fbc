@@ -1,3 +1,7 @@
+''
+'' simple pointer test, using nodes
+''
+
 defint a-z
 
 const MAXNODES = 10

@@ -1,3 +1,6 @@
+''
+'' hello world example
+''
 
 	width 80, 25
 	

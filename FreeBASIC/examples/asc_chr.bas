@@ -1,3 +1,7 @@
+''
+'' asc and chr$ compile-time evaluation test
+''
+
 const B_CONST = asc( "ABC", 2 )
 
 const ABC = chr$( 65, 66, 67 )

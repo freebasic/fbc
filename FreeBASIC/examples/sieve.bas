@@ -1,3 +1,7 @@
+''
+'' ordinary sieve test
+''
+
 defint a-z
 
 const INTERATIONS = 1000

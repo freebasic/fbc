@@ -1,3 +1,7 @@
+''
+'' UDT's passed by value test
+''
+
 type BAR
     a as byte
     b as byte

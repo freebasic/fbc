@@ -1,3 +1,7 @@
+''
+'' function pointers test
+''
+
 option explicit
 
 type functype

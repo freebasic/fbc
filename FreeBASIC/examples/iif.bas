@@ -1,3 +1,6 @@
+''
+'' IIF test
+''
 
 	randomize timer
 	

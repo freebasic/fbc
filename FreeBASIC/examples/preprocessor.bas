@@ -1,3 +1,7 @@
+''
+'' pre-processor test
+''
+
 option explicit
 
 #define DWORD integer

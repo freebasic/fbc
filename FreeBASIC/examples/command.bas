@@ -1,4 +1,6 @@
-
+''
+'' command-line arguments example
+''
 
  	print "exe name= "; command$( 0 )
  	

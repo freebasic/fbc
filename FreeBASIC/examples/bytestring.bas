@@ -1,3 +1,7 @@
+''
+'' dynamic zstrings test
+''
+
 type sometype
 	abc as integer
 	lpstring as zstring ptr

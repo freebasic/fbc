@@ -1,3 +1,6 @@
+''
+'' implicit conversion between types test
+''
 		
 	dim ub as ubyte
 	dim us as ushort

@@ -1,3 +1,6 @@
+''
+'' string indexing test
+''
 
 const teststr = "ABCDEFGHIJKLM"
 

@@ -1,3 +1,7 @@
+''
+'' macro tests
+''
+
 	randomize timer
 
 #define mul(x,y) ((x) * (y))

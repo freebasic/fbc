@@ -1,3 +1,7 @@
+''
+'' static field arrays test
+''
+
 type t
 	a(3) as integer
 	b as integer

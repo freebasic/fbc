@@ -1,3 +1,6 @@
+''
+'' inline assembly example
+''
 
 declare function mulintegers( byval x as integer, byval y as integer ) as integer
 

@@ -1,3 +1,7 @@
+''
+'' dynamic memory allocation example
+''
+
 Type sometype
 	x As Integer
 	y As Integer
