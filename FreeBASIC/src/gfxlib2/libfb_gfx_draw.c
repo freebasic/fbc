@@ -25,6 +25,7 @@
  */
 
 #include "fb_gfx.h"
+#include <ctype.h>
 
 #ifdef NAN
 #undef NAN

@@ -33,8 +33,6 @@ static GFXDRIVERINFO info;
 /*:::::*/
 FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void)
 {
-	int len;
-	
 	if (!fb_mode)
 		return &none;
 	

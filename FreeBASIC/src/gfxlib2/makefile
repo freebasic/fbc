@@ -21,7 +21,7 @@ ifeq ($(OS),DOS)
 endif
 
 CC := gcc
-CFLAGS := -O3 -I ./
+CFLAGS := -O3 -Wall -I .
 AFLAGS := -x assembler-with-cpp
 ifneq ($(WINSYSDIR),)
     CFLAGS := $(CFLAGS) -DTARGET_WIN32

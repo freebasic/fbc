@@ -69,7 +69,7 @@ static int reverse_mask(int mask)
 /*:::::*/
 static int clip_line(int *x1, int *y1, int *x2, int *y2)
 {
-	int temp, code1, code2;
+	int code1, code2;
 	float m;
 
 	while (1) {

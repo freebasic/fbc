@@ -33,7 +33,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 	int x1, y1, x2, y2, w, h;
 
 	if (!fb_mode)
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	fb_hPrepareTarget(target);
 

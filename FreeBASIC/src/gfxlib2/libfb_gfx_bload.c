@@ -119,10 +119,10 @@ static void convert_24to32(unsigned char *src, unsigned char *dest, int w)
 static int load_bmp(FILE *f, void *dest)
 {
 	BMP_HEADER header;
-	unsigned char *buffer, *d;
+	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
 	int i, j, color, rgb[3], expand, size, palette[256];
-	void (*convert)(unsigned char *, unsigned char *, int);
+	void (*convert)(unsigned char *, unsigned char *, int) = NULL;
 	
 	if (!fb_mode)
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
@@ -213,7 +213,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 {
 	FILE *f;
 	unsigned char id;
-	unsigned int data, size;
+	unsigned int size;
 	int result = FB_RTERROR_OK;
 	
 	if ((!dest) && (!fb_mode))

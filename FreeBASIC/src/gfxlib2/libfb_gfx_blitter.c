@@ -53,7 +53,6 @@ extern void fb_hBlit32to32RGBMMX(unsigned char *dest, int pitch);
 /*:::::*/
 static void fb_hBlitCopy(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *src = fb_mode->framebuffer;
 	char *dirty = fb_mode->dirty;
 	int y, z = 0;

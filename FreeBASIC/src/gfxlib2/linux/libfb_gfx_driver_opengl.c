@@ -24,7 +24,7 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_linux.h"
 #include <GL/glx.h>
 #include <dlfcn.h>
@@ -62,9 +62,7 @@ static GLXDESTROYCONTEXT fb_glXDestroyContext;
 static GLXMAKECURRENT fb_glXMakeCurrent;
 static GLXSWAPBUFFERS fb_glXSwapBuffers;
 
-static XF86VidModeModeInfo *mode;
-static XF86VidModeModeInfo **modes_info;
-static int num_modes, gl_options;
+static int gl_options;
 static GLXContext context;
 
 
@@ -96,12 +94,8 @@ static int load_library(void)
 static int opengl_window_init(void)
 {
 	XSetWindowAttributes attribs;
-	int i, x, y;
-	int dummy, version;
+	int x, y;
 	char *display_name;
-	
-	mode = NULL;
-	modes_info = NULL;
 	
 	attribs.override_redirect = (fb_linux.fullscreen ? True : False);
 	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
@@ -138,8 +132,6 @@ static int opengl_window_init(void)
 /*:::::*/
 static void opengl_window_exit(void)
 {
-	int i;
-	
 	XUnmapWindow(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);
 	if (fb_linux.fullscreen)

@@ -24,8 +24,9 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_linux.h"
+#include <unistd.h>
 
 
 LINUXDRIVER fb_linux;
@@ -98,7 +99,7 @@ static const struct
 static void *window_thread(void *arg)
 {
 	XEvent event;
-	int i, y, h, k;
+	int k;
 	unsigned char key[8];
 	
 	(void)arg;

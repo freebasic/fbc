@@ -30,9 +30,6 @@
 /*:::::*/
 void fb_GfxColor(int fg, int bg)
 {
-	const unsigned char *palette;
-	int i;
-	
 	switch (fb_mode->mode_num) {
 	
 		case 1:

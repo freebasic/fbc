@@ -36,7 +36,7 @@ FBCALL int fb_GfxPaletteInp(int port)
 	int value = 0;
 
 	if ((!fb_mode) || (fb_mode->depth > 8))
-		return;
+		return 0;
 
 	switch (port) {
 

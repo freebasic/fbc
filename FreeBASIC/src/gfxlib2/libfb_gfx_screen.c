@@ -91,7 +91,7 @@ static void exit_proc(void)
 /*:::::*/
 static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
 {
-	const GFXDRIVER *driver;
+	const GFXDRIVER *driver = NULL;
 	int i, try;
 	char *c, *driver_name;
 
@@ -198,7 +198,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		if (!window_title)
 		{
 			window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
-			if (c = strrchr(window_title, '.'))
+			if ((c = strrchr(window_title, '.')))
 				*c = '\0';
 		}
 

@@ -24,7 +24,7 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_linux.h"
 
 
@@ -157,8 +157,6 @@ static int x11_init(void)
 /*:::::*/
 static void x11_exit(void)
 {
-	int i;
-	
 	XUnmapWindow(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);
 	if (fb_linux.fullscreen)
