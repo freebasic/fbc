@@ -919,7 +919,7 @@ function cEnumLine as integer
 end function
 
 '':::::
-''EnumDecl        =   ENUM ID Comment? SttSeparator
+''EnumDecl        =   ENUM ID? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
 function cEnumDecl
@@ -931,13 +931,12 @@ function cEnumDecl
 	'' ENUM
 	lexSkipToken
 
-	'' ID
-	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-    	exit function
+	'' ID?
+	if( lexCurrentTokenClass = FB.TKCLASS.IDENTIFIER ) then
+    	id = lexEatToken
+    else
+    	id = hMakeTmpStr
     end if
-
-	id = lexEatToken
 
 	e = symbAddEnum( id )
 	if( e = NULL ) then
