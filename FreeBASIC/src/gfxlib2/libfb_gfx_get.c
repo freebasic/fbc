@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
+FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
 	int x1, y1, x2, y2, w, h;
 
@@ -46,14 +46,14 @@ FBCALL void fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, 
 
 	if ((x1 < fb_mode->view_x) || (y1 < fb_mode->view_y) ||
 	    (x2 >= fb_mode->view_x + fb_mode->view_w) || (y2 >= fb_mode->view_y + fb_mode->view_h))
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
 
 	if( array != NULL )
 		if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->ptr + array->size))
-			return;
+			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
 	*(unsigned short *)dest = w << 3;
 	*(unsigned short *)(dest + 2) = h;
@@ -67,4 +67,6 @@ FBCALL void fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, 
 	}
 
 	DRIVER_UNLOCK();
+	
+	return FB_RTERROR_OK;
 }

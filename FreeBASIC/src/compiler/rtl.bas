@@ -714,8 +714,8 @@ data "fb_GfxPut", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 6, _
 					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxGet ( byref target as any, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
-''			   byref array as any, byval coordType as integer, array() as any ) as void
-data "fb_GfxGet", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
+''			   byref array as any, byval coordType as integer, array() as any ) as integer
+data "fb_GfxGet", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 8, _
 					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -735,7 +735,7 @@ data "fb_GfxScreen", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
 
 '' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
 ''					 byval num_pages as integer = 1, byval flags as integer = 0 )
-data "fb_GfxScreenRes", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 5, _
+data "fb_GfxScreenRes", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
 					 		FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,8, _
@@ -4758,6 +4758,7 @@ function rtlGfxGet( byval target as integer, byval targetisptr as integer, _
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer, targetmode as integer
     dim argmode as integer
+    dim reslabel as FBSYMBOL ptr
 
     rtlGfxGet = FALSE
 
@@ -4824,15 +4825,20 @@ function rtlGfxGet( byval target as integer, byval targetisptr as integer, _
  		exit function
  	end if
 
- 	''
- 	astFlush proc, vr
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( hMakeTmpStr )
+    	irEmitLABEL reslabel, FALSE
+    else
+    	reslabel = NULL
+    end if
 
  	''
 #ifdef AUTOADDGFXLIBS
  	hAddGfxLibs
 #endif
 
-	rtlGfxGet = TRUE
+	rtlGfxGet = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -4844,13 +4850,8 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
 
 	rtlGfxScreenSet = FALSE
 
-	if( hexpr = INVALID ) then
-		f = ifuncTB(FB.RTL.GFXSCREENSET)
-	    proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
-	else
-		f = ifuncTB(FB.RTL.GFXSCREENRES)
-	    proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
-	end if
+	f = ifuncTB( iif( hexpr = INVALID, FB.RTL.GFXSCREENSET, FB.RTL.GFXSCREENRES ) )
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
 
  	'' byval m as integer
  	if( astNewPARAM( proc, wexpr, INVALID ) = INVALID ) then

@@ -248,7 +248,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 	if (flags != SCREEN_EXIT)
 		fb_Cls(-1);
 
-	return 0;
+	return FB_RTERROR_OK;
 }
 
 
