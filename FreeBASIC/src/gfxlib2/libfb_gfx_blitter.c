@@ -39,10 +39,8 @@ extern void fb_hBlit8to32BGRMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit16to15RGBMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit16to15BGRMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit16to16RGBMMX(unsigned char *dest, int pitch);
-extern void fb_hBlit16to24RGBMMX(unsigned char *dest, int pitch);
-extern void fb_hBlit16to24BGRMMX(unsigned char *dest, int pitch);
-extern void fb_hBlit16to32RGBMMX(unsigned char *dest, int pitch);
-extern void fb_hBlit16to32BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to24MMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to32MMX(unsigned char *dest, int pitch);
 extern void fb_hBlit32to15RGBMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit32to15BGRMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit32to16RGBMMX(unsigned char *dest, int pitch);
@@ -439,26 +437,28 @@ static void fb_hBlit16to16RGB(unsigned char *dest, int pitch)
 
 
 /*:::::*/
-static void fb_hBlit16to24RGB(unsigned char *dest, int pitch)
+static void fb_hBlit16to24(unsigned char *dest, int pitch)
 {
 	unsigned char *src = fb_mode->framebuffer;
-	unsigned short *s;
-	unsigned int c;
-	unsigned char *d;
+	unsigned int *s, *d, c1, c2, c3, temp;
 	char *dirty = fb_mode->dirty;
 	int x, y, z = 0;
 	
 	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
 		if (*dirty) {
-			s = (unsigned short *)src;
-			d = (unsigned char *)dest;
-			for (x = fb_mode->w; x; x--) {
-				c = *s;
-				d[0] = (c >> 8) & 0xF8;
-				d[1] = (c >> 3) & 0xFC;
-				d[2] = (c << 3) & 0xF8;
+			s = (unsigned int *)src;
+			d = (unsigned int *)dest;
+			for (x = fb_mode->w >> 2; x; x--) {
+				c1 = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 8) & 0xFF)];
+				temp = fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)];
+				*d++ = c1 | (temp << 24);
+				c2 = temp >> 8;
 				s++;
-				d += 3;
+				temp = fb_color_conv_16to32[*s & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 8) & 0xFF)];
+				*d++ = c2 | (temp << 16);
+				c3 = temp >> 16;
+				*d++ = c3 | ((fb_color_conv_16to32[(*s >> 16) & 0xFF] | fb_color_conv_16to32[512 + ((*s >> 24) & 0xFF)]) << 8);
+				s++;
 			}
 		}
 		z++;
@@ -473,41 +473,7 @@ static void fb_hBlit16to24RGB(unsigned char *dest, int pitch)
 
 
 /*:::::*/
-static void fb_hBlit16to24BGR(unsigned char *dest, int pitch)
-{
-	unsigned char *src = fb_mode->framebuffer;
-	unsigned short *s;
-	unsigned int c;
-	unsigned char *d;
-	char *dirty = fb_mode->dirty;
-	int x, y, z = 0;
-	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
-		if (*dirty) {
-			s = (unsigned short *)src;
-			d = (unsigned char *)dest;
-			for (x = fb_mode->w; x; x--) {
-				c = *s;
-				d[0] = (c << 3) & 0xF8;
-				d[1] = (c >> 3) & 0xFC;
-				d[2] = (c >> 8) & 0xF8;
-				s++;
-				d += 3;
-			}
-		}
-		z++;
-		if (z >= fb_mode->scanline_size) {
-			z = 0;
-			dirty++;
-			src += fb_mode->pitch;
-		}
-		dest += pitch;
-	}
-}
-
-
-/*:::::*/
-static void fb_hBlit16to32RGB(unsigned char *dest, int pitch)
+static void fb_hBlit16to32(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
 	unsigned char *src = fb_mode->framebuffer;
@@ -521,38 +487,8 @@ static void fb_hBlit16to32RGB(unsigned char *dest, int pitch)
 			d = (unsigned int *)dest;
 			for (x = fb_mode->w >> 1; x; x--) {
 				c = *s++;
-				*d++ = ((c & 0xF800) >> 8) | ((c & 0x07E0) << 5) | ((c & 0x001F) << 19);
-				*d++ = ((c & 0xF8000000) >> 24) | ((c & 0x07E00000) >> 11) | ((c & 0x001F0000) << 3);
-			}
-		}
-		z++;
-		if (z >= fb_mode->scanline_size) {
-			z = 0;
-			dirty++;
-			src += fb_mode->pitch;
-		}
-		dest += pitch;
-	}
-}
-
-
-/*:::::*/
-static void fb_hBlit16to32BGR(unsigned char *dest, int pitch)
-{
-	unsigned int *d, *s;
-	unsigned char *src = fb_mode->framebuffer;
-	unsigned int c;
-	char *dirty = fb_mode->dirty;
-	int x, y, z = 0;
-	
-	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
-		if (*dirty) {
-			s = (unsigned int *)src;
-			d = (unsigned int *)dest;
-			for (x = fb_mode->w >> 1; x; x--) {
-				c = *s++;
-				*d++ = ((c & 0x001F) << 3) | ((c & 0x07E0) << 5) | ((c & 0xF800) << 8);
-				*d++ = ((c & 0x001F0000) >> 13) | ((c & 0x07E00000) >> 11) | ((c & 0xF8000000) >> 8);
+				*d++ = fb_color_conv_16to32[c & 0xFF] | fb_color_conv_16to32[256 + ((c >> 8) & 0xFF)];
+				*d++ = fb_color_conv_16to32[(c >> 16) & 0xFF] | fb_color_conv_16to32[256 + ((c >> 24) & 0xFF)];
 			}
 		}
 		z++;
@@ -801,21 +737,33 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 	BLITTER *all_blitters[] = {
 		/* RGB (C) */
 		fb_hBlit8to15RGB, fb_hBlit8to16RGB, fb_hBlit8to24RGB, fb_hBlit8to32RGB,
-		fb_hBlit16to15RGB, fb_hBlit16to16RGB, fb_hBlit16to24RGB, fb_hBlit16to32RGB,
+		fb_hBlit16to15RGB, fb_hBlit16to16RGB, fb_hBlit16to24, fb_hBlit16to32,
 		fb_hBlit32to15RGB, fb_hBlit32to16RGB, fb_hBlit32to24RGB, fb_hBlit32to32RGB,
 		/* BGR (C) */
 		fb_hBlit8to15BGR, fb_hBlit8to16BGR, fb_hBlit8to24BGR, fb_hBlit8to32BGR,
-		fb_hBlit16to15BGR, fb_hBlitCopy, fb_hBlit16to24BGR, fb_hBlit16to32BGR,
+		fb_hBlit16to15BGR, fb_hBlitCopy, fb_hBlit16to24, fb_hBlit16to32,
 		fb_hBlit32to15BGR, fb_hBlit32to16BGR, fb_hBlit32to24BGR, fb_hBlitCopy,
 		/* RGB (MMX) */
 		fb_hBlit8to15RGBMMX, fb_hBlit8to16RGBMMX, fb_hBlit8to24RGBMMX, fb_hBlit8to32RGBMMX,
-		fb_hBlit16to15RGBMMX, fb_hBlit16to16RGBMMX, fb_hBlit16to24RGBMMX, fb_hBlit16to32RGBMMX,
+		fb_hBlit16to15RGBMMX, fb_hBlit16to16RGBMMX, fb_hBlit16to24MMX, fb_hBlit16to32MMX,
 		fb_hBlit32to15RGBMMX, fb_hBlit32to16RGBMMX, fb_hBlit32to24RGBMMX, fb_hBlit32to32RGBMMX,
 		/* BGR (MMX) */
 		fb_hBlit8to15BGRMMX, fb_hBlit8to16BGRMMX, fb_hBlit8to24BGRMMX, fb_hBlit8to32BGRMMX,
-		fb_hBlit16to15BGRMMX, fb_hBlitCopy, fb_hBlit16to24BGRMMX, fb_hBlit16to32BGRMMX,
+		fb_hBlit16to15BGRMMX, fb_hBlitCopy, fb_hBlit16to24MMX, fb_hBlit16to32MMX,
 		fb_hBlit32to15BGRMMX, fb_hBlit32to16BGRMMX, fb_hBlit32to24BGRMMX, fb_hBlitCopy,
 	}, **blitter = &all_blitters[0];
+	int i;
+	
+	for (i = 0; i < 256; i++) {
+		if (is_rgb) {
+			fb_color_conv_16to32[i] = ((i & 0x1F) << 19) | ((i & 0xE0) << 5);
+			fb_color_conv_16to32[256+i] = ((i & 0x07) << 13) | (i & 0xF8);
+		}
+		else {
+			fb_color_conv_16to32[i] = ((i & 0x1F) << 3) | ((i & 0xE0) << 5);
+			fb_color_conv_16to32[256+i] = ((i & 0x07) << 13) | ((i & 0xF8) << 16);
+		}
+	}
 	
 	if ((fb_mode->flags & HAS_MMX) && (fb_mode->scanline_size == 1))
 		blitter = &blitter[24];

@@ -36,6 +36,7 @@ void (*fb_hPutPixel)(int x, int y, unsigned int color) = NULL;
 unsigned int (*fb_hGetPixel)(int x, int y) = NULL;
 void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size) = NULL;
 void *(*fb_hPixelSet)(void *dest, int color, size_t size) = NULL;
+unsigned int *fb_color_conv_16to32 = NULL;
 
 
 
@@ -127,6 +128,8 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		if (fb_mode->key)
 			free(fb_mode->key);
 		free(fb_mode);
+		if (fb_color_conv_16to32)
+			free(fb_color_conv_16to32);
 	}
 
 	if (mode == 0) {
@@ -194,6 +197,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
 		fb_mode->color_association = (unsigned char *)malloc(16);
 		fb_mode->key = (unsigned char *)calloc(1, 128);
+		fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
 
 		fb_hSetupFuncs();
 

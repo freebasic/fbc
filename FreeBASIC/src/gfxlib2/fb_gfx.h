@@ -206,6 +206,7 @@ extern void (*fb_hPutPixel)(int x, int y, unsigned int color);
 extern unsigned int (*fb_hGetPixel)(int x, int y);
 extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
+extern unsigned int *fb_color_conv_16to32;
 extern const PALETTE fb_palette_16;
 extern const PALETTE fb_palette_64;
 extern const PALETTE fb_palette_256;
