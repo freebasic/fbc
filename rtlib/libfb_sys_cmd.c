@@ -28,16 +28,6 @@
 #include <string.h>
 #include "fb.h"
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#include <unistd.h>
-
-/* global */
-char fb_commandline[1024] = { 0 };
-
-#endif
 
 /*:::::*/
 FBCALL FBSTRING *fb_Command ( void )
@@ -46,22 +36,7 @@ FBCALL FBSTRING *fb_Command ( void )
 	char		*cline;
 	int			len;
 
-#ifdef WIN32
-	cline = GetCommandLine( );
-
-	/* exe paths with white-spaces are quoted on Windows */
-	if( cline[0] == '"' )
-	{
-		cline = strchr( &cline[1], '"' );
-		if( cline != NULL )
-			++cline;
-	}
-
-#else
-
-	cline = fb_commandline;
-
-#endif
+	cline = fb_hGetCommandLine( );
 
 	/* skip argv[0] (exe's name) */
 	cline = strchr( cline, ' ' );

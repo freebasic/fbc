@@ -18,22 +18,39 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * file_hgetstr - line input function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
+#if !defined DISABLE_NCURSES
+#include <curses.h>
+#endif
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hFileGetStr( char *buffer, int len, FILE *f )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+#if !defined DISABLE_NCURSES
+	if( f == stdin )
+	{
+		echo( );
+		nodelay( stdscr, FALSE );
+		if( getnstr( buffer, len ) == ERR )
+			return NULL;
+		noecho( );
+		nodelay( stdscr, TRUE );
+		strcat( buffer, "\n" );
+		return buffer;
+	}
+	else
+#endif
 
-	/////atexit( &fb_End );
+		return fgets( buffer, len, f );
 
 }
+

@@ -18,22 +18,35 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_run.c -- run function for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
+#include <process.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL int fb_Run ( FBSTRING *program )
 {
+    char	buffer[MAX_PATH+1];
+    char 	arg0[] = "";
+    int		res;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( (program != NULL) && (program->data != NULL) )
+	{
+		res = _execl( fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
+	}
 
-	/////atexit( &fb_End );
+	/* del if temp */
+	fb_hStrDelTemp( program );
 
+	return res;
 }

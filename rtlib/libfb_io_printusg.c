@@ -367,12 +367,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 	else
 	{
+		fb_hFloat2Str( value, buffer, 16, FB_FALSE );
 
-#ifdef WIN32
-		_gcvt( value, 16, buffer );
-#else
-		sprintf( buffer, "%.16g", value );
-#endif
 		len = strlen( buffer );
 		if( buffer[len-1] == '.' )
 		{

@@ -18,22 +18,30 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * file_convpath - path conversion for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <string.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hConvertPath( char *path, int len )
 {
+	char *res;
+    int i;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	res = strdup( path );
 
-	/////atexit( &fb_End );
+	for (i = 0; i < len; i++)
+	{
+		if ( res[i] == '\\' )
+			res[i] = '/';
+	}
 
+	return res;
 }
+

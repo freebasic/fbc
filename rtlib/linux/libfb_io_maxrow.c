@@ -18,22 +18,24 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_maxrow.c -- get max row (console, no gfx) for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_ConsoleGetMaxRow( void )
 {
-
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
-
+#ifndef DISABLE_NCURSES
+	return getmaxy(stdscr);
+#else
+	return 0;
+#endif
 }

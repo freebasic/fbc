@@ -18,22 +18,48 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_run.c -- run function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [lillo]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#define MAX_PATH	1024
+
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL int fb_Run ( FBSTRING *program )
 {
+    char	buffer[MAX_PATH+1];
+    char 	arg0[] = "";
+    int		res;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( (program != NULL) && (program->data != NULL) )
+	{
+		char buffer2[MAX_PATH+3];
 
-	/////atexit( &fb_End );
+		fb_hGetShortPath( program->data, buffer, MAX_PATH );
+		res = execlp( buffer, buffer, NULL);
+		/* Ok, an error occured. Probably the file could not be found;
+	 	* as a last resort, let's try in current directory.
+	 	*/
+		if( !strchr( buffer, '/' ))
+		{
+			sprintf( buffer2, "./%s", buffer );
+			execlp( buffer2, buffer2, NULL );
+		}
+		exit( -1 );
+	}
 
+	/* del if temp */
+	fb_hStrDelTemp( program );
+
+	return res;
 }

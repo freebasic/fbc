@@ -18,22 +18,23 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getcwd.c -- get current dir for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_hGetCurrentDir ( char *dst, int maxlen )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	return GetCurrentDirectory( maxlen, dst );
 
 }

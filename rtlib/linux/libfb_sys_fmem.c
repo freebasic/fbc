@@ -18,22 +18,21 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_fmem.c -- fre function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: dec/2004 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#include <sys/sysinfo.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL unsigned int fb_GetMemAvail ( int mode )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	return get_avphys_pages() * 4096;
 
 }
+

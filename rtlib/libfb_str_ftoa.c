@@ -32,38 +32,44 @@
 char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
 {
 	int len;
+	char *p;
+
+	if( addblank == FB_TRUE )
+		p = &buffer[1];
+	else
+		p = buffer;
 
 #ifdef WIN32
-	_gcvt( val, precision, &buffer[1] );
+	_gcvt( val, precision, p );
 
 #else
 	char fmtstr[16];
 
 	sprintf( fmtstr, "%%.%dg", precision );
 
-	sprintf( &buffer[1], fmtstr, val );
+	sprintf( p, fmtstr, val );
 
 #endif
 
-	len = strlen( &buffer[1] );
+	len = strlen( p );
 
 	/* skip the dot at end if any */
 	if( len > 0 )
-		if( buffer[1+len-1] == '.' )
-			buffer[1+len-1] = '\0';
+		if( p[len-1] == '.' )
+			p[len-1] = '\0';
 
 	/* */
 	if( addblank == FB_TRUE )
 	{
-		if( buffer[1] != '-' )
+		if( p[0] != '-' )
 		{
 			buffer[0] = ' ';
 			return &buffer[0];
 		}
 		else
-			return &buffer[1];
+			return p;
 	}
 	else
-		return &buffer[1];
+		return p;
 }
 

@@ -18,22 +18,27 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_sleep.c -- sleep function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#include <unistd.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL void fb_Sleep ( int msecs )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( msecs == -1 )
+	{
+		fb_Getkey( );
+		return;
+	}
 
-	/////atexit( &fb_End );
+	usleep( msecs * 1000 );
 
 }
+

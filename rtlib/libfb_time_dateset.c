@@ -25,14 +25,11 @@
  */
 
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
+
 
 /*:::::*/
 FBCALL int fb_SetDate( FBSTRING *date )
@@ -44,14 +41,8 @@ FBCALL int fb_SetDate( FBSTRING *date )
    mm-dd-yy
    mm-dd-yyyy
 
-   portability warning:  assumes ASCII ordering of digit chars ('0' < '9')
-
    assumes 2-digit years are 1900 + year - !!!FIXME!!! - not sure how QB handles these
 */
-
-#ifdef WIN32
-    SYSTEMTIME st;
-#endif
 
 	if( (date != NULL) && (date->data != NULL) )
 	{
@@ -83,27 +74,8 @@ FBCALL int fb_SetDate( FBSTRING *date )
 
     	if (y < 100) y += 1900;
 
-#ifdef WIN32
 
-    	/* get current local time and date */
-    	GetLocalTime(&st);
-
-    	/* set time fields */
-    	st.wYear = y;
-    	st.wMonth = m;
-    	st.wDay = d;
-
-    	/* set system time relative to local time zone */
-    	SetLocalTime(&st);
-
-    	/* send WM_TIMECHANGE to all top-level windows on NT and 95/98/Me
-     	* (_not_ on 2K/XP etc.) */
-    	if ((GetVersion() & 0xFF) == 4)
-			SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
-
-#else   /* WIN32 */
-
-#endif
+		fb_hSetDate( y, m, d );
 
 	}
 

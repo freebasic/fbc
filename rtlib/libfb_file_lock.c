@@ -21,24 +21,16 @@
  *	file_lock - lock and unlock functions
  *
  * chng: nov/2004 written [v1ctor]
+ *       jan/2005 os-dep calls moved to proper dirs [v1ctor]
  *
  */
 
 #include "fb.h"
 #include "fb_rterr.h"
 
-#ifdef WIN32
-#include <io.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#include <fcntl.h>
-#endif
-
 /*:::::*/
 FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 {
-	int 	res;
 	FILE 	*f;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
@@ -63,18 +55,7 @@ FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 		--endpos;
 	}
 
-
-#ifdef WIN32
-
-    res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
-
-	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
-
-#else
-
-	return (flock(_fileno(f), LOCK_EX) ? FB_RTERROR_FILEIO : FB_RTERROR_OK);
-
-#endif
+	return fb_hFileLock( f, inipos, endpos );
 
 }
 
@@ -106,18 +87,7 @@ FBCALL int fb_FileUnlock( int fnum, unsigned int inipos, unsigned int endpos )
 		--endpos;
 	}
 
-
-#ifdef WIN32
-
-    res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
-    
-	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
-	
-#else
-
-	return (flock(_fileno(f), LOCK_UN) ? FB_RTERROR_FILEIO : FB_RTERROR_OK);
-
-#endif
+	return fb_hFileUnlock( f, inipos, endpos );
 
 }
 

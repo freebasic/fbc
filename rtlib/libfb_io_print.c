@@ -28,22 +28,6 @@
 #include <stdio.h>
 #include "fb.h"
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#else
-#ifndef FALSE
-#define FALSE	0
-#endif
-#ifndef TRUE
-#define TRUE	1
-#endif
-#endif
-#endif
-
 
 #define FB_PRINTNUM(fnum, val, mask, type) 				\
     char buffer[80];									\
@@ -62,122 +46,13 @@
 
 
 /*:::::*/
-void fb_ConsolePrintBuffer( char *buffer, int mask )
-{
-    int col, row;
-    int toprow, botrow;
-	int cols, rows;
-	int len, scrolloff = FALSE;
-	int rowsleft, rowstoscroll;
-
-	len = strlen( buffer );
-
-	fb_ConsoleGetSize( &cols, &rows );
-	fb_ConsoleGetView( &toprow, &botrow );
-	fb_ConsoleGetXY( &col, &row );
-
-#ifdef WIN32
-	/* scrolling */
-	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
-	{
-		fb_ConsoleScroll( 1 );
-		row = botrow;
-	}
-
-	/* if no newline and row at bottom and col+string at right, disable scrolling */
-	if( (mask & FB_PRINT_NEWLINE) == 0 )
-	{
-		if( row == botrow )
-			if( col + len - 1 == cols )
-				scrolloff = TRUE;
-	}
-
-	HANDLE 	hnd;
-	DWORD 	mode;
-
-	if( scrolloff )
-	{
-		hnd = GetStdHandle( STD_OUTPUT_HANDLE );
-		GetConsoleMode( hnd, &mode );
-		SetConsoleMode( hnd, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
-	}
-
-	/* scrolling if VIEW was set */
-	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != fb_ConsoleGetMaxRow( )) )
-	{
-    	rowsleft = (botrow - row) /*+ 1*/;
-    	rowstoscroll = 1 + (len - (cols - col + 1)) / cols;
-    	if( (mask & FB_PRINT_NEWLINE) != 0 )
-    		++rowstoscroll;
-
-     	if( rowstoscroll - rowsleft > 0 )
-     	{
-     		fb_ConsoleScroll( rowstoscroll - rowsleft );
-     		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1, -1 );
-     	}
-	}
-
-	printf( "%s", buffer );
-
-	if( scrolloff )
-		SetConsoleMode( hnd, mode );
-
-#else
-
-#ifdef DISABLE_NCURSES
-	printf( "%s", buffer );
-#else
-
-	/* scrolling */
-	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
-	{
-		row = botrow + 1;
-		fb_ConsoleLocate(row, col, -1);
-	}
-
-	rowstoscroll = 0;
-	if (mask & FB_PRINT_NEWLINE) {
-		buffer[len - 1] = '\0';
-		len--;
-		rowstoscroll++;
-	}
-	if (col + len - 1 > cols)
-		rowstoscroll += 1 + ((len - (cols - col + 1)) / cols);
-	if (row + rowstoscroll > fb_ConsoleGetMaxRow()) {
-		fb_ConsoleScroll((row + rowstoscroll) - fb_ConsoleGetMaxRow());
-		fb_ConsoleLocate(fb_ConsoleGetMaxRow() - rowstoscroll, col, -1);
-	}
-	else {
-		rowsleft = botrow - (row - 1);
-		if (rowstoscroll > rowsleft) {
-			fb_ConsoleScroll(rowstoscroll - rowsleft);
-			fb_ConsoleLocate(botrow - rowstoscroll + 1, col, -1);
-		}
-	}
-	printw("%s", buffer);
-	if (mask & FB_PRINT_NEWLINE)
-		move(getcury(stdscr) + 1, 0);
-	refresh();
-#endif
-
-#endif
-
-}
-
-/*:::::*/
 FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
     char *buffer;
-#ifndef WIN32
-	char nl[2] = { '\n', '\0' };
-#endif
 
     if( mask & FB_PRINT_NEWLINE )
-#ifndef WIN32
-		buffer = nl;
-#else
-    	buffer = "\n\0";
-#endif
+		buffer = "\n\0";
+
     else if( mask & FB_PRINT_PAD )
     	buffer = "%-14\0";
     else

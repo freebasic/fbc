@@ -18,22 +18,31 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getexepath.c -- get the executable path for Windows
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hGetExePath( char *dst, int maxlen )
 {
+	char *p;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	GetModuleFileName( GetModuleHandle( NULL ), dst, maxlen );
 
-	/////atexit( &fb_End );
+	p = strrchr( dst, '\\' );
+	if( p != NULL )
+		*p = '\0';
+	else
+		dst[0] = '\0';
 
+	return p;
 }

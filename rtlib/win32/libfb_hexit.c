@@ -18,22 +18,20 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * exit.c -- end helper for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
 #include <stdlib.h>
 #include "fb.h"
 
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_hEnd ( int errlevel )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	/* do nothing */
 
 }

@@ -18,22 +18,23 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getcwd.c -- get current dir for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
 #include "fb.h"
 
+#include <unistd.h>
+#define MAX_PATH	1024
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_hGetCurrentDir ( char *dst, int maxlen )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	return strlen( getcwd( dst, maxlen ) );
 
 }

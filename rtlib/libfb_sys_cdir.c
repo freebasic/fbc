@@ -28,14 +28,6 @@
 #include <string.h>
 #include "fb.h"
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#include <unistd.h>
-#define MAX_PATH	1024
-#endif
-
 /*:::::*/
 FBCALL FBSTRING *fb_CurDir ( void )
 {
@@ -43,11 +35,7 @@ FBCALL FBSTRING *fb_CurDir ( void )
 	char		tmp[MAX_PATH];
 	int			len;
 
-#ifdef WIN32
-	len = GetCurrentDirectory( MAX_PATH, tmp );
-#else
-	len = strlen(getcwd(tmp, MAX_PATH));
-#endif
+	len = fb_hGetCurrentDir( tmp, MAX_PATH );
 
 	/* alloc temp string */
 	if( len > 0 )

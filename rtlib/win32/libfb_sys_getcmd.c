@@ -18,22 +18,33 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getcmd.c -- get command line for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hGetCommandLine( void )
 {
+    char *buffer;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	buffer = GetCommandLine( );
 
-	/////atexit( &fb_End );
+	/* exe paths with white-spaces are quoted on Windows */
+	if( buffer[0] == '"' )
+	{
+		buffer = strchr( &buffer[1], '"' );
+		if( buffer != NULL )
+			++buffer;
+	}
 
+	return buffer;
 }

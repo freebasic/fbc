@@ -18,22 +18,27 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_fmem.c -- fre function for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: dec/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL unsigned int fb_GetMemAvail ( int mode )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+	MEMORYSTATUS ms;
 
-	/////atexit( &fb_End );
+	ms.dwLength = sizeof( MEMORYSTATUS );
+	GlobalMemoryStatus( &ms );
+
+	return ms.dwAvailPhys;
 
 }
+

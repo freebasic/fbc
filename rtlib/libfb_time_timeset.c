@@ -25,14 +25,11 @@
  */
 
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
+
 
 /*:::::*/
 FBCALL int fb_SetTime( FBSTRING *time )
@@ -42,13 +39,7 @@ FBCALL int fb_SetTime( FBSTRING *time )
    hh
    hh:mm
    hh:mm:ss
-
-   portability warning:  assumes ASCII ordering of digit chars ('0' < '9')
 */
-
-#ifdef WIN32
-    SYSTEMTIME st;
-#endif
 
 	if( (time != NULL) && (time->data != NULL) )
 	{
@@ -91,28 +82,7 @@ FBCALL int fb_SetTime( FBSTRING *time )
 			return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
 
-#ifdef WIN32
-
-    	/* get current local time and date */
-    	GetLocalTime(&st);
-
-    	/* set time fields */
-    	st.wHour = h;
-    	st.wMinute = m;
-    	st.wSecond = s;
-
-    	/* set system time relative to local time zone */
-    	SetLocalTime(&st);
-
-    	/* send WM_TIMECHANGE to all top-level windows on NT and 95/98/Me
-     	* (_not_ on 2K/XP etc.) */
-    	if ((GetVersion() & 0xFF) == 4)
-			SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
-
-#else   /* WIN32 */
-
-
-#endif
+		fb_hSetTime( h, m, s );
 
 	}
 

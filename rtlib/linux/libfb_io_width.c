@@ -18,22 +18,17 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_width.c -- width (console, no gfx) for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_ConsoleWidth( int cols, int rows )
 {
-
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	/* Changing console size isn't allowed in linux */
 
 }

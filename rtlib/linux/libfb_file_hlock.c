@@ -18,22 +18,29 @@
  */
 
 /*
- * init.c -- libfb initialization
+ *	file_hlock - low-level lock and unlock functions for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ *  chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
+#include "fb_rterr.h"
+#include <fcntl.h>
+
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+	return (flock(_fileno(f), LOCK_EX) ? FB_RTERROR_FILEIO : FB_RTERROR_OK);
 
-	/////atexit( &fb_End );
+}
+
+/*:::::*/
+int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
+{
+
+	return (flock(_fileno(f), LOCK_UN) ? FB_RTERROR_FILEIO : FB_RTERROR_OK);
 
 }

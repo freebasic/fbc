@@ -16,14 +16,15 @@ else
 endif
 
 CC := gcc
+CFLAGS := -O3 -I ./
 ifneq ($(WINSYSDIR),)
-    CFLAGS := -O3
-    #-fssa -- GCC's manual states it's not stable enough??
+    CFLAGS := $(CFLAGS) -DTARGET_WIN32
+    osdeppath := win32
 else
+    osdeppath := linux
+    CFLAGS := $(CFLAGS) -DTARGET_LINUX
     ifdef COMPILER
-        CFLAGS := -O3 -DDISABLE_NCURSES
-    else
-        CFLAGS := -O3
+        CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
     endif
 endif
 
@@ -33,17 +34,23 @@ ifeq ($(WINSYSDIR),)
     ifdef COMPILER
     	lib := $(libpath)/libfb-nocurses.a
     endif
-endif	
+endif
 
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
-          
+osdepobjs := $(patsubst $(osdeppath)/%.c,obj/%.o,$(wildcard $(osdeppath)/*.c))
+
+
 obj/%.o : %.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
-all : $(objects) $(lib) fb.h
+obj/%.o : $(osdeppath)/%.c
+	$(CC) -c $(CFLAGS) $? -o $@
 
-$(lib) : $(objects)
-	$(AR) cr $(lib) $(objects)
+
+all : $(objects) $(osdepobjs) $(lib) fb.h
+
+$(lib) : $(objects) $(osdepobjs)
+	$(AR) cr $(lib) $(objects) $(osdepobjs)
 
 
 .PHONY : clean
@@ -51,7 +58,9 @@ clean :
 ifneq ($(WINSYSDIR),)
 	del $(subst /,\,$(lib))
 	del $(subst /,\,$(objects))
+	del $(subst /,\,$(osdepobjs))
 else
 	rm -f $(lib)
 	rm -f $(objects)
+	rm -f $(osdepobjs)
 endif

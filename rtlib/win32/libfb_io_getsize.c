@@ -18,22 +18,38 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_getsize.c -- get size (console, no gfx) function for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
+#include <stdio.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
+    int toprow, botrow;
 
-	/* os-dep initialization */
-	fb_hInit( );
+    CONSOLE_SCREEN_BUFFER_INFO info;
 
-	/////atexit( &fb_End );
+    if( cols != NULL )
+    {
+    	if( !GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info ) )
+    		*cols = 80;
+    	else
+    		*cols = info.dwSize.X;
+    }
 
+    if( rows != NULL )
+    {
+    	fb_ConsoleGetView( &toprow, &botrow );
+
+    	*rows = botrow - toprow + 1;
+    }
 }

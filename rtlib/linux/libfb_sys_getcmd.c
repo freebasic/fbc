@@ -18,22 +18,26 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getcmd.c -- get command line for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
 #include "fb.h"
 
+#include <unistd.h>
+
+/* global */
+char fb_commandline[1024] = { 0 };
+
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hGetCommandLine( void )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	return fb_commandline;
 
 }

@@ -18,22 +18,43 @@
  */
 
 /*
- * init.c -- libfb initialization
+ *	file_hlock - low-level lock and unlock functions for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ *  chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+
 #include "fb.h"
+#include "fb_rterr.h"
+#include <io.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
 {
+    int res;
 
-	/* os-dep initialization */
-	fb_hInit( );
+    res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
 
-	/////atexit( &fb_End );
+	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
 
 }
+
+/*:::::*/
+int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
+{
+    int res;
+
+    res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
+
+	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
+
+}
+
+
+
+
+
+

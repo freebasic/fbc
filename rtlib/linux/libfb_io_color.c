@@ -18,22 +18,57 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_color.c -- color (console, no gfx) function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
+#include "fb_colors.h"
+
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
+
+/* globals */
+int fb_last_bc = 0,
+	fb_last_fc = 15;
+
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_ConsoleColor( int fc, int bc )
 {
+#ifndef DISABLE_NCURSES
+	int pair;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if (!has_colors())
+		return;
 
-	/////atexit( &fb_End );
+	if (fc >= 0)
+		fb_last_fc = (fc & 0xf);
+	if (bc >= 0)
+		fb_last_bc = (bc & 0x7);
+
+	pair = ((fb_last_fc & 0x7) | (fb_last_bc << 3));
+	attrset(COLOR_PAIR(pair) | (fb_last_fc & 0x8 ? A_BOLD : 0));
+#endif
+
+}
+
+/*:::::*/
+int fb_ConsoleGetColorAtt( void )
+{
+	int res = 0;
+
+#ifndef DISABLE_NCURSES
+	attr_t attr;
+	short pair;
+
+	attr_get(&attr, &pair, NULL);
+	res = (pair & 0x7) | (attr & A_BOLD ? 0x8 : 0) | ((pair & 0x38) << 4);
+#endif
+
+	return res;
 
 }

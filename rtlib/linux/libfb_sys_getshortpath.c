@@ -18,22 +18,49 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getshorpath.c -- get short path for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [lillo]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#define MAX_PATH	1024
+
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hGetShortPath( char *src, char *dst, int maxlen )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( strchr( src, 32 ) == NULL )
+	{
+		strcpy( dst, src );
+	}
+	else
+	{
+		int i = 0;
+		char *old_dst = dst;
 
-	/////atexit( &fb_End );
+		while ((*src) && (i < maxlen - 1)) {
+			if (*src == ' ') {
+				*dst++ = '\\';
+				i++;
+			}
+			if (i == maxlen - 1)
+				break;
+			*dst++ = *src++;
+			i++;
+		}
+		dst = old_dst;
+		dst[maxlen - 1] = '\0';
+    }
 
+	return dst;
 }
+

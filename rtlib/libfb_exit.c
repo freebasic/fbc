@@ -31,10 +31,10 @@
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
-#if !defined WIN32 && !defined DISABLE_NCURSES
-	endwin();
-	system("echo -e \"\\033(B\"");
-#endif
+
+	/* os-dep termination */
+	fb_hEnd( errlevel );
+
 	exit( errlevel );
 
 }

@@ -26,15 +26,6 @@
 
 #include "fb.h"
 
-#ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#else
-#ifndef DISABLE_NCURSES
-#include <curses.h>
-#endif
-#endif
-
 /* globals */
 int fb_viewTopRow = -1;
 int fb_viewBotRow = -1;
@@ -79,22 +70,3 @@ void fb_ConsoleGetView( int *toprow, int *botrow )
 }
 
 
-/*:::::*/
-int fb_ConsoleGetMaxRow( void )
-{
-#ifdef WIN32
-
-	COORD max = GetLargestConsoleWindowSize( GetStdHandle( STD_OUTPUT_HANDLE ) );
-
-	return max.Y + 1;
-
-#else /* WIN32 */
-
-#ifndef DISABLE_NCURSES
-	return getmaxy(stdscr);
-#else
-	return 0;
-#endif
-
-#endif /* WIN32 */
-}

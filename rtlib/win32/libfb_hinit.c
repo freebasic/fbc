@@ -18,22 +18,21 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * init.c -- libfb initialization for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
 #include <stdlib.h>
 #include "fb.h"
+#include <float.h>
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_hInit ( void )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+    /* set FPU precision to 64-bit and round to nearest (as in QB) */
+	_controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
 
 }

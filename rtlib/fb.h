@@ -35,8 +35,14 @@
 # define FBCALL
 #endif /* WIN32 */
 
+#ifndef FALSE
+#define FALSE	0
+#endif
+#ifndef TRUE
+#define TRUE	1
+#endif
 #ifndef NULL
-#define NULL 0
+#define NULL 	0
 #endif
 
 
@@ -216,6 +222,10 @@ FBCALL int 			fb_Exec 			( FBSTRING *program, FBSTRING *args );
 
 	   char 		*fb_hGetShortPath	( char *src, char *dst, int maxlen );
 
+	   int 			fb_hGetCurrentDir 	( char *dst, int maxlen );
+	   char 		*fb_hGetCommandLine	( void );
+	   char 		*fb_hGetExePath		( char *dst, int maxlen );
+
 /**************************************************************************************************
  * math
  **************************************************************************************************/
@@ -252,7 +262,6 @@ extern int fb_viewBotRow;
 
 
 	   void 		fb_ConsoleWidth		( int cols, int rows );
-FBCALL void 		fb_ConsoleScreen	( int mode );
 	   void 		fb_ConsoleClear		( int mode );
 
 	   void 		fb_ConsoleLocate	( int row, int col, int cursor );
@@ -363,6 +372,10 @@ FBCALL int 			fb_LineInput		( FBSTRING *text, FBSTRING *dst, int addquestion, in
 
 	   int 			fb_hFilePrintBuffer	( int fnum, char *buffer );
 
+	   int 			fb_hFileLock		( FILE *f, unsigned int inipos, unsigned int endpos );
+	   int 			fb_hFileUnlock		( FILE *f, unsigned int inipos, unsigned int endpos );
+	   char 		*fb_hConvertPath	( char *path, int len );
+	   char 		*fb_hFileGetStr		( char *buffer, int len, FILE *f );
 
 /**************************************************************************************************
  * data/time
@@ -374,6 +387,8 @@ FBCALL int 			fb_SetTime			( FBSTRING *time );
 FBCALL FBSTRING 	*fb_Date 			( void );
 FBCALL int 			fb_SetDate			( FBSTRING *date );
 
+	   int 			fb_hSetTime			( int h, int m, int s );
+	   int 			fb_hSetDate			( int y, int m, int d );
 
 /**************************************************************************************************
  * error
@@ -396,6 +411,9 @@ FBCALL void 		fb_End 				( int errlevel );
 
 FBCALL void			fb_MemSwap			( unsigned char *dst, unsigned char *src, int bytes );
 FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_size );
+
+	   void 		fb_hInit 			( void );
+	   void 		fb_hEnd 			( int errlevel );
 
 /**************************************************************************************************
  * hooks

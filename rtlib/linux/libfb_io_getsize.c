@@ -18,22 +18,33 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_getsize.c -- get size (console, no gfx) function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
+#include <stdio.h>
+
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
+    int toprow, botrow;
 
-	/* os-dep initialization */
-	fb_hInit( );
+#ifndef DISABLE_NCURSES
+	if (cols != NULL)
+		*cols = getmaxx(stdscr);
+#endif
 
-	/////atexit( &fb_End );
+    if( rows != NULL )
+    {
+    	fb_ConsoleGetView( &toprow, &botrow );
 
+    	*rows = botrow - toprow + 1;
+    }
 }

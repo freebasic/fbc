@@ -18,22 +18,21 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * file_hgetstr - line input function for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hFileGetStr( char *buffer, int len, FILE *f )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
+	return fgets( buffer, len, f );
 
 }
+

@@ -18,22 +18,39 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * time_settime.c -- set time function for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [DrV]
  *
  */
 
+
+#include <windows.h>
+
+#include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_hSetTime( int h, int m, int s )
 {
+    SYSTEMTIME st;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	/* get current local time and date */
+   	GetLocalTime(&st);
 
-	/////atexit( &fb_End );
+   	/* set time fields */
+   	st.wHour = h;
+   	st.wMinute = m;
+   	st.wSecond = s;
 
+   	/* set system time relative to local time zone */
+   	SetLocalTime(&st);
+
+   	/* send WM_TIMECHANGE to all top-level windows on NT and 95/98/Me
+   	* (_not_ on 2K/XP etc.) */
+   	if ((GetVersion() & 0xFF) == 4)
+		SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
 }
+

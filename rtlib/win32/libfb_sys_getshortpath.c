@@ -18,22 +18,34 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_getshorpath.c -- get short path for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
+#include <process.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+char *fb_hGetShortPath( char *src, char *dst, int maxlen )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( strchr( src, 32 ) == NULL )
+	{
+		strcpy( dst, src );
+	}
+	else
+	{
+	 	GetShortPathName( src, dst, maxlen );
+    }
 
-	/////atexit( &fb_End );
-
+	return dst;
 }
+

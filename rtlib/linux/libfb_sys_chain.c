@@ -18,47 +18,62 @@
  */
 
 /*
- * sys_exepath.c -- exepath$
+ * sys_chain.c -- chain function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
 #include <malloc.h>
 #include <string.h>
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#define MAX_PATH	1024
+
 #include "fb.h"
 
-#ifndef WIN32
-#define MAX_PATH	1024
-#endif
-
 /*:::::*/
-FBCALL FBSTRING *fb_ExePath ( void )
+FBCALL int fb_Chain ( FBSTRING *program )
 {
-	FBSTRING 	*dst;
-	char		*p;
-	char		tmp[MAX_PATH+1];
-	int			len;
+    char	buffer[MAX_PATH+1];
+    char 	arg0[] = "";
+    int		res;
 
-	p = fb_hGetExePath( tmp, MAX_PATH );
-
-	if( p != NULL )
+	if( (program != NULL) && (program->data != NULL) )
 	{
-		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		if( dst != NULL )
+		pid_t pid;
+		int status;
+
+		if ((pid = fork()) == 0)
 		{
-			len = strlen( tmp );
+			char buffer2[MAX_PATH+3];
 
-			fb_hStrAllocTemp( dst, len );
-
-			strncpy( dst->data, tmp, len + 1 );
+			fb_hGetShortPath( program->data, buffer, MAX_PATH );
+			execlp( buffer, buffer, NULL );
+			/* Ok, an error occured. Probably the file could not be found;
+		 	* as a last resort, let's try in current directory.
+		 	*/
+			if( !strchr( buffer, '/' ))
+			{
+				sprintf( buffer2, "./%s", buffer );
+				execlp( buffer2, buffer2, NULL );
+			}
+			exit( -1 );
 		}
 		else
-			dst = &fb_strNullDesc;
+		{
+			waitpid(pid, &status, 0);
+			if (WIFEXITED(status))
+				res = WEXITSTATUS(status);
+			else
+				res = -1;
+		}
 	}
-	else
-		dst = &fb_strNullDesc;
 
-	return dst;
+	/* del if temp */
+	fb_hStrDelTemp( program );
+
+	return res;
 }

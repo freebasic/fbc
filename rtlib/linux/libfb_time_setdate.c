@@ -18,22 +18,21 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * time_setdate.c -- set date function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [nobody]
  *
  */
 
+
+#include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_hSetDate( int y, int m, int d )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
 
 }

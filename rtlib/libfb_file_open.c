@@ -134,7 +134,8 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 {
 	char openmask[16];
 	FILE* f;
-	int i, strlen;
+	int strlen;
+	char *filename;
 
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
@@ -178,28 +179,22 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	}
 
 	/* Convert directory separators to whatever the current platform supports */
-	for (i = 0; i < strlen; i++) {
-#ifdef WIN32
-		if ( str->data[i] == '/' )
-			str->data[i] = '\\';
-#else
-		if ( str->data[i] == '\\' )
-			str->data[i] = '/';
-#endif
-	}
+	filename = fb_hConvertPath( str->data, strlen );
 
 	/* try opening */
-	if( (f = fopen( str->data, openmask )) == NULL )
+	if( (f = fopen( filename, openmask )) == NULL )
 	{
 		/* try creating the file if it doesn't exist */
 		if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
 		{
-			if( (f = fopen( str->data, "w+b" )) == NULL )
+			if( (f = fopen( filename, "w+b" )) == NULL )
 				return FB_RTERROR_FILENOTFOUND;
 		}
 		else
 			return FB_RTERROR_FILENOTFOUND;
 	}
+
+	free( filename );
 
 	/* fill struct */
 	fb_fileTB[fnum-1].f    = f;

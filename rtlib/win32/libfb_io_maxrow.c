@@ -18,22 +18,21 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_maxrow.c -- get max row (console, no gfx) for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+int fb_ConsoleGetMaxRow( void )
 {
+	COORD max = GetLargestConsoleWindowSize( GetStdHandle( STD_OUTPUT_HANDLE ) );
 
-	/* os-dep initialization */
-	fb_hInit( );
-
-	/////atexit( &fb_End );
-
+	return max.Y + 1;
 }

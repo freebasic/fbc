@@ -18,22 +18,27 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * sys_sleep.c -- sleep function for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBCALL void fb_Sleep ( int msecs )
 {
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( msecs == -1 )
+	{
+		fb_Getkey( );
+		return;
+	}
 
-	/////atexit( &fb_End );
-
+	Sleep( msecs );
 }
+

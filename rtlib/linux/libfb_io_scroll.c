@@ -18,22 +18,49 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_scroll.c -- console scrolling for when VIEW is used for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_ConsoleScroll( int nrows )
 {
+    int toprow, botrow;
+    int cols, rows;
+#ifndef DISABLE_NCURSES
+	WINDOW *view;
+	int i;
+#endif
 
-	/* os-dep initialization */
-	fb_hInit( );
+    if( nrows <= 0 )
+    	return;
 
-	/////atexit( &fb_End );
+    fb_ConsoleGetSize( &cols, &rows );
+    fb_ConsoleGetView( &toprow, &botrow );
+
+#ifndef DISABLE_NCURSES
+
+	view = subwin(stdscr, botrow - toprow + 1, getmaxx(stdscr), toprow - 1, 0);
+	scrollok(view, TRUE);
+	wscrl(view, nrows);
+	touchwin(stdscr);
+	for (; nrows; nrows--) {
+		move(botrow - nrows, 0);
+    	for (i = getmaxx(stdscr); i; i--)
+    	    addch(' ');
+	}
+
+	refresh();
+	delwin(view);
+
+#endif
 
 }

@@ -18,22 +18,71 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_locate.c -- locate (console, no gfx) function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_ConsoleLocate( int row, int col, int cursor )
 {
+#ifndef DISABLE_NCURSES
+	int x, y;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if (col > 0)
+		x = col - 1;
+	else
+		x = getcurx(stdscr);
 
-	/////atexit( &fb_End );
+	if (row > 0)
+		y = row - 1;
+	else
+		y = getcury(stdscr);
 
+	if (cursor >= 0)
+		curs_set(cursor ? 1 : 0);
+
+	move(y, x);
+	refresh();
+#endif
 }
+
+
+/*:::::*/
+int fb_ConsoleGetX( void )
+{
+#ifndef DISABLE_NCURSES
+	return getcurx(stdscr) + 1;
+#else
+	return 0;
+#endif
+}
+
+/*:::::*/
+int fb_ConsoleGetY( void )
+{
+#ifndef DISABLE_NCURSES
+	return getcury(stdscr) + 1;
+#else
+	return 0;
+#endif
+}
+
+/*:::::*/
+FBCALL void fb_ConsoleGetXY( int *col, int *row )
+{
+#ifndef DISABLE_NCURSES
+	if (col != NULL)
+		*col = getcurx(stdscr) + 1;
+	if (row != NULL)
+		*row = getcury(stdscr) + 1;
+#endif
+}
+

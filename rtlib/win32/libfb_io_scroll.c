@@ -18,22 +18,46 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_scroll.c -- console scrolling for when VIEW is used for Windows
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_ConsoleScroll( int nrows )
 {
+    int toprow, botrow;
+    int cols, rows;
 
-	/* os-dep initialization */
-	fb_hInit( );
+    if( nrows <= 0 )
+    	return;
 
-	/////atexit( &fb_End );
+    fb_ConsoleGetSize( &cols, &rows );
+    fb_ConsoleGetView( &toprow, &botrow );
+
+    SMALL_RECT srec;
+    COORD dcoord;
+    CHAR_INFO cinf;
+
+    srec.Left 	= 0;
+    srec.Right 	= cols-1;
+    srec.Top 	= toprow-1 + nrows;
+    srec.Bottom = botrow-1;
+
+    dcoord.X = 0;
+    dcoord.Y = toprow-1;
+
+    cinf.Char.AsciiChar	= ' ';
+    cinf.Attributes 	= fb_ConsoleGetColorAtt( );
+
+    ScrollConsoleScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ), &srec, NULL, dcoord, &cinf );
+
+	fb_ConsoleLocate( botrow - (nrows-1), -1, -1 );
 
 }

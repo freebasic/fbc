@@ -18,22 +18,59 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_inkey.c -- inkey$ function for Windows console mode apps
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+#include <conio.h>
+
 /*:::::*/
-FBCALL void fb_Init ( void )
+FBSTRING *fb_ConsoleInkey( void )
 {
+	FBSTRING 	 *res;
+	unsigned int k;
+	int			 chars;
 
-	/* os-dep initialization */
-	fb_hInit( );
+	if( _kbhit( ) )
+	{
+		res = (FBSTRING *)fb_hStrAllocTmpDesc( );
 
-	/////atexit( &fb_End );
+		chars = 1;
+		k = (unsigned int)_getch( );
+		if( k == 0x00 || k == 0xE0 )
+		{
+			k = (unsigned int)_getch( );
+			chars = 2;
+		}
 
+		fb_hStrAllocTemp( res, chars );
+
+		if( chars > 1 )
+			res->data[0] = 255;					/* note: can't use '\0' here as in qb */
+
+		res->data[chars-1] = (unsigned char)k;
+		res->data[chars-0] = '\0';
+
+    }
+	else
+		res = &fb_strNullDesc;
+
+
+	return res;
+}
+
+/*:::::*/
+int fb_ConsoleGetkey( void )
+{
+	int k = 0;
+
+	k = _getch( );
+	if( k == 0x00 || k == 0xE0 )
+		k = _getch( );
+
+	return k;
 }

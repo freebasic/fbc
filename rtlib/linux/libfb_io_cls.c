@@ -18,22 +18,48 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * io_cls.c -- cls (console, no gfx) function for Linux
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [lillo]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
+#include <stdio.h>
+
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
+
 
 /*:::::*/
-FBCALL void fb_Init ( void )
+void fb_ConsoleClear( int mode )
 {
+    int start_line, end_line, toprow, botrow, i;
 
-	/* os-dep initialization */
-	fb_hInit( );
+#ifndef DISABLE_NCURSES
+    fb_ConsoleGetView( &toprow, &botrow );
 
-	/////atexit( &fb_End );
+	if( (mode == 1) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
+	{
+		start_line = toprow - 1;
+		end_line = botrow - 1;
+    }
+    else
+    {
+    	start_line = 0;
+    	end_line = getmaxy(stdscr) - 1;
+    }
+    for (; start_line <= end_line; start_line++) {
+    	move(start_line, 0);
+    	for (i = getmaxx(stdscr); i; i--)
+    	    addch(' ');
+    }
+    refresh();
+#endif
+
+    fb_ConsoleLocate( toprow, 1, -1 );
 
 }
+
+
