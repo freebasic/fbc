@@ -380,7 +380,7 @@ function linkFiles as integer
 #elseif defined(TARGET_LINUX)
 
 	if( ctx.outtype = FB_OUTTYPE_EXECUTABLE) then
-		ldcline = "-dynamic-linker"
+		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
 	end if
 
 #elseif defined(TARGET_DOS)
