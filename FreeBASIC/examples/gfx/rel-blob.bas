@@ -6,8 +6,11 @@ defint a-z
 
 
 '$include: 'tinyptc.bi'
+
+#ifdef FB__WIN32
 '$Include: 'win\kernel32.bi'
 '$Include: 'win\user32.bi'
+#endif
 
 Declare Sub ErrorQuit (Message$)
 
@@ -87,7 +90,12 @@ end
 
 Sub ErrorQuit (Message$)
 
+#ifdef FB__WIN32
   MessageBox 0, Message$, "Error", MB_ICONERROR
+#else
+  Print "Error: "; Message$
+  Sleep
+#endif
   End
 
 End Sub
