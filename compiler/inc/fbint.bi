@@ -401,6 +401,18 @@ type FBCMPSTMT
     endlabel		as integer
 end type
 
+type FBENUMCTX
+    value 			as integer
+    elements 		as integer
+end type
+
+type FBTYPECTX
+    innercnt		as integer
+    elements 		as integer
+    isunion			as integer
+    symbol			as integer
+end type
+
 ''
 type FBENV
 	'' paths
@@ -420,6 +432,12 @@ type FBENV
 	dostmt			as FBCMPSTMT
 	whilestmt		as FBCMPSTMT
 	procstmt		as FBCMPSTMT
+
+	'' internal contexts
+	union
+		enumctx 	as FBENUMCTX
+		typectx 	as FBTYPECTX
+	end union
 
 	'' globals
 	scope			as integer					'' current scope (0=main module)

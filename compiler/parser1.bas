@@ -333,7 +333,7 @@ function cLine
 
 	cDebugLineBegin
 
-    ppres = cPreProcess
+    ppres = cPreProcess( @cLine )
     if( not ppres ) then
     	res = cLabel
     	res = cStatement
@@ -374,7 +374,7 @@ function cSimpleLine
 
     cDebugLineBegin
 
-    stmtres = cPreProcess
+    stmtres = cPreProcess( @cSimpleLine )
     if( not stmtres ) then
     	res = cLabel
     	stmtres = cSimpleStatement
@@ -932,18 +932,91 @@ function cElementDecl( id as string, typ as integer, subtype as integer, lgt as 
 end function
 
 '':::::
-''TypeDecl        =   (TYPE|UNION) ID (FIELD '=' Expression)? Comment? SttSeparator
-''						  (UNION Comment? SttSeparator
-''						   		(ElementDecl? Comment? SttSeparator)+
-''						   END UNION)
-''                        | (ElementDecl? Comment? SttSeparator)+
-''					  END (TYPE|UNION) .
-function cTypeDecl
-    dim id as string, isunion as integer, align as integer, expr as integer
-    dim elements as integer, t as integer, innercnt as integer
+''TypeLine      =   (UNION Comment? SttSeparator
+''					 (ElementDecl? Comment? SttSeparator)+
+''					END UNION)
+''              |   (ElementDecl? Comment? SttSeparator)+
+''				|	PreProcessor .
+''
+function cTypeLine as integer
+	dim ppres as integer
     dim typ as integer, subtype as integer, lgt as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim ename as string
+
+	cTypeLine = FALSE
+
+	'' Comment? SttSeparator?
+	do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
+	loop
+
+	ppres = cPreProcess( @cTypeLine )
+	if( not ppres ) then
+
+		select case lexCurrentToken
+		case FB.TK.END
+			if( env.typectx.innercnt = 0 ) then
+				exit function
+			else
+				lexSkipToken
+			end if
+
+			if( not hMatch( FB.TK.UNION ) ) then
+    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    			exit function
+			end if
+
+			env.typectx.innercnt = env.typectx.innercnt - 1
+
+			if( env.typectx.innercnt = 0 ) then
+				symbRecalcUDTSize env.typectx.symbol
+			end if
+
+		case FB.TK.UNION
+			if( env.typectx.isunion = TRUE ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			else
+				lexSkipToken
+			end if
+
+			env.typectx.innercnt = env.typectx.innercnt + 1
+
+		case else
+			env.typectx.elements = env.typectx.elements + 1
+
+			if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
+				if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _
+									   typ, subtype, lgt, env.typectx.innercnt > 0 ) = INVALID ) then
+					hReportError FB.ERRMSG.DUPDEFINITION
+					exit function
+				end if
+			end if
+		end select
+
+	end if
+
+
+	'' Comment? SttSeparator
+	cComment
+
+    if( not cSttSeparator ) then
+    	if( not ppres ) then
+    		hReportError FB.ERRMSG.SYNTAXERROR
+    	end if
+    	exit function
+	end if
+
+    cTypeLine = TRUE
+
+end function
+
+'':::::
+''TypeDecl        =   (TYPE|UNION) ID (FIELD '=' Expression)? Comment? SttSeparator
+''						TypeLine+
+''					  END (TYPE|UNION) .
+function cTypeDecl
+    dim id as string, align as integer, expr as integer
     dim res as integer
 
 	cTypeDecl = FALSE
@@ -951,10 +1024,10 @@ function cTypeDecl
 	'' TYPE | UNION
 	select case lexCurrentToken
 	case FB.TK.TYPE
-		isunion = FALSE
+		env.typectx.isunion = FALSE
 		lexSkipToken
 	case FB.TK.UNION
-		isunion = TRUE
+		env.typectx.isunion = TRUE
 		lexSkipToken
 	case else
 		exit function
@@ -992,8 +1065,8 @@ function cTypeDecl
 		align = FB.INTEGERSIZE
 	end if
 
-	t = symbAddUDT( id, isunion, align )
-	if( t = INVALID ) then
+	env.typectx.symbol = symbAddUDT( id, env.typectx.isunion, align )
+	if( env.typectx.symbol = INVALID ) then
     	hReportError FB.ERRMSG.DUPDEFINITION
     	exit function
 	end if
@@ -1006,72 +1079,21 @@ function cTypeDecl
     	exit function
 	end if
 
-	'' (ElementDecl? Comment? SttSeparator)+
-	elements = 0
-	innercnt = 0
+	'' TypeLine+
+	env.typectx.elements = 0
+	env.typectx.innercnt = 0
 	do
-		'' Comment? SttSeparator?
-		do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
-		loop
+		res = cTypeLine
+	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
-		select case lexCurrentToken
-		case FB.TK.END
-			if( innercnt = 0 ) then
-				exit do
-			else
-				lexSkipToken
-			end if
-
-			if( not hMatch( FB.TK.UNION ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
-    			exit function
-			end if
-
-			innercnt = innercnt - 1
-
-			if( innercnt = 0 ) then
-				symbRecalcUDTSize t
-			end if
-
-		case FB.TK.UNION
-			if( isunion = TRUE ) then
-				hReportError FB.ERRMSG.SYNTAXERROR
-				exit function
-			else
-				lexSkipToken
-			end if
-
-			innercnt = innercnt + 1
-
-		case else
-
-			elements = elements + 1
-
-			if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
-				if( symbAddUDTElement( t, ename, dimensions, dTB(), typ, subtype, lgt, innercnt > 0 ) = INVALID ) then
-					hReportError FB.ERRMSG.DUPDEFINITION
-					exit function
-				end if
-			end if
-		end select
-
-		'' Comment? SttSeparator
-		res = cComment
-
-		if( not cSttSeparator ) then
-    		hReportError FB.ERRMSG.SYNTAXERROR
-    		exit function
-		end if
-
-	loop
-
-	if( elements = 0 ) then
+	''
+	if( env.typectx.elements = 0 ) then
 		hReportError FB.ERRMSG.ELEMENTNOTDEFINED
 		exit function
 	end if
 
 	'' align to multiple of sizeof( int )
-	symbRoundUDTSize t
+	symbRoundUDTSize env.typectx.symbol
 
 	'' END
 	if( not hMatch( FB.TK.END ) ) then
@@ -1088,7 +1110,7 @@ function cTypeDecl
     	exit function
     end select
 
-
+    ''
 	cTypeDecl = TRUE
 
 end function
@@ -1096,7 +1118,7 @@ end function
 '':::
 ''EnumConstDecl     =   ID (ASSIGN ConstExpression)? .
 ''
-function cEnumConstDecl( id as string, value as integer )
+function cEnumConstDecl( id as string )
     dim expr as integer
 
 	cEnumConstDecl = FALSE
@@ -1121,7 +1143,7 @@ function cEnumConstDecl( id as string, value as integer )
 			end if
 		end if
 
-		value = cint( astGetValue( expr ) )
+		env.enumctx.value = cint( astGetValue( expr ) )
 		astDel expr
 
     end if
@@ -1131,13 +1153,59 @@ function cEnumConstDecl( id as string, value as integer )
 end function
 
 '':::::
+''EnumLine      =   (EnumDecl? Comment? SttSeparator)
+''				|	PreProcessor .
+function cEnumLine as integer
+	dim ename as string
+	dim ppres as integer
+
+	cEnumLine = FALSE
+
+	'' Comment? SttSeparator?
+	do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
+	loop
+
+	if( lexCurrentToken = FB.TK.END ) then
+		exit function
+	end if
+
+	ppres = cPreProcess( @cEnumLine )
+	if( not ppres ) then
+
+		env.enumctx.elements = env.enumctx.elements + 1
+
+		if( cEnumConstDecl( ename ) ) then
+			if( not symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ) ) ) then
+				hReportError FB.ERRMSG.DUPDEFINITION
+				exit function
+			end if
+		end if
+
+		''
+		env.enumctx.value = env.enumctx.value + 1
+
+	end if
+
+	'' Comment? SttSeparator
+	cComment
+
+	if( not cSttSeparator ) then
+    	if( not ppres ) then
+    		hReportError FB.ERRMSG.EXPECTEDEOL
+    	end if
+    	exit function
+	end if
+
+	cEnumLine = TRUE
+
+end function
+
+'':::::
 ''EnumDecl        =   ENUM ID Comment? SttSeparator
-''                        (EnumDecl? Comment? SttSeparator)+
+''                        EnumLine+
 ''					  END ENUM .
 function cEnumDecl
     dim id as string, e as integer
-    dim elements as integer
-    dim ename as string, value as integer
     dim res as integer
 
 	cEnumDecl = FALSE
@@ -1169,41 +1237,15 @@ function cEnumDecl
     	exit function
 	end if
 
-	'' (EnumDecl? Comment? SttSeparator)+
-	elements = 0
-	value = 0
+	'' EnumLine+
+	env.enumctx.elements = 0
+	env.enumctx.value = 0
 	do
-		'' Comment? SttSeparator?
-		do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
-		loop
+		res = cEnumLine
+	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
-		if( lexCurrentToken = FB.TK.END ) then
-			exit do
-		end if
-
-		elements = elements + 1
-
-		if( cEnumConstDecl( ename, value ) ) then
-			if( not symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( value ) ) ) then
-				hReportError FB.ERRMSG.DUPDEFINITION
-				exit function
-			end if
-		end if
-
-		''
-		value = value + 1
-
-		'' Comment? SttSeparator
-		res = cComment
-
-		if( not cSttSeparator ) then
-    		hReportError FB.ERRMSG.SYNTAXERROR
-    		exit function
-		end if
-
-	loop
-
-	if( elements = 0 ) then
+	''
+	if( env.enumctx.elements = 0 ) then
 		hReportError FB.ERRMSG.ELEMENTNOTDEFINED
 		exit function
 	end if
@@ -1217,7 +1259,7 @@ function cEnumDecl
     	exit function
 	end if
 
-
+    ''
 	cEnumDecl = TRUE
 
 end function

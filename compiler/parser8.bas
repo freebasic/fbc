@@ -27,7 +27,7 @@ defint a-z
 '$include: 'inc\fbint.bi'
 '$include: 'inc\parser.bi'
 
-declare function cPreProcessIF 				( ) as integer
+declare function cPreProcessIF 				( byval linefunct as function( ) as integer ) as integer
 
 declare function cPPLogExpression			( logexpr as integer ) as integer
 declare function cPPRelExpression			( relexpr as integer, rellit as string ) as integer
@@ -66,7 +66,7 @@ end function
 ''               |   '#'ENDIF
 ''               |   '#'PRINT LITERAL* .
 ''
-function cPreProcess
+function cPreProcess( byval linefunct as function( ) as integer ) as integer
 	dim id as string
 
 	cPreProcess = FALSE
@@ -111,7 +111,7 @@ function cPreProcess
 	'' IF ID '=' LITERAL
     case FB.TK.IFDEF, FB.TK.IFNDEF, FB.TK.IF
 
-    	cPreProcess = cPreProcessIF
+    	cPreProcess = cPreProcessIF( linefunct )
     	exit function
 
 
@@ -142,7 +142,7 @@ function cPreProcess
 end function
 
 '':::::
-function cPreProcessIF as integer
+function cPreProcessIF( byval linefunct as function( ) as integer ) as integer
     dim istrue as integer, elsecnt as integer, level as integer
     dim res as integer
 
@@ -194,7 +194,7 @@ function cPreProcessIF as integer
 		'' loop body
 		if( istrue ) then
 			do
-				res = cLine
+				res = *linefunct( )
 			loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
 		'' skip lines until a #ENDIF or #ELSE at same level is found
