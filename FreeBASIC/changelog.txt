@@ -65,6 +65,7 @@ Version 0.13 Beta:
 - programs using SCREENRES failed to compile when runtime error checking was enabled (lillo)
 - GET now triggers an illegal function call runtime error if image is partly offscreen (lillo)
 - PUT used to crash if sprites with null width/height were passed (lillo)
+- double locking on Linux was causing SETMOUSE/GETMOUSE to hang programs (lillo)
 
 
 Version 0.12 Beta:

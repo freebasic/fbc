@@ -459,12 +459,10 @@ int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons)
 	if ((!mouse_on) || (!has_focus))
 		return -1;
 	
-	fb_hX11Lock();
 	*x = mouse_x;
 	*y = mouse_y;
 	*z = mouse_wheel;
 	*buttons = mouse_buttons;
-	fb_hX11Unlock();
 	
 	return 0;
 }
@@ -473,7 +471,6 @@ int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons)
 /*:::::*/
 void fb_hX11SetMouse(int x, int y, int show)
 {
-	fb_hX11Lock();
 	if ((x >= 0) && (has_focus)) {
 		mouse_on = TRUE;
 		mouse_x = MID(0, x, fb_linux.w - 1);
@@ -490,7 +487,6 @@ void fb_hX11SetMouse(int x, int y, int show)
 		XDefineCursor(fb_linux.display, fb_linux.window, blank_cursor);
 		cursor_shown = FALSE;
 	}
-	fb_hX11Unlock();
 }
 
 
