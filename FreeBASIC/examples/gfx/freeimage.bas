@@ -54,7 +54,7 @@ declare function fibitmap2sdlsurface( byval dib as FIBITMAP Ptr ) as SDL_Surface
    	Print "Opening: "; filename
    	
    	Print "Format: ";
-   	Select Case fiType
+   	Select Case as const fiType
       Case FIF_BMP:     Print "OS/2 Bitmap (bmp)"
       Case FIF_ICO:     Print "Icon (ico)"
       Case FIF_JPEG:    Print "JPEG - JFIF Compliant (jif/jpg/jpeg)"
@@ -82,8 +82,6 @@ declare function fibitmap2sdlsurface( byval dib as FIBITMAP Ptr ) as SDL_Surface
       Case FIF_XPM:     Print "? (xpm)"
       Case FIF_DDS:     Print "? (dds)"
       Case FIF_GIF:     Print "CompuServe Graphics Interchange (gif)"
-      Case FIF_UNKNOWN: Print "Unknown"
-                        End -1
 	End Select
 
 

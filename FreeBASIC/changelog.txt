@@ -33,7 +33,8 @@ Version 0.12 Beta:
 [added] the ASM statement can be used on a single line as in "ASM mov eax, 1234" (v1c)
 [added] SCREEN() function, working as in QB (lillo)
 [added] gfxlib now internally uses MMX routines to update the screen if supported (lillo)
-[added] OPTION NOKEYWORD, to remove intrinsic routines/statements (v1c)
+[added] "OPTION NOKEYWORD", to remove intrinsic routines/statements (v1c)
+[added] "DIM|REDIM|STATIC|COMMON AS SymbolType" for multiple declarations like "DIM AS INTEGER a, b, c(10)" (v1c)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
@@ -60,6 +61,10 @@ Version 0.12 Beta:
 [fixed] #DEFINE's can now contain forward references to other #DEFINE's (v1c)
 [fixed] CIRCLE used wrong color for lines when drawing arcs with negative start/end angles (lillo)
 [fixed] Calling SCREENLOCK/SCREENUNLOCK when framebuffer is already locked/unlocked does not hang program anymore (lillo)
+[fixed] ON...GOTO and ON...GOSUB now work as expected (v1c)
+[fixed] only empty ()'s should be allowed with COMMON (v1c)
+[fixed] all quirk routines now check for invalid parameters (v1c)
+[fixed] REDIM now checks for run-time errors (out-of-mem) (v1c)
 
 
 Version 0.11 Beta:

@@ -275,12 +275,6 @@ Possible Additions to Later Versions:
       getting it to work with the Intermediate Representation (IR) module.
 
 
-Known Bugs:
-
-  o "ON Expression GOTO | GOSUB List" will be fixed later. It acts like
-    "IF Expression GOTO | GOSUB" as of now.
-
-
 Credits (in alphabetic order):
 
   o Angelo Mottola (a.mottola@libero.it) - Project Member:

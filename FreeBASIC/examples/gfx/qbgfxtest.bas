@@ -10,7 +10,6 @@ const xres = 320*1
 const yres = 200*1
 	
 	screen 13
-	'screen xres, yres, 8, 1 ''if you want full screen
 	
 	window (0, 0)-(xres-1, yres-1)
 	
@@ -23,11 +22,11 @@ const yres = 200*1
 	
 	mypal(255) = 63 shl 16 or 63 shl 8 or 63
 	
-	palette using mypal(0)
+	palette using mypal
 	
 const spritesize = 64	
 	
-	redim mysprite(0) as byte
+	dim mysprite() as byte
 	
 	createsprite mysprite(), spritesize, spritesize
 	
@@ -36,18 +35,16 @@ const spritesize = 64
 	do
 	
 		for i = 1 to 1000
-			put (-spritesize+rnd*(xRes-1+spritesize), -spritesize+rnd*(yRes-1+spritesize)), mysprite(0)
-			'color rnd*255
+			put (-spritesize+rnd*(xRes-1+spritesize), -spritesize+rnd*(yRes-1+spritesize)), mysprite, PSET
+			'color rnd*254
 			'line -( rnd*(xRes-1), rnd*(yRes-1) )
 			'line ( rnd*(xRes-1), rnd*(yRes-1) )-( rnd*(xRes-1), rnd*(yRes-1) )
 			'circle ( rnd*(xRes-1), rnd*(yRes-1) ), rnd*100, , , , 1.0
 		next i
 		
-		locate 1+ rnd*23, 1'+rnd*40
+		locate 1+ rnd*23, 1+rnd*40
 		color 255, 0
 		print "QB gfx!";
-		
-		'flip
 		
 	loop while( len( inkey$ ) = 0 )
 	
