@@ -46,7 +46,6 @@ end function
 function func2( s as string ) as byte ptr
 	dim p as byte ptr
 	p = callocate( len( s ) + 1 )
-	clear byval p, 32, len( s )
 	*p = s
 	func2 = p
 end function
