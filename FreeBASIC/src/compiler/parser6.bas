@@ -124,7 +124,7 @@ end function
 ''				  |   SWAP Variable, Variable .
 ''
 function cArrayStmt
-	dim s as FBSYMBOL ptr, elm as FBTYPELEMENT ptr
+	dim s as FBSYMBOL ptr, elm as FBSYMBOL ptr
 	dim expr1 as integer, expr2 as integer
 	dim isarray as integer, isdynamic as integer
 
@@ -134,7 +134,7 @@ function cArrayStmt
 	case FB.TK.ERASE
 		lexSkipToken
 
-		if( not cVariable( expr1, FALSE ) ) then
+		if( not cVarOrDeref( expr1, FALSE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -143,14 +143,14 @@ function cArrayStmt
 		isarray = FALSE
     	elm = astGetUDTElm( expr1 )
     	if( elm <> NULL ) then
-    		if( symbGetUDTElmDimensions( elm ) > 0 ) then
+    		if( symbGetArrayDimensions( elm ) > 0 ) then
     			isdynamic = FALSE
     			isarray = TRUE
     		end if
     	else
     		s = astGetSymbol( expr1 )
     		if( symbIsArray( s ) ) then
-    			isdynamic = symbGetVarIsDynamic( s )
+    			isdynamic = symbGetIsDynamic( s )
     			isarray = TRUE
     		end if
     	end if
@@ -172,7 +172,7 @@ function cArrayStmt
 	case FB.TK.SWAP
 		lexSkipToken
 
-		if( not cVariable( expr1 ) ) then
+		if( not cVarOrDeref( expr1 ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -182,7 +182,7 @@ function cArrayStmt
 			exit function
 		end if
 
-		if( not cVariable( expr2 ) ) then
+		if( not cVarOrDeref( expr2 ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -294,7 +294,7 @@ function cDataStmt
 		lexSkipToken
 
 		do
-		    if( not cVariable( expr ) ) then
+		    if( not cVarOrDeref( expr ) ) then
 		    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		    	exit function
 		    end if
@@ -594,7 +594,7 @@ function cLineInputStmt
 	end if
 
     '' Variable?
-	if( not cVariable( dstexpr ) ) then
+	if( not cVarOrDeref( dstexpr ) ) then
        	if( (expr = INVALID) or (isfile) ) then
        		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
        		exit function
@@ -674,7 +674,7 @@ function cInputStmt
 
     '' Variable (',' Variable)*
     do
-		if( not cVariable( dstexpr ) ) then
+		if( not cVarOrDeref( dstexpr ) ) then
        		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
        		exit function
        	end if
@@ -812,7 +812,7 @@ function cFileStmt
     dim filename as integer, fmode as integer, faccess as integer, flock as integer, flen as integer
     dim res as integer, islock as integer
     dim cnt as integer
-    dim isarray as integer, e as FBTYPELEMENT ptr
+    dim isarray as integer, e as FBSYMBOL ptr
 
 	cFileStmt = FALSE
 
@@ -998,7 +998,7 @@ function cFileStmt
     		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
     			e = astGetUDTElm( expr2 )
     			if( e <> NULL ) then
-    				if( symbGetUDTELmDimensions( e ) > 0 ) then
+    				if( symbGetArrayDimensions( e ) > 0 ) then
     					isarray = TRUE
     				end if
     			else
@@ -1045,7 +1045,7 @@ function cFileStmt
 			hReportError FB.ERRMSG.EXPECTEDCOMMA
 			exit function
 		end if
-		if( not cVariable( expr2 ) ) then
+		if( not cVarOrDeref( expr2 ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -1055,7 +1055,7 @@ function cFileStmt
     		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
     			e = astGetUDTElm( expr2 )
     			if( e <> NULL ) then
-    				if( symbGetUDTELmDimensions( e ) > 0 ) then
+    				if( symbGetArrayDimensions( e ) > 0 ) then
     					isarray = TRUE
     				end if
     			else
@@ -1338,7 +1338,7 @@ end function
 function cArrayFunct( funcexpr as integer )
 	dim sexpr as integer
 	dim islbound as integer, expr as integer
-	dim elm as FBTYPELEMENT ptr
+	dim elm as FBSYMBOL ptr
 
 	cArrayFunct = FALSE
 
@@ -1360,7 +1360,7 @@ function cArrayFunct( funcexpr as integer )
 		end if
 
 		'' ID
-		if( not cVariable( sexpr, FALSE ) ) then
+		if( not cVarOrDeref( sexpr, FALSE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -1368,7 +1368,7 @@ function cArrayFunct( funcexpr as integer )
 		'' array?
 		elm = astGetUDTElm( sexpr )
 		if( elm <> NULL ) then
-			if( symbGetUDTElmDimensions( elm ) = 0 ) then
+			if( symbGetArrayDimensions( elm ) = 0 ) then
 				hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
 				exit function
 			end if
@@ -1682,7 +1682,7 @@ function cMathFunct( funcexpr as integer )
 			else
 				if( not cSymbolType( typ, subtype, lgt ) ) then
 					if( not cFunction( expr ) ) then
-						if( not cVariable( expr, FALSE ) ) then
+						if( not cVarOrDeref( expr, FALSE ) ) then
 							if( not cExpression( expr ) ) then
 								hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 								exit function

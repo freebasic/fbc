@@ -56,17 +56,17 @@ function cLogExpression( logexpr as integer )
 
     '' RelExpression
     if( not cRelExpression( logexpr ) ) then
-    	exit function
+	   	exit function
     end if
 
     '' exec not
     if( donot ) then
     	logexpr = astNewUOP( IR.OP.NOT, logexpr )
 
-        if( logexpr = INVALID ) then
+       	if( logexpr = INVALID ) then
 			hReportError FB.ERRMSG.TYPEMISMATCH
-            exit function
-        end if
+           	exit function
+       	end if
     end if
 
     '' ( ... )*
@@ -135,10 +135,11 @@ function cRelExpression( relexpr as integer )
 
     cRelExpression = FALSE
 
-    '' AddExpression
-    if( not cAddExpression( relexpr ) ) then
-    	exit function
-    end if
+   	'' AddExpression
+   	relexpr = INVALID
+   	if( not cAddExpression( relexpr ) ) then
+   		exit function
+   	end if
 
     '' ( ... )*
     do
@@ -152,6 +153,7 @@ function cRelExpression( relexpr as integer )
     	end select
 
     	'' AddExpression
+    	addexpr = INVALID
     	if( not cAddExpression( addexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
     		exit function
@@ -191,9 +193,11 @@ function cAddExpression( addexpr as integer )
 
     cAddExpression = FALSE
 
-    '' ShiftExpression
-    if( not cShiftExpression( addexpr ) ) then
-    	exit function
+    if( addexpr = INVALID ) then
+    	'' ShiftExpression
+    	if( not cShiftExpression( addexpr ) ) then
+    		exit function
+    	end if
     end if
 
     '' ( ... )*
@@ -239,10 +243,10 @@ function cShiftExpression( shiftexpr as integer )
 
     cShiftExpression = FALSE
 
-    '' ModExpression
-    if( not cModExpression( shiftexpr ) ) then
-    	exit function
-    end if
+   	'' ModExpression
+   	if( not cModExpression( shiftexpr ) ) then
+   		exit function
+   	end if
 
     '' ( ... )*
     do
@@ -287,10 +291,10 @@ function cModExpression( modexpr as integer )
 
     cModExpression = FALSE
 
-    '' IntDivExpression
-    if( not cIntDivExpression( modexpr ) ) then
-    	exit function
-    end if
+   	'' IntDivExpression
+   	if( not cIntDivExpression( modexpr ) ) then
+   		exit function
+   	end if
 
     '' ( ... )*
     do
@@ -328,10 +332,10 @@ function cIntDivExpression( idivexpr as integer )
 
     cIntDivExpression = FALSE
 
-    '' MultExpression
-    if( not cMultExpression( idivexpr ) ) then
-    	exit function
-    end if
+   	'' MultExpression
+   	if( not cMultExpression( idivexpr ) ) then
+   		exit function
+   	end if
 
     '' ( ... )*
     do
@@ -369,10 +373,10 @@ function cMultExpression( mulexpr as integer )
 
     cMultExpression = FALSE
 
-    '' ExpExpression
-    if( not cExpExpression( mulexpr ) ) then
-    	exit function
-    end if
+   	'' ExpExpression
+   	if( not cExpExpression( mulexpr ) ) then
+   		exit function
+   	end if
 
     '' ( ... )*
     do
@@ -417,10 +421,10 @@ function cExpExpression( expexpr as integer )
 
     cExpExpression = FALSE
 
-    '' NegExpression
-    if( not cNegExpression( expexpr ) ) then
-    	exit function
-    end if
+   	'' NegExpression
+   	if( not cNegExpression( expexpr ) ) then
+   		exit function
+   	end if
 
     '' ( '^' NegExpression )*
     do
@@ -451,13 +455,15 @@ end function
 
 '':::::
 ''NegExpression   =   ('-'|'+') ExpExpression
-''                |   AddrOfExpression .
+''				  |   HighestPresExpr .
 ''
 function cNegExpression( negexpr as integer )
+    dim res as integer
 
 	cNegExpression = FALSE
 
 	select case lexCurrentToken
+	'' '-'
 	case CHAR_MINUS
 		lexSkipToken
 		if( not cExpExpression( negexpr ) ) then
@@ -472,179 +478,62 @@ function cNegExpression( negexpr as integer )
     	end if
 
 		cNegExpression = TRUE
+		exit function
 
+	'' '+'
 	case CHAR_PLUS
 		lexSkipToken
-		cNegExpression = cExpExpression( negexpr )
 
-	case else
-		cNegExpression = cAddrOfExpression( negexpr )
+		cNegExpression = cExpExpression( negexpr )
+		exit function
+
 	end select
 
-end function
-
-'':::::
-function cProcPtrBody( byval proc as FBSYMBOL ptr, addrofexpr as integer ) as integer
-	dim expr as integer, dtype as integer
-
-	cProcPtrBody = FALSE
-
-	if( hMatch( CHAR_LPRNT ) ) then
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
-	end if
-
-	expr = astNewVAR( proc, 0, IR.DATATYPE.UINT )
-	addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
-
-	cProcPtrBody = TRUE
+	cNegExpression = cHighestPresExpr( negexpr )
 
 end function
 
-'':::::
-function cVarPtrBody( addrofexpr as integer ) as integer
-
-	cVarPtrBody = FALSE
-
-	if( not cVariable( addrofexpr ) ) then
-		exit function
-	end if
-
-	addrofexpr = astNewADDR( IR.OP.ADDROF, addrofexpr )
-
-    cVarPtrBody = TRUE
-
-end function
-
-'':::::
-''AddrOfExpression  =   VARPTR '(' Variable ')'
-''					|   PROCPTR '(' Proc ('('')')? ')'
-'' 					| 	'@' (Proc ('('')')? | Variable)
-''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')'
-''                  |   TypeConvExpr .
+''::::
+'' HighestPresExpr=   AddrOfExpression
+''				  |	  DerefExpr
+''                |   TypeConvExpr
+''				  |   ParentExpression
+''				  |   Atom .
 ''
-function cAddrOfExpression( addrofexpr as integer )
-    dim expr as integer, dtype as integer, proc as FBSYMBOL ptr
-
-	cAddrOfExpression = FALSE
+function cHighestPresExpr( highexpr as integer ) as integer
+    dim res as integer
+    dim symb as FBSYMBOL ptr, elm as FBSYMBOL ptr
 
 	select case lexCurrentToken
-	'' VARPTR '(' Variable ')'
-	case FB.TK.VARPTR
-		lexSkipToken
+	'' AddrOfExpression
+	case FB.TK.VARPTR, FB.TK.PROCPTR, FB.TK.ADDROFCHAR, FB.TK.SADD, FB.TK.STRPTR
+		res = cAddrOfExpression( highexpr, symb, elm )
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+	'' DerefExpr
+	case FB.TK.DEREFCHAR
+		res = cDerefExpression( highexpr )
 
-		if( not cVarPtrBody( addrofexpr ) ) then
-			exit function
-		end if
+	'' TypeConvExpr
+	case FB.TK.CBYTE, FB.TK.CSHORT, FB.TK.CINT, FB.TK.CLNG, FB.TK.CSNG, FB.TK.CDBL, _
+         FB.TK.CSIGN, FB.TK.CUNSG
+		res = cTypeConvExpr( highexpr )
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+	'' ParentExpression
+	case CHAR_LPRNT
+		res = cParentExpression( highexpr )
 
-		cAddrOfExpression = TRUE
-        exit function
+	'' Atom
+	case else
+		res = cAtom( highexpr )
 
-	'' PROCPTR '(' Proc ('('')')? ')'
-	case FB.TK.PROCPTR
-		lexSkipToken
-
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-
-		proc = symbLookupProc( lexTokenText )
-		if( proc = NULL ) then
-			hReportError FB.ERRMSG.UNDEFINEDSYMBOL
-			exit function
-		else
-			lexSkipToken
-		end if
-
-		if( not cProcPtrBody( proc, addrofexpr ) ) then
-			exit function
-		end if
-
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
-
-		cAddrOfExpression = TRUE
-        exit function
-
-	'' '@' (Proc ('('')')? | Variable)
-	case FB.TK.ADDROFCHAR
-		lexSkipToken
-
-		proc = symbLookupProc( lexTokenText )
-		if( proc <> NULL ) then
-			lexSkipToken
-			if( not cProcPtrBody( proc, addrofexpr ) ) then
-				exit function
-			end if
-		else
-			if( not cVarPtrBody( addrofexpr ) ) then
-				exit function
-			end if
-		end if
-
-		cAddrOfExpression = TRUE
-        exit function
-
-	'' SADD|STRPTR '(' Variable{str} ')'
-	case FB.TK.SADD, FB.TK.STRPTR
-		lexSkipToken
-
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-
-		if( not cVariable( expr ) ) then
-			if( not cConstant( expr ) ) then
-				if( not cLiteral( expr ) ) then
-					exit function
-				end if
-			end if
-		end if
-
-		dtype = astGetDataType( expr )
-		if( not hIsString( dtype ) ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
-			exit function
-		end if
-
-		if( hIsStrFixed( dtype ) ) then
-			addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
-		else
-			addrofexpr = astNewADDR( IR.OP.DEREF, expr )
-		end if
-
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
-
-		cAddrOfExpression = TRUE
-        exit function
 	end select
 
-	cAddrOfExpression = cTypeConvExpr( addrofexpr )
+	cHighestPresExpr = res
 
 end function
 
 '':::::
-''TypeConvExpr		=    (C### '(' expression ')')
-''					|    ParentExpression
+''TypeConvExpr		=    (C### '(' expression ')') .
 ''
 function cTypeConvExpr( tconvexpr as integer )
     dim totype as integer, op as integer
@@ -675,7 +564,6 @@ function cTypeConvExpr( tconvexpr as integer )
 	end select
 
 	if( totype = INVALID ) then
-		cTypeConvExpr = cParentExpression( tconvexpr )
 		exit function
 	else
 		lexSkipToken
@@ -706,34 +594,334 @@ function cTypeConvExpr( tconvexpr as integer )
 
 end function
 
+'':::::
+private function hDoDeref( byval cnt as integer, expr as integer, _
+					       byval symb as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, _
+					       byval dtype as integer ) as integer
+
+	hDoDeref = FALSE
+
+	if( (expr = INVALID) or (cnt <= 0) ) then
+		exit function
+	end if
+
+	do while( cnt > 1 )
+		'' not a pointer?
+		if( dtype < IR.DATATYPE.POINTER ) then
+			exit function
+		end if
+		dtype = dtype - IR.DATATYPE.POINTER
+
+		expr = astNewPTR( 0, dtype, expr )
+		cnt = cnt - 1
+	loop
+
+	'' not a pointer?
+	if( dtype < IR.DATATYPE.POINTER ) then
+		exit function
+	end if
+    dtype = dtype - FB.SYMBTYPE.POINTER
+
+    ''
+    expr = astNewPTREx( symb, elm, 0, dtype, expr )
+
+    hDoDeref = TRUE
+
+end function
 
 '':::::
-''ParentExpression=   '(' Expression ')'
-''                |   Atom .
+''cDerefExpression	= 	DREF+ (AddrOfExpression
+''							  | Function
+''							  | Variable
+''							  | '(' (AddrOfExpression|Variable) AddExpression ')')
+''
+function cDerefExpression( derefexpr as integer ) as integer
+
+    dim symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr
+    dim derefcnt as integer
+    dim dtype as integer
+
+	cDerefExpression = FALSE
+
+	if( lexCurrentToken <> FB.TK.DEREFCHAR ) then
+		exit function
+	end if
+
+	'' DREF+
+    derefcnt = 0
+	do
+		lexSkipToken
+		derefcnt = derefcnt + 1
+	loop while( lexCurrentToken = FB.TK.DEREFCHAR )
+
+	'' AddrOfExpression
+	if( not cAddrOfExpression( derefexpr, symbol, elm ) ) then
+
+  		'' Function
+  		if( cFunction( derefexpr ) ) then
+			symbol = astGetSymbol( derefexpr )
+			elm    = NULL
+
+  		else
+
+  			'' Variable
+  			if( cVariable( derefexpr ) ) then
+				symbol = astGetSymbol( derefexpr )
+				elm    = astGetUDTElm( derefexpr )
+
+  			else
+		    	'' '('
+		    	if( not hMatch( CHAR_LPRNT ) ) then
+		    		hReportError FB.ERRMSG.SYNTAXERROR
+		    		exit function
+		    	end if
+
+  				'' AddrOfExpression
+				if( not cAddrOfExpression( derefexpr, symbol, elm ) ) then
+
+  					'' Variable
+  					if( not cVariable( derefexpr ) ) then
+		    			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		    			exit function
+  					end if
+
+					symbol = astGetSymbol( derefexpr )
+					elm    = astGetUDTElm( derefexpr )
+
+  				end if
+
+				'' AddExpression
+				if( not cAddExpression( derefexpr ) ) then
+					if( hGetLastError <> FB.ERRMSG.OK ) then
+						exit function
+					end if
+				end if
+
+		    	'' ')'
+		    	if( not hMatch( CHAR_RPRNT ) ) then
+		    		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		    		exit function
+		    	end if
+		    end if
+		end if
+	end if
+
+	''
+	if( not hDoDeref( derefcnt, derefexpr, symbol, elm, astGetDataType( derefexpr ) ) ) then
+		hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+		exit function
+	end if
+
+	cDerefExpression = TRUE
+
+end function
+
+'':::::
+private function hProcPtrBody( byval proc as FBSYMBOL ptr, addrofexpr as integer ) as integer
+	dim expr as integer, dtype as integer
+
+	hProcPtrBody = FALSE
+
+	'' '('')'?
+	if( hMatch( CHAR_LPRNT ) ) then
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+	end if
+
+	expr = astNewVAR( proc, 0, IR.DATATYPE.UINT )
+	addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
+
+	hProcPtrBody = TRUE
+
+end function
+
+'':::::
+private function hVarPtrBody( addrofexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr ) as integer
+
+	hVarPtrBody = FALSE
+
+	if( not cVariable( addrofexpr ) ) then
+		exit function
+	end if
+
+	symbol = astGetSymbol( addrofexpr )
+	elm	   = astGetUDTElm( addrofexpr )
+
+	addrofexpr = astNewADDR( IR.OP.ADDROF, addrofexpr )
+
+    hVarPtrBody = TRUE
+
+end function
+
+'':::::
+''AddrOfExpression  =   VARPTR '(' Variable ')'
+''					|   PROCPTR '(' Proc ('('')')? ')'
+'' 					| 	'@' (Proc ('('')')? | Variable)
+''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
+''
+function cAddrOfExpression( addrofexpr as integer, symbol as FBSYMBOL ptr, elm as FBSYMBOL ptr )
+    dim expr as integer, dtype as integer, proc as FBSYMBOL ptr
+
+	cAddrOfExpression = FALSE
+
+	select case lexCurrentToken
+	'' VARPTR '(' Variable ')'
+	case FB.TK.VARPTR
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		if( not hVarPtrBody( addrofexpr, symbol, elm ) ) then
+			exit function
+		end if
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+
+		cAddrOfExpression = TRUE
+        exit function
+
+	'' PROCPTR '(' Proc ('('')')? ')'
+	case FB.TK.PROCPTR
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		proc = symbLookupProc( lexTokenText )
+		if( proc = NULL ) then
+			hReportError FB.ERRMSG.UNDEFINEDSYMBOL
+			exit function
+		else
+			lexSkipToken
+		end if
+
+		if( not hProcPtrBody( proc, addrofexpr ) ) then
+			exit function
+		end if
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+		symbol = proc
+		elm	   = NULL
+
+		cAddrOfExpression = TRUE
+        exit function
+
+	'' '@' (Proc ('('')')? | Variable)
+	case FB.TK.ADDROFCHAR
+		lexSkipToken
+
+		proc = symbLookupProc( lexTokenText )
+		if( proc <> NULL ) then
+			lexSkipToken
+
+			if( not hProcPtrBody( proc, addrofexpr ) ) then
+				exit function
+			end if
+			symbol = proc
+			elm	   = NULL
+
+		else
+			if( not hVarPtrBody( addrofexpr, symbol, elm ) ) then
+				exit function
+			end if
+		end if
+
+		cAddrOfExpression = TRUE
+        exit function
+
+	'' SADD|STRPTR '(' Variable{str} ')'
+	case FB.TK.SADD, FB.TK.STRPTR
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		if( not cVariable( expr ) ) then
+			if( not cConstant( expr ) ) then
+				if( not cLiteral( expr ) ) then
+					exit function
+				end if
+			end if
+		end if
+
+		dtype = astGetDataType( expr )
+		if( not hIsString( dtype ) ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES
+			exit function
+		end if
+
+		symbol = astGetSymbol( addrofexpr )
+		elm	   = astGetUDTElm( addrofexpr )
+
+		if( hIsStrFixed( dtype ) ) then
+			addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
+		else
+			addrofexpr = astNewADDR( IR.OP.DEREF, expr )
+		end if
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+
+		cAddrOfExpression = TRUE
+        exit function
+	end select
+
+end function
+
+'':::::
+''ParentExpression=   '(' Expression ')' .
 ''
 function cParentExpression( parexpr as integer )
-    dim res as integer
 
-  	res = FALSE
+  	cParentExpression = FALSE
 
-  	if( lexCurrentToken = CHAR_LPRNT ) then
-  		lexSkipToken
-  		res = cExpression( parexpr )
-  		if( not res ) then
-  			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-  		else
-  			if( lexCurrentToken = CHAR_RPRNT ) then
-  				lexSkipToken
-  			else
-  				hReportError FB.ERRMSG.EXPECTEDRPRNT
-  				res = FALSE
-  			end if
-  		end if
-  	else
-  		res = cAtom( parexpr )
+  	'' '('
+  	if( not hMatch( CHAR_LPRNT ) ) then
+  		exit function
   	end if
 
-	cParentExpression = res
+  	'' ++parent cnt
+  	env.prntcnt = env.prntcnt + 1
+
+  	if( not cExpression( parexpr ) ) then
+  		'' calling a SUB? it can be a BYVAL or nothing due the optional ()'s
+  		if( not env.prntopt ) then
+  			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+  			exit function
+  		end if
+
+  	else
+  		'' ')'
+  		if( hMatch( CHAR_RPRNT ) ) then
+  			'' --parent cnt
+  			env.prntcnt = env.prntcnt - 1
+  		else
+  			'' not calling a SUB or parent cnt = 0?
+  			if( (not env.prntopt) or (env.prntcnt = 0) ) then
+  				hReportError FB.ERRMSG.EXPECTEDRPRNT
+  				exit function
+  			end if
+  		end if
+
+  		cParentExpression = TRUE
+  	end if
 
 end function
 
@@ -745,18 +933,20 @@ function cAtom( atom as integer )
 
   	atom = INVALID
 
-  	res = cConstant( atom )
-  	if( not res ) then
+  	if( lexCurrentTokenClass = FB.TKCLASS.KEYWORD ) then
   		res = cQuirkFunction( atom )
+
+  	elseif( lexCurrentToken = FB.TK.ID ) then
+  		res = cConstant( atom )
   		if( not res ) then
   			res = cFunction( atom )
   			if( not res ) then
   				res = cVariable( atom )
-  				if( not res ) then
-  					res = cLiteral( atom )
-  				end if
   			end if
   		end if
+
+  	else
+  		res = cLiteral( atom )
   	end if
 
 	cAtom = res
@@ -807,28 +997,28 @@ function cLiteral( litexpr as integer )
 	dim res as integer, typ as integer, dtype as integer
 	dim tc as FBSYMBOL ptr, p as integer, expr as integer
 
-	res = FALSE
+	cLiteral = FALSE
 
-	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+	select case lexCurrentTokenClass
+	case FB.TKCLASS.NUMLITERAL
   		dtype = hStyp2Dtype( lexTokenType )
   		litexpr = astNewCONST( val( lexTokenText ), dtype )
+
   		lexSkipToken
-  		res = TRUE
+  		cLiteral = TRUE
 
-  	elseif( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
-
+  	case FB.TKCLASS.STRLITERAL
 		tc = hAllocStringConst( lexTokenText, lexTokenTextLen )
 		litexpr = astNewVAR( tc, 0, IR.DATATYPE.FIXSTR )
 
 		lexSkipToken
-        res = TRUE
-  	end if
+        cLiteral = TRUE
+  	end select
 
-  	cLiteral = res
 end function
 
 '':::::
-''FuncParam         =   (BYVAL|BYREF|SEG)? (ID(('(' ')')? | Expression) .
+''FuncParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
 function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval procexpr as integer, _
 					 byval optonly as integer ) as integer
@@ -837,24 +1027,18 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 
 	cFuncParam = FALSE
 
-	'' (BYVAL|SEG)?
 	amode = symbGetArgMode( proc, arg )
+
 	pmode = INVALID
-
-	if( not optonly ) then
-		select case lexCurrentToken
-		case FB.TK.BYVAL
-			pmode = FB.ARGMODE.BYVAL
-			lexSkipToken
-		case FB.TK.BYREF, FB.TK.SEG
-			pmode =  FB.ARGMODE.BYREF
-			lexSkipToken
-		end select
-	end if
-
-	'' Expression
 	paramexpr = INVALID
+
 	if( not optonly ) then
+		'' BYVAL?
+		if( hMatch( FB.TK.BYVAL ) ) then
+			pmode = FB.ARGMODE.BYVAL
+		end if
+
+		'' Expression
 		if( not cExpression( paramexpr ) ) then
 			paramexpr = INVALID
 		end if

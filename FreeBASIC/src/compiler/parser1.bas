@@ -201,12 +201,14 @@ function cLabel
 
     '' NUM_LIT
     if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-		l = symbAddLabel( lexTokenText )
-		if( l = NULL ) then
-			hReportError FB.ERRMSG.DUPDEFINITION
-			exit function
-		else
-			lexSkipToken
+		if( lexTokenType = FB.SYMBTYPE.INTEGER ) then
+			l = symbAddLabel( lexTokenText )
+			if( l = NULL ) then
+				hReportError FB.ERRMSG.DUPDEFINITION
+				exit function
+			else
+				lexSkipToken
+			end if
 		end if
 
 	'' ID
@@ -374,7 +376,7 @@ function cStatement
 						if( not res ) then
 							res = cAsmBlock
 							if( not res ) then
-								res = cAssignment
+								res = cAssignmentOrPtrCall
 							end if
 						end if
 					end if
@@ -417,7 +419,7 @@ function cSimpleStatement
 						if( not res ) then
 							res = cAsmBlock
 							if( not res ) then
-								res = cAssignment
+								res = cAssignmentOrPtrCall
 							end if
 						end if
 					end if
@@ -467,25 +469,25 @@ end function
 function cDeclaration
     dim res as integer
 
-	res = cConstDecl
-	if( not res ) then
+	res = FALSE
+
+	select case lexCurrentToken
+	case FB.TK.CONST
+		res = cConstDecl
+	case FB.TK.DECLARE
 		res = cProcDecl
-		if( not res ) then
-			res = cTypeDecl
-			if( not res ) then
-				res = cEnumDecl
-				if( not res ) then
-					res = cSymbolDecl
-					if( not res ) then
-						res = cDefDecl
-						if( not res ) then
-							res = cOptDecl
-						end if
-					end if
-				end if
-			end if
-		end if
-	end if
+	case FB.TK.TYPE, FB.TK.UNION
+		res = cTypeDecl
+	case FB.TK.ENUM
+		res = cEnumDecl
+	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON, FB.TK.EXTERN, FB.TK.STATIC
+		res = cSymbolDecl
+	case FB.TK.DEFBYTE, FB.TK.DEFUBYTE, FB.TK.DEFSHORT, FB.TK.DEFUSHORT, FB.TK.DEFINT, FB.TK.DEFLNG, _
+		 FB.TK.DEFUINT, FB.TK.DEFSNG, FB.TK.DEFDBL, FB.TK.DEFSTR
+		res = cDefDecl
+	case FB.TK.OPTION
+		res = cOptDecl
+	end select
 
 	cDeclaration = res
 
@@ -495,23 +497,18 @@ end function
 ''ConstDecl       =   CONST ConstAssign (DECL_SEPARATOR ConstAssign)* .
 ''
 function cConstDecl
-    dim res as integer
 
-    res = FALSE
+    cConstDecl = FALSE
 
     '' CONST
-    if( lexCurrentToken <> FB.TK.CONST ) then
-    	cConstDecl = res
+    if( not hMatch( FB.TK.CONST ) ) then
     	exit function
-    else
-    	lexSkipToken
     end if
 
 	do
 		'' ConstAssign
-		res = cConstAssign
-		if( not res ) then
-			exit do
+		if( not cConstAssign ) then
+			exit function
 		end if
 
     	'' ','
@@ -522,7 +519,7 @@ function cConstDecl
     	end if
 	loop
 
-	cConstDecl = res
+	cConstDecl = TRUE
 
 end function
 
@@ -915,9 +912,7 @@ function cEnumDecl
 	cEnumDecl = FALSE
 
 	'' ENUM
-	if( not hMatch( FB.TK.ENUM ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' ID
 	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
@@ -1120,7 +1115,7 @@ end sub
 function hDeclExternVar( id as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
 						 byval alloctype as integer, byval addsuffix as integer ) as FBSYMBOL ptr
 	dim symbol as FBSYMBOL ptr
-	dim ofs as integer, elm as FBTYPELEMENT ptr
+	dim ofs as integer, elm as FBSYMBOL ptr
 
     hDeclExternVar = NULL
 
@@ -1317,7 +1312,7 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
    		end if
 	else
 
-		if( not symbGetVarIsDynamic( s ) ) then
+		if( not symbGetIsDynamic( s ) ) then
 
    			s = hDeclExternVar( id, typ, subtype, atype, addsuffix )
 
@@ -1357,8 +1352,8 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
     		exit function
 		end if
 
-		if( symbGetVarDimensions( s ) > 0 ) then
-			if( dimensions <> symbGetVarDimensions( s ) ) then
+		if( symbGetArrayDimensions( s ) > 0 ) then
+			if( dimensions <> symbGetArrayDimensions( s ) ) then
     			hReportErrorEx FB.ERRMSG.WRONGDIMENSIONS, id
     			exit function
     		end if
@@ -1379,13 +1374,13 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 
 	'' if common, check for max dimensions used
 	if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
-		if( dimensions > symbGetVarDimensions( s ) ) then
-			symbSetVarDimensions s, dimensions
+		if( dimensions > symbGetArrayDimensions( s ) ) then
+			symbSetArrayDimensions s, dimensions
 		end if
 
 	'' or if dims = -1 (cause of "redim|dim array()")
-	elseif( symbGetVarDimensions( s ) = -1 ) then
-		symbSetVarDimensions s, dimensions
+	elseif( symbGetArrayDimensions( s ) = -1 ) then
+		symbSetArrayDimensions s, dimensions
 	end if
 
     cDynArrayDef = s
@@ -1403,7 +1398,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 	cSymbolInit = FALSE
 
 	'' cannot initialize dynamic vars
-	if( symbGetVarIsDynamic( s ) ) then
+	if( symbGetIsDynamic( s ) ) then
 		hReportError FB.ERRMSG.SYNTAXERROR
 		exit function
 	end if
@@ -1426,7 +1421,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 	end if
 
 	cnt = 0
-	dimensions = symbGetVarDimensions( s )
+	dimensions = symbGetArrayDimensions( s )
 	do
 
 		if( cnt > dimensions ) then
@@ -1883,11 +1878,8 @@ function cProcDecl
 
     cProcDecl = FALSE
 
-    if( lexCurrentToken <> FB.TK.DECLARE ) then
-    	exit function
-    else
-    	lexSkipToken
-    end if
+    '' DECLARE
+    lexSkipToken
 
 	select case lexCurrentToken
 	case FB.TK.SUB
@@ -2317,9 +2309,7 @@ function cOptDecl
 	cOptDecl = FALSE
 
 	'' OPTION
-	if( not hMatch( FB.TK.OPTION ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	select case lexCurrentToken
 	case FB.TK.EXPLICIT
@@ -2368,32 +2358,42 @@ function cOptDecl
 end function
 
 '':::::
-''ProcParam         =   (BYREF|BYVAL|SEG)? (ID(('(' ')')? | Expression) .
+''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, expr as integer, pmode as integer, _
-					 byval optonly as integer ) as integer
+function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval param as integer, _
+					 expr as integer, pmode as integer, byval optonly as integer ) as integer
 	dim amode as integer
 
 	cProcParam = FALSE
 
-	'' (BYVAL|SEG)?
 	amode = symbGetArgMode( proc, arg )
+
 	pmode = INVALID
-
-	select case lexCurrentToken
-	case FB.TK.BYVAL
-		pmode = FB.ARGMODE.BYVAL
-		lexSkipToken
-	case FB.TK.BYREF, FB.TK.SEG
-		pmode = FB.ARGMODE.BYREF
-		lexSkipToken
-	end select
-
-	'' Expression
 	expr = INVALID
+
 	if( not optonly ) then
+		'' BYVAL?
+		if( hMatch( FB.TK.BYVAL ) ) then
+			pmode = FB.ARGMODE.BYVAL
+		end if
+
+		'' Expression
 		if( not cExpression( expr ) ) then
-			expr = INVALID
+			'' failed and expr not null?
+			if( expr <> INVALID ) then
+				exit function
+			end if
+
+			'' check for BYVAL if it's the first param, due the optional ()'s
+			if( (param = 0) and (pmode = INVALID) ) then
+				'' BYVAL?
+				if( hMatch( FB.TK.BYVAL ) ) then
+					pmode = FB.ARGMODE.BYVAL
+					if( not cExpression( expr ) ) then
+						expr = INVALID
+					end if
+				end if
+			end if
 		end if
 	end if
 
@@ -2451,6 +2451,15 @@ function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer )
 
 	'' proc has no args?
 	if( args = 0 ) then
+		'' '('
+		if( hMatch( CHAR_LPRNT ) ) then
+			'' ')'
+			if( not hMatch( CHAR_RPRNT ) ) then
+				hReportError FB.ERRMSG.EXPECTEDRPRNT
+				exit function
+			end if
+		end if
+
 		cProcParamList = TRUE
 		exit function
 	end if
@@ -2465,7 +2474,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer )
 			exit function
 		end if
 
-		if( not cProcParam( proc, arg, elist(p), mlist(p), FALSE ) ) then
+		if( not cProcParam( proc, arg, p, elist(p), mlist(p), FALSE ) ) then
 			exit function
 		end if
 
@@ -2479,7 +2488,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer )
 
 		do while( p < args )
 
-			if( not cProcParam( proc, arg, elist(p), mlist(p), TRUE ) ) then
+			if( not cProcParam( proc, arg, p, elist(p), mlist(p), TRUE ) ) then
 				exit function
 			end if
 
@@ -2535,7 +2544,6 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	dim procexpr as integer
 	dim vr as integer
 	dim typ as integer, dtype as integer
-	dim isfunc as integer, isopened as integer
 
 	cProcCall = FALSE
 
@@ -2545,33 +2553,29 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
     	procexpr = astNewFUNCTPTR( ptrexpr, proc, IR.DATATYPE.VOID, symbGetProcArgs( proc ) )
     end if
 
-	isfunc = FALSE
 	if( checkparents = TRUE ) then
+		'' if the sub has no args, parents are optional
 		if( symbGetProcArgs( proc ) = 0 ) then
 			checkparents = FALSE
 		end if
+
+	'' if it's a function pointer, parents are obrigatory
 	elseif( ptrexpr <> INVALID ) then
 		checkparents = TRUE
-	elseif( symbGetType( proc ) <> FB.SYMBTYPE.VOID ) then
-		isfunc = TRUE
-		'' function has args?
-		if( symbGetProcArgs( proc ) > 0 ) then
-			checkparents = TRUE
-		end if
+
 	end if
 
-	'' '('
-	isopened = FALSE
 	if( checkparents ) then
+		'' '('
 		if( not hMatch( CHAR_LPRNT ) ) then
-			if( not isfunc ) then
-				hReportError FB.ERRMSG.EXPECTEDLPRNT
-				exit function
-			end if
-		else
-			isopened = TRUE
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
 		end if
+
 	end if
+
+	env.prntcnt = 0
+	env.prntopt	= not checkparents
 
 	'' ProcParamList
 	if( not cProcParamList( proc, procexpr ) ) then
@@ -2579,14 +2583,19 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	end if
 
 	'' ')'
-	if( checkparents ) then
-		if( isopened ) then
-			if( not hMatch( CHAR_RPRNT ) ) then
-				hReportError FB.ERRMSG.EXPECTEDRPRNT
-				exit function
-			end if
+	if( (checkparents) or (env.prntcnt > 0) ) then
+
+		'' --parent cnt
+		env.prntcnt = env.prntcnt - 1
+
+		if( (not hMatch( CHAR_RPRNT )) or (env.prntcnt > 0) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
 		end if
+
 	end if
+
+	env.prntopt	= FALSE
 
 	'' can proc's result be skipped?
 	typ = symbGetType( proc )
@@ -2672,12 +2681,12 @@ end function
 ''Assignment      =   LET? Variable '=' Expression
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
-function cAssignment
+function cAssignmentOrPtrCall
 	dim islet as integer
-	dim assg as integer, expr as integer
+	dim assgexpr as integer, expr as integer, dtype as integer
 	dim vr as integer
 
-	cAssignment = FALSE
+	cAssignmentOrPtrCall = FALSE
 
 	if( hMatch( FB.TK.LET ) ) then
 		islet = TRUE
@@ -2686,22 +2695,33 @@ function cAssignment
 	end if
 
 	'' Variable
-	if( cVariable( assg, , TRUE ) ) then
+	if( cVarOrDeref( assgexpr ) ) then
+
+    	'' calling a SUB ptr?
+    	if( assgexpr = INVALID ) then
+    		cAssignmentOrPtrCall = TRUE
+    		exit function
+    	end if
+
+    	'' calling a FUNCTION ptr?
+    	if( astGetType( assgexpr ) = AST.NODETYPE.FUNCT ) then
+			'' can the result be skipped?
+			dtype = astGetDataType( assgexpr )
+			if( (irGetDataClass( dtype ) = IR.DATACLASS.FPOINT) or hIsString( dtype ) ) then
+				hReportError FB.ERRMSG.VARIABLEREQUIRED
+				exit function
+			end if
+
+    		'' flush the call
+    		astFlush assgexpr, vr
+    		cAssignmentOrPtrCall = TRUE
+    		exit function
+    	end if
 
         '' '='
         if( not hMatch( FB.TK.ASSIGN ) ) then
-
-    		if( not islet ) then
-    			'' check if not a function call through pointers
-    			if( assg = INVALID ) then
-    				cAssignment = TRUE
-    				exit function
-    			end if
-    		end if
-
     		hReportError FB.ERRMSG.EXPECTEDEQ
     		exit function
-
     	end if
 
         '' Expression
@@ -2711,14 +2731,15 @@ function cAssignment
         end if
 
         '' do assign
-        assg = astNewASSIGN( assg, expr )
+        assgexpr = astNewASSIGN( assgexpr, expr )
 
-        if( assg = INVALID ) then
+        if( assgexpr = INVALID ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
             exit function
         end if
 
-        astFlush assg, vr
+        astFlush assgexpr, vr
+        cAssignmentOrPtrCall = TRUE
 
 	else
 		if( islet ) then
@@ -2727,8 +2748,6 @@ function cAssignment
 		end if
 	end if
 
-	cAssignment = TRUE
-
 end function
 
 '':::::
@@ -2736,7 +2755,7 @@ end function
 ''
 function cAsmCode
 	dim asmline as string, text as string
-	dim ofs as integer, elm as FBTYPELEMENT ptr, subtype as FBSYMBOL ptr, s as FBSYMBOL ptr
+	dim ofs as integer, elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, s as FBSYMBOL ptr
 
 	cAsmCode = FALSE
 

@@ -57,34 +57,30 @@ function cCompoundStmt
 
     env.compoundcnt = env.compoundcnt + 1
 
-	res = cIfStatement
-	if( not res ) then
+	res = FALSE
+
+	select case lexCurrentToken
+	case FB.TK.IF
+		res = cIfStatement
+	case FB.TK.FOR
 		res = cForStatement
-		if( not res ) then
-			res = cDoStatement
-			if( not res ) then
-				res = cWhileStatement
-				if( not res ) then
-					res = cSelectStatement
-					if( not res ) then
-						res = cExitStatement
-						if( not res ) then
-							res = cContinueStatement
-							if( not res ) then
-								res = cEndStatement
-								if( not res ) then
-									res = cCompoundStmtElm
-									if( not res ) then
-										res = cWithStatement
-									end if
-								end if
-							end if
-						end if
-					end if
-				end if
-			end if
-		end if
-	end if
+	case FB.TK.DO
+		res = cDoStatement
+	case FB.TK.WHILE
+		res = cWhileStatement
+	case FB.TK.ELSE, FB.TK.ELSEIF, FB.TK.CASE, FB.TK.LOOP, FB.TK.NEXT, FB.TK.WEND
+		res = cCompoundStmtElm
+	case FB.TK.SELECT
+		res = cSelectStatement
+	case FB.TK.EXIT
+		res = cExitStatement
+	case FB.TK.CONTINUE
+		res = cContinueStatement
+	case FB.TK.END
+		res = cEndStatement
+	case FB.TK.WITH
+		res = cWithStatement
+	end select
 
 	env.compoundcnt = env.compoundcnt - 1
 
@@ -142,7 +138,9 @@ function cSingleIfStatement( byval expr as integer )
 		irEmitBRANCH IR.OP.JMP, l, symbGetLabelScope( l ) = 0
 
 	elseif( not cSimpleStatement ) then
-		exit function
+		if( hGetLastError <> FB.ERRMSG.OK ) then
+			exit function
+		end if
 	end if
 
 	'' (ELSE SimpleStatement*)?
@@ -335,9 +333,7 @@ function cIfStatement
 	cIfStatement = FALSE
 
 	'' IF
-	if( not hMatch( FB.TK.IF ) ) then
-		exit function
-	end if
+	lexSkipToken
 
     '' Expression
     if( not cExpression( expr ) ) then
@@ -488,9 +484,7 @@ function cForStatement
 	cForStatement = FALSE
 
 	'' FOR
-	if( not hMatch( FB.TK.FOR ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' ID
 	if( not cVariable( idexpr ) ) then
@@ -716,9 +710,7 @@ function cDoStatement
 	cDoStatement = FALSE
 
 	'' DO
-	if( not hMatch( FB.TK.DO ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' add ini and end labels (will be used by any EXIT DO)
 	il = symbAddLabel( hMakeTmpStr )
@@ -898,9 +890,7 @@ function cWhileStatement
 	cWhileStatement = FALSE
 
 	'' WHILE
-	if( not hMatch( FB.TK.WHILE ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' add ini and end labels
 	il = symbAddLabel( hMakeTmpStr )
@@ -1009,9 +999,7 @@ function cSelectStatement
 	cSelectStatement = FALSE
 
 	'' SELECT
-	if( not hMatch( FB.TK.SELECT ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' CASE
 	if( not hMatch( FB.TK.CASE ) ) then
@@ -1243,9 +1231,7 @@ function cExitStatement
 	cExitStatement = FALSE
 
 	'' EXIT
-	if( not hMatch( FB.TK.EXIT ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' (FOR | DO | WHILE | SUB | FUNCTION)
 	select case lexCurrentToken
@@ -1295,9 +1281,7 @@ function cContinueStatement
 	cContinueStatement = FALSE
 
 	'' CONTINUE
-	if( not hMatch( FB.TK.CONTINUE ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' (FOR | DO | WHILE)
 	select case lexCurrentToken
@@ -1436,9 +1420,7 @@ function cWithStatement
 	cWithStatement = FALSE
 
 	'' WITH
-	if( not hMatch( FB.TK.WITH ) ) then
-		exit function
-	end if
+	lexSkipToken
 
 	'' save old
 	oldwithtextidx = env.withtextidx
