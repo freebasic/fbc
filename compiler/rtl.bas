@@ -853,6 +853,10 @@ data "clear","memset", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 3, _
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
+data "dir","fb_Dir", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
+					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&h33
+
 #ifdef TARGET_WIN32
 
 '' beep ( ) as void
