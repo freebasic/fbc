@@ -40,7 +40,15 @@ void fb_ConsoleScroll( int nrows )
 {
     int toprow, botrow;
     int cols, rows;
-
+	/* had to move this declaration here otherwise GCC won't compile this
+	   file on Debian with a weird "parse error before *" message (v1c) */
+#ifndef WIN32
+#ifndef DISABLE_NCURSES
+	WINDOW *view;
+	int i;
+#endif
+#endif
+    
     if( nrows <= 0 )
     	return;
 
@@ -70,8 +78,6 @@ void fb_ConsoleScroll( int nrows )
 #else /* WIN32 */
 
 #ifndef DISABLE_NCURSES
-	WINDOW *view;
-	int i;
 	
 	view = subwin(stdscr, botrow - toprow + 1, getmaxx(stdscr), toprow - 1, 0);
 	scrollok(view, TRUE);
