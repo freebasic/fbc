@@ -41,8 +41,10 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 	if( p != NULL )
 	{
 		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		fb_StrAssign( (void *)dst, -1, (void *)p, strlen( p ) );
-		dst->len |= FB_TEMPSTRBIT;					/* mark as temp */
+		
+		fb_StrAssign( (void *)dst, -1, (void *)p, 0, 1 );
+		
+		dst->len |= FB_TEMPSTRBIT;				/* mark as temp */
 	}
 	else
 		dst = &fb_strNullDesc;

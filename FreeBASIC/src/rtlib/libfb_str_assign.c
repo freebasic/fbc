@@ -29,14 +29,19 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
+FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, int fillrem )
 {
 	FBSTRING 	*dstr;
 	char 		*src_ptr;
 	int 		src_len, dst_len;
 
-	if( (dst == NULL) || (src == NULL) )
-		return;
+	if( dst == NULL )
+	{
+		if( src_size == -1 )
+			fb_hStrDelTemp( (FBSTRING *)src );
+		
+		return dst;
+	}
 
 	/* src */
 	FB_STRSETUP( src, src_size, src_ptr, src_len )
@@ -46,34 +51,34 @@ FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 	{
         dstr = (FBSTRING *)dst;
 
-		/* if src is a temp, just copy the descriptor */
-		if( (src_size == -1) && FB_ISTEMP(src) )
-		{
-			fb_StrDelete( dstr );
-
-			dstr->data = src_ptr;
-			dstr->len  = src_len;
-			dstr->size = ((FBSTRING *)src)->size;
-
-			((FBSTRING *)src)->data = NULL;
-			((FBSTRING *)src)->len  = 0;
-			((FBSTRING *)src)->size = 0;
-
-			fb_hStrDelTempDesc( (FBSTRING *)src );
-
-			return;
-		}
-
-        /* else, realloc dst if needed and copy src */
-        dst_len = FB_STRSIZE( dst );
-
-		/* NULL? */
+		/* src NULL? */
 		if( src_len == 0 )
 		{
 			fb_StrDelete( dstr );
 		}
 		else
 		{
+			/* if src is a temp, just copy the descriptor */
+			if( (src_size == -1) && FB_ISTEMP(src) )
+			{
+				fb_StrDelete( dstr );
+
+				dstr->data = src_ptr;
+				dstr->len  = src_len;
+				dstr->size = ((FBSTRING *)src)->size;
+
+				((FBSTRING *)src)->data = NULL;
+				((FBSTRING *)src)->len  = 0;
+				((FBSTRING *)src)->size = 0;
+
+				fb_hStrDelTempDesc( (FBSTRING *)src );
+
+				return dst;
+			}
+
+        	/* else, realloc dst if needed and copy src */
+        	dst_len = FB_STRSIZE( dst );
+
 			if( dst_len != src_len )
 				fb_hStrRealloc( dstr, src_len, FB_FALSE );
 
@@ -85,16 +90,22 @@ FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 		/* byte ptr? as in C, assume dst is large enough */
 		if( dst_size == 0 )
 			dst_size = src_len;
-
-		if( dst_size < src_len )
-			src_len = dst_size;
+		else
+		{
+			--dst_size; 						/* less the null-term */
+			if( dst_size < src_len )
+				src_len = dst_size;
+		}
 
 		fb_hStrCopy( (char *)dst, src_ptr, src_len );
 
 		/* fill reminder with null's */
-		dst_size -= src_len;
-		if( dst_size > 0 )
-			memset( &(((char *)dst)[src_len]), 0, dst_size );
+		if( fillrem != 0 )
+		{
+			dst_size -= src_len;
+			if( (dst_size > 0) && (fillrem) )
+				memset( &(((char *)dst)[src_len]), 0, dst_size );
+		}
 	}
 
 
@@ -102,6 +113,7 @@ FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 	if( src_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)src );
 
+	return dst;
 }
 
 

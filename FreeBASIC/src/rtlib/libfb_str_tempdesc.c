@@ -48,10 +48,19 @@ FBCALL FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
 	else
 	{
 		dsc->data = (char *)str;
+		/* can't use strlen() if the size is known, otherwise GET# or PUT# 
+		  would not work with fixed-len's */
 		if( str_size != 0 )
-			dsc->len = str_size;
+		{
+			dsc->len = str_size - 1;			/* less the null-term */
+		}
 		else
-			dsc->len = strlen( str );
+		{
+			if( str != NULL )
+				dsc->len = strlen( str );
+			else
+				dsc->len = 0;
+		}
 		dsc->size = dsc->len;
 	}
 

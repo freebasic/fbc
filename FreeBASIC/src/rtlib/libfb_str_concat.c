@@ -85,9 +85,6 @@ FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *
 	char 	*str1_ptr, *str2_ptr;
 	int 	str1_len, str2_len;
 
-	if( (str1 == NULL) || (str2 == NULL) )
-		return NULL;
-
 	FB_STRSETUP( str1, str1_size, str1_ptr, str1_len )
 
 	FB_STRSETUP( str2, str2_size, str2_ptr, str2_len )

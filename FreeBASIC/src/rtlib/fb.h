@@ -81,18 +81,26 @@ void				fb_hListFreeElem		( FB_LIST *list, FB_LISTELEM *elem );
 
 #define FB_STRSIZE(s) (((FBSTRING *)s)->len & ~FB_TEMPSTRBIT)
 
-#define FB_STRSETUP(s,size,ptr,len)  							\
-	if( size == -1 )                                            \
-	{                                                           \
-		ptr = ((FBSTRING *)s)->data;                            \
-		len = FB_STRSIZE( s );                                  \
-	}                                                           \
-	else                                                        \
-	{                                                           \
-		ptr = (char *)s;                                        \
-		/* always get the real len, as fix-len string will */	\
-		/* have garbage at end (nulls or spaces) */				\
-		len = strlen( (char *)s );                      		\
+#define FB_STRSETUP(s,size,ptr,len)  								\
+	if( s == NULL )													\
+	{																\
+		ptr = NULL;													\
+		len = 0;													\
+	}																\
+	else															\
+	{																\
+		if( size == -1 )                                            \
+		{                                                           \
+			ptr = ((FBSTRING *)s)->data;                            \
+			len = FB_STRSIZE( s );                                  \
+		}                                                           \
+		else                                                        \
+		{                                                           \
+			ptr = (char *)s;                                        \
+			/* always get the real len, as fix-len string will */	\
+			/* have garbage at end (nulls or spaces) */				\
+			len = strlen( (char *)s );                      		\
+		}															\
 	}
 
 typedef struct _FBSTRING {
@@ -129,9 +137,9 @@ FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
 /* public */
 
 FBCALL void 		fb_StrDelete			( FBSTRING *str );
-FBCALL void 		fb_StrAssign 			( void *dst, int dst_size, void *src, int src_size );
+FBCALL void 		*fb_StrAssign 			( void *dst, int dst_size, void *src, int src_size, int fillrem );
 FBCALL FBSTRING		*fb_StrConcat 			( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size );
-FBCALL void 		fb_StrConcatAssign 		( void *dst, int dst_size, void *src, int src_size );
+FBCALL void 		*fb_StrConcatAssign 	( void *dst, int dst_size, void *src, int src_size, int fillrem );
 FBCALL int 			fb_StrCompare 			( void *str1, int str1_size, void *str2, int str2_size );
 FBCALL FBSTRING		*fb_StrAllocTempResult 	( FBSTRING *src );
 FBCALL FBSTRING		*fb_StrAllocTempDesc	( void *str, int str_size );
@@ -253,7 +261,7 @@ FBCALL double 		fb_FIXDouble		( double x );
  * data
  **************************************************************************************************/
 
-FBCALL void 		fb_DataReadStr		( void *dst, int dst_size );
+FBCALL void 		fb_DataReadStr		( void *dst, int dst_size, int fillrem );
 FBCALL void 		fb_DataReadByte		( char *dst );
 FBCALL void 		fb_DataReadShort	( short *dst );
 FBCALL void 		fb_DataReadInt		( int *dst );
@@ -405,8 +413,8 @@ FBCALL unsigned int fb_FileSize			( int fnum );
 
 FBCALL FBSTRING 	*fb_FileStrInput	( int bytes, int fnum );
 
-FBCALL int 			fb_FileLineInput	( int fnum, void *dst, int dst_len );
-FBCALL int 			fb_LineInput		( FBSTRING *text, void *dst, int dst_len, int addquestion, int addnewline );
+FBCALL int 			fb_FileLineInput	( int fnum, void *dst, int dst_len, int fillrem );
+FBCALL int 			fb_LineInput		( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
 
 	   int 			fb_hFilePrintBuffer	( int fnum, char *buffer );
 

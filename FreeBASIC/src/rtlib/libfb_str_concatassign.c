@@ -29,14 +29,20 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_size )
+FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_size, int fillrem )
 {
 	FBSTRING 	*dstr;
 	char 		*src_ptr;
 	int 		src_len, dst_len;
 
-	if( (dst == NULL) || (src == NULL) )
-		return;
+	if( dst == NULL )
+	{
+		/* delete temp? */
+		if( src_size == -1 )
+			fb_hStrDelTemp( (FBSTRING *)src );
+		
+		return dst;
+	}
 
 	/* src */
 	FB_STRSETUP( src, src_size, src_ptr, src_len )
@@ -62,6 +68,8 @@ FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_siz
 		/* don't check byte ptr's */
 		if( dst_size > 0 )
 		{
+			--dst_size;							/* less the null-term */
+			
 			if( src_len > dst_size - dst_len )
 				src_len = dst_size - dst_len;
 		}
@@ -69,10 +77,10 @@ FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_siz
 		fb_hStrCopy( &(((char *)dst)[dst_len]), src_ptr, src_len );
 
 		/* don't check byte ptr's */
-		if( dst_size > 0 )
+		if( (dst_size > 0) && (fillrem != 0) )
 		{
 			/* fill reminder with null's */
-			dst_size -= (dst_len+src_len);
+			dst_size -= (dst_len + src_len);
 			if( dst_size > 0 )
 				memset( &(((char *)dst)[dst_len+src_len]), 0, dst_size );
 		}
@@ -83,4 +91,5 @@ FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_siz
 	if( src_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)src );
 
+	return dst;
 }

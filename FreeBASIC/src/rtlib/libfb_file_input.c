@@ -67,7 +67,7 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 	ctx.f = NULL;
 	ctx.i = 0;
 
-	return fb_LineInput( text, &ctx.s, -1, addquestion, addnewline );
+	return fb_LineInput( text, &ctx.s, -1, 0, addquestion, addnewline );
 
 }
 
@@ -144,13 +144,13 @@ FBCALL int fb_InputDouble( double *dst )
 }
 
 /*:::::*/
-FBCALL int fb_InputString( void *dst, int strlen )
+FBCALL int fb_InputString( void *dst, int strlen, int fillrem )
 {
     char buffer[1024+1];
 
 	fb_hGetNextToken( buffer, 1024, FB_TRUE );
 
-	fb_StrAssign( dst, strlen, buffer, 1024 );
+	fb_StrAssign( dst, strlen, buffer, 0, fillrem );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

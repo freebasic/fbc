@@ -206,9 +206,9 @@ void fb_hStrCopy( char *dst, char *src, int bytes )
 
 #endif
 
-	*dst = '\0';
-
 	}
+
+	*dst = '\0';
 
 }
 

@@ -64,13 +64,13 @@ static short fb_hDataRead( void )
 }
 
 /*:::::*/
-FBCALL void fb_DataReadStr( void *dst, int dst_size )
+FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 {
 	short len;
 
 	len = fb_hDataRead();
 
-	fb_StrAssign( dst, dst_size, (void *)fb_dataptr, len );
+	fb_StrAssign( dst, dst_size, (void *)fb_dataptr, 0, fillrem );
 
 	fb_dataptr += len + 1;
 }

@@ -49,7 +49,7 @@ static FB_PRINTUSGCTX ctx = { 0 };
 FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 {
 
-	fb_StrAssign( (void *)&ctx.fmtstr, -1, fmtstr, -1 );
+	fb_StrAssign( (void *)&ctx.fmtstr, -1, fmtstr, -1, 0 );
 
 	ctx.ptr		= ctx.fmtstr.data;
 	ctx.chars	= FB_STRSIZE( &ctx.fmtstr );
