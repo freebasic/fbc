@@ -523,51 +523,6 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 end function
 
 '':::::
-function hVarLookup( id as string, s as FBSYMBOL ptr, typ as integer, ofs as integer, _
-					 elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr ) as integer
-
-	hVarLookup = FALSE
-
-	s   		= NULL
-	ofs 		= 0
-	elm			= NULL
-	typesymbol 	= NULL
-
-	if( typ = INVALID ) then
-		'' check first for declared vars w/o suffixes
-		s = symbLookupVar( id, typ, ofs, elm, typesymbol )
-		if( s = NULL ) then
-			if( typesymbol <> NULL ) then
-				exit function
-			end if
-			'' now with suffixes
-			typ = hGetDefType( id )
-			s = symbLookupVar( id, typ, ofs, elm, typesymbol )
-		end if
-
-	else
-		'' check first for declared vars w/ suffixes
-		s = symbLookupVar( id, typ, ofs, elm, typesymbol )
-		if( s = NULL ) then
-			if( typesymbol <> NULL ) then
-				exit function
-			end if
-			'' now w/o suffixes
-			s = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
-			if( s <> NULL ) then
-				'' same type?
-				if( typ <> symbGetType( s ) ) then
-					exit function
-				end if
-			end if
-	    end if
-	end if
-
-	hVarLookup = TRUE
-
-end function
-
-'':::::
 function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
 	dim s as FBSYMBOL ptr
 	dim dTB(0) as FBARRAYDIM, alloctype as integer
@@ -676,19 +631,24 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
 
 	''
 	'' lookup
-	if( not hVarLookup( id, s, typ, ofs, elm, typesymbol ) ) then
-	   	if( typesymbol = NULL ) then
-	   		hReportError FB.ERRMSG.DUPDEFINITION
-       	else
-       		hReportError FB.ERRMSG.ELEMENTNOTDEFINED
-       	end if
+	ofs 		= 0
+	elm			= NULL
+	typesymbol 	= NULL
 
-       	exit function
-	end if
+	s = symbLookupVar( id, typ, ofs, elm, typesymbol )
 
 	'' add undeclared variable
 	if( s = NULL ) then
+		if( hGetLastError <> FB.ERRMSG.OK ) then
+			exit function
+		end if
+
 		if( not env.optexplicit ) then
+
+			if( typ = INVALID ) then
+				typ = hGetDefType( id )
+			end if
+
 			s = hVarAddUndecl( id, typ )
 			if( s = NULL ) then
 				hReportError FB.ERRMSG.DUPDEFINITION
@@ -704,9 +664,11 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
     ''
 	lexSkipToken
 
-    ''
-    if( typ = INVALID ) then typ = symbGetType( s )
+	if( typ = INVALID ) then
+		typ = symbGetType( s )
+	end if
 
+    ''
     isbyref = (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYREF) > 0
 
     ''

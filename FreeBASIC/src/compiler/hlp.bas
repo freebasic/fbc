@@ -109,8 +109,9 @@ data "Illegal specification"
 data "Expected 'END WITH'"
 data "Illegal inside a SUB or FUNCTION"
 data "Expected array"
+data "Too many expressions"
 
-const FB.ERRMSGS = 63
+const FB.ERRMSGS = 64
 
 
 '':::::

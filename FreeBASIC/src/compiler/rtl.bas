@@ -3087,7 +3087,6 @@ end sub
 #ifdef AUTOADDGFXLIBS
 private sub hAddGfxLibs
  	symbAddLib( "fbgfx" )
- 	symbAddLib( "SDL" )
 end sub
 #endif
 
@@ -3235,10 +3234,10 @@ sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
     dim pattern as integer
-	
+
 	f = ifuncTB(FB.RTL.GFXPAINT)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
-	
+
  	'' byval x as single
  	astNewPARAM( proc, xexpr, INVALID )
 
@@ -3254,10 +3253,10 @@ sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as 
 		pattern = FALSE
 		astNewPARAM( proc, pexpr )
 	end if
-	
+
 	'' byval border_color as uinteger
 	astNewPARAM( proc, bexpr, INVALID )
-	
+
 	'' pattern as string, byval mode as integer
 	if( pattern = TRUE ) then
 		astNewPARAM( proc, pexpr, INVALID )
@@ -3266,10 +3265,10 @@ sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as 
     	astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR ), INVALID )
 		astNewPARAM( proc, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
 	end if
-	
+
 	'' byval coord_type as integer
 	astNewPARAM( proc, astNewCONST( coord_type, IR.DATATYPE.INTEGER ), INVALID )
-	
+
  	''
  	astFlush proc, vr
 

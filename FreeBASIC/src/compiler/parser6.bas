@@ -1580,7 +1580,7 @@ end function
 '' 				|   SGN( Expression )
 ''				|   FIX( Expression )
 ''				|   INT( Expression )
-''				|	LEN( UDT | data type | Variable ) .
+''				|	LEN( UDT | data type | Function{str} | Variable | Expression ) .
 ''
 function cMathFunct( funcexpr as integer )
     dim expr as integer
@@ -1669,7 +1669,7 @@ function cMathFunct( funcexpr as integer )
 	'' INT( Expression ) is implemented by libc's floor( )
 
 
-	'' LEN( UDT | data type | Variable )
+	'' LEN( UDT | data type | Function{str} | Variable | Expression )
 	case FB.TK.LEN
 		lexSkipToken
 
@@ -1688,12 +1688,13 @@ function cMathFunct( funcexpr as integer )
 				lexSkipToken
 				lgt = FB.INTEGERSIZE
 			else
-
 				if( not cSymbolType( typ, subtype, lgt ) ) then
 					if( not cFunction( expr ) ) then
 						if( not cVariable( expr, FALSE ) ) then
-							hReportError FB.ERRMSG.SYNTAXERROR
-							exit function
+							if( not cExpression( expr ) ) then
+								hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+								exit function
+							end if
 						end if
 					end if
 				end if

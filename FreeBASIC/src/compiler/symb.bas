@@ -854,7 +854,8 @@ function symbAddVarEx( symbol as string, aliasname as string, _
 					   byval typ as integer, byval subtype as FBSYMBOL ptr, _
 					   byval lgt as integer, byval dimensions as integer, dTB() as FBARRAYDIM, _
 				       byval alloctype as integer, _
-				       byval addsuffix as integer, byval preservecase as integer, _
+				       byval addsuffix as integer, _
+				       byval preservecase as integer, _
 				       byval clearname as integer ) as FBSYMBOL ptr static
 
     dim s as FBSYMBOL ptr, sname as string, aname as string
@@ -1001,7 +1002,7 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL p
 
 	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, dTB(), FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
 	if( s = NULL ) then
-		hAllocFloatConst = symbLookupVarEx( cname, typ, ofs, elm, typesymbol, TRUE, FALSE, FALSE )
+		hAllocFloatConst = symbLookupVar( cname, typ, ofs, elm, typesymbol, TRUE, FALSE, FALSE )
 		exit function
 	end if
 
@@ -1031,7 +1032,7 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
 
 	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, lgt + 1, 0, dTB(), FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
 	if( s = NULL ) then
-		s = symbLookupVarEx( cname, FB.SYMBTYPE.FIXSTR, ofs, elm, typesymbol, FALSE, TRUE, FALSE )
+		s = symbLookupVar( cname, FB.SYMBTYPE.FIXSTR, ofs, elm, typesymbol, FALSE, TRUE, FALSE )
 		hAllocStringConst = s 's->v.desc
 		exit function
 	end if
@@ -1754,70 +1755,54 @@ function symbGetUDTElmOffset( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL pt
 end function
 
 '':::::
-function hLookupVar( vname as string ) as FBSYMBOL ptr static
+function hLookupVar( vname as string, byval lookupmode as integer ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
 
 	hLookupVar = NULL
 
-	'' first check the local symbols if current scope > 0
-	if( env.scope > 0 ) then
-		s = hashLookup( ctx.lochash, vname )
-		if( s <> NULL ) then
-			if( s->class = FB.SYMBCLASS.VAR ) then
-				hLookupVar = s
-			end if
-			exit function
-		end if
-	else
-		s = NULL
-	end if
+	s = NULL
 
-	'' check globals (and shared if current scope > 0)
-	if( s = NULL ) then
-		s = hashLookup( ctx.symhash, vname )
-		if( s <> NULL ) then
-			if( s->class = FB.SYMBCLASS.VAR ) then
-				if( (env.scope = 0) or ((s->alloctype and FB.ALLOCTYPE.SHARED) > 0) ) then
+	if( (lookupmode and FB.LOOKUPMODE.LOCAL) > 0 ) then
+		'' first check the local symbols if current scope > 0
+		if( env.scope > 0 ) then
+			s = hashLookup( ctx.lochash, vname )
+			if( s <> NULL ) then
+				if( s->class = FB.SYMBCLASS.VAR ) then
 					hLookupVar = s
 				end if
+				exit function
 			end if
-			exit function
+		end if
+	end if
+
+	if( (lookupmode and FB.LOOKUPMODE.GLOBAL) > 0 ) then
+		'' check globals (and shared if current scope > 0)
+		if( s = NULL ) then
+			s = hashLookup( ctx.symhash, vname )
+			if( s <> NULL ) then
+				if( s->class = FB.SYMBCLASS.VAR ) then
+					if( (env.scope = 0) or ((s->alloctype and FB.ALLOCTYPE.SHARED) > 0) ) then
+						hLookupVar = s
+					end if
+				end if
+				exit function
+			end if
 		end if
 	end if
 
 end function
 
 '':::::
-function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
+function hCheckTypeField( symbol as string, typ as integer, ofs as integer, _
 						  elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, _
-					      byval addsuffix as integer, byval preservecase as integer, _
-					      byval clearname as integer ) as FBSYMBOL ptr static
-    dim vname as string
-    dim s as FBSYMBOL ptr, p as integer
+					      byval preservecase as integer, byval clearname as integer ) as FBSYMBOL ptr static
 
-    symbLookupVarEx = NULL
+  	dim s as FBSYMBOL ptr
+  	dim p as integer
+  	dim vname as string
 
-    ofs 		= 0
-    elm	        = NULL
-    typesymbol 	= NULL
+  	hCheckTypeField = NULL
 
-    if( addsuffix ) then
-    	vname = hCreateNameEx( symbol, typ, preservecase, TRUE, clearname )
-    else
-    	vname = hCreateNameEx( symbol, INVALID, preservecase, TRUE, clearname )
-    end if
-
-	s = hLookupVar( vname )
-	if( s <> NULL ) then
-		s->acccnt = s->acccnt + 1
-		typesymbol = s->subtype
-		symbLookupVarEx = s
-		exit function
-	end if
-
-	''
-	'' check if it's an UDT field
-	''
 	p = instr( 1, symbol, "." )
 	if( p <= 1 ) then
 		exit function
@@ -1825,7 +1810,7 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
 
 	vname = hCreateNameEx( left$( symbol, p-1 ), INVALID, preservecase, TRUE, clearname )
 
-    s = hLookupVar( vname )
+    s = hLookupVar( vname, FB.LOOKUPMODE.ALL )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -1847,14 +1832,121 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
     	exit function
     end if
 
-    symbLookupVarEx = s
+    hCheckTypeField = s
 
 end function
 
 '':::::
-function symbLookupVar( symbol as string, typ as integer, ofs as integer, elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
+					    elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, _
+					    byval addsuffix as integer = TRUE, _
+					    byval preservecase as integer = FALSE, _
+					    byval clearname as integer = TRUE ) as FBSYMBOL ptr static
 
-	symbLookupVar = symbLookupVarEx( symbol, typ, ofs, elm, typesymbol, TRUE, FALSE, TRUE )
+    dim s as FBSYMBOL ptr, stype as integer, t as integer
+    dim vname as string
+    dim cnt as integer
+    dim lookupmode as integer
+
+    symbLookupVar = NULL
+
+    stype = typ									'' save type
+
+    ''
+	if( env.scope = 0 ) then
+		lookupmode = FB.LOOKUPMODE.GLOBAL
+	else
+		lookupmode = FB.LOOKUPMODE.LOCAL
+	end if
+
+    do
+    	typ = stype
+    	cnt = 2									'' try twice, w/ and w/out suffixes
+    	do
+    		ofs 		= 0
+    		elm	        = NULL
+    		typesymbol 	= NULL
+
+    		if( addsuffix ) then
+    			t = typ
+    		else
+    			t = INVALID
+    		end if
+
+    		vname = hCreateNameEx( symbol, t, preservecase, TRUE, clearname )
+
+			''
+			s = hLookupVar( vname, lookupmode )
+			if( s <> NULL ) then
+				typ = symbGetType( s )
+				if( stype <> INVALID ) then
+					'' same type?
+					if( stype <> typ ) then
+						hReportError FB.ERRMSG.DUPDEFINITION
+						exit function
+					end if
+				end if
+
+				s->acccnt = s->acccnt + 1
+				typesymbol = s->subtype
+
+				symbLookupVar = s
+				exit function
+			end if
+
+			''
+			if( not clearname ) then
+				exit do
+			end if
+
+			''
+			'' check if it's an UDT field
+			''
+			s = hCheckTypeField( symbol, typ, ofs, elm, typesymbol, preservecase, clearname )
+			if( s <> NULL ) then
+				s->acccnt = s->acccnt + 1
+
+				symbLookupVar = s
+				exit function
+
+			else
+				if( typesymbol <> NULL ) then
+					hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+					exit function
+				end if
+			end if
+
+			''
+			if( not addsuffix ) then
+				exit do
+			end if
+
+			''
+			cnt = cnt - 1
+			if( cnt = 0 ) then
+				exit do
+			end if
+
+			'' try again, now with or without suffixes
+			if( stype = INVALID ) then
+				'' now with suffixes
+				typ = hGetDefType( symbol )
+			else
+				'' now without suffixes
+				typ = INVALID
+			end if
+
+    	loop
+
+    	'' try next escope, if not yet
+    	if( lookupmode = FB.LOOKUPMODE.GLOBAL ) then
+    		exit do
+    	end if
+
+    	lookupmode = FB.LOOKUPMODE.GLOBAL
+    loop
+
+    typ = stype
 
 end function
 
@@ -2521,7 +2613,11 @@ end function
 '':::::
 function symbGetName( byval s as FBSYMBOL ptr ) as string static
 
-	symbGetName = strpGet( s->nameidx )
+	if( s <> NULL ) then
+		symbGetName = strpGet( s->nameidx )
+	else
+		symbGetName = ""
+	end if
 
 end function
 
@@ -2535,10 +2631,14 @@ end function
 '':::::
 function symbGetVarName( byval s as FBSYMBOL ptr ) as string static
 
-	if( s->aliasidx <> INVALID ) then
-		symbGetVarName = strpGet( s->aliasidx )
+	if( s <> NULL ) then
+		if( s->aliasidx <> INVALID ) then
+			symbGetVarName = strpGet( s->aliasidx )
+		else
+			symbGetVarName = strpGet( s->nameidx )
+		end if
 	else
-		symbGetVarName = strpGet( s->nameidx )
+		symbGetVarName = ""
 	end if
 
 end function
@@ -3120,7 +3220,7 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, byval issub as integer 
 
 					if( s->v.dims > 0 ) then
 						if( (s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
-							rtlArrayErase s
+							rtlArrayErase astNewVAR( s, 0, s->typ )
 						elseif( s->typ = FB.SYMBTYPE.STRING ) then
 							rtlArrayStrErase s
 						end if

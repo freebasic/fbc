@@ -1537,7 +1537,7 @@ function hDeclExternVar( id as string, byval typ as integer, byval subtype as FB
     	exit function
     end if
 
-    symbol = symbLookupVarEx( id, typ, ofs, elm, subtype, addsuffix, FALSE, TRUE )
+    symbol = symbLookupVar( id, typ, ofs, elm, subtype )
     if( symbol <> NULL ) then
     	if( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
     		exit function
@@ -1713,7 +1713,7 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
     atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
 
     ''
-  	s = symbLookupVarEx( id, typ, 0, NULL, NULL, addsuffix, FALSE, TRUE )
+  	s = symbLookupVar( id, typ, 0, NULL, NULL )
    	if( s = NULL ) then
    		s = symbAddVarEx( id, idalias, typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
    		if( s = NULL ) then
@@ -1803,6 +1803,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
     dim litstr as integer, islitstring as integer
     dim dimensions as integer, subtype as FBSYMBOL ptr
     dim istatic as integer
+    dim cnt as integer
 
 	cSymbolInit = FALSE
 
@@ -1814,22 +1815,29 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 
 	istatic = (symbGetAllocType( s ) and FB.ALLOCTYPE.STATIC) > 0
 
-	'dimensions =
-	'subtype =
+	'' - types are known too, must be checked
+	'' - var-len strings can't be accepted on static/mod-level
+	'' - fix-len strings must be padded by emit if static/mod-level
+	'' - the same goes with same with user types *and* arrays!
 
-	'' 1) dimensions + low/upp bounds are known, as arrays can't be dynamic, check them..
-	'' 2) types are known too, must be checked
-	'' 3) var-len strings can't be accepted on static/mod-level
-	'' 4) fix-len strings must be padded by emit if static/mod-level
-	'' 5) the same goes with same with user types
+	'' impossible to save as trees, they can get really complex with udt with udts inside,
+	'' just emit the current vars on a .data seg and restore the .code seg, as DATA does,
+	'' emit must be aware that the var was already initialized..
 
-	'' {
+	'' '{'
 	if( not hMatch( CHAR_LBRACKET ) ) then
 		hReportError FB.ERRMSG.EXPECTEDLBRACKET
 		exit function
 	end if
 
+	cnt = 0
+	dimensions = symbGetVarDimensions( s )
 	do
+
+		if( cnt > dimensions ) then
+			hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
+			exit function
+		end if
 
 		islitstring = FALSE
 		if( istatic or env.scope = 0 ) then
@@ -1870,9 +1878,12 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 
 		end if
 
-	loop
+		cnt = cnt + 1
 
-	'' }
+	'' ','
+	loop while( hMatch( CHAR_COMMA ) )
+
+	'' '}'
 	if( not hMatch( CHAR_RBRACKET ) ) then
 		hReportError FB.ERRMSG.EXPECTEDRBRACKET
 		exit function
