@@ -34,13 +34,11 @@ type FBERRCTX
 	lastline	as integer
 end type
 
-
-declare sub 		hUcase		( src as string )
-
-
 ''globals
 	dim shared errctx as FBERRCTX
-	redim shared deftypeTB( 0 ) as integer
+
+	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
+
 
 ''warning msgs (level, msg)
 warningdata:
@@ -289,8 +287,6 @@ sub hlpInit
     dim i as integer
 
 	''
-	redim deftypeTB( 0 to (90-65+1)-1 ) as integer
-
 	for i = 0 to (90-65+1)-1
 		deftypeTB(i) = FB.SYMBTYPE.INTEGER
 	next i
@@ -300,14 +296,12 @@ end sub
 '':::::
 sub hlpEnd
 
-	erase deftypeTB
-
 end sub
 
 '':::::
 function hFBrelop2IRrelop( byval op as integer ) as integer static
 
-    select case op
+    select case as const op
     case FB.TK.EQ
     	op = IR.OP.EQ
     case FB.TK.GT
@@ -434,15 +428,14 @@ end sub
 
 '':::::
 sub hClearName( src as string ) static
-    dim i as integer, c as integer
+    dim i as integer
     dim p as byte ptr
 
 	p = sadd( src )
 
 	for i = 1 to len( src )
-		c = *p
 
-		select case c
+		select case as const *p
 		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE, CHAR_TILD
 			*p = CHAR_ZLOW
 		end select
@@ -455,41 +448,44 @@ end sub
 '':::::
 function hCreateName( symbol as string, byval typ as integer = INVALID, _
 					  byval preservecase as integer = FALSE, _
-					  byval addunderscore as integer = TRUE, byval clearname as integer = TRUE ) as string static
-    dim nm as string
+					  byval addunderscore as integer = TRUE, _
+					  byval clearname as integer = TRUE ) as string static
+    dim sname as string
 
 	if( addunderscore ) then
-		nm = "_"
+		sname = "_" + symbol
 	else
-		nm = ""
+		sname = symbol
 	end if
 
-	nm = nm + symbol
-
 	if( not preservecase ) then
-		hUcase nm
+		hUcase sname
 	end if
 
     if( clearname ) then
-    	hClearName nm
+    	hClearName sname
     end if
 
-    if( (typ <> INVALID) and (typ < 128) ) then
-    	nm = nm + "_" + chr$( CHAR_ALOW + typ )
+    if( typ <> INVALID ) then
+    	sname = sname + chr$( CHAR_ALOW + typ )
     end if
 
-	hCreateName = nm
+	hCreateName = sname
 
 end function
 
 '':::::
 function hCreateProcAlias( symbol as string, byval argslen as integer, _
-						   byval toupper as integer, byval mode as integer ) as string static
+						   byval mode as integer ) as string static
     dim nm as string
     dim addat as integer
 
 #ifdef TARGET_WIN32
-	nm = "_" + symbol
+	if( env.clopt.nounderprefix ) then
+		nm = symbol
+	else
+		nm = "_" + symbol
+	end if
 
     if( env.clopt.nostdcall ) then
     	addat = FALSE
@@ -507,10 +503,6 @@ function hCreateProcAlias( symbol as string, byval argslen as integer, _
 #else
 	nm = symbol
 #endif
-
-	if( toupper ) then
-		hUcase nm
-	end if
 
 	hCreateProcAlias = nm
 

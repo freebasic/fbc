@@ -165,13 +165,24 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 	cSubOrFuncHeader = FALSE
 
 	'' ID
-	if( lexCurrentToken <> FB.TK.ID ) then
+	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
 
-	typ = lexTokenType
-	id = lexEatToken
+	typ 	= lexTokenType
+	proc    = lexTokenSymbol
+
+    '' symbol found?
+    if( proc <> NULL ) then
+    	'' not a proc?
+    	if( proc->class <> FB.SYMBCLASS.PROC ) then
+    		hReportError FB.ERRMSG.DUPDEFINITION
+    		exit function
+    	end if
+    end if
+
+	id 		= lexEatToken
 	subtype = NULL
 
 	if( (isSub) and (typ <> INVALID) ) then
@@ -264,16 +275,15 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 	end if
 
     ''
-    proc = symbLookupProc( id )
     if( proc = NULL ) then
     	proc = symbAddProc( id, aliasid, "", typ, subtype, alloctype, mode, argc, argv() )
     	if( proc = NULL ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
+    		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
     		exit function
     	end if
     else
     	if( symbGetProcIsDeclared( proc ) ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
+    		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
     		exit function
     	end if
 
@@ -284,7 +294,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 
     	'' check calling convention
     	if( symbGetFuncMode( proc ) <> mode ) then
-    		hReportError FB.ERRMSG.ILLEGALPARAMSPEC
+    		hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
     		exit function
     	end if
 
@@ -316,7 +326,8 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 		n = rtlStrAllocTmpResult( t )
 		astFlush n, vr
 	else
-		vr = irAllocVRVAR( typ, s, 0 )
+		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+		vr = irAllocVRVAR( typ, s, s->ofs )
 		irEmitLOAD IR.OP.LDFUNCRESULT, vr
 	end if
 

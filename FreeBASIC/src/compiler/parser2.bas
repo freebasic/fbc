@@ -826,8 +826,9 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 	if( lexCurrentToken = FB.TK.ADDROFCHAR ) then
 		lexSkipToken
 
-		proc = symbLookupProc( lexTokenText )
-		if( proc <> NULL ) then
+		'' proc?
+		if( lexCurrentToken = FB.TK.IDFUNCT ) then
+			proc = lexTokenSymbol
 			lexSkipToken
 
 			if( not hProcPtrBody( proc, addrofexpr ) ) then
@@ -877,11 +878,12 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 			exit function
 		end if
 
-		proc = symbLookupProc( lexTokenText )
-		if( proc = NULL ) then
+		'' proc?
+		if( lexCurrentToken <> FB.TK.IDFUNCT ) then
 			hReportError FB.ERRMSG.UNDEFINEDSYMBOL
 			exit function
 		else
+			proc = lexTokenSymbol
 			lexSkipToken
 		end if
 
@@ -991,10 +993,11 @@ function cAtom( atom as integer )
 
   	atom = INVALID
 
-  	if( lexCurrentTokenClass = FB.TKCLASS.KEYWORD ) then
+  	select case lexCurrentTokenClass
+  	case FB.TKCLASS.KEYWORD
   		res = cQuirkFunction( atom )
 
-  	elseif( lexCurrentToken = FB.TK.ID ) then
+  	case FB.TKCLASS.IDENTIFIER
   		res = cConstant( atom )
   		if( not res ) then
   			res = cFunction( atom, sym )
@@ -1003,9 +1006,9 @@ function cAtom( atom as integer )
   			end if
   		end if
 
-  	else
+  	case else
   		res = cLiteral( atom )
-  	end if
+  	end select
 
 	cAtom = res
 
@@ -1020,10 +1023,10 @@ function cConstant( constexpr as integer )
 
 	res = FALSE
 
-	if( lexCurrentToken = FB.TK.ID ) then
+	if( lexCurrentToken = FB.TK.IDCONST ) then
 		typ = lexTokenType
 
-		c = symbLookupConst( lexTokenText, typ )
+		c = lexTokenSymbol
 		if( c <> NULL ) then
 
   			text = symbGetConstText( c )
@@ -1258,19 +1261,15 @@ end function
 ''Function        =   ID ('(' ProcParamList ')')? .	 			//ambiguity w/ var!!
 ''
 function cFunction( funcexpr as integer, sym as FBSYMBOL ptr )
-	dim id as string
 
 	cFunction = FALSE
 
 	'' ID
-	if( lexCurrentToken <> FB.TK.ID ) then
+	if( lexCurrentToken <> FB.TK.IDFUNCT ) then
 		exit function
 	end if
 
-	id = lexTokenText
-
-	sym = symbLookupProc( id )
-
+	sym = lexTokenSymbol
 	if( sym = NULL ) then
 		exit function
 	else

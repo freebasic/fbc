@@ -85,17 +85,19 @@ sub cDebugLineBegin
 
     if( env.clopt.debug and (env.reclevel = 0) ) then
     	if( env.dbglnum > 0 ) then
+    		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
     		irFlush
     		env.dbgpos = emitGetPos - env.dbgpos
     		if( env.dbgpos > 0 ) then
     			emitDbgLine env.dbglnum, env.dbglname
     		end if
     	end if
+    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
     	irFlush
     	env.dbgpos	 = emitGetPos
     	env.dbglnum  = lexLineNum
     	env.dbglname = hMakeTmpStr
-    	emitLABEL env.dbglname, TRUE
+    	emitLABEL env.dbglname
     end if
 
 end sub
@@ -105,6 +107,7 @@ sub cDebugLineEnd
 
     if( env.clopt.debug and (env.reclevel = 0) ) then
     	if( env.dbglnum > 0 ) then
+    		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
     		irFlush
      		env.dbgpos = emitGetPos - env.dbgpos
     		if( env.dbgpos > 0 ) then
@@ -206,7 +209,8 @@ function cLabel
     l = NULL
 
     '' NUM_LIT
-    if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+    select case lexCurrentTokenClass
+    case FB.TKCLASS.NUMLITERAL
 		if( lexTokenType = FB.SYMBTYPE.INTEGER ) then
 			l = symbAddLabel( lexTokenText )
 			if( l = NULL ) then
@@ -218,12 +222,12 @@ function cLabel
 		end if
 
 	'' ID
-	elseif( token = FB.TK.ID ) then
+	case FB.TKCLASS.IDENTIFIER
 		'' ':'
 		if( lexLookAhead(1) = CHAR_COLON ) then
 
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
-			if( symbIsProc( lexTokenText ) ) then
+			if( lexCurrentToken = FB.TK.IDFUNCT ) then
 				exit function
 			end if
 
@@ -239,7 +243,7 @@ function cLabel
 			lexSkipToken
 
 		end if
-    end if
+    end select
 
     if( l <> NULL ) then
 
@@ -1410,20 +1414,20 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 		end if
 	end if
 
-	'' if it isn't a common array, redim it
-	if( ((alloctype and FB.ALLOCTYPE.COMMON) = 0) and (dimensions > 0) ) then
+	'' if dimensions not = -1 (COMMON or DIM|REDIM array()), redim it
+	if( dimensions > 0 ) then
 		if( not rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) ) then
 			exit function
 		end if
 	end if
 
-	'' if common, check for max dimensions used
+	'' if COMMON, check for max dimensions used
 	if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
 		if( dimensions > symbGetArrayDimensions( s ) ) then
 			symbSetArrayDimensions s, dimensions
 		end if
 
-	'' or if dims = -1 (cause of "redim|dim array()")
+	'' or if dims = -1 (cause of "DIM|REDIM array()")
 	elseif( symbGetArrayDimensions( s ) = -1 ) then
 		symbSetArrayDimensions s, dimensions
 	end if
@@ -1528,9 +1532,9 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
-''ArrayDecl       =   IDX_OPEN Expression (TO Expression)?
+''ArrayDecl       =   '(' Expression (TO Expression)?
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
-''				      IDX_CLOSE .
+''				      ')' .
 ''
 function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
     dim res as integer
@@ -1542,7 +1546,7 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
     dimensions = 0
 
     '' IDX_OPEN
-    if( not hMatch( FB.TK.IDXOPENCHAR ) ) then
+    if( not hMatch( CHAR_LPRNT ) ) then
     	exit function
     end if
 
@@ -1603,7 +1607,7 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 
 	'' IDX_CLOSE
     res = TRUE
-    if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
+    if( not hMatch( CHAR_RPRNT ) ) then
     	hReportError FB.ERRMSG.EXPECTEDRPRNT
     	res = FALSE
     end if
@@ -1973,7 +1977,7 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 	cSubOrFuncDecl = FALSE
 
 	'' ID
-	if( lexCurrentToken <> FB.TK.ID ) then
+	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -2120,7 +2124,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
 	end select
 
 	'' only allow keywords as arg names on prototypes
-	if( lexCurrentToken <> FB.TK.ID ) then
+	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
 		if( not isproto ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexCurrentTokenClass = FB.TKCLASS.KEYWORD ) then
@@ -2413,14 +2417,14 @@ function cOptDecl
 					lexSkipToken
 
 				case FB.TKCLASS.IDENTIFIER
-					'' proc exists?
-					s = symbLookupProc( lexTokenText )
-					if( s = NULL ) then
+					'' proc?
+					if( lexCurrentToken <> FB.TK.IDFUNCT ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 						exit function
 					end if
 
 					'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
+					s = lexTokenSymbol
 					if( symbGetProcLib( s ) <> "fb" ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 						exit function
@@ -2722,8 +2726,8 @@ function cProcCallOrAssign
 		lexSkipToken
 
 		'' ID
-		if( lexCurrentToken = FB.TK.ID ) then
-			proc = symbLookupProc( lexTokenText )
+		if( lexCurrentToken = FB.TK.IDFUNCT ) then
+			proc = lexTokenSymbol
 			if( proc <> NULL ) then
 				lexSkipToken
 
@@ -2733,12 +2737,15 @@ function cProcCallOrAssign
 				hReportError FB.ERRMSG.PROCNOTDECLARED
 				exit function
 		    end if
+		else
+			hReportError FB.ERRMSG.PROCNOTDECLARED
+			exit function
 		end if
 
 	'' ID?
-	case FB.TK.ID
+	case FB.TK.IDFUNCT
 
-		proc = symbLookupProc( lexTokenText )
+		proc = lexTokenSymbol
 		if( proc <> NULL ) then
 			lexSkipToken
 
@@ -2915,25 +2922,23 @@ function cAsmCode
 
 		text = lexTokenText
 
-		if( lexCurrentToken( LEXCHECK_NOWHITESPC ) = FB.TK.ID ) then
+		if( lexCurrentTokenClass( LEXCHECK_NOWHITESPC ) = FB.TKCLASS.IDENTIFIER ) then
 			if( not emitIsKeyword( text ) ) then
-				'' lookup functions
-				s = symbLookupProc( text )
-				if( s <> NULL ) then
-					text = symbGetProcName( s )
-				else
+				select case lexCurrentToken
+				'' function?
+				case FB.TK.IDFUNCT
+					text = symbGetProcName( lexTokenSymbol )
+				'' const?
+				case FB.TK.IDCONST
+					text = symbGetConstText( lexTokenSymbol )
+				case else
 					'' lookup var's
 					s = symbLookupVar( text, lexTokenType, ofs, elm, subtype )
 					if( s <> NULL ) then
-						text = symbGetVarName( s )
+						symbGetVarName( s, text )
         			else
-						'' and const's
-						s = symbLookupConst( text, lexTokenType )
-						if( s <> NULL ) then
-							text = symbGetConstText( s )
-						end if
 					end if
-				end if
+				end select
 			end if
 		end if
 
@@ -2945,6 +2950,7 @@ function cAsmCode
 
 	''
 	if( len( asmline ) > 0 ) then
+		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		irFlush
 		emitASM asmline
 	end if

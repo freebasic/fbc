@@ -1,4 +1,6 @@
 
+[ ] allow single line IF and ELSE to have a stupid ':' before the first statement
+
 [ ] macros -- single line, with recursive expansion, same as in C's #define's -- problem with
     "foo.bar" when "foo" is a macro argument, lookupdefine will have to check for dots and break
     the tokens
@@ -9,18 +11,17 @@
 
 [ ] PEEK(SymbolType, Expression) and POKE(SymbolType, Expression) as in PB 8
 
-[ ] add support for BYVAL strings -- they are a pointer already, so when used as argument AST
+[ ] add support for BYVAL strings -- they are a pointers already, so when used as argument AST
     will have to handle that
 
 [ ] update glut.bi with the changes received
 
 [ ] update comctrl.bi adding ALL the #define's
 
-[ ] make the damn icon 16x16 and transparent
-
 [ ] rewrite the IR module using pointers instead of indexes, to be able to make fast links between
     a vreg and a TAC node later, so no MaxDistance will be needed
 
+*** *** *** *** ***
 [ ] parser should never call IR directly, or no inline functions can be added (or never-called
     private functions eliminated). For that be done, all labels must be handled by AST, DATA, ASM,
     var initializers and jump tbs too, all IR/AST flush calls must be changed to astLink or such,
@@ -28,7 +29,6 @@
     started or when the end of file is reached -- should it be better done as a CFG-like than
     handled at AST that is becoming more and more complex (don't make the AST a parser tree!)?
 
-*** *** *** *** ***
 [ ] inline functions -- better than macros as they can be "turned off" when debugged (AST will need some kind of "link"
                         node to glue all nodes parsed, and they can't be flushed by any part of the parser -- everything
                         must be done at the AST then, no IR calls at the parser.. quite hard to do due the var

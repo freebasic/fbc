@@ -592,10 +592,6 @@ function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
 
 	hVarAddUndecl = NULL
 
-	'if( symbIsProc( id ) ) then
-	'	exit function
-	'end if
-
 	if( env.isprocstatic ) then
 		alloctype = FB.ALLOCTYPE.STATIC
 	else
@@ -686,8 +682,8 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
     '' check for '('')', it's not an array, just passing by desc
     idxexpr  = INVALID
     isbydesc = FALSE
-    if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
-    	if( lexLookahead(1) <> FB.TK.IDXCLOSECHAR ) then
+    if( lexCurrentToken = CHAR_LPRNT ) then
+    	if( lexLookahead(1) <> CHAR_RPRNT ) then
 
     		'' ArrayIdx?
     		if( (elm = NULL) and (symbIsArray( sym )) ) then
@@ -697,7 +693,7 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
     			cArrayIdx( sym, idxexpr )
 
 				'' ')'
-    			if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
+    			if( not hMatch( CHAR_RPRNT ) ) then
     				hReportError FB.ERRMSG.EXPECTEDRPRNT
     				exit function
     			end if
@@ -776,7 +772,7 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
    		end if
 	end if
 
-	'' call function, pushing params on stack
+	'' function pointer dref? call it
 	if( isfunctionptr ) then
 		''
 		if( elm <> NULL ) then

@@ -41,8 +41,6 @@ Type HASHCTX
 End Type
 
 
-declare function 	hashHash	( symbol as string, byval nodes as uinteger ) as integer
-
 declare function 	hashNewItem	( byval list as HASHLIST ptr ) as HASHITEM ptr
 declare sub 		hashDelItem	( byval list as HASHLIST ptr, byval item as HASHITEM ptr )
 
@@ -103,7 +101,7 @@ sub hashFree( hash as THASH ) static
 end sub
 
 '':::::
-function hashHash( symbol as string, byval nodes as uinteger ) as integer static
+function hashHash( symbol as string ) as uinteger static
 	dim index as uinteger
 	dim i as integer, c as uinteger
 	dim p as ubyte ptr
@@ -116,20 +114,18 @@ function hashHash( symbol as string, byval nodes as uinteger ) as integer static
 		p = p + 1
 	next i
 
-	hashHash = index mod nodes
+	hashHash = index
 
 end function
 
 ''::::::
-function hashLookup( hash as THASH, symbol as string ) as any ptr static
-    dim index as integer
+function hashLookupEx( hash as THASH, symbol as string, byval index as uinteger ) as any ptr static
     dim item as HASHITEM ptr
     dim list as HASHLIST ptr
 
-    hashLookup = NULL
+    hashLookupEx = NULL
 
-    '' calc hash
-    index = hashHash( symbol, hash.nodes )
+    index = index mod hash.nodes
 
 	'' get the start of list
 	list = hash.list + (index * len( HASHLIST ))
@@ -141,11 +137,18 @@ function hashLookup( hash as THASH, symbol as string ) as any ptr static
 	'' loop until end of list or if item was found
 	do while( item <> NULL )
 		if( strpGet( item->nameidx ) = symbol ) then
-			hashLookup = item->idx
+			hashLookupEx = item->idx
 			exit function
 		end if
 		item = item->r
 	loop
+
+end function
+
+''::::::
+function hashLookup( hash as THASH, symbol as string ) as any ptr static
+
+    hashLookup = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
 end function
 
@@ -203,11 +206,11 @@ end sub
 
 ''::::::
 sub hashAdd( hash as THASH, symbol as string, byval idx as any ptr, byval nameidx as integer ) static
-    dim index as integer
+    dim index as uinteger
     dim item as HASHITEM ptr
 
     '' calc hash
-    index = hashHash( symbol, hash.nodes )
+    index = hashHash( symbol ) mod hash.nodes
 
     '' allocate a new node
     item = hashNewItem( hash.list + (index * len( HASHLIST )) )
@@ -223,12 +226,12 @@ end sub
 
 ''::::::
 sub hashDel( hash as THASH, symbol as string ) static
-    dim index as integer
+    dim index as uinteger
     dim item as HASHITEM ptr
     dim list as HASHLIST ptr
 
     '' calc hash
-    index = hashHash( symbol, hash.nodes )
+    index = hashHash( symbol ) mod hash.nodes
 
 	'' get start of list
 	list = hash.list + (index * len( HASHLIST ))

@@ -37,9 +37,9 @@ declare function cConstExprValue			( littext as string ) as integer
 '' globals
 	dim shared incfiles as integer			'' can't be on ENV as it is restored on recursion
 
-	redim shared envcopyTB( 0 ) as FBENV
-	redim shared incpathTB( 0 ) as string
-	redim shared incfileTB( 0 ) as string
+	dim shared envcopyTB( ) as FBENV
+	dim shared incpathTB( ) as string
+	dim shared incfileTB( ) as string
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -219,6 +219,7 @@ sub fbSetDefaultOptions
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
 	env.clopt.nostdcall 	= FALSE
+	env.clopt.nounderprefix	= FALSE
 	env.clopt.outtype		= FB_OUTTYPE_EXECUTABLE
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= TRUE
@@ -238,6 +239,8 @@ sub fbSetOption ( byval opt as integer, byval value as integer )
 		env.clopt.errorcheck = value
 	case FB.COMPOPT.NOSTDCALL
 		env.clopt.nostdcall = value
+	case FB.COMPOPT.NOUNDERPREFIX
+		env.clopt.nounderprefix = value
 	case FB.COMPOPT.OUTTYPE
 		env.clopt.outtype = value
 	case FB.COMPOPT.RESUMEERROR
@@ -267,6 +270,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		res = env.clopt.errorcheck
 	case FB.COMPOPT.NOSTDCALL
 		res = env.clopt.nostdcall
+	case FB.COMPOPT.NOUNDERPREFIX
+		res = env.clopt.nounderprefix
 	case FB.COMPOPT.OUTTYPE
 		res = env.clopt.outtype
 	case FB.COMPOPT.RESUMEERROR

@@ -182,7 +182,7 @@ declare function 	astNewLOAD			( byval l as integer, byval dtype as integer ) as
 declare sub 		astLoadLOAD			( byval n as integer, vr as integer )
 
 declare function 	astNewBRANCH		( byval op as integer, byval label as FBSYMBOL ptr, _
-										  byval l as integer ) as integer
+										  byval l as integer = INVALID ) as integer
 declare sub 		astLoadBRANCH		( byval n as integer, vr as integer )
 
 declare sub 		astOptimize			( byval n as integer )

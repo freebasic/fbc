@@ -298,7 +298,7 @@ end function
 '':::::
 ''indentifier    = ALPHA { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
 ''
-sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer ) static
+sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, dpos as integer ) static
 	dim c as integer
 
 	'' ALPHA
@@ -306,25 +306,30 @@ sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer ) 
 	pid = pid + 1
 
 	tlen = 1
+	dpos = 0
 
 	'' { [ALPHADIGIT | '_' | '.'] }
 	do
 		c = lexCurrentChar
 		select case as const c
-		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_DOT, CHAR_UNDER
+		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
 
-			tlen = tlen + 1
-			if( tlen > FB.MAXNAMELEN ) then
-				hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
-				exit function
-			end if
-
-			*pid = lexEatChar
-			pid = pid + 1
+		case CHAR_DOT
+			dpos = tlen
 
 		case else
 			exit do
 		end select
+
+		tlen = tlen + 1
+		if( tlen > FB.MAXNAMELEN ) then
+ 			hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
+			exit function
+		end if
+
+		*pid = lexEatChar
+		pid = pid + 1
+
 	loop
 
 	'' null-term
@@ -690,8 +695,7 @@ end sub
 sub lexNextToken ( t as FBTOKEN, byval flags as LEXCHECK_ENUM ) static
 	dim char as integer
 	dim islinecont as integer, isnumber as integer, iswith as integer
-	dim d as FBDEFINE ptr, lgt as integer
-	dim token as string
+	dim token as string, lgt as integer, dotpos as integer
 
 reread:
 	poke @t.text, 0								''t.text = ""
@@ -806,19 +810,20 @@ readnumber:
 	'':::::
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 readid:
-		lexReadIdentifier @t.text, t.tlen, t.typ
+		lexReadIdentifier @t.text, t.tlen, t.typ, dotpos
 		token = t.text
+
+		t.sym = symbLookup( token, t.id, t.class )
 
 		if( (flags and LEXCHECK_NODEFINE) = 0 ) then
 			'' is it a define?
-			d = symbLookupDefine( token )
-			if( d <> NULL ) then
-				lgt = symbGetDefineLen( d )
+			if( t.id = FB.TK.IDDEFINE ) then
+				lgt = symbGetDefineLen( t.sym )
 				if( lgt > 0 ) then
 					if( ctx.deflen = 0 ) then
-						ctx.deftext = symbGetDefineText( d )
+						ctx.deftext = symbGetDefineText( t.sym )
 					else
-						ctx.deftext = symbGetDefineText( d ) + _
+						ctx.deftext = symbGetDefineText( t.sym ) + _
 									  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
 					end if
 					ctx.defptr = @ctx.deftext
@@ -831,8 +836,6 @@ readid:
 				goto reread
         	end if
         end if
-
-       	t.id = symbLookupKeyword( token, t.class, t.typ )
 
        	'' WITH hack
        	if( iswith ) then
@@ -1230,6 +1233,13 @@ end function
 function lexTokenType as integer
 
 	lexTokenType = ctx.tokenTB(0).typ
+
+end function
+
+''::::
+function lexTokenSymbol as FBSYMBOL ptr
+
+	lexTokenSymbol = ctx.tokenTB(0).sym
 
 end function
 

@@ -99,16 +99,16 @@ function lexPreProcessor as integer
 
     select case as const lexCurrentToken
 
-    '' DEFINE ID LITERAL+
+    '' DEFINE ID (!WHITESPC '(' ID+ ')')? LITERAL+
     case FB.TK.DEFINE
     	lexSkipToken LEXCHECK_NODEFINE
 
     	'' ID
-    	if( symbLookupDefine( lexTokenText ) <> NULL ) then
+    	if( lexTokenSymbol <> NULL ) then
     		hReportError FB.ERRMSG.DUPDEFINITION
     		exit function
     	else
-    		id = lexEatToken
+    		id = lexEatToken( LEXCHECK_NOWHITESPC )
     	end if
 
     	'' LITERAL+
@@ -120,7 +120,7 @@ function lexPreProcessor as integer
     case FB.TK.UNDEF
     	lexSkipToken LEXCHECK_NODEFINE
 
-    	if( not symbDelDefine( lexTokenText ) ) then
+    	if( not symbDelDefine( lexTokenSymbol ) ) then
     		hReportError FB.ERRMSG.VARIABLENOTDECLARED
     		exit function
     	else
@@ -204,6 +204,7 @@ end function
 '':::::
 private function ppIf as integer
     dim istrue as integer
+    dim d as FBSYMBOL ptr
 
     ppIf = FALSE
 
@@ -214,17 +215,27 @@ private function ppIf as integer
 	case FB.TK.IFDEF
         lexSkipToken LEXCHECK_NODEFINE
 
-		if( symbLookupDefine( lexEatToken ) <> NULL ) then
-			istrue = TRUE
+		d = lexTokenSymbol
+		if( d <> NULL ) then
+			if( d->class = FB.SYMBCLASS.DEFINE ) then
+				istrue = TRUE
+			end if
 		end if
+		lexSkipToken
 
 	'' IFNDEF ID
 	case FB.TK.IFNDEF
         lexSkipToken LEXCHECK_NODEFINE
 
-		if( symbLookupDefine( lexEatToken ) = NULL ) then
+		d = lexTokenSymbol
+		if( d = NULL ) then
 			istrue = TRUE
+		else
+			if( d->class <> FB.SYMBCLASS.DEFINE ) then
+				istrue = TRUE
+			end if
 		end if
+		lexSkipToken
 
 	'' IF Expression
 	case FB.TK.IF
@@ -542,6 +553,7 @@ end function
 ''             |   LITERAL .
 private function ppParentExpr( parexpr as integer, atom as string, isnumber as integer ) as integer
     dim res as integer
+    dim d as FBSYMBOL ptr
 
   	ppParentExpr = FALSE
   	res = FALSE
@@ -575,11 +587,14 @@ private function ppParentExpr( parexpr as integer, atom as string, isnumber as i
     		lexSkipToken LEXCHECK_NODEFINE
     	end if
 
-		if( symbLookupDefine( lexEatToken ) <> NULL ) then
-			parexpr = TRUE
-		else
-			parexpr = FALSE
+		d = lexTokenSymbol
+		parexpr = FALSE
+		if( d <> NULL ) then
+			if( d->class = FB.SYMBCLASS.DEFINE ) then
+				parexpr = TRUE
+			end if
 		end if
+		lexSkipToken
 
   		if( not hMatch( CHAR_RPRNT ) ) then
   			hReportError FB.ERRMSG.EXPECTEDRPRNT

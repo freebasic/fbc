@@ -39,9 +39,10 @@ declare function 	hFileExists				( filename as string ) as integer
 declare function 	hScapeStr				( text as string ) as string
 declare function 	hUnescapeStr			( text as string ) as string
 declare sub 		hClearName				( src as string )
+declare sub 		hUcase					( src as string )
 
 declare function 	hCreateProcAlias		( symbol as string, byval argslen as integer, _
-						   					  byval toupper as integer, byval mode as integer ) as string
+						   					  byval mode as integer ) as string
 declare function 	hCreateDataAlias		( symbol as string, byval isimport as integer ) as string
 
 

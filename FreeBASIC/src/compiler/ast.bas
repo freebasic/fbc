@@ -65,7 +65,7 @@ declare sub 		astUpdStrConcat		( byval n as integer )
 	dim shared tempstrTB( 0 to AST.MAXTEMPSTRINGS-1 ) as ASTTEMPSTR
 	dim shared temparraydescTB( 0 to AST.MAXTEMPARRAYDESCS-1 ) as ASTTEMPARRAYDESC
 
-	redim shared astTB( 0 ) as ASTNODE
+	dim shared astTB( ) as ASTNODE
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc node copy/swap
@@ -1889,41 +1889,41 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 		case IR.OP.DIV
 			astTB(l).value = astTB(l).value / astTB(r).value
 		case IR.OP.INTDIV
-			astTB(l).value = int(astTB(l).value) \ int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) \ cint(astTB(r).value)
 		case IR.OP.MOD
-			astTB(l).value = int(astTB(l).value) mod int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) mod cint(astTB(r).value)
 
 		case IR.OP.SHL
-			astTB(l).value = int(astTB(l).value) shl int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) shl cint(astTB(r).value)
 		case IR.OP.SHR
-			astTB(l).value = int(astTB(l).value) shr int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) shr cint(astTB(r).value)
 
 		case IR.OP.AND
-			astTB(l).value = int(astTB(l).value) and int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) and cint(astTB(r).value)
 		case IR.OP.OR
-			astTB(l).value = int(astTB(l).value) or int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) or cint(astTB(r).value)
 		case IR.OP.XOR
-			astTB(l).value = int(astTB(l).value) xor int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) xor cint(astTB(r).value)
 		case IR.OP.EQV
-			astTB(l).value = int(astTB(l).value) eqv int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) eqv cint(astTB(r).value)
 		case IR.OP.IMP
-			astTB(l).value = int(astTB(l).value) imp int(astTB(r).value)
+			astTB(l).value = cint(astTB(l).value) imp cint(astTB(r).value)
 
 		case IR.OP.POW
 			astTB(l).value = astTB(l).value ^ astTB(r).value
 
 		case IR.OP.EQ
-			astTB(l).value = int(astTB(l).value = astTB(r).value)
+			astTB(l).value = cint(astTB(l).value = astTB(r).value)
 		case IR.OP.GT
-			astTB(l).value = int(astTB(l).value > astTB(r).value)
+			astTB(l).value = cint(astTB(l).value > astTB(r).value)
 		case IR.OP.LT
-			astTB(l).value = int(astTB(l).value < astTB(r).value)
+			astTB(l).value = cint(astTB(l).value < astTB(r).value)
 		case IR.OP.NE
-			astTB(l).value = int(astTB(l).value <> astTB(r).value)
+			astTB(l).value = cint(astTB(l).value <> astTB(r).value)
 		case IR.OP.LE
-			astTB(l).value = int(astTB(l).value <= astTB(r).value)
+			astTB(l).value = cint(astTB(l).value <= astTB(r).value)
 		case IR.OP.GE
-			astTB(l).value = int(astTB(l).value >= astTB(r).value)
+			astTB(l).value = cint(astTB(l).value >= astTB(r).value)
 		end select
 
 
@@ -2112,7 +2112,7 @@ sub asthBOPCheckDataType( byval l as integer, byval r as integer, v1 as integer,
 			'' if int oper is an IMM, allocate a temp var
 			if( irIsIMM( v1 ) and (dc2 = IR.DATACLASS.FPOINT) ) then
 				s = hAllocFloatConst( str$( irGetVRValue( v1 ) ), dt2 )
-				v1 = irAllocVRVAR( dt2, s, 0 )
+				v1 = irAllocVRVAR( dt2, s, s->ofs )
 			else
 				vt = irAllocVREG( dt2 )
 				irEmitCONVERT vt, dt2, v1, dt1
@@ -2132,7 +2132,7 @@ sub asthBOPCheckDataType( byval l as integer, byval r as integer, v1 as integer,
 
 			if( irIsIMM( v2 ) and (dc1 = IR.DATACLASS.FPOINT) ) then
 				s = hAllocFloatConst( str$( irGetVRValue( v2 ) ), dt1 )
-				v2 = irAllocVRVAR( dt1, s, 0 )
+				v2 = irAllocVRVAR( dt1, s, s->ofs )
 				astTB(r).dtype = dt1
 			else
 				'' hack! if it's an int var, let the FPU do it..
@@ -2280,7 +2280,7 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 	if( astTB(o).defined ) then
 		select case as const op
 		case IR.OP.NOT
-			astTB(o).value = not int(astTB(o).value)
+			astTB(o).value = not cint(astTB(o).value)
 			astTB(o).dtype = IR.DATATYPE.INTEGER
 		case IR.OP.NEG
 			astTB(o).value = - astTB(o).value
@@ -2320,23 +2320,36 @@ end function
 '':::::
 function asthUOPConvDataType( byval op as integer, byval o as integer, v1 as integer ) as integer static
     dim vt as integer
-    dim dt1 as integer
-    dim dc1 as integer
+    dim dt1 as integer, dc1 as integer
+    dim dtype as integer
 
 	dt1 = astTB(o).dtype
-	dc1 = irGetDataClass( dt1 )
 	vt = INVALID
 
 	'' NOT can only be done with integers
-	select case op
-	case IR.OP.NOT
-		if( dc1 <> IR.DATACLASS.INTEGER ) then
+	if( op = IR.OP.NOT ) then
+		if( irGetDataClass( dt1 ) <> IR.DATACLASS.INTEGER ) then
 			vt = irAllocVREG( IR.DATATYPE.INTEGER )
 			irEmitCONVERT vt, IR.DATATYPE.INTEGER, v1, dt1
 			v1 = vt
 			astTB(o).dtype = IR.DATATYPE.INTEGER
+			dt1 = IR.DATATYPE.INTEGER
 		end if
-	end select
+	end if
+
+	'' byte? convert to int
+	if( irGetDataSize( dt1 ) = 1 ) then
+		if( irIsSigned( dt1 ) ) then
+			dtype = IR.DATATYPE.INTEGER
+		else
+			dtype = IR.DATATYPE.UINT
+		end if
+
+		vt = irAllocVREG( dtype )
+		irEmitCONVERT vt, dtype, v1, dt1
+		v1 = vt
+		astTB(o).dtype = dtype
+	end if
 
 	if( vt <> INVALID ) then
 		asthUOPConvDataType = TRUE
@@ -2409,7 +2422,7 @@ sub astLoadCONST( byval n as integer, vreg as integer ) static
   	'' if node is a float, create a temp float var (FPU can't operate on IMM's)
   	if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.FPOINT ) then
 		s = hAllocFloatConst( str$( astTB(n).value ), astTB(n).dtype )
-		vreg = irAllocVRVAR( astTB(n).dtype, s, 0 )
+		vreg = irAllocVRVAR( astTB(n).dtype, s, s->ofs )
 
 	else
 		vreg = irAllocVRIMM( astTB(n).dtype, int(astTB(n).value) )
@@ -2437,6 +2450,9 @@ function astNewVAR( byval sym as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, _
 
 	astTB(n).var.sym 	= sym
 	astTB(n).var.elm 	= elm
+	if( sym <> NULL ) then
+		ofs = ofs + sym->ofs
+	end if
 	astTB(n).var.ofs	= ofs
 
 end function
@@ -2479,24 +2495,14 @@ end function
 
 '':::::
 function asthEmitIDX( byval v as integer, byval ofs as integer, byval mult as integer, byval vi as integer ) as integer static
-    dim s as FBSYMBOL ptr, vs as integer, vd as integer, vt as integer, dt as integer
-    dim mul as string, dif as string
-    dim isdyn as integer, diff as integer
+    dim s as FBSYMBOL ptr, vd as integer
 
     s = astTB(v).var.sym
 
-    isdyn = symbGetIsDynamic( s )
-    diff  = symbGetArrayDiff( s )
-
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
-	if( not isdyn ) then
-		ofs = ofs + diff + astTB(v).var.ofs
+	if( not symbGetIsDynamic( s ) ) then
+		ofs = ofs + symbGetArrayDiff( s ) + astTB(v).var.ofs
 	else
-		ofs = ofs + astTB(v).var.ofs
-	end if
-
-	''
-	if( isdyn ) then
 		s = NULL
 	end if
 
@@ -2874,7 +2880,8 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewBRANCH( byval op as integer, byval label as FBSYMBOL ptr, byval l as integer ) as integer static
+function astNewBRANCH( byval op as integer, byval label as FBSYMBOL ptr, _
+					   byval l as integer = INVALID ) as integer static
     dim n as integer
     dim dtype as integer
 
@@ -2920,7 +2927,7 @@ sub astLoadBRANCH( byval n as integer, vr as integer )
 			irEmitCALLPTR vr, INVALID, 0
 		end if
 	else
-		irEmitBRANCHNF astTB(n).op, astTB(n).ex
+		irEmitBRANCH astTB(n).op, astTB(n).ex
 	end if
 
 end sub

@@ -166,7 +166,7 @@ sub edgbhCloseMain
     exitlabel = symbAddLabel( hMakeTmpStr )
 
     lname = symbGetLabelName( exitlabel )
-    emitLABEL lname, FALSE
+    emitLABEL lname
 
     edbgProcEnd NULL, ctx.maininitlabel, exitlabel
 
@@ -257,7 +257,7 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, b
 	hWriteStr ctx.asmf, TRUE, STABN + "224,0," + ltrim$( str$( endline ) ) + "," + endname + "-" + procname
 
 	lname = hMakeTmpStr
-	emitLABEL lname, FALSE
+	emitLABEL lname
 	hWriteStr ctx.asmf, TRUE, STABS + QUOTE+QUOTE + ",36,0,0," + lname + "-" + procname
 
 end sub

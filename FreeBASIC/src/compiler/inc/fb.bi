@@ -46,6 +46,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.DEBUG
 	FB.COMPOPT.CPUTYPE
 	FB.COMPOPT.NOSTDCALL
+	FB.COMPOPT.NOUNDERPREFIX
 	FB.COMPOPT.ERRORCHECK
 	FB.COMPOPT.OUTTYPE
 	FB.COMPOPT.RESUMEERROR
@@ -59,6 +60,7 @@ type FBCMMLINEOPT
 	cputype			as integer
 	errorcheck		as integer					'' runtime error check (def= false)
 	nostdcall		as integer
+	nounderprefix	as integer					'' don't add underscore's the function names
 	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
 	resumeerr 		as integer					'' add support for RESUME (def= false)
 	warninglevel	as integer					'' (def = 0)

@@ -34,6 +34,7 @@ type FBTOKEN
 	text			as string * FB.MAXNAMELEN
 	littext			as string * FB.MAXLITLEN 	'' used by lit-strings
 	tlen			as integer
+	sym				as FBSYMBOL ptr
 end type
 
 
@@ -55,6 +56,7 @@ declare function 	lexCurrentTokenClass 	( byval flags as LEXCHECK_ENUM = LEXCHEC
 declare function 	lexTokenText 			( ) as string
 declare function 	lexTokenTextLen 		( ) as integer
 declare function 	lexTokenType 			( ) as integer
+declare function 	lexTokenSymbol 			( ) as FBSYMBOL ptr
 
 declare function 	lexEatToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as string
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )

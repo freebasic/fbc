@@ -23,19 +23,16 @@
 declare sub 		symbInit				( )
 declare sub 		symbEnd					( )
 
+declare function 	symbLookup				( symbname as string, id as integer, class as integer ) as FBSYMBOL ptr
 declare function 	symbLookupSentinel		( id as string, byval class as integer, byval islocal as integer ) as FBSENTINEL ptr
-declare function 	symbLookupDefine		( id as string ) as FBDEFINE ptr
 declare function 	symbLookupVar			( symbol as string, typ as integer, ofs as integer, _
 											  elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, _
 											  byval addsuffix as integer = TRUE, _
 											  byval preservecase as integer = FALSE, _
 											  byval clearname as integer = TRUE ) as FBSYMBOL ptr
-declare function 	symbLookupProc			( id as string ) as FBSYMBOL ptr
 declare function 	symbLookupLabel			( label as string ) as FBSYMBOL ptr
-declare function 	symbLookupConst			( constname as string, byval typ as integer ) as FBSYMBOL ptr
 declare function 	symbLookupUDT			( typename as string, lgt as integer ) as FBSYMBOL ptr
 declare function 	symbLookupEnum			( id as string ) as FBSYMBOL ptr
-declare function 	symbLookupKeyword		( kname as string, class as integer, typ as integer ) as integer
 declare function 	symbLookupFunctionResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbGetLabelName		( byval l as FBSYMBOL ptr ) as string
@@ -45,7 +42,8 @@ declare function 	symbGetLabelIsDeclared	( byval l as FBSYMBOL ptr ) as integer
 declare	function 	symbGetFirstNode 		( ) as FBSYMBOL ptr
 declare	function 	symbGetNextNode			( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function 	symbGetVarName			( byval s as FBSYMBOL ptr ) as string
+declare sub 		symbGetVarName			( byval s as FBSYMBOL ptr, sname as string )
+declare function 	symbGetVarOfs			( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 declare function 	symbGetVarDscName		( byval s as FBSYMBOL ptr ) as string
 declare function 	symbGetConstName		( byval c as FBSYMBOL ptr ) as string
@@ -93,8 +91,8 @@ declare function 	symbGetArrayDescriptor	( byval s as FBSYMBOL ptr ) as FBSYMBOL
 
 declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, byval realsize as integer = TRUE ) as integer
 
-declare function 	symbGetDefineText		( byval d as FBDEFINE ptr ) as string
-declare function 	symbGetDefineLen		( byval d as FBDEFINE ptr ) as integer
+declare function 	symbGetDefineText		( byval d as FBSYMBOL ptr ) as string
+declare function 	symbGetDefineLen		( byval d as FBSYMBOL ptr ) as integer
 
 declare function 	symbCalcArgsLen			( byval f as FBSYMBOL ptr, byval args as integer ) as integer
 declare function 	symbCalcArgLen			( byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer ) as integer
@@ -110,11 +108,8 @@ declare sub 		symbSetArrayDimensions	( byval s as FBSYMBOL ptr, byval dims as in
 declare sub 		symbSetAllocType		( byval s as FBSYMBOL ptr, byval alloctype as integer )
 declare sub 		symbSetProcIsDeclared	( byval f as FBSYMBOL ptr, byval isdeclared as integer )
 
-declare function 	symbIsProc				( id as string ) as integer
-declare function 	symbIsConst				( constname as string ) as integer
-
-declare function 	symbAddKeyword			( kname as string, byval id as integer, byval class as integer ) as FBKEYWORD ptr
-declare function 	symbAddDefine			( id as string, text as string ) as FBDEFINE ptr
+declare function 	symbAddKeyword			( keyname as string, byval id as integer, byval class as integer ) as FBSYMBOL ptr
+declare function 	symbAddDefine			( defname as string, text as string ) as FBSYMBOL ptr
 declare function 	symbAddLabel			( label as string ) as FBSYMBOL ptr
 declare function 	symbAddLabelEx			( label as string, byval declaring as integer, byval createalias as integer = FALSE ) as FBSYMBOL ptr
 declare function 	symbAddVar				( symbol as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
@@ -153,8 +148,8 @@ declare sub 		symbSetLastLabel		( byval l as FBSYMBOL ptr )
 declare sub 		symbFreeLocalDynSymbols	( byval proc as FBSYMBOL ptr, byval issub as integer )
 declare sub 		symbDelLocalSymbols		( )
 
-declare function 	symbDelKeyword			( kname as string ) as integer
-declare function 	symbDelDefine			( id as string ) as integer
+declare function 	symbDelKeyword			( keyname as string ) as integer
+declare function 	symbDelDefine			( byval d as FBSYMBOL ptr ) as integer
 declare sub 		symbDelLabel			( byval l as FBSYMBOL ptr )
 declare sub 		symbDelVar				( byval s as FBSYMBOL ptr )
 declare sub 		symbDelPrototype		( byval f as FBSYMBOL ptr )

@@ -832,6 +832,7 @@ sub printOptions
 	print "-nodeflibs", "Do not include the default libraries"
 #ifdef TARGET_WIN32
 	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
+	'''''print "-nounderscore", "Don't add the underscore prefix to function names"
 #endif
 	print "-o <name>", "Set output name (in the same number as source files)"
 	print "-p <name>", "Add a path to search for libraries"
@@ -880,7 +881,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "arch", "e", "ex", "w", "nostdcall", "nodeflibs"
+			case "arch", "e", "ex", "w", "nodeflibs", "nostdcall", "nounderscore"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -1014,6 +1015,8 @@ function processCompOptions as integer
 #ifdef TARGET_WIN32
 			case "nostdcall"
 				fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
+			case "nounderscore"
+				fbSetOption FB.COMPOPT.NOUNDERPREFIX, TRUE
 #endif
 
 			case "nodeflibs"

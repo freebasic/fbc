@@ -2096,6 +2096,7 @@ sub rtlDataStoreBegin static
     dim label as FBSYMBOL ptr, lname as string
     dim l as FBSYMBOL ptr
 
+	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 	irFlush
 
 	'' switch section, can't be code coz it will screw up debugging
@@ -2111,7 +2112,7 @@ sub rtlDataStoreBegin static
 		end if
 
 		lname = symbGetLabelName( l )
-		emitLABEL lname, TRUE
+		emitLABEL lname
 
 	else
 		lname = symbGetLabelName( symbLookupLabel( FB.DATALABELNAME ) )
@@ -2139,7 +2140,7 @@ sub rtlDataStoreBegin static
     		ctx.labelcnt = 0
     	end if
 
-    	emitLABEL lname, TRUE
+    	emitLABEL lname
 
     else
     	symbSetLastLabel symbLookupLabel( FB.DATALABELNAME )
@@ -2367,6 +2368,8 @@ function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval is
 			f = ifuncTB(FB.RTL.PRINTSINGLE)
 		case IR.DATATYPE.DOUBLE
 			f = ifuncTB(FB.RTL.PRINTDOUBLE)
+		case IR.DATATYPE.USERDEF
+			exit function						'' illegal
 		case else
 			if( dtype >= IR.DATATYPE.POINTER ) then
 				f = ifuncTB(FB.RTL.PRINTUINT)
@@ -2499,6 +2502,8 @@ function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval ex
 			f = ifuncTB(FB.RTL.WRITESINGLE)
 		case IR.DATATYPE.DOUBLE
 			f = ifuncTB(FB.RTL.WRITEDOUBLE)
+		case IR.DATATYPE.USERDEF
+			exit function						'' illegal
 		case else
 			if( dtype >= IR.DATATYPE.POINTER ) then
 				f = ifuncTB(FB.RTL.WRITEUINT)
@@ -2710,20 +2715,21 @@ function rtlMemSwap( byval dst as integer, byval src as integer ) as integer sta
 	dtype = astGetDataType( dst )
 	if( (dtype <> IR.DATATYPE.USERDEF) and (astGetClass( dst ) = AST.NODECLASS.VAR) ) then
 
+		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		d = astGetSymbol( dst )
 		s = astGetSymbol( src )
 
 		'' push src
-		vr = irAllocVRVAR( dtype, s, 0 )
+		vr = irAllocVRVAR( dtype, s, s->ofs )
 		irEmitPUSH vr
 
 		'' src = dst
-		vr = irAllocVRVAR( dtype, s, 0 )
-		vs = irAllocVRVAR( dtype, d, 0 )
+		vr = irAllocVRVAR( dtype, s, s->ofs )
+		vs = irAllocVRVAR( dtype, d, d->ofs )
 		irEmitSTORE vr, vs
 
 		'' pop dst
-		vr = irAllocVRVAR( dtype, d, 0 )
+		vr = irAllocVRVAR( dtype, d, d->ofs )
 		irEmitPOP vr
 
 		exit sub
@@ -2989,8 +2995,7 @@ end sub
 '':::::
 sub rtlErrorSetHandler( byval newhandler as integer, byval savecurrent as integer ) static
     dim proc as integer, f as FBSYMBOL ptr
-
-    dim vr as integer, vs as integer
+    dim v as integer, vr as integer
 
 	''
 	f = ifuncTB(FB.RTL.ERRORSETHANDLER)
@@ -3000,17 +3005,19 @@ sub rtlErrorSetHandler( byval newhandler as integer, byval savecurrent as intege
     astNewPARAM( proc, newhandler, INVALID )
 
     ''
-    astFlush proc, vr
-
+    v = INVALID
     if( savecurrent ) then
     	if( env.scope > 0 ) then
     		if( env.procerrorhnd = NULL ) then
 				env.procerrorhnd = symbAddTempVar( IR.DATATYPE.UINT )
-
-				vs = irAllocVRVAR( IR.DATATYPE.UINT, env.procerrorhnd, 0 )
-				irEmitSTORE vs, vr
+                v = astNewVAR( env.procerrorhnd, NULL, 0, IR.DATATYPE.UINT )
+                astFlush astNewASSIGN( v, proc ), vr
     		end if
 		end if
+    end if
+
+    if( v = INVALID ) then
+    	astFlush proc, vr
     end if
 
 end sub
@@ -3048,8 +3055,9 @@ end sub
 
 '':::::
 sub rtlErrorResume( byval isnext as integer )
-    dim f as FBSYMBOL ptr
+    dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
+    dim dst as integer
 
 	''
 	if( not isnext ) then
@@ -3058,11 +3066,12 @@ sub rtlErrorResume( byval isnext as integer )
 		f = ifuncTB(FB.RTL.ERRORRESUMENEXT)
 	end if
 
-    ''
-	vr = irAllocVREG( IR.DATATYPE.INTEGER )
-	irEmitCALLFUNCT f, 0, vr
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 0 )
 
-    irEmitBRANCHPTR vr
+    ''
+    dst = astNewBRANCH( IR.OP.JUMPPTR, NULL, proc )
+
+    astFlush dst, vr
 
 end sub
 
@@ -3577,6 +3586,8 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
 		f = ifuncTB(FB.RTL.INPUTSINGLE)
 	case IR.DATATYPE.DOUBLE
 		f = ifuncTB(FB.RTL.INPUTDOUBLE)
+	case IR.DATATYPE.USERDEF
+		exit function							'' illegal
 	end select
 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )

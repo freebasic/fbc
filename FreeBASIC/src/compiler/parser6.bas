@@ -42,6 +42,7 @@ defint a-z
 function cGotoStmt
 	dim l as FBSYMBOL ptr, lname as string
 	dim isglobal as integer, isnext as integer
+	dim vr as integer
 
 	cGotoStmt = FALSE
 
@@ -55,8 +56,7 @@ function cGotoStmt
 		end if
 		lexSkipToken
 
-		isglobal = symbGetLabelScope( l ) = 0
-		irEmitBRANCH IR.OP.JMP, l, isglobal
+		astFlush astNewBRANCH( IR.OP.JMP, l ), vr
 
 		cGotoStmt = TRUE
 
@@ -69,9 +69,7 @@ function cGotoStmt
 		end if
 		lexSkipToken
 
-		lname = symbGetLabelName( l )
-		isglobal = symbGetLabelScope( l ) = 0
-		irEmitCALL lname, 0, isglobal
+		astFlush astNewBRANCH( IR.OP.CALL, l ), vr
 
 		cGotoStmt = TRUE
 
@@ -79,7 +77,8 @@ function cGotoStmt
 	case FB.TK.RETURN
 		lexSkipToken
 
-		if( (lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL) or (lexCurrentToken = FB.TK.ID) ) then
+		select case lexCurrentTokenClass
+		case FB.TKCLASS.NUMLITERAL, FB.TKCLASS.IDENTIFIER
 
 			l = symbLookupLabel( lexTokenText )
 			if( l = NULL ) then
@@ -87,12 +86,12 @@ function cGotoStmt
 			end if
 			lexSkipToken
 
-			isglobal = symbGetLabelScope( l ) = 0
-			irEmitBRANCH IR.OP.JMP, l, isglobal
+			astFlush astNewBRANCH( IR.OP.JMP, l ), vr
 
-		else
+		case else
+			''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 			irEmitRETURN 0
-		end if
+		end select
 
 		cGotoStmt = TRUE
 
@@ -1007,8 +1006,8 @@ function cFileStmt
 		end if
 
     	isarray = FALSE
-    	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
-    		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
+    	if( lexCurrentToken = CHAR_LPRNT ) then
+    		if( lexLookahead(1) = CHAR_RPRNT ) then
     			isarray = symbIsArray( astGetSymbol( expr2 ) )
     			if( isarray ) then
     				lexSkipToken
@@ -1052,8 +1051,8 @@ function cFileStmt
 		end if
 
     	isarray = FALSE
-    	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
-    		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
+    	if( lexCurrentToken = CHAR_LPRNT ) then
+    		if( lexLookahead(1) = CHAR_RPRNT ) then
     			isarray = symbIsArray( astGetSymbol( expr2 ) )
     			if( isarray ) then
     				lexSkipToken
@@ -1147,7 +1146,7 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 	l = 0
 	do
 		if( (lexCurrentTokenClass <> FB.TKCLASS.NUMLITERAL) and _
-			(lexCurrentToken <> FB.TK.ID) ) then
+			(lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -1193,6 +1192,7 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
     '' emit table
     irEmitLABEL tbsym, FALSE
 
+    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
     irFlush
 
     ''

@@ -1,5 +1,5 @@
-#ifndef REG_BI
-#define REG_BI
+#ifndef REG_BI__
+#define REG_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -66,4 +66,4 @@ end type
 declare function 	regNewClass			( byval class as integer, byval regs as integer, byval isstack as integer ) as REGCLASS ptr
 declare function 	regDelClass			( byval reg as REGCLASS ptr ) as integer
 
-#endif '' REG_BI
+#endif '' REG_BI__

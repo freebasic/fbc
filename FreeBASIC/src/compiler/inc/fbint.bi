@@ -28,6 +28,7 @@ const FB.MAXINCFILES		= 128
 const FB.MAXNAMELEN			= 64
 const FB.MAXLITLEN			= 1024				'' literal strings max length
 const FB.MAXNUMLEN			= 32
+const FB.MAXOPERANDLEN		= FB.MAXNAMELEN + 2 + 16 + 2 + 1
 
 const FB_MAXPROCARGS		= 64
 const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
@@ -35,7 +36,7 @@ const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
 const FB.MAXGOTBITEMS		= 64
 
 ''
-const FB.INITSYMBOLNODES	= 8000
+const FB.INITSYMBOLNODES	= 10000
 const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 20
 
 const FB.INITARGNODES		= 4000
@@ -43,8 +44,6 @@ const FB.INITARGNODES		= 4000
 const FB.INITDIMNODES		= 400
 
 const FB.INITLIBNODES		= 50
-
-const FB.INITDEFINENODES	= 3000
 
 
 ''
@@ -166,6 +165,9 @@ enum FBTK_ENUM
 	FB.TK.NUMLIT
 	FB.TK.STRLIT
 	FB.TK.ID
+	FB.TK.IDFUNCT
+	FB.TK.IDCONST
+	FB.TK.IDDEFINE
 
 	FB.TK.REM
 
@@ -370,8 +372,6 @@ const FB.TK.COMMENTCHAR			= CHAR_APOST	'' '
 const FB.TK.DIRECTIVECHAR		= CHAR_DOLAR	'' $
 const FB.TK.DECLSEPCHAR			= CHAR_COMMA	'' ,
 const FB.TK.ASSIGN				= FB.TK.EQ		'' special case, due the way lex processes comparators
-const FB.TK.IDXOPENCHAR			= CHAR_LPRNT	'' (
-const FB.TK.IDXCLOSECHAR		= CHAR_RPRNT	'' )
 const FB.TK.DEREFCHAR			= CHAR_CARET	'' *
 const FB.TK.ADDROFCHAR			= CHAR_AT		'' @
 
@@ -478,15 +478,6 @@ type FBLIBRARY
 	nameidx			as integer
 end type
 
-''
-type FBDEFINE
-	prv				as FBDEFINE ptr				'' linked-list nodes
-	nxt				as FBDEFINE	ptr				'' /
-
-	nameidx			as integer
-	textidx			as integer
-end type
-
 
 ''
 enum SYMBCLASS_ENUM
@@ -497,6 +488,8 @@ enum SYMBCLASS_ENUM
 	FB.SYMBCLASS.PROC
 	FB.SYMBCLASS.LABEL
 	FB.SYMBCLASS.ENUM
+	FB.SYMBCLASS.DEFINE
+	FB.SYMBCLASS.KEYWORD
 end enum
 
 
@@ -507,6 +500,19 @@ enum SYMBLOOKUPMODE_ENUM
 	FB.LOOKUPMODE.ALL			= FB.LOOKUPMODE.LOCAL or FB.LOOKUPMODE.GLOBAL
 end enum
 
+
+''
+''
+type FBSKEYWORD
+	id				as integer
+	class			as integer
+end type
+
+''
+type FBSDEFINE
+	textidx			as integer
+	args			as integer
+end type
 
 ''
 type FBLABEL
@@ -605,6 +611,7 @@ type FBSYMBOL
 	scope			as integer
 
 	lgt				as integer
+	ofs				as integer					'' used with local vars and args
 
 	acccnt			as integer					'' access counter (number of lookup's)
 
@@ -617,6 +624,8 @@ type FBSYMBOL
 		elm			as FBSUDTELM
 		proc		as FBSPROC
 		lbl			as FBLABEL
+		def			as FBSDEFINE
+		key			as FBSKEYWORD
 	end union
 
 	array			as FBSARRAY					'' shared by var and elm
@@ -629,16 +638,6 @@ type FBLOCSYMBOL
 	nxt				as FBLOCSYMBOL ptr			'' /
 
     s				as FBSYMBOL ptr
-end type
-
-''
-type FBKEYWORD
-	prv				as FBKEYWORD ptr			'' linked-list nodes
-	nxt				as FBKEYWORD ptr			'' /
-
-	nameidx			as integer
-	id				as integer
-	class			as integer
 end type
 
 

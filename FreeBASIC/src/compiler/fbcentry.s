@@ -16,7 +16,7 @@
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-# fbc DOS entrypoint hack for compiler
+# fbc DOS entrypoint hack for compiler (assemble this file using GAS for DJGPP only)
 #
 # chng: jan/2005 written [DrV]
 #

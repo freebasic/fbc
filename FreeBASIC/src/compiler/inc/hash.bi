@@ -44,7 +44,9 @@ end type
 declare sub 		hashInit	( )
 declare sub 		hashNew		( hash as THASH, byval nodes as integer )
 declare sub 		hashFree	( hash as THASH )
+declare function 	hashHash	( symbol as string ) as uinteger
 declare function 	hashLookup	( hash as THASH, symbol as string ) as any ptr
+declare function 	hashLookupEx( hash as THASH, symbol as string, byval index as uinteger ) as any ptr
 declare sub 		hashAdd		( hash as THASH, symbol as string, byval idx as any ptr, byval nameidx as integer )
 declare sub 		hashDel		( hash as THASH, symbol as string )
 
