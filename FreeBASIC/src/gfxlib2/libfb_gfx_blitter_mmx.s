@@ -38,15 +38,17 @@ const16to15_gb:		.int	0xFFC0FFC0, 0xFFC0FFC0
 const16to16_g:		.int	0x07E007E0, 0x07E007E0
 
 const32to15_rb:		.int	0x00F800F8, 0x00F800F8
-const32to15_mul_rgb:	.int	0x04000001, 0x04000001
-const32to15_mul_bgr:	.int	0x00010400, 0x00010400
+const32to15_mul_bgr:	.int	0x04000001, 0x04000001
+const32to15_mul_rgb:	.int	0x00010400, 0x00010400
 const32to15_g:		.int	0x0000F800, 0x0000F800
 
 const32to16_rb:		.int	0x00F800F8, 0x00F800F8
-const32to16_mul_rgb:	.int	0x08000001, 0x08000001
-const32to16_mul_bgr:	.int	0x00010800, 0x00010800
+const32to16_mul_bgr:	.int	0x08000001, 0x08000001
+const32to16_mul_rgb:	.int	0x00010800, 0x00010800
 const32to16_g:		.int	0x0000FC00, 0x0000FC00
 
+const32to32_g:		.int	0x0000FF00, 0x0000FF00
+const32to32_b:		.int	0x00FF0000, 0x00FF0000
 
 .text
 
@@ -72,7 +74,7 @@ FUNC(fb_hBlit8to15RGBMMX)
 	movl DIRTY(%ebx), %edx
 	movl DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to15_rb), %mm2
-	movq (const32to15_mul_rgb), %mm3
+	movq (const32to15_mul_bgr), %mm3
 	movq (const32to15_g), %mm6
 
 LABEL(blit8to15RGB_y_loop)
@@ -164,7 +166,7 @@ FUNC(fb_hBlit8to15BGRMMX)
 	movl DIRTY(%ebx), %edx
 	movl DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to15_rb), %mm2
-	movq (const32to15_mul_bgr), %mm3
+	movq (const32to15_mul_rgb), %mm3
 	movq (const32to15_g), %mm6
 
 LABEL(blit8to15BGR_y_loop)
@@ -256,7 +258,7 @@ FUNC(fb_hBlit8to16RGBMMX)
 	movl DIRTY(%ebx), %edx
 	movl DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to16_rb), %mm2
-	movq (const32to16_mul_rgb), %mm3
+	movq (const32to16_mul_bgr), %mm3
 	movq (const32to16_g), %mm6
 
 LABEL(blit8to16RGB_y_loop)
@@ -351,7 +353,7 @@ FUNC(fb_hBlit8to16BGRMMX)
 	movl DIRTY(%ebx), %edx
 	movl DEVICE_PALETTE(%ebx), %ebx
 	movq (const32to16_rb), %mm2
-	movq (const32to16_mul_bgr), %mm3
+	movq (const32to16_mul_rgb), %mm3
 	movq (const32to16_g), %mm6
 
 LABEL(blit8to16BGR_y_loop)
@@ -562,12 +564,12 @@ LABEL(blit8to24BGR_x_loop)
 	movd %ecx, %mm3
 	popl %ecx
 
-	psllq $24, %mm1
-	psllq $8, %mm3
+	psllq $16, %mm1
+	psrlq $8, %mm0
 	movq %mm2, %mm4
 	por %mm1, %mm0		/* mm0 = |       r2 g2 | b2 r1 g1 b1 | */
-	psrlq $16, %mm4
-	psllq $48, %mm2
+	psrlq $24, %mm4
+	psllq $40, %mm2
 	por %mm4, %mm3		/* mm3 = |             | r4 g4 b4 r3 | */
 	por %mm2, %mm0		/* mm0 = | g3 b3 r2 g2 | b2 r1 g1 b1 | */
 
@@ -1138,34 +1140,510 @@ LABEL(blit16to32_next_line)
 
 /*:::::*/
 FUNC(fb_hBlit32to15RGBMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(1)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+	movq (const32to15_rb), %mm2
+	movq (const32to15_mul_rgb), %mm3
+	movq (const32to15_g), %mm6
+
+LABEL(blit32to15RGB_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to15RGB_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to15RGB_x_loop)
+	movq (%esi), %mm0
+	movq 8(%esi), %mm1
+	movq %mm0, %mm4
+	movq %mm1, %mm5
+	pand %mm2, %mm4
+	pand %mm2, %mm5
+	addl $8, %edi
+	addl $16, %esi
+	pmaddwd %mm3, %mm4
+	pmaddwd %mm3, %mm5
+	pand %mm6, %mm0
+	pand %mm6, %mm1
+	psrld $3, %mm4
+	psrld $3, %mm5
+	psrld $6, %mm0
+	psrld $6, %mm1
+	por %mm4, %mm0
+	por %mm5, %mm1
+	packssdw %mm1, %mm0
+	
+	movq %mm0, -8(%edi)
+	decl %ecx
+	jnz blit32to15RGB_x_loop
+	popl %edi
+	
+LABEL(blit32to15RGB_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl %eax
+	jnz blit32to15RGB_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(1)
+	popl %ebp
 	ret
 
 
 /*:::::*/
 FUNC(fb_hBlit32to15BGRMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(1)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+	movq (const32to15_rb), %mm2
+	movq (const32to15_mul_bgr), %mm3
+	movq (const32to15_g), %mm6
+
+LABEL(blit32to15BGR_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to15BGR_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to15BGR_x_loop)
+	movq (%esi), %mm0
+	movq 8(%esi), %mm1
+	movq %mm0, %mm4
+	movq %mm1, %mm5
+	pand %mm2, %mm4
+	pand %mm2, %mm5
+	addl $8, %edi
+	addl $16, %esi
+	pmaddwd %mm3, %mm4
+	pmaddwd %mm3, %mm5
+	pand %mm6, %mm0
+	pand %mm6, %mm1
+	psrld $3, %mm4
+	psrld $3, %mm5
+	psrld $6, %mm0
+	psrld $6, %mm1
+	por %mm4, %mm0
+	por %mm5, %mm1
+	packssdw %mm1, %mm0
+	
+	movq %mm0, -8(%edi)
+	decl %ecx
+	jnz blit32to15BGR_x_loop
+	popl %edi
+	
+LABEL(blit32to15BGR_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl %eax
+	jnz blit32to15BGR_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(1)
+	popl %ebp
 	ret
 
 
 /*:::::*/
 FUNC(fb_hBlit32to16RGBMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(1)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+	movq (const32to16_rb), %mm2
+	movq (const32to16_mul_rgb), %mm3
+	movq (const32to16_g), %mm6
+
+LABEL(blit32to16RGB_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to16RGB_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to16RGB_x_loop)
+	movq (%esi), %mm0
+	movq 8(%esi), %mm7
+	movq %mm0, %mm1
+	punpckldq %mm7, %mm0
+	punpckhdq %mm7, %mm1
+	movq %mm0, %mm4
+	movq %mm1, %mm5
+	pand %mm2, %mm4
+	pand %mm2, %mm5
+	addl $8, %edi
+	addl $16, %esi
+	pmaddwd %mm3, %mm4
+	pmaddwd %mm3, %mm5
+	pand %mm6, %mm0
+	pand %mm6, %mm1
+	psrld $3, %mm4
+	psrld $3, %mm5
+	psrld $5, %mm0
+	psrld $5, %mm1
+	por %mm4, %mm0
+	por %mm5, %mm1
+	movq %mm0, %mm7
+	punpcklwd %mm1, %mm0
+	punpckhwd %mm1, %mm7
+	punpckldq %mm7, %mm0
+	
+	movq %mm0, -8(%edi)
+	decl %ecx
+	jnz blit32to16RGB_x_loop
+	popl %edi
+	
+LABEL(blit32to16RGB_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl %eax
+	jnz blit32to16RGB_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(1)
+	popl %ebp
 	ret
 
 
 /*:::::*/
 FUNC(fb_hBlit32to16BGRMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(1)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+	movq (const32to16_rb), %mm2
+	movq (const32to16_mul_bgr), %mm3
+	movq (const32to16_g), %mm6
+
+LABEL(blit32to16BGR_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to16BGR_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to16BGR_x_loop)
+	movq (%esi), %mm0
+	movq 8(%esi), %mm7
+	movq %mm0, %mm1
+	punpckldq %mm7, %mm0
+	punpckhdq %mm7, %mm1
+	movq %mm0, %mm4
+	movq %mm1, %mm5
+	pand %mm2, %mm4
+	pand %mm2, %mm5
+	addl $8, %edi
+	addl $16, %esi
+	pmaddwd %mm3, %mm4
+	pmaddwd %mm3, %mm5
+	pand %mm6, %mm0
+	pand %mm6, %mm1
+	psrld $3, %mm4
+	psrld $3, %mm5
+	psrld $5, %mm0
+	psrld $5, %mm1
+	por %mm4, %mm0
+	por %mm5, %mm1
+	movq %mm0, %mm7
+	punpcklwd %mm1, %mm0
+	punpckhwd %mm1, %mm7
+	punpckldq %mm7, %mm0
+	
+	movq %mm0, -8(%edi)
+	decl %ecx
+	jnz blit32to16BGR_x_loop
+	popl %edi
+	
+LABEL(blit32to16BGR_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl %eax
+	jnz blit32to16BGR_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(1)
+	popl %ebp
 	ret
 
 
 /*:::::*/
 FUNC(fb_hBlit32to24RGBMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(2)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->h */
+
+LABEL(blit32to24RGB_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to24RGB_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to24RGB_x_loop)
+	lodsl
+	bswap %eax
+	movd %eax, %mm0
+	lodsl
+	bswap %eax
+	movd %eax, %mm1
+	lodsl
+	bswap %eax
+	movd %eax, %mm2
+	lodsl
+	bswap %eax
+	movd %eax, %mm3
+	addl $12, %edi
+	psllq $16, %mm1
+	psrlq $8, %mm0
+	movq %mm2, %mm4
+	por %mm1, %mm0		/* mm0 = |       r2 g2 | b2 r1 g1 b1 | */
+	psrlq $24, %mm4
+	psllq $40, %mm2
+	por %mm4, %mm3		/* mm3 = |             | r4 g4 b4 r3 | */
+	por %mm2, %mm0		/* mm0 = | g3 b3 r2 g2 | b2 r1 g1 b1 | */
+	
+	movq %mm0, -12(%edi)
+	movd %mm3, -4(%edi)
+	decl %ecx
+	jnz blit32to24RGB_x_loop
+	popl %edi
+	
+LABEL(blit32to24RGB_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl LOCAL2
+	jnz blit32to24RGB_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(2)
+	popl %ebp
 	ret
 
 
 /*:::::*/
 FUNC(fb_hBlit32to24BGRMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(1)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+
+LABEL(blit32to24BGR_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to24BGR_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to24BGR_x_loop)
+	movd (%esi), %mm0
+	movd 4(%esi), %mm1
+	movd 8(%esi), %mm2
+	movd 12(%esi), %mm3
+	addl $12, %edi
+	addl $16, %esi
+	psllq $24, %mm1
+	psllq $8, %mm3
+	movq %mm2, %mm4
+	por %mm1, %mm0		/* mm0 = |       r2 g2 | b2 r1 g1 b1 | */
+	psrlq $16, %mm4
+	psllq $48, %mm2
+	por %mm4, %mm3		/* mm3 = |             | r4 g4 b4 r3 | */
+	por %mm2, %mm0		/* mm0 = | g3 b3 r2 g2 | b2 r1 g1 b1 | */
+	
+	movq %mm0, -12(%edi)
+	movd %mm3, -4(%edi)
+	decl %ecx
+	jnz blit32to24BGR_x_loop
+	popl %edi
+	
+LABEL(blit32to24BGR_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl %eax
+	jnz blit32to24BGR_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(1)
+	popl %ebp
 	ret
 
 
 /*:::::*/
 FUNC(fb_hBlit32to32RGBMMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(1)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl GLOBL(fb_mode), %ebx
+	movl ARG1, %edi
+	movl FRAMEBUFFER(%ebx), %esi
+	movl MODE_W(%ebx), %edx
+	movl %edx, %eax
+	shll $2, %edx
+	shrl $2, %eax
+	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 2 */
+	movl MODE_H(%ebx), %eax
+	movl DIRTY(%ebx), %ebx
+	movq (const32to32_g), %mm3
+	movq (const32to32_b), %mm7
+
+LABEL(blit32to32RGB_y_loop)
+	addl %edx, %esi
+	cmpb $0, (%ebx)
+	jz blit32to24BGR_next_line
+	movl LOCAL1, %ecx
+	subl %edx, %esi
+	pushl %edi
+
+LABEL(blit32to32RGB_x_loop)
+	movq (%esi), %mm0
+	movq 8(%esi), %mm4
+	movq %mm0, %mm1
+	movq %mm4, %mm5
+	movq %mm0, %mm2
+	movq %mm4, %mm6
+	addl $16, %esi
+	addl $16, %edi
+	pand %mm3, %mm2
+	pand %mm3, %mm6
+	pand %mm7, %mm0
+	pand %mm7, %mm4
+	pslld $16, %mm1
+	pslld $16, %mm5
+	psrld $16, %mm0
+	psrld $16, %mm4
+	por %mm1, %mm2
+	por %mm5, %mm6
+	por %mm0, %mm2
+	por %mm4, %mm6
+	
+	movq %mm2, -16(%edi)
+	movq %mm6, -8(%edi)
+	decl %ecx
+	jnz blit32to32RGB_x_loop
+	popl %edi
+	
+LABEL(blit32to32RGB_next_line)
+	incl %ebx
+	addl ARG2, %edi
+	decl %eax
+	jnz blit32to32RGB_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(1)
+	popl %ebp
 	ret
