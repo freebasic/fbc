@@ -1,6 +1,10 @@
+''
+'' select example, comparing the ordinary one with select as const
+'' 
+
 const inter = 50000000
 
-	initmr# = timer
+	t# = timer
 	for i = 1 to inter
 		select case i
 		case 1, 3, 5, 7, 9
@@ -17,12 +21,12 @@ const inter = 50000000
 			print "can't happen"
 		end select
 	next i
-	print using "normal select_, secs taken: ##.###"; timer - initmr#
+	print using "normal select_, secs taken: ##.###"; timer - t#
 	
 	print "0 ="; j
 	
 
-	initmr# = timer
+	t# = timer
 	for i = 1 to inter
 		select case as const i
 		case 1, 3, 5, 7, 9
@@ -41,7 +45,7 @@ const inter = 50000000
 			end if
 		end select
 	next i
-	print using "as const select_, secs taken: ##.###"; timer - initmr#	
+	print using "as const select_, secs taken: ##.###"; timer - t#	
 	
 	print "0 ="; j
 	
