@@ -47,6 +47,8 @@ declare function 	hCreateName				( symbol as string, byval typ as integer ) as s
 declare function 	hCreateNameEx			( symbol as string, byval typ as integer = INVALID, byval preservecase as integer = FALSE, _
 								      		  byval addunderscore as integer = TRUE, byval clearname as integer  = TRUE) as string
 
+declare function 	hStripUnderscore		( symbol as string ) as string
+
 declare function 	hStripExt				( filename as string ) as string
 declare function 	hStripPath				( filename as string ) as string
 declare function 	hStripFilename 			( filename as string ) as string

@@ -330,10 +330,11 @@ enum FBTK_ENUM
 	FB.TK.WINDOW
 	FB.TK.PALETTE
 	FB.TK.SCREEN
+	FB.TK.PAINT
 	FB.TK.EXTERN
 	FB.TK.STRPTR
 	FB.TK.WITH
-	FB.TK.PAINT
+	FB.TK.EXPORT
 end enum
 
 '' single char tokens
@@ -383,6 +384,7 @@ end enum
 
 const FB.DEFAULT.FUNCMODE		= FB.FUNCMODE.STDCALL
 
+
 '' symbol types (same order as IR.DATATYPES!)
 enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.VOID
@@ -420,6 +422,7 @@ enum FBALLOCTYPE_ENUM
 	FB.ALLOCTYPE.ARGUMENTBYREF 	= 128
 	FB.ALLOCTYPE.PUBLIC 		= 256
 	FB.ALLOCTYPE.EXTERN			= 512			'' extern's become public when DIM'ed
+	FB.ALLOCTYPE.EXPORT			= 1024
 end enum
 
 

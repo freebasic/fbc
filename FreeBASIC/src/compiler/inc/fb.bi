@@ -50,6 +50,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.OUTTYPE
 	FB.COMPOPT.RESUMEERROR
 	FB.COMPOPT.WARNINGLEVEL
+	FB.COMPOPT.EXPORT
 end enum
 
 type FBCMMLINEOPT
@@ -60,6 +61,7 @@ type FBCMMLINEOPT
 	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
 	resumeerr 		as integer					'' add support for RESUME (def= false)
 	warninglevel	as integer					'' def = 0
+	export			as integer					'' export all symbols declared as EXPORT, def= true
 end type
 
 
@@ -160,18 +162,18 @@ end enum
 ''
 ''
 ''
-declare function 	fbcInit			( ) as integer
-declare sub 		fbcEnd			( )
-declare function 	fbcCompile		( infname as string, outfname as string ) as integer
+declare function 	fbInit			( ) as integer
+declare sub 		fbEnd			( )
+declare function 	fbCompile		( infname as string, outfname as string ) as integer
 
-declare sub 		fbcSetDefaultOptions ( )
-declare sub 		fbcSetOption	( byval opt as integer, byval value as integer )
-declare function 	fbcGetOption 	( byval opt as integer ) as integer
+declare sub 		fbSetDefaultOptions ( )
+declare sub 		fbSetOption		( byval opt as integer, byval value as integer )
+declare function 	fbGetOption 	( byval opt as integer ) as integer
 
-declare function 	fbcListLibs		( namelist() as string, byval index as integer ) as integer
-declare sub 		fbcAddIncPath	( path as string )
-declare sub 		fbcAddDefine	( dname as string, dtext as string )
+declare function 	fbListLibs		( namelist() as string, byval index as integer ) as integer
+declare sub 		fbAddIncPath	( path as string )
+declare sub 		fbAddDefine		( dname as string, dtext as string )
 
-declare function 	fbcIncludeFile	( filename as string, byval isonce as integer ) as integer
+declare function 	fbIncludeFile	( filename as string, byval isonce as integer ) as integer
 
-declare sub 		fbcAddDefaultLibs
+declare sub 		fbAddDefaultLibs

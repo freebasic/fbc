@@ -164,7 +164,7 @@ function lexPreProcessor as integer
 			end if
 		end if
 
-		lexPreProcessor = fbcIncludeFile( hUnescapeStr( lexEatToken ), isonce )
+		lexPreProcessor = fbIncludeFile( hUnescapeStr( lexEatToken ), isonce )
 
 	'' INCLIB LIT_STR
 	case FB.TK.INCLIB

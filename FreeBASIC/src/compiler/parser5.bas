@@ -154,9 +154,9 @@ end function
 
 
 '':::::
-''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) (ALIAS LIT_STRING)? ('(' Arguments? ')')? (AS SymbolType)? STATIC?
+''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) (ALIAS LIT_STRING)? ('(' Arguments? ')')? (AS SymbolType)? STATIC? EXPORT?
 ''
-function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstatic as integer ) static
+function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, alloctype as integer ) static
     dim res as integer
     dim id as string, aliasid as string
     dim typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
@@ -241,11 +241,16 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
     	subtype = NULL
     end if
 
-    if( isstatic = FALSE ) then
+    if( (alloctype and FB.ALLOCTYPE.STATIC) = 0 ) then
     	'' STATIC?
     	if( hMatch( FB.TK.STATIC ) ) then
-    		isstatic = TRUE
+    		alloctype = alloctype or FB.ALLOCTYPE.STATIC
     	end if
+    end if
+
+    '' EXPORT?
+    if( hMatch( FB.TK.EXPORT ) ) then
+    	alloctype = alloctype or FB.ALLOCTYPE.EXPORT
     end if
 
 	''
@@ -256,7 +261,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
     ''
     proc = symbLookupProc( id )
     if( proc = NULL ) then
-    	proc = symbAddProc( id, aliasid, "", typ, subtype, mode, argc, argv() )
+    	proc = symbAddProc( id, aliasid, "", typ, subtype, alloctype, mode, argc, argv() )
     	if( proc = NULL ) then
     		hReportError FB.ERRMSG.DUPDEFINITION
     		exit function
@@ -277,6 +282,11 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstati
     		hReportError FB.ERRMSG.ILLEGALPARAMSPEC
     		exit function
     	end if
+
+    	''
+    	symbSetProcIsDeclared proc, TRUE
+
+    	symbSetAllocType proc, alloctype
 
     end if
 
@@ -314,30 +324,31 @@ end sub
 ''				      END (SUB | FUNCTION)
 ''
 function cProcStatement static
-	dim issub as integer, proc as FBSYMBOL ptr, ispublic as integer
+	dim issub as integer, proc as FBSYMBOL ptr, alloctype as integer
     dim oldprocstmt as FBCMPSTMT
     dim endlabel as FBSYMBOL ptr, exitlabel as FBSYMBOL ptr, initlabel as FBSYMBOL ptr
     dim res as integer, expr as integer, l as FBSYMBOL ptr
 
 	cProcStatement = FALSE
 
+	alloctype = 0
+
 	'' (PRIVATE|PUBLIC)?
 	select case lexCurrentToken
-	case FB.TK.PUBLIC
-		lexSkipToken
-		ispublic = TRUE
 	case FB.TK.PRIVATE
 		lexSkipToken
-		ispublic = FALSE
+	case FB.TK.PUBLIC
+		lexSkipToken
+		alloctype = alloctype or FB.ALLOCTYPE.PUBLIC
 	case else
-		ispublic = env.optprocpublic
+		if( env.optprocpublic ) then
+			alloctype = alloctype or FB.ALLOCTYPE.PUBLIC
+		end if
 	end select
 
     '' STATIC?
     if( hMatch( FB.TK.STATIC ) ) then
-    	env.isprocstatic = TRUE
-    else
-    	env.isprocstatic = FALSE
+    	alloctype = alloctype or FB.ALLOCTYPE.STATIC
     end if
 
 	'' SUB | FUNCTION
@@ -358,7 +369,7 @@ function cProcStatement static
 	end if
 
 	'' SubDecl | FuncDecl
-	if( not cSubOrFuncHeader( issub, proc, env.isprocstatic ) ) then
+	if( not cSubOrFuncHeader( issub, proc, alloctype ) ) then
 		exit function
 	end if
 
@@ -368,6 +379,12 @@ function cProcStatement static
 	env.currproc = proc
 	env.compoundcnt = env.compoundcnt + 1
 
+	if( (alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then
+		env.isprocstatic = TRUE
+	else
+		env.isprocstatic = FALSE
+	end if
+
 	''
 	'' add end and exit labels (will be used by any EXIT SUB/FUNCTION)
 	endlabel  = symbAddLabel( hMakeTmpStr )
@@ -375,7 +392,7 @@ function cProcStatement static
 	initlabel = symbAddLabel( hMakeTmpStr )
 
 	'' emit proc setup
-	irEmitPROCBEGIN proc, initlabel, endlabel, ispublic
+	irEmitPROCBEGIN proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0
 
 	'' save old proc stmt info
 	oldprocstmt = env.procstmt

@@ -117,6 +117,7 @@ declare sub 		symbSetArgName			( byval f as FBSYMBOL ptr, byval a as FBPROCARG p
 declare sub 		symbSetArgSuffix		( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval suffix as integer )
 declare sub 		symbSetVarDimensions	( byval s as FBSYMBOL ptr, byval dims as integer )
 declare sub 		symbSetAllocType		( byval s as FBSYMBOL ptr, byval alloctype as integer )
+declare sub 		symbSetProcIsDeclared	( byval f as FBSYMBOL ptr, byval isdeclared as integer )
 
 declare function 	symbIsProc				( id as string ) as integer
 declare function 	symbIsConst				( constname as string ) as integer
@@ -141,12 +142,12 @@ declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, id as string, _
 											  byval isinnerunion as integer ) as FBTYPELEMENT ptr
 declare function 	symbAddEnum				( id as string ) as FBSYMBOL ptr
 declare function 	symbAddPrototype		( id as string, aliasname as string, libname as string, _
-											  byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
-											  byval argc as integer, argv() as FBPROCARG, _
+											  byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
+											  byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
 											  byval isexternal as integer ) as FBSYMBOL ptr
 declare function 	symbAddProc				( id as string, aliasname as string, libname as string, _
-					  						  byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
-					  						  byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr
+					  						  byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
+					  						  byval mode as integer, byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 declare function 	symbAddLib				( libname as string ) as FBLIBRARY ptr
 declare function 	symbAddArg				( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FBSYMBOL ptr

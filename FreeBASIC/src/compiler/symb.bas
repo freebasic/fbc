@@ -253,12 +253,13 @@ data "CIRCLE"	, FB.TK.CIRCLE		, FB.TKCLASS.KEYWORD
 data "WINDOW"	, FB.TK.WINDOW		, FB.TKCLASS.KEYWORD
 data "PALETTE"	, FB.TK.PALETTE		, FB.TKCLASS.KEYWORD
 data "SCREEN"	, FB.TK.SCREEN		, FB.TKCLASS.KEYWORD
+data "PAINT"	, FB.TK.PAINT		, FB.TKCLASS.KEYWORD
 data "EXTERN"	, FB.TK.EXTERN		, FB.TKCLASS.KEYWORD
 data "STRPTR"	, FB.TK.STRPTR		, FB.TKCLASS.KEYWORD
 data "WITH"		, FB.TK.WITH		, FB.TKCLASS.KEYWORD
-data "PAINT"	, FB.TK.PAINT		, FB.TKCLASS.KEYWORD
+data "EXPORT"	, FB.TK.EXPORT		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 163
+const FB.MAXKEYWORDS 		= 164
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1521,8 +1522,8 @@ end function
 
 '':::::
 private function hSetupProc( id as string, aliasname as string, libname as string, _
-				             byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
-				             byval argc as integer, argv() as FBPROCARG, _
+				             byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
+				             byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
 			                 byval declaring as integer ) as FBSYMBOL ptr static
 
     dim toupper as integer, lgt as integer
@@ -1572,7 +1573,7 @@ private function hSetupProc( id as string, aliasname as string, libname as strin
 
     ''
 	f->scope	= env.scope
-	f->alloctype= FB.ALLOCTYPE.SHARED
+	f->alloctype= alloctype or FB.ALLOCTYPE.SHARED
     f->sentinel = sentinel
 
 	f->typ		= typ
@@ -1609,15 +1610,15 @@ end function
 
 '':::::
 function symbAddPrototype( id as string, aliasname as string, libname as string, _
-						   byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
-						   byval argc as integer, argv() as FBPROCARG, _
+						   byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
+						   byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
 						   byval isexternal as integer ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     symbAddPrototype = NULL
 
-	f = hSetupProc( id, aliasname, libname, typ, subtype, mode, argc, argv(), isexternal )
+	f = hSetupProc( id, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), isexternal )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -1628,14 +1629,14 @@ end function
 
 '':::::
 function symbAddProc( id as string, aliasname as string, libname as string, _
-					  byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer, _
-					  byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr static
+					  byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
+					  byval mode as integer, byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     symbAddProc = NULL
 
-	f = hSetupProc( id, aliasname, libname, typ, subtype, mode, argc, argv(), TRUE )
+	f = hSetupProc( id, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), TRUE )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -2716,6 +2717,13 @@ function symbGetProcIsDeclared( byval f as FBSYMBOL ptr ) as integer static
 	symbGetProcIsDeclared = f->p.isdeclared
 
 end function
+
+'':::::
+sub symbSetProcIsDeclared( byval f as FBSYMBOL ptr, byval isdeclared as integer ) static
+
+	f->p.isdeclared = isdeclared
+
+end sub
 
 '':::::
 function symbGetProcFirstArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static

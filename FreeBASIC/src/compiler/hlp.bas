@@ -494,6 +494,26 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
 end function
 
 '':::::
+function hStripUnderscore( symbol as string ) as string static
+
+#ifdef TARGET_WIN32
+    if( not env.clopt.nostdcall ) then
+		hStripUnderscore = mid$( symbol, 2 )
+	else
+		hStripUnderscore = symbol
+	end if
+
+#elseif defined(TARGET_DOS)
+    hStripUnderscore = mid$( symbol, 2 )
+
+#else
+	hStripUnderscore = symbol
+
+#endif
+
+end function
+
+'':::::
 function hStripExt( filename as string ) as string 'static
     dim p as integer, lp as integer
 

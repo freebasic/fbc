@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' main module
+'' main module, front-end
 ''
 '' chng: sep/2004 written [v1ctor]
 ''		 dec/2004 linux support added [lillo]
@@ -182,7 +182,7 @@ function compileFiles as integer
     	end if
 
     	'' init the parser
-    	if( not fbcInit ) then
+    	if( not fbInit ) then
     		exit function
     	end if
 
@@ -201,7 +201,7 @@ function compileFiles as integer
     		print "compiling: ", inplist(i); " -o "; asmlist(i)
     	end if
 
-    	if( not fbcCompile( inplist(i), asmlist(i) ) ) then
+    	if( not fbCompile( inplist(i), asmlist(i) ) ) then
     		exit function
     	end if
 
@@ -209,16 +209,16 @@ function compileFiles as integer
 		getLibList
 
 		'' shutdown the parser
-		fbcEnd
+		fbEnd
 
 	next i
 
     '' no default libs will be added if no inp files were given
     if( ctx.inps = 0 ) then
-   		fbcInit
-   		fbcAddDefaultLibs
+   		fbInit
+   		fbAddDefaultLibs
    		getLibList
-   		fbcend
+   		fbend
     end if
 
 	compileFiles = TRUE
@@ -254,10 +254,6 @@ function assembleFiles as integer
     	'' invoke as
     	if( ctx.verbose ) then
     		print "assembling: ", ascline
-
-'' --------------
-	print "aspath = '" + aspath + "'"
-'' -------------
     	end if
 
     	if( exec( aspath, ascline ) <> 0 ) then
@@ -383,7 +379,7 @@ function linkFiles as integer
 		ldcline = ldcline + " --dll --enable-stdcall-fixup"
 
 		'' add aliases for functions without @nn
-		if( fbcGetOption( FB.COMPOPT.NOSTDCALL ) ) then
+		if( fbGetOption( FB.COMPOPT.NOSTDCALL ) ) then
 	   		ldcline = ldcline + " --add-stdcall-alias"
     	end if
 
@@ -407,6 +403,16 @@ function linkFiles as integer
 		ldcline = "-shared --export-dynamic"
 
 #endif
+
+    else
+
+#ifndef TARGET_DOS
+    	'' tell LD to add all symbols declared as EXPORT to the symbol table
+    	if( fbGetOption( FB.COMPOPT.EXPORT ) ) then
+    		ldcline = ldcline + " --export-dynamic"
+    	end if
+#endif
+
     end if
 
 	if( not ctx.debug ) then
@@ -907,7 +913,7 @@ function processCompOptions as integer
 	processCompOptions = FALSE
 
 	'' reset options
-	fbcSetDefaultOptions
+	fbSetDefaultOptions
 
 	''
 	for i = 0 to argc-1
@@ -924,18 +930,18 @@ function processCompOptions as integer
 
 			select case mid$( argv(i), 2 )
 			case "e"
-				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
+				fbSetOption FB.COMPOPT.ERRORCHECK, TRUE
 
 			case "ex"
-				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
-				fbcSetOption FB.COMPOPT.RESUMEERROR, TRUE
+				fbSetOption FB.COMPOPT.ERRORCHECK, TRUE
+				fbSetOption FB.COMPOPT.RESUMEERROR, TRUE
 
 			case "w"
-				fbcSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )
+				fbSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )
 
 #ifdef TARGET_WIN32
 			case "nostd"
-				fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
+				fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
 #endif
 
 			end select
@@ -944,10 +950,10 @@ function processCompOptions as integer
 	next i
 
 	''
-	fbcSetOption FB.COMPOPT.DEBUG, ctx.debug
-	fbcSetOption FB.COMPOPT.OUTTYPE, ctx.outtype
+	fbSetOption FB.COMPOPT.DEBUG, ctx.debug
+	fbSetOption FB.COMPOPT.OUTTYPE, ctx.outtype
 #ifndef TARGET_WIN32
-	fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
+	fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
 #endif
 
 	processCompOptions = TRUE
@@ -963,7 +969,7 @@ function processCompLists as integer
 
     '' add inc files
     for i = 0 to ctx.incs-1
-    	fbcAddIncPath inclist(i)
+    	fbAddIncPath inclist(i)
     next i
 
     '' add defines
@@ -981,7 +987,7 @@ function processCompLists as integer
 			dtext = "1"
     	end if
 
-    	fbcAddDefine dname, dtext
+    	fbAddDefine dname, dtext
     next i
 
     processCompLists = FALSE
@@ -1165,7 +1171,7 @@ end sub
 '':::::
 sub getLibList
 
-	ctx.libs = ctx.libs + fbcListLibs( liblist(), ctx.libs )
+	ctx.libs = ctx.libs + fbListLibs( liblist(), ctx.libs )
 
 end sub
 

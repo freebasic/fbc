@@ -48,6 +48,12 @@ type EMITCTX
 	argptr			as integer
 
 	keyhash			as THASH
+
+    '' header flags, TRUE= emited already
+    bssheader		as integer
+    conheader		as integer
+    datheader		as integer
+    expheader       as integer
 end type
 
 type EMITDATATYPE
@@ -271,6 +277,11 @@ sub emitInit
 	ctx.inited = TRUE
 	ctx.dataend = 0
 	ctx.pos		= 0
+
+	ctx.bssheader	= FALSE
+	ctx.conheader	= FALSE
+	ctx.datheader	= FALSE
+	ctx.expheader	= FALSE
 
 end sub
 
@@ -2328,7 +2339,7 @@ private sub hSaveAsmInitProc( )
 end sub
 
 '':::::
-private sub hSaveAsmFooter( )
+private sub hEmitFooter( )
 
     hWriteStr ctx.outf, FALSE, ""
 
@@ -2378,15 +2389,27 @@ private function hGetTypeString( byval typ as integer ) as string 'static
 end function
 
 '':::::
-private sub hSaveAsmBss( ) 'static
-    dim s as FBSYMBOL ptr
-    dim lgt as integer, sname as string
-    dim elements as integer, alloc as string
-    dim alloctype as integer
+private sub hEmitBssHeader( )
+
+    if( ctx.bssheader ) then
+    	exit sub
+    end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global non-initialized vars"
     hWriteStr ctx.outf, FALSE, ".section .bss"
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+
+    ctx.bssheader = TRUE
+
+end sub
+
+
+'':::::
+private sub hEmitBss( ) 'static
+    dim s as FBSYMBOL ptr
+    dim lgt as integer, sname as string
+    dim elements as integer, alloc as string
+    dim alloctype as integer
 
     s = symbGetFirstNode
     do while( s <> NULL )
@@ -2408,6 +2431,8 @@ private sub hSaveAsmBss( ) 'static
     	    		end if
 
     	    		sname = symbGetVarName( s )
+
+    	    		hEmitBssHeader
 
     	    		if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
     	    			if( (alloctype and FB.ALLOCTYPE.PUBLIC) <> 0 ) then
@@ -2431,13 +2456,24 @@ private sub hSaveAsmBss( ) 'static
 end sub
 
 '':::::
-private sub hSaveAsmConst( ) 'static
-    dim s as FBSYMBOL ptr, typ as integer
-    dim sname as string, stext as string, stype as string
+private sub hEmitConstHeader( )
+
+    if( ctx.conheader ) then
+    	exit sub
+    end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized constants"
 	hWriteStr ctx.outf, FALSE, ".section .data"
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+
+    ctx.conheader = TRUE
+
+end sub
+
+'':::::
+private sub hEmitConst( ) 'static
+    dim s as FBSYMBOL ptr, typ as integer
+    dim sname as string, stext as string, stype as string
 
     s = symbGetFirstNode
     do while( s <> NULL )
@@ -2455,6 +2491,7 @@ private sub hSaveAsmConst( ) 'static
     	    			stext = QUOTE + hScapeStr( stext ) + QUOTE
     	    		end if
 
+    	    		hEmitConstHeader
     	    		hWriteStr ctx.outf, TRUE, ".balign 4"
     	    		hWriteStr ctx.outf, FALSE, sname + ":" + TABCHAR + stype + TABCHAR + stext
     	    	end if
@@ -2558,12 +2595,23 @@ private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) 'static
 end sub
 
 '':::::
-private sub hSaveAsmData( ) 'static
-    dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
+private sub hEmitDataHeader( )
+
+    if( ctx.datheader ) then
+    	exit sub
+    end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized vars"
     hWriteStr ctx.outf, FALSE, ".section .data" + NEWLINE
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+
+    ctx.datheader = TRUE
+
+end sub
+
+'':::::
+private sub hEmitData( ) 'static
+    dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
 
     s = symbGetFirstNode
     do while( s <> NULL )
@@ -2571,6 +2619,7 @@ private sub hSaveAsmData( ) 'static
     	if( symbGetClass( s ) = FB.SYMBCLASS.VAR ) then
     	    d = symbGetVarDescriptor( s )
     	    if( d <> NULL ) then
+    	    	hEmitDataHeader
     	    	select case symbGetSubtype( d )
     	    	case FB.DESCTYPE.ARRAY
     	    		hWriteArrayDesc s
@@ -2584,6 +2633,44 @@ private sub hSaveAsmData( ) 'static
     loop
 
 end sub
+
+'':::::
+private sub hEmitExportHeader( )
+
+    if( ctx.expheader ) then
+    	exit sub
+    end if
+
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#exported functions"
+    hWriteStr ctx.outf, FALSE, ".section .drectve" + NEWLINE
+
+    ctx.expheader = TRUE
+
+end sub
+
+'':::::
+private sub hEmitExport( ) 'static
+    dim s as FBSYMBOL ptr
+    dim sname as string
+
+    s = symbGetFirstNode
+    do while( s <> NULL )
+
+    	if( symbGetClass( s ) = FB.SYMBCLASS.PROC ) then
+    		if( symbGetProcIsDeclared( s ) ) then
+    			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXPORT) > 0 ) then
+    				hEmitExportHeader
+    				sname = hStripUnderscore( symbGetProcName( s ) )
+    				hWriteStr ctx.outf, TRUE, ".ascii \"-export:" + sname + "\"" + NEWLINE
+    			end if
+    		end if
+    	end if
+
+    	s = symbGetNextNode( s )
+    loop
+
+end sub
+
 
 '':::::
 function emitOpen
@@ -2611,16 +2698,21 @@ end function
 sub emitClose
 
     '' footer
-    hSaveAsmFooter
+    hEmitFooter
 
 	'' const
-	hSaveAsmConst
+	hEmitConst
 
 	'' data
-	hSaveAsmData
+	hEmitData
 
 	'' bss
-	hSaveAsmBss
+	hEmitBss
+
+	''
+	if( env.clopt.export ) then
+		hEmitExport
+	end if
 
 	''
 	edbgFooter

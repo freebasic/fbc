@@ -1016,7 +1016,7 @@ sub rtlInit static
 	dim argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 
     ''
-	fbcAddDefaultLibs
+	fbAddDefaultLibs
 
 	''
 	redim ifuncTB( 0 to FB.RTL.MAXFUNCTIONS-1 ) as FBSYMBOL ptr
@@ -1049,7 +1049,7 @@ sub rtlInit static
 			end if
 		next a
 
-		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", typ, NULL, mode, args, argv(), TRUE )
+		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", typ, NULL, 0, mode, args, argv(), TRUE )
 		i = i + 1
 	loop
 
