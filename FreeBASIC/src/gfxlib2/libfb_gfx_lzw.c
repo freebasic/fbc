@@ -21,7 +21,7 @@
  * lzw.c -- tiny LZW codec
  *          Based on code by Mark Nelson, Dr. Dobb's Journal October, 1989
  *
- * chng: feb/2005 written [lillo]
+ * chng: mar/2005 written [lillo]
  *
  */
 

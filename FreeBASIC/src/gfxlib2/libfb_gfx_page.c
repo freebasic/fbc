@@ -31,7 +31,7 @@
 FBCALL void fb_GfxFlip(int from_page, int to_page)
 {
 	unsigned char *dest, *src;
-	int i, size;
+	int i, size, lock = FALSE;
 	
 	if (!fb_mode)
 		return;
@@ -56,18 +56,21 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	
 	if (src == dest)
 		return;
-	
-	src += (fb_mode->view_y * fb_mode->pitch);
-	dest += (fb_mode->view_y * fb_mode->pitch);
-	size = fb_mode->view_w * fb_mode->bpp;
 	if (dest == fb_mode->framebuffer)
+		lock = TRUE;
+	
+	src += (fb_mode->view_y * fb_mode->pitch) + (fb_mode->view_x * fb_mode->bpp);
+	dest += (fb_mode->view_y * fb_mode->pitch) + (fb_mode->view_x * fb_mode->bpp);
+	size = fb_mode->view_w * fb_mode->bpp;
+	
+	if (lock)
 		fb_mode->driver->lock();
 	for (i = fb_mode->view_h; i; i--) {
 		fb_hMemCpy(dest, src, size);
 		dest += fb_mode->pitch;
 		src += fb_mode->pitch;
 	}
-	if (dest == fb_mode->framebuffer) {
+	if (lock) {
 		fb_hMemSet(fb_mode->dirty + fb_mode->view_y, TRUE, fb_mode->view_h);
 		fb_mode->driver->unlock();
 	}

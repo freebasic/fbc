@@ -20,7 +20,7 @@
 /*
  * data.c -- internal font/palette compressed data
  *
- * chng: jan/2005 written [lillo]
+ * chng: mar/2005 written [lillo]
  *
  */
 
