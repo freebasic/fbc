@@ -65,6 +65,9 @@ Version 0.13 Beta:
 - function's can return UDT's now, but only for prototypes of C libs (compiled by GCC 3.x only), not internally yet (v1c)
 - TYPE and UNION fields can now be declared as "AS sometype a, b, c, d(123)" too (v1c)
 - ENUM items can now be separated by commas too, as in "a, b, c = 2, d" (v1c)
+- the PIPE: file type to OPEN, for read or write access, as in: "OPEN "PIPE:dir *.*" for input as #1" (v1c)
+- the ugly ON ERROR GOTO 0 (v1c)
+- OPEN, CLOSE, GET# and PUT# can be used as functions now, so errors can be checked w/o handlers (v1c)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported
@@ -98,6 +101,7 @@ Version 0.13 Beta:
 - literal values passed as parameter were not been converted at compile-time, generating bad code is some cases (v1c)
 - CLS in gfx mode now clears viewport only if previously set via VIEW (lillo)
 - BEEP rtlib routine for DOS was missing (DrV)
+- BYREF AS ANY arguments when variables weren't passed would create a temp vars with the VOID type (v1c)
 
 
 Version 0.12 Beta:
