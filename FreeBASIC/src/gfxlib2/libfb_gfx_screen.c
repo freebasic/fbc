@@ -209,6 +209,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 					continue;
 				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
 					break;
+				driver->exit();
 				driver = NULL;
 			}
 			if (driver)
