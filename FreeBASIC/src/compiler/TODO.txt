@@ -1,4 +1,10 @@
 
+[ ] macros -- single line, with recursive expansion, same as in C's #define's -- problem with
+    "foo.bar" when "foo" is a macro argument, lookupdefine will have to check for dots and break
+    the tokens
+
+[ ] IFF() -- will need some kind of AST link node
+
 [ ] OPTION's should be preserved when changed inside include files
 
 [ ] PEEK(SymbolType, Expression) and POKE(SymbolType, Expression) as in PB 8
@@ -17,15 +23,12 @@
 
 [ ] parser should never call IR directly, or no inline functions can be added (or never-called
     private functions eliminated). For that be done, all labels must be handled by AST, DATA, ASM,
-    var initializers and jump tbs too (rtlCheckError is problem too), all IR/AST flush calls must be
-    changed to astLink or such, that will add the new node to a list of nodes, that will be flushed
-    only a new function is started or when the end of file is reached -- should it be better done as
-    a CFG-like than handled at AST that is becoming more and more complex (don't make the AST a
-    parser tree!)?
+    var initializers and jump tbs too, all IR/AST flush calls must be changed to astLink or such,
+    that will add the new node to a list of nodes, that will be flushed only a new function is
+    started or when the end of file is reached -- should it be better done as a CFG-like than
+    handled at AST that is becoming more and more complex (don't make the AST a parser tree!)?
 
 *** *** *** *** ***
-[ ] macros   -- single line, with recursive expansion, same as in C's #define's, not PB MACRO's
-
 [ ] inline functions -- better than macros as they can be "turned off" when debugged (AST will need some kind of "link"
                         node to glue all nodes parsed, and they can't be flushed by any part of the parser -- everything
                         must be done at the AST then, no IR calls at the parser.. quite hard to do due the var

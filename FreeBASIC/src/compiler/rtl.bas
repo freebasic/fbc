@@ -39,7 +39,7 @@ type RTLCTX
     labelcnt 		as integer
 end type
 
-declare sub 		rtlCheckError		( byval vr as integer, byval reslabel as FBSYMBOL ptr )
+declare function	rtlCheckError		( byval resexpr as integer, byval reslabel as FBSYMBOL ptr ) as integer
 
 
 ''globals
@@ -509,12 +509,17 @@ data "fb_FileUnlock","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 
 
 ''
-'' fb_ErrorThrow cdecl( byval errnum as integer, byval reslabel as any ptr, _
-''                      byval resnxtlabel as any ptr ) as any ptr
-data "fb_ErrorThrow","", FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+'' fb_ErrorThrow cdecl ( byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
+data "fb_ErrorThrow","", FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, 2, _
 						 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+''
+'' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval reslabel as any ptr, _
+''                        byval resnxtlabel as any ptr ) as any ptr
+data "fb_ErrorThrowEx","", FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, 3, _
+						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						   FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+						   FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 '' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
 data "fb_ErrorSetHandler","", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
 							  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
@@ -1642,7 +1647,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, by
 
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer, isvarlen as integer
-    dim i as integer, vr as integer
+    dim i as integer
     dim reslabel as FBSYMBOL ptr
 
     rtlArrayRedim = FALSE
@@ -1710,11 +1715,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, by
     end if
 
     ''
-	astFlush proc, vr
-
-	rtlCheckError vr, reslabel
-
-	rtlArrayRedim = TRUE
+	rtlArrayRedim = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -2865,60 +2866,79 @@ end function
 '' error
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub rtlCheckError( byval vr as integer, byval reslabel as FBSYMBOL ptr ) static
+function rtlCheckError( byval resexpr as integer, byval reslabel as FBSYMBOL ptr ) as integer static
+	dim proc as integer, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr
-	dim cr as integer, vt as integer
+	dim param as integer, dst as integer
+	dim vr as integer
+
+	rtlCheckError = FALSE
 
 	if( not env.clopt.errorcheck ) then
+		astFlush resexpr, vr
+		rtlCheckError = TRUE
 		exit function
 	end if
+
+	''
+	f = ifuncTB(FB.RTL.ERRORTHROW)
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
 	''
 	nxtlabel = symbAddLabel( hMakeTmpStr )
 
 	'' result == FB_RTERROR_OK? skip..
-	cr = irAllocVRIMM( IR.DATATYPE.INTEGER, 0 )
-	irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nxtlabel
+	resexpr = astNewBOP( IR.OP.EQ, resexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), nxtlabel, FALSE )
 
-	'' else, fb_ErrorThrow( result, reslabel, resnxtlabel ); -- CDECL
+	astFlush resexpr, vr
 
-	'' resnxtlabel
-	if( env.clopt.resumeerr ) then
-		vt = irAllocVREG( IR.DATATYPE.UINT )
-		irEmitBOP IR.OP.ADDROF, irAllocVRVAR( IR.DATATYPE.UINT, nxtlabel, 0 ), INVALID, vt
-	else
-		vt = irAllocVRIMM( IR.DATATYPE.UINT, NULL )
-	end if
-	irEmitPUSH vt
+	'' else, fb_ErrorThrow( reslabel, resnxtlabel ); -- CDECL
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		vt = irAllocVREG( IR.DATATYPE.UINT )
-		irEmitBOP IR.OP.ADDROF, irAllocVRVAR( IR.DATATYPE.UINT, reslabel, 0 ), INVALID, vt
+		param = astNewADDR( IR.OP.ADDROF, astNewVAR( reslabel, NULL, 0, IR.DATATYPE.UINT ) )
 	else
-		vt = irAllocVRIMM( IR.DATATYPE.UINT, NULL )
+		param = astNewCONST( NULL, IR.DATATYPE.UINT )
 	end if
-	irEmitPUSH vt
+	if( astNewPARAM( proc, param ) = INVALID ) then
+		exit function
+	end if
 
-	'' result
-	irEmitPUSH vr
+	'' resnxtlabel
+	if( env.clopt.resumeerr ) then
+		param = astNewADDR( IR.OP.ADDROF, astNewVAR( nxtlabel, NULL, 0, IR.DATATYPE.UINT ) )
+	else
+		param = astNewCONST( NULL, IR.DATATYPE.UINT )
+	end if
+	if( astNewPARAM( proc, param ) = INVALID ) then
+		exit function
+	end if
 
-	vr = irAllocVREG( IR.DATATYPE.UINT )
-	irEmitCALLFUNCT ifuncTB(FB.RTL.ERRORTHROW), 0, vr
+    '' dst
+    dst = astNewBRANCH( IR.OP.JUMPPTR, NULL, proc )
 
-	irEmitBRANCHPTR vr
+    astFlush dst, vr
 
+	''
 	irEmitLABEL nxtlabel, FALSE
 
 	'''''symbDelLabel nxtlabel
 	'''''symbDelLabel reslabel
 
-end sub
+	rtlCheckError = TRUE
+
+end function
 
 '':::::
 sub rtlErrorThrow( byval errexpr as integer ) static
+	dim proc as integer, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr, reslabel as FBSYMBOL ptr
-	dim vr as integer, vt as integer
+	dim param as integer, dst as integer
+	dim vr as integer
+
+	''
+	f = ifuncTB(FB.RTL.ERRORTHROWEX)
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
 	''
     reslabel = symbAddLabel( hMakeTmpStr )
@@ -2926,35 +2946,39 @@ sub rtlErrorThrow( byval errexpr as integer ) static
 
 	nxtlabel = symbAddLabel( hMakeTmpStr )
 
-	'' fb_ErrorThrow( result, reslabel, resnxtlabel ); -- CDECL
+	'' fb_ErrorThrowEx( errnum, reslabel, resnxtlabel ); -- CDECL
 
-	'' resnxtlabel
-	if( env.clopt.resumeerr ) then
-		vt = irAllocVREG( IR.DATATYPE.UINT )
-		irEmitBOP IR.OP.ADDROF, irAllocVRVAR( IR.DATATYPE.UINT, nxtlabel, 0 ), INVALID, vt
-	else
-		vt = irAllocVRIMM( IR.DATATYPE.UINT, NULL )
+	'' errnum
+	if( astNewPARAM( proc, errexpr ) = INVALID ) then
+		exit sub
 	end if
-	irEmitPUSH vt
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		vt = irAllocVREG( IR.DATATYPE.UINT )
-		irEmitBOP IR.OP.ADDROF, irAllocVRVAR( IR.DATATYPE.UINT, reslabel, 0 ), INVALID, vt
+		param = astNewADDR( IR.OP.ADDROF, astNewVAR( reslabel, NULL, 0, IR.DATATYPE.UINT ) )
 	else
-		vt = irAllocVRIMM( IR.DATATYPE.UINT, NULL )
+		param = astNewCONST( NULL, IR.DATATYPE.UINT )
 	end if
-	irEmitPUSH vt
+	if( astNewPARAM( proc, param ) = INVALID ) then
+		exit function
+	end if
 
-	'' result
-	astLoad errexpr, vt
-	irEmitPUSH vt
+	'' resnxtlabel
+	if( env.clopt.resumeerr ) then
+		param = astNewADDR( IR.OP.ADDROF, astNewVAR( nxtlabel, NULL, 0, IR.DATATYPE.UINT ) )
+	else
+		param = astNewCONST( NULL, IR.DATATYPE.UINT )
+	end if
+	if( astNewPARAM( proc, param ) = INVALID ) then
+		exit function
+	end if
 
-	vr = irAllocVREG( IR.DATATYPE.UINT )
-	irEmitCALLFUNCT ifuncTB(FB.RTL.ERRORTHROW), 0, vr
+    '' dst
+    dst = astNewBRANCH( IR.OP.JUMPPTR, NULL, proc )
 
-	irEmitBRANCHPTR vr
+    astFlush dst, vr
 
+	''
 	irEmitLABEL nxtlabel, FALSE
 
 	'''''symbDelLabel nxtlabel
@@ -3051,7 +3075,6 @@ function rtlFileOpen( byval filename as integer, byval fmode as integer, byval f
 				      byval flock, byval filenum as integer, byval flen as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlFileOpen = FALSE
 
@@ -3098,11 +3121,7 @@ function rtlFileOpen( byval filename as integer, byval fmode as integer, byval f
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFileOpen = TRUE
+    rtlFileOpen = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -3110,7 +3129,6 @@ end function
 function rtlFileClose( byval filenum as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlFileClose = FALSE
 
@@ -3132,11 +3150,7 @@ function rtlFileClose( byval filenum as integer ) as integer static
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFileClose = TRUE
+    rtlFileClose = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -3144,7 +3158,6 @@ end function
 function rtlFileSeek( byval filenum as integer, byval newpos as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlFileSeek = FALSE
 
@@ -3171,11 +3184,7 @@ function rtlFileSeek( byval filenum as integer, byval newpos as integer ) as int
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFileSeek = TRUE
+    rtlFileSeek = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -3206,7 +3215,6 @@ function rtlFilePut( byval filenum as integer, byval offset as integer, _
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
     rtlFilePut = FALSE
 
@@ -3258,11 +3266,7 @@ function rtlFilePut( byval filenum as integer, byval offset as integer, _
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFilePut = TRUE
+    rtlFilePut = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -3272,7 +3276,6 @@ function rtlFilePutArray( byval filenum as integer, byval offset as integer, _
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
     rtlFilePutArray = FALSE
 
@@ -3307,11 +3310,7 @@ function rtlFilePutArray( byval filenum as integer, byval offset as integer, _
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFilePutArray = TRUE
+    rtlFilePutArray = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -3321,7 +3320,6 @@ function rtlFileGet( byval filenum as integer, byval offset as integer, _
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
     rtlFileGet = FALSE
 
@@ -3373,11 +3371,7 @@ function rtlFileGet( byval filenum as integer, byval offset as integer, _
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFileGet = TRUE
+    rtlFileGet = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -3387,7 +3381,6 @@ function rtlFileGetArray( byval filenum as integer, byval offset as integer, _
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlFileGetArray = FALSE
 
@@ -3422,11 +3415,7 @@ function rtlFileGetArray( byval filenum as integer, byval offset as integer, _
     end if
 
     ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
-    rtlFileGetArray = TRUE
+    rtlFileGetArray = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -4454,7 +4443,7 @@ end function
 function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, _
 						  byval fexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim reslabel as FBSYMBOL ptr
 
 	rtlGfxScreenSet = FALSE
 
@@ -4490,15 +4479,20 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
  		exit function
  	end if
 
- 	''
- 	astFlush proc, vr
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( hMakeTmpStr )
+    	irEmitLABEL reslabel, FALSE
+    else
+    	reslabel = NULL
+    end if
 
  	''
 #ifdef AUTOADDGFXLIBS
  	hAddGfxLibs
 #endif
 
-	rtlGfxScreenSet = TRUE
+	rtlGfxScreenSet = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -4506,7 +4500,6 @@ end function
 function rtlGfxBload( byval filename as integer, byval dexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
     rtlGfxBload = FALSE
 
@@ -4532,17 +4525,13 @@ function rtlGfxBload( byval filename as integer, byval dexpr as integer ) as int
     	reslabel = NULL
     end if
 
-    ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
  	''
 #ifdef AUTOADDGFXLIBS
  	hAddGfxLibs
 #endif
 
-	rtlGfxBload = TRUE
+    ''
+	rtlGfxBload = rtlCheckError( proc, reslabel )
 
 end function
 
@@ -4550,7 +4539,6 @@ end function
 function rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlGfxBsave = FALSE
 
@@ -4581,16 +4569,11 @@ function rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval l
     	reslabel = NULL
     end if
 
-    ''
-    astFlush proc, vr
-
-    rtlCheckError vr, reslabel
-
  	''
 #ifdef AUTOADDGFXLIBS
  	hAddGfxLibs
 #endif
 
-	rtlGfxBsave = TRUE
+	rtlGfxBsave = rtlCheckError( proc, reslabel )
 
 end function
