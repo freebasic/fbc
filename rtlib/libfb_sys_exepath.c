@@ -58,12 +58,12 @@ FBCALL FBSTRING *fb_ExePath ( void )
 	struct stat finfo;
 	
 	sprintf(linkname, "/proc/%d/exe", getpid());
-	if ((!stat(linkname, &finfo)) && ((len = readlink(linkname, tmp, sizeof(tmp) - 1) > 0))) {
+	if ((stat(linkname, &finfo) == 0) && ((len = readlink(linkname, tmp, sizeof(tmp) - 1)) > -1)) {
 		/* Linux-like proc fs is available */
-		tmp[len - 1] = '\0';
+		tmp[len] = '\0';
 		p = strrchr(tmp, '/');
 		if (p)
-			p = '\0';
+			*p = '\0';
 		else
 			tmp[0] = '\0';
 	}
