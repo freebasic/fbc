@@ -46,6 +46,7 @@ Functions reference:
 	RGB		function
 	SCREEN		statement
 	SCREENCOPY	statement
+	SCREENINFO	function
 	SCREENLOCK	statement
 	SCREENPTR	function
 	SCREENSET	statement
@@ -1346,7 +1347,8 @@ any number of pages in any mode.
 
 See also:
 
-PALETTE, SCREENLOCK, SCREENUNLOCK, SCREENPTR, SCREENSET, SCREENCOPY.
+PALETTE, SCREENLOCK, SCREENUNLOCK, SCREENPTR, SCREENSET, SCREENCOPY,
+SCREENINFO.
 
 
 
@@ -1392,6 +1394,79 @@ mode, providing you requested enough pages.
 See also:
 
 SCREEN, SCREENSET.
+
+
+
++------------+----------------------------------------------------------------
+| SCREENINFO |
++------------+
+
+Function to retrieve information about current video mode.
+
+
+Syntax:
+	SCREENINFO
+
+
+Insights:
+
+This function can be useful to get current mode informations like gfx driver
+name, color depth, screen size and more. It returns a pointer to a read-only
+variable of type SCREENINFOTYPE, defined as follows:
+
+TYPE SCREENINFOTYPE
+	driver_name AS STRING
+	w AS INTEGER
+	h AS INTEGER
+	depth AS INTEGER
+	pitch AS INTEGER
+	bpp AS INTEGER
+	mask_color AS INTEGER
+	num_pages AS INTEGER
+	flags AS INTEGER
+END TYPE
+
+Here's a description of available fields:
+
+driver_name	Name of current gfx driver in use, like "DirectX" or "X11".
+w		Width of the screen in pixels.
+h		Height of the screen in pixels.
+depth		Current pixel format bits per pixel: this can be 1, 2, 4, 8,
+		16 or 32. See appendix C for details.
+pitch		Size of a framebuffer row in bytes.
+bpp		Bytes per pixel.
+mask_color	Color value for transparent pixels in current mode.
+num_pages	Number of available pages.
+flags		Mode flags. If bit 0 is set mode is fullscreen, otherwise it's
+		windowed.
+
+If no gfx mode is set when you call this function, the returned structure will
+report "none" as driver_name and 0 to all other fields. If you change video
+mode via SCREEN, the informations returned by previous calls to SCREENINFO are
+invalidated, and you have to recall SCREENINFO to obtain the updated new
+settings. You never have to deallocate the returned structure.
+
+
+Example:
+
+' Assuming you have declared SCREENINFOTYPE as above...
+DIM info AS SCREENINFOTYPE PTR
+SCREEN 15, 32
+' Obtain info about current mode
+info = SCREENINFO
+PRINT STR$(info->w) + "x" + STR$(info->h) + "x" + STR$(info->depth);
+PRINT " using " + info->driver_name + " driver"
+SLEEP
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+SCREEN, Appendix C.
 
 
 
