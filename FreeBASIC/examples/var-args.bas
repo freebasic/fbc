@@ -4,6 +4,8 @@
 
 option explicit
 
+#include "crt.bi" 		'' just for strlen()
+
 declare sub myprintf cdecl (fmtstr as string, ...)
 
 	dim s as string
