@@ -104,7 +104,7 @@ function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr a
     diff = symbGetArrayDiff( elm )
     if( diff <> 0 ) then
     	constexpr = astNewCONST( diff, IR.DATATYPE.INTEGER )
-    	idxexpr = astNewBOP( IR.OP.ADD, idxexpr, constexpr )
+    	expr = astNewBOP( IR.OP.ADD, expr, constexpr )
     end if
 
     '' plus initial expression
@@ -139,20 +139,21 @@ function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL pt
 				exit function
 			end if
 
-			if( len( lexTokenText ) = 0 ) then
+			fields = lexTokenText
+			if( len( fields ) = 0 ) then
 				exit function
 			end if
 
 			if( isderef = FALSE ) then
-				if( asc( left$( lexTokenText, 1 ) ) <> CHAR_DOT ) then
+
+				if( fields[0] <> CHAR_DOT ) then
 					exit function
 				end if
 
-				fields = mid$( lexTokenText, 2 )
+				fields = mid$( fields, 2 )
 
 			else
 				isderef = FALSE
-				fields = lexTokenText
 			end if
 
     		ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )

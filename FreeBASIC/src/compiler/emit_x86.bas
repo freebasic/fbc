@@ -562,7 +562,7 @@ private sub outp( s as string ) static
 	if( env.clopt.debug ) then
 		p = instr( s, " " )
 		if( p > 0 ) then
-			mid$( s, p, 1 ) = TABCHAR
+			s[p-1] = CHAR_TAB
 		end if
 
 		ostr = TABCHAR

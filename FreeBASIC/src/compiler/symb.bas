@@ -946,7 +946,7 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL p
 
 	p = instr( sname, "D" )
 	if( p <> 0 ) then
-		mid$( sname, p, 1 ) = "E"
+		sname[p-1] = asc( "E" )
 	end if
 	s->var.inittext	= sname
 
