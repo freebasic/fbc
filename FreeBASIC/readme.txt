@@ -142,6 +142,23 @@ Most Important Features:
          Result = ArgumentA * ArgumentB
       END SUB
 
+    - pointer indexing:
+    
+      DIM foo AS INTEGER PTR
+      
+      foo = CALLOCATE( 10 * len( integer ) )
+      
+      FOR i = 0 to 9
+      	foo[i] = bar			'' same as *(foo + i) = bar      	
+      NEXT
+      
+    - string indexing:
+    
+      DIM text AS STRING
+      
+      text = "BAR"
+      print text[0]  			'' output will be 66 = ASC("B")
+
   o Optional function arguments (numeric only):
 
       DECLARE SUB Test(A AS DOUBLE = 12.345, BYVAL B AS BYTE = 255)
@@ -187,7 +204,7 @@ Most Important Features:
 
   o Escape characters inside literal strings:
 
-    - Same as in C (except numbers are interpreted as decimal numbers).
+    - Same as in C (except numbers are interpreted as decimal, not octagonal).
       Use the OPTION ESCAPE statement to turn this behavior on or off.
 
       OPTION ESCPAPE
@@ -212,11 +229,11 @@ Most Important Features:
 
     - While FreeBASIC is not an optimizing compiler, it does many kinds of general
       optimizations to generate the fastest possible code on x86 CPU's, not losing
-      to other BASIC alternatives, including many commercial ones.
+      to other BASIC alternatives, including the commercial ones.
 
   o Completely free:
 
-    - All third-party tools are also free. No piece of abandoned of copyrighted
+    - All third-party tools are also free. No piece of abandoned or copyrighted
       software is used (but GoRC on Win32). The assembler, linker, archiver, and 
       other command-line applications come from the GNU binutil programming tools.
 
@@ -246,7 +263,7 @@ What FreeBASIC Isn't:
       
     - While FB is certainly the BASIC compiler that most reassembles the Microsoft 
       BASIC compilers for DOS, don't expect to compile old source-codes filled with 
-      unsupported statements or external libraries, they won't be compiled.
+      unsupported statements or external libraries, that won't work.
 
   o FreeBASIC is not a Visual Basic alternative.
 
@@ -322,7 +339,6 @@ Credits (in alphabetic order):
     - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
     - Translated the first SDL headers (replaced by new ones since version 0.11b).
     - Wrote the first file routines for the run-time library.
-    - Made the preliminary preprocessor, an external tool.
 
   o Nek (dave@nodtveidt.net):
     - Translated the Windows API headers, integrating parts of fsw's work.
@@ -339,15 +355,15 @@ Credits (in alphabetic order):
       KrisKhaos for version 0.12).
 
   o zydon:
-    - Wrote the calendar the toolbar examples at the GUI directory.
+    - Wrote many of the examples at the Windows/gui directory.
 
 
   o Third-party tools:
     - Win32: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
     - DOS32: DJGPP (http://www.delorie.com/)
 
-  o Many run-time library console routines were based on the CONIO implementation
-    for Mingw32.
+  o Many console routines used in the Win32 version of the run-time library were based 
+    on the CONIO implementation for Mingw32.
 
 
 Greetings:

@@ -1,6 +1,8 @@
 Version 0.13 Beta:
 
 [changed] 
+- RETURN can now be used as a shortcut to function result set + EXIT FUNCTION (as in C); with this modification, 
+  the LABEL's (if used) must have been defined already, no forward references are allowed anymore (v1c)
 - ASC now has an optional parameter to retrieve a char at a specific position as in "c = asc( "abc", 2 )" (v1c)
 - CHR$ now accepts multiple arguments as in "s = chr$( 65, 66, 67, 68 )" (v1c)
 - COMMAND$ can now return just a specific argument as in "argv3 = command$(3)" (v1c)
