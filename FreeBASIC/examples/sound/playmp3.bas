@@ -222,7 +222,7 @@ const pathdiv = "/"
    		
    		if( song >= maxsongs ) then
    			maxsongs = maxsongs + (maxsongs \ 2)
-   			redim mp3table(0 to maxsongs-1) as string
+   			redim preserve mp3table(0 to maxsongs-1) as string
    		end if
    		
    		mp3table(song) = path + fname
