@@ -390,7 +390,8 @@ Commands to scale and rotate:
 	An		Rotate n*90 degrees (n ranges 0-3).
 	TAn		Rotate n degrees (n ranges 0-359).
 Extra commands:
-	Xp		Executes commands a address p. For example, you can do
+	Xp		Executes commands at address p. For example, you could
+			do:
 
 		down10$ = "D10" : DRAW "U10R5X" + VARPTR(down10$) + "L5"
 
