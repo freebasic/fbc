@@ -25,6 +25,7 @@ Version 0.12 Beta:
 [added] the OpenAL headers, ported by Chris Davies (v1c)
 [added] SCREEN() function, working as in QB (lillo)
 [added] gfxlib now internally uses MMX routines to update the screen if supported (lillo)
+[added] built-in multiplatform threading functions (lillo)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
