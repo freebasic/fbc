@@ -792,6 +792,7 @@ end function
 
 #define STATE_OUT_STRING	0
 #define STATE_IN_STRING		1
+#define CHAR_TAB			9
 #define CHAR_QUOTE			34
 
 function compileXpmFile as integer
@@ -806,79 +807,94 @@ function compileXpmFile as integer
 	compileXpmFile = FALSE
 	
 	if( len( xpmfile ) = 0 ) then
-		compileXpmFile = TRUE
-		exit function
-	end if
 	
-	''
-	if( not hFileExists( xpmfile ) ) then
-		exit function
-	end if
-	iconsrc = hStripExt( xpmfile ) + ".asm"
+		'' no icon supplied, provide a NULL symbol
+		iconsrc = "$$fb_icon$$.asm"
+		fo = freefile()
+		open iconsrc for output as #fo
+		print #fo, ".data"
+		print #fo, ".align 32"
+		print #fo, ".globl fb_program_icon"
+		print #fo, "fb_program_icon:"
+		print #fo, ".long 0"
+		close #fo
+	else
+		''
+		if( not hFileExists( xpmfile ) ) then
+			exit function
+		end if
+		iconsrc = hStripExt( hStripPath( xpmfile ) ) + ".asm"
 	
-	''
-	fi = freefile()
-	open xpmfile for input as #fi
-	line input #1, buffer
-	if( ucase$( buffer ) <> "/* XPM */" ) then
+		''
+		fi = freefile()
+		open xpmfile for input as #fi
+		line input #1, buffer
+		if( ucase$( buffer ) <> "/* XPM */" ) then
+			close #fi
+			exit function
+		end if
+		buffer = ""
+		while not eof( fi )
+			buffer_len = seek( fi )
+			get #1,, chunk
+			buffer_len = seek( fi ) - buffer_len
+			buffer += left$( chunk, buffer_len )
+		wend
 		close #fi
-		exit function
+		buffer_len = len( buffer )
+		p = sadd( buffer )
+		
+		''
+		do
+			select case state
+			
+			case STATE_OUT_STRING
+				if( *p = CHAR_QUOTE ) then
+					state = STATE_IN_STRING
+					outstr_count += 1
+					redim preserve outstr(outstr_count) as string
+					outstr(outstr_count-1) = ""
+				end if
+			
+			case STATE_IN_STRING
+				if( *p = CHAR_QUOTE ) then
+					state = STATE_OUT_STRING
+				elseif( *p = CHAR_TAB ) then
+					outstr(outstr_count-1) += "\\t"
+				else
+					outstr(outstr_count-1) += chr$(*p)
+				end if
+			
+			end select
+			p += 1
+			buffer_len -= 1
+		loop while buffer_len > 0
+		if( state <> STATE_OUT_STRING ) then
+			exit function
+		end if
+		
+		''
+		fo = freefile()
+		open iconsrc for output as #fo
+		print #fo, ".section .rodata"
+		for label = 0 to outstr_count-1
+			print #fo, "_l" + hex$( label ) + ":"
+			print #fo, ".string \"" + outstr( label ) + "\""
+		next label
+		print #fo, ".section .data"
+		print #fo, ".align 32"
+		print #fo, "_xpm_data:"
+		for label = 0 to outstr_count-1
+			print #fo, ".long _l" + hex$( label )
+		next label
+		print #fo, ".align 32"
+		print #fo, ".globl fb_program_icon"
+		print #fo, "fb_program_icon:"
+		print #fo, ".long _xpm_data"
+		close #fo
 	end if
-	buffer = ""
-	while not eof( fi )
-		buffer_len = seek( fi )
-		get #1,, chunk
-		buffer_len = seek( fi ) - buffer_len
-		buffer += mid$( chunk, 1, buffer_len )
-	wend
-	close #fi
-	buffer_len = len( buffer )
-	p = sadd( buffer )
 	
-	''
-	do
-		select case state
-		
-		case STATE_OUT_STRING
-			if( *p = CHAR_QUOTE ) then
-				state = STATE_IN_STRING
-				outstr_count += 1
-				redim preserve outstr(outstr_count) as string
-				outstr(outstr_count-1) = ""
-			end if
-		
-		case STATE_IN_STRING
-			if( *p = CHAR_QUOTE ) then
-				state = STATE_OUT_STRING
-			else
-				outstr(outstr_count-1) += chr$(*p)
-			end if
-		
-		end select
-		p += 1
-		buffer_len -= 1
-	loop while buffer_len > 0
-	close #fo
-	if( state <> STATE_OUT_STRING ) then
-		exit function
-	end if
-	
-	''
-	fo = freefile()
-	open iconsrc for output as #fo
-	print #fo, ".section .rodata"
-	for label = 0 to outstr_count-1
-		print #fo, "_l" + hex$( label ) + ":"
-		print #fo, ".string \"" + outstr( label ) + "\""
-	next label
-	print #fo, ".data"
-	print #fo, ".align 32"
-	print #fo, "fb_program_icon:"
-	for label = 0 to outstr_count-1
-		print #fo, ".long _l" + hex$( label )
-	next label
-	close #fo
-	
+	'' compile icon source file
 	if( exec( "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
 		kill iconsrc
 		exit function
