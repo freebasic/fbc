@@ -24,7 +24,7 @@ end type
 type SDL_Color
     r as Uint8
     g as Uint8
-    n as Uint8
+    b as Uint8
     unused as Uint8
 end type
 
@@ -102,8 +102,7 @@ end type
 #define SDL_PREALLOC &h01000000
 
 private function SDL_MUSTLOCK (surface as SDL_Surface ptr)
-    SDL_MUSTLOCK = (surface->offset or ((surface->flags and (SDL_HWSURFACE or _
-       SDL_ASYNCBLIT or SDL_RLEACCEL)) <> 0))
+    SDL_MUSTLOCK = (surface->offset or ((surface->flags and (SDL_HWSURFACE or SDL_ASYNCBLIT or SDL_RLEACCEL)) <> 0))
 end function
 
 type SDL_VideoInfo
@@ -210,8 +209,8 @@ declare function SDL_GetGammaRamp SDLCALL alias "SDL_GetGammaRamp" _
    byval blue as Uint16 ptr) as integer
 
 declare function SDL_SetColors SDLCALL alias "SDL_SetColors" _
-   (surface as SDL_Surface ptr, colors as SDL_Color ptr, _
-   firstcolor as integer, ncolors as integer) as integer
+   (byval surface as SDL_Surface ptr, byval colors as SDL_Color ptr, _
+   byval firstcolor as integer, byval ncolors as integer) as integer
 
 declare function SDL_SetPalette SDLCALL alias "SDL_SetPalette" _
    (byval surface as SDL_Surface ptr, byval flags as integer, _
@@ -224,7 +223,7 @@ declare function SDL_MapRGB SDLCALL alias "SDL_MapRGB" _
 
 declare function SDL_MapRGBA SDLCALL alias "SDL_MapRGBA" _
    (byval format as SDL_PixelFormat ptr, byval r as Uint8, byval g as Uint8, _
-   b as Uint8, byval a as Uint8) as Uint32
+   byval b as Uint8, byval a as Uint8) as Uint32
 
 declare sub SDL_GetRGB SDLCALL alias "SDL_GetRGB" _
    (byval pixel as Uint32, byval fmt as SDL_PixelFormat ptr, _
