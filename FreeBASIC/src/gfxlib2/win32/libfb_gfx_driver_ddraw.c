@@ -27,10 +27,16 @@
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 
-#define INITGUID
 #include <objbase.h>
 #include <ddraw.h>
 #include <dinput.h>
+
+#define DX_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) const GUID n GUID_SECT = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+
+/* These are taken off the DirectX headers */
+DX_GUID( IID_IDirectDraw2, 0xB3A6F3E0,0x2B43,0x11CF,0xA2,0xDE,0x00,0xAA,0x00,0xB9,0x33,0x56 );
+DX_GUID( GUID_Key,         0x55728220,0xD33C,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
+DX_GUID( GUID_SysKeyboard, 0x6F1D2B61,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
 
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
@@ -384,9 +390,10 @@ error:
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
+	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
+	
 	if (flags & DRIVER_OPENGL)
 		return -1;
-	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 	fb_win32.init = directx_init;
 	fb_win32.exit = directx_exit;
 	fb_win32.paint = directx_paint;
