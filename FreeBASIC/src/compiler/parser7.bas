@@ -590,6 +590,35 @@ function cGfxPalette as integer
 end function
 
 '':::::
+private function hMakeArrayIndex( byval s as FBSYMBOL ptr, byval arrayexpr as integer ) as integer
+    dim idxexpr as integer
+
+    ''  argument passed by descriptor or common array?
+    if( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
+
+    	astDelTree arrayexpr
+    	arrayexpr = astNewVAR( s, 0, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewPTR( FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER, arrayexpr )
+    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
+
+    '' dynamic array? (this will handle common's too)
+    elseif( symbGetIsDynamic( s ) ) then
+
+    	idxexpr = astNewVAR( symbGetArrayDescriptor( s ), FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
+
+    '' static array
+    else
+
+    	idxexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+
+    end if
+
+    hMakeArrayIndex = astNewIDX( arrayexpr, idxexpr, INVALID )
+
+end function
+
+'':::::
 '' GfxPut   =   PUT STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode)?
 ''
 function cGfxPut as integer
@@ -653,9 +682,9 @@ function cGfxPut as integer
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
-	
+
 	if( astGetType( arrayexpr ) <> AST.NODETYPE.IDX ) then
-		arrayexpr = astNewIDX( arrayexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
+		arrayexpr = hMakeArrayIndex( s, arrayexpr )
 	end if
 
 	'' (',' Mode)?
@@ -812,9 +841,9 @@ function cGfxGet as integer
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
-	
+
 	if( astGetType( arrayexpr ) <> AST.NODETYPE.IDX ) then
-		arrayexpr = astNewIDX( arrayexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
+		arrayexpr = hMakeArrayIndex( s, arrayexpr )
 	end if
 
     ''
