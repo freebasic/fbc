@@ -14,7 +14,7 @@
 type GScanner as _GScanner
 type GScannerConfig as _GScannerConfig
 type GTokenValue as _GTokenValue
-type GScannerMsgFunc as sub cdecl(byval as GScanner ptr, byval as gchar ptr, byval as gboolean)
+type GScannerMsgFunc as sub cdecl(byval as GScanner ptr, byval as string, byval as gboolean)
 
 #define G_CSET_A_2_Z "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define G_CSET_a_2_z_ "abcdefghijklmnopqrstuvwxyz"
@@ -64,24 +64,24 @@ end enum
 
 union _GTokenValue
 	v_symbol as gpointer
-	v_identifier as gchar ptr
+	v_identifier as zstring ptr
 	v_binary as gulong
 	v_octal as gulong
 	v_int as gulong
 	v_int64 as guint64
 	v_float as gdouble
 	v_hex as gulong
-	v_string as gchar ptr
-	v_comment as gchar ptr
+	v_string as zstring ptr
+	v_comment as zstring ptr
 	v_char as guchar
 	v_error as guint
 end union
 
 type _GScannerConfig
-	cset_skip_characters as gchar ptr
-	cset_identifier_first as gchar ptr
-	cset_identifier_nth as gchar ptr
-	cpair_comment_single as gchar ptr
+	cset_skip_characters as zstring ptr
+	cset_identifier_first as zstring ptr
+	cset_identifier_nth as zstring ptr
+	cpair_comment_single as zstring ptr
 	case_sensitive as guint
 	skip_comment_multi as guint
 	skip_comment_single as guint
@@ -111,7 +111,7 @@ type _GScanner
 	user_data as gpointer
 	max_parse_errors as guint
 	parse_errors as guint
-	input_name as gchar ptr
+	input_name as zstring ptr
 	qdata as GData ptr
 	config as GScannerConfig ptr
 	token as GTokenType
@@ -124,9 +124,9 @@ type _GScanner
 	next_position as guint
 	symbol_table as GHashTable ptr
 	input_fd as gint
-	text as gchar ptr
-	text_end as gchar ptr
-	buffer as gchar ptr
+	text as zstring ptr
+	text_end as zstring ptr
+	buffer as zstring ptr
 	scope_id as guint
 	msg_handler as GScannerMsgFunc
 end type
@@ -135,7 +135,7 @@ declare function g_scanner_new cdecl alias "g_scanner_new" (byval config_templ a
 declare sub g_scanner_destroy cdecl alias "g_scanner_destroy" (byval scanner as GScanner ptr)
 declare sub g_scanner_input_file cdecl alias "g_scanner_input_file" (byval scanner as GScanner ptr, byval input_fd as gint)
 declare sub g_scanner_sync_file_offset cdecl alias "g_scanner_sync_file_offset" (byval scanner as GScanner ptr)
-declare sub g_scanner_input_text cdecl alias "g_scanner_input_text" (byval scanner as GScanner ptr, byval text as gchar ptr, byval text_len as guint)
+declare sub g_scanner_input_text cdecl alias "g_scanner_input_text" (byval scanner as GScanner ptr, byval text as string, byval text_len as guint)
 declare function g_scanner_get_next_token cdecl alias "g_scanner_get_next_token" (byval scanner as GScanner ptr) as GTokenType
 declare function g_scanner_peek_next_token cdecl alias "g_scanner_peek_next_token" (byval scanner as GScanner ptr) as GTokenType
 declare function g_scanner_cur_token cdecl alias "g_scanner_cur_token" (byval scanner as GScanner ptr) as GTokenType
@@ -144,13 +144,13 @@ declare function g_scanner_cur_line cdecl alias "g_scanner_cur_line" (byval scan
 declare function g_scanner_cur_position cdecl alias "g_scanner_cur_position" (byval scanner as GScanner ptr) as guint
 declare function g_scanner_eof cdecl alias "g_scanner_eof" (byval scanner as GScanner ptr) as gboolean
 declare function g_scanner_set_scope cdecl alias "g_scanner_set_scope" (byval scanner as GScanner ptr, byval scope_id as guint) as guint
-declare sub g_scanner_scope_add_symbol cdecl alias "g_scanner_scope_add_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as gchar ptr, byval value as gpointer)
-declare sub g_scanner_scope_remove_symbol cdecl alias "g_scanner_scope_remove_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as gchar ptr)
-declare function g_scanner_scope_lookup_symbol cdecl alias "g_scanner_scope_lookup_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as gchar ptr) as gpointer
+declare sub g_scanner_scope_add_symbol cdecl alias "g_scanner_scope_add_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as string, byval value as gpointer)
+declare sub g_scanner_scope_remove_symbol cdecl alias "g_scanner_scope_remove_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as string)
+declare function g_scanner_scope_lookup_symbol cdecl alias "g_scanner_scope_lookup_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as string) as gpointer
 declare sub g_scanner_scope_foreach_symbol cdecl alias "g_scanner_scope_foreach_symbol" (byval scanner as GScanner ptr, byval scope_id as guint, byval func as GHFunc, byval user_data as gpointer)
-declare function g_scanner_lookup_symbol cdecl alias "g_scanner_lookup_symbol" (byval scanner as GScanner ptr, byval symbol as gchar ptr) as gpointer
-declare sub g_scanner_unexp_token cdecl alias "g_scanner_unexp_token" (byval scanner as GScanner ptr, byval expected_token as GTokenType, byval identifier_spec as gchar ptr, byval symbol_spec as gchar ptr, byval symbol_name as gchar ptr, byval message as gchar ptr, byval is_error as gint)
-declare sub g_scanner_error cdecl alias "g_scanner_error" (byval scanner as GScanner ptr, byval format as gchar ptr, ...)
-declare sub g_scanner_warn cdecl alias "g_scanner_warn" (byval scanner as GScanner ptr, byval format as gchar ptr, ...)
+declare function g_scanner_lookup_symbol cdecl alias "g_scanner_lookup_symbol" (byval scanner as GScanner ptr, byval symbol as string) as gpointer
+declare sub g_scanner_unexp_token cdecl alias "g_scanner_unexp_token" (byval scanner as GScanner ptr, byval expected_token as GTokenType, byval identifier_spec as string, byval symbol_spec as string, byval symbol_name as string, byval message as string, byval is_error as gint)
+declare sub g_scanner_error cdecl alias "g_scanner_error" (byval scanner as GScanner ptr, byval format as string, ...)
+declare sub g_scanner_warn cdecl alias "g_scanner_warn" (byval scanner as GScanner ptr, byval format as string, ...)
 
 #endif

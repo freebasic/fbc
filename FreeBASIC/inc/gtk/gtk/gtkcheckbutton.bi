@@ -30,8 +30,8 @@ end type
 
 declare function gtk_check_button_get_type cdecl alias "gtk_check_button_get_type" () as GType
 declare function gtk_check_button_new cdecl alias "gtk_check_button_new" () as GtkWidget ptr
-declare function gtk_check_button_new_with_label cdecl alias "gtk_check_button_new_with_label" (byval label as gchar ptr) as GtkWidget ptr
-declare function gtk_check_button_new_with_mnemonic cdecl alias "gtk_check_button_new_with_mnemonic" (byval label as gchar ptr) as GtkWidget ptr
+declare function gtk_check_button_new_with_label cdecl alias "gtk_check_button_new_with_label" (byval label as string) as GtkWidget ptr
+declare function gtk_check_button_new_with_mnemonic cdecl alias "gtk_check_button_new_with_mnemonic" (byval label as string) as GtkWidget ptr
 declare sub _gtk_check_button_get_props cdecl alias "_gtk_check_button_get_props" (byval check_button as GtkCheckButton ptr, byval indicator_size as gint ptr, byval indicator_spacing as gint ptr)
 
 #endif

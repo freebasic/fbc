@@ -68,19 +68,19 @@ declare function gtk_container_get_focus_hadjustment cdecl alias "gtk_container_
 declare sub gtk_container_resize_children cdecl alias "gtk_container_resize_children" (byval container as GtkContainer ptr)
 declare function gtk_container_child_type cdecl alias "gtk_container_child_type" (byval container as GtkContainer ptr) as GType
 declare sub gtk_container_class_install_child_property cdecl alias "gtk_container_class_install_child_property" (byval cclass as GtkContainerClass ptr, byval property_id as guint, byval pspec as GParamSpec ptr)
-declare function gtk_container_class_find_child_property cdecl alias "gtk_container_class_find_child_property" (byval cclass as GObjectClass ptr, byval property_name as gchar ptr) as GParamSpec ptr
+declare function gtk_container_class_find_child_property cdecl alias "gtk_container_class_find_child_property" (byval cclass as GObjectClass ptr, byval property_name as string) as GParamSpec ptr
 declare function gtk_container_class_list_child_properties cdecl alias "gtk_container_class_list_child_properties" (byval cclass as GObjectClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
-declare sub gtk_container_add_with_properties cdecl alias "gtk_container_add_with_properties" (byval container as GtkContainer ptr, byval widget as GtkWidget ptr, byval first_prop_name as gchar ptr, ...)
-declare sub gtk_container_child_set cdecl alias "gtk_container_child_set" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as gchar ptr, ...)
-declare sub gtk_container_child_get cdecl alias "gtk_container_child_get" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as gchar ptr, ...)
-''''''' declare sub gtk_container_child_set_valist cdecl alias "gtk_container_child_set_valist" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as gchar ptr, byval var_args as va_list)
-''''''' declare sub gtk_container_child_get_valist cdecl alias "gtk_container_child_get_valist" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as gchar ptr, byval var_args as va_list)
-declare sub gtk_container_child_set_property cdecl alias "gtk_container_child_set_property" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as gchar ptr, byval value as GValue ptr)
-declare sub gtk_container_child_get_property cdecl alias "gtk_container_child_get_property" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as gchar ptr, byval value as GValue ptr)
+declare sub gtk_container_add_with_properties cdecl alias "gtk_container_add_with_properties" (byval container as GtkContainer ptr, byval widget as GtkWidget ptr, byval first_prop_name as string, ...)
+declare sub gtk_container_child_set cdecl alias "gtk_container_child_set" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as string, ...)
+declare sub gtk_container_child_get cdecl alias "gtk_container_child_get" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as string, ...)
+''''''' declare sub gtk_container_child_set_valist cdecl alias "gtk_container_child_set_valist" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as string, byval var_args as va_list)
+''''''' declare sub gtk_container_child_get_valist cdecl alias "gtk_container_child_get_valist" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as string, byval var_args as va_list)
+declare sub gtk_container_child_set_property cdecl alias "gtk_container_child_set_property" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as string, byval value as GValue ptr)
+declare sub gtk_container_child_get_property cdecl alias "gtk_container_child_get_property" (byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as string, byval value as GValue ptr)
 declare sub gtk_container_forall cdecl alias "gtk_container_forall" (byval container as GtkContainer ptr, byval callback as GtkCallback, byval callback_data as gpointer)
 declare sub _gtk_container_queue_resize cdecl alias "_gtk_container_queue_resize" (byval container as GtkContainer ptr)
 declare sub _gtk_container_clear_resize_widgets cdecl alias "_gtk_container_clear_resize_widgets" (byval container as GtkContainer ptr)
-declare function _gtk_container_child_composite_name cdecl alias "_gtk_container_child_composite_name" (byval container as GtkContainer ptr, byval child as GtkWidget ptr) as gchar ptr
+declare function _gtk_container_child_composite_name cdecl alias "_gtk_container_child_composite_name" (byval container as GtkContainer ptr, byval child as GtkWidget ptr) as zstring ptr
 declare sub _gtk_container_dequeue_resize_handler cdecl alias "_gtk_container_dequeue_resize_handler" (byval container as GtkContainer ptr)
 declare function _gtk_container_focus_sort cdecl alias "_gtk_container_focus_sort" (byval container as GtkContainer ptr, byval children as GList ptr, byval direction as GtkDirectionType, byval old_focus as GtkWidget ptr) as GList ptr
 

@@ -9,6 +9,9 @@
 #ifndef __pango_bi__
 #define __pango_bi__
 
+#inclib "pango-1.0"
+#inclib "pangowin32-1.0"
+
 #include once "gtk/pango/pango-attributes.bi"
 #include once "gtk/pango/pango-break.bi"
 #include once "gtk/pango/pango-context.bi"

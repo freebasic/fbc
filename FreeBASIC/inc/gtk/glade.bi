@@ -9,6 +9,8 @@
 #ifndef __glade_bi__
 #define __glade_bi__
 
+#inclib "glade-2.0"
+
 #include once "gtk/glib.bi"
 #include once "gtk/libglade/glade-init.bi"
 #include once "gtk/libglade/glade-xml.bi"

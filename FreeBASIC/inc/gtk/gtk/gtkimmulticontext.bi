@@ -20,7 +20,7 @@ type _GtkIMMulticontext
 	object as GtkIMContext
 	slave as GtkIMContext ptr
 	priv as GtkIMMulticontextPrivate ptr
-	context_id as gchar ptr
+	context_id as zstring ptr
 end type
 
 type _GtkIMMulticontextClass

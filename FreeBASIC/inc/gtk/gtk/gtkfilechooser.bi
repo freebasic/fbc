@@ -39,23 +39,23 @@ declare sub gtk_file_chooser_set_select_multiple cdecl alias "gtk_file_chooser_s
 declare function gtk_file_chooser_get_select_multiple cdecl alias "gtk_file_chooser_get_select_multiple" (byval chooser as GtkFileChooser ptr) as gboolean
 declare sub gtk_file_chooser_set_show_hidden cdecl alias "gtk_file_chooser_set_show_hidden" (byval chooser as GtkFileChooser ptr, byval show_hidden as gboolean)
 declare function gtk_file_chooser_get_show_hidden cdecl alias "gtk_file_chooser_get_show_hidden" (byval chooser as GtkFileChooser ptr) as gboolean
-declare sub gtk_file_chooser_set_current_name cdecl alias "gtk_file_chooser_set_current_name" (byval chooser as GtkFileChooser ptr, byval name as gchar ptr)
-declare function gtk_file_chooser_get_filename cdecl alias "gtk_file_chooser_get_filename" (byval chooser as GtkFileChooser ptr) as gchar ptr
+declare sub gtk_file_chooser_set_current_name cdecl alias "gtk_file_chooser_set_current_name" (byval chooser as GtkFileChooser ptr, byval name as string)
+declare function gtk_file_chooser_get_filename cdecl alias "gtk_file_chooser_get_filename" (byval chooser as GtkFileChooser ptr) as zstring ptr
 declare function gtk_file_chooser_set_filename cdecl alias "gtk_file_chooser_set_filename" (byval chooser as GtkFileChooser ptr, byval filename as string) as gboolean
 declare function gtk_file_chooser_select_filename cdecl alias "gtk_file_chooser_select_filename" (byval chooser as GtkFileChooser ptr, byval filename as string) as gboolean
 declare sub gtk_file_chooser_unselect_filename cdecl alias "gtk_file_chooser_unselect_filename" (byval chooser as GtkFileChooser ptr, byval filename as string)
 declare sub gtk_file_chooser_select_all cdecl alias "gtk_file_chooser_select_all" (byval chooser as GtkFileChooser ptr)
 declare sub gtk_file_chooser_unselect_all cdecl alias "gtk_file_chooser_unselect_all" (byval chooser as GtkFileChooser ptr)
 declare function gtk_file_chooser_get_filenames cdecl alias "gtk_file_chooser_get_filenames" (byval chooser as GtkFileChooser ptr) as GSList ptr
-declare function gtk_file_chooser_set_current_folder cdecl alias "gtk_file_chooser_set_current_folder" (byval chooser as GtkFileChooser ptr, byval filename as gchar ptr) as gboolean
-declare function gtk_file_chooser_get_current_folder cdecl alias "gtk_file_chooser_get_current_folder" (byval chooser as GtkFileChooser ptr) as gchar ptr
-declare function gtk_file_chooser_get_uri cdecl alias "gtk_file_chooser_get_uri" (byval chooser as GtkFileChooser ptr) as gchar ptr
+declare function gtk_file_chooser_set_current_folder cdecl alias "gtk_file_chooser_set_current_folder" (byval chooser as GtkFileChooser ptr, byval filename as string) as gboolean
+declare function gtk_file_chooser_get_current_folder cdecl alias "gtk_file_chooser_get_current_folder" (byval chooser as GtkFileChooser ptr) as zstring ptr
+declare function gtk_file_chooser_get_uri cdecl alias "gtk_file_chooser_get_uri" (byval chooser as GtkFileChooser ptr) as zstring ptr
 declare function gtk_file_chooser_set_uri cdecl alias "gtk_file_chooser_set_uri" (byval chooser as GtkFileChooser ptr, byval uri as string) as gboolean
 declare function gtk_file_chooser_select_uri cdecl alias "gtk_file_chooser_select_uri" (byval chooser as GtkFileChooser ptr, byval uri as string) as gboolean
 declare sub gtk_file_chooser_unselect_uri cdecl alias "gtk_file_chooser_unselect_uri" (byval chooser as GtkFileChooser ptr, byval uri as string)
 declare function gtk_file_chooser_get_uris cdecl alias "gtk_file_chooser_get_uris" (byval chooser as GtkFileChooser ptr) as GSList ptr
-declare function gtk_file_chooser_set_current_folder_uri cdecl alias "gtk_file_chooser_set_current_folder_uri" (byval chooser as GtkFileChooser ptr, byval uri as gchar ptr) as gboolean
-declare function gtk_file_chooser_get_current_folder_uri cdecl alias "gtk_file_chooser_get_current_folder_uri" (byval chooser as GtkFileChooser ptr) as gchar ptr
+declare function gtk_file_chooser_set_current_folder_uri cdecl alias "gtk_file_chooser_set_current_folder_uri" (byval chooser as GtkFileChooser ptr, byval uri as string) as gboolean
+declare function gtk_file_chooser_get_current_folder_uri cdecl alias "gtk_file_chooser_get_current_folder_uri" (byval chooser as GtkFileChooser ptr) as zstring ptr
 declare sub gtk_file_chooser_set_preview_widget cdecl alias "gtk_file_chooser_set_preview_widget" (byval chooser as GtkFileChooser ptr, byval preview_widget as GtkWidget ptr)
 declare function gtk_file_chooser_get_preview_widget cdecl alias "gtk_file_chooser_get_preview_widget" (byval chooser as GtkFileChooser ptr) as GtkWidget ptr
 declare sub gtk_file_chooser_set_preview_widget_active cdecl alias "gtk_file_chooser_set_preview_widget_active" (byval chooser as GtkFileChooser ptr, byval active as gboolean)

@@ -20,14 +20,14 @@ type GtkLabelSelectionInfo as _GtkLabelSelectionInfo
 
 type _GtkLabel
 	misc as GtkMisc
-	label as gchar ptr
+	label as zstring ptr
 	jtype as guint
 	wrap as guint
 	use_underline as guint
 	use_markup as guint
 	ellipsize as guint
 	mnemonic_keyval as guint
-	text as gchar ptr
+	text as zstring ptr
 	attrs as PangoAttrList ptr
 	effective_attrs as PangoAttrList ptr
 	layout as PangoLayout ptr
@@ -51,21 +51,21 @@ declare function gtk_label_get_type cdecl alias "gtk_label_get_type" () as GType
 declare function gtk_label_new cdecl alias "gtk_label_new" (byval str as string) as GtkWidget ptr
 declare function gtk_label_new_with_mnemonic cdecl alias "gtk_label_new_with_mnemonic" (byval str as string) as GtkWidget ptr
 declare sub gtk_label_set_text cdecl alias "gtk_label_set_text" (byval label as GtkLabel ptr, byval str as string)
-declare function gtk_label_get_text cdecl alias "gtk_label_get_text" (byval label as GtkLabel ptr) as gchar ptr
+declare function gtk_label_get_text cdecl alias "gtk_label_get_text" (byval label as GtkLabel ptr) as zstring ptr
 declare sub gtk_label_set_attributes cdecl alias "gtk_label_set_attributes" (byval label as GtkLabel ptr, byval attrs as PangoAttrList ptr)
 declare function gtk_label_get_attributes cdecl alias "gtk_label_get_attributes" (byval label as GtkLabel ptr) as PangoAttrList ptr
-declare sub gtk_label_set_label cdecl alias "gtk_label_set_label" (byval label as GtkLabel ptr, byval str as gchar ptr)
-declare function gtk_label_get_label cdecl alias "gtk_label_get_label" (byval label as GtkLabel ptr) as gchar ptr
-declare sub gtk_label_set_markup cdecl alias "gtk_label_set_markup" (byval label as GtkLabel ptr, byval str as gchar ptr)
+declare sub gtk_label_set_label cdecl alias "gtk_label_set_label" (byval label as GtkLabel ptr, byval str as string)
+declare function gtk_label_get_label cdecl alias "gtk_label_get_label" (byval label as GtkLabel ptr) as zstring ptr
+declare sub gtk_label_set_markup cdecl alias "gtk_label_set_markup" (byval label as GtkLabel ptr, byval str as string)
 declare sub gtk_label_set_use_markup cdecl alias "gtk_label_set_use_markup" (byval label as GtkLabel ptr, byval setting as gboolean)
 declare function gtk_label_get_use_markup cdecl alias "gtk_label_get_use_markup" (byval label as GtkLabel ptr) as gboolean
 declare sub gtk_label_set_use_underline cdecl alias "gtk_label_set_use_underline" (byval label as GtkLabel ptr, byval setting as gboolean)
 declare function gtk_label_get_use_underline cdecl alias "gtk_label_get_use_underline" (byval label as GtkLabel ptr) as gboolean
-declare sub gtk_label_set_markup_with_mnemonic cdecl alias "gtk_label_set_markup_with_mnemonic" (byval label as GtkLabel ptr, byval str as gchar ptr)
+declare sub gtk_label_set_markup_with_mnemonic cdecl alias "gtk_label_set_markup_with_mnemonic" (byval label as GtkLabel ptr, byval str as string)
 declare function gtk_label_get_mnemonic_keyval cdecl alias "gtk_label_get_mnemonic_keyval" (byval label as GtkLabel ptr) as guint
 declare sub gtk_label_set_mnemonic_widget cdecl alias "gtk_label_set_mnemonic_widget" (byval label as GtkLabel ptr, byval widget as GtkWidget ptr)
 declare function gtk_label_get_mnemonic_widget cdecl alias "gtk_label_get_mnemonic_widget" (byval label as GtkLabel ptr) as GtkWidget ptr
-declare sub gtk_label_set_text_with_mnemonic cdecl alias "gtk_label_set_text_with_mnemonic" (byval label as GtkLabel ptr, byval str as gchar ptr)
+declare sub gtk_label_set_text_with_mnemonic cdecl alias "gtk_label_set_text_with_mnemonic" (byval label as GtkLabel ptr, byval str as string)
 declare sub gtk_label_set_justify cdecl alias "gtk_label_set_justify" (byval label as GtkLabel ptr, byval jtype as GtkJustification)
 declare function gtk_label_get_justify cdecl alias "gtk_label_get_justify" (byval label as GtkLabel ptr) as GtkJustification
 declare sub gtk_label_set_ellipsize cdecl alias "gtk_label_set_ellipsize" (byval label as GtkLabel ptr, byval mode as PangoEllipsizeMode)
@@ -74,7 +74,7 @@ declare sub gtk_label_set_width_chars cdecl alias "gtk_label_set_width_chars" (b
 declare function gtk_label_get_width_chars cdecl alias "gtk_label_get_width_chars" (byval label as GtkLabel ptr) as gint
 declare sub gtk_label_set_max_width_chars cdecl alias "gtk_label_set_max_width_chars" (byval label as GtkLabel ptr, byval n_chars as gint)
 declare function gtk_label_get_max_width_chars cdecl alias "gtk_label_get_max_width_chars" (byval label as GtkLabel ptr) as gint
-declare sub gtk_label_set_pattern cdecl alias "gtk_label_set_pattern" (byval label as GtkLabel ptr, byval pattern as gchar ptr)
+declare sub gtk_label_set_pattern cdecl alias "gtk_label_set_pattern" (byval label as GtkLabel ptr, byval pattern as string)
 declare sub gtk_label_set_line_wrap cdecl alias "gtk_label_set_line_wrap" (byval label as GtkLabel ptr, byval wrap as gboolean)
 declare function gtk_label_get_line_wrap cdecl alias "gtk_label_get_line_wrap" (byval label as GtkLabel ptr) as gboolean
 declare sub gtk_label_set_selectable cdecl alias "gtk_label_set_selectable" (byval label as GtkLabel ptr, byval setting as gboolean)
@@ -88,6 +88,6 @@ declare sub gtk_label_get_layout_offsets cdecl alias "gtk_label_get_layout_offse
 declare sub gtk_label_set_single_line_mode cdecl alias "gtk_label_set_single_line_mode" (byval label as GtkLabel ptr, byval single_line_mode as gboolean)
 declare function gtk_label_get_single_line_mode cdecl alias "gtk_label_get_single_line_mode" (byval label as GtkLabel ptr) as gboolean
 declare sub gtk_label_get cdecl alias "gtk_label_get" (byval label as GtkLabel ptr, byval str as byte ptr ptr)
-declare function gtk_label_parse_uline cdecl alias "gtk_label_parse_uline" (byval label as GtkLabel ptr, byval string as gchar ptr) as guint
+declare function gtk_label_parse_uline cdecl alias "gtk_label_parse_uline" (byval label as GtkLabel ptr, byval string as string) as guint
 
 #endif

@@ -47,7 +47,7 @@ type _GtkTreeViewColumn
 	max_width as gint
 	drag_x as gint
 	drag_y as gint
-	title as gchar ptr
+	title as zstring ptr
 	cell_list as GList ptr
 	sort_clicked_signal as guint
 	sort_column_changed_signal as guint
@@ -75,12 +75,12 @@ end type
 
 declare function gtk_tree_view_column_get_type cdecl alias "gtk_tree_view_column_get_type" () as GType
 declare function gtk_tree_view_column_new cdecl alias "gtk_tree_view_column_new" () as GtkTreeViewColumn ptr
-declare function gtk_tree_view_column_new_with_attributes cdecl alias "gtk_tree_view_column_new_with_attributes" (byval title as gchar ptr, byval cell as GtkCellRenderer ptr, ...) as GtkTreeViewColumn ptr
+declare function gtk_tree_view_column_new_with_attributes cdecl alias "gtk_tree_view_column_new_with_attributes" (byval title as string, byval cell as GtkCellRenderer ptr, ...) as GtkTreeViewColumn ptr
 declare sub gtk_tree_view_column_pack_start cdecl alias "gtk_tree_view_column_pack_start" (byval tree_column as GtkTreeViewColumn ptr, byval cell as GtkCellRenderer ptr, byval expand as gboolean)
 declare sub gtk_tree_view_column_pack_end cdecl alias "gtk_tree_view_column_pack_end" (byval tree_column as GtkTreeViewColumn ptr, byval cell as GtkCellRenderer ptr, byval expand as gboolean)
 declare sub gtk_tree_view_column_clear cdecl alias "gtk_tree_view_column_clear" (byval tree_column as GtkTreeViewColumn ptr)
 declare function gtk_tree_view_column_get_cell_renderers cdecl alias "gtk_tree_view_column_get_cell_renderers" (byval tree_column as GtkTreeViewColumn ptr) as GList ptr
-declare sub gtk_tree_view_column_add_attribute cdecl alias "gtk_tree_view_column_add_attribute" (byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, byval attribute as gchar ptr, byval column as gint)
+declare sub gtk_tree_view_column_add_attribute cdecl alias "gtk_tree_view_column_add_attribute" (byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, byval attribute as string, byval column as gint)
 declare sub gtk_tree_view_column_set_attributes cdecl alias "gtk_tree_view_column_set_attributes" (byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, ...)
 declare sub gtk_tree_view_column_set_cell_data_func cdecl alias "gtk_tree_view_column_set_cell_data_func" (byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, byval func as GtkTreeCellDataFunc, byval func_data as gpointer, byval destroy as GtkDestroyNotify)
 declare sub gtk_tree_view_column_clear_attributes cdecl alias "gtk_tree_view_column_clear_attributes" (byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr)
@@ -100,8 +100,8 @@ declare function gtk_tree_view_column_get_min_width cdecl alias "gtk_tree_view_c
 declare sub gtk_tree_view_column_set_max_width cdecl alias "gtk_tree_view_column_set_max_width" (byval tree_column as GtkTreeViewColumn ptr, byval max_width as gint)
 declare function gtk_tree_view_column_get_max_width cdecl alias "gtk_tree_view_column_get_max_width" (byval tree_column as GtkTreeViewColumn ptr) as gint
 declare sub gtk_tree_view_column_clicked cdecl alias "gtk_tree_view_column_clicked" (byval tree_column as GtkTreeViewColumn ptr)
-declare sub gtk_tree_view_column_set_title cdecl alias "gtk_tree_view_column_set_title" (byval tree_column as GtkTreeViewColumn ptr, byval title as gchar ptr)
-declare function gtk_tree_view_column_get_title cdecl alias "gtk_tree_view_column_get_title" (byval tree_column as GtkTreeViewColumn ptr) as gchar ptr
+declare sub gtk_tree_view_column_set_title cdecl alias "gtk_tree_view_column_set_title" (byval tree_column as GtkTreeViewColumn ptr, byval title as string)
+declare function gtk_tree_view_column_get_title cdecl alias "gtk_tree_view_column_get_title" (byval tree_column as GtkTreeViewColumn ptr) as zstring ptr
 declare sub gtk_tree_view_column_set_expand cdecl alias "gtk_tree_view_column_set_expand" (byval tree_column as GtkTreeViewColumn ptr, byval expand as gboolean)
 declare function gtk_tree_view_column_get_expand cdecl alias "gtk_tree_view_column_get_expand" (byval tree_column as GtkTreeViewColumn ptr) as gboolean
 declare sub gtk_tree_view_column_set_clickable cdecl alias "gtk_tree_view_column_set_clickable" (byval tree_column as GtkTreeViewColumn ptr, byval clickable as gboolean)

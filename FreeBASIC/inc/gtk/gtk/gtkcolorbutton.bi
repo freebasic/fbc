@@ -38,7 +38,7 @@ declare sub gtk_color_button_get_color cdecl alias "gtk_color_button_get_color" 
 declare function gtk_color_button_get_alpha cdecl alias "gtk_color_button_get_alpha" (byval color_button as GtkColorButton ptr) as guint16
 declare sub gtk_color_button_set_use_alpha cdecl alias "gtk_color_button_set_use_alpha" (byval color_button as GtkColorButton ptr, byval use_alpha as gboolean)
 declare function gtk_color_button_get_use_alpha cdecl alias "gtk_color_button_get_use_alpha" (byval color_button as GtkColorButton ptr) as gboolean
-declare sub gtk_color_button_set_title cdecl alias "gtk_color_button_set_title" (byval color_button as GtkColorButton ptr, byval title as gchar ptr)
-declare function gtk_color_button_get_title cdecl alias "gtk_color_button_get_title" (byval color_button as GtkColorButton ptr) as gchar ptr
+declare sub gtk_color_button_set_title cdecl alias "gtk_color_button_set_title" (byval color_button as GtkColorButton ptr, byval title as string)
+declare function gtk_color_button_get_title cdecl alias "gtk_color_button_get_title" (byval color_button as GtkColorButton ptr) as zstring ptr
 
 #endif

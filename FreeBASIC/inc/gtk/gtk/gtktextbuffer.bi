@@ -33,7 +33,7 @@ end type
 
 type _GtkTextBufferClass
 	parent_class as GObjectClass
-	insert_text as sub cdecl(byval as GtkTextBuffer ptr, byval as GtkTextIter ptr, byval as gchar ptr, byval as gint)
+	insert_text as sub cdecl(byval as GtkTextBuffer ptr, byval as GtkTextIter ptr, byval as string, byval as gint)
 	insert_pixbuf as sub cdecl(byval as GtkTextBuffer ptr, byval as GtkTextIter ptr, byval as GdkPixbuf ptr)
 	insert_child_anchor as sub cdecl(byval as GtkTextBuffer ptr, byval as GtkTextIter ptr, byval as GtkTextChildAnchor ptr)
 	delete_range as sub cdecl(byval as GtkTextBuffer ptr, byval as GtkTextIter ptr, byval as GtkTextIter ptr)
@@ -58,39 +58,39 @@ declare function gtk_text_buffer_new cdecl alias "gtk_text_buffer_new" (byval ta
 declare function gtk_text_buffer_get_line_count cdecl alias "gtk_text_buffer_get_line_count" (byval buffer as GtkTextBuffer ptr) as gint
 declare function gtk_text_buffer_get_char_count cdecl alias "gtk_text_buffer_get_char_count" (byval buffer as GtkTextBuffer ptr) as gint
 declare function gtk_text_buffer_get_tag_table cdecl alias "gtk_text_buffer_get_tag_table" (byval buffer as GtkTextBuffer ptr) as GtkTextTagTable ptr
-declare sub gtk_text_buffer_set_text cdecl alias "gtk_text_buffer_set_text" (byval buffer as GtkTextBuffer ptr, byval text as gchar ptr, byval len as gint)
-declare sub gtk_text_buffer_insert cdecl alias "gtk_text_buffer_insert" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as gchar ptr, byval len as gint)
-declare sub gtk_text_buffer_insert_at_cursor cdecl alias "gtk_text_buffer_insert_at_cursor" (byval buffer as GtkTextBuffer ptr, byval text as gchar ptr, byval len as gint)
-declare function gtk_text_buffer_insert_interactive cdecl alias "gtk_text_buffer_insert_interactive" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as gchar ptr, byval len as gint, byval default_editable as gboolean) as gboolean
-declare function gtk_text_buffer_insert_interactive_at_cursor cdecl alias "gtk_text_buffer_insert_interactive_at_cursor" (byval buffer as GtkTextBuffer ptr, byval text as gchar ptr, byval len as gint, byval default_editable as gboolean) as gboolean
+declare sub gtk_text_buffer_set_text cdecl alias "gtk_text_buffer_set_text" (byval buffer as GtkTextBuffer ptr, byval text as string, byval len as gint)
+declare sub gtk_text_buffer_insert cdecl alias "gtk_text_buffer_insert" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as string, byval len as gint)
+declare sub gtk_text_buffer_insert_at_cursor cdecl alias "gtk_text_buffer_insert_at_cursor" (byval buffer as GtkTextBuffer ptr, byval text as string, byval len as gint)
+declare function gtk_text_buffer_insert_interactive cdecl alias "gtk_text_buffer_insert_interactive" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as string, byval len as gint, byval default_editable as gboolean) as gboolean
+declare function gtk_text_buffer_insert_interactive_at_cursor cdecl alias "gtk_text_buffer_insert_interactive_at_cursor" (byval buffer as GtkTextBuffer ptr, byval text as string, byval len as gint, byval default_editable as gboolean) as gboolean
 declare sub gtk_text_buffer_insert_range cdecl alias "gtk_text_buffer_insert_range" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
 declare function gtk_text_buffer_insert_range_interactive cdecl alias "gtk_text_buffer_insert_range_interactive" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr, byval default_editable as gboolean) as gboolean
-declare sub gtk_text_buffer_insert_with_tags cdecl alias "gtk_text_buffer_insert_with_tags" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as gchar ptr, byval len as gint, byval first_tag as GtkTextTag ptr, ...)
-declare sub gtk_text_buffer_insert_with_tags_by_name cdecl alias "gtk_text_buffer_insert_with_tags_by_name" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as gchar ptr, byval len as gint, byval first_tag_name as gchar ptr, ...)
+declare sub gtk_text_buffer_insert_with_tags cdecl alias "gtk_text_buffer_insert_with_tags" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as string, byval len as gint, byval first_tag as GtkTextTag ptr, ...)
+declare sub gtk_text_buffer_insert_with_tags_by_name cdecl alias "gtk_text_buffer_insert_with_tags_by_name" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as string, byval len as gint, byval first_tag_name as string, ...)
 declare sub gtk_text_buffer_delete cdecl alias "gtk_text_buffer_delete" (byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
 declare function gtk_text_buffer_delete_interactive cdecl alias "gtk_text_buffer_delete_interactive" (byval buffer as GtkTextBuffer ptr, byval start_iter as GtkTextIter ptr, byval end_iter as GtkTextIter ptr, byval default_editable as gboolean) as gboolean
 declare function gtk_text_buffer_backspace cdecl alias "gtk_text_buffer_backspace" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval interactive as gboolean, byval default_editable as gboolean) as gboolean
-declare function gtk_text_buffer_get_text cdecl alias "gtk_text_buffer_get_text" (byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr, byval include_hidden_chars as gboolean) as gchar ptr
-declare function gtk_text_buffer_get_slice cdecl alias "gtk_text_buffer_get_slice" (byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr, byval include_hidden_chars as gboolean) as gchar ptr
+declare function gtk_text_buffer_get_text cdecl alias "gtk_text_buffer_get_text" (byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr, byval include_hidden_chars as gboolean) as zstring ptr
+declare function gtk_text_buffer_get_slice cdecl alias "gtk_text_buffer_get_slice" (byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr, byval include_hidden_chars as gboolean) as zstring ptr
 declare sub gtk_text_buffer_insert_pixbuf cdecl alias "gtk_text_buffer_insert_pixbuf" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval pixbuf as GdkPixbuf ptr)
 declare sub gtk_text_buffer_insert_child_anchor cdecl alias "gtk_text_buffer_insert_child_anchor" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval anchor as GtkTextChildAnchor ptr)
 declare function gtk_text_buffer_create_child_anchor cdecl alias "gtk_text_buffer_create_child_anchor" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr) as GtkTextChildAnchor ptr
-declare function gtk_text_buffer_create_mark cdecl alias "gtk_text_buffer_create_mark" (byval buffer as GtkTextBuffer ptr, byval mark_name as gchar ptr, byval where as GtkTextIter ptr, byval left_gravity as gboolean) as GtkTextMark ptr
+declare function gtk_text_buffer_create_mark cdecl alias "gtk_text_buffer_create_mark" (byval buffer as GtkTextBuffer ptr, byval mark_name as string, byval where as GtkTextIter ptr, byval left_gravity as gboolean) as GtkTextMark ptr
 declare sub gtk_text_buffer_move_mark cdecl alias "gtk_text_buffer_move_mark" (byval buffer as GtkTextBuffer ptr, byval mark as GtkTextMark ptr, byval where as GtkTextIter ptr)
 declare sub gtk_text_buffer_delete_mark cdecl alias "gtk_text_buffer_delete_mark" (byval buffer as GtkTextBuffer ptr, byval mark as GtkTextMark ptr)
-declare function gtk_text_buffer_get_mark cdecl alias "gtk_text_buffer_get_mark" (byval buffer as GtkTextBuffer ptr, byval name as gchar ptr) as GtkTextMark ptr
-declare sub gtk_text_buffer_move_mark_by_name cdecl alias "gtk_text_buffer_move_mark_by_name" (byval buffer as GtkTextBuffer ptr, byval name as gchar ptr, byval where as GtkTextIter ptr)
-declare sub gtk_text_buffer_delete_mark_by_name cdecl alias "gtk_text_buffer_delete_mark_by_name" (byval buffer as GtkTextBuffer ptr, byval name as gchar ptr)
+declare function gtk_text_buffer_get_mark cdecl alias "gtk_text_buffer_get_mark" (byval buffer as GtkTextBuffer ptr, byval name as string) as GtkTextMark ptr
+declare sub gtk_text_buffer_move_mark_by_name cdecl alias "gtk_text_buffer_move_mark_by_name" (byval buffer as GtkTextBuffer ptr, byval name as string, byval where as GtkTextIter ptr)
+declare sub gtk_text_buffer_delete_mark_by_name cdecl alias "gtk_text_buffer_delete_mark_by_name" (byval buffer as GtkTextBuffer ptr, byval name as string)
 declare function gtk_text_buffer_get_insert cdecl alias "gtk_text_buffer_get_insert" (byval buffer as GtkTextBuffer ptr) as GtkTextMark ptr
 declare function gtk_text_buffer_get_selection_bound cdecl alias "gtk_text_buffer_get_selection_bound" (byval buffer as GtkTextBuffer ptr) as GtkTextMark ptr
 declare sub gtk_text_buffer_place_cursor cdecl alias "gtk_text_buffer_place_cursor" (byval buffer as GtkTextBuffer ptr, byval where as GtkTextIter ptr)
 declare sub gtk_text_buffer_select_range cdecl alias "gtk_text_buffer_select_range" (byval buffer as GtkTextBuffer ptr, byval ins as GtkTextIter ptr, byval bound as GtkTextIter ptr)
 declare sub gtk_text_buffer_apply_tag cdecl alias "gtk_text_buffer_apply_tag" (byval buffer as GtkTextBuffer ptr, byval tag as GtkTextTag ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
 declare sub gtk_text_buffer_remove_tag cdecl alias "gtk_text_buffer_remove_tag" (byval buffer as GtkTextBuffer ptr, byval tag as GtkTextTag ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
-declare sub gtk_text_buffer_apply_tag_by_name cdecl alias "gtk_text_buffer_apply_tag_by_name" (byval buffer as GtkTextBuffer ptr, byval name as gchar ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
-declare sub gtk_text_buffer_remove_tag_by_name cdecl alias "gtk_text_buffer_remove_tag_by_name" (byval buffer as GtkTextBuffer ptr, byval name as gchar ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
+declare sub gtk_text_buffer_apply_tag_by_name cdecl alias "gtk_text_buffer_apply_tag_by_name" (byval buffer as GtkTextBuffer ptr, byval name as string, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
+declare sub gtk_text_buffer_remove_tag_by_name cdecl alias "gtk_text_buffer_remove_tag_by_name" (byval buffer as GtkTextBuffer ptr, byval name as string, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
 declare sub gtk_text_buffer_remove_all_tags cdecl alias "gtk_text_buffer_remove_all_tags" (byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
-declare function gtk_text_buffer_create_tag cdecl alias "gtk_text_buffer_create_tag" (byval buffer as GtkTextBuffer ptr, byval tag_name as gchar ptr, byval first_property_name as gchar ptr, ...) as GtkTextTag ptr
+declare function gtk_text_buffer_create_tag cdecl alias "gtk_text_buffer_create_tag" (byval buffer as GtkTextBuffer ptr, byval tag_name as string, byval first_property_name as string, ...) as GtkTextTag ptr
 declare sub gtk_text_buffer_get_iter_at_line_offset cdecl alias "gtk_text_buffer_get_iter_at_line_offset" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval line_number as gint, byval char_offset as gint)
 declare sub gtk_text_buffer_get_iter_at_line_index cdecl alias "gtk_text_buffer_get_iter_at_line_index" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval line_number as gint, byval byte_index as gint)
 declare sub gtk_text_buffer_get_iter_at_offset cdecl alias "gtk_text_buffer_get_iter_at_offset" (byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval char_offset as gint)

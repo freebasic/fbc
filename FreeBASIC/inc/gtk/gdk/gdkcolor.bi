@@ -47,7 +47,7 @@ declare sub gdk_colormap_query_color cdecl alias "gdk_colormap_query_color" (byv
 declare function gdk_colormap_get_visual cdecl alias "gdk_colormap_get_visual" (byval colormap as GdkColormap ptr) as GdkVisual ptr
 declare function gdk_color_copy cdecl alias "gdk_color_copy" (byval color as GdkColor ptr) as GdkColor ptr
 declare sub gdk_color_free cdecl alias "gdk_color_free" (byval color as GdkColor ptr)
-declare function gdk_color_parse cdecl alias "gdk_color_parse" (byval spec as gchar ptr, byval color as GdkColor ptr) as gint
+declare function gdk_color_parse cdecl alias "gdk_color_parse" (byval spec as string, byval color as GdkColor ptr) as gint
 declare function gdk_color_hash cdecl alias "gdk_color_hash" (byval colora as GdkColor ptr) as guint
 declare function gdk_color_equal cdecl alias "gdk_color_equal" (byval colora as GdkColor ptr, byval colorb as GdkColor ptr) as gboolean
 declare function gdk_color_get_type cdecl alias "gdk_color_get_type" () as GType

@@ -30,7 +30,7 @@ type _AtkDocumentIface
 end type
 
 declare function atk_document_get_type cdecl alias "atk_document_get_type" () as GType
-declare function atk_document_get_document_type cdecl alias "atk_document_get_document_type" (byval document as AtkDocument ptr) as gchar ptr
+declare function atk_document_get_document_type cdecl alias "atk_document_get_document_type" (byval document as AtkDocument ptr) as zstring ptr
 declare function atk_document_get_document cdecl alias "atk_document_get_document" (byval document as AtkDocument ptr) as gpointer
 
 #endif

@@ -41,8 +41,8 @@ type _GtkRulerClass
 end type
 
 type _GtkRulerMetric
-	metric_name as gchar ptr
-	abbrev as gchar ptr
+	metric_name as zstring ptr
+	abbrev as zstring ptr
 	pixels_per_unit as gdouble
 	ruler_scale(0 to 10-1) as gdouble ptr
 	subdivide(0 to 5-1) as gint ptr

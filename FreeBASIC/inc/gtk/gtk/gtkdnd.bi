@@ -51,12 +51,12 @@ declare sub gtk_drag_source_add_image_targets cdecl alias "gtk_drag_source_add_i
 declare sub gtk_drag_source_add_uri_targets cdecl alias "gtk_drag_source_add_uri_targets" (byval widget as GtkWidget ptr)
 declare sub gtk_drag_source_set_icon cdecl alias "gtk_drag_source_set_icon" (byval widget as GtkWidget ptr, byval colormap as GdkColormap ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_drag_source_set_icon_pixbuf cdecl alias "gtk_drag_source_set_icon_pixbuf" (byval widget as GtkWidget ptr, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_drag_source_set_icon_stock cdecl alias "gtk_drag_source_set_icon_stock" (byval widget as GtkWidget ptr, byval stock_id as gchar ptr)
+declare sub gtk_drag_source_set_icon_stock cdecl alias "gtk_drag_source_set_icon_stock" (byval widget as GtkWidget ptr, byval stock_id as string)
 declare function gtk_drag_begin cdecl alias "gtk_drag_begin" (byval widget as GtkWidget ptr, byval targets as GtkTargetList ptr, byval actions as GdkDragAction, byval button as gint, byval event as GdkEvent ptr) as GdkDragContext ptr
 declare sub gtk_drag_set_icon_widget cdecl alias "gtk_drag_set_icon_widget" (byval context as GdkDragContext ptr, byval widget as GtkWidget ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_pixmap cdecl alias "gtk_drag_set_icon_pixmap" (byval context as GdkDragContext ptr, byval colormap as GdkColormap ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_pixbuf cdecl alias "gtk_drag_set_icon_pixbuf" (byval context as GdkDragContext ptr, byval pixbuf as GdkPixbuf ptr, byval hot_x as gint, byval hot_y as gint)
-declare sub gtk_drag_set_icon_stock cdecl alias "gtk_drag_set_icon_stock" (byval context as GdkDragContext ptr, byval stock_id as gchar ptr, byval hot_x as gint, byval hot_y as gint)
+declare sub gtk_drag_set_icon_stock cdecl alias "gtk_drag_set_icon_stock" (byval context as GdkDragContext ptr, byval stock_id as string, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_default cdecl alias "gtk_drag_set_icon_default" (byval context as GdkDragContext ptr)
 declare function gtk_drag_check_threshold cdecl alias "gtk_drag_check_threshold" (byval widget as GtkWidget ptr, byval start_x as gint, byval start_y as gint, byval current_x as gint, byval current_y as gint) as gboolean
 declare sub _gtk_drag_source_handle_event cdecl alias "_gtk_drag_source_handle_event" (byval widget as GtkWidget ptr, byval event as GdkEvent ptr)

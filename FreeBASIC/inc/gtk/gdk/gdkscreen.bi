@@ -42,13 +42,13 @@ declare function gdk_screen_get_width_mm cdecl alias "gdk_screen_get_width_mm" (
 declare function gdk_screen_get_height_mm cdecl alias "gdk_screen_get_height_mm" (byval screen as GdkScreen ptr) as gint
 declare function gdk_screen_list_visuals cdecl alias "gdk_screen_list_visuals" (byval screen as GdkScreen ptr) as GList ptr
 declare function gdk_screen_get_toplevel_windows cdecl alias "gdk_screen_get_toplevel_windows" (byval screen as GdkScreen ptr) as GList ptr
-declare function gdk_screen_make_display_name cdecl alias "gdk_screen_make_display_name" (byval screen as GdkScreen ptr) as gchar ptr
+declare function gdk_screen_make_display_name cdecl alias "gdk_screen_make_display_name" (byval screen as GdkScreen ptr) as zstring ptr
 declare function gdk_screen_get_n_monitors cdecl alias "gdk_screen_get_n_monitors" (byval screen as GdkScreen ptr) as gint
 declare sub gdk_screen_get_monitor_geometry cdecl alias "gdk_screen_get_monitor_geometry" (byval screen as GdkScreen ptr, byval monitor_num as gint, byval dest as GdkRectangle ptr)
 declare function gdk_screen_get_monitor_at_point cdecl alias "gdk_screen_get_monitor_at_point" (byval screen as GdkScreen ptr, byval x as gint, byval y as gint) as gint
 declare function gdk_screen_get_monitor_at_window cdecl alias "gdk_screen_get_monitor_at_window" (byval screen as GdkScreen ptr, byval window as GdkWindow ptr) as gint
 declare sub gdk_screen_broadcast_client_message cdecl alias "gdk_screen_broadcast_client_message" (byval screen as GdkScreen ptr, byval event as GdkEvent ptr)
 declare function gdk_screen_get_default cdecl alias "gdk_screen_get_default" () as GdkScreen ptr
-declare function gdk_screen_get_setting cdecl alias "gdk_screen_get_setting" (byval screen as GdkScreen ptr, byval name as gchar ptr, byval value as GValue ptr) as gboolean
+declare function gdk_screen_get_setting cdecl alias "gdk_screen_get_setting" (byval screen as GdkScreen ptr, byval name as string, byval value as GValue ptr) as gboolean
 
 #endif

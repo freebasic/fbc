@@ -88,7 +88,7 @@ declare function gtk_toolbar_get_icon_size cdecl alias "gtk_toolbar_get_icon_siz
 declare function gtk_toolbar_get_relief_style cdecl alias "gtk_toolbar_get_relief_style" (byval toolbar as GtkToolbar ptr) as GtkReliefStyle
 declare function gtk_toolbar_get_drop_index cdecl alias "gtk_toolbar_get_drop_index" (byval toolbar as GtkToolbar ptr, byval x as gint, byval y as gint) as gint
 declare sub gtk_toolbar_set_drop_highlight_item cdecl alias "gtk_toolbar_set_drop_highlight_item" (byval toolbar as GtkToolbar ptr, byval tool_item as GtkToolItem ptr, byval index_ as gint)
-declare function _gtk_toolbar_elide_underscores cdecl alias "_gtk_toolbar_elide_underscores" (byval original as gchar ptr) as gchar ptr
+declare function _gtk_toolbar_elide_underscores cdecl alias "_gtk_toolbar_elide_underscores" (byval original as string) as zstring ptr
 declare sub _gtk_toolbar_paint_space_line cdecl alias "_gtk_toolbar_paint_space_line" (byval widget as GtkWidget ptr, byval toolbar as GtkToolbar ptr, byval area as GdkRectangle ptr, byval allocation as GtkAllocation ptr)
 declare function _gtk_toolbar_get_default_space_size cdecl alias "_gtk_toolbar_get_default_space_size" () as gint
 declare sub _gtk_toolbar_rebuild_menu cdecl alias "_gtk_toolbar_rebuild_menu" (byval toolbar as GtkToolbar ptr)
@@ -97,7 +97,7 @@ declare sub gtk_toolbar_unset_icon_size cdecl alias "gtk_toolbar_unset_icon_size
 declare function gtk_toolbar_append_item cdecl alias "gtk_toolbar_append_item" (byval toolbar as GtkToolbar ptr, byval text as string, byval tooltip_text as string, byval tooltip_private_text as string, byval icon as GtkWidget ptr, byval callback as GtkSignalFunc, byval user_data as gpointer) as GtkWidget ptr
 declare function gtk_toolbar_prepend_item cdecl alias "gtk_toolbar_prepend_item" (byval toolbar as GtkToolbar ptr, byval text as string, byval tooltip_text as string, byval tooltip_private_text as string, byval icon as GtkWidget ptr, byval callback as GtkSignalFunc, byval user_data as gpointer) as GtkWidget ptr
 declare function gtk_toolbar_insert_item cdecl alias "gtk_toolbar_insert_item" (byval toolbar as GtkToolbar ptr, byval text as string, byval tooltip_text as string, byval tooltip_private_text as string, byval icon as GtkWidget ptr, byval callback as GtkSignalFunc, byval user_data as gpointer, byval position as gint) as GtkWidget ptr
-declare function gtk_toolbar_insert_stock cdecl alias "gtk_toolbar_insert_stock" (byval toolbar as GtkToolbar ptr, byval stock_id as gchar ptr, byval tooltip_text as string, byval tooltip_private_text as string, byval callback as GtkSignalFunc, byval user_data as gpointer, byval position as gint) as GtkWidget ptr
+declare function gtk_toolbar_insert_stock cdecl alias "gtk_toolbar_insert_stock" (byval toolbar as GtkToolbar ptr, byval stock_id as string, byval tooltip_text as string, byval tooltip_private_text as string, byval callback as GtkSignalFunc, byval user_data as gpointer, byval position as gint) as GtkWidget ptr
 declare sub gtk_toolbar_append_space cdecl alias "gtk_toolbar_append_space" (byval toolbar as GtkToolbar ptr)
 declare sub gtk_toolbar_prepend_space cdecl alias "gtk_toolbar_prepend_space" (byval toolbar as GtkToolbar ptr)
 declare sub gtk_toolbar_insert_space cdecl alias "gtk_toolbar_insert_space" (byval toolbar as GtkToolbar ptr, byval position as gint)

@@ -90,7 +90,7 @@ declare function g_date_get_monday_week_of_year cdecl alias "g_date_get_monday_w
 declare function g_date_get_sunday_week_of_year cdecl alias "g_date_get_sunday_week_of_year" (byval date as GDate ptr) as guint
 declare function g_date_get_iso8601_week_of_year cdecl alias "g_date_get_iso8601_week_of_year" (byval date as GDate ptr) as guint
 declare sub g_date_clear cdecl alias "g_date_clear" (byval date as GDate ptr, byval n_dates as guint)
-declare sub g_date_set_parse cdecl alias "g_date_set_parse" (byval date as GDate ptr, byval str as gchar ptr)
+declare sub g_date_set_parse cdecl alias "g_date_set_parse" (byval date as GDate ptr, byval str as string)
 declare sub g_date_set_time cdecl alias "g_date_set_time" (byval date as GDate ptr, byval time_ as GTime)
 declare sub g_date_set_month cdecl alias "g_date_set_month" (byval date as GDate ptr, byval month as GDateMonth)
 declare sub g_date_set_day cdecl alias "g_date_set_day" (byval date as GDate ptr, byval day as GDateDay)
@@ -114,6 +114,6 @@ declare function g_date_compare cdecl alias "g_date_compare" (byval lhs as GDate
 declare sub g_date_to_struct_tm cdecl alias "g_date_to_struct_tm" (byval date as GDate ptr, byval tm as tm ptr)
 declare sub g_date_clamp cdecl alias "g_date_clamp" (byval date as GDate ptr, byval min_date as GDate ptr, byval max_date as GDate ptr)
 declare sub g_date_order cdecl alias "g_date_order" (byval date1 as GDate ptr, byval date2 as GDate ptr)
-declare function g_date_strftime cdecl alias "g_date_strftime" (byval s as gchar ptr, byval slen as gsize, byval format as gchar ptr, byval date as GDate ptr) as gsize
+declare function g_date_strftime cdecl alias "g_date_strftime" (byval s as string, byval slen as gsize, byval format as string, byval date as GDate ptr) as gsize
 
 #endif

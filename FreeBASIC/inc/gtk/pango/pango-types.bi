@@ -63,6 +63,6 @@ declare function pango_language_from_string cdecl alias "pango_language_from_str
 declare function pango_language_matches cdecl alias "pango_language_matches" (byval language as PangoLanguage ptr, byval range_list as string) as gboolean
 declare function pango_get_mirror_char cdecl alias "pango_get_mirror_char" (byval ch as gunichar, byval mirrored_ch as gunichar ptr) as gboolean
 declare function pango_unichar_direction cdecl alias "pango_unichar_direction" (byval ch as gunichar) as PangoDirection
-declare function pango_find_base_dir cdecl alias "pango_find_base_dir" (byval text as gchar ptr, byval length as gint) as PangoDirection
+declare function pango_find_base_dir cdecl alias "pango_find_base_dir" (byval text as string, byval length as gint) as PangoDirection
 
 #endif

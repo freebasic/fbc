@@ -9,6 +9,8 @@
 #ifndef __atk_bi__
 #define __atk_bi__
 
+#inclib "atk-1.0"
+
 #include once "gtk/atk/atkobject.bi"
 #include once "gtk/atk/atkaction.bi"
 #include once "gtk/atk/atkcomponent.bi"

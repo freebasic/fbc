@@ -60,7 +60,7 @@ end type
 
 type GtkTreeViewColumnDropFunc as function cdecl(byval as GtkTreeView ptr, byval as GtkTreeViewColumn ptr, byval as GtkTreeViewColumn ptr, byval as GtkTreeViewColumn ptr, byval as gpointer) as gboolean
 type GtkTreeViewMappingFunc as sub cdecl(byval as GtkTreeView ptr, byval as GtkTreePath ptr, byval as gpointer)
-type GtkTreeViewSearchEqualFunc as function cdecl(byval as GtkTreeModel ptr, byval as gint, byval as gchar ptr, byval as GtkTreeIter ptr, byval as gpointer) as gboolean
+type GtkTreeViewSearchEqualFunc as function cdecl(byval as GtkTreeModel ptr, byval as gint, byval as string, byval as GtkTreeIter ptr, byval as gpointer) as gboolean
 type GtkTreeViewRowSeparatorFunc as function cdecl(byval as GtkTreeModel ptr, byval as GtkTreeIter ptr, byval as gpointer) as gboolean
 
 declare function gtk_tree_view_get_type cdecl alias "gtk_tree_view_get_type" () as GType
@@ -82,8 +82,8 @@ declare function gtk_tree_view_get_rules_hint cdecl alias "gtk_tree_view_get_rul
 declare function gtk_tree_view_append_column cdecl alias "gtk_tree_view_append_column" (byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr) as gint
 declare function gtk_tree_view_remove_column cdecl alias "gtk_tree_view_remove_column" (byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr) as gint
 declare function gtk_tree_view_insert_column cdecl alias "gtk_tree_view_insert_column" (byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr, byval position as gint) as gint
-declare function gtk_tree_view_insert_column_with_attributes cdecl alias "gtk_tree_view_insert_column_with_attributes" (byval tree_view as GtkTreeView ptr, byval position as gint, byval title as gchar ptr, byval cell as GtkCellRenderer ptr, ...) as gint
-declare function gtk_tree_view_insert_column_with_data_func cdecl alias "gtk_tree_view_insert_column_with_data_func" (byval tree_view as GtkTreeView ptr, byval position as gint, byval title as gchar ptr, byval cell as GtkCellRenderer ptr, byval func as GtkTreeCellDataFunc, byval data as gpointer, byval dnotify as GDestroyNotify) as gint
+declare function gtk_tree_view_insert_column_with_attributes cdecl alias "gtk_tree_view_insert_column_with_attributes" (byval tree_view as GtkTreeView ptr, byval position as gint, byval title as string, byval cell as GtkCellRenderer ptr, ...) as gint
+declare function gtk_tree_view_insert_column_with_data_func cdecl alias "gtk_tree_view_insert_column_with_data_func" (byval tree_view as GtkTreeView ptr, byval position as gint, byval title as string, byval cell as GtkCellRenderer ptr, byval func as GtkTreeCellDataFunc, byval data as gpointer, byval dnotify as GDestroyNotify) as gint
 declare function gtk_tree_view_get_column cdecl alias "gtk_tree_view_get_column" (byval tree_view as GtkTreeView ptr, byval n as gint) as GtkTreeViewColumn ptr
 declare function gtk_tree_view_get_columns cdecl alias "gtk_tree_view_get_columns" (byval tree_view as GtkTreeView ptr) as GList ptr
 declare sub gtk_tree_view_move_column_after cdecl alias "gtk_tree_view_move_column_after" (byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr, byval base_column as GtkTreeViewColumn ptr)

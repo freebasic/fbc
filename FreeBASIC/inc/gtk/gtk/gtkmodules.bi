@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtksettings.bi"
 
-declare function _gtk_find_module cdecl alias "_gtk_find_module" (byval name as gchar ptr, byval type as gchar ptr) as gchar ptr
-declare function _gtk_get_module_path cdecl alias "_gtk_get_module_path" (byval type as gchar ptr) as gchar ptr ptr
-declare sub _gtk_modules_init cdecl alias "_gtk_modules_init" (byval argc as gint ptr, byval argv as gchar ptr ptr ptr, byval gtk_modules_args as gchar ptr)
-declare sub _gtk_modules_settings_changed cdecl alias "_gtk_modules_settings_changed" (byval settings as GtkSettings ptr, byval modules as gchar ptr)
+declare function _gtk_find_module cdecl alias "_gtk_find_module" (byval name as string, byval type as string) as zstring ptr
+declare function _gtk_get_module_path cdecl alias "_gtk_get_module_path" (byval type as string) as zstring ptr ptr
+declare sub _gtk_modules_init cdecl alias "_gtk_modules_init" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr, byval gtk_modules_args as string)
+declare sub _gtk_modules_settings_changed cdecl alias "_gtk_modules_settings_changed" (byval settings as GtkSettings ptr, byval modules as string)
 
-type GtkModuleInitFunc as sub cdecl(byval as gint ptr, byval as gchar ptr ptr ptr)
+type GtkModuleInitFunc as sub cdecl(byval as gint ptr, byval as zstring ptr ptr ptr)
 type GtkModuleDisplayInitFunc as sub cdecl(byval as GdkDisplay ptr)
 
 #endif

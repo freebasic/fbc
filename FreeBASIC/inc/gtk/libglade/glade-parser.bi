@@ -15,31 +15,31 @@
 type GladeProperty as _GladeProperty
 
 type _GladeProperty
-	name as gchar ptr
-	value as gchar ptr
+	name as zstring ptr
+	value as zstring ptr
 end type
 
 type GladeSignalInfo as _GladeSignalInfo
 
 type _GladeSignalInfo
-	name as gchar ptr
-	handler as gchar ptr
-	object as gchar ptr
+	name as zstring ptr
+	handler as zstring ptr
+	object as zstring ptr
 	after as guint
 end type
 
 type GladeAtkActionInfo as _GladeAtkActionInfo
 
 type _GladeAtkActionInfo
-	action_name as gchar ptr
-	description as gchar ptr
+	action_name as zstring ptr
+	description as zstring ptr
 end type
 
 type GladeAtkRelationInfo as _GladeAtkRelationInfo
 
 type _GladeAtkRelationInfo
-	target as gchar ptr
-	type as gchar ptr
+	target as zstring ptr
+	type as zstring ptr
 end type
 
 type GladeAccelInfo as _GladeAccelInfo
@@ -47,7 +47,7 @@ type GladeAccelInfo as _GladeAccelInfo
 type _GladeAccelInfo
 	key as guint
 	modifiers as GdkModifierType
-	signal as gchar ptr
+	signal as zstring ptr
 end type
 
 type GladeWidgetInfo as _GladeWidgetInfo
@@ -55,8 +55,8 @@ type GladeChildInfo as _GladeChildInfo
 
 type _GladeWidgetInfo
 	parent as GladeWidgetInfo ptr
-	classname as gchar ptr
-	name as gchar ptr
+	classname as zstring ptr
+	name as zstring ptr
 	properties as GladeProperty ptr
 	n_properties as guint
 	atk_props as GladeProperty ptr
@@ -77,13 +77,13 @@ type _GladeChildInfo
 	properties as GladeProperty ptr
 	n_properties as guint
 	child as GladeWidgetInfo ptr
-	internal_child as gchar ptr
+	internal_child as zstring ptr
 end type
 
 type GladeInterface as _GladeInterface
 
 type _GladeInterface
-	requires as gchar ptr ptr
+	requires as zstring ptr ptr
 	n_requires as guint
 	toplevels as GladeWidgetInfo ptr ptr
 	n_toplevels as guint
@@ -91,9 +91,9 @@ type _GladeInterface
 	strings as GHashTable ptr
 end type
 
-declare function glade_parser_parse_file cdecl alias "glade_parser_parse_file" (byval file as gchar ptr, byval domain as gchar ptr) as GladeInterface ptr
-declare function glade_parser_parse_buffer cdecl alias "glade_parser_parse_buffer" (byval buffer as gchar ptr, byval len as gint, byval domain as gchar ptr) as GladeInterface ptr
+declare function glade_parser_parse_file cdecl alias "glade_parser_parse_file" (byval file as string, byval domain as string) as GladeInterface ptr
+declare function glade_parser_parse_buffer cdecl alias "glade_parser_parse_buffer" (byval buffer as string, byval len as gint, byval domain as string) as GladeInterface ptr
 declare sub glade_interface_destroy cdecl alias "glade_interface_destroy" (byval interface as GladeInterface ptr)
-declare sub glade_interface_dump cdecl alias "glade_interface_dump" (byval interface as GladeInterface ptr, byval filename as gchar ptr)
+declare sub glade_interface_dump cdecl alias "glade_interface_dump" (byval interface as GladeInterface ptr, byval filename as string)
 
 #endif

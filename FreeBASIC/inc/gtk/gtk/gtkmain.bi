@@ -14,7 +14,7 @@
 
 type GtkKeySnoopFunc as function cdecl(byval as GtkWidget ptr, byval as GdkEventKey ptr, byval as gpointer) as gint
 
-declare function gtk_check_version cdecl alias "gtk_check_version" (byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as gchar ptr
+declare function gtk_check_version cdecl alias "gtk_check_version" (byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as zstring ptr
 declare function gtk_parse_args cdecl alias "gtk_parse_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
 declare sub gtk_init cdecl alias "gtk_init" (byval argc as integer ptr, byval argv as byte ptr ptr ptr)
 declare function gtk_init_check cdecl alias "gtk_init_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
@@ -22,7 +22,7 @@ declare function gtk_init_with_args cdecl alias "gtk_init_with_args" (byval argc
 declare function gtk_get_option_group cdecl alias "gtk_get_option_group" (byval open_default_display as gboolean) as GOptionGroup ptr
 declare sub gtk_exit cdecl alias "gtk_exit" (byval error_code as gint)
 declare sub gtk_disable_setlocale cdecl alias "gtk_disable_setlocale" ()
-declare function gtk_set_locale cdecl alias "gtk_set_locale" () as gchar ptr
+declare function gtk_set_locale cdecl alias "gtk_set_locale" () as zstring ptr
 declare function gtk_get_default_language cdecl alias "gtk_get_default_language" () as PangoLanguage ptr
 declare function gtk_events_pending cdecl alias "gtk_events_pending" () as gboolean
 declare sub gtk_main_do_event cdecl alias "gtk_main_do_event" (byval event as GdkEvent ptr)
@@ -60,6 +60,6 @@ declare function gtk_get_current_event_state cdecl alias "gtk_get_current_event_
 declare function gtk_get_event_widget cdecl alias "gtk_get_event_widget" (byval event as GdkEvent ptr) as GtkWidget ptr
 declare sub gtk_propagate_event cdecl alias "gtk_propagate_event" (byval widget as GtkWidget ptr, byval event as GdkEvent ptr)
 declare function _gtk_boolean_handled_accumulator cdecl alias "_gtk_boolean_handled_accumulator" (byval ihint as GSignalInvocationHint ptr, byval return_accu as GValue ptr, byval handler_return as GValue ptr, byval dummy as gpointer) as gboolean
-declare function _gtk_get_lc_ctype cdecl alias "_gtk_get_lc_ctype" () as gchar ptr
+declare function _gtk_get_lc_ctype cdecl alias "_gtk_get_lc_ctype" () as zstring ptr
 
 #endif

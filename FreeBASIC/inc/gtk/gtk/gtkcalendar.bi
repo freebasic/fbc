@@ -45,7 +45,7 @@ type _GtkCalendar
 	highlight_row as gint
 	highlight_col as gint
 	private_data as gpointer
-	grow_space(0 to 32-1) as gchar ptr
+	grow_space(0 to 32-1) as zstring ptr
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 	_gtk_reserved3 as sub cdecl()

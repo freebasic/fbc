@@ -46,8 +46,8 @@ declare sub gtk_color_selection_set_previous_alpha cdecl alias "gtk_color_select
 declare sub gtk_color_selection_get_previous_color cdecl alias "gtk_color_selection_get_previous_color" (byval colorsel as GtkColorSelection ptr, byval color as GdkColor ptr)
 declare function gtk_color_selection_get_previous_alpha cdecl alias "gtk_color_selection_get_previous_alpha" (byval colorsel as GtkColorSelection ptr) as guint16
 declare function gtk_color_selection_is_adjusting cdecl alias "gtk_color_selection_is_adjusting" (byval colorsel as GtkColorSelection ptr) as gboolean
-declare function gtk_color_selection_palette_from_string cdecl alias "gtk_color_selection_palette_from_string" (byval str as gchar ptr, byval colors as GdkColor ptr ptr, byval n_colors as gint ptr) as gboolean
-declare function gtk_color_selection_palette_to_string cdecl alias "gtk_color_selection_palette_to_string" (byval colors as GdkColor ptr, byval n_colors as gint) as gchar ptr
+declare function gtk_color_selection_palette_from_string cdecl alias "gtk_color_selection_palette_from_string" (byval str as string, byval colors as GdkColor ptr ptr, byval n_colors as gint ptr) as gboolean
+declare function gtk_color_selection_palette_to_string cdecl alias "gtk_color_selection_palette_to_string" (byval colors as GdkColor ptr, byval n_colors as gint) as zstring ptr
 declare function gtk_color_selection_set_change_palette_hook cdecl alias "gtk_color_selection_set_change_palette_hook" (byval func as GtkColorSelectionChangePaletteFunc) as GtkColorSelectionChangePaletteFunc
 declare function gtk_color_selection_set_change_palette_with_screen_hook cdecl alias "gtk_color_selection_set_change_palette_with_screen_hook" (byval func as GtkColorSelectionChangePaletteWithScreenFunc) as GtkColorSelectionChangePaletteWithScreenFunc
 declare sub gtk_color_selection_set_color cdecl alias "gtk_color_selection_set_color" (byval colorsel as GtkColorSelection ptr, byval color as gdouble ptr)

@@ -30,7 +30,7 @@ type _GtkFileSelection
 	history_list as GList ptr
 	fileop_dialog as GtkWidget ptr
 	fileop_entry as GtkWidget ptr
-	fileop_file as gchar ptr
+	fileop_file as zstring ptr
 	cmpl_state as gpointer
 	fileop_c_dir as GtkWidget ptr
 	fileop_del_file as GtkWidget ptr
@@ -38,7 +38,7 @@ type _GtkFileSelection
 	button_area as GtkWidget ptr
 	action_area as GtkWidget ptr
 	selected_names as GPtrArray ptr
-	last_selected as gchar ptr
+	last_selected as zstring ptr
 end type
 
 type _GtkFileSelectionClass
@@ -50,13 +50,13 @@ type _GtkFileSelectionClass
 end type
 
 declare function gtk_file_selection_get_type cdecl alias "gtk_file_selection_get_type" () as GType
-declare function gtk_file_selection_new cdecl alias "gtk_file_selection_new" (byval title as gchar ptr) as GtkWidget ptr
-declare sub gtk_file_selection_set_filename cdecl alias "gtk_file_selection_set_filename" (byval filesel as GtkFileSelection ptr, byval filename as gchar ptr)
-declare function gtk_file_selection_get_filename cdecl alias "gtk_file_selection_get_filename" (byval filesel as GtkFileSelection ptr) as gchar ptr
-declare sub gtk_file_selection_complete cdecl alias "gtk_file_selection_complete" (byval filesel as GtkFileSelection ptr, byval pattern as gchar ptr)
+declare function gtk_file_selection_new cdecl alias "gtk_file_selection_new" (byval title as string) as GtkWidget ptr
+declare sub gtk_file_selection_set_filename cdecl alias "gtk_file_selection_set_filename" (byval filesel as GtkFileSelection ptr, byval filename as string)
+declare function gtk_file_selection_get_filename cdecl alias "gtk_file_selection_get_filename" (byval filesel as GtkFileSelection ptr) as zstring ptr
+declare sub gtk_file_selection_complete cdecl alias "gtk_file_selection_complete" (byval filesel as GtkFileSelection ptr, byval pattern as string)
 declare sub gtk_file_selection_show_fileop_buttons cdecl alias "gtk_file_selection_show_fileop_buttons" (byval filesel as GtkFileSelection ptr)
 declare sub gtk_file_selection_hide_fileop_buttons cdecl alias "gtk_file_selection_hide_fileop_buttons" (byval filesel as GtkFileSelection ptr)
-declare function gtk_file_selection_get_selections cdecl alias "gtk_file_selection_get_selections" (byval filesel as GtkFileSelection ptr) as gchar ptr ptr
+declare function gtk_file_selection_get_selections cdecl alias "gtk_file_selection_get_selections" (byval filesel as GtkFileSelection ptr) as zstring ptr ptr
 declare sub gtk_file_selection_set_select_multiple cdecl alias "gtk_file_selection_set_select_multiple" (byval filesel as GtkFileSelection ptr, byval select_multiple as gboolean)
 declare function gtk_file_selection_get_select_multiple cdecl alias "gtk_file_selection_get_select_multiple" (byval filesel as GtkFileSelection ptr) as gboolean
 

@@ -54,11 +54,11 @@ end type
 declare function gtk_progress_bar_get_type cdecl alias "gtk_progress_bar_get_type" () as GType
 declare function gtk_progress_bar_new cdecl alias "gtk_progress_bar_new" () as GtkWidget ptr
 declare sub gtk_progress_bar_pulse cdecl alias "gtk_progress_bar_pulse" (byval pbar as GtkProgressBar ptr)
-declare sub gtk_progress_bar_set_text cdecl alias "gtk_progress_bar_set_text" (byval pbar as GtkProgressBar ptr, byval text as gchar ptr)
+declare sub gtk_progress_bar_set_text cdecl alias "gtk_progress_bar_set_text" (byval pbar as GtkProgressBar ptr, byval text as string)
 declare sub gtk_progress_bar_set_fraction cdecl alias "gtk_progress_bar_set_fraction" (byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
 declare sub gtk_progress_bar_set_pulse_step cdecl alias "gtk_progress_bar_set_pulse_step" (byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
 declare sub gtk_progress_bar_set_orientation cdecl alias "gtk_progress_bar_set_orientation" (byval pbar as GtkProgressBar ptr, byval orientation as GtkProgressBarOrientation)
-declare function gtk_progress_bar_get_text cdecl alias "gtk_progress_bar_get_text" (byval pbar as GtkProgressBar ptr) as gchar ptr
+declare function gtk_progress_bar_get_text cdecl alias "gtk_progress_bar_get_text" (byval pbar as GtkProgressBar ptr) as zstring ptr
 declare function gtk_progress_bar_get_fraction cdecl alias "gtk_progress_bar_get_fraction" (byval pbar as GtkProgressBar ptr) as gdouble
 declare function gtk_progress_bar_get_pulse_step cdecl alias "gtk_progress_bar_get_pulse_step" (byval pbar as GtkProgressBar ptr) as gdouble
 declare function gtk_progress_bar_get_orientation cdecl alias "gtk_progress_bar_get_orientation" (byval pbar as GtkProgressBar ptr) as GtkProgressBarOrientation

@@ -48,8 +48,8 @@ end type
 
 type _GtkRangeClass
 	parent_class as GtkWidgetClass
-	slider_detail as gchar ptr
-	stepper_detail as gchar ptr
+	slider_detail as zstring ptr
+	stepper_detail as zstring ptr
 	value_changed as sub cdecl(byval as GtkRange ptr)
 	adjust_bounds as sub cdecl(byval as GtkRange ptr, byval as gdouble)
 	move_slider as sub cdecl(byval as GtkRange ptr, byval as GtkScrollType)

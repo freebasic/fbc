@@ -46,7 +46,7 @@ end type
 
 type _GTypeQuery
 	type as GType
-	type_name as gchar ptr
+	type_name as zstring ptr
 	class_size as guint
 	instance_size as guint
 end type
@@ -61,9 +61,9 @@ end enum
 
 declare sub g_type_init cdecl alias "g_type_init" ()
 declare sub g_type_init_with_debug_flags cdecl alias "g_type_init_with_debug_flags" (byval debug_flags as GTypeDebugFlags)
-declare function g_type_name cdecl alias "g_type_name" (byval type as GType) as gchar ptr
+declare function g_type_name cdecl alias "g_type_name" (byval type as GType) as zstring ptr
 declare function g_type_qname cdecl alias "g_type_qname" (byval type as GType) as GQuark
-declare function g_type_from_name cdecl alias "g_type_from_name" (byval name as gchar ptr) as GType
+declare function g_type_from_name cdecl alias "g_type_from_name" (byval name as string) as GType
 declare function g_type_parent cdecl alias "g_type_parent" (byval type as GType) as GType
 declare function g_type_depth cdecl alias "g_type_depth" (byval type as GType) as guint
 declare function g_type_next_base cdecl alias "g_type_next_base" (byval leaf_type as GType, byval root_type as GType) as GType
@@ -136,15 +136,15 @@ type _GTypeValueTable
 	value_free as sub cdecl(byval as GValue ptr)
 	value_copy as sub cdecl(byval as GValue ptr, byval as GValue ptr)
 	value_peek_pointer as function cdecl(byval as GValue ptr) as gpointer
-	collect_format as gchar ptr
+	collect_format as zstring ptr
 	collect_value as function cdecl(byval as GValue ptr, byval as guint, byval as GTypeCValue ptr, byval as guint) as gchar
-	lcopy_format as gchar ptr
+	lcopy_format as zstring ptr
 	lcopy_value as function cdecl(byval as GValue ptr, byval as guint, byval as GTypeCValue ptr, byval as guint) as gchar
 end type
 
-declare function g_type_register_static cdecl alias "g_type_register_static" (byval parent_type as GType, byval type_name as gchar ptr, byval info as GTypeInfo ptr, byval flags as GTypeFlags) as GType
-declare function g_type_register_dynamic cdecl alias "g_type_register_dynamic" (byval parent_type as GType, byval type_name as gchar ptr, byval plugin as GTypePlugin ptr, byval flags as GTypeFlags) as GType
-declare function g_type_register_fundamental cdecl alias "g_type_register_fundamental" (byval type_id as GType, byval type_name as gchar ptr, byval info as GTypeInfo ptr, byval finfo as GTypeFundamentalInfo ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_static cdecl alias "g_type_register_static" (byval parent_type as GType, byval type_name as string, byval info as GTypeInfo ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_dynamic cdecl alias "g_type_register_dynamic" (byval parent_type as GType, byval type_name as string, byval plugin as GTypePlugin ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_fundamental cdecl alias "g_type_register_fundamental" (byval type_id as GType, byval type_name as string, byval info as GTypeInfo ptr, byval finfo as GTypeFundamentalInfo ptr, byval flags as GTypeFlags) as GType
 declare sub g_type_add_interface_static cdecl alias "g_type_add_interface_static" (byval instance_type as GType, byval interface_type as GType, byval info as GInterfaceInfo ptr)
 declare sub g_type_add_interface_dynamic cdecl alias "g_type_add_interface_dynamic" (byval instance_type as GType, byval interface_type as GType, byval plugin as GTypePlugin ptr)
 declare sub g_type_interface_add_prerequisite cdecl alias "g_type_interface_add_prerequisite" (byval interface_type as GType, byval prerequisite_type as GType)
@@ -172,8 +172,8 @@ declare function g_type_check_is_value_type cdecl alias "g_type_check_is_value_t
 declare function g_type_check_value cdecl alias "g_type_check_value" (byval value as GValue ptr) as gboolean
 declare function g_type_check_value_holds cdecl alias "g_type_check_value_holds" (byval value as GValue ptr, byval type as GType) as gboolean
 declare function g_type_test_flags cdecl alias "g_type_test_flags" (byval type as GType, byval flags as guint) as gboolean
-declare function g_type_name_from_instance cdecl alias "g_type_name_from_instance" (byval instance as GTypeInstance ptr) as gchar ptr
-declare function g_type_name_from_class cdecl alias "g_type_name_from_class" (byval g_class as GTypeClass ptr) as gchar ptr
+declare function g_type_name_from_instance cdecl alias "g_type_name_from_instance" (byval instance as GTypeInstance ptr) as zstring ptr
+declare function g_type_name_from_class cdecl alias "g_type_name_from_class" (byval g_class as GTypeClass ptr) as zstring ptr
 declare sub g_value_c_init cdecl alias "g_value_c_init" ()
 declare sub g_value_types_init cdecl alias "g_value_types_init" ()
 declare sub g_enum_types_init cdecl alias "g_enum_types_init" ()

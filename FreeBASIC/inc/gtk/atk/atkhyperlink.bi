@@ -37,7 +37,7 @@ type _AtkHyperlinkClass
 end type
 
 declare function atk_hyperlink_get_type cdecl alias "atk_hyperlink_get_type" () as GType
-declare function atk_hyperlink_get_uri cdecl alias "atk_hyperlink_get_uri" (byval link_ as AtkHyperlink ptr, byval i as gint) as gchar ptr
+declare function atk_hyperlink_get_uri cdecl alias "atk_hyperlink_get_uri" (byval link_ as AtkHyperlink ptr, byval i as gint) as zstring ptr
 declare function atk_hyperlink_get_object cdecl alias "atk_hyperlink_get_object" (byval link_ as AtkHyperlink ptr, byval i as gint) as AtkObject ptr
 declare function atk_hyperlink_get_end_index cdecl alias "atk_hyperlink_get_end_index" (byval link_ as AtkHyperlink ptr) as gint
 declare function atk_hyperlink_get_start_index cdecl alias "atk_hyperlink_get_start_index" (byval link_ as AtkHyperlink ptr) as gint

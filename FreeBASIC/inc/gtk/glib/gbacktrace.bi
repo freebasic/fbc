@@ -11,7 +11,7 @@
 
 #include once "gtk/glib/gtypes.bi"
 
-declare sub g_on_error_query cdecl alias "g_on_error_query" (byval prg_name as gchar ptr)
-declare sub g_on_error_stack_trace cdecl alias "g_on_error_stack_trace" (byval prg_name as gchar ptr)
+declare sub g_on_error_query cdecl alias "g_on_error_query" (byval prg_name as string)
+declare sub g_on_error_stack_trace cdecl alias "g_on_error_stack_trace" (byval prg_name as string)
 
 #endif

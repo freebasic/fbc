@@ -13,12 +13,12 @@
 
 type GCompletion as _GCompletion
 type GCompletionFunc as function cdecl(byval as gpointer) as gchar
-type GCompletionStrncmpFunc as function cdecl(byval as gchar ptr, byval as gchar ptr, byval as gsize) as gint
+type GCompletionStrncmpFunc as function cdecl(byval as string, byval as string, byval as gsize) as gint
 
 type _GCompletion
 	items as GList ptr
 	func as GCompletionFunc
-	prefix as gchar ptr
+	prefix as zstring ptr
 	cache as GList ptr
 	strncmp_func as GCompletionStrncmpFunc
 end type
@@ -27,8 +27,8 @@ declare function g_completion_new cdecl alias "g_completion_new" (byval func as 
 declare sub g_completion_add_items cdecl alias "g_completion_add_items" (byval cmp as GCompletion ptr, byval items as GList ptr)
 declare sub g_completion_remove_items cdecl alias "g_completion_remove_items" (byval cmp as GCompletion ptr, byval items as GList ptr)
 declare sub g_completion_clear_items cdecl alias "g_completion_clear_items" (byval cmp as GCompletion ptr)
-declare function g_completion_complete cdecl alias "g_completion_complete" (byval cmp as GCompletion ptr, byval prefix as gchar ptr, byval new_prefix as gchar ptr ptr) as GList ptr
-declare function g_completion_complete_utf8 cdecl alias "g_completion_complete_utf8" (byval cmp as GCompletion ptr, byval prefix as gchar ptr, byval new_prefix as gchar ptr ptr) as GList ptr
+declare function g_completion_complete cdecl alias "g_completion_complete" (byval cmp as GCompletion ptr, byval prefix as string, byval new_prefix as zstring ptr ptr) as GList ptr
+declare function g_completion_complete_utf8 cdecl alias "g_completion_complete_utf8" (byval cmp as GCompletion ptr, byval prefix as string, byval new_prefix as zstring ptr ptr) as GList ptr
 declare sub g_completion_set_compare cdecl alias "g_completion_set_compare" (byval cmp as GCompletion ptr, byval strncmp_func as GCompletionStrncmpFunc)
 declare sub g_completion_free cdecl alias "g_completion_free" (byval cmp as GCompletion ptr)
 

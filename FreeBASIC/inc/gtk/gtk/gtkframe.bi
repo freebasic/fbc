@@ -30,9 +30,9 @@ type _GtkFrameClass
 end type
 
 declare function gtk_frame_get_type cdecl alias "gtk_frame_get_type" () as GType
-declare function gtk_frame_new cdecl alias "gtk_frame_new" (byval label as gchar ptr) as GtkWidget ptr
-declare sub gtk_frame_set_label cdecl alias "gtk_frame_set_label" (byval frame as GtkFrame ptr, byval label as gchar ptr)
-declare function gtk_frame_get_label cdecl alias "gtk_frame_get_label" (byval frame as GtkFrame ptr) as gchar ptr
+declare function gtk_frame_new cdecl alias "gtk_frame_new" (byval label as string) as GtkWidget ptr
+declare sub gtk_frame_set_label cdecl alias "gtk_frame_set_label" (byval frame as GtkFrame ptr, byval label as string)
+declare function gtk_frame_get_label cdecl alias "gtk_frame_get_label" (byval frame as GtkFrame ptr) as zstring ptr
 declare sub gtk_frame_set_label_widget cdecl alias "gtk_frame_set_label_widget" (byval frame as GtkFrame ptr, byval label_widget as GtkWidget ptr)
 declare function gtk_frame_get_label_widget cdecl alias "gtk_frame_get_label_widget" (byval frame as GtkFrame ptr) as GtkWidget ptr
 declare sub gtk_frame_set_label_align cdecl alias "gtk_frame_set_label_align" (byval frame as GtkFrame ptr, byval xalign as gfloat, byval yalign as gfloat)

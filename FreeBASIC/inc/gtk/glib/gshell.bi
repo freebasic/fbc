@@ -19,8 +19,8 @@ end enum
 
 
 declare function g_shell_error_quark cdecl alias "g_shell_error_quark" () as GQuark
-declare function g_shell_quote cdecl alias "g_shell_quote" (byval unquoted_string as gchar ptr) as gchar ptr
-declare function g_shell_unquote cdecl alias "g_shell_unquote" (byval quoted_string as gchar ptr, byval error as GError ptr ptr) as gchar ptr
-declare function g_shell_parse_argv cdecl alias "g_shell_parse_argv" (byval command_line as gchar ptr, byval argcp as gint ptr, byval argvp as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_shell_quote cdecl alias "g_shell_quote" (byval unquoted_string as string) as zstring ptr
+declare function g_shell_unquote cdecl alias "g_shell_unquote" (byval quoted_string as string, byval error as GError ptr ptr) as zstring ptr
+declare function g_shell_parse_argv cdecl alias "g_shell_parse_argv" (byval command_line as string, byval argcp as gint ptr, byval argvp as zstring ptr ptr ptr, byval error as GError ptr ptr) as gboolean
 
 #endif

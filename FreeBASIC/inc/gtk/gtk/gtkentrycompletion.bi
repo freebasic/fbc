@@ -18,7 +18,7 @@
 type GtkEntryCompletion as _GtkEntryCompletion
 type GtkEntryCompletionClass as _GtkEntryCompletionClass
 type GtkEntryCompletionPrivate as _GtkEntryCompletionPrivate
-type GtkEntryCompletionMatchFunc as function cdecl(byval as GtkEntryCompletion ptr, byval as gchar ptr, byval as GtkTreeIter ptr, byval as gpointer) as gboolean
+type GtkEntryCompletionMatchFunc as function cdecl(byval as GtkEntryCompletion ptr, byval as string, byval as GtkTreeIter ptr, byval as gpointer) as gboolean
 
 type _GtkEntryCompletion
 	parent_instance as GObject
@@ -29,7 +29,7 @@ type _GtkEntryCompletionClass
 	parent_class as GObjectClass
 	match_selected as function cdecl(byval as GtkEntryCompletion ptr, byval as GtkTreeModel ptr, byval as GtkTreeIter ptr) as gboolean
 	action_activated as sub cdecl(byval as GtkEntryCompletion ptr, byval as gint)
-	insert_prefix as function cdecl(byval as GtkEntryCompletion ptr, byval as gchar ptr) as gboolean
+	insert_prefix as function cdecl(byval as GtkEntryCompletion ptr, byval as string) as gboolean
 	_gtk_reserved0 as sub cdecl()
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
@@ -45,8 +45,8 @@ declare sub gtk_entry_completion_set_minimum_key_length cdecl alias "gtk_entry_c
 declare function gtk_entry_completion_get_minimum_key_length cdecl alias "gtk_entry_completion_get_minimum_key_length" (byval completion as GtkEntryCompletion ptr) as gint
 declare sub gtk_entry_completion_complete cdecl alias "gtk_entry_completion_complete" (byval completion as GtkEntryCompletion ptr)
 declare sub gtk_entry_completion_insert_prefix cdecl alias "gtk_entry_completion_insert_prefix" (byval completion as GtkEntryCompletion ptr)
-declare sub gtk_entry_completion_insert_action_text cdecl alias "gtk_entry_completion_insert_action_text" (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval text as gchar ptr)
-declare sub gtk_entry_completion_insert_action_markup cdecl alias "gtk_entry_completion_insert_action_markup" (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval markup as gchar ptr)
+declare sub gtk_entry_completion_insert_action_text cdecl alias "gtk_entry_completion_insert_action_text" (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval text as string)
+declare sub gtk_entry_completion_insert_action_markup cdecl alias "gtk_entry_completion_insert_action_markup" (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval markup as string)
 declare sub gtk_entry_completion_delete_action cdecl alias "gtk_entry_completion_delete_action" (byval completion as GtkEntryCompletion ptr, byval index_ as gint)
 declare sub gtk_entry_completion_set_inline_completion cdecl alias "gtk_entry_completion_set_inline_completion" (byval completion as GtkEntryCompletion ptr, byval inline_completion as gboolean)
 declare function gtk_entry_completion_get_inline_completion cdecl alias "gtk_entry_completion_get_inline_completion" (byval completion as GtkEntryCompletion ptr) as gboolean

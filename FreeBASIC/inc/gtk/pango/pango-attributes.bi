@@ -132,7 +132,7 @@ type _PangoAttrFontDesc
 	desc as PangoFontDescription ptr
 end type
 
-declare function pango_attr_type_register cdecl alias "pango_attr_type_register" (byval name as gchar ptr) as PangoAttrType
+declare function pango_attr_type_register cdecl alias "pango_attr_type_register" (byval name as string) as PangoAttrType
 declare function pango_attribute_copy cdecl alias "pango_attribute_copy" (byval attr as PangoAttribute ptr) as PangoAttribute ptr
 declare sub pango_attribute_destroy cdecl alias "pango_attribute_destroy" (byval attr as PangoAttribute ptr)
 declare function pango_attribute_equal cdecl alias "pango_attribute_equal" (byval attr1 as PangoAttribute ptr, byval attr2 as PangoAttribute ptr) as gboolean

@@ -43,6 +43,6 @@ declare function gtk_scale_get_layout cdecl alias "gtk_scale_get_layout" (byval 
 declare sub gtk_scale_get_layout_offsets cdecl alias "gtk_scale_get_layout_offsets" (byval scale as GtkScale ptr, byval x as gint ptr, byval y as gint ptr)
 declare sub _gtk_scale_clear_layout cdecl alias "_gtk_scale_clear_layout" (byval scale as GtkScale ptr)
 declare sub _gtk_scale_get_value_size cdecl alias "_gtk_scale_get_value_size" (byval scale as GtkScale ptr, byval width as gint ptr, byval height as gint ptr)
-declare function _gtk_scale_format_value cdecl alias "_gtk_scale_format_value" (byval scale as GtkScale ptr, byval value as gdouble) as gchar ptr
+declare function _gtk_scale_format_value cdecl alias "_gtk_scale_format_value" (byval scale as GtkScale ptr, byval value as gdouble) as zstring ptr
 
 #endif

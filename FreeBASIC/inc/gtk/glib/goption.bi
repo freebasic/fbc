@@ -33,7 +33,7 @@ enum GOptionArg
 	G_OPTION_ARG_FILENAME_ARRAY
 end enum
 
-type GOptionArgFunc as function cdecl(byval as gchar ptr, byval as gchar ptr, byval as gpointer, byval as GError ptr ptr) as gboolean
+type GOptionArgFunc as function cdecl(byval as string, byval as string, byval as gpointer, byval as GError ptr ptr) as gboolean
 type GOptionParseFunc as function cdecl(byval as GOptionContext ptr, byval as GOptionGroup ptr, byval as gpointer, byval as GError ptr ptr) as gboolean
 type GOptionErrorFunc as sub cdecl(byval as GOptionContext ptr, byval as GOptionGroup ptr, byval as gpointer, byval as GError ptr ptr)
 
@@ -47,34 +47,34 @@ end enum
 declare function g_option_error_quark cdecl alias "g_option_error_quark" () as GQuark
 
 type _GOptionEntry
-	long_name as gchar ptr
+	long_name as zstring ptr
 	short_name as gchar
 	flags as gint
 	arg as GOptionArg
 	arg_data as gpointer
-	description as gchar ptr
-	arg_description as gchar ptr
+	description as zstring ptr
+	arg_description as zstring ptr
 end type
 
 #define G_OPTION_REMAINING ""
 
-declare function g_option_context_new cdecl alias "g_option_context_new" (byval parameter_string as gchar ptr) as GOptionContext ptr
+declare function g_option_context_new cdecl alias "g_option_context_new" (byval parameter_string as string) as GOptionContext ptr
 declare sub g_option_context_free cdecl alias "g_option_context_free" (byval context as GOptionContext ptr)
 declare sub g_option_context_set_help_enabled cdecl alias "g_option_context_set_help_enabled" (byval context as GOptionContext ptr, byval help_enabled as gboolean)
 declare function g_option_context_get_help_enabled cdecl alias "g_option_context_get_help_enabled" (byval context as GOptionContext ptr) as gboolean
 declare sub g_option_context_set_ignore_unknown_options cdecl alias "g_option_context_set_ignore_unknown_options" (byval context as GOptionContext ptr, byval ignore_unknown as gboolean)
 declare function g_option_context_get_ignore_unknown_options cdecl alias "g_option_context_get_ignore_unknown_options" (byval context as GOptionContext ptr) as gboolean
-declare sub g_option_context_add_main_entries cdecl alias "g_option_context_add_main_entries" (byval context as GOptionContext ptr, byval entries as GOptionEntry ptr, byval translation_domain as gchar ptr)
-declare function g_option_context_parse cdecl alias "g_option_context_parse" (byval context as GOptionContext ptr, byval argc as gint ptr, byval argv as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_option_context_add_main_entries cdecl alias "g_option_context_add_main_entries" (byval context as GOptionContext ptr, byval entries as GOptionEntry ptr, byval translation_domain as string)
+declare function g_option_context_parse cdecl alias "g_option_context_parse" (byval context as GOptionContext ptr, byval argc as gint ptr, byval argv as zstring ptr ptr ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_option_context_add_group cdecl alias "g_option_context_add_group" (byval context as GOptionContext ptr, byval group as GOptionGroup ptr)
 declare sub g_option_context_set_main_group cdecl alias "g_option_context_set_main_group" (byval context as GOptionContext ptr, byval group as GOptionGroup ptr)
 declare function g_option_context_get_main_group cdecl alias "g_option_context_get_main_group" (byval context as GOptionContext ptr) as GOptionGroup ptr
-declare function g_option_group_new cdecl alias "g_option_group_new" (byval name as gchar ptr, byval description as gchar ptr, byval help_description as gchar ptr, byval user_data as gpointer, byval destroy as GDestroyNotify) as GOptionGroup ptr
+declare function g_option_group_new cdecl alias "g_option_group_new" (byval name as string, byval description as string, byval help_description as string, byval user_data as gpointer, byval destroy as GDestroyNotify) as GOptionGroup ptr
 declare sub g_option_group_set_parse_hooks cdecl alias "g_option_group_set_parse_hooks" (byval group as GOptionGroup ptr, byval pre_parse_func as GOptionParseFunc, byval post_parse_func as GOptionParseFunc)
 declare sub g_option_group_set_error_hook cdecl alias "g_option_group_set_error_hook" (byval group as GOptionGroup ptr, byval error_func as GOptionErrorFunc)
 declare sub g_option_group_free cdecl alias "g_option_group_free" (byval group as GOptionGroup ptr)
 declare sub g_option_group_add_entries cdecl alias "g_option_group_add_entries" (byval group as GOptionGroup ptr, byval entries as GOptionEntry ptr)
 declare sub g_option_group_set_translate_func cdecl alias "g_option_group_set_translate_func" (byval group as GOptionGroup ptr, byval func as GTranslateFunc, byval data as gpointer, byval destroy_notify as GDestroyNotify)
-declare sub g_option_group_set_translation_domain cdecl alias "g_option_group_set_translation_domain" (byval group as GOptionGroup ptr, byval domain as gchar ptr)
+declare sub g_option_group_set_translation_domain cdecl alias "g_option_group_set_translation_domain" (byval group as GOptionGroup ptr, byval domain as string)
 
 #endif

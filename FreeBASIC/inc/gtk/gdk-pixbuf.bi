@@ -9,6 +9,8 @@
 #ifndef __gdk_pixbuf_bi__
 #define __gdk_pixbuf_bi__
 
+#inclib "gdk_pixbuf-2.0"
+
 #include once "gtk/glib.bi"
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-features.bi"
 #include once "gtk/glib-object.bi"

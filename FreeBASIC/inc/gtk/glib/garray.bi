@@ -16,7 +16,7 @@ type GByteArray as _GByteArray
 type GPtrArray as _GPtrArray
 
 type _GArray
-	data as gchar ptr
+	data as zstring ptr
 	len as guint
 end type
 
@@ -32,7 +32,7 @@ end type
 
 declare function g_array_new cdecl alias "g_array_new" (byval zero_terminated as gboolean, byval clear_ as gboolean, byval element_size as guint) as GArray ptr
 declare function g_array_sized_new cdecl alias "g_array_sized_new" (byval zero_terminated as gboolean, byval clear_ as gboolean, byval element_size as guint, byval reserved_size as guint) as GArray ptr
-declare function g_array_free cdecl alias "g_array_free" (byval array as GArray ptr, byval free_segment as gboolean) as gchar ptr
+declare function g_array_free cdecl alias "g_array_free" (byval array as GArray ptr, byval free_segment as gboolean) as zstring ptr
 declare function g_array_append_vals cdecl alias "g_array_append_vals" (byval array as GArray ptr, byval data as gconstpointer, byval len as guint) as GArray ptr
 declare function g_array_prepend_vals cdecl alias "g_array_prepend_vals" (byval array as GArray ptr, byval data as gconstpointer, byval len as guint) as GArray ptr
 declare function g_array_insert_vals cdecl alias "g_array_insert_vals" (byval array as GArray ptr, byval index_ as guint, byval data as gconstpointer, byval len as guint) as GArray ptr

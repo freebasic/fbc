@@ -60,15 +60,15 @@ declare sub gdk_pixbuf_fill cdecl alias "gdk_pixbuf_fill" (byval pixbuf as GdkPi
 declare function gdk_pixbuf_save cdecl alias "gdk_pixbuf_save" (byval pixbuf as GdkPixbuf ptr, byval filename as string, byval type as string, byval error as GError ptr ptr, ...) as gboolean
 declare function gdk_pixbuf_savev cdecl alias "gdk_pixbuf_savev" (byval pixbuf as GdkPixbuf ptr, byval filename as string, byval type as string, byval option_keys as byte ptr ptr, byval option_values as byte ptr ptr, byval error as GError ptr ptr) as gboolean
 
-type GdkPixbufSaveFunc as function cdecl(byval as gchar ptr, byval as gsize, byval as GError ptr ptr, byval as gpointer) as gboolean
+type GdkPixbufSaveFunc as function cdecl(byval as string, byval as gsize, byval as GError ptr ptr, byval as gpointer) as gboolean
 
 declare function gdk_pixbuf_save_to_callback cdecl alias "gdk_pixbuf_save_to_callback" (byval pixbuf as GdkPixbuf ptr, byval save_func as GdkPixbufSaveFunc, byval user_data as gpointer, byval type as string, byval error as GError ptr ptr, ...) as gboolean
 declare function gdk_pixbuf_save_to_callbackv cdecl alias "gdk_pixbuf_save_to_callbackv" (byval pixbuf as GdkPixbuf ptr, byval save_func as GdkPixbufSaveFunc, byval user_data as gpointer, byval type as string, byval option_keys as byte ptr ptr, byval option_values as byte ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function gdk_pixbuf_save_to_buffer cdecl alias "gdk_pixbuf_save_to_buffer" (byval pixbuf as GdkPixbuf ptr, byval buffer as gchar ptr ptr, byval buffer_size as gsize ptr, byval type as string, byval error as GError ptr ptr, ...) as gboolean
-declare function gdk_pixbuf_save_to_bufferv cdecl alias "gdk_pixbuf_save_to_bufferv" (byval pixbuf as GdkPixbuf ptr, byval buffer as gchar ptr ptr, byval buffer_size as gsize ptr, byval type as string, byval option_keys as byte ptr ptr, byval option_values as byte ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function gdk_pixbuf_save_to_buffer cdecl alias "gdk_pixbuf_save_to_buffer" (byval pixbuf as GdkPixbuf ptr, byval buffer as zstring ptr ptr, byval buffer_size as gsize ptr, byval type as string, byval error as GError ptr ptr, ...) as gboolean
+declare function gdk_pixbuf_save_to_bufferv cdecl alias "gdk_pixbuf_save_to_bufferv" (byval pixbuf as GdkPixbuf ptr, byval buffer as zstring ptr ptr, byval buffer_size as gsize ptr, byval type as string, byval option_keys as byte ptr ptr, byval option_values as byte ptr ptr, byval error as GError ptr ptr) as gboolean
 declare function gdk_pixbuf_add_alpha cdecl alias "gdk_pixbuf_add_alpha" (byval pixbuf as GdkPixbuf ptr, byval substitute_color as gboolean, byval r as guchar, byval g as guchar, byval b as guchar) as GdkPixbuf ptr
 declare sub gdk_pixbuf_copy_area cdecl alias "gdk_pixbuf_copy_area" (byval src_pixbuf as GdkPixbuf ptr, byval src_x as integer, byval src_y as integer, byval width as integer, byval height as integer, byval dest_pixbuf as GdkPixbuf ptr, byval dest_x as integer, byval dest_y as integer)
 declare sub gdk_pixbuf_saturate_and_pixelate cdecl alias "gdk_pixbuf_saturate_and_pixelate" (byval src as GdkPixbuf ptr, byval dest as GdkPixbuf ptr, byval saturation as gfloat, byval pixelate as gboolean)
-declare function gdk_pixbuf_get_option cdecl alias "gdk_pixbuf_get_option" (byval pixbuf as GdkPixbuf ptr, byval key as gchar ptr) as gchar ptr
+declare function gdk_pixbuf_get_option cdecl alias "gdk_pixbuf_get_option" (byval pixbuf as GdkPixbuf ptr, byval key as string) as zstring ptr
 
 #endif

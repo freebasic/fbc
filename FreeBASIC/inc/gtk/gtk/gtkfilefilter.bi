@@ -25,18 +25,18 @@ type GtkFileFilterFunc as function cdecl(byval as GtkFileFilterInfo ptr, byval a
 
 type _GtkFileFilterInfo
 	contains as GtkFileFilterFlags
-	filename as gchar ptr
-	uri as gchar ptr
-	display_name as gchar ptr
-	mime_type as gchar ptr
+	filename as zstring ptr
+	uri as zstring ptr
+	display_name as zstring ptr
+	mime_type as zstring ptr
 end type
 
 declare function gtk_file_filter_get_type cdecl alias "gtk_file_filter_get_type" () as GType
 declare function gtk_file_filter_new cdecl alias "gtk_file_filter_new" () as GtkFileFilter ptr
-declare sub gtk_file_filter_set_name cdecl alias "gtk_file_filter_set_name" (byval filter as GtkFileFilter ptr, byval name as gchar ptr)
-declare function gtk_file_filter_get_name cdecl alias "gtk_file_filter_get_name" (byval filter as GtkFileFilter ptr) as gchar ptr
-declare sub gtk_file_filter_add_mime_type cdecl alias "gtk_file_filter_add_mime_type" (byval filter as GtkFileFilter ptr, byval mime_type as gchar ptr)
-declare sub gtk_file_filter_add_pattern cdecl alias "gtk_file_filter_add_pattern" (byval filter as GtkFileFilter ptr, byval pattern as gchar ptr)
+declare sub gtk_file_filter_set_name cdecl alias "gtk_file_filter_set_name" (byval filter as GtkFileFilter ptr, byval name as string)
+declare function gtk_file_filter_get_name cdecl alias "gtk_file_filter_get_name" (byval filter as GtkFileFilter ptr) as zstring ptr
+declare sub gtk_file_filter_add_mime_type cdecl alias "gtk_file_filter_add_mime_type" (byval filter as GtkFileFilter ptr, byval mime_type as string)
+declare sub gtk_file_filter_add_pattern cdecl alias "gtk_file_filter_add_pattern" (byval filter as GtkFileFilter ptr, byval pattern as string)
 declare sub gtk_file_filter_add_pixbuf_formats cdecl alias "gtk_file_filter_add_pixbuf_formats" (byval filter as GtkFileFilter ptr)
 declare sub gtk_file_filter_add_custom cdecl alias "gtk_file_filter_add_custom" (byval filter as GtkFileFilter ptr, byval needed as GtkFileFilterFlags, byval func as GtkFileFilterFunc, byval data as gpointer, byval notify as GDestroyNotify)
 declare function gtk_file_filter_get_needed cdecl alias "gtk_file_filter_get_needed" (byval filter as GtkFileFilter ptr) as GtkFileFilterFlags

@@ -27,7 +27,7 @@ type _GtkSelectionData
 end type
 
 type _GtkTargetEntry
-	target as gchar ptr
+	target as zstring ptr
 	flags as guint
 	info as guint
 end type
@@ -62,12 +62,12 @@ declare sub gtk_selection_add_targets cdecl alias "gtk_selection_add_targets" (b
 declare sub gtk_selection_clear_targets cdecl alias "gtk_selection_clear_targets" (byval widget as GtkWidget ptr, byval selection as GdkAtom)
 declare function gtk_selection_convert cdecl alias "gtk_selection_convert" (byval widget as GtkWidget ptr, byval selection as GdkAtom, byval target as GdkAtom, byval time_ as guint32) as gboolean
 declare sub gtk_selection_data_set cdecl alias "gtk_selection_data_set" (byval selection_data as GtkSelectionData ptr, byval type as GdkAtom, byval format as gint, byval data as guchar ptr, byval length as gint)
-declare function gtk_selection_data_set_text cdecl alias "gtk_selection_data_set_text" (byval selection_data as GtkSelectionData ptr, byval str as gchar ptr, byval len as gint) as gboolean
+declare function gtk_selection_data_set_text cdecl alias "gtk_selection_data_set_text" (byval selection_data as GtkSelectionData ptr, byval str as string, byval len as gint) as gboolean
 declare function gtk_selection_data_get_text cdecl alias "gtk_selection_data_get_text" (byval selection_data as GtkSelectionData ptr) as guchar ptr
 declare function gtk_selection_data_set_pixbuf cdecl alias "gtk_selection_data_set_pixbuf" (byval selection_data as GtkSelectionData ptr, byval pixbuf as GdkPixbuf ptr) as gboolean
 declare function gtk_selection_data_get_pixbuf cdecl alias "gtk_selection_data_get_pixbuf" (byval selection_data as GtkSelectionData ptr) as GdkPixbuf ptr
-declare function gtk_selection_data_set_uris cdecl alias "gtk_selection_data_set_uris" (byval selection_data as GtkSelectionData ptr, byval uris as gchar ptr ptr) as gboolean
-declare function gtk_selection_data_get_uris cdecl alias "gtk_selection_data_get_uris" (byval selection_data as GtkSelectionData ptr) as gchar ptr ptr
+declare function gtk_selection_data_set_uris cdecl alias "gtk_selection_data_set_uris" (byval selection_data as GtkSelectionData ptr, byval uris as zstring ptr ptr) as gboolean
+declare function gtk_selection_data_get_uris cdecl alias "gtk_selection_data_get_uris" (byval selection_data as GtkSelectionData ptr) as zstring ptr ptr
 declare function gtk_selection_data_get_targets cdecl alias "gtk_selection_data_get_targets" (byval selection_data as GtkSelectionData ptr, byval targets as GdkAtom ptr ptr, byval n_atoms as gint ptr) as gboolean
 declare function gtk_selection_data_targets_include_text cdecl alias "gtk_selection_data_targets_include_text" (byval selection_data as GtkSelectionData ptr) as gboolean
 declare function gtk_selection_data_targets_include_image cdecl alias "gtk_selection_data_targets_include_image" (byval selection_data as GtkSelectionData ptr, byval writable as gboolean) as gboolean

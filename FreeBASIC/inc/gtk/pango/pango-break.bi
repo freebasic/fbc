@@ -26,8 +26,8 @@ type _PangoLogAttr
 	backspace_deletes_character as guint
 end type
 
-declare sub pango_break cdecl alias "pango_break" (byval text as gchar ptr, byval length as integer, byval analysis as PangoAnalysis ptr, byval attrs as PangoLogAttr ptr, byval attrs_len as integer)
-declare sub pango_find_paragraph_boundary cdecl alias "pango_find_paragraph_boundary" (byval text as gchar ptr, byval length as gint, byval paragraph_delimiter_index as gint ptr, byval next_paragraph_start as gint ptr)
+declare sub pango_break cdecl alias "pango_break" (byval text as string, byval length as integer, byval analysis as PangoAnalysis ptr, byval attrs as PangoLogAttr ptr, byval attrs_len as integer)
+declare sub pango_find_paragraph_boundary cdecl alias "pango_find_paragraph_boundary" (byval text as string, byval length as gint, byval paragraph_delimiter_index as gint ptr, byval next_paragraph_start as gint ptr)
 declare sub pango_get_log_attrs cdecl alias "pango_get_log_attrs" (byval text as string, byval length as integer, byval level as integer, byval language as PangoLanguage ptr, byval log_attrs as PangoLogAttr ptr, byval attrs_len as integer)
 
 #endif

@@ -23,10 +23,10 @@ type GtkWindowGroupClass as _GtkWindowGroupClass
 
 type _GtkWindow
 	bin as GtkBin
-	title as gchar ptr
-	wmclass_name as gchar ptr
-	wmclass_class as gchar ptr
-	wm_role as gchar ptr
+	title as zstring ptr
+	wmclass_name as zstring ptr
+	wmclass_class as zstring ptr
+	wm_role as zstring ptr
 	focus_widget as GtkWidget ptr
 	default_widget as GtkWidget ptr
 	transient_parent as GtkWindow ptr
@@ -92,11 +92,11 @@ end type
 
 declare function gtk_window_get_type cdecl alias "gtk_window_get_type" () as GType
 declare function gtk_window_new cdecl alias "gtk_window_new" (byval type as GtkWindowType) as GtkWidget ptr
-declare sub gtk_window_set_title cdecl alias "gtk_window_set_title" (byval window as GtkWindow ptr, byval title as gchar ptr)
-declare function gtk_window_get_title cdecl alias "gtk_window_get_title" (byval window as GtkWindow ptr) as gchar ptr
-declare sub gtk_window_set_wmclass cdecl alias "gtk_window_set_wmclass" (byval window as GtkWindow ptr, byval wmclass_name as gchar ptr, byval wmclass_class as gchar ptr)
-declare sub gtk_window_set_role cdecl alias "gtk_window_set_role" (byval window as GtkWindow ptr, byval role as gchar ptr)
-declare function gtk_window_get_role cdecl alias "gtk_window_get_role" (byval window as GtkWindow ptr) as gchar ptr
+declare sub gtk_window_set_title cdecl alias "gtk_window_set_title" (byval window as GtkWindow ptr, byval title as string)
+declare function gtk_window_get_title cdecl alias "gtk_window_get_title" (byval window as GtkWindow ptr) as zstring ptr
+declare sub gtk_window_set_wmclass cdecl alias "gtk_window_set_wmclass" (byval window as GtkWindow ptr, byval wmclass_name as string, byval wmclass_class as string)
+declare sub gtk_window_set_role cdecl alias "gtk_window_set_role" (byval window as GtkWindow ptr, byval role as string)
+declare function gtk_window_get_role cdecl alias "gtk_window_get_role" (byval window as GtkWindow ptr) as zstring ptr
 declare sub gtk_window_add_accel_group cdecl alias "gtk_window_add_accel_group" (byval window as GtkWindow ptr, byval accel_group as GtkAccelGroup ptr)
 declare sub gtk_window_remove_accel_group cdecl alias "gtk_window_remove_accel_group" (byval window as GtkWindow ptr, byval accel_group as GtkAccelGroup ptr)
 declare sub gtk_window_set_position cdecl alias "gtk_window_set_position" (byval window as GtkWindow ptr, byval position as GtkWindowPosition)
@@ -137,15 +137,15 @@ declare function gtk_window_get_decorated cdecl alias "gtk_window_get_decorated"
 declare sub gtk_window_set_icon_list cdecl alias "gtk_window_set_icon_list" (byval window as GtkWindow ptr, byval list as GList ptr)
 declare function gtk_window_get_icon_list cdecl alias "gtk_window_get_icon_list" (byval window as GtkWindow ptr) as GList ptr
 declare sub gtk_window_set_icon cdecl alias "gtk_window_set_icon" (byval window as GtkWindow ptr, byval icon as GdkPixbuf ptr)
-declare sub gtk_window_set_icon_name cdecl alias "gtk_window_set_icon_name" (byval window as GtkWindow ptr, byval name as gchar ptr)
-declare function gtk_window_set_icon_from_file cdecl alias "gtk_window_set_icon_from_file" (byval window as GtkWindow ptr, byval filename as gchar ptr, byval err as GError ptr ptr) as gboolean
+declare sub gtk_window_set_icon_name cdecl alias "gtk_window_set_icon_name" (byval window as GtkWindow ptr, byval name as string)
+declare function gtk_window_set_icon_from_file cdecl alias "gtk_window_set_icon_from_file" (byval window as GtkWindow ptr, byval filename as string, byval err as GError ptr ptr) as gboolean
 declare function gtk_window_get_icon cdecl alias "gtk_window_get_icon" (byval window as GtkWindow ptr) as GdkPixbuf ptr
-declare function gtk_window_get_icon_name cdecl alias "gtk_window_get_icon_name" (byval window as GtkWindow ptr) as gchar ptr
+declare function gtk_window_get_icon_name cdecl alias "gtk_window_get_icon_name" (byval window as GtkWindow ptr) as zstring ptr
 declare sub gtk_window_set_default_icon_list cdecl alias "gtk_window_set_default_icon_list" (byval list as GList ptr)
 declare function gtk_window_get_default_icon_list cdecl alias "gtk_window_get_default_icon_list" () as GList ptr
 declare sub gtk_window_set_default_icon cdecl alias "gtk_window_set_default_icon" (byval icon as GdkPixbuf ptr)
-declare sub gtk_window_set_default_icon_name cdecl alias "gtk_window_set_default_icon_name" (byval name as gchar ptr)
-declare function gtk_window_set_default_icon_from_file cdecl alias "gtk_window_set_default_icon_from_file" (byval filename as gchar ptr, byval err as GError ptr ptr) as gboolean
+declare sub gtk_window_set_default_icon_name cdecl alias "gtk_window_set_default_icon_name" (byval name as string)
+declare function gtk_window_set_default_icon_from_file cdecl alias "gtk_window_set_default_icon_from_file" (byval filename as string, byval err as GError ptr ptr) as gboolean
 declare sub gtk_window_set_auto_startup_notification cdecl alias "gtk_window_set_auto_startup_notification" (byval setting as gboolean)
 declare sub gtk_window_set_modal cdecl alias "gtk_window_set_modal" (byval window as GtkWindow ptr, byval modal as gboolean)
 declare function gtk_window_get_modal cdecl alias "gtk_window_get_modal" (byval window as GtkWindow ptr) as gboolean
@@ -177,7 +177,7 @@ declare sub gtk_window_resize cdecl alias "gtk_window_resize" (byval window as G
 declare sub gtk_window_get_size cdecl alias "gtk_window_get_size" (byval window as GtkWindow ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_window_move cdecl alias "gtk_window_move" (byval window as GtkWindow ptr, byval x as gint, byval y as gint)
 declare sub gtk_window_get_position cdecl alias "gtk_window_get_position" (byval window as GtkWindow ptr, byval root_x as gint ptr, byval root_y as gint ptr)
-declare function gtk_window_parse_geometry cdecl alias "gtk_window_parse_geometry" (byval window as GtkWindow ptr, byval geometry as gchar ptr) as gboolean
+declare function gtk_window_parse_geometry cdecl alias "gtk_window_parse_geometry" (byval window as GtkWindow ptr, byval geometry as string) as gboolean
 declare sub gtk_window_reshow_with_initial_size cdecl alias "gtk_window_reshow_with_initial_size" (byval window as GtkWindow ptr)
 declare function gtk_window_group_get_type cdecl alias "gtk_window_group_get_type" () as GType
 declare function gtk_window_group_new cdecl alias "gtk_window_group_new" () as GtkWindowGroup ptr

@@ -9,6 +9,8 @@
 #ifndef __gtk_bi__
 #define __gtk_bi__
 
+#inclib "gtk-win32-2.0"
+
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkaboutdialog.bi"
 #include once "gtk/gtk/gtkaccelgroup.bi"

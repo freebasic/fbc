@@ -9,6 +9,8 @@
 #ifndef __gdk_bi__
 #define __gdk_bi__
 
+#inclib "gdk-win32-2.0"
+
 #include once "gtk/gdk/gdkcolor.bi"
 #include once "gtk/gdk/gdkcursor.bi"
 #include once "gtk/gdk/gdkdisplay.bi"
@@ -35,21 +37,21 @@
 #include once "gtk/gdk/gdkvisual.bi"
 #include once "gtk/gdk/gdkwindow.bi"
 
-declare sub gdk_parse_args cdecl alias "gdk_parse_args" (byval argc as gint ptr, byval argv as gchar ptr ptr ptr)
-declare sub gdk_init cdecl alias "gdk_init" (byval argc as gint ptr, byval argv as gchar ptr ptr ptr)
-declare function gdk_init_check cdecl alias "gdk_init_check" (byval argc as gint ptr, byval argv as gchar ptr ptr ptr) as gboolean
+declare sub gdk_parse_args cdecl alias "gdk_parse_args" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
+declare sub gdk_init cdecl alias "gdk_init" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
+declare function gdk_init_check cdecl alias "gdk_init_check" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr) as gboolean
 declare sub gdk_add_option_entries_libgtk_only cdecl alias "gdk_add_option_entries_libgtk_only" (byval group as GOptionGroup ptr)
 declare sub gdk_pre_parse_libgtk_only cdecl alias "gdk_pre_parse_libgtk_only" ()
 declare sub gdk_exit cdecl alias "gdk_exit" (byval error_code as gint)
-declare function gdk_set_locale cdecl alias "gdk_set_locale" () as gchar ptr
+declare function gdk_set_locale cdecl alias "gdk_set_locale" () as zstring ptr
 declare function gdk_get_program_class cdecl alias "gdk_get_program_class" () as zstring ptr
 declare sub gdk_set_program_class cdecl alias "gdk_set_program_class" (byval program_class as string)
 declare sub gdk_error_trap_push cdecl alias "gdk_error_trap_push" ()
 declare function gdk_error_trap_pop cdecl alias "gdk_error_trap_pop" () as gint
 declare sub gdk_set_use_xshm cdecl alias "gdk_set_use_xshm" (byval use_xshm as gboolean)
 declare function gdk_get_use_xshm cdecl alias "gdk_get_use_xshm" () as gboolean
-declare function gdk_get_display cdecl alias "gdk_get_display" () as gchar ptr
-declare function gdk_get_display_arg_name cdecl alias "gdk_get_display_arg_name" () as gchar ptr
+declare function gdk_get_display cdecl alias "gdk_get_display" () as zstring ptr
+declare function gdk_get_display_arg_name cdecl alias "gdk_get_display_arg_name" () as zstring ptr
 declare function gdk_input_add_full cdecl alias "gdk_input_add_full" (byval source as gint, byval condition as GdkInputCondition, byval function as GdkInputFunction, byval data as gpointer, byval destroy as GdkDestroyNotify) as gint
 declare function gdk_input_add cdecl alias "gdk_input_add" (byval source as gint, byval condition as GdkInputCondition, byval function as GdkInputFunction, byval data as gpointer) as gint
 declare sub gdk_input_remove cdecl alias "gdk_input_remove" (byval tag as gint)
@@ -70,8 +72,8 @@ declare sub gdk_set_double_click_time cdecl alias "gdk_set_double_click_time" (b
 declare function gdk_rectangle_intersect cdecl alias "gdk_rectangle_intersect" (byval src1 as GdkRectangle ptr, byval src2 as GdkRectangle ptr, byval dest as GdkRectangle ptr) as gboolean
 declare sub gdk_rectangle_union cdecl alias "gdk_rectangle_union" (byval src1 as GdkRectangle ptr, byval src2 as GdkRectangle ptr, byval dest as GdkRectangle ptr)
 declare function gdk_rectangle_get_type cdecl alias "gdk_rectangle_get_type" () as GType
-declare function gdk_wcstombs cdecl alias "gdk_wcstombs" (byval src as GdkWChar ptr) as gchar ptr
-declare function gdk_mbstowcs cdecl alias "gdk_mbstowcs" (byval dest as GdkWChar ptr, byval src as gchar ptr, byval dest_max as gint) as gint
+declare function gdk_wcstombs cdecl alias "gdk_wcstombs" (byval src as GdkWChar ptr) as zstring ptr
+declare function gdk_mbstowcs cdecl alias "gdk_mbstowcs" (byval dest as GdkWChar ptr, byval src as string, byval dest_max as gint) as gint
 declare function gdk_event_send_client_message cdecl alias "gdk_event_send_client_message" (byval event as GdkEvent ptr, byval winid as GdkNativeWindow) as gboolean
 declare sub gdk_event_send_clientmessage_toall cdecl alias "gdk_event_send_clientmessage_toall" (byval event as GdkEvent ptr)
 declare function gdk_event_send_client_message_for_display cdecl alias "gdk_event_send_client_message_for_display" (byval display as GdkDisplay ptr, byval event as GdkEvent ptr, byval winid as GdkNativeWindow) as gboolean

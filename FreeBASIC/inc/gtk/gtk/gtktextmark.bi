@@ -28,7 +28,7 @@ end type
 declare function gtk_text_mark_get_type cdecl alias "gtk_text_mark_get_type" () as GType
 declare sub gtk_text_mark_set_visible cdecl alias "gtk_text_mark_set_visible" (byval mark as GtkTextMark ptr, byval setting as gboolean)
 declare function gtk_text_mark_get_visible cdecl alias "gtk_text_mark_get_visible" (byval mark as GtkTextMark ptr) as gboolean
-declare function gtk_text_mark_get_name cdecl alias "gtk_text_mark_get_name" (byval mark as GtkTextMark ptr) as gchar ptr
+declare function gtk_text_mark_get_name cdecl alias "gtk_text_mark_get_name" (byval mark as GtkTextMark ptr) as zstring ptr
 declare function gtk_text_mark_get_deleted cdecl alias "gtk_text_mark_get_deleted" (byval mark as GtkTextMark ptr) as gboolean
 declare function gtk_text_mark_get_buffer cdecl alias "gtk_text_mark_get_buffer" (byval mark as GtkTextMark ptr) as GtkTextBuffer ptr
 declare function gtk_text_mark_get_left_gravity cdecl alias "gtk_text_mark_get_left_gravity" (byval mark as GtkTextMark ptr) as gboolean

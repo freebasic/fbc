@@ -17,7 +17,7 @@ type GtkCellRendererTextClass as _GtkCellRendererTextClass
 
 type _GtkCellRendererText
 	parent as GtkCellRenderer
-	text as gchar ptr
+	text as zstring ptr
 	font as PangoFontDescription ptr
 	font_scale as gdouble
 	foreground as PangoColor
@@ -40,7 +40,7 @@ end type
 
 type _GtkCellRendererTextClass
 	parent_class as GtkCellRendererClass
-	edited as sub cdecl(byval as GtkCellRendererText ptr, byval as gchar ptr, byval as gchar ptr)
+	edited as sub cdecl(byval as GtkCellRendererText ptr, byval as string, byval as string)
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 	_gtk_reserved3 as sub cdecl()

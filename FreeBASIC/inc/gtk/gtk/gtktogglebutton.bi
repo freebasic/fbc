@@ -33,8 +33,8 @@ end type
 
 declare function gtk_toggle_button_get_type cdecl alias "gtk_toggle_button_get_type" () as GType
 declare function gtk_toggle_button_new cdecl alias "gtk_toggle_button_new" () as GtkWidget ptr
-declare function gtk_toggle_button_new_with_label cdecl alias "gtk_toggle_button_new_with_label" (byval label as gchar ptr) as GtkWidget ptr
-declare function gtk_toggle_button_new_with_mnemonic cdecl alias "gtk_toggle_button_new_with_mnemonic" (byval label as gchar ptr) as GtkWidget ptr
+declare function gtk_toggle_button_new_with_label cdecl alias "gtk_toggle_button_new_with_label" (byval label as string) as GtkWidget ptr
+declare function gtk_toggle_button_new_with_mnemonic cdecl alias "gtk_toggle_button_new_with_mnemonic" (byval label as string) as GtkWidget ptr
 declare sub gtk_toggle_button_set_mode cdecl alias "gtk_toggle_button_set_mode" (byval toggle_button as GtkToggleButton ptr, byval draw_indicator as gboolean)
 declare function gtk_toggle_button_get_mode cdecl alias "gtk_toggle_button_get_mode" (byval toggle_button as GtkToggleButton ptr) as gboolean
 declare sub gtk_toggle_button_set_active cdecl alias "gtk_toggle_button_set_active" (byval toggle_button as GtkToggleButton ptr, byval is_active as gboolean)

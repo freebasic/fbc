@@ -9,6 +9,8 @@
 #ifndef __glib_bi__
 #define __glib_bi__
 
+#inclib "glib-2.0"
+
 #include once "gtk/glib/galloca.bi"
 #include once "gtk/glib/garray.bi"
 #include once "gtk/glib/gasyncqueue.bi"

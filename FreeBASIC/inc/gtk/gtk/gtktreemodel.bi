@@ -56,9 +56,9 @@ type _GtkTreeModelIface
 end type
 
 declare function gtk_tree_path_new cdecl alias "gtk_tree_path_new" () as GtkTreePath ptr
-declare function gtk_tree_path_new_from_string cdecl alias "gtk_tree_path_new_from_string" (byval path as gchar ptr) as GtkTreePath ptr
+declare function gtk_tree_path_new_from_string cdecl alias "gtk_tree_path_new_from_string" (byval path as string) as GtkTreePath ptr
 declare function gtk_tree_path_new_from_indices cdecl alias "gtk_tree_path_new_from_indices" (byval first_index as gint, ...) as GtkTreePath ptr
-declare function gtk_tree_path_to_string cdecl alias "gtk_tree_path_to_string" (byval path as GtkTreePath ptr) as gchar ptr
+declare function gtk_tree_path_to_string cdecl alias "gtk_tree_path_to_string" (byval path as GtkTreePath ptr) as zstring ptr
 declare function gtk_tree_path_new_first cdecl alias "gtk_tree_path_new_first" () as GtkTreePath ptr
 declare sub gtk_tree_path_append_index cdecl alias "gtk_tree_path_append_index" (byval path as GtkTreePath ptr, byval index_ as gint)
 declare sub gtk_tree_path_prepend_index cdecl alias "gtk_tree_path_prepend_index" (byval path as GtkTreePath ptr, byval index_ as gint)
@@ -92,8 +92,8 @@ declare function gtk_tree_model_get_flags cdecl alias "gtk_tree_model_get_flags"
 declare function gtk_tree_model_get_n_columns cdecl alias "gtk_tree_model_get_n_columns" (byval tree_model as GtkTreeModel ptr) as gint
 declare function gtk_tree_model_get_column_type cdecl alias "gtk_tree_model_get_column_type" (byval tree_model as GtkTreeModel ptr, byval index_ as gint) as GType
 declare function gtk_tree_model_get_iter cdecl alias "gtk_tree_model_get_iter" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval path as GtkTreePath ptr) as gboolean
-declare function gtk_tree_model_get_iter_from_string cdecl alias "gtk_tree_model_get_iter_from_string" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval path_string as gchar ptr) as gboolean
-declare function gtk_tree_model_get_string_from_iter cdecl alias "gtk_tree_model_get_string_from_iter" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as gchar ptr
+declare function gtk_tree_model_get_iter_from_string cdecl alias "gtk_tree_model_get_iter_from_string" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval path_string as string) as gboolean
+declare function gtk_tree_model_get_string_from_iter cdecl alias "gtk_tree_model_get_string_from_iter" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as zstring ptr
 declare function gtk_tree_model_get_iter_first cdecl alias "gtk_tree_model_get_iter_first" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as gboolean
 declare function gtk_tree_model_get_path cdecl alias "gtk_tree_model_get_path" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as GtkTreePath ptr
 declare sub gtk_tree_model_get_value cdecl alias "gtk_tree_model_get_value" (byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval column as gint, byval value as GValue ptr)

@@ -9,6 +9,8 @@
 #ifndef __libart_bi__
 #define __libart_bi__
 
+#inclib "art_lgpl_2"
+
 #include once "gtk/libart/art_affine.bi"
 #include once "gtk/libart/art_alphagamma.bi"
 #include once "gtk/libart/art_bpath.bi"

@@ -25,7 +25,7 @@ type _GtkOldEditable
 	has_selection as guint
 	editable as guint
 	visible as guint
-	clipboard_text as gchar ptr
+	clipboard_text as zstring ptr
 end type
 
 type _GtkOldEditableClass

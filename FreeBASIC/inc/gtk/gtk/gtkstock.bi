@@ -14,16 +14,16 @@
 type GtkStockItem as _GtkStockItem
 
 type _GtkStockItem
-	stock_id as gchar ptr
-	label as gchar ptr
+	stock_id as zstring ptr
+	label as zstring ptr
 	modifier as GdkModifierType
 	keyval as guint
-	translation_domain as gchar ptr
+	translation_domain as zstring ptr
 end type
 
 declare sub gtk_stock_add cdecl alias "gtk_stock_add" (byval items as GtkStockItem ptr, byval n_items as guint)
 declare sub gtk_stock_add_static cdecl alias "gtk_stock_add_static" (byval items as GtkStockItem ptr, byval n_items as guint)
-declare function gtk_stock_lookup cdecl alias "gtk_stock_lookup" (byval stock_id as gchar ptr, byval item as GtkStockItem ptr) as gboolean
+declare function gtk_stock_lookup cdecl alias "gtk_stock_lookup" (byval stock_id as string, byval item as GtkStockItem ptr) as gboolean
 declare function gtk_stock_list_ids cdecl alias "gtk_stock_list_ids" () as GSList ptr
 declare function gtk_stock_item_copy cdecl alias "gtk_stock_item_copy" (byval item as GtkStockItem ptr) as GtkStockItem ptr
 declare sub gtk_stock_item_free cdecl alias "gtk_stock_item_free" (byval item as GtkStockItem ptr)

@@ -33,28 +33,28 @@ end type
 
 type _GEnumValue
 	value as gint
-	value_name as gchar ptr
-	value_nick as gchar ptr
+	value_name as zstring ptr
+	value_nick as zstring ptr
 end type
 
 type _GFlagsValue
 	value as guint
-	value_name as gchar ptr
-	value_nick as gchar ptr
+	value_name as zstring ptr
+	value_nick as zstring ptr
 end type
 
 declare function g_enum_get_value cdecl alias "g_enum_get_value" (byval enum_class as GEnumClass ptr, byval value as gint) as GEnumValue ptr
-declare function g_enum_get_value_by_name cdecl alias "g_enum_get_value_by_name" (byval enum_class as GEnumClass ptr, byval name as gchar ptr) as GEnumValue ptr
-declare function g_enum_get_value_by_nick cdecl alias "g_enum_get_value_by_nick" (byval enum_class as GEnumClass ptr, byval nick as gchar ptr) as GEnumValue ptr
+declare function g_enum_get_value_by_name cdecl alias "g_enum_get_value_by_name" (byval enum_class as GEnumClass ptr, byval name as string) as GEnumValue ptr
+declare function g_enum_get_value_by_nick cdecl alias "g_enum_get_value_by_nick" (byval enum_class as GEnumClass ptr, byval nick as string) as GEnumValue ptr
 declare function g_flags_get_first_value cdecl alias "g_flags_get_first_value" (byval flags_class as GFlagsClass ptr, byval value as guint) as GFlagsValue ptr
-declare function g_flags_get_value_by_name cdecl alias "g_flags_get_value_by_name" (byval flags_class as GFlagsClass ptr, byval name as gchar ptr) as GFlagsValue ptr
-declare function g_flags_get_value_by_nick cdecl alias "g_flags_get_value_by_nick" (byval flags_class as GFlagsClass ptr, byval nick as gchar ptr) as GFlagsValue ptr
+declare function g_flags_get_value_by_name cdecl alias "g_flags_get_value_by_name" (byval flags_class as GFlagsClass ptr, byval name as string) as GFlagsValue ptr
+declare function g_flags_get_value_by_nick cdecl alias "g_flags_get_value_by_nick" (byval flags_class as GFlagsClass ptr, byval nick as string) as GFlagsValue ptr
 declare sub g_value_set_enum cdecl alias "g_value_set_enum" (byval value as GValue ptr, byval v_enum as gint)
 declare function g_value_get_enum cdecl alias "g_value_get_enum" (byval value as GValue ptr) as gint
 declare sub g_value_set_flags cdecl alias "g_value_set_flags" (byval value as GValue ptr, byval v_flags as guint)
 declare function g_value_get_flags cdecl alias "g_value_get_flags" (byval value as GValue ptr) as guint
-declare function g_enum_register_static cdecl alias "g_enum_register_static" (byval name as gchar ptr, byval const_static_values as GEnumValue ptr) as GType
-declare function g_flags_register_static cdecl alias "g_flags_register_static" (byval name as gchar ptr, byval const_static_values as GFlagsValue ptr) as GType
+declare function g_enum_register_static cdecl alias "g_enum_register_static" (byval name as string, byval const_static_values as GEnumValue ptr) as GType
+declare function g_flags_register_static cdecl alias "g_flags_register_static" (byval name as string, byval const_static_values as GFlagsValue ptr) as GType
 declare sub g_enum_complete_type_info cdecl alias "g_enum_complete_type_info" (byval g_enum_type as GType, byval info as GTypeInfo ptr, byval const_values as GEnumValue ptr)
 declare sub g_flags_complete_type_info cdecl alias "g_flags_complete_type_info" (byval g_flags_type as GType, byval info as GTypeInfo ptr, byval const_values as GFlagsValue ptr)
 

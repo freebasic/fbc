@@ -33,17 +33,17 @@ declare sub g_value_set_float cdecl alias "g_value_set_float" (byval value as GV
 declare function g_value_get_float cdecl alias "g_value_get_float" (byval value as GValue ptr) as gfloat
 declare sub g_value_set_double cdecl alias "g_value_set_double" (byval value as GValue ptr, byval v_double as gdouble)
 declare function g_value_get_double cdecl alias "g_value_get_double" (byval value as GValue ptr) as gdouble
-declare sub g_value_set_string cdecl alias "g_value_set_string" (byval value as GValue ptr, byval v_string as gchar ptr)
-declare sub g_value_set_static_string cdecl alias "g_value_set_static_string" (byval value as GValue ptr, byval v_string as gchar ptr)
-declare function g_value_get_string cdecl alias "g_value_get_string" (byval value as GValue ptr) as gchar ptr
-declare function g_value_dup_string cdecl alias "g_value_dup_string" (byval value as GValue ptr) as gchar ptr
+declare sub g_value_set_string cdecl alias "g_value_set_string" (byval value as GValue ptr, byval v_string as string)
+declare sub g_value_set_static_string cdecl alias "g_value_set_static_string" (byval value as GValue ptr, byval v_string as string)
+declare function g_value_get_string cdecl alias "g_value_get_string" (byval value as GValue ptr) as zstring ptr
+declare function g_value_dup_string cdecl alias "g_value_dup_string" (byval value as GValue ptr) as zstring ptr
 declare sub g_value_set_pointer cdecl alias "g_value_set_pointer" (byval value as GValue ptr, byval v_pointer as gpointer)
 declare function g_value_get_pointer cdecl alias "g_value_get_pointer" (byval value as GValue ptr) as gpointer
-declare function g_pointer_type_register_static cdecl alias "g_pointer_type_register_static" (byval name as gchar ptr) as GType
-declare function g_strdup_value_contents cdecl alias "g_strdup_value_contents" (byval value as GValue ptr) as gchar ptr
-declare sub g_value_take_string cdecl alias "g_value_take_string" (byval value as GValue ptr, byval v_string as gchar ptr)
-declare sub g_value_set_string_take_ownership cdecl alias "g_value_set_string_take_ownership" (byval value as GValue ptr, byval v_string as gchar ptr)
+declare function g_pointer_type_register_static cdecl alias "g_pointer_type_register_static" (byval name as string) as GType
+declare function g_strdup_value_contents cdecl alias "g_strdup_value_contents" (byval value as GValue ptr) as zstring ptr
+declare sub g_value_take_string cdecl alias "g_value_take_string" (byval value as GValue ptr, byval v_string as string)
+declare sub g_value_set_string_take_ownership cdecl alias "g_value_set_string_take_ownership" (byval value as GValue ptr, byval v_string as string)
 
-type gchararray as gchar ptr
+type gchararray as zstring ptr
 
 #endif

@@ -118,7 +118,7 @@ end enum
 
 
 type _GdkWindowAttr
-	title as gchar ptr
+	title as zstring ptr
 	event_mask as gint
 	x as gint
 	y as gint
@@ -129,8 +129,8 @@ type _GdkWindowAttr
 	colormap as GdkColormap ptr
 	window_type as GdkWindowType
 	cursor as GdkCursor ptr
-	wmclass_name as gchar ptr
-	wmclass_class as gchar ptr
+	wmclass_name as zstring ptr
+	wmclass_class as zstring ptr
 	override_redirect as gboolean
 end type
 
@@ -232,12 +232,12 @@ declare sub gdk_window_set_modal_hint cdecl alias "gdk_window_set_modal_hint" (b
 declare sub gdk_window_set_skip_taskbar_hint cdecl alias "gdk_window_set_skip_taskbar_hint" (byval window as GdkWindow ptr, byval skips_taskbar as gboolean)
 declare sub gdk_window_set_skip_pager_hint cdecl alias "gdk_window_set_skip_pager_hint" (byval window as GdkWindow ptr, byval skips_pager as gboolean)
 declare sub gdk_window_set_geometry_hints cdecl alias "gdk_window_set_geometry_hints" (byval window as GdkWindow ptr, byval geometry as GdkGeometry ptr, byval geom_mask as GdkWindowHints)
-declare sub gdk_set_sm_client_id cdecl alias "gdk_set_sm_client_id" (byval sm_client_id as gchar ptr)
+declare sub gdk_set_sm_client_id cdecl alias "gdk_set_sm_client_id" (byval sm_client_id as string)
 declare sub gdk_window_begin_paint_rect cdecl alias "gdk_window_begin_paint_rect" (byval window as GdkWindow ptr, byval rectangle as GdkRectangle ptr)
 declare sub gdk_window_begin_paint_region cdecl alias "gdk_window_begin_paint_region" (byval window as GdkWindow ptr, byval region as GdkRegion ptr)
 declare sub gdk_window_end_paint cdecl alias "gdk_window_end_paint" (byval window as GdkWindow ptr)
-declare sub gdk_window_set_title cdecl alias "gdk_window_set_title" (byval window as GdkWindow ptr, byval title as gchar ptr)
-declare sub gdk_window_set_role cdecl alias "gdk_window_set_role" (byval window as GdkWindow ptr, byval role as gchar ptr)
+declare sub gdk_window_set_title cdecl alias "gdk_window_set_title" (byval window as GdkWindow ptr, byval title as string)
+declare sub gdk_window_set_role cdecl alias "gdk_window_set_role" (byval window as GdkWindow ptr, byval role as string)
 declare sub gdk_window_set_transient_for cdecl alias "gdk_window_set_transient_for" (byval window as GdkWindow ptr, byval parent as GdkWindow ptr)
 declare sub gdk_window_set_background cdecl alias "gdk_window_set_background" (byval window as GdkWindow ptr, byval color as GdkColor ptr)
 declare sub gdk_window_set_back_pixmap cdecl alias "gdk_window_set_back_pixmap" (byval window as GdkWindow ptr, byval pixmap as GdkPixmap ptr, byval parent_relative as gboolean)
@@ -258,7 +258,7 @@ declare function gdk_window_get_events cdecl alias "gdk_window_get_events" (byva
 declare sub gdk_window_set_events cdecl alias "gdk_window_set_events" (byval window as GdkWindow ptr, byval event_mask as GdkEventMask)
 declare sub gdk_window_set_icon_list cdecl alias "gdk_window_set_icon_list" (byval window as GdkWindow ptr, byval pixbufs as GList ptr)
 declare sub gdk_window_set_icon cdecl alias "gdk_window_set_icon" (byval window as GdkWindow ptr, byval icon_window as GdkWindow ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare sub gdk_window_set_icon_name cdecl alias "gdk_window_set_icon_name" (byval window as GdkWindow ptr, byval name as gchar ptr)
+declare sub gdk_window_set_icon_name cdecl alias "gdk_window_set_icon_name" (byval window as GdkWindow ptr, byval name as string)
 declare sub gdk_window_set_group cdecl alias "gdk_window_set_group" (byval window as GdkWindow ptr, byval leader as GdkWindow ptr)
 declare function gdk_window_get_group cdecl alias "gdk_window_get_group" (byval window as GdkWindow ptr) as GdkWindow ptr
 declare sub gdk_window_set_decorations cdecl alias "gdk_window_set_decorations" (byval window as GdkWindow ptr, byval decorations as GdkWMDecoration)

@@ -156,14 +156,14 @@ type _GtkCListClass
 	clear as sub cdecl(byval as GtkCList ptr)
 	fake_unselect_all as sub cdecl(byval as GtkCList ptr, byval as gint)
 	sort_list as sub cdecl(byval as GtkCList ptr)
-	insert_row as function cdecl(byval as GtkCList ptr, byval as gint, byval as gchar ptr ptr) as gint
+	insert_row as function cdecl(byval as GtkCList ptr, byval as gint, byval as zstring ptr ptr) as gint
 	remove_row as sub cdecl(byval as GtkCList ptr, byval as gint)
-	set_cell_contents as sub cdecl(byval as GtkCList ptr, byval as GtkCListRow ptr, byval as gint, byval as GtkCellType, byval as gchar ptr, byval as guint8, byval as GdkPixmap ptr, byval as GdkBitmap ptr)
+	set_cell_contents as sub cdecl(byval as GtkCList ptr, byval as GtkCListRow ptr, byval as gint, byval as GtkCellType, byval as string, byval as guint8, byval as GdkPixmap ptr, byval as GdkBitmap ptr)
 	cell_size_request as sub cdecl(byval as GtkCList ptr, byval as GtkCListRow ptr, byval as gint, byval as GtkRequisition ptr)
 end type
 
 type _GtkCListColumn
-	title as gchar ptr
+	title as zstring ptr
 	area as GdkRectangle
 	button as GtkWidget ptr
 	window as GdkWindow ptr
@@ -196,7 +196,7 @@ type _GtkCellText
 	vertical as gint16
 	horizontal as gint16
 	style as GtkStyle ptr
-	text as gchar ptr
+	text as zstring ptr
 end type
 
 type _GtkCellPixmap
@@ -213,7 +213,7 @@ type _GtkCellPixText
 	vertical as gint16
 	horizontal as gint16
 	style as GtkStyle ptr
-	text as gchar ptr
+	text as zstring ptr
 	spacing as guint8
 	pixmap as GdkPixmap ptr
 	mask as GdkBitmap ptr
@@ -228,7 +228,7 @@ type _GtkCellWidget
 end type
 
 type _GtkCell_u_pt
-	text as gchar ptr
+	text as zstring ptr
 	spacing as guint8
 	pixmap as GdkPixmap ptr
 	mask as GdkBitmap ptr
@@ -240,7 +240,7 @@ type _GtkCell_u_pm
 end type
 
 union _GtkCell_u
-	text as gchar ptr
+	text as zstring ptr
 	widget as GtkWidget ptr
 	pt as _GtkCell_u_pt
 	pm as _GtkCell_u_pm
@@ -256,7 +256,7 @@ end type
 
 declare function gtk_clist_get_type cdecl alias "gtk_clist_get_type" () as GtkType
 declare function gtk_clist_new cdecl alias "gtk_clist_new" (byval columns as gint) as GtkWidget ptr
-declare function gtk_clist_new_with_titles cdecl alias "gtk_clist_new_with_titles" (byval columns as gint, byval titles as gchar ptr ptr) as GtkWidget ptr
+declare function gtk_clist_new_with_titles cdecl alias "gtk_clist_new_with_titles" (byval columns as gint, byval titles as zstring ptr ptr) as GtkWidget ptr
 declare sub gtk_clist_set_hadjustment cdecl alias "gtk_clist_set_hadjustment" (byval clist as GtkCList ptr, byval adjustment as GtkAdjustment ptr)
 declare sub gtk_clist_set_vadjustment cdecl alias "gtk_clist_set_vadjustment" (byval clist as GtkCList ptr, byval adjustment as GtkAdjustment ptr)
 declare function gtk_clist_get_hadjustment cdecl alias "gtk_clist_get_hadjustment" (byval clist as GtkCList ptr) as GtkAdjustment ptr
@@ -274,8 +274,8 @@ declare sub gtk_clist_column_title_active cdecl alias "gtk_clist_column_title_ac
 declare sub gtk_clist_column_title_passive cdecl alias "gtk_clist_column_title_passive" (byval clist as GtkCList ptr, byval column as gint)
 declare sub gtk_clist_column_titles_active cdecl alias "gtk_clist_column_titles_active" (byval clist as GtkCList ptr)
 declare sub gtk_clist_column_titles_passive cdecl alias "gtk_clist_column_titles_passive" (byval clist as GtkCList ptr)
-declare sub gtk_clist_set_column_title cdecl alias "gtk_clist_set_column_title" (byval clist as GtkCList ptr, byval column as gint, byval title as gchar ptr)
-declare function gtk_clist_get_column_title cdecl alias "gtk_clist_get_column_title" (byval clist as GtkCList ptr, byval column as gint) as gchar ptr
+declare sub gtk_clist_set_column_title cdecl alias "gtk_clist_set_column_title" (byval clist as GtkCList ptr, byval column as gint, byval title as string)
+declare function gtk_clist_get_column_title cdecl alias "gtk_clist_get_column_title" (byval clist as GtkCList ptr, byval column as gint) as zstring ptr
 declare sub gtk_clist_set_column_widget cdecl alias "gtk_clist_set_column_widget" (byval clist as GtkCList ptr, byval column as gint, byval widget as GtkWidget ptr)
 declare function gtk_clist_get_column_widget cdecl alias "gtk_clist_get_column_widget" (byval clist as GtkCList ptr, byval column as gint) as GtkWidget ptr
 declare sub gtk_clist_set_column_justification cdecl alias "gtk_clist_set_column_justification" (byval clist as GtkCList ptr, byval column as gint, byval justification as GtkJustification)
@@ -291,12 +291,12 @@ declare sub gtk_clist_set_row_height cdecl alias "gtk_clist_set_row_height" (byv
 declare sub gtk_clist_moveto cdecl alias "gtk_clist_moveto" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval row_align as gfloat, byval col_align as gfloat)
 declare function gtk_clist_row_is_visible cdecl alias "gtk_clist_row_is_visible" (byval clist as GtkCList ptr, byval row as gint) as GtkVisibility
 declare function gtk_clist_get_cell_type cdecl alias "gtk_clist_get_cell_type" (byval clist as GtkCList ptr, byval row as gint, byval column as gint) as GtkCellType
-declare sub gtk_clist_set_text cdecl alias "gtk_clist_set_text" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as gchar ptr)
-declare function gtk_clist_get_text cdecl alias "gtk_clist_get_text" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as gchar ptr ptr) as gint
+declare sub gtk_clist_set_text cdecl alias "gtk_clist_set_text" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as string)
+declare function gtk_clist_get_text cdecl alias "gtk_clist_get_text" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as zstring ptr ptr) as gint
 declare sub gtk_clist_set_pixmap cdecl alias "gtk_clist_set_pixmap" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare function gtk_clist_get_pixmap cdecl alias "gtk_clist_get_pixmap" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gint
-declare sub gtk_clist_set_pixtext cdecl alias "gtk_clist_set_pixtext" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as gchar ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare function gtk_clist_get_pixtext cdecl alias "gtk_clist_get_pixtext" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as gchar ptr ptr, byval spacing as guint8 ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gint
+declare sub gtk_clist_set_pixtext cdecl alias "gtk_clist_set_pixtext" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as string, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
+declare function gtk_clist_get_pixtext cdecl alias "gtk_clist_get_pixtext" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as zstring ptr ptr, byval spacing as guint8 ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gint
 declare sub gtk_clist_set_foreground cdecl alias "gtk_clist_set_foreground" (byval clist as GtkCList ptr, byval row as gint, byval color as GdkColor ptr)
 declare sub gtk_clist_set_background cdecl alias "gtk_clist_set_background" (byval clist as GtkCList ptr, byval row as gint, byval color as GdkColor ptr)
 declare sub gtk_clist_set_cell_style cdecl alias "gtk_clist_set_cell_style" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval style as GtkStyle ptr)
@@ -306,9 +306,9 @@ declare function gtk_clist_get_row_style cdecl alias "gtk_clist_get_row_style" (
 declare sub gtk_clist_set_shift cdecl alias "gtk_clist_set_shift" (byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval vertical as gint, byval horizontal as gint)
 declare sub gtk_clist_set_selectable cdecl alias "gtk_clist_set_selectable" (byval clist as GtkCList ptr, byval row as gint, byval selectable as gboolean)
 declare function gtk_clist_get_selectable cdecl alias "gtk_clist_get_selectable" (byval clist as GtkCList ptr, byval row as gint) as gboolean
-declare function gtk_clist_prepend cdecl alias "gtk_clist_prepend" (byval clist as GtkCList ptr, byval text as gchar ptr ptr) as gint
-declare function gtk_clist_append cdecl alias "gtk_clist_append" (byval clist as GtkCList ptr, byval text as gchar ptr ptr) as gint
-declare function gtk_clist_insert cdecl alias "gtk_clist_insert" (byval clist as GtkCList ptr, byval row as gint, byval text as gchar ptr ptr) as gint
+declare function gtk_clist_prepend cdecl alias "gtk_clist_prepend" (byval clist as GtkCList ptr, byval text as zstring ptr ptr) as gint
+declare function gtk_clist_append cdecl alias "gtk_clist_append" (byval clist as GtkCList ptr, byval text as zstring ptr ptr) as gint
+declare function gtk_clist_insert cdecl alias "gtk_clist_insert" (byval clist as GtkCList ptr, byval row as gint, byval text as zstring ptr ptr) as gint
 declare sub gtk_clist_remove cdecl alias "gtk_clist_remove" (byval clist as GtkCList ptr, byval row as gint)
 declare sub gtk_clist_set_row_data cdecl alias "gtk_clist_set_row_data" (byval clist as GtkCList ptr, byval row as gint, byval data as gpointer)
 declare sub gtk_clist_set_row_data_full cdecl alias "gtk_clist_set_row_data_full" (byval clist as GtkCList ptr, byval row as gint, byval data as gpointer, byval destroy as GtkDestroyNotify)

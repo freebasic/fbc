@@ -35,7 +35,7 @@ type _GtkImagePixbufData
 end type
 
 type _GtkImageStockData
-	stock_id as gchar ptr
+	stock_id as zstring ptr
 end type
 
 type _GtkImageIconSetData
@@ -49,7 +49,7 @@ type _GtkImageAnimationData
 end type
 
 type _GtkImageIconNameData
-	icon_name as gchar ptr
+	icon_name as zstring ptr
 	pixbuf as GdkPixbuf ptr
 	theme_change_id as guint
 end type
@@ -96,29 +96,29 @@ declare function gtk_image_get_type cdecl alias "gtk_image_get_type" () as GType
 declare function gtk_image_new cdecl alias "gtk_image_new" () as GtkWidget ptr
 declare function gtk_image_new_from_pixmap cdecl alias "gtk_image_new_from_pixmap" (byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
 declare function gtk_image_new_from_image cdecl alias "gtk_image_new_from_image" (byval image as GdkImage ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
-declare function gtk_image_new_from_file cdecl alias "gtk_image_new_from_file" (byval filename as gchar ptr) as GtkWidget ptr
+declare function gtk_image_new_from_file cdecl alias "gtk_image_new_from_file" (byval filename as string) as GtkWidget ptr
 declare function gtk_image_new_from_pixbuf cdecl alias "gtk_image_new_from_pixbuf" (byval pixbuf as GdkPixbuf ptr) as GtkWidget ptr
-declare function gtk_image_new_from_stock cdecl alias "gtk_image_new_from_stock" (byval stock_id as gchar ptr, byval size as GtkIconSize) as GtkWidget ptr
+declare function gtk_image_new_from_stock cdecl alias "gtk_image_new_from_stock" (byval stock_id as string, byval size as GtkIconSize) as GtkWidget ptr
 declare function gtk_image_new_from_icon_set cdecl alias "gtk_image_new_from_icon_set" (byval icon_set as GtkIconSet ptr, byval size as GtkIconSize) as GtkWidget ptr
 declare function gtk_image_new_from_animation cdecl alias "gtk_image_new_from_animation" (byval animation as GdkPixbufAnimation ptr) as GtkWidget ptr
-declare function gtk_image_new_from_icon_name cdecl alias "gtk_image_new_from_icon_name" (byval icon_name as gchar ptr, byval size as GtkIconSize) as GtkWidget ptr
+declare function gtk_image_new_from_icon_name cdecl alias "gtk_image_new_from_icon_name" (byval icon_name as string, byval size as GtkIconSize) as GtkWidget ptr
 declare sub gtk_image_set_from_pixmap cdecl alias "gtk_image_set_from_pixmap" (byval image as GtkImage ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_image_set_from_image cdecl alias "gtk_image_set_from_image" (byval image as GtkImage ptr, byval gdk_image as GdkImage ptr, byval mask as GdkBitmap ptr)
-declare sub gtk_image_set_from_file cdecl alias "gtk_image_set_from_file" (byval image as GtkImage ptr, byval filename as gchar ptr)
+declare sub gtk_image_set_from_file cdecl alias "gtk_image_set_from_file" (byval image as GtkImage ptr, byval filename as string)
 declare sub gtk_image_set_from_pixbuf cdecl alias "gtk_image_set_from_pixbuf" (byval image as GtkImage ptr, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_image_set_from_stock cdecl alias "gtk_image_set_from_stock" (byval image as GtkImage ptr, byval stock_id as gchar ptr, byval size as GtkIconSize)
+declare sub gtk_image_set_from_stock cdecl alias "gtk_image_set_from_stock" (byval image as GtkImage ptr, byval stock_id as string, byval size as GtkIconSize)
 declare sub gtk_image_set_from_icon_set cdecl alias "gtk_image_set_from_icon_set" (byval image as GtkImage ptr, byval icon_set as GtkIconSet ptr, byval size as GtkIconSize)
 declare sub gtk_image_set_from_animation cdecl alias "gtk_image_set_from_animation" (byval image as GtkImage ptr, byval animation as GdkPixbufAnimation ptr)
-declare sub gtk_image_set_from_icon_name cdecl alias "gtk_image_set_from_icon_name" (byval image as GtkImage ptr, byval icon_name as gchar ptr, byval size as GtkIconSize)
+declare sub gtk_image_set_from_icon_name cdecl alias "gtk_image_set_from_icon_name" (byval image as GtkImage ptr, byval icon_name as string, byval size as GtkIconSize)
 declare sub gtk_image_set_pixel_size cdecl alias "gtk_image_set_pixel_size" (byval image as GtkImage ptr, byval pixel_size as gint)
 declare function gtk_image_get_storage_type cdecl alias "gtk_image_get_storage_type" (byval image as GtkImage ptr) as GtkImageType
 declare sub gtk_image_get_pixmap cdecl alias "gtk_image_get_pixmap" (byval image as GtkImage ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr)
 declare sub gtk_image_get_image cdecl alias "gtk_image_get_image" (byval image as GtkImage ptr, byval gdk_image as GdkImage ptr ptr, byval mask as GdkBitmap ptr ptr)
 declare function gtk_image_get_pixbuf cdecl alias "gtk_image_get_pixbuf" (byval image as GtkImage ptr) as GdkPixbuf ptr
-declare sub gtk_image_get_stock cdecl alias "gtk_image_get_stock" (byval image as GtkImage ptr, byval stock_id as gchar ptr ptr, byval size as GtkIconSize ptr)
+declare sub gtk_image_get_stock cdecl alias "gtk_image_get_stock" (byval image as GtkImage ptr, byval stock_id as zstring ptr ptr, byval size as GtkIconSize ptr)
 declare sub gtk_image_get_icon_set cdecl alias "gtk_image_get_icon_set" (byval image as GtkImage ptr, byval icon_set as GtkIconSet ptr ptr, byval size as GtkIconSize ptr)
 declare function gtk_image_get_animation cdecl alias "gtk_image_get_animation" (byval image as GtkImage ptr) as GdkPixbufAnimation ptr
-declare sub gtk_image_get_icon_name cdecl alias "gtk_image_get_icon_name" (byval image as GtkImage ptr, byval icon_name as gchar ptr ptr, byval size as GtkIconSize ptr)
+declare sub gtk_image_get_icon_name cdecl alias "gtk_image_get_icon_name" (byval image as GtkImage ptr, byval icon_name as zstring ptr ptr, byval size as GtkIconSize ptr)
 declare function gtk_image_get_pixel_size cdecl alias "gtk_image_get_pixel_size" (byval image as GtkImage ptr) as gint
 declare sub gtk_image_set cdecl alias "gtk_image_set" (byval image as GtkImage ptr, byval val as GdkImage ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_image_get cdecl alias "gtk_image_get" (byval image as GtkImage ptr, byval val as GdkImage ptr ptr, byval mask as GdkBitmap ptr ptr)

@@ -47,10 +47,10 @@ declare function gtk_text_iter_get_line_index cdecl alias "gtk_text_iter_get_lin
 declare function gtk_text_iter_get_visible_line_offset cdecl alias "gtk_text_iter_get_visible_line_offset" (byval iter as GtkTextIter ptr) as gint
 declare function gtk_text_iter_get_visible_line_index cdecl alias "gtk_text_iter_get_visible_line_index" (byval iter as GtkTextIter ptr) as gint
 declare function gtk_text_iter_get_char cdecl alias "gtk_text_iter_get_char" (byval iter as GtkTextIter ptr) as gunichar
-declare function gtk_text_iter_get_slice cdecl alias "gtk_text_iter_get_slice" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as gchar ptr
-declare function gtk_text_iter_get_text cdecl alias "gtk_text_iter_get_text" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as gchar ptr
-declare function gtk_text_iter_get_visible_slice cdecl alias "gtk_text_iter_get_visible_slice" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as gchar ptr
-declare function gtk_text_iter_get_visible_text cdecl alias "gtk_text_iter_get_visible_text" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as gchar ptr
+declare function gtk_text_iter_get_slice cdecl alias "gtk_text_iter_get_slice" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as zstring ptr
+declare function gtk_text_iter_get_text cdecl alias "gtk_text_iter_get_text" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as zstring ptr
+declare function gtk_text_iter_get_visible_slice cdecl alias "gtk_text_iter_get_visible_slice" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as zstring ptr
+declare function gtk_text_iter_get_visible_text cdecl alias "gtk_text_iter_get_visible_text" (byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as zstring ptr
 declare function gtk_text_iter_get_pixbuf cdecl alias "gtk_text_iter_get_pixbuf" (byval iter as GtkTextIter ptr) as GdkPixbuf ptr
 declare function gtk_text_iter_get_marks cdecl alias "gtk_text_iter_get_marks" (byval iter as GtkTextIter ptr) as GSList ptr
 declare function gtk_text_iter_get_child_anchor cdecl alias "gtk_text_iter_get_child_anchor" (byval iter as GtkTextIter ptr) as GtkTextChildAnchor ptr
@@ -120,8 +120,8 @@ type GtkTextCharPredicate as function cdecl(byval as gunichar, byval as gpointer
 
 declare function gtk_text_iter_forward_find_char cdecl alias "gtk_text_iter_forward_find_char" (byval iter as GtkTextIter ptr, byval pred as GtkTextCharPredicate, byval user_data as gpointer, byval limit as GtkTextIter ptr) as gboolean
 declare function gtk_text_iter_backward_find_char cdecl alias "gtk_text_iter_backward_find_char" (byval iter as GtkTextIter ptr, byval pred as GtkTextCharPredicate, byval user_data as gpointer, byval limit as GtkTextIter ptr) as gboolean
-declare function gtk_text_iter_forward_search cdecl alias "gtk_text_iter_forward_search" (byval iter as GtkTextIter ptr, byval str as gchar ptr, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as GtkTextIter ptr) as gboolean
-declare function gtk_text_iter_backward_search cdecl alias "gtk_text_iter_backward_search" (byval iter as GtkTextIter ptr, byval str as gchar ptr, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as GtkTextIter ptr) as gboolean
+declare function gtk_text_iter_forward_search cdecl alias "gtk_text_iter_forward_search" (byval iter as GtkTextIter ptr, byval str as string, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as GtkTextIter ptr) as gboolean
+declare function gtk_text_iter_backward_search cdecl alias "gtk_text_iter_backward_search" (byval iter as GtkTextIter ptr, byval str as string, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as GtkTextIter ptr) as gboolean
 declare function gtk_text_iter_equal cdecl alias "gtk_text_iter_equal" (byval lhs as GtkTextIter ptr, byval rhs as GtkTextIter ptr) as gboolean
 declare function gtk_text_iter_compare cdecl alias "gtk_text_iter_compare" (byval lhs as GtkTextIter ptr, byval rhs as GtkTextIter ptr) as gint
 declare function gtk_text_iter_in_range cdecl alias "gtk_text_iter_in_range" (byval iter as GtkTextIter ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as gboolean

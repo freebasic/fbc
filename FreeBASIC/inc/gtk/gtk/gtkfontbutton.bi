@@ -31,15 +31,15 @@ end type
 
 declare function gtk_font_button_get_type cdecl alias "gtk_font_button_get_type" () as GType
 declare function gtk_font_button_new cdecl alias "gtk_font_button_new" () as GtkWidget ptr
-declare function gtk_font_button_new_with_font cdecl alias "gtk_font_button_new_with_font" (byval fontname as gchar ptr) as GtkWidget ptr
-declare function gtk_font_button_get_title cdecl alias "gtk_font_button_get_title" (byval font_button as GtkFontButton ptr) as gchar ptr
-declare sub gtk_font_button_set_title cdecl alias "gtk_font_button_set_title" (byval font_button as GtkFontButton ptr, byval title as gchar ptr)
+declare function gtk_font_button_new_with_font cdecl alias "gtk_font_button_new_with_font" (byval fontname as string) as GtkWidget ptr
+declare function gtk_font_button_get_title cdecl alias "gtk_font_button_get_title" (byval font_button as GtkFontButton ptr) as zstring ptr
+declare sub gtk_font_button_set_title cdecl alias "gtk_font_button_set_title" (byval font_button as GtkFontButton ptr, byval title as string)
 declare function gtk_font_button_get_use_font cdecl alias "gtk_font_button_get_use_font" (byval font_button as GtkFontButton ptr) as gboolean
 declare sub gtk_font_button_set_use_font cdecl alias "gtk_font_button_set_use_font" (byval font_button as GtkFontButton ptr, byval use_font as gboolean)
 declare function gtk_font_button_get_use_size cdecl alias "gtk_font_button_get_use_size" (byval font_button as GtkFontButton ptr) as gboolean
 declare sub gtk_font_button_set_use_size cdecl alias "gtk_font_button_set_use_size" (byval font_button as GtkFontButton ptr, byval use_size as gboolean)
-declare function gtk_font_button_get_font_name cdecl alias "gtk_font_button_get_font_name" (byval font_button as GtkFontButton ptr) as gchar ptr
-declare function gtk_font_button_set_font_name cdecl alias "gtk_font_button_set_font_name" (byval font_button as GtkFontButton ptr, byval fontname as gchar ptr) as gboolean
+declare function gtk_font_button_get_font_name cdecl alias "gtk_font_button_get_font_name" (byval font_button as GtkFontButton ptr) as zstring ptr
+declare function gtk_font_button_set_font_name cdecl alias "gtk_font_button_set_font_name" (byval font_button as GtkFontButton ptr, byval fontname as string) as gboolean
 declare function gtk_font_button_get_show_style cdecl alias "gtk_font_button_get_show_style" (byval font_button as GtkFontButton ptr) as gboolean
 declare sub gtk_font_button_set_show_style cdecl alias "gtk_font_button_set_show_style" (byval font_button as GtkFontButton ptr, byval show_style as gboolean)
 declare function gtk_font_button_get_show_size cdecl alias "gtk_font_button_get_show_size" (byval font_button as GtkFontButton ptr) as gboolean

@@ -27,7 +27,7 @@ type _GdkDrawableClass
 	draw_rectangle as sub cdecl(byval as GdkDrawable ptr, byval as GdkGC ptr, byval as gboolean, byval as gint, byval as gint, byval as gint, byval as gint)
 	draw_arc as sub cdecl(byval as GdkDrawable ptr, byval as GdkGC ptr, byval as gboolean, byval as gint, byval as gint, byval as gint, byval as gint, byval as gint, byval as gint)
 	draw_polygon as sub cdecl(byval as GdkDrawable ptr, byval as GdkGC ptr, byval as gboolean, byval as GdkPoint ptr, byval as gint)
-	draw_text as sub cdecl(byval as GdkDrawable ptr, byval as GdkFont ptr, byval as GdkGC ptr, byval as gint, byval as gint, byval as gchar ptr, byval as gint)
+	draw_text as sub cdecl(byval as GdkDrawable ptr, byval as GdkFont ptr, byval as GdkGC ptr, byval as gint, byval as gint, byval as string, byval as gint)
 	draw_text_wc as sub cdecl(byval as GdkDrawable ptr, byval as GdkFont ptr, byval as GdkGC ptr, byval as gint, byval as gint, byval as GdkWChar ptr, byval as gint)
 	draw_drawable as sub cdecl(byval as GdkDrawable ptr, byval as GdkGC ptr, byval as GdkDrawable ptr, byval as gint, byval as gint, byval as gint, byval as gint, byval as gint, byval as gint)
 	draw_points as sub cdecl(byval as GdkDrawable ptr, byval as GdkGC ptr, byval as GdkPoint ptr, byval as gint)
@@ -74,8 +74,8 @@ type _GdkTrapezoid
 end type
 
 declare function gdk_drawable_get_type cdecl alias "gdk_drawable_get_type" () as GType
-declare sub gdk_drawable_set_data cdecl alias "gdk_drawable_set_data" (byval drawable as GdkDrawable ptr, byval key as gchar ptr, byval data as gpointer, byval destroy_func as GDestroyNotify)
-declare function gdk_drawable_get_data cdecl alias "gdk_drawable_get_data" (byval drawable as GdkDrawable ptr, byval key as gchar ptr) as gpointer
+declare sub gdk_drawable_set_data cdecl alias "gdk_drawable_set_data" (byval drawable as GdkDrawable ptr, byval key as string, byval data as gpointer, byval destroy_func as GDestroyNotify)
+declare function gdk_drawable_get_data cdecl alias "gdk_drawable_get_data" (byval drawable as GdkDrawable ptr, byval key as string) as gpointer
 declare sub gdk_drawable_get_size cdecl alias "gdk_drawable_get_size" (byval drawable as GdkDrawable ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gdk_drawable_set_colormap cdecl alias "gdk_drawable_set_colormap" (byval drawable as GdkDrawable ptr, byval colormap as GdkColormap ptr)
 declare function gdk_drawable_get_colormap cdecl alias "gdk_drawable_get_colormap" (byval drawable as GdkDrawable ptr) as GdkColormap ptr
@@ -90,8 +90,8 @@ declare sub gdk_draw_line cdecl alias "gdk_draw_line" (byval drawable as GdkDraw
 declare sub gdk_draw_rectangle cdecl alias "gdk_draw_rectangle" (byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval filled as gboolean, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
 declare sub gdk_draw_arc cdecl alias "gdk_draw_arc" (byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval filled as gboolean, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval angle1 as gint, byval angle2 as gint)
 declare sub gdk_draw_polygon cdecl alias "gdk_draw_polygon" (byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval filled as gboolean, byval points as GdkPoint ptr, byval npoints as gint)
-declare sub gdk_draw_string cdecl alias "gdk_draw_string" (byval drawable as GdkDrawable ptr, byval font as GdkFont ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval string as gchar ptr)
-declare sub gdk_draw_text cdecl alias "gdk_draw_text" (byval drawable as GdkDrawable ptr, byval font as GdkFont ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval text as gchar ptr, byval text_length as gint)
+declare sub gdk_draw_string cdecl alias "gdk_draw_string" (byval drawable as GdkDrawable ptr, byval font as GdkFont ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval string as string)
+declare sub gdk_draw_text cdecl alias "gdk_draw_text" (byval drawable as GdkDrawable ptr, byval font as GdkFont ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval text as string, byval text_length as gint)
 declare sub gdk_draw_text_wc cdecl alias "gdk_draw_text_wc" (byval drawable as GdkDrawable ptr, byval font as GdkFont ptr, byval gc as GdkGC ptr, byval x as gint, byval y as gint, byval text as GdkWChar ptr, byval text_length as gint)
 declare sub gdk_draw_drawable cdecl alias "gdk_draw_drawable" (byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval src as GdkDrawable ptr, byval xsrc as gint, byval ysrc as gint, byval xdest as gint, byval ydest as gint, byval width as gint, byval height as gint)
 declare sub gdk_draw_image cdecl alias "gdk_draw_image" (byval drawable as GdkDrawable ptr, byval gc as GdkGC ptr, byval image as GdkImage ptr, byval xsrc as gint, byval ysrc as gint, byval xdest as gint, byval ydest as gint, byval width as gint, byval height as gint)

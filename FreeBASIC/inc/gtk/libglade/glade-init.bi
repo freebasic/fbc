@@ -12,7 +12,7 @@
 #include once "gtk/glib.bi"
 
 declare sub glade_init cdecl alias "glade_init" ()
-declare sub glade_require cdecl alias "glade_require" (byval library as gchar ptr)
-declare sub glade_provide cdecl alias "glade_provide" (byval library as gchar ptr)
+declare sub glade_require cdecl alias "glade_require" (byval library as string)
+declare sub glade_provide cdecl alias "glade_provide" (byval library as string)
 
 #endif

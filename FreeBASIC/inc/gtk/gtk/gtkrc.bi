@@ -25,8 +25,8 @@ end enum
 
 type _GtkRcStyle
 	parent_instance as GObject
-	name as gchar ptr
-	bg_pixmap_name(0 to 5-1) as gchar ptr ptr
+	name as zstring ptr
+	bg_pixmap_name(0 to 5-1) as zstring ptr ptr
 	font_desc as PangoFontDescription ptr
 	color_flags(0 to 5-1) as GtkRcFlags ptr
 	fg(0 to 5-1) as GdkColor ptr
@@ -54,30 +54,30 @@ type _GtkRcStyleClass
 end type
 
 declare sub _gtk_rc_init cdecl alias "_gtk_rc_init" ()
-declare sub gtk_rc_add_default_file cdecl alias "gtk_rc_add_default_file" (byval filename as gchar ptr)
-declare sub gtk_rc_set_default_files cdecl alias "gtk_rc_set_default_files" (byval filenames as gchar ptr ptr)
-declare function gtk_rc_get_default_files cdecl alias "gtk_rc_get_default_files" () as gchar ptr ptr
+declare sub gtk_rc_add_default_file cdecl alias "gtk_rc_add_default_file" (byval filename as string)
+declare sub gtk_rc_set_default_files cdecl alias "gtk_rc_set_default_files" (byval filenames as zstring ptr ptr)
+declare function gtk_rc_get_default_files cdecl alias "gtk_rc_get_default_files" () as zstring ptr ptr
 declare function gtk_rc_get_style cdecl alias "gtk_rc_get_style" (byval widget as GtkWidget ptr) as GtkStyle ptr
 declare function gtk_rc_get_style_by_paths cdecl alias "gtk_rc_get_style_by_paths" (byval settings as GtkSettings ptr, byval widget_path as string, byval class_path as string, byval type as GType) as GtkStyle ptr
 declare function gtk_rc_reparse_all_for_settings cdecl alias "gtk_rc_reparse_all_for_settings" (byval settings as GtkSettings ptr, byval force_load as gboolean) as gboolean
 declare sub gtk_rc_reset_styles cdecl alias "gtk_rc_reset_styles" (byval settings as GtkSettings ptr)
-declare function gtk_rc_find_pixmap_in_path cdecl alias "gtk_rc_find_pixmap_in_path" (byval settings as GtkSettings ptr, byval scanner as GScanner ptr, byval pixmap_file as gchar ptr) as gchar ptr
-declare sub gtk_rc_parse cdecl alias "gtk_rc_parse" (byval filename as gchar ptr)
-declare sub gtk_rc_parse_string cdecl alias "gtk_rc_parse_string" (byval rc_string as gchar ptr)
+declare function gtk_rc_find_pixmap_in_path cdecl alias "gtk_rc_find_pixmap_in_path" (byval settings as GtkSettings ptr, byval scanner as GScanner ptr, byval pixmap_file as string) as zstring ptr
+declare sub gtk_rc_parse cdecl alias "gtk_rc_parse" (byval filename as string)
+declare sub gtk_rc_parse_string cdecl alias "gtk_rc_parse_string" (byval rc_string as string)
 declare function gtk_rc_reparse_all cdecl alias "gtk_rc_reparse_all" () as gboolean
-declare sub gtk_rc_add_widget_name_style cdecl alias "gtk_rc_add_widget_name_style" (byval rc_style as GtkRcStyle ptr, byval pattern as gchar ptr)
-declare sub gtk_rc_add_widget_class_style cdecl alias "gtk_rc_add_widget_class_style" (byval rc_style as GtkRcStyle ptr, byval pattern as gchar ptr)
-declare sub gtk_rc_add_class_style cdecl alias "gtk_rc_add_class_style" (byval rc_style as GtkRcStyle ptr, byval pattern as gchar ptr)
+declare sub gtk_rc_add_widget_name_style cdecl alias "gtk_rc_add_widget_name_style" (byval rc_style as GtkRcStyle ptr, byval pattern as string)
+declare sub gtk_rc_add_widget_class_style cdecl alias "gtk_rc_add_widget_class_style" (byval rc_style as GtkRcStyle ptr, byval pattern as string)
+declare sub gtk_rc_add_class_style cdecl alias "gtk_rc_add_class_style" (byval rc_style as GtkRcStyle ptr, byval pattern as string)
 declare function gtk_rc_style_get_type cdecl alias "gtk_rc_style_get_type" () as GType
 declare function gtk_rc_style_new cdecl alias "gtk_rc_style_new" () as GtkRcStyle ptr
 declare function gtk_rc_style_copy cdecl alias "gtk_rc_style_copy" (byval orig as GtkRcStyle ptr) as GtkRcStyle ptr
 declare sub gtk_rc_style_ref cdecl alias "gtk_rc_style_ref" (byval rc_style as GtkRcStyle ptr)
 declare sub gtk_rc_style_unref cdecl alias "gtk_rc_style_unref" (byval rc_style as GtkRcStyle ptr)
-declare function gtk_rc_find_module_in_path cdecl alias "gtk_rc_find_module_in_path" (byval module_file as gchar ptr) as gchar ptr
-declare function gtk_rc_get_theme_dir cdecl alias "gtk_rc_get_theme_dir" () as gchar ptr
-declare function gtk_rc_get_module_dir cdecl alias "gtk_rc_get_module_dir" () as gchar ptr
-declare function gtk_rc_get_im_module_path cdecl alias "gtk_rc_get_im_module_path" () as gchar ptr
-declare function gtk_rc_get_im_module_file cdecl alias "gtk_rc_get_im_module_file" () as gchar ptr
+declare function gtk_rc_find_module_in_path cdecl alias "gtk_rc_find_module_in_path" (byval module_file as string) as zstring ptr
+declare function gtk_rc_get_theme_dir cdecl alias "gtk_rc_get_theme_dir" () as zstring ptr
+declare function gtk_rc_get_module_dir cdecl alias "gtk_rc_get_module_dir" () as zstring ptr
+declare function gtk_rc_get_im_module_path cdecl alias "gtk_rc_get_im_module_path" () as zstring ptr
+declare function gtk_rc_get_im_module_file cdecl alias "gtk_rc_get_im_module_file" () as zstring ptr
 
 enum GtkRcTokenType
 	GTK_RC_TOKEN_INVALID = G_TOKEN_LAST
@@ -129,11 +129,11 @@ declare function gtk_rc_parse_priority cdecl alias "gtk_rc_parse_priority" (byva
 type _GtkRcProperty
 	type_name as GQuark
 	property_name as GQuark
-	origin as gchar ptr
+	origin as zstring ptr
 	value as GValue
 end type
 
 declare function _gtk_rc_style_lookup_rc_property cdecl alias "_gtk_rc_style_lookup_rc_property" (byval rc_style as GtkRcStyle ptr, byval type_name as GQuark, byval property_name as GQuark) as GtkRcProperty ptr
-declare function _gtk_rc_context_get_default_font_name cdecl alias "_gtk_rc_context_get_default_font_name" (byval settings as GtkSettings ptr) as gchar ptr
+declare function _gtk_rc_context_get_default_font_name cdecl alias "_gtk_rc_context_get_default_font_name" (byval settings as GtkSettings ptr) as zstring ptr
 
 #endif

@@ -64,7 +64,7 @@ end type
 
 type _GdkDevice
 	parent_instance as GObject
-	name as gchar ptr
+	name as zstring ptr
 	source as GdkInputSource
 	mode as GdkInputMode
 	has_cursor as gboolean

@@ -9,6 +9,8 @@
 #ifndef __glib_object_bi__
 #define __glib_object_bi__
 
+#inclib "gobject-2.0"
+
 #include once "gtk/gobject/gboxed.bi"
 #include once "gtk/gobject/genums.bi"
 #include once "gtk/gobject/gobject.bi"

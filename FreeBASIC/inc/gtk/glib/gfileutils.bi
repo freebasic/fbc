@@ -51,12 +51,12 @@ end enum
 
 declare function g_file_error_quark cdecl alias "g_file_error_quark" () as GQuark
 declare function g_file_error_from_errno cdecl alias "g_file_error_from_errno" (byval err_no as gint) as GFileError
-declare function g_file_test_utf8 cdecl alias "g_file_test_utf8" (byval filename as gchar ptr, byval test as GFileTest) as gboolean
-declare function g_file_get_contents_utf8 cdecl alias "g_file_get_contents_utf8" (byval filename as gchar ptr, byval contents as gchar ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
-declare function g_file_read_link cdecl alias "g_file_read_link" (byval filename as gchar ptr, byval error as GError ptr ptr) as gchar ptr
-declare function g_mkstemp_utf8 cdecl alias "g_mkstemp_utf8" (byval tmpl as gchar ptr) as gint
-declare function g_file_open_tmp_utf8 cdecl alias "g_file_open_tmp_utf8" (byval tmpl as gchar ptr, byval name_used as gchar ptr ptr, byval error as GError ptr ptr) as gint
-declare function g_build_path cdecl alias "g_build_path" (byval separator as gchar ptr, byval first_element as gchar ptr, ...) as gchar ptr
-declare function g_build_filename cdecl alias "g_build_filename" (byval first_element as gchar ptr, ...) as gchar ptr
+declare function g_file_test_utf8 cdecl alias "g_file_test_utf8" (byval filename as string, byval test as GFileTest) as gboolean
+declare function g_file_get_contents_utf8 cdecl alias "g_file_get_contents_utf8" (byval filename as string, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
+declare function g_file_read_link cdecl alias "g_file_read_link" (byval filename as string, byval error as GError ptr ptr) as zstring ptr
+declare function g_mkstemp_utf8 cdecl alias "g_mkstemp_utf8" (byval tmpl as string) as gint
+declare function g_file_open_tmp_utf8 cdecl alias "g_file_open_tmp_utf8" (byval tmpl as string, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
+declare function g_build_path cdecl alias "g_build_path" (byval separator as string, byval first_element as string, ...) as zstring ptr
+declare function g_build_filename cdecl alias "g_build_filename" (byval first_element as string, ...) as zstring ptr
 
 #endif

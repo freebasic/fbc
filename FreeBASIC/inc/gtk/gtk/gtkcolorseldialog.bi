@@ -33,6 +33,6 @@ type _GtkColorSelectionDialogClass
 end type
 
 declare function gtk_color_selection_dialog_get_type cdecl alias "gtk_color_selection_dialog_get_type" () as GType
-declare function gtk_color_selection_dialog_new cdecl alias "gtk_color_selection_dialog_new" (byval title as gchar ptr) as GtkWidget ptr
+declare function gtk_color_selection_dialog_new cdecl alias "gtk_color_selection_dialog_new" (byval title as string) as GtkWidget ptr
 
 #endif

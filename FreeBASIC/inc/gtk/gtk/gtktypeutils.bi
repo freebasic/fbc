@@ -46,7 +46,7 @@ union _GtkArg_d
 	ulong_data as gulong
 	float_data as gfloat
 	double_data as gdouble
-	string_data as gchar ptr
+	string_data as zstring ptr
 	object_data as GtkObject ptr
 	pointer_data as gpointer
 	signal_data as _GtkArg_d_signal_data
@@ -54,12 +54,12 @@ end union
 
 type _GtkArg
 	type as GtkType
-	name as gchar ptr
+	name as zstring ptr
 	d as _GtkArg_d
 end type
 
 type _GtkTypeInfo
-	type_name as gchar ptr
+	type_name as zstring ptr
 	object_size as guint
 	class_size as guint
 	class_init_func as GtkClassInitFunc
@@ -78,8 +78,8 @@ type GtkFlagValue as GFlagsValue
 
 declare function gtk_type_enum_get_values cdecl alias "gtk_type_enum_get_values" (byval enum_type as GtkType) as GtkEnumValue ptr
 declare function gtk_type_flags_get_values cdecl alias "gtk_type_flags_get_values" (byval flags_type as GtkType) as GtkFlagValue ptr
-declare function gtk_type_enum_find_value cdecl alias "gtk_type_enum_find_value" (byval enum_type as GtkType, byval value_name as gchar ptr) as GtkEnumValue ptr
-declare function gtk_type_flags_find_value cdecl alias "gtk_type_flags_find_value" (byval flags_type as GtkType, byval value_name as gchar ptr) as GtkFlagValue ptr
+declare function gtk_type_enum_find_value cdecl alias "gtk_type_enum_find_value" (byval enum_type as GtkType, byval value_name as string) as GtkEnumValue ptr
+declare function gtk_type_flags_find_value cdecl alias "gtk_type_flags_find_value" (byval flags_type as GtkType, byval value_name as string) as GtkFlagValue ptr
 declare sub gtk_type_init cdecl alias "gtk_type_init" (byval debug_flags as GTypeDebugFlags)
 
 #endif

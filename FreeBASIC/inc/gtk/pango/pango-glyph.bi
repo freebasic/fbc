@@ -51,7 +51,7 @@ declare sub pango_glyph_string_extents_range cdecl alias "pango_glyph_string_ext
 declare sub pango_glyph_string_get_logical_widths cdecl alias "pango_glyph_string_get_logical_widths" (byval glyphs as PangoGlyphString ptr, byval text as string, byval length as integer, byval embedding_level as integer, byval logical_widths as integer ptr)
 declare sub pango_glyph_string_index_to_x cdecl alias "pango_glyph_string_index_to_x" (byval glyphs as PangoGlyphString ptr, byval text as string, byval length as integer, byval analysis as PangoAnalysis ptr, byval index_ as integer, byval trailing as gboolean, byval x_pos as integer ptr)
 declare sub pango_glyph_string_x_to_index cdecl alias "pango_glyph_string_x_to_index" (byval glyphs as PangoGlyphString ptr, byval text as string, byval length as integer, byval analysis as PangoAnalysis ptr, byval x_pos as integer, byval index_ as integer ptr, byval trailing as integer ptr)
-declare sub pango_shape cdecl alias "pango_shape" (byval text as gchar ptr, byval length as gint, byval analysis as PangoAnalysis ptr, byval glyphs as PangoGlyphString ptr)
+declare sub pango_shape cdecl alias "pango_shape" (byval text as string, byval length as gint, byval analysis as PangoAnalysis ptr, byval glyphs as PangoGlyphString ptr)
 declare function pango_reorder_items cdecl alias "pango_reorder_items" (byval logical_items as GList ptr) as GList ptr
 
 #endif

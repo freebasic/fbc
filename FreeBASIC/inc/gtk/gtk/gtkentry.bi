@@ -21,7 +21,7 @@ type GtkEntryClass as _GtkEntryClass
 
 type _GtkEntry
 	widget as GtkWidget
-	text as gchar ptr
+	text as zstring ptr
 	editable as guint
 	visible as guint
 	overwrite_mode as guint
@@ -68,7 +68,7 @@ type _GtkEntryClass
 	populate_popup as sub cdecl(byval as GtkEntry ptr, byval as GtkMenu ptr)
 	activate as sub cdecl(byval as GtkEntry ptr)
 	move_cursor as sub cdecl(byval as GtkEntry ptr, byval as GtkMovementStep, byval as gint, byval as gboolean)
-	insert_at_cursor as sub cdecl(byval as GtkEntry ptr, byval as gchar ptr)
+	insert_at_cursor as sub cdecl(byval as GtkEntry ptr, byval as string)
 	delete_from_cursor as sub cdecl(byval as GtkEntry ptr, byval as GtkDeleteType, byval as gint)
 	backspace as sub cdecl(byval as GtkEntry ptr)
 	cut_clipboard as sub cdecl(byval as GtkEntry ptr)
@@ -94,8 +94,8 @@ declare sub gtk_entry_set_activates_default cdecl alias "gtk_entry_set_activates
 declare function gtk_entry_get_activates_default cdecl alias "gtk_entry_get_activates_default" (byval entry as GtkEntry ptr) as gboolean
 declare sub gtk_entry_set_width_chars cdecl alias "gtk_entry_set_width_chars" (byval entry as GtkEntry ptr, byval n_chars as gint)
 declare function gtk_entry_get_width_chars cdecl alias "gtk_entry_get_width_chars" (byval entry as GtkEntry ptr) as gint
-declare sub gtk_entry_set_text cdecl alias "gtk_entry_set_text" (byval entry as GtkEntry ptr, byval text as gchar ptr)
-declare function gtk_entry_get_text cdecl alias "gtk_entry_get_text" (byval entry as GtkEntry ptr) as gchar ptr
+declare sub gtk_entry_set_text cdecl alias "gtk_entry_set_text" (byval entry as GtkEntry ptr, byval text as string)
+declare function gtk_entry_get_text cdecl alias "gtk_entry_get_text" (byval entry as GtkEntry ptr) as zstring ptr
 declare function gtk_entry_get_layout cdecl alias "gtk_entry_get_layout" (byval entry as GtkEntry ptr) as PangoLayout ptr
 declare sub gtk_entry_get_layout_offsets cdecl alias "gtk_entry_get_layout_offsets" (byval entry as GtkEntry ptr, byval x as gint ptr, byval y as gint ptr)
 declare sub gtk_entry_set_alignment cdecl alias "gtk_entry_set_alignment" (byval entry as GtkEntry ptr, byval xalign as gfloat)
@@ -105,8 +105,8 @@ declare function gtk_entry_get_completion cdecl alias "gtk_entry_get_completion"
 declare function gtk_entry_layout_index_to_text_index cdecl alias "gtk_entry_layout_index_to_text_index" (byval entry as GtkEntry ptr, byval layout_index as gint) as gint
 declare function gtk_entry_text_index_to_layout_index cdecl alias "gtk_entry_text_index_to_layout_index" (byval entry as GtkEntry ptr, byval text_index as gint) as gint
 declare function gtk_entry_new_with_max_length cdecl alias "gtk_entry_new_with_max_length" (byval max as gint) as GtkWidget ptr
-declare sub gtk_entry_append_text cdecl alias "gtk_entry_append_text" (byval entry as GtkEntry ptr, byval text as gchar ptr)
-declare sub gtk_entry_prepend_text cdecl alias "gtk_entry_prepend_text" (byval entry as GtkEntry ptr, byval text as gchar ptr)
+declare sub gtk_entry_append_text cdecl alias "gtk_entry_append_text" (byval entry as GtkEntry ptr, byval text as string)
+declare sub gtk_entry_prepend_text cdecl alias "gtk_entry_prepend_text" (byval entry as GtkEntry ptr, byval text as string)
 declare sub gtk_entry_set_position cdecl alias "gtk_entry_set_position" (byval entry as GtkEntry ptr, byval position as gint)
 declare sub gtk_entry_select_region cdecl alias "gtk_entry_select_region" (byval entry as GtkEntry ptr, byval start as gint, byval end as gint)
 declare sub gtk_entry_set_editable cdecl alias "gtk_entry_set_editable" (byval entry as GtkEntry ptr, byval editable as gboolean)
