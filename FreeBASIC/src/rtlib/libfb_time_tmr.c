@@ -31,6 +31,8 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <sys/time.h>
 #endif
 
 
@@ -42,7 +44,11 @@ FBCALL double fb_Timer ( void )
 	/* from msecs to secs */
 	return (double)GetTickCount( ) / 1000.0;
 #else
-	return (double)clock( ) / 1000.0;
+	struct timeval tv;
+	
+	if (gettimeofday(&tv, NULL))
+		return 0.0;
+	return (double)tv.tv_sec + ((double)tv.tv_usec * 0.000001);
 #endif
 
 }
