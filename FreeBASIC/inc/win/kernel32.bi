@@ -11,6 +11,7 @@
 'Changelog:
 '  1.01: INT64 moved to winbase.bi and renamed to the original name: LARGE_INTEGER, as shown by the Platform Api docs
 '        A few previously disabled functions were enabled and Type MEMORY_BASIC_INFORMATION was added.
+'        Resource Types moved to user32.bi
 
 'This inclusion was originally built from fsw's kernel32_new.bi file.
 
@@ -659,19 +660,6 @@ Const ENABLE_PROCESSED_OUTPUT 		= &H1
 Const ENABLE_WRAP_AT_EOL_OUTPUT 	= &H2
 
 Const CONSOLE_TEXTMODE_BUFFER 		= 1
-
-'  Predefined Resource Types
-
-Const RT_CURSOR 			= 1
-Const RT_BITMAP 			= 2
-Const RT_ICON 				= 3
-Const RT_MENU 				= 4
-Const RT_DIALOG 			= 5
-Const RT_STRING 			= 6
-Const RT_FONTDIR 			= 7
-Const RT_FONT 				= 8
-Const RT_ACCELERATOR 			= 9
-Const RT_RCDATA 			= 10
 
 Const WAIT_FAILED        		= &HFFFFFFFF
 Const WAIT_OBJECT_0      		= &H0
