@@ -805,6 +805,10 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     	'' passing an immediate?
     	elseif( irIsIMM( vr ) ) then
         	amode = FB.ARGMODE.BYVAL
+
+    	'' anything else, use the param type to create a temp var if needed
+    	else
+    		adtype = pdtype
     	end if
 
     '' byval or byref (but as any)
