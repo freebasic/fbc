@@ -49,6 +49,39 @@
 #define MAX_PATH	1024
 #endif
 
+#ifdef MULTITHREADED
+# ifdef TARGET_WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+extern CRITICAL_SECTION fb_global_mutex;
+#  define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
+#  define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
+#  define FB_TLSENTRY				DWORD
+#  define FB_TLSSET(key,value)		TlsSetValue(key, (LPVOID)value)
+#  define FB_TLSGET(key)			TlsGetValue(key)
+# elif defined(TARGET_LINUX)
+#  include <pthread.h>
+extern pthread_mutex_t fb_global_mutex;
+#  define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
+#  define FB_UNLOCK()				pthread_mutex_unlock(&fb_global_mutex)
+#  define FB_TLSENTRY				pthread_key_t
+#  define FB_TLSSET(key,value)		pthread_setspecific(key, (const void *)value)
+#  define FB_TLSGET(key)			pthread_getspecific(key)
+# else
+#  define FB_LOCK()
+#  define FB_UNLOCK()
+#  define FB_TLSENTRY				unsigned int
+#  define FB_TLSSET(key,value)		key = (unsigned int)value
+#  define FB_TLSGET(key)			key
+# endif
+#else
+# define FB_LOCK()
+# define FB_UNLOCK()
+# define FB_TLSENTRY				unsigned int
+# define FB_TLSSET(key,value)		key = (unsigned int)value
+# define FB_TLSGET(key)				key
+#endif
+
 /**************************************************************************************************
  * internal lists
  **************************************************************************************************/
@@ -443,10 +476,16 @@ FBCALL void 		fb_Sleep 			( int msecs );
  **************************************************************************************************/
 
 typedef struct _FB_ERRORCTX {
+	FB_TLSENTRY		handler;
+	FB_TLSENTRY		num;
+	FB_TLSENTRY		reslbl;
+	FB_TLSENTRY		resnxtlbl;
+/*
 	void 	*handler;
 	int		num;
 	void 	*reslbl;
 	void 	*resnxtlbl;
+*/
 } FB_ERRORCTX;
 
 extern FB_ERRORCTX fb_errctx;

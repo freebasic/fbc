@@ -30,15 +30,11 @@
 #include "fb_rterr.h"
 
 
-/* FIXME: not thread safe */
-FB_ERRORCTX fb_errctx = { NULL, FB_RTERROR_OK, NULL, NULL };
-
-
 /*:::::*/
 FBCALL int fb_ErrorGetNum ( void )
 {
 
-	return fb_errctx.num;
+	return (int)FB_TLSGET( fb_errctx.num );
 
 }
 
@@ -46,7 +42,7 @@ FBCALL int fb_ErrorGetNum ( void )
 FBCALL int fb_ErrorSetNum ( int errnum )
 {
 
-	fb_errctx.num = errnum;
+	FB_TLSSET( fb_errctx.num, errnum );
 
 	return errnum;
 

@@ -33,11 +33,17 @@
 FBCALL int fb_ArrayUBound( FBARRAY *array, int dimension )
 {
 	FBARRAYDIM	*p;
+	int res;
 
 	if( dimension > 0 )
 		--dimension;
 
+	FB_LOCK();
+	
     p = &array->dimTB[dimension];
+    res = p->lbound + p->elements - 1;
 
-    return p->lbound + p->elements - 1;
+	FB_UNLOCK();
+	
+    return res;
 }

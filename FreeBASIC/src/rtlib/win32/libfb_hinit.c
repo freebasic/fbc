@@ -26,7 +26,17 @@
 
 #include <stdlib.h>
 #include "fb.h"
+#include "fb_rterr.h"
 #include <float.h>
+
+#ifdef MULTITHREADED
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+CRITICAL_SECTION fb_global_mutex;
+
+#endif
+
+FB_ERRORCTX fb_errctx;
 
 /*:::::*/
 void fb_hInit ( void )
@@ -34,5 +44,20 @@ void fb_hInit ( void )
 
     /* set FPU precision to 64-bit and round to nearest (as in QB) */
 	_controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
+
+#ifdef MULTITHREADED
+	InitializeCriticalSection(&fb_global_mutex);
+	
+	/* allocate thread local storage vars for runtime error handling */
+	fb_errctx.handler   = TlsAlloc();
+	fb_errctx.num       = TlsAlloc();
+	fb_errctx.reslbl    = TlsAlloc();
+	fb_errctx.resnxtlbl = TlsAlloc();
+#else
+	fb_errctx.handler   = 0;
+	fb_errctx.num       = FB_RTERROR_OK;
+	fb_errctx.reslbl    = 0;
+	fb_errctx.resnxtlbl = 0;
+#endif
 
 }

@@ -95,7 +95,11 @@ int fb_hArrayFreeVarLenStrs( FBARRAY *array )
 /*:::::*/
 FBCALL void fb_ArrayStrErase( FBARRAY *array )
 {
+	FB_LOCK();
+	
     if( array->ptr != NULL )
     	fb_hArrayFreeVarLenStrs( array );
+    
+    FB_UNLOCK();
 }
 

@@ -38,6 +38,8 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
     FBARRAYDIM	*p;
     int			lbTB[FB_MAXDIMENSIONS];
     int			ubTB[FB_MAXDIMENSIONS];
+    
+    FB_LOCK();
 
     va_start( ap, dimensions );
 
@@ -64,5 +66,7 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
     array->ptr 	= ptr;
     array->data = array->ptr + diff;
     array->size	= elements * element_len;
+    
+    FB_UNLOCK();
 }
 

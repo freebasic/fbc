@@ -39,6 +39,8 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, 
     int			lbTB[FB_MAXDIMENSIONS];
     int			ubTB[FB_MAXDIMENSIONS];
 
+	FB_LOCK();
+	
     /* free old */
     if( (preserve == FB_FALSE) && (array->ptr != NULL) )
     {
@@ -74,14 +76,18 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, 
     if( (preserve == FB_FALSE) || (array->ptr == NULL) )
     {
     	array->ptr = calloc( size, 1 );
-    	if( array->ptr == NULL )
+    	if( array->ptr == NULL ) {
+    		FB_UNLOCK();
     		return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+    	}
     }
     else
     {
         array->ptr = realloc( array->ptr, size );
-    	if( array->ptr == NULL )
+    	if( array->ptr == NULL ) {
+    		FB_UNLOCK();
     		return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+    	}
 
         if( size > array->size )
         	memset( array->ptr + array->size, 0, size - array->size );
@@ -95,6 +101,8 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, 
     	array->data = array->ptr + diff;
     else
     	array->data = NULL;
+
+	FB_UNLOCK();
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -32,6 +32,8 @@
 /*:::::*/
 FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen )
 {
+	FB_LOCK();
+	
     if( array->ptr != NULL )
     {
     	if( isvarlen != 0 )
@@ -41,8 +43,12 @@ FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen )
     	array->ptr  = NULL;
     	array->data = NULL;
 
+		FB_UNLOCK();
+
     	return fb_ErrorSetNum( FB_RTERROR_OK );
     }
+
+	FB_UNLOCK();
 
     return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }

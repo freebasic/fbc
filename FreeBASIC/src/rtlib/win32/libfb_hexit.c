@@ -32,6 +32,8 @@
 void fb_hEnd ( int errlevel )
 {
 
-	/* do nothing */
+#ifdef MULTITHREADED
+	DeleteCriticalSection(&fb_global_mutex);
+#endif
 
 }

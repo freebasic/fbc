@@ -51,13 +51,13 @@ static void fb_Die( int errnum )
 void *fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
 {
 
-    if( fb_errctx.handler != NULL )
+    if( FB_TLSGET( fb_errctx.handler ) )
     {
-    	fb_errctx.num 		= errnum;
-    	fb_errctx.reslbl 	= res_label;
-    	fb_errctx.resnxtlbl = resnext_label;
+    	FB_TLSSET( fb_errctx.num, errnum );
+    	FB_TLSSET( fb_errctx.reslbl, res_label );
+    	FB_TLSSET( fb_errctx.resnxtlbl, resnext_label );
 
-    	return fb_errctx.handler;
+    	return (void *)FB_TLSGET( fb_errctx.handler );
     }
 
 	/* if no user handler defined, die */
@@ -69,7 +69,7 @@ void *fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
 void *fb_ErrorThrow ( void *res_label, void *resnext_label )
 {
 
-	return fb_ErrorThrowEx( fb_errctx.num, res_label, resnext_label );
+	return fb_ErrorThrowEx( (int)FB_TLSGET( fb_errctx.num ), res_label, resnext_label );
 
 }
 
@@ -78,9 +78,9 @@ FBCALL void *fb_ErrorSetHandler ( void *newhandler )
 {
 	void *oldhandler;
 
-    oldhandler = fb_errctx.handler;
+    oldhandler = (void *)FB_TLSGET( fb_errctx.handler );
 
-    fb_errctx.handler = newhandler;
+    FB_TLSSET( fb_errctx.handler, newhandler );
 
 	return oldhandler;
 }
@@ -88,15 +88,15 @@ FBCALL void *fb_ErrorSetHandler ( void *newhandler )
 /*:::::*/
 void *fb_ErrorResume ( void )
 {
-    void *label = fb_errctx.reslbl;
+    void *label = (void *)FB_TLSGET( fb_errctx.reslbl );
 
 	/* not defined? die */
 	if( label == NULL )
 		fb_Die( FB_RTERROR_ILLEGALRESUME );
 
 	/* don't loop forever */
-	fb_errctx.reslbl 		= NULL;
-	fb_errctx.resnxtlbl 	= NULL;
+	FB_TLSSET( fb_errctx.reslbl, NULL );
+	FB_TLSSET( fb_errctx.resnxtlbl, NULL );
 
 	return label;
 
@@ -105,15 +105,15 @@ void *fb_ErrorResume ( void )
 /*:::::*/
 void *fb_ErrorResumeNext ( void )
 {
-    void *label = fb_errctx.resnxtlbl;
+    void *label = (void *)FB_TLSGET( fb_errctx.resnxtlbl );
 
 	/* not defined? die */
 	if( label == NULL )
 		fb_Die( FB_RTERROR_ILLEGALRESUME );
 
 	/* don't loop forever */
-	fb_errctx.reslbl 		= NULL;
-	fb_errctx.resnxtlbl 	= NULL;
+	FB_TLSSET( fb_errctx.reslbl, NULL );
+	FB_TLSSET( fb_errctx.resnxtlbl, NULL );
 
 	return label;
 
