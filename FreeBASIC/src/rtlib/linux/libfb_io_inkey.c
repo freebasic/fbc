@@ -125,7 +125,6 @@ int fb_hGetCh()
 		}
 		node = Sequence;
 		for (;;) {
-			printf("%c", k);
 			while (node->key) {
 				if (k == node->key) {
 					if (node->code)
