@@ -634,7 +634,7 @@ data "pcopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 data "screencopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxRgb ( byval r as ubyte, byval g as ubyte, byval b as ubyte ) as uinteger
