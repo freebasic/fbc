@@ -27,6 +27,7 @@
 #include "fb_gfx.h"
 
 #define NUM_MODES		21
+#define WINDOW_TITLE_SIZE	128
 
 
 MODE *fb_mode = NULL;
@@ -85,6 +86,9 @@ static const GFXDRIVER *driver[] = {
 };
 
 
+static char window_title[WINDOW_TITLE_SIZE] = "";
+
+
 /*:::::*/
 static void exit_proc(void)
 {
@@ -97,6 +101,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 {
 	const MODEINFO *info;
 	int i;
+	char *c;
 	
 	if ((mode < 0) || (mode > NUM_MODES))
 		return -1;
@@ -186,8 +191,15 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		
 		fb_hSetupFuncs();
 		
+		if (!window_title[0]) {
+			strncpy(window_title, fb_hGetCommandLine(), WINDOW_TITLE_SIZE - 1);
+			if (c = strchr(window_title, ' '))
+				*c = '\0';
+			window_title[WINDOW_TITLE_SIZE - 1] = '\0';
+		}
+		
 		for (i = 0; driver[i]; i++) {
-			if (!driver[i]->init("FreeBasic app", fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
+			if (!driver[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
 				break;
 		}
 		if (!driver[i]) {
@@ -217,3 +229,11 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	return 0;
 }
 
+
+/*:::::*/
+FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
+{
+	strncpy(window_title, title->data, WINDOW_TITLE_SIZE - 1);
+	if (fb_mode)
+		fb_mode->driver->set_window_title(window_title);
+}

@@ -148,6 +148,7 @@ typedef struct GFXDRIVER
 	void (*set_palette)(int index, int r, int g, int b);
 	void (*wait_vsync)(void);
 	int (*get_key)(int wait);
+	void (*set_window_title)(char *title);
 } GFXDRIVER;
 
 
@@ -215,6 +216,7 @@ extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);
 extern FBCALL void fb_GfxLock(void);
 extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
+extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 
 /* Runtime library hooks */
 int fb_GfxGetkey(void);

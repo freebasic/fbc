@@ -40,6 +40,8 @@ static void ddraw_unlock(void);
 static void ddraw_set_palette(int index, int r, int g, int b);
 static void ddraw_wait_vsync(void);
 static int ddraw_get_key(int wait);
+static void ddraw_set_window_title(char *title);
+
 
 
 GFXDRIVER fb_gfxDriverDirectDraw =
@@ -51,6 +53,7 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	ddraw_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	ddraw_wait_vsync,	/* void (*wait_vsync)(void); */
 	ddraw_get_key,		/* int (*get_key)(int wait); */
+	ddraw_set_window_title	/* void (*set_window_title)(char *title); */
 };
 
 
@@ -530,4 +533,11 @@ static int ddraw_get_key(int wait)
 	ddraw_unlock();
 
 	return key;
+}
+
+
+/*:::::*/
+static void ddraw_set_window_title(char *title)
+{
+	SetWindowText(wnd, title);
 }
