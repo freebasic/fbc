@@ -44,6 +44,7 @@ type FBCCTX
     defs			as integer
     incs			as integer
     pths			as integer
+	rcs			as integer
 
 	compileonly		as integer
 	preserveasm		as integer
@@ -79,6 +80,8 @@ declare function 	makeImpLib 			( dllpath as string, dllname as string ) as inte
 declare function 	makeMain			( o_file as string ) as integer
 #endif
 
+declare function	windresFiles		( ) as integer
+
 
 ''globals
 	dim shared argc as integer, argv(0 to FB_MAXARGS-1) as string
@@ -90,6 +93,7 @@ declare function 	makeMain			( o_file as string ) as integer
 	dim shared deflist(0 to FB_MAXARGS-1) as string
 	dim shared inclist(0 to FB_MAXARGS-1) as string
 	dim shared pthlist(0 to FB_MAXARGS-1) as string
+	dim shared rclist (0 to FB_MAXARGS-1) as string
 	dim shared ctx as FBCCTX
 
 const QUOTE = "\""
@@ -150,6 +154,10 @@ const QUOTE = "\""
 
     	'' link
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
+		if (not windresFiles) then
+			end 1
+		end if
+
     		if( not linkFiles ) then
     			end 1
     		end if
@@ -729,6 +737,51 @@ function archiveFiles as integer
 
 end function
 
+#ifdef TARGET_WIN32
+
+'':::::
+function windresFiles as integer
+	dim i as integer, f as integer
+	dim windrespath as string, windrescline as string
+
+	windresFiles = FALSE
+
+	''
+	windrespath = exepath$ + FB.BINPATH + "windres.exe"
+
+
+
+	'' set input files (.rc's) and output files (.res's)
+	for i = 0 to ctx.rcs-1
+
+		'' windres options
+		windrescline = "--input-format=rc -O coff"
+		windrescline = windrescline + " --include-dir=\"" + exepath$ + FB.INCPATH + "win\\rc\""
+		''windrescline = windrescline + " --preprocessor=\"" + exepath$ + FB.BINPATH + "cpp.exe\""
+
+		windrescline = windrescline + " -i \"" + rclist(i) + QUOTE + " -o " + QUOTE + hStripExt(rclist(i)) + ".res\" "
+
+		'' invoke windres
+		if( ctx.verbose ) then
+			print "compiling resource: ", windrescline
+		end if
+
+		if( exec( windrespath, windrescline ) <> 0 ) then
+			exit function
+		end if
+
+		'' add to obj list
+		objlist(ctx.objs) = hStripExt(rclist(i)) + ".res"
+		ctx.objs = ctx.objs + 1
+	next i
+
+
+	windresFiles = TRUE
+
+end function
+
+#endif '' TARGET_WIN32
+
 '':::::
 function delFiles as integer
 	dim i as integer
@@ -754,6 +807,9 @@ sub printOptions
 	print "Usage: fbc [options] inputlist"
 	print
 	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
+#ifdef TARGET_WIN32
+	print " "         , "xxx.rc = resource definition, xxx.res = compiled resource (COFF)"
+#endif
 	print
 	print "options:"
 	print "-a <name>", "Add an object file to linker's list"
@@ -1116,9 +1172,13 @@ function listFiles as integer
 				liblist(ctx.libs) = argv(i)
 				ctx.libs = ctx.libs + 1
 				argv(i) = ""
-			case "o"
+			case "o", "res"
 				objlist(ctx.objs) = argv(i)
 				ctx.objs = ctx.objs + 1
+				argv(i) = ""
+			case "rc"
+				rclist(ctx.rcs) = argv(i)
+				ctx.rcs = ctx.rcs + 1
 				argv(i) = ""
 			end select
 		end if
