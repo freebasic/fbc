@@ -37,6 +37,7 @@ type FBTOKEN
 	tlen			as integer                  '' lenght
 	dotpos			as integer                  '' first '.' position, if any
 	sym				as FBSYMBOL ptr				'' symbol found, if any
+	filepos			as integer					'' position in source file
 end type
 
 

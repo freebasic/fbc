@@ -63,6 +63,7 @@ type LEXCTX
 	bufflen			as integer
 	buffptr			as byte ptr
 	buff			as string * 8192
+	filepos			as integer
 end type
 
 declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as integer
@@ -119,6 +120,8 @@ sub lexInit
 
 	ctx.bufflen		= 0
 	ctx.buffptr		= NULL
+	
+	ctx.filepos		= 0
 
 	'' only if it's not on an inc file
 	if( env.reclevel = 0 ) then
@@ -247,7 +250,6 @@ end sub
 '':::::
 private function lexReadChar as integer static
     dim char as integer
-    dim p as integer
 
 	'' any #define'd text?
 	if( ctx.deflen > 0 ) then
@@ -262,10 +264,11 @@ private function lexReadChar as integer static
 		'' buffer empty?
 		if( ctx.bufflen = 0 ) then
 			if( not eof( env.inf ) ) then
-				p = seek( env.inf )
+				ctx.filepos = seek( env.inf )
 				get #env.inf, , ctx.buff
-				ctx.bufflen = seek( env.inf ) - p
+				ctx.bufflen = seek( env.inf ) - ctx.filepos
 				ctx.buffptr = @ctx.buff
+				ctx.filepos += ctx.bufflen
 			end if
 		end if
 
@@ -907,6 +910,8 @@ reread:
 
 	iswith = FALSE
 
+	t.filepos = ctx.filepos - ctx.bufflen
+
 	select case as const char
 	'':::::
 	case CHAR_DOT
@@ -1391,48 +1396,40 @@ end sub
 '':::::
 function lexPeekCurrentLine( token_pos as integer ) as string
 	dim res as string, buffer as string * 1024
-	dim p as integer, old_p as integer
-	dim c as ubyte ptr, old_c as ubyte ptr
-	dim start as integer
+	dim p as integer, old_p as integer, start as integer
+	dim c as ubyte ptr
 	
 	lexPeekCurrentLine = ""
 	
+	'' get file contents around current token
 	old_p = seek( env.inf )
-	p = old_p - ctx.bufflen - 512
-	token_pos = 512
-	if( p < 0 ) then
-		token_pos += p
-		p = 0
+	p = ctx.tokenTB(0).filepos - 512
+	start = 512
+	if( p < 1 ) then
+		start += p
+		p = 1
 	end if
-	seek #env.inf, p + 1
-	get #env.inf, , buffer
+	get #env.inf, p, buffer
+	seek #env.inf, old_p
 	
-	start = token_pos + 1
-	c = sadd(buffer) + token_pos
-	old_c = c
+	'' find source line start
+	c = sadd(buffer) + start
+	token_pos = -1
 	while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
 		c = c - 1
 		start = start - 1
+		token_pos = token_pos + iif( *c = 9, 8, 1 )
 	wend
+	
+	'' build source line
 	res = ""
-	c = c + 1
+	if( start > 0 ) then
+		c = c + 1
+	end if
 	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
-		if( *c = 9 ) then
-			token_pos += 7
-		end if
 		res += chr$(*c)
 		c = c + 1
 	wend
-	
-	c = old_c - 1
-	token_pos -= start
-	while ( ( *c = 32 ) or ( *c = 9 ) )
-		token_pos -= iif( *c = 9, 8, 1 )
-		c = c - 1
-	wend
-	token_pos -= len( lexTokenText )
-	
-	seek #env.inf, old_p
 	
 	lexPeekCurrentLine = res
 end function
