@@ -11,9 +11,13 @@
 
 ' typedefs
 
+#ifndef ulong
 type ulong as uinteger
+#endif
 
+#ifndef FILE
 type FILE as any
+#endif
 
 ' constants
 

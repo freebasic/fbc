@@ -28,7 +28,9 @@ type gdsl_copy_func_t as function cdecl(byval as gdsl_element_t) as gdsl_element
 type gdsl_map_func_t as function cdecl(byval as gdsl_element_t, byval as any ptr) as integer
 type gdsl_compare_func_t as function cdecl(byval as gdsl_element_t, byval as any ptr) as integer
 type gdsl_write_func_t as sub cdecl(byval as gdsl_element_t, byval as FILE ptr, byval as any ptr)
+#ifndef ulong
 type ulong as uinteger
+#endif
 
 enum bool
   FALSE = 0
