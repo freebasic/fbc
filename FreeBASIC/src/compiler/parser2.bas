@@ -676,6 +676,8 @@ function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSY
   		dtype = symbGetType( s ) - FB.SYMBTYPE.POINTER
   	end if
 
+	subtype = symbGetSubType( s )
+
 	'' '-' | '+'
 	select case lexCurrentToken
 	case CHAR_MINUS
@@ -702,7 +704,6 @@ function cParentDeref( derefexpr as integer, symbol as FBSYMBOL ptr, elm as FBSY
 		end if
 
 		'' times length
-		subtype = symbGetSubType( s )
 		lgt = symbCalcLen( dtype, subtype )
 
 		expr = astNewBOP( IR.OP.MUL, expr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
