@@ -524,6 +524,8 @@ function processCompLists as integer
     	p = instr( deflist(i), "=" )
     	if( (p > 0) and (p < len( deflist(i) )) ) then
     		fbcAddDefine left$( deflist(i), p-1 ), mid$( deflist(i), p+1 )
+    	else
+    		fbcAddDefine deflist(i), ""
     	end if
     next i
 
