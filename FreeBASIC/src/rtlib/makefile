@@ -40,18 +40,18 @@ endif
 
 lib = $(libpath)/libfb.a
 
-objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
-osdepobjs := $(patsubst $(osdeppath)/%.c,$(osdeppath)/obj/%.o,$(wildcard $(osdeppath)/*.c))
+objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
+osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))
 
 
-obj/%.o : %.c
+obj/$(osdeppath)/%.o : %.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
-obj/%.o : %.s
+obj/$(osdeppath)/%.o : $(osdeppath)/%.c
+	$(CC) -c $(CFLAGS) $? -o $@
+
+obj/$(osdeppath)/%.o : %.s
 	$(AS) $? -o $@
-
-$(osdeppath)/obj/%.o : $(osdeppath)/%.c
-	$(CC) -c $(CFLAGS) $? -o $@
 
 
 all : $(objects) $(osdepobjs) $(lib) fb.h
