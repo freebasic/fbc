@@ -49,25 +49,14 @@ ifeq ($(PLATFORM),LINUX)
     LD := ld
 endif
 
-#ifeq ($(PLATFORM),DOS)
-#    EXE :=
-#    LDFLAGS := -T ../../bin/i386go32.x -s
-#    LDLIBS := -L../../lib -( -lcrt -lfb -)
-#    BC := ..\..\fbc.exe
-#    BCFLAGS := $(BCFLAGS) -d TARGET_DOS
-#    LD := ..\..\bin\ld.exe
-#endif
-
-# use win32 fbc for now
 ifeq ($(PLATFORM),DOS)
     EXE := .exe
-    LDFLAGS := -T ../../bin/winbin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
-    LDLIBS := -L../../lib/winlib -( -lcrtdll -lfb -lkernel32 -luser32 -)
+    LDFLAGS := -T ../../bin/i386go32.x -s ../../lib/crt0.o ../../lib/crt1.o obj/fbcentry.o
+    LDLIBS := -L../../lib -( -lfb -lc -lgcc -)
     BC := ..\..\fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_DOS
-    LD := ..\..\bin\winbin\ld.exe
+    LD := ..\..\bin\ld.exe
 endif
-
 
 main	:= fbc.bas
 
