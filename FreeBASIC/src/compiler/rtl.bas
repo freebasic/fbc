@@ -994,6 +994,39 @@ data "settime","fb_SetTime", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 data "setdate","fb_SetDate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
                      		 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
+'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
+data "threadcreate","fb_ThreadCreate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
+									   FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+									   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+'' threadwait ( byval id as integer ) as void
+data "threadwait","fb_ThreadWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' mutexcreate ( ) as integer
+data "mutexcreate","fb_MutexCreate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+'' mutexdestroy ( byval id as integer ) as void
+data "mutexdestroy","fb_MutexDestroy", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+									   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' mutexlock ( byval id as integer ) as void
+data "mutexlock","fb_MutexLock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+								 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' mutexunlock ( byval id as integer ) as void
+data "mutexunlock","fb_MutexUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' condcreate ( ) as integer
+data "condcreate","fb_CondCreate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+'' conddestroy ( byval id as integer ) as void
+data "conddestroy","fb_CondDestroy", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' condsignal ( byval id as integer ) as void
+data "condsignal","fb_CondSignal", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' condbroadcast ( byval id as integer ) as void
+data "condbroadcast","fb_CondBroadcast", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+										 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' condwait ( byval id as integer ) as void
+data "condwait","fb_CondWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+							   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #ifdef TARGET_WIN32
