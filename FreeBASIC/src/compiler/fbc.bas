@@ -167,8 +167,10 @@ const QUOTE = "\""
 			end 1
 		end if
 #elseif defined(TARGET_LINUX)
-		if( not compileXpmFile ) then
-			end 1
+		if( ctx.outtype = FB_OUTTYPE_EXECUTABLE ) then
+			if ( not compileXpmFile ) then
+				end 1
+			end if
 		end if
 #endif
     		if( not linkFiles ) then
