@@ -138,9 +138,9 @@ declare function	intdosx cdecl alias "intdosx"	( byval in as REGS ptr, byval out
 declare function	bdos cdecl alias "bdos"		( byval func as integer, byval dx as uinteger, byval al as uinteger ) as integer
 declare function	bdosptr cdecl alias "bdosptr"	( byval func as integer, byval dx as any ptr, byval al as uinteger ) as integer
 
-#define bdosptr(a, b, c) bdos(a, (unsigned)(b), c)
-#define intdos(a, b) int86(0x21, a, b)
-#define intdosx(a, b, c) int86x(0x21, a, b, c)
+''#define bdosptr(a, b, c) bdos(a, (unsigned)(b), c)
+''#define intdos(a, b) int86(0x21, a, b)
+''#define intdosx(a, b, c) int86x(0x21, a, b, c)
 
 declare function	enable cdecl alias "enable"	( ) as integer
 declare function	disable cdecl alias "disable"	( ) as integer
@@ -153,8 +153,8 @@ declare function	setcbrk cdecl alias "setcbrk"	( byval new_value as integer ) as
 
 declare sub		getdate cdecl alias "getdate"	( byval dp as date ptr )
 declare sub		gettime cdecl alias "gettime"	( byval tp as time ptr )
-declare sub		setdate cdecl alias "setdate"	( byval dp as date ptr )
-declare sub		settime cdecl alias "settime"	( byval tp as time ptr )
+declare sub		dos_setdate cdecl alias "setdate"	( byval dp as date ptr )
+declare sub		dos_settime cdecl alias "settime"	( byval tp as time ptr )
 
 declare sub		getdfree cdecl alias "getdfree"	( byval drive as ubyte, byval pt as dfree ptr )
 

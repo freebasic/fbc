@@ -59,7 +59,7 @@ enum COLORS
 	WHITE
 end enum
 
-#define BLINK   &H80    /*  blink bit   */
+#define BLINK   &H80    ' blink bit
 
 
 declare sub		blinkvideo		cdecl alias "blinkvideo"	()
@@ -94,10 +94,10 @@ declare sub		textmode		cdecl alias "textmode"		(byval mode as integer)
 declare function	ungetch			cdecl alias "ungetch"		(byval c as integer) as integer
 declare function	wherex			cdecl alias "wherex"		() as integer
 declare function	wherey			cdecl alias "wherey"		() as integer
-declare sub		window			cdecl alias "window"		(byval left_ as integer, byval top as integer, byval right_ as integer, byval bottom as integer)
+declare sub		conio_window		cdecl alias "window"		(byval left_ as integer, byval top as integer, byval right_ as integer, byval bottom as integer)
 
-#define kbhit conio_kbhit ' Who ever includes gppconio.h probably
-                          '    also wants _conio_kbhit and not kbhit
-                          '    from libc
+'#define kbhit conio_kbhit ' Who ever includes gppconio.h probably
+'                          '    also wants _conio_kbhit and not kbhit
+'                          '    from libc
 
 #endif ' !__dj_include_conio_h_

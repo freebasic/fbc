@@ -25,7 +25,7 @@ declare sub		outpw cdecl alias "outpw"		( byval _port as ushort, byval _data as 
 #ifndef kbhit
 declare function	kbhit cdecl alias "kbhit"		( ) as integer
 #endif
-declare function	getkey cdecl alias "getkey"		( ) as integer	' ALT's have 0x100 set
+declare function	pc_getkey cdecl alias "getkey"		( ) as integer	' ALT's have 0x100 set
 declare function	getxkey cdecl alias "getxkey"		( ) as integer	' ALT's have 0x100 set, 0xe0 sets 0x200
 
 declare sub		sound cdecl alias "sound"		( byval _frequency )
