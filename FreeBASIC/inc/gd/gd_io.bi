@@ -2,7 +2,8 @@
 ''
 '' gd_io --
 ''
-'' To be distributed with the FreeBASIC compiler only!
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
 ''
 ''
 #ifndef __gd_io_bi__
