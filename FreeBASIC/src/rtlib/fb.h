@@ -281,6 +281,7 @@ FBCALL void 		fb_ConsoleGetXY		( int *col, int *row );
 FBCALL void 		fb_ConsoleView		( int toprow, int botrow );
 	   void 		fb_ConsoleGetView	( int *toprow, int *botrow );
 	   int 			fb_ConsoleGetMaxRow ( void );
+	void fb_ConsoleViewUpdate ( void );
 
 	   void 		fb_ConsoleScroll	( int nrows );
 
