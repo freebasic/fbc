@@ -14,6 +14,7 @@ Version 0.13 Beta:
 - SCREENCOPY now copies only the page area set by most recent VIEW call, or whole screen if no viewport is set (lillo)
 - fixed-length strings can now by referenced using the "$" suffix, as in QB (v1c)
 - #ifdef and #ifndef will find any kind of symbol, not #define's only as before (v1c)
+- TIMER now uses the Win32 high resolution timer when available (lillo)
 
 [added]
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
