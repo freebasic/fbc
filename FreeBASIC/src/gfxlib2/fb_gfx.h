@@ -217,7 +217,7 @@ extern FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, 
 extern FBCALL void fb_GfxFlip(int from_page, int to_page);
 extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);
 extern FBCALL void fb_GfxLock(void);
-extern FBCALL void fb_GfxUnlock(void);
+extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
 
 /* Runtime library hooks */

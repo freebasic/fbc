@@ -681,7 +681,9 @@ data "screenset", "fb_GfxSetPage", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 data "screenlock", "fb_GfxLock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
 
 '' fb_GfxUnlock ( ) as void
-data "screenunlock", "fb_GfxUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+data "screenunlock", "fb_GfxUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxScreenPtr ( ) as any ptr
 data "screenptr", "fb_GfxScreenPtr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
