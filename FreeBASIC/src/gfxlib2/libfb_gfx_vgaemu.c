@@ -33,7 +33,7 @@ static int index = 0, shift = 2, color = 0;
 /*:::::*/
 FBCALL int fb_GfxPaletteInp(int port)
 {
-	int value;
+	int value = 0;
 
 	if (!fb_mode)
 		return;
