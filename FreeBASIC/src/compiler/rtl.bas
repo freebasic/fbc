@@ -720,6 +720,9 @@ data "getmouse", "fb_GfxGetMouse", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
 								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
 								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0
 
+'' fb_GfxScreenInfo ( ) as any ptr
+data "screeninfo", "fb_GfxScreenInfo", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -3123,6 +3126,7 @@ private sub hAddGfxLibs
 	symbAddLib( "fbgfx" )
 #ifdef TARGET_WIN32
 	symbAddLib( "user32" )
+	symbAddLib( "gdi32" )
 #elseif defined(TARGET_LINUX)
 	fbAddLibPath( "/usr/X11R6/lib" )
 	symbAddLib( "X11" )
