@@ -93,7 +93,7 @@ void fb_hStrDelTempDesc( FBSTRING *str )
 }
 
 /**********
- * internal helper routines
+ * internal helper routines (these assume the string lock to be already held when called)
  **********/
 
 /*:::::*/
@@ -108,7 +108,11 @@ void fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 	{
 		if( preserve == FB_FALSE )
 		{
+#ifdef MULTITHREADED
+			fb_hStrDeleteLocked( str );
+#else
 			fb_StrDelete( str );
+#endif
 
 			str->data = (char *)malloc( newsize + 1 );
 			/* failed? try the original request */
@@ -164,8 +168,12 @@ void fb_hStrDelTemp( FBSTRING *str )
 	}
 
     /* del data */
+#ifdef MULTITHREADED
+	fb_hStrDeleteLocked( str );
+#else
     fb_StrDelete( str );
-    
+#endif
+
     /* del descriptor (must be done by last as it will be cleared) */
     fb_hStrDelTempDesc( str );
 }

@@ -38,6 +38,8 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 {
 	FBSTRING 	*dst;
 
+	FB_STRLOCK();
+
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -57,6 +59,8 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+
 	return dst;
 }
 
@@ -64,6 +68,8 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 {
 	FBSTRING 	*dst;
+
+	FB_STRLOCK();
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -83,6 +89,8 @@ FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 	}
 	else
 		dst = &fb_strNullDesc;
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

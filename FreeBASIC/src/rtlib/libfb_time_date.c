@@ -36,6 +36,8 @@ FBCALL FBSTRING *fb_Date ( void )
 	time_t 		rawtime = { 0 };
   	struct tm	*ptm = { 0 };
 
+	FB_STRLOCK();
+
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -50,6 +52,8 @@ FBCALL FBSTRING *fb_Date ( void )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+		
 	return dst;
 }
 

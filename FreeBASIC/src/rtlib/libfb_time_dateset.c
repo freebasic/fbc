@@ -44,6 +44,7 @@ FBCALL int fb_SetDate( FBSTRING *date )
 
    assumes 2-digit years are 1900 + year - !!!FIXME!!! - not sure how QB handles these
 */
+	FB_STRLOCK();
 
 	if( (date != NULL) && (date->data != NULL) )
 	{
@@ -56,8 +57,10 @@ FBCALL int fb_SetDate( FBSTRING *date )
     	for (i = 0, t = date->data; (c = *t) && isdigit(c); t++, i += 10)
 			m = m * i + c - '0';
 
-    	if (((c != '/') && (c != '-')) || (m < 1) || (m > 12))
+    	if (((c != '/') && (c != '-')) || (m < 1) || (m > 12)) {
+    		FB_STRUNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
     	sep = c;
 
     	/* get day */
@@ -65,8 +68,10 @@ FBCALL int fb_SetDate( FBSTRING *date )
     	for (i = 0, t++; (c = *t) && isdigit(c); t++, i += 10)
         	d = d * i + c - '0';
 
-    	if ((c != sep) || (d < 1) || (d > 31))
+    	if ((c != sep) || (d < 1) || (d > 31)) {
+    		FB_STRUNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
 
     	/* get year */
     	y = 0;
@@ -82,6 +87,8 @@ FBCALL int fb_SetDate( FBSTRING *date )
 
 	/* del if temp */
 	fb_hStrDelTemp( date );
+
+	FB_STRUNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

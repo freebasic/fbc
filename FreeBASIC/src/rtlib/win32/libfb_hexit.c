@@ -34,6 +34,7 @@ void fb_hEnd ( int errlevel )
 
 #ifdef MULTITHREADED
 	DeleteCriticalSection(&fb_global_mutex);
+	DeleteCriticalSection(&fb_string_mutex);
 
 	TlsFree( fb_errctx.handler );
 	TlsFree( fb_errctx.num );

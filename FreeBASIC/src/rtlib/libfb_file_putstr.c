@@ -59,6 +59,8 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 		}
 	}
+	
+	FB_STRLOCK();
 
 	len = FB_STRSIZE( str );
 
@@ -67,12 +69,14 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 		/* del if temp */
 		fb_hStrDelTemp( str );
 
+		FB_STRUNLOCK();
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
 	/* do write */
 	if( fwrite( str->data, 1, len, fb_fileTB[fnum-1].f ) != len ) {
+		FB_STRUNLOCK();
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}
@@ -88,6 +92,7 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
+	FB_STRUNLOCK();
 	FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );

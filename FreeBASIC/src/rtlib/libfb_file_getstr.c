@@ -61,6 +61,8 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 		}
 	}
 
+	FB_STRLOCK();
+	
 	len = FB_STRSIZE( str );
 
 	if( (str->data == NULL) || (len == 0) )
@@ -68,6 +70,7 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 		/* del if temp */
 		fb_hStrDelTemp( str );
 
+		FB_STRUNLOCK();
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
@@ -93,6 +96,7 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );						/* will free the temp desc if fix-len passed */
 
+	FB_STRUNLOCK();
 	FB_UNLOCK();
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -35,11 +35,15 @@ FBCALL FBSTRING *fb_CurDir ( void )
 	char		tmp[MAX_PATH];
 	int			len;
 
+	FB_LOCK();
+	
 	len = fb_hGetCurrentDir( tmp, MAX_PATH );
 
 	/* alloc temp string */
 	if( len > 0 )
 	{
+		FB_STRLOCK();
+		
 		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 		if( dst != NULL )
 		{
@@ -49,10 +53,14 @@ FBCALL FBSTRING *fb_CurDir ( void )
 		}
 		else
 			dst = &fb_strNullDesc;
+		
+		FB_STRUNLOCK();
 	}
 	else
 		dst = &fb_strNullDesc;
 
+	FB_UNLOCK();
+	
 	return dst;
 }
 

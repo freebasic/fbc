@@ -120,6 +120,8 @@ FBCALL long long fb_VAL64 ( FBSTRING *str )
 	if( str == NULL )
 	    return 0;
 
+	FB_STRLOCK();
+
 	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
 		val = 0;
 	else
@@ -127,6 +129,8 @@ FBCALL long long fb_VAL64 ( FBSTRING *str )
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
+
+	FB_STRUNLOCK();
 
 	return val;
 }

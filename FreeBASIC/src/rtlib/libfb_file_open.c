@@ -201,6 +201,8 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
 
+	FB_STRLOCK();
+	
 	/* copy file name */
 	str_len = FB_STRSIZE( str );
 
@@ -209,6 +211,8 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
+	FB_STRUNLOCK();
+	
 	if( str_len == 0 )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 

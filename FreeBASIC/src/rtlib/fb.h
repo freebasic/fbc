@@ -54,22 +54,30 @@
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 extern CRITICAL_SECTION fb_global_mutex;
+extern CRITICAL_SECTION fb_string_mutex;
 #  define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
 #  define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
+#  define FB_STRLOCK()				EnterCriticalSection(&fb_string_mutex)
+#  define FB_STRUNLOCK()			LeaveCriticalSection(&fb_string_mutex)
 #  define FB_TLSENTRY				DWORD
 #  define FB_TLSSET(key,value)		TlsSetValue((key), (LPVOID)(value))
 #  define FB_TLSGET(key)			TlsGetValue((key))
 # elif defined(TARGET_LINUX)
 #  include <pthread.h>
 extern pthread_mutex_t fb_global_mutex;
+extern pthread_mutex_t fb_string_mutex;
 #  define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
 #  define FB_UNLOCK()				pthread_mutex_unlock(&fb_global_mutex)
+#  define FB_STRLOCK()				pthread_mutex_lock(&fb_string_mutex)
+#  define FB_STRUNLOCK()			pthread_mutex_unlock(&fb_string_mutex)
 #  define FB_TLSENTRY				pthread_key_t
 #  define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
 #  define FB_TLSGET(key)			pthread_getspecific((key))
 # else
 #  define FB_LOCK()
 #  define FB_UNLOCK()
+#  define FB_STRLOCK()
+#  define FB_STRUNLOCK()
 #  define FB_TLSENTRY				unsigned int
 #  define FB_TLSSET(key,value)		key = (unsigned int)value
 #  define FB_TLSGET(key)			key
@@ -77,6 +85,8 @@ extern pthread_mutex_t fb_global_mutex;
 #else
 # define FB_LOCK()
 # define FB_UNLOCK()
+# define FB_STRLOCK()
+# define FB_STRUNLOCK()
 # define FB_TLSENTRY				unsigned int
 # define FB_TLSSET(key,value)		key = (unsigned int)value
 # define FB_TLSGET(key)				key
@@ -170,6 +180,9 @@ FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
 /* public */
 
 FBCALL void 		fb_StrDelete			( FBSTRING *str );
+#ifdef MULTITHREADED
+	   void			fb_hStrDeleteLocked		( FBSTRING *str );
+#endif
 FBCALL void 		*fb_StrAssign 			( void *dst, int dst_size, void *src, int src_size, int fillrem );
 FBCALL FBSTRING		*fb_StrConcat 			( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size );
 FBCALL void 		*fb_StrConcatAssign 	( void *dst, int dst_size, void *src, int src_size, int fillrem );

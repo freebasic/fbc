@@ -41,6 +41,8 @@ FBSTRING *fb_CHR ( int args, ... )
 
 	va_start( ap, args );
 
+	FB_STRLOCK();
+
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -58,6 +60,8 @@ FBSTRING *fb_CHR ( int args, ... )
 	}
 	else
 		dst = &fb_strNullDesc;
+
+	FB_STRUNLOCK();
 
 	va_end( ap );
 

@@ -35,6 +35,8 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
     int 	r;
     char    *p;
 
+	FB_STRLOCK();
+	
     if( (src != NULL) && (src->data != NULL) && (patt != NULL) && (patt->data != NULL) )
     {
     	if( (start > 0) && (start <= FB_STRSIZE( src )) )
@@ -55,6 +57,8 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
 	fb_hStrDelTemp( src );
 
 	fb_hStrDelTemp( patt );
+	
+	FB_STRUNLOCK();
 
 	return r;
 }

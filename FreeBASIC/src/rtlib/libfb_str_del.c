@@ -31,6 +31,24 @@
 /*:::::*/
 FBCALL void fb_StrDelete ( FBSTRING *str )
 {
+	FB_STRLOCK();
+	
+    if( (str != NULL) && (str->data != NULL) ) {
+    	
+	    free( (void *)str->data );
+
+		str->data = NULL;
+		str->len  = 0;
+		str->size = 0;
+	}
+	
+	FB_STRUNLOCK();
+}
+
+#ifdef MULTITHREADED
+/*:::::*/
+void fb_hStrDeleteLocked ( FBSTRING *str )
+{
     if( (str == NULL) || (str->data == NULL) )
     	return;
     	
@@ -39,5 +57,5 @@ FBCALL void fb_StrDelete ( FBSTRING *str )
 	str->data = NULL;
 	str->len  = 0;
 	str->size = 0;
-
 }
+#endif

@@ -85,6 +85,8 @@ FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *
 	char 	*str1_ptr, *str2_ptr;
 	int 	str1_len, str2_len;
 
+	FB_STRLOCK();
+
 	FB_STRSETUP( str1, str1_size, str1_ptr, str1_len )
 
 	FB_STRSETUP( str2, str2_size, str2_ptr, str2_len )
@@ -92,7 +94,11 @@ FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *
 	/* NULL? */
 	if( str1_len+str2_len == 0 )
 	{
+#ifdef MULTITHREADED
+		fb_hStrDeleteLocked( dst );
+#else
 		fb_StrDelete( dst );
+#endif
 	}
 	else
 	{
@@ -108,6 +114,8 @@ FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *
 		fb_hStrDelTemp( (FBSTRING *)str1 );
 	if( str2_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)str2 );
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

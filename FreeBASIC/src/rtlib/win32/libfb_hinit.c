@@ -33,6 +33,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 CRITICAL_SECTION fb_global_mutex;
+CRITICAL_SECTION fb_string_mutex;
 #endif
 
 
@@ -45,6 +46,7 @@ void fb_hInit ( void )
 
 #ifdef MULTITHREADED
 	InitializeCriticalSection(&fb_global_mutex);
+	InitializeCriticalSection(&fb_string_mutex);
 	
 	/* allocate thread local storage vars for runtime error handling */
 	fb_errctx.handler   = TlsAlloc();

@@ -37,6 +37,8 @@ FBCALL double fb_CVD ( FBSTRING *str )
 	if( str == NULL )
 		return 0.0;
 
+	FB_STRLOCK();
+
 	len = FB_STRSIZE( str );
 
 	num = 0.0;
@@ -49,6 +51,8 @@ FBCALL double fb_CVD ( FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
+	FB_STRUNLOCK();
+	
 	return num;
 }
 
@@ -60,6 +64,8 @@ FBCALL float fb_CVS ( FBSTRING *str )
 
 	if( str == NULL )
 		return 0.0;
+
+	FB_STRLOCK();
 
 	len = FB_STRSIZE( str );
 
@@ -73,6 +79,8 @@ FBCALL float fb_CVS ( FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
+	FB_STRUNLOCK();
+
 	return num;
 }
 
@@ -85,6 +93,8 @@ FBCALL int fb_CVI ( FBSTRING *str )
 	if( str == NULL )
 		return 0;
 
+	FB_STRLOCK();
+
 	num = 0;
 	if( (str->data != NULL) && (FB_STRSIZE( str ) == sizeof( int )) )
 	{
@@ -95,6 +105,8 @@ FBCALL int fb_CVI ( FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
+	FB_STRUNLOCK();
+
 	return num;
 }
 
@@ -104,6 +116,8 @@ FBCALL FBSTRING *fb_MKD ( double num )
 {
 	FBSTRING 	*dst;
 	int			i;
+
+	FB_STRLOCK();
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -120,6 +134,8 @@ FBCALL FBSTRING *fb_MKD ( double num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+
 	return dst;
 }
 
@@ -128,6 +144,8 @@ FBCALL FBSTRING *fb_MKI ( int num )
 {
 	FBSTRING 	*dst;
 	int			i;
+
+	FB_STRLOCK();
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -144,6 +162,8 @@ FBCALL FBSTRING *fb_MKI ( int num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+
 	return dst;
 }
 
@@ -152,6 +172,8 @@ FBCALL FBSTRING *fb_MKS ( float num )
 {
 	FBSTRING 	*dst;
 	int			i;
+
+	FB_STRLOCK();
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -167,6 +189,8 @@ FBCALL FBSTRING *fb_MKS ( float num )
 	}
 	else
 		dst = &fb_strNullDesc;
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

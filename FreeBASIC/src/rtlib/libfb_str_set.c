@@ -34,6 +34,8 @@ FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 {
     int slen, dlen, len;
 
+   	FB_STRLOCK();
+
 	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
 	{
 		slen = FB_STRSIZE( src );
@@ -58,12 +60,16 @@ FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+
+   	FB_STRUNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 {
     int slen, dlen, len, padlen;
+
+   	FB_STRLOCK();
 
 	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
 	{
@@ -86,5 +92,7 @@ FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+
+   	FB_STRUNLOCK();
 }
 

@@ -35,11 +35,15 @@ FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_si
 	char 		*src_ptr;
 	int 		src_len, dst_len;
 
+	FB_STRLOCK();
+
 	if( dst == NULL )
 	{
 		/* delete temp? */
 		if( src_size == -1 )
 			fb_hStrDelTemp( (FBSTRING *)src );
+		
+		FB_STRUNLOCK();
 		
 		return dst;
 	}
@@ -90,6 +94,8 @@ FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_si
 	/* delete temp? */
 	if( src_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)src );
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

@@ -51,8 +51,11 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 		return &fb_strNullDesc;
 	}
 
+	FB_STRLOCK();
+
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst == NULL ) {
+		FB_STRUNLOCK();
 		FB_UNLOCK();
 		return &fb_strNullDesc;
 	}
@@ -61,6 +64,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 	if( dst->data == NULL )
 	{
 		fb_hStrDelTempDesc( dst );
+		FB_STRUNLOCK();
 		FB_UNLOCK();
 		return &fb_strNullDesc;
 	}
@@ -81,6 +85,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 		dst->len = len | FB_TEMPSTRBIT;				/* mark as temp */
 	}
 
+	FB_STRUNLOCK();
 	FB_UNLOCK();
 
 	return dst;

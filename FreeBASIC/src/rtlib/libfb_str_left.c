@@ -36,6 +36,8 @@ FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 	if( src == NULL )
 		return &fb_strNullDesc;
 
+	FB_STRLOCK();
+	
 	src_len = FB_STRSIZE( src );
 	if( (src->data != NULL)	&& (chars > 0) && (src_len > 0) )
 	{
@@ -61,6 +63,8 @@ FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

@@ -38,6 +38,8 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 {
 	FBSTRING 	*dst;
 
+	FB_STRLOCK();
+
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -57,6 +59,8 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+
 	return dst;
 }
 
@@ -64,6 +68,8 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 {
 	FBSTRING 	*dst;
+
+	FB_STRLOCK();
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -83,6 +89,8 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 	}
 	else
 		dst = &fb_strNullDesc;
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

@@ -33,10 +33,14 @@ FBCALL FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
 {
  	FBSTRING *dsc;
 
+	FB_STRLOCK();
+	
  	/* alloc a temporary descriptor (the current one at stack will be trashed) */
  	dsc = (FBSTRING *)fb_hStrAllocTmpDesc( );
-    if( dsc == NULL )
+    if( dsc == NULL ) {
+    	FB_STRUNLOCK();
     	return &fb_strNullDesc;
+    }
 
     /* copy just the descriptor, setting it as a temp string */
     dsc->data = src->data;
@@ -47,6 +51,8 @@ FBCALL FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
 	src->data = NULL;
 	src->len  = 0;
 	src->size = 0;
+
+	FB_STRUNLOCK();
 
 	return dsc;
 }

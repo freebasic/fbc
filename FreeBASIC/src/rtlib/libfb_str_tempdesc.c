@@ -33,10 +33,14 @@ FBCALL FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
 {
 	FBSTRING *dsc;
 
+	FB_STRLOCK();
+
  	/* alloc a temporary descriptor */
  	dsc = (FBSTRING *)fb_hStrAllocTmpDesc( );
-    if( dsc == NULL )
+    if( dsc == NULL ) {
+    	FB_STRUNLOCK();
     	return &fb_strNullDesc;
+    }
 
 	/* fill it */
 	if( str_size == -1 )
@@ -63,6 +67,8 @@ FBCALL FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
 		}
 		dsc->size = dsc->len;
 	}
+
+	FB_STRUNLOCK();
 
 	return dsc;
 }

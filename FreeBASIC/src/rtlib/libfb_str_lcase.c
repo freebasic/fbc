@@ -38,6 +38,8 @@ FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )
 	if( src == NULL )
 		return &fb_strNullDesc;
 
+	FB_STRLOCK();
+	
 	if( src->data != NULL )
 	{
 		len = FB_STRSIZE( src );
@@ -74,6 +76,8 @@ FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )
 	/* del if temp */
 	fb_hStrDelTemp( src );
 
+	FB_STRUNLOCK();
+	
 	return dst;
 }
 

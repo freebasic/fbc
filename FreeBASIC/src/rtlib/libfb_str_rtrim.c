@@ -38,6 +38,8 @@ FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 	if( src == NULL )
 		return &fb_strNullDesc;
 
+   	FB_STRLOCK();
+
 	if( src->data != NULL )
 	{
 		p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
@@ -65,6 +67,8 @@ FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+
+   	FB_STRUNLOCK();
 
 	return dst;
 }

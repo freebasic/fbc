@@ -36,6 +36,8 @@ FBCALL int fb_StrLen( void *str, int str_size )
 	if( str == NULL )
 		return 0;
 
+	FB_STRLOCK();
+
 	/* is dst var-len? */
 	if( str_size == -1 )
 	{
@@ -51,6 +53,8 @@ FBCALL int fb_StrLen( void *str, int str_size )
 		   a zstring, so find out the real len (as in C/PB) */
 		len = strlen( (char *)str );
 	}
+
+	FB_STRUNLOCK();
 
 	return len;
 }

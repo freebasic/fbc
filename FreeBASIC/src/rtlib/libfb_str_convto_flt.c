@@ -38,6 +38,8 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 {
 	FBSTRING 	*dst;
 
+	FB_STRLOCK();
+	
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -67,6 +69,8 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+
 	return dst;
 }
 
@@ -74,6 +78,8 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 FBCALL FBSTRING *fb_DoubleToStr ( double num )
 {
 	FBSTRING 	*dst;
+
+	FB_STRLOCK();
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -103,6 +109,8 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 	}
 	else
 		dst = &fb_strNullDesc;
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

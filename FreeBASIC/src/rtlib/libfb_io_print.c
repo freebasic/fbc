@@ -117,6 +117,8 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
 /*:::::*/
 FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 {
+	FB_STRLOCK();
+	
     if( (s == NULL) || (s->data == NULL) )
     	fb_PrintVoid( fnum, mask );
     else
@@ -124,6 +126,8 @@ FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 
 	/* del if temp */
 	fb_hStrDelTemp( s );
+
+	FB_STRUNLOCK();
 }
 
 /*:::::*/

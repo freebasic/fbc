@@ -36,6 +36,8 @@ FBCALL FBSTRING *fb_HEX ( int num )
 {
 	FBSTRING 	*dst;
 
+	FB_STRLOCK();
+	
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -55,6 +57,8 @@ FBCALL FBSTRING *fb_HEX ( int num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+	
 	return dst;
 }
 
@@ -63,6 +67,8 @@ FBCALL FBSTRING *fb_OCT ( int num )
 {
 	FBSTRING 	*dst;
 
+	FB_STRLOCK();
+	
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -82,6 +88,8 @@ FBCALL FBSTRING *fb_OCT ( int num )
 	else
 		dst = &fb_strNullDesc;
 
+	FB_STRUNLOCK();
+
 	return dst;
 }
 
@@ -93,6 +101,8 @@ FBCALL FBSTRING *fb_BIN ( int num )
 	int			i;
 #endif
 
+	FB_STRLOCK();
+	
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
@@ -119,6 +129,8 @@ FBCALL FBSTRING *fb_BIN ( int num )
 	}
 	else
 		dst = &fb_strNullDesc;
+
+	FB_STRUNLOCK();
 
 	return dst;
 }

@@ -37,6 +37,8 @@ FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
 	if( (dst == NULL) || (src == NULL) || (bytes <= 0) )
 		return;
 
+	FB_LOCK();
+	
 	/* words */
 	for( i = 0; i < (bytes >> 2); i++ )
 	{
@@ -55,6 +57,8 @@ FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
 		*src++ = *dst;
 		*dst++ = tb;
 	}
+	
+	FB_UNLOCK();
 }
 
 
