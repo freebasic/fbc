@@ -92,6 +92,7 @@ static int mouse_buttons, mouse_wheel;
 static HWND wnd;
 static RECT rect;
 static HANDLE handle = NULL;
+static HANDLE vsync_event = NULL;
 static CRITICAL_SECTION update_lock;
 static int is_running, is_palette_changed, is_active;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
@@ -514,7 +515,8 @@ static void window_thread(HANDLE running_event)
 		ddraw_unlock();
 
 		Sleep(10);
-		ddraw_wait_vsync();
+		IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+		SetEvent(vsync_event);
 	}
 
 error:
@@ -539,6 +541,7 @@ static int ddraw_init(char *title, int w, int h, int depth, int flags)
 	is_running = TRUE;
 
 	InitializeCriticalSection(&update_lock);
+	vsync_event = CreateEvent(NULL, FALSE, FALSE, NULL);
 	events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
 	events[1] = (HANDLE)_beginthread(window_thread, 0, events[0]);
 	result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
@@ -563,6 +566,7 @@ static void ddraw_exit(void)
 {
 	is_running = FALSE;
 	WaitForSingleObject(handle, INFINITE);
+	CloseHandle(vsync_event);
 	DeleteCriticalSection(&update_lock);
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
 }
@@ -598,7 +602,7 @@ static void ddraw_set_palette(int index, int r, int g, int b)
 /*:::::*/
 static void ddraw_wait_vsync(void)
 {
-	IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+	WaitForSingleObject(vsync_event, 1000/60);
 }
 
 
