@@ -89,11 +89,12 @@ data "Expected scalar counter"
 data "Illegal outside a SUB or FUNCTION"
 data "Expected dynamic array"
 data "Cannot return TYPE's or UNION's from functions"
+data "Cannot return fixed-len strings from functions"
 data "Array already dimensioned"
 data "Literal string too big, split it"
 data "Identifier's name too big"
 
-const FB.ERRMSGS = 56
+const FB.ERRMSGS = 57
 
 
 '':::::

@@ -173,10 +173,15 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
     		exit function
     	end if
 
-    	if( typ = FB.SYMBTYPE.USERDEF ) then
+    	'' check for invalid types
+    	select case typ
+    	case FB.SYMBTYPE.USERDEF
     		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
     		exit function
-    	end if
+    	case FB.SYMBTYPE.FIXSTR
+    		hReportError FB.ERRMSG.CANNOTRETURNFIXLENFROMFUNCTS
+    		exit function
+    	end select
     end if
 
     if( issub ) then

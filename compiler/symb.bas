@@ -1622,7 +1622,7 @@ function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as 
 	end if
 
 	select case lgt
-	case 1, 2, 4, 8
+	case 1, 2, 4
 		pad = lgt - 1
 	case else
 		pad = align - 1

@@ -2090,10 +2090,15 @@ function cSubOrFuncDecl( byval isSub as integer ) static
     		exit function
     	end if
 
-    	if( typ = FB.SYMBTYPE.USERDEF ) then
+    	'' check for invalid types
+    	select case typ
+    	case FB.SYMBTYPE.USERDEF
     		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
     		exit function
-    	end if
+    	case FB.SYMBTYPE.FIXSTR
+    		hReportError FB.ERRMSG.CANNOTRETURNFIXLENFROMFUNCTS
+    		exit function
+    	end select
     end if
 
     if( issub ) then
@@ -2204,14 +2209,20 @@ function cArgDecl( arg as FBPROCARG, byval isproto as integer ) as integer
         arg.suffix = INVALID 'arg.typ
     end if
 
-    '' check for invalid args on FB functions (not prototypes)
+    '' can't be a fixed-len string
+    if( arg.typ = FB.SYMBTYPE.FIXSTR ) then
+    	hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
+    	exit function
+    end if
+
+	'' check for invalid args on FB functions (not prototypes)
     if( not isproto ) then
     	if( arg.typ = FB.SYMBTYPE.VOID ) then
     		hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
     		exit function
     	elseif( arg.mode = FB.ARGMODE.BYVAL ) then
     		select case arg.typ
-    		case FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.USERDEF
+    		case FB.SYMBTYPE.STRING, FB.SYMBTYPE.USERDEF
     			hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
     			exit function
     		end select
