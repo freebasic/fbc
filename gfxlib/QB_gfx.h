@@ -13,7 +13,7 @@
 #ifndef QB_GFX_H_
 #define QB_GFX_H_
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "QB_gfx_main.h"
 #include "QB_gfx_text.h"
 #include "QB_gfx_pal.h"
