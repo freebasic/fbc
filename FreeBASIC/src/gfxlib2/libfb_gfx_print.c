@@ -74,10 +74,20 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 	check_scroll(&dirty_start, &dirty_len);
 	
 	for (i = 0; i < strlen(buffer); i++) {
+		
+		if (fb_mode->cursor_x >= fb_mode->text_w) {
+			fb_mode->cursor_y++;
+			if (i == 0)
+				dirty_start++;
+			dirty_len++;
+			fb_mode->cursor_x = 0;
+			check_scroll(&dirty_start, &dirty_len);
+		}
+		
 		switch (buffer[i]) {
 			case '\t':
 				new_x = (fb_mode->cursor_x + 8) & ~0x7;
-				dest = fb_mode->line[fb_mode->cursor_y << 3] + ((fb_mode->cursor_x << 3) * fb_mode->bpp);
+				dest = fb_mode->line[fb_mode->cursor_y * fb_mode->font->h] + ((fb_mode->cursor_x << 3) * fb_mode->bpp);
 				for (j = 0; j < fb_mode->font->h; j++) {
 					fb_hPixelSet(dest, fb_mode->bg_color, (new_x - fb_mode->cursor_x) << 3);
 					dest += fb_mode->pitch;
@@ -87,7 +97,10 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 			
 			case '\n':
 			case '\r':
-				fb_mode->cursor_x = 0x100;
+				fb_mode->cursor_x = 0;
+				fb_mode->cursor_y++;
+				dirty_len++;
+				check_scroll(&dirty_start, &dirty_len);
 				break;
 			
 			default:
@@ -96,12 +109,6 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 				if (!dirty_len)
 					dirty_len = 1;
 				break;
-		}
-		if (fb_mode->cursor_x >= fb_mode->text_w) {
-			fb_mode->cursor_y++;
-			dirty_len++;
-			fb_mode->cursor_x = 0;
-			check_scroll(&dirty_start, &dirty_len);
 		}
 	}
 	fb_hMemSet(fb_mode->dirty + (dirty_start * fb_mode->font->h), TRUE, dirty_len * fb_mode->font->h);
