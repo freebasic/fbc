@@ -80,11 +80,6 @@ ifeq ($(osdeppath),win32)
 	del $(subst /,\,$(objects))
 	del $(subst /,\,$(TARGET))
 else
-ifeq ($(OS),DOS)
-	del $(subst /,\,$(objects))
-	del $(subst /,\,$(TARGET))
-else
 	rm -f $(objects)
 	rm -f $(TARGET)
-endif
 endif
