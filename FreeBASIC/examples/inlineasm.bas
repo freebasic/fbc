@@ -15,9 +15,9 @@ function mulintegers( byval x as integer, byval y as integer ) as integer
 	dim res as integer
 	
 	asm 
-		mov		eax, dword ptr [x]
-		imul	eax, dword ptr [y]
-		mov		dword ptr [res], eax
+		mov		eax, [x]
+		imul	eax, [y]
+		mov		[res], eax
 	end asm
 	
 	mulintegers = res

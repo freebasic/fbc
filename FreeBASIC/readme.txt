@@ -289,7 +289,7 @@ Credits (in alphabetic order):
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
-    - Wrote the OpenAL demostration in the Sound directory.
+    - Wrote the OpenAL demonstration in the Sound directory.
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS; port maintainer.
@@ -396,11 +396,11 @@ Links:
 
     - Lua: http://www.lua.org/
 
-    - OpenAL: http://www.openal.org/
+    - OpenAL: http://www.openal.org/ or http://developer.creative.com/landing.asp?cat=1&sbcat=31&top=38
 
     - OpenGL: http://www.opengl.org/
 
-    - SDL: http://www.libsdl.org/ (look under Projects for SDL_net, SDL_image, SDL_ttf, etc)
+    - SDL: http://www.libsdl.org/ (look under Libraries for SDL_net, SDL_image, SDL_ttf, etc)
 
     - SDL_gfx: http://www.ferzkopp.net/~aschiffler/Software/SDL_gfx-2.0/
 

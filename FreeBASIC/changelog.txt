@@ -1,18 +1,25 @@
 Version 0.12 Beta:
 
-[chged] Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
 [chged] IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
         functions won't be automatically exported anymore, because that would make it hard to write DLL's with
         multiple modules where not all global functions should be exported (v1ctor)
+[chged] IMPORTANT: the format of the internal string descriptor was modified to speed up concatenation of large strings, 
+        so you MUST recompile all the old code, don't reuse object files compiled with older versions (below v0.12b) and 
+        rebuild DLL's created in FB if they return or process STRING's passed to/from client EXE's (v1c)
 [chged] Linux port does not use ncurses anymore, but its own internal lowlevel routines for console access.
         Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
         at programs startup and proper colors support under X11. Compatibility issues may rise though, so
         feedback is welcome (lillo)
-[chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
+[chged] many Allegro's globals like al_screen, al_rgb had the "al_" prefix removed, they are now as the originals (v1c)
+[chged] Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
+[chged] white-spaces are now preserved for ASM blocks and #DEFINE's (v1c)
 [chged] Linux port install script will now warn users if not run with root priviledges (lillo)
+[chged] the range of console-mode background colors is now 0 to 15 in DOS and Windows, 'cause Nex wanted that :) (v1c)
+[chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
 [added] resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
         compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
         used too (DrV)
+[added] built-in multiplatform threading functions (lillo)
 [added] "operator =" shorthand, as in "a += b * c" (v1ctor)
 [added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
         faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
@@ -23,9 +30,10 @@ Version 0.12 Beta:
 [added] Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
 [added] possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
 [added] the OpenAL headers, ported by Chris Davies (v1c)
+[added] the ASM statement can be used on a single line as in "ASM mov eax, 1234" (v1c)
 [added] SCREEN() function, working as in QB (lillo)
 [added] gfxlib now internally uses MMX routines to update the screen if supported (lillo)
-[added] built-in multiplatform threading functions (lillo)
+[added] OPTION NOKEYWORD, to remove intrinsic routines/statements (v1c)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
@@ -49,6 +57,7 @@ Version 0.12 Beta:
 [fixed] Linux port had precision problems with the TIMER function (lillo)
 [fixed] PSET gfx primitive was not respecting default color (lillo)
 [fixed] SGN() for floating-point numbers was converting the source to integer at the AST module (v1c)
+[fixed] #DEFINE's can now contain forward references to other #DEFINE's (v1c)
 [fixed] CIRCLE used wrong color for lines when drawing arcs with negative start/end angles (lillo)
 [fixed] Calling SCREENLOCK/SCREENUNLOCK when framebuffer is already locked/unlocked does not hang program anymore (lillo)
 
