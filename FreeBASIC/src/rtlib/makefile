@@ -25,20 +25,22 @@ CFLAGS := -O3 -I ./
 ifneq ($(WINSYSDIR),)
     CFLAGS := $(CFLAGS) -DTARGET_WIN32
     osdeppath := win32
+	libpath = ../../lib/win32
 else
     ifeq ($(OS),DOS)
-        osdeppath := dos
         CFLAGS := $(CFLAGS) -DTARGET_DOS
+        osdeppath := dos
+        libpath = ../../lib/dos
     else
-        osdeppath := linux
         CFLAGS := $(CFLAGS) -DTARGET_LINUX
         ifdef COMPILER
             CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
         endif
+        osdeppath := linux
+        libpath = ../../lib
     endif
 endif
 
-libpath = ../../lib
 lib = $(libpath)/libfb.a
 ifeq ($(WINSYSDIR),)
     ifneq ($(OS),DOS)
@@ -49,13 +51,13 @@ ifeq ($(WINSYSDIR),)
 endif
 
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
-osdepobjs := $(patsubst $(osdeppath)/%.c,obj/%.o,$(wildcard $(osdeppath)/*.c))
+osdepobjs := $(patsubst $(osdeppath)/%.c,$(osdeppath)/obj/%.o,$(wildcard $(osdeppath)/*.c))
 
 
 obj/%.o : %.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
-obj/%.o : $(osdeppath)/%.c
+$(osdeppath)/obj/%.o : $(osdeppath)/%.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
 
@@ -72,7 +74,13 @@ ifneq ($(WINSYSDIR),)
 	del $(subst /,\,$(objects))
 	del $(subst /,\,$(osdepobjs))
 else
+ifeq ($(OS),DOS)
+	del $(subst /,\,$(lib))
+	del $(subst /,\,$(objects))
+	del $(subst /,\,$(osdepobjs))
+else
 	rm -f $(lib)
 	rm -f $(objects)
 	rm -f $(osdepobjs)
+endif
 endif
