@@ -366,6 +366,7 @@ sub printOptions
 #ifdef TARGET_WIN32
 	print "-s <name>", "subsystem (gui, console)"
 	print "-t <value>", "stack size in kbytes (default: 1M)"
+	print "-w", "treat stdcall calling convention as cdecl"
 #endif
 	print "-v", "verbose"
 	print "-x <name>", "executable name"
