@@ -34,8 +34,8 @@ declare function ppEndIf 					( ) as integer
 declare function ppSkip 					( ) as integer
 
 declare function ppLogExpression			( logexpr as integer ) as integer
-declare function ppRelExpression			( relexpr as integer, rellit as string ) as integer
-declare function ppParentExpr				( parexpr as integer, atom as string ) as integer
+declare function ppRelExpression			( relexpr as integer, rellit as string, relisnum as integer ) as integer
+declare function ppParentExpr				( parexpr as integer, atom as string, isnumber as integer ) as integer
 
 const FB.PP.MAXRECLEVEL = 64
 
@@ -379,8 +379,8 @@ end function
 ''
 private function ppLogExpression( logexpr as integer )
     dim donot as integer, op as integer
-    dim loglit as string
-    dim relexpr as integer, rellit as string
+    dim loglit as string, logisnum
+    dim relexpr as integer, rellit as string, relisnum as integer
 
     logexpr = FALSE
 
@@ -391,7 +391,7 @@ private function ppLogExpression( logexpr as integer )
     end if
 
     '' RelExpression
-    if( not ppRelExpression( logexpr, loglit ) ) then
+    if( not ppRelExpression( logexpr, loglit, logisnum ) ) then
     	ppLogExpression = FALSE
     	exit function
     end if
@@ -421,7 +421,7 @@ private function ppLogExpression( logexpr as integer )
     	end if
 
     	'' RelExpression
-    	if( not ppRelExpression( relexpr, rellit ) ) then
+    	if( not ppRelExpression( relexpr, rellit, relisnum ) ) then
     		ppLogExpression = FALSE
     		exit function
     	end if
@@ -445,14 +445,14 @@ end function
 '':::::
 ''RelExpression   =   ParentExpr ( (EQ | GT | LT | NE | LE | GE) ParentExpr )* .
 ''
-private function ppRelExpression( relexpr as integer, rellit as string )
+private function ppRelExpression( relexpr as integer, rellit as string, relisnum as integer )
     dim op as integer, ops as integer
-    dim parexpr as integer, parlit as string
+    dim parexpr as integer, parlit as string, parisnum
 
    	ppRelExpression = FALSE
 
     '' Atom
-    if( not ppParentExpr( relexpr, rellit ) ) then
+    if( not ppParentExpr( relexpr, rellit, relisnum ) ) then
     	exit function
     end if
 
@@ -469,32 +469,53 @@ private function ppRelExpression( relexpr as integer, rellit as string )
     	end select
 
     	'' Atom
-    	if( not ppParentExpr( parexpr, parlit ) ) then
+    	if( not ppParentExpr( parexpr, parlit, parisnum ) ) then
     		exit function
     	end if
 
-   		'' both literals?
-   		if( relexpr <= 0 or parexpr <= 0 ) then
+   		'' same type?
+   		if( (relisnum xor parisnum) = -1 ) then
    			hReportError FB.ERRMSG.SYNTAXERROR
    			exit function
    		end if
 
    		'' do operation
-   		select case op
-   		case FB.TK.EQ
-   			relexpr = rellit = parlit
-   		case FB.TK.GT
-   			relexpr = rellit > parlit
-   		case FB.TK.LT
-   			relexpr = rellit < parlit
-   		case FB.TK.NE
-   			relexpr = rellit <> parlit
-   		case FB.TK.LE
-   			relexpr = rellit <= parlit
-   		case FB.TK.GE
-   			relexpr = rellit >= parlit
-   		end select
+   		if( relisnum ) then
+   			'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
+   			select case op
+   			case FB.TK.EQ
+   				relexpr = val( rellit ) = val( parlit )
+   			case FB.TK.GT
+   				relexpr = val( rellit ) > val( parlit )
+   			case FB.TK.LT
+   				relexpr = val( rellit ) < val( parlit )
+   			case FB.TK.NE
+   				relexpr = val( rellit ) <> val( parlit )
+   			case FB.TK.LE
+   				relexpr = val( rellit ) <= val( parlit )
+   			case FB.TK.GE
+   				relexpr = val( rellit ) >= val( parlit )
+   			end select
 
+   		else
+   			select case op
+   			case FB.TK.EQ
+   				relexpr = rellit = parlit
+   			case FB.TK.GT
+   				relexpr = rellit > parlit
+   			case FB.TK.LT
+   				relexpr = rellit < parlit
+   			case FB.TK.NE
+   				relexpr = rellit <> parlit
+   			case FB.TK.LE
+   				relexpr = rellit <= parlit
+   			case FB.TK.GE
+   				relexpr = rellit >= parlit
+   			end select
+   		end if
+
+   		rellit = str$( relexpr )
+   		relisnum = TRUE
    		ops = ops + 1
     loop
 
@@ -511,18 +532,21 @@ end function
 '' ParentExpr  =   '(' Expression ')'
 ''			   |   DEFINED'(' ID ')'
 ''             |   LITERAL .
-private function ppParentExpr( parexpr as integer, atom as string ) as integer
+private function ppParentExpr( parexpr as integer, atom as string, isnumber as integer ) as integer
     dim res as integer
 
   	ppParentExpr = FALSE
   	res = FALSE
 
   	atom = ""
+  	isnumber = FALSE
 
   	'' '(' Expression ')'
-  	if( hMatch( CHAR_LPRNT ) ) then
-  		res = ppLogExpression( parexpr )
-  		if( not res ) then
+  	select case lexCurrentToken
+  	case CHAR_LPRNT
+  		lexSkipToken
+
+  		if( not ppLogExpression( parexpr ) ) then
   			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
   			exit function
   		end if
@@ -533,7 +557,8 @@ private function ppParentExpr( parexpr as integer, atom as string ) as integer
   		end if
 
   	'' DEFINED'(' ID ')'
-  	elseif( hMatch( FB.TK.DEFINED ) ) then
+  	case FB.TK.DEFINED
+  		lexSkipToken
 
     	if( lexCurrentToken <> CHAR_LPRNT ) then
     		hReportError FB.ERRMSG.EXPECTEDLPRNT
@@ -553,19 +578,33 @@ private function ppParentExpr( parexpr as integer, atom as string ) as integer
   			exit function
   		end if
 
-  		res = TRUE
+  	'' '-'
+	case CHAR_MINUS
+		lexSkipToken
+
+  		if( not ppParentExpr( parexpr, atom, isnumber ) ) then
+  			exit function
+  		elseif( not isnumber ) then
+  			hReportError FB.ERRMSG.SYNTAXERROR
+  			exit function
+  		end if
+
+  		atom = "-" + atom
+  		parexpr = len( atom )
 
   	'' LITERAL
-  	else
-  		atom = lexEatToken
-  		parexpr = len( atom )
-  		if( parexpr = 0 ) then
-  			res = FALSE
-  		else
-  			res = TRUE
+  	case else
+  		if( lexCurrentTokenClass <> FB.TKCLASS.STRLITERAL ) then
+  			isnumber = TRUE
   		end if
-  	end if
 
-	ppParentExpr = res
+  		atom = lexEatToken
+  		if( len( atom ) = 0 ) then
+  			hReportError FB.ERRMSG.SYNTAXERROR
+  			exit function
+  		end if
+  	end select
+
+	ppParentExpr = TRUE
 
 end function
