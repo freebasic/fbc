@@ -108,8 +108,9 @@ data "Type mismatch"
 data "Illegal specification"
 data "Expected 'END WITH'"
 data "Illegal inside a SUB or FUNCTION"
+data "Expected array"
 
-const FB.ERRMSGS = 62
+const FB.ERRMSGS = 63
 
 
 '':::::
@@ -474,7 +475,7 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
 		nm = nm + "@" + ltrim$( str$( argslen ) )
 	end if
 #elseif defined(TARGET_DOS)
-    nm = "_" + symbol	
+    nm = "_" + symbol
 #else
 	nm = symbol
 #endif

@@ -112,6 +112,12 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
     		symbSetArgName proc, arg, argv(a).nameidx
     	end if
 
+    	'' as both have the same type, re-set the suffix, because for example
+    	'' "a as integer" on the prototype and "a%" or just "a" on the proc
+    	'' declaration when in a defint context is allowed in QB
+    	symbSetArgSuffix proc, arg, argv(a).suffix
+
+    	'' next arg
     	arg = symbGetProcNextArg( proc, arg, FALSE )
     	a   = a + 1
     loop

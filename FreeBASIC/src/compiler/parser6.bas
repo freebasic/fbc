@@ -1329,6 +1329,7 @@ end function
 function cArrayFunct( funcexpr as integer )
 	dim sexpr as integer
 	dim islbound as integer, expr as integer
+	dim elm as FBTYPELEMENT ptr
 
 	cArrayFunct = FALSE
 
@@ -1353,6 +1354,20 @@ function cArrayFunct( funcexpr as integer )
 		if( not cVariable( sexpr, FALSE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
+		end if
+
+		'' array?
+		elm = astGetUDTElm( sexpr )
+		if( elm <> NULL ) then
+			if( symbGetUDTElmDimensions( elm ) = 0 ) then
+				hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
+				exit function
+			end if
+		else
+			if( not symbIsArray( astGetSymbol( sexpr ) ) ) then
+				hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
+				exit function
+			end if
 		end if
 
 		'' (',' Expression)?

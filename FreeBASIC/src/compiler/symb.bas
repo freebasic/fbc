@@ -2811,6 +2811,15 @@ function symbGetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) a
 end function
 
 '':::::
+sub symbSetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval suffix as integer ) static
+
+	if( a <> NULL ) then
+		a->suffix = suffix
+	end if
+
+end sub
+
+'':::::
 function symbGetArgsLen( byval f as FBSYMBOL ptr ) as integer static
 
 	symbGetArgsLen = f->lgt

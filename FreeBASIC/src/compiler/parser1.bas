@@ -2523,7 +2523,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
     ''
     if( arg.typ = INVALID ) then
         arg.typ = hGetDefType( id )
-        arg.suffix = INVALID
+        arg.suffix = arg.typ
     end if
 
     '' check for invalid args
