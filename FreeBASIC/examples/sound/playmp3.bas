@@ -111,17 +111,15 @@ declare sub 		printmp3tags	( byval stream as integer )
 	
 ''::::
 function byteptr2string( byval pbyte as byte ptr, byval lgt as integer ) as string
-	dim text as string, ptext as byte ptr
+	dim text as string
 	dim i as integer
 
 	text = ""
 	if( lgt > 0 ) then 
 		text = space$( lgt )
-		ptext = strptr( text )
-		for i = 1 to lgt
-			*ptext = *pbyte
-			ptext = ptext + 1
-			pbyte = pbyte + 1
+		for i = 0 to lgt-1
+			text[i] = *pbyte
+			pbyte += 1
 		next i
 	end if
 	
