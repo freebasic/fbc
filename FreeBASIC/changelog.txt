@@ -104,6 +104,7 @@ Version 0.13 Beta:
 - CLS in gfx mode now clears viewport only if previously set via VIEW (lillo)
 - BEEP rtlib routine for DOS was missing (DrV)
 - BYREF AS ANY arguments when variables weren't passed would create a temp vars with the VOID type (v1c)
+- SCREEN function rtlib routine for DOS was missing (DrV)
 
 
 Version 0.12 Beta:
