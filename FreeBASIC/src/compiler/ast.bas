@@ -2238,7 +2238,6 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 	'' hack! SGN with floats is handled by a function
 	if( (op = IR.OP.SGN) and (dclass = IR.DATACLASS.FPOINT) ) then
 		astNewUOP = rtlMathFSGN( o )
-		astTB(o).dtype = IR.DATATYPE.INTEGER
 		exit function
 	end if
 
