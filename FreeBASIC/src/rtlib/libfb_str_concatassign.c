@@ -59,15 +59,23 @@ FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_siz
 	{
 		dst_len = strlen( (char *)dst );
 
-		if( src_len > dst_size - dst_len )
-			src_len = dst_size - dst_len;
+		/* don't check byte ptr's */
+		if( dst_size > 0 )
+		{
+			if( src_len > dst_size - dst_len )
+				src_len = dst_size - dst_len;
+		}
 
 		fb_hStrCopy( &(((char *)dst)[dst_len]), src_ptr, src_len );
 
-		/* fill reminder with null's */
-		dst_size -= (dst_len+src_len);
+		/* don't check byte ptr's */
 		if( dst_size > 0 )
-			memset( &(((char *)dst)[dst_len+src_len]), 0, dst_size );
+		{
+			/* fill reminder with null's */
+			dst_size -= (dst_len+src_len);
+			if( dst_size > 0 )
+				memset( &(((char *)dst)[dst_len+src_len]), 0, dst_size );
+		}
 	}
 
 
@@ -76,6 +84,3 @@ FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_siz
 		fb_hStrDelTemp( (FBSTRING *)src );
 
 }
-
-
-
