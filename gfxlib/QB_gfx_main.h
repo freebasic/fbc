@@ -1,7 +1,7 @@
 #ifndef QB_GFX_MAIN_H_
 #define QB_GFX_MAIN_H_
 
-#include <sdl/SDL.h>
+#include <SDL/SDL.h>
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_rterr.h"
 

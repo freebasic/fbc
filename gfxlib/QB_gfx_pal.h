@@ -1,7 +1,7 @@
 #ifndef QB_GFX_PAL_H_
 #define QB_GFX_PAL_H_
 
-#include <sdl/SDL.h>
+#include <SDL/SDL.h>
 
 struct fb_GfxVgaPalEmuStruct
 {

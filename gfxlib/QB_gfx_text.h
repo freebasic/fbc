@@ -1,7 +1,7 @@
 #ifndef QB_GFX_TEXT_H_
 #define QB_GFX_TEXT_H_
 
-#include <sdl/SDL.h>
+#include <SDL/SDL.h>
 #include "../rtlib/fb.h"
 
 /* If using text coordinates: width x height is the desired text resolution, width will
