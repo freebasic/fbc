@@ -17,10 +17,10 @@ endif
 
 CC := gcc
 ifneq ($(WINSYSDIR),)
-    CFLAGS := -Wall -O3 -march=i386 -mcpu=i686
+    CFLAGS := -Wall -O3 -march=i586 -mcpu=i686
     #-fssa -- GCC's manual states it's not stable enough??
 else
-    CFLAGS := -Wall -O3 -march=i386 -mcpu=i686
+    CFLAGS := -Wall -O3 -march=i586 -mcpu=i686
 endif
 
 libpath = ../../lib

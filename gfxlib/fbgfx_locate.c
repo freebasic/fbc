@@ -23,9 +23,7 @@ void fb_GfxLocate (int xOrRow, int yOrColumn, int cursor)
 {
     int x, y, invalid;
 
-    if (fb_GfxInfo.fontData == NULL) fb_GfxSetFont(8, 16, (void*)fb_GfxDefaultFont8x16);
-
-    if (fb_GfxInfo.textCoords)
+    if (fb_GfxInfo.fontData != NULL && fb_GfxInfo.textCoords)
     {
         invalid = 0;
         x = (yOrColumn - 1) * fb_GfxInfo.charWidth;

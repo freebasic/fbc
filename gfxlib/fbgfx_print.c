@@ -79,7 +79,7 @@ void fb_GfxPrintBuffer (char *str, int mask)
 
     SANITY_CHECK;
 
-    if (fb_GfxInfo.fontData == NULL) fb_GfxSetFont(8, 16, (void*)fb_GfxDefaultFont8x16);
+    if (fb_GfxInfo.fontData == NULL) fb_GfxSetFont((Uint8*)fb_GfxDefaultFont8x16);
 
     surface = SDL_CreateRGBSurfaceFrom(fb_GfxInfo.fontData,
                                        fb_GfxInfo.charWidth, fb_GfxInfo.charHeight << 8,

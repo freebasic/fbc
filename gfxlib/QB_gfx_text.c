@@ -37,19 +37,19 @@ extern struct fb_GfxVgaPalEmuStruct fb_GfxVgaPalEmu;
 extern struct fb_GfxInfoStruct fb_GfxInfo;
 */
 
-const Uint8 fb_GfxDefaultFont8x8[2048] = {
-#include "font8x8.h"
+const Uint8 fb_GfxDefaultFont8x8[2 + 2048] = {
+    #include "font8x8.h"
 };
 
-const Uint8 fb_GfxDefaultFont8x16[4096] = {
-#include "font8x16.h"
+const Uint8 fb_GfxDefaultFont8x16[2 + 4096] = {
+    #include "font8x16.h"
 };
 
-FBCALL int fb_GfxSetFont (Uint8 width, Uint8 height, void *fontData)
+FBCALL int fb_GfxSetFont (Uint8 *fontData)
 {
-    fb_GfxInfo.fontData = fontData;
-    fb_GfxInfo.charWidth  = width;
-    fb_GfxInfo.charHeight = height;
+    fb_GfxInfo.charWidth  = fontData[0];
+    fb_GfxInfo.charHeight = fontData[1];
+    fb_GfxInfo.fontData   = fontData + 2;
 
     return 0;
 }

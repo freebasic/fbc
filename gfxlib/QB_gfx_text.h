@@ -23,8 +23,8 @@
 #include "../rtlib/fb.h"
 
 #ifndef FBGFX_NO_FONTDATA_EXTERN
-extern const Uint8 fb_GfxDefaultFont8x8[2048];
-extern const Uint8 fb_GfxDefaultFont8x16[4096];
+extern const Uint8 fb_GfxDefaultFont8x8[2 + 2048];
+extern const Uint8 fb_GfxDefaultFont8x16[2 + 4096];
 #endif
 
 /* If using text coordinates: width x height is the desired text resolution, width will
@@ -38,7 +38,7 @@ extern const Uint8 fb_GfxDefaultFont8x16[4096];
 /* transBgFlag: -1=no change, 0=solid background, 1=transparent */
 FBCALL int fb_GfxSetFontBg  (Uint32 bgColor, int transBgFlag);
 
-FBCALL int fb_GfxSetFont    (Uint8 width, Uint8 height, void *fontData);
+FBCALL int fb_GfxSetFont    (Uint8 *fontData);
 FBCALL int fb_GfxSetFormat  (int tabStopDistance, int affectedByViewFlag,
                                 int letterWrapFlag, int scrollFlag, int locateTextCoords);
 

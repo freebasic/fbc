@@ -22,6 +22,7 @@
 void fb_GfxWidth (int width, int height)
 {
     int h;
+    Uint8 *font;
 
     if (fb_GfxInfo.textCoords)
     {
@@ -33,11 +34,11 @@ void fb_GfxWidth (int width, int height)
 
         if ( (((h / height) + 4) >> 3) < 2)
         {
-            fb_GfxSetFont(8, 8, (void*)fb_GfxDefaultFont8x8);
+            font = (Uint8*)fb_GfxDefaultFont8x8;
         }
         else
         {
-            fb_GfxSetFont(8, 16, (void*)fb_GfxDefaultFont8x16);
+            font = (Uint8*)fb_GfxDefaultFont8x16;
         }
     }
     else
@@ -47,16 +48,17 @@ void fb_GfxWidth (int width, int height)
         switch (height)
         {
         case 8:
-            fb_GfxSetFont(8, 8, (void*)fb_GfxDefaultFont8x8);
+            font = (Uint8*)fb_GfxDefaultFont8x8;
             break;
         case 16:
-            fb_GfxSetFont(8, 16, (void*)fb_GfxDefaultFont8x16);
+            font = (Uint8*)fb_GfxDefaultFont8x16;
             break;
         default:
             return;
 //            break;
         }
     }
-
+    
+    fb_GfxSetFont(font);
 }
 
