@@ -10,8 +10,7 @@ Const FALSE = 0
 Const MusicFile = "dne_trtn.mod"
 	Dim Shared Handle As Long
 
-
-	If FSOUND_GetVersion <= FMOD_VERSION Then
+	If FSOUND_GetVersion < FMOD_VERSION Then
   		ErrorQuit "FMOD version " + STR$(FMOD_VERSION) + " or greater required"
 	End If
 

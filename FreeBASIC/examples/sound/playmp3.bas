@@ -31,7 +31,7 @@ declare sub 		printmp3tags	( byval stream as integer )
 	end if
    
    	''
-   	if( FSOUND_GetVersion <= FMOD_VERSION ) then 
+   	if( FSOUND_GetVersion < FMOD_VERSION ) then 
       	print "FMOD version " + str$(FMOD_VERSION) + " or greater required" 
       	end 1
    	end If 
