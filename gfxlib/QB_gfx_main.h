@@ -101,7 +101,7 @@ extern struct fb_GfxInfoStruct fb_GfxInfo;
 #endif
 
 #define SANITY_CHECK_CONDITION   (!fb_GfxInfo.sdlIsInitialized || !fb_GfxInfo.screen || !fb_GfxInfo.videoIsInitialized)
-#define SANITY_CHECK   			 if (SANITY_CHECK_CONDITION) return;
+#define SANITY_CHECK   			 if (SANITY_CHECK_CONDITION) return
 
 /* ----- Defines for pixel clipping tests */
 #define clip_xmin fb_GfxInfo.screen->clip_rect.x

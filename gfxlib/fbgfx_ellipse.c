@@ -326,7 +326,7 @@ FBCALL int fb_GfxEllipse (float x, float y, float radius, Uint32 color,
     Sint16 rx, ry, rradX, rradY;
     float radX, radY;
 
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     if (coordType != COORD_TYPE_A)
     {

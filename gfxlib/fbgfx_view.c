@@ -29,17 +29,16 @@ static void fb_GfxCenterCursor (void)
     }
     else
     {
-        fb_GfxInfo.gfx_cursorX = fb_GfxInfo.view.w >> 1 + fb_GfxInfo.view.x;
-        fb_GfxInfo.gfx_cursorY = fb_GfxInfo.view.h >> 1 + fb_GfxInfo.view.y;
+        fb_GfxInfo.gfx_cursorX = (fb_GfxInfo.view.w >> 1) + fb_GfxInfo.view.x;
+        fb_GfxInfo.gfx_cursorY = (fb_GfxInfo.view.h >> 1) + fb_GfxInfo.view.y;
     }
 }
 
 FBCALL int fb_GfxView (int x1, int y1, int x2, int y2, Uint32 fillCol, Uint32 borderCol, int screenFlag)
 {
-    SDL_Color *c;
     SDL_Rect r;
 
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     /* Let's be a little more tolerant than QB (SDL_SetClipRect takes care of clipping boxs that go offscreen) */
     if (x2 < x1 || y2 < y1) return -1;

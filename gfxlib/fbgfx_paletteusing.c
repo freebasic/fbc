@@ -23,7 +23,7 @@ FBCALL int fb_GfxPalette (Uint32 attribute, Uint32 color)
 {
     Uint8 r, g, b;
 
-    if (SANITY_CHECK_CONDITION) return -1;
+    SANITY_CHECK -1;
     
     if( attribute == 0xFFFFFFFF )
     {

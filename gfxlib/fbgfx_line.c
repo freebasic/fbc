@@ -228,7 +228,7 @@ FBCALL int fb_GfxLineEx(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint32 color
     int pixx, pixy;
     int x, y;
     int dx, dy;
-    int ax, ay;
+    //int ax, ay;
     int sx, sy;
     int swaptmp;
     Uint8 *pixel;
@@ -362,10 +362,9 @@ FBCALL int fb_GfxLineEx(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint32 color
 
 FBCALL int fb_GfxLine (float x1, float y1, float x2, float y2, Uint32 color, int type, unsigned int style, int coordType)
 {
-    SDL_Color *c;
     Sint16 rx1, ry1, rx2, ry2;
 
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     fb_GfxConvertCoords(&x1, &y1, &x2, &y2, coordType);
 

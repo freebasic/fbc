@@ -20,7 +20,7 @@
 
 FBCALL int fb_GfxWindow (float x1, float y1, float x2, float y2, int screenFlag)
 {
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     if (x1 != 0 || y1 != 0 || x2 != 0 || y2 != 0)
     {
@@ -53,5 +53,7 @@ FBCALL int fb_GfxWindow (float x1, float y1, float x2, float y2, int screenFlag)
     {
         fb_GfxInfo.winActive = 0;
     }
+    
+    return 0;
 }
 

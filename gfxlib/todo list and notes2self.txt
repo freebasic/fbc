@@ -1,4 +1,5 @@
 - Merge screen and screenEx
 - fb_GfxPrintBuffer could probably be smaller
-- Inkey needs to check Numpad, and set scancode according to keysym
+- Inkey needs to check Numlock, and set scancode according to keysym
 - bc parameter on Color makes fb_GfxSetFontBg obsolete
+- what should floating point functions like pmap return for error?

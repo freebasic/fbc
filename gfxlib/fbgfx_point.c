@@ -25,7 +25,7 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
     Uint8 r, g, b, bpp, *p;
     Uint32 pixel;
 
-    SANITY_CHECK
+    SANITY_CHECK 0xFFFFFFFF;
 
     bpp = fb_GfxInfo.screen->format->BytesPerPixel;
 
@@ -70,7 +70,8 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
             pixel = p[0] + (p[1] << 8) + (p[2] << 16);
         }
         break;
-    case 4:
+    //case 4:
+    default:
         pixel = *(Uint32 *) p;
         break;
     }  /* switch */

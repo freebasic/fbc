@@ -25,7 +25,7 @@ FBCALL int fb_GfxPut( float x, float y, void *sourceAddress, int coordType, int 
     int ret, depth, bytesPP, w, h;
     Uint32 colorKey;
 
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     if (coordType != COORD_TYPE_A)
     {

@@ -99,10 +99,9 @@ FBCALL int fb_GfxPsetEx (Sint16 x, Sint16 y, Uint32 color)
 
 FBCALL int fb_GfxPset (float x, float y, Uint32 color, int coordType)
 {
-    SDL_Color *c;
     Sint16 rx, ry;
 
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     if (color == DEFAULT_COLOR) color = fb_GfxInfo.defaultColor;
 

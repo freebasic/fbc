@@ -26,7 +26,7 @@
 FBCALL int fb_GfxPsetNoLocking (Sint16 x, Sint16 y, Uint32 color)
 {
     int bpp;
-    Uint8 *p, *colorptr;
+    Uint8 *p;
 
     /*
      * Honor clipping setup at pixel level

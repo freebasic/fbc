@@ -24,7 +24,7 @@ static int fb_GfxInpEx (void)
     int ret;
     SDL_Color *c;
     
-    if (SANITY_CHECK_CONDITION) return -1;
+    SANITY_CHECK -1;
     
     if (fb_GfxInfo.screen->format->BytesPerPixel != 1) return 0;
     

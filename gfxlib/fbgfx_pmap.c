@@ -71,7 +71,8 @@ FBCALL float fb_GfxPMap (float coord, int num)
         }
         return coord;
 
-//    default:
+    default:
         // <><><><><> error... <><><><><>
+        return -1.0f;  // ???
     }
 }

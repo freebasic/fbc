@@ -77,7 +77,7 @@ void fb_GfxPrintBuffer (char *str, int mask)
     int ret, length;
     Sint16 ox, x, y;
 
-    SANITY_CHECK
+    SANITY_CHECK;
 
     if (fb_GfxInfo.fontData == NULL) fb_GfxSetFont(8, 16, (void*)fb_GfxDefaultFont8x16);
 

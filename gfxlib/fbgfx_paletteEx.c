@@ -23,7 +23,7 @@ int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
 {
     SDL_Color c;
     
-    if (SANITY_CHECK_CONDITION) return -1;
+    SANITY_CHECK -1;
     
     fb_GfxInfo.paletteChanged = 1;
 

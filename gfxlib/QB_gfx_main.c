@@ -36,8 +36,6 @@ static void fb_GfxQuit      			(void);
 static int 	fb_GfxScreenEx   			(int width, int height, int depth, int fullscreenFlag);
 static void fb_GfxRestoreHandlers 		(void);
 static void fb_GfxTakeHandlers 			(void);
-static int 	fb_GfxGetEx      			(Sint16 x, Sint16 y, Uint16 w, Uint16 h, void *dst);
-
 
 #define DEFAULT_DEPTH 8
 
@@ -299,9 +297,7 @@ static int fb_GfxScreenEx(int width, int height, int depth, int fullScreenFlag)
 
 void fb_GfxColor ( int fc, int bc )
 {
-    SDL_Color c;
-
-    SANITY_CHECK
+    SANITY_CHECK;
 
     if (fb_GfxInfo.screen->format->BytesPerPixel == 1)
     {
@@ -315,7 +311,7 @@ void fb_GfxColor ( int fc, int bc )
 
 FBCALL int fb_GfxFlip (int frompage, int topage)
 {
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     if (fb_GfxInfo.paletteChanged)
     {

@@ -77,7 +77,7 @@ FBCALL int fb_GfxGet (float x1, float y1, float x2, float y2, void *elementAddre
     Sint16 w, h,
            rx1, ry1, rx2, ry2;
 
-    SANITY_CHECK
+    SANITY_CHECK -1;
 
     fb_GfxConvertCoords(&x1, &y1, &x2, &y2, coordType);
     fb_GfxTransCoord(x1, y1, &rx1, &ry1);

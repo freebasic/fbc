@@ -21,7 +21,7 @@
 
 FBCALL void fb_GfxPaletteOut (int port, int data)
 {
-    SANITY_CHECK
+    SANITY_CHECK;
     
     data &= 0xFF;
 

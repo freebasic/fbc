@@ -18,7 +18,7 @@
 
 #include "QB_gfx_main.h"
 
-/* Equivalent to calling POINT witha single parameter in QB
+/* Equivalent to calling POINT with a single parameter in QB
    Gets info about current graphics cursor position:
        0 for viewport x
        1 for viewport y
@@ -36,8 +36,10 @@ FBCALL float fb_GfxCursor (int number)
         return fb_GfxInfo.gfx_cursorX;
     case 3:
         return fb_GfxInfo.gfx_cursorY;
-//    default:
+    //default:
         // <><><><><> error... <><><><><>
     }
+    
+    return -1.0f; // ????
 }
 

@@ -22,7 +22,7 @@ void fb_GfxCls (int color)
 {
     Uint8 *colorptr;
 
-    SANITY_CHECK
+    SANITY_CHECK;
 
     fb_GfxInfo.text_cursorX = 0;
     fb_GfxInfo.text_cursorY = 0;
