@@ -175,21 +175,24 @@ function lexPreProcessor as integer
     	if( lexCurrentToken = CHAR_LPRNT ) then
     		lexSkipToken LEXCHECK_NODEFINE
 
-			lastarg = NULL
-			do
-			    lastarg = symbAddDefineArg( lastarg, lexEatToken( LEXCHECK_NODEFINE ) )
-			    args = args + 1
+			'' not arg-less?
+			if( lexCurrentToken <> CHAR_RPRNT ) then
+				lastarg = NULL
+				do
+			    	lastarg = symbAddDefineArg( lastarg, lexEatToken( LEXCHECK_NODEFINE ) )
+			    	args = args + 1
 
-			    if( arghead = NULL ) then
-			    	arghead = lastarg
-			    end if
+			    	if( arghead = NULL ) then
+			    		arghead = lastarg
+			    	end if
 
-				'' ','?
-				if( lexCurrentToken <> CHAR_COMMA ) then
-					exit do
-				end if
-			    lexSkipToken LEXCHECK_NODEFINE
-			loop
+					'' ','?
+					if( lexCurrentToken <> CHAR_COMMA ) then
+						exit do
+					end if
+			    	lexSkipToken LEXCHECK_NODEFINE
+				loop
+			end if
 
     		'' ')'
     		if( not hMatch( CHAR_RPRNT ) ) then

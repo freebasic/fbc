@@ -230,6 +230,16 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, _
 	'' no args, just load text as-is
 	else
 
+		'' '(' ')'?
+		if( lexCurrentChar = CHAR_LPRNT ) then
+			lexEatChar
+			if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+				hReportError FB.ERRMSG.EXPECTEDRPRNT
+				exit sub
+			end if
+			lexEatChar
+		end if
+
 		if( ctx.deflen = 0 ) then
 			ctx.deftext = s->def.text
 		else
