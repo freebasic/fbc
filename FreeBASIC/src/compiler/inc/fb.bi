@@ -36,9 +36,9 @@ const FB.BINPATH$				= "\\bin\\dos\\"
 const FB.INCPATH$				= "\\inc\\"
 const FB.LIBPATH$				= "\\lib\\dos"
 #else
-const FB.BINPATH$				= "/bin/"
-const FB.INCPATH$				= "/inc/"
-const FB.LIBPATH$				= "/lib"
+const FB.BINPATH$				= "/usr/share/freebasic/bin/"
+const FB.INCPATH$				= "/usr/share/freebasic/inc/"
+const FB.LIBPATH$				= "/usr/share/freebasic/lib"
 #endif
 
 '' compiler options

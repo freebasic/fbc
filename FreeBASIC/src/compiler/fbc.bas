@@ -466,7 +466,11 @@ function linkFiles as integer
     ldcline = ldcline + "-o \"" + ctx.outname + QUOTE
 
     '' default lib path
+#ifndef TARGET_LINUX
     ldcline = ldcline + " -L \"" + exepath$ + FB.LIBPATH + QUOTE
+#else
+    ldcline = ldcline + " -L \"" + FB.LIBPATH + QUOTE
+#endif
     '' and the current path to libs search list
     ldcline = ldcline + " -L \"./\""
 

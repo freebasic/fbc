@@ -165,7 +165,11 @@ private sub hSetCtx
 	env.incpaths		= 0
 	incfiles			= 0
 
+#ifndef TARGET_LINUX
 	fbAddIncPath exepath$ + FB.INCPATH
+#else
+	fbAddIncPath FB.INCPATH
+#endif
 
 end sub
 
