@@ -1,9 +1,19 @@
 Version 0.12 Beta:
 
+[chged] Linux port does not use ncurses anymore, but its own internal lowlevel routines for console access.
+        Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
+        at programs startup and proper colors support under X11. Compatibility issues may rise though, so
+        feedback is welcome (lillo)
+[chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
+[chged] Linux port install script will now warn users if not run with root priviledges (lillo)
 [added] "operator =" shortcut, as in "a += b * c" (v1ctor)
 [added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
         faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
 [added] "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
+[added] SCREENINFO gfx function to get informations on current gfx mode (lillo)
+[added] SETMOUSE gfx statement to set mouse position and cursor visibility (lillo)
+[added] Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
+[added] possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
@@ -11,6 +21,16 @@ Version 0.12 Beta:
 [fixed] ERASE should accept multiple arguments (v1c)
 [fixed] DATA should not be allowed inside procs (v1c)
 [fixed] invalid types in CASE statements were not been reported (v1c)
+[fixed] "blurry window" gfx bug in Win32 DirectX windowed mode (lillo)
+[fixed] DRAW had precision bugs that caused malformed shapes to be drawn (lillo)
+[fixed] bad negative coordinates transformations was affecting all gfx primitives (lillo)
+[fixed] SCREENPTR was always returning the pointer to the visible page memory instead of the working page (lillo)
+[fixed] palette handling via INP/OUT emulation was producing bad colors (Sterling)
+[fixed] various fixes to the X11 internal gfx driver: was not working if the X server was running in 24bpp mode, mouse
+        cursor was not hidden in fullscreen mode, mouse and keyboard were still working even if the app had not got
+        focus, had memory leaks if executed on a remote X server (lillo)
+[fixed] using gfx primitives on a non-visible working page was still causing screen updates (lillo)
+[fixed] BSAVE was not expecting commas as parameters separator (lillo)
 
 
 Version 0.11 Beta:
