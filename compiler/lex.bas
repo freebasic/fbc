@@ -20,6 +20,7 @@
 ''
 ''
 '' chng: sep/2004 written [v1ctor]
+'' 	     dec/2004 pre-processor added (all code at lexpp.bas) [v1ctor]
 
 option explicit
 
@@ -82,15 +83,15 @@ sub lexInit
 	ctx.k = 0
 
 	for i = 0 to FB.LEX.MAXK
-		ctx.tokenTB(i).id = -1
+		ctx.tokenTB(i).id = INVALID
 	next i
 
-	ctx.char		= -1
-	ctx.lachar		= -1
+	ctx.char		= INVALID
+	ctx.lachar		= INVALID
 
 	ctx.linenum		= 1
 	ctx.colnum		= 1
-	ctx.lasttoken	= -1
+	ctx.lasttoken	= INVALID
 
 	ctx.deflen		= 0
 
@@ -169,14 +170,14 @@ sub lexUnreadChar static
 		ctx.buffptr = ctx.buffptr - 1
 	end if
 
-	ctx.char 	= -1
+	ctx.char 	= INVALID
 
 end sub
 
 '':::::
 function lexCurrentCharEx( byval skipwhitespc as integer ) as integer static
 
-    if( ctx.char = -1 ) then
+    if( ctx.char = INVALID ) then
     	ctx.char = lexReadChar
     end if
 
@@ -205,11 +206,11 @@ function lexEatChar as integer static
     ''
     lexEatChar = ctx.char
 
-    if( ctx.lachar = -1 ) then
+    if( ctx.lachar = INVALID ) then
     	ctx.char = lexReadChar
     else
     	ctx.char = ctx.lachar
-    	ctx.lachar = -1
+    	ctx.lachar = INVALID
     end if
 
 end function
@@ -217,7 +218,7 @@ end function
 '':::::
 function lexLookAheadCharEx( byval skipwhitespc as integer ) as integer
 
-	if( ctx.lachar = -1 ) then
+	if( ctx.lachar = INVALID ) then
 		ctx.lachar = lexReadChar
 	end if
 
@@ -350,6 +351,8 @@ function lexReadNonDecNumber as string static
 		loop
 
 	end select
+
+	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
 
 	lexReadNonDecNumber = str$( v )
 
@@ -496,6 +499,8 @@ function lexReadNumber( typ as integer, tlen as integer ) as string static
 		end if
 	end if
 
+	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
+
 	''
 	lexReadNumber = s
 
@@ -535,7 +540,8 @@ end function
 
 '':::::
 sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) static
-	dim c as integer, linecontinuation as integer
+	dim c as integer
+	dim linecontinuation as integer
 	dim isnumber as integer
 	dim d as integer
 	dim token as string
@@ -722,13 +728,47 @@ readid:
 
 	end select
 
+
+end sub
+
+'':::::
+private sub hCheckPP
+	static reclevel as integer
+
+	'' not already inside the PP? (ie: not skipping a false #IF or #ELSE)
+	if( reclevel = 0 ) then
+		'' '#' char?
+		if( ctx.tokenTB(0).id = CHAR_SHARP ) then
+			'' at beginning of line (or top of source-file)?
+			if( (ctx.lasttoken = FB.TK.EOL) or (ctx.lasttoken = INVALID) ) then
+                reclevel = reclevel + 1
+                lexSkipToken
+
+       			'' not a keyword? error, parser will catch it..
+       			if( ctx.tokenTB(0).class <> FB.TKCLASS.KEYWORD ) then
+       				reclevel = reclevel - 1
+       				exit sub
+       			end if
+
+       			'' pp failed? exit
+       			if( not lexPreProcessor ) then
+       				reclevel = reclevel - 1
+       				exit sub
+       			end if
+
+				reclevel = reclevel - 1
+			end if
+		end if
+	end if
+
 end sub
 
 '':::::
 function lexCurrentToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer static
 
-    if( ctx.tokenTB(0).id = -1 ) then
+    if( ctx.tokenTB(0).id = INVALID ) then
     	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    	hCheckPP
     end if
 
     lexCurrentToken = ctx.tokenTB(0).id
@@ -738,8 +778,9 @@ end function
 '':::::
 function lexCurrentTokenClass( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer static
 
-    if( ctx.tokenTB(0).id = -1 ) then
+    if( ctx.tokenTB(0).id = INVALID ) then
     	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    	hCheckPP
     end if
 
     lexCurrentTokenClass = ctx.tokenTB(0).class
@@ -753,7 +794,7 @@ function lexLookAhead( byval k as integer ) as integer static
     	exit function
     end if
 
-    if( ctx.tokenTB(k).id = -1 ) then
+    if( ctx.tokenTB(k).id = INVALID ) then
 	    lexNextToken ctx.tokenTB(k)
 	end if
 
@@ -772,7 +813,7 @@ function lexLookAheadClass( byval k as integer ) as integer static
     	exit function
     end if
 
-    if( ctx.tokenTB(k).id = -1 ) then
+    if( ctx.tokenTB(k).id = INVALID ) then
     	lexNextToken ctx.tokenTB(k)
     end if
 
@@ -785,14 +826,14 @@ function lexLookAheadClass( byval k as integer ) as integer static
 end function
 
 '':::::
-sub hMoveKDown static
+private sub hMoveKDown static
     dim i as integer
 
     for i = 0 to ctx.k-1
     	ctx.tokenTB(i) = ctx.tokenTB(i+1)
     next i
 
-    ctx.tokenTB(ctx.k).id = -1
+    ctx.tokenTB(ctx.k).id = INVALID
 
     ctx.k = ctx.k - 1
 
@@ -801,6 +842,7 @@ end sub
 '':::::
 function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string static
 
+    ''
     lexEatToken = left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
 
     ''
@@ -811,12 +853,13 @@ function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine a
 
     ctx.lasttoken = ctx.tokenTB(0).id
 
-    ''
     if( ctx.k = 0 ) then
     	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
     else
     	hMoveKDown
     end if
+
+    hCheckPP
 
 end function
 
@@ -837,26 +880,42 @@ sub lexSkipToken( byval checkLineCont as integer = TRUE, byval checkDefine as in
     	hMoveKDown
     end if
 
+    hCheckPP
+
 end sub
 
 '':::::
-sub lexSkipLine static
+sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipline as integer = FALSE ) static
     dim c as integer
 
-    ''
+	if( not skipline ) then
+		dst = ""
+	end if
+
+    '' check look ahead tokens if any
     do while( ctx.k > 0 )
-    	hMoveKDown
     	c = ctx.tokenTB(0).id
-    	if( c = FB.TK.EOF ) or ( c = FB.TK.EOL ) then
+    	select case c
+    	case FB.TK.EOF, FB.TK.EOL, endchar
     		exit sub
-    	end if
+    	case else
+    		if( not skipline ) then
+    			dst = dst + left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
+    		end if
+    	end select
+
+    	hMoveKDown
     loop
 
    	'' check current token
-   	c = ctx.tokenTB(0).id
-   	if( c = FB.TK.EOF ) or ( c = FB.TK.EOL ) then
+    select case ctx.tokenTB(0).id
+    case FB.TK.EOF, FB.TK.EOL, endchar
    		exit sub
-   	end if
+   	case else
+   		if( not skipline ) then
+   			dst = dst + left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
+   		end if
+   	end select
 
     ''
 	do
@@ -886,16 +945,33 @@ sub lexSkipLine static
 				if( lexCurrentChar = CHAR_LF ) then c = lexEatChar
 			end if
 
-			ctx.tokenTB(0).id = FB.TK.EOL
+			ctx.tokenTB(0).id 	 = FB.TK.EOL
 			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
 			exit sub
+
+		'' closing char?
+		elseif( c = endchar ) then
+			ctx.tokenTB(0).id 	 = endchar
+			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
+			exit sub
+
 		end if
 
-		'' skip
 		c = lexEatChar
+		if( not skipline ) then
+			dst = dst + chr$( c )
+		end if
 	loop
 
 end sub
+
+'':::::
+sub lexSkipLine static
+
+	lexReadLine , "", TRUE
+
+end sub
+
 
 ''::::
 function lexLineNum as integer

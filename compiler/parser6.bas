@@ -806,12 +806,20 @@ function cFileStmt
 		end if
 		fmode = astNewCONST( fmode, IR.DATATYPE.INTEGER )
 
-		'' (ACCESS Expression)?
+		'' (ACCESS (READ|WRITE|READ WRITE))?
 		if( hMatch( FB.TK.ACCESS ) ) then
-			if( not cExpression( faccess ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			select case lexCurrentToken
+			case FB.TK.WRITE
+				lexSkipToken
+				faccess = astNewCONST( FB.FILE.ACCESS.WRITE, IR.DATATYPE.INTEGER )
+			case FB.TK.READ
+				lexSkipToken
+				if( hMatch( FB.TK.WRITE ) ) then
+					faccess = astNewCONST( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
+				else
+					faccess = astNewCONST( FB.FILE.ACCESS.READ, IR.DATATYPE.INTEGER )
+				end if
+			end select
 		else
 			faccess = astNewCONST( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
 		end if

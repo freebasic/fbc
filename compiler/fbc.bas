@@ -19,16 +19,26 @@
 '' main module
 ''
 '' chng: sep/2004 written [v1ctor]
+''		 dec/2004 linux support added [lillo]
 
 
 defint a-z
 option explicit
+option private
 
 '$include: 'inc\fb.bi'
-'$include: 'inc\hlp.bi'
+'$include: 'inc\fbint.bi'
 
+const FB_MAXARGS	  = 100
 const FB_MINSTACKSIZE =   32 * 1024
 const FB_DEFSTACKSIZE = 1024 * 1024
+
+enum FB_OUTTYPE_ENUM
+	FB_OUTTYPE_EXECUTABLE
+	FB_OUTTYPE_STATICLIB
+	FB_OUTTYPE_DYNAMICLIB
+end enum
+
 
 type FBCCTX
     libs			as integer
@@ -43,8 +53,9 @@ type FBCCTX
 	verbose			as integer
 	debug 			as integer
 	stacksize		as integer
+	outtype			as integer
 
-	exefile 		as string
+	outname 		as string
 	entrypoint 		as string
 	subsystem		as string
 end type
@@ -62,18 +73,20 @@ declare function 	listFiles 			( ) as integer
 declare function 	compileFiles 		( ) as integer
 declare function 	assembleFiles 		( ) as integer
 declare function 	linkFiles 			( ) as integer
+declare function 	archiveFiles 		( ) as integer
 declare function 	delFiles 			( ) as integer
+declare function 	makeImpLib 			( dllname as string ) as integer
 
 
 ''globals
-	dim shared argc as integer, argv(0 to 99) as string
-	dim shared inplist(0 to 99) as string
-	dim shared asmlist(0 to 99) as string
-	dim shared outlist(0 to 99) as string
-	dim shared liblist(0 to 99) as string
-	dim shared objlist(0 to 99) as string
-	dim shared deflist(0 to 99) as string
-	dim shared inclist(0 to 99) as string
+	dim shared argc as integer, argv(0 to FB_MAXARGS-1) as string
+	dim shared inplist(0 to FB_MAXARGS-1) as string
+	dim shared asmlist(0 to FB_MAXARGS-1) as string
+	dim shared outlist(0 to FB_MAXARGS-1) as string
+	dim shared liblist(0 to FB_MAXARGS-1) as string
+	dim shared objlist(0 to FB_MAXARGS-1) as string
+	dim shared deflist(0 to FB_MAXARGS-1) as string
+	dim shared inclist(0 to FB_MAXARGS-1) as string
 	dim shared ctx as FBCCTX
 
     ''
@@ -118,8 +131,14 @@ declare function 	delFiles 			( ) as integer
 
 	if( not ctx.compileonly ) then
     	'' link
-    	if( not linkFiles ) then
-    		end 1
+    	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
+    		if( not linkFiles ) then
+    			end 1
+    		end if
+    	else
+    		if( not archiveFiles ) then
+    			end 1
+    		end if
     	end if
     end if
 
@@ -231,22 +250,37 @@ function linkFiles as integer
 	dim ldcline as string
 	dim ldpath as string
 	dim QUOTE as string
+#ifdef TARGET_WIN32
+	dim libname as string, dllname as string
+#endif
 
 	linkFiles = FALSE
 
 	QUOTE = chr$( 34 )
 
 	'' if no executable name was defined, assume it's the same as the first source file
-	if( len( ctx.exefile ) = 0 ) then
-		ctx.exefile = hStripExt( inplist(0) )
+	if( len( ctx.outname ) = 0 ) then
+		ctx.outname = hStripExt( inplist(0) )
 #ifdef TARGET_WIN32
-		ctx.exefile = ctx.exefile + ".exe"
+		select case ctx.outtype
+		case FB_OUTTYPE_EXECUTABLE
+			ctx.outname = ctx.outname + ".exe"
+		case FB_OUTTYPE_DYNAMICLIB
+			ctx.outname = ctx.outname + ".dll"
+		end select
 #endif
 	end if
 
     '' if entry point was not defined, assume it's at the first source file
 	if( len( ctx.entrypoint ) = 0 ) then
-		ctx.entrypoint = hStripPath( hStripExt( inplist(0) ) )
+		select case ctx.outtype
+		case FB_OUTTYPE_EXECUTABLE
+			ctx.entrypoint = "fb_" + hStripPath( hStripExt( inplist(0) ) ) + "_entry"
+#ifdef TARGET_WIN32
+		case FB_OUTTYPE_DYNAMICLIB
+            ctx.entrypoint = "_DLLMAIN"
+#endif
+		end select
 	end if
 	hClearName ctx.entrypoint
 
@@ -267,6 +301,34 @@ function linkFiles as integer
 	ldcline = "-dynamic-linker /lib/ld-linux.so.2"
 #endif
 
+#ifdef TARGET_WIN32
+    if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+		''
+		dllname = hStripPath( hStripExt( ctx.outname ) )
+
+		'' create a dll
+		ldcline = ldcline + " --dll --enable-stdcall-fixup"
+
+		'' add aliases for functions without @nn
+		if( env.clopt.nostdcall ) then
+	   		ldcline = ldcline + " --add-stdcall-alias"
+    	end if
+
+		'' export all global symbols
+		ldcline = ldcline + " --export-all-symbols"
+
+    	'' don't export entry points
+    	ldcline = ldcline + " --exclude-symbols DLLMAIN@12,_DLLMAIN"
+    	for i = 0 to ctx.inps-1
+        	ldcline = ldcline + ",fb_" + hStripExt(outlist(i)) + "_entry"
+        	ldcline = ldcline + ",fb_" + ucase$(hStripExt(outlist(i))) + "_entry"
+    	next i
+
+    	'' don't export any symbol from rtlib
+        ldcline = ldcline + " --exclude-libs libfb.a"
+    end if
+#endif
+
 	if( not ctx.debug ) then
 		ldcline = ldcline + " -s"
 	end if
@@ -277,7 +339,7 @@ function linkFiles as integer
 #endif
 
 	'' set entry point
-	ldcline = ldcline + " -e fb_" + ctx.entrypoint + "_entry "
+	ldcline = ldcline + " -e " + ctx.entrypoint + " "
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
@@ -290,21 +352,44 @@ function linkFiles as integer
     next i
 
     '' set executable name
-    ldcline = ldcline + "-o " + QUOTE + ctx.exefile + QUOTE
+    ldcline = ldcline + "-o " + QUOTE + ctx.outname + QUOTE
 
     '' default lib path
     ldcline = ldcline + " -L " + QUOTE + exepath$ + FB.LIBPATH + QUOTE
+    '' and the current path to libs search list
+    ldcline = ldcline + " -L " + QUOTE +  "./" + QUOTE
 
     '' init lib group
     ldcline = ldcline + " -( "
 
     '' add libraries from cmm-line and found when parsing
     for i = 0 to ctx.libs-1
+#ifdef TARGET_WIN32
+    	libname = liblist(i)
+    	if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    		'' check if the lib isn't the dll's import library itself
+            if( libname = dllname ) then
+            	libname = ""
+            end if
+    	end if
+
+    	if( len( libname ) > 0 ) then
+    		ldcline = ldcline + "-l" + libname + " "
+    	end if
+#else
     	ldcline = ldcline + "-l" + liblist(i) + " "
+#endif
     next i
 
     '' end lib group
     ldcline = ldcline + "-) "
+
+#ifdef TARGET_WIN32
+    if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+        '' create the def list to use when creating the import library
+        ldcline = ldcline + " --output-def " + QUOTE + dllname + ".def" + QUOTE
+	end if
+#endif
 
     '' invoke ld
     if( ctx.verbose ) then
@@ -321,7 +406,162 @@ function linkFiles as integer
 		exit function
     end if
 
+#ifdef TARGET_WIN32
+    if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+		'' create the import library for the dll built
+		if( makeImpLib( dllname ) = FALSE ) then
+			exit function
+		end if
+	end if
+#endif
+
     linkFiles = TRUE
+
+end function
+
+#ifdef TARGET_WIN32
+'':::::
+function makeDefList( dllname as string ) as integer
+	dim pxpath as string
+	dim pxcline as string
+
+	makeDefList = FALSE
+
+   	pxpath = exepath$ + FB.BINPATH + "pexports.exe"
+
+   	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
+
+    '' can't use EXEC coz redirection is needed, damn..
+    '''''if( exec( pxpath, pxcline ) <> 0 ) then
+	'''''	exit function
+    '''''end if
+
+	shell pxpath + " " + pxcline
+
+    makeDefList = TRUE
+
+end function
+
+'':::::
+function clearDefList( dllname as string ) as integer
+	dim inpf as integer, outf as integer
+	dim ln as string
+
+	clearDefList = FALSE
+
+    if( not hFileExists( dllname + ".def" ) ) then
+    	exit function
+    end if
+
+    inpf = freefile
+    open dllname + ".def" for input as #inpf
+    outf = freefile
+    open dllname + ".clean.def" for output as #outf
+
+    do until eof( inpf )
+
+    	line input #inpf, ln
+
+    	if( right$( ln, 4 ) =  "DATA" ) then
+    		ln = left$( ln, len( ln ) - 4 )
+    	end if
+
+    	print #outf, ln
+    loop
+
+    close #outf
+    close #inpf
+
+    kill dllname + ".def"
+    rename dllname + ".clean.def", dllname + ".def"
+
+    clearDefList = TRUE
+
+end function
+
+'':::::
+function makeImpLib( dllname as string ) as integer
+	dim dtpath as string
+	dim dtcline as string
+
+	makeImpLib = FALSE
+
+	'' output def list
+	'''''if( makeDefList( dllname ) = FALSE ) then
+	'''''	exit function
+	'''''end if
+
+	'' for some weird reason, LD will declare all functions exported as if they were
+	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
+	if( clearDefList( dllname ) = FALSE ) then
+		exit function
+	end if
+
+	dtpath = exepath$ + FB.BINPATH + "dlltool.exe"
+
+	dtcline = "--def " + dllname + ".def --dllname " + dllname + ".dll --output-lib lib" + dllname + ".dll.a"
+
+    if( exec( dtpath, dtcline ) <> 0 ) then
+		exit function
+    end if
+
+	''
+	kill dllname + ".def"
+
+    makeImpLib = TRUE
+
+end function
+#endif
+
+
+'':::::
+function archiveFiles as integer
+    dim i as integer
+    dim arcpath as string, arcline as string
+  	dim QUOTE as string
+
+	archiveFiles = FALSE
+
+	QUOTE = chr$( 34 )
+
+    '' if no exe file name given, assume "lib" + first source name + ".a"
+    '' ( exe filename is actually lib filename for static libs )
+    if( len( ctx.outname ) = 0 ) then
+       ctx.outname = "lib" + hStripPath( hStripExt( inplist(0) ) ) + ".a"
+    end if
+
+    arcline = "-rs -c "
+
+    '' output library file name
+    arcline = arcline + QUOTE + ctx.outname + QUOTE + " "
+
+    '' add objects from output list
+    for i = 0 to ctx.inps-1
+    	arcline = arcline + QUOTE + outlist(i) + QUOTE + " "
+    next i
+
+    '' add objects from cmm-line
+    for i = 0 to ctx.objs-1
+    	arcline = arcline + QUOTE + objlist(i) + QUOTE + " "
+    next i
+
+    '' invoke ar
+    if( ctx.verbose ) then
+       print "archiving: ", arcline
+    end if
+
+#ifdef TARGET_WIN32
+	arcpath = exepath$ + FB.BINPATH + "ar.exe"
+#endif
+#ifdef TARGET_LINUX
+	arcpath = "ar"
+#endif
+
+    if( exec( arcpath, arcline ) <> 0 ) then
+		exit function
+    end if
+
+    archiveFiles = TRUE
 
 end function
 
@@ -356,10 +596,14 @@ sub printOptions
 	print "-b <name>", "add a source file to compilation"
 	print "-c", "compile only, do not link"
 	print "-d <name=val>", "add a preprocessor's define"
+#ifdef TARGET_WIN32
+	print "-dll", "create a DLL, including the import library"
+#endif
 	print "-e", "add error checking"
 	print "-g", "add debug info (testing)"
 	print "-i <name>", "add a path to search for include files"
 	print "-l <name>", "add a library file to linker's list"
+	print "-lib", "create a static library"
 	print "-m <name>", "main file w/o .ext (entry point)"
 	print "-o <name>", "output name (in the same number as source files)"
 	print "-r", "do not delete the asm file(s)"
@@ -369,9 +613,10 @@ sub printOptions
 	print "-w", "treat stdcall calling convention as cdecl"
 #endif
 	print "-v", "verbose"
-	print "-x <name>", "executable name"
+	print "-x <name>", "executable/library name"
 
 end sub
+
 
 '':::::
 sub setDefaultOptions
@@ -381,6 +626,7 @@ sub setDefaultOptions
 	ctx.verbose		= FALSE
 	ctx.debug 		= FALSE
 	ctx.stacksize	= FB_DEFSTACKSIZE
+	ctx.outtype 	= FB_OUTTYPE_EXECUTABLE
 
 end sub
 
@@ -403,13 +649,16 @@ function processOptions as integer
 				exit function
 			end if
 
-			select case lcase$( mid$( argv(i), 2, 1 ) )
-			'' compiler options, will be processed by processCompOptions
+			select case mid$( argv(i), 2 )
 			case "g", "e", "w"
+				'' compiler options, will be processed by processCompOptions
 
 			case "c"
 				ctx.compileonly = TRUE
 				argv(i) = ""
+
+			case "lib"
+				ctx.outtype = FB_OUTTYPE_STATICLIB
 
 			case "r"
 				ctx.preserveasm = TRUE
@@ -420,8 +669,8 @@ function processOptions as integer
 				argv(i) = ""
 
 			case "x"
-				ctx.exefile = argv(i+1)
-				if( len( ctx.exefile ) = 0 ) then
+				ctx.outname = argv(i+1)
+				if( len( ctx.outname ) = 0 ) then
 					exit function
 				end if
 				argv(i) = ""
@@ -451,6 +700,9 @@ function processOptions as integer
 				end if
 				argv(i) = ""
 				argv(i+1) = ""
+
+			case "dll"
+				ctx.outtype = FB_OUTTYPE_DYNAMICLIB
 #endif
 
 			case else
@@ -486,7 +738,7 @@ function processCompOptions as integer
 				exit function
 			end if
 
-			select case lcase$( mid$( argv(i), 2, 1 ) )
+			select case mid$( argv(i), 2 )
 			case "g"
 				fbcSetOption FB.COMPOPT.DEBUG, TRUE
 				ctx.debug = TRUE
@@ -512,6 +764,7 @@ end function
 '':::::
 function processCompLists as integer
     dim i as integer, p as integer
+    dim dname as string, dtext as string
 
 	processCompLists = FALSE
 
@@ -523,11 +776,19 @@ function processCompLists as integer
     '' add defines
     for i = 0 to ctx.defs-1
     	p = instr( deflist(i), "=" )
-    	if( (p > 0) and (p < len( deflist(i) )) ) then
-    		fbcAddDefine left$( deflist(i), p-1 ), mid$( deflist(i), p+1 )
-    	else
-    		fbcAddDefine deflist(i), ""
+    	if( p = 0 ) then
+    		p = len( deflist(i) ) + 1
     	end if
+
+    	dname = left$( deflist(i), p-1 )
+
+		if( p < len( deflist(i) ) ) then
+			dtext = mid$( deflist(i), p+1 )
+		else
+			dtext = "1"
+    	end if
+
+    	fbcAddDefine dname, dtext
     next i
 
     processCompLists = FALSE
@@ -568,7 +829,7 @@ function listFiles as integer
 		end if
 
 		if( left$( argv(i), 1 ) = "-" ) then
-			select case lcase$( mid$( argv(i), 2, 1 ) )
+			select case mid$( argv(i), 2 )
 			'' source files
 			case "b"
 				inplist(ctx.inps) = argv(i+1)
@@ -691,6 +952,9 @@ sub parseCmd ( argc as integer, argv() as string )
 		loop until ( char = 13 )
 
 		argc = argc + 1
+		if( argc >= FB_MAXARGS ) then
+			exit do
+		end if
 	loop while ( char <> 13 )
 
 end sub

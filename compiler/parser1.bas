@@ -140,7 +140,7 @@ function fbcInit as integer static
 	hSetCtx
 
 	env.libpathidx	= strpAdd( exepath$ + FB.LIBPATH )
-	
+
 	''
 	fbcInit = TRUE
 
@@ -331,27 +331,21 @@ sub cDebugLineEnd
 end sub
 
 '':::::
-''Line            =   (PreProcess | (Label? Statement?)) Comment? EOL .
+''Line            =   Label? Statement? Comment? EOL .
 ''
 function cLine
-    dim res as integer, ppres as integer
+    dim res as integer
 
 	cDebugLineBegin
 
-    ppres = cPreProcess( @cLine )
-    if( not ppres ) then
-    	res = cLabel
-    	res = cStatement
-    end if
-
+    res = cLabel
+    res = cStatement
     res = cComment
 
 	if( hGetLastError = FB.ERRMSG.OK ) then
 		if( not hMatch( FB.TK.EOL ) ) then
 			if( lexCurrentToken <> FB.TK.EOF ) then
-				if( not ppres ) then
-					hReportError FB.ERRMSG.EXPECTEDEOL
-				end if
+				hReportError FB.ERRMSG.EXPECTEDEOL
 				res = FALSE
 			else
 				res = TRUE
@@ -372,18 +366,15 @@ function cLine
 end function
 
 '':::::
-''SimpleLine      =   (PreProcess? | (Label? SimpleStatement?)) Comment? EOL .
+''SimpleLine      =   Label? SimpleStatement? Comment? EOL .
 ''
 function cSimpleLine
     dim res as integer, stmtres as integer
 
     cDebugLineBegin
 
-    stmtres = cPreProcess( @cSimpleLine )
-    if( not stmtres ) then
-    	res = cLabel
-    	stmtres = cSimpleStatement
-    end if
+    res = cLabel
+    stmtres = cSimpleStatement
 
     res = cComment
 
@@ -597,34 +588,23 @@ function cDirective
 
 		incfile = ""
 
-		'' "STR_LIT "
+		'' "STR_LIT"
 		if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
 			incfile = lexEatToken
 
 		else
 			'' '\''
-			if( lexCurrentToken <> CHAR_APOST ) then
+			if( not hMatch( CHAR_APOST ) ) then
 				hReportSimpleError FB.ERRMSG.SYNTAXERROR
 				exit function
-			else
-				lexSkipToken FALSE
 			end if
 
-			do
-				token = lexCurrentToken( FALSE )
-				select case token
-				case CHAR_APOST, FB.TK.EOL, FB.TK.EOF
-					exit do
-				end select
-				incfile = incfile + lexEatToken( FALSE )
-			loop
+			lexReadLine CHAR_APOST, incfile
 
 			'' '\''
-			if( lexCurrentToken <> CHAR_APOST ) then
+			if( not hMatch( CHAR_APOST ) ) then
 				hReportSimpleError FB.ERRMSG.SYNTAXERROR
 				exit function
-			else
-				lexSkipToken
 			end if
 		end if
 
@@ -827,6 +807,7 @@ function cConstAssign
 	cConstAssign = FALSE
 
 	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
+		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
 
@@ -940,11 +921,9 @@ end function
 ''TypeLine      =   (UNION Comment? SttSeparator
 ''					 (ElementDecl? Comment? SttSeparator)+
 ''					END UNION)
-''              |   (ElementDecl? Comment? SttSeparator)+
-''				|	PreProcessor .
+''              |   (ElementDecl? Comment? SttSeparator)+ .
 ''
 function cTypeLine as integer
-	dim ppres as integer
     dim typ as integer, subtype as integer, lgt as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim ename as string
@@ -955,60 +934,53 @@ function cTypeLine as integer
 	do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
 	loop
 
-	ppres = cPreProcess( @cTypeLine )
-	if( not ppres ) then
+	select case lexCurrentToken
+	case FB.TK.END
+		if( env.typectx.innercnt = 0 ) then
+			exit function
+		else
+			lexSkipToken
+		end if
 
-		select case lexCurrentToken
-		case FB.TK.END
-			if( env.typectx.innercnt = 0 ) then
+		if( not hMatch( FB.TK.UNION ) ) then
+    		hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    		exit function
+		end if
+
+		env.typectx.innercnt = env.typectx.innercnt - 1
+
+		if( env.typectx.innercnt = 0 ) then
+			symbRecalcUDTSize env.typectx.symbol
+		end if
+
+	case FB.TK.UNION
+		if( env.typectx.isunion = TRUE ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		else
+			lexSkipToken
+		end if
+
+		env.typectx.innercnt = env.typectx.innercnt + 1
+
+	case else
+		env.typectx.elements = env.typectx.elements + 1
+
+		if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
+			if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _
+								   typ, subtype, lgt, env.typectx.innercnt > 0 ) = INVALID ) then
+				hReportError FB.ERRMSG.DUPDEFINITION
 				exit function
-			else
-				lexSkipToken
 			end if
-
-			if( not hMatch( FB.TK.UNION ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
-    			exit function
-			end if
-
-			env.typectx.innercnt = env.typectx.innercnt - 1
-
-			if( env.typectx.innercnt = 0 ) then
-				symbRecalcUDTSize env.typectx.symbol
-			end if
-
-		case FB.TK.UNION
-			if( env.typectx.isunion = TRUE ) then
-				hReportError FB.ERRMSG.SYNTAXERROR
-				exit function
-			else
-				lexSkipToken
-			end if
-
-			env.typectx.innercnt = env.typectx.innercnt + 1
-
-		case else
-			env.typectx.elements = env.typectx.elements + 1
-
-			if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
-				if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _
-									   typ, subtype, lgt, env.typectx.innercnt > 0 ) = INVALID ) then
-					hReportError FB.ERRMSG.DUPDEFINITION
-					exit function
-				end if
-			end if
-		end select
-
-	end if
+		end if
+	end select
 
 
 	'' Comment? SttSeparator
 	cComment
 
     if( not cSttSeparator ) then
-    	if( not ppres ) then
-    		hReportError FB.ERRMSG.SYNTAXERROR
-    	end if
+    	hReportError FB.ERRMSG.SYNTAXERROR
     	exit function
 	end if
 
@@ -1158,11 +1130,10 @@ function cEnumConstDecl( id as string )
 end function
 
 '':::::
-''EnumLine      =   (EnumDecl? Comment? SttSeparator)
-''				|	PreProcessor .
+''EnumLine      =   (EnumDecl? Comment? SttSeparator) .
+''
 function cEnumLine as integer
 	dim ename as string
-	dim ppres as integer
 
 	cEnumLine = FALSE
 
@@ -1174,30 +1145,23 @@ function cEnumLine as integer
 		exit function
 	end if
 
-	ppres = cPreProcess( @cEnumLine )
-	if( not ppres ) then
+	env.enumctx.elements = env.enumctx.elements + 1
 
-		env.enumctx.elements = env.enumctx.elements + 1
-
-		if( cEnumConstDecl( ename ) ) then
-			if( not symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ) ) ) then
-				hReportError FB.ERRMSG.DUPDEFINITION
-				exit function
-			end if
+	if( cEnumConstDecl( ename ) ) then
+		if( not symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ) ) ) then
+			hReportError FB.ERRMSG.DUPDEFINITION
+			exit function
 		end if
-
-		''
-		env.enumctx.value = env.enumctx.value + 1
-
 	end if
+
+	''
+	env.enumctx.value = env.enumctx.value + 1
 
 	'' Comment? SttSeparator
 	cComment
 
 	if( not cSttSeparator ) then
-    	if( not ppres ) then
-    		hReportError FB.ERRMSG.EXPECTEDEOL
-    	end if
+    	hReportError FB.ERRMSG.EXPECTEDEOL
     	exit function
 	end if
 

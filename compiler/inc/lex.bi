@@ -58,6 +58,9 @@ declare function 	lexLookAhead 			( byval k as integer ) as integer
 declare function 	lexLineNum 				( ) as integer
 declare function 	lexColNum 				( ) as integer
 
+declare sub 		lexReadLine				( byval endchar as integer = INVALID, dst as string, byval skipline as integer = FALSE )
 declare sub 		lexSkipLine				( )
 
 declare sub 		lexSetCurrentToken		( byval id as integer, byval class as integer )
+
+declare function 	lexPreProcessor 		( ) as integer

@@ -25,7 +25,6 @@
 declare function 	cProgram				( ) as integer
 declare function 	cLine					( ) as integer
 declare function 	cSimpleLine             ( ) as integer
-declare function 	cPreProcess				( byval linefunct as function( ) as integer ) as integer
 declare function 	cLabel                  ( ) as integer
 declare function 	cComment                ( ) as integer
 declare function 	cDirective              ( ) as integer
@@ -63,6 +62,7 @@ declare function 	cWhileStatement        	( ) as integer
 declare function 	cSelectStatement       	( ) as integer
 declare function 	cCaseStatement         	( byval s as integer, byval sdtype as integer, byval exitlabel as integer ) as integer
 declare function 	cCaseExpression        	( byval s as integer, byval sdtype as integer, byval initlabel as integer, byval nextlabel as integer ) as integer
+declare function 	cSelectLine 			( )as integer
 declare function 	cCompoundStmtElm		( ) as integer
 declare function 	cProcStatement         	( ) as integer
 declare function 	cExitStatement			( ) as integer

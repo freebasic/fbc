@@ -507,6 +507,9 @@ function hVarLookup( id as string, s as integer, typ as integer, ofs as integer,
 		'' check first for declared vars w/o suffixes
 		s = symbLookupVar( id, typ, ofs, elm, typesymbol )
 		if( s = INVALID ) then
+			if( typesymbol <> INVALID ) then
+				exit function
+			end if
 			'' now with suffixes
 			typ = hGetDefType( id )
 			s = symbLookupVar( id, typ, ofs, elm, typesymbol )
@@ -516,6 +519,9 @@ function hVarLookup( id as string, s as integer, typ as integer, ofs as integer,
 		'' check first for declared vars w/ suffixes
 		s = symbLookupVar( id, typ, ofs, elm, typesymbol )
 		if( s = INVALID ) then
+			if( typesymbol <> INVALID ) then
+				exit function
+			end if
 			'' now w/o suffixes
 			s = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
 			if( s <> INVALID ) then
@@ -616,7 +622,12 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
 	typ	= lexTokenType
 
 	if( not hVarLookup( id, s, typ, ofs, elm, typesymbol ) ) then
-	    hReportError FB.ERRMSG.DUPDEFINITION
+	    if( typesymbol = INVALID ) then
+	    	hReportError FB.ERRMSG.DUPDEFINITION
+        else
+        	hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+        end if
+
         exit function
 	end if
 

@@ -31,6 +31,15 @@ defint a-z
 '$include: 'inc\ir.bi'
 '$include: 'inc\emit.bi'
 
+type FBSELECTCTX
+	symbol	as integer
+	dtype	as integer
+	elabel	as integer
+end type
+
+'' globals
+	dim shared selctx as FBSELECTCTX
+
 
 '':::::
 ''CompoundStmt	  =   IfStatement
@@ -948,15 +957,32 @@ function cWhileStatement
 end function
 
 '':::::
+function cSelectLine as integer
+
+    cSelectLine = FALSE
+
+    '' Comment? SttSeparator?
+    do while( cComment or cSttSeparator )
+    loop
+
+    '' CaseStatement
+    if( not cCaseStatement( selctx.symbol, selctx.dtype, selctx.elabel ) ) then
+    	exit function
+    end if
+
+    cSelectLine = TRUE
+
+end function
+
+'':::::
 ''SelectStatement =   SELECT CASE Expression Comment? SttSeparator
 ''					   cComment? cSttSeparator? CaseStatement*
 ''				      END SELECT .
 ''
 function cSelectStatement
-    dim expr as integer, t as integer, vr as integer, lastcompstmt as integer
-    dim s as integer, dtype as integer, dclass as integer, typ as integer
-    dim el as integer
+    dim expr as integer, vr as integer, lastcompstmt as integer
     dim res as integer
+    dim oldselctx as FBSELECTCTX
 
 	cSelectStatement = FALSE
 
@@ -985,46 +1011,40 @@ function cSelectStatement
 		exit function
 	end if
 
-	''
+	'' save current context
 	lastcompstmt = env.lastcompound
 	env.lastcompound = FB.TK.SELECT
 
+	oldselctx = selctx
+
 	'' add exit label
-	el = symbAddLabel( hMakeTmpStr )
+	selctx.elabel = symbAddLabel( hMakeTmpStr )
 
 	'' store expression into a temp var
-	dtype  = astGetDataType( expr )				'' !!!FIXME!!! can ret wrong types w/ a complex expr
-	if( dtype = FB.SYMBTYPE.FIXSTR ) then
-		dtype = FB.SYMBTYPE.STRING
+	selctx.dtype  = astGetDataType( expr )			'' !!!FIXME!!! can ret wrong types w/ a complex expr
+	if( selctx.dtype = FB.SYMBTYPE.FIXSTR ) then
+		selctx.dtype = FB.SYMBTYPE.STRING
 	end if
-	dclass = irGetDataClass( dtype )
-	typ    = hDtype2Stype( dtype )
 
-	s = symbAddTempVar( typ )
-	if( s = INVALID ) then
+	selctx.symbol = symbAddTempVar( hDtype2Stype( selctx.dtype ) )
+	if( selctx.symbol = INVALID ) then
 		exit function
 	end if
 
-	t = astNewVAR( s, 0, dtype )
-	expr = astNewASSIGN( t, expr )
+	expr = astNewASSIGN( astNewVAR( selctx.symbol, 0, selctx.dtype ), expr )
 	if( expr = INVALID ) then
 		exit function
 	end if
 	astFlush expr, vr
 
-    '' Comment? SttSeparator? (CaseStatement)*
-    do
-    	do while( cComment or cSttSeparator )
-    	loop
-
-    	if( not cCaseStatement( s, dtype, el ) ) then
-    		exit do
-    	end if
-    loop
+	'' SelectLine*
+	do
+		res = cSelectLine
+	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
     '' emit exit label
-    irEmitLABEL el, FALSE
-    '''''symbDelLabel el
+    irEmitLABEL selctx.elabel, FALSE
+    '''''symbDelLabel selctx.elabel
 
 	'' END SELECT
 	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.SELECT )) ) then
@@ -1032,15 +1052,16 @@ function cSelectStatement
 		exit function
 	end if
 
-	''
-	env.lastcompound = lastcompstmt
-
 	'' if a temp string was allocated, delete it
-	if( dtype = FB.SYMBTYPE.STRING ) then
-		t = astNewVAR( s, 0, dtype )
-		expr = rtlStrDelete( t )
+	if( selctx.dtype = FB.SYMBTYPE.STRING ) then
+		expr = rtlStrDelete( astNewVAR( selctx.symbol, 0, selctx.dtype ) )
 		astFlush expr, vr
 	end if
+
+	'' restore old context
+	selctx = oldselctx
+
+	env.lastcompound = lastcompstmt
 
 	cSelectStatement = TRUE
 

@@ -1030,11 +1030,14 @@ end sub
 '':::::
 function symbAddDefine( id as string, text as string ) as integer static
     dim d as integer
+    dim dname as string
 
     symbAddDefine = INVALID
 
+    dname = ucase$( id )
+
     '' already exists? (done by parser already)
-    '''''d = hashLookup( id, defhashTB(), FB.INITDEFINENODES )
+    '''''d = hashLookup( dname, defhashTB(), FB.INITDEFINENODES )
     '''''if( d <> INVALID ) then
     '''''	exit function
     '''''end if
@@ -1046,11 +1049,11 @@ function symbAddDefine( id as string, text as string ) as integer static
     end if
 
 	'' add to pool
-	defineTB(d).nameidx = strpAdd( id )
+	defineTB(d).nameidx = strpAdd( dname )
 	defineTB(d).textidx = strpAdd( text )
 
 	'' and to hash table
-	hashAdd id, d, defineTB(d).nameidx, defhashTB(), FB.INITDEFINENODES
+	hashAdd dname, d, defineTB(d).nameidx, defhashTB(), FB.INITDEFINENODES
 
 	''
 	symbAddDefine = d

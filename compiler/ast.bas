@@ -825,12 +825,12 @@ sub astUpdNodeResult( byval n as integer )
 					(irGetDataClass( dt2 ) = IR.DATACLASS.INTEGER) ) then
 					if( dtype <> dt1 ) then
 						if( astTB(r).typ = AST.NODETYPE.CONST ) then
-							dt2 = dt1
+							astTB(r).dtype = dt1
 							dtype = dt1
 						end if
 					else
 						if( astTB(l).typ = AST.NODETYPE.CONST ) then
-							dt1 = dt2
+							astTB(l).dtype = dt2
 							dtype = dt2
 						end if
 					end if
@@ -1945,7 +1945,7 @@ sub astLoadBOP( byval n as integer, vr as integer )
 		exit sub
 	end if
 
-	'' need some other algo here to select which operand is better to evalutate
+	'' need some other algo here to select which operand is better to evaluate
 	'' first - pay attention to logical ops, "func1(bar) OR func1(foo)" isn't
 	'' the same as the inverse if func1 depends on the order..
 	astLoad l, v1
