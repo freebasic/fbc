@@ -27,15 +27,14 @@ const FB.MAXINCFILES		= 128
 
 const FB.MAXNAMELEN			= 64
 const FB.MAXLITLEN			= 1024				'' literal strings max length
+const FB.MAXNUMLEN			= 32
 
 const FB_MAXPROCARGS		= 64
 const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
 
 ''
-const FB.INITELEMENTNODES 	= 2000
-
-const FB.INITSYMBOLNODES	= 5000
-const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 10
+const FB.INITSYMBOLNODES	= 8000
+const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 20
 
 const FB.INITARGNODES		= 4000
 
@@ -43,7 +42,7 @@ const FB.INITDIMNODES		= 400
 
 const FB.INITLIBNODES		= 50
 
-const FB.INITDEFINENODES	= 1000
+const FB.INITDEFINENODES	= 3000
 
 
 ''
@@ -443,28 +442,6 @@ type FBVARDIM
 end type
 
 ''
-type FBTYPELEMENT
-	prv				as FBTYPELEMENT ptr			'' linked-list nodes
-	nxt				as FBTYPELEMENT ptr			'' /
-
-	typ				as integer
-	subtype			as any ptr					'' only if another UDT
-	ofs				as integer
-	parent			as any ptr					'' FBSYMBOL ptr
-	nameidx			as integer
-
-	lgt				as integer
-	dims			as integer
-	dimhead			as FBVARDIM ptr
-	dimtail			as FBVARDIM ptr
-	dif				as integer
-
-	l				as FBTYPELEMENT ptr			'' left
-	r				as FBTYPELEMENT ptr			'' right
-end type
-
-
-''
 type FBLIBRARY
 	prv				as FBLIBRARY ptr			'' linked-list nodes
 	nxt				as FBLIBRARY ptr			'' /
@@ -487,6 +464,7 @@ enum SYMBCLASS_ENUM
 	FB.SYMBCLASS.VAR			= 1
 	FB.SYMBCLASS.CONST
 	FB.SYMBCLASS.UDT
+	FB.SYMBCLASS.UDTELM
 	FB.SYMBCLASS.PROC
 	FB.SYMBCLASS.LABEL
 	FB.SYMBCLASS.ENUM
@@ -507,12 +485,18 @@ type FBLABEL
 end type
 
 ''
-type FBSVAR
+type FBSARRAY
 	dims			as integer
 	dimhead 		as FBVARDIM ptr
 	dimtail			as FBVARDIM ptr
 	dif				as integer
+
 	desc			as any ptr					'' FBSYMBOL ptr
+end type
+
+type FBSVAR
+	initialized		as integer
+	inittextidx		as integer
 end type
 
 type FBSCONST
@@ -523,11 +507,19 @@ end type
 type FBSUDT
 	isunion			as integer
 	elements		as integer
-	head			as FBTYPELEMENT ptr			'' first element
-	tail			as FBTYPELEMENT ptr			'' last  /
+	head			as any ptr					'' first element (FBSYMBOL ptr)
+	tail			as any ptr					'' last  / 		 (FBSYMBOL ptr)
 	ofs				as integer
 	align			as integer
 	innerlgt		as integer					'' used with inner nameless unions
+end type
+
+type FBSUDTELM
+	ofs				as integer
+	parent			as any ptr					'' FBSYMBOL ptr
+
+	l				as any ptr					'' left (FBSYMBOL ptr)
+	r				as any ptr					'' right (FBSYMBOL ptr)
 end type
 
 ''
@@ -577,7 +569,7 @@ type FBSYMBOL
 	prv				as FBSYMBOL ptr				'' linked-list nodes
 	nxt				as FBSYMBOL ptr				'' /
 
-	class			as integer					'' var, const, proc, ..
+	class			as integer					'' VAR, CONST, PROC, ..
 	typ				as integer					'' integer, float, string, pointer, ..
 	subtype			as FBSYMBOL ptr				'' used by UDT's
 	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
@@ -589,16 +581,16 @@ type FBSYMBOL
 	lgt				as integer
 	acccnt			as integer					'' access counter (number of lookup's)
 
-	initialized		as integer
-	inittextidx		as integer
-
 	union
-		v			as FBSVAR
-		c			as FBSCONST
-		u			as FBSUDT
-		p			as FBSPROC
-		l			as FBLABEL
+		var			as FBSVAR
+		con			as FBSCONST
+		udt			as FBSUDT
+		elm			as FBSUDTELM
+		proc		as FBSPROC
+		lbl			as FBLABEL
 	end union
+
+	array			as FBSARRAY					'' shared by var and elm
 
 	sentinel		as FBSENTINEL ptr
 end type
@@ -681,6 +673,14 @@ type FBENV
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
 	withtextidx		as integer					'' WITH's text
 
+	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
+	prntopt			as integer					'' /
+
+	compoundcnt		as integer					'' checked when parsing EXIT
+	lastcompound	as integer					'' last compound stmt (token), def= INVALID
+	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
+	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
+
 	'' cmm-line options
 	clopt			as FBCMMLINEOPT
 
@@ -696,11 +696,6 @@ type FBENV
 	optprocpublic	as integer					'' def    = true
 	optescapestr	as integer					'' def    = false
 	optdynamic		as integer					'' def    = false
-
-	compoundcnt		as integer					'' checked when parsing EXIT
-	lastcompound	as integer					'' last compound stmt (token), def= INVALID
-	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
-	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
 end type
 
 
