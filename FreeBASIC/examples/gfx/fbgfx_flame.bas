@@ -29,7 +29,7 @@ declare sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 	
 	dim w as integer, h as integer, x as integer, y as integer, i as integer
-	dim c0 as integer, c1 as integer, c2 as integer, c3 as integer
+	dim c0 as uinteger, c1 as uinteger, c2 as uinteger, c3 as uinteger
 	dim header as short ptr
 	
 	header = buffer
@@ -49,7 +49,7 @@ sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 				c2 = buffer[4 + ((y - 1) * w) + x]
 				c3 = buffer[4 + ((y + 1) * w) + x]
 				c0 = ((c0 + c1 + c2 + c3) \ 4) - rnd*2
-				if (c0 < 0) then c0 = 0
+				if (cint(c0) < 0) then c0 = 0
 				buffer[4 + (y * w) + x] = c0
 			next x
 		next y

@@ -44,9 +44,9 @@ end type
     next i
 
     for i = 0 to 255
-        Lcols(i).r = cint(abs(INT(128 - 127 * SIN(i * PI / 32))))
-	    Lcols(i).g = cint(abs(INT(128 - 127 * SIN(i * PI / 64))))
-	    Lcols(i).b = cint(abs(INT(128 - 127 * SIN(i * PI / 128))))
+        Lcols(i).r = cbyte(abs(INT(128 - 127 * SIN(i * PI / 32))))
+	    Lcols(i).g = cbyte(abs(INT(128 - 127 * SIN(i * PI / 64))))
+	    Lcols(i).b = cbyte(abs(INT(128 - 127 * SIN(i * PI / 128))))
 	next i
 
     counter = 0

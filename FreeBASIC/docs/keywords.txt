@@ -3,7 +3,7 @@
 *****************************************************************************
 
   AS
-  ASC Function
+  ASC Function          (diff: there's an optional argument to retrieve a char at a specific position, ie: c = asc( "abc", 2 ))
   ALIAS
   AND Operator
   ANY
@@ -24,22 +24,22 @@
   CSNG Function
   CINT Function
   CLNG Function
-  CHR$ Function
+  CHR$ Function         (diff: accepts multiple arguments too, ie: s$ = chr$( 65, 66, 67, 68 ))
   CHAIN Statement
   CVD Function
   CVI Function
   CVL Function
   CVS Function
   COS Function
-  COMMAND$ Function
-  COMMON Statement      (diff: arrays are always dynamic; no /NAME/; vars order doesn't matter)
+  COMMAND$ Function     (diff: there's an optional parameter that can be used to get a specific argument, ie: argv3$ = command$(3))
+  COMMON Statement      (diff: arrays are always dynamic; no /NAME/; the vars order doesn't matter)
   CHDIR Statement
   CLS Statement
   CSRLIN Function
   COLOR Statement       (diff: there's no border argument)
   CLOSE Statement
-  CLEAR Statement	(diff: completely different mean: used to fill a memory block with some value, args are:
-			       byref dst as any, byval value as integer = 0, byval bytes as integer)
+  CLEAR Statement       (diff: completely different mean: used to fill a memory block with some value, args are:
+                         byref dst as any, byval value as integer = 0, byval bytes as integer)
 
   DATA Statement        (diff: string literals MUST be enclosed by quotes; Const's are evaluated before storing)
   DEFINT Statement
@@ -54,7 +54,7 @@
   $DYNAMIC Metacommand
   DATE$ Function
   DATE$ Statement       (diff: called SETDATE now; syntax is "SETDATE newdate$", not "SETDATE$ = newdate$")
-  DIR$ Function		(diff: pass "" to return the next file, pattern is not optional)
+  DIR$ Function         (diff: pass "" to return the next file, pattern is not optional)
 
   ELSE
   ELSEIF
@@ -78,7 +78,7 @@
 
   GOSUB Statement
   GOTO Statement
-  GET (File) Statement	(diff: reads full arrays too, as in VB: "GET #f, , inarray()" )
+  GET (File) Statement  (diff: reads full arrays too, as in VB: "GET #f, , inarray()" )
 
   HEX$ Function
 
@@ -89,7 +89,7 @@
   IMP Operator
   INSTR Function
   INT Function
-  INKEY$ Function	(diff: for extended scan-codes, 255 will be returned, not 0; check for chr$(255), not chr$(0))
+  INKEY$ Function       (diff: for extended scan-codes, 255 will be returned, not 0; check for chr$(255), not chr$(0))
   INPUT$ (Screen) Function
   INPUT$ (File) Function
   INPUT (Screen) Statement
@@ -246,7 +246,7 @@
 *****************************************************************************
 
   #DEFINE
-  #DEFINE(args)	      (note: between "#define" and "(", no spaces are allowed, as in C)
+  #DEFINE(args)         (note: between "#define" and "(", no spaces are allowed, as in C)
   #UNDEF
   #IFDEF
   #IFNDEF
@@ -255,7 +255,7 @@
   #ELSEIF
   #ENDIF
   
-  ALLOCATE Function   (function( byval bytes as integer ) as any ptr)
+  ALLOCATE Function     (function( byval bytes as integer ) as any ptr)
   ASM Statement
   ACOS Function
   ASIN Function
@@ -264,11 +264,11 @@
   BYTE
   BYREF
   BIN$
-  BIT macro            (foo = BIT( bar, 10 ) -- same as "foo = (bar and 10 shl 10) > 0")
-  BITSET macro         (foo = BITSET( bar, 5 ) -- same as "foo = bar or (1 shl 5)")
-  BITRESET macro       (foo = BITRESET( bar, 5 ) -- "same as foo = bar and not (1 shl 5)")
+  BIT macro             (foo = BIT( bar, 10 ) -- same as "foo = (bar and 10 shl 10) > 0")
+  BITSET macro          (foo = BITSET( bar, 5 ) -- same as "foo = bar or (1 shl 5)")
+  BITRESET macro        (foo = BITRESET( bar, 5 ) -- "same as foo = bar and not (1 shl 5)")
 
-  CALLOCATE Function   (same as ALLOCATE, but clears the contents)
+  CALLOCATE Function    (same as ALLOCATE, but clears the contents)
   CBYTE Function
   CSHORT Function
   CSIGN Function
@@ -276,34 +276,34 @@
   CONTINUE Statement
   CURDIR Function
 
-  DEALLOCATE Statement (sub( byval src as any ptr ))
+  DEALLOCATE Statement  (sub( byval src as any ptr ))
   DEFBYTE Statement
   DEFUBYTE Statement
   DEFSHORT Statement
   DEFUSHORT Statement
   DEFUINT Statement  
-  DEFINED Function     (Pre-processor)
+  DEFINED Function      (Pre-processor)
 
   ENUM Statement
   EXEPATH Function
-  EXEC Function        (function( program as string, arguments as string ) as integer)
-  EXTERN Statement     (to declare external variables: "EXTERN identifier [ALIAS "name"] [AS type]";
-                        if the variable/array is found COMMON/REDIM/DIM'ed, it will declared as public)
+  EXEC Function         (function( program as string, arguments as string ) as integer)
+  EXTERN Statement      (to declare external variables: "EXTERN identifier [ALIAS "name"] [AS type]";
+                         if the variable/array is found COMMON/REDIM/DIM'ed, it will declared as public)
 
   FLIP Statement
 
   GETKEY Function
   GETMOUSE Statement
   
-  HIBYTE macro			(foo = HIBYTE(bar) -- same as "foo = cunsg(bar) shr 8")
-  HIWORD macro			(foo = HIWORD(bar) -- same as "foo = cunsg(bar) shr 16")
+  HIBYTE macro          (foo = HIBYTE(bar) -- same as "foo = cunsg(bar) shr 8")
+  HIWORD macro          (foo = HIWORD(bar) -- same as "foo = cunsg(bar) shr 16")
 
   IIF()
   $INCLIB Directive
 
   LIB
-  LOBYTE macro			(foo = LOBYTE(bar) -- same as "foo = bar and &h000000ff")
-  LOWORD macro			(foo = LOWORD(bar) -- same as "foo = bar and &h0000ffff")
+  LOBYTE macro          (foo = LOBYTE(bar) -- same as "foo = bar and &h000000ff")
+  LOWORD macro          (foo = LOWORD(bar) -- same as "foo = bar and &h0000ffff")
 
   MULTIKEY Function
 
@@ -333,6 +333,12 @@
   SHL
   SHR
   STRPTR Function       (returns the pointer to string data, not to descriptor as VARPTR will with var-len strings)
+  
+  STRCAT, STRCHR, 
+  STRCMP, STRCPY, 
+  STRLEN, STRNCAT, 
+  STRNCMP, STRNCPY, 
+  STRRCHR, STRSTR       (C string functions, can operate on byte ptr's and on ordinary FB strings)
 
   TRIM$ Function
 
@@ -341,9 +347,13 @@
   UBYTE
   USHORT
   UINTEGER
+  
+  VA_FIRST() macro      (returns a pointer to the first variable-argument)
+  VA_ARG(a,t) macro     (returns the current var-arg, a= argument, t= argument type)
+  VA_NEXT(a,t) macro    (returns a pointer to the next var-arg, a= current argument, t= current argument type)
 
   WINDOWTITLE Statement
-  WITH..END WITH 	(compound statement -- won't work with field dereference "->")
+  WITH..END WITH        (compound statement -- won't work with field dereference "->")
   
 
 *****************************************************************************
@@ -405,7 +415,7 @@
   STRIG Statements      (reason: ditto)
   SIGNAL                (reason: seldom if ever used)
   SOUND Statement       (reason: use real sound libraries instead)
-  SEG			(reason: segments are not needed in 32-bit flat mode)
+  SEG           (reason: segments are not needed in 32-bit flat mode)
 
   TIMER Statement       (reason: no "faked" events)
   TROFF Statement       (reason: use a real debugger)

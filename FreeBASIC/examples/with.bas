@@ -1,27 +1,27 @@
 
 type MYTYPE
-	a			as integer
-	b			as double
-	c			as string * 4
+	c			as integer
+	d			as double
+	e			as string * 4
 end type
 
 	dim shared t(10) as MYTYPE
 	
-	t(0).a = 1
-	t(0).b = 2.0
-	t(0).c = "3"
+	t(0).c = 1
+	t(0).d = 2.0
+	t(0).e = "3"
 	
 	i = 5
 	
-	print t(0).a, t(0).b, t(0).c
+	print t(0).c, t(0).d, t(0).e
 	
 	with t(i)
-		.a = t(0).a
-		.b = t(0).b
 		.c = t(0).c
-		print .a, .b, .c
+		.d = t(0).d
+		.e = t(0).e
+		print .c, .d, .e
 	end	with
 	
-	print t(i).a, t(i).b, t(i).c
+	print t(i).c, t(i).d, t(i).e
 	
 	sleep

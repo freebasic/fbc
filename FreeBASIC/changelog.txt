@@ -1,326 +1,386 @@
 Version 0.13 Beta:
 
-[chged] glut include file, header completed with help of the SWIG FB wrapper (v1c)
-[added] on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
-[added] PALETTE can now be called with 4 parameters, specifying new color red/green/blue components directly (lillo)
-[added] include file and import lib for the SQLite library (v1c)
-[added] include file and import lib for the mySQL client library (v1c)
-[added] include file and import lib for the DevIL library (v1c)
-[added] include file and import lib for the gd library (v1c)
-[added] ENUM's can now be nameless (v1c)
-[fixed] CVS() was being done as CVD() (v1c)
-[fixed] inline asm now supports complete IA32 instruction set (lillo)
-[fixed] SELECT CASE and other compound statments were accepting UDT's w/o any fields given (v1c)
-[fixed] line-continuation with _ when anything but white-spaces are used after it (v1c)
-[fixed] dyn arrays of function pointers can now be redimensioned, as the symbol name is being mangled now (v1c)
-[fixed] MID$ with len = 0 should return an empty string (v1c)
-[fixed] WINDOW statement was inverting y coordinate (lillo)
-[fixed] LINE INPUT was limited to 1024 bytes (v1c)
-[fixed] bug with INP/OUT emulation for palette handling, thanks to Adigun A. Polack for pointing this out (lillo)
+[changed] 
+- ASC now has an optional parameter to retrieve a char at a specific position as in "c = asc( "abc", 2 )" (v1c)
+- CHR$ now accepts multiple arguments as in "s = chr$( 65, 66, 67, 68 )" (v1c)
+- COMMAND$ can now return just a specific argument as in "argv3 = command$(3)" (v1c)
+- PEEK and POKE now accept STRING and UDT's as data type (v1c)
+- string constant expressions can now be used with CONST's (v1c)
+- glut include file, header completed with help of the SWIG FB wrapper (v1c)
+
+[added] 
+- on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
+- inline string indexing as in "char = somestring[idx]" (V1c)
+- variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
+- va_first(), va_arg() and va_next() intrinsic macros, to access variable-arguments in FB functions (v1c)
+- include file and import lib for the SQLite library (v1c)
+- include file and import lib for the mySQL client library (v1c)
+- include file and import lib for the DevIL library (v1c)
+- include file and import lib for the gd library (v1c)
+- PALETTE can now be called with 4 parameters, specifying new color red/green/blue components directly (lillo)
+- ENUM's can now be nameless (v1c)
+- strcat, strchr, strcmp, strcpy, strlen, strncat, strncmp, strncpy, strrchr, strstr as intrinsic functions (v1c)
+- CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
+
+[fixed]
+- CVS() was being done as CVD() (v1c)
+- inline asm now supports complete IA32 instruction set (lillo)
+- SELECT CASE and other compound statments were accepting UDT's w/o any fields given (v1c)
+- line-continuation with _ when anything but white-spaces are used after it (v1c)
+- dyn arrays of function pointers can now be redimensioned, as the symbol name is being mangled now (v1c)
+- MID$ with len = 0 should return an empty string (v1c)
+- WINDOW statement was inverting y coordinate (lillo)
+- LINE INPUT was limited to 1024 bytes (v1c)
+- bug with INP/OUT emulation for palette handling (lillo)
+- unsigned to signed and vice-versa could be wrong if operand sizes were different and dst was > src (v1c)
+- LEN() was not working when string concatenation was used (v1c)
+- STRPTR()/SADD() were not checking for constants (v1c)
+- char 255 was seen as -1 due the unsigned to signed bug listed above, making lexSkipLine fail when that char was used inside a comment (v1c)
 
 
 Version 0.12 Beta:
 
-[chged] IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
-        functions won't be automatically exported anymore, because that would make it hard to write DLL's with
-        multiple modules where not all global functions should be exported (v1ctor)
-[chged] IMPORTANT: the format of the internal string descriptor was modified to speed up concatenation of large strings, 
-        so you MUST recompile all the old code, don't reuse object files compiled with older versions (below v0.12b) and 
-        rebuild DLL's created in FB if they return or process STRING's passed to/from client EXE's (v1c)
-[chged] Linux port does not use ncurses anymore, but its own internal lowlevel routines for console access.
-        Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
-        at programs startup and proper colors support under X11. Compatibility issues may rise though, so
-        feedback is welcome (lillo)
-[chged] PEEKS, PEEKI, POKES, POKEI keywords removed, use now the new syntax as "PEEK( data type, expression )" or 
-        "POKE data ype, expression, expression" to peek/poke different data types than BYTE, that's the default one (v1c)
-[chged] many Allegro's globals like al_screen, al_rgb had the "al_" prefix removed, they are now as the originals (v1c)
-[chged] Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
-[chged] white-spaces are now preserved for ASM blocks and #DEFINE's (v1c)
-[chged] Linux port install script will now warn users if not run with root priviledges (lillo)
-[chged] the range of console-mode background colors is now 0 to 15 in DOS and Windows, 'cause Nex wanted that :) (v1c)
-[chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
-[chged] empty statements like ":foo=1::bar=2:" are now accepted, "if foo then:bar:else:foo" will work too (v1c)
-[chged] DIM|REDIM array w/o explicit dimensions is not allowed anymore inside procs, as the descriptor size is unknown (v1c)
-[chged] RGB is now an intrinsic macro, not a function (so no UDT's called RGB are allowed anymore) (v1c)
-[chged] symbols can now start with an underscore as in "_1234 = 1234" (v1c)
-[chged] local labels can now have the same name in different procs (v1c)
-[added] resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
-        compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
-        used too (DrV)
-[added] XPM icon resource files support on Linux. As with Windows resource, just pass the .xpm file to
-        the commandline and the executable will sport a fb_program_icon symbol holding the XPM data.
-        If using gfxlib, this is automatically used to set the window icon (lillo)
-[added] built-in multiplatform threading functions (lillo)
-[added] "operator =" shorthand, as in "a += b * c" (v1ctor)
-[added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
-        faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
-[added] #DEFINE's with arguments (macros) as in "#DEFINE foo(a,b) ((a)*(b))" (v1c)
-[added] "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
-[added] compile-time evaluation for the CHR$ and ASC intrinsic routines (v1c)
-[added] SCREENINFO gfx function to get informations on current gfx mode (lillo)
-[added] SCREENRES gfx statement to set custom resolution modes (lillo)
-[added] SETMOUSE gfx statement to set mouse position and cursor visibility (lillo)
-[added] Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
-[added] OpenGL internal gfx driver for both Win32 and Linux (lillo)
-[added] possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
-[added] the OpenAL headers, ported by Chris Davies (v1c)
-[added] include file and static library for TRE (a POSIX regular expressions lib) (v1c)
-[added] the ASM statement can be used on a single line as in "ASM mov eax, 1234" (v1c)
-[added] SCREEN() function, working as in QB (lillo)
-[added] gfxlib now internally uses MMX routines to update the screen if supported (lillo)
-[added] "OPTION NOKEYWORD", to remove intrinsic routines/statements (v1c)
-[added] "DIM|REDIM|STATIC|COMMON AS SymbolType" for multiple declarations like "DIM AS INTEGER a, b, c(10)" (v1c)
-[added] all gfx primitives now accept as optional first parameter a target buffer where drawing will take place (lillo)
-[added] BLOAD now supports loading BMP files (lillo)
-[added] IFF(), conditional IF, to be used with numeric types only as in: "a = IIF( b > c, -1, 0)" (v1c)
-[added] LOWORD, HIWORD, LOBYTE and HIBYTE intrinsic macros (v1c)
-[added] BIT, BITSET and BITRESET intrinsic macros (v1c)
-[added] nameless arguments on function prototypes as in "BYVAL AS INTEGER" (v1c)
-[added] END IF to end the single line IF's to make porting of complex C macros easier to be done (v1c)
-[added] the winsock 1.1 include file and import library (v1c)
-[fixed] ACCESS clause was not being checked with OPEN (v1c)
-[fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
-[fixed] local labels not found weren't being reported (v1c)
-[fixed] LEN() now accepts PTR's when used with ENUM's and UDT's (v1c)
-[fixed] ERASE should accept multiple arguments (v1c)
-[fixed] DATA should not be allowed inside procs (v1c)
-[fixed] invalid types in CASE statements were not been reported (v1c)
-[fixed] byref UDT arguments with array fields would be wrongly accessed because an error at parser3 (v1c)
-[fixed] length of array fields on UDT's was wrong, as the elements weren't taken into account by the symb mod (v1c)
-[fixed] "blurry window" gfx bug in Win32 DirectX windowed mode (lillo)
-[fixed] Waiting for vertical retrace via WAIT under Win32 was waiting twice the time as needed (lillo)
-[fixed] DRAW had precision bugs that caused malformed shapes to be drawn (lillo)
-[fixed] bad negative coordinates transformations was affecting all gfx primitives (lillo)
-[fixed] SCREENPTR was always returning the pointer to the visible page memory instead of the working page (lillo)
-[fixed] palette handling via INP/OUT emulation was producing bad colors (Sterling)
-[fixed] various fixes to the X11 internal gfx driver: was not working if the X server was running in 24bpp mode, mouse
-        cursor was not hidden in fullscreen mode, mouse and keyboard were still working even if the app had not got
-        focus, had memory leaks if executed on a remote X server (lillo)
-[fixed] using gfx primitives on a non-visible working page was still causing screen updates (lillo)
-[fixed] BSAVE was not expecting commas as parameters separator (lillo)
-[fixed] Linux port had precision problems with the TIMER function (lillo)
-[fixed] PSET gfx primitive was not respecting default color (lillo)
-[fixed] SGN() for floating-point numbers was converting the source to integer at the AST module (v1c)
-[fixed] #DEFINE's can now contain forward references to other #DEFINE's (v1c)
-[fixed] CIRCLE used wrong color for lines when drawing arcs with negative start/end angles (lillo)
-[fixed] Calling SCREENLOCK/SCREENUNLOCK when framebuffer is already locked/unlocked does not hang program anymore (lillo)
-[fixed] ON...GOTO and ON...GOSUB now work as expected (v1c)
-[fixed] only empty ()'s should be allowed with COMMON (v1c)
-[fixed] all quirk routines now check for invalid parameters (v1c)
-[fixed] REDIM now checks for run-time errors (out-of-mem) (v1c)
-[fixed] INPUT quirks: comma separates all items, white-spaces won't separate strings, etc (v1c)
-[fixed] PRINT and WRITE shouldn't allow UDT's as parameter, same with INPUT (v1c)
-[fixed] COMMON arrays wouldn't be redimensioned when a REDIM was used (v1c)
-[fixed] integer division and modulo could gen bad code if pointers or indexes were used with EAX as the index reg (v1c)
-[fixed] base for non base-0 arrays with more than 2 dimensions was being wrongly calculated (v1c)
-[fixed] d! = cbyte( d! ) would gen bad code at EMIT if the SI or DI registers were used as source (v1c)
-[fixed] #define's would be checked inside $include and $inclib if ' was used as delimiter (v1c)
+[changed]
+- IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
+  functions won't be automatically exported anymore, because that would make it hard to write DLL's with
+  multiple modules where not all global functions should be exported (v1ctor)
+- IMPORTANT: the format of the internal string descriptor was modified to speed up concatenation of large strings, 
+  so you MUST recompile all the old code, don't reuse object files compiled with older versions (below v0.12b) and 
+  rebuild DLL's created in FB if they return or process STRING's passed to/from client EXE's (v1c)
+- Linux port does not use ncurses anymore, but its own internal lowlevel routines for console access.
+  Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
+  at programs startup and proper colors support under X11. Compatibility issues may rise though, so
+  feedback is welcome (lillo)
+- PEEKS, PEEKI, POKES, POKEI keywords removed, use now the new syntax as "PEEK( data type, expression )" or 
+  "POKE data ype, expression, expression" to peek/poke different data types than BYTE, that's the default one (v1c)
+- many Allegro's globals like al_screen, al_rgb had the "al_" prefix removed, they are now as the originals (v1c)
+- Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
+- white-spaces are now preserved for ASM blocks and #DEFINE's (v1c)
+- Linux port install script will now warn users if not run with root priviledges (lillo)
+- the range of console-mode background colors is now 0 to 15 in DOS and Windows, 'cause Nex wanted that :) (v1c)
+- generated EXEs size can now be up to 5-6K smaller than before (lillo)
+- empty statements like ":foo=1::bar=2:" are now accepted, "if foo then:bar:else:foo" will work too (v1c)
+- DIM|REDIM array w/o explicit dimensions is not allowed anymore inside procs, as the descriptor size is unknown (v1c)
+- RGB is now an intrinsic macro, not a function (so no UDT's called RGB are allowed anymore) (v1c)
+- symbols can now start with an underscore as in "_1234 = 1234" (v1c)
+- local labels can now have the same name in different procs (v1c)
+
+[added]
+- resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
+  compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
+  used too (DrV)
+- XPM icon resource files support on Linux. As with Windows resource, just pass the .xpm file to
+  the commandline and the executable will sport a fb_program_icon symbol holding the XPM data.
+  If using gfxlib, this is automatically used to set the window icon (lillo)
+- built-in multiplatform threading functions (lillo)
+- "operator =" shorthand, as in "a += b * c" (v1ctor)
+- SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
+  faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
+- #DEFINE's with arguments (macros) as in "#DEFINE foo(a,b) ((a)*(b))" (v1c)
+- "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
+- compile-time evaluation for the CHR$ and ASC intrinsic routines (v1c)
+- SCREENINFO gfx function to get informations on current gfx mode (lillo)
+- SCREENRES gfx statement to set custom resolution modes (lillo)
+- SETMOUSE gfx statement to set mouse position and cursor visibility (lillo)
+- Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
+- OpenGL internal gfx driver for both Win32 and Linux (lillo)
+- possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
+- the OpenAL headers, ported by Chris Davies (v1c)
+- include file and static library for TRE (a POSIX regular expressions lib) (v1c)
+- the ASM statement can be used on a single line as in "ASM mov eax, 1234" (v1c)
+- SCREEN() function, working as in QB (lillo)
+- gfxlib now internally uses MMX routines to update the screen if supported (lillo)
+- "OPTION NOKEYWORD", to remove intrinsic routines/statements (v1c)
+- "DIM|REDIM|STATIC|COMMON AS SymbolType" for multiple declarations like "DIM AS INTEGER a, b, c(10)" (v1c)
+- all gfx primitives now accept as optional first parameter a target buffer where drawing will take place (lillo)
+- BLOAD now supports loading BMP files (lillo)
+- IFF(), conditional IF, to be used with numeric types only as in: "a = IIF( b > c, -1, 0)" (v1c)
+- LOWORD, HIWORD, LOBYTE and HIBYTE intrinsic macros (v1c)
+- BIT, BITSET and BITRESET intrinsic macros (v1c)
+- nameless arguments on function prototypes as in "BYVAL AS INTEGER" (v1c)
+- END IF to end the single line IF's to make porting of complex C macros easier to be done (v1c)
+- the winsock 1.1 include file and import library (v1c)
+
+[fixed]
+- ACCESS clause was not being checked with OPEN (v1c)
+- BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
+- local labels not found weren't being reported (v1c)
+- LEN() now accepts PTR's when used with ENUM's and UDT's (v1c)
+- ERASE should accept multiple arguments (v1c)
+- DATA should not be allowed inside procs (v1c)
+- invalid types in CASE statements were not been reported (v1c)
+- byref UDT arguments with array fields would be wrongly accessed because an error at parser3 (v1c)
+- length of array fields on UDT's was wrong, as the elements weren't taken into account by the symb mod (v1c)
+- "blurry window" gfx bug in Win32 DirectX windowed mode (lillo)
+- Waiting for vertical retrace via WAIT under Win32 was waiting twice the time as needed (lillo)
+- DRAW had precision bugs that caused malformed shapes to be drawn (lillo)
+- bad negative coordinates transformations was affecting all gfx primitives (lillo)
+- SCREENPTR was always returning the pointer to the visible page memory instead of the working page (lillo)
+- palette handling via INP/OUT emulation was producing bad colors (Sterling)
+- various fixes to the X11 internal gfx driver: was not working if the X server was running in 24bpp mode, mouse
+  cursor was not hidden in fullscreen mode, mouse and keyboard were still working even if the app had not got
+  focus, had memory leaks if executed on a remote X server (lillo)
+- using gfx primitives on a non-visible working page was still causing screen updates (lillo)
+- BSAVE was not expecting commas as parameters separator (lillo)
+- Linux port had precision problems with the TIMER function (lillo)
+- PSET gfx primitive was not respecting default color (lillo)
+- SGN() for floating-point numbers was converting the source to integer at the AST module (v1c)
+- #DEFINE's can now contain forward references to other #DEFINE's (v1c)
+- CIRCLE used wrong color for lines when drawing arcs with negative start/end angles (lillo)
+- Calling SCREENLOCK/SCREENUNLOCK when framebuffer is already locked/unlocked does not hang program anymore (lillo)
+- ON...GOTO and ON...GOSUB now work as expected (v1c)
+- only empty ()'s should be allowed with COMMON (v1c)
+- all quirk routines now check for invalid parameters (v1c)
+- REDIM now checks for run-time errors (out-of-mem) (v1c)
+- INPUT quirks: comma separates all items, white-spaces won't separate strings, etc (v1c)
+- PRINT and WRITE shouldn't allow UDT's as parameter, same with INPUT (v1c)
+- COMMON arrays wouldn't be redimensioned when a REDIM was used (v1c)
+- integer division and modulo could gen bad code if pointers or indexes were used with EAX as the index reg (v1c)
+- base for non base-0 arrays with more than 2 dimensions was being wrongly calculated (v1c)
+- d! = cbyte( d! ) would gen bad code at EMIT if the SI or DI registers were used as source (v1c)
+- #define's would be checked inside $include and $inclib if ' was used as delimiter (v1c)
 
 
 Version 0.11 Beta:
 
-[chged] the internal GFX library is now the former alternative one written by lillo, many thanks to Sterling
-        for making the first version, he started working on it even before FB was released -- if you prefer to 
-        continue using it, the sources still on CVS at sf.net (src/gfxlib), just build the library and rewrite 
-        the libfbgfx.a file at \lib, it contains no PAINT or DRAW, nor low-res screen modes, but everything 
-        else stills functional - the SCREEN arguments are different, pay attention
-[chged] new OpenGL header translated by Rel to work better with pointers, there are no more BYREF arguments, 
-        use @ or varptr() to get the address of variables and arrays when the argument is a BYVAL ... PTR (v1c)
-[chged] fmod and BASS headers: all BYREF arguments changed to BYVAL ... PTR to work better with pointers (v1c)
-[chged] new SDL headers translated by Edmond Leung, no changes needed on user's code (v1c)
-[chged] fixed-len strings on arrays can now be passed as parameter to functions (v1c)
-[chged] array fields can now be passed by descriptor, as in "array(idx).arrayfield()" (v1c)
-[chged] #DEFINE now supports complex definitions like "any ptr" at right-side rule (v1c)
-[chged] pointers to pointers *MUST* now be declared as "ptr ptr ...", multiple dereferencing are only allowed on those (v1c)
-[chged] -w cmm-line option changed to -nostd (v1c)
-[chged] ERASE now accepts non-dynamic arrays and fills them with 0's (v1c)
-[chged] the crt dll on Win32 is now msvcrt.dll instead of crtdll.dll, to be able to statically link to libs 
-        compiled with VC 5/6 and Mingw (crtdll is not supported by M$ anymore), you can use the new -nostdlibs 
-        option to set a different lib (like crtdll) if you really need that -- ie: plain vanilla Windows 95/osr2 
-        doesn't come with msvcrt.dll installed (it can be found at M$'s site) (v1c) 
-[added] include file and import lib for the GLU library (thanks Rel for sending it) (v1c)
-[added] include file and import lib for the FreeImage library (thanks Eric) (v1c)
-[added] include file and import lib for the SDL_gfx 2.0 library (v1c)
-[added] include file and static lib for the Lua (teh C-like scripting language) library (v1c)
-[added] escape chars (\) on string literals, use "OPTION ESCAPE" to enable -- they won't be parsed within $include $inclib (v1c)
-[added] GOTO on single-line IF's w/o THEN (v1c)
-[added] EXTERN keyword, to declare external/global variables (not the same as COMMON) (v1c)
-[added] EXPORT keyword, to declare exported functions on executables (not in DLL's) (v1c)
-[added] STRPTR keyword, works like SADD, but name makes more sense (as for VARPTR, PROCPTR) (v1c)
-[added] WITH..END WITH compound statement -- won't work with field dereference "->" (v1c)
-[added] warning messages when passing a scalar type to a function argument that expects a pointer (v1c)
-[added] -w cmm-line option to change the min level of warning messages shown (v1c)
-[added] ONCE keyword to be used with $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
-[added] UDT arguments now can be declared and passed by value too (v1c)
-[added] -nodeflibs cmm-line option, so no standard libraries are automatically linked (v1c)
-[added] "*([@]variable +|- expression)" and "*@variable" support (v1c)
-[added] pointer indexing support, as in "myptr[idx]" (v1c)
-[fixed] COMMON arrays shared between different sources had different descriptor names (v1c)
-[fixed] the UDT size returned for UDT vars when using LEN() was the real-one, w/o padding (v1c)
-[fixed] LEN() can now handle arrays with no indexes given, as in QB (v1c)
-[fixed] by ref arguments now accept different data types when expressions are passed (v1c)
-[fixed] when an include file was not found, the executable would still built (v1c)
-[fixed] the --dllname cmm-line option to dlltool.exe should not contain the path (v1c)
-[fixed] udtptr.field was being accepted as valid -- it must to be udtptr->field (v1c)
-[fixed] PRINT/WRITE both have much more precision now when printing floating-point numbers (v1c)
-[fixed] #ELSEIF were not skipping to #ENDIF if and #IF or other #ELSEIF had already being true (v1c) 
-[fixed] SHARED with DIM|REDIM was being allowed inside procs (v1c)
-[fixed] STATIC was was being allowed outside procs (v1c)
-[fixed] indexes as "byte|short var + constant expr" could gen bad code, as var wasn't been converted to int (v1c)
-[fixed] loading an ubyte to a signed one storing a sbyte to an unsigned one would make a convertion at emit (v1c)
-[fixed] "DIM a as myudt, a.b as sometype" won't be allowed anymore (v1c)
-[fixed] Pre-processor would fail if comparing numbers using relational operators others than = and <> (v1c)
+[changed]
+- the internal GFX library is now the former alternative one written by lillo, many thanks to Sterling
+  for making the first version, he started working on it even before FB was released -- if you prefer to 
+  continue using it, the sources still on CVS at sf.net (src/gfxlib), just build the library and rewrite 
+  the libfbgfx.a file at \lib, it contains no PAINT or DRAW, nor low-res screen modes, but everything 
+  else stills functional - the SCREEN arguments are different, pay attention
+- new OpenGL header translated by Rel to work better with pointers, there are no more BYREF arguments, 
+  use @ or varptr() to get the address of variables and arrays when the argument is a BYVAL ... PTR (v1c)
+- fmod and BASS headers: all BYREF arguments changed to BYVAL ... PTR to work better with pointers (v1c)
+- new SDL headers translated by Edmond Leung, no changes needed on user's code (v1c)
+- fixed-len strings on arrays can now be passed as parameter to functions (v1c)
+- array fields can now be passed by descriptor, as in "array(idx).arrayfield()" (v1c)
+- #DEFINE now supports complex definitions like "any ptr" at right-side rule (v1c)
+- pointers to pointers *MUST* now be declared as "ptr ptr ...", multiple dereferencing are only allowed on those (v1c)
+- -w cmm-line option changed to -nostd (v1c)
+- ERASE now accepts non-dynamic arrays and fills them with 0's (v1c)
+- the crt dll on Win32 is now msvcrt.dll instead of crtdll.dll, to be able to statically link to libs 
+  compiled with VC 5/6 and Mingw (crtdll is not supported by M$ anymore), you can use the new -nostdlibs 
+  option to set a different lib (like crtdll) if you really need that -- ie: plain vanilla Windows 95/osr2 
+  doesn't come with msvcrt.dll installed (it can be found at M$'s site) (v1c) 
+
+[added]
+- include file and import lib for the GLU library (thanks Rel for sending it) (v1c)
+- include file and import lib for the FreeImage library (thanks Eric) (v1c)
+- include file and import lib for the SDL_gfx 2.0 library (v1c)
+- include file and static lib for the Lua (teh C-like scripting language) library (v1c)
+- escape chars (\) on string literals, use "OPTION ESCAPE" to enable -- they won't be parsed within $include $inclib (v1c)
+- GOTO on single-line IF's w/o THEN (v1c)
+- EXTERN keyword, to declare external/global variables (not the same as COMMON) (v1c)
+- EXPORT keyword, to declare exported functions on executables (not in DLL's) (v1c)
+- STRPTR keyword, works like SADD, but name makes more sense (as for VARPTR, PROCPTR) (v1c)
+- WITH..END WITH compound statement -- won't work with field dereference "->" (v1c)
+- warning messages when passing a scalar type to a function argument that expects a pointer (v1c)
+- -w cmm-line option to change the min level of warning messages shown (v1c)
+- ONCE keyword to be used with $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
+- UDT arguments now can be declared and passed by value too (v1c)
+- -nodeflibs cmm-line option, so no standard libraries are automatically linked (v1c)
+- "*([@]variable +|- expression)" and "*@variable" support (v1c)
+- pointer indexing support, as in "myptr[idx]" (v1c)
+
+[fixed]
+- COMMON arrays shared between different sources had different descriptor names (v1c)
+- the UDT size returned for UDT vars when using LEN() was the real-one, w/o padding (v1c)
+- LEN() can now handle arrays with no indexes given, as in QB (v1c)
+- by ref arguments now accept different data types when expressions are passed (v1c)
+- when an include file was not found, the executable would still built (v1c)
+- the --dllname cmm-line option to dlltool.exe should not contain the path (v1c)
+- udtptr.field was being accepted as valid -- it must to be udtptr->field (v1c)
+- PRINT/WRITE both have much more precision now when printing floating-point numbers (v1c)
+- #ELSEIF were not skipping to #ENDIF if and #IF or other #ELSEIF had already being true (v1c) 
+- SHARED with DIM|REDIM was being allowed inside procs (v1c)
+- STATIC was was being allowed outside procs (v1c)
+- indexes as "byte|short var + constant expr" could gen bad code, as var wasn't been converted to int (v1c)
+- loading an ubyte to a signed one storing a sbyte to an unsigned one would make a convertion at emit (v1c)
+- "DIM a as myudt, a.b as sometype" won't be allowed anymore (v1c)
+- Pre-processor would fail if comparing numbers using relational operators others than = and <> (v1c)
 
 
 Version 0.10 Beta:
 
-[chged] some param declarations on include files were changed, don't use the old ones with this version (v1ctor)
-[chged] arrays can't no more be accessed w/o indexes (even at (0)) (v1c)
-[chged] DirectDraw include file (ddraw.bi) completed by Drv (v1c)
-[chged] GFX lib is much more modular now, executables generated are much smaller (Sterling)
-[chged] default char set on Linux is now IBM codepage 437 (same as in DOS) (lillo)
-[chged] the SDL lib is added automatically when the intrinsic GFX routines are used (v1c)
-[chged] winmm.bi renamed to mmsystem.bi to match the original C version (v1c)
-[added] RESUME and RESUME NEXT error handling intrinsic functions (v1c)
-[added] DIR$ intrinsic function, both for Windows and Linux (lillo)
-[added] REALLOCATE intrinsic function (same as C's realloc) (v1c)
-[added] SETDATE and SETTIME statements, thanks DrV for sending the patches (v1c)
-[added] PUT# and GET# now can write/read full arrays as in VB (v1c)
-[added] power (^) operator optimization: "var ^ 2" becomes "var * var" (v1c)
-[added] MOD operator optimization: "var MOD power of 2 constant" becomes "var AND constant-1" (v1c)
-[added] winmm import library that was missing (v1c)
-[fixed] QB GFX library runs fine now, it was a makefile fault (headers changed but files didn't get rebuilt) (v1c)
-[fixed] SDL and OpenGL include files are more cross-platform now (thanks Danilo) (v1c)
-[fixed] alignament of UDT fields wasn't correct when they were an UDT too (v1c)
-[fixed] fixed-len strings were being allowed in function arguments and results (v1c)
-[fixed] reported names of not found include files still wrong (v1c)
-[fixed] PRINT with no args on Linux was causing a segment-fault (lillo)
-[fixed] NAME was declared as RENAME (v1c)
-[fixed] function arguments with same name as the function itself were being accepted (v1c)
-[fixed] PRINT USING was not doing any output if there was no chars at end of the format string (v1c)
-[fixed] illegal unary/binary/convertion operations were been silently ignored (v1c)
-[fixed] mytypeptr->myfieldarray(expr) is now working again (v1c)
-[fixed] ON ERROR was accepting GOSUB too (v1c)
-[fixed] functions with optional arguments called as parameter could try taking args from the caller function (v1c)
-[fixed] CLOSE now accepts multiple files (v1c)
-[fixed] COMMAND$ on Windows when the executable path had white-spaces was returning part of it (v1c)
-[fixed] fpoint regs were been spilled in the wrong order when procs were called within complex expressions (v1c)
-[fixed] when making a DLL the path was not being stripped, creating bad exclude symbols (v1c)
-[fixed] making a static library was not saving the built lib to the source path (v1c)
-[fixed] rtlib arg len calc was wrong and affected CDECL function calls when byval strings were passed (v1c)
+[changed] 
+- some param declarations on include files were changed, don't use the old ones with this version (v1ctor)
+- arrays can't no more be accessed w/o indexes (even at (0)) (v1c)
+- DirectDraw include file (ddraw.bi) completed by Drv (v1c)
+- GFX lib is much more modular now, executables generated are much smaller (Sterling)
+- default char set on Linux is now IBM codepage 437 (same as in DOS) (lillo)
+- the SDL lib is added automatically when the intrinsic GFX routines are used (v1c)
+- winmm.bi renamed to mmsystem.bi to match the original C version (v1c)
+
+[added]
+- RESUME and RESUME NEXT error handling intrinsic functions (v1c)
+- DIR$ intrinsic function, both for Windows and Linux (lillo)
+- REALLOCATE intrinsic function (same as C's realloc) (v1c)
+- SETDATE and SETTIME statements, thanks DrV for sending the patches (v1c)
+- PUT# and GET# now can write/read full arrays as in VB (v1c)
+- power (^) operator optimization: "var ^ 2" becomes "var * var" (v1c)
+- MOD operator optimization: "var MOD power of 2 constant" becomes "var AND constant-1" (v1c)
+- winmm import library that was missing (v1c)
+
+[fixed]
+- QB GFX library runs fine now, it was a makefile fault (headers changed but files didn't get rebuilt) (v1c)
+- SDL and OpenGL include files are more cross-platform now (thanks Danilo) (v1c)
+- alignament of UDT fields wasn't correct when they were an UDT too (v1c)
+- fixed-len strings were being allowed in function arguments and results (v1c)
+- reported names of not found include files still wrong (v1c)
+- PRINT with no args on Linux was causing a segment-fault (lillo)
+- NAME was declared as RENAME (v1c)
+- function arguments with same name as the function itself were being accepted (v1c)
+- PRINT USING was not doing any output if there was no chars at end of the format string (v1c)
+- illegal unary/binary/convertion operations were been silently ignored (v1c)
+- mytypeptr->myfieldarray(expr) is now working again (v1c)
+- ON ERROR was accepting GOSUB too (v1c)
+- functions with optional arguments called as parameter could try taking args from the caller function (v1c)
+- CLOSE now accepts multiple files (v1c)
+- COMMAND$ on Windows when the executable path had white-spaces was returning part of it (v1c)
+- fpoint regs were been spilled in the wrong order when procs were called within complex expressions (v1c)
+- when making a DLL the path was not being stripped, creating bad exclude symbols (v1c)
+- making a static library was not saving the built lib to the source path (v1c)
+- rtlib arg len calc was wrong and affected CDECL function calls when byval strings were passed (v1c)
 
 
 Version 0.09 Beta:
 
-[chged] FBC's command-line options are now case-sensitive, -b is NOT the same as -B anymore, pay attention (v1ctor)
-[chged] all Windows-only include files were moved to the inc\win path, fix your sources please (v1c)
-[chged] calling function pointers no more needs a * at beginning, () must now be used, even if proc has no args (v1c)
-[chged] pre-processor is now at Lex's level, so it can be used inside TYPE, UNION and ENUM blocks too (v1c)
-[chged] LOCATE now accepts a 3rd optional argument to turn cursor on and off (lillo)
-[chged] max length of literal strings was too short, 1024 chars now (also an error msg is shown if too big) (v1c)
-[added] QB-ish GFX library (not fully functional yet, palette is buggy), all credits to Sterling for the hard work (v1c)
-[added] DLL and static library automation, thanks to DrV for sending the patches (v1c)
-[added] support for creating shared libraries on Linux (lillo)
-[added] #ELSEIF pre-processor statement (lillo)
-[added] pre-defined #defines: FB__VERSION, FB__SIGNATURE, FB__WIN32, FB__LINUX (lillo)
-[added] double-quotes on literal-strings, as in: text = "quote=""": print text (will print: quote=") (v1c)
-[added] more complete Windows API include files, thanks to Nek and fws for the hard work (v1c)
-[added] dereferenced byte pointers can now be assigned to fixed and var-len strings and vice-versa (v1c)
-[added] function calls can now be dereferenced, ie: sometype = *somefuncreturningapointer(somearg) (v1c)
-[added] ALLOCATE and DEALLOCATE intrinsic functions, to dynamic allocate memory (as malloc/free) (v1c)
-[added] CLEAR intrinsic function, to fill a memory block with some value (as memset) (v1c)
-[fixed] rtlib routines still had stdcall alias (with @'s) when -w option was used (v1c)
-[fixed] "."'s were being checked inside an $include directive when using apostrophes instead of quotes (v1c)
-[fixed] #DEFINE's were case-sensitive and quotes weren't being preserved (v1c)
-[fixed] defines passed by cmm-line were being ignored if no value was explicitly given (v1c)
-[fixed] PRINT couldn't print more than 80x25 chars at time (WRITE stills limited tho) (v1c)
-[fixed] TRIM$ was eating one char more (v1c)
-[fixed] undefined UDT elements when accessed w/o OPTION EXPLICIT were being declarated as new variables (v1c)
-[fixed] ACCESS clause on OPEN was expecting an expression, correct is READ|WRITE|READ WRITE (v1c)
-[fixed] "imm op short var" was allocating the wrong register type, due an integer imm optimization at AST (v1c)
-[fixed] ptr params passed byref to functions were being converted, as IR wasn't treating POINTER dtypes as UINT (v1c)
-[fixed] "dim var as sometype: goto|gosub var" was being accepted (v1c)
-[fixed] when an include file was not found, the compiler context was not being restored (v1c)
+[changed] 
+- FBC's command-line options are now case-sensitive, -b is NOT the same as -B anymore, pay attention (v1ctor)
+- all Windows-only include files were moved to the inc\win path, fix your sources please (v1c)
+- calling function pointers no more needs a * at beginning, () must now be used, even if proc has no args (v1c)
+- pre-processor is now at Lex's level, so it can be used inside TYPE, UNION and ENUM blocks too (v1c)
+- LOCATE now accepts a 3rd optional argument to turn cursor on and off (lillo)
+- max length of literal strings was too short, 1024 chars now (also an error msg is shown if too big) (v1c)
+
+[added]
+- QB-ish GFX library (not fully functional yet, palette is buggy), all credits to Sterling for the hard work (v1c)
+- DLL and static library automation, thanks to DrV for sending the patches (v1c)
+- support for creating shared libraries on Linux (lillo)
+- #ELSEIF pre-processor statement (lillo)
+- pre-defined #defines: FB__VERSION, FB__SIGNATURE, FB__WIN32, FB__LINUX (lillo)
+- double-quotes on literal-strings, as in: text = "quote=""": print text (will print: quote=") (v1c)
+- more complete Windows API include files, thanks to Nek and fws for the hard work (v1c)
+- dereferenced byte pointers can now be assigned to fixed and var-len strings and vice-versa (v1c)
+- function calls can now be dereferenced, ie: sometype = *somefuncreturningapointer(somearg) (v1c)
+- ALLOCATE and DEALLOCATE intrinsic functions, to dynamic allocate memory (as malloc/free) (v1c)
+- CLEAR intrinsic function, to fill a memory block with some value (as memset) (v1c)
+
+[fixed]
+- rtlib routines still had stdcall alias (with @'s) when -w option was used (v1c)
+- "."'s were being checked inside an $include directive when using apostrophes instead of quotes (v1c)
+- #DEFINE's were case-sensitive and quotes weren't being preserved (v1c)
+- defines passed by cmm-line were being ignored if no value was explicitly given (v1c)
+- PRINT couldn't print more than 80x25 chars at time (WRITE stills limited tho) (v1c)
+- TRIM$ was eating one char more (v1c)
+- undefined UDT elements when accessed w/o OPTION EXPLICIT were being declarated as new variables (v1c)
+- ACCESS clause on OPEN was expecting an expression, correct is READ|WRITE|READ WRITE (v1c)
+- "imm op short var" was allocating the wrong register type, due an integer imm optimization at AST (v1c)
+- ptr params passed byref to functions were being converted, as IR wasn't treating POINTER dtypes as UINT (v1c)
+- "dim var as sometype: goto|gosub var" was being accepted (v1c)
+- when an include file was not found, the compiler context was not being restored (v1c)
 
 
 Version 0.08 Beta:
 
-[added] pre-processor: #DEFINE ID, #UNDEF ID, #IFDEF ID, #IFNDEF ID, #IF Expression, #ELSE, #ENDIF, #PRINT (v1ctor)
-[added] -d cmd-line option, to add compile-time pre-processor define's (v1c)
-[added] -w cmd-line option, to treat stdcall calling convention as cdecl even on Win32 (v1c)
-[added] NOSTDCALL define to rtlib, also all __stdcall references are now FBCALL (v1c)
-[fixed] comparing a fpoint operand against an int operand would not load the int to the FPU stack due the comp&branch opt (v1c)
-[fixed] debugging symbols were being stripped even when the -g option were used (v1c)
-[fixed] sdlvideo.bi: pitch field from SDL_Surface struct redeclared as ushort - it was uinteger before (v1c)
-[fixed] sdlvideo.bi: SDL_Rect fields were integer's instead of short's (v1c)
-[fixed] sdlevent.bi: SDL_MouseMotionEvent, yrel was declared as unsigned (v1c)
+[added] 
+- pre-processor: #DEFINE ID, #UNDEF ID, #IFDEF ID, #IFNDEF ID, #IF Expression, #ELSE, #ENDIF, #PRINT (v1ctor)
+- -d cmd-line option, to add compile-time pre-processor define's (v1c)
+- -w cmd-line option, to treat stdcall calling convention as cdecl even on Win32 (v1c)
+- NOSTDCALL define to rtlib, also all __stdcall references are now FBCALL (v1c)
+
+[fixed]
+- comparing a fpoint operand against an int operand would not load the int to the FPU stack due the comp&branch opt (v1c)
+- debugging symbols were being stripped even when the -g option were used (v1c)
+- sdlvideo.bi: pitch field from SDL_Surface struct redeclared as ushort - it was uinteger before (v1c)
+- sdlvideo.bi: SDL_Rect fields were integer's instead of short's (v1c)
+- sdlevent.bi: SDL_MouseMotionEvent, yrel was declared as unsigned (v1c)
 
 
 Version 0.07 Beta:
 
-[chged] DIM now can be used with non-constant indexes, what will create a dynamic array (v1ctor)
-[added] DIM array(), dynamic arrays with unknown dimensions as in VBDOS/VB (v1c)
-[fixed] RTRIM$ would fail with fixed-len strings as fb_StrAssign was not padding them with nulls (v1c)
-[fixed] DATE$ was allocating 2 chars less than needed (v1c)
-[fixed] EXIT was not checking if was inside a compound stmt or a proc, an access violation would happen (v1c)
-[fixed] vars explicity declared with full type weren't be found when used with a prefix of same type (v1c)
-[fixed] emit was pushing words to stack and cleaning 4 bytes when converting to/from fpoint vars to/from short vars (v1c)
-[fixed] ERASE was accepting any kind of vars, including scalars and non-dynamic arrays (v1c)
-[fixed] const relop expr would gen bad code (dst as immediate value) (v1c)
-[fixed] functions should never be allowed to return structs (v1c)
-[fixed] INPUT statement for console was generating an infinite loop at AST if no prompt string was passed (v1c)
-[fixed] sdlmouse.bi: SDL_WarpMouse was named as SDL_WrapMouse (v1c)
+[changed]
+- DIM now can be used with non-constant indexes, what will create a dynamic array (v1ctor)
+
+[added]
+- DIM array(), dynamic arrays with unknown dimensions as in VBDOS/VB (v1c)
+
+[fixed]
+- RTRIM$ would fail with fixed-len strings as fb_StrAssign was not padding them with nulls (v1c)
+- DATE$ was allocating 2 chars less than needed (v1c)
+- EXIT was not checking if was inside a compound stmt or a proc, an access violation would happen (v1c)
+- vars explicity declared with full type weren't be found when used with a prefix of same type (v1c)
+- emit was pushing words to stack and cleaning 4 bytes when converting to/from fpoint vars to/from short vars (v1c)
+- ERASE was accepting any kind of vars, including scalars and non-dynamic arrays (v1c)
+- const relop expr would gen bad code (dst as immediate value) (v1c)
+- functions should never be allowed to return structs (v1c)
+- INPUT statement for console was generating an infinite loop at AST if no prompt string was passed (v1c)
+- sdlmouse.bi: SDL_WarpMouse was named as SDL_WrapMouse (v1c)
 
 
 Version 0.06 Beta:
 
-[added] STATIC declared before SUB or FUNCTION like in VBDOS/VB (v1ctor)
-[added] another quirk: ELSE and ELSEIF with statements in the same line (v1c)
-[added] "IF expr THEN linenumber", GOTO ugly stuff (v1c)
-[added] byte and floating-point vars can now be freely mixed (v1c)
-[added] ALIAS declaration on SUB's or FUNCTION's (prototypes already had that) (v1c)
-[added] FRE function (v1c)
-[fixed] assumption that GAS would convert IDX*3 to IDX*2+IDX like MASM/TASM/NASM do (v1c)
-[fixed] passing non-existent arrays by descriptor would cause an access violation (v1c)
-[fixed] RND should never return 1.0 (v1c)
-[fixed] too few array dimensions (limited to 16 now) (v1c)
-[fixed] DATE$ was wrong, libc's localtime() returns current year less 1900 (v1c)
-[fixed] FOR was accepting UDT fields as counter (v1c)
-[fixed] file names with spaces, now quotes are added when passing them to AS and LD (v1c)
-[fixed] when path contains spaces, EXEC, RUN and CHAIN will use a short one (v1c)
+[added]
+- STATIC declared before SUB or FUNCTION like in VBDOS/VB (v1ctor)
+- another quirk: ELSE and ELSEIF with statements in the same line (v1c)
+- "IF expr THEN linenumber", GOTO ugly stuff (v1c)
+- byte and floating-point vars can now be freely mixed (v1c)
+- ALIAS declaration on SUB's or FUNCTION's (prototypes already had that) (v1c)
+- FRE function (v1c)
+
+[fixed]
+- assumption that GAS would convert IDX*3 to IDX*2+IDX like MASM/TASM/NASM do (v1c)
+- passing non-existent arrays by descriptor would cause an access violation (v1c)
+- RND should never return 1.0 (v1c)
+- too few array dimensions (limited to 16 now) (v1c)
+- DATE$ was wrong, libc's localtime() returns current year less 1900 (v1c)
+- FOR was accepting UDT fields as counter (v1c)
+- file names with spaces, now quotes are added when passing them to AS and LD (v1c)
+- when path contains spaces, EXEC, RUN and CHAIN will use a short one (v1c)
 
 
 Version 0.05 Beta:
 
-[added] NEXT with multiple identifiers (NEXT a, b, ...), as many old sources seem to have that (v1ctor)
-[fixed] PRINT and WRITE stmts were accepting expressions separated by white-spaces (BC also allows that) (v1c)
-[fixed] quirks with LINE INPUT and INPUT for console, message is optional (try parsing that using a LR..) (v1c)
-[fixed] and another one with CLOSE, file number is also optional and that way it works as RESET (v1c)
-[fixed] CSRLIN was declared as CSRLINE (v1c)
+[added]
+-  NEXT with multiple identifiers (NEXT a, b, ...), as many old sources seem to have that (v1ctor)
+
+[fixed]
+- PRINT and WRITE stmts were accepting expressions separated by white-spaces (BC also allows that) (v1c)
+- quirks with LINE INPUT and INPUT for console, message is optional (try parsing that using a LR..) (v1c)
+- and another one with CLOSE, file number is also optional and that way it works as RESET (v1c)
+- CSRLIN was declared as CSRLINE (v1c)
 
 
 Version 0.04 Beta:
 
-[fixed] SDL prototype for UnlockSurface, the alias was wrong (v1ctor)
-[fixed] SDL include files: all BYREF args were changed to BYVAL ... PTR, for better consistency (v1c)
-[fixed] line continuation char "_" was being processed inside comments and $include's file names (v1c)
-[fixed] entry point name wasn't checking for "-" chars, that are valid on file names, but invalid on symbol names (v1c)
-[fixed] using RESTORE w/o a label before any DATA statement would create the wrong default label (v1c)
-[fixed] loading larger vars to byte ones with SI/DI was wrong as the source type was not being remapped at EMIT (v1c)
-[chged] fpu initialization is done at rtlib now, for better portability (v1c)
-[added] LOCAL keyword to be used with ON ERROR statments, when inside sub-routines (v1c)
-[added] "ERR = expr" statement, for setting the error number (the ERR function already existed) (v1c)
+[changed]
+- fpu initialization is done at rtlib now, for better portability (v1c)
+
+[added] 
+- LOCAL keyword to be used with ON ERROR statments, when inside sub-routines (v1c)
+- "ERR = expr" statement, for setting the error number (the ERR function already existed) (v1c)
+
+[fixed]
+- SDL prototype for UnlockSurface, the alias was wrong (v1ctor)
+- SDL include files: all BYREF args were changed to BYVAL ... PTR, for better consistency (v1c)
+- line continuation char "_" was being processed inside comments and $include's file names (v1c)
+- entry point name wasn't checking for "-" chars, that are valid on file names, but invalid on symbol names (v1c)
+- using RESTORE w/o a label before any DATA statement would create the wrong default label (v1c)
+- loading larger vars to byte ones with SI/DI was wrong as the source type was not being remapped at EMIT (v1c)
 
 
 Version 0.03 Beta:
 
-[fixed] entry point name was wrong when the source file had slashes in the name, and not back-slashes (v1ctor)
-[fixed] IR was renaming the compare ops when operands hadn't the same class, 'cause a x86 FPU opt. done at AST (v1c)
+[fixed]
+- entry point name was wrong when the source file had slashes in the name, and not back-slashes (v1ctor)
+- IR was renaming the compare ops when operands hadn't the same class, 'cause a x86 FPU opt. done at AST (v1c)
 
 
 Version 0.02 Beta:
 
-[fixed] IR module was not freeing regs of the same classes while making int convertions and reusing them (v1ctor)
-[fixed] optargs.bas wasn't working, it was being used just as a prototype, shouldn't be there (v1c)
-[fixed] argument-less function pointers: parser wasn't accepting them when ()'s were used (v1c)
-[fixed] right$ was reversing the result (v1c)
+[fixed]
+- IR module was not freeing regs of the same classes while making int convertions and reusing them (v1ctor)
+- optargs.bas wasn't working, it was being used just as a prototype, shouldn't be there (v1c)
+- argument-less function pointers: parser wasn't accepting them when ()'s were used (v1c)
+- right$ was reversing the result (v1c)
