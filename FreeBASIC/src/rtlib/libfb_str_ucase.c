@@ -32,7 +32,7 @@
 FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
-	int 		i, len, c;
+	int 		i, c, len = 0;
 	char		*s, *d;
 
 	if( src == NULL )

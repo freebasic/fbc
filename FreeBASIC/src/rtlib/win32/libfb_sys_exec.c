@@ -39,7 +39,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
     char	buffer[MAX_PATH+1];
     char	*argv[256];
-    int		res;
+    int		res = 0;
 
 	if( (program != NULL) && (program->data != NULL) )
 	{

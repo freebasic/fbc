@@ -31,20 +31,25 @@
 FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 {
 	FBSTRING 	*dst;
-	char 		*p;
+	char 		*tmp;
+	int			len;
 
 	if( (varname != NULL) && (varname->data != NULL) )
-		p = getenv( varname->data );
+		tmp = getenv( varname->data );
 	else
-		p = NULL;
+		tmp = NULL;
 
-	if( p != NULL )
+	if( tmp != NULL )
 	{
 		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		
-		fb_StrAssign( (void *)dst, -1, (void *)p, 0, 1 );
-		
-		dst->len |= FB_TEMPSTRBIT;				/* mark as temp */
+		if( dst != NULL )
+		{
+			len = strlen( tmp );
+			fb_hStrAllocTemp( dst, len );
+			fb_hStrCopy( dst->data, tmp, len );		
+		} 
+		else
+			dst = &fb_strNullDesc;
 	}
 	else
 		dst = &fb_strNullDesc;
@@ -59,7 +64,7 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 /*:::::*/
 FBCALL int fb_SetEnviron ( FBSTRING *str )
 {
-	int res;
+	int res = 0;
 
 	if( (str != NULL) && (str->data != NULL) )
 	{

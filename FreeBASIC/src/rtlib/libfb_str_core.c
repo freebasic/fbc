@@ -87,8 +87,8 @@ void fb_hStrDelTempDesc( FBSTRING *str )
 	/* is this really a temp descriptor? */
 	if( ((FB_STR_TMPDESC *)str < &fb_tmpdsTB[0]) ||
 	    ((FB_STR_TMPDESC *)str > &fb_tmpdsTB[FB_STR_TMPDESCRIPTORS-1]) )
-		return ;
-	
+		return;
+
 	fb_hStrFreeTmpDesc( (FB_STR_TMPDESC *)str );
 }
 
@@ -163,9 +163,10 @@ void fb_hStrDelTemp( FBSTRING *str )
 		return;
 	}
 
+    /* del data */
     fb_StrDelete( str );
-
-    /* must be done after Delete, as desc is destroyed */
+    
+    /* del descriptor (must be done by last as it will be cleared) */
     fb_hStrDelTempDesc( str );
 }
 

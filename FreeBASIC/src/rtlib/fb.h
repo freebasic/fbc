@@ -147,7 +147,7 @@ typedef struct _FBSTRING {
 
 typedef struct _FB_STR_TMPDESC {
 	FBSTRING		desc;
-
+	
 	FB_LISTELEM		elem;
 } FB_STR_TMPDESC;
 

@@ -21,9 +21,9 @@ ifeq ($(OS),DOS)
 endif
 
 CC := gcc
-CFLAGS := -O3 -I .
+CFLAGS := -O3 -Wall -I .
 ifneq ($(WINSYSDIR),)
-    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86 -DMULTITHREADED
+    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86
     osdeppath := win32
 	libpath = ../../lib/win32
 else
@@ -65,12 +65,6 @@ $(lib) : $(objects) $(osdepobjs)
 
 .PHONY : clean
 clean :
-ifneq ($(WINSYSDIR),)
-	del $(subst /,\,$(lib))
-	del $(subst /,\,$(objects))
-	del $(subst /,\,$(osdepobjs))
-else
 	rm -f $(lib)
 	rm -f $(objects)
 	rm -f $(osdepobjs)
-endif

@@ -38,7 +38,7 @@ FBCALL int fb_Chain ( FBSTRING *program )
 {
     char	buffer[MAX_PATH+1];
     char 	arg0[] = "";
-    int		res;
+    int		res = 0;
 
 	if( (program != NULL) && (program->data != NULL) )
 	{

@@ -33,7 +33,7 @@ FBCALL FBSTRING *fb_LTRIM ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		len;
-	char		*p;
+	char		*p = NULL;
 
 	if( src == NULL )
 		return &fb_strNullDesc;

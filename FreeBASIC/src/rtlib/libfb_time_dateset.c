@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -55,7 +56,7 @@ FBCALL int fb_SetDate( FBSTRING *date )
     	for (i = 0, t = date->data; (c = *t) && isdigit(c); t++, i += 10)
 			m = m * i + c - '0';
 
-    	if ((c != '/') && (c != '-') || (m < 1) || (m > 12))
+    	if (((c != '/') && (c != '-')) || (m < 1) || (m > 12))
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     	sep = c;
 

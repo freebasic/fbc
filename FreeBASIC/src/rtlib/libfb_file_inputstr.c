@@ -77,8 +77,8 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 
 	if( len != bytes )
 	{
-		dst->len = len | FB_TEMPSTRBIT;				/* fake len */
 		dst->data[len] = '\0';
+		dst->len = len | FB_TEMPSTRBIT;				/* mark as temp */
 	}
 
 	FB_UNLOCK();

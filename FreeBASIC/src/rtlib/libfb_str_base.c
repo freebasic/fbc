@@ -89,7 +89,9 @@ FBCALL FBSTRING *fb_OCT ( int num )
 FBCALL FBSTRING *fb_BIN ( int num )
 {
 	FBSTRING 	*dst;
+#ifndef WIN32
 	int			i;
+#endif
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );

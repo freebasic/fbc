@@ -78,7 +78,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 {
 	FBSTRING	*res;
 	int		len;
-	char		*name, *p;
+	char		*name;
 
 	len = FB_STRSIZE( filespec );
 	name = NULL;

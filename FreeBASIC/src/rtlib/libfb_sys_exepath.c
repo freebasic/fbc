@@ -45,10 +45,8 @@ FBCALL FBSTRING *fb_ExePath ( void )
 		if( dst != NULL )
 		{
 			len = strlen( tmp );
-
 			fb_hStrAllocTemp( dst, len );
-
-			memcpy( dst->data, tmp, len + 1 );
+			fb_hStrCopy( dst->data, tmp, len );
 		}
 		else
 			dst = &fb_strNullDesc;

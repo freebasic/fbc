@@ -31,8 +31,7 @@
 FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
 {
 	FBSTRING 	*dst;
-	int 		i, len, src_len;
-	char		*s, *d;
+	int 		len, src_len;
 
 	if( src == NULL )
 		return &fb_strNullDesc;
