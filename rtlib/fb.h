@@ -189,6 +189,8 @@ FBCALL int 			fb_Run 				( FBSTRING *program );
 FBCALL int 			fb_Chain 			( FBSTRING *program );
 FBCALL int 			fb_Exec 			( FBSTRING *program, FBSTRING *args );
 
+	   char 		*fb_hGetShortPath	( char *src, char *dst, int maxlen );
+
 /**************************************************************************************************
  * math
  **************************************************************************************************/

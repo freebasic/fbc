@@ -18,7 +18,7 @@
  */
 
 /*
- * sys_exec.c -- run and chain
+ * sys_exec.c -- exec function
  *
  * chng: nov/2004 written [v1ctor]
  *
@@ -41,7 +41,7 @@
 #include "fb.h"
 
 /*:::::*/
-static char *fn_hGetShortPath( char *src, char *dst, int maxlen )
+char *fb_hGetShortPath( char *src, char *dst, int maxlen )
 {
 
 	if( strchr( src, 32 ) == NULL )
@@ -55,7 +55,7 @@ static char *fn_hGetShortPath( char *src, char *dst, int maxlen )
 #else
 		int i = 0;
 		char *old_dst = dst;
-		
+
 		while ((*src) && (i < maxlen - 1)) {
 			if (*src == ' ') {
 				*dst++ = '\\';
@@ -74,77 +74,6 @@ static char *fn_hGetShortPath( char *src, char *dst, int maxlen )
 	return dst;
 }
 
-/*:::::*/
-FBCALL int fb_Run ( FBSTRING *program )
-{
-    char	buffer[MAX_PATH+1];
-    char 	arg0[] = "";
-    int		res;
-
-#ifdef WIN32
-	res = _execl( fn_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
-#else
-	char buffer2[MAX_PATH+3];
-
-	fn_hGetShortPath( program->data, buffer, MAX_PATH );
-	res = execlp( buffer, buffer, NULL);
-	/* Ok, an error occured. Probably the file could not be found;
-	 * as a last resort, let's try in current directory.
-	 */
-	if( !strchr( buffer, '/' )) {
-		sprintf( buffer2, "./%s", buffer );
-		execlp( buffer2, buffer2, NULL );
-	}
-	exit( -1 );
-#endif
-
-	/* del if temp */
-	fb_hStrDelTemp( program );
-
-	return res;
-}
-
-/*:::::*/
-FBCALL int fb_Chain ( FBSTRING *program )
-{
-    char	buffer[MAX_PATH+1];
-    char 	arg0[] = "";
-    int		res;
-
-#ifdef WIN32
-	res = _spawnl( _P_WAIT, fn_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
-#else
-	pid_t pid;
-	int status;
-	
-	if ((pid = fork()) == 0) {
-		char buffer2[MAX_PATH+3];
-		
-		fn_hGetShortPath( program->data, buffer, MAX_PATH );
-		execlp( buffer, buffer, NULL );
-		/* Ok, an error occured. Probably the file could not be found;
-		 * as a last resort, let's try in current directory.
-		 */
-		if( !strchr( buffer, '/' )) {
-			sprintf( buffer2, "./%s", buffer );
-			execlp( buffer2, buffer2, NULL );
-		}
-		exit( -1 );
-	}
-	else {
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			res = WEXITSTATUS(status);
-		else
-			res = -1;
-	}
-#endif
-
-	/* del if temp */
-	fb_hStrDelTemp( program );
-
-	return res;
-}
 
 /*:::::*/
 FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
@@ -157,7 +86,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	argv[0] = &buffer[0];
 	argv[1] = args->data;
 	argv[2] = NULL;
-	res = _spawnv( _P_WAIT, fn_hGetShortPath( program->data, buffer, MAX_PATH ), argv );
+	res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv );
 #else
 	char	*cmdline, *this_arg;
     int		i, argc = 1;
@@ -174,7 +103,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 		cmdline[i] = '\0';
 		if (strchr(this_arg, '\"')) {
 			cmdline[i-1] = '\0';
-			fn_hGetShortPath(this_arg + 1, buffer, MAX_PATH);
+			fb_hGetShortPath(this_arg + 1, buffer, MAX_PATH);
 			argv[argc] = strdup(buffer);
 		}
 		else
@@ -185,10 +114,10 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 		argc++;
 	}
 	argv[argc] = NULL;
-	
+
 	/* Launch */
 	if ((pid = fork()) == 0) {
-		exit( execvp( fn_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
+		exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
 	}
 	else {
 		waitpid(pid, &status, 0);
