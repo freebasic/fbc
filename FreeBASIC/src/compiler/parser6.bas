@@ -40,10 +40,10 @@ defint a-z
 ''				  |   RESUME NEXT? .
 ''
 function cGotoStmt
-	dim res as integer, l as FBSYMBOL ptr, lname as string
+	dim l as FBSYMBOL ptr, lname as string
 	dim isglobal as integer, isnext as integer
 
-	res = FALSE
+	cGotoStmt = FALSE
 
 	select case lexCurrentToken
 	'' GOTO LABEL
@@ -57,7 +57,8 @@ function cGotoStmt
 
 		isglobal = symbGetLabelScope( l ) = 0
 		irEmitBRANCH IR.OP.JMP, l, isglobal
-		res = TRUE
+
+		cGotoStmt = TRUE
 
 	'' GOSUB LABEL
 	case FB.TK.GOSUB
@@ -71,7 +72,8 @@ function cGotoStmt
 		lname = symbGetLabelName( l )
 		isglobal = symbGetLabelScope( l ) = 0
 		irEmitCALL lname, 0, isglobal
-		res = TRUE
+
+		cGotoStmt = TRUE
 
 	'' RETURN LABEL?
 	case FB.TK.RETURN
@@ -92,7 +94,7 @@ function cGotoStmt
 			irEmitRETURN 0
 		end if
 
-		res = TRUE
+		cGotoStmt = TRUE
 
 	'' RESUME NEXT?
 	case FB.TK.RESUME
@@ -112,10 +114,8 @@ function cGotoStmt
 
 		rtlErrorResume isnext
 
-		res = TRUE
+		cGotoStmt = TRUE
 	end select
-
-	cGotoStmt = res
 
 end function
 

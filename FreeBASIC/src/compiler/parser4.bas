@@ -216,7 +216,9 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 		res = cSimpleLine
 	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
-	cIfStmtBody = TRUE
+	if( hGetLastError = FB.ERRMSG.OK ) then
+		cIfStmtBody = TRUE
+	end if
 
 end function
 
@@ -347,9 +349,11 @@ function cIfStatement
 
 		'' (BlockIfStatement | SingleIfStatement)
 		if( not cBlockIfStatement( expr ) ) then
-			if( not cSingleIfStatement( expr ) ) then
-				hReportError FB.ERRMSG.SYNTAXERROR
-				exit function
+			if( hGetLastError = FB.ERRMSG.OK ) then
+				if( not cSingleIfStatement( expr ) ) then
+					hReportError FB.ERRMSG.SYNTAXERROR
+					exit function
+				end if
 			end if
 		end if
 
@@ -1147,6 +1151,10 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 	do
 		res = cSimpleLine
 	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+
+	if( hGetLastError <> FB.ERRMSG.OK ) then
+		exit function
+	end if
 
 	'' break from block
 	if( not iselse ) then
