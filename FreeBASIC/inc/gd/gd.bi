@@ -138,8 +138,8 @@ declare sub gdImageStringUp16 alias "gdImageStringUp16" (byval im as gdImagePtr,
 declare function gdFontCacheSetup alias "gdFontCacheSetup" () as integer
 declare sub gdFontCacheShutdown alias "gdFontCacheShutdown" ()
 declare sub gdFreeFontCache alias "gdFreeFontCache" ()
-declare function gdImageStringTTF alias "gdImageStringTTF" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as byte
-declare function gdImageStringFT alias "gdImageStringFT" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as byte
+declare function gdImageStringTTF alias "gdImageStringTTF" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as byte ptr
+declare function gdImageStringFT alias "gdImageStringFT" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as byte ptr
 
 type gdFTStringExtra
 	flags as integer
@@ -168,7 +168,7 @@ declare function gdFTUseFontConfig alias "gdFTUseFontConfig" (byval flag as inte
 #define gdFTEX_Shift_JIS 1
 #define gdFTEX_Big5 2
 
-declare function gdImageStringFTEx alias "gdImageStringFTEx" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string, byval strex as gdFTStringExtraPtr) as byte
+declare function gdImageStringFTEx alias "gdImageStringFTEx" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string, byval strex as gdFTStringExtraPtr) as byte ptr
 
 type gdPoint
 	x as integer
@@ -203,10 +203,10 @@ declare sub gdImagePngCtxEx alias "gdImagePngCtxEx" (byval im as gdImagePtr, byv
 declare sub gdImageWBMP alias "gdImageWBMP" (byval image as gdImagePtr, byval fg as integer, byval out as FILE ptr)
 declare sub gdImageWBMPCtx alias "gdImageWBMPCtx" (byval image as gdImagePtr, byval fg as integer, byval out as gdIOCtx ptr)
 declare sub gdFree alias "gdFree" (byval m as any ptr)
-declare sub gdImageWBMPPtr alias "gdImageWBMPPtr" (byval im as gdImagePtr, byval size as integer ptr, byval fg as integer)
+declare function gdImageWBMPPtr alias "gdImageWBMPPtr" (byval im as gdImagePtr, byval size as integer ptr, byval fg as integer) as any ptr
 declare sub gdImageJpeg alias "gdImageJpeg" (byval im as gdImagePtr, byval out as FILE ptr, byval quality as integer)
 declare sub gdImageJpegCtx alias "gdImageJpegCtx" (byval im as gdImagePtr, byval out as gdIOCtx ptr, byval quality as integer)
-declare sub gdImageJpegPtr alias "gdImageJpegPtr" (byval im as gdImagePtr, byval size as integer ptr, byval quality as integer)
+declare function gdImageJpegPtr alias "gdImageJpegPtr" (byval im as gdImagePtr, byval size as integer ptr, byval quality as integer) as any ptr
 
 enum 
 	gdDisposalUnknown
@@ -221,9 +221,9 @@ declare sub gdImageGifAnimEnd alias "gdImageGifAnimEnd" (byval outFile as FILE p
 declare sub gdImageGifAnimBeginCtx alias "gdImageGifAnimBeginCtx" (byval im as gdImagePtr, byval out as gdIOCtx ptr, byval GlobalCM as integer, byval Loops as integer)
 declare sub gdImageGifAnimAddCtx alias "gdImageGifAnimAddCtx" (byval im as gdImagePtr, byval out as gdIOCtx ptr, byval LocalCM as integer, byval LeftOfs as integer, byval TopOfs as integer, byval Delay as integer, byval Disposal as integer, byval previm as gdImagePtr)
 declare sub gdImageGifAnimEndCtx alias "gdImageGifAnimEndCtx" (byval out as gdIOCtx ptr)
-declare sub gdImageGifAnimBeginPtr alias "gdImageGifAnimBeginPtr" (byval im as gdImagePtr, byval size as integer ptr, byval GlobalCM as integer, byval Loops as integer)
-declare sub gdImageGifAnimAddPtr alias "gdImageGifAnimAddPtr" (byval im as gdImagePtr, byval size as integer ptr, byval LocalCM as integer, byval LeftOfs as integer, byval TopOfs as integer, byval Delay as integer, byval Disposal as integer, byval previm as gdImagePtr)
-declare sub gdImageGifAnimEndPtr alias "gdImageGifAnimEndPtr" (byval size as integer ptr)
+declare function gdImageGifAnimBeginPtr alias "gdImageGifAnimBeginPtr" (byval im as gdImagePtr, byval size as integer ptr, byval GlobalCM as integer, byval Loops as integer) as any ptr
+declare function gdImageGifAnimAddPtr alias "gdImageGifAnimAddPtr" (byval im as gdImagePtr, byval size as integer ptr, byval LocalCM as integer, byval LeftOfs as integer, byval TopOfs as integer, byval Delay as integer, byval Disposal as integer, byval previm as gdImagePtr) as any ptr
+declare function gdImageGifAnimEndPtr alias "gdImageGifAnimEndPtr" (byval size as integer ptr) as any ptr
 
 type gdSink
 	sink as function(byval as any ptr, byval as string, byval as integer) as integer
@@ -235,11 +235,11 @@ end type
 declare sub gdImagePngToSink alias "gdImagePngToSink" (byval im as gdImagePtr, byval out as gdSinkPtr)
 declare sub gdImageGd alias "gdImageGd" (byval im as gdImagePtr, byval out as FILE ptr)
 declare sub gdImageGd2 alias "gdImageGd2" (byval im as gdImagePtr, byval out as FILE ptr, byval cs as integer, byval fmt as integer)
-declare sub gdImageGifPtr alias "gdImageGifPtr" (byval im as gdImagePtr, byval size as integer ptr)
-declare sub gdImagePngPtr alias "gdImagePngPtr" (byval im as gdImagePtr, byval size as integer ptr)
-declare sub gdImagePngPtrEx alias "gdImagePngPtrEx" (byval im as gdImagePtr, byval size as integer ptr, byval level as integer)
-declare sub gdImageGdPtr alias "gdImageGdPtr" (byval im as gdImagePtr, byval size as integer ptr)
-declare sub gdImageGd2Ptr alias "gdImageGd2Ptr" (byval im as gdImagePtr, byval cs as integer, byval fmt as integer, byval size as integer ptr)
+declare function gdImageGifPtr alias "gdImageGifPtr" (byval im as gdImagePtr, byval size as integer ptr) as any ptr
+declare function gdImagePngPtr alias "gdImagePngPtr" (byval im as gdImagePtr, byval size as integer ptr) as any ptr
+declare function gdImagePngPtrEx alias "gdImagePngPtrEx" (byval im as gdImagePtr, byval size as integer ptr, byval level as integer) as any ptr
+declare function gdImageGdPtr alias "gdImageGdPtr" (byval im as gdImagePtr, byval size as integer ptr) as any ptr
+declare function gdImageGd2Ptr alias "gdImageGd2Ptr" (byval im as gdImagePtr, byval cs as integer, byval fmt as integer, byval size as integer ptr) as any ptr
 declare sub gdImageEllipse alias "gdImageEllipse" (byval im as gdImagePtr, byval cx as integer, byval cy as integer, byval w as integer, byval h as integer, byval color as integer)
 
 #define gdArc 0
@@ -272,7 +272,7 @@ declare function gdNewFileCtx alias "gdNewFileCtx" (byval as FILE ptr) as gdIOCt
 declare function gdNewDynamicCtx alias "gdNewDynamicCtx" (byval size as integer, byval data as any ptr) as gdIOCtx ptr
 declare function gdNewDynamicCtxEx alias "gdNewDynamicCtxEx" (byval size as integer, byval data as any ptr, byval freeFlag as integer) as gdIOCtx ptr
 declare function gdNewSSCtx alias "gdNewSSCtx" (byval in as gdSourcePtr, byval out as gdSinkPtr) as gdIOCtx ptr
-declare sub gdDPExtractData alias "gdDPExtractData" (byval ctx as gdIOCtx ptr, byval size as integer ptr)
+declare function gdDPExtractData alias "gdDPExtractData" (byval ctx as gdIOCtx ptr, byval size as integer ptr) as any ptr
 
 #define GD2_CHUNKSIZE 128
 #define GD2_CHUNKSIZE_MIN 64

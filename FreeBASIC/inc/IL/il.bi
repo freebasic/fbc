@@ -273,18 +273,18 @@ declare function ilDisable cdecl alias "ilDisable" (byval Mode as ILenum) as ILb
 declare function ilEnable cdecl alias "ilEnable" (byval Mode as ILenum) as ILboolean
 declare function ilFormatFunc cdecl alias "ilFormatFunc" (byval Mode as ILenum) as ILboolean
 declare sub ilGenImages cdecl alias "ilGenImages" (byval Num as ILsizei, byval Images as ILuint ptr)
-declare function ilGetAlpha cdecl alias "ilGetAlpha" (byval Type as ILenum) as ILubyte
+declare function ilGetAlpha cdecl alias "ilGetAlpha" (byval Type as ILenum) as ILubyte ptr
 declare sub ilModAlpha cdecl alias "ilModAlpha" (byval AlphaValue as ILint)
 declare sub ilSetAlpha cdecl alias "ilSetAlpha" (byval AlphaValue as ILuint)
 declare function ilGetBoolean cdecl alias "ilGetBoolean" (byval Mode as ILenum) as ILboolean
 declare sub ilGetBooleanv cdecl alias "ilGetBooleanv" (byval Mode as ILenum, byval Param as ILboolean ptr)
-declare function ilGetData cdecl alias "ilGetData" () as ILubyte
+declare function ilGetData cdecl alias "ilGetData" () as ILubyte ptr
 declare function ilGetDXTCData cdecl alias "ilGetDXTCData" (byval Buffer as ILvoid ptr, byval BufferSize as ILuint, byval DXTCFormat as ILenum) as ILuint
 declare function ilGetError cdecl alias "ilGetError" () as ILenum
 declare function ilGetInteger cdecl alias "ilGetInteger" (byval Mode as ILenum) as ILint
 declare sub ilGetIntegerv cdecl alias "ilGetIntegerv" (byval Mode as ILenum, byval Param as ILint ptr)
 declare function ilGetLumpPos cdecl alias "ilGetLumpPos" () as ILuint
-declare function ilGetPalette cdecl alias "ilGetPalette" () as ILubyte
+declare function ilGetPalette cdecl alias "ilGetPalette" () as ILubyte ptr
 declare function ilGetString cdecl alias "ilGetString" (byval StringName as ILenum) as byte ptr
 declare sub ilHint cdecl alias "ilHint" (byval Target as ILenum, byval Mode as ILenum)
 declare sub ilInit cdecl alias "ilInit" ()
