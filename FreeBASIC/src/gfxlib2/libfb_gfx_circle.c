@@ -64,7 +64,7 @@ static void draw_ellipse_scanline(int y, int x1, int x2, unsigned int color, int
 		if (fill) {
 			x1 = MAX(x1, fb_mode->view_x);
 			x2 = MIN(x2, fb_mode->view_x + fb_mode->view_w - 1);
-			fb_hPixelSet(fb_mode->line[y] + x1, color, x2 - x1 + 1);
+			fb_hPixelSet(fb_mode->line[y] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);
 		}
 		else {
 			if (x1 >= fb_mode->view_x)
