@@ -20,36 +20,38 @@
 '' internal compiler definitions
 ''
 
-const FB.MAXINCRECLEVEL%	= 16
-const FB.MAXINCPATHS%		= 16
+const FB.MAXINCRECLEVEL		= 16
 
-const FB.MAXNAMELEN%		= 64
-const FB.MAXLITLEN%			= 1024				'' literal strings max length
+const FB.MAXINCPATHS		= 16
+const FB.MAXINCFILES		= 128
 
-const FB_MAXPROCARGS%		= 64
-const FB.MAXARRAYDIMS%		= FB_MAXPROCARGS \ 4
+const FB.MAXNAMELEN			= 64
+const FB.MAXLITLEN			= 1024				'' literal strings max length
 
-''
-const FB.INITELEMENTNODES% 	= 2000
-
-const FB.INITSYMBOLNODES%	= 5000
-const FB.INITLOCSYMBOLNODES%= FB.INITSYMBOLNODES \ 10
-
-const FB.INITARGNODES%		= 4000
-
-const FB.INITDIMNODES%		= 400
-
-const FB.INITLIBNODES%		= 50
-
-const FB.INITDEFINENODES%	= 1000
-
+const FB_MAXPROCARGS		= 64
+const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
 
 ''
-const FB.POINTERSIZE%		= 4%
-const FB.INTEGERSIZE%		= 4%
-const FB.ARRAYDESCSIZE%		= FB.INTEGERSIZE*5
+const FB.INITELEMENTNODES 	= 2000
 
-const FB.ARRAYDESC.DATAOFFS% = 0%
+const FB.INITSYMBOLNODES	= 5000
+const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 10
+
+const FB.INITARGNODES		= 4000
+
+const FB.INITDIMNODES		= 400
+
+const FB.INITLIBNODES		= 50
+
+const FB.INITDEFINENODES	= 1000
+
+
+''
+const FB.POINTERSIZE		= 4
+const FB.INTEGERSIZE		= 4
+const FB.ARRAYDESCSIZE		= FB.INTEGERSIZE*5
+
+const FB.ARRAYDESC.DATAOFFS = 0
 
 const FB.DATALABELNAME 		= "_fbdata_begin"
 const FB.DATALABELPREFIX	= "_fbdata_"
@@ -152,7 +154,7 @@ const FB.INTSCAPECHAR		= CHAR_ESC			'' assuming it won't ever be used inside lit
 
 
 '' tokens
-const FB.TK.EOF%				= 32767
+const FB.TK.EOF					= 32767
 
 enum FBTK_ENUM
 	FB.TK.EOL					= 256
@@ -332,22 +334,22 @@ enum FBTK_ENUM
 end enum
 
 '' single char tokens
-const FB.TK.TWOPOINTSCHAR%		= CHAR_COLON	'' :
+const FB.TK.TWOPOINTSCHAR		= CHAR_COLON	'' :
 const FB.TK.STATSEPCHAR			= CHAR_COLON	'' :
-const FB.TK.COMMENTCHAR%		= CHAR_APOST	'' '
-const FB.TK.DIRECTIVECHAR%		= CHAR_DOLAR	'' $
-const FB.TK.DECLSEPCHAR%		= CHAR_COMMA	'' ,
-const FB.TK.ASSIGN%				= FB.TK.EQ		'' special case, due the way lex processes comparators
-const FB.TK.IDXOPENCHAR%		= CHAR_LPRNT	'' (
-const FB.TK.IDXCLOSECHAR%		= CHAR_RPRNT	'' )
-const FB.TK.DEREFCHAR%			= CHAR_CARET	'' *
+const FB.TK.COMMENTCHAR			= CHAR_APOST	'' '
+const FB.TK.DIRECTIVECHAR		= CHAR_DOLAR	'' $
+const FB.TK.DECLSEPCHAR			= CHAR_COMMA	'' ,
+const FB.TK.ASSIGN				= FB.TK.EQ		'' special case, due the way lex processes comparators
+const FB.TK.IDXOPENCHAR			= CHAR_LPRNT	'' (
+const FB.TK.IDXCLOSECHAR		= CHAR_RPRNT	'' )
+const FB.TK.DEREFCHAR			= CHAR_CARET	'' *
 const FB.TK.ADDROFCHAR			= CHAR_AT		'' @
 
-const FB.TK.INTTYPECHAR%		= CHAR_PERC
-const FB.TK.LNGTYPECHAR%		= CHAR_AMP
-const FB.TK.SGNTYPECHAR%		= CHAR_EXCL
-const FB.TK.DBLTYPECHAR%		= CHAR_SHARP
-const FB.TK.STRTYPECHAR%		= CHAR_DOLAR
+const FB.TK.INTTYPECHAR			= CHAR_PERC
+const FB.TK.LNGTYPECHAR			= CHAR_AMP
+const FB.TK.SGNTYPECHAR			= CHAR_EXCL
+const FB.TK.DBLTYPECHAR			= CHAR_SHARP
+const FB.TK.STRTYPECHAR			= CHAR_DOLAR
 
 
 '' token classes
@@ -376,7 +378,7 @@ enum FBFUNCMODE_ENUM
 	FB.FUNCMODE.STDCALL
 end enum
 
-const FB.DEFAULT.FUNCMODE%		= FB.FUNCMODE.STDCALL
+const FB.DEFAULT.FUNCMODE		= FB.FUNCMODE.STDCALL
 
 '' symbol types (same order as IR.DATATYPES!)
 enum FBSYMBTYPE_ENUM
@@ -397,10 +399,10 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.POINTER            				'' must be the last
 end enum
 
-const FB.SYMBOLTYPES%			= 14-1			'' pointer not taken into account
+const FB.SYMBOLTYPES			= 14-1			'' pointer not taken into account
 
 '' internal symbols, not processed by AST or IR
-const FB.SYMBTYPE.LABEL%		= FB.SYMBTYPE.VOID
+const FB.SYMBTYPE.LABEL			= FB.SYMBTYPE.VOID
 
 
 '' allocation types mask
@@ -610,11 +612,11 @@ type FBSTRING
 	lgt				as integer
 end type
 
-const FB.STRSTRUCTSIZE%		= 4+4
+const FB.STRSTRUCTSIZE		= 4+4
 
 '' "fake" descriptors as UDT's
-const FB.DESCTYPE.ARRAY% 	= -2
-const FB.DESCTYPE.STR% 		= -3
+const FB.DESCTYPE.ARRAY 	= -2
+const FB.DESCTYPE.STR 		= -3
 
 ''
 type FBCMPSTMT

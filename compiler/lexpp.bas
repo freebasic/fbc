@@ -90,11 +90,12 @@ end function
 ''				 |   '#'ELSEIF Expression
 ''               |   '#'ENDIF
 ''               |   '#'PRINT LITERAL*
-''				 |   '#'INCLUDE LIT_STR
+''				 |   '#'INCLUDE ONCE? LIT_STR
 ''				 |   '#'INCLIB LIT_STR .
 ''
 function lexPreProcessor as integer
 	dim id as string
+	dim isonce as integer
 
 	lexPreProcessor = FALSE
 
@@ -150,11 +151,20 @@ function lexPreProcessor as integer
 		print hLiteral
 		lexPreProcessor = TRUE
 
-	'' INCLUDE LIT_STR
+	'' INCLUDE ONCE? LIT_STR
 	case FB.TK.INCLUDE
 		lexSkipToken
 
-		lexPreProcessor = fbcIncludeFile( hUnescapeStr( lexEatToken ) )
+		'' ONCE?
+		isonce = FALSE
+		if( lexCurrentTokenClass = FB.TKCLASS.IDENTIFIER ) then
+			if( ucase$( lexTokenText ) = "ONCE" ) then
+				lexSkipToken
+				isonce = TRUE
+			end if
+		end if
+
+		lexPreProcessor = fbcIncludeFile( hUnescapeStr( lexEatToken ), isonce )
 
 	'' INCLIB LIT_STR
 	case FB.TK.INCLIB

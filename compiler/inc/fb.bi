@@ -164,6 +164,6 @@ declare function 	fbcListLibs		( namelist() as string, byval index as integer ) 
 declare sub 		fbcAddIncPath	( path as string )
 declare sub 		fbcAddDefine	( dname as string, dtext as string )
 
-declare function 	fbcIncludeFile	( filename as string ) as integer
+declare function 	fbcIncludeFile	( filename as string, byval isonce as integer ) as integer
 
 declare sub 		fbcAddDefaultLibs

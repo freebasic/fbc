@@ -38,8 +38,11 @@ defint a-z
 declare function cConstExprValue			( littext as string ) as integer
 
 '' globals
+	dim shared incfiles as integer			'' can't be on ENV as it is restored on recursion
+
 	redim shared envcopyTB( 0 ) as FBENV
 	redim shared incpathTB( 0 ) as string
+	redim shared incfileTB( 0 ) as string
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -87,6 +90,39 @@ sub fbcAddDefine( dname as string, dtext as string )
 end sub
 
 '':::::
+function fbcFindIncFile( filename as string ) as integer
+	dim i as integer
+	dim fname as string
+
+	fbcFindIncFile = FALSE
+
+	fname = ucase$( filename )
+
+	for i = 0 to incfiles-1
+		if( incfileTB( i ) = fname ) then
+			fbcFindIncFile = TRUE
+			exit function
+		end if
+	next i
+
+end function
+
+'':::::
+sub fbcAddIncFile( filename as string )
+    dim fname as string
+
+	fname = ucase$( filename )
+
+	if( incfiles < FB.MAXINCFILES ) then
+		if( not fbcFindIncFile( fname ) ) then
+			incfileTB( incfiles ) = fname
+			incfiles = incfiles + 1
+		end if
+	end if
+
+end sub
+
+'':::::
 sub hSetCtx
 
 	env.scope			= 0
@@ -123,6 +159,7 @@ sub hSetCtx
 
 	''
 	env.incpaths		= 0
+	incfiles			= 0
 
 	fbcAddIncPath exepath$ + FB.INCPATH
 
@@ -155,6 +192,8 @@ function fbcInit as integer static
 	redim envcopyTB( 0 to FB.MAXINCRECLEVEL-1 ) as FBENV
 
 	redim incpathTB( 0 to FB.MAXINCPATHS-1 ) as string
+
+	redim incfileTB( 0 to FB.MAXINCFILES-1 ) as string
 
 	''
 	hSetCtx
@@ -231,6 +270,8 @@ sub fbcEnd
 
 	''
 	erase incpathTB
+
+	erase incfileTB
 
 	erase envcopyTB
 
@@ -329,7 +370,7 @@ sub fbcAddDefaultLibs
 end sub
 
 ''::::
-function fbcIncludeFile( filename as string ) as integer
+function fbcIncludeFile( filename as string, byval isonce as integer ) as integer
     dim incfile as string
     dim i as integer
 
@@ -360,6 +401,19 @@ function fbcIncludeFile( filename as string ) as integer
 		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + incfile + "\""
 
 	else
+
+		''
+		if( isonce ) then
+        	if( fbcFindIncFile( filename ) ) then
+        		fbcIncludeFile = TRUE
+        		exit function
+        	end if
+		end if
+
+		''
+		fbcAddIncFile filename
+
+		''
 		envcopyTB(env.reclevel) = env
 		lexSaveCtx env.reclevel
     	env.reclevel	= env.reclevel + 1
@@ -623,13 +677,13 @@ function cComment
 end function
 
 '':::::
-''Directive       =   INCLUDE ':' '\'' STR_LIT '\''
+''Directive       =   INCLUDE ONCE? ':' '\'' STR_LIT '\''
 ''				  |   DYNAMIC
 ''				  |   STATIC .
 ''
 function cDirective
     dim res as integer
-    dim incfile as string
+    dim incfile as string, isonce as integer
     dim token as integer
 
 	res = FALSE
@@ -650,6 +704,14 @@ function cDirective
 		token = lexCurrentToken
 		lexSkipToken
 
+		'' ONCE?
+		isonce = FALSE
+		if( ucase$( lexTokenText ) = "ONCE" ) then
+			lexSkipToken
+			isonce = TRUE
+		end if
+
+		'' ':'
 		if( not hMatch( CHAR_COLON ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
@@ -679,7 +741,7 @@ function cDirective
 
 		select case token
 		case FB.TK.INCLUDE
-			res = fbcIncludeFile( incfile )
+			res = fbcIncludeFile( incfile, isonce )
 		case FB.TK.INCLIB
 			if( symbAddLib( incfile ) <> NULL ) then
 				res = TRUE
