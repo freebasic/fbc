@@ -57,7 +57,7 @@ end type
 ''
 declare sub 		outp				( s as string )
 
-declare sub 		hSaveAsmHeader		( byval asmf as integer, byval outtype as integer )
+declare sub 		hSaveAsmHeader		( byval asmf as integer )
 
 
 declare function 	hGetTypeString		( byval typ as integer ) as string
@@ -1563,7 +1563,7 @@ sub emithICMP( rname as string, label as string, mnemonic as string, _
 	end if
 
 	''!!!FIXME!!! assuming res = dst !!!FIXME!!!
-	if( (env.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) and (dtype = IR.VREGTYPE.REG) ) then
+	if( (env.clopt.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) and (dtype = IR.VREGTYPE.REG) ) then
 		reg = emitLookupReg( rname, ddtype )
 		rname8 = emitGetRegName( IR.DATATYPE.BYTE, IR.DATACLASS.INTEGER, reg )
 
@@ -1651,7 +1651,7 @@ sub emithFCMP( rname as string, label as string, mnemonic as string, mask as str
        	end if
     end if
 
-	if( (env.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) ) then
+	if( (env.clopt.cputype >= FB.CPUTYPE.486) and (len( rname ) > 0) ) then
 		reg = emitLookupReg( rname, IR.DATATYPE.INTEGER )
 		rname8 = emitGetRegName( IR.DATATYPE.BYTE, IR.DATACLASS.INTEGER, reg )
 
@@ -2015,8 +2015,10 @@ sub emitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval ispu
 	dim id as string
 
 	id = symbGetProcName( proc )
-	outp ".type" + TABCHAR + id + ", @function"
-	
+#ifdef TARGET_LINUX
+	outp ".type " + id + ", @function"
+#endif
+
     emithPUSH "ebp"
     outp "mov ebp, esp"
 
@@ -2056,8 +2058,9 @@ sub emitPROCEND( byval proc as integer, byval bytestopop as integer, byval initl
     outp "mov esp, ebp"
     emithPOP "ebp"
     outp "ret " + ltrim$( str$( bytestopop ) )
-
-    outp ".size" + TABCHAR + id + ", .-" + id
+#ifdef TARGET_LINUX
+    outp ".size " + id + ", .-" + id
+#endif
 
     edbgProcEnd proc, initlabel, exitlabel
 
@@ -2191,7 +2194,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub hSaveAsmHeader( byval asmf as integer, byval outtype as integer )
+sub hSaveAsmHeader( byval asmf as integer )
     dim res as long
     dim entry as string, lname as string
     dim maininitlabel as integer
@@ -2216,7 +2219,7 @@ sub hSaveAsmHeader( byval asmf as integer, byval outtype as integer )
     hWriteStr asmf, FALSE, "fb_" + entry  + "_entry" + ":"
     hWriteStr asmf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
 #ifdef TARGET_LINUX
-	if (outtype = FB_OUTTYPE_EXECUTABLE) then
+	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
 		' Add small stub to get commandline under linux
 		hWriteStr asmf, TRUE, "pop" + TABCHAR + "ecx"
 		hWriteStr asmf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
@@ -2262,7 +2265,7 @@ sub hSaveAsmHeader( byval asmf as integer, byval outtype as integer )
 end sub
 
 '':::::
-sub hSaveAsmInitProc( byval asmf as integer )
+private sub hSaveAsmInitProc( byval asmf as integer )
     dim s as integer
 
     hWriteStr asmf, FALSE, NEWLINE + "#initialization"
@@ -2272,13 +2275,11 @@ sub hSaveAsmInitProc( byval asmf as integer )
     hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_Init", 0, FALSE, FB.FUNCMODE.STDCALL )
 
     '' set default data label (def label isn't global as it could clash with other
-    '' modules, so DataRestore alone can't figure out were to start)
-    s = symbLookupVar( FB.DATALABELNAME, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
+    '' modules, so DataRestore alone can't figure out where to start)
+    s = symbLookupLabel( FB.DATALABELNAME )
     if( s <> INVALID ) then
-    	'if( symbGetLabelIsDeclared( s ) ) then
-    		hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetVarName( s )
-    		hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_DataRestore", 4, FALSE, FB.FUNCMODE.STDCALL )
-    	'end if
+    	hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetLabelName( s )
+    	hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_DataRestore", 4, FALSE, FB.FUNCMODE.STDCALL )
     end if
 
     hWriteStr asmf, TRUE,  "ret"
@@ -2286,7 +2287,7 @@ sub hSaveAsmInitProc( byval asmf as integer )
 end sub
 
 '':::::
-sub hSaveAsmFooter( byval asmf as integer )
+private sub hSaveAsmFooter( byval asmf as integer )
 
     hWriteStr asmf, FALSE, ""
     hWriteStr asmf, TRUE,  "push" + TABCHAR + "0"
@@ -2302,7 +2303,7 @@ end sub
 
 
 '':::::
-function hGetTypeString( byval typ as integer ) as string 'static
+private function hGetTypeString( byval typ as integer ) as string 'static
 	dim tstr as string
 
 	select case typ
@@ -2331,7 +2332,7 @@ function hGetTypeString( byval typ as integer ) as string 'static
 end function
 
 '':::::
-sub hSaveAsmBss( byval asmf as integer ) 'static
+private sub hSaveAsmBss( byval asmf as integer ) 'static
     dim i as integer
     dim lgt as long, sname as string
     dim elements as long, alloc as string
@@ -2345,8 +2346,7 @@ sub hSaveAsmBss( byval asmf as integer ) 'static
 
     	if( (symbGetClass( i ) = FB.SYMBCLASS.VAR) and _
     		(not symbGetInitialized( i )) and _
-    		(not symbGetVarIsDynamic( i )) and _
-    		(symbGetType( i ) <> FB.SYMBTYPE.DATALABEL) ) then
+    		(not symbGetVarIsDynamic( i )) ) then
 
     	    lgt = symbGetLen( i )
 
@@ -2377,7 +2377,7 @@ sub hSaveAsmBss( byval asmf as integer ) 'static
 end sub
 
 '':::::
-sub hSaveAsmConst( byval asmf as integer ) 'static
+private sub hSaveAsmConst( byval asmf as integer ) 'static
     dim i as integer, typ as integer
     dim sname as string, stext as string, stype as string
 
@@ -2417,7 +2417,7 @@ sub hSaveAsmConst( byval asmf as integer ) 'static
 end sub
 
 '':::::
-sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
+private sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
 	dim d as integer
     dim l as long, u as long
     dim dims as integer, diff as long
@@ -2486,7 +2486,7 @@ sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
 end sub
 
 '':::::
-sub hWriteStringDesc( byval asmf as integer, byval s as integer ) 'static
+private sub hWriteStringDesc( byval asmf as integer, byval s as integer ) 'static
     dim sname as string, dname as string
 
     sname = symbGetVarName( s )
@@ -2503,7 +2503,7 @@ sub hWriteStringDesc( byval asmf as integer, byval s as integer ) 'static
 end sub
 
 '':::::
-sub hSaveAsmData( byval asmf as integer ) 'static
+private sub hSaveAsmData( byval asmf as integer ) 'static
     dim i as integer, d as integer
 
     hWriteStr asmf, FALSE, NEWLINE + "#global initialized vars"
@@ -2531,7 +2531,7 @@ sub hSaveAsmData( byval asmf as integer ) 'static
 end sub
 
 '':::::
-function emitOpen( byval outtype as integer )
+function emitOpen
 
 	if( hFileExists( env.outfile ) ) then
 		kill env.outfile
@@ -2543,7 +2543,7 @@ function emitOpen( byval outtype as integer )
 	open env.outfile for binary as #ctx.outf
 
 	'' header
-	hSaveAsmHeader ctx.outf, outtype
+	hSaveAsmHeader ctx.outf
 
 
 	emitOpen = TRUE

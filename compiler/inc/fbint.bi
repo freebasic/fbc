@@ -50,16 +50,9 @@ const FB.ARRAYDESCSIZE%		= FB.INTEGERSIZE*5
 
 const FB.ARRAYDESC.DATAOFFS% = 0%
 
-const FB.DATALABELNAME 		= "_fb_data_begin"
-const FB.DATALABELPREFIX 	= "_datalbl_"
+const FB.DATALABELNAME 		= "_fbdata_begin"
+const FB.DATALABELPREFIX	= "_fbdata_"
 
-
-'' output file type
-enum FB_OUTTYPE_ENUM
-	FB_OUTTYPE_EXECUTABLE
-	FB_OUTTYPE_STATICLIB
-	FB_OUTTYPE_DYNAMICLIB
-end enum
 
 '' print modes (same as in rtlib/fb.h)
 enum FBPRINTMASK
@@ -392,7 +385,8 @@ end enum
 
 const FB.SYMBOLTYPES%			= 14-1			'' pointer not taken into account
 
-const FB.SYMBTYPE.DATALABEL%	= FB.SYMBOLTYPES*2	'' internal only, used with DATA's
+'' internal symbols, not processed by AST or IR
+const FB.SYMBTYPE.LABEL%		= FB.SYMBTYPE.VOID
 
 
 '' allocation types mask
@@ -427,9 +421,7 @@ end type
 
 ''
 type FBENV
-	'' paths
-	libpathidx		as integer
-
+	'' include paths
 	incpaths		as integer
 
 	'' source file
@@ -472,7 +464,6 @@ type FBENV
 
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
-	cputype 		as integer                  '' used by the emit module
 	isdynamic		as integer					'' TRUE with $dynamic, FALSE with $static
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	procerrorhnd	as integer					'' var holding the old error handler inside a proc
@@ -487,8 +478,6 @@ end type
 
 ''
 type FBTYPELEMENT
-	free			as integer
-
 	typ				as integer
 	subtype			as integer					'' only if another UDT
 	ofs				as integer

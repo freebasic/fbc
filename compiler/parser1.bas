@@ -85,7 +85,6 @@ sub hSetCtx
 
 	env.compoundcnt 	= 0
 	env.lastcompound	= INVALID
-	env.cputype 		= FB.DEFAULTCPUTYPE
 	env.isdynamic		= FALSE
 	env.isprocstatic	= FALSE
 	env.procerrorhnd 	= INVALID
@@ -139,8 +138,6 @@ function fbcInit as integer static
 	''
 	hSetCtx
 
-	env.libpathidx	= strpAdd( exepath$ + FB.LIBPATH )
-
 	''
 	fbcInit = TRUE
 
@@ -150,8 +147,10 @@ end function
 sub fbcSetDefaultOptions
 
 	env.clopt.debug		= FALSE
+	env.clopt.cputype 	= FB.DEFAULTCPUTYPE
 	env.clopt.errorcheck= FALSE
 	env.clopt.nostdcall = FALSE
+	env.clopt.outtype	= FB_OUTTYPE_EXECUTABLE
 
 end sub
 
@@ -161,13 +160,40 @@ sub fbcSetOption ( byval opt as integer, byval value as integer )
 	select case opt
 	case FB.COMPOPT.DEBUG
 		env.clopt.debug = value
+	case FB.COMPOPT.CPUTYPE
+		env.clopt.cputype = value
 	case FB.COMPOPT.ERRORCHECK
 		env.clopt.errorcheck = value
 	case FB.COMPOPT.NOSTDCALL
 		env.clopt.nostdcall = value
+	case FB.COMPOPT.OUTTYPE
+		env.clopt.outtype = value
 	end select
 
 end sub
+
+'':::::
+function fbcGetOption ( byval opt as integer ) as integer
+    dim res as integer
+
+	res = FALSE
+
+	select case opt
+	case FB.COMPOPT.DEBUG
+		res = env.clopt.debug
+	case FB.COMPOPT.CPUTYPE
+		res = env.clopt.cputype
+	case FB.COMPOPT.ERRORCHECK
+		res = env.clopt.errorcheck
+	case FB.COMPOPT.NOSTDCALL
+		res = env.clopt.nostdcall
+	case FB.COMPOPT.OUTTYPE
+		res = env.clopt.outtype
+	end select
+
+	fbcGetOption = res
+
+end function
 
 '':::::
 sub fbcEnd
@@ -197,7 +223,7 @@ sub fbcEnd
 end sub
 
 '':::::
-function fbcCompile ( infname as string, outfname as string, outtype as integer )
+function fbcCompile ( infname as string, outfname as string )
     dim res as integer, l as integer
 
 	fbcCompile = FALSE
@@ -216,7 +242,7 @@ function fbcCompile ( infname as string, outfname as string, outtype as integer 
 	open infname for binary as #env.inf
 
 	''
-	if( not emitOpen( outtype ) ) then
+	if( not emitOpen ) then
 		hReportSimpleError FB.ERRMSG.FILEACCESSERROR
 		exit function
 	end if

@@ -1519,8 +1519,8 @@ sub rtlDataRestore( byval label as integer ) static
     dim res as integer
     dim proc as integer, f as integer
     dim vr as integer
-    dim lname as string, rname as string
-    dim s as integer, dTB(0) as FBARRAYDIM
+    dim lname as string
+    dim s as integer
 
 	f = ifuncTB(FB.RTL.DATARESTORE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
@@ -1532,13 +1532,10 @@ sub rtlDataRestore( byval label as integer ) static
     	lname = FB.DATALABELNAME
     end if
 
-    '' label already declared as var? (i have to do this as labels aren't stored in
-    '' symbolTB array, as in QB you can have label with the same name as vars and
-    '' functions.. symbGet#### knows nothing about diferent tables)
-    s = symbLookupVar( lname, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
+    '' label already declared?
+    s = symbLookupLabel( lname )
     if( s = INVALID ) then
-       	rname = hMakeTmpStr
-       	s = symbAddVarEx( lname, rname, FB.SYMBTYPE.DATALABEL, 0, 1, 0, dTB(), FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC, TRUE, FALSE, TRUE )
+       	s = symbAddLabelEx( lname, TRUE, TRUE )
     end if
 
     '' byval labeladdrs as void ptr
@@ -1554,8 +1551,8 @@ end sub
 
 '':::::
 sub rtlDataStoreBegin static
-    dim label as integer, lname as string, rname as string
-    dim s as integer, dTB(0) as FBARRAYDIM
+    dim label as integer, lname as string
+    dim s as integer
 
 	irFlush
 
@@ -1566,48 +1563,45 @@ sub rtlDataStoreBegin static
 	if( not ctx.datainited ) then
 		ctx.datainited = TRUE
 
-		rname = hMakeTmpStr
-		s = symbAddVarEx( FB.DATALABELNAME, rname, FB.SYMBTYPE.DATALABEL, 0, 1, 0, dTB(), FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC, TRUE, FALSE, TRUE )
+		s = symbAddLabelEx( FB.DATALABELNAME, TRUE, TRUE )
 		if( s = INVALID ) then
-			s = symbLookupVar( FB.DATALABELNAME, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
+			s = symbLookupLabel( FB.DATALABELNAME )
 		end if
 
-		rname = symbGetVarName( s )
-		emitLABEL rname, TRUE
+		lname = symbGetLabelName( s )
+		emitLABEL lname, TRUE
 
 	else
-		s = symbLookupVar( FB.DATALABELNAME, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
-		rname = symbGetVarName( s )
+		lname = symbGetLabelName( symbLookupLabel( FB.DATALABELNAME ) )
 	end if
 
-	'' emit last label as a label in const section (read the comment at Restore)
+	'' emit last label as a label in const section
 	'' if any defined already, otherwise it will be the default
 	label = symbGetLastLabel
 	if( label <> INVALID ) then
     	''
     	lname = FB.DATALABELPREFIX + symbGetLabelName( label )
-    	s = symbLookupVar( lname, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
+    	s = symbLookupLabel( lname )
     	if( s = INVALID ) then
-    		rname = hMakeTmpStr
-       		s = symbAddVarEx( lname, rname, FB.SYMBTYPE.DATALABEL, 0, 1, 0, dTB(), FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC, TRUE, FALSE, TRUE )
-    	else
-    		rname = symbGetVarName( s )
+       		s = symbAddLabelEx( lname, TRUE, TRUE )
     	end if
+
+    	lname = symbGetLabelName( s )
 
     	'' stills the same label as before? incrase counter to link DATA's
     	if( ctx.lastlabel = label ) then
     		ctx.labelcnt = ctx.labelcnt + 1
-    		rname = rname + "_" + ltrim$( str$( ctx.labelcnt ) )
+    		lname = lname + "_" + ltrim$( str$( ctx.labelcnt ) )
     	else
     		ctx.lastlabel = label
     		ctx.labelcnt = 0
     	end if
 
-    	emitLABEL rname, TRUE
+    	emitLABEL lname, TRUE
     end if
 
 	'' emit will link the last DATA with this one if any exists
-	emitDATABEGIN rname
+	emitDATABEGIN lname
 
 end sub
 

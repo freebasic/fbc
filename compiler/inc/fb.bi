@@ -42,12 +42,15 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.CPUTYPE
 	FB.COMPOPT.NOSTDCALL
 	FB.COMPOPT.ERRORCHECK
+	FB.COMPOPT.OUTTYPE
 end enum
 
 type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
+	cputype			as integer
 	errorcheck		as integer					'' runtime error check (def= false)
 	nostdcall		as integer
+	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
 end type
 
 
@@ -121,15 +124,24 @@ end enum
 
 const FB.DEFAULTCPUTYPE%	= FB.CPUTYPE.486
 
+'' output file type
+enum FBOUTTYPE_ENUM
+	FB_OUTTYPE_EXECUTABLE
+	FB_OUTTYPE_STATICLIB
+	FB_OUTTYPE_DYNAMICLIB
+end enum
+
+
 ''
 ''
 ''
 declare function 	fbcInit			( ) as integer
 declare sub 		fbcEnd			( )
-declare function 	fbcCompile		( infname as string, outfname as string, outtype as integer ) as integer
+declare function 	fbcCompile		( infname as string, outfname as string ) as integer
 
 declare sub 		fbcSetDefaultOptions ( )
 declare sub 		fbcSetOption	( byval opt as integer, byval value as integer )
+declare function 	fbcGetOption 	( byval opt as integer ) as integer
 
 declare function 	fbcListLibs		( namelist() as string, byval index as integer ) as integer
 declare sub 		fbcAddIncPath	( path as string )

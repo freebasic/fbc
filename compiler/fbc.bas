@@ -27,7 +27,7 @@ option explicit
 option private
 
 '$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
+'$include: 'inc\hlp.bi'
 
 const FB_MAXARGS	  = 100
 const FB_MINSTACKSIZE =   32 * 1024
@@ -166,18 +166,18 @@ function compileFiles as integer
     	'' this must be done before Init coz rtlib initialization depends on nostdcall to be defined
     	if( not processCompOptions ) then
     		printOptions
-    		end 1
+    		exit function
     	end if
 
     	'' init the parser
     	if( not fbcInit ) then
-    		end 1
+    		exit function
     	end if
 
     	'' add include paths and defines
     	processCompLists
 
-    	'' if no output file define, assume it's the same name as input, with the .o extension
+    	'' if no output file given, assume it's the same name as input, with the .o extension
     	if( len( outlist(i) ) = 0 ) then
     		outlist(i) = hStripExt( inplist(i) ) + ".o"
     	end if
@@ -189,8 +189,8 @@ function compileFiles as integer
     		print "compiling: ", inplist(i); " -o "; asmlist(i)
     	end if
 
-    	if( not fbcCompile( inplist(i), asmlist(i), ctx.outtype ) ) then
-    		end 1
+    	if( not fbcCompile( inplist(i), asmlist(i) ) ) then
+    		exit function
     	end if
 
 		'' get list with all referenced libraries
@@ -218,8 +218,7 @@ function assembleFiles as integer
     ''
 #ifdef TARGET_WIN32
     aspath = exepath$ + FB.BINPATH + "as.exe"
-#endif
-#ifdef TARGET_LINUX
+#elseif defined(TARGET_LINUX)
 	aspath = "as"
 #endif
 
@@ -296,6 +295,7 @@ function linkFiles as integer
 	hClearName ctx.entrypoint
 
 #ifdef TARGET_WIN32
+
 	'' set default subsystem mode
 	if( len( ctx.subsystem ) = 0 ) then
 		ctx.subsystem = "console"
@@ -313,6 +313,7 @@ function linkFiles as integer
 	if( ctx.outtype = FB_OUTTYPE_EXECUTABLE) then
 		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
 	end if
+
 #endif
 
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
@@ -324,7 +325,7 @@ function linkFiles as integer
 		ldcline = ldcline + " --dll --enable-stdcall-fixup"
 
 		'' add aliases for functions without @nn
-		if( env.clopt.nostdcall ) then
+		if( fbcGetOption( FB.COMPOPT.NOSTDCALL ) ) then
 	   		ldcline = ldcline + " --add-stdcall-alias"
     	end if
 
@@ -345,7 +346,7 @@ function linkFiles as integer
 
 		''
 		ldcline = "-shared --export-dynamic"
-		
+
 #endif
     end if
 
@@ -386,7 +387,7 @@ function linkFiles as integer
     ldcline = ldcline + " -L " + QUOTE + exepath$ + FB.LIBPATH + QUOTE
     '' and the current path to libs search list
     ldcline = ldcline + " -L " + QUOTE +  "./" + QUOTE
-    
+
     '' add additional user-specified library search paths
     for i = 0 to ctx.pths-1
     	ldcline = ldcline + " -L " + QUOTE + pthlist(i) + QUOTE
@@ -586,8 +587,7 @@ function archiveFiles as integer
 
 #ifdef TARGET_WIN32
 	arcpath = exepath$ + FB.BINPATH + "ar.exe"
-#endif
-#ifdef TARGET_LINUX
+#elseif defined(TARGET_LINUX)
 	arcpath = "ar"
 #endif
 
@@ -689,8 +689,12 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "g", "e", "w"
+			case "e", "w"
 				'' compiler options, will be processed by processCompOptions
+
+			case "g"
+				ctx.debug = TRUE
+				argv(i) = ""
 
 			case "c"
 				ctx.compileonly = TRUE
@@ -698,9 +702,11 @@ function processOptions as integer
 
 			case "dylib", "dll"
 				ctx.outtype = FB_OUTTYPE_DYNAMICLIB
+				argv(i) = ""
 
 			case "lib"
 				ctx.outtype = FB_OUTTYPE_STATICLIB
+				argv(i) = ""
 
 			case "r"
 				ctx.preserveasm = TRUE
@@ -782,9 +788,6 @@ function processCompOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "g"
-				fbcSetOption FB.COMPOPT.DEBUG, TRUE
-				ctx.debug = TRUE
 			case "e"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
 #ifdef TARGET_WIN32
@@ -796,6 +799,9 @@ function processCompOptions as integer
 
 	next i
 
+	''
+	fbcSetOption FB.COMPOPT.DEBUG, ctx.debug
+	fbcSetOption FB.COMPOPT.OUTTYPE, ctx.outtype
 #ifndef TARGET_WIN32
 	fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
 #endif

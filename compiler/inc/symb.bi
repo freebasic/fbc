@@ -115,7 +115,7 @@ declare function 	symbIsConst				( constname as string ) as integer
 
 declare function 	symbAddDefine			( id as string, text as string ) as integer
 declare function 	symbAddLabel			( label as string ) as integer
-declare function 	symbAddLabelEx			( label as string, byval declaring as integer ) as integer
+declare function 	symbAddLabelEx			( label as string, byval declaring as integer, byval createalias as integer = FALSE ) as integer
 declare function 	symbAddVar				( symbol as string, byval typ as integer, byval subtype as integer, _
 					  						  byval dimensions as integer, dTB() as FBARRAYDIM, _
 				      						  byval alloctype as integer ) as integer

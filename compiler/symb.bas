@@ -865,7 +865,7 @@ sub symbInitDefines static
 	symbReallocDefineTB FB.INITDEFINENODES
 
     hashNew defhashTB(), FB.INITDEFINENODES
-    
+
     restore definesdata
     do
     	read def
@@ -1021,7 +1021,7 @@ function hCreateNameEx( symbol as string, byval typ as integer, _
     end if
 
     if( (typ <> INVALID) and (typ < 128) ) then
-    	nm = nm + "_" + chr$( 97 + typ )
+    	nm = nm + "_" + chr$( CHAR_ALOW + typ )
     end if
 
 	hCreateNameEx = nm
@@ -1504,13 +1504,13 @@ function symbAddConst( id as string, byval typ as integer, text as string ) as i
 end function
 
 '':::::
-function symbAddLabelEx( label as string, byval declaring as integer ) as integer static
+function symbAddLabelEx( label as string, byval declaring as integer, byval createalias as integer = FALSE ) as integer static
     dim i as integer, l as integer
-    dim lname as string
+    dim lname as string, aname as string
 
     symbAddLabelEx = INVALID
 
-    lname = hCreateNameEx( label, INVALID, FALSE, TRUE, TRUE )
+    lname = hCreateNameEx( label, FB.SYMBTYPE.LABEL, FALSE, TRUE, TRUE )
 
     if( env.scope > 0 ) then
     	lname = "L" + lname
@@ -1544,7 +1544,12 @@ function symbAddLabelEx( label as string, byval declaring as integer ) as intege
     end if
 
 	'' add the new label
-    l = hNewSymbol( lname, "", FB.SYMBCLASS.LABEL, env.scope = 0 )
+	if( not createalias ) then
+		aname = ""
+	else
+		aname = hMakeTmpStr
+	end if
+    l = hNewSymbol( lname, aname, FB.SYMBCLASS.LABEL, env.scope = 0 )
     if( l = INVALID ) then
     	exit function
     end if
@@ -1565,7 +1570,7 @@ end function
 '':::::
 function symbAddLabel( label as string ) as integer static
 
-	symbAddLabel = symbAddLabelEx( label, TRUE )
+	symbAddLabel = symbAddLabelEx( label, TRUE, FALSE )
 
 end function
 
@@ -2296,7 +2301,7 @@ function symbLookupLabel( label as string ) as integer static
 
     symbLookupLabel = INVALID
 
-    lname = hCreateName( label, INVALID )
+    lname = hCreateName( label, FB.SYMBTYPE.LABEL )
 
 	'' first check the local symbols if current scope > 0
 	if( env.scope > 0 ) then
@@ -3040,7 +3045,13 @@ end function
 
 '':::::
 function symbGetLabelName( byval l as integer ) as string static
-	symbGetLabelName = strpGet( symbolTB(l).nameidx )
+
+	if( symbolTB(l).aliasidx <> INVALID ) then
+		symbGetLabelName = strpGet( symbolTB(l).aliasidx )
+	else
+		symbGetLabelName = strpGet( symbolTB(l).nameidx )
+	end if
+
 end function
 
 '':::::
