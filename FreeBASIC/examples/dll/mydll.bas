@@ -10,8 +10,11 @@
 ''
 
 option explicit
+#ifdef FB__WIN32
 '$include: 'win\kernel32.bi'
-'$include: 'C:\prg\code\bas\freeBASIC\examples\dll\mydll.bi'
+#endif
+
+'$include: 'mydll.bi'
 
 	dim shared hInstance as long
 	
@@ -21,6 +24,7 @@ option explicit
 	'' is invoked by Windows at the initialization
 	''
 	
+#ifdef FB__WIN32
 ''::::::
 ''
 '' DllMain is the entry-point (ALWAYS needed with DLL's), don't change the prototype
@@ -38,6 +42,7 @@ function DllMain ( byval hModule as long, byval reason as long, byval lpReserved
     DllMain = TRUE
 
 end function
+#endif
 
 
 ''::::::
