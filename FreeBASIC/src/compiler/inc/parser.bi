@@ -64,7 +64,6 @@ declare function 	cDoStatement           	( ) as integer
 declare function 	cWhileStatement        	( ) as integer
 declare function 	cSelectStatement       	( ) as integer
 declare function 	cCaseStatement         	( byval s as FBSYMBOL ptr, byval sdtype as integer, byval exitlabel as FBSYMBOL ptr ) as integer
-declare function 	cCaseExpression        	( byval s as FBSYMBOL ptr, byval sdtype as integer, byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr ) as integer
 declare function 	cSelectLine 			( )as integer
 declare function 	cCompoundStmtElm		( ) as integer
 declare function 	cProcStatement         	( ) as integer

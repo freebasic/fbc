@@ -427,7 +427,7 @@ sub irhGetVREG( byval vreg as integer, dtype as integer, dclass as integer, typ 
 end sub
 
 '':::::
-function irGetInverseLogOp( byval op as integer ) as integer 'static
+function irGetInverseLogOp( byval op as integer ) as integer static
 
 	select case op
 	case IR.OP.EQ

@@ -23,8 +23,8 @@ const NULL			= 0
 const INVALID		= -1
 
 ''
-#define FB.VERSION				"0.11"
-#define FB.SIGN					"FreeBASIC v0.11b"
+#define FB.VERSION				"0.12"
+#define FB.SIGN					"FreeBASIC v0.12b"
 
 '' paths
 #if defined(TARGET_WIN32)

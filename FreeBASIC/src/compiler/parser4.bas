@@ -33,13 +33,28 @@ defint a-z
 '$include: 'inc\emit.bi'
 
 type FBSELECTCTX
-	symbol	as FBSYMBOL ptr
-	dtype	as integer
-	elabel	as FBSYMBOL ptr
+	symbol		as FBSYMBOL ptr
+	dtype		as integer
+	elabel		as FBSYMBOL ptr
+	base		as integer
 end type
+
+type FBCASECTX
+	typ 		as integer
+	op 			as integer
+	expr1		as integer
+	expr2		as integer
+end type
+
+const FB.CASETYPE.RANGE = 1
+const FB.CASETYPE.IS    = 2
+const FB.CASETYPE.ELSE  = 3
+
+const FB.MAXCASEEXPR = 256*4
 
 '' globals
 	dim shared selctx as FBSELECTCTX
+	dim shared caseTB(0 to FB.MAXCASEEXPR-1) as FBCASECTX
 
 
 '':::::
@@ -1018,7 +1033,8 @@ function cSelectStatement
 	selctx.elabel = symbAddLabel( hMakeTmpStr )
 
 	'' store expression into a temp var
-	selctx.dtype  = astGetDataType( expr )			'' !!!FIXME!!! can ret wrong types w/ a complex expr
+	astUpdNodeResult expr
+	selctx.dtype  = astGetDataType( expr )
 	if( selctx.dtype = FB.SYMBTYPE.FIXSTR ) then
 		selctx.dtype = FB.SYMBTYPE.STRING
 	end if
@@ -1065,13 +1081,91 @@ function cSelectStatement
 end function
 
 '':::::
+''CaseExpression  =   (Expression (TO Expression)?)?
+''				  |   (IS REL_OP Expression)? .
+''
+function cCaseExpression( casectx as FBCASECTX )
+
+	cCaseExpression = FALSE
+
+	casectx.op 	= IR.OP.EQ
+
+	'' IS REL_OP Expression
+	if( hMatch( FB.TK.IS ) ) then
+		casectx.op = hFBrelop2IRrelop( lexCurrentToken )
+		lexSkipToken
+		casectx.typ = FB.CASETYPE.IS
+	else
+		casectx.typ = 0
+	end if
+
+	'' Expression
+	if( not cExpression( casectx.expr1 ) ) then
+		exit function
+	end if
+
+	'' TO Expression
+	if( hMatch( FB.TK.TO ) ) then
+		if( casectx.typ <> 0 ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		end if
+
+		if( not cExpression( casectx.expr2 ) ) then
+			exit function
+		end if
+
+		casectx.typ =  FB.CASETYPE.RANGE
+	end if
+
+	cCaseExpression = TRUE
+
+end function
+
+'':::::
+private sub hExecCaseExpr( casectx as FBCASECTX, _
+				           byval s as FBSYMBOL ptr, byval sdtype as integer, _
+				           byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr, _
+				           byval inverselogic as integer ) static
+
+	dim vr as integer, v as integer, expr as integer
+
+	if( casectx.typ <> FB.CASETYPE.RANGE ) then
+		v = astNewVAR( s, NULL, 0, sdtype )
+
+		if( not inverselogic ) then
+			expr = astNewBOP( casectx.op, v, casectx.expr1, initlabel, FALSE )
+		else
+			expr = astNewBOP( irGetInverseLogOp( casectx.op ), v, casectx.expr1, nextlabel, FALSE )
+		end if
+
+		astFlush expr, vr
+
+	else
+		v = astNewVAR( s, NULL, 0, sdtype )
+		expr = astNewBOP( IR.OP.LT, v, casectx.expr1, nextlabel, FALSE )
+		astFlush expr, vr
+
+		v = astNewVAR( s, NULL, 0, sdtype )
+		if( not inverselogic ) then
+			expr = astNewBOP( IR.OP.LE, v, casectx.expr2, initlabel, FALSE )
+		else
+			expr = astNewBOP( IR.OP.GT, v, casectx.expr2, nextlabel, FALSE )
+		end if
+		astFlush expr, vr
+	end if
+
+end sub
+
+
+'':::::
 ''CaseStatement   =    CASE (ELSE | (CaseExpression (COMMA CaseExpression)*)) Comment? SttSeparator
 ''					   SimpleLine*.
 ''
 function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval exitlabel as FBSYMBOL ptr )
 	dim il as FBSYMBOL ptr, nl as FBSYMBOL ptr
-	dim iselse as integer
-	dim res as integer
+	dim iselse as integer, res as integer
+	dim cnt as integer, i as integer, cntbase as integer
 
 	cCaseStatement = FALSE
 
@@ -1084,27 +1178,25 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 	il = symbAddLabel( hMakeTmpStr )
 
 	'' CaseExpression (COMMA CaseExpression)*
-	iselse = FALSE
-	do
-		'' add next label
-		nl = symbAddLabel( hMakeTmpStr )
+	cnt = 0
+	cntbase = selctx.base
 
-		if( hMatch( FB.TK.ELSE ) ) then
-			iselse = TRUE
-			exit do
-		elseif( not cCaseExpression( s, sdtype, il, nl ) ) then
+	do
+		if( cnt = 0 ) then
+			if( hMatch( FB.TK.ELSE ) ) then
+				caseTB(cntbase + cnt).typ = FB.CASETYPE.ELSE
+				cnt = 1
+				exit do
+			end if
+		end if
+
+		if( not cCaseExpression( caseTB(cntbase + cnt) ) ) then
 			exit function
 		end if
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			exit do
-		end if
+		cnt = cnt + 1
 
-    	'' emit next label
-    	irEmitLABEL nl, FALSE
-    	'''''symbDelLabel nl
-
-	loop
+	loop while( hMatch( CHAR_COMMA ) )
 
 	'' Comment?
 	res = cComment
@@ -1114,98 +1206,50 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 		exit function
 	end if
 
-	if( not iselse ) then
-		irEmitBRANCH IR.OP.JMP, nl, FALSE
-	end if
-
-	''
-	irEmitLABEL il, FALSE
-	'''''symbDelLabel il
-
-	'' SimpleLine*
-	do
-		res = cSimpleLine
-	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
-
 	if( hGetLastError <> FB.ERRMSG.OK ) then
 		exit function
 	end if
 
-	'' break from block
-	if( not iselse ) then
-		irEmitBRANCH IR.OP.JMP, exitlabel, FALSE
-	end if
+	''
+	selctx.base = selctx.base + cnt
 
-    '' emit next label
-    irEmitLABEL nl, FALSE
-    '''''symbDelLabel nl
+	for i = cntbase to cntbase + cnt-1
+
+		'' add next label
+		nl = symbAddLabel( hMakeTmpStr )
+
+		if( caseTB(i).typ <> FB.CASETYPE.ELSE ) then
+			hExecCaseExpr( caseTB(i), s, sdtype, il, nl, i = cntbase )
+		end if
+
+		if( i = cntbase ) then
+			''
+			irEmitLABEL il, FALSE
+			'''''symbDelLabel il
+
+			'' SimpleLine*
+			do
+				res = cSimpleLine
+			loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+
+			if( caseTB(i).typ = FB.CASETYPE.ELSE ) then
+				exit for
+			end if
+
+			'' break from block
+			irEmitBRANCH IR.OP.JMP, exitlabel, FALSE
+
+		end if
+
+		'' emit next label
+		irEmitLABEL nl, FALSE
+		'''''symbDelLabel nl
+
+	next i
+
+	selctx.base = selctx.base - cnt
 
 	cCaseStatement = TRUE
-
-end function
-
-'':::::
-''CaseExpression  =   (Expression (TO Expression)?)?
-''				  |   (IS REL_OP Expression)? .
-''
-function cCaseExpression( byval s as FBSYMBOL ptr, byval sdtype as integer, byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr )
-	dim op as integer, iscomp as integer, isrange as integer
-	dim expr1 as integer, expr2 as integer
-	dim vr as integer, v as integer
-
-	cCaseExpression = FALSE
-
-	expr1		= INVALID
-	expr2		= INVALID
-
-	iscomp		= FALSE
-	isrange		= FALSE
-	op 			= IR.OP.EQ
-
-	'' IS REL_OP Expression
-	if( hMatch( FB.TK.IS ) ) then
-		op = hFBrelop2IRrelop( lexCurrentToken )
-		lexSkipToken
-		iscomp = TRUE
-	end if
-
-	'' Expression
-	if( not cExpression( expr1 ) ) then
-		exit function
-	end if
-
-	'' TO Expression
-	if( hMatch( FB.TK.TO ) ) then
-		if( iscomp ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
-			exit function
-		end if
-
-		if( not cExpression( expr2 ) ) then
-			exit function
-		end if
-
-		isrange = TRUE
-	end if
-
-	if( not isrange ) then
-		v = astNewVAR( s, NULL, 0, sdtype )
-		expr1 = astNewBOP( op, v, expr1, initlabel, FALSE )
-
-		astFlush expr1, vr
-
-	else
-		v = astNewVAR( s, NULL, 0, sdtype )
-		expr1 = astNewBOP( IR.OP.LT, v, expr1, nextlabel, FALSE )
-
-		v = astNewVAR( s, NULL, 0, sdtype )
-		expr2 = astNewBOP( IR.OP.LE, v, expr2, initlabel, FALSE )
-
-		astFlush expr1, vr
-		astFlush expr2, vr
-	end if
-
-	cCaseExpression = TRUE
 
 end function
 
