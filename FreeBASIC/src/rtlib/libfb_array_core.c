@@ -47,16 +47,18 @@ int fb_hArrayCalcDiff( int dimensions, const int *lboundTB, const int *uboundTB 
 	int elements;
 	int diff = 0;
 
+	if( dimensions <= 0 )
+		return 0;
+
     for( i = 0; i < dimensions-1; i++ )
     {
     	elements = (uboundTB[i+1] - lboundTB[i+1]) + 1;
-    	diff += -lboundTB[i] * elements;
+    	diff = (diff + lboundTB[i]) * elements;
     }
 
-	if( dimensions > 0 )
-		diff += -lboundTB[dimensions-1];
+	diff += lboundTB[dimensions-1];
 
-	return diff;
+	return -diff;
 }
 
 /*:::::*/
