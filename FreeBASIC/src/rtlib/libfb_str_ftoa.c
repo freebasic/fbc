@@ -28,29 +28,45 @@
 #include "fb.h"
 
 /*:::::*/
-char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
+char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
 	int len;
 	char *p;
 	char fmtstr[16];
 
-	if( addblank == FB_TRUE )
+	if( mask & FB_F2A_ADDBLANK )
 		p = &buffer[1];
 	else
 		p = buffer;
 
-	sprintf( fmtstr, "%%.%df", precision );
+	/* no exponent? (if exp is too big, that won't matter) */
+	if( (mask & FB_F2A_NOEXP) > 0 )
+	{
+		sprintf( fmtstr, "%%.%df", digits );
+		sprintf( p, fmtstr, val );
+	}
+	else
+	{
+		/* why not use always %f? because it will print dizima's,
+		   123467.9 will become 123467.89999999999 for example */
+#ifdef WIN32
+		_gcvt( val, digits, p );
+#else
+		sprintf( fmtstr, "%%.%dg", digits );
+		sprintf( p, fmtstr, val );
+#endif
+	}
 
-	sprintf( p, fmtstr, val );
 
 	len = strlen( p );
 
 	if( len > 0 )
 	{
-		/* skip the zeros at end */
-		while( p[len-1] == '0' )
-			p[--len] = '\0';
-				
+		if( (mask & FB_F2A_NOEXP) > 0 )
+			/* skip the zeros at end */
+			while( p[len-1] == '0' )
+				p[--len] = '\0';
+
 		/* skip the dot at end if any */
 		if( len > 0 )
 			if( p[len-1] == '.' )
@@ -58,7 +74,7 @@ char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
 	}
 
 	/* */
-	if( addblank == FB_TRUE )
+	if( (mask & FB_F2A_ADDBLANK) > 0 )
 	{
 		if( p[0] != '-' )
 		{

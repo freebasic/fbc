@@ -376,8 +376,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			totdigs = 1;
 		else if( totdigs > 16 )
 			totdigs = 16;
-		
-		fb_hFloat2Str( value, buffer, totdigs, FB_FALSE );
+
+		fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
 
 		len = strlen( buffer );
 		if( buffer[len-1] == '.' )

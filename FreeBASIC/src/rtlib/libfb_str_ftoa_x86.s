@@ -63,7 +63,6 @@ fb_f2a:
 		push	edi
 		push	esi
 
-                int 3
                 fld     qword ptr [ebp+8]	# double num
                 mov     edi, [ebp+16]		# char *dst
                 mov     ecx, [ebp+20]		# int digits

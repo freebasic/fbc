@@ -126,7 +126,7 @@ FBCALL void fb_WriteSingle ( int fnum, float val, int mask )
 {
 	char buffer[8+1+8+1];
 
-	fb_WriteFixString( fnum, fb_hFloat2Str( (double)val, buffer, 8, FB_FALSE ), mask );
+	fb_WriteFixString( fnum, fb_hFloat2Str( (double)val, buffer, 8, FB_F2A_ADDBLANK ), mask );
 
 }
 
@@ -135,7 +135,7 @@ FBCALL void fb_WriteDouble ( int fnum, double val, int mask )
 {
 	char buffer[16+1+8+1];
 
-	fb_WriteFixString( fnum, fb_hFloat2Str( val, buffer, 16, FB_FALSE ), mask );
+	fb_WriteFixString( fnum, fb_hFloat2Str( val, buffer, 16, FB_F2A_ADDBLANK ), mask );
 
 }
 

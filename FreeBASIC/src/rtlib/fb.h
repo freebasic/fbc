@@ -131,8 +131,11 @@ FBCALL FBSTRING 	*fb_IntToStr 			( int num );
 FBCALL FBSTRING 	*fb_FloatToStr 			( float num );
 FBCALL FBSTRING 	*fb_DoubleToStr 		( double num );
 
+#define FB_F2A_ADDBLANK	 0x00000001
+#define FB_F2A_NOEXP	 0x00000002
+
 FBCALL double 		fb_hStr2Double			( char *src, int len );
-	   char 		*fb_hFloat2Str			( double val, char *buffer, int precision, int addblank );
+	   char 		*fb_hFloat2Str			( double val, char *buffer, int digits, int mask );
 
 
 FBCALL FBSTRING 	*fb_CHR 				( unsigned int num );
@@ -261,6 +264,7 @@ FBCALL void 		fb_DataReadDouble	( double *dst );
 #define FB_PRINT_NEWLINE 0x00000001
 #define FB_PRINT_PAD 	 0x00000002
 #define FB_PRINT_ISLAST  0x80000000
+
 
 extern int fb_viewTopRow;
 extern int fb_viewBotRow;
