@@ -865,7 +865,7 @@ sub lexSkipLine static
 		'' !!!FIXME!!! this shouldn't be here :P
 		'' only emit current src line if it's not on an inc file
 		if( env.reclevel = 0 ) then
-			if( (c = CHAR_CR) or (c = 0) ) then
+			if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
 				emitCOMMENT curline
 				curline = ""
 			end if
