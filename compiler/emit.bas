@@ -2280,9 +2280,9 @@ private sub hSaveAsmInitProc( byval asmf as integer )
     if( s <> INVALID ) then
     	hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetLabelName( s )
     	hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_DataRestore", 4, FALSE, FB.FUNCMODE.STDCALL )
-#ifdef TARGET_LINUX
-		hWriteStr asmf, TRUE,  "add" + TABCHAR + "esp, 4"
-#endif
+    	if( env.clopt.nostdcall = TRUE) then
+			hWriteStr asmf, TRUE,  "add" + TABCHAR + "esp, 4"
+		end if
     end if
 
     hWriteStr asmf, TRUE,  "ret"
