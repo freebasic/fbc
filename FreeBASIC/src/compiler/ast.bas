@@ -1704,7 +1704,8 @@ function astCntFreeNodes as integer static
 end function
 
 ''::::
-function astFlush( byval n as integer, vreg as integer, byval label as FBSYMBOL ptr = NULL, byval isinverse as integer = FALSE ) as integer
+function astFlush( byval n as integer, vreg as integer, byval label as FBSYMBOL ptr = NULL, _
+				   byval isinverse as integer = FALSE ) as integer
 
 	astFlush = FALSE
 
@@ -2452,6 +2453,7 @@ function asthEmitIDX( byval v as integer, byval ofs as integer, byval mult as in
 		if( irIsIDX( vi ) or irIsVAR( vi ) ) then
 			irEmitLOAD IR.OP.LOAD, vi
 		end if
+
 	else
 		vd = irAllocVRVAR( astTB(v).dtype, s, ofs )
 	end if
@@ -2792,7 +2794,7 @@ sub astLoadCONV( byval n as integer, vr as integer )
 
 	dtype = astTB(n).dtype
 
-	'' only convert file class are different (ie, floating<->integer) or
+	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
 	if( (irGetVRDataClass( vs ) <> irGetDataClass( dtype )) or _
 		(irGetVRDataSize( vs ) <> irGetDataSize( dtype )) ) then
@@ -2825,7 +2827,11 @@ function astNewFUNCTEx( byval ptrexpr as integer, byval sym as FBSYMBOL ptr, _
 	astTB(n).proc.sym 		= sym
 	astTB(n).proc.p 		= ptrexpr
 	astTB(n).proc.args 		= args
-	astTB(n).proc.arg		= symbGetProcHeadArg( sym )
+	if( sym <> NULL ) then
+		astTB(n).proc.arg	= symbGetProcHeadArg( sym )
+	else
+		astTB(n).proc.arg	= NULL
+	end if
 	astTB(n).proc.argnum 	= 0
 	astTB(n).proc.tmparraybase = INVALID
 
@@ -2839,7 +2845,8 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, byval dtype as integer, byval a
 end function
 
 '':::::
-function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr, byval dtype as integer, byval args as integer ) as integer static
+function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr, _
+						 byval dtype as integer, byval args as integer ) as integer static
 
 	astNewFUNCTPTR = astNewFUNCTEx( ptrexpr, symbol, dtype, args )
 
@@ -3226,6 +3233,15 @@ private sub hCallProc( byval n as integer, byval proc as FBSYMBOL ptr, byval mod
     dim dtype as integer
     dim vr as integer, p as integer
 
+	'' ordinary pointer?
+	if( proc = NULL ) then
+		p = astTB(n).proc.p
+		astLoad p, vr
+		astDel p
+		irEmitBRANCHPTR vr
+		exit sub
+	end if
+
 	dtype = astTB(n).dtype
 	if( dtype = IR.DATATYPE.STRING ) then dtype = IR.DATATYPE.UINT
 
@@ -3357,6 +3373,13 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 
 	'' execute each param and push the result
 	proc = astTB(n).proc.sym
+
+	'' ordinary pointer?
+	if( proc = NULL ) then
+		hCallProc n, NULL, INVALID, vreg
+		exit sub
+	end if
+
     mode = symbGetFuncMode( proc )
 
 	isrtl = symbGetProcLib( proc ) = "fb"

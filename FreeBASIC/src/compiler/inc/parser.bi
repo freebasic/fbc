@@ -22,6 +22,9 @@
 
 '$include:'inc\lex.bi'
 
+declare sub 		parser4Init				( )
+declare sub 		parser4End				( )
+
 declare function 	cProgram				( ) as integer
 declare function 	cLine					( ) as integer
 declare function 	cSimpleLine             ( ) as integer
@@ -64,7 +67,7 @@ declare function 	cDoStatement           	( ) as integer
 declare function 	cWhileStatement        	( ) as integer
 declare function 	cSelectStatement       	( ) as integer
 declare function 	cCaseStatement         	( byval s as FBSYMBOL ptr, byval sdtype as integer, byval exitlabel as FBSYMBOL ptr ) as integer
-declare function 	cSelectLine 			( )as integer
+declare function 	cSelectConstStmt 		( ) as integer
 declare function 	cCompoundStmtElm		( ) as integer
 declare function 	cProcStatement         	( ) as integer
 declare function 	cExitStatement			( ) as integer

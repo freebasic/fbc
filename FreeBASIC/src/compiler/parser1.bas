@@ -41,12 +41,18 @@ declare function cConstExprValue			( littext as string ) as integer
 '':::::
 function hIsSttSeparatorOrComment( byval token as integer ) as integer static
 
-	select case token
-	case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+	hIsSttSeparatorOrComment = FALSE
+
+	if( token = FB.TK.STATSEPCHAR ) then
 		hIsSttSeparatorOrComment = TRUE
-	case else
-		hIsSttSeparatorOrComment = FALSE
-	end select
+	elseif( token = FB.TK.COMMENTCHAR ) then
+		hIsSttSeparatorOrComment = TRUE
+	else
+		select case token
+		case FB.TK.EOL, FB.TK.EOF, FB.TK.REM
+			hIsSttSeparatorOrComment = TRUE
+		end select
+	end if
 
 end function
 

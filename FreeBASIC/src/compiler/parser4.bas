@@ -33,9 +33,10 @@ defint a-z
 '$include: 'inc\emit.bi'
 
 type FBSELECTCTX
-	symbol		as FBSYMBOL ptr
-	dtype		as integer
-	elabel		as FBSYMBOL ptr
+	base		as integer
+end type
+
+type FBSWITCHCTX
 	base		as integer
 end type
 
@@ -46,15 +47,39 @@ type FBCASECTX
 	expr2		as integer
 end type
 
+type FBSWTCASECTX
+	label		as FBSYMBOL ptr
+	value		as uinteger
+end type
+
 const FB.CASETYPE.RANGE = 1
 const FB.CASETYPE.IS    = 2
 const FB.CASETYPE.ELSE  = 3
 
-const FB.MAXCASEEXPR = 256*4
+const FB.MAXCASEEXPR 	= 1024
+const FB.MAXSWTCASEEXPR = 8192
 
 '' globals
 	dim shared selctx as FBSELECTCTX
+	dim shared swtctx as FBSWITCHCTX
 	dim shared caseTB(0 to FB.MAXCASEEXPR-1) as FBCASECTX
+	dim shared swtcaseTB(0 to FB.MAXSWTCASEEXPR-1) as FBSWTCASECTX
+
+
+'':::::
+sub parser4Init
+
+	selctx.base 	= 0
+
+	swtctx.base 	= 0
+
+end sub
+
+'':::::
+sub parser4End
+
+
+end sub
 
 
 '':::::
@@ -971,32 +996,14 @@ function cWhileStatement
 end function
 
 '':::::
-function cSelectLine as integer
-
-    cSelectLine = FALSE
-
-    '' Comment? SttSeparator?
-    do while( cComment or cSttSeparator )
-    loop
-
-    '' CaseStatement
-    if( not cCaseStatement( selctx.symbol, selctx.dtype, selctx.elabel ) ) then
-    	exit function
-    end if
-
-    cSelectLine = TRUE
-
-end function
-
-'':::::
-''SelectStatement =   SELECT CASE Expression Comment? SttSeparator
+''SelectStatement =   SELECT CASE (AS CONST)? Expression Comment? SttSeparator
 ''					   cComment? cSttSeparator? CaseStatement*
 ''				      END SELECT .
 ''
 function cSelectStatement
     dim expr as integer, vr as integer, lastcompstmt as integer
-    dim res as integer
-    dim oldselctx as FBSELECTCTX
+	dim symbol as FBSYMBOL ptr, dtype as integer
+	dim elabel as FBSYMBOL ptr
 
 	cSelectStatement = FALSE
 
@@ -1009,13 +1016,24 @@ function cSelectStatement
 		exit function
 	end if
 
+	'' AS?
+	if( hMatch( FB.TK.AS ) ) then
+		'' CONST?
+		if( hMatch( FB.TK.CONST ) ) then
+			cSelectStatement = cSelectConstStmt
+		else
+			hReportError FB.ERRMSG.SYNTAXERROR
+		end if
+		exit function
+	end if
+
 	'' Expression
 	if( not cExpression( expr ) ) then
 		exit function
 	end if
 
 	'' Comment?
-	res = cComment
+	cComment
 
 	'' separator
 	if( not cSttSeparator ) then
@@ -1027,24 +1045,22 @@ function cSelectStatement
 	lastcompstmt = env.lastcompound
 	env.lastcompound = FB.TK.SELECT
 
-	oldselctx = selctx
-
 	'' add exit label
-	selctx.elabel = symbAddLabel( hMakeTmpStr )
+	elabel = symbAddLabel( hMakeTmpStr )
 
 	'' store expression into a temp var
 	astUpdNodeResult expr
-	selctx.dtype  = astGetDataType( expr )
-	if( selctx.dtype = FB.SYMBTYPE.FIXSTR ) then
-		selctx.dtype = FB.SYMBTYPE.STRING
+	dtype  = astGetDataType( expr )
+	if( dtype = FB.SYMBTYPE.FIXSTR ) then
+		dtype = FB.SYMBTYPE.STRING
 	end if
 
-	selctx.symbol = symbAddTempVar( selctx.dtype )
-	if( selctx.symbol = NULL ) then
+	symbol = symbAddTempVar( dtype )
+	if( symbol = NULL ) then
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( selctx.symbol, NULL, 0, selctx.dtype ), expr )
+	expr = astNewASSIGN( astNewVAR( symbol, NULL, 0, dtype ), expr )
 	if( expr = INVALID ) then
 		exit function
 	end if
@@ -1052,12 +1068,21 @@ function cSelectStatement
 
 	'' SelectLine*
 	do
-		res = cSelectLine
-	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+
+    	'' Comment? SttSeparator?
+    	do while( cComment or cSttSeparator )
+    	loop
+
+    	'' CaseStatement
+    	if( not cCaseStatement( symbol, dtype, elabel ) ) then
+	    	exit do
+    	end if
+
+	loop while( lexCurrentToken <> FB.TK.EOF )
 
     '' emit exit label
-    irEmitLABEL selctx.elabel, FALSE
-    '''''symbDelLabel selctx.elabel
+    irEmitLABEL elabel, FALSE
+    '''''symbDelLabel elabel
 
 	'' END SELECT
 	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.SELECT )) ) then
@@ -1066,13 +1091,10 @@ function cSelectStatement
 	end if
 
 	'' if a temp string was allocated, delete it
-	if( selctx.dtype = FB.SYMBTYPE.STRING ) then
-		expr = rtlStrDelete( astNewVAR( selctx.symbol, NULL, 0, selctx.dtype ) )
+	if( dtype = FB.SYMBTYPE.STRING ) then
+		expr = rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) )
 		astFlush expr, vr
 	end if
-
-	'' restore old context
-	selctx = oldselctx
 
 	env.lastcompound = lastcompstmt
 
@@ -1123,10 +1145,10 @@ function cCaseExpression( casectx as FBCASECTX )
 end function
 
 '':::::
-private sub hExecCaseExpr( casectx as FBCASECTX, _
-				           byval s as FBSYMBOL ptr, byval sdtype as integer, _
-				           byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr, _
-				           byval inverselogic as integer ) static
+private function hExecCaseExpr( casectx as FBCASECTX, _
+				           	    byval s as FBSYMBOL ptr, byval sdtype as integer, _
+				           	    byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr, _
+				           		byval inverselogic as integer ) as integer static
 
 	dim vr as integer, v as integer, expr as integer
 
@@ -1146,6 +1168,11 @@ private sub hExecCaseExpr( casectx as FBCASECTX, _
 		expr = astNewBOP( IR.OP.LT, v, casectx.expr1, nextlabel, FALSE )
 		astFlush expr, vr
 
+		if( expr = INVALID ) then
+			hExecCaseExpr = FALSE
+			exit function
+		end if
+
 		v = astNewVAR( s, NULL, 0, sdtype )
 		if( not inverselogic ) then
 			expr = astNewBOP( IR.OP.LE, v, casectx.expr2, initlabel, FALSE )
@@ -1155,7 +1182,9 @@ private sub hExecCaseExpr( casectx as FBCASECTX, _
 		astFlush expr, vr
 	end if
 
-end sub
+	hExecCaseExpr = expr <> INVALID
+
+end function
 
 
 '':::::
@@ -1199,7 +1228,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' Comment?
-	res = cComment
+	cComment
 
 	'' SttSeparator
 	if( not cSttSeparator ) then
@@ -1219,7 +1248,10 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 		nl = symbAddLabel( hMakeTmpStr )
 
 		if( caseTB(i).typ <> FB.CASETYPE.ELSE ) then
-			hExecCaseExpr( caseTB(i), s, sdtype, il, nl, i = cntbase )
+			if( not hExecCaseExpr( caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+				exit function
+			end if
 		end if
 
 		if( i = cntbase ) then
@@ -1250,6 +1282,307 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 	selctx.base = selctx.base - cnt
 
 	cCaseStatement = TRUE
+
+end function
+
+'':::::
+private sub hSelConstAddCase( byval swtbase as integer, byval value as uinteger, _
+							  byval label as FBSYMBOL ptr ) static
+
+	dim probe as integer, high as integer, low as integer
+	dim v as uinteger, i as integer
+
+	'' find the slot using bin-search
+	high = swtctx.base - swtbase
+	low  = -1
+
+	do while( high - low > 1 )
+		probe = (high + low) \ 2
+		v = swtcaseTB(swtbase+probe).value
+		if( v < value ) then
+			low = probe
+		elseif( v > value ) then
+			high = probe
+		else
+			exit sub
+		end if
+	loop
+
+	'' move up
+	for i = swtctx.base+1 to swtbase+high+1 step -1
+		swtcaseTB(i) = swtcaseTB(i-1)
+	next i
+
+	'' insert new item
+	swtcaseTB(swtbase+high).value = value
+	swtcaseTB(swtbase+high).label = label
+	swtctx.base = swtctx.base + 1
+
+end sub
+
+'':::::
+''SelConstCaseStmt =   CASE (ELSE | (ConstExpression{int} (COMMA ConstExpression{int})*)) Comment? SttSeparator
+''					       SimpleLine*.
+''
+function cSelConstCaseStmt( byval swtbase as integer, _
+						    byval sym as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr, _
+						    minval as uinteger, maxval as uinteger, deflabel as FBSYMBOL ptr ) as integer
+
+	dim expr1 as integer, expr2 as integer
+	dim value as uinteger, tovalue as uinteger, v as uinteger
+	dim label as FBSYMBOL ptr
+
+	cSelConstCaseStmt = FALSE
+
+	'' CASE
+	if( not hMatch( FB.TK.CASE ) ) then
+		exit function
+	end if
+
+	'' ELSE
+	if( hMatch( FB.TK.ELSE ) ) then
+		deflabel = symbAddLabel( hMakeTmpStr )
+		irEmitLABEL deflabel, FALSE
+
+	else
+
+		'' add label
+		label = symbAddLabel( hMakeTmpStr )
+
+		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
+		do
+			if( not cExpression( expr1 ) ) then
+				exit function
+			end if
+
+			if( astGetClass( expr1 ) <> AST.NODECLASS.CONST ) then
+				hReportError FB.ERRMSG.EXPECTEDCONST
+				exit function
+			end if
+
+			value = astGetValue( expr1 )
+			astDel expr1
+
+			'' TO?
+			if( hMatch( FB.TK.TO ) ) then
+				if( not cExpression( expr2 ) ) then
+					exit function
+				end if
+
+				if( astGetClass( expr2 ) <> AST.NODECLASS.CONST ) then
+					hReportError FB.ERRMSG.EXPECTEDCONST
+					exit function
+				end if
+
+				tovalue = astGetValue( expr2 )
+				astDel expr2
+
+			else
+				tovalue = value
+			end if
+
+			for v = value to tovalue
+				if( v < minval ) then
+					minval = v
+				end if
+
+				if( v > maxval ) then
+					maxval = v
+				end if
+
+				'' add item
+				hSelConstAddCase swtbase, v, label
+			next
+
+		loop while( hMatch( CHAR_COMMA ) )
+
+		''
+		irEmitLABEL label, FALSE
+
+	end if
+
+	'' Comment?
+	cComment
+
+	'' SttSeparator
+	if( not cSttSeparator ) then
+		exit function
+	end if
+
+	'' SimpleLine*
+	do
+	loop while( cSimpleLine and (lexCurrentToken <> FB.TK.EOF) )
+
+	if( hGetLastError <> FB.ERRMSG.OK ) then
+		exit function
+	end if
+
+	'' break from block
+	irEmitBRANCH IR.OP.JMP, exitlabel, FALSE
+
+	cSelConstCaseStmt = TRUE
+
+end function
+
+'':::::
+private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
+	dim dTB(0) as FBARRAYDIM
+
+	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, FB.INTEGERSIZE, NULL, _
+							            1, dTB(), FB.ALLOCTYPE.SHARED, FALSE, FALSE, FALSE )
+
+end function
+
+'':::::
+private sub hSelConstFreeTbSym( byval tbsym as FBSYMBOL ptr ) static
+
+	symbDelVar symbGetArrayDescriptor( tbsym )
+	symbDelVar tbsym
+
+end sub
+
+'':::::
+''SelectConstStmt =   SELECT CASE AS CONST Expression{int} Comment? SttSeparator
+''					   cComment? cSttSeparator? SelConstCaseStmt*
+''				      END SELECT .
+''
+function cSelectConstStmt as integer
+    dim expr as integer, idxexpr as integer, vr as integer, lastcompstmt as integer
+	dim sym as FBSYMBOL ptr
+	dim exitlabel as FBSYMBOL ptr, complabel as FBSYMBOL ptr, deflabel as FBSYMBOL ptr
+	dim tbsym as FBSYMBOL ptr
+	dim minval as uinteger, maxval as uinteger
+	dim value as uinteger, l as integer, swtbase as integer
+
+	cSelectConstStmt = FALSE
+
+	'' Expression
+	if( not cExpression( expr ) ) then
+		exit function
+	end if
+
+	if( astGetDataClass( expr ) <> IR.DATACLASS.INTEGER ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	end if
+
+	if( astGetDataType( expr ) <> IR.DATATYPE.UINT ) then
+		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
+	end if
+
+	'' Comment?
+	cComment
+
+	'' separator
+	if( not cSttSeparator ) then
+		hReportError FB.ERRMSG.EXPECTEDEOL
+		exit function
+	end if
+
+	'' save current context
+	lastcompstmt = env.lastcompound
+	env.lastcompound = FB.TK.SELECT
+
+	'' add labels
+	exitlabel = symbAddLabel( hMakeTmpStr )
+	complabel = symbAddLabel( hMakeTmpStr )
+
+	'' store expression into a temp var
+	sym = symbAddTempVar( FB.SYMBTYPE.UINT )
+	if( sym = NULL ) then
+		exit function
+	end if
+
+	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), expr )
+	if( expr = INVALID ) then
+		exit function
+	end if
+	astFlush expr, vr
+
+	'' skip the statements
+	irEmitBRANCH IR.OP.JMP, complabel, FALSE
+
+	'' SwitchLine*
+	swtbase = swtctx.base
+	deflabel = NULL
+	minval = &hFFFFFFFF
+	maxval = 0
+	do
+    	'' Comment? SttSeparator?
+    	do while( cComment or cSttSeparator )
+    	loop
+
+    	'' SelConstCaseStmt
+    	if( not cSelConstCaseStmt( swtbase, sym, exitlabel, minval, maxval, deflabel ) ) then
+	    	exit do
+    	end if
+
+	loop while( lexCurrentToken <> FB.TK.EOF )
+
+    if( deflabel = NULL ) then
+    	deflabel = exitlabel
+    end if
+
+    '' emit comp label
+    irEmitLABEL complabel, FALSE
+    '''''symbDelLabel complabel
+
+	'' check min val
+	if( minval > 0 ) then
+		expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
+						  astNewCONST( minval, IR.DATATYPE.UINT ), deflabel, FALSE )
+		astFlush expr, vr
+	end if
+
+	'' check max val
+	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
+					  astNewCONST( maxval, IR.DATATYPE.UINT ), deflabel, FALSE )
+	astFlush expr, vr
+
+    '' jump to table[idx]
+    tbsym = hSelConstAllocTbSym( )
+
+	idxexpr = astNewBOP( IR.OP.MUL, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
+    				  			    astNewCONST( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
+
+    expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
+    				  IR.DATATYPE.UINT, NULL )
+
+    astFlush astNewFUNCTPTR( expr, NULL, INVALID, 0 ), vr
+
+    '' emit table
+    irEmitLABEL tbsym, FALSE
+
+    irFlush
+
+    ''
+    l = swtbase
+    for value = minval to maxval
+    	if( value = swtcaseTB(l).value ) then
+    		emitTYPE IR.DATATYPE.UINT, symbGetLabelName( swtcaseTB(l).label )
+    		l = l + 1
+    	else
+    		emitTYPE IR.DATATYPE.UINT, symbGetLabelName( deflabel )
+    	end if
+    next value
+
+    hSelConstFreeTbSym( tbsym )
+
+    swtctx.base = swtbase
+
+    '' emit exit label
+    irEmitLABEL exitlabel, FALSE
+    '''''symbDelLabel exitlabel
+
+	'' END SELECT
+	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.SELECT )) ) then
+		hReportError FB.ERRMSG.EXPECTEDENDSELECT
+		exit function
+	end if
+
+	env.lastcompound = lastcompstmt
+
+	cSelectConstStmt = TRUE
 
 end function
 

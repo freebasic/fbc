@@ -400,7 +400,7 @@ sub irhLoadIDX( byval vreg as integer, byval dtype as integer, byval dclass as i
 		exit sub
 	end if
 
-	vregTB(vi).r   = regTB(IR.DATACLASS.INTEGER)->ensure( regTB(IR.DATACLASS.INTEGER), vi )
+	vregTB(vi).r = regTB(IR.DATACLASS.INTEGER)->ensure( regTB(IR.DATACLASS.INTEGER), vi )
 
 end sub
 
@@ -542,7 +542,7 @@ end sub
 sub irEmitLABEL( byval label as FBSYMBOL ptr, byval isglobal as integer ) 'static
     dim lname as string
 
-	irFlush										'' needed? (no way to know if label is ever called)
+	irFlush
 
 	lname = symbGetLabelName( label )
 

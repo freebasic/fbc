@@ -60,6 +60,7 @@ declare function 	emitIsKeyword		( text as string ) as integer
 declare sub 		emitASM				( s as string )
 
 declare sub 		emitCOMMENT			( s as string )
+declare sub 		emitTYPE			( byval typ as integer, text as string )
 
 declare sub 		emitALIGN			( byval bytes as integer )
 declare sub 		emitSECTION			( byval section as integer )

@@ -444,7 +444,7 @@ sub hClearName( src as string ) static
 		c = *p
 
 		select case c
-		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE
+		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE, CHAR_TILD
 			*p = CHAR_ZLOW
 		end select
 

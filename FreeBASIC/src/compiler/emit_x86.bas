@@ -457,7 +457,6 @@ private sub outEx( s as string, byval updpos as integer ) 'static
 	end if
 
 outerror:
-
 end sub
 
 '':::::
@@ -529,6 +528,12 @@ sub emitALIGN( byval bytes as integer ) 'static
 
 end sub
 
+'':::::
+sub emitTYPE( byval typ as integer, text as string ) 'static
+
+	outp hGetTypeString( typ ) + " " + text
+
+end sub
 
 '':::::
 sub emitCALL( pname as string, byval bytestopop as integer, byval ispublic as integer ) 'static
@@ -2381,7 +2386,7 @@ private function hGetTypeString( byval typ as integer ) as string 'static
     	tstr = ".int"
 	case FB.SYMBTYPE.USERDEF
 		tstr = "INVALID"
-    case FB.SYMBTYPE.POINTER to FB.SYMBTYPE.POINTER + FB.SYMBOLTYPES
+    case is >= FB.SYMBTYPE.POINTER
     	tstr = ".int"
 	end select
 
@@ -2686,7 +2691,6 @@ function emitOpen
 
 	'' header
 	hSaveAsmHeader
-
 
 	emitOpen = TRUE
 

@@ -120,7 +120,7 @@ function cGotoStmt
 end function
 
 '':::::
-''ArrayStmt   	  =   ERASE ID
+''ArrayStmt   	  =   ERASE ID (',' ID)*;
 ''				  |   SWAP Variable, Variable .
 ''
 function cArrayStmt
@@ -133,23 +133,27 @@ function cArrayStmt
 	case FB.TK.ERASE
 		lexSkipToken
 
-		if( not cVarOrDeref( expr1, FALSE ) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-			exit function
-		end if
+		do
+			if( not cVarOrDeref( expr1, FALSE ) ) then
+				hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+				exit function
+			end if
 
-		'' array?
-    	s = astGetSymbol( expr1 )
-    	if( not symbIsArray( s ) ) then
-			hReportError FB.ERRMSG.EXPECTEDARRAY
-			exit function
-		end if
+			'' array?
+    		s = astGetSymbol( expr1 )
+    		if( not symbIsArray( s ) ) then
+				hReportError FB.ERRMSG.EXPECTEDARRAY
+				exit function
+			end if
 
-		if( symbGetIsDynamic( s ) ) then
-			rtlArrayErase expr1
-		else
-			rtlArrayClear expr1
-		end if
+			if( symbGetIsDynamic( s ) ) then
+				rtlArrayErase expr1
+			else
+				rtlArrayClear expr1
+			end if
+
+		'' ','?
+		loop while( hMatch( CHAR_COMMA ) )
 
 		cArrayStmt = TRUE
 
@@ -295,6 +299,13 @@ function cDataStmt
 
 	'' DATA literal|constant expr (',' literal|constant expr)*
 	case FB.TK.DATA
+
+		'' not allowed inside procs
+		if( env.scope > 0 ) then
+			hReportError FB.ERRMSG.ILLEGALINSIDEASUB
+			exit function
+		end if
+
 		lexSkipToken
 
 		rtlDataStoreBegin
@@ -830,18 +841,6 @@ function cFileStmt
 			end select
 			lexSkipToken
 
-			if( fmode = FB.FILE.MODE.BINARY ) then
-				'' INPUT|OUTPUT
-				select case lexCurrentToken
-				case FB.TK.INPUT
-					lexSkipToken
-					fmode = FB.FILE.MODE.BINARYINPUT
-				case FB.TK.OUTPUT
-					lexSkipToken
-					fmode = FB.FILE.MODE.BINARYOUTPUT
-				end select
-			end if
-
 		else
 			fmode = FB.FILE.MODE.RANDOM
 		end if
@@ -862,7 +861,7 @@ function cFileStmt
 				end if
 			end select
 		else
-			faccess = astNewCONST( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
+			faccess = astNewCONST( FB.FILE.ACCESS.ANY, IR.DATATYPE.INTEGER )
 		end if
 
 		'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
@@ -1640,23 +1639,12 @@ function cMathFunct( funcexpr as integer )
 		end if
 
 		expr = INVALID
-		sym = symbLookupUDT( lexTokenText, lgt )
-		if( sym <> NULL ) then
-			lexSkipToken
-		else
-			sym = symbLookupEnum( lexTokenText )
-			if( sym <> NULL ) then
-				lexSkipToken
-				lgt = FB.INTEGERSIZE
-			else
-				if( not cSymbolType( typ, subtype, lgt ) ) then
-					if( not cFunction( expr, sym ) ) then
-						if( not cVarOrDeref( expr, FALSE ) ) then
-							if( not cExpression( expr ) ) then
-								hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-								exit function
-							end if
-						end if
+		if( not cSymbolType( typ, subtype, lgt ) ) then
+			if( not cFunction( expr, sym ) ) then
+				if( not cVarOrDeref( expr, FALSE ) ) then
+					if( not cExpression( expr ) ) then
+						hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+						exit function
 					end if
 				end if
 			end if

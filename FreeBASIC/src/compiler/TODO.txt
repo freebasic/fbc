@@ -1,4 +1,8 @@
 
+[ ] CHR$ and ASC compile-time evaluation
+
+[ ] idx is being loaded twice even been already a register
+
 [ ] var initializers: dim myvar as sometype = ( initialvalue ) -- has to support arrays and types too
 
 [ ] "ON expr GOTO|GOSUB label" is wrong, expr is an integer index into the label list

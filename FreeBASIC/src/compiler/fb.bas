@@ -339,7 +339,11 @@ function fbCompile ( infname as string, outfname as string )
 
 	'' parse
 	tmr = timer
+
+	parser4Init
 	res = cProgram
+	parser4End
+
 	tmr = timer - tmr
 
 	irFlush
