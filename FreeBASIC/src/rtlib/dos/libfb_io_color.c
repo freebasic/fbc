@@ -37,9 +37,9 @@ void fb_ConsoleColor( int fc, int bc )
 {
 	if( fc >= 0 )
 		fb_last_fc = fc & 15;
-	
+
 	if( bc >= 0 )
-		fb_last_bc = bc & 7;
+		fb_last_bc = bc & 15;
 
 	ScreenAttrib = fb_last_fc | (fb_last_bc << 4);
 

@@ -51,7 +51,7 @@ void fb_ConsoleColor( int fc, int bc )
     	fb_last_fc = colorlut[fc & 15];
 
     if( bc >= 0 )
-    	fb_last_bc = colorlut[bc & 7];
+    	fb_last_bc = colorlut[bc & 15];
 
     SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), fb_last_fc + (fb_last_bc << 4) );
 
