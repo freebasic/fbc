@@ -380,31 +380,31 @@ end sub
       poll_keyboard()
 
       '' exit program
-      if( *(@al_key+KEY_ESC) <> 0 )then
+      if( key(KEY_ESC) <> 0 )then
 	 	exit do
 	  end if
 
       '' rotates
-      if (*(@al_key+KEY_UP)) then
+      if (key(KEY_UP)) then
 	 	ship.rx = ship.rx - 5
-      elseif (*(@al_key+KEY_DOWN)) then
+      elseif (key(KEY_DOWN)) then
 	 	ship.rx = ship.rx + 5
 	  end if
 
-      if (*(@al_key+KEY_LEFT)) then
+      if (key(KEY_LEFT)) then
 	 	ship.ry = ship.ry - 5
-      elseif (*(@al_key+KEY_RIGHT)) then
+      elseif (key(KEY_RIGHT)) then
 	 	ship.ry = ship.ry + 5
 	  end if
 
-      if (*(@al_key+KEY_PGUP)) then
+      if (key(KEY_PGUP)) then
 	 	ship.rz = ship.rz - 5
-      elseif (*(@al_key+KEY_PGDN)) then
+      elseif (key(KEY_PGDN)) then
 	 	ship.rz = ship.rz + 5
 	  end if
 
       '' thrust
-      if ((*(@al_key+KEY_LCONTROL) <> 0) or (*(@al_key+KEY_RCONTROL) <> 0)) then
+      if (key(KEY_LCONTROL) <> 0) or (key(KEY_RCONTROL) <> 0) then
 	 	ship.faces(ENGINE).colour = ENGINE_ON
 	 	ship.faces(ENGINE).range = 3
 	 	if (ship.velocity < SPEED_LIMIT) then 
