@@ -917,6 +917,317 @@ function cPokeStmt
 end function
 
 '':::::
+private function hFileClose( byval isfunc as integer ) as integer
+	dim as integer cnt, filenum, proc
+
+	hFileClose = INVALID
+
+	'' CLOSE
+	lexSkipToken
+
+	if( isfunc ) then
+		'' '('
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+	end if
+
+	cnt = 0
+	do
+		hMatch( CHAR_SHARP )
+
+    	if( not cExpression( filenum ) ) then
+			if( cnt = 0 ) then
+				filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
+			else
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+		end if
+
+		proc = rtlFileClose( filenum, isfunc )
+		if( proc = INVALID ) then
+			exit function
+		end if
+
+		if( isfunc ) then
+			exit do
+		end if
+
+		cnt += 1
+
+	loop while( hMatch( CHAR_COMMA ) )
+
+	if( isfunc ) then
+		'' ')'
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+	end if
+
+	hFileClose = proc
+
+end function
+
+'':::::
+private function hFilePut( byval isfunc as integer ) as integer
+	dim as integer filenum, expr1, expr2, isarray
+
+	hFilePut = INVALID
+
+	'' '#'?
+	if( lexCurrentToken = CHAR_SHARP ) then
+		lexSkipToken
+	end if
+
+	if( not cExpression( filenum ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	if( not cExpression( expr1 ) ) then
+		expr1 = INVALID
+	end if
+
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	if( not cExpression( expr2 ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+    isarray = FALSE
+    if( lexCurrentToken = CHAR_LPRNT ) then
+    	if( lexLookahead(1) = CHAR_RPRNT ) then
+    		isarray = symbIsArray( astGetSymbol( expr2 ) )
+    		if( isarray ) then
+    			lexSkipToken
+    			lexSkipToken
+    		end if
+    	end if
+    end if
+
+	if( not isarray ) then
+		hFilePut = rtlFilePut( filenum, expr1, expr2, isfunc )
+	else
+		hFilePut = rtlFilePutArray( filenum, expr1, expr2, isfunc )
+	end if
+
+end function
+
+'':::::
+private function hFileGet( byval isfunc as integer ) as integer
+	dim as integer filenum, expr1, expr2, isarray
+
+	hFileGet = INVALID
+
+	'' '#'?
+	if( lexCurrentToken = CHAR_SHARP ) then
+		lexSkipToken
+	end if
+
+	if( not cExpression( filenum ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	if( not cExpression( expr1 ) ) then
+		expr1 = INVALID
+	end if
+
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	if( not cVarOrDeref( expr2 ) ) then
+		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		exit function
+	end if
+
+    isarray = FALSE
+    if( lexCurrentToken = CHAR_LPRNT ) then
+    	if( lexLookahead(1) = CHAR_RPRNT ) then
+    		isarray = symbIsArray( astGetSymbol( expr2 ) )
+    		if( isarray ) then
+    			lexSkipToken
+    			lexSkipToken
+    		end if
+    	end if
+    end if
+
+	if( not isarray ) then
+		hFileGet = rtlFileGet( filenum, expr1, expr2, isfunc )
+	else
+		hFileGet = rtlFileGetArray( filenum, expr1, expr2, isfunc )
+	end if
+
+end function
+
+'':::::
+private function hFileOpen( byval isfunc as integer ) as integer
+	dim as integer filenum
+	dim as integer filename, fmode, faccess, flock, flen
+
+	hFileOpen = INVALID
+
+	if( isfunc ) then
+		'' '('
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+	end if
+
+	if( not cExpression( filename ) ) then
+		hReportError FB.ERRMSG.SYNTAXERROR
+		exit function
+	end if
+
+	if( isfunc ) then
+		'' ','?
+		hMatch( CHAR_COMMA )
+	end if
+
+	'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
+	if( hMatch( FB.TK.FOR ) ) then
+		select case lexCurrentToken
+		case FB.TK.INPUT
+			fmode = FB.FILE.MODE.INPUT
+		case FB.TK.OUTPUT
+			fmode = FB.FILE.MODE.OUTPUT
+		case FB.TK.BINARY
+			fmode = FB.FILE.MODE.BINARY
+		case FB.TK.RANDOM
+			fmode = FB.FILE.MODE.RANDOM
+		case FB.TK.APPEND
+			fmode = FB.FILE.MODE.APPEND
+		case else
+			exit function
+		end select
+		lexSkipToken
+
+	else
+		fmode = FB.FILE.MODE.RANDOM
+	end if
+
+	fmode = astNewCONST( fmode, IR.DATATYPE.INTEGER )
+
+	if( isfunc ) then
+		'' ','?
+		hMatch( CHAR_COMMA )
+	end if
+
+	'' (ACCESS (READ|WRITE|READ WRITE))?
+	if( hMatch( FB.TK.ACCESS ) ) then
+		select case lexCurrentToken
+		case FB.TK.WRITE
+			lexSkipToken
+			faccess = astNewCONST( FB.FILE.ACCESS.WRITE, IR.DATATYPE.INTEGER )
+		case FB.TK.READ
+			lexSkipToken
+			if( hMatch( FB.TK.WRITE ) ) then
+				faccess = astNewCONST( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
+			else
+				faccess = astNewCONST( FB.FILE.ACCESS.READ, IR.DATATYPE.INTEGER )
+			end if
+		end select
+	else
+		faccess = astNewCONST( FB.FILE.ACCESS.ANY, IR.DATATYPE.INTEGER )
+	end if
+
+	if( isfunc ) then
+		'' ','?
+		hMatch( CHAR_COMMA )
+	end if
+
+	'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
+	if( hMatch( FB.TK.SHARED ) ) then
+		flock = astNewCONST( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
+	elseif( hMatch( FB.TK.LOCK ) ) then
+		select case lexCurrentToken
+		case FB.TK.WRITE
+			lexSkipToken
+			flock = astNewCONST( FB.FILE.LOCK.WRITE, IR.DATATYPE.INTEGER )
+		case FB.TK.READ
+			lexSkipToken
+			if( hMatch( FB.TK.WRITE ) ) then
+				flock = astNewCONST( FB.FILE.LOCK.READWRITE, IR.DATATYPE.INTEGER )
+			else
+				flock = astNewCONST( FB.FILE.LOCK.READ, IR.DATATYPE.INTEGER )
+			end if
+		end select
+	else
+		flock = astNewCONST( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
+	end if
+
+	if( isfunc ) then
+		'' ','?
+		hMatch( CHAR_COMMA )
+	end if
+
+	'' AS '#'? Expression
+	if( not hMatch( FB.TK.AS ) ) then
+		hReportError FB.ERRMSG.EXPECTINGAS
+		exit function
+	end if
+
+	hMatch( CHAR_SHARP )
+
+	if( not cExpression( filenum ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	if( isfunc ) then
+		'' ','?
+		hMatch( CHAR_COMMA )
+	end if
+
+	'' (LEN '=' Expression)?
+	if( hMatch( FB.TK.LEN ) ) then
+		if( not hMatch( FB.TK.ASSIGN ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEQ
+			exit function
+		end if
+		if( not cExpression( flen ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+	else
+		flen = astNewCONST( 0, IR.DATATYPE.INTEGER )
+	end if
+
+	if( isfunc ) then
+		'' ')'
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+	end if
+
+	''
+	hFileOpen = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen, isfunc )
+
+end function
+
+
+'':::::
 '' FileStmt		  =	   OPEN Expression{str} (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))? (ACCESS Expression)?
 ''					   (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
 ''				  |	   CLOSE ('#'? Expression)*
@@ -926,10 +1237,7 @@ end function
 ''				  |    (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)? .
 function cFileStmt
     dim filenum as integer, expr1 as integer, expr2 as integer
-    dim filename as integer, fmode as integer, faccess as integer, flock as integer, flen as integer
     dim res as integer, islock as integer
-    dim cnt as integer
-    dim isarray as integer
 
 	cFileStmt = FALSE
 
@@ -939,127 +1247,13 @@ function cFileStmt
 	case FB.TK.OPEN
 		lexSkipToken
 
-		if( not cExpression( filename ) ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
-			exit function
-		end if
+		cFileStmt = (hFileOpen( FALSE ) <> INVALID)
 
-		'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
-		if( hMatch( FB.TK.FOR ) ) then
-			select case lexCurrentToken
-			case FB.TK.INPUT
-				fmode = FB.FILE.MODE.INPUT
-			case FB.TK.OUTPUT
-				fmode = FB.FILE.MODE.OUTPUT
-			case FB.TK.BINARY
-				fmode = FB.FILE.MODE.BINARY
-			case FB.TK.RANDOM
-				fmode = FB.FILE.MODE.RANDOM
-			case FB.TK.APPEND
-				fmode = FB.FILE.MODE.APPEND
-			case else
-				exit function
-			end select
-			lexSkipToken
-
-		else
-			fmode = FB.FILE.MODE.RANDOM
-		end if
-		fmode = astNewCONST( fmode, IR.DATATYPE.INTEGER )
-
-		'' (ACCESS (READ|WRITE|READ WRITE))?
-		if( hMatch( FB.TK.ACCESS ) ) then
-			select case lexCurrentToken
-			case FB.TK.WRITE
-				lexSkipToken
-				faccess = astNewCONST( FB.FILE.ACCESS.WRITE, IR.DATATYPE.INTEGER )
-			case FB.TK.READ
-				lexSkipToken
-				if( hMatch( FB.TK.WRITE ) ) then
-					faccess = astNewCONST( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
-				else
-					faccess = astNewCONST( FB.FILE.ACCESS.READ, IR.DATATYPE.INTEGER )
-				end if
-			end select
-		else
-			faccess = astNewCONST( FB.FILE.ACCESS.ANY, IR.DATATYPE.INTEGER )
-		end if
-
-		'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
-		if( hMatch( FB.TK.SHARED ) ) then
-			flock = astNewCONST( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
-		elseif( hMatch( FB.TK.LOCK ) ) then
-			select case lexCurrentToken
-			case FB.TK.WRITE
-				lexSkipToken
-				flock = astNewCONST( FB.FILE.LOCK.WRITE, IR.DATATYPE.INTEGER )
-			case FB.TK.READ
-				lexSkipToken
-				if( hMatch( FB.TK.WRITE ) ) then
-					flock = astNewCONST( FB.FILE.LOCK.READWRITE, IR.DATATYPE.INTEGER )
-				else
-					flock = astNewCONST( FB.FILE.LOCK.READ, IR.DATATYPE.INTEGER )
-				end if
-			end select
-		else
-			flock = astNewCONST( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
-		end if
-
-		'' AS '#'? Expression
-		if( not hMatch( FB.TK.AS ) ) then
-			hReportError FB.ERRMSG.EXPECTINGAS
-			exit function
-		end if
-
-		res = hMatch( CHAR_SHARP )
-
-		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-
-		'' (LEN '=' Expression)?
-		if( hMatch( FB.TK.LEN ) ) then
-			if( not hMatch( FB.TK.ASSIGN ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEQ
-				exit function
-			end if
-			if( not cExpression( flen ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
-		else
-			flen = astNewCONST( 0, IR.DATATYPE.INTEGER )
-		end if
-
-		''
-		cFileStmt = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen )
 
 	'' CLOSE ('#'? Expression)*
 	case FB.TK.CLOSE
-		lexSkipToken
 
-		cnt = 0
-		do
-			hMatch( CHAR_SHARP )
-
-			if( not cExpression( filenum ) ) then
-				if( cnt = 0 ) then
-					filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
-				else
-					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-					exit function
-				end if
-			end if
-
-			if( not rtlFileClose( filenum ) ) then
-				exit function
-			end if
-			cnt = cnt + 1
-
-		loop while( hMatch( CHAR_COMMA ) )
-
-		cFileStmt = TRUE
+		cFileStmt = (hFileClose( FALSE ) <> INVALID)
 
 	'' SEEK '#'? Expression ',' Expression
 	case FB.TK.SEEK
@@ -1086,90 +1280,20 @@ function cFileStmt
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
 		end if
+
 		lexSkipToken
-		lexSkipToken
 
-		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
-		if( not cExpression( expr1 ) ) then
-			expr1 = INVALID
-		end if
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-
-    	isarray = FALSE
-    	if( lexCurrentToken = CHAR_LPRNT ) then
-    		if( lexLookahead(1) = CHAR_RPRNT ) then
-    			isarray = symbIsArray( astGetSymbol( expr2 ) )
-    			if( isarray ) then
-    				lexSkipToken
-    				lexSkipToken
-    			end if
-    		end if
-    	end if
-
-		if( not isarray ) then
-			cFileStmt = rtlFilePut( filenum, expr1, expr2 )
-		else
-			cFileStmt = rtlFilePutArray( filenum, expr1, expr2 )
-		end if
+        cFileStmt = (hFilePut( FALSE ) <> INVALID)
 
 	'' GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 	case FB.TK.GET
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
 		end if
+
 		lexSkipToken
-		lexSkipToken
 
-		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
-		if( not cExpression( expr1 ) ) then
-			expr1 = INVALID
-		end if
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
-		if( not cVarOrDeref( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-			exit function
-		end if
-
-    	isarray = FALSE
-    	if( lexCurrentToken = CHAR_LPRNT ) then
-    		if( lexLookahead(1) = CHAR_RPRNT ) then
-    			isarray = symbIsArray( astGetSymbol( expr2 ) )
-    			if( isarray ) then
-    				lexSkipToken
-    				lexSkipToken
-    			end if
-    		end if
-    	end if
-
-		if( not isarray ) then
-			cFileStmt = rtlFileGet( filenum, expr1, expr2 )
-		else
-			cFileStmt = rtlFileGetArray( filenum, expr1, expr2 )
-		end if
+		cFileStmt = (hFileGet( FALSE ) <> INVALID)
 
 	'' (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)?
 	case FB.TK.LOCK, FB.TK.UNLOCK
@@ -2129,7 +2253,7 @@ function cFileFunct( funcexpr as integer )
 	cFileFunct = FALSE
 
 	'' SEEK '(' Expression ')'
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.SEEK
 		lexSkipToken
 
@@ -2183,6 +2307,54 @@ function cFileFunct( funcexpr as integer )
 		funcexpr = rtlFileStrInput( expr, filenum )
 
 		cFileFunct = funcexpr <> INVALID
+
+	'' OPEN '(' ... ')'
+	case FB.TK.OPEN
+		lexSkipToken
+
+		funcexpr = hFileOpen( TRUE )
+		cFileFunct = funcexpr <> INVALID
+
+	'' CLOSE '(' '#'? Expr? ')'
+	case FB.TK.CLOSE
+
+		funcexpr = hFileClose( TRUE )
+		cFileFunct = funcexpr <> INVALID
+
+	'' PUT '(' '#'? Expr, Expr?, Expr ')'
+	case FB.TK.PUT
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		funcexpr = hFilePut( TRUE )
+		cFileFunct = funcexpr <> INVALID
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+
+	'' GET '(' '#'? Expr, Expr?, Expr ')'
+	case FB.TK.GET
+		lexSkipToken
+
+		if( not hMatch( CHAR_LPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
+
+		funcexpr = hFileGet( TRUE )
+		cFileFunct = funcexpr <> INVALID
+
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+
 	end select
 
 end function
@@ -2349,7 +2521,7 @@ function cQuirkFunction( funcexpr as integer )
 		res = cPeekFunct( funcexpr )
 	case FB.TK.LBOUND, FB.TK.UBOUND
 		res = cArrayFunct( funcexpr )
-	case FB.TK.SEEK, FB.TK.INPUT
+	case FB.TK.SEEK, FB.TK.INPUT, FB.TK.OPEN, FB.TK.CLOSE, FB.TK.GET, FB.TK.PUT
 		res = cFileFunct( funcexpr )
 	case FB.TK.ERR
 		res = cErrorFunct( funcexpr )

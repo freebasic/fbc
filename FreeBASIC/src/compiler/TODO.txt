@@ -1,7 +1,7 @@
 
-[ ] make PUT# and GET# accept a 4th optional argument: bytes
-
 [ ] make the runtime lib thread safe
+
+[ ] make PUT# and GET# accept a 4th optional argument: bytes
 
 [ ] OPTION's should be preserved when changed inside include files
 

@@ -3448,11 +3448,12 @@ function rtlFileOpen( byval filename as integer, _
 					  byval faccess as integer, _
 				      byval flock as integer, _
 				      byval filenum as integer, _
-				      byval flen as integer ) as integer static
+				      byval flen as integer, _
+				      byval isfunc as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
-	rtlFileOpen = FALSE
+	rtlFileOpen = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.FILEOPEN)
@@ -3489,24 +3490,29 @@ function rtlFileOpen( byval filename as integer, _
  	end if
 
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( hMakeTmpStr )
+    		irEmitLABEL reslabel, FALSE
+    	else
+    		reslabel = NULL
+    	end if
 
-    ''
-    rtlFileOpen = rtlCheckError( proc, reslabel )
+    	rtlFileOpen = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+
+    else
+    	rtlFileOpen = proc
+    end if
 
 end function
 
 '':::::
-function rtlFileClose( byval filenum as integer ) as integer static
+function rtlFileClose( byval filenum as integer, _
+					   byval isfunc as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
-	rtlFileClose = FALSE
+	rtlFileClose = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.FILECLOSE)
@@ -3518,15 +3524,19 @@ function rtlFileClose( byval filenum as integer ) as integer static
  	end if
 
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( hMakeTmpStr )
+    		irEmitLABEL reslabel, FALSE
+    	else
+    		reslabel = NULL
+    	end if
 
-    ''
-    rtlFileClose = rtlCheckError( proc, reslabel )
+    	rtlFileClose = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+
+    else
+    	rtlFileClose = proc
+    end if
 
 end function
 
@@ -3588,12 +3598,13 @@ end function
 '':::::
 function rtlFilePut( byval filenum as integer, _
 					 byval offset as integer, _
-					 byval src as integer ) as integer static
+					 byval src as integer, _
+					 byval isfunc as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
     dim reslabel as FBSYMBOL ptr
 
-    rtlFilePut = FALSE
+    rtlFilePut = INVALID
 
 	''
 	dtype = astGetDataType( src )
@@ -3634,27 +3645,32 @@ function rtlFilePut( byval filenum as integer, _
     end if
 
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( hMakeTmpStr )
+    		irEmitLABEL reslabel, FALSE
+    	else
+    		reslabel = NULL
+    	end if
 
-    ''
-    rtlFilePut = rtlCheckError( proc, reslabel )
+    	rtlFilePut = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+
+    else
+    	rtlFilePut = proc
+    end if
 
 end function
 
 '':::::
 function rtlFilePutArray( byval filenum as integer, _
 						  byval offset as integer, _
-						  byval src as integer ) as integer static
+						  byval src as integer, _
+					 	  byval isfunc as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
     dim reslabel as FBSYMBOL ptr
 
-    rtlFilePutArray = FALSE
+    rtlFilePutArray = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.FILEPUTARRAY)
@@ -3679,22 +3695,27 @@ function rtlFilePutArray( byval filenum as integer, _
     end if
 
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( hMakeTmpStr )
+    		irEmitLABEL reslabel, FALSE
+    	else
+	    	reslabel = NULL
+    	end if
 
-    ''
-    rtlFilePutArray = rtlCheckError( proc, reslabel )
+    	rtlFilePutArray = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+
+    else
+    	rtlFilePutArray = proc
+    end if
 
 end function
 
 '':::::
 function rtlFileGet( byval filenum as integer, _
 					 byval offset as integer, _
-					 byval dst as integer ) as integer static
+					 byval dst as integer, _
+					 byval isfunc as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
     dim reslabel as FBSYMBOL ptr
@@ -3740,22 +3761,27 @@ function rtlFileGet( byval filenum as integer, _
     end if
 
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( hMakeTmpStr )
+    		irEmitLABEL reslabel, FALSE
+    	else
+    		reslabel = NULL
+    	end if
 
-    ''
-    rtlFileGet = rtlCheckError( proc, reslabel )
+    	rtlFileGet = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+
+    else
+    	rtlFileGet = proc
+    end if
 
 end function
 
 '':::::
 function rtlFileGetArray( byval filenum as integer, _
 						  byval offset as integer, _
-						  byval dst as integer ) as integer static
+						  byval dst as integer, _
+					 	  byval isfunc as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
     dim reslabel as FBSYMBOL ptr
@@ -3785,15 +3811,19 @@ function rtlFileGetArray( byval filenum as integer, _
     end if
 
     ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( hMakeTmpStr )
+    		irEmitLABEL reslabel, FALSE
+    	else
+    		reslabel = NULL
+    	end if
 
-    ''
-    rtlFileGetArray = rtlCheckError( proc, reslabel )
+    	rtlFileGetArray = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+
+    else
+    	rtlFileGetArray = proc
+    end if
 
 end function
 

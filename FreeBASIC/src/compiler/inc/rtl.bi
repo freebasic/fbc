@@ -339,9 +339,11 @@ declare function	rtlFileOpen			( byval filename as integer, _
 										  byval faccess as integer, _
 										  byval flock as integer, _
 										  byval filenum as integer, _
-										  byval flen as integer ) as integer
+										  byval flen as integer, _
+										  byval isfunc as integer ) as integer
 
-declare function	rtlFileClose		( byval filenum as integer ) as integer
+declare function	rtlFileClose		( byval filenum as integer, _
+										  byval isfunc as integer ) as integer
 
 declare function	rtlFileSeek			( byval filenum as integer, _
 										  byval newpos as integer ) as integer
@@ -350,19 +352,23 @@ declare function 	rtlFileTell			( byval filenum as integer ) as integer
 
 declare function	rtlFilePut			( byval filenum as integer, _
 										  byval offset as integer, _
-										  byval src as integer ) as integer
+										  byval src as integer, _
+										  byval isfunc as integer ) as integer
 
 declare function	rtlFilePutArray		( byval filenum as integer, _
 										  byval offset as integer, _
-										  byval src as integer ) as integer
+										  byval src as integer, _
+										  byval isfunc as integer ) as integer
 
 declare function	rtlFileGet			( byval filenum as integer, _
 										  byval offset as integer, _
-										  byval dst as integer ) as integer
+										  byval dst as integer, _
+										  byval isfunc as integer ) as integer
 
 declare function	rtlFileGetArray		( byval filenum as integer, _
 										  byval offset as integer, _
-										  byval dst as integer ) as integer
+										  byval dst as integer, _
+										  byval isfunc as integer ) as integer
 
 declare function 	rtlFileStrInput		( byval bytesexpr as integer, _
 										  byval filenum as integer ) as integer
