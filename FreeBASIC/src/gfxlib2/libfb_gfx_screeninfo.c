@@ -45,7 +45,12 @@ FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void)
 	info.depth = fb_mode->depth;
 	info.pitch = fb_mode->pitch;
 	info.bpp = fb_mode->bpp;
-	info.mask_color = fb_mode->color_mask;
+	if (fb_mode->depth <= 8)
+		info.mask_color = 0;
+	else if (fb_mode->depth <= 16)
+		info.mask_color = MASK_COLOR_16;
+	else
+		info.mask_color = MASK_COLOR_32;
 	info.num_pages = fb_mode->num_pages;
 	info.flags = fb_mode->flags;
 	
