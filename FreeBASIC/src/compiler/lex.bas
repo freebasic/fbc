@@ -1489,10 +1489,10 @@ sub lexSetCurrentToken( byval id as integer, byval class as integer )
 end sub
 
 '':::::
-function lexPeekCurrentLine( token_pos as integer ) as string
+function lexPeekCurrentLine( token_pos as string ) as string
 	dim res as string, buffer as string * 1024
 	dim p as integer, old_p as integer, start as integer
-	dim c as ubyte ptr
+	dim c as ubyte ptr, token_len as integer
 
 	lexPeekCurrentLine = ""
 
@@ -1509,25 +1509,31 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 
 	'' find source line start
 	c = sadd(buffer) + start
-	token_pos = 0
+	token_len = 0
 	if( start > 0 ) then
 		c = c - 1
 		while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
-			token_pos = token_pos + iif( *c = 9, 8, 1 )
-			c = c - 1
-			start = start - 1
+			token_len += 1
+			c -= 1
+			start -= 1
 		wend
 	end if
 
 	'' build source line
 	res = ""
+	token_pos = ""
 	if( start > 0 ) then
-		c = c + 1
+		c += 1
 	end if
 	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
 		res += chr$(*c)
-		c = c + 1
+		if( token_len > 0 ) then
+			token_pos += chr$( iif( *c = 9, 9, 32 ) )
+			token_len -= 1
+		end if
+		c += 1
 	wend
+	token_pos += "^"
 
 	lexPeekCurrentLine = res
 end function
