@@ -51,7 +51,6 @@ typedef struct FBCONSOLE
 	struct termios old_term_out, old_term_in;
 	int in_flags, old_in_flags;
 	int fg_color, bg_color;
-	int start_time;
 	int cur_x, cur_y;
 	int w, h, resized;
 	unsigned char *char_buffer, *attr_buffer;
