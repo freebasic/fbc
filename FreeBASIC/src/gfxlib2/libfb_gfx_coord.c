@@ -92,8 +92,6 @@ void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2)
 /*:::::*/
 void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2)
 {
-	int temp;
-	
 	if (*x2 < *x1)
 		SWAP(*x1, *x2);
 	
