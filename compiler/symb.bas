@@ -1651,14 +1651,12 @@ end function
 
 '':::::
 function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
-	dim rname as string, typ as integer
+	dim rname as string
 	dim dTB(0) as FBARRAYDIM
 
-	rname = strpGet( f->aliasidx )
+	rname = "_fbpr_" + strpGet( f->aliasidx )
 
-	typ = f->typ
-
-	symbAddProcResult = symbAddVarEx( rname, "", typ, f->subtype, 0, _
+	symbAddProcResult = symbAddVarEx( rname, "", f->typ, f->subtype, 0, _
 			 			              0, dTB(), 0, TRUE, FALSE, TRUE )
 
 end function
@@ -1862,13 +1860,8 @@ end function
 '':::::
 function symbLookupFunctionResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	dim rname as string
-	dim typ as integer
 
-	rname = strpGet( f->aliasidx )
-
-	typ   = f->typ
-
-	rname = hCreateName( rname, typ )
+	rname = hCreateName( "_fbpr_" + strpGet( f->aliasidx ), f->typ )
 
 	symbLookupFunctionResult = hashLookup( ctx.lochash, rname )
 
