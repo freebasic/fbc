@@ -35,6 +35,9 @@ type FBERRCTX
 end type
 
 
+declare sub 		hUcase		( src as string )
+
+
 ''globals
 	dim shared errctx as FBERRCTX
 	redim shared deftypeTB( 0 ) as integer
@@ -341,33 +344,42 @@ end function
 
 '':::::
 function hScapeStr( text as string ) as string static
-    dim c as integer, l as byte ptr, p as byte ptr
+    dim c as integer, l as byte ptr
+    dim s as byte ptr, d as byte ptr
     dim res as string
 
-	res = ""
+	s = sadd( text )
+	l = len( text )
 
-	p = sadd( text )
-	l = p + len( text )
-	do while( p < l )
-		c = *p
-		p = p + 1
+	res = space$( l * 2 )
+	d = sadd( res )
+
+	l = l + s
+
+	do while( s < l )
+		c = *s
+		s = s + 1
 
 		select case c
 		case CHAR_RSLASH, CHAR_QUOTE
-			res = res + chr$( CHAR_RSLASH )
+			*d = CHAR_RSLASH
+			d = d + 1
 
 		case FB.INTSCAPECHAR
 			if( env.optescapestr ) then
-				res = res + chr$( CHAR_RSLASH )
-				c = *p
-				p = p + 1
+				*d = CHAR_RSLASH
+				d = d + 1
+				if( s >= l ) then exit do
+				c = *s
+				s = s + 1
 			end if
 		end select
 
-		res = res + chr$( c )
+		*d = c
+		d = d + 1
 	loop
 
-	hScapeStr = res
+	hScapeStr = left$( res, d - sadd( res ) )
 
 end function
 
@@ -401,29 +413,49 @@ function hUnescapeStr( text as string ) as string static
 
 end function
 
-
 '':::::
-sub hClearName( src as string ) static
+sub hUcase( src as string ) static
     dim i as integer, c as integer
-    dim ofs as integer
+    dim p as byte ptr
 
-	ofs = sadd( src )
+	p = sadd( src )
 
 	for i = 1 to len( src )
-		c = peek( ofs )
-		select case c
-		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE
-			poke ofs, CHAR_ZLOW
-		end select
-		ofs = ofs + 1
+		c = *p
+
+		if( (c >= 97) and (c <= 122) ) then
+			*p = c - (97 - 65)
+		end if
+
+		p = p + 1
 	next i
 
 end sub
 
 '':::::
-function hCreateNameEx( symbol as string, byval typ as integer = INVALID, _
-						byval preservecase as integer = FALSE, _
-						byval addunderscore as integer = TRUE, byval clearname as integer = TRUE ) as string static
+sub hClearName( src as string ) static
+    dim i as integer, c as integer
+    dim p as byte ptr
+
+	p = sadd( src )
+
+	for i = 1 to len( src )
+		c = *p
+
+		select case c
+		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE
+			*p = CHAR_ZLOW
+		end select
+
+		p = p + 1
+	next i
+
+end sub
+
+'':::::
+function hCreateName( symbol as string, byval typ as integer = INVALID, _
+					  byval preservecase as integer = FALSE, _
+					  byval addunderscore as integer = TRUE, byval clearname as integer = TRUE ) as string static
     dim nm as string
 
 	if( addunderscore ) then
@@ -435,7 +467,7 @@ function hCreateNameEx( symbol as string, byval typ as integer = INVALID, _
 	nm = nm + symbol
 
 	if( not preservecase ) then
-		nm = ucase$( nm )
+		hUcase nm
 	end if
 
     if( clearname ) then
@@ -446,14 +478,7 @@ function hCreateNameEx( symbol as string, byval typ as integer = INVALID, _
     	nm = nm + "_" + chr$( CHAR_ALOW + typ )
     end if
 
-	hCreateNameEx = nm
-
-end function
-
-'':::::
-function hCreateName( symbol as string, byval typ as integer ) as string static
-
-	hCreateName = hCreateNameEx( symbol, typ, FALSE, TRUE, TRUE )
+	hCreateName = nm
 
 end function
 
@@ -477,16 +502,18 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
     end if
 
 	if( addat ) then
-		nm = nm + "@" + ltrim$( str$( argslen ) )
+		nm = nm + "@" + str$( argslen )
 	end if
+
 #elseif defined(TARGET_DOS)
     nm = "_" + symbol
+
 #else
 	nm = symbol
 #endif
 
 	if( toupper ) then
-		nm = ucase$( nm )
+		hUcase nm
 	end if
 
 	hCreateAliasName = nm
@@ -582,26 +609,83 @@ function hStripFilename ( filename as string ) as string 'static
 
 end function
 
+	dim shared pow2tb(0 to 63) as uinteger
 
 '':::::
-function hToPow2( byval value as integer ) as integer static
-	dim c as integer, remainder as integer
+private sub hInitPow2
+	static hasinit as integer
 
-  	c = 0
-  	remainder = value and 1
-  	do while( (value > 1) and (remainder = 0) )
-    	remainder = value and 1
-    	value = value shr 1
-    	c = c + 1
-  	loop
-
-	if( remainder = 0 ) then
-		hToPow2 = c
-	else
-		hToPow2 = 0
+	if( hasinit ) then
+		exit sub
 	end if
 
+	pow2tb(0)  =  0: pow2tb(1)  =  0: pow2tb(2)  =  0: pow2tb(3)  = 15
+	pow2tb(4)  =  0: pow2tb(5)  =  1: pow2tb(6)  = 28: pow2tb(7)  =  0
+	pow2tb(8)  = 16: pow2tb(9)  =  0: pow2tb(10) =  0: pow2tb(11) =  0
+	pow2tb(12) =  2: pow2tb(13) = 21: pow2tb(14) = 29: pow2tb(15) =  0
+    pow2tb(16) =  0: pow2tb(17) =  0: pow2tb(18) = 19: pow2tb(19) = 17
+    pow2tb(20) = 10: pow2tb(21) =  0: pow2tb(22) = 12: pow2tb(23) =  0
+    pow2tb(24) =  0: pow2tb(25) =  3: pow2tb(26) =  0: pow2tb(27) =  6
+    pow2tb(28) =  0: pow2tb(29) = 22: pow2tb(30) = 30: pow2tb(31) =  0
+    pow2tb(32) = 14: pow2tb(33) =  0: pow2tb(34) = 27: pow2tb(35) =  0
+    pow2tb(36) =  0: pow2tb(37) =  0: pow2tb(38) = 20: pow2tb(39) =  0
+    pow2tb(40) = 18: pow2tb(41) =  9: pow2tb(42) = 11: pow2tb(43) =  0
+    pow2tb(44) =  5: pow2tb(45) =  0: pow2tb(46) =  0: pow2tb(47) = 13
+    pow2tb(48) = 26: pow2tb(49) =  0: pow2tb(50) =  0: pow2tb(51) =  8
+    pow2tb(52) =  0: pow2tb(53) =  4: pow2tb(54) =  0: pow2tb(55) = 25
+    pow2tb(56) =  0: pow2tb(57) =  7: pow2tb(58) = 24: pow2tb(59) =  0
+    pow2tb(60) = 23: pow2tb(61) =  0: pow2tb(62) = 31: pow2tb(63) =  0
+
+    hasinit = TRUE
+
+end sub
+
+'':::::
+function hToPow2( byval value as uinteger ) as uinteger static
+    dim n as uinteger
+
+	'' init table
+	hInitPow2
+
+	hToPow2 = 0
+
+	'' don't check if it's zero
+	if( value = 0 ) then
+		exit function
+	end if
+
+	'' (n^(n-1)) * Harley's magic number
+	n = ((value-1) xor value) * (7*255*255*255)
+
+    '' extract bits <31:26>
+    n = pow2tb(n shr 26)				'' translate into bit count - 1
+
+    '' is this really a power of 2?
+    if( value - (1 shl n) = 0 ) then
+    	hToPow2 = n
+    end if
+
 end function
+
+'':::::
+'function hToPow2( byval value as integer ) as integer static
+'	dim c as integer, remainder as integer
+'
+'  	c = 0
+'  	remainder = value and 1
+'  	do while( (value > 1) and (remainder = 0) )
+'    	remainder = value and 1
+'    	value = value shr 1
+'    	c = c + 1
+'  	loop
+'
+'	if( remainder = 0 ) then
+'		hToPow2 = c
+'	else
+'		hToPow2 = 0
+'	end if
+'
+'end function
 
 '':::::
 function hMakeEntryPointName( entrypoint as string ) as string
