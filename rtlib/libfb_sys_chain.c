@@ -47,34 +47,40 @@ FBCALL int fb_Chain ( FBSTRING *program )
     char 	arg0[] = "";
     int		res;
 
+	if( (program != NULL) && (program->data != NULL) )
+	{
 #ifdef WIN32
-	res = _spawnl( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
+		res = _spawnl( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
 #else
-	pid_t pid;
-	int status;
+		pid_t pid;
+		int status;
 
-	if ((pid = fork()) == 0) {
-		char buffer2[MAX_PATH+3];
+		if ((pid = fork()) == 0)
+		{
+			char buffer2[MAX_PATH+3];
 
-		fb_hGetShortPath( program->data, buffer, MAX_PATH );
-		execlp( buffer, buffer, NULL );
-		/* Ok, an error occured. Probably the file could not be found;
-		 * as a last resort, let's try in current directory.
-		 */
-		if( !strchr( buffer, '/' )) {
-			sprintf( buffer2, "./%s", buffer );
-			execlp( buffer2, buffer2, NULL );
+			fb_hGetShortPath( program->data, buffer, MAX_PATH );
+			execlp( buffer, buffer, NULL );
+			/* Ok, an error occured. Probably the file could not be found;
+		 	* as a last resort, let's try in current directory.
+		 	*/
+			if( !strchr( buffer, '/' ))
+			{
+				sprintf( buffer2, "./%s", buffer );
+				execlp( buffer2, buffer2, NULL );
+			}
+			exit( -1 );
 		}
-		exit( -1 );
-	}
-	else {
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			res = WEXITSTATUS(status);
 		else
-			res = -1;
-	}
+		{
+			waitpid(pid, &status, 0);
+			if (WIFEXITED(status))
+				res = WEXITSTATUS(status);
+			else
+				res = -1;
+		}
 #endif
+	}
 
 	/* del if temp */
 	fb_hStrDelTemp( program );

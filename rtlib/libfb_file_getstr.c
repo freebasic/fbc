@@ -57,6 +57,14 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 
 	len = FB_STRSIZE( str );
 
+	if( (str->data == NULL) || (len == 0) )
+	{
+		/* del if temp */
+		fb_hStrDelTemp( str );
+
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+	}
+
 	/* do read */
 	rlen = fread( str->data, 1, len, fb_fileTB[fnum-1].f );
 	if( rlen != len )

@@ -18,26 +18,63 @@
  */
 
 /*
- * str_del.c -- string deletion function
+ * str_lcase.c -- lcase$ function
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
 #include <malloc.h>
-#include <string.h>
 #include "fb.h"
 
+
 /*:::::*/
-FBCALL void fb_StrDelete ( FBSTRING *str )
+FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )
 {
-    if( (str == NULL) || (str->data == NULL) )
-    	return;
+	FBSTRING 	*dst;
+	int 		i, len, c;
+	char		*s, *d;
 
-    free( (void *)str->data );
+	if( src == NULL )
+		return &fb_strNullDesc;
 
-	str->data = NULL;
-	str->len  = 0;
+	if( src->data != NULL )
+	{
+		len = FB_STRSIZE( src );
+
+		/* alloc temp string */
+		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+	}
+	else
+		dst = NULL;
+
+	if( dst != NULL )
+	{
+		fb_hStrAllocTemp( dst, len );
+
+		/* to lower */
+		s = src->data;
+		d = dst->data;
+		for( i = 0; i < len; i++ )
+		{
+			c = (int)*s++;
+
+			if( (c >= 65) && (c <= 90) )
+				c += 97 - 65;
+
+			*d++ = (char)c;
+		}
+
+		/* null char */
+		*d = '\0';
+	}
+	else
+		dst = &fb_strNullDesc;
+
+	/* del if temp */
+	fb_hStrDelTemp( src );
+
+	return dst;
 }
 
 

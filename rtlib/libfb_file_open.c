@@ -134,7 +134,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 {
 	char openmask[16];
 	FILE* f;
-	int i;
+	int i, strlen;
 
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
@@ -145,6 +145,16 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 
 	if( fb_fileTB[fnum-1].f != NULL )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+
+	strlen = FB_STRSIZE( str );
+
+	if( (str->data == NULL) || (strlen == 0) )
+	{
+		/* del if temp */
+		fb_hStrDelTemp( str );
+
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+	}
 
 	/* check mode */
 	switch( mode )
@@ -168,7 +178,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	}
 
 	/* Convert directory separators to whatever the current platform supports */
-	for (i = 0; i < strlen( str->data ); i++) {
+	for (i = 0; i < strlen; i++) {
 #ifdef WIN32
 		if ( str->data[i] == '/' )
 			str->data[i] = '\\';
@@ -177,7 +187,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 			str->data[i] = '/';
 #endif
 	}
-	
+
 	/* try opening */
 	if( (f = fopen( str->data, openmask )) == NULL )
 	{
@@ -192,7 +202,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	}
 
 	/* fill struct */
-	fb_fileTB[fnum-1].f 	  = f;
+	fb_fileTB[fnum-1].f    = f;
 	fb_fileTB[fnum-1].mode = mode;
 
 	/* reclen */

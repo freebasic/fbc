@@ -127,7 +127,12 @@ FBCALL void fb_WriteDouble ( int fnum, double val, int mask )
 /*:::::*/
 FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 {
-    FB_WRITESTR( fnum, s->data, mask, "\"%s\"" )
+    if( (s == NULL) || (s->data == NULL) )
+    	fb_WriteVoid( fnum, mask );
+    else
+    {
+    	FB_WRITESTR( fnum, s->data, mask, "\"%s\"" )
+    }
 
 	/* del if temp */
 	fb_hStrDelTemp( s );

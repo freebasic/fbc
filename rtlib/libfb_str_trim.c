@@ -18,7 +18,7 @@
  */
 
 /*
- * str_trim.c -- ltrim$, rtrim$ and trim$ routines
+ * str_trim.c -- trim$ function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -29,90 +29,23 @@
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_LTRIM ( FBSTRING *src )
-{
-	FBSTRING 	*dst;
-	int 		len;
-	char		*p;
-
-	if( (src == NULL) || (src->data == NULL) )
-		return &fb_strNullDesc;
-
-	p = fb_hStrSkipChar( src->data, FB_STRSIZE( src ), 32 );
-
-	len = FB_STRSIZE( src ) - (int)(p - src->data);
-	if( len > 0 )
-	{
-		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		if( dst != NULL )
-		{
-			fb_hStrAllocTemp( dst, len );
-
-			/* simple copy */
-			fb_hStrCopy( dst->data, p, len );
-		}
-		else
-			dst = &fb_strNullDesc;
-    }
-	else
-		dst = &fb_strNullDesc;
-
-	/* del if temp */
-	fb_hStrDelTemp( src );
-
-	return dst;
-}
-
-/*:::::*/
-FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
-{
-	FBSTRING 	*dst;
-	int 		len;
-	char		*p;
-
-	if( (src == NULL) || (src->data == NULL) )
-		return &fb_strNullDesc;
-
-	p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
-
-	len = (int)(p - src->data) + 1;
-	if( len > 0 )
-	{
-		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		if( dst != NULL )
-		{
-			fb_hStrAllocTemp( dst, len );
-
-			/* simple copy */
-			fb_hStrCopy( dst->data, src->data, len );
-		}
-		else
-			dst = &fb_strNullDesc;
-    }
-	else
-		dst = &fb_strNullDesc;
-
-	/* del if temp */
-	fb_hStrDelTemp( src );
-
-	return dst;
-}
-
-/*:::::*/
 FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		len;
 	char		*p;
 
-	if( (src == NULL) || (src->data == NULL) )
+	if( src == NULL )
 		return &fb_strNullDesc;
 
-	p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
+	if( src->data != NULL )
+	{
+		p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
+		len = (int)(p - src->data) + 1;
+	}
+	else
+		len = 0;
 
-	len = (int)(p - src->data) + 1;
 	if( len > 0 )
 	{
 		p = fb_hStrSkipChar( src->data, FB_STRSIZE( src ), 32 );

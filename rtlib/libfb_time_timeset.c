@@ -50,66 +50,71 @@ FBCALL int fb_SetTime( FBSTRING *time )
     SYSTEMTIME st;
 #endif
 
-    char *t, c;
-    int i, h, m, s;
+	if( (time != NULL) && (time->data != NULL) )
+	{
 
-    /* get hours */
-    h = 0;
-	for (i = 0, t = time->data; (c = *t) && isdigit(c); t++, i += 10)
-		h = h * i + c - '0';
+    	char *t, c;
+    	int i, h, m, s;
 
-	if (h > 23)
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
-	if( c != '\0' && c != ':' )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+    	/* get hours */
+    	h = 0;
+		for (i = 0, t = time->data; (c = *t) && isdigit(c); t++, i += 10)
+			h = h * i + c - '0';
 
-    if (c != '\0')
-    {
-		/* get minutes */
-     	m = 0;
-     	for (i = 0, t++; (c = *t) && isdigit(c); t++, i += 10)
-        	 m = m * i + c - '0';
+		if (h > 23)
+			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		if( c != '\0' && c != ':' )
+			return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
-     	if( m > 59 )
-     		return FB_RTERROR_ILLEGALFUNCTIONCALL;
-     	if( c != '\0' && c != ':' )
-     		return FB_RTERROR_ILLEGALFUNCTIONCALL;
-
-     	if (c != '\0')
-     	{
-     		/* get seconds */
-     		s = 0;
+    	if (c != '\0')
+    	{
+			/* get minutes */
+     		m = 0;
      		for (i = 0, t++; (c = *t) && isdigit(c); t++, i += 10)
-         		s = s * i + c - '0';
-    	}
-    }
+        		 m = m * i + c - '0';
 
-    if ((s > 59) || (c != '\0'))
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+     		if( m > 59 )
+     			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+     		if( c != '\0' && c != ':' )
+     			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+
+     		if (c != '\0')
+     		{
+     			/* get seconds */
+     			s = 0;
+     			for (i = 0, t++; (c = *t) && isdigit(c); t++, i += 10)
+         			s = s * i + c - '0';
+    		}
+    	}
+
+    	if ((s > 59) || (c != '\0'))
+			return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
 
 #ifdef WIN32
 
-    /* get current local time and date */
-    GetLocalTime(&st);
+    	/* get current local time and date */
+    	GetLocalTime(&st);
 
-    /* set time fields */
-    st.wHour = h;
-    st.wMinute = m;
-    st.wSecond = s;
+    	/* set time fields */
+    	st.wHour = h;
+    	st.wMinute = m;
+    	st.wSecond = s;
 
-    /* set system time relative to local time zone */
-    SetLocalTime(&st);
+    	/* set system time relative to local time zone */
+    	SetLocalTime(&st);
 
-    /* send WM_TIMECHANGE to all top-level windows on NT and 95/98/Me
-     * (_not_ on 2K/XP etc.) */
-    if ((GetVersion() & 0xFF) == 4)
-		SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
+    	/* send WM_TIMECHANGE to all top-level windows on NT and 95/98/Me
+     	* (_not_ on 2K/XP etc.) */
+    	if ((GetVersion() & 0xFF) == 4)
+			SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
 
 #else   /* WIN32 */
 
 
 #endif
+
+	}
 
 	/* del if temp */
 	fb_hStrDelTemp( time );

@@ -37,9 +37,7 @@
 #include "fb.h"
 
 /* globals */
-char fb_strNull = '\0';
-
-FBSTRING fb_strNullDesc = { &fb_strNull, 0 };
+FBSTRING fb_strNullDesc = { NULL, 0 };
 
 /**********
  * temp string descriptors
@@ -106,7 +104,7 @@ FB_STR_TMPDESC *fb_hStrAllocTmpDesc( void )
 	/*  */
 	dsc->data = NULL;
 	dsc->len  = 0;
-	
+
 	return dsc;
 }
 
@@ -153,20 +151,34 @@ void fb_hStrDelTempDesc( FBSTRING *str )
  **********/
 
 /*:::::*/
-void fb_hStrRealloc( FBSTRING *str, int size )
+void fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 {
-	fb_StrDelete( str );
+#define FB_STR_REALSIZE(v) (((v) + 31) & ~31)
 
-	str->data = (char *)malloc( size + 1 );
-	if( str->data == NULL )
-		return;
+	int realsize = FB_STR_REALSIZE( FB_STRSIZE( str ) );
+
+	if( str->data == NULL || realsize == 0 || size > realsize )
+	{
+		if( preserve == FB_FALSE )
+		{
+			fb_StrDelete( str );
+			str->data = (char *)malloc( FB_STR_REALSIZE( size ) + 1 );
+		}
+		else
+			str->data = (char *)realloc( str->data, FB_STR_REALSIZE( size ) + 1 );
+
+		if( str->data == NULL )
+			return;
+	}
+
 	str->len  = size;
+
 }
 
 /*:::::*/
 void fb_hStrAllocTemp( FBSTRING *str, int size )
 {
-	fb_hStrRealloc( str, size );
+	fb_hStrRealloc( str, size, FB_FALSE );
 
 	str->len |= FB_TEMPSTRBIT;
 }
@@ -192,9 +204,22 @@ void fb_hStrDelTemp( FBSTRING *str )
 /*:::::*/
 void fb_hStrCopy( char *dst, char *src, int bytes )
 {
-	if( src != NULL )
-		while( --bytes >= 0 )
+	int i;
+
+	if( (src != NULL) && (bytes > 0 ) )
+	{
+		/* words */
+		for( i = 0; i < (bytes >> 2); i++ )
+		{
+			*(unsigned int *)dst = *(unsigned int *)src;
+			src += sizeof(unsigned int);
+			dst += sizeof(unsigned int);
+		}
+
+		/* remainder */
+		for( i = 0; i < (bytes & 3); i++ )
 			*dst++ = *src++;
+	}
 
 	*dst = '\0';
 }

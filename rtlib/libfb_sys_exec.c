@@ -82,55 +82,65 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
     char	*argv[256];
     int		res;
 
+	if( (program != NULL) && (program->data != NULL) )
+	{
+		char *argsdata;
+
+		if( (args == NULL) || (args->data == NULL) )
+			argsdata = "\0";
+		else
+			argsdata = args->data;
+
 #ifdef WIN32
-	argv[0] = &buffer[0];
-	argv[1] = args->data;
-	argv[2] = NULL;
-	res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), (const char **)argv );
+		argv[0] = &buffer[0];
+		argv[1] = argsdata;
+		argv[2] = NULL;
+		res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), (const char **)argv );
 #else
-	char	*cmdline, *this_arg;
-    int		i, argc = 1;
-	pid_t	pid;
-	int		status;
+		char	*cmdline, *this_arg;
+    	int		i, argc = 1;
+		pid_t	pid;
+		int		status;
 
-	/* Build argv list */
-	argv[0] = &buffer[0];
-	cmdline = strdup(args->data);
-	this_arg = cmdline;
-	for (i = 0; (i < strlen(args->data)) && (argc < 255);) {
-		while ((args->data[i] != ' ') && (args->data[i] != '\0'))
-			i++;
-		cmdline[i] = '\0';
-		if (strchr(this_arg, '\"')) {
-			cmdline[i-1] = '\0';
-			fb_hGetShortPath(this_arg + 1, buffer, MAX_PATH);
-			argv[argc] = strdup(buffer);
+		/* Build argv list */
+		argv[0] = &buffer[0];
+		cmdline = strdup( argsdata );
+		this_arg = cmdline;
+		for (i = 0; (i < strlen( argsdata )) && (argc < 255);) {
+			while ((argsdata[i] != ' ') && (argsdata[i] != '\0'))
+				i++;
+			cmdline[i] = '\0';
+			if (strchr(this_arg, '\"')) {
+				cmdline[i-1] = '\0';
+				fb_hGetShortPath(this_arg + 1, buffer, MAX_PATH);
+				argv[argc] = strdup(buffer);
+			}
+			else
+				argv[argc] = strdup(this_arg);
+			while (argsdata[i] == ' ')
+				i++;
+			this_arg = &cmdline[i];
+			argc++;
 		}
-		else
-			argv[argc] = strdup(this_arg);
-		while (args->data[i] == ' ')
-			i++;
-		this_arg = &cmdline[i];
-		argc++;
-	}
-	argv[argc] = NULL;
+		argv[argc] = NULL;
 
-	/* Launch */
-	if ((pid = fork()) == 0) {
-		exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
-	}
-	else {
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			res = WEXITSTATUS(status);
-		else
-			res = -1;
-	}
-	free(cmdline);
-	for (i = 1; i < argc; i++)
-		free(argv[i]);
+		/* Launch */
+		if ((pid = fork()) == 0) {
+			exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
+		}
+		else {
+			waitpid(pid, &status, 0);
+			if (WIFEXITED(status))
+				res = WEXITSTATUS(status);
+			else
+				res = -1;
+		}
+		free(cmdline);
+		for (i = 1; i < argc; i++)
+			free(argv[i]);
 
 #endif
+	}
 
 	/* del if temp */
 	fb_hStrDelTemp( args );

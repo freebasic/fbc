@@ -113,10 +113,13 @@ FBCALL double fb_VAL ( FBSTRING *str )
     int 	len;
     double	val;
 
-	if( (str == NULL) || (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
-		return 0.0;
+	if( str == NULL )
+	    return 0.0;
 
-	val = fb_hStr2Double( str->data, FB_STRSIZE( str ) );
+	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
+		val = 0.0;
+	else
+		val = fb_hStr2Double( str->data, FB_STRSIZE( str ) );
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
@@ -129,10 +132,13 @@ FBCALL unsigned int fb_ASC ( FBSTRING *str )
 {
     unsigned int a;
 
-	if( (str == NULL) || (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
+	if( str == NULL )
 		return 0;
 
-	a = (unsigned char)str->data[0];
+	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
+		a = 0;
+	else
+		a = (unsigned char)str->data[0];
 
 	/* del if temp */
 	fb_hStrDelTemp( str );

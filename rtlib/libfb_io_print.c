@@ -336,7 +336,10 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
 /*:::::*/
 FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 {
-    fb_hPrintStr( fnum, s->data, FB_STRSIZE(s), mask );
+    if( (s == NULL) || (s->data == NULL) )
+    	fb_PrintVoid( fnum, mask );
+    else
+    	fb_hPrintStr( fnum, s->data, FB_STRSIZE(s), mask );
 
 	/* del if temp */
 	fb_hStrDelTemp( s );
@@ -345,5 +348,8 @@ FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 /*:::::*/
 FBCALL void fb_PrintFixString ( int fnum, char *s, int mask )
 {
-    fb_hPrintStr( fnum, s, strlen( s ), mask );
+    if( s == NULL )
+    	fb_PrintVoid( fnum, mask );
+    else
+    	fb_hPrintStr( fnum, s, strlen( s ), mask );
 }

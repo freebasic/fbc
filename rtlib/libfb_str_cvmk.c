@@ -34,13 +34,13 @@ FBCALL double fb_CVD ( FBSTRING *str )
     int		i, len;
     double 	num;
 
-	if( (str == NULL) || (str->data == NULL) )
+	if( str == NULL )
 		return 0.0;
 
 	len = FB_STRSIZE( str );
 
 	num = 0.0;
-	if( (len == sizeof( float )) || (len == sizeof( double )) )
+	if( (str->data != NULL) && ((len == sizeof( float )) || (len == sizeof( double ))) )
 	{
 		for( i = 0; i < len; i++ )
 			((char *)&num)[i] = str->data[i];
@@ -57,11 +57,11 @@ FBCALL int fb_CVI ( FBSTRING *str )
 {
     int		i, num;
 
-	if( (str == NULL) || (str->data == NULL) )
+	if( str == NULL )
 		return 0;
 
 	num = 0;
-	if( FB_STRSIZE( str ) == sizeof( int ) )
+	if( (str->data != NULL) && (FB_STRSIZE( str ) == sizeof( int )) )
 	{
 		for( i = 0; i < sizeof( int ); i++ )
 			((char *)&num)[i] = str->data[i];

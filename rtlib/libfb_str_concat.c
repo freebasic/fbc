@@ -59,7 +59,6 @@ FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *
 	if( str1_len+str2_len == 0 )
 	{
 		fb_StrDelete( dst );
-		dst->data = &fb_strNull;
 	}
 	else
 	{

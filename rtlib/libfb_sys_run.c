@@ -47,22 +47,26 @@ FBCALL int fb_Run ( FBSTRING *program )
     char 	arg0[] = "";
     int		res;
 
+	if( (program != NULL) && (program->data != NULL) )
+	{
 #ifdef WIN32
-	res = _execl( fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
+		res = _execl( fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
 #else
-	char buffer2[MAX_PATH+3];
+		char buffer2[MAX_PATH+3];
 
-	fb_hGetShortPath( program->data, buffer, MAX_PATH );
-	res = execlp( buffer, buffer, NULL);
-	/* Ok, an error occured. Probably the file could not be found;
-	 * as a last resort, let's try in current directory.
-	 */
-	if( !strchr( buffer, '/' )) {
-		sprintf( buffer2, "./%s", buffer );
-		execlp( buffer2, buffer2, NULL );
-	}
-	exit( -1 );
+		fb_hGetShortPath( program->data, buffer, MAX_PATH );
+		res = execlp( buffer, buffer, NULL);
+		/* Ok, an error occured. Probably the file could not be found;
+	 	* as a last resort, let's try in current directory.
+	 	*/
+		if( !strchr( buffer, '/' ))
+		{
+			sprintf( buffer2, "./%s", buffer );
+			execlp( buffer2, buffer2, NULL );
+		}
+		exit( -1 );
 #endif
+	}
 
 	/* del if temp */
 	fb_hStrDelTemp( program );

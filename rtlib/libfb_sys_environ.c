@@ -33,7 +33,10 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 	FBSTRING 	*dst;
 	char 		*p;
 
-	p = getenv( varname->data );
+	if( (varname != NULL) && (varname->data != NULL) )
+		p = getenv( varname->data );
+	else
+		p = NULL;
 
 	if( p != NULL )
 	{
@@ -56,11 +59,14 @@ FBCALL int fb_SetEnviron ( FBSTRING *str )
 {
 	int res;
 
+	if( (str != NULL) && (str->data != NULL) )
+	{
 #if WIN32
-	res = _putenv( str->data );
+		res = _putenv( str->data );
 #else
-	res = putenv( str->data );
+		res = putenv( str->data );
 #endif
+	}
 
 	/* del if temp */
 	fb_hStrDelTemp( str );

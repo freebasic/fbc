@@ -56,6 +56,14 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 
 	len = FB_STRSIZE( str );
 
+	if( (str->data == NULL) || (len == 0) )
+	{
+		/* del if temp */
+		fb_hStrDelTemp( str );
+
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+	}
+
 	/* do write */
 	if( fwrite( str->data, 1, len, fb_fileTB[fnum-1].f ) != len )
 		return FB_RTERROR_FILEIO;

@@ -61,7 +61,8 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 	{
 		if( text != NULL )
 		{
-			fb_PrintString( 0, text, 0 );
+			if( text->data != NULL )
+				fb_PrintString( 0, text, 0 );
 
 			if( addquestion != FB_FALSE )
 			{

@@ -79,6 +79,9 @@ static int fb_PrintUsingFmtStr( int fnum )
 	int 	doexit;
 
 	len = 0;
+	if( ctx.ptr == NULL )
+		ctx.chars = 0;
+
 	while( (ctx.chars > 0) && (len < BUFFERLEN) )
 	{
 		c = *ctx.ptr;
@@ -143,6 +146,9 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 
 
 	strchars = -1;
+
+	if( ctx.ptr == NULL )
+		ctx.chars = 0;
 
 	while( ctx.chars > 0 )
     {
@@ -274,6 +280,9 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	isexp 		= 0;
 
 	lc = -1;
+
+	if( ctx.ptr == NULL )
+		ctx.chars = 0;
 
 	while( ctx.chars > 0 )
 	{

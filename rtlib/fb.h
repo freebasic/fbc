@@ -35,6 +35,9 @@
 # define FBCALL
 #endif /* WIN32 */
 
+#ifndef NULL
+#define NULL 0
+#endif
 
 /**************************************************************************************************
  * strings
@@ -90,12 +93,11 @@ typedef struct _FB_STR_TMPDESCLIST {
 /* protos */
 
 /* intern */
-extern    char 		fb_strNull;
 extern    FBSTRING 	fb_strNullDesc;
 
 FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
 		  void 		fb_hStrDelTempDesc		( FBSTRING *str );
-		  void 		fb_hStrRealloc			( FBSTRING *str, int size );
+		  void 		fb_hStrRealloc			( FBSTRING *str, int size, int preserve );
 		  void 		fb_hStrAllocTemp		( FBSTRING *str, int size );
 		  void 		fb_hStrDelTemp			( FBSTRING *str );
 		  void 		fb_hStrCopy				( char *dst, char *src, int bytes );
@@ -108,6 +110,7 @@ FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
 FBCALL void 		fb_StrDelete			( FBSTRING *str );
 FBCALL void 		fb_StrAssign 			( void *dst, int dst_size, void *src, int src_size );
 FBCALL FBSTRING		*fb_StrConcat 			( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size );
+FBCALL void 		fb_StrConcatAssign 		( void *dst, int dst_size, void *src, int src_size );
 FBCALL int 			fb_StrCompare 			( void *str1, int str1_size, void *str2, int str2_size );
 FBCALL FBSTRING		*fb_StrAllocTempResult 	( FBSTRING *src );
 FBCALL FBSTRING		*fb_StrAllocTempDesc	( void *str, int str_size );

@@ -18,26 +18,54 @@
  */
 
 /*
- * str_del.c -- string deletion function
+ * str_ltrim.c -- ltrim$ function
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
 #include <malloc.h>
-#include <string.h>
 #include "fb.h"
 
+
 /*:::::*/
-FBCALL void fb_StrDelete ( FBSTRING *str )
+FBCALL FBSTRING *fb_LTRIM ( FBSTRING *src )
 {
-    if( (str == NULL) || (str->data == NULL) )
-    	return;
+	FBSTRING 	*dst;
+	int 		len;
+	char		*p;
 
-    free( (void *)str->data );
+	if( src == NULL )
+		return &fb_strNullDesc;
 
-	str->data = NULL;
-	str->len  = 0;
+	if( src->data != NULL )
+	{
+		p = fb_hStrSkipChar( src->data, FB_STRSIZE( src ), 32 );
+		len = FB_STRSIZE( src ) - (int)(p - src->data);
+	}
+	else
+		len = 0;
+
+	if( len > 0 )
+	{
+		/* alloc temp string */
+		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+		if( dst != NULL )
+		{
+			fb_hStrAllocTemp( dst, len );
+
+			/* simple copy */
+			fb_hStrCopy( dst->data, p, len );
+		}
+		else
+			dst = &fb_strNullDesc;
+    }
+	else
+		dst = &fb_strNullDesc;
+
+	/* del if temp */
+	fb_hStrDelTemp( src );
+
+	return dst;
 }
-
 

@@ -34,11 +34,11 @@ FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
 	int 		i, len, src_len;
 	char		*s, *d;
 
-	if( (src == NULL) || (src->data == NULL) )
+	if( src == NULL )
 		return &fb_strNullDesc;
 
 	src_len = FB_STRSIZE( src );
-	if( (chars > 0) && (src_len > 0) )
+	if( (src->data != NULL)	&& (chars > 0) && (src_len > 0) )
     {
 		if( chars > src_len )
 			len = src_len;

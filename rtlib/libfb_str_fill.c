@@ -64,9 +64,7 @@ FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
 	FBSTRING 	*dst;
 
 	if( (cnt > 0) && (src != NULL) && (src->data != NULL) && (FB_STRSIZE( src ) > 0) )
-	{
 		dst = fb_StrFill1( cnt, (int)src->data[0] );
-	}
 	else
 		dst = &fb_strNullDesc;
 

@@ -32,9 +32,10 @@
 /*:::::*/
 FBCALL int fb_FileKill( FBSTRING *str )
 {
-	int res;
+	int res = 0;
 
-	res = remove( str->data );
+	if( str->data != NULL )
+		res = remove( str->data );
 
 	/* del if temp */
 	fb_hStrDelTemp( str );

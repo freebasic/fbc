@@ -34,22 +34,25 @@ FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 {
     int slen, dlen, len;
 
-	slen = FB_STRSIZE( src );
-	dlen = FB_STRSIZE( dst );
-
-	if( dlen > 0 )
+	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
 	{
-		len = (dlen <= slen? dlen: slen );
+		slen = FB_STRSIZE( src );
+		dlen = FB_STRSIZE( dst );
 
-		fb_hStrCopy( dst->data, src->data, len );
-
-		len = dlen - slen;
-		if( len > 0 )
+		if( dlen > 0 )
 		{
-			memset( &dst->data[slen], 32, len );
+			len = (dlen <= slen? dlen: slen );
 
-			/* null char */
-			dst->data[slen+len] = '\0';
+			fb_hStrCopy( dst->data, src->data, len );
+
+			len = dlen - slen;
+			if( len > 0 )
+			{
+				memset( &dst->data[slen], 32, len );
+
+				/* null char */
+				dst->data[slen+len] = '\0';
+			}
 		}
 	}
 
@@ -62,20 +65,23 @@ FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 {
     int slen, dlen, len, padlen;
 
-	slen = FB_STRSIZE( src );
-	dlen = FB_STRSIZE( dst );
-
-	if( dlen > 0 )
+	if( (dst != NULL) && (dst->data != NULL) && (src != NULL) && (src->data != NULL) )
 	{
-		padlen = dlen - slen;
-		if( padlen > 0 )
-			memset( dst->data, 32, padlen );
-		else
-			padlen = 0;
+		slen = FB_STRSIZE( src );
+		dlen = FB_STRSIZE( dst );
 
-		len = (dlen <= slen? dlen: slen );
+		if( dlen > 0 )
+		{
+			padlen = dlen - slen;
+			if( padlen > 0 )
+				memset( dst->data, 32, padlen );
+			else
+				padlen = 0;
 
-		fb_hStrCopy( &dst->data[padlen], src->data, len );
+			len = (dlen <= slen? dlen: slen );
+
+			fb_hStrCopy( &dst->data[padlen], src->data, len );
+		}
 	}
 
 	/* del if temp */

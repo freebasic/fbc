@@ -18,9 +18,9 @@
  */
 
 /*
- * str_assign.c -- string assigning function
+ * str_concatassign.c -- string concat and assigning (s = s + expr) function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
@@ -29,7 +29,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
+FBCALL void fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_size )
 {
 	FBSTRING 	*dstr;
 	char 		*src_ptr;
@@ -45,54 +45,29 @@ FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 	if( dst_size == -1 )
 	{
         dstr = (FBSTRING *)dst;
-
-		/* if src is a temp, just copy the descriptor */
-		if( (src_size == -1) && FB_ISTEMP(src) )
-		{
-			fb_StrDelete( dstr );
-
-			dstr->data = src_ptr;
-			dstr->len  = src_len;
-
-			((FBSTRING *)src)->data = NULL;
-			((FBSTRING *)src)->len  = 0;
-
-			fb_hStrDelTempDesc( (FBSTRING *)src );
-
-			return;
-		}
-
-        /* else, realloc dst if needed and copy src */
         dst_len = FB_STRSIZE( dst );
 
-		/* NULL? */
-		if( src_len == 0 )
+		/* not NULL? */
+		if( src_len > 0 )
 		{
-			fb_StrDelete( dstr );
-		}
-		else
-		{
-			if( dst_len != src_len )
-				fb_hStrRealloc( dstr, src_len, FB_FALSE );
+			fb_hStrRealloc( dstr, dst_len+src_len, FB_TRUE );
 
-			fb_hStrCopy( dstr->data, src_ptr, src_len );
+			fb_hStrCopy( &dstr->data[dst_len], src_ptr, src_len );
 		}
 	}
 	else
 	{
-		/* byte ptr? */
-		if( dst_size == 0 )
-			dst_size = strlen( (char *)dst );
+		dst_len = strlen( (char *)dst );
 
-		if( dst_size < src_len )
-			src_len = dst_size;
+		if( src_len > dst_size - dst_len )
+			src_len = dst_size - dst_len;
 
-		fb_hStrCopy( (char *)dst, src_ptr, src_len );
+		fb_hStrCopy( &(((char *)dst)[dst_len]), src_ptr, src_len );
 
 		/* fill reminder with null's */
-		dst_size -= src_len;
+		dst_size -= (dst_len+src_len);
 		if( dst_size > 0 )
-			memset( &(((char *)dst)[src_len]), 0, dst_size );
+			memset( &(((char *)dst)[dst_len+src_len]), 0, dst_size );
 	}
 
 
