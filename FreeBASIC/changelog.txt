@@ -23,6 +23,7 @@ Version 0.12 Beta:
 [added] Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
 [added] possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
 [added] the OpenAL headers, ported by Chris Davies (v1c)
+[added] SCREEN() function, working as in QB (lillo)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
@@ -46,6 +47,8 @@ Version 0.12 Beta:
 [fixed] Linux port had precision problems with the TIMER function (lillo)
 [fixed] PSET gfx primitive was not respecting default color (lillo)
 [fixed] SGN() for floating-point numbers was converting the source to integer at the AST module (v1c)
+[fixed] CIRCLE used wrong color for lines when drawing arcs with negative start/end angles (lillo)
+[fixed] Calling SCREENLOCK/SCREENUNLOCK when framebuffer is already locked/unlocked does not hang program anymore (lillo)
 
 
 Version 0.11 Beta:
