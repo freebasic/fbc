@@ -193,6 +193,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
 
 		fb_hSetupFuncs();
+		fb_hSetupData();
 
 		if (!window_title)
 		{
