@@ -491,12 +491,6 @@ typedef struct _FB_ERRORCTX {
 	FB_TLSENTRY		num;
 	FB_TLSENTRY		reslbl;
 	FB_TLSENTRY		resnxtlbl;
-/*
-	void 	*handler;
-	int		num;
-	void 	*reslbl;
-	void 	*resnxtlbl;
-*/
 } FB_ERRORCTX;
 
 extern FB_ERRORCTX fb_errctx;

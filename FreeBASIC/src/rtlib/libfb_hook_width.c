@@ -33,16 +33,25 @@ static FB_WIDTHPROC fb_widhook = &fb_ConsoleWidth;
 FBCALL void fb_Width( int cols, int rows )
 {
 
-	return fb_widhook( cols, rows );
+	FB_LOCK();
+
+	fb_widhook( cols, rows );
+
+	FB_UNLOCK();
 
 }
 
 /*:::::*/
 FBCALL FB_WIDTHPROC fb_SetWidthProc( FB_WIDTHPROC newproc )
 {
-    FB_WIDTHPROC oldproc = fb_widhook;
+    FB_WIDTHPROC oldproc;
+    
+	FB_LOCK();
 
+    oldproc = fb_widhook;
     fb_widhook = newproc;
+
+	FB_UNLOCK();
 
 	return oldproc;
 }

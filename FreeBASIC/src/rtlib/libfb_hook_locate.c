@@ -33,16 +33,25 @@ static FB_LOCATEPROC fb_lochook = &fb_ConsoleLocate;
 FBCALL void fb_Locate( int row, int col, int cursor )
 {
 
-	return fb_lochook( row, col, cursor );
+	FB_LOCK();
+	
+	fb_lochook( row, col, cursor );
+
+	FB_UNLOCK();
 
 }
 
 /*:::::*/
 FBCALL FB_LOCATEPROC fb_SetLocateProc( FB_LOCATEPROC newproc )
 {
-    FB_LOCATEPROC oldproc = fb_lochook;
+    FB_LOCATEPROC oldproc;
+    
+	FB_LOCK();
 
+    oldproc = fb_lochook;
     fb_lochook = newproc;
+
+	FB_UNLOCK();
 
 	return oldproc;
 }

@@ -33,16 +33,25 @@ static FB_PRINTBUFFPROC fb_printbuffhook = &fb_ConsolePrintBuffer;
 FBCALL void fb_PrintBuffer( char *buffer, int mask )
 {
 
-	return fb_printbuffhook( buffer, mask );
+	FB_LOCK();
+	
+	fb_printbuffhook( buffer, mask );
+
+	FB_UNLOCK();
 
 }
 
 /*:::::*/
 FBCALL FB_PRINTBUFFPROC fb_SetPrintBufferProc( FB_PRINTBUFFPROC newproc )
 {
-    FB_PRINTBUFFPROC oldproc = fb_printbuffhook;
+    FB_PRINTBUFFPROC oldproc;
+    
+    FB_LOCK();
 
+    oldproc = fb_printbuffhook;
     fb_printbuffhook = newproc;
+
+	FB_UNLOCK();
 
 	return oldproc;
 }

@@ -33,17 +33,28 @@ static FB_GETYPROC fb_getyhook = &fb_ConsoleGetY;
 /*:::::*/
 FBCALL int fb_GetX( void )
 {
+	int res;
 
-	return fb_getxhook( );
+	FB_LOCK();
 
+	res = fb_getxhook( );
+	
+	FB_UNLOCK();
+	
+	return res;
 }
 
 /*:::::*/
 FBCALL FB_GETXPROC fb_SetGetXProc( FB_GETXPROC newproc )
 {
-    FB_GETXPROC oldproc = fb_getxhook;
+    FB_GETXPROC oldproc;
+    
+	FB_LOCK();
 
+    oldproc = fb_getxhook;
     fb_getxhook = newproc;
+    
+    FB_UNLOCK();
 
 	return oldproc;
 }
@@ -51,17 +62,28 @@ FBCALL FB_GETXPROC fb_SetGetXProc( FB_GETXPROC newproc )
 /*:::::*/
 FBCALL int fb_GetY( void )
 {
-
-	return fb_getyhook( );
-
+	int res;
+	
+	FB_LOCK();
+	
+	res = fb_getyhook( );
+	
+	FB_UNLOCK();
+	
+	return res;
 }
 
 /*:::::*/
 FBCALL FB_GETYPROC fb_SetGetYProc( FB_GETYPROC newproc )
 {
-    FB_GETYPROC oldproc = fb_getyhook;
-
+    FB_GETYPROC oldproc;
+    
+    FB_LOCK();
+    
+    oldproc = fb_getyhook;
     fb_getyhook = newproc;
 
+	FB_UNLOCK();
+	
 	return oldproc;
 }

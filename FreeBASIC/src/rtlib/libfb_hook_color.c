@@ -33,16 +33,25 @@ static FB_COLORPROC fb_colorhook = &fb_ConsoleColor;
 FBCALL void fb_Color( int fc, int bc )
 {
 
-	return fb_colorhook( fc, bc );
+	FB_LOCK();
+
+	fb_colorhook( fc, bc );
+
+	FB_UNLOCK();
 
 }
 
 /*:::::*/
 FBCALL FB_COLORPROC fb_SetColorProc( FB_COLORPROC newproc )
 {
-    FB_COLORPROC oldproc = fb_colorhook;
+    FB_COLORPROC oldproc;
 
+	FB_LOCK();
+	
+    oldproc = fb_colorhook;
     fb_colorhook = newproc;
 
+	FB_UNLOCK();
+	
 	return oldproc;
 }
