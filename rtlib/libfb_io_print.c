@@ -121,7 +121,14 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 #if defined WIN32 || defined DISABLE_NCURSES
 	printf( "%s", buffer );
 #else
-	printw( "%s", buffer );
+    if( mask & FB_PRINT_NEWLINE ) {
+        /* curses does bad jokes on \n, so we skip it */
+        buffer[len - 1] = '\0';
+        printw( "%s", buffer );
+        move( row + 1, 0 );
+    }
+    else
+        printw( "%s", buffer );
 	refresh();
 #endif
 

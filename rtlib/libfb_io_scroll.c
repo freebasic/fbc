@@ -69,6 +69,7 @@ void fb_ConsoleScroll( int nrows )
 
 #ifndef DISABLE_NCURSES
 	WINDOW *view;
+	int i;
 	
 	view = subwin(stdscr, botrow - toprow + 1, getmaxx(stdscr), toprow - 1, 0);
 	scrollok(view, TRUE);
@@ -76,7 +77,8 @@ void fb_ConsoleScroll( int nrows )
 	touchwin(stdscr);
 	for (; nrows; nrows--) {
 		move(botrow - nrows, 0);
-		clrtoeol();
+    	for (i = getmaxx(stdscr); i; i--)
+    	    addch(' ');
 	}
 	refresh();
 	delwin(view);

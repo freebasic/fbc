@@ -77,7 +77,7 @@ void fb_ConsoleClear( int mode )
 
 #else /* WIN32 */
 
-    int start_line, end_line, toprow, botrow;
+    int start_line, end_line, toprow, botrow, i;
     
 #ifndef DISABLE_NCURSES
     fb_ConsoleGetView( &toprow, &botrow );
@@ -94,7 +94,8 @@ void fb_ConsoleClear( int mode )
     }
     for (; start_line <= end_line; start_line++) {
     	move(start_line, 0);
-    	clrtoeol();
+    	for (i = getmaxx(stdscr); i; i--)
+    	    addch(' ');
     }
     refresh();
 #endif
