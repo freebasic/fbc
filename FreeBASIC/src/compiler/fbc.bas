@@ -150,11 +150,13 @@ const QUOTE = "\""
 
     '' compile
     if( not compileFiles ) then
+    	delFiles
     	end 1
     end if
 
     '' assemble
    	if( not assembleFiles ) then
+   		delFiles
    		end 1
    	end if
 
@@ -164,20 +166,24 @@ const QUOTE = "\""
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
 #ifdef TARGET_WIN32
 		if (not compileResFiles) then
+			delFiles
 			end 1
 		end if
 #elseif defined(TARGET_LINUX)
 		if( ctx.outtype = FB_OUTTYPE_EXECUTABLE ) then
 			if ( not compileXpmFile ) then
+				delFiles
 				end 1
 			end if
 		end if
 #endif
     		if( not linkFiles ) then
+    			delFiles
     			end 1
     		end if
     	else
     		if( not archiveFiles ) then
+    			delFiles
     			end 1
     		end if
     	end if
