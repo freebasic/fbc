@@ -9,4 +9,5 @@
 	chain CHAIN2
 	
 	print "chain1 ends"
-	
+
+	sleep

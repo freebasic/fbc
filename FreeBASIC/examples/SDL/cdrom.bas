@@ -29,7 +29,7 @@
 
 	' we now print info about each track
 	for i = 0 to cdrom->numtracks - 1
-   		FRAMES_TO_MSF cdrom->track(i).length, @m, @s, @f
+   		FRAMES_TO_MSF(cdrom->track(i).length, @m, @s, @f)
    		if (f > 0) then s = s + 1
    		print chr$(9); "Track (index"; i; ") "; cdrom->track(i).id; ":"; m; ":"; string(2 - len(str(s)), "0"); trim(str(s))
 	next

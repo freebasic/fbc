@@ -50,12 +50,12 @@ function InitDirectDraw( byval hWnd as integer ) as integer
 	end if
 
 	' set the access mode (full screen)
-	if( pDD->Vtable->SetCooperativeLevel( pDD, hWnd, DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN ) <> DD_OK ) then
+	if( IDirectDraw_SetCooperativeLevel( pDD, hWnd, DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN ) <> DD_OK ) then
 		exit function
 	end if
 	
 	' set the display mode
-	if( pDD->Vtable->SetDisplayMode( pDD, SCR_WIDTH, SCR_HEIGHT, SCR_BPP ) <> DD_OK ) then
+	if( IDirectDraw_SetDisplayMode( pDD, SCR_WIDTH, SCR_HEIGHT, SCR_BPP ) <> DD_OK ) then
 		exit function
 	end if
 
@@ -66,7 +66,7 @@ function InitDirectDraw( byval hWnd as integer ) as integer
 	ddsd.ddsCaps.dwCaps 	= DDSCAPS_PRIMARYSURFACE or DDSCAPS_FLIP or DDSCAPS_COMPLEX
 	ddsd.dwBackBufferCount 	= 1
 
-	if( pDD->Vtable->CreateSurface( pDD, @ddsd, @pDDSFront, NULL ) <> DD_OK ) then
+	if( IDirectDraw_CreateSurface( pDD, @ddsd, @pDDSFront, NULL ) <> DD_OK ) then
 		exit function
 	end if
 
@@ -74,7 +74,7 @@ function InitDirectDraw( byval hWnd as integer ) as integer
 	clear ddscaps, 0, len( ddscaps )
 	ddscaps.dwCaps 			= DDSCAPS_BACKBUFFER
 
-	if( pDDSFront->Vtable->GetAttachedSurface( pDDSFront, @ddscaps, @pDDSBack ) <> DD_OK ) then
+	if( IDirectDrawSurface_GetAttachedSurface( pDDSFront, @ddscaps, @pDDSBack ) <> DD_OK ) then
 		exit function
 	end if
 
@@ -90,7 +90,7 @@ sub doRendering
 	dim x as integer, y as integer
 	
 	'' lock the back buffer before start drawing on it
-	if( pDDSBack->Vtable->Lock( pDDSBack, byval NULL, @ddsd, DDLOCK_SURFACEMEMORYPTR or DDLOCK_WAIT, NULL ) <> DD_OK ) then
+	if( IDirectDrawSurface_Lock( pDDSBack, NULL, @ddsd, DDLOCK_WAIT, NULL ) <> DD_OK ) then
 		exit function
 	end if
 	
@@ -100,8 +100,8 @@ sub doRendering
 	dst = ddsd.lpSurface
 	
    	'' draw some static (code from ptc_test)
-   	for y = 0 to SCR_HEIGHT
-   		for x = 0 to SCR_WIDTH
+   	for y = 0 to SCR_HEIGHT-1
+   		for x = 0 to SCR_WIDTH-1
 			noise = (seed shr 3) xor seed
        		carry = noise and 1
        		seed = (seed shr 1) or (carry shl 30)
@@ -109,11 +109,11 @@ sub doRendering
 			*dst = (noise shl 11) or (noise shl 5) or noise
 			dst = dst + len( ushort )
 		next x
-		dst = dst + (ddsd.lPitch - (SCR_WIDTH*2) - 2) 
+		dst += ddsd.lPitch - (SCR_WIDTH * len( ushort ))
    	next y
 	
 	'' unlock it, no more needed
-	pDDSBack->Vtable->Unlock( pDDSBack, byval NULL )
+	IDirectDrawSurface_Unlock( pDDSBack, NULL )
 
 end sub
 
@@ -122,19 +122,19 @@ sub CleanUp
 
     '' free the back-buffer
     if( pDDSBack <> NULL ) then
-        pDDSBack->Vtable->Release( pDDSBack )
+        IDirectDrawSurface_Release( pDDSBack )
         pDDSBack = NULL
     end if
 
     '' and the primary one
     if( pDDSFront <> NULL ) then
-        pDDSFront->Vtable->Release( pDDSFront )
+        IDirectDrawSurface_Release( pDDSFront )
         pDDSFront = NULL
     end if
 
     '' and for last the ddraw interface
     if( pDD <> NULL ) then
-        pDD->Vtable->Release( pDD )
+        IDirectDraw_Release( pDD )
         pDD = NULL
     end if
 
@@ -156,7 +156,7 @@ function ProcessIdle
 
     '' turn it visible (flip)
     do        
-        hRet = pDDSFront->Vtable->Flip( pDDSFront, NULL, 0 )
+        hRet = IDirectDrawSurface_Flip( pDDSFront, NULL, 0 )
         
         '' flip done? exit
         if( hRet = DD_OK ) then
@@ -164,7 +164,7 @@ function ProcessIdle
         
         '' surface lost? (user switched to desktop??)
         elseif( hRet = DDERR_SURFACELOST ) then        
-            pDDSFront->Vtable->Restore( pDDSFront )
+            IDirectDrawSurface_Restore( pDDSFront )
         
         '' wait until all current drawing is being done
         elseif( hRet <> DDERR_WASSTILLDRAWING ) then

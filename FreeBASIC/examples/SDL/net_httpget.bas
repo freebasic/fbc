@@ -20,6 +20,7 @@ declare sub gethostandpath( src as string, hostname as string, path as string )
 	
 	if( len( hostname ) = 0 ) then
 		print "usage: hostname [path]"
+		sleep
 		end 1
 	end if
 	

@@ -6,4 +6,9 @@
 
 '$include: 'mydll.bi'
 
-	print "1 + 2 ="; addnumbers( 1, 2 )
+	randomize timer
+	
+	x = rnd * 10
+	y = rnd * 10
+	
+	print x; " +"; y; " ="; addnumbers( x, y )

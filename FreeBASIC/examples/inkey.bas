@@ -10,4 +10,6 @@
 				print
 			end if
 		end if
+		
+		sleep 25
 	loop until k$ = chr$( 27 )

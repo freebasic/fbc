@@ -28,7 +28,7 @@ option explicit
    	'' Detect mouse presence
    	if( install_mouse() < 0 ) then
 		textout_centre(screen, font, "No mouse detected, but you need one!", _
-	 				   SCREEN_W/2, SCREEN_H/2, makecol(0, 0, 0))
+	 				   SCREEN_W\2, SCREEN_H\2, makecol(0, 0, 0))
       	readkey()
       	end 1
    	end if
@@ -102,7 +102,7 @@ option explicit
     ''
    	clear_to_color(screen, makecol(255, 255, 255))
    	textout_centre(screen, font, "Press a key to change cursor", _
-		  SCREEN_W/2, SCREEN_H/2, makecol(0, 0, 0))
+		  SCREEN_W\2, SCREEN_H\2, makecol(0, 0, 0))
    	show_mouse(screen)
    	readkey()
    	show_mouse(NULL)
@@ -119,8 +119,8 @@ option explicit
    	set_mouse_sprite_focus(16, 16)
 
    	clear_to_color(screen, makecol(255, 255, 255))
-   	textout_centre(screen, font, "Press a key to quit", SCREEN_W/2, _
-		  		   SCREEN_H/2, makecol(0, 0, 0))
+   	textout_centre(screen, font, "Press a key to quit", SCREEN_W\2, _
+		  		   SCREEN_H\2, makecol(0, 0, 0))
    	show_mouse(screen)
    	readkey()
    	show_mouse(NULL)
