@@ -38,7 +38,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	if (from_page < 0)
 		src = fb_mode->line[0];
 	else if (from_page >= fb_mode->num_pages)
-		return
+		return;
 	else
 		src = fb_mode->page[from_page];
 	if (to_page < 0)
