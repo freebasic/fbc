@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' runtime-lib helpers, for when simple calls can't be done, 'cause args for diff types, etc
+'' runtime-lib helpers, for when simple calls can't be done, 'cause args of diff types, etc
 ''
 '' chng: oct/2004 written [v1ctor]
 
@@ -1517,11 +1517,11 @@ sub rtlArrayStrErase( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-function rtlArrayBound( byval s as FBSYMBOL ptr, byval dimexpr as integer, byval islbound as integer ) as integer static
-
+function rtlArrayBound( byval sexpr as integer, byval dimexpr as integer, byval islbound as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim typ as integer, dtype as integer, v as integer
     dim vr as integer
+
+	rtlArrayBound = INVALID
 
 	''
 	if( islbound ) then
@@ -1532,13 +1532,14 @@ function rtlArrayBound( byval s as FBSYMBOL ptr, byval dimexpr as integer, byval
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' array() as ANY
-    typ = symbGetType( s )
-    dtype =  hStyp2Dtype( typ )
-	v = astNewVAR( s, 0, dtype )
-    astNewPARAM( proc, v, dtype )
+    if( astNewPARAM( proc, sexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval dimension as integer
-	astNewPARAM( proc, dimexpr, INVALID )
+	if( astNewPARAM( proc, dimexpr, INVALID ) = INVALID ) then
+		exit function
+	end if
 
     ''
     rtlArrayBound = proc

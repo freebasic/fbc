@@ -122,7 +122,7 @@ end function
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
 function cTypeField( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ as integer, idxexpr as integer, _
-					 byval isderef as integer ) as integer
+					 byval isderef as integer, byval checkarray as integer ) as integer
     dim fields as string, ofs as integer
     dim constexpr as integer
     dim res as integer
@@ -197,9 +197,11 @@ function cTypeField( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ as
     	else
 			'' array and no index?
 			if( symbGetUDTElmDimensions( elm ) <> 0 ) then
-    			hReportError FB.ERRMSG.EXPECTEDLPRNT
-   				cTypeField = FALSE
-    			exit function
+    			if( checkarray ) then
+    				hReportError FB.ERRMSG.EXPECTEDLPRNT
+   					cTypeField = FALSE
+    				exit function
+    			end if
 			end if
 
     		exit do
@@ -225,7 +227,7 @@ end function
 ''DerefFields	=   (FIELDDEREF DREF* TypeField)* .
 ''
 function cDerefFields( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ as integer, _
-					   varexpr as integer ) as integer
+					   varexpr as integer, byval checkarray as integer ) as integer
 	dim dtype as integer, cnt as integer
 	dim expr as integer
 
@@ -250,7 +252,7 @@ function cDerefFields( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ 
 		typ = typ - FB.SYMBTYPE.POINTER
 
 		expr = INVALID
-		if( not cTypeField( elm, typesymbol, typ, expr, TRUE ) ) then
+		if( not cTypeField( elm, typesymbol, typ, expr, TRUE, checkarray ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -619,14 +621,15 @@ end function
 ''Variable        =   DREF* ID ArrayIdx? ((TypeField|DerefField) FieldIdx?)*
 ''				  |   DREF* ID{Function} ProcParamList .
 ''
-function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval isassign as integer )
+function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
+					byval isassign as integer = FALSE )
 	dim typ as integer, ofs as integer, idxexpr as integer, funcexpr as integer
 	dim s as FBSYMBOL ptr, res as integer
 	dim id as string, dtype as integer, derefcnt as integer
 	dim isbyref as integer, isfunctionptr as integer, isbydesc as integer
 	dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
 
-	cVariableEx = FALSE
+	cVariable = FALSE
 
 	'' DREF*
     derefcnt = 0
@@ -643,21 +646,19 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
 	id 	= lexTokenText
 	typ	= lexTokenType
 
-	if( not scalarsonly ) then
-		'' check for if dereferencing a function call
-		if( derefcnt > 0 ) then
-			s = symbLookupProc( id )
-			if( s <> NULL ) then
-				lexSkipToken
-				if( not cFunctionCall( s, varexpr, INVALID ) ) then
-					exit function
-				end if
+	'' check for if dereferencing a function call
+	if( derefcnt > 0 ) then
+		s = symbLookupProc( id )
+		if( s <> NULL ) then
+			lexSkipToken
+			if( not cFunctionCall( s, varexpr, INVALID ) ) then
+				exit function
+			end if
 
-				typ = symbGetType( s )
-				elm = NULL
-				goto varderef
-        	end if
-		end if
+			typ = symbGetType( s )
+			elm = NULL
+			goto varderef
+       	end if
 	end if
 
 	'' lookup
@@ -696,100 +697,89 @@ function cVariableEx( varexpr as integer, byval scalarsonly as integer, byval is
     isfunctionptr = FALSE
 
     ''
-    if( scalarsonly ) then
-    	dtype = hStyp2Dtype( typ )
-		varexpr = astNewVAR( s, ofs, dtype )
+    idxexpr = INVALID
+    isbydesc = FALSE
+    '' check for '('')', it's not an array, just passing by desc
+    if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
+    	if( lexLookahead(1) <> FB.TK.IDXCLOSECHAR ) then
 
-		'' check arguments passed by reference (implicity pointer's)
-		if( isbyref ) then
-    		derefcnt = derefcnt + 1
-		end if
+    		'' ArrayIdx?
+    		if( (elm = NULL) and (symbIsArray( s )) ) then
+    			'' '('
+    			lexSkipToken
 
-    else
+    			res = cArrayIdx( s, idxexpr )
 
-    	idxexpr = INVALID
-    	isbydesc = FALSE
-    	'' check for '('')', it's not an array, just passing by desc
-    	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
-    		if( lexLookahead(1) <> FB.TK.IDXCLOSECHAR ) then
-
-    			'' ArrayIdx?
-    			if( (elm = NULL) and (symbIsArray( s )) ) then
-    				'' '('
-    				lexSkipToken
-
-    				res = cArrayIdx( s, idxexpr )
-
-					'' ')'
-    				if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
-    					hReportError FB.ERRMSG.EXPECTEDRPRNT
-    					exit function
-    				end if
-
-    			else
-   					'' check if calling functions through pointers
-   					if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-       					isfunctionptr = TRUE
-       				end if
-
+				'' ')'
+    			if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
+    				hReportError FB.ERRMSG.EXPECTEDRPRNT
+    				exit function
     			end if
 
     		else
-    			isbydesc = TRUE
-    		end if
-    	end if
-
-   		if( not isfunctionptr ) then
-   			'' TypeField?
-   			cTypeField( elm, typesymbol, typ, idxexpr, FALSE )
-
-   			'' check for calling functions through pointers
-   			if( lexCurrentToken = CHAR_LPRNT ) then
+   				'' check if calling functions through pointers
    				if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-	       			isfunctionptr = TRUE
-   				end if
+      				isfunctionptr = TRUE
+    			end if
+
+    		end if
+
+    	else
+    		isbydesc = TRUE
+    	end if
+    end if
+
+   	if( not isfunctionptr ) then
+   		'' TypeField?
+   		cTypeField( elm, typesymbol, typ, idxexpr, FALSE, checkarray )
+
+   		'' check for calling functions through pointers
+   		if( lexCurrentToken = CHAR_LPRNT ) then
+   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+	   			isfunctionptr = TRUE
    			end if
    		end if
+   	end if
 
-   		'' AST will handle descriptor pointers
-   		dtype = hStyp2Dtype( typ )
+   	'' AST will handle descriptor pointers
+   	dtype = hStyp2Dtype( typ )
 
-   		if( not isbyref ) then
-   			varexpr = astNewVAREx( s, elm, ofs, dtype )
-   		else
-   			varexpr = astNewVAREx( s, elm, 0, dtype )
-   		end if
+   	if( not isbyref ) then
+   		varexpr = astNewVAREx( s, elm, ofs, dtype )
+   	else
+   		varexpr = astNewVAREx( s, elm, 0, dtype )
+   	end if
 
-		if( idxexpr <> INVALID ) then
-			varexpr = astNewIDX( varexpr, idxexpr, dtype )
-		else
-			'' array and no index?
-			if( not isbydesc ) then
-   				if( symbIsArray( s ) ) then
+	if( idxexpr <> INVALID ) then
+		varexpr = astNewIDX( varexpr, idxexpr, dtype )
+	else
+		'' array and no index?
+		if( not isbydesc ) then
+   			if( symbIsArray( s ) ) then
+   				if( checkarray ) then
     				hReportError FB.ERRMSG.EXPECTEDLPRNT
     				exit function
     			end if
-		    end if
-		end if
+    		end if
+	    end if
+	end if
 
-		'' check arguments passed by reference (implicity pointer's)
-		if( isbyref ) then
-    		dtype = astGetDataType( varexpr )
-    		varexpr = astNewPTREx( s, elm, ofs, dtype, varexpr )
-		end if
+	'' check arguments passed by reference (implicity pointer's)
+	if( isbyref ) then
+    	dtype = astGetDataType( varexpr )
+    	varexpr = astNewPTREx( s, elm, ofs, dtype, varexpr )
+	end if
 
-		if( not isfunctionptr ) then
-			'' DerefFields?
-			cDerefFields( elm, typesymbol, typ, varexpr )
+	if( not isfunctionptr ) then
+		'' DerefFields?
+		cDerefFields( elm, typesymbol, typ, varexpr, checkarray )
 
-   			'' check for calling functions through pointers
-   			if( lexCurrentToken = CHAR_LPRNT ) then
-   				if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-	       			isfunctionptr = TRUE
-   				end if
+   		'' check for calling functions through pointers
+   		if( lexCurrentToken = CHAR_LPRNT ) then
+   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+	  			isfunctionptr = TRUE
    			end if
-		end if
-
+   		end if
 	end if
 
 	'' call function, pushing params on stack
@@ -828,15 +818,6 @@ varderef:
 		end if
 	end if
 
-	cVariableEx = TRUE
+	cVariable = TRUE
 
 end function
-
-'':::::
-function cVariable( varexpr as integer )
-
-	cVariable = cVariableEx( varexpr, FALSE, FALSE )
-
-end function
-
-

@@ -790,7 +790,7 @@ end function
 ''				  |	   CLOSE ('#'? Expression)*
 ''				  |	   SEEK '#'? Expression ',' Expression
 ''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
-''				  |	   GET '#' Expression ',' Expression? ',' Expression{str|int|float|array}
+''				  |	   GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 ''				  |    (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)? .
 function cFileStmt
     dim filenum as integer, expr1 as integer, expr2 as integer
@@ -1007,7 +1007,7 @@ function cFileStmt
 
 		cFileStmt = TRUE
 
-	'' GET '#' Expression ',' Expression? ',' Expression{str|int|float|array}
+	'' GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 	case FB.TK.GET
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
@@ -1030,8 +1030,8 @@ function cFileStmt
 			hReportError FB.ERRMSG.EXPECTEDCOMMA
 			exit function
 		end if
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		if( not cVariable( expr2 ) ) then
+			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
 
@@ -1327,8 +1327,7 @@ end function
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
 function cArrayFunct( funcexpr as integer )
-	dim s as FBSYMBOL ptr, ofs as integer, typ as integer
-	dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
+	dim sexpr as integer
 	dim islbound as integer, expr as integer
 
 	cArrayFunct = FALSE
@@ -1351,13 +1350,9 @@ function cArrayFunct( funcexpr as integer )
 		end if
 
 		'' ID
-		typ = lexTokenType
-		s = symbLookupVar( lexTokenText, typ, ofs, elm, typesymbol )
-		if( s = NULL ) then
+		if( not cVariable( sexpr, FALSE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
-		else
-			lexSkipToken
 		end if
 
 		'' (',' Expression)?
@@ -1376,9 +1371,12 @@ function cArrayFunct( funcexpr as integer )
     		exit function
 		end if
 
-		funcexpr = rtlArrayBound( s, expr, islbound )
+		funcexpr = rtlArrayBound( sexpr, expr, islbound )
 
-		cArrayFunct = TRUE
+		if( funcexpr <> INVALID ) then
+			cArrayFunct = TRUE
+		end if
+
 	end select
 
 end function

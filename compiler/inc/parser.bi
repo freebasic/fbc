@@ -86,8 +86,7 @@ declare function 	cAddrOfExpression		( addrofexpr as integer ) as integer
 declare function 	cTypeConvExpr			( tconvexpr as integer ) as integer
 declare function 	cParentExpression		( parexpr as integer ) as integer
 declare function 	cAtom					( atom as integer ) as integer
-declare function 	cVariableEx				( varexpr as integer, byval scalarsonly as integer, byval isassign as integer ) as integer
-declare function 	cVariable				( varexpr as integer ) as integer
+declare function 	cVariable				( varexpr as integer, byval checkarray as integer = TRUE, byval isassign as integer = FALSE )
 declare function 	cFunction				( funcexpr as integer ) as integer
 declare function 	cQuirkFunction			( funcexpr as integer ) as integer
 declare function 	cConstant				( constexpr as integer ) as integer

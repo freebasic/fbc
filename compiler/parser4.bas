@@ -486,7 +486,7 @@ function cForStatement
 	end if
 
 	'' ID
-	if( not cVariableEx( idexpr, TRUE, FALSE ) ) then
+	if( not cVariable( idexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDVAR
 		exit function
 	end if

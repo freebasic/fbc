@@ -2739,7 +2739,7 @@ function cAssignment
 	end if
 
 	'' Variable
-	if( cVariableEx( assg, FALSE, TRUE ) ) then
+	if( cVariable( assg, , TRUE ) ) then
 
         '' '='
         if( not hMatch( FB.TK.ASSIGN ) ) then

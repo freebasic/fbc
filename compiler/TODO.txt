@@ -9,38 +9,6 @@
 		type bar: f as foo ptr: end type
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 
-*** *** *** *** ***
-[ ] bound = lbound( sometype.arrayfield ), needs a temp descriptor or just guess it at compile-time?
-
-[ ] i = hCalcElements2( 1, typelmTB(i).dimlist() ), temp descriptors are needed, and they must
-   be deallocated after the call (same as done with strings).. arrays on fields don't have
-   descriptors..
-
-	mov     ax, len( typelmTB )
-        imul    [i]
-        add     ax, elm_offset( dimlist )
-        mov     bx, ax
-        mov     si, offset typelmTB
-        add     bx, 0Ah[si]
-        mov     es, 02h[si]
-        push    es
-        push    bx
-        mov     bx, offset <const>
-        mov     02h[bx], ds
-        push    bx
-        push    offset _T0018
-        call    fb_ArrayAllocTempDesc
-
-        push    01h
-        push    offset _T0018
-        call    HCALCELEMENTS2&
-        mov     [i], ax
-
-        push    offset _T0018
-        call    fb_ArrayFreeTempDesc
-
-
-
 *** yet another optimizations ***
 [ ] get hide of double fxch's (needs peephole optimization at EMIT)
 [ ] load after store elimination (at IR?)

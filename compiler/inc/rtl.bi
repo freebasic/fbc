@@ -169,7 +169,7 @@ declare sub 		rtlArrayRedim		( byval s as FBSYMBOL ptr, byval elementlen as inte
 									  	  byval dimensions as integer, exprTB() as integer, _
 									  	  byval dopreserve as integer )
 declare sub 		rtlArrayErase		( byval s as FBSYMBOL ptr )
-declare function 	rtlArrayBound		( byval s as FBSYMBOL ptr, byval dimexpr as integer, byval islbound as integer ) as integer
+declare function 	rtlArrayBound		( byval sexpr as integer, byval dimexpr as integer, byval islbound as integer ) as integer
 declare sub 		rtlArraySetDesc		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 										  byval dimensions as integer, dTB() as FBARRAYDIM )
 declare sub 		rtlArrayStrErase	( byval s as FBSYMBOL ptr )

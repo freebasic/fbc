@@ -2831,7 +2831,7 @@ function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr,
 end function
 
 '':::::
-private sub hReportParamError( byval f as integer )
+private sub hReportParamError( byval proc as FBSYMBOL ptr, byval f as integer )
 
 	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( astTB(f).proc.argnum+1 )
 
@@ -2897,7 +2897,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			if( e <> NULL ) then
 				'' not an array?
 				if( symbGetUDTElmDimensions( e ) = 0 ) then
-					hReportParamError f
+					hReportParamError proc, f
 					exit function
 				end if
 
@@ -2908,14 +2908,14 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			else
 				s = astGetSymbol( p )
 				if( s = NULL ) then
-					hReportParamError f
+					hReportParamError proc, f
 					exit function
 				end if
 
 				'' not an argument passed by descriptor?
 				if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
 					if( symbGetVarDescriptor( s ) = NULL ) then
-						hReportParamError f
+						hReportParamError proc, f
 						exit function
 					end if
         		end if
@@ -2936,7 +2936,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			    	if( (pdclass <> IR.DATACLASS.INTEGER) or _
 			    		(amode <> FB.ARGMODE.BYVAL) or _
 			    		(irGetDataSize( pdtype ) <> FB.POINTERSIZE) ) then
-						hReportParamError f
+						hReportParamError proc, f
 						exit function
 			    	end if
 			    end if
@@ -2947,14 +2947,14 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			if( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
 				if( (pdclass <> IR.DATACLASS.INTEGER) or _
 					(irGetDataSize( pdtype ) <> FB.POINTERSIZE) ) then
-					hReportParamError f
+					hReportParamError proc, f
 					exit function
 				end if
 
 			'' UDT arg? check if the same, can't convert
 			elseif( adtype = IR.DATATYPE.USERDEF ) then
 				if( pdtype <> IR.DATATYPE.USERDEF ) then
-					hReportParamError f
+					hReportParamError proc, f
 					exit function
 				end if
 
@@ -2968,7 +2968,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 				end if
 
 				if( symbGetArgSubtype( proc, arg ) <> s ) then
-					hReportParamError f
+					hReportParamError proc, f
 					exit function
 				end if
 
@@ -2976,7 +2976,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			else
 				'' can't convert strings/UDT's to other types
 				if( (pdclass = IR.DATACLASS.STRING) or (pdtype = IR.DATATYPE.USERDEF) ) then
-					hReportParamError f
+					hReportParamError proc, f
 					exit function
 				end if
 
@@ -2995,7 +2995,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 								astTB(p).dtype = adtype
 								astTB(n).dtype = adtype
 							else
-								hReportParamError f
+								hReportParamError proc, f
 								exit function
 							end if
 
