@@ -34,13 +34,40 @@ defint a-z
 '$include once: 'inc\emit.bi'
 
 '':::::
+function cFuncReturn as integer
+    dim expr as integer, vr as integer
+
+    cFuncReturn = FALSE
+
+	if( (env.currproc = NULL) or (env.procstmt.endlabel = NULL) ) then
+		hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+		exit function
+	end if
+
+	if( not cExpression( expr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	if( not hAssignFunctResult( env.currproc, expr ) ) then
+		exit function
+	end if
+
+	'' do an implicit exit function
+	astFlush astNewBRANCH( IR.OP.JMP, env.procstmt.endlabel ), vr
+
+	cFuncReturn = TRUE
+
+end function
+
+'':::::
 ''GotoStmt   	  =   GOTO LABEL
 ''				  |   GOSUB LABEL
 ''				  |	  RETURN LABEL?
 ''				  |   RESUME NEXT? .
 ''
 function cGotoStmt
-	dim l as FBSYMBOL ptr, lname as string
+	dim l as FBSYMBOL ptr
 	dim isglobal as integer, isnext as integer
 	dim vr as integer
 
@@ -50,7 +77,13 @@ function cGotoStmt
 	'' GOTO LABEL
 	case FB.TK.GOTO
 		lexSkipToken
-		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+
+		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+			l = symbFindByNameAndClass( lexTokenText, FB.SYMBCLASS.LABEL )
+		else
+			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+		end if
+
 		if( l = NULL ) then
 			l = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
@@ -63,7 +96,13 @@ function cGotoStmt
 	'' GOSUB LABEL
 	case FB.TK.GOSUB
 		lexSkipToken
-		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+
+		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+			l = symbFindByNameAndClass( lexTokenText, FB.SYMBCLASS.LABEL )
+		else
+			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+		end if
+
 		if( l = NULL ) then
 			l = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
@@ -73,27 +112,43 @@ function cGotoStmt
 
 		cGotoStmt = TRUE
 
-	'' RETURN LABEL?
+	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB.TK.RETURN
 		lexSkipToken
 
-		select case lexCurrentTokenClass
-		case FB.TKCLASS.NUMLITERAL, FB.TKCLASS.IDENTIFIER
-
-			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
-			if( l = NULL ) then
-				l = symbAddLabel( lexTokenText, FALSE, TRUE )
-			end if
-			lexSkipToken
-
-			astFlush astNewBRANCH( IR.OP.JMP, l ), vr
-
-		case else
+		'' Comment|StmtSep|EOF? just return
+		select case lexCurrentToken
+		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 			irEmitRETURN 0
+
+		case else
+
+			l = NULL
+
+			'' Comment|StmtSep|EOF following? check if it's not an already defined label
+			select case lexLookAhead( 1 )
+			case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+				if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+					l = symbFindByNameAndClass( lexTokenText, FB.SYMBCLASS.LABEL )
+				else
+					l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+				end if
+			end select
+
+			'' label?
+			if( l <> NULL ) then
+				lexSkipToken
+				astFlush astNewBRANCH( IR.OP.JMP, l ), vr
+				cGotoStmt = TRUE
+
+			'' must be a function return then
+			else
+				cGotoStmt = cFuncReturn( )
+			end if
+
 		end select
 
-		cGotoStmt = TRUE
 
 	'' RESUME NEXT?
 	case FB.TK.RESUME

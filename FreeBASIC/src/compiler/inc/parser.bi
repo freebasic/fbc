@@ -125,5 +125,7 @@ declare function 	cDerefFields			( byval sym as FBSYMBOL ptr, elm as FBSYMBOL pt
 
 declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
 
+declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, byval expr as integer ) as integer
+
 declare function 	cGfxStmt 				( ) as integer
 declare function 	cGfxFunct				( funcexpr as integer ) as integer

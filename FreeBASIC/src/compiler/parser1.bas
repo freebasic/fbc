@@ -2775,12 +2775,17 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
 
     s = symbLookupProcResult( proc )
     if( s = NULL ) then
+    	hReportError FB.ERRMSG.SYNTAXERROR
     	exit function
     end if
 
     assg = astNewVAR( s, NULL, 0, symbGetType( s ), symbGetSubtype( s ) )
 
     assg = astNewASSIGN( assg, expr )
+    if( assg = INVALID ) then
+    	hReportError FB.ERRMSG.INVALIDDATATYPES
+    	exit function
+    end if
 
     astFlush assg, vr
 
@@ -2910,7 +2915,6 @@ function cProcCallOrAssign
 				end if
 
         		if( not hAssignFunctResult( s, expr ) ) then
-        			hReportError FB.ERRMSG.SYNTAXERROR
         			exit function
         		end if
 

@@ -3,8 +3,6 @@
 
 [ ] allow structs to be returned (must follow gcc's abi)
 
-[ ] build-in dynamic lib loading/get proc address
-
 [ ] make the runtime lib thread safe
 
 [ ] OPTION's should be preserved when changed inside include files

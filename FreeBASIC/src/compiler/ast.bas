@@ -2160,7 +2160,7 @@ end sub
 
 '':::::
 function astNewUOP( byval op as integer, byval o as integer ) as integer static
-    dim n as integer, dclass as integer
+    dim n as integer, dclass as integer, dtype as integer
 
 	astNewUOP = INVALID
 
@@ -2168,14 +2168,16 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 		exit function
 	end if
 
+	dtype = astTB(o).dtype
+
     '' string? can't operate
-    dclass = irGetDataClass( astTB(o).dtype )
+    dclass = irGetDataClass( dtype )
     if( dclass = IR.DATACLASS.STRING ) then
     	exit function
     end if
 
 	'' UDT's? ditto
-	if( astTB(o).dtype = IR.DATATYPE.USERDEF ) then
+	if( dtype = IR.DATATYPE.USERDEF ) then
 		exit function
     end if
 
@@ -2184,7 +2186,7 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 		select case as const op
 		case IR.OP.NOT
 			astTB(o).value = not cint(astTB(o).value)
-			if( irIsSigned( astTB(o).dtype ) ) then
+			if( irIsSigned( dtype ) ) then
 				astTB(o).dtype = IR.DATATYPE.INTEGER
 			else
 				astTB(o).dtype = IR.DATATYPE.UINT
@@ -2195,22 +2197,29 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 
 		case IR.OP.ABS
 			astTB(o).value = abs( astTB(o).value )
+
 		case IR.OP.SGN
 			astTB(o).value = sgn( astTB(o).value )
+			astTB(o).dtype = IR.DATATYPE.INTEGER
 		end select
 
 		astNewUOP = o
 		exit function
 	end if
 
-	'' hack! SGN with floats is handled by a function
-	if( (op = IR.OP.SGN) and (dclass = IR.DATACLASS.FPOINT) ) then
-		astNewUOP = rtlMathFSGN( o )
-		exit function
+	if( op = IR.OP.SGN ) then
+		'' hack! SGN with floats is handled by a function
+		if( dclass = IR.DATACLASS.FPOINT ) then
+			astNewUOP = rtlMathFSGN( o )
+			exit function
+		end if
+
+		'' the result is always signed
+		dtype = irGetSignedType( dtype )
 	end if
 
 	'' alloc new node
-	n = astNew( AST.NODECLASS.UOP, astTB(o).dtype )
+	n = astNew( AST.NODECLASS.UOP, dtype )
 	astNewUOP = n
 
 	if( n = INVALID ) then
