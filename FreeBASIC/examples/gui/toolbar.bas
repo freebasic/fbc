@@ -90,7 +90,7 @@ function WndProc ( byval hWnd as long, _
 		end if 
         
 	case WM_KEYDOWN 
-    	if( (wParam and &hff) = 27 ) then 
+    	if( lobyte( wParam ) = 27 ) then 
 			PostMessage hWnd, WM_CLOSE, 0, 0 
 		end if 
         

@@ -28,7 +28,7 @@ const SCR_SIZE = SCR_WIDTH*SCR_HEIGHT
         	seed = seed shr 1
         	seed = seed or (carry shl 30)
         	noise = noise and &hFF
-        	buffer(index) = (noise shl 16) or (noise shl 8) or noise
+        	buffer(index) = rgb( noise, noise, noise )
     	next index
     
     	ptc_update @buffer(0)

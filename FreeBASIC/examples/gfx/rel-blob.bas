@@ -40,7 +40,7 @@ const BLOB_HEI = 128
 	end if
 
     dim strength as integer
-    dim x, y as integer
+    dim as integer x, y
     dim bcol as integer
     dim dist as single
     strength =  BLOB_WID \ 2
@@ -55,13 +55,12 @@ const BLOB_HEI = 128
             end if
             if bcol < 0 then bcol = 0
             if bcol > 255 then bcol = 255
-            light(x + (BLOB_WID \ 2), y + (BLOB_HEI \ 2)) =_
-                        bcol shl 16 or bcol shl 8 or bcol
+            light(x + (BLOB_WID \ 2), y + (BLOB_HEI \ 2)) = rgb( bcol, bcol, bcol )
 
         next y
     next x
 
-    dim f, i as integer
+    dim as integer f, i
 
     do
 
@@ -111,13 +110,10 @@ private sub draw_blob(buffer() as integer, light() as integer,_
    	const SCR_X_MAX = SCR_WIDTH - 1
 	const SCR_Y_MAX = SCR_HEIGHT - 1
 
-    dim wid, hei as integer
-    dim minx, miny as integer
-    dim wtemp, htemp as integer
-    dim offset as integer ptr
-
-
-
+    dim as integer wid, hei 
+    dim as integer minx, miny 
+    dim as integer wtemp, htemp 
+    dim as integer ptr offset 
 
 
     wid = (Ubound(light,1) - Lbound(light,1)) + 1
@@ -155,11 +151,11 @@ private sub draw_blob(buffer() as integer, light() as integer,_
 
 
 
-    dim erroradd as integer ptr
-    dim nx, ny as integer
-    dim c, oc, occ as integer
-    dim lr, lg, lb, br, bg , bb as integer
-    dim r, g, b as integer
+    dim as integer ptr erroradd 
+    dim as integer nx, ny 
+    dim as integer c, oc 
+    dim as integer lr, lg, lb, br, bg, bb
+    dim as integer r, g, b 
 
     erroradd = (SCR_WIDTH - wid) * len(integer)
 	offset = @buffer(0)+ ((y * SCR_WIDTH + x)* len(integer))
@@ -186,8 +182,7 @@ private sub draw_blob(buffer() as integer, light() as integer,_
                 b = (lb + bb)
                 if b > 255 then b = 255
 
-                occ = r shl 16 or g shl 8 or b
-                *offset = occ
+                *offset = rgb( r, g, b )
             end if
 
             offset = offset + len(integer)

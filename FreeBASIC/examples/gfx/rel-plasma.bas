@@ -11,7 +11,7 @@ const SCR_SIZE = SCR_WIDTH*SCR_HEIGHT
 
 const PI = 3.141593
 
-type RGB
+type TRGB
 	r as ubyte
 	g as ubyte
 	b as ubyte
@@ -22,7 +22,7 @@ end type
 	dim shared Lsin1( -1024 to 1024) as integer
 	dim shared Lsin2( -1024 to 1024) as integer
 	dim shared Lsin3( -1024 to 1024) as integer
-	dim shared Lcols(255) as RGB
+	dim shared Lcols(255) as TRGB
 	
 	
     dim frame as long
@@ -67,7 +67,7 @@ end type
 				rot = -rot
               	col = (Lsin3(x + Rot) + Lsin1(x + Rot + Counter) + Lsin2(y + Rot)) and 255
               	
-              	*p = Lcols(col).r shl 16 or Lcols(col).g shl 8 or Lcols(col).b
+              	*p = rgb( Lcols(col).r, Lcols(col).g, Lcols(col).b )
               	p = p + len( integer )
           	NEXT x
       	NEXT y

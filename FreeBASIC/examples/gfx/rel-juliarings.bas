@@ -192,7 +192,7 @@ do
                   grn = tmp
               end select
 
-            pixel = red shl 16 or grn shl 8 or blu
+            pixel = rgb( red, grn, blu )
             *p_buffer = pixel
             *p_bufferl = pixel
             p_buffer = p_buffer + Len(integer)

@@ -72,8 +72,8 @@ function WndProc ( byval hWnd as long, _
     	'' menu item selected
     	''
 		case WM_COMMAND
-			wmId    = wParam and &hFFFF
-			wmEvent = wParam shr 16
+			wmId    = loword( wParam )
+			wmEvent = hiword( wParam )
 			
 			menu = GetMenu( hWnd )
 			
@@ -116,7 +116,7 @@ function WndProc ( byval hWnd as long, _
 		''
 		''
 		case WM_KEYDOWN
-			if( (wParam and &hff) = 27 ) then
+			if( lobyte( wParam ) = 27 ) then
 				PostMessage hWnd, WM_CLOSE, 0, 0
 			end if
 

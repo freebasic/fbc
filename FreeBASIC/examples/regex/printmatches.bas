@@ -10,6 +10,8 @@ declare sub printmatches( pattern as string, buffer as string )
 
 		
 	printmatches( "[a-zA-Z_][a-zA-Z_0-9]*", "foo _bar 123 foo123 BAR 456 !!! Foo__ ???" )
+	
+	sleep
 
 	
 '':::::

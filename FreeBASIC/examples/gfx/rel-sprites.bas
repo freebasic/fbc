@@ -80,7 +80,7 @@ const SPR_SIZE = SPR_WID * SPR_HEI
             r = abs(INT(128 - 127 * SIN(x * PI / 16))) 
             g = abs(INT(128 - 127 * SIN(y * PI / 32))) 
             b = abs(INT(128 - 127 * SIN((x+y) * PI / 16))) 
-            put_pixel buffer(), x, y , r shl 16 or  g shl 8 or b 
+            put_pixel buffer(), x, y , rgb( r, g, b )
         next x 
     next y 
     get_sprite buffer(), 0, 0, SPR_WID -1, SPR_HEI -1, sprite() 

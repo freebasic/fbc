@@ -7,7 +7,7 @@ const SCR_WIDTH% 	= 320*1
 const SCR_HEIGHT% 	= 240*1
 const SCR_SIZE% 	= SCR_WIDTH*SCR_HEIGHT
 
-const MAX% 			= 128\2
+const _MAX 			= 128\2
 const SX 			= -2.025 	' start value real
 const SY 			= -1.125 	' start value imaginary
 const EX 			= 0.6    	' end value real
@@ -117,14 +117,14 @@ end sub
 private function DotsColor( byval xval, byval yval )
    dim j as integer
 
-   do WHILE (j < MAX) AND (m < 4.0)
+   do WHILE (j < _MAX) AND (m < 4.0)
       j = j + 1
       m = r * r - i * i
       i = 2.0 * r * i + yval
       r = m + xval
    loop
 
-   DotsColor = j / MAX
+   DotsColor = j / _MAX
 
 end function
 
@@ -189,7 +189,7 @@ private function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
       blue  = red - (brightness - green) * domainOffset * 6.0
    ENd select
    
-   HSBtoRGB = CINT(red*255.0) shl 16 + CINT(green*255.0) shl 8 + CINT(blue*255.0)
+   HSBtoRGB = rgb( red*255.0, green*255.0, blue*255.0 )
 
 end function
 
