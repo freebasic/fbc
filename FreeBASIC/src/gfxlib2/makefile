@@ -37,9 +37,6 @@ else
     else
         CFLAGS := $(CFLAGS) -DTARGET_LINUX
         AFLAGS += -DTARGET_LINUX
-        ifdef COMPILER
-            CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
-        endif
         osdeppath := linux
         libpath = ../../lib
     endif
@@ -47,19 +44,19 @@ endif
 
 lib = $(libpath)/libfbgfx.a
 
-objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
-objects += $(patsubst %.s,obj/%.o,$(wildcard *.s))
-osdepobjs := $(patsubst $(osdeppath)/%.c,$(osdeppath)/obj/%.o,$(wildcard $(osdeppath)/*.c))
+objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
+objects += $(patsubst %.s,obj/$(osdeppath)/%.o,$(wildcard *.s))
+osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))
 headers := $(wildcard *.h)
 headers += $(wildcard $(osdeppath)/*.h)
 
-obj/%.o : %.c $(headers)
+obj/$(osdeppath)/%.o : %.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/%.o : %.s $(headers)
+obj/$(osdeppath)/%.o : %.s $(headers)
 	$(CC) -c $(AFLAGS) $< -o $@
 
-$(osdeppath)/obj/%.o : $(osdeppath)/%.c
+obj/$(osdeppath)/%.o : $(osdeppath)/%.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 
