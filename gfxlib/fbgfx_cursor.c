@@ -28,13 +28,13 @@ FBCALL float fb_GfxCursor (int number)
 {
     switch (number)
     {
-    case 0:
+    case 0: /* viewport x */
         return fb_GfxPMap(fb_GfxInfo.gfx_cursorX, 0);
-    case 1:
+    case 1: /* viewport y */
         return fb_GfxPMap(fb_GfxInfo.gfx_cursorY, 1);
-    case 2:
+    case 2: /* window x */
         return fb_GfxInfo.gfx_cursorX;
-    case 3:
+    case 3: /* window y */
         return fb_GfxInfo.gfx_cursorY;
     //default:
         // <><><><><> error... <><><><><>

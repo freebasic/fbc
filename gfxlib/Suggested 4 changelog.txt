@@ -6,5 +6,6 @@
  - The cursor is now hidden in fullscreen modes *
  - When emulating a QB screen mode, solid background for text is turned on *
 (text still has transparent background in "Screen xRes, yRes, depth" modes)
+ - Pset and Point now lock the surface before calculating pixel address (fixes crashing in fullscreen)
 
 * Is this ok?
