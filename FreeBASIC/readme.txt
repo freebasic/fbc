@@ -1,5 +1,5 @@
   
-  FreeBASIC - A 32-bit QuickBASIC-compatible Compiler
+  FreeBASIC - A 32-bit BASIC Compiler for DOS, Windows and Linux
   Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 
 
@@ -163,7 +163,7 @@ Most Important Features:
 
   o Preprocessor:
 
-    - Same syntax as in C (less for complex #DEFINE's, as they are unsupported):
+    - Same syntax as in C (including #DEFINE's with arguments):
 
       #DEFINE SOMEDEF 1234
       #DEFINE OTHERDEF 5678
@@ -180,6 +180,10 @@ Most Important Features:
       #   DEFINE OTHERDEF 5678
       #ENDIF
       #PRINT OTHERDEF
+
+      #DEFINE bar(x,y) ((x) * (y))
+      #DEFINE foo(x,y) bar(x-y,y-x)
+      a = foo(b, c)
 
   o Escape characters inside literal strings:
 
@@ -237,12 +241,12 @@ What FreeBASIC Isn't:
   o FreeBASIC is not a QuickBASIC clone, neither an emulator.
   
     - DEF SEG, PEEK and POKE to absolute 16-bit memory locations and many 
-      old and deprecated statements, that would be seldom used today, were not 
-      implemented, read the docs/keywords.txt file for a list of the differences. 
+      old and deprecated statements, that are seldom used today, were not 
+      implemented, read the docs/keywords.txt file for a list of differences. 
       
     - While FB is certainly the BASIC compiler that most reassembles the Microsoft 
       BASIC compilers for DOS, don't expect to compile old source-codes filled with 
-      unsupported statements or external libraries, that won't work.
+      unsupported statements or external libraries, they won't be compiled.
 
   o FreeBASIC is not a Visual Basic alternative.
 

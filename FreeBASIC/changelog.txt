@@ -10,12 +10,16 @@ Version 0.12 Beta:
         Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
         at programs startup and proper colors support under X11. Compatibility issues may rise though, so
         feedback is welcome (lillo)
+[chged] PEEKS, PEEKI, POKES, POKEI keywords removed, use now the new syntax as "PEEK( data type, expression )" or 
+        "POKE data ype, expression, expression" to peek/poke different data types than BYTE, that's the default one (v1c)
 [chged] many Allegro's globals like al_screen, al_rgb had the "al_" prefix removed, they are now as the originals (v1c)
 [chged] Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
 [chged] white-spaces are now preserved for ASM blocks and #DEFINE's (v1c)
 [chged] Linux port install script will now warn users if not run with root priviledges (lillo)
 [chged] the range of console-mode background colors is now 0 to 15 in DOS and Windows, 'cause Nex wanted that :) (v1c)
 [chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
+[chged] empty statements like ":foo=1::bar=2:" are now accepted, "if foo then:bar:else:foo" will work too (v1c)
+[chged] DIM|REDIM array w/o explicit dimensions is not allowed anymore inside procs, as the descriptor size is unknown (v1c)
 [added] resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
         compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
         used too (DrV)
@@ -26,6 +30,7 @@ Version 0.12 Beta:
 [added] "operator =" shorthand, as in "a += b * c" (v1ctor)
 [added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
         faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
+[added] #DEFINE's with arguments (macros) as in "#DEFINE foo(a,b) ((a)*(b))" (v1c)
 [added] "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
 [added] compile-time evaluation for the CHR$ and ASC intrinsic routines (v1c)
 [added] SCREENINFO gfx function to get informations on current gfx mode (lillo)
@@ -35,6 +40,7 @@ Version 0.12 Beta:
 [added] OpenGL internal gfx driver for both Win32 and Linux (lillo)
 [added] possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
 [added] the OpenAL headers, ported by Chris Davies (v1c)
+[added] include file and static library for TRE (a POSIX regular expressions lib) (v1c)
 [added] the ASM statement can be used on a single line as in "ASM mov eax, 1234" (v1c)
 [added] SCREEN() function, working as in QB (lillo)
 [added] gfxlib now internally uses MMX routines to update the screen if supported (lillo)
@@ -42,6 +48,7 @@ Version 0.12 Beta:
 [added] "DIM|REDIM|STATIC|COMMON AS SymbolType" for multiple declarations like "DIM AS INTEGER a, b, c(10)" (v1c)
 [added] all gfx primitives now accept as optional first parameter a target buffer where drawing will take place (lillo)
 [added] BLOAD now supports loading BMP files (lillo)
+[added] IFF(), conditional IF, to be used with numeric types only as in: "a = IIF( b > c, -1, 0)" (v1c)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
@@ -76,6 +83,7 @@ Version 0.12 Beta:
 [fixed] PRINT and WRITE shouldn't allow UDT's as parameter, same with INPUT (v1c)
 [fixed] COMMON arrays wouldn't be redimensioned when a REDIM was used (v1c)
 [fixed] integer division and modulo could gen bad code if pointers or indexes were used with EAX as the index reg (v1c)
+[fixed] base for non base-0 arrays with more than 2 dimensions was being wrongly calculated (v1c)
 
 
 Version 0.11 Beta:
