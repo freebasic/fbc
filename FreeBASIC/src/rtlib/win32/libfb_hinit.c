@@ -36,7 +36,9 @@ CRITICAL_SECTION fb_global_mutex;
 
 #endif
 
-FB_ERRORCTX fb_errctx;
+FB_ERRORCTX fb_errctx = { 0 };
+FB_INPCTX fb_inpctx = { 0 };
+
 
 /*:::::*/
 void fb_hInit ( void )
@@ -53,11 +55,13 @@ void fb_hInit ( void )
 	fb_errctx.num       = TlsAlloc();
 	fb_errctx.reslbl    = TlsAlloc();
 	fb_errctx.resnxtlbl = TlsAlloc();
-#else
-	fb_errctx.handler   = 0;
-	fb_errctx.num       = FB_RTERROR_OK;
-	fb_errctx.reslbl    = 0;
-	fb_errctx.resnxtlbl = 0;
+	
+	/* allocate thread local storage vars for input context */
+	fb_inpctx.f         = TlsAlloc();
+	fb_inpctx.i         = TlsAlloc();
+	fb_inpctx.s.data    = TlsAlloc();
+	fb_inpctx.s.len     = TlsAlloc();
+	fb_inpctx.s.size    = TlsAlloc();
 #endif
 
 }

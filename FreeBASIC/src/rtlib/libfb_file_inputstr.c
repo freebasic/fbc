@@ -39,22 +39,29 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 	if( fnum < 0 || fnum > FB_MAX_FILES )
 		return &fb_strNullDesc;
 
+	FB_LOCK();
+
 	if( fnum == 0 )
 		f = stdin;
 	else
 		f = fb_fileTB[fnum-1].f;
 
-	if( f == NULL )
+	if( f == NULL ) {
+		FB_UNLOCK();
 		return &fb_strNullDesc;
+	}
 
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-	if( dst == NULL )
+	if( dst == NULL ) {
+		FB_UNLOCK();
 		return &fb_strNullDesc;
+	}
 
 	fb_hStrAllocTemp( dst, bytes );
 	if( dst->data == NULL )
 	{
 		fb_hStrDelTempDesc( dst );
+		FB_UNLOCK();
 		return &fb_strNullDesc;
 	}
 
@@ -73,6 +80,8 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 		dst->len = len | FB_TEMPSTRBIT;				/* fake len */
 		dst->data[len] = '\0';
 	}
+
+	FB_UNLOCK();
 
 	return dst;
 }

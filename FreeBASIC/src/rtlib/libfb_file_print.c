@@ -37,13 +37,21 @@ int fb_hFilePrintBuffer( int fnum, char *buffer )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	len = strlen( buffer );
 
-	if( fwrite( buffer, 1, len, fb_fileTB[fnum-1].f ) != len )
+	if( fwrite( buffer, 1, len, fb_fileTB[fnum-1].f ) != len ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	}
+	
+	FB_UNLOCK();
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -38,8 +38,12 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	/* seek to newpos */
 	if( pos > 0 )
@@ -51,8 +55,10 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 			--pos;
 
 		result = fseek( fb_fileTB[fnum-1].f, pos, SEEK_SET );
-		if( result != 0 )
+		if( result != 0 ) {
+			FB_UNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		}
 	}
 
 	/* do read */
@@ -73,6 +79,8 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 		if( valuelen > 0 )
 			fseek( fb_fileTB[fnum-1].f, valuelen, SEEK_CUR );
 	}
+
+	FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -37,8 +37,12 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	/* seek to newpos */
 	if( pos > 0 )
@@ -50,8 +54,10 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 			--pos;
 
 		result = fseek( fb_fileTB[fnum-1].f, pos, SEEK_SET );
-		if( result != 0 )
+		if( result != 0 ) {
+			FB_UNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		}
 	}
 
 	len = FB_STRSIZE( str );
@@ -61,12 +67,15 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 		/* del if temp */
 		fb_hStrDelTemp( str );
 
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
 	/* do write */
-	if( fwrite( str->data, 1, len, fb_fileTB[fnum-1].f ) != len )
+	if( fwrite( str->data, 1, len, fb_fileTB[fnum-1].f ) != len ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	}
 
     /* if in random mode, writes must be of reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
@@ -78,6 +87,8 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
+
+	FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -402,8 +402,19 @@ typedef struct _FB_FILE {
     int				access;
 } FB_FILE;
 
+typedef struct _FB_INPCTX {
+	FB_TLSENTRY		f;
+	FB_TLSENTRY		i;
+	struct {
+		FB_TLSENTRY	data;
+		FB_TLSENTRY len;
+		FB_TLSENTRY size;
+	} s;
+} FB_INPCTX;
+
 
 extern FB_FILE fb_fileTB[];
+extern FB_INPCTX fb_inpctx;
 
 
 #define FB_FILE_MODE_BINARY			0

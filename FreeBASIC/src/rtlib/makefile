@@ -23,7 +23,7 @@ endif
 CC := gcc
 CFLAGS := -O3 -I .
 ifneq ($(WINSYSDIR),)
-    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86
+    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86 -DMULTITHREADED
     osdeppath := win32
 	libpath = ../../lib/win32
 else

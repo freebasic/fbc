@@ -31,11 +31,18 @@
 
 static void fb_hFileCtx ( int doinit );
 
+#ifdef MULTITHREADED
+static int is_exiting = FALSE;
+#endif
 
 
 /*:::::*/
 static void fb_hFileExit( void )
 {
+
+#ifdef MULTITHREADED
+	is_exiting = TRUE;
+#endif
 
 	fb_hFileCtx( 0 );
 
@@ -78,6 +85,11 @@ FBCALL void fb_FileReset ( void )
 {
 	int i;
 
+#ifdef MULTITHREADED
+	if (!is_exiting)
+		FB_LOCK();
+#endif
+	
 	for( i = 0; i < FB_MAX_FILES; i++ )
 		if( fb_fileTB[i].f != NULL )
 		{
@@ -85,6 +97,11 @@ FBCALL void fb_FileReset ( void )
 				fclose( fb_fileTB[i].f );
 			fb_fileTB[i].f = NULL;
 		}
+
+#ifdef MULTITHREADED
+	if (!is_exiting)
+		FB_UNLOCK();
+#endif
 }
 
 /*:::::*/
@@ -92,9 +109,15 @@ FBCALL int fb_FileFree ( void )
 {
 	int i;
 
+	FB_LOCK();
+	
 	for( i = 0; i < FB_MAX_FILES; i++ )
-		if( fb_fileTB[i].f == NULL )
+		if( fb_fileTB[i].f == NULL ) {
+			FB_UNLOCK();
 			return i + 1;
+		}
+
+	FB_UNLOCK();
 
 	return 0;
 }
@@ -117,13 +140,23 @@ long fb_hFileSize( FILE *f )
 /*:::::*/
 FBCALL unsigned int fb_FileSize( int fnum )
 {
+	unsigned int res;
+	
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return 0;
 
-	if( fb_fileTB[fnum-1].f == NULL )
-		return 0;
+	FB_LOCK();
 
-	return fb_hFileSize( fb_fileTB[fnum-1].f );
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
+		return 0;
+	}
+
+	res = fb_hFileSize( fb_fileTB[fnum-1].f );
+
+	FB_UNLOCK();
+
+	return res;
 }
 
 /*:::::*/
@@ -165,8 +198,12 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( fb_fileTB[fnum-1].f != NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f != NULL ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	str_len = FB_STRSIZE( str );
 
@@ -174,7 +211,8 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	{
 		/* del if temp */
 		fb_hStrDelTemp( str );
-
+		
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
@@ -231,6 +269,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
             	if( f == NULL )
             	{
             		free( filename );
+            		FB_UNLOCK();
             		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
             	}
 			}
@@ -241,6 +280,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 			if( (f = fopen( filename, openmask )) == NULL )
 			{
 				free( filename );
+				FB_UNLOCK();
 				return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 			}
 		}
@@ -259,8 +299,10 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		case FB_FILE_MODE_INPUT:
 			if( type == FB_FILE_TYPE_CONSOLE )
 				f = stdin;
-			else
+			else {
+				FB_UNLOCK();
 				return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+			}
 			break;
 
 		case FB_FILE_MODE_OUTPUT:
@@ -271,6 +313,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 			break;
 
 		default:
+			FB_UNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
 	}
@@ -319,6 +362,8 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
+	FB_UNLOCK();
+
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
@@ -336,11 +381,15 @@ FBCALL int fb_FileClose( int fnum )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
+	FB_LOCK();
+
 	if( fb_fileTB[fnum-1].type == FB_FILE_TYPE_NORMAL )
 		if( fb_fileTB[fnum-1].f != NULL )
 			fclose( fb_fileTB[fnum-1].f );
 
 	fb_fileTB[fnum-1].f = NULL;
+	
+	FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -36,7 +36,11 @@ static char *fb_dataptr = NULL;
 /*:::::*/
 FBCALL void fb_DataRestore( char *labeladdr )
 {
+	FB_LOCK();
+
 	fb_dataptr = labeladdr;
+
+	FB_UNLOCK();
 }
 
 static short fb_hDataRead( void )
@@ -68,17 +72,23 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 {
 	short len;
 
+	FB_LOCK();
+
 	len = fb_hDataRead();
 
 	fb_StrAssign( dst, dst_size, (void *)fb_dataptr, 0, fillrem );
 
 	fb_dataptr += len + 1;
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadByte( char *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -90,12 +100,16 @@ FBCALL void fb_DataReadByte( char *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadUByte( unsigned char *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -107,12 +121,16 @@ FBCALL void fb_DataReadUByte( unsigned char *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadShort( short *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -124,12 +142,16 @@ FBCALL void fb_DataReadShort( short *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadUShort( unsigned short *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -141,12 +163,16 @@ FBCALL void fb_DataReadUShort( unsigned short *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadInt( int *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -158,12 +184,16 @@ FBCALL void fb_DataReadInt( int *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadUInt( unsigned int *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -175,12 +205,16 @@ FBCALL void fb_DataReadUInt( unsigned int *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadLongint( long long *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -196,12 +230,16 @@ FBCALL void fb_DataReadLongint( long long *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadULongint( unsigned long long *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -217,12 +255,16 @@ FBCALL void fb_DataReadULongint( unsigned long long *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadSingle( float *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -234,12 +276,16 @@ FBCALL void fb_DataReadSingle( float *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 
 /*:::::*/
 FBCALL void fb_DataReadDouble( double *dst )
 {
 	short len;
+
+	FB_LOCK();
 
 	len = fb_hDataRead();
 
@@ -251,5 +297,7 @@ FBCALL void fb_DataReadDouble( double *dst )
 
 		fb_dataptr += len + 1;
 	}
+
+	FB_UNLOCK();
 }
 

@@ -131,16 +131,24 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len, 
 /*:::::*/
 FBCALL int fb_FileLineInput( int fnum, void *dst, int dst_len, int fillrem )
 {
+	int res;
 
-	return fb_hFileLineInput( fnum, NULL, dst, dst_len, fillrem, FB_FALSE, FB_FALSE );
-
+	FB_LOCK();
+	res = fb_hFileLineInput( fnum, NULL, dst, dst_len, fillrem, FB_FALSE, FB_FALSE );
+	FB_UNLOCK();
+	
+	return res;
 }
 
 /*:::::*/
 FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
 {
+	int res;
 
-	return fb_hFileLineInput( 0, text, dst, dst_len, fillrem, addquestion, addnewline );
+	FB_LOCK();
+	res = fb_hFileLineInput( 0, text, dst, dst_len, fillrem, addquestion, addnewline );
+	FB_UNLOCK();
 
+	return res;
 }
 

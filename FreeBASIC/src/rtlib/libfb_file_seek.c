@@ -38,8 +38,12 @@ FBCALL long fb_FileTell( int fnum )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return 0;
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return 0;
+	}
 
 	pos = ftell( fb_fileTB[fnum-1].f );
 
@@ -47,17 +51,25 @@ FBCALL long fb_FileTell( int fnum )
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
 		pos /= fb_fileTB[fnum-1].len;
 
+	FB_UNLOCK();
+
 	return pos + 1;
 }
 
 /*:::::*/
 FBCALL int fb_FileSeek( int fnum, long newpos )
 {
+	int res;
+	
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	/* if in random mode, mul by reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
@@ -65,7 +77,11 @@ FBCALL int fb_FileSeek( int fnum, long newpos )
 	else
 		--newpos;
 
-	return fb_ErrorSetNum( fseek( fb_fileTB[fnum-1].f, newpos, SEEK_SET ) == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
+	res = fb_ErrorSetNum( fseek( fb_fileTB[fnum-1].f, newpos, SEEK_SET ) == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
+
+	FB_UNLOCK();
+
+	return res;
 }
 
 /*:::::*/
@@ -76,24 +92,32 @@ FBCALL long fb_FileLocation( int fnum )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return 0;
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return 0;
-
-	pos = fb_FileTell( fnum );
-
-	if( pos > 0 )
-	{
-		/* if in seq mode, divide by 128 (QB quirk) */
-		switch( fb_fileTB[fnum-1].mode )
-		{
-		case FB_FILE_MODE_INPUT:
-		case FB_FILE_MODE_OUTPUT:
-			pos /= 128;
-			break;
-		default:
-			--pos;
-		}
 	}
+
+	pos = ftell( fb_fileTB[fnum-1].f );
+
+	/* if in random mode, divide by reclen */
+	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
+		pos /= fb_fileTB[fnum-1].len;
+	pos++;
+
+	/* if in seq mode, divide by 128 (QB quirk) */
+	switch( fb_fileTB[fnum-1].mode )
+	{
+	case FB_FILE_MODE_INPUT:
+	case FB_FILE_MODE_OUTPUT:
+		pos /= 128;
+		break;
+	default:
+		--pos;
+	}
+
+	FB_UNLOCK();
 
 	return pos;
 }

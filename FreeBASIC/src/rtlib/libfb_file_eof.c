@@ -32,11 +32,17 @@
 /*:::::*/
 FBCALL int fb_FileEof( int fnum )
 {
+	int res;
+	
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_TRUE;
 
-	if( fb_fileTB[fnum-1].f == NULL )
+	FB_LOCK();
+
+	if( fb_fileTB[fnum-1].f == NULL ) {
+		FB_UNLOCK();
 		return FB_TRUE;
+	}
 
 	if( fb_fileTB[fnum-1].type == FB_FILE_TYPE_NORMAL )
 	{
@@ -45,13 +51,20 @@ FBCALL int fb_FileEof( int fnum )
 		case FB_FILE_MODE_BINARY:
 		case FB_FILE_MODE_RANDOM:
 		case FB_FILE_MODE_INPUT:
-			if( ftell( fb_fileTB[fnum-1].f ) >= fb_fileTB[fnum-1].size )
+			if( ftell( fb_fileTB[fnum-1].f ) >= fb_fileTB[fnum-1].size ) {
+				FB_UNLOCK();
 	        	return FB_TRUE;
-    	    else
+	        }
+    	    else {
+    	    	FB_UNLOCK();
         		return FB_FALSE;
+        	}
 		}
 	}
 
-	return (feof( fb_fileTB[fnum-1].f ) == 0? FB_FALSE: FB_TRUE);
+	res = (feof( fb_fileTB[fnum-1].f ) == 0? FB_FALSE: FB_TRUE);
+	FB_UNLOCK();
+
+	return res;
 }
 
