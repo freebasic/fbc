@@ -107,8 +107,8 @@ end sub
 ''========================================================================
 
 sub DrawScene(  )
-	static as GLfloat model_diffuse(0 to 3) = 1.0, 0.8, 0.8, 1.0
-	static as GLfloat model_specular(0 to 3) = 0.6, 0.6, 0.6, 1.0
+	static as GLfloat model_diffuse(0 to 3) = { 1.0, 0.8, 0.8, 1.0 }
+	static as GLfloat model_specular(0 to 3) = { 0.6, 0.6, 0.6, 1.0 }
 	static as GLfloat model_shininess = 20.0
 
     glPushMatrix( )
@@ -193,10 +193,10 @@ end sub
 ''========================================================================
 
 sub DrawAllViews( )
-	static as GLfloat light_position(0 to 3) = 0.0, 8.0, 8.0, 1.0
-	static as GLfloat light_diffuse(0 to 3) = 1.0, 1.0, 1.0, 1.0
-	static as GLfloat light_specular(0 to 3) = 1.0, 1.0, 1.0, 1.0
-	static as GLfloat light_ambient(0 to 3) = 0.2, 0.2, 0.3, 1.0
+	static as GLfloat light_position(0 to 3) = { 0.0, 8.0, 8.0, 1.0 }
+	static as GLfloat light_diffuse(0 to 3) = { 1.0, 1.0, 1.0, 1.0 }
+	static as GLfloat light_specular(0 to 3) = { 1.0, 1.0, 1.0, 1.0 }
+	static as GLfloat light_ambient(0 to 3) = { 0.2, 0.2, 0.3, 1.0 }
     dim as double aspect
 
     '' Calculate aspect of window

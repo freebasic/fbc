@@ -26,11 +26,11 @@ dim shared as GLfloat pos_y
 sub realize cdecl (byval widget as GtkWidget ptr, _
          	 	   byval userdata as gpointer )
   
-  static as GLfloat ambient(0 to 3) = 0.0, 0.0, 0.0, 1.0
-  static as GLfloat diffuse(0 to 3) = 1.0, 1.0, 1.0, 1.0
-  static as GLfloat position(0 to 3) = 1.0, 1.0, 1.0, 0.0
-  static as GLfloat lmodel_ambient(0 to 3) = 0.2, 0.2, 0.2, 1.0
-  static as GLfloat local_view(0) = 0.0
+  static as GLfloat ambient(0 to 3) = { 0.0, 0.0, 0.0, 1.0 }
+  static as GLfloat diffuse(0 to 3) = { 1.0, 1.0, 1.0, 1.0 }
+  static as GLfloat position(0 to 3) = { 1.0, 1.0, 1.0, 0.0 }
+  static as GLfloat lmodel_ambient(0 to 3) = { 0.2, 0.2, 0.2, 1.0 }
+  static as GLfloat local_view(0) = { 0.0 }
   
   dim as GdkGLContext ptr glcontext
   dim as GdkGLDrawable ptr gldrawable
@@ -106,9 +106,9 @@ function expose_event cdecl (byval widget as GtkWidget ptr, _
                        		 byval userdata as gpointer) as gboolean
 
   '' brass
-  static as GLfloat ambient(0 to 3) = 0.329412, 0.223529, 0.027451, 1.0
-  static as GLfloat diffuse(0 to 3) = 0.780392, 0.568627, 0.113725, 1.0
-  static as GLfloat specular(0 to 3) = 0.992157, 0.941176, 0.807843, 1.0
+  static as GLfloat ambient(0 to 3) = { 0.329412, 0.223529, 0.027451, 1.0 }
+  static as GLfloat diffuse(0 to 3) = { 0.780392, 0.568627, 0.113725, 1.0 }
+  static as GLfloat specular(0 to 3) = { 0.992157, 0.941176, 0.807843, 1.0 }
   static as GLfloat shininess = 0.21794872 * 128.0
 
   dim as GdkGLContext ptr glcontext
