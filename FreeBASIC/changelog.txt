@@ -24,6 +24,10 @@ Version 0.13 Beta:
 - #UNDEF won't report an error if un-defining an non-existent symbol (v1c)
 
 [added]
+- runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded
+  applications to avoid unnecessary locking, latter is used when compiling multithreaded apps. The compiler detects if the
+  app in multithreaded if it makes use of THREADCREATE; to force linking with the thread-safe lib in any case, use the -mt
+  commandline option.
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
 - typedefs with forward referencing support, as in C (but the syntax is "TYPE Name AS SymbolType") (v1c)
 - the ZSTRING type, null-terminated strings with fixed-length but that can be dereferenced and returned by functions (v1c)
@@ -40,14 +44,16 @@ Version 0.13 Beta:
 - include file and import lib for the DevIL library (v1c)
 - include file and import lib for the gd library (v1c)
 - include file and import lib for the zlib library (v1c
-- include file and import lib for the PDFlib library (v1c)
+- include file and import lib for the PDFlib Lite library (v1c)
 - include file and import lib for the ODE library (v1c)
+- include file and import lib for the cryptlib library (v1c)
 - include file and static lib for the GRX library (v1c)
 - include file and static lib for the BIG_INT library (v1c)
 - include file and static lib for the cgi-util library (v1c)
 - include file and static lib for the Mini-XML library (v1c)
 - include file and static lib for the GDSL library (v1c)
 - include file and static lib for the GLFW library (v1c)
+- include file and static lib for the PDCurses library (v1c)
 - PALETTE can now be called with 4 parameters, specifying new color red/green/blue components directly (lillo)
 - ENUM's can now be nameless (v1c)
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
@@ -70,10 +76,7 @@ Version 0.13 Beta:
 - the PIPE: file type to OPEN, for read or write access, as in: "OPEN "PIPE:dir *.*" for input as #1" (v1c)
 - the ugly ON ERROR GOTO 0 (v1c)
 - OPEN, CLOSE, GET# and PUT# can be used as functions now, so errors can be checked w/o handlers (v1c)
-- runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded
-  applications to avoid unnecessary locking, latter is used when compiling multithreaded apps. The compiler detects if the
-  app in multithreaded if it makes use of THREADCREATE; to force linking with the thread-safe lib in any case, use the -mt
-  commandline option.
+- argument-less #define's can now be declared and referenced using optional ()'s (v1c)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported

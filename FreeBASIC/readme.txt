@@ -42,10 +42,10 @@ Most Important Features:
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
-  o A large number of variable types available, like BYTE/SHORT/INTEGER/LONGINT, 
-    SINGLE/DOUBLE and STRING:
+  o A large number of variable types available, like BYTE, SHORT, INTEGER, LONGINT, 
+    SINGLE, DOUBLE and STRING:
 
-    - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER/ULONGINT).
+    - All integer types have unsigned versions (UBYTE, USHORT, UINTEGER, ULONGINT).
 
     - Strings can be fixed, variable-length or null-terminated (zstring's), up to 2GB long.
 
@@ -55,7 +55,7 @@ Most Important Features:
 
     - GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including support for Glade)
 
-    - libxml and libxslt: defacto XML and XLT libraries
+    - libxml and libxslt: defacto standard XML and XSL libraries
 
     - GSL - GNU Scientific library
 
@@ -187,6 +187,16 @@ Most Important Features:
       
       text = "BAR"
       print text[0]  			'' output will be 66 = ASC("B")
+
+  o Variable initializers, for variables and arrays, static, module-level or local:
+
+      DIM foo( 0 to 3 ) as integer = 1, 2, 3, 4
+
+      STATIC bar( 0 to 1, 0 to 1 ) as zstring * 10 = { "abc", "def" }, { "ghi", "jkl" }
+
+      DIM mytype as MYTYPE = ( "a", 1, 2.0 )
+
+      DIM mytypearray(0 to 1) as MYTYPE = ( "a", 1, 2.0 ), ( "b", 3, 4.0 )
 
   o Optional function arguments (numeric and strings):
 
@@ -333,10 +343,6 @@ Possible Additions to Later Versions:
 
   o Pointer type casting
 
-  o Variable initializers:
-
-      DIM MyVariable AS SomeType = { InitialValue, ... }
-
   o CLASS data structure (for object-oriented programming):
 
     - GUI code would be much easier to write.
@@ -348,7 +354,7 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
     - Added build-in threads and dynlib support, made the rtlib thread-safe, 
-      besides  many other runtime lib and compiler changes.
+      besides many other runtime lib and compiler improvements.
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
@@ -373,6 +379,9 @@ Credits (in alphabetic order):
   o fsw:
     - Translated most of the Windows API headers, besides the Gtk/GLADE and the 
       wx-c GUI examples (not included yet).
+      
+  o keeling (...@...):
+    - Wrote the GSL matrix test.
 
   o Matthias Faust (matthias_faust@web.de):
     - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was sent by
@@ -459,6 +468,8 @@ Links:
  
     - cgi-util: http://www.newbreedsoftware.com/cgi-util/
 
+    - cryptlib: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
+
     - DevIL: http://openil.sourceforge.net/
     
     - fmod: http://www.fmod.org/
@@ -481,6 +492,8 @@ Links:
     
     - IUP: http://luaforge.net/projects/iup
 
+    - JAPI: http://www.japi.de/
+
     - LibXML: http://xmlsoft.org/
     
     - Lua: http://www.lua.org/
@@ -494,6 +507,8 @@ Links:
     - OpenAL: http://www.openal.org/ or http://developer.creative.com/landing.asp?cat=1&sbcat=31&top=38
 
     - OpenGL: http://www.opengl.org/
+
+    - PDCurses: http://pdcurses.sourceforge.net/
 
     - PDFlib: http://www.pdflib.com/ or http://gnuwin32.sourceforge.net/packages/pdflib.htm
 
