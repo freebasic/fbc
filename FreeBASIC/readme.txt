@@ -20,18 +20,15 @@ License:
 
 Most Important Features:
 
-  o Syntax-compatible with Microsoft's QBASIC/QuickBASIC/PDS/VB-DOS interpreters
-    and compilers:
+  o BASIC Compatibility:
 
     - FreeBASIC is not a "new" BASIC language. It is not required of you to learn
-      anything new if you are familiar with any MS-BASIC variant.
+      anything new if you are familiar with any Microsoft-BASIC variant.
 
-    - FreeBASIC is case-insensitive; scalar variables don't need to be dimensioned;
-      line numbers are supported; no required MAIN function; et cetera.
-
-    - Please note that compatibility does not mean that any code written for any
-      version of MS-BASIC will run the same with FreeBASIC. It may compile
-      fine, but have problems running.
+    - FreeBASIC is case-insensitive; scalar variables don't need to be dimensioned and
+      suffix can be used; line numbers are supported; MAIN function is no required; 
+      most of the graphic and console statements and functions found in MS-QuickBASIC were
+      implemented, et cetera.
 
   o Clean Syntax:
 
@@ -45,13 +42,11 @@ Most Important Features:
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
-
   o A large number of variable types available, like BYTE/SHORT/INTEGER, SINGLE/DOUBLE and STRING:
 
     - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER).
 
     - Strings can be fixed or variable-length (up to 2GB long).
-
 
   o User-defined Types (UDT's):
 
@@ -224,7 +219,7 @@ Most Important Features:
   o Portability:
 
     - The run-time library is being written with portability in mind. Operating
-      system-dependent functions are being separated to make porting the compiler
+      system-dependent functions are separated to make porting the compiler
       easy.
 
     - The compiler is written in 100% FreeBASIC code (FreeBASIC compiles itself.)
@@ -239,6 +234,16 @@ Most Important Features:
 
 What FreeBASIC Isn't:
 
+  o FreeBASIC is not a QuickBASIC clone, neither an emulator.
+  
+    - DEF SEG, PEEK and POKE to absolute 16-bit memory locations and many 
+      old and deprecated statements, that would be seldom used today, were not 
+      implemented, read the docs/keywords.txt file for a list of the differences. 
+      
+    - While FB is certainly the BASIC compiler that most reassembles the Microsoft 
+      BASIC compilers for DOS, don't expect to compile old source-codes filled with 
+      unsupported statements or external libraries, that won't work.
+
   o FreeBASIC is not a Visual Basic alternative.
 
     - There are no events, or any GUI wrapper of any kind. (You can create them
@@ -246,9 +251,9 @@ What FreeBASIC Isn't:
 
   o FreeBASIC is most certainly not bug free, as with any other program.
 
-    - The FreeBASIC project is only five months old, and was not/is not tested
+    - The FreeBASIC project was started in September 2004, and was not/is not tested
       enough.
-
+      
 
 Possible Additions to Later Versions:
 
@@ -301,7 +306,8 @@ Credits (in alphabetic order):
     - Wrote the rel-* graphics demonstrations in the GFX directory.
 
   o fsw:
-    - Translated most of the Windows API headers.
+    - Translated most of the Windows API headers, besides the Gtk/GLADE and the 
+      wx-c GUI examples (not included yet).
 
   o Matthias Faust (matthias_faust@web.de):
     - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was sent by
@@ -324,7 +330,8 @@ Credits (in alphabetic order):
     - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
 
   o Steven Hidy (subxero@phatcode.net):
-    - Rewrote this readme file, correcting v1ctor's mistakes (too many to list :P).
+    - Rewrote this readme file, correcting v1ctor's mistakes (also re-edited by 
+      KrisKhaos for version 0.12).
 
   o zydon:
     - Wrote the calendar the toolbar examples at the GUI directory.
@@ -399,6 +406,8 @@ Links:
     - SDL_gfx: http://www.ferzkopp.net/~aschiffler/Software/SDL_gfx-2.0/
 
     - TinyPTC: http://www.gaffer.org/tinyptc/
+    
+    - TRE (Regular Expressions): http://laurikari.net/tre/
 
     - Zlib: http://www.zlib.net/
 
