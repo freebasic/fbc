@@ -109,6 +109,7 @@
 #define KEY_F(n)		(0x10A + (n))
 #define KEY_MAX_SPECIALS	(KEY_F(10) - 0x100 + 1)
 
+#define WINDOW_TITLE_SIZE	128
 
 
 typedef struct MODE

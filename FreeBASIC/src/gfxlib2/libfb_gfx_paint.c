@@ -40,7 +40,7 @@ static SPAN *add_span(SPAN **span, int *x, int y, int border_color)
 {
 	SPAN *s;
 	int x1, x2;
-	
+
 	x1 = x2 = *x;
 	while ((x1 > fb_mode->view_x) && (fb_hGetPixel(x1 - 1, y) != border_color))
 		x1--;
@@ -58,7 +58,7 @@ static SPAN *add_span(SPAN **span, int *x, int y, int border_color)
 	s->next = NULL;
 	s->row_next = span[y];
 	span[y] = s;
-	
+
 	return s;
 }
 
@@ -70,10 +70,10 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 	unsigned int texel;
 	unsigned char data[256], *dest, *src;
 	SPAN **span, *s, *tail, *head;
-	
+
 	if (!fb_mode)
 		return;
-	
+
 	if (color == DEFAULT_COLOR)
 		color = fb_mode->fg_color;
 	else
@@ -82,28 +82,28 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 		border_color = color;
 	else
 		border_color = fb_hFixColor(border_color);
-	
+
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
-	
+
 	fb_hTranslateCoord(fx, fy, &x, &y);
-	
+
 	if ((x < fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
 	    (y < fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
 		return;
-	
+
 	if (fb_hGetPixel(x, y) == border_color)
 		return;
-	
+
 	fb_hMemSet(data, 0, sizeof(data));
 	if ((mode == PAINT_TYPE_PATTERN) && (pattern))
 		fb_hMemCpy(data, pattern->data, MIN(256, FB_STRSIZE(pattern)));
-	
+
 	size = sizeof(SPAN *) * fb_mode->h;
 	span = (SPAN **)malloc(size);
 	fb_hMemSet(span, 0, size);
-	
+
 	tail = head = add_span(span, &x, y, border_color);
-	
+
 	/* Find all spans to paint */
 	while (tail) {
 		if (tail->y - 1 >= fb_mode->view_y) {
@@ -130,15 +130,15 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 		}
 		tail = tail->next;
 	}
-	
+
 	fb_mode->driver->lock();
-	
+
 	/* Fill spans */
 	for (y = 0; y < fb_mode->h; y++) {
 		for (s = tail = span[y]; s; s = s->row_next, free(tail), tail = s) {
-			
+
 			dest = fb_mode->line[s->y] + (s->x1 * fb_mode->bpp);
-			
+
 			if (mode == PAINT_TYPE_FILL)
 				fb_hPixelSet(dest, color, s->x2 - s->x1 + 1);
 			else {
@@ -159,11 +159,15 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 				if ((s->x2 & 0x7) && ((s->x1 & ~0x7) != (s->x2 & ~0x7)))
 					fb_hPixelCpy(dest, src, s->x2 & 0x7);
 			}
-			
+
 			fb_mode->dirty[y] = TRUE;
 		}
 	}
 	free(span);
-	
+
 	fb_mode->driver->unlock();
+
+	/* del if temp */
+	fb_hStrDelTemp( pattern );
+
 }

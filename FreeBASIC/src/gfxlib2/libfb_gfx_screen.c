@@ -27,7 +27,6 @@
 #include "fb_gfx.h"
 
 #define NUM_MODES		21
-#define WINDOW_TITLE_SIZE	128
 
 
 MODE *fb_mode = NULL;
@@ -86,7 +85,8 @@ static const GFXDRIVER *driver[] = {
 };
 
 
-static char window_title[WINDOW_TITLE_SIZE] = "";
+static char window_title_buff[WINDOW_TITLE_SIZE] = "";
+static char *window_title = NULL;
 
 
 /*:::::*/
@@ -102,10 +102,10 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	const MODEINFO *info;
 	int i;
 	char *c;
-	
+
 	if ((mode < 0) || (mode > NUM_MODES))
 		return -1;
-	
+
 	if (mode > 0) {
 		info = &mode_info[mode - 1];
 		if (info->w < 0)
@@ -113,7 +113,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	}
 	if (num_pages <= 0)
 		num_pages = 1;
-	
+
 	if (fb_mode) {
 		if (fb_mode->driver)
 			fb_mode->driver->exit();
@@ -130,7 +130,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			free(fb_mode->dirty);
 		free(fb_mode);
 	}
-	
+
 	if (mode == 0) {
 		fb_SetInkeyProc(fb_ConsoleInkey);
 		fb_SetGetkeyProc(fb_ConsoleGetkey);
@@ -155,7 +155,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_SetPrintBufferProc(fb_GfxPrintBuffer);
 		fb_mode = (MODE *)calloc(1, sizeof(MODE));
 	}
-	
+
 	if (fb_mode) {
 		fb_mode->w = info->w;
 		fb_mode->h = info->h;
@@ -165,7 +165,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_mode->default_palette = info->palette;
 		fb_mode->scanline_size = info->scanline_size;
 		fb_mode->font = (FONT *)info->font;
-		
+
 		switch (fb_mode->depth) {
 			case 15:
 			case 16:	fb_mode->color_mask = 0xFFFF; fb_mode->depth = 16; break;
@@ -173,7 +173,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			case 32:	fb_mode->color_mask = 0xFFFFFF; fb_mode->depth = 32; break;
 			default:	fb_mode->color_mask = (1 << fb_mode->depth) - 1;
 		}
-		
+
 		fb_mode->bpp = BYTES_PER_PIXEL(fb_mode->depth);
 		fb_mode->pitch = fb_mode->w * fb_mode->bpp;
 		fb_mode->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
@@ -188,20 +188,20 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		   gfx driver which is not aware of the scanline size */
 		fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
 		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
-		
+
 		fb_hSetupFuncs();
-		
-		if (!window_title[0]) {
-			strncpy(window_title, fb_hGetCommandLine(), WINDOW_TITLE_SIZE - 1);
+
+		if (!window_title)
+		{
+			window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
 			if (c = strchr(window_title, ' '))
 				*c = '\0';
 #ifdef WIN32
 			if (c = strrchr(window_title, '.'))
 				*c = '\0';
 #endif
-			window_title[WINDOW_TITLE_SIZE - 1] = '\0';
 		}
-		
+
 		for (i = 0; driver[i]; i++) {
 			if (!driver[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
 				break;
@@ -211,25 +211,25 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			return -1;
 		}
 		fb_mode->driver = driver[i];
-				
+
 		fb_GfxPalette(-1, 0);
-		
+
 		if (fb_mode->depth == 8)
 			fb_mode->fg_color = 15;
 		else
 			fb_mode->fg_color = fb_mode->color_mask;
-		
+
 		fb_mode->view_w = fb_mode->w;
 		fb_mode->view_h = fb_mode->h;
 		fb_mode->text_w = info->text_w;
 		fb_mode->text_h = info->text_h;
-		
+
 		fb_AtExit(exit_proc);
 	}
-	
+
 	if (flags != SCREEN_EXIT)
 		fb_Cls(-1);
-	
+
 	return 0;
 }
 
@@ -237,7 +237,10 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 /*:::::*/
 FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
-	strncpy(window_title, title->data, WINDOW_TITLE_SIZE - 1);
+	strncpy(window_title_buff, title->data, WINDOW_TITLE_SIZE - 1);
 	if (fb_mode)
 		fb_mode->driver->set_window_title(window_title);
+
+	/* del if temp */
+	fb_hStrDelTemp( title );
 }

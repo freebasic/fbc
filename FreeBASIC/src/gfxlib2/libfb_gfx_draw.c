@@ -37,7 +37,7 @@ static int parse_number(char **str)
 {
 	char *c = *str;
 	int n = NAN, negative = FALSE;
-	
+
 	if (*c == '-') {
 		negative = TRUE;
 		c++;
@@ -53,7 +53,7 @@ static int parse_number(char **str)
 	*str = c;
 	if ((negative) && (n != NAN))
 		n = -n;
-	
+
 	return n;
 }
 
@@ -64,21 +64,21 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 	float x, y, dx, dy, ax, ay, base_scale = 1.0, scale = 1.0, base_angle = 0.0, angle = 0.0;
 	char *c = command->data;
 	int draw = TRUE, move = TRUE, length = 0, value1, value2, flags, rel, ix, iy;
-	
+
 	if (!fb_mode)
 		return;
-	
+
 	x = fb_mode->last_x;
 	y = fb_mode->last_y;
-	
+
 	fb_mode->driver->lock();
-	
+
 	flags = fb_mode->flags;
 	fb_mode->flags = VIEW_SCREEN;
-	
+
 	while (*c) {
 		switch (toupper(*c)) {
-			
+
 			case 'B':
 				c++;
 				draw = FALSE;
@@ -88,28 +88,28 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				c++;
 				move = FALSE;
 				break;
-			
+
 			case 'C':
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
 				fb_mode->fg_color = fb_hFixColor(value1);
 				break;
-				
+
 			case 'S':
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
 				base_scale = value1;
 				break;
-			
+
 			case 'A':
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
 				base_angle = (float)(value1 & 0x3) * PI * 0.5;
 				break;
-			
+
 			case 'T':
 				c++;
 				if (toupper(*c) != 'A')
@@ -119,7 +119,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 					goto error;
 				base_angle = (float)value1 * PI / 180.0;
 				break;
-			
+
 			case 'X':
 				c++;
 				/* Here we could be more severe with checking, but it's unlikely our substring
@@ -128,7 +128,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 					goto error;
 				fb_GfxDraw((FBSTRING *)value1);
 				break;
-				
+
 			case 'P':
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
@@ -143,7 +143,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				fb_GfxPaint(x, y, value1 & fb_mode->color_mask, value2 & fb_mode->color_mask, NULL, PAINT_TYPE_FILL, COORD_TYPE_A);
 				fb_mode->driver->lock();
 				break;
-			
+
 			case 'M':
 				c++;
 				rel = FALSE;
@@ -176,7 +176,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				}
 				move = draw = TRUE;
 				break;
-				
+
 			case 'F': angle += PI * 0.25;
 			case 'D': angle += PI * 0.25;
 			case 'G': angle += PI * 0.25;
@@ -193,11 +193,11 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				else
 					length = 1;
 				break;
-			
+
 			default:
 				goto error;
 		}
-		
+
 		if (length) {
 			length *= (base_scale * scale);
 			if (length < 0) {
@@ -207,7 +207,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 			angle += base_angle;
 			dx = x;
 			dy = y;
-			
+
 			for (; length >= 0; length--) {
 				if (draw) {
 					ix = dx;
@@ -233,12 +233,16 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 			move = draw = TRUE;
 		}
 	}
-	
+
 	fb_mode->last_x = x;
 	fb_mode->last_y = y;
-	
+
 error:
 	fb_mode->flags = flags;
-	
+
 	fb_mode->driver->unlock();
+
+	/* del if temp */
+	fb_hStrDelTemp( command );
+
 }

@@ -32,6 +32,7 @@
 
 #define KEY_BUFFER_LEN		16
 
+#define WINDOW_CLASS_PREFIX "fbgfxclass_"
 
 static int ddraw_init(char *title, int w, int h, int depth, int flags);
 static void ddraw_exit(void);
@@ -77,6 +78,7 @@ static CRITICAL_SECTION update_lock;
 static int is_running, is_palette_changed, is_active;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
 static char *window_title;
+static char window_class[WINDOW_TITLE_SIZE+sizeof( WINDOW_CLASS_PREFIX )] = { 0 };
 static int display_offset;
 static BOOL screensaver_active;
 
@@ -145,7 +147,7 @@ static int private_init()
 
 	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
 	wndclass.lpfnWndProc = win_proc;
-	wndclass.lpszClassName = window_title;
+	wndclass.lpszClassName = window_class;
 
 	rect.left = rect.top = 0;
 	rect.right = mode_w;
@@ -153,7 +155,7 @@ static int private_init()
 
 	if (mode_fullscreen) {
 		RegisterClass(&wndclass);
-		wnd = CreateWindow(window_title, window_title, WS_POPUP | WS_VISIBLE, 0, 0,
+		wnd = CreateWindow(window_class, window_title, WS_POPUP | WS_VISIBLE, 0, 0,
 				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, 0, NULL);
 		if (IDirectDraw_SetCooperativeLevel(lpDD, wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
 			return -1;
@@ -191,10 +193,12 @@ static int private_init()
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		wnd = CreateWindow(window_title, window_title, (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
+		wnd = CreateWindow(window_class, window_title, (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
 				   rect.right, rect.bottom, 0, 0, 0, 0);
+		if ( wnd == 0 )
+			return -1;
 		if (IDirectDraw_SetCooperativeLevel(lpDD, wnd, DDSCL_NORMAL) != DD_OK)
 			return -1;
 		if (IDirectDraw_CreateClipper(lpDD, 0, &lpDDC, NULL) != DD_OK)
@@ -439,6 +443,8 @@ static int ddraw_init(char *title, int w, int h, int depth, int flags)
 	long result;
 
 	window_title = title;
+	strcpy( window_class, WINDOW_CLASS_PREFIX );
+	strcat( window_class, window_title );
 	mode_w = w;
 	mode_h = h;
 	mode_depth = depth;
