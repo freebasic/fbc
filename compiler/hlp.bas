@@ -344,11 +344,8 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
     dim nm as string
     dim addat as integer
 
+#ifdef TARGET_WIN32
 	nm = "_" + symbol
-
-	if( toupper ) then
-		nm = ucase$( nm )
-	end if
 
     if( env.clopt.nostdcall ) then
     	addat = FALSE
@@ -358,6 +355,13 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
 
 	if( addat ) then
 		nm = nm + "@" + ltrim$( str$( argslen ) )
+	end if
+#else
+	nm = symbol
+#endif
+
+	if( toupper ) then
+		nm = ucase$( nm )
 	end if
 
 	hCreateAliasName = nm

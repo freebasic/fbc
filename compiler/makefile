@@ -3,17 +3,39 @@
 # needs GNU make and FBC itself
 #
 
+ifeq ($(OS),Windows_NT)
+    WINSYSDIR = $(SYSTEMROOT)
+    ifeq ($(WINSYSDIR),)
+        WINSYSDIR = $(SystemRoot)
+    endif
+else
+    WINSYSDIR = $(WINDIR)
+    ifeq ($(WINSYSDIR),)
+        WINSYSDIR = $(windir)
+    endif
+endif
+
+ifneq ($(WINSYSDIR),)
+    EXE := .exe
+    LDFLAGS := -T ../../bin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDLIBS := -L../../lib -( -lcrtdll -lfb -lkernel32 -luser32 -)
+    BC := ..\..\fbc32.exe
+    BCFLAGS := -e -c -d TARGET_WIN32
+else
+    EXE :=
+    LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -e fb_fbc_entry
+    LDLIBS := -L../../lib -( -lc -lm -lfb -lncurses -)
+    BC := ../../fbc32
+    BCFLAGS := -e -c -d TARGET_LINUX
+endif
+
+
 main	:= fbc.bas
 
 exepath = ../..
-exe = $(exepath)/$(subst .bas,.exe,$(main))
+TARGET = $(exepath)/$(subst .bas,$(EXE),$(main))
 
-BC := ..\..\fbc32.exe
-BCFLAGS := -e -c
-
-LD := ld.exe
-LDFLAGS := -T ../../bin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
-LDLIBS := -L../../lib -( -lcrtdll -lfb -lkernel32 -luser32 -)
+LD := ld$(EXE)
 
 sources := $(wildcard *.bas)
 objects := $(patsubst %.bas,obj/%.o,$(main) $(filter-out $(main),$(sources)))
@@ -22,13 +44,13 @@ headers := $(wildcard inc/*.bi)
 obj/%.o : %.bas
 	$(BC) $(BCFLAGS) $? -o $@
 
-all : $(exe)
+all : $(TARGET)
 
-$(exe) : $(objects)
+$(TARGET) : $(objects)
 	$(LD) $(LDFLAGS) $(objects) -o $@ $(LDLIBS)
 
 
 .PHONY : clean
 clean :
-	del $(subst /,\,$(exe))
+	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))

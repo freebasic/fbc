@@ -2115,7 +2115,11 @@ sub emitSECTION( byval section as integer ) 'static
 
 	select case section
 	case EMIT.SECTYPE.CONST
+#ifdef TARGET_LINUX
+		sname = "data"
+#else
 		sname = "const"
+#endif
 	case EMIT.SECTYPE.DATA
 		sname = "data"
 	case EMIT.SECTYPE.BSS
@@ -2198,6 +2202,30 @@ sub hSaveAsmHeader( byval asmf as integer )
     hWriteStr asmf, FALSE, ".globl " + "fb_" + ucase$( entry ) + "_entry"
     hWriteStr asmf, FALSE, "fb_" + entry  + "_entry" + ":"
     hWriteStr asmf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
+#ifdef TARGET_LINUX
+	' Add small stub to get commandline under linux
+	hWriteStr asmf, TRUE, "pop" + TABCHAR + "ecx"
+	hWriteStr asmf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
+	hWriteStr asmf, TRUE, "mov" + TABCHAR + "edx, 1023"
+	hWriteStr asmf, TRUE, "cld"
+	hWriteStr asmf, FALSE, "fb_get_argv:"
+	hWriteStr asmf, TRUE, "pop" + TABCHAR + "esi"
+	hWriteStr asmf, FALSE, "fb_copy_arg:"
+	hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, [esi]"
+	hWriteStr asmf, TRUE, "test" + TABCHAR + "al, al"
+	hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_copy_arg"
+	hWriteStr asmf, TRUE, "movsb"
+	hWriteStr asmf, TRUE, "dec" + TABCHAR + "edx"
+	hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_get_argv"
+	hWriteStr asmf, TRUE, "jmp" + TABCHAR + "fb_copy_arg"
+	hWriteStr asmf, FALSE, "fb_end_copy_arg:"
+	hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, 32"
+	hWriteStr asmf, TRUE, "stosb"
+	hWriteStr asmf, TRUE, "dec" + TABCHAR + "ecx"
+	hWriteStr asmf, TRUE, "jnz" + TABCHAR + "fb_get_argv"
+	hWriteStr asmf, TRUE, "mov" + TABCHAR + "byte ptr [edi-1], 0"
+	hWriteStr asmf, FALSE, "fb_end_get_argv:"
+#endif
     hWriteStr asmf, TRUE,  "call" + TABCHAR + "fb_moduleinit"
     hWriteStr asmf, TRUE,  "call" + TABCHAR + EMIT_MAINPROC
     hWriteStr asmf, TRUE,  "ret"
@@ -2339,7 +2367,11 @@ sub hSaveAsmConst( byval asmf as integer ) 'static
     dim sname as string, stext as string, stype as string
 
     hWriteStr asmf, FALSE, NEWLINE + "#global initialized constants"
+#ifdef TARGET_LINUX
+	hWriteStr asmf, FALSE, ".section .data"
+#else
     hWriteStr asmf, FALSE, ".section .const"
+#endif
     hWriteStr asmf, TRUE,  ".balign 16" + NEWLINE
 
     i = symbGetFirstNode

@@ -858,10 +858,17 @@ data ""
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 deflibsdata:
 data "fb"
+#ifdef TARGET_WIN32
 data "fbgfx"
 data "crtdll"
 data "kernel32"
 data "user32"
+#endif
+#ifdef TARGET_LINUX
+data "c"
+data "m"
+data "ncurses"
+#endif
 data ""
 
 '':::::

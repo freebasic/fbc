@@ -76,7 +76,6 @@ declare function 	delFiles 			( ) as integer
 	dim shared inclist(0 to 99) as string
 	dim shared ctx as FBCCTX
 
-
     ''
     parseCmd argc, argv()
 
@@ -192,7 +191,12 @@ function assembleFiles as integer
 	QUOTE = chr$( 34 )
 
     ''
+#ifdef TARGET_WIN32
     aspath = exepath$ + FB.BINPATH + "as.exe"
+#endif
+#ifdef TARGET_LINUX
+	aspath = "as"
+#endif
 
     '' set input files (.asm's) and output files (.o's)
     for i = 0 to ctx.inps-1
@@ -225,6 +229,7 @@ end function
 function linkFiles as integer
 	dim i as integer, f as integer
 	dim ldcline as string
+	dim ldpath as string
 	dim QUOTE as string
 
 	linkFiles = FALSE
@@ -233,7 +238,10 @@ function linkFiles as integer
 
 	'' if no executable name was defined, assume it's the same as the first source file
 	if( len( ctx.exefile ) = 0 ) then
-		ctx.exefile = hStripExt( inplist(0) ) + ".exe"
+		ctx.exefile = hStripExt( inplist(0) )
+#ifdef TARGET_WIN32
+		ctx.exefile = ctx.exefile + ".exe"
+#endif
 	end if
 
     '' if entry point was not defined, assume it's at the first source file
@@ -242,6 +250,7 @@ function linkFiles as integer
 	end if
 	hClearName ctx.entrypoint
 
+#ifdef TARGET_WIN32
 	'' set default subsystem mode
 	if( len( ctx.subsystem ) = 0 ) then
 		ctx.subsystem = "console"
@@ -253,12 +262,19 @@ function linkFiles as integer
 
 	'' set script file and subsystem
 	ldcline = "-T " + QUOTE + exepath$ + FB.BINPATH + "i386pe.x" + QUOTE + " -subsystem " + ctx.subsystem
+#endif
+#ifdef TARGET_LINUX
+	ldcline = "-dynamic-linker /lib/ld-linux.so.2"
+#endif
+
 	if( not ctx.debug ) then
 		ldcline = ldcline + " -s"
 	end if
 
+#ifdef TARGET_WIN32
 	'' stack size
 	ldcline = ldcline + " --stack " + str$( ctx.stacksize ) + "," + + str$( ctx.stacksize )
+#endif
 
 	'' set entry point
 	ldcline = ldcline + " -e fb_" + ctx.entrypoint + "_entry "
@@ -295,7 +311,13 @@ function linkFiles as integer
     	print "linking: ", ldcline
     end if
 
-    if( exec( exepath$ + FB.BINPATH + "ld.exe", ldcline ) <> 0 ) then
+#ifdef TARGET_WIN32
+	ldpath = exepath$ + FB.BINPATH + "ld.exe"
+#endif
+#ifdef TARGET_LINUX
+	ldpath = "ld"
+#endif
+    if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
     end if
 
@@ -341,8 +363,10 @@ sub printOptions
 	print "-m <name>", "main file w/o .ext (entry point)"
 	print "-o <name>", "output name (in the same number as source files)"
 	print "-r", "do not delete the asm file(s)"
+#ifdef TARGET_WIN32
 	print "-s <name>", "subsystem (gui, console)"
 	print "-t <value>", "stack size in kbytes (default: 1M)"
+#endif
 	print "-v", "verbose"
 	print "-x <name>", "executable name"
 
@@ -394,26 +418,9 @@ function processOptions as integer
 				ctx.verbose = TRUE
 				argv(i) = ""
 
-			case "t"
-				ctx.stacksize = cint( val( argv(i+1) ) ) * 1024
-				if( ctx.stacksize < FB_MINSTACKSIZE ) then
-					ctx.stacksize = FB_MINSTACKSIZE
-				end if
-				argv(i) = ""
-				argv(i+1) = ""
-
 			case "x"
 				ctx.exefile = argv(i+1)
 				if( len( ctx.exefile ) = 0 ) then
-					exit function
-				end if
-				argv(i) = ""
-				argv(i+1) = ""
-
-
-			case "s"
-				ctx.subsystem = argv(i+1)
-				if( len( ctx.subsystem ) = 0 ) then
 					exit function
 				end if
 				argv(i) = ""
@@ -426,6 +433,24 @@ function processOptions as integer
 				end if
 				argv(i) = ""
 				argv(i+1) = ""
+
+#ifdef TARGET_WIN32
+			case "s"
+				ctx.subsystem = argv(i+1)
+				if( len( ctx.subsystem ) = 0 ) then
+					exit function
+				end if
+				argv(i) = ""
+				argv(i+1) = ""
+
+			case "t"
+				ctx.stacksize = cint( val( argv(i+1) ) ) * 1024
+				if( ctx.stacksize < FB_MINSTACKSIZE ) then
+					ctx.stacksize = FB_MINSTACKSIZE
+				end if
+				argv(i) = ""
+				argv(i+1) = ""
+#endif
 
 			case else
 				exit function
@@ -443,6 +468,10 @@ function processCompOptions as integer
     dim i as integer
 
 	processCompOptions = FALSE
+
+#ifndef TARGET_WIN32
+	fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
+#endif
 
 	'' reset options
 	fbcSetDefaultOptions
@@ -466,8 +495,10 @@ function processCompOptions as integer
 				ctx.debug = TRUE
 			case "e"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
+#ifdef TARGET_WIN32
 			case "w"
 				fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
+#endif
 			end select
 		end if
 
