@@ -970,10 +970,10 @@ function cGfxGet as integer
 end function
 
 '':::::
-'' GfxScreen     =   SCREEN (num | ((expr ((',' expr)? ',' expr)? expr)?)
+'' GfxScreen     =   SCREEN (num | ((expr (((',' expr)? ',' expr)? expr)? ',' expr))
 ''
 function cGfxScreen as integer
-    dim mexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer
+    dim mexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer, rexpr
 
 	cGfxScreen = FALSE
 
@@ -985,6 +985,7 @@ function cGfxScreen as integer
 	dexpr = INVALID
 	pexpr = INVALID
 	fexpr = INVALID
+	rexpr = INVALID
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
@@ -1007,8 +1008,15 @@ function cGfxScreen as integer
 		end if
 	end if
 
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( rexpr ) ) then
+			rexpr = INVALID
+		end if
+	end if
+
 	''
-	cGfxScreen = rtlGfxScreenSet( mexpr, INVALID, dexpr, pexpr, fexpr )
+	cGfxScreen = rtlGfxScreenSet( mexpr, INVALID, dexpr, pexpr, fexpr, rexpr )
 
 end function
 
@@ -1016,7 +1024,7 @@ end function
 '' GfxScreenRes     =   SCREENRES expr ',' expr (((',' expr)? ',' expr)? ',' expr)?
 ''
 function cGfxScreenRes as integer
-    dim wexpr as integer, hexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer
+    dim wexpr as integer, hexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer, rexpr as integer
 
 	cGfxScreenRes = FALSE
 
@@ -1038,6 +1046,7 @@ function cGfxScreenRes as integer
 	dexpr = INVALID
 	pexpr = INVALID
 	fexpr = INVALID
+	rexpr = INVALID
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
@@ -1060,8 +1069,15 @@ function cGfxScreenRes as integer
 		end if
 	end if
 
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( rexpr ) ) then
+			rexpr = INVALID
+		end if
+	end if
+
 	''
-	cGfxScreenRes = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr )
+	cGfxScreenRes = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr, rexpr )
 
 end function
 

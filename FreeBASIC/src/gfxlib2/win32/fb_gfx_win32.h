@@ -42,7 +42,7 @@ typedef struct WIN32DRIVER
 	PALETTEENTRY palette[256];
 	BLITTER *blitter;
 	int is_running, is_palette_changed, is_active;
-	int w, h, depth, fullscreen;
+	int w, h, depth, fullscreen, refresh_rate;
 	char *window_title;
 	char window_class[WINDOW_TITLE_SIZE+sizeof( WINDOW_CLASS_PREFIX )];
 	int (*init)(void);
@@ -60,7 +60,7 @@ extern const unsigned char fb_keytable[][3];
 
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-extern int fb_hWin32Init(char *title, int w, int h, int depth, int flags);
+extern int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 extern void fb_hWin32Exit(void);
 extern void fb_hWin32Lock(void);
 extern void fb_hWin32Unlock(void);

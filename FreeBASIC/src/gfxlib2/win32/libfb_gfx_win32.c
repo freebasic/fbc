@@ -209,7 +209,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 
 /*:::::*/
-int fb_hWin32Init(char *title, int w, int h, int depth, int flags)
+int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	HANDLE events[2];
 	long result;
@@ -225,6 +225,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int flags)
 	fb_win32.h = h;
 	fb_win32.depth = depth;
 	fb_win32.fullscreen = (flags & DRIVER_FULLSCREEN) ? TRUE : FALSE;
+	fb_win32.refresh_rate = refresh_rate;
 	fb_win32.wndclass.lpfnWndProc = fb_hWin32WinProc;
 	fb_win32.wndclass.lpszClassName = fb_win32.window_class;
 	fb_win32.wndclass.hInstance = fb_win32.hinstance;

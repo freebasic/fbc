@@ -33,7 +33,7 @@
 #include <dinput.h>
 
 
-static int driver_init(char *title, int w, int h, int depth, int flags);
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_wait_vsync(void);
 
 
@@ -69,7 +69,7 @@ static DIOBJECTDATAFORMAT c_rgodfDIKeyboard[256];
 static const DIDATAFORMAT c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, c_rgodfDIKeyboard };
 static HMODULE dd_library;
 static HMODULE di_library;
-static LPDIRECTDRAW lpDD;
+static LPDIRECTDRAW2 lpDD;
 static LPDIRECTDRAWSURFACE lpDDS;
 static LPDIRECTDRAWSURFACE lpDDS_back;
 static LPDIRECTDRAWPALETTE lpDDP;
@@ -121,11 +121,13 @@ static int calc_comp_height( int h )
 /*:::::*/
 static int directx_init(void)
 {
+	LPDIRECTDRAW lpDD1 = NULL;
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
 	DIRECTDRAWCREATE DirectDrawCreate;
 	DIRECTINPUTCREATE DirectInputCreate;
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
+	HRESULT res;
 	int i, depth, is_rgb = FALSE, height;
 
 	lpDD = NULL;
@@ -145,7 +147,11 @@ static int directx_init(void)
 	DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(dd_library, "DirectDrawCreate");
 	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
 	
-	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK))
+	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD1, NULL) != DD_OK))
+		return -1;
+	res = IDirectDraw_QueryInterface(lpDD1, &IID_IDirectDraw2, (LPVOID)&lpDD);
+	IDirectDraw_Release(lpDD1);
+	if (res != DD_OK)
 		return -1;
 	if ((!DirectInputCreate) || (DirectInputCreate(fb_win32.hinstance, 0x0300, &lpDI, NULL) != DI_OK))
 		return -1;
@@ -159,13 +165,13 @@ static int directx_init(void)
 				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, fb_win32.hinstance, NULL);
 		if (!fb_win32.wnd)
 			return -1;
-		if (IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
+		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
 			return -1;
 
 		height = fb_win32.h;
 		while( 1 )
 		{
-			if (IDirectDraw_SetDisplayMode(lpDD, fb_win32.w, height, fb_win32.depth) == DD_OK)
+			if (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, fb_win32.depth, fb_win32.refresh_rate, 0) == DD_OK)
 				break;
 
 			depth = fb_win32.depth;
@@ -177,7 +183,7 @@ static int directx_init(void)
 				case 32: depth = 24; break;
 			}
 
-			if ((depth == fb_win32.depth) || (IDirectDraw_SetDisplayMode(lpDD, fb_win32.w, height, depth) != DD_OK))
+			if ((depth == fb_win32.depth) || (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, depth, fb_win32.refresh_rate, 0) != DD_OK))
 			{
 				height = calc_comp_height( height );
 				if( height == 0 )
@@ -199,9 +205,9 @@ static int directx_init(void)
 				   rect.right, rect.bottom, 0, 0, 0, 0);
 		if (!fb_win32.wnd)
 			return -1;
-		if (IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)
+		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)
 			return -1;
-		if (IDirectDraw_CreateClipper(lpDD, 0, &lpDDC, NULL) != DD_OK)
+		if (IDirectDraw2_CreateClipper(lpDD, 0, &lpDDC, NULL) != DD_OK)
 			return -1;
 		if (IDirectDrawClipper_SetHWnd(lpDDC, 0, fb_win32.wnd) != DD_OK)
 			return -1;
@@ -210,7 +216,7 @@ static int directx_init(void)
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = DDSD_CAPS;
 	desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-	if (IDirectDraw_CreateSurface(lpDD, &desc, &lpDDS, NULL) != DD_OK)
+	if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS, NULL) != DD_OK)
 		return -1;
 
 	if (!fb_win32.fullscreen) {
@@ -220,7 +226,7 @@ static int directx_init(void)
 		desc.dwWidth = fb_win32.w;
 		desc.dwHeight = fb_win32.h;
 		desc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
-		if (IDirectDraw_CreateSurface(lpDD, &desc, &lpDDS_back, 0) != DD_OK)
+		if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS_back, 0) != DD_OK)
 			return -1;
 	}
 	else
@@ -233,7 +239,7 @@ static int directx_init(void)
 		return -1;
 
 	if (format.dwRGBBitCount == 8) {
-		if (IDirectDraw_CreatePalette(lpDD, DDPCAPS_8BIT | DDPCAPS_INITIALIZE | DDPCAPS_ALLOW256,
+		if (IDirectDraw2_CreatePalette(lpDD, DDPCAPS_8BIT | DDPCAPS_INITIALIZE | DDPCAPS_ALLOW256,
 					      fb_win32.palette, &lpDDP, NULL) != DD_OK)
 			return -1;
 		IDirectDrawSurface_SetPalette(lpDDS, lpDDP);
@@ -250,7 +256,9 @@ static int directx_init(void)
 	fb_win32.blitter = fb_hGetBlitter(depth, is_rgb);
 	if (!fb_win32.blitter)
 		return -1;
-
+	
+	IDirectDraw2_GetMonitorFrequency(lpDD, (LPDWORD)&fb_mode->refresh_rate);
+	
 	SetForegroundWindow(fb_win32.wnd);
 	
 	for (i = 0; i < 256; i++) {
@@ -295,10 +303,10 @@ static void directx_exit(void)
 		if ((!fb_win32.fullscreen) && (lpDDS_back))
 			IDirectDrawSurface_Release(lpDDS_back);
 		if (fb_win32.fullscreen)
-			IDirectDraw_RestoreDisplayMode(lpDD);
+			IDirectDraw2_RestoreDisplayMode(lpDD);
 		if (fb_win32.fullscreen)
-			IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL);
-		IDirectDraw_Release(lpDD);
+			IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL);
+		IDirectDraw2_Release(lpDD);
 	}
 	if (fb_win32.wnd)
 		DestroyWindow(fb_win32.wnd);
@@ -372,7 +380,7 @@ error:
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int flags)
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	if (flags & DRIVER_OPENGL)
 		return -1;
@@ -382,12 +390,12 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_win32.paint = directx_paint;
 	fb_win32.thread = directx_thread;
 	
-	return fb_hWin32Init(title, w, h, depth, flags);
+	return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 }
 
 
 /*:::::*/
 static void driver_wait_vsync(void)
 {
-	IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+	IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
 }

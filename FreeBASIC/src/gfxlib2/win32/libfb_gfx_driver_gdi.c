@@ -28,7 +28,7 @@
 #include "fb_gfx_win32.h"
 
 
-static int driver_init(char *title, int w, int h, int depth, int flags);
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 
 
 GFXDRIVER fb_gfxDriverGDI =
@@ -108,6 +108,7 @@ static int gdi_init(void)
 	
 	SetForegroundWindow(fb_win32.wnd);
 	hdc = GetDC(fb_win32.wnd);
+	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	
 	return 0;
 }
@@ -199,7 +200,7 @@ error:
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int flags)
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	if (flags & DRIVER_OPENGL)
 		return -1;
@@ -209,5 +210,5 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_win32.paint = gdi_paint;
 	fb_win32.thread = gdi_thread;
 	
-	return fb_hWin32Init(title, w, h, depth, flags);
+	return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 }

@@ -29,7 +29,7 @@
 #include <GL/GL.h>
 
 
-static int driver_init(char *title, int w, int h, int depth, int flags);
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_flip(void);
 static int opengl_window_init(void);
 static void opengl_window_exit(void);
@@ -153,6 +153,7 @@ static int opengl_window_init(void)
 		mode.dmPelsWidth = fb_win32.w;
 		mode.dmPelsHeight = fb_win32.h;
 		mode.dmBitsPerPel = fb_win32.depth;
+		mode.dmDisplayFrequency = fb_win32.refresh_rate;
 		mode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 		if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
 			return -1;
@@ -181,6 +182,7 @@ static int opengl_window_init(void)
 	ShowWindow(fb_win32.wnd, SW_SHOW);
 	SetForegroundWindow(fb_win32.wnd);
 	SetFocus(fb_win32.wnd);
+	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	
 	return 0;
 }
@@ -238,7 +240,7 @@ error:
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int flags)
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	int result;
 	
@@ -251,7 +253,7 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_win32.thread = opengl_thread;
 	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 	
-	result = fb_hWin32Init(title, w, h, depth, flags);
+	result = fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 	if (!result)
 		fb_wglMakeCurrent(hdc, hglrc);
 	

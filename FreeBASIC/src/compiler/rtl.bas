@@ -727,19 +727,21 @@ data "fb_GfxGet", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 8, _
 
 '' fb_GfxScreen ( byval w as integer, byval h as integer = 0, byval depth as integer = 0, _
 ''                byval fullscreenFlag as integer = 0 ) as integer
-data "fb_GfxScreen", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
+data "fb_GfxScreen", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
-''					 byval num_pages as integer = 1, byval flags as integer = 0 )
-data "fb_GfxScreenRes", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
+''					 byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 )
+data "fb_GfxScreenRes", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 6, _
 					 		FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,8, _
 							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1, _
+							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxBload ( filename as string, byval dest as any ptr )
@@ -4805,7 +4807,7 @@ end function
 
 '':::::
 function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, _
-						  byval pexpr as integer, byval fexpr as integer ) as integer
+						  byval pexpr as integer, byval fexpr as integer, byval rexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
@@ -4849,6 +4851,14 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
  		exit function
  	end if
 
+	'' byval refresh_rate as integer
+	if( rexpr = INVALID ) then
+		rexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+	end if
+ 	if( astNewPARAM( proc, rexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
+	
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( hMakeTmpStr )

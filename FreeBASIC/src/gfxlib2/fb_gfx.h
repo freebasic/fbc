@@ -159,6 +159,7 @@ typedef struct MODE
 	int text_w, text_h;				/* Graphical text console size in characters */
 	char *key;					/* Keyboard states */
 	int driver_flags;				/* Driver initialization flags */
+	int refresh_rate;				/* Driver refresh rate */
 	int flags;					/* Status flags */
 } MODE;
 
@@ -170,6 +171,7 @@ typedef struct GFXDRIVERINFO
 	int depth;
 	int pitch;
 	int bpp;
+	int refresh_rate;
 	int mask_color;
 	int num_pages;
 	int flags;
@@ -179,7 +181,7 @@ typedef struct GFXDRIVERINFO
 typedef struct GFXDRIVER
 {
 	char *name;
-	int (*init)(char *title, int w, int h, int depth, int flags);
+	int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags);
 	void (*exit)(void);
 	void (*lock)(void);
 	void (*unlock)(void);
@@ -246,7 +248,8 @@ extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 
 /* Public API */
-extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags);
+extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
+extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);

@@ -315,7 +315,7 @@ declare function	rtlGfxGet			( byval target as integer, byval targetisptr as int
 										  byval arrayexpr as integer, byval isptr as integer, _
 										  byval symbol as FBSYMBOL ptr, byval coordtype as integer ) as integer
 declare function	rtlGfxScreenSet		( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, _
-										  byval pexpr as integer, byval fexpr as integer ) as integer
+										  byval pexpr as integer, byval fexpr as integer, byval rexpr as integer ) as integer
 declare function	rtlGfxBload			( byval filename as integer, byval dexpr as integer ) as integer
 declare function	rtlGfxBsave			( byval filaname as integer, byval sexpr as integer, _
 										  byval lexpr as integer ) as integer

@@ -45,6 +45,7 @@ FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void)
 	info.depth = fb_mode->depth;
 	info.pitch = fb_mode->pitch;
 	info.bpp = fb_mode->bpp;
+	info.refresh_rate = fb_mode->refresh_rate;
 	if (fb_mode->depth <= 8)
 		info.mask_color = 0;
 	else if (fb_mode->depth <= 16)

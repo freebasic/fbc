@@ -84,12 +84,12 @@ static char *window_title = NULL;
 /*:::::*/
 static void exit_proc(void)
 {
-	fb_GfxScreen(0, 0, 0, SCREEN_EXIT);
+	fb_GfxScreen(0, 0, 0, SCREEN_EXIT, 0);
 }
 
 
 /*:::::*/
-static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int flags)
+static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
 {
 	const GFXDRIVER *driver;
 	int i, try;
@@ -205,10 +205,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		driver_name = getenv("FBGFX");
 		for (try = (driver_name ? 4 : 2); try; try--) {
 			for (i = 0; fb_gfx_driver_list[i]; i++) {
-				driver = fb_gfx_driver_list[i];
+				driver = fb_gfx_driver_list[i >> 1];
 				if ((driver_name) && (try & 0x1) && (strcasecmp(driver_name, driver->name)))
 					continue;
-				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
+				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), (i & 0x1) ? 0 : refresh_rate, flags))
 					break;
 				driver->exit();
 				driver = NULL;
@@ -253,7 +253,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 
 /*:::::*/
-FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
+FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate)
 {
 	const MODEINFO *info = NULL;
 	
@@ -265,12 +265,12 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		if (info->w < 0)
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	return set_mode(info, mode, depth, num_pages, flags);
+	return set_mode(info, mode, depth, num_pages, refresh_rate, flags);
 }
 
 
 /*:::::*/
-FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags)
+FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, int refresh_rate)
 {
 	MODEINFO info;
 	
@@ -287,7 +287,7 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags)
 	info.text_w = w / 8;
 	info.text_h = h / 8;
 	
-	return set_mode((const MODEINFO *)&info, -1, depth, num_pages, flags);
+	return set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
 }
 
 
