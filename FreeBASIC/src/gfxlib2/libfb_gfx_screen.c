@@ -76,15 +76,6 @@ static const MODEINFO mode_info[NUM_MODES] = {
  {1280,1024, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 64 },		/* 21: 1280x1024 */
 };
 
-
-static const GFXDRIVER *driver[] = {
-#ifdef WIN32
-	&fb_gfxDriverDirectDraw,
-#endif
-	NULL
-};
-
-
 static char window_title_buff[WINDOW_TITLE_SIZE] = "";
 static char *window_title = NULL;
 
@@ -199,23 +190,19 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		if (!window_title)
 		{
 			window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
-			if (c = strchr(window_title, ' '))
-				*c = '\0';
-#ifdef WIN32
 			if (c = strrchr(window_title, '.'))
 				*c = '\0';
-#endif
 		}
 
-		for (i = 0; driver[i]; i++) {
-			if (!driver[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
+		for (i = 0; fb_gfx_driver_list[i]; i++) {
+			if (!fb_gfx_driver_list[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
 				break;
 		}
-		if (!driver[i]) {
+		if (!fb_gfx_driver_list[i]) {
 			exit_proc();
 			return -1;
 		}
-		fb_mode->driver = driver[i];
+		fb_mode->driver = fb_gfx_driver_list[i];
 
 		fb_GfxPalette(-1, 0);
 

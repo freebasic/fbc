@@ -167,6 +167,7 @@ typedef void (BLITTER)(unsigned char *, int);
 
 /* Global variables */
 extern MODE *fb_mode;
+extern const GFXDRIVER *fb_gfx_driver_list[];
 extern void *(*fb_hMemCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hMemSet)(void *dest, int value, size_t size);
 extern void (*fb_hPutPixel)(int x, int y, unsigned int color);
@@ -179,9 +180,6 @@ extern const unsigned char fb_vga_palette[256][3];
 extern const FONT fb_font_8x8;
 extern const FONT fb_font_8x14;
 extern const FONT fb_font_8x16;
-#ifdef WIN32
-extern GFXDRIVER fb_gfxDriverDirectDraw;
-#endif
 
 
 /* Internal functions */

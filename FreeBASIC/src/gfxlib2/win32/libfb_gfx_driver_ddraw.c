@@ -30,7 +30,7 @@
 #include <ddraw.h>
 #include <dinput.h>
 
-#include "fb_gfx.h"
+#include "../fb_gfx.h"
 
 
 #define KEY_BUFFER_LEN		16
