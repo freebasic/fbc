@@ -24,8 +24,9 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_win32.h"
+#include <process.h>
 
 
 WIN32DRIVER fb_win32;
@@ -95,7 +96,6 @@ static int mouse_buttons, mouse_wheel;
 /*:::::*/
 LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int result;
 	char key_state[256];
 	WORD key = 0;
 	
@@ -138,6 +138,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 		
 		case WM_MOUSEWHEEL:
+			if (fb_win32.version < 0x40A)
+				break;
 			if ((signed)wParam > 0)
 				mouse_wheel++;
 			else
@@ -146,6 +148,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		
 		case WM_SIZE:
 		case WM_SYSKEYDOWN:
+			if (!fb_win32.is_active)
+				break;
 			if (((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED)) ||
 			    ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000))) {
 				fb_win32.exit();
@@ -162,6 +166,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			return 0;
 
 		case WM_KEYDOWN:
+			if (!fb_win32.is_active)
+				break;
 			switch (wParam) {
 
 				case VK_UP:		key = KEY_UP;		break;
@@ -211,16 +217,21 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 /*:::::*/
 int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
+	OSVERSIONINFO info;
 	HANDLE events[2];
 	long result;
 
+	info.dwOSVersionInfoSize = sizeof(info);
+	GetVersionEx(&info);
+	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
+	
 	msg_cursor = RegisterWindowMessage("FB mouse cursor");
 	cursor_shown = TRUE;
 	
 	fb_win32.hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	fb_win32.window_title = title;
 	strcpy( fb_win32.window_class, WINDOW_CLASS_PREFIX );
-	strcat( fb_win32.window_class, fb_win32.window_title );
+	strncat( fb_win32.window_class, fb_win32.window_title, WINDOW_TITLE_SIZE + sizeof(WINDOW_CLASS_PREFIX) - 1 );
 	fb_win32.w = w;
 	fb_win32.h = h;
 	fb_win32.depth = depth;
@@ -233,7 +244,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.wndclass.hIcon = LoadIcon(fb_win32.hinstance, "FB_PROGRAM_ICON");
 	if (!fb_win32.wndclass.hIcon)
 		fb_win32.wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	fb_win32.wndclass.style = CS_VREDRAW | CS_HREDRAW | CS_OWNDC;
+	fb_win32.wndclass.style = CS_VREDRAW | CS_HREDRAW | (flags & DRIVER_OPENGL ? CS_OWNDC : 0);
 	RegisterClass(&fb_win32.wndclass);
 
 	fb_win32.is_running = TRUE;

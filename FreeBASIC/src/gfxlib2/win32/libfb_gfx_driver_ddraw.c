@@ -24,7 +24,7 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 
 #define INITGUID
@@ -202,7 +202,7 @@ static int directx_init(void)
 				   (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
-				   rect.right, rect.bottom, 0, 0, 0, 0);
+				   rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
 		if (!fb_win32.wnd)
 			return -1;
 		if (IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)

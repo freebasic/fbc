@@ -213,7 +213,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 {
 	FILE *f;
 	unsigned char id;
-	unsigned int size;
+	unsigned int size = 0;
 	int result = FB_RTERROR_OK;
 	
 	if ((!dest) && (!fb_mode))

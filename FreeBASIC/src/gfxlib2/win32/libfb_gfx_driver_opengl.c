@@ -24,7 +24,7 @@
  *
  */
 
-#include "../fb_gfx.h"
+#include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 #include <GL/GL.h>
 
@@ -74,7 +74,6 @@ static void opengl_paint(void)
 /*:::::*/
 static int opengl_init(void)
 {
-	DWORD style, ex_style;
 	PIXELFORMATDESCRIPTOR pfd;
 	int pf;
 	
@@ -90,8 +89,8 @@ static int opengl_init(void)
 		return -1;
 	
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-				    0, 0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
-	if (!fb_win32.wnd)
+				    WS_OVERLAPPEDWINDOW, 0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
+	if ((!fb_win32.wnd) || (opengl_window_init()))
 		return -1;
 	
 	fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
@@ -115,7 +114,7 @@ static int opengl_init(void)
 	if (!hglrc)
 		return -1;
 	
-	return opengl_window_init();
+	return 0;
 }
 
 
@@ -142,7 +141,7 @@ static void opengl_exit(void)
 static int opengl_window_init(void)
 {
 	DEVMODE mode;
-	DWORD style, ex_style;
+	DWORD style;
 	RECT rect;
 	HWND root;
 	int x, y;
@@ -158,28 +157,24 @@ static int opengl_window_init(void)
 		if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
 			return -1;
 		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-		ex_style = WS_EX_APPWINDOW;
 		root = HWND_TOPMOST;
 	}
 	else {
-		style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-		ex_style = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
+		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		root = HWND_NOTOPMOST;
 	}
 	SetWindowLong(fb_win32.wnd, GWL_STYLE, style);
-	SetWindowLong(fb_win32.wnd, GWL_EXSTYLE, ex_style);
 
 	rect.left = rect.top = x = y = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
 	if (!fb_win32.fullscreen) {
-		AdjustWindowRectEx(&rect, style, FALSE, ex_style);
+		AdjustWindowRectEx(&rect, style, FALSE, 0);
 		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
 		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
 	}
 	SetWindowPos(fb_win32.wnd, root, x, y, rect.right - rect.left, rect.bottom - rect.top,
-		     SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOACTIVATE);
-	ShowWindow(fb_win32.wnd, SW_SHOW);
+		     SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 	SetForegroundWindow(fb_win32.wnd);
 	SetFocus(fb_win32.wnd);
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
@@ -230,7 +225,7 @@ static void opengl_thread(HANDLE running_event)
 		
 		fb_hWin32Unlock();
 		
-		Sleep(1000 / 60);
+		Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 		SetEvent(fb_win32.vsync_event);
 	}
 	

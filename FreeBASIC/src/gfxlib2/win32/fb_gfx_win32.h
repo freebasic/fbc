@@ -35,6 +35,7 @@
 
 typedef struct WIN32DRIVER
 {
+	int version;
 	HINSTANCE hinstance;
 	WNDCLASS wndclass;
 	HWND wnd;
