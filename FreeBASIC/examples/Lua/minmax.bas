@@ -1,7 +1,7 @@
 ''
 '' Lua (script language) example
 ''
-'' code translated from a PB, original written by Marco Pontello (marcopon@myrealbox.com)
+'' translated from PB source, originally written by Marco Pontello (marcopon@myrealbox.com)
 ''
 
 option explicit
@@ -42,8 +42,8 @@ function minmax cdecl (byval L as lua_State ptr) as integer
   	next i
   
   	' push the results on the vs
-  	lua_pushnumber L, minnum
-  	lua_pushnumber L, maxnum
+  	lua_pushnumber( L, minnum )
+  	lua_pushnumber( L, maxnum )
   
   	' set number of returned parameters
   	minmax = 2
@@ -62,13 +62,13 @@ end function
   	luaopen_base( L )
 
   	' register the function to be called from lua as MinMax
-  	lua_register L, "MinMax", @minmax
+  	lua_register( L, "MinMax", @minmax )
 
   	' execute the lua script from a file
   	lua_dofile( L, "minmax.lua" )
 
   	' release the lua state
-  	lua_close L
+  	lua_close( L )
 
   	print "finished! press any key"
   	sleep

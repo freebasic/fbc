@@ -1,402 +1,396 @@
+  
+  FreeBASIC - A 32-bit QuickBASIC-compatible Compiler
+  Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 
-[Legal stuff]
 
-    FreeBASIC - a 32-bit QB-compatible Compiler
-    Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+License:
 
-    This program is free software; you can redistribute it and/or modify it under the terms
-    of the GNU General Public License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
+  This program is free software; you can redistribute it and/or modify it under the terms
+  of the GNU General Public License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-    See the GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along with this program;
-    if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-    MA 02111-1307 USA.
+  You should have received a copy of the GNU General Public License along with this program;
+  if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+  MA 02111-1307 USA.
 
 
+Most Important Features:
 
-[Most important features]
+  o Syntax-compatible with Microsoft's QBASIC/QuickBASIC/PDS/VB-DOS interpreters
+    and compilers:
 
-    * syntax compatible with Microsoft's QBASIC/QuickBASIC/PDS/VBDOS interpreters/compilers:
+    - FreeBASIC is not a "new" BASIC language. It is not required of you to learn
+      anything new if you are familiar with any MS-BASIC variant.
 
-        - freeBASIC is not a "new" BASIC language, you don't have to learn anything new if
-          you already know any MS-BASIC variant
+    - FreeBASIC is case-insensitive; scalar variables don't need to be dimensioned;
+      line numbers are supported; no required MAIN function; et cetera.
 
-        - case-insensitive, scalar variables don't need to be dimensioned, supports line
-          numbers, no MAIN functions and so on..
+    - Please note that compatibility does not mean that any code written for any
+      version of MS-BASIC will run the same with FreeBASIC. It may compile
+      fine, but have problems running.
 
-        - please note that compatibility doesn't mean you can compile a source-code made for
-          QuickBASIC and hope it will run fine (it may compile fine!)
+  o Clean Syntax:
 
+    - Only a small number of keywords have been added. All functions are implemented
+      as libraries, so for the most part, there are no new intrinsic routines, and
+      therefore there is a low chance of having name duplication with old code. If you
+      want to show up a message box in Windows, simply do:
 
-    * clean syntax:
+      '$include: 'win\user32.bi'
+      MessageBox NULL, "Title", "Text", MB_ICONASTERISK
 
-        - only a small number of keywords were added, all functions are implemented as
-          libraries, there's not a single new intrinsic routine, like MSGBOX of example,
-          so there's no variable clashes with old code. if you want to show up a msg box
-          in Windows, simply do:
+      (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
-          '$include: 'user32.bi'
-          MessageBox NULL, "Title", "Text", MB_ICONASTERISK
 
-          (note, MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
+  o There is a large number of variable types, like BYTE/SHORT/INTEGER, SINGLE/DOUBLE and STRING:
 
+    - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER).
 
-    * great number of variables types, like BYTE/SHORT/INTEGER, SINGLE/DOUBLE and STRING:
+    - Strings can be fixed or variable-length (up to 2GB long).
 
-      - all integer types have unsigned versions (UBYTE/USHORT/UINTEGER)
 
-      - strings can be fixed or variable-length (up to 2GB long!)
+  o User-defined Types (UDT's):
 
+    - Unlimited nesting.
 
-    * user defined types (UDT's):
+    - BASIC's TYPE statement is supported, along with the new UNION statement (including 
+      nameless nested UNION's).
 
-      - unlimited nesting
+      TYPE MyType
+         A AS SHORT
+         B AS INTEGER
+         C AS LONG
+         D AS OtherUDT
+         UNION
+            E AS DOUBLE
+            F AS SINGLE
+            G AS OtherUDT
+         END UNION
+         H AS BYTE
+      END TYPE
 
-      - QB's TYPE and UNION's (including nameless inner-unions):
+      Or,
 
-        type MYTYPE
-            a as short
-            b as integer
-            c as short
-            d as OTHERTYPE
-            union
-                e as double
-                f as single
-                g as OTHERTYPE
-            end union
-            h as byte
-        end type
+      UNION MyUnion
+         A AS INTEGER
+         B AS INTEGER
+         C AS DOUBLE
+      END UNION
 
-        union MYUNION
-            a as integer
-            b as short
-            c as double
-        end union
+    - Array fields utilizing up to four dimensions can be used. For example,
 
-      - array fields, up to 4 dimensions, ex:
+      TYPE MyList
+         ListData(0 TO MAXITEMS - 1) AS MyItem
+      END TYPE
 
-        type MYLIST
-            mylist(0 to MAXITEMS-1) as MYITEM
-        end type
+    - Function field types:
 
-      - function field types:
+      TYPE MyType
+         MyFunction AS FUNCTION (BYVAL ArgumentA AS INTEGER) AS INTEGER
+      END TYPE
 
-        type SOMETYPE
-            myfunc as function( byval arg1 as integer ) as integer
-        end type
+  o Enumerations (ENUM's):
 
+      ENUM MyEnum
+         A
+         B = 3
+         C
+      END ENUM
 
-    * enum's (Enumerations):
+      DIM E AS MyEnum
 
-        enum MYENUM
-            A
-            B = 3
-            C
-        end enum
+      E = C
 
-        dim e as MYENUM
+  o Arrays:
 
-        e = C (ie, e = 4)
+    - Dynamic and static arrays are supported, up to 2 GB in size.
 
+    - Unlimited number of array dimensions.
 
-    * arrays:
+    - Any lower and upper boundaries.
 
-      - dynamic and static, up to 2GB
+    - REDIM PRESERVE statement is supported to resize any dynamic array and keep its
+      contents intact.
 
-      - unlimited number of dimensions
+  o Pointers:
 
-      - any lower and upper bounds
+    - Pointers to any of the data types listed above, including UDT's and arrays.
 
-      - redim preserve
+    - Uses the same syntax as C/C++. For example,
 
+      TYPE Node
+         PreviousNode AS Node POINTER
+         NextNode     AS Node POINTER
+      END TYPE
 
-    * pointers:
+      DIM CurrentNode AS Node POINTER
+      CurrentNode->NextNode->PreviousNode = NULL
 
-      - pointers to *any* variable listed above, including UDT's and arrays
+      DIM A AS SHORT POINTER, B AS SHORT POINTER, C AS SHORT POINTER POINTER
+      *A = *B \ **C
 
-      - uses the same syntax as in C, ex:
-        type node 
-          prevNode as node ptr
-          nextNode as node ptr
-        end type
+    - Unlimited indirection levels (e.g., pointer to pointer to ...)
 
-	dim currNode as node ptr
-        currNode->nextNode->prevNode = NULL
+    - Function pointers:
 
-        dim a as short ptr, b as short ptr, c as short ptr ptr
-        *a = *b \ **c
+      DIM MyPointer AS SUB(BYVAL ArgumentA AS INTEGER, BYVAL ArgumentB AS DOUBLE)
+      DIM OtherPointer AS FUNCTION(BYVAL ArgumentA AS INTEGER)
 
-      - unlimited indirection levels (pointer to pointer to pointer to ...)
+      MyPointer = PROCPTR(RealSub)
+      MyPointer (1, 2)
 
-      - function pointers:
+      SUB RealSub(BYVAL ArgumentA AS INTEGER, BYVAL ArgumentB AS DOUBLE)
+         Result = ArgumentA * ArgumentB
+      END SUB
 
-        dim myptr as sub( byval arg1 as function( byval arg as integer ), byval arg2 as double )
-        dim otherptr as as function( byval arg as integer )
+  o Optional function arguments (numeric only):
 
-        myptr = @realsub
-        myptr( otherptr, f )
+      DECLARE SUB Test(A AS DOUBLE = 12.345, BYVAL B AS BYTE = 255)
 
-        sub realsub( byval arg1 as function( byval arg as integer ), byval arg2 as double )
+      Test
+      Test , 128
+      Test ,
+      Test 44,
+      Test 44
 
-            res = arg1( a+b ) * arg2
+      et cetera.
 
-        end sub
+  o Inline Assembly:
 
+    - Intel syntax.
 
-    * optional function arguments (numeric only):
+    - Reference variables directly by name; no "trick code" needed.
 
-      declare sub bar( foo1 as double = 12.345, byval foo2 as byte = 255 )
+  o Preprocessor:
 
-      bar
-      bar , 128
-      bar ,
-      bar 123.4,
-      bar 123.4
-      etc...
+    - Same syntax as in C (less for complex #DEFINE's, as they are unsupported):
 
+      #DEFINE SOMEDEF 1234
+      #DEFINE OTHERDEF 5678
+      #IFDEF SOMEDEF
+      #   IF NOT DEFINED(OTHERDEF)
+      #      DEFINE OTHERDEF SOMEDEF
+      #   ELSE
+      #      IF OTHERDEF <> SOMEDEF
+      #         UNDEF OTHERDEF
+      #         DEFINE OTHERDEF SOMEDEF
+      #      ENDIF
+      #   ENDIF
+      #ELSE
+      #   DEFINE OTHERDEF 5678
+      #ENDIF
+      #PRINT OTHERDEF
 
-    * inline assembly:
+  o Escape characters inside literal strings:
 
-      - intel syntax
+    - Same as in C (except numbers are interpreted as decimal numbers).
+      Use the OPTION ESCAPE statement to turn this behavior on or off.
 
-      - reference variables by name, no trick code needed
+      OPTION ESCPAPE
+      PRINT "\"Hello from FreeBASIC!\""
 
+  o Create OBJ's, LIB's, DLL's, and console or GUI EXE's:
 
-    * pre-processor:
+    - You are in no way locked to an IDE or editor of any kind.
 
-      - same syntax as in C (less for complex #define's, that are not supported)
+    - You can create static and dynamic libraries adding just one command-line
+      option (-lib or -dll).
 
-      #define SOMEDEF  1234
-      #define OTHERDEF 5678
-      #ifdef SOMEDEF
-      # if not defined( OTHERDEF )
-      #  define OTHERDEF SOMEDEF
-      # else
-      #  if OTHERDEF <> SOMEDEF
-      #   undef OTHERDEF
-      #   define OTHERDEF SOMEDEF
-      #  endif
-      # endif
-      #else
-      # define OTHERDEF 5678
-      #endif
-      #print OTHERDEF
+  o As a 32-bit application:
 
+    - FreeBASIC can compile source code files up to 2 GB long.
 
-    * escape characters inside literal strings:
+    - The number of symbols (variables, constants, et cetera) is only limited by the
+      total memory available during compile time. (You can, for example, include
+      OpenGL, SDL, BASS, and Windows 32-bit API simultaneously in your source code.)
 
-      - same as in C (but numbers are interpreted as decimal, not octagonal)
+  o Optimized code generation:
 
-        option escape                           '' needed to enable
-        print "\"Hello from FreeBASIC!\""
+    - While FreeBASIC is not an optimizing compiler, it does many kinds of general
+      optimizations to generate the fastest possible code on x86 CPU's, not losing
+      to other BASIC alternatives, including many commercial ones.
 
+  o Completely free:
 
-    * creates OBJ's, LIB's, DLL's, console and GUI EXE's
+    - All third-party tools are also free. No piece of abandoned of copyrighted
+      software is used. The assembler, linker, archiver, and other command-line
+      tools come from the mingw32 project (the GCC port for Windows).
 
-      - you are in no way locked to an IDE
+  o Portability:
 
-      - create static libraries as before
+    - The run-time library is being written with portability in mind. Operating
+      system-dependent functions are being separated to make porting the compiler
+      easy.
 
+    - The compiler is written in 100% FreeBASIC code (FreeBASIC compiles itself.)
+      As all modules are independent, porting to other operating systems on the
+      x86 platform won't be too difficult.
 
-    * as a 32-bit application:
+    - All tools used in the creation of FreeBASIC exist on most operating systems
+      already as they are from the GNU binutils.
 
-      - FB can compile source-code files up to 2GB long
+    - FreeBASIC currently runs on 32-bit Windows, Linux, and MS-DOS.
 
-      - the number of symbols (variables, constants, etc) is only limited
-        by the memory available (you can include/use for example opengl +
-        sdl + bass + win api with your application)
 
+What FreeBASIC Isn't:
 
-    * optimized code generation:
+  o FreeBASIC is not a Visual Basic alternative.
 
-      - while freeBASIC isn't an optimizing compiler, it does many kinds
-        of optimizations to generate the fastest possible code on x86 CPU's,
-        not losing to other BASIC alternatives, including the commercial ones
+    - There are no events, or any GUI wrapper of any kind. (You can create them
+      easily with UDT's and function pointers.)
 
+  o FreeBASIC is most certainly not bug free, as with any other program.
 
-    * completely *FREE*:
+    - The FreeBASIC project is only five months old, and was not/is not tested
+      enough.
 
-      - all 3rd party tools are also free, no piece of abandoned or copyrighted
-        software is used. assembler, linker, archiver and other cmd-line tools came
-        from the (awesome) Mingw32 project (the GCC Windows port)
 
+Possible Additions to Later Versions:
 
-    * portability:
+  o Macros
 
-      - runtime-lib is being written with portability in mind, OS dependent
-        functions are being separated to make porting easy later
+  o TYPEDEF's
 
-      - compiler is written in 100% in FB (that's it, FB is compiles itself),
-        and all modules are independent, porting to other OSes on the x86
-        platform won't be too difficult
+  o Variable initializers:
 
-      - as all tools used also exist on other OSes and can even create
-        cross-platform executables, that will make the porting easier
+      DIM MyVariable AS SomeType = { InitialValue, ... }
 
+  o CLASS data structure (for object-oriented programming):
 
-[What freeBASIC isn't]
+    - GUI code would be much easier to write.
 
-    * it's not a VisualBASIC alternative:
+  o More optimizations:
 
-      - there's no events, no frames or any GUI wrapper (you can create them easily
-        with the UDT's and function pointers)
+    - Common sub-expression elimination: QB 4.5 and later had this type
+      of optimization 16 years ago. Today, you can't find any BASIC compiler that
+      utilizes this type of optimization - not even PowerBASIC, known as the BASIC
+      compiler that generates the fastest code.
 
-    * it's not bug free:
+    - Direct Acyclic Graph (DAG) module has already been coded. All that remains is
+      getting it to work with the Intermediate Representation (IR) module.
 
-      - as any 5-months old project, FB wasn't tested enough
 
+Known Bugs:
 
+  o "ON Expression GOTO | GOSUB List" will be fixed later. It acts like
+    "IF Expression GOTO | GOSUB" as of now.
 
-[Possible additions to next versions]
 
-    * macros
+Credits (in alphabetic order):
 
+  o Angelo Mottola (a.mottola@libero.it) - Project Member:
+    - Ported FreeBASIC to Linux; port maintainer.
+    - Developer of GFXLib2.
+    - Wrote many, many fixes and additions to the run-time library and compiler.
 
-    * typedefs
+  o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
+    - Ported FreeBASIC to DOS; port maintainer.
+    - FreeBASIC Documentation project member.
+    - Wrote the DLL and static library automation.
+    - Developed the SETDATE and SETTIME run-time library routines.
+    - Completed the CRTDLL and DDRAW headers.
 
+  o Eric Lope (vic_viperph@yahoo.com):
+    - Translated the OpenGL and GLU headers
+    - Wrote the rel-* graphics demonstrations in the GFX directory.
 
-    * var initializers:
+  o fsw:
+    - Translated most of the Windows API headers.
 
-      dim myvar as sometype = { initialvalue }
+  o Matthias Faust (matthias_faust@web.de):
+    - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was sent by
+      Edmond Leung some days before) and wrote the SDL_ttf demonstration program.
 
+  o Marzec:
+    - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
+    - Translated the first SDL headers (replaced by new ones since version 0.11b).
+    - Wrote the first file routines for the run-time library.
+    - Made the preliminary preprocessor, an external tool.
 
-    * CLASS data structure (OOP anyone?)
+  o Nek (dave@nodtveidt.net):
+    - Translated the Windows API headers, integrating parts of fsw's work.
 
-      - GUI code would be way easier to write
+  o plasma:
+    - Translated the FMOD and BASS headers.
+    - Wrote the fmod.bas test in the SOUND directory.
 
+  o Steven Hidy (subxero@phatcode.net):
+    - Rewrote this readme file, correcting v1ctor's mistakes (too many to list :P).
 
-    * more optimizations: common sub-expression elimination:
+  o Sterling Christensen (sterling@engineer.com) - Project Member:
+    - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
 
-      - believe or not, MS-QB 4.5 and above had that kind of optimization 16 years ago,
-        and you can't find ANY BASIC compiler these days that can do that, not even
-        PowerBASIC, known as the BASIC compiler that gens the fastest code (until now ;)
+  o zydon:
+    - Wrote the calendar the toolbar examples at the GUI directory.
 
-      - Direct Acyclic Graph module is already coded, just have to get it to work
-        with the IR module
+  o All third-party tools from Mingw32: http://www.mingw.org/
 
+  o Many run-time library console routines were based on the CONIO implementation
+    for Mingw32.
 
-[Known bugs]
 
-    * "ON expr GOTO|GOSUB list" will be fixed later, it acts as "IF expr GOTO|GOSUB"
-      by now
+Greetings:
 
+  o Blitz: The first to see the compiler when it was just a toy (delete the sources!).
+    Helped pointing me out the right paths to follow in order to generate better code.
+    Helped finding tons of bugs and wrote the first real apps.
 
-[Credits]
+  o Marzec: Loads of tests, besides giving many ideas.
 
-    * Angelo Motolla (a.mottola@libero.it) - project member:
-      - ported FB to Linux; port maintainer
-      - developer of the gfxlib2
-      - wrote many fixes and additions to the rtlib and compiler (too many to list ;)
-    
-    * Daniel R. Verkamp (i_am_drv@yahoo.com) - project member: 
-      - ported FB to DOS; port maintainer
-      - FreeBASIC Doc's project member
-      - wrote the DLL and static lib automation
-      - developed the SETDATE and SETTIME rtlib routines
-      - completed the crtdll and ddraw headers
+  o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch of
+    kangaroos in the middle time.
 
-    * Sterling Christensen (sterling@engineer.com) - project member: 
-      - developer of the QB-ish GFX library (replaced by gfxlib2 since version 0.11b)
-    
-    * Edmond Leung (leung.edmond@gmail.com): 
-      - translated the SDL headers, including SDL_mixer and SDL_image
-      - wrote/ported many of the examples at the SDL dir
+  o VonGodric: author of the first (an unique at the moment) freeBASIC IDE: FBIDE (download
+    it here: http://www.hot.ee/wizgui/setup.exe) and also reported loatsa bugs (i'm getting
+    tired of typing that, arf)
 
-    * fsw (...@...): 
-      - translated most of the Windows API headers
+  o Rel: Best beta tester ever, found loads of bugs.
 
-    * Matthias Faust (...@...):
-      - translated the SDL_ttf header (also SDL_mixer, that unfortunately was 
-        sent by Leung some days before) and wrote the sdl_ttf demo
+  o Plasma: Wrote the first FB demos for fmod and BASS. Also the register of the freebasic.net
+    domain.
 
-    * Marzec (...@...): 
-      - wrote the sdl_bassgl, sdl_opengl and sdl_key tests at the SDL dir
-      - translated the first SDL headers (replaced by new ones since version 0.11b)
-      - wrote the first file routines for the rtlib
-      - made the preliminary pre-processor, an external tool
+  o Jofers: Fitted a horse icon in just 16x16 pixels (awesome work, btw ;), also working on the
+    documentation (more info at http://freebasicdoc.sourceforge.net).
 
-    * Nek (dave@nodtveidt.net): 
-      - translated the Windows API headers, integrating parts of fsw's work
+  o Wildcard: Created the biggest FB forum and helped making FB known even before it was
+    released.
 
-    * plasma (...@...): 
-      - translated the fmod and BASS headers
-      - wrote the fmod.bas test at SOUNDS dir
+  o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of bugs found.
 
-    * Rel (...@...):
-      - translated the OpenGL and GLU headers
-      - wrote the rel-* GFX demos at the GFX dir
+  o Dav, WD, Alias, Urger: Beta testing.
 
-    * zydon (...@...): 
-      - wrote the calendar and toolbar examples at the GUI dir
+  o People at Qbasicnews (too many to list, thanks all!) for all the support and feedback.
 
-    * All 3rd-party tools from Mingw32 (http://www.mingw.org/)
+  o You, for giving it a try - you won't regret.. er.
 
-    * Many rtlib console routines were based on the conio implementation for Mingw32
 
+Links:
 
-[Greetings]
+  o Official site: http://fbc.sourceforge.net/ (or http://www.sourceforge.net/projects/fbc)
 
-    * Blitz: The first to see the compiler when it was just a toy (delete the sources!).
-      Helped pointing me out the right paths to follow in order to generate better code.
-      Helped finding tons of bugs and wrote the first real apps.
+  o IRC channel: irc://irc.freenode.net/freeBASIC
 
-    * Marzec: Loads of tests, besides giving many ideas.
+  o External libraries:
 
-    * Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch of
-      kangaroos in the middle time.
+    - BASS and BASSMod: http://www.un4seen.com/
 
-    * VonGodric: author of the first (an unique at the moment) freeBASIC IDE: FBIDE (download 
-      it here: http://www.hot.ee/wizgui/setup.exe) and also reported loatsa bugs (i'm getting 
-      tired of typing that, arf)
+    - fmod: http://www.fmod.org/
 
-    * Rel: Best beta tester ever, found loads of bugs.
+    - FreeImage: http://freeimage.sourceforge.net/
 
-    * Plasma: Wrote the first FB demos for fmod and BASS. Also the register of the freebasic.net 
-      domain.
+    - GLUT: http://www.xmission.com/~nate/glut.html
 
-    * Jofers: Fitted a horse icon in just 16x16 pixels (awesome work, btw ;), also working on the
-      documentation (more info at http://freebasicdoc.sourceforge.net).
+    - OpenGL: http://www.opengl.org/
 
-    * Wildcard: Created the biggest FB forum and helped making FB known even before it was
-      released.
+    - SDL: http://www.libsdl.org/ (look under Projects for SDL_net, SDL_image, SDL_ttf, etc)
 
-    * Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of bugs found.
+    - TinyPTC: http://www.gaffer.org/tinyptc/
 
-    * Dav, WD, Alias, Urger: Beta testing.
+    - Zlib: http://www.zlib.net/
 
-    * People at Qbasicnews (too many to list, thanks all!) for all the support and feedback.
 
-    * You, for giving it a try - you won't regret.. er.
-
-
-[Links]
-
-    Site: http://fbc.sourceforge.net/ (or http://www.sourceforge.net/projects/fbc)
-
-    IRC channel: irc://irc.freenode.net/freeBASIC
-
-
-[Libraries]
-
-    BASS and BASSMod: http://www.un4seen.com/
-
-    fmod: http://www.fmod.org/
-
-    FreeImage: http://freeimage.sourceforge.net/
-
-    GLUT: http://www.xmission.com/~nate/glut.html
-
-    OpenGL: http://www.opengl.org/
-
-    SDL: http://www.libsdl.org/ (look under Projects for SDL_net, SDL_image, SDL_ttf, etc)
-
-    TinyPTC: http://www.gaffer.org/tinyptc/
-
-    Zlib: http://www.zlib.net/
-
-
-[EOF]
+EOF
