@@ -37,7 +37,8 @@ void fb_ConsoleLocate( int row, int col, int cursor )
 	if (!fb_con.inited)
 		return;
 	
-	fb_ConsoleGetXY(&x, &y);
+	if ((row <= 0) || (col <= 0))
+		fb_ConsoleGetXY(&x, &y);
 	
 	if (col > 0)
 		x = col;
