@@ -39,7 +39,8 @@ const GFXDRIVER *fb_gfx_driver_list[] = {
 
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
-static BOOL screensaver_active;
+static BOOL screensaver_active, cursor_shown;
+static UINT msg_cursor;
 static int mouse_buttons, mouse_wheel;
 
 
@@ -49,6 +50,11 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	int result;
 	char key_state[256];
 	WORD key = 0;
+	
+	if (message == msg_cursor) {
+		ShowCursor(wParam);
+		return 0;
+	}
 
 	switch (message)
 	{
@@ -167,6 +173,9 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int flags)
 	HANDLE events[2];
 	long result;
 
+	msg_cursor = RegisterWindowMessage("FB mouse cursor");
+	cursor_shown = TRUE;
+	
 	fb_win32.hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	fb_win32.window_title = title;
 	strcpy( fb_win32.window_class, WINDOW_CLASS_PREFIX );
@@ -194,7 +203,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int flags)
 
 	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
-
+	
 	return 0;
 }
 
@@ -271,6 +280,30 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 	*buttons = mouse_buttons;
 	
 	return 0;
+}
+
+
+/*:::::*/
+void fb_hWin32SetMouse(int x, int y, int cursor)
+{
+	POINT point;
+	
+	if (x >= 0) {
+		point.x = MID(0, x, fb_win32.w - 1);
+		point.y = MID(0, y, fb_win32.h - 1);
+		if (!fb_win32.fullscreen)
+			ClientToScreen(fb_win32.wnd, &point);
+		SetCursorPos(point.x, point.y);
+	}
+	
+	if ((cursor == 0) && (cursor_shown)) {
+		PostMessage(fb_win32.wnd, msg_cursor, FALSE, 0);
+		cursor_shown = FALSE;
+	}
+	else if ((cursor > 0) && (!cursor_shown)) {
+		PostMessage(fb_win32.wnd, msg_cursor, TRUE, 0);
+		cursor_shown = TRUE;
+	}
 }
 
 

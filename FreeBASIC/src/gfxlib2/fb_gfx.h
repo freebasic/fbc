@@ -176,6 +176,7 @@ typedef struct GFXDRIVER
 	void (*set_palette)(int index, int r, int g, int b);
 	void (*wait_vsync)(void);
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons);
+	void (*set_mouse)(int x, int y, int cursor);
 	void (*set_window_title)(char *title);
 } GFXDRIVER;
 
