@@ -415,7 +415,7 @@ function linkFiles as integer
 #elseif defined(TARGET_LINUX)
 
 		''
-		ldcline = ldcline + " -shared --export-dynamic"
+		ldcline = "-shared --export-dynamic -h" + hStripPath( ctx.outname )
 
 #endif
 
