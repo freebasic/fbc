@@ -104,7 +104,7 @@ static int clip_line(int *x1, int *y1, int *x2, int *y2)
 FBCALL void fb_GfxLine(float fx1, float fy1, float fx2, float fy2, int color, int type, unsigned int style, int coord_type)
 {
 	int x1, y1, x2, y2;
-	int x, y, len, dx, dy, bit = 0x8000;
+	int x, y, len, d, dx, dy, ax, ay, bit = 0x8000;
 
 	if (!fb_mode)
 		return;
@@ -154,47 +154,59 @@ FBCALL void fb_GfxLine(float fx1, float fy1, float fx2, float fy2, int color, in
 		else {
 			dx = x2 - x1;
 			dy = y2 - y1;
-			if(abs(dy) > abs(dx))
-			{
-				len = abs(dy)+1;
-				dx = (dx<<16) / abs(dy);
-				if( dy < 0 )
-					dy = -1<<16;
-				else
-					dy = 1<<16;
+			ax = ay = 1;
+			if (dx < 0) {
+				dx = -dx;
+				ax = -1;
 			}
-			else
-			{
-				len = abs(dx)+1;
-				dy = (dy<<16) / abs(dx);
-				if( dx < 0 )
-					dx = -1<<16;
-				else
-					dx = 1<<16;
+			if (dy < 0) {
+				dy = -dy;
+				ay = -1;
 			}
-
-			x = x1<<16;
-			y = y1<<16;
-
-			if (style == 0xFFFF)
-				for (; len; len--) {
-					fb_hPutPixel(x>>16, y>>16, color);
-					x += dx;
-					y += dy;
-				}
-
-			else
+			x = x1;
+			y = y1;
+			if (dx >= dy) {
+				len = dx + 1;
+				dy <<= 1;
+				d = dy - dx;
+				dx <<= 1;
 				for (; len; len--) {
 					if (style & bit)
-						fb_hPutPixel(x>>16, y>>16, color);
+						fb_hPutPixel(x, y, color);
 					bit >>= 1;
 					if (!bit)
 						bit = 0x8000;
-					x += dx;
-					y += dy;
+					if (d >= 0) {
+						y += ay;
+						d -= dx;
+					}
+					d += dy;
+					x += ax;
 				}
+			}
+			else {
+				len = dy + 1;
+				dx <<= 1;
+				d = dx - dy;
+				dy <<= 1;
+				for (; len; len--) {
+					if (style & bit)
+						fb_hPutPixel(x, y, color);
+					bit >>= 1;
+					if (!bit)
+						bit = 0x8000;
+					if (d >= 0) {
+						x += ax;
+						d -= dy;
+					}
+					d += dx;
+					y += ay;
+				}
+			}
 		}
-		fb_hMemSet(fb_mode->dirty + y1, TRUE, abs(y2 - y1) + 1);
+		if (y1 > y2)
+			SWAP(y1, y2);
+		fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
 		fb_mode->driver->unlock();
 	}
 	else {
