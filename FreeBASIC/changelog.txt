@@ -1,7 +1,13 @@
 Version 0.13 Beta:
 
+[chged] glut include file, header completed with help of the SWIG FB wrapper (v1c)
 [added] on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
 [added] PALETTE can now be called with 4 parameters, specifying new color red/green/blue components directly (lillo)
+[added] include file and import lib for the SQLite library (v1c)
+[added] include file and import lib for the mySQL client library (v1c)
+[added] include file and import lib for the DevIL library (v1c)
+[added] include file and import lib for the gd library (v1c)
+[added] ENUM's can now be nameless (v1c)
 [fixed] CVS() was being done as CVD() (v1c)
 [fixed] inline asm now supports complete IA32 instruction set (lillo)
 [fixed] SELECT CASE and other compound statments were accepting UDT's w/o any fields given (v1c)
@@ -9,6 +15,7 @@ Version 0.13 Beta:
 [fixed] dyn arrays of function pointers can now be redimensioned, as the symbol name is being mangled now (v1c)
 [fixed] MID$ with len = 0 should return an empty string (v1c)
 [fixed] WINDOW statement was inverting y coordinate (lillo)
+[fixed] LINE INPUT was limited to 1024 bytes (v1c)
 
 
 Version 0.12 Beta:
