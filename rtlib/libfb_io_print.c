@@ -125,7 +125,7 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
         /* curses does bad jokes on \n, so we skip it */
         buffer[len - 1] = '\0';
         printw( "%s", buffer );
-        move( row + 1, 0 );
+        move( row, 0 );
     }
     else
         printw( "%s", buffer );
