@@ -910,7 +910,7 @@ reread:
 
 	iswith = FALSE
 
-	t.filepos = ctx.filepos - ctx.bufflen
+	t.filepos = ctx.filepos - ctx.bufflen - 1
 
 	select case as const char
 	'':::::
@@ -1400,26 +1400,29 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 	dim c as ubyte ptr
 	
 	lexPeekCurrentLine = ""
-	
+
 	'' get file contents around current token
 	old_p = seek( env.inf )
 	p = ctx.tokenTB(0).filepos - 512
 	start = 512
-	if( p < 1 ) then
+	if( p < 0 ) then
 		start += p
-		p = 1
+		p = 0
 	end if
-	get #env.inf, p, buffer
+	get #env.inf, p + 1, buffer
 	seek #env.inf, old_p
 	
 	'' find source line start
 	c = sadd(buffer) + start
-	token_pos = -1
-	while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
+	token_pos = 0
+	if( start > 0 ) then
 		c = c - 1
-		start = start - 1
-		token_pos = token_pos + iif( *c = 9, 8, 1 )
-	wend
+		while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
+			token_pos = token_pos + iif( *c = 9, 8, 1 )
+			c = c - 1
+			start = start - 1
+		wend
+	end if
 	
 	'' build source line
 	res = ""
