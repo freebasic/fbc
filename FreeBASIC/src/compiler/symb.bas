@@ -144,17 +144,19 @@ data "WHILE"	, FB.TK.WHILE		, FB.TKCLASS.KEYWORD
 data "UNTIL"	, FB.TK.UNTIL		, FB.TKCLASS.KEYWORD
 data "WEND"		, FB.TK.WEND		, FB.TKCLASS.KEYWORD
 data "CONTINUE"	, FB.TK.CONTINUE	, FB.TKCLASS.KEYWORD
-data "CINT"		, FB.TK.CINT		, FB.TKCLASS.KEYWORD
-data "CLNG"		, FB.TK.CLNG		, FB.TKCLASS.KEYWORD
-data "CSNG"		, FB.TK.CSNG		, FB.TKCLASS.KEYWORD
-data "CDBL"		, FB.TK.CDBL		, FB.TKCLASS.KEYWORD
 data "CBYTE"	, FB.TK.CBYTE		, FB.TKCLASS.KEYWORD
 data "CSHORT"	, FB.TK.CSHORT		, FB.TKCLASS.KEYWORD
-data "CSIGN"	, FB.TK.CSIGN		, FB.TKCLASS.KEYWORD
-data "CUNSG"	, FB.TK.CUNSG		, FB.TKCLASS.KEYWORD
+data "CINT"		, FB.TK.CINT		, FB.TKCLASS.KEYWORD
+data "CLNG"		, FB.TK.CLNG		, FB.TKCLASS.KEYWORD
+data "CLNGINT"	, FB.TK.CLNGINT		, FB.TKCLASS.KEYWORD
 data "CUBYTE"	, FB.TK.CUBYTE		, FB.TKCLASS.KEYWORD
 data "CUSHORT"	, FB.TK.CUSHORT		, FB.TKCLASS.KEYWORD
 data "CUINT"	, FB.TK.CUINT		, FB.TKCLASS.KEYWORD
+data "CULNGINT"	, FB.TK.CULNGINT	, FB.TKCLASS.KEYWORD
+data "CSNG"		, FB.TK.CSNG		, FB.TKCLASS.KEYWORD
+data "CDBL"		, FB.TK.CDBL		, FB.TKCLASS.KEYWORD
+data "CSIGN"	, FB.TK.CSIGN		, FB.TKCLASS.KEYWORD
+data "CUNSG"	, FB.TK.CUNSG		, FB.TKCLASS.KEYWORD
 data "IF"		, FB.TK.IF			, FB.TKCLASS.KEYWORD
 data "THEN"		, FB.TK.THEN		, FB.TKCLASS.KEYWORD
 data "ELSE"		, FB.TK.ELSE		, FB.TKCLASS.KEYWORD
@@ -250,6 +252,8 @@ data "ASC"		, FB.TK.ASC			, FB.TKCLASS.KEYWORD
 data "IIF"		, FB.TK.IIF			, FB.TKCLASS.KEYWORD
 data "..."		, FB.TK.VARARG		, FB.TKCLASS.KEYWORD
 data "VA_FIRST"	, FB.TK.VA_FIRST	, FB.TKCLASS.KEYWORD
+data "LONGINT"	, FB.TK.LONGINT		, FB.TKCLASS.KEYWORD
+data "ULONGINT" , FB.TK.ULONGINT	, FB.TKCLASS.KEYWORD
 data ""
 
 
@@ -923,18 +927,18 @@ function symbAddTempVar( byval typ as integer ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL ptr static
+function hAllocNumericConst( sname as string, byval typ as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
     dim p as integer
 
-	hAllocFloatConst = NULL
+	hAllocNumericConst = NULL
 
-	cname = "_fbfc_" + sname
+	cname = "_fbnc_" + sname
 
 	s = symbFindByNameAndSuffix( cname, typ, FALSE )
 	if( s <> NULL ) then
-		hAllocFloatConst = s
+		hAllocNumericConst = s
 		exit function
 	end if
 
@@ -944,13 +948,15 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL p
 
 	s->var.initialized = TRUE
 
-	p = instr( sname, "D" )
-	if( p <> 0 ) then
-		sname[p-1] = asc( "E" )
+	if( typ = FB.SYMBTYPE.DOUBLE ) then
+		p = instr( sname, "D" )
+		if( p <> 0 ) then
+			sname[p-1] = asc( "E" )
+		end if
 	end if
 	s->var.inittext	= sname
 
-	hAllocFloatConst = s
+	hAllocNumericConst = s
 
 end function
 
@@ -1846,6 +1852,9 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 
 	case FB.SYMBTYPE.INTEGER, FB.SYMBTYPE.LONG, FB.SYMBTYPE.UINT
 		lgt = FB.INTEGERSIZE
+
+	case FB.SYMBTYPE.LONGINT, FB.SYMBTYPE.ULONGINT
+		lgt = FB.INTEGERSIZE*2
 
 	case FB.SYMBTYPE.SINGLE
 		lgt = 4

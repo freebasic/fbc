@@ -78,6 +78,11 @@ type IIFNode
 	falselabel 		as FBSYMBOL ptr
 end type
 
+type longlong
+	low				as uinteger
+	high			as integer
+end type
+
 type ASTNode
 	prv				as integer						'' 'pointers' used by the allocator,
 	nxt				as integer						'' /  (can't be swapped/copied!)
@@ -88,7 +93,10 @@ type ASTNode
 	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF
 
 	defined 		as integer						'' only true for constants
-	value			as double						'' /
+	union
+		value		as double						'' /
+		quadval		as longlong
+	end union
 
 	op				as integer						'' f/ BOP, UOP, ... nodes
 	allocres 		as integer						'' /

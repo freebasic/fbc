@@ -41,6 +41,8 @@ enum IRDATATYPE_ENUM
 	IR.DATATYPE.INTEGER
 	IR.DATATYPE.LONG		= IR.DATATYPE.INTEGER
 	IR.DATATYPE.UINT
+	IR.DATATYPE.LONGINT
+	IR.DATATYPE.ULONGINT
 	IR.DATATYPE.SINGLE
 	IR.DATATYPE.DOUBLE
 	IR.DATATYPE.STRING
@@ -50,7 +52,7 @@ enum IRDATATYPE_ENUM
 	IR.DATATYPE.POINTER							'' ptr must be the last!
 end enum
 
-const IR.MAXDATATYPES% 		= 14-1				'' pointer not taken into account
+const IR.MAXDATATYPES 		= 16-1				'' pointer not taken into account
 
 ''
 enum IRVREGTYPE_ENUM
@@ -78,7 +80,7 @@ enum IROPTYPE_ENUM
 end enum
 
 ''
-const IR.OP.NOP%			= 255
+const IR.OP.NOP			= 255
 
 enum IROP_ENUM
 	IR.OP.LOAD
@@ -131,8 +133,8 @@ enum IROP_ENUM
 end enum
 
 '' operations below won't reach IR, used by AST
-const IR.OP.TOSIGNED%		= 253
-const IR.OP.TOUNSIGNED%		= 254
+const IR.OP.TOSIGNED		= 253
+const IR.OP.TOUNSIGNED		= 254
 
 
 ''
@@ -146,6 +148,7 @@ type IRVREG
 	ofs			as integer						'' +offset
 	mult		as integer						'' multipler
 	vi			as integer						'' index vreg
+	va			as integer						'' aux vreg (used with longint's)
 
 	value		as integer						'' imm value
 end type
@@ -223,7 +226,7 @@ declare function 	irGetVRRealValue( byval vreg as integer ) as integer
 
 declare function 	irGetInverseLogOp( byval op as integer ) as integer
 
-declare sub 		irLoadVR		( byval reg as integer, byval vreg as integer )
+declare sub 		irLoadVR		( byval reg as integer, byval vreg as integer, byval doload as integer = TRUE )
 declare sub 		irStoreVR		( byval vreg as integer, byval reg as integer )
 declare sub 		irSetVR			( byval reg as integer, byval vreg as integer )
 declare sub 		irXchgTOS		( byval reg as integer )

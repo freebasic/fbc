@@ -510,8 +510,9 @@ function cHighestPresExpr( highexpr as integer ) as integer
 			res = cAddrOfExpression( highexpr, sym, elm )
 
 		'' TypeConvExpr
-		case FB.TK.CBYTE, FB.TK.CSHORT, FB.TK.CINT, FB.TK.CLNG, FB.TK.CSNG, FB.TK.CDBL, _
-			 FB.TK.CUBYTE, FB.TK.CUSHORT, FB.TK.CUINT, _
+		case FB.TK.CBYTE, FB.TK.CSHORT, FB.TK.CINT, FB.TK.CLNG, FB.TK.CLNGINT, _
+			 FB.TK.CUBYTE, FB.TK.CUSHORT, FB.TK.CUINT, FB.TK.CULNGINT, _
+			 FB.TK.CSNG, FB.TK.CDBL, _
          	 FB.TK.CSIGN, FB.TK.CUNSG
 			res = cTypeConvExpr( highexpr )
 
@@ -545,10 +546,8 @@ function cTypeConvExpr( tconvexpr as integer )
 		totype = IR.DATATYPE.SHORT
 	case FB.TK.CINT, FB.TK.CLNG
 		totype = IR.DATATYPE.INTEGER
-	case FB.TK.CSNG
-		totype = IR.DATATYPE.SINGLE
-	case FB.TK.CDBL
-		totype = IR.DATATYPE.DOUBLE
+	case FB.TK.CLNGINT
+		totype = IR.DATATYPE.LONGINT
 
 	case FB.TK.CUBYTE
 		totype = IR.DATATYPE.UBYTE
@@ -556,6 +555,13 @@ function cTypeConvExpr( tconvexpr as integer )
 		totype = IR.DATATYPE.USHORT
 	case FB.TK.CUINT
 		totype = IR.DATATYPE.UINT
+	case FB.TK.CULNGINT
+		totype = IR.DATATYPE.ULONGINT
+
+	case FB.TK.CSNG
+		totype = IR.DATATYPE.SINGLE
+	case FB.TK.CDBL
+		totype = IR.DATATYPE.DOUBLE
 
 	case FB.TK.CSIGN
 		totype = IR.DATATYPE.VOID				'' hack! AST will handle that
@@ -689,7 +695,6 @@ function cParentDeref( derefexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBO
 		end if
 
 		'' if index isn't an integer, convert
-		astUpdNodeResult( expr )
 		if( (astGetDataClass( expr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( expr ) <> FB.POINTERSIZE) ) then
 			expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )

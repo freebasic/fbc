@@ -1930,6 +1930,15 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 		lgt = FB.INTEGERSIZE
 		lexSkipToken
 
+	case FB.TK.LONGINT
+		typ = FB.SYMBTYPE.LONGINT
+		lgt = FB.INTEGERSIZE*2
+		lexSkipToken
+	case FB.TK.ULONGINT
+		typ = FB.SYMBTYPE.ULONGINT
+		lgt = FB.INTEGERSIZE*2
+		lexSkipToken
+
 	case FB.TK.SINGLE
 		typ = FB.SYMBTYPE.SINGLE
 		lgt = 4
@@ -2001,6 +2010,8 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 				typ = FB.SYMBTYPE.USHORT
 			case FB.SYMBTYPE.INTEGER
 				typ = FB.SYMBTYPE.UINT
+			case FB.SYMBTYPE.LONGINT
+				typ = FB.SYMBTYPE.ULONGINT
 			case else
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
@@ -3065,6 +3076,8 @@ function cAssignmentOrPtrCall
         if( op <> INVALID ) then
             expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
         end if
+
+        'astDump1 INVALID, expr, TRUE, 1, 40
 
         '' do assign
         assgexpr = astNewASSIGN( assgexpr, expr )

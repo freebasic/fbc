@@ -97,6 +97,24 @@ data "fb_StrAllocTempDesc","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
 						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+'' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
+data "__divdi3","", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, 2, _
+					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
+'' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint
+data "__udivdi3","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 2, _
+					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
+'' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint
+data "__moddi3","", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, 2, _
+					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
+'' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint
+data "__umoddi3","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 2, _
+					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
+
+
 '' fb_ArrayRedim CDECL ( array() as ANY, byval elementlen as integer, _
 ''					     byval isvarlen as integer, byval preserve as integer, _
 ''						 byval dimensions as integer, ... ) as integer
@@ -150,6 +168,15 @@ data "fb_ArrayFreeTempDesc","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 '' fb_IntToStr ( byval number as integer ) as string
 data "fb_IntToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
 					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_UIntToStr ( byval number as uinteger ) as string
+data "fb_UIntToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
+					    FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
+'' fb_LongintToStr ( byval number as longint ) as string
+data "fb_LongintToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
+					       FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
+'' fb_ULongintToStr ( byval number as ulongint ) as string
+data "fb_ULongintToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
+					        FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_FloatToStr ( byval number as single ) as string
 data "fb_FloatToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
 						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
@@ -216,6 +243,9 @@ data "fb_DataReadShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 '' fb_DataReadInt ( dst as integer ) as void
 data "fb_DataReadInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+'' fb_DataReadLongint ( dst as longint ) as void
+data "fb_DataReadLongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						      FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadUByte ( dst as ubyte ) as void
 data "fb_DataReadUByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						    FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYREF, FALSE
@@ -225,6 +255,9 @@ data "fb_DataReadUShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 '' fb_DataReadUInt ( dst as uinteger ) as void
 data "fb_DataReadUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						   FB.SYMBTYPE.UINT,FB.ARGMODE.BYREF, FALSE
+'' fb_DataReadULongint ( dst as ulongint ) as void
+data "fb_DataReadULongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						       FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadSingle ( dst as single ) as void
 data "fb_DataReadSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
@@ -285,6 +318,16 @@ data "fb_PrintUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_PrintLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void
+data "fb_PrintLongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
+					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+					      FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_PrintULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void
+data "fb_PrintULongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
+						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+						    FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void
 data "fb_PrintSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
@@ -345,6 +388,16 @@ data "fb_WriteUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_WriteLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void
+data "fb_WriteLongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
+					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+					       FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_WriteULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void
+data "fb_WriteULongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
+						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+						    FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void
 data "fb_WriteSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
@@ -500,6 +553,9 @@ data "fb_InputShort","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 '' fb_InputInt ( x as integer ) as void
 data "fb_InputInt","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+'' fb_InputLongint ( x as longint ) as void
+data "fb_InputLongint","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
+					       FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
 '' fb_InputSingle ( x as single ) as void
 data "fb_InputSingle","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 						  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
@@ -1360,13 +1416,17 @@ function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
 
    	''
 	str1len = -1
-	if( hIsStrFixed( sdtype1 ) ) then
+	if( (sdtype1 = IR.DATATYPE.BYTE) or (sdtype1 = IR.DATATYPE.UBYTE) ) then
+		str1len = 0
+	elseif( hIsStrFixed( sdtype1 ) ) then
 		str1len = hGetFixStrLen( str1 )
 	end if
 
     ''
 	str2len = -1
-	if( hIsStrFixed( sdtype2 ) ) then
+	if( (sdtype2 = IR.DATATYPE.BYTE) or (sdtype2 = IR.DATATYPE.UBYTE) ) then
+		str2len = 0
+	elseif( hIsStrFixed( sdtype2 ) ) then
 		str2len = hGetFixStrLen( str2 )
 	end if
 
@@ -1413,13 +1473,17 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
 
    	''
 	str1len = -1
-	if( hIsStrFixed( sdtype1 ) ) then
+	if( (sdtype1 = IR.DATATYPE.BYTE) or (sdtype1 = IR.DATATYPE.UBYTE) ) then
+		str1len = 0
+	elseif( hIsStrFixed( sdtype1 ) ) then
 		str1len = hGetFixStrLen( str1 )
 	end if
 
     ''
 	str2len = -1
-	if( hIsStrFixed( sdtype2 ) ) then
+	if( (sdtype2 = IR.DATATYPE.BYTE) or (sdtype2 = IR.DATATYPE.UBYTE) ) then
+		str2len = 0
+	elseif( hIsStrFixed( sdtype2 ) ) then
 		str2len = hGetFixStrLen( str2 )
 	end if
 
@@ -1460,7 +1524,7 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
    	dtype = astGetDataType( dst )
 
 	lgt = -1
-	if( dtype = IR.DATATYPE.BYTE ) then
+	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( dst )
@@ -1477,7 +1541,7 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
    	dtype = astGetDataType( src )
 
 	lgt = -1
-	if( dtype = IR.DATATYPE.BYTE ) then
+	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( src )
@@ -1511,7 +1575,7 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
    	dtype = astGetDataType( dst )
 
 	lgt = -1
-	if( dtype = IR.DATATYPE.BYTE ) then
+	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( dst )
@@ -1528,7 +1592,7 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
    	dtype = astGetDataType( src )
 
 	lgt = -1
-	if( dtype = IR.DATATYPE.BYTE ) then
+	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( src )
@@ -1607,7 +1671,7 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
    	dtype = astGetDataType( strg )
 
 	lgt = -1
-	if( dtype = IR.DATATYPE.BYTE ) then
+	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
 		lgt = 0
 	elseif( hIsStrFixed( dtype ) ) then
 		lgt = hGetFixStrLen( strg )
@@ -1631,7 +1695,20 @@ function rtlToStr( byval expr as integer ) as integer static
     ''
 	select case astGetDataClass( expr )
 	case IR.DATACLASS.INTEGER
-		f = ifuncTB(FB.RTL.INT2STR)
+
+		select case as const astGetDataType( expr )
+		case IR.DATATYPE.LONGINT
+			f = ifuncTB(FB.RTL.LONGINT2STR)
+		case IR.DATATYPE.ULONGINT
+			f = ifuncTB(FB.RTL.ULONGINT2STR)
+		case IR.DATATYPE.BYTE, IR.DATATYPE.SHORT, IR.DATATYPE.INTEGER
+			f = ifuncTB(FB.RTL.INT2STR)
+		case IR.DATATYPE.UBYTE, IR.DATATYPE.USHORT, IR.DATATYPE.UINT
+			f = ifuncTB(FB.RTL.UINT2STR)
+		case else
+			f = ifuncTB(FB.RTL.UINT2STR)
+		end select
+
 	case IR.DATACLASS.FPOINT
 		if( astGetDataType( expr ) = IR.DATATYPE.SINGLE ) then
 			f = ifuncTB(FB.RTL.FLT2STR)
@@ -1823,7 +1900,6 @@ function rtlStrChr( byval args as integer, exprtb() as integer ) as integer stat
     '' ...
     for i = 0 to args-1
     	expr = exprtb(i)
-    	astUpdNodeResult( expr )
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
@@ -1898,7 +1974,6 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, by
 
 		'' lbound
 		expr = exprTB(i, 0)
-		astUpdNodeResult( expr )
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
@@ -1911,7 +1986,6 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, by
 
 		'' ubound
 		expr = exprTB(i, 1)
-		astUpdNodeResult( expr )
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
@@ -2234,6 +2308,10 @@ function rtlDataRead( byval varexpr as integer ) as integer static
 		f = ifuncTB(FB.RTL.DATAREADINT)
 	case IR.DATATYPE.UINT
 		f = ifuncTB(FB.RTL.DATAREADUINT)
+	case IR.DATATYPE.LONGINT
+		f = ifuncTB(FB.RTL.DATAREADLONGINT)
+	case IR.DATATYPE.ULONGINT
+		f = ifuncTB(FB.RTL.DATAREADULONGINT)
 	case IR.DATATYPE.SINGLE
 		f = ifuncTB(FB.RTL.DATAREADSINGLE)
 	case IR.DATATYPE.DOUBLE
@@ -2403,7 +2481,6 @@ end sub
 function rtlMathPow	( byval xexpr as integer, byval yexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
-
 	''
 	f = ifuncTB(FB.RTL.POW)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
@@ -2422,7 +2499,6 @@ end function
 '':::::
 function rtlMathFSGN ( byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-
 
 	''
 	if( astGetDataType( expr ) = IR.DATATYPE.SINGLE ) then
@@ -2444,7 +2520,6 @@ end function
 '':::::
 function rtlMathFIX ( byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-
 
 	''
 	select case astGetDataClass( expr )
@@ -2491,6 +2566,9 @@ private function hCalcExprLen( byval expr as integer, byval realsize as integer 
 
 	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
 		lgt = FB.INTEGERSIZE
+
+	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		lgt = FB.INTEGERSIZE*2
 
 	case IR.DATATYPE.SINGLE
 		lgt = 4
@@ -2551,6 +2629,64 @@ function rtlMathLen( byval expr as integer ) as integer static
 
 end function
 
+'':::::
+function rtlMathLongintDIV( byval dtype as integer, _
+							byval lexpr as integer, byval ldtype as integer, _
+					        byval rexpr as integer, byval rdtype as integer ) as integer static
+    dim proc as integer, f as FBSYMBOL ptr
+
+	rtlMathLongintDIV = INVALID
+
+	if( dtype = IR.DATATYPE.LONGINT ) then
+		f = ifuncTB(FB.RTL.LONGINTDIV)
+	else
+		f = ifuncTB(FB.RTL.ULONGINTDIV)
+	end if
+
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
+
+    ''
+    if( astNewPARAM( proc, lexpr, ldtype ) = INVALID ) then
+    	exit function
+    end if
+
+    if( astNewPARAM( proc, rexpr, rdtype ) = INVALID ) then
+    	exit function
+    end if
+
+    rtlMathLongintDIV = proc
+
+end function
+
+'':::::
+function rtlMathLongintMOD( byval dtype as integer, _
+							byval lexpr as integer, byval ldtype as integer, _
+					        byval rexpr as integer, byval rdtype as integer ) as integer static
+    dim proc as integer, f as FBSYMBOL ptr
+
+	rtlMathLongintMOD = INVALID
+
+	if( dtype = IR.DATATYPE.LONGINT ) then
+		f = ifuncTB(FB.RTL.LONGINTMOD)
+	else
+		f = ifuncTB(FB.RTL.ULONGINTMOD)
+	end if
+
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
+
+    ''
+    if( astNewPARAM( proc, lexpr, ldtype ) = INVALID ) then
+    	exit function
+    end if
+
+    if( astNewPARAM( proc, rexpr, rdtype ) = INVALID ) then
+    	exit function
+    end if
+
+    rtlMathLongintMOD = proc
+
+end function
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' console
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2568,7 +2704,6 @@ function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval is
 		f = ifuncTB(FB.RTL.PRINTVOID)
 		args = 2
 	else
-        astUpdNodeResult expr
 
 		dtype = astGetDataType( expr )
 		select case as const dtype
@@ -2586,6 +2721,10 @@ function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval is
 			f = ifuncTB(FB.RTL.PRINTINT)
 		case IR.DATATYPE.UINT
 			f = ifuncTB(FB.RTL.PRINTUINT)
+		case IR.DATATYPE.LONGINT
+			f = ifuncTB(FB.RTL.PRINTLONGINT)
+		case IR.DATATYPE.ULONGINT
+			f = ifuncTB(FB.RTL.PRINTULONGINT)
 		case IR.DATATYPE.SINGLE
 			f = ifuncTB(FB.RTL.PRINTSINGLE)
 		case IR.DATATYPE.DOUBLE
@@ -2702,7 +2841,6 @@ function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval ex
 		f = ifuncTB(FB.RTL.WRITEVOID)
 		args = 2
 	else
-        astUpdNodeResult expr
 
 		dtype = astGetDataType( expr )
 		select case as const dtype
@@ -2720,6 +2858,10 @@ function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval ex
 			f = ifuncTB(FB.RTL.WRITEINT)
 		case IR.DATATYPE.UINT
 			f = ifuncTB(FB.RTL.WRITEUINT)
+		case IR.DATATYPE.LONGINT
+			f = ifuncTB(FB.RTL.WRITELONGINT)
+		case IR.DATATYPE.ULONGINT
+			f = ifuncTB(FB.RTL.WRITEULONGINT)
 		case IR.DATATYPE.SINGLE
 			f = ifuncTB(FB.RTL.WRITESINGLE)
 		case IR.DATATYPE.DOUBLE
@@ -2823,7 +2965,6 @@ function rtlPrintUsing( byval fileexpr as integer, byval expr as integer, _
 
 	rtlPrintUsing = FALSE
 
-	astUpdNodeResult expr
 	select case astGetDataType( expr )
 	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
 		f = ifuncTB(FB.RTL.PRINTUSGSTR)
@@ -3788,8 +3929,6 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
 	rtlFileInputGet = FALSE
 
 	''
-    astUpdNodeResult dstexpr
-
 	args = 1
 	select case astGetDataType( dstexpr )
 	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
@@ -3801,6 +3940,8 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
 		f = ifuncTB(FB.RTL.INPUTSHORT)
 	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT, is >= IR.DATATYPE.POINTER
 		f = ifuncTB(FB.RTL.INPUTINT)
+	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		f = ifuncTB(FB.RTL.INPUTLONGINT)
 	case IR.DATATYPE.SINGLE
 		f = ifuncTB(FB.RTL.INPUTSINGLE)
 	case IR.DATATYPE.DOUBLE

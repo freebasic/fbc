@@ -25,6 +25,11 @@ enum FBRTL_ENUM
 	FB.RTL.STRALLOCTMPRES
 	FB.RTL.STRALLOCTMPDESC
 
+	FB.RTL.LONGINTDIV
+	FB.RTL.ULONGINTDIV
+	FB.RTL.LONGINTMOD
+	FB.RTL.ULONGINTMOD
+
 	FB.RTL.ARRAYREDIM
 	FB.RTL.ARRAYERASE
 	FB.RTL.ARRAYCLEAR
@@ -36,6 +41,9 @@ enum FBRTL_ENUM
 	FB.RTL.ARRAYFREETMPDESC
 
 	FB.RTL.INT2STR
+	FB.RTL.UINT2STR
+	FB.RTL.LONGINT2STR
+	FB.RTL.ULONGINT2STR
 	FB.RTL.FLT2STR
 	FB.RTL.DBL2STR
 
@@ -55,9 +63,11 @@ enum FBRTL_ENUM
 	FB.RTL.DATAREADBYTE
 	FB.RTL.DATAREADSHORT
 	FB.RTL.DATAREADINT
+	FB.RTL.DATAREADLONGINT
 	FB.RTL.DATAREADUBYTE
 	FB.RTL.DATAREADUSHORT
 	FB.RTL.DATAREADUINT
+	FB.RTL.DATAREADULONGINT
 	FB.RTL.DATAREADSINGLE
 	FB.RTL.DATAREADDOUBLE
 
@@ -74,6 +84,8 @@ enum FBRTL_ENUM
 	FB.RTL.PRINTUSHORT
 	FB.RTL.PRINTINT
 	FB.RTL.PRINTUINT
+	FB.RTL.PRINTLONGINT
+	FB.RTL.PRINTULONGINT
 	FB.RTL.PRINTSINGLE
 	FB.RTL.PRINTDOUBLE
 	FB.RTL.PRINTSTR
@@ -87,6 +99,8 @@ enum FBRTL_ENUM
 	FB.RTL.WRITEUSHORT
 	FB.RTL.WRITEINT
 	FB.RTL.WRITEUINT
+	FB.RTL.WRITELONGINT
+	FB.RTL.WRITEULONGINT
 	FB.RTL.WRITESINGLE
 	FB.RTL.WRITEDOUBLE
 	FB.RTL.WRITESTR
@@ -124,6 +138,7 @@ enum FBRTL_ENUM
 	FB.RTL.INPUTBYTE
 	FB.RTL.INPUTSHORT
 	FB.RTL.INPUTINT
+	FB.RTL.INPUTLONGINT
 	FB.RTL.INPUTSINGLE
 	FB.RTL.INPUTDOUBLE
 	FB.RTL.INPUTSTR
@@ -203,6 +218,19 @@ declare function	rtlMathPow			( byval xexpr as integer, byval yexpr as integer )
 declare function 	rtlMathFSGN 		( byval expr as integer ) as integer
 declare function 	rtlMathFIX 			( byval expr as integer ) as integer
 declare function 	rtlMathLen			( byval expr as integer ) as integer
+
+declare function 	rtlMathLongintCMP	( byval op as integer, byval dtype as integer, _
+										  byval lexpr as integer, byval ldtype as integer, _
+					        			  byval rexpr as integer, byval rdtype as integer ) as integer
+declare function 	rtlMathLongintDIV	( byval dtype as integer, _
+										  byval lexpr as integer, byval ldtype as integer, _
+					        			  byval rexpr as integer, byval rdtype as integer ) as integer
+declare function 	rtlMathLongintMUL	( byval dtype as integer, _
+										  byval lexpr as integer, byval ldtype as integer, _
+					        			  byval rexpr as integer, byval rdtype as integer ) as integer
+declare function 	rtlMathLongintMOD	( byval dtype as integer, _
+										  byval lexpr as integer, byval ldtype as integer, _
+					        			  byval rexpr as integer, byval rdtype as integer ) as integer
 
 declare function	rtlExit				( byval errlevel as integer ) as integer
 

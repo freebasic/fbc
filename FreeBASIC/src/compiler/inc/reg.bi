@@ -28,7 +28,7 @@ const REG.MAXREGS	= 8
 type REGCLASS
 
 	'' methods
-	ensure			as function ( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer
+	ensure			as function ( byval this_ as REGCLASS ptr, byval vreg as integer, byval doload as integer = TRUE ) as integer
 	allocate		as function ( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer
 	allocateReg		as function ( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer ) as integer
 	free			as sub 		( byval this_ as REGCLASS ptr, byval r as integer )

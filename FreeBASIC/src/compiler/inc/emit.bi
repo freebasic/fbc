@@ -79,7 +79,8 @@ declare sub 		emitGetIDXName		( byval mult as integer, sname as string, idxname 
 declare function 	emitGetVarName		( byval s as FBSYMBOL ptr ) as string
 
 declare function 	emitIsRegPreserved 	( byval dtype as integer, byval dclass as integer, byval reg as integer ) as integer
-declare function 	emitGetResultReg 	( byval dtype as integer, byval dclass as integer ) as integer
+declare sub			emitGetResultReg 	( byval dtype as integer, byval dclass as integer, _
+										  r1 as integer, r2 as integer )
 declare function 	emitGetFreePreservedReg( byval dtype as integer, byval dclass as integer ) as integer
 
 declare function 	emitSave			( filename as string ) as integer

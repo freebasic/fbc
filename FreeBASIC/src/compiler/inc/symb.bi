@@ -162,7 +162,7 @@ declare function 	symbIsArray				( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbIsString			( byval s as FBSYMBOL ptr ) as integer
 declare function 	hIsString				( byval dtype as integer ) as integer
 
-declare function 	hAllocFloatConst		( sname as string, byval typ as integer ) as FBSYMBOL ptr
+declare function 	hAllocNumericConst		( sname as string, byval typ as integer ) as FBSYMBOL ptr
 declare function 	hAllocStringConst		( sname as string, byval lgt as integer ) as FBSYMBOL ptr
 
 declare function 	hCalcElements 			( byval s as FBSYMBOL ptr ) as integer

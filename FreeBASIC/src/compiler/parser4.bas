@@ -156,7 +156,6 @@ function cSingleIfStatement( byval expr as integer )
 	env.lastcompound = FB.TK.IF
 
 	'' branch
-	astUpdNodeResult expr
 	astUpdComp2Branch expr, nl, FALSE
 	if( expr = INVALID ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -231,7 +230,6 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 	cIfStmtBody = FALSE
 
 	'' branch
-	astUpdNodeResult expr
 	astUpdComp2Branch expr, nl, FALSE
 	if( expr = INVALID ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -767,7 +765,6 @@ function cDoStatement
 			isinverse = TRUE
 		end if
 
-		astUpdNodeResult expr
 		astUpdComp2Branch expr, el, isinverse
 		if( expr = INVALID ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -843,7 +840,6 @@ function cDoStatement
 			isinverse = FALSE
 		end if
 
-		astUpdNodeResult expr
 		astUpdComp2Branch expr, il, isinverse
 		if( expr = INVALID ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -912,7 +908,6 @@ function cWhileStatement
 	end if
 
 	'' branch
-	astUpdNodeResult expr
 	astUpdComp2Branch expr, el, FALSE
 	if( expr = INVALID ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -1019,7 +1014,6 @@ function cSelectStatement
 	elabel = symbAddLabel( hMakeTmpStr )
 
 	'' store expression into a temp var
-	astUpdNodeResult expr
 	dtype  = astGetDataType( expr )
 	if( dtype = FB.SYMBTYPE.FIXSTR ) then
 		dtype = FB.SYMBTYPE.STRING
@@ -1437,8 +1431,6 @@ function cSelectConstStmt as integer
 	if( not cExpression( expr ) ) then
 		exit function
 	end if
-
-	astUpdNodeResult( expr )
 
 	if( astGetDataClass( expr ) <> IR.DATACLASS.INTEGER ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
