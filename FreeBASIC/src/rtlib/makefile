@@ -21,7 +21,7 @@ ifeq ($(OS),DOS)
 endif
 
 CC := gcc
-CFLAGS := -O3 -Wall -I .
+CFLAGS := -O3 -Wall -Wno-format -I .
 ifneq ($(WINSYSDIR),)
     CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86
     osdeppath := win32

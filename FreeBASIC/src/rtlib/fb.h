@@ -333,15 +333,15 @@ typedef struct _FB_PRINTUSGCTX {
 #define FB_PRINT_PAD 	 0x00000002
 #define FB_PRINT_ISLAST  0x80000000
 
-#define FB_PRINTNUM(fnum, val, mask, type) 				\
+#define FB_PRINTNUM(fnum, val, mask, fmt, type)			\
     char buffer[80];									\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, "%" type "\n", val );       	\
+    	sprintf( buffer, fmt type "\n", val );       	\
     else if( mask & FB_PRINT_PAD )          			\
-    	sprintf( buffer, "%-14" type, val );			\
+    	sprintf( buffer, fmt "-14" type, val );			\
     else												\
-    	sprintf( buffer, "%" type, val );               \
+    	sprintf( buffer, fmt type, val );              	\
     													\
     if( fnum == 0 )										\
     	fb_PrintBuffer( buffer, mask );					\
