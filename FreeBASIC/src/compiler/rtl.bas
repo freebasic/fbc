@@ -642,7 +642,7 @@ data "rgb", "fb_GfxRgb", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 '' fb_GfxPoint ( byval x as single, byval y as single ) as uinteger
 data "point", "fb_GfxPoint", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 2, _
 						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxCursor ( number as integer) as single
 data "pointcoord", "fb_GfxCursor", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
