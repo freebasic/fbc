@@ -134,6 +134,15 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
 
     if( array != NULL )
     {
+    	if( dimensions == 0) {
+
+    		/* special case for GET temp arrays */
+    		array->size = 0;
+    		*pdesc = array;
+
+       		return array;
+    	}
+    	
     	va_start( ap, dimensions );
 
     	p = &array->dimTB[0];
@@ -159,6 +168,7 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
     	array->ptr 	= arraydata;
     	array->data = array->ptr + diff;
     	array->size	= elements * element_len;
+    	
     }
 
     *pdesc = array;
