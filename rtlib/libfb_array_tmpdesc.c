@@ -29,6 +29,96 @@
 #include "fb.h"
 
 
+/**********
+ * temp array descriptors
+ **********/
+
+static FB_ARRAY_TMPDESCLIST tmpdsList = { 0 };
+
+static FB_ARRAY_TMPDESC fb_tmpdsTB[FB_ARRAY_TMPDESCRIPTORS] = { 0 };
+
+/*:::::*/
+static void fb_hArrayInitTmpDesc( void )
+{
+    int 			i;
+    FB_ARRAY_TMPDESC  *next;
+
+	tmpdsList.head 	= NULL;
+	tmpdsList.tail 	= NULL;
+	tmpdsList.fhead = &fb_tmpdsTB[0];
+	tmpdsList.cnt	= 0;
+
+	for( i = 0; i < FB_ARRAY_TMPDESCRIPTORS; i++ )
+	{
+    	if( i < FB_ARRAY_TMPDESCRIPTORS-1 )
+    		next = &fb_tmpdsTB[i+1];
+    	else
+    		next = NULL;
+
+    	fb_tmpdsTB[i].prev 	= NULL;
+    	fb_tmpdsTB[i].next 	= next;
+	}
+}
+
+/*:::::*/
+FBARRAY *fb_hArrayAllocTmpDesc( void )
+{
+	FB_ARRAY_TMPDESC *dsc;
+
+	if( (tmpdsList.fhead == NULL) && (tmpdsList.head == NULL) )
+		fb_hArrayInitTmpDesc( );
+
+	/* take from free list */
+	dsc = tmpdsList.fhead;
+	if( dsc == NULL )
+		return NULL;
+
+	tmpdsList.fhead = dsc->next;
+
+	/* add to entry used list */
+	if( tmpdsList.tail != NULL )
+		tmpdsList.tail->next = dsc;
+	else
+		tmpdsList.head = dsc;
+
+	dsc->prev = tmpdsList.tail;
+	dsc->next = NULL;
+
+	tmpdsList.tail = dsc;
+
+	++tmpdsList.cnt;
+
+	/*  */
+
+	return (FBARRAY *)&dsc->array;
+}
+
+/*:::::*/
+void fb_hArrayFreeTmpDesc( FBARRAY *src )
+{
+	FB_ARRAY_TMPDESC *dsc;
+
+	dsc = (FB_ARRAY_TMPDESC *)(((char *)src) - (sizeof( void * ) * 2));
+
+    /* del from used list */
+	if( dsc->prev != NULL )
+		dsc->prev->next = dsc->next;
+	else
+		tmpdsList.head = dsc->next;
+
+	if( dsc->next != NULL )
+		dsc->next->prev = dsc->prev;
+	else
+		tmpdsList.tail = dsc->prev;
+
+	/* add to free list */
+	dsc->prev = NULL;
+	dsc->next = tmpdsList.fhead;
+	tmpdsList.fhead = dsc;
+
+	--tmpdsList.cnt;
+}
+
 /*:::::*/
 FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_len, int dimensions, ... )
 {
@@ -40,7 +130,7 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
     int			lbTB[FB_MAXDIMENSIONS];
     int			ubTB[FB_MAXDIMENSIONS];
 
-    array = malloc( sizeof( FBARRAY ) + ((dimensions-1) * sizeof( FBARRAYDIM )) );
+    array = fb_hArrayAllocTmpDesc( );
 
     if( array != NULL )
     {
@@ -80,6 +170,14 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
 FBCALL void fb_ArrayFreeTempDesc( FBARRAY *pdesc )
 {
 
-	free( pdesc );
+	fb_hArrayFreeTmpDesc( pdesc );
 
 }
+
+
+
+
+
+
+
+

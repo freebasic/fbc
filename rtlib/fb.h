@@ -39,6 +39,7 @@
 #define NULL 0
 #endif
 
+
 /**************************************************************************************************
  * strings
  **************************************************************************************************/
@@ -169,6 +170,23 @@ typedef struct _FBARRAY {
 	FBARRAYDIM	dimTB[1];					/* dimtb[dimensions] */
 } FBARRAY;
 
+typedef struct _FB_ARRAY_TMPDESC {
+    struct _FB_ARRAY_TMPDESC 	*prev;
+    struct _FB_ARRAY_TMPDESC 	*next;
+
+	FBARRAY		array;
+	FBARRAYDIM	dimTB[FB_MAXDIMENSIONS-1];
+} FB_ARRAY_TMPDESC;
+
+
+#define FB_ARRAY_TMPDESCRIPTORS (FB_STR_TMPDESCRIPTORS / 4)
+
+typedef struct _FB_ARRAY_TMPDESCLIST {
+	int					cnt;
+	FB_ARRAY_TMPDESC	*head;
+	FB_ARRAY_TMPDESC	*tail;
+	FB_ARRAY_TMPDESC	*fhead;
+} FB_ARRAY_TMPDESCLIST;
 
 /* protos */
 
