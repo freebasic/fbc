@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <termios.h>
+#include <dlfcn.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 

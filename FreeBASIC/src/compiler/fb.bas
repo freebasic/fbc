@@ -55,6 +55,7 @@ data "kernel32"
 data "c"
 data "m"
 data "pthread"
+data "dl"
 #elseif defined(TARGET_DOS)
 data "c"
 data "gcc"

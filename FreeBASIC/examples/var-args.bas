@@ -12,6 +12,7 @@ declare sub myprintf cdecl (fmtstr as string, ...)
 	
 	myprintf "integer=%i, single=%f, double=%d, string=%s, string=%s", 1, 2.2!, 3.3#, "foo", s
 	
+	print
 	sleep
 	
 '':::::	
