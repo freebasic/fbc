@@ -309,7 +309,8 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 	h = (int)*(unsigned short *)(src + 2);
 	src += 4;
 	
-	if ((x + w <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
+	if ((w == 0) || (h == 0) ||
+	    (x + w <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
 	    (y + h <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
 		return;
 	
