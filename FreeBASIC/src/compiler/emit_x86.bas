@@ -1945,7 +1945,7 @@ end sub
 
 '':::::
 sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
-    dim src as string, sdsize as integer
+    dim src as string, sdsize as integer, offset as integer, lgt as integer, sofs as string
     dim reg as integer
 
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
@@ -1974,8 +1974,29 @@ sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer
 			if( sdtype = IR.DATATYPE.SINGLE ) then
 				outp "push " + src
 			else
-				outp "push " + "dword ptr [" + sname + "+4]"
-				outp "push " + "dword ptr [" + sname + "+0]"
+				'' GNU as 2.15 refuses to compile stuff like "push dword ptr [ebp +8+4]", so
+				'' we need to convert this to "push dword ptr [ebp +12]"...
+				offset = instr( sname, "+" )
+				if( offset = 0 ) then
+					offset = instr( sname, "-" )
+				end if
+				if( offset ) then
+					lgt = val( mid$( sname, offset ) )
+					sname = mid$( sname, 1, offset - 1 )
+					if( lgt+4 >= 0 ) then
+						outp "push " + "dword ptr [" + sname + "+" + str$(lgt+4) + "]"
+					else
+						outp "push " + "dword ptr [" + sname + str$(lgt+4) + "]"
+					end if
+					if( lgt >= 0 ) then
+						outp "push " + "dword ptr [" + sname + "+" + str$(lgt+0) + "]"
+					else
+						outp "push " + "dword ptr [" + sname + str$(lgt+0) + "]"
+					end if
+				else
+					outp "push " + "dword ptr [" + sname + "+4]"
+					outp "push " + "dword ptr [" + sname + "+0]"
+				end if
 			end if
 		else
 			outp "sub " + "esp," + str$( irGetDataSize( sdtype ) )
