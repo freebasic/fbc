@@ -35,8 +35,8 @@ void fb_hTranslateCoord(float fx, float fy, int *x, int *y)
 		fy = (fy - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
 	}
 	
-	*x = (int)fx;
-	*y = (int)fy;
+	*x = (int)(fx + 0.5);
+	*y = (int)(fy + 0.5);
 	
 	if (fb_mode->flags & (WINDOW_ACTIVE | WINDOW_SCREEN) == WINDOW_ACTIVE)
 		*y = fb_mode->view_h - 1 - *y;
