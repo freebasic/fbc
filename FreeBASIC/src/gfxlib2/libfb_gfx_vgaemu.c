@@ -70,7 +70,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 		case 0x3C7:
 		case 0x3C8:
 			idx = value;
-			shift = 2;
+			shift = 0;
 			color = 0;
 			break;
 
@@ -95,7 +95,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 					fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 					fb_mode->driver->unlock();
 				}
-				shift = 2;
+				shift = 0;
 				color = 0;
 				idx++;
 				idx &= (fb_mode->default_palette->colors - 1);
