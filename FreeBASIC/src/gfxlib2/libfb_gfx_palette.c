@@ -114,6 +114,19 @@ unsigned int fb_hFixColor(unsigned int color)
 
 
 /*:::::*/
+void fb_hRestorePalette(void)
+{
+	int i;
+	
+	for (i = 0; i < 256; i++) {
+		fb_mode->driver->set_palette(i, (fb_mode->device_palette[i] & 0xFF),
+						(fb_mode->device_palette[i] >> 8) & 0xFF,
+						(fb_mode->device_palette[i] >> 16) & 0xFF);
+	}
+}
+
+
+/*:::::*/
 static void set_color(int index, unsigned int color)
 {
 	int r, g, b;

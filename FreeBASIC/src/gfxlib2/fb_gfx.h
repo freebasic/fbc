@@ -199,6 +199,7 @@ extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern unsigned int fb_hMakeColor(int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);
+extern void fb_hRestorePalette(void);
 extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
