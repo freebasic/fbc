@@ -76,6 +76,9 @@ void fb_ConsoleColor( int fc, int bc )
 #ifndef DISABLE_NCURSES
 	int pair;
 	
+	if (!has_color())
+		return;
+	
 	if (fc >= 0)
 		fb_last_fc = (fc & 0xf);
 	if (bc >= 0)

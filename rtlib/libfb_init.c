@@ -66,9 +66,11 @@ FBCALL void fb_Init ( void )
 	initscr();
 	cbreak();
 	noecho();
+	nonl();
 	nodelay(stdscr, TRUE);
 	keypad(stdscr, TRUE);
 	scrollok(stdscr, FALSE);
+	leaveok(stdscr, TRUE);
 	if (has_colors() && (start_color() == OK) && (COLOR_PAIRS >= 64)) {
 		for (i = 0; i < 64; i++) {
 			if (i == 0) continue;

@@ -80,17 +80,17 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		row = botrow;
 	}
 
-#ifdef WIN32
-	HANDLE 	hnd;
-	DWORD 	mode;
-
-	/* if no newline and row at bottom and col+string at right, disable scrolling */
+		/* if no newline and row at bottom and col+string at right, disable scrolling */
 	if( (mask & FB_PRINT_NEWLINE) == 0 )
 	{
 		if( row == botrow )
 			if( col + len - 1 == cols )
 				scrolloff = TRUE;
 	}
+
+#ifdef WIN32
+	HANDLE 	hnd;
+	DWORD 	mode;
 
 	if( scrolloff )
 	{
@@ -99,7 +99,6 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		SetConsoleMode( hnd, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
 	}
 #endif
-
 
 	/* scrolling if VIEW was set */
 	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != fb_ConsoleGetMaxRow( )) )
