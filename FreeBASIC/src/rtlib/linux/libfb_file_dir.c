@@ -25,6 +25,7 @@
  */
 
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -65,9 +66,9 @@ static int get_attrib ( char *name, struct stat *info )
 {
 	int attrib = 0;
 
-	if( ( ( info->st_uid == geteuid() ) && ( info->st_mode & S_IWUSR == 0 ) ) ||
-	    ( ( info->st_gid == getegid() ) && ( info->st_mode & S_IWGRP == 0 ) ) ||
-	    ( ( info->st_mode & S_IWOTH == 0 ) ) )
+	if( ( ( info->st_uid == geteuid() ) && ( ( info->st_mode & S_IWUSR ) == 0 ) ) ||
+	    ( ( info->st_gid == getegid() ) && ( ( info->st_mode & S_IWGRP ) == 0 ) ) ||
+	    ( ( ( info->st_mode & S_IWOTH ) == 0 ) ) )
 		attrib |= 0x1;	/* read only */
 	if( name[0] == '.' )
 		attrib |= 0x2;	/* hidden */
@@ -197,13 +198,10 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			}
 
 			/* compatibility convertions */
-			if( !strcmp( dir_data.filespec, "*.*" ) )
+			if( (!strcmp( dir_data.filespec, "*.*" )) || (!strcmp( dir_data.filespec, "*." )) )
 				strcpy( dir_data.filespec, "*" );
-			else if( !strcmp( dir_data.filespec, "*." ) ) {
-				strcpy( dir_data.filespec, "*" );
-				dir_data.attrib = 0x17;
-			}
-
+			
+			dir_data.attrib = attrib;
 			dir_data.dir = opendir( dir_data.dirname );
 			if( dir_data.dir )
 			{
