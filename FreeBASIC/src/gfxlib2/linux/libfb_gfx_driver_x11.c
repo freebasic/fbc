@@ -71,6 +71,7 @@ static XF86VidModeModeInfo **modes_info;
 static int screen;
 static Window window;
 static Atom wm_delete_window;
+static Cursor cursor;
 static Colormap color_map;
 static XImage *image;
 static XShmSegmentInfo shm_info;
@@ -131,14 +132,18 @@ static int private_init(void)
 	XPixmapFormatValues *format;
 	XSetWindowAttributes attribs;
 	XSizeHints size;
+	Pixmap pixmap;
+	XColor color;
+	XGCValues gc_values;
 	int i, j, x, y, num_formats, depth = 0, is_rgb = FALSE;
-	int keycode_min, keycode_max, dummy, version;
+	int gc_mask, keycode_min, keycode_max, dummy, version;
 	KeySym keysym;
 	char *display_name;
 	
 	mode = NULL;
 	modes_info = NULL;
 	window = None;
+	cursor = None;
 	color_map = None;
 	image = NULL;
 	is_shm = FALSE;
@@ -187,7 +192,6 @@ static int private_init(void)
 	XSetWMNormalHints(display, window, &size);
 	wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(display, window, &wm_delete_window, 1);
-	gc = DefaultGC(display, screen);
 	if (visual->class == PseudoColor) {
 		color_map = XCreateColormap(display, XDefaultRootWindow(display), visual, AllocAll);
 		XSetWindowColormap(display, window, color_map);
@@ -229,6 +233,19 @@ static int private_init(void)
 			if (XGrabPointer(display, window, False, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
 			    GrabModeAsync, GrabModeAsync, window, None, CurrentTime) != GrabSuccess)
 				return -1;
+			
+			pixmap = XCreatePixmap(display, window, 1, 1, 1);
+			gc_mask = GCFunction | GCForeground | GCBackground;
+			gc_values.function = GXcopy;
+			gc_values.foreground = gc_values.background = 0;
+			gc = XCreateGC(display, pixmap, gc_mask, &gc_values);
+			XDrawPoint(display, pixmap, gc, 0, 0);
+			XFreeGC(display, gc);
+			color.pixel = color.red = color.green = color.blue = 0;
+			color.flags = DoRed | DoGreen | DoBlue;
+			cursor = XCreatePixmapCursor(display, pixmap, pixmap, &color, &color, 0, 0);
+			XDefineCursor(display, window, cursor);
+			XFreePixmap(display, pixmap);
 		}
 		
 		is_shm = TRUE;
@@ -260,6 +277,7 @@ static int private_init(void)
 	}
 	if (!image)
 		return -1;
+	gc = DefaultGC(display, screen);
 	
 	XDisplayKeycodes(display, &keycode_min, &keycode_max);
 	keycode_min = MAX(keycode_min, 0);
@@ -307,6 +325,10 @@ static void private_exit(void)
 			else
 				free(image->data);
 			XDestroyImage(image);
+		}
+		if (cursor != None) {
+			XUndefineCursor(display, window);
+			XFreeCursor(display, cursor);
 		}
 		if (color_map != None)
 			XFreeColormap(display, color_map);
