@@ -751,7 +751,7 @@ LABEL(blit8to32BGR_next_line)
 FUNC(fb_hBlit16to15RGBMMX)
 	pushl %ebp
 	movl %esp, %ebp
-	RESERVE_LOCALS(2)
+	RESERVE_LOCALS(1)
 	pushl %esi
 	pushl %edi
 	pushl %ebx
@@ -765,8 +765,8 @@ FUNC(fb_hBlit16to15RGBMMX)
 	shrl $3, %eax
 	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 3 */
 	movl MODE_H(%ebx), %eax
-	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
 	movl DIRTY(%ebx), %ebx
+	movq (const16to15_g), %mm7
 
 LABEL(blit16to15RGB_y_loop)
 	addl %edx, %esi
@@ -775,7 +775,6 @@ LABEL(blit16to15RGB_y_loop)
 	movl LOCAL1, %ecx
 	subl %edx, %esi
 	pushl %edi
-	movq (const16to15_g), %mm7
 
 LABEL(blit16to15RGB_x_loop)
 	movq (%esi), %mm0
@@ -798,8 +797,8 @@ LABEL(blit16to15RGB_x_loop)
 	addl $16, %edi
 	por %mm1, %mm0
 	por %mm5, %mm4
-	movq -16(%edi), %mm0
-	movq -8(%edi), %mm4
+	movq %mm0, -16(%edi)
+	movq %mm4, -8(%edi)
 	decl %ecx
 	jnz blit16to15RGB_x_loop
 	popl %edi
@@ -807,14 +806,14 @@ LABEL(blit16to15RGB_x_loop)
 LABEL(blit16to15RGB_next_line)
 	incl %ebx
 	addl ARG2, %edi
-	decl LOCAL2
+	decl %eax
 	jnz blit16to15RGB_y_loop
 
 	emms
 	popl %ebx
 	popl %edi
 	popl %esi
-	FREE_LOCALS(2)
+	FREE_LOCALS(1)
 	popl %ebp
 	ret
 
@@ -823,7 +822,7 @@ LABEL(blit16to15RGB_next_line)
 FUNC(fb_hBlit16to15BGRMMX)
 	pushl %ebp
 	movl %esp, %ebp
-	RESERVE_LOCALS(2)
+	RESERVE_LOCALS(1)
 	pushl %esi
 	pushl %edi
 	pushl %ebx
@@ -837,8 +836,9 @@ FUNC(fb_hBlit16to15BGRMMX)
 	shrl $3, %eax
 	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 3 */
 	movl MODE_H(%ebx), %eax
-	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
 	movl DIRTY(%ebx), %ebx
+	movq (const16to15_r), %mm3
+	movq (const16to15_gb), %mm7
 
 LABEL(blit16to15BGR_y_loop)
 	addl %edx, %esi
@@ -847,8 +847,6 @@ LABEL(blit16to15BGR_y_loop)
 	movl LOCAL1, %ecx
 	subl %edx, %esi
 	pushl %edi
-	movq (const16to15_r), %mm3
-	movq (const16to15_gb), %mm7
 
 LABEL(blit16to15BGR_x_loop)
 	movq (%esi), %mm0
@@ -865,8 +863,8 @@ LABEL(blit16to15BGR_x_loop)
 	addl $16, %edi
 	por %mm1, %mm0
 	por %mm5, %mm4
-	movq -16(%edi), %mm0
-	movq -8(%edi), %mm4
+	movq %mm0, -16(%edi)
+	movq %mm4, -8(%edi)
 	decl %ecx
 	jnz blit16to15BGR_x_loop
 	popl %edi
@@ -874,14 +872,14 @@ LABEL(blit16to15BGR_x_loop)
 LABEL(blit16to15BGR_next_line)
 	incl %ebx
 	addl ARG2, %edi
-	decl LOCAL2
+	decl %eax
 	jnz blit16to15BGR_y_loop
 
 	emms
 	popl %ebx
 	popl %edi
 	popl %esi
-	FREE_LOCALS(2)
+	FREE_LOCALS(1)
 	popl %ebp
 	ret
 
@@ -890,7 +888,7 @@ LABEL(blit16to15BGR_next_line)
 FUNC(fb_hBlit16to16RGBMMX)
 	pushl %ebp
 	movl %esp, %ebp
-	RESERVE_LOCALS(2)
+	RESERVE_LOCALS(1)
 	pushl %esi
 	pushl %edi
 	pushl %ebx
@@ -904,8 +902,8 @@ FUNC(fb_hBlit16to16RGBMMX)
 	shrl $3, %eax
 	movl %eax, LOCAL1		/* LOCAL1 = fb_mode->mode_w >> 3 */
 	movl MODE_H(%ebx), %eax
-	movl %eax, LOCAL2		/* LOCAL2 = fb_mode->mode_h */
 	movl DIRTY(%ebx), %ebx
+	movq (const16to16_g), %mm7
 
 LABEL(blit16to16RGB_y_loop)
 	addl %edx, %esi
@@ -914,7 +912,6 @@ LABEL(blit16to16RGB_y_loop)
 	movl LOCAL1, %ecx
 	subl %edx, %esi
 	pushl %edi
-	movq (const16to16_g), %mm7
 
 LABEL(blit16to16RGB_x_loop)
 	movq (%esi), %mm0
@@ -935,8 +932,8 @@ LABEL(blit16to16RGB_x_loop)
 	addl $16, %edi
 	por %mm1, %mm0
 	por %mm5, %mm4
-	movq -16(%edi), %mm0
-	movq -8(%edi), %mm4
+	movq %mm0, -16(%edi)
+	movq %mm4, -8(%edi)
 	decl %ecx
 	jnz blit16to16RGB_x_loop
 	popl %edi
@@ -944,14 +941,14 @@ LABEL(blit16to16RGB_x_loop)
 LABEL(blit16to16RGB_next_line)
 	incl %ebx
 	addl ARG2, %edi
-	decl LOCAL2
+	decl %eax
 	jnz blit16to16RGB_y_loop
 
 	emms
 	popl %ebx
 	popl %edi
 	popl %esi
-	FREE_LOCALS(2)
+	FREE_LOCALS(1)
 	popl %ebp
 	ret
 
