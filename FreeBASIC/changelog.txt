@@ -16,6 +16,7 @@ Version 0.13 Beta:
 [fixed] MID$ with len = 0 should return an empty string (v1c)
 [fixed] WINDOW statement was inverting y coordinate (lillo)
 [fixed] LINE INPUT was limited to 1024 bytes (v1c)
+[fixed] bug with INP/OUT emulation for palette handling, thanks to Adigun A. Polack for pointing this out (lillo)
 
 
 Version 0.12 Beta:
