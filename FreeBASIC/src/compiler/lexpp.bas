@@ -715,6 +715,10 @@ private function ppParentExpr( parexpr as integer, atom as string, isnumber as i
   			hReportError FB.ERRMSG.SYNTAXERROR
   			exit function
   		end if
+  		
+  		if( isnumber ) then
+  			parexpr = ( val( atom ) <> 0 )
+  		end if
   	end select
 
 	ppParentExpr = TRUE

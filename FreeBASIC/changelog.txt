@@ -51,6 +51,7 @@ Version 0.13 Beta:
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported
   in gfxlib.txt of 0.12 does not work as expected with gfxlib 0.13; if your program used it, it's time to update its
   code from the new gfxlib.txt (lillo)
+- #if <number> conditional compilation was not skipping code block if number was 0 (lillo)
 
 
 Version 0.12 Beta:
