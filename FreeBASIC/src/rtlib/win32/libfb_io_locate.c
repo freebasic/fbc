@@ -91,3 +91,23 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
     	*row = info.dwCursorPosition.Y + 1;
 }
 
+/*:::::*/
+FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
+{
+    TCHAR character;
+    WORD attribute;
+    DWORD res;
+    COORD coord;
+    
+    coord.X = col - 1;
+    coord.Y = row - 1;
+    
+    if( colorflag ) {
+        ReadConsoleOutputAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), &attribute, 1, coord, &res);
+        return attribute;
+    }
+    else {
+    	ReadConsoleOutputCharacter( GetStdHandle( STD_OUTPUT_HANDLE ), &character, 1, coord, &res);
+    	return character;
+    }
+}
