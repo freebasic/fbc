@@ -71,7 +71,7 @@ declare function luaL_loadbuffer LUALIB_API alias "luaL_loadbuffer"  (byval L as
 
 
 ''
-'' {======================================================
+'' =======================================================
 '' Generic Buffer manipulation
 '' =======================================================
 ''
@@ -97,13 +97,7 @@ declare sub luaL_addvalue LUALIB_API alias "luaL_addvalue"  (byval B as luaL_Buf
 declare sub luaL_pushresult LUALIB_API alias "luaL_pushresult"  (byval B as luaL_Buffer ptr)
 
 
-private sub luaL_putchar(byval B as luaL_Buffer ptr, byval c as byte)	
-  	if( B->p >= @B->buffer(LUAL_BUFFERSIZE) ) then
-  		luaL_prepbuffer( B )
-	end if
-   	B->p = c
-   	B->p = B->p + 1
-end sub
+#define luaL_putchar(B,c) if( B->p >= @B->buffer(LUAL_BUFFERSIZE) ) then luaL_prepbuffer( B ) end if : B->p = c : B->p += 1
 
 #define luaL_addsize(B,n) B->p += (n)
 

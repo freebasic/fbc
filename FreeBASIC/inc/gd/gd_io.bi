@@ -21,7 +21,7 @@ end type
 #define gdIOCtxPtr gdIOCtx ptr
 
 declare sub Putword alias "Putword" (byval w as integer, byval ctx as gdIOCtx ptr)
-declare sub Putchar alias "Putchar" (byval c as integer, byval ctx as gdIOCtx ptr)
+declare sub Putchar_ alias "Putchar" (byval c as integer, byval ctx as gdIOCtx ptr)
 declare sub gdPutC alias "gdPutC" (byval c as ubyte, byval ctx as gdIOCtx ptr)
 declare function gdPutBuf alias "gdPutBuf" (byval as any ptr, byval as integer, byval as gdIOCtx ptr) as integer
 declare sub gdPutWord alias "gdPutWord" (byval w as integer, byval ctx as gdIOCtx ptr)

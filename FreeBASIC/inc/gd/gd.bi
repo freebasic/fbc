@@ -10,9 +10,7 @@
 
 #inclib "gd"
 
-#ifndef FILE
-#define FILE any ptr
-#endif
+#include once "crt.bi"
 
 #define PATHSEPARATOR ":"
 

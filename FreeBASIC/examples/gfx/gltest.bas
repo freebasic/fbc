@@ -8,9 +8,9 @@
 defint a-z
 option explicit
 
-'$include: 'GL/gl.bi'
-'$include: 'GL/glu.bi'
-'$include: 'GL/glut.bi'
+'$include once: 'GL/gl.bi'
+'$include once: 'GL/glu.bi'
+'$include once: 'GL/glut.bi'
 
 ''
 declare sub         doMain           ( )

@@ -15,29 +15,30 @@
 
 ' constants
 
-#if     defined(FB__WIN32)
+#if defined(FB__WIN32)
 
-	#define CLOCKS_PER_SEC  1000
-	#define RAND_MAX  32767
+#	define CLOCKS_PER_SEC  1000
+#	define RAND_MAX  32767
 
 #elseif defined(FB__DOS)
 
-	#define CLOCKS_PER_SEC  91
-	#define RAND_MAX  2147483647
+#	define CLOCKS_PER_SEC  91
+#	define RAND_MAX  2147483647
 
 #elseif defined(FB__LINUX)
 
-	#define CLOCKS_PER_SEC  1000000 ' as per http://www.die.net/doc/linux/man/man3/clock.3.html
-	''#define RAND_MAX  ??? ' fixme
+#	define CLOCKS_PER_SEC  1000000 ' as per http://www.die.net/doc/linux/man/man3/clock.3.html
+#	define RAND_MAX  ??? ' fixme
 
 #else
-	#print crt.bi: unsupported platform
-
+#	print crt.bi: unsupported platform
 #endif
 
 #ifndef NULL
-	#define NULL 0
+#	define NULL 0
 #endif
+
+#define FILE any
 
 '' #if defined(FB__X86)
 	#define SCHAR_MAX   127
@@ -94,276 +95,290 @@ type tm
 	tm_isdst	as integer	' daylight savings time flag
 end type
 
-declare sub		abort		CDECL alias "abort"		( )
+declare sub		abort		cdecl alias "abort"		( )
 
 ' abs() already declared
 
 ' acos () already declared
 
-declare function	asctime		CDECL alias "asctime"		( byval timeptr as tm ptr ) as byte ptr
+declare function	asctime		cdecl alias "asctime"		( byval timeptr as tm ptr ) as byte ptr
 
 ' asin() already declared
 
-declare function	atan		CDECL alias "atan"		( byval x as double) as double
+declare function	atan		cdecl alias "atan"		( byval x as double) as double
 
 ' atan2() already declared
 
-declare sub		atexit		CDECL alias "atexit"		( )
+declare sub		atexit		cdecl alias "atexit"		( )
 
-declare function	atof		CDECL alias "atof"		( byval s as string ) as double
+declare function	atof		cdecl alias "atof"		( byval s as string ) as double
 
-declare function	atoi		CDECL alias "atoi"		( byval s as string ) as integer
+declare function	atoi		cdecl alias "atoi"		( byval s as string ) as integer
 
-declare function	atol		CDECL alias "atol"		( byval s as string ) as long
+declare function	atol		cdecl alias "atol"		( byval s as string ) as long
 
-declare function	beginthread	CDECL alias "_beginthread"	( byval start_address as integer, _
+declare function	beginthread	cdecl alias "_beginthread"	( byval start_address as integer, _
 									  byval stack_size as uinteger, _
 									  arglist as any ) as long
 
-declare function	bsearch		CDECL alias "bsearch"		( byval key as any ptr, _
+declare function	bsearch		cdecl alias "bsearch"		( byval key as any ptr, _
 									  byval base_ptr as any ptr, _
 									  byval num as integer, _
 									  byval size as integer, _
 									  byval compare_proc as function() as integer ) as any ptr
 
-declare function	calloc		CDECL alias "calloc"		( byval num as integer, _
+declare function	calloc		cdecl alias "calloc"		( byval num as integer, _
 									  byval size as integer ) as any ptr
 
-declare function	ceil		CDECL alias "ceil"		( byval x as double) as double
+declare function	ceil		cdecl alias "ceil"		( byval x as double) as double
 
 ' clearerr() uses a FILE*
 
-declare function	clock		CDECL alias "clock"		( ) as integer
+declare function	clock		cdecl alias "clock"		( ) as integer
 
-declare function	cosh		CDECL alias "cosh"		( x as double ) as double
+declare function	cosh		cdecl alias "cosh"		( x as double ) as double
 
-declare function	ctime		CDECL alias "ctime"		( byval timr as integer ) as byte ptr
+declare function	ctime		cdecl alias "ctime"		( byval timr as integer ) as byte ptr
 
-declare function	difftime	CDECL alias "difftime"		( byval timer1 as integer, _
+declare function	difftime	cdecl alias "difftime"		( byval timer1 as integer, _
 									  byval timer0 as integer ) as double
 
 ' div() is mostly useless and returns a structure
 
-declare sub		endthread	CDECL alias "_endthread"	( )
+declare sub		endthread	cdecl alias "_endthread"	( )
 
-declare sub		exit_crt	CDECL alias "exit"		( byval status as integer )
+declare sub		exit_crt	cdecl alias "exit"		( byval status as integer )
 
 ' exp() already defined
 
-declare function	fabs		CDECL alias "fabs"		( byval x as double ) as double
+declare function	fabs		cdecl alias "fabs"		( byval x as double ) as double
 
-' f*() file rouitines use FILE*
+declare function fopen cdecl alias "fopen" (byval fname as string, byval as string) as FILE ptr
+declare function freopen cdecl alias "freopen" (byval as string, byval as string, byval as FILE ptr) as FILE ptr
+declare function fflush cdecl alias "fflush" (byval as FILE ptr) as integer
+declare function fclose cdecl alias "fclose" (byval as FILE ptr) as integer
 
-declare function	floor		CDECL alias "floor"		( byval x as double ) as double
+declare function fgetc cdecl alias "fgetc" (byval as FILE ptr) as integer
+declare function fgets cdecl alias "fgets" (byval as string, byval as integer, byval as FILE ptr) as byte ptr
+declare function fputc cdecl alias "fputc" (byval as integer, byval as FILE ptr) as integer
+declare function fputs cdecl alias "fputs" (byval as string, byval as FILE ptr) as integer
 
-declare function	fmod		CDECL alias "fmod"		( byval x as double, _
+declare function fread cdecl alias "fread" (byval as any ptr, byval as integer, byval as integer, byval as FILE ptr) as integer
+declare function fwrite cdecl alias "fwrite" (byval as any ptr, byval as integer, byval as integer, byval as FILE ptr) as integer
+
+declare function fseek cdecl alias "fseek" (byval as FILE ptr, byval as integer, byval as integer) as integer
+declare function ftell cdecl alias "ftell" (byval as FILE ptr) as integer
+declare sub rewind cdecl alias "rewind" (byval as FILE ptr)
+
+
+declare function	floor		cdecl alias "floor"		( byval x as double ) as double
+
+declare function	fmod		cdecl alias "fmod"		( byval x as double, _
 									  byval y as double ) as double
 
-declare function	frexp		CDECL alias "frexp"		( byval x as double, _
+declare function	frexp		cdecl alias "frexp"		( byval x as double, _
 									  byval expptr as integer ptr ) as double
 
-declare sub		free		CDECL alias "free"		( byval memblock as any ptr )
+declare sub		free		cdecl alias "free"		( byval memblock as any ptr )
 
 ' getc() uses a FILE *
 
-declare function	getchar		CDECL alias "getchar"		( ) as integer
+declare function	getchar		cdecl alias "getchar"		( ) as integer
 
 ' getenv() returns a string
 
-declare function	getenv		CDECL alias "getenv"		( byval varname as string ) as byte ptr
+declare function	getenv		cdecl alias "getenv"		( byval varname as string ) as byte ptr
 
-declare function	gets		CDECL alias "gets"		( byval buffer as string ) as byte ptr
+declare function	gets		cdecl alias "gets"		( byval buffer as string ) as byte ptr
 
-declare function	gmtime		CDECL alias "gmtime"		( byval timer as long ptr ) as tm ptr
+declare function	gmtime		cdecl alias "gmtime"		( byval timer as long ptr ) as tm ptr
 
 ' is_wctype() uses wide characters
 
-declare function	isalnum		CDECL alias "isalnum"		( byval c as integer ) as integer
+declare function	isalnum		cdecl alias "isalnum"		( byval c as integer ) as integer
 
-declare function	isalpha		CDECL alias "isalpha"		( byval c as integer ) as integer
+declare function	isalpha		cdecl alias "isalpha"		( byval c as integer ) as integer
 
-declare function	iscntrl		CDECL alias "iscntrl"		( byval c as integer ) as integer
+declare function	iscntrl		cdecl alias "iscntrl"		( byval c as integer ) as integer
 
-declare function	isdigit		CDECL alias "isdigit"		( byval c as integer ) as integer
+declare function	isdigit		cdecl alias "isdigit"		( byval c as integer ) as integer
 
-declare function	isgraph		CDECL alias "isgraph"		( byval c as integer ) as integer
+declare function	isgraph		cdecl alias "isgraph"		( byval c as integer ) as integer
 
-declare function	isleadbyte	CDECL alias "isleadbyte"	( byval c as integer ) as integer
+declare function	isleadbyte	cdecl alias "isleadbyte"	( byval c as integer ) as integer
 
-declare function	islower		CDECL alias "islower"		( byval c as integer ) as integer
+declare function	islower		cdecl alias "islower"		( byval c as integer ) as integer
 
-declare function	isprint		CDECL alias "isprint"		( byval c as integer ) as integer
+declare function	isprint		cdecl alias "isprint"		( byval c as integer ) as integer
 
-declare function	ispunct		CDECL alias "ispunct"		( byval c as integer ) as integer
+declare function	ispunct		cdecl alias "ispunct"		( byval c as integer ) as integer
 
-declare function	isspace		CDECL alias "isspace"		( byval c as integer ) as integer
+declare function	isspace		cdecl alias "isspace"		( byval c as integer ) as integer
 
-declare function	isupper		CDECL alias "isupper"		( byval c as integer ) as integer
+declare function	isupper		cdecl alias "isupper"		( byval c as integer ) as integer
 
 ' isw*() use wide characters
 
-declare function	isxdigit	CDECL alias "isxdigit"		( byval c as integer ) as integer
+declare function	isxdigit	cdecl alias "isxdigit"		( byval c as integer ) as integer
 
-declare function	labs		CDECL alias "labs"		( byval n as long ) as long
+declare function	labs		cdecl alias "labs"		( byval n as long ) as long
 
-declare function	ldexp		CDECL alias "ldexp"		( byval x as double, _
+declare function	ldexp		cdecl alias "ldexp"		( byval x as double, _
 									  byval exp as integer ) as double
 
 ' ldiv() returns a structure
 
 ' localeconv() returns a pointer to a structure that contains strings
 
-declare function	localtime	CDECL alias "localtime"		( byval timer as long ptr ) as tm ptr
+declare function	localtime	cdecl alias "localtime"		( byval timer as long ptr ) as tm ptr
 
 ' log() already defined
 
-declare function	log10		CDECL alias "log10"		( byval x as double ) as double
+declare function	log10		cdecl alias "log10"		( byval x as double ) as double
 
 ' setjmp() is evil
 
-declare function	malloc		CDECL alias "malloc"		( byval size as integer ) as any ptr
+declare function	malloc		cdecl alias "malloc"		( byval size as integer ) as any ptr
 
 ' mb*() use multibyte strings
 
-declare function	memchr		CDECL alias "memchr"		( byval buf as any ptr, _
+declare function	memchr		cdecl alias "memchr"		( byval buf as any ptr, _
 									  byval c as integer, _
 									  byval count as integer ) as any ptr
 
-declare function	memcmp		CDECL alias "memcmp"		( byval buf1 as any ptr, _
+declare function	memcmp		cdecl alias "memcmp"		( byval buf1 as any ptr, _
 									  byval buf2 as any ptr, _
 									  byval count as integer ) as integer
 
-declare function	memcpy		CDECL alias "memcpy"		( byval dest as any ptr, _
+declare function	memcpy		cdecl alias "memcpy"		( byval dest as any ptr, _
 									  byval src as any ptr, _
 									  byval count as integer ) as any ptr
 
-declare function	memmove		CDECL alias "memmove"		( byval dest as any ptr, _
+declare function	memmove		cdecl alias "memmove"		( byval dest as any ptr, _
 									  byval src as any ptr, _
 									  byval count as integer ) as any ptr
 
-declare function	memset		CDECL alias "memset"		( buffer as any, _
+declare function	memset		cdecl alias "memset"		( buffer as any, _
 									  byval c as integer, _
 									  byval bytes as integer) as integer
 
-declare function	mktime		CDECL alias "mktime"		( byval timeptr as tm ptr ) as long
+declare function	mktime		cdecl alias "mktime"		( byval timeptr as tm ptr ) as long
 
-declare function	modf		CDECL alias "modf"		( byval x as double, _
+declare function	modf		cdecl alias "modf"		( byval x as double, _
 									  byval intptr as double ptr ) as double
 
-declare sub		perror		CDECL alias "perror"		( byval s as string )
+declare sub		perror		cdecl alias "perror"		( byval s as string )
 
-declare function	pow		CDECL alias "pow"		( byval x as double, _
+declare function	pow		cdecl alias "pow"		( byval x as double, _
 									  byval y as double ) as double
 
 ' printf() is useless without C-style optional arguments
 
 ' putc() uses a FILE*
 
-declare function	putchar		CDECL alias "putchar"		( byval c as integer ) as integer
+declare function	putchar		cdecl alias "putchar"		( byval c as integer ) as integer
 
-declare function	puts		CDECL alias "puts"		( byval s as string ) as integer
+declare function	puts		cdecl alias "puts"		( byval s as string ) as integer
 
-declare sub		qsort		CDECL alias "qsort"		( byval baseptr as any ptr, _
+declare sub		qsort		cdecl alias "qsort"		( byval baseptr as any ptr, _
 									  byval num As integer, _
 									  byval size as integer, _
 									  byval compare_func as function() as integer )
 
-declare function	raise		CDECL alias "raise"		( byval sig as integer ) as integer
+declare function	raise		cdecl alias "raise"		( byval sig as integer ) as integer
 
-declare function	rand		CDECL alias "rand"		( ) as integer
+declare function	rand		cdecl alias "rand"		( ) as integer
 
-declare function	realloc		CDECL alias "realloc"		( byval memblock as any ptr, _
+declare function	realloc		cdecl alias "realloc"		( byval memblock as any ptr, _
 									  byval size as integer ) as any ptr
 
-declare function	remove		CDECL alias "remove"		( byval path as string ) as integer
+declare function	remove		cdecl alias "remove"		( byval path as string ) as integer
 
 ' rename() already declared
-
-' rewind() uses a FILE*
 
 ' scanf() is useless without C-style optional arguments
 
 ' setbuf() uses a FILE*
 
-declare function	setlocale	CDECL alias "setlocale"		( byval category as integer, _
+declare function	setlocale	cdecl alias "setlocale"		( byval category as integer, _
 									  byval locale as string ) as byte ptr
 
 ' setvbuf() uses a FILE*
 
-declare sub		signal		CDECL alias "signal"		( byval sig as integer, _
+declare sub		signal		cdecl alias "signal"		( byval sig as integer, _
 									  byval func as sub )
 
 ' sin() already declared
 
-declare function	sinh		CDECL alias "sinh"		( byval x as double ) as double
+declare function	sinh		cdecl alias "sinh"		( byval x as double ) as double
 
 ' sprintf() is useless without C-style optional arguments
 
-declare function	sqrt		CDECL alias "sqrt"		( byval x as double ) as double
+declare function	sqrt		cdecl alias "sqrt"		( byval x as double ) as double
 
-declare sub		srand		CDECL alias "srand"		( byval seed as unsigned integer )
+declare sub		srand		cdecl alias "srand"		( byval seed as unsigned integer )
 
 ' sscanf() is useless without C-style optional arguments
 
 ' strcat() is useless in freeBASIC (use string + operator instead)
 
-declare function	strchr		CDECL alias "strchr"		( byval s as string, _
+declare function	strchr		cdecl alias "strchr"		( byval s as string, _
 									  byval c as integer ) as byte ptr
 
-declare function	strcmp		CDECL alias "strcmp"		( byval string1 as string, _
+declare function	strcmp		cdecl alias "strcmp"		( byval string1 as string, _
 									  byval string2 as string ) as integer
 
-declare function	strcoll		CDECL alias "strcoll"		( byval string1 as string, _
+declare function	strcoll		cdecl alias "strcoll"		( byval string1 as string, _
 									  byval string2 as string ) as integer
 
 ' strcpy() is useless in freeBASIC (use string = operator instead)
 
-declare function	strcspn		CDECL alias "strcspn"		( byval s as string, _
+declare function	strcspn		cdecl alias "strcspn"		( byval s as string, _
 									  byval strCharSet as string ) as integer
 
-declare function	strerror	CDECL alias "strerror"		( byval errnum as integer ) as byte ptr
+declare function	strerror	cdecl alias "strerror"		( byval errnum as integer ) as byte ptr
 
-declare function	strftime	CDECL alias "strftime"		( byval strDest as string, _
+declare function	strftime	cdecl alias "strftime"		( byval strDest as string, _
 									  byval maxsize as integer, _
 									  byval fmt as string, _
 									  byval timeptr as tm ptr ) as integer
 
-declare function	strlen		CDECL alias "strlen"		( byval s as string ) as integer
+declare function	strlen		cdecl alias "strlen"		( byval s as string ) as integer
 
 ' strncat() is useless in freeBASIC (use string + operator instead)
 
-declare function	strncmp		CDECL alias "strncmp"		( byval string1 as string, _
+declare function	strncmp		cdecl alias "strncmp"		( byval string1 as string, _
 									  byval string2 as string, _
 									  byval count as integer ) as integer
 
 ' strncpy() is useless in freeBASIC (use string = operator instead)
 
-declare function	strpbrk		CDECL alias "strpbrk"		( byval s as string, _
+declare function	strpbrk		cdecl alias "strpbrk"		( byval s as string, _
 									  byval strCharSet as string ) as byte ptr
 
-declare function	strrchr		CDECL alias "strrchr"		( byval s as string, _
+declare function	strrchr		cdecl alias "strrchr"		( byval s as string, _
 									  byval c as integer ) as byte ptr
 
-declare function	strspn		CDECL alias "strspn"		( byval s as string, _
+declare function	strspn		cdecl alias "strspn"		( byval s as string, _
 									  byval strCharSet as string ) as integer
 
-declare function	strstr		CDECL alias "strstr"		( byval s as string, _
+declare function	strstr		cdecl alias "strstr"		( byval s as string, _
 									  byval strCharSet as string ) as byte ptr
 
-declare function	strtod		CDECL alias "strtod"		( byval nptr as string, _
+declare function	strtod		cdecl alias "strtod"		( byval nptr as string, _
 									  byval endptr as integer ptr ) as double
 
 ' strtok() is evil
 
-declare function	strtol		CDECL alias "strtol"		( byval nptr as string, _
+declare function	strtol		cdecl alias "strtol"		( byval nptr as string, _
 									  byval endptr as integer ptr, _
 									  byval n_base as integer ) as long
 
-declare function	strtoul		CDECL alias "strtoul"		( byval nptr as string, _
+declare function	strtoul		cdecl alias "strtoul"		( byval nptr as string, _
 									  byval endptr as integer ptr, _
 									  byval n_base as integer ) as unsigned long
 
-declare function	strxfrm		CDECL alias "strxfrm"		( byval strDest as string, _
+declare function	strxfrm		cdecl alias "strxfrm"		( byval strDest as string, _
 									  byval strSource as string, _
 									  byval count as integer ) as integer
 
@@ -372,21 +387,21 @@ declare function	strxfrm		CDECL alias "strxfrm"		( byval strDest as string, _
 ' swscanf() uses wide characters and is useless without C-style optional parameters
 
 ' note: system() is already used for BASIC's 'SYSTEM'; renamed to system_crt
-declare function	system_crt	CDECL alias "system"		( byval cmd as string ) as integer
+declare function	system_crt	cdecl alias "system"		( byval cmd as string ) as integer
 
 ' tan() already declared
 
-declare function	tanh		CDECL alias "tanh"		( byval x as double ) as double
+declare function	tanh		cdecl alias "tanh"		( byval x as double ) as double
 
 ' time() already used for BASIC's 'TIME$'; also time() returns a structure
 
 ' tmpfile() uses a FILE*
 
-declare function	tmpnam		CDECL alias "tmpnam"		( byval strng as string ) as byte ptr
+declare function	tmpnam		cdecl alias "tmpnam"		( byval strng as string ) as byte ptr
 
-declare function	tolower		CDECL alias "tolower"		( byval c as integer ) as integer
+declare function	tolower		cdecl alias "tolower"		( byval c as integer ) as integer
 
-declare function	toupper		CDECL alias "toupper"		( byval c as integer ) as integer
+declare function	toupper		cdecl alias "toupper"		( byval c as integer ) as integer
 
 ' towlower() and towupper() use wide characters
 
