@@ -110,7 +110,7 @@ FBSTRING *fb_GfxInkey(void)
 			return res;
 		}
 		else
-			return fb_CHR(key);
+			return fb_CHR( 1, key );
 	}
 
 	return &fb_strNullDesc;
