@@ -35,7 +35,10 @@ FBCALL void fb_GfxPset(float fx, float fy, int color, int coord_type)
 	if (!fb_mode)
 		return;
 	
-	color = fb_hFixColor(color);
+	if (color == DEFAULT_COLOR)
+		color = fb_mode->fg_color;
+	else
+		color = fb_hFixColor(color);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	
