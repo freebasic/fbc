@@ -20,6 +20,8 @@ Version 0.12 Beta:
 [chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
 [chged] empty statements like ":foo=1::bar=2:" are now accepted, "if foo then:bar:else:foo" will work too (v1c)
 [chged] DIM|REDIM array w/o explicit dimensions is not allowed anymore inside procs, as the descriptor size is unknown (v1c)
+[chged] RGB is now an intrinsic macro, not a function (so no UDT's called RGB are allowed anymore) (v1c)
+[chged] symbols can now start with an underscore as in "_1234 = 1234" (v1c)
 [added] resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
         compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
         used too (DrV)
@@ -49,6 +51,8 @@ Version 0.12 Beta:
 [added] all gfx primitives now accept as optional first parameter a target buffer where drawing will take place (lillo)
 [added] BLOAD now supports loading BMP files (lillo)
 [added] IFF(), conditional IF, to be used with numeric types only as in: "a = IIF( b > c, -1, 0)" (v1c)
+[added] LOWORD, HIWORD, LOBYTE and HIBYTE intrinsic macros (v1c)
+[added] BIT, BITSET and BITRESET intrinsic macros (v1c)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
@@ -84,6 +88,8 @@ Version 0.12 Beta:
 [fixed] COMMON arrays wouldn't be redimensioned when a REDIM was used (v1c)
 [fixed] integer division and modulo could gen bad code if pointers or indexes were used with EAX as the index reg (v1c)
 [fixed] base for non base-0 arrays with more than 2 dimensions was being wrongly calculated (v1c)
+[fixed] d! = cbyte( d! ) would gen bad code at EMIT if the SI or DI registers were used as source (v1c)
+[fixed] #define's would be checked inside $include and $inclib if ' was used as delimiter (v1c)
 
 
 Version 0.11 Beta:
