@@ -420,6 +420,7 @@ LABEL(trans1_y_loop)
 	jnc trans1_skip_1
 	incl %edi
 	lodsb
+	orb %al, %al
 	jz trans1_skip_1
 	movb %al, -1(%edi)
 
@@ -428,6 +429,7 @@ LABEL(trans1_skip_1)
 	jnc trans1_skip_2
 	addl $2, %edi
 	lodsw
+	orw %ax, %ax
 	jz trans1_skip_2
 	movw %ax, -2(%edi)
 
@@ -436,14 +438,13 @@ LABEL(trans1_skip_2)
 	jnc trans1_skip_4
 	addl $4, %edi
 	lodsl
+	orl %eax, %eax
 	jz trans1_skip_4
 	movl %eax, -4(%edi)
 
 LABEL(trans1_skip_4)
-	orl %ecx, %ecx
-	jz trans1_next_line
-
-LABEL(trans1_x_loop)
+	shrl $1, %ecx
+	jnc trans1_skip_8
 	movq (%esi), %mm0
 	movq (%edi), %mm2
 	movq %mm0, %mm3
@@ -453,6 +454,28 @@ LABEL(trans1_x_loop)
 	por %mm3, %mm2
 	addl $8, %esi
 	movq %mm2, -8(%edi)
+	
+LABEL(trans1_skip_8)
+	orl %ecx, %ecx
+	jz trans1_next_line
+
+LABEL(trans1_x_loop)
+	movq (%esi), %mm0
+	movq 8(%esi), %mm4
+	movq (%edi), %mm2
+	movq 8(%edi), %mm6
+	movq %mm0, %mm3
+	movq %mm4, %mm7
+	pcmpeqb %mm1, %mm0
+	pcmpeqb %mm1, %mm4
+	pand %mm0, %mm2
+	pand %mm4, %mm6
+	addl $16, %edi
+	por %mm3, %mm2
+	por %mm7, %mm6
+	addl $16, %esi
+	movq %mm2, -16(%edi)
+	movq %mm6, -8(%edi)
 	decl %ecx
 	jnz trans1_x_loop
 
