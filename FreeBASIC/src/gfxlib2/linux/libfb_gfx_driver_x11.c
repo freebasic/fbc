@@ -79,6 +79,7 @@ static GC gc;
 static char *window_title;
 static BLITTER *blitter;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
+static int display_offset;
 static int is_running, is_shm, num_modes, has_focus;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 static unsigned char keycode_to_scancode[256];
@@ -127,6 +128,24 @@ static const struct
 
 
 /*:::::*/
+static int calc_comp_height( int h )
+{
+	if( h < 240 )
+		return 240;
+	else if( h < 480 )
+		return 480;
+	else if( h < 600 )
+		return 600;
+	else if( h < 768 )
+		return 768;
+	else if( h < 1024 )
+		return 1024;
+	else
+		return 0;
+}
+
+
+/*:::::*/
 static int private_init(void)
 {
 	XPixmapFormatValues *format;
@@ -135,7 +154,7 @@ static int private_init(void)
 	Pixmap pixmap;
 	XColor color;
 	XGCValues gc_values;
-	int i, j, x, y, num_formats, depth = 0, is_rgb = FALSE;
+	int i, j, x, y, h, num_formats, depth = 0, is_rgb = FALSE;
 	int gc_mask, keycode_min, keycode_max, dummy, version;
 	KeySym keysym;
 	char *display_name;
@@ -200,6 +219,7 @@ static int private_init(void)
 	XMapRaised(display, window);
 	XFlush(display);
 	
+	display_offset = 0;
 	display_name = XDisplayName(NULL);
 	if (((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) &&
 	    (XShmQueryExtension(display))) {
@@ -210,12 +230,24 @@ static int private_init(void)
 				return -1;
 			if (!XF86VidModeGetAllModeLines(display, screen, &num_modes, &modes_info))
 				return -1;
+			h = mode_h;
 			for (i = 0; i < num_modes; i++) {
-				if ((modes_info[i]->hdisplay == mode_w) && (modes_info[i]->vdisplay == mode_h))
+				if ((modes_info[i]->hdisplay == mode_w) && (modes_info[i]->vdisplay == h))
 					break;
 			}
-			if (i == num_modes)
-				return -1;
+			if (i == num_modes) {
+				h = calc_comp_height(mode_h);
+				if (h) {
+					for (i = 0; i < num_modes; i++) {
+						if ((modes_info[i]->hdisplay == mode_w) && (modes_info[i]->vdisplay == h))
+							break;
+					}
+				}
+				if (i == num_modes)
+					return -1;
+				XResizeWindow(display, window, mode_w, h);
+			}
+			display_offset = (h - mode_h) >> 1;
 			if (!XF86VidModeSwitchToMode(display, screen, modes_info[i]))
 				return -1;
 			mode = modes_info[i];
@@ -366,9 +398,9 @@ static void *window_thread(void *arg)
 				for (y = i, h = 0; (fb_mode->dirty[i]) && (i < mode_h); h++, i++)
 					;
 				if (is_shm)
-					XShmPutImage(display, window, gc, image, 0, y, 0, y, mode_w, h, False);
+					XShmPutImage(display, window, gc, image, 0, y, 0, y + display_offset, mode_w, h, False);
 				else
-					XPutImage(display, window, gc, image, 0, y, 0, y, mode_w, h);
+					XPutImage(display, window, gc, image, 0, y, 0, y + display_offset, mode_w, h);
 			}
 		}
 		fb_hMemSet(fb_mode->dirty, FALSE, mode_h);
@@ -432,6 +464,7 @@ static void *window_thread(void *arg)
 								private_init();
 							}
 							fb_hRestorePalette();
+							fb_hMemSet(fb_mode->key, FALSE, 128);
 						}
 						else if (XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1)
 							fb_hPostKey(key);
