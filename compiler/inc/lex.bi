@@ -59,3 +59,5 @@ declare function 	lexLineNum 				( ) as integer
 declare function 	lexColNum 				( ) as integer
 
 declare sub 		lexSkipComment			( )
+
+declare sub 		lexSetCurrentToken		( byval id as integer, byval class as integer )

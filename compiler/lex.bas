@@ -863,3 +863,12 @@ function lexTokenType as integer
 	lexTokenType = ctx.tokenTB(0).typ
 
 end function
+
+'':::::
+sub lexSetCurrentToken( byval id as integer, byval class as integer )
+
+	ctx.tokenTB(0).tlen 	= 0
+	ctx.tokenTB(0).id 		= id
+	ctx.tokenTB(0).class 	= class
+
+end sub

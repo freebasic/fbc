@@ -2370,6 +2370,10 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' "byval filenum as integer" or "text as string "
+    if( (not isfile) and (expr = INVALID) ) then
+		expr = astNewVAR( hAllocStringConst( "" ), 0, IR.DATATYPE.FIXSTR )
+	end if
+
     res = astNewPARAM( proc, expr, INVALID )
 
     '' dst as string
@@ -2406,7 +2410,11 @@ sub rtlFileInput( byval isfile as integer, byval expr as integer, _
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' "byval filenum as integer" or "text as string "
-    res = astNewPARAM( proc, expr, INVALID )
+    if( (not isfile) and (expr = INVALID) ) then
+		expr = astNewVAR( hAllocStringConst( "" ), 0, IR.DATATYPE.FIXSTR )
+	end if
+
+	res = astNewPARAM( proc, expr, INVALID )
 
     if( args = 3 ) then
     	'' byval addquestion as integer

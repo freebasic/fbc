@@ -418,7 +418,7 @@ function cPrintStmt
     	end if
 
     	expressions = expressions + 1
-    loop
+    loop while( iscomma or issemicolon )
 
     ''
     astDelTree filexpr
@@ -483,7 +483,7 @@ function cWriteStmt
     	rtlWrite filexprcopy, iscomma, expr
 
     	expressions = expressions + 1
-    loop
+    loop while( iscomma )
 
     ''
     astDelTree filexpr
@@ -493,11 +493,11 @@ function cWriteStmt
 end function
 
 '':::::
-'' LineInputStmt	  =   LINE INPUT ';'? ('#' Expression| Expression{str}) (','|';') Variable .
+'' LineInputStmt	  =   LINE INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? .
 ''
 function cLineInputStmt
     dim expr as integer, dstexpr as integer
-    dim isfile as integer, addnewline as integer, addquestion as integer
+    dim isfile as integer, addnewline as integer, issep as integer
 
 	cLineInputStmt = FALSE
 
@@ -521,46 +521,61 @@ function cLineInputStmt
 		addnewline = TRUE
 	end if
 
-	'' ('#' Expression)?
+	'' '#'?
 	isfile = FALSE
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 	end if
 
+	'' Expression?
 	if( not cExpression( expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-
-	'' ','|';'
-	if( not hMatch( CHAR_COMMA ) ) then
-		if( not hMatch( CHAR_SEMICOLON ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
+		if( isfile ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 			exit function
 		end if
-		addquestion = TRUE
-	else
-		addquestion = FALSE
+		expr = INVALID
 	end if
 
-    '' Variable
+	'' ','|';'?
+	issep = TRUE
+	if( not hMatch( CHAR_COMMA ) ) then
+		if( not hMatch( CHAR_SEMICOLON ) ) then
+			issep = FALSE
+			if( (expr = INVALID) or (isfile) ) then
+				hReportError FB.ERRMSG.EXPECTEDCOMMA
+				exit function
+			end if
+		end if
+	end if
+
+    '' Variable?
 	if( not cVariable( dstexpr ) ) then
-       	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-       	exit function
+       	if( (expr = INVALID) or (isfile) ) then
+       		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+       		exit function
+       	end if
+       	dstexpr = expr
+       	expr = INVALID
+    else
+    	if( issep = FALSE ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+    	end if
     end if
 
-    rtlFileLineInput isfile, expr, dstexpr, addquestion, addnewline
+    rtlFileLineInput isfile, expr, dstexpr, FALSE, addnewline
 
     cLineInputStmt = TRUE
 
 end function
 
 '':::::
-'' InputStmt	  =   INPUT ';'? ('#' Expression| Expression{str}) (','|';') Variable (',' Variable)*
+'' InputStmt	  =   INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? (',' Variable)*
 ''
 function cInputStmt
     dim filestrexpr as integer, dstexpr as integer
     dim iscomma as integer, isfile as integer, addnewline as integer, addquestion as integer
+    dim issep as integer
 
 	cInputStmt = FALSE
 
@@ -576,23 +591,31 @@ function cInputStmt
 		addnewline = TRUE
 	end if
 
-	'' ('#' Expression)?
+	'' '#'?
 	if( hMatch( CHAR_SHARP ) ) then
         isfile = TRUE
     else
     	isfile = FALSE
 	end if
 
+	'' Expression?
 	if( not cExpression( filestrexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
+		if( isfile ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+		filestrexpr = INVALID
 	end if
 
 	'' ','|';'
+	issep = TRUE
 	if( not hMatch( CHAR_COMMA ) ) then
 		if( not hMatch( CHAR_SEMICOLON ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
+			issep = FALSE
+			if( (filestrexpr = INVALID) or (isfile) ) then
+				hReportError FB.ERRMSG.EXPECTEDCOMMA
+				exit function
+			end if
 		end if
 		addquestion = TRUE
 	else
@@ -604,8 +627,17 @@ function cInputStmt
     '' Variable (',' Variable)*
     do
 		if( not cVariable( dstexpr ) ) then
-       		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-       		exit function
+       		if( (filestrexpr = INVALID) or (isfile) ) then
+       			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+       			exit function
+       		end if
+       		dstexpr = filestrexpr
+       		filestrexpr = INVALID
+    	else
+    		if( issep = FALSE ) then
+				hReportError FB.ERRMSG.EXPECTEDCOMMA
+				exit function
+    		end if
     	end if
 
 		iscomma = FALSE
@@ -729,7 +761,7 @@ end function
 '':::::
 '' FileStmt		  =	   OPEN Expression{str} (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))? (ACCESS Expression)?
 ''					   (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
-''				  |	   CLOSE '#'? Expression
+''				  |	   CLOSE '#'? Expression?
 ''				  |	   SEEK '#'? Expression ',' Expression
 ''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float}
 ''				  |	   GET '#' Expression ',' Expression? ',' Expression{str|int|float}
@@ -836,14 +868,13 @@ function cFileStmt
 
 		cFileStmt = TRUE
 
-	'' CLOSE '#'? Expression
+	'' CLOSE '#'? Expression?
 	case FB.TK.CLOSE
 		lexSkipToken
 		res = hMatch( CHAR_SHARP )
 
 		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
+			filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
 		end if
 
 		rtlFileClose filenum

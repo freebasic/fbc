@@ -220,6 +220,14 @@ __stdcall int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access
 /*:::::*/
 __stdcall int fb_FileClose( int fnum )
 {
+	/* QB quirk: CLOSE w/o arguments closes all files */
+	if( fnum == 0 )
+	{
+		fb_FileReset( );
+		return FB_RTERROR_OK;
+	}
+
+
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 

@@ -589,6 +589,12 @@ function cForStatement
 	'' counter?
 	if( lexCurrentToken = FB.TK.ID ) then
 		lexSkipToken
+
+		'' ( ',' counter? )*
+		if( lexCurrentToken = CHAR_COMMA ) then
+			'' hack to handle multiple identifiers...
+			lexSetCurrentToken FB.TK.NEXT, FB.TKCLASS.KEYWORD
+		end if
 	end if
 
 	'' cmp label
