@@ -28,10 +28,6 @@
 #include <malloc.h>
 #include "fb.h"
 
-static FB_STR_TMPDESCLIST tmpdsList = { 0 };
-
-static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS] = { 0 };
-
 /*:::::*/
 void fb_hListInit( FB_LIST *list, void *table, int elem_size, int size )
 {
