@@ -72,8 +72,8 @@ declare function 	emitGetFreePreservReg( byval dtype as integer, byval dclass as
 
 declare function 	emitSave			( filename as string ) as integer
 
-declare sub 		emitPROCBEGIN		( byval proc as integer, byval initlabel as integer, byval ispublic as integer )
-declare sub 		emitPROCEND			( byval proc as integer, byval bytestopop as integer, byval initlabel as integer, byval exitlabel as integer )
+declare sub 		emitPROCBEGIN		( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval ispublic as integer )
+declare sub 		emitPROCEND			( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr )
 declare function 	emitAllocLocal		( byval lgt as integer ) as string
 declare sub 		emitFreeLocal		( byval lgt as integer )
 declare function 	emitAllocArg		( byval lgt as integer ) as string
@@ -164,7 +164,7 @@ declare sub 		emitPOP		( sname as string, byval sdtype as integer, byval sdclass
 
 declare	sub 		emitDbgLine			( byval lnum as integer, lname as string )
 
-declare	function 	emitGetPos 			( ) as long
+declare	function 	emitGetPos 			( ) as integer
 
 
 declare sub 		hWriteStr			( byval f as integer, byval addtab as integer, s as string )

@@ -26,7 +26,7 @@ declare	function 	hGetDefType				( symbol as string ) as integer
 declare	sub 		hSetDefType				( byval ichar as integer, byval echar as integer, byval typ as integer )
 declare function 	hMatch					( byval token as integer ) as integer
 
-declare sub 		hReportErrorEx			( byval errnum as integer, byval linenum as integer, msgex as string )
+declare sub 		hReportErrorEx			( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
 declare sub 		hReportError			( byval errnum as integer, byval isbefore as integer = FALSE )
 declare sub 		hReportSimpleError		( byval errnum as integer )
 declare function 	hGetLastError 			( ) as integer
@@ -42,8 +42,13 @@ declare sub 		hClearName				( src as string )
 declare function 	hCreateAliasName		( symbol as string, byval argslen as integer, _
 						   					  byval toupper as integer, byval mode as integer ) as string
 
+declare function 	hCreateName				( symbol as string, byval typ as integer ) as string
+declare function 	hCreateNameEx			( symbol as string, byval typ as integer = INVALID, byval preservecase as integer = FALSE, _
+								      		  byval addunderscore as integer = TRUE, byval clearname as integer  = TRUE) as string
+
 declare function 	hStripExt				( filename as string ) as string
 declare function 	hStripPath				( filename as string ) as string
+declare function 	hStripFilename 			( filename as string ) as string
 
 declare function 	hToPow2					( byval value as integer ) as integer
 

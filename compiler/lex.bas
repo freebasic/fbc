@@ -117,7 +117,7 @@ end sub
 '':::::
 function lexReadChar as integer static
     dim char as integer
-    dim p as long
+    dim p as integer
 
 	'' any #define'd text?
 	if( ctx.deflen > 0 ) then
@@ -313,7 +313,7 @@ end function
 ''                | 'B' BINDIG+
 ''
 function lexReadNonDecNumber as string static
-	dim v as long, c as integer
+	dim v as integer, c as integer
 
 	v = 0
 
@@ -552,7 +552,7 @@ sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval ch
 	dim c as integer
 	dim linecontinuation as integer
 	dim isnumber as integer
-	dim d as integer
+	dim d as FBDEFINE ptr
 	dim token as string
 
 reread:
@@ -655,7 +655,7 @@ readid:
 		if( checkDefine ) then
 			'' is it a define?
 			d = symbLookupDefine( token )
-			if( d <> INVALID ) then
+			if( d <> NULL ) then
 				lexUnreadChar
 				ctx.deftext = symbGetDefineText( d )
 				ctx.deflen  = symbGetDefineLen( d )

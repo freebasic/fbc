@@ -30,7 +30,7 @@ const FB_MAXPROCARGS%		= 64
 const FB.MAXARRAYDIMS%		= FB_MAXPROCARGS \ 4
 
 ''
-const FB.INITELEMENTNODES% 	= 1000
+const FB.INITELEMENTNODES% 	= 2000
 
 const FB.INITSYMBOLNODES%	= 5000
 const FB.INITLOCSYMBOLNODES%= FB.INITSYMBOLNODES \ 10
@@ -311,11 +311,13 @@ enum FBTK_ENUM
 	FB.TK.IFNDEF
 	FB.TK.ENDIF
 	FB.TK.DEFINED
+	FB.TK.RESUME
 	FB.TK.PSET
 	FB.TK.PRESET
 	FB.TK.CIRCLE
 	FB.TK.WINDOW
 	FB.TK.PALETTE
+	FB.TK.SCREEN
 end enum
 
 '' single char tokens
@@ -403,9 +405,207 @@ enum FBALLOCTYPE_ENUM
 end enum
 
 
+''
+type FBARRAYDIM
+	lower			as integer
+	upper			as integer
+end type
+
+type FBVARDIM
+	prv				as FBVARDIM ptr				'' linked-list nodes
+	nxt				as FBVARDIM ptr				'' /
+
+	lower			as integer
+	upper			as integer
+
+	r				as FBVARDIM ptr				'' right
+end type
+
+''
+type FBTYPELEMENT
+	prv				as FBTYPELEMENT ptr			'' linked-list nodes
+	nxt				as FBTYPELEMENT ptr			'' /
+
+	typ				as integer
+	subtype			as any ptr					'' only if another UDT
+	ofs				as integer
+	parent			as any ptr					'' FBSYMBOL ptr
+	nameidx			as integer
+
+	lgt				as integer
+	dims			as integer
+	dimhead			as FBVARDIM ptr
+	dimtail			as FBVARDIM ptr
+	dif				as integer
+
+	l				as FBTYPELEMENT ptr			'' left
+	r				as FBTYPELEMENT ptr			'' right
+end type
+
+
+''
+type FBLIBRARY
+	prv				as FBLIBRARY ptr			'' linked-list nodes
+	nxt				as FBLIBRARY ptr			'' /
+
+	nameidx			as integer
+end type
+
+''
+type FBDEFINE
+	prv				as FBDEFINE ptr				'' linked-list nodes
+	nxt				as FBDEFINE	ptr				'' /
+
+	nameidx			as integer
+	textidx			as integer
+end type
+
+
+''
+enum SYMBCLASS_ENUM
+	FB.SYMBCLASS.VAR			= 1
+	FB.SYMBCLASS.CONST
+	FB.SYMBCLASS.UDT
+	FB.SYMBCLASS.PROC
+	FB.SYMBCLASS.LABEL
+	FB.SYMBCLASS.ENUM
+end enum
+
+''
+type FBLABEL
+	declared		as integer
+end type
+
+''
+type FBSVAR
+	dims			as integer
+	dimhead 		as FBVARDIM ptr
+	dimtail			as FBVARDIM ptr
+	dif				as integer
+	desc			as any ptr					'' FBSYMBOL ptr
+end type
+
+type FBSCONST
+	textidx			as integer
+end type
+
+''
+type FBSUDT
+	isunion			as integer
+	elements		as integer
+	head			as FBTYPELEMENT ptr			'' first element
+	tail			as FBTYPELEMENT ptr			'' last  /
+	ofs				as integer
+	align			as integer
+	innerlgt		as integer					'' used with inner nameless unions
+end type
+
+''
+type FBPROCARG
+	prv				as FBPROCARG ptr			'' linked-list nodes
+	nxt				as FBPROCARG ptr			'' /
+
+	nameidx			as integer
+	typ				as integer
+	subtype			as any ptr					'' UDT's only
+	lgt				as integer
+	mode			as integer
+	suffix			as integer					'' QB quirk..
+
+	optional		as integer					'' true or false
+	defvalue		as double					'' default value
+
+	l				as FBPROCARG ptr			'' left
+	r				as FBPROCARG ptr			'' right
+end type
+
+type FBSPROC
+	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
+	lib				as FBLIBRARY ptr
+	args			as integer
+	arghead 		as FBPROCARG ptr
+	argtail			as FBPROCARG ptr
+	isdeclared		as integer					'' FALSE = just the prototype
+end type
+
+''
+type FBSENTINEL
+	prv				as FBSENTINEL ptr			'' linked-list nodes
+	nxt				as FBSENTINEL ptr			'' /
+
+	class			as integer
+	scope			as integer
+	isglobal		as integer
+	nameidx			as integer
+
+	suffix			as integer					'' QB quirk..
+	count			as integer
+end type
+
+''
+type FBSYMBOL
+	prv				as FBSYMBOL ptr				'' linked-list nodes
+	nxt				as FBSYMBOL ptr				'' /
+
+	class			as integer					'' var, const, proc, ..
+	typ				as integer					'' integer, float, string, pointer, ..
+	subtype			as FBSYMBOL ptr				'' used by UDT's
+	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
+
+	nameidx			as integer
+	aliasidx		as integer
+
+	scope			as integer
+	lgt				as integer
+
+	initialized		as integer
+	inittextidx		as integer
+
+	union
+		v			as FBSVAR
+		c			as FBSCONST
+		u			as FBSUDT
+		p			as FBSPROC
+		l			as FBLABEL
+	end union
+
+	sentinel		as FBSENTINEL ptr
+end type
+
+type FBLOCSYMBOL
+	prv				as FBLOCSYMBOL ptr			'' linked-list nodes
+	nxt				as FBLOCSYMBOL ptr			'' /
+
+    s				as FBSYMBOL ptr
+end type
+
+''
+type FBKEYWORD
+	prv				as FBKEYWORD ptr			'' linked-list nodes
+	nxt				as FBKEYWORD ptr			'' /
+
+	nameidx			as integer
+	id				as integer
+	class			as integer
+end type
+
+
+''
+type FBSTRING
+	id				as integer
+	lgt				as integer
+end type
+
+const FB.STRSTRUCTSIZE%		= 4+4
+
+'' "fake" descriptors as UDT's
+const FB.DESCTYPE.ARRAY% 	= -2
+const FB.DESCTYPE.STR% 		= -3
+
+''
 type FBCMPSTMT
-	cmplabel		as integer					'' or inilabel
-    endlabel		as integer
+	cmplabel		as FBSYMBOL ptr				'' or inilabel
+    endlabel		as FBSYMBOL ptr
 end type
 
 type FBENUMCTX
@@ -417,7 +617,7 @@ type FBTYPECTX
     innercnt		as integer
     elements 		as integer
     isunion			as integer
-    symbol			as integer
+    symbol			as FBSYMBOL ptr
 end type
 
 ''
@@ -447,7 +647,7 @@ type FBENV
 	'' globals
 	scope			as integer					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
-	currproc 		as integer					'' current proc (def= INVALID)
+	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
 
 	'' cmm-line options
 	clopt			as FBCMMLINEOPT
@@ -455,7 +655,7 @@ type FBENV
 	'' debug states
 	dbglname 		as string * 32
 	dbglnum 		as integer
-	dbgpos 			as long
+	dbgpos 			as integer
 
 	'' options
 	optbase			as integer					'' default=0
@@ -467,187 +667,8 @@ type FBENV
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
 	isdynamic		as integer					'' TRUE with $dynamic, FALSE with $static
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
-	procerrorhnd	as integer					'' var holding the old error handler inside a proc
+	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
 end type
-
-
-''
-type FBARRAYDIM
-	lower			as long
-	upper			as long
-end type
-
-''
-type FBTYPELEMENT
-	typ				as integer
-	subtype			as integer					'' only if another UDT
-	ofs				as integer
-	parent			as integer
-	nameidx			as integer
-
-	lgt				as integer
-	dims			as integer
-	dimhead			as integer
-	dimtail			as integer
-	dif				as integer
-
-	l				as integer					'' left
-	r				as integer					'' right
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-
-''
-type FBLIBRARY
-	nameidx			as integer
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-''
-type FBDEFINE
-	nameidx			as integer
-	textidx			as integer
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-
-''
-enum SYMBCLASS_ENUM
-	FB.SYMBCLASS.VAR			= 1
-	FB.SYMBCLASS.CONST
-	FB.SYMBCLASS.UDT
-	FB.SYMBCLASS.PROC
-	FB.SYMBCLASS.LABEL
-	FB.SYMBCLASS.ENUM
-end enum
-
-''
-type FBLABEL
-	declared		as integer
-end type
-
-''
-type FBVARDIM
-	lower			as long
-	upper			as long
-
-	r				as integer					'' right
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-type FBSVAR
-	dims			as integer
-	dimhead 		as integer
-	dimtail			as integer
-	dif				as long
-	desc			as integer
-end type
-
-type FBSCONST
-	textidx			as integer
-end type
-
-''
-type FBSUDT
-	isunion			as integer
-	elements		as integer
-	head			as integer					'' first element
-	tail			as integer					'' last  /
-	ofs				as integer
-	align			as integer
-	innerlgt		as integer					'' used with inner nameless unions
-end type
-
-''
-type FBPROCARG
-	nameidx			as integer
-	typ				as integer
-	subtype			as integer					'' UDT's only
-	lgt				as integer
-	mode			as integer
-	suffix			as integer					'' QB quirk..
-
-	optional		as integer					'' true or false
-	defvalue		as double					'' default value
-
-	l				as integer					'' left
-	r				as integer					'' right
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-type FBSPROC
-	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
-	lib				as integer
-	args			as integer
-	arghead 		as integer
-	argtail			as integer
-	isdeclared		as integer					'' FALSE = just the prototype
-end type
-
-
-''
-type FBLOCSYMBOL
-    s				as integer
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-type FBSYMBOL
-	class			as integer					'' var, const, proc, ..
-	typ				as integer					'' integer, float, string, pointer, ..
-	subtype			as integer					'' used by UDT's
-	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
-
-	nameidx			as integer
-	aliasidx		as integer
-
-	scope			as integer
-	lgt				as long
-
-	initialized		as integer
-	inittextidx		as integer
-
-	union
-		v			as FBSVAR
-		c			as FBSCONST
-		u			as FBSUDT
-		p			as FBSPROC
-		l			as FBLABEL
-	end union
-
-	prv				as integer					'' linked-list nodes
-	nxt				as integer					'' /
-end type
-
-''
-type FBKEYWORD
-	nameidx			as integer
-	id				as integer
-	class			as integer
-end type
-
-''
-type FBSTRING
-	id				as long
-	lgt				as long
-end type
-
-const FB.STRSTRUCTSIZE%		= 4+4
-
-'' "fake" descriptors as UDT's
-const FB.DESCTYPE.ARRAY% 	= -2
-const FB.DESCTYPE.STR% 		= -3
 
 
 '$include:'inc\symb.bi'

@@ -135,14 +135,14 @@ type IRVREG
 	typ			as integer						'' VAR, IMM, IDX, etc
 	dtype		as integer						'' CHAR, INTEGER, ...
 
-	s			as integer						'' symbol
+	s			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
 	lgt			as integer						'' *length
 	vi			as integer						'' index vreg
 
 	r			as integer						'' reg
 
-	value		as long							'' imm value
+	value		as integer						'' imm value
 end type
 
 type IRDATATYPE
@@ -159,56 +159,56 @@ declare sub 		irInit				( )
 declare sub 		irEnd				( )
 
 declare function 	irAllocVREG			( byval dtype as integer ) as integer
-declare function 	irAllocVRIMM		( byval dtype as integer, byval value as long ) as integer
-declare function 	irAllocVRVAR		( byval dtype as integer, byval symbol as integer, byval ofs as integer ) as integer
-declare function 	irAllocVRIDX		( byval dtype as integer, byval symbol as integer, byval ofs as integer, byval lgt as integer, byval vidx as integer ) as integer
+declare function 	irAllocVRIMM		( byval dtype as integer, byval value as integer ) as integer
+declare function 	irAllocVRVAR		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer ) as integer
+declare function 	irAllocVRIDX		( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval lgt as integer, byval vidx as integer ) as integer
 declare function 	irAllocVRPTR		( byval dtype as integer, byval ofs as integer, byval vidx as integer ) as integer
 declare sub 		irPreserveVR		( byval vreg as integer )
 declare sub 		irTrashVR			( byval vreg as integer )
 declare function 	irCloneVR			( byval src as integer ) as integer
 declare sub 		irCopyVR			( byval src as integer, byval dst as integer )
 
-declare sub 		irEmitPROCBEGIN		( byval proc as integer, byval initlabel as integer, byval endlabel as integer, byval ispublic as integer )
-declare sub 		irEmitPROCEND		( byval proc as integer, byval initlabel as integer, byval exitlabel as integer )
+declare sub 		irEmitPROCBEGIN		( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval endlabel as FBSYMBOL ptr, byval ispublic as integer )
+declare sub 		irEmitPROCEND		( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr )
 
 declare sub 		irEmitPUSH			( byval v1 as integer )
 declare sub 		irEmitPOP			( byval v1 as integer )
 declare sub 		irEmitBOP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer )
-declare sub 		irEmitBOPEx			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as long )
+declare sub 		irEmitBOPEx			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr )
 declare sub 		irEmitUOP			( byval op as integer, byval v1 as integer, byval vr as integer )
 declare sub 		irEmitSTORE			( byval v1 as integer, byval v2 as integer )
 declare sub 		irEmitLOAD			( byval op as integer, byval v1 as integer )
 declare sub 		irEmitCONVERT		( byval v1 as integer, byval dtype1 as integer, byval v2 as integer, byval dtype2 as integer )
 declare sub 		irEmitADDR			( byval op as integer, byval v1 as integer, byval vr as integer )
 
-declare sub 		irEmitLABEL			( byval label as integer, byval isglobal as integer )
-declare sub 		irEmitLABELNF		( byval label as integer )
+declare sub 		irEmitLABEL			( byval label as FBSYMBOL ptr, byval isglobal as integer )
+declare sub 		irEmitLABELNF		( byval label as FBSYMBOL ptr )
 declare sub 		irEmitCALL			( pname as string, byval bytestopop as integer, byval isglobal as integer )
-declare sub 		irEmitCALLSUB		( byval proc as integer )
-declare sub 		irEmitCALLFUNCT		( byval proc as integer, byval bytestopop as integer, byval vr as integer )
+declare sub 		irEmitCALLSUB		( byval proc as FBSYMBOL ptr )
+declare sub 		irEmitCALLFUNCT		( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval vr as integer )
 declare sub 		irEmitCALLPTR		( byval v1 as integer, byval vr as integer, byval bytestopop as integer )
 declare sub 		irEmitBRANCHPTR		( byval v1 as integer )
 
-declare sub 		irEmitBRANCH		( byval op as integer, byval label as integer, byval isglobal as integer )
-declare sub 		irEmitBRANCHNF		( byval op as integer, byval label as integer )
-declare sub 		irEmitCOMPBRANCH	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as integer )
-declare sub 		irEmitCOMPBRANCHNF	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as integer )
+declare sub 		irEmitBRANCH		( byval op as integer, byval label as FBSYMBOL ptr, byval isglobal as integer )
+declare sub 		irEmitBRANCHNF		( byval op as integer, byval label as FBSYMBOL ptr )
+declare sub 		irEmitCOMPBRANCH	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as FBSYMBOL ptr )
+declare sub 		irEmitCOMPBRANCHNF	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as FBSYMBOL ptr )
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
-declare function	irEmitPUSHPARAM		( byval proc as integer, byval param as integer, byval vr as integer, byval pmode as integer ) as integer
+declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval vr as integer, byval pmode as integer ) as integer
 
 declare function 	irIsIMM				( byval vreg as integer ) as integer
 declare function 	irIsVAR				( byval vreg as integer ) as integer
 declare function 	irIsIDX				( byval vreg as integer ) as integer
 declare function 	irIsREG				( byval vreg as integer ) as integer
 
-declare function 	irGetVRValue	( byval vreg as integer ) as long
+declare function 	irGetVRValue	( byval vreg as integer ) as integer
 declare function 	irGetVRDataType	( byval vreg as integer ) as integer
 declare function 	irGetVRDataClass( byval vreg as integer ) as integer
 declare function 	irGetVRDataSize	( byval vreg as integer ) as integer
 declare function 	irGetVRName		( byval vreg as integer ) as string
 declare function 	irGetVRNameEx	( byval vreg as integer, byval typ as integer ) as string
 declare function 	irGetVRType		( byval vreg as integer ) as integer
-declare function 	irGetVRSymbol	( byval vreg as integer ) as integer
+declare function 	irGetVRSymbol	( byval vreg as integer ) as FBSYMBOL ptr
 
 
 declare function 	irMaxDataType	( byval dtype1 as integer, byval dtype2 as integer ) as integer
@@ -220,7 +220,7 @@ declare function 	irIsSigned		( byval dtype as integer ) as integer
 declare function 	irGetSignedType	( byval dtype as integer ) as integer
 declare function 	irGetUnsignedType( byval dtype as integer ) as integer
 
-declare function 	irGetVARSymbol	( byval vreg as integer ) as integer
+declare function 	irGetVARSymbol	( byval vreg as integer ) as FBSYMBOL ptr
 declare function 	irGetVAROffset	( byval vreg as integer ) as integer
 
 declare sub 		irFlush 		( )

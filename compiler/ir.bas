@@ -63,7 +63,8 @@ type IR3ADDRCODE
 	vr			as integer						'' result
 	v1			as integer						'' operand 1
 	v2			as integer						'' operand 2
-	ex			as long							'' extra field, used by call/jmp
+	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
+	ex2			as integer						'' /
 end type
 
 
@@ -71,12 +72,12 @@ declare function 	irCreateTMPVAR		( byval vreg as integer ) as string
 
 declare sub 		irFlushUOP			( byval op as integer, byval v1 as integer, byval vr as integer )
 declare sub 		irFlushBOP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer )
-declare sub 		irFlushCOMP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval label as integer )
+declare sub 		irFlushCOMP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval label as FBSYMBOL ptr )
 declare sub 		irFlushSTORE		( byval op as integer, byval v1 as integer, byval v2 as integer )
 declare sub 		irFlushLOAD			( byval op as integer, byval v1 as integer )
 declare sub 		irFlushCONVERT		( byval op as integer, byval v1 as integer, byval v2 as integer )
-declare sub 		irFlushCALL			( byval op as integer, byval ex as long, byval v1 as integer, byval vr as integer )
-declare sub 		irFlushBRANCH		( byval op as integer, byval label as integer )
+declare sub 		irFlushCALL			( byval op as integer, byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval v1 as integer, byval vr as integer )
+declare sub 		irFlushBRANCH		( byval op as integer, byval label as FBSYMBOL ptr )
 declare sub 		irFlushSTACK		( byval op as integer, byval v1 as integer )
 declare sub 		irFlushADDR			( byval op as integer, byval v1 as integer, byval vr as integer )
 
@@ -104,7 +105,7 @@ declare sub 		irDump				( byval op as integer, byval v1 as integer, byval v2 as 
 
 '' class, size, signed?, name
 datatypedata:
-data IR.DATACLASS.INTEGER, 0			 , FALSE, "void"
+data IR.DATACLASS.INTEGER, 1			 , FALSE, "void"
 data IR.DATACLASS.INTEGER, 1			 , TRUE , "char"
 data IR.DATACLASS.INTEGER, 1			 , FALSE, "byte"
 data IR.DATACLASS.INTEGER, 2			 , TRUE , "short"
@@ -439,7 +440,7 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irEmitEx( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as long ) 'static
+sub irEmitEx( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex1 as FBSYMBOL ptr, byval ex2 as integer = 0 ) 'static
     dim i as integer
 
     if( ctx.codes >= ctx.nodes ) then
@@ -448,19 +449,21 @@ sub irEmitEx( byval op as integer, byval v1 as integer, byval v2 as integer, byv
 
     i = ctx.codes
 
-    tacTB(i).op = op
-    tacTB(i).v1 = v1
-    tacTB(i).v2 = v2
-    tacTB(i).vr = vr
-    tacTB(i).ex	= ex
+    tacTB(i).op  = op
+    tacTB(i).v1  = v1
+    tacTB(i).v2  = v2
+    tacTB(i).vr  = vr
+    tacTB(i).ex1 = ex1
+    tacTB(i).ex2 = ex2
 
     ctx.codes = ctx.codes + 1
+
 end sub
 
 '':::::
 sub irEmit( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer ) 'static
 
-	irEmitEx op, v1, v2, vr, INVALID
+	irEmitEx op, v1, v2, vr, NULL
 
 end sub
 
@@ -484,7 +487,7 @@ sub irEmitBOP( byval op as integer, byval v1 as integer, byval v2 as integer, by
 end sub
 
 '':::::
-sub irEmitBOPEx( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as long ) 'static
+sub irEmitBOPEx( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr ) 'static
 	irEmitEx op, v1, v2, vr, ex
 end sub
 
@@ -520,7 +523,7 @@ end sub
 
 
 '':::::
-sub irEmitLABEL( byval label as integer, byval isglobal as integer ) 'static
+sub irEmitLABEL( byval label as FBSYMBOL ptr, byval isglobal as integer ) 'static
     dim lname as string
 
 	irFlush										'' needed? (no way to know if label is ever called)
@@ -532,7 +535,7 @@ sub irEmitLABEL( byval label as integer, byval isglobal as integer ) 'static
 end sub
 
 '':::::
-sub irEmitLABELNF( byval label as integer ) 'static
+sub irEmitLABELNF( byval label as FBSYMBOL ptr ) 'static
 
 	irEmitEx IR.OP.LABEL, INVALID, INVALID, INVALID, label
 
@@ -548,7 +551,7 @@ sub irEmitCALL( pname as string, byval bytestopop as integer, byval isglobal as 
 end sub
 
 '':::::
-sub irEmitCALLSUB( byval proc as integer  ) 'static
+sub irEmitCALLSUB( byval proc as FBSYMBOL ptr ) 'static
     dim pname as string, bytes2pop as integer, mode as integer
 
     irFlush										'' needed? (only if passing any param by ref?)
@@ -566,28 +569,28 @@ sub irEmitCALLSUB( byval proc as integer  ) 'static
 end sub
 
 '':::::
-sub irEmitCALLFUNCT( byval proc as integer, byval bytestopop as integer, byval vr as integer ) 'static
+sub irEmitCALLFUNCT( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval vr as integer ) 'static
 
-    irEmitEx IR.OP.CALL, INVALID, INVALID, vr, proc + (bytestopop * 65536&)
+    irEmitEx IR.OP.CALL, INVALID, INVALID, vr, proc, bytestopop
 
 end sub
 
 '':::::
 sub irEmitCALLPTR( byval v1 as integer, byval vr as integer, byval bytestopop as integer ) 'static
 
-    irEmitEx IR.OP.CALLPTR, v1, INVALID, vr, &h0000FFFF& or (bytestopop * 65536&)
+    irEmitEx IR.OP.CALLPTR, v1, INVALID, vr, NULL, bytestopop
 
 end sub
 
 '':::::
 sub irEmitBRANCHPTR( byval v1 as integer ) 'static
 
-    irEmitEx IR.OP.JUMPPTR, v1, INVALID, INVALID, &h0000FFFF&
+    irEmitEx IR.OP.JUMPPTR, v1, INVALID, INVALID, NULL
 
 end sub
 
 '':::::
-sub irEmitBRANCH( byval op as integer, byval label as integer, byval isglobal as integer ) 'static
+sub irEmitBRANCH( byval op as integer, byval label as FBSYMBOL ptr, byval isglobal as integer ) 'static
 	dim lname as string
 
     irFlush
@@ -604,14 +607,14 @@ sub irEmitBRANCH( byval op as integer, byval label as integer, byval isglobal as
 end sub
 
 '':::::
-sub irEmitBRANCHNF( byval op as integer, byval label as integer ) 'static
+sub irEmitBRANCHNF( byval op as integer, byval label as FBSYMBOL ptr ) 'static
 
     irEmitEx op, INVALID, INVALID, INVALID, label
 
 end sub
 
 '':::::
-sub irEmitCOMPBRANCH( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as integer ) 'static
+sub irEmitCOMPBRANCH( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as FBSYMBOL ptr ) 'static
 
     irFlush
 
@@ -620,7 +623,7 @@ sub irEmitCOMPBRANCH( byval op as integer, byval v1 as integer, byval v2 as inte
 end sub
 
 '':::::
-sub irEmitCOMPBRANCHNF( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as integer ) 'static
+sub irEmitCOMPBRANCHNF( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as FBSYMBOL ptr ) 'static
 
     irEmitEx op, v1, v2, INVALID, label
 
@@ -636,7 +639,7 @@ sub irEmitRETURN( byval bytestopop as integer ) 'static
 end sub
 
 '':::::
-sub irEmitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval endlabel as integer, byval ispublic as integer ) 'static
+sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval endlabel as FBSYMBOL ptr, byval ispublic as integer ) 'static
     dim label as integer
     dim id as string
 
@@ -648,6 +651,10 @@ sub irEmitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval en
 	edbgProcBegin proc, ispublic, -1
 
 	''
+	if( env.clopt.debug ) then
+		emitASM ".asciz " + chr$( CHAR_QUOTE ) + id + chr$( CHAR_QUOTE )
+	end if
+
 	emitALIGN 16
 
 	if( ispublic ) then
@@ -660,7 +667,7 @@ sub irEmitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval en
 end sub
 
 '':::::
-sub irEmitPROCEND( byval proc as integer, byval initlabel as integer, byval exitlabel as integer ) 'static
+sub irEmitPROCEND( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr ) 'static
     dim bytestopop as integer, mode as integer
 
     mode = symbGetFuncMode( proc )
@@ -677,11 +684,12 @@ sub irEmitPROCEND( byval proc as integer, byval initlabel as integer, byval exit
 end sub
 
 '':::::
-function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as integer, byval pmode as integer ) as integer 'static
+function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
+						  byval vr as integer, byval pmode as integer ) as integer 'static
     dim vt as integer, vp as integer
     dim atype as integer, aclass as integer
     dim ptype as integer, pclass as integer, psize as integer
-    dim s as integer, amode as integer, typ as integer, isfixed as integer, desc as integer
+    dim s as FBSYMBOL ptr, amode as integer, typ as integer, isfixed as integer, desc as FBSYMBOL ptr
 
 	irEmitPUSHPARAM = FALSE
 
@@ -709,22 +717,10 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
         else
 
 			s = vregTB(vr).s
-			if( s = INVALID ) then
-				hReportError FB.ERRMSG.PARAMTYPEMISMATCH, TRUE
-				exit function
-			end if
-
 			'' not an argument passed by descriptor?
 			if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
 				ptype = IR.DATATYPE.VOID
-
-        		desc = symbGetVarDescriptor( s )
-				if( desc = INVALID ) then
-					hReportError FB.ERRMSG.PARAMTYPEMISMATCH, TRUE
-					exit function
-				end if
-
-        		vr = irAllocVRVAR( ptype, desc, 0 )
+        		vr = irAllocVRVAR( ptype, symbGetVarDescriptor( s ), 0 )
         		amode = FB.ARGMODE.BYREF
 
         	'' it's already a descriptor pointer, pass as-is
@@ -740,18 +736,6 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 
     	'' string argument?
     	if( aclass = IR.DATACLASS.STRING ) then
-			'' param not an string?
-			if( pclass <> IR.DATACLASS.STRING ) then
-				'' check if not a byte ptr
-				if( (ptype <> IR.DATATYPE.BYTE) or (typ <> IR.VREGTYPE.PTR) ) then
-					'' or if passing a ptr to a BYVAL string arg
-			    	if( (pclass <> IR.DATACLASS.INTEGER) or (amode <> FB.ARGMODE.BYVAL) or (psize <> FB.POINTERSIZE) ) then
-						hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
-						exit function
-			    	end if
-			    end if
-			end if
-
 			'' byval and fixed/byte ptr/ptr   	: pass the pointer as-is
 			'' byval and variable				: pass the pointer at ofs 0 of the string descriptor
 			'' byref and variable				: pass the pointer to descriptor
@@ -787,25 +771,12 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 		else
 	        '' passing a BYVAL ptr to an BYREF arg?
 			if( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
-				if( (pclass <> IR.DATACLASS.INTEGER) or (psize <> FB.POINTERSIZE) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
-					exit function
-				end if
 
 			'' UDT arg? check if the same, can't convert
 			elseif( atype = IR.DATATYPE.USERDEF ) then
-				if( (ptype <> IR.DATATYPE.USERDEF) and (ptype <> IR.DATATYPE.POINTER + IR.DATATYPE.USERDEF) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
-					exit function
-				end if
 			''
 			else
 				if( (aclass <> pclass) or (irGetDataSize( atype ) <> psize) ) then
-					'' can't convert strings to other types
-					if( pclass = IR.DATACLASS.STRING ) then
-						hReportError FB.ERRMSG.INVALIDDATATYPES
-						exit function
-					end if
 					vt = irAllocVREG( atype )
 					irEmitCONVERT vt, atype, vr, ptype
 					vr = vt
@@ -850,7 +821,7 @@ function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr 
 
 		'' simple index?
 		elseif( (typ = IR.VREGTYPE.IDX) and (vregTB(vr).ofs = 0) and _
-				(vregTB(vr).s = INVALID) and (vregTB(vr).lgt <= 1) ) then
+				(vregTB(vr).s = NULL) and (vregTB(vr).lgt <= 1) ) then
 
 			irEmitPUSH vregTB(vr).vi
 
@@ -896,7 +867,7 @@ function irNewVR( byval dtype as integer, byval typ as integer ) as integer 'sta
 
 	vregTB(v).typ 	= typ
 	vregTB(v).dtype	= dtype
-	vregTB(v).s		= INVALID
+	vregTB(v).s		= NULL
 	vregTB(v).r		= INVALID
 	vregTB(v).vi	= INVALID
 
@@ -919,7 +890,7 @@ function irAllocVREG( byval dtype as integer ) as integer 'static
 end function
 
 '':::::
-function irAllocVRIMM( byval dtype as integer, byval value as long ) as integer 'static
+function irAllocVRIMM( byval dtype as integer, byval value as integer ) as integer 'static
 	dim vr as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.IMM )
@@ -933,7 +904,7 @@ function irAllocVRIMM( byval dtype as integer, byval value as long ) as integer 
 end function
 
 '':::::
-function irAllocVRVAR( byval dtype as integer, byval symbol as integer, byval ofs as integer ) as integer 'static
+function irAllocVRVAR( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer ) as integer 'static
 	dim vr as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.VAR )
@@ -948,7 +919,7 @@ function irAllocVRVAR( byval dtype as integer, byval symbol as integer, byval of
 end function
 
 '':::::
-function irAllocVRIDX( byval dtype as integer, byval symbol as integer, byval ofs as integer, byval lgt as integer, byval vidx as integer ) as integer 'static
+function irAllocVRIDX( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval lgt as integer, byval vidx as integer ) as integer 'static
 	dim vr as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.IDX )
@@ -1028,11 +999,11 @@ end function
 '':::::
 function irIsVAR( byval vreg as integer ) as integer 'static
 
+	irIsVAR = FALSE
+
 	select case vregTB(vreg).typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR
 		irIsVAR = TRUE
-	case else
-		irIsVAR = FALSE
 	end select
 
 end function
@@ -1040,17 +1011,17 @@ end function
 '':::::
 function irIsIDX( byval vreg as integer ) as integer 'static
 
+	irIsIDX = FALSE
+
 	select case vregTB(vreg).typ
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
 		irIsIDX = TRUE
-	case else
-		irIsIDX = FALSE
 	end select
 
 end function
 
 '':::::
-function irGetVRValue( byval vreg as integer ) as long 'static
+function irGetVRValue( byval vreg as integer ) as integer 'static
 	irGetVRValue = vregTB(vreg).value
 end function
 
@@ -1084,7 +1055,7 @@ function irGetVRDataSize( byval vreg as integer ) as integer 'static
 end function
 
 '':::::
-function irGetVARSymbol( byval vreg as integer ) as integer 'static
+function irGetVARSymbol( byval vreg as integer ) as FBSYMBOL ptr 'static
 	irGetVARSymbol = vregTB(vreg).s
 end function
 
@@ -1192,7 +1163,7 @@ end sub
 '':::::
 sub irFlush 'static
     dim op as integer, i as integer
-    dim v1 as integer, v2 as integer, vr as integer, ex as long
+    dim v1 as integer, v2 as integer, vr as integer
 
 	if( ctx.codes = 0 ) then
 		exit sub
@@ -1210,7 +1181,6 @@ sub irFlush 'static
 		v1   = tacTB(i).v1
 		v2   = tacTB(i).v2
 		vr   = tacTB(i).vr
-		ex	 = tacTB(i).ex
 
 		''
 		'irDump op, v1, v2, vr
@@ -1224,7 +1194,7 @@ sub irFlush 'static
 			irFlushBOP op, v1, v2, vr
 
 		case IR.OPTYPE.COMP
-			irFlushCOMP op, v1, v2, vr, ex
+			irFlushCOMP op, v1, v2, vr, tacTB(i).ex1
 
 		case IR.OPTYPE.STORE
 			irFlushSTORE op, v1, v2
@@ -1239,10 +1209,10 @@ sub irFlush 'static
 			irFlushSTACK op, v1
 
 		case IR.OPTYPE.CALL
-			irFlushCALL op, ex, v1, vr
+			irFlushCALL op, tacTB(i).ex1, tacTB(i).ex2, v1, vr
 
 		case IR.OPTYPE.BRANCH
-			irFlushBRANCH op, ex
+			irFlushBRANCH op, tacTB(i).ex1
 
 		case IR.OPTYPE.ADDRESSING
 			irFlushADDR op, v1, vr
@@ -1261,7 +1231,7 @@ sub irFlush 'static
 end sub
 
 '':::::
-sub irFlushBRANCH( byval op as integer, byval label as integer ) 'static
+sub irFlushBRANCH( byval op as integer, byval label as FBSYMBOL ptr ) 'static
     dim lname as string
 
 	lname = symbGetLabelName( label )
@@ -1291,53 +1261,71 @@ sub irFlushBRANCH( byval op as integer, byval label as integer ) 'static
 end sub
 
 '':::::
-sub irhPreserveRegs 'static
-    dim i as integer, r as integer
-    dim dclass as integer, dtype as integer, typ as integer, rname as string
-    dim fr as integer, frname as string
+private sub irhPreserveRegs 'static
+    dim vr as integer, r as integer
+    dim dclass as integer, dtype as integer, typ as integer
+    dim fr as integer
+    dim class as integer
 
-	for i = 0 to ctx.vregs-1
-		if( vregTB(i).typ = IR.VREGTYPE.REG ) then
+	'' for each reg class
+	class = IR.DATACLASS.INTEGER
+	do
 
-			r = vregTB(i).r
-        	if( r <> INVALID ) then
-        		irhGetVREG i, dtype, dclass, typ
+		'' for each register on that class
+		r = regGetFirst( class )
+		do until( r = INVALID )
+			'' if not free
+			if( not regIsFree( INVALID, class, r ) ) then
 
+				'' get the attached vreg
+				vr = regGetVreg( class, r )
+                irhGetVREG vr, dtype, dclass, typ
+
+        		'' if reg is not preserved between calls
         		if( not emitIsRegPreserved( dtype, dclass, r ) ) then
+
+        			'' find a preserved reg to copy to
         			fr = emitGetFreePreservReg( dtype, dclass )
+
+        			'' if none free, spill reg
         			if( fr = INVALID ) then
-        				irStoreVR dtype, dclass, i, r
-        				regFree dtype, dclass, r
+        				irStoreVR dtype, dclass, vr, r
+
+        			'' else, copy it to a preserved reg
         			else
-        				rname = emitGetRegName( dtype, dclass, r )
-        				fr = regAllocateReg( dtype, dclass, fr, i )
-        				vregTB(i).r = fr
-        				frname = emitGetRegName( dtype, dclass, fr )
-        				emitMOV frname, dtype, dclass, IR.VREGTYPE.REG, rname, dtype, dclass, IR.VREGTYPE.REG
-        				regFree dtype, dclass, r
+        				fr = regAllocateReg( dtype, dclass, fr, vr )
+        				vregTB(vr).r = fr
+        				emitMOV emitGetRegName( dtype, dclass, fr ), dtype, dclass, IR.VREGTYPE.REG, _
+        						emitGetRegName( dtype, dclass, r ), dtype, dclass, IR.VREGTYPE.REG
         			end if
+
+        			'' free reg
+        			regFree dtype, dclass, r
         		end if
-            end if
+        	end if
+
+        	'' next reg
+        	r = regGetNext( class, r )
+		loop
+
+		'' next class
+		if( class = IR.DATACLASS.INTEGER ) then
+			class = IR.DATACLASS.FPOINT
+		else
+			exit do
 		end if
-	next i
+	loop
 
 end sub
 
 '':::::
-sub irFlushCALL( byval op as integer, byval ex as long, byval v1 as integer, byval vr as integer ) 'static
-    dim pname as string, proc as integer, bytes2pop as integer, mode as integer
+sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2pop as integer, byval v1 as integer, byval vr as integer ) 'static
+    dim pname as string, mode as integer
     dim rr as integer, rdclass as integer, rdtype as integer, rtyp as integer
 
-    proc = ex and &h0000FFFF&
-
-    if( proc = &h0000FFFF& ) then proc = INVALID
-
-    if( proc = INVALID ) then
-    	bytes2pop = ex \ 65536&
-    else
+    if( proc <> NULL ) then
     	mode = symbGetFuncMode( proc )
     	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
-			bytes2pop = ex \ 65536&
 			if( bytes2pop = 0 ) then
 				bytes2pop = symbGetArgsLen( proc )
 			end if
@@ -1350,7 +1338,7 @@ sub irFlushCALL( byval op as integer, byval ex as long, byval v1 as integer, byv
     irhPreserveRegs
 
 	'' call ptr
-	if( proc = INVALID ) then
+	if( proc = NULL ) then
 
 		irhGetVREG v1, rdtype, rdclass, rtyp
 		irhLoadIDX v1, rdtype, rdclass, rtyp
@@ -1583,7 +1571,7 @@ sub irFlushBOP( byval op as integer, byval v1 as integer, byval v2 as integer, b
 end sub
 
 '':::::
-sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval label as integer ) 'static
+sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval label as FBSYMBOL ptr ) 'static
 	dim dst as string, src as string, res as string, lname as string
 	dim r1 as integer, t1 as integer, dt1 as integer, dc1 as integer
 	dim r2 as integer, t2 as integer, dt2 as integer, dc2 as integer
@@ -1644,7 +1632,7 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	end if
 
 	''
-	if( label = INVALID ) then
+	if( label = NULL ) then
 		lname = hMakeTmpStr
 	else
 		lname = symbGetLabelName( label )
@@ -1981,7 +1969,7 @@ end function
 
 '':::::
 function irhGetVRIndexName( byval vreg as integer ) as string 'static
-    dim s as integer, ofs as integer, lgt as integer, vi as integer
+    dim s as FBSYMBOL ptr, ofs as integer, lgt as integer, vi as integer
     dim varname as string, idxname as string
 
 	if( vreg = INVALID ) then
@@ -2000,7 +1988,7 @@ function irhGetVRIndexName( byval vreg as integer ) as string 'static
 		idxname = ""
 	end if
 
-	if( s <> INVALID ) then
+	if( s <> NULL ) then
 		varname = symbGetVarName( s )
 	else
 		varname = ""
@@ -2022,9 +2010,9 @@ function irGetVRType( byval vreg as integer ) as integer 'static
 end function
 
 '':::::
-function irGetVRSymbol( byval vreg as integer ) as integer 'static
+function irGetVRSymbol( byval vreg as integer ) as FBSYMBOL ptr 'static
 
-	irGetVRSymbol = INVALID
+	irGetVRSymbol = NULL
 
 	if( vreg = INVALID ) then
 		exit function

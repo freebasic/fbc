@@ -21,101 +21,88 @@
 '' obs: uses the string pool to not duplicate the symbol table string names
 ''
 '' chng: sep/2004 written [v1ctor]
+''       jan/2005 updated to use real linked-lists [v1ctor]
 
 DefInt a-z
 Option Explicit
 
 '$include:'inc\hash.bi'
+'$include:'inc\list.bi'
 '$include:'inc\strpool.bi'
 
 Const INVALID = -1
 Const TRUE = -1
 Const FALSE = 0
+Const NULL = 0
 
-declare function 	hashHash	( symbol as string, byval entries as uinteger ) as integer
-declare function 	hashNewItem	( e as HASHTB ) as integer
-declare sub 		hashDelItem	( byval i as integer, e as HASHTB )
+Type HASHCTX
+	itemlist    as TLIST
+End Type
 
+
+declare function 	hashHash	( symbol as string, byval nodes as uinteger ) as integer
+
+declare function 	hashNewItem	( byval list as HASHLIST ptr ) as HASHITEM ptr
+declare sub 		hashDelItem	( byval list as HASHLIST ptr, byval item as HASHITEM ptr )
 
 ''globals
 	Dim shared ctx as HASHCTX
-	ReDim shared hitemTB( 0 ) as HASHITEM
 
-
-'':::::
-sub hashRealloc( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.nodes
-	ub = ctx.nodes + (nodes - 1)
-
-	redim preserve hitemTB( 0 to ub ) as HASHITEM
-
-	For i = lb to ub
-		hitemTB(i).prv  = i-1
-		hitemTB(i).nxt  = i+1
-	Next i
-
-	if( lb = 0 ) then
-		hitemTB(lb).prv = INVALID
-	end if
-
-	hitemTB(ub).nxt = INVALID
-
-	''
-	ctx.fhead 		= lb
-	ctx.nodes 		= ctx.nodes + nodes
-
-end sub
 
 '':::::
 sub hashInit static
 
-	''
-	ctx.fhead = INVALID
-	ctx.nodes = 0
-
-	hashRealloc HASH.INITITEMNODES
+	'' allocate the initial item list pool
+	listNew( @ctx.itemlist, HASH.INITITEMNODES, len( HASHITEM ) )
 
 end sub
 
 '':::::
-sub hashNew( hTB() as HASHTB, byval entries as integer ) static
+sub hashNew( hash as THASH, byval nodes as integer ) static
     dim i as integer
+    dim list as HASHLIST ptr
 
-	redim hTB( 0 to entries-1 ) as HASHTB
+	'' allocate a fixed list of internal linked-lists
+	hash.list = callocate( nodes * len( HASHLIST ) )
+	hash.nodes = nodes
 
-	for i = 0 to entries-1
-		hTB(i).items = 0
-		hTB(i).head = INVALID
-		hTB(i).tail = INVALID
+	'' initialize the list
+	list = hash.list
+	for i = 0 to nodes-1
+		list->head = NULL
+		list->tail = NULL
+		list = list + len( HASHLIST )
 	next i
 
 end sub
 
 ''::::::
-sub hashFree( hTB() as HASHTB, byval entries as integer ) static
-    dim i as integer, n as integer, nn as integer
+sub hashFree( hash as THASH ) static
+    dim i as integer
+    dim item as HASHITEM ptr, nxt as HASHITEM ptr
+    dim list as HASHLIST ptr
 
-    for i = 0 to entries-1
-		n = hTB(i).head
-		do while( n <> INVALID )
-			nn = hitemTB(n).nxt
+    '' for each item on each list, deallocate it and the string from the pool
+    list = hash.list
+    for i = 0 to hash.nodes-1
+		item = list->head
+		do while( item <> NULL )
+			nxt = item->r
 
-			strpDel hitemTB(n).nameidx
-			hashDelItem n, hTB(i)
+			strpDel item->nameidx
+			hashDelItem list, item
 
-			n = nn
+			item = nxt
 		loop
+		list = list + len( HASHLIST )
 	next i
 
-	erase hTB
+	deallocate hash.list
 
 end sub
 
 '':::::
-function hashHash( symbol as string, byval entries as uinteger ) as integer static
+function hashHash( symbol as string, byval nodes as uinteger ) as integer static
 	dim index as uinteger
 	dim i as integer, c as uinteger
 	dim p as ubyte ptr
@@ -128,147 +115,154 @@ function hashHash( symbol as string, byval entries as uinteger ) as integer stat
 		p = p + 1
 	next i
 
-	hashHash = index mod entries
+	hashHash = index mod nodes
 
 end function
 
 ''::::::
-function hashLookup( symbol as string, hTB() as HASHTB, byval entries as integer ) as integer static
-    dim index as integer, n as integer
+function hashLookup( hash as THASH, symbol as string ) as any ptr static
+    dim index as integer
+    dim item as HASHITEM ptr
+    dim list as HASHLIST ptr
 
-    hashLookup = INVALID
+    hashLookup = NULL
 
-    index = hashHash( symbol, entries )
+    '' calc hash
+    index = hashHash( symbol, hash.nodes )
 
-	n = hTB(index).head
-	if( n = INVALID ) then
+	'' get the start of list
+	list = hash.list + (index * len( HASHLIST ))
+	item = list->head
+	if( item = NULL ) then
 		exit function
 	end if
 
-	do while( n <> INVALID )
-		if( strpGet( hitemTB(n).nameidx ) = symbol ) then
-			hashLookup = hitemTB(n).idx
+	'' loop until end of list or if item was found
+	do while( item <> NULL )
+		if( strpGet( item->nameidx ) = symbol ) then
+			hashLookup = item->idx
 			exit function
 		end if
-		n = hitemTB(n).nxt
+		item = item->r
 	loop
 
 end function
 
 ''::::::
-function hashNewItem( e as HASHTB ) as integer static
-	Dim i as integer, t as integer
+private function hashNewItem( byval list as HASHLIST ptr ) as HASHITEM ptr static
+	Dim item as HASHITEM ptr
 
-	If( ctx.fhead = INVALID ) Then
-		hashRealloc ctx.nodes \ 2
-	End If
+	'' add a new node
+	item = listNewNode( @ctx.itemlist )
 
-	'' take from global free list
-	i = ctx.fhead
-	ctx.fhead = hitemTB(i).nxt
-
-	'' add to entry used list
-	t = e.tail
-	e.tail = i
-	If( t <> INVALID ) Then
-		hitemTB(t).nxt = i
+	'' add it to the internal linked-list
+	If( list->tail <> NULL ) Then
+		list->tail->r = item
 	Else
-		e.head = i
+		list->head = item
 	End If
 
-	hitemTB(i).prv	= t
-	hitemTB(i).nxt	= INVALID
+	item->l	= list->tail
+	item->r	= NULL
 
-	''
-	e.items = e.items + 1
+	list->tail = item
 
-	hashNewItem = i
+	hashNewItem = item
 
 end function
 
 ''::::::
-sub hashDelItem( byval i as integer, e as HASHTB ) static
-	Dim pn as integer, nn as integer
+private sub hashDelItem( byval list as HASHLIST ptr, byval item as HASHITEM ptr ) static
+	Dim prv as HASHITEM ptr, nxt as HASHITEM ptr
 
-	if( i = INVALID ) Then
+	''
+	if( item = NULL ) Then
 		Exit Sub
 	End If
 
-	'' remove from entry used list
-	pn = hitemTB(i).prv
-	nn = hitemTB(i).nxt
-	If( pn <> INVALID ) Then
-		hitemTB(pn).nxt = nn
+	'' remove from internal linked-list
+	prv  = item->l
+	nxt  = item->r
+	If( prv <> NULL ) Then
+		prv->r = nxt
 	Else
-		e.head = nn
+		list->head = nxt
 	End If
 
-	If( nn <> INVALID ) Then
-		hitemTB(nn).prv = pn
+	If( nxt <> NULL ) Then
+		nxt->l = prv
 	Else
-		e.tail = pn
+		list->tail = prv
 	End If
 
-	'' add to global free list
-	hitemTB(i).nxt = ctx.fhead
-	ctx.fhead = i
-
-	''
-	e.items = e.items - 1
+	'' remove node
+	listDelNode @ctx.itemlist, item
 
 end sub
 
 ''::::::
-sub hashAdd( symbol as string, byval idx as integer, byval nameidx as integer, _
-			 hTB() as HASHTB, byval entries as integer ) static
-    dim index as integer, n as integer
+sub hashAdd( hash as THASH, symbol as string, byval idx as any ptr, byval nameidx as integer ) static
+    dim index as integer
+    dim item as HASHITEM ptr
 
-    index = hashHash( symbol, entries )
+    '' calc hash
+    index = hashHash( symbol, hash.nodes )
 
-    n = hashNewItem( hTB(index) )
-
-    if( n = INVALID ) then
+    '' allocate a new node
+    item = hashNewItem( hash.list + (index * len( HASHLIST )) )
+    if( item = NULL ) then
     	exit sub
 	end if
 
-    hitemTB(n).nameidx = nameidx
-    hitemTB(n).idx	= idx
+    '' fill node
+    item->nameidx = nameidx
+    item->idx	  = idx
 
 end sub
 
-
 ''::::::
-sub hashDel( symbol as string, hTB() as HASHTB, byval entries as integer ) static
-    dim index as integer, n as integer
+sub hashDel( hash as THASH, symbol as string ) static
+    dim index as integer
+    dim item as HASHITEM ptr
+    dim list as HASHLIST ptr
 
-    index = hashHash( symbol, entries )
+    '' calc hash
+    index = hashHash( symbol, hash.nodes )
 
-	n = hTB(index).head
-	if( n = INVALID ) then
+	'' get start of list
+	list = hash.list + (index * len( HASHLIST ))
+
+	item = list->head
+	if( item = NULL ) then
 		exit sub
 	end if
 
-	do while( n <> INVALID )
-		if( strpGet( hitemTB(n).nameidx ) = symbol ) then
-			hashDelItem n, hTB(index)
+	'' loop until item is found or if list ended
+	do while( item <> NULL )
+		if( strpGet( item->nameidx ) = symbol ) then
+			hashDelItem list, item
 			exit do
 		end if
-		n = hitemTB(n).nxt
+		item = item->r
 	loop
 
 end sub
 
 
 ''::::::
-sub hashDump( hTB() as HASHTB, byval entries as integer ) static
-    dim i as integer, n as integer
+sub hashDump( hash as THASH ) static
+    dim i as integer
+    dim item as HASHITEM ptr
+    dim list as HASHLIST ptr
 
-    for i = 0 to entries-1
-		n = hTB(i).head
-		do while( n <> INVALID )
-			print strpGet( hitemTB(n).nameidx ); " ";
-			n = hitemTB(n).nxt
+    list = hash.list
+    for i = 0 to hash.nodes-1
+		item = list->head
+		do while( item <> NULL )
+			print strpGet( item->nameidx ); " ";
+			item = item->r
 		loop
+		list = list + len( HASHLIST )
 	next i
 
 end sub

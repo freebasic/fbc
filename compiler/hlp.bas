@@ -23,15 +23,20 @@
 option explicit
 
 defint a-z
-'$include: 'inc\ir.bi'
 '$include: 'inc\fb.bi'
 '$include: 'inc\fbint.bi'
+'$include: 'inc\ir.bi'
 '$include: 'inc\lex.bi'
+
+type FBERRCTX
+	lasterror 	as integer
+	lastline	as integer
+end type
 
 
 ''globals
+	dim shared errctx as FBERRCTX
 	redim shared deftypeTB( 0 ) as integer
-	dim shared lasterror as integer
 
 
 '' error msgs
@@ -93,8 +98,11 @@ data "Cannot return fixed-len strings from functions"
 data "Array already dimensioned"
 data "Literal string too big, split it"
 data "Identifier's name too big"
+data "Illegal without the -ex option"
+data "Type mismatch"
+data "Illegal specification"
 
-const FB.ERRMSGS = 57
+const FB.ERRMSGS = 60
 
 
 '':::::
@@ -109,8 +117,19 @@ function hMatch( byval token as integer ) as integer
 end function
 
 '':::::
-sub hReportErrorEx( byval errnum as integer, byval linenum as integer, msgex as string )
+sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
     dim i as integer, msg as string
+
+	if( linenum = 0 ) then
+		linenum = lexLineNum
+
+		if( linenum = errctx.lastline ) then
+			exit sub
+		end if
+
+		errctx.lasterror = errnum
+		errctx.lastline  = linenum
+	end if
 
 	restore errordata
 	for i = 0 to FB.ERRMSGS-1
@@ -136,18 +155,7 @@ end sub
 
 '':::::
 sub hReportError( byval errnum as integer, byval isbefore as integer = FALSE )
-    static lastline as integer
     dim token as string, msgex as string
-    dim l as integer, c as integer
-
-	l = lexLineNum
-	c = lexColNum
-
-	if( l = lastline ) then
-		exit sub
-	end if
-
-	lasterror = errnum
 
 	token = lexTokenText
 	if( len( token ) > 0 ) then
@@ -162,16 +170,14 @@ sub hReportError( byval errnum as integer, byval isbefore as integer = FALSE )
 	end if
 
     ''
-	hReportErrorEx errnum, l, msgex
-
-	lastline = l
+	hReportErrorEx errnum, msgex
 
 end sub
 
 '':::::
 function hGetLastError as integer
 
-	hGetLastError = lasterror
+	hGetLastError = errctx.lasterror
 
 end function
 
@@ -344,6 +350,43 @@ sub hClearName( src as string ) static
 end sub
 
 '':::::
+function hCreateNameEx( symbol as string, byval typ as integer = INVALID, _
+						byval preservecase as integer = FALSE, _
+						byval addunderscore as integer = TRUE, byval clearname as integer = TRUE ) as string static
+    dim nm as string
+
+	if( addunderscore ) then
+		nm = "_"
+	else
+		nm = ""
+	end if
+
+	nm = nm + symbol
+
+	if( not preservecase ) then
+		nm = ucase$( nm )
+	end if
+
+    if( clearname ) then
+    	hClearName nm
+    end if
+
+    if( (typ <> INVALID) and (typ < 128) ) then
+    	nm = nm + "_" + chr$( CHAR_ALOW + typ )
+    end if
+
+	hCreateNameEx = nm
+
+end function
+
+'':::::
+function hCreateName( symbol as string, byval typ as integer ) as string static
+
+	hCreateName = hCreateNameEx( symbol, typ, FALSE, TRUE, TRUE )
+
+end function
+
+'':::::
 function hCreateAliasName( symbol as string, byval argslen as integer, _
 						   byval toupper as integer, byval mode as integer ) as string static
     dim nm as string
@@ -417,6 +460,31 @@ function hStripPath( filename as string ) as string 'static
 	end if
 
 end function
+
+'':::::
+function hStripFilename ( filename as string ) as string 'static
+    dim p as integer, lp as integer
+
+	lp = 0
+	do
+		p = instr( lp+1, filename, "\" )
+	    if( p = 0 ) then
+	    	p = instr( lp+1, filename, "/" )
+	    	if( p = 0 ) then
+	    		exit do
+	    	end if
+	    end if
+	    lp = p
+	loop
+
+	if( lp > 0 ) then
+		hStripFilename = left$( filename, lp )
+	else
+		hStripFilename = ""
+	end if
+
+end function
+
 
 '':::::
 function hToPow2( byval value as integer ) as integer static

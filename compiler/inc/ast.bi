@@ -34,10 +34,11 @@ const AST.NODETYPE.CONV%		= 11
 const AST.NODETYPE.LOAD%		= 12
 
 type FUNCTNode
-	s			as integer							'' index of symbol tb
+	sym			as FBSYMBOL ptr						'' symbol
 	p			as integer							'' ptr expr, f/ function pointers
 	args		as integer
-	arg			as integer
+	argnum		as integer
+	arg			as FBPROCARG ptr
 end type
 
 type PARAMNode
@@ -47,33 +48,51 @@ type PARAMNode
 end type
 
 type VARNode
-	s			as integer							'' index of symbol tb
-	e			as integer							'' field element, if any
-	ofs			as integer							'' offset (used with UDT's)
-	lgt			as integer							'' length (used with arrays)
+	sym			as FBSYMBOL ptr						'' symbol
+	elm			as FBTYPELEMENT ptr					'' field element, if any
+	ofs			as integer							'' offset
+	lgt			as integer							'' length
+end type
+
+type IDXNode
+	sym			as FBSYMBOL ptr						'' symbol
+	elm			as FBTYPELEMENT ptr					'' field element, if any
+	ofs			as integer							'' offset
+	lgt			as integer							'' length
+	var			as integer							'' AST tb index to a VARNode
+end type
+
+type PTRNode
+	sym			as FBSYMBOL ptr						'' symbol
+	elm			as FBTYPELEMENT ptr					'' field element, if any
+	ofs			as integer							'' offset
 end type
 
 type ASTNode
-	typ			as integer							'' CONST, VAR, BOP, UOP, IDX
+	prv			as integer							'' 'pointers' used by the allocator,
+	nxt			as integer							'' /  (can't be swapped/copied!)
 
-	dtype		as integer							'' CHAR, INTEGER, SINGLE, DOUBLE, etc
+	typ			as integer							'' CONST, VAR, BOP, UOP, IDX, etc
+
+	dtype		as integer							'' BYTE, INTEGER, SINGLE, DOUBLE, etc
 
 	defined 	as integer							'' only true for constants
 	value		as double							'' /
 
 	op			as integer							'' f/ BOP & UOP nodes
 	allocres 	as integer							'' /
-	ex			as integer							'' / (extra: label, etc)
+	ex			as FBSYMBOL ptr						'' / (extra: label, etc)
 
-	v			as VARNode							'' f/ VAR & IDX
-	f			as FUNCTNode
-	p			as PARAMNode
+	union
+		var			as VARNode
+		idx			as IDXNode
+		ptr			as PTRNode
+		proc		as FUNCTNode
+		param		as PARAMNode
+	end union
 
 	l			as integer							'' left node, index of ast tb
 	r			as integer							'' right /     /
-
-	prv			as integer							'' 'pointers' used by the allocator,
-	nxt			as integer							'' /  (can't be swapped/copied!)
 end type
 
 
@@ -90,15 +109,16 @@ declare function 	astGetDataType		( byval n as integer ) as integer
 declare function 	astGetDataClass		( byval n as integer ) as integer
 declare function 	astGetDataSize		( byval n as integer ) as integer
 declare function 	astGetValue			( byval n as integer ) as double
-declare function 	astGetSymbol		( byval n as integer ) as integer
+declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
+declare function 	astGetUDTElm		( byval n as integer ) as FBTYPELEMENT ptr
+declare function 	astGetVAROfs		( byval n as integer ) as integer
 
 declare sub 		astLoad				( byval n as integer, dst as integer )
-declare sub 		astBinOperation		( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as integer )
+declare sub 		astBinOperation		( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr )
 declare sub 		astUnaOperation		( byval op as integer, byval v1 as integer, byval vr as integer )
 declare sub 		astAddrOperation	( byval op as integer, byval v1 as integer, byval vr as integer )
 
-declare sub 		astFlush			( byval n as integer, dst as integer )
-declare function 	astFlushEx			( byval n as integer, vreg as integer, byval label as integer, byval isinverse as integer ) as integer
+declare function 	astFlush			( byval n as integer, vreg as integer, byval label as FBSYMBOL ptr = NULL, byval isinverse as integer = FALSE ) as integer
 
 declare sub 		astUpdNodeResult	( byval n as integer )
 
@@ -108,9 +128,8 @@ declare sub 		astLoadASSIGN		( byval n as integer, vr as integer )
 declare function 	astNewCONV			( byval op as integer, byval dtype as integer, byval l as integer ) as integer
 declare sub 		astLoadCONV			( byval n as integer, vr as integer )
 
-declare function 	astNewBOP			( byval op as integer, byval l as integer, r as integer ) as integer
-declare function 	astNewBOPEx			( byval op as integer, byval l as integer, r as integer, _
-					  					  byval ex as integer, byval allocres as integer ) as integer
+declare function 	astNewBOP			( byval op as integer, byval l as integer, r as integer, _
+					  					  byval ex as FBSYMBOL ptr = NULL, byval allocres as integer = TRUE ) as integer
 declare sub 		astLoadBOP			( byval n as integer, vr as integer )
 
 declare function 	astNewUOP			( byval op as integer, byval o as integer ) as integer
@@ -119,25 +138,20 @@ declare sub 		astLoadUOP			( byval n as integer, vr as integer )
 declare function 	astNewCONST			( byval value as double, byval dtype as integer ) as integer
 declare sub 		astLoadCONST		( byval n as integer, vr as integer )
 
-declare function 	astNewVAREx			( byval symbol as integer, byval elm as integer, byval ofs as integer, byval dtype as integer ) as integer
-declare function 	astNewVAR			( byval symbol as integer, byval ofs as integer, byval dtype as integer )  as integer
+declare function 	astNewVAREx			( byval symbol as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval ofs as integer, byval dtype as integer ) as integer
+declare function 	astNewVAR			( byval symbol as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer )  as integer
 declare sub 		astLoadVAR			( byval n as integer, vr as integer )
-
-declare sub 		astSetVAROfs		( byval n as integer, byval ofs as integer )
-declare function 	astGetVAROfs		( byval n as integer ) as long
-declare function 	astGetVARElm		( byval n as integer ) as integer
 
 declare function 	astNewIDX			( byval v as integer, byval i as integer, byval dtype as integer )  as integer
 declare sub 		astLoadIDX			( byval n as integer, vr as integer )
 
-declare function 	astNewPTREx			( byval s as integer, byval elm as integer, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
+declare function 	astNewPTREx			( byval s as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
 declare function 	astNewPTR			( byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer
 declare sub 		astLoadPTR			( byval n as integer, vreg as integer )
 
-declare function 	astNewFUNCT			( byval symbol as integer, byval dtype as integer, byval args as integer ) as integer
-declare function 	astNewFUNCTPTR		( byval ptrexpr as integer, byval symbol as integer, byval dtype as integer, byval args as integer ) as integer
-declare function 	astNewPARAMEx		( byval f as integer, byval p as integer, byval dtype as integer, byval mode as integer ) as integer
-declare function 	astNewPARAM			( byval f as integer, byval p as integer, byval dtype as integer ) as integer
+declare function 	astNewFUNCT			( byval symbol as FBSYMBOL ptr, byval dtype as integer, byval args as integer ) as integer
+declare function 	astNewFUNCTPTR		( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr, byval dtype as integer, byval args as integer ) as integer
+declare function 	astNewPARAM			( byval f as integer, byval p as integer, byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
 declare sub 		astLoadFUNCT		( byval n as integer, vr as integer )
 
 declare function 	astNewADDR			( byval op as integer, byval p as integer ) as integer

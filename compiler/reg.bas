@@ -25,12 +25,10 @@
 defint a-z
 option explicit
 
+'$include:'inc\fb.bi'
+'$include:'inc\fbint.bi'
 '$include:'inc\ir.bi'
 '$include:'inc\reg.bi'
-
-const TRUE%			= -1
-const FALSE%		= 0
-const INVALID%		= -1
 
 '' internals
 declare function 	regFindFarest	( byval c as integer ) as integer
@@ -47,6 +45,9 @@ declare function 	sregAllocate	( byval t as integer, byval c as integer, byval v
 declare sub 		sregFree		( byval t as integer, byval c as integer, byval r as integer )
 declare function 	sregIsFree		( byval t as integer, byval c as integer, byval r as integer ) as integer
 declare sub 		sregSetOwner	( byval t as integer, byval c as integer, byval r as integer, byval vreg as integer )
+declare function 	sregGetFirst	( byval class as integer ) as integer
+declare function 	sregGetNext		( byval class as integer, byval r as integer ) as integer
+declare function 	sregGetVreg		( byval class as integer, byval r as integer ) as integer
 
 
 '' globals
@@ -292,6 +293,49 @@ function regGetMaxRegs( byval c as integer ) as integer static
 
 end function
 
+'':::::
+function regGetFirst( byval class as integer ) as integer static
+
+    if( class = IR.DATACLASS.FPOINT ) then
+    	regGetFirst = sregGetFirst( class )
+    	exit function
+    end if
+
+	regGetFirst = 0
+
+end function
+
+'':::::
+function regGetNext( byval class as integer, byval r as integer ) as integer static
+
+    if( class = IR.DATACLASS.FPOINT ) then
+    	regGetNext = sregGetNext( class, r )
+    	exit function
+    end if
+
+	regGetNext = INVALID
+
+	if( r >= 0 ) then
+		r = r + 1
+		if( r < reg.regs ) then
+			regGetNext = r
+		end if
+	end if
+
+end function
+
+'':::::
+function regGetVreg( byval class as integer, byval r as integer ) as integer static
+
+    if( class = IR.DATACLASS.FPOINT ) then
+    	regGetVreg = sregGetVreg( class, r )
+    	exit function
+    end if
+
+	regGetVreg = reg.vreg(r)
+
+end function
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' stack register allocator
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -489,7 +533,7 @@ end sub
 '':::::
 function sregIsFree( byval t as integer, byval c as integer, byval r as integer ) as integer static
 
-	sregIsFree = sreg.reg(r) <> INVALID
+	sregIsFree = sreg.reg(r) = INVALID
 
 end function
 
@@ -504,6 +548,31 @@ end sub
 function sregGetRealReg( byval r as integer ) as integer static
 
 	sregGetRealReg = sreg.reg(r)
+
+end function
+
+'':::::
+function sregGetFirst( byval class as integer ) as integer static
+
+	sregGetFirst = sregFindTOSReg
+
+end function
+
+'':::::
+function sregGetNext( byval class as integer, byval r as integer ) as integer static
+
+	if( r < 0 or r >= sreg.regs ) then
+		sregGetNext = INVALID
+	else
+		sregGetNext = sregFindTOSReg
+	end if
+
+end function
+
+'':::::
+function sregGetVreg( byval class as integer, byval r as integer ) as integer static
+
+	sregGetVreg = sreg.vreg(r)
 
 end function
 

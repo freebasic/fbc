@@ -38,16 +38,18 @@ declare function 	cTypeDecl               ( ) as integer
 declare function 	cEnumDecl               ( ) as integer
 declare function 	cSymbolDecl             ( ) as integer
 declare function 	cSymbolDef 				( byval alloctype as integer, byval dopreserve as integer = FALSE ) as integer
-declare function 	cDynArrayDef			( byval s as integer, id as string, byval typ as integer, byval subtype as integer, byval lgt as integer, _
-					   						  byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
+declare function 	cDynArrayDef			( id as string, _
+											  byval typ as integer, byval subtype as FBSYMBOL ptr, _
+											  byval lgt as integer, byval addsuffix as integer, _
+											  byval alloctype as integer, byval dopreserve as integer, _
 					   						  byval dimensions as integer, exprTB() as integer ) as integer
 declare function 	cStaticArrayDecl 		( dimensions as integer, dTB() as FBARRAYDIM ) as integer
 declare function 	cArrayDecl				( dimensions as integer, exprTB() as integer ) as integer
-declare function 	cSymbolType 			( typ as integer, subtype as integer, lgt as integer ) as integer
+declare function 	cSymbolType 			( typ as integer, subtype as FBSYMBOL ptr, lgt as integer ) as integer
 declare function 	cProcDecl               ( ) as integer
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
 declare function 	cArguments              ( argc as integer, argv() as FBPROCARG, byval isproto as integer ) as integer
-declare function 	cArgDecl                ( arg as FBPROCARG, byval isproto as integer ) as integer
+declare function 	cArgDecl                ( byval argc as integer, arg as FBPROCARG, byval isproto as integer ) as integer
 declare function 	cDefDecl				( ) as integer
 declare function 	cOptDecl				( ) as integer
 declare function 	cProcCallOrAssign		( ) as integer
@@ -60,8 +62,8 @@ declare function 	cForStatement          	( ) as integer
 declare function 	cDoStatement           	( ) as integer
 declare function 	cWhileStatement        	( ) as integer
 declare function 	cSelectStatement       	( ) as integer
-declare function 	cCaseStatement         	( byval s as integer, byval sdtype as integer, byval exitlabel as integer ) as integer
-declare function 	cCaseExpression        	( byval s as integer, byval sdtype as integer, byval initlabel as integer, byval nextlabel as integer ) as integer
+declare function 	cCaseStatement         	( byval s as FBSYMBOL ptr, byval sdtype as integer, byval exitlabel as FBSYMBOL ptr ) as integer
+declare function 	cCaseExpression        	( byval s as FBSYMBOL ptr, byval sdtype as integer, byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr ) as integer
 declare function 	cSelectLine 			( )as integer
 declare function 	cCompoundStmtElm		( ) as integer
 declare function 	cProcStatement         	( ) as integer
@@ -90,16 +92,16 @@ declare function 	cFunction				( funcexpr as integer ) as integer
 declare function 	cQuirkFunction			( funcexpr as integer ) as integer
 declare function 	cConstant				( constexpr as integer ) as integer
 declare function 	cLiteral 				( litexpr as integer ) as integer
-declare function 	cFuncParamList			( byval proc as integer, byval procexpr as integer, byval optonly as integer ) as integer
-declare function 	cFuncParam				( byval proc as integer, byval arg as integer, byval procexpr as integer, byval optonly as integer ) as integer
-declare function 	cProcParamList			( byval proc as integer, byval procexpr as integer ) as integer
-declare function 	cProcParam				( byval proc as integer, byval arg as integer, expr as integer, pmode as integer, byval optonly as integer ) as integer
+declare function 	cFuncParamList			( byval proc as FBSYMBOL ptr, byval procexpr as integer, byval optonly as integer ) as integer
+declare function 	cFuncParam				( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval procexpr as integer, byval optonly as integer ) as integer
+declare function 	cProcParamList			( byval proc as FBSYMBOL ptr, byval procexpr as integer ) as integer
+declare function 	cProcParam				( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, expr as integer, pmode as integer, byval optonly as integer ) as integer
 declare function 	cAsmBlock				( ) as integer
 declare function 	cFunctionMode 			( ) as integer
-declare function 	cFunctionCall			( byval proc as integer, funcexpr as integer, byval ptrexpr as integer ) as integer
-declare function 	cProcCall				( byval proc as integer, byval ptrexpr as integer ) as integer
+declare function 	cFunctionCall			( byval proc as FBSYMBOL ptr, funcexpr as integer, byval ptrexpr as integer ) as integer
+declare function 	cProcCall				( byval proc as FBSYMBOL ptr, byval ptrexpr as integer ) as integer
 
 declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
 
 declare function 	cGfxStmt 				( ) as integer
-declare function 	cGfxFunction			( funcexpr as integer ) as integer
+declare function 	cGfxFunct				( funcexpr as integer ) as integer

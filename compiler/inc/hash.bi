@@ -1,3 +1,6 @@
+#ifndef HASH_BI
+#define HASH_BI
+
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 ''
@@ -15,35 +18,36 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-
-Const HASH.INITENTRYNODES%	= 500
+Const HASH.INITENTRYNODES%	= 1000
 Const HASH.INITITEMNODES%	= HASH.INITENTRYNODES*8
 
-Type HASHCTX
-	fhead		as integer
-	nodes		as integer
-End Type
-
-Type HASHTB
-	items		as integer
-	head		as integer
-	tail		as integer
-End Type
-
 type HASHITEM
-	nameidx		as integer
-	idx			as integer
+	prv			as HASHITEM ptr			'' linked-list nodes
+	nxt			as HASHITEM ptr			'' /
 
-	prv			as integer
-	nxt			as integer
+	nameidx		as integer
+	idx			as any ptr
+	l			as HASHITEM ptr			'' left node
+	r			as HASHITEM ptr			'' right node
 end type
 
+Type HASHLIST
+	head		as HASHITEM ptr
+	tail		as HASHITEM ptr
+End Type
+
+type THASH
+	list		as HASHLIST ptr
+	nodes		as integer
+end type
 
 declare sub 		hashInit	( )
-declare sub 		hashNew		( hTB() as HASHTB, byval entries as integer )
-declare sub 		hashFree	( hTB() as HASHTB, byval entries as integer )
-declare function 	hashLookup	( symbol as string, hTB() as HASHTB, byval entries as integer ) as integer
-declare sub 		hashAdd		( symbol as string, byval idx as integer, byval nameidx as integer, hTB() as HASHTB, byval entries as integer )
-declare sub 		hashDel		( symbol as string, hTB() as HASHTB, byval entries as integer )
+declare sub 		hashNew		( hash as THASH, byval nodes as integer )
+declare sub 		hashFree	( hash as THASH )
+declare function 	hashLookup	( hash as THASH, symbol as string ) as any ptr
+declare sub 		hashAdd		( hash as THASH, symbol as string, byval idx as any ptr, byval nameidx as integer )
+declare sub 		hashDel		( hash as THASH, symbol as string )
 
-declare sub 		hashDump	( hTB() as HASHTB, byval entries as integer )
+declare sub 		hashDump	( hash as THASH )
+
+#endif '' HASH_BI

@@ -38,7 +38,7 @@ type EDBGCTX
 
 	mainopened		as integer
 	mainclosed		as integer
-	maininitlabel	as integer
+	maininitlabel	as FBSYMBOL ptr
 	mainoffs		as integer
 	procinitline 	as integer
 end type
@@ -141,11 +141,9 @@ sub edbgFooter
 end sub
 
 '':::::
-sub edbgMain( byval initlabel as integer )
+sub edbgMain( byval initlabel as FBSYMBOL ptr )
 
 	if( not env.clopt.debug ) then exit sub
-
-	'edbgProcBegin asmf, INVALID, FALSE
 
 	ctx.mainclosed = FALSE
 	ctx.maininitlabel = initlabel
@@ -154,7 +152,7 @@ end sub
 
 '':::::
 sub edgbhCloseMain
-    dim exitlabel as integer, currpos as long
+    dim exitlabel as FBSYMBOL ptr, currpos as integer
     dim lname as string
 
     ''
@@ -169,7 +167,7 @@ sub edgbhCloseMain
     lname = symbGetLabelName( exitlabel )
     emitLABEL lname, FALSE
 
-    edbgProcEnd INVALID, ctx.maininitlabel, exitlabel
+    edbgProcEnd NULL, ctx.maininitlabel, exitlabel
 
 	'''''symbDelLabel exitlabel
 
@@ -184,12 +182,12 @@ sub edbgLine( byval lnum as integer, lname as string )
 	if( not env.clopt.debug ) then exit sub
 
 	if( not ctx.mainopened ) then
-		edbgProcBegin INVALID, FALSE, lnum
+		edbgProcBegin NULL, FALSE, lnum
 		ctx.mainopened = TRUE
 		ctx.mainclosed = FALSE
 	end if
 
-	if( env.currproc <> INVALID ) then
+	if( env.currproc <> NULL ) then
 		procname = symbGetProcName( env.currproc )
 	else
 		procname = EMIT_MAINPROC
@@ -200,12 +198,12 @@ sub edbgLine( byval lnum as integer, lname as string )
 end sub
 
 '':::::
-sub edbgProcBegin ( byval proc as integer, byval ispublic as integer, byval lnum as integer )
+sub edbgProcBegin ( byval proc as FBSYMBOL ptr, byval ispublic as integer, byval lnum as integer )
     dim realname as string, procname as string, prochar as string
 
 	if( not env.clopt.debug ) then exit sub
 
-	if( proc <> INVALID ) then
+	if( proc <> NULL ) then
 		if( ctx.mainopened and not ctx.mainclosed ) then
 			edgbhCloseMain
 		end if
@@ -234,13 +232,13 @@ sub edbgProcBegin ( byval proc as integer, byval ispublic as integer, byval lnum
 end sub
 
 '':::::
-sub edbgProcEnd ( byval proc as integer, byval initlabel as integer, byval exitlabel as integer )
+sub edbgProcEnd ( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr )
     dim procname as string, ininame as string, endname as string, lname as string
     dim iniline as integer, endline as integer
 
 	if( not env.clopt.debug ) then exit sub
 
-	if( proc <> INVALID ) then
+	if( proc <> NULL ) then
 		procname = symbGetProcName( proc )
 		iniline = ctx.procinitline
 		endline = lexLineNum

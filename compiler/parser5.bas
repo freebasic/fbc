@@ -32,11 +32,18 @@ defint a-z
 '$include: 'inc\emit.bi'
 
 '':::::
-function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBPROCARG ) as integer static
-    dim a as integer, atype as integer, amode as integer
-    dim arg as integer, typ as integer
+private sub hReportParamError( byval argnum as integer, byval errnum as integer = FB.ERRMSG.PARAMTYPEMISMATCHAT )
 
-	hCheckArgs = FALSE
+	hReportErrorEx errnum, "at parameter: " + str$( argnum+1 )
+
+end sub
+
+'':::::
+private function hCheckPrototype( byval proc as FBSYMBOL ptr, byval argc as integer, argv() as FBPROCARG ) as integer static
+    dim a as integer, atype as integer, amode as integer
+    dim arg as FBPROCARG ptr, typ as integer
+
+	hCheckPrototype = FALSE
 
 	''
 	if( argc <> symbGetProcArgs( proc ) ) then
@@ -45,8 +52,8 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
 	end if
 
 	a = 0
-	arg = symbGetProcLastArg( proc )
-	do while( arg <> INVALID )
+	arg = symbGetProcHeadArg( proc )
+	do while( arg <> NULL )
         typ   = symbGetArgType( proc, arg )
     	atype = argv(a).typ
 
@@ -58,14 +65,14 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
     	'' check if types don't conflit
     	else
     		if( atype <> typ ) then
-                hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+                hReportParamError a
                 exit function
 
             elseif( argv(a).subtype <> symbGetArgSubtype( proc, arg ) ) then
 
     			'' if it's a function pointer, subtypes (protos) will be different.. doesn't matter
     			if( atype <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-                	hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+                	hReportParamError a
                 	exit function
     			else
     				'' !!!FIXME!!! delete prototype as it isn't needed
@@ -77,7 +84,7 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
     	'' and mode
     	amode = argv(a).mode
     	if( amode <> symbGetArgMode( proc, arg ) ) then
-			hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+			hReportParamError a
             exit function
     	end if
 
@@ -86,29 +93,47 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
     		symbSetArgName proc, arg, argv(a).nameidx
     	end if
 
-    	'' hack! change BYVAL arg AS STRING to BYREF arg as BYTE
-    	'''''if( amode = FB.ARGMODE.BYVAL ) then
-    	'''''	if( atype = FB.SYMBTYPE.STRING ) then
-    	'''''		symbSetArgMode proc, arg, FB.ARGMODE.BYREF
-    	'''''		symbSetArgType proc, arg, FB.SYMBTYPE.BYTE
-    	'''''	end if
-    	'''''end if
-
-    	arg = symbGetProcPrevArg( proc, arg )
+    	arg = symbGetProcNextArg( proc, arg, FALSE )
     	a   = a + 1
     loop
 
     ''
-    hCheckArgs = TRUE
+    hCheckPrototype = TRUE
 
 end function
 
 '':::::
+private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
+    dim i as integer
+    dim arg as FBPROCARG ptr
+
+	hDeclareArgs = FALSE
+
+	''
+	i = 0
+	arg = symbGetProcHeadArg( proc )
+	do while( arg <> NULL )
+
+		if( symbAddArg( proc, arg ) = NULL ) then
+			hReportParamError i, FB.ERRMSG.DUPDEFINITION
+			exit function
+		end if
+
+		arg = symbGetProcNextArg( proc, arg, FALSE )
+		i = i + 1
+	loop
+
+	hDeclareArgs = TRUE
+
+end function
+
+
+'':::::
 ''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) (ALIAS LIT_STRING)? ('(' Arguments? ')')? (AS SymbolType)? STATIC?
 ''
-function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as integer ) static
+function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, isstatic as integer ) static
     dim res as integer
-    dim id as string, aliasid as string, typ as integer, subtype as integer, mode as integer, lgt as integer
+    dim id as string, aliasid as string, typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
     dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 
 	cSubOrFuncHeader = FALSE
@@ -196,8 +221,12 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
     end if
 
     proc = symbLookupProc( id )
-    if( proc = INVALID ) then
-    	proc = symbAddProc( id, aliasid, "", typ, mode, argc, argv(), TRUE )
+    if( proc = NULL ) then
+    	proc = symbAddProc( id, aliasid, "", typ, mode, argc, argv() )
+    	if( proc = NULL ) then
+    		hReportError FB.ERRMSG.DUPDEFINITION
+    		exit function
+    	end if
     else
     	if( symbGetProcIsDeclared( proc ) ) then
     		hReportError FB.ERRMSG.DUPDEFINITION
@@ -205,7 +234,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
     	end if
 
     	'' there's already a prototype for this proc, so check for conflits
-    	if( not hCheckArgs( proc, argc, argv() ) ) then
+    	if( not hCheckPrototype( proc, argc, argv() ) ) then
     		exit function
     	end if
 
@@ -222,39 +251,8 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
 end function
 
 '':::::
-sub hDeclareArgs ( byval proc as integer ) static
-    dim arg as integer
-    dim argname as string, typ as integer, subtype as integer, mode as integer, suffix as integer
-    dim dTB(0) as FBARRAYDIM
-    dim s as integer, alloctype as integer
-
-	arg = symbGetProcLastArg( proc )
-	do while( arg <> INVALID )
-        argname   = symbGetArgName( proc, arg )
-        typ       = symbGetArgType( proc, arg )
-        subtype   = symbGetArgSubtype( proc, arg )
-        mode      = symbGetArgMode( proc, arg )
-        suffix 	  = symbGetArgSuffix( proc, arg )
-
-        select case mode
-        case FB.ARGMODE.BYVAL
-        	alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL
-        case FB.ARGMODE.BYDESC
-        	alloctype = FB.ALLOCTYPE.ARGUMENTBYDESC
-        case else
-        	alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
-        end select
-
-        s = symbAddVarEx( argname, "", typ, subtype, 0, 0, dTB(), alloctype, suffix <> INVALID, FALSE, TRUE )
-
-        arg = symbGetProcPrevArg( proc, arg )
-	loop
-
-end sub
-
-'':::::
-sub hLoadResult ( byval proc as integer ) static
-    dim s as integer, typ as integer, dtype as integer
+private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
+    dim s as FBSYMBOL ptr, typ as integer, dtype as integer
     dim vr as integer, n as integer, t as integer
 
 	s = symbLookupFunctionResult( proc )
@@ -282,10 +280,10 @@ end sub
 ''				      END (SUB | FUNCTION)
 ''
 function cProcStatement static
-	dim issub as integer, proc as integer, ispublic as integer
+	dim issub as integer, proc as FBSYMBOL ptr, ispublic as integer
     dim oldprocstmt as FBCMPSTMT
-    dim endlabel as integer, exitlabel as integer, initlabel as integer
-    dim res as integer, expr as integer, l as integer
+    dim endlabel as FBSYMBOL ptr, exitlabel as FBSYMBOL ptr, initlabel as FBSYMBOL ptr
+    dim res as integer, expr as integer, l as FBSYMBOL ptr
 
 	cProcStatement = FALSE
 
@@ -325,22 +323,13 @@ function cProcStatement static
         exit function
 	end if
 
-	''
-	env.scope = 1
-
 	'' SubDecl | FuncDecl
 	if( not cSubOrFuncHeader( issub, proc, env.isprocstatic ) ) then
 		exit function
 	end if
 
-	'' Comment?
-	res = cComment
-
-	'' SttSeparator
-	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
-		exit function
-	end if
+	''
+	env.scope = 1
 
 	env.currproc = proc
 	env.compoundcnt = env.compoundcnt + 1
@@ -357,19 +346,30 @@ function cProcStatement static
 	'' save old proc stmt info
 	oldprocstmt = env.procstmt
 
-	env.procstmt.cmplabel = INVALID
+	env.procstmt.cmplabel = NULL
 	env.procstmt.endlabel = exitlabel
 
 	'' restore error old handle if any was set
-	env.procerrorhnd 	  = INVALID
+	env.procerrorhnd 	  = NULL
 
-	'' declare arguments as vars
-	hDeclareArgs proc
+    '' alloc args
+    if( not hDeclareArgs( proc ) ) then
+    	exit function
+    end if
 
 	'' alloc result local var
 	if( not issub ) then
-		if( not symbAddProcResult( proc ) ) then
+		if( symbAddProcResult( proc ) = NULL ) then
 		end if
+	end if
+
+	'' Comment?
+	res = cComment
+
+	'' SttSeparator
+	if( not cSttSeparator ) then
+		hReportError FB.ERRMSG.EXPECTEDEOL
+		exit function
 	end if
 
 	'' proc body
@@ -403,7 +403,7 @@ function cProcStatement static
 	irEmitLABEL exitlabel, FALSE
 
 	'' restore old error handler if any was set
-	if( env.procerrorhnd <> INVALID ) then
+	if( env.procerrorhnd <> NULL ) then
         expr = astNewVAR( env.procerrorhnd, 0, IR.DATATYPE.UINT )
         rtlErrorSetHandler expr, FALSE
 	end if
@@ -423,8 +423,8 @@ function cProcStatement static
 
 	'' check undefined labels
 	l = symbCheckLabels
-	if( l <> INVALID ) then
-		'''''hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, -1, symbGetLabelName( l )
+	if( l <> NULL ) then
+		'''''hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetLabelName( l ), -1
 		exit function
 	end if
 
@@ -437,12 +437,12 @@ function cProcStatement static
 	symbDelLocalSymbols
 
 	'' back to old state
-	env.procerrorhnd 		= INVALID
-	env.currproc 			= INVALID
+	env.procerrorhnd 		= NULL
+	env.currproc 			= NULL
 	env.compoundcnt 		= env.compoundcnt - 1
 	env.isprocstatic 	 	= FALSE
-	env.procstmt.cmplabel 	= INVALID
-	env.procstmt.endlabel 	= INVALID
+	env.procstmt.cmplabel 	= NULL
+	env.procstmt.endlabel 	= NULL
 	env.scope 				= 0
 
 	''

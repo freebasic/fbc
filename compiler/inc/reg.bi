@@ -49,4 +49,8 @@ declare sub 		regFree			( byval t as integer, byval c as integer, byval r as int
 declare function 	regIsFree		( byval typ as integer, byval class as integer, byval reg as integer ) as integer
 declare function 	regGetMaxRegs	( byval c as integer ) as integer
 
+declare function 	regGetFirst		( byval class as integer ) as integer
+declare function 	regGetNext		( byval class as integer, byval r as integer ) as integer
+declare function 	regGetVreg		( byval class as integer, byval r as integer ) as integer
+
 declare function 	sregGetRealReg	( byval r as integer ) as integer

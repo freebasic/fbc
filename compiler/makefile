@@ -19,13 +19,13 @@ ifneq ($(WINSYSDIR),)
     EXE := .exe
     LDFLAGS := -T ../../bin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib -( -lcrtdll -lfb -lkernel32 -luser32 -)
-    BC := ..\..\fbc32.exe
+    BC := ..\..\fbc.exe
     BCFLAGS := -e -c -d TARGET_WIN32
 else
     EXE :=
     LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
     LDLIBS := -L../../lib -\( -lc -lm -lfb -\)
-    BC := ../../fbc32
+    BC := ../../fbc
     BCFLAGS := -e -c -d TARGET_LINUX
 endif
 
@@ -33,7 +33,7 @@ endif
 main	:= fbc.bas
 
 exepath = ../..
-TARGET = $(exepath)/$(subst .bas,$(EXE),$(main))
+TARGET = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 
 LD := ld$(EXE)
 

@@ -32,9 +32,9 @@ defint a-z
 '$include: 'inc\emit.bi'
 
 type FBSELECTCTX
-	symbol	as integer
+	symbol	as FBSYMBOL ptr
 	dtype	as integer
-	elabel	as integer
+	elabel	as FBSYMBOL ptr
 end type
 
 '' globals
@@ -93,8 +93,8 @@ end function
 ''                    (ELSE SimpleStatement*)?
 ''
 function cSingleIfStatement( byval expr as integer )
-	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as integer
-	dim el as integer, nl as integer, l as integer
+	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as FBSYMBOL ptr
+	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr, l as FBSYMBOL ptr
 	dim lastcompstmt as integer
 
 	cSingleIfStatement = FALSE
@@ -114,7 +114,7 @@ function cSingleIfStatement( byval expr as integer )
 	env.lastcompound = FB.TK.IF
 
 	'' try to optimize if an logical op is at top of tree
-	skipcompare = astFlushEx( expr, vr, nl, FALSE )
+	skipcompare = astFlush( expr, vr, nl, FALSE )
 
 	if( not skipcompare ) then
 		dtype = irGetVRDataType( vr )
@@ -130,7 +130,7 @@ function cSingleIfStatement( byval expr as integer )
 	'' NUM_LIT | SimpleStatement*
 	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
 		l = symbLookupLabel( lexTokenText )
-		if( l = INVALID ) then
+		if( l = NULL ) then
 			l = symbAddLabelEx( lexTokenText, FALSE )
 		end if
 		lexSkipToken
@@ -175,15 +175,15 @@ function cSingleIfStatement( byval expr as integer )
 end function
 
 '':::::
-function cIfStmtBody( byval expr as integer, byval nl as integer, byval el as integer, _
+function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el as FBSYMBOL ptr, _
 					  byval checkstmtsep as integer = TRUE ) as integer
-	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as integer
+	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as FBSYMBOL ptr
 	dim res as integer
 
 	cIfStmtBody = FALSE
 
 	'' try to optimize if an logical op is at top of tree
-	skipcompare = astFlushEx( expr, vr, nl, FALSE )
+	skipcompare = astFlush( expr, vr, nl, FALSE )
 
 	if( not skipcompare ) then
 		dtype = irGetVRDataType( vr )
@@ -226,7 +226,7 @@ end function
 ''					  END IF.
 ''
 function cBlockIfStatement( byval expr as integer )
-	dim el as integer, nl as integer
+	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr
 	dim lastcompstmt as integer
 	dim res as integer
 
@@ -358,14 +358,14 @@ end function
 
 '':::::
 function cStoreTemp( byval vs as integer, byval dtype as integer, byval dclass as integer, _
-					 byval typ as integer, isvar as integer ) as long static
-    dim vr as integer, v as long
+					 byval typ as integer, isvar as integer ) as FBSYMBOL ptr static
+    dim vr as integer, v as FBSYMBOL ptr
 
-	cStoreTemp = INVALID
+	cStoreTemp = NULL
 
 	if( (not irIsIMM( vs )) or (dclass = IR.DATACLASS.FPOINT) ) then
 		v = symbAddTempVar( typ )
-		if( v = INVALID ) then
+		if( v = NULL ) then
 			exit function
 		end if
 		vr = irAllocVRVAR( dtype, v, 0 )
@@ -381,7 +381,7 @@ function cStoreTemp( byval vs as integer, byval dtype as integer, byval dclass a
 end function
 
 '':::::
-function cAddNode( byval v as integer, byval dtype as integer, byval isvar as integer ) as integer static
+function cAddNode( byval v as FBSYMBOL ptr, byval dtype as integer, byval isvar as integer ) as integer static
 
 	if( isvar ) then
 		cAddNode = astNewVAR( v, 0, dtype )
@@ -393,9 +393,9 @@ end function
 
 '':::::
 sub cFlushBOP( byval op as integer, byval dtype as integer, _
-	 		   byval v1 as integer, byval v1isvar as integer, _
-			   byval v2 as long, byval v2isvar as integer, _
-			   byval ex as integer, byval allocres as integer ) static
+	 		   byval v1 as FBSYMBOL ptr, byval v1isvar as integer, _
+			   byval v2 as FBSYMBOL ptr, byval v2isvar as integer, _
+			   byval ex as FBSYMBOL ptr, byval allocres as integer ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 	dim vr as integer
 
@@ -412,7 +412,7 @@ sub cFlushBOP( byval op as integer, byval dtype as integer, _
 		expr2 = astNewCONST( v2, dtype )
 	end if
 
-	expr = astNewBOPEx( op, expr1, expr2, ex, allocres )
+	expr = astNewBOP( op, expr1, expr2, ex, allocres )
 
 	''
 	astFlush expr, vr
@@ -422,7 +422,7 @@ end sub
 '':::::
 sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	 		       byval v1 as integer, _
-			       byval v2 as long, byval v2isvar as integer ) static
+			       byval v2 as integer, byval v2isvar as integer ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 	dim vr as integer
 
@@ -454,10 +454,10 @@ end sub
 ''
 function cForStatement
     dim res as integer, iscomplex as integer, ispositive as integer
-    dim il as integer, tl as integer, el as integer, cl as integer, c2l as integer
+    dim il as FBSYMBOL ptr, tl as FBSYMBOL ptr, el as FBSYMBOL ptr, cl as FBSYMBOL ptr, c2l as FBSYMBOL ptr
     dim cnt as integer
-    dim endc as long, endc_isvar as integer
-    dim stp as long, stp_isvar as integer
+    dim endc as integer, endc_isvar as integer
+    dim stp as integer, stp_isvar as integer
 	dim cmp as integer, cmp_isvar as integer
     dim vr as integer, vt as integer
     dim idexpr as integer, expr as integer
@@ -544,7 +544,7 @@ function cForStatement
 		if( (iscomplex) or (dclass = IR.DATACLASS.FPOINT) ) then
 
 			stp = symbAddTempVar( typ )
-			if( stp = INVALID ) then
+			if( stp = NULL ) then
 				exit function
 			end if
 			vt = irAllocVRVAR( dtype, stp, 0 )
@@ -634,7 +634,7 @@ function cForStatement
 			cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_isvar, il, FALSE
     	end if
 
-		c2l = INVALID
+		c2l = NULL
     else
 		c2l = symbAddLabel( hMakeTmpStr )
 
@@ -669,7 +669,7 @@ function cForStatement
 	env.lastcompound = lastcompstmt
 
     ''
-    '''''if( c2l <> INVALID ) then symbDelLabel c2l
+    '''''if( c2l <> NULL ) then symbDelLabel c2l
     '''''symbDelLabel cl
     '''''symbDelLabel el
     '''''symbDelLabel il
@@ -685,9 +685,10 @@ end function
 ''					  LOOP ((WHILE | UNTIL) Expression)? .
 ''
 function cDoStatement
-    dim expr as integer, vr as integer, cr as integer, dtype as integer, op as integer, s as integer
+    dim expr as integer, vr as integer, cr as integer, dtype as integer, op as integer
+    dim s as FBSYMBOL ptr
 	dim iswhile as integer, isuntil as integer
-    dim il as integer, el as integer, cl as integer
+    dim il as FBSYMBOL ptr, el as FBSYMBOL ptr, cl as FBSYMBOL ptr
     dim olddostmt as FBCMPSTMT, lastcompstmt as integer
     dim res as integer, skipcompare as integer, isinverse as integer
 
@@ -733,7 +734,7 @@ function cDoStatement
 		else
 			isinverse = TRUE
 		end if
-		skipcompare = astFlushEx( expr, vr, el, isinverse )
+		skipcompare = astFlush( expr, vr, el, isinverse )
 
 		if( not skipcompare ) then
 			if( iswhile ) then
@@ -820,7 +821,7 @@ function cDoStatement
 		else
 			isinverse = FALSE
 		end if
-		skipcompare = astFlushEx( expr, vr, il, isinverse )
+		skipcompare = astFlush( expr, vr, il, isinverse )
 
 		if( not skipcompare ) then
 			if( iswhile ) then
@@ -868,8 +869,8 @@ end function
 ''					  WEND .
 ''
 function cWhileStatement
-    dim expr as integer, vr as integer, cr as integer, dtype as integer, s as integer
-    dim il as integer, el as integer
+    dim expr as integer, vr as integer, cr as integer, dtype as integer, s as FBSYMBOL ptr
+    dim il as FBSYMBOL ptr, el as FBSYMBOL ptr
     dim oldwhilestmt as FBCMPSTMT, lastcompstmt as integer
     dim res as integer, skipcompare as integer
 
@@ -903,7 +904,7 @@ function cWhileStatement
 	end if
 
 	'' try to optimize if an logical op is at top of tree
-	skipcompare = astFlushEx( expr, vr, el, FALSE )
+	skipcompare = astFlush( expr, vr, el, FALSE )
 
 	if( not skipcompare ) then
 		dtype = irGetVRDataType( vr )
@@ -1027,7 +1028,7 @@ function cSelectStatement
 	end if
 
 	selctx.symbol = symbAddTempVar( hDtype2Stype( selctx.dtype ) )
-	if( selctx.symbol = INVALID ) then
+	if( selctx.symbol = NULL ) then
 		exit function
 	end if
 
@@ -1071,8 +1072,8 @@ end function
 ''CaseStatement   =    CASE (ELSE | (CaseExpression (COMMA CaseExpression)*)) Comment? SttSeparator
 ''					   SimpleLine*.
 ''
-function cCaseStatement( byval s as integer, byval sdtype as integer, byval exitlabel as integer )
-	dim il as integer, nl as integer
+function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval exitlabel as FBSYMBOL ptr )
+	dim il as FBSYMBOL ptr, nl as FBSYMBOL ptr
 	dim iselse as integer
 	dim res as integer
 
@@ -1147,7 +1148,7 @@ end function
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-function cCaseExpression( byval s as integer, byval sdtype as integer, byval initlabel as integer, byval nextlabel as integer )
+function cCaseExpression( byval s as FBSYMBOL ptr, byval sdtype as integer, byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr )
 	dim op as integer, iscomp as integer, isrange as integer
 	dim expr1 as integer, expr2 as integer
 	dim vr as integer, v as integer
@@ -1189,16 +1190,16 @@ function cCaseExpression( byval s as integer, byval sdtype as integer, byval ini
 
 	if( not isrange ) then
 		v = astNewVAR( s, 0, sdtype )
-		expr1 = astNewBOPEx( op, v, expr1, initlabel, FALSE )
+		expr1 = astNewBOP( op, v, expr1, initlabel, FALSE )
 
 		astFlush expr1, vr
 
 	else
 		v = astNewVAR( s, 0, sdtype )
-		expr1 = astNewBOPEx( IR.OP.LT, v, expr1, nextlabel, FALSE )
+		expr1 = astNewBOP( IR.OP.LT, v, expr1, nextlabel, FALSE )
 
 		v = astNewVAR( s, 0, sdtype )
-		expr2 = astNewBOPEx( IR.OP.LE, v, expr2, initlabel, FALSE )
+		expr2 = astNewBOP( IR.OP.LE, v, expr2, initlabel, FALSE )
 
 		astFlush expr1, vr
 		astFlush expr2, vr
@@ -1212,7 +1213,7 @@ end function
 ''ExitStatement	  =	  EXIT (FOR | DO | WHILE | SUB | FUNCTION)
 ''
 function cExitStatement
-    dim label as integer
+    dim label as FBSYMBOL ptr
 
 	cExitStatement = FALSE
 
@@ -1235,7 +1236,7 @@ function cExitStatement
 	case FB.TK.SUB, FB.TK.FUNCTION
 		label = env.procstmt.endlabel
 
-		if( label = INVALID ) then
+		if( label = NULL ) then
 			hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
 			exit function
 		end if
@@ -1246,7 +1247,7 @@ function cExitStatement
 	end select
 
 	''
-	if( label = INVALID ) then
+	if( label = NULL ) then
 		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
 		exit function
 	end if
@@ -1264,7 +1265,7 @@ end function
 ''ContinueStatement	  =	  CONTINUE (FOR | DO | WHILE)
 ''
 function cContinueStatement
-    dim label as integer
+    dim label as FBSYMBOL ptr
 
 	cContinueStatement = FALSE
 
@@ -1289,7 +1290,7 @@ function cContinueStatement
 		exit function
 	end select
 
-	if( label = INVALID ) then
+	if( label = NULL ) then
 		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
 		exit function
 	end if

@@ -35,20 +35,21 @@ defint a-z
 '':::::
 ''GotoStmt   	  =   GOTO LABEL
 ''				  |   GOSUB LABEL
-''				  |	  RETURN LABEL? .
+''				  |	  RETURN LABEL?
+''				  |   RESUME NEXT? .
 ''
 function cGotoStmt
-	dim res as integer, l as integer, lname as string
-	dim isglobal as integer
+	dim res as integer, l as FBSYMBOL ptr, lname as string
+	dim isglobal as integer, isnext as integer
 
 	res = FALSE
 
 	select case lexCurrentToken
-	''
+	'' GOTO LABEL
 	case FB.TK.GOTO
 		lexSkipToken
 		l = symbLookupLabel( lexTokenText )
-		if( l = INVALID ) then
+		if( l = NULL ) then
 			l = symbAddLabelEx( lexTokenText, FALSE )
 		end if
 		lexSkipToken
@@ -57,11 +58,11 @@ function cGotoStmt
 		irEmitBRANCH IR.OP.JMP, l, isglobal
 		res = TRUE
 
-	''
+	'' GOSUB LABEL
 	case FB.TK.GOSUB
 		lexSkipToken
 		l = symbLookupLabel( lexTokenText )
-		if( l = INVALID ) then
+		if( l = NULL ) then
 			l = symbAddLabelEx( lexTokenText, FALSE )
 		end if
 		lexSkipToken
@@ -71,13 +72,14 @@ function cGotoStmt
 		irEmitCALL lname, 0, isglobal
 		res = TRUE
 
+	'' RETURN LABEL?
 	case FB.TK.RETURN
 		lexSkipToken
 
 		if( (lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL) or (lexCurrentToken = FB.TK.ID) ) then
 
 			l = symbLookupLabel( lexTokenText )
-			if( l = INVALID ) then
+			if( l = NULL ) then
 				l = symbAddLabelEx( lexTokenText, FALSE )
 			end if
 			lexSkipToken
@@ -88,6 +90,26 @@ function cGotoStmt
 		else
 			irEmitRETURN 0
 		end if
+
+		res = TRUE
+
+	'' RESUME NEXT?
+	case FB.TK.RESUME
+
+		if( not env.clopt.resumeerr ) then
+			hReportError FB.ERRMSG.ILLEGALRESUMEERROR
+			exit function
+		end if
+
+		lexSkipToken
+
+		if( hMatch( FB.TK.NEXT ) ) then
+			isnext = TRUE
+		else
+			isnext = FALSE
+		end if
+
+		rtlErrorResume isnext
 
 		res = TRUE
 	end select
@@ -101,8 +123,8 @@ end function
 ''				  |   SWAP Variable, Variable .
 ''
 function cArrayStmt
-	dim s as integer, ofs as integer, typ as integer
-	dim elm as integer, typesymbol as integer
+	dim s as FBSYMBOL ptr, ofs as integer, typ as integer
+	dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
 	dim expr1 as integer, expr2 as integer
 
 	cArrayStmt = FALSE
@@ -113,7 +135,7 @@ function cArrayStmt
 
 		typ = lexTokenType
 		s = symbLookupVar( lexTokenText, typ, ofs, elm, typesymbol )
-		if( s = INVALID ) then
+		if( s = NULL ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
@@ -228,7 +250,7 @@ end function
 ''
 function cDataStmt
 	dim expr as integer, typ as integer
-	dim s as integer
+	dim s as FBSYMBOL ptr
 	dim littext as string
 
 	cDataStmt = FALSE
@@ -239,10 +261,10 @@ function cDataStmt
 		lexSkipToken
 
 		'' LABEL?
-		s = INVALID
+		s = NULL
 		if( not hIsSttSeparatorOrComment( lexCurrentToken ) ) then
 			s = symbLookupLabel( lexTokenText )
-			if( s = INVALID ) then
+			if( s = NULL ) then
 				s = symbAddLabelEx( lexTokenText, FALSE )
 			end if
 			lexSkipToken
@@ -761,15 +783,17 @@ end function
 '':::::
 '' FileStmt		  =	   OPEN Expression{str} (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))? (ACCESS Expression)?
 ''					   (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
-''				  |	   CLOSE '#'? Expression?
+''				  |	   CLOSE ('#'? Expression)*
 ''				  |	   SEEK '#'? Expression ',' Expression
-''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float}
-''				  |	   GET '#' Expression ',' Expression? ',' Expression{str|int|float}
+''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
+''				  |	   GET '#' Expression ',' Expression? ',' Expression{str|int|float|array}
 ''				  |    (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)? .
 function cFileStmt
     dim filenum as integer, expr1 as integer, expr2 as integer
     dim filename as integer, fmode as integer, faccess as integer, flock as integer, flen as integer
     dim res as integer, islock as integer
+    dim cnt as integer
+    dim isarray as integer
 
 	cFileStmt = FALSE
 
@@ -876,16 +900,27 @@ function cFileStmt
 
 		cFileStmt = TRUE
 
-	'' CLOSE '#'? Expression?
+	'' CLOSE ('#'? Expression)*
 	case FB.TK.CLOSE
 		lexSkipToken
-		res = hMatch( CHAR_SHARP )
 
-		if( not cExpression( filenum ) ) then
-			filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
-		end if
+		cnt = 0
+		do
+			hMatch( CHAR_SHARP )
 
-		rtlFileClose filenum
+			if( not cExpression( filenum ) ) then
+				if( cnt = 0 ) then
+					filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
+				else
+					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+					exit function
+				end if
+			end if
+
+			rtlFileClose filenum
+			cnt = cnt + 1
+
+		loop while( hMatch( CHAR_COMMA ) )
 
 		cFileStmt = TRUE
 
@@ -911,7 +946,7 @@ function cFileStmt
 
 		cFileStmt = TRUE
 
-	'' PUT '#' Expression ',' Expression? ',' Expression{str|int|float}
+	'' PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
 	case FB.TK.PUT
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
@@ -939,11 +974,26 @@ function cFileStmt
 			exit function
 		end if
 
-		rtlFilePut filenum, expr1, expr2
+    	isarray = FALSE
+    	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
+    		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
+    			if( symbIsArray( astGetSymbol( expr2 ) ) ) then
+    				lexSkipToken
+    				lexSkipToken
+    				isarray = TRUE
+    			end if
+    		end if
+    	end if
+
+		if( not isarray ) then
+			rtlFilePut filenum, expr1, expr2
+		else
+			rtlFilePutArray filenum, expr1, expr2
+		end if
 
 		cFileStmt = TRUE
 
-	'' GET '#' Expression ',' Expression? ',' Expression{str|int|float}
+	'' GET '#' Expression ',' Expression? ',' Expression{str|int|float|array}
 	case FB.TK.GET
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
@@ -971,7 +1021,22 @@ function cFileStmt
 			exit function
 		end if
 
-		rtlFileGet filenum, expr1, expr2
+    	isarray = FALSE
+    	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
+    		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
+    			if( symbIsArray( astGetSymbol( expr2 ) ) ) then
+    				lexSkipToken
+    				lexSkipToken
+    				isarray = TRUE
+    			end if
+    		end if
+    	end if
+
+		if( not isarray ) then
+			rtlFileGet filenum, expr1, expr2
+		else
+			rtlFileGetArray filenum, expr1, expr2
+		end if
 
 		cFileStmt = TRUE
 
@@ -1020,9 +1085,9 @@ end function
 ''
 function cOnStmt
 	dim expr as integer
-	dim isgoto as integer, label as integer, islocal as integer
-	dim vr as integer, cr as integer, skipcompare as integer, endlabel as integer
-	dim s as integer, dtype as integer
+	dim isgoto as integer, label as FBSYMBOL ptr, islocal as integer
+	dim vr as integer, cr as integer, skipcompare as integer, endlabel as FBSYMBOL ptr
+	dim s as FBSYMBOL ptr, dtype as integer
 
 	cOnStmt = FALSE
 
@@ -1058,6 +1123,11 @@ function cOnStmt
 	if( hMatch( FB.TK.GOTO ) ) then
 		isgoto = TRUE
 	elseif( hMatch( FB.TK.GOSUB ) ) then
+	    '' can't do GOSUB with ON ERROR
+	    if( expr = INVALID ) then
+	    	hReportError FB.ERRMSG.SYNTAXERROR
+	    	exit function
+	    end if
 	    isgoto = FALSE
 	else
 		hReportError FB.ERRMSG.SYNTAXERROR
@@ -1066,7 +1136,7 @@ function cOnStmt
 
 	'' Label
 	label = symbLookupLabel( lexTokenText )
-	if( label = INVALID ) then
+	if( label = NULL ) then
 		label = symbAddLabelEx( lexTokenText, FALSE )
 	end if
 	lexSkipToken
@@ -1080,7 +1150,7 @@ function cOnStmt
 	else
 		if( isgoto ) then
 			'' try to optimize if an logical op is at top of tree
-			skipcompare = astFlushEx( expr, vr, label, TRUE )
+			skipcompare = astFlush( expr, vr, label, TRUE )
 
 			if( not skipcompare ) then
 				dtype = irGetVRDataType( vr )
@@ -1233,8 +1303,8 @@ end function
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
 function cArrayFunct( funcexpr as integer )
-	dim s as integer, ofs as integer, typ as integer
-	dim elm as integer, typesymbol as integer
+	dim s as FBSYMBOL ptr, ofs as integer, typ as integer
+	dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
 	dim islbound as integer, expr as integer
 
 	cArrayFunct = FALSE
@@ -1259,7 +1329,7 @@ function cArrayFunct( funcexpr as integer )
 		'' ID
 		typ = lexTokenType
 		s = symbLookupVar( lexTokenText, typ, ofs, elm, typesymbol )
-		if( s = INVALID ) then
+		if( s = NULL ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		else
@@ -1460,7 +1530,7 @@ end function
 ''
 function cMathFunct( funcexpr as integer )
     dim expr as integer
-    dim typ as integer, subtype as integer, lgt as integer, s as integer
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, s as FBSYMBOL ptr
 
 	cMathFunct = FALSE
 
@@ -1556,17 +1626,17 @@ function cMathFunct( funcexpr as integer )
 
 		expr = INVALID
 		s = symbLookupUDT( lexTokenText, lgt )
-		if( s <> INVALID ) then
+		if( s <> NULL ) then
 			lexSkipToken
 		else
 			s = symbLookupEnum( lexTokenText )
-			if( s <> INVALID ) then
+			if( s <> NULL ) then
 				lexSkipToken
 				lgt = FB.INTEGERSIZE
 			else
 
-				if( not cExpression( expr ) ) then
-					if( not cSymbolType( typ, subtype, lgt ) ) then
+				if( not cSymbolType( typ, subtype, lgt ) ) then
+					if( not cExpression( expr ) ) then
 						hReportError FB.ERRMSG.SYNTAXERROR
 						exit function
 					end if
@@ -1761,6 +1831,9 @@ function cQuirkFunction( funcexpr as integer )
 					res = cFileFunct( funcexpr )
 					if( not res ) then
 						res = cErrorFunct( funcexpr )
+						if( not res ) then
+							res = cGfxFunct( funcexpr )
+						end if
 					end if
 				end if
 			end if

@@ -27,6 +27,7 @@ option explicit
 '$include:'inc\fbint.bi'
 '$include:'inc\reg.bi'
 '$include:'inc\ir.bi'
+'$include:'inc\rtl.bi'
 '$include:'inc\emit.bi'
 '$include:'inc\emitdbg.bi'
 '$include:'inc\hash.bi'
@@ -35,15 +36,17 @@ type EMITCTX
 	inited			as integer
 
 	outf			as integer
-	pos				as long
+	pos				as integer
 
-	procstksetup 	as long
-	procstkcleanup 	as long
+	procstksetup 	as integer
+	procstkcleanup 	as integer
 
-	dataend			as long
+	dataend			as integer
 
 	localptr		as integer
 	argptr			as integer
+
+	keyhash			as THASH
 end type
 
 type EMITDATATYPE
@@ -57,7 +60,7 @@ end type
 ''
 declare sub 		outp				( s as string )
 
-declare sub 		hSaveAsmHeader		( byval asmf as integer )
+declare sub 		hSaveAsmHeader		( )
 
 
 declare function 	hGetTypeString		( byval typ as integer ) as string
@@ -73,8 +76,6 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 	redim shared dtypeTB( 0 ) as EMITDATATYPE
 	redim shared rnameTB( 0, 0 ) as string
 
-	redim shared keywordhash( 0 ) as HASHTB
-
 ''
 const EMIT.MAXRNAMES  = 8
 const EMIT.MAXRTABLES = 4
@@ -87,7 +88,7 @@ data "st(0)","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"
 
 '' class, size, regnametb, mov's ptr name, init name
 datatypedata:
-data IR.DATACLASS.INTEGER, 0 			 , 0, "", ".void"
+data IR.DATACLASS.INTEGER, 1 			 , 0, "", ".void"
 data IR.DATACLASS.INTEGER, 1			 , 0, "byte ptr", ".byte"
 data IR.DATACLASS.INTEGER, 1			 , 0, "byte ptr", ".byte"
 data IR.DATACLASS.INTEGER, 2             , 1, "word ptr", ".short"
@@ -153,7 +154,7 @@ private sub hInitKeywordsTB
     dim t as integer, i as integer, k as integer
     dim keyword as string
 
-	hashNew keywordhash(), EMIT_MAXKEYWORDS
+	hashNew ctx.keyhash, EMIT_MAXKEYWORDS
 
 	'' add reg names
 	restore regnametbdata
@@ -162,7 +163,7 @@ private sub hInitKeywordsTB
 			read keyword
 			if( len( keyword ) > 0 ) then
 				k = strpAdd( keyword )
-				hashAdd keyword, 0, k, keywordhash(), EMIT_MAXKEYWORDS
+				hashAdd ctx.keyhash, keyword, 1, k
 			end if
 		next i
 	next t
@@ -176,7 +177,7 @@ private sub hInitKeywordsTB
 		end if
 
 		k = strpAdd( keyword )
-		hashAdd keyword, 0, k, keywordhash(), EMIT_MAXKEYWORDS
+		hashAdd ctx.keyhash, keyword, 1, k
 	loop
 
 end sub
@@ -184,7 +185,7 @@ end sub
 '':::::
 private sub hEndKeywordsTB
 
-	hashFree keywordhash(), EMIT_MAXKEYWORDS
+	hashFree ctx.keyhash
 
 end sub
 
@@ -311,7 +312,7 @@ end function
 '':::::
 function emitGetIDXName( byval lgt as integer, byval ofs as integer, idxname as string, _
 						 sname as string ) as string
-    dim scalestr as string, name as string
+    dim scalestr as string, iname as string
     dim addone as integer
 
 	if( lgt > 1 ) then
@@ -337,13 +338,13 @@ function emitGetIDXName( byval lgt as integer, byval ofs as integer, idxname as 
 		scalestr = scalestr + " +" + str$( ofs )
 	end if
 
-	name = idxname + scalestr
+	iname = idxname + scalestr
 
 	if( len( sname ) > 0 ) then
-		name = sname + " + " + name
+		iname = sname + " + " + iname
 	end if
 
-	emitGetIDXName = name
+	emitGetIDXName = iname
 
 end function
 
@@ -470,7 +471,7 @@ end function
 '':::::
 function emitIsKeyword( text as string ) as integer
 
-	if( hashLookup( text, keywordhash(), EMIT_MAXKEYWORDS ) <> INVALID ) then
+	if( hashLookup( ctx.keyhash, text ) <> NULL ) then
 		emitIsKeyword = TRUE
 	else
 		emitIsKeyword = FALSE
@@ -481,7 +482,7 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitGetPos as long static
+function emitGetPos as integer static
 
 	emitGetPos = ctx.pos
 
@@ -2010,7 +2011,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval ispublic as integer ) 'static
+sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval ispublic as integer ) 'static
 	dim lname as string
 	dim id as string
 
@@ -2042,8 +2043,8 @@ sub emitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval ispu
 end sub
 
 '':::::
-sub emitPROCEND( byval proc as integer, byval bytestopop as integer, byval initlabel as integer, byval exitlabel as integer ) 'static
-    dim currpos as long
+sub emitPROCEND( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr ) 'static
+    dim currpos as integer
     dim bytestoalloc as integer
     dim i as integer
 	dim id as string
@@ -2150,7 +2151,7 @@ end sub
 
 '':::::
 sub emitDATABEGIN( lname as string ) 'static
-    dim currpos as long
+    dim currpos as integer
 
 	if( ctx.dataend <> 0 ) then
 		currpos = seek( ctx.outf )
@@ -2194,70 +2195,70 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub hSaveAsmHeader( byval asmf as integer )
-    dim res as long
+sub hSaveAsmHeader( )
+    dim res as integer
     dim entry as string, lname as string
-    dim maininitlabel as integer
+    dim maininitlabel as FBSYMBOL ptr
 
-	edbgHeader asmf, env.infile
+	edbgHeader ctx.outf, env.infile
 
-	hWriteStr asmf, TRUE,  ".intel_syntax noprefix"
-	hWriteStr asmf, TRUE,  ".arch i386"
+	hWriteStr ctx.outf, TRUE,  ".intel_syntax noprefix"
+	hWriteStr ctx.outf, TRUE,  ".arch i386"
 
-    hWriteStr asmf, FALSE, ""
-    hWriteStr asmf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"
+    hWriteStr ctx.outf, FALSE, ""
+    hWriteStr ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"
 
     entry = env.infile
     entry = hStripPath( hStripExt( entry ) )
     hClearName entry
 
-    hWriteStr asmf, FALSE, NEWLINE + "#entry point"
-    hWriteStr asmf, FALSE, ".section .text"
-    hWriteStr asmf, TRUE,  ".balign 16" + NEWLINE
-    hWriteStr asmf, FALSE, ".globl " + "fb_" + entry + "_entry"
-    hWriteStr asmf, FALSE, ".globl " + "fb_" + ucase$( entry ) + "_entry"
-    hWriteStr asmf, FALSE, "fb_" + entry  + "_entry" + ":"
-    hWriteStr asmf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#entry point"
+    hWriteStr ctx.outf, FALSE, ".section .text"
+    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr ctx.outf, FALSE, ".globl " + "fb_" + entry + "_entry"
+    hWriteStr ctx.outf, FALSE, ".globl " + "fb_" + ucase$( entry ) + "_entry"
+    hWriteStr ctx.outf, FALSE, "fb_" + entry  + "_entry" + ":"
+    hWriteStr ctx.outf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
 #ifdef TARGET_LINUX
 	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
 		' Add small stub to get commandline under linux
-		hWriteStr asmf, TRUE, "pop" + TABCHAR + "ecx"
-		hWriteStr asmf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
-		hWriteStr asmf, TRUE, "mov" + TABCHAR + "edx, 1023"
-		hWriteStr asmf, TRUE, "cld"
-		hWriteStr asmf, FALSE, "fb_get_argv:"
-		hWriteStr asmf, TRUE, "pop" + TABCHAR + "esi"
-		hWriteStr asmf, FALSE, "fb_copy_arg:"
-		hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, [esi]"
-		hWriteStr asmf, TRUE, "test" + TABCHAR + "al, al"
-		hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_copy_arg"
-		hWriteStr asmf, TRUE, "movsb"
-		hWriteStr asmf, TRUE, "dec" + TABCHAR + "edx"
-		hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_get_argv"
-		hWriteStr asmf, TRUE, "jmp" + TABCHAR + "fb_copy_arg"
-		hWriteStr asmf, FALSE, "fb_end_copy_arg:"
-		hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, 32"
-		hWriteStr asmf, TRUE, "stosb"
-		hWriteStr asmf, TRUE, "dec" + TABCHAR + "ecx"
-		hWriteStr asmf, TRUE, "jnz" + TABCHAR + "fb_get_argv"
-		hWriteStr asmf, TRUE, "mov" + TABCHAR + "byte ptr [edi-1], 0"
-		hWriteStr asmf, FALSE, "fb_end_get_argv:"
+		hWriteStr ctx.outf, TRUE, "pop" + TABCHAR + "ecx"
+		hWriteStr ctx.outf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
+		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "edx, 1023"
+		hWriteStr ctx.outf, TRUE, "cld"
+		hWriteStr ctx.outf, FALSE, "fb_get_argv:"
+		hWriteStr ctx.outf, TRUE, "pop" + TABCHAR + "esi"
+		hWriteStr ctx.outf, FALSE, "fb_copy_arg:"
+		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "al, [esi]"
+		hWriteStr ctx.outf, TRUE, "test" + TABCHAR + "al, al"
+		hWriteStr ctx.outf, TRUE, "jz" + TABCHAR + "fb_end_copy_arg"
+		hWriteStr ctx.outf, TRUE, "movsb"
+		hWriteStr ctx.outf, TRUE, "dec" + TABCHAR + "edx"
+		hWriteStr ctx.outf, TRUE, "jz" + TABCHAR + "fb_end_get_argv"
+		hWriteStr ctx.outf, TRUE, "jmp" + TABCHAR + "fb_copy_arg"
+		hWriteStr ctx.outf, FALSE, "fb_end_copy_arg:"
+		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "al, 32"
+		hWriteStr ctx.outf, TRUE, "stosb"
+		hWriteStr ctx.outf, TRUE, "dec" + TABCHAR + "ecx"
+		hWriteStr ctx.outf, TRUE, "jnz" + TABCHAR + "fb_get_argv"
+		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "byte ptr [edi-1], 0"
+		hWriteStr ctx.outf, FALSE, "fb_end_get_argv:"
 	end if
 #endif
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + "fb_moduleinit"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + EMIT_MAINPROC
-    hWriteStr asmf, TRUE,  "ret"
+    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + "fb_moduleinit"
+    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + EMIT_MAINPROC
+    hWriteStr ctx.outf, TRUE,  "ret"
 
     ''
     maininitlabel = symbAddLabel( hMakeTmpStr )
 
     edbgMain maininitlabel
 
-    hWriteStr asmf, FALSE, NEWLINE + "#user code"
-    hWriteStr asmf, FALSE, EMIT_MAINPROC + ":"
-    hWriteStr asmf, TRUE,  "push" + TABCHAR + "ebp"
-    hWriteStr asmf, TRUE,  "mov" + TABCHAR + "ebp, esp"
-    hWriteStr asmf, FALSE, ""
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#user code"
+    hWriteStr ctx.outf, FALSE, EMIT_MAINPROC + ":"
+    hWriteStr ctx.outf, TRUE,  "push" + TABCHAR + "ebp"
+    hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "ebp, esp"
+    hWriteStr ctx.outf, FALSE, ""
 
     lname = symbGetLabelName( maininitlabel )
     emitLABEL lname, FALSE
@@ -2265,43 +2266,43 @@ sub hSaveAsmHeader( byval asmf as integer )
 end sub
 
 '':::::
-private sub hSaveAsmInitProc( byval asmf as integer )
-    dim s as integer
+private sub hSaveAsmInitProc( )
 
-    hWriteStr asmf, FALSE, NEWLINE + "#initialization"
-    hWriteStr asmf, FALSE, "fb_moduleinit:"
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#initialization"
+    hWriteStr ctx.outf, FALSE, "fb_moduleinit:"
 
-    hWriteStr asmf, TRUE,  "finit"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_Init", 0, FALSE, FB.FUNCMODE.STDCALL )
+    hWriteStr ctx.outf, TRUE,  "finit"
+    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_Init", 0, FALSE, FB.FUNCMODE.STDCALL )
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
-    s = symbLookupLabel( FB.DATALABELNAME )
-    if( s <> INVALID ) then
-    	hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetLabelName( s )
-    	hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_DataRestore", 4, FALSE, FB.FUNCMODE.STDCALL )
-    	if( env.clopt.nostdcall = TRUE) then
-			hWriteStr asmf, TRUE,  "add" + TABCHAR + "esp, 4"
-		end if
+    if( symbLookupLabel( FB.DATALABELNAME ) <> NULL ) then
+    	rtlDataRestore NULL
+    	irFlush
     end if
 
-    hWriteStr asmf, TRUE,  "ret"
+    hWriteStr ctx.outf, TRUE,  "ret"
 
 end sub
 
 '':::::
-private sub hSaveAsmFooter( byval asmf as integer )
+private sub hSaveAsmFooter( )
 
-    hWriteStr asmf, FALSE, ""
-    hWriteStr asmf, TRUE,  "push" + TABCHAR + "0"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + hCreateAliasName( "fb_End", 4, FALSE, FB.FUNCMODE.STDCALL )
-    hWriteStr asmf, TRUE,  "mov" + TABCHAR + "esp, ebp"
-    hWriteStr asmf, TRUE,  "pop" + TABCHAR + "ebp"
-    hWriteStr asmf, TRUE,  "ret"
+    hWriteStr ctx.outf, FALSE, ""
 
-    hSaveAsmInitProc asmf
+    '' end( 0 )
+    rtlExit INVALID
+    irFlush
 
-    hWriteStr asmf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation finished at " + time$ + " (" + FB.SIGN + ")"
+    '' end() will never return but..
+    hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp"
+    hWriteStr ctx.outf, TRUE,  "pop" + TABCHAR + "ebp"
+    hWriteStr ctx.outf, TRUE,  "ret"
+
+    hSaveAsmInitProc
+
+    hWriteStr ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation finished at " + time$ + " (" + FB.SIGN + ")"
+
 end sub
 
 
@@ -2315,7 +2316,7 @@ private function hGetTypeString( byval typ as integer ) as string 'static
     case FB.SYMBTYPE.USHORT, FB.SYMBTYPE.SHORT
     	tstr = ".short"
     case FB.SYMBTYPE.INTEGER, FB.SYMBTYPE.LONG, FB.SYMBTYPE.UINT
-    	tstr = ".long"
+    	tstr = ".int"
     case FB.SYMBTYPE.SINGLE
 		tstr = ".float"
 	case FB.SYMBTYPE.DOUBLE
@@ -2323,11 +2324,11 @@ private function hGetTypeString( byval typ as integer ) as string 'static
 	case FB.SYMBTYPE.FIXSTR
     	tstr = ".asciz"
     case FB.SYMBTYPE.STRING
-    	tstr = ".long"
+    	tstr = ".int"
 	case FB.SYMBTYPE.USERDEF
 		tstr = "INVALID"
     case FB.SYMBTYPE.POINTER to FB.SYMBTYPE.POINTER + FB.SYMBOLTYPES
-    	tstr = ".long"
+    	tstr = ".int"
 	end select
 
 	hGetTypeString = tstr
@@ -2335,95 +2336,95 @@ private function hGetTypeString( byval typ as integer ) as string 'static
 end function
 
 '':::::
-private sub hSaveAsmBss( byval asmf as integer ) 'static
-    dim i as integer
-    dim lgt as long, sname as string
-    dim elements as long, alloc as string
+private sub hSaveAsmBss( ) 'static
+    dim s as FBSYMBOL ptr
+    dim lgt as integer, sname as string
+    dim elements as integer, alloc as string
 
-    hWriteStr asmf, FALSE, NEWLINE + "#global non-initialized vars"
-    hWriteStr asmf, FALSE, ".section .bss"
-    hWriteStr asmf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#global non-initialized vars"
+    hWriteStr ctx.outf, FALSE, ".section .bss"
+    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
-    i = symbGetFirstNode
-    do while( i <> INVALID )
+    s = symbGetFirstNode
+    do while( s <> NULL )
 
-    	if( (symbGetClass( i ) = FB.SYMBCLASS.VAR) and _
-    		(not symbGetInitialized( i )) and _
-    		(not symbGetVarIsDynamic( i )) ) then
+    	if( (symbGetClass( s ) = FB.SYMBCLASS.VAR) and _
+    		(not symbGetInitialized( s )) and _
+    		(not symbGetVarIsDynamic( s )) ) then
 
-    	    lgt = symbGetLen( i )
+    	    lgt = symbGetLen( s )
 
     	    '' don't add initialized string or array descriptors
     	    if( lgt > 0 ) then
     	    	elements = 1
-    	    	if( symbGetVarDimensions( i ) > 0 ) then
-    	    		elements = hCalcElements( i )
+    	    	if( symbGetVarDimensions( s ) > 0 ) then
+    	    		elements = hCalcElements( s )
     	    	end if
 
-    	    	sname = symbGetVarName( i )
+    	    	sname = symbGetVarName( s )
 
-    	    	if( (symbGetAlloctype( i ) and FB.ALLOCTYPE.COMMON) = 0 ) then
+    	    	if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.COMMON) = 0 ) then
     	    		alloc = ".lcomm"
     	    	else
     	    		emitPUBLIC sname
     	    		alloc = ".comm"
     	    	end if
 
-    	    	hWriteStr asmf, TRUE, ".balign 4"
-    	    	hWriteStr asmf, TRUE,  alloc + TABCHAR + sname + "," + str$( lgt * elements )
+    	    	hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    	hWriteStr ctx.outf, TRUE,  alloc + TABCHAR + sname + "," + str$( lgt * elements )
     	    end if
     	end if
 
-    	i = symbGetNextNode( i )
+    	s = symbGetNextNode( s )
     loop
 
 end sub
 
 '':::::
-private sub hSaveAsmConst( byval asmf as integer ) 'static
-    dim i as integer, typ as integer
+private sub hSaveAsmConst( ) 'static
+    dim s as FBSYMBOL ptr, typ as integer
     dim sname as string, stext as string, stype as string
 
-    hWriteStr asmf, FALSE, NEWLINE + "#global initialized constants"
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized constants"
 #ifdef TARGET_LINUX
-	hWriteStr asmf, FALSE, ".section .data"
+	hWriteStr ctx.outf, FALSE, ".section .data"
 #else
-    hWriteStr asmf, FALSE, ".section .const"
+    hWriteStr ctx.outf, FALSE, ".section .const"
 #endif
-    hWriteStr asmf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
-    i = symbGetFirstNode
-    do while( i <> INVALID )
+    s = symbGetFirstNode
+    do while( s <> NULL )
 
-    	if( (symbGetClass( i ) = FB.SYMBCLASS.VAR) and (symbGetInitialized( i )) ) then
+    	if( (symbGetClass( s ) = FB.SYMBCLASS.VAR) and (symbGetInitialized( s )) ) then
 
     	    '' don't add initialized string or array descriptors
-    	    typ = symbGetType( i )
+    	    typ = symbGetType( s )
     	    if( typ <> FB.SYMBTYPE.USERDEF ) then
-    	    	if( (symbGetLen( i ) > 0) or (symbGetType( i ) = FB.SYMBTYPE.FIXSTR) ) then
-    	    		sname = symbGetVarName( i )
+    	    	if( (symbGetLen( s ) > 0) or (symbGetType( s ) = FB.SYMBTYPE.FIXSTR) ) then
+    	    		sname = symbGetVarName( s )
     	    		stype = hGetTypeString( typ )
-    	    		stext = symbGetVarText( i )
-    	    		if( symbGetType( i ) = FB.SYMBTYPE.FIXSTR ) then
+    	    		stext = symbGetVarText( s )
+    	    		if( symbGetType( s ) = FB.SYMBTYPE.FIXSTR ) then
     	    			stext = chr$( CHAR_QUOTE ) + hScapeStr( stext ) + chr$( CHAR_QUOTE )
     	    		end if
 
-    	    		hWriteStr asmf, TRUE, ".balign 4"
-    	    		hWriteStr asmf, FALSE, sname + ":" + TABCHAR + stype + TABCHAR + stext
+    	    		hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    		hWriteStr ctx.outf, FALSE, sname + ":" + TABCHAR + stype + TABCHAR + stext
     	    	end if
     	    end if
     	end if
 
-    	i = symbGetNextNode( i )
+    	s = symbGetNextNode( s )
     loop
 
 end sub
 
 '':::::
-private sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
-	dim d as integer
-    dim l as long, u as long
-    dim dims as integer, diff as long
+private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
+	dim i as integer, d as FBVARDIM ptr
+    dim l as integer, u as integer
+    dim dims as integer, diff as integer
     dim sname as string, dname as string
 
     dims = symbGetVarDimensions( s )
@@ -2442,93 +2443,93 @@ private sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
     '' common?
     if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.COMMON) > 0 ) then
     	if( dims = -1 ) then dims = 1
-    	hWriteStr asmf, TRUE, ".balign 4"
-    	hWriteStr asmf, TRUE,  ".comm" + TABCHAR + dname + "," + _
+    	hWriteStr ctx.outf, TRUE, ".balign 4"
+    	hWriteStr ctx.outf, TRUE,  ".comm" + TABCHAR + dname + "," + _
     					str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
     	exit sub
     end if
 
 
-    hWriteStr asmf, TRUE, ".balign 4"
-    hWriteStr asmf, FALSE, dname + ":"
+    hWriteStr ctx.outf, TRUE, ".balign 4"
+    hWriteStr ctx.outf, FALSE, dname + ":"
 
 	''	void		*data 	// ptr + diff
-	hWriteStr asmf, TRUE,  ".int" + TABCHAR + sname + " +" + str$( diff )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname + " +" + str$( diff )
 	''	void		*ptr
-	hWriteStr asmf, TRUE,  ".int" + TABCHAR + sname
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname
 	''	uint		size
-	hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) * hCalcElements( s ) )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) * hCalcElements( s ) )
 	''	uint		element_len
-    hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
+    hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
 	''	uint		dimensions
 	if( dims = -1 ) then dims = 1
-	hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( dims )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( dims )
 
     if( not symbGetVarIsDynamic( s ) ) then
     	d = symbGetFirstVarDim( s )
-    	do while( d <> INVALID )
+    	do while( d <> NULL )
     		symbGetVarDims s, d, l, u
 
 			''	uint	dim_elemts
-			hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( u - l + 1 )
+			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( u - l + 1 )
 			''	int		dim_first
-			hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( l )
+			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( l )
 
 			d = symbGetNextVarDim( s, d )
     	loop
 
     else
-        for d = 0 to dims-1
+        for i = 0 to dims-1
 			''	uint	dim_elemts
-			hWriteStr asmf, TRUE,  ".int" + TABCHAR + "0"
+			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + "0"
 			''	int		dim_first
-			hWriteStr asmf, TRUE,  ".int" + TABCHAR + "0"
-        next d
+			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + "0"
+        next i
     end if
 
 end sub
 
 '':::::
-private sub hWriteStringDesc( byval asmf as integer, byval s as integer ) 'static
+private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) 'static
     dim sname as string, dname as string
 
     sname = symbGetVarName( s )
 	dname = symbGetVarDscName( s )
 
-    hWriteStr asmf, TRUE, ".balign 4"
-    hWriteStr asmf, FALSE, dname + ":"
+    hWriteStr ctx.outf, TRUE, ".balign 4"
+    hWriteStr ctx.outf, FALSE, dname + ":"
 
 	''	void		*data
-	hWriteStr asmf, TRUE,  ".int" + TABCHAR + sname
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname
 	''	int			len
-	hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
 
 end sub
 
 '':::::
-private sub hSaveAsmData( byval asmf as integer ) 'static
-    dim i as integer, d as integer
+private sub hSaveAsmData( ) 'static
+    dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
 
-    hWriteStr asmf, FALSE, NEWLINE + "#global initialized vars"
-    hWriteStr asmf, FALSE, ".section .data" + NEWLINE
-    hWriteStr asmf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized vars"
+    hWriteStr ctx.outf, FALSE, ".section .data" + NEWLINE
+    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
-    i = symbGetFirstNode
-    do while( i <> INVALID )
+    s = symbGetFirstNode
+    do while( s <> NULL )
 
-    	if( symbGetClass( i ) = FB.SYMBCLASS.VAR ) then
-    	    d = symbGetVarDesc( i )
-    	    if( d <> INVALID ) then
+    	if( symbGetClass( s ) = FB.SYMBCLASS.VAR ) then
+    	    d = symbGetVarDescriptor( s )
+    	    if( d <> NULL ) then
     	    	select case symbGetSubtype( d )
     	    	case FB.DESCTYPE.ARRAY
-    	    		hWriteArrayDesc asmf, i
+    	    		hWriteArrayDesc s
     	    	case FB.DESCTYPE.STR
-    	    		hWriteStringDesc asmf, i
+    	    		hWriteStringDesc s
     	    	end select
     	    end if
     	end if
 
-    	i = symbGetNextNode( i )
+    	s = symbGetNextNode( s )
     loop
 
 end sub
@@ -2546,7 +2547,7 @@ function emitOpen
 	open env.outfile for binary as #ctx.outf
 
 	'' header
-	hSaveAsmHeader ctx.outf
+	hSaveAsmHeader
 
 
 	emitOpen = TRUE
@@ -2559,16 +2560,16 @@ end function
 sub emitClose
 
     '' footer
-    hSaveAsmFooter ctx.outf
+    hSaveAsmFooter
 
 	'' const
-	hSaveAsmConst ctx.outf
+	hSaveAsmConst
 
 	'' BSS
-	hSaveAsmBss ctx.outf
+	hSaveAsmBss
 
 	'' data
-	hSaveAsmData ctx.outf
+	hSaveAsmData
 
 	''
 	edbgFooter

@@ -97,8 +97,10 @@ enum FBRTL_ENUM
 	FB.RTL.FILECLOSE
 	FB.RTL.FILEPUT
 	FB.RTL.FILEPUTSTR
+	FB.RTL.FILEPUTARRAY
 	FB.RTL.FILEGET
 	FB.RTL.FILEGETSTR
+	FB.RTL.FILEGETARRAY
 	FB.RTL.FILETELL
 	FB.RTL.FILESEEK
 	FB.RTL.FILESTRINPUT
@@ -123,6 +125,8 @@ enum FBRTL_ENUM
 	FB.RTL.ERRORSETHANDLER
 	FB.RTL.ERRORGETNUM
 	FB.RTL.ERRORSETNUM
+	FB.RTL.ERRORRESUME
+	FB.RTL.ERRORRESUMENEXT
 
 	FB.RTL.GFXPSET
 	FB.RTL.GFXLINE
@@ -133,6 +137,7 @@ enum FBRTL_ENUM
 	FB.RTL.GFXPALETTEUSING
 	FB.RTL.GFXPUT
 	FB.RTL.GFXGET
+	FB.RTL.GFXSCREENSET
 end enum
 
 const FB.RTL.MAXFUNCTIONS%		= 512
@@ -156,16 +161,16 @@ declare function 	rtlStrMid			( byval expr1 as integer, byval expr2 as integer, 
 declare sub 		rtlStrAssignMid		( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, byval expr4 as integer )
 declare function 	rtlStrFill			( byval expr1 as integer, byval expr2 as integer ) as integer
 
-declare sub 		rtlArrayRedim		( byval s as integer, byval elementlen as integer, _
+declare sub 		rtlArrayRedim		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 									  	  byval dimensions as integer, exprTB() as integer, _
 									  	  byval dopreserve as integer )
-declare sub 		rtlArrayErase		( byval s as integer )
-declare function 	rtlArrayBound		( byval s as integer, byval dimexpr as integer, byval islbound as integer ) as integer
-declare sub 		rtlArraySetDesc		( byval s as integer, byval elementlen as integer, _
+declare sub 		rtlArrayErase		( byval s as FBSYMBOL ptr )
+declare function 	rtlArrayBound		( byval s as FBSYMBOL ptr, byval dimexpr as integer, byval islbound as integer ) as integer
+declare sub 		rtlArraySetDesc		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 										  byval dimensions as integer, dTB() as FBARRAYDIM )
-declare sub 		rtlArrayStrErase	( byval s as integer )
+declare sub 		rtlArrayStrErase	( byval s as FBSYMBOL ptr )
 
-declare sub 		rtlDataRestore		( byval varexpr as integer )
+declare sub 		rtlDataRestore		( byval label as FBSYMBOL ptr )
 declare sub 		rtlDataRead			( byval varexpr as integer )
 declare sub 		rtlDataStoreBegin	( )
 declare sub 		rtlDataStore		( littext as string, byval typ as integer )
@@ -199,7 +204,9 @@ declare sub 		rtlFileClose		( byval filenum as integer )
 declare sub 		rtlFileSeek			( byval filenum as integer, byval newpos as integer )
 declare function 	rtlFileTell			( byval filenum as integer ) as integer
 declare sub 		rtlFilePut			( byval filenum as integer, byval offset as integer, byval src as integer )
+declare sub 		rtlFilePutArray		( byval filenum as integer, byval offset as integer, byval src as integer )
 declare sub 		rtlFileGet			( byval filenum as integer, byval offset as integer, byval dst as integer )
+declare sub 		rtlFileGetArray		( byval filenum as integer, byval offset as integer, byval dst as integer )
 declare function 	rtlFileStrInput		( byval bytesexpr as integer, byval filenum as integer ) as integer
 declare sub 		rtlFileLineInput	( byval isfile as integer, byval expr as integer, byval dstexpr as integer, byval addquestion as integer, byval addnewline as integer )
 declare sub 		rtlFileInput		( byval isfile as integer, byval expr as integer, byval addquestion as integer, byval addnewline as integer )
@@ -210,6 +217,7 @@ declare sub 		rtlErrorThrow		( byval errexpr as integer )
 declare sub 		rtlErrorSetHandler	( byval newhandler as integer, byval savecurrent as integer )
 declare function	rtlErrorGetNum		( ) as integer
 declare sub 		rtlErrorSetNum		( byval errexpr as integer )
+declare sub 		rtlErrorResume		( byval isnext as integer )
 
 declare sub 		rtlConsoleView		( byval topexpr as integer, byval botexpr as integer )
 
@@ -227,4 +235,5 @@ declare sub 		rtlGfxPalette 		( byval attexpr as integer, byval colexpr as integ
 declare sub 		rtlGfxPaletteUsing	( byval arrayexpr as integer )
 declare sub 		rtlGfxPut			( byval xexpr as integer, byval yexpr as integer, byval arrayexpr as integer, byval mode as integer, byval coordtype as integer )
 declare sub 		rtlGfxGet			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
-										  byval arrayexpr as integer, byval symbol as integer, byval coordtype as integer )
+										  byval arrayexpr as integer, byval symbol as FBSYMBOL ptr, byval coordtype as integer )
+declare sub 		rtlGfxScreenSet		( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, byval fexpr as integer )

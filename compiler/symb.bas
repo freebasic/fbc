@@ -19,67 +19,59 @@
 '' symbol table module
 ''
 '' chng: sep/2004 written [v1ctor]
+''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 option explicit
 
 defint a-z
 '$include: 'inc\fb.bi'
 '$include: 'inc\fbint.bi'
-'$include: 'inc\rtl.bi'
 '$include: 'inc\hash.bi'
+'$include: 'inc\list.bi'
+'$include: 'inc\rtl.bi'
 '$include: 'inc\ast.bi'
 '$include: 'inc\ir.bi'
 '$include: 'inc\emit.bi'
 
-type SYMBLIST
-	nodes			as integer
-	fhead			as integer
-	head			as integer
-	tail			as integer
-end type
-
 type SYMBCTX
 	inited			as integer
 
-	sym				as SYMBLIST
-	locsym			as SYMBLIST
-	elm				as SYMBLIST
-	vdim			as SYMBLIST
-	arg				as SYMBLIST
-	lib				as SYMBLIST
-	def             as SYMBLIST
+	symlist			as TLIST					'' symbols (VAR, CONST, FUNCTION, UDT, ENUM, LABEL, etc)
+	symhash			as THASH
 
-	lastlbl			as integer
+	loclist			as TLIST					'' local symbols (/)
+	lochash			as THASH
+
+	senlist			as TLIST					'' sentinels
+	senhash			as THASH
+
+	locsenlist		as TLIST					'' local sentinels
+	locsenhash		as THASH
+
+	keylist			as TLIST					'' keywords
+	keyhash			as THASH
+
+	deflist			as TLIST					'' defines
+	defhash			as THASH
+
+	liblist 		as TLIST					'' libraries
+	libhash			as THASH
+
+	arglist			as TLIST					'' proc arguments
+	dimlist			as TLIST					'' array dimensions
+	elmlist			as TLIST					'' UDT fields
+
+	lastlbl			as FBSYMBOL ptr
 end type
 
 
-declare function 	hCreateName		( symbol as string, byval typ as integer ) as string
-declare function 	hCreateNameEx	( symbol as string, byval typ as integer, byval preservecase as integer, _
-								      byval addunderscore as integer, byval clearname as integer ) as string
+declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as integer
 
-declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as long
-
-declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAYDIM ) as long
+declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer
 
 
 ''globals
 	dim shared ctx as SYMBCTX
-
-	redim shared symbolTB( 0 ) as FBSYMBOL, symbhashTB( 0 ) as HASHTB
-
-	redim shared locsymbolTB( 0 ) as FBLOCSYMBOL, locsymbhashTB( 0 ) as HASHTB
-
-	redim shared keywordTB( 0 ) as FBKEYWORD, keyhashTB( 0 ) as HASHTB
-
-	redim shared typelmTB( 0 ) as FBTYPELEMENT
-
-	redim shared dimTB( 0 ) as FBVARDIM
-
-	redim shared argTB( 0 ) as FBPROCARG
-
-	redim shared libTB( 0 ) as FBLIBRARY, libhashTB( 0 ) as HASHTB
-
-	redim shared defineTB( 0 ) as FBDEFINE, defhashTB( 0 ) as HASHTB
 
 
 '' predefined #defines: name, value, is_string
@@ -248,538 +240,16 @@ data "IFDEF"	, FB.TK.IFDEF		, FB.TKCLASS.KEYWORD
 data "IFNDEF"	, FB.TK.IFNDEF		, FB.TKCLASS.KEYWORD
 data "ENDIF"	, FB.TK.ENDIF		, FB.TKCLASS.KEYWORD
 data "DEFINED"	, FB.TK.DEFINED		, FB.TKCLASS.KEYWORD
+data "RESUME"	, FB.TK.RESUME		, FB.TKCLASS.KEYWORD
 data "PSET"		, FB.TK.PSET		, FB.TKCLASS.KEYWORD
 data "PRESET"	, FB.TK.PRESET		, FB.TKCLASS.KEYWORD
 data "CIRCLE"	, FB.TK.CIRCLE		, FB.TKCLASS.KEYWORD
 data "WINDOW"	, FB.TK.WINDOW		, FB.TKCLASS.KEYWORD
 data "PALETTE"	, FB.TK.PALETTE		, FB.TKCLASS.KEYWORD
+data "SCREEN"	, FB.TK.SCREEN		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 157
+const FB.MAXKEYWORDS 		= 159
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' linked-lists
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub symbReallocSymbolTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.sym.nodes
-	ub = ctx.sym.nodes + (nodes - 1)
-
-	redim preserve symbolTB( 0 to ub ) as FBSYMBOL
-
-	for i = lb to ub
-		symbolTB(i).prv  = i-1
-		symbolTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		symbolTB(lb).prv = INVALID
-	end if
-
-	symbolTB(ub).nxt = INVALID
-
-	''
-	ctx.sym.nodes = ctx.sym.nodes + nodes
-	ctx.sym.fhead = lb
-
-end sub
-
-'':::::
-function symbNewSymbolNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.sym.fhead = INVALID ) Then
-		symbReallocSymbolTB ctx.sym.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.sym.fhead
-	ctx.sym.fhead = symbolTB(n).nxt
-
-	'' add to used list
-	t = ctx.sym.tail
-	ctx.sym.tail = n
-	if( t <> INVALID ) then
-		symbolTB(t).nxt = n
-	else
-		ctx.sym.head = n
-	end If
-
-	symbolTB(n).prv	= t
-	symbolTB(n).nxt	= INVALID
-
-	''
-	symbNewSymbolNode = n
-
-end function
-
-'':::::
-sub symbDelSymbolNode( byval n as integer ) static
-	Dim pn as integer, nn as integer
-
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	'' remove from used list
-	pn = symbolTB(n).prv
-	nn = symbolTB(n).nxt
-	if( pn <> INVALID ) then
-		symbolTB(pn).nxt = nn
-	else
-		ctx.sym.head = nn
-	end If
-
-	if( nn <> INVALID ) then
-		symbolTB(nn).prv = pn
-	else
-		ctx.sym.tail = pn
-	end If
-
-	'' add to free list
-	symbolTB(n).nxt = ctx.sym.fhead
-	ctx.sym.fhead = n
-
-end sub
-
-
-'':::::
-sub symbReallocLocSymbolTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.locsym.nodes
-	ub = ctx.locsym.nodes + (nodes - 1)
-
-	redim preserve locsymbolTB( 0 to ub ) as FBLOCSYMBOL
-
-	for i = lb to ub
-		locsymbolTB(i).prv  = i-1
-		locsymbolTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		locsymbolTB(lb).prv = INVALID
-	end if
-
-	locsymbolTB(ub).nxt = INVALID
-
-	''
-	ctx.locsym.nodes = ctx.locsym.nodes + nodes
-	ctx.locsym.fhead = lb
-
-end sub
-
-'':::::
-function symbNewLocSymbolNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.locsym.fhead = INVALID ) Then
-		symbReallocLocSymbolTB ctx.locsym.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.locsym.fhead
-	ctx.locsym.fhead = locsymbolTB(n).nxt
-
-	'' add to used list
-	t = ctx.locsym.tail
-	ctx.locsym.tail = n
-	if( t <> INVALID ) then
-		locsymbolTB(t).nxt = n
-	else
-		ctx.locsym.head = n
-	end If
-
-	locsymbolTB(n).prv	= t
-	locsymbolTB(n).nxt	= INVALID
-
-	''
-	symbNewLocSymbolNode = n
-
-end function
-
-'':::::
-sub symbDelLocSymbolNode( byval n as integer ) static
-	Dim pn as integer, nn as integer
-
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	'' remove from used list
-	pn = locsymbolTB(n).prv
-	nn = locsymbolTB(n).nxt
-	if( pn <> INVALID ) then
-		locsymbolTB(pn).nxt = nn
-	else
-		ctx.locsym.head = nn
-	end If
-
-	if( nn <> INVALID ) then
-		locsymbolTB(nn).prv = pn
-	else
-		ctx.locsym.tail = pn
-	end If
-
-	'' add to free list
-	locsymbolTB(n).nxt = ctx.locsym.fhead
-	ctx.locsym.fhead = n
-
-end sub
-
-
-'':::::
-sub symbReallocArgTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.arg.nodes
-	ub = ctx.arg.nodes + (nodes - 1)
-
-	redim preserve argTB( 0 to ub ) as FBPROCARG
-
-	for i = lb to ub
-		argTB(i).prv  = i-1
-		argTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		argTB(lb).prv = INVALID
-	end if
-
-	argTB(ub).nxt = INVALID
-
-	''
-	ctx.arg.nodes = ctx.arg.nodes + nodes
-	ctx.arg.fhead = lb
-
-end sub
-
-'':::::
-function symbNewArgNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.arg.fhead = INVALID ) Then
-		symbReallocArgTB ctx.arg.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.arg.fhead
-	ctx.arg.fhead = argTB(n).nxt
-
-	'' add to used list
-	t = ctx.arg.tail
-	ctx.arg.tail = n
-	if( t <> INVALID ) then
-		argTB(t).nxt = n
-	else
-		ctx.arg.head = n
-	end If
-
-	argTB(n).prv	= t
-	argTB(n).nxt	= INVALID
-
-	''
-	symbNewArgNode = n
-
-end function
-
-
-'':::::
-sub symbReallocElmTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.elm.nodes
-	ub = ctx.elm.nodes + (nodes - 1)
-
-	redim preserve typelmTB( 0 to ub ) as FBTYPELEMENT
-
-	for i = lb to ub
-		typelmTB(i).prv  = i-1
-		typelmTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		typelmTB(lb).prv = INVALID
-	end if
-
-	typelmTB(ub).nxt = INVALID
-
-	''
-	ctx.elm.nodes = ctx.elm.nodes + nodes
-	ctx.elm.fhead = lb
-
-end sub
-
-'':::::
-function symbNewElmNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.elm.fhead = INVALID ) Then
-		symbReallocElmTB ctx.elm.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.elm.fhead
-	ctx.elm.fhead = typelmTB(n).nxt
-
-	'' add to used list
-	t = ctx.elm.tail
-	ctx.elm.tail = n
-	if( t <> INVALID ) then
-		typelmTB(t).nxt = n
-	else
-		ctx.elm.head = n
-	end If
-
-	typelmTB(n).prv	= t
-	typelmTB(n).nxt	= INVALID
-
-	''
-	symbNewElmNode = n
-
-end function
-
-
-'':::::
-sub symbReallocLibTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.lib.nodes
-	ub = ctx.lib.nodes + (nodes - 1)
-
-	redim preserve libTB( 0 to ub ) as FBLIBRARY
-
-	for i = lb to ub
-		libTB(i).prv  = i-1
-		libTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		libTB(lb).prv = INVALID
-	end if
-
-	libTB(ub).nxt = INVALID
-
-	''
-	ctx.lib.nodes = ctx.lib.nodes + nodes
-	ctx.lib.fhead = lb
-
-end sub
-
-'':::::
-function symbNewLibNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.lib.fhead = INVALID ) Then
-		symbReallocLibTB ctx.lib.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.lib.fhead
-	ctx.lib.fhead = libTB(n).nxt
-
-	'' add to used list
-	t = ctx.lib.tail
-	ctx.lib.tail = n
-	if( t <> INVALID ) then
-		libTB(t).nxt = n
-	else
-		ctx.lib.head = n
-	end If
-
-	libTB(n).prv	= t
-	libTB(n).nxt	= INVALID
-
-	''
-	symbNewLibNode = n
-
-end function
-
-
-'':::::
-sub symbReallocDimTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.vdim.nodes
-	ub = ctx.vdim.nodes + (nodes - 1)
-
-	redim preserve dimTB( 0 to ub ) as FBVARDIM
-
-	for i = lb to ub
-		dimTB(i).prv  = i-1
-		dimTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		dimTB(lb).prv = INVALID
-	end if
-
-	dimTB(ub).nxt = INVALID
-
-	''
-	ctx.vdim.nodes = ctx.vdim.nodes + nodes
-	ctx.vdim.fhead = lb
-
-end sub
-
-'':::::
-function symbNewDimNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.vdim.fhead = INVALID ) Then
-		symbReallocDimTB ctx.vdim.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.vdim.fhead
-	ctx.vdim.fhead = dimTB(n).nxt
-
-	'' add to used list
-	t = ctx.vdim.tail
-	ctx.vdim.tail = n
-	if( t <> INVALID ) then
-		dimTB(t).nxt = n
-	else
-		ctx.vdim.head = n
-	end If
-
-	dimTB(n).prv	= t
-	dimTB(n).nxt	= INVALID
-
-	''
-	symbNewDimNode = n
-
-end function
-
-'':::::
-sub symbDelDimNode( byval n as integer ) static
-	Dim pn as integer, nn as integer
-
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	'' remove from used list
-	pn = dimTB(n).prv
-	nn = dimTB(n).nxt
-	if( pn <> INVALID ) then
-		dimTB(pn).nxt = nn
-	else
-		ctx.vdim.head = nn
-	end If
-
-	if( nn <> INVALID ) then
-		dimTB(nn).prv = pn
-	else
-		ctx.vdim.tail = pn
-	end If
-
-	'' add to free list
-	dimTB(n).nxt = ctx.vdim.fhead
-	ctx.vdim.fhead = n
-
-end sub
-
-
-'':::::
-sub symbReallocDefineTB( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.def.nodes
-	ub = ctx.def.nodes + (nodes - 1)
-
-	redim preserve defineTB( 0 to ub ) as FBDEFINE
-
-	for i = lb to ub
-		defineTB(i).prv  = i-1
-		defineTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		defineTB(lb).prv = INVALID
-	end if
-
-	defineTB(ub).nxt = INVALID
-
-	''
-	ctx.def.nodes = ctx.def.nodes + nodes
-	ctx.def.fhead = lb
-
-end sub
-
-'':::::
-function symbNewDefineNode as integer static
-	dim n as integer, t as integer
-
-	'' realloc node list if it's full
-	if( ctx.def.fhead = INVALID ) Then
-		symbReallocDefineTB ctx.def.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.def.fhead
-	ctx.def.fhead = defineTB(n).nxt
-
-	'' add to used list
-	t = ctx.def.tail
-	ctx.def.tail = n
-	if( t <> INVALID ) then
-		defineTB(t).nxt = n
-	else
-		ctx.def.head = n
-	end If
-
-	defineTB(n).prv	= t
-	defineTB(n).nxt	= INVALID
-
-	''
-	symbNewDefineNode = n
-
-end function
-
-'':::::
-sub symbDelDefineNode( byval n as integer ) static
-	Dim pn as integer, nn as integer
-
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	'' remove from used list
-	pn = defineTB(n).prv
-	nn = defineTB(n).nxt
-	if( pn <> INVALID ) then
-		defineTB(pn).nxt = nn
-	else
-		ctx.def.head = nn
-	end If
-
-	if( nn <> INVALID ) then
-		defineTB(nn).prv = pn
-	else
-		ctx.def.tail = pn
-	end If
-
-	'' add to free list
-	defineTB(n).nxt = ctx.def.fhead
-	ctx.def.fhead = n
-
-end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init/end
@@ -788,69 +258,55 @@ end sub
 '':::::
 sub symbInitSymbols static
 
-	'' global/module-level
-	ctx.sym.nodes 	= 0
-	ctx.sym.head	= INVALID
-	ctx.sym.tail	= INVALID
+	'' globals/module-level
+	listNew @ctx.symlist, FB.INITSYMBOLNODES, len( FBSYMBOL )
 
-	symbReallocSymbolTB FB.INITSYMBOLNODES
+	hashNew ctx.symhash, FB.INITSYMBOLNODES
 
-	hashNew symbhashTB(), FB.INITSYMBOLNODES
+	'' locals
+	listNew @ctx.loclist, FB.INITLOCSYMBOLNODES, len( FBLOCSYMBOL )
 
-	'' local vars
-	ctx.locsym.nodes 	= 0
-	ctx.locsym.head		= INVALID
-	ctx.locsym.tail		= INVALID
+	hashNew ctx.lochash, FB.INITLOCSYMBOLNODES
 
-	symbReallocLocSymbolTB FB.INITLOCSYMBOLNODES
+	'' sentinels
+	listNew @ctx.senlist, FB.INITSYMBOLNODES, len( FBSENTINEL )
 
-	hashNew locsymbhashTB(), FB.INITLOCSYMBOLNODES
+	hashNew ctx.senhash, FB.INITSYMBOLNODES
+
+	'' local sentinels
+	listNew @ctx.locsenlist, FB.INITLOCSYMBOLNODES, len( FBSENTINEL )
+
+	hashNew ctx.locsenhash, FB.INITLOCSYMBOLNODES
 
 end sub
 
 '':::::
 sub symbInitArgs static
 
-	ctx.arg.nodes 	= 0
-	ctx.arg.head	= INVALID
-	ctx.arg.tail	= INVALID
-
-	symbReallocArgTB FB.INITARGNODES
+	listNew @ctx.arglist, FB.INITARGNODES, len( FBPROCARG )
 
 end sub
 
 '':::::
 sub symbInitElms static
 
-	ctx.elm.nodes 	= 0
-	ctx.elm.head	= INVALID
-	ctx.elm.tail	= INVALID
-
-	symbReallocElmTB FB.INITELEMENTNODES
+	listNew @ctx.elmlist, FB.INITELEMENTNODES, len( FBTYPELEMENT )
 
 end sub
 
 '':::::
 sub symbInitDims static
 
-	ctx.vdim.nodes 	= 0
-	ctx.vdim.head	= INVALID
-	ctx.vdim.tail	= INVALID
-
-	symbReallocDimTB FB.INITDIMNODES
+	listNew @ctx.dimlist, FB.INITDIMNODES, len( FBVARDIM )
 
 end sub
 
 '':::::
 sub symbInitLibs static
 
-	ctx.lib.nodes 	= 0
-	ctx.lib.head	= INVALID
-	ctx.lib.tail	= INVALID
+	listNew @ctx.liblist, FB.INITLIBNODES, len( FBLIBRARY )
 
-	symbReallocLibTB FB.INITLIBNODES
-
-    hashNew libhashTB(), FB.INITLIBNODES
+    hashNew ctx.libhash, FB.INITLIBNODES
 
 end sub
 
@@ -858,13 +314,9 @@ end sub
 sub symbInitDefines static
 	dim def as string, value as string, is_string as integer
 
-	ctx.def.nodes 	= 0
-	ctx.def.head	= INVALID
-	ctx.def.tail	= INVALID
+	listNew @ctx.deflist, FB.INITDEFINENODES, len( FBDEFINE )
 
-	symbReallocDefineTB FB.INITDEFINENODES
-
-    hashNew defhashTB(), FB.INITDEFINENODES
+    hashNew ctx.defhash, FB.INITDEFINENODES
 
     restore definesdata
     do
@@ -877,14 +329,34 @@ sub symbInitDefines static
     	if( is_string ) then
     		value = chr$( CHAR_QUOTE ) + value + chr$( CHAR_QUOTE )
     	end if
-    	symbAddDefine def, value
+    	symbAddDefine( def, value )
     loop
 
 end sub
 
 '':::::
-sub symbInit
+sub symbInitKeywords
 	dim i as integer, sname as string
+	dim k as FBKEYWORD ptr
+
+	listNew @ctx.keylist, FB.MAXKEYWORDS, len( FBKEYWORD )
+
+    hashNew ctx.keyhash, FB.MAXKEYWORDS
+
+	restore keyworddata
+	for i = 0 to FB.MAXKEYWORDS-1
+    	read sname
+    	k = listNewNode( @ctx.keylist )
+    	k->nameidx = strpAdd( sname )
+    	read k->id
+    	read k->class
+    	hashAdd ctx.keyhash, sname, k, k->nameidx
+    next i
+
+end sub
+
+'':::::
+sub symbInit
 
 	''
 	if( ctx.inited ) then
@@ -897,18 +369,7 @@ sub symbInit
 
 	''
 	'' keywords
-	redim keywordTB( 0 to FB.MAXKEYWORDS-1 ) as FBKEYWORD
-
-    hashNew keyhashTB(), FB.MAXKEYWORDS
-
-	restore keyworddata
-	for i = 0 to FB.MAXKEYWORDS-1
-    	read sname
-    	keywordTB(i).nameidx = strpAdd( sname )
-    	read keywordTB(i).id
-    	read keywordTB(i).class
-    	hashAdd sname, i, keywordTB(i).nameidx, keyhashTB(), FB.MAXKEYWORDS
-    next i
+	symbInitKeywords
 
 	''
 	'' vars, arrays, procs & consts
@@ -953,32 +414,40 @@ sub symbEnd
     end if
 
     ''
-    hashFree defhashTB(), FB.INITDEFINENODES
+    hashFree ctx.defhash
 
-	hashFree libhashTB(), FB.INITLIBNODES
+	hashFree ctx.libhash
 
-    hashFree keyhashTB(), FB.MAXKEYWORDS
+    hashFree ctx.keyhash
 
-	hashFree locsymbhashTB(), FB.INITLOCSYMBOLNODES
+	hashFree ctx.locsenhash
 
-    hashFree symbhashTB(), FB.INITSYMBOLNODES
+	hashFree ctx.senhash
+
+	hashFree ctx.lochash
+
+    hashFree ctx.symhash
 
 	''
-	erase defineTB
+	listFree( @ctx.deflist )
 
-	erase libTB
+	listFree( @ctx.liblist )
 
-	erase typelmTB
+	listFree( @ctx.elmlist )
 
-	erase argTB
+	listFree( @ctx.arglist )
 
-	erase dimTB
+	listFree( @ctx.dimlist )
 
-	erase keywordTB
+	listFree( @ctx.keylist )
 
-	erase locsymbolTB
+	listFree( @ctx.locsenlist )
 
-	erase symbolTB
+	listFree( @ctx.senlist )
+
+	listFree( @ctx.loclist )
+
+	listFree( @ctx.symlist )
 
 	''
 	ctx.inited = FALSE
@@ -998,56 +467,19 @@ sub hStrReplace( src as string, oldchar as string, newchar as string ) static
 
 end sub
 
-'':::::
-function hCreateNameEx( symbol as string, byval typ as integer, _
-						byval preservecase as integer, _
-						byval addunderscore as integer, byval clearname as integer ) as string static
-    dim nm as string
-
-	if( addunderscore ) then
-		nm = "_"
-	else
-		nm = ""
-	end if
-
-	nm = nm + symbol
-
-	if( not preservecase ) then
-		nm = ucase$( nm )
-	end if
-
-    if( clearname ) then
-    	hClearName nm
-    end if
-
-    if( (typ <> INVALID) and (typ < 128) ) then
-    	nm = nm + "_" + chr$( CHAR_ALOW + typ )
-    end if
-
-	hCreateNameEx = nm
-
-end function
-
-'':::::
-function hCreateName( symbol as string, byval typ as integer ) as string static
-
-	hCreateName = hCreateNameEx( symbol, typ, FALSE, TRUE, TRUE )
-
-end function
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbGetLastLabel as integer static
+function symbGetLastLabel as FBSYMBOL ptr static
 
 	symbGetLastLabel = ctx.lastlbl
 
 end function
 
 '':::::
-sub symbSetLastLabel( byval l as integer ) static
+sub symbSetLastLabel( byval l as FBSYMBOL ptr ) static
 
 	ctx.lastlbl = l
 
@@ -1055,32 +487,32 @@ end sub
 
 
 '':::::
-function symbAddDefine( id as string, text as string ) as integer static
-    dim d as integer
+function symbAddDefine( id as string, text as string ) as FBDEFINE ptr static
+    dim d as FBDEFINE ptr
     dim dname as string
 
-    symbAddDefine = INVALID
+    symbAddDefine = NULL
 
     dname = ucase$( id )
 
     '' already exists? (done by parser already)
-    '''''d = hashLookup( dname, defhashTB(), FB.INITDEFINENODES )
-    '''''if( d <> INVALID ) then
+    '''''d = hashLookup( ctx.defhash, dname  )
+    '''''if( d <> NULL ) then
     '''''	exit function
     '''''end if
 
     '' allocate new node
-    d = symbNewDefineNode
-    if( d = INVALID ) then
+    d = listNewNode( @ctx.deflist )
+    if( d = NULL ) then
     	exit function
     end if
 
-	'' add to pool
-	defineTB(d).nameidx = strpAdd( dname )
-	defineTB(d).textidx = strpAdd( text )
+	'' add to list
+	d->nameidx = strpAdd( dname )
+	d->textidx = strpAdd( text )
 
 	'' and to hash table
-	hashAdd dname, d, defineTB(d).nameidx, defhashTB(), FB.INITDEFINENODES
+	hashAdd ctx.defhash, dname, d, d->nameidx
 
 	''
 	symbAddDefine = d
@@ -1089,47 +521,49 @@ end function
 
 
 '':::::
-function hNewSymbol( symbol as string, aliasname as string, byval class as integer, byval isglobal as integer ) as integer static
-    dim l as integer, s as integer
+function hNewSymbol( symbol as string, aliasname as string, byval class as integer, _
+					 byval isglobal as integer ) as FBSYMBOL ptr static
+    dim l as FBLOCSYMBOL ptr, s as FBSYMBOL ptr
 
-    hNewSymbol = INVALID
+    hNewSymbol = NULL
 
     '' symbol already exists?
     if( isglobal ) then
-    	s = hashLookup( symbol, symbhashTB(), FB.INITSYMBOLNODES )
+    	s = hashLookup( ctx.symhash, symbol )
     else
-    	s = hashLookup( symbol, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
+    	s = hashLookup( ctx.lochash, symbol )
     end if
 
-    if( s <> INVALID ) then
+    if( s <> NULL ) then
     	exit function
     end if
 
-    s = symbNewSymbolNode
-    if( s = INVALID ) then
+    s = listNewNode( @ctx.symlist )
+    if( s = NULL ) then
     	exit function
     end if
 
     ''
-    symbolTB(s).class		= class
-    symbolTB(s).typ			= INVALID
-    symbolTB(s).subtype		= INVALID
-	symbolTB(s).alloctype	= 0
+    s->class		= class
+    s->typ			= INVALID
+    s->subtype		= NULL
+	s->alloctype	= 0
+	s->sentinel		= NULL
 
-    symbolTB(s).nameidx	= strpAdd( symbol )
+    s->nameidx	= strpAdd( symbol )
     if( len( aliasname ) > 0 ) then
-    	symbolTB(s).aliasidx = strpAdd( aliasname )
+    	s->aliasidx = strpAdd( aliasname )
     else
-    	symbolTB(s).aliasidx= INVALID
+    	s->aliasidx = INVALID
     end if
 
-    symbolTB(s).initialized = FALSE
-    symbolTB(s).inittextidx	= INVALID
+    s->initialized = FALSE
+    s->inittextidx = INVALID
 
 	'' add node to local symbol table for fast deletion later
 	if( not isglobal ) then
-		l = symbNewLocSymbolNode
-		locsymbolTB(l).s = s
+		l = listNewNode( @ctx.loclist )
+		l->s = s
 	end if
 
     ''
@@ -1138,14 +572,14 @@ function hNewSymbol( symbol as string, aliasname as string, byval class as integ
 end function
 
 '':::::
-function hCreateArrayDesc( byval s as integer, byval dimensions as integer) as integer static
-    dim sname as string, aname as string, d as integer
+function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer) as FBSYMBOL ptr static
+    dim sname as string, aname as string, d as FBSYMBOL ptr
     dim lgt as integer, isshared as integer, isstatic as integer
 
-	hCreateArrayDesc = INVALID
+	hCreateArrayDesc = NULL
 
-	isshared = (symbolTB(s).alloctype and FB.ALLOCTYPE.SHARED) > 0
-	isstatic = (symbolTB(s).alloctype and FB.ALLOCTYPE.STATIC) > 0
+	isshared = (s->alloctype and FB.ALLOCTYPE.SHARED) > 0
+	isstatic = (s->alloctype and FB.ALLOCTYPE.STATIC) > 0
 
 	sname = hMakeTmpStr
 
@@ -1157,25 +591,25 @@ function hCreateArrayDesc( byval s as integer, byval dimensions as integer) as i
 	end if
 
 	d = hNewSymbol( sname, aname, FB.SYMBCLASS.VAR, (env.scope = 0) or isshared )
-    if( d = INVALID ) then
+    if( d = NULL ) then
     	exit function
     end if
 
 	''
-	symbolTB(d).scope	= env.scope
+	d->scope		= env.scope
 	if( isshared ) then
-		symbolTB(d).alloctype= FB.ALLOCTYPE.SHARED
+		d->alloctype= FB.ALLOCTYPE.SHARED
 	elseif( isstatic ) then
-		symbolTB(d).alloctype= FB.ALLOCTYPE.STATIC
+		d->alloctype= FB.ALLOCTYPE.STATIC
 	else
-		symbolTB(d).alloctype= 0
+		d->alloctype= 0
 	end if
-	symbolTB(d).typ		= FB.SYMBTYPE.USERDEF
-	symbolTB(d).subtype	= FB.DESCTYPE.ARRAY
-	symbolTB(d).lgt		= 0
-	symbolTB(d).v.dif	= 0
-	symbolTB(d).v.dims	= 0
-	symbolTB(d).v.desc	= INVALID
+	d->typ		= FB.SYMBTYPE.USERDEF
+	d->subtype	= FB.DESCTYPE.ARRAY
+	d->lgt		= 0
+	d->v.dif	= 0
+	d->v.dims	= 0
+	d->v.desc	= NULL
 
 	''
 	hCreateArrayDesc = d
@@ -1183,28 +617,28 @@ function hCreateArrayDesc( byval s as integer, byval dimensions as integer) as i
 end function
 
 '':::::
-function hCreateStringDesc( byval s as integer ) as integer static
-    dim sname as string, d as integer
+function hCreateStringDesc( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr static
+    dim sname as string, d as FBSYMBOL ptr
 
-	hCreateStringDesc = INVALID
+	hCreateStringDesc = NULL
 
 	sname = hMakeTmpStr
 
 	d = hNewSymbol( sname, "", FB.SYMBCLASS.VAR, TRUE )
-    if( d = INVALID ) then
+    if( d = NULL ) then
     	exit function
     end if
 
 	''
-	symbolTB(d).scope	= 0
-	symbolTB(d).alloctype= FB.ALLOCTYPE.SHARED
+	d->scope	= 0
+	d->alloctype= FB.ALLOCTYPE.SHARED
 
-	symbolTB(d).typ		= FB.SYMBTYPE.STRING 'FB.SYMBTYPE.USERDEF
-	symbolTB(d).subtype	= FB.DESCTYPE.STR
-	symbolTB(d).lgt		= 0
-	symbolTB(d).v.dif	= 0
-	symbolTB(d).v.dims	= 0
-	symbolTB(d).v.desc	= INVALID
+	d->typ		= FB.SYMBTYPE.STRING 'FB.SYMBTYPE.USERDEF
+	d->subtype	= FB.DESCTYPE.STR
+	d->lgt		= 0
+	d->v.dif	= 0
+	d->v.dims	= 0
+	d->v.desc	= NULL
 
 	''
 	hCreateStringDesc = d
@@ -1212,24 +646,25 @@ function hCreateStringDesc( byval s as integer ) as integer static
 end function
 
 '':::::
-function hNewDim( head as integer, tail as integer, byval lower as long, byval upper as long ) as integer static
-    dim i as integer, d as integer, n as integer
+function hNewDim( head as FBVARDIM ptr, tail as FBVARDIM ptr, _
+				  byval lower as integer, byval upper as integer ) as FBVARDIM ptr static
+    dim d as FBVARDIM ptr, n as FBVARDIM ptr
 
-    hNewDim = INVALID
+    hNewDim = NULL
 
-    d = symbNewDimNode
-    if( d = INVALID ) then
+    d = listNewNode( @ctx.dimlist )
+    if( d = NULL ) then
     	exit function
     end if
 
-    dimTB(d).lower	= lower
-    dimTB(d).upper	= upper
+    d->lower = lower
+    d->upper = upper
 
 	n = tail
-	dimTB(d).r = INVALID
+	d->r = NULL
 	tail = d
-	if( n <> INVALID ) then
-		dimTB(n).r = d
+	if( n <> NULL ) then
+		n->r = d
 	else
 		head = d
 	end if
@@ -1239,10 +674,10 @@ function hNewDim( head as integer, tail as integer, byval lower as long, byval u
 end function
 
 '':::::
-sub hSetupVar( byval s as integer, sname as string, aname as string, _
-			   byval typ as integer, byval subtype as integer, _
+sub hSetupVar( byval s as FBSYMBOL ptr, sname as string, aname as string, _
+			   byval typ as integer, byval subtype as FBSYMBOL ptr, _
 			   byval lgt as integer, byval dimensions as integer, dTB() as FBARRAYDIM, _
-			   byval alloctype as integer ) static
+			   byval alloctype as integer, byval sentinel as FBSENTINEL ptr ) static
 
     dim i as integer, res as integer
     dim isshared as integer, isstatic as integer, isdynamic as integer
@@ -1252,58 +687,169 @@ sub hSetupVar( byval s as integer, sname as string, aname as string, _
     isdynamic = (alloctype and FB.ALLOCTYPE.DYNAMIC) > 0
 
 	''
-	symbolTB(s).scope	= env.scope
-	symbolTB(s).alloctype= alloctype
+	s->scope	= env.scope
+	s->alloctype= alloctype
 
-	symbolTB(s).typ		= typ
-	symbolTB(s).subtype	= subtype
-	symbolTB(s).lgt		= lgt
+	s->typ		= typ
+	s->subtype	= subtype
+	s->lgt		= lgt
 
 	'' array fields
-	symbolTB(s).v.dimhead = INVALID
-	symbolTB(s).v.dimtail =	INVALID
+	s->v.dimhead = NULL
+	s->v.dimtail = NULL
 
-	symbolTB(s).v.dif	= hCalcDiff( dimensions, dTB(), symbolTB(s).lgt )
-	symbolTB(s).v.dims	= dimensions
+	s->v.dif	= hCalcDiff( dimensions, dTB(), s->lgt )
+	s->v.dims	= dimensions
 	if( dimensions > 0 ) then
 		for i = 0 to dimensions-1
-			if( hNewDim( symbolTB(s).v.dimhead, symbolTB(s).v.dimtail, dTB(i).lower, dTB(i).upper ) = INVALID ) then
+			if( hNewDim( s->v.dimhead, s->v.dimtail, dTB(i).lower, dTB(i).upper ) = NULL ) then
 			end if
 		next i
 	end if
 
 	if( dimensions <> 0 ) then
-		symbolTB(s).v.desc = hCreateArrayDesc( s, dimensions )
+		s->v.desc = hCreateArrayDesc( s, dimensions )
 	else
-		symbolTB(s).v.desc = INVALID
+		s->v.desc = NULL
 	end if
+
+	s->sentinel = sentinel
 
 	'' add to hash tables (local or global)
 	if( (isshared) or (env.scope = 0) ) then
-		hashAdd sname, s, symbolTB(s).nameidx, symbhashTB(), FB.INITSYMBOLNODES
+		hashAdd ctx.symhash, sname, s, s->nameidx
 	else
-		hashAdd sname, s, symbolTB(s).nameidx, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+		hashAdd ctx.lochash, sname, s, s->nameidx
 
 		'' hack! add only the alias name to global table, DelLocalSymbols will do the rest
 		if( isstatic ) then
-			hashAdd aname, s, symbolTB(s).aliasidx, symbhashTB(), FB.INITSYMBOLNODES
+			hashAdd ctx.symhash, aname, s, s->aliasidx
 		end if
 	end if
 
 end sub
 
 '':::::
-function symbAddVarEx( symbol as string, aliasname as string, byval typ as integer, byval subtype as integer, _
+function symbLookupSentinel( id as string, byval class as integer, byval islocal as integer ) as FBSENTINEL ptr static
+    dim sname as string
+    dim s as FBSENTINEL ptr
+
+	sname = hCreateNameEx( id )
+
+	'' first check the local symbols if current scope > 0
+	s = NULL
+	if( islocal ) then
+		s = hashLookup( ctx.locsenhash, sname )
+	end if
+
+	'' check module level symbols (and shared if current scope > 0)
+	if( s = NULL ) then
+		s = hashLookup( ctx.senhash, sname )
+		if( s <> NULL ) then
+			if( (islocal) and (not s->isglobal) ) then
+				s = NULL
+			end if
+		end if
+	end if
+
+	symbLookupSentinel = s
+
+end function
+
+'':::::
+function hAddSentinel( id as string, byval class as integer, byval isglobal as integer, _
+					   byval suffix as integer = INVALID ) as FBSENTINEL ptr static
+    dim sname as string
+    dim s as FBSENTINEL ptr
+
+    hAddSentinel = NULL
+
+	s = symbLookupSentinel( id, class, env.scope > 0 )
+
+    '' already exists?
+    if( s <> NULL ) then
+    	'' not a var, no dup defs
+    	if( (class <> FB.SYMBCLASS.VAR) or (s->class <> FB.SYMBCLASS.VAR) ) then
+    		exit function
+    	end if
+
+    	'' allow local vars with same names as global ones, check only at same scope
+    	if( env.scope = s->scope ) then
+    		'' not suffixed?
+    		if( (suffix = INVALID) or (s->suffix = INVALID) ) then
+    			exit function
+    		end if
+
+    		s->count = s->count + 1
+
+    		hAddSentinel = s
+    		exit function
+    	end if
+    end if
+
+    '' add to list
+    if( env.scope = 0 ) then
+    	s = listNewNode( @ctx.senlist )
+    else
+    	s = listNewNode( @ctx.locsenlist )
+    end if
+
+	sname = hCreateNameEx( id )
+
+    s->class 	= class
+    s->scope    = env.scope
+    s->suffix 	= suffix
+    s->isglobal = isglobal
+    s->count 	= 1
+	s->nameidx	= strpAdd( sname )
+
+    if( env.scope = 0 ) then
+    	hashAdd ctx.senhash, sname, s, s->nameidx
+    else
+    	hashAdd ctx.locsenhash, sname, s, s->nameidx
+    end if
+
+    hAddSentinel = s
+
+end function
+
+'':::::
+sub hDelSentinel( byval s as FBSENTINEL ptr, byval isglobal as integer ) static
+
+	if( s = NULL ) then
+		exit sub
+	end if
+
+	s->count = s->count - 1
+	if( s->count > 0 ) then
+		exit sub
+	end if
+
+	'' del from list
+	if( s->scope = 0 ) then
+		hashDel ctx.senhash, strpGet( s->nameidx )
+		listDelNode( @ctx.senlist, s )
+	else
+		hashDel ctx.locsenhash, strpGet( s->nameidx )
+		listDelNode( @ctx.locsenlist, s )
+	end if
+
+end sub
+
+'':::::
+function symbAddVarEx( symbol as string, aliasname as string, _
+					   byval typ as integer, byval subtype as FBSYMBOL ptr, _
 					   byval lgt as integer, byval dimensions as integer, dTB() as FBARRAYDIM, _
 				       byval alloctype as integer, _
 				       byval addsuffix as integer, byval preservecase as integer, _
-				       byval clearname as integer ) as integer 'static
+				       byval clearname as integer ) as FBSYMBOL ptr 'static
 
-    dim s as integer, sname as string, aname as string
-    dim elms as long, stype as integer, arglen as integer
+    dim s as FBSYMBOL ptr, sname as string, aname as string
+    dim elms as integer, stype as integer, arglen as integer
     dim isshared as integer, isstatic as integer, isarg as integer, islocal as integer
+    dim sentinel as FBSENTINEL ptr
 
-    symbAddVarEx = INVALID
+    symbAddVarEx = NULL
 
     ''
     isshared = (alloctype and FB.ALLOCTYPE.SHARED) > 0
@@ -1314,6 +860,26 @@ function symbAddVarEx( symbol as string, aliasname as string, byval typ as integ
 	islocal  = FALSE
 
     ''
+    if( addsuffix ) then
+    	stype = typ
+    else
+    	stype = INVALID
+    end if
+
+    '' only create the sentinel if not a string|fpoint constant ("a" and "A" would be the same)
+    if( clearname ) then
+    	sentinel = hAddSentinel( symbol, FB.SYMBCLASS.VAR, isshared, stype )
+    	if( sentinel = NULL ) then
+    		exit function
+    	end if
+    else
+    	sentinel = NULL
+    end if
+
+    ''
+    sname = hCreateNameEx( symbol, stype, preservecase, TRUE, clearname )
+
+    ''
     if( lgt <= 0 ) then
 		if( typ = INVALID ) then
 			stype = hGetDefType( symbol )
@@ -1321,13 +887,6 @@ function symbAddVarEx( symbol as string, aliasname as string, byval typ as integ
 			stype = typ
 		end if
     	lgt	= symbCalcLen( stype, subtype )
-    end if
-
-    ''
-    if( addsuffix ) then
-    	sname = hCreateNameEx( symbol, typ, preservecase, TRUE, clearname )
-    else
-    	sname = hCreateNameEx( symbol, INVALID, preservecase, TRUE, clearname )
     end if
 
 	'' create an alias name (the real one that will be emited)
@@ -1359,7 +918,7 @@ function symbAddVarEx( symbol as string, aliasname as string, byval typ as integ
 	''
 	s = hNewSymbol( sname, aname, FB.SYMBCLASS.VAR, (isshared) or (env.scope = 0) )
 
-	if( s = INVALID ) then
+	if( s = NULL ) then
 		'' remove a local or arg or else emit will reserve unused space for it..
 		if( islocal ) then
 			emitFreeLocal lgt * elms
@@ -1374,16 +933,16 @@ function symbAddVarEx( symbol as string, aliasname as string, byval typ as integ
 		typ = hGetDefType( symbol )
 	end if
 
-	hSetupVar s, sname, aname, typ, subtype, lgt, dimensions, dTB(), alloctype
+	hSetupVar s, sname, aname, typ, subtype, lgt, dimensions, dTB(), alloctype, sentinel
 
 	symbAddVarEx = s
 
 end function
 
 '':::::
-function symbAddVar( symbol as string, byval typ as integer, byval subtype as integer, _
+function symbAddVar( symbol as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
 				     byval dimensions as integer, dTB() as FBARRAYDIM, _
-				     byval alloctype as integer ) as integer static
+				     byval alloctype as integer ) as FBSYMBOL ptr static
 
     symbAddVar = symbAddVarEx( symbol, "", typ, subtype, _
     						   0, dimensions, dTB(), _
@@ -1392,8 +951,8 @@ function symbAddVar( symbol as string, byval typ as integer, byval subtype as in
 end function
 
 '':::::
-function symbAddTempVar( byval typ as integer ) as integer static
-	dim sname as string, s as integer, alloctype as integer
+function symbAddTempVar( byval typ as integer ) as FBSYMBOL ptr static
+	dim sname as string, s as FBSYMBOL ptr, alloctype as integer
     dim dTB(0) as FBARRAYDIM
 
 	sname = hMakeTmpStr
@@ -1402,114 +961,123 @@ function symbAddTempVar( byval typ as integer ) as integer static
 	if( (env.scope > 0) and (env.isprocstatic) ) then
 		alloctype = alloctype or FB.ALLOCTYPE.STATIC
 	end if
-	s = symbAddVar( sname, typ, INVALID, 0, dTB(), alloctype )
+
+	s = symbAddVar( sname, typ, NULL, 0, dTB(), alloctype )
 
 	symbAddTempVar = s
-	if( s = INVALID ) then
-		exit function
-	end if
 
 end function
 
 '':::::
 function hAllocFloatConst( sname as string, byval typ as integer ) as integer static
-	dim s as integer, ofs as integer, dTB(0) as FBARRAYDIM
+	dim s as FBSYMBOL ptr, ofs as integer, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
-    dim elm as integer, typesymbol as integer
+    dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
     dim p as integer
 
-	hAllocFloatConst = INVALID
+	hAllocFloatConst = NULL
 
 	cname = "_fc_" + sname
 
 	aname = hMakeTmpStr
 
-	s = symbAddVarEx( cname, aname, typ, INVALID, 0, 0, dTB(), FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
-	if( s = INVALID ) then
+	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, dTB(), FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
+	if( s = NULL ) then
 		hAllocFloatConst = symbLookupVarEx( cname, typ, ofs, elm, typesymbol, TRUE, FALSE, FALSE )
 		exit function
 	end if
 
-	symbolTB(s).initialized = TRUE
+	s->initialized = TRUE
 
 	p = instr( sname, "D" )
 	if( p <> 0 ) then
 		mid$( sname, p, 1 ) = "E"
 	end if
-	symbolTB(s).inittextidx	= strpAdd( sname )
+	s->inittextidx	= strpAdd( sname )
 
 	hAllocFloatConst = s
 
 end function
 
 '':::::
-function hAllocStringConst( sname as string ) as integer static
-	dim s as integer, ofs as integer, dTB(0) as FBARRAYDIM
+function hAllocStringConst( sname as string ) as FBSYMBOL ptr static
+	dim s as FBSYMBOL ptr, ofs as integer, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
-    dim elm as integer, typesymbol as integer
+    dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
 
-	hAllocStringConst = INVALID
+	hAllocStringConst = NULL
 
 	cname = "_sc_" + sname
 
 	aname = hMakeTmpStr
 
-	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, INVALID, len( sname ) + 1, 0, dTB(), FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
-	if( s = INVALID ) then
+	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, len( sname ) + 1, 0, dTB(), FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
+	if( s = NULL ) then
 		s = symbLookupVarEx( cname, FB.SYMBTYPE.FIXSTR, ofs, elm, typesymbol, FALSE, TRUE, FALSE )
-		hAllocStringConst = s 'symbolTB(s).v.desc
+		hAllocStringConst = s 's->v.desc
 		exit function
 	end if
 
-	symbolTB(s).initialized = TRUE
-	symbolTB(s).inittextidx	= strpAdd( sname )
+	s->initialized = TRUE
+	s->inittextidx	= strpAdd( sname )
 
 	'' can't fake a descriptor as the literal string passed to user procs can be modified/reused
-	'symbolTB(s).v.desc = hCreateStringDesc( s )
+	's->v.desc = hCreateStringDesc( s )
 
-	hAllocStringConst = s 'symbolTB(s).v.desc
+	hAllocStringConst = s 's->v.desc
 
 end function
 
 '':::::
-function symbAddConst( id as string, byval typ as integer, text as string ) as integer static
-    dim i as integer, c as integer
+function symbAddConst( id as string, byval typ as integer, text as string ) as FBSYMBOL ptr static
+    dim c as FBSYMBOL ptr
     dim cname as string
+    dim sentinel as FBSENTINEL ptr
 
-    symbAddConst = FALSE
+    symbAddConst = NULL
 
+    ''
+    sentinel = hAddSentinel( id, FB.SYMBCLASS.CONST, env.scope = 0 )
+    if( sentinel = NULL ) then
+    	exit function
+    end if
+
+    ''
     cname = hCreateName( id, INVALID )
 
     c = hNewSymbol( cname, "", FB.SYMBCLASS.CONST, env.scope = 0 )
-
-	if( c = INVALID ) then
+	if( c = NULL ) then
 		exit function
 	end if
 
-	symbolTB(c).scope   	= env.scope
-	symbolTB(c).typ 		= typ
-	symbolTB(c).lgt			= len( text )
-	symbolTB(c).c.textidx 	= strpAdd( text )
+	c->scope   	= env.scope
+	c->typ 		= typ
+	c->lgt		= len( text )
+	c->sentinel	= sentinel
+	c->c.textidx= strpAdd( text )
 
 	''
 	if( env.scope > 0 ) then
-		hashAdd cname, c, symbolTB(c).nameidx, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+		hashAdd ctx.lochash, cname, c, c->nameidx
 	else
-		hashAdd cname, c, symbolTB(c).nameidx, symbhashTB(), FB.INITSYMBOLNODES
-		symbolTB(c).alloctype = FB.ALLOCTYPE.SHARED
+		hashAdd ctx.symhash, cname, c, c->nameidx
+		c->alloctype = FB.ALLOCTYPE.SHARED
 	end if
 
-	symbAddConst = TRUE
+	symbAddConst = c
 
 end function
 
 '':::::
-function symbAddLabelEx( label as string, byval declaring as integer, byval createalias as integer = FALSE ) as integer static
-    dim i as integer, l as integer
+function symbAddLabelEx( label as string, byval declaring as integer, byval createalias as integer = FALSE ) as FBSYMBOL ptr static
+    dim l as FBSYMBOL ptr
     dim lname as string, aname as string
 
-    symbAddLabelEx = INVALID
+    symbAddLabelEx = NULL
 
+    '' there's no sentinel, labels can be declared with the same name as any symbol
+
+    ''
     lname = hCreateNameEx( label, FB.SYMBTYPE.LABEL, FALSE, TRUE, TRUE )
 
     if( env.scope > 0 ) then
@@ -1518,21 +1086,21 @@ function symbAddLabelEx( label as string, byval declaring as integer, byval crea
 
     '' check if label already exists
     if( env.scope = 0 ) then
-    	l = hashLookup( lname, symbhashTB(), FB.INITSYMBOLNODES )
+    	l = hashLookup( ctx.symhash, lname )
     else
-    	l = hashLookup( lname, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
+    	l = hashLookup( ctx.lochash, lname )
     end if
 
-    if( l <> INVALID ) then
-    	if( symbolTB(l).class <> FB.SYMBCLASS.LABEL ) then
+    if( l <> NULL ) then
+    	if( l->class <> FB.SYMBCLASS.LABEL ) then
     		exit function
     	end if
 
     	if( declaring ) then
-    		if( symbolTB(l).l.declared ) then
+    		if( l->l.declared ) then
     			exit function
     		else
-    			symbolTB(l).l.declared = TRUE
+    			l->l.declared = TRUE
     			symbAddLabelEx = l
     			exit function
     		end if
@@ -1549,18 +1117,19 @@ function symbAddLabelEx( label as string, byval declaring as integer, byval crea
 	else
 		aname = hMakeTmpStr
 	end if
+
     l = hNewSymbol( lname, aname, FB.SYMBCLASS.LABEL, env.scope = 0 )
-    if( l = INVALID ) then
+    if( l = NULL ) then
     	exit function
     end if
 
-	symbolTB(l).l.declared 	= declaring
-	symbolTB(l).scope    	= env.scope
+	l->l.declared 	= declaring
+	l->scope    	= env.scope
 
 	if( env.scope = 0 ) then
-		hashAdd lname, l, symbolTB(l).nameidx, symbhashTB(), FB.INITSYMBOLNODES
+		hashAdd ctx.symhash, lname, l, l->nameidx
 	else
-		hashAdd lname, l, symbolTB(l).nameidx, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+		hashAdd ctx.lochash, lname, l, l->nameidx
 	end if
 
 	symbAddLabelEx = l
@@ -1568,7 +1137,7 @@ function symbAddLabelEx( label as string, byval declaring as integer, byval crea
 end function
 
 '':::::
-function symbAddLabel( label as string ) as integer static
+function symbAddLabel( label as string ) as FBSYMBOL ptr static
 
 	symbAddLabel = symbAddLabelEx( label, TRUE, FALSE )
 
@@ -1576,35 +1145,38 @@ end function
 
 
 '':::::
-function symbAddUDT( id as string, byval isunion as integer, byval align as integer ) as integer static
-    dim i as integer, t as integer
+function symbAddUDT( id as string, byval isunion as integer, byval align as integer ) as FBSYMBOL ptr static
+    dim t as FBSYMBOL ptr
     dim tname as string
 
-    symbAddUDT = INVALID
+    symbAddUDT = NULL
 
+    '' there's no sentinel, UDT's can be declared with the same name as
+    '' any symbol, making it not so easy to len( ) decide..
+
+    ''
     tname = hCreateName( id, FB.SYMBTYPE.USERDEF )
 
     t = hNewSymbol( tname, "", FB.SYMBCLASS.UDT, env.scope = 0 )
-
-	if( t = INVALID ) then
+	if( t = NULL ) then
 		exit function
 	end if
 
-	symbolTB(t).scope   	= env.scope
-	symbolTB(t).lgt			= 0
-	symbolTB(t).u.isunion	= isunion
-	symbolTB(t).u.elements	= 0
-	symbolTB(t).u.head 		= INVALID
-	symbolTB(t).u.tail 		= INVALID
-	symbolTB(t).u.ofs		= 0
-	symbolTB(t).u.align		= align
-	symbolTB(t).u.innerlgt	= 0
+	t->scope   		= env.scope
+	t->lgt			= 0
+	t->u.isunion	= isunion
+	t->u.elements	= 0
+	t->u.head 		= NULL
+	t->u.tail 		= NULL
+	t->u.ofs		= 0
+	t->u.align		= align
+	t->u.innerlgt	= 0
 
 	if( env.scope > 0 ) then
-		hashAdd tname, t, symbolTB(t).nameidx, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+		hashAdd ctx.lochash, tname, t, t->nameidx
 	else
-		hashAdd tname, t, symbolTB(t).nameidx, symbhashTB(), FB.INITSYMBOLNODES
-		symbolTB(t).alloctype = FB.ALLOCTYPE.SHARED
+		hashAdd ctx.symhash, tname, t, t->nameidx
+		t->alloctype = FB.ALLOCTYPE.SHARED
 	end if
 
 	symbAddUDT = t
@@ -1612,8 +1184,10 @@ function symbAddUDT( id as string, byval isunion as integer, byval align as inte
 end function
 
 '':::::
-function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as integer ) as integer
+function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as integer, _
+					 byval typ as integer, byval subtype as FBSYMBOL ptr ) as integer static
     dim pad as integer
+    dim e as FBTYPELEMENT ptr
 
 	hCalcALign = 0
 
@@ -1621,9 +1195,27 @@ function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as 
 		exit function
 	end if
 
+	'' if field is another UDT, loop until a non-UDT header field is found
+	if( typ = FB.SYMBTYPE.USERDEF ) then
+		do
+			e = subtype->u.head
+    		typ = e->typ
+    		subtype = e->subtype
+		loop while( typ = FB.SYMBTYPE.USERDEF )
+
+		lgt = e->lgt
+		'' len = field's len + pad from current field to the next field, if any
+		e = e->r
+		if( e <> NULL ) then
+			lgt = lgt + (e->ofs - lgt)
+		end if
+	end if
+
 	select case lgt
-	case 1, 2, 4
+	'' align byte, short, int's, float's and double's to the nearest boundary
+	case 1, 2, 4, 8
 		pad = lgt - 1
+	'' anything else to align given (default: sizeof( int ))
 	case else
 		pad = align - 1
 		lgt = align
@@ -1635,90 +1227,90 @@ function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as 
 
 end function
 
-
 '':::::
-function hNewUDTElement( t as integer, ename as string, _
+function hNewUDTElement( byval t as FBSYMBOL ptr, ename as string, _
 						 byval dimensions as integer, dTB() as FBARRAYDIM, _
-						 byval typ as integer, byval subtype as integer, byval lgt as integer, _
-						 byval isinnerunion as integer ) as integer static
-    dim i as integer, e as integer, n as integer, d as integer
+						 byval typ as integer, byval subtype as FBSYMBOL ptr, byval lgt as integer, _
+						 byval isinnerunion as integer ) as FBTYPELEMENT ptr static
+    dim i as integer
+    dim e as FBTYPELEMENT ptr, n as FBTYPELEMENT ptr
     dim align as integer
 
-    hNewUDTElement = INVALID
+    hNewUDTElement = NULL
 
     '' check if element already exists in the current struct
-    i = symbolTB(t).u.head
-    do while( i <> INVALID )
+    e = t->u.head
+    do while( e <> NULL )
 
-    	if( strpGet( typelmTB(i).nameidx ) = ename ) then
+    	if( strpGet( e->nameidx ) = ename ) then
     		exit function
     	end if
 
-    	i = typelmTB(i).r
+    	e = e->r
     loop
 
-    e = symbNewElmNode
-    if( e = INVALID ) then
+    e = listNewNode( @ctx.elmlist )
+    if( e = NULL ) then
     	exit function
     end if
 
-    typelmTB(e).typ		= typ
-    typelmTB(e).subtype	= subtype
-	if( lgt <= 0 ) then
-		lgt	= symbCalcLen( typ, subtype )
+    e->typ		= typ
+    e->subtype	= subtype
+	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
+		lgt	= symbCalcLen( typ, subtype, TRUE )
 	end if
 
-	align = hCalcALign( lgt, symbolTB(t).u.ofs, symbolTB(t).u.align )
+	align = hCalcALign( lgt, t->u.ofs, t->u.align, typ, subtype )
 	if( align > 0 ) then
-		symbolTB(t).u.ofs = symbolTB(t).u.ofs + align
+		t->u.ofs = t->u.ofs + align
 	end if
 
-	typelmTB(e).ofs		= symbolTB(t).u.ofs
-	typelmTB(e).lgt		= lgt
-	typelmTB(e).dif		= hCalcDiff( dimensions, dTB(), typelmTB(e).lgt )
-    typelmTB(e).parent	= t
-    typelmTB(e).nameidx	= strpAdd( ename )
+	e->ofs		= t->u.ofs
+	e->lgt		= lgt
+	e->dif		= hCalcDiff( dimensions, dTB(), e->lgt )
+    e->parent	= t
+    e->nameidx	= strpAdd( ename )
 
-	n = symbolTB(t).u.tail
-	typelmTB(e).l = n
-	typelmTB(e).r = INVALID
-	symbolTB(t).u.tail = e
-	if( n <> INVALID ) then
-		typelmTB(n).r = e
+	n = t->u.tail
+	e->l = n
+	e->r = NULL
+	t->u.tail = e
+	if( n <> NULL ) then
+		n->r = e
 	else
-		symbolTB(t).u.head = e
+		t->u.head = e
 	end if
 
-    symbolTB(t).u.elements	= symbolTB(t).u.elements + 1
+    t->u.elements	= t->u.elements + 1
 
 	'' array fields
-	typelmTB(e).dimhead = INVALID
-	typelmTB(e).dimtail = INVALID
+	e->dimhead	= NULL
+	e->dimtail 	= NULL
 
-	typelmTB(e).dims	= dimensions
+	e->dims		= dimensions
 	if( dimensions > 0 ) then
 		for i = 0 to dimensions-1
-			if( hNewDim( typelmTB(e).dimhead, typelmTB(e).dimtail, dTB(i).lower, dTB(i).upper ) = INVALID ) then
+			if( hNewDim( e->dimhead, e->dimtail, dTB(i).lower, dTB(i).upper ) = NULL ) then
 			end if
 		next i
 	end if
 
 	lgt = lgt * hCalcElements2( dimensions, dTB() )
 
-	if( not symbolTB(t).u.isunion ) then
+	if( not t->u.isunion ) then
 		if( not isinnerunion ) then
-			symbolTB(t).u.ofs = symbolTB(t).u.ofs + lgt
-			symbolTB(t).lgt = symbolTB(t).u.ofs
+			t->u.ofs = t->u.ofs + lgt
+			t->lgt = t->u.ofs
 		else
-			if( lgt > symbolTB(t).u.innerlgt ) then
-				symbolTB(t).u.innerlgt = lgt
+			if( lgt > t->u.innerlgt ) then
+				t->u.innerlgt = lgt
 			end if
 		end if
 
 	else
-		symbolTB(t).u.ofs = 0
-		if( lgt > symbolTB(t).lgt ) then
-			symbolTB(t).lgt = lgt
+		t->u.ofs = 0
+		if( lgt > t->lgt ) then
+			t->lgt = lgt
 		end if
 	end if
 
@@ -1728,10 +1320,10 @@ function hNewUDTElement( t as integer, ename as string, _
 end function
 
 '':::::
-function symbAddUDTElement( byval t as integer, id as string, _
-							 byval dimensions as integer, dTB() as FBARRAYDIM, _
-							 byval typ as integer, byval subtype as integer, byval lgt as integer, _
-							 byval isinnerunion as integer ) as integer static
+function symbAddUDTElement( byval t as FBSYMBOL ptr, id as string, _
+							byval dimensions as integer, dTB() as FBARRAYDIM, _
+							byval typ as integer, byval subtype as FBSYMBOL ptr, byval lgt as integer, _
+							byval isinnerunion as integer ) as FBTYPELEMENT ptr static
 
     dim ename as string
 
@@ -1742,58 +1334,66 @@ function symbAddUDTElement( byval t as integer, id as string, _
 end function
 
 '':::::
-sub symbRoundUDTSize( byval t as integer ) static
+sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
     dim round as integer, align as integer
 
-	align = symbolTB(t).u.align
+	align = t->u.align
 
 	if( align <= 1 ) then
 		exit sub
 	end if
 
-	round = (align - (symbolTB(t).lgt and (align-1))) and (align-1)
+	round = (align - (t->lgt and (align-1))) and (align-1)
 
 	if( round > 0 ) then
-		symbolTB(t).lgt = symbolTB(t).lgt + round
+		t->lgt = t->lgt + round
 	end if
 
 end sub
 
 '':::::
-sub symbRecalcUDTSize( byval t as integer ) static
+sub symbRecalcUDTSize( byval t as FBSYMBOL ptr ) static
     dim lgt as integer
 
-	lgt = symbolTB(t).u.innerlgt
+	lgt = t->u.innerlgt
 	if( lgt > 0 ) then
-		symbolTB(t).u.ofs = symbolTB(t).u.ofs + lgt
-		symbolTB(t).lgt = symbolTB(t).u.ofs
-		symbolTB(t).u.innerlgt = 0
+		t->u.ofs		= t->u.ofs + lgt
+		t->lgt 			= t->u.ofs
+		t->u.innerlgt 	= 0
 	end if
 
 end sub
 
 
 '':::::
-function symbAddEnum( id as string ) as integer static
-    dim i as integer, e as integer
+function symbAddEnum( id as string ) as FBSYMBOL ptr static
+    dim i as integer, e as FBSYMBOL ptr
     dim ename as string
+    dim sentinel as FBSENTINEL ptr
 
-    symbAddEnum = INVALID
+    symbAddEnum = NULL
 
+    ''
+    sentinel = hAddSentinel( id, FB.SYMBCLASS.ENUM, env.scope = 0 )
+    if( sentinel = NULL ) then
+    	exit function
+    end if
+
+    ''
     ename = hCreateName( id, FB.SYMBTYPE.USERDEF )
 
     e = hNewSymbol( ename, "", FB.SYMBCLASS.ENUM, env.scope = 0 )
-
-	if( e = INVALID ) then
+	if( e = NULL ) then
 		exit function
 	end if
 
-	symbolTB(e).scope   	= env.scope
+	e->scope   	= env.scope
+	e->sentinel	= sentinel
 
 	if( env.scope > 0 ) then
-		hashAdd ename, e, symbolTB(e).nameidx, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+		hashAdd ctx.lochash, ename, e, e->nameidx
 	else
-		hashAdd ename, e, symbolTB(e).nameidx, symbhashTB(), FB.INITSYMBOLNODES
+		hashAdd ctx.symhash, ename, e, e->nameidx
 	end if
 
 	symbAddEnum = e
@@ -1805,27 +1405,27 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbAddLib( libname as string ) as integer static
-    dim i as integer, l as integer
+function symbAddLib( libname as string ) as FBLIBRARY ptr static
+    dim l as FBLIBRARY ptr
 
-    symbAddLib = INVALID
+    symbAddLib = NULL
 
     '' check if not already declared
-    l = hashLookup( libname, libhashTB(), FB.INITLIBNODES )
-    if( l <> INVALID ) then
+    l = hashLookup( ctx.libhash, libname )
+    if( l <> NULL ) then
     	symbAddLib = l
     	exit function
     end if
 
-    l = symbNewLibNode
-	if( l = INVALID ) then
+    l = listNewNode( @ctx.liblist )
+	if( l = NULL ) then
 		exit function
 	end if
 
 	''
-	libTB(l).nameidx = strpAdd( libname )
+	l->nameidx = strpAdd( libname )
 
-	hashAdd libname, l, libTB(l).nameidx, libhashTB(), FB.INITLIBNODES
+	hashAdd ctx.libhash, libname, l, l->nameidx
 
 	symbAddLib = l
 
@@ -1849,94 +1449,66 @@ function hCalcProcArgsLen( byval args as integer, argv() as FBPROCARG ) as integ
 end function
 
 '':::::
-function hNewArg( byval f as integer, arg as FBPROCARG ) as integer static
-    dim i as integer, a as integer, n as integer
+private function hNewArg( byval f as FBSYMBOL ptr, arg as FBPROCARG ) as FBPROCARG ptr static
+    dim a as FBPROCARG ptr, n as FBPROCARG ptr
 
-    hNewArg = INVALID
+    hNewArg = NULL
 
-    a = symbNewArgNode
-    if( a = INVALID ) then
+    a = listNewNode( @ctx.arglist )
+    if( a = NULL ) then
     	exit function
     end if
 
-    argTB(a).nameidx	= arg.nameidx
-	argTB(a).typ		= arg.typ
-	argTB(a).subtype	= arg.subtype
-	argTB(a).lgt		= arg.lgt
-	argTB(a).mode		= arg.mode
-	argTB(a).suffix		= arg.suffix
-	argTB(a).optional	= arg.optional
-	argTB(a).defvalue	= arg.defvalue
-
-	n = symbolTB(f).p.argtail
-	argTB(a).l = n
-	argTB(a).r = INVALID
-	symbolTB(f).p.argtail = a
-	if( n <> INVALID ) then
-		argTB(n).r = a
+	n = f->p.argtail
+	a->l = n
+	a->r = NULL
+	f->p.argtail = a
+	if( n <> NULL ) then
+		n->r = a
 	else
-		symbolTB(f).p.arghead = a
+		f->p.arghead = a
 	end if
+
+	f->p.args = f->p.args + 1
+
+	''
+    a->nameidx	= arg.nameidx
+	a->typ		= arg.typ
+	a->subtype	= arg.subtype
+	a->lgt		= arg.lgt
+	a->mode		= arg.mode
+	a->suffix	= arg.suffix
+	a->optional	= arg.optional
+	a->defvalue	= arg.defvalue
 
     hNewArg = a
 
 end function
 
 '':::::
-sub hSetupProc( byval f as integer, sname as string, aliasname as string, libname as string, _
-				byval typ as integer, byval mode as integer, byval lgt as integer, _
-			    byval args as integer, argv() as FBPROCARG, byval declaring as integer ) static
+private function hSetupProc( id as string, aliasname as string, libname as string, _
+				             byval typ as integer, byval mode as integer, _
+				             byval argc as integer, argv() as FBPROCARG, _
+			                 byval declaring as integer ) as FBSYMBOL ptr static
 
+    dim toupper as integer, lgt as integer
+    dim f as FBSYMBOL ptr, sentinel as FBSENTINEL ptr
+    dim sname as string, aname as string
     dim i as integer
 
-	symbolTB(f).scope	= env.scope
-	symbolTB(f).alloctype= FB.ALLOCTYPE.SHARED
+    hSetupProc = NULL
 
-	symbolTB(f).typ		= typ
-	symbolTB(f).lgt		= lgt
+    ''
+    sentinel = hAddSentinel( id, FB.SYMBCLASS.PROC, TRUE )
+    if( sentinel = NULL ) then
+    	exit function
+    end if
 
-	symbolTB(f).p.isdeclared = declaring
-	symbolTB(f).p.mode	= mode
-
-	symbolTB(f).p.arghead = INVALID
-	symbolTB(f).p.argtail = INVALID
-	symbolTB(f).p.args	= args
-	for i = 0 to args-1
-		if( hNewArg( f, argv(i) ) = INVALID ) then
-		end if
-	next i
-
-	if( len( aliasname ) > 0 ) then
-		symbolTB(f).aliasidx = strpAdd( aliasname )
-	else
-		symbolTB(f).aliasidx = INVALID
-	end if
-
-	if( len( libname ) > 0 ) then
-		symbolTB(f).p.lib = symbAddLib( libname )
-	else
-		symbolTB(f).p.lib = INVALID
-	end if
-
-	hashAdd sname, f, symbolTB(f).nameidx, symbhashTB(), FB.INITSYMBOLNODES
-
-end sub
-
-'':::::
-function symbAddProc( id as string, aliasname as string, libname as string, byval typ as integer, _
-                      byval mode as integer, byval args as integer, argv() as FBPROCARG, _
-                      byval declaring as integer ) as integer static
-
-    dim f as integer, sname as string, aname as string, lgt as integer
-    dim toupper as integer
-
-    symbAddProc = INVALID
-
+	''
     sname = hCreateName( id, INVALID )
 
 	f = hNewSymbol( sname, "", FB.SYMBCLASS.PROC, TRUE )
-
-	if( f = INVALID ) then
+	if( f = NULL ) then
 		exit function
 	end if
 
@@ -1944,8 +1516,9 @@ function symbAddProc( id as string, aliasname as string, libname as string, byva
 		typ = hGetDefType( id )
 	end if
 
-    lgt = hCalcProcArgsLen( args, argv() )
+    lgt = hCalcProcArgsLen( argc, argv() )
 
+    ''
     if( len( aliasname ) = 0 ) then
     	aname = id
     	toupper = TRUE
@@ -1962,20 +1535,114 @@ function symbAddProc( id as string, aliasname as string, libname as string, byva
     	aname = hCreateAliasName( aname, lgt, toupper, mode )
     end if
 
-	hSetupProc f, sname, aname, libname, typ, mode, lgt, args, argv(), declaring
+    ''
+	f->scope	= env.scope
+	f->alloctype= FB.ALLOCTYPE.SHARED
+    f->sentinel = sentinel
+
+	f->typ		= typ
+	f->lgt		= lgt
+
+	f->p.isdeclared = declaring
+	f->p.mode	= mode
+	f->aliasidx = strpAdd( aname )
+
+	if( len( libname ) > 0 ) then
+		f->p.lib = symbAddLib( libname )
+	else
+		f->p.lib = NULL
+	end if
+
+	'' add arguments (w/o declaring them as symbols)
+	f->p.arghead= NULL
+	f->p.argtail= NULL
+	f->p.args 	= 0
+
+	for i = 0 to argc-1
+		if( hNewArg( f, argv(i) ) = NULL ) then
+			exit function
+		end if
+	next i
+
+	''
+	hashAdd ctx.symhash, sname, f, f->nameidx
+
+	hSetupProc = f
+
+end function
+
+'':::::
+function symbAddPrototype( id as string, aliasname as string, libname as string, _
+						   byval typ as integer, byval mode as integer, _
+						   byval argc as integer, argv() as FBPROCARG, _
+						   byval isexternal as integer ) as FBSYMBOL ptr static
+
+    dim f as FBSYMBOL ptr
+
+    symbAddPrototype = NULL
+
+	f = hSetupProc( id, aliasname, libname, typ, mode, argc, argv(), isexternal )
+	if( f = NULL ) then
+		exit function
+	end if
+
+	symbAddPrototype = f
+
+end function
+
+'':::::
+function symbAddProc( id as string, aliasname as string, libname as string, _
+					  byval typ as integer, byval mode as integer, _
+					  byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr static
+
+    dim f as FBSYMBOL ptr
+
+    symbAddProc = NULL
+
+	f = hSetupProc( id, aliasname, libname, typ, mode, argc, argv(), TRUE )
+	if( f = NULL ) then
+		exit function
+	end if
 
 	symbAddProc = f
 
 end function
 
 '':::::
-function symbCalcArgsLen( byval f as integer, byval args as integer ) as integer static
+function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FBSYMBOL ptr
+    dim dTB(0) as FBARRAYDIM
+    dim s as FBSYMBOL ptr, alloctype as integer
+
+	symbAddArg = NULL
+
+	select case arg->mode
+    case FB.ARGMODE.BYVAL
+    	alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL
+	case FB.ARGMODE.BYDESC
+    	alloctype = FB.ALLOCTYPE.ARGUMENTBYDESC
+	case else
+    	alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
+	end select
+
+    s = symbAddVarEx( strpGet( arg->nameidx ), "", arg->typ, arg->subtype, 0, _
+    				  0, dTB(), alloctype, arg->suffix <> INVALID, FALSE, TRUE )
+
+    if( s = NULL ) then
+    	exit function
+    end if
+
+	symbAddArg = s
+
+end function
+
+'':::::
+function symbCalcArgsLen( byval f as FBSYMBOL ptr, byval args as integer ) as integer static
     dim lgt as integer
 
 	'' use symbGetLen() with normal procs, this is only for C var-len progs
-	lgt = symbolTB(f).lgt
-	if( args > symbolTB(f).p.args ) then
-		lgt = lgt + ((args - symbolTB(f).p.args) * FB.INTEGERSIZE)
+	lgt = f->lgt
+	if( args > f->p.args ) then
+		lgt = lgt + ((args - f->p.args) * FB.INTEGERSIZE)
 	end if
 
 	symbCalcArgsLen = lgt
@@ -1983,15 +1650,15 @@ function symbCalcArgsLen( byval f as integer, byval args as integer ) as integer
 end function
 
 '':::::
-function symbAddProcResult( byval f as integer ) as integer static
+function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	dim rname as string, typ as integer
 	dim dTB(0) as FBARRAYDIM
 
-	rname = strpGet( symbolTB(f).aliasidx )
+	rname = strpGet( f->aliasidx )
 
-	typ = symbolTB(f).typ
+	typ = f->typ
 
-	symbAddProcResult = symbAddVarEx( rname, "", typ, symbolTB(f).subtype, 0, _
+	symbAddProcResult = symbAddVarEx( rname, "", typ, f->subtype, 0, _
 			 			              0, dTB(), 0, TRUE, FALSE, TRUE )
 
 end function
@@ -2001,16 +1668,17 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbLookupDefine( id as string ) as integer static
+function symbLookupDefine( id as string ) as FBDEFINE ptr static
+    dim r as FBDEFINE ptr
 
-    symbLookupDefine = hashLookup( ucase$( id ), defhashTB(), FB.INITDEFINENODES )
+    symbLookupDefine = hashLookup( ctx.defhash, ucase$( id ) )
 
 end function
 
 
 '':::::
-function symbGetUDTElmOffset( elm as integer, typesymbol as integer, typ as integer, id as string ) as integer
-	dim e as integer, ename as string
+function symbGetUDTElmOffset( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, typ as integer, id as string ) as integer
+	dim e as FBTYPELEMENT ptr, ename as string
 	dim p as integer, ofs as integer, o as integer
 
 	symbGetUDTElmOffset = INVALID
@@ -2022,20 +1690,24 @@ function symbGetUDTElmOffset( elm as integer, typesymbol as integer, typ as inte
 
     ename = hCreateName( left$( id, p-1 ), INVALID )
 
-	elm = INVALID
+	elm = NULL
 	ofs = INVALID
 
-	e = symbolTB(typesymbol).u.head
-	do while( e <> INVALID )
+    if( typesymbol = NULL ) then
+    	exit function
+    end if
 
-        if( strpGet( typelmTB(e).nameidx ) = ename ) then
+	e = typesymbol->u.head
+	do while( e <> NULL )
+
+        if( strpGet( e->nameidx ) = ename ) then
 
         	elm = e
-        	ofs = typelmTB(e).ofs
-        	typ = typelmTB(e).typ
+        	ofs = e->ofs
+        	typ = e->typ
 
         	if( (typ = FB.SYMBTYPE.USERDEF) or (typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF) ) then
-                typesymbol = typelmTB(e).subtype
+                typesymbol = e->subtype
 
     			if( p >= len( id ) ) then
     				exit do
@@ -2056,7 +1728,7 @@ function symbGetUDTElmOffset( elm as integer, typesymbol as integer, typ as inte
         	exit do
         end if
 
-		e = typelmTB(e).r
+		e = e->r
     loop
 
     symbGetUDTElmOffset = ofs
@@ -2064,30 +1736,30 @@ function symbGetUDTElmOffset( elm as integer, typesymbol as integer, typ as inte
 end function
 
 '':::::
-function hLookupVar( vname as string ) as integer static
-    dim s as integer
+function hLookupVar( vname as string ) as FBSYMBOL ptr static
+    dim s as FBSYMBOL ptr
 
-	hLookupVar = INVALID
+	hLookupVar = NULL
 
 	'' first check the local symbols if current scope > 0
 	if( env.scope > 0 ) then
-		s = hashLookup( vname, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
-		if( s <> INVALID ) then
-			if( symbolTB(s).class = FB.SYMBCLASS.VAR ) then
+		s = hashLookup( ctx.lochash, vname )
+		if( s <> NULL ) then
+			if( s->class = FB.SYMBCLASS.VAR ) then
 				hLookupVar = s
 			end if
 			exit function
 		end if
 	else
-		s = INVALID
+		s = NULL
 	end if
 
 	'' check globals (and shared if current scope > 0)
-	if( s = INVALID ) then
-		s = hashLookup( vname, symbhashTB(), FB.INITSYMBOLNODES )
-		if( s <> INVALID ) then
-			if( symbolTB(s).class = FB.SYMBCLASS.VAR ) then
-				if( (env.scope = 0) or ((symbolTB(s).alloctype and FB.ALLOCTYPE.SHARED) > 0) ) then
+	if( s = NULL ) then
+		s = hashLookup( ctx.symhash, vname )
+		if( s <> NULL ) then
+			if( s->class = FB.SYMBCLASS.VAR ) then
+				if( (env.scope = 0) or ((s->alloctype and FB.ALLOCTYPE.SHARED) > 0) ) then
 					hLookupVar = s
 				end if
 			end if
@@ -2099,17 +1771,17 @@ end function
 
 '':::::
 function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
-						  elm as integer, typesymbol as integer, _
+						  elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, _
 					      byval addsuffix as integer, byval preservecase as integer, _
-					      byval clearname as integer ) as integer static
+					      byval clearname as integer ) as FBSYMBOL ptr static
     dim vname as string
-    dim s as integer, p as integer
+    dim s as FBSYMBOL ptr, p as integer
 
-    symbLookupVarEx = INVALID
+    symbLookupVarEx = NULL
 
     ofs 		= 0
-    elm	        = INVALID
-    typesymbol 	= INVALID
+    elm	        = NULL
+    typesymbol 	= NULL
 
     if( addsuffix ) then
     	vname = hCreateNameEx( symbol, typ, preservecase, TRUE, clearname )
@@ -2118,8 +1790,8 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
     end if
 
 	s = hLookupVar( vname )
-	if( s <> INVALID ) then
-		typesymbol = symbolTB(s).subtype
+	if( s <> NULL ) then
+		typesymbol = s->subtype
 		symbLookupVarEx = s
 		exit function
 	end if
@@ -2135,20 +1807,21 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
 	vname = hCreateNameEx( left$( symbol, p-1 ), INVALID, preservecase, TRUE, clearname )
 
     s = hLookupVar( vname )
-	if( s = INVALID ) then
+	if( s = NULL ) then
 		exit function
 	end if
 
-	if( symbolTB(s).class <> FB.SYMBCLASS.VAR ) then
+	if( s->class <> FB.SYMBCLASS.VAR ) then
 		exit function
 	end if
 
-	typ = symbolTB(s).typ
+	typ = s->typ
 	if( (typ <> FB.SYMBTYPE.USERDEF) and (typ <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF) ) then
 		exit function
 	end if
 
-    typesymbol = symbolTB(s).subtype
+    typesymbol = s->subtype
+
     ofs = symbGetUDTElmOffset( elm, typesymbol, typ, mid$( symbol, p+1 ) )
     if( ofs = INVALID ) then
     	exit function
@@ -2159,167 +1832,167 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
 end function
 
 '':::::
-function symbLookupVar( symbol as string, typ as integer, ofs as integer, elm as integer, typesymbol as integer ) as integer static
+function symbLookupVar( symbol as string, typ as integer, ofs as integer, elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	symbLookupVar = symbLookupVarEx( symbol, typ, ofs, elm, typesymbol, TRUE, FALSE, TRUE )
 
 end function
 
 '':::::
-function symbLookupProc( id as string ) as integer static
+function symbLookupProc( id as string ) as FBSYMBOL ptr static
     dim pname as string
-    dim s as integer
+    dim s as FBSYMBOL ptr
 
-	symbLookupProc = INVALID
+	symbLookupProc = NULL
 
 	pname = hCreateName( id, INVALID )
 
-	s = hashLookup( pname, symbhashTB(), FB.INITSYMBOLNODES )
+	s = hashLookup( ctx.symhash, pname )
 
-	if( s = INVALID ) then
+	if( s = NULL ) then
 		exit function
 	end if
 
-	if( symbolTB(s).class = FB.SYMBCLASS.PROC ) then
+	if( s->class = FB.SYMBCLASS.PROC ) then
 		symbLookupProc = s
 	end if
 
 end function
 
 '':::::
-function symbLookupFunctionResult( byval f as integer ) as integer static
+function symbLookupFunctionResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	dim rname as string
 	dim typ as integer
 
-	rname = strpGet( symbolTB(f).aliasidx )
+	rname = strpGet( f->aliasidx )
 
-	typ   = symbolTB(f).typ
+	typ   = f->typ
 
 	rname = hCreateName( rname, typ )
 
-	symbLookupFunctionResult = hashLookup( rname, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
+	symbLookupFunctionResult = hashLookup( ctx.lochash, rname )
 
 end function
 
 '':::::
-function symbLookupConst( constname as string, byval typ as integer ) as integer static
+function symbLookupConst( constname as string, byval typ as integer ) as FBSYMBOL ptr static
     dim cname as string
-    dim s as integer
+    dim s as FBSYMBOL ptr
 
-	symbLookupConst = INVALID
+	symbLookupConst = NULL
 
     cname = hCreateName( constname, INVALID )
 
 	'' first check the local symbols if current scope > 0
 	if( env.scope > 0 ) then
-		s = hashLookup( cname, locsymbhashTB(), FB.INITLOCSYMBOLNODES)
+		s = hashLookup( ctx.lochash, cname )
     else
-    	s = INVALID
+    	s = NULL
     end if
 
     '' and then the globals
-    if( s = INVALID ) then
-    	s = hashLookup( cname, symbhashTB(), FB.INITSYMBOLNODES )
+    if( s = NULL ) then
+    	s = hashLookup( ctx.symhash, cname )
     end if
 
-	if( s = INVALID ) then
+	if( s = NULL ) then
 		exit function
 	end if
 
-	if( symbolTB(s).class = FB.SYMBCLASS.CONST ) then
+	if( s->class = FB.SYMBCLASS.CONST ) then
 		symbLookupConst = s
 	end if
 
 end function
 
 '':::::
-function symbLookupUDT( typename as string, lgt as integer ) as integer static
+function symbLookupUDT( typename as string, lgt as integer ) as FBSYMBOL ptr static
     dim tname as string
-    dim t as integer
+    dim t as FBSYMBOL ptr
 
-    symbLookupUDT = INVALID
+    symbLookupUDT = NULL
 
     tname = hCreateName( typename, FB.SYMBTYPE.USERDEF )
 
 	'' first check the local symbols if current scope > 0
 	if( env.scope > 0 ) then
-    	t = hashLookup( tname, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
+    	t = hashLookup( ctx.lochash, tname )
     else
-    	t = INVALID
+    	t = NULL
     end if
 
     '' and then the globals
-    if( t = INVALID ) then
-    	t = hashLookup( tname, symbhashTB(), FB.INITSYMBOLNODES )
+    if( t = NULL ) then
+    	t = hashLookup( ctx.symhash, tname )
     end if
 
-	if( t = INVALID ) then
+	if( t = NULL ) then
 		exit function
 	end if
 
-	if( symbolTB(t).class = FB.SYMBCLASS.UDT ) then
-		lgt = symbolTB(t).lgt
+	if( t->class = FB.SYMBCLASS.UDT ) then
+		lgt = t->lgt
 		symbLookupUDT = t
 	end if
 
 end function
 
 '':::::
-function symbLookupEnum( id as string ) as integer static
+function symbLookupEnum( id as string ) as FBSYMBOL ptr static
     dim ename as string
-    dim e as integer
+    dim e as FBSYMBOL ptr
 
-    symbLookupEnum = INVALID
+    symbLookupEnum = NULL
 
     ename = hCreateName( id, FB.SYMBTYPE.USERDEF )
 
 	'' first check the local symbols if current scope > 0
 	if( env.scope > 0 ) then
-    	e = hashLookup( ename, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
+    	e = hashLookup( ctx.lochash, ename )
     else
-    	e = INVALID
+    	e = NULL
     end if
 
     '' and then the globals
-    if( e = INVALID ) then
-    	e = hashLookup( ename, symbhashTB(), FB.INITSYMBOLNODES )
+    if( e = NULL ) then
+    	e = hashLookup( ctx.symhash, ename )
     end if
 
-	if( e = INVALID ) then
+	if( e = NULL ) then
 		exit function
 	end if
 
-	if( symbolTB(e).class = FB.SYMBCLASS.ENUM ) then
+	if( e->class = FB.SYMBCLASS.ENUM ) then
 		symbLookupEnum = e
 	end if
 
 end function
 
 '':::::
-function symbLookupLabel( label as string ) as integer static
-    dim l as integer, lname as string
+function symbLookupLabel( label as string ) as FBSYMBOL ptr static
+    dim l as FBSYMBOL ptr, lname as string
 
-    symbLookupLabel = INVALID
+    symbLookupLabel = NULL
 
     lname = hCreateName( label, FB.SYMBTYPE.LABEL )
 
 	'' first check the local symbols if current scope > 0
 	if( env.scope > 0 ) then
-    	l = hashLookup( lname, locsymbhashTB(), FB.INITLOCSYMBOLNODES )
+    	l = hashLookup( ctx.lochash, lname )
     else
-    	l = INVALID
+    	l = NULL
     end if
 
     '' and then the globals
-    if( l = INVALID ) then
-    	l = hashLookup( lname, symbhashTB(), FB.INITSYMBOLNODES )
+    if( l = NULL ) then
+    	l = hashLookup( ctx.symhash, lname )
     end if
 
-	if( l = INVALID ) then
+	if( l = NULL ) then
 		exit function
 	end if
 
-	if( symbolTB(l).class = FB.SYMBCLASS.LABEL ) then
+	if( l->class = FB.SYMBCLASS.LABEL ) then
 		symbLookupLabel = l
 	end if
 
@@ -2327,7 +2000,7 @@ end function
 
 '':::::
 function symbLookupKeyword( keyword as string, class as integer, typ as integer ) as integer static
-    dim i as integer, id as integer
+    dim k as FBKEYWORD ptr, id as integer
     dim kname as string
 
 	id = FB.TK.ID
@@ -2338,10 +2011,10 @@ function symbLookupKeyword( keyword as string, class as integer, typ as integer 
 		'kname = kname + "_" + chr$( typ )
 	end if
 
-	i = hashLookup( kname, keyhashTB(), FB.MAXKEYWORDS )
-	if( i <> INVALID ) then
-		id = keywordTB(i).id
-		class = keywordTB(i).class
+	k = hashLookup( ctx.keyhash, kname )
+	if( k <> NULL ) then
+		id = k->id
+		class = k->class
 	end if
 
 	symbLookupKeyword = id
@@ -2351,7 +2024,7 @@ end function
 '':::::
 function symbIsProc( id as string ) as integer
 
-	if( symbLookupProc( id ) <> INVALID ) then
+	if( symbLookupProc( id ) <> NULL ) then
 		symbIsProc = TRUE
 	else
 		symbIsProc = FALSE
@@ -2362,7 +2035,7 @@ end function
 '':::::
 'function symbIsConst( constname as string ) as integer
 '
-'	if( symbLookupConst( constname ) <> INVALID ) then
+'	if( symbLookupConst( constname ) <> NULL ) then
 '		symbIsConst = TRUE
 '	else
 '		symbIsConst = FALSE
@@ -2375,8 +2048,9 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcLen( byval typ as integer, byval subtype as integer ) as integer static
+function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval realUDTlen as integer = FALSE ) as integer static
     dim lgt as integer
+    dim e as FBTYPELEMENT ptr
 
 	lgt = 0
 
@@ -2403,7 +2077,12 @@ function symbCalcLen( byval typ as integer, byval subtype as integer ) as intege
 		lgt = FB.STRSTRUCTSIZE
 
 	case FB.SYMBTYPE.USERDEF
-		lgt = symbolTB(subtype).lgt
+		if( not realUDTlen ) then
+			lgt = subtype->lgt
+		else
+			e = subtype->u.tail
+			lgt = e->ofs + e->lgt
+		end if
 
 	case is >= FB.SYMBTYPE.POINTER
 		lgt = FB.POINTERSIZE
@@ -2414,8 +2093,8 @@ function symbCalcLen( byval typ as integer, byval subtype as integer ) as intege
 end function
 
 '':::::
-function hCalcDiff( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as long
-    dim d as integer, diff as long, elms as long
+function hCalcDiff( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as integer
+    dim d as integer, diff as integer, elms as integer
 
 	diff = 0
 	for d = 0 to (dimensions-1)-1
@@ -2434,15 +2113,16 @@ function hCalcDiff( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt 
 end function
 
 '':::::
-function hCalcElements( byval s as integer ) as long static
-    dim e as long, i as integer, d as long
+function hCalcElements( byval s as FBSYMBOL ptr ) as integer static
+    dim e as integer, d as integer
+    dim n as FBVARDIM ptr
 
 	e = 1
-	i = symbolTB(s).v.dimhead
-	do while( i <> INVALID )
-		d = (dimTB(i).upper - dimTB(i).lower) + 1
+	n = s->v.dimhead
+	do while( n <> NULL )
+		d = (n->upper - n->lower) + 1
 		e = e * d
-		i = dimTB(i).r
+		n = n->r
 	loop
 
 	hCalcElements = e
@@ -2450,8 +2130,8 @@ function hCalcElements( byval s as integer ) as long static
 end function
 
 '':::::
-function hCalcElements2( byval dimensions as integer, dTB() as FBARRAYDIM ) as long static
-    dim e as long, i as integer, d as long
+function hCalcElements2( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer static
+    dim e as integer, i as integer, d as integer
 
 	e = 1
 	for i = 0 to dimensions-1
@@ -2492,10 +2172,10 @@ function hIsString( byval dtype as integer ) as integer static
 end function
 
 '':::::
-function symbIsString( byval s as integer ) as integer static
+function symbIsString( byval s as FBSYMBOL ptr ) as integer static
     dim dtype as integer
 
-    dtype = hStyp2Dtype( symbolTB(s).typ )
+    dtype = hStyp2Dtype( s->typ )
 
     symbIsString = hIsString( dtype )
 
@@ -2506,244 +2186,265 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbGetDefineText( byval d as integer ) as string static
+function symbGetDefineText( byval d as FBDEFINE ptr ) as string static
 
-	symbGetDefineText = strpGet( defineTB(d).textidx )
-
-end function
-
-'':::::
-function symbGetDefineLen( byval d as integer ) as integer static
-
-	symbGetDefineLen = len( strpGet( defineTB(d).textidx ) )
+	symbGetDefineText = strpGet( d->textidx )
 
 end function
 
 '':::::
-function symbGetLen( byval s as integer ) as integer static
+function symbGetDefineLen( byval d as FBDEFINE ptr ) as integer static
 
-	symbGetLen = symbolTB(s).lgt
-
-end function
-
-'':::::
-function symbGetUDTElmLen( byval t as integer ) as integer static
-
-	symbGetUDTElmLen = typelmTB(t).lgt
+	symbGetDefineLen = len( strpGet( d->textidx ) )
 
 end function
 
 '':::::
-function symbGetFirstNode as integer static
+function symbGetLen( byval s as FBSYMBOL ptr ) as integer static
 
-	symbGetFirstNode = ctx.sym.head
+	symbGetLen = s->lgt
 
 end function
 
 '':::::
-function symbGetNextNode( byval n as integer ) as integer static
+function symbGetUDTLen( byval s as FBSYMBOL ptr ) as integer static
+    dim e as FBTYPELEMENT ptr
 
-	if( n <> INVALID ) then
-		symbGetNextNode = symbolTB(n).nxt
+	e = s->u.tail
+	symbGetUDTLen = e->ofs + e->lgt
+
+end function
+
+'':::::
+function symbGetUDTElmLen( byval e as FBTYPELEMENT ptr ) as integer static
+
+	symbGetUDTElmLen = e->lgt
+
+end function
+
+'':::::
+function symbGetFirstNode as FBSYMBOL ptr static
+
+	symbGetFirstNode = ctx.symlist.head
+
+end function
+
+'':::::
+function symbGetNextNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
+
+	if( n <> NULL ) then
+		symbGetNextNode = n->nxt
 	else
-		symbGetNextNode = INVALID
+		symbGetNextNode = NULL
 	end if
 
 end function
 
 '':::::
-function symbGetType( byval s as integer ) as integer static
+function symbGetType( byval s as FBSYMBOL ptr ) as integer static
 
-	symbGetType = symbolTB(s).typ
-
-end function
-
-'':::::
-function symbGetSubType( byval s as integer ) as integer static
-
-	symbGetSubType = symbolTB(s).subtype
+	symbGetType = s->typ
 
 end function
 
 '':::::
-function symbGetUDTElmSubType( byval t as integer ) as integer static
+function symbGetSubType( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
-    symbGetUDTElmSubType = typelmTB(t).subtype
-
-end function
-
-'':::::
-function symbGetClass( byval s as integer ) as integer static
-
-	symbGetClass = symbolTB(s).class
+	if( s <> NULL ) then
+		symbGetSubType = s->subtype
+	else
+		symbGetSubType = NULL
+	end if
 
 end function
 
 '':::::
-function symbGetAllocType( byval s as integer ) as integer static
+function symbGetUDTElmSubType( byval e as FBTYPELEMENT ptr ) as FBSYMBOL ptr static
 
-	symbGetAllocType = symbolTB(s).alloctype
-
-end function
-
-'':::::
-function symbGetInitialized( byval s as integer ) as integer static
-
-	symbGetInitialized = symbolTB(s).initialized
+    if( e <> NULL ) then
+    	symbGetUDTElmSubType = e->subtype
+    else
+    	symbGetUDTElmSubType = NULL
+    end if
 
 end function
 
 '':::::
-function symbGetVarIsDynamic( byval s as integer ) as integer static
+function symbGetClass( byval s as FBSYMBOL ptr ) as integer static
 
-	symbGetVarIsDynamic = (symbolTB(s).alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0
+	symbGetClass = s->class
 
 end function
 
 '':::::
-function symbIsArray( byval s as integer ) as integer static
+function symbGetAllocType( byval s as FBSYMBOL ptr ) as integer static
 
-	if( (symbolTB(s).alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0 ) then
+	symbGetAllocType = s->alloctype
+
+end function
+
+'':::::
+function symbGetInitialized( byval s as FBSYMBOL ptr ) as integer static
+
+	symbGetInitialized = s->initialized
+
+end function
+
+'':::::
+function symbGetVarIsDynamic( byval s as FBSYMBOL ptr ) as integer static
+
+	symbGetVarIsDynamic = (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0
+
+end function
+
+'':::::
+function symbIsArray( byval s as FBSYMBOL ptr ) as integer static
+
+	if( s = NULL ) then
+		symbIsArray = FALSE
+	end if
+
+	if( (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0 ) then
 		symbIsArray = TRUE
 	else
-		symbIsArray = symbolTB(s).v.dims > 0
+		symbIsArray = s->v.dims > 0
 	end if
 
 end function
 
 '':::::
-function symbGetVarDiff( byval s as integer ) as long static
+function symbGetVarDiff( byval s as FBSYMBOL ptr ) as integer static
 
-	symbGetVarDiff = symbolTB(s).v.dif
-
-end function
-
-'':::::
-function symbGetUDTElmDiff( byval t as integer ) as long static
-
-	symbGetUDTElmDiff = typelmTB(t).dif
+	symbGetVarDiff = s->v.dif
 
 end function
 
 '':::::
-function symbGetVarDimensions( byval s as integer ) as integer static
+function symbGetUDTElmDiff( byval e as FBTYPELEMENT ptr ) as integer static
 
-	symbGetVarDimensions = symbolTB(s).v.dims
+	symbGetUDTElmDiff = e->dif
 
 end function
 
 '':::::
-sub symbSetVarDimensions( byval s as integer, byval dims as integer ) static
+function symbGetVarDimensions( byval s as FBSYMBOL ptr ) as integer static
 
-	symbolTB(s).v.dims = dims
+	symbGetVarDimensions = s->v.dims
+
+end function
+
+'':::::
+sub symbSetVarDimensions( byval s as FBSYMBOL ptr, byval dims as integer ) static
+
+	s->v.dims = dims
 
 end sub
 
 
 '':::::
-function symbGetUDTElmDimensions( byval t as integer ) as integer static
+function symbGetUDTElmDimensions( byval e as FBTYPELEMENT ptr ) as integer static
 
-	symbGetUDTElmDimensions = typelmTB(t).dims
-
-end function
-
-'':::::
-function symbGetUDTElmName( byval t as integer ) as string static
-
-	symbGetUDTElmName = strpGet( typelmTB(t).nameidx )
+	symbGetUDTElmDimensions = e->dims
 
 end function
 
 '':::::
-function symbGetVarDescriptor( byval s as integer ) as integer static
+function symbGetUDTElmName( byval e as FBTYPELEMENT ptr ) as string static
 
-	symbGetVarDescriptor = symbolTB(s).v.desc
-
-end function
-
-'':::::
-function symbGetProcArgs( byval f as integer ) as integer static
-
-	symbGetProcArgs = symbolTB(f).p.args
+	symbGetUDTElmName = strpGet( e->nameidx )
 
 end function
 
 '':::::
-sub symbGetVarDims( byval s as integer, byval d as integer, lb as long, ub as long ) static
+function symbGetVarDescriptor( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
-    lb = dimTB(d).lower
-    ub = dimTB(d).upper
+	symbGetVarDescriptor = s->v.desc
+
+end function
+
+'':::::
+function symbGetProcArgs( byval f as FBSYMBOL ptr ) as integer static
+
+	symbGetProcArgs = f->p.args
+
+end function
+
+'':::::
+sub symbGetVarDims( byval s as FBSYMBOL ptr, byval d as FBVARDIM ptr, lb as integer, ub as integer ) static
+
+    lb = d->lower
+    ub = d->upper
 
 end sub
 
 '':::::
-sub symbGetUDTElmDims( byval t as integer, byval d as integer, lb as long, ub as long ) static
+sub symbGetUDTElmDims( byval e as FBTYPELEMENT ptr, byval d as FBVARDIM ptr, lb as integer, ub as integer ) static
 
-    lb = dimTB(d).lower
-    ub = dimTB(d).upper
+    lb = d->lower
+    ub = d->upper
 
 end sub
 
 '':::::
-function symbGetFirstVarDim( byval s as integer ) as integer static
+function symbGetFirstVarDim( byval s as FBSYMBOL ptr ) as FBVARDIM ptr static
 
-	symbGetFirstVarDim = symbolTB(s).v.dimhead
-
-end function
-
-'':::::
-function symbGetFirstUDTElmDim( byval t as integer ) as integer static
-
-	symbGetFirstUDTElmDim = typelmTB(t).dimhead
+	symbGetFirstVarDim = s->v.dimhead
 
 end function
 
 '':::::
-function symbGetNextVarDim( byval s as integer, byval d as integer ) as integer static
+function symbGetFirstUDTElmDim( byval e as FBTYPELEMENT ptr ) as FBVARDIM ptr static
 
-	if( d <> INVALID ) then
-		symbGetNextVarDim = dimTB(d).r
+	symbGetFirstUDTElmDim = e->dimhead
+
+end function
+
+'':::::
+function symbGetNextVarDim( byval s as FBSYMBOL ptr, byval d as FBVARDIM ptr ) as FBVARDIM ptr static
+
+	if( d <> NULL ) then
+		symbGetNextVarDim = d->r
 	else
-		symbGetNextVarDim = INVALID
+		symbGetNextVarDim = NULL
 	end if
 
 end function
 
 '':::::
-function symbGetNextUDTElmDim( byval t as integer, byval d as integer ) as integer static
+function symbGetNextUDTElmDim( byval e as FBTYPELEMENT ptr, byval d as FBVARDIM ptr ) as FBVARDIM ptr static
 
-	if( d <> INVALID ) then
-		symbGetNextUDTElmDim = dimTB(d).r
+	if( d <> NULL ) then
+		symbGetNextUDTElmDim = d->r
 	else
-		symbGetNextUDTElmDim = INVALID
+		symbGetNextUDTElmDim = NULL
 	end if
 
 end function
 
 '':::::
-function symbGetFuncMode( byval f as integer ) as integer static
+function symbGetFuncMode( byval f as FBSYMBOL ptr ) as integer static
 
-	symbGetFuncMode = symbolTB(f).p.mode
+	symbGetFuncMode = f->p.mode
 
 end function
 
 '':::::
-function symbGetFuncDataType( byval f as integer ) as integer static
+function symbGetFuncDataType( byval f as FBSYMBOL ptr ) as integer static
 	dim typ as integer
 
-	typ = symbolTB(f).typ
-	'if( typ = FB.SYMBTYPE.USERDEF ) then typ = symbolTB(f).subtype
+	typ = f->typ
 
 	symbGetFuncDataType = hStyp2Dtype( typ )
+
 end function
 
 '':::::
-function symbGetProcLib( byval p as integer ) as string static
-    dim l as integer
+function symbGetProcLib( byval p as FBSYMBOL ptr ) as string static
+    dim l as FBLIBRARY ptr
 
-	l = symbolTB(p).p.lib
-	if( l <> INVALID ) then
-		symbGetProcLib = strpGet( libTB(l).nameidx )
+	l = p->p.lib
+	if( l <> NULL ) then
+		symbGetProcLib = strpGet( l->nameidx )
 	else
 	    symbGetProcLib = ""
 	end if
@@ -2751,37 +2452,37 @@ function symbGetProcLib( byval p as integer ) as string static
 end function
 
 '':::::
-function symbGetName( byval s as integer ) as string static
+function symbGetName( byval s as FBSYMBOL ptr ) as string static
 
-	symbGetName = strpGet( symbolTB(s).nameidx )
-
-end function
-
-'':::::
-function symbGetAlias( byval s as integer ) as string static
-
-	symbGetAlias = strpGet( symbolTB(s).aliasidx )
+	symbGetName = strpGet( s->nameidx )
 
 end function
 
 '':::::
-function symbGetVarName( byval s as integer ) as string static
+function symbGetAlias( byval s as FBSYMBOL ptr ) as string static
 
-	if( symbolTB(s).aliasidx <> INVALID ) then
-		symbGetVarName = strpGet( symbolTB(s).aliasidx )
+	symbGetAlias = strpGet( s->aliasidx )
+
+end function
+
+'':::::
+function symbGetVarName( byval s as FBSYMBOL ptr ) as string static
+
+	if( s->aliasidx <> INVALID ) then
+		symbGetVarName = strpGet( s->aliasidx )
 	else
-		symbGetVarName = strpGet( symbolTB(s).nameidx )
+		symbGetVarName = strpGet( s->nameidx )
 	end if
 
 end function
 
 '':::::
-function symbGetVarDscName( byval s as integer ) as string static
-	dim d as integer
+function symbGetVarDscName( byval s as FBSYMBOL ptr ) as string static
+	dim d as FBSYMBOL ptr
 
-	d = symbolTB(s).v.desc
-	if( d <> INVALID ) then
-		symbGetVarDscName = strpGet( symbolTB(d).nameidx )
+	d = s->v.desc
+	if( d <> NULL ) then
+		symbGetVarDscName = strpGet( d->nameidx )
 	else
 		symbGetVarDscName = ""
 	end if
@@ -2789,130 +2490,150 @@ function symbGetVarDscName( byval s as integer ) as string static
 end function
 
 '':::::
-function symbGetVarDesc( byval s as integer ) as integer static
+function symbGetVarText( byval s as FBSYMBOL ptr ) as string static
 
-	symbGetVarDesc = symbolTB(s).v.desc
-
-end function
-
-'':::::
-function symbGetVarText( byval s as integer ) as string static
-
-	symbGetVarText = strpGet( symbolTB(s).inittextidx )
+	symbGetVarText = strpGet( s->inittextidx )
 
 end function
 
 '':::::
-function symbGetConstName( byval c as integer ) as string static
+function symbGetConstName( byval c as FBSYMBOL ptr ) as string static
 
-	if( symbolTB(c).aliasidx <> INVALID ) then
-		symbGetConstName = strpGet( symbolTB(c).aliasidx )
+	if( c->aliasidx <> INVALID ) then
+		symbGetConstName = strpGet( c->aliasidx )
 	else
-		symbGetConstName = strpGet( symbolTB(c).nameidx )
+		symbGetConstName = strpGet( c->nameidx )
 	end if
 
 end function
 
 '':::::
-function symbGetConstText( byval c as integer ) as string static
+function symbGetConstText( byval c as FBSYMBOL ptr ) as string static
 
-	symbGetConstText = strpGet( symbolTB(c).c.textidx )
-
-end function
-
-'':::::
-function symbGetLabelIsDeclared( byval l as integer ) as integer static
-
-	symbGetLabelIsDeclared = symbolTB(l).l.declared
+	symbGetConstText = strpGet( c->c.textidx )
 
 end function
 
 '':::::
-function symbGetProcName( byval p as integer ) as string static
+function symbGetLabelIsDeclared( byval l as FBSYMBOL ptr ) as integer static
 
-	if( symbolTB(p).aliasidx <> INVALID ) then
-		symbGetProcName = strpGet( symbolTB(p).aliasidx )
+	symbGetLabelIsDeclared = l->l.declared
+
+end function
+
+'':::::
+function symbGetProcName( byval p as FBSYMBOL ptr ) as string static
+
+	if( p->aliasidx <> INVALID ) then
+		symbGetProcName = strpGet( p->aliasidx )
 	else
-		symbGetProcName = strpGet( symbolTB(p).nameidx )
+		symbGetProcName = strpGet( p->nameidx )
 	end if
 
 end function
 
 '':::::
-function symbGetProcIsDeclared( byval f as integer ) as integer static
+function symbGetProcIsDeclared( byval f as FBSYMBOL ptr ) as integer static
 
-	symbGetProcIsDeclared = symbolTB(f).p.isdeclared
+	symbGetProcIsDeclared = f->p.isdeclared
 
 end function
 
 '':::::
-function symbGetProcFirstArg( byval f as integer ) as integer static
+function symbGetProcFirstArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
 
-	if( symbolTB(f).p.mode = FB.FUNCMODE.PASCAL ) then
-		symbGetProcFirstArg = symbolTB(f).p.arghead
+	if( f->p.mode = FB.FUNCMODE.PASCAL ) then
+		symbGetProcFirstArg = f->p.arghead
 	else
-		symbGetProcFirstArg = symbolTB(f).p.argtail
+		symbGetProcFirstArg = f->p.argtail
 	end if
 
 end function
 
 '':::::
-function symbGetProcLastArg( byval f as integer ) as integer static
+function symbGetProcLastArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
 
-	if( symbolTB(f).p.mode = FB.FUNCMODE.PASCAL ) then
-		symbGetProcLastArg = symbolTB(f).p.argtail
+	if( f->p.mode = FB.FUNCMODE.PASCAL ) then
+		symbGetProcLastArg = f->p.argtail
 	else
-		symbGetProcLastArg = symbolTB(f).p.arghead
+		symbGetProcLastArg = f->p.arghead
 	end if
 
 end function
 
 '':::::
-function symbGetProcTailArg( byval f as integer ) as integer static
+function symbGetProcHeadArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
 
-	symbGetProcTailArg = symbolTB(f).p.argtail
+	symbGetProcHeadArg = f->p.arghead
 
 end function
 
 '':::::
-function symbGetProcPrevArg( byval f as integer, byval a as integer ) as integer static
+function symbGetProcTailArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
 
-	if( symbolTB(f).p.mode = FB.FUNCMODE.PASCAL ) then
-		symbGetProcPrevArg = argTB(a).l
+	symbGetProcTailArg = f->p.argtail
+
+end function
+
+'':::::
+function symbGetProcPrevArg( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, _
+							 byval checkconv as integer = TRUE ) as FBPROCARG ptr static
+
+	if( a = NULL ) then
+		symbGetProcPrevArg = NULL
+		exit function
+	end if
+
+	if( checkconv ) then
+		if( f->p.mode = FB.FUNCMODE.PASCAL ) then
+			symbGetProcPrevArg = a->l
+		else
+			symbGetProcPrevArg = a->r
+		end if
 	else
-		symbGetProcPrevArg = argTB(a).r
+		symbGetProcPrevArg = a->l
 	end if
 
 end function
 
 '':::::
-function symbGetProcNextArg( byval f as integer, byval a as integer ) as integer static
+function symbGetProcNextArg( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, _
+							 byval checkconv as integer = TRUE ) as FBPROCARG ptr static
 
-	if( symbolTB(f).p.mode = FB.FUNCMODE.PASCAL ) then
-		symbGetProcNextArg = argTB(a).r
+	if( a = NULL ) then
+		symbGetProcNextArg = NULL
+		exit function
+	end if
+
+	if( checkconv ) then
+		if( f->p.mode = FB.FUNCMODE.PASCAL ) then
+			symbGetProcNextArg = a->r
+		else
+			symbGetProcNextArg = a->l
+		end if
 	else
-		symbGetProcNextArg = argTB(a).l
+		symbGetProcNextArg = a->r
 	end if
 
 end function
 
 '':::::
-function symbGetArgDataType( byval f as integer, byval a as integer ) as integer static
+function symbGetArgDataType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
 	dim typ as integer
 
 	symbGetArgDataType = INVALID
 
-	if( a = INVALID ) then
+	if( a = NULL ) then
 		exit function
 	end if
 
-	typ = argTB(a).typ
+	typ = a->typ
     if( typ <> INVALID ) then
 		symbGetArgDataType = hStyp2Dtype( typ )
 		exit function
 	end if
 
-	if( symbolTB(f).p.mode <> FB.FUNCMODE.CDECL ) then
+	if( f->p.mode <> FB.FUNCMODE.CDECL ) then
 		exit function
 	end if
 
@@ -2922,22 +2643,22 @@ function symbGetArgDataType( byval f as integer, byval a as integer ) as integer
 end function
 
 '':::::
-function symbGetArgMode( byval f as integer, byval a as integer ) as integer static
+function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
 	dim mode as integer
 
 	symbGetArgMode = INVALID
 
-	if( a = INVALID ) then
+	if( a = NULL ) then
 		exit function
 	end if
 
-	mode = argTB(a).mode
+	mode = a->mode
 	if( mode <> INVALID ) then
 		symbGetArgMode = mode
 		exit function
 	end if
 
-	if( symbolTB(f).p.mode <> FB.FUNCMODE.CDECL ) then
+	if( f->p.mode <> FB.FUNCMODE.CDECL ) then
 		exit function
 	end if
 
@@ -2947,36 +2668,36 @@ function symbGetArgMode( byval f as integer, byval a as integer ) as integer sta
 end function
 
 '':::::
-sub symbSetArgMode( byval f as integer, byval a as integer, byval mode as integer ) static
+sub symbSetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval mode as integer ) static
 
-	if( a <> INVALID ) then
-		argTB(a).mode = mode
+	if( a <> NULL ) then
+		a->mode = mode
 	end if
 
 end sub
 
 '':::::
-function symbGetArgName( byval f as integer, byval a as integer ) as string static
+function symbGetArgName( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as string static
 
-	symbGetArgName = strpGet( argTB(a).nameidx )
+	symbGetArgName = strpGet( a->nameidx )
 
 end function
 
 '':::::
-sub symbSetArgName( byval f as integer, byval a as integer, byval nameidx as integer ) static
+sub symbSetArgName( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval nameidx as integer ) static
 
-	if( a <> INVALID ) then
-		strpDel argTB(a).nameidx
-		argTB(a).nameidx = nameidx
+	if( a <> NULL ) then
+		strpDel a->nameidx
+		a->nameidx = nameidx
 	end if
 
 end sub
 
 '':::::
-function symbGetArgType( byval f as integer, byval a as integer ) as integer static
+function symbGetArgType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
 
-	if( a <> INVALID ) then
-		symbGetArgType = argTB(a).typ
+	if( a <> NULL ) then
+		symbGetArgType = a->typ
 	else
 		symbGetArgType = INVALID
 	end if
@@ -2984,39 +2705,39 @@ function symbGetArgType( byval f as integer, byval a as integer ) as integer sta
 end function
 
 '':::::
-sub symbSetArgType( byval f as integer, byval a as integer, byval typ as integer ) static
+sub symbSetArgType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval typ as integer ) static
 
-	if( a <> INVALID ) then
-		argTB(a).typ = typ
+	if( a <> NULL ) then
+		a->typ = typ
 	end if
 
 end sub
 
 '':::::
-function symbGetArgSubtype( byval f as integer, byval a as integer ) as integer static
+function symbGetArgSubtype( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as FBSYMBOL ptr static
 
-	if( a <> INVALID ) then
-		symbGetArgSubtype = argTB(a).subtype
+	if( a <> NULL ) then
+		symbGetArgSubtype = a->subtype
 	else
-		symbGetArgSubtype = INVALID
+		symbGetArgSubtype = NULL
 	end if
 
 end function
 
 '':::::
-sub symbSetArgSubType( byval f as integer, byval a as integer, byval subtype as integer ) static
+sub symbSetArgSubType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval subtype as FBSYMBOL ptr ) static
 
-	if( a <> INVALID ) then
-		argTB(a).subtype = subtype
+	if( a <> NULL ) then
+		a->subtype = subtype
 	end if
 
 end sub
 
 '':::::
-function symbGetArgSuffix( byval f as integer, byval a as integer ) as integer static
+function symbGetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
 
-	if( a <> INVALID ) then
-		symbGetArgSuffix = argTB(a).suffix
+	if( a <> NULL ) then
+		symbGetArgSuffix = a->suffix
 	else
 		symbGetArgSuffix = INVALID
 	end if
@@ -3024,17 +2745,17 @@ function symbGetArgSuffix( byval f as integer, byval a as integer ) as integer s
 end function
 
 '':::::
-function symbGetArgsLen( byval f as integer ) as integer static
+function symbGetArgsLen( byval f as FBSYMBOL ptr ) as integer static
 
-	symbGetArgsLen = symbolTB(f).lgt
+	symbGetArgsLen = f->lgt
 
 end function
 
 '':::::
-function symbGetArgOptional( byval f as integer, byval a as integer ) as integer static
+function symbGetArgOptional( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
 
-	if( a <> INVALID ) then
-		symbGetArgOptional = argTB(a).optional
+	if( a <> NULL ) then
+		symbGetArgOptional = a->optional
 	else
 		symbGetArgOptional = FALSE
 	end if
@@ -3042,10 +2763,10 @@ function symbGetArgOptional( byval f as integer, byval a as integer ) as integer
 end function
 
 '':::::
-function symbGetArgDefvalue( byval f as integer, byval a as integer ) as double static
+function symbGetArgDefvalue( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as double static
 
-	if( a <> INVALID ) then
-		symbGetArgDefvalue = argTB(a).defvalue
+	if( a <> NULL ) then
+		symbGetArgDefvalue = a->defvalue
 	else
 		symbGetArgDefvalue = 0.0
 	end if
@@ -3053,19 +2774,21 @@ function symbGetArgDefvalue( byval f as integer, byval a as integer ) as double 
 end function
 
 '':::::
-function symbGetLabelName( byval l as integer ) as string static
+function symbGetLabelName( byval l as FBSYMBOL ptr ) as string static
 
-	if( symbolTB(l).aliasidx <> INVALID ) then
-		symbGetLabelName = strpGet( symbolTB(l).aliasidx )
+	if( l->aliasidx <> INVALID ) then
+		symbGetLabelName = strpGet( l->aliasidx )
 	else
-		symbGetLabelName = strpGet( symbolTB(l).nameidx )
+		symbGetLabelName = strpGet( l->nameidx )
 	end if
 
 end function
 
 '':::::
-function symbGetLabelScope( byval l as integer ) as integer static
-	symbGetLabelScope = symbolTB(l).scope
+function symbGetLabelScope( byval l as FBSYMBOL ptr ) as integer static
+
+	symbGetLabelScope = l->scope
+
 end function
 
 
@@ -3091,20 +2814,20 @@ end function
 
 '':::::
 function symbListLibs( namelist() as string, byval index as integer ) as integer static
-    dim cnt as integer, i as integer
+    dim cnt as integer, node as FBLIBRARY ptr
     dim libname as string
 
 	cnt = index
-	i = ctx.lib.head
-	do while( i <> INVALID )
+	node = ctx.liblist.head
+	do while( node <> NULL )
 
-		libname = strpGet( libTB(i).nameidx )
+		libname = strpGet( node->nameidx )
 		if( hFindLib( libname, namelist() ) = INVALID ) then
 			namelist(cnt) = libname
 			cnt = cnt + 1
 		end if
 
-		i = libTB(i).nxt
+		node = node->nxt
 	loop
 
 	symbListLibs = cnt - index
@@ -3117,25 +2840,25 @@ end function
 
 '':::::
 function symbDelDefine( id as string ) as integer static
-    dim d as integer
+    dim d as FBDEFINE ptr
 
     symbDelDefine = FALSE
 
     '' exists?
-    d = hashLookup( id, defhashTB(), FB.INITDEFINENODES )
-    if( d = INVALID ) then
+    d = hashLookup( ctx.defhash, id )
+    if( d = NULL ) then
     	exit function
     end if
 
 	'' del from hash table
-	hashDel id, defhashTB(), FB.INITDEFINENODES
+	hashDel ctx.defhash, id
 
 	''
-	strpDel defineTB(d).textidx
-	strpDel defineTB(d).nameidx
+	strpDel d->textidx
+	strpDel d->nameidx
 
 	'' del node
-	symbDelDefineNode d
+	listDelNode @ctx.deflist, d
 
 	''
 	symbDelDefine = TRUE
@@ -3143,130 +2866,137 @@ function symbDelDefine( id as string ) as integer static
 end function
 
 '':::::
-sub symbDelLabel( byval l as integer ) static
+sub symbDelLabel( byval l as FBSYMBOL ptr ) static
     dim lname as string
 
-    if( l = INVALID ) then
+    if( l = NULL ) then
     	exit sub
     end if
 
-    lname = strpGet( symbolTB(l).nameidx )
+    lname = strpGet( l->nameidx )
 
-    if( symbolTB(l).scope > 0 ) then
-    	hashDel lname, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+    if( l->scope > 0 ) then
+    	hashDel ctx.lochash, lname
     else
-    	hashDel lname, symbhashTB(), FB.INITSYMBOLNODES
+    	hashDel ctx.symhash, lname
     end if
 
-    strpDel symbolTB(l).nameidx
+    strpDel l->nameidx
 
-    symbDelSymbolNode l
+    listDelNode @ctx.symlist, l
 
 end sub
 
 '':::::
-sub hDelVarDims( byval s as integer ) static
-    dim nn as integer, n as integer
+sub hDelVarDims( byval s as FBSYMBOL ptr ) static
+    dim n as FBVARDIM ptr, nxt as FBVARDIM ptr
 
-    n = symbolTB(s).v.dimhead
-    do while( n <> INVALID )
-    	nn = dimTB(n).r
+    n = s->v.dimhead
+    do while( n <> NULL )
+    	nxt = n->r
 
-    	symbDelDimNode n
+    	listDelNode @ctx.dimlist, n
 
-    	n = nn
+    	n = nxt
     loop
 
-    symbolTB(s).v.dimhead = INVALID
-    symbolTB(s).v.dimtail = INVALID
-    symbolTB(s).v.dims	  = 0
+    s->v.dimhead = NULL
+    s->v.dimtail = NULL
+    s->v.dims	  = 0
 
 end sub
 
 '':::::
-sub symbDelVar( byval s as integer )
+sub symbDelVar( byval s as FBSYMBOL ptr )
     dim sname as string, freeup as integer
 
-    if( s = INVALID ) then
+    if( s = NULL ) then
     	exit sub
     end if
 
 	freeup = TRUE
 
-	sname = strpGet( symbolTB(s).nameidx )
+	sname = strpGet( s->nameidx )
 
 	'' local?
-	if( symbolTB(s).scope > 0 ) then
-		hashDel sname, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+	if( s->scope > 0 ) then
+		hashDel ctx.lochash, sname
 
-    	if( (symbolTB(s).alloctype and FB.ALLOCTYPE.STATIC) = 0 ) then
-			strpDel symbolTB(s).nameidx
-			strpDel symbolTB(s).aliasidx
+    	if( (s->alloctype and FB.ALLOCTYPE.STATIC) = 0 ) then
+			strpDel s->nameidx
+			strpDel s->aliasidx
     	else
     		freeup = FALSE
     		'' check if it's not a static array descriptor
-    		if( (symbolTB(s).typ <> FB.SYMBTYPE.USERDEF) or (symbolTB(s).subtype <> FB.DESCTYPE.ARRAY) ) then
-    			strpDel symbolTB(s).nameidx
-    			symbolTB(s).nameidx = INVALID
+    		if( (s->typ <> FB.SYMBTYPE.USERDEF) or (s->subtype <> FB.DESCTYPE.ARRAY) ) then
+    			strpDel s->nameidx
+    			s->nameidx = INVALID
     		end if
     	end if
 
     '' global..
     else
-		hashDel sname, symbhashTB(), FB.INITSYMBOLNODES
+		hashDel ctx.symhash, sname
 
-		strpDel symbolTB(s).nameidx
-		strpDel symbolTB(s).aliasidx
+		strpDel s->nameidx
+		strpDel s->aliasidx
 	end if
 
+    ''
+    hDelSentinel s->sentinel, (s->alloctype and FB.ALLOCTYPE.SHARED) <> 0
+
 	if( freeup ) then
-    	if( symbolTB(s).v.dims > 0 ) then
+    	if( s->v.dims > 0 ) then
     		hDelVarDims s
     	end if
 
-    	symbDelSymbolNode s
+    	listDelNode @ctx.symlist, s
     end if
 
 end sub
 
 '':::::
-sub symbDelConstUDTOrEnum( byval s as integer )
+sub symbDelConstUDTOrEnum( byval s as FBSYMBOL ptr )
     dim sname as string
 
-    if( s = INVALID ) then
+    if( s = NULL ) then
     	exit sub
     end if
 
-	sname = strpGet( symbolTB(s).nameidx )
+	sname = strpGet( s->nameidx )
 
 	'' local?
-	if( symbolTB(s).scope > 0 ) then
-		hashDel sname, locsymbhashTB(), FB.INITLOCSYMBOLNODES
+	if( s->scope > 0 ) then
+		hashDel ctx.lochash, sname
 
     '' global..
     else
-		hashDel sname, symbhashTB(), FB.INITSYMBOLNODES
+		hashDel ctx.symhash, sname
 	end if
 
-	strpDel symbolTB(s).nameidx
-	strpDel symbolTB(s).aliasidx
+	strpDel s->nameidx
+	strpDel s->aliasidx
 
-    symbDelSymbolNode s
+	''
+	hDelSentinel s->sentinel, (s->alloctype and FB.ALLOCTYPE.SHARED) <> 0
+
+    listDelNode @ctx.symlist, s
 
 end sub
 
 '':::::
 sub symbDelLocalSymbols static
-    dim i as integer, n as integer, s as integer
+    dim node as FBLOCSYMBOL ptr, nxt as FBLOCSYMBOL ptr
+    dim s as FBSYMBOL ptr
 
-	i = ctx.locsym.head
-    do while( i <> INVALID )
-    	n = locsymbolTB(i).nxt
+	node = ctx.loclist.head
+    do while( node <> NULL )
+    	nxt = node->nxt
 
-    	s = locsymbolTB(i).s
-    	if( (symbolTB(s).alloctype and FB.ALLOCTYPE.SHARED) = 0 ) then
+    	s = node->s
+    	if( (s->alloctype and FB.ALLOCTYPE.SHARED) = 0 ) then
 
-    		select case symbolTB(s).class
+    		select case s->class
     		case FB.SYMBCLASS.VAR
     			symbDelVar s
     		case FB.SYMBCLASS.CONST, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM
@@ -3277,50 +3007,49 @@ sub symbDelLocalSymbols static
 
     	end if
 
-		symbDelLocSymbolNode i
+		listDelNode @ctx.loclist, node
 
-		i = n
+		node = nxt
     loop
-
-    'strpDump
 
 end sub
 
 '':::::
-sub symbFreeLocalDynSymbols( byval proc as integer, byval issub as integer ) static
-    dim i as integer, n as integer, s as integer
+sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, byval issub as integer ) static
+    dim node as FBLOCSYMBOL ptr, nxt as FBLOCSYMBOL ptr
+    dim s as FBSYMBOL ptr
     dim strg as integer, expr as integer, vr as integer
-    dim fres as integer
+    dim fres as FBSYMBOL ptr
 
     '' can't free function's result, that's will be done by the rtlib
     if( issub ) then
-    	fres = INVALID
+    	fres = NULL
     else
     	fres = symbLookupFunctionResult( proc )
 	end if
 
-	i = ctx.locsym.head
-    do while( i <> INVALID )
-    	n = locsymbolTB(i).nxt
+	node = ctx.loclist.head
+    do while( node <> NULL )
+    	nxt = node->nxt
 
-    	s = locsymbolTB(i).s
-    	if( symbolTB(s).class = FB.SYMBCLASS.VAR ) then
-    		if( (symbolTB(s).alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
+    	s = node->s
+    	if( s->class = FB.SYMBCLASS.VAR ) then
+    		if( (s->alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
 
 				'' not an argument?
-    			if( (symbolTB(s).alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
-    				  							FB.ALLOCTYPE.ARGUMENTBYVAL or _
-    				  							FB.ALLOCTYPE.ARGUMENTBYREF or _
-    				  							FB.ALLOCTYPE.TEMP)) = 0 ) then
+    			if( (s->alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
+    				  				   FB.ALLOCTYPE.ARGUMENTBYVAL or _
+    				  				   FB.ALLOCTYPE.ARGUMENTBYREF or _
+    				  				   FB.ALLOCTYPE.TEMP)) = 0 ) then
 
-					if( symbolTB(s).v.dims > 0 ) then
-						if( (symbolTB(s).alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
+					if( s->v.dims > 0 ) then
+						if( (s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
 							rtlArrayErase s
-						elseif( symbolTB(s).typ = FB.SYMBTYPE.STRING ) then
+						elseif( s->typ = FB.SYMBTYPE.STRING ) then
 							rtlArrayStrErase s
 						end if
 
-					elseif( symbolTB(s).typ = FB.SYMBTYPE.STRING ) then
+					elseif( s->typ = FB.SYMBTYPE.STRING ) then
 						'' not funct's result?
 						if( s <> fres ) then
 							strg = astNewVAR( s, 0, IR.DATATYPE.STRING )
@@ -3334,31 +3063,31 @@ sub symbFreeLocalDynSymbols( byval proc as integer, byval issub as integer ) sta
     		end if
     	end if
 
-    	i = n
+    	node = nxt
     loop
 
 end sub
 
 
 '':::::
-function symbCheckLabels as integer
-    dim i as integer
+function symbCheckLabels as FBSYMBOL ptr
+    dim s as FBSYMBOL ptr
 
-    i = symbGetFirstNode
-    do while( i <> INVALID )
+    s = symbGetFirstNode
+    do while( s <> NULL )
 
-    	if( symbolTB(i).scope = env.scope ) then
-    		if( symbolTB(i).class = FB.SYMBCLASS.LABEL ) then
-    			if( not symbolTB(i).l.declared ) then
-    				symbCheckLabels = i
+    	if( s->scope = env.scope ) then
+    		if( s->class = FB.SYMBCLASS.LABEL ) then
+    			if( not s->l.declared ) then
+    				symbCheckLabels = s
     				exit function
     			end if
     		end if
     	end if
 
-    	i = symbGetNextNode( i )
+    	s = symbGetNextNode( s )
     loop
 
-	symbCheckLabels = INVALID
+	symbCheckLabels = NULL
 
 end function

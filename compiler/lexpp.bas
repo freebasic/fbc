@@ -100,7 +100,7 @@ function lexPreProcessor as integer
     	lexSkipToken , FALSE
 
     	'' ID
-    	if( symbLookupDefine( lexTokenText ) <> INVALID ) then
+    	if( symbLookupDefine( lexTokenText ) <> NULL ) then
     		hReportError FB.ERRMSG.DUPDEFINITION
     		exit function
     	else
@@ -177,7 +177,7 @@ private function ppIf as integer
 	case FB.TK.IFDEF
         lexSkipToken , FALSE
 
-		if( symbLookupDefine( lexEatToken ) <> INVALID ) then
+		if( symbLookupDefine( lexEatToken ) <> NULL ) then
 			istrue = TRUE
 		end if
 
@@ -185,7 +185,7 @@ private function ppIf as integer
 	case FB.TK.IFNDEF
         lexSkipToken , FALSE
 
-		if( symbLookupDefine( lexEatToken ) = INVALID ) then
+		if( symbLookupDefine( lexEatToken ) = NULL ) then
 			istrue = TRUE
 		end if
 
@@ -506,7 +506,7 @@ private function ppParentExpr( parexpr as integer, atom as string ) as integer
     		lexSkipToken , FALSE
     	end if
 
-		if( symbLookupDefine( lexEatToken ) <> INVALID ) then
+		if( symbLookupDefine( lexEatToken ) <> NULL ) then
 			parexpr = TRUE
 		else
 			parexpr = FALSE

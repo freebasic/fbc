@@ -72,7 +72,7 @@ sub hSetCtx
 
 	env.scope			= 0
 	env.reclevel		= 0
-	env.currproc 		= INVALID
+	env.currproc 		= NULL
 
 	env.dbglname 		= ""
 	env.dbglnum 		= 0
@@ -87,17 +87,17 @@ sub hSetCtx
 	env.lastcompound	= INVALID
 	env.isdynamic		= FALSE
 	env.isprocstatic	= FALSE
-	env.procerrorhnd 	= INVALID
+	env.procerrorhnd 	= NULL
 
 	''
-	env.forstmt.endlabel	= INVALID
-	env.forstmt.cmplabel	= INVALID
-	env.dostmt.endlabel		= INVALID
-	env.dostmt.cmplabel		= INVALID
-	env.whilestmt.endlabel	= INVALID
-	env.whilestmt.cmplabel	= INVALID
-	env.procstmt.endlabel	= INVALID
-	env.procstmt.cmplabel	= INVALID
+	env.forstmt.endlabel	= NULL
+	env.forstmt.cmplabel	= NULL
+	env.dostmt.endlabel		= NULL
+	env.dostmt.cmplabel		= NULL
+	env.whilestmt.endlabel	= NULL
+	env.whilestmt.cmplabel	= NULL
+	env.procstmt.endlabel	= NULL
+	env.procstmt.cmplabel	= NULL
 
 
 	''
@@ -149,6 +149,7 @@ sub fbcSetDefaultOptions
 	env.clopt.debug		= FALSE
 	env.clopt.cputype 	= FB.DEFAULTCPUTYPE
 	env.clopt.errorcheck= FALSE
+	env.clopt.resumeerr = FALSE
 	env.clopt.nostdcall = FALSE
 	env.clopt.outtype	= FB_OUTTYPE_EXECUTABLE
 
@@ -168,6 +169,8 @@ sub fbcSetOption ( byval opt as integer, byval value as integer )
 		env.clopt.nostdcall = value
 	case FB.COMPOPT.OUTTYPE
 		env.clopt.outtype = value
+	case FB.COMPOPT.RESUMEERROR
+		env.clopt.resumeerr = value
 	end select
 
 end sub
@@ -189,6 +192,8 @@ function fbcGetOption ( byval opt as integer ) as integer
 		res = env.clopt.nostdcall
 	case FB.COMPOPT.OUTTYPE
 		res = env.clopt.outtype
+	case FB.COMPOPT.RESUMEERROR
+		res = env.clopt.resumeerr
 	end select
 
 	fbcGetOption = res
@@ -224,7 +229,7 @@ end sub
 
 '':::::
 function fbcCompile ( infname as string, outfname as string )
-    dim res as integer, l as integer
+    dim res as integer, l as FBSYMBOL ptr
 
 	fbcCompile = FALSE
 
@@ -261,8 +266,8 @@ function fbcCompile ( infname as string, outfname as string )
 	'' check if any label undefined was used
 	if( res = TRUE ) then
 		l = symbCheckLabels
-		if( l <> INVALID ) then
-			hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, -1, symbGetLabelName( l )
+		if( l <> NULL ) then
+			hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetLabelName( l ), -1
 			res = FALSE
 		else
 			res = TRUE
@@ -437,18 +442,18 @@ end function
 ''                |   ID ':' .
 ''
 function cLabel
-    dim token as integer, l as integer, lname as string
+    dim token as integer, l as FBSYMBOL ptr, lname as string
 
     cLabel = FALSE
 
     token = lexCurrentToken
 
-    l = INVALID
+    l = NULL
 
     '' NUM_LIT
     if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
 		l = symbAddLabel( lexTokenText )
-		if( l = INVALID ) then
+		if( l = NULL ) then
 			hReportError FB.ERRMSG.DUPDEFINITION
 			exit function
 		else
@@ -466,7 +471,7 @@ function cLabel
 			end if
 
 			l = symbAddLabel( lexTokenText )
-			if( l = INVALID ) then
+			if( l = NULL ) then
 				hReportError FB.ERRMSG.DUPDEFINITION
 				exit function
 			else
@@ -479,7 +484,7 @@ function cLabel
 		end if
     end if
 
-    if( l <> INVALID ) then
+    if( l <> NULL ) then
 
     	lname = symbGetLabelName( l )
     	irEmitLABEL l, (env.scope = 0)
@@ -543,11 +548,6 @@ function hDoInclude( filename as string ) as integer
 		incfile = filename
 	end if
 
-	if( not hFileExists( incfile ) ) then
-		hReportSimpleError FB.ERRMSG.FILENOTFOUND
-		exit function
-	end if
-
 	''
 	envcopyTB(env.reclevel) = env
 	lexSaveCtx env.reclevel
@@ -555,17 +555,25 @@ function hDoInclude( filename as string ) as integer
 
 	env.infile		= filename
 
-	lexInit
-
 	''
-	env.inf = freefile
-	open incfile for binary as #env.inf
+	if( not hFileExists( incfile ) ) then
+		hReportSimpleError FB.ERRMSG.FILENOTFOUND
 
-	'' parse
-	hDoInclude = cProgram
+	else
+		''
+		lexInit
 
-	'' close it
-	close #env.inf
+		''
+		env.inf = freefile
+		open incfile for binary as #env.inf
+
+		'' parse
+		hDoInclude = cProgram
+
+		'' close it
+		close #env.inf
+
+	end if
 
 	''
 	lexRestoreCtx env.reclevel-1
@@ -637,7 +645,11 @@ function cDirective
 		if( isinclude ) then
 			res = hDoInclude( incfile )
 		else
-			res = symbAddLib( incfile )
+			if( symbAddLib( incfile ) <> NULL ) then
+				res = TRUE
+			else
+				res = FALSE
+			end if
 		end if
 
 	end select
@@ -826,7 +838,7 @@ end function
 ''ConstAssign     =   ID (AS SymbolType)? ASSIGN (ConstExpression | STR_LITERAL) .
 ''
 function cConstAssign
-    dim id as string, typ as integer, subtype as integer, lgt as integer
+    dim id as string, typ as integer, subtype as FBSYMBOL ptr, lgt as integer
     dim value as double, text as string, c as integer
     dim expr as integer
 
@@ -862,19 +874,19 @@ function cConstAssign
 	'' STR_LITERAL
 	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
 
-		if( not symbAddConst( id, FB.SYMBTYPE.STRING, lexEatToken ) ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
+		if( symbAddConst( id, FB.SYMBTYPE.STRING, lexEatToken ) = NULL ) then
+    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
 
 	'' ConstExpression
 	else
 		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCONST
+			hReportErrorEx FB.ERRMSG.EXPECTEDCONST, id
 			exit function
 		else
 			if( astGetType( expr ) <> AST.NODETYPE.CONST ) then
-				hReportError FB.ERRMSG.EXPECTEDCONST
+				hReportErrorEx FB.ERRMSG.EXPECTEDCONST, id
 				exit function
 			end if
 		end if
@@ -897,8 +909,8 @@ function cConstAssign
 
 		text = ltrim$( str$( value ) )
 
-		if( not symbAddConst( id, typ, text ) ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
+		if( symbAddConst( id, typ, text ) = NULL ) then
+    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
 
@@ -911,18 +923,22 @@ end function
 '':::::
 ''ElementDecl     =   ID ArrayDecl? AS SymbolType
 ''
-function cElementDecl( id as string, typ as integer, subtype as integer, lgt as integer, dimensions as integer, dTB() as FBARRAYDIM )
+function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, lgt as integer, _
+					   dimensions as integer, dTB() as FBARRAYDIM )
 	dim res as integer
 
 	cElementDecl = FALSE
 
-	'' ID
-	'if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-    '	exit function
-    'end if
+	'' allow keywords as field names
+	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
+		if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	end if
+    end if
 
+	'' ID
 	typ = lexTokenType
-	subtype = INVALID
+	subtype = NULL
 	id = lexEatToken
 
 	'' ArrayDecl?
@@ -950,7 +966,7 @@ end function
 ''              |   (ElementDecl? Comment? SttSeparator)+ .
 ''
 function cTypeLine as integer
-    dim typ as integer, subtype as integer, lgt as integer
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim ename as string
 
@@ -994,8 +1010,8 @@ function cTypeLine as integer
 
 		if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
 			if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _
-								   typ, subtype, lgt, env.typectx.innercnt > 0 ) = INVALID ) then
-				hReportError FB.ERRMSG.DUPDEFINITION
+								   typ, subtype, lgt, env.typectx.innercnt > 0 ) = NULL ) then
+				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 				exit function
 			end if
 		end if
@@ -1069,8 +1085,8 @@ function cTypeDecl
 	end if
 
 	env.typectx.symbol = symbAddUDT( id, env.typectx.isunion, align )
-	if( env.typectx.symbol = INVALID ) then
-    	hReportError FB.ERRMSG.DUPDEFINITION
+	if( env.typectx.symbol = NULL ) then
+    	hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     	exit function
 	end if
 
@@ -1174,8 +1190,8 @@ function cEnumLine as integer
 	env.enumctx.elements = env.enumctx.elements + 1
 
 	if( cEnumConstDecl( ename ) ) then
-		if( not symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ) ) ) then
-			hReportError FB.ERRMSG.DUPDEFINITION
+		if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ) ) = NULL ) then
+			hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 			exit function
 		end if
 	end if
@@ -1219,8 +1235,8 @@ function cEnumDecl
 	id = lexEatToken
 
 	e = symbAddEnum( id )
-	if( e = INVALID ) then
-    	hReportError FB.ERRMSG.DUPDEFINITION
+	if( e = NULL ) then
+    	hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     	exit function
 	end if
 
@@ -1373,10 +1389,10 @@ end sub
 ''                       (DECL_SEPARATOR SymbolDef)* .
 ''
 function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
-    dim id as string, symbol as integer
+    dim id as string, symbol as FBSYMBOL ptr
     dim addsuffix as integer, atype as integer, isdynamic as integer
-    dim typ as integer, subtype as integer, lgt as integer, ofs as integer
-    dim elm as integer, typesymbol as integer
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer
+    dim elm as FBTYPELEMENT ptr
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
 
@@ -1390,7 +1406,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     	end if
 
     	typ 		= lexTokenType
-    	subtype 	= INVALID
+    	subtype 	= NULL
     	lgt			= 0
     	id 			= lexEatToken
     	addsuffix 	= TRUE
@@ -1419,7 +1435,6 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 		end if
 
     	'' (AS SymbolType)?
-    	symbol = INVALID
     	if( lexCurrentToken = FB.TK.AS ) then
 
     		if( typ <> INVALID ) then
@@ -1436,48 +1451,19 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 
     		addsuffix = FALSE
 
-    		'' check if any suffixed var with same name was already declared
-
-			'' if symbol already exists, check if dynamic
-			symbol = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
-			if( symbol <> INVALID ) then
-   				if( not symbGetVarIsDynamic( symbol ) ) then
-   					hReportError FB.ERRMSG.ARRAYALREADYDIMENSIONED
-   					exit function
-   				end if
-			end if
-
     	else
-
-			'' check if any non-suffixed var with same name was already declared
-			symbol = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
-			if( symbol <> INVALID ) then
-   				if( not isdynamic ) then
-   					hReportError FB.ERRMSG.DUPDEFINITION
-   					exit function
-   				elseif( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
-   					hReportError FB.ERRMSG.DUPDEFINITION
-   					exit function
-   				end if
-			end if
 
 			if( typ = INVALID ) then
 				typ = hGetDefType( id )
 			end if
     		lgt	= symbCalcLen( typ, subtype )
+
     	end if
 
     	''
-    	if( (isdynamic) or (symbol <> INVALID) ) then
+    	if( isdynamic ) then
 
-    		if( symbol <> INVALID ) then
-    			if( not symbGetVarIsDynamic( symbol ) ) then
-    				hReportError FB.ERRMSG.ARRAYALREADYDIMENSIONED
-    				exit function
-    			end if
-    		end if
-
-    		if( not cDynArrayDef( symbol, id, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() ) ) then
+    		if( not cDynArrayDef( id, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() ) ) then
     			exit function
     		end if
 
@@ -1488,8 +1474,8 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
             atype = alloctype and (not FB.ALLOCTYPE.DYNAMIC)
 
     		symbol = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
-    		if( symbol = INVALID ) then
-    			hReportError FB.ERRMSG.DUPDEFINITION
+    		if( symbol = NULL ) then
+    			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     			exit function
 			end if
 
@@ -1522,9 +1508,11 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 end function
 
 '':::::
-function cDynArrayDef( byval s as integer, id as string, byval typ as integer, byval subtype as integer, byval lgt as integer, _
+function cDynArrayDef( id as string, byval typ as integer, _
+					   byval subtype as FBSYMBOL ptr, byval lgt as integer, _
 					   byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
 					   byval dimensions as integer, exprTB() as integer ) as integer
+    dim s as FBSYMBOL ptr
     dim res as integer
     dim atype as integer
     dim dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
@@ -1534,10 +1522,17 @@ function cDynArrayDef( byval s as integer, id as string, byval typ as integer, b
     atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
 
     ''
-    if( s = INVALID ) then
-    	s = symbLookupVarEx( id, typ, 0, 0, 0, addsuffix, FALSE, TRUE )
-    	if( s = INVALID ) then
-    		s = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+  	s = symbLookupVarEx( id, typ, 0, NULL, NULL, addsuffix, FALSE, TRUE )
+   	if( s = NULL ) then
+   		s = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+   		if( s = NULL ) then
+   			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+   			exit function
+   		end if
+	else
+		if( not symbGetVarIsDynamic( s ) ) then
+   			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+   			exit function
 		end if
 	end if
 
@@ -1545,15 +1540,14 @@ function cDynArrayDef( byval s as integer, id as string, byval typ as integer, b
 	if( ((symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0) and _
 		((symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) = 0) ) then
 
-		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) or _
-	    	(not symbGetVarIsDynamic( s )) ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
+		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
+    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
 
 		if( symbGetVarDimensions( s ) > 0 ) then
 			if( dimensions <> symbGetVarDimensions( s ) ) then
-    			hReportError FB.ERRMSG.WRONGDIMENSIONS
+    			hReportErrorEx FB.ERRMSG.WRONGDIMENSIONS, id
     			exit function
     		end if
 		end if
@@ -1561,7 +1555,7 @@ function cDynArrayDef( byval s as integer, id as string, byval typ as integer, b
 	'' else, can't check it's dimensions at compile-time
 	else
 		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
+    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
 	end if
@@ -1765,12 +1759,12 @@ function cConstExprValue( littext as string ) as integer
 end function
 
 '':::::
-function cSymbolTypeFuncPtr
-	dim s as integer, typ as integer, subtype as integer, lgt as integer, mode as integer
+function cSymbolTypeFuncPtr as FBSYMBOL ptr
+	dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, mode as integer
 	dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 	dim res as integer
 
-	cSymbolTypeFuncPtr = INVALID
+	cSymbolTypeFuncPtr = NULL
 
 	'' mode
 	mode = cFunctionMode
@@ -1797,7 +1791,7 @@ function cSymbolTypeFuncPtr
 		typ = FB.SYMBTYPE.VOID
 	end if
 
-	cSymbolTypeFuncPtr = symbAddProc( hMakeTmpStr, "", "", typ, mode, argc, argv(), TRUE )
+	cSymbolTypeFuncPtr = symbAddPrototype( hMakeTmpStr, "", "", typ, mode, argc, argv(), TRUE )
 
 end function
 
@@ -1815,16 +1809,16 @@ end function
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
 ''				      (PTR|POINTER)? .
 ''
-function cSymbolType( typ as integer, subtype as integer, lgt as integer )
+function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
     dim isunsigned as integer
-    dim res as integer, s as integer
+    dim res as integer, s as FBSYMBOL ptr
     dim littext as string
 
 	res = FALSE
 
 	lgt = 0
 	typ = INVALID
-	subtype = INVALID
+	subtype = NULL
 
 	'' UNSIGNED?
 	isunsigned = hMatch( FB.TK.UNSIGNED )
@@ -1897,21 +1891,21 @@ function cSymbolType( typ as integer, subtype as integer, lgt as integer )
 
 		typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION
 		lgt = FB.POINTERSIZE
-		subtype = cSymbolTypeFuncPtr
 
-		if( subtype = INVALID ) then
+		subtype = cSymbolTypeFuncPtr
+		if( subtype = NULL ) then
 			exit function
 		end if
 
 	case else
 		s = symbLookupUDT( lexTokenText, lgt )
-		if( s <> INVALID ) then
+		if( s <> NULL ) then
 			typ = FB.SYMBTYPE.USERDEF
 			subtype = s
 			lexSkipToken
 		else
 			s = symbLookupEnum( lexTokenText )
-			if( s <> INVALID ) then
+			if( s <> NULL ) then
 				typ = FB.SYMBTYPE.UINT
 				lgt = FB.INTEGERSIZE
 				lexSkipToken
@@ -2019,9 +2013,9 @@ end function
 ''
 function cSubOrFuncDecl( byval isSub as integer ) static
     dim res as integer
-    dim id as string, typ as integer, subtype as integer, mode as integer, lgt as integer
+    dim id as string, typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
     dim libname as string, aliasname as string
-    dim f as integer, argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
+    dim f as FBSYMBOL ptr, argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 
 	cSubOrFuncDecl = FALSE
 
@@ -2105,8 +2099,8 @@ function cSubOrFuncDecl( byval isSub as integer ) static
     	typ = FB.SYMBTYPE.VOID
     end if
 
-    f = symbAddProc( id, aliasname, libname, typ, mode, argc, argv(), FALSE )
-    if( f = INVALID ) then
+    f = symbAddPrototype( id, aliasname, libname, typ, mode, argc, argv(), FALSE )
+    if( f = NULL ) then
     	hReportError FB.ERRMSG.DUPDEFINITION
     	exit function
     end if
@@ -2124,7 +2118,7 @@ function cArguments( argc as integer, argv() as FBPROCARG, byval isproto as inte
 
 	argc = 0
 	do
-		if( not cArgDecl( argv(argc), isproto ) ) then
+		if( not cArgDecl( argc, argv(argc), isproto ) ) then
 			exit function
 		end if
 
@@ -2139,9 +2133,16 @@ function cArguments( argc as integer, argv() as FBPROCARG, byval isproto as inte
 end function
 
 '':::::
+private sub hReportParamError( byval argnum as integer, id as string )
+
+	hReportErrorEx FB.ERRMSG.ILLEGALPARAMSPECAT, "at parameter " + str$( argnum+1 ) + ": " + id
+
+end sub
+
+'':::::
 ''ArgDecl         =   (BYVAL|BYREF|SEG)? ID (('(' ')')? (AS SymbolType)?)? ('=" NUM_LIT)? .
 ''
-function cArgDecl( arg as FBPROCARG, byval isproto as integer ) as integer
+function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as integer ) as integer
 	dim id as string
 	dim expr as integer, dclass as integer
 
@@ -2158,20 +2159,30 @@ function cArgDecl( arg as FBPROCARG, byval isproto as integer ) as integer
 		lexSkipToken
 	end select
 
-	'' ID
+	'' only allow keywords as arg names on prototypes
 	if( lexCurrentToken <> FB.TK.ID ) then
-		exit function
-	else
-		arg.typ = lexTokenType
-		id = lexEatToken
-
-		'' don't save arg's name if it's just a prototype
 		if( not isproto ) then
-			arg.nameidx = strpAdd( id )
-		else
-			arg.nameidx = INVALID
+			'' anything but keywords will be catch by parser (could be a ')' too)
+			if( lexCurrentTokenClass = FB.TKCLASS.KEYWORD ) then
+				hReportError FB.ERRMSG.ILLEGALPARAMSPEC
+				exit function
+			end if
 		end if
 
+		if(	lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+			exit function
+		end if
+	end if
+
+	'' ID
+	arg.typ = lexTokenType
+	id = lexEatToken
+
+	'' don't save arg's name if it's just a prototype
+	if( not isproto ) then
+		arg.nameidx = strpAdd( id )
+	else
+		arg.nameidx = INVALID
 	end if
 
 	'' ('('')')
@@ -2189,52 +2200,85 @@ function cArgDecl( arg as FBPROCARG, byval isproto as integer ) as integer
     '' (AS SymbolType)?
     if( hMatch( FB.TK.AS ) ) then
     	if( arg.typ <> INVALID ) then
-    		hReportError FB.ERRMSG.ILLEGALPARAMSPEC
+    		hReportParamError argc, id
     		exit function
     	end if
     	if( not cSymbolType( arg.typ, arg.subtype, arg.lgt ) ) then
-    		hReportError FB.ERRMSG.ILLEGALPARAMSPEC
+    		hReportParamError argc, id
     		exit function
     	end if
 
     	arg.suffix = INVALID
     else
-    	arg.subtype = INVALID
+    	arg.subtype = NULL
     	arg.suffix = arg.typ
     end if
 
     ''
     if( arg.typ = INVALID ) then
         arg.typ = hGetDefType( id )
-        arg.suffix = INVALID 'arg.typ
+        arg.suffix = INVALID
     end if
 
+    '' check for invalid args
+    select case arg.typ
     '' can't be a fixed-len string
-    if( arg.typ = FB.SYMBTYPE.FIXSTR ) then
-    	hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
+    case FB.SYMBTYPE.FIXSTR
+    	hReportParamError argc, id
     	exit function
-    end if
 
-	'' check for invalid args on FB functions (not prototypes)
-    if( not isproto ) then
-    	if( arg.typ = FB.SYMBTYPE.VOID ) then
-    		hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
+	'' can't be as ANY on non-prototypes
+    case FB.SYMBTYPE.VOID
+    	if( not isproto ) then
+    		hReportParamError argc, id
     		exit function
-    	elseif( arg.mode = FB.ARGMODE.BYVAL ) then
+    	end if
+    end select
+
+    ''
+    select case arg.mode
+    case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
+    	arg.lgt = FB.POINTERSIZE
+
+    case FB.ARGMODE.BYVAL
+
+    	'' check for invalid args
+    	if( isproto ) then
+    		select case arg.typ
+    		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.USERDEF
+    			hReportParamError argc, id
+    			exit function
+    		end select
+    	else
     		select case arg.typ
     		case FB.SYMBTYPE.STRING, FB.SYMBTYPE.USERDEF
-    			hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
+    			hReportParamError argc, id
     			exit function
     		end select
     	end if
-    end if
+
+    	select case arg.typ
+    	case FB.SYMBTYPE.STRING
+    		arg.lgt  = FB.POINTERSIZE
+    	case else
+    		arg.lgt = symbCalcLen( arg.typ, arg.subtype )
+    	end select
+    end select
+
+    '' if not a prototype, check if args are not dup-defined -- already done at hDeclareArgs()
+    '''''if( not isproto ) then
+    '''''	if( symbLookupSentinel( id, FB.SYMBCLASS.VAR, TRUE ) <> NULL ) then
+    '''''		hReportParamError argc, id
+    '''''		exit function
+    '''''	end if
+    '''''end if
 
     '' ('=' NUM_LIT)?
     if( hMatch( FB.TK.ASSIGN ) ) then
     	dclass = irGetDataClass( hStyp2Dtype( arg.typ ) )
 
     	if( (dclass <> IR.DATACLASS.INTEGER) and (dclass <> IR.DATACLASS.FPOINT) ) then
- 	   		hReportError FB.ERRMSG.ILLEGALPARAMSPEC
+ 	   		hReportParamError argc, id
     		exit function
     	end if
 
@@ -2256,25 +2300,6 @@ function cArgDecl( arg as FBPROCARG, byval isproto as integer ) as integer
     	arg.optional = FALSE
         arg.defvalue = 0.0
     end if
-
-    ''
-    select case arg.mode
-    case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
-    	arg.lgt = FB.POINTERSIZE
-
-    case FB.ARGMODE.BYVAL
-    	select case arg.typ
-    	case FB.SYMBTYPE.VOID
-    		if( isproto ) then
-    			hReportError FB.ERRMSG.ILLEGALPARAMSPEC
-    			exit function
-    		end if
-    	case FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.USERDEF
-    		arg.lgt  = FB.POINTERSIZE
-    	case else
-    		arg.lgt = symbCalcLen( arg.typ, arg.subtype )
-    	end select
-    end select
 
     cArgDecl = TRUE
 
@@ -2406,7 +2431,7 @@ end function
 '':::::
 ''ProcParam         =   (BYREF|BYVAL|SEG)? (ID(('(' ')')? | Expression) .
 ''
-function cProcParam( byval proc as integer, byval arg as integer, expr as integer, pmode as integer, _
+function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, expr as integer, pmode as integer, _
 					 byval optonly as integer ) as integer
 	dim amode as integer
 
@@ -2478,8 +2503,8 @@ end function
 '':::::
 ''ProcParamList     =    ProcParam (DECL_SEPARATOR ProcParam)* .
 ''
-function cProcParamList( byval proc as integer, byval procexpr as integer ) as integer
-    dim p as integer, arg as integer
+function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer ) as integer
+    dim p as integer, arg as FBPROCARG ptr
     dim res as integer, dtype as integer
     dim args as integer, elist(0 to FB_MAXPROCARGS-1) as integer, mlist(0 to FB_MAXPROCARGS-1) as integer
 
@@ -2528,8 +2553,7 @@ function cProcParamList( byval proc as integer, byval procexpr as integer ) as i
     ''
 	for p = 0 to args-1
 
-		dtype = astGetDataType( elist(p) )
-		if( astNewPARAMEx( procexpr, elist(p), dtype, mlist(p) ) = INVALID ) then
+		if( astNewPARAM( procexpr, elist(p), INVALID, mlist(p) ) = INVALID ) then
 			hReportError FB.ERRMSG.PARAMTYPEMISMATCH
 			exit function
 		end if
@@ -2542,15 +2566,15 @@ function cProcParamList( byval proc as integer, byval procexpr as integer ) as i
 end function
 
 '':::::
-function hAssignFunctResult( byval proc as integer, byval expr as integer ) as integer static
-    dim s as integer
+function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer ) as integer static
+    dim s as FBSYMBOL ptr
     dim assg as integer, typ as integer, dtype as integer
     dim vr as integer
 
     hAssignFunctResult = FALSE
 
     s = symbLookupFunctionResult( proc )
-    if( s = INVALID ) then
+    if( s = NULL ) then
     	exit function
     end if
 
@@ -2567,7 +2591,7 @@ function hAssignFunctResult( byval proc as integer, byval expr as integer ) as i
 end function
 
 '':::::
-function cProcCall( byval proc as integer, byval ptrexpr as integer ) as integer
+function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer ) as integer
 	dim procexpr as integer
 	dim vr as integer
 	dim typ as integer, dtype as integer
@@ -2625,7 +2649,7 @@ end function
 ''				  |	  ID '=' Expression .						!!QB quirk!!
 ''
 function cProcCallOrAssign
-	dim proc as integer, expr as integer
+	dim proc as FBSYMBOL ptr, expr as integer
 
 	cProcCallOrAssign = FALSE
 
@@ -2637,7 +2661,7 @@ function cProcCallOrAssign
 		'' ID
 		if( lexCurrentToken = FB.TK.ID ) then
 			proc = symbLookupProc( lexTokenText )
-			if( proc <> INVALID ) then
+			if( proc <> NULL ) then
 				lexSkipToken
 
 				cProcCallOrAssign = cProcCall( proc, INVALID )
@@ -2651,7 +2675,7 @@ function cProcCallOrAssign
 	case FB.TK.ID
 
 		proc = symbLookupProc( lexTokenText )
-		if( proc <> INVALID ) then
+		if( proc <> NULL ) then
 			lexSkipToken
 
 			'' ID ProcParamList?
@@ -2749,7 +2773,7 @@ end function
 ''
 function cAsmCode
 	dim asmline as string, text as string
-	dim ofs as integer, elm as integer, typesymbol as integer, s as integer
+	dim ofs as integer, elm as FBTYPELEMENT ptr, subtype as FBSYMBOL ptr, s as FBSYMBOL ptr
 
 	cAsmCode = FALSE
 
@@ -2767,17 +2791,17 @@ function cAsmCode
 			if( not emitIsKeyword( text ) ) then
 				'' lookup functions
 				s = symbLookupProc( text )
-				if( s <> INVALID ) then
+				if( s <> NULL ) then
 					text = symbGetProcName( s )
 				else
 					'' lookup var's
-					s = symbLookupVar( text, lexTokenType, ofs, elm, typesymbol )
-					if( s <> INVALID ) then
+					s = symbLookupVar( text, lexTokenType, ofs, elm, subtype )
+					if( s <> NULL ) then
 						text = symbGetVarName( s )
         			else
 						'' and const's
 						s = symbLookupConst( text, lexTokenType )
-						if( s <> INVALID ) then
+						if( s <> NULL ) then
 							text = symbGetConstText( s )
 						end if
 					end if

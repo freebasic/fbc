@@ -71,7 +71,7 @@ declare function 	assembleFiles 		( ) as integer
 declare function 	linkFiles 			( ) as integer
 declare function 	archiveFiles 		( ) as integer
 declare function 	delFiles 			( ) as integer
-declare function 	makeImpLib 			( dllname as string ) as integer
+declare function 	makeImpLib 			( dllpath as string, dllname as string ) as integer
 
 
 ''globals
@@ -85,6 +85,11 @@ declare function 	makeImpLib 			( dllname as string ) as integer
 	dim shared inclist(0 to FB_MAXARGS-1) as string
 	dim shared pthlist(0 to FB_MAXARGS-1) as string
 	dim shared ctx as FBCCTX
+
+	dim shared QUOTE as string
+
+	QUOTE = chr$( 34 )
+
 
     ''
     parseCmd argc, argv()
@@ -209,11 +214,8 @@ end function
 function assembleFiles as integer
 	dim i as integer, f as integer
 	dim aspath as string, ascline as string
-	dim QUOTE as string
 
 	assembleFiles = FALSE
-
-	QUOTE = chr$( 34 )
 
     ''
 #ifdef TARGET_WIN32
@@ -254,14 +256,11 @@ function linkFiles as integer
 	dim i as integer, f as integer
 	dim ldcline as string
 	dim ldpath as string
-	dim QUOTE as string
 #ifdef TARGET_WIN32
 	dim libname as string, dllname as string
 #endif
 
 	linkFiles = FALSE
-
-	QUOTE = chr$( 34 )
 
 	'' if no executable name was defined, assume it's the same as the first source file
 	if( len( ctx.outname ) = 0 ) then
@@ -276,7 +275,7 @@ function linkFiles as integer
 #elseif defined(TARGET_LINUX)
 		select case ctx.outtype
 		case FB_OUTTYPE_DYNAMICLIB
-			ctx.outname = "lib" + hStripPath( ctx.outname ) + ".so"
+			ctx.outname = hStripFilename( ctx.outname ) + "lib" + hStripPath( ctx.outname ) + ".so"
 		end select
 #endif
 	end if
@@ -335,8 +334,8 @@ function linkFiles as integer
     	'' don't export entry points
     	ldcline = ldcline + " --exclude-symbols DLLMAIN@12,_DLLMAIN"
     	for i = 0 to ctx.inps-1
-        	ldcline = ldcline + ",fb_" + hStripExt(outlist(i)) + "_entry"
-        	ldcline = ldcline + ",fb_" + ucase$(hStripExt(outlist(i))) + "_entry"
+        	ldcline = ldcline + ",fb_" + hStripPath( hStripExt( outlist(i) ) ) + "_entry"
+        	ldcline = ldcline + ",fb_" + ucase$( hStripPath( hStripExt( outlist(i) ) ) ) + "_entry"
     	next i
 
     	'' don't export any symbol from rtlib
@@ -423,7 +422,7 @@ function linkFiles as integer
 #ifdef TARGET_WIN32
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
-        ldcline = ldcline + " --output-def " + QUOTE + dllname + ".def" + QUOTE
+        ldcline = ldcline + " --output-def " + QUOTE + hStripFilename( ctx.outname ) + dllname + ".def" + QUOTE
 	end if
 #endif
 
@@ -444,7 +443,7 @@ function linkFiles as integer
 #ifdef TARGET_WIN32
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 		'' create the import library for the dll built
-		if( makeImpLib( dllname ) = FALSE ) then
+		if( makeImpLib( hStripFilename( ctx.outname ), dllname ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -478,20 +477,20 @@ function makeDefList( dllname as string ) as integer
 end function
 
 '':::::
-function clearDefList( dllname as string ) as integer
+function clearDefList( dllfile as string ) as integer
 	dim inpf as integer, outf as integer
 	dim ln as string
 
 	clearDefList = FALSE
 
-    if( not hFileExists( dllname + ".def" ) ) then
+    if( not hFileExists( dllfile + ".def" ) ) then
     	exit function
     end if
 
     inpf = freefile
-    open dllname + ".def" for input as #inpf
+    open dllfile + ".def" for input as #inpf
     outf = freefile
-    open dllname + ".clean.def" for output as #outf
+    open dllfile + ".clean.def" for output as #outf
 
     do until eof( inpf )
 
@@ -507,19 +506,22 @@ function clearDefList( dllname as string ) as integer
     close #outf
     close #inpf
 
-    kill dllname + ".def"
-    rename dllname + ".clean.def", dllname + ".def"
+    kill dllfile + ".def"
+    name dllfile + ".clean.def", dllfile + ".def"
 
     clearDefList = TRUE
 
 end function
 
 '':::::
-function makeImpLib( dllname as string ) as integer
+function makeImpLib( dllpath as string, dllname as string ) as integer
 	dim dtpath as string
 	dim dtcline as string
+	dim dllfile as string
 
 	makeImpLib = FALSE
+
+	dllfile = dllpath + dllname
 
 	'' output def list
 	'''''if( makeDefList( dllname ) = FALSE ) then
@@ -528,20 +530,26 @@ function makeImpLib( dllname as string ) as integer
 
 	'' for some weird reason, LD will declare all functions exported as if they were
 	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
-	if( clearDefList( dllname ) = FALSE ) then
+	if( clearDefList( dllfile ) = FALSE ) then
 		exit function
 	end if
 
 	dtpath = exepath$ + FB.BINPATH + "dlltool.exe"
 
-	dtcline = "--def " + dllname + ".def --dllname " + dllname + ".dll --output-lib lib" + dllname + ".dll.a"
+	dtcline = "--def " + QUOTE + dllfile + ".def" + QUOTE + _
+			  " --dllname " + QUOTE + dllfile + ".dll" + QUOTE + _
+			  " --output-lib " + QUOTE + dllpath + "lib" + dllname + ".dll.a" + QUOTE
+
+    if( ctx.verbose ) then
+    	print "dlltool: ", dtcline
+    end if
 
     if( exec( dtpath, dtcline ) <> 0 ) then
 		exit function
     end if
 
 	''
-	kill dllname + ".def"
+	kill dllfile + ".def"
 
     makeImpLib = TRUE
 
@@ -553,16 +561,13 @@ end function
 function archiveFiles as integer
     dim i as integer
     dim arcpath as string, arcline as string
-  	dim QUOTE as string
 
 	archiveFiles = FALSE
-
-	QUOTE = chr$( 34 )
 
     '' if no exe file name given, assume "lib" + first source name + ".a"
     '' ( exe filename is actually lib filename for static libs )
     if( len( ctx.outname ) = 0 ) then
-       ctx.outname = "lib" + hStripPath( hStripExt( inplist(0) ) ) + ".a"
+       ctx.outname = hStripFilename( inplist(0) ) + "lib" + hStripPath( hStripExt( inplist(0) ) ) + ".a"
     end if
 
     arcline = "-rsc "
@@ -637,6 +642,7 @@ sub printOptions
 	print "-dylib", "create a shared library"
 #endif
 	print "-e", "add error checking"
+	print "-ex", "add error checking with RESUME support"
 	print "-g", "add debug info (testing)"
 	print "-i <name>", "add a path to search for include files"
 	print "-l <name>", "add a library file to linker's list"
@@ -691,7 +697,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "e", "w"
+			case "e", "ex", "w"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -792,6 +798,10 @@ function processCompOptions as integer
 			select case mid$( argv(i), 2 )
 			case "e"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
+			case "ex"
+				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
+				fbcSetOption FB.COMPOPT.RESUMEERROR, TRUE
+
 #ifdef TARGET_WIN32
 			case "w"
 				fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE

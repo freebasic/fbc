@@ -45,6 +45,8 @@ end function
 function cLogExpression( logexpr as integer )
     dim donot as integer, op as integer, relexpr as integer
 
+	cLogExpression = FALSE
+
     '' NOT?
     donot = FALSE
     if( hMatch( FB.TK.NOT ) ) then
@@ -53,16 +55,18 @@ function cLogExpression( logexpr as integer )
 
     '' RelExpression
     if( not cRelExpression( logexpr ) ) then
-    	cLogExpression = FALSE
     	exit function
     end if
 
     '' exec not
     if( donot ) then
     	logexpr = astNewUOP( IR.OP.NOT, logexpr )
-    end if
 
-	cLogExpression = TRUE
+        if( logexpr = INVALID ) then
+			hReportError FB.ERRMSG.TYPEMISMATCH
+            exit function
+        end if
+    end if
 
     '' ( ... )*
     do
@@ -84,13 +88,17 @@ function cLogExpression( logexpr as integer )
     	'' RelExpression
     	if( not cRelExpression( relexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cLogExpression = FALSE
     		exit function
     	end if
 
     	'' exec not
     	if( donot ) then
     		relexpr = astNewUOP( IR.OP.NOT, relexpr )
+
+        	if( relexpr = INVALID ) then
+				hReportError FB.ERRMSG.TYPEMISMATCH
+            	exit function
+        	end if
     	end if
 
     	'' do operation
@@ -106,7 +114,15 @@ function cLogExpression( logexpr as integer )
     	case FB.TK.IMP
     		logexpr = astNewBOP( IR.OP.IMP, logexpr, relexpr )
     	end select
+
+        if( logexpr = INVALID ) then
+			hReportError FB.ERRMSG.TYPEMISMATCH
+            exit function
+        end if
+
     loop
+
+	cLogExpression = TRUE
 
 end function
 
@@ -116,13 +132,12 @@ end function
 function cRelExpression( relexpr as integer )
     dim op as integer, addexpr as integer
 
+    cRelExpression = FALSE
+
     '' AddExpression
     if( not cAddExpression( relexpr ) ) then
-    	cRelExpression = FALSE
     	exit function
     end if
-
-    cRelExpression = TRUE
 
     '' ( ... )*
     do
@@ -138,7 +153,6 @@ function cRelExpression( relexpr as integer )
     	'' AddExpression
     	if( not cAddExpression( addexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cRelExpression = FALSE
     		exit function
     	end if
 
@@ -164,6 +178,8 @@ function cRelExpression( relexpr as integer )
     	end if
     loop
 
+    cRelExpression = TRUE
+
 end function
 
 '':::::
@@ -172,13 +188,12 @@ end function
 function cAddExpression( addexpr as integer )
     dim op as integer, shiftexpr as integer
 
+    cAddExpression = FALSE
+
     '' ShiftExpression
     if( not cShiftExpression( addexpr ) ) then
-    	cAddExpression = FALSE
     	exit function
     end if
-
-    cAddExpression = TRUE
 
     '' ( ... )*
     do
@@ -194,7 +209,6 @@ function cAddExpression( addexpr as integer )
     	'' ShiftExpression
     	if( not cShiftExpression( shiftexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cAddExpression = FALSE
     		exit do
     	end if
 
@@ -212,6 +226,8 @@ function cAddExpression( addexpr as integer )
     	end if
     loop
 
+    cAddExpression = TRUE
+
 end function
 
 '':::::
@@ -220,13 +236,12 @@ end function
 function cShiftExpression( shiftexpr as integer )
     dim op as integer, modexpr as integer
 
+    cShiftExpression = FALSE
+
     '' ModExpression
     if( not cModExpression( shiftexpr ) ) then
-    	cShiftExpression = FALSE
     	exit function
     end if
-
-    cShiftExpression = TRUE
 
     '' ( ... )*
     do
@@ -242,7 +257,6 @@ function cShiftExpression( shiftexpr as integer )
     	'' ModExpression
     	if( not cModExpression( modexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cShiftExpression = FALSE
     		exit do
     	end if
 
@@ -253,7 +267,14 @@ function cShiftExpression( shiftexpr as integer )
     	case FB.TK.SHR
     		shiftexpr = astNewBOP( IR.OP.SHR, shiftexpr, modexpr )
     	end select
+
+    	if( shiftexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
     loop
+
+    cShiftExpression = TRUE
 
 end function
 
@@ -263,13 +284,12 @@ end function
 function cModExpression( modexpr as integer )
     dim idivexpr as integer
 
+    cModExpression = FALSE
+
     '' IntDivExpression
     if( not cIntDivExpression( modexpr ) ) then
-    	cModExpression = FALSE
     	exit function
     end if
-
-    cModExpression = TRUE
 
     '' ( ... )*
     do
@@ -283,13 +303,19 @@ function cModExpression( modexpr as integer )
     	'' IntDivExpression
     	if( not cIntDivExpression( idivexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cModExpression = FALSE
     		exit function
     	end if
 
     	'' do operation
     	modexpr = astNewBOP( IR.OP.MOD, modexpr, idivexpr )
+
+    	if( modexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
     loop
+
+    cModExpression = TRUE
 
 end function
 
@@ -299,13 +325,12 @@ end function
 function cIntDivExpression( idivexpr as integer )
 	dim mulexpr as integer
 
+    cIntDivExpression = FALSE
+
     '' MultExpression
     if( not cMultExpression( idivexpr ) ) then
-    	cIntDivExpression = FALSE
     	exit function
     end if
-
-    cIntDivExpression = TRUE
 
     '' ( ... )*
     do
@@ -319,13 +344,19 @@ function cIntDivExpression( idivexpr as integer )
     	'' MultExpression
     	if( not cMultExpression( mulexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cIntDivExpression = FALSE
     		exit function
     	end if
 
     	'' do operation
     	idivexpr = astNewBOP( IR.OP.INTDIV, idivexpr, mulexpr )
+
+    	if( idivexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
     loop
+
+    cIntDivExpression = TRUE
 
 end function
 
@@ -335,13 +366,12 @@ end function
 function cMultExpression( mulexpr as integer )
     dim op as integer, expexpr as integer
 
+    cMultExpression = FALSE
+
     '' ExpExpression
     if( not cExpExpression( mulexpr ) ) then
-    	cMultExpression = FALSE
     	exit function
     end if
-
-    cMultExpression = TRUE
 
     '' ( ... )*
     do
@@ -357,7 +387,6 @@ function cMultExpression( mulexpr as integer )
     	'' ExpExpression
     	if( not cExpExpression( expexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cMultExpression = FALSE
     		exit do
     	end if
 
@@ -368,7 +397,14 @@ function cMultExpression( mulexpr as integer )
     	case CHAR_SLASH
     		mulexpr = astNewBOP( IR.OP.DIV, mulexpr, expexpr )
     	end select
+
+    	if( mulexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
     loop
+
+    cMultExpression = TRUE
 
 end function
 
@@ -378,13 +414,12 @@ end function
 function cExpExpression( expexpr as integer )
 	dim negexpr as integer
 
+    cExpExpression = FALSE
+
     '' NegExpression
     if( not cNegExpression( expexpr ) ) then
-    	cExpExpression = FALSE
     	exit function
     end if
-
-    cExpExpression = TRUE
 
     '' ( '^' NegExpression )*
     do
@@ -397,13 +432,19 @@ function cExpExpression( expexpr as integer )
     	'' NegExpression
     	if( not cNegExpression( negexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-    		cExpExpression = FALSE
     		exit do
     	end if
 
     	'' do operation
     	expexpr = astNewBOP( IR.OP.POW, expexpr, negexpr )
+
+    	if( expexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
     loop
+
+    cExpExpression = TRUE
 
 end function
 
@@ -421,7 +462,14 @@ function cNegExpression( negexpr as integer )
 		if( not cExpExpression( negexpr ) ) then
 			exit function
 		end if
+
 		negexpr = astNewUOP( IR.OP.NEG, negexpr )
+
+    	if( negexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
+
 		cNegExpression = TRUE
 
 	case CHAR_PLUS
@@ -435,7 +483,7 @@ function cNegExpression( negexpr as integer )
 end function
 
 '':::::
-function cProcPtrBody( byval proc as integer, addrofexpr as integer ) as integer
+function cProcPtrBody( byval proc as FBSYMBOL ptr, addrofexpr as integer ) as integer
 	dim expr as integer, dtype as integer
 
 	cProcPtrBody = FALSE
@@ -477,7 +525,7 @@ end function
 ''                  |   TypeConvExpr .
 ''
 function cAddrOfExpression( addrofexpr as integer )
-    dim expr as integer, dtype as integer, proc as integer
+    dim expr as integer, dtype as integer, proc as FBSYMBOL ptr
 
 	cAddrOfExpression = FALSE
 
@@ -513,7 +561,7 @@ function cAddrOfExpression( addrofexpr as integer )
 		end if
 
 		proc = symbLookupProc( lexTokenText )
-		if( proc = INVALID ) then
+		if( proc = NULL ) then
 			hReportError FB.ERRMSG.UNDEFINEDSYMBOL
 			exit function
 		else
@@ -537,7 +585,7 @@ function cAddrOfExpression( addrofexpr as integer )
 		lexSkipToken
 
 		proc = symbLookupProc( lexTokenText )
-		if( proc <> INVALID ) then
+		if( proc <> NULL ) then
 			lexSkipToken
 			if( not cProcPtrBody( proc, addrofexpr ) ) then
 				exit function
@@ -641,12 +689,17 @@ function cTypeConvExpr( tconvexpr as integer )
 		exit function
 	end if
 
+	tconvexpr = astNewCONV( op, totype, tconvexpr )
+
+    if( tconvexpr = INVALID ) Then
+    	hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
+    	exit function
+    end if
+
 	if( not hMatch( CHAR_RPRNT ) ) then
 		hReportError FB.ERRMSG.EXPECTEDRPRNT
 		exit function
 	end if
-
-	tconvexpr = astNewCONV( op, totype, tconvexpr )
 
 	cTypeConvExpr = TRUE
 
@@ -713,7 +766,7 @@ end function
 '' Constant       = ID .                                    !!ambiguity w/ var!!
 ''
 function cConstant( constexpr as integer )
-	dim res as integer, c as integer, typ as integer, dtype as integer, expr as integer
+	dim res as integer, c as FBSYMBOL ptr, typ as integer, dtype as integer, expr as integer
 	dim text as string
 
 	res = FALSE
@@ -722,7 +775,7 @@ function cConstant( constexpr as integer )
 		typ = lexTokenType
 
 		c = symbLookupConst( lexTokenText, typ )
-		if( c <> INVALID ) then
+		if( c <> NULL ) then
 
   			text = symbGetConstText( c )
   			typ = symbGetType( c )
@@ -751,7 +804,7 @@ end function
 ''
 function cLiteral( litexpr as integer )
 	dim res as integer, typ as integer, dtype as integer
-	dim tc as integer, p as integer, expr as integer
+	dim tc as FBSYMBOL ptr, p as integer, expr as integer
 
 	res = FALSE
 
@@ -776,7 +829,7 @@ end function
 '':::::
 ''FuncParam         =   (BYVAL|BYREF|SEG)? (ID(('(' ')')? | Expression) .
 ''
-function cFuncParam( byval proc as integer, byval arg as integer, byval procexpr as integer, _
+function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval procexpr as integer, _
 					 byval optonly as integer ) as integer
 	dim paramexpr as integer, amode as integer, pmode as integer
 	dim dtype as integer
@@ -843,8 +896,7 @@ function cFuncParam( byval proc as integer, byval arg as integer, byval procexpr
 		end if
 	end if
 
-    dtype = astGetDataType( paramexpr )
-    if( astNewPARAMEx( procexpr, paramexpr, dtype, pmode ) = INVALID ) then
+    if( astNewPARAM( procexpr, paramexpr, INVALID, pmode ) = INVALID ) then
 		hReportError FB.ERRMSG.PARAMTYPEMISMATCH
 		exit function
     end if
@@ -856,8 +908,8 @@ end function
 '':::::
 ''FuncParamList     =    FuncParam (DECL_SEPARATOR FuncParam)* .
 ''
-function cFuncParamList( byval proc as integer, byval procexpr as integer, byval optonly as integer ) as integer
-    dim param as integer, args as integer, arg as integer
+function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, byval optonly as integer ) as integer
+    dim param as integer, args as integer, arg as FBPROCARG ptr
 
 	cFuncParamList = FALSE
 
@@ -871,20 +923,22 @@ function cFuncParamList( byval proc as integer, byval procexpr as integer, byval
 
 	param = 0
 	arg = symbGetProcLastArg( proc )
-	do
-		if( param >= args ) then
-			hReportError FB.ERRMSG.ARGCNTMISMATCH
-			exit function
-		end if
+	if( not optonly ) then
+		do
+			if( param >= args ) then
+				hReportError FB.ERRMSG.ARGCNTMISMATCH
+				exit function
+			end if
 
-		if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
-			exit function
-		end if
+			if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
+				exit function
+			end if
 
-		param = param + 1
-		arg = symbGetProcPrevArg( proc, arg )
+			param = param + 1
+			arg = symbGetProcPrevArg( proc, arg )
 
-	loop while( hMatch( CHAR_COMMA ) )
+		loop while( hMatch( CHAR_COMMA ) )
+	end if
 
 	''
 	if( param < args ) then
@@ -906,12 +960,12 @@ function cFuncParamList( byval proc as integer, byval procexpr as integer, byval
 end function
 
 '':::::
-function cFunctionCall( byval proc as integer, funcexpr as integer, byval ptrexpr as integer ) as integer
+function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval ptrexpr as integer ) as integer
 	dim res as integer, typ as integer
 
 	cFunctionCall = FALSE
 
-    if( proc = INVALID ) then
+    if( proc = NULL ) then
     	exit function
     end if
 
@@ -963,7 +1017,7 @@ end function
 ''Function        =   ID ('(' ProcParamList ')')? .	 			//ambiguity w/ var!!
 ''
 function cFunction( funcexpr as integer )
-	dim id as string, f as integer
+	dim id as string, f as FBSYMBOL ptr
 
 	cFunction = FALSE
 
@@ -976,7 +1030,7 @@ function cFunction( funcexpr as integer )
 
 	f = symbLookupProc( id )
 
-	if( f = INVALID ) then
+	if( f = NULL ) then
 		exit function
 	else
 		lexSkipToken

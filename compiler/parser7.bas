@@ -451,7 +451,7 @@ end function
 '' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr)?)
 ''
 function cGfxPalette as integer
-    dim arrayexpr as integer, s as integer
+    dim arrayexpr as integer, s as FBSYMBOL ptr
     dim attexpr as integer, colexpr as integer
 
 	cGfxPalette = FALSE
@@ -464,7 +464,7 @@ function cGfxPalette as integer
         end if
 
 		s = astGetSymbol( arrayexpr )
-		if( s = INVALID ) then
+		if( s = NULL ) then
             hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
             exit function
         end if
@@ -507,7 +507,7 @@ end function
 function cGfxPut as integer
     dim coordtype as integer, mode as integer
     dim xexpr as integer, yexpr as integer
-    dim arrayexpr as integer, s as integer
+    dim arrayexpr as integer, s as FBSYMBOL ptr
 
 	cGfxPut = FALSE
 
@@ -556,7 +556,7 @@ function cGfxPut as integer
 	end if
 
 	s = astGetSymbol( arrayexpr )
-	if( s = INVALID ) then
+	if( s = NULL ) then
     	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -597,7 +597,7 @@ end function
 function cGfxGet as integer
     dim coordtype as integer
     dim x1expr as integer, y1expr as integer, x2expr as integer, y2expr as integer
-    dim arrayexpr as integer, s as integer
+    dim arrayexpr as integer, s as FBSYMBOL ptr
 
 	cGfxGet = FALSE
 
@@ -693,7 +693,7 @@ function cGfxGet as integer
 	end if
 
 	s = astGetSymbol( arrayexpr )
-	if( s = INVALID ) then
+	if( s = NULL ) then
     	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -707,6 +707,54 @@ function cGfxGet as integer
 	rtlGfxGet x1expr, y1expr, x2expr, y2expr, arrayexpr, s, coordtype
 
 	cGfxGet = TRUE
+
+end function
+
+'':::::
+'' GfxScreen     =   SCREEN (num | ((expr ((',' expr)? ',' expr)? expr)?)
+''
+function cGfxScreen as integer
+    dim wexpr as integer, hexpr as integer, dexpr as integer, fexpr as integer
+
+	cGfxScreen = FALSE
+
+	if( not cExpression( wexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	hexpr = INVALID
+	dexpr = INVALID
+	fexpr = INVALID
+
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( hexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+
+		'' (',' Expr )?
+		if( hMatch( CHAR_COMMA ) ) then
+			if( not cExpression( dexpr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+
+			'' (',' Expr )?
+			if( hMatch( CHAR_COMMA ) ) then
+				if( not cExpression( fexpr ) ) then
+					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+					exit function
+				end if
+			end if
+		end if
+	end if
+
+	''
+	rtlGfxScreenSet wexpr, hexpr, dexpr, fexpr
+
+	cGfxScreen = TRUE
 
 end function
 
@@ -748,7 +796,18 @@ function cGfxStmt as integer
 		lexSkipToken
 		cGfxStmt = cGfxGet
 
+	case FB.TK.SCREEN
+		lexSkipToken
+		cGfxStmt = cGfxScreen
+
 	end select
+
+end function
+
+'':::::
+function cGfxFunct ( funcexpr as integer ) as integer
+
+	cGfxFunct = FALSE
 
 end function
 

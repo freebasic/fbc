@@ -17,13 +17,14 @@
 
 
 ''
-const TRUE%			= -1
-const FALSE%		= 0
-const INVALID%		= -1
+const TRUE			= -1
+const FALSE			= 0
+const NULL			= 0
+const INVALID		= -1
 
 ''
-#define FB.VERSION				"0.09b"
-#define FB.SIGN					"FreeBASIC v0.09b"
+#define FB.VERSION				"0.10"
+#define FB.SIGN					"FreeBASIC v0.10b"
 
 '' paths
 #ifdef TARGET_WIN32
@@ -43,6 +44,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.NOSTDCALL
 	FB.COMPOPT.ERRORCHECK
 	FB.COMPOPT.OUTTYPE
+	FB.COMPOPT.RESUMEERROR
 end enum
 
 type FBCMMLINEOPT
@@ -51,6 +53,7 @@ type FBCMMLINEOPT
 	errorcheck		as integer					'' runtime error check (def= false)
 	nostdcall		as integer
 	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
+	resumeerr 		as integer					'' add support for RESUME (def= false)
 end type
 
 
@@ -115,6 +118,9 @@ enum FBERRMSG_ENUM
 	FB.ERRMSG.ARRAYALREADYDIMENSIONED
 	FB.ERRMSG.LITSTRINGTOOBIG
 	FB.ERRMSG.IDNAMETOOBIG
+	FB.ERRMSG.ILLEGALRESUMEERROR
+	FB.ERRMSG.PARAMTYPEMISMATCHAT
+	FB.ERRMSG.ILLEGALPARAMSPECAT
 end enum
 
 '' cpu types
