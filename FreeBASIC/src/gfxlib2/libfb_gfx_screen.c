@@ -204,9 +204,9 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 		driver_name = getenv("FBGFX");
 		for (try = (driver_name ? 4 : 2); try; try--) {
-			for (i = 0; fb_gfx_driver_list[i]; i++) {
+			for (i = 0; fb_gfx_driver_list[i >> 1]; i++) {
 				driver = fb_gfx_driver_list[i >> 1];
-				if ((driver_name) && (try & 0x1) && (strcasecmp(driver_name, driver->name)))
+				if ((driver_name) && !(try & 0x1) && (strcasecmp(driver_name, driver->name)))
 					continue;
 				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), (i & 0x1) ? 0 : refresh_rate, flags))
 					break;
