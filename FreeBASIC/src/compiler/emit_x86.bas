@@ -141,6 +141,9 @@ data "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7"
 data "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"
 data "byte", "word", "dword", "qword"
 data "ptr", "offset"
+''
+'' IA-32 instruction set, including MMX/SSE/SSE2
+''
 data "aaa", "aad", "aam", "aas", "adc", "add", "addpd", "addps", "addsd", "addss", "and", "andpd", "andps"
 data "andnpd", "andnps", "arpl", "bound", "bsf", "bsr", "bswap", "bt", "btc", "btr", "bts", "call", "cbw"
 data "cwde", "cdq", "clc", "cld", "clflush", "cli", "clts", "cmc", "cmova", "cmovae", "cmovb", "cmovbe"
@@ -190,7 +193,14 @@ data "sqrtps", "sqrtsd", "sqrtss", "stc", "std", "sti", "stmxcsr", "stos", "stos
 data "str", "sub", "subpd", "subps", "subsd", "subss", "sysenter", "sysexit", "test", "ucomisd"
 data "ucomiss", "ud2", "unpckhpd", "unpckhps", "unpcklpd", "unpcklps", "verr", "verw", "wait", "wbinvd"
 data "wrmsr", "xadd", "xchg", "xlat", "xlatb", "xor", "xorpd", "xorps"
+''
+'' AMD x86 additions, including 3DNow!/Ext.3DNow!
+''
+data "pavgusb", "pfadd", "pfsub", "pfsubr", "pfacc", "pfcmpge", "pfcmpgt", "pfcmpeq", "pfmin", "pfmax"
+data "pi2fw", "pi2fd", "pf2iw", "pf2id", "pfrcp", "pfrsqrt", "pfmul", "pfrcpit1", "pfrsqit1", "pfrcpit2"
+data "pmulhrw", "pswapw", "femms", "prefetch", "prefetchw", "pfnacc", "pfpnacc", "pswapd", "pmulhuw"
 data ""
+
 
 const EMIT_MAXKEYWORDS = 512
 
