@@ -33,6 +33,10 @@ FBCALL void fb_Sleep ( int msecs )
 	/* infinite? wait until any key is pressed */
 	if( msecs == -1 )
 	{
+		/* clear input buffer */
+		while( fb_KeyHit( ) )
+			fb_Getkey( );
+
 		while( !fb_KeyHit( ) )
 			fb_hSleep( 50 );
 		return;
