@@ -49,6 +49,7 @@ static void x11_set_window_title(char *title);
 
 GFXDRIVER fb_gfxDriverX11 =
 {
+	"X11",			/* char *name; */
 	x11_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
 	x11_exit,		/* void (*exit)(void); */
 	x11_lock,		/* void (*lock)(void); */
