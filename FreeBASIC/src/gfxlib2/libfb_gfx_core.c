@@ -75,8 +75,8 @@ void fb_hPrepareTarget(void *target)
 void fb_hTranslateCoord(float fx, float fy, int *x, int *y)
 {
 	if (fb_mode->flags & WINDOW_ACTIVE) {
-		fx = (fx - fb_mode->win_x) * (fb_mode->view_w - 1) / fb_mode->win_w;
-		fy = (fy - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
+		fx = ((fx - fb_mode->win_x) * fb_mode->view_w) / (fb_mode->win_w - 1);
+		fy = ((fy - fb_mode->win_y) * fb_mode->view_h) / (fb_mode->win_h - 1);
 	}
 	
 	*x = (int)(fx > 0 ? fx + 0.5 : fx - 0.5);
