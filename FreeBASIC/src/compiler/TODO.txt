@@ -1,5 +1,9 @@
 
-[ ] CHR$ and ASC compile-time evaluation
+[ ] all rtl routines should check astNewPARAM for INVALID and parser6/7 should check the result
+
+[ ] OPTION's should be preserved when changed inside include files
+
+[ ] OPTION NOGFX NOCONSOLE NOFILE NOSYS to remove the keywords from each group
 
 [ ] idx is being loaded twice even been already a register
 

@@ -157,7 +157,7 @@ declare sub 		symbDelLabel			( byval l as FBSYMBOL ptr )
 declare sub 		symbDelVar				( byval s as FBSYMBOL ptr )
 
 declare function 	symbCalcLen				( byval typ as integer, byval subtype as FBSYMBOL ptr, _
-											  byval realUDTlen as integer = FALSE ) as integer
+											  byval realsize as integer = FALSE ) as integer
 
 declare function 	symbIsArray				( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbIsString			( byval s as FBSYMBOL ptr ) as integer

@@ -516,6 +516,7 @@ type FBSARRAY
 	dimhead 		as FBVARDIM ptr
 	dimtail			as FBVARDIM ptr
 	dif				as integer
+	elms			as integer
 
 	desc			as any ptr					'' FBSYMBOL ptr
 end type
@@ -599,7 +600,9 @@ type FBSYMBOL
 	aliasidx		as integer
 
 	scope			as integer
+
 	lgt				as integer
+
 	acccnt			as integer					'' access counter (number of lookup's)
 
 	initialized		as integer

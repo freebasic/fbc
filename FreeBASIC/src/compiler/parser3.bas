@@ -740,7 +740,11 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 	end if
 
 	if( idxexpr <> INVALID ) then
-		varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
+		if( isbyref or isimport ) then
+			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
+		else
+			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
+		end if
 	else
 		'' array and no index?
 		if( not isbydesc ) then

@@ -696,6 +696,7 @@ sub hSetupVar( byval s as FBSYMBOL ptr, sname as string, aname as string, _
 
 	s->array.dif	= hCalcDiff( dimensions, dTB(), s->lgt )
 	s->array.dims	= dimensions
+	s->array.elms	= 0								'' real value doesn't matter
 	if( dimensions > 0 ) then
 		for i = 0 to dimensions-1
 			if( hNewDim( s->array.dimhead, s->array.dimtail, dTB(i).lower, dTB(i).upper ) = NULL ) then
@@ -1278,39 +1279,41 @@ function hNewUDTElement( byval t as FBSYMBOL ptr, ename as string, _
     	exit function
     end if
 
-    e->typ		= typ
-    e->subtype	= subtype
-	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
-		lgt	= symbCalcLen( typ, subtype, TRUE )
-	end if
-
-	align = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
-	if( align > 0 ) then
-		t->udt.ofs = t->udt.ofs + align
-	end if
-
-	e->elm.ofs	= t->udt.ofs
-	e->lgt		= lgt
-	e->array.dif= hCalcDiff( dimensions, dTB(), e->lgt )
-    e->elm.parent= t
-
+	'' add to parent's linked-list
 	n = t->udt.tail
-	e->elm.l = n
-	e->elm.r = NULL
-	t->udt.tail = e
+	e->elm.l 		= n
+	e->elm.r 		= NULL
+    e->elm.parent	= t
+	t->udt.tail 	= e
 	if( n <> NULL ) then
-		n->elm.r = e
+		n->elm.r 	= e
 	else
 		t->udt.head = e
 	end if
 
     t->udt.elements	= t->udt.elements + 1
 
-	'' array fields
-	e->array.dimhead	= NULL
-	e->array.dimtail 	= NULL
+    ''
+    e->typ			= typ
+    e->subtype		= subtype
+	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
+		lgt	= symbCalcLen( typ, subtype, TRUE )
+	end if
 
-	e->array.dims		= dimensions
+	align = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
+	if( align > 0 ) then
+		t->udt.ofs 	= t->udt.ofs + align
+	end if
+
+	e->lgt 			= lgt
+	e->elm.ofs		= t->udt.ofs
+	e->array.dif	= hCalcDiff( dimensions, dTB(), lgt )
+
+	'' array fields
+	e->array.dimhead= NULL
+	e->array.dimtail= NULL
+
+	e->array.dims	= dimensions
 	if( dimensions > 0 ) then
 		for i = 0 to dimensions-1
 			if( hNewDim( e->array.dimhead, e->array.dimtail, dTB(i).lower, dTB(i).upper ) = NULL ) then
@@ -1318,7 +1321,9 @@ function hNewUDTElement( byval t as FBSYMBOL ptr, ename as string, _
 		next i
 	end if
 
-	lgt = lgt * hCalcElements2( dimensions, dTB() )
+	e->array.elms 	= hCalcElements( e )
+
+	lgt = lgt * e->array.elms
 
 	if( not t->udt.isunion ) then
 		if( not isinnerunion ) then
@@ -2156,7 +2161,7 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval realUDTlen as integer = FALSE ) as integer static
+function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval realsize as integer = FALSE ) as integer static
     dim lgt as integer
     dim e as FBSYMBOL ptr
 
@@ -2185,11 +2190,11 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 		lgt = FB.STRSTRUCTSIZE
 
 	case FB.SYMBTYPE.USERDEF
-		if( not realUDTlen ) then
+		if( not realsize ) then
 			lgt = subtype->lgt
 		else
 			e = subtype->udt.tail
-			lgt = e->elm.ofs + e->lgt
+			lgt = e->elm.ofs + (e->lgt * e->array.elms)
 		end if
 
 	case is >= FB.SYMBTYPE.POINTER
@@ -2329,7 +2334,7 @@ function symbGetUDTLen( byval udt as FBSYMBOL ptr, byval realsize as integer = T
 
 	if( realsize ) then
 		e = udt->udt.tail
-		symbGetUDTLen = e->elm.ofs + e->lgt
+		symbGetUDTLen = e->elm.ofs + (e->lgt * e->array.elms)
 	else
 		symbGetUDTLen = udt->lgt
 	end if
