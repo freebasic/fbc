@@ -17,38 +17,20 @@
 */
 
 #include "QB_gfx_main.h"
-
-#define FBGFX_NO_PALEMU_EXTERN
 #include "QB_gfx_pal.h"
-#undef FBGFX_NO_PALEMU_EXTERN
 
-
-const SDL_Color fb_GfxDefaultPal[256] = {
-#include "defaultPalette.h"
-};
-
-struct fb_GfxVgaPalEmuStruct fb_GfxVgaPalEmu = {0, 0, 0, 0, {0, 0, 0}};
-
-/*
- *   Used by fb_GfxScreenEx
- */
-void fb_GfxResetVgaPalEmu (void)
+int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
 {
-    fb_GfxVgaPalEmu.readColor = 0;
-    fb_GfxVgaPalEmu.writeColor = 0;
-    fb_GfxVgaPalEmu.readIndex = 0;
-    fb_GfxVgaPalEmu.writeIndex = 0;
-}
+    SDL_Color c;
+    
+    if (SANITY_CHECK_CONDITION) return -1;
+    
+    fb_GfxInfo.paletteChanged = 1;
 
-/*
- *   Used by fb_GfxFlip
- */
-void fb_GfxFlushPalette (void)
-{
-    SDL_Palette *p;
-
-    p = fb_GfxInfo.screen->format->palette;
-    SDL_SetPalette(fb_GfxInfo.screen, SDL_PHYSPAL, p->colors, 0, p->ncolors);
-    fb_GfxInfo.paletteChanged = 0;
+    c.r = r;
+    c.g = g;
+    c.b = b;
+    
+    return (SDL_SetPalette(fb_GfxInfo.screen, SDL_LOGPAL, &c, attribute, 1) == 0);
 }
 

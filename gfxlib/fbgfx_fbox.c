@@ -19,13 +19,12 @@
 #include "QB_gfx_main.h"
 
 /*
- *  Used by fb_GfxLine and fb_GfxView
+ *   Used by fb_GfxFEllipseEx and fb_GfxPrintBuffer
  */
-FBCALL int fb_GfxBoxEx (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color)
+FBCALL int fb_GfxFBoxEx (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color)
 {
     SDL_Rect r;
     Uint8 * colorptr;
-    int ret = 0;
 
     if (dx < 0)
     {
@@ -37,11 +36,6 @@ FBCALL int fb_GfxBoxEx (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color
     {
         dy = -dy;
         y1 -= dy;
-    }
-
-    if (dx < 2 || dy < 2)
-    {
-        return fb_GfxFBoxEx(x1, y1, dx, dy, color);
     }
 
     if (fb_GfxInfo.screen->format->BitsPerPixel > 8)
@@ -62,22 +56,8 @@ FBCALL int fb_GfxBoxEx (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color
         color &= 255;
     }
 
-    r.x = x1;       r.w = dx + 1;
-    r.y = y1;       r.h = 1;
-    ret |= SDL_FillRect(fb_GfxInfo.screen, &r, color);
-
-    r.x = x1;       r.w = 1;
-    r.y = y1 + 1;   r.h = dy - 1;
-    ret |= SDL_FillRect(fb_GfxInfo.screen, &r, color);
-
-    r.x = x1 + dx;  r.w = 1;
-    r.y = y1 + 1;   r.h = dy - 1;
-    ret |= SDL_FillRect(fb_GfxInfo.screen, &r, color);
-
-    r.x = x1;       r.w = dx + 1;
-    r.y = y1 + dy;  r.h = 1;
-    ret |= SDL_FillRect(fb_GfxInfo.screen, &r, color);
-
-    return ret;
+    r.x = x1; r.w = dx + 1;
+    r.y = y1; r.h = dy + 1;
+    return SDL_FillRect(fb_GfxInfo.screen, &r, color);
 }
 

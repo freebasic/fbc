@@ -168,8 +168,6 @@ FBCALL int fb_GfxScreen (int width, int height, int depth, int fullScreenFlag)
 {
     int screenNum = width;
 
-	fb_GfxSetDefaultInfo( );
-
     if (screenNum == 0)  // exit graphics mode
     {
         if ( fb_GfxInfo.sdlIsInitialized && SDL_WasInit(SDL_INIT_VIDEO) )
@@ -182,6 +180,8 @@ FBCALL int fb_GfxScreen (int width, int height, int depth, int fullScreenFlag)
 
         return FB_RTERROR_OK;
     }
+
+	fb_GfxSetDefaultInfo( );
 
 	/* calling the extended version? */
 	if( (height != 0) && (depth != 0) )
