@@ -10,6 +10,7 @@
 
 'Changelog:
 '  1.07: LF_FACESIZE and LOGFONT moved back, comdlg must include this header
+'        MAX_PATH moved into winbase.bi, as shellapi.bi also requires it.		
 '  1.06: All STRING arguments changed to BYVAL and to BYTE PTR for structs fields (v1ctor)
 '  1.05: LF_FACESIZE and LOGFONT moved into winbase.bi.
 '  1.04: Added two new constants to help with fonts.
@@ -173,8 +174,6 @@ Const PS_TYPE_MASK = &HF0000
 
 Const AD_COUNTERCLOCKWISE = 1
 Const AD_CLOCKWISE = 2
-
-Const MAX_PATH = 260&
 
 'for SetLayout
 Const LAYOUT_BITMAPORIENTATIONPRESERVED = &H8&

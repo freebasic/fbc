@@ -6,9 +6,13 @@
 '
 'This header defines every obtainable user32 Function and related data types and structures.
 
-'VERSION: 1.00
+'VERSION: 1.01
 
-'This inclusion was built from fsw's kernel32_new.bi file.
+'Changelog:
+'  1.01: INT64 moved to winbase.bi and renamed to the original name: LARGE_INTEGER, as shown by the Platform Api docs
+'        A few previously disabled functions were enabled and Type MEMORY_BASIC_INFORMATION was added.
+
+'This inclusion was originally built from fsw's kernel32_new.bi file.
 
 '$include once: "win\winbase.bi"
 
@@ -1502,11 +1506,6 @@ Type SYSTEMTIME
   msec    As ushort  
 End Type
 
-Type LARGE_INTEGER
-  low     As uinteger	
-  high    As Integer 
-End Type
-
 Type TIME_ZONE_INFORMATION
   Bias                    As Integer  		
   StandardName(0 to 30)   As ushort  	
@@ -1541,11 +1540,6 @@ Type MEMORYSTATUS
   dwAvailPageFile As uinteger  
   dwTotalVirtual  As uinteger  
   dwAvailVirtual  As uinteger  
-End Type
-
-Type INT64
-  word1 As Integer
-  word2 As Integer
 End Type
 
 Type MEMORYSTATUSEX
@@ -1760,6 +1754,16 @@ Type DEBUG_EVENT
   End Union
 End Type  
 
+Type MEMORY_BASIC_INFORMATION
+  BaseAddress       As Integer
+  AllocationBase    As Integer
+  AllocationProtect As Integer
+  RegionSize        As Integer
+  State             As Integer
+  Protect           As Integer
+  lType             As Integer
+End Type
+
 '-----------------
 '| API FunctionS |
 '-----------------
@@ -1890,7 +1894,7 @@ Declare Function GetCurrentThreadId Lib "kernel32" () As Integer
 Declare Function GetDateFormat Lib "kernel32" Alias "GetDateFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpDate As SYSTEMTIME, ByVal lpFormat As String, ByVal lpDateStr As String, ByVal cchDate As Integer) As Integer
 Declare Function GetDefaultCommConfig Lib "kernel32" Alias "GetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
 Declare Function GetDiskFreeSpace Lib "kernel32" Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, lpSectorsPerCluster As Integer, lpBytesPerSector As Integer, lpNumberOfFreeClusters As Integer, lpTotalNumberOfClusters As Integer) As Integer
-'Declare Function GetDiskFreeSpaceEx Lib "kernel32" Alias "GetDiskFreeSpaceExA" (ByVal lpPathName As String, lpFreeBytesAvailableToCaller As INT64, lpTotalNumberOfBytes As INT64, lpTotalNumberOfFreeBytes As INT64) As Integer
+Declare Function GetDiskFreeSpaceEx Lib "kernel32" Alias "GetDiskFreeSpaceExA" (ByVal lpPathName As String, lpFreeBytesAvailableToCaller As INT64, lpTotalNumberOfBytes As INT64, lpTotalNumberOfFreeBytes As INT64) As Integer
 Declare Function GetDriveType Lib "kernel32" Alias "GetDriveTypeA" (ByVal nDrive As String) As Integer
 Declare Function GetEnvironmentStrings Lib "kernel32" Alias "GetEnvironmentStringsA" () As Integer
 Declare Function GetEnvironmentVariable Lib "kernel32" Alias "GetEnvironmentVariableA" (ByVal lpName As String, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
@@ -1993,13 +1997,13 @@ Declare Function HeapAlloc Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags
 Declare Function HeapCompact Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer) As Integer
 Declare Function HeapCreate Lib "kernel32" (ByVal flOptions As Integer, ByVal dwInitialSize As Integer, ByVal dwMaximumSize As Integer) As Integer
 Declare Function HeapDestroy Lib "kernel32" (ByVal hHeap As Integer) As Integer
-'Declare Function HeapFree Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByVal lpMem As ANY) As Integer
+Declare Function HeapFree Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
 Declare Function HeapLock Lib "kernel32" (ByVal hHeap As Integer) As Integer
-'Declare Function HeapReAlloc Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByVal lpMem As ANY, ByVal dwBytes As Integer) As Integer
-'Declare Function HeapSize Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByVal lpMem As ANY) As Integer
+Declare Function HeapReAlloc Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any, ByVal dwBytes As Integer) As Integer
+Declare Function HeapSize Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
 Declare Function HeapUnlock Lib "kernel32" (ByVal hHeap As Integer) As Integer
-'Declare Function HeapValidate Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByVal lpMem As ANY) As Integer
-'Declare Function hread Lib "kernel32" Alias "_hread" (ByVal hFile As Integer, ByVal lpBuffer As ANY, ByVal lBytes As Integer) As Integer
+Declare Function HeapValidate Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
+Declare Function hread Lib "kernel32" Alias "_hread" (ByVal hFile As Integer, ByRef lpBuffer As Any, ByVal lBytes As Integer) As Integer
 Declare Function hwrite Lib "kernel32" Alias "_hwrite" (ByVal hFile As Integer, ByVal lpBuffer As String, ByVal lBytes As Integer) As Integer
 
 Declare Function ImpersonateLoggedOnUser Lib "kernel32" (ByVal hToken As Integer) As Integer
@@ -2061,7 +2065,7 @@ Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDestination As ANY
 Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Integer, ByVal nNumerator As Integer, ByVal nDenominator As Integer) As Integer
 Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer) As Integer
 
-'Declare Function ObjectOpenAuditAlarm Lib "kernel32" Alias "ObjectOpenAuditAlarmA" (ByVal SubsystemName As String, ByVal HandleId As ANY, ByVal ObjectTypeName As String, ByVal ObjectName As String, pSecurityDescriptor As SECURITY_DESCRIPTOR, ByVal ClientToken As Integer, ByVal DesiredAccess As Integer, ByVal GrantedAccess As Integer, Privileges As PRIVILEGE_SET, ByVal ObjectCreation As Integer, ByVal AccessGranted As Integer, ByVal GenerateOnClose As Integer) As Integer
+'Declare Function ObjectOpenAuditAlarm Lib "kernel32" Alias "ObjectOpenAuditAlarmA" (ByVal SubsystemName As String, ByRef HandleId As Any, ByVal ObjectTypeName As String, ByVal ObjectName As String, pSecurityDescriptor As SECURITY_DESCRIPTOR, ByVal ClientToken As Integer, ByVal DesiredAccess As Integer, ByVal GrantedAccess As Integer, Privileges As PRIVILEGE_SET, ByVal ObjectCreation As Integer, ByVal AccessGranted As Integer, ByVal GenerateOnClose As Integer) As Integer
 Declare Function OpenEvent Lib "kernel32" Alias "OpenEventA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
 Declare Function OpenFile Lib "kernel32" (ByVal lpFileName As String, lpReOpenBuff As OFSTRUCT, ByVal wStyle As Integer) As Integer
 Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
@@ -2179,12 +2183,12 @@ Declare Function VirtualFreeEx Lib "kernel32" (ByVal hProcess As Integer, lpAddr
 Declare Function VirtualLock Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer) As Integer
 Declare Function VirtualProtect Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
 Declare Function VirtualProtectEx Lib "kernel32" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
-'Declare Function VirtualQuery Lib "kernel32" (lpAddress As ANY, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
-'Declare Function VirtualQueryEx Lib "kernel32" (ByVal hProcess As Integer, lpAddress As ANY, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
-'Declare Function VirtualUnlock Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer) As Integer
+Declare Function VirtualQuery Lib "kernel32" (ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
+Declare Function VirtualQueryEx Lib "kernel32" (ByVal hProcess As Integer, ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
+Declare Function VirtualUnlock Lib "kernel32" (ByRef lpAddress As Any, ByVal dwSize As Integer) As Integer
 
 Declare Function WaitCommEvent Lib "kernel32" (ByVal hFile As Integer, lpEvtMask As Integer, lpOverlapped As OVERLAPPED) As Integer
-'Declare Function WaitForDebugEvent Lib "kernel32" (lpde As DEBUG_EVENT, ByVal dwTimeOut As Integer) As Integer
+Declare Function WaitForDebugEvent Lib "kernel32" (lpde As DEBUG_EVENT, ByVal dwTimeOut As Integer) As Integer
 Declare Function WaitForMultipleObjects Lib "kernel32" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer) As Integer
 Declare Function WaitForMultipleObjectsEx Lib "kernel32" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
 Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer) As Integer

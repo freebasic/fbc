@@ -999,6 +999,82 @@ Const SB_THUMBPOSITION = 4&
 Const SB_THUMBTRACK    = 5&
 Const SB_ENDSCROLL     = 8&
 
+'menu constants
+Const MF_BYCOMMAND = &H0&
+Const MF_BYPOSITION = &H400&
+
+'consts for AppendMenu/InsertMenu
+Const MF_BITMAP = &H4&
+Const MF_CHECKED = &H8&
+Const MF_DISABLED = &H2&
+Const MF_ENABLED = &H0&
+Const MF_GRAYED = &H1&
+Const MF_MENUBARBREAK = &H20&
+Const MF_MENUBREAK = &H40&
+Const MF_OWNERDRAW = &H100&
+Const MF_POPUP = &H10&
+Const MF_SEPARATOR = &H800&
+Const MF_STRING = &H0&
+Const MF_UNCHECKED = &H0&
+
+'not quite sure where these are used...
+Const MF_DEFAULT = &H1000&
+Const MF_HILITE = &H80&
+Const MF_UNHILITE = &H0&
+
+'some api calls use these flags instead...note that they are not all the same as the above
+Const MFS_CHECKED As Long = MF_CHECKED
+Const MFS_DEFAULT As Long = MF_DEFAULT
+Const MFS_GRAYED = &H3&
+Const MFS_DISABLED As Long = MFS_GRAYED
+Const MFS_ENABLED As Long = MF_ENABLED
+Const MFS_HILITE As Long = MF_HILITE
+Const MFS_UNCHECKED As Long = MF_UNCHECKED
+Const MFS_UNHILITE As Long = MF_UNHILITE
+
+'constants for TrackPopupMenu/TrackPopupMenuEx
+'for horizontal popup menus
+Const TPM_CENTERALIGN = &H4&
+Const TPM_LEFTALIGN = &H0&
+Const TPM_RIGHTALIGN = &H8&
+
+'for vertical popup menus
+Const TPM_BOTTOMALIGN = &H20&
+Const TPM_TOPALIGN = &H0&
+Const TPM_VCENTERALIGN = &H10&
+
+'for parentless popup menus
+Const TPM_NONOTIFY = &H80&
+Const TPM_RETURNCMD = &H100&
+
+'to determine which mouse buttons can click a menu item
+Const TPM_LEFTBUTTON = &H0& 'only left button
+Const TPM_RIGHTBUTTON = &H2& 'either button
+
+'win98 and above only: popup menu animation method
+Const TPM_HORNEGANIMATION = &H800&
+Const TPM_HORPOSANIMATION = &H400&
+Const TPM_NOANIMATION = &H4000&
+Const TPM_VERNEGANIMATION = &H2000&
+Const TPM_VERPOSANIMATION = &H1000&
+
+'TrackPopupMenuEx only
+'win98 and above only: for displaying menus when another menu is already displayed...for context menus within menus
+'  To use these, use TPM_RECURSE with TPM_HORIZONTAL or TPM_VERTICAL
+Const TPM_RECURSE = &H1&
+Const TPM_HORIZONTAL = &H0&
+Const TPM_VERTICAL = &H40&
+
+const MFT_BITMAP = 4
+const MFT_MENUBARBREAK = 32
+const MFT_MENUBREAK = 64
+const MFT_OWNERDRAW = 256
+const MFT_RADIOCHECK = 512
+const MFT_RIGHTJUSTIFY = &h4000
+const MFT_SEPARATOR = &h800
+const MFT_RIGHTORDER = &h2000
+const MFT_STRING = 0
+
 '------------------
 '| REQUIRED TYPES |
 '------------------
@@ -1193,6 +1269,17 @@ Type MENUITEMINFO
   cch           As Integer
 End Type 
 
+Type MENUITEMTEMPLATE Field = 1
+  mtOption As Short
+  mtID As Short
+  mtString As Byte
+End Type
+
+Type MENUITEMTEMPLATEHEADER Field = 1
+  versionNumber As Short
+  offset As Short
+End Type
+
 Type WINDOWPLACEMENT Field = 1
   Length           As Integer
   flags            As Integer
@@ -1339,6 +1426,7 @@ Declare Function AdjustWindowRectEx Lib "user32" (ByRef lpRect As RECT, ByVal ds
 Declare Function AlignRects Lib "user32" (arc As RECT, cCount As Integer, iPrimary As Integer, dwFlags As Integer) As Integer
 Declare Function AnimateWindow Lib "user32" (ByVal hwnd As Integer, ByVal dwTime As Integer, ByVal dwFlags As Integer) As Integer
 Declare Function AnyPopup Lib "user32" () As Integer
+Declare Function AppendMenu Lib "user32" Alias "AppendMenuA" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, lpNewItem As Any) As Integer
 Declare Function ArrangeIconicWindows Lib "user32" (ByVal hwnd As Integer) As Integer
 Declare Function AttachThreadInput Lib "user32" (ByVal idAttach As Integer, ByVal idAttachTo As Integer, ByVal fAttach As Integer) As Integer
 Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Integer) As Integer
@@ -1543,6 +1631,7 @@ Declare Function GetMenuDefaultItem Lib "user32" (ByVal hMenu As Integer, ByVal 
 Declare Function GetMenuInfo Lib "user32" (ByVal hmenu As Integer, ByRef LPMENUINFO As CMENUINFO) As Integer 'MENUINFO renamed to CMENUINFO
 Declare Function GetMenuItemCount Lib "user32" (ByVal hMenu As Integer) As Integer
 Declare Function GetMenuItemID Lib "user32" (ByVal hMenu As Integer, ByVal nPos As Integer) As Integer
+Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal b As Short, ByRef lpMenuItemInfo As MENUITEMINFO) As Integer
 Declare Function GetMenuItemRect Lib "user32" (ByVal hWnd As Integer, ByVal hMenu As Integer, ByVal uItem As Integer,  ByRef lprcItem As RECT) As Integer
 Declare Function GetMenuState Lib "user32" (ByVal hMenu As Integer, ByVal wID As Integer, ByVal wFlags As Integer) As Integer
 Declare Function GetMenuString Lib "user32" Alias "GetMenuStringA" (ByVal hMenu As Integer, ByVal wIDItem As Integer, ByVal lpString As String, ByVal nMaxCount As Integer, ByVal wFlag As Integer) As Integer
@@ -1594,6 +1683,9 @@ Declare Function HiliteMenuItem Lib "user32" (ByVal hwnd As Integer, ByVal hMenu
 Declare Function ImpersonateDdeClientWindow Lib "user32" (ByVal hWndClient As Integer, ByVal hWndServer As Integer) As Integer
 Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function InSendMessage Lib "user32" () As Integer
+Declare Function InSendMessageEx Lib "user32" (lpReserved As Any) As Integer
+Declare Function InsertMenu Lib "user32" Alias "InsertMenuA" (ByVal hMenu As UInteger, ByVal nPosition As UInteger, ByVal wFlags As UInteger, ByVal wIDNewItem As UInteger, lpNewItem As Any) As Integer
+Declare Function InsertMenuItem Lib "user32" Alias "InsertMenuItemA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
 Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Integer
 Declare Function InvalidateRect Lib "user32" (ByVal hwnd As Integer, ByRef lpRect As RECT, ByVal bErase As Integer) As Integer
 Declare Function InvalidateRgn Lib "user32" (ByVal hwnd As Integer, ByVal hRgn As Integer, ByVal bErase As Integer) As Integer
@@ -1626,7 +1718,8 @@ Declare Function LoadMenu Lib "user32" Alias "LoadMenuA" (ByVal hInstance As Int
 Declare Function LoadMenuIndirect Lib "user32" Alias "LoadMenuIndirectA" (ByVal lpMenuTemplate As Integer) As Integer
 Declare Function LoadString Lib "user32" Alias "LoadStringA" (ByVal hInstance As Integer, ByVal wID As Integer, ByVal lpBuffer As String, ByVal nBufferMax As Integer) As Integer
 Declare Function LockWindowUpdate Lib "user32" (ByVal hwndLock As Integer) As Integer
-Declare Function LookupIconIdFromDirectory Lib "user32" (ByRef presbits As Byte, ByVal fIcon As Integer) As Integer
+Declare Function LookupIconIdFromDirectory Lib "user32" (ByRef presbits As Byte, ByVal fIcon As Short) As Integer
+Declare Function LookupIconIdFromDirectoryEx Lib "user32" (ByRef presbits As Byte, ByVal fIcon As Short, ByVal cxDesired As Integer, ByVal cyDesired As Integer, ByVal Flags As Integer) As Integer
 Declare Function MapDialogRect Lib "user32" (ByVal hDlg As Integer, ByRef lpRect As RECT) As Integer
 Declare Function MapVirtualKey Lib "user32" Alias "MapVirtualKeyA" (ByVal wCode As Integer, ByVal wMapType As Integer) As Integer
 Declare Function MapVirtualKeyEx Lib "user32" Alias "MapVirtualKeyExA" (ByVal uCode As Integer, ByVal uMapType As Integer, ByVal dwhkl As Integer) As Integer
@@ -1647,6 +1740,7 @@ Declare Function OemToChar Lib "user32" Alias "OemToCharA" (ByVal lpszSrc As Str
 Declare Function OemToCharBuff Lib "user32" Alias "OemToCharBuffA" (ByVal lpszSrc As String, ByVal lpszDst As String, ByVal cchDstLength As Integer) As Integer
 Declare Function OffsetRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function OpenClipboard Lib "user32" (ByVal hwnd As Integer) As Integer
+Declare Function OpenDesktop Lib "user32" Alias "OpenDesktopA" (ByVal lpszDesktop As String, ByVal dwFlags As Integer, ByVal fInherit As Short, ByVal dwDesiredAccess As Integer) As Integer
 Declare Function OpenIcon Lib "user32" (ByVal hwnd As Integer) As Integer
 Declare Function PackDDElParam Lib "user32" (ByVal msg As Integer, ByVal uiLo As Integer, ByVal uiHi As Integer) As Integer
 Declare Function PaintDesktop Lib "user32" (ByVal hdc As Integer) As Integer
@@ -1701,6 +1795,7 @@ Declare Function SetMenuContextHelpId Lib "user32" (ByVal hMenu As Integer, ByVa
 Declare Function SetMenuDefaultItem Lib "user32" (ByVal hMenu As Integer, ByVal uItem As Integer, ByVal fByPos As Integer) As Integer
 Declare Function SetMenuInfo Lib "user32" (ByVal hmenu As Integer, ByRef LPCMENUINFO As CMENUINFO) As Integer
 Declare Function SetMenuItemBitmaps Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal hBitmapUnchecked As Integer, ByVal hBitmapChecked As Integer) As Integer
+Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
 Declare Function SetMessageExtraInfo Lib "user32" (ByVal lParam As Integer) As Integer
 Declare Function SetMessageQueue Lib "user32" (ByVal cMessagesMax As Integer) As Integer
 Declare Function SetParent Lib "user32" (ByVal hWndChild As Integer, ByVal hWndNewParent As Integer) As Integer
@@ -1722,7 +1817,8 @@ Declare Function SetWindowContextHelpId Lib "user32" (ByVal hWnd As Integer, ByV
 Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal dwNewLong As Integer) As Integer
 Declare Function SetWindowPlacement Lib "user32" (ByVal hwnd As Integer, ByRef lpwndpl As WINDOWPLACEMENT) As Integer
 Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Integer, ByVal hWndInsertAfter As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal wFlags As Integer) As Integer
-Declare Function SetWindowText  lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Integer, byVal lpText As String ) As Short
+Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Integer, ByVal hRgn As Integer, ByVal bRedraw As Short) As Integer
+Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Integer, byVal lpText As String ) As Short
 Declare Function SetWindowWord Lib "user32" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal wNewWord As Integer) As Integer
 Declare Function SetWindowsHook Lib "user32" Alias "SetWindowsHookA" (ByVal nFilterType As Integer, ByVal pfnFilterProc As Integer) As Integer
 Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Integer, ByVal lpfn As Integer, ByVal hmod As Integer, ByVal dwThreadId As Integer) As Integer
@@ -1772,11 +1868,9 @@ Declare Sub keybd_event Lib "user32" (ByVal bVk As Byte, ByVal bScan As Byte, By
 Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal cButtons As Integer, ByVal dwExtraInfo As Integer)
 
 'the following functions require advanced functionality, additional data types, or are missing their required types.
-'Declare Function AppendMenu Lib "user32" Alias "AppendMenuA" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, ByVal lpNewItem As Any) As Integer
 'Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesA" (ByVal lpDevice As String, ByVal iDevNum As Integer, ByRef lpDisplayDevice As PDISPLAY_DEVICEA, ByVal dwFlags As Integer) As Integer
 'Declare Function EnumDisplayMonitors Lib "user32" (ByVal hdc As Integer, ByRef lprcClip As RECT, ByRef lpfnEnum As MONITORENUMPROC, ByVal dwData As Integer) As Integer
 'Declare Function GetMenuBarInfo Lib "user32" (ByVal hwnd As Integer, ByVal idObject As Integer, ByVal idItem As Integer, ByRef pmbi As PMENUBARINFO) As Integer
-'Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal b As Boolean, ByRef lpMenuItemInfo As MENUITEMINFO) As Integer
 'Declare Function GetScrollBarInfo Lib "user32" (ByVal hwnd As Integer, ByVal idObject As Integer, ByRef psbi As PSCROLLBARINFO) As Integer
 'Declare Function GetTitleBarInfo Lib "user32" (ByVal hwnd As Integer, ByRef pti As PTITLEBARINFO) As Integer
 'Declare Function GetUserObjectInformation Lib "user32" Alias "GetUserObjectInformationA" (ByVal hObj As Integer, ByVal nIndex As Integer, ByRef pvInfo As Any, ByVal nLength As Integer, ByRef lpnLengthNeeded As Integer) As Integer
@@ -1784,20 +1878,12 @@ Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Integer, ByVal dx As Inte
 'Declare Function IMPGetIME Lib "user32" Alias "IMPGetIMEA" (ByVal hwnd As Integer, ByRef LPIMEPROA As IMEPROA) As Integer
 'Declare Function IMPQueryIME Lib "user32" Alias "IMPQueryIMEA" (ByRef LPIMEPROA As IMEPROA) As Integer
 'Declare Function IMPSetIME Lib "user32" Alias "IMPSetIMEA" (ByVal hwnd As Integer, ByRef LPIMEPROA As IMEPROA) As Integer
-'Declare Function InSendMessageEx Lib "user32" (ByRef lpReserved As Any) As Integer
-'Declare Function InsertMenu Lib "user32" Alias "InsertMenuA" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, ByVal lpNewItem As Any) As Integer
-'Declare Function InsertMenuItem Lib "user32" Alias "InsertMenuItemA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Boolean, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
-'Declare Function LookupIconIdFromDirectoryEx Lib "user32" (ByRef presbits As Byte, ByVal fIcon As Boolean, ByVal cxDesired As Integer, ByVal cyDesired As Integer, ByVal Flags As Integer) As Integer
 'Declare Function MapWindowPoints Lib "user32" (ByVal hwndFrom As Integer, ByVal hwndTo As Integer, ByRef lppt As Any, ByVal cPoints As Integer) As Integer
 'Declare Function ModifyMenu Lib "user32" Alias "ModifyMenuA" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, ByVal lpString As Any) As Integer
-'Declare Function OpenDesktop Lib "user32" Alias "OpenDesktopA" (ByVal lpszDesktop As String, ByVal dwFlags As Integer, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
 'Declare Function OpenInputDesktop Lib "user32" (ByVal dwFlags As Integer, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
 'Declare Function OpenWindowStation Lib "user32" Alias "OpenWindowStationA" (ByVal lpszWinSta As String, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
 'Declare Sub RegisterDeviceNotification Lib "user32" Alias "RegisterDeviceNotificationA" (ByVal hRecipient As Integer, ByRef NotificationFilter As Any, ByVal Flags As Integer)
 'Declare Function SendInput Lib "user32" (ByVal cInputs As Integer, ByRef pInputs As INPUT, ByVal cbSize As Integer) As Integer
-'Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Boolean, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
-'Declare Function SetScrollInfo Lib "user32" (ByVal hWnd As Integer, ByVal n As Integer, ByRef lpcScrollInfo As SCROLLINFO, ByVal bool As Boolean) As Integer
 'Declare Sub SetWinEventHook Lib "user32" (ByVal eventMin As Integer, ByVal eventMax As Integer, ByVal hmodWinEventProc As Integer, ByRef pfnWinEventProc As WINEVENTPROC, ByVal idProcess As Integer, ByVal idThread As Integer, ByVal dwFlags As Integer)
-'Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Integer, ByVal hRgn As Integer, ByVal bRedraw As Boolean) As Integer
 'Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENT) As Integer
 #endif 'USER32_BI

@@ -29,6 +29,8 @@
 '| CONSTANTS |
 '-------------
 
+Const MAX_PATH = 260&
+
 Const CCHDEVICENAME = 32
 Const CCHFORMNAME = 32
 
@@ -105,6 +107,13 @@ Const COLOR_DESKTOP = COLOR_BACKGROUND
 '---------
 '| TYPES |
 '---------
+
+type LARGE_INTEGER
+    LowPart  as uinteger
+    HighPart as integer
+end type
+
+#define INT64 LARGE_INTEGER
 
 Type DEVMODE Field = 1
   dmDeviceName       As String * CCHDEVICENAME-1
