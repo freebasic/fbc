@@ -60,7 +60,8 @@ data "c"
 data "m"
 data "ncurses"
 #elseif defined(TARGET_DOS)
-data "crt"
+data "c"
+data "gcc"
 #endif
 data ""
 
