@@ -295,7 +295,11 @@ Sub astOptConstAccum1( byval n as integer )
 				if( c - int(c) <> 0 ) then
 					astTB(r).dtype = IR.DATATYPE.DOUBLE
 				else
-					astTB(r).dtype = IR.DATATYPE.INTEGER
+					if( irIsSigned( astTB(r).dtype ) ) then
+						astTB(r).dtype = IR.DATATYPE.INTEGER
+					else
+						astTB(r).dtype = IR.DATATYPE.UINT
+					end if
 				end if
 
 				if( delnode ) then
@@ -451,7 +455,11 @@ Sub astOptConstDistMUL( byval n as integer )
 				asthConstDistMUL astTB(r).value, l, c
 
 				if( c <> 0 ) then
-					if( c - int(c) <> 0 ) then dtype = IR.DATATYPE.DOUBLE else dtype = IR.DATATYPE.INTEGER
+					if( c - int(c) <> 0 ) then
+						dtype = IR.DATATYPE.DOUBLE
+					else
+						dtype = IR.DATATYPE.INTEGER
+					end if
 					nn = astNewCONST( c, dtype )
 					nn = astNewBOP( IR.OP.ADD, n, nn )
 					astSwap n, nn
@@ -954,7 +962,11 @@ sub astUpdNodeResult( byval n as integer )
 					dt1 = IR.DATATYPE.UINT
 				end if
 			else
-				dt1 = dt2
+				if( irIsSigned( dt1 ) ) then
+					dt1 = irGetSignedType( dt2 )
+				else
+					dt1 = irGetUnsignedType( dt2 )
+				end if
 			end if
 
 		end if
@@ -963,7 +975,11 @@ sub astUpdNodeResult( byval n as integer )
 			if( irGetDataClass( dt1 ) = IR.DATACLASS.FPOINT ) then
 				dt2 = IR.DATATYPE.INTEGER
 			else
-				dt2 = dt1
+				if( irIsSigned( dt2 ) ) then
+					dt2 = irGetSignedType( dt1 )
+				else
+					dt2 = irGetUnsignedType( dt1 )
+				end if
 			end if
 		end if
 
@@ -1028,11 +1044,18 @@ sub astUpdNodeResult( byval n as integer )
 
 		dtype = astTB(l).dtype
 
-		dclass = irGetDataClass( dtype )
+		'' convert byte to integer
+		if( irGetDataSize( dtype ) = 1 ) then
+			if( irIsSigned( dtype ) ) then
+				dtype = IR.DATATYPE.INTEGER
+			else
+				dtype = IR.DATATYPE.UINT
+			end if
+		end if
 
 		'' NOT can only be done with integers
 		if( astTB(n).op = IR.OP.NOT ) then
-			if( dclass <> IR.DATACLASS.INTEGER ) then
+			if( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) then
 				dtype = IR.DATATYPE.INTEGER
 			end if
 		end if
@@ -1654,8 +1677,9 @@ private function hStrLiteralConcat( byval l as integer, byval r as integer ) as 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
 
+	'' new len = both strings' len less the 2 null-chars
 	s = hAllocStringConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
-						   symbGetLen( ls ) + symbGetLen( rs ) )
+						   symbGetLen( ls ) - 1 + symbGetLen( rs ) - 1 )
 
 	hStrLiteralConcat = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
 
@@ -1791,11 +1815,19 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 		'' with bitwise operations, int div (\), modulus and shift, result is an integer
 		case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
 			 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
-			astTB(l).dtype = IR.DATATYPE.INTEGER
+			if( irIsSigned( astTB(l).dtype ) ) then
+				astTB(l).dtype = IR.DATATYPE.INTEGER
+			else
+				astTB(l).dtype = IR.DATATYPE.UINT
+			end if
 
 		'' if operands are floats and are been comparated, result will be an integer (boolean)
 		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
-			astTB(l).dtype = IR.DATATYPE.INTEGER
+			if( irIsSigned( astTB(l).dtype ) ) then
+				astTB(l).dtype = IR.DATATYPE.INTEGER
+			else
+				astTB(l).dtype = IR.DATATYPE.UINT
+			end if
 
 		'' check most precise type
 		case else
@@ -1912,6 +1944,7 @@ function asthBOPConvDataType( byval op as integer, byval l as integer, byval r a
 	'' bitwise operations, int div (\), modulus and shift only work with integers
 	case IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP, _
 		 IR.OP.INTDIV, IR.OP.MOD, IR.OP.SHL, IR.OP.SHR
+
 		if( dc1 <> IR.DATACLASS.INTEGER ) then
 			vt = irAllocVREG( IR.DATATYPE.INTEGER )
 			irEmitCONVERT vt, IR.DATATYPE.INTEGER, v1, dt1
@@ -2017,7 +2050,6 @@ sub asthBOPConvByteDataType( byval l as integer, byval r as integer, v1 as integ
 	ds2 = irGetDataSize( dt2 )
 
 	if( ds1 = 1 ) then
-
 		if( irGetDataClass( dt2 ) = IR.DATACLASS.FPOINT ) then
 			dtype = IR.DATATYPE.INTEGER
 		elseif( ds2 = 1 ) then
@@ -2027,7 +2059,11 @@ sub asthBOPConvByteDataType( byval l as integer, byval r as integer, v1 as integ
 				dtype = IR.DATATYPE.UINT
 			end if
 		else
-			dtype = dt2
+			if( irIsSigned( dt1 ) ) then
+				dtype = irGetSignedType( dt2 )
+			else
+				dtype = irGetUnsignedType( dt2 )
+			end if
 		end if
 
 		'' not an imm? otherwise, just incrase its class
@@ -2047,7 +2083,11 @@ sub asthBOPConvByteDataType( byval l as integer, byval r as integer, v1 as integ
 		if( irGetDataClass( dt1 ) = IR.DATACLASS.FPOINT ) then
 			dtype = IR.DATATYPE.INTEGER
 		else
-			dtype = dt1
+			if( irIsSigned( dt2 ) ) then
+				dtype = irGetSignedType( dt1 )
+			else
+				dtype = irGetUnsignedType( dt1 )
+			end if
 		end if
 
 		'' not a imm? otherwise, just incrase its class
@@ -2144,7 +2184,12 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 		select case as const op
 		case IR.OP.NOT
 			astTB(o).value = not cint(astTB(o).value)
-			astTB(o).dtype = IR.DATATYPE.INTEGER
+			if( irIsSigned( astTB(o).dtype ) ) then
+				astTB(o).dtype = IR.DATATYPE.INTEGER
+			else
+				astTB(o).dtype = IR.DATATYPE.UINT
+			end if
+
 		case IR.OP.NEG
 			astTB(o).value = - astTB(o).value
 
@@ -2723,14 +2768,23 @@ function astNewCONV( byval op as integer, byval dtype as integer, byval l as int
 	'' constant? evaluate at compile-time
 	if( astTB(l).defined ) then
 		select case as const dtype
-		case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
+		case IR.DATATYPE.BYTE
 			astTB(l).value = cbyte( astTB(l).value )
 
-		case IR.DATATYPE.SHORT, IR.DATATYPE.USHORT
+		case IR.DATATYPE.UBYTE
+			astTB(l).value = cubyte( astTB(l).value )
+
+		case IR.DATATYPE.SHORT
 			astTB(l).value = cshort( astTB(l).value )
 
-		case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
+		case IR.DATATYPE.USHORT
+			astTB(l).value = cushort( astTB(l).value )
+
+		case IR.DATATYPE.INTEGER
 			astTB(l).value = cint( astTB(l).value )
+
+		case IR.DATATYPE.UINT
+			astTB(l).value = cuint( astTB(l).value )
 
 		case IR.DATATYPE.SINGLE
 			astTB(l).value = csng( astTB(l).value )
@@ -2842,7 +2896,7 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function astNewFUNCTEx( byval ptrexpr as integer, byval sym as FBSYMBOL ptr, _
-						byval dtype as integer, byval args as integer ) as integer static
+						byval dtype as integer ) as integer static
     dim n as integer
 
 	'' alloc new node
@@ -2855,43 +2909,42 @@ function astNewFUNCTEx( byval ptrexpr as integer, byval sym as FBSYMBOL ptr, _
 
 	astTB(n).proc.sym 		= sym
 	astTB(n).l 				= ptrexpr
-	astTB(n).proc.args 		= args
+	astTB(n).proc.params 	= 0
 	if( sym <> NULL ) then
 		astTB(n).proc.arg	= symbGetProcHeadArg( sym )
 	else
 		astTB(n).proc.arg	= NULL
 	end if
-	astTB(n).proc.argnum 	= 0
 	astTB(n).proc.tmparraybase = INVALID
 
 end function
 
 '':::::
-function astNewFUNCT( byval sym as FBSYMBOL ptr, byval dtype as integer, byval args as integer ) as integer static
+function astNewFUNCT( byval sym as FBSYMBOL ptr, byval dtype as integer ) as integer static
 
-	astNewFUNCT = astNewFUNCTEx( INVALID, sym, dtype, args )
+	astNewFUNCT = astNewFUNCTEx( INVALID, sym, dtype )
 
 end function
 
 '':::::
 function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr, _
-						 byval dtype as integer, byval args as integer ) as integer static
+						 byval dtype as integer ) as integer static
 
-	astNewFUNCTPTR = astNewFUNCTEx( ptrexpr, symbol, dtype, args )
+	astNewFUNCTPTR = astNewFUNCTEx( ptrexpr, symbol, dtype )
 
 end function
 
 '':::::
 private sub hReportParamError( byval proc as FBSYMBOL ptr, byval f as integer )
 
-	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( astTB(f).proc.argnum+1 )
+	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( astTB(f).proc.params+1 )
 
 end sub
 
 '':::::
 private sub hReportParamWarning( byval proc as FBSYMBOL ptr, byval f as integer, byval msgnum as integer )
 
-	hReportWarning msgnum, "at parameter: " + str$( astTB(f).proc.argnum+1 )
+	hReportWarning msgnum, "at parameter: " + str$( astTB(f).proc.params+1 )
 
 end sub
 
@@ -2925,7 +2978,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 	''
 	proc = astTB(f).proc.sym
 
-	if( astTB(f).proc.argnum >= proc->proc.args ) then
+	if( astTB(f).proc.params >= proc->proc.args ) then
 		arg = symbGetProcTailArg( proc )
 	else
 		arg = astTB(f).proc.arg
@@ -2935,7 +2988,9 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 	''
 	adtype  = symbGetArgDataType( proc, arg )
-	adclass = irGetDataClass( adtype )
+	if( adtype <> INVALID ) then
+		adclass = irGetDataClass( adtype )
+	end if
 	amode   = symbGetArgMode( proc, arg )
 
 	pdtype  = astTB(n).dtype
@@ -2982,6 +3037,9 @@ private function hCheckParam( byval f as integer, byval n as integer )
         	end if
 
         end if
+
+    '' vararg? do nothing..
+    elseif( amode = FB.ARGMODE.VARARG ) then
 
     ''
     elseif( adtype <> IR.DATATYPE.VOID ) then
@@ -3138,19 +3196,19 @@ function astNewPARAM( byval f as integer, byval p as integer, _
 	end if
 
 	''
-	if( astTB(f).proc.argnum < proc->proc.args ) then
+	astTB(f).proc.params += 1
+
+	if( astTB(f).proc.params < proc->proc.args ) then
 		astTB(f).proc.arg = symbGetProcNextArg( proc, astTB(f).proc.arg, FALSE )
 	end if
-
-	astTB(f).proc.argnum = astTB(f).proc.argnum + 1
 
 end function
 
 '':::::
 private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as integer, byval arg as FBPROCARG ptr, _
 						       byval n as integer, srctree as integer, isexpr as integer ) as FBSYMBOL ptr
-    dim adtype as integer, adclass as integer, amode as integer
-    dim pdtype as integer, pdclass as integer, ptype as integer
+    dim adtype as integer
+    dim pdtype as integer, pclass as integer
     dim tempstr as FBSYMBOL ptr, t as integer
 
 	''
@@ -3169,14 +3227,16 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
    		exit function
    	end if
 
-	'' classes
-	adclass = irGetDataClass( adtype )
-	pdclass = irGetDataClass( pdtype )
+   	'' don't check varargs
+   	if( adtype <> INVALID ) then
+   		'' if both aren't strings, skip..
+   		if( irGetDataClass( adtype ) <> IR.DATACLASS.STRING ) then
+   			exit function
+   		end if
+   	end if
 
-   	'' if both aren't strings, skip..
-   	if( adclass <> IR.DATACLASS.STRING ) then
-   		exit function
-   	elseif( pdclass <> IR.DATACLASS.STRING ) then
+	''
+   	if( irGetDataClass( pdtype ) <> IR.DATACLASS.STRING ) then
    		'' check if it's not a byte ptr param
    		if( pdtype <> IR.DATATYPE.BYTE ) then
    			exit function
@@ -3206,8 +3266,8 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 	end if
 
 
-	'' param type
-	ptype = astTB(n).class
+	'' param class
+	pclass = astTB(n).class
 
 	''
 	select case symbGetArgMode( proc, arg )
@@ -3222,7 +3282,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 			'' (ast will have to copy temp back to fixed when function returns and delete temp)
 
 			'' don't copy back if it's a function returning a fixed-len (ie: C functions)
-			if( ptype <> AST.NODECLASS.FUNCT ) then
+			if( pclass <> AST.NODECLASS.FUNCT ) then
 				srctree = astCloneTree( n )
 			end if
 
@@ -3233,16 +3293,16 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
     	'' string descriptor..
     	case else
     		'' if not a function's result, skip..
-    		if( ptype <> AST.NODECLASS.FUNCT ) then
+    		if( pclass <> AST.NODECLASS.FUNCT ) then
     			exit function
             end if
     	end select
 
-    '' byval?
-    case FB.ARGMODE.BYVAL
+    '' byval or vararg?
+    case FB.ARGMODE.BYVAL, FB.ARGMODE.VARARG
 
 		'' skip, unless it's a temp string, that must be deleted when the called proc returns
-		if( ptype <> AST.NODECLASS.FUNCT ) then
+		if( pclass <> AST.NODECLASS.FUNCT ) then
 			exit function
 		end if
 
@@ -3267,8 +3327,8 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 end function
 
 '':::::
-private sub hCallProc( byval n as integer, byval proc as FBSYMBOL ptr, byval mode as integer, vreg as integer )
-    dim bytestopop as integer
+private sub hCallProc( byval n as integer, byval proc as FBSYMBOL ptr, _
+					   byval mode as integer, byval bytestopop as integer, vreg as integer )
     dim dtype as integer
     dim vr as integer, p as integer
 
@@ -3290,10 +3350,14 @@ private sub hCallProc( byval n as integer, byval proc as FBSYMBOL ptr, byval mod
 		vreg = INVALID
 	end if
 
-	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
-		bytestopop = symbCalcArgsLen( proc, astTB(n).proc.args )
-	else
-		bytestopop = 0
+	if( mode <> FB.FUNCMODE.CDECL ) then
+		if( mode = FB.FUNCMODE.STDCALL ) then
+			if( not env.clopt.nostdcall ) then
+				bytestopop = 0
+			end if
+		else
+			bytestopop = 0
+		end if
 	end if
 
 	'' call function or ptr
@@ -3405,19 +3469,20 @@ end sub
 
 '':::::
 sub astLoadFUNCT( byval n as integer, vreg as integer )
-    dim p as integer, np as integer, pmode as integer
-    dim proc as FBSYMBOL ptr, mode as integer, isrtl as integer
-    dim i as integer, inc as integer, l as integer, dtype as integer
-    dim a as FBPROCARG ptr, arg as FBPROCARG ptr, lastarg as FBPROCARG ptr, args as integer
-    dim vr as integer
-    dim tempstrs_base as integer
+    dim as integer p, np, pmode
+    dim as FBSYMBOL ptr proc
+    dim as integer mode, isrtl, bytestopop
+    dim as integer params, inc, l, dtype
+    dim as FBPROCARG ptr arg, lastarg
+    dim as integer args, vr
+    dim as integer tempstrs_base
 
 	'' execute each param and push the result
 	proc = astTB(n).proc.sym
 
 	'' ordinary pointer?
 	if( proc = NULL ) then
-		hCallProc n, NULL, INVALID, vreg
+		hCallProc n, NULL, INVALID, 0, vreg
 		exit sub
 	end if
 
@@ -3428,37 +3493,54 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 	tempstrs_base = ctx.tempstrings
 
     ''
-    p = astTB(n).r
 	if( mode = FB.FUNCMODE.PASCAL ) then
-		i = 0
+		params = 0
 		inc = 1
 	else
-		i = astTB(n).proc.args-1
+		params = astTB(n).proc.params
 		inc = -1
 	end if
 
 	''
 	args 	= proc->proc.args
 	lastarg = proc->proc.argtail
-	arg 	= symbGetProcFirstArg( proc )
+	if( params <= args ) then
+		arg = symbGetProcFirstArg( proc )
+		'' vararg and not param not passed?
+		if( params < args ) then
+			if( mode <> FB.FUNCMODE.PASCAL ) then
+				arg = symbGetProcNextArg( proc, arg )
+			end if
+		end if
+	'' vararg
+	else
+		arg = lastarg
+	end if
 
+	bytestopop = proc->lgt
+
+	p = astTB(n).r
 	do while( p <> INVALID )
 		np = astTB(p).r
 
-		if( i < args ) then
-			a = arg
-		else
-			a = lastarg
-		end if
-
 		'' check the parameter
-		l = hPrepParam( proc, isrtl, a, p, pmode )
+		l = hPrepParam( proc, isrtl, arg, p, pmode )
 
 		'' try to optimize if a constant is being pushed and the arg is a float
   		if( astTB(l).class = AST.NODECLASS.CONST ) then
-  			dtype = symbGetArgDataType( proc, a )
-  			if( irGetDataClass( dtype ) = IR.DATACLASS.FPOINT ) then
-				astTB(l).dtype = dtype
+  			dtype = symbGetArgDataType( proc, arg )
+  			'' vararg?
+  			if( dtype <> INVALID ) then
+  				if( irGetDataClass( dtype ) = IR.DATACLASS.FPOINT ) then
+					astTB(l).dtype = dtype
+				end if
+			end if
+		end if
+
+		''
+		if( arg = lastarg ) then
+			if( arg->mode = FB.ARGMODE.VARARG ) then
+				bytestopop += (symbCalcLen( astTB(l).dtype, NULL ) + 3) and not 3 '' x86 assumption!
 			end if
 		end if
 
@@ -3466,21 +3548,23 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 		astLoad l, vr
 		astDel l
 
-		if( not irEmitPUSHPARAM( proc, a, vr, pmode, astTB(p).param.lgt ) ) then
+		if( not irEmitPUSHPARAM( proc, arg, vr, pmode, astTB(p).param.lgt ) ) then
 		'''''exit sub
 		end if
 
 		astDel p
 
-		if( i < args ) then
+		params += inc
+
+		if( params < args ) then
 			arg = symbGetProcNextArg( proc, arg )
 		end if
-		i = i + inc
+
 		p = np
 	loop
 
 	'' return the result (same type as function ones)
-	hCallProc n, proc, mode, vreg
+	hCallProc n, proc, mode, bytestopop, vreg
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings tempstrs_base

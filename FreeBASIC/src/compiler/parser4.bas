@@ -1438,6 +1438,8 @@ function cSelectConstStmt as integer
 		exit function
 	end if
 
+	astUpdNodeResult( expr )
+
 	if( astGetDataClass( expr ) <> IR.DATACLASS.INTEGER ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function

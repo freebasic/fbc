@@ -1,9 +1,11 @@
 
+[ ] nameless inner type's on union's
+
+[ ] allow structs to be returned (must follow gcc's abi)
+
 [ ] build-in dynamic lib loading/get proc address
 
 [ ] make the runtime lib thread safe
-
-[ ] nameless inner type's on union's
 
 [ ] OPTION's should be preserved when changed inside include files
 

@@ -47,6 +47,7 @@ type EMITCTX
 	localptr		as integer
 	argptr			as integer
 
+	keyinited		as integer
 	keyhash			as THASH
 
     '' header flags, TRUE= emited already
@@ -222,12 +223,18 @@ private sub hInitKeywordsTB
 		hashAdd( @ctx.keyhash, keyword, @idx, idx )
 	loop
 
+	ctx.keyinited = TRUE
+
 end sub
 
 '':::::
 private sub hEndKeywordsTB
 
-	hashFree( @ctx.keyhash )
+	if( ctx.keyinited ) then
+		hashFree( @ctx.keyhash )
+	end if
+
+	ctx.keyinited = FALSE
 
 end sub
 
@@ -300,12 +307,12 @@ sub emitInit
 	hInitRegTB
 
 	''
-	hInitKeywordsTB
+	ctx.keyinited 	= FALSE
 
 	''
-	ctx.inited = TRUE
-	ctx.dataend = 0
-	ctx.pos		= 0
+	ctx.inited 		= TRUE
+	ctx.dataend 	= 0
+	ctx.pos			= 0
 
 	ctx.bssheader	= FALSE
 	ctx.conheader	= FALSE
@@ -602,6 +609,10 @@ end function
 
 '':::::
 function emitIsKeyword( text as string ) as integer static
+
+	if( not ctx.keyinited ) then
+		hInitKeywordsTB
+	end if
 
 	if( hashLookup( @ctx.keyhash, text ) <> NULL ) then
 		emitIsKeyword = TRUE
@@ -916,7 +927,7 @@ sub emitSTORE2INT ( dname as string, byval dvreg as IRVREG ptr, byval ddclass as
 		else
 			emitGetRegName( dvreg->dtype, ddclass, svreg->reg, ext )
 			if( dvreg->dtype > svreg->dtype ) then
-				if( irIsSigned( svreg->dtype ) ) then
+				if( irIsSigned( dvreg->dtype ) ) then
 					ostr = "movsx "
 					ostr += ext
 					ostr += COMMA
@@ -1169,7 +1180,7 @@ sub emitLOAD2INT( dname as string, byval dvreg as IRVREG ptr, byval ddclass as i
 
 		else
 			if( dvreg->dtype > svreg->dtype ) then
-				if( irIsSigned( svreg->dtype ) ) then
+				if( irIsSigned( dvreg->dtype ) ) then
 					ostr = "movsx "
 					ostr += dst
 					ostr += COMMA
@@ -1211,7 +1222,7 @@ loadSIDI:				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS
 							emithMOV "dl", src
 						end if
 
-						if( irIsSigned( svreg->dtype ) ) then
+						if( irIsSigned( dvreg->dtype ) ) then
 							ostr = "movsx "
 							ostr += dst
 							ostr += ", dl"

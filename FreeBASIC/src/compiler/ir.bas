@@ -102,19 +102,19 @@ declare sub 		irDump				( byval op as integer, byval v1 as integer, byval v2 as 
 
 '' class, size, signed?, name
 datatypedata:
-data IR.DATACLASS.INTEGER, 1			 , FALSE, "void"
-data IR.DATACLASS.INTEGER, 1			 , TRUE , "char"
-data IR.DATACLASS.INTEGER, 1			 , FALSE, "byte"
-data IR.DATACLASS.INTEGER, 2			 , TRUE , "short"
-data IR.DATACLASS.INTEGER, 2			 , FALSE, "word"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE, TRUE , "integer"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE, FALSE, "dword"
-data IR.DATACLASS.FPOINT , 4             , TRUE , "single"
-data IR.DATACLASS.FPOINT , 8			 , TRUE , "double"
-data IR.DATACLASS.STRING , 8			 , FALSE, "string"
-data IR.DATACLASS.STRING , 0			 , FALSE, "fixstr"
-data IR.DATACLASS.INTEGER, 0			 , FALSE, "udt"
-data IR.DATACLASS.INTEGER, 0			 , FALSE, "func"
+data IR.DATACLASS.INTEGER, 1			 	, FALSE, "void"
+data IR.DATACLASS.INTEGER, 1			 	, TRUE , "byte"
+data IR.DATACLASS.INTEGER, 1			 	, FALSE, "ubyte"
+data IR.DATACLASS.INTEGER, 2			 	, TRUE , "short"
+data IR.DATACLASS.INTEGER, 2			 	, FALSE, "ushort"
+data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, TRUE , "integer"
+data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, FALSE, "uint"
+data IR.DATACLASS.FPOINT , 4             	, TRUE , "single"
+data IR.DATACLASS.FPOINT , 8			 	, TRUE , "double"
+data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, FALSE, "string"
+data IR.DATACLASS.STRING , 0			 	, FALSE, "fixstr"
+data IR.DATACLASS.INTEGER, 0			 	, FALSE, "udt"
+data IR.DATACLASS.INTEGER, 0			 	, FALSE, "func"
 
 ''op, type(binary=0,unary=1,...), cummutative, name
 opcodedata:
@@ -646,7 +646,9 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
 	'' convert param to arg type if needed
 	atype  = symbGetArgDataType( proc, arg )
-	aclass = irGetDataClass( atype )
+	if( atype <> INVALID ) then
+		aclass = irGetDataClass( atype )
+	end if
 	ptype  = irGetVRDataType( vr )
 	pclass = irGetDataClass( ptype )
 	psize  = irGetDataSize( ptype )
@@ -681,6 +683,31 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
         end if
 
+    '' var args
+    elseif( amode = FB.ARGMODE.VARARG ) then
+
+    	if( pclass = IR.DATACLASS.STRING ) then
+			'' not fixed-len? deref var-len (ptr at offset 0)
+			if( ptype <> IR.DATATYPE.FIXSTR ) then
+            	vt = irAllocVREG( IR.DATATYPE.UINT )
+            	vregTB(vr).dtype = IR.DATATYPE.UINT
+            	irEmitADDR IR.OP.DEREF, vr, vt
+            	vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vt )
+
+            '' fixed-len? get the address of
+            elseif( typ <> IR.VREGTYPE.PTR ) then
+				vp = irAllocVREG( IR.DATATYPE.UINT )
+				irEmitADDR IR.OP.ADDROF, vr, vp
+				vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vp )
+			end if
+
+        	typ = IR.VREGTYPE.PTR
+        	amode = FB.ARGMODE.BYREF
+        else
+
+    		amode = FB.ARGMODE.BYVAL
+    	end if
+
     ''
     elseif( atype <> IR.DATATYPE.VOID ) then
 
@@ -701,7 +728,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
             			vt = irAllocVREG( IR.DATATYPE.UINT )
             			vregTB(vr).dtype = IR.DATATYPE.UINT
             			irEmitADDR IR.OP.DEREF, vr, vt
-            			vr = irAllocVRPTR( IR.DATATYPE.STRING, 0, vt )
+            			vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vt )
             			typ = IR.VREGTYPE.PTR
             		end if
 				end if
@@ -713,7 +740,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 				if( pclass = IR.DATACLASS.STRING ) then
 					vp = irAllocVREG( IR.DATATYPE.UINT )
 					irEmitADDR IR.OP.ADDROF, vr, vp
-					vr = irAllocVRPTR( IR.DATATYPE.STRING, 0, vp )
+					vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vp )
 					typ = IR.VREGTYPE.PTR
 				end if
 			end if

@@ -49,11 +49,16 @@ declare function 	cDynArrayDef			( id as string, idlias as string, _
 declare function 	cStaticArrayDecl 		( dimensions as integer, dTB() as FBARRAYDIM ) as integer
 declare function 	cArrayDecl				( dimensions as integer, exprTB() as integer ) as integer
 declare function 	cSymbolInit				( byval s as FBSYMBOL ptr ) as integer
-declare function 	cSymbolType 			( typ as integer, subtype as FBSYMBOL ptr, lgt as integer ) as integer
+declare function 	cSymbolType 			( typ as integer, subtype as FBSYMBOL ptr, _
+											  lgt as integer ) as integer
 declare function 	cProcDecl               ( ) as integer
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
-declare function 	cArguments              ( argc as integer, argv() as FBPROCARG, byval isproto as integer ) as integer
-declare function 	cArgDecl                ( byval argc as integer, arg as FBPROCARG, byval isproto as integer ) as integer
+declare function 	cArguments              ( byval procmode as integer, _
+											  argc as integer, argv() as FBPROCARG, _
+											  byval isproto as integer ) as integer
+declare function 	cArgDecl                ( byval procmode as integer, _
+											  byval argc as integer, arg as FBPROCARG, _
+											  byval isproto as integer ) as integer
 declare function 	cDefDecl				( ) as integer
 declare function 	cOptDecl				( ) as integer
 declare function 	cProcCallOrAssign		( ) as integer

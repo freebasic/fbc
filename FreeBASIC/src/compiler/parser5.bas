@@ -98,18 +98,20 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
     	end if
 
     	'' check names and change to the new one if needed
-    	if( strpGet( argv(a).nameidx ) <> symbGetArgName( proc, arg ) ) then
-    		symbSetArgName proc, arg, argv(a).nameidx
-    	end if
+    	if( amode <> FB.ARGMODE.VARARG ) then
+    		if( strpGet( argv(a).nameidx ) <> symbGetArgName( proc, arg ) ) then
+    			symbSetArgName proc, arg, argv(a).nameidx
+    		end if
 
-    	'' as both have the same type, re-set the suffix, because for example
-    	'' "a as integer" on the prototype and "a%" or just "a" on the proc
-    	'' declaration when in a defint context is allowed in QB
-    	symbSetArgSuffix proc, arg, argv(a).suffix
+    		'' as both have the same type, re-set the suffix, because for example
+    		'' "a as integer" on the prototype and "a%" or just "a" on the proc
+    		'' declaration when in a defint context is allowed in QB
+    		symbSetArgSuffix proc, arg, argv(a).suffix
+    	end if
 
     	'' next arg
     	arg = symbGetProcNextArg( proc, arg, FALSE )
-    	a   = a + 1
+    	a += 1
     loop
 
     ''
@@ -119,23 +121,25 @@ end function
 
 '':::::
 private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
-    dim i as integer
+    dim a as integer
     dim arg as FBPROCARG ptr
 
 	hDeclareArgs = FALSE
 
 	''
-	i = 0
+	a = 0
 	arg = symbGetProcHeadArg( proc )
 	do while( arg <> NULL )
 
-		if( symbAddArg( proc, arg ) = NULL ) then
-			hReportParamError i, FB.ERRMSG.DUPDEFINITION
-			exit function
+		if( arg->mode <> FB.ARGMODE.VARARG ) then
+			if( symbAddArg( proc, arg ) = NULL ) then
+				hReportParamError a, FB.ERRMSG.DUPDEFINITION
+				exit function
+			end if
 		end if
 
 		arg = symbGetProcNextArg( proc, arg, FALSE )
-		i = i + 1
+		a += 1
 	loop
 
 	hDeclareArgs = TRUE
@@ -194,8 +198,8 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 
 	'' ('(' Arguments? ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
-		res = cArguments( argc, argv(), FALSE )
-		if( not hMatch( CHAR_RPRNT ) ) then
+		res = cArguments( mode, argc, argv(), FALSE )
+		if( not hMatch( CHAR_RPRNT ) or (hGetLastError <> FB.ERRMSG.OK) ) then
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
 		end if

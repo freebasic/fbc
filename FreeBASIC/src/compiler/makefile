@@ -33,9 +33,9 @@ ifeq ($(osdeppath),win32)
     EXE := .exe
     LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
-    BC := ..\..\fbc.exe
+    BC := ../../fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
-    LD := ..\..\bin\win32\ld.exe
+    LD := ../../bin/win32/ld.exe
 endif
 
 ifeq ($(osdeppath),linux)
@@ -77,14 +77,14 @@ $(TARGET) : $(objects)
 .PHONY : clean
 clean :
 ifeq ($(osdeppath),win32)
-	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))
+	del $(subst /,\,$(TARGET))
 else
 ifeq ($(OS),DOS)
-	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))
+	del $(subst /,\,$(TARGET))
 else
-	rm -f $(TARGET)
 	rm -f $(objects)
+	rm -f $(TARGET)
 endif
 endif

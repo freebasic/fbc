@@ -149,6 +149,7 @@ private sub hSetCtx
 
 	env.prntcnt			= 0
 	env.prntopt			= FALSE
+	env.varcheckarray	= TRUE
 
 	''
 	env.forstmt.endlabel	= NULL

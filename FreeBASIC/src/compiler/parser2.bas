@@ -511,6 +511,7 @@ function cHighestPresExpr( highexpr as integer ) as integer
 
 		'' TypeConvExpr
 		case FB.TK.CBYTE, FB.TK.CSHORT, FB.TK.CINT, FB.TK.CLNG, FB.TK.CSNG, FB.TK.CDBL, _
+			 FB.TK.CUBYTE, FB.TK.CUSHORT, FB.TK.CUINT, _
          	 FB.TK.CSIGN, FB.TK.CUNSG
 			res = cTypeConvExpr( highexpr )
 
@@ -548,6 +549,13 @@ function cTypeConvExpr( tconvexpr as integer )
 		totype = IR.DATATYPE.SINGLE
 	case FB.TK.CDBL
 		totype = IR.DATATYPE.DOUBLE
+
+	case FB.TK.CUBYTE
+		totype = IR.DATATYPE.UBYTE
+	case FB.TK.CUSHORT
+		totype = IR.DATATYPE.USHORT
+	case FB.TK.CUINT
+		totype = IR.DATATYPE.UINT
 
 	case FB.TK.CSIGN
 		totype = IR.DATATYPE.VOID				'' hack! AST will handle that
@@ -911,10 +919,10 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 			exit function
 		end if
 
-		if( not cVariable( expr, sym, elm ) ) then
-			elm = NULL
+		elm = NULL
+		if( not cLiteral( expr ) ) then
 			if( not cConstant( expr ) ) then
-				if( not cLiteral( expr ) ) then
+				if( not cVariable( expr, sym, elm ) ) then
 					exit function
 				end if
 			end if
@@ -1002,7 +1010,7 @@ function cAtom( atom as integer )
   		if( not res ) then
   			res = cFunction( atom, sym )
   			if( not res ) then
-  				res = cVariable( atom, sym, elm )
+  				res = cVariable( atom, sym, elm, env.varcheckarray )
   			end if
   		end if
 
@@ -1103,7 +1111,9 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 
 		'' check if argument is optional
 		if( not symbGetArgOptional( proc, arg ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			if( amode <> FB.ARGMODE.VARARG ) then
+				hReportError FB.ERRMSG.ARGCNTMISMATCH
+			end if
 			exit function
 		end if
 
@@ -1128,10 +1138,12 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 
 	if( pmode <> INVALID ) then
 		if( amode <> pmode ) then
-            '' allow BYVAL param passed to BYREF arg (to pass NULL to pointers and so on)
-            if( (amode <> FB.ARGMODE.BYREF) or (pmode <> FB.ARGMODE.BYVAL) ) then
-				hReportError FB.ERRMSG.PARAMTYPEMISMATCH
-				exit function
+            if( amode <> FB.ARGMODE.VARARG ) then
+            	'' allow BYVAL param passed to BYREF arg (to pass NULL to pointers and so on)
+            	if( pmode <> FB.ARGMODE.BYVAL ) then
+					hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+					exit function
+				end if
 			end if
 		end if
 	end if
@@ -1148,8 +1160,9 @@ end function
 '':::::
 ''FuncParamList     =    FuncParam (DECL_SEPARATOR FuncParam)* .
 ''
-function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, byval optonly as integer ) as integer
-    dim param as integer, args as integer, arg as FBPROCARG ptr
+function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, _
+						 byval optonly as integer ) as integer
+    dim params as integer, args as integer, arg as FBPROCARG ptr
 
 	cFuncParamList = FALSE
 
@@ -1161,39 +1174,47 @@ function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, 
 		exit function
 	end if
 
-	param = 0
+	params = 0
 	arg = symbGetProcLastArg( proc )
 	if( not optonly ) then
 		do
-			if( param >= args ) then
-				hReportError FB.ERRMSG.ARGCNTMISMATCH
-				exit function
+			if( params >= args ) then
+				if( arg->mode <> FB.ARGMODE.VARARG ) then
+					hReportError FB.ERRMSG.ARGCNTMISMATCH
+					exit function
+				end if
 			end if
 
 			if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
-				exit function
+				if( hGetLastError <> FB.ERRMSG.OK ) then
+					exit function
+				else
+					exit do
+				end if
 			end if
 
-			param = param + 1
-			arg = symbGetProcPrevArg( proc, arg )
+			params += 1
+
+			if( params < args ) then
+				arg = symbGetProcPrevArg( proc, arg )
+			end if
 
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
 
 	''
-	if( param < args ) then
+	do while( params < args )
+		if( arg->mode = FB.ARGMODE.VARARG ) then
+			exit do
+		end if
 
-		do while( param < args )
+		if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
+			exit function
+		end if
 
-			if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
-				exit function
-			end if
-
-			param = param + 1
-			arg = symbGetProcPrevArg( proc, arg )
-		loop
-
-	end if
+		params += 1
+		arg = symbGetProcPrevArg( proc, arg )
+	loop
 
 	cFuncParamList = TRUE
 
@@ -1211,9 +1232,9 @@ function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval p
 
     typ = symbGetType( proc )
     if( ptrexpr = INVALID ) then
-    	funcexpr = astNewFUNCT( proc, typ, symbGetProcArgs( proc ) )
+    	funcexpr = astNewFUNCT( proc, typ )
     else
-    	funcexpr = astNewFUNCTPTR( ptrexpr, proc, typ, symbGetProcArgs( proc ) )
+    	funcexpr = astNewFUNCTPTR( ptrexpr, proc, typ )
     end if
 
 	'' is it really a function?

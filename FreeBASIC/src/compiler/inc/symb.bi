@@ -93,7 +93,6 @@ declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, byval realsize as
 declare function 	symbGetDefineText		( byval d as FBSYMBOL ptr ) as string
 declare function 	symbGetDefineLen		( byval d as FBSYMBOL ptr ) as integer
 
-declare function 	symbCalcArgsLen			( byval f as FBSYMBOL ptr, byval args as integer ) as integer
 declare function 	symbCalcArgLen			( byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer ) as integer
 
 declare function 	symbListLibs			( namelist() as string, byval index as integer ) as integer

@@ -40,8 +40,8 @@ type LEXCTX
 	tokenTB(0 to FB.LEX.MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
 
-	currchar		as integer					'' current char
-	lahdchar		as integer					'' look ahead char
+	currchar		as uinteger					'' current char
+	lahdchar		as uinteger					'' look ahead char
 
 	linenum 		as integer
 	colnum 			as integer
@@ -66,9 +66,9 @@ type LEXCTX
 	filepos			as integer
 end type
 
-declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as integer
-declare function 	lexEatChar              ( ) as integer
-declare function 	lexLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as integer
+declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as uinteger
+declare function 	lexEatChar              ( ) as uinteger
+declare function 	lexLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as uinteger
 declare sub 		lexNextToken 			( t as FBTOKEN, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
@@ -120,7 +120,7 @@ sub lexInit
 
 	ctx.bufflen		= 0
 	ctx.buffptr		= NULL
-	
+
 	ctx.filepos		= 0
 
 	'' only if it's not on an inc file
@@ -248,8 +248,8 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, byval lgt as integer )
 end sub
 
 '':::::
-private function lexReadChar as integer static
-    dim char as integer
+private function lexReadChar as uinteger static
+    dim char as uinteger
 
 	'' any #define'd text?
 	if( ctx.deflen > 0 ) then
@@ -297,7 +297,7 @@ private function lexReadChar as integer static
 end function
 
 '':::::
-private function lexEatChar as integer static
+private function lexEatChar as uinteger static
 
 	ctx.colnum = ctx.colnum + 1
 
@@ -357,7 +357,7 @@ private sub lexSkipChar static
 end sub
 
 '':::::
-private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as integer static
+private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as uinteger static
 
     if( ctx.currchar = INVALID ) then
     	ctx.currchar = lexReadChar
@@ -375,7 +375,7 @@ private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as inte
 end function
 
 '':::::
-private function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as integer
+private function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as uinteger
 
 	if( ctx.lahdchar = INVALID ) then
 		lexSkipChar
@@ -417,7 +417,7 @@ end function
 ''
 private sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, _
 							   dpos as integer, byval flags as LEXCHECK_ENUM ) static
-	dim c as integer
+	dim c as uinteger
 
 	'' (ALPHA | '_')
 	*pid = lexEatChar
@@ -484,7 +484,7 @@ end sub
 ''                | 'B' BINDIG+
 ''
 private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
-	dim v as uinteger, c as integer
+	dim v as uinteger, c as uinteger
 	dim tb(0 to 31) as integer, i as integer
 
 	v = 0
@@ -576,7 +576,7 @@ end sub
 ''float           = DOT DIGIT { DIGIT } [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ].
 ''
 private sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) static
-    dim c as integer
+    dim c as uinteger
     dim llen as integer
 
 	typ = FB.SYMBTYPE.DOUBLE
@@ -658,7 +658,7 @@ end sub
 ''
 private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer, _
 				   		   byval flags as LEXCHECK_ENUM ) static
-	dim c as integer
+	dim c as uinteger
 	dim isfloat as integer
 
 	isfloat = FALSE
@@ -722,7 +722,9 @@ private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integ
 			select case as const lexCurrentChar
 			case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
 				typ = FB.SYMBTYPE.INTEGER
-			case FB.TK.SGNTYPECHAR, FB.TK.DBLTYPECHAR
+			case FB.TK.SGNTYPECHAR
+				typ = FB.SYMBTYPE.SINGLE
+			case FB.TK.DBLTYPECHAR
 				typ = FB.SYMBTYPE.DOUBLE
 			end select
 
@@ -819,7 +821,7 @@ end sub
 
 '':::::
 private sub lexNextToken ( t as FBTOKEN, byval flags as LEXCHECK_ENUM ) static
-	dim char as integer
+	dim char as uinteger
 	dim islinecont as integer, isnumber as integer, iswith as integer
 	dim token as string, s as FBSYMBOL ptr, lgt as integer
 
@@ -931,18 +933,33 @@ reread:
 
 	    '' only check for fpoint literals if not inside a comment or parsing an $include
 	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
-	    	char = lexLookAheadChar( TRUE )
-	    	if( char >= CHAR_0 and char <= CHAR_9 ) then
+
+	    	select case as const lexLookAheadChar( TRUE )
+	    	'' 0 .. 9
+	    	case CHAR_0 to CHAR_9
 				isnumber = TRUE
-			elseif( ctx.lasttoken <> CHAR_RPRNT ) then
-				if( ctx.lasttoken <> CHAR_RBRACKET ) then
-					if( env.withtextidx = INVALID ) then
-						isnumber = TRUE
-					else
+
+			'' E | D
+			case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
+				if( ctx.lasttoken <> CHAR_RPRNT ) then
+					if( ctx.lasttoken <> CHAR_RBRACKET ) then
+						if( env.withtextidx = INVALID ) then
+							isnumber = TRUE
+						else
+							iswith = TRUE
+						end if
+					end if
+				end if
+
+			'' anything else
+			case else
+				if( env.withtextidx <> INVALID ) then
+					if( (ctx.lasttoken <> CHAR_RPRNT) and (ctx.lasttoken <> CHAR_RBRACKET) ) then
 						iswith = TRUE
 					end if
 				end if
-			end if
+			end select
+
 		end if
 
 		if( isnumber ) then
@@ -1244,8 +1261,8 @@ sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 end sub
 
 '':::::
-sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipline as integer = FALSE ) static
-    dim char as integer
+sub lexReadLine( byval endchar as uinteger = INVALID, dst as string, byval skipline as integer = FALSE ) static
+    dim char as uinteger
 
 	if( not skipline ) then
 		dst = ""
@@ -1409,7 +1426,7 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 	dim res as string, buffer as string * 1024
 	dim p as integer, old_p as integer, start as integer
 	dim c as ubyte ptr
-	
+
 	lexPeekCurrentLine = ""
 
 	'' get file contents around current token
@@ -1422,7 +1439,7 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 	end if
 	get #env.inf, p + 1, buffer
 	seek #env.inf, old_p
-	
+
 	'' find source line start
 	c = sadd(buffer) + start
 	token_pos = 0
@@ -1434,7 +1451,7 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 			start = start - 1
 		wend
 	end if
-	
+
 	'' build source line
 	res = ""
 	if( start > 0 ) then
@@ -1444,6 +1461,6 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 		res += chr$(*c)
 		c = c + 1
 	wend
-	
+
 	lexPeekCurrentLine = res
 end function

@@ -221,6 +221,7 @@ enum FBTK_ENUM
 	FB.TK.EXPLICIT
 	FB.TK.BYVAL
 	FB.TK.BYREF
+	FB.TK.VARARG
 
 	FB.TK.STATIC
 	FB.TK.DIM
@@ -299,6 +300,9 @@ enum FBTK_ENUM
 	FB.TK.CSHORT
 	FB.TK.CSIGN
 	FB.TK.CUNSG
+	FB.TK.CUINT
+	FB.TK.CUBYTE
+	FB.TK.CUSHORT
 
 	FB.TK.ASC
 	FB.TK.CHR
@@ -339,6 +343,7 @@ enum FBTK_ENUM
 	FB.TK.ERASE
 	FB.TK.LBOUND
 	FB.TK.UBOUND
+	FB.TK.VA_FIRST
 
 	FB.TK.ON
 	FB.TK.ERROR
@@ -402,6 +407,7 @@ enum FBARGMODE_ENUM
 	FB.ARGMODE.BYVAL 			= 1				'' must start at 1! used for mangling
 	FB.ARGMODE.BYREF
 	FB.ARGMODE.BYDESC
+	FB.ARGMODE.VARARG
 end enum
 
 '' call conventions
@@ -689,13 +695,15 @@ type FBENV
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
 	withtextidx		as integer					'' WITH's text
 
-	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
-	prntopt			as integer					'' /
-
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
+
+	'' hacks
+	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
+	prntopt			as integer					'' /
+	varcheckarray	as integer					'' used by LEN() to handle expr's and ()-less arrays
 
 	'' cmm-line options
 	clopt			as FBCMMLINEOPT

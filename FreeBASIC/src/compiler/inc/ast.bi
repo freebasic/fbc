@@ -40,11 +40,10 @@ end enum
 
 type FUNCTNode
 	sym				as FBSYMBOL ptr					'' symbol
-	args			as integer
-	argnum			as integer
+	params			as integer
 	arg				as FBPROCARG ptr
-	tmparraybase 	as integer
 	lastparam		as integer						'' used to speed up PASCAL calling conv. only
+	tmparraybase 	as integer
 end type
 
 type PARAMNode
@@ -169,10 +168,9 @@ declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, byval elm as FBSYMBOL
 										  byval dtype as integer, byval subtype as FBSYMBOL ptr ) as integer
 declare sub 		astLoadPTR			( byval n as integer, vreg as integer )
 
-declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, byval dtype as integer, _
-										  byval args as integer ) as integer
+declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, byval dtype as integer ) as integer
 declare function 	astNewFUNCTPTR		( byval ptrexpr as integer, byval sym as FBSYMBOL ptr, _
-										  byval dtype as integer, byval args as integer ) as integer
+										  byval dtype as integer ) as integer
 declare function 	astNewPARAM			( byval f as integer, byval p as integer, _
 										  byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
 declare sub 		astLoadFUNCT		( byval n as integer, vr as integer )

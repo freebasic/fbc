@@ -764,14 +764,10 @@ function cPokeStmt
 
 	'' (SymbolType ',')?
 	if( cSymbolType( poketype, subtype, lgt ) ) then
-		if( subtype <> NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
-			exit function
-		end if
 
 		'' check for invalid types
-		select case as const poketype
-		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.USERDEF
+		select case poketype
+		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.FIXSTR
 			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
 			exit function
 		end select
@@ -784,6 +780,7 @@ function cPokeStmt
 
 	else
 		poketype = IR.DATATYPE.BYTE
+		subtype  = NULL
 	end if
 
 	'' Expression, Expression
@@ -800,7 +797,7 @@ function cPokeStmt
 		exit function
 	end if
 
-    astUpdNodeResult expr1
+    astUpdNodeResult( expr1 )
     select case astGetDataClass( expr1 )
     case IR.DATACLASS.STRING
     	hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -814,7 +811,7 @@ function cPokeStmt
         end if
 	end select
 
-    expr1 = astNewPTR( NULL, NULL, 0, expr1, poketype, NULL )
+    expr1 = astNewPTR( NULL, NULL, 0, expr1, poketype, subtype )
 
     expr1 = astNewASSIGN( expr1, expr2 )
 
@@ -1469,6 +1466,150 @@ function cArrayFunct( funcexpr as integer )
 end function
 
 '':::::
+private function cStrCHR( funcexpr as integer ) as integer
+	dim v as integer, s as string
+	dim i as integer, cnt as integer, exprtb(0 to 31) as integer
+	dim isconst as integer
+
+	cStrCHR = FALSE
+
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+
+	cnt = 0
+	do
+		if( not cExpression( exprtb(cnt) ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+		cnt += 1
+		if( cnt >= 32 ) then
+			exit do
+		end if
+	loop while( hMatch( CHAR_COMMA ) )
+
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+
+	'' constant? evaluate at compile-time
+	isconst = TRUE
+	for i = 0 to cnt-1
+		if( astGetClass( exprtb(i) ) <> AST.NODECLASS.CONST ) then
+			isconst = FALSE
+			exit for
+		end if
+	next i
+
+	if( isconst ) then
+		s = ""
+
+		for i = 0 to cnt-1
+			v = astGetValue( exprtb(i) )
+
+			if( (v < CHAR_SPACE) or (v > 127) ) then
+				s += "\27"
+				s += oct$( v )
+			else
+				s += chr$( v )
+			end if
+
+			astDel exprtb(i)
+		next i
+
+		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR.DATATYPE.FIXSTR )
+
+    else
+
+		funcexpr = rtlStrChr( cnt, exprtb() )
+
+	end if
+
+	cStrCHR = funcexpr <> INVALID
+
+end function
+
+'':::::
+private function cStrASC( funcexpr as integer ) as integer
+    dim expr1 as integer, posexpr as integer, p as integer
+    dim sym as FBSYMBOL ptr
+
+	cStrASC = FALSE
+
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+
+	if( not cExpression( expr1 ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	'' (',' Expression)?
+	if( hMatch( CHAR_COMMA ) ) then
+
+		if( not cExpression( posexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+	else
+		posexpr = INVALID
+	end if
+
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+
+	'' constant? evaluate at compile-time
+	if( astGetClass( expr1 ) = AST.NODECLASS.VAR ) then
+		if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
+			sym = astGetSymbol( expr1 )
+			if( symbGetVarInitialized( sym ) ) then
+
+				'' pos is an constant too?
+				if( posexpr <> INVALID ) then
+					if( astGetClass( posexpr ) = AST.NODECLASS.CONST ) then
+						p = astGetValue( posexpr )
+						if( p < 0 ) then
+							p = 0
+						end if
+						astDel posexpr
+					else
+						p = -1
+					end if
+				else
+					p = 1
+				end if
+
+				if( p >= 0 ) then
+					funcexpr = astNewCONST( asc( symbGetVarText( sym ), p ), IR.DATATYPE.INTEGER )
+
+					'' delete var if it was never accessed before
+					if( symbGetAccessCnt( sym ) = 0 ) then
+						symbDelVar sym
+					end if
+
+	    			astDel expr1
+	    			expr1 = INVALID
+	    		end if
+	    	end if
+	    end if
+	end if
+
+	if( expr1 <> INVALID ) then
+		funcexpr = rtlStrAsc( expr1, posexpr )
+	end if
+
+	cStrASC = funcexpr <> INVALID
+
+end function
+
+'':::::
 '' cStringFunct	=	STR$ '(' Expression{int|float|double} ')'
 '' 				|   INSTR '(' ((Expression{int} ',' Expression ',' Expression)|
 ''							   (Expression{str} ',' Expression)) ')'
@@ -1478,8 +1619,6 @@ end function
 function cStringFunct( funcexpr as integer )
     dim expr1 as integer, expr2 as integer, expr3 as integer
     dim dclass as integer
-    dim sym as FBSYMBOL ptr
-    dim v as integer, s as string
 
 	cStringFunct = FALSE
 
@@ -1632,84 +1771,18 @@ function cStringFunct( funcexpr as integer )
 
 		cStringFunct = funcexpr <> INVALID
 
-	'' CHR$ '(' Expression ')'
+	'' CHR$ '(' Expression (',' Expression )* ')'
 	case FB.TK.CHR
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		cStringFunct = cStrCHR( funcexpr )
 
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
-
-		'' constant? evaluate at compile-time
-		if( astGetClass( expr1 ) = AST.NODECLASS.CONST ) then
-			v = astGetValue( expr1 )
-			if( (v < CHAR_SPACE) or (v > 127) ) then
-				s = "\27" + oct$( v )
-			else
-				s = chr$( v )
-			end if
-			funcexpr = astNewVAR( hAllocStringConst( s, 1 ), NULL, 0, IR.DATATYPE.FIXSTR )
-		    astDel expr1
-		else
-			funcexpr = rtlStrChr( expr1 )
-		end if
-
-		cStringFunct = funcexpr <> INVALID
-
-	'' ASC '(' Expression ')'
+	'' ASC '(' Expression (',' Expression)? ')'
 	case FB.TK.ASC
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		cStringFunct = cStrASC( funcexpr )
 
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
-
-		'' constant? evaluate at compile-time
-		if( astGetClass( expr1 ) = AST.NODECLASS.VAR ) then
-			if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
-				sym = astGetSymbol( expr1 )
-				if( symbGetVarInitialized( sym ) ) then
-					funcexpr = astNewCONST( asc( symbGetVarText( sym ) ), IR.DATATYPE.INTEGER )
-
-					'' delete var if it was never accessed before
-					if( symbGetAccessCnt( sym ) = 0 ) then
-						symbDelVar sym
-					end if
-
-		    		astDel expr1
-		    		expr1 = INVALID
-
-		    	end if
-		    end if
-		end if
-
-		if( expr1 <> INVALID ) then
-			funcexpr = rtlStrAsc( expr1 )
-		end if
-
-		cStringFunct = funcexpr <> INVALID
 	end select
 
 end function
@@ -1719,7 +1792,7 @@ end function
 '' 				|   SGN( Expression )
 ''				|   FIX( Expression )
 ''				|   INT( Expression )
-''				|	LEN( UDT | data type | Function{str} | Variable | Expression ) .
+''				|	LEN( data type | Expression ) .
 ''
 function cMathFunct( funcexpr as integer )
     dim expr as integer
@@ -1808,7 +1881,7 @@ function cMathFunct( funcexpr as integer )
 	'' INT( Expression ) is implemented by libc's floor( )
 
 
-	'' LEN( UDT | data type | Function{str} | Variable | Expression )
+	'' LEN( data type | Expression{idx-less arrays too} )
 	case FB.TK.LEN
 		lexSkipToken
 
@@ -1819,14 +1892,13 @@ function cMathFunct( funcexpr as integer )
 
 		expr = INVALID
 		if( not cSymbolType( typ, subtype, lgt ) ) then
-			if( not cFunction( expr, sym ) ) then
-				if( not cVarOrDeref( expr, FALSE ) ) then
-					if( not cExpression( expr ) ) then
-						hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-						exit function
-					end if
-				end if
+			env.varcheckarray = FALSE
+			if( not cExpression( expr ) ) then
+				env.varcheckarray = TRUE
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
 			end if
+			env.varcheckarray = TRUE
 		end if
 
 		if( not hMatch( CHAR_RPRNT ) ) then
@@ -1865,14 +1937,10 @@ function cPeekFunct( funcexpr as integer )
 
 	'' (SymbolType ',')?
 	if( cSymbolType( peektype, subtype, lgt ) ) then
-		if( subtype <> NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
-			exit function
-		end if
 
 		'' check for invalid types
-		select case as const peektype
-		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.USERDEF
+		select case peektype
+		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.FIXSTR
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
 		end select
@@ -1885,6 +1953,7 @@ function cPeekFunct( funcexpr as integer )
 
 	else
 		peektype = IR.DATATYPE.BYTE
+		subtype = NULL
 	end if
 
 	'' Expression
@@ -1899,7 +1968,8 @@ function cPeekFunct( funcexpr as integer )
 		exit function
 	end if
 
-    astUpdNodeResult expr
+    ''
+    astUpdNodeResult( expr )
     select case astGetDataClass( expr )
     case IR.DATACLASS.STRING
     	hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -1913,7 +1983,7 @@ function cPeekFunct( funcexpr as integer )
 		end if
 	end select
 
-    funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, NULL )
+    funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, subtype )
 
 	'' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
     if( peektype = IR.DATATYPE.BYTE ) then
@@ -2075,6 +2145,64 @@ function cIIFFunct( funcexpr as integer )
 end function
 
 '':::::
+''cVAFunct =     VA_FIRST ('(' ')')? .
+''
+function cVAFunct( funcexpr as integer )
+    dim expr as integer
+    dim arg as FBPROCARG ptr
+    dim proc as FBSYMBOL ptr, sym as FBSYMBOL ptr
+
+	cVAFunct = FALSE
+
+	proc = env.currproc
+
+	if( proc = NULL ) then
+		exit function
+	end if
+
+	if( proc->proc.mode <> FB.FUNCMODE.CDECL ) then
+		exit function
+	end if
+
+	arg = symbGetProcTailArg( proc )
+	arg = symbGetProcNextArg( proc, arg )
+	if( arg = NULL ) then
+		exit function
+	end if
+
+	sym = symbFindByNameAndClass( strpGet( arg->nameidx ), FB.SYMBCLASS.VAR )
+	if( sym = NULL ) then
+		exit function
+	end if
+
+	'' VA_FIRST
+	lexSkipToken
+
+	'' ('(' ')')?
+	if( hMatch( CHAR_LPRNT ) ) then
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
+	end if
+
+	'' @arg
+	expr = astNewVAR( sym, NULL, 0, sym->typ, NULL )
+	expr = astNewADDR( IR.OP.ADDROF, expr, sym )
+
+	'' + arglen( arg )
+	funcexpr = astNewBOP( IR.OP.ADD, _
+						  expr, _
+						  astNewCONST( symbCalcArgLen( arg->typ, arg->subtype, arg->mode ), _
+						  IR.DATATYPE.UINT ) )
+
+
+
+	cVAFunct = TRUE
+
+end function
+
+'':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
 function cQuirkFunction( funcexpr as integer )
@@ -2103,6 +2231,8 @@ function cQuirkFunction( funcexpr as integer )
 		res = cErrorFunct( funcexpr )
 	case FB.TK.IIF
 		res = cIIFFunct( funcexpr )
+	case FB.TK.VA_FIRST
+		res = cVAFunct( funcexpr )
 	end select
 
 	if( not res ) then

@@ -152,6 +152,9 @@ data "CBYTE"	, FB.TK.CBYTE		, FB.TKCLASS.KEYWORD
 data "CSHORT"	, FB.TK.CSHORT		, FB.TKCLASS.KEYWORD
 data "CSIGN"	, FB.TK.CSIGN		, FB.TKCLASS.KEYWORD
 data "CUNSG"	, FB.TK.CUNSG		, FB.TKCLASS.KEYWORD
+data "CUBYTE"	, FB.TK.CUBYTE		, FB.TKCLASS.KEYWORD
+data "CUSHORT"	, FB.TK.CUSHORT		, FB.TKCLASS.KEYWORD
+data "CUINT"	, FB.TK.CUINT		, FB.TKCLASS.KEYWORD
 data "IF"		, FB.TK.IF			, FB.TKCLASS.KEYWORD
 data "THEN"		, FB.TK.THEN		, FB.TKCLASS.KEYWORD
 data "ELSE"		, FB.TK.ELSE		, FB.TKCLASS.KEYWORD
@@ -245,6 +248,8 @@ data "BSAVE"	, FB.TK.BSAVE		, FB.TKCLASS.KEYWORD
 data "CHR"		, FB.TK.CHR			, FB.TKCLASS.KEYWORD
 data "ASC"		, FB.TK.ASC			, FB.TKCLASS.KEYWORD
 data "IIF"		, FB.TK.IIF			, FB.TKCLASS.KEYWORD
+data "..."		, FB.TK.VARARG		, FB.TKCLASS.KEYWORD
+data "VA_FIRST"	, FB.TK.VA_FIRST	, FB.TKCLASS.KEYWORD
 data ""
 
 
@@ -972,7 +977,10 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
 
 	aname = hMakeTmpStr
 
-	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, lgt + 1, 0, dTB(), _
+	'' plus the null-char as rtlib wrappers will take it into account
+	lgt += 1
+
+	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, lgt, 0, dTB(), _
 					  FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
 
 	s->var.initialized = TRUE
@@ -1302,11 +1310,13 @@ function hCalcProcArgsLen( byval args as integer, argv() as FBPROCARG ) as integ
 
 	lgt	= 0
 	for i = 0 to args-1
-		if( argv(i).mode = FB.ARGMODE.BYVAL ) then
-			lgt	= lgt + ((argv(i).lgt + 3) and not 3)	'' hack! x86 pmode assumption
-		else
-			lgt	= lgt + FB.POINTERSIZE
-		end if
+		select case argv(i).mode
+		case FB.ARGMODE.BYVAL
+			lgt	+= ((argv(i).lgt + 3) and not 3)	'' hack! x86 pmode assumption
+
+		case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
+			lgt	+= FB.POINTERSIZE
+		end select
 	next i
 
 	hCalcProcArgsLen = lgt
@@ -1469,13 +1479,15 @@ function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FB
 
 	symbAddArg = NULL
 
-	select case arg->mode
+	select case as const arg->mode
     case FB.ARGMODE.BYVAL
     	alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL
+	case FB.ARGMODE.BYREF
+	    alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
 	case FB.ARGMODE.BYDESC
     	alloctype = FB.ALLOCTYPE.ARGUMENTBYDESC
 	case else
-    	alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
+    	exit function
 	end select
 
     s = symbAddVarEx( strpGet( arg->nameidx ), "", arg->typ, arg->subtype, 0, _
@@ -1486,20 +1498,6 @@ function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FB
     end if
 
 	symbAddArg = s
-
-end function
-
-'':::::
-function symbCalcArgsLen( byval f as FBSYMBOL ptr, byval args as integer ) as integer static
-    dim lgt as integer
-
-	'' use symbGetLen() with normal procs, this is only for C var-len progs
-	lgt = f->lgt
-	if( args > f->proc.args ) then
-		lgt = lgt + ((args - f->proc.args) * FB.INTEGERSIZE)
-	end if
-
-	symbCalcArgsLen = lgt
 
 end function
 
@@ -2337,7 +2335,6 @@ end function
 
 '':::::
 function symbGetArgDataType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
-	dim typ as integer
 
 	symbGetArgDataType = INVALID
 
@@ -2345,24 +2342,12 @@ function symbGetArgDataType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr )
 		exit function
 	end if
 
-	typ = a->typ
-    if( typ <> INVALID ) then
-		symbGetArgDataType = typ
-		exit function
-	end if
-
-	if( f->proc.mode <> FB.FUNCMODE.CDECL ) then
-		exit function
-	end if
-
-	'' it's really a "..." arg, so, it's always an integer
-	symbGetArgDataType = FB.SYMBTYPE.INTEGER
+	symbGetArgDataType = a->typ
 
 end function
 
 '':::::
 function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
-	dim mode as integer
 
 	symbGetArgMode = INVALID
 
@@ -2370,18 +2355,7 @@ function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as 
 		exit function
 	end if
 
-	mode = a->mode
-	if( mode <> INVALID ) then
-		symbGetArgMode = mode
-		exit function
-	end if
-
-	if( f->proc.mode <> FB.FUNCMODE.CDECL ) then
-		exit function
-	end if
-
-	'' it's really a "..." arg, so, it's always passed by value
-	symbGetArgMode = FB.ARGMODE.BYVAL
+	symbGetArgMode = a->mode
 
 end function
 

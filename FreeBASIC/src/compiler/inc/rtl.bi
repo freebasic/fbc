@@ -175,8 +175,8 @@ declare function 	rtlStrInstr			( byval expr1 as integer, byval expr2 as integer
 declare function 	rtlStrMid			( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer ) as integer
 declare function	rtlStrAssignMid		( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, byval expr4 as integer ) as integer
 declare function 	rtlStrFill			( byval expr1 as integer, byval expr2 as integer ) as integer
-declare function 	rtlStrAsc			( byval expr as integer ) as integer
-declare function 	rtlStrChr			( byval expr as integer ) as integer
+declare function 	rtlStrAsc			( byval expr as integer, byval posexpr as integer ) as integer
+declare function 	rtlStrChr			( byval args as integer, exprtb() as integer ) as integer
 
 declare function	rtlArrayRedim		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 									  	  byval dimensions as integer, exprTB() as integer, _
