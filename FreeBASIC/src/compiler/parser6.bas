@@ -160,8 +160,6 @@ function cArrayStmt
 			exit function
 		end if
 
-		lexSkipToken
-
 		if( isdynamic ) then
 			rtlArrayErase expr1
 		else
