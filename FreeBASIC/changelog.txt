@@ -1,5 +1,6 @@
 Version 0.12 Beta:
 
+[chged] Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
 [chged] IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
         functions won't be automatically exported anymore, because that would make it hard to write DLL's with
         multiple modules where not all global functions should be exported (v1ctor)

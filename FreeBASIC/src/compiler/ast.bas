@@ -2943,8 +2943,15 @@ private function hCheckParam( byval f as integer, byval n as integer )
 				'' not an argument passed by descriptor?
 				if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
 					if( symbGetArrayDescriptor( s ) = NULL ) then
-						hReportParamError proc, f
-						exit function
+						if( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+							
+							'' create a temp array descriptor
+							astTB(n).l = hAllocTmpArrayDesc( f, p )
+							astTB(n).param.mode = FB.ARGMODE.BYVAL
+						else
+							hReportParamError proc, f
+							exit function
+						end if
 					end if
         		end if
         	end if

@@ -49,7 +49,7 @@ FBCALL void fb_GfxGet(float fx1, float fy1, float fx2, float fy2, unsigned char 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
 	
-	if ((int)dest + 4 + (w * h) > (int)array->ptr + array->size)
+	if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->ptr + array->size))
 		return;
 	
 	*(unsigned short *)dest = w << 3;
