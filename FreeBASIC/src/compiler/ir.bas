@@ -736,7 +736,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 			'' not an argument passed by descriptor?
 			if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
 				ptype = IR.DATATYPE.VOID
-        		vr = irAllocVRVAR( ptype, symbGetVarDescriptor( s ), 0 )
+        		vr = irAllocVRVAR( ptype, symbGetArrayDescriptor( s ), 0 )
         		amode = FB.ARGMODE.BYREF
 
         	'' it's already a descriptor pointer, pass as-is
