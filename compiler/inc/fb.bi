@@ -22,8 +22,8 @@ const FALSE%		= 0
 const INVALID%		= -1
 
 ''
-const FB.VERSION$				= "0.08b"
-const FB.SIGN$					= "FreeBASIC v0.08b"
+const FB.VERSION$				= "0.09b"
+const FB.SIGN$					= "FreeBASIC v0.09b"
 
 '' paths
 const FB.BINPATH$				= "\bin\"
@@ -121,7 +121,10 @@ const FB.DEFAULTCPUTYPE%	= FB.CPUTYPE.486
 declare function 	fbcInit			( ) as integer
 declare sub 		fbcEnd			( )
 declare function 	fbcCompile		( infname as string, outfname as string ) as integer
+
+declare sub 		fbcSetDefaultOptions ( )
 declare sub 		fbcSetOption	( byval opt as integer, byval value as integer )
+
 declare function 	fbcListLibs		( namelist() as string, byval index as integer ) as integer
 declare sub 		fbcAddIncPath	( path as string )
 declare sub 		fbcAddDefine	( dname as string, dtext as string )

@@ -1198,6 +1198,9 @@ function cQuirkStmt
 												res = cInputStmt
 												if( not res ) then
 													res = cViewStmt
+													if( not res ) then
+														res = cGfxStmt
+													end if
 												end if
 											end if
 										end if

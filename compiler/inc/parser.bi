@@ -100,3 +100,6 @@ declare function 	cFunctionCall			( byval proc as integer, funcexpr as integer, 
 declare function 	cProcCall				( byval proc as integer, byval ptrexpr as integer ) as integer
 
 declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
+
+declare function 	cGfxStmt 				( ) as integer
+declare function 	cGfxFunction			( funcexpr as integer ) as integer

@@ -236,8 +236,9 @@ data "IFDEF"	, FB.TK.IFDEF		, FB.TKCLASS.KEYWORD
 data "IFNDEF"	, FB.TK.IFNDEF		, FB.TKCLASS.KEYWORD
 data "ENDIF"	, FB.TK.ENDIF		, FB.TKCLASS.KEYWORD
 data "DEFINED"	, FB.TK.DEFINED		, FB.TKCLASS.KEYWORD
+data "PSET"		, FB.TK.PSET		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 152
+const FB.MAXKEYWORDS 		= 153
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' linked-lists

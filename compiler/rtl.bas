@@ -470,6 +470,73 @@ data "fb_ErrorGetNum", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
 data "fb_ErrorSetNum", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+''
+'' fb_GfxPset (byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
+data "fb_GfxPset", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_GfxLine (byval x1 as single = 0, byval y1 as single = 0, byval x2 as single = 0, byval y2 as single = 0, _
+''             byval color as uinteger = DEFAULT_COLOR, byval line_type as integer = LINE_TYPE_LINE, _
+''             byval style as uinteger = &hFFFF, byval coordType as integer = COORD_TYPE_AA) as integer
+data "fb_GfxLine", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+'' fb_GfxScreen (byval w as integer, byval h as integer = 0, byval depth as integer = 0, _
+''               byval fullscreenFlag as integer = 0) as integer
+data "screen", "fb_GfxScreen", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
+						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
+'' fb_GfxWindow (byval x1 as single = 0, byval y1 as single = 0, byval x2 as single = 0, _
+'' 				 byval y2 as single = 0, byval screenflag as integer = 0) as integer
+data "window", "fb_GfxWindow", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
+						       FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+						       FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+						       FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+						       FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
+'' fb_GfxFlip () as void
+data "flip", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+
+'' fb_GfxRgb (byval r as ubyte, byval g as ubyte, byval b as ubyte) as uinteger
+data "rgb", "fb_GfxRgb", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
+						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
+						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
+						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_GfxPoint (byval x as single, byval y as single) as uinteger
+data "point", "fb_GfxPoint", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 2, _
+						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_GfxCursor (number as integer) as single
+data "pointcoord", "fb_GfxCursor", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
+						           FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
+
+'' fb_GfxPMap (byval Coord as single, byval num as integer) as single
+data "pmap", "fb_GfxPMap", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 2, _
+						   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '' fb_FileFree ( ) as integer
@@ -719,6 +786,7 @@ data ""
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 deflibsdata:
 data "fb"
+data "fbgfx"
 data "crtdll"
 data "kernel32"
 data "user32"
@@ -2505,3 +2573,71 @@ sub rtlFileLock( byval islock as integer, byval filenum as integer, byval iniexp
 
 end sub
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' gfx
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub rtlGfxPset( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, byval coordtype as integer )
+    dim proc as integer, f as integer
+    dim vr as integer
+    dim res as integer
+
+	f = ifuncTB(FB.RTL.GFXPSET)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
+
+ 	'' byval x as single
+ 	res = astNewPARAM( proc, xexpr, INVALID )
+
+ 	'' byval y as single
+ 	res = astNewPARAM( proc, yexpr, INVALID )
+
+ 	'' byval color as uinteger
+ 	res = astNewPARAM( proc, cexpr, INVALID )
+
+ 	'' byval coordtype as integer
+ 	res = astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+
+ 	''
+ 	astFlush proc, vr
+
+end sub
+
+'':::::
+sub rtlGfxLine( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+			    byval cexpr as integer, byval linetype as integer, byval styleexpr as integer, byval coordtype as integer )
+    dim proc as integer, f as integer
+    dim vr as integer
+    dim res as integer
+
+	f = ifuncTB(FB.RTL.GFXLINE)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 8 )
+
+ 	'' byval x1 as single
+ 	res = astNewPARAM( proc, x1expr, INVALID )
+
+ 	'' byval y1 as single
+ 	res = astNewPARAM( proc, y1expr, INVALID )
+
+ 	'' byval x2 as single
+ 	res = astNewPARAM( proc, x2expr, INVALID )
+
+ 	'' byval y2 as single
+ 	res = astNewPARAM( proc, y2expr, INVALID )
+
+ 	'' byval color as uinteger
+ 	res = astNewPARAM( proc, cexpr, INVALID )
+
+ 	'' byval linetype as integer
+ 	res = astNewPARAM( proc, astNewCONST( linetype, IR.DATATYPE.INTEGER ), INVALID )
+
+ 	'' byval style as uinteger
+ 	res = astNewPARAM( proc, styleexpr, INVALID )
+
+ 	'' byval coordtype as integer
+ 	res = astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+
+ 	''
+ 	astFlush proc, vr
+
+end sub

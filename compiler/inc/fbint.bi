@@ -310,6 +310,7 @@ enum FBTK_ENUM
 	FB.TK.IFNDEF
 	FB.TK.ENDIF
 	FB.TK.DEFINED
+	FB.TK.PSET
 end enum
 
 '' single char tokens

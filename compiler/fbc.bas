@@ -54,6 +54,7 @@ declare sub 		parseCmd 			( argc as integer, argv() as string )
 declare sub 		setDefaultOptions	( )
 declare function 	processOptions		( ) as integer
 declare function 	processCompOptions  ( ) as integer
+declare function 	processCompLists 	( ) as integer
 declare sub 		printOptions		( )
 declare sub 		getLibList 			( )
 
@@ -138,15 +139,19 @@ function compileFiles as integer
 
     for i = 0 to ctx.inps-1
 
-    	if( not fbcInit ) then
-    		end 1
-    	end if
-
-    	'' fbc will reset the options
+    	'' this must be done before Init coz rtlib initialization depends on nostdcall to be defined
     	if( not processCompOptions ) then
     		printOptions
     		end 1
     	end if
+
+    	'' init the parser
+    	if( not fbcInit ) then
+    		end 1
+    	end if
+
+    	'' add include paths and defines
+    	processCompLists
 
     	'' if no output file define, assume it's the same name as input, with the .o extension
     	if( len( outlist(i) ) = 0 ) then
@@ -164,8 +169,10 @@ function compileFiles as integer
     		end 1
     	end if
 
+		'' get list with all referenced libraries
 		getLibList
 
+		'' shutdown the parser
 		fbcEnd
 
 	next i
@@ -433,9 +440,12 @@ end function
 
 '':::::
 function processCompOptions as integer
-    dim i as integer, p as integer
+    dim i as integer
 
 	processCompOptions = FALSE
+
+	'' reset options
+	fbcSetDefaultOptions
 
 	''
 	for i = 0 to argc-1
@@ -463,6 +473,16 @@ function processCompOptions as integer
 
 	next i
 
+	processCompOptions = TRUE
+
+end function
+
+'':::::
+function processCompLists as integer
+    dim i as integer, p as integer
+
+	processCompLists = FALSE
+
     '' add inc files
     for i = 0 to ctx.incs-1
     	fbcAddIncPath inclist(i)
@@ -476,7 +496,7 @@ function processCompOptions as integer
     	end if
     next i
 
-	processCompOptions = TRUE
+    processCompLists = FALSE
 
 end function
 

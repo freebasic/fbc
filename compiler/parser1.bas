@@ -74,10 +74,6 @@ sub hSetCtx
 	env.reclevel		= 0
 	env.currproc 		= INVALID
 
-	env.clopt.debug		= FALSE
-	env.clopt.errorcheck= FALSE
-	env.clopt.nostdcall = FALSE
-
 	env.dbglname 		= ""
 	env.dbglnum 		= 0
 	env.dbgpos 			= 0
@@ -149,6 +145,15 @@ function fbcInit as integer static
 	fbcInit = TRUE
 
 end function
+
+'':::::
+sub fbcSetDefaultOptions
+
+	env.clopt.debug		= FALSE
+	env.clopt.errorcheck= FALSE
+	env.clopt.nostdcall = FALSE
+
+end sub
 
 '':::::
 sub fbcSetOption ( byval opt as integer, byval value as integer )

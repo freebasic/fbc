@@ -123,6 +123,9 @@ enum FBRTL_ENUM
 	FB.RTL.ERRORSETHANDLER
 	FB.RTL.ERRORGETNUM
 	FB.RTL.ERRORSETNUM
+
+	FB.RTL.GFXPSET
+	FB.RTL.GFXLINE
 end enum
 
 const FB.RTL.MAXFUNCTIONS%		= 512
@@ -202,3 +205,7 @@ declare function	rtlErrorGetNum		( ) as integer
 declare sub 		rtlErrorSetNum		( byval errexpr as integer )
 
 declare sub 		rtlConsoleView		( byval topexpr as integer, byval botexpr as integer )
+
+declare sub 		rtlGfxPset			( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, byval coordtype as integer )
+declare sub 		rtlGfxLine			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+										  byval cexpr as integer, byval linetype as integer, byval styleexpr as integer, byval coordtype as integer )
