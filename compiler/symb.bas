@@ -581,7 +581,11 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer)
 	isshared = (s->alloctype and FB.ALLOCTYPE.SHARED) > 0
 	isstatic = (s->alloctype and FB.ALLOCTYPE.STATIC) > 0
 
-	sname = hMakeTmpStr
+	if( (s->alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
+		sname = hMakeTmpStr
+	else
+		sname = strpGet( s->nameidx )
+	end if
 
 	if( (env.scope = 0) or (isshared) or (isstatic) ) then
 		aname = ""
