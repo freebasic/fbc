@@ -10,9 +10,7 @@
 #ifndef __cryptlib_bi__
 #define __cryptlib_bi__
 
-#ifdef FB__WIN32
-#inclib "cl32"
-#endif
+#inclib "crypt"
 
 enum CRYPT_ALGO_TYPE
 	CRYPT_ALGO_NONE

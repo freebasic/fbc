@@ -227,6 +227,9 @@ extern COLOR_PAIRS alias "COLOR_PAIRS" as integer
 # define COLOR_WHITE		7
 #endif
 
+#define COLOR_PAIR(n)  ((n) shl 24)
+#define PAIR_NUMBER(n) (((n) and A_COLOR) shr 24)
+
 #define CHR_MSK &h0000FFFF
 #define ATR_MSK &hFFFF0000
 #define ATR_NRM &h00000000
@@ -504,6 +507,10 @@ declare function mvderwin cdecl alias "mvderwin" (byval as WINDOW ptr, byval as 
 declare function mvwaddnstr cdecl alias "mvwaddnstr" (byval as WINDOW ptr, byval as integer, byval as integer, byval as string, byval as integer) as integer
 declare function mvwin cdecl alias "mvwin" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
 declare function mvwinsertln cdecl alias "mvwinsertln" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
+declare function mvprintw cdecl alias "mvprintw" (byval as integer, byval as integer, byval as string, ...) as integer
+declare function mvscanw cdecl alias "mvscanw" (byval as integer, byval as integer, byval as string, ...) as integer
+declare function mvwprintw cdecl alias "mvwprintw" (byval as WINDOW ptr, byval as integer, byval as integer, byval as string, ...) as integer
+declare function mvwscanw cdecl alias "mvwscanw" (byval as WINDOW ptr, byval as integer, byval as integer, byval as string, ...) as integer
 declare function newpad cdecl alias "newpad" (byval as integer, byval as integer) as WINDOW ptr
 declare function newterm cdecl alias "newterm" (byval as string, byval as FILE ptr, byval as FILE ptr) as SCREEN ptr
 declare function newwin cdecl alias "newwin" (byval as integer, byval as integer, byval as integer, byval as integer) as WINDOW ptr
@@ -515,6 +522,8 @@ declare function pair_content cdecl alias "pair_content" (byval as integer, byva
 declare function pechochar cdecl alias "pechochar" (byval as WINDOW ptr, byval as chtype) as integer
 declare function pnoutrefresh cdecl alias "pnoutrefresh" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as integer
 declare function prefresh cdecl alias "prefresh" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as integer
+declare function printw cdecl alias "printw" (byval as string, ...) as integer
+declare function scanw cdecl alias "scanw" (byval as string, ...) as integer
 declare function raw cdecl alias "raw" () as integer
 declare function refresh cdecl alias "refresh" () as integer
 declare function reset_prog_mode cdecl alias "reset_prog_mode" () as integer
@@ -593,6 +602,8 @@ declare function wtouchln cdecl alias "wtouchln" (byval as WINDOW ptr, byval as 
 declare sub wsyncdown cdecl alias "wsyncdown" (byval as WINDOW ptr)
 declare sub wsyncup cdecl alias "wsyncup" (byval as WINDOW ptr)
 declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chtype, byval as integer) as integer
+declare function wprintw cdecl alias "wprintw" (byval as WINDOW ptr, byval as string, ...) as integer
+declare function wscanw cdecl alias "wscanw" (byval as WINDOW ptr, byval as string, ...) as integer
 declare function raw_output cdecl alias "raw_output" (byval as integer) as integer
 declare function resize_term cdecl alias "resize_term" (byval as integer, byval as integer) as integer
 declare function resize_window cdecl alias "resize_window" (byval as WINDOW ptr, byval as integer, byval as integer) as WINDOW ptr
@@ -604,6 +615,7 @@ declare function map_button cdecl alias "map_button" (byval as uinteger) as inte
 declare sub wmouse_position cdecl alias "wmouse_position" (byval as WINDOW ptr, byval as integer ptr, byval as integer ptr)
 declare function getmouse cdecl alias "getmouse" () as uinteger
 declare function getbmap cdecl alias "getbmap" () as uinteger
+
 declare function PDC_chadd cdecl alias "PDC_chadd" (byval as WINDOW ptr, byval as chtype, byval as integer, byval as integer) as integer
 declare function PDC_chins cdecl alias "PDC_chins" (byval as WINDOW ptr, byval as chtype, byval as integer) as integer
 declare function PDC_ungetch cdecl alias "PDC_ungetch" (byval as integer) as integer
@@ -619,6 +631,14 @@ declare function PDC_wunderline cdecl alias "PDC_wunderline" (byval as WINDOW pt
 declare function PDC_wleftline cdecl alias "PDC_wleftline" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
 declare function PDC_wrightline cdecl alias "PDC_wrightline" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
 declare function PDC_set_line_color cdecl alias "PDC_set_line_color" (byval as short) as integer
+
+declare function nocbreak cdecl alias "nocbreak" () as integer
+declare function cbreak cdecl alias "cbreak" () as integer
+declare function nocrmode cdecl alias "nocrmode" () as integer
+declare function crmode cdecl alias "crmode" () as integer
+declare function noecho cdecl alias "noecho" () as integer
+declare function echo cdecl alias "echo" () as integer
+declare function nodelay cdecl alias "nodelay" (byval as WINDOW ptr, byval as integer) as integer
 
 #define PDC_CLIP_SUCCESS 0
 #define PDC_CLIP_ACCESS_ERROR 1

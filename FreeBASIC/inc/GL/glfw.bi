@@ -35,10 +35,8 @@
 
 #inclib "glfw"
 
-#define GLFW_STATICLIB
-
 #ifdef FB__WIN32
-#	ifdef GLFW_STATICLIB
+#	ifndef GLFW_DLL
 #		inclib "user32"
 #		inclib "gdi32"
 #		define GLFWAPIENTRY cdecl
