@@ -73,7 +73,7 @@ void fb_GfxPrintBuffer (char *str, int mask)
     SDL_Surface *surface;
     SDL_Color palette[2];
     SDL_Rect src, dst, oldClip;
-    char c, after, drawFlag;
+    char c = 0, after, drawFlag;
     int ret, length;
     Sint16 ox, x, y;
 
