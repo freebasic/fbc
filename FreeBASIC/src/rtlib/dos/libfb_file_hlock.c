@@ -34,7 +34,7 @@ int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
 {
 	int res;
 	res = _dos_lock(fileno(f), inipos, endpos - inipos );
-	return (res == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO);
+	return fb_ErrorSetNum( res == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 }
 
 /*:::::*/
@@ -42,7 +42,7 @@ int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
 {
 	int res;
 	res = _dos_unlock(fileno(f), inipos, endpos - inipos);
-	return (res == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO);
+	return fb_ErrorSetNum( res == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 }
 
 

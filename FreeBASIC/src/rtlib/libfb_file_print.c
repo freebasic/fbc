@@ -35,15 +35,15 @@ int fb_hFilePrintBuffer( int fnum, char *buffer )
     int len;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	len = strlen( buffer );
 
 	if( fwrite( buffer, 1, len, fb_fileTB[fnum-1].f ) != len )
-		return FB_RTERROR_FILEIO;
+		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
-    return FB_RTERROR_OK;
+    return fb_ErrorSetNum( FB_RTERROR_OK );
 }

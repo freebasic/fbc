@@ -35,10 +35,10 @@ FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
 	int result;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	/* seek to newpos */
 	if( pos > 0 )
@@ -51,12 +51,12 @@ FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
 
 		result = fseek( fb_fileTB[fnum-1].f, pos, SEEK_SET );
 		if( result != 0 )
-			return FB_RTERROR_FILEIO;
+			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}
 
 	/* do write */
 	if( fwrite( value, 1, valuelen, fb_fileTB[fnum-1].f ) != valuelen )
-		return FB_RTERROR_FILEIO;
+		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
     /* if in random mode, writes must be of reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
@@ -66,5 +66,5 @@ FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
 			fseek( fb_fileTB[fnum-1].f, valuelen, SEEK_CUR );
 	}
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -432,9 +432,20 @@ FBCALL void 		fb_Sleep 			( int msecs );
  * error
  **************************************************************************************************/
 
-	   void 		*fb_ErrorThrow 		( int errnum, void *res_label, void *resnext_label );
+typedef struct _FB_ERRORCTX {
+	void 	*handler;
+	int		num;
+	void 	*reslbl;
+	void 	*resnxtlbl;
+} FB_ERRORCTX;
+
+extern FB_ERRORCTX fb_errctx;
+
+	   void 		*fb_ErrorThrowEx	( int errnum, void *res_label, void *resnext_label );
+	   void 		*fb_ErrorThrow 		( void *res_label, void *resnext_label );
 FBCALL void 		*fb_ErrorSetHandler ( void *newhandler );
 FBCALL int 			fb_ErrorGetNum 		( void );
+FBCALL int 			fb_ErrorSetNum 		( int errnum );
 	   void 		*fb_ErrorResume		( void );
 	   void 		*fb_ErrorResumeNext	( void );
 

@@ -54,7 +54,7 @@ FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 	ctx.ptr		= ctx.fmtstr.data;
 	ctx.chars	= FB_STRSIZE( &ctx.fmtstr );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -68,7 +68,7 @@ FBCALL int fb_PrintUsingEnd( int fnum )
 	ctx.ptr		= NULL;
 	ctx.chars	= 0;
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -123,7 +123,7 @@ static int fb_PrintUsingFmtStr( int fnum )
     	fb_PrintFixString( fnum, buffer, 0 );
     }
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 
@@ -246,7 +246,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	/* del if temp */
 	fb_hStrDelTemp( s );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 
@@ -519,6 +519,6 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		fb_StrDelete( &ctx.fmtstr );
 	}
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

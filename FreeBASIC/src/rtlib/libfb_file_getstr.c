@@ -36,10 +36,10 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 	int result, len, rlen, i;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	/* seek to newpos */
 	if( pos > 0 )
@@ -52,7 +52,7 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 
 		result = fseek( fb_fileTB[fnum-1].f, pos, SEEK_SET );
 		if( result != 0 )
-			return FB_RTERROR_FILEIO;
+			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}
 
 	len = FB_STRSIZE( str );
@@ -62,7 +62,7 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 		/* del if temp */
 		fb_hStrDelTemp( str );
 
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
 	/* do read */
@@ -86,6 +86,6 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );						/* will free the temp desc if fix-len passed */
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

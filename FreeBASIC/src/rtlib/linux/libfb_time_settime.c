@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_hSetTime( int h, int m, int s )

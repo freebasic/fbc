@@ -54,10 +54,10 @@ FBCALL long fb_FileTell( int fnum )
 FBCALL int fb_FileSeek( int fnum, long newpos )
 {
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	/* if in random mode, mul by reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
@@ -65,7 +65,7 @@ FBCALL int fb_FileSeek( int fnum, long newpos )
 	else
 		--newpos;
 
-	return (fseek( fb_fileTB[fnum-1].f, newpos, SEEK_SET ) == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO);
+	return fb_ErrorSetNum( fseek( fb_fileTB[fnum-1].f, newpos, SEEK_SET ) == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 }
 
 /*:::::*/

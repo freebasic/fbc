@@ -34,15 +34,15 @@ FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 	FILE 	*f;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	f = fb_fileTB[fnum-1].f;
 
 	if( f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( inipos < 1 || endpos <= inipos )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
 	{
@@ -66,15 +66,15 @@ FBCALL int fb_FileUnlock( int fnum, unsigned int inipos, unsigned int endpos )
 	FILE 	*f;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	f = fb_fileTB[fnum-1].f;
 
 	if( f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( inipos < 1 || endpos <= inipos )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
 	{

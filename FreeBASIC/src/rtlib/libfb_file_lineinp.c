@@ -43,7 +43,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 
     /* - */
 	if( fnum < 0 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fnum == 0 )
 		f = stdin;
@@ -51,7 +51,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 		f = fb_fileTB[fnum-1].f;
 
 	if( f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	/* - */
 	if( fnum == 0 )
@@ -115,7 +115,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 	//if( text != NULL )
 		//fb_hStrDelTemp( text );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/

@@ -56,7 +56,7 @@ FBCALL int fb_SetDate( FBSTRING *date )
 			m = m * i + c - '0';
 
     	if ((c != '/') && (c != '-') || (m < 1) || (m > 12))
-			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     	sep = c;
 
     	/* get day */
@@ -65,7 +65,7 @@ FBCALL int fb_SetDate( FBSTRING *date )
         	d = d * i + c - '0';
 
     	if ((c != sep) || (d < 1) || (d > 31))
-			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     	/* get year */
     	y = 0;
@@ -82,5 +82,5 @@ FBCALL int fb_SetDate( FBSTRING *date )
 	/* del if temp */
 	fb_hStrDelTemp( date );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

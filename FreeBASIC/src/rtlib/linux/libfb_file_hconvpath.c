@@ -26,7 +26,6 @@
 
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 char *fb_hConvertPath( char *path, int len )

@@ -18,7 +18,7 @@
  */
 
 /*
- *	file_kill - kill function
+ * error - runtime error handling, set & get
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -29,17 +29,27 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+
+/* FIXME: not thread safe */
+FB_ERRORCTX fb_errctx = { NULL, FB_RTERROR_OK, NULL, NULL };
+
+
 /*:::::*/
-FBCALL int fb_FileKill( FBSTRING *str )
+FBCALL int fb_ErrorGetNum ( void )
 {
-	int res = 0;
 
-	if( str->data != NULL )
-		res = remove( str->data );
+	return fb_errctx.num;
 
-	/* del if temp */
-	fb_hStrDelTemp( str );
-
-	return fb_ErrorSetNum( res == 0? FB_RTERROR_OK: FB_RTERROR_OK );
 }
+
+/*:::::*/
+FBCALL int fb_ErrorSetNum ( int errnum )
+{
+
+	fb_errctx.num = errnum;
+
+	return errnum;
+
+}
+
 

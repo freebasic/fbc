@@ -53,9 +53,9 @@ FBCALL int fb_SetTime( FBSTRING *time )
 			h = h * i + c - '0';
 
 		if (h > 23)
-			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		if( c != '\0' && c != ':' )
-			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     	if (c != '\0')
     	{
@@ -65,9 +65,9 @@ FBCALL int fb_SetTime( FBSTRING *time )
         		 m = m * i + c - '0';
 
      		if( m > 59 )
-     			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+     			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
      		if( c != '\0' && c != ':' )
-     			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+     			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
      		if (c != '\0')
      		{
@@ -79,7 +79,7 @@ FBCALL int fb_SetTime( FBSTRING *time )
     	}
 
     	if ((s > 59) || (c != '\0'))
-			return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 
 		fb_hSetTime( h, m, s );
@@ -89,6 +89,6 @@ FBCALL int fb_SetTime( FBSTRING *time )
 	/* del if temp */
 	fb_hStrDelTemp( time );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

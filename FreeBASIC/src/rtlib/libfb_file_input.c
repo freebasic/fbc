@@ -51,13 +51,13 @@ FBCALL int fb_FileInput( int fnum )
 
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( fb_fileTB[fnum-1].f == NULL )
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -80,7 +80,7 @@ FBCALL int fb_InputByte( char *dst )
 
 	*dst = (char)atoi( buffer );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -92,7 +92,7 @@ FBCALL int fb_InputShort( short *dst )
 
 	*dst = (short)atoi( buffer );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -104,7 +104,7 @@ FBCALL int fb_InputInt( int *dst )
 
 	*dst = (int)atoi( buffer );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -116,7 +116,7 @@ FBCALL int fb_InputSingle( float *dst )
 
 	*dst = (float)atof( buffer );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -128,7 +128,7 @@ FBCALL int fb_InputDouble( double *dst )
 
 	*dst = (double)atof( buffer );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
@@ -140,7 +140,7 @@ FBCALL int fb_InputString( void *dst, int strlen )
 
 	fb_StrAssign( dst, strlen, buffer, 1024 );
 
-	return FB_RTERROR_OK;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*****************************************************************************/

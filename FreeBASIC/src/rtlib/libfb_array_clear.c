@@ -38,8 +38,8 @@ FBCALL int fb_ArrayClear( FBARRAY *array, int isvarlen )
     	else
     		fb_hArrayFreeVarLenStrs( array );
 
-    	return FB_RTERROR_OK;
+    	return fb_ErrorSetNum( FB_RTERROR_OK );
     }
     else
-    	return FB_RTERROR_ILLEGALFUNCTIONCALL;
+    	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }

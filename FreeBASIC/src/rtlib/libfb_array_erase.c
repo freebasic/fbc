@@ -41,10 +41,10 @@ FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen )
     	array->ptr  = NULL;
     	array->data = NULL;
 
-    	return FB_RTERROR_OK;
+    	return fb_ErrorSetNum( FB_RTERROR_OK );
     }
 
-    return FB_RTERROR_ILLEGALFUNCTIONCALL;
+    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }
 
 
