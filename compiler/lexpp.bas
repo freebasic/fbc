@@ -89,7 +89,9 @@ end function
 ''				 |	 '#'ELSE
 ''				 |   '#'ELSEIF Expression
 ''               |   '#'ENDIF
-''               |   '#'PRINT LITERAL* .
+''               |   '#'PRINT LITERAL*
+''				 |   '#'INCLUDE LIT_STR
+''				 |   '#'INCLIB LIT_STR .
 ''
 function lexPreProcessor as integer
 	dim id as string
@@ -148,6 +150,20 @@ function lexPreProcessor as integer
 		print hLiteral
 		lexPreProcessor = TRUE
 
+	'' INCLUDE LIT_STR
+	case FB.TK.INCLUDE
+		lexSkipToken
+
+		lexPreProcessor = fbcIncludeFile( hUnescapeStr( lexEatToken ) )
+
+	'' INCLIB LIT_STR
+	case FB.TK.INCLIB
+		lexSkipToken
+
+		if( symbAddLib( hUnescapeStr( lexEatToken ) ) <> NULL ) then
+			lexPreProcessor = TRUE
+		end if
+
 	case else
 		hReportError FB.ERRMSG.SYNTAXERROR
 		exit function
@@ -204,7 +220,7 @@ private function ppIf as integer
 
 	ctx.level = ctx.level + 1
 	pptb(ctx.level).istrue = istrue
-	pptb(ctx.level).elsecnt = 0
+	pptb(ctx.level).elsecnt   = 0
 
     if( not istrue ) then
     	ppIf = ppSkip
@@ -241,7 +257,13 @@ private function ppElse as integer
 			exit function
 		end if
 
-		pptb(ctx.level).istrue = istrue
+		if( pptb(ctx.level).istrue ) then
+		    ppElse = ppSkip
+		    exit function
+		else
+			pptb(ctx.level).istrue = istrue
+		end if
+
 	else
 		'' ELSE
 
@@ -253,11 +275,12 @@ private function ppElse as integer
 
     end if
 
-    if( not pptb(ctx.level).istrue ) then
-    	ppElse = ppSkip
-    else
-    	ppElse = TRUE
-    end if
+   	if( not pptb(ctx.level).istrue ) then
+   		ppElse = ppSkip
+   	else
+   		ppElse = TRUE
+   	end if
+
 
 end function
 
