@@ -21,7 +21,9 @@
 '  1.01: uses 0.08's new preprocessor to include win32constants.bi and win32types.bi, this makes shared constants and
 '        types across multiple API inclusions a breeze :)
 
-'$include once: "win\winbase.bi"
+#include once "win\winbase.bi"
+
+#inclib "user32"
 
 '----------------------
 '| REQUIRED CONSTANTS |
@@ -2418,470 +2420,470 @@ end type
 '| API FUNCTIONS |
 '-----------------
 
-Declare Function ActivateKeyboardLayout Lib "user32" (ByVal HKL As Integer, ByVal Flags As Integer) As Integer
-Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As RECT, ByVal dwStyle As Integer, ByVal bMenu As Integer) As Integer
-Declare Function AdjustWindowRectEx Lib "user32" (ByRef lpRect As RECT, ByVal dsStyle As Integer, ByVal bMenu As Integer, ByVal dwEsStyle As Integer) As Integer
-Declare Function AlignRects Lib "user32" (arc As RECT, cCount As Integer, iPrimary As Integer, dwFlags As Integer) As Integer
-Declare Function AnimateWindow Lib "user32" (ByVal hwnd As Integer, ByVal dwTime As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function AnyPopup Lib "user32" () As Integer
-Declare Function AppendMenu Lib "user32" Alias "AppendMenuA" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, lpNewItem As Any) As Integer
-Declare Function ArrangeIconicWindows Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function AttachThreadInput Lib "user32" (ByVal idAttach As Integer, ByVal idAttachTo As Integer, ByVal fAttach As Integer) As Integer
-Declare Function BeginDeferWindowPos Lib "user32" (ByVal nNumWindows As Integer) As Integer
-Declare Function BeginPaint Lib "user32" Alias "BeginPaint" (ByVal hwnd As Integer, lpPaint As PAINTSTRUCT) As Integer
-Declare Function BlockInput Lib "user32" (ByVal fBlockIt As Integer) As Integer
-Declare Function BringWindowToTop Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function BroadcastSystemMessage Lib "user32" (ByVal dw As Integer, ByRef pdw As Integer, ByVal un As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function CallMsgFilter Lib "user32" Alias "CallMsgFilterA" (ByRef lpMsg As msg, ByVal ncode As Integer) As Integer
-Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Integer, ByVal ncode As Integer, ByVal wParam As Integer, lParam As Any) As Integer
-Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Integer, ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function CascadeWindows Lib "user32" (ByVal hWndParent As Integer, ByVal wHow As Integer, byref lpRect As RECT, ByVal cKids As Integer, ByRef lpkids As Integer) As Short
-Declare Function ChangeClipboardChain Lib "user32" (ByVal hwnd As Integer, ByVal hWndNext As Integer) As Integer
-Declare Function ChangeDisplaySettings Lib "user32" Alias "ChangeDisplaySettingsA" (ByRef lpDevMode As DEVMODE, ByVal dwFlags As Integer) As Integer
-Declare Function ChangeDisplaySettingsEx Lib "user32" Alias "ChangeDisplaySettingsExA" (ByVal lpszDeviceName As String, ByRef lpDevMode As DEVMODE, ByVal hwnd As Integer, ByVal dwflags As Integer, ByRef lParam As Any) As Integer
-Declare Function ChangeMenu Lib "user32" Alias "ChangeMenuA" (ByVal hMenu As Integer, ByVal cmd As Integer, ByVal lpszNewItem As String, ByVal cmdInsert As Integer, ByVal flags As Integer) As Integer
-Declare Function CharLower Lib "user32" Alias "CharLowerA" (ByVal lpsz As String) As byte ptr
-Declare Function CharLowerBuff Lib "user32" Alias "CharLowerBuffA" (ByVal lpsz As String, ByVal cchLength As Integer) As Integer
-Declare Function CharNext Lib "user32" Alias "CharNextA" (ByVal lpsz As String) As byte ptr
-Declare Function CharNextEx Lib "user32" Alias "CharNextExA" (ByVal CodePage As Short, ByVal lpCurrentChar As String, ByVal dwFlags As Integer) As Integer
-Declare Function CharPrev Lib "user32" Alias "CharPrevA" (ByVal lpszStart As String, ByVal lpszCurrent As String) As byte ptr
-Declare Function CharPrevEx Lib "user32" Alias "CharPrevExA" (ByVal CodePage As Short, ByVal lpStart As String, ByVal lpCurrentChar As String, ByVal dwFlags As Integer) As Integer
-Declare Function CharToOem Lib "user32" Alias "CharToOemA" (ByVal lpszSrc As String, ByVal lpszDst As String) As Integer
-Declare Function CharToOemBuff Lib "user32" Alias "CharToOemBuffA" (ByVal lpszSrc As String, ByVal lpszDst As String, ByVal cchDstLength As Integer) As Integer
-Declare Function CharUpper Lib "user32" Alias "CharUpperA" (ByVal lpsz As String) As byte ptr
-Declare Function CharUpperBuff Lib "user32" Alias "CharUpperBuffA" (ByVal lpsz As String, ByVal cchLength As Integer) As Integer
-Declare Function CheckDlgButton Lib "user32" Alias "CheckDlgButtonA" (ByVal hDlg As Integer, ByVal nIDButton As Integer, ByVal wCheck As Integer) As Integer
-Declare Function CheckMenuItem Lib "user32" (ByVal hMenu As Integer, ByVal wIDCheckItem As Integer, ByVal wCheck As Integer) As Integer
-Declare Function CheckMenuRadioItem Lib "user32" (ByVal hMenu As Integer, ByVal un1 As Integer, ByVal un2 As Integer, ByVal un3 As Integer, ByVal un4 As Integer) As Integer
-Declare Function CheckRadioButton Lib "user32" (ByVal hDlg As Integer, ByVal nIDFirstButton As Integer, ByVal nIDLastButton As Integer, ByVal nIDCheckButton As Integer) As Integer
-Declare Function ChildWindowFromPoint Lib "user32" (ByVal hWndParent As Integer, Byref pt As POINTAPI) As Integer
-Declare Function ChildWindowFromPointEx Lib "user32" (ByVal hWnd As Integer, Byref pt As POINTAPI, ByVal un As Integer) As Integer
-Declare Function ClientToScreen Lib "user32" (ByVal hwnd As Integer, ByRef lpPoint As POINTAPI) As Integer
-Declare Function ClipCursor Lib "user32" (ByRef lpRect As Any) As Integer
-Declare Function CloseClipboard Lib "user32" () As Integer
-Declare Function CloseDesktop Lib "user32" (ByVal hDesktop As Integer) As Integer
-Declare Function CloseWindow Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function CloseWindowStation Lib "user32" (ByVal hWinSta As Integer) As Integer
-Declare Function CopyAcceleratorTable Lib "user32" Alias "CopyAcceleratorTableA" (ByVal hAccelSrc As Integer, ByRef lpAccelDst As ACCEL, ByVal cAccelEntries As Integer) As Integer
-Declare Function CopyCursor Lib "user32" (ByVal hcur As Integer) As Integer
-Declare Function CopyIcon Lib "user32" (ByVal hIcon As Integer) As Integer
-Declare Function CopyImage Lib "user32" (ByVal handle As Integer, ByVal un1 As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal un2 As Integer) As Integer
-Declare Function CopyRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSourceRect As RECT) As Integer
-Declare Function CountClipboardFormats Lib "user32" () As Integer
-Declare Function CreateAcceleratorTable Lib "user32" Alias "CreateAcceleratorTableA" (ByRef lpaccl As ACCEL, ByVal cEntries As Integer) As Integer
-Declare Function CreateCaret Lib "user32" (ByVal hwnd As Integer, ByVal hBitmap As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
-Declare Function CreateCursor Lib "user32" (ByVal hInstance As Integer, ByVal nXhotspot As Integer, ByVal nYhotspot As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByRef lpANDbitPlane As Any, ByRef lpXORbitPlane As Any) As Integer
-Declare Function CreateDesktop Lib "user32" Alias "CreateDesktopA" (ByVal lpszDesktop As String, ByVal lpszDevice As String, ByRef pDevmode As DEVMODE, ByVal dwFlags As Integer, ByVal dwDesiredAccess As Integer, ByRef lpsa As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateDialogIndirectParam Lib "user32" Alias "CreateDialogIndirectParamA" (ByVal hInstance As Integer, ByRef lpTemplate As DLGTEMPLATE, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) As Integer
-Declare Function CreateDialogParam Lib "user32" Alias "CreateDialogParamA" (ByVal hInstance As Integer, ByVal lpName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal lParamInit As Integer) As Integer
-Declare Function CreateIcon Lib "user32" (ByVal hInstance As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal nPlanes As Byte, ByVal nBitsPixel As Byte, ByRef lpANDbits As Byte, ByRef lpXORbits As Byte) As Integer
-Declare Function CreateIconFromResource Lib "user32" (ByRef presbits As Byte, ByVal dwResSize As Integer, ByVal fIcon As Integer, ByVal dwVer As Integer) As Integer
-Declare Function CreateIconFromResourceEx Lib "user32" (ByVal presbits As String, ByVal dwResSize As Integer, ByVal fIcon As Integer, ByVal dwVer As Integer, ByVal cxDesired As Integer, ByVal cyDesired As Integer, ByVal Flags As Integer) As Integer
-Declare Function CreateIconIndirect Lib "user32" (ByRef piconinfo As ICONINFO) As Integer
-Declare Function CreateMDIWindow Lib "user32" Alias "CreateMDIWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hInstance As Integer, ByVal lParam As Integer) As Integer
-Declare Function CreateMenu Lib "user32" () As Integer
-Declare Function CreatePopupMenu Lib "user32" () As Integer
-Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Integer, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hMenu As Integer, ByVal hInstance As Integer, lpParam as Any) As Integer
-Declare Function CreateWindowStation Lib "user32" Alias "CreateWindowStationA" (ByVal lpwinsta As String, ByVal dwReserved As Integer, ByVal dwDesiredAccess As Integer, ByRef lpsa As SECURITY_ATTRIBUTES) As Integer
-Declare Function DdeAbandonTransaction Lib "user32" (ByVal idInst As Integer, ByVal hConv As Integer, ByVal idTransaction As Integer) As Integer
-Declare Function DdeAccessData Lib "user32" (ByVal hData As Integer, ByRef pcbDataSize As Integer) As Integer
-Declare Function DdeAddData Lib "user32" (ByVal hData As Integer, ByRef pSrc As Byte, ByVal cb As Integer, ByVal cbOff As Integer) As Integer
-Declare Function DdeClientTransaction Lib "user32" (ByRef pData As Byte, ByVal cbData As Integer, ByVal hConv As Integer, ByVal hszItem As Integer, ByVal wFmt As Integer, ByVal wType As Integer, ByVal dwTimeout As Integer, ByRef pdwResult As Integer) As Integer
-Declare Function DdeCmpStringHandles Lib "user32" (ByVal hsz1 As Integer, ByVal hsz2 As Integer) As Integer
-Declare Function DdeConnect Lib "user32" (ByVal idInst As Integer, ByVal hszService As Integer, ByVal hszTopic As Integer, ByRef pCC As CONVCONTEXT) As Integer
-Declare Function DdeConnectList Lib "user32" (ByVal idInst As Integer, ByVal hszService As Integer, ByVal hszTopic As Integer, ByVal hConvList As Integer, ByRef pCC As CONVCONTEXT) As Integer
-Declare Function DdeCreateDataHandle Lib "user32" (ByVal idInst As Integer, ByRef pSrc As Byte, ByVal cb As Integer, ByVal cbOff As Integer, ByVal hszItem As Integer, ByVal wFmt As Integer, ByVal afCmd As Integer) As Integer
-Declare Function DdeCreateStringHandle Lib "user32" Alias "DdeCreateStringHandleA" (ByVal idInst As Integer, ByVal psz As String, ByVal iCodePage As Integer) As Integer
-Declare Function DdeDisconnect Lib "user32" (ByVal hConv As Integer) As Integer
-Declare Function DdeDisconnectList Lib "user32" (ByVal hConvList As Integer) As Integer
-Declare Function DdeEnableCallback Lib "user32" (ByVal idInst As Integer, ByVal hConv As Integer, ByVal wCmd As Integer) As Integer
-Declare Function DdeFreeDataHandle Lib "user32" (ByVal hData As Integer) As Integer
-Declare Function DdeFreeStringHandle Lib "user32" (ByVal idInst As Integer, ByVal hsz As Integer) As Integer
-Declare Function DdeGetData Lib "user32" (ByVal hData As Integer, ByRef pDst As Byte, ByVal cbMax As Integer, ByVal cbOff As Integer) As Integer
-Declare Function DdeGetLastError Lib "user32" (ByVal idInst As Integer) As Integer
-Declare Function DdeImpersonateClient Lib "user32" (ByVal hConv As Integer) As Integer
-Declare Function DdeInitialize Lib "user32" Alias "DdeInitializeA" (ByRef pidInst As Integer, ByVal pfnCallback As Integer, ByVal afCmd As Integer, ByVal ulRes As Integer) As Short
-Declare Function DdeKeepStringHandle Lib "user32" (ByVal idInst As Integer, ByVal hsz As Integer) As Integer
-Declare Function DdeNameService Lib "user32" (ByVal idInst As Integer, ByVal hsz1 As Integer, ByVal hsz2 As Integer, ByVal afCmd As Integer) As Integer
-Declare Function DdePostAdvise Lib "user32" (ByVal idInst As Integer, ByVal hszTopic As Integer, ByVal hszItem As Integer) As Integer
-Declare Function DdeQueryConvInfo Lib "user32" (ByVal hConv As Integer, ByVal idTransaction As Integer, ByRef pConvInfo As CONVINFO) As Integer
-Declare Function DdeQueryNextServer Lib "user32" (ByVal hConvList As Integer, ByVal hConvPrev As Integer) As Integer
-Declare Function DdeQueryString Lib "user32" Alias "DdeQueryStringA" (ByVal idInst As Integer, ByVal hsz As Integer, ByVal psz As String, ByVal cchMax As Integer, ByVal iCodePage As Integer) As Integer
-Declare Function DdeReconnect Lib "user32" (ByVal hConv As Integer) As Integer
-Declare Function DdeSetQualityOfService Lib "user32" (ByVal hWndClient As Integer, ByRef pqosNew As SECURITY_QUALITY_OF_SERVICE, ByRef pqosPrev As SECURITY_QUALITY_OF_SERVICE) As Integer
-Declare Function DdeSetUserHandle Lib "user32" (ByVal hConv As Integer, ByVal id As Integer, ByVal hUser As Integer) As Integer
-Declare Function DdeUnaccessData Lib "user32" (ByVal hData As Integer) As Integer
-Declare Function DdeUninitialize Lib "user32" (ByVal idInst As Integer) As Integer
-Declare Function DefDlgProc Lib "user32" Alias "DefDlgProcA" (ByVal hDlg As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function DefFrameProc Lib "user32" Alias "DefFrameProcA" (ByVal hwnd As Integer, ByVal hWndMDIClient As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function DefMDIChildProc Lib "user32" Alias "DefMDIChildProcA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function DefWindowProc lib "user32" Alias "DefWindowProcA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function DeferWindowPos Lib "user32" (ByVal hWinPosInfo As Integer, ByVal hwnd As Integer, ByVal hWndInsertAfter As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal wFlags As Integer) As Integer
-Declare Function DeleteMenu Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
-Declare Function DestroyAcceleratorTable Lib "user32" (ByVal haccel As Integer) As Integer
-Declare Function DestroyCaret Lib "user32" () As Integer
-Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Integer) As Integer
-Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Integer) As Integer
-Declare Function DestroyMenu Lib "user32" (ByVal hMenu As Integer) As Integer
-Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function DialogBoxIndirectParam Lib "user32" Alias "DialogBoxIndirectParamA" (ByVal hInstance As Integer, ByRef hDialogTemplate As DLGTEMPLATE, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) As Integer
-Declare Sub DialogBoxParam Lib "user32" Alias "DialogBoxParamA" (ByVal hInstance As Integer, ByVal lpTemplateName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer)
-Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageA" (lpMsg As MSG) As Integer
-Declare Function DlgDirList Lib "user32" Alias "DlgDirListA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDListBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
-Declare Function DlgDirListComboBox Lib "user32" Alias "DlgDirListComboBoxA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDComboBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
-Declare Function DlgDirSelectComboBoxEx Lib "user32" Alias "DlgDirSelectComboBoxExA" (ByVal hWndDlg As Integer, ByVal lpszPath As String, ByVal cbPath As Integer, ByVal idComboBox As Integer) As Integer
-Declare Function DlgDirSelectEx Lib "user32" Alias "DlgDirSelectExA" (ByVal hWndDlg As Integer, ByVal lpszPath As String, ByVal cbPath As Integer, ByVal idListBox As Integer) As Integer
-Declare Function DragDetect Lib "user32" (ByVal hWnd As Integer, Byref pt As POINTAPI) As Integer
-Declare Function DragObject Lib "user32" (ByVal hWnd1 As Integer, ByVal hWnd2 As Integer, ByVal un As Integer, ByVal dw As Integer, ByVal hCursor As Integer) As Integer
-Declare Function DrawAnimatedRects Lib "user32" (ByVal hwnd As Integer, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As Integer
-Declare Function DrawCaption Lib "user32" (ByVal hWnd As Integer, ByVal hDC As Integer, ByRef pcRect As Rect, ByVal un As Integer) As Integer
-Declare Function DrawEdge Lib "user32" (ByVal hdc As Integer, ByRef qrc As RECT, ByVal edge As Integer, ByVal grfFlags As Integer) As Integer
-Declare Function DrawFocusRect Lib "user32" (ByVal hdc As Integer, ByRef lpRect As RECT) As Integer
-Declare Function DrawFrameControl Lib "user32" (ByVal hDC As Integer, ByRef lpRect As RECT, ByVal un1 As Integer, ByVal un2 As Integer) As Integer
-Declare Function DrawIcon Lib "user32" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal hIcon As Integer) As Integer
-Declare Function DrawIconEx Lib "user32" (ByVal hdc As Integer, ByVal xLeft As Integer, ByVal yTop As Integer, ByVal hIcon As Integer, ByVal cxWidth As Integer, ByVal cyWidth As Integer, ByVal istepIfAniCur As Integer, ByVal hbrFlickerFreeDraw As Integer, ByVal diFlags As Integer) As Integer
-Declare Function DrawMenuBar Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function DrawState Lib "user32" Alias "DrawStateA" (ByVal hDC As Integer, ByVal hBrush As Integer, ByVal lpDrawStateProc As Integer, ByVal lParam As Integer, ByVal wParam As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal n3 As Integer, ByVal n4 As Integer, ByVal un As Integer) As Integer
-Declare Function DrawText Lib "user32" Alias "DrawTextA" (ByVal hdc As Integer, ByVal lpStr As String, ByVal nCount As Integer, lpRect As RECT, ByVal wFormat As Integer) As Integer
-Declare Function DrawTextEx Lib "user32" Alias "DrawTextExA" (ByVal hDC As Integer, ByVal lpsz As String, ByVal n As Integer, ByRef lpRect As RECT, ByVal un As Integer, ByRef lpDrawTextParams As DRAWTEXTPARAMS) As Integer
-Declare Function EmptyClipboard Lib "user32" () As Integer
-Declare Function EnableMenuItem Lib "user32" (ByVal hMenu As Integer, ByVal wIDEnableItem As Integer, ByVal wEnable As Integer) As Integer
-Declare Function EnableScrollBar Lib "user32" (ByVal hwnd As Integer, ByVal wSBflags As Integer, ByVal wArrows As Integer) As Integer
-Declare Function EnableWindow Lib "user32" (ByVal hwnd As Integer, ByVal fEnable As Integer) As Integer
-Declare Function EndDeferWindowPos Lib "user32" (ByVal hWinPosInfo As Integer) As Integer
-Declare Function EndDialog Lib "user32" (ByVal hDlg As Integer, ByVal nResult As Integer) As Integer
-Declare Function EndMenu Lib "user32" () As Integer
-Declare Function EndPaint Lib "user32" Alias "EndPaint" (ByVal hwnd As Integer, lpPaint As PAINTSTRUCT) As Integer
-Declare Function EnumChildWindows Lib "user32" (ByVal hWndParent As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumClipboardFormats Lib "user32" (ByVal wFormat As Integer) As Integer
-Declare Function EnumDesktops Lib "user32" Alias "EnumDesktopsA" (ByVal hwinsta As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumDesktopWindows Lib "user32" (ByVal hDesktop As Integer, ByVal lpfn As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumDisplaySettings Lib "user32" Alias "EnumDisplaySettingsA" (ByVal lpszDeviceName As String, ByVal iModeNum As Integer, ByRef lpDevMode As DEVMODE) As Integer
-Declare Function EnumDisplaySettingsEx Lib "user32" (ByVal lpszDeviceName As String, ByVal iModeNum As Integer, ByRef lpDevMode As DEVMODE, ByVal dwFlags As Integer) As Integer
-Declare Function EnumProps Lib "user32" Alias "EnumPropsA" (ByVal hWnd As Integer, ByVal lpEnumFunc As Integer) As Integer
-Declare Function EnumPropsEx Lib "user32" Alias "EnumPropsExA" (ByVal hWnd As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Integer, ByVal lpfn As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumWindowStations Lib "user32" Alias "EnumWindowStationsA" (ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EqualRect Lib "user32" (ByRef lpRect1 As RECT, ByRef lpRect2 As RECT) As Integer
-Declare Function ExcludeUpdateRgn Lib "user32" (ByVal hdc As Integer, ByVal hwnd As Integer) As Integer
-Declare Function ExitWindows Lib "user32" (ByVal dwReserved As Integer, ByVal uReturnCode As Integer) As Integer
-Declare Function ExitWindowsEx Lib "user32" (ByVal uFlags As Integer, ByVal dwReserved As Integer) As Integer
-Declare Function FillRect Lib "user32" (ByVal hdc As Integer, ByRef lpRect As RECT, ByVal hBrush As Integer) As Integer
-Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Integer
-Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWnd1 As Integer, ByVal hWnd2 As Integer, ByVal lpsz1 As String, ByVal lpsz2 As String) As Integer
-Declare Function FlashWindow Lib "user32" (ByVal hwnd As Integer, ByVal bInvert As Integer) As Integer
-Declare Function FlashWindowEx Lib "user32" (ByRef pfwi As PFLASHWINFO ) As Integer
-Declare Function FrameRect Lib "user32" (ByVal hdc As Integer, ByRef lpRect As RECT, ByVal hBrush As Integer) As Integer
-Declare Function FreeDDElParam Lib "user32" (ByVal msg As Integer, ByVal lParam As Integer) As Integer
-Declare Function GetActiveWindow Lib "user32" Alias "GetActiveWindow" ( ) As Integer
-Declare Function GetAltTabInfo Lib "user32" (ByVal hwnd As Integer, ByVal iItem As Integer, ByRef pati As PALTTABINFO, ByVal pszItemText As String, ByVal cchItemText As Integer) As Integer
-Declare Function GetAncestor Lib "user32" (ByVal hwnd As Integer, ByVal gaFlags As Integer) As Integer
-Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Integer) As Short
-Declare Function GetCapture Lib "user32" () As Integer
-Declare Function GetCaretBlinkTime Lib "user32" () As Integer
-Declare Function GetCaretPos Lib "user32" (ByRef lpPoint As POINTAPI) As Integer
-Declare Function GetClassInfo Lib "user32" Alias "GetClassInfoA" (ByVal hInstance As Integer, ByVal lpClassName As String, ByRef lpWndClass As WNDCLASS) As Integer
-Declare Function GetClassInfoEx Lib "user32" Alias "GetClassInfoExA" (ByVal hinstance As Integer, ByVal lpcstr As String, ByRef lpwndclassexa As WNDCLASSEX) As Integer
-Declare Function GetClassLong Lib "user32" Alias "GetClassLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Integer
-Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hwnd As Integer, ByVal lpClassName As String, ByVal nMaxCount As Integer) As Integer
-Declare Function GetClassWord Lib "user32" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Integer
-Declare Function GetClientRect lib "user32" Alias "GetClientRect" (ByVal hwnd As Integer, lpRect as RECT) As Integer
-Declare Function GetClipboardData Lib "user32" (ByVal wFormat As Integer) As Integer
-Declare Function GetClipboardFormatName Lib "user32" Alias "GetClipboardFormatNameA" (ByVal wFormat As Integer, ByVal lpString As String, ByVal nMaxCount As Integer) As Integer
-Declare Function GetClipboardOwner Lib "user32" () As Integer
-Declare Function GetClipboardSequenceNumber Lib "user32" () As Integer
-Declare Function GetClipboardViewer Lib "user32" () As Integer
-Declare Function GetClipCursor Lib "user32" (ByRef lprc As RECT) As Integer
-Declare Function GetComboBoxInfo Lib "user32" (ByVal hwndCombo As Integer, ByRef pcbi As PCOMBOBOXINFO) As Integer
-Declare Function GetCursor Lib "user32" () As Integer
-Declare Function GetCursorInfo Lib "user32" (ByRef pci As PCURSORINFO) As Integer
-Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Integer
-Declare Function GetDC Lib "user32" (ByVal hWnd As Integer) As Integer
-Declare Function GetDCEx Lib "user32" (ByVal hwnd As Integer, ByVal hrgnclip As Integer, ByVal fdwOptions As Integer) As Integer
-Declare Function GetDesktopWindow Lib "user32" () As Integer
-Declare Function GetDialogBaseUnits Lib "user32" () As Integer
-Declare Function GetDlgCtrlID Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function GetDlgItem Lib "user32" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer) As Integer
-Declare Function GetDlgItemInt Lib "user32" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal lpTranslated As Integer, ByVal bSigned As Integer) As Integer
-Declare Function GetDlgItemText Lib "user32" Alias "GetDlgItemTextA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal lpString As String, ByVal nMaxCount As Integer) As Integer
-Declare Function GetDoubleClickTime Lib "user32" () As Integer
-Declare Function GetFocus Lib "user32" Alias "GetFocus" () As Integer
-Declare Function GetForegroundWindow Lib "user32" () As Integer
-Declare Function GetGuiResources Lib "user32" (ByVal hProcess As Integer, ByVal uiFlags As Integer) As Integer
-Declare Function GetGUIThreadInfo Lib "user32" (ByVal idThread As Integer, ByRef pgui As PGUITHREADINFO) As Integer
-Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Integer, ByRef piconinfo As ICONINFO) As Integer
-Declare Function GetInputState Lib "user32" () As Integer
-Declare Function GetKBCodePage Lib "user32" () As Integer
-Declare Function GetKeyboardLayout Lib "user32" (ByVal dwLayout As Integer) As Integer
-Declare Function GetKeyboardLayoutList Lib "user32" (ByVal nBuff As Integer, ByRef lpList As Integer) As Integer
-Declare Function GetKeyboardLayoutName Lib "user32" Alias "GetKeyboardLayoutNameA" (ByVal pwszKLID As String) As Integer
-Declare Function GetKeyboardState Lib "user32" (ByRef pbKeyState As Byte) As Integer
-Declare Function GetKeyboardType Lib "user32" (ByVal nTypeFlag As Integer) As Integer
-Declare Function GetKeyNameText Lib "user32" Alias "GetKeyNameTextA" (ByVal lParam As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GetKeyState Lib "user32" (ByVal vKey As Integer) As Short
-Declare Function GetLastActivePopup Lib "user32" (ByVal hwndOwnder As Integer) As Integer
-Declare Function GetListBoxInfo Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function GetMenu Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function GetMenuCheckMarkDimensions Lib "user32" () As Integer
-Declare Function GetMenuContextHelpId Lib "user32" (ByVal hMenu As Integer) As Integer
-Declare Function GetMenuDefaultItem Lib "user32" (ByVal hMenu As Integer, ByVal fByPos As Integer, ByVal gmdiFlags As Integer) As Integer
-Declare Function GetMenuInfo Lib "user32" (ByVal hmenu As Integer, ByRef LPMENUINFO As CMENUINFO) As Integer 'MENUINFO renamed to CMENUINFO
-Declare Function GetMenuItemCount Lib "user32" (ByVal hMenu As Integer) As Integer
-Declare Function GetMenuItemID Lib "user32" (ByVal hMenu As Integer, ByVal nPos As Integer) As Integer
-Declare Function GetMenuItemInfo Lib "user32" Alias "GetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal b As Short, ByRef lpMenuItemInfo As MENUITEMINFO) As Integer
-Declare Function GetMenuItemRect Lib "user32" (ByVal hWnd As Integer, ByVal hMenu As Integer, ByVal uItem As Integer,  ByRef lprcItem As RECT) As Integer
-Declare Function GetMenuState Lib "user32" (ByVal hMenu As Integer, ByVal wID As Integer, ByVal wFlags As Integer) As Integer
-Declare Function GetMenuString Lib "user32" Alias "GetMenuStringA" (ByVal hMenu As Integer, ByVal wIDItem As Integer, ByVal lpString As String, ByVal nMaxCount As Integer, ByVal wFlag As Integer) As Integer
-Declare Function GetMessage lib "user32" Alias "GetMessageA" (lpMsg as MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer) As Integer
-Declare Function GetMessageExtraInfo Lib "user32" () As Integer
-Declare Function GetMessagePos Lib "user32" () As Integer
-Declare Function GetMessageTime Lib "user32" () As Integer
-Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoA" (ByRef hMonitor As Integer, ByRef lpmi As MONITORINFO) As Integer
-Declare Function GetMouseMovePointsEx Lib "user32" (ByVal cbSize As Integer, ByRef lppt As MOUSEMOVEPOINT, ByRef lpptBuf As MOUSEMOVEPOINT, ByVal nBufPoints As Integer, ByVal resolution As Integer) As Integer
-Declare Function GetNextDlgGroupItem Lib "user32" (ByVal hDlg As Integer, ByVal hCtl As Integer, ByVal bPrevious As Integer) As Integer
-Declare Function GetNextDlgTabItem Lib "user32" (ByVal hDlg As Integer, ByVal hCtl As Integer, ByVal bPrevious As Integer) As Integer
-Declare Function GetNextWindow Lib "user32" Alias "GetWindow" (ByVal hwnd As Integer, ByVal wFlag As Integer) As Integer
-Declare Function GetOpenClipboardWindow Lib "user32" () As Integer
-Declare Function GetParent Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function GetPriorityClipboardFormat Lib "user32" (ByRef lpPriorityList As Integer, ByVal nCount As Integer) As Integer
-Declare Function GetProcessDefaultLayout Lib "user32" (ByRef pdwDefaultLayout As Integer) As Integer
-Declare Function GetProcessWindowStation Lib "user32" () As Integer
-Declare Function GetProp Lib "user32" Alias "GetPropA" (ByVal hwnd As Integer, ByVal lpString As String) As Integer
-Declare Function GetQueueStatus Lib "user32" (ByVal fuFlags As Integer) As Integer
-Declare Function GetScrollInfo Lib "user32" (ByVal hWnd As Integer, ByVal fnBar As Integer, ByRef lpScrollInfo As SCROLLINFO) As Integer
-Declare Function GetScrollPos Lib "user32" (ByVal hwnd As Integer, ByVal nBar As Integer) As Integer
-Declare Function GetScrollRange Lib "user32" (ByVal hwnd As Integer, ByVal nBar As Integer, ByRef lpMinPos As Integer, ByRef lpMaxPos As Integer) As Integer
-Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Integer, ByVal nPos As Integer) As Integer
-Declare Function GetSysColor Lib "user32" (ByVal nIndex As Integer) As Integer
-Declare Function GetSysColorBrush Lib "user32" (ByVal nIndex As Integer) As Integer
-Declare Function GetSystemMenu Lib "user32" (ByVal hwnd As Integer, ByVal bRevert As Integer) As Integer
-Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Integer) As Integer
-Declare Function GetTabbedTextExtent Lib "user32" Alias "GetTabbedTextExtentA" (ByVal hdc As Integer, ByVal lpString As String, ByVal nCount As Integer, ByVal nTabPositions As Integer, ByRef lpnTabStopPositions As Integer) As Integer
-Declare Function GetThreadDesktop Lib "user32" (ByVal dwThread As Integer) As Integer
-Declare Function GetTopWindow Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function GetUpdateRect Lib "user32" (ByVal hwnd As Integer, ByRef lpRect As RECT, ByVal bErase As Integer) As Integer
-Declare Function GetUpdateRgn Lib "user32" (ByVal hwnd As Integer, ByVal hRgn As Integer, ByVal fErase As Integer) As Integer
-Declare Function GetUserObjectSecurity Lib "user32" (ByVal hObj As Integer, ByRef pSIRequested As Integer, ByRef pSd As SECURITY_DESCRIPTOR, ByVal nLength As Integer, ByRef lpnLengthNeeded As Integer) As Integer
-Declare Function GetWindow Lib "user32" (ByVal hwnd As Integer, ByVal wCmd As Integer) As Integer
-Declare Function GetWindowContextHelpId Lib "user32" (ByVal hWnd As Integer) As Integer
-Declare Function GetWindowDC Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Integer, ByVal nIndex As Integer) As Integer
-Declare Function GetWindowModuleFileName Lib "user32" Alias "GetWindowModuleFileNameA" (ByVal hwnd As Integer, ByVal pszFileName As String, ByVal cchFileNameMax As Integer) As Integer
-Declare Function GetWindowPlacement Lib "user32" (ByVal hwnd As Integer, ByRef lpwndpl As WINDOWPLACEMENT) As Integer
-Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Integer, lpRect As RECT) As Integer
-Declare Function GetWindowRgn Lib "user32" (ByVal hWnd As Integer, ByVal hRgn As Integer) As Integer
-Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Integer, ByVal lpString As String, ByVal cch As Integer) As Integer
-Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hwnd As Integer) As Integer
-Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Integer, ByRef lpdwProcessId As Integer) As Integer
-Declare Function GetWindowWord Lib "user32" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Short
-Declare Function GrayString Lib "user32" Alias "GrayStringA" (ByVal hDC As Integer, ByVal hBrush As Integer, ByVal lpOutputFunc As Integer, ByVal lpData As Integer, ByVal nCount As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
-Declare Function HideCaret Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function HiliteMenuItem Lib "user32" (ByVal hwnd As Integer, ByVal hMenu As Integer, ByVal wIDHiliteItem As Integer, ByVal wHilite As Integer) As Integer
-Declare Function ImpersonateDdeClientWindow Lib "user32" (ByVal hWndClient As Integer, ByVal hWndServer As Integer) As Integer
-Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function InSendMessage Lib "user32" () As Integer
-Declare Function InSendMessageEx Lib "user32" (lpReserved As Any) As Integer
-Declare Function InsertMenu Lib "user32" Alias "InsertMenuA" (ByVal hMenu As UInteger, ByVal nPosition As UInteger, ByVal wFlags As UInteger, ByVal wIDNewItem As UInteger, lpNewItem As Any) As Integer
-Declare Function InsertMenuItem Lib "user32" Alias "InsertMenuItemA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
-Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Integer
-Declare Function InvalidateRect Lib "user32" (ByVal hwnd As Integer, ByRef lpRect As RECT, ByVal bErase As Integer) As Integer
-Declare Function InvalidateRgn Lib "user32" (ByVal hwnd As Integer, ByVal hRgn As Integer, ByVal bErase As Integer) As Integer
-Declare Function InvertRect Lib "user32" (ByVal hdc As Integer, ByRef lpRect As RECT) As Integer
-Declare Function IsCharAlpha Lib "user32" Alias "IsCharAlphaA" (ByVal cChar As Byte) As Integer
-Declare Function IsCharAlphaNumeric Lib "user32" Alias "IsCharAlphaNumericA" (ByVal cChar As Byte) As Integer
-Declare Function IsCharLower Lib "user32" Alias "IsCharLowerA" (ByVal cChar As Byte) As Integer
-Declare Function IsCharUpper Lib "user32" Alias "IsCharUpperA" (ByVal cChar As Byte) As Integer
-Declare Function IsChild Lib "user32" (ByVal hWndParent As Integer, ByVal hwnd As Integer) As Integer
-Declare Function IsClipboardFormatAvailable Lib "user32" (ByVal wFormat As Integer) As Integer
-Declare Function IsDialogMessage Lib "user32" Alias "IsDialogMessageA" (ByVal hDlg As Integer, ByRef lpMsg As MSG) As Integer
-Declare Function IsDlgButtonChecked Lib "user32" (ByVal hDlg As Integer, ByVal nIDButton As Integer) As Integer
-Declare Function IsIconic Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function IsMenu Lib "user32" (ByVal hMenu As Integer) As Integer
-Declare Function IsRectEmpty Lib "user32" (ByRef lpRect As RECT) As Integer
-Declare Function IsWindow Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function IsWindowEnabled Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function IsWindowUnicode Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function IsWindowVisible Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function IsZoomed Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function KillTimer Lib "user32" (ByVal hwnd As Integer, ByVal nIDEvent As Integer) As Integer
-Declare Function LoadAccelerators Lib "user32" Alias "LoadAcceleratorsA" (ByVal hInstance As Integer, ByVal lpTableName As String) As Integer
-Declare Function LoadBitmap Lib "user32" Alias "LoadBitmapA" (ByVal hInstance As Integer, ByVal lpBitmapName As String) As Integer
-Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Integer, ByVal lpCursorName As String) As Integer
-Declare Function LoadCursorFromFile Lib "user32" Alias "LoadCursorFromFileA" (ByVal lpFileName As String) As Integer
-Declare Function LoadIcon Lib "user32" Alias "LoadIconA" (ByVal hInstance As Integer, ByVal lpIconName As String) As Integer
-Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Integer, ByVal lpsz As String, ByVal un1 As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal un2 As Integer) As Integer
-Declare Function LoadKeyboardLayout Lib "user32" Alias "LoadKeyboardLayoutA" (ByVal pwszKLID As String, ByVal flags As Integer) As Integer
-Declare Function LoadMenu Lib "user32" Alias "LoadMenuA" (ByVal hInstance As Integer, ByVal lpString As String) As Integer
-Declare Function LoadMenuIndirect Lib "user32" Alias "LoadMenuIndirectA" (ByVal lpMenuTemplate As Integer) As Integer
-Declare Function LoadString Lib "user32" Alias "LoadStringA" (ByVal hInstance As Integer, ByVal wID As Integer, ByVal lpBuffer As String, ByVal nBufferMax As Integer) As Integer
-Declare Function LockWindowUpdate Lib "user32" (ByVal hwndLock As Integer) As Integer
-Declare Function LookupIconIdFromDirectory Lib "user32" (ByRef presbits As Byte, ByVal fIcon As Short) As Integer
-Declare Function LookupIconIdFromDirectoryEx Lib "user32" (ByRef presbits As Byte, ByVal fIcon As Short, ByVal cxDesired As Integer, ByVal cyDesired As Integer, ByVal Flags As Integer) As Integer
-Declare Function MapDialogRect Lib "user32" (ByVal hDlg As Integer, ByRef lpRect As RECT) As Integer
-Declare Function MapVirtualKey Lib "user32" Alias "MapVirtualKeyA" (ByVal wCode As Integer, ByVal wMapType As Integer) As Integer
-Declare Function MapVirtualKeyEx Lib "user32" Alias "MapVirtualKeyExA" (ByVal uCode As Integer, ByVal uMapType As Integer, ByVal dwhkl As Integer) As Integer
-Declare Function MenuItemFromPoint Lib "user32" (ByVal hWnd As Integer, ByVal hMenu As Integer, Byref ptScreen As POINTAPI) As Integer
-Declare Function MessageBeep Lib "user32" (ByVal wType As Integer) As Integer
-Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hwnd As Integer, ByVal lpText As String, ByVal lpCaption As String, ByVal wtype As Integer) As Integer
-Declare Function MessageBoxEx Lib "user32" Alias "MessageBoxExA" (ByVal hwnd As Integer, ByVal lpText As String, ByVal lpCaption As String, ByVal uType As Integer, ByVal wLanguageId As Integer) As Integer
-Declare Function MessageBoxIndirect Lib "user32" Alias "MessageBoxIndirectA" (ByRef lpMsgBoxParams As MSGBOXPARAMS) As Integer
-Declare Sub MonitorFromPoint Lib "user32" (Byref pt As POINTAPI, ByVal dwFlags As Integer)
-Declare Sub MonitorFromRect Lib "user32" (ByRef lprc As RECT, ByVal dwFlags As Integer)
-Declare Sub MonitorFromWindow Lib "user32" (ByVal hwnd As Integer, ByVal dwFlags As Integer)
-Declare Function MoveWindow Lib "user32" (ByVal hwnd As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal bRepaint As Integer) As Integer
-Declare Function MsgWaitForMultipleObjects Lib "user32" (ByVal nCount As Integer, ByRef pHandles As Integer, ByVal fWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal dwWakeMask As Integer) As Integer
-Declare Function MsgWaitForMultipleObjectsEx Lib "user32" (ByVal nCount As Integer, ByRef pHandles As Integer, ByVal dwMilliseconds As Integer, ByVal dwWakeMask As Integer, ByVal dwFlags As Integer) As Integer
-Declare Sub NotifyWinEvent Lib "user32" (ByVal lEvent As Integer, ByVal hwnd As Integer, ByVal idObject As Integer, ByVal idChild As Integer)
-Declare Function OemKeyScan Lib "user32" (ByVal wOemChar As Integer) As Integer
-Declare Function OemToChar Lib "user32" Alias "OemToCharA" (ByVal lpszSrc As String, ByVal lpszDst As String) As Integer
-Declare Function OemToCharBuff Lib "user32" Alias "OemToCharBuffA" (ByVal lpszSrc As String, ByVal lpszDst As String, ByVal cchDstLength As Integer) As Integer
-Declare Function OffsetRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function OpenClipboard Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function OpenDesktop Lib "user32" Alias "OpenDesktopA" (ByVal lpszDesktop As String, ByVal dwFlags As Integer, ByVal fInherit As Short, ByVal dwDesiredAccess As Integer) As Integer
-Declare Function OpenIcon Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function PackDDElParam Lib "user32" (ByVal msg As Integer, ByVal uiLo As Integer, ByVal uiHi As Integer) As Integer
-Declare Function PaintDesktop Lib "user32" (ByVal hdc As Integer) As Integer
-Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer, ByVal wRemoveMsg As Integer) As Integer
-Declare Function PostMessage Lib "user32" Alias "PostMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare sub PostQuitMessage Lib "user32" Alias "PostQuitMessage" (ByVal nExitCode As Integer)
-Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function RealChildWindowFromPoint Lib "user32" (ByVal hwndParent As Integer, Byref ptParentClientCoords As POINTAPI) As Integer
-Declare Function RealGetWindowClass Lib "user32" (ByVal hwnd As Integer, ByVal pszType As String, ByVal cchType As Integer) As Integer
-Declare Function RedrawWindow Lib "user32" (ByVal hwnd As Integer, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Integer, ByVal fuRedraw As Integer) As Integer
-Declare Function RegisterClass Lib "user32" Alias "RegisterClassA" (Class As WNDCLASS) As Integer
-Declare Function RegisterClassEx Lib "user32" Alias "RegisterClassExA" (pcWndClassEx As WNDCLASSEX) As Integer
-Declare Function RegisterClipboardFormat Lib "user32" Alias "RegisterClipboardFormatA" (ByVal lpString As String) As Integer
-Declare Function RegisterHotKey Lib "user32" (ByVal hwnd As Integer, ByVal id As Integer, ByVal fsModifiers As Integer, ByVal vk As Integer) As Integer
-Declare Function RegisterWindowMessage Lib "user32" Alias "RegisterWindowMessageA" (ByVal lpString As String) As Integer
-Declare Function ReleaseCapture Lib "user32" () As Integer
-Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Integer, ByVal hDC As Integer) As Integer
-Declare Function RemoveMenu Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
-Declare Function RemoveProp Lib "user32" Alias "RemovePropA" (ByVal hwnd As Integer, ByVal lpString As String) As Integer
-Declare Function ReplyMessage Lib "user32" (ByVal lReply As Integer) As Integer
-Declare Function ReuseDDElParam Lib "user32" (ByVal lParam As Integer, ByVal msgIn As Integer, ByVal msgOut As Integer, ByVal uiLo As Integer, ByVal uiHi As Integer) As Integer
-Declare Function ScreenToClient Lib "user32" (ByVal hwnd As Integer, ByRef lpPoint As POINTAPI) As Integer
-Declare Function ScrollDC Lib "user32" (ByVal hdc As Integer, ByVal dx As Integer, ByVal dy As Integer, ByRef lprcScroll As RECT, ByRef lprcClip As RECT, ByVal hrgnUpdate As Integer, ByRef lprcUpdate As RECT) As Integer
-Declare Function ScrollWindow Lib "user32" (ByVal hWnd As Integer, ByVal XAmount As Integer, ByVal YAmount As Integer, ByRef lpRect As RECT, ByRef lpClipRect As RECT) As Integer
-Declare Function ScrollWindowEx Lib "user32" (ByVal hwnd As Integer, ByVal dx As Integer, ByVal dy As Integer, ByRef lprcScroll As RECT, ByRef lprcClip As RECT, ByVal hrgnUpdate As Integer, ByRef lprcUpdate As RECT, ByVal fuScroll As Integer) As Integer
-Declare Function SendDlgItemMessage Lib "user32" Alias "SendDlgItemMessageA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function SendIMEMessageEx Lib "user32" Alias "SendIMEMessageExA" (ByVal hwnd As Integer, ByVal lparam As Integer) As Integer
-Declare Function SendInput Lib "user32" (ByVal cInputs As Integer, ByRef pInputs As TINPUT, ByVal cbSize As Integer) As Integer
-Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
-Declare Function SendMessageCallback Lib "user32" Alias "SendMessageCallbackA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal lpResultCallBack As Integer, ByVal dwData As Integer) As Integer
-Declare Function SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal fuFlags As Integer, ByVal uTimeout As Integer, ByRef lpdwResult As Integer) As Integer
-Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-Declare Function SetActiveWindow Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function SetCapture Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function SetCaretBlinkTime Lib "user32" (ByVal wMSeconds As Integer) As Integer
-Declare Function SetCaretPos Lib "user32" (ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function SetClassLong Lib "user32" Alias "SetClassLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal dwNewLong As Integer) As Integer
-Declare Function SetClassWord Lib "user32" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal wNewWord As Integer) As Integer
-Declare Function SetClipboardData Lib "user32" (ByVal wFormat As Integer, ByVal hMem As Integer) As Integer
-Declare Function SetClipboardViewer Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function SetCursor Lib "user32" (ByVal hCursor As Integer) As Integer
-Declare Function SetCursorPos Lib "user32" (ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Sub SetDebugErrorLevel Lib "user32" (ByVal dwLevel As Integer)
-Declare Function SetDlgItemInt Lib "user32" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal wValue As Integer, ByVal bSigned As Integer) As Integer
-Declare Function SetDlgItemText Lib "user32" Alias "SetDlgItemTextA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal lpString As String) As Integer
-Declare Function SetDoubleClickTime Lib "user32" (ByVal wCount As Integer) As Integer
-Declare Function SetFocus Lib "user32" Alias "SetFocus" (ByVal hwnd As Integer) As Integer
-Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function SetKeyboardState Lib "user32" (ByRef lppbKeyState As Byte) As Integer
-Declare Sub SetLastErrorEx Lib "user32" (ByVal dwErrCode As Integer, ByVal dwType As Integer)
-Declare Function SetMenu Lib "user32" (ByVal hwnd As Integer, ByVal hMenu As Integer) As Integer
-Declare Function SetMenuContextHelpId Lib "user32" (ByVal hMenu As Integer, ByVal dw As Integer) As Integer
-Declare Function SetMenuDefaultItem Lib "user32" (ByVal hMenu As Integer, ByVal uItem As Integer, ByVal fByPos As Integer) As Integer
-Declare Function SetMenuInfo Lib "user32" (ByVal hmenu As Integer, ByRef LPCMENUINFO As CMENUINFO) As Integer
-Declare Function SetMenuItemBitmaps Lib "user32" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal hBitmapUnchecked As Integer, ByVal hBitmapChecked As Integer) As Integer
-Declare Function SetMenuItemInfo Lib "user32" Alias "SetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
-Declare Function SetMessageExtraInfo Lib "user32" (ByVal lParam As Integer) As Integer
-Declare Function SetMessageQueue Lib "user32" (ByVal cMessagesMax As Integer) As Integer
-Declare Function SetParent Lib "user32" (ByVal hWndChild As Integer, ByVal hWndNewParent As Integer) As Integer
-Declare Function SetProcessDefaultLayout Lib "user32" (ByVal dwDefaultLayout As Integer) As Integer
-Declare Function SetProcessWindowStation Lib "user32" (ByVal hWinSta As Integer) As Integer
-Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hwnd As Integer, ByVal lpString As String, ByVal hData As Integer) As Integer
-Declare Function SetRect Lib "user32" (ByRef lpRect As RECT, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
-Declare Function SetRectEmpty Lib "user32" (ByRef lpRect As RECT) As Integer
-Declare Function SetScrollInfo Lib "user32" (ByVal hWnd As Integer, ByVal n As Integer, ByRef lpcScrollInfo As SCROLLINFO, ByVal bool As Short) As Integer
-Declare Function SetScrollPos Lib "user32" (ByVal hwnd As Integer, ByVal nBar As Integer, ByVal nPos As Integer, ByVal bRedraw As Integer) As Integer
-Declare Function SetScrollRange Lib "user32" (ByVal hwnd As Integer, ByVal nBar As Integer, ByVal nMinPos As Integer, ByVal nMaxPos As Integer, ByVal bRedraw As Integer) As Integer
-Declare Function SetSysColors Lib "user32" (ByVal nChanges As Integer, ByRef lpSysColor As Integer, ByRef lpColorValues As Integer) As Integer
-Declare Function SetSystemCursor Lib "user32" (ByVal hcur As Integer, ByVal id As Integer) As Integer
-Declare Function SetThreadDesktop Lib "user32" (ByVal hDesktop As Integer) As Integer
-Declare Function SetTimer Lib "user32" (ByVal hWnd As Integer, ByVal nIDEvent As Integer, ByVal uElapse As Integer, ByVal lpTimerFunc As Integer) As Integer
-Declare Function SetUserObjectInformation Lib "user32" Alias "SetUserObjectInformationA" (ByVal hObj As Integer, ByVal nIndex As Integer, ByRef pvInfo As Any, ByVal nLength As Integer) As Integer
-Declare Function SetUserObjectSecurity Lib "user32" (ByVal hObj As Integer, ByRef pSIRequested As Integer, ByRef pSd As SECURITY_DESCRIPTOR) As Integer
-Declare Function SetWindowContextHelpId Lib "user32" (ByVal hWnd As Integer, ByVal dw As Integer) As Integer
-Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal dwNewLong As Integer) As Integer
-Declare Function SetWindowPlacement Lib "user32" (ByVal hwnd As Integer, ByRef lpwndpl As WINDOWPLACEMENT) As Integer
-Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Integer, ByVal hWndInsertAfter As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal wFlags As Integer) As Integer
-Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As Integer, ByVal hRgn As Integer, ByVal bRedraw As Short) As Integer
-Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal hwnd As Integer, byVal lpText As String ) As Short
-Declare Function SetWindowWord Lib "user32" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal wNewWord As Integer) As Integer
-Declare Function SetWindowsHook Lib "user32" Alias "SetWindowsHookA" (ByVal nFilterType As Integer, ByVal pfnFilterProc As Integer) As Integer
-Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Integer, ByVal lpfn As Integer, ByVal hmod As Integer, ByVal dwThreadId As Integer) As Integer
-Declare Function ShowCaret Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function ShowCursor Lib "user32" (ByVal bShow As Integer) As Integer
-Declare Function ShowOwnedPopups Lib "user32" (ByVal hwnd As Integer, ByVal fShow As Integer) As Integer
-Declare Function ShowScrollBar Lib "user32" (ByVal hwnd As Integer, ByVal wBar As Integer, ByVal bShow As Integer) As Integer
-Declare Function ShowWindow lib "user32" Alias "ShowWindow" (ByVal hwnd As Integer, ByVal nCmdShow As Integer) As Integer
-Declare Function ShowWindowAsync Lib "user32" (ByVal hWnd As Integer, ByVal nCmdShow As Integer) As Integer
-Declare Function SubtractRect Lib "user32" (ByRef lprcDst As RECT, ByRef lprcSrc1 As RECT, ByRef lprcSrc2 As RECT) As Integer
-Declare Function SwapMouseButton Lib "user32" (ByVal bSwap As Integer) As Integer
-Declare Function SwitchDesktop Lib "user32" (ByVal hDesktop As Integer) As Integer
-Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoA" (ByVal uAction As Integer, ByVal uParam As Integer, ByRef lpvParam As Any, ByVal fuWinIni As Integer) As Integer
-Declare Function TabbedTextOut Lib "user32" Alias "TabbedTextOutA" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal lpString As String, ByVal nCount As Integer, ByVal nTabPositions As Integer, ByRef lpnTabStopPositions As Integer, ByVal nTabOrigin As Integer) As Integer
-Declare Function TileWindows Lib "user32" (ByVal hwndParent As Integer, ByVal wHow As Integer, ByRef lpRect As RECT, ByVal cKids As Integer, ByRef lpKids As Integer) As Short
-Declare Function ToAscii Lib "user32" (ByVal uVirtKey As Integer, ByVal uScanCode As Integer, ByRef lpbKeyState As Byte, ByRef lpwTransKey As Integer, ByVal fuState As Integer) As Integer
-Declare Function ToAsciiEx Lib "user32" (ByVal uVirtKey As Integer, ByVal uScanCode As Integer, ByRef lpKeyState As Byte, ByRef lpChar As Short, ByVal uFlags As Integer, ByVal dwhkl As Integer) As Integer
-Declare Function ToUnicode Lib "user32" (ByVal wVirtKey As Integer, ByVal wScanCode As Integer, ByRef lpKeyState As Byte, ByVal pwszBuff As String, ByVal cchBuff As Integer, ByVal wFlags As Integer) As Integer
-Declare Function ToUnicodeEx Lib "user32" (ByVal wVirtKey As Integer, ByVal wScanCode As Integer, ByVal lpKeyState As String, ByVal pwszBuff As String, ByVal cchBuff As Integer, ByVal wFlags As Integer, ByVal dwhkl As Integer) As Integer
-Declare Function TrackPopupMenu Lib "user32" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nReserved As Integer, ByVal hwnd As Integer, ByRef lprc As RECT) As Integer
-Declare Function TrackPopupMenuEx Lib "user32" (ByVal hMenu As Integer, ByVal un As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal hWnd As Integer, ByRef lpTPMParams As TPMPARAMS) As Integer
-Declare Function TranslateAccelerator Lib "user32" Alias "TranslateAcceleratorA" (ByVal hwnd As Integer, ByVal hAccTable As Integer, ByRef lpMsg As MSG) As Integer
-Declare Function TranslateMDISysAccel Lib "user32" (ByVal hWndClient As Integer, ByRef lpMsg As MSG) As Integer
-Declare Function TranslateMessage Lib "user32" Alias "TranslateMessage" (lpMsg As MSG) As Integer
-Declare Function UnhookWinEvent Lib "user32" (ByRef hWinEventHook As Integer) As Integer
-Declare Function UnhookWindowsHook Lib "user32" (ByVal nCode As Integer, ByVal pfnFilterProc As Integer) As Integer
-Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Integer) As Integer
-Declare Function UnionRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Integer
-Declare Function UnloadKeyboardLayout Lib "user32" (ByVal HKL As Integer) As Integer
-Declare Function UnpackDDElParam Lib "user32" (ByVal msg As Integer, ByVal lParam As Integer, ByRef puiLo As Integer, ByRef puiHi As Integer) As Integer
-Declare Function UnregisterClass Lib "user32" Alias "UnregisterClassA" (ByVal lpClassName As String, ByVal hInstance As Integer) As Integer
-Declare Function UnregisterDeviceNotification Lib "user32" (ByRef Handle As Integer) As Integer
-Declare Function UnregisterHotKey Lib "user32" (ByVal hwnd As Integer, ByVal id As Integer) As Integer
-Declare Function UpdateWindow Lib "user32" Alias "UpdateWindow" (ByVal hwnd As Integer) As Integer
-Declare Function ValidateRect Lib "user32" (ByVal hwnd As Integer, ByRef lpRect As RECT) As Integer
-Declare Function ValidateRgn Lib "user32" (ByVal hwnd As Integer, ByVal hRgn As Integer) As Integer
-Declare Function VkKeyScan Lib "user32" Alias "VkKeyScanA" (ByVal cChar As Byte) As Short
-Declare Function VkKeyScanEx Lib "user32" Alias "VkKeyScanExA" (ByVal ch As Byte, ByVal dwhkl As Integer) As Short
-Declare Function WaitForInputIdle Lib "user32" (ByVal hProcess As Integer, ByVal dwMilliseconds As Integer) As Integer
-Declare Function WindowFromDC Lib "user32" (ByVal hdc As Integer) As Integer
-Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Integer, ByVal yPoint As Integer) As Integer
-Declare Function WinHelp Lib "user32" Alias "WinHelpA" (ByVal hwnd As Integer, ByVal lpHelpFile As String, ByVal wCommand As Integer, ByVal dwData As Integer) As Integer
-Declare Function WINNLSEnableIME Lib "user32" (ByVal hwnd As Integer, ByVal bool As Integer) As Integer
-Declare Function WINNLSGetEnableStatus Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Function WINNLSGetIMEHotkey Lib "user32" (ByVal hwnd As Integer) As Integer
-Declare Sub keybd_event Lib "user32" (ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As Integer, ByVal dwExtraInfo As Integer)
-Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal cButtons As Integer, ByVal dwExtraInfo As Integer)
+Declare Function ActivateKeyboardLayout Alias "ActivateKeyboardLayout" (ByVal HKL As Integer, ByVal Flags As Integer) As Integer
+Declare Function AdjustWindowRect Alias "AdjustWindowRect" (ByRef lpRect As RECT, ByVal dwStyle As Integer, ByVal bMenu As Integer) As Integer
+Declare Function AdjustWindowRectEx Alias "AdjustWindowRectEx" (ByRef lpRect As RECT, ByVal dsStyle As Integer, ByVal bMenu As Integer, ByVal dwEsStyle As Integer) As Integer
+Declare Function AlignRects Alias "AlignRects" (arc As RECT, cCount As Integer, iPrimary As Integer, dwFlags As Integer) As Integer
+Declare Function AnimateWindow Alias "AnimateWindow" (ByVal hwnd As Integer, ByVal dwTime As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function AnyPopup Alias "AnyPopup" () As Integer
+Declare Function AppendMenu Alias "AppendMenuA" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, lpNewItem As Any) As Integer
+Declare Function ArrangeIconicWindows Alias "ArrangeIconicWindows" (ByVal hwnd As Integer) As Integer
+Declare Function AttachThreadInput Alias "AttachThreadInput" (ByVal idAttach As Integer, ByVal idAttachTo As Integer, ByVal fAttach As Integer) As Integer
+Declare Function BeginDeferWindowPos Alias "BeginDeferWindowPos" (ByVal nNumWindows As Integer) As Integer
+Declare Function BeginPaint Alias "BeginPaint" (ByVal hwnd As Integer, lpPaint As PAINTSTRUCT) As Integer
+Declare Function BlockInput Alias "BlockInput" (ByVal fBlockIt As Integer) As Integer
+Declare Function BringWindowToTop Alias "BringWindowToTop" (ByVal hwnd As Integer) As Integer
+Declare Function BroadcastSystemMessage Alias "BroadcastSystemMessage" (ByVal dw As Integer, ByRef pdw As Integer, ByVal un As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function CallMsgFilter Alias "CallMsgFilterA" (ByRef lpMsg As msg, ByVal ncode As Integer) As Integer
+Declare Function CallNextHookEx Alias "CallNextHookEx" (ByVal hHook As Integer, ByVal ncode As Integer, ByVal wParam As Integer, lParam As Any) As Integer
+Declare Function CallWindowProc Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Integer, ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function CascadeWindows Alias "CascadeWindows" (ByVal hWndParent As Integer, ByVal wHow As Integer, byref lpRect As RECT, ByVal cKids As Integer, ByRef lpkids As Integer) As Short
+Declare Function ChangeClipboardChain Alias "ChangeClipboardChain" (ByVal hwnd As Integer, ByVal hWndNext As Integer) As Integer
+Declare Function ChangeDisplaySettings Alias "ChangeDisplaySettingsA" (ByRef lpDevMode As DEVMODE, ByVal dwFlags As Integer) As Integer
+Declare Function ChangeDisplaySettingsEx Alias "ChangeDisplaySettingsExA" (ByVal lpszDeviceName As String, ByRef lpDevMode As DEVMODE, ByVal hwnd As Integer, ByVal dwflags As Integer, ByRef lParam As Any) As Integer
+Declare Function ChangeMenu Alias "ChangeMenuA" (ByVal hMenu As Integer, ByVal cmd As Integer, ByVal lpszNewItem As String, ByVal cmdInsert As Integer, ByVal flags As Integer) As Integer
+Declare Function CharLower Alias "CharLowerA" (ByVal lpsz As String) As byte ptr
+Declare Function CharLowerBuff Alias "CharLowerBuffA" (ByVal lpsz As String, ByVal cchLength As Integer) As Integer
+Declare Function CharNext Alias "CharNextA" (ByVal lpsz As String) As byte ptr
+Declare Function CharNextEx Alias "CharNextExA" (ByVal CodePage As Short, ByVal lpCurrentChar As String, ByVal dwFlags As Integer) As Integer
+Declare Function CharPrev Alias "CharPrevA" (ByVal lpszStart As String, ByVal lpszCurrent As String) As byte ptr
+Declare Function CharPrevEx Alias "CharPrevExA" (ByVal CodePage As Short, ByVal lpStart As String, ByVal lpCurrentChar As String, ByVal dwFlags As Integer) As Integer
+Declare Function CharToOem Alias "CharToOemA" (ByVal lpszSrc As String, ByVal lpszDst As String) As Integer
+Declare Function CharToOemBuff Alias "CharToOemBuffA" (ByVal lpszSrc As String, ByVal lpszDst As String, ByVal cchDstLength As Integer) As Integer
+Declare Function CharUpper Alias "CharUpperA" (ByVal lpsz As String) As byte ptr
+Declare Function CharUpperBuff Alias "CharUpperBuffA" (ByVal lpsz As String, ByVal cchLength As Integer) As Integer
+Declare Function CheckDlgButton Alias "CheckDlgButtonA" (ByVal hDlg As Integer, ByVal nIDButton As Integer, ByVal wCheck As Integer) As Integer
+Declare Function CheckMenuItem Alias "CheckMenuItem" (ByVal hMenu As Integer, ByVal wIDCheckItem As Integer, ByVal wCheck As Integer) As Integer
+Declare Function CheckMenuRadioItem Alias "CheckMenuRadioItem" (ByVal hMenu As Integer, ByVal un1 As Integer, ByVal un2 As Integer, ByVal un3 As Integer, ByVal un4 As Integer) As Integer
+Declare Function CheckRadioButton Alias "CheckRadioButton" (ByVal hDlg As Integer, ByVal nIDFirstButton As Integer, ByVal nIDLastButton As Integer, ByVal nIDCheckButton As Integer) As Integer
+Declare Function ChildWindowFromPoint Alias "ChildWindowFromPoint" (ByVal hWndParent As Integer, Byref pt As POINTAPI) As Integer
+Declare Function ChildWindowFromPointEx Alias "ChildWindowFromPointEx" (ByVal hWnd As Integer, Byref pt As POINTAPI, ByVal un As Integer) As Integer
+Declare Function ClientToScreen Alias "ClientToScreen" (ByVal hwnd As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function ClipCursor Alias "ClipCursor" (ByRef lpRect As Any) As Integer
+Declare Function CloseClipboard Alias "CloseClipboard" () As Integer
+Declare Function CloseDesktop Alias "CloseDesktop" (ByVal hDesktop As Integer) As Integer
+Declare Function CloseWindow Alias "CloseWindow" (ByVal hwnd As Integer) As Integer
+Declare Function CloseWindowStation Alias "CloseWindowStation" (ByVal hWinSta As Integer) As Integer
+Declare Function CopyAcceleratorTable Alias "CopyAcceleratorTableA" (ByVal hAccelSrc As Integer, ByRef lpAccelDst As ACCEL, ByVal cAccelEntries As Integer) As Integer
+Declare Function CopyCursor Alias "CopyCursor" (ByVal hcur As Integer) As Integer
+Declare Function CopyIcon Alias "CopyIcon" (ByVal hIcon As Integer) As Integer
+Declare Function CopyImage Alias "CopyImage" (ByVal handle As Integer, ByVal un1 As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal un2 As Integer) As Integer
+Declare Function CopyRect Alias "CopyRect" (ByRef lpDestRect As RECT, ByRef lpSourceRect As RECT) As Integer
+Declare Function CountClipboardFormats Alias "CountClipboardFormats" () As Integer
+Declare Function CreateAcceleratorTable Alias "CreateAcceleratorTableA" (ByRef lpaccl As ACCEL, ByVal cEntries As Integer) As Integer
+Declare Function CreateCaret Alias "CreateCaret" (ByVal hwnd As Integer, ByVal hBitmap As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
+Declare Function CreateCursor Alias "CreateCursor" (ByVal hInstance As Integer, ByVal nXhotspot As Integer, ByVal nYhotspot As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByRef lpANDbitPlane As Any, ByRef lpXORbitPlane As Any) As Integer
+Declare Function CreateDesktop Alias "CreateDesktopA" (ByVal lpszDesktop As String, ByVal lpszDevice As String, ByRef pDevmode As DEVMODE, ByVal dwFlags As Integer, ByVal dwDesiredAccess As Integer, ByRef lpsa As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateDialogIndirectParam Alias "CreateDialogIndirectParamA" (ByVal hInstance As Integer, ByRef lpTemplate As DLGTEMPLATE, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) As Integer
+Declare Function CreateDialogParam Alias "CreateDialogParamA" (ByVal hInstance As Integer, ByVal lpName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal lParamInit As Integer) As Integer
+Declare Function CreateIcon Alias "CreateIcon" (ByVal hInstance As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal nPlanes As Byte, ByVal nBitsPixel As Byte, ByRef lpANDbits As Byte, ByRef lpXORbits As Byte) As Integer
+Declare Function CreateIconFromResource Alias "CreateIconFromResource" (ByRef presbits As Byte, ByVal dwResSize As Integer, ByVal fIcon As Integer, ByVal dwVer As Integer) As Integer
+Declare Function CreateIconFromResourceEx Alias "CreateIconFromResourceEx" (ByVal presbits As String, ByVal dwResSize As Integer, ByVal fIcon As Integer, ByVal dwVer As Integer, ByVal cxDesired As Integer, ByVal cyDesired As Integer, ByVal Flags As Integer) As Integer
+Declare Function CreateIconIndirect Alias "CreateIconIndirect" (ByRef piconinfo As ICONINFO) As Integer
+Declare Function CreateMDIWindow Alias "CreateMDIWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hInstance As Integer, ByVal lParam As Integer) As Integer
+Declare Function CreateMenu Alias "CreateMenu" () As Integer
+Declare Function CreatePopupMenu Alias "CreatePopupMenu" () As Integer
+Declare Function CreateWindowEx Alias "CreateWindowExA" (ByVal dwExStyle As Integer, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hMenu As Integer, ByVal hInstance As Integer, lpParam as Any) As Integer
+Declare Function CreateWindowStation Alias "CreateWindowStationA" (ByVal lpwinsta As String, ByVal dwReserved As Integer, ByVal dwDesiredAccess As Integer, ByRef lpsa As SECURITY_ATTRIBUTES) As Integer
+Declare Function DdeAbandonTransaction Alias "DdeAbandonTransaction" (ByVal idInst As Integer, ByVal hConv As Integer, ByVal idTransaction As Integer) As Integer
+Declare Function DdeAccessData Alias "DdeAccessData" (ByVal hData As Integer, ByRef pcbDataSize As Integer) As Integer
+Declare Function DdeAddData Alias "DdeAddData" (ByVal hData As Integer, ByRef pSrc As Byte, ByVal cb As Integer, ByVal cbOff As Integer) As Integer
+Declare Function DdeClientTransaction Alias "DdeClientTransaction" (ByRef pData As Byte, ByVal cbData As Integer, ByVal hConv As Integer, ByVal hszItem As Integer, ByVal wFmt As Integer, ByVal wType As Integer, ByVal dwTimeout As Integer, ByRef pdwResult As Integer) As Integer
+Declare Function DdeCmpStringHandles Alias "DdeCmpStringHandles" (ByVal hsz1 As Integer, ByVal hsz2 As Integer) As Integer
+Declare Function DdeConnect Alias "DdeConnect" (ByVal idInst As Integer, ByVal hszService As Integer, ByVal hszTopic As Integer, ByRef pCC As CONVCONTEXT) As Integer
+Declare Function DdeConnectList Alias "DdeConnectList" (ByVal idInst As Integer, ByVal hszService As Integer, ByVal hszTopic As Integer, ByVal hConvList As Integer, ByRef pCC As CONVCONTEXT) As Integer
+Declare Function DdeCreateDataHandle Alias "DdeCreateDataHandle" (ByVal idInst As Integer, ByRef pSrc As Byte, ByVal cb As Integer, ByVal cbOff As Integer, ByVal hszItem As Integer, ByVal wFmt As Integer, ByVal afCmd As Integer) As Integer
+Declare Function DdeCreateStringHandle Alias "DdeCreateStringHandleA" (ByVal idInst As Integer, ByVal psz As String, ByVal iCodePage As Integer) As Integer
+Declare Function DdeDisconnect Alias "DdeDisconnect" (ByVal hConv As Integer) As Integer
+Declare Function DdeDisconnectList Alias "DdeDisconnectList" (ByVal hConvList As Integer) As Integer
+Declare Function DdeEnableCallback Alias "DdeEnableCallback" (ByVal idInst As Integer, ByVal hConv As Integer, ByVal wCmd As Integer) As Integer
+Declare Function DdeFreeDataHandle Alias "DdeFreeDataHandle" (ByVal hData As Integer) As Integer
+Declare Function DdeFreeStringHandle Alias "DdeFreeStringHandle" (ByVal idInst As Integer, ByVal hsz As Integer) As Integer
+Declare Function DdeGetData Alias "DdeGetData" (ByVal hData As Integer, ByRef pDst As Byte, ByVal cbMax As Integer, ByVal cbOff As Integer) As Integer
+Declare Function DdeGetLastError Alias "DdeGetLastError" (ByVal idInst As Integer) As Integer
+Declare Function DdeImpersonateClient Alias "DdeImpersonateClient" (ByVal hConv As Integer) As Integer
+Declare Function DdeInitialize Alias "DdeInitializeA" (ByRef pidInst As Integer, ByVal pfnCallback As Integer, ByVal afCmd As Integer, ByVal ulRes As Integer) As Short
+Declare Function DdeKeepStringHandle Alias "DdeKeepStringHandle" (ByVal idInst As Integer, ByVal hsz As Integer) As Integer
+Declare Function DdeNameService Alias "DdeNameService" (ByVal idInst As Integer, ByVal hsz1 As Integer, ByVal hsz2 As Integer, ByVal afCmd As Integer) As Integer
+Declare Function DdePostAdvise Alias "DdePostAdvise" (ByVal idInst As Integer, ByVal hszTopic As Integer, ByVal hszItem As Integer) As Integer
+Declare Function DdeQueryConvInfo Alias "DdeQueryConvInfo" (ByVal hConv As Integer, ByVal idTransaction As Integer, ByRef pConvInfo As CONVINFO) As Integer
+Declare Function DdeQueryNextServer Alias "DdeQueryNextServer" (ByVal hConvList As Integer, ByVal hConvPrev As Integer) As Integer
+Declare Function DdeQueryString Alias "DdeQueryStringA" (ByVal idInst As Integer, ByVal hsz As Integer, ByVal psz As String, ByVal cchMax As Integer, ByVal iCodePage As Integer) As Integer
+Declare Function DdeReconnect Alias "DdeReconnect" (ByVal hConv As Integer) As Integer
+Declare Function DdeSetQualityOfService Alias "DdeSetQualityOfService" (ByVal hWndClient As Integer, ByRef pqosNew As SECURITY_QUALITY_OF_SERVICE, ByRef pqosPrev As SECURITY_QUALITY_OF_SERVICE) As Integer
+Declare Function DdeSetUserHandle Alias "DdeSetUserHandle" (ByVal hConv As Integer, ByVal id As Integer, ByVal hUser As Integer) As Integer
+Declare Function DdeUnaccessData Alias "DdeUnaccessData" (ByVal hData As Integer) As Integer
+Declare Function DdeUninitialize Alias "DdeUninitialize" (ByVal idInst As Integer) As Integer
+Declare Function DefDlgProc Alias "DefDlgProcA" (ByVal hDlg As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function DefFrameProc Alias "DefFrameProcA" (ByVal hwnd As Integer, ByVal hWndMDIClient As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function DefMDIChildProc Alias "DefMDIChildProcA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function DefWindowProc Alias "DefWindowProcA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function DeferWindowPos Alias "DeferWindowPos" (ByVal hWinPosInfo As Integer, ByVal hwnd As Integer, ByVal hWndInsertAfter As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal wFlags As Integer) As Integer
+Declare Function DeleteMenu Alias "DeleteMenu" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
+Declare Function DestroyAcceleratorTable Alias "DestroyAcceleratorTable" (ByVal haccel As Integer) As Integer
+Declare Function DestroyCaret Alias "DestroyCaret" () As Integer
+Declare Function DestroyCursor Alias "DestroyCursor" (ByVal hCursor As Integer) As Integer
+Declare Function DestroyIcon Alias "DestroyIcon" (ByVal hIcon As Integer) As Integer
+Declare Function DestroyMenu Alias "DestroyMenu" (ByVal hMenu As Integer) As Integer
+Declare Function DestroyWindow Alias "DestroyWindow" (ByVal hwnd As Integer) As Integer
+Declare Function DialogBoxIndirectParam Alias "DialogBoxIndirectParamA" (ByVal hInstance As Integer, ByRef hDialogTemplate As DLGTEMPLATE, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) As Integer
+Declare Sub DialogBoxParam Alias "DialogBoxParamA" (ByVal hInstance As Integer, ByVal lpTemplateName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer)
+Declare Function DispatchMessage Alias "DispatchMessageA" (lpMsg As MSG) As Integer
+Declare Function DlgDirList Alias "DlgDirListA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDListBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
+Declare Function DlgDirListComboBox Alias "DlgDirListComboBoxA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDComboBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
+Declare Function DlgDirSelectComboBoxEx Alias "DlgDirSelectComboBoxExA" (ByVal hWndDlg As Integer, ByVal lpszPath As String, ByVal cbPath As Integer, ByVal idComboBox As Integer) As Integer
+Declare Function DlgDirSelectEx Alias "DlgDirSelectExA" (ByVal hWndDlg As Integer, ByVal lpszPath As String, ByVal cbPath As Integer, ByVal idListBox As Integer) As Integer
+Declare Function DragDetect Alias "DragDetect" (ByVal hWnd As Integer, Byref pt As POINTAPI) As Integer
+Declare Function DragObject Alias "DragObject" (ByVal hWnd1 As Integer, ByVal hWnd2 As Integer, ByVal un As Integer, ByVal dw As Integer, ByVal hCursor As Integer) As Integer
+Declare Function DrawAnimatedRects Alias "DrawAnimatedRects" (ByVal hwnd As Integer, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As Integer
+Declare Function DrawCaption Alias "DrawCaption" (ByVal hWnd As Integer, ByVal hDC As Integer, ByRef pcRect As Rect, ByVal un As Integer) As Integer
+Declare Function DrawEdge Alias "DrawEdge" (ByVal hdc As Integer, ByRef qrc As RECT, ByVal edge As Integer, ByVal grfFlags As Integer) As Integer
+Declare Function DrawFocusRect Alias "DrawFocusRect" (ByVal hdc As Integer, ByRef lpRect As RECT) As Integer
+Declare Function DrawFrameControl Alias "DrawFrameControl" (ByVal hDC As Integer, ByRef lpRect As RECT, ByVal un1 As Integer, ByVal un2 As Integer) As Integer
+Declare Function DrawIcon Alias "DrawIcon" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal hIcon As Integer) As Integer
+Declare Function DrawIconEx Alias "DrawIconEx" (ByVal hdc As Integer, ByVal xLeft As Integer, ByVal yTop As Integer, ByVal hIcon As Integer, ByVal cxWidth As Integer, ByVal cyWidth As Integer, ByVal istepIfAniCur As Integer, ByVal hbrFlickerFreeDraw As Integer, ByVal diFlags As Integer) As Integer
+Declare Function DrawMenuBar Alias "DrawMenuBar" (ByVal hwnd As Integer) As Integer
+Declare Function DrawState Alias "DrawStateA" (ByVal hDC As Integer, ByVal hBrush As Integer, ByVal lpDrawStateProc As Integer, ByVal lParam As Integer, ByVal wParam As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal n3 As Integer, ByVal n4 As Integer, ByVal un As Integer) As Integer
+Declare Function DrawText Alias "DrawTextA" (ByVal hdc As Integer, ByVal lpStr As String, ByVal nCount As Integer, lpRect As RECT, ByVal wFormat As Integer) As Integer
+Declare Function DrawTextEx Alias "DrawTextExA" (ByVal hDC As Integer, ByVal lpsz As String, ByVal n As Integer, ByRef lpRect As RECT, ByVal un As Integer, ByRef lpDrawTextParams As DRAWTEXTPARAMS) As Integer
+Declare Function EmptyClipboard Alias "EmptyClipboard" () As Integer
+Declare Function EnableMenuItem Alias "EnableMenuItem" (ByVal hMenu As Integer, ByVal wIDEnableItem As Integer, ByVal wEnable As Integer) As Integer
+Declare Function EnableScrollBar Alias "EnableScrollBar" (ByVal hwnd As Integer, ByVal wSBflags As Integer, ByVal wArrows As Integer) As Integer
+Declare Function EnableWindow Alias "EnableWindow" (ByVal hwnd As Integer, ByVal fEnable As Integer) As Integer
+Declare Function EndDeferWindowPos Alias "EndDeferWindowPos" (ByVal hWinPosInfo As Integer) As Integer
+Declare Function EndDialog Alias "EndDialog" (ByVal hDlg As Integer, ByVal nResult As Integer) As Integer
+Declare Function EndMenu Alias "EndMenu" () As Integer
+Declare Function EndPaint Alias "EndPaint" (ByVal hwnd As Integer, lpPaint As PAINTSTRUCT) As Integer
+Declare Function EnumChildWindows Alias "EnumChildWindows" (ByVal hWndParent As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumClipboardFormats Alias "EnumClipboardFormats" (ByVal wFormat As Integer) As Integer
+Declare Function EnumDesktops Alias "EnumDesktopsA" (ByVal hwinsta As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumDesktopWindows Alias "EnumDesktopWindows" (ByVal hDesktop As Integer, ByVal lpfn As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumDisplaySettings Alias "EnumDisplaySettingsA" (ByVal lpszDeviceName As String, ByVal iModeNum As Integer, ByRef lpDevMode As DEVMODE) As Integer
+Declare Function EnumDisplaySettingsEx Alias "EnumDisplaySettingsEx" (ByVal lpszDeviceName As String, ByVal iModeNum As Integer, ByRef lpDevMode As DEVMODE, ByVal dwFlags As Integer) As Integer
+Declare Function EnumProps Alias "EnumPropsA" (ByVal hWnd As Integer, ByVal lpEnumFunc As Integer) As Integer
+Declare Function EnumPropsEx Alias "EnumPropsExA" (ByVal hWnd As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumThreadWindows Alias "EnumThreadWindows" (ByVal dwThreadId As Integer, ByVal lpfn As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumWindows Alias "EnumWindows" (ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumWindowStations Alias "EnumWindowStationsA" (ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EqualRect Alias "EqualRect" (ByRef lpRect1 As RECT, ByRef lpRect2 As RECT) As Integer
+Declare Function ExcludeUpdateRgn Alias "ExcludeUpdateRgn" (ByVal hdc As Integer, ByVal hwnd As Integer) As Integer
+Declare Function ExitWindows Alias "ExitWindows" (ByVal dwReserved As Integer, ByVal uReturnCode As Integer) As Integer
+Declare Function ExitWindowsEx Alias "ExitWindowsEx" (ByVal uFlags As Integer, ByVal dwReserved As Integer) As Integer
+Declare Function FillRect Alias "FillRect" (ByVal hdc As Integer, ByRef lpRect As RECT, ByVal hBrush As Integer) As Integer
+Declare Function FindWindow Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Integer
+Declare Function FindWindowEx Alias "FindWindowExA" (ByVal hWnd1 As Integer, ByVal hWnd2 As Integer, ByVal lpsz1 As String, ByVal lpsz2 As String) As Integer
+Declare Function FlashWindow Alias "FlashWindow" (ByVal hwnd As Integer, ByVal bInvert As Integer) As Integer
+Declare Function FlashWindowEx Alias "FlashWindowEx" (ByRef pfwi As PFLASHWINFO ) As Integer
+Declare Function FrameRect Alias "FrameRect" (ByVal hdc As Integer, ByRef lpRect As RECT, ByVal hBrush As Integer) As Integer
+Declare Function FreeDDElParam Alias "FreeDDElParam" (ByVal msg As Integer, ByVal lParam As Integer) As Integer
+Declare Function GetActiveWindow Alias "GetActiveWindow" ( ) As Integer
+Declare Function GetAltTabInfo Alias "GetAltTabInfo" (ByVal hwnd As Integer, ByVal iItem As Integer, ByRef pati As PALTTABINFO, ByVal pszItemText As String, ByVal cchItemText As Integer) As Integer
+Declare Function GetAncestor Alias "GetAncestor" (ByVal hwnd As Integer, ByVal gaFlags As Integer) As Integer
+Declare Function GetAsyncKeyState Alias "GetAsyncKeyState" (ByVal vKey As Integer) As Short
+Declare Function GetCapture Alias "GetCapture" () As Integer
+Declare Function GetCaretBlinkTime Alias "GetCaretBlinkTime" () As Integer
+Declare Function GetCaretPos Alias "GetCaretPos" (ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetClassInfo Alias "GetClassInfoA" (ByVal hInstance As Integer, ByVal lpClassName As String, ByRef lpWndClass As WNDCLASS) As Integer
+Declare Function GetClassInfoEx Alias "GetClassInfoExA" (ByVal hinstance As Integer, ByVal lpcstr As String, ByRef lpwndclassexa As WNDCLASSEX) As Integer
+Declare Function GetClassLong Alias "GetClassLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Integer
+Declare Function GetClassName Alias "GetClassNameA" (ByVal hwnd As Integer, ByVal lpClassName As String, ByVal nMaxCount As Integer) As Integer
+Declare Function GetClassWord Alias "GetClassWord" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Integer
+Declare Function GetClientRect Alias "GetClientRect" (ByVal hwnd As Integer, lpRect as RECT) As Integer
+Declare Function GetClipboardData Alias "GetClipboardData" (ByVal wFormat As Integer) As Integer
+Declare Function GetClipboardFormatName Alias "GetClipboardFormatNameA" (ByVal wFormat As Integer, ByVal lpString As String, ByVal nMaxCount As Integer) As Integer
+Declare Function GetClipboardOwner Alias "GetClipboardOwner" () As Integer
+Declare Function GetClipboardSequenceNumber Alias "GetClipboardSequenceNumber" () As Integer
+Declare Function GetClipboardViewer Alias "GetClipboardViewer" () As Integer
+Declare Function GetClipCursor Alias "GetClipCursor" (ByRef lprc As RECT) As Integer
+Declare Function GetComboBoxInfo Alias "GetComboBoxInfo" (ByVal hwndCombo As Integer, ByRef pcbi As PCOMBOBOXINFO) As Integer
+Declare Function GetCursor Alias "GetCursor" () As Integer
+Declare Function GetCursorInfo Alias "GetCursorInfo" (ByRef pci As PCURSORINFO) As Integer
+Declare Function GetCursorPos Alias "GetCursorPos" (ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetDC Alias "GetDC" (ByVal hWnd As Integer) As Integer
+Declare Function GetDCEx Alias "GetDCEx" (ByVal hwnd As Integer, ByVal hrgnclip As Integer, ByVal fdwOptions As Integer) As Integer
+Declare Function GetDesktopWindow Alias "GetDesktopWindow" () As Integer
+Declare Function GetDialogBaseUnits Alias "GetDialogBaseUnits" () As Integer
+Declare Function GetDlgCtrlID Alias "GetDlgCtrlID" (ByVal hwnd As Integer) As Integer
+Declare Function GetDlgItem Alias "GetDlgItem" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer) As Integer
+Declare Function GetDlgItemInt Alias "GetDlgItemInt" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal lpTranslated As Integer, ByVal bSigned As Integer) As Integer
+Declare Function GetDlgItemText Alias "GetDlgItemTextA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal lpString As String, ByVal nMaxCount As Integer) As Integer
+Declare Function GetDoubleClickTime Alias "GetDoubleClickTime" () As Integer
+Declare Function GetFocus Alias "GetFocus" () As Integer
+Declare Function GetForegroundWindow Alias "GetForegroundWindow" () As Integer
+Declare Function GetGuiResources Alias "GetGuiResources" (ByVal hProcess As Integer, ByVal uiFlags As Integer) As Integer
+Declare Function GetGUIThreadInfo Alias "GetGUIThreadInfo" (ByVal idThread As Integer, ByRef pgui As PGUITHREADINFO) As Integer
+Declare Function GetIconInfo Alias "GetIconInfo" (ByVal hIcon As Integer, ByRef piconinfo As ICONINFO) As Integer
+Declare Function GetInputState Alias "GetInputState" () As Integer
+Declare Function GetKBCodePage Alias "GetKBCodePage" () As Integer
+Declare Function GetKeyboardLayout Alias "GetKeyboardLayout" (ByVal dwLayout As Integer) As Integer
+Declare Function GetKeyboardLayoutList Alias "GetKeyboardLayoutList" (ByVal nBuff As Integer, ByRef lpList As Integer) As Integer
+Declare Function GetKeyboardLayoutName Alias "GetKeyboardLayoutNameA" (ByVal pwszKLID As String) As Integer
+Declare Function GetKeyboardState Alias "GetKeyboardState" (ByRef pbKeyState As Byte) As Integer
+Declare Function GetKeyboardType Alias "GetKeyboardType" (ByVal nTypeFlag As Integer) As Integer
+Declare Function GetKeyNameText Alias "GetKeyNameTextA" (ByVal lParam As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
+Declare Function GetKeyState Alias "GetKeyState" (ByVal vKey As Integer) As Short
+Declare Function GetLastActivePopup Alias "GetLastActivePopup" (ByVal hwndOwnder As Integer) As Integer
+Declare Function GetListBoxInfo Alias "GetListBoxInfo" (ByVal hwnd As Integer) As Integer
+Declare Function GetMenu Alias "GetMenu" (ByVal hwnd As Integer) As Integer
+Declare Function GetMenuCheckMarkDimensions Alias "GetMenuCheckMarkDimensions" () As Integer
+Declare Function GetMenuContextHelpId Alias "GetMenuContextHelpId" (ByVal hMenu As Integer) As Integer
+Declare Function GetMenuDefaultItem Alias "GetMenuDefaultItem" (ByVal hMenu As Integer, ByVal fByPos As Integer, ByVal gmdiFlags As Integer) As Integer
+Declare Function GetMenuInfo Alias "GetMenuInfo" (ByVal hmenu As Integer, ByRef LPMENUINFO As CMENUINFO) As Integer 'MENUINFO renamed to CMENUINFO
+Declare Function GetMenuItemCount Alias "GetMenuItemCount" (ByVal hMenu As Integer) As Integer
+Declare Function GetMenuItemID Alias "GetMenuItemID" (ByVal hMenu As Integer, ByVal nPos As Integer) As Integer
+Declare Function GetMenuItemInfo Alias "GetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal b As Short, ByRef lpMenuItemInfo As MENUITEMINFO) As Integer
+Declare Function GetMenuItemRect Alias "GetMenuItemRect" (ByVal hWnd As Integer, ByVal hMenu As Integer, ByVal uItem As Integer,  ByRef lprcItem As RECT) As Integer
+Declare Function GetMenuState Alias "GetMenuState" (ByVal hMenu As Integer, ByVal wID As Integer, ByVal wFlags As Integer) As Integer
+Declare Function GetMenuString Alias "GetMenuStringA" (ByVal hMenu As Integer, ByVal wIDItem As Integer, ByVal lpString As String, ByVal nMaxCount As Integer, ByVal wFlag As Integer) As Integer
+Declare Function GetMessage Alias "GetMessageA" (lpMsg as MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer) As Integer
+Declare Function GetMessageExtraInfo Alias "GetMessageExtraInfo" () As Integer
+Declare Function GetMessagePos Alias "GetMessagePos" () As Integer
+Declare Function GetMessageTime Alias "GetMessageTime" () As Integer
+Declare Function GetMonitorInfo Alias "GetMonitorInfoA" (ByRef hMonitor As Integer, ByRef lpmi As MONITORINFO) As Integer
+Declare Function GetMouseMovePointsEx Alias "GetMouseMovePointsEx" (ByVal cbSize As Integer, ByRef lppt As MOUSEMOVEPOINT, ByRef lpptBuf As MOUSEMOVEPOINT, ByVal nBufPoints As Integer, ByVal resolution As Integer) As Integer
+Declare Function GetNextDlgGroupItem Alias "GetNextDlgGroupItem" (ByVal hDlg As Integer, ByVal hCtl As Integer, ByVal bPrevious As Integer) As Integer
+Declare Function GetNextDlgTabItem Alias "GetNextDlgTabItem" (ByVal hDlg As Integer, ByVal hCtl As Integer, ByVal bPrevious As Integer) As Integer
+Declare Function GetNextWindow Alias "GetWindow" (ByVal hwnd As Integer, ByVal wFlag As Integer) As Integer
+Declare Function GetOpenClipboardWindow Alias "GetOpenClipboardWindow" () As Integer
+Declare Function GetParent Alias "GetParent" (ByVal hwnd As Integer) As Integer
+Declare Function GetPriorityClipboardFormat Alias "GetPriorityClipboardFormat" (ByRef lpPriorityList As Integer, ByVal nCount As Integer) As Integer
+Declare Function GetProcessDefaultLayout Alias "GetProcessDefaultLayout" (ByRef pdwDefaultLayout As Integer) As Integer
+Declare Function GetProcessWindowStation Alias "GetProcessWindowStation" () As Integer
+Declare Function GetProp Alias "GetPropA" (ByVal hwnd As Integer, ByVal lpString As String) As Integer
+Declare Function GetQueueStatus Alias "GetQueueStatus" (ByVal fuFlags As Integer) As Integer
+Declare Function GetScrollInfo Alias "GetScrollInfo" (ByVal hWnd As Integer, ByVal fnBar As Integer, ByRef lpScrollInfo As SCROLLINFO) As Integer
+Declare Function GetScrollPos Alias "GetScrollPos" (ByVal hwnd As Integer, ByVal nBar As Integer) As Integer
+Declare Function GetScrollRange Alias "GetScrollRange" (ByVal hwnd As Integer, ByVal nBar As Integer, ByRef lpMinPos As Integer, ByRef lpMaxPos As Integer) As Integer
+Declare Function GetSubMenu Alias "GetSubMenu" (ByVal hMenu As Integer, ByVal nPos As Integer) As Integer
+Declare Function GetSysColor Alias "GetSysColor" (ByVal nIndex As Integer) As Integer
+Declare Function GetSysColorBrush Alias "GetSysColorBrush" (ByVal nIndex As Integer) As Integer
+Declare Function GetSystemMenu Alias "GetSystemMenu" (ByVal hwnd As Integer, ByVal bRevert As Integer) As Integer
+Declare Function GetSystemMetrics Alias "GetSystemMetrics" (ByVal nIndex As Integer) As Integer
+Declare Function GetTabbedTextExtent Alias "GetTabbedTextExtentA" (ByVal hdc As Integer, ByVal lpString As String, ByVal nCount As Integer, ByVal nTabPositions As Integer, ByRef lpnTabStopPositions As Integer) As Integer
+Declare Function GetThreadDesktop Alias "GetThreadDesktop" (ByVal dwThread As Integer) As Integer
+Declare Function GetTopWindow Alias "GetTopWindow" (ByVal hwnd As Integer) As Integer
+Declare Function GetUpdateRect Alias "GetUpdateRect" (ByVal hwnd As Integer, ByRef lpRect As RECT, ByVal bErase As Integer) As Integer
+Declare Function GetUpdateRgn Alias "GetUpdateRgn" (ByVal hwnd As Integer, ByVal hRgn As Integer, ByVal fErase As Integer) As Integer
+Declare Function GetUserObjectSecurity Alias "GetUserObjectSecurity" (ByVal hObj As Integer, ByRef pSIRequested As Integer, ByRef pSd As SECURITY_DESCRIPTOR, ByVal nLength As Integer, ByRef lpnLengthNeeded As Integer) As Integer
+Declare Function GetWindow Alias "GetWindow" (ByVal hwnd As Integer, ByVal wCmd As Integer) As Integer
+Declare Function GetWindowContextHelpId Alias "GetWindowContextHelpId" (ByVal hWnd As Integer) As Integer
+Declare Function GetWindowDC Alias "GetWindowDC" (ByVal hwnd As Integer) As Integer
+Declare Function GetWindowLong Alias "GetWindowLongA" (ByVal hWnd As Integer, ByVal nIndex As Integer) As Integer
+Declare Function GetWindowModuleFileName Alias "GetWindowModuleFileNameA" (ByVal hwnd As Integer, ByVal pszFileName As String, ByVal cchFileNameMax As Integer) As Integer
+Declare Function GetWindowPlacement Alias "GetWindowPlacement" (ByVal hwnd As Integer, ByRef lpwndpl As WINDOWPLACEMENT) As Integer
+Declare Function GetWindowRect Alias "GetWindowRect" (ByVal hWnd As Integer, lpRect As RECT) As Integer
+Declare Function GetWindowRgn Alias "GetWindowRgn" (ByVal hWnd As Integer, ByVal hRgn As Integer) As Integer
+Declare Function GetWindowText Alias "GetWindowTextA" (ByVal hwnd As Integer, ByVal lpString As String, ByVal cch As Integer) As Integer
+Declare Function GetWindowTextLength Alias "GetWindowTextLengthA" (ByVal hwnd As Integer) As Integer
+Declare Function GetWindowThreadProcessId Alias "GetWindowThreadProcessId" (ByVal hwnd As Integer, ByRef lpdwProcessId As Integer) As Integer
+Declare Function GetWindowWord Alias "GetWindowWord" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Short
+Declare Function GrayString Alias "GrayStringA" (ByVal hDC As Integer, ByVal hBrush As Integer, ByVal lpOutputFunc As Integer, ByVal lpData As Integer, ByVal nCount As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
+Declare Function HideCaret Alias "HideCaret" (ByVal hwnd As Integer) As Integer
+Declare Function HiliteMenuItem Alias "HiliteMenuItem" (ByVal hwnd As Integer, ByVal hMenu As Integer, ByVal wIDHiliteItem As Integer, ByVal wHilite As Integer) As Integer
+Declare Function ImpersonateDdeClientWindow Alias "ImpersonateDdeClientWindow" (ByVal hWndClient As Integer, ByVal hWndServer As Integer) As Integer
+Declare Function InflateRect Alias "InflateRect" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Function InSendMessage Alias "InSendMessage" () As Integer
+Declare Function InSendMessageEx Alias "InSendMessageEx" (lpReserved As Any) As Integer
+Declare Function InsertMenu Alias "InsertMenuA" (ByVal hMenu As UInteger, ByVal nPosition As UInteger, ByVal wFlags As UInteger, ByVal wIDNewItem As UInteger, lpNewItem As Any) As Integer
+Declare Function InsertMenuItem Alias "InsertMenuItemA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
+Declare Function IntersectRect Alias "IntersectRect" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Integer
+Declare Function InvalidateRect Alias "InvalidateRect" (ByVal hwnd As Integer, ByRef lpRect As RECT, ByVal bErase As Integer) As Integer
+Declare Function InvalidateRgn Alias "InvalidateRgn" (ByVal hwnd As Integer, ByVal hRgn As Integer, ByVal bErase As Integer) As Integer
+Declare Function InvertRect Alias "InvertRect" (ByVal hdc As Integer, ByRef lpRect As RECT) As Integer
+Declare Function IsCharAlpha Alias "IsCharAlphaA" (ByVal cChar As Byte) As Integer
+Declare Function IsCharAlphaNumeric Alias "IsCharAlphaNumericA" (ByVal cChar As Byte) As Integer
+Declare Function IsCharLower Alias "IsCharLowerA" (ByVal cChar As Byte) As Integer
+Declare Function IsCharUpper Alias "IsCharUpperA" (ByVal cChar As Byte) As Integer
+Declare Function IsChild Alias "IsChild" (ByVal hWndParent As Integer, ByVal hwnd As Integer) As Integer
+Declare Function IsClipboardFormatAvailable Alias "IsClipboardFormatAvailable" (ByVal wFormat As Integer) As Integer
+Declare Function IsDialogMessage Alias "IsDialogMessageA" (ByVal hDlg As Integer, ByRef lpMsg As MSG) As Integer
+Declare Function IsDlgButtonChecked Alias "IsDlgButtonChecked" (ByVal hDlg As Integer, ByVal nIDButton As Integer) As Integer
+Declare Function IsIconic Alias "IsIconic" (ByVal hwnd As Integer) As Integer
+Declare Function IsMenu Alias "IsMenu" (ByVal hMenu As Integer) As Integer
+Declare Function IsRectEmpty Alias "IsRectEmpty" (ByRef lpRect As RECT) As Integer
+Declare Function IsWindow Alias "IsWindow" (ByVal hwnd As Integer) As Integer
+Declare Function IsWindowEnabled Alias "IsWindowEnabled" (ByVal hwnd As Integer) As Integer
+Declare Function IsWindowUnicode Alias "IsWindowUnicode" (ByVal hwnd As Integer) As Integer
+Declare Function IsWindowVisible Alias "IsWindowVisible" (ByVal hwnd As Integer) As Integer
+Declare Function IsZoomed Alias "IsZoomed" (ByVal hwnd As Integer) As Integer
+Declare Function KillTimer Alias "KillTimer" (ByVal hwnd As Integer, ByVal nIDEvent As Integer) As Integer
+Declare Function LoadAccelerators Alias "LoadAcceleratorsA" (ByVal hInstance As Integer, ByVal lpTableName As String) As Integer
+Declare Function LoadBitmap Alias "LoadBitmapA" (ByVal hInstance As Integer, ByVal lpBitmapName As String) As Integer
+Declare Function LoadCursor Alias "LoadCursorA" (ByVal hInstance As Integer, ByVal lpCursorName As String) As Integer
+Declare Function LoadCursorFromFile Alias "LoadCursorFromFileA" (ByVal lpFileName As String) As Integer
+Declare Function LoadIcon Alias "LoadIconA" (ByVal hInstance As Integer, ByVal lpIconName As String) As Integer
+Declare Function LoadImage Alias "LoadImageA" (ByVal hInst As Integer, ByVal lpsz As String, ByVal un1 As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal un2 As Integer) As Integer
+Declare Function LoadKeyboardLayout Alias "LoadKeyboardLayoutA" (ByVal pwszKLID As String, ByVal flags As Integer) As Integer
+Declare Function LoadMenu Alias "LoadMenuA" (ByVal hInstance As Integer, ByVal lpString As String) As Integer
+Declare Function LoadMenuIndirect Alias "LoadMenuIndirectA" (ByVal lpMenuTemplate As Integer) As Integer
+Declare Function LoadString Alias "LoadStringA" (ByVal hInstance As Integer, ByVal wID As Integer, ByVal lpBuffer As String, ByVal nBufferMax As Integer) As Integer
+Declare Function LockWindowUpdate Alias "LockWindowUpdate" (ByVal hwndLock As Integer) As Integer
+Declare Function LookupIconIdFromDirectory Alias "LookupIconIdFromDirectory" (ByRef presbits As Byte, ByVal fIcon As Short) As Integer
+Declare Function LookupIconIdFromDirectoryEx Alias "LookupIconIdFromDirectoryEx" (ByRef presbits As Byte, ByVal fIcon As Short, ByVal cxDesired As Integer, ByVal cyDesired As Integer, ByVal Flags As Integer) As Integer
+Declare Function MapDialogRect Alias "MapDialogRect" (ByVal hDlg As Integer, ByRef lpRect As RECT) As Integer
+Declare Function MapVirtualKey Alias "MapVirtualKeyA" (ByVal wCode As Integer, ByVal wMapType As Integer) As Integer
+Declare Function MapVirtualKeyEx Alias "MapVirtualKeyExA" (ByVal uCode As Integer, ByVal uMapType As Integer, ByVal dwhkl As Integer) As Integer
+Declare Function MenuItemFromPoint Alias "MenuItemFromPoint" (ByVal hWnd As Integer, ByVal hMenu As Integer, Byref ptScreen As POINTAPI) As Integer
+Declare Function MessageBeep Alias "MessageBeep" (ByVal wType As Integer) As Integer
+Declare Function MessageBox Alias "MessageBoxA" (ByVal hwnd As Integer, ByVal lpText As String, ByVal lpCaption As String, ByVal wtype As Integer) As Integer
+Declare Function MessageBoxEx Alias "MessageBoxExA" (ByVal hwnd As Integer, ByVal lpText As String, ByVal lpCaption As String, ByVal uType As Integer, ByVal wLanguageId As Integer) As Integer
+Declare Function MessageBoxIndirect Alias "MessageBoxIndirectA" (ByRef lpMsgBoxParams As MSGBOXPARAMS) As Integer
+Declare Sub MonitorFromPoint Alias "MonitorFromPoint" (Byref pt As POINTAPI, ByVal dwFlags As Integer)
+Declare Sub MonitorFromRect Alias "MonitorFromRect" (ByRef lprc As RECT, ByVal dwFlags As Integer)
+Declare Sub MonitorFromWindow Alias "MonitorFromWindow" (ByVal hwnd As Integer, ByVal dwFlags As Integer)
+Declare Function MoveWindow Alias "MoveWindow" (ByVal hwnd As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal bRepaint As Integer) As Integer
+Declare Function MsgWaitForMultipleObjects Alias "MsgWaitForMultipleObjects" (ByVal nCount As Integer, ByRef pHandles As Integer, ByVal fWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal dwWakeMask As Integer) As Integer
+Declare Function MsgWaitForMultipleObjectsEx Alias "MsgWaitForMultipleObjectsEx" (ByVal nCount As Integer, ByRef pHandles As Integer, ByVal dwMilliseconds As Integer, ByVal dwWakeMask As Integer, ByVal dwFlags As Integer) As Integer
+Declare Sub NotifyWinEvent Alias "NotifyWinEvent" (ByVal lEvent As Integer, ByVal hwnd As Integer, ByVal idObject As Integer, ByVal idChild As Integer)
+Declare Function OemKeyScan Alias "OemKeyScan" (ByVal wOemChar As Integer) As Integer
+Declare Function OemToChar Alias "OemToCharA" (ByVal lpszSrc As String, ByVal lpszDst As String) As Integer
+Declare Function OemToCharBuff Alias "OemToCharBuffA" (ByVal lpszSrc As String, ByVal lpszDst As String, ByVal cchDstLength As Integer) As Integer
+Declare Function OffsetRect Alias "OffsetRect" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Function OpenClipboard Alias "OpenClipboard" (ByVal hwnd As Integer) As Integer
+Declare Function OpenDesktop Alias "OpenDesktopA" (ByVal lpszDesktop As String, ByVal dwFlags As Integer, ByVal fInherit As Short, ByVal dwDesiredAccess As Integer) As Integer
+Declare Function OpenIcon Alias "OpenIcon" (ByVal hwnd As Integer) As Integer
+Declare Function PackDDElParam Alias "PackDDElParam" (ByVal msg As Integer, ByVal uiLo As Integer, ByVal uiHi As Integer) As Integer
+Declare Function PaintDesktop Alias "PaintDesktop" (ByVal hdc As Integer) As Integer
+Declare Function PeekMessage Alias "PeekMessageA" (lpMsg As MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer, ByVal wRemoveMsg As Integer) As Integer
+Declare Function PostMessage Alias "PostMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare sub PostQuitMessage Alias "PostQuitMessage" (ByVal nExitCode As Integer)
+Declare Function PtInRect Alias "PtInRect" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Function RealChildWindowFromPoint Alias "RealChildWindowFromPoint" (ByVal hwndParent As Integer, Byref ptParentClientCoords As POINTAPI) As Integer
+Declare Function RealGetWindowClass Alias "RealGetWindowClass" (ByVal hwnd As Integer, ByVal pszType As String, ByVal cchType As Integer) As Integer
+Declare Function RedrawWindow Alias "RedrawWindow" (ByVal hwnd As Integer, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Integer, ByVal fuRedraw As Integer) As Integer
+Declare Function RegisterClass Alias "RegisterClassA" (Class As WNDCLASS) As Integer
+Declare Function RegisterClassEx Alias "RegisterClassExA" (pcWndClassEx As WNDCLASSEX) As Integer
+Declare Function RegisterClipboardFormat Alias "RegisterClipboardFormatA" (ByVal lpString As String) As Integer
+Declare Function RegisterHotKey Alias "RegisterHotKey" (ByVal hwnd As Integer, ByVal id As Integer, ByVal fsModifiers As Integer, ByVal vk As Integer) As Integer
+Declare Function RegisterWindowMessage Alias "RegisterWindowMessageA" (ByVal lpString As String) As Integer
+Declare Function ReleaseCapture Alias "ReleaseCapture" () As Integer
+Declare Function ReleaseDC Alias "ReleaseDC" (ByVal hWnd As Integer, ByVal hDC As Integer) As Integer
+Declare Function RemoveMenu Alias "RemoveMenu" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer) As Integer
+Declare Function RemoveProp Alias "RemovePropA" (ByVal hwnd As Integer, ByVal lpString As String) As Integer
+Declare Function ReplyMessage Alias "ReplyMessage" (ByVal lReply As Integer) As Integer
+Declare Function ReuseDDElParam Alias "ReuseDDElParam" (ByVal lParam As Integer, ByVal msgIn As Integer, ByVal msgOut As Integer, ByVal uiLo As Integer, ByVal uiHi As Integer) As Integer
+Declare Function ScreenToClient Alias "ScreenToClient" (ByVal hwnd As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function ScrollDC Alias "ScrollDC" (ByVal hdc As Integer, ByVal dx As Integer, ByVal dy As Integer, ByRef lprcScroll As RECT, ByRef lprcClip As RECT, ByVal hrgnUpdate As Integer, ByRef lprcUpdate As RECT) As Integer
+Declare Function ScrollWindow Alias "ScrollWindow" (ByVal hWnd As Integer, ByVal XAmount As Integer, ByVal YAmount As Integer, ByRef lpRect As RECT, ByRef lpClipRect As RECT) As Integer
+Declare Function ScrollWindowEx Alias "ScrollWindowEx" (ByVal hwnd As Integer, ByVal dx As Integer, ByVal dy As Integer, ByRef lprcScroll As RECT, ByRef lprcClip As RECT, ByVal hrgnUpdate As Integer, ByRef lprcUpdate As RECT, ByVal fuScroll As Integer) As Integer
+Declare Function SendDlgItemMessage Alias "SendDlgItemMessageA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function SendIMEMessageEx Alias "SendIMEMessageExA" (ByVal hwnd As Integer, ByVal lparam As Integer) As Integer
+Declare Function SendInput Alias "SendInput" (ByVal cInputs As Integer, ByRef pInputs As TINPUT, ByVal cbSize As Integer) As Integer
+Declare Function SendMessage Alias "SendMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
+Declare Function SendMessageCallback Alias "SendMessageCallbackA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal lpResultCallBack As Integer, ByVal dwData As Integer) As Integer
+Declare Function SendMessageTimeout Alias "SendMessageTimeoutA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal fuFlags As Integer, ByVal uTimeout As Integer, ByRef lpdwResult As Integer) As Integer
+Declare Function SendNotifyMessage Alias "SendNotifyMessageA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+Declare Function SetActiveWindow Alias "SetActiveWindow" (ByVal hwnd As Integer) As Integer
+Declare Function SetCapture Alias "SetCapture" (ByVal hwnd As Integer) As Integer
+Declare Function SetCaretBlinkTime Alias "SetCaretBlinkTime" (ByVal wMSeconds As Integer) As Integer
+Declare Function SetCaretPos Alias "SetCaretPos" (ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Function SetClassLong Alias "SetClassLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal dwNewLong As Integer) As Integer
+Declare Function SetClassWord Alias "SetClassWord" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal wNewWord As Integer) As Integer
+Declare Function SetClipboardData Alias "SetClipboardData" (ByVal wFormat As Integer, ByVal hMem As Integer) As Integer
+Declare Function SetClipboardViewer Alias "SetClipboardViewer" (ByVal hwnd As Integer) As Integer
+Declare Function SetCursor Alias "SetCursor" (ByVal hCursor As Integer) As Integer
+Declare Function SetCursorPos Alias "SetCursorPos" (ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Sub SetDebugErrorLevel Alias "SetDebugErrorLevel" (ByVal dwLevel As Integer)
+Declare Function SetDlgItemInt Alias "SetDlgItemInt" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal wValue As Integer, ByVal bSigned As Integer) As Integer
+Declare Function SetDlgItemText Alias "SetDlgItemTextA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal lpString As String) As Integer
+Declare Function SetDoubleClickTime Alias "SetDoubleClickTime" (ByVal wCount As Integer) As Integer
+Declare Function SetFocus Alias "SetFocus" (ByVal hwnd As Integer) As Integer
+Declare Function SetForegroundWindow Alias "SetForegroundWindow" (ByVal hwnd As Integer) As Integer
+Declare Function SetKeyboardState Alias "SetKeyboardState" (ByRef lppbKeyState As Byte) As Integer
+Declare Sub SetLastErrorEx Alias "SetLastErrorEx" (ByVal dwErrCode As Integer, ByVal dwType As Integer)
+Declare Function SetMenu Alias "SetMenu" (ByVal hwnd As Integer, ByVal hMenu As Integer) As Integer
+Declare Function SetMenuContextHelpId Alias "SetMenuContextHelpId" (ByVal hMenu As Integer, ByVal dw As Integer) As Integer
+Declare Function SetMenuDefaultItem Alias "SetMenuDefaultItem" (ByVal hMenu As Integer, ByVal uItem As Integer, ByVal fByPos As Integer) As Integer
+Declare Function SetMenuInfo Alias "SetMenuInfo" (ByVal hmenu As Integer, ByRef LPCMENUINFO As CMENUINFO) As Integer
+Declare Function SetMenuItemBitmaps Alias "SetMenuItemBitmaps" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal hBitmapUnchecked As Integer, ByVal hBitmapChecked As Integer) As Integer
+Declare Function SetMenuItemInfo Alias "SetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
+Declare Function SetMessageExtraInfo Alias "SetMessageExtraInfo" (ByVal lParam As Integer) As Integer
+Declare Function SetMessageQueue Alias "SetMessageQueue" (ByVal cMessagesMax As Integer) As Integer
+Declare Function SetParent Alias "SetParent" (ByVal hWndChild As Integer, ByVal hWndNewParent As Integer) As Integer
+Declare Function SetProcessDefaultLayout Alias "SetProcessDefaultLayout" (ByVal dwDefaultLayout As Integer) As Integer
+Declare Function SetProcessWindowStation Alias "SetProcessWindowStation" (ByVal hWinSta As Integer) As Integer
+Declare Function SetProp Alias "SetPropA" (ByVal hwnd As Integer, ByVal lpString As String, ByVal hData As Integer) As Integer
+Declare Function SetRect Alias "SetRect" (ByRef lpRect As RECT, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
+Declare Function SetRectEmpty Alias "SetRectEmpty" (ByRef lpRect As RECT) As Integer
+Declare Function SetScrollInfo Alias "SetScrollInfo" (ByVal hWnd As Integer, ByVal n As Integer, ByRef lpcScrollInfo As SCROLLINFO, ByVal bool As Short) As Integer
+Declare Function SetScrollPos Alias "SetScrollPos" (ByVal hwnd As Integer, ByVal nBar As Integer, ByVal nPos As Integer, ByVal bRedraw As Integer) As Integer
+Declare Function SetScrollRange Alias "SetScrollRange" (ByVal hwnd As Integer, ByVal nBar As Integer, ByVal nMinPos As Integer, ByVal nMaxPos As Integer, ByVal bRedraw As Integer) As Integer
+Declare Function SetSysColors Alias "SetSysColors" (ByVal nChanges As Integer, ByRef lpSysColor As Integer, ByRef lpColorValues As Integer) As Integer
+Declare Function SetSystemCursor Alias "SetSystemCursor" (ByVal hcur As Integer, ByVal id As Integer) As Integer
+Declare Function SetThreadDesktop Alias "SetThreadDesktop" (ByVal hDesktop As Integer) As Integer
+Declare Function SetTimer Alias "SetTimer" (ByVal hWnd As Integer, ByVal nIDEvent As Integer, ByVal uElapse As Integer, ByVal lpTimerFunc As Integer) As Integer
+Declare Function SetUserObjectInformation Alias "SetUserObjectInformationA" (ByVal hObj As Integer, ByVal nIndex As Integer, ByRef pvInfo As Any, ByVal nLength As Integer) As Integer
+Declare Function SetUserObjectSecurity Alias "SetUserObjectSecurity" (ByVal hObj As Integer, ByRef pSIRequested As Integer, ByRef pSd As SECURITY_DESCRIPTOR) As Integer
+Declare Function SetWindowContextHelpId Alias "SetWindowContextHelpId" (ByVal hWnd As Integer, ByVal dw As Integer) As Integer
+Declare Function SetWindowLong Alias "SetWindowLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal dwNewLong As Integer) As Integer
+Declare Function SetWindowPlacement Alias "SetWindowPlacement" (ByVal hwnd As Integer, ByRef lpwndpl As WINDOWPLACEMENT) As Integer
+Declare Function SetWindowPos Alias "SetWindowPos" (ByVal hWnd As Integer, ByVal hWndInsertAfter As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal wFlags As Integer) As Integer
+Declare Function SetWindowRgn Alias "SetWindowRgn" (ByVal hWnd As Integer, ByVal hRgn As Integer, ByVal bRedraw As Short) As Integer
+Declare Function SetWindowText Alias "SetWindowTextA" (ByVal hwnd As Integer, byVal lpText As String ) As Short
+Declare Function SetWindowWord Alias "SetWindowWord" (ByVal hwnd As Integer, ByVal nIndex As Integer, ByVal wNewWord As Integer) As Integer
+Declare Function SetWindowsHook Alias "SetWindowsHookA" (ByVal nFilterType As Integer, ByVal pfnFilterProc As Integer) As Integer
+Declare Function SetWindowsHookEx Alias "SetWindowsHookExA" (ByVal idHook As Integer, ByVal lpfn As Integer, ByVal hmod As Integer, ByVal dwThreadId As Integer) As Integer
+Declare Function ShowCaret Alias "ShowCaret" (ByVal hwnd As Integer) As Integer
+Declare Function ShowCursor Alias "ShowCursor" (ByVal bShow As Integer) As Integer
+Declare Function ShowOwnedPopups Alias "ShowOwnedPopups" (ByVal hwnd As Integer, ByVal fShow As Integer) As Integer
+Declare Function ShowScrollBar Alias "ShowScrollBar" (ByVal hwnd As Integer, ByVal wBar As Integer, ByVal bShow As Integer) As Integer
+Declare Function ShowWindow Alias "ShowWindow" (ByVal hwnd As Integer, ByVal nCmdShow As Integer) As Integer
+Declare Function ShowWindowAsync Alias "ShowWindowAsync" (ByVal hWnd As Integer, ByVal nCmdShow As Integer) As Integer
+Declare Function SubtractRect Alias "SubtractRect" (ByRef lprcDst As RECT, ByRef lprcSrc1 As RECT, ByRef lprcSrc2 As RECT) As Integer
+Declare Function SwapMouseButton Alias "SwapMouseButton" (ByVal bSwap As Integer) As Integer
+Declare Function SwitchDesktop Alias "SwitchDesktop" (ByVal hDesktop As Integer) As Integer
+Declare Function SystemParametersInfo Alias "SystemParametersInfoA" (ByVal uAction As Integer, ByVal uParam As Integer, ByRef lpvParam As Any, ByVal fuWinIni As Integer) As Integer
+Declare Function TabbedTextOut Alias "TabbedTextOutA" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal lpString As String, ByVal nCount As Integer, ByVal nTabPositions As Integer, ByRef lpnTabStopPositions As Integer, ByVal nTabOrigin As Integer) As Integer
+Declare Function TileWindows Alias "TileWindows" (ByVal hwndParent As Integer, ByVal wHow As Integer, ByRef lpRect As RECT, ByVal cKids As Integer, ByRef lpKids As Integer) As Short
+Declare Function ToAscii Alias "ToAscii" (ByVal uVirtKey As Integer, ByVal uScanCode As Integer, ByRef lpbKeyState As Byte, ByRef lpwTransKey As Integer, ByVal fuState As Integer) As Integer
+Declare Function ToAsciiEx Alias "ToAsciiEx" (ByVal uVirtKey As Integer, ByVal uScanCode As Integer, ByRef lpKeyState As Byte, ByRef lpChar As Short, ByVal uFlags As Integer, ByVal dwhkl As Integer) As Integer
+Declare Function ToUnicode Alias "ToUnicode" (ByVal wVirtKey As Integer, ByVal wScanCode As Integer, ByRef lpKeyState As Byte, ByVal pwszBuff As String, ByVal cchBuff As Integer, ByVal wFlags As Integer) As Integer
+Declare Function ToUnicodeEx Alias "ToUnicodeEx" (ByVal wVirtKey As Integer, ByVal wScanCode As Integer, ByVal lpKeyState As String, ByVal pwszBuff As String, ByVal cchBuff As Integer, ByVal wFlags As Integer, ByVal dwhkl As Integer) As Integer
+Declare Function TrackPopupMenu Alias "TrackPopupMenu" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nReserved As Integer, ByVal hwnd As Integer, ByRef lprc As RECT) As Integer
+Declare Function TrackPopupMenuEx Alias "TrackPopupMenuEx" (ByVal hMenu As Integer, ByVal un As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal hWnd As Integer, ByRef lpTPMParams As TPMPARAMS) As Integer
+Declare Function TranslateAccelerator Alias "TranslateAcceleratorA" (ByVal hwnd As Integer, ByVal hAccTable As Integer, ByRef lpMsg As MSG) As Integer
+Declare Function TranslateMDISysAccel Alias "TranslateMDISysAccel" (ByVal hWndClient As Integer, ByRef lpMsg As MSG) As Integer
+Declare Function TranslateMessage Alias "TranslateMessage" (lpMsg As MSG) As Integer
+Declare Function UnhookWinEvent Alias "UnhookWinEvent" (ByRef hWinEventHook As Integer) As Integer
+Declare Function UnhookWindowsHook Alias "UnhookWindowsHook" (ByVal nCode As Integer, ByVal pfnFilterProc As Integer) As Integer
+Declare Function UnhookWindowsHookEx Alias "UnhookWindowsHookEx" (ByVal hHook As Integer) As Integer
+Declare Function UnionRect Alias "UnionRect" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Integer
+Declare Function UnloadKeyboardLayout Alias "UnloadKeyboardLayout" (ByVal HKL As Integer) As Integer
+Declare Function UnpackDDElParam Alias "UnpackDDElParam" (ByVal msg As Integer, ByVal lParam As Integer, ByRef puiLo As Integer, ByRef puiHi As Integer) As Integer
+Declare Function UnregisterClass Alias "UnregisterClassA" (ByVal lpClassName As String, ByVal hInstance As Integer) As Integer
+Declare Function UnregisterDeviceNotification Alias "UnregisterDeviceNotification" (ByRef Handle As Integer) As Integer
+Declare Function UnregisterHotKey Alias "UnregisterHotKey" (ByVal hwnd As Integer, ByVal id As Integer) As Integer
+Declare Function UpdateWindow Alias "UpdateWindow" (ByVal hwnd As Integer) As Integer
+Declare Function ValidateRect Alias "ValidateRect" (ByVal hwnd As Integer, ByRef lpRect As RECT) As Integer
+Declare Function ValidateRgn Alias "ValidateRgn" (ByVal hwnd As Integer, ByVal hRgn As Integer) As Integer
+Declare Function VkKeyScan Alias "VkKeyScanA" (ByVal cChar As Byte) As Short
+Declare Function VkKeyScanEx Alias "VkKeyScanExA" (ByVal ch As Byte, ByVal dwhkl As Integer) As Short
+Declare Function WaitForInputIdle Alias "WaitForInputIdle" (ByVal hProcess As Integer, ByVal dwMilliseconds As Integer) As Integer
+Declare Function WindowFromDC Alias "WindowFromDC" (ByVal hdc As Integer) As Integer
+Declare Function WindowFromPoint Alias "WindowFromPoint" (ByVal xPoint As Integer, ByVal yPoint As Integer) As Integer
+Declare Function WinHelp Alias "WinHelpA" (ByVal hwnd As Integer, ByVal lpHelpFile As String, ByVal wCommand As Integer, ByVal dwData As Integer) As Integer
+Declare Function WINNLSEnableIME Alias "WINNLSEnableIME" (ByVal hwnd As Integer, ByVal bool As Integer) As Integer
+Declare Function WINNLSGetEnableStatus Alias "WINNLSGetEnableStatus" (ByVal hwnd As Integer) As Integer
+Declare Function WINNLSGetIMEHotkey Alias "WINNLSGetIMEHotkey" (ByVal hwnd As Integer) As Integer
+Declare Sub keybd_event Alias "keybd_event" (ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As Integer, ByVal dwExtraInfo As Integer)
+Declare Sub mouse_event Alias "mouse_event" (ByVal dwFlags As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal cButtons As Integer, ByVal dwExtraInfo As Integer)
 
 'the following functions require advanced functionality, additional data types, or are missing their required types.
-'Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesA" (ByVal lpDevice As String, ByVal iDevNum As Integer, ByRef lpDisplayDevice As PDISPLAY_DEVICEA, ByVal dwFlags As Integer) As Integer
-'Declare Function EnumDisplayMonitors Lib "user32" (ByVal hdc As Integer, ByRef lprcClip As RECT, ByRef lpfnEnum As MONITORENUMPROC, ByVal dwData As Integer) As Integer
-'Declare Function GetMenuBarInfo Lib "user32" (ByVal hwnd As Integer, ByVal idObject As Integer, ByVal idItem As Integer, ByRef pmbi As PMENUBARINFO) As Integer
-'Declare Function GetScrollBarInfo Lib "user32" (ByVal hwnd As Integer, ByVal idObject As Integer, ByRef psbi As PSCROLLBARINFO) As Integer
-'Declare Function GetTitleBarInfo Lib "user32" (ByVal hwnd As Integer, ByRef pti As PTITLEBARINFO) As Integer
-'Declare Function GetUserObjectInformation Lib "user32" Alias "GetUserObjectInformationA" (ByVal hObj As Integer, ByVal nIndex As Integer, ByRef pvInfo As Any, ByVal nLength As Integer, ByRef lpnLengthNeeded As Integer) As Integer
-'Declare Function GetWindowInfo Lib "user32" (ByVal hwnd As Integer, ByRef pwi As PWINDOWINFO) As Integer
-'Declare Function IMPGetIME Lib "user32" Alias "IMPGetIMEA" (ByVal hwnd As Integer, ByRef LPIMEPROA As IMEPROA) As Integer
-'Declare Function IMPQueryIME Lib "user32" Alias "IMPQueryIMEA" (ByRef LPIMEPROA As IMEPROA) As Integer
-'Declare Function IMPSetIME Lib "user32" Alias "IMPSetIMEA" (ByVal hwnd As Integer, ByRef LPIMEPROA As IMEPROA) As Integer
-'Declare Function MapWindowPoints Lib "user32" (ByVal hwndFrom As Integer, ByVal hwndTo As Integer, ByRef lppt As Any, ByVal cPoints As Integer) As Integer
-'Declare Function ModifyMenu Lib "user32" Alias "ModifyMenuA" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, ByVal lpString As Any) As Integer
-'Declare Function OpenInputDesktop Lib "user32" (ByVal dwFlags As Integer, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
-'Declare Function OpenWindowStation Lib "user32" Alias "OpenWindowStationA" (ByVal lpszWinSta As String, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
-'Declare Sub RegisterDeviceNotification Lib "user32" Alias "RegisterDeviceNotificationA" (ByVal hRecipient As Integer, ByRef NotificationFilter As Any, ByVal Flags As Integer)
-'Declare Sub SetWinEventHook Lib "user32" (ByVal eventMin As Integer, ByVal eventMax As Integer, ByVal hmodWinEventProc As Integer, ByRef pfnWinEventProc As WINEVENTPROC, ByVal idProcess As Integer, ByVal idThread As Integer, ByVal dwFlags As Integer)
-'Declare Function TrackMouseEvent Lib "user32" (ByRef lpEventTrack As TRACKMOUSEEVENT) As Integer
+'Declare Function EnumDisplayDevices Alias "EnumDisplayDevicesA" (ByVal lpDevice As String, ByVal iDevNum As Integer, ByRef lpDisplayDevice As PDISPLAY_DEVICEA, ByVal dwFlags As Integer) As Integer
+'Declare Function EnumDisplayMonitors Alias "EnumDisplayMonitors" (ByVal hdc As Integer, ByRef lprcClip As RECT, ByRef lpfnEnum As MONITORENUMPROC, ByVal dwData As Integer) As Integer
+'Declare Function GetMenuBarInfo Alias "GetMenuBarInfo" (ByVal hwnd As Integer, ByVal idObject As Integer, ByVal idItem As Integer, ByRef pmbi As PMENUBARINFO) As Integer
+'Declare Function GetScrollBarInfo Alias "GetScrollBarInfo" (ByVal hwnd As Integer, ByVal idObject As Integer, ByRef psbi As PSCROLLBARINFO) As Integer
+'Declare Function GetTitleBarInfo Alias "GetTitleBarInfo" (ByVal hwnd As Integer, ByRef pti As PTITLEBARINFO) As Integer
+'Declare Function GetUserObjectInformation Alias "GetUserObjectInformationA" (ByVal hObj As Integer, ByVal nIndex As Integer, ByRef pvInfo As Any, ByVal nLength As Integer, ByRef lpnLengthNeeded As Integer) As Integer
+'Declare Function GetWindowInfo Alias "GetWindowInfo" (ByVal hwnd As Integer, ByRef pwi As PWINDOWINFO) As Integer
+'Declare Function IMPGetIME Alias "IMPGetIMEA" (ByVal hwnd As Integer, ByRef LPIMEPROA As IMEPROA) As Integer
+'Declare Function IMPQueryIME Alias "IMPQueryIMEA" (ByRef LPIMEPROA As IMEPROA) As Integer
+'Declare Function IMPSetIME Alias "IMPSetIMEA" (ByVal hwnd As Integer, ByRef LPIMEPROA As IMEPROA) As Integer
+'Declare Function MapWindowPoints Alias "MapWindowPoints" (ByVal hwndFrom As Integer, ByVal hwndTo As Integer, ByRef lppt As Any, ByVal cPoints As Integer) As Integer
+'Declare Function ModifyMenu Alias "ModifyMenuA" (ByVal hMenu As Integer, ByVal nPosition As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, ByVal lpString As Any) As Integer
+'Declare Function OpenInputDesktop Alias "OpenInputDesktop" (ByVal dwFlags As Integer, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
+'Declare Function OpenWindowStation Alias "OpenWindowStationA" (ByVal lpszWinSta As String, ByVal fInherit As Boolean, ByVal dwDesiredAccess As Integer) As Integer
+'Declare Sub RegisterDeviceNotification Alias "RegisterDeviceNotificationA" (ByVal hRecipient As Integer, ByRef NotificationFilter As Any, ByVal Flags As Integer)
+'Declare Sub SetWinEventHook Alias "SetWinEventHook" (ByVal eventMin As Integer, ByVal eventMax As Integer, ByVal hmodWinEventProc As Integer, ByRef pfnWinEventProc As WINEVENTPROC, ByVal idProcess As Integer, ByVal idThread As Integer, ByVal dwFlags As Integer)
+'Declare Function TrackMouseEvent Alias "TrackMouseEvent" (ByRef lpEventTrack As TRACKMOUSEEVENT) As Integer
 #endif 'USER32_BI

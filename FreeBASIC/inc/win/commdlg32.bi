@@ -11,9 +11,11 @@
 'Changelog:
 '  1.01: All STRING structs fields changed to BYTE PTR, the OPENFILENAME struct maps the VB version better (v1ctor)
 
-'$include once: "win\winbase.bi"
-'$include once: "win\user32.bi"
-'$include once: "win\gdi32.bi"
+#include once "win\winbase.bi"
+#include once "win\user32.bi"
+#include once "win\gdi32.bi"
+
+#inclib "comdlg32"
 
 '----------------------
 '| REQUIRED CONSTANTS |
@@ -295,14 +297,14 @@ End Type
 '| API FUNCTIONS |
 '-----------------
 
-Declare Function ChooseColor Lib "comdlg32" Alias "ChooseColorA" (pChoosecolor As CHOOSECOLORS) As Integer
-Declare Function ChooseFont Lib "comdlg32" Alias "ChooseFontA" (ByRef pChoosefont As CHOOSEFONTS) As Integer
-Declare Function CommDlgExtendedError Lib "comdlg32" () As Integer
-Declare Function FindText Lib "comdlg32" Alias "FindTextA" (ByRef pFindreplace As FINDREPLACE) As Integer
-Declare Function GetFileTitle Lib "comdlg32" Alias "GetFileTitleA" (ByVal lpszFile As String, ByVal lpszTitle As String, ByVal cbBuf As Short) As Short
-Declare Function GetOpenFileName Lib "comdlg32" Alias "GetOpenFileNameA" (pOpenfilename As OPENFILENAME) As Integer
-Declare Function GetSaveFileName Lib "comdlg32" Alias "GetSaveFileNameA" (pOpenfilename As OPENFILENAME) As Integer
-Declare Function PageSetupDlg Lib "comdlg32" Alias "PageSetupDlgA" (ByRef pPagesetupdlg As PAGESETUPDLGS) As Integer
-Declare Function PrintDlg Lib "comdlg32" Alias "PrintDlgA" (pPrintdlg As PRINTDLGS) As Integer
-Declare Function ReplaceText Lib "comdlg32" Alias "ReplaceTextA" (ByRef pFindreplace As FINDREPLACE) As Integer
+Declare Function ChooseColor Alias "ChooseColorA" (pChoosecolor As CHOOSECOLORS) As Integer
+Declare Function ChooseFont Alias "ChooseFontA" (ByRef pChoosefont As CHOOSEFONTS) As Integer
+Declare Function CommDlgExtendedError Alias "CommDlgExtendedError" () As Integer
+Declare Function FindText Alias "FindTextA" (ByRef pFindreplace As FINDREPLACE) As Integer
+Declare Function GetFileTitle Alias "GetFileTitleA" (ByVal lpszFile As String, ByVal lpszTitle As String, ByVal cbBuf As Short) As Short
+Declare Function GetOpenFileName Alias "GetOpenFileNameA" (pOpenfilename As OPENFILENAME) As Integer
+Declare Function GetSaveFileName Alias "GetSaveFileNameA" (pOpenfilename As OPENFILENAME) As Integer
+Declare Function PageSetupDlg Alias "PageSetupDlgA" (ByRef pPagesetupdlg As PAGESETUPDLGS) As Integer
+Declare Function PrintDlg Alias "PrintDlgA" (pPrintdlg As PRINTDLGS) As Integer
+Declare Function ReplaceText Alias "ReplaceTextA" (ByRef pFindreplace As FINDREPLACE) As Integer
 #endif 'COMMDLG32_BI

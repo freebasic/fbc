@@ -12,9 +12,11 @@
 '  1.02: TINITCOMMONCONTROLSEX named back to INITCOMMONCONTROLSEX, TYPE's can have the same name as other symbols since ver 0.09 (v1ctor)
 '  1.01: bunch of constants added (many missing), INITCOMMONCONTROLSEX with a T prefix now to not clash with the proc (v1c)
 
-'$include once: 'win\winbase.bi'
-'$include once: "win\user32.bi"
-'$include once: "win\gdi32.bi"
+#include once "win\winbase.bi"
+#include once "win\user32.bi"
+#include once "win\gdi32.bi"
+
+#inclib "comctl32"
 
 '----------------------
 '| REQUIRED CONSTANTS |
@@ -252,68 +254,68 @@ end type
 '| API FUNCTIONS |
 '-----------------
 
-'Declare Function CreateMappedBitmap Lib "comctl32" (ByVal hInstance As Integer, ByRef idBitmap As T_PTR, ByVal wFlags As Integer, ByRef lpColorMap As ColorMap, ByValumMaps As Integer) As Integer
-'Declare Function CreatePropertySheetPage Lib "comctl32" (ByRef lpcpropsheetpagea As CPROPSHEETPAGEA) As Integer
-Declare Function CreateStatusWindow Lib "comctl32" (ByVal style As Integer, ByVal lpszText As String, ByVal hwndParent As Integer, ByVal wID As Integer) As Integer
-'Declare Function CreateToolbarEx Lib "comctl32" (ByVal hwnd As Integer, ByVal ws As Integer, ByVal wID As Integer, ByVal nBitmaps As Integer, ByVal hBMInst As Integer, ByRef wBMID As Integer, ByRef lpButtons As CTBBUTTON, ByVal numButtons As Integer, ByVal dxButton As Integer, ByVal dyButton As Integer, ByVal dxBitmap As Integer, ByVal dyBitmap As Integer, ByVal uStructSize As Integer) As Integer
-Declare Function CreateUpDownControl Lib "comctl32" (ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal hParent As Integer, ByVal nID As Integer, ByVal hInst As Integer, ByVal hBuddy As Integer, ByVal nUpper As Integer, ByVal nLower As Integer, ByVal nPos As Integer) As Integer
-Declare Function DestroyPropertySheetPage Lib "comctl32" (ByVal hpropsheetpage As Integer) As Integer
-Declare Sub DrawInsert Lib "comctl32" (ByVal handParent As Integer, ByVal hLB As Integer, ByVal nItem As Integer)
-Declare Sub DrawStatusText Lib "comctl32" (ByVal hDC As Integer, ByRef lprc As RECT, ByVal pszText As String, ByVal uFlags As Integer)
-Declare Function FlatSB_EnableScrollBar Lib "comctl32" (ByVal hwnd As Integer, ByValt As Integer, ByVal uint As Integer) As Integer
-Declare Function FlatSB_GetScrollInfo Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer, ByRef lpscrollinfo As SCROLLINFO) As Integer
-Declare Function FlatSB_GetScrollPos Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer) As Integer
-Declare Function FlatSB_GetScrollProp Lib "comctl32" (ByVal hwnd As Integer, ByVal propIndex As Integer, ByRef lpint As Integer) As Integer
-Declare Function FlatSB_GetScrollRange Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer, ByRef lpint As Integer, ByRef lpint As Integer) As Integer
-Declare Function FlatSB_SetScrollInfo Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer, ByRef lpscrollinfo As SCROLLINFO, ByVal fRedraw As Integer) As Integer
-Declare Function FlatSB_SetScrollPos Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer, ByVal pos As Integer, ByVal fRedraw As Integer) As Integer
-'Declare Function FlatSB_SetScrollProp Lib "comctl32" (ByVal hwnd As Integer, ByVal index As Integer, ByRef newValue As T_PTR, ByVal bool As Integer) As Integer
-Declare Function FlatSB_SetScrollRange Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer, ByVal min As Integer, ByVal max As Integer, ByVal fRedraw As Integer) As Integer
-Declare Function FlatSB_ShowScrollBar Lib "comctl32" (ByVal hwnd As Integer, ByVal code As Integer, ByVal bool As Integer) As Integer
-Declare Sub GetEffectiveClientRect Lib "comctl32" (ByVal hWnd As Integer, ByRef lprc As RECT, ByRef lpInfo As Integer)
-Declare Function GetMUILanguage Lib "comctl32" () As Integer
-Declare Function ImageList_Add Lib "comctl32" (ByVal himl As Integer, ByVal hbmImage As Integer, ByVal hbmMask As Integer) As Integer
-Declare Function ImageList_AddMasked Lib "comctl32" (ByVal himl As Integer, ByVal hbmImage As Integer, ByVal crMask As Integer) As Integer
-Declare Function ImageList_BeginDrag Lib "comctl32" (ByVal himlTrack As Integer, ByVal iTrack As Integer, ByVal dxHotspot As Integer, ByVal dyHotspot As Integer) As Integer
-Declare Function ImageList_Copy Lib "comctl32" (ByVal himlDst As Integer, ByVal iDst As Integer, ByVal himlSrc As Integer, ByVal iSrc As Integer, ByVal uFlags As Integer) As Integer
-Declare Function ImageList_Create Lib "comctl32" (ByVal cx As Integer, ByVal cy As Integer, ByVal flags As Integer, ByVal cInitial As Integer, ByVal cGrow As Integer) As Integer
-Declare Function ImageList_Destroy Lib "comctl32" (ByVal himl As Integer) As Integer
-Declare Function ImageList_DragEnter Lib "comctl32" (ByVal hwndLock As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function ImageList_DragLeave Lib "comctl32" (ByVal hwndLock As Integer) As Integer
-Declare Function ImageList_DragMove Lib "comctl32" (ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function ImageList_DragShowNolock Lib "comctl32" (ByVal fShow As Integer) As Integer
-Declare Function ImageList_Draw Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer, ByVal hdcDst As Integer, ByVal x As Integer, ByVal y As Integer, ByVal fStyle As Integer) As Integer
-Declare Function ImageList_DrawEx Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer, ByVal hdcDst As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal rgbBk As Integer, ByVal rgbFg As Integer, ByVal fStyle As Integer) As Integer
-Declare Function ImageList_DrawIndirect Lib "comctl32" (ByRef pimldp As IMAGELISTDRAWPARAMS) As Integer
-Declare Function ImageList_Duplicate Lib "comctl32" (ByVal himl As Integer) As Integer
-Declare Sub ImageList_EndDrag Lib "comctl32" ()
-Declare Function ImageList_GetBkColor Lib "comctl32" (ByVal himl As Integer) As Integer
-Declare Function ImageList_GetDragImage Lib "comctl32" (ByRef ppt As POINTAPI, ByRef pptHotspot As POINTAPI) As Integer
-Declare Function ImageList_GetIcon Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer, ByVal flags As Integer) As Integer
-Declare Function ImageList_GetIconSize Lib "comctl32" (ByVal himl As Integer, ByRef cx As Integer, ByRef cy As Integer) As Integer
-Declare Function ImageList_GetImageCount Lib "comctl32" (ByVal himl As Integer) As Integer
-Declare Function ImageList_GetImageInfo Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer, ByRef pImageInfo As IMAGEINFO) As Integer
-Declare Function ImageList_LoadImage Lib "comctl32" (ByVal hi As Integer, ByVal lpbmp As String, ByVal cx As Integer, ByVal cGrow As Integer, ByVal crMask As Integer, ByVal uType As Integer, ByVal uFlags As Integer) As Integer
-Declare Function ImageList_Merge Lib "comctl32" (ByVal himl1 As Integer, ByVal i1 As Integer, ByVal himl2 As Integer, ByVal i2 As Integer, ByVal dx As Integer, ByVal dy As Integer) As Integer
-Declare Function ImageList_Read Lib "comctl32" (ByRef pstm As Integer) As Integer
-Declare Function ImageList_Remove Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer) As Integer
-Declare Function ImageList_Replace Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer, ByVal hbmImage As Integer, ByVal hbmMask As Integer) As Integer
-Declare Function ImageList_ReplaceIcon Lib "comctl32" (ByVal himl As Integer, ByVal i As Integer, ByVal hicon As Integer) As Integer
-Declare Function ImageList_SetBkColor Lib "comctl32" (ByVal himl As Integer, ByVal clrBk As Integer) As Integer
-Declare Function ImageList_SetDragCursorImage Lib "comctl32" (ByVal himlDrag As Integer, ByVal iDrag As Integer, ByVal dxHotspot As Integer, ByVal dyHotspot As Integer) As Integer
-Declare Function ImageList_SetIconSize Lib "comctl32" (ByVal himl As Integer, ByVal cx As Integer, ByVal cy As Integer) As Integer
-Declare Function ImageList_SetImageCount Lib "comctl32" (ByVal himl As Integer, ByVal uNewCount As Integer) As Integer
-Declare Function ImageList_SetOverlayImage Lib "comctl32" (ByVal himl As Integer, ByVal iImage As Integer, ByVal iOverlay As Integer) As Integer
-Declare Function ImageList_Write Lib "comctl32" (ByVal himl As Integer, ByRef pstm As Integer) As Integer
-Declare Sub InitCommonControls Lib "comctl32" ()
-Declare Function InitCommonControlsEx Lib "comctl32" (ByRef TLPINITCOMMONCONTROLSEX As INITCOMMONCONTROLSEX) As Integer
-Declare Sub InitMUILanguage Lib "comctl32" (ByVal uiLang As Integer)
-Declare Function InitializeFlatSB Lib "comctl32" (ByVal hwnd As Integer) As Integer
-Declare Function LBItemFromPt Lib "comctl32" (ByVal hLB As Integer, Byref pt As POINTAPI, ByVal bAutoScroll As Integer) As Integer
-Declare Function MakeDragList Lib "comctl32" (ByVal hLB As Integer) As Integer
-Declare Sub MenuHelp Lib "comctl32" (ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal hMainMenu As Integer, ByVal hInst As Integer, ByVal hwndStatus As Integer, ByRef lpwIDs As Integer)
-'Declare Sub PropertySheet Lib "comctl32" (ByRef lpcpropsheetheadera As CPROPSHEETHEADERA)
-Declare Function ShowHideMenuCtl Lib "comctl32" (ByVal hWnd As Integer, ByRef uFlags As Integer, ByRef lpInfo As Integer) As Integer
-Declare Function UninitializeFlatSB Lib "comctl32" (ByVal hwnd As Integer) As Integer
-'Declare Function TrackMouseEvent Lib "comctl32" (ByRef lpEventTrack As TRACKMOUSEEVENT) As Integer
+'Declare Function CreateMappedBitmap Alias "CreateMappedBitmap" (ByVal hInstance As Integer, ByRef idBitmap As T_PTR, ByVal wFlags As Integer, ByRef lpColorMap As ColorMap, ByValumMaps As Integer) As Integer
+'Declare Function CreatePropertySheetPage Alias "CreatePropertySheetPage" (ByRef lpcpropsheetpagea As CPROPSHEETPAGEA) As Integer
+Declare Function CreateStatusWindow Alias "CreateStatusWindow" (ByVal style As Integer, ByVal lpszText As String, ByVal hwndParent As Integer, ByVal wID As Integer) As Integer
+'Declare Function CreateToolbarEx Alias "CreateToolbarEx" (ByVal hwnd As Integer, ByVal ws As Integer, ByVal wID As Integer, ByVal nBitmaps As Integer, ByVal hBMInst As Integer, ByRef wBMID As Integer, ByRef lpButtons As CTBBUTTON, ByVal numButtons As Integer, ByVal dxButton As Integer, ByVal dyButton As Integer, ByVal dxBitmap As Integer, ByVal dyBitmap As Integer, ByVal uStructSize As Integer) As Integer
+Declare Function CreateUpDownControl Alias "CreateUpDownControl" (ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal hParent As Integer, ByVal nID As Integer, ByVal hInst As Integer, ByVal hBuddy As Integer, ByVal nUpper As Integer, ByVal nLower As Integer, ByVal nPos As Integer) As Integer
+Declare Function DestroyPropertySheetPage Alias "DestroyPropertySheetPage" (ByVal hpropsheetpage As Integer) As Integer
+Declare Sub DrawInsert Alias "DrawInsert" (ByVal handParent As Integer, ByVal hLB As Integer, ByVal nItem As Integer)
+Declare Sub DrawStatusText Alias "DrawStatusText" (ByVal hDC As Integer, ByRef lprc As RECT, ByVal pszText As String, ByVal uFlags As Integer)
+Declare Function FlatSB_EnableScrollBar Alias "FlatSB_EnableScrollBar" (ByVal hwnd As Integer, ByValt As Integer, ByVal uint As Integer) As Integer
+Declare Function FlatSB_GetScrollInfo Alias "FlatSB_GetScrollInfo" (ByVal hwnd As Integer, ByVal code As Integer, ByRef lpscrollinfo As SCROLLINFO) As Integer
+Declare Function FlatSB_GetScrollPos Alias "FlatSB_GetScrollPos" (ByVal hwnd As Integer, ByVal code As Integer) As Integer
+Declare Function FlatSB_GetScrollProp Alias "FlatSB_GetScrollProp" (ByVal hwnd As Integer, ByVal propIndex As Integer, ByRef lpint As Integer) As Integer
+Declare Function FlatSB_GetScrollRange Alias "FlatSB_GetScrollRange" (ByVal hwnd As Integer, ByVal code As Integer, ByRef lpint As Integer, ByRef lpint As Integer) As Integer
+Declare Function FlatSB_SetScrollInfo Alias "FlatSB_SetScrollInfo" (ByVal hwnd As Integer, ByVal code As Integer, ByRef lpscrollinfo As SCROLLINFO, ByVal fRedraw As Integer) As Integer
+Declare Function FlatSB_SetScrollPos Alias "FlatSB_SetScrollPos" (ByVal hwnd As Integer, ByVal code As Integer, ByVal pos As Integer, ByVal fRedraw As Integer) As Integer
+'Declare Function FlatSB_SetScrollProp Alias "FlatSB_SetScrollProp" (ByVal hwnd As Integer, ByVal index As Integer, ByRef newValue As T_PTR, ByVal bool As Integer) As Integer
+Declare Function FlatSB_SetScrollRange Alias "FlatSB_SetScrollRange" (ByVal hwnd As Integer, ByVal code As Integer, ByVal min As Integer, ByVal max As Integer, ByVal fRedraw As Integer) As Integer
+Declare Function FlatSB_ShowScrollBar Alias "FlatSB_ShowScrollBar" (ByVal hwnd As Integer, ByVal code As Integer, ByVal bool As Integer) As Integer
+Declare Sub GetEffectiveClientRect Alias "GetEffectiveClientRect" (ByVal hWnd As Integer, ByRef lprc As RECT, ByRef lpInfo As Integer)
+Declare Function GetMUILanguage Alias "GetMUILanguage" () As Integer
+Declare Function ImageList_Add Alias "ImageList_Add" (ByVal himl As Integer, ByVal hbmImage As Integer, ByVal hbmMask As Integer) As Integer
+Declare Function ImageList_AddMasked Alias "ImageList_AddMasked" (ByVal himl As Integer, ByVal hbmImage As Integer, ByVal crMask As Integer) As Integer
+Declare Function ImageList_BeginDrag Alias "ImageList_BeginDrag" (ByVal himlTrack As Integer, ByVal iTrack As Integer, ByVal dxHotspot As Integer, ByVal dyHotspot As Integer) As Integer
+Declare Function ImageList_Copy Alias "ImageList_Copy" (ByVal himlDst As Integer, ByVal iDst As Integer, ByVal himlSrc As Integer, ByVal iSrc As Integer, ByVal uFlags As Integer) As Integer
+Declare Function ImageList_Create Alias "ImageList_Create" (ByVal cx As Integer, ByVal cy As Integer, ByVal flags As Integer, ByVal cInitial As Integer, ByVal cGrow As Integer) As Integer
+Declare Function ImageList_Destroy Alias "ImageList_Destroy" (ByVal himl As Integer) As Integer
+Declare Function ImageList_DragEnter Alias "ImageList_DragEnter" (ByVal hwndLock As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Function ImageList_DragLeave Alias "ImageList_DragLeave" (ByVal hwndLock As Integer) As Integer
+Declare Function ImageList_DragMove Alias "ImageList_DragMove" (ByVal x As Integer, ByVal y As Integer) As Integer
+Declare Function ImageList_DragShowNolock Alias "ImageList_DragShowNolock" (ByVal fShow As Integer) As Integer
+Declare Function ImageList_Draw Alias "ImageList_Draw" (ByVal himl As Integer, ByVal i As Integer, ByVal hdcDst As Integer, ByVal x As Integer, ByVal y As Integer, ByVal fStyle As Integer) As Integer
+Declare Function ImageList_DrawEx Alias "ImageList_DrawEx" (ByVal himl As Integer, ByVal i As Integer, ByVal hdcDst As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal rgbBk As Integer, ByVal rgbFg As Integer, ByVal fStyle As Integer) As Integer
+Declare Function ImageList_DrawIndirect Alias "ImageList_DrawIndirect" (ByRef pimldp As IMAGELISTDRAWPARAMS) As Integer
+Declare Function ImageList_Duplicate Alias "ImageList_Duplicate" (ByVal himl As Integer) As Integer
+Declare Sub ImageList_EndDrag Alias "ImageList_EndDrag" ()
+Declare Function ImageList_GetBkColor Alias "ImageList_GetBkColor" (ByVal himl As Integer) As Integer
+Declare Function ImageList_GetDragImage Alias "ImageList_GetDragImage" (ByRef ppt As POINTAPI, ByRef pptHotspot As POINTAPI) As Integer
+Declare Function ImageList_GetIcon Alias "ImageList_GetIcon" (ByVal himl As Integer, ByVal i As Integer, ByVal flags As Integer) As Integer
+Declare Function ImageList_GetIconSize Alias "ImageList_GetIconSize" (ByVal himl As Integer, ByRef cx As Integer, ByRef cy As Integer) As Integer
+Declare Function ImageList_GetImageCount Alias "ImageList_GetImageCount" (ByVal himl As Integer) As Integer
+Declare Function ImageList_GetImageInfo Alias "ImageList_GetImageInfo" (ByVal himl As Integer, ByVal i As Integer, ByRef pImageInfo As IMAGEINFO) As Integer
+Declare Function ImageList_LoadImage Alias "ImageList_LoadImage" (ByVal hi As Integer, ByVal lpbmp As String, ByVal cx As Integer, ByVal cGrow As Integer, ByVal crMask As Integer, ByVal uType As Integer, ByVal uFlags As Integer) As Integer
+Declare Function ImageList_Merge Alias "ImageList_Merge" (ByVal himl1 As Integer, ByVal i1 As Integer, ByVal himl2 As Integer, ByVal i2 As Integer, ByVal dx As Integer, ByVal dy As Integer) As Integer
+Declare Function ImageList_Read Alias "ImageList_Read" (ByRef pstm As Integer) As Integer
+Declare Function ImageList_Remove Alias "ImageList_Remove" (ByVal himl As Integer, ByVal i As Integer) As Integer
+Declare Function ImageList_Replace Alias "ImageList_Replace" (ByVal himl As Integer, ByVal i As Integer, ByVal hbmImage As Integer, ByVal hbmMask As Integer) As Integer
+Declare Function ImageList_ReplaceIcon Alias "ImageList_ReplaceIcon" (ByVal himl As Integer, ByVal i As Integer, ByVal hicon As Integer) As Integer
+Declare Function ImageList_SetBkColor Alias "ImageList_SetBkColor" (ByVal himl As Integer, ByVal clrBk As Integer) As Integer
+Declare Function ImageList_SetDragCursorImage Alias "ImageList_SetDragCursorImage" (ByVal himlDrag As Integer, ByVal iDrag As Integer, ByVal dxHotspot As Integer, ByVal dyHotspot As Integer) As Integer
+Declare Function ImageList_SetIconSize Alias "ImageList_SetIconSize" (ByVal himl As Integer, ByVal cx As Integer, ByVal cy As Integer) As Integer
+Declare Function ImageList_SetImageCount Alias "ImageList_SetImageCount" (ByVal himl As Integer, ByVal uNewCount As Integer) As Integer
+Declare Function ImageList_SetOverlayImage Alias "ImageList_SetOverlayImage" (ByVal himl As Integer, ByVal iImage As Integer, ByVal iOverlay As Integer) As Integer
+Declare Function ImageList_Write Alias "ImageList_Write" (ByVal himl As Integer, ByRef pstm As Integer) As Integer
+Declare Sub InitCommonControls Alias "InitCommonControls" ()
+Declare Function InitCommonControlsEx Alias "InitCommonControlsEx" (ByRef TLPINITCOMMONCONTROLSEX As INITCOMMONCONTROLSEX) As Integer
+Declare Sub InitMUILanguage Alias "InitMUILanguage" (ByVal uiLang As Integer)
+Declare Function InitializeFlatSB Alias "InitializeFlatSB" (ByVal hwnd As Integer) As Integer
+Declare Function LBItemFromPt Alias "LBItemFromPt" (ByVal hLB As Integer, Byref pt As POINTAPI, ByVal bAutoScroll As Integer) As Integer
+Declare Function MakeDragList Alias "MakeDragList" (ByVal hLB As Integer) As Integer
+Declare Sub MenuHelp Alias "MenuHelp" (ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal hMainMenu As Integer, ByVal hInst As Integer, ByVal hwndStatus As Integer, ByRef lpwIDs As Integer)
+'Declare Sub PropertySheet Alias "PropertySheet" (ByRef lpcpropsheetheadera As CPROPSHEETHEADERA)
+Declare Function ShowHideMenuCtl Alias "ShowHideMenuCtl" (ByVal hWnd As Integer, ByRef uFlags As Integer, ByRef lpInfo As Integer) As Integer
+Declare Function UninitializeFlatSB Alias "UninitializeFlatSB" (ByVal hwnd As Integer) As Integer
+'Declare Function TrackMouseEvent Alias "TrackMouseEvent" (ByRef lpEventTrack As TRACKMOUSEEVENT) As Integer
 #endif 'COMMCTRL32_BI

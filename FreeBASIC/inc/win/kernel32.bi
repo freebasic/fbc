@@ -15,7 +15,9 @@
 
 'This inclusion was originally built from fsw's kernel32_new.bi file.
 
-'$include once: "win\winbase.bi"
+#include once "win\winbase.bi"
+
+#inclib "kernel32"
 
 '----------------------
 '| REQUIRED CONSTANTS |
@@ -1756,448 +1758,448 @@ End Type
 '| API FunctionS |
 '-----------------
 
-Declare Function AddAtom Lib "kernel32" Alias "AddAtomA" (ByVal lpString As String) As Integer
-Declare Function AllocConsole Lib "kernel32" () As Integer
-Declare Function AreFileApisANSI Lib "kernel32" () As Integer
+Declare Function AddAtom Alias "AddAtomA" (ByVal lpString As String) As Integer
+Declare Function AllocConsole Alias "AllocConsole" () As Integer
+Declare Function AreFileApisANSI Alias "AreFileApisANSI" () As Integer
 
-Declare Function BackupRead Lib "kernel32" (ByVal hFile As Integer, lpBuffer As BYTE, ByVal nNumberOfBytesToRead As Integer, lpNumberOfBytesRead As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, lpContext As ANY) As Integer
-Declare Function BackupSeek Lib "kernel32" (ByVal hFile As Integer, ByVal dwLowBytesToSeek As Integer, ByVal dwHighBytesToSeek As Integer, lpdwLowByteSeeked As Integer, lpdwHighByteSeeked As Integer, lpContext As Integer) As Integer
-Declare Function BackupWrite Lib "kernel32" (ByVal hFile As Integer, lpBuffer As BYTE, ByVal nNumberOfBytesToWrite As Integer, lpNumberOfBytesWritten As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, lpContext As Integer) As Integer
-'Declare Function Beep Lib "kernel32" (ByVal dwFreq As Integer, ByVal dwDuration As Integer) As Integer
-Declare Function BeginUpdateResource Lib "kernel32" Alias "BeginUpdateResourceA" (ByVal pFileName As String, ByVal bDeleteExistingResources As Integer) As Integer
-Declare Function BuildCommDCB Lib "kernel32" Alias "BuildCommDCBA" (ByVal lpDef As String, lpDCB As DCB) As Integer
-Declare Function BuildCommDCBAndTimeouts Lib "kernel32" Alias "BuildCommDCBAndTimeoutsA" (ByVal lpDef As String, lpDCB As DCB, lpCommTimeouts As COMMTIMEOUTS) As Integer
+Declare Function BackupRead Alias "BackupRead" (ByVal hFile As Integer, lpBuffer As BYTE, ByVal nNumberOfBytesToRead As Integer, lpNumberOfBytesRead As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, lpContext As ANY) As Integer
+Declare Function BackupSeek Alias "BackupSeek" (ByVal hFile As Integer, ByVal dwLowBytesToSeek As Integer, ByVal dwHighBytesToSeek As Integer, lpdwLowByteSeeked As Integer, lpdwHighByteSeeked As Integer, lpContext As Integer) As Integer
+Declare Function BackupWrite Alias "BackupWrite" (ByVal hFile As Integer, lpBuffer As BYTE, ByVal nNumberOfBytesToWrite As Integer, lpNumberOfBytesWritten As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, lpContext As Integer) As Integer
+'Declare Function Beep Alias "Beep" (ByVal dwFreq As Integer, ByVal dwDuration As Integer) As Integer
+Declare Function BeginUpdateResource Alias "BeginUpdateResourceA" (ByVal pFileName As String, ByVal bDeleteExistingResources As Integer) As Integer
+Declare Function BuildCommDCB Alias "BuildCommDCBA" (ByVal lpDef As String, lpDCB As DCB) As Integer
+Declare Function BuildCommDCBAndTimeouts Alias "BuildCommDCBAndTimeoutsA" (ByVal lpDef As String, lpDCB As DCB, lpCommTimeouts As COMMTIMEOUTS) As Integer
 
-Declare Function CallNamedPipe Lib "kernel32" Alias "CallNamedPipeA" (ByVal lpNamedPipeName As String, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesRead As Integer, ByVal nTimeOut As Integer) As Integer
-Declare Function ClearCommBreak Lib "kernel32" (ByVal nCid As Integer) As Integer
-Declare Function ClearCommError Lib "kernel32" (ByVal hFile As Integer, lpErrors As Integer, lpStat As COMSTAT) As Integer
-Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Integer) As Integer
-Declare Function CommConfigDialog Lib "kernel32" Alias "CommConfigDialogA" (ByVal lpszName As String, ByVal hwnd As Integer, lpCC As COMMCONFIG) As Integer
-Declare Function CompareFileTime Lib "kernel32" (lpFileTime1 As FILETIME, lpFileTime2 As FILETIME) As Integer
-Declare Function CompareString Lib "kernel32" Alias "CompareStringA" (ByVal Locale As Integer, ByVal dwCmpFlags As Integer, ByVal lpString1 As String, ByVal cchCount1 As Integer, ByVal lpString2 As String, ByVal cchCount2 As Integer) As Integer
-Declare Function ConnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function ContinueDebugEvent Lib "kernel32" (ByVal dwProcessId As Integer, ByVal dwThreadId As Integer, ByVal dwContinueStatus As Integer) As Integer
-Declare Function ConvertDefaultLocale Lib "kernel32" (ByVal Locale As Integer) As Integer
-Declare Function CopyFile Lib "kernel32" Alias "CopyFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String, ByVal bFailIfExists As Integer) As Integer
-Declare Function CreateConsoleScreenBuffer Lib "kernel32" (ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwFlags As Integer, ByVal lpScreenBufferData As Integer) As Integer
-Declare Function CreateDirectory Lib "kernel32" Alias "CreateDirectoryA" (ByVal lpPathName As String, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateDirectoryEx Lib "kernel32" Alias "CreateDirectoryExA" (ByVal lpTemplateDirectory As String, ByVal lpNewDirectory As String, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateEvent Lib "kernel32" Alias "CreateEventA" (lpEventAttributes As SECURITY_ATTRIBUTES, ByVal bManualReset As Integer, ByVal bInitialState As Integer, ByVal lpName As String) As Integer
-Declare Function CreateFile Lib "kernel32" Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwCreationDisposition As Integer, ByVal dwFlagsAndAttributes As Integer, ByVal hTemplateFile As Integer) As Integer
-Declare Function CreateFileMapping Lib "kernel32" Alias "CreateFileMappingA" (ByVal hFile As Integer, lpFileMappigAttributes As SECURITY_ATTRIBUTES, ByVal flProtect As Integer, ByVal dwMaximumSizeHigh As Integer, ByVal dwMaximumSizeLow As Integer, ByVal lpName As String) As Integer
-Declare Function CreateIoCompletionPort Lib "kernel32" (ByVal FileHandle As Integer, ByVal ExistingCompletionPort As Integer, ByVal CompletionKey As Integer, ByVal NumberOfConcurrentThreads As Integer) As Integer
-Declare Function CreateMailslot Lib "kernel32" Alias "CreateMailslotA" (ByVal lpName As String, ByVal nMaxMessageSize As Integer, ByVal lReadTimeout As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateMutex Lib "kernel32" Alias "CreateMutexA" (lpMutexAttributes As SECURITY_ATTRIBUTES, ByVal bInitialOwner As Integer, ByVal lpName As String) As Integer
-Declare Function CreateNamedPipe Lib "kernel32" Alias "CreateNamedPipeA" (ByVal lpName As String, ByVal dwOpenMode As Integer, ByVal dwPipeMode As Integer, ByVal nMaxInstances As Integer, ByVal nOutBufferSize As Integer, ByVal nInBufferSize As Integer, ByVal nDefaultTimeOut As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreatePipe Lib "kernel32" (phReadPipe As Integer, phWritePipe As Integer, lpPipeAttributes As SECURITY_ATTRIBUTES, ByVal nSize As Integer) As Integer
-Declare Function CreateProcess Lib "kernel32" Alias "CreateProcessA" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As SECURITY_ATTRIBUTES, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, lpEnvironment As ANY, ByVal lpCurrentDriectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Integer
-Declare Function CreateProcessAsUser Lib "kernel32" Alias "CreateProcessAsUserA" (ByVal hToken As Integer, ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As SECURITY_ATTRIBUTES, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, ByVal lpEnvironment As String, ByVal lpCurrentDirectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Integer
-Declare Function CreateRemoteThread Lib "kernel32" (ByVal hProcess As Integer, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal lpStartAddress As Integer, lpParameter As ANY, ByVal dwCreationFlags As Integer, lpThreadId As Integer) As Integer
-Declare Function CreateSemaphore Lib "kernel32" Alias "CreateSemaphoreA" (lpSemaphoreAttributes As SECURITY_ATTRIBUTES, ByVal lInitialCount As Integer, ByVal lMaximumCount As Integer, ByVal lpName As String) As Integer
-Declare Function CreateTapePartition Lib "kernel32" (ByVal hDevice As Integer, ByVal dwPartitionMethod As Integer, ByVal dwCount As Integer, ByVal dwSize As Integer) As Integer
-Declare Function CreateThread Lib "kernel32" (lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal StartAddress As Integer, ByVal lpParameter As Integer, ByVal dwCreationFlags As Integer, lpThreadId As Integer) As Integer
+Declare Function CallNamedPipe Alias "CallNamedPipeA" (ByVal lpNamedPipeName As String, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesRead As Integer, ByVal nTimeOut As Integer) As Integer
+Declare Function ClearCommBreak Alias "ClearCommBreak" (ByVal nCid As Integer) As Integer
+Declare Function ClearCommError Alias "ClearCommError" (ByVal hFile As Integer, lpErrors As Integer, lpStat As COMSTAT) As Integer
+Declare Function CloseHandle Alias "CloseHandle" (ByVal hObject As Integer) As Integer
+Declare Function CommConfigDialog Alias "CommConfigDialogA" (ByVal lpszName As String, ByVal hwnd As Integer, lpCC As COMMCONFIG) As Integer
+Declare Function CompareFileTime Alias "CompareFileTime" (lpFileTime1 As FILETIME, lpFileTime2 As FILETIME) As Integer
+Declare Function CompareString Alias "CompareStringA" (ByVal Locale As Integer, ByVal dwCmpFlags As Integer, ByVal lpString1 As String, ByVal cchCount1 As Integer, ByVal lpString2 As String, ByVal cchCount2 As Integer) As Integer
+Declare Function ConnectNamedPipe Alias "ConnectNamedPipe" (ByVal hNamedPipe As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function ContinueDebugEvent Alias "ContinueDebugEvent" (ByVal dwProcessId As Integer, ByVal dwThreadId As Integer, ByVal dwContinueStatus As Integer) As Integer
+Declare Function ConvertDefaultLocale Alias "ConvertDefaultLocale" (ByVal Locale As Integer) As Integer
+Declare Function CopyFile Alias "CopyFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String, ByVal bFailIfExists As Integer) As Integer
+Declare Function CreateConsoleScreenBuffer Alias "CreateConsoleScreenBuffer" (ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwFlags As Integer, ByVal lpScreenBufferData As Integer) As Integer
+Declare Function CreateDirectory Alias "CreateDirectoryA" (ByVal lpPathName As String, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateDirectoryEx Alias "CreateDirectoryExA" (ByVal lpTemplateDirectory As String, ByVal lpNewDirectory As String, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateEvent Alias "CreateEventA" (lpEventAttributes As SECURITY_ATTRIBUTES, ByVal bManualReset As Integer, ByVal bInitialState As Integer, ByVal lpName As String) As Integer
+Declare Function CreateFile Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwCreationDisposition As Integer, ByVal dwFlagsAndAttributes As Integer, ByVal hTemplateFile As Integer) As Integer
+Declare Function CreateFileMapping Alias "CreateFileMappingA" (ByVal hFile As Integer, lpFileMappigAttributes As SECURITY_ATTRIBUTES, ByVal flProtect As Integer, ByVal dwMaximumSizeHigh As Integer, ByVal dwMaximumSizeLow As Integer, ByVal lpName As String) As Integer
+Declare Function CreateIoCompletionPort Alias "CreateIoCompletionPort" (ByVal FileHandle As Integer, ByVal ExistingCompletionPort As Integer, ByVal CompletionKey As Integer, ByVal NumberOfConcurrentThreads As Integer) As Integer
+Declare Function CreateMailslot Alias "CreateMailslotA" (ByVal lpName As String, ByVal nMaxMessageSize As Integer, ByVal lReadTimeout As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateMutex Alias "CreateMutexA" (lpMutexAttributes As SECURITY_ATTRIBUTES, ByVal bInitialOwner As Integer, ByVal lpName As String) As Integer
+Declare Function CreateNamedPipe Alias "CreateNamedPipeA" (ByVal lpName As String, ByVal dwOpenMode As Integer, ByVal dwPipeMode As Integer, ByVal nMaxInstances As Integer, ByVal nOutBufferSize As Integer, ByVal nInBufferSize As Integer, ByVal nDefaultTimeOut As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreatePipe Alias "CreatePipe" (phReadPipe As Integer, phWritePipe As Integer, lpPipeAttributes As SECURITY_ATTRIBUTES, ByVal nSize As Integer) As Integer
+Declare Function CreateProcess Alias "CreateProcessA" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As SECURITY_ATTRIBUTES, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, lpEnvironment As ANY, ByVal lpCurrentDriectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Integer
+Declare Function CreateProcessAsUser Alias "CreateProcessAsUserA" (ByVal hToken As Integer, ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As SECURITY_ATTRIBUTES, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, ByVal lpEnvironment As String, ByVal lpCurrentDirectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Integer
+Declare Function CreateRemoteThread Alias "CreateRemoteThread" (ByVal hProcess As Integer, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal lpStartAddress As Integer, lpParameter As ANY, ByVal dwCreationFlags As Integer, lpThreadId As Integer) As Integer
+Declare Function CreateSemaphore Alias "CreateSemaphoreA" (lpSemaphoreAttributes As SECURITY_ATTRIBUTES, ByVal lInitialCount As Integer, ByVal lMaximumCount As Integer, ByVal lpName As String) As Integer
+Declare Function CreateTapePartition Alias "CreateTapePartition" (ByVal hDevice As Integer, ByVal dwPartitionMethod As Integer, ByVal dwCount As Integer, ByVal dwSize As Integer) As Integer
+Declare Function CreateThread Alias "CreateThread" (lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal StartAddress As Integer, ByVal lpParameter As Integer, ByVal dwCreationFlags As Integer, lpThreadId As Integer) As Integer
 
-Declare Function DebugActiveProcess Lib "kernel32" (ByVal dwProcessId As Integer) As Integer
-Declare Sub DebugBreak Lib "kernel32" ()
-Declare Function DefineDosDevice Lib "kernel32" Alias "DefineDosDeviceA" (ByVal dwFlags As Integer, ByVal lpDeviceName As String, ByVal lpTargetPath As String) As Integer
-Declare Function DeleteAtom Lib "kernel32" (ByVal nAtom As Integer) As Integer
-Declare Sub DeleteCriticalSection Lib "kernel32" (lpCriticalSection As CRITICAL_SECTION)
-Declare Function DeleteFile Lib "kernel32" Alias "DeleteFileA" (ByVal lpFileName As String) As Integer
-Declare Function DeviceIoControl Lib "kernel32" (ByVal hDevice As Integer, ByVal dwIoControlCode As Integer, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesReturned As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function DisableThreadLibraryCalls Lib "kernel32" (ByVal hLibModule As Integer) As Integer
-Declare Function DisconnectNamedPipe Lib "kernel32" (ByVal hNamedPipe As Integer) As Integer
-Declare Function DosDateTimeToFileTime Lib "kernel32" (ByVal wFatDate As Integer, ByVal wFatTime As Integer, lpFileTime As FILETIME) As Integer
-Declare Function DuplicateHandle Lib "kernel32" (ByVal hSourceProcessHandle As Integer, ByVal hSourceHandle As Integer, ByVal hTargetProcessHandle As Integer, lpTargetHandle As Integer, ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwOptions As Integer) As Integer
+Declare Function DebugActiveProcess Alias "DebugActiveProcess" (ByVal dwProcessId As Integer) As Integer
+Declare Sub DebugBreak Alias "DebugBreak" ()
+Declare Function DefineDosDevice Alias "DefineDosDeviceA" (ByVal dwFlags As Integer, ByVal lpDeviceName As String, ByVal lpTargetPath As String) As Integer
+Declare Function DeleteAtom Alias "DeleteAtom" (ByVal nAtom As Integer) As Integer
+Declare Sub DeleteCriticalSection Alias "DeleteCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Function DeleteFile Alias "DeleteFileA" (ByVal lpFileName As String) As Integer
+Declare Function DeviceIoControl Alias "DeviceIoControl" (ByVal hDevice As Integer, ByVal dwIoControlCode As Integer, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesReturned As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function DisableThreadLibraryCalls Alias "DisableThreadLibraryCalls" (ByVal hLibModule As Integer) As Integer
+Declare Function DisconnectNamedPipe Alias "DisconnectNamedPipe" (ByVal hNamedPipe As Integer) As Integer
+Declare Function DosDateTimeToFileTime Alias "DosDateTimeToFileTime" (ByVal wFatDate As Integer, ByVal wFatTime As Integer, lpFileTime As FILETIME) As Integer
+Declare Function DuplicateHandle Alias "DuplicateHandle" (ByVal hSourceProcessHandle As Integer, ByVal hSourceHandle As Integer, ByVal hTargetProcessHandle As Integer, lpTargetHandle As Integer, ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwOptions As Integer) As Integer
 
-Declare Function EndUpdateResource Lib "kernel32" Alias "EndUpdateResourceA" (ByVal hUpdate As Integer, ByVal fDiscard As Integer) As Integer
-Declare Sub EnterCriticalSection Lib "kernel32" (lpCriticalSection As CRITICAL_SECTION)
-Declare Function EnumCalendarInfo Lib "kernel32" Alias "EnumCalendarInfoA" (ByVal lpCalInfoEnumProc As Integer, ByVal Locale As Integer, ByVal Calendar As Integer, ByVal CalType As Integer) As Integer
-Declare Function EnumDateFormats Lib "kernel32" (ByVal lpDateFmtEnumProc As Integer, ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function EnumResourceLanguages Lib "kernel32" Alias "EnumResourceLanguagesA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpName As String, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumResourceNames Lib "kernel32" Alias "EnumResourceNamesA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumResourceTypes Lib "kernel32" Alias "EnumResourceTypesA" (ByVal hModule As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumSystemCodePages Lib "kernel32" (ByVal lpCodePageEnumProc As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function EnumSystemLocales Lib "kernel32" (ByVal lpLocaleEnumProc As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function EnumTimeFormats Lib "kernel32" Alias "EnumTimeFormats" (ByVal lpTimeFmtEnumProc As Integer, ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function EraseTape Lib "kernel32" Alias "EraseTape" (ByVal hDevice As Integer, ByVal dwEraseType As Integer, ByVal bimmediate As Integer) As Integer
-Declare Function EscapeCommFunction Lib "kernel32" (ByVal nCid As Integer, ByVal nFunc As Integer) As Integer
-Declare Sub ExitProcess Lib "kernel32" (ByVal uExitCode As Integer)
-Declare Sub ExitThread Lib "kernel32" (ByVal dwExitCode As Integer)
-Declare Function ExpandEnvironmentStrings Lib "kernel32" Alias "ExpandEnvironmentStringsA" (ByVal lpSrc As String, ByVal lpDst As String, ByVal nSize As Integer) As Integer
+Declare Function EndUpdateResource Alias "EndUpdateResourceA" (ByVal hUpdate As Integer, ByVal fDiscard As Integer) As Integer
+Declare Sub EnterCriticalSection Alias "EnterCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Function EnumCalendarInfo Alias "EnumCalendarInfoA" (ByVal lpCalInfoEnumProc As Integer, ByVal Locale As Integer, ByVal Calendar As Integer, ByVal CalType As Integer) As Integer
+Declare Function EnumDateFormats Alias "EnumDateFormats" (ByVal lpDateFmtEnumProc As Integer, ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function EnumResourceLanguages Alias "EnumResourceLanguagesA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpName As String, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumResourceNames Alias "EnumResourceNamesA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumResourceTypes Alias "EnumResourceTypesA" (ByVal hModule As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
+Declare Function EnumSystemCodePages Alias "EnumSystemCodePages" (ByVal lpCodePageEnumProc As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function EnumSystemLocales Alias "EnumSystemLocales" (ByVal lpLocaleEnumProc As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function EnumTimeFormats Alias "EnumTimeFormats" (ByVal lpTimeFmtEnumProc As Integer, ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function EraseTape Alias "EraseTape" (ByVal hDevice As Integer, ByVal dwEraseType As Integer, ByVal bimmediate As Integer) As Integer
+Declare Function EscapeCommFunction Alias "EscapeCommFunction" (ByVal nCid As Integer, ByVal nFunc As Integer) As Integer
+Declare Sub ExitProcess Alias "ExitProcess" (ByVal uExitCode As Integer)
+Declare Sub ExitThread Alias "ExitThread" (ByVal dwExitCode As Integer)
+Declare Function ExpandEnvironmentStrings Alias "ExpandEnvironmentStringsA" (ByVal lpSrc As String, ByVal lpDst As String, ByVal nSize As Integer) As Integer
 
-Declare Sub FatalAppExit Lib "kernel32" Alias "FatalAppExitA" (ByVal uAction As Integer, ByVal lpMessageText As String)
-Declare Sub FatalExit Lib "kernel32" (ByVal code As Integer)
-Declare Function FileTimeToDosDateTime Lib "kernel32" (lpFileTime As FILETIME, lpFatDate As SHORT, lpFatTime As SHORT) As Integer
-Declare Function FileTimeToLocalFileTime Lib "kernel32" (lpFileTime As FILETIME, lpLocalFileTime As FILETIME) As Integer
-Declare Function FileTimeToSystemTime Lib "kernel32" (lpFileTime As FILETIME, lpSystemTime As SYSTEMTIME) As Integer
-Declare Function FillConsoleOutputAttribute Lib "kernel32" (ByVal hConsoleOutput As Integer, ByVal dwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfAttrsWritten As Integer) As Integer
-Declare Function FillConsoleOutputCharacter Lib "kernel32" Alias "FillConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfCharsWritten As Integer) As Integer
-Declare Function FindAtom Lib "kernel32" Alias "FindAtomA" (ByVal lpString As String) As Integer
-Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Integer) As Integer
-Declare Function FindCloseChangeNotification Lib "kernel32" (ByVal hChangeHandle As Integer) As Integer
-Declare Function FindFirstChangeNotification Lib "kernel32" Alias "FindFirstChangeNotificationA" (ByVal lpPathName As String, ByVal bWatchSubtree As Integer, ByVal dwNotifyFilter As Integer) As Integer
-Declare Function FindFirstFile Lib "kernel32" Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Integer
-Declare Function FindNextChangeNotification Lib "kernel32" (ByVal hChangeHandle As Integer) As Integer
-Declare Function FindNextFile Lib "kernel32" Alias "FindNextFileA" (ByVal hFindFile As Integer, lpFindFileData As WIN32_FIND_DATA) As Integer
-Declare Function FindResource Lib "kernel32" Alias "FindResourceA" (ByVal hInstance As Integer, ByVal lpName As String, ByVal lpType As String) As Integer
-Declare Function FindResourceEx Lib "kernel32" Alias "FindResourceExA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer) As Integer
-Declare Function FlushConsoleInputBuffer Lib "kernel32" (ByVal hConsoleInput As Integer) As Integer
-Declare Function FlushFileBuffers Lib "kernel32" (ByVal hFile As Integer) As Integer
-Declare Function FlushInstructionCache Lib "kernel32" (ByVal hProcess As Integer, lpBaseAddress As ANY, ByVal dwSize As Integer) As Integer
-Declare Function FlushViewOfFile Lib "kernel32" (lpBaseAddress As ANY, ByVal dwNumberOfBytesToFlush As Integer) As Integer
-Declare Function FoldString Lib "kernel32" Alias "FoldStringA" (ByVal dwMapFlags As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByVal lpDestStr As String, ByVal cchDest As Integer) As Integer
-Declare Function FormatMessage Lib "kernel32" Alias "FormatMessageA" (ByVal dwFlags As Integer, lpSource As ANY, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, ByVal lpBuffer As String, ByVal nSize As Integer, Arguments As Integer) As Integer
-Declare Function FreeConsole Lib "kernel32" () As Integer
-Declare Function FreeEnvironmentStrings Lib "kernel32" Alias "FreeEnvironmentStringsA" (ByVal lpsz As String) As Integer
-Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Integer) As Integer
-Declare Sub FreeLibraryAndExitThread Lib "kernel32" (ByVal hLibModule As Integer, ByVal dwExitCode As Integer)
-Declare Function FreeResource Lib "kernel32" (ByVal hResData As Integer) As Integer
+Declare Sub FatalAppExit Alias "FatalAppExitA" (ByVal uAction As Integer, ByVal lpMessageText As String)
+Declare Sub FatalExit Alias "FatalExit" (ByVal code As Integer)
+Declare Function FileTimeToDosDateTime Alias "FileTimeToDosDateTime" (lpFileTime As FILETIME, lpFatDate As SHORT, lpFatTime As SHORT) As Integer
+Declare Function FileTimeToLocalFileTime Alias "FileTimeToLocalFileTime" (lpFileTime As FILETIME, lpLocalFileTime As FILETIME) As Integer
+Declare Function FileTimeToSystemTime Alias "FileTimeToSystemTime" (lpFileTime As FILETIME, lpSystemTime As SYSTEMTIME) As Integer
+Declare Function FillConsoleOutputAttribute Alias "FillConsoleOutputAttribute" (ByVal hConsoleOutput As Integer, ByVal dwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfAttrsWritten As Integer) As Integer
+Declare Function FillConsoleOutputCharacter Alias "FillConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfCharsWritten As Integer) As Integer
+Declare Function FindAtom Alias "FindAtomA" (ByVal lpString As String) As Integer
+Declare Function FindClose Alias "FindClose" (ByVal hFindFile As Integer) As Integer
+Declare Function FindCloseChangeNotification Alias "FindCloseChangeNotification" (ByVal hChangeHandle As Integer) As Integer
+Declare Function FindFirstChangeNotification Alias "FindFirstChangeNotificationA" (ByVal lpPathName As String, ByVal bWatchSubtree As Integer, ByVal dwNotifyFilter As Integer) As Integer
+Declare Function FindFirstFile Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Integer
+Declare Function FindNextChangeNotification Alias "FindNextChangeNotification" (ByVal hChangeHandle As Integer) As Integer
+Declare Function FindNextFile Alias "FindNextFileA" (ByVal hFindFile As Integer, lpFindFileData As WIN32_FIND_DATA) As Integer
+Declare Function FindResource Alias "FindResourceA" (ByVal hInstance As Integer, ByVal lpName As String, ByVal lpType As String) As Integer
+Declare Function FindResourceEx Alias "FindResourceExA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer) As Integer
+Declare Function FlushConsoleInputBuffer Alias "FlushConsoleInputBuffer" (ByVal hConsoleInput As Integer) As Integer
+Declare Function FlushFileBuffers Alias "FlushFileBuffers" (ByVal hFile As Integer) As Integer
+Declare Function FlushInstructionCache Alias "FlushInstructionCache" (ByVal hProcess As Integer, lpBaseAddress As ANY, ByVal dwSize As Integer) As Integer
+Declare Function FlushViewOfFile Alias "FlushViewOfFile" (lpBaseAddress As ANY, ByVal dwNumberOfBytesToFlush As Integer) As Integer
+Declare Function FoldString Alias "FoldStringA" (ByVal dwMapFlags As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByVal lpDestStr As String, ByVal cchDest As Integer) As Integer
+Declare Function FormatMessage Alias "FormatMessageA" (ByVal dwFlags As Integer, lpSource As ANY, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, ByVal lpBuffer As String, ByVal nSize As Integer, Arguments As Integer) As Integer
+Declare Function FreeConsole Alias "FreeConsole" () As Integer
+Declare Function FreeEnvironmentStrings Alias "FreeEnvironmentStringsA" (ByVal lpsz As String) As Integer
+Declare Function FreeLibrary Alias "FreeLibrary" (ByVal hLibModule As Integer) As Integer
+Declare Sub FreeLibraryAndExitThread Alias "FreeLibraryAndExitThread" (ByVal hLibModule As Integer, ByVal dwExitCode As Integer)
+Declare Function FreeResource Alias "FreeResource" (ByVal hResData As Integer) As Integer
 
-Declare Function GenerateConsoleCtrlEvent Lib "kernel32" (ByVal dwCtrlEvent As Integer, ByVal dwProcessGroupId As Integer) As Integer
-Declare Function GetACP Lib "kernel32" () As Integer
-Declare Function GetAtomName Lib "kernel32" Alias "GetAtomNameA" (ByVal nAtom As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GetBinaryType Lib "kernel32" Alias "GetBinaryTypeA" (ByVal lpApplicationName As String, lpBinaryType As Integer) As Integer
-Declare Function GetCPInfo Lib "kernel32" (ByVal CodePage As Integer, lpCPInfo As CPINFO) As Integer
-Declare Function GetCommConfig Lib "kernel32" (ByVal hCommDev As Integer, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
-Declare Function GetCommMask Lib "kernel32" (ByVal hFile As Integer, lpEvtMask As Integer) As Integer
-Declare Function GetCommModemStatus Lib "kernel32" (ByVal hFile As Integer, lpModemStat As Integer) As Integer
-Declare Function GetCommProperties Lib "kernel32" (ByVal hFile As Integer, lpCommProp As COMMPROP) As Integer
-Declare Function GetCommState Lib "kernel32" (ByVal nCid As Integer, lpDCB As DCB) As Integer
-Declare Function GetCommTimeouts Lib "kernel32" (ByVal hFile As Integer, lpCommTimeouts As COMMTIMEOUTS) As Integer
-Declare Function GetCommandLine Lib "kernel32" Alias "GetCommandLineA" () As Integer
-Declare Function GetCompressedFileSize Lib "kernel32" Alias "GetCompressedFileSizeA" (ByVal lpFileName As String, lpFileSizeHigh As Integer) As Integer
-Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameA" (ByVal lpBuffer As String, nSize As Integer) As Integer
-Declare Function GetConsoleCP Lib "kernel32" () As Integer
-Declare Function GetConsoleCursorInfo Lib "kernel32" (ByVal hConsoleOutput As Integer, lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
-Declare Function GetConsoleMode Lib "kernel32" (ByVal hConsoleHandle As Integer, lpMode As Integer) As Integer
-Declare Function GetConsoleOutputCP Lib "kernel32" () As Integer
-Declare Function GetConsoleScreenBufferInfo Lib "kernel32" (ByVal hConsoleOutput As Integer, lpConsoleScreenBufferInfo As CONSOLE_SCREEN_BUFFER_INFO) As Integer
-Declare Function GetConsoleTitle Lib "kernel32" Alias "GetConsoleTitleA" (ByVal lpConsoleTitle As String, ByVal nSize As Integer) As Integer
-Declare Function GetCurrencyFormat Lib "kernel32" Alias "GetCurrencyFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, lpFormat As CURRENCYFMT, ByVal lpCurrencyStr As String, ByVal cchCurrency As Integer) As Integer
-Declare Function GetCurrentDirectory Lib "kernel32" Alias "GetCurrentDirectoryA" (ByVal nBufferLength As Integer, ByVal lpBuffer As String) As Integer
-Declare Function GetCurrentProcess Lib "kernel32" () As Integer
-Declare Function GetCurrentProcessId Lib "kernel32" () As Integer
-Declare Function GetCurrentThread Lib "kernel32" () As Integer
-Declare Function GetCurrentThreadId Lib "kernel32" () As Integer
-Declare Function GetDateFormat Lib "kernel32" Alias "GetDateFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpDate As SYSTEMTIME, ByVal lpFormat As String, ByVal lpDateStr As String, ByVal cchDate As Integer) As Integer
-Declare Function GetDefaultCommConfig Lib "kernel32" Alias "GetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
-Declare Function GetDiskFreeSpace Lib "kernel32" Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, lpSectorsPerCluster As Integer, lpBytesPerSector As Integer, lpNumberOfFreeClusters As Integer, lpTotalNumberOfClusters As Integer) As Integer
-Declare Function GetDiskFreeSpaceEx Lib "kernel32" Alias "GetDiskFreeSpaceExA" (ByVal lpPathName As String, lpFreeBytesAvailableToCaller As INT64, lpTotalNumberOfBytes As INT64, lpTotalNumberOfFreeBytes As INT64) As Integer
-Declare Function GetDriveType Lib "kernel32" Alias "GetDriveTypeA" (ByVal nDrive As String) As Integer
-Declare Function GetEnvironmentStrings Lib "kernel32" Alias "GetEnvironmentStringsA" () As Integer
-Declare Function GetEnvironmentVariable Lib "kernel32" Alias "GetEnvironmentVariableA" (ByVal lpName As String, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Integer, lpExitCode As Integer) As Integer
-Declare Function GetExitCodeThread Lib "kernel32" (ByVal hThread As Integer, lpExitCode As Integer) As Integer
-Declare Function GetFileAttributes Lib "kernel32" Alias "GetFileAttributesA" (ByVal lpFileName As String) As Integer
-Declare Function GetFileInformationByHandle Lib "kernel32" Alias "GetFileInformationByHandle" (ByVal hFile As Integer, lpFileInformation As BY_HANDLE_FILE_INFORMATION) As Integer
-Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Integer, lpFileSizeHigh As Integer) As Integer
-Declare Function GetFileTime Lib "kernel32" (ByVal hFile As Integer, lpCreationTime As FILETIME, lpLastAccessTime As FILETIME, lpLastWriteTime As FILETIME) As Integer
-Declare Function GetFileType Lib "kernel32" (ByVal hFile As Integer) As Integer
-Declare Function GetFullPathName Lib "kernel32" Alias "GetFullPathNameA" (ByVal lpFileName As String, ByVal nBufferLength As Integer, ByVal lpBuffer As String, ByVal lpFilePart As Integer) As Integer
-Declare Function GetHandleInformation Lib "kernel32" (ByVal hObject As Integer, lpdwFlags As Integer) As Integer
-Declare Function GetLargestConsoleWindowSize Lib "kernel32" (ByVal hConsoleOutput As Integer) As Integer
-Declare Function GetLastError Lib "kernel32" () As Integer
-Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (ByVal Locale As Integer, ByVal LCType As Integer, ByVal lpLCData As String, ByVal cchData As Integer) As Integer
-Declare Sub GetLocalTime Lib "kernel32" (lpSystemTime As SYSTEMTIME)
-Declare Function GetLogicalDriveStrings Lib "kernel32" Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Integer, lpBuffer As ANY) As Integer
-Declare Function GetLogicalDrives Lib "kernel32" () As Integer
-Declare Function GetMailslotInfo Lib "kernel32" (ByVal hMailslot As Integer, lpMaxMessageSize As Integer, lpNextSize As Integer, lpMessageCount As Integer, lpReadTimeout As Integer) As Integer
-Declare Function GetModuleFileName Lib "kernel32" Alias "GetModuleFileNameA" (ByVal hModule As Integer, ByVal lpFileName As String, ByVal nSize As Integer) As Integer
-Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Integer
-Declare Function GetNamedPipeHandleState Lib "kernel32" Alias "GetNamedPipeHandleStateA" (ByVal hNamedPipe As Integer, lpState As Integer, lpCurInstances As Integer, lpMaxCollectionCount As Integer, lpCollectDataTimeout As Integer, ByVal lpUserName As String, ByVal nMaxUserNameSize As Integer) As Integer
-Declare Function GetNamedPipeInfo Lib "kernel32" (ByVal hNamedPipe As Integer, lpFlags As Integer, lpOutBufferSize As Integer, lpInBufferSize As Integer, lpMaxInstances As Integer) As Integer
-Declare Function GetNumberFormat Lib "kernel32" Alias "GetNumberFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, lpFormat As NUMBERFMT, ByVal lpNumberStr As String, ByVal cchNumber As Integer) As Integer
-Declare Function GetNumberOfConsoleInputEvents Lib "kernel32" (ByVal hConsoleInput As Integer, lpNumberOfEvents As Integer) As Integer
-Declare Function GetNumberOfConsoleMouseButtons Lib "kernel32" (lpNumberOfMouseButtons As Integer) As Integer
-Declare Function GetOEMCP Lib "kernel32" () As Integer
-Declare Function GetOverlappedResult Lib "kernel32" (ByVal hFile As Integer, lpOverlapped As OVERLAPPED, lpNumberOfBytesTransferred As Integer, ByVal bWait As Integer) As Integer
-Declare Function GetPriorityClass Lib "kernel32" (ByVal hProcess As Integer) As Integer
-Declare Function GetPrivateProfileInt Lib "kernel32" Alias "GetPrivateProfileIntA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal nDefault As Integer, ByVal lpFileName As String) As Integer
-Declare Function GetPrivateProfileSection Lib "kernel32" Alias "GetPrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
-Declare Function GetPrivateProfileSectionNames Lib "kernel32" Alias "GetPrivateProfileSectionNamesA" (ByVal lpszReturnBuffer As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
-Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
-Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Integer, ByVal lpProcName As String) As Integer
-Declare Function GetProcessAffinityMask Lib "kernel32" (ByVal hProcess As Integer, lpProcessAffinityMask As Integer, SystemAffinityMask As Integer) As Integer
-Declare Function GetProcessHeap Lib "kernel32" () As Integer
-Declare Function GetProcessHeaps Lib "kernel32" (ByVal NumberOfHeaps As Integer, ProcessHeaps As Integer) As Integer
-Declare Function GetProcessShutdownParameters Lib "kernel32" (lpdwLevel As Integer, lpdwFlags As Integer) As Integer
-Declare Function GetProcessTimes Lib "kernel32" (ByVal hProcess As Integer, lpCreationTime As FILETIME, lpExitTime As FILETIME, lpKernelTime As FILETIME, lpUserTime As FILETIME) As Integer
-Declare Function GetProcessWorkingSetSize Lib "kernel32" (ByVal hProcess As Integer, lpMinimumWorkingSetSize As Integer, lpMaximumWorkingSetSize As Integer) As Integer
-Declare Function GetProfileInt Lib "kernel32" Alias "GetProfileIntA" (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal nDefault As Integer) As Integer
-Declare Function GetProfileSection Lib "kernel32" Alias "GetProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Integer) As Integer
-Declare Function GetProfileString Lib "kernel32" Alias "GetProfileStringA" (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer) As Integer
-Declare Function GetQueuedCompletionStatus Lib "kernel32" (ByVal CompletionPort As Integer, lpNumberOfBytesTransferred As Integer, lpCompletionKey As Integer, lpOverlapped As Integer, ByVal dwMilliseconds As Integer) As Integer
-Declare Function GetShortPathName Lib "kernel32" Alias "GetShortPathNameA" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Integer) As Integer
-Declare Sub GetStartupInfo Lib "kernel32" Alias "GetStartupInfoA" (lpStartupInfo As STARTUPINFO)
-Declare Function GetStdHandle Lib "kernel32" (ByVal nStdHandle As Integer) As Integer
-Declare Function GetStringTypeA Lib "kernel32" (ByVal lcid As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
-Declare Function GetStringTypeEx Lib "kernel32" (ByVal Locale As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
-Declare Function GetStringTypeW Lib "kernel32" (ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
-Declare Function GetSystemDefaultLCID Lib "kernel32" () As Integer
-Declare Function GetSystemDefaultLangID Lib "kernel32" () As Integer
-Declare Function GetSystemDirectory Lib "kernel32" Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Sub GetSystemInfo Lib "kernel32" (lpSystemInfo As SYSTEM_INFO)
-Declare Function GetSystemPowerStatus Lib "kernel32" (lpSystemPowerStatus As SYSTEM_POWER_STATUS) As Integer
-Declare Sub GetSystemTime Lib "kernel32" (lpSystemTime As SYSTEMTIME)
-Declare Function GetSystemTimeAdjustment Lib "kernel32" (lpTimeAdjustment As Integer, lpTimeIncrement As Integer, lpTimeAdjustmentDisabled As Integer) As Integer
-Declare Sub GetSystemTimeAsFileTime Lib "kernel32" (lpFileTime As FILETIME)
-Declare Function GetTapeParameters Lib "kernel32" (ByVal hDevice As Integer, ByVal dwOperation As Integer, lpdwSize As Integer, lpTapeInformation As ANY) As Integer
-Declare Function GetTapePosition Lib "kernel32" (ByVal hDevice As Integer, ByVal dwPositionType As Integer, lpdwPartition As Integer, lpdwOffsetLow As Integer, lpdwOffsetHigh As Integer) As Integer
-Declare Function GetTapeStatus Lib "kernel32" (ByVal hDevice As Integer) As Integer
-Declare Function GetTempFileName Lib "kernel32" Alias "GetTempFileNameA" (ByVal lpszPath As String, ByVal lpPrefixString As String, ByVal wUnique As Integer, ByVal lpTempFileName As String) As Integer
-Declare Function GetTempPath Lib "kernel32" Alias "GetTempPathA" (ByVal nBufferLength As Integer, ByVal lpBuffer As String) As Integer
-Declare Function GetThreadContext Lib "kernel32" (ByVal hThread As Integer, lpContext As CONTEXT) As Integer
-Declare Function GetThreadLocale Lib "kernel32" () As Integer
-Declare Function GetThreadPriority Lib "kernel32" (ByVal hThread As Integer) As Integer
-Declare Function GetThreadSelectorEntry Lib "kernel32" (ByVal hThread As Integer, ByVal dwSelector As Integer, lpSelectorEntry As LDT_ENTRY) As Integer
-Declare Function GetThreadTimes Lib "kernel32" (ByVal hThread As Integer, lpCreationTime As FILETIME, lpExitTime As FILETIME, lpKernelTime As FILETIME, lpUserTime As FILETIME) As Integer
-Declare Function GetTickCount Lib "kernel32" () As Integer
-Declare Function GetTimeFormat Lib "kernel32" Alias "GetTimeFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpTime As SYSTEMTIME, ByVal lpFormat As String, ByVal lpTimeStr As String, ByVal cchTime As Integer) As Integer
-Declare Function GetTimeZoneInformation Lib "kernel32" (lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
-Declare Function GetUserDefaultLCID Lib "kernel32" () As Integer
-Declare Function GetUserDefaultLangID Lib "kernel32" () As Integer
-Declare Function GetVersion Lib "kernel32" () As Integer
-Declare Function GetVersionEx Lib "kernel32" Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Integer
-Declare Function GetVolumeInformation Lib "kernel32" Alias "GetVolumeInformationA" (ByVal lpRootPathName As String, ByVal lpVolumeNameBuffer As String, ByVal nVolumeNameSize As Integer, lpVolumeSerialNumber As Integer, lpMaximumComponentLength As Integer, lpFileSystemFlags As Integer, ByVal lpFileSystemNameBuffer As String, ByVal nFileSystemNameSize As Integer) As Integer
-Declare Function GetWindowsDirectory Lib "kernel32" Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GlobalAddAtom Lib "kernel32" Alias "GlobalAddAtomA" (ByVal lpString As String) As Integer
-Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Integer, ByVal dwBytes As Integer) As Integer
-Declare Function GlobalCompact Lib "kernel32" (ByVal dwMinFree As Integer) As Integer
-Declare Function GlobalDeleteAtom Lib "kernel32" (ByVal nAtom As Integer) As Integer
-Declare Function GlobalFindAtom Lib "kernel32" Alias "GlobalFindAtomA" (ByVal lpString As String) As Integer
-Declare Sub GlobalFix Lib "kernel32" (ByVal hMem As Integer)
-Declare Function GlobalFlags Lib "kernel32" Alias "GlobalFlags" (ByVal hMem As Integer) As Integer
-Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function GlobalGetAtomName Lib "kernel32" Alias "GlobalGetAtomNameA" (ByVal nAtom As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GlobalHandle Lib "kernel32" (wMem As ANY) As Integer
-Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Sub GlobalMemoryStatus Lib "kernel32" (lpBuffer As MEMORYSTATUS)
-Declare Function GlobalMemoryStatusEx Lib "kernel32" (lpBuffer As MEMORYSTATUSEX) As Integer
-Declare Function GlobalReAlloc Lib "kernel32" (ByVal hMem As Integer, ByVal dwBytes As Integer, ByVal wFlags As Integer) As Integer
-Declare Function GlobalSize Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Sub GlobalUnfix Lib "kernel32" (ByVal hMem As Integer)
-Declare Function GlobalUnWire Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function GlobalWire Lib "kernel32" (ByVal hMem As Integer) As Integer
+Declare Function GenerateConsoleCtrlEvent Alias "GenerateConsoleCtrlEvent" (ByVal dwCtrlEvent As Integer, ByVal dwProcessGroupId As Integer) As Integer
+Declare Function GetACP Alias "GetACP" () As Integer
+Declare Function GetAtomName Alias "GetAtomNameA" (ByVal nAtom As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
+Declare Function GetBinaryType Alias "GetBinaryTypeA" (ByVal lpApplicationName As String, lpBinaryType As Integer) As Integer
+Declare Function GetCPInfo Alias "GetCPInfo" (ByVal CodePage As Integer, lpCPInfo As CPINFO) As Integer
+Declare Function GetCommConfig Alias "GetCommConfig" (ByVal hCommDev As Integer, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
+Declare Function GetCommMask Alias "GetCommMask" (ByVal hFile As Integer, lpEvtMask As Integer) As Integer
+Declare Function GetCommModemStatus Alias "GetCommModemStatus" (ByVal hFile As Integer, lpModemStat As Integer) As Integer
+Declare Function GetCommProperties Alias "GetCommProperties" (ByVal hFile As Integer, lpCommProp As COMMPROP) As Integer
+Declare Function GetCommState Alias "GetCommState" (ByVal nCid As Integer, lpDCB As DCB) As Integer
+Declare Function GetCommTimeouts Alias "GetCommTimeouts" (ByVal hFile As Integer, lpCommTimeouts As COMMTIMEOUTS) As Integer
+Declare Function GetCommandLine Alias "GetCommandLineA" () As Integer
+Declare Function GetCompressedFileSize Alias "GetCompressedFileSizeA" (ByVal lpFileName As String, lpFileSizeHigh As Integer) As Integer
+Declare Function GetComputerName Alias "GetComputerNameA" (ByVal lpBuffer As String, nSize As Integer) As Integer
+Declare Function GetConsoleCP Alias "GetConsoleCP" () As Integer
+Declare Function GetConsoleCursorInfo Alias "GetConsoleCursorInfo" (ByVal hConsoleOutput As Integer, lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
+Declare Function GetConsoleMode Alias "GetConsoleMode" (ByVal hConsoleHandle As Integer, lpMode As Integer) As Integer
+Declare Function GetConsoleOutputCP Alias "GetConsoleOutputCP" () As Integer
+Declare Function GetConsoleScreenBufferInfo Alias "GetConsoleScreenBufferInfo" (ByVal hConsoleOutput As Integer, lpConsoleScreenBufferInfo As CONSOLE_SCREEN_BUFFER_INFO) As Integer
+Declare Function GetConsoleTitle Alias "GetConsoleTitleA" (ByVal lpConsoleTitle As String, ByVal nSize As Integer) As Integer
+Declare Function GetCurrencyFormat Alias "GetCurrencyFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, lpFormat As CURRENCYFMT, ByVal lpCurrencyStr As String, ByVal cchCurrency As Integer) As Integer
+Declare Function GetCurrentDirectory Alias "GetCurrentDirectoryA" (ByVal nBufferLength As Integer, ByVal lpBuffer As String) As Integer
+Declare Function GetCurrentProcess Alias "GetCurrentProcess" () As Integer
+Declare Function GetCurrentProcessId Alias "GetCurrentProcessId" () As Integer
+Declare Function GetCurrentThread Alias "GetCurrentThread" () As Integer
+Declare Function GetCurrentThreadId Alias "GetCurrentThreadId" () As Integer
+Declare Function GetDateFormat Alias "GetDateFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpDate As SYSTEMTIME, ByVal lpFormat As String, ByVal lpDateStr As String, ByVal cchDate As Integer) As Integer
+Declare Function GetDefaultCommConfig Alias "GetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
+Declare Function GetDiskFreeSpace Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, lpSectorsPerCluster As Integer, lpBytesPerSector As Integer, lpNumberOfFreeClusters As Integer, lpTotalNumberOfClusters As Integer) As Integer
+Declare Function GetDiskFreeSpaceEx Alias "GetDiskFreeSpaceExA" (ByVal lpPathName As String, lpFreeBytesAvailableToCaller As INT64, lpTotalNumberOfBytes As INT64, lpTotalNumberOfFreeBytes As INT64) As Integer
+Declare Function GetDriveType Alias "GetDriveTypeA" (ByVal nDrive As String) As Integer
+Declare Function GetEnvironmentStrings Alias "GetEnvironmentStringsA" () As Integer
+Declare Function GetEnvironmentVariable Alias "GetEnvironmentVariableA" (ByVal lpName As String, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
+Declare Function GetExitCodeProcess Alias "GetExitCodeProcess" (ByVal hProcess As Integer, lpExitCode As Integer) As Integer
+Declare Function GetExitCodeThread Alias "GetExitCodeThread" (ByVal hThread As Integer, lpExitCode As Integer) As Integer
+Declare Function GetFileAttributes Alias "GetFileAttributesA" (ByVal lpFileName As String) As Integer
+Declare Function GetFileInformationByHandle Alias "GetFileInformationByHandle" (ByVal hFile As Integer, lpFileInformation As BY_HANDLE_FILE_INFORMATION) As Integer
+Declare Function GetFileSize Alias "GetFileSize" (ByVal hFile As Integer, lpFileSizeHigh As Integer) As Integer
+Declare Function GetFileTime Alias "GetFileTime" (ByVal hFile As Integer, lpCreationTime As FILETIME, lpLastAccessTime As FILETIME, lpLastWriteTime As FILETIME) As Integer
+Declare Function GetFileType Alias "GetFileType" (ByVal hFile As Integer) As Integer
+Declare Function GetFullPathName Alias "GetFullPathNameA" (ByVal lpFileName As String, ByVal nBufferLength As Integer, ByVal lpBuffer As String, ByVal lpFilePart As Integer) As Integer
+Declare Function GetHandleInformation Alias "GetHandleInformation" (ByVal hObject As Integer, lpdwFlags As Integer) As Integer
+Declare Function GetLargestConsoleWindowSize Alias "GetLargestConsoleWindowSize" (ByVal hConsoleOutput As Integer) As Integer
+Declare Function GetLastError Alias "GetLastError" () As Integer
+Declare Function GetLocaleInfo Alias "GetLocaleInfoA" (ByVal Locale As Integer, ByVal LCType As Integer, ByVal lpLCData As String, ByVal cchData As Integer) As Integer
+Declare Sub GetLocalTime Alias "GetLocalTime" (lpSystemTime As SYSTEMTIME)
+Declare Function GetLogicalDriveStrings Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Integer, lpBuffer As ANY) As Integer
+Declare Function GetLogicalDrives Alias "GetLogicalDrives" () As Integer
+Declare Function GetMailslotInfo Alias "GetMailslotInfo" (ByVal hMailslot As Integer, lpMaxMessageSize As Integer, lpNextSize As Integer, lpMessageCount As Integer, lpReadTimeout As Integer) As Integer
+Declare Function GetModuleFileName Alias "GetModuleFileNameA" (ByVal hModule As Integer, ByVal lpFileName As String, ByVal nSize As Integer) As Integer
+Declare Function GetModuleHandle Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Integer
+Declare Function GetNamedPipeHandleState Alias "GetNamedPipeHandleStateA" (ByVal hNamedPipe As Integer, lpState As Integer, lpCurInstances As Integer, lpMaxCollectionCount As Integer, lpCollectDataTimeout As Integer, ByVal lpUserName As String, ByVal nMaxUserNameSize As Integer) As Integer
+Declare Function GetNamedPipeInfo Alias "GetNamedPipeInfo" (ByVal hNamedPipe As Integer, lpFlags As Integer, lpOutBufferSize As Integer, lpInBufferSize As Integer, lpMaxInstances As Integer) As Integer
+Declare Function GetNumberFormat Alias "GetNumberFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, lpFormat As NUMBERFMT, ByVal lpNumberStr As String, ByVal cchNumber As Integer) As Integer
+Declare Function GetNumberOfConsoleInputEvents Alias "GetNumberOfConsoleInputEvents" (ByVal hConsoleInput As Integer, lpNumberOfEvents As Integer) As Integer
+Declare Function GetNumberOfConsoleMouseButtons Alias "GetNumberOfConsoleMouseButtons" (lpNumberOfMouseButtons As Integer) As Integer
+Declare Function GetOEMCP Alias "GetOEMCP" () As Integer
+Declare Function GetOverlappedResult Alias "GetOverlappedResult" (ByVal hFile As Integer, lpOverlapped As OVERLAPPED, lpNumberOfBytesTransferred As Integer, ByVal bWait As Integer) As Integer
+Declare Function GetPriorityClass Alias "GetPriorityClass" (ByVal hProcess As Integer) As Integer
+Declare Function GetPrivateProfileInt Alias "GetPrivateProfileIntA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal nDefault As Integer, ByVal lpFileName As String) As Integer
+Declare Function GetPrivateProfileSection Alias "GetPrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
+Declare Function GetPrivateProfileSectionNames Alias "GetPrivateProfileSectionNamesA" (ByVal lpszReturnBuffer As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
+Declare Function GetPrivateProfileString Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
+Declare Function GetProcAddress Alias "GetProcAddress" (ByVal hModule As Integer, ByVal lpProcName As String) As Integer
+Declare Function GetProcessAffinityMask Alias "GetProcessAffinityMask" (ByVal hProcess As Integer, lpProcessAffinityMask As Integer, SystemAffinityMask As Integer) As Integer
+Declare Function GetProcessHeap Alias "GetProcessHeap" () As Integer
+Declare Function GetProcessHeaps Alias "GetProcessHeaps" (ByVal NumberOfHeaps As Integer, ProcessHeaps As Integer) As Integer
+Declare Function GetProcessShutdownParameters Alias "GetProcessShutdownParameters" (lpdwLevel As Integer, lpdwFlags As Integer) As Integer
+Declare Function GetProcessTimes Alias "GetProcessTimes" (ByVal hProcess As Integer, lpCreationTime As FILETIME, lpExitTime As FILETIME, lpKernelTime As FILETIME, lpUserTime As FILETIME) As Integer
+Declare Function GetProcessWorkingSetSize Alias "GetProcessWorkingSetSize" (ByVal hProcess As Integer, lpMinimumWorkingSetSize As Integer, lpMaximumWorkingSetSize As Integer) As Integer
+Declare Function GetProfileInt Alias "GetProfileIntA" (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal nDefault As Integer) As Integer
+Declare Function GetProfileSection Alias "GetProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Integer) As Integer
+Declare Function GetProfileString Alias "GetProfileStringA" (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer) As Integer
+Declare Function GetQueuedCompletionStatus Alias "GetQueuedCompletionStatus" (ByVal CompletionPort As Integer, lpNumberOfBytesTransferred As Integer, lpCompletionKey As Integer, lpOverlapped As Integer, ByVal dwMilliseconds As Integer) As Integer
+Declare Function GetShortPathName Alias "GetShortPathNameA" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Integer) As Integer
+Declare Sub GetStartupInfo Alias "GetStartupInfoA" (lpStartupInfo As STARTUPINFO)
+Declare Function GetStdHandle Alias "GetStdHandle" (ByVal nStdHandle As Integer) As Integer
+Declare Function GetStringTypeA Alias "GetStringTypeA" (ByVal lcid As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
+Declare Function GetStringTypeEx Alias "GetStringTypeEx" (ByVal Locale As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
+Declare Function GetStringTypeW Alias "GetStringTypeW" (ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
+Declare Function GetSystemDefaultLCID Alias "GetSystemDefaultLCID" () As Integer
+Declare Function GetSystemDefaultLangID Alias "GetSystemDefaultLangID" () As Integer
+Declare Function GetSystemDirectory Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
+Declare Sub GetSystemInfo Alias "GetSystemInfo" (lpSystemInfo As SYSTEM_INFO)
+Declare Function GetSystemPowerStatus Alias "GetSystemPowerStatus" (lpSystemPowerStatus As SYSTEM_POWER_STATUS) As Integer
+Declare Sub GetSystemTime Alias "GetSystemTime" (lpSystemTime As SYSTEMTIME)
+Declare Function GetSystemTimeAdjustment Alias "GetSystemTimeAdjustment" (lpTimeAdjustment As Integer, lpTimeIncrement As Integer, lpTimeAdjustmentDisabled As Integer) As Integer
+Declare Sub GetSystemTimeAsFileTime Alias "GetSystemTimeAsFileTime" (lpFileTime As FILETIME)
+Declare Function GetTapeParameters Alias "GetTapeParameters" (ByVal hDevice As Integer, ByVal dwOperation As Integer, lpdwSize As Integer, lpTapeInformation As ANY) As Integer
+Declare Function GetTapePosition Alias "GetTapePosition" (ByVal hDevice As Integer, ByVal dwPositionType As Integer, lpdwPartition As Integer, lpdwOffsetLow As Integer, lpdwOffsetHigh As Integer) As Integer
+Declare Function GetTapeStatus Alias "GetTapeStatus" (ByVal hDevice As Integer) As Integer
+Declare Function GetTempFileName Alias "GetTempFileNameA" (ByVal lpszPath As String, ByVal lpPrefixString As String, ByVal wUnique As Integer, ByVal lpTempFileName As String) As Integer
+Declare Function GetTempPath Alias "GetTempPathA" (ByVal nBufferLength As Integer, ByVal lpBuffer As String) As Integer
+Declare Function GetThreadContext Alias "GetThreadContext" (ByVal hThread As Integer, lpContext As CONTEXT) As Integer
+Declare Function GetThreadLocale Alias "GetThreadLocale" () As Integer
+Declare Function GetThreadPriority Alias "GetThreadPriority" (ByVal hThread As Integer) As Integer
+Declare Function GetThreadSelectorEntry Alias "GetThreadSelectorEntry" (ByVal hThread As Integer, ByVal dwSelector As Integer, lpSelectorEntry As LDT_ENTRY) As Integer
+Declare Function GetThreadTimes Alias "GetThreadTimes" (ByVal hThread As Integer, lpCreationTime As FILETIME, lpExitTime As FILETIME, lpKernelTime As FILETIME, lpUserTime As FILETIME) As Integer
+Declare Function GetTickCount Alias "GetTickCount" () As Integer
+Declare Function GetTimeFormat Alias "GetTimeFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpTime As SYSTEMTIME, ByVal lpFormat As String, ByVal lpTimeStr As String, ByVal cchTime As Integer) As Integer
+Declare Function GetTimeZoneInformation Alias "GetTimeZoneInformation" (lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
+Declare Function GetUserDefaultLCID Alias "GetUserDefaultLCID" () As Integer
+Declare Function GetUserDefaultLangID Alias "GetUserDefaultLangID" () As Integer
+Declare Function GetVersion Alias "GetVersion" () As Integer
+Declare Function GetVersionEx Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Integer
+Declare Function GetVolumeInformation Alias "GetVolumeInformationA" (ByVal lpRootPathName As String, ByVal lpVolumeNameBuffer As String, ByVal nVolumeNameSize As Integer, lpVolumeSerialNumber As Integer, lpMaximumComponentLength As Integer, lpFileSystemFlags As Integer, ByVal lpFileSystemNameBuffer As String, ByVal nFileSystemNameSize As Integer) As Integer
+Declare Function GetWindowsDirectory Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
+Declare Function GlobalAddAtom Alias "GlobalAddAtomA" (ByVal lpString As String) As Integer
+Declare Function GlobalAlloc Alias "GlobalAlloc" (ByVal wFlags As Integer, ByVal dwBytes As Integer) As Integer
+Declare Function GlobalCompact Alias "GlobalCompact" (ByVal dwMinFree As Integer) As Integer
+Declare Function GlobalDeleteAtom Alias "GlobalDeleteAtom" (ByVal nAtom As Integer) As Integer
+Declare Function GlobalFindAtom Alias "GlobalFindAtomA" (ByVal lpString As String) As Integer
+Declare Sub GlobalFix Alias "GlobalFix" (ByVal hMem As Integer)
+Declare Function GlobalFlags Alias "GlobalFlags" (ByVal hMem As Integer) As Integer
+Declare Function GlobalFree Alias "GlobalFree" (ByVal hMem As Integer) As Integer
+Declare Function GlobalGetAtomName Alias "GlobalGetAtomNameA" (ByVal nAtom As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
+Declare Function GlobalHandle Alias "GlobalHandle" (wMem As ANY) As Integer
+Declare Function GlobalLock Alias "GlobalLock" (ByVal hMem As Integer) As Integer
+Declare Sub GlobalMemoryStatus Alias "GlobalMemoryStatus" (lpBuffer As MEMORYSTATUS)
+Declare Function GlobalMemoryStatusEx Alias "GlobalMemoryStatusEx" (lpBuffer As MEMORYSTATUSEX) As Integer
+Declare Function GlobalReAlloc Alias "GlobalReAlloc" (ByVal hMem As Integer, ByVal dwBytes As Integer, ByVal wFlags As Integer) As Integer
+Declare Function GlobalSize Alias "GlobalSize" (ByVal hMem As Integer) As Integer
+Declare Sub GlobalUnfix Alias "GlobalUnfix" (ByVal hMem As Integer)
+Declare Function GlobalUnWire Alias "GlobalUnWire" (ByVal hMem As Integer) As Integer
+Declare Function GlobalUnlock Alias "GlobalUnlock" (ByVal hMem As Integer) As Integer
+Declare Function GlobalWire Alias "GlobalWire" (ByVal hMem As Integer) As Integer
 
 
-Declare Function HeapAlloc Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByVal dwBytes As Integer) As Integer
-Declare Function HeapCompact Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function HeapCreate Lib "kernel32" (ByVal flOptions As Integer, ByVal dwInitialSize As Integer, ByVal dwMaximumSize As Integer) As Integer
-Declare Function HeapDestroy Lib "kernel32" (ByVal hHeap As Integer) As Integer
-Declare Function HeapFree Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
-Declare Function HeapLock Lib "kernel32" (ByVal hHeap As Integer) As Integer
-Declare Function HeapReAlloc Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any, ByVal dwBytes As Integer) As Integer
-Declare Function HeapSize Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
-Declare Function HeapUnlock Lib "kernel32" (ByVal hHeap As Integer) As Integer
-Declare Function HeapValidate Lib "kernel32" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
-Declare Function hread Lib "kernel32" Alias "_hread" (ByVal hFile As Integer, ByRef lpBuffer As Any, ByVal lBytes As Integer) As Integer
-Declare Function hwrite Lib "kernel32" Alias "_hwrite" (ByVal hFile As Integer, ByVal lpBuffer As String, ByVal lBytes As Integer) As Integer
+Declare Function HeapAlloc Alias "HeapAlloc" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByVal dwBytes As Integer) As Integer
+Declare Function HeapCompact Alias "HeapCompact" (ByVal hHeap As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function HeapCreate Alias "HeapCreate" (ByVal flOptions As Integer, ByVal dwInitialSize As Integer, ByVal dwMaximumSize As Integer) As Integer
+Declare Function HeapDestroy Alias "HeapDestroy" (ByVal hHeap As Integer) As Integer
+Declare Function HeapFree Alias "HeapFree" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
+Declare Function HeapLock Alias "HeapLock" (ByVal hHeap As Integer) As Integer
+Declare Function HeapReAlloc Alias "HeapReAlloc" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any, ByVal dwBytes As Integer) As Integer
+Declare Function HeapSize Alias "HeapSize" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
+Declare Function HeapUnlock Alias "HeapUnlock" (ByVal hHeap As Integer) As Integer
+Declare Function HeapValidate Alias "HeapValidate" (ByVal hHeap As Integer, ByVal dwFlags As Integer, ByRef lpMem As Any) As Integer
+Declare Function hread Alias "_hread" (ByVal hFile As Integer, ByRef lpBuffer As Any, ByVal lBytes As Integer) As Integer
+Declare Function hwrite Alias "_hwrite" (ByVal hFile As Integer, ByVal lpBuffer As String, ByVal lBytes As Integer) As Integer
 
-Declare Function ImpersonateLoggedOnUser Lib "kernel32" (ByVal hToken As Integer) As Integer
-Declare Function InitAtomTable Lib "kernel32" (ByVal nSize As Integer) As Integer
-Declare Sub InitializeCriticalSection Lib "kernel32" (lpCriticalSection As CRITICAL_SECTION)
-Declare Function InitializeCriticalSectionAndSpinCount Lib "kernel32" (lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
-Declare Function InterlockedDecrement Lib "kernel32" (lpAddend As Integer) As Integer
-Declare Function InterlockedExchange Lib "kernel32" (xTarget As Integer, ByVal xValue As Integer) As Integer
-Declare Function InterlockedIncrement Lib "kernel32" (lpAddend As Integer) As Integer
-Declare Function IsBadCodePtr Lib "kernel32" (ByVal lpfn As Integer) As Integer
-Declare Function IsBadHugeReadPtr Lib "kernel32" (lp As ANY, ByVal ucb As Integer) As Integer
-Declare Function IsBadHugeWritePtr Lib "kernel32" (lp As ANY, ByVal ucb As Integer) As Integer
-Declare Function IsBadReadPtr Lib "kernel32" (ByVal lp As Integer, ByVal ucb As Integer) As Integer
-Declare Function IsBadStringPtr Lib "kernel32" Alias "IsBadStringPtrA" (ByVal lpsz As String, ByVal ucchMax As Integer) As Integer
-Declare Function IsBadWritePtr Lib "kernel32" (ByVal lp As Integer, ByVal ucb As Integer) As Integer
-Declare Function IsDBCSLeadByte Lib "kernel32" (ByVal bTestChar As BYTE) As Integer
-Declare Function IsValidCodePage Lib "kernel32" (ByVal CodePage As Integer) As Integer
-Declare Function IsValidLocale Lib "kernel32" (ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function ImpersonateLoggedOnUser Alias "ImpersonateLoggedOnUser" (ByVal hToken As Integer) As Integer
+Declare Function InitAtomTable Alias "InitAtomTable" (ByVal nSize As Integer) As Integer
+Declare Sub InitializeCriticalSection Alias "InitializeCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Function InitializeCriticalSectionAndSpinCount Alias "InitializeCriticalSectionAndSpinCount" (lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
+Declare Function InterlockedDecrement Alias "InterlockedDecrement" (lpAddend As Integer) As Integer
+Declare Function InterlockedExchange Alias "InterlockedExchange" (xTarget As Integer, ByVal xValue As Integer) As Integer
+Declare Function InterlockedIncrement Alias "InterlockedIncrement" (lpAddend As Integer) As Integer
+Declare Function IsBadCodePtr Alias "IsBadCodePtr" (ByVal lpfn As Integer) As Integer
+Declare Function IsBadHugeReadPtr Alias "IsBadHugeReadPtr" (lp As ANY, ByVal ucb As Integer) As Integer
+Declare Function IsBadHugeWritePtr Alias "IsBadHugeWritePtr" (lp As ANY, ByVal ucb As Integer) As Integer
+Declare Function IsBadReadPtr Alias "IsBadReadPtr" (ByVal lp As Integer, ByVal ucb As Integer) As Integer
+Declare Function IsBadStringPtr Alias "IsBadStringPtrA" (ByVal lpsz As String, ByVal ucchMax As Integer) As Integer
+Declare Function IsBadWritePtr Alias "IsBadWritePtr" (ByVal lp As Integer, ByVal ucb As Integer) As Integer
+Declare Function IsDBCSLeadByte Alias "IsDBCSLeadByte" (ByVal bTestChar As BYTE) As Integer
+Declare Function IsValidCodePage Alias "IsValidCodePage" (ByVal CodePage As Integer) As Integer
+Declare Function IsValidLocale Alias "IsValidLocale" (ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
 
-Declare Function lclose Lib "kernel32" Alias "_lclose" (ByVal hFile As Integer) As Integer
-Declare Function LCMapString Lib "kernel32" Alias "LCMapStringA" (ByVal Locale As Integer, ByVal dwMapFlags As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByVal lpDestStr As String, ByVal cchDest As Integer) As Integer
-Declare Function lcreat Lib "kernel32" Alias "_lcreat" (ByVal lpPathName As String, ByVal iAttribute As Integer) As Integer
-Declare Function llseek Lib "kernel32" Alias "_llseek" (ByVal hFile As Integer, ByVal lOffset As Integer, ByVal iOrigin As Integer) As Integer
-Declare Sub LeaveCriticalSection Lib "kernel32" (lpCriticalSection As CRITICAL_SECTION)
-Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Integer
-Declare Function LoadLibraryEx Lib "kernel32" Alias "LoadLibraryExA" (ByVal lpLibFileName As String, ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function LoadModule Lib "kernel32" (ByVal lpModuleName As String, lpParameterBlock As ANY) As Integer
-Declare Function LoadResource Lib "kernel32" (ByVal hInstance As Integer, ByVal hResInfo As Integer) As Integer
-Declare Function LocalAlloc Lib "kernel32" (ByVal wFlags As Integer, ByVal wBytes As Integer) As Integer
-Declare Function LocalCompact Lib "kernel32" (ByVal uMinFree As Integer) As Integer
-Declare Function LocalFileTimeToFileTime Lib "kernel32" (lpLocalFileTime As FILETIME, lpFileTime As FILETIME) As Integer
-Declare Function LocalFlags Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function LocalFree Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function LocalHandle Lib "kernel32" (wMem As ANY) As Integer
-Declare Function LocalLock Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function LocalReAlloc Lib "kernel32" (ByVal hMem As Integer, ByVal wBytes As Integer, ByVal wFlags As Integer) As Integer
-Declare Function LocalShrink Lib "kernel32" (ByVal hMem As Integer, ByVal cbNewSize As Integer) As Integer
-Declare Function LocalSize Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function LocalUnlock Lib "kernel32" (ByVal hMem As Integer) As Integer
-Declare Function LockFile Lib "kernel32" (ByVal hFile As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwFileOffsetHigh As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer) As Integer
-Declare Function LockFileEx Lib "kernel32" (ByVal hFile As Integer, ByVal dwFlags As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function LockResource Lib "kernel32" (ByVal hResData As Integer) As Integer
-Declare Function LogonUser Lib "kernel32" Alias "LogonUserA" (ByVal lpszUsername As String, ByVal lpszDomain As String, ByVal lpszPassword As String, ByVal dwLogonType As Integer, ByVal dwLogonProvider As Integer, phToken As Integer) As Integer
-Declare Function lopen Lib "kernel32" Alias "_lopen" (ByVal lpPathName As String, ByVal iReadWrite As Integer) As Integer
-Declare Function lread Lib "kernel32" Alias "_lread" (ByVal hFile As Integer, lpBuffer As ANY, ByVal wBytes As Integer) As Integer
-Declare Function lstrcat Lib "kernel32" Alias "lstrcatA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
-Declare Function lstrcmp Lib "kernel32" Alias "lstrcmpA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
-Declare Function lstrcmpi Lib "kernel32" Alias "lstrcmpiA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
-Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
-Declare Function lstrcpyn Lib "kernel32" Alias "lstrcpynA" (ByVal lpString1 As String, ByVal lpString2 As String, ByVal iMaxLength As Integer) As Integer
-Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As String) As Integer
-Declare Function lwrite Lib "kernel32" Alias "_lwrite" (ByVal hFile As Integer, ByVal lpBuffer As String, ByVal wBytes As Integer) As Integer
+Declare Function lclose Alias "_lclose" (ByVal hFile As Integer) As Integer
+Declare Function LCMapString Alias "LCMapStringA" (ByVal Locale As Integer, ByVal dwMapFlags As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByVal lpDestStr As String, ByVal cchDest As Integer) As Integer
+Declare Function lcreat Alias "_lcreat" (ByVal lpPathName As String, ByVal iAttribute As Integer) As Integer
+Declare Function llseek Alias "_llseek" (ByVal hFile As Integer, ByVal lOffset As Integer, ByVal iOrigin As Integer) As Integer
+Declare Sub LeaveCriticalSection Alias "LeaveCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Function LoadLibrary Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Integer
+Declare Function LoadLibraryEx Alias "LoadLibraryExA" (ByVal lpLibFileName As String, ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function LoadModule Alias "LoadModule" (ByVal lpModuleName As String, lpParameterBlock As ANY) As Integer
+Declare Function LoadResource Alias "LoadResource" (ByVal hInstance As Integer, ByVal hResInfo As Integer) As Integer
+Declare Function LocalAlloc Alias "LocalAlloc" (ByVal wFlags As Integer, ByVal wBytes As Integer) As Integer
+Declare Function LocalCompact Alias "LocalCompact" (ByVal uMinFree As Integer) As Integer
+Declare Function LocalFileTimeToFileTime Alias "LocalFileTimeToFileTime" (lpLocalFileTime As FILETIME, lpFileTime As FILETIME) As Integer
+Declare Function LocalFlags Alias "LocalFlags" (ByVal hMem As Integer) As Integer
+Declare Function LocalFree Alias "LocalFree" (ByVal hMem As Integer) As Integer
+Declare Function LocalHandle Alias "LocalHandle" (wMem As ANY) As Integer
+Declare Function LocalLock Alias "LocalLock" (ByVal hMem As Integer) As Integer
+Declare Function LocalReAlloc Alias "LocalReAlloc" (ByVal hMem As Integer, ByVal wBytes As Integer, ByVal wFlags As Integer) As Integer
+Declare Function LocalShrink Alias "LocalShrink" (ByVal hMem As Integer, ByVal cbNewSize As Integer) As Integer
+Declare Function LocalSize Alias "LocalSize" (ByVal hMem As Integer) As Integer
+Declare Function LocalUnlock Alias "LocalUnlock" (ByVal hMem As Integer) As Integer
+Declare Function LockFile Alias "LockFile" (ByVal hFile As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwFileOffsetHigh As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer) As Integer
+Declare Function LockFileEx Alias "LockFileEx" (ByVal hFile As Integer, ByVal dwFlags As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function LockResource Alias "LockResource" (ByVal hResData As Integer) As Integer
+Declare Function LogonUser Alias "LogonUserA" (ByVal lpszUsername As String, ByVal lpszDomain As String, ByVal lpszPassword As String, ByVal dwLogonType As Integer, ByVal dwLogonProvider As Integer, phToken As Integer) As Integer
+Declare Function lopen Alias "_lopen" (ByVal lpPathName As String, ByVal iReadWrite As Integer) As Integer
+Declare Function lread Alias "_lread" (ByVal hFile As Integer, lpBuffer As ANY, ByVal wBytes As Integer) As Integer
+Declare Function lstrcat Alias "lstrcatA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
+Declare Function lstrcmp Alias "lstrcmpA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
+Declare Function lstrcmpi Alias "lstrcmpiA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
+Declare Function lstrcpy Alias "lstrcpyA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
+Declare Function lstrcpyn Alias "lstrcpynA" (ByVal lpString1 As String, ByVal lpString2 As String, ByVal iMaxLength As Integer) As Integer
+Declare Function lstrlen Alias "lstrlenA" (ByVal lpString As String) As Integer
+Declare Function lwrite Alias "_lwrite" (ByVal hFile As Integer, ByVal lpBuffer As String, ByVal wBytes As Integer) As Integer
 
-Declare Function MapViewOfFile Lib "kernel32" Alias "MapViewOfFile" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer) As Integer
-Declare Function MapViewOfFileEx Lib "kernel32" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer, lpBaseAddress As ANY) As Integer
-Declare Function MoveFile Lib "kernel32" Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
-Declare Function MoveFileEx Lib "kernel32" Alias "MoveFileExA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String, ByVal dwFlags As Integer) As Integer
-Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (pDestination As ANY, pSource As ANY, ByVal cbLength As Integer)
-Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Integer, ByVal nNumerator As Integer, ByVal nDenominator As Integer) As Integer
-Declare Function MultiByteToWideChar Lib "kernel32" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer) As Integer
+Declare Function MapViewOfFile Alias "MapViewOfFile" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer) As Integer
+Declare Function MapViewOfFileEx Alias "MapViewOfFileEx" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer, lpBaseAddress As ANY) As Integer
+Declare Function MoveFile Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
+Declare Function MoveFileEx Alias "MoveFileExA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String, ByVal dwFlags As Integer) As Integer
+Declare Sub MoveMemory Alias "RtlMoveMemory" (pDestination As ANY, pSource As ANY, ByVal cbLength As Integer)
+Declare Function MulDiv Alias "MulDiv" (ByVal nNumber As Integer, ByVal nNumerator As Integer, ByVal nDenominator As Integer) As Integer
+Declare Function MultiByteToWideChar Alias "MultiByteToWideChar" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer) As Integer
 
-'Declare Function ObjectOpenAuditAlarm Lib "kernel32" Alias "ObjectOpenAuditAlarmA" (ByVal SubsystemName As String, ByRef HandleId As Any, ByVal ObjectTypeName As String, ByVal ObjectName As String, pSecurityDescriptor As SECURITY_DESCRIPTOR, ByVal ClientToken As Integer, ByVal DesiredAccess As Integer, ByVal GrantedAccess As Integer, Privileges As PRIVILEGE_SET, ByVal ObjectCreation As Integer, ByVal AccessGranted As Integer, ByVal GenerateOnClose As Integer) As Integer
-Declare Function OpenEvent Lib "kernel32" Alias "OpenEventA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
-Declare Function OpenFile Lib "kernel32" (ByVal lpFileName As String, lpReOpenBuff As OFSTRUCT, ByVal wStyle As Integer) As Integer
-Declare Function OpenFileMapping Lib "kernel32" Alias "OpenFileMappingA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
-Declare Function OpenMutex Lib "kernel32" Alias "OpenMutexA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
-Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwProcessId As Integer) As Integer
-Declare Function OpenSemaphore Lib "kernel32" Alias "OpenSemaphoreA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
-Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
+'Declare Function ObjectOpenAuditAlarm Alias "ObjectOpenAuditAlarmA" (ByVal SubsystemName As String, ByRef HandleId As Any, ByVal ObjectTypeName As String, ByVal ObjectName As String, pSecurityDescriptor As SECURITY_DESCRIPTOR, ByVal ClientToken As Integer, ByVal DesiredAccess As Integer, ByVal GrantedAccess As Integer, Privileges As PRIVILEGE_SET, ByVal ObjectCreation As Integer, ByVal AccessGranted As Integer, ByVal GenerateOnClose As Integer) As Integer
+Declare Function OpenEvent Alias "OpenEventA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
+Declare Function OpenFile Alias "OpenFile" (ByVal lpFileName As String, lpReOpenBuff As OFSTRUCT, ByVal wStyle As Integer) As Integer
+Declare Function OpenFileMapping Alias "OpenFileMappingA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
+Declare Function OpenMutex Alias "OpenMutexA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
+Declare Function OpenProcess Alias "OpenProcess" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwProcessId As Integer) As Integer
+Declare Function OpenSemaphore Alias "OpenSemaphoreA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
+Declare Sub OutputDebugString Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 
-Declare Function PeekNamedPipe Lib "kernel32" (ByVal hNamedPipe As Integer, lpBuffer As ANY, ByVal nBufferSize As Integer, lpBytesRead As Integer, lpTotalBytesAvail As Integer, lpBytesLeftThisMessage As Integer) As Integer
-Declare Function PrepareTape Lib "kernel32" (ByVal hDevice As Integer, ByVal dwOperation As Integer, ByVal bimmediate As Integer) As Integer
-Declare Function PulseEvent Lib "kernel32" (ByVal hEvent As Integer) As Integer
-Declare Function PurgeComm Lib "kernel32" (ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function PeekNamedPipe Alias "PeekNamedPipe" (ByVal hNamedPipe As Integer, lpBuffer As ANY, ByVal nBufferSize As Integer, lpBytesRead As Integer, lpTotalBytesAvail As Integer, lpBytesLeftThisMessage As Integer) As Integer
+Declare Function PrepareTape Alias "PrepareTape" (ByVal hDevice As Integer, ByVal dwOperation As Integer, ByVal bimmediate As Integer) As Integer
+Declare Function PulseEvent Alias "PulseEvent" (ByVal hEvent As Integer) As Integer
+Declare Function PurgeComm Alias "PurgeComm" (ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
 
 Declare Function PeekConsoleInput alias "PeekConsoleInputA" ( byval hConsoleInput as integer, byref pirBuffer as INPUT_RECORD, byval cInRecords as integer, byref lpcRead as integer ) as integer
 
-Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (ByVal lpDeviceName As String, ByVal lpTargetPath As String, ByVal ucchMax As Integer) As Integer
-Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As INT64) As Integer
-Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As INT64) As Integer
+Declare Function QueryDosDevice Alias "QueryDosDeviceA" (ByVal lpDeviceName As String, ByVal lpTargetPath As String, ByVal ucchMax As Integer) As Integer
+Declare Function QueryPerformanceCounter Alias "QueryPerformanceCounter" (lpPerformanceCount As INT64) As Integer
+Declare Function QueryPerformanceFrequency Alias "QueryPerformanceFrequency" (lpFrequency As INT64) As Integer
 
-Declare Sub RaiseException Lib "kernel32" (ByVal dwExceptionCode As Integer, ByVal dwExceptionFlags As Integer, ByVal nNumberOfArguments As Integer, lpArguments As Integer)
-Declare Function ReadConsole Lib "kernel32" Alias "ReadConsoleA" (ByVal hConsoleInput As Integer, lpBuffer As ANY, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer, lpReserved As ANY) As Integer
-Declare Function ReadConsoleInput Lib "kernel32" Alias "ReadConsoleInputA" (ByVal hConsoleInput As Integer, byref lpBuffer As INPUT_RECORD, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer) As Integer
-Declare Function ReadConsoleOutput Lib "kernel32" Alias "ReadConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpReadRegion As SMALL_RECT) As Integer
-Declare Function ReadConsoleOutputAttribute Lib "kernel32" (ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfAttrsRead As Integer) As Integer
-Declare Function ReadConsoleOutputCharacter Lib "kernel32" Alias "ReadConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfCharsRead As Integer) As Integer
-Declare Function ReadFile Lib "kernel32" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, lpNumberOfBytesRead As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function ReadFileEx Lib "kernel32" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
-Declare Function ReadProcessMemory Lib "kernel32" (ByVal hProcess As Integer, ByVal lpBaseAddress As Integer, lpBuffer As ANY, ByVal nSize As Integer, lpNumberOfBytesWritten As Integer) As Integer
-Declare Function ReleaseMutex Lib "kernel32" (ByVal hMutex As Integer) As Integer
-Declare Function ReleaseSemaphore Lib "kernel32" (ByVal hSemaphore As Integer, ByVal lReleaseCount As Integer, lpPreviousCount As Integer) As Integer
-Declare Function RemoveDirectory Lib "kernel32" Alias "RemoveDirectoryA" (ByVal lpPathName As String) As Integer
-Declare Function ResetEvent Lib "kernel32" (ByVal hEvent As Integer) As Integer
-Declare Function ResumeThread Lib "kernel32" (ByVal hThread As Integer) As Integer
+Declare Sub RaiseException Alias "RaiseException" (ByVal dwExceptionCode As Integer, ByVal dwExceptionFlags As Integer, ByVal nNumberOfArguments As Integer, lpArguments As Integer)
+Declare Function ReadConsole Alias "ReadConsoleA" (ByVal hConsoleInput As Integer, lpBuffer As ANY, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer, lpReserved As ANY) As Integer
+Declare Function ReadConsoleInput Alias "ReadConsoleInputA" (ByVal hConsoleInput As Integer, byref lpBuffer As INPUT_RECORD, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer) As Integer
+Declare Function ReadConsoleOutput Alias "ReadConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpReadRegion As SMALL_RECT) As Integer
+Declare Function ReadConsoleOutputAttribute Alias "ReadConsoleOutputAttribute" (ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfAttrsRead As Integer) As Integer
+Declare Function ReadConsoleOutputCharacter Alias "ReadConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfCharsRead As Integer) As Integer
+Declare Function ReadFile Alias "ReadFile" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, lpNumberOfBytesRead As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function ReadFileEx Alias "ReadFileEx" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
+Declare Function ReadProcessMemory Alias "ReadProcessMemory" (ByVal hProcess As Integer, ByVal lpBaseAddress As Integer, lpBuffer As ANY, ByVal nSize As Integer, lpNumberOfBytesWritten As Integer) As Integer
+Declare Function ReleaseMutex Alias "ReleaseMutex" (ByVal hMutex As Integer) As Integer
+Declare Function ReleaseSemaphore Alias "ReleaseSemaphore" (ByVal hSemaphore As Integer, ByVal lReleaseCount As Integer, lpPreviousCount As Integer) As Integer
+Declare Function RemoveDirectory Alias "RemoveDirectoryA" (ByVal lpPathName As String) As Integer
+Declare Function ResetEvent Alias "ResetEvent" (ByVal hEvent As Integer) As Integer
+Declare Function ResumeThread Alias "ResumeThread" (ByVal hThread As Integer) As Integer
 
-Declare Function ScrollConsoleScreenBuffer Lib "kernel32" Alias "ScrollConsoleScreenBufferA" (ByVal hConsoleOutput As Integer, lpScrollRectangle As SMALL_RECT, lpClipRectangle As SMALL_RECT, ByVal dwDestinationOrigin As Integer, lpFill As CHAR_INFO) As Integer
-Declare Function SearchPath Lib "kernel32" Alias "SearchPathA" (ByVal lpPath As String, ByVal lpFileName As String, ByVal lpExtension As String, ByVal nBufferLength As Integer, ByVal lpBuffer As String, ByVal lpFilePart As String) As Integer
-Declare Function SetCommBreak Lib "kernel32" (ByVal nCid As Integer) As Integer
-Declare Function SetCommConfig Lib "kernel32" (ByVal hCommDev As Integer, lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
-Declare Function SetCommMask Lib "kernel32" (ByVal hFile As Integer, ByVal dwEvtMask As Integer) As Integer
-Declare Function SetCommState Lib "kernel32" (ByVal hCommDev As Integer, lpDCB As DCB) As Integer
-Declare Function SetCommTimeouts Lib "kernel32" (ByVal hFile As Integer, lpCommTimeouts As COMMTIMEOUTS) As Integer
-Declare Function SetComputerName Lib "kernel32" Alias "SetComputerNameA" (ByVal lpComputerName As String) As Integer
-Declare Function SetConsoleActiveScreenBuffer Lib "kernel32" (ByVal hConsoleOutput As Integer) As Integer
-Declare Function SetConsoleCP Lib "kernel32" (ByVal wCodePageID As Integer) As Integer
-Declare Function SetConsoleCtrlHandler Lib "kernel32" (ByVal HandlerRoutine As Integer, ByVal nAdd As Integer) As Integer
-Declare Function SetConsoleCursorInfo Lib "kernel32" (ByVal hConsoleOutput As Integer, lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
-Declare Function SetConsoleCursorPosition Lib "kernel32" (ByVal hConsoleOutput As Integer, ByVal dwCursorPosition As Integer) As Integer
-Declare Function SetConsoleMode Lib "kernel32" (ByVal hConsoleHandle As Integer, ByVal dwMode As Integer) As Integer
-Declare Function SetConsoleOutputCP Lib "kernel32" (ByVal wCodePageID As Integer) As Integer
-Declare Function SetConsoleScreenBufferSize Lib "kernel32" (ByVal hConsoleOutput As Integer, ByVal dwSize As Integer) As Integer
-Declare Function SetConsoleTextAttribute Lib "kernel32" (ByVal hConsoleOutput As Integer, ByVal dwAttributes As Integer) As Integer
-Declare Function SetConsoleTitle Lib "kernel32" Alias "SetConsoleTitleA" (ByVal lpConsoleTitle As String) As Integer
-Declare Function SetConsoleWindowInfo Lib "kernel32" (ByVal hConsoleOutput As Integer, ByVal bAbsolute As Integer, lpConsoleWindow As SMALL_RECT) As Integer
-Declare Function SetCriticalSectionSpinCount Lib "kernel32" (lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
-Declare Function SetCurrentDirectory Lib "kernel32" Alias "SetCurrentDirectoryA" (ByVal lpPathName As String) As Integer
-Declare Function SetDefaultCommConfig Lib "kernel32" Alias "SetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
-Declare Function SetEndOfFile Lib "kernel32" (ByVal hFile As Integer) As Integer
-Declare Function SetEnvironmentVariable Lib "kernel32" Alias "SetEnvironmentVariableA" (ByVal lpName As String, ByVal lpValue As String) As Integer
-Declare Function SetErrorMode Lib "kernel32" (ByVal wMode As Integer) As Integer
-Declare Function SetEvent Lib "kernel32" (ByVal hEvent As Integer) As Integer
-Declare Sub SetFileApisToANSI Lib "kernel32" ()
-Declare Sub SetFileApisToOEM Lib "kernel32" ()
-Declare Function SetFileAttributes Lib "kernel32" Alias "SetFileAttributesA" (ByVal lpFileName As String, ByVal dwFileAttributes As Integer) As Integer
-Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Integer, ByVal lDistanceToMove As Integer, lpDistanceToMoveHigh As Integer, ByVal dwMoveMethod As Integer) As Integer
-Declare Function SetFileTime Lib "kernel32" (ByVal hFile As Integer, lpCreationTime As FILETIME, lpLastAccessTime As FILETIME, lpLastWriteTime As FILETIME) As Integer
-Declare Function SetHandleCount Lib "kernel32" (ByVal wNumber As Integer) As Integer
-Declare Function SetHandleInformation Lib "kernel32" (ByVal hObject As Integer, ByVal dwMask As Integer, ByVal dwFlags As Integer) As Integer
-Declare Sub SetLastError Lib "kernel32" (ByVal dwErrCode As Integer)
-Declare Function SetLocalTime Lib "kernel32" (lpSystemTime As SYSTEMTIME) As Integer
-Declare Function SetLocaleInfo Lib "kernel32" Alias "SetLocaleInfoA" (ByVal Locale As Integer, ByVal LCType As Integer, ByVal lpLCData As String) As Integer
-Declare Function SetMailslotInfo Lib "kernel32" (ByVal hMailslot As Integer, ByVal lReadTimeout As Integer) As Integer
-Declare Function SetNamedPipeHandleState Lib "kernel32" (ByVal hNamedPipe As Integer, lpMode As Integer, lpMaxCollectionCount As Integer, lpCollectDataTimeout As Integer) As Integer
-Declare Function SetPriorityClass Lib "kernel32" (ByVal hProcess As Integer, ByVal dwPriorityClass As Integer) As Integer
-Declare Function SetProcessShutdownParameters Lib "kernel32" Alias "SetProcessShutdownParameters" (ByVal dwLevel As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function SetProcessWorkingSetSize Lib "kernel32" (ByVal hProcess As Integer, ByVal dwMinimumWorkingSetSize As Integer, ByVal dwMaximumWorkingSetSize As Integer) As Integer
-Declare Function SetStdHandle Lib "kernel32" (ByVal nStdHandle As Integer, ByVal nHandle As Integer) As Integer
-Declare Function SetSystemPowerState Lib "kernel32" (ByVal fSuspend As Integer, ByVal fForce As Integer) As Integer
-Declare Function SetSystemTime Lib "kernel32" (lpSystemTime As SYSTEMTIME) As Integer
-Declare Function SetSystemTimeAdjustment Lib "kernel32" (ByVal dwTimeAdjustment As Integer, ByVal bTimeAdjustmentDisabled As Integer) As Integer
-Declare Function SetTapeParameters Lib "kernel32" (ByVal hDevice As Integer, ByVal dwOperation As Integer, lpTapeInformation As ANY) As Integer
-Declare Function SetTapePosition Lib "kernel32" (ByVal hDevice As Integer, ByVal dwPositionMethod As Integer, ByVal dwPartition As Integer, ByVal dwOffsetLow As Integer, ByVal dwOffsetHigh As Integer, ByVal bimmediate As Integer) As Integer
-Declare Function SetThreadAffinityMask Lib "kernel32" (ByVal hThread As Integer, ByVal dwThreadAffinityMask As Integer) As Integer
-Declare Function SetThreadContext Lib "kernel32" (ByVal hThread As Integer, lpContext As CONTEXT) As Integer
-Declare Function SetThreadLocale Lib "kernel32" (ByVal Locale As Integer) As Integer
-Declare Function SetThreadPriority Lib "kernel32" (ByVal hThread As Integer, ByVal nPriority As Integer) As Integer
-Declare Function SetTimeZoneInformation Lib "kernel32" (lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
-Declare Function SetUnhandledExceptionFilter Lib "kernel32" (ByVal lpTopLevelExceptionFilter As Integer) As Integer
-Declare Function SetVolumeLabel Lib "kernel32" Alias "SetVolumeLabelA" (ByVal lpRootPathName As String, lpVolumeName As String) As Integer
-Declare Function SetupComm Lib "kernel32" (ByVal hFile As Integer, ByVal dwInQueue As Integer, ByVal dwOutQueue As Integer) As Integer
-Declare Function SizeofResource Lib "kernel32" (ByVal hInstance As Integer, ByVal hResInfo As Integer) As Integer
-'Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Integer)
-Declare Function SleepEx Lib "kernel32" (ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
-Declare Function SuspendThread Lib "kernel32" (ByVal hThread As Integer) As Integer
-Declare Function SystemTimeToFileTime Lib "kernel32" (lpSystemTime As SYSTEMTIME, lpFileTime As FILETIME) As Integer
-Declare Function SystemTimeToTzSpecificLocalTime Lib "kernel32" (lpTimeZoneInformation As TIME_ZONE_INFORMATION, lpUniversalTime As SYSTEMTIME, lpLocalTime As SYSTEMTIME) As Integer
+Declare Function ScrollConsoleScreenBuffer Alias "ScrollConsoleScreenBufferA" (ByVal hConsoleOutput As Integer, lpScrollRectangle As SMALL_RECT, lpClipRectangle As SMALL_RECT, ByVal dwDestinationOrigin As Integer, lpFill As CHAR_INFO) As Integer
+Declare Function SearchPath Alias "SearchPathA" (ByVal lpPath As String, ByVal lpFileName As String, ByVal lpExtension As String, ByVal nBufferLength As Integer, ByVal lpBuffer As String, ByVal lpFilePart As String) As Integer
+Declare Function SetCommBreak Alias "SetCommBreak" (ByVal nCid As Integer) As Integer
+Declare Function SetCommConfig Alias "SetCommConfig" (ByVal hCommDev As Integer, lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
+Declare Function SetCommMask Alias "SetCommMask" (ByVal hFile As Integer, ByVal dwEvtMask As Integer) As Integer
+Declare Function SetCommState Alias "SetCommState" (ByVal hCommDev As Integer, lpDCB As DCB) As Integer
+Declare Function SetCommTimeouts Alias "SetCommTimeouts" (ByVal hFile As Integer, lpCommTimeouts As COMMTIMEOUTS) As Integer
+Declare Function SetComputerName Alias "SetComputerNameA" (ByVal lpComputerName As String) As Integer
+Declare Function SetConsoleActiveScreenBuffer Alias "SetConsoleActiveScreenBuffer" (ByVal hConsoleOutput As Integer) As Integer
+Declare Function SetConsoleCP Alias "SetConsoleCP" (ByVal wCodePageID As Integer) As Integer
+Declare Function SetConsoleCtrlHandler Alias "SetConsoleCtrlHandler" (ByVal HandlerRoutine As Integer, ByVal nAdd As Integer) As Integer
+Declare Function SetConsoleCursorInfo Alias "SetConsoleCursorInfo" (ByVal hConsoleOutput As Integer, lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
+Declare Function SetConsoleCursorPosition Alias "SetConsoleCursorPosition" (ByVal hConsoleOutput As Integer, ByVal dwCursorPosition As Integer) As Integer
+Declare Function SetConsoleMode Alias "SetConsoleMode" (ByVal hConsoleHandle As Integer, ByVal dwMode As Integer) As Integer
+Declare Function SetConsoleOutputCP Alias "SetConsoleOutputCP" (ByVal wCodePageID As Integer) As Integer
+Declare Function SetConsoleScreenBufferSize Alias "SetConsoleScreenBufferSize" (ByVal hConsoleOutput As Integer, ByVal dwSize As Integer) As Integer
+Declare Function SetConsoleTextAttribute Alias "SetConsoleTextAttribute" (ByVal hConsoleOutput As Integer, ByVal dwAttributes As Integer) As Integer
+Declare Function SetConsoleTitle Alias "SetConsoleTitleA" (ByVal lpConsoleTitle As String) As Integer
+Declare Function SetConsoleWindowInfo Alias "SetConsoleWindowInfo" (ByVal hConsoleOutput As Integer, ByVal bAbsolute As Integer, lpConsoleWindow As SMALL_RECT) As Integer
+Declare Function SetCriticalSectionSpinCount Alias "SetCriticalSectionSpinCount" (lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
+Declare Function SetCurrentDirectory Alias "SetCurrentDirectoryA" (ByVal lpPathName As String) As Integer
+Declare Function SetDefaultCommConfig Alias "SetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
+Declare Function SetEndOfFile Alias "SetEndOfFile" (ByVal hFile As Integer) As Integer
+Declare Function SetEnvironmentVariable Alias "SetEnvironmentVariableA" (ByVal lpName As String, ByVal lpValue As String) As Integer
+Declare Function SetErrorMode Alias "SetErrorMode" (ByVal wMode As Integer) As Integer
+Declare Function SetEvent Alias "SetEvent" (ByVal hEvent As Integer) As Integer
+Declare Sub SetFileApisToANSI Alias "SetFileApisToANSI" ()
+Declare Sub SetFileApisToOEM Alias "SetFileApisToOEM" ()
+Declare Function SetFileAttributes Alias "SetFileAttributesA" (ByVal lpFileName As String, ByVal dwFileAttributes As Integer) As Integer
+Declare Function SetFilePointer Alias "SetFilePointer" (ByVal hFile As Integer, ByVal lDistanceToMove As Integer, lpDistanceToMoveHigh As Integer, ByVal dwMoveMethod As Integer) As Integer
+Declare Function SetFileTime Alias "SetFileTime" (ByVal hFile As Integer, lpCreationTime As FILETIME, lpLastAccessTime As FILETIME, lpLastWriteTime As FILETIME) As Integer
+Declare Function SetHandleCount Alias "SetHandleCount" (ByVal wNumber As Integer) As Integer
+Declare Function SetHandleInformation Alias "SetHandleInformation" (ByVal hObject As Integer, ByVal dwMask As Integer, ByVal dwFlags As Integer) As Integer
+Declare Sub SetLastError Alias "SetLastError" (ByVal dwErrCode As Integer)
+Declare Function SetLocalTime Alias "SetLocalTime" (lpSystemTime As SYSTEMTIME) As Integer
+Declare Function SetLocaleInfo Alias "SetLocaleInfoA" (ByVal Locale As Integer, ByVal LCType As Integer, ByVal lpLCData As String) As Integer
+Declare Function SetMailslotInfo Alias "SetMailslotInfo" (ByVal hMailslot As Integer, ByVal lReadTimeout As Integer) As Integer
+Declare Function SetNamedPipeHandleState Alias "SetNamedPipeHandleState" (ByVal hNamedPipe As Integer, lpMode As Integer, lpMaxCollectionCount As Integer, lpCollectDataTimeout As Integer) As Integer
+Declare Function SetPriorityClass Alias "SetPriorityClass" (ByVal hProcess As Integer, ByVal dwPriorityClass As Integer) As Integer
+Declare Function SetProcessShutdownParameters Alias "SetProcessShutdownParameters" (ByVal dwLevel As Integer, ByVal dwFlags As Integer) As Integer
+Declare Function SetProcessWorkingSetSize Alias "SetProcessWorkingSetSize" (ByVal hProcess As Integer, ByVal dwMinimumWorkingSetSize As Integer, ByVal dwMaximumWorkingSetSize As Integer) As Integer
+Declare Function SetStdHandle Alias "SetStdHandle" (ByVal nStdHandle As Integer, ByVal nHandle As Integer) As Integer
+Declare Function SetSystemPowerState Alias "SetSystemPowerState" (ByVal fSuspend As Integer, ByVal fForce As Integer) As Integer
+Declare Function SetSystemTime Alias "SetSystemTime" (lpSystemTime As SYSTEMTIME) As Integer
+Declare Function SetSystemTimeAdjustment Alias "SetSystemTimeAdjustment" (ByVal dwTimeAdjustment As Integer, ByVal bTimeAdjustmentDisabled As Integer) As Integer
+Declare Function SetTapeParameters Alias "SetTapeParameters" (ByVal hDevice As Integer, ByVal dwOperation As Integer, lpTapeInformation As ANY) As Integer
+Declare Function SetTapePosition Alias "SetTapePosition" (ByVal hDevice As Integer, ByVal dwPositionMethod As Integer, ByVal dwPartition As Integer, ByVal dwOffsetLow As Integer, ByVal dwOffsetHigh As Integer, ByVal bimmediate As Integer) As Integer
+Declare Function SetThreadAffinityMask Alias "SetThreadAffinityMask" (ByVal hThread As Integer, ByVal dwThreadAffinityMask As Integer) As Integer
+Declare Function SetThreadContext Alias "SetThreadContext" (ByVal hThread As Integer, lpContext As CONTEXT) As Integer
+Declare Function SetThreadLocale Alias "SetThreadLocale" (ByVal Locale As Integer) As Integer
+Declare Function SetThreadPriority Alias "SetThreadPriority" (ByVal hThread As Integer, ByVal nPriority As Integer) As Integer
+Declare Function SetTimeZoneInformation Alias "SetTimeZoneInformation" (lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
+Declare Function SetUnhandledExceptionFilter Alias "SetUnhandledExceptionFilter" (ByVal lpTopLevelExceptionFilter As Integer) As Integer
+Declare Function SetVolumeLabel Alias "SetVolumeLabelA" (ByVal lpRootPathName As String, lpVolumeName As String) As Integer
+Declare Function SetupComm Alias "SetupComm" (ByVal hFile As Integer, ByVal dwInQueue As Integer, ByVal dwOutQueue As Integer) As Integer
+Declare Function SizeofResource Alias "SizeofResource" (ByVal hInstance As Integer, ByVal hResInfo As Integer) As Integer
+'Declare Sub Sleep Alias "Sleep" (ByVal dwMilliseconds As Integer)
+Declare Function SleepEx Alias "SleepEx" (ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
+Declare Function SuspendThread Alias "SuspendThread" (ByVal hThread As Integer) As Integer
+Declare Function SystemTimeToFileTime Alias "SystemTimeToFileTime" (lpSystemTime As SYSTEMTIME, lpFileTime As FILETIME) As Integer
+Declare Function SystemTimeToTzSpecificLocalTime Alias "SystemTimeToTzSpecificLocalTime" (lpTimeZoneInformation As TIME_ZONE_INFORMATION, lpUniversalTime As SYSTEMTIME, lpLocalTime As SYSTEMTIME) As Integer
 
-Declare Function TerminateProcess Lib "kernel32" (ByVal hProcess As Integer, ByVal uExitCode As Integer) As Integer
-Declare Function TerminateThread Lib "kernel32" (ByVal hThread As Integer, ByVal dwExitCode As Integer) As Integer
-Declare Function TlsAlloc Lib "kernel32" () As Integer
-Declare Function TlsFree Lib "kernel32" (ByVal dwTlsIndex As Integer) As Integer
-Declare Function TlsGetValue Lib "kernel32" (ByVal dwTlsIndex As Integer) As Integer
-Declare Function TlsSetValue Lib "kernel32" (ByVal dwTlsIndex As Integer, lpTlsValue As ANY) As Integer
-Declare Function TransactNamedPipe Lib "kernel32" (ByVal hNamedPipe As Integer, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesRead As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function TransmitCommChar Lib "kernel32" (ByVal nCid As Integer, ByVal cChar As BYTE) As Integer
+Declare Function TerminateProcess Alias "TerminateProcess" (ByVal hProcess As Integer, ByVal uExitCode As Integer) As Integer
+Declare Function TerminateThread Alias "TerminateThread" (ByVal hThread As Integer, ByVal dwExitCode As Integer) As Integer
+Declare Function TlsAlloc Alias "TlsAlloc" () As Integer
+Declare Function TlsFree Alias "TlsFree" (ByVal dwTlsIndex As Integer) As Integer
+Declare Function TlsGetValue Alias "TlsGetValue" (ByVal dwTlsIndex As Integer) As Integer
+Declare Function TlsSetValue Alias "TlsSetValue" (ByVal dwTlsIndex As Integer, lpTlsValue As ANY) As Integer
+Declare Function TransactNamedPipe Alias "TransactNamedPipe" (ByVal hNamedPipe As Integer, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesRead As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function TransmitCommChar Alias "TransmitCommChar" (ByVal nCid As Integer, ByVal cChar As BYTE) As Integer
 
-Declare Function UnhandledExceptionFilter Lib "kernel32" (ExceptionInfo As EXCEPTION_POINTERS) As Integer
-Declare Function UnlockFile Lib "kernel32" (ByVal hFile As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwFileOffsetHigh As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer) As Integer
-Declare Function UnlockFileEx Lib "kernel32" (ByVal hFile As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function UnmapViewOfFile Lib "kernel32" (lpBaseAddress As ANY) As Integer
-Declare Function UpdateResource Lib "kernel32" Alias "UpdateResourceA" (ByVal hUpdate As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer, lpData As ANY, ByVal cbData As Integer) As Integer
+Declare Function UnhandledExceptionFilter Alias "UnhandledExceptionFilter" (ExceptionInfo As EXCEPTION_POINTERS) As Integer
+Declare Function UnlockFile Alias "UnlockFile" (ByVal hFile As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwFileOffsetHigh As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer) As Integer
+Declare Function UnlockFileEx Alias "UnlockFileEx" (ByVal hFile As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function UnmapViewOfFile Alias "UnmapViewOfFile" (lpBaseAddress As ANY) As Integer
+Declare Function UpdateResource Alias "UpdateResourceA" (ByVal hUpdate As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer, lpData As ANY, ByVal cbData As Integer) As Integer
 
-Declare Function VerLanguageName Lib "kernel32" Alias "VerLanguageNameA" (ByVal wLang As Integer, ByVal szLang As String, ByVal nSize As Integer) As Integer
-Declare Function VirtualAlloc Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
-Declare Function VirtualAllocEx Lib "kernel32" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
-Declare Function VirtualFree Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
-Declare Function VirtualFreeEx Lib "kernel32" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
-Declare Function VirtualLock Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer) As Integer
-Declare Function VirtualProtect Lib "kernel32" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
-Declare Function VirtualProtectEx Lib "kernel32" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
-Declare Function VirtualQuery Lib "kernel32" (ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
-Declare Function VirtualQueryEx Lib "kernel32" (ByVal hProcess As Integer, ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
-Declare Function VirtualUnlock Lib "kernel32" (ByRef lpAddress As Any, ByVal dwSize As Integer) As Integer
+Declare Function VerLanguageName Alias "VerLanguageNameA" (ByVal wLang As Integer, ByVal szLang As String, ByVal nSize As Integer) As Integer
+Declare Function VirtualAlloc Alias "VirtualAlloc" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
+Declare Function VirtualAllocEx Alias "VirtualAllocEx" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
+Declare Function VirtualFree Alias "VirtualFree" (lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
+Declare Function VirtualFreeEx Alias "VirtualFreeEx" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
+Declare Function VirtualLock Alias "VirtualLock" (lpAddress As ANY, ByVal dwSize As Integer) As Integer
+Declare Function VirtualProtect Alias "VirtualProtect" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
+Declare Function VirtualProtectEx Alias "VirtualProtectEx" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
+Declare Function VirtualQuery Alias "VirtualQuery" (ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
+Declare Function VirtualQueryEx Alias "VirtualQueryEx" (ByVal hProcess As Integer, ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
+Declare Function VirtualUnlock Alias "VirtualUnlock" (ByRef lpAddress As Any, ByVal dwSize As Integer) As Integer
 
-Declare Function WaitCommEvent Lib "kernel32" (ByVal hFile As Integer, lpEvtMask As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function WaitForDebugEvent Lib "kernel32" (lpde As DEBUG_EVENT, ByVal dwTimeOut As Integer) As Integer
-Declare Function WaitForMultipleObjects Lib "kernel32" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer) As Integer
-Declare Function WaitForMultipleObjectsEx Lib "kernel32" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
-Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer) As Integer
-Declare Function WaitForSingleObjectEx Lib "kernel32" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
-Declare Function WaitNamedPipe Lib "kernel32" Alias "WaitNamedPipeA" (ByVal lpNamedPipeName As String, ByVal nTimeOut As Integer) As Integer
-Declare Function WideCharToMultiByte Lib "kernel32" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpDefaultChar As String, ByVal lpUsedDefaultChar As Integer) As Integer
-Declare Function WinExec Lib "kernel32" (ByVal lpCmdLine As String, ByVal nCmdShow As Integer) As Integer
-Declare Function WriteConsole Lib "kernel32" Alias "WriteConsoleA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As String, ByVal nNumberOfCharsToWrite As Integer, lpNumberOfCharsWritten As Integer, ByVal lpReserved As Integer) As Integer
-Declare Function WriteConsoleInput Lib "kernel32" Alias "WriteConsoleInputA" (ByVal hConsoleInput As Integer, lpBuffer As INPUT_RECORD, ByVal nLength As Integer, lpNumberOfEventsWritten As Integer) As Integer
-Declare Function WriteConsoleOutput Lib "kernel32" Alias "WriteConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpWriteRegion As SMALL_RECT) As Integer
-Declare Function WriteConsoleOutputAttribute Lib "kernel32"(ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfAttrsWritten As Integer) As Integer
-Declare Function WriteConsoleOutputCharacter Lib "kernel32" Alias "WriteConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfCharsWritten As Integer) As Integer
-Declare Function WriteFile Lib "kernel32" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, lpNumberOfBytesWritten As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function WriteFileEx Lib "kernel32" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
-Declare Function WritePrivateProfileSection Lib "kernel32" Alias "WritePrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
-Declare Function WritePrivateProfileString Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
-Declare Function WriteProcessMemory Lib "kernel32"(ByVal hProcess As Integer, lpBaseAddress As ANY, lpBuffer As ANY, ByVal nSize As Integer, lpNumberOfBytesWritten As Integer) As Integer
-Declare Function WriteProfileSection Lib "kernel32" Alias "WriteProfileSectionA" (ByVal lpAppName As String, ByVal lpString As String) As Integer
-Declare Function WriteProfileString Lib "kernel32" Alias "WriteProfileStringA" (ByVal lpszSection As String, ByVal lpszKeyName As String, ByVal lpszString As String) As Integer
-Declare Function WriteTapemark Lib "kernel32" (ByVal hDevice As Integer, ByVal dwTapemarkType As Integer, ByVal dwTapemarkCount As Integer, ByVal bimmediate As Integer) As Integer
+Declare Function WaitCommEvent Alias "WaitCommEvent" (ByVal hFile As Integer, lpEvtMask As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function WaitForDebugEvent Alias "WaitForDebugEvent" (lpde As DEBUG_EVENT, ByVal dwTimeOut As Integer) As Integer
+Declare Function WaitForMultipleObjects Alias "WaitForMultipleObjects" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer) As Integer
+Declare Function WaitForMultipleObjectsEx Alias "WaitForMultipleObjectsEx" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
+Declare Function WaitForSingleObject Alias "WaitForSingleObject" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer) As Integer
+Declare Function WaitForSingleObjectEx Alias "WaitForSingleObjectEx" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
+Declare Function WaitNamedPipe Alias "WaitNamedPipeA" (ByVal lpNamedPipeName As String, ByVal nTimeOut As Integer) As Integer
+Declare Function WideCharToMultiByte Alias "WideCharToMultiByte" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpDefaultChar As String, ByVal lpUsedDefaultChar As Integer) As Integer
+Declare Function WinExec Alias "WinExec" (ByVal lpCmdLine As String, ByVal nCmdShow As Integer) As Integer
+Declare Function WriteConsole Alias "WriteConsoleA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As String, ByVal nNumberOfCharsToWrite As Integer, lpNumberOfCharsWritten As Integer, ByVal lpReserved As Integer) As Integer
+Declare Function WriteConsoleInput Alias "WriteConsoleInputA" (ByVal hConsoleInput As Integer, lpBuffer As INPUT_RECORD, ByVal nLength As Integer, lpNumberOfEventsWritten As Integer) As Integer
+Declare Function WriteConsoleOutput Alias "WriteConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpWriteRegion As SMALL_RECT) As Integer
+Declare Function WriteConsoleOutputAttribute Alias "WriteConsoleOutputAttribute"(ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfAttrsWritten As Integer) As Integer
+Declare Function WriteConsoleOutputCharacter Alias "WriteConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfCharsWritten As Integer) As Integer
+Declare Function WriteFile Alias "WriteFile" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, lpNumberOfBytesWritten As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function WriteFileEx Alias "WriteFileEx" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
+Declare Function WritePrivateProfileSection Alias "WritePrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
+Declare Function WritePrivateProfileString Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
+Declare Function WriteProcessMemory Alias "WriteProcessMemory"(ByVal hProcess As Integer, lpBaseAddress As ANY, lpBuffer As ANY, ByVal nSize As Integer, lpNumberOfBytesWritten As Integer) As Integer
+Declare Function WriteProfileSection Alias "WriteProfileSectionA" (ByVal lpAppName As String, ByVal lpString As String) As Integer
+Declare Function WriteProfileString Alias "WriteProfileStringA" (ByVal lpszSection As String, ByVal lpszKeyName As String, ByVal lpszString As String) As Integer
+Declare Function WriteTapemark Alias "WriteTapemark" (ByVal hDevice As Integer, ByVal dwTapemarkType As Integer, ByVal dwTapemarkCount As Integer, ByVal bimmediate As Integer) As Integer
 
 #endif ' KERNEL32_BI
