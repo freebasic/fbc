@@ -1,5 +1,10 @@
 
-[ ] allow structs to be returned (must follow gcc's abi)
+[ ] when bootstrapping, add longint constant handling for Lex and AST -- use .valquad, not .value
+
+[ ] allow structs to be returned (must follow gcc's abi) -- how to handle foo = bar() if bar()
+    actually returns a ptr to the hidden argument passed? and worst.. GCC will return ANY struct
+    <= 8 bytes in EAX:EDX (and with an unique FP field in ST(0)!), what means things will become
+    weird when asssigning them to real UDT's, as UDT's have no data class to AST/IR/EMIT deal with
 
 [ ] make the runtime lib thread safe
 
@@ -13,9 +18,9 @@
     private functions eliminated). For that be done, all labels must be handled by AST, ASM,
     var initializers and jump tbs too (DATA can't be defined inside procs), all IR/AST flush
     calls must be changed to astLink or such, that will add the new node to a list of nodes,
-    that will be flushed only a new function is started or when the end of file is reached --
-    should it be better done as a CFG-like than handled at AST that is becoming more and more
-    complex (don't make the AST a parser tree!)?
+    that will be flushed only whem a new function is started or when the end of file is reached --
+    should it be better to be done as a CFG-like than handled at AST that is becoming more and
+    more complex (don't make the AST a parser tree!)?
 
 [ ] inline functions -- better than macros as they can be "turned off" when debugged (AST will need some kind of "link"
                         node to glue all nodes parsed, and they can't be flushed by any part of the parser -- everything
@@ -43,7 +48,7 @@
 [ ] unreachable code removal
 
 *** future ***
-[ ] AndThen and OrElse, short-circuit versions of And and Or
+[ ] AndAlso and OrElse, short-circuit versions of And and Or
 
 [ ] use a DAG for common sub-expr opt (don't mess up w/ FPU??)
 

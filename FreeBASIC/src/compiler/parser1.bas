@@ -3077,8 +3077,6 @@ function cAssignmentOrPtrCall
             expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
         end if
 
-        'astDump1 INVALID, expr, TRUE, 1, 40
-
         '' do assign
         assgexpr = astNewASSIGN( assgexpr, expr )
 
