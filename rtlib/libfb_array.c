@@ -83,11 +83,7 @@ static void fb_hFreeVarLenStrArray( FBARRAY *array )
 	{
 		--elements;
 		if( p->data != NULL )
-		{
-			free( p->data );
-		  	p->data = NULL;
-			p->len = 0;
-		}
+			fb_StrDelete( p );
 		++p;
 	}
 

@@ -153,8 +153,6 @@ private sub hInitKeywordsTB
     dim t as integer, i as integer, k as integer
     dim keyword as string
 
-	redim keywordhash( 0 to EMIT_MAXKEYWORDS-1 ) as HASHTB
-
 	hashNew keywordhash(), EMIT_MAXKEYWORDS
 
 	'' add reg names
@@ -187,8 +185,6 @@ end sub
 private sub hEndKeywordsTB
 
 	hashFree keywordhash(), EMIT_MAXKEYWORDS
-
-	erase keywordhash
 
 end sub
 
