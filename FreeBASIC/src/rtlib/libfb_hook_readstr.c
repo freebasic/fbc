@@ -43,14 +43,9 @@ char *fb_ReadString( char *buffer, int len, FILE *f )
 /*:::::*/
 FBCALL FB_READSTRPROC fb_SetReadStrProc( FB_READSTRPROC newproc )
 {
-    FB_READSTRPROC oldproc;
-    
-    FB_LOCK();
+    FB_READSTRPROC oldproc = fb_readstrhook;
 
-    oldproc = fb_readstrhook;
     fb_readstrhook = newproc;
-
-	FB_UNLOCK();
 
 	return oldproc;
 }

@@ -44,14 +44,9 @@ FBCALL void fb_Cls( int mode )
 /*:::::*/
 FBCALL FB_CLSPROC fb_SetClsProc( FB_CLSPROC newproc )
 {
-    FB_CLSPROC oldproc;
+    FB_CLSPROC oldproc = fb_clshook;
     
-    FB_LOCK();
-    
-    oldproc = fb_clshook;
     fb_clshook = newproc;
-
-	FB_UNLOCK();
 	
 	return oldproc;
 }

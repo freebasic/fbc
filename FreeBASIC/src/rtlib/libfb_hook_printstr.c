@@ -44,14 +44,9 @@ FBCALL void fb_PrintBuffer( char *buffer, int mask )
 /*:::::*/
 FBCALL FB_PRINTBUFFPROC fb_SetPrintBufferProc( FB_PRINTBUFFPROC newproc )
 {
-    FB_PRINTBUFFPROC oldproc;
-    
-    FB_LOCK();
+    FB_PRINTBUFFPROC oldproc = fb_printbuffhook;
 
-    oldproc = fb_printbuffhook;
     fb_printbuffhook = newproc;
-
-	FB_UNLOCK();
 
 	return oldproc;
 }

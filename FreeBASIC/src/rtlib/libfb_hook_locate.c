@@ -44,14 +44,9 @@ FBCALL void fb_Locate( int row, int col, int cursor )
 /*:::::*/
 FBCALL FB_LOCATEPROC fb_SetLocateProc( FB_LOCATEPROC newproc )
 {
-    FB_LOCATEPROC oldproc;
-    
-	FB_LOCK();
+    FB_LOCATEPROC oldproc = fb_lochook;
 
-    oldproc = fb_lochook;
     fb_lochook = newproc;
-
-	FB_UNLOCK();
 
 	return oldproc;
 }

@@ -44,14 +44,9 @@ FBCALL void fb_Width( int cols, int rows )
 /*:::::*/
 FBCALL FB_WIDTHPROC fb_SetWidthProc( FB_WIDTHPROC newproc )
 {
-    FB_WIDTHPROC oldproc;
-    
-	FB_LOCK();
+    FB_WIDTHPROC oldproc = fb_widhook;
 
-    oldproc = fb_widhook;
     fb_widhook = newproc;
-
-	FB_UNLOCK();
 
 	return oldproc;
 }
