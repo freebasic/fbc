@@ -98,7 +98,7 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
     	}
     	else
     	{
-    		strncpy( buffer, s, chars );
+    		memcpy( buffer, s, chars );
     		buffer[chars] = '\0';
     	}
 

@@ -197,7 +197,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 					}
 					else
 					{
-						strncpy( buffer, s->data, strchars );
+						memcpy( buffer, s->data, strchars );
 						buffer[strchars] = '\0';
 						fb_PrintFixString( fnum, buffer, 0 );
 					}

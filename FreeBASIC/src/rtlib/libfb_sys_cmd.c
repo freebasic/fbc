@@ -138,7 +138,7 @@ FBCALL FBSTRING *fb_Command ( int argc )
 	{
 		fb_hStrAllocTemp( dst, len );
 
-		strncpy( dst->data, cline, len );
+		memcpy( dst->data, cline, len );
 
 		dst->data[len] = '\0';
 	}

@@ -55,7 +55,7 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
             {
 				fb_hStrAllocTemp( dst, len );
 
-				strncpy( dst->data, src->data + start, len );
+				memcpy( dst->data, src->data + start, len );
 				/* null term */
 				dst->data[len] = '\0';
             }
@@ -103,7 +103,7 @@ FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
         if( start + len > dst_len )
         	len = (dst_len - start) - 1;
 
-		strncpy( dst->data + start, src->data, len );
+		memcpy( dst->data + start, src->data, len );
     }
 
 	/* del if temp */
