@@ -21,6 +21,7 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 '' 	     dec/2004 pre-processor added (all code at lexpp.bas) [v1ctor]
+''       jan/2005 optimized to not create dynamic strings (but at NextToken:readid)
 
 option explicit
 option escape
@@ -198,7 +199,7 @@ sub lexUnreadChar static
 end sub
 
 '':::::
-function lexCurrentCharEx( byval skipwhitespc as integer ) as integer static
+function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as integer static
 
     if( ctx.char = INVALID ) then
     	ctx.char = lexReadChar
@@ -210,14 +211,7 @@ function lexCurrentCharEx( byval skipwhitespc as integer ) as integer static
     	loop
     end if
 
-    lexCurrentCharEx = ctx.char
-
-end function
-
-'':::::
-function lexCurrentChar as integer static
-
-	lexCurrentChar = lexCurrentCharEx( FALSE )
+    lexCurrentChar = ctx.char
 
 end function
 
@@ -284,22 +278,37 @@ end function
 '':::::
 ''indentifier    = ALPHA { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
 ''
-function lexReadIdentifier( tlen as integer, typ as integer ) as string static
-	dim c as integer, id as string
+sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer ) static
+	dim c as integer
 
 	'' ALPHA
-	id = chr$( lexEatChar )
+	*pid = lexEatChar
+	pid = pid + 1
+
+	tlen = 1
 
 	'' { [ALPHADIGIT | '_' | '.'] }
 	do
 		c = lexCurrentChar
 		select case c
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_DOT, CHAR_UNDER
-			id = id + chr$( lexEatChar )
+
+			tlen = tlen + 1
+			if( tlen > FB.MAXNAMELEN ) then
+				hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
+				exit function
+			end if
+
+			*pid = lexEatChar
+			pid = pid + 1
+
 		case else
 			exit do
 		end select
 	loop
+
+	'' null-term
+	*pid = 0
 
 	'' [SUFFIX]
 	typ = INVALID
@@ -319,24 +328,16 @@ function lexReadIdentifier( tlen as integer, typ as integer ) as string static
 		c = lexEatChar
 	end if
 
-	''
-	lexReadIdentifier = id
-
-	tlen = len( id )
-
-	if( tlen > FB.MAXNAMELEN ) then
-		hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
-	end if
-
-end function
+end sub
 
 ''::::
 ''hex_oct_bin     = 'H' HEXDIG+
 ''                | 'O' OCTDIG+
 ''                | 'B' BINDIG+
 ''
-function lexReadNonDecNumber as string static
-	dim v as integer, c as integer
+sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
+	dim v as uinteger, c as integer
+	dim tb(0 to 31) as integer, i as integer
 
 	v = 0
 
@@ -347,8 +348,8 @@ function lexReadNonDecNumber as string static
 			select case lexCurrentChar
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
 				  c = lexEatChar - CHAR_0
-                  if (c > 9) then c = c - (CHAR_AUPP - CHAR_9 - 1)
-                  if (c > 16) then c = c - (CHAR_ALOW - CHAR_AUPP)
+                  if( c > 9 ) then c = c - (CHAR_AUPP - CHAR_9 - 1)
+                  if( c > 16 ) then c = c - (CHAR_ALOW - CHAR_AUPP)
                   v = (v * 16) + c
 			case else
 				exit do
@@ -381,25 +382,59 @@ function lexReadNonDecNumber as string static
 
 	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
 
-	lexReadNonDecNumber = str$( v )
+	'' int to ascii
+	if( v = 0 ) then
+		*pnum = CHAR_0
+		pnum = pnum + 1
+		tlen = tlen + 1
 
-end function
+	else
+
+		'' convert to unsigned
+		if( (v and &h80000000) > 0 ) then
+			v = -v
+
+			*pnum = CHAR_MINUS
+			pnum = pnum + 1
+			tlen = tlen + 1
+		end if
+
+		i = 0
+		do while( v > 0 )
+			tb(i) = v mod 10
+			i = i + 1
+			v = v \ 10
+		loop
+
+		do while( i > 0 )
+			i = i - 1
+			*pnum = CHAR_0 + tb(i)
+			pnum = pnum + 1
+			tlen = tlen + 1
+		loop
+	end if
+
+end sub
 
 '':::::
 ''float           = DOT DIGIT { DIGIT } [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ].
 ''
-function lexReadFloatNumber( typ as integer ) as string static
-    dim s as string, c as integer
+sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) static
+    dim c as integer
+    dim llen as integer
 
-	s = ""
 	typ = FB.SYMBTYPE.DOUBLE
+
+	llen = tlen
 
 	'' DIGIT { DIGIT }
 	do
 		c = lexCurrentChar
 		select case c
 		case CHAR_0 to CHAR_9
-			s = s + chr$( lexEatChar )
+			*pnum = lexEatChar
+			pnum = pnum + 1
+			tlen = tlen + 1
 		case else
 			exit do
 		end select
@@ -417,19 +452,25 @@ function lexReadFloatNumber( typ as integer ) as string static
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
 		c = lexEatChar
-		s = s + "e"
+		*pnum = CHAR_ELOW
+		pnum = pnum + 1
+		tlen = tlen + 1
 
 		'' [opadd]
 		c = lexCurrentChar
 		if( (c = CHAR_PLUS) or (c = CHAR_MINUS) ) then
-			s = s + chr$( lexEatChar )
+			*pnum = lexEatChar
+			pnum = pnum + 1
+			tlen = tlen + 1
 		end if
 
 		do
 			c = lexCurrentChar
 			select case c
 			case CHAR_0 to CHAR_9
-				s = s + chr$( lexEatChar )
+				*pnum = lexEatChar
+				pnum = pnum + 1
+				tlen = tlen + 1
 			case else
 				exit do
 			end select
@@ -437,13 +478,14 @@ function lexReadFloatNumber( typ as integer ) as string static
 
 	end select
 
-	if( len( s ) = 0 ) then
-		s = "0"
+	if( tlen - llen = 0 ) then
+		'' '0'
+		*pnum = CHAR_0
+		pnum = pnum + 1
+		tlen = tlen + 1
 	end if
 
-	lexReadFloatNumber = s
-
-end function
+end sub
 
 '':::::
 ''number          = DIGIT dig_dot_nil i_fsufx_nil
@@ -458,13 +500,13 @@ end function
 ''                | FSUFFIX                       # is float
 ''                | .                             # is def### !!! context sensitive !!!
 ''
-function lexReadNumber( typ as integer, tlen as integer ) as string static
-	dim c as integer, s as string
+sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer ) static
+	dim c as integer
 	dim isfloat as integer
 
-	s = ""
 	isfloat = FALSE
 	typ = INVALID
+	*pnum = 0
 
 	c = lexEatChar
 
@@ -472,20 +514,27 @@ function lexReadNumber( typ as integer, tlen as integer ) as string static
 	'' integer part
 	case CHAR_0 to CHAR_9
 
-		s = chr$( c )
+		*pnum = c
+		pnum = pnum + 1
+		tlen = 1
 
 		do
 			c = lexCurrentChar
 			select case c
 			case CHAR_0 to CHAR_9
-				s = s + chr$( lexEatChar )
+				*pnum = lexEatChar
+				pnum = pnum + 1
+				tlen = tlen + 1
+
 			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 				isfloat = TRUE
 				if( c = CHAR_DOT ) then
 					c = lexEatChar
-					s = s + "."
+					*pnum = CHAR_DOT
+					pnum = pnum + 1
+					tlen = tlen + 1
 				end if
-				s = s + lexReadFloatNumber( typ )
+				lexReadFloatNumber pnum, tlen, typ
 				exit do
 			case else
 				exit do
@@ -495,14 +544,20 @@ function lexReadNumber( typ as integer, tlen as integer ) as string static
 	'' fractional part
 	case CHAR_DOT
 		isfloat = TRUE
-        s = "." + lexReadFloatNumber( typ )
+		'' add '.'
+		*pnum = CHAR_DOT
+		pnum = pnum + 1
+		tlen = 1
+        lexReadFloatNumber pnum, tlen, typ
 
 	'' hex, oct, bin
 	case CHAR_AMP
-		s = lexReadNonDecNumber
+		tlen = 0
+		lexReadNonDecNumber pnum, tlen
 	end select
 
-
+	'' null-term
+	*pnum = 0
 
 	'' check suffix type
 	if( not isfloat ) then
@@ -528,25 +583,20 @@ function lexReadNumber( typ as integer, tlen as integer ) as string static
 
 	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
 
-	''
-	lexReadNumber = s
-
-	tlen = len( s )
-
-end function
+end sub
 
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-function lexReadString ( tlen as integer ) as string static
-	dim s as string
-	dim nval as string, ntyp as integer, nlen as integer
+sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
+	dim rlen as integer
+	dim nval as string * 16, ntyp as integer, nlen as integer, pval as byte ptr
 
-	s = ""
+	*ps = 0
+	tlen = 0
+	rlen = 0
 
 	lexEatChar									'' skip open quote
-
-	tlen = 0
 
 	do
 		select case lexCurrentChar
@@ -564,18 +614,27 @@ function lexReadString ( tlen as integer ) as string static
 			'' process the scape sequence
 			if( env.optescapestr ) then
 
-				'' can't use '\', it will be scaped anyway because GAS
+				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar
-				s = s + chr$( FB.INTSCAPECHAR )
+				*ps = FB.INTSCAPECHAR
+				ps = ps + 1
+				rlen = rlen + 1
 
 				select case lexCurrentChar
 				'' if it's a literal number, convert to octagonal
 				case CHAR_0 to CHAR_9, CHAR_AMP
-					nval = lexReadNumber( ntyp, nlen )
+					lexReadNumber @nval, ntyp, nlen
 					if( nlen > 3 ) then
 						nval = left$( nval, 3 )
 					end if
-					s = s + oct$( val( nval ) )
+					nval = oct$( val( nval ) )
+					pval = sadd( nval )
+					do until( *pval = 0 )
+						*ps = *pval
+						pval = pval + 1
+						ps = ps + 1
+						rlen = rlen + 1
+					loop
 					tlen = tlen + 1
 					continue do
 				end select
@@ -583,17 +642,21 @@ function lexReadString ( tlen as integer ) as string static
 			end if
 		end select
 
-		s = s + chr$( lexEatChar )
+		rlen = rlen + 1
+		if( rlen > FB.MAXLITLEN ) then
+			hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
+			exit function
+		end if
+
+		*ps = lexEatChar
+		ps = ps + 1
 		tlen = tlen + 1
 	loop
 
-	lexReadString = s
+	'' null-term
+	*ps = 0
 
-	if( len( s ) > FB.MAXLITLEN ) then
-		hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
-	end if
-
-end function
+end sub
 
 '':::::
 sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) static
@@ -605,7 +668,7 @@ sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval ch
 	dim iswith as integer
 
 reread:
-	t.text = ""
+	poke @t.text, 0								''t.text = ""
 	t.tlen = 0
 
 	'':::::
@@ -614,7 +677,7 @@ reread:
 	do
 		c  = lexCurrentChar
 
-		'' !!!FIXME!!! this shouldn't be here :P
+		'' !!!FIXME!!! this shouldn't be here
 		'' only emit current src line if it's not on an inc file
 		if( env.reclevel = 0 ) then
 			if( env.clopt.debug ) then
@@ -699,15 +762,15 @@ reread:
 	'':::::
 	case CHAR_AMP, CHAR_0 to CHAR_9
 readnumber:
-		t.text 		= lexReadNumber( t.id, t.tlen )
+		lexReadNumber @t.text, t.id, t.tlen
 		t.class 	= FB.TKCLASS.NUMLITERAL
 		t.typ		= t.id
 
 	'':::::
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 readid:
-		t.text 		= lexReadIdentifier( t.tlen, t.typ )
-		token 		= t.text
+		lexReadIdentifier @t.text, t.tlen, t.typ
+		token = t.text
 
 		if( checkDefine ) then
 			'' is it a define?
@@ -721,7 +784,7 @@ readid:
         	end if
         end if
 
-       	t.id 		= symbLookupKeyword( token, t.class, t.typ )
+       	t.id = symbLookupKeyword( token, t.class, t.typ )
 
        	'' WITH hack
        	if( iswith ) then
@@ -736,14 +799,16 @@ readid:
 	'':::::
 	case CHAR_QUOTE
 		t.id		= FB.TK.STRLIT
-		t.littext	= lexReadString( t.tlen )
+		lexReadString @t.littext, t.tlen
 		t.class 	= FB.TKCLASS.STRLITERAL
 		t.typ		= t.id
 
 	'':::::
 	case else
 		t.id		= lexEatChar
-		t.text 		= chr$( c )
+''#ifndef FB__BIGENDIAN
+		pokei @t.text, c and &h000000FF			'' t.text = chr$( c )
+''#endif
 		t.tlen		= 1
 		t.typ		= t.id
 
@@ -754,7 +819,7 @@ readid:
 
 			select case c
 			case CHAR_LT
-				select case lexCurrentCharEx( TRUE )
+				select case lexCurrentChar( TRUE )
 				case CHAR_EQ
 					c = lexEatChar
 					t.id = FB.TK.LE
@@ -768,7 +833,7 @@ readid:
 				end select
 
 			case CHAR_GT
-				if( lexCurrentCharEx( TRUE ) = CHAR_EQ ) then
+				if( lexCurrentChar( TRUE ) = CHAR_EQ ) then
 					c = lexEatChar
 					t.id = FB.TK.GE
 					t.tlen = t.tlen + 1
@@ -786,7 +851,7 @@ readid:
 
 			'' check for type-field dereference
 			if( c = CHAR_MINUS ) then
-				if( lexCurrentCharEx( TRUE ) = CHAR_GT ) then
+				if( lexCurrentChar( TRUE ) = CHAR_GT ) then
 					c = lexEatChar
 					t.id = FB.TK.FIELDDEREF
 					t.tlen = t.tlen + 1
@@ -1008,7 +1073,7 @@ sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipli
 	do
 		c  = lexCurrentChar
 
-		'' !!!FIXME!!! this shouldn't be here :P
+		'' !!!FIXME!!! this shouldn't be here
 		'' only emit current src line if it's not on an inc file
 		if( env.reclevel = 0 ) then
 			if( env.clopt.debug ) then
