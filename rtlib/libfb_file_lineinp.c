@@ -92,7 +92,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 		}
 		else
 #endif
-		if( fgets( buffer, BUFFER_LEN+1, f ) == NULL )
+		if( fgets( buffer, BUFFER_LEN, f ) == NULL )
 			break;
 
 		len = strlen( buffer );
