@@ -1,4 +1,3 @@
-
 [ ] allow structs to be returned (must follow gcc's abi) -- how to handle foo = bar() if bar()
     actually returns a ptr to the hidden argument passed? and worst.. GCC will return ANY struct
     <= 8 bytes in EAX:EDX (and with an unique FP field in ST(0)!), what means things will become
@@ -30,11 +29,6 @@
 [ ] full debug support
 
 [ ] var ini  -- dim myvar as sometype = { initialvalue } -- has to support arrays and types too
-
-[ ] typedefs -- can be done with one pass? ie, it should allow:
-		typedef bleh as bar
-		type foo: b as bleh ptr: end type
-		type bar: f as foo ptr: end type
 
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 

@@ -19,11 +19,11 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-const IR.INITVREGNODES%		= 1024
+const IR.INITVREGNODES		= 1024
 
-const IR.INITADDRNODES%		= 2048
+const IR.INITADDRNODES		= 2048
 
-const IR.MAXDIST%			= 32767
+const IR.MAXDIST			= 32767
 
 enum IRDATACLASS_ENUM
 	IR.DATACLASS.INTEGER                        '' must be the first
@@ -49,10 +49,11 @@ enum IRDATATYPE_ENUM
 	IR.DATATYPE.FIXSTR
 	IR.DATATYPE.USERDEF
 	IR.DATATYPE.FUNCTION
+	IR.DATATYPE.FWDREF
 	IR.DATATYPE.POINTER							'' ptr must be the last!
 end enum
 
-const IR.MAXDATATYPES 		= 16-1				'' pointer not taken into account
+const IR.MAXDATATYPES 		= 17-1				'' pointer not taken into account
 
 ''
 enum IRVREGTYPE_ENUM
@@ -195,7 +196,7 @@ declare sub 		irEmitBRANCHPTR		( byval v1 as integer )
 
 declare sub 		irEmitBRANCH		( byval op as integer, byval label as FBSYMBOL ptr )
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
-declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
+declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 										  byval vr as integer, byval pmode as integer, _
 										  byval plen as integer ) as integer
 

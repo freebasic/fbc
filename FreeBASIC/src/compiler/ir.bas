@@ -117,6 +117,7 @@ data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, FALSE, "string"
 data IR.DATACLASS.STRING , 0			 	, FALSE, "fixstr"
 data IR.DATACLASS.INTEGER, 0			 	, FALSE, "udt"
 data IR.DATACLASS.INTEGER, 0			 	, FALSE, "func"
+data IR.DATACLASS.INTEGER, 1			 	, FALSE, "typedef"
 
 ''op, type(binary=0,unary=1,...), cummutative, name
 opcodedata:
@@ -631,7 +632,7 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, 
 end sub
 
 '':::::
-function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
+function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 						  byval vr as integer, _
 						  byval pmode as integer, byval plen as integer ) as integer static
     dim vt as integer, vp as integer
@@ -645,7 +646,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 	amode = symbGetArgMode( proc, arg )
 
 	'' convert param to arg type if needed
-	atype  = symbGetArgDataType( proc, arg )
+	atype  = symbGetType( arg )
 	if( atype <> INVALID ) then
 		aclass = irGetDataClass( atype )
 	end if

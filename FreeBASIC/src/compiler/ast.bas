@@ -1147,6 +1147,7 @@ function astUpdComp2Branch( byval n as integer, byval label as FBSYMBOL ptr, byv
 
 end function
 
+#if 0
 '':::::
 sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, _
 			   byval ln as integer, byval cn as integer )
@@ -1232,6 +1233,7 @@ sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, 
 	end if
 
 end sub
+#endif
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree cloning and deletion
@@ -3331,7 +3333,7 @@ end function
 
 '':::::
 private function hCheckParam( byval f as integer, byval n as integer )
-    dim proc as FBSYMBOL ptr, arg as FBPROCARG ptr, s as FBSYMBOL ptr
+    dim proc as FBSYMBOL ptr, arg as FBSYMBOL ptr, s as FBSYMBOL ptr
     dim p as integer, class as integer, t as integer
     dim adtype as integer, adclass as integer, pmode as integer
     dim pdtype as integer, pdclass as integer, amode as integer
@@ -3350,7 +3352,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 	p = astTB(n).l
 
 	''
-	adtype  = symbGetArgDataType( proc, arg )
+	adtype  = symbGetType( arg )
 	if( adtype <> INVALID ) then
 		adclass = irGetDataClass( adtype )
 	end if
@@ -3443,7 +3445,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 				'' check for invalid UDT's (different subtypes)
 				s = astGetSubtype( p )
 
-				if( symbGetArgSubtype( proc, arg ) <> s ) then
+				if( symbGetSubtype( arg ) <> s ) then
 					hReportParamError proc, f
 					exit function
 				end if
@@ -3577,8 +3579,9 @@ function astNewPARAM( byval f as integer, byval p as integer, _
 end function
 
 '':::::
-private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as integer, byval arg as FBPROCARG ptr, _
-						       byval n as integer, srctree as integer, isexpr as integer ) as FBSYMBOL ptr
+private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as integer, _
+							   byval arg as FBSYMBOL ptr, byval n as integer, _
+							   srctree as integer, isexpr as integer ) as FBSYMBOL ptr
     dim adtype as integer
     dim pdtype as integer, pclass as integer
     dim tempstr as FBSYMBOL ptr, t as integer
@@ -3591,7 +3594,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 
 
 	'' get param and arg data types
-	adtype  = symbGetArgDataType( proc, arg )
+	adtype  = symbGetType( arg )
 	pdtype  = astTB(n).dtype
 
    	'' if arg type = ANY, pass anything
@@ -3788,8 +3791,9 @@ private sub hCheckTmpStrings( byval inibase as integer )
 end sub
 
 '':::::
-private function hPrepParam( byval proc as FBSYMBOL ptr, byval isrtl as integer, byval arg as FBPROCARG ptr, _
-				             byval param as integer, pmode as integer ) as integer
+private function hPrepParam( byval proc as FBSYMBOL ptr, byval isrtl as integer, _
+							 byval arg as FBSYMBOL ptr, byval param as integer, _
+							 pmode as integer ) as integer
     dim srctree as integer, isexpr as integer
     dim t as FBSYMBOL ptr
 
@@ -3845,7 +3849,7 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
     dim as FBSYMBOL ptr proc
     dim as integer mode, isrtl, bytestopop
     dim as integer params, inc, l, dtype
-    dim as FBPROCARG ptr arg, lastarg
+    dim as FBSYMBOL ptr arg, lastarg
     dim as integer args, vr
     dim as integer tempstrs_base
 
@@ -3900,7 +3904,7 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 
 		'' try to optimize if a constant is being pushed and the arg is a float
   		if( astTB(l).class = AST.NODECLASS.CONST ) then
-  			dtype = symbGetArgDataType( proc, arg )
+  			dtype = symbGetType( arg )
   			'' vararg?
   			if( dtype <> INVALID ) then
   				if( irGetDataClass( dtype ) = IR.DATACLASS.FPOINT ) then
@@ -3911,7 +3915,7 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 
 		''
 		if( arg = lastarg ) then
-			if( arg->mode = FB.ARGMODE.VARARG ) then
+			if( arg->arg.mode = FB.ARGMODE.VARARG ) then
 				bytestopop += (symbCalcLen( astTB(l).dtype, NULL ) + 3) and not 3 '' x86 assumption!
 			end if
 		end if

@@ -103,7 +103,7 @@ data "st(0)","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"
 
 '' class, size, regnametb, mov's ptr name, init name
 datatypedata:
-data IR.DATACLASS.INTEGER, 1 			 , 0, ""
+data IR.DATACLASS.INTEGER, 1 			 , 0, "byte ptr"
 data IR.DATACLASS.INTEGER, 1			 , 0, "byte ptr"
 data IR.DATACLASS.INTEGER, 1			 , 0, "byte ptr"
 data IR.DATACLASS.INTEGER, 2             , 1, "word ptr"
@@ -118,6 +118,7 @@ data IR.DATACLASS.STRING , 8             , 0, ""
 data IR.DATACLASS.STRING , 0             , 0, ""
 data IR.DATACLASS.INTEGER, FB.INTEGERSIZE, 0, "dword ptr"
 data IR.DATACLASS.INTEGER, FB.INTEGERSIZE, 0, "dword ptr"
+data IR.DATACLASS.INTEGER, 1			 , 0, "byte ptr"
 
 '' class,reg,name
 regdata:

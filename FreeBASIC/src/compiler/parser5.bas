@@ -42,9 +42,9 @@ end sub
 '':::::
 private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
 								  byval proctyp as integer, byval procsubtype as FBSYMBOL ptr, _
-								  byval argc as integer, argv() as FBPROCARG ) as integer static
-    dim a as integer, atype as integer, amode as integer
-    dim arg as FBPROCARG ptr, typ as integer
+								  byval argc as integer, byval argtail as FBSYMBOL ptr ) as integer static
+    dim a as integer
+    dim arg as FBSYMBOL ptr, typ as integer
 
 	hCheckPrototype = FALSE
 
@@ -67,51 +67,48 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
     end if
 
 	'' check each arg
-	a = 0
-	arg = symbGetProcHeadArg( proc )
+	a = argc
+	arg = symbGetProcTailArg( proc )
 	do while( arg <> NULL )
-        typ   = symbGetArgType( proc, arg )
-    	atype = argv(a).typ
+        typ = symbGetType( arg )
 
     	'' convert any AS ANY arg to the final one
     	if( typ = FB.SYMBTYPE.VOID ) then
-    		symbSetArgType proc, arg, atype
-    		symbSetArgSubType proc, arg, argv(a).subtype
+    		arg->typ = argtail->typ
+    		arg->subtype = argtail->subtype
 
     	'' check if types don't conflit
     	else
-    		if( atype <> typ ) then
+    		if( argtail->typ <> typ ) then
                 hReportParamError a
                 exit function
 
-            elseif( argv(a).subtype <> symbGetArgSubtype( proc, arg ) ) then
+            elseif( argtail->subtype <> symbGetSubtype( arg ) ) then
                 hReportParamError a
                 exit function
     		end if
     	end if
 
     	'' and mode
-    	amode = argv(a).mode
-    	if( amode <> symbGetArgMode( proc, arg ) ) then
+    	if( argtail->arg.mode <> symbGetArgMode( proc, arg ) ) then
 			hReportParamError a
             exit function
     	end if
 
     	'' check names and change to the new one if needed
-    	if( amode <> FB.ARGMODE.VARARG ) then
-    		if( strpGet( argv(a).nameidx ) <> symbGetArgName( proc, arg ) ) then
-    			symbSetArgName proc, arg, argv(a).nameidx
-    		end if
+    	if( argtail->arg.mode <> FB.ARGMODE.VARARG ) then
+    		arg->alias = argtail->alias
 
     		'' as both have the same type, re-set the suffix, because for example
     		'' "a as integer" on the prototype and "a%" or just "a" on the proc
     		'' declaration when in a defint context is allowed in QB
-    		symbSetArgSuffix proc, arg, argv(a).suffix
+    		arg->arg.suffix = argtail->arg.suffix
     	end if
 
-    	'' next arg
-    	arg = symbGetProcNextArg( proc, arg, FALSE )
-    	a += 1
+    	'' prev arg
+    	arg = arg->arg.l
+    	argtail = argtail->arg.l
+    	a -= 1
     loop
 
     ''
@@ -122,7 +119,7 @@ end function
 '':::::
 private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
     dim a as integer
-    dim arg as FBPROCARG ptr
+    dim arg as FBSYMBOL ptr
 
 	hDeclareArgs = FALSE
 
@@ -131,8 +128,8 @@ private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
 	arg = symbGetProcHeadArg( proc )
 	do while( arg <> NULL )
 
-		if( arg->mode <> FB.ARGMODE.VARARG ) then
-			if( symbAddArg( proc, arg ) = NULL ) then
+		if( arg->arg.mode <> FB.ARGMODE.VARARG ) then
+			if( symbAddArgAsVar( arg->alias, arg ) = NULL ) then
 				hReportParamError a, FB.ERRMSG.DUPDEFINITION
 				exit function
 			end if
@@ -153,8 +150,8 @@ end function
 function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, alloctype as integer ) static
     dim res as integer
     dim id as string, aliasid as string
-    dim typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
-    dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
+    dim typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer, ptrcnt as integer
+    dim argc as integer, argtail as FBSYMBOL ptr
 
 	cSubOrFuncHeader = FALSE
 
@@ -168,6 +165,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 	proc    = lexTokenSymbol
 	id 		= lexEatToken
 	subtype = NULL
+	ptrcnt  = 0
 
 	if( (isSub) and (typ <> INVALID) ) then
     	hReportError FB.ERRMSG.INVALIDCHARACTER
@@ -198,13 +196,14 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 
 	'' ('(' Arguments? ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
-		res = cArguments( mode, argc, argv(), FALSE )
+		argtail = cArguments( mode, argc, argtail, FALSE )
 		if( not hMatch( CHAR_RPRNT ) or (hGetLastError <> FB.ERRMSG.OK) ) then
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
 		end if
 	else
 		argc = 0
+		argtail = NULL
 	end if
 
     '' (AS SymbolType)?
@@ -215,7 +214,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     		exit function
     	end if
 
-    	if( not cSymbolType( typ, subtype, lgt ) ) then
+    	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
     		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
     		exit function
     	end if
@@ -264,7 +263,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     end if
 
     if( proc = NULL ) then
-    	proc = symbAddProc( id, aliasid, "", typ, subtype, alloctype, mode, argc, argv() )
+    	proc = symbAddProc( id, aliasid, "", typ, subtype, ptrcnt, alloctype, mode, argc, argtail )
     	if( proc = NULL ) then
     		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
     		exit function
@@ -277,7 +276,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     	end if
 
     	'' there's already a prototype for this proc, so check for conflits
-    	if( not hCheckPrototype( proc, typ, subtype, argc, argv() ) ) then
+    	if( not hCheckPrototype( proc, typ, subtype, argc, argtail ) ) then
     		exit function
     	end if
 

@@ -545,7 +545,7 @@ end function
 ''
 function cConstAssign
     dim id as string, valtext as string
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
     dim value as double, c as integer, dtype as integer
     dim expr as integer
     dim sym as FBSYMBOL ptr
@@ -568,7 +568,7 @@ function cConstAssign
 			exit function
 		end if
 
-		if( not cSymbolType( typ, subtype, lgt ) ) then
+		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
 			exit function
 		end if
 
@@ -673,9 +673,67 @@ function cConstAssign
 end function
 
 '':::::
+function cTypedefDecl( id as string ) as integer
+    dim as integer typ, lgt, ptrcnt
+    dim as FBSYMBOL ptr subtype
+    dim as string tname
+
+    cTypedefDecl = FALSE
+
+    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+
+    	tname = lexTokenText
+    	'' pointing to itself? then it's a void..
+    	if( tname = id ) then
+    		typ 	= FB.SYMBTYPE.VOID
+    		subtype = NULL
+    		lgt 	= 0
+
+    	'' else, create a forward reference (or lookup one)
+    	else
+    		typ 	= FB.SYMBTYPE.FWDREF
+    		subtype = symbAddFwdRef( tname )
+			lgt 	= -1
+			if( subtype = NULL ) then
+				subtype = symbFindByNameAndClass( tname, FB.SYMBCLASS.FWDREF )
+				if( subtype = NULL ) then
+					hReportError FB.ERRMSG.DUPDEFINITION
+					exit function
+				end if
+			end if
+    	end if
+
+    	lexSkipToken
+    end if
+
+	if( ptrcnt = 0 ) then
+		'' (PTR|POINTER)*
+		do
+			select case lexCurrentToken
+			case FB.TK.PTR, FB.TK.POINTER
+				lexSkipToken
+				typ += FB.SYMBTYPE.POINTER
+				ptrcnt += 1
+			case else
+				exit do
+			end select
+		loop
+	end if
+
+    if( symbAddTypedef( id, typ, subtype, ptrcnt, lgt ) = NULL ) then
+		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
+		exit function
+    end if
+
+	cTypedefDecl = TRUE
+
+end function
+
+'':::::
 ''ElementDecl     =   ID ArrayDecl? AS SymbolType
 ''
-function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, lgt as integer, _
+function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, _
+					   ptrcnt as integer, lgt as integer, _
 					   dimensions as integer, dTB() as FBARRAYDIM )
 	dim res as integer
 
@@ -702,7 +760,7 @@ function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, lg
     	exit function
     end if
 
-    if( not cSymbolType( typ, subtype, lgt ) ) then
+    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
     	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
     	exit function
     end if
@@ -718,7 +776,7 @@ end function
 ''              |   (ElementDecl? Comment? SttSeparator)+ .
 ''
 function cTypeLine as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim ename as string
 
@@ -798,9 +856,9 @@ declfield:
 
 		env.typectx.elements += 1
 
-		if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
+		if( cElementDecl( ename, typ, subtype, ptrcnt, lgt, dimensions, dTB() ) ) then
 			if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _
-								   typ, subtype, lgt, env.typectx.innercnt > 0 ) = NULL ) then
+								   typ, subtype, ptrcnt, lgt, env.typectx.innercnt > 0 ) = NULL ) then
 				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 				exit function
 			end if
@@ -850,8 +908,24 @@ function cTypeDecl
 
 	id = lexEatToken
 
+	''
+	select case lexCurrentToken
+	'' AS?
+	case FB.TK.AS
+		if( env.typectx.isunion ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		end if
+
+		lexSkipToken
+
+		cTypeDecl = cTypedefDecl( id )
+		exit function
+
 	'' (FIELD '=' Expression)?
-	if( hMatch( FB.TK.FIELD ) ) then
+    case FB.TK.FIELD
+		lexSkipToken
+
 		if( not hMatch( FB.TK.ASSIGN ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
@@ -875,9 +949,9 @@ function cTypeDecl
   		end if
   		astDel expr
 
-	else
+	case else
 		align = FB.INTEGERSIZE
-	end if
+	end select
 
 	env.typectx.symbol = symbAddUDT( id, env.typectx.isunion, align )
 	if( env.typectx.symbol = NULL ) then
@@ -1278,7 +1352,7 @@ end function
 function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
     dim id as string, idalias as string, symbol as FBSYMBOL ptr
     dim addsuffix as integer, atype as integer, isdynamic as integer, ismultdecl as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer, ptrcnt as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
 
@@ -1289,7 +1363,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     if( lexCurrentToken = FB.TK.AS ) then
     	lexSkipToken
 
-    	if( not cSymbolType( typ, subtype, lgt ) ) then
+    	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
     		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
     		exit function
     	end if
@@ -1383,7 +1457,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 
     			lexSkipToken
 
-    			if( not cSymbolType( typ, subtype, lgt ) ) then
+    			if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
     				hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
     				exit function
     			end if
@@ -1403,7 +1477,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     	''
     	if( isdynamic ) then
 
-    		symbol = cDynArrayDef( id, idalias, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() )
+    		symbol = cDynArrayDef( id, idalias, typ, subtype, ptrcnt, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() )
     		if( symbol = NULL ) then
     			exit function
     		end if
@@ -1414,7 +1488,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 
             atype = alloctype and (not FB.ALLOCTYPE.DYNAMIC)
 
-    		symbol = symbAddVarEx( id, idalias, typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+    		symbol = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
     		if( symbol = NULL ) then
 
                 symbol = hDeclExternVar( id, typ, subtype, atype, addsuffix )
@@ -1463,8 +1537,9 @@ end function
 
 '':::::
 function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
-					   byval subtype as FBSYMBOL ptr, byval lgt as integer, _
-					   byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
+					   byval subtype as FBSYMBOL ptr, byval ptrcnt as integer, _
+					   byval lgt as integer, byval addsuffix as integer, _
+					   byval alloctype as integer, byval dopreserve as integer, _
 					   byval dimensions as integer, exprTB() as integer ) as FBSYMBOL ptr
     dim s as FBSYMBOL ptr
     dim res as integer
@@ -1478,7 +1553,7 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
     ''
   	s = symbFindByNameAndSuffix( id, typ )
    	if( s = NULL ) then
-   		s = symbAddVarEx( id, idalias, typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+   		s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
    		if( s = NULL ) then
    			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
    			exit function
@@ -1840,7 +1915,7 @@ end function
 '':::::
 function hMangleFuncPtrName( sname as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
 					    	 byval mode as integer, _
-						  	 byval argc as integer, argv() as FBPROCARG ) as string static
+						  	 byval argc as integer, byval argtail as FBSYMBOL ptr ) as string static
     dim i as integer
     dim mname as string
     dim aname as string
@@ -1850,13 +1925,15 @@ function hMangleFuncPtrName( sname as string, byval typ as integer, byval subtyp
     for i = 0 to argc-1
     	mname += "_"
 
-    	if( argv(i).subtype = NULL ) then
-    		aname = hex$( argv(i).typ * argv(i).mode )
+    	if( argtail->subtype = NULL ) then
+    		aname = hex$( argtail->typ * argtail->arg.mode )
     	else
-    		aname = hex$( argv(i).subtype )
+    		aname = hex$( argtail->subtype )
     	end if
 
     	mname += aname
+
+    	argtail = argtail->arg.l
     next i
 
     mname += "@"
@@ -1873,8 +1950,8 @@ end function
 
 '':::::
 function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
-	dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, mode as integer
-	dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
+	dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, mode as integer, ptrcnt as integer
+	dim argc as integer, argtail as FBSYMBOL ptr
 	dim sname as string, s as FBSYMBOL ptr
 
 	cSymbolTypeFuncPtr = NULL
@@ -1884,7 +1961,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	'' ('(' Argument? ')')
 	if( hMatch( CHAR_LPRNT ) ) then
-		cArguments( mode, argc, argv(), TRUE )
+		argtail = cArguments( mode, argc, argtail, TRUE )
 
     	if( not hMatch( CHAR_RPRNT ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
@@ -1893,11 +1970,12 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	else
 		argc = 0
+		argtail = NULL
 	end if
 
 	'' (AS SymbolType)?
 	if( hMatch( FB.TK.AS ) ) then
-		if( not cSymbolType( typ, subtype, lgt ) ) then
+		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
 			exit function
 		end if
 	else
@@ -1910,13 +1988,14 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 		subtype = NULL
 		typ = FB.SYMBTYPE.VOID
+		ptrcnt = 0
 	end if
 
-	sname = hMangleFuncPtrName( "_fbfp_", typ, subtype, mode, argc, argv() )
+	sname = hMangleFuncPtrName( "_fbfp_", typ, subtype, mode, argc, argtail )
 
 	s = symbFindByNameAndClass( sname, FB.SYMBCLASS.PROC, TRUE )
 	if( s = NULL ) then
-		s = symbAddPrototype( sname, "", "", typ, subtype, 0, mode, argc, argv(), TRUE, TRUE )
+		s = symbAddPrototype( sname, "", "", typ, subtype, ptrcnt, 0, mode, argc, argtail, TRUE, TRUE )
 	end if
 
 	cSymbolTypeFuncPtr = s
@@ -1937,17 +2016,17 @@ end function
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
 ''				      (PTR|POINTER)* .
 ''
-function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
+function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer )
     dim isunsigned as integer, isfunction as integer
-    dim res as integer, s as FBSYMBOL ptr
-    dim littext as string
-    dim ptrcnt as integer
+    dim s as FBSYMBOL ptr
+    dim text as string
 
-	res = FALSE
+	cSymbolType = FALSE
 
 	lgt = 0
 	typ = INVALID
 	subtype = NULL
+	ptrcnt = 0
 
 	'' UNSIGNED?
 	isunsigned = hMatch( FB.TK.UNSIGNED )
@@ -1955,65 +2034,65 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 	''
 	select case as const lexCurrentToken
 	case FB.TK.ANY
+		lexSkipToken
 		typ = FB.SYMBTYPE.VOID
 		lgt = 0
-		lexSkipToken
 
 	case FB.TK.BYTE
+		lexSkipToken
 		typ = FB.SYMBTYPE.BYTE
 		lgt = 1
-		lexSkipToken
 	case FB.TK.UBYTE
+		lexSkipToken
 		typ = FB.SYMBTYPE.UBYTE
 		lgt = 1
-		lexSkipToken
 
 	case FB.TK.SHORT
+		lexSkipToken
 		typ = FB.SYMBTYPE.SHORT
 		lgt = 2
-		lexSkipToken
 	case FB.TK.USHORT
+		lexSkipToken
 		typ = FB.SYMBTYPE.USHORT
 		lgt = 2
-		lexSkipToken
 
 	case FB.TK.INTEGER, FB.TK.LONG
+		lexSkipToken
 		typ = FB.SYMBTYPE.INTEGER
 		lgt = FB.INTEGERSIZE
-		lexSkipToken
 	case FB.TK.UINT
+		lexSkipToken
 		typ = FB.SYMBTYPE.UINT
 		lgt = FB.INTEGERSIZE
-		lexSkipToken
 
 	case FB.TK.LONGINT
+		lexSkipToken
 		typ = FB.SYMBTYPE.LONGINT
 		lgt = FB.INTEGERSIZE*2
-		lexSkipToken
 	case FB.TK.ULONGINT
+		lexSkipToken
 		typ = FB.SYMBTYPE.ULONGINT
 		lgt = FB.INTEGERSIZE*2
-		lexSkipToken
 
 	case FB.TK.SINGLE
+		lexSkipToken
 		typ = FB.SYMBTYPE.SINGLE
 		lgt = 4
-		lexSkipToken
 
 	case FB.TK.DOUBLE
+		lexSkipToken
 		typ = FB.SYMBTYPE.DOUBLE
 		lgt = 8
-		lexSkipToken
 
 	case FB.TK.STRING
 		if( lexLookAhead(1) = CHAR_STAR ) then
 			lexSkipToken
 			lexSkipToken
 			typ = FB.SYMBTYPE.FIXSTR
-			if( not cConstExprValue( littext ) ) then
+			if( not cConstExprValue( text ) ) then
 				exit function
 			end if
-			lgt = val( littext ) + 1
+			lgt = val( text ) + 1
 			if( lgt = 1 ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
@@ -2030,6 +2109,7 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 
 		typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION
 		lgt = FB.POINTERSIZE
+		ptrcnt = 1
 
 		subtype = cSymbolTypeFuncPtr( isfunction )
 		if( subtype = NULL ) then
@@ -2039,24 +2119,31 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 	case else
 		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.UDT )
 		if( s <> NULL ) then
+			lexSkipToken
 			typ 	= FB.SYMBTYPE.USERDEF
 			subtype = s
 			lgt 	= s->lgt
-			lexSkipToken
 		else
 			s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.ENUM )
 			if( s <> NULL ) then
+				lexSkipToken
 				typ = FB.SYMBTYPE.UINT
 				lgt = FB.INTEGERSIZE
-				lexSkipToken
+			else
+				s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.TYPEDEF )
+				if( s <> NULL ) then
+					lexSkipToken
+					typ 	= s->typ
+					subtype = s->subtype
+					lgt 	= s->lgt
+					ptrcnt	= s->ptrcnt
+			    end if
 			end if
 		end if
 	end select
 
 	''
 	if( typ <> INVALID ) then
-
-		res = TRUE
 
 		if( isunsigned ) then
 			select case as const typ
@@ -2075,13 +2162,12 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 		end if
 
 		'' (PTR|POINTER)*
-		ptrcnt = 0
 		do
 			select case lexCurrentToken
 			case FB.TK.PTR, FB.TK.POINTER
 				lexSkipToken
-				typ = FB.SYMBTYPE.POINTER + typ
-				ptrcnt = ptrcnt + 1
+				typ += FB.SYMBTYPE.POINTER
+				ptrcnt += 1
 			case else
 				exit do
 			end select
@@ -2095,7 +2181,16 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 			end if
 
 			lgt = FB.POINTERSIZE
+
+		else
+			'' can't have forward typedef's if they aren't pointers
+			if( typ = FB.SYMBTYPE.FWDREF ) then
+				hReportError FB.ERRMSG.INCOMPLETETYPE
+				exit function
+			end if
 		end if
+
+		cSymbolType = TRUE
 
 	else
 		if( isunsigned ) then
@@ -2103,8 +2198,6 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 			exit function
 		end if
 	end if
-
-	cSymbolType = res
 
 end function
 
@@ -2161,9 +2254,10 @@ end function
 ''
 function cSubOrFuncDecl( byval isSub as integer ) static
     dim res as integer
-    dim id as string, typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer
+    dim id as string
+    dim typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer, ptrcnt as integer
     dim libname as string, aliasname as string
-    dim f as FBSYMBOL ptr, argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
+    dim f as FBSYMBOL ptr, argc as integer, argtail as FBSYMBOL ptr
 
 	cSubOrFuncDecl = FALSE
 
@@ -2176,6 +2270,7 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 	typ = lexTokenType
 	id = lexEatToken
 	subtype = NULL
+	ptrcnt = 0
 
 	if( (isSub) and (typ <> INVALID) ) then
     	hReportError FB.ERRMSG.INVALIDCHARACTER
@@ -2209,13 +2304,14 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 
 	'' ('(' Arguments? ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
-		cArguments( mode, argc, argv(), TRUE )
+		argtail = cArguments( mode, argc, argtail, TRUE )
 		if( not hMatch( CHAR_RPRNT ) ) then
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
 		end if
 	else
 		argc = 0
+		argtail = NULL
 	end if
 
     '' (AS SymbolType)?
@@ -2226,7 +2322,7 @@ function cSubOrFuncDecl( byval isSub as integer ) static
     		exit function
     	end if
 
-    	if( not cSymbolType( typ, subtype, lgt ) ) then
+    	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
     		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
     		exit function
     	end if
@@ -2253,7 +2349,7 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 	end if
 
     ''
-    f = symbAddPrototype( id, aliasname, libname, typ, subtype, 0, mode, argc, argv(), FALSE )
+    f = symbAddPrototype( id, aliasname, libname, typ, subtype, ptrcnt, 0, mode, argc, argtail, FALSE )
     if( f = NULL ) then
     	hReportError FB.ERRMSG.DUPDEFINITION
     	exit function
@@ -2267,26 +2363,30 @@ end function
 ''Arguments       =   ArgDecl (',' ArgDecl)* .
 ''
 function cArguments( byval procmode as integer, _
-					 argc as integer, argv() as FBPROCARG, byval isproto as integer )
+					 argc as integer, byval argtail as FBSYMBOL ptr, _
+					 byval isproto as integer ) as FBSYMBOL ptr
 
+	argtail = NULL
 	argc = 0
+
 	do
-		if( not cArgDecl( procmode, argc, argv(argc), isproto ) ) then
-			cArguments = FALSE
+		argtail = cArgDecl( procmode, argc, argtail, isproto )
+		if( argtail = NULL ) then
+			cArguments = NULL
 			exit function
 		end if
 
 		argc += 1
 
 		'' vararg?
-		if( argv(argc-1).mode = FB.ARGMODE.VARARG ) then
+		if( argtail->arg.mode = FB.ARGMODE.VARARG ) then
 			exit do
 		end if
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
 
-	cArguments = TRUE
+	cArguments = argtail
 
 end function
 
@@ -2300,13 +2400,16 @@ end sub
 '':::::
 ''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" NUM_LIT)? .
 ''
-function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPROCARG, _
-				   byval isproto as integer ) as integer
-	dim id as string, mode as integer
-	dim expr as integer, dclass as integer, dtype as integer
-	dim readid as integer
+function cArgDecl( byval procmode as integer, _
+				   byval argc as integer, byval argtail as FBSYMBOL ptr, _
+				   byval isproto as integer ) as FBSYMBOL ptr
+	dim as string id
+	dim as integer expr, dclass, dtype, readid, mode
+	dim as integer atype, amode, alen, asuffix, optional, ptrcnt
+	dim as FBVALUE optval
+	dim as FBSYMBOL ptr subtype
 
-	cArgDecl = FALSE
+	cArgDecl = NULL
 
 	'' "..."?
 	if( lexCurrentToken = FB.TK.VARARG ) then
@@ -2318,15 +2421,7 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
 
 		lexSkipToken
 
-		arg.nameidx = INVALID
-		arg.typ		= INVALID
-		arg.subtype	= NULL
-		arg.mode	= FB.ARGMODE.VARARG
-		arg.suffix 	= INVALID
-    	arg.lgt 	= 0
-    	arg.optional= FALSE
-
-		cArgDecl = TRUE
+		cArgDecl = symbAddArg( "", argtail, INVALID, NULL, 0, 0, FB.ARGMODE.VARARG, INVALID, FALSE, NULL )
 		exit function
 	end if
 
@@ -2367,15 +2462,8 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
 
 	if( readid ) then
 		'' ID
-		arg.typ = lexTokenType
+		atype = lexTokenType
 		id = lexEatToken
-
-		'' don't save arg's name if it's just a prototype
-		if( not isproto ) then
-			arg.nameidx = strpAdd( id )
-		else
-			arg.nameidx = INVALID
-		end if
 
 		'' ('('')')
 		if( hMatch( CHAR_LPRNT ) ) then
@@ -2384,54 +2472,59 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
 				exit function
 			end if
 
-			arg.mode = FB.ARGMODE.BYDESC
+			amode = FB.ARGMODE.BYDESC
 
 		else
 			if( mode = INVALID ) then
-				arg.mode = env.optargmode
+				amode = env.optargmode
 			else
-				arg.mode = mode
+				amode = mode
 			end if
 		end if
 
 	'' no id
 	else
-		arg.typ = INVALID
-
-		arg.nameidx = INVALID
+		atype = INVALID
 
 		if( mode = INVALID ) then
-			arg.mode = env.optargmode
+			amode = env.optargmode
 		else
-			arg.mode = mode
+			amode = mode
 		end if
 	end if
 
     '' (AS SymbolType)?
     if( hMatch( FB.TK.AS ) ) then
-    	if( arg.typ <> INVALID ) then
+    	if( atype <> INVALID ) then
     		hReportParamError argc, id
     		exit function
     	end if
-    	if( not cSymbolType( arg.typ, arg.subtype, arg.lgt ) ) then
+    	if( not cSymbolType( atype, subtype, alen, ptrcnt ) ) then
     		hReportParamError argc, id
     		exit function
     	end if
 
-    	arg.suffix = INVALID
+    	asuffix = INVALID
+
     else
-    	arg.subtype = NULL
-    	arg.suffix = arg.typ
+    	if( not readid ) then
+    		hReportParamError argc, ""
+    		exit function
+    	end if
+
+    	subtype = NULL
+    	asuffix = atype
+    	ptrcnt = 0
     end if
 
     ''
-    if( arg.typ = INVALID ) then
-        arg.typ = hGetDefType( id )
-        arg.suffix = arg.typ
+    if( atype = INVALID ) then
+        atype = hGetDefType( id )
+        asuffix = atype
     end if
 
     '' check for invalid args
-    select case arg.typ
+    select case atype
     '' can't be a fixed-len string
     case FB.SYMBTYPE.FIXSTR
     	hReportParamError argc, id
@@ -2446,32 +2539,32 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
     end select
 
     ''
-    select case arg.mode
+    select case amode
     case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
-    	arg.lgt = FB.POINTERSIZE
+    	alen = FB.POINTERSIZE
 
     case FB.ARGMODE.BYVAL
 
     	'' check for invalid args
     	if( isproto ) then
-    		select case arg.typ
+    		select case atype
     		case FB.SYMBTYPE.VOID
     			hReportParamError argc, id
     			exit function
     		end select
     	end if
 
-    	select case arg.typ
+    	select case atype
     	case FB.SYMBTYPE.STRING
-    		arg.lgt  = FB.POINTERSIZE
+    		alen = FB.POINTERSIZE
     	case else
-    		arg.lgt = symbCalcLen( arg.typ, arg.subtype, TRUE )
+    		alen = symbCalcLen( atype, subtype, TRUE )
     	end select
     end select
 
     '' ('=' NUM_LIT)?
     if( hMatch( FB.TK.ASSIGN ) ) then
-    	dclass = irGetDataClass( arg.typ )
+    	dclass = irGetDataClass( atype )
 
     	if( (dclass <> IR.DATACLASS.INTEGER) and (dclass <> IR.DATACLASS.FPOINT) ) then
  	   		hReportParamError argc, id
@@ -2488,33 +2581,32 @@ function cArgDecl( byval procmode as integer, byval argc as integer, arg as FBPR
 			exit function
 		end if
 
-    	arg.optional = TRUE
+    	optional = TRUE
     	dtype = astGetDataType( expr )
-    	if( (arg.typ = IR.DATATYPE.LONGINT) or (arg.typ = IR.DATATYPE.ULONGINT) ) then
+    	if( (atype = IR.DATATYPE.LONGINT) or (atype = IR.DATATYPE.ULONGINT) ) then
 			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-    			arg.defvalue64 = astGetValue64( expr )
+    			optval.value64 = astGetValue64( expr )
     		else
-    			arg.defvalue64 = clngint( astGetValue( expr ) )
+    			optval.value64 = clngint( astGetValue( expr ) )
     		end if
     	else
 			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-				arg.defvalue = cdbl( astGetValue64( expr ) )
+				optval.value = cdbl( astGetValue64( expr ) )
 			else
-    			arg.defvalue = astGetValue( expr )
+    			optval.value = astGetValue( expr )
     		end if
     	end if
     	astDel expr
 
     else
-    	arg.optional = FALSE
-        if( (arg.typ <> IR.DATATYPE.LONGINT) and (arg.typ <> IR.DATATYPE.ULONGINT) ) then
-        	arg.defvalue = 0.0
-        else
-        	arg.defvalue64 = 0
-        end if
+    	optional = FALSE
     end if
 
-    cArgDecl = TRUE
+    if( isproto ) then
+    	id = ""
+    end if
+
+    cArgDecl = symbAddArg( id, argtail, atype, subtype, ptrcnt, alen, amode, asuffix, optional, @optval )
 
 end function
 
@@ -2720,7 +2812,7 @@ end function
 '':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval param as integer, _
+function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byval param as integer, _
 					 expr as integer, pmode as integer, byval optonly as integer ) as integer
 	dim amode as integer
 	dim typ as integer
@@ -2769,11 +2861,11 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 		end if
 
 		'' create an arg
-		typ = symbGetArgType( proc, arg )
+		typ = symbGetType( arg )
 		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
-			expr = astNewCONST64( symbGetArgDefvalue64( proc, arg ), typ )
+			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
 		else
-			expr = astNewCONST( symbGetArgDefvalue( proc, arg ), typ )
+			expr = astNewCONST( symbGetArgOptval( proc, arg ), typ )
 		end if
 
 	else
@@ -2816,7 +2908,7 @@ end function
 function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer ) as integer
     dim p as integer, params as integer
     dim res as integer, dtype as integer
-    dim args as integer, arg as FBPROCARG ptr
+    dim args as integer, arg as FBSYMBOL ptr
     dim elist(0 to FB_MAXPROCARGS-1) as integer, mlist(0 to FB_MAXPROCARGS-1) as integer
 
 	args = symbGetProcArgs( proc )
@@ -2842,7 +2934,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer )
 	arg = symbGetProcLastArg( proc )
 	do
 		if( params >= args ) then
-			if( arg->mode <> FB.ARGMODE.VARARG ) then
+			if( arg->arg.mode <> FB.ARGMODE.VARARG ) then
 				hReportError FB.ERRMSG.ARGCNTMISMATCH
 				exit function
 			end if
@@ -2866,7 +2958,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer )
 
 	''
 	do while( params < args )
-		if( arg->mode = FB.ARGMODE.VARARG ) then
+		if( arg->arg.mode = FB.ARGMODE.VARARG ) then
 			exit do
 		end if
 

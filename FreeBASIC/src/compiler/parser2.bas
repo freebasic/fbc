@@ -611,7 +611,7 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
 	dtype   = astGetDataType( expr )
 	subtype = astGetSubType( expr )
 
-	hDoDeref = FALSE
+	hDoDeref = INVALID
 
 	if( (expr = INVALID) or (cnt <= 0) ) then
 		exit function
@@ -637,7 +637,7 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
     ''
     expr = astNewPTR( sym, elm, 0, expr, dtype, subtype )
 
-    hDoDeref = TRUE
+    hDoDeref = dtype
 
 end function
 
@@ -647,9 +647,8 @@ end function
 function cParentDeref( derefexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
 					   derefcnt as integer )
 
-    dim s as FBSYMBOL ptr, subtype as FBSYMBOL ptr
-    dim lgt as integer, dtype as integer
-    dim op as integer, expr as integer
+    dim as FBSYMBOL ptr s, subtype
+    dim as integer lgt, dtype, expr, op
 
 	cParentDeref = FALSE
 
@@ -718,13 +717,13 @@ function cParentDeref( derefexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBO
 		derefexpr = astNewBOP( op, derefexpr, expr )
 	end if
 
-	''
+    ''
 	if( not cDerefFields( sym, elm, dtype, subtype, derefexpr, TRUE, FALSE ) ) then
 		if( hGetLastError <> FB.ERRMSG.OK ) then
 			exit function
 		end if
 	else
-		derefcnt = derefcnt - 1
+		derefcnt -= 1
 	end if
 
 	cParentDeref = TRUE
@@ -738,8 +737,8 @@ end function
 ''							  | ParentDeref) .
 ''
 function cDerefExpression( derefexpr as integer ) as integer
-    dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
-    dim derefcnt as integer
+    dim as FBSYMBOL ptr sym, elm
+    dim as integer derefcnt, funcexpr, dtype
 
 	cDerefExpression = FALSE
 
@@ -752,7 +751,7 @@ function cDerefExpression( derefexpr as integer ) as integer
     derefcnt = 0
 	do
 		lexSkipToken
-		derefcnt = derefcnt + 1
+		derefcnt += 1
 	loop while( lexCurrentToken = FB.TK.DEREFCHAR )
 
 	'' AddrOfExpression
@@ -778,9 +777,37 @@ function cDerefExpression( derefexpr as integer ) as integer
 
 	''
 	if( derefcnt > 0 ) then
-		if( not hDoDeref( derefcnt, derefexpr, sym, elm ) ) then
+		dtype = hDoDeref( derefcnt, derefexpr, sym, elm )
+		if( dtype = INVALID ) then
 			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			exit function
+		end if
+	end if
+
+	'' function ptr?
+	if( dtype = IR.DATATYPE.POINTER+IR.DATATYPE.FUNCTION ) then
+		if( lexCurrentToken = CHAR_LPRNT ) then
+
+			if( elm <> NULL ) then
+				sym = elm
+			end if
+
+			sym = symbGetSubtype( sym )
+			elm = NULL
+
+			''
+			if( symbGetType( sym ) <> FB.SYMBTYPE.VOID ) then
+				if( not cFunctionCall( sym, funcexpr, derefexpr ) ) then
+					exit function
+				end if
+				derefexpr = funcexpr
+
+			else
+				if( not cProcCall( sym, derefexpr ) ) then
+					exit function
+				end if
+		    	derefexpr = INVALID
+			end if
 		end if
 	end if
 
@@ -1098,8 +1125,8 @@ end function
 '':::::
 ''FuncParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval procexpr as integer, _
-					 byval optonly as integer ) as integer
+function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
+					 byval procexpr as integer, byval optonly as integer ) as integer
 	dim paramexpr as integer, amode as integer, pmode as integer
 	dim typ as integer
 
@@ -1133,11 +1160,11 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 		end if
 
 		'' create an arg
-		typ = symbGetArgType( proc, arg )
+		typ = symbGetType( arg )
 		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
-			paramexpr = astNewCONST64( symbGetArgDefvalue64( proc, arg ), typ )
+			paramexpr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
 		else
-			paramexpr = astNewCONST( symbGetArgDefvalue( proc, arg ), typ )
+			paramexpr = astNewCONST( symbGetArgOptval( proc, arg ), typ )
 		end if
 
 	else
@@ -1181,7 +1208,7 @@ end function
 ''
 function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, _
 						 byval optonly as integer ) as integer
-    dim params as integer, args as integer, arg as FBPROCARG ptr
+    dim params as integer, args as integer, arg as FBSYMBOL ptr
 
 	cFuncParamList = FALSE
 
@@ -1198,7 +1225,7 @@ function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, 
 	if( not optonly ) then
 		do
 			if( params >= args ) then
-				if( arg->mode <> FB.ARGMODE.VARARG ) then
+				if( arg->arg.mode <> FB.ARGMODE.VARARG ) then
 					hReportError FB.ERRMSG.ARGCNTMISMATCH
 					exit function
 				end if
@@ -1223,7 +1250,7 @@ function cFuncParamList( byval proc as FBSYMBOL ptr, byval procexpr as integer, 
 
 	''
 	do while( params < args )
-		if( arg->mode = FB.ARGMODE.VARARG ) then
+		if( arg->arg.mode = FB.ARGMODE.VARARG ) then
 			exit do
 		end if
 

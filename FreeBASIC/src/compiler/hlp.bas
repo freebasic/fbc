@@ -120,8 +120,9 @@ data "Too many expressions"
 data "Expected explicit result type"
 data "Range too large"
 data "Forward references not allowed"
+data "Incomplete type"
 
-const FB.ERRMSGS = 67
+const FB.ERRMSGS = 68
 
 
 '':::::

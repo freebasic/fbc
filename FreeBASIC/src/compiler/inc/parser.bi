@@ -43,22 +43,23 @@ declare function 	cSymbolDecl             ( ) as integer
 declare function 	cSymbolDef 				( byval alloctype as integer, byval dopreserve as integer = FALSE ) as integer
 declare function 	cDynArrayDef			( id as string, idlias as string, _
 											  byval typ as integer, byval subtype as FBSYMBOL ptr, _
-											  byval lgt as integer, byval addsuffix as integer, _
-											  byval alloctype as integer, byval dopreserve as integer, _
-					   						  byval dimensions as integer, exprTB() as integer ) as FBSYMBOL ptr
+											  byval ptrcnt as integer, byval lgt as integer, _
+											  byval addsuffix as integer, byval alloctype as integer, _
+											  byval dopreserve as integer, _
+											  byval dimensions as integer, exprTB() as integer ) as FBSYMBOL ptr
 declare function 	cStaticArrayDecl 		( dimensions as integer, dTB() as FBARRAYDIM ) as integer
 declare function 	cArrayDecl				( dimensions as integer, exprTB() as integer ) as integer
 declare function 	cSymbolInit				( byval s as FBSYMBOL ptr ) as integer
 declare function 	cSymbolType 			( typ as integer, subtype as FBSYMBOL ptr, _
-											  lgt as integer ) as integer
+											  lgt as integer, ptrcnt as integer ) as integer
 declare function 	cProcDecl               ( ) as integer
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
 declare function 	cArguments              ( byval procmode as integer, _
-											  argc as integer, argv() as FBPROCARG, _
-											  byval isproto as integer ) as integer
-declare function 	cArgDecl                ( byval procmode as integer, _
-											  byval argc as integer, arg as FBPROCARG, _
-											  byval isproto as integer ) as integer
+											  argc as integer, byval argtail as FBSYMBOL ptr, _
+											  byval isproto as integer ) as FBSYMBOL ptr
+declare function 	cArgDecl				( byval procmode as integer, _
+				   							  byval argc as integer, byval argtail as FBSYMBOL ptr, _
+				   							  byval isproto as integer ) as FBSYMBOL ptr
 declare function 	cDefDecl				( ) as integer
 declare function 	cOptDecl				( ) as integer
 declare function 	cProcCallOrAssign		( ) as integer
@@ -107,10 +108,10 @@ declare function 	cConstant				( constexpr as integer ) as integer
 declare function 	cLiteral 				( litexpr as integer ) as integer
 declare function 	cFuncParamList			( byval proc as FBSYMBOL ptr, byval procexpr as integer, _
 											  byval optonly as integer ) as integer
-declare function 	cFuncParam				( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
+declare function 	cFuncParam				( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 											  byval procexpr as integer, byval optonly as integer ) as integer
 declare function 	cProcParamList			( byval proc as FBSYMBOL ptr, byval procexpr as integer ) as integer
-declare function 	cProcParam				( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
+declare function 	cProcParam				( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 											  byval param as integer, expr as integer, pmode as integer, byval optonly as integer ) as integer
 declare function 	cAsmBlock				( ) as integer
 declare function 	cFunctionMode 			( ) as integer

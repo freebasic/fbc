@@ -36,15 +36,16 @@ const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
 const FB.MAXGOTBITEMS		= 64
 
 ''
-const FB.INITSYMBOLNODES	= 10000
-const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 20
+const FB.INITSYMBOLNODES	= 15000
+const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 30
 
-const FB.INITARGNODES		= 4000
 const FB.INITDEFARGNODES	= 400
 
 const FB.INITDIMNODES		= 400
 
 const FB.INITLIBNODES		= 50
+
+const FB.INITFWDREFNODES	= 200
 
 
 ''
@@ -446,10 +447,11 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.FIXSTR
 	FB.SYMBTYPE.USERDEF
 	FB.SYMBTYPE.FUNCTION
+	FB.SYMBTYPE.FWDREF
 	FB.SYMBTYPE.POINTER            				'' must be the last
 end enum
 
-const FB.SYMBOLTYPES			= 16
+const FB.SYMBOLTYPES			= 17
 
 
 '' allocation types mask
@@ -504,16 +506,24 @@ enum SYMBCLASS_ENUM
 	FB.SYMBCLASS.VAR			= 1
 	FB.SYMBCLASS.CONST
 	FB.SYMBCLASS.PROC
+	FB.SYMBCLASS.PROCARG
 	FB.SYMBCLASS.DEFINE
 	FB.SYMBCLASS.KEYWORD
 	FB.SYMBCLASS.LABEL
 	FB.SYMBCLASS.ENUM
 	FB.SYMBCLASS.UDT
 	FB.SYMBCLASS.UDTELM
+	FB.SYMBCLASS.TYPEDEF
+	FB.SYMBCLASS.FWDREF
 end enum
 
 
 ''
+union FBVALUE
+	value			as double
+	value64			as longint
+end union
+
 ''
 type FBSKEYWORD
 	id				as integer
@@ -521,12 +531,12 @@ type FBSKEYWORD
 end type
 
 type FBDEFARG
-	prv				as FBDEFARG ptr			'' linked-list nodes
-	nxt				as FBDEFARG ptr			'' /
+	prv				as FBDEFARG ptr				'' linked-list nodes
+	nxt				as FBDEFARG ptr				'' /
 
 	name			as string
 
-	r				as FBDEFARG ptr			'' right
+	r				as FBDEFARG ptr				'' right
 end type
 
 ''
@@ -534,6 +544,20 @@ type FBSDEFINE
 	text			as string
 	args			as integer
 	arghead 		as FBDEFARG ptr
+end type
+
+''
+type FBFWDREF
+	prv				as FBFWDREF ptr				'' linked-list nodes
+	nxt				as FBFWDREF ptr				'' /
+
+	ref				as any ptr					'' FBSYMBOL ptr
+	l				as FBFWDREF ptr				'' preview
+end type
+
+type FBSFWDREF
+	refs			as integer
+	reftail			as FBFWDREF ptr
 end type
 
 ''
@@ -576,31 +600,23 @@ type FBSUDTELM
 end type
 
 ''
-type FBPROCARG
-	prv				as FBPROCARG ptr			'' linked-list nodes
-	nxt				as FBPROCARG ptr			'' /
-
-	nameidx			as integer
-	typ				as integer
-	subtype			as any ptr					'' UDT's only
-	lgt				as integer
+type FBSPROCARG
 	mode			as integer
 	suffix			as integer					'' QB quirk..
 
 	optional		as integer					'' true or false
-	defvalue		as double					'' default value
-	defvalue64		as longint
+	optval			as FBVALUE                  '' default value
 
-	l				as FBPROCARG ptr			'' left
-	r				as FBPROCARG ptr			'' right
+	l				as any ptr					'' left  (FBSYMBOL ptr)
+	r				as any ptr					'' right (/)
 end type
 
 type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
 	lib				as FBLIBRARY ptr
 	args			as integer
-	arghead 		as FBPROCARG ptr
-	argtail			as FBPROCARG ptr
+	arghead 		as any ptr					'' FBSYMBOL ptr
+	argtail			as any ptr                  '' /
 	isdeclared		as integer					'' FALSE = just the prototype
 end type
 
@@ -622,6 +638,7 @@ type FBSYMBOL
 	class			as integer					'' VAR, CONST, PROC, ..
 	typ				as integer					'' integer, float, string, pointer, ..
 	subtype			as FBSYMBOL ptr				'' used by UDT's
+	ptrcnt 			as integer
 	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
 
 	alias			as string					'' alias -- original name is only at the hashtb
@@ -641,9 +658,11 @@ type FBSYMBOL
 		con			as FBSCONST
 		udt			as FBSUDT
 		proc		as FBSPROC
+		arg			as FBSPROCARG
 		lbl			as FBLABEL
 		def			as FBSDEFINE
 		key			as FBSKEYWORD
+		fwd			as FBSFWDREF
 	end union
 
 	left			as FBSYMBOL ptr

@@ -44,13 +44,16 @@ type SYMBCTX
 	liblist 		as TLIST					'' libraries
 	libhash			as THASH
 
-	arglist			as TLIST					'' proc arguments
 	dimlist			as TLIST					'' array dimensions
 	defarglist		as TLIST					'' define arguments
+	fwdlist			as TLIST					'' forward typedef refs
 
 	lastlbl			as FBSYMBOL ptr
+
+	fwdrefcnt 		as integer
 end type
 
+declare sub 		hFreeSymbol		( byval s as FBSYMBOL ptr, byval freeup as integer = TRUE )
 
 declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as integer
 
@@ -274,12 +277,16 @@ sub symbInitSymbols static
 	'' locals
 	listNew( @ctx.loclist, FB.INITLOCSYMBOLNODES, len( FBLOCSYMBOL ) )
 
+	ctx.lastlbl = NULL
+
 end sub
 
 '':::::
-sub symbInitArgs static
+sub symbInitFwdRef static
 
-	listNew( @ctx.arglist, FB.INITARGNODES, len( FBPROCARG ) )
+	listNew( @ctx.fwdlist, FB.INITFWDREFNODES, len( FBFWDREF ) )
+
+	ctx.fwdrefcnt = 0
 
 end sub
 
@@ -367,9 +374,9 @@ sub symbInit
 	symbInitDefines
 
 	''
-	'' proc args tb
+	'' forward refs
 	''
-	symbInitArgs
+	symbInitFwdRef
 
 	''
 	'' arrays dim tb
@@ -401,9 +408,9 @@ sub symbEnd
 	''
 	listFree( @ctx.liblist )
 
-	listFree( @ctx.arglist )
-
 	listFree( @ctx.dimlist )
+
+	listFree( @ctx.fwdlist )
 
 	listFree( @ctx.defarglist )
 
@@ -430,11 +437,12 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, byval s as FBSYMBOL ptr
 		exit function
 
 	'' adding a type field? anything is allowed (udt elms are not added to a hash tb)
-	case FB.SYMBCLASS.UDTELM
+	case FB.SYMBCLASS.UDTELM, FB.SYMBCLASS.PROCARG
 
 	'' adding a label, udt or enum? anything but a define or keyword is
 	'' allowed, if the same class doesn't exist already
-	case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM
+	case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, _
+		 FB.SYMBCLASS.TYPEDEF, FB.SYMBCLASS.FWDREF
 
 		hCanDuplicate = FALSE
 
@@ -459,7 +467,8 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, byval s as FBSYMBOL ptr
 
 		do
 			select case as const n->class
-			case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM
+			case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, _
+				 FB.SYMBCLASS.TYPEDEF, FB.SYMBCLASS.FWDREF
 
 			case else
 				exit function
@@ -477,7 +486,8 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, byval s as FBSYMBOL ptr
 
 		do
 			select case as const n->class
-			case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM
+			case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, _
+				 FB.SYMBCLASS.TYPEDEF, FB.SYMBCLASS.FWDREF
 
 			case FB.SYMBCLASS.VAR
 				if( s->scope = n->scope ) then
@@ -507,15 +517,72 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, byval s as FBSYMBOL ptr
 end function
 
 '':::::
+private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
+							byval sym as FBSYMBOL ptr, _
+							byval class as integer )
+    dim as FBFWDREF ptr n, p
+    dim as FBSYMBOL ptr ref
+    dim as integer typ, ptrcnt
+
+	select case as const class
+	case FB.SYMBCLASS.UDT
+		typ 	= FB.SYMBTYPE.USERDEF
+		ptrcnt 	= 0
+	case FB.SYMBCLASS.ENUM
+		typ 	= FB.SYMBTYPE.UINT
+		ptrcnt 	= 0
+	case FB.SYMBCLASS.TYPEDEF
+		typ 	= sym->typ
+		ptrcnt 	= sym->ptrcnt
+		sym 	= sym->subtype
+	end select
+
+	n = f->fwd.reftail
+	do while( n <> NULL )
+		p = n->l
+
+		ref = n->ref
+
+		ref->typ     = typ + (ref->ptrcnt * FB.SYMBTYPE.POINTER)
+		ref->subtype = sym
+		ref->ptrcnt  = ptrcnt
+		ref->lgt	 = symbCalcLen( ref->typ, sym )
+
+		listDelNode( @ctx.fwdlist, n )
+		n = p
+	loop
+
+	hFreeSymbol f
+
+	ctx.fwdrefcnt -= 1
+
+end sub
+
+'':::::
+private sub hAddToFwdRef( byval f as FBSYMBOL ptr, byval ref as FBSYMBOL ptr ) static
+	dim n as FBFWDREF ptr
+
+	n = listNewNode( @ctx.fwdlist )
+
+	n->ref 	= ref
+	n->l 	= f->fwd.reftail
+	f->fwd.reftail = n
+
+	f->fwd.refs += 1
+
+end sub
+
+'':::::
 function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
 					 symbol as string, aliasname as string, _
 					 byval islocal as integer = FALSE, _
-					 byval suffix as integer = INVALID, _
+					 byval typ as integer = INVALID, byval subtype as FBSYMBOL ptr = NULL, _
+					 byval ptrcnt as integer = 0, byval suffix as integer = INVALID, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim l as FBLOCSYMBOL ptr
     dim s as FBSYMBOL ptr, n as FBSYMBOL ptr
-    dim sname as string
+    dim sname as string, slen as integer
 
     hNewSymbol = NULL
 
@@ -527,9 +594,10 @@ function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
     ''
     s->class		= class
     s->scope		= env.scope
+    s->typ			= typ
+    s->subtype		= subtype
+    s->ptrcnt		= ptrcnt
 
-    s->typ			= INVALID
-    s->subtype		= NULL
 	s->alloctype	= 0
     s->lgt			= 0
     s->ofs			= 0
@@ -539,7 +607,8 @@ function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
     end if
 
     ''
-    if( len( symbol ) > 0 ) then
+    slen = len( symbol )
+    if( slen > 0 ) then
     	if( not preservecase ) then
     		sname = ucase$( symbol )
     	else
@@ -550,7 +619,11 @@ function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
     if( len( aliasname ) > 0 ) then
     	s->alias = aliasname
     else
-    	s->alias = sname
+    	if( slen > 0 ) then
+    		s->alias = sname
+    	else
+    		s->alias = ""
+    	end if
     end if
 
 	'' add node to local symbol table for fast deletion later
@@ -604,6 +677,12 @@ function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
 	else
 		s->hashitem  = NULL
 		s->hashindex = 0
+	end if
+
+	''
+	typ -= ptrcnt * FB.SYMBTYPE.POINTER
+	if( typ = FB.SYMBTYPE.FWDREF ) then
+		hAddToFwdRef subtype, s
 	end if
 
     ''
@@ -675,6 +754,71 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, symbol as string ) as 
 
 end function
 
+'':::::
+private sub hCheckFwdRef( byval s as FBSYMBOL ptr, byval class as integer ) static
+	dim as FBSYMBOL ptr f, n
+
+	'' go to head
+	n = s
+	do while( n->left <> NULL )
+		n = n->left
+	loop
+
+	f = symbFindByClass( n, FB.SYMBCLASS.FWDREF )
+	if( f <> NULL ) then
+		hFixForwardRef f, s, class
+	end if
+
+end sub
+
+'':::::
+function symbAddTypedef( symbol as string, _
+						 byval typ as integer, byval subtype as FBSYMBOL ptr, _
+						 byval ptrcnt as integer, byval lgt as integer ) as FBSYMBOL ptr static
+    dim as FBSYMBOL ptr t
+
+    symbAddTypedef = NULL
+
+    '' allocate new node
+    t = hNewSymbol( FB.SYMBCLASS.TYPEDEF, TRUE, symbol, "", env.scope > 0, typ, subtype, ptrcnt )
+    if( t = NULL ) then
+    	exit function
+    end if
+
+	''
+	t->lgt 	= lgt
+
+	'' check for forward references
+	if( ctx.fwdrefcnt > 0 ) then
+		hCheckFwdRef t, FB.SYMBCLASS.TYPEDEF
+	end if
+
+	''
+	symbAddTypedef = t
+
+end function
+
+'':::::
+function symbAddFwdRef( symbol as string ) as FBSYMBOL ptr static
+    dim f as FBSYMBOL ptr
+
+    symbAddFwdRef = NULL
+
+    '' allocate new node
+    f = hNewSymbol( FB.SYMBCLASS.FWDREF, TRUE, symbol, "", env.scope > 0 )
+    if( f = NULL ) then
+    	exit function
+    end if
+
+   	f->fwd.refs = 0
+   	f->fwd.reftail = NULL
+
+   	''
+   	ctx.fwdrefcnt += 1
+
+    symbAddFwdRef = f
+
+end function
 
 '':::::
 function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer) as FBSYMBOL ptr static
@@ -700,25 +844,25 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer)
 		aname = emitAllocLocal( lgt, ofs )
 	end if
 
-	d = hNewSymbol( FB.SYMBCLASS.VAR, FALSE, "", aname, (env.scope > 0) and (not isshared) )
+	d = hNewSymbol( FB.SYMBCLASS.VAR, FALSE, "", aname, (env.scope > 0) and (not isshared), _
+					FB.SYMBTYPE.USERDEF, FB.DESCTYPE.ARRAY, 0 )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
 	if( isshared ) then
-		d->alloctype= FB.ALLOCTYPE.SHARED
+		d->alloctype	= FB.ALLOCTYPE.SHARED
 	elseif( isstatic ) then
-		d->alloctype= FB.ALLOCTYPE.STATIC
+		d->alloctype	= FB.ALLOCTYPE.STATIC
 	else
-		d->alloctype= 0
+		d->alloctype	= 0
 	end if
-	d->typ		= FB.SYMBTYPE.USERDEF
-	d->subtype	= FB.DESCTYPE.ARRAY
-	d->ofs		= ofs
-	d->var.array.desc = NULL
-	d->var.array.dif  = 0
-	d->var.array.dims = 0
+
+	d->ofs				= ofs
+	d->var.array.desc 	= NULL
+	d->var.array.dif  	= 0
+	d->var.array.dims 	= 0
 
     d->var.suffix 		= INVALID
     d->var.initialized 	= FALSE
@@ -773,8 +917,6 @@ sub hSetupVar( byval s as FBSYMBOL ptr, symbol as string, aname as string, _
 	s->alloctype= alloctype
 	s->acccnt 	= 0
 
-	s->typ		= typ
-	s->subtype	= subtype
 	s->lgt		= lgt
 	s->ofs		= ofs
 
@@ -805,7 +947,7 @@ end sub
 
 '':::::
 function symbAddVarEx( symbol as string, aliasname as string, _
-					   byval typ as integer, byval subtype as FBSYMBOL ptr, _
+					   byval typ as integer, byval subtype as FBSYMBOL ptr, byval ptrcnt as integer, _
 					   byval lgt as integer, byval dimensions as integer, dTB() as FBARRAYDIM, _
 				       byval alloctype as integer, _
 				       byval addsuffix as integer, _
@@ -879,7 +1021,8 @@ function symbAddVarEx( symbol as string, aliasname as string, _
 	end if
 
 	''
-	s = hNewSymbol( FB.SYMBCLASS.VAR, TRUE, symbol, aname, (env.scope > 0) and (not isshared), suffix, preservecase )
+	s = hNewSymbol( FB.SYMBCLASS.VAR, TRUE, symbol, aname, (env.scope > 0) and (not isshared), _
+					typ, subtype, ptrcnt, suffix, preservecase )
 
 	if( s = NULL ) then
 		'' remove a local or arg or else emit will reserve unused space for it..
@@ -901,10 +1044,11 @@ end function
 
 '':::::
 function symbAddVar( symbol as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
+				     byval ptrcnt as integer, _
 				     byval dimensions as integer, dTB() as FBARRAYDIM, _
 				     byval alloctype as integer ) as FBSYMBOL ptr static
 
-    symbAddVar = symbAddVarEx( symbol, "", typ, subtype, _
+    symbAddVar = symbAddVarEx( symbol, "", typ, subtype, ptrcnt, _
     						   0, dimensions, dTB(), _
     						   alloctype, _
     						   TRUE, FALSE, TRUE )
@@ -922,7 +1066,7 @@ function symbAddTempVar( byval typ as integer ) as FBSYMBOL ptr static
 		alloctype = alloctype or FB.ALLOCTYPE.STATIC
 	end if
 
-	s = symbAddVar( sname, typ, NULL, 0, dTB(), alloctype )
+	s = symbAddVar( sname, typ, NULL, 0, 0, dTB(), alloctype )
 
 	symbAddTempVar = s
 
@@ -946,7 +1090,7 @@ function hAllocNumericConst( sname as string, byval typ as integer ) as FBSYMBOL
 
 	aname = hMakeTmpStr
 
-	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, dTB(), FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
+	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, 0, dTB(), FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
 
 	s->var.initialized = TRUE
 
@@ -988,7 +1132,7 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
 
-	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, lgt, 0, dTB(), _
+	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, 0, lgt, 0, dTB(), _
 					  FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
 
 	s->var.initialized = TRUE
@@ -1008,12 +1152,11 @@ function symbAddConst( symbol as string, byval typ as integer, text as string, b
     symbAddConst = NULL
 
     ''
-    c = hNewSymbol( FB.SYMBCLASS.CONST, TRUE, symbol, "", env.scope > 0 )
+    c = hNewSymbol( FB.SYMBCLASS.CONST, TRUE, symbol, "", env.scope > 0, typ )
 	if( c = NULL ) then
 		exit function
 	end if
 
-	c->typ 		= typ
 	c->lgt		= lgt
 	c->con.text	= text
 
@@ -1135,7 +1278,8 @@ end function
 '':::::
 function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
 						    byval dimensions as integer, dTB() as FBARRAYDIM, _
-						    byval typ as integer, byval subtype as FBSYMBOL ptr, byval lgt as integer, _
+						    byval typ as integer, byval subtype as FBSYMBOL ptr, _
+						    byval ptrcnt as integer, byval lgt as integer, _
 						    byval isinner as integer ) as FBSYMBOL ptr static
     dim i as integer
     dim e as FBSYMBOL ptr, n as FBSYMBOL ptr
@@ -1158,7 +1302,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
     	e = e->var.elm.r
     loop
 
-    e = hNewSymbol( FB.SYMBCLASS.UDTELM, FALSE, ename, "" )
+    e = hNewSymbol( FB.SYMBCLASS.UDTELM, FALSE, ename, "", FALSE, typ, subtype, ptrcnt )
     if( e = NULL ) then
     	exit function
     end if
@@ -1178,8 +1322,6 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, elmname as string, _
     t->udt.elements	+= 1
 
     ''
-    e->typ			= typ
-    e->subtype		= subtype
 	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
 		lgt	= symbCalcLen( typ, subtype, TRUE )
 	end if
@@ -1245,14 +1387,19 @@ sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
 
 	align = t->udt.align
 
-	if( align <= 1 ) then
-		exit sub
+	if( align > 1 ) then
+
+		round = (align - (t->lgt and (align-1))) and (align-1)
+
+		if( round > 0 ) then
+			t->lgt = t->lgt + round
+		end if
+
 	end if
 
-	round = (align - (t->lgt and (align-1))) and (align-1)
-
-	if( round > 0 ) then
-		t->lgt = t->lgt + round
+	'' check for forward references
+	if( ctx.fwdrefcnt > 0 ) then
+		hCheckFwdRef t, FB.SYMBCLASS.UDT
 	end if
 
 end sub
@@ -1291,6 +1438,12 @@ function symbAddEnum( symbol as string ) as FBSYMBOL ptr static
 		exit function
 	end if
 
+	'' check for forward references
+	if( ctx.fwdrefcnt > 0 ) then
+		hCheckFwdRef e, FB.SYMBCLASS.ENUM
+	end if
+
+
 	symbAddEnum = e
 
 end function
@@ -1327,75 +1480,73 @@ function symbAddLib( libname as string ) as FBLIBRARY ptr static
 end function
 
 '':::::
-function hCalcProcArgsLen( byval args as integer, argv() as FBPROCARG ) as integer
+function hCalcProcArgsLen( byval args as integer, byval argtail as FBSYMBOL ptr ) as integer
 	dim i as integer, lgt as integer
 
 	lgt	= 0
-	for i = 0 to args-1
-		select case argv(i).mode
+	do while( argtail <> NULL )
+		select case argtail->arg.mode
 		case FB.ARGMODE.BYVAL
-			lgt	+= ((argv(i).lgt + 3) and not 3)	'' hack! x86 pmode assumption
+			lgt	+= ((argtail->lgt + 3) and not 3)			'' x86 assumption!
 
 		case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
 			lgt	+= FB.POINTERSIZE
 		end select
-	next i
+
+		argtail = argtail->arg.l
+	loop
 
 	hCalcProcArgsLen = lgt
 
 end function
 
 '':::::
-private function hNewArg( byval f as FBSYMBOL ptr, arg as FBPROCARG ) as FBPROCARG ptr static
-    dim a as FBPROCARG ptr, n as FBPROCARG ptr
+function symbAddArg( symbol as string, byval tail as FBSYMBOL ptr, _
+					 byval typ as integer, byval subtype as FBSYMBOL ptr, byval ptrcnt as integer, _
+					 byval lgt as integer, byval mode as integer, byval suffix as integer, _
+					 byval optional as integer, byval optval as FBVALUE ptr ) as FBSYMBOL ptr static
+    dim a as FBSYMBOL ptr
 
-    hNewArg = NULL
+    symbAddArg = NULL
 
-    a = listNewNode( @ctx.arglist )
+    a = hNewSymbol( FB.SYMBCLASS.PROCARG, FALSE, "", symbol, FALSE, typ, subtype, ptrcnt, INVALID, TRUE )
     if( a = NULL ) then
     	exit function
     end if
 
-	n = f->proc.argtail
-	a->l = n
-	a->r = NULL
-	f->proc.argtail = a
-	if( n <> NULL ) then
-		n->r = a
-	else
-		f->proc.arghead = a
+	a->arg.l = tail
+	a->arg.r = NULL
+	if( tail <> NULL ) then
+		tail->arg.r = a
 	end if
 
-	f->proc.args = f->proc.args + 1
-
 	''
-    a->nameidx	= arg.nameidx
-	a->typ		= arg.typ
-	a->subtype	= arg.subtype
-	a->lgt		= arg.lgt
-	a->mode		= arg.mode
-	a->suffix	= arg.suffix
-	a->optional	= arg.optional
-	if( a->optional ) then
-		if( (a->typ <> IR.DATATYPE.LONGINT) and (a->typ <> IR.DATATYPE.ULONGINT) ) then
-			a->defvalue	= arg.defvalue
+	a->lgt			= lgt
+	a->arg.mode		= mode
+	a->arg.suffix	= suffix
+	a->arg.optional	= optional
+	if( optional ) then
+		if( (typ <> IR.DATATYPE.LONGINT) and (typ <> IR.DATATYPE.ULONGINT) ) then
+			a->arg.optval.value	= optval->value
 		else
-			a->defvalue64 = arg.defvalue64
+			a->arg.optval.value64 = optval->value64
 		end if
 	end if
 
-    hNewArg = a
+    symbAddArg = a
 
 end function
 
 '':::::
 private function hSetupProc( symbol as string, aliasname as string, libname as string, _
-				             byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
-				             byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
+				             byval typ as integer, byval subtype as FBSYMBOL ptr, _
+				             byval ptrcnt as integer, byval alloctype as integer, _
+				             byval mode as integer, _
+				             byval argc as integer, byval argtail as FBSYMBOL ptr, _
 			                 byval declaring as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim lgt as integer
-    dim f as FBSYMBOL ptr
+    dim f as FBSYMBOL ptr, a as FBSYMBOL ptr
     dim sname as string, aname as string
     dim i as integer
 
@@ -1407,7 +1558,7 @@ private function hSetupProc( symbol as string, aliasname as string, libname as s
 		subtype = NULL
 	end if
 
-    lgt = hCalcProcArgsLen( argc, argv() )
+    lgt = hCalcProcArgsLen( argc, argtail )
 
     ''
     if( len( aliasname ) = 0 ) then
@@ -1428,15 +1579,14 @@ private function hSetupProc( symbol as string, aliasname as string, libname as s
 	aname = hCreateProcAlias( aname, lgt, mode )
 #endif
 
-	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, , , preservecase )
+	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, FALSE, typ, subtype, ptrcnt, _
+					INVALID, preservecase )
 	if( f = NULL ) then
 		exit function
 	end if
 
     ''
 	f->alloctype	= alloctype or FB.ALLOCTYPE.SHARED
-	f->typ			= typ
-	f->subtype		= subtype
 	f->lgt			= lgt
 
 	f->proc.isdeclared = declaring
@@ -1449,15 +1599,16 @@ private function hSetupProc( symbol as string, aliasname as string, libname as s
 	end if
 
 	'' add arguments (w/o declaring them as symbols)
-	f->proc.arghead	= NULL
-	f->proc.argtail	= NULL
-	f->proc.args 	= 0
+	f->proc.args 	= argc
+	f->proc.argtail	= argtail
 
-	for i = 0 to argc-1
-		if( hNewArg( f, argv(i) ) = NULL ) then
-			exit function
-		end if
-	next i
+	if( argtail <> NULL ) then
+		do while( argtail->arg.l <> NULL )
+			argtail = argtail->arg.l
+		loop
+	end if
+
+	f->proc.arghead	= argtail
 
 	hSetupProc = f
 
@@ -1465,15 +1616,17 @@ end function
 
 '':::::
 function symbAddPrototype( symbol as string, aliasname as string, libname as string, _
-						   byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
-						   byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
+						   byval typ as integer, byval subtype as FBSYMBOL ptr, _
+						   byval ptrcnt as integer, byval alloctype as integer, _
+						   byval mode as integer, byval argc as integer, byval argtail as FBSYMBOL ptr, _
 						   byval isexternal as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     symbAddPrototype = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), isexternal, preservecase )
+	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, alloctype, mode, _
+					argc, argtail, isexternal, preservecase )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -1484,14 +1637,16 @@ end function
 
 '':::::
 function symbAddProc( symbol as string, aliasname as string, libname as string, _
-					  byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
-					  byval mode as integer, byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr static
+					  byval typ as integer, byval subtype as FBSYMBOL ptr, _
+					  byval ptrcnt as integer, byval alloctype as integer, _
+					  byval mode as integer, byval argc as integer, byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     symbAddProc = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), TRUE, FALSE )
+	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, alloctype, mode, _
+					argc, argtail, TRUE, FALSE )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -1501,15 +1656,15 @@ function symbAddProc( symbol as string, aliasname as string, libname as string, 
 end function
 
 '':::::
-function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FBSYMBOL ptr
+function symbAddArgAsVar( symbol as string, byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim dTB(0) as FBARRAYDIM
     dim s as FBSYMBOL ptr, alloctype as integer, typ as integer
 
-	symbAddArg = NULL
+	symbAddArgAsVar = NULL
 
 	typ = arg->typ
 
-	select case as const arg->mode
+	select case as const arg->arg.mode
     case FB.ARGMODE.BYVAL
     	'' byval string? it's actually an pointer to a fixed-len with unknown lenght
     	if( typ = FB.SYMBTYPE.STRING ) then
@@ -1526,14 +1681,16 @@ function symbAddArg( byval f as FBSYMBOL ptr, byval arg as FBPROCARG ptr ) as FB
     	exit function
 	end select
 
-    s = symbAddVarEx( strpGet( arg->nameidx ), "", typ, arg->subtype, 0, _
-    				  0, dTB(), alloctype, arg->suffix <> INVALID, FALSE, TRUE )
+    s = symbAddVarEx( symbol, "", typ, arg->subtype, 0, 0, _
+    				  0, dTB(), alloctype, arg->arg.suffix <> INVALID, FALSE, TRUE )
+
+    'print s->hashitem->name, s->alias, s->typ, s->subtype, s->alloctype
 
     if( s = NULL ) then
     	exit function
     end if
 
-	symbAddArg = s
+	symbAddArgAsVar = s
 
 end function
 
@@ -1545,7 +1702,7 @@ function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	rname = "_fbpr_" + f->alias
 
-	s = symbAddVarEx( rname, "", f->typ, f->subtype, 0, 0, dTB(), 0, TRUE, TRUE, FALSE )
+	s = symbAddVarEx( rname, "", f->typ, f->subtype, 0, 0, 0, dTB(), 0, TRUE, TRUE, FALSE )
 
 	symbAddProcResult = s
 
@@ -1852,6 +2009,9 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 	lgt = 0
 
 	select case as const typ
+	case FB.SYMBTYPE.FWDREF
+		lgt = 0
+
 	case FB.SYMBTYPE.BYTE, FB.SYMBTYPE.UBYTE
 		lgt = 1
 
@@ -2295,7 +2455,7 @@ sub symbSetProcIsDeclared( byval f as FBSYMBOL ptr, byval isdeclared as integer 
 end sub
 
 '':::::
-function symbGetProcFirstArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
+function symbGetProcFirstArg( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	if( f->proc.mode = FB.FUNCMODE.PASCAL ) then
 		symbGetProcFirstArg = f->proc.arghead
@@ -2306,7 +2466,7 @@ function symbGetProcFirstArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
 end function
 
 '':::::
-function symbGetProcLastArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
+function symbGetProcLastArg( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	if( f->proc.mode = FB.FUNCMODE.PASCAL ) then
 		symbGetProcLastArg = f->proc.argtail
@@ -2317,22 +2477,22 @@ function symbGetProcLastArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
 end function
 
 '':::::
-function symbGetProcHeadArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
+function symbGetProcHeadArg( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	symbGetProcHeadArg = f->proc.arghead
 
 end function
 
 '':::::
-function symbGetProcTailArg( byval f as FBSYMBOL ptr ) as FBPROCARG ptr static
+function symbGetProcTailArg( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	symbGetProcTailArg = f->proc.argtail
 
 end function
 
 '':::::
-function symbGetProcPrevArg( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, _
-							 byval checkconv as integer = TRUE ) as FBPROCARG ptr static
+function symbGetProcPrevArg( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr, _
+							 byval checkconv as integer = TRUE ) as FBSYMBOL ptr static
 
 	if( a = NULL ) then
 		symbGetProcPrevArg = NULL
@@ -2341,19 +2501,19 @@ function symbGetProcPrevArg( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, 
 
 	if( checkconv ) then
 		if( f->proc.mode = FB.FUNCMODE.PASCAL ) then
-			symbGetProcPrevArg = a->l
+			symbGetProcPrevArg = a->arg.l
 		else
-			symbGetProcPrevArg = a->r
+			symbGetProcPrevArg = a->arg.r
 		end if
 	else
-		symbGetProcPrevArg = a->l
+		symbGetProcPrevArg = a->arg.l
 	end if
 
 end function
 
 '':::::
-function symbGetProcNextArg( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, _
-							 byval checkconv as integer = TRUE ) as FBPROCARG ptr static
+function symbGetProcNextArg( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr, _
+							 byval checkconv as integer = TRUE ) as FBSYMBOL ptr static
 
 	if( a = NULL ) then
 		symbGetProcNextArg = NULL
@@ -2362,31 +2522,18 @@ function symbGetProcNextArg( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, 
 
 	if( checkconv ) then
 		if( f->proc.mode = FB.FUNCMODE.PASCAL ) then
-			symbGetProcNextArg = a->r
+			symbGetProcNextArg = a->arg.r
 		else
-			symbGetProcNextArg = a->l
+			symbGetProcNextArg = a->arg.l
 		end if
 	else
-		symbGetProcNextArg = a->r
+		symbGetProcNextArg = a->arg.r
 	end if
 
 end function
 
 '':::::
-function symbGetArgDataType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
-
-	symbGetArgDataType = INVALID
-
-	if( a = NULL ) then
-		exit function
-	end if
-
-	symbGetArgDataType = a->typ
-
-end function
-
-'':::::
-function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
+function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer static
 
 	symbGetArgMode = INVALID
 
@@ -2394,95 +2541,20 @@ function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as 
 		exit function
 	end if
 
-	symbGetArgMode = a->mode
+	symbGetArgMode = a->arg.mode
 
 end function
 
 '':::::
-sub symbSetArgMode( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval mode as integer ) static
+function symbGetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer static
 
 	if( a <> NULL ) then
-		a->mode = mode
-	end if
-
-end sub
-
-'':::::
-function symbGetArgName( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as string static
-
-	symbGetArgName = strpGet( a->nameidx )
-
-end function
-
-'':::::
-sub symbSetArgName( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval nameidx as integer ) static
-
-	if( a <> NULL ) then
-		strpDel a->nameidx
-		a->nameidx = nameidx
-	end if
-
-end sub
-
-'':::::
-function symbGetArgType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
-
-	if( a <> NULL ) then
-		symbGetArgType = a->typ
-	else
-		symbGetArgType = INVALID
-	end if
-
-end function
-
-'':::::
-sub symbSetArgType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval typ as integer ) static
-
-	if( a <> NULL ) then
-		a->typ = typ
-	end if
-
-end sub
-
-'':::::
-function symbGetArgSubtype( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as FBSYMBOL ptr static
-
-	if( a <> NULL ) then
-		symbGetArgSubtype = a->subtype
-	else
-		symbGetArgSubtype = NULL
-	end if
-
-end function
-
-'':::::
-sub symbSetArgSubType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval subtype as FBSYMBOL ptr ) static
-
-	if( a <> NULL ) then
-		a->subtype = subtype
-	end if
-
-end sub
-
-'':::::
-function symbGetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
-
-	if( a <> NULL ) then
-		symbGetArgSuffix = a->suffix
+		symbGetArgSuffix = a->arg.suffix
 	else
 		symbGetArgSuffix = INVALID
 	end if
 
 end function
-
-'':::::
-sub symbSetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval suffix as integer ) static
-
-	if( a <> NULL ) then
-		a->suffix = suffix
-	end if
-
-end sub
 
 '':::::
 function symbGetArgsLen( byval f as FBSYMBOL ptr ) as integer static
@@ -2492,10 +2564,10 @@ function symbGetArgsLen( byval f as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function symbGetArgOptional( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as integer static
+function symbGetArgOptional( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer static
 
 	if( a <> NULL ) then
-		symbGetArgOptional = a->optional
+		symbGetArgOptional = a->arg.optional
 	else
 		symbGetArgOptional = FALSE
 	end if
@@ -2503,23 +2575,23 @@ function symbGetArgOptional( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr )
 end function
 
 '':::::
-function symbGetArgDefvalue( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as double static
+function symbGetArgOptval( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as double static
 
 	if( a <> NULL ) then
-		symbGetArgDefvalue = a->defvalue
+		symbGetArgOptval = a->arg.optval.value
 	else
-		symbGetArgDefvalue = 0.0
+		symbGetArgOptval = 0.0
 	end if
 
 end function
 
 '':::::
-function symbGetArgDefvalue64( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr ) as longint static
+function symbGetArgOptval64( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as longint static
 
 	if( a <> NULL ) then
-		symbGetArgDefvalue64 = a->defvalue64
+		symbGetArgOptval64 = a->arg.optval.value64
 	else
-		symbGetArgDefvalue64 = 0
+		symbGetArgOptval64 = 0
 	end if
 
 end function
@@ -2684,13 +2756,12 @@ end sub
 
 '':::::
 private sub hDelArgs( byval f as FBSYMBOL ptr )
-	dim a as FBPROCARG ptr, n as FBPROCARG ptr
+	dim a as FBSYMBOL ptr, n as FBSYMBOL ptr
 
     a = f->proc.arghead
     do while( a <> NULL )
-    	n = a->r
-    	strpDel a->nameidx
-    	listDelNode( @ctx.arglist, a )
+    	n = a->arg.r
+    	hFreeSymbol( a )
     	a = n
     loop
 

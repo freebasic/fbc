@@ -416,7 +416,7 @@ end function
 '':::::
 ''indentifier    = (ALPHA | '_') { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
 ''
-private sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, _
+private sub lexReadIdentifier( byval pid as ubyte ptr, tlen as integer, typ as integer, _
 							   dpos as integer, byval flags as LEXCHECK_ENUM ) static
 	dim c as uinteger
 
@@ -484,7 +484,7 @@ end sub
 ''                | 'O' OCTDIG+
 ''                | 'B' BINDIG+
 ''
-private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer, isneg as integer ) static
+private sub lexReadNonDecNumber( pnum as ubyte ptr, tlen as integer, isneg as integer ) static
 	dim v as uinteger, c as uinteger
 	dim tb(0 to 63) as integer, i as integer
 
@@ -578,7 +578,7 @@ end sub
 '':::::
 ''float           = DOT DIGIT { DIGIT } [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ].
 ''
-private sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) static
+private sub lexReadFloatNumber( pnum as ubyte ptr, tlen as integer, typ as integer ) static
     dim c as uinteger
     dim llen as integer
 
@@ -659,7 +659,7 @@ end sub
 ''                | FSUFFIX                       # is float
 ''                | .                             # is def### !!! context sensitive !!!
 ''
-private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer, _
+private sub lexReadNumber( byval pnum as ubyte ptr, typ as integer, tlen as integer, _
 				   		   byval flags as LEXCHECK_ENUM ) static
 	dim c as uinteger
 	dim isfloat as integer, isneg as integer
@@ -808,9 +808,9 @@ end sub
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
+private sub lexReadString ( byval ps as ubyte ptr, tlen as integer ) static
 	dim rlen as integer
-	dim nval as string * 16, ntyp as integer, nlen as integer, pval as byte ptr
+	dim nval as string * 16, ntyp as integer, nlen as integer, plen as ubyte ptr, p as integer
 
 	*ps = 0
 	tlen = 0
@@ -850,16 +850,18 @@ private sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 
 					nval = oct$( val( nval ) )
 					'' save the oct len, or concatenation would fail if number chars follow
-					*ps = strlen( nval )
+					plen = ps
+					*plen = 0
 					ps += 1
 					rlen += 1
 
-					pval = strptr( nval )
-					do until( *pval = 0 )
-						*ps = *pval
+					p = 0
+					do until( nval[p] = 0 )
+						*plen += 1
+						*ps = nval[p]
 						ps += 1
 						rlen += 1
-						pval += 1
+						p += 1
 					loop
 					tlen += 1
 					continue do

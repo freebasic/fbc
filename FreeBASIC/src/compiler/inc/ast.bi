@@ -41,7 +41,7 @@ end enum
 type FUNCTNode
 	sym				as FBSYMBOL ptr					'' symbol
 	params			as integer
-	arg				as FBPROCARG ptr
+	arg				as FBSYMBOL ptr
 	lastparam		as integer						'' used to speed up PASCAL calling conv. only
 	tmparraybase 	as integer
 end type

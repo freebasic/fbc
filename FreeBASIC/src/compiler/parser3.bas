@@ -294,10 +294,10 @@ function cDerefFields( byval sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
 					'' add index
 					varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
 					'' make a pointer
-					varexpr = astNewPTR( NULL, NULL, 0, varexpr, IR.DATATYPE.BYTE, NULL )
+					varexpr = astNewPTR( NULL, NULL, 0, varexpr, IR.DATATYPE.UBYTE, NULL )
 
 					'' reset type
-					typ = IR.DATATYPE.BYTE
+					typ = IR.DATATYPE.UBYTE
 					subtype = NULL
 					elm = NULL
 
@@ -622,7 +622,7 @@ function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
 		alloctype = 0
 	end if
 
-    s = symbAddVar( id, typ, NULL, 0, dTB(), alloctype )
+    s = symbAddVar( id, typ, NULL, 0, 0, dTB(), alloctype )
     if( s = NULL ) then
 		exit function
 	end if
@@ -675,8 +675,8 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 	end if
 
 	if( sym <> NULL ) then
-		typ 	= sym->typ
-		subtype = sym->subtype
+		typ 	= symbGetType( sym )
+		subtype = symbGetSubType( sym )
 
 	else
 

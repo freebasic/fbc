@@ -1464,7 +1464,7 @@ end function
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 	dim dTB(0) as FBARRAYDIM
 
-	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, _
+	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
 										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
 										FALSE, FALSE, FALSE )
 

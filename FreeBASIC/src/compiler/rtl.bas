@@ -1134,60 +1134,6 @@ data "dylibsymbol","fb_DylibSymbol", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUN
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'' strcat cdecl ( byval dst as string, byval src as string ) as byte ptr
-data "strcat","strcat", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 2, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
-
-'' strchr cdecl ( byval s as string, byval c as integer ) as byte ptr
-data "strchr","strchr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 2, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-'' strcmp cdecl ( byval string1 as string, byval string2 as string ) as integer
-data "strcmp","strcmp", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 2, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
-
-'' strcpy cdecl ( byval dst as string, byval src as string ) as byte ptr
-data "strcpy","strcpy", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 2, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
-
-'' strlen cdecl ( byval s as string ) as integer
-data "strlen","strlen", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
-
-'' strncat cdecl ( byval dst as string, byval src as string, byval count as integer ) as byte ptr
-data "strncat","strncat", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 3, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-'' strncmp cdecl ( byval string1 as string, byval string2 as string, byval count as integer ) as integer
-data "strncmp","strncmp", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 3, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-'' strncpy cdecl ( byval dst as string, byval src as string, byval count as integer ) as byte ptr
-data "strncpy","strncpy", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 3, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-'' strrchr cdecl ( byval s as string, byval c as integer ) as byte ptr
-data "strrchr","strrchr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 2, _
-					      FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-'' strstr cdecl ( byval string1 as string, byval string2 as string ) as byte ptr
-data "strstr","strstr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.BYTE,FB.FUNCMODE.CDECL, 2, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					    FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::
-
 #ifdef TARGET_WIN32
 
 '' beep ( ) as void
@@ -1264,12 +1210,23 @@ data ""
 '' implementation
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
+#define cntptr(typ,t,cnt)						_
+	t = typ                                     : _
+	cnt = 0                                     : _
+	do while( t >= IR.DATATYPE.POINTER )		: _
+		t -= IR.DATATYPE.POINTER				: _
+		cnt += 1								: _
+	loop
+
+
 '':::::
 private sub hAddIntrinsicProcs
-	dim i as integer, a as integer
-	dim p as integer, pname as string, aname as string
-	dim args as integer, typ as integer, mode as integer
-	dim argv(0 to FB_MAXPROCARGS-1) as FBPROCARG, atype as integer
+	dim as integer i, typ
+	dim as string pname, aname
+	dim as integer p, ptype, pmode, pargs
+	dim as integer a, atype, alen, amode, optional, ptrcnt
+	dim as FBSYMBOL ptr argtail
+	dim as FBVALUE optval
 
 	''
 	redim ifuncTB( 0 to FB.RTL.MAXFUNCTIONS-1 ) as FBSYMBOL ptr
@@ -1282,30 +1239,34 @@ private sub hAddIntrinsicProcs
 			exit do
 		end if
 
-		read aname, typ, mode, args
+		read aname, ptype, pmode, pargs
 
-		for a = 0 to args-1
-			read atype, argv(a).mode, argv(a).optional
+		argtail = NULL
+		for a = 0 to pargs-1
+			read atype, amode, optional
 
-			argv(a).typ = atype
-
-			if( argv(a).optional ) then
+			if( optional ) then
 				if( (atype <> IR.DATATYPE.LONGINT) and (atype <> IR.DATATYPE.ULONGINT) ) then
-					read argv(a).defvalue
+					read optval.value
 				else
-					read argv(a).defvalue64
+					read optval.value64
 				end if
 			end if
 
-			argv(a).nameidx = INVALID
 			if( atype <> INVALID ) then
-				argv(a).lgt	= symbCalcArgLen( atype, NULL, argv(a).mode )
+				alen = symbCalcArgLen( atype, NULL, amode )
 			else
-				argv(a).lgt	= FB.POINTERSIZE
+				alen = FB.POINTERSIZE
 			end if
+
+			cntptr( atype, typ, ptrcnt )
+
+			argtail = symbAddArg( "", argtail, atype, NULL, ptrcnt, alen, amode, INVALID, optional, @optval )
 		next a
 
-		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", typ, NULL, 0, mode, args, argv(), TRUE )
+		cntptr( ptype, typ, ptrcnt )
+		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, 0, pmode, _
+									   pargs, argtail, TRUE )
 		i = i + 1
 	loop
 

@@ -306,9 +306,8 @@ private function ppIf as integer
 
 		d = lexTokenSymbol
 		if( d <> NULL ) then
-			if( d->class = FB.SYMBCLASS.DEFINE ) then
-				istrue = TRUE
-			end if
+			'' any symbol is okay or type's wouldn't be found
+			istrue = TRUE
 		end if
 		lexSkipToken
 
@@ -318,11 +317,8 @@ private function ppIf as integer
 
 		d = lexTokenSymbol
 		if( d = NULL ) then
+			'' ditto
 			istrue = TRUE
-		else
-			if( d->class <> FB.SYMBCLASS.DEFINE ) then
-				istrue = TRUE
-			end if
 		end if
 		lexSkipToken
 
@@ -715,7 +711,7 @@ private function ppParentExpr( parexpr as integer, atom as string, isnumber as i
   			hReportError FB.ERRMSG.SYNTAXERROR
   			exit function
   		end if
-  		
+
   		if( isnumber ) then
   			parexpr = ( val( atom ) <> 0 )
   		end if

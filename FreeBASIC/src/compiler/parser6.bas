@@ -815,7 +815,7 @@ end function
 ''
 function cPokeStmt
 	dim expr1 as integer, expr2 as integer
-	dim poketype as integer, subtype as FBSYMBOL ptr, lgt as integer
+	dim poketype as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
 	dim vr as integer
 
 	cPokeStmt = FALSE
@@ -824,7 +824,7 @@ function cPokeStmt
 	lexSkipToken
 
 	'' (SymbolType ',')?
-	if( cSymbolType( poketype, subtype, lgt ) ) then
+	if( cSymbolType( poketype, subtype, lgt, ptrcnt ) ) then
 
 		'' check for invalid types
 		select case poketype
@@ -1178,7 +1178,7 @@ end function
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 	dim dTB(0) as FBARRAYDIM
 
-	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, _
+	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
 										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
 										FALSE, FALSE, FALSE )
 
@@ -1870,7 +1870,8 @@ end function
 ''
 function cMathFunct( funcexpr as integer )
     dim expr as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, sym as FBSYMBOL ptr
+    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
+    dim sym as FBSYMBOL ptr
 
 	cMathFunct = FALSE
 
@@ -1965,7 +1966,7 @@ function cMathFunct( funcexpr as integer )
 		end if
 
 		expr = INVALID
-		if( not cSymbolType( typ, subtype, lgt ) ) then
+		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
 			env.varcheckarray = FALSE
 			if( not cExpression( expr ) ) then
 				env.varcheckarray = TRUE
@@ -1996,7 +1997,7 @@ end function
 ''
 function cPeekFunct( funcexpr as integer )
 	dim expr as integer
-	dim peektype as integer, subtype as FBSYMBOL ptr, lgt as integer
+	dim peektype as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
 
 	cPeekFunct = FALSE
 
@@ -2010,7 +2011,7 @@ function cPeekFunct( funcexpr as integer )
 	end if
 
 	'' (SymbolType ',')?
-	if( cSymbolType( peektype, subtype, lgt ) ) then
+	if( cSymbolType( peektype, subtype, lgt, ptrcnt ) ) then
 
 		'' check for invalid types
 		select case peektype
@@ -2222,7 +2223,7 @@ end function
 ''
 function cVAFunct( funcexpr as integer )
     dim expr as integer
-    dim arg as FBPROCARG ptr
+    dim arg as FBSYMBOL ptr
     dim proc as FBSYMBOL ptr, sym as FBSYMBOL ptr
 
 	cVAFunct = FALSE
@@ -2243,7 +2244,7 @@ function cVAFunct( funcexpr as integer )
 		exit function
 	end if
 
-	sym = symbFindByNameAndClass( strpGet( arg->nameidx ), FB.SYMBCLASS.VAR )
+	sym = symbFindByNameAndClass( arg->alias, FB.SYMBCLASS.VAR )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -2260,13 +2261,13 @@ function cVAFunct( funcexpr as integer )
 	end if
 
 	'' @arg
-	expr = astNewVAR( sym, NULL, 0, sym->typ, NULL )
+	expr = astNewVAR( sym, NULL, 0, symbGetType( sym ), NULL )
 	expr = astNewADDR( IR.OP.ADDROF, expr, sym )
 
 	'' + arglen( arg )
 	funcexpr = astNewBOP( IR.OP.ADD, _
 						  expr, _
-						  astNewCONST( symbCalcArgLen( arg->typ, arg->subtype, arg->mode ), _
+						  astNewCONST( symbCalcArgLen( arg->typ, arg->subtype, arg->arg.mode ), _
 						  IR.DATATYPE.UINT ) )
 
 

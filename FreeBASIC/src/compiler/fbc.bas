@@ -119,14 +119,14 @@ const QUOTE = "\""
     ''
     setDefaultOptions
 
-    '' list
-    if( not listFiles ) then
+    ''
+    if( not processOptions ) then
     	printOptions
     	end 1
     end if
 
-    ''
-    if( not processOptions ) then
+    '' list
+    if( not listFiles ) then
     	printOptions
     	end 1
     end if
@@ -264,7 +264,7 @@ function assembleFiles as integer
 
     ''
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-    aspath = exepath$ + FB.BINPATH + "as.exe"
+    aspath = exepath( ) + FB.BINPATH + "as.exe"
 #elseif defined(TARGET_LINUX)
 	aspath = "as"
 #endif
@@ -382,7 +382,7 @@ function linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T \"" + exepath$ + FB.BINPATH + "i386pe.x\" -subsystem " + ctx.subsystem
+	ldcline = "-T \"" + exepath( ) + FB.BINPATH + "i386pe.x\" -subsystem " + ctx.subsystem
 
 #elseif defined(TARGET_LINUX)
 
@@ -395,7 +395,7 @@ function linkFiles as integer
     '' set script file
     select case ctx.outtype
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = "-T \"" + exepath$ + FB.BINPATH + "i386go32.x\""
+		ldcline = "-T \"" + exepath( ) + FB.BINPATH + "i386go32.x\""
 	end select
 
 #endif
@@ -480,8 +480,8 @@ function linkFiles as integer
 	ldcline = ldcline + QUOTE + mainobj + "\" "
 
 	'' link with crt0.o and crt1.o (C runtime init)
-	ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt0.o\" "
-	'''''ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt1.o\" "
+	ldcline = ldcline + QUOTE + exepath( ) + FB.LIBPATH + "/crt0.o\" "
+	'''''ldcline = ldcline + QUOTE + exepath( ) + FB.LIBPATH + "/crt1.o\" "
 #endif
 
     '' set executable name
@@ -489,7 +489,7 @@ function linkFiles as integer
 
     '' default lib path
 #ifndef TARGET_LINUX
-    ldcline = ldcline + " -L \"" + exepath$ + FB.LIBPATH + QUOTE
+    ldcline = ldcline + " -L \"" + exepath( ) + FB.LIBPATH + QUOTE
 #else
     ldcline = ldcline + " -L \"" + FB.LIBPATH + QUOTE
 #endif
@@ -541,7 +541,7 @@ function linkFiles as integer
     end if
 
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-	ldpath = exepath$ + FB.BINPATH + "ld.exe"
+	ldpath = exepath( ) + FB.BINPATH + "ld.exe"
 #elseif defined(TARGET_LINUX)
 	ldpath = "ld"
 #endif
@@ -596,7 +596,7 @@ function makeDefList( dllname as string ) as integer
 
 	makeDefList = FALSE
 
-   	pxpath = exepath$ + FB.BINPATH + "pexports.exe"
+   	pxpath = exepath( ) + FB.BINPATH + "pexports.exe"
 
    	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
 
@@ -671,7 +671,7 @@ function makeImpLib( dllpath as string, dllname as string ) as integer
 		exit function
 	end if
 
-	dtpath = exepath$ + FB.BINPATH + "dlltool.exe"
+	dtpath = exepath( ) + FB.BINPATH + "dlltool.exe"
 
 	dtcline = "--def \"" + dllfile + ".def\"" + _
 			  " --dllname \"" + dllname + ".dll\"" + _
@@ -738,7 +738,7 @@ function archiveFiles as integer
     end if
 
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-	arcpath = exepath$ + FB.BINPATH + "ar.exe"
+	arcpath = exepath( ) + FB.BINPATH + "ar.exe"
 #elseif defined(TARGET_LINUX)
 	arcpath = "ar"
 #endif
@@ -763,10 +763,10 @@ function compileResFiles as integer
 
 	'' change the include env var
 	oldinclude = trim$( environ$( "INCLUDE" ) )
-	setenviron "INCLUDE=" + exepath$ + FB.INCPATH + "win\\rc"
+	setenviron "INCLUDE=" + exepath( ) + FB.INCPATH + "win\\rc"
 
 	''
-	rescmppath = exepath$ + FB.BINPATH + "GoRC.exe"
+	rescmppath = exepath( ) + FB.BINPATH + "GoRC.exe"
 
 	'' set input files (.rc's and .res') and output files (.obj's)
 	for i = 0 to ctx.rcs-1
@@ -930,9 +930,9 @@ end function
 sub safeKill( filename as string )
 
 	on local error goto safeKillError
-	
+
 	kill filename
-	
+
 safeKillError:
 end sub
 
@@ -1044,7 +1044,7 @@ function processOptions as integer
 			continue for
 		end if
 
-		if( left$( argv(i), 1 ) = "-" ) then
+		if( argv(i)[0] = asc( "-" ) ) then
 
 			if( len( argv(i) ) = 1 ) then
 				exit function
@@ -1106,6 +1106,74 @@ function processOptions as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' library paths
+			case "p"
+				if( not fbAddLibPath( argv(i+1) ) ) then
+					exit function
+				end if
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' include paths
+			case "i"
+				inclist(ctx.incs) = argv(i+1)
+				if( len( inclist(ctx.incs) ) = 0 ) then
+					exit function
+				end if
+				ctx.incs = ctx.incs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' defines
+			case "d"
+				deflist(ctx.defs) = argv(i+1)
+				if( len( deflist(ctx.defs) ) = 0 ) then
+					exit function
+				end if
+				ctx.defs = ctx.defs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' source files
+			case "b"
+				inplist(ctx.inps) = argv(i+1)
+				if( len( inplist(ctx.inps) ) = 0 ) then
+					exit function
+				end if
+				ctx.inps = ctx.inps + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' outputs
+			case "o"
+				outlist(ctx.outs) = argv(i+1)
+				if( len( outlist(ctx.outs) ) = 0 ) then
+					exit function
+				end if
+				ctx.outs = ctx.outs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' objects
+			case "a"
+				objlist(ctx.objs) = argv(i+1)
+				if( len( objlist(ctx.objs) ) = 0 ) then
+					exit function
+				end if
+				ctx.objs = ctx.objs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' libraries
+			case "l"
+				liblist(ctx.libs) = argv(i+1)
+				if( len( liblist(ctx.libs) ) = 0 ) then
+					exit function
+				end if
+				ctx.libs = ctx.libs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
 #ifdef TARGET_WIN32
 			case "s"
 				ctx.subsystem = argv(i+1)
@@ -1151,7 +1219,7 @@ function processCompOptions as integer
 			continue for
 		end if
 
-		if( left$( argv(i), 1 ) = "-" ) then
+		if( argv(i)[0] = asc( "-" ) ) then
 
 			if( len( argv(i) ) = 1 ) then
 				exit function
@@ -1278,105 +1346,32 @@ function listFiles as integer
 			continue for
 		end if
 
-		if( left$( argv(i), 1 ) = "-" ) then
-			select case mid$( argv(i), 2 )
-			'' source files
-			case "b"
-				inplist(ctx.inps) = argv(i+1)
-				if( len( inplist(ctx.inps) ) = 0 ) then
-					exit function
-				end if
-				ctx.inps = ctx.inps + 1
-				argv(i) = ""
-				argv(i+1) = ""
-
-			'' outputs
-			case "o"
-				outlist(ctx.outs) = argv(i+1)
-				if( len( outlist(ctx.outs) ) = 0 ) then
-					exit function
-				end if
-				ctx.outs = ctx.outs + 1
-				argv(i) = ""
-				argv(i+1) = ""
-
-			'' objects
-			case "a"
-				objlist(ctx.objs) = argv(i+1)
-				if( len( objlist(ctx.objs) ) = 0 ) then
-					exit function
-				end if
-				ctx.objs = ctx.objs + 1
-				argv(i) = ""
-				argv(i+1) = ""
-
-			'' libraries
-			case "l"
-				liblist(ctx.libs) = argv(i+1)
-				if( len( liblist(ctx.libs) ) = 0 ) then
-					exit function
-				end if
-				ctx.libs = ctx.libs + 1
-				argv(i) = ""
-				argv(i+1) = ""
-
-			'' library paths
-			case "p"
-				if( not fbAddLibPath( argv(i+1) ) ) then
-					exit function
-				end if
-				argv(i) = ""
-				argv(i+1) = ""
-
-			'' include paths
-			case "i"
-				inclist(ctx.incs) = argv(i+1)
-				if( len( inclist(ctx.incs) ) = 0 ) then
-					exit function
-				end if
-				ctx.incs = ctx.incs + 1
-				argv(i) = ""
-				argv(i+1) = ""
-
-			'' defines
-			case "d"
-				deflist(ctx.defs) = argv(i+1)
-				if( len( deflist(ctx.defs) ) = 0 ) then
-					exit function
-				end if
-				ctx.defs = ctx.defs + 1
-				argv(i) = ""
-				argv(i+1) = ""
-			end select
-
-		else
-			select case getFileExt( argv(i) )
-			case "bas"
-				inplist(ctx.inps) = argv(i)
-				ctx.inps = ctx.inps + 1
-				argv(i) = ""
-			case "a"
-				liblist(ctx.libs) = argv(i)
-				ctx.libs = ctx.libs + 1
-				argv(i) = ""
-			case "o"
-				objlist(ctx.objs) = argv(i)
-				ctx.objs = ctx.objs + 1
-				argv(i) = ""
+		select case getFileExt( argv(i) )
+		case "bas"
+			inplist(ctx.inps) = argv(i)
+			ctx.inps = ctx.inps + 1
+			argv(i) = ""
+		case "a"
+			liblist(ctx.libs) = argv(i)
+			ctx.libs = ctx.libs + 1
+			argv(i) = ""
+		case "o"
+			objlist(ctx.objs) = argv(i)
+			ctx.objs = ctx.objs + 1
+			argv(i) = ""
 #ifdef TARGET_WIN32
-			case "rc", "res"
-				rclist(ctx.rcs) = argv(i)
-				ctx.rcs = ctx.rcs + 1
-				argv(i) = ""
+		case "rc", "res"
+			rclist(ctx.rcs) = argv(i)
+			ctx.rcs = ctx.rcs + 1
+			argv(i) = ""
 #elseif defined(TARGET_LINUX)
-			case "xpm"
-				if( len( xpmfile ) <> 0 ) then
-					exit function
-				end if
-				xpmfile = argv(i)
+		case "xpm"
+			if( len( xpmfile ) <> 0 ) then
+				exit function
+			end if
+			xpmfile = argv(i)
 #endif
-			end select
-		end if
+		end select
 	next i
 
 	listFiles = TRUE
@@ -1386,18 +1381,18 @@ end function
 '':::::
 sub parseCmd ( argc as integer, argv() as string )
     dim cmd as string
-    dim p as integer, char as integer
+    dim p as integer, char as uinteger
     dim isstr as integer
 
 	cmd = command$ + "\r"
 
-	p = 1
+	p = 0
 	argc = 0
 
 	do
 		do
-			char = asc( mid$( cmd, p, 1 ) )
-			p = p + 1
+			char = cmd[p]
+			p += 1
 		loop while ( (char = 32) or (char = 7) )
 
 		if( char = 13 ) then exit do
@@ -1407,11 +1402,11 @@ sub parseCmd ( argc as integer, argv() as string )
 			if( char = 34 ) then
 				isstr = not isstr
             else
-				argv(argc) = argv(argc) + chr$( char )
+				argv(argc) += chr$( char )
 			end if
 
-			char = asc( mid$( cmd, p, 1 ) )
-			p = p + 1
+			char = cmd[p]
+			p += 1
 
 			if( not isstr ) then
 				if( (char = 32) or (char = 7) ) then
@@ -1421,7 +1416,7 @@ sub parseCmd ( argc as integer, argv() as string )
 
 		loop until ( char = 13 )
 
-		argc = argc + 1
+		argc += 1
 		if( argc >= FB_MAXARGS ) then
 			exit do
 		end if
@@ -1446,7 +1441,7 @@ function makeMain ( main_obj as string ) as integer
 
     makeMain = FALSE
 
-    aspath = exepath$ + FB.BINPATH + "as.exe"
+    aspath = exepath( ) + FB.BINPATH + "as.exe"
 
     f = freefile()
     if f = 0 then exit function
