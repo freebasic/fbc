@@ -1,10 +1,5 @@
 Version 0.11 Beta:
 
-[chged] IMPORTANT: ()'s aren't optional when calling SUB's anymore, they simply CANNOT be used (as in QB), 
-        otherwise they could break when ()'s were used at the first parameter if the SUB had more than one 
-        argument. They still optional when calling FUNCTION's and ignoring the return value, but you must 
-        take care if using ()'s on the first parameter of that FUNCTION, if parents aren't used to make the 
-        call to it (v1ctor)
 [chged] the internal GFX library is now the former alternative one written by lillo, many thanks to Sterling
         for making the first version, he started working on it even before FB was released -- if you prefer to 
         continue using it, the sources still on CVS at sf.net (src/gfxlib), just build the library and rewrite 
@@ -34,9 +29,10 @@ Version 0.11 Beta:
 [added] -w cmm-line option to change the min level of warning messages shown (v1c)
 [added] include file for the GLU library (thanks Rel for sending it) (v1c)
 [added] include file for the FreeImage library (thanks Eric) (v1c)
-[added] ONCE keyword to be used by $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
+[added] ONCE keyword to be used with $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
 [added] UDT arguments now can be declared and passed by value too (v1c)
 [added] -nostdlibs cmm-line option, so no standard libraries are automatically linked (v1c)
+[added] "*([@]variable +|- expression)" and "*@variable" support (v1c)
 [fixed] COMMON arrays shared between different sources had different descriptor names (v1c)
 [fixed] the UDT size returned for UDT vars when using LEN() was the real-one, w/o padding (v1c)
 [fixed] LEN() can now handle arrays with no indexes given, as in QB (v1c)
