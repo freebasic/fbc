@@ -24,8 +24,11 @@ Index
 ------------------------------------------------------------------------------
 
 Functions reference:
+	BLOAD		statement
+	BSAVE		statement
 	CIRCLE		statement
 	COLOR		statement
+	DRAW		statement
 	FLIP		statement
 	GET		statement
 	GETMOUSE	statement
@@ -61,6 +64,117 @@ Appendix D: About speed and size
 ==============================================================================
 FUNCTIONS REFERENCE
 ==============================================================================
+
+
++-------+---------------------------------------------------------------------
+| BLOAD |
++-------+
+
+Statement to load a block of binary data from a file.
+
+
+Syntax:
+	BLOAD filename[,addr]
+
+
+Argument:	Description:
+
+filename	Name of the file to load data from.
+
+addr		Address where to load data. If omitted or 0 (NULL), data is
+		loaded on the current work page.
+
+
+Insights:
+
+BLOAD can be used to save a block of binary data, and can be also used to load
+raw pixel data to the screen: if you don't specify the addr argument, or you
+set it to 0, the data will be treated as pixel data and loaded into the
+current work page.
+
+BLOAD "image.bsv", 0
+
+is infact equivalent to:
+
+SCREENLOCK
+BLOAD "image.bsv", SCREENPTR
+SCREENUNLOCK
+
+Pay attention that the pixel data stored in the file is in the same pixel
+format as the one used by the current video mode; see appendix C for details.
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+FB version supports blocks of data with sizes bigger than 64K.
+
+
+See also:
+
+BSAVE, Appendix C.
+
+
+
++-------+---------------------------------------------------------------------
+| BSAVE |
++-------+
+
+Statement to save a block of binary data into a file.
+
+
+Syntax:
+	BSAVE filename,addr,size
+
+
+Argument:	Description:
+
+filename	Name of the file where data will be saved.
+
+addr		Address where to save data from. If 0 (NULL), data is taken
+		from current work page.
+
+size		Size of the data block to be saved, in bytes.
+
+
+Insights:
+
+BSAVE saves a block of binary data into a specified file. It can also be used
+to save pixel data from current work page into a file, by specifying 0 as
+addr argument:
+
+BSAVE "image.bsv", 0, 64000
+
+is infact equivalent to:
+
+SCREENLOCK
+BSAVE "image.bsv", SCREENPTR, 64000
+SCREENUNLOCK
+
+When saving pixel data, the data will be saved in the current gfx mode pixel
+format; see appendix C for details. Also keep in mind a pixel may require
+more than one byte, so the size argument will need to be adjusted accordingly.
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+Files saved using the FB version of BSAVE are incompatible with files saved
+using the QB BSAVE.
+
+
+See also:
+
+BLOAD, Appendix C.
+
 
 
 +--------+--------------------------------------------------------------------
@@ -226,6 +340,76 @@ SCREEN, PALETTE.
 
 
 +------+----------------------------------------------------------------------
+| DRAW |
++------+
+
+Statement for sequenced pixel plotting.
+
+
+Syntax:
+	DRAW commands
+
+
+Argument:	Description:
+
+commands	String holding drawing commands, see below.
+
+
+Insights:
+
+The DRAW statement can be used to issue several drawing commands all at once;
+it is useful to quickly draw figures. The command string accepts the following
+commands:
+
+	Command:	Description:
+Commands to plot pixels:
+	B		Optional prefix; move but do not draw.
+	N		Optional prefix; draw but do not move.
+	Mx,y		Move to specified screen location; if + or - precedes
+			x, movement is relative to current cursor position.
+	U[n]		Move n units up. If n is omitted, 1 is assumed.
+	D[n]		Move n units down. If n is omitted, 1 is assumed.
+	L[n]		Move n units left. If n is omitted, 1 is assumed.
+	R[n]		Move n units right. If n is omitted, 1 is assumed.
+	E[n]		Move n units up and right. If n is omitted, 1 is
+			assumed.
+	F[n]		Move n units down and right. If n is omitted, 1 is
+			assumed.
+	G[n]		Move n units down and left. If n is omitted, 1 is
+			assumed.
+	H[n]		Move n units up and left. If n is omitted, 1 is
+			assumed.
+Commands to color:
+	Cn		Changes current foreground color to n.
+	Pp,b		Flood fills region with border color b with color p.
+Commands to scale and rotate:
+	Sn		Sets the current unit length; default is 4 pixels per
+			unit.
+	An		Rotate n*90 degrees (n ranges 0-3).
+	TAn		Rotate n degrees (n ranges 0-359).
+Extra commands:
+	Xp		Executes commands a address p. For example, you can do
+
+		down10$ = "D10" : DRAW "U10R5X" + VARPTR(down10$) + "L5"
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+none
+
+
+See also:
+
+none
+
+
+
++------+----------------------------------------------------------------------
 | FLIP |
 +------+
 
@@ -293,6 +477,10 @@ Contrary to the QB version, this requested array size for an image does not
 reduce if you are using a mode with color depth less than 8bpp; so your arrays
 will need to be sized using the formula for 8bpp modes even if you're is 1, 2
 or 4bpp modes.
+Also pay attention when storing pixel data blocks in multidimensional arrays,
+as QB stored arrays in column-order, whereas FB stores arrays in row-order, so
+what in QB was achieved with PUT (100, 100), sprites(0, 7), in FB is achieved
+with PUT (100, 100), sprites(7, 0).
 
 
 See also:
