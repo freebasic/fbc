@@ -46,7 +46,7 @@ Most Important Features:
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
 
-  o There is a large number of variable types, like BYTE/SHORT/INTEGER, SINGLE/DOUBLE and STRING:
+  o A large number of variable types available, like BYTE/SHORT/INTEGER, SINGLE/DOUBLE and STRING:
 
     - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER).
 
@@ -156,6 +156,7 @@ Most Important Features:
       Test ,
       Test 44,
       Test 44
+      Test ( )
 
       et cetera.
 
@@ -285,14 +286,12 @@ Credits (in alphabetic order):
   o Angelo Mottola (a.mottola@libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
-    - Wrote many, many fixes and additions to the run-time library and compiler.
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS; port maintainer.
     - Translated the Allegro headers (W.I.P.)
     - FreeBASIC Documentation project member.
     - Wrote the DLL and static library automation.
-    - Developed the SETDATE and SETTIME run-time library routines.
     - Completed the CRTDLL and DDRAW headers.
 
   o Eric Lope (vic_viperph@yahoo.com):
@@ -319,14 +318,15 @@ Credits (in alphabetic order):
     - Translated the FMOD and BASS headers.
     - Wrote the fmod.bas test in the SOUND directory.
 
-  o Steven Hidy (subxero@phatcode.net):
-    - Rewrote this readme file, correcting v1ctor's mistakes (too many to list :P).
-
   o Sterling Christensen (sterling@engineer.com) - Project Member:
     - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
 
+  o Steven Hidy (subxero@phatcode.net):
+    - Rewrote this readme file, correcting v1ctor's mistakes (too many to list :P).
+
   o zydon:
     - Wrote the calendar the toolbar examples at the GUI directory.
+
 
   o All third-party tools from Mingw32: http://www.mingw.org/
 
@@ -377,6 +377,8 @@ Links:
 
   o External libraries:
 
+    - Allegro: http://www.talula.demon.co.uk/allegro/
+
     - BASS and BASSMod: http://www.un4seen.com/
 
     - fmod: http://www.fmod.org/
@@ -385,9 +387,13 @@ Links:
 
     - GLUT: http://www.xmission.com/~nate/glut.html
 
+    - Lua: http://www.lua.org/
+
     - OpenGL: http://www.opengl.org/
 
     - SDL: http://www.libsdl.org/ (look under Projects for SDL_net, SDL_image, SDL_ttf, etc)
+
+    - SDL_gfx: http://www.ferzkopp.net/~aschiffler/Software/SDL_gfx-2.0/
 
     - TinyPTC: http://www.gaffer.org/tinyptc/
 

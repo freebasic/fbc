@@ -7,8 +7,8 @@ is missing.
 
 2) We need help porting/translating the headers from the Win API (it's better to 
 put each function on it's own header (like kernel32, user32, etc), or else the include 
-file can get easily >1MB) plus finishing the SDL ones, GLUT and GLU, DDRAW (and others 
-from the Directx SDK like D3D etc), etc, etc.
+file can get easily >1MB), the Gtk+ headers, plus finishing GLUT and others headers 
+from the Directx SDK like D3D etc, etc.. any header from a known C API is welcome.
 
 3) Writing tests, making demos, reporting bugs (use the sourceforge's page, be the most
 descriptive you can, thanks). FB is just a few months old, many tests are needed yet.
