@@ -47,9 +47,9 @@ end function
 
 ''::::::
 ''
-'' simple exported function, the full prototype is at mydll.bi
+'' simple exported function, the full prototype is at mydll.bi (the EXPORT clause must be used here)
 ''
-function AddNumbers ( byval operand1 as integer, byval operand2 as integer ) as integer
+function AddNumbers ( byval operand1 as integer, byval operand2 as integer ) as integer export
 
 	AddNumbers = operand1 + operand2
 	
