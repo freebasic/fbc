@@ -136,9 +136,11 @@ enum FBRTL_ENUM
 	FB.RTL.ERRORRESUMENEXT
 
 	FB.RTL.GFXPSET
+	FB.RTL.GFXPOINT
 	FB.RTL.GFXLINE
 	FB.RTL.GFXCIRCLE
 	FB.RTL.GFXPAINT
+	FB.RTL.GFXDRAW
 	FB.RTL.GFXVIEW
 	FB.RTL.GFXWINDOW
 	FB.RTL.GFXPALETTE
@@ -247,20 +249,22 @@ declare sub 		rtlErrorResume		( byval isnext as integer )
 declare function	rtlConsoleView		( byval topexpr as integer, byval botexpr as integer ) as integer
 declare function	rtlConsoleReadXY	( byval row as integer, byval column as integer, byval colorflag as integer ) as integer
 
-declare function	rtlGfxPset			( byval xexpr as integer, byval yexpr as integer, _
+declare function	rtlGfxPset			( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer, _
 										  byval cexpr as integer, byval coordtype as integer ) as integer
-declare function	rtlGfxLine			( byval x1expr as integer, byval y1expr as integer, _
+declare function	rtlGfxPoint			( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer )
+declare function	rtlGfxLine			( byval target as integer, byval targetisptr as integer, byval x1expr as integer, byval y1expr as integer, _
 										  byval x2expr as integer, byval y2expr as integer, _
 										  byval cexpr as integer, byval linetype as integer, _
 										  byval styleexpr as integer, byval coordtype as integer ) as integer
-declare function	rtlGfxCircle		( byval xexpr as integer, byval yexpr as integer, _
+declare function	rtlGfxCircle		( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer, _
 										  byval radexpr as integer, byval cexpr as integer, _
 										  byval aspexpr as integer, byval iniexpr as integer, _
 										  byval endexpr as integer, _
 										  byval fillflag as integer, byval coordtype as integer ) as integer
-declare function	rtlGfxPaint			( byval xexpr as integer, byval yexpr as integer, _
+declare function	rtlGfxPaint			( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer, _
 										  byval pexpr as integer, byval bexpr as integer, _
 									 	  byval coord_type as integer ) as integer
+declare function	rtlGfxDraw			( byval target as integer, byval targetisptr as integer, byval cexpr as integer )
 declare function	rtlGfxView			( byval x1expr as integer, byval y1expr as integer, _
 										  byval x2expr as integer, byval y2expr as integer, _
 			    						  byval fillexpr as integer, byval bordexpr as integer, _
@@ -270,10 +274,10 @@ declare function	rtlGfxWindow		( byval x1expr as integer, byval y1expr as intege
 			    						  byval screenflag as integer ) as integer
 declare function	rtlGfxPalette 		( byval attexpr as integer, byval colexpr as integer ) as integer
 declare function	rtlGfxPaletteUsing	( byval arrayexpr as integer ) as integer
-declare function 	rtlGfxPut			( byval xexpr as integer, byval yexpr as integer, _
+declare function 	rtlGfxPut			( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer, _
 										  byval arrayexpr as integer, byval isptr as integer, _
 										  byval mode as integer, byval coordtype as integer ) as integer
-declare function	rtlGfxGet			( byval x1expr as integer, byval y1expr as integer, _
+declare function	rtlGfxGet			( byval target as integer, byval targetisptr as integer, byval x1expr as integer, byval y1expr as integer, _
 										  byval x2expr as integer, byval y2expr as integer, _
 										  byval arrayexpr as integer, byval isptr as integer, _
 										  byval symbol as FBSYMBOL ptr, byval coordtype as integer ) as integer

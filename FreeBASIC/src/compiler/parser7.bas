@@ -54,14 +54,87 @@ const FBGFX_PUTMODE_XOR    = 5
 
 
 '':::::
-'' GfxPset     =   PSET STEP? '(' Expr ',' Expr ')' (',' Expr )?
+private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, byval arrayexpr as integer ) as integer
+    dim idxexpr as integer
+
+    ''  argument passed by descriptor?
+    if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
+
+    	astDelTree arrayexpr
+    	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, arrayexpr, IR.DATATYPE.INTEGER, NULL )
+    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
+
+    '' dynamic array? (this will handle common's too)
+    elseif( symbGetIsDynamic( sym ) ) then
+
+    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), NULL, FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
+
+    '' static array
+    else
+
+    	idxexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+
+    end if
+
+    hMakeArrayIndex = astNewIDX( arrayexpr, idxexpr, INVALID, NULL )
+
+end function
+
+'':::::
+private function hGetTarget( targetexpr as integer, isptr as integer, byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
+	dim s as FBSYMBOL ptr
+	
+	hGetTarget = NULL
+	
+	if( fetchexpr ) then
+		targetexpr = INVALID
+	
+		if( not cVarOrDeref( targetexpr, FALSE, TRUE ) ) then
+			exit function
+		end if
+	end if
+
+	s = astGetSymbol( targetexpr )
+	if( s = NULL ) then
+		exit function
+	end if
+
+	if( symbIsArray( s ) ) then
+		if ( astGetClass( targetexpr ) <> AST.NODECLASS.IDX ) then
+			targetexpr = hMakeArrayIndex( s, targetexpr )
+		end if
+		isptr = FALSE
+	elseif( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+		isptr = TRUE
+	else
+		exit function
+	end if
+
+	hGetTarget = s
+
+end function
+
+'':::::
+'' GfxPset     =   PSET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' (',' Expr )?
 ''
 function cGfxPset as integer
     dim coordtype as integer
     dim xexpr as integer, yexpr as integer, cexpr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
 
 	cGfxPset = FALSE
 
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( target ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+	end if
+	
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -106,20 +179,30 @@ function cGfxPset as integer
 	end if
 
 	''
-	cGfxPset = rtlGfxPset( xexpr, yexpr, cexpr, coordtype )
+	cGfxPset = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, coordtype )
 
 end function
 
 '':::::
-'' LINE STEP? ('(' Expr ',' Expr ')')? '-' STEP? '(' Expr ',' Expr ')' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
+'' LINE ( Expr ',' )? STEP? ('(' Expr ',' Expr ')')? '-' STEP? '(' Expr ',' Expr ')' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 ''
 function cGfxLine as integer
     dim coordtype as integer, linetype as integer, styleexpr as integer
     dim x1expr as integer, y1expr as integer, x2expr as integer, y2expr as integer
     dim cexpr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
 
 	cGfxLine = FALSE
 
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( target ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+	end if
+	
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -236,20 +319,30 @@ function cGfxLine as integer
 	end if
 
 	''
-	cGfxLine = rtlGfxLine( x1expr, y1expr, x2expr, y2expr, cexpr, linetype, styleexpr, coordtype )
+	cGfxLine = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, cexpr, linetype, styleexpr, coordtype )
 
 end function
 
 '':::::
-'' GfxCircle     =   CIRCLE STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr (',' Expr)? )? )?)?)?)?
+'' GfxCircle     =   CIRCLE ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr (',' Expr)? )? )?)?)?)?
 ''
 function cGfxCircle as integer
     dim coordtype as integer, fillflag as integer
     dim xexpr as integer, yexpr as integer, cexpr as integer
     dim radexpr as integer, iniexpr as integer, endexpr as integer, aspexpr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
 
 	cGfxCircle = FALSE
 
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( target ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+	end if
+	
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -341,19 +434,29 @@ function cGfxCircle as integer
 	end if
 
 	''
-	cGfxCircle = rtlGfxCircle( xexpr, yexpr, radexpr, cexpr, aspexpr, iniexpr, endexpr, fillflag, coordtype )
+	cGfxCircle = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, aspexpr, iniexpr, endexpr, fillflag, coordtype )
 
 end function
 
 '':::::
-'' GfxPaint   =   PAINT STEP? '(' expr ',' expr ')' (',' expr? (',' expr? ) )
+'' GfxPaint   =   PAINT ( Expr ',' )? STEP? '(' expr ',' expr ')' (',' expr? (',' expr? ) )
 ''
 function cGfxPaint as integer
     dim xexpr as integer, yexpr as integer, pexpr as integer, bexpr as integer
 	dim coord_type as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
 
 	cGfxPaint = FALSE
 
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( target ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+	end if
+	
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coord_type = FBGFX_COORDTYPE_R
@@ -413,7 +516,40 @@ function cGfxPaint as integer
 		bexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
-	cGfxPaint = rtlGfxPaint( xexpr, yexpr, pexpr, bexpr, coord_type )
+	cGfxPaint = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )
+
+end function
+
+'':::::
+'' GfxDraw    =   DRAW ( Expr ',' )? Expr
+''
+function cGfxDraw as integer
+	dim cexpr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+
+	cGfxDraw = FALSE
+
+	if( not cExpression( texpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	if( hMatch( CHAR_COMMA ) ) then
+		target = hGetTarget( texpr, tisptr, FALSE )
+		if( target = NULL ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+		if( not cExpression( cexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+	else
+		cexpr = texpr
+		texpr = INVALID
+	end if
+	
+	cGfxDraw = rtlGfxDraw( texpr, tisptr, cexpr )
 
 end function
 
@@ -526,35 +662,6 @@ function cGfxView( byval isview as integer ) as integer
 end function
 
 '':::::
-private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, byval arrayexpr as integer ) as integer
-    dim idxexpr as integer
-
-    ''  argument passed by descriptor?
-    if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
-
-    	astDelTree arrayexpr
-    	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
-    	idxexpr = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, arrayexpr, IR.DATATYPE.INTEGER, NULL )
-    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
-
-    '' dynamic array? (this will handle common's too)
-    elseif( symbGetIsDynamic( sym ) ) then
-
-    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), NULL, FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
-    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
-
-    '' static array
-    else
-
-    	idxexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
-
-    end if
-
-    hMakeArrayIndex = astNewIDX( arrayexpr, idxexpr, INVALID, NULL )
-
-end function
-
-'':::::
 '' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr)?)
 ''
 function cGfxPalette as integer
@@ -611,16 +718,26 @@ function cGfxPalette as integer
 end function
 
 '':::::
-'' GfxPut   =   PUT STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode)?
+'' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode)?
 ''
 function cGfxPut as integer
     dim coordtype as integer, mode as integer
     dim xexpr as integer, yexpr as integer
     dim arrayexpr as integer, s as FBSYMBOL ptr
     dim isptr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
 
 	cGfxPut = FALSE
 
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( target ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+	end if
+	
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -660,25 +777,8 @@ function cGfxPut as integer
 		exit function
 	end if
 
-	if( not cVarOrDeref( arrayexpr, FALSE, TRUE ) ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-		exit function
-	end if
-
-	s = astGetSymbol( arrayexpr )
+	s = hGetTarget( arrayexpr, isptr )
 	if( s = NULL ) then
-    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-		exit function
-	end if
-
-	if( symbIsArray( s ) ) then
-		if ( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
-			arrayexpr = hMakeArrayIndex( s, arrayexpr )
-		end if
-		isptr = FALSE
-	elseif( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
-		isptr = TRUE
-	else
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -720,21 +820,31 @@ function cGfxPut as integer
 	end if
 
 	''
-	cGfxPut = rtlGfxPut( xexpr, yexpr, arrayexpr, isptr, mode, coordtype )
+	cGfxPut = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, coordtype )
 
 end function
 
 '':::::
-'' GfxGet   =   GET STEP? '(' Expr ',' Expr ')' '-' STEP? '(' Expr ',' Expr ')' ',' Variable
+'' GfxGet   =   GET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' '-' STEP? '(' Expr ',' Expr ')' ',' Variable
 ''
 function cGfxGet as integer
     dim coordtype as integer
     dim x1expr as integer, y1expr as integer, x2expr as integer, y2expr as integer
     dim arrayexpr as integer, s as FBSYMBOL ptr
     dim isptr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
 
 	cGfxGet = FALSE
 
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( target ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+	end if
+	
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -821,31 +931,14 @@ function cGfxGet as integer
 		exit function
 	end if
 
-	if( not cVarOrDeref( arrayexpr, FALSE, TRUE ) ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-		exit function
-	end if
-
-	s = astGetSymbol( arrayexpr )
+	s = hGetTarget( arrayexpr, isptr )
 	if( s = NULL ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
 
-	if( symbIsArray( s ) ) then
-		if ( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
-			arrayexpr = hMakeArrayIndex( s, arrayexpr )
-		end if
-		isptr = FALSE
-	elseif ( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
-		isptr = TRUE
-	else
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-		exit function
-	end if
-
     ''
-	cGfxGet = rtlGfxGet( x1expr, y1expr, x2expr, y2expr, arrayexpr, isptr, s, coordtype )
+	cGfxGet = rtlGfxGet( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, arrayexpr, isptr, s, coordtype )
 
 end function
 
@@ -983,6 +1076,10 @@ function cGfxStmt as integer
 		lexSkipToken
 		cGfxStmt = cGfxPaint
 
+	case FB.TK.DRAW
+		lexSkipToken
+		cGfxStmt = cGfxDraw
+
 	case FB.TK.VIEW
 		lexSkipToken
 		cGfxStmt = cGfxView( TRUE )
@@ -1018,6 +1115,50 @@ function cGfxStmt as integer
 	end select
 
 end function
+
+'':::::
+'' GfxPoint    =   POINT '(' Expr ( ',' ( Expr )? ( ',' Expr )? )? ')'
+''
+function cGfxPoint( funcexpr as integer ) as integer
+	dim xexpr as integer, yexpr as integer
+    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+
+	cGfxPoint = FALSE
+
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+
+	if( not cExpression( xexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	yexpr = INVALID
+	texpr = INVALID
+	
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( yexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+		
+		if( hMatch( CHAR_COMMA ) ) then
+			target = hGetTarget( texpr, tisptr )
+			if( target = NULL ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+		end if
+	end if
+	
+	funcexpr = rtlGfxPoint( texpr, tisptr, xexpr, yexpr )
+	
+	cGfxPoint = TRUE
+
+end function
+
 
 '':::::
 '' ConsoleReadXY   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
@@ -1072,6 +1213,10 @@ function cGfxFunct ( funcexpr as integer ) as integer
 	cGfxFunct = FALSE
 
 	select case lexCurrentToken
+	case FB.TK.POINT
+		lexSkipToken
+		cGfxFunct = cGfxPoint( funcexpr )
+
 	case FB.TK.SCREEN
 		lexSkipToken
 		cGfxFunct = cConsoleReadXY( funcexpr )

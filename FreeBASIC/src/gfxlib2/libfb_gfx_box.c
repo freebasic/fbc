@@ -54,7 +54,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, int color, int full)
 		dest = fb_mode->line[clipped_y1] + (clipped_x1 * fb_mode->bpp);
 		for (; h; h--) {
 			fb_hPixelSet(dest, color, w);
-			dest += fb_mode->pitch;
+			dest += fb_mode->target_pitch;
 		}
 	}
 	else {

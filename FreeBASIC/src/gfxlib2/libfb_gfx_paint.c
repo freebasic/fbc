@@ -64,7 +64,7 @@ static SPAN *add_span(SPAN **span, int *x, int y, int border_color)
 
 
 /*:::::*/
-FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRING *pattern, int mode, int coord_type)
+FBCALL void fb_GfxPaint(void *target, float fx, float fy, int color, int border_color, FBSTRING *pattern, int mode, int coord_type)
 {
 	int size, x, y, x1, x2;
 	unsigned int texel;
@@ -82,6 +82,8 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 		border_color = color;
 	else
 		border_color = fb_hFixColor(border_color);
+
+	fb_hPrepareTarget(target);
 
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 

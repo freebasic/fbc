@@ -75,6 +75,7 @@ FBCALL void fb_GfxSetPage(int work_page, int visible_page)
 	if ((work_page >= 0) && (work_page < fb_mode->num_pages)) {
 		for (i = 0; i < fb_mode->h; i++)
 			fb_mode->line[i] = fb_mode->page[work_page] + (i * fb_mode->pitch);
+		fb_mode->work_page = work_page;
 	}
 	if ((visible_page >= 0) && (visible_page < fb_mode->num_pages) && (fb_mode->page[visible_page] != fb_mode->framebuffer)) {
 		fb_mode->driver->lock();

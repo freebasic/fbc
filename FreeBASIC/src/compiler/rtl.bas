@@ -531,17 +531,25 @@ data "fb_ErrorResume", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDEC
 data "fb_ErrorResumeNext", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
 
 ''
-'' fb_GfxPset ( byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
-data "fb_GfxPset", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+'' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
+data "fb_GfxPset", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 5, _
+					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
 					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_GfxLine ( byval x1 as single = 0, byval y1 as single = 0, byval x2 as single = 0, byval y2 as single = 0, _
+'' fb_GfxPoint ( byref target as any, byval x as single, byval y as single ) as integer
+data "fb_GfxPoint", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
+						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_GfxLine ( byref target as any, byval x1 as single = 0, byval y1 as single = 0, byval x2 as single = 0, byval y2 as single = 0, _
 ''              byval color as uinteger = DEFAULT_COLOR, byval line_type as integer = LINE_TYPE_LINE, _
 ''              byval style as uinteger = &hFFFF, byval coordType as integer = COORD_TYPE_AA ) as integer
-data "fb_GfxLine", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
+data "fb_GfxLine", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 9, _
+					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -551,11 +559,12 @@ data "fb_GfxLine", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
 					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
 					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_GfxEllipse ( byval x as single, byval y as single, byval radius as single, _
+'' fb_GfxEllipse ( byref target as any, byval x as single, byval y as single, byval radius as single, _
 ''				   byval color as uinteger = DEFAULT_COLOR, byval aspect as single = 0.0, _
 ''				   byval iniarc as single = 0.0, byval endarc as single = 6.283185, _
 ''				   byval FillFlag as integer = 0, byval CoordType as integer = COORD_TYPE_A ) as integer
-data "fb_GfxEllipse", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 9, _
+data "fb_GfxEllipse", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 10, _
+						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -566,10 +575,11 @@ data "fb_GfxEllipse", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 9, _
 					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_GfxPaint ( byval x as single, byval y as single, byval color as uinteger = DEFAULT_COLOR, _
+'' fb_GfxPaint ( byref target as any, byval x as single, byval y as single, byval color as uinteger = DEFAULT_COLOR, _
 ''				 byval border_color as uinteger = DEFAULT_COLOR, pattern as string, _
 ''				 byval mode as integer = PAINT_TYPE_FILL, byval coord_type as integer = COORD_TYPE_A ) as integer
-data "fb_GfxPaint", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 7, _
+data "fb_GfxPaint", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
+						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
@@ -577,6 +587,11 @@ data "fb_GfxPaint", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 7, _
 						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_GfxDraw ( byval target as any, cmd as string )
+data "fb_GfxDraw", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxView ( byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''              byval x1 as integer = -32768, byval y1 as integer = -32768, _
@@ -609,18 +624,20 @@ data "fb_GfxPalette", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 data "fb_GfxPaletteUsing", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 
-'' fb_GfxPut ( byval x as single, byval y as single, byref array as any, _
+'' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
 ''			   byval coordType as integer, byval mode as integer )  as void
-data "fb_GfxPut", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 5, _
+data "fb_GfxPut", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 6, _
+					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_GfxGet ( byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
+'' fb_GfxGet ( byref target as any, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
 ''			   byref array as any, byval coordType as integer, array() as any ) as void
-data "fb_GfxGet", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 7, _
+data "fb_GfxGet", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
+					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -671,18 +688,9 @@ data "rgb", "fb_GfxRgb", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_GfxPoint ( byval x as single, byval y as single ) as uinteger
-data "point", "fb_GfxPoint", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 2, _
-						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,-1
-
 '' fb_GfxCursor ( number as integer) as single
 data "pointcoord", "fb_GfxCursor", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
 						           FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-'' fb_GfxDraw ( cmd as string ) as void
-data "draw", "fb_GfxDraw", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxPMap ( byval Coord as single, byval num as integer ) as single
 data "pmap", "fb_GfxPMap", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 2, _
@@ -3666,15 +3674,31 @@ end sub
 #endif
 
 '':::::
-function rtlGfxPset( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, _
+function rtlGfxPset( byval target as integer, byval targetisptr as integer, _
+					 byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, _
 					 byval coordtype as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim vr as integer, targetmode as integer
 
 	rtlGfxPset = FALSE
 
 	f = ifuncTB(FB.RTL.GFXPSET)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x as single
  	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
@@ -3709,17 +3733,75 @@ function rtlGfxPset( byval xexpr as integer, byval yexpr as integer, byval cexpr
 end function
 
 '':::::
-function rtlGfxLine( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, _
+function rtlGfxPoint( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer )
+	dim proc as integer, f as FBSYMBOL ptr
+	dim vr as integer, targetmode as integer
+	
+	rtlGfxPoint = FALSE
+	
+	f = ifuncTB(FB.RTL.GFXPOINT)
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
+	
+	'' byref target as any
+	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
+
+ 	'' byval x as single
+ 	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
+
+ 	'' byval y as single
+ 	if( yexpr = INVALID ) then
+ 		yexpr = astNewCONST( -1, IR.DATATYPE.SINGLE )
+ 	end if
+ 	if( astNewPARAM( proc, yexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
+
+	rtlGfxPoint = proc
+
+end function
+
+'':::::
+function rtlGfxLine( byval target as integer, byval targetisptr as integer, _
+					 byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, _
 					 byval y2expr as integer, byval cexpr as integer, byval linetype as integer, _
 					 byval styleexpr as integer, byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim vr as integer, targetmode as integer
 
 	rtlGfxLine = FALSE
 
 	f = ifuncTB(FB.RTL.GFXLINE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 8 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x1 as single
  	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
@@ -3777,17 +3859,33 @@ function rtlGfxLine( byval x1expr as integer, byval y1expr as integer, byval x2e
 end function
 
 '':::::
-function rtlGfxCircle( byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, _
+function rtlGfxCircle( byval target as integer, byval targetisptr as integer, _
+					   byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, _
 					   byval cexpr as integer, byval aspexpr as integer, byval iniexpr as integer, _
 					   byval endexpr as integer, byval fillflag as integer, byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim vr as integer, targetmode as integer
 
 	rtlGfxCircle = FALSE
 
 	f = ifuncTB(FB.RTL.GFXCIRCLE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 9 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x as single
  	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
@@ -3856,17 +3954,33 @@ function rtlGfxCircle( byval xexpr as integer, byval yexpr as integer, byval rad
 end function
 
 '':::::
-function rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, _
+function rtlGfxPaint( byval target as integer, byval targetisptr as integer, _
+					  byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, _
 					  byval bexpr as integer, byval coord_type as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim vr as integer, targetmode as integer
     dim pattern as integer
 
     rtlGfxPaint = FALSE
 
 	f = ifuncTB(FB.RTL.GFXPAINT)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x as single
  	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
@@ -3928,6 +4042,48 @@ function rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexp
 #endif
 
 	rtlGfxPaint = TRUE
+
+end function
+
+'':::::
+function rtlGfxDraw( byval target as integer, byval targetisptr as integer, byval cexpr as integer )
+    dim proc as integer, f as FBSYMBOL ptr
+    dim vr as integer, targetmode as integer
+
+	rtlGfxDraw = FALSE
+
+	f = ifuncTB(FB.RTL.GFXDRAW)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
+
+ 	'' cmd as string
+ 	if( astNewPARAM( proc, cexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
+
+ 	''
+ 	astFlush proc, vr
+
+ 	''
+#ifdef AUTOADDGFXLIBS
+ 	hAddGfxLibs
+#endif
+
+	rtlGfxDraw = TRUE
 
 end function
 
@@ -4137,17 +4293,33 @@ function rtlGfxPaletteUsing ( byval arrayexpr as integer ) as integer
 end function
 
 '':::::
-function rtlGfxPut( byval xexpr as integer, byval yexpr as integer, _
+function rtlGfxPut( byval target as integer, byval targetisptr as integer, _
+					byval xexpr as integer, byval yexpr as integer, _
 			   		byval arrayexpr as integer, byval isptr as integer, _
 			   		byval mode as integer, byval coordtype as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim vr as integer, targetmode as integer
     dim argmode as integer
 
     rtlGfxPut = FALSE
 
 	f = ifuncTB(FB.RTL.GFXPUT)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 5 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x as single
  	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
@@ -4192,18 +4364,34 @@ function rtlGfxPut( byval xexpr as integer, byval yexpr as integer, _
 end function
 
 '':::::
-function rtlGfxGet( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+function rtlGfxGet( byval target as integer, byval targetisptr as integer, _
+					byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
 			   		byval arrayexpr as integer, byval isptr as integer, byval symbol as FBSYMBOL ptr, _
 			   		byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
+    dim vr as integer, targetmode as integer
     dim argmode as integer
 
     rtlGfxGet = FALSE
 
 	f = ifuncTB(FB.RTL.GFXGET)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 7 )
+
+ 	'' byref target as any
+ 	if( target = INVALID ) then
+ 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		targetmode = INVALID
+ 	else
+		if( targetisptr ) then
+			targetmode = FB.ARGMODE.BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x1 as single
  	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then

@@ -65,7 +65,7 @@ static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h
 			d++;
 		}
 		s += pitch;
-		dest += fb_mode->pitch;
+		dest += fb_mode->target_pitch;
 	}
 }
 
@@ -87,7 +87,7 @@ static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h
 			d++;
 		}
 		s += pitch;
-		dest += fb_mode->pitch;
+		dest += fb_mode->target_pitch;
 	}
 }
 
@@ -109,7 +109,7 @@ static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h
 			d++;
 		}
 		s += pitch;
-		dest += fb_mode->pitch;
+		dest += fb_mode->target_pitch;
 	}
 }
 
@@ -120,7 +120,7 @@ static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, 
 	for (; h; h--) {
 		fb_hPixelCpy(dest, src, w);
 		src += pitch;
-		dest += fb_mode->pitch;
+		dest += fb_mode->target_pitch;
 	}
 }
 
@@ -132,7 +132,7 @@ static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h
 	
 	w <<= (fb_mode->bpp >> 1);
 	pitch -= w;
-	dpitch = fb_mode->pitch - w;
+	dpitch = fb_mode->target_pitch - w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ = 0xFF ^ *src++;
@@ -159,7 +159,7 @@ static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, i
 	
 	w <<= (fb_mode->bpp >> 1);
 	pitch -= w;
-	dpitch = fb_mode->pitch - w;
+	dpitch = fb_mode->target_pitch - w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ &= *src++;
@@ -186,7 +186,7 @@ static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, in
 	
 	w <<= (fb_mode->bpp >> 1);
 	pitch -= w;
-	dpitch = fb_mode->pitch - w;
+	dpitch = fb_mode->target_pitch - w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ |= *src++;
@@ -213,7 +213,7 @@ static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, i
 	
 	w <<= (fb_mode->bpp >> 1);
 	pitch -= w;
-	dpitch = fb_mode->pitch - w;
+	dpitch = fb_mode->target_pitch - w;
 	for (; h; h--) {
 		if (w & 1)
 			*dest++ ^= *src++;
@@ -291,13 +291,15 @@ static void init_put(void)
 
 
 /*:::::*/
-FBCALL void fb_GfxPut(float fx, float fy, unsigned char *src, int coord_type, int mode)
+FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode)
 {
 	int x, y, w, h, pitch;
 	void (*put)(unsigned char *, unsigned char *, int, int, int);
 	
 	if (!fb_mode)
 		return;
+	
+	fb_hPrepareTarget(target);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	

@@ -39,6 +39,8 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	if (!f)
 		return FB_RTERROR_FILENOTFOUND;
 	
+	fb_hPrepareTarget(NULL);
+	
 	id = fgetc(f);
 	switch (id) {
 	

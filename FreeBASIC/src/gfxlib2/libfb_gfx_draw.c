@@ -66,7 +66,7 @@ static int parse_number(char **str)
 
 
 /*:::::*/
-FBCALL void fb_GfxDraw(FBSTRING *command)
+FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 {
 	float x, y, dx, dy, ax, ay, x2, y2, scale = 1.0, angle = 0.0;
 	char *c = command->data;
@@ -74,6 +74,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 
 	if (!fb_mode)
 		return;
+	
+	fb_hPrepareTarget(target);
 
 	x = fb_mode->last_x + 0.5;
 	y = fb_mode->last_y + 0.5;
@@ -133,7 +135,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				 * resides at location NAN (0x80000000) */
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
-				fb_GfxDraw((FBSTRING *)value1);
+				fb_GfxDraw(target, (FBSTRING *)value1);
 				break;
 
 			case 'P':
@@ -147,7 +149,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 						goto error;
 				}
 				DRIVER_UNLOCK();
-				fb_GfxPaint(x, y, value1 & fb_mode->color_mask, value2 & fb_mode->color_mask, NULL, PAINT_TYPE_FILL, COORD_TYPE_A);
+				fb_GfxPaint(target, x, y, value1 & fb_mode->color_mask, value2 & fb_mode->color_mask, NULL, PAINT_TYPE_FILL, COORD_TYPE_A);
 				DRIVER_LOCK();
 				break;
 
@@ -180,7 +182,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				}
 				if (draw) {
 					DRIVER_UNLOCK();
-					fb_GfxLine((int)x, (int)y, (int)x2, (int)y2, DEFAULT_COLOR, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+					fb_GfxLine(target, (int)x, (int)y, (int)x2, (int)y2, DEFAULT_COLOR, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
 					DRIVER_LOCK();
 				}
 				if (move) {

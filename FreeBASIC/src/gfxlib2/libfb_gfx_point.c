@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL int fb_GfxPoint(float fx, float fy)
+FBCALL int fb_GfxPoint(void *target, float fx, float fy)
 {
 	int x, y, color;
 	
@@ -37,6 +37,8 @@ FBCALL int fb_GfxPoint(float fx, float fy)
 	
 	if (fy < 0)
 		return fb_GfxCursor(fx);
+	
+	fb_hPrepareTarget(target);
 	
 	fb_hTranslateCoord(fx, fy, &x, &y);
 	

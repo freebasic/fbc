@@ -181,7 +181,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		}
 
 		fb_mode->bpp = BYTES_PER_PIXEL(fb_mode->depth);
-		fb_mode->pitch = fb_mode->w * fb_mode->bpp;
+		fb_mode->pitch = fb_mode->target_pitch = fb_mode->w * fb_mode->bpp;
 		fb_mode->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
 		for (i = 0; i < num_pages; i++)
 			fb_mode->page[i] = (unsigned char *)calloc(1, (fb_mode->pitch * fb_mode->h));
@@ -240,7 +240,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			fb_mode->fg_color = fb_mode->color_mask;
 
 		fb_mode->view_w = fb_mode->w;
-		fb_mode->view_h = fb_mode->h;
+		fb_mode->view_h = fb_mode->max_h = fb_mode->h;
 		fb_mode->text_w = info->text_w;
 		fb_mode->text_h = info->text_h;
 

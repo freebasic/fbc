@@ -56,7 +56,7 @@ FUNC(fb_hPutPSetMMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -121,7 +121,7 @@ FUNC(fb_hPutPResetMMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	movl $0xFFFFFFFF, %eax
 	subl %ebx, %edx
@@ -196,7 +196,7 @@ FUNC(fb_hPutAndMMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -268,7 +268,7 @@ FUNC(fb_hPutOrMMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -340,7 +340,7 @@ FUNC(fb_hPutXorMMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 
@@ -531,7 +531,7 @@ FUNC(fb_hPutTrans2MMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movq (mask_16), %mm1
@@ -633,7 +633,7 @@ FUNC(fb_hPutTrans4MMX)
 	subl %ebx, ARG5
 	movl %edx, LOCAL1
 	movl ARG1, %esi
-	movl PITCH(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movq (mask_32), %mm1

@@ -33,6 +33,8 @@ FBCALL float fb_GfxPMap(float coord, int func)
 	if (!fb_mode)
 		return 0.0;
 	
+	fb_hPrepareTarget(NULL);
+	
 	switch (func) {
 		
 		case 0:

@@ -28,12 +28,14 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxGet(float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
+FBCALL void fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
 	int x1, y1, x2, y2, w, h;
 	
 	if (!fb_mode)
 		return;
+	
+	fb_hPrepareTarget(target);
 	
 	fb_hFixRelative(coord_type, &fx1, &fy1, &fx2, &fy2);
 	

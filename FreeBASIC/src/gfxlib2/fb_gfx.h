@@ -78,6 +78,7 @@
 #define WINDOW_ACTIVE		0x00000001
 #define WINDOW_SCREEN		0x00000002
 #define VIEW_SCREEN		0x00000004
+#define BUFFER_SET		0x00000008
 
 #define COORD_TYPE_AA		0
 #define COORD_TYPE_AR		1
@@ -127,9 +128,13 @@ typedef struct MODE
 	int mode_num;					/* Current mode number */
 	unsigned char **page;				/* Pages memory */
 	int num_pages;					/* Number of requested pages */
+	int work_page;					/* Current work page number */
 	unsigned char *framebuffer;			/* Our current visible framebuffer */
 	unsigned char **line;				/* Line pointers into current active framebuffer */
 	int pitch;					/* Width of a framebuffer line in bytes */
+	int target_pitch;				/* Width of current target buffer line in bytes */
+	void *last_target;				/* Last target buffer set */
+	int max_h;					/* Max registered height of target buffer */
 	int bpp;					/* Bytes per pixel */
 	unsigned int *palette;				/* Current RGB color values for each palette index */
 	unsigned int *device_palette;			/* Current RGB color values of visible device palette */
@@ -222,6 +227,7 @@ extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
 extern unsigned int fb_hMakeColor(int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);
 extern void fb_hRestorePalette(void);
+extern void fb_hPrepareTarget(void *target);
 extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
@@ -237,18 +243,19 @@ extern FBCALL void fb_GfxPalette(int index, unsigned int color);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
 extern FBCALL int fb_GfxPaletteInp(int port);
 extern FBCALL int fb_GfxRgb(unsigned char r, unsigned char g, unsigned char b);
-extern FBCALL void fb_GfxPset(float x, float y, int color, int coord_type);
-extern FBCALL int fb_GfxPoint(float x, float y);
+extern FBCALL void fb_GfxPset(void *target, float x, float y, int color, int coord_type);
+extern FBCALL int fb_GfxPoint(void *target, float x, float y);
 extern FBCALL float fb_GfxPMap(float coord, int func);
 extern FBCALL float fb_GfxCursor(int func);
 extern FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, int fill_color, int border_color, int screen);
 extern FBCALL void fb_GfxWindow(float x1, float y1, float x2, float y2, int screen);
-extern FBCALL void fb_GfxLine(float x1, float y1, float x2, float y2, int color, int type, unsigned int style, int coord_type);
-extern FBCALL void fb_GfxEllipse(float x, float y, float radius, int color, float aspect, float start, float end, int fill, int coord_type);
-extern FBCALL void fb_GfxGet(float x1, float y1, float x2, float y2, unsigned char *dest, int coord_type, FBARRAY *array);
-extern FBCALL void fb_GfxPut(float x, float y, unsigned char *src, int coord_type, int mode);
+extern FBCALL void fb_GfxLine(void *target, float x1, float y1, float x2, float y2, int color, int type, unsigned int style, int coord_type);
+extern FBCALL void fb_GfxEllipse(void *target, float x, float y, float radius, int color, float aspect, float start, float end, int fill, int coord_type);
+extern FBCALL void fb_GfxGet(void *target, float x1, float y1, float x2, float y2, unsigned char *dest, int coord_type, FBARRAY *array);
+extern FBCALL void fb_GfxPut(void *target, float x, float y, unsigned char *src, int coord_type, int mode);
 extern FBCALL void fb_GfxWaitVSync(int port, int and_mask, int xor_mask);
-extern FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRING *pattern, int mode, int coord_type);
+extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, int color, int border_color, FBSTRING *pattern, int mode, int coord_type);
+extern FBCALL void fb_GfxDraw(void *target, FBSTRING *command);
 extern FBCALL void fb_GfxFlip(int from_page, int to_page);
 extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);
 extern FBCALL void fb_GfxLock(void);

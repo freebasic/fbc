@@ -37,6 +37,8 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 	if (!f)
 		return FB_RTERROR_FILENOTFOUND;
 	
+	fb_hPrepareTarget(NULL);
+	
 	fputc(0xFE, f);
 	fputc(size & 0xFF, f);
 	fputc((size >> 8) & 0xFF, f);

@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxPset(float fx, float fy, int color, int coord_type)
+FBCALL void fb_GfxPset(void *target, float fx, float fy, int color, int coord_type)
 {
 	int x, y;
 	
@@ -39,6 +39,8 @@ FBCALL void fb_GfxPset(float fx, float fy, int color, int coord_type)
 		color = fb_mode->fg_color;
 	else
 		color = fb_hFixColor(color);
+	
+	fb_hPrepareTarget(target);
 	
 	fb_hFixRelative(coord_type, &fx, &fy, NULL, NULL);
 	

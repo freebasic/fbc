@@ -33,6 +33,8 @@ void fb_GfxClear(int mode)
 	unsigned char *dest;
 	int i, dirty, dirty_len;
 	
+	fb_hPrepareTarget(NULL);
+	
 	DRIVER_LOCK();
 	
 	switch (mode) {
