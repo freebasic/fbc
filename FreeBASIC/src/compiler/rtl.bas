@@ -696,7 +696,16 @@ data "screenptr", "fb_GfxScreenPtr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUN
 data "windowtitle", "fb_GfxSetWindowTitle", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 											FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
+'' fb_GfxMultikey ( scancode as integer ) as integer
+data "multikey", "fb_GfxMultikey", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+'' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as void
+data "getmouse", "fb_GfxGetMouse", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
