@@ -418,7 +418,8 @@ function cExpExpression( expexpr as integer )
 end function
 
 '':::::
-''NegNotExpression=   ('-'|'+'|NOT) ExpExpression
+''NegNotExpression=   ('-'|'+'|) ExpExpression
+''				  |   NOT RelExpression
 ''				  |   HighestPresExpr .
 ''
 function cNegNotExpression( negexpr as integer )
@@ -430,6 +431,8 @@ function cNegNotExpression( negexpr as integer )
 	'' '-'
 	case CHAR_MINUS
 		lexSkipToken
+
+		'' ExpExpression
 		if( not cExpExpression( negexpr ) ) then
 			exit function
 		end if
@@ -448,13 +451,15 @@ function cNegNotExpression( negexpr as integer )
 	case CHAR_PLUS
 		lexSkipToken
 
+		'' ExpExpression
 		cNegNotExpression = cExpExpression( negexpr )
 		exit function
 
 	'' NOT
 	case FB.TK.NOT
 		lexSkipToken
-		if( not cExpExpression( negexpr ) ) then
+		'' RelExpression
+		if( not cRelExpression( negexpr ) ) then
 			exit function
 		end if
 

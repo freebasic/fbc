@@ -3,16 +3,12 @@
 
 [ ] OPTION's should be preserved when changed inside include files
 
-[ ] OPTION NOGFX NOCONSOLE NOFILE NOSYS to remove the keywords from each group
-
-[ ] idx is being loaded twice even been already a register
-
-[ ] var initializers: dim myvar as sometype = ( initialvalue ) -- has to support arrays and types too
-
 [ ] "ON expr GOTO|GOSUB label" is wrong, expr is an integer index into the label list
 
 *** *** *** *** ***
+[ ] full debug support
 [ ] macros   -- with recursive expansion and local vars
+[ ] var ini  -- dim myvar as sometype = ( initialvalue ) -- has to support arrays and types too
 [ ] typedefs -- can be done with one pass? ie, it should allow:
 		typedef bleh as bar
 		type foo: b as bleh ptr: end type
@@ -20,6 +16,7 @@
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 
 *** yet another optimizations ***
+[ ] idx is being loaded twice even been already a register
 [ ] get hide of double fxch's (needs peephole optimization at EMIT)
 [ ] load after store elimination (at IR?)
 [ ] use CMOV when possible on 686 (maybe at IR, but probably requires peephole at EMIT)
