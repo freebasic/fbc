@@ -875,8 +875,8 @@ data ""
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 deflibsdata:
 data "fb"
-#ifdef TARGET_WIN32
 data "fbgfx"
+#ifdef TARGET_WIN32
 data "crtdll"
 data "kernel32"
 data "user32"
