@@ -229,6 +229,7 @@ FBCALL int 			fb_Exec 			( FBSTRING *program, FBSTRING *args );
 	   int 			fb_hGetCurrentDir 	( char *dst, int maxlen );
 	   char 		*fb_hGetCommandLine	( void );
 	   char 		*fb_hGetExePath		( char *dst, int maxlen );
+	   char 		*fb_hGetExeName		( char *dst, int maxlen );
 
 /**************************************************************************************************
  * math

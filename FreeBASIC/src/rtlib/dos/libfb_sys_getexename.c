@@ -18,36 +18,29 @@
  */
 
 /*
- * sys_getcmd.c -- get command line for Windows
+ * sys_getexename.c -- get the executable's name for DOS
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: jan/2005 written [DrV]
  *
  */
 
-#include <malloc.h>
-#include <string.h>
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+extern char **fb_argv;
 
 /*:::::*/
-char *fb_hGetCommandLine( void )
+char *fb_hGetExeName( char *dst, int maxlen )
 {
-    char *buffer;
+	char *p;
 
-	buffer = GetCommandLine( );
+	strncpy(dst, fb_argv[0], maxlen);
 
-	if( buffer != NULL )
-	{
-		/* exe paths with white-spaces are quoted on Windows */
-		if( buffer[0] == '"' )
-		{
-			buffer = strchr( &buffer[1], '"' );
-			if( buffer != NULL )
-			++buffer;
-		}
-	}
+	p = strrchr( dst, '\\' );
+	if( p != NULL )
+		++p;
+	else
+		p = dst;
 
-	return buffer;
+	return p;
 }
+

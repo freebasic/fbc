@@ -18,7 +18,7 @@
  */
 
 /*
- * sys_getcmd.c -- get command line for Windows
+ * sys_getexename.c -- get the executable's name for Windows
  *
  * chng: jan/2005 written [v1ctor]
  *
@@ -32,22 +32,17 @@
 #include <windows.h>
 
 /*:::::*/
-char *fb_hGetCommandLine( void )
+char *fb_hGetExeName( char *dst, int maxlen )
 {
-    char *buffer;
+	char *p;
 
-	buffer = GetCommandLine( );
+	GetModuleFileName( GetModuleHandle( NULL ), dst, maxlen );
 
-	if( buffer != NULL )
-	{
-		/* exe paths with white-spaces are quoted on Windows */
-		if( buffer[0] == '"' )
-		{
-			buffer = strchr( &buffer[1], '"' );
-			if( buffer != NULL )
-			++buffer;
-		}
-	}
+	p = strrchr( dst, '\\' );
+	if( p != NULL )
+		++p;
+	else
+		p = dst;
 
-	return buffer;
+	return p;
 }
