@@ -1194,7 +1194,7 @@ Declare Sub qtrnslate_matrix_f CDecl Alias "qtranslate_matrix_f" (ByVal m As MAT
 Declare Sub qscale_matrix CDecl Alias "qscale_matrix" (ByVal m As MATRIX Ptr, ByVal scale As fixed)
 Declare Sub qscale_matrix_f CDecl Alias "qscale_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal scale As Single)
 Declare Sub matrix_mul CDecl Alias "matrix_mul" (ByVal m1 As MATRIX Ptr, ByVal m2 As MATRIX Ptr, ByVal mout As MATRIX Ptr)
-Declare Sub matrix_mul_f CDecl Alias "matrix_mul_f' (ByVal m1 As MATRIX_f Ptr, ByVal m2 As MATRIX_f Ptr, ByVal mout As MATRIX_f Ptr)
+Declare Sub matrix_mul_f CDecl Alias "matrix_mul_f" (ByVal m1 As MATRIX_f Ptr, ByVal m2 As MATRIX_f Ptr, ByVal mout As MATRIX_f Ptr)
 Declare Function vector_length CDecl Alias "vector_length" (ByVal x As fixed, BYVal y As fixed, ByVal z As fixed) As fixed
 Declare Function vector_lengtH_f CDecl Alias "vector_length_f" (ByVal x As Single, BYVal y As Single, ByVal z As Single) As SIngle
 Declare Sub normalize_vector CDecl Alias "normalize_vector" (ByRef x As fixed, ByRef y As fixed, ByRef z As fixed)
