@@ -31,8 +31,6 @@ extern GFXDRIVER fb_gfxDriverDirectDraw;
 
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
-#ifdef WIN32
 	&fb_gfxDriverDirectDraw,
-#endif
 	NULL
 };
