@@ -18,15 +18,15 @@ else
     endif
 endif
 
-ifeq ($(OS),DOS)
-    WINSYSDIR =
-    PLATFORM = DOS
-endif
-
 ifneq ($(WINSYSDIR),)
     PLATFORM = WIN32
 else
     PLATFORM = LINUX
+endif
+
+ifeq ($(OS),DOS)
+    WINSYSDIR =
+    PLATFORM = DOS
 endif
 
 ifeq ($(PLATFORM),WIN32)
@@ -47,13 +47,23 @@ ifeq ($(PLATFORM),LINUX)
     LD := ld
 endif
 
+#ifeq ($(PLATFORM),DOS)
+#    EXE :=
+#    LDFLAGS := -T ../../bin/i386go32.x -s
+#    LDLIBS := -L../../lib -( -lcrt -lfb -)
+#    BC := ..\..\fbc.exe
+#    BCFLAGS := -e -c -d TARGET_DOS
+#    LD := ..\..\bin\ld.exe
+#endif
+
+# use win32 fbc for now
 ifeq ($(PLATFORM),DOS)
-    EXE :=
-    LDFLAGS := -T ../../bin/i386go32.x -s
-    LDLIBS := -L../../lib -( -lcrt -lfb -)
+    EXE := .exe
+    LDFLAGS := -T ../../bin/winbin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDLIBS := -L../../lib/winlib -( -lcrtdll -lfb -lkernel32 -luser32 -)
     BC := ..\..\fbc.exe
     BCFLAGS := -e -c -d TARGET_DOS
-    LD := ..\..\bin\ld.exe
+    LD := ..\..\bin\winbin\ld.exe
 endif
 
 
