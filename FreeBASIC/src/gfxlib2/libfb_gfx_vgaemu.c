@@ -79,15 +79,15 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 			shift += 8;
 			if (shift > 18) {
 				if (fb_mode->default_palette == &fb_palette_256)
-					fb_GfxPalette(index, color);
+					fb_GfxPalette(idx, color);
 				else {
 					fb_mode->driver->lock();
 					r = ((color & 0x3F) * 255.0) / 63.0;
 					g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
 					b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
-					fb_mode->palette[index] = r | (g << 8) | (b << 16);
+					fb_mode->palette[idx] = r | (g << 8) | (b << 16);
 					for (i = 0; i < (1 << fb_mode->depth); i++) {
-						if (fb_mode->color_association[i] == index) {
+						if (fb_mode->color_association[i] == idx) {
 							fb_mode->device_palette[i] = r | (g << 8) | (b << 16);
 							fb_mode->driver->set_palette(i, r, g, b);
 						}
