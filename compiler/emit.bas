@@ -2044,7 +2044,7 @@ sub hSaveAsmHeader( byval asmf as integer )
 	hWriteStr asmf, TRUE,  ".arch i386"
 
     hWriteStr asmf, FALSE, ""
-    hWriteStr asmf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (freeBASIC v0.01)"
+    hWriteStr asmf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"
 
     entry = env.infile
     entry = hStripPath( hStripExt( entry ) )
@@ -2113,7 +2113,7 @@ sub hSaveAsmFooter( byval asmf as integer )
 
     hSaveAsmInitProc asmf
 
-    hWriteStr asmf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation finished at " + time$ + " (freeBASIC v0.01)"
+    hWriteStr asmf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation finished at " + time$ + " (" + FB.SIGN + ")"
 end sub
 
 

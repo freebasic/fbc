@@ -21,6 +21,8 @@ const TRUE%			= -1
 const FALSE%		= 0
 const INVALID%		= -1
 
+''
+const FB.SIGN$					= "FreeBASIC v0.05b"
 
 '' paths
 const FB.BINPATH$				= "\bin\"
