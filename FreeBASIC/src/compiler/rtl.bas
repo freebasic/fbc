@@ -4544,6 +4544,9 @@ function rtlGfxBload( byval filename as integer, byval dexpr as integer ) as int
  	end if
 
     '' byval dexpr as integer
+    if( dexpr = INVALID ) then
+    	dexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    end if
     if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
