@@ -193,6 +193,11 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				else
 					length = 1;
 				break;
+			
+			case ' ':
+			case '\t':
+				c++;
+				break;
 
 			default:
 				goto error;
