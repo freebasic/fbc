@@ -201,6 +201,5 @@ int fb_ConsoleKeyHit( void )
 	if( !fb_con.inited )
 		return (feof(stdin)? 0: 1);
 
-	return (feof(fb_con.f_in)? 0: 1);
-
+	return (fb_hGetCh() >= 0);
 }
