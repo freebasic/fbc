@@ -64,8 +64,7 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 static Display *display;
-static 
-Visual *visual;
+static Visual *visual;
 static XF86VidModeModeInfo *mode;
 static XF86VidModeModeInfo **modes_info;
 static int screen;
