@@ -133,8 +133,8 @@ void fb_GfxPrintBuffer (char *str, int mask)
     if (str == NULL) length = 0; else length = -1;
 
  	after = 0;
- 	if( (mask & FB_PRINT_NEWLINE) != 0 )
- 		after = 13;
+ 	//if( (mask & FB_PRINT_NEWLINE) != 0 )
+ 	//	after = 13;
 
     while (length != 0 || after != 0)
     {
