@@ -1554,7 +1554,7 @@ function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function astGetUDTElm( byval n as integer ) as FBTYPELEMENT ptr static
+function astGetUDTElm( byval n as integer ) as FBSYMBOL ptr static
 
 	astGetUDTElm = NULL
 
@@ -2378,7 +2378,7 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewVAREx( byval symbol as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval ofs as integer, byval dtype as integer ) as integer static
+function astNewVAREx( byval symbol as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer ) as integer static
     dim n as integer
 
 	'' alloc new node
@@ -2446,8 +2446,8 @@ function asthEmitIDX( byval v as integer, byval ofs as integer, byval lgt as int
 
     s = astTB(v).var.sym
 
-    isdyn = symbGetVarIsDynamic( s )
-    diff  = symbGetVarDiff( s )
+    isdyn = symbGetIsDynamic( s )
+    diff  = symbGetArrayDiff( s )
 
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
 	if( not isdyn ) then
@@ -2511,11 +2511,20 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewADDR( byval op as integer, byval p as integer ) as integer static
+function astNewADDR( byval op as integer, byval p as integer, byval dtype as integer = INVALID ) as integer static
     dim n as integer
 
+	if( p = INVALID ) then
+		astNewADDR = INVALID
+		exit function
+	end if
+
+	if( dtype = INVALID ) then
+		dtype = astTB(p).dtype
+	end if
+
 	'' alloc new node
-	n = astNew( AST.NODETYPE.ADDR, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+	n = astNew( AST.NODETYPE.ADDR, IR.DATATYPE.POINTER + dtype )
 	astNewADDR = n
 
 	if( n = INVALID ) then
@@ -2593,7 +2602,7 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewPTREx( byval s as FBSYMBOL ptr, byval elm as FBTYPELEMENT ptr, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer static
+function astNewPTREx( byval s as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, byval ofs as integer, byval dtype as integer, byval expr as integer ) as integer static
     dim n as integer
 
 	'' alloc new node
@@ -2662,7 +2671,7 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
     dim n as integer
     dim dt1 as integer, dt2 as integer
     dim dc1 as integer, dc2 as integer
-    dim lgt as integer, elm as FBTYPELEMENT ptr
+    dim lgt as integer, elm as FBSYMBOL ptr
 
 	astNewASSIGN = INVALID
 
@@ -2704,7 +2713,7 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
 		'' check if it's not an UDT field
 		elm = astGetUDTElm( l )
 		if( elm <> NULL ) then
-			lgt = symbGetUDTLen( symbGetUDTElmSubtype( elm ) )
+			lgt = symbGetUDTLen( symbGetSubtype( elm ) )
 		else
 			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( l ) ) )
 		end if
@@ -2897,7 +2906,7 @@ end function
 
 '':::::
 private function hCheckParam( byval f as integer, byval n as integer )
-    dim proc as FBSYMBOL ptr, arg as FBPROCARG ptr, s as FBSYMBOL ptr, e as FBTYPELEMENT ptr
+    dim proc as FBSYMBOL ptr, arg as FBPROCARG ptr, s as FBSYMBOL ptr, e as FBSYMBOL ptr
     dim p as integer, typ as integer, t as integer
     dim adtype as integer, adclass as integer, pmode as integer
     dim pdtype as integer, pdclass as integer, amode as integer
@@ -2936,7 +2945,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			e = astGetUDTElm( p )
 			if( e <> NULL ) then
 				'' not an array?
-				if( symbGetUDTElmDimensions( e ) = 0 ) then
+				if( symbGetArrayDimensions( e ) = 0 ) then
 					hReportParamError proc, f
 					exit function
 				end if
@@ -2954,7 +2963,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 				'' not an argument passed by descriptor?
 				if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
-					if( symbGetVarDescriptor( s ) = NULL ) then
+					if( symbGetArrayDescriptor( s ) = NULL ) then
 						hReportParamError proc, f
 						exit function
 					end if
@@ -3002,7 +3011,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 				e = astGetUDTElm( p )
 				if( e <> NULL ) then
-					s = symbGetUDTElmSubtype( e )
+					s = symbGetSubtype( e )
 				else
 					s = symbGetSubtype( astGetSymbol( p ) )
 				end if
@@ -3015,7 +3024,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 				'' set the length if it's been passed by value
 				if( amode = FB.ARGMODE.BYVAL ) then
 					if( e <> NULL ) then
-						astTB(n).param.lgt = symbGetUDTElmLen( e )
+						astTB(n).param.lgt = symbGetLen( e )
 					else
 						astTB(n).param.lgt = symbGetUDTLen( s )
 					end if
