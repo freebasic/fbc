@@ -1,5 +1,5 @@
-#ifndef QB_GFX_MAIN_H_
-#define QB_GFX_MAIN_H_
+#ifndef QB_GFX_MAIN_H
+#define QB_GFX_MAIN_H
 
 #include <SDL/SDL.h>
 #include "../rtlib/fb.h"
@@ -78,6 +78,19 @@ struct fb_GfxInfoStruct
     char           textCoords;
 };
 
+#ifndef FBGFX_NO_GFXINFO_EXTERN
+extern struct fb_GfxInfoStruct fb_GfxInfo;
+#endif
+
+#define SANITY_CHECK_CONDITION   (!fb_GfxInfo.sdlIsInitialized || !fb_GfxInfo.screen || !fb_GfxInfo.videoIsInitialized)
+#define SANITY_CHECK   			 if (SANITY_CHECK_CONDITION) return;
+
+/* ----- Defines for pixel clipping tests */
+#define clip_xmin fb_GfxInfo.screen->clip_rect.x
+#define clip_xmax fb_GfxInfo.screen->clip_rect.x + fb_GfxInfo.screen->clip_rect.w-1
+#define clip_ymin fb_GfxInfo.screen->clip_rect.y
+#define clip_ymax fb_GfxInfo.screen->clip_rect.y + fb_GfxInfo.screen->clip_rect.h-1
+
 /* Sets what type of events Inkey/InkeyEx removes from the queue
    Default is SDL_ALLEVENTS
    Takes an int in the same format as SDL_PeepEvents */
@@ -86,7 +99,7 @@ FBCALL void fb_GfxSetEventMask (int mask);
        FBSTRING* fb_GfxInkey(void);
        int fb_GfxInkeyEx    (void);
 
-FBCALL int fb_GfxScreen     (int width, int height, int depth, int fullScreenFlag);
+FBCALL int fb_GfxScreen (int width, int height, int depth, int fullScreenFlag);
 
 /* -32768 in each for full screen */
 FBCALL int fb_GfxView       (int x1, int y1, int x2, int y2,

@@ -21,16 +21,18 @@
 */
 
 #include "QB_gfx_main.h"
+
+#define FBGFX_NO_PALEMU_EXTERN
 #include "QB_gfx_pal.h"
+#undef FBGFX_NO_PALEMU_EXTERN
 
-#define SANITY_CHECK_CONDITION   (!fb_GfxInfo.sdlIsInitialized || !fb_GfxInfo.screen || !fb_GfxInfo.videoIsInitialized)
-#define SANITY_CHECK             if (SANITY_CHECK_CONDITION) return -1;
+//#define SANITY_CHECK_CONDITION   (!fb_GfxInfo.sdlIsInitialized || !fb_GfxInfo.screen || !fb_GfxInfo.videoIsInitialized)
+//#define SANITY_CHECK             if (SANITY_CHECK_CONDITION) return -1;
 
-extern struct fb_GfxInfoStruct fb_GfxInfo;
+//extern struct fb_GfxInfoStruct fb_GfxInfo;
 
 /*  r, g, and b range from 0 to 255 */
 static int fb_GfxPaletteEx  	(Uint8 attribute, Uint8 r, Uint8 g, Uint8 b);
-
 
 const SDL_Color fb_GfxDefaultPal[256] = {
 #include "defaultPalette.h"
@@ -38,7 +40,20 @@ const SDL_Color fb_GfxDefaultPal[256] = {
 
 struct fb_GfxVgaPalEmuStruct fb_GfxVgaPalEmu = {0, 0, 0, 0, {0, 0, 0}};
 
+/*
+ *   Used by fb_GfxScreenEx
+ */
+void fb_GfxResetVgaPalEmu (void)
+{
+    fb_GfxVgaPalEmu.readColor = 0;
+    fb_GfxVgaPalEmu.writeColor = 0;
+    fb_GfxVgaPalEmu.readIndex = 0;
+    fb_GfxVgaPalEmu.writeIndex = 0;
+}
 
+/*
+ *   Used by fb_GfxFlip
+ */
 void fb_GfxFlushPalette (void)
 {
     SDL_Palette *p;
@@ -52,7 +67,7 @@ FBCALL int fb_GfxPalette (Uint32 attribute, Uint32 color)
 {
     Uint8 r, g, b;
 
-    SANITY_CHECK
+    if (SANITY_CHECK_CONDITION) return -1;
     
     if( attribute == 0xFFFFFFFF )
     {
@@ -81,7 +96,7 @@ static int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
 {
     SDL_Color c;
     
-    SANITY_CHECK
+    if (SANITY_CHECK_CONDITION) return -1;
     
     fb_GfxInfo.paletteChanged = 1;
 
@@ -103,83 +118,3 @@ FBCALL void fb_GfxPaletteUsing( int *src )
     
 }
 
-
-FBCALL void fb_GfxPaletteOut (int port, int data)
-{
-    if (SANITY_CHECK_CONDITION) return;
-    
-    data &= 0xFF;
-
-    switch (port)
-    {
-    case 0x3C7:
-
-        fb_GfxVgaPalEmu.readColor = data;
-        fb_GfxVgaPalEmu.readIndex = 0;
-
-        break;
-    case 0x3C8:
-
-        fb_GfxVgaPalEmu.writeColor = data;
-        fb_GfxVgaPalEmu.writeIndex = 0;
-
-        break;
-    case 0x3C9:
-
-        /* shifting right/left by 2 would make the display look slightly
-           darker: (0 to 252) instead of (0 to 255), 63 << 2 = 252 */
-        fb_GfxVgaPalEmu.rgbOut[fb_GfxVgaPalEmu.writeIndex++] = (Uint8)(data * (255.0f / 63.0f) + .5f);
-        
-        if (fb_GfxVgaPalEmu.writeIndex >= 3)
-        {
-            fb_GfxPaletteEx(fb_GfxVgaPalEmu.writeColor++, fb_GfxVgaPalEmu.rgbOut[0],
-                                                          fb_GfxVgaPalEmu.rgbOut[1],
-                                                          fb_GfxVgaPalEmu.rgbOut[2]);
-            fb_GfxVgaPalEmu.writeIndex = 0;
-        }
-        
-        break;
-    }
-}
-
-static int fb_GfxInpEx (void)
-{
-    int ret;
-    SDL_Color *c;
-    
-    SANITY_CHECK
-    
-    if (fb_GfxInfo.screen->format->BytesPerPixel != 1) return 0;
-    
-    c = fb_GfxInfo.screen->format->palette->colors + fb_GfxVgaPalEmu.readColor;
-    
-    switch (fb_GfxVgaPalEmu.readIndex)
-    {
-    case 0:
-        ret = c->r;
-        break;
-    case 1:
-        ret = c->g;
-        break;
-    default:  /* could only be 2 */
-        ret = c->b;
-        break;
-    }
-
-    if (++fb_GfxVgaPalEmu.readIndex >= 3)
-    {
-        fb_GfxVgaPalEmu.readColor++;
-        fb_GfxVgaPalEmu.readIndex = 0;
-    }
-    
-    /* shifting right/left by 2 would make the display look slightly
-       darker: (0 to 252) instead of (0 to 255), 63 << 2 = 252 */
-    return (int)(ret * (63.0f / 255.0f) + .5f);  
-}
-
-FBCALL int fb_GfxPaletteInp (int port)
-{
-    if (port == 0x3C9) return fb_GfxInpEx();
-    
-    return 0;
-}

@@ -4,6 +4,11 @@
 #include <SDL/SDL.h>
 #include "../rtlib/fb.h"
 
+#ifndef FBGFX_NO_FONTDATA_EXTERN
+extern const Uint8 fb_GfxDefaultFont8x8[2048];
+extern const Uint8 fb_GfxDefaultFont8x16[4096];
+#endif
+
 /* If using text coordinates: width x height is the desired text resolution, width will
                               select the best match (either 8x8 or 8x16) for the
                               screen/view (depending on affectedByViewFlag)
