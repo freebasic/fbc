@@ -13,7 +13,9 @@
 
 '$INCLUDE: 'al/al.bi'
 '$INCLUDE: 'al/alu.bi'
+#ifndef FB__LINUX
 '$INCLIB: 'ALut'
+#endif
 
 declare sub alutInit cdecl ALIAS "alutInit" (byval argc as ALint ptr, byval argv as ALbyte ptr ptr)
 declare sub alutExit cdecl ALIAS "alutExit" ()

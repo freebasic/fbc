@@ -17,8 +17,12 @@ CONST FRACTIONMASK      = ((1 SHL FRACTIONBITS) - 1)
 const OUTPUTCHANNELS    = 2
 
 '$INCLUDE: 'al/altypes.bi'
+#ifdef FB__WIN32
 '$INCLIB: 'OpenAL32'
 '$INCLIB: 'ALut'
+#elseif defined(FB__LINUX)
+'$INCLIB: 'openal'
+#endif
 
 
 ' Type Conversion Functions

@@ -14,7 +14,11 @@
 
 #define OPENAL
 
+#ifdef FB__WIN32
 '$INCLIB: 'OpenAL32'
+#elseif defined(FB__LINUX)
+'$INCLIB: 'openal'
+#endif
 
 #ifndef AL_NO_PROTOTYPES
 
