@@ -61,12 +61,11 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 				scrolloff = TRUE;
 	}
 
-	HANDLE 	hnd;
-	DWORD 	mode;
+	HANDLE hnd = GetStdHandle( STD_OUTPUT_HANDLE );
+	DWORD  mode, byteswritten;
 
 	if( scrolloff )
 	{
-		hnd = GetStdHandle( STD_OUTPUT_HANDLE );
 		GetConsoleMode( hnd, &mode );
 		SetConsoleMode( hnd, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
 	}
@@ -86,7 +85,14 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
      	}
 	}
 
-	printf( "%s", buffer );
+    /* */
+	while( WriteFile( hnd, buffer, len, &byteswritten, NULL ) == TRUE )
+	{
+		buffer += byteswritten;
+		len -= byteswritten;
+		if( len <= 0 )
+			break;
+	}
 
 	if( scrolloff )
 		SetConsoleMode( hnd, mode );
