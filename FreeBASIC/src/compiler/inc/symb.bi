@@ -111,8 +111,8 @@ declare function 	symbAddKeyword			( symbol as string, byval id as integer, byva
 declare function 	symbAddDefine			( symbol as string, text as string, _
 											  byval args as integer = 0, byval arghead as FBDEFARG ptr = NULL ) as FBSYMBOL ptr
 declare function 	symbAddDefineArg		( byval lastarg as FBDEFARG ptr, symbol as string ) as FBDEFARG ptr
-declare function 	symbAddLabel			( symbol as string ) as FBSYMBOL ptr
-declare function 	symbAddLabelEx			( symbol as string, byval declaring as integer, byval createalias as integer = FALSE ) as FBSYMBOL ptr
+declare function 	symbAddLabel			( symbol as string, byval declaring as integer = TRUE, _
+											  byval createalias as integer = FALSE ) as FBSYMBOL ptr
 declare function 	symbAddVar				( symbol as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
 					  						  byval dimensions as integer, dTB() as FBARRAYDIM, _
 				      						  byval alloctype as integer ) as FBSYMBOL ptr

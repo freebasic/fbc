@@ -1,7 +1,4 @@
 
-[ ] add RGB as macro (#define()) and maybe others -- SGN()? LOWORD, HIWORD, LOBYTE, HIBYTE,
-                                                     BITSET, BITRESET, BIT, etc
-
 [ ] OPTION's should be preserved when changed inside include files
 
 [ ] add support for BYVAL strings -- they are a pointers already, so when used as argument AST

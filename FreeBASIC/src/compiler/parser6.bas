@@ -52,7 +52,7 @@ function cGotoStmt
 		lexSkipToken
 		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
-			l = symbAddLabelEx( lexTokenText, FALSE )
+			l = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
 		lexSkipToken
 
@@ -65,7 +65,7 @@ function cGotoStmt
 		lexSkipToken
 		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
-			l = symbAddLabelEx( lexTokenText, FALSE )
+			l = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
 		lexSkipToken
 
@@ -82,7 +82,7 @@ function cGotoStmt
 
 			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 			if( l = NULL ) then
-				l = symbAddLabelEx( lexTokenText, FALSE )
+				l = symbAddLabel( lexTokenText, FALSE, TRUE )
 			end if
 			lexSkipToken
 
@@ -271,7 +271,7 @@ function cDataStmt
 		if( not hIsSttSeparatorOrComment( lexCurrentToken ) ) then
 			s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 			if( s = NULL ) then
-				s = symbAddLabelEx( lexTokenText, FALSE )
+				s = symbAddLabel( lexTokenText, FALSE, TRUE )
 			end if
 			lexSkipToken
 		end if
@@ -1167,7 +1167,7 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 		'' Label
 		labelTB(l) = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( labelTB(l) = NULL ) then
-			labelTB(l) = symbAddLabelEx( lexTokenText, FALSE )
+			labelTB(l) = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
 		lexSkipToken
 
@@ -1280,7 +1280,7 @@ function cOnStmt
 		'' Label
 		label = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( label = NULL ) then
-			label = symbAddLabelEx( lexTokenText, FALSE )
+			label = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
 		lexSkipToken
 

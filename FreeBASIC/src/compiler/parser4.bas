@@ -164,7 +164,7 @@ function cSingleIfStatement( byval expr as integer )
 	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
 		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
-			l = symbAddLabelEx( lexTokenText, FALSE )
+			l = symbAddLabel( lexTokenText, FALSE, TRUE )
 		end if
 		lexSkipToken
 

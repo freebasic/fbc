@@ -200,7 +200,7 @@ end function
 ''                |   ID ':' .
 ''
 function cLabel
-    dim token as integer, l as FBSYMBOL ptr, lname as string
+    dim token as integer, l as FBSYMBOL ptr
 
     cLabel = FALSE
 
@@ -212,7 +212,7 @@ function cLabel
     select case lexCurrentTokenClass
     case FB.TKCLASS.NUMLITERAL
 		if( lexTokenType = FB.SYMBTYPE.INTEGER ) then
-			l = symbAddLabel( lexTokenText )
+			l = symbAddLabel( lexTokenText, TRUE, TRUE )
 			if( l = NULL ) then
 				hReportError FB.ERRMSG.DUPDEFINITION
 				exit function
@@ -231,7 +231,7 @@ function cLabel
 				exit function
 			end if
 
-			l = symbAddLabel( lexTokenText )
+			l = symbAddLabel( lexTokenText, TRUE, TRUE )
 			if( l = NULL ) then
 				hReportError FB.ERRMSG.DUPDEFINITION
 				exit function
@@ -247,7 +247,7 @@ function cLabel
 
     if( l <> NULL ) then
 
-    	lname = symbGetName( l )
+    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
     	irEmitLABEL l, (env.scope = 0)
 
     	symbSetLastLabel l
@@ -332,9 +332,11 @@ function cDirective
 
 		else
 			'' '\''
-			if( not hMatch( CHAR_APOST ) ) then
+			if( lexCurrentToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
+			else
+				lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOWHITESPC )
 			end if
 
 			lexReadLine CHAR_APOST, incfile
@@ -2410,10 +2412,10 @@ function cOptDecl
 
 		'' NOKEYWORD? (ditto..)
 		case "NOKEYWORD"
-			lexSkipToken
+			lexSkipToken( LEXCHECK_NODEFINE )
 
 			do
-				select case lexCurrentTokenClass
+				select case lexCurrentTokenClass( LEXCHECK_NODEFINE )
 				case FB.TKCLASS.KEYWORD
 					if( not symbDelKeyword( lexTokenSymbol ) ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
@@ -2425,18 +2427,26 @@ function cOptDecl
 				case FB.TKCLASS.IDENTIFIER
 					'' proc?
 					s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
-					if( s = NULL ) then
-						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-						exit function
-					end if
+					if( s <> NULL ) then
 
-					'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
-					if( symbGetProcLib( s ) <> "fb" ) then
-						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-						exit function
-					end if
+						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
+						if( symbGetProcLib( s ) <> "fb" ) then
+							hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+							exit function
+						end if
 
-					symbDelPrototype s
+						symbDelPrototype s
+					else
+
+						'' macro?
+						s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.DEFINE )
+						if( s = NULL ) then
+							hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+							exit function
+						end if
+
+						symbDelDefine s
+					end if
 
 					lexSkipToken
 
@@ -2445,8 +2455,14 @@ function cOptDecl
 					exit function
 				end select
 
-			'' ','?
-			loop while( hMatch( CHAR_COMMA ) )
+				'' ','?
+				if( lexCurrentToken <> CHAR_COMMA ) then
+					exit do
+				else
+					lexSkipToken( LEXCHECK_NODEFINE )
+				end if
+
+			loop
 
 		case else
 			hReportError FB.ERRMSG.SYNTAXERROR

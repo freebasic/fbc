@@ -846,15 +846,31 @@ sub emitSTORE2INT ( dname as string, byval dvreg as IRVREG ptr, byval ddclass as
 			outp "fistp dword ptr [esp]"
 
 			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
-			if( not isedxfree ) then
-				emithPUSH "edx"
-			end if
 
-			outp "mov dl, byte ptr [esp]"
-			emithMOV dst, "dl"
+            '' handle DI/SI as destine
+            if( (dvreg->typ = IR.VREGTYPE.REG) and _
+            	((dvreg->reg = EMIT.INTREG.ESI) or (dvreg->reg = EMIT.INTREG.EDI)) ) then
+            	if( irIsSigned( dvreg->dtype ) ) then
+            		ostr = "movsx "
+            		ostr += dst
+            		ostr = + ", byte ptr [esp]"
+            		outp ostr
+            	else
+            		ostr = "movzx "
+            		ostr += dst
+            		ostr = + ", byte ptr [esp]"
+            		outp ostr
+            	end if
 
-			if( not isedxfree ) then
-				emithPOP "edx"
+			else
+				if( not isedxfree ) then
+					emithPUSH "edx"
+				end if
+				outp "mov dl, byte ptr [esp]"
+				emithMOV dst, "dl"
+				if( not isedxfree ) then
+					emithPOP "edx"
+				end if
 			end if
 
 			outp "add esp, 4"
@@ -924,7 +940,24 @@ storeSIDI:			isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS
 					end if
 
 					emithMOV "dx", ext
-					emithMOV dst, "dl"
+
+            		'' handle DI/SI as destine
+            		if( (dvreg->typ = IR.VREGTYPE.REG) and _
+            			((dvreg->reg = EMIT.INTREG.ESI) or (dvreg->reg = EMIT.INTREG.EDI)) ) then
+						if( irIsSigned( dvreg->dtype ) ) then
+							ostr = "movsx "
+							ostr += dst
+							ostr += ", dl"
+							outp ostr
+						else
+							ostr = "movzx "
+							ostr += dst
+							ostr += ", dl"
+							outp ostr
+						end if
+					else
+						emithMOV dst, "dl"
+					end if
 
 					if( not isedxfree ) then
 						emithPOP "edx"
@@ -1164,7 +1197,14 @@ loadSIDI:				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS
 						end if
 
 						hPrepOperand( sname, svreg->ofs, dvreg->dtype, svreg->typ, src )
-						emithMOV "dl", src
+
+						'' handle SI/DI as source
+						if( (svreg->typ = IR.VREGTYPE.REG) and _
+            				((svreg->reg = EMIT.INTREG.ESI) or (svreg->reg = EMIT.INTREG.EDI)) ) then
+							emithMOV "dx", src
+						else
+							emithMOV "dl", src
+						end if
 
 						if( irIsSigned( svreg->dtype ) ) then
 							ostr = "movsx "
@@ -1210,8 +1250,26 @@ loadSIDI:				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS
 
 			outp "sub esp, 4"
             outp "fistp dword ptr [esp]"
-            outp "pop edx"
-            emithMOV dst, "dl"
+
+            '' handle DI/SI as destine
+            if( (dvreg->typ = IR.VREGTYPE.REG) and _
+            	((dvreg->reg = EMIT.INTREG.ESI) or (dvreg->reg = EMIT.INTREG.EDI)) ) then
+				if( irIsSigned( dvreg->dtype ) ) then
+					ostr = "movsx "
+					ostr += dst
+					ostr += ", byte ptr [esp]"
+					outp ostr
+				else
+					ostr = "movzx "
+					ostr += dst
+					ostr += ", byte ptr [esp]"
+					outp ostr
+				end if
+				outp "add esp, 4"
+            else
+            	outp "pop edx"
+            	emithMOV dst, "dl"
+            end if
 
 			if( not isedxfree ) then
 				emithPOP "edx"

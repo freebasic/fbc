@@ -1006,11 +1006,12 @@ function symbAddConst( symbol as string, byval typ as integer, text as string, b
 end function
 
 '':::::
-function symbAddLabelEx( symbol as string, byval declaring as integer, byval createalias as integer = FALSE ) as FBSYMBOL ptr static
+function symbAddLabel( symbol as string, byval declaring as integer = TRUE, _
+					   byval createalias as integer = FALSE ) as FBSYMBOL ptr static
     dim l as FBSYMBOL ptr
     dim lname as string, aname as string
 
-    symbAddLabelEx = NULL
+    symbAddLabel = NULL
 
     '' check if label already exists
     l = symbFindByNameAndClass( symbol, FB.SYMBCLASS.LABEL )
@@ -1020,18 +1021,18 @@ function symbAddLabelEx( symbol as string, byval declaring as integer, byval cre
     			exit function
     		else
     			l->lbl.declared = TRUE
-    			symbAddLabelEx = l
+    			symbAddLabel = l
     			exit function
     		end if
     	else
-    		symbAddLabelEx = l
+    		symbAddLabel = l
     		exit function
     	end if
     end if
 
 	'' add the new label
 	if( not createalias ) then
-    	aname = hCreateName( symbol, FB.SYMBTYPE.FUNCTION, FALSE, TRUE, TRUE )
+    	aname = symbol
 	else
 		aname = hMakeTmpStr
 	end if
@@ -1043,14 +1044,7 @@ function symbAddLabelEx( symbol as string, byval declaring as integer, byval cre
 
 	l->lbl.declared = declaring
 
-	symbAddLabelEx = l
-
-end function
-
-'':::::
-function symbAddLabel( symbol as string ) as FBSYMBOL ptr static
-
-	symbAddLabel = symbAddLabelEx( symbol, TRUE, FALSE )
+	symbAddLabel = l
 
 end function
 
@@ -2569,7 +2563,22 @@ function symbDelKeyword( byval s as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
+private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
+	dim a as FBDEFARG ptr, n as FBDEFARG ptr
+
+    a = s->def.arghead
+    do while( a <> NULL )
+    	n = a->r
+    	a->name = ""
+    	listDelNode( @ctx.defarglist, a )
+    	a = n
+    loop
+
+end sub
+
+'':::::
 function symbDelDefine( byval s as FBSYMBOL ptr ) as integer static
+    dim arg as FBDEFARG ptr, narg as FBDEFARG ptr
 
     symbDelDefine = FALSE
 
@@ -2582,6 +2591,9 @@ function symbDelDefine( byval s as FBSYMBOL ptr ) as integer static
 	''
 	s->def.text = ""
 
+	hDelDefineArgs s
+
+    ''
     hFreeSymbol s
 
 	''

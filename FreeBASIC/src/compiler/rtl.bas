@@ -47,6 +47,11 @@ declare function	rtlCheckError		( byval resexpr as integer, byval reslabel as FB
 
 	redim shared ifuncTB( 0 ) as FBSYMBOL ptr
 
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
+'' FUNCTIONS
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
+
 '' name,alias,typ,mode, args, [arg typ,mode,optional[,value]]*args (same order as FB.IFUNC)
 ifuncdata:
 
@@ -696,12 +701,6 @@ data "screencopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
-'' fb_GfxRgb ( byval r as ubyte, byval g as ubyte, byval b as ubyte ) as uinteger
-data "rgb", "fb_GfxRgb", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE
-
 '' fb_GfxCursor ( number as integer) as single
 data "pointcoord", "fb_GfxCursor", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
 						           FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
@@ -1090,18 +1089,46 @@ data "chdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
 '' EOL
 data ""
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
+'' MACROS
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
 
+'' name, args, arg[0] to arg[n] names, macro text
+imacrodata:
+''#define RGB(r,g,b) ((cint(r) shl 16) or (cint(g) shl 8) or cint(b))
+data "RGB", 3, "R", "G", "B", "((cint(#R#) shl 16) or (cint(#G#) shl 8) or cint(#B#))"
+
+'#ifndef FB__BIGENDIAN
+''#define LOWORD(x) (cint(x) and &h0000FFFF)
+data "LOWORD", 1, "X", "(cint(#X#) and &h0000FFFF)"
+''#define HIWORD(x) (cunsg(cint(x)) shr 16)
+data "HIWORD", 1, "X", "(cunsg(cint(#X#)) shr 16)"
+''#define LOBYTE(x) (cint(x) and &h000000FF)
+data "LOBYTE", 1, "X", "(cint(#X#) and &h000000FF)"
+''#define HIBYTE(x) ((cunsg(cshort(x)) and &h0000FF00) shr 8)
+data "HIBYTE", 1, "X", "((cunsg(cint(#X#)) and &h0000FF00) shr 8)"
+''#define BIT(x,y) (((x) and (1 shl (y))) > 0)
+data "BIT", 2, "X", "Y", "(((#X#) and (1 shl (#Y#))) <> 0)"
+''#define BITSET(x,y) ((x) or (1 shl (y)))
+data "BITSET", 2, "X", "Y", "((#X#) or (1 shl (#Y#)))"
+''#define BITRESET(x,y) ((x) and not (y))
+data "BITRESET", 2, "X", "Y", "((#X#) and not (1 shl (#Y#)))"
+'#endif
+
+'' EOL
+data ""
+
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
+'' implementation
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub rtlInit static
+private sub hAddIntrinsicProcs
 	dim i as integer, a as integer
 	dim p as integer, pname as string, aname as string
 	dim args as integer, typ as integer, mode as integer
 	dim argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
-
-    ''
-	fbAddDefaultLibs
 
 	''
 	redim ifuncTB( 0 to FB.RTL.MAXFUNCTIONS-1 ) as FBSYMBOL ptr
@@ -1113,14 +1140,11 @@ sub rtlInit static
 		if( len( pname ) = 0 ) then
 			exit do
 		end if
-		read aname
-		read typ
-		read mode
-		read args
+
+		read aname, typ, mode, args
+
 		for a = 0 to args-1
-			read argv(a).typ
-			read argv(a).mode
-			read argv(a).optional
+			read argv(a).typ, argv(a).mode, argv(a).optional
 
 			if( argv(a).optional ) then
 				read argv(a).defvalue
@@ -1138,6 +1162,72 @@ sub rtlInit static
 		i = i + 1
 	loop
 
+end sub
+
+'':::::
+private sub hAddIntrinsicMacros
+	dim as integer i, args
+	dim as FBDEFARG ptr arghead, lastarg, arg
+	dim as string oldname, newname, mname, mtext, aname
+
+	restore imacrodata
+	do
+		read mname
+		if( len( mname ) = 0 ) then
+			exit do
+		end if
+
+		arghead = NULL
+		lastarg = NULL
+
+		'' for each argument, add it
+		read args
+		for i = 0 to args-1
+			read aname
+
+			lastarg = symbAddDefineArg( lastarg, aname )
+
+			if( arghead = NULL ) then
+				arghead = lastarg
+			end if
+		next i
+
+		read mtext
+
+    	'' replace the pattern by the one that Lex expects
+    	arg = arghead
+    	do while( arg <> NULL )
+        	oldname = "#"
+        	oldname += arg->name
+        	oldname += "#"
+
+        	newname = "\27"
+        	newname += hex$( arg )
+        	newname += "\27"
+
+        	hReplace( mtext, oldname, newname )
+
+        	arg = arg->r
+        loop
+
+        symbAddDefine( mname, mtext, args, arghead )
+
+	loop
+
+end sub
+
+'':::::
+sub rtlInit static
+
+    ''
+	fbAddDefaultLibs
+
+	''
+	hAddIntrinsicProcs
+
+	''
+	hAddIntrinsicMacros
+
 	''
 	ctx.datainited	= FALSE
 	ctx.lastlabel	= NULL
@@ -1149,6 +1239,8 @@ end sub
 sub rtlEnd
 
 	'' procs will be deleted when symbEnd is called
+
+	'' ditto with macros
 
 	erase ifuncTB
 
@@ -2083,7 +2175,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
     '' label already declared?
     s = symbFindByNameAndClass( lname, FB.SYMBCLASS.LABEL )
     if( s = NULL ) then
-       	s = symbAddLabelEx( lname, TRUE, TRUE )
+       	s = symbAddLabel( lname, TRUE, TRUE )
     end if
 
     '' byval labeladdrs as void ptr
@@ -2115,7 +2207,7 @@ sub rtlDataStoreBegin static
 	if( not ctx.datainited ) then
 		ctx.datainited = TRUE
 
-		l = symbAddLabelEx( FB.DATALABELNAME, TRUE, TRUE )
+		l = symbAddLabel( FB.DATALABELNAME, TRUE, TRUE )
 		if( l = NULL ) then
 			l = symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL )
 		end if
@@ -2135,7 +2227,7 @@ sub rtlDataStoreBegin static
     	lname = FB.DATALABELPREFIX + symbGetName( label )
     	l = symbFindByNameAndClass( lname, FB.SYMBCLASS.LABEL )
     	if( l = NULL ) then
-       		l = symbAddLabelEx( lname, TRUE, TRUE )
+       		l = symbAddLabel( lname, TRUE, TRUE )
     	end if
 
     	lname = symbGetName( l )
@@ -4475,7 +4567,7 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
 		f = ifuncTB(FB.RTL.GFXSCREENRES)
 	    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 5 )
 	end if
-	
+
  	'' byval m as integer
  	if( astNewPARAM( proc, wexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4486,7 +4578,7 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
 			exit function
 		end if
 	end if
-	
+
  	'' byval d as integer
  	if( dexpr = INVALID ) then
  		dexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )

@@ -2662,6 +2662,7 @@ end sub
 '':::::
 function astNewCONV( byval op as integer, byval dtype as integer, byval l as integer ) as integer static
     dim n as integer
+    dim dclass as integer
 
 	astNewCONV = INVALID
 
@@ -2669,8 +2670,11 @@ function astNewCONV( byval op as integer, byval dtype as integer, byval l as int
     	exit function
     end if
 
+    astUpdNodeResult l
+    dclass = irGetDataClass( astTB(l).dtype )
+
     '' string? can't operate
-    if( irGetDataClass( astTB(l).dtype ) = IR.DATACLASS.STRING ) then
+    if( dclass = IR.DATACLASS.STRING ) then
     	exit function
     end if
 
@@ -2681,11 +2685,54 @@ function astNewCONV( byval op as integer, byval dtype as integer, byval l as int
 
 	'' if it's just a sign conversion, change node's sign and create no new node
 	if( op <> INVALID ) then
+
+		'' float? invalid
+		if( dclass <> IR.DATACLASS.INTEGER ) then
+			exit function
+		end if
+
 		if( op = IR.OP.TOSIGNED ) then
 			astTB(l).dtype = irGetSignedType( astTB(l).dtype )
 		else
 			astTB(l).dtype = irGetUnsignedType( astTB(l).dtype )
 		end if
+
+		astNewCONV = l
+		exit function
+	end if
+
+	'' only convert if the classes are different (ie, floating<->integer) or
+	'' if sizes are different (ie, byte<->int)
+	if( (dclass = irGetDataClass( dtype )) and _
+		(irGetDataSize( astTB(l).dtype ) = irGetDataSize( dtype )) ) then
+
+		astTB(l).dtype = dtype
+
+		astNewCONV = l
+		exit function
+	end if
+
+	'' constant? evaluate at compile-time
+	if( astTB(l).defined ) then
+		select case as const dtype
+		case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
+			astTB(l).value = cbyte( astTB(l).value )
+
+		case IR.DATATYPE.SHORT, IR.DATATYPE.USHORT
+			astTB(l).value = cshort( astTB(l).value )
+
+		case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
+			astTB(l).value = cint( astTB(l).value )
+
+		case IR.DATATYPE.SINGLE
+			astTB(l).value = csng( astTB(l).value )
+
+		case IR.DATATYPE.DOUBLE
+			astTB(l).value = cdbl( astTB(l).value )
+
+		end select
+
+		astTB(l).dtype = dtype
 
 		astNewCONV = l
 		exit function
@@ -2718,15 +2765,8 @@ sub astLoadCONV( byval n as integer, vr as integer )
 
 	dtype = astTB(n).dtype
 
-	'' only convert if the classes are different (ie, floating<->integer) or
-	'' if sizes are different (ie, byte<->int)
-	if( (irGetVRDataClass( vs ) <> irGetDataClass( dtype )) or _
-		(irGetVRDataSize( vs ) <> irGetDataSize( dtype )) ) then
-		vr = irAllocVREG( dtype )
-		irEmitCONVERT vr, dtype, vs, INVALID
-	else
-		vr = vs
-	end if
+	vr = irAllocVREG( dtype )
+	irEmitCONVERT vr, dtype, vs, INVALID
 
 	astDel l
 

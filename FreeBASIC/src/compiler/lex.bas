@@ -410,13 +410,13 @@ end function
 ''
 
 '':::::
-''indentifier    = ALPHA { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
+''indentifier    = (ALPHA | '_') { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
 ''
 private sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, _
 							   dpos as integer, byval flags as LEXCHECK_ENUM ) static
 	dim c as integer
 
-	'' ALPHA
+	'' (ALPHA | '_')
 	*pid = lexEatChar
 	pid = pid + 1
 
@@ -849,10 +849,22 @@ reread:
 
 		'' line continuation?
 		case CHAR_UNDER
+			'' check for line cont?
 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				lexEatChar
-				islinecont = TRUE
-				continue do
+
+				'' is next char a valid identifier char? then, read it
+				select case as const lexLookAheadChar( )
+				case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
+                	goto readid
+
+				'' otherwise, skip until new-line is found
+				case else
+					lexEatChar
+					islinecont = TRUE
+					continue do
+				end select
+
+			'' else, take it as-is
 			else
 				exit do
 			end if
