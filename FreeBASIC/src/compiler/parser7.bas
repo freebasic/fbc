@@ -954,30 +954,30 @@ end function
 '' GfxScreen     =   SCREEN (num | ((expr ((',' expr)? ',' expr)? expr)?)
 ''
 function cGfxScreen as integer
-    dim wexpr as integer, hexpr as integer, dexpr as integer, fexpr as integer
+    dim mexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer
 
 	cGfxScreen = FALSE
 
-	if( not cExpression( wexpr ) ) then
+	if( not cExpression( mexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
 
-	hexpr = INVALID
 	dexpr = INVALID
+	pexpr = INVALID
 	fexpr = INVALID
-
-	'' (',' Expr )?
-	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( hexpr ) ) then
-			hexpr = INVALID
-		end if
-	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( dexpr ) ) then
 			dexpr = INVALID
+		end if
+	end if
+
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( pexpr ) ) then
+			pexpr = INVALID
 		end if
 	end if
 
@@ -989,7 +989,60 @@ function cGfxScreen as integer
 	end if
 
 	''
-	cGfxScreen = rtlGfxScreenSet( wexpr, hexpr, dexpr, fexpr )
+	cGfxScreen = rtlGfxScreenSet( mexpr, INVALID, dexpr, pexpr, fexpr )
+
+end function
+
+'':::::
+'' GfxScreenRes     =   SCREENRES expr ',' expr (((',' expr)? ',' expr)? ',' expr)?
+''
+function cGfxScreenRes as integer
+    dim wexpr as integer, hexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer
+
+	cGfxScreenRes = FALSE
+
+	if( not cExpression( wexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	if( not cExpression( hexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	dexpr = INVALID
+	pexpr = INVALID
+	fexpr = INVALID
+
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( dexpr ) ) then
+			dexpr = INVALID
+		end if
+	end if
+
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( pexpr ) ) then
+			pexpr = INVALID
+		end if
+	end if
+
+	'' (',' Expr )?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( fexpr ) ) then
+			fexpr = INVALID
+		end if
+	end if
+
+	''
+	cGfxScreenRes = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr )
 
 end function
 
@@ -1111,6 +1164,10 @@ function cGfxStmt as integer
 	case FB.TK.SCREEN
 		lexSkipToken
 		cGfxStmt = cGfxScreen
+
+	case FB.TK.SCREENRES
+		lexSkipToken
+		cGfxStmt = cGfxScreenRes
 
 	case FB.TK.BLOAD
 		lexSkipToken

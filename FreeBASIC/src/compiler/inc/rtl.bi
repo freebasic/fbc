@@ -149,6 +149,7 @@ enum FBRTL_ENUM
 	FB.RTL.GFXPUT
 	FB.RTL.GFXGET
 	FB.RTL.GFXSCREENSET
+	FB.RTL.GFXSCREENRES
 	FB.RTL.GFXBLOAD
 	FB.RTL.GFXBSAVE
 end enum
@@ -282,8 +283,8 @@ declare function	rtlGfxGet			( byval target as integer, byval targetisptr as int
 										  byval x2expr as integer, byval y2expr as integer, _
 										  byval arrayexpr as integer, byval isptr as integer, _
 										  byval symbol as FBSYMBOL ptr, byval coordtype as integer ) as integer
-declare function	rtlGfxScreenSet		( byval wexpr as integer, byval hexpr as integer, _
-										  byval dexpr as integer, byval fexpr as integer ) as integer
+declare function	rtlGfxScreenSet		( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, _
+										  byval pexpr as integer, byval fexpr as integer ) as integer
 declare function	rtlGfxBload			( byval filename as integer, byval dexpr as integer ) as integer
 declare function	rtlGfxBsave			( byval filaname as integer, byval sexpr as integer, _
 										  byval lexpr as integer ) as integer
