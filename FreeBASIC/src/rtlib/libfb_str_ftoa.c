@@ -27,37 +27,35 @@
 #include <stdio.h>
 #include "fb.h"
 
-
 /*:::::*/
 char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
 {
 	int len;
 	char *p;
-#ifndef WIN32
 	char fmtstr[16];
-#endif	
 
 	if( addblank == FB_TRUE )
 		p = &buffer[1];
 	else
 		p = buffer;
 
-#ifdef WIN32
-	_gcvt( val, precision, p );
-
-#else
-	sprintf( fmtstr, "%%.%dg", precision );
+	sprintf( fmtstr, "%%.%df", precision );
 
 	sprintf( p, fmtstr, val );
 
-#endif
-
 	len = strlen( p );
 
-	/* skip the dot at end if any */
 	if( len > 0 )
-		if( p[len-1] == '.' )
-			p[len-1] = '\0';
+	{
+		/* skip the zeros at end */
+		while( p[len-1] == '0' )
+			p[--len] = '\0';
+				
+		/* skip the dot at end if any */
+		if( len > 0 )
+			if( p[len-1] == '.' )
+				p[len-1] = '\0';
+	}
 
 	/* */
 	if( addblank == FB_TRUE )
@@ -72,5 +70,6 @@ char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
 	}
 	else
 		return p;
+
 }
 

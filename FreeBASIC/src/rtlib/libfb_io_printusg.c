@@ -255,7 +255,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 {
 	char 	buffer[BUFFERLEN+1], *p;
 	int 	c, nc, lc, d, i, j, len, intlgt;
-	int 	doexit, padchar, intdigs, decdigs;
+	int 	doexit, padchar, intdigs, decdigs, totdigs;
 	int		adddolar, addcomma, endcomma, signatend, isexp, isneg;
 
 
@@ -367,7 +367,17 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 	else
 	{
-		fb_hFloat2Str( value, buffer, 16, FB_FALSE );
+		if( decdigs <= 0 )
+			totdigs = intdigs;
+		else
+			totdigs = intdigs+decdigs-1;
+
+		if( totdigs <= 0 )
+			totdigs = 1;
+		else if( totdigs > 16 )
+			totdigs = 16;
+		
+		fb_hFloat2Str( value, buffer, totdigs, FB_FALSE );
 
 		len = strlen( buffer );
 		if( buffer[len-1] == '.' )
@@ -472,7 +482,16 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			memset( &buffer[len], '0', decdigs );
 			buffer[len+decdigs] = '\0';
 		}
+		else if( decdigs < 0 )
+			buffer[len+decdigs] = '\0';
 	}
+	else
+	{
+		p = strchr( buffer, '.' );
+		if( p != NULL )
+			*p = '\0';
+	}
+
 
 	// neg
 	if( signatend && isneg )

@@ -57,6 +57,9 @@ osdepobjs := $(patsubst $(osdeppath)/%.c,$(osdeppath)/obj/%.o,$(wildcard $(osdep
 obj/%.o : %.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
+obj/%.o : %.s
+	$(AS) $? -o $@
+
 $(osdeppath)/obj/%.o : $(osdeppath)/%.c
 	$(CC) -c $(CFLAGS) $? -o $@
 
