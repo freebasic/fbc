@@ -30,10 +30,14 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
+#include <X11/cursorfont.h>
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/xf86vmode.h>
 
 #include "../fb_gfx.h"
+
+#define CURSOR_ARROW		1
+#define CURSOR_NONE		0
 
 
 static int x11_init(char *title, int w, int h, int depth, int flags);
@@ -43,6 +47,7 @@ static void x11_unlock(void);
 static void x11_set_palette(int index, int r, int g, int b);
 static void x11_wait_vsync(void);
 static int x11_get_mouse(int *x, int *y, int *z, int *buttons);
+static void x11_set_mouse(int x, int y, int cursor);
 static void x11_set_window_title(char *title);
 
 
@@ -57,6 +62,7 @@ GFXDRIVER fb_gfxDriverX11 =
 	x11_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	x11_wait_vsync,		/* void (*wait_vsync)(void); */
 	x11_get_mouse,		/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
+	x11_set_mouse,		/* void (*set_mouse)(int x, int y, int cursor); */
 	x11_set_window_title	/* void (*set_window_title)(char *title); */
 };
 
@@ -71,7 +77,7 @@ static XF86VidModeModeInfo **modes_info;
 static int screen;
 static Window window;
 static Atom wm_delete_window;
-static Cursor cursor;
+static Cursor blank_cursor, arrow_cursor;
 static Colormap color_map;
 static XImage *image;
 static XShmSegmentInfo shm_info;
@@ -80,7 +86,7 @@ static char *window_title;
 static BLITTER *blitter;
 static int mode_w, mode_h, mode_depth, mode_fullscreen;
 static int display_offset;
-static int is_running, is_shm, num_modes, has_focus;
+static int is_running, is_shm, num_modes, has_focus, cursor;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 static unsigned char keycode_to_scancode[256];
 
@@ -146,6 +152,16 @@ static int calc_comp_height( int h )
 
 
 /*:::::*/
+static void set_cursor(Cursor c)
+{
+	XUndefineCursor(display, window);
+	if (mode_fullscreen)
+		c = blank_cursor;
+	XDefineCursor(display, window, c);
+}
+
+
+/*:::::*/
 static int private_init(void)
 {
 	XPixmapFormatValues *format;
@@ -162,11 +178,12 @@ static int private_init(void)
 	mode = NULL;
 	modes_info = NULL;
 	window = None;
-	cursor = None;
 	color_map = None;
 	image = NULL;
 	is_shm = FALSE;
 	mouse_on = FALSE;
+	blank_cursor = None;
+	arrow_cursor = None;
 	
 	display = XOpenDisplay(NULL);
 	if (!display)
@@ -265,21 +282,7 @@ static int private_init(void)
 			if (XGrabPointer(display, window, False, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
 			    GrabModeAsync, GrabModeAsync, window, None, CurrentTime) != GrabSuccess)
 				return -1;
-			
-			pixmap = XCreatePixmap(display, window, 1, 1, 1);
-			gc_mask = GCFunction | GCForeground | GCBackground;
-			gc_values.function = GXcopy;
-			gc_values.foreground = gc_values.background = 0;
-			gc = XCreateGC(display, pixmap, gc_mask, &gc_values);
-			XDrawPoint(display, pixmap, gc, 0, 0);
-			XFreeGC(display, gc);
-			color.pixel = color.red = color.green = color.blue = 0;
-			color.flags = DoRed | DoGreen | DoBlue;
-			cursor = XCreatePixmapCursor(display, pixmap, pixmap, &color, &color, 0, 0);
-			XDefineCursor(display, window, cursor);
-			XFreePixmap(display, pixmap);
 		}
-		
 		is_shm = TRUE;
 		image = XShmCreateImage(display, visual, XDefaultDepth(display, screen),
 					ZPixmap, 0, &shm_info, mode_w, mode_h);
@@ -309,6 +312,19 @@ static int private_init(void)
 	}
 	if (!image)
 		return -1;
+	
+	pixmap = XCreatePixmap(display, window, 1, 1, 1);
+	gc_mask = GCFunction | GCForeground | GCBackground;
+	gc_values.function = GXcopy;
+	gc_values.foreground = gc_values.background = 0;
+	gc = XCreateGC(display, pixmap, gc_mask, &gc_values);
+	XDrawPoint(display, pixmap, gc, 0, 0);
+	XFreeGC(display, gc);
+	color.pixel = color.red = color.green = color.blue = 0;
+	color.flags = DoRed | DoGreen | DoBlue;
+	blank_cursor = XCreatePixmapCursor(display, pixmap, pixmap, &color, &color, 0, 0);
+	arrow_cursor = XCreateFontCursor(display, XC_left_ptr);
+	XFreePixmap(display, pixmap);
 	gc = DefaultGC(display, screen);
 	
 	XDisplayKeycodes(display, &keycode_min, &keycode_max);
@@ -358,9 +374,10 @@ static void private_exit(void)
 				free(image->data);
 			XDestroyImage(image);
 		}
-		if (cursor != None) {
+		if (arrow_cursor != None) {
 			XUndefineCursor(display, window);
-			XFreeCursor(display, cursor);
+			XFreeCursor(display, arrow_cursor);
+			XFreeCursor(display, blank_cursor);
 		}
 		if (color_map != None)
 			XFreeColormap(display, color_map);
@@ -383,6 +400,11 @@ static void *window_thread(void *arg)
 	is_running = TRUE;
 	if (private_init())
 		is_running = FALSE;
+	cursor = CURSOR_ARROW;
+	if (mode_fullscreen)
+		XDefineCursor(display, window, blank_cursor);
+	else
+		XDefineCursor(display, window, arrow_cursor);
 	
 	pthread_mutex_lock(&mutex);
 	pthread_cond_signal(&cond);
@@ -431,7 +453,11 @@ static void *window_thread(void *arg)
 				
 				case MotionNotify:
 					mouse_x = event.xmotion.x;
-					mouse_y = event.xmotion.y;
+					mouse_y = event.xmotion.y - display_offset;
+					if ((mouse_y < 0) || (mouse_y >= mode_h))
+						mouse_on = FALSE;
+					else
+						mouse_on = TRUE;
 					break;
 				
 				case ButtonPress:
@@ -465,6 +491,7 @@ static void *window_thread(void *arg)
 							}
 							fb_hRestorePalette();
 							fb_hMemSet(fb_mode->key, FALSE, 128);
+							set_cursor(cursor == CURSOR_ARROW ? arrow_cursor : blank_cursor);
 						}
 						else if ((XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1) && (key != 0x7F))
 							fb_hPostKey(key);
@@ -599,6 +626,26 @@ static int x11_get_mouse(int *x, int *y, int *z, int *buttons)
 	*buttons = mouse_buttons;
 	
 	return 0;
+}
+
+
+/*:::::*/
+static void x11_set_mouse(int x, int y, int show)
+{
+	if ((x >= 0) && (has_focus)) {
+		mouse_on = TRUE;
+		mouse_x = MID(0, x, mode_w - 1);
+		mouse_y = MID(0, y, mode_h - 1) + display_offset;
+		XWarpPointer(display, None, window, 0, 0, 0, 0, mouse_x, mouse_y);
+	}
+	if ((show > 0) && (cursor == CURSOR_NONE)) {
+		set_cursor(arrow_cursor);
+		cursor = CURSOR_ARROW;
+	}
+	else if ((show == 0) && (cursor == CURSOR_ARROW)) {
+		set_cursor(blank_cursor);
+		cursor = CURSOR_NONE;
+	}
 }
 
 
