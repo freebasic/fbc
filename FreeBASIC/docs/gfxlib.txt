@@ -2284,6 +2284,14 @@ driver selection path.
 Appendix F: Hints
 ==============================================================================
 
+- Avoid double buffering whenever possible; gfxlib already uses a double
+  buffering system internally to keep the screen updated, so using your own
+  double buffer will just mean an additional (unneeded) screen copy, thus a
+  slowdown. Use the provided page flipping capabilities exported via the
+  SCREENSET statement; see the MULTIKEY example provided in this doc, or see
+  the fbgfx_flame.bas source in your FreeBASIC/examples/gfx directory.
+
+
 - Other than normal arrays, GET and PUT support pointers as pixel data holder;
   the following code will work:
 
@@ -2317,6 +2325,7 @@ Appendix F: Hints
   
   Here we used GET for the example, but the concept applies to PUT as well.
 
+
 - All gfx primitives can work on GET/PUT buffers. This means you can have any
   number of offscreen surfaces of any size where to draw your stuff, and blit
   your buffers later onto the screen:
@@ -2343,6 +2352,7 @@ Appendix F: Hints
   Of course the optional target buffer parameter passed to all gfx primitives
   can be an array as well as a pointer, as in the case of GET/PUT pixel data
   holders.
+
 
 - You can enhance the PRINT functionality by using a custom routine that uses
   the internal predefined gfx fonts. The following snippet defines a new
