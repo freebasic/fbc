@@ -6,33 +6,18 @@ option private
 #define NULL 0
 
 '':::::
-function asstring( byval p as byte ptr ) as string
-	asstring = *p
-end function
-
-'':::::
 sub processNode( byval reader as xmlTextReaderPtr )
-    dim constname as xmlChar ptr, value as xmlChar ptr
-    dim namestr as string
+    dim constname as zstring ptr, value as zstring ptr
 
     constname = xmlTextReaderConstName( reader )
-    if( constname = NULL ) then
-		namestr = "--"
-	else
-		namestr = *constname
-	end if
 
     value = xmlTextReaderConstValue( reader )
 
     print xmlTextReaderDepth( reader ); xmlTextReaderNodeType( reader ); _
-	      namestr; _
+	      " "; *constname; _
 	      xmlTextReaderIsEmptyElement(reader); xmlTextReaderHasValue( reader );
     
-    if( value = NULL ) then
-		print
-    else
-		print asstring( value )
-    end if
+	print *value
 end sub
 
 '':::::

@@ -53,8 +53,8 @@ Declare Function TTF_FontDescent SDLCALL alias "TTF_FontDescent" (byval font as 
 Declare Function TTF_FontLineSkip SDLCALL alias "TTF_FontLineSkip" (byval font as TTF_Font) as integer
 Declare Function TTF_FontFaces SDLCALL alias "TTF_FontFaces" (byval font as TTF_Font) as integer
 Declare Function TTF_FontFaceIsFixedWidth SDLCALL alias "TTF_FontFaceIsFixedWidth" (byval font as TTF_Font) as integer
-Declare Function TTF_FontFaceFamilyName SDLCALL alias "TTF_FontFaceFamilyName" (byval font as TTF_Font) as byte ptr
-Declare Function TTF_FontFaceStyleName SDLCALL alias "TTF_FontFaceStyleName" (byval font as TTF_Font) as byte ptr
+Declare Function TTF_FontFaceFamilyName SDLCALL alias "TTF_FontFaceFamilyName" (byval font as TTF_Font) as zstring ptr
+Declare Function TTF_FontFaceStyleName SDLCALL alias "TTF_FontFaceStyleName" (byval font as TTF_Font) as zstring ptr
 
 Declare Function TTF_GlyphMetrics SDLCALL alias "TTF_GlyphMetrics" (byval font as TTF_Font, byval ch as Uint16, byval minx as integer ptr, byval maxx as integer ptr, byval miny as integer ptr, byval maxy as integer ptr, byval advance as integer ptr) as integer
 

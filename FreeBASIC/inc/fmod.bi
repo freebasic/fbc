@@ -446,7 +446,7 @@ Declare Function FSOUND_GetError Alias "FSOUND_GetError" () As FMOD_ERRORS
 Declare Function FSOUND_GetVersion Alias "FSOUND_GetVersion" () As Single
 Declare Function FSOUND_GetOutput Alias "FSOUND_GetOutput" () As FSOUND_OUTPUTTYPES
 Declare Function FSOUND_GetOutputHandle Alias "FSOUND_GetOutputHandle" () As Integer
-Declare Function FSOUND_GetDriver Alias "FSOUND_GetDriver" () As byte ptr
+Declare Function FSOUND_GetDriver Alias "FSOUND_GetDriver" () as zstring ptr
 Declare Function FSOUND_GetMixer Alias "FSOUND_GetMixer" () As FSOUND_MIXERTYPES
 Declare Function FSOUND_GetNumDrivers Alias "FSOUND_GetNumDrivers" () As Integer
 Declare Function FSOUND_GetDriverName Alias "FSOUND_GetDriverName" (ByVal id As Integer) As Integer
@@ -493,7 +493,7 @@ Declare Function FSOUND_Sample_SetMaxPlaybacks Alias "FSOUND_Sample_SetMaxPlayba
 
 
 Declare Function FSOUND_Sample_Get Alias "FSOUND_Sample_Get" (ByVal sampno As Integer) As Integer
-Declare Function FSOUND_Sample_GetName Alias "FSOUND_Sample_GetName" (ByVal sptr As Integer) As byte ptr
+Declare Function FSOUND_Sample_GetName Alias "FSOUND_Sample_GetName" (ByVal sptr As Integer) as zstring ptr
 Declare Function FSOUND_Sample_GetLength Alias "FSOUND_Sample_GetLength" (ByVal sptr As Integer) As Integer
 Declare Function FSOUND_Sample_GetLoopPoints Alias "FSOUND_Sample_GetLoopPoints" (ByVal sptr As Integer, Byval loopstart As Integer ptr, Byval loopend As Integer ptr) As Byte
 Declare Function FSOUND_Sample_GetDefaults Alias "FSOUND_Sample_GetDefaults" (ByVal sptr As Integer, Byval deffreq As Integer ptr, Byval defvol As Integer ptr, Byval defpan As Integer ptr, Byval defpri As Integer ptr) As Byte
@@ -646,7 +646,7 @@ Declare Function FSOUND_Stream_AddSyncPoint Alias "FSOUND_Stream_AddSyncPoint" (
 Declare Function FSOUND_Stream_DeleteSyncPoint Alias "FSOUND_Stream_DeleteSyncPoint" (ByVal point As Integer) As Byte
 Declare Function FSOUND_Stream_GetNumSyncPoints Alias "FSOUND_Stream_GetNumSyncPoints" (ByVal stream As Integer) As Integer
 Declare Function FSOUND_Stream_GetSyncPoint Alias "FSOUND_Stream_GetSyncPoint" (ByVal stream As Integer, ByVal index As Integer) As Integer
-Declare Function FSOUND_Stream_GetSyncPointInfo Alias "FSOUND_Stream_GetSyncPointInfo" (ByVal point As Integer, Byval pcmoffset As Integer ptr) As byte ptr
+Declare Function FSOUND_Stream_GetSyncPointInfo Alias "FSOUND_Stream_GetSyncPointInfo" (ByVal point As Integer, Byval pcmoffset As Integer ptr) as zstring ptr
 
 Declare Function FSOUND_Stream_SetSubStream Alias "FSOUND_Stream_SetSubStream" (ByVal stream As Integer, ByVal index As Integer) As Byte
 Declare Function FSOUND_Stream_GetNumSubStreams Alias "FSOUND_Stream_GetNumSubStreams" (ByVal stream As Integer) As Integer
@@ -661,7 +661,7 @@ Declare Function FSOUND_Stream_FindTagField Alias "FSOUND_Stream_FindTagField" (
 '
 
 Declare Function FSOUND_Stream_Net_SetProxy Alias "FSOUND_Stream_Net_SetProxy" (ByVal proxy As String) As Byte
-Declare Function FSOUND_Stream_Net_GetLastServerStatus Alias "FSOUND_Stream_Net_GetLastServerStatus" () As byte ptr
+Declare Function FSOUND_Stream_Net_GetLastServerStatus Alias "FSOUND_Stream_Net_GetLastServerStatus" () as zstring ptr
 Declare Function FSOUND_Stream_Net_SetBufferProperties Alias "FSOUND_Stream_Net_SetBufferProperties" (ByVal buffersize As Integer, ByVal prebuffer_percent As Integer, ByVal rebuffer_percent As Integer) As Byte
 Declare Function FSOUND_Stream_Net_GetBufferProperties Alias "FSOUND_Stream_Net_GetBufferProperties" (Byval buffersize As Integer ptr, Byval prebuffer_percent As Integer ptr, Byval rebuffer_percent As Integer ptr) As Byte
 Declare Function FSOUND_Stream_Net_SetMetadataCallback Alias "FSOUND_Stream_Net_SetMetadataCallback" (ByVal stream As Integer, ByVal callback As Integer, ByVal userdata As Integer) As Byte
@@ -752,7 +752,7 @@ Declare Function FSOUND_Reverb_GetChannelProperties Alias "FSOUND_Reverb_GetChan
 
 Declare Function FSOUND_Record_SetDriver Alias "FSOUND_Record_SetDriver" (ByVal outputtype As Integer) As Byte
 Declare Function FSOUND_Record_GetNumDrivers Alias "FSOUND_Record_GetNumDrivers" () As Integer
-Declare Function FSOUND_Record_GetDriverName Alias "FSOUND_Record_GetDriverName" (ByVal id As Integer) As byte ptr
+Declare Function FSOUND_Record_GetDriverName Alias "FSOUND_Record_GetDriverName" (ByVal id As Integer) as zstring ptr
 Declare Function FSOUND_Record_GetDriver Alias "FSOUND_Record_GetDriver" () As Integer
 
 
@@ -806,7 +806,7 @@ Declare Function FMUSIC_SetPanSeperation Alias "FMUSIC_SetPanSeperation" (ByVal 
 '   Static song information functions
 
 
-Declare Function FMUSIC_GetName Alias "FMUSIC_GetName" (ByVal module As Integer) As byte ptr
+Declare Function FMUSIC_GetName Alias "FMUSIC_GetName" (ByVal module As Integer) as zstring ptr
 Declare Function FMUSIC_GetType Alias "FMUSIC_GetType" (ByVal module As Integer) As FMUSIC_TYPES
 Declare Function FMUSIC_GetNumOrders Alias "FMUSIC_GetNumOrders" (ByVal module As Integer) As Integer
 Declare Function FMUSIC_GetNumPatterns Alias "FMUSIC_GetNumPatterns" (ByVal module As Integer) As Integer

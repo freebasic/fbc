@@ -87,14 +87,14 @@ declare function iluEmboss cdecl alias "iluEmboss" () as ILboolean
 declare function iluEnlargeCanvas cdecl alias "iluEnlargeCanvas" (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint) as ILboolean
 declare function iluEnlargeImage cdecl alias "iluEnlargeImage" (byval XDim as ILfloat, byval YDim as ILfloat, byval ZDim as ILfloat) as ILboolean
 declare function iluEqualize cdecl alias "iluEqualize" () as ILboolean
-declare function iluErrorString cdecl alias "iluErrorString" (byval Error as ILenum) as byte ptr
+declare function iluErrorString cdecl alias "iluErrorString" (byval Error as ILenum) as zstring ptr
 declare function iluFlipImage cdecl alias "iluFlipImage" () as ILboolean
 declare function iluGammaCorrect cdecl alias "iluGammaCorrect" (byval Gamma as ILfloat) as ILboolean
 declare function iluGenImage cdecl alias "iluGenImage" () as ILuint
 declare sub iluGetImageInfo cdecl alias "iluGetImageInfo" (byval Info as ILinfo ptr)
 declare function iluGetInteger cdecl alias "iluGetInteger" (byval Mode as ILenum) as ILint
 declare sub iluGetIntegerv cdecl alias "iluGetIntegerv" (byval Mode as ILenum, byval Param as ILint ptr)
-declare function iluGetString cdecl alias "iluGetString" (byval StringName as ILenum) as byte ptr
+declare function iluGetString cdecl alias "iluGetString" (byval StringName as ILenum) as zstring ptr
 declare sub iluImageParameter cdecl alias "iluImageParameter" (byval PName as ILenum, byval Param as ILenum)
 declare sub iluInit cdecl alias "iluInit" ()
 declare function iluInvertAlpha cdecl alias "iluInvertAlpha" () as ILboolean

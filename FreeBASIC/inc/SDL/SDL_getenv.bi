@@ -12,7 +12,7 @@ declare function SDL_putenv SDLCALL alias "SDL_putenv" _
 #define putenv(X) SDL_putenv(X)
 
 declare function SDL_getenv SDLCALL alias "SDL_getenv" _
-   (byval name as string) as byte ptr
+   (byval name as string) as zstring ptr
 
 #define getenv(X) SDL_getenv(X)
 

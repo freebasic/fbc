@@ -80,16 +80,20 @@ declare function resolveHost	( hostname as string ) as integer
 	end if
     
     '' receive until connection is closed
-    dim recvbuffer as string * RECVBUFFLEN
+    dim recvbuffer as zstring * RECVBUFFLEN+1
     dim bytes as integer
     
     do 
-    	recvbuffer = ""
     	bytes = recv( s, strptr( recvBuffer ), RECVBUFFLEN, 0 )
     	if( bytes <= 0 ) then
     		exit do
     	end if
-    	print left$( recvbuffer, bytes );
+    	
+    	'' add the null-terminator
+    	recvbuffer[bytes] = 0
+    	
+    	'' print buffer as a string
+    	print recvbuffer
     loop
     print
                          

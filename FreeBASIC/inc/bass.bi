@@ -639,7 +639,7 @@ End Type
 Declare Function BASS_SetConfig Lib "bass" (ByVal opt As Integer, ByVal value As Integer) As Integer
 Declare Function BASS_GetConfig Lib "bass" (ByVal opt As Integer) As Integer
 Declare Function BASS_GetVersion Lib "bass" () As Integer
-Declare Function BASS_GetDeviceDescription Lib "bass" (ByVal device As Integer) As byte ptr
+Declare Function BASS_GetDeviceDescription Lib "bass" (ByVal device As Integer) as zstring ptr
 Declare Function BASS_ErrorGetCode Lib "bass" () As Integer
 Declare Function BASS_Init Lib "bass" (ByVal device As Integer, ByVal freq As Integer, ByVal flags As Integer, ByVal win As Integer, ByVal clsid As Integer) As Integer
 Declare Function BASS_SetDevice Lib "bass" (ByVal device As Integer) As Integer
@@ -665,7 +665,7 @@ Declare Function BASS_GetEAXParameters Lib "bass" (Byval env As Integer ptr, Byv
 
 Declare Function BASS_MusicLoad Lib "bass" (ByVal mem As Integer, ByVal f As String, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer, ByVal freq As Integer) As Integer
 Declare Sub BASS_MusicFree Lib "bass" (ByVal handle As Integer)
-Declare Function BASS_MusicGetName Lib "bass" (ByVal handle As Integer) As byte ptr
+Declare Function BASS_MusicGetName Lib "bass" (ByVal handle As Integer) as zstring ptr
 Declare Function BASS_MusicGetLength Lib "bass" (ByVal handle As Integer, ByVal playlen As Integer) As Integer
 Declare Function BASS_MusicPreBuf Lib "bass" (ByVal handle As Integer) As Integer
 Declare Function BASS_MusicPlay Lib "bass" (ByVal handle As Integer) As Integer
@@ -694,18 +694,18 @@ Declare Function BASS_StreamCreateURL Lib "bass" (ByVal url As String, ByVal off
 Declare Function BASS_StreamCreateFileUser Lib "bass" (ByVal buffered As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
 Declare Sub BASS_StreamFree Lib "bass" (ByVal handle As Integer)
 Declare Function BASS_StreamGetLength Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_StreamGetTags Lib "bass" (ByVal handle As Integer, ByVal tags As Integer) As byte ptr
+Declare Function BASS_StreamGetTags Lib "bass" (ByVal handle As Integer, ByVal tags As Integer) as zstring ptr
 Declare Function BASS_StreamPreBuf Lib "bass" (ByVal handle As Integer) As Integer
 Declare Function BASS_StreamPlay Lib "bass" (ByVal handle As Integer, ByVal flush As Integer, ByVal flags As Integer) As Integer
 Declare Function BASS_StreamGetFilePosition Lib "bass" (ByVal handle As Integer, ByVal mode As Integer) As Integer
 
-Declare Function BASS_RecordGetDeviceDescription Lib "bass" (ByVal device As Integer) As byte ptr
+Declare Function BASS_RecordGetDeviceDescription Lib "bass" (ByVal device As Integer) as zstring ptr
 Declare Function BASS_RecordInit Lib "bass" (ByVal device As Integer) As Integer
 Declare Function BASS_RecordSetDevice Lib "bass" (ByVal device As Integer) As Integer
 Declare Function BASS_RecordGetDevice Lib "bass" () As Integer
 Declare Function BASS_RecordFree Lib "bass" () As Integer
 Declare Function BASS_RecordGetInfo Lib "bass" (Byval info As BASS_RECORDINFO ptr) As Integer
-Declare Function BASS_RecordGetInputName Lib "bass" (ByVal inputn As Integer) As byte ptr
+Declare Function BASS_RecordGetInputName Lib "bass" (ByVal inputn As Integer) as zstring ptr
 Declare Function BASS_RecordSetInput Lib "bass" (ByVal inputn As Integer, ByVal setting As Integer) As Integer
 Declare Function BASS_RecordGetInput Lib "bass" (ByVal inputn As Integer) As Integer
 Declare Function BASS_RecordStart Lib "bass" (ByVal freq As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer

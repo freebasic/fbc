@@ -430,7 +430,7 @@ declare function getpeername alias "getpeername" (byval as SOCKET, byval as sock
 declare function getsockname alias "getsockname" (byval as SOCKET, byval as sockaddr ptr, byval as integer ptr) as integer
 declare function getsockopt alias "getsockopt" (byval as SOCKET, byval as integer, byval as integer, byval as byte ptr, byval as integer ptr) as integer
 declare function inet_addr alias "inet_addr" (byval as string) as uinteger
-declare function inet_ntoa stdcall alias "inet_ntoa" (byval as in_addr) as byte ptr
+declare function inet_ntoa stdcall alias "inet_ntoa" (byval as in_addr) as zstring ptr
 declare function listen alias "listen" (byval as SOCKET, byval as integer) as integer
 declare function recv alias "recv" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer) as integer
 declare function recvfrom alias "recvfrom" (byval as SOCKET, byval as byte ptr, byval as integer, byval as integer, byval as sockaddr ptr, byval as integer ptr) as integer

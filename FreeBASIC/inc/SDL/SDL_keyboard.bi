@@ -37,7 +37,7 @@ declare sub SDL_SetModState SDLCALL alias "SDL_SetModState" _
    (byval modstate as SDLMod)
 
 declare function SDL_GetKeyName SDLCALL alias "SDL_GetKeyName" _
-   (byval key as SDLKey) as byte ptr
+   (byval key as SDLKey) as zstring ptr
 
 '$include: 'SDL/close_code.bi'
 

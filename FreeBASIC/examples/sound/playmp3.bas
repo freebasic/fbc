@@ -109,76 +109,57 @@ declare sub 		printmp3tags	( byval stream as integer )
 	FSOUND_Close 
 	end
 	
-''::::
-function byteptr2string( byval pbyte as byte ptr, byval lgt as integer ) as string
-	dim text as string
-	dim i as integer
-
-	text = ""
-	if( lgt > 0 ) then 
-		text = space$( lgt )
-		for i = 0 to lgt-1
-			text[i] = *pbyte
-			pbyte += 1
-		next i
-	end if
-	
-	byteptr2string = trim$( text )
-	
-end function
-
-
 '':::::
 sub printmp3tags( byval stream as integer )
 	dim numtags as integer
-   	dim tagtype as integer, tagname as byte ptr, tagvalue as byte ptr, taglen as integer
+   	dim tagtype as integer, tagname as zstring ptr, tagvalue as zstring ptr, taglen as integer
    	dim tag as integer
 
    	FSOUND_Stream_GetNumTagFields( stream, @numtags )
    
    	for tag = 0 to numtags-1
 		FSOUND_Stream_GetTagField( stream, tag, @tagtype, @tagname, @tagvalue, @taglen )
-		print byteptr2string( tagname, taglen )
+		print left$( *tagname, taglen )
 	next tag
 
 end sub
 
 '':::::
 function getmp3name( byval stream as integer ) as string
-	dim tagname as byte ptr, taglen as integer
+	dim tagname as zstring ptr, taglen as integer
    
 	FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V1, "TITLE", @tagname, @taglen ) 
 	if( taglen = 0 ) then 
 		FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V2, "TIT2", @tagname, @taglen ) 
 	end if
    
-	getmp3name = byteptr2string( tagname, taglen )
+	getmp3name = left$( *tagname, taglen )
 	
 end function
 
 '':::::
 function getmp3artist( byval stream as integer ) as string
-	dim tagname as byte ptr, taglen as integer
+	dim tagname as zstring ptr, taglen as integer
    
 	FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V1, "ARTIST", @tagname, @taglen ) 
 	if( taglen = 0 ) then 
 		FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V2, "TPE1", @tagname, @taglen ) 
 	end if
    
-	getmp3artist = byteptr2string( tagname, taglen )
+	getmp3artist = left$( *tagname, taglen )
 	
 end function
 
 '':::::
 function getmp3album( byval stream as integer ) as string
-	dim tagname as byte ptr, taglen as integer
+	dim tagname as zstring ptr, taglen as integer
    
 	FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V1, "ALBUM", @tagname, @taglen ) 
 	if( taglen = 0 ) then 
 		FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V2, "TALB", @tagname, @taglen ) 
 	end if
    
-	getmp3album = byteptr2string( tagname, taglen )
+	getmp3album = left$( *tagname, taglen )
 	
 end function
 

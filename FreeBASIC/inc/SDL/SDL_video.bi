@@ -164,7 +164,7 @@ declare function SDL_VideoInit SDLCALL alias "SDL_VideoInit" _
 declare sub SDL_VideoQuit SDLCALL alias "SDL_VideoQuit" ()
 
 declare function SDL_VideoDriverName SDLCALL alias "SDL_VideoDriverName" _
-   (byval namebuf as byte ptr, byval maxlen as integer) as byte ptr
+   (byval namebuf as string, byval maxlen as integer) as zstring ptr
 
 declare function SDL_GetVideoSurface SDLCALL alias "SDL_GetVideoSurface" _
    () as SDL_Surface ptr

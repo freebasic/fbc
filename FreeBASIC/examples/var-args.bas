@@ -4,8 +4,6 @@
 
 option explicit
 
-#include "crt.bi" 		'' just for strlen()
-
 declare sub myprintf cdecl (fmtstr as string, ...)
 
 	dim s as string
@@ -19,10 +17,9 @@ declare sub myprintf cdecl (fmtstr as string, ...)
 	
 '':::::	
 sub myprintf cdecl (fmtstr as string, ...)
-	dim arg as any ptr
-	dim p as byte ptr
-	dim s as byte ptr
-	dim i as integer, char as integer
+	dim as any ptr arg
+	dim as byte ptr p
+	dim as integer i, char
 	
 	'' get the pointer to the first var-arg
 	arg = va_first()
@@ -60,9 +57,8 @@ sub myprintf cdecl (fmtstr as string, ...)
 			
 			case asc( "s" )
 				'' strings are passed byval, so the len is unknown
-				s = va_arg( arg, byte ptr )
-				print left$( *s, strlen( s ) );
-				arg = va_next( arg, byte ptr )			'' /
+				print *va_arg( arg, zstring ptr );
+				arg = va_next( arg, zstring ptr )		'' /
 			end select
 			
 		'' ordinary char, just print as-is

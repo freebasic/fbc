@@ -138,8 +138,8 @@ declare sub gdImageStringUp16 alias "gdImageStringUp16" (byval im as gdImagePtr,
 declare function gdFontCacheSetup alias "gdFontCacheSetup" () as integer
 declare sub gdFontCacheShutdown alias "gdFontCacheShutdown" ()
 declare sub gdFreeFontCache alias "gdFreeFontCache" ()
-declare function gdImageStringTTF alias "gdImageStringTTF" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as byte ptr
-declare function gdImageStringFT alias "gdImageStringFT" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as byte ptr
+declare function gdImageStringTTF alias "gdImageStringTTF" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as zstring ptr
+declare function gdImageStringFT alias "gdImageStringFT" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string) as zstring ptr
 
 type gdFTStringExtra
 	flags as integer
@@ -168,7 +168,7 @@ declare function gdFTUseFontConfig alias "gdFTUseFontConfig" (byval flag as inte
 #define gdFTEX_Shift_JIS 1
 #define gdFTEX_Big5 2
 
-declare function gdImageStringFTEx alias "gdImageStringFTEx" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string, byval strex as gdFTStringExtraPtr) as byte ptr
+declare function gdImageStringFTEx alias "gdImageStringFTEx" (byval im as gdImage ptr, byval brect as integer ptr, byval fg as integer, byval fontlist as string, byval ptsize as double, byval angle as double, byval x as integer, byval y as integer, byval string as string, byval strex as gdFTStringExtraPtr) as zstring ptr
 
 type gdPoint
 	x as integer

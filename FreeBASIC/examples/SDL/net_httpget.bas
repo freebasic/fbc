@@ -60,15 +60,19 @@ declare sub gethostandpath( src as string, hostname as string, path as string )
 	end if
     
     '' receive til connection is closed
-    dim recvbuffer as string * RECVBUFFLEN
+    dim recvbuffer as zstring * RECVBUFFLEN+1
     dim bytes as integer
     
     do 
-    	recvbuffer = ""
     	bytes = SDLNet_TCP_Recv( socket, strptr( recvbuffer ), RECVBUFFLEN )
     	if( bytes <= 0 ) then
     		exit do
     	end if
+    	
+    	'' add the null-terminator
+    	recvbuffer[bytes] = 0
+    	
+    	'' print it as string
     	print recvbuffer;
     loop
     print

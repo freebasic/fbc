@@ -23,11 +23,11 @@ type charset_info_st as any
 #define CLIENT_NET_WRITE_TIMEOUT 365*24*3600
 
 type st_mysql_field
-	name as byte ptr
-	table as byte ptr
-	org_table as byte ptr
-	db as byte ptr
-	def as byte ptr
+	name as zstring ptr
+	table as zstring ptr
+	org_table as zstring ptr
+	db as zstring ptr
+	def as zstring ptr
 	length as uinteger
 	max_length as uinteger
 	flags as uinteger
@@ -36,7 +36,7 @@ type st_mysql_field
 end type
 
 type MYSQL_FIELD as st_mysql_field
-type MYSQL_ROW as byte ptr ptr
+type MYSQL_ROW as zstring ptr ptr
 type MYSQL_FIELD_OFFSET as uinteger
 type my_ulonglong as ulongint
 
@@ -65,21 +65,21 @@ type st_mysql_options
 	connect_timeout as uinteger
 	client_flag as uinteger
 	port as uinteger
-	host as byte ptr
-	init_command as byte ptr
-	user as byte ptr
-	password as byte ptr
+	host as zstring ptr
+	init_command as zstring ptr
+	user as zstring ptr
+	password as zstring ptr
 	unix_socket as byte ptr
-	db as byte ptr
-	my_cnf_file as byte ptr
-	my_cnf_group as byte ptr
-	charset_dir as byte ptr
-	charset_name as byte ptr
-	ssl_key as byte ptr
-	ssl_cert as byte ptr
-	ssl_ca as byte ptr
-	ssl_capath as byte ptr
-	ssl_cipher as byte ptr
+	db as zstring ptr
+	my_cnf_file as zstring ptr
+	my_cnf_group as zstring ptr
+	charset_dir as zstring ptr
+	charset_name as zstring ptr
+	ssl_key as zstring ptr
+	ssl_cert as zstring ptr
+	ssl_ca as zstring ptr
+	ssl_capath as zstring ptr
+	ssl_cipher as zstring ptr
 	max_allowed_packet as uinteger
 	use_ssl as my_bool
 	compress as my_bool
@@ -116,14 +116,14 @@ end enum
 type st_mysql
 	net as NET
 	connector_fd as gptr
-	host as byte ptr
-	user as byte ptr
-	passwd as byte ptr
+	host as zstring ptr
+	user as zstring ptr
+	passwd as zstring ptr
 	unix_socket as byte ptr
-	server_version as byte ptr
-	host_info as byte ptr
-	info as byte ptr
-	db as byte ptr
+	server_version as zstring ptr
+	host_info as zstring ptr
+	info as zstring ptr
+	db as zstring ptr
 	charset as charset_info_st ptr
 	fields as MYSQL_FIELD ptr
 	field_alloc as MEM_ROOT
@@ -180,9 +180,9 @@ type MYSQL_RES as st_mysql_res
 
 type st_mysql_manager
 	net as NET
-	host as byte ptr
-	user as byte ptr
-	passwd as byte ptr
+	host as zstring ptr
+	user as zstring ptr
+	passwd as zstring ptr
 	port as uinteger
 	free_me as my_bool
 	eof as my_bool
@@ -212,10 +212,10 @@ declare function mysql_field_count alias "mysql_field_count" (byval mysql as MYS
 declare function mysql_affected_rows alias "mysql_affected_rows" (byval mysql as MYSQL ptr) as my_ulonglong
 declare function mysql_insert_id alias "mysql_insert_id" (byval mysql as MYSQL ptr) as my_ulonglong
 declare function mysql_errno alias "mysql_errno" (byval mysql as MYSQL ptr) as uinteger
-declare function mysql_error alias "mysql_error" (byval mysql as MYSQL ptr) as byte ptr
-declare function mysql_info alias "mysql_info" (byval mysql as MYSQL ptr) as byte ptr
+declare function mysql_error alias "mysql_error" (byval mysql as MYSQL ptr) as zstring ptr
+declare function mysql_info alias "mysql_info" (byval mysql as MYSQL ptr) as zstring ptr
 declare function mysql_thread_id alias "mysql_thread_id" (byval mysql as MYSQL ptr) as uinteger
-declare function mysql_character_set_name alias "mysql_character_set_name" (byval mysql as MYSQL ptr) as byte ptr
+declare function mysql_character_set_name alias "mysql_character_set_name" (byval mysql as MYSQL ptr) as zstring ptr
 declare function mysql_init alias "mysql_init" (byval mysql as MYSQL ptr) as MYSQL ptr
 declare function mysql_ssl_set alias "mysql_ssl_set" (byval mysql as MYSQL ptr, byval key as string, byval cert as string, byval ca as string, byval capath as string, byval cipher as string) as integer
 declare function mysql_change_user alias "mysql_change_user" (byval mysql as MYSQL ptr, byval user as string, byval passwd as string, byval db as string) as my_bool
@@ -245,11 +245,11 @@ declare function mysql_dump_debug_info alias "mysql_dump_debug_info" (byval mysq
 declare function mysql_refresh alias "mysql_refresh" (byval mysql as MYSQL ptr, byval refresh_options as uinteger) as integer
 declare function mysql_kill alias "mysql_kill" (byval mysql as MYSQL ptr, byval pid as uinteger) as integer
 declare function mysql_ping alias "mysql_ping" (byval mysql as MYSQL ptr) as integer
-declare function mysql_stat alias "mysql_stat" (byval mysql as MYSQL ptr) as byte ptr
-declare function mysql_get_server_info alias "mysql_get_server_info" (byval mysql as MYSQL ptr) as byte ptr
-declare function mysql_get_client_info alias "mysql_get_client_info" () as byte ptr
+declare function mysql_stat alias "mysql_stat" (byval mysql as MYSQL ptr) as zstring ptr
+declare function mysql_get_server_info alias "mysql_get_server_info" (byval mysql as MYSQL ptr) as zstring ptr
+declare function mysql_get_client_info alias "mysql_get_client_info" () as zstring ptr
 declare function mysql_get_client_version alias "mysql_get_client_version" () as uinteger
-declare function mysql_get_host_info alias "mysql_get_host_info" (byval mysql as MYSQL ptr) as byte ptr
+declare function mysql_get_host_info alias "mysql_get_host_info" (byval mysql as MYSQL ptr) as zstring ptr
 declare function mysql_get_proto_info alias "mysql_get_proto_info" (byval mysql as MYSQL ptr) as uinteger
 declare function mysql_list_dbs alias "mysql_list_dbs" (byval mysql as MYSQL ptr, byval wild as string) as MYSQL_RES ptr
 declare function mysql_list_tables alias "mysql_list_tables" (byval mysql as MYSQL ptr, byval wild as string) as MYSQL_RES ptr
@@ -268,7 +268,7 @@ declare function mysql_fetch_field alias "mysql_fetch_field" (byval result as MY
 declare function mysql_escape_string alias "mysql_escape_string" (byval to as string, byval from as string, byval from_length as uinteger) as uinteger
 declare function mysql_real_escape_string alias "mysql_real_escape_string" (byval mysql as MYSQL ptr, byval to as string, byval from as string, byval length as uinteger) as uinteger
 declare sub mysql_debug alias "mysql_debug" (byval debug as string)
-declare function mysql_odbc_escape_string alias "mysql_odbc_escape_string" (byval mysql as MYSQL ptr, byval to as string, byval to_length as uinteger, byval from as string, byval from_length as uinteger, byval param as any ptr, byval extend_buffer as function(byval as any ptr, byval as string, byval as uinteger ptr) as byte) as byte ptr
+declare function mysql_odbc_escape_string alias "mysql_odbc_escape_string" (byval mysql as MYSQL ptr, byval to as string, byval to_length as uinteger, byval from as string, byval from_length as uinteger, byval param as any ptr, byval extend_buffer as function(byval as any ptr, byval as string, byval as uinteger ptr) as byte) as zstring ptr
 declare sub myodbc_remove_escape alias "myodbc_remove_escape" (byval mysql as MYSQL ptr, byval name as string)
 declare function mysql_thread_safe alias "mysql_thread_safe" () as uinteger
 declare function mysql_manager_init alias "mysql_manager_init" (byval con as MYSQL_MANAGER ptr) as MYSQL_MANAGER ptr

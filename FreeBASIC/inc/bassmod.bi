@@ -90,7 +90,7 @@
 
 Declare Function BASSMOD_GetVersion Lib "bassmod" () As Integer
 Declare Function BASSMOD_ErrorGetCode Lib "bassmod" () As Integer
-Declare Function BASSMOD_GetDeviceDescription Lib "bassmod" (ByVal devnum As Integer) As byte ptr
+Declare Function BASSMOD_GetDeviceDescription Lib "bassmod" (ByVal devnum As Integer) as zstring ptr
 Declare Function BASSMOD_Init Lib "bassmod" (ByVal device As Integer, ByVal freq As Integer, ByVal flags As Integer) As Integer
 Declare Sub BASSMOD_Free Lib "bassmod" ()
 Declare Function BASSMOD_GetCPU Lib "bassmod" () As Single
@@ -99,7 +99,7 @@ Declare Function BASSMOD_GetVolume Lib "bassmod" () As Integer
 
 Declare Function BASSMOD_MusicLoad Lib "bassmod" (ByVal mem As Integer, ByVal pfile As String, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer) As Integer
 Declare Sub BASSMOD_MusicFree Lib "bassmod" ()
-Declare Function BASSMOD_MusicGetName lib "bassmod" () as byte ptr
+Declare Function BASSMOD_MusicGetName lib "bassmod" () as zstring ptr
 Declare Function BASSMOD_MusicGetLength Lib "bassmod" (ByVal playlen As Integer) As Integer
 Declare Function BASSMOD_MusicPlay Lib "bassmod" () As Integer
 Declare Function BASSMOD_MusicPlayEx Lib "bassmod" (ByVal pos As Integer, ByVal flags As Integer, ByVal reset As Integer) As Integer

@@ -285,7 +285,7 @@ declare function ilGetInteger cdecl alias "ilGetInteger" (byval Mode as ILenum) 
 declare sub ilGetIntegerv cdecl alias "ilGetIntegerv" (byval Mode as ILenum, byval Param as ILint ptr)
 declare function ilGetLumpPos cdecl alias "ilGetLumpPos" () as ILuint
 declare function ilGetPalette cdecl alias "ilGetPalette" () as ILubyte ptr
-declare function ilGetString cdecl alias "ilGetString" (byval StringName as ILenum) as byte ptr
+declare function ilGetString cdecl alias "ilGetString" (byval StringName as ILenum) as zstring ptr
 declare sub ilHint cdecl alias "ilHint" (byval Target as ILenum, byval Mode as ILenum)
 declare sub ilInit cdecl alias "ilInit" ()
 declare function ilIsDisabled cdecl alias "ilIsDisabled" (byval Mode as ILenum) as ILboolean

@@ -24,4 +24,30 @@ end type
 	
 	print t(i).c, t(i).d, t(i).e
 	
+	''-------------------
+	
+type bar
+	abc		as integer
+end type
+
+type foo
+	bar		as bar
+end type
+	
+	dim foo as foo
+	dim bar as bar
+	
+	with foo
+		with .bar
+			.abc = 1234
+		end with
+
+		with bar
+			.abc = 5678
+		end with
+		
+		print "1234 ="; .bar.abc
+		print "5678 ="; bar.abc
+	end with
+	
 	sleep

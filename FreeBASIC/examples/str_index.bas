@@ -1,10 +1,11 @@
 
-const teststr = "ABCDEFGH"
+const teststr = "ABCDEFGHIJKLM"
 
 type mytype
 	a as integer
 	s as string
-	f as string * 10
+	f as string * 16
+	z as zstring * 16
 end type	
 
 declare sub somesub( s as string )
@@ -18,34 +19,56 @@ declare sub somesub4( t() as mytype )
 	dim s(10) as string
 
 	s(i) = teststr
-	print "asc('A') ="; s(i)[0]
+	print "asc('A') ="; s(i)[0];
 	
 	s(i)[0] = asc( "#" )
-	print s(i)
+	print " "; s(i)
 	
 	''---------
-	dim f(10) as string * 10
+	dim f(10) as string * 16
 
 	f(i) = teststr
-	print "asc('B') ="; f(i)[1]
+	print "asc('B') ="; f(i)[1];
 	
 	f(i)[1] = asc( "#" )
-	print f(i)
+	print " "; f(i)
+
+	''---------
+	dim z(10) as zstring * 16
+
+	z(i) = teststr
+	print "asc('C') ="; z(i)[2];
+	
+	z(i)[2] = asc( "#" )
+	print " "; z(i)
 	
 	''---------
 	dim t(10) as mytype
 
 	t(i).s = teststr
-	print "asc('C') ="; t(i).s[2]
+	print "asc('D') ="; t(i).s[3];
 	
-	t(i).s[2] = asc( "#" )
-	print t(i).s
+	t(i).s[3] = asc( "#" )
+	print " "; t(i).s
 
 	t(i).f = teststr
-	print "asc('D') ="; t(i).f[3]
+	print "asc('E') ="; t(i).f[4];
 	
-	t(i).f[3] = asc( "#" )
-	print t(i).f
+	t(i).f[4] = asc( "#" )
+	print " "; t(i).f
+
+	''---------
+	t(i).z = teststr
+	print "asc('F') ="; t(i).z[5];
+	
+	t(i).z[5] = asc( "#" )
+	print " "; t(i).z
+
+	t(i).z = teststr
+	print "asc('G') ="; t(i).z[6];
+	
+	t(i).z[6] = asc( "#" )
+	print " "; t(i).z
 	
 	''---------
 
@@ -70,10 +93,10 @@ declare sub somesub4( t() as mytype )
 sub somesub( s as string )
 
 	s = teststr
-	print "asc('E') ="; s[4]
+	print "asc('H') ="; s[7];
 	
-	s[4] = asc( "#" )
-	print s
+	s[7] = asc( "#" )
+	print " "; s
 
 end sub	
 
@@ -83,10 +106,10 @@ sub somesub2( s() as string )
 	i = 4
 	
 	s(i) = teststr
-	print "asc('F') ="; s(i)[5]
+	print "asc('I') ="; s(i)[8];
 	
-	s(i)[5] = asc( "#" )
-	print s(i)
+	s(i)[8] = asc( "#" )
+	print " "; s(i)
 
 end sub	
 
@@ -94,10 +117,16 @@ end sub
 sub somesub3( t as mytype )
 
 	t.s = teststr
-	print "asc('G') ="; t.s[6]
+	print "asc('J') ="; t.s[9];
 	
-	t.s[6] = asc( "#" )
-	print t.s
+	t.s[9] = asc( "#" )
+	print " "; t.s
+
+	t.z = teststr
+	print "asc('K') ="; t.z[10];
+	
+	t.z[10] = asc( "#" )
+	print " "; t.z
 
 end sub	
 
@@ -107,9 +136,16 @@ sub somesub4( t() as mytype )
 	i = 2
 	
 	t(i).f = teststr
-	print "asc('H') ="; t(i).f[7]
+	print "asc('L') ="; t(i).f[11];
 	
-	t(i).f[7] = asc( "#" )
-	print t(i).f
+	t(i).f[11] = asc( "#" )
+	print " "; t(i).f
+
+	t(i).z = teststr
+	print "asc('M') ="; t(i).z[12];
+	
+	t(i).z[12] = asc( "#" )
+	print " "; t(i).z
+
 
 end sub	

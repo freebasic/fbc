@@ -1,14 +1,13 @@
 type sometype
 	abc as integer
-	lpstring as byte ptr
+	lpstring as zstring ptr
 end type
 
 
-declare function func1( s as string ) as byte ptr
-declare function func2( s as string ) as byte ptr
-declare sub printchar( s as string )
+declare function func1( byval s as string ) as zstring ptr
+declare function func2( byval s as string ) as zstring ptr
 
-	dim p as byte ptr
+	dim p as zstring ptr
 	
 	dim temp as string
 	temp = "HeyHoh!"
@@ -26,33 +25,26 @@ declare sub printchar( s as string )
 	print s
 
 	'' 2
-	printchar *p
+	print *p
 	
 	'' 3
-	printchar *t(a).lpstring
+	print *t(a).lpstring
 
 	'' 4
-	printchar *func2( "HeyHoh!" )			'' returned pointer will leak, just for testing..
+	print *func2( "HeyHoh!" )			'' returned pointer will leak, just for testing..
 	
 	sleep
 	
 	
 '':::::
-function func1( s as string ) as byte ptr
-	func1 = sadd( s )
+function func1( byval s as string ) as zstring ptr
+	func1 = strptr( s )
 end function
 
 '':::::
-function func2( s as string ) as byte ptr
-	dim p as byte ptr
-	p = callocate( len( s ) + 1 )
+function func2( byval s as string ) as zstring ptr
+	dim p as zstring ptr
+	p = allocate( len( s ) + 1 )
 	*p = s
 	func2 = p
 end function
-
-'':::::
-sub printchar( s as string )
-	'' only way of printing a byte ptr as a string of chars -- while there's no pointer type casting
-	print s
-end sub
-

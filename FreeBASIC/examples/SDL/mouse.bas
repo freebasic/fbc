@@ -10,8 +10,6 @@ declare function loadCursor _
    (image() as ubyte, byval w as integer, byval h as integer, _
    byval hotx as integer, byval hoty as integer) as SDL_Cursor ptr
 
-dim shared errorMsg as string
-
 dim video as SDL_Surface ptr
 dim hand(31, 31) as ubyte, arrow(31, 31) as ubyte
 dim x, y as integer
@@ -32,16 +30,14 @@ next
 
 ' initialise SDL with video support
 if (SDL_Init(SDL_INIT_VIDEO) < 0) then
-   errorMsg = *SDL_GetError()
-   print "Couldn't initialise SDL: "; errorMsg
+   print "Couldn't initialise SDL: "; *SDL_GetError()
    end 1
 end if
 
 ' set the video mode to 640x480x32bpp
 video = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE or SDL_DOUBLEBUF)
 if (video = 0) then
-   errorMsg = *SDL_GetError()
-   print "Couldn't set the video mode: "; errorMsg
+   print "Couldn't set the video mode: "; *SDL_GetError()
    end 1
 end if
 

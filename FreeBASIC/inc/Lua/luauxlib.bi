@@ -26,8 +26,8 @@ declare function luaL_getmetafield LUALIB_API alias "luaL_getmetafield"  (byval 
 declare function luaL_callmeta LUALIB_API alias "luaL_callmeta"  (byval L as lua_State ptr, byval obj as integer, byval e as string) as integer
 declare function luaL_typerror LUALIB_API alias "luaL_typerror"  (byval L as lua_State ptr, byval narg as integer, byval tname as string) as integer
 declare function luaL_argerror LUALIB_API alias "luaL_argerror"  (byval L as lua_State ptr, byval numarg as integer, byval extramsg as string) as integer
-declare function luaL_checklstring LUALIB_API alias "luaL_checklstring" (byval L as lua_State ptr, byval numArg as integer, byval l as integer ptr) as byte ptr
-declare function luaL_optlstring LUALIB_API alias "luaL_optlstring" (byval L as lua_State ptr, byval numArg as integer, byval def as string, byval l as integer ptr) as byte ptr
+declare function luaL_checklstring LUALIB_API alias "luaL_checklstring" (byval L as lua_State ptr, byval numArg as integer, byval l as integer ptr) as zstring ptr
+declare function luaL_optlstring LUALIB_API alias "luaL_optlstring" (byval L as lua_State ptr, byval numArg as integer, byval def as string, byval l as integer ptr) as zstring ptr
 declare function luaL_checknumber LUALIB_API alias "luaL_checknumber" (byval L as lua_State ptr, byval numArg as integer) as lua_Number
 declare function luaL_optnumber LUALIB_API alias "luaL_optnumber" (byval L as lua_State ptr, byval nArg as integer, byval def as lua_Number) as lua_Number
 
@@ -40,7 +40,7 @@ declare sub luaL_getmetatable LUALIB_API alias "luaL_getmetatable"  (byval L as 
 declare function luaL_checkudata LUALIB_API alias "luaL_checkudata" (byval L as lua_State ptr, byval ud as integer, byval tname as string) as any ptr
 
 declare sub luaL_where LUALIB_API alias "luaL_where"  (byval L as lua_State ptr, byval lvl as integer)
-'''''declare function luaL_error LUALIB_API alias "luaL_error"  (byval L as lua_State ptr, byval fmt as string, ...) as integer
+declare function luaL_error LUALIB_API alias "luaL_error"  (byval L as lua_State ptr, byval fmt as string, ...) as integer
 
 declare function luaL_findstring LUALIB_API alias "luaL_findstring"  (byval st as string, byval lst as byte ptr) as integer
 

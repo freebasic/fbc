@@ -25,7 +25,7 @@ declare sub xmlDebugDumpEntities cdecl alias "xmlDebugDumpEntities" (byval outpu
 declare function xmlDebugCheckDocument cdecl alias "xmlDebugCheckDocument" (byval output as FILE ptr, byval doc as xmlDocPtr) as integer
 declare sub xmlLsOneNode cdecl alias "xmlLsOneNode" (byval output as FILE ptr, byval node as xmlNodePtr)
 declare function xmlLsCountNode cdecl alias "xmlLsCountNode" (byval node as xmlNodePtr) as integer
-declare function xmlBoolToText cdecl alias "xmlBoolToText" (byval boolval as integer) as byte ptr
+declare function xmlBoolToText cdecl alias "xmlBoolToText" (byval boolval as integer) as zstring ptr
 
 type xmlShellReadlineFunc as byte ptr
 type xmlShellCtxt as _xmlShellCtxt

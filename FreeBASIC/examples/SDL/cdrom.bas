@@ -5,16 +5,13 @@
 
 '$include: "SDL\SDL.bi"
 
-	dim shared errorMsg as string
-
 	dim cdrom as SDL_CD ptr
 	dim i as integer
 	dim m as integer, s as integer, f as integer
 
 	' initiate SDL with cdrom support
 	if (SDL_Init(SDL_INIT_CDROM) < 0) then
-   		errorMsg = *SDL_GetError()
-   		print "Unable to initiate SDL: "; errorMsg
+   		print "Unable to initiate SDL: "; *SDL_GetError()
    		end
 	end if
 

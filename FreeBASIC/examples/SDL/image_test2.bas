@@ -8,8 +8,6 @@
 '$include: "SDL\SDL.bi"
 '$include: "SDL\SDL_image.bi"
 
-	dim shared errorMsg as string
-
 sub fade _
    (byval video as SDL_Surface ptr, byval rgb_ as Uint32, byval a as Uint8)
    dim tmp as SDL_Surface ptr
@@ -32,16 +30,14 @@ end sub
 
 	' startup SDL
 	if (SDL_Init(SDL_INIT_VIDEO) = -1) then
-   		errorMsg = *SDL_GetError()
-   		print "SDL_Init: "; errorMsg
+   		print "SDL_Init: "; *SDL_GetError()
    		end 1
 	end if
 
 	' load the image
 	image = IMG_Load(filename)
 	if (image = 0) then
-   		errorMsg = *IMG_GetError()
-   		print "IMG_Load: "; errorMsg
+   		print "IMG_Load: "; *IMG_GetError()
    		SDL_Quit
    		end 1
 	end if
@@ -54,8 +50,7 @@ end sub
 	' try to match the image size and depth 
 	video = SDL_SetVideoMode(image->w, image->h, image->format->BitsPerPixel, SDL_ANYFORMAT)
 	if (video = 0) then
-   		errorMsg = *SDL_GetError()
-   		print "SDL_SetVideoMode: "; errorMsg
+   		print "SDL_SetVideoMode: "; *SDL_GetError()
    		SDL_Quit
    		end 1
 	end if

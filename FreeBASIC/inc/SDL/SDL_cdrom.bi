@@ -51,7 +51,7 @@ end type
 declare function SDL_CDNumDrives SDLCALL alias "SDL_CDNumDrives" () as integer
 
 declare function SDL_CDName SDLCALL alias "SDL_CDName" _
-   (byval drive as integer) as byte ptr
+   (byval drive as integer) as zstring ptr
 
 declare function SDL_CDOpen SDLCALL alias "SDL_CDOpen" _
    (byval drive as integer) as SDL_CD ptr

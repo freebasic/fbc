@@ -367,8 +367,8 @@ End Type
 
 Declare Sub FreeImage_Initialise Alias "FreeImage_Initialise" (ByVal load_local_plugins_only As Integer = 0)
 Declare Sub FreeImage_DeInitialise Alias "FreeImage_DeInitialise" ()
-Declare Function FreeImage_GetVersion Alias "FreeImage_GetVersion" () As Byte Ptr
-Declare Function FreeImage_GetCopyrightMessage Alias "FreeImage_GetCopyrightMessage" () As byte ptr
+Declare Function FreeImage_GetVersion Alias "FreeImage_GetVersion" () as zstring ptr
+Declare Function FreeImage_GetCopyrightMessage Alias "FreeImage_GetCopyrightMessage" () as zstring ptr
 Declare Sub FreeImage_OutputMessageProc CDECL Alias "FreeImage_OutputMessageProc" (ByVal fif As Integer, ByVal fmt As String, ...)
 Declare Sub FreeImage_SetOutputMessage Alias "FreeImage_SetOutputMessage" (ByVal omf As Integer)
 Declare Function FreeImage_Allocate Alias "FreeImage_Allocate" (ByVal width As Integer, ByVal height As Integer, ByVal bpp As Integer, ByVal red_mask As Integer = 0, ByVal green_mask As Integer = 0, ByVal blue_mask As Integer = 0) As FIBITMAP ptr
@@ -393,11 +393,11 @@ Declare Function FreeImage_SetPluginEnabled Alias "FreeImage_SetPluginEnabled" (
 Declare Function FreeImage_IsPluginEnabled Alias "FreeImage_IsPluginEnabled" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
 Declare Function FreeImage_GetFIFFromFormat Alias "FreeImage_GetFIFFromFormat" (ByVal format As String) As FREE_IMAGE_FORMAT
 Declare Function FreeImage_GetFIFFromMime Alias "FreeImage_GetFIFFromMime" (ByVal mime As String) As FREE_IMAGE_FORMAT
-Declare Function FreeImage_GetFormatFromFIF Alias "FreeImage_GetFormatFromFIF" (ByVal fif As FREE_IMAGE_FORMAT) As byte ptr
-Declare Function FreeImage_GetFIFExtensionList Alias "FreeImage_GetFIFExtensionList" (ByVal fif As FREE_IMAGE_FORMAT) As byte ptr
-Declare Function FreeImage_GetFIFDescription Alias "FreeImage_GetFIFDescription" (ByVal fif As FREE_IMAGE_FORMAT) As byte ptr
-Declare Function FreeImage_GetFIFRegExpr Alias "FreeImage_GetFIFRegExpr" (ByVal fif As FREE_IMAGE_FORMAT) As byte ptr
-Declare Function FreeImage_GetFIFMimeType Alias "FreeImage_GetFIFMimeType" (ByVal fif As FREE_IMAGE_FORMAT) As byte ptr
+Declare Function FreeImage_GetFormatFromFIF Alias "FreeImage_GetFormatFromFIF" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
+Declare Function FreeImage_GetFIFExtensionList Alias "FreeImage_GetFIFExtensionList" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
+Declare Function FreeImage_GetFIFDescription Alias "FreeImage_GetFIFDescription" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
+Declare Function FreeImage_GetFIFRegExpr Alias "FreeImage_GetFIFRegExpr" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
+Declare Function FreeImage_GetFIFMimeType Alias "FreeImage_GetFIFMimeType" (ByVal fif As FREE_IMAGE_FORMAT) as zstring ptr
 Declare Function FreeImage_GetFIFFromFilename Alias "FreeImage_GetFIFFromFilename" (ByVal filename As String) As FREE_IMAGE_FORMAT
 Declare Function FreeImage_FIFSupportsReading Alias "FreeImage_FIFSupportsReading" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
 Declare Function FreeImage_FIFSupportsWriting Alias "FreeImage_FIFSupportsWriting" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
@@ -421,8 +421,8 @@ Declare Function FreeImage_GetImageType Alias "FreeImage_GetImageType" (byval di
 Declare Function FreeImage_IsLittleEndian Alias "FreeImage_IsLittleEndian" () As Integer
 Declare Function FreeImage_LookupX11Color Alias "FreeImage_LookupX11Color" (ByVal szColor As String, Byval nRed As Integer ptr, Byval nGreen As Integer ptr, Byval nBlue As Integer ptr) As Integer
 Declare Function FreeImage_LookupSVGColor Alias "FreeImage_LookupSVGColor" (ByVal szColor As String, Byval nRed As Integer ptr, Byval nGreen As Integer ptr, Byval nBlue As Integer ptr) As Integer
-Declare Function FreeImage_GetBits Alias "FreeImage_GetBits" (byval dib as FIBITMAP ptr) As byte ptr
-Declare Function FreeImage_GetScanLine Alias "FreeImage_GetScanLine" (byval dib as FIBITMAP ptr, ByVal scanline As Integer) As byte ptr
+Declare Function FreeImage_GetBits Alias "FreeImage_GetBits" (byval dib as FIBITMAP ptr) as zstring ptr
+Declare Function FreeImage_GetScanLine Alias "FreeImage_GetScanLine" (byval dib as FIBITMAP ptr, ByVal scanline As Integer) as zstring ptr
 Declare Function FreeImage_GetPixelIndex Alias "FreeImage_GetPixelIndex" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval value As Byte ptr) As Integer
 Declare Function FreeImage_GetPixelColor Alias "FreeImage_GetPixelColor" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval value As RGBQUAD ptr) As Integer
 Declare Function FreeImage_SetPixelIndex Alias "FreeImage_SetPixelIndex" (byval dib as FIBITMAP ptr, ByVal x As Integer, ByVal y As Integer, Byval Value As Byte ptr) As Integer
@@ -444,7 +444,7 @@ Declare Function FreeImage_GetRedMask Alias "FreeImage_GetRedMask" (byval dib as
 Declare Function FreeImage_GetGreenMask Alias "FreeImage_GetGreenMask" (byval dib as FIBITMAP ptr) As Integer
 Declare Function FreeImage_GetBlueMask Alias "FreeImage_GetBlueMask" (byval dib as FIBITMAP ptr) As Integer
 Declare Function FreeImage_GetTransparencyCount Alias "FreeImage_GetTransparencyCount" (byval dib as FIBITMAP ptr) As Integer
-Declare Function FreeImage_GetTransparencyTable Alias "FreeImage_GetTransparencyTable" (byval dib as FIBITMAP ptr) As byte ptr
+Declare Function FreeImage_GetTransparencyTable Alias "FreeImage_GetTransparencyTable" (byval dib as FIBITMAP ptr) as zstring ptr
 Declare Sub FreeImage_SetTransparent Alias "FreeImage_SetTransparent" (byval dib as FIBITMAP ptr, ByVal enabled As Integer)
 Declare Sub FreeImage_SetTransparencyTable Alias "FreeImage_SetTransparencyTable" (byval dib as FIBITMAP ptr, Byval table As byte ptr, ByVal count As Integer)
 Declare Function FreeImage_IsTransparent Alias "FreeImage_IsTransparent" (byval dib as FIBITMAP ptr) As Integer

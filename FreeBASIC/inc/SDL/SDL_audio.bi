@@ -65,7 +65,7 @@ declare function SDL_AudioInit SDLCALL alias "SDL_AudioInit" _
 declare sub SDL_AudioQuit SDLCALL alias "SDL_AudioQuit" ()
 
 declare function SDL_AudioDriverName SDLCALL alias "SDL_AudioDriverName" _
-   (byval namebuf as byte ptr, byval maxlen as integer) as byte ptr
+   (byval namebuf as byte ptr, byval maxlen as integer) as zstring ptr
 
 declare function SDL_OpenAudio SDLCALL alias "SDL_OpenAudio" _
    (byval desired as SDL_AudioSpec ptr, byval obtained as SDL_AudioSpec ptr) _

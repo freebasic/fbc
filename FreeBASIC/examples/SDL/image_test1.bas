@@ -10,7 +10,6 @@ declare sub blitImage _
    (byval img as SDL_Surface ptr, byval x as integer, byval y as integer)
 
 	dim shared video as SDL_Surface ptr
-	dim shared errorMsg as string
 
 	dim freeImg as SDL_Surface ptr, basicImg as SDL_Surface ptr, horseImg as SDL_Surface ptr
 
@@ -23,8 +22,7 @@ declare sub blitImage _
 
 	' initialise sdl with video support
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) then
-   		errorMsg = *SDL_GetError()
-   		print "Couldn't initialise SDL: "; errorMsg
+   		print "Couldn't initialise SDL: "; *SDL_GetError()
 	end if
 
 	' check to see if the images are in the correct formats
@@ -38,8 +36,7 @@ declare sub blitImage _
 	' set the video mode to 640x480x32bpp
 	video = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE or SDL_DOUBLEBUF)
 	if (video = NULL) then
-   		errorMsg = *SDL_GetError()
-   		print "Couldn't set video mode: "; errorMsg
+   		print "Couldn't set video mode: "; *SDL_GetError()
 	end if
 
 	' load the images into an SDL_RWops structure

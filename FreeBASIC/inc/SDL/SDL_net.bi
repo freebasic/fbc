@@ -39,7 +39,7 @@ end type
 declare function SDLNet_ResolveHost SDLCALL alias "SDLNet_ResolveHost" _
 	(byval address as IPaddress ptr, byval host as string, byval port as Uint16) as integer
 
-declare function SDLNet_ResolveIP SDLCALL alias "SDLNet_ResolveIP" (byval ip as IPaddress ptr) as byte ptr
+declare function SDLNet_ResolveIP SDLCALL alias "SDLNet_ResolveIP" (byval ip as IPaddress ptr) as zstring ptr
 
 
 ''/***********************************************************************/

@@ -215,9 +215,9 @@ declare function my_rnd alias "my_rnd" (byval as rand_struct ptr) as double
 declare sub make_scrambled_password alias "make_scrambled_password" (byval to as string, byval password as string)
 declare sub get_salt_from_password alias "get_salt_from_password" (byval res as uinteger ptr, byval password as string)
 declare sub make_password_from_salt alias "make_password_from_salt" (byval to as string, byval hash_res as uinteger ptr)
-declare function scramble alias "scramble" (byval to as string, byval message as string, byval password as string, byval old_ver as my_bool) as byte ptr
+declare function scramble alias "scramble" (byval to as string, byval message as string, byval password as string, byval old_ver as my_bool) as zstring ptr
 declare function check_scramble alias "check_scramble" (byval as string, byval message as string, byval salt as uinteger ptr, byval old_ver as my_bool) as my_bool
-declare function get_tty_password alias "get_tty_password" (byval opt_message as string) as byte ptr
+declare function get_tty_password alias "get_tty_password" (byval opt_message as string) as zstring ptr
 declare sub hash_password alias "hash_password" (byval result as uinteger ptr, byval password as string)
 declare function my_init alias "my_init" () as my_bool
 declare function load_defaults alias "load_defaults" (byval conf_file as string, byval groups as byte ptr ptr, byval argc as integer ptr, byval argv as byte ptr ptr ptr) as integer

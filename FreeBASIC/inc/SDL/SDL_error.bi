@@ -8,7 +8,7 @@
 '$include: 'SDL/begin_code.bi'
 
 declare sub SDL_SetError SDLCALL alias "SDL_SetError" (byval errorMsg as string)
-declare function SDL_GetError SDLCALL alias "SDL_GetError" () as byte ptr
+declare function SDL_GetError SDLCALL alias "SDL_GetError" () as zstring ptr
 declare sub SDL_ClearError SDLCALL alias "SDL_ClearError" ()
 
 #define SDL_OutOfMemory SDL_Error(SDL_ENONEM)

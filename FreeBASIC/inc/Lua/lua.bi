@@ -38,7 +38,7 @@ type lua_State as any
 ''
 '' functions that read/write blocks when loading/dumping Lua chunks
 ''
-#define lua_Chunkreader function(byval L as lua_State ptr, byval ud as any ptr, byval sz as integer ptr) as byte ptr
+#define lua_Chunkreader function(byval L as lua_State ptr, byval ud as any ptr, byval sz as integer ptr) as zstring ptr
 
 #define lua_Chunkwriter function(byval L as lua_State ptr, byval p as any ptr, byval sz as integer, byval ud as any ptr ) as integer
 
@@ -116,7 +116,7 @@ declare function lua_isstring LUA_API alias "lua_isstring" (byval L as lua_State
 declare function lua_iscfunction LUA_API alias "lua_iscfunction" (byval L as lua_State ptr, byval idx as integer) as integer
 declare function lua_isuserdata LUA_API alias "lua_isuserdata" (byval L as lua_State ptr, byval idx as integer) as integer
 declare function lua_type LUA_API alias "lua_type" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_typename LUA_API alias "lua_typename" (byval L as lua_State ptr, byval tp as integer) as byte ptr
+declare function lua_typename LUA_API alias "lua_typename" (byval L as lua_State ptr, byval tp as integer) as zstring ptr
 
 declare function lua_equal LUA_API alias "lua_equal" (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
 declare function lua_rawequal LUA_API alias "lua_rawequal" (byval L as lua_State ptr, byval idx1 as integer, byval idx2 as integer) as integer
@@ -124,7 +124,7 @@ declare function lua_lessthan LUA_API alias "lua_lessthan" (byval L as lua_State
 
 declare function lua_tonumber LUA_API alias "lua_tonumber" (byval L as lua_State ptr, byval idx as integer) as lua_Number
 declare function lua_toboolean LUA_API alias "lua_toboolean" (byval L as lua_State ptr, byval idx as integer) as integer
-declare function lua_tostring LUA_API alias "lua_tostring" (byval L as lua_State ptr, byval idx as integer) as byte ptr
+declare function lua_tostring LUA_API alias "lua_tostring" (byval L as lua_State ptr, byval idx as integer) as zstring ptr
 declare function lua_strlen LUA_API alias "lua_strlen" (byval L as lua_State ptr, byval idx as integer) as integer
 declare function lua_tocfunction LUA_API alias "lua_tocfunction" (byval L as lua_State ptr, byval idx as integer) as lua_CFunction
 declare function lua_touserdata LUA_API alias "lua_touserdata" (byval L as lua_State ptr, byval idx as integer) as any ptr
@@ -139,8 +139,8 @@ declare sub lua_pushnil LUA_API alias "lua_pushnil" (byval L as lua_State ptr)
 declare sub lua_pushnumber LUA_API alias "lua_pushnumber" (byval L as lua_State ptr, byval n as lua_Number)
 declare sub lua_pushlstring LUA_API alias "lua_pushlstring" (byval L as lua_State ptr, byval s as string, byval l as integer)
 declare sub lua_pushstring LUA_API alias "lua_pushstring" (byval L as lua_State ptr, byval s as string)
-declare function lua_pushvfstring LUA_API alias "lua_pushvfstring" (byval L as lua_State ptr, byval fmt as string, byval argp as any ptr ) as byte ptr
-''LUA_API const char *lua_pushfstring (byval L as lua_State ptr, byval fmt as string, ...)
+declare function lua_pushvfstring LUA_API alias "lua_pushvfstring" (byval L as lua_State ptr, byval fmt as string, byval argp as any ptr ) as zstring ptr
+declare function lua_pushfstring LUA_API alias "lua_pushfstring" (byval L as lua_State ptr, byval fmt as string, ...) as zstring ptr
 declare sub lua_pushcclosure LUA_API alias "lua_pushcclosure" (byval L as lua_State ptr, byval fn as lua_CFunction, byval n as integer)
 declare sub lua_pushboolean LUA_API alias "lua_pushboolean" (byval L as lua_State ptr, byval b as integer)
 declare sub lua_pushlightuserdata LUA_API alias "lua_pushlightuserdata" (byval L as lua_State ptr, byval p as any ptr)
@@ -196,7 +196,7 @@ declare sub lua_setgcthreshold LUA_API alias "lua_setgcthreshold" (byval L as lu
 '' miscellaneous functions
 ''
 
-declare function lua_version LUA_API alias "lua_version" () as byte ptr
+declare function lua_version LUA_API alias "lua_version" () as zstring ptr
 
 declare function lua_error LUA_API alias "lua_error" (byval L as lua_State ptr) as integer
 

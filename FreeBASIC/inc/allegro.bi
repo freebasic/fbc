@@ -1281,13 +1281,13 @@ Declare Sub flush_config_file CDecl Alias "flush_config_file" ()
 Declare Sub reload_config_texts CDecl Alias "reload_config_texts" (ByVal new_language As String)
 Declare Sub hook_config_section CDecl Alias "hook_config_section" (ByVal section As String, ByVal intgetter As Function(ByVal name As String, ByVal idef As Integer) As Integer, ByVal stringgetter As Function(ByVal name As String, ByVal sdef As String) As Integer, ByVal stringsetter As Sub (ByVal name As String, ByVal value As String))
 Declare Function config_is_hooked CDecl Alias "config_is_hooked" (ByVal section As String) As Integer
-Declare Function get_config_string CDecl Alias "get_config_string" (ByVal section As String, ByVal name As String, Byval sdef As String) As Byte Ptr
+Declare Function get_config_string CDecl Alias "get_config_string" (ByVal section As String, ByVal name As String, Byval sdef As String) as zstring ptr
 Declare Function get_config_int CDecl Alias "get_config_int" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
 Declare Function get_config_hex CDecl Alias "get_config_hex" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
 Declare Function get_config_float CDecl Alias "get_config_float" (ByVal section As String, ByVal name As String, ByVal fdef As Single) As Single
 Declare Function get_config_id CDecl Alias "get_config_id" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
-Declare Function get_config_argv CDecl Alias "get_config_argv" (ByVal section As String, ByVal s_name As String, ByVal argc As Integer Ptr) As Byte Ptr Ptr
-Declare Function get_config_text CDecl Alias "get_config_text" (ByVal msg As String) As Byte Ptr
+Declare Function get_config_argv CDecl Alias "get_config_argv" (ByVal section As String, ByVal s_name As String, ByVal argc As Integer Ptr) as zstring ptr Ptr
+Declare Function get_config_text CDecl Alias "get_config_text" (ByVal msg As String) as zstring ptr
 Declare Sub set_config_string CDecl Alias "set_config_string" (ByVal section As String, ByVal name As String, ByVal val As String)
 Declare Sub set_config_int CDecl Alias "set_config_int" (ByVal section As String, ByVal name As String, ByVal val As Integer)
 Declare Sub set_config_hex CDecl Alias "set_config_hex" (ByVal section As String, ByVal name As String, ByVal val As Integer)
@@ -1345,7 +1345,7 @@ Declare Sub clear_keybuf CDecl Alias "clear_keybuf" ()
 Declare Function install_joystick CDecl Alias "install_joystick" (ByVal jtype As Integer) As Integer
 Declare Sub remove_joystick CDecl Alias "remove_joystick" ()
 Declare Function poll_joystick CDecl Alias "poll_joystick" () As Integer
-Declare Function calibrate_joystick_name CDecl Alias "calibrate_joystick_name" (ByVal n As Integer) As Byte Ptr
+Declare Function calibrate_joystick_name CDecl Alias "calibrate_joystick_name" (ByVal n As Integer) as zstring ptr
 Declare Function calibrate_joystick CDecl Alias "calibrate_joystick" (ByVal n As Integer) As Integer
 Declare Function save_joystick_data CDecl Alias "save_joystick_data" (ByVal filename As String) As Integer
 Declare Function load_joystick_data CDecl Alias "load_joystick_data" (ByVal filename As String) As Integer
@@ -1709,7 +1709,7 @@ Declare Sub unload_datafile CDecl Alias "unload_datafile" (ByVal dat As DATAFILE
 Declare Function load_datafile_object CDecl Alias "load_datafile_object" (ByVal filename As String, ByVal objectname As String) As DATAFILE Ptr
 Declare Sub unload_datafile_object CDecl Alias "unload_datafile_object" (ByVal dat As DATAFILE Ptr)
 Declare Function find_datafile_object CDecl Alias "find_datafile_object" (ByVal dat As DATAFILE Ptr, ByVal objectname As String) As DATAFILE Ptr
-Declare Function get_datafile_property CDecl Alias "get_datafile_property" (ByVal dat As DATAFILE Ptr, ByVal typ As Integer) As Byte Ptr
+Declare Function get_datafile_property CDecl Alias "get_datafile_property" (ByVal dat As DATAFILE Ptr, ByVal typ As Integer) as zstring ptr
 Declare Sub register_datafile_object CDecl Alias "register_datafile_object" (ByVal id As Integer, ByVal load As Sub(ByVal f As PACKFILE Ptr, ByVal size As Long), ByVal destroy As Sub(ByVal dat As Integer))
 Declare Sub fixup_datafile CDecl Alias "fixup_datafile" (ByVal dat As DATAFILE Ptr)
 
@@ -1880,7 +1880,7 @@ end function
 
 declare function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer
 declare function allegro_main alias "main" (byval argc as integer, byval argv as any ptr) as integer
-declare function rtlib_get_exename alias "fb_hGetExeName" (byval buffer as byte ptr, byval length as integer) as byte ptr
+declare function rtlib_get_exename alias "fb_hGetExeName" (byval buffer as byte ptr, byval length as integer) as zstring ptr
 
 '':::::
 function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer

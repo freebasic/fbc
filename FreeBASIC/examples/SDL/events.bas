@@ -5,8 +5,6 @@
 
 '$include: "SDL\SDL.bi"
 
-	dim shared errorMsg as string
-
 ' This function may run in a separate event thread 
 ' note the use of SDLCALL (or cdecl) for this callback function
 function FilterEvents SDLCALL (byval event as SDL_Event ptr)
@@ -31,8 +29,7 @@ end function
 
 	' Initialize the SDL library (starts the event loop)
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) then
-   		errorMsg = *SDL_GetError()
-   		print "Couldn't initialize SDL: "; errorMsg
+   		print "Couldn't initialize SDL: "; *SDL_GetError()
    		end 1
 	end if
 
@@ -46,8 +43,7 @@ end function
 
 	' The mouse isn't much use unless we have a display for reference 
 	if (SDL_SetVideoMode(320, 240, 8, 0) = NULL) then
-   		errorMsg = *SDL_GetError()
-   		print "Couldn't set 320x240x8 video mode: "; errorMsg
+   		print "Couldn't set 320x240x8 video mode: "; *SDL_GetError()
    		end 1
 	end if
 
@@ -80,5 +76,4 @@ end function
 	loop
 
 	' This should never happen 
-	errorMsg = *SDL_GetError()
-	print "SDL_WaitEvent error: "; errorMsg
+	print "SDL_WaitEvent error: "; *SDL_GetError()

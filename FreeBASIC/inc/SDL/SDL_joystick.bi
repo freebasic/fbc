@@ -14,7 +14,7 @@
 declare function SDL_NumJoySticks SDLCALL alias "SDL_NumJoySticks" () as integer
 
 declare function SDL_JoystickName SDLCALL alias "SDL_JoyStickName" _
-   (byval device_index as integer) as byte ptr
+   (byval device_index as integer) as zstring ptr
 
 declare function SDL_JoystickOpen SDLCALL alias "SDL_JoystickOpen" _
    (byval device_index as integer) as SDL_Joystick ptr

@@ -23,16 +23,11 @@ option explicit
 		end 1
 	end if
 
-	dim info as string
-	
-	info = *mysql_get_client_info()
-  	print "Client info: "; info
+  	print "Client info: "; *mysql_get_client_info()
   
-  	info = *mysql_get_host_info( db )
-  	print "Host info: "; info
+  	print "Host info: "; *mysql_get_host_info( db )
     	
-  	info = *mysql_get_server_info( db )
-  	print "Server info: "; info
+  	print "Server info: "; *mysql_get_server_info( db )
   	
   	dim res as MYSQL_RES ptr
   	dim fd as MYSQL_FIELD ptr

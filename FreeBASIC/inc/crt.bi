@@ -101,7 +101,7 @@ declare sub abort cdecl alias "abort" ( )
 
 ' acos () already declared
 
-declare function asctime cdecl alias "asctime" ( byval timeptr as tm ptr ) as byte ptr
+declare function asctime cdecl alias "asctime" ( byval timeptr as tm ptr ) as zstring ptr
 
 ' asin() already declared
 
@@ -131,7 +131,7 @@ declare function clock cdecl alias "clock" ( ) as integer
 
 declare function cosh cdecl alias "cosh" ( x as double ) as double
 
-declare function ctime cdecl alias "ctime" ( byval timr as integer ) as byte ptr
+declare function ctime cdecl alias "ctime" ( byval timr as integer ) as zstring ptr
 
 declare function difftime cdecl alias "difftime" ( byval timer1 as integer, byval timer0 as integer ) as double
 
@@ -151,7 +151,7 @@ declare function fflush cdecl alias "fflush" (byval as FILE ptr) as integer
 declare function fclose cdecl alias "fclose" (byval as FILE ptr) as integer
 
 declare function fgetc cdecl alias "fgetc" (byval as FILE ptr) as integer
-declare function fgets cdecl alias "fgets" (byval as string, byval as integer, byval as FILE ptr) as byte ptr
+declare function fgets cdecl alias "fgets" (byval as string, byval as integer, byval as FILE ptr) as zstring ptr
 declare function fputc cdecl alias "fputc" (byval as integer, byval as FILE ptr) as integer
 declare function fputs cdecl alias "fputs" (byval as string, byval as FILE ptr) as integer
 
@@ -177,9 +177,9 @@ declare function getchar cdecl alias "getchar" ( ) as integer
 
 ' getenv() returns a string
 
-declare function getenv cdecl alias "getenv" ( byval varname as string ) as byte ptr
+declare function getenv cdecl alias "getenv" ( byval varname as string ) as zstring ptr
 
-declare function gets cdecl alias "gets" ( byval buffer as string ) as byte ptr
+declare function gets cdecl alias "gets" ( byval buffer as string ) as zstring ptr
 
 declare function gmtime cdecl alias "gmtime" ( byval timer as long ptr ) as tm ptr
 
@@ -271,7 +271,7 @@ declare function scanf cdecl alias "scanf" ( byval format as string, ... ) as in
 
 ' setbuf() uses a FILE*
 
-declare function setlocale cdecl alias "setlocale" ( byval category as integer, byval locale as string ) as byte ptr
+declare function setlocale cdecl alias "setlocale" ( byval category as integer, byval locale as string ) as zstring ptr
 
 ' setvbuf() uses a FILE*
 
@@ -289,37 +289,37 @@ declare sub srand cdecl alias "srand" ( byval seed as unsigned integer )
 
 declare function sscanf cdecl alias "sscanf" ( byval buffer as byte ptr, byval format as string, ... ) as integer
 
-declare function strcat cdecl alias "strcat" ( byval dst as string, byval src as string ) as byte ptr
+declare function strcat cdecl alias "strcat" ( byval dst as string, byval src as string ) as zstring ptr
 
-declare function strchr cdecl alias "strchr" ( byval s as string, byval c as integer ) as byte ptr
+declare function strchr cdecl alias "strchr" ( byval s as string, byval c as integer ) as zstring ptr
 
 declare function strcmp cdecl alias "strcmp" ( byval string1 as string, byval string2 as string ) as integer
 
 declare function strcoll cdecl alias "strcoll" ( byval string1 as string, byval string2 as string ) as integer
 
-declare function strcpy cdecl alias "strcpy" ( byval dst as string, byval src as string ) as byte ptr
+declare function strcpy cdecl alias "strcpy" ( byval dst as string, byval src as string ) as zstring ptr
 
 declare function strcspn cdecl alias "strcspn" ( byval s as string, byval strCharSet as string ) as integer
 
-declare function strerror cdecl alias "strerror" ( byval errnum as integer ) as byte ptr
+declare function strerror cdecl alias "strerror" ( byval errnum as integer ) as zstring ptr
 
 declare function strftime cdecl alias "strftime" ( byval strDest as string, byval maxsize as integer, byval fmt as string, byval timeptr as tm ptr ) as integer
 
 declare function strlen cdecl alias "strlen" ( byval s as string ) as integer
 
-declare function strncat cdecl alias "strncat" ( byval dst as string, byval src as string, byval count as integer ) as byte ptr
+declare function strncat cdecl alias "strncat" ( byval dst as string, byval src as string, byval count as integer ) as zstring ptr
 
 declare function strncmp cdecl alias "strncmp" ( byval string1 as string, byval string2 as string, byval count as integer ) as integer
 
-declare function strncpy cdecl alias "strncpy" ( byval dst as string, byval src as string, byval count as integer ) as byte ptr
+declare function strncpy cdecl alias "strncpy" ( byval dst as string, byval src as string, byval count as integer ) as zstring ptr
 
-declare function strpbrk cdecl alias "strpbrk" ( byval s as string, byval strCharSet as string ) as byte ptr
+declare function strpbrk cdecl alias "strpbrk" ( byval s as string, byval strCharSet as string ) as zstring ptr
 
-declare function strrchr cdecl alias "strrchr" ( byval s as string, byval c as integer ) as byte ptr
+declare function strrchr cdecl alias "strrchr" ( byval s as string, byval c as integer ) as zstring ptr
 
 declare function strspn cdecl alias "strspn" ( byval s as string, byval strCharSet as string ) as integer
 
-declare function strstr cdecl alias "strstr" ( byval string1 as string, byval string2 as string ) as byte ptr
+declare function strstr cdecl alias "strstr" ( byval string1 as string, byval string2 as string ) as zstring ptr
 
 declare function strtod cdecl alias "strtod" ( byval nptr as string, byval endptr as integer ptr ) as double
 
@@ -342,7 +342,7 @@ declare function tanh cdecl alias "tanh" ( byval x as double ) as double
 
 ' tmpfile() uses a FILE*
 
-declare function tmpnam cdecl alias "tmpnam" ( byval strng as string ) as byte ptr
+declare function tmpnam cdecl alias "tmpnam" ( byval strng as string ) as zstring ptr
 
 declare function tolower cdecl alias "tolower" ( byval c as integer ) as integer
 

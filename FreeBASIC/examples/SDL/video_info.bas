@@ -6,13 +6,10 @@
 
 	Dim Video As SDL_VideoInfo Ptr
 
-	Dim errorMsg As String
-
 	' Startup SDL
 	If ( SDL_Init( SDL_INIT_VIDEO ) = -1) Then
-		errorMsg = *SDL_GetError()
-		Print "SDL_Init: "; errorMsg
-   	End 1
+		Print "SDL_Init: "; *SDL_GetError()
+   		End 1
 	End If
 
 	Video = SDL_GetVideoInfo
@@ -21,9 +18,8 @@
 
 		dim NameBuffer as string * 256
 
-		SDL_VideoDriverName @NameBuffer, len( NameBuffer )
-
-		Print "Device: "; NameBuffer
+		Print "Device: "; *SDL_VideoDriverName( NameBuffer, len( NameBuffer ) )
+		
 		Print Using "VRAM: ###,### KB"; Video->video_mem
 
 		If ( Video->flagBits And SDL_HW_AVAILABLE ) Then Print "  + Hardware surfaces available"
