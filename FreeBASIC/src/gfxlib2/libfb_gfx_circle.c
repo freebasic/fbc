@@ -234,6 +234,10 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 	
 	y1 = y - b;
 	y2 = y + b;
+	
+	if( y1 > y2 )
+		SWAP( y1, y2 );
+		
 	if (y1 < fb_mode->view_y)
 		y1 = fb_mode->view_y;
 	if (y2 >= fb_mode->view_y + fb_mode->view_h)
