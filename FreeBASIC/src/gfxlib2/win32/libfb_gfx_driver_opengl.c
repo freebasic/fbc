@@ -89,7 +89,8 @@ static int opengl_init(void)
 	if ((!fb_wglCreateContext) || (!fb_wglMakeCurrent) || (!fb_wglGetCurrentContext) || (!fb_wglDeleteContext))
 		return -1;
 	
-	fb_win32.wnd = CreateWindowEx(0, fb_win32.window_class, fb_win32.window_title, 0, 0, 0, 320, 200, 0, 0, 0, 0);
+	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
+				    0, 0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
 	if (!fb_win32.wnd)
 		return -1;
 	
@@ -176,7 +177,8 @@ static int opengl_window_init(void)
 		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
 	}
 	SetWindowPos(fb_win32.wnd, root, x, y, rect.right - rect.left, rect.bottom - rect.top,
-		     SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_SHOWWINDOW);
+		     SWP_FRAMECHANGED | SWP_NOCOPYBITS | SWP_NOACTIVATE);
+	ShowWindow(fb_win32.wnd, SW_SHOW);
 	SetForegroundWindow(fb_win32.wnd);
 	SetFocus(fb_win32.wnd);
 	

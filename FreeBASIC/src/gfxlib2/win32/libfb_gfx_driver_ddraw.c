@@ -156,7 +156,7 @@ static int directx_init(void)
 
 	if (fb_win32.fullscreen) {
 		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, WS_POPUP | WS_VISIBLE, 0, 0,
-				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, 0, NULL);
+				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, fb_win32.hinstance, NULL);
 		if (!fb_win32.wnd)
 			return -1;
 		if (IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
