@@ -295,4 +295,3 @@ stringex_doTheCarriageReturnThang:
 //    return (int)((Uint32)y << 16) | ((Uint32)x & 0xFFFF);
     return;
 }
-
