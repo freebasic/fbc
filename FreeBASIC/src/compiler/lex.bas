@@ -75,6 +75,7 @@ declare sub 		lexNextToken 			( t as FBTOKEN, _
 '' globals
 	dim shared ctx as LEXCTX
 	dim shared curline as string
+	dim shared lastfilepos as integer
 
 	dim shared ctxcopyTB( 0 TO FB.MAXINCRECLEVEL-1 ) as LEXCTX
 
@@ -923,7 +924,7 @@ reread:
 
 	iswith = FALSE
 
-	t.filepos = ctx.filepos - ctx.bufflen - 1
+	lastfilepos = ctx.filepos - ctx.bufflen - 1
 
 	select case as const char
 	'':::::
@@ -1431,7 +1432,7 @@ function lexPeekCurrentLine( token_pos as integer ) as string
 
 	'' get file contents around current token
 	old_p = seek( env.inf )
-	p = ctx.tokenTB(0).filepos - 512
+	p = lastfilepos - 512
 	start = 512
 	if( p < 0 ) then
 		start += p
