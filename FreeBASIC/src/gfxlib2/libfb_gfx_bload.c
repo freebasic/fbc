@@ -217,25 +217,26 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	int result = FB_RTERROR_OK;
 	
 	if ((!dest) && (!fb_mode))
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	
 	f = fopen(filename->data, "rb");
+
 	if (!f) {
 		fb_hStrDelTemp(filename);
-		return FB_RTERROR_FILENOTFOUND;
+		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 	
 	fb_hPrepareTarget(NULL);
-	
+
 	id = fgetc(f);
 	switch (id) {
-	
+
 		case 0xFD:
 			/* QB BSAVEd block */
 			fgetc(f); fgetc(f); fgetc(f); fgetc(f);
 			size = fgetc(f) | (fgetc(f) << 8);
 			break;
-		
+
 		case 0xFE:
 			/* FB BSAVEd block */
 			size = fgetc(f) | (fgetc(f) << 8) | (fgetc(f) << 16) | (fgetc(f) << 24);
@@ -253,7 +254,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 			result = FB_RTERROR_FILEIO;
 			break;
 	}
-	
+
 	if (result == FB_RTERROR_OK) {
 		if (!dest) {
 			DRIVER_LOCK();
@@ -276,5 +277,5 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	
 	fb_hStrDelTemp(filename);
 	
-	return result;
+	return fb_ErrorSetNum( result );
 }

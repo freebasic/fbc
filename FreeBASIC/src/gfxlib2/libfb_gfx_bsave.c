@@ -32,21 +32,21 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 {
 	FILE *f;
 	int result = FB_RTERROR_OK;
-	
+
 	f = fopen(filename->data, "wb");
 	if (!f) {
 		fb_hStrDelTemp(filename);
-		return FB_RTERROR_FILENOTFOUND;
+		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
 	
 	fb_hPrepareTarget(NULL);
-	
+
 	fputc(0xFE, f);
 	fputc(size & 0xFF, f);
 	fputc((size >> 8) & 0xFF, f);
 	fputc((size >> 16) & 0xFF, f);
 	fputc(size >> 24, f);
-	
+
 	if (!src) {
 		DRIVER_LOCK();
 		size = MIN(size, fb_mode->pitch * fb_mode->h);
@@ -65,5 +65,5 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 	
 	fb_hStrDelTemp(filename);
 	
-	return result;
+	return fb_ErrorSetNum( result );
 }
