@@ -67,8 +67,8 @@ sources := $(wildcard *.bas)
 objects := $(patsubst %.bas,obj/%.o,$(main) $(filter-out $(main),$(sources)))
 headers := $(wildcard inc/*.bi)
 
-obj/%.o : %.bas
-	$(BC) $(BCFLAGS) $? -o $@
+obj/%.o : %.bas $(headers)
+	$(BC) $(BCFLAGS) $< -o $@
 
 all : $(TARGET)
 
