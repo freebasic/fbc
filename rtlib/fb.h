@@ -230,8 +230,8 @@ FBCALL void 		fb_ConsoleScreen	( int mode );
 	   void 		fb_ConsoleClear		( int mode );
 
 	   void 		fb_ConsoleLocate	( int row, int col );
-FBCALL int 			fb_ConsoleGetY		( void );
-FBCALL int 			fb_ConsoleGetX		( void );
+	   int 			fb_ConsoleGetY		( void );
+       int 			fb_ConsoleGetX		( void );
 FBCALL void 		fb_ConsoleGetSize	( int *cols, int *rows );
 FBCALL void 		fb_ConsoleGetXY		( int *col, int *row );
 
@@ -369,32 +369,40 @@ FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_siz
  * hooks
  **************************************************************************************************/
 
-typedef FBSTRING *(*FB_INKEYPROC)( void );
-typedef int		  (*FB_GETKEYPROC)( void );
+typedef FBSTRING 	*(*FB_INKEYPROC)	( void );
+typedef int		  	(*FB_GETKEYPROC)	( void );
 
 FBCALL FBSTRING 	*fb_Inkey			( void );
 FBCALL FB_INKEYPROC fb_SetInkeyProc		( FB_INKEYPROC newproc );
 FBCALL int		 	fb_Getkey			( void );
 FBCALL FB_GETKEYPROC fb_SetGetkeyProc	( FB_GETKEYPROC newproc );
 
-typedef void	  (*FB_CLSPROC)( int mode );
+typedef void	  	(*FB_CLSPROC)		( int mode );
 
 FBCALL void 		fb_Cls				( int mode );
 FBCALL FB_CLSPROC 	fb_SetClsProc		( FB_CLSPROC newproc );
 
-typedef void	  (*FB_COLORPROC)( int fc, int bc );
+typedef void	  	(*FB_COLORPROC)		( int fc, int bc );
 
 FBCALL void 		fb_Color			( int fc, int bc );
 FBCALL FB_COLORPROC fb_SetColorProc		( FB_COLORPROC newproc );
 
-typedef void	  (*FB_LOCATEPROC)( int row, int col );
+typedef void	  	(*FB_LOCATEPROC)	( int row, int col );
 
 FBCALL void 		fb_Locate			( int row, int col );
 FBCALL FB_LOCATEPROC fb_SetLocateProc	( FB_LOCATEPROC newproc );
 
-typedef void	  (*FB_WIDTHPROC)( int cols, int rows );
+typedef void	  	(*FB_WIDTHPROC)		( int cols, int rows );
 
 FBCALL void 		fb_Width			( int cols, int rows );
 FBCALL FB_WIDTHPROC fb_SetWidthProc		( FB_WIDTHPROC newproc );
+
+typedef int	  		(*FB_GETXPROC)		( void );
+typedef int	  		(*FB_GETYPROC)		( void );
+
+FBCALL int 			fb_GetX				( void );
+FBCALL FB_GETXPROC  fb_SetGetXProc		( FB_GETXPROC newproc );
+FBCALL int 			fb_GetY				( void );
+FBCALL FB_GETYPROC  fb_SetGetYProc		( FB_GETYPROC newproc );
 
 #endif /*__FB_H__*/

@@ -126,6 +126,13 @@ enum FBRTL_ENUM
 
 	FB.RTL.GFXPSET
 	FB.RTL.GFXLINE
+	FB.RTL.GFXCIRCLE
+	FB.RTL.GFXVIEW
+	FB.RTL.GFXWINDOW
+	FB.RTL.GFXPALETTE
+	FB.RTL.GFXPALETTEUSING
+	FB.RTL.GFXPUT
+	FB.RTL.GFXGET
 end enum
 
 const FB.RTL.MAXFUNCTIONS%		= 512
@@ -209,3 +216,15 @@ declare sub 		rtlConsoleView		( byval topexpr as integer, byval botexpr as integ
 declare sub 		rtlGfxPset			( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, byval coordtype as integer )
 declare sub 		rtlGfxLine			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
 										  byval cexpr as integer, byval linetype as integer, byval styleexpr as integer, byval coordtype as integer )
+declare sub 		rtlGfxCircle		( byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, byval cexpr as integer, _
+										  byval aspexpr as integer, byval iniexpr as integer, byval endexpr as integer, _
+										  byval fillflag as integer, byval coordtype as integer )
+declare sub 		rtlGfxView			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+			    						  byval fillexpr as integer, byval bordexpr as integer, byval screenflag as integer )
+declare sub 		rtlGfxWindow		( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+			    						  byval screenflag as integer )
+declare sub 		rtlGfxPalette 		( byval attexpr as integer, byval colexpr as integer )
+declare sub 		rtlGfxPaletteUsing	( byval arrayexpr as integer )
+declare sub 		rtlGfxPut			( byval xexpr as integer, byval yexpr as integer, byval arrayexpr as integer, byval mode as integer, byval coordtype as integer )
+declare sub 		rtlGfxGet			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+										  byval arrayexpr as integer, byval symbol as integer, byval coordtype as integer )

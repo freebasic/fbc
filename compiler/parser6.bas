@@ -651,8 +651,7 @@ function cInputStmt
 end function
 
 '':::::
-'' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?)
-''			  |   (SCREEN Expression...) .
+'' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
 ''
 function cViewStmt
     dim expr1 as integer, expr2 as integer
@@ -660,14 +659,17 @@ function cViewStmt
 	cViewStmt = FALSE
 
 	'' VIEW
-	if( not hMatch( FB.TK.VIEW ) ) then
+	if( lexCurrentToken <> FB.TK.VIEW ) then
 		exit function
 	end if
 
 	'' PRINT
-	if( not hMatch( FB.TK.PRINT ) ) then
+	if( lexLookAhead(1) <> FB.TK.PRINT ) then
 		exit function
 	end if
+
+	lexSkipToken
+	lexSkipToken
 
 	'' (Expression TO Expression)?
 	if( cExpression( expr1 ) ) then

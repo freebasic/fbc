@@ -18,6 +18,11 @@
 
 #define DEFAULT_COLOR   0xFFFF0000
 
+#define FBGFX_PUTMODE_MASK  0
+#define FBGFX_PUTMODE_SOLID 1
+
+#define FBGFX_WINDOWTITLE "FB"
+
 struct fb_GfxInfoStruct
 {
     Uint8        * fontData;
@@ -53,6 +58,8 @@ struct fb_GfxInfoStruct
     FB_COLORPROC   oldColorHandler;
     FB_LOCATEPROC  oldLocateHandler;
     FB_WIDTHPROC   oldWidthHandler;
+    FB_GETXPROC    oldGetXHandler;
+    FB_GETYPROC    oldGetYHandler;
 
     /* boolean: */
     char           winActive;      /* Logical coordinate system active */
@@ -75,9 +82,6 @@ struct fb_GfxInfoStruct
    Takes an int in the same format as SDL_PeepEvents */
 FBCALL void fb_GfxSetEventMask (int mask);
 
-FBCALL void fb_GfxRestoreHandlers (void);
-FBCALL void fb_GfxTakeHandlers (void);
-
        FBSTRING* fb_GfxInkey(void);
        int fb_GfxInkeyEx    (void);
 
@@ -87,13 +91,13 @@ FBCALL int fb_GfxScreen     (int width, int height, int depth, int fullScreenFla
           void fb_GfxQuit      (void);
 
 /* -32768 in each for full screen */
-FBCALL int fb_GfxView       (Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
-                                Uint32 fillCol, Uint32 borderCol, int screenFlag);
+FBCALL int fb_GfxView       (int x1, int y1, int x2, int y2,
+                             Uint32 fillCol, Uint32 borderCol, int screenFlag);
 
 /* Pass all zeros for coordinates to disable logical coordinate system */
 FBCALL int fb_GfxWindow     (float x1, float y1, float x2, float y2, int screenFlag);
 
-FBCALL int fb_GfxFlip       (void);
+FBCALL int fb_GfxFlip       (int frompage, int topage);
 
 FBCALL Uint32 fb_GfxRgb     (Uint8 r, Uint8 g, Uint8 b);
 	   void fb_GfxColor      (int fc, int bc);
@@ -128,16 +132,15 @@ FBCALL int fb_GfxBoxEx      (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 
 FBCALL int fb_GfxFBoxEx     (Sint16 x1, Sint16 y1, Sint16 dx, Sint16 dy, Uint32 color);
 
 FBCALL int fb_GfxCircle     (float x, float y, float radius, Uint32 color,
-                                int fillFlag, int coordType);
+                             int fillFlag, int coordType);
 FBCALL int fb_GfxEllipse    (float x, float y, float radius, Uint32 color,
-                                float aspect, int fillFlag, int coordType);
+                             float aspect, float arcini, float arcend,
+                             int fillFlag, int coordType);
 FBCALL int fb_GfxEllipseEx  (Sint16 x, Sint16 y, Sint16 rx, Sint16 ry, Uint32 color);
 FBCALL int fb_GfxFEllipseEx (Sint16 x, Sint16 y, Sint16 rx, Sint16 ry, Uint32 color);
 
-FBCALL int fb_GfxGet        (float x1, float y1, float x2, float y2, FBARRAY *desc, void *elementAddress, int coordType);
-FBCALL int fb_GfxGetEx      (Sint16 x, Sint16 y, Uint16 w, Uint16 h, void *dst);
+FBCALL int fb_GfxGet        (float x1, float y1, float x2, float y2, void *elementAddress, int coordType, FBARRAY *desc);
 
-FBCALL int fb_GfxPut        (float x, float y, void *sourceAddress, int coordType);
-FBCALL int fb_GfxPutKey     (float x, float y, void *sourceAddress, Uint32 colorKey, int coordType);
+FBCALL int fb_GfxPut        (float x, float y, void *sourceAddress, int coordType, int mode);
 
 #endif

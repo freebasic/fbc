@@ -237,8 +237,12 @@ data "IFNDEF"	, FB.TK.IFNDEF		, FB.TKCLASS.KEYWORD
 data "ENDIF"	, FB.TK.ENDIF		, FB.TKCLASS.KEYWORD
 data "DEFINED"	, FB.TK.DEFINED		, FB.TKCLASS.KEYWORD
 data "PSET"		, FB.TK.PSET		, FB.TKCLASS.KEYWORD
+data "PRESET"	, FB.TK.PRESET		, FB.TKCLASS.KEYWORD
+data "CIRCLE"	, FB.TK.CIRCLE		, FB.TKCLASS.KEYWORD
+data "WINDOW"	, FB.TK.WINDOW		, FB.TKCLASS.KEYWORD
+data "PALETTE"	, FB.TK.PALETTE		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 153
+const FB.MAXKEYWORDS 		= 157
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' linked-lists

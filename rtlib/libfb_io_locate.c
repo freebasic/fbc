@@ -60,7 +60,7 @@ void fb_ConsoleLocate( int row, int col )
 
 
 /*:::::*/
-FBCALL int fb_ConsoleGetX( void )
+int fb_ConsoleGetX( void )
 {
 
 #ifdef WIN32
@@ -78,7 +78,7 @@ FBCALL int fb_ConsoleGetX( void )
 }
 
 /*:::::*/
-FBCALL int fb_ConsoleGetY( void )
+int fb_ConsoleGetY( void )
 {
 
 #ifdef WIN32

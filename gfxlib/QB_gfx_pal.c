@@ -28,6 +28,10 @@
 
 extern struct fb_GfxInfoStruct fb_GfxInfo;
 
+/*  r, g, and b range from 0 to 255 */
+static int fb_GfxPaletteEx  	(Uint8 attribute, Uint8 r, Uint8 g, Uint8 b);
+
+
 const SDL_Color fb_GfxDefaultPal[256] = {
 #include "defaultPalette.h"
 };
@@ -50,7 +54,7 @@ FBCALL int fb_GfxPalette (Uint32 attribute, Uint32 color)
 
     SANITY_CHECK
     
-    if (attribute == 0xFFFFFFFF && color == 0xFFFFFFFF)
+    if( attribute == 0xFFFFFFFF )
     {
         fb_GfxInfo.paletteChanged = 1;
 
@@ -60,18 +64,20 @@ FBCALL int fb_GfxPalette (Uint32 attribute, Uint32 color)
 
     if (color > 0xFFFFFF || attribute > 255) return -1;
     
-    r = (Uint8)(color);
+    b = (Uint8)(color);
     g = (Uint8)(color >> 8);
-    b = (Uint8)(color >> 16);
+    r = (Uint8)(color >> 16);
     
     if (r > 63 || g > 63 || b > 63) return -1;
     
-    return fb_GfxPaletteEx(attribute, (Uint32)(r * 255.0f / 63.0f + .5f),
-                                      (Uint32)(g * 255.0f / 63.0f + .5f),
-                                      (Uint32)(b * 255.0f / 63.0f + .5f) );
+    attribute &= 0xFF;
+    
+    return fb_GfxPaletteEx(attribute, (Uint8)(r * 255.0f / 63.0f + .5f),
+                                      (Uint8)(g * 255.0f / 63.0f + .5f),
+                                      (Uint8)(b * 255.0f / 63.0f + .5f) );
 }
 
-FBCALL int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
+static int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
 {
     SDL_Color c;
     
@@ -86,9 +92,23 @@ FBCALL int fb_GfxPaletteEx (Uint8 attribute, Uint8 r, Uint8 g, Uint8 b)
     return (SDL_SetPalette(fb_GfxInfo.screen, SDL_LOGPAL, &c, attribute, 1) == 0);
 }
 
-FBCALL void fb_GfxOut (Uint32 port, Uint8 data)
+FBCALL void fb_GfxPaletteUsing( int *src )
+{
+    Uint8 r, g, b;
+    int i;
+    
+    for( i = 0; i < 256; i++ )
+    	if( src[i] != -1 )
+    		fb_GfxPalette( i, src[i] );
+    
+}
+
+
+FBCALL void fb_GfxPaletteOut (int port, int data)
 {
     if (SANITY_CHECK_CONDITION) return;
+    
+    data &= 0xFF;
 
     switch (port)
     {
@@ -122,9 +142,9 @@ FBCALL void fb_GfxOut (Uint32 port, Uint8 data)
     }
 }
 
-FBCALL Uint8 fb_GfxInpEx (void)
+static int fb_GfxInpEx (void)
 {
-    Uint8 ret;
+    int ret;
     SDL_Color *c;
     
     SANITY_CHECK
@@ -154,10 +174,10 @@ FBCALL Uint8 fb_GfxInpEx (void)
     
     /* shifting right/left by 2 would make the display look slightly
        darker: (0 to 252) instead of (0 to 255), 63 << 2 = 252 */
-    return (Uint8)(ret * (63.0f / 255.0f) + .5f);  
+    return (int)(ret * (63.0f / 255.0f) + .5f);  
 }
 
-FBCALL Uint8 fb_GfxInp (Uint32 port)
+FBCALL int fb_GfxPaletteInp (int port)
 {
     if (port == 0x3C9) return fb_GfxInpEx();
     

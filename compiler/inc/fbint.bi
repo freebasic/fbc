@@ -311,6 +311,10 @@ enum FBTK_ENUM
 	FB.TK.ENDIF
 	FB.TK.DEFINED
 	FB.TK.PSET
+	FB.TK.PRESET
+	FB.TK.CIRCLE
+	FB.TK.WINDOW
+	FB.TK.PALETTE
 end enum
 
 '' single char tokens

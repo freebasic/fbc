@@ -137,7 +137,7 @@ FBCALL int fb_GfxSetFormat (int tabStopDistance, int affectedByViewFlag,
     return 0;
 }
 
-FBCALL int fb_GfxCsrlin (void)
+int fb_GfxCsrlin (void)
 {
     int y;
 
@@ -152,7 +152,7 @@ FBCALL int fb_GfxCsrlin (void)
     return y;
 }
 
-FBCALL int fb_GfxPos (void)
+int fb_GfxPos (void)
 {
     int x;
 

@@ -38,7 +38,12 @@
 #include "QB_gfx_text.h"
 #include "QB_gfx_pal.h"
 
-static int 	fb_GfxScreenEx   	(int width, int height, int depth, int fullscreenFlag);
+static int 	fb_GfxScreenEx   			(int width, int height, int depth, int fullscreenFlag);
+static void fb_GfxRestoreHandlers 		(void);
+static void fb_GfxTakeHandlers 			(void);
+static int 	fb_GfxPutKey     			(float x, float y, void *sourceAddress, int coordType);
+static int 	fb_GfxGetEx      			(Sint16 x, Sint16 y, Uint16 w, Uint16 h, void *dst);
+
 
 #define DEFAULT_DEPTH 8
 
@@ -76,7 +81,16 @@ struct fb_GfxInfoStruct fb_GfxInfo =
     NULL,                                  /* screen surface pointer */
     {0, 0, 0, 0},                          /* View */
     0.0f, 0.0f, 0.0f, 0.0f,                /* Window */
-    NULL, NULL, NULL, NULL, NULL, NULL,    /* FB function handlers */
+    /* FB function handlers */
+    NULL, 
+    NULL, 
+    NULL, 
+    NULL, 
+    NULL, 
+    NULL,
+    NULL,
+    NULL,
+    /* FB function handlers */
     0, 0, 0, 0, 0,
     0, 0, 0, 0
 };
@@ -238,7 +252,7 @@ FBCALL void fb_GfxTransCoord (float x, float y, Sint16 *rx, Sint16 *ry)
 }
 
 /* Convert coords to absolute */
-FBCALL void fb_GfxConvertCoords(float *x1, float *y1, float *x2, float *y2, int coordType)
+static void fb_GfxConvertCoords(float *x1, float *y1, float *x2, float *y2, int coordType)
 {
     switch (coordType)
     {
@@ -386,7 +400,7 @@ void fb_GfxCenterCursor (void)
     }
 }
 
-FBCALL void fb_GfxRestoreHandlers (void)
+static void fb_GfxRestoreHandlers (void)
 {
     if (fb_GfxInfo.oldInkeyHandler != NULL)
     {
@@ -418,34 +432,36 @@ FBCALL void fb_GfxRestoreHandlers (void)
         fb_SetWidthProc(fb_GfxInfo.oldWidthHandler);
         fb_GfxInfo.oldWidthHandler = NULL;
     }
+    if (fb_GfxInfo.oldGetXHandler != NULL)
+    {
+        fb_SetGetXProc(fb_GfxInfo.oldGetXHandler);
+        fb_GfxInfo.oldGetXHandler = NULL;
+    }
+    if (fb_GfxInfo.oldGetYHandler != NULL)
+    {
+        fb_SetGetYProc(fb_GfxInfo.oldGetYHandler);
+        fb_GfxInfo.oldGetYHandler = NULL;
+    }
 }
 
-FBCALL void fb_GfxTakeHandlers (void)
+static void fb_GfxTakeHandlers (void)
 {
     if (fb_GfxInfo.oldInkeyHandler == NULL)
-    {
         fb_GfxInfo.oldInkeyHandler = fb_SetInkeyProc((FB_INKEYPROC)fb_GfxInkey);
-    }
     if (fb_GfxInfo.oldGetkeyHandler == NULL)
-    {
         fb_GfxInfo.oldGetkeyHandler = fb_SetGetkeyProc((FB_GETKEYPROC)fb_GfxInkeyEx);
-    }
     if (fb_GfxInfo.oldClsHandler == NULL)
-    {
         fb_GfxInfo.oldClsHandler = fb_SetClsProc((FB_CLSPROC)fb_GfxCls);
-    }
     if (fb_GfxInfo.oldColorHandler == NULL)
-    {
         fb_GfxInfo.oldColorHandler = fb_SetColorProc((FB_COLORPROC)fb_GfxColor);
-    }
     if (fb_GfxInfo.oldLocateHandler == NULL)
-    {
         fb_GfxInfo.oldLocateHandler = fb_SetLocateProc((FB_LOCATEPROC)fb_GfxLocate);
-    }
     if (fb_GfxInfo.oldWidthHandler == NULL)
-    {
         fb_GfxInfo.oldWidthHandler = fb_SetWidthProc((FB_WIDTHPROC)fb_GfxWidth);
-    }
+    if (fb_GfxInfo.oldGetXHandler == NULL)
+        fb_GfxInfo.oldGetXHandler = fb_SetGetXProc((FB_GETXPROC)fb_GfxPos);
+    if (fb_GfxInfo.oldGetYHandler == NULL)
+        fb_GfxInfo.oldGetYHandler = fb_SetGetXProc((FB_GETYPROC)fb_GfxCsrlin);
 }
 
 void fb_GfxQuit (void)
@@ -540,10 +556,17 @@ static int fb_GfxScreenEx(int width, int height, int depth, int fullScreenFlag)
     if (fullScreenFlag)
         flags |= SDL_FULLSCREEN;
     else
-        flags &= !SDL_FULLSCREEN;
+        flags &= ~SDL_FULLSCREEN;
 
     fb_GfxInfo.screen = SDL_SetVideoMode(width, height, depth, flags);
     if (fb_GfxInfo.screen == NULL) return -1;
+    
+    if( fullScreenFlag == 0 )
+    {
+    	char buff[64];
+    	sprintf( buff, "%s (%dx%dx%d)", FBGFX_WINDOWTITLE, width, height, depth );
+    	SDL_WM_SetCaption( buff, NULL );
+    }
 
     fb_GfxInfo.gfx_cursorX = width >> 1;
     fb_GfxInfo.gfx_cursorY = height >> 1;
@@ -630,7 +653,7 @@ FBCALL int fb_GfxWindow (float x1, float y1, float x2, float y2, int screenFlag)
     }
 }
 
-FBCALL int fb_GfxView (Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint32 fillCol, Uint32 borderCol, int screenFlag)
+FBCALL int fb_GfxView (int x1, int y1, int x2, int y2, Uint32 fillCol, Uint32 borderCol, int screenFlag)
 {
     SDL_Color *c;
     SDL_Rect r;
@@ -688,7 +711,7 @@ void fb_GfxColor ( int fc, int bc )
     fb_GfxInfo.defaultColor = fc;
 }
 
-FBCALL int fb_GfxFlip (void)
+FBCALL int fb_GfxFlip (int frompage, int topage)
 {
     SANITY_CHECK
 
@@ -1735,11 +1758,13 @@ FBCALL int fb_GfxCircle (float x, float y, float radius, Uint32 color,
 
     return fb_GfxEllipse(x, y, radius, color,
                          4 * ((float)fb_GfxInfo.screen->h / fb_GfxInfo.screen->w) / 3,
+                         0, 3.141593*2,
                          fillFlag, coordType);
 }
 
 FBCALL int fb_GfxEllipse (float x, float y, float radius, Uint32 color,
-                             float aspect, int fillFlag, int coordType)
+                          float aspect, float arcini, float arcend, 
+                          int fillFlag, int coordType)
 {
 //    SDL_Color *c;
 //    Uint8 r, g, b;
@@ -1765,7 +1790,10 @@ FBCALL int fb_GfxEllipse (float x, float y, float radius, Uint32 color,
 
     /* Radius is interpretted as x-radius or y-radius depending
        on which would make a smaller circle. Why? */
-    if (aspect > 1)
+    if( aspect == 0.0 )
+    	aspect = 4.0 * ((float)fb_GfxInfo.screen->h / fb_GfxInfo.screen->w) / 3.0;
+    	
+    if (aspect > 1.0)
     {
         radX = radius / aspect;
         radY = radius;
@@ -1790,18 +1818,14 @@ FBCALL int fb_GfxEllipse (float x, float y, float radius, Uint32 color,
     rradY = (Sint16)(radY + .5f);
 
     if (fillFlag)
-    {
         return fb_GfxFEllipseEx(rx, ry, rradX, rradY, color);
-    }
     else
-    {
         return fb_GfxEllipseEx(rx, ry, rradX, rradY, color);
-    }
 
     return 0;
 }
 
-FBCALL int fb_GfxGet (float x1, float y1, float x2, float y2, FBARRAY *desc, void *elementAddress, int coordType)
+FBCALL int fb_GfxGet (float x1, float y1, float x2, float y2, void *elementAddress, int coordType, FBARRAY *desc)
 {
     Sint16 w, h,
            rx1, ry1, rx2, ry2;
@@ -1837,7 +1861,7 @@ FBCALL int fb_GfxGet (float x1, float y1, float x2, float y2, FBARRAY *desc, voi
     return fb_GfxGetEx(rx1, ry1, w, h, elementAddress);
 }
 
-FBCALL int fb_GfxGetEx (Sint16 x, Sint16 y, Uint16 w, Uint16 h, void *dst)
+static int fb_GfxGetEx (Sint16 x, Sint16 y, Uint16 w, Uint16 h, void *dst)
 {
     SDL_Surface *surface;
     SDL_Rect r;
@@ -1891,15 +1915,18 @@ FBCALL int fb_GfxGetEx (Sint16 x, Sint16 y, Uint16 w, Uint16 h, void *dst)
     return ret;
 }
 
-FBCALL int fb_GfxPut (float x, float y, void *sourceAddress, int coordType)
+FBCALL int fb_GfxPut( float x, float y, void *sourceAddress, int coordType, int mode )
 {
     SDL_Surface *surface;
     SDL_Rect dst;
     int ret, depth, bytesPP, w, h;
-    Sint16 rx, ry;
-    Uint8 *colorptr;
 
     SANITY_CHECK
+    
+    if( mode == FBGFX_PUTMODE_MASK )
+    {
+    	return fb_GfxPutKey( x, y, sourceAddress, coordType );
+    }
 
     if (coordType != COORD_TYPE_A)
     {
@@ -1953,13 +1980,12 @@ FBCALL int fb_GfxPut (float x, float y, void *sourceAddress, int coordType)
     return ret;
 }
 
-FBCALL int fb_GfxPutKey (float x, float y, void *sourceAddress, Uint32 colorKey, int coordType)
+static int fb_GfxPutKey (float x, float y, void *sourceAddress, int coordType)
 {
     SDL_Surface *surface;
     SDL_Rect dst;
     int ret, depth, bytesPP, w, h;
-    Sint16 rx, ry;
-    Uint8 *colorptr;
+    Uint32 colorKey;
 
     SANITY_CHECK
 
@@ -2010,18 +2036,9 @@ FBCALL int fb_GfxPutKey (float x, float y, void *sourceAddress, Uint32 colorKey,
     }
 
     if (depth > 8)
-    {
-        /* Convert 0xRRGGBBAA to screen pixel format: */
-        colorptr = (Uint8 *) & colorKey;
-        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-        {
-            colorKey = SDL_MapRGB(fb_GfxInfo.screen->format, colorptr[0], colorptr[1], colorptr[2]);
-        }
-        else
-        {
-            colorKey = SDL_MapRGB(fb_GfxInfo.screen->format, colorptr[3], colorptr[2], colorptr[1]);
-        }
-    }
+    	colorKey = SDL_MapRGB(fb_GfxInfo.screen->format, 0xFF, 0x00, 0xFF );
+    else
+    	colorKey = SDL_MapRGB(fb_GfxInfo.screen->format, 0x00, 0x00, 0x00 );
 
     SDL_SetColorKey(surface, SDL_SRCCOLORKEY, colorKey);
 
