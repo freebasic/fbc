@@ -557,6 +557,17 @@ Sub astOptConstIDX( byval n as integer )
 				    end if
 				end if
 			end if
+
+			'' convert to integer if needed
+			if( (irGetDataClass( astTB(l).dtype ) <> IR.DATACLASS.INTEGER) or _
+			    (irGetDataSize( astTB(l).dtype ) <> FB.POINTERSIZE) ) then
+				ll = astNew( INVALID, INVALID )
+				astCopy ll, l
+				ll = astNewCONV( INVALID, IR.DATATYPE.INTEGER, ll )
+				astCopy l, ll
+				astDel ll
+			end if
+
         end if
 	end if
 
@@ -1450,10 +1461,7 @@ function astNew( byval typ as integer, byval dtype as integer ) as integer stati
 
 	''
 	astTB(n).typ 	= typ
-
-	'if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 	astTB(n).dtype 	= dtype
-
 	astTB(n).defined= FALSE
 	astTB(n).op		= INVALID
 	astTB(n).l    	= INVALID

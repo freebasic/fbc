@@ -62,7 +62,8 @@ function cFieldArray( byval elm as FBTYPELEMENT ptr, byval typ as integer, idxex
 
 		'' if index isn't an integer, convert
 		astUpdNodeResult dimexpr
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or (astGetDataSize( dimexpr ) <> 4) ) then
+		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
 		end if
 
@@ -321,7 +322,8 @@ function cDynArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 
 		'' if index isn't an integer, convert
 		astUpdNodeResult dimexpr
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or (astGetDataSize( dimexpr ) <> 4) ) then
+		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
 		end if
 
@@ -390,7 +392,8 @@ function cArgArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 
 		'' if index isn't an integer, convert
 		astUpdNodeResult dimexpr
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or (astGetDataSize( dimexpr ) <> 4) ) then
+		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
 		end if
 
@@ -476,7 +479,8 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 
 		'' if index isn't an integer, convert
 		astUpdNodeResult dimexpr
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or (astGetDataSize( dimexpr ) <> 4) ) then
+		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
 		end if
 
