@@ -203,13 +203,13 @@ private function regAllocateReg( byval this_ as REGCLASS ptr, byval r as integer
 end function
 
 '':::::
-private function regEnsure( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer static
+private function regEnsure( byval this_ as REGCLASS ptr, byval vreg as integer, byval doload as integer ) as integer static
     dim r as integer
 
     r = regFindReg( this_, vreg )
     if( r = INVALID ) then
     	r = regAllocate( this_, vreg )
-    	irLoadVR r, vreg
+    	irLoadVR r, vreg, doload
     else
     	'''''irSetVR r, vreg
     end if
@@ -442,13 +442,13 @@ private function sregAllocateReg( byval this_ as REGCLASS ptr, byval r as intege
 end function
 
 '':::::
-private Function sregEnsure( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer Static
+private Function sregEnsure( byval this_ as REGCLASS ptr, byval vreg as integer, byval doload as integer ) as integer Static
 	Dim r as integer
 
 	r = sregFindReg( this_, vreg )
 	If( r = INVALID ) Then
 		r = sregAllocate( this_, vreg )
-		irLoadVR r, vreg
+		irLoadVR r, vreg, doload
 	Else
 		If( this_->regTB(r) <> 0 ) Then
 			sregXchg this_, r
