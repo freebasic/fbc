@@ -51,7 +51,7 @@ static void fb_hFileExit( void )
 /*:::::*/
 static void fb_hFileCtx ( int doinit )
 {
-	static inited = 0;
+	static int inited = 0;
 	int i;
 
 	//
@@ -186,13 +186,24 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 						unsigned int lock, int fnum, int len )
 {
 	char openmask[16];
+	char fname[MAX_PATH];
 	FILE* f;
 	int str_len;
-	char *filename;
 	int type, accesstype;
 
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
+
+	/* copy file name */
+	str_len = FB_STRSIZE( str );
+
+	fb_hStrCopy( fname, str->data, str_len );
+
+	/* del if temp */
+	fb_hStrDelTemp( str );
+
+	if( str_len == 0 )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	/* check if valid */
 	if( fnum < 1 || fnum > FB_MAX_FILES )
@@ -205,22 +216,11 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	str_len = FB_STRSIZE( str );
-
-	if( (str->data == NULL) || (str_len == 0) )
-	{
-		/* del if temp */
-		fb_hStrDelTemp( str );
-		
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
-
 	/* check for special file names */
 	type = FB_FILE_TYPE_NORMAL;
-	if( strcasecmp( str->data, "CONS:" ) == 0 )
+	if( strcasecmp( fname, "CONS:" ) == 0 )
 		type = FB_FILE_TYPE_CONSOLE;
-	else if( strcasecmp( str->data, "ERR:" ) == 0 )
+	else if( strcasecmp( fname, "ERR:" ) == 0 )
 		type = FB_FILE_TYPE_ERR;
 
 	accesstype = (access != FB_FILE_ACCESS_ANY? access: FB_FILE_ACCESS_READWRITE);
@@ -249,26 +249,25 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		}
 
 		/* Convert directory separators to whatever the current platform supports */
-		filename = fb_hConvertPath( str->data, str_len );
+		fb_hConvertPath( fname, str_len );
 
 		if( (mode == FB_FILE_MODE_BINARY) || (mode == FB_FILE_MODE_RANDOM) )
 		{
 			/* try opening */
-			if( (f = fopen( filename, openmask )) == NULL )
+			if( (f = fopen( fname, openmask )) == NULL )
 			{
 				/* if file was not found and in READ/WRITE mode, create it */
 				if( accesstype == FB_FILE_ACCESS_READWRITE )
 				{
-					f = fopen( filename,  "w+b" );
+					f = fopen( fname,  "w+b" );
 
 					/* if file could not be created and in ANY mode, try opening as read-only */
 					if( (f == NULL) && (access == FB_FILE_ACCESS_ANY) )
-            			f = fopen( filename,  "rb" );
+            			f = fopen( fname,  "rb" );
             	}
 
             	if( f == NULL )
             	{
-            		free( filename );
             		FB_UNLOCK();
             		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
             	}
@@ -277,15 +276,12 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		else
 		{
 			/* try opening */
-			if( (f = fopen( filename, openmask )) == NULL )
+			if( (f = fopen( fname, openmask )) == NULL )
 			{
-				free( filename );
 				FB_UNLOCK();
 				return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 			}
 		}
-
-		free( filename );
 
 		/* change the default buffer size */
 		setvbuf( f, NULL, _IOFBF, FB_FILE_BUFSIZE );
@@ -358,9 +354,6 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	else
 		fb_fileTB[fnum-1].size = 0;
 
-
-	/* del if temp */
-	fb_hStrDelTemp( str );
 
 	FB_UNLOCK();
 
