@@ -509,8 +509,11 @@ static void window_thread(HANDLE running_event)
 		if ((result == DIERR_NOTACQUIRED) || (result == DIERR_INPUTLOST))
 			IDirectInputDevice_Acquire(lpDID);
 		else {
-			for (i = 0; i < 256; i++)
+			for (i = 0; i < 128; i++)
 				fb_mode->key[i] = (keystate[i] & 0x80) ? TRUE : FALSE;
+			/* Simplicistic way to deal with extended scancodes */
+			for (i = 128; i < 256; i++)
+				fb_mode->key[i & 0x7F] |= (keystate[i] & 0x80) ? TRUE : FALSE;
 		}
 		
 		while (PeekMessage(&message, wnd, 0, 0, PM_REMOVE)) {
