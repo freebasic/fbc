@@ -216,6 +216,15 @@ data "fb_DataReadShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 '' fb_DataReadInt ( dst as integer ) as void
 data "fb_DataReadInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+'' fb_DataReadUByte ( dst as ubyte ) as void
+data "fb_DataReadUByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						    FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYREF, FALSE
+'' fb_DataReadUShort ( dst as ushort ) as void
+data "fb_DataReadUShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+							 FB.SYMBTYPE.USHORT,FB.ARGMODE.BYREF, FALSE
+'' fb_DataReadUInt ( dst as uinteger ) as void
+data "fb_DataReadUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						   FB.SYMBTYPE.UINT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadSingle ( dst as single ) as void
 data "fb_DataReadSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
@@ -1059,7 +1068,7 @@ data "condwait","fb_CondWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 data "dylibload","fb_DylibLoad", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 								 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
-'' dylibsymbol( byval library as integer, symbol as string) as any ptr 
+'' dylibsymbol( byval library as integer, symbol as string) as any ptr
 data "dylibsymbol","fb_DylibSymbol", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 									 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
@@ -2213,34 +2222,35 @@ function rtlDataRead( byval varexpr as integer ) as integer static
     rtlDataRead = FALSE
 
 	f = NULL
-	select case astGetDataClass( varexpr )
-	case IR.DATACLASS.INTEGER
-		select case astGetDataSize( varexpr )
-		case 1
-			f = ifuncTB(FB.RTL.DATAREADBYTE)
-		case 2
-			f = ifuncTB(FB.RTL.DATAREADSHORT)
-		case 4
-			f = ifuncTB(FB.RTL.DATAREADINT)
-		end select
-		args = 1
-
-	case IR.DATACLASS.FPOINT
-		select case astGetDataSize( varexpr )
-		case 4
-			f = ifuncTB(FB.RTL.DATAREADSINGLE)
-		case 8
-			f = ifuncTB(FB.RTL.DATAREADDOUBLE)
-		end select
-		args = 1
-
-	case else
+	args = 1
+	select case as const astGetDataType( varexpr )
+	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR
 		f = ifuncTB(FB.RTL.DATAREADSTR)
 		args = 2
+	case IR.DATATYPE.BYTE
+		f = ifuncTB(FB.RTL.DATAREADBYTE)
+	case IR.DATATYPE.UBYTE
+		f = ifuncTB(FB.RTL.DATAREADUBYTE)
+	case IR.DATATYPE.SHORT
+		f = ifuncTB(FB.RTL.DATAREADSHORT)
+	case IR.DATATYPE.USHORT
+		f = ifuncTB(FB.RTL.DATAREADUSHORT)
+	case IR.DATATYPE.INTEGER
+		f = ifuncTB(FB.RTL.DATAREADINT)
+	case IR.DATATYPE.UINT
+		f = ifuncTB(FB.RTL.DATAREADUINT)
+	case IR.DATATYPE.SINGLE
+		f = ifuncTB(FB.RTL.DATAREADSINGLE)
+	case IR.DATATYPE.DOUBLE
+		f = ifuncTB(FB.RTL.DATAREADDOUBLE)
+	case IR.DATATYPE.USERDEF
+		exit function						'' illegal
+	case else
+		f = ifuncTB(FB.RTL.DATAREADUINT)
 	end select
 
     if( f = NULL ) then
-    	exit sub
+    	exit function
     end if
 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
