@@ -22,6 +22,7 @@ Version 0.13 Beta:
 - inline string indexing as in "char = somestring[idx]" (V1c)
 - variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
 - va_first(), va_arg() and va_next() intrinsic macros, to access variable-arguments in FB functions (v1c)
+- include file and import lib for the libxml2 library (v1c)
 - include file and import lib for the SQLite library (v1c)
 - include file and import lib for the mySQL client library (v1c)
 - include file and import lib for the DevIL library (v1c)
