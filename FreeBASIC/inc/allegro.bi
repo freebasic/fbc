@@ -967,14 +967,14 @@ Declare Sub destroy_font CDecl Alias "destroy_font" (ByVal f As FONT Ptr)
 'Declare Sub textprintf_justify_ex CDecl Alias "textprintf_justify_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer)
 
 ' polygon rendering
-Declare Sub polygon3d CDecl Alias "polygon3d" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, ByRef vtx() As V3D Ptr)
-Declare Sub polygon3d_f CDecl Alias "polygon3d_f" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, ByRef vtx() As V3D_f Ptr)
+Declare Sub polygon3d CDecl Alias "polygon3d" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D Ptr)
+Declare Sub polygon3d_f CDecl Alias "polygon3d_f" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D_f Ptr)
 Declare Sub triangle3d CDecl Alias "triangle3d" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal tex As BITMAP Ptr, ByRef v1 As V3D, ByRef v2 As V3D, ByRef v3 As V3D)
 Declare Sub triangle3d_f CDecl Alias "triangle3d_f" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal tex As BITMAP Ptr, ByRef v1 As V3D_f, ByRef v2 As V3D_f, ByRef v3 As V3D_f)
 Declare Sub quad3d CDecl Alias "quad3d" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal tex As BITMAP Ptr, ByRef v1 As V3D, ByRef v2 As V3D, ByRef v3 As V3D, ByRef v4 As V3D)
 Declare Sub quad3d_f CDecl Alias "quad3d_f" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal tex As BITMAP Ptr, ByRef v1 As V3D_f, ByRef v2 As V3D_f, ByRef v3 As V3D_f, ByRef v4 As V3D_f)
-Declare Function clip3d_f CDecl Alias "clip3d_f" (ByVal typ As Integer, ByVal min_z As Single, ByVal max_z As Single, ByVal vc As Integer, ByRef vtx() As V3D_f Ptr, ByRef vout() As V3D_f Ptr, ByRef vtmp() As V3D_f Ptr, ByVal iOut As Integer Ptr) As Integer
-Declare Function clip3d CDecl Alias "clip3d" (ByVal typ As Integer, ByVal min_z As fixed, ByVal max_z As fixed, ByVal vc As Integer, ByRef vtx() As V3D Ptr, ByRef vout() As V3D Ptr, ByRef vtmp() As V3D Ptr, ByVal iOut As Integer Ptr) As Integer
+Declare Function clip3d_f CDecl Alias "clip3d_f" (ByVal typ As Integer, ByVal min_z As Single, ByVal max_z As Single, ByVal vc As Integer, vtx() As V3D_f Ptr, vout() As V3D_f Ptr, vtmp() As V3D_f Ptr, ByVal iOut As Integer Ptr) As Integer
+Declare Function clip3d CDecl Alias "clip3d" (ByVal typ As Integer, ByVal min_z As fixed, ByVal max_z As fixed, ByVal vc As Integer, vtx() As V3D Ptr, vout() As V3D Ptr, vtmp() As V3D Ptr, ByVal iOut As Integer Ptr) As Integer
 Declare Function create_zbuffer CDecl Alias "create_zbuffer" (ByVal parent As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
 Declare Sub set_zbuffer CDecl Alias "set_zbuffer" (ByVal buf As BITMAP Ptr)
 Declare Sub clear_zbuffer CDecl Alias "clear_zbuffer" (ByVal zbuf As BITMAP Ptr, ByVal z As Single)
@@ -982,8 +982,8 @@ Declare Sub destroy_zbuffer CDecl Alias "destroy_zbuffer" (ByVal zbuf As BITMAP 
 Declare Function create_scene CDecl Alias "create_scene" (ByVal nedge As Integer, ByVal npoly As Integer)
 Declare Sub clear_scene CDecl Alias "clear_scene" (ByVal bmp As BITMAP Ptr)
 Declare Sub destroy_scene CDecl Alias "destroy_scene" ()
-Declare Function scene_polygon3d CDecl Alias "scene_polygon3d" (ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, ByRef vtx() As V3D Ptr)
-Declare Function scene_polygon3d_f CDecl Alias "scene_polygon3d_f" (ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, ByRef vtx() As V3D_f Ptr)
+Declare Function scene_polygon3d CDecl Alias "scene_polygon3d" (ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D Ptr)
+Declare Function scene_polygon3d_f CDecl Alias "scene_polygon3d_f" (ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D_f Ptr)
 Declare Sub render_scene CDecl Alias "render_scene" ()
 Extern Import scene_gap Alias "scene_gap" As Single
 
