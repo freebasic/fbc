@@ -41,6 +41,7 @@ type FBCCTX
 	compileonly		as integer
 	preserveasm		as integer
 	verbose			as integer
+	debug 			as integer
 	stacksize		as integer
 
 	exefile 		as string
@@ -190,7 +191,11 @@ function assembleFiles as integer
     for i = 0 to ctx.inps-1
 
     	'' as' options
-    	ascline = "--strip-local-absolute "
+    	if( not ctx.debug ) then
+    		ascline = "--strip-local-absolute "
+    	else
+    		ascline = ""
+    	end if
 
 		ascline = ascline + QUOTE + asmlist(i) + QUOTE + " -o " + QUOTE + outlist(i) + QUOTE + " "
 
@@ -240,7 +245,10 @@ function linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T " + QUOTE + exepath$ + FB.BINPATH + "i386pe.x" + QUOTE + " -s -subsystem " + ctx.subsystem
+	ldcline = "-T " + QUOTE + exepath$ + FB.BINPATH + "i386pe.x" + QUOTE + " -subsystem " + ctx.subsystem
+	if( not ctx.debug ) then
+		ldcline = ldcline + " -s"
+	end if
 
 	'' stack size
 	ldcline = ldcline + " --stack " + str$( ctx.stacksize ) + "," + + str$( ctx.stacksize )
@@ -339,6 +347,7 @@ sub setDefaultOptions
 	ctx.compileonly = FALSE
 	ctx.preserveasm	= FALSE
 	ctx.verbose		= FALSE
+	ctx.debug 		= FALSE
 	ctx.stacksize	= FB_DEFSTACKSIZE
 
 end sub
@@ -444,6 +453,7 @@ function processCompOptions as integer
 			select case lcase$( mid$( argv(i), 2, 1 ) )
 			case "g"
 				fbcSetOption FB.COMPOPT.DEBUG, TRUE
+				ctx.debug = TRUE
 			case "e"
 				fbcSetOption FB.COMPOPT.ERRORCHECK, TRUE
 			end select

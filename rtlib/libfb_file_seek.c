@@ -38,6 +38,9 @@ __stdcall long fb_FileTell( int fnum )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return 0;
 
+	if( fb_fileTB[fnum-1].f == NULL )
+		return 0;
+
 	pos = ftell( fb_fileTB[fnum-1].f );
 
 	/* if in random mode, divide by reclen */
@@ -53,6 +56,9 @@ __stdcall int fb_FileSeek( int fnum, long newpos )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
+	if( fb_fileTB[fnum-1].f == NULL )
+		return FB_RTERROR_ILLEGALFUNCTIONCALL;
+
 	/* if in random mode, mul by reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
 		newpos = (newpos-1) * fb_fileTB[fnum-1].len;
@@ -66,6 +72,12 @@ __stdcall int fb_FileSeek( int fnum, long newpos )
 __stdcall long fb_FileLocation( int fnum )
 {
     long pos;
+
+	if( fnum < 1 || fnum > FB_MAX_FILES )
+		return 0;
+
+	if( fb_fileTB[fnum-1].f == NULL )
+		return 0;
 
 	pos = fb_FileTell( fnum );
 

@@ -1586,7 +1586,7 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 
 	'' all these checks for better FOR..NEXT loops..
 	if( (t2 = IR.VREGTYPE.REG) or _
-		((vr = INVALID) and (dc2 = IR.DATACLASS.INTEGER) and (t2 <> IR.VREGTYPE.IMM)) ) then
+		((vr = INVALID) and (dc2 = IR.DATACLASS.INTEGER) and (t2 <> IR.VREGTYPE.IMM) and (dc1 <> IR.DATACLASS.FPOINT)) ) then
 		r2 = regEnsure( dt2, dc2, v2 )
 		t2 = IR.VREGTYPE.REG
 	end if

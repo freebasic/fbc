@@ -35,6 +35,9 @@ __stdcall int fb_FileEof( int fnum )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_TRUE;
 
+	if( fb_fileTB[fnum-1].f == NULL )
+		return FB_TRUE;
+
 	switch( fb_fileTB[fnum-1].mode )
 	{
 	case FB_FILE_MODE_BINARY:

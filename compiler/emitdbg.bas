@@ -245,8 +245,8 @@ sub edbgProcEnd ( byval proc as integer, byval initlabel as integer, byval exitl
 		endline = 0
 	end if
 
-	ininame	 = EMIT_LOCALPREFIX + symbGetLabelName( initlabel )
-	endname	 = EMIT_LOCALPREFIX + symbGetLabelName( exitlabel )
+	ininame	 = symbGetLabelName( initlabel )
+	endname	 = symbGetLabelName( exitlabel )
 
 
 	hWriteStr ctx.asmf, TRUE, STABN + "192,0," + ltrim$( str$( iniline ) ) + "," + ininame + "-" + procname
@@ -254,6 +254,6 @@ sub edbgProcEnd ( byval proc as integer, byval initlabel as integer, byval exitl
 
 	lname = hMakeTmpStr
 	emitLABEL lname, FALSE
-	hWriteStr ctx.asmf, TRUE, STABS + QUOTE+QUOTE + ",36,0,0," + EMIT_LOCALPREFIX + lname + "-" + procname
+	hWriteStr ctx.asmf, TRUE, STABS + QUOTE+QUOTE + ",36,0,0," + lname + "-" + procname
 
 end sub
