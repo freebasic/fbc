@@ -1,0 +1,4 @@
+- bc parameter on Color makes fb_GfxSetFontBg obsolete
+- what should floating point functions like pmap return for error?
+- what does locate get passed when a parameter is missing?
+- locate's cursor parameter makes font background transparent/solid

@@ -1,0 +1,14 @@
+Feel free to rephrase, omit, etc. Only suggestions:
+
+0.11b
+ - gfxlib: Fixed GetKey (now waits for keypress), which means Sleep works now
+ - gfxlib: Screen QbScreenMode, FullScreenFlag
+(if third parameter is zero or omitted, second is interpretted as the fullScreenFlag)
+ - gfxlib: Inkey$/Getkey in graphics modes now return the same as in console for every key on my (US English) keyboard
+ - gfxlib: The cursor is now hidden in fullscreen modes *
+ - gfxlib: When emulating a QB screen mode, solid background for text is turned on *
+(text still has transparent background in "Screen xRes, yRes, depth" modes)
+ - gfxlib: Pset and Point now lock the surface before calculating pixel address (fixes crashing in fullscreen)
+ - gfxlib: Fixed double new-line bug
+
+* Is this ok?

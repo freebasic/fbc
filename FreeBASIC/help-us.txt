@@ -1,0 +1,20 @@
+This file name got your attention, eh? Anyway, FB really needs your help,
+let's start:
+
+1) We need documentation about the syntax, about the statements and 
+intrinsic functions, about the command-line (really??), about well, everything
+is missing.
+
+2) We need help porting/translating the headers from the Win API (it's better to 
+put each function on it's own header (like kernel32, user32, etc), or else the include 
+file can get easily >1MB) plus finishing the SDL ones, GLUT and GLU, DDRAW (and others 
+from the Directx SDK like D3D etc), etc, etc.
+
+3) Writing tests, making demos, reporting bugs (use the sourceforge's page, be the most
+descriptive you can, thanks). FB is just a few months old, many tests are needed yet.
+
+4) Anything i forgot..
+
+
+If you can REALLY help on any of the items listed above, contact me at 
+av1ctor@yahoo.com.br, you will get the full credits for any contribution, thanks.
