@@ -29,6 +29,8 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
 
     fb_GfxTransCoord(x, y, &rx, &ry);
 
+    bpp = fb_GfxInfo.screen->format->BytesPerPixel;
+
     /*
      * Return -1 (8 bit) or DEFAULT color (> 8 bit) outside of VIEW
      */
@@ -40,8 +42,6 @@ FBCALL Uint32 fb_GfxPoint (float x, float y)
         else
             return DEFAULT_COLOR;
     }
-
-    bpp = fb_GfxInfo.screen->format->BytesPerPixel;
 
     /*
      * Lock the surface
