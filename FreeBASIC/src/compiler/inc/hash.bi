@@ -41,15 +41,31 @@ type THASH
 	nodes		as integer
 end type
 
-declare sub 		hashInit	( )
-declare sub 		hashNew		( byval hash as THASH ptr, byval nodes as integer )
-declare sub 		hashFree	( byval hash as THASH ptr )
-declare function 	hashHash	( symbol as string ) as uinteger
-declare function 	hashLookup	( byval hash as THASH ptr, symbol as string ) as any ptr
-declare function 	hashLookupEx( byval hash as THASH ptr, symbol as string, byval index as uinteger ) as any ptr
-declare function	hashAdd		( byval hash as THASH ptr, symbol as string, byval idx as any ptr, index as uinteger ) as HASHITEM ptr
-declare sub 		hashDel		( byval hash as THASH ptr, byval item as HASHITEM ptr, byval index as uinteger )
+declare sub 		hashInit		( )
 
-declare sub 		hashDump	( byval hash as THASH ptr )
+declare sub 		hashNew			( byval hash as THASH ptr, _
+								  	  byval nodes as integer )
+
+declare sub 		hashFree		( byval hash as THASH ptr )
+
+declare function 	hashHash		( byval symbol as string ) as uinteger
+
+declare function 	hashLookup		( byval hash as THASH ptr, _
+									  byval symbol as string ) as any ptr
+
+declare function 	hashLookupEx	( byval hash as THASH ptr, _
+									  byval symbol as string, _
+									  byval index as uinteger ) as any ptr
+
+declare function	hashAdd			( byval hash as THASH ptr, _
+									  byval symbol as string, _
+									  byval idx as any ptr, _
+									  index as uinteger ) as HASHITEM ptr
+
+declare sub 		hashDel			( byval hash as THASH ptr, _
+									  byval item as HASHITEM ptr, _
+									  byval index as uinteger )
+
+declare sub 		hashDump		( byval hash as THASH ptr )
 
 #endif '' HASH_BI

@@ -16,14 +16,20 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub 		edbgHeader			( byval asmf as integer, filename as string )
+declare sub 		edbgHeader			( byval asmf as integer, _
+										  byval filename as string )
 
-declare sub 		edbgMain			(  byval initlabel as FBSYMBOL ptr )
+declare sub 		edbgMain			( byval initlabel as FBSYMBOL ptr )
 
-declare sub 		edbgLine			( byval lnum as integer, lname as string )
+declare sub 		edbgLine			( byval lnum as integer, _
+										  byval lname as string )
 
-declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr, byval ispublic as integer, byval lnum as integer )
+declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr, _
+										  byval ispublic as integer, _
+										  byval lnum as integer )
 
-declare sub 		edbgProcEnd			( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr )
+declare sub 		edbgProcEnd			( byval proc as FBSYMBOL ptr, _
+										  byval initlabel as FBSYMBOL ptr, _
+										  byval exitlabel as FBSYMBOL ptr )
 
 declare sub 		edbgFooter			( )

@@ -63,7 +63,7 @@ data "gcc"
 data ""
 
 '':::::
-sub fbAddIncPath( path as string )
+sub fbAddIncPath( byval path as string )
 
 	if( env.incpaths < FB.MAXINCPATHS ) then
 		incpathTB( env.incpaths ) = path
@@ -85,14 +85,15 @@ const PATHDIV = "/"
 end sub
 
 '':::::
-sub fbAddDefine( dname as string, dtext as string )
+sub fbAddDefine( byval dname as string, _
+				 byval dtext as string )
 
     symbAddDefine( dname, dtext )
 
 end sub
 
 '':::::
-function fbFindIncFile( filename as string ) as integer
+function fbFindIncFile( byval filename as string ) as integer
 	dim i as integer
 	dim fname as string
 
@@ -110,7 +111,7 @@ function fbFindIncFile( filename as string ) as integer
 end function
 
 '':::::
-sub fbAddIncFile( filename as string )
+sub fbAddIncFile( byval filename as string )
     dim fname as string
 
 	fname = ucase$( filename )
@@ -146,7 +147,7 @@ private sub hSetCtx
 	env.lastcompound	= INVALID
 	env.isprocstatic	= FALSE
 	env.procerrorhnd 	= NULL
-	env.withtextidx		= INVALID
+	env.withtext		= ""
 
 	env.prntcnt			= 0
 	env.prntopt			= FALSE
@@ -182,8 +183,6 @@ function fbInit as integer static
 	fbInit = FALSE
 
 	''
-	strpInit
-
 	symbInit
 
 	hlpInit
@@ -231,7 +230,8 @@ sub fbSetDefaultOptions
 end sub
 
 '':::::
-sub fbSetOption ( byval opt as integer, byval value as integer )
+sub fbSetOption ( byval opt as integer, _
+				  byval value as integer )
 
 	select case as const opt
 	case FB.COMPOPT.DEBUG
@@ -320,12 +320,11 @@ sub fbEnd
 
 	symbEnd
 
-	strpEnd
-
 end sub
 
 '':::::
-function fbCompile ( infname as string, outfname as string )
+function fbCompile ( byval infname as string, _
+				     byval outfname as string )
     dim res as integer, l as FBSYMBOL ptr
 	dim tmr as double
 
@@ -411,7 +410,8 @@ sub fbAddDefaultLibs
 end sub
 
 ''::::
-function fbIncludeFile( filename as string, byval isonce as integer ) as integer
+function fbIncludeFile( byval filename as string, _
+						byval isonce as integer ) as integer
     dim incfile as string
     dim i as integer
 

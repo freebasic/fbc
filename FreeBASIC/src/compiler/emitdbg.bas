@@ -60,7 +60,7 @@ data "void:t4=4"
 const STABS_TYPEDEFS = 4
 
 '':::::
-function hRevertSlash( s as string ) as string 'static
+function hRevertSlash( byval s as string ) as string 'static
     dim c as string, i as integer
     dim res as string
 
@@ -70,9 +70,9 @@ function hRevertSlash( s as string ) as string 'static
 
 		c = mid$( s, i, 1 )
 		if( asc( c ) = CHAR_RSLASH ) then
-			res = res + chr$( CHAR_SLASH )
+			res += chr$( CHAR_SLASH )
 		else
-			res = res + lcase$( c )
+			res += lcase$( c )
 		end if
 
 	next i
@@ -82,7 +82,8 @@ function hRevertSlash( s as string ) as string 'static
 end function
 
 '':::::
-sub edbgHeader( byval asmf as integer, filename as string )
+sub edbgHeader( byval asmf as integer, _
+				byval filename as string )
     dim i as integer
     dim s as string
 
@@ -177,7 +178,8 @@ sub edgbhCloseMain
 end sub
 
 '':::::
-sub edbgLine( byval lnum as integer, lname as string )
+sub edbgLine( byval lnum as integer, _
+			  byval lname as string )
     dim procname as string
 
 	if( not env.clopt.debug ) then exit sub
@@ -199,7 +201,9 @@ sub edbgLine( byval lnum as integer, lname as string )
 end sub
 
 '':::::
-sub edbgProcBegin ( byval proc as FBSYMBOL ptr, byval ispublic as integer, byval lnum as integer )
+sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
+					byval ispublic as integer, _
+					byval lnum as integer )
     dim realname as string, procname as string, prochar as string
 
 	if( not env.clopt.debug ) then exit sub
@@ -233,7 +237,9 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, byval ispublic as integer, byval
 end sub
 
 '':::::
-sub edbgProcEnd ( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr )
+sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
+				  byval initlabel as FBSYMBOL ptr, _
+				  byval exitlabel as FBSYMBOL ptr )
     dim procname as string, ininame as string, endname as string, lname as string
     dim iniline as integer, endline as integer
 

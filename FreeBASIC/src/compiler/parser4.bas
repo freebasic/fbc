@@ -32,26 +32,6 @@ defint a-z
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
 
-type FBSELECTCTX
-	base		as integer
-end type
-
-type FBSWITCHCTX
-	base		as integer
-end type
-
-type FBCASECTX
-	typ 		as integer
-	op 			as integer
-	expr1		as integer
-	expr2		as integer
-end type
-
-type FBSWTCASECTX
-	label		as FBSYMBOL ptr
-	value		as uinteger
-end type
-
 const FB.CASETYPE.RANGE = 1
 const FB.CASETYPE.IS    = 2
 const FB.CASETYPE.ELSE  = 3
@@ -61,19 +41,46 @@ const FB.MAXSWTCASEEXPR = 8192
 
 const FB.MAXSWTCASERANGE= 4096
 
+type FBCASECTX
+	typ 		as integer
+	op 			as integer
+	expr1		as integer
+	expr2		as integer
+end type
+
+type FBSELECTCTX
+	base		as integer
+	caseTB(0 to FB.MAXCASEEXPR-1) as FBCASECTX
+end type
+
+type FBSWTCASECTX
+	label		as FBSYMBOL ptr
+	value		as uinteger
+end type
+
+type FBSWITCHCTX
+	base		as integer
+	caseTB(0 to FB.MAXSWTCASEEXPR-1) as FBSWTCASECTX
+end type
+
+type FBCTX
+	sel 		as FBSELECTCTX
+	swt 		as FBSWITCHCTX
+	withcnt		as integer
+end type
+
 '' globals
-	dim shared selctx as FBSELECTCTX
-	dim shared swtctx as FBSWITCHCTX
-	dim shared caseTB(0 to FB.MAXCASEEXPR-1) as FBCASECTX
-	dim shared swtcaseTB(0 to FB.MAXSWTCASEEXPR-1) as FBSWTCASECTX
+	dim shared ctx as FBCTX
 
 
 '':::::
 sub parser4Init
 
-	selctx.base 	= 0
+	ctx.sel.base 	= 0
 
-	swtctx.base 	= 0
+	ctx.swt.base 	= 0
+
+	ctx.withcnt		= 0
 
 end sub
 
@@ -1063,7 +1070,7 @@ function cSelectStatement
 
 	'' store expression into a temp var
 	dtype  = astGetDataType( expr )
-	if( dtype = FB.SYMBTYPE.FIXSTR ) then
+	if( (dtype = FB.SYMBTYPE.FIXSTR) or (dtype = FB.SYMBTYPE.CHAR) ) then
 		dtype = FB.SYMBTYPE.STRING
 	end if
 
@@ -1221,22 +1228,22 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 
 	'' CaseExpression (COMMA CaseExpression)*
 	cnt = 0
-	cntbase = selctx.base
+	cntbase = ctx.sel.base
 
 	do
 		if( cnt = 0 ) then
 			if( hMatch( FB.TK.ELSE ) ) then
-				caseTB(cntbase + cnt).typ = FB.CASETYPE.ELSE
+				ctx.sel.caseTB(cntbase + cnt).typ = FB.CASETYPE.ELSE
 				cnt = 1
 				exit do
 			end if
 		end if
 
-		if( not cCaseExpression( caseTB(cntbase + cnt) ) ) then
+		if( not cCaseExpression( ctx.sel.caseTB(cntbase + cnt) ) ) then
 			exit function
 		end if
 
-		cnt = cnt + 1
+		cnt += 1
 
 	loop while( hMatch( CHAR_COMMA ) )
 
@@ -1253,15 +1260,15 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 	end if
 
 	''
-	selctx.base = selctx.base + cnt
+	ctx.sel.base += cnt
 
 	for i = cntbase to cntbase + cnt-1
 
 		'' add next label
 		nl = symbAddLabel( hMakeTmpStr )
 
-		if( caseTB(i).typ <> FB.CASETYPE.ELSE ) then
-			if( not hExecCaseExpr( caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
+		if( ctx.sel.caseTB(i).typ <> FB.CASETYPE.ELSE ) then
+			if( not hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
 				exit function
 			end if
@@ -1277,7 +1284,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 				res = cSimpleLine
 			loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
-			if( caseTB(i).typ = FB.CASETYPE.ELSE ) then
+			if( ctx.sel.caseTB(i).typ = FB.CASETYPE.ELSE ) then
 				exit for
 			end if
 
@@ -1292,7 +1299,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 
 	next i
 
-	selctx.base = selctx.base - cnt
+	ctx.sel.base -= cnt
 
 	cCaseStatement = TRUE
 
@@ -1306,7 +1313,7 @@ private function hSelConstAddCase( byval swtbase as integer, byval value as uint
 	dim v as uinteger, i as integer
 
 	'' nothing left?
-	if( swtctx.base >= FB.MAXSWTCASEEXPR ) then
+	if( ctx.swt.base >= FB.MAXSWTCASEEXPR ) then
 		hSelConstAddCase = FALSE
 		exit function
 	end if
@@ -1314,12 +1321,12 @@ private function hSelConstAddCase( byval swtbase as integer, byval value as uint
 	hSelConstAddCase = TRUE
 
 	'' find the slot using bin-search
-	high = swtctx.base - swtbase
+	high = ctx.swt.base - swtbase
 	low  = -1
 
 	do while( high - low > 1 )
 		probe = (high + low) \ 2
-		v = swtcaseTB(swtbase+probe).value
+		v = ctx.swt.caseTB(swtbase+probe).value
 		if( v < value ) then
 			low = probe
 		elseif( v > value ) then
@@ -1330,14 +1337,14 @@ private function hSelConstAddCase( byval swtbase as integer, byval value as uint
 	loop
 
 	'' move up
-	for i = swtctx.base+1 to swtbase+high+1 step -1
-		swtcaseTB(i) = swtcaseTB(i-1)
+	for i = ctx.swt.base+1 to swtbase+high+1 step -1
+		ctx.swt.caseTB(i) = ctx.swt.caseTB(i-1)
 	next i
 
 	'' insert new item
-	swtcaseTB(swtbase+high).value = value
-	swtcaseTB(swtbase+high).label = label
-	swtctx.base = swtctx.base + 1
+	ctx.swt.caseTB(swtbase+high).value = value
+	ctx.swt.caseTB(swtbase+high).label = label
+	ctx.swt.base = ctx.swt.base + 1
 
 end function
 
@@ -1532,7 +1539,7 @@ function cSelectConstStmt as integer
 	astFlush astNewBRANCH( IR.OP.JMP, complabel ), vr
 
 	'' SwitchLine*
-	swtbase = swtctx.base
+	swtbase = ctx.swt.base
 	deflabel = NULL
 	minval = &hFFFFFFFF
 	maxval = 0
@@ -1594,8 +1601,8 @@ function cSelectConstStmt as integer
     ''
     l = swtbase
     for value = minval to maxval
-    	if( value = swtcaseTB(l).value ) then
-    		emitTYPE IR.DATATYPE.UINT, symbGetName( swtcaseTB(l).label )
+    	if( value = ctx.swt.caseTB(l).value ) then
+    		emitTYPE IR.DATATYPE.UINT, symbGetName( ctx.swt.caseTB(l).label )
     		l = l + 1
     	else
     		emitTYPE IR.DATATYPE.UINT, symbGetName( deflabel )
@@ -1605,7 +1612,7 @@ function cSelectConstStmt as integer
     '' the table is not needed anymore
     symbDelVar tbsym
 
-    swtctx.base = swtbase
+    ctx.swt.base = swtbase
 
     '' emit exit label
     irEmitLABEL exitlabel, FALSE
@@ -1792,20 +1799,43 @@ function cCompoundStmtElm
 end function
 
 '':::::
-private function hReadWithText as string
-    dim text as string
+private function hReadWithText( byval text as string ) as integer
+    dim as FBSYMBOL ptr sym
+    dim as integer dpos
+    dim as string id
 
-    text = ""
+    ''
+    dpos = lexTokenDotpos
+    id = lexTokenText
+
+    if( dpos > 0 ) then
+    	id = left$( id, dpos-1 )
+    end if
+
+    sym = symbFindByNameAndClass( id, FB.SYMBCLASS.VAR )
+    if( sym = NULL ) then
+    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	return FALSE
+    end if
+
+	if( sym->typ <> FB.SYMBTYPE.USERDEF ) then
+		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		return FALSE
+	end if
+
+    ''
+    text = lexEatToken
+
     do
     	select case lexCurrentToken
 		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOF
 			exit do
 		end select
 
-    	text = text + lexEatToken
+    	text += lexEatToken
     loop
 
-	hReadWithText = text
+	return TRUE
 
 end function
 
@@ -1815,50 +1845,62 @@ end function
 ''					  END WITH .
 ''
 function cWithStatement
-    dim oldwithtextidx as integer, lastcompstmt as integer
+    dim oldwithtext as zstring * FB.MAXWITHLEN+1, lastcompstmt as integer
     dim res as integer
 
 	cWithStatement = FALSE
+
+	if( ctx.withcnt >= FB.MAXWITHLEVELS ) then
+		hReportError FB.ERRMSG.RECLEVELTOODEPTH
+		exit function
+	end if
 
 	'' WITH
 	lexSkipToken
 
 	'' save old
-	oldwithtextidx = env.withtextidx
+	oldwithtext = env.withtext
 
 	'' Variable
-	env.withtextidx = strpAdd( hReadWithText )
 
-	''
-	lastcompstmt     = env.lastcompound
-	env.lastcompound = FB.TK.WITH
+	if( not hReadWithText( env.withtext ) ) then
+		exit function
+	end if
 
 	'' Comment?
 	res = cComment
 
 	'' separator
 	if( not cSttSeparator ) then
+		env.withtext = oldwithtext
 		hReportError FB.ERRMSG.EXPECTEDEOL
 		exit function
 	end if
+
+	''
+	lastcompstmt     = env.lastcompound
+	env.lastcompound = FB.TK.WITH
+
+	ctx.withcnt += 1
 
 	'' loop body
 	do
 		res = cSimpleLine
 	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
 
+	'' restore old
+	env.withtext = oldwithtext
+
+	ctx.withcnt -= 1
+
+	''
+	env.lastcompound = lastcompstmt
+
 	'' END WITH
 	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.WITH )) ) then
 		hReportError FB.ERRMSG.EXPECTEDENDWITH
 		exit function
 	end if
-
-	'' restore old
-	strpDel env.withtextidx
-	env.withtextidx = oldwithtextidx
-
-	''
-	env.lastcompound = lastcompstmt
 
 	cWithStatement = TRUE
 

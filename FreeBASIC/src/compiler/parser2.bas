@@ -620,9 +620,17 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
 	do while( cnt > 1 )
 		'' not a pointer?
 		if( dtype < IR.DATATYPE.POINTER ) then
+			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			exit function
 		end if
-		dtype = dtype - IR.DATATYPE.POINTER
+
+		dtype -= IR.DATATYPE.POINTER
+
+		'' incomplete type?
+		if( dtype = FB.SYMBTYPE.FWDREF ) then
+			hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
+			exit function
+		end if
 
 		expr = astNewPTR( NULL, NULL, 0, expr, dtype, NULL )
 		cnt = cnt - 1
@@ -630,9 +638,17 @@ private function hDoDeref( byval cnt as integer, expr as integer, _
 
 	'' not a pointer?
 	if( dtype < IR.DATATYPE.POINTER ) then
+		hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 		exit function
 	end if
-    dtype = dtype - FB.SYMBTYPE.POINTER
+
+    dtype -= FB.SYMBTYPE.POINTER
+
+	'' incomplete type?
+	if( dtype = FB.SYMBTYPE.FWDREF ) then
+		hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
+		exit function
+	end if
 
     ''
     expr = astNewPTR( sym, elm, 0, expr, dtype, subtype )
@@ -697,10 +713,19 @@ function cParentDeref( derefexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBO
 		if( (astGetDataClass( expr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( expr ) <> FB.POINTERSIZE) ) then
 			expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )
+			if( expr = INVALID ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES
+				exit function
+			end if
 		end if
 
 		'' times length
 		lgt = symbCalcLen( dtype - FB.SYMBTYPE.POINTER, subtype )
+
+		if( lgt = 0 ) then
+			hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
+			exit function
+		end if
 
 		expr = astNewBOP( IR.OP.MUL, expr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
 
@@ -757,20 +782,21 @@ function cDerefExpression( derefexpr as integer ) as integer
 	'' AddrOfExpression
 	if( not cAddrOfExpression( derefexpr, sym, elm ) ) then
 
+  		sym = NULL
   		elm = NULL
 
-  		'' Function
-  		if( not cFunction( derefexpr, sym ) ) then
-
-  			'' Variable
-  			if( not cVariable( derefexpr, sym, elm ) ) then
-
-                '' ParentDeref
-  				if( not cParentDeref( derefexpr, sym, elm, derefcnt ) ) then
-  					exit function
-  				end if
-
-		    end if
+  		'' can be PEEK() or VA_ARG()..
+  		if( not cQuirkFunction( derefexpr ) ) then
+  			'' Function
+  			if( not cFunction( derefexpr, sym ) ) then
+  				'' Variable
+  				if( not cVariable( derefexpr, sym, elm ) ) then
+                	'' ParentDeref
+  					if( not cParentDeref( derefexpr, sym, elm, derefcnt ) ) then
+  						exit function
+  					end if
+		    	end if
+			end if
 		end if
 
 	end if
@@ -779,7 +805,6 @@ function cDerefExpression( derefexpr as integer ) as integer
 	if( derefcnt > 0 ) then
 		dtype = hDoDeref( derefcnt, derefexpr, sym, elm )
 		if( dtype = INVALID ) then
-			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			exit function
 		end if
 	end if
@@ -967,10 +992,10 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 			exit function
 		end if
 
-		if( hIsStrFixed( dtype ) ) then
-			addrofexpr = astNewADDR( IR.OP.ADDROF, expr, sym, elm )
-		else
+		if( dtype = IR.DATATYPE.STRING ) then
 			addrofexpr = astNewADDR( IR.OP.DEREF, expr, sym, elm )
+		else
+			addrofexpr = astNewADDR( IR.OP.ADDROF, expr, sym, elm )
 		end if
 
 		if( not hMatch( CHAR_RPRNT ) ) then
@@ -1173,6 +1198,10 @@ function cFuncParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
 		if( amode = FB.ARGMODE.BYDESC ) then
 			if( lexCurrentToken = CHAR_LPRNT ) then
 				if( lexLookahead(1) = CHAR_RPRNT ) then
+					if( pmode <> INVALID ) then
+						hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+						exit function
+					end if
 					lexSkipToken
 					lexSkipToken
 					pmode = FB.ARGMODE.BYDESC
@@ -1277,11 +1306,8 @@ function cFunctionCall( byval proc as FBSYMBOL ptr, funcexpr as integer, byval p
     end if
 
     typ = symbGetType( proc )
-    if( ptrexpr = INVALID ) then
-    	funcexpr = astNewFUNCT( proc, typ )
-    else
-    	funcexpr = astNewFUNCTPTR( ptrexpr, proc, typ )
-    end if
+
+    funcexpr = astNewFUNCT( proc, typ, ptrexpr )
 
 	'' is it really a function?
 	if( typ = FB.SYMBTYPE.VOID ) then

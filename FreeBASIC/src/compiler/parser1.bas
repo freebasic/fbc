@@ -579,7 +579,7 @@ function cConstAssign
 		end if
 
 		select case typ
-		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.FIXSTR
+		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
 			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
 			exit function
 		end select
@@ -1647,7 +1647,7 @@ end function
 '':::::
 function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
     dim expr as integer
-    dim litstr as integer, islitstring as integer
+    dim litstr as string, islitstring as integer
     dim dimensions as integer, subtype as FBSYMBOL ptr
     dim istatic as integer
     dim cnt as integer
@@ -1690,7 +1690,7 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 		if( istatic or env.scope = 0 ) then
 			if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
 				islitstring = TRUE
-				litstr = strpAdd( lexEatToken )
+				litstr = lexEatToken
 			end if
 		end if
 
@@ -2024,9 +2024,10 @@ end function
 ''				      (PTR|POINTER)* .
 ''
 function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer )
-    dim isunsigned as integer, isfunction as integer
+    dim as integer isunsigned, isfunction, allowptr
     dim s as FBSYMBOL ptr
     dim text as string
+
 
 	cSymbolType = FALSE
 
@@ -2034,6 +2035,8 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, p
 	typ = INVALID
 	subtype = NULL
 	ptrcnt = 0
+
+	allowptr = TRUE
 
 	'' UNSIGNED?
 	isunsigned = hMatch( FB.TK.UNSIGNED )
@@ -2100,14 +2103,37 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, p
 				exit function
 			end if
 			lgt = val( text ) + 1
-			if( lgt = 1 ) then
+			'' min 1 char + null-term
+			if( lgt <= 1 ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
 			end if
+			allowptr = FALSE
 		else
 			typ = FB.SYMBTYPE.STRING
 			lgt = FB.STRSTRUCTSIZE
 			lexSkipToken
+		end if
+
+	case FB.TK.ZSTRING
+		lexSkipToken
+		if( lexCurrentToken = CHAR_STAR ) then
+			lexSkipToken
+			if( not cConstExprValue( text ) ) then
+				exit function
+			end if
+			typ = FB.SYMBTYPE.CHAR
+			lgt = val( text )
+			'' min 1 char
+			if( lgt < 1 ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			end if
+			allowptr = FALSE
+
+		else
+    		typ = FB.SYMBTYPE.CHAR
+    		lgt = 0
 		end if
 
 	case FB.TK.FUNCTION, FB.TK.SUB
@@ -2181,8 +2207,7 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, p
 		loop
 
         if( ptrcnt > 0 ) then
-			'' can't be a fixed-len string
-			if( typ = FB.SYMBTYPE.FIXSTR ) then
+			if( not allowptr ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
 			end if
@@ -2194,6 +2219,11 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer, p
 			if( typ = FB.SYMBTYPE.FWDREF ) then
 				hReportError FB.ERRMSG.INCOMPLETETYPE
 				exit function
+			elseif( lgt <= 0 ) then
+				if( typ = FB.SYMBTYPE.CHAR ) then
+					hReportError FB.ERRMSG.EXPECTEDPOINTER
+					exit function
+				end if
 			end if
 		end if
 
@@ -2339,7 +2369,7 @@ function cSubOrFuncDecl( byval isSub as integer ) static
     	case FB.SYMBTYPE.USERDEF
     		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
     		exit function
-    	case FB.SYMBTYPE.FIXSTR
+    	case FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
     		hReportError FB.ERRMSG.CANNOTRETURNFIXLENFROMFUNCTS
     		exit function
     	end select
@@ -2533,7 +2563,7 @@ function cArgDecl( byval procmode as integer, _
     '' check for invalid args
     select case atype
     '' can't be a fixed-len string
-    case FB.SYMBTYPE.FIXSTR
+    case FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
     	hReportParamError argc, id
     	exit function
 
@@ -2881,6 +2911,10 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byva
 		if( amode = FB.ARGMODE.BYDESC ) then
 			if( lexCurrentToken = CHAR_LPRNT ) then
 				if( lexLookahead(1) = CHAR_RPRNT ) then
+					if( pmode <> INVALID ) then
+						hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+						exit function
+					end if
 					lexSkipToken
 					lexSkipToken
 					pmode = FB.ARGMODE.BYDESC
@@ -3028,11 +3062,7 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 
 	cProcCall = FALSE
 
-	if( ptrexpr = INVALID ) then
-		procexpr = astNewFUNCT( proc, IR.DATATYPE.VOID )
-    else
-    	procexpr = astNewFUNCTPTR( ptrexpr, proc, IR.DATATYPE.VOID )
-    end if
+	procexpr = astNewFUNCT( proc, IR.DATATYPE.VOID, ptrexpr )
 
 	if( checkparents = TRUE ) then
 		'' if the sub has no args, parents are optional
@@ -3081,7 +3111,8 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	'' can proc's result be skipped?
 	typ = symbGetType( proc )
 	if( typ <> FB.SYMBTYPE.VOID ) then
-		if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or hIsString( typ ) ) then
+		if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or _
+			(typ = IR.DATATYPE.STRING) ) then
 			hReportError FB.ERRMSG.VARIABLEREQUIRED
 			exit function
 		end if
@@ -3185,7 +3216,8 @@ function cAssignmentOrPtrCall
     	if( astGetClass( assgexpr ) = AST.NODECLASS.FUNCT ) then
 			'' can the result be skipped?
 			dtype = astGetDataType( assgexpr )
-			if( (irGetDataClass( dtype ) = IR.DATACLASS.FPOINT) or hIsString( dtype ) ) then
+			if( (irGetDataClass( dtype ) = IR.DATACLASS.FPOINT) or _
+				( dtype = IR.DATATYPE.STRING ) ) then
 				hReportError FB.ERRMSG.VARIABLEREQUIRED
 				exit function
 			end if

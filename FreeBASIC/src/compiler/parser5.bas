@@ -224,7 +224,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     	case FB.SYMBTYPE.USERDEF
     		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
     		exit function
-    	case FB.SYMBTYPE.FIXSTR
+    	case FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
     		hReportError FB.ERRMSG.CANNOTRETURNFIXLENFROMFUNCTS
     		exit function
     	end select

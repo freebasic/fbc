@@ -28,17 +28,39 @@ const REG.MAXREGS	= 8
 type REGCLASS
 
 	'' methods
-	ensure			as function ( byval this_ as REGCLASS ptr, byval vreg as integer, byval doload as integer = TRUE ) as integer
-	allocate		as function ( byval this_ as REGCLASS ptr, byval vreg as integer ) as integer
-	allocateReg		as function ( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer ) as integer
-	free			as sub 		( byval this_ as REGCLASS ptr, byval r as integer )
-	isFree			as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
-	setOwner		as sub 		( byval this_ as REGCLASS ptr, byval r as integer, byval vreg as integer )
-	getMaxRegs		as function ( byval this_ as REGCLASS ptr ) as integer
-	getFirst		as function ( byval this_ as REGCLASS ptr ) as integer
-	getNext			as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
-	getVreg			as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
-	getRealReg		as function ( byval this_ as REGCLASS ptr, byval r as integer ) as integer
+	ensure						as function ( byval this_ as REGCLASS ptr, _
+								  			  byval vreg as integer, _
+								  			  byval doload as integer = TRUE ) as integer
+
+	allocate					as function ( byval this_ as REGCLASS ptr, _
+											  byval vreg as integer ) as integer
+
+	allocateReg					as function ( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer, _
+								  			  byval vreg as integer ) as integer
+
+	free						as sub 		( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer )
+
+	isFree						as function ( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer ) as integer
+
+	setOwner					as sub 		( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer, _
+								  			  byval vreg as integer )
+
+	getMaxRegs					as function ( byval this_ as REGCLASS ptr ) as integer
+
+	getFirst					as function ( byval this_ as REGCLASS ptr ) as integer
+
+	getNext						as function ( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer ) as integer
+
+	getVreg						as function ( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer ) as integer
+
+	getRealReg					as function ( byval this_ as REGCLASS ptr, _
+								  			  byval r as integer ) as integer
 
 	'' private data
 	class 						as integer

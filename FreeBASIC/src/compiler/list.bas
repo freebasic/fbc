@@ -185,6 +185,7 @@ function listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as 
 	node->nxt = list->fhead
 	list->fhead = node
 
+	'' node can contain strings descriptors, so, erase it..
 	clear byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2)
 
 end function

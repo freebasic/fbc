@@ -21,6 +21,7 @@
 ''
 
 const FB.MAXINCRECLEVEL		= 16
+const FB.MAXWITHLEVELS		= 4
 
 const FB.MAXINCPATHS		= 16
 const FB.MAXINCFILES		= 128
@@ -29,6 +30,7 @@ const FB.MAXNAMELEN			= 64
 const FB.MAXLITLEN			= 1024				'' literal strings max length
 const FB.MAXNUMLEN			= 32
 const FB.MAXOPERANDLEN		= FB.MAXNAMELEN + 2 + 16 + 2 + 1
+const FB.MAXWITHLEN			= FB.MAXNAMELEN * FB.MAXWITHLEVELS
 
 const FB_MAXPROCARGS		= 64
 const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
@@ -277,6 +279,7 @@ enum FBTK_ENUM
 	FB.TK.POINTER
 	FB.TK.UNSIGNED
 	FB.TK.AS
+	FB.TK.ZSTRING
 
 	FB.TK.PUBLIC
 	FB.TK.PRIVATE
@@ -327,6 +330,7 @@ enum FBTK_ENUM
 	FB.TK.PRINT
 	FB.TK.USING
 	FB.TK.LEN
+	FB.TK.SIZEOF
 	FB.TK.PEEK
 	FB.TK.POKE
 	FB.TK.SWAP
@@ -434,6 +438,7 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.VOID
 	FB.SYMBTYPE.BYTE
 	FB.SYMBTYPE.UBYTE
+	FB.SYMBTYPE.CHAR
 	FB.SYMBTYPE.SHORT
 	FB.SYMBTYPE.USHORT
 	FB.SYMBTYPE.INTEGER
@@ -451,7 +456,7 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.POINTER            				'' must be the last
 end enum
 
-const FB.SYMBOLTYPES			= 17
+const FB.SYMBOLTYPES			= 18
 
 
 '' allocation types mask
@@ -702,10 +707,10 @@ type FBENV
 
 	'' source file
 	inf				as integer
-	infile			as string * 260
+	infile			as zstring * 260+1
 
 	'' destine file
-	outfile			as string * 260
+	outfile			as zstring * 260+1
 
 	'' stmt recursion
 	forstmt			as FBCMPSTMT
@@ -723,7 +728,7 @@ type FBENV
 	scope			as integer					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
-	withtextidx		as integer					'' WITH's text
+	withtext		as zstring * FB.MAXWITHLEN+1'' WITH's text
 
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
@@ -739,7 +744,7 @@ type FBENV
 	clopt			as FBCMMLINEOPT
 
 	'' debug states
-	dbglname 		as string * 32
+	dbglname 		as zstring * 32+1
 	dbglnum 		as integer
 	dbgpos 			as integer
 
@@ -754,8 +759,6 @@ end type
 
 
 '$include once:'inc\symb.bi'
-
-'$include once:'inc\strpool.bi'
 
 '$include once:'inc\hlp.bi'
 

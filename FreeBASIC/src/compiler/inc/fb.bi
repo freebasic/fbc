@@ -145,6 +145,8 @@ enum FBERRMSG_ENUM
 	FB.ERRMSG.RANGETOOLARGE
 	FB.ERRMSG.FORWARDREFNOTALLOWED
 	FB.ERRMSG.INCOMPLETETYPE
+	FB.ERRMSG.ARRAYNOTALLOCATED
+	FB.ERRMSG.EXPECTEDINDEX
 end enum
 
 enum FBWARNINGMSG_ENUM
@@ -174,17 +176,22 @@ end enum
 ''
 declare function 	fbInit			( ) as integer
 declare sub 		fbEnd			( )
-declare function 	fbCompile		( infname as string, outfname as string ) as integer
+declare function 	fbCompile		( byval infname as string, _
+									  byval outfname as string ) as integer
 
 declare sub 		fbSetDefaultOptions ( )
-declare sub 		fbSetOption		( byval opt as integer, byval value as integer )
+declare sub 		fbSetOption		( byval opt as integer, _
+									  byval value as integer )
 declare function 	fbGetOption 	( byval opt as integer ) as integer
 
-declare function 	fbListLibs		( namelist() as string, byval index as integer ) as integer
-declare sub 		fbAddIncPath	( path as string )
-declare function	fbAddLibPath	( path as string ) as integer
-declare sub 		fbAddDefine		( dname as string, dtext as string )
+declare function 	fbListLibs		( namelist() as string, _
+									  byval index as integer ) as integer
+declare sub 		fbAddIncPath	( byval path as string )
+declare function	fbAddLibPath	( byval path as string ) as integer
+declare sub 		fbAddDefine		( byval dname as string, _
+									  byval dtext as string )
 
-declare function 	fbIncludeFile	( filename as string, byval isonce as integer ) as integer
+declare function 	fbIncludeFile	( byval filename as string, _
+									  byval isonce as integer ) as integer
 
 declare sub 		fbAddDefaultLibs

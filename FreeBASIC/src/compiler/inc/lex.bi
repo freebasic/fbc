@@ -32,8 +32,8 @@ type FBTOKEN
 	id				as integer
 	class			as integer
 	typ				as integer
-	text			as string * FB.MAXNAMELEN
-	littext			as string * FB.MAXLITLEN 	'' used by lit-strings
+	text			as zstring * FB.MAXNAMELEN+1
+	littext			as zstring * FB.MAXLITLEN+1	'' used by lit-strings
 	tlen			as integer                  '' lenght
 	dotpos			as integer                  '' first '.' position, if any
 	sym				as FBSYMBOL ptr				'' symbol found, if any

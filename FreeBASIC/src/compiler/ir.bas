@@ -69,25 +69,64 @@ type IRTAC
 end type
 
 
-declare sub 		irCreateTMPVAR		( byval vreg as integer, vname as string )
+declare sub 		irCreateTMPVAR		( byval vreg as integer, _
+										  vname as string )
 
-declare sub 		irFlushUOP			( byval op as integer, byval v1 as integer, byval vr as integer )
-declare sub 		irFlushBOP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer )
-declare sub 		irFlushCOMP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval label as FBSYMBOL ptr )
-declare sub 		irFlushSTORE		( byval op as integer, byval v1 as integer, byval v2 as integer )
-declare sub 		irFlushLOAD			( byval op as integer, byval v1 as integer )
-declare sub 		irFlushCONVERT		( byval op as integer, byval v1 as integer, byval v2 as integer )
-declare sub 		irFlushCALL			( byval op as integer, byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval v1 as integer, byval vr as integer )
-declare sub 		irFlushBRANCH		( byval op as integer, byval label as FBSYMBOL ptr )
-declare sub 		irFlushSTACK		( byval op as integer, byval v1 as integer, byval ex as integer )
-declare sub 		irFlushADDR			( byval op as integer, byval v1 as integer, byval vr as integer )
+declare sub 		irFlushUOP			( byval op as integer, _
+										  byval v1 as integer, _
+										  byval vr as integer )
 
-declare sub 		irhFreeIDX			( byval vreg as integer, byval force as integer = FALSE )
-declare sub 		irhFreeREG			( byval vreg as integer, byval force as integer = FALSE )
+declare sub 		irFlushBOP			( byval op as integer, _
+										  byval v1 as integer, _
+										  byval v2 as integer, _
+										  byval vr as integer )
+
+declare sub 		irFlushCOMP			( byval op as integer, _
+										  byval v1 as integer, _
+										  byval v2 as integer, _
+										  byval vr as integer, _
+										  byval label as FBSYMBOL ptr )
+
+declare sub 		irFlushSTORE		( byval op as integer, _
+										  byval v1 as integer, _
+										  byval v2 as integer )
+
+declare sub 		irFlushLOAD			( byval op as integer, _
+										  byval v1 as integer )
+
+declare sub 		irFlushCONVERT		( byval op as integer, _
+										  byval v1 as integer, _
+										  byval v2 as integer )
+
+declare sub 		irFlushCALL			( byval op as integer, _
+										  byval proc as FBSYMBOL ptr, _
+										  byval bytestopop as integer, _
+										  byval v1 as integer, _
+										  byval vr as integer )
+
+declare sub 		irFlushBRANCH		( byval op as integer, _
+										  byval label as FBSYMBOL ptr )
+
+declare sub 		irFlushSTACK		( byval op as integer, _
+										  byval v1 as integer, _
+										  byval ex as integer )
+
+declare sub 		irFlushADDR			( byval op as integer, _
+										  byval v1 as integer, _
+										  byval vr as integer )
+
+declare sub 		irhFreeIDX			( byval vreg as integer, _
+										  byval force as integer = FALSE )
+
+declare sub 		irhFreeREG			( byval vreg as integer, _
+										  byval force as integer = FALSE )
 
 declare sub 		irOptimize			( )
 
-declare sub 		irDump				( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer )
+declare sub 		irDump				( byval op as integer, _
+										  byval v1 as integer, _
+										  byval v2 as integer, _
+										  byval vr as integer )
 
 '' globals
 	dim shared ctx as IRCTX
@@ -102,9 +141,10 @@ declare sub 		irDump				( byval op as integer, byval v1 as integer, byval v2 as 
 
 '' class, size, signed?, name
 datatypedata:
-data IR.DATACLASS.INTEGER, 1			 	, FALSE, "void"
+data IR.DATACLASS.INTEGER, 0			 	, FALSE, "void"
 data IR.DATACLASS.INTEGER, 1			 	, TRUE , "byte"
 data IR.DATACLASS.INTEGER, 1			 	, FALSE, "ubyte"
+data IR.DATACLASS.INTEGER, 0			 	, FALSE, "char"
 data IR.DATACLASS.INTEGER, 2			 	, TRUE , "short"
 data IR.DATACLASS.INTEGER, 2			 	, FALSE, "ushort"
 data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, TRUE , "integer"
@@ -114,7 +154,7 @@ data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, FALSE, "uquad"
 data IR.DATACLASS.FPOINT , 4             	, TRUE , "single"
 data IR.DATACLASS.FPOINT , 8			 	, TRUE , "double"
 data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, FALSE, "string"
-data IR.DATACLASS.STRING , 0			 	, FALSE, "fixstr"
+data IR.DATACLASS.STRING , 1			 	, FALSE, "fixstr"
 data IR.DATACLASS.INTEGER, 0			 	, FALSE, "udt"
 data IR.DATACLASS.INTEGER, 0			 	, FALSE, "func"
 data IR.DATACLASS.INTEGER, 1			 	, FALSE, "typedef"
@@ -276,14 +316,31 @@ function irGetDataClass( byval dtype as integer ) as integer static
 end function
 
 '':::::
-function irMaxDataType( byval dtype1 as integer, byval dtype2 as integer ) as integer static
-
-    if( dtype1 >= IR.DATATYPE.POINTER ) then dtype1 = IR.DATATYPE.UINT
-
-    if( dtype2 >= IR.DATATYPE.POINTER ) then dtype2 = IR.DATATYPE.UINT
-
+function irMaxDataType( byval dtype1 as integer, _
+						byval dtype2 as integer ) as integer static
 
     irMaxDataType = -1
+
+    if( dtype1 >= IR.DATATYPE.POINTER ) then
+    	dtype1 = IR.DATATYPE.UINT
+    end if
+
+    if( dtype2 >= IR.DATATYPE.POINTER ) then
+    	dtype2 = IR.DATATYPE.UINT
+    end if
+
+    ''
+    if( dtype2 = IR.DATATYPE.CHAR ) then
+ 		select case dtype2
+ 		case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
+ 			exit function
+    	end select
+    elseif( dtype1 = IR.DATATYPE.CHAR ) then
+ 		select case dtype2
+ 		case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
+ 			exit function
+    	end select
+    end if
 
     '' don't convert byte <-> char, word <-> short, dword <-> integer, single <-> double
     select case as const dtype1
@@ -291,9 +348,11 @@ function irMaxDataType( byval dtype1 as integer, byval dtype2 as integer ) as in
     	if( dtype1 - dtype2 = 1 ) then
     		exit function
     	end if
+
     case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR
     	irMaxDataType = IR.DATATYPE.STRING
     	exit function
+
     case else
     	if( dtype1 - dtype2 = -1 ) then
     		exit function
@@ -332,14 +391,16 @@ function irGetSignedType( byval dtype as integer ) as integer static
 	dim dt as integer
 
 	dt = dtype
-	if( dt >= IR.DATATYPE.POINTER ) then dt = IR.DATATYPE.UINT
+	if( dt >= IR.DATATYPE.POINTER ) then
+		dt = IR.DATATYPE.UINT
+	end if
 
 	if( dtypeTB(dt).class <> IR.DATACLASS.INTEGER ) then
 		irGetSignedType = dtype
 		exit function
 	end if
 
-	select case dt
+	select case as const dt
 	case IR.DATATYPE.UBYTE, IR.DATATYPE.USHORT, IR.DATATYPE.UINT, IR.DATATYPE.ULONGINT
 		dtype = dtype - 1						'' hack! assuming sign/unsig are in pairs
 	end select
@@ -353,16 +414,20 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 	dim dt as integer
 
 	dt = dtype
-	if( dt >= IR.DATATYPE.POINTER ) then dt = IR.DATATYPE.UINT
+	if( dt >= IR.DATATYPE.POINTER ) then
+		dt = IR.DATATYPE.UINT
+	end if
 
 	if( dtypeTB(dt).class <> IR.DATACLASS.INTEGER ) then
 		irGetUnsignedType = dtype
 		exit function
 	end if
 
-	select case dt
+	select case as const dt
 	case IR.DATATYPE.BYTE, IR.DATATYPE.SHORT, IR.DATATYPE.INTEGER, IR.DATATYPE.LONGINT
 		dtype = dtype + 1						'' hack! assuming sign/unsig are in pairs
+	case IR.DATATYPE.CHAR
+		dtype = IR.DATATYPE.BYTE
 	end select
 
 	irGetUnsignedType = dtype
@@ -370,7 +435,8 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 end function
 
 '':::::
-sub irhLoadIDX( byval vreg as integer, byval typ as integer )
+sub irhLoadIDX( byval vreg as integer, _
+				byval typ as integer )
     dim vi as integer
 
 	if( vreg = INVALID ) then
@@ -442,7 +508,12 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irEmitEx( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex1 as FBSYMBOL ptr, byval ex2 as integer = 0 ) static
+sub irEmitEx( byval op as integer, _
+			  byval v1 as integer, _
+			  byval v2 as integer, _
+			  byval vr as integer, _
+			  byval ex1 as FBSYMBOL ptr, _
+			  byval ex2 as integer = 0 ) static
     dim p as IRTAC ptr
 
     if( ctx.codes >= ctx.nodes ) then
@@ -462,14 +533,20 @@ sub irEmitEx( byval op as integer, byval v1 as integer, byval v2 as integer, byv
 end sub
 
 '':::::
-sub irEmit( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer ) static
+sub irEmit( byval op as integer, _
+			byval v1 as integer, _
+			byval v2 as integer, _
+			byval vr as integer ) static
 
 	irEmitEx op, v1, v2, vr, NULL
 
 end sub
 
 '':::::
-sub irEmitCONVERT( byval v1 as integer, byval dtype1 as integer, byval v2 as integer, byval dtype2 as integer ) static
+sub irEmitCONVERT( byval v1 as integer, _
+				   byval dtype1 as integer, _
+				   byval v2 as integer, _
+				   byval dtype2 as integer ) static
 
 	if( dtype1 >= IR.DATATYPE.POINTER ) then dtype1 = IR.DATATYPE.UINT
 
@@ -483,27 +560,38 @@ sub irEmitCONVERT( byval v1 as integer, byval dtype1 as integer, byval v2 as int
 end sub
 
 '':::::
-sub irEmitBOP( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer ) static
+sub irEmitBOP( byval op as integer, _
+			   byval v1 as integer, _
+			   byval v2 as integer, _
+			   byval vr as integer ) static
 	irEmit op, v1, v2, vr
 end sub
 
 '':::::
-sub irEmitBOPEx( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr ) static
+sub irEmitBOPEx( byval op as integer, _
+				 byval v1 as integer, _
+				 byval v2 as integer, _
+				 byval vr as integer, _
+				 byval ex as FBSYMBOL ptr ) static
 	irEmitEx op, v1, v2, vr, ex
 end sub
 
 '':::::
-sub irEmitUOP( byval op as integer, byval v1 as integer, byval vr as integer ) static
+sub irEmitUOP( byval op as integer, _
+			   byval v1 as integer, _
+			   byval vr as integer ) static
 	irEmit op, v1, INVALID, vr
 end sub
 
 '':::::
-sub irEmitSTORE( byval v1 as integer, byval v2 as integer ) static
+sub irEmitSTORE( byval v1 as integer, _
+				 byval v2 as integer ) static
 	irEmit IR.OP.STORE, v1, v2, INVALID
 end sub
 
 '':::::
-sub irEmitLOAD( byval op as integer, byval v1 as integer ) static
+sub irEmitLOAD( byval op as integer, _
+				byval v1 as integer ) static
 	irEmit op, v1, INVALID, INVALID
 end sub
 
@@ -513,7 +601,8 @@ sub irEmitPUSH( byval v1 as integer ) static
 end sub
 
 '':::::
-sub irEmitPUSHUDT( byval v1 as integer, byval lgt as integer ) static
+sub irEmitPUSHUDT( byval v1 as integer, _
+				   byval lgt as integer ) static
 	irEmitEx IR.OP.PUSHUDT, v1, INVALID, INVALID, NULL, lgt
 end sub
 
@@ -523,13 +612,16 @@ sub irEmitPOP( byval v1 as integer ) static
 end sub
 
 '':::::
-sub irEmitADDR( byval op as integer, byval v1 as integer, byval vr as integer ) static
+sub irEmitADDR( byval op as integer, _
+				byval v1 as integer, _
+				byval vr as integer ) static
 	irEmit op, v1, INVALID, vr
 end sub
 
 
 '':::::
-sub irEmitLABEL( byval label as FBSYMBOL ptr, byval isglobal as integer ) static
+sub irEmitLABEL( byval label as FBSYMBOL ptr, _
+				 byval isglobal as integer ) static
     dim lname as string
 
 	irFlush
@@ -548,14 +640,18 @@ sub irEmitLABELNF( byval label as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irEmitCALLFUNCT( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval vr as integer ) static
+sub irEmitCALLFUNCT( byval proc as FBSYMBOL ptr, _
+					 byval bytestopop as integer, _
+					 byval vr as integer ) static
 
     irEmitEx IR.OP.CALLFUNCT, INVALID, INVALID, vr, proc, bytestopop
 
 end sub
 
 '':::::
-sub irEmitCALLPTR( byval v1 as integer, byval vr as integer, byval bytestopop as integer ) static
+sub irEmitCALLPTR( byval v1 as integer, _
+				   byval vr as integer, _
+				   byval bytestopop as integer ) static
 
     irEmitEx IR.OP.CALLPTR, v1, INVALID, vr, NULL, bytestopop
 
@@ -569,7 +665,8 @@ sub irEmitBRANCHPTR( byval v1 as integer ) static
 end sub
 
 '':::::
-sub irEmitBRANCH( byval op as integer, byval label as FBSYMBOL ptr ) static
+sub irEmitBRANCH( byval op as integer, _
+				  byval label as FBSYMBOL ptr ) static
 
     irEmitEx op, INVALID, INVALID, INVALID, label
 
@@ -585,7 +682,10 @@ sub irEmitRETURN( byval bytestopop as integer ) static
 end sub
 
 '':::::
-sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval endlabel as FBSYMBOL ptr, byval ispublic as integer ) static
+sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, _
+					 byval initlabel as FBSYMBOL ptr, _
+					 byval endlabel as FBSYMBOL ptr, _
+					 byval ispublic as integer ) static
     dim label as integer
     dim id as string
 
@@ -615,7 +715,9 @@ sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr
 end sub
 
 '':::::
-sub irEmitPROCEND( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr ) static
+sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
+				   byval initlabel as FBSYMBOL ptr, _
+				   byval exitlabel as FBSYMBOL ptr ) static
     dim bytestopop as integer, mode as integer
 
     mode = symbGetFuncMode( proc )
@@ -632,155 +734,94 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, 
 end sub
 
 '':::::
-function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, _
+function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
+						  byval arg as FBSYMBOL ptr, _
 						  byval vr as integer, _
-						  byval pmode as integer, byval plen as integer ) as integer static
-    dim vt as integer, vp as integer
-    dim atype as integer, aclass as integer
-    dim ptype as integer, pclass as integer, psize as integer
-    dim s as FBSYMBOL ptr, amode as integer, typ as integer
-    dim d as FBSYMBOL ptr
+						  byval pmode as integer, _
+						  byval plen as integer ) as integer static
+    dim as integer vt, isptr
+    dim as integer adtype, adclass, amode
+    dim as integer pdtype, pdclass, pclass
+    dim as FBSYMBOL ptr s, d
 
 	irEmitPUSHPARAM = FALSE
 
-	amode = symbGetArgMode( proc, arg )
-
-	'' convert param to arg type if needed
-	atype  = symbGetType( arg )
-	if( atype <> INVALID ) then
-		aclass = irGetDataClass( atype )
+	''
+	amode  = symbGetArgMode( proc, arg )
+	adtype = symbGetType( arg )
+	if( adtype <> INVALID ) then
+		adclass = irGetDataClass( adtype )
 	end if
-	ptype  = irGetVRDataType( vr )
-	pclass = irGetDataClass( ptype )
-	psize  = irGetDataSize( ptype )
 
-    typ = irGetVRType( vr )
+	''
+	pdtype  = irGetVRDataType( vr )
+	pdclass = irGetDataClass( pdtype )
 
-	'print symbGetName(proc), arg, atype; aclass, ptype; pclass
+    pclass = irGetVRType( vr )
 
-	'' process by descriptor arguments..
+	'' by descriptor?
 	if( amode = FB.ARGMODE.BYDESC ) then
 
-        '' param is an pointer
-        if( pmode = FB.ARGMODE.BYVAL ) then
-            amode = FB.ARGMODE.BYVAL
+		amode = FB.ARGMODE.BYVAL
 
-        '' param is an identifier
-        else
-
-			s = vregTB(vr).sym
-			'' not an argument passed by descriptor?
-			if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
-				ptype = IR.DATATYPE.VOID
-        		d = symbGetArrayDescriptor( s )
-        		vr = irAllocVRVAR( ptype, d, d->ofs )
-        		amode = FB.ARGMODE.BYREF
-
-        	'' it's already a descriptor pointer, pass as-is
-        	else
-        		vr = irAllocVRVAR( IR.DATATYPE.UINT, s, s->ofs )
-        		amode = FB.ARGMODE.BYVAL
-        	end if
-
-        end if
-
-    '' var args
+    '' var args?
     elseif( amode = FB.ARGMODE.VARARG ) then
 
-    	if( pclass = IR.DATACLASS.STRING ) then
-			'' not fixed-len? deref var-len (ptr at offset 0)
-			if( ptype <> IR.DATATYPE.FIXSTR ) then
-            	vt = irAllocVREG( IR.DATATYPE.UINT )
-            	vregTB(vr).dtype = IR.DATATYPE.UINT
-            	irEmitADDR IR.OP.DEREF, vr, vt
-            	vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vt )
-
-            '' fixed-len? get the address of
-            elseif( typ <> IR.VREGTYPE.PTR ) then
-				vp = irAllocVREG( IR.DATATYPE.UINT )
-				irEmitADDR IR.OP.ADDROF, vr, vp
-				vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vp )
+    	'' string argument?
+    	if( (pdclass = IR.DATACLASS.STRING) or _
+    		(pdtype = IR.DATATYPE.CHAR) ) then
+			'' not a pointer yet?
+			if( pclass = IR.VREGTYPE.PTR ) then
+				amode = FB.ARGMODE.BYREF
+			else
+				amode = FB.ARGMODE.BYVAL
 			end if
 
-        	typ = IR.VREGTYPE.PTR
-        	amode = FB.ARGMODE.BYREF
-        else
-
+    	'' otherwise, pass as-is
+    	else
     		amode = FB.ARGMODE.BYVAL
     	end if
 
-    ''
-    elseif( atype <> IR.DATATYPE.VOID ) then
+    '' as any?
+    elseif( adtype = IR.DATATYPE.VOID ) then
+
+		if( pmode = FB.ARGMODE.BYVAL ) then
+
+    		'' another quirk: BYVAL strings passed to BYREF ANY args..
+    		if( (pdclass = IR.DATACLASS.STRING) or _
+    			(pdtype = IR.DATATYPE.CHAR) ) then
+    			'' not a pointer yet?
+    			if( pclass <> IR.VREGTYPE.PTR ) then
+    				amode = FB.ARGMODE.BYVAL
+    			else
+    				amode = FB.ARGMODE.BYREF
+    			end if
+
+    		'' otherwise, pass as-is
+    		else
+    			amode = FB.ARGMODE.BYVAL
+    		end if
+
+    	'' passing an immediate?
+    	elseif( irIsIMM( vr ) ) then
+        	amode = FB.ARGMODE.BYVAL
+    	end if
+
+    '' byval or byref (but as any)
+    else
 
     	'' string argument?
-    	if( aclass = IR.DATACLASS.STRING ) then
-			'' byval and fixed/byte ptr/ptr   	: pass the pointer as-is
-			'' byval and variable				: pass the pointer at ofs 0 of the string descriptor
-			'' byref and variable				: pass the pointer to descriptor
-			'' byref and fixed/byte ptr   		: alloc a temp string, copy fixed to temp, pass temp,
-			''					   				  copy temp back to fixed when func returns, del temp
-			if( amode = FB.ARGMODE.BYVAL ) then
-
-				'' do not check byte ptr or byval ptrs
-				if( pclass = IR.DATACLASS.STRING ) then
-					amode = FB.ARGMODE.BYREF
-					'' not fixed-len? deref var-len (ptr at offset 0)
-					if( ptype <> IR.DATATYPE.FIXSTR ) then
-            			vt = irAllocVREG( IR.DATATYPE.UINT )
-            			vregTB(vr).dtype = IR.DATATYPE.UINT
-            			irEmitADDR IR.OP.DEREF, vr, vt
-            			vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vt )
-            			typ = IR.VREGTYPE.PTR
-            		end if
-				end if
-
-			end if
-
-			'' descriptor or fixed-len? get the address of
-			if( typ <> IR.VREGTYPE.PTR ) then
-				if( pclass = IR.DATACLASS.STRING ) then
-					vp = irAllocVREG( IR.DATATYPE.UINT )
-					irEmitADDR IR.OP.ADDROF, vr, vp
-					vr = irAllocVRPTR( IR.DATATYPE.POINTER+IR.DATATYPE.STRING, 0, vp )
-					typ = IR.VREGTYPE.PTR
-				end if
-			end if
-
-		else
-	        '' passing a BYVAL ptr to an BYREF arg?
-			if( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
-
-			'' UDT arg? check if the same, can't convert
-			elseif( atype = IR.DATATYPE.USERDEF ) then
-
-			''
+    	if( adclass = IR.DATACLASS.STRING ) then
+			'' not a pointer yet?
+			if( pclass = IR.VREGTYPE.PTR ) then
+				'' BYVAL or not the mode has to be changed to byref, as
+				'' BYVAL AS STRING is actually BYREF AS ZSTRING
+				amode = FB.ARGMODE.BYREF
 			else
-				if( (aclass <> pclass) or (irGetDataSize( atype ) <> psize) ) then
-					vt = irAllocVREG( atype )
-					irEmitCONVERT vt, atype, vr, ptype
-					vr = vt
-					ptype = atype
-				end if
+				amode = FB.ARGMODE.BYVAL
 			end if
 		end if
 
-	'' another quirk: BYVAL strings passed to BYREF ANY args..
-	else
-		if( (pclass = IR.DATACLASS.STRING) and (pmode = FB.ARGMODE.BYVAL) ) then
-
-			if( ptype <> IR.DATATYPE.FIXSTR ) then
-            	vt = irAllocVREG( IR.DATATYPE.UINT )
-            	vregTB(vr).dtype = IR.DATATYPE.UINT
-            	irEmitADDR IR.OP.DEREF, vr, vt
-            	vr = vt
-			elseif( typ <> IR.VREGTYPE.PTR ) then
-				vp = irAllocVREG( IR.DATATYPE.UINT )
-				irEmitADDR IR.OP.ADDROF, vr, vp
-				vr = vp
-			end if
-
-			amode = FB.ARGMODE.BYVAL
-		end if
 	end if
 
 	'' push to stack, depending on arg mode
@@ -798,37 +839,45 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr,
 		if( pmode = FB.ARGMODE.BYVAL ) then
 			irEmitPUSH vr
 
-		'' simple pointer?
-		elseif( (typ = IR.VREGTYPE.PTR) and (vregTB(vr).ofs = 0) ) then
-
-			irEmitPUSH vregTB(vr).vi
-
-		'' simple index?
-		elseif( (typ = IR.VREGTYPE.IDX) and (vregTB(vr).ofs = 0) and _
-				(vregTB(vr).sym = NULL) and (vregTB(vr).mult <= 1) ) then
-
-			irEmitPUSH vregTB(vr).vi
-
 		else
 
-			'' passing an immediate to a byref void arg?
-			if( (atype = IR.DATATYPE.VOID) and irIsIMM( vr ) ) then
-				irEmitPUSH vr
+			isptr = FALSE
+
+			select case pclass
+			'' simple pointer?
+			case IR.VREGTYPE.PTR
+				if( vregTB(vr).ofs = 0 ) then
+					isptr = TRUE
+				end if
+
+			'' simple index?
+			case IR.VREGTYPE.IDX
+				if( vregTB(vr).ofs = 0 ) then
+					if( vregTB(vr).sym = NULL ) then
+						if( vregTB(vr).mult <= 1 ) then
+							isptr = TRUE
+						end if
+					end if
+				end if
+			end select
+
+			if( isptr ) then
+				irEmitPUSH vregTB(vr).vi
 
 			else
 				'' byref arg and it's not a var? create a temp one..
 				if( not irIsVAR( vr ) ) then
 					if( not irIsIDX( vr ) ) then
-						s = symbAddTempVar( atype )
-						vt = irAllocVRVAR( atype, s, s->ofs )
+						s = symbAddTempVar( adtype )
+						vt = irAllocVRVAR( adtype, s, s->ofs )
 						irEmitSTORE vt, vr
 						vr = vt
 					end if
 				end if
 
-				vp = irAllocVREG( IR.DATATYPE.UINT )
-				irEmitADDR IR.OP.ADDROF, vr, vp
-				irEmitPUSH vp
+				vt = irAllocVREG( IR.DATATYPE.UINT )
+				irEmitADDR IR.OP.ADDROF, vr, vt
+				irEmitPUSH vt
 			end if
 
 		end if
@@ -842,7 +891,8 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function irNewVR( byval dtype as integer, byval typ as integer ) as integer static
+function irNewVR( byval dtype as integer, _
+				  byval typ as integer ) as integer static
 	dim v as integer
 	dim p as IRVREG ptr
 
@@ -888,7 +938,8 @@ function irAllocVREG( byval dtype as integer ) as integer static
 end function
 
 '':::::
-function irAllocVRIMM( byval dtype as integer, byval value as integer ) as integer static
+function irAllocVRIMM( byval dtype as integer, _
+					   byval value as integer ) as integer static
 	dim vr as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.IMM )
@@ -910,7 +961,8 @@ function irAllocVRIMM( byval dtype as integer, byval value as integer ) as integ
 end function
 
 '':::::
-function irAllocVRIMM64( byval dtype as integer, byval value as longint ) as integer static
+function irAllocVRIMM64( byval dtype as integer, _
+						 byval value as longint ) as integer static
 	dim vr as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.IMM )
@@ -931,7 +983,9 @@ function irAllocVRIMM64( byval dtype as integer, byval value as longint ) as int
 end function
 
 '':::::
-function irAllocVRVAR( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer ) as integer static
+function irAllocVRVAR( byval dtype as integer, _
+					   byval symbol as FBSYMBOL ptr, _
+					   byval ofs as integer ) as integer static
 	dim vr as integer, va as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.VAR )
@@ -955,7 +1009,11 @@ function irAllocVRVAR( byval dtype as integer, byval symbol as FBSYMBOL ptr, byv
 end function
 
 '':::::
-function irAllocVRIDX( byval dtype as integer, byval symbol as FBSYMBOL ptr, byval ofs as integer, byval mult as integer, byval vidx as integer ) as integer static
+function irAllocVRIDX( byval dtype as integer, _
+					   byval symbol as FBSYMBOL ptr, _
+					   byval ofs as integer, _
+					   byval mult as integer, _
+					   byval vidx as integer ) as integer static
 	dim vr as integer, va as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.IDX )
@@ -981,7 +1039,9 @@ function irAllocVRIDX( byval dtype as integer, byval symbol as FBSYMBOL ptr, byv
 end function
 
 '':::::
-function irAllocVRPTR( byval dtype as integer, byval ofs as integer, byval vidx as integer ) as integer static
+function irAllocVRPTR( byval dtype as integer, _
+					   byval ofs as integer, _
+					   byval vidx as integer ) as integer static
 	dim vr as integer, va as integer
 
 	vr = irNewVR( dtype, IR.VREGTYPE.PTR )
@@ -1097,7 +1157,8 @@ function irGetVRDataSize( byval vreg as integer ) as integer static
 end function
 
 '':::::
-sub irGetVRIndexName( byval vreg as integer, vname as string )
+sub irGetVRIndexName( byval vreg as integer, _
+					  vname as string )
     dim sym as FBSYMBOL ptr, mult as integer, vi as integer
     dim sname as string
 
@@ -1127,7 +1188,9 @@ sub irGetVRIndexName( byval vreg as integer, vname as string )
 end sub
 
 '':::::
-sub irGetVRNameEx( byval vreg as integer, byval typ as integer, vname as string )
+sub irGetVRNameEx( byval vreg as integer, _
+				   byval typ as integer, _
+				   vname as string )
     dim dtype as integer, dclass as integer
 
 	if( vreg = INVALID ) then
@@ -1155,7 +1218,8 @@ sub irGetVRNameEx( byval vreg as integer, byval typ as integer, vname as string 
 end sub
 
 '':::::
-sub irGetVRName( byval vreg as integer, vname as string ) static
+sub irGetVRName( byval vreg as integer, _
+				 vname as string ) static
 
 	irGetVRNameEx( vreg, vregTB(vreg).typ, vname )
 
@@ -1164,7 +1228,8 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irRename( byval vold as integer, byval vnew as integer ) static
+sub irRename( byval vold as integer, _
+			  byval vnew as integer ) static
     dim i as integer
 
 	for i = ctx.currc to ctx.codes-1
@@ -1195,11 +1260,11 @@ end sub
 
 '':::::
 sub irReuse( byval i as integer ) static
-    dim op as integer
-    dim v1 as integer, dt1 as integer, dc1 as integer, t1 as integer
-    dim v2 as integer, dt2 as integer, dc2 as integer, t2 as integer
-    dim vr as integer, dtr as integer, dcr as integer, tr as integer
-    dim v1rename as integer, v2rename as integer
+    dim as integer op
+    dim as integer v1, dt1, dc1, t1
+    dim as integer v2, dt2, dc2, t2
+    dim as integer vr, dtr, dcr, tr
+    dim as integer v1rename, v2rename
 
 	op 	 = tacTB(i).op
 	v1   = tacTB(i).v1
@@ -1333,7 +1398,8 @@ sub irFlush static
 end sub
 
 '':::::
-sub irFlushBRANCH( byval op as integer, byval label as FBSYMBOL ptr ) static
+sub irFlushBRANCH( byval op as integer, _
+				   byval label as FBSYMBOL ptr ) static
     dim lname as string
 
 	lname = symbGetName( label )
@@ -1441,8 +1507,11 @@ private sub irhPreserveRegs( byval ptrvreg as integer = INVALID ) static
 end sub
 
 '':::::
-sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2pop as integer, _
-				 byval v1 as integer, byval vr as integer ) static
+sub irFlushCALL( byval op as integer, _
+				 byval proc as FBSYMBOL ptr, _
+				 byval bytes2pop as integer, _
+				 byval v1 as integer, _
+				 byval vr as integer ) static
     dim as string pname
     dim as integer rr, rr2, rdclass, rdtype, rtyp
     dim as integer va, mode
@@ -1515,7 +1584,9 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
 end sub
 
 '':::::
-sub irFlushSTACK( byval op as integer, byval v1 as integer, byval ex as integer ) static
+sub irFlushSTACK( byval op as integer, _
+				  byval v1 as integer, _
+				  byval ex as integer ) static
 	dim as string dst
 	dim as integer r1, t1, dt1, dc1
 
@@ -1550,7 +1621,9 @@ sub irFlushSTACK( byval op as integer, byval v1 as integer, byval ex as integer 
 end sub
 
 '':::::
-sub irFlushUOP( byval op as integer, byval v1 as integer, byval vr as integer ) static
+sub irFlushUOP( byval op as integer, _
+			    byval v1 as integer, _
+			    byval vr as integer ) static
 	dim as string dst, res
 	dim as integer r1, t1, dt1, dc1
 	dim as integer rr, tr, dtr, dcr
@@ -1623,7 +1696,10 @@ sub irFlushUOP( byval op as integer, byval v1 as integer, byval vr as integer ) 
 end sub
 
 '':::::
-sub irFlushBOP( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer ) static
+sub irFlushBOP( byval op as integer, _
+				byval v1 as integer, _
+				byval v2 as integer, _
+				byval vr as integer ) static
 	dim as string dst, src, res
 	dim as integer r1, t1, dt1, dc1
 	dim as integer r2, t2, dt2, dc2
@@ -1742,7 +1818,10 @@ sub irFlushBOP( byval op as integer, byval v1 as integer, byval v2 as integer, b
 end sub
 
 '':::::
-sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, _
+sub irFlushCOMP( byval op as integer, _
+				 byval v1 as integer, _
+				 byval v2 as integer, _
+				 byval vr as integer, _
 				 byval label as FBSYMBOL ptr ) static
 	dim as string dst, src, res, lname
 	dim as integer r1, t1, dt1, dc1
@@ -1873,7 +1952,9 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 end sub
 
 '':::::
-sub irFlushSTORE( byval op as integer, byval v1 as integer, byval v2 as integer ) static
+sub irFlushSTORE( byval op as integer, _
+				  byval v1 as integer, _
+				  byval v2 as integer ) static
 	dim as string dst, src
 	dim as integer r1, t1, dt1, dc1
 	dim as integer r2, t2, dt2, dc2
@@ -1913,7 +1994,8 @@ sub irFlushSTORE( byval op as integer, byval v1 as integer, byval v2 as integer 
 end sub
 
 '':::::
-sub irFlushLOAD( byval op as integer, byval v1 as integer ) static
+sub irFlushLOAD( byval op as integer, _
+				 byval v1 as integer ) static
 	dim as string src, dst
 	dim as integer r1, t1, dt1, dc1
 	dim as integer rr, rr2, vr
@@ -1981,7 +2063,9 @@ sub irFlushLOAD( byval op as integer, byval v1 as integer ) static
 end sub
 
 '':::::
-sub irFlushCONVERT( byval op as integer, byval v1 as integer, byval v2 as integer ) static
+sub irFlushCONVERT( byval op as integer, _
+					byval v1 as integer, _
+					byval v2 as integer ) static
 	dim as string dst, src
 	dim as integer r1, t1, dt1, dc1
 	dim as integer r2, t2, dt2, dc2
@@ -2070,7 +2154,9 @@ sub irFlushCONVERT( byval op as integer, byval v1 as integer, byval v2 as intege
 end sub
 
 '':::::
-sub irFlushADDR( byval op as integer, byval v1 as integer, byval vr as integer ) static
+sub irFlushADDR( byval op as integer, _
+				 byval v1 as integer, _
+				 byval vr as integer ) static
 	dim as string src, dst
 	dim as integer r1, t1, dt1, dc1
 	dim as integer rr, tr, dtr, dcr
@@ -2114,7 +2200,8 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irhFreeIDX( byval vreg as integer, byval force as integer = FALSE )
+sub irhFreeIDX( byval vreg as integer, _
+				byval force as integer = FALSE )
 	dim vi as integer
 
 	if( vreg = INVALID ) then
@@ -2132,7 +2219,8 @@ sub irhFreeIDX( byval vreg as integer, byval force as integer = FALSE )
 end sub
 
 '':::::
-sub irhFreeREG( byval vreg as integer, byval force as integer = FALSE )
+sub irhFreeREG( byval vreg as integer, _
+				byval force as integer = FALSE )
 	dim reg as integer
 	dim rdtype as integer, rdclass as integer, rtyp as integer
 	dim freereg as integer
@@ -2230,7 +2318,9 @@ function irGetDistance( byval vreg as integer ) as integer
 end function
 
 '':::::
-sub irLoadVR( byval reg as integer, byval vr as integer, byval doload as integer ) static
+sub irLoadVR( byval reg as integer, _
+			  byval vr as integer, _
+			  byval doload as integer ) static
 	dim vname as string, rname as string
 	dim rvreg as IRVREG
 	dim vreg as IRVREG ptr
@@ -2263,7 +2353,8 @@ sub irLoadVR( byval reg as integer, byval vr as integer, byval doload as integer
 end sub
 
 '':::::
-sub irCreateTMPVAR( byval vr as integer, vname as string ) static
+sub irCreateTMPVAR( byval vr as integer, _
+					vname as string ) static
     dim vreg as IRVREG ptr
 
 	vreg = @vregTB(vr)
@@ -2280,7 +2371,8 @@ sub irCreateTMPVAR( byval vr as integer, vname as string ) static
 end sub
 
 '':::::
-sub irStoreVR( byval vr as integer, byval reg as integer ) static
+sub irStoreVR( byval vr as integer, _
+			   byval reg as integer ) static
 	dim vname as string, rname as string
     dim rvreg as IRVREG
 	dim vreg as IRVREG ptr, vareg as IRVREG ptr
@@ -2330,8 +2422,12 @@ sub irXchgTOS( byval reg as integer ) static
 
 end sub
 
+#if 0
 '':::::
-sub irDump( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer ) 'static
+sub irDump( byval op as integer, _
+			byval v1 as integer, _
+			byval v2 as integer, _
+			byval vr as integer ) 'static
 	dim vname as string
 
 	if( vr <> INVALID ) then
@@ -2355,9 +2451,11 @@ sub irDump( byval op as integer, byval v1 as integer, byval v2 as integer, byval
 	end if
 
 end sub
+#endif
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+#if 0
 '':::::
 function irGetVRRealValue( byval vreg as integer ) as integer static
     dim rval as integer
@@ -2447,3 +2545,4 @@ sub irOptimize static
 	'dagTopSort
 
 end sub
+#endif

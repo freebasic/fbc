@@ -217,7 +217,7 @@ declare sub 		rtlDataStoreEnd		( )
 declare function	rtlMathPow			( byval xexpr as integer, byval yexpr as integer ) as integer
 declare function 	rtlMathFSGN 		( byval expr as integer ) as integer
 declare function 	rtlMathFIX 			( byval expr as integer ) as integer
-declare function 	rtlMathLen			( byval expr as integer ) as integer
+declare function 	rtlMathLen			( byval expr as integer, byval checkstrings as integer = TRUE ) as integer
 
 declare function 	rtlMathLongintCMP	( byval op as integer, byval dtype as integer, _
 										  byval lexpr as integer, byval ldtype as integer, _

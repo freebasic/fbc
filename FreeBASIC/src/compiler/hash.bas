@@ -100,14 +100,14 @@ sub hashFree( byval hash as THASH ptr ) static
 end sub
 
 '':::::
-function hashHash( symbol as string ) as uinteger static
+function hashHash( byval symbol as string ) as uinteger static
 	dim index as uinteger
 	dim i as integer, c as uinteger
 	dim p as ubyte ptr
 
 	index = 0
 
-	p = sadd( symbol )
+	p = strptr( symbol )
 	for i = 1 to len( symbol )
 		index = *p + (index shl 5) - index
 		p = p + 1
@@ -118,7 +118,7 @@ function hashHash( symbol as string ) as uinteger static
 end function
 
 ''::::::
-function hashLookupEx( byval hash as THASH ptr, symbol as string, byval index as uinteger ) as any ptr static
+function hashLookupEx( byval hash as THASH ptr, byval symbol as string, byval index as uinteger ) as any ptr static
     dim item as HASHITEM ptr
     dim list as HASHLIST ptr
 
@@ -145,7 +145,7 @@ function hashLookupEx( byval hash as THASH ptr, symbol as string, byval index as
 end function
 
 ''::::::
-function hashLookup( byval hash as THASH ptr, symbol as string ) as any ptr static
+function hashLookup( byval hash as THASH ptr, byval symbol as string ) as any ptr static
 
     hashLookup = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
@@ -204,7 +204,7 @@ private sub hashDelItem( byval list as HASHLIST ptr, byval item as HASHITEM ptr 
 end sub
 
 ''::::::
-function hashAdd( byval hash as THASH ptr, symbol as string, byval idx as any ptr, _
+function hashAdd( byval hash as THASH ptr, byval symbol as string, byval idx as any ptr, _
 			 	  index as uinteger ) as HASHITEM ptr static
     dim item as HASHITEM ptr
 

@@ -1490,7 +1490,7 @@ end function
 #endif
 
 '':::::
-public function fbAddLibPath ( path as string ) as integer
+public function fbAddLibPath ( byval path as string ) as integer
 	dim i as integer
 
 	fbAddLibPath = FALSE

@@ -21,41 +21,68 @@
 ''
 
 declare	sub 		hlpInit					( )
+
 declare	sub 		hlpEnd					( )
-declare	function 	hGetDefType				( symbol as string ) as integer
-declare	sub 		hSetDefType				( byval ichar as integer, byval echar as integer, byval typ as integer )
+
+declare	function 	hGetDefType				( byval symbol as string ) as integer
+
+declare	sub 		hSetDefType				( byval ichar as integer, _
+											  byval echar as integer, _
+											  byval typ as integer )
+
 declare function 	hMatch					( byval token as integer ) as integer
 
-declare sub 		hReportErrorEx			( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
-declare sub 		hReportError			( byval errnum as integer, byval isbefore as integer = FALSE )
+declare sub 		hReportErrorEx			( byval errnum as integer, _
+											  byval msgex as string, _
+											  byval linenum as integer = 0 )
+
+declare sub 		hReportError			( byval errnum as integer, _
+											  byval isbefore as integer = FALSE )
+
 declare function 	hGetLastError 			( ) as integer
-declare sub 		hReportWarning			( byval msgnum as integer, msgex as string )
+
+declare sub 		hReportWarning			( byval msgnum as integer, _
+											  byval msgex as string )
 
 declare function 	hMakeTmpStr 			( ) as string
+
 declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
 
-declare function 	hFileExists				( filename as string ) as integer
+declare function 	hFileExists				( byval filename as string ) as integer
 
-declare function 	hScapeStr				( text as string ) as string
-declare function 	hUnescapeStr			( text as string ) as string
-declare sub 		hClearName				( src as string )
-declare sub 		hUcase					( src as string )
-declare sub 		hReplace				( text as string, oldtext as string, newtext as string )
+declare function 	hScapeStr				( byval text as string ) as string
 
-declare function 	hCreateProcAlias		( symbol as string, byval argslen as integer, _
+declare function 	hUnescapeStr			( byval text as string ) as string
+
+declare sub 		hClearName				( byval src as string )
+
+declare sub 		hUcase					( byval src as string )
+
+declare sub 		hReplace				( text as string, _
+											  byval oldtext as string, _
+											  byval newtext as string )
+
+declare function 	hCreateProcAlias		( byval symbol as string, _
+											  byval argslen as integer, _
 						   					  byval mode as integer ) as string
-declare function 	hCreateDataAlias		( symbol as string, byval isimport as integer ) as string
 
+declare function 	hCreateDataAlias		( byval symbol as string, _
+											  byval isimport as integer ) as string
 
-declare function 	hCreateName 			( symbol as string, byval typ as integer = INVALID, byval preservecase as integer = FALSE, _
-								      		  byval addunderscore as integer = TRUE, byval clearname as integer  = TRUE) as string
+declare function 	hCreateName 			( byval symbol as string, _
+											  byval typ as integer = INVALID, _
+											  byval preservecase as integer = FALSE, _
+								      		  byval addunderscore as integer = TRUE, _
+								      		  byval clearname as integer  = TRUE) as string
 
-declare function 	hStripUnderscore		( symbol as string ) as string
+declare function 	hStripUnderscore		( byval symbol as string ) as string
 
-declare function 	hStripExt				( filename as string ) as string
-declare function 	hStripPath				( filename as string ) as string
-declare function 	hStripFilename 			( filename as string ) as string
+declare function 	hStripExt				( byval filename as string ) as string
+
+declare function 	hStripPath				( byval filename as string ) as string
+
+declare function 	hStripFilename 			( byval filename as string ) as string
 
 declare function 	hToPow2					( byval value as uinteger ) as uinteger
 
-declare function 	hMakeEntryPointName		( entrypoint as string ) as string
+declare function 	hMakeEntryPointName		( byval entrypoint as string ) as string

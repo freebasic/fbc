@@ -43,7 +43,7 @@ end type
 
 	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
 
-	dim shared suffixTB( 0 to FB.SYMBOLTYPES-1 ) as string * 1
+	dim shared suffixTB( 0 to FB.SYMBOLTYPES-1 ) as zstring * 1+1
 
 
 ''warning msgs (level, msg)
@@ -116,13 +116,17 @@ data "Illegal specification"
 data "Expected 'END WITH'"
 data "Illegal inside a SUB or FUNCTION"
 data "Expected array"
+data "Expected '{'"
+data "Expected '}'"
 data "Too many expressions"
 data "Expected explicit result type"
 data "Range too large"
 data "Forward references not allowed"
 data "Incomplete type"
+data "Array not dimensioned"
+data "Array access, index expected"
 
-const FB.ERRMSGS = 68
+const FB.ERRMSGS = 72
 
 
 '':::::
@@ -163,7 +167,9 @@ function hMatch( byval token as integer ) as integer
 end function
 
 '':::::
-sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
+sub hReportErrorEx( byval errnum as integer, _
+					byval msgex as string, _
+					byval linenum as integer = 0 )
     dim i as integer, msg as string
     dim token_pos as string
 
@@ -207,7 +213,8 @@ sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as i
 end sub
 
 '':::::
-sub hReportError( byval errnum as integer, byval isbefore as integer = FALSE )
+sub hReportError( byval errnum as integer, _
+				  byval isbefore as integer = FALSE )
     dim token as string, msgex as string
 
 	token = lexTokenText
@@ -236,7 +243,8 @@ end function
 
 
 '':::::
-sub hReportWarning( byval msgnum as integer, msgex as string )
+sub hReportWarning( byval msgnum as integer, _
+				 	byval msgex as string )
     dim i as integer
     dim level as integer, msg as string
 
@@ -294,7 +302,7 @@ function hMakeTmpStr as string static
 end function
 
 '':::::
-function hGetDefType( symbol as string ) as integer static
+function hGetDefType( byval symbol as string ) as integer static
     dim c as integer
     dim p as byte ptr
 
@@ -312,7 +320,9 @@ function hGetDefType( symbol as string ) as integer static
 end function
 
 '':::::
-sub hSetDefType( byval ichar as integer, byval echar as integer, byval typ as integer ) static
+sub hSetDefType( byval ichar as integer, _
+				 byval echar as integer, _
+				 byval typ as integer ) static
     dim i as integer
 
 	if( ichar < 65 ) then
@@ -360,7 +370,7 @@ function hFBrelop2IRrelop( byval op as integer ) as integer static
 end function
 
 '':::::
-function hFileExists( filename as string ) as integer static
+function hFileExists( byval filename as string ) as integer static
     dim f as integer
 
 	hFileExists = FALSE
@@ -378,7 +388,9 @@ exitfunction:
 end function
 
 '':::::
-sub hReplace( text as string, oldtext as string, newtext as string ) static
+sub hReplace( text as string, _
+			  byval oldtext as string, _
+			  byval newtext as string ) static
     dim remtext as string
     dim oldlen as integer, newlen as integer
     dim p as integer
@@ -403,7 +415,7 @@ sub hReplace( text as string, oldtext as string, newtext as string ) static
 end sub
 
 '':::::
-function hScapeStr( text as string ) as string static
+function hScapeStr( byval text as string ) as string static
     dim c as integer, l as byte ptr
     dim s as byte ptr, d as byte ptr
     dim res as string
@@ -463,7 +475,7 @@ function hScapeStr( text as string ) as string static
 end function
 
 '':::::
-function hUnescapeStr( text as string ) as string static
+function hUnescapeStr( byval text as string ) as string static
     dim c as integer, l as byte ptr, s as byte ptr
     dim res as string, d as byte ptr
 
@@ -495,7 +507,7 @@ function hUnescapeStr( text as string ) as string static
 end function
 
 '':::::
-sub hUcase( src as string ) static
+sub hUcase( byval src as string ) static
     dim i as integer, c as integer
     dim p as byte ptr
 
@@ -514,7 +526,7 @@ sub hUcase( src as string ) static
 end sub
 
 '':::::
-sub hClearName( src as string ) static
+sub hClearName( byval src as string ) static
     dim i as integer
     dim p as byte ptr
 
@@ -529,13 +541,14 @@ sub hClearName( src as string ) static
 			*p = CHAR_ZLOW
 		end select
 
-		p = p + 1
+		p += 1
 	next i
 
 end sub
 
 '':::::
-function hCreateName( symbol as string, byval typ as integer = INVALID, _
+function hCreateName( byval symbol as string, _
+					  byval typ as integer = INVALID, _
 					  byval preservecase as integer = FALSE, _
 					  byval addunderscore as integer = TRUE, _
 					  byval clearname as integer = TRUE ) as string static
@@ -565,7 +578,8 @@ function hCreateName( symbol as string, byval typ as integer = INVALID, _
 end function
 
 '':::::
-function hCreateProcAlias( symbol as string, byval argslen as integer, _
+function hCreateProcAlias( byval symbol as string, _
+						   byval argslen as integer, _
 						   byval mode as integer ) as string static
     dim sname as string
     dim addat as integer
@@ -602,7 +616,8 @@ function hCreateProcAlias( symbol as string, byval argslen as integer, _
 end function
 
 '':::::
-function hCreateDataAlias( symbol as string, byval isimport as integer ) as string static
+function hCreateDataAlias( byval symbol as string, _
+						   byval isimport as integer ) as string static
 
 #if defined(TARGET_WIN32)
 	if( isimport ) then
@@ -622,7 +637,7 @@ function hCreateDataAlias( symbol as string, byval isimport as integer ) as stri
 end function
 
 '':::::
-function hStripUnderscore( symbol as string ) as string static
+function hStripUnderscore( byval symbol as string ) as string static
 
 #ifdef TARGET_WIN32
     if( not env.clopt.nostdcall ) then
@@ -642,7 +657,7 @@ function hStripUnderscore( symbol as string ) as string static
 end function
 
 '':::::
-function hStripExt( filename as string ) as string static
+function hStripExt( byval filename as string ) as string static
     dim p as integer, lp as integer
 
 	lp = 0
@@ -663,7 +678,7 @@ function hStripExt( filename as string ) as string static
 end function
 
 '':::::
-function hStripPath( filename as string ) as string static
+function hStripPath( byval filename as string ) as string static
     dim p as integer, lp as integer
 
 	lp = 0
@@ -687,7 +702,7 @@ function hStripPath( filename as string ) as string static
 end function
 
 '':::::
-function hStripFilename ( filename as string ) as string static
+function hStripFilename ( byval filename as string ) as string static
     dim p as integer, lp as integer
 
 	lp = 0
@@ -789,7 +804,7 @@ end function
 'end function
 
 '':::::
-function hMakeEntryPointName( entrypoint as string ) as string
+function hMakeEntryPointName( byval entrypoint as string ) as string
 
 	hMakeEntryPointName = "fb_" + entrypoint + "_entry"
 

@@ -73,29 +73,33 @@ data "fb_StrCompare","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
 						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_StrAssign ( dst as any, byval dst_len as integer, _
-'' 				  src as any, byval src_len as integer ) as void
-data "fb_StrAssign","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+'' 				  src as any, byval src_len as integer, _
+''                byval fillrem as integer = 1 ) as string
+data "fb_StrAssign","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 5, _
 						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_StrConcatAssign ( dst as any, byval dst_len as integer, _
-'' 				        src as any, byval src_len as integer ) as void
-data "fb_StrConcatAssign","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+'' 				        src as any, byval src_len as integer, _
+''					    byval fillrem as integer = 1 ) as string
+data "fb_StrConcatAssign","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 5, _
 						      FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						      FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_StrDelete ( str as string ) as void
 data "fb_StrDelete","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrAllocTempResult ( str as string ) as string
 data "fb_StrAllocTempResult","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+						         FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrAllocTempDesc ( str as any, byval strlen as integer ) as string
 data "fb_StrAllocTempDesc","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+						       FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
 data "__divdi3","", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, 2, _
@@ -230,10 +234,12 @@ data "fb_End","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 '' fb_DataRestore ( byval labeladdrs as void ptr ) as void
 data "fb_DataRestore","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
-'' fb_DataReadStr ( dst as any, byval dst_size as integer ) as void
-data "fb_DataReadStr","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+'' fb_DataReadStr ( dst as any, byval dst_size as integer, _
+''                  byval fillrem as integer = 1 ) as void
+data "fb_DataReadStr","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
 						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_DataReadByte ( dst as byte ) as void
 data "fb_DataReadByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						   FB.SYMBTYPE.BYTE,FB.ARGMODE.BYREF, FALSE
@@ -520,19 +526,23 @@ data "fb_FileStrInput", "", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
 						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
-'' fb_FileLineInput ( byval filenum as integer, dst as any, byval dstlen as integer ) as integer
-data "fb_FileLineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
+'' fb_FileLineInput ( byval filenum as integer, _
+''					  dst as any, byval dstlen as integer, byval fillrem as integer = 1 ) as integer
+data "fb_FileLineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
 						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						     FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_LineInput ( text as string, dst as any, byval dstlen as integer, _
+						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+'' fb_LineInput ( text as string, _
+''				  dst as any, byval dstlen as integer, byval fillrem as integer = 1, _
 ''				  byval addquestion as integer, byval addnewline as integer ) as integer
-data "fb_LineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
+data "fb_LineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 6, _
 						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 
 '' fb_FileInput ( byval filenum as integer ) as integer
 data "fb_FileInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
@@ -562,10 +572,11 @@ data "fb_InputSingle","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 '' fb_InputDouble ( x as double ) as void
 data "fb_InputDouble","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 						  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYREF, FALSE
-'' fb_InputString ( x as any, byval strlen as integer ) as void
-data "fb_InputString","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
+'' fb_InputString ( x as any, byval strlen as integer, byval fillrem as integer = 1 ) as void
+data "fb_InputString","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 
 '' fb_FileLock ( byval inipos as integer, byval endpos as integer ) as integer
 data "fb_FileLock","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
@@ -1361,16 +1372,25 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function hGetFixStrLen( byval expr as integer ) as integer
-	dim lgt as integer
+#define FIXSTRGETLEN(e) symbGetLen( astGetSymbol( e ) )
 
-	lgt = symbGetLen( astGetSymbol( expr ) ) - 1
+'':::::
+#define ZSTRGETLEN(e) iif( astGetClass( e ) = AST.NODECLASS.PTR, _
+						   0, _
+						   symbGetLen( astGetSymbol( e ) ) )
 
-	'' if < 0 (ie: a byval as string arg), return 0, the rtlib will take care of the real lenght
-	hGetFixStrLen = iif( lgt < 0, 0, lgt )
-
-end function
-
+'':::::
+#define STRGETLEN(s,t,l)												_
+	select case as const t                                              :_
+	case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE       						:_
+		l = 0                                                           :_
+	case IR.DATATYPE.FIXSTR                                             :_
+		l = FIXSTRGETLEN( s )                                      		:_
+	case IR.DATATYPE.CHAR                                               :_
+		l = ZSTRGETLEN( s )                                      		:_
+	case else                                                           :_
+		l = -1															:_
+	end select
 
 '':::::
 function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
@@ -1387,35 +1407,24 @@ function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
 
    	''
-	str1len = -1
-	if( (sdtype1 = IR.DATATYPE.BYTE) or (sdtype1 = IR.DATATYPE.UBYTE) ) then
-		str1len = 0
-	elseif( hIsStrFixed( sdtype1 ) ) then
-		str1len = hGetFixStrLen( str1 )
-	end if
+   	STRGETLEN( str1, sdtype1, str1len )
 
-    ''
-	str2len = -1
-	if( (sdtype2 = IR.DATATYPE.BYTE) or (sdtype2 = IR.DATATYPE.UBYTE) ) then
-		str2len = 0
-	elseif( hIsStrFixed( sdtype2 ) ) then
-		str2len = hGetFixStrLen( str2 )
-	end if
+	STRGETLEN( str2, sdtype2, str2len )
 
     ''
     if( astNewPARAM( proc, str1, sdtype1 ) = INVALID ) then
     	exit function
     end if
-    lgt = astNewCONST( str1len, IR.DATATYPE.INTEGER )
-    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+    if( astNewPARAM( proc, astNewCONST( str1len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
     if( astNewPARAM( proc, str2, sdtype2 ) = INVALID ) then
     	exit function
     end if
-    lgt = astNewCONST( str2len, IR.DATATYPE.INTEGER )
-    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+    if( astNewPARAM( proc, astNewCONST( str2len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1444,35 +1453,24 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
     end if
 
    	''
-	str1len = -1
-	if( (sdtype1 = IR.DATATYPE.BYTE) or (sdtype1 = IR.DATATYPE.UBYTE) ) then
-		str1len = 0
-	elseif( hIsStrFixed( sdtype1 ) ) then
-		str1len = hGetFixStrLen( str1 )
-	end if
+   	STRGETLEN( str1, sdtype1, str1len )
 
-    ''
-	str2len = -1
-	if( (sdtype2 = IR.DATATYPE.BYTE) or (sdtype2 = IR.DATATYPE.UBYTE) ) then
-		str2len = 0
-	elseif( hIsStrFixed( sdtype2 ) ) then
-		str2len = hGetFixStrLen( str2 )
-	end if
+	STRGETLEN( str2, sdtype2, str2len )
 
     ''
     if( astNewPARAM( proc, str1, sdtype1 ) = INVALID ) then
     	exit function
     end if
-    lgt = astNewCONST( str1len, IR.DATATYPE.INTEGER )
-    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+    if( astNewPARAM( proc, astNewCONST( str1len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
     if( astNewPARAM( proc, str2, sdtype2 ) = INVALID ) then
     	exit function
     end if
-    lgt = astNewCONST( str2len, IR.DATATYPE.INTEGER )
-    if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+    if( astNewPARAM( proc, astNewCONST( str2len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1482,7 +1480,7 @@ end function
 
 '':::::
 function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as integer static
-    dim lgt as integer, dtype as integer
+    dim lgt as integer, ddtype as integer, sdtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
 
@@ -1493,36 +1491,37 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
 
     ''
-   	dtype = astGetDataType( dst )
+   	ddtype = astGetDataType( dst )
 
-	lgt = -1
-	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
-		lgt = 0
-	elseif( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( dst )
-	end if
-	if( astNewPARAM( proc, dst, dtype ) = INVALID ) then
+	'' dst as any
+	if( astNewPARAM( proc, dst, ddtype ) = INVALID ) then
     	exit function
     end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+	'' byval dstlen as integer
+	STRGETLEN( dst, ddtype, lgt )
+
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
    	''
-   	dtype = astGetDataType( src )
+   	sdtype = astGetDataType( src )
 
-	lgt = -1
-	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
-		lgt = 0
-	elseif( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( src )
-	end if
-	if( astNewPARAM( proc, src, dtype ) = INVALID ) then
+	'' src as any
+	if( astNewPARAM( proc, src, sdtype ) = INVALID ) then
     	exit function
     end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+	'' byval srclen as integer
+	STRGETLEN( src, sdtype, lgt )
+
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
+
+	'' byval fillrem as integer
+	if( astNewPARAM( proc, astNewCONST( ddtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1533,7 +1532,7 @@ end function
 
 '':::::
 function rtlStrAssign( byval dst as integer, byval src as integer ) as integer static
-    dim lgt as integer, dtype as integer
+    dim lgt as integer, ddtype as integer, sdtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
 
@@ -1544,36 +1543,37 @@ function rtlStrAssign( byval dst as integer, byval src as integer ) as integer s
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
 
     ''
-   	dtype = astGetDataType( dst )
+   	ddtype = astGetDataType( dst )
 
-	lgt = -1
-	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
-		lgt = 0
-	elseif( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( dst )
-	end if
-	if( astNewPARAM( proc, dst, dtype ) = INVALID ) then
+	'' dst as any
+	if( astNewPARAM( proc, dst, ddtype ) = INVALID ) then
     	exit function
     end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+	'' byval dstlen as integer
+	STRGETLEN( dst, ddtype, lgt )
+
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
    	''
-   	dtype = astGetDataType( src )
+   	sdtype = astGetDataType( src )
 
-	lgt = -1
-	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
-		lgt = 0
-	elseif( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( src )
-	end if
-	if( astNewPARAM( proc, src, dtype ) = INVALID ) then
+	'' src as any
+	if( astNewPARAM( proc, src, sdtype ) = INVALID ) then
     	exit function
     end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+
+	'' byval srclen as integer
+	STRGETLEN( src, sdtype, lgt )
+
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
+
+	'' byval fillrem as integer
+	if( astNewPARAM( proc, astNewCONST( ddtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1642,14 +1642,9 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
     '' byval strlen as integer
    	dtype = astGetDataType( strg )
 
-	lgt = -1
-	if( (dtype = IR.DATATYPE.BYTE) or (dtype = IR.DATATYPE.UBYTE) ) then
-		lgt = 0
-	elseif( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( strg )
-	end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+	STRGETLEN( strg, dtype, lgt )
+
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1920,24 +1915,18 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, by
     end if
 
 	'' byval isvarlen as integer
-	isvarlen = FALSE
-	if( symbIsString( s ) ) then
-		isvarlen = not hIsStrFixed( dtype )
-	end if
-	expr = astNewCONST( isvarlen, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = INVALID ) then
+	isvarlen = (dtype = IR.DATATYPE.STRING)
+	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval preserve as integer
-	expr = astNewCONST( dopreserve, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONST( dopreserve, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval dimensions as integer
-	expr = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONST( dimensions, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1984,9 +1973,8 @@ end function
 
 '':::::
 function rtlArrayErase( byval arrayexpr as integer ) as integer static
-    dim s as FBSYMBOL ptr
     dim proc as integer, f as FBSYMBOL ptr
-    dim typ as integer, dtype as integer, t as integer, isvarlen as integer
+    dim isvarlen as integer
     dim vr as integer
 
 	rtlArrayErase = FALSE
@@ -2001,12 +1989,8 @@ function rtlArrayErase( byval arrayexpr as integer ) as integer static
     end if
 
 	'' byval isvarlen as integer
-	isvarlen = FALSE
-	if( symbIsString( astGetSymbol( arrayexpr ) ) ) then
-		isvarlen = not hIsStrFixed( dtype )
-	end if
-	t = astNewCONST( isvarlen, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+	isvarlen = (astGetDataType( arrayexpr ) = IR.DATATYPE.STRING)
+	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -2037,10 +2021,7 @@ function rtlArrayClear( byval arrayexpr as integer ) as integer static
 	'' byval isvarlen as integer
 	dtype = symbGetType( astGetSymbol( arrayexpr ) )
 
-    isvarlen = FALSE
-	if( hIsString( dtype ) ) then
-		isvarlen = not hIsStrFixed( dtype )
-	end if
+    isvarlen = (dtype = IR.DATATYPE.STRING)
 	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
@@ -2265,9 +2246,9 @@ function rtlDataRead( byval varexpr as integer ) as integer static
 	f = NULL
 	args = 1
 	select case as const astGetDataType( varexpr )
-	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR
+	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR
 		f = ifuncTB(FB.RTL.DATAREADSTR)
-		args = 2
+		args = 3
 	case IR.DATATYPE.BYTE
 		f = ifuncTB(FB.RTL.DATAREADBYTE)
 	case IR.DATATYPE.UBYTE
@@ -2305,17 +2286,18 @@ function rtlDataRead( byval varexpr as integer ) as integer static
  		exit function
  	end if
 
-    if( args = 2 ) then
+    if( args = 3 ) then
 		'' byval dst_size as integer
-		lgt = -1
 		dtype = astGetDataType( varexpr )
-		if( hIsStrFixed( dtype ) ) then
-			lgt = hGetFixStrLen( varexpr )
-		end if
-		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-		if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+		STRGETLEN( varexpr, dtype, lgt )
+		if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  			exit function
  		end if
+
+		'' byval fillrem as integer
+		if( astNewPARAM( proc, astNewCONST( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    		exit function
+    	end if
     end if
 
     ''
@@ -2548,6 +2530,18 @@ private function hCalcExprLen( byval expr as integer, byval realsize as integer 
 	case IR.DATATYPE.DOUBLE
 		lgt = 8
 
+	case IR.DATATYPE.STRING
+		lgt = FB.STRSTRUCTSIZE
+
+	case IR.DATATYPE.FIXSTR
+		lgt = FIXSTRGETLEN( expr )
+
+	case IR.DATATYPE.CHAR
+		lgt = ZSTRGETLEN( expr )
+		if( lgt = 0 ) then
+			lgt = 1
+		end if
+
 	case IR.DATATYPE.USERDEF
 		s = astGetSymbol( expr )
 		'' if it's a type field that's an udt, no pad is ever added, realsize is always TRUE
@@ -2567,37 +2561,47 @@ private function hCalcExprLen( byval expr as integer, byval realsize as integer 
 end function
 
 '':::::
-function rtlMathLen( byval expr as integer ) as integer static
+function rtlMathLen( byval expr as integer, byval checkstrings as integer = TRUE ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, lgt as integer, s as integer
 
-
 	dtype = astGetDataType( expr )
 
-	if( hIsString( dtype ) ) then
-		f = ifuncTB(FB.RTL.STRLEN)
-    	proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
+	'' LEN()?
+	if( checkstrings ) then
+		'' dyn-len or zstring?
+		if( (dtype = IR.DATATYPE.STRING) or (dtype = IR.DATATYPE.CHAR) ) then
+			f = ifuncTB(FB.RTL.STRLEN)
+    		proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
 
-    	'' str as any
-    	astNewPARAM( proc, expr, IR.DATATYPE.STRING )
+    		'' str as any
+    		astNewPARAM( proc, expr, IR.DATATYPE.STRING )
 
-    	'' byval strlen as integer
-		lgt = -1
-		if( hIsStrFixed( dtype ) ) then
-			lgt = hGetFixStrLen( expr )
+    		'' byval strlen as integer
+			STRGETLEN( expr, dtype, lgt )
+
+			astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
+
+			rtlMathLen = proc
+			exit function
 		end if
-		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
-
-		rtlMathLen = proc
-		exit function
 	end if
 
 	''
 	lgt = hCalcExprLen( expr, FALSE )
-	astDelTree expr
+
+	'' handle fix-len strings (evaluated at compile-time)
+	if( checkstrings ) then
+		if( dtype = IR.DATATYPE.FIXSTR ) then
+			if( lgt > 0 ) then
+				lgt -= 1						'' less the null-term
+			end if
+		end if
+	end if
 
 	rtlMathLen = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+
+	astDelTree expr
 
 end function
 
@@ -2679,7 +2683,7 @@ function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval is
 
 		dtype = astGetDataType( expr )
 		select case as const dtype
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
 			f = ifuncTB(FB.RTL.PRINTSTR)
 		case IR.DATATYPE.BYTE
 			f = ifuncTB(FB.RTL.PRINTBYTE)
@@ -2816,7 +2820,7 @@ function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval ex
 
 		dtype = astGetDataType( expr )
 		select case as const dtype
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
+		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
 			f = ifuncTB(FB.RTL.WRITESTR)
 		case IR.DATATYPE.BYTE
 			f = ifuncTB(FB.RTL.WRITEBYTE)
@@ -2938,7 +2942,7 @@ function rtlPrintUsing( byval fileexpr as integer, byval expr as integer, _
 	rtlPrintUsing = FALSE
 
 	select case astGetDataType( expr )
-	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
+	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
 		f = ifuncTB(FB.RTL.PRINTUSGSTR)
 	case else
 		f = ifuncTB(FB.RTL.PRINTUSGVAL)
@@ -3118,12 +3122,8 @@ function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer s
 
     '' byval str1len as integer
 	dtype = astGetDataType( str1 )
-	lgt = -1
-	if( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( str1 )
-	end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+	STRGETLEN( str1, dtype, lgt )
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -3134,12 +3134,8 @@ function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer s
 
     '' byval str1len as integer
 	dtype = astGetDataType( str2 )
-	lgt = -1
-	if( hIsStrFixed( dtype ) ) then
-		lgt = hGetFixStrLen( str2 )
-	end if
-	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+	STRGETLEN( str2, dtype, lgt )
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -3593,8 +3589,7 @@ function rtlFilePut( byval filenum as integer, byval offset as integer, _
     if( args = 4 ) then
     	'' byval valuelen as integer
     	lgt = hCalcExprLen( src )
-    	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-    	if( astNewPARAM( proc, lgt, INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
     end if
@@ -3698,8 +3693,7 @@ function rtlFileGet( byval filenum as integer, byval offset as integer, _
     if( args = 4 ) then
     	'' byval valuelen as integer
     	lgt = hCalcExprLen( dst )
-    	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-    	if( astNewPARAM( proc, lgt, INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
     end if
@@ -3791,17 +3785,17 @@ function rtlFileLineInput( byval isfile as integer, byval expr as integer, byval
 					       byval addquestion as integer, byval addnewline as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
     dim vr as integer
-	dim lgt as integer
+	dim lgt as integer, dtype as integer
 
 	rtlFileLineInput = FALSE
 
 	''
 	if( isfile ) then
 		f = ifuncTB(FB.RTL.FILELINEINPUT)
-		args = 3
+		args = 4
 	else
 		f = ifuncTB(FB.RTL.CONSOLELINEINPUT)
-		args = 5
+		args = 6
 	end if
 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
@@ -3821,15 +3815,18 @@ function rtlFileLineInput( byval isfile as integer, byval expr as integer, byval
  	end if
 
 	'' byval dstlen as integer
-	lgt = -1
-	if( hIsStrFixed( astGetDataType( dstexpr ) ) ) then
-		lgt = hGetFixStrLen( dstexpr )
-	end if
+	dtype = astGetDataType( dstexpr )
+	STRGETLEN( dstexpr, dtype, lgt )
 	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  		exit function
  	end if
 
-    if( args = 5 ) then
+	'' byval fillrem as integer
+	if( astNewPARAM( proc, astNewCONST( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
+
+    if( args = 6 ) then
     	'' byval addquestion as integer
  		if( astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
@@ -3896,21 +3893,22 @@ end function
 '':::::
 function rtlFileInputGet( byval dstexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
-    dim vr as integer, lgt as integer
+    dim vr as integer, lgt as integer, dtype as integer
 
 	rtlFileInputGet = FALSE
 
 	''
 	args = 1
-	select case astGetDataType( dstexpr )
-	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
+	dtype = astGetDataType( dstexpr )
+	select case as const dtype
+	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
 		f = ifuncTB(FB.RTL.INPUTSTR)
-		args = 2
+		args = 3
 	case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
 		f = ifuncTB(FB.RTL.INPUTBYTE)
 	case IR.DATATYPE.SHORT, IR.DATATYPE.USHORT
 		f = ifuncTB(FB.RTL.INPUTSHORT)
-	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT, is >= IR.DATATYPE.POINTER
+	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
 		f = ifuncTB(FB.RTL.INPUTINT)
 	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 		f = ifuncTB(FB.RTL.INPUTLONGINT)
@@ -3920,6 +3918,10 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
 		f = ifuncTB(FB.RTL.INPUTDOUBLE)
 	case IR.DATATYPE.USERDEF
 		exit function							'' illegal
+	case else
+		if( dtype >= IR.DATATYPE.POINTER ) then
+			f = ifuncTB(FB.RTL.INPUTINT)
+		end if
 	end select
 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
@@ -3930,14 +3932,16 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
  	end if
 
     if( args > 1 ) then
-		lgt = -1
-		if( hIsStrFixed( astGetDataType( dstexpr ) ) ) then
-			lgt = hGetFixStrLen( dstexpr )
-		end if
-		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-		if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+		'' byval dstlen as integer
+		STRGETLEN( dstexpr, dtype, lgt )
+		if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  			exit function
  		end if
+
+		'' byval fillrem as integer
+		if( astNewPARAM( proc, astNewCONST( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    		exit function
+    	end if
     end if
 
     astFlush proc, vr

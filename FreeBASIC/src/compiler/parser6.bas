@@ -235,7 +235,7 @@ function cArrayStmt
 		end if
 
 		select case astGetDataType( expr1 )
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
+		case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR
 			cArrayStmt = rtlStrSwap( expr1, expr2 )
 		case else
 			cArrayStmt = rtlMemSwap( expr1, expr2 )
@@ -371,17 +371,35 @@ function cDataStmt
 			littext = ""
 			typ = INVALID
 
-  			if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
+			if( not cExpression( expr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			    exit function
+			end if
+
+			'' check if it's an string
+			s = NULL
+			if( astGetDataType( expr ) = IR.DATATYPE.FIXSTR ) then
+				if( astGetClass( expr ) = AST.NODECLASS.VAR ) then
+					s = astGetSymbol( expr )
+					if( not symbGetVarInitialized( s ) ) then
+						s = NULL
+					end if
+				end if
+			end if
+
+			'' string?
+			if( s <> NULL ) then
+				astDel expr
+
                 typ = FB.SYMBTYPE.FIXSTR
-				litlen  = lexTokenTextLen
-				littext = lexEatToken
+				litlen  = symbGetLen( s ) - 1 				'' less the null-char
+				littext = symbGetVarText( s )
+
+				if( symbGetAccessCnt( s ) = 0 ) then
+					symbDelVar s
+				end if
 
 			else
-			    if( not cExpression( expr ) ) then
-			    	hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			    	exit function
-			    end if
-
 				if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 					hReportError FB.ERRMSG.EXPECTEDCONST
 					exit function
@@ -1691,8 +1709,8 @@ end function
 '' 				|   STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''
 function cStringFunct( funcexpr as integer )
-    dim expr1 as integer, expr2 as integer, expr3 as integer
-    dim dclass as integer
+    dim as integer expr1, expr2, expr3
+    dim as integer dclass, dtype
 
 	cStringFunct = FALSE
 
@@ -1731,9 +1749,10 @@ function cStringFunct( funcexpr as integer )
 			exit function
 		end if
 
-		dclass = astGetDataClass( expr1 )
+		dtype = astGetDataType( expr1 )
+		dclass = irGetDataClass( dtype )
 		'' (Expression{int} ',' Expression{str} ',' Expression{str})
-		if( (dclass = IR.DATACLASS.INTEGER) or (dclass = IR.DATACLASS.FPOINT) ) then
+		if( (dclass <> IR.DATACLASS.STRING) and (dtype <> IR.DATATYPE.CHAR) ) then
 			if( not hMatch( CHAR_COMMA ) ) then
 				hReportError FB.ERRMSG.EXPECTEDCOMMA
 				exit function
@@ -1869,7 +1888,7 @@ end function
 ''				|	LEN( data type | Expression ) .
 ''
 function cMathFunct( funcexpr as integer )
-    dim expr as integer
+    dim expr as integer, islen as integer
     dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
     dim sym as FBSYMBOL ptr
 
@@ -1956,8 +1975,9 @@ function cMathFunct( funcexpr as integer )
 	'' INT( Expression ) is implemented by libc's floor( )
 
 
-	'' LEN( data type | Expression{idx-less arrays too} )
-	case FB.TK.LEN
+	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
+	case FB.TK.LEN, FB.TK.SIZEOF
+		islen = (lexCurrentToken = FB.TK.LEN)
 		lexSkipToken
 
 		if( not hMatch( CHAR_LPRNT ) ) then
@@ -1976,18 +1996,31 @@ function cMathFunct( funcexpr as integer )
 			env.varcheckarray = TRUE
 		end if
 
+		'' string expressions with SIZEOF() are not allowed
+		if( expr <> INVALID ) then
+			if( not islen ) then
+				if( astGetDataClass( expr ) = IR.DATACLASS.STRING ) then
+					if( (astGetSymbol( expr ) = NULL) or (astGetClass( expr ) = AST.NODECLASS.FUNCT) ) then
+						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER, TRUE
+						exit function
+					end if
+				end if
+			end if
+		end if
+
 		if( not hMatch( CHAR_RPRNT ) ) then
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
 		end if
 
 		if( expr <> INVALID ) then
-			funcexpr = rtlMathLen( expr )
+			funcexpr = rtlMathLen( expr, islen )
 		else
 			funcexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 		end if
 
 		cMathFunct = TRUE
+
 	end select
 
 end function
@@ -2293,7 +2326,7 @@ function cQuirkFunction( funcexpr as integer )
 	select case as const lexCurrentToken
 	case FB.TK.STR, FB.TK.INSTR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
 		res = cStringFunct( funcexpr )
-	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN
+	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN, FB.TK.SIZEOF
 		res = cMathFunct( funcexpr )
 	case FB.TK.PEEK
 		res = cPeekFunct( funcexpr )
