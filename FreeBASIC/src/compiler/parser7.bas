@@ -1153,6 +1153,11 @@ function cGfxPoint( funcexpr as integer ) as integer
 		end if
 	end if
 	
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+
 	funcexpr = rtlGfxPoint( texpr, tisptr, xexpr, yexpr )
 	
 	cGfxPoint = TRUE
