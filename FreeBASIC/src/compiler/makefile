@@ -91,10 +91,5 @@ $(TARGET) : $(objects) $(osdepobjs)
 
 .PHONY : clean
 clean :
-ifeq ($(osdeppath),win32)
-	del $(subst /,\,$(objects))
-	del $(subst /,\,$(TARGET))
-else
 	rm -f $(objects)
 	rm -f $(TARGET)
-endif

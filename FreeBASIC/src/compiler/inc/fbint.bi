@@ -128,6 +128,8 @@ const CHAR_NULL   	= 00, _
       CHAR_LLOW  	= 108, _
       CHAR_OUPP    	= 79, _
       CHAR_OLOW    	= 111, _
+      CHAR_UUPP    	= 85, _
+      CHAR_ULOW  	= 117, _
       CHAR_ZUPP    	= 90, _
       CHAR_ZLOW  	= 122, _
 	  CHAR_NLOW		= 110, _
@@ -623,6 +625,7 @@ end type
 
 type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
+	realtype		as integer					'' used with STRING and UDT functions
 	lib				as FBLIBRARY ptr
 	args			as integer
 	arghead 		as FBSYMBOL_ ptr

@@ -1057,7 +1057,7 @@ function symbAddVar( byval symbol as string, byval typ as integer, byval subtype
 end function
 
 '':::::
-function symbAddTempVar( byval typ as integer ) as FBSYMBOL ptr static
+function symbAddTempVar( byval typ as integer, byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr static
 	dim sname as string, s as FBSYMBOL ptr, alloctype as integer
     dim dTB(0) as FBARRAYDIM
 
@@ -1068,7 +1068,7 @@ function symbAddTempVar( byval typ as integer ) as FBSYMBOL ptr static
 		alloctype = alloctype or FB.ALLOCTYPE.STATIC
 	end if
 
-	s = symbAddVar( sname, typ, NULL, 0, 0, dTB(), alloctype )
+	s = symbAddVar( sname, typ, subtype, 0, 0, dTB(), alloctype )
 
 	symbAddTempVar = s
 
@@ -1556,6 +1556,81 @@ function symbAddArg( byval symbol as string, byval tail as FBSYMBOL ptr, _
 end function
 
 '':::::
+private function hGetProcRealType( byval typ as integer, _
+								   byval subtype as FBSYMBOL ptr ) as integer static
+
+    dim as integer lgt
+
+    select case typ
+    '' string? it's actually a pointer to a string descriptor
+    case FB.SYMBTYPE.STRING
+    	 hGetProcRealType = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.STRING
+
+    '' UDT? follow GCC 3.x's ABI
+    case FB.SYMBTYPE.USERDEF
+
+    	'' assume it will be returned by address
+		hGetProcRealType = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF
+
+		'' get the un-padded UDT len
+		lgt = symbGetUDTLen( subtype, FALSE )
+
+		select case as const lgt
+		case 1
+			hGetProcRealType = FB.SYMBTYPE.BYTE
+
+		case 2
+			hGetProcRealType = FB.SYMBTYPE.SHORT
+
+		case 3
+			'' return as int only if first is a short
+			if( subtype->udt.head->lgt = 2 ) then
+				'' and if the struct is not packed
+				if( subtype->lgt >= FB.INTEGERSIZE ) then
+					hGetProcRealType = FB.SYMBTYPE.INTEGER
+				end if
+			end if
+
+		case FB.INTEGERSIZE
+			hGetProcRealType = FB.SYMBTYPE.INTEGER
+
+			'' return in ST(0) if there's only one element and it's a SINGLE
+			if( subtype->udt.elements = 1 ) then
+				if( subtype->udt.head->typ = FB.SYMBTYPE.SINGLE ) then
+					hGetProcRealType = FB.SYMBTYPE.SINGLE
+				end if
+			end if
+
+		case FB.INTEGERSIZE + 1, FB.INTEGERSIZE + 2, FB.INTEGERSIZE + 3
+			'' return as longint only if first is a int
+			if( subtype->udt.head->lgt = FB.INTEGERSIZE ) then
+				'' and if the struct is not packed
+				if( subtype->lgt >= FB.INTEGERSIZE*2 ) then
+					hGetProcRealType = FB.SYMBTYPE.LONGINT
+				end if
+			end if
+
+		case FB.INTEGERSIZE*2
+			hGetProcRealType = FB.SYMBTYPE.LONGINT
+
+			'' return in ST(0) if there's only one element and it's a DOUBLE
+			if( subtype->udt.elements = 1 ) then
+				if( subtype->udt.head->typ = FB.SYMBTYPE.DOUBLE ) then
+					hGetProcRealType = FB.SYMBTYPE.DOUBLE
+				end if
+			end if
+
+		end select
+
+	'' type is the same
+	case else
+    	hGetProcRealType = typ
+
+	end select
+
+end function
+
+'':::::
 private function hSetupProc( byval symbol as string, byval aliasname as string, byval libname as string, _
 				             byval typ as integer, byval subtype as FBSYMBOL ptr, _
 				             byval ptrcnt as integer, byval alloctype as integer, _
@@ -1563,10 +1638,9 @@ private function hSetupProc( byval symbol as string, byval aliasname as string, 
 				             byval argc as integer, byval argtail as FBSYMBOL ptr, _
 			                 byval declaring as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    dim lgt as integer
-    dim f as FBSYMBOL ptr, a as FBSYMBOL ptr
-    dim sname as string, aname as string
-    dim i as integer
+    dim as integer lgt, i, realtype
+    dim as FBSYMBOL ptr f, a
+    dim as string sname, aname
 
     hSetupProc = NULL
 
@@ -1575,6 +1649,8 @@ private function hSetupProc( byval symbol as string, byval aliasname as string, 
 		typ = hGetDefType( symbol )
 		subtype = NULL
 	end if
+
+    realtype = hGetProcRealType( typ, subtype )
 
     lgt = hCalcProcArgsLen( argc, argtail )
 
@@ -1605,10 +1681,19 @@ private function hSetupProc( byval symbol as string, byval aliasname as string, 
 
     ''
 	f->alloctype	= alloctype or FB.ALLOCTYPE.SHARED
+
+    '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
+    if( typ = FB.SYMBTYPE.USERDEF ) then
+    	if( realtype = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF ) then
+    		lgt += FB.POINTERSIZE
+    	end if
+    end if
+
 	f->lgt			= lgt
 
 	f->proc.isdeclared = declaring
 	f->proc.mode	= mode
+	f->proc.realtype= realtype
 
 	if( len( libname ) > 0 ) then
 		f->proc.lib = symbAddLib( libname )
@@ -1701,8 +1786,6 @@ function symbAddArgAsVar( byval symbol as string, byval arg as FBSYMBOL ptr ) as
 
     s = symbAddVarEx( symbol, "", typ, arg->subtype, 0, 0, _
     				  0, dTB(), alloctype, arg->arg.suffix <> INVALID, FALSE, TRUE )
-
-    'print s->hashitem->name, s->alias, s->typ, s->subtype, s->alloctype
 
     if( s = NULL ) then
     	exit function

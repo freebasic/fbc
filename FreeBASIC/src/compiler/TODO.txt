@@ -3,11 +3,6 @@
 
 [ ] make PUT# and GET# accept a 4th option argument: bytes
 
-[ ] allow structs to be returned (must follow gcc's abi) -- how to handle foo = bar() if bar()
-    actually returns a ptr to the hidden argument passed? and worst.. GCC will return ANY struct
-    <= 8 bytes in EAX:EDX (and with an unique FP field in ST(0)!), what means things will become
-    weird when asssigning them to real UDT's, as UDT's have no data class to AST/IR/EMIT deal with
-
 [ ] make the runtime lib thread safe
 
 [ ] OPTION's should be preserved when changed inside include files

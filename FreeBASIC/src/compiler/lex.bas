@@ -793,17 +793,30 @@ private sub lexReadNumber( byval pnum as zstring ptr, typ as integer, tlen as in
 	if( not isfloat ) then
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 
+			'' 'U' | 'u'
+			select case lexCurrentChar
+			case CHAR_UUPP, CHAR_ULOW
+				lexEatChar
+				typ = FB.SYMBTYPE.UINT
+			end select
+
 			select case as const lexCurrentChar
 			'' 'L' | 'l'
 			case CHAR_LUPP, CHAR_LLOW
 				lexEatChar
-				typ = FB.SYMBTYPE.INTEGER
+				if( typ <> FB.SYMBTYPE.UINT ) then
+					typ = FB.SYMBTYPE.INTEGER
+				end if
 
 				'' 'LL'?
 				c = lexCurrentChar
 				if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 					lexEatChar
-					typ = FB.SYMBTYPE.LONGINT
+					if( typ <> FB.SYMBTYPE.UINT ) then
+						typ = FB.SYMBTYPE.LONGINT
+					else
+						typ = FB.SYMBTYPE.ULONGINT
+					end if
 				end if
 
 			'' '%' | '&'

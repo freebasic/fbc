@@ -2367,8 +2367,8 @@ function cSubOrFuncDecl( byval isSub as integer ) static
     	'' check for invalid types
     	select case typ
     	case FB.SYMBTYPE.USERDEF
-    		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
-    		exit function
+    		'hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
+    		'exit function
     	case FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
     		hReportError FB.ERRMSG.CANNOTRETURNFIXLENFROMFUNCTS
     		exit function
@@ -2601,6 +2601,13 @@ function cArgDecl( byval procmode as integer, _
 
     '' ('=' (NUM_LIT|STR_LIT))?
     if( hMatch( FB.TK.ASSIGN ) ) then
+
+    	'' not byval or byref?
+    	if( (amode <> FB.ARGMODE.BYVAL) and (amode <> FB.ARGMODE.BYREF) ) then
+ 	   		hReportParamError argc, id
+    		exit function
+    	end if
+
     	dclass = irGetDataClass( atype )
 
     	if( dclass <> IR.DATACLASS.INTEGER ) then
@@ -3161,7 +3168,7 @@ end function
 '':::::
 ''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
 ''                |   ID ProcParamList?
-''				  |	  ID '=' Expression .						!!QB quirk!!
+''				  |	  (ID | FUNCTION) '=' Expression .
 ''
 function cProcCallOrAssign
 	dim s as FBSYMBOL ptr, expr as integer
@@ -3213,6 +3220,28 @@ function cProcCallOrAssign
 
 		end if
 
+	'' FUNCTION?
+	case FB.TK.FUNCTION
+		'' '='?
+		if( lexLookAhead(1) = FB.TK.ASSIGN ) then
+			if( env.currproc = NULL ) then
+				hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+				exit function
+			end if
+
+			lexSkipToken
+			lexSkipToken
+
+			'' Expression
+			if( not cExpression( expr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+
+        	if( not hAssignFunctResult( env.currproc, expr ) ) then
+        		exit function
+        	end if
+		end if
 	end select
 
 end function

@@ -121,7 +121,8 @@ declare function 	symbAddVarEx			( byval symbol as string, byval aliasname as st
 				       						  byval alloctype as integer, _
 				       						  byval addsuffix as integer, byval preservecase as integer, _
 				       						  byval clearname as integer ) as FBSYMBOL ptr
-declare function 	symbAddTempVar			( byval typ as integer ) as FBSYMBOL ptr
+declare function 	symbAddTempVar			( byval typ as integer, _
+											  byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr
 declare function 	symbAddConst			( byval symbol as string, byval typ as integer, _
 											  byval text as string, byval lgt as integer ) as FBSYMBOL ptr
 declare function 	symbAddUDT				( byval symbol as string, byval isunion as integer, byval align as integer ) as FBSYMBOL ptr
