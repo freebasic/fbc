@@ -83,7 +83,8 @@ static NODE F1[] = { { '~', KEY_F1, NULL }, { 0 } },
 	    		  { '4', 0, End }, { '5', 0, PageUp }, { '6', 0, PageDown }, { 0, KEY_TAB, NULL },
 	    		  { 0, KEY_BACKSPACE, NULL }, { 0 } },
 	    X11[] = { { 'P', KEY_F1, NULL }, { 'Q', KEY_F2, NULL }, { 'R', KEY_F3, NULL }, { 'S', KEY_F4, NULL },
-	    	      { 'F', KEY_END, NULL }, { 'H', KEY_HOME, NULL }, { 0 } },
+	    	      { 'F', KEY_END, NULL }, { 'H', KEY_HOME, NULL }, { 'A', KEY_UP, NULL }, { 'B', KEY_DOWN, NULL },
+	    	      { 'C', KEY_RIGHT, NULL }, { 'D', KEY_LEFT, NULL }, { 0 } },
 	    Sequence[] = { { '[', 0, Console }, { 0, 0, X11 }, { 0 } };
 
 
@@ -99,6 +100,8 @@ int fb_hGetCh()
 		return -1;
 	if (k == 0x7F)
 		k = 8;
+	if (k == '\n')
+		k = '\r';
 	if (k == '\e') {
 		k = fgetc(fb_con.f_in);
 		if (k == EOF)
