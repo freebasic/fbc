@@ -15,6 +15,7 @@ const SCR_HEIGHT= 600
 const SCR_BPP   = 16
 
 declare sub blitImage (byval img as SDL_Surface ptr, byval x as integer, byval y as integer)
+declare function fibitmap2sdlsurface( byval dib as FIBITMAP Ptr ) as SDL_Surface ptr
 
 	dim dib As FIBITMAP Ptr
 	dim fiVersion As String
@@ -104,11 +105,7 @@ declare sub blitImage (byval img as SDL_Surface ptr, byval x as integer, byval y
 	dim shared video as SDL_Surface ptr
 	dim srcimg as SDL_Surface ptr
 
-	srcimg = SDL_CreateRGBSurfaceFrom( FreeImage_GetBits( dib ), _
-									   FreeImage_GetWidth( dib ), FreeImage_GetHeight( dib ), _
-									   FreeImage_GetBPP( dib ), _
-									   FreeImage_GetPitch( dib ), _
-									   FreeImage_GetRedMask( dib ), FreeImage_GetGreenMask( dib ), FreeImage_GetBlueMask( dib ), 0 )
+	srcimg = fibitmap2sdlsurface( dib )
 
 	if( srcimg = NULL ) then
    		print "Couldn't create surface"
@@ -200,3 +197,45 @@ sub blitImage (byval img as SDL_Surface ptr, byval x as integer, byval y as inte
    	dest.y = y
    	SDL_BlitSurface( img, 0, video, @dest )
 end sub
+
+'':::::
+sub fipal2sdlpal( byval dib as FIBITMAP Ptr, byval surface as SDL_Surface ptr )
+	dim pal as RGBQUAD ptr
+	dim colors as integer
+	dim intpal(0 to 255) as SDL_Color
+	dim i as integer
+	
+	pal = FreeImage_GetPalette( dib )
+	colors = FreeImage_GetColorsUsed( dib )
+	
+	for i = 0 to colors-1
+		intpal(i).r = pal->rgbRed
+		intpal(i).g = pal->rgbGreen
+		intpal(i).b = pal->rgbBlue
+		pal = pal + len( RGBQUAD )
+	next i
+		
+	SDL_SetColors( surface, @intpal(0), 0, colors )
+	
+end sub
+
+'':::::
+function fibitmap2sdlsurface( byval dib as FIBITMAP Ptr ) as SDL_Surface ptr
+	dim surface as SDL_Surface ptr
+	
+	surface = SDL_CreateRGBSurfaceFrom( FreeImage_GetBits( dib ), _
+										FreeImage_GetWidth( dib ), FreeImage_GetHeight( dib ), _
+										FreeImage_GetBPP( dib ), _
+										FreeImage_GetPitch( dib ), _
+										FreeImage_GetRedMask( dib ), FreeImage_GetGreenMask( dib ), FreeImage_GetBlueMask( dib ), 0 )
+
+	
+	if( surface <> NULL ) then
+		if( FreeImage_GetPalette( dib ) <> NULL ) then
+			fipal2sdlpal dib, surface
+		end if
+	end if
+
+	fibitmap2sdlsurface = surface
+
+end function
