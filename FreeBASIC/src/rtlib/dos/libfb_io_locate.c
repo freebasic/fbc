@@ -26,6 +26,9 @@
 
 #include "fb.h"
 #include <conio.h>
+#include <go32.h>
+#include <pc.h>
+#include <sys/farptr.h>
 
 /*:::::*/
 void fb_ConsoleLocate( int row, int col, int cursor )
@@ -79,3 +82,16 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 		*row = r + 1;
 }
 
+/*:::::*/
+FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
+{
+	unsigned short word;
+	
+	word = _farpeekw(_dos_ds, ScreenPrimary + (((row - 1) * ScreenCols() + (col - 1)) << 1));
+	
+	if (colorflag) {
+		return (word >> 8) & 0xFF;
+	} else {
+		return word & 0xFF;
+	}
+}
