@@ -260,6 +260,8 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int flags)
 /*:::::*/
 void fb_hWin32Exit(void)
 {
+	if (!fb_win32.is_running)
+		return;
 	fb_win32.is_running = FALSE;
 	WaitForSingleObject(handle, INFINITE);
 	CloseHandle(fb_win32.vsync_event);
