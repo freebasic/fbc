@@ -200,7 +200,7 @@ extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags);
 extern FBCALL void fb_GfxPalette(int index, unsigned int color);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
-extern FBCALL int fb_GfxPaletteIn(int port);
+extern FBCALL int fb_GfxPaletteInp(int port);
 extern FBCALL int fb_GfxRgb(unsigned char r, unsigned char g, unsigned char b);
 extern FBCALL void fb_GfxPset(float x, float y, int color, int coord_type);
 extern FBCALL int fb_GfxPoint(float x, float y);

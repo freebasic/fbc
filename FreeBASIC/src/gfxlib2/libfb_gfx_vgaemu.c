@@ -31,15 +31,15 @@ static int index = 0, shift = 2, color = 0;
 
 
 /*:::::*/
-FBCALL int fb_GfxPaletteIn(int port)
+FBCALL int fb_GfxPaletteInp(int port)
 {
 	int value;
-	
+
 	if (!fb_mode)
 		return;
-	
+
 	switch (port) {
-		
+
 		case 0x3C9:
 			value = (fb_mode->palette[index] >> shift) & 0x3F;
 			shift += 8;
@@ -50,7 +50,7 @@ FBCALL int fb_GfxPaletteIn(int port)
 			}
 			break;
 	}
-	
+
 	return value;
 }
 
@@ -60,18 +60,18 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 {
 	if (!fb_mode)
 		return;
-	
+
 	value &= 0xFF;
-	
+
 	switch (port) {
-	
+
 		case 0x3C7:
 		case 0x3C8:
 			index = value;
 			shift = 2;
 			color = 0;
 			break;
-		
+
 		case 0x3C9:
 			color |= ((value & 0x3F) << shift);
 			shift += 8;
