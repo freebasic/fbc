@@ -27,11 +27,7 @@ const INVALID		= -1
 #define FB.SIGN					"FreeBASIC v0.11b"
 
 '' paths
-#ifdef TARGET_WIN32
-const FB.BINPATH$				= "\\bin\\"
-const FB.INCPATH$				= "\\inc\\"
-const FB.LIBPATH$				= "\\lib"
-#elseif defined(TARGET_DOS)
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
 const FB.BINPATH$				= "\\bin\\"
 const FB.INCPATH$				= "\\inc\\"
 const FB.LIBPATH$				= "\\lib"
@@ -132,6 +128,7 @@ enum FBERRMSG_ENUM
 	FB.ERRMSG.EXPECTEDARRAY
 	FB.ERRMSG.EXPECTEDLBRACKET
 	FB.ERRMSG.EXPECTEDRBRACKET
+	FB.ERRMSG.TOOMANYEXPRESSIONS
 end enum
 
 enum FBWARNINGMSG_ENUM

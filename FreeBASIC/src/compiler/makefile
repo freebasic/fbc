@@ -29,12 +29,14 @@ ifeq ($(OS),DOS)
     PLATFORM = DOS
 endif
 
+BCFLAGS := -e -c -w 1
+
 ifeq ($(PLATFORM),WIN32)
     EXE := .exe
     LDFLAGS := -T ../../bin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib -( -lcrtdll -lfb -lkernel32 -luser32 -)
     BC := ..\..\fbc.exe
-    BCFLAGS := -e -c -d TARGET_WIN32 -g
+    BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
     LD := ..\..\bin\ld.exe
 endif
 
@@ -43,7 +45,7 @@ ifeq ($(PLATFORM),LINUX)
     LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
     LDLIBS := -L../../lib -\( -lc -lm -lfb-nocurses -\)
     BC := ../../fbc
-    BCFLAGS := -e -c -d TARGET_LINUX
+    BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
     LD := ld
 endif
 
@@ -52,7 +54,7 @@ endif
 #    LDFLAGS := -T ../../bin/i386go32.x -s
 #    LDLIBS := -L../../lib -( -lcrt -lfb -)
 #    BC := ..\..\fbc.exe
-#    BCFLAGS := -e -c -d TARGET_DOS
+#    BCFLAGS := $(BCFLAGS) -d TARGET_DOS
 #    LD := ..\..\bin\ld.exe
 #endif
 
@@ -62,7 +64,7 @@ ifeq ($(PLATFORM),DOS)
     LDFLAGS := -T ../../bin/winbin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib/winlib -( -lcrtdll -lfb -lkernel32 -luser32 -)
     BC := ..\..\fbc.exe
-    BCFLAGS := -e -c -d TARGET_DOS
+    BCFLAGS := $(BCFLAGS) -d TARGET_DOS
     LD := ..\..\bin\winbin\ld.exe
 endif
 

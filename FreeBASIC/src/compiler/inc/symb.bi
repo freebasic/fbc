@@ -26,11 +26,10 @@ declare sub 		symbEnd					( )
 declare function 	symbLookupSentinel		( id as string, byval class as integer, byval islocal as integer ) as FBSENTINEL ptr
 declare function 	symbLookupDefine		( id as string ) as FBDEFINE ptr
 declare function 	symbLookupVar			( symbol as string, typ as integer, ofs as integer, _
-											  elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function 	symbLookupVarEx			( symbol as string, typ as integer, ofs as integer, _
 											  elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, _
-											  byval addsuffix as integer, byval preservecase as integer, _
-											  byval clearname as integer ) as FBSYMBOL ptr
+											  byval addsuffix as integer = TRUE, _
+											  byval preservecase as integer = FALSE, _
+											  byval clearname as integer = TRUE ) as FBSYMBOL ptr
 declare function 	symbLookupProc			( id as string ) as FBSYMBOL ptr
 declare function 	symbLookupLabel			( label as string ) as FBSYMBOL ptr
 declare function 	symbLookupConst			( constname as string, byval typ as integer ) as FBSYMBOL ptr

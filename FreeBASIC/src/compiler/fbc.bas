@@ -233,10 +233,8 @@ function assembleFiles as integer
 	assembleFiles = FALSE
 
     ''
-#ifdef TARGET_WIN32
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
     aspath = exepath$ + FB.BINPATH + "as.exe"
-#elseif defined(TARGET_DOS)
-    aspath = exepath$ + FB.BINPATH + "as-dos.exe"
 #elseif defined(TARGET_LINUX)
 	aspath = "as"
 #endif
@@ -308,7 +306,7 @@ function linkFiles as integer
 		case FB_OUTTYPE_DYNAMICLIB
 			ctx.outname = hStripFilename( ctx.outname ) + "lib" + hStripPath( ctx.outname ) + ".so"
 		end select
-		
+
 #elseif defined(TARGET_DOS)
 		select case ctx.outtype
 		case FB_OUTTYPE_EXECUTABLE
@@ -363,7 +361,7 @@ function linkFiles as integer
 	if( ctx.outtype = FB_OUTTYPE_EXECUTABLE) then
 		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
 	end if
-	
+
 #elseif defined(TARGET_DOS)
 
     '' set script file
@@ -443,7 +441,7 @@ function linkFiles as integer
     for i = 0 to ctx.objs-1
     	ldcline = ldcline + QUOTE + objlist(i) + "\" "
     next i
-    
+
 #ifdef TARGET_DOS
     '' add entry point wrapper
     mainobj = hStripExt(ctx.outname) + ".~~~"
@@ -520,11 +518,11 @@ function linkFiles as integer
     open respfile for output as #f
     print #f, ldcline
     close #f
-    
+
     if (exec(ldpath, "@" + respfile) <> 0) then
         exit function
     end if
-    
+
     '' delete temporary files
     kill respfile
     kill mainobj
@@ -697,10 +695,8 @@ function archiveFiles as integer
        print "archiving: ", arcline
     end if
 
-#ifdef TARGET_WIN32
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
 	arcpath = exepath$ + FB.BINPATH + "ar.exe"
-#elseif defined(TARGET_DOS)
-    arcpath = exepath$ + FB.BINPATH + "ar.exe"
 #elseif defined(TARGET_LINUX)
 	arcpath = "ar"
 #endif
@@ -1179,9 +1175,9 @@ function makeMain ( main_obj as string ) as integer
     if f = 0 then exit function
 
     asm_file = hStripExt(main_obj) + ".s~~"
-    
+
     open asm_file for output as #f
-    
+
     print #f, ".section .text"
     print #f, ".globl _main"
     print #f, "_main:"
@@ -1195,22 +1191,22 @@ function makeMain ( main_obj as string ) as integer
 
 	'' jump to real entry point ( will ret to crt startup code )
     print #f, "jmp " + ctx.entrypoint
-    
+
     close #f
-    
+
     ascline = "--strip-local-absolute \"" + asm_file + "\" -o \"" + main_obj + QUOTE
-    
+
     '' invoke as
     if (ctx.verbose) then
         print "assembling: ", ascline
     end if
-    
+
     if (exec(aspath, ascline) <> 0) then
         exit function
     end if
-    
+
     kill asm_file
-    
+
     makeMain = TRUE
 
 end function
