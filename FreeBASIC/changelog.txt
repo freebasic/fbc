@@ -68,6 +68,9 @@ Version 0.12 Beta:
 [fixed] all quirk routines now check for invalid parameters (v1c)
 [fixed] REDIM now checks for run-time errors (out-of-mem) (v1c)
 [fixed] INPUT quirks: comma separates all items, white-spaces won't separate strings, etc (v1c)
+[fixed] PRINT and WRITE shouldn't allow UDT's as parameter, same with INPUT (v1c)
+[fixed] COMMON arrays wouldn't be redimensioned when a REDIM was used (v1c)
+[fixed] integer division and modulo could gen bad code if pointers or indexes were used with EAX as the index reg (v1c)
 
 
 Version 0.11 Beta:
