@@ -106,7 +106,7 @@ static int calc_comp_height( int h )
 	else if( h < 480 )
 		return 480;
 	else if( h < 600 )
-		return 480;
+		return 600;
 	else if( h < 768 )
 		return 768;
 	else if( h < 1024 )
