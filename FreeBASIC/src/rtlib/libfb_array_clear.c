@@ -18,29 +18,25 @@
  */
 
 /*
- * array_erase.c -- erase function for dynamic arrays
+ * array_clear.c -- erase function for static arrays
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
 #include <malloc.h>
-#include <stdarg.h>
 #include "fb.h"
 
 
 /*:::::*/
-FBCALL void fb_ArrayErase( FBARRAY *array, int isvarlen )
+FBCALL void fb_ArrayClear( FBARRAY *array, int isvarlen )
 {
     if( array->ptr != NULL )
     {
-    	if( isvarlen != 0 )
+    	if( isvarlen == FB_FALSE )
+    		memset( array->ptr, 0, array->size );
+    	else
     		fb_hArrayFreeVarLenStrs( array );
 
-    	free( array->ptr );
-    	array->ptr  = NULL;
-    	array->data = NULL;
     }
 }
-
-

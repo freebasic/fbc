@@ -124,9 +124,9 @@ end function
 ''				  |   SWAP Variable, Variable .
 ''
 function cArrayStmt
-	dim s as FBSYMBOL ptr, ofs as integer, typ as integer
-	dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
+	dim s as FBSYMBOL ptr, elm as FBTYPELEMENT ptr
 	dim expr1 as integer, expr2 as integer
+	dim isarray as integer, isdynamic as integer
 
 	cArrayStmt = FALSE
 
@@ -134,22 +134,39 @@ function cArrayStmt
 	case FB.TK.ERASE
 		lexSkipToken
 
-		typ = lexTokenType
-		s = symbLookupVar( lexTokenText, typ, ofs, elm, typesymbol )
-		if( s = NULL ) then
+		if( not cVariable( expr1, FALSE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
 		end if
 
-		'' array and dynamic?
-		if( not symbIsArray( s ) or not symbGetVarIsDynamic( s ) ) then
-			hReportError FB.ERRMSG.EXPECTEDDYNAMICARRAY
+		'' array?
+		isarray = FALSE
+    	elm = astGetUDTElm( expr1 )
+    	if( elm <> NULL ) then
+    		if( symbGetUDTElmDimensions( elm ) > 0 ) then
+    			isdynamic = FALSE
+    			isarray = TRUE
+    		end if
+    	else
+    		s = astGetSymbol( expr1 )
+    		if( symbIsArray( s ) ) then
+    			isdynamic = symbGetVarIsDynamic( s )
+    			isarray = TRUE
+    		end if
+    	end if
+
+		if( not isarray ) then
+			hReportError FB.ERRMSG.EXPECTEDARRAY
 			exit function
 		end if
 
 		lexSkipToken
 
-		rtlArrayErase s
+		if( isdynamic ) then
+			rtlArrayErase expr1
+		else
+			rtlArrayClear expr1
+		end if
 
 		cArrayStmt = TRUE
 

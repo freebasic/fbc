@@ -27,6 +27,7 @@ enum FBRTL_ENUM
 
 	FB.RTL.ARRAYREDIM
 	FB.RTL.ARRAYERASE
+	FB.RTL.ARRAYCLEAR
 	FB.RTL.ARRAYLBOUND
 	FB.RTL.ARRAYUBOUND
 	FB.RTL.ARRAYSETDESC
@@ -169,7 +170,8 @@ declare function 	rtlStrFill			( byval expr1 as integer, byval expr2 as integer 
 declare sub 		rtlArrayRedim		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 									  	  byval dimensions as integer, exprTB() as integer, _
 									  	  byval dopreserve as integer )
-declare sub 		rtlArrayErase		( byval s as FBSYMBOL ptr )
+declare sub 		rtlArrayErase		( byval arrayexpr as integer )
+declare sub 		rtlArrayClear		( byval arrayexpr as integer )
 declare function 	rtlArrayBound		( byval sexpr as integer, byval dimexpr as integer, byval islbound as integer ) as integer
 declare sub 		rtlArraySetDesc		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 										  byval dimensions as integer, dTB() as FBARRAYDIM )

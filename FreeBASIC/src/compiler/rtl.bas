@@ -104,6 +104,10 @@ data "fb_ArrayRedim","", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 6, _
 data "fb_ArrayErase","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as void
+data "fb_ArrayClear","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer
 data "fb_ArrayLBound","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
 						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
@@ -1451,8 +1455,8 @@ sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval d
 end sub
 
 '':::::
-sub rtlArrayErase( byval s as FBSYMBOL ptr ) static
-
+sub rtlArrayErase( byval arrayexpr as integer ) static
+    dim s as FBSYMBOL ptr
     dim proc as integer, f as FBSYMBOL ptr
     dim typ as integer, dtype as integer, t as integer, isvarlen as integer
     dim vr as integer
@@ -1462,18 +1466,52 @@ sub rtlArrayErase( byval s as FBSYMBOL ptr ) static
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' array() as ANY
-    typ = symbGetType( s )
-    dtype =  hStyp2Dtype( typ )
-	t = astNewVAR( s, 0, dtype )
-    astNewPARAM( proc, t, dtype )
+    if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = INVALID ) then
+    	exit sub
+    end if
 
 	'' byval isvarlen as integer
 	isvarlen = FALSE
-	if( symbIsString( s ) ) then
+	if( symbIsString( astGetSymbol( arrayexpr ) ) ) then
 		isvarlen = not hIsStrFixed( dtype )
 	end if
 	t = astNewCONST( isvarlen, IR.DATATYPE.INTEGER )
 	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+
+    ''
+	astFlush proc, vr
+
+end sub
+
+'':::::
+sub rtlArrayClear( byval arrayexpr as integer ) static
+    dim e as FBTYPELEMENT ptr
+    dim proc as integer, f as FBSYMBOL ptr
+    dim isvarlen as integer, dtype as integer
+    dim vr as integer
+
+	''
+	f = ifuncTB(FB.RTL.ARRAYCLEAR)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
+
+    '' array() as ANY
+    if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = INVALID ) then
+    	exit sub
+    end if
+
+	'' byval isvarlen as integer
+	e = astGetUDTElm( arrayexpr )
+	if( e <> NULL ) then
+		dtype = symbGetUDTElmType( e )
+	else
+		dtype = symbGetType( astGetSymbol( arrayexpr ) )
+	end if
+
+    isvarlen = FALSE
+	if( hIsString( dtype ) ) then
+		isvarlen = not hIsStrFixed( dtype )
+	end if
+	astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
 
     ''
 	astFlush proc, vr
