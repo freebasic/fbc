@@ -5,4 +5,5 @@ mkdir -p -m 0755 /usr/share/freebasic/lib
 cp lib/* /usr/share/freebasic/lib
 cp -r inc/* /usr/share/freebasic/inc
 cp fbc /usr/share/freebasic/bin
+rm -f /usr/bin/fbc
 (cd /usr/bin; ln -s /usr/share/freebasic/bin/fbc fbc)
