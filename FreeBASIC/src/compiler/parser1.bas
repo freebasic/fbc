@@ -2575,13 +2575,13 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
     	'' check for invalid args
     	if( isproto ) then
     		select case arg.typ
-    		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.USERDEF
+    		case FB.SYMBTYPE.VOID
     			hReportParamError argc, id
     			exit function
     		end select
     	else
     		select case arg.typ
-    		case FB.SYMBTYPE.STRING, FB.SYMBTYPE.USERDEF
+    		case FB.SYMBTYPE.STRING
     			hReportParamError argc, id
     			exit function
     		end select
@@ -2591,7 +2591,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
     	case FB.SYMBTYPE.STRING
     		arg.lgt  = FB.POINTERSIZE
     	case else
-    		arg.lgt = symbCalcLen( arg.typ, arg.subtype )
+    		arg.lgt = symbCalcLen( arg.typ, arg.subtype, TRUE )
     	end select
     end select
 

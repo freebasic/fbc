@@ -79,7 +79,7 @@ declare sub 		irFlushLOAD			( byval op as integer, byval v1 as integer )
 declare sub 		irFlushCONVERT		( byval op as integer, byval v1 as integer, byval v2 as integer )
 declare sub 		irFlushCALL			( byval op as integer, byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval v1 as integer, byval vr as integer )
 declare sub 		irFlushBRANCH		( byval op as integer, byval label as FBSYMBOL ptr )
-declare sub 		irFlushSTACK		( byval op as integer, byval v1 as integer )
+declare sub 		irFlushSTACK		( byval op as integer, byval v1 as integer, byval ex as integer )
 declare sub 		irFlushADDR			( byval op as integer, byval v1 as integer, byval vr as integer )
 
 
@@ -166,6 +166,7 @@ data IR.OP.ABS		, IR.OPTYPE.UNARY	, FALSE, "abs"
 data IR.OP.SGN		, IR.OPTYPE.UNARY	, FALSE, "sgn"
 data IR.OP.CALLPTR	, IR.OPTYPE.CALL	, FALSE, "ca@"
 data IR.OP.JUMPPTR	, IR.OPTYPE.CALL	, FALSE, "jm@"
+data IR.OP.PUSHUDT	, IR.OPTYPE.STACK	, FALSE, "psh"
 
 data -1
 
@@ -522,6 +523,11 @@ sub irEmitPUSH( byval v1 as integer ) 'static
 end sub
 
 '':::::
+sub irEmitPUSHUDT( byval v1 as integer, byval lgt as integer ) 'static
+	irEmitEx IR.OP.PUSHUDT, v1, INVALID, INVALID, NULL, lgt
+end sub
+
+'':::::
 sub irEmitPOP( byval v1 as integer ) 'static
 	irEmit IR.OP.POP, v1, INVALID, INVALID
 end sub
@@ -695,7 +701,7 @@ end sub
 
 '':::::
 function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
-						  byval vr as integer, byval pmode as integer ) as integer 'static
+						  byval vr as integer, byval pmode as integer, byval plen as integer ) as integer 'static
     dim vt as integer, vp as integer
     dim atype as integer, aclass as integer
     dim ptype as integer, pclass as integer, psize as integer
@@ -784,6 +790,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
 			'' UDT arg? check if the same, can't convert
 			elseif( atype = IR.DATATYPE.USERDEF ) then
+
 			''
 			else
 				if( (aclass <> pclass) or (irGetDataSize( atype ) <> psize) ) then
@@ -817,7 +824,12 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 	'' push to stack, depending on arg mode
 	select case amode
 	case FB.ARGMODE.BYVAL
-		irEmitPUSH vr
+
+		if( plen = 0 ) then
+			irEmitPUSH vr
+		else
+			irEmitPUSHUDT vr, plen
+		end if
 
 	case FB.ARGMODE.BYREF
 		'' BYVAL param? pass as-is
@@ -1216,7 +1228,7 @@ sub irFlush 'static
 			irFlushCONVERT op, v1, v2
 
 		case IR.OPTYPE.STACK
-			irFlushSTACK op, v1
+			irFlushSTACK op, v1, tacTB(i).ex2
 
 		case IR.OPTYPE.CALL
 			irFlushCALL op, tacTB(i).ex1, tacTB(i).ex2, v1, vr
@@ -1379,7 +1391,7 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
 end sub
 
 '':::::
-sub irFlushSTACK( byval op as integer, byval v1 as integer ) 'static
+sub irFlushSTACK( byval op as integer, byval v1 as integer, byval ex as integer ) 'static
 	dim dst as string
 	dim r1 as integer, t1 as integer, dt1 as integer, dc1 as integer
 
@@ -1402,6 +1414,8 @@ sub irFlushSTACK( byval op as integer, byval v1 as integer ) 'static
 	select case op
 	case IR.OP.PUSH
 		emitPUSH dst, dt1, dc1, t1
+	case IR.OP.PUSHUDT
+		emitPUSHUDT dst, dt1, ex, t1
 	case IR.OP.POP
 		emitPOP dst, dt1, dc1, t1
 	end select

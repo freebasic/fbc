@@ -164,6 +164,7 @@ declare sub 		emitABS		( dname as string, byval ddtype as integer, byval ddclass
 declare sub 		emitSGN		( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer )
 
 declare sub 		emitPUSH	( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer )
+declare sub 		emitPUSHUDT	( sname as string, byval sdtype as integer, byval sdsize as integer, byval stype as integer )
 declare sub 		emitPOP		( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer )
 
 

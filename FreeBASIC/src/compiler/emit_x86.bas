@@ -1934,29 +1934,20 @@ sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer
 
 	select case sdclass
 	case IR.DATACLASS.INTEGER
-		if( sdsize > 1 ) then
-			if( stype = IR.VREGTYPE.REG ) then
-				if( sdsize < FB.INTEGERSIZE ) then
-					reg = emitLookupReg( src, sdtype )
-					src = emitGetRegName( IR.DATATYPE.INTEGER, sdclass, reg )
-				end if
-			else
-				if( sdsize < FB.INTEGERSIZE ) then
-					src = hPrepOperand( sname, IR.DATATYPE.INTEGER, sdclass, stype )
-				end if
-			end if
-
-			outp "push " + src
-
-		else
-			if( stype = IR.VREGTYPE.REG ) then
+		if( stype = IR.VREGTYPE.REG ) then
+			if( sdsize < FB.INTEGERSIZE ) then
 				reg = emitLookupReg( src, sdtype )
 				src = emitGetRegName( IR.DATATYPE.INTEGER, sdclass, reg )
-			else
+			end if
+		else
+			if( sdsize < FB.INTEGERSIZE ) then
+				'' !!!FIXME!!! assuming it's okay to push over the var if's not dword aligned
 				src = hPrepOperand( sname, IR.DATATYPE.INTEGER, sdclass, stype )
 			end if
-			outp "push " + src
 		end if
+
+		outp "push " + src
+
 
 	case IR.DATACLASS.FPOINT
 		if( stype <> IR.VREGTYPE.REG ) then
@@ -1971,6 +1962,17 @@ sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer
 			outp "fstp " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
 		end if
 	end select
+
+end sub
+
+'':::::
+sub emitPUSHUDT( sname as string, byval sdtype as integer, byval sdsize as integer, byval stype as integer ) 'static
+    dim i as integer
+
+	'' !!!FIXME!!! assuming it's okay to push over the UDT if's not dword aligned
+	for i = 0 to sdsize-1 step 4
+		outp "push " + "dword ptr [" + sname + "+" + str$( i ) + "]"
+	next i
 
 end sub
 

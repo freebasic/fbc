@@ -123,6 +123,7 @@ enum IROP_ENUM
 	IR.OP.SGN
 	IR.OP.CALLPTR
 	IR.OP.JUMPPTR
+	IR.OP.PUSHUDT
 end enum
 
 '' operations below won't reach IR, used by AST
@@ -172,6 +173,7 @@ declare sub 		irEmitPROCBEGIN		( byval proc as FBSYMBOL ptr, byval initlabel as 
 declare sub 		irEmitPROCEND		( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr )
 
 declare sub 		irEmitPUSH			( byval v1 as integer )
+declare sub 		irEmitPUSHUDT		( byval v1 as integer, byval lgt as integer )
 declare sub 		irEmitPOP			( byval v1 as integer )
 declare sub 		irEmitBOP			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer )
 declare sub 		irEmitBOPEx			( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr )
@@ -194,7 +196,9 @@ declare sub 		irEmitBRANCHNF		( byval op as integer, byval label as FBSYMBOL ptr
 declare sub 		irEmitCOMPBRANCH	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as FBSYMBOL ptr )
 declare sub 		irEmitCOMPBRANCHNF	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as FBSYMBOL ptr )
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
-declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byval vr as integer, byval pmode as integer ) as integer
+declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, _
+										  byval vr as integer, byval pmode as integer, _
+										  byval plen as integer ) as integer
 
 declare function 	irIsIMM				( byval vreg as integer ) as integer
 declare function 	irIsVAR				( byval vreg as integer ) as integer

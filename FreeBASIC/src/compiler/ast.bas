@@ -3012,6 +3012,15 @@ private function hCheckParam( byval f as integer, byval n as integer )
 					exit function
 				end if
 
+				'' set the length if it's been passed by value
+				if( amode = FB.ARGMODE.BYVAL ) then
+					if( e <> NULL ) then
+						astTB(n).param.lgt = symbGetUDTElmLen( e )
+					else
+						astTB(n).param.lgt = symbGetUDTLen( s )
+					end if
+				end if
+
 			''
 			else
 				'' can't convert strings/UDT's to other types
@@ -3096,6 +3105,7 @@ function astNewPARAM( byval f as integer, byval p as integer, _
 	astTB(n).param.prv 	= t						'' node prev= tail
 	astTB(n).param.nxt 	= INVALID				'' node next= NULL
 	astTB(n).param.mode = mode
+	astTB(n).param.lgt	= 0
 
 	if( t <> INVALID ) then
 		astTB(t).param.nxt = n					'' tail next= node
@@ -3425,7 +3435,7 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 		astLoad l, vr
 		astDel l
 
-		if( not irEmitPUSHPARAM( proc, a, vr, pmode ) ) then
+		if( not irEmitPUSHPARAM( proc, a, vr, pmode, astTB(p).param.lgt ) ) then
 		'''''exit sub
 		end if
 

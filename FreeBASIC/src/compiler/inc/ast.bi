@@ -45,6 +45,7 @@ end type
 
 type PARAMNode
 	mode			as integer						'' to pass NULL's to byref args, etc
+	lgt				as integer						'' length, used to push UDT's by value
 	prv				as integer						'' preview node
 	nxt				as integer						'' next    /
 end type
