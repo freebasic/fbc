@@ -116,6 +116,7 @@
 
 typedef struct MODE
 {
+	int mode_num;					/* Current mode number */
 	unsigned char **page;				/* Pages memory */
 	int num_pages;					/* Number of requested pages */
 	unsigned char *framebuffer;			/* Our current visible framebuffer */
@@ -123,12 +124,13 @@ typedef struct MODE
 	int pitch;					/* Width of a framebuffer line in bytes */
 	int bpp;					/* Bytes per pixel */
 	unsigned int *palette;				/* Current RGB color values for each palette index */
+	unsigned char *color_association;		/* Palette color index associations for CGA/EGA emulation */
 	char *dirty;					/* Dirty lines buffer */
 	const struct GFXDRIVER *driver;			/* Gfx driver in use */
 	int w, h;					/* Current mode width and height */
 	int depth;					/* Current mode depth */
 	int color_mask;					/* Color bit mask for colordepth emulation */
-	const unsigned char *default_palette;		/* Default palette data for current mode */
+	const struct PALETTE *default_palette;		/* Default palette for current mode */
 	int scanline_size;				/* Vertical size of a single scanline in pixels */
 	int fg_color, bg_color;				/* Current foreground and background colors */
 	float last_x, last_y;				/* Last pen position */
@@ -156,6 +158,13 @@ typedef struct GFXDRIVER
 } GFXDRIVER;
 
 
+typedef struct PALETTE
+{
+	const int colors;
+	const unsigned char *data;
+} PALETTE;
+
+
 typedef struct FONT
 {
 	const int h;
@@ -174,9 +183,9 @@ extern void (*fb_hPutPixel)(int x, int y, unsigned int color);
 extern unsigned int (*fb_hGetPixel)(int x, int y);
 extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
-extern const unsigned char fb_cga_palette[12][3];
-extern const unsigned char fb_ega_palette[80][3];
-extern const unsigned char fb_vga_palette[256][3];
+extern const PALETTE fb_palette_16;
+extern const PALETTE fb_palette_64;
+extern const PALETTE fb_palette_256;
 extern const FONT fb_font_8x8;
 extern const FONT fb_font_8x14;
 extern const FONT fb_font_8x16;

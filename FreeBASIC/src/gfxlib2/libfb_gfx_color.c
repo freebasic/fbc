@@ -33,38 +33,37 @@ void fb_GfxColor(int fg, int bg)
 	const unsigned char *palette;
 	int i;
 	
-	if (fb_mode->depth == 2) {
-		if ((fg >= 0) || (bg >= 0)) {
-			fb_mode->driver->lock();
+	switch (fb_mode->mode_num) {
+	
+		case 1:
+			if (bg >= 0)
+				fb_GfxPalette(-(4 - (bg & 0x3)), 0);
+			if (fg >= 0)
+				fb_GfxPalette(0, fg);
+			break;
+		
+		case 7:
+		case 8:
+		case 9:
+			if (fg >= 0)
+				fb_mode->fg_color = (fg & 0xF);
+			if (bg >= 0)
+				fb_GfxPalette(0, bg);
+			break;
+		
+		default:
 			if (fg >= 0) {
-				palette = fb_vga_palette[fg & 0xF];
-				fb_mode->palette[0] = fb_hMakeColor(0, palette[0], palette[1], palette[2]);
-				fb_mode->driver->set_palette(0, palette[0], palette[1], palette[2]);
+				if (fb_mode->depth > 8)
+					fb_mode->fg_color = fb_hMakeColor(fg, (fg >> 16) & 0xFF, (fg >> 8) & 0xFF, fg & 0xFF);
+				else
+					fb_mode->fg_color = (fg & fb_mode->color_mask);
 			}
 			if (bg >= 0) {
-				palette = fb_cga_palette[4 + ((bg & 0x1) * 3)];
-				for (i = 1; i < 4; i++) {
-					fb_mode->palette[i] = fb_hMakeColor(i, palette[0], palette[1], palette[2]);
-					fb_mode->driver->set_palette(i, palette[0], palette[1], palette[2]);
-					palette += 3;
-				}
+				if (fb_mode->depth > 8)
+					fb_mode->bg_color = fb_hMakeColor(bg, (bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
+				else
+					fb_mode->bg_color = (bg & fb_mode->color_mask);
 			}
-			fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
-			fb_mode->driver->unlock();
-		}
-	}
-	else {
-		if (fg >= 0) {
-			if (fb_mode->depth > 8)
-				fb_mode->fg_color = fb_hMakeColor(fg, (fg >> 16) & 0xFF, (fg >> 8) & 0xFF, fg & 0xFF);
-			else
-				fb_mode->fg_color = (fg & fb_mode->color_mask);
-		}
-		if (bg >= 0) {
-			if (fb_mode->depth > 8)
-				fb_mode->bg_color = fb_hMakeColor(bg, (bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
-			else
-				fb_mode->bg_color = (bg & fb_mode->color_mask);
-		}
+			break;
 	}
 }

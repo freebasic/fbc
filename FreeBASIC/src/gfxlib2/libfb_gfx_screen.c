@@ -45,7 +45,7 @@ typedef struct MODEINFO
 	int h;
 	int depth;
 	int scanline_size;
-	const unsigned char *palette;
+	const PALETTE *palette;
 	const FONT *font;
 	int text_w;
 	int text_h;
@@ -54,26 +54,26 @@ typedef struct MODEINFO
 
 
 static const MODEINFO mode_info[NUM_MODES] = {
- { 320, 200, 2, 1, fb_cga_palette[0],  &fb_font_8x8,  40, 25 },		/* CGA mode 1 */
- { 640, 200, 1, 2, fb_cga_palette[10], &fb_font_8x8,  80, 25 },		/* CGA mode 2 */
+ { 320, 200, 2, 1, &fb_palette_16,  &fb_font_8x8,  40, 25 },		/* CGA mode 1 */
+ { 640, 200, 1, 2, &fb_palette_16,  &fb_font_8x8,  80, 25 },		/* CGA mode 2 */
  { -1 }, { -1}, { -1 }, { -1 },						/* Unsupported modes (3, 4, 5, 6) */
- { 320, 200, 4, 1, fb_ega_palette[64], &fb_font_8x8,  40, 25 },		/* EGA mode 7 */
- { 640, 200, 4, 2, fb_ega_palette[64], &fb_font_8x8,  80, 25 },		/* EGA mode 8 */
- { 640, 350, 4, 1, fb_ega_palette[64], &fb_font_8x14, 80, 25 },		/* EGA mode 9 */
+ { 320, 200, 4, 1, &fb_palette_16,  &fb_font_8x8,  40, 25 },		/* EGA mode 7 */
+ { 640, 200, 4, 2, &fb_palette_16,  &fb_font_8x8,  80, 25 },		/* EGA mode 8 */
+ { 640, 350, 4, 1, &fb_palette_64,  &fb_font_8x14, 80, 25 },		/* EGA mode 9 */
  { -1 },								/* Unsupported mode (10) */
- { 640, 480, 1, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 30 },		/* VGA mode 11 */
- { 640, 480, 4, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 30 },		/* VGA mode 12 */
- { 320, 200, 8, 1, fb_vga_palette[0],  &fb_font_8x8,  40, 25 },		/* VGA mode 13 */
+ { 640, 480, 1, 1, &fb_palette_256, &fb_font_8x16, 80, 30 },		/* VGA mode 11 */
+ { 640, 480, 4, 1, &fb_palette_256, &fb_font_8x16, 80, 30 },		/* VGA mode 12 */
+ { 320, 200, 8, 1, &fb_palette_256, &fb_font_8x8,  40, 25 },		/* VGA mode 13 */
 
 									/* New modes */
- { 320, 240, 8, 1, fb_vga_palette[0],  &fb_font_8x8,  40, 30 },		/* 14: 320x240 */
- { 400, 300, 8, 1, fb_vga_palette[0],  &fb_font_8x8,  50, 37 },		/* 15: 400x300 */
- { 512, 384, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 64, 24 },		/* 16: 512x384 */
- { 640, 400, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 25 },		/* 17: 640x400 */
- { 640, 480, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 30 },		/* 18: 640x480 */
- { 800, 600, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 37 },		/* 19: 800x600 */
- {1024, 768, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 48 },		/* 20: 1024x768 */
- {1280,1024, 8, 1, fb_vga_palette[0],  &fb_font_8x16, 80, 64 },		/* 21: 1280x1024 */
+ { 320, 240, 8, 1, &fb_palette_256, &fb_font_8x8,  40, 30 },		/* 14: 320x240 */
+ { 400, 300, 8, 1, &fb_palette_256, &fb_font_8x8,  50, 37 },		/* 15: 400x300 */
+ { 512, 384, 8, 1, &fb_palette_256, &fb_font_8x16, 64, 24 },		/* 16: 512x384 */
+ { 640, 400, 8, 1, &fb_palette_256, &fb_font_8x16, 80, 25 },		/* 17: 640x400 */
+ { 640, 480, 8, 1, &fb_palette_256, &fb_font_8x16, 80, 30 },		/* 18: 640x480 */
+ { 800, 600, 8, 1, &fb_palette_256, &fb_font_8x16, 80, 37 },		/* 19: 800x600 */
+ {1024, 768, 8, 1, &fb_palette_256, &fb_font_8x16, 80, 48 },		/* 20: 1024x768 */
+ {1280,1024, 8, 1, &fb_palette_256, &fb_font_8x16, 80, 64 },		/* 21: 1280x1024 */
 };
 
 static char window_title_buff[WINDOW_TITLE_SIZE] = "";
@@ -117,6 +117,8 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			free(fb_mode->line);
 		if (fb_mode->palette)
 			free(fb_mode->palette);
+		if (fb_mode->color_association)
+			free(fb_mode->color_association);
 		if (fb_mode->dirty)
 			free(fb_mode->dirty);
 		if (fb_mode->key)
@@ -152,6 +154,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 	}
 
 	if (fb_mode) {
+		fb_mode->mode_num = mode;
 		fb_mode->w = info->w;
 		fb_mode->h = info->h;
 		fb_mode->depth = info->depth;
@@ -183,6 +186,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		   gfx driver which is not aware of the scanline size */
 		fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
 		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
+		fb_mode->color_association = (unsigned char *)malloc(16);
 		fb_mode->key = (unsigned char *)calloc(1, 128);
 
 		fb_hSetupFuncs();

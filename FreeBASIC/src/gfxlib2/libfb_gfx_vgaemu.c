@@ -35,7 +35,7 @@ FBCALL int fb_GfxPaletteInp(int port)
 {
 	int value = 0;
 
-	if (!fb_mode)
+	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
 
 	switch (port) {
@@ -46,7 +46,7 @@ FBCALL int fb_GfxPaletteInp(int port)
 			if (shift > 18) {
 				shift = 2;
 				index++;
-				index &= fb_mode->color_mask;
+				index &= (fb_mode->default_palette->colors - 1);
 			}
 			break;
 	}
@@ -58,7 +58,9 @@ FBCALL int fb_GfxPaletteInp(int port)
 /*:::::*/
 FBCALL void fb_GfxPaletteOut(int port, int value)
 {
-	if (!fb_mode)
+	int i, r, g, b;
+	
+	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
 
 	value &= 0xFF;
@@ -76,11 +78,25 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 			color |= ((value & 0x3F) << shift);
 			shift += 8;
 			if (shift > 18) {
-				fb_GfxPalette(index, color);
+				if (fb_mode->default_palette == &fb_palette_256)
+					fb_GfxPalette(index, color);
+				else {
+					fb_mode->driver->lock();
+					r = ((color & 0x3F) * 255.0) / 63.0;
+					g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
+					b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
+					fb_mode->palette[index] = r | (g << 8) | (b << 16);
+					for (i = 0; i < (1 << fb_mode->depth); i++) {
+						if (fb_mode->color_association[i] == index)
+							fb_mode->driver->set_palette(i, r, g, b);
+					}
+					fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
+					fb_mode->driver->unlock();
+				}
 				shift = 2;
 				color = 0;
 				index++;
-				index &= fb_mode->color_mask;
+				index &= (fb_mode->default_palette->colors - 1);
 			}
 			break;
 	}
