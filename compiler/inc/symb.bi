@@ -93,6 +93,7 @@ declare function 	symbGetName				( byval s as FBSYMBOL ptr ) as string
 declare function 	symbGetAlias			( byval s as FBSYMBOL ptr ) as string
 
 declare function 	symbGetUDTLen			( byval s as FBSYMBOL ptr, byval realUDTsize as integer = TRUE ) as integer
+declare function 	symbGetUDTElmType		( byval e as FBTYPELEMENT ptr ) as FBSYMBOL ptr
 declare function 	symbGetUDTElmDiff		( byval e as FBTYPELEMENT ptr ) as integer
 declare sub 		symbGetUDTElmDims		( byval e as FBTYPELEMENT ptr, byval d as FBVARDIM ptr, lb as integer, ub as integer )
 declare function 	symbGetFirstUDTElmDim	( byval e as FBTYPELEMENT ptr ) as FBVARDIM ptr

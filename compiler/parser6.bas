@@ -797,7 +797,7 @@ function cFileStmt
     dim filename as integer, fmode as integer, faccess as integer, flock as integer, flen as integer
     dim res as integer, islock as integer
     dim cnt as integer
-    dim isarray as integer
+    dim isarray as integer, e as FBTYPELEMENT ptr
 
 	cFileStmt = FALSE
 
@@ -981,10 +981,20 @@ function cFileStmt
     	isarray = FALSE
     	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
     		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
-    			if( symbIsArray( astGetSymbol( expr2 ) ) ) then
+    			e = astGetUDTElm( expr2 )
+    			if( e <> NULL ) then
+    				if( symbGetUDTELmDimensions( e ) > 0 ) then
+    					isarray = TRUE
+    				end if
+    			else
+    				if( symbIsArray( astGetSymbol( expr2 ) ) ) then
+    					isarray = TRUE
+    				end if
+    			end if
+
+    			if( isarray ) then
     				lexSkipToken
     				lexSkipToken
-    				isarray = TRUE
     			end if
     		end if
     	end if
@@ -1028,10 +1038,20 @@ function cFileStmt
     	isarray = FALSE
     	if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
     		if( lexLookahead(1) = FB.TK.IDXCLOSECHAR ) then
-    			if( symbIsArray( astGetSymbol( expr2 ) ) ) then
+    			e = astGetUDTElm( expr2 )
+    			if( e <> NULL ) then
+    				if( symbGetUDTELmDimensions( e ) > 0 ) then
+    					isarray = TRUE
+    				end if
+    			else
+    				if( symbIsArray( astGetSymbol( expr2 ) ) ) then
+    					isarray = TRUE
+    				end if
+    			end if
+
+    			if( isarray ) then
     				lexSkipToken
     				lexSkipToken
-    				isarray = TRUE
     			end if
     		end if
     	end if

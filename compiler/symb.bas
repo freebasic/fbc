@@ -2279,6 +2279,17 @@ function symbGetType( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
+function symbGetUDTElmType( byval e as FBTYPELEMENT ptr ) as FBSYMBOL ptr static
+
+    if( e <> NULL ) then
+    	symbGetUDTElmType = e->typ
+    else
+    	symbGetUDTElmType = NULL
+    end if
+
+end function
+
+'':::::
 function symbGetSubType( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	if( s <> NULL ) then

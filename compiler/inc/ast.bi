@@ -17,6 +17,7 @@
 
 
 const AST.MAXTEMPSTRINGS%		= 32
+const AST.MAXTEMPARRAYDESCS		= 32
 
 const AST.INITNODES%			= 128
 
@@ -34,54 +35,55 @@ const AST.NODETYPE.CONV%		= 11
 const AST.NODETYPE.LOAD%		= 12
 
 type FUNCTNode
-	sym			as FBSYMBOL ptr						'' symbol
-	p			as integer							'' ptr expr, f/ function pointers
-	args		as integer
-	argnum		as integer
-	arg			as FBPROCARG ptr
+	sym				as FBSYMBOL ptr					'' symbol
+	p				as integer						'' ptr expr, f/ function pointers
+	args			as integer
+	argnum			as integer
+	arg				as FBPROCARG ptr
+	tmparraybase 	as integer
 end type
 
 type PARAMNode
-	mode		as integer							'' to pass NULL's to byref args, etc
-	prv			as integer							'' preview node
-	nxt			as integer							'' next    /
+	mode			as integer						'' to pass NULL's to byref args, etc
+	prv				as integer						'' preview node
+	nxt				as integer						'' next    /
 end type
 
 type VARNode
-	sym			as FBSYMBOL ptr						'' symbol
-	elm			as FBTYPELEMENT ptr					'' field element, if any
-	ofs			as integer							'' offset
-	lgt			as integer							'' length
+	sym				as FBSYMBOL ptr					'' symbol
+	elm				as FBTYPELEMENT ptr				'' field element, if any
+	ofs				as integer						'' offset
+	lgt				as integer						'' length
 end type
 
 type IDXNode
-	sym			as FBSYMBOL ptr						'' symbol
-	elm			as FBTYPELEMENT ptr					'' field element, if any
-	ofs			as integer							'' offset
-	lgt			as integer							'' length
-	var			as integer							'' AST tb index to a VARNode
+	sym				as FBSYMBOL ptr					'' symbol
+	elm				as FBTYPELEMENT ptr				'' field element, if any
+	ofs				as integer						'' offset
+	lgt				as integer						'' length
+	var				as integer						'' AST tb index to a VARNode
 end type
 
 type PTRNode
-	sym			as FBSYMBOL ptr						'' symbol
-	elm			as FBTYPELEMENT ptr					'' field element, if any
-	ofs			as integer							'' offset
+	sym				as FBSYMBOL ptr					'' symbol
+	elm				as FBTYPELEMENT ptr				'' field element, if any
+	ofs				as integer						'' offset
 end type
 
 type ASTNode
-	prv			as integer							'' 'pointers' used by the allocator,
-	nxt			as integer							'' /  (can't be swapped/copied!)
+	prv				as integer						'' 'pointers' used by the allocator,
+	nxt				as integer						'' /  (can't be swapped/copied!)
 
-	typ			as integer							'' CONST, VAR, BOP, UOP, IDX, etc
+	typ				as integer						'' CONST, VAR, BOP, UOP, IDX, etc
 
-	dtype		as integer							'' BYTE, INTEGER, SINGLE, DOUBLE, etc
+	dtype			as integer						'' BYTE, INTEGER, SINGLE, DOUBLE, etc
 
-	defined 	as integer							'' only true for constants
-	value		as double							'' /
+	defined 		as integer						'' only true for constants
+	value			as double						'' /
 
-	op			as integer							'' f/ BOP & UOP nodes
-	allocres 	as integer							'' /
-	ex			as FBSYMBOL ptr						'' / (extra: label, etc)
+	op				as integer						'' f/ BOP & UOP nodes
+	allocres 		as integer						'' /
+	ex				as FBSYMBOL ptr					'' / (extra: label, etc)
 
 	union
 		var			as VARNode
@@ -91,8 +93,8 @@ type ASTNode
 		param		as PARAMNode
 	end union
 
-	l			as integer							'' left node, index of ast tb
-	r			as integer							'' right /     /
+	l				as integer						'' left node, index of ast tb
+	r				as integer						'' right /     /
 end type
 
 

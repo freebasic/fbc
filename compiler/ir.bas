@@ -714,8 +714,8 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 	if( amode = FB.ARGMODE.BYDESC ) then
 
         '' param is an pointer
-        if( typ = IR.VREGTYPE.PTR ) then
-        	amode = FB.ARGMODE.BYVAL
+        if( pmode = FB.ARGMODE.BYVAL ) then
+            amode = FB.ARGMODE.BYVAL
 
         '' param is an identifier
         else

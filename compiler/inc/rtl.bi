@@ -31,6 +31,8 @@ enum FBRTL_ENUM
 	FB.RTL.ARRAYUBOUND
 	FB.RTL.ARRAYSETDESC
 	FB.RTL.ARRAYSTRERASE
+	FB.RTL.ARRAYALLOCTMPDESC
+	FB.RTL.ARRAYFREETMPDESC
 
 	FB.RTL.INT2STR
 	FB.RTL.FLT2STR
@@ -171,6 +173,8 @@ declare function 	rtlArrayBound		( byval s as FBSYMBOL ptr, byval dimexpr as int
 declare sub 		rtlArraySetDesc		( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 										  byval dimensions as integer, dTB() as FBARRAYDIM )
 declare sub 		rtlArrayStrErase	( byval s as FBSYMBOL ptr )
+declare function 	rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMBOL ptr ) as integer
+declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as integer
 
 declare sub 		rtlDataRestore		( byval label as FBSYMBOL ptr )
 declare sub 		rtlDataRead			( byval varexpr as integer )

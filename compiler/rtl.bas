@@ -123,6 +123,17 @@ data "fb_ArraySetDesc","", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 5, _
 '' fb_ArrayStrErase ( array() as any ) as void
 data "fb_ArrayStrErase","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 							FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
+'' fb_ArrayAllocTempDesc CDECL ( byref pdesc as any ptr, arraydata as any, byval elementlen as integer, _
+''						         byval dimensions as integer, ... ) as void ptr
+data "fb_ArrayAllocTempDesc","", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 5, _
+					 	         FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						         FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						         FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						         FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						         -1,-1, FALSE
+'' fb_ArrayFreeTempDesc ( byval pdesc as any ptr) as void
+data "fb_ArrayFreeTempDesc","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						        FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_IntToStr ( byval number as integer ) as string
@@ -1575,6 +1586,69 @@ sub rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 	astFlush proc, vr
 
 end sub
+
+'':::::
+function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMBOL ptr ) as integer
+    dim proc as integer, f as FBSYMBOL ptr
+    dim dtype as integer, t as integer
+    dim s as FBSYMBOL ptr, e as FBTYPELEMENT ptr
+    dim d as FBVARDIM ptr, l as integer, u as integer
+    dim dimensions as integer
+
+	s = astGetSymbol( arrayexpr )
+	e = astGetUDTElm( arrayexpr )
+
+	dimensions = symbGetUDTElmDimensions( e )
+
+	f = ifuncTB(FB.RTL.ARRAYALLOCTMPDESC)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4+dimensions*2 )
+
+    '' byref pdesc as any ptr
+	t = astNewVAR( pdesc, 0, IR.DATATYPE.UINT )
+    astNewPARAM( proc, t, IR.DATATYPE.UINT )
+
+    '' byref arraydata as any
+    astNewPARAM( proc, arrayexpr, IR.DATATYPE.VOID )
+
+	'' byval element_len as integer
+	t = astNewCONST( symbGetUDTElmLen( e ), IR.DATATYPE.INTEGER )
+	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+
+	'' byval dimensions as integer
+	t = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
+	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+
+	'' ...
+    d = symbGetFirstUDTElmDim( e )
+    do while( d <> NULL )
+    	symbGetUDTElmDims e, d, l, u
+		t = astNewCONST( l, IR.DATATYPE.INTEGER )
+		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+		t = astNewCONST( u, IR.DATATYPE.INTEGER )
+		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+
+		d = symbGetNextUDTElmDim( e, d )
+	loop
+
+	rtlArrayAllocTmpDesc = proc
+
+end function
+
+'':::::
+function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as integer
+    dim proc as integer, f as FBSYMBOL ptr
+    dim t as integer
+
+	f = ifuncTB(FB.RTL.ARRAYFREETMPDESC)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
+
+    '' byval pdesc as any ptr
+	t = astNewVAR( pdesc, 0, IR.DATATYPE.UINT )
+    astNewPARAM( proc, t, IR.DATATYPE.UINT )
+
+    rtlArrayFreeTempDesc = proc
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' data

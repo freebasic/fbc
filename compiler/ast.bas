@@ -39,12 +39,13 @@ option escape
 '$include: 'inc\ast.bi'
 
 type ASTCTX
-	head		as integer
-	tail		as integer
-	fhead		as integer
-	nodes		as integer
+	head			as integer
+	tail			as integer
+	fhead			as integer
+	nodes			as integer
 
-	tempstrs	as integer
+	tempstrings		as integer
+	temparraydescs	as integer
 end Type
 
 type ASTTEMPSTR
@@ -52,15 +53,19 @@ type ASTTEMPSTR
 	srctree		as integer
 end type
 
+type ASTTEMPARRAYDESC
+	pdesc		as FBSYMBOL ptr
+end type
 
 declare sub 		astUpdStrConcat		( byval n as integer )
 
 '' globals
 	dim shared ctx as ASTCTX
 
-	redim shared astTB( 0 ) as ASTNODE
+	dim shared tempstrTB( 0 to AST.MAXTEMPSTRINGS-1 ) as ASTTEMPSTR
+	dim shared temparraydescTB( 0 to AST.MAXTEMPARRAYDESCS-1 ) as ASTTEMPARRAYDESC
 
-	redim shared tempstrTB( 0 ) as ASTTEMPSTR
+	redim shared astTB( 0 ) as ASTNODE
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc node copy/swap
@@ -1380,16 +1385,13 @@ sub astInit static
     astRealloc AST.INITNODES
 
 	''
-	redim tempstrTB( 0 to AST.MAXTEMPSTRINGS-1 ) as ASTTEMPSTR
-
-	ctx.tempstrs	= 0
+	ctx.tempstrings		= 0
+	ctx.temparraydescs	= 0
 
 end sub
 
 '':::::
 sub astEnd static
-
-	erase tempstrTB
 
 	erase astTB
 
@@ -2810,6 +2812,7 @@ function astNewFUNCTEx( byval ptrexpr as integer, byval symbol as FBSYMBOL ptr, 
 	astTB(n).proc.args 		= args
 	astTB(n).proc.arg		= symbGetProcHeadArg( symbol )
 	astTB(n).proc.argnum 	= 0
+	astTB(n).proc.tmparraybase = INVALID
 
 end function
 
@@ -2835,9 +2838,27 @@ private sub hReportParamError( byval f as integer )
 end sub
 
 '':::::
-private function hCheckParam( byval f as integer, byval n as integer ) static
+private function hAllocTmpArrayDesc( byval f as integer, byval n as integer ) as integer static
+	dim s as FBSYMBOL ptr
+
+	s = symbAddTempVar( FB.SYMBTYPE.UINT )
+
+	if( astTB(f).proc.tmparraybase = INVALID ) then
+		astTB(f).proc.tmparraybase = ctx.temparraydescs
+	end if
+
+	temparraydescTB(ctx.temparraydescs).pdesc = s
+	ctx.temparraydescs = ctx.temparraydescs + 1
+
+	''
+	hAllocTmpArrayDesc = rtlArrayAllocTmpDesc( n, s )
+
+end function
+
+'':::::
+private function hCheckParam( byval f as integer, byval n as integer )
     dim proc as FBSYMBOL ptr, arg as FBPROCARG ptr, s as FBSYMBOL ptr, e as FBTYPELEMENT ptr
-    dim p as integer, typ as integer
+    dim p as integer, typ as integer, t as integer
     dim adtype as integer, adclass as integer, pmode as integer
     dim pdtype as integer, pdclass as integer, amode as integer
 
@@ -2869,20 +2890,35 @@ private function hCheckParam( byval f as integer, byval n as integer ) static
 	if( amode = FB.ARGMODE.BYDESC ) then
 
         '' param is not an pointer
-        if( typ <> AST.NODETYPE.PTR ) then
+        if( pmode <> FB.ARGMODE.BYVAL ) then
 
-			s = astGetSymbol( p )
-			if( s = NULL ) then
-				hReportParamError f
-				exit function
-			end if
-
-			'' not an argument passed by descriptor?
-			if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
-				if( symbGetVarDescriptor( s ) = NULL ) then
+			'' type field?
+			e = astGetUDTElm( p )
+			if( e <> NULL ) then
+				'' not an array?
+				if( symbGetUDTElmDimensions( e ) = 0 ) then
 					hReportParamError f
 					exit function
 				end if
+
+				'' create a temp array descriptor
+				astTB(n).l = hAllocTmpArrayDesc( f, p )
+				astTB(n).param.mode = FB.ARGMODE.BYVAL
+
+			else
+				s = astGetSymbol( p )
+				if( s = NULL ) then
+					hReportParamError f
+					exit function
+				end if
+
+				'' not an argument passed by descriptor?
+				if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
+					if( symbGetVarDescriptor( s ) = NULL ) then
+						hReportParamError f
+						exit function
+					end if
+        		end if
         	end if
 
         end if
@@ -2979,7 +3015,7 @@ end function
 
 '':::::
 function astNewPARAM( byval f as integer, byval p as integer, _
-					  byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer static
+					  byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
     dim n as integer
     dim t as integer
 
@@ -3193,11 +3229,11 @@ private sub hCheckTmpStrings( byval inibase as integer )
 
 	'' copy-back any fix-len string passed as parameter and
 	'' delete all temp strings used as parameters
-	do while( ctx.tempstrs > inibase )
-        ctx.tempstrs = ctx.tempstrs - 1
+	do while( ctx.tempstrings > inibase )
+        ctx.tempstrings = ctx.tempstrings - 1
 
 		'' copy back if needed
-		srctree = tempstrTB(ctx.tempstrs).srctree
+		srctree = tempstrTB(ctx.tempstrings).srctree
 		if( srctree <> INVALID ) then
         	'' only if not a literal string passed a fixed-len
         	if( astTB(srctree).typ = AST.NODETYPE.VAR ) then
@@ -3207,7 +3243,7 @@ private sub hCheckTmpStrings( byval inibase as integer )
         	end if
 
         	if( docopy ) then
-        		s = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
+        		s = astNewVAR( tempstrTB(ctx.tempstrings).tmp, 0, IR.DATATYPE.STRING )
 				t = rtlStrAssign( srctree, s )
 				astLoad t, vr
 				astDel t
@@ -3215,7 +3251,7 @@ private sub hCheckTmpStrings( byval inibase as integer )
 		end if
 
 		'' delete the temp string
-		t = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
+		t = astNewVAR( tempstrTB(ctx.tempstrings).tmp, 0, IR.DATATYPE.STRING )
 		t = rtlStrDelete( t )
 		astLoad t, vr
 		astDel t
@@ -3238,9 +3274,9 @@ private function hPrepParam( byval proc as FBSYMBOL ptr, byval isrtl as integer,
 		hPrepParam = t
 	else
 		if( t <> NULL ) then
-			tempstrTB(ctx.tempstrs).tmp 	= t
-			tempstrTB(ctx.tempstrs).srctree = srctree
-			ctx.tempstrs = ctx.tempstrs + 1
+			tempstrTB(ctx.tempstrings).tmp 		= t
+			tempstrTB(ctx.tempstrings).srctree 	= srctree
+			ctx.tempstrings = ctx.tempstrings + 1
 			hPrepParam = astNewVAR( t, 0, IR.DATATYPE.STRING )
 
 		else
@@ -3250,6 +3286,28 @@ private function hPrepParam( byval proc as FBSYMBOL ptr, byval isrtl as integer,
 	end if
 
 end function
+
+'':::::
+private sub hFreeTempArrayDescs( byval f as integer )
+    dim arraybase as integer
+    dim t as integer, vr as integer
+
+	arraybase = astTB(f).proc.tmparraybase
+
+	'' any?
+	if( arraybase = INVALID ) then
+		exit sub
+	end if
+
+	do while( ctx.temparraydescs > arraybase )
+		ctx.temparraydescs = ctx.temparraydescs - 1
+
+		t = rtlArrayFreeTempDesc( temparraydescTB(ctx.temparraydescs).pdesc )
+		astLoad t, vr
+		astDel t
+	loop
+
+end sub
 
 '':::::
 sub astLoadFUNCT( byval n as integer, vreg as integer )
@@ -3266,7 +3324,7 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 
 	isrtl = symbGetProcLib( proc ) = "fb"
 
-	tempstrs_base = ctx.tempstrs
+	tempstrs_base = ctx.tempstrings
 
     ''
 	if( mode = FB.FUNCMODE.PASCAL ) then
@@ -3331,4 +3389,8 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings tempstrs_base
 
+	'' del temp arrays descriptors created for array fields passed by desc
+	hFreeTempArrayDescs n
+
 end sub
+
