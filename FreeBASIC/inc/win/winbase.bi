@@ -72,7 +72,7 @@ Type DEVMODE Field = 1
   dmCollate          As Short
   dmFormName         As String * CCHFORMNAME-1
   dmUnusedPadding    As Short
-  dmBitsPerPel       As Short
+  dmBitsPerPel       As integer
   dmPelsWidth        As Integer
   dmPelsHeight       As Integer
   dmDisplayFlags     As Integer

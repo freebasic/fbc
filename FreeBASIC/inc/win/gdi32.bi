@@ -1850,4 +1850,8 @@ Declare Function UnrealizeObject Alias "UnrealizeObject" (ByVal hObject As Integ
 Declare Function UpdateColors Alias "UpdateColors" (ByVal hdc As Integer) As Integer
 
 Declare Function WidenPath Alias "WidenPath" (ByVal hdc As Integer) As Integer
+
+Declare Function wglMakeCurrent Alias "wglMakeCurrent" (Byval hdc As Integer, Byval hglrc As Integer) As Integer 
+Declare Function wglDeleteContext Alias "wglDeleteContext" (Byval hglrc As Integer) As Integer 
+Declare Function wglCreateContext Alias "wglCreateContext" (Byval hdc As Integer) As Integer 
 #endif 'GDI32

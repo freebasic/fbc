@@ -2527,7 +2527,7 @@ Declare Function DestroyIcon Alias "DestroyIcon" (ByVal hIcon As Integer) As Int
 Declare Function DestroyMenu Alias "DestroyMenu" (ByVal hMenu As Integer) As Integer
 Declare Function DestroyWindow Alias "DestroyWindow" (ByVal hwnd As Integer) As Integer
 Declare Function DialogBoxIndirectParam Alias "DialogBoxIndirectParamA" (ByVal hInstance As Integer, ByRef hDialogTemplate As DLGTEMPLATE, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) As Integer
-Declare Sub DialogBoxParam Alias "DialogBoxParamA" (ByVal hInstance As Integer, ByVal lpTemplateName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer)
+Declare Function DialogBoxParam Alias "DialogBoxParamA" (ByVal hInstance As Integer, ByVal lpTemplateName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) as integer
 Declare Function DispatchMessage Alias "DispatchMessageA" (lpMsg As MSG) As Integer
 Declare Function DlgDirList Alias "DlgDirListA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDListBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
 Declare Function DlgDirListComboBox Alias "DlgDirListComboBoxA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDComboBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
@@ -2867,6 +2867,7 @@ Declare Function WINNLSGetEnableStatus Alias "WINNLSGetEnableStatus" (ByVal hwnd
 Declare Function WINNLSGetIMEHotkey Alias "WINNLSGetIMEHotkey" (ByVal hwnd As Integer) As Integer
 Declare Sub keybd_event Alias "keybd_event" (ByVal bVk As Byte, ByVal bScan As Byte, ByVal dwFlags As Integer, ByVal dwExtraInfo As Integer)
 Declare Sub mouse_event Alias "mouse_event" (ByVal dwFlags As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal cButtons As Integer, ByVal dwExtraInfo As Integer)
+DECLARE SUB WaitMessage ALIAS "WaitMessage" ()
 
 'the following functions require advanced functionality, additional data types, or are missing their required types.
 'Declare Function EnumDisplayDevices Alias "EnumDisplayDevicesA" (ByVal lpDevice As String, ByVal iDevNum As Integer, ByRef lpDisplayDevice As PDISPLAY_DEVICEA, ByVal dwFlags As Integer) As Integer
