@@ -638,7 +638,7 @@ function cGfxPut as integer
 		exit function
 	end if
 
-	if( not cVarOrDeref( arrayexpr ) ) then
+	if( not cVarOrDeref( arrayexpr, FALSE ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -649,9 +649,13 @@ function cGfxPut as integer
 		exit function
 	end if
 
-	if( not symbIsArray( s ) or (astGetType( arrayexpr ) <> AST.NODETYPE.IDX) ) then
+	if( not symbIsArray( s ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
+	end if
+	
+	if( astGetType( arrayexpr ) <> AST.NODETYPE.IDX ) then
+		arrayexpr = astNewIDX( arrayexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
 	end if
 
 	'' (',' Mode)?
@@ -793,20 +797,24 @@ function cGfxGet as integer
 		exit function
 	end if
 
-	if( not cVarOrDeref( arrayexpr ) ) then
+	if( not cVarOrDeref( arrayexpr, FALSE ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
 
 	s = astGetSymbol( arrayexpr )
 	if( s = NULL ) then
-    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
 
-	if( not symbIsArray( s ) or (astGetType( arrayexpr ) <> AST.NODETYPE.IDX) ) then
+	if( not symbIsArray( s ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
+	end if
+	
+	if( astGetType( arrayexpr ) <> AST.NODETYPE.IDX ) then
+		arrayexpr = astNewIDX( arrayexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
 	end if
 
     ''
