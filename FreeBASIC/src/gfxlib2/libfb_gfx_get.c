@@ -42,6 +42,11 @@ FBCALL void fb_GfxGet(float fx1, float fy1, float fx2, float fy2, unsigned char 
 	
 	fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
 	
+	if (x1 > x2)
+		SWAP(x1, x2);
+	if (y1 > y2)
+		SWAP(y1, y2);
+	
 	if ((x1 < fb_mode->view_x) || (y1 < fb_mode->view_y) ||
 	    (x2 >= fb_mode->view_x + fb_mode->view_w) || (y2 >= fb_mode->view_y + fb_mode->view_h))
 		return;
