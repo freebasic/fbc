@@ -34,7 +34,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_IntToStr ( int num )
+FBCALL FBSTRING *fb_IntToStr ( int num )
 {
 	FBSTRING 	*dst;
 
@@ -57,7 +57,7 @@ __stdcall FBSTRING *fb_IntToStr ( int num )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_FloatToStr ( float num )
+FBCALL FBSTRING *fb_FloatToStr ( float num )
 {
 	FBSTRING 	*dst;
 
@@ -90,7 +90,7 @@ __stdcall FBSTRING *fb_FloatToStr ( float num )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_DoubleToStr ( double num )
+FBCALL FBSTRING *fb_DoubleToStr ( double num )
 {
 	FBSTRING 	*dst;
 
@@ -124,7 +124,7 @@ __stdcall FBSTRING *fb_DoubleToStr ( double num )
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_CHR ( unsigned int num )
+FBCALL FBSTRING *fb_CHR ( unsigned int num )
 {
 	FBSTRING 	*dst;
 

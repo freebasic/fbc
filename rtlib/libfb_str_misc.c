@@ -28,7 +28,7 @@
 #include "fb.h"
 
 /*:::::*/
-__stdcall FBSTRING *fb_SPACE ( int len )
+FBCALL FBSTRING *fb_SPACE ( int len )
 {
 	FBSTRING 	*dst;
 

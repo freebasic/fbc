@@ -32,7 +32,7 @@
 #endif
 
 /*:::::*/
-__stdcall unsigned int fb_GetMemAvail ( int mode )
+FBCALL unsigned int fb_GetMemAvail ( int mode )
 {
 
 #ifdef WIN32

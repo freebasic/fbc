@@ -28,7 +28,7 @@
 #include "fb.h"
 
 /*:::::*/
-__stdcall void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
+FBCALL void fb_MemSwap( unsigned char *dst, unsigned char *src, int bytes )
 {
 	int i;
 	unsigned int ti;

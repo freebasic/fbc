@@ -34,7 +34,7 @@
 #endif
 
 /*:::::*/
-__stdcall FBSTRING *fb_Command ( void )
+FBCALL FBSTRING *fb_Command ( void )
 {
 	FBSTRING 	*dst;
 	char		*cline;

@@ -24,6 +24,8 @@
  *
  */
 
+#include "fb.h"
+
 #ifdef WIN32
 
  /* can't include stdlib.h as Mingw32 will not import atexit() from crtdll, but
@@ -42,7 +44,7 @@ _CRTIMP int __cdecl	atexit	(void (*proc)(void));
 
 
 /*:::::*/
-__stdcall void fb_AtExit ( void (*proc)(void) )
+FBCALL void fb_AtExit ( void (*proc)(void) )
 {
 
 	atexit( proc );

@@ -30,7 +30,7 @@
 #include "fb.h"
 
 /*:::::*/
-__stdcall FBSTRING *fb_Time ( void )
+FBCALL FBSTRING *fb_Time ( void )
 {
 	FBSTRING	*dst;
 	time_t 		rawtime;

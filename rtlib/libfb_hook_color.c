@@ -30,7 +30,7 @@ FB_COLORPROC 	fb_colorhook  = &fb_ConsoleColor;
 
 
 /*:::::*/
-__stdcall void fb_Color( int fc, int bc )
+FBCALL void fb_Color( int fc, int bc )
 {
 
 	return fb_colorhook( fc, bc );
@@ -38,7 +38,7 @@ __stdcall void fb_Color( int fc, int bc )
 }
 
 /*:::::*/
-__stdcall FB_COLORPROC fb_SetColorProc( FB_COLORPROC newproc )
+FBCALL FB_COLORPROC fb_SetColorProc( FB_COLORPROC newproc )
 {
     FB_COLORPROC oldproc = fb_colorhook;
 

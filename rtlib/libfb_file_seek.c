@@ -31,7 +31,7 @@
 
 
 /*:::::*/
-__stdcall long fb_FileTell( int fnum )
+FBCALL long fb_FileTell( int fnum )
 {
 	long pos;
 
@@ -51,7 +51,7 @@ __stdcall long fb_FileTell( int fnum )
 }
 
 /*:::::*/
-__stdcall int fb_FileSeek( int fnum, long newpos )
+FBCALL int fb_FileSeek( int fnum, long newpos )
 {
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
@@ -69,7 +69,7 @@ __stdcall int fb_FileSeek( int fnum, long newpos )
 }
 
 /*:::::*/
-__stdcall long fb_FileLocation( int fnum )
+FBCALL long fb_FileLocation( int fnum )
 {
     long pos;
 

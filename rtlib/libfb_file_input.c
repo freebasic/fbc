@@ -42,7 +42,7 @@ static FB_INPCTX ctx = { 0 };
 
 
 /*:::::*/
-__stdcall int fb_FileInput( int fnum )
+FBCALL int fb_FileInput( int fnum )
 {
 
 	ctx.f = fb_fileTB[fnum-1].f;
@@ -61,7 +61,7 @@ __stdcall int fb_FileInput( int fnum )
 }
 
 /*:::::*/
-__stdcall int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
+FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 {
 
 	ctx.f = NULL;
@@ -72,7 +72,7 @@ __stdcall int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 }
 
 /*:::::*/
-__stdcall int fb_InputByte( char *dst )
+FBCALL int fb_InputByte( char *dst )
 {
     char buffer[4+1];
 
@@ -84,7 +84,7 @@ __stdcall int fb_InputByte( char *dst )
 }
 
 /*:::::*/
-__stdcall int fb_InputShort( short *dst )
+FBCALL int fb_InputShort( short *dst )
 {
     char buffer[6+1];
 
@@ -96,7 +96,7 @@ __stdcall int fb_InputShort( short *dst )
 }
 
 /*:::::*/
-__stdcall int fb_InputInt( int *dst )
+FBCALL int fb_InputInt( int *dst )
 {
     char buffer[11+1];
 
@@ -108,7 +108,7 @@ __stdcall int fb_InputInt( int *dst )
 }
 
 /*:::::*/
-__stdcall int fb_InputSingle( float *dst )
+FBCALL int fb_InputSingle( float *dst )
 {
     char buffer[15+1];
 
@@ -120,7 +120,7 @@ __stdcall int fb_InputSingle( float *dst )
 }
 
 /*:::::*/
-__stdcall int fb_InputDouble( double *dst )
+FBCALL int fb_InputDouble( double *dst )
 {
     char buffer[21+1];
 
@@ -132,7 +132,7 @@ __stdcall int fb_InputDouble( double *dst )
 }
 
 /*:::::*/
-__stdcall int fb_InputString( void *dst, int strlen )
+FBCALL int fb_InputString( void *dst, int strlen )
 {
     char buffer[1024+1];
 

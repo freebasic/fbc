@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_LTRIM ( FBSTRING *src )
+FBCALL FBSTRING *fb_LTRIM ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		len;
@@ -65,7 +65,7 @@ __stdcall FBSTRING *fb_LTRIM ( FBSTRING *src )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_RTRIM ( FBSTRING *src )
+FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		len;
@@ -101,7 +101,7 @@ __stdcall FBSTRING *fb_RTRIM ( FBSTRING *src )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_TRIM ( FBSTRING *src )
+FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		len;

@@ -32,7 +32,7 @@ int		fb_errnum 		= FB_RTERROR_OK;
 
 
 /*:::::*/
-__stdcall void *fb_ErrorThrow ( int errnum )
+FBCALL void *fb_ErrorThrow ( int errnum )
 {
 
     fb_errnum = errnum;
@@ -47,7 +47,7 @@ __stdcall void *fb_ErrorThrow ( int errnum )
 }
 
 /*:::::*/
-__stdcall void *fb_ErrorSetHandler ( void *newhandler )
+FBCALL void *fb_ErrorSetHandler ( void *newhandler )
 {
 	void *oldhandler;
 
@@ -59,7 +59,7 @@ __stdcall void *fb_ErrorSetHandler ( void *newhandler )
 }
 
 /*:::::*/
-__stdcall int fb_ErrorGetNum ( void )
+FBCALL int fb_ErrorGetNum ( void )
 {
 
 	return fb_errnum;
@@ -68,7 +68,7 @@ __stdcall int fb_ErrorGetNum ( void )
 
 
 /*:::::*/
-__stdcall void fb_ErrorSetNum ( int errnum )
+FBCALL void fb_ErrorSetNum ( int errnum )
 {
 
 	fb_errnum = errnum;

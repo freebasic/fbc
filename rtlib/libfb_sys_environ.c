@@ -28,7 +28,7 @@
 #include <stdlib.h>
 
 /*:::::*/
-__stdcall FBSTRING *fb_GetEnviron ( FBSTRING *varname )
+FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 {
 	FBSTRING 	*dst;
 	char 		*p;
@@ -52,7 +52,7 @@ __stdcall FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 
 
 /*:::::*/
-__stdcall int fb_SetEnviron ( FBSTRING *str )
+FBCALL int fb_SetEnviron ( FBSTRING *str )
 {
 	int res;
 

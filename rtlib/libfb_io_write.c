@@ -56,7 +56,7 @@
 
 
 /*:::::*/
-__stdcall void fb_WriteVoid ( int fnum, int mask )
+FBCALL void fb_WriteVoid ( int fnum, int mask )
 {
     char *buffer;
 
@@ -77,55 +77,55 @@ __stdcall void fb_WriteVoid ( int fnum, int mask )
 }
 
 /*:::::*/
-__stdcall void fb_WriteByte ( int fnum, char val, int mask )
+FBCALL void fb_WriteByte ( int fnum, char val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%d" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteUByte ( int fnum, unsigned char val, int mask )
+FBCALL void fb_WriteUByte ( int fnum, unsigned char val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%u" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteShort ( int fnum, short val, int mask )
+FBCALL void fb_WriteShort ( int fnum, short val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%hd" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteUShort ( int fnum, unsigned short val, int mask )
+FBCALL void fb_WriteUShort ( int fnum, unsigned short val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%hu" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteInt ( int fnum, int val, int mask )
+FBCALL void fb_WriteInt ( int fnum, int val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%d" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteUInt ( int fnum, unsigned int val, int mask )
+FBCALL void fb_WriteUInt ( int fnum, unsigned int val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%u" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteSingle ( int fnum, float val, int mask )
+FBCALL void fb_WriteSingle ( int fnum, float val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%g" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteDouble ( int fnum, double val, int mask )
+FBCALL void fb_WriteDouble ( int fnum, double val, int mask )
 {
     FB_WRITENUM( fnum, val, mask, "%lg" )
 }
 
 /*:::::*/
-__stdcall void fb_WriteString ( int fnum, FBSTRING *s, int mask )
+FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 {
     FB_WRITESTR( fnum, s->data, mask, "\"%s\"" )
 

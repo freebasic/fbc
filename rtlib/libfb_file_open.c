@@ -77,7 +77,7 @@ static void fb_hFileCtx ( int doinit )
 }
 
 /*:::::*/
-__stdcall void fb_FileReset ( void )
+FBCALL void fb_FileReset ( void )
 {
 	int i;
 
@@ -90,7 +90,7 @@ __stdcall void fb_FileReset ( void )
 }
 
 /*:::::*/
-__stdcall int fb_FileFree ( void )
+FBCALL int fb_FileFree ( void )
 {
 	int i;
 
@@ -117,7 +117,7 @@ long fb_hFileSize( FILE *f )
 }
 
 /*:::::*/
-__stdcall unsigned int fb_FileSize( int fnum )
+FBCALL unsigned int fb_FileSize( int fnum )
 {
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return 0;
@@ -129,7 +129,7 @@ __stdcall unsigned int fb_FileSize( int fnum )
 }
 
 /*:::::*/
-__stdcall int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
+FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 						   unsigned int lock, int fnum, int len )
 {
 	char openmask[16];
@@ -218,7 +218,7 @@ __stdcall int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access
 }
 
 /*:::::*/
-__stdcall int fb_FileClose( int fnum )
+FBCALL int fb_FileClose( int fnum )
 {
 	/* QB quirk: CLOSE w/o arguments closes all files */
 	if( fnum == 0 )

@@ -34,7 +34,7 @@
 #endif
 
 /*:::::*/
-__stdcall int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
+FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 {
 	int 	res;
 	FILE 	*f;
@@ -76,7 +76,7 @@ __stdcall int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 }
 
 /*:::::*/
-__stdcall int fb_FileUnlock( int fnum, unsigned int inipos, unsigned int endpos )
+FBCALL int fb_FileUnlock( int fnum, unsigned int inipos, unsigned int endpos )
 {
 	int 	res;
 	FILE 	*f;

@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-__stdcall double fb_CVD ( FBSTRING *str )
+FBCALL double fb_CVD ( FBSTRING *str )
 {
     int		i, len;
     double 	num;
@@ -53,7 +53,7 @@ __stdcall double fb_CVD ( FBSTRING *str )
 }
 
 /*:::::*/
-__stdcall int fb_CVI ( FBSTRING *str )
+FBCALL int fb_CVI ( FBSTRING *str )
 {
     int		i, num;
 
@@ -75,7 +75,7 @@ __stdcall int fb_CVI ( FBSTRING *str )
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_MKD ( double num )
+FBCALL FBSTRING *fb_MKD ( double num )
 {
 	FBSTRING 	*dst;
 	int			i;
@@ -99,7 +99,7 @@ __stdcall FBSTRING *fb_MKD ( double num )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_MKI ( int num )
+FBCALL FBSTRING *fb_MKI ( int num )
 {
 	FBSTRING 	*dst;
 	int			i;
@@ -123,7 +123,7 @@ __stdcall FBSTRING *fb_MKI ( int num )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_MKS ( float num )
+FBCALL FBSTRING *fb_MKS ( float num )
 {
 	FBSTRING 	*dst;
 	int			i;

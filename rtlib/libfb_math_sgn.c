@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-__stdcall int fb_SGNSingle ( float x )
+FBCALL int fb_SGNSingle ( float x )
 {
 	if( x == 0.0 )
 		return 0;
@@ -39,7 +39,7 @@ __stdcall int fb_SGNSingle ( float x )
 }
 
 /*:::::*/
-__stdcall int fb_SGNDouble ( double x )
+FBCALL int fb_SGNDouble ( double x )
 {
 	if( x == 0.0 )
 		return 0;

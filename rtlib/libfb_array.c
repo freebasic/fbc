@@ -157,7 +157,7 @@ void fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve,
 }
 
 /*:::::*/
-__stdcall void fb_ArrayErase( FBARRAY *array, int isvarlen )
+FBCALL void fb_ArrayErase( FBARRAY *array, int isvarlen )
 {
     if( array->ptr != NULL )
     {
@@ -171,14 +171,14 @@ __stdcall void fb_ArrayErase( FBARRAY *array, int isvarlen )
 }
 
 /*:::::*/
-__stdcall void fb_ArrayStrErase( FBARRAY *array )
+FBCALL void fb_ArrayStrErase( FBARRAY *array )
 {
     if( array->ptr != NULL )
     	fb_hFreeVarLenStrArray( array );
 }
 
 /*:::::*/
-__stdcall int fb_ArrayLBound( FBARRAY *array, int dimension )
+FBCALL int fb_ArrayLBound( FBARRAY *array, int dimension )
 {
 	FBARRAYDIM	*p;
 
@@ -191,7 +191,7 @@ __stdcall int fb_ArrayLBound( FBARRAY *array, int dimension )
 }
 
 /*:::::*/
-__stdcall int fb_ArrayUBound( FBARRAY *array, int dimension )
+FBCALL int fb_ArrayUBound( FBARRAY *array, int dimension )
 {
 	FBARRAYDIM	*p;
 

@@ -34,7 +34,7 @@
 #endif
 
 /*:::::*/
-__stdcall FBSTRING *fb_CurDir ( void )
+FBCALL FBSTRING *fb_CurDir ( void )
 {
 	FBSTRING 	*dst;
 	char		tmp[MAX_PATH];

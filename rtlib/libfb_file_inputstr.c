@@ -31,7 +31,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_FileStrInput( int bytes, int fnum )
+FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 {
 	FILE 		*f;
 	FBSTRING 	*dst;

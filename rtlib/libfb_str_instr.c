@@ -30,7 +30,7 @@
 
 
 /*:::::*/
-__stdcall int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
+FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
 {
     int 	r;
     char    *p;

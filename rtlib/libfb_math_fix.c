@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-__stdcall float fb_FIXSingle( float x )
+FBCALL float fb_FIXSingle( float x )
 {
 
 	return (float)(floor( fabs( x ) ) * (double)fb_SGNSingle( x ));
@@ -38,7 +38,7 @@ __stdcall float fb_FIXSingle( float x )
 
 
 /*:::::*/
-__stdcall double fb_FIXDouble( double x )
+FBCALL double fb_FIXDouble( double x )
 {
 
 	return floor( fabs( x ) ) * fb_SGNDouble( x );

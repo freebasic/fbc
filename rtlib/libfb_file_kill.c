@@ -30,7 +30,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-__stdcall int fb_FileKill( FBSTRING *str )
+FBCALL int fb_FileKill( FBSTRING *str )
 {
 	int res;
 

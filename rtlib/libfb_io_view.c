@@ -37,7 +37,7 @@ int fb_viewBotRow = -1;
 
 
 /*:::::*/
-__stdcall void fb_ConsoleView( int toprow, int botrow )
+FBCALL void fb_ConsoleView( int toprow, int botrow )
 {
    	int maxrow = fb_ConsoleGetMaxRow( ) - 1;
 

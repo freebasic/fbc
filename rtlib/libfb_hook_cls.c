@@ -30,7 +30,7 @@ FB_CLSPROC 	fb_clshook  = &fb_ConsoleClear;
 
 
 /*:::::*/
-__stdcall void fb_Cls( int mode )
+FBCALL void fb_Cls( int mode )
 {
 
 	return fb_clshook( mode );
@@ -38,7 +38,7 @@ __stdcall void fb_Cls( int mode )
 }
 
 /*:::::*/
-__stdcall FB_CLSPROC fb_SetClsProc( FB_CLSPROC newproc )
+FBCALL FB_CLSPROC fb_SetClsProc( FB_CLSPROC newproc )
 {
     FB_CLSPROC oldproc = fb_clshook;
 

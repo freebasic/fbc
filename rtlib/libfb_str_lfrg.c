@@ -28,7 +28,7 @@
 #include "fb.h"
 
 /*:::::*/
-__stdcall FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
+FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 {
 	FBSTRING 	*dst;
 	int 		i, len, src_len;
@@ -67,7 +67,7 @@ __stdcall FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
+FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
 {
 	FBSTRING 	*dst;
 	int 		i, len, src_len;

@@ -32,7 +32,7 @@
 #endif
 
 /*:::::*/
-__stdcall void fb_Init ( void )
+FBCALL void fb_Init ( void )
 {
 
 

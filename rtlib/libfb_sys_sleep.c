@@ -32,7 +32,7 @@
 #endif
 
 /*:::::*/
-__stdcall void fb_Sleep ( int msecs )
+FBCALL void fb_Sleep ( int msecs )
 {
 
 	if( msecs == -1 )

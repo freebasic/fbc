@@ -30,7 +30,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_StrFill1 ( int cnt, int fchar )
+FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 {
 	FBSTRING 	*dst;
 
@@ -59,7 +59,7 @@ __stdcall FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
+FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
 {
 	FBSTRING 	*dst;
 

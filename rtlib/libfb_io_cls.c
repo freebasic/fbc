@@ -83,7 +83,7 @@ void fb_ConsoleClear( int mode )
 }
 
 /*:::::*/
-__stdcall void fb_ConsoleGetSize( int *cols, int *rows )
+FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
     int toprow, botrow;
 

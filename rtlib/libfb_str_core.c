@@ -279,7 +279,7 @@ char *fb_hStrSkipCharRev( char *s, int len, int c )
  **********/
 
 /*:::::*/
-__stdcall void fb_StrDelete ( FBSTRING *str )
+FBCALL void fb_StrDelete ( FBSTRING *str )
 {
     if( (str == NULL) || (str->data == NULL) || (str->data == &fb_strNull) )
     	return;
@@ -291,7 +291,7 @@ __stdcall void fb_StrDelete ( FBSTRING *str )
 }
 
 /*:::::*/
-__stdcall int fb_StrLen( void *str, int str_size )
+FBCALL int fb_StrLen( void *str, int str_size )
 {
 	int len;
 
@@ -315,7 +315,7 @@ __stdcall int fb_StrLen( void *str, int str_size )
 }
 
 /*:::::*/
-__stdcall void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
+FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 {
 	FBSTRING 	*dstr;
 	char 		*src_ptr;
@@ -386,7 +386,7 @@ __stdcall void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size )
+FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size )
 {
 	char 	*str1_ptr, *str2_ptr;
 	int 	str1_len, str2_len;
@@ -423,7 +423,7 @@ __stdcall FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, voi
 }
 
 /*:::::*/
-__stdcall int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size )
+FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size )
 {
 	char 	*str1_ptr, *str2_ptr;
 	int 	str1_len, str2_len;
@@ -447,7 +447,7 @@ __stdcall int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_si
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
+FBCALL FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
 {
  	FB_STR_TMPDESC *dsc;
 
@@ -468,7 +468,7 @@ __stdcall FBSTRING *fb_StrAllocTempResult ( FBSTRING *src )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
+FBCALL FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
 {
 	FB_STR_TMPDESC 	*dsc;
 

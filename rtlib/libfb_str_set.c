@@ -30,7 +30,7 @@
 
 
 /*:::::*/
-__stdcall void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
+FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 {
     int slen, dlen, len;
 
@@ -58,7 +58,7 @@ __stdcall void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 }
 
 /*:::::*/
-__stdcall void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
+FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 {
     int slen, dlen, len, padlen;
 

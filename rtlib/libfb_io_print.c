@@ -135,7 +135,7 @@ void fb_hPrintBuffer( char *buffer, int mask )
 }
 
 /*:::::*/
-__stdcall void fb_PrintVoid ( int fnum, int mask )
+FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
     char *buffer;
 
@@ -156,55 +156,55 @@ __stdcall void fb_PrintVoid ( int fnum, int mask )
 }
 
 /*:::::*/
-__stdcall void fb_PrintByte ( int fnum, char val, int mask )
+FBCALL void fb_PrintByte ( int fnum, char val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "d" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintUByte ( int fnum, unsigned char val, int mask )
+FBCALL void fb_PrintUByte ( int fnum, unsigned char val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "u" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintShort ( int fnum, short val, int mask )
+FBCALL void fb_PrintShort ( int fnum, short val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "hd" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintUShort ( int fnum, unsigned short val, int mask )
+FBCALL void fb_PrintUShort ( int fnum, unsigned short val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "hu" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintInt ( int fnum, int val, int mask )
+FBCALL void fb_PrintInt ( int fnum, int val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "d" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintUInt ( int fnum, unsigned int val, int mask )
+FBCALL void fb_PrintUInt ( int fnum, unsigned int val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "u" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintSingle ( int fnum, float val, int mask )
+FBCALL void fb_PrintSingle ( int fnum, float val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "g" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintDouble ( int fnum, double val, int mask )
+FBCALL void fb_PrintDouble ( int fnum, double val, int mask )
 {
     FB_PRINTNUM( fnum, val, mask, "lg" )
 }
 
 /*:::::*/
-__stdcall void fb_PrintString ( int fnum, FBSTRING *s, int mask )
+FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 {
     FB_PRINTSTR( fnum, s->data, mask, "s" )
 
@@ -213,7 +213,7 @@ __stdcall void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 }
 
 /*:::::*/
-__stdcall void fb_PrintFixString ( int fnum, char *s, int mask )
+FBCALL void fb_PrintFixString ( int fnum, char *s, int mask )
 {
     FB_PRINTSTR( fnum, s, mask, "s" )
 }

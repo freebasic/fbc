@@ -34,7 +34,7 @@
 #endif
 
 /*:::::*/
-__stdcall FBSTRING *fb_ExePath ( void )
+FBCALL FBSTRING *fb_ExePath ( void )
 {
 	FBSTRING 	*dst;
 	char		*p;

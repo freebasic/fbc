@@ -35,7 +35,7 @@
 
 
 /*:::::*/
-__stdcall double fb_Timer ( void )
+FBCALL double fb_Timer ( void )
 {
 
 #ifdef WIN32

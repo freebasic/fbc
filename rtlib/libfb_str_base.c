@@ -32,7 +32,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_HEX ( int num )
+FBCALL FBSTRING *fb_HEX ( int num )
 {
 	FBSTRING 	*dst;
 
@@ -55,7 +55,7 @@ __stdcall FBSTRING *fb_HEX ( int num )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_OCT ( int num )
+FBCALL FBSTRING *fb_OCT ( int num )
 {
 	FBSTRING 	*dst;
 
@@ -78,7 +78,7 @@ __stdcall FBSTRING *fb_OCT ( int num )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_BIN ( int num )
+FBCALL FBSTRING *fb_BIN ( int num )
 {
 	FBSTRING 	*dst;
 

@@ -90,7 +90,7 @@ void fb_ConsoleWidth( int cols, int rows )
 }
 
 /*:::::*/
-__stdcall void fb_ConsoleScreen( int mode )
+FBCALL void fb_ConsoleScreen( int mode )
 {
 
    	fb_ConsoleWidth( 80, 25 );

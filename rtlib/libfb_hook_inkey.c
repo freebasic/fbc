@@ -32,7 +32,7 @@ FB_GETKEYPROC 	fb_getkeyhook = &fb_ConsoleGetkey;
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_Inkey( void )
+FBCALL FBSTRING *fb_Inkey( void )
 {
 
 	return fb_inkeyhook( );
@@ -40,7 +40,7 @@ __stdcall FBSTRING *fb_Inkey( void )
 }
 
 /*:::::*/
-__stdcall FB_INKEYPROC fb_SetInkeyProc( FB_INKEYPROC newproc )
+FBCALL FB_INKEYPROC fb_SetInkeyProc( FB_INKEYPROC newproc )
 {
     FB_INKEYPROC oldproc = fb_inkeyhook;
 
@@ -50,7 +50,7 @@ __stdcall FB_INKEYPROC fb_SetInkeyProc( FB_INKEYPROC newproc )
 }
 
 /*:::::*/
-__stdcall int fb_Getkey( void )
+FBCALL int fb_Getkey( void )
 {
 
 	return fb_getkeyhook( );
@@ -58,7 +58,7 @@ __stdcall int fb_Getkey( void )
 }
 
 /*:::::*/
-__stdcall FB_GETKEYPROC fb_SetGetkeyProc( FB_GETKEYPROC newproc )
+FBCALL FB_GETKEYPROC fb_SetGetkeyProc( FB_GETKEYPROC newproc )
 {
     FB_GETKEYPROC oldproc = fb_getkeyhook;
 

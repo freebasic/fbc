@@ -30,7 +30,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-__stdcall int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
+FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
 {
 	int result;
 
@@ -70,7 +70,7 @@ __stdcall int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen
 }
 
 /*:::::*/
-__stdcall int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
+FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 {
 	int result, len;
 

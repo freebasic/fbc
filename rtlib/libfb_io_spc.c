@@ -27,7 +27,7 @@
 #include "fb.h"
 
 /*:::::*/
-__stdcall void fb_PrintTab( int fnum, int newcol )
+FBCALL void fb_PrintTab( int fnum, int newcol )
 {
 	int col, row, cols, rows;
 
@@ -52,7 +52,7 @@ __stdcall void fb_PrintTab( int fnum, int newcol )
 
 
 /*:::::*/
-__stdcall void fb_PrintSPC( int fnum, int n )
+FBCALL void fb_PrintSPC( int fnum, int n )
 {
 	int col, row, cols, rows, newcol;
 

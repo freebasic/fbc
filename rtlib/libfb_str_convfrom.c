@@ -68,7 +68,7 @@ static int fb_hStrToInt( char *s, int len, int radix )
 }
 
 /*:::::*/
-__stdcall double fb_hStr2Double( char *src, int len )
+FBCALL double fb_hStr2Double( char *src, int len )
 {
     char 	*p;
     int 	radix;
@@ -108,7 +108,7 @@ __stdcall double fb_hStr2Double( char *src, int len )
 }
 
 /*:::::*/
-__stdcall double fb_VAL ( FBSTRING *str )
+FBCALL double fb_VAL ( FBSTRING *str )
 {
     int 	len;
     double	val;
@@ -125,7 +125,7 @@ __stdcall double fb_VAL ( FBSTRING *str )
 }
 
 /*:::::*/
-__stdcall unsigned int fb_ASC ( FBSTRING *str )
+FBCALL unsigned int fb_ASC ( FBSTRING *str )
 {
     unsigned int a;
 

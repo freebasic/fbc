@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_LCASE ( FBSTRING *src )
+FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		i, len, c;
@@ -72,7 +72,7 @@ __stdcall FBSTRING *fb_LCASE ( FBSTRING *src )
 }
 
 /*:::::*/
-__stdcall FBSTRING *fb_UCASE ( FBSTRING *src )
+FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 {
 	FBSTRING 	*dst;
 	int 		i, len, c;

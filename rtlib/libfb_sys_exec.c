@@ -56,7 +56,7 @@ static char *fn_hGetShortPath( char *src, char *dst, int maxlen )
 }
 
 /*:::::*/
-__stdcall int fb_Run ( FBSTRING *program )
+FBCALL int fb_Run ( FBSTRING *program )
 {
     char	buffer[MAX_PATH+1];
     char 	arg0[] = "";
@@ -75,7 +75,7 @@ __stdcall int fb_Run ( FBSTRING *program )
 }
 
 /*:::::*/
-__stdcall int fb_Chain ( FBSTRING *program )
+FBCALL int fb_Chain ( FBSTRING *program )
 {
     char	buffer[MAX_PATH+1];
     char 	arg0[] = "";
@@ -94,7 +94,7 @@ __stdcall int fb_Chain ( FBSTRING *program )
 }
 
 /*:::::*/
-__stdcall int fb_Exec ( FBSTRING *program, FBSTRING *args )
+FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
     char	buffer[MAX_PATH+1];
     char	*argv[3];

@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-__stdcall void fb_End ( int errlevel )
+FBCALL void fb_End ( int errlevel )
 {
 
 	exit( errlevel );

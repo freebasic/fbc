@@ -30,7 +30,7 @@
 
 
 /*:::::*/
-__stdcall double fb_Rnd ( int n )
+FBCALL double fb_Rnd ( int n )
 {
 	static double last_num;
 
@@ -45,7 +45,7 @@ __stdcall double fb_Rnd ( int n )
 
 
 /*:::::*/
-__stdcall void fb_Randomize ( double seed )
+FBCALL void fb_Randomize ( double seed )
 {
 
 	if( seed == -1.0 )

@@ -46,7 +46,7 @@ static FB_PRINTUSGCTX ctx = { 0 };
 
 
 /*:::::*/
-__stdcall int fb_PrintUsingInit( FBSTRING *fmtstr )
+FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 {
 
 	fb_StrAssign( (void *)&ctx.fmtstr, -1, fmtstr, -1 );
@@ -58,7 +58,7 @@ __stdcall int fb_PrintUsingInit( FBSTRING *fmtstr )
 }
 
 /*:::::*/
-__stdcall int fb_PrintUsingEnd( int fnum )
+FBCALL int fb_PrintUsingEnd( int fnum )
 {
 
 	fb_PrintUsingFmtStr( fnum );
@@ -125,7 +125,7 @@ static int fb_PrintUsingFmtStr( int fnum )
 
 
 /*:::::*/
-__stdcall int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
+FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 {
 	char 	buffer[BUFFERLEN+1];
 	int 	c, nc, lc;
@@ -245,7 +245,7 @@ __stdcall int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 
 
 /*:::::*/
-__stdcall int fb_PrintUsingVal( int fnum, double value, int mask )
+FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 {
 	char 	buffer[BUFFERLEN+1], *p;
 	int 	c, nc, lc, d, i, j, len, intlgt;

@@ -30,7 +30,7 @@
 
 
 /*:::::*/
-__stdcall FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
+FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 {
     FBSTRING 	*dst;
     int			src_len;
@@ -76,7 +76,7 @@ __stdcall FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 
 
 /*:::::*/
-__stdcall void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
+FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
 {
     int 	src_len, dst_len;
 

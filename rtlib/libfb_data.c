@@ -34,7 +34,7 @@ char *fb_dataptr = NULL;
 
 
 /*:::::*/
-__stdcall void fb_DataRestore( char *labeladdr )
+FBCALL void fb_DataRestore( char *labeladdr )
 {
 	fb_dataptr = labeladdr;
 }
@@ -62,7 +62,7 @@ static short fb_hDataRead( void )
 }
 
 /*:::::*/
-__stdcall void fb_DataReadStr( void *dst, int dst_size )
+FBCALL void fb_DataReadStr( void *dst, int dst_size )
 {
 	short len;
 
@@ -74,7 +74,7 @@ __stdcall void fb_DataReadStr( void *dst, int dst_size )
 }
 
 /*:::::*/
-__stdcall void fb_DataReadByte( char *dst )
+FBCALL void fb_DataReadByte( char *dst )
 {
 	short len;
 
@@ -91,7 +91,7 @@ __stdcall void fb_DataReadByte( char *dst )
 }
 
 /*:::::*/
-__stdcall void fb_DataReadShort( short *dst )
+FBCALL void fb_DataReadShort( short *dst )
 {
 	short len;
 
@@ -108,7 +108,7 @@ __stdcall void fb_DataReadShort( short *dst )
 }
 
 /*:::::*/
-__stdcall void fb_DataReadInt( int *dst )
+FBCALL void fb_DataReadInt( int *dst )
 {
 	short len;
 
@@ -125,7 +125,7 @@ __stdcall void fb_DataReadInt( int *dst )
 }
 
 /*:::::*/
-__stdcall void fb_DataReadSingle( float *dst )
+FBCALL void fb_DataReadSingle( float *dst )
 {
 	short len;
 
@@ -142,7 +142,7 @@ __stdcall void fb_DataReadSingle( float *dst )
 }
 
 /*:::::*/
-__stdcall void fb_DataReadDouble( double *dst )
+FBCALL void fb_DataReadDouble( double *dst )
 {
 	short len;
 

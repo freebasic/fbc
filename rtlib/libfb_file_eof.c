@@ -30,7 +30,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-__stdcall int fb_FileEof( int fnum )
+FBCALL int fb_FileEof( int fnum )
 {
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_TRUE;

@@ -31,7 +31,7 @@
 
 
 /*:::::*/
-__stdcall int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
+FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 {
 	int i, result;
 
@@ -76,7 +76,7 @@ __stdcall int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen
 }
 
 /*:::::*/
-__stdcall int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
+FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 {
 	int result, len, rlen, i;
 
