@@ -36,15 +36,17 @@ void fb_hEnd ( int errlevel )
 	if (fb_con.inited) {
 		bottom = fb_ConsoleGetMaxRow();
 		if (((fb_viewTopRow != -1) || (fb_viewBotRow != -1)) &&
-		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom)))
-			/* Restore scrolling region to whole screen */
+		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom))) {
+			/* Restore scrolling region to whole screen and clear */
 			fprintf(fb_con.f_out, "\e[1;%dr", bottom);
+			fputs("\e[2J", fb_con.f_out);
+		}
 		/* Restore latin1 charset */
 		fputs("\e(B", fb_con.f_out);
 		/* Restore default attributes and color */
 		fputs("\e[0m", fb_con.f_out);
 		/* Force cursor display */
-		fputs("\E[?25h", fb_con.f_out);
+		fputs("\e[?25h", fb_con.f_out);
 		fflush(fb_con.f_out);
 		tcsetattr(fb_con.h_out, TCSAFLUSH, &fb_con.old_term_out);
 		
