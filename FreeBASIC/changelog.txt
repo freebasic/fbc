@@ -1,11 +1,13 @@
 Version 0.13 Beta:
 
+[added] on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
 [fixed] CVS() was being done as CVD() (v1c)
 [fixed] inline asm now supports complete IA32 instruction set (lillo)
 [fixed] SELECT CASE and other compound statments were accepting UDT's w/o any fields given (v1c)
 [fixed] line-continuation with _ when anything but white-spaces are used after it (v1c)
 [fixed] dyn arrays of function pointers can now be redimensioned, as the symbol name is being mangled now (v1c)
 [fixed] MID$ with len = 0 should return an empty string (v1c)
+[fixed] WINDOW statement was inverting y coordinate (lillo)
 
 
 Version 0.12 Beta:

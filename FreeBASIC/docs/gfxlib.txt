@@ -887,6 +887,7 @@ Statement to customize current palette.
 
 Syntax:
 	PALETTE [index,color]
+	PALETTE [index,r,g,b]
 	PALETTE USING arrayname(idx)
 
 
@@ -894,9 +895,15 @@ Argument:	Description:
 
 index		Index of the color to be customized.
 
-color		New color RGB value for specified index.
+color		New color packed RGB value for specified index.
 
-arrayname(idx)	Array of color values to be set.
+r		New color red component, ranging 0-255.
+
+g		New color green component, ranging 0-255.
+
+b		New color blue component, ranging 0-255.
+
+arrayname(idx)	Array of packed RGB color values to be set.
 
 
 Insights:
@@ -919,14 +926,18 @@ Screen mode:                       | index range: | color range:
 
 In screen modes 1, 2, 7, 8 and 9 you can assign to each color index one of the
 colors in the available range.
-In other screen modes, the color must be specified in the form &hBBGGRR, where
-BB, GG and RR are the blue, green and red components ranging &h0-&h3F in
-hexadecimal (0-63 in decimal). If you don't like hexadecimal form, you can use
-the following formula to compute the integer value to pass to this parameter:
+In other screen modes, the color must be specified in the packed form
+&hBBGGRR, where BB, GG and RR are the blue, green and red components ranging
+&h0-&h3F in hexadecimal (0-63 in decimal). If you don't like hexadecimal form,
+you can use the following formula to compute the integer value to pass to this
+parameter:
 
   color = red or (green shl 8) or (blue shl 16)
 
 Where red, green and blue must range 0-63.
+You can also specify the new color red, green and blue components directly,
+by calling PALETTE with 4 parameters. In this case r, g and b must be in the
+range 0-255.
 The available colors are reset by the SCREEN statement to a default palette;
 see appendix B for details. You can alter the contents of the current palette
 using the PALETTE statement for modes with a color depth higher or equal to 8,
@@ -934,10 +945,10 @@ or by using the OUT statement in lower depth modes.
 Calling PALETTE USING allows to set a list of color values all at once; you
 should pass an array holding enough elements as the color indices available
 for your current gfx mode color depth (2 for 1bpp, 4 for 2bpp, 16 for 4bpp or
-256 for 8bpp). The array elements must be integer color values in the form
-described above. The colors stored into arrayname starting with given idx
-index are then assigned to each palette index, starting with index 0.
-Any change to the palette is immediately visible on screen.
+256 for 8bpp). The array elements must be integer values holding packed colors
+in the form described above. The colors stored into arrayname starting with
+given idx index are then assigned to each palette index, starting with index
+0. Any change to the palette is immediately visible on screen.
 
 
 Example:
