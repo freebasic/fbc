@@ -9,6 +9,9 @@
 '$inclib: "glut32"
 #elseif defined(FB__LINUX)
 '$inclib: "glut" 
+#elseif defined(FB__DOS)
+'$inclib: "GLUT" 
+'$inclib: "alleg"
 #endif
 
 '' Display mode bit masks. 

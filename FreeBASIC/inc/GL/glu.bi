@@ -9,7 +9,13 @@
 #define glu_bi
 
 
+#ifdef FB__WIN32
 '$inclib: "glu32"
+#elseif defined(FB__LINUX)
+'$inclib: "GLU"
+#elseif defined(FB__DOS)
+'$inclib: "glu"
+#endif
 
 #ifndef gl_bi
 	'$include: "GL/gl.bi"
