@@ -1,3 +1,21 @@
+/*
+ *  Copyright (C) 2004 Sterling Christensen (sterling@engineer.com)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
 #ifndef QB_GFX_MAIN_H
 #define QB_GFX_MAIN_H
 
@@ -99,6 +117,9 @@ FBCALL void fb_GfxSetEventMask (int mask);
        FBSTRING* fb_GfxInkey(void);
        int fb_GfxInkeyEx    (void);
 
+FBCALL void fb_GfxTransCoord (float x, float y, Sint16 *rx, Sint16 *ry);
+FBCALL void fb_GfxConvertCoords (float *x1, float *y1, float *x2, float *y2, int coordType);
+
 FBCALL int fb_GfxScreen (int width, int height, int depth, int fullScreenFlag);
 
 /* -32768 in each for full screen */
@@ -117,6 +138,7 @@ FBCALL Uint32 fb_GfxRgb     (Uint8 r, Uint8 g, Uint8 b);
 
 FBCALL int fb_GfxPset       (float x, float y, Uint32 color, int coordType);
 FBCALL int fb_GfxPsetEx     (Sint16 x, Sint16 y, Uint32 color);
+FBCALL int fb_GfxPsetNoLocking (Sint16 x, Sint16 y, Uint32 color);
 
 /* Returns -1 for out of bounds in 8 bit modes (like QB), DEFAULT_COLOR in other modes
    because -1 (0xFFFFFFFF) is opaque bright white in un-paletted modes (0xRRGGBBAA) */

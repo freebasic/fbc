@@ -1,13 +1,5 @@
 /*
- *  The following routines are based on code from the SDL_gfx library,
- *  which is licensed under the LGPL and Copyrighted (C) by A. Schiffler:
- *      fb_GfxFEllipseEx, fb_GfxEllipseEx, fb_GfxClipLine, fb_GfxLineEx,
- *      fb_GfxPset, fb_GfxPoint
- *
- *  fb_GfxInkey and fb_GfxInkeyEx are modified versions of code written
- *  and Copyrighted (C) 2004 by Marzec
- *
- *  All other code Copyright (C) 2004 Sterling Christensen
+ *  Copyright (C) 2004 Sterling Christensen (sterling@engineer.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -342,6 +334,4 @@ FBCALL int fb_GfxFlip (int frompage, int topage)
 
     return 0;
 }
-
-
 
