@@ -3676,6 +3676,7 @@ private sub hAddGfxLibs
 	fbAddLibPath( "/usr/X11R6/lib" )
 	symbAddLib( "X11" )
 	symbAddLib( "Xext" )
+	symbAddLib( "Xpm" )
 	symbAddLib( "Xxf86vm" )
 	symbAddLib( "pthread" )
 #endif
