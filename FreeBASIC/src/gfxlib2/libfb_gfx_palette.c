@@ -86,12 +86,12 @@ const unsigned char fb_vga_palette[256][3] = {
 unsigned int fb_hMakeColor(int index, int r, int g, int b)
 {
 	unsigned int color;
-	
+
 	if (fb_mode->bpp == 2)
 		color = (b >> 3) | ((g << 3) & 0x07E0) | ((r << 8) & 0xF800);
 	else
 		color = index;
-	
+
 	return color;
 }
 
@@ -107,7 +107,7 @@ unsigned int fb_hFixColor(unsigned int color)
 static void set_color(int index, unsigned int color)
 {
 	color = (color & 0x3F3F3F) << 2;
-	
+
 	fb_mode->palette[index] = color;
 	fb_mode->driver->set_palette(index, color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF);
 }
@@ -118,12 +118,12 @@ FBCALL void fb_GfxPalette(int index, unsigned int color)
 {
 	int i, r, g, b;
 	const unsigned char *palette;
-	
+
 	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
-	
+
 	fb_mode->driver->lock();
-	
+
 	if (index < 0) {
 		palette = fb_mode->default_palette;
 		for (i = 0; i < (1 << fb_mode->depth); i++) {
@@ -139,9 +139,9 @@ FBCALL void fb_GfxPalette(int index, unsigned int color)
 		}
 		set_color(index, color);
 	}
-	
+
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
-	
+
 	fb_mode->driver->unlock();
 }
 
@@ -150,18 +150,18 @@ FBCALL void fb_GfxPalette(int index, unsigned int color)
 FBCALL void fb_GfxPaletteUsing(int *data)
 {
 	int i;
-	
+
 	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
-	
+
 	fb_mode->driver->lock();
-	
-	for (i = 0; i < 256; i++) {
+
+	for (i = 0; i < (1 << fb_mode->depth); i++) {
 		if (data[i] >= 0)
 			set_color(i, data[i]);
 	}
-	
+
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
-	
+
 	fb_mode->driver->unlock();
 }
