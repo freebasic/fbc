@@ -82,10 +82,10 @@ static void update_screen()
 {
 	RECT src, dest;
 	POINT point;
-	
+
 	if (mode_fullscreen)
 		return;
-	
+
 	src.left = src.top = 0;
 	src.right = mode_w;
 	src.bottom = mode_h;
@@ -99,6 +99,22 @@ static void update_screen()
 	IDirectDrawSurface_Blt(lpDDS, &dest, lpDDS_back, &src, DDBLT_WAIT, NULL);
 }
 
+/*:::::*/
+static int calc_comp_height( int h )
+{
+	if( h < 240 )
+		return 240;
+	else if( h < 480 )
+		return 480;
+	else if( h < 600 )
+		return 480;
+	else if( h < 768 )
+		return 768;
+	else if( h < 1024 )
+		return 1024;
+	else
+		return 0;
+}
 
 /*:::::*/
 static int private_init()
@@ -108,45 +124,59 @@ static int private_init()
 	DIRECTDRAWCREATE DirectDrawCreate;
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
-	int depth, is_rgb = FALSE;
-	
+	int depth, is_rgb = FALSE, height;
+
 	lpDD = NULL;
 	lpDDS = NULL;
 	lpDDS_back = NULL;
 	lpDDP = NULL;
-	
+
 	library = (HMODULE)LoadLibrary("ddraw.dll");
 	if (!library)
 		return -1;
-	
+
 	DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(library, "DirectDrawCreate");
 	if (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK)
 		return -1;
-	
+
 	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
 	wndclass.lpfnWndProc = win_proc;
 	wndclass.lpszClassName = window_title;
-	
+
 	rect.left = rect.top = 0;
 	rect.right = mode_w;
 	rect.bottom = mode_h;
-	
+
 	if (mode_fullscreen) {
 		RegisterClass(&wndclass);
 		wnd = CreateWindow(window_title, window_title, WS_POPUP | WS_VISIBLE, 0, 0,
 				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, 0, NULL);
 		if (IDirectDraw_SetCooperativeLevel(lpDD, wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
 			return -1;
-		if (IDirectDraw_SetDisplayMode(lpDD, mode_w, mode_h, mode_depth) != DD_OK) {
+
+		height = mode_h;
+		while( 1 )
+		{
+			if (IDirectDraw_SetDisplayMode(lpDD, mode_w, height, mode_depth) == DD_OK)
+				break;
+
 			depth = mode_depth;
-			switch (mode_depth) {
+			switch (mode_depth)
+			{
 				case 15: depth = 16; break;
 				case 16: depth = 15; break;
 				case 24: depth = 32; break;
 				case 32: depth = 24; break;
 			}
-			if ((depth == mode_depth) || (IDirectDraw_SetDisplayMode(lpDD, mode_w, mode_h, depth) != DD_OK))
-				return -1;
+
+			if ((depth == mode_depth) || (IDirectDraw_SetDisplayMode(lpDD, mode_w, height, depth) != DD_OK))
+			{
+				height = calc_comp_height( height );
+				if( height == 0 )
+					return -1;
+			}
+			else
+				break;
 		}
 	}
 	else {
@@ -172,7 +202,7 @@ static int private_init()
 	desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 	if (IDirectDraw_CreateSurface(lpDD, &desc, &lpDDS, NULL) != DD_OK)
 		return -1;
-	
+
 	if (!mode_fullscreen) {
 		if (IDirectDrawSurface_SetClipper(lpDDS, lpDDC) != DD_OK)
 			return -1;
@@ -185,13 +215,13 @@ static int private_init()
 	}
 	else
 		lpDDS_back = lpDDS;
-	
+
 	format.dwSize = sizeof(format);
 	if (IDirectDrawSurface_GetPixelFormat(lpDDS, &format) != DD_OK)
 		return -1;
 	if (!(format.dwFlags & DDPF_RGB))
 		return -1;
-	
+
 	if (format.dwRGBBitCount == 8) {
 		if (IDirectDraw_CreatePalette(lpDD, DDPCAPS_8BIT | DDPCAPS_INITIALIZE | DDPCAPS_ALLOW256,
 					      palette, &lpDDP, NULL) != DD_OK)
@@ -199,7 +229,7 @@ static int private_init()
 		IDirectDrawSurface_SetPalette(lpDDS, lpDDP);
 		is_palette_changed = FALSE;
 	}
-	
+
 	depth = format.dwRGBBitCount;
 	if ((format.dwRGBBitCount == 16) && (format.dwGBitMask == 0x03E0))
 		depth = 15;
@@ -210,9 +240,9 @@ static int private_init()
 	blitter = fb_hGetBlitter(depth, is_rgb);
 	if (!blitter)
 		return -1;
-	
+
 	SetForegroundWindow(wnd);
-	
+
 	return 0;
 }
 
@@ -221,7 +251,7 @@ static int private_init()
 static void private_exit()
 {
 	DDBLTFX bltfx;
-	
+
 	if (lpDD) {
 		if (mode_fullscreen && lpDDS) {
 			bltfx.dwSize = sizeof(bltfx);
@@ -261,17 +291,17 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			else
 				result = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
-		
+
 		case WM_ACTIVATEAPP:
 			if (mode_fullscreen)
 				is_active = (int)wParam;
 			result = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
-		
+
 		case WM_SIZE:
 			if (wParam != SIZE_MAXIMIZED)
 				return DefWindowProc(hWnd, message, wParam, lParam);
-		
+
 		case WM_SYSKEYDOWN:
 			if ((message == WM_SIZE) || ((wParam == VK_RETURN) && (lParam & 0x20000000))) {
 				private_exit();
@@ -290,7 +320,7 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 		case WM_KEYDOWN:
 			switch (wParam) {
-				
+
 				case VK_UP:		key = KEY_UP;		break;
 				case VK_DOWN:		key = KEY_DOWN;		break;
 				case VK_LEFT:		key = KEY_LEFT;		break;
@@ -311,7 +341,7 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 				case VK_F8:
 				case VK_F9:
 				case VK_F10:		key = KEY_F(wParam - VK_F1 + 1); break;
-				
+
 				default:
 					GetKeyboardState(key_state);
 					if (ToAscii(wParam, (lParam >> 16) & 0xff, key_state, &key, 0) != 1)
@@ -325,21 +355,21 @@ static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 			}
 			result = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
-		
+
 		case WM_CLOSE:
 			key_buffer[key_tail] = KEY_QUIT;
 			if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) != key_head)
 				key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
 			break;
-		
+
 		case WM_PAINT:
 			update_screen();
-		
+
 		default:
 			result = DefWindowProc(hWnd, message, wParam, lParam);
 			break;
 	}
-	
+
 	return result;
 }
 
@@ -349,22 +379,22 @@ static void window_thread(HANDLE running_event)
 {
 	DDSURFACEDESC desc;
 	MSG message;
-		
+
 	if (private_init())
 		goto error;
-	
+
 	SetEvent(running_event);
 	is_active = TRUE;
-	
+
 	while (is_running)
 	{
 		ddraw_lock();
-		
+
 		if (is_active) {
 			IDirectDrawSurface_Restore(lpDDS);
 			if (!mode_fullscreen)
 				IDirectDrawSurface_Restore(lpDDS_back);
-			
+
 			if (is_palette_changed && lpDDP) {
 				IDirectDrawPalette_SetEntries(lpDDP, 0, 0, 256, palette);
 				is_palette_changed = FALSE;
@@ -375,21 +405,21 @@ static void window_thread(HANDLE running_event)
 				IDirectDrawSurface_Unlock(lpDDS_back, desc.lpSurface);
 				fb_hMemSet(fb_mode->dirty, FALSE, mode_h);
 			}
-			
+
 			update_screen();
 		}
-		
+
 		while (PeekMessage(&message, wnd, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-		
+
 		ddraw_unlock();
-		
+
 		Sleep(10);
 		ddraw_wait_vsync();
 	}
-	
+
 error:
 	private_exit();
 }
@@ -401,15 +431,15 @@ static int ddraw_init(char *title, int w, int h, int depth, int flags)
 	DIRECTDRAWCREATE DirectDrawCreate;
 	HANDLE events[2];
 	long result;
-    	
+
 	window_title = title;
 	mode_w = w;
 	mode_h = h;
 	mode_depth = depth;
 	mode_fullscreen = flags & DRIVER_FULLSCREEN;
-	
+
 	is_running = TRUE;
-	
+
 	InitializeCriticalSection(&update_lock);
 	events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
 	events[1] = (HANDLE)_beginthread(window_thread, 0, events[0]);
@@ -420,12 +450,12 @@ static int ddraw_init(char *title, int w, int h, int depth, int flags)
 		DeleteCriticalSection(&update_lock);
 		return -1;
 	}
-	
+
 	SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
-	
+
 	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
-	
+
 	return 0;
 }
 
@@ -458,7 +488,7 @@ static void ddraw_unlock(void)
 static void ddraw_set_palette(int index, int r, int g, int b)
 {
 	/* assumes lock to be held */
-	
+
 	palette[index].peRed = r;
 	palette[index].peGreen = g;
 	palette[index].peBlue = b;
@@ -478,7 +508,7 @@ static void ddraw_wait_vsync(void)
 static int ddraw_get_key(int wait)
 {
 	int key = 0;
-	
+
 	if (wait) {
 		do {
 			key = ddraw_get_key(FALSE);
@@ -486,15 +516,15 @@ static int ddraw_get_key(int wait)
 		} while(!key);
 		return key;
 	}
-		
+
 	ddraw_lock();
-	
+
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
-	
+
 	ddraw_unlock();
-	
+
 	return key;
 }
