@@ -40,6 +40,8 @@ Version 0.13 Beta:
 - LEN() was not working when string concatenation was used (v1c)
 - STRPTR()/SADD() were not checking for constants (v1c)
 - char 255 was seen as -1 due the unsigned to signed bug listed above, making lexSkipLine fail when that char was used inside a comment (v1c)
+- unsigned versions for READ were missing (v1c)
+- field arrays starting at offset 0 with a lbound <> 0 would cause an access to the wrong fields, 'cause a bug at parser3 (v1c)
 
 
 Version 0.12 Beta:
