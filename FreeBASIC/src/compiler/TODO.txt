@@ -1,23 +1,51 @@
 
-[ ] all rtl routines should check astNewPARAM for INVALID and parser6/7 should check the result
-
 [ ] OPTION's should be preserved when changed inside include files
 
-[ ] "ON expr GOTO|GOSUB label" is wrong, expr is an integer index into the label list
+[ ] PEEK(SymbolType, Expression) and POKE(SymbolType, Expression) as in PB 8
+
+[ ] add support for BYVAL strings -- they are a pointer already, so when used as argument AST
+    will have to handle that
+
+[ ] update glut.bi with the changes received
+
+[ ] update comctrl.bi adding ALL the #define's
+
+[ ] make the damn icon 16x16 and transparent
+
+[ ] rewrite the IR module using pointers instead of indexes, to be able to make fast links between
+    a vreg and a TAC node later, so no MaxDistance will be needed
+
+[ ] parser should never call IR directly, or no inline functions can be added (or never-called
+    private functions eliminated). For that be done, all labels must be handled by AST, DATA, ASM,
+    var initializers and jump tbs too (rtlCheckError is problem too), all IR/AST flush calls must be
+    changed to astLink or such, that will add the new node to a list of nodes, that will be flushed
+    only a new function is started or when the end of file is reached -- should it be better done as
+    a CFG-like than handled at AST that is becoming more and more complex (don't make the AST a
+    parser tree!)?
 
 *** *** *** *** ***
-[ ] macros   -- with recursive expansion and local vars
+[ ] macros   -- single line, with recursive expansion, same as in C's #define's, not PB MACRO's
+
+[ ] inline functions -- better than macros as they can be "turned off" when debugged (AST will need some kind of "link"
+                        node to glue all nodes parsed, and they can't be flushed by any part of the parser -- everything
+                        must be done at the AST then, no IR calls at the parser.. quite hard to do due the var
+                        initializers, etc)
+
 [ ] pointer type casting
+
 [ ] full debug support
-[ ] var ini  -- dim myvar as sometype = ( initialvalue ) -- has to support arrays and types too
+
+[ ] var ini  -- dim myvar as sometype = { initialvalue } -- has to support arrays and types too
+
 [ ] typedefs -- can be done with one pass? ie, it should allow:
 		typedef bleh as bar
 		type foo: b as bleh ptr: end type
 		type bar: f as foo ptr: end type
+
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 
 *** yet another optimizations ***
-[ ] idx is being loaded twice even been already a register
+[ ] reuse temp vars (or just strings), so less mem is used and less strDel's are needed inside procs
 [ ] get hide of double fxch's (needs peephole optimization at EMIT)
 [ ] load after store elimination (at IR?)
 [ ] use CMOV when possible on 686 (maybe at IR, but probably requires peephole at EMIT)

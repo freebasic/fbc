@@ -39,6 +39,8 @@ type RTLCTX
     labelcnt 		as integer
 end type
 
+declare sub 		rtlCheckError		( byval vr as integer, byval reslabel as FBSYMBOL ptr )
+
 
 ''globals
 	dim shared ctx as RTLCTX
@@ -92,20 +94,20 @@ data "fb_StrAllocTempDesc","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
 
 '' fb_ArrayRedim CDECL ( array() as ANY, byval elementlen as integer, _
 ''					     byval isvarlen as integer, byval preserve as integer, _
-''						 byval dimensions as integer, ... ) as void
-data "fb_ArrayRedim","", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 6, _
+''						 byval dimensions as integer, ... ) as integer
+data "fb_ArrayRedim","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 6, _
 						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 -1,-1, FALSE
-'' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as void
-data "fb_ArrayErase","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+'' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as integer
+data "fb_ArrayErase","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
 						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as void
-data "fb_ArrayClear","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+'' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as integer
+data "fb_ArrayClear","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
 						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer
@@ -1627,12 +1629,15 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval dimensions as integer, _
-				   exprTB() as integer, byval dopreserve as integer ) static
+function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval dimensions as integer, _
+				        exprTB() as integer, byval dopreserve as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer, isvarlen as integer
     dim i as integer, vr as integer
+    dim reslabel as FBSYMBOL ptr
+
+    rtlArrayRedim = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.ARRAYREDIM)
@@ -1641,11 +1646,15 @@ sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval d
     '' array() as ANY
     dtype =  symbGetType( s )
 	t = astNewVAR( s, NULL, 0, dtype )
-    astNewPARAM( proc, t, dtype )
+    if( astNewPARAM( proc, t, dtype ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval element_len as integer
 	t = astNewCONST( elementlen, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval isvarlen as integer
 	isvarlen = FALSE
@@ -1653,38 +1662,62 @@ sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval d
 		isvarlen = not hIsStrFixed( dtype )
 	end if
 	t = astNewCONST( isvarlen, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval preserve as integer
 	t = astNewCONST( dopreserve, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval dimensions as integer
 	t = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	'' ...
 	for i = 0 to dimensions-1
 		t = exprTB(i,0)
 		dtype = astGetDataType( t )
-		astNewPARAM( proc, t, dtype )
+		if( astNewPARAM( proc, t, dtype ) = INVALID ) then
+    		exit function
+    	end if
 
 		t = exprTB(i,1)
 		dtype = astGetDataType( t )
-		astNewPARAM( proc, t, dtype )
+		if( astNewPARAM( proc, t, dtype ) = INVALID ) then
+    		exit function
+    	end if
 	next i
+
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( hMakeTmpStr )
+    	irEmitLABEL reslabel, FALSE
+    else
+    	reslabel = NULL
+    end if
 
     ''
 	astFlush proc, vr
 
-end sub
+	rtlCheckError vr, reslabel
+
+	rtlArrayRedim = TRUE
+
+end function
 
 '':::::
-sub rtlArrayErase( byval arrayexpr as integer ) static
+function rtlArrayErase( byval arrayexpr as integer ) as integer static
     dim s as FBSYMBOL ptr
     dim proc as integer, f as FBSYMBOL ptr
     dim typ as integer, dtype as integer, t as integer, isvarlen as integer
     dim vr as integer
+
+	rtlArrayErase = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.ARRAYERASE)
@@ -1692,7 +1725,7 @@ sub rtlArrayErase( byval arrayexpr as integer ) static
 
     '' array() as ANY
     if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = INVALID ) then
-    	exit sub
+    	exit function
     end if
 
 	'' byval isvarlen as integer
@@ -1701,18 +1734,24 @@ sub rtlArrayErase( byval arrayexpr as integer ) static
 		isvarlen = not hIsStrFixed( dtype )
 	end if
 	t = astNewCONST( isvarlen, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
     ''
 	astFlush proc, vr
 
-end sub
+	rtlArrayErase = TRUE
+
+end function
 
 '':::::
-sub rtlArrayClear( byval arrayexpr as integer ) static
+function rtlArrayClear( byval arrayexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim isvarlen as integer, dtype as integer
     dim vr as integer
+
+    rtlArrayClear = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.ARRAYCLEAR)
@@ -1720,7 +1759,7 @@ sub rtlArrayClear( byval arrayexpr as integer ) static
 
     '' array() as ANY
     if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = INVALID ) then
-    	exit sub
+    	exit function
     end if
 
 	'' byval isvarlen as integer
@@ -1730,19 +1769,24 @@ sub rtlArrayClear( byval arrayexpr as integer ) static
 	if( hIsString( dtype ) ) then
 		isvarlen = not hIsStrFixed( dtype )
 	end if
-	astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
     ''
 	astFlush proc, vr
 
-end sub
+	rtlArrayClear = TRUE
+
+end function
 
 '':::::
-sub rtlArrayStrErase( byval s as FBSYMBOL ptr ) static
-
+function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer, isvarlen as integer
     dim vr as integer
+
+	rtlArrayStrErase = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.ARRAYSTRERASE)
@@ -1751,12 +1795,16 @@ sub rtlArrayStrErase( byval s as FBSYMBOL ptr ) static
     '' array() as ANY
     dtype = symbGetType( s )
 	t = astNewVAR( s, NULL, 0, dtype )
-    astNewPARAM( proc, t, dtype )
+    if( astNewPARAM( proc, t, dtype ) = INVALID ) then
+    	exit function
+    end if
 
     ''
 	astFlush proc, vr
 
-end sub
+	rtlArrayStrErase = TRUE
+
+end function
 
 '':::::
 function rtlArrayBound( byval sexpr as integer, byval dimexpr as integer, byval islbound as integer ) as integer static
@@ -1789,12 +1837,14 @@ function rtlArrayBound( byval sexpr as integer, byval dimexpr as integer, byval 
 end function
 
 '':::::
-sub rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
-					 byval dimensions as integer, dTB() as FBARRAYDIM ) static
+function rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
+					      byval dimensions as integer, dTB() as FBARRAYDIM ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer
     dim i as integer, vr as integer
+
+    rtlArraySetDesc = FALSE
 
 	f = ifuncTB(FB.RTL.ARRAYSETDESC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4+dimensions*2 )
@@ -1802,32 +1852,46 @@ sub rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
     '' array() as ANY
     dtype =  symbGetType( s )
 	t = astNewVAR( s, NULL, 0, dtype )
-    astNewPARAM( proc, t, dtype )
+    if( astNewPARAM( proc, t, dtype ) = INVALID ) then
+		exit function
+	end if
 
 	'' arraydata as any
 	t = astNewVAR( s, NULL, 0, dtype )
-    astNewPARAM( proc, t, dtype )
+    if( astNewPARAM( proc, t, dtype ) = INVALID ) then
+		exit function
+	end if
 
 	'' byval element_len as integer
 	t = astNewCONST( elementlen, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+		exit function
+	end if
 
 	'' byval dimensions as integer
 	t = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+		exit function
+	end if
 
 	'' ...
 	for i = 0 to dimensions-1
 		t = astNewCONST( dTB(i).lower, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+			exit function
+		end if
 		t = astNewCONST( dTB(i).upper, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+			exit function
+		end if
 	next i
 
     ''
 	astFlush proc, vr
 
-end sub
+	rtlArraySetDesc = TRUE
+
+end function
 
 '':::::
 function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMBOL ptr ) as integer
@@ -1836,6 +1900,8 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMB
     dim s as FBSYMBOL ptr
     dim d as FBVARDIM ptr
     dim dimensions as integer
+
+	rtlArrayAllocTmpDesc = INVALID
 
 	s = astGetSymbol( arrayexpr )
 
@@ -1846,26 +1912,38 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMB
 
     '' byref pdesc as any ptr
 	t = astNewVAR( pdesc, NULL, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
-    astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+    if( astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID ) = INVALID ) then
+    	exit function
+    end if
 
     '' byref arraydata as any
-    astNewPARAM( proc, arrayexpr, IR.DATATYPE.VOID )
+    if( astNewPARAM( proc, arrayexpr, IR.DATATYPE.VOID ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval element_len as integer
 	t = astNewCONST( symbGetLen( s ), IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	'' byval dimensions as integer
 	t = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
 	'' ...
     d = symbGetArrayFirstDim( s )
     do while( d <> NULL )
 		t = astNewCONST( d->lower, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    		exit function
+    	end if
 		t = astNewCONST( d->upper, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+    		exit function
+    	end if
 
 		'' next
 		d = d->r
@@ -1880,12 +1958,16 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer
 
+	rtlArrayFreeTempDesc = INVALID
+
 	f = ifuncTB(FB.RTL.ARRAYFREETMPDESC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' byval pdesc as any ptr
 	t = astNewVAR( pdesc, NULL, 0, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
-    astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID )
+    if( astNewPARAM( proc, t, IR.DATATYPE.POINTER+IR.DATATYPE.VOID ) = INVALID ) then
+    	exit function
+    end if
 
     rtlArrayFreeTempDesc = proc
 
@@ -1896,10 +1978,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub rtlDataRead( byval varexpr as integer ) static
-
+function rtlDataRead( byval varexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr, args as integer
     dim vr as integer, dtype as integer, lgt as integer
+
+    rtlDataRead = FALSE
 
 	f = NULL
 	select case astGetDataClass( varexpr )
@@ -1935,7 +2018,9 @@ sub rtlDataRead( byval varexpr as integer ) static
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' byref var as any
-    astNewPARAM( proc, varexpr, INVALID )
+    if( astNewPARAM( proc, varexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( args = 2 ) then
 		'' byval dst_size as integer
@@ -1946,21 +2031,26 @@ sub rtlDataRead( byval varexpr as integer ) static
 			if( lgt < 0 ) then lgt = 0
 		end if
 		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+		if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlDataRead = TRUE
+
+end function
 
 '':::::
-sub rtlDataRestore( byval label as FBSYMBOL ptr ) static
-
+function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
     dim lname as string
     dim s as FBSYMBOL ptr
+
+    rtlDataRestore = FALSE
 
 	f = ifuncTB(FB.RTL.DATARESTORE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
@@ -1979,15 +2069,18 @@ sub rtlDataRestore( byval label as FBSYMBOL ptr ) static
     end if
 
     '' byval labeladdrs as void ptr
-    s = astNewVAR( s, NULL, 0, IR.DATATYPE.UINT )
-    label = astNewADDR( IR.OP.ADDROF, s )
+    label = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.UINT ), s )
 
-    astNewPARAM( proc, label, INVALID )
+    if( astNewPARAM( proc, label, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
 	''
 	astFlush proc, vr
 
-end sub
+	rtlDataRestore = TRUE
+
+end function
 
 '':::::
 sub rtlDataStoreBegin static
@@ -2049,12 +2142,14 @@ sub rtlDataStoreBegin static
 end sub
 
 '':::::
-sub rtlDataStore( littext as string, byval litlen as integer, byval typ as integer ) static
+function rtlDataStore( littext as string, byval litlen as integer, byval typ as integer ) as integer static
 
 	'' emit will take care of all dirty details
 	emitDATA littext, litlen, typ
 
-end sub
+	rtlDataStore = TRUE
+
+end function
 
 '':::::
 sub rtlDataStoreEnd static
@@ -2229,10 +2324,13 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemicolon as integer, byval expr as integer )
+function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemicolon as integer, _
+				   byval expr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer, args as integer
     dim vr as integer, dtype as integer
+
+    rtlPrint = FALSE
 
 	if( expr = INVALID ) then
 		f = ifuncTB(FB.RTL.PRINTVOID)
@@ -2273,11 +2371,15 @@ sub rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemic
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' byval filenum as integer
-    astNewPARAM( proc, fileexpr, INVALID )
+    if( astNewPARAM( proc, fileexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( expr <> INVALID ) then
     	'' byval? x as ???
-    	astNewPARAM( proc, expr, INVALID )
+    	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     '' byval mask as integer
@@ -2289,58 +2391,78 @@ sub rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemic
 	end if
 
 	t = astNewCONST( mask, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlPrint = TRUE
+
+end function
 
 '':::::
-sub rtlPrintSPC( byval fileexpr as integer, byval expr as integer ) static
+function rtlPrintSPC( byval fileexpr as integer, byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlPrintSPC = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.PRINTSPC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, fileexpr, INVALID )
+    if( astNewPARAM( proc, fileexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval n as integer
-    astNewPARAM( proc, expr, INVALID )
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     astFlush proc, vr
 
-end sub
+    rtlPrintSPC = TRUE
+
+end function
 
 '':::::
-sub rtlPrintTab( byval fileexpr as integer, byval expr as integer ) static
+function rtlPrintTab( byval fileexpr as integer, byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlPrintTab = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.PRINTTAB)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, fileexpr, INVALID )
+    if( astNewPARAM( proc, fileexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval newcol as integer
-    astNewPARAM( proc, expr, INVALID )
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     astFlush proc, vr
 
-end sub
+    rtlPrintTab = TRUE
+
+end function
 
 '':::::
-sub rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as integer )
+function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer, args as integer
     dim vr as integer, dtype as integer
+
+	rtlWrite = FALSE
 
 	if( expr = INVALID ) then
 		f = ifuncTB(FB.RTL.WRITEVOID)
@@ -2381,11 +2503,15 @@ sub rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' byval filenum as integer
-    astNewPARAM( proc, fileexpr, INVALID )
+    if( astNewPARAM( proc, fileexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( expr <> INVALID ) then
     	'' byval? x as ???
-    	astNewPARAM( proc, expr, INVALID )
+    	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     '' byval mask as integer
@@ -2397,55 +2523,71 @@ sub rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as
 	end if
 
 	t = astNewCONST( mask, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlWrite = FALSE
+
+end function
 
 '':::::
-sub rtlPrintUsingInit( byval usingexpr as integer ) static
+function rtlPrintUsingInit( byval usingexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlPrintUsingInit = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.PRINTUSGINIT)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' fmtstr as string
-    astNewPARAM( proc, usingexpr, INVALID )
+    if( astNewPARAM( proc, usingexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     astFlush proc, vr
 
-end sub
+    rtlPrintUsingInit = TRUE
+
+end function
 
 '':::::
-sub rtlPrintUsingEnd( byval fileexpr as integer ) static
+function rtlPrintUsingEnd( byval fileexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlPrintUsingEnd = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.PRINTUSGEND)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, fileexpr, INVALID )
+    if( astNewPARAM( proc, fileexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     astFlush proc, vr
 
-end sub
+    rtlPrintUsingEnd = TRUE
+
+end function
 
 '':::::
-sub rtlPrintUsing( byval fileexpr as integer, byval expr as integer, byval issemicolon as integer )
+function rtlPrintUsing( byval fileexpr as integer, byval expr as integer, _
+						byval issemicolon as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer
     dim vr as integer
 
-	astUpdNodeResult expr
+	rtlPrintUsing = FALSE
 
+	astUpdNodeResult expr
 	select case astGetDataType( expr )
 	case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
 		f = ifuncTB(FB.RTL.PRINTUSGSTR)
@@ -2457,10 +2599,14 @@ sub rtlPrintUsing( byval fileexpr as integer, byval expr as integer, byval issem
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, fileexpr, INVALID )
+    if( astNewPARAM( proc, fileexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' s as string or byval v as double
-    astNewPARAM( proc, expr, INVALID )
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval mask as integer
 	mask = 0
@@ -2469,22 +2615,27 @@ sub rtlPrintUsing( byval fileexpr as integer, byval expr as integer, byval issem
 	end if
 
 	t = astNewCONST( mask, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlPrintUsing = TRUE
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub rtlExit( byval errlevel as integer ) static
+function rtlExit( byval errlevel as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlExit = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.END)
@@ -2494,30 +2645,42 @@ sub rtlExit( byval errlevel as integer ) static
     if( errlevel = INVALID ) then
     	errlevel = astNewCONST( 0, IR.DATATYPE.INTEGER )
     end if
-    astNewPARAM( proc, errlevel, INVALID )
+    if( astNewPARAM( proc, errlevel, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     astFlush proc, vr
 
-end sub
+    rtlExit = TRUE
+
+end function
 
 '':::::
 function rtlMemCopy( byval dst as integer, byval src as integer, byval bytes as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer
 
+	rtlMemCopy = INVALID
+
 	''
 	f = ifuncTB(FB.RTL.MEMCOPY)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' dst as any
-    astNewPARAM( proc, dst, INVALID )
+    if( astNewPARAM( proc, dst, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     '' src as any
-    astNewPARAM( proc, src, INVALID )
+    if( astNewPARAM( proc, src, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     '' byval bytes as integer
     t = astNewCONST( bytes, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, t, INVALID )
+    if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     ''
     rtlMemCopy = proc
@@ -2525,12 +2688,14 @@ function rtlMemCopy( byval dst as integer, byval src as integer, byval bytes as 
 end function
 
 '':::::
-sub rtlMemSwap( byval dst as integer, byval src as integer ) static
+function rtlMemSwap( byval dst as integer, byval src as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, bytes as integer
     dim vr as integer, vs as integer
     dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
     dim dtype as integer, typ as integer
+
+    rtlMemSwap = FALSE
 
 	'' simple type?
 	dtype = astGetDataType( dst )
@@ -2560,34 +2725,46 @@ sub rtlMemSwap( byval dst as integer, byval src as integer ) static
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' dst as any
-    astNewPARAM( proc, dst, INVALID )
+    if( astNewPARAM( proc, dst, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     '' src as any
-    astNewPARAM( proc, src, INVALID )
+    if( astNewPARAM( proc, src, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     '' byval bytes as integer
 	bytes = hCalcExprLen( dst )
 
     t = astNewCONST( bytes, IR.DATATYPE.INTEGER )
-    astNewPARAM( proc, t, INVALID )
+    if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlMemSwap = TRUE
+
+end function
 
 '':::::
-sub rtlStrSwap( byval str1 as integer, byval str2 as integer ) static
+function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim lgt as integer, s as integer, dtype as integer
     dim vr as integer
+
+	rtlStrSwap = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.STRSWAP)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
 
     '' str1 as any
-    astNewPARAM( proc, str1, IR.DATATYPE.STRING )
+    if( astNewPARAM( proc, str1, IR.DATATYPE.STRING ) = INVALID ) then
+    	exit function
+    end if
 
     '' byval str1len as integer
 	dtype = astGetDataType( str1 )
@@ -2597,10 +2774,14 @@ sub rtlStrSwap( byval str1 as integer, byval str2 as integer ) static
 		if( lgt < 0 ) then lgt = 0
 	end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
     '' str2 as any
-    astNewPARAM( proc, str2, IR.DATATYPE.STRING )
+    if( astNewPARAM( proc, str2, IR.DATATYPE.STRING ) = INVALID ) then
+    	exit function
+    end if
 
     '' byval str1len as integer
 	dtype = astGetDataType( str2 )
@@ -2610,32 +2791,43 @@ sub rtlStrSwap( byval str1 as integer, byval str2 as integer ) static
 		if( lgt < 0 ) then lgt = 0
 	end if
 	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+    	exit function
+    end if
 
     ''
     astFlush proc, vr
 
-end sub
+    rtlStrSwap = TRUE
+
+end function
 
 '':::::
-sub rtlConsoleView ( byval topexpr as integer, byval botexpr as integer )
+function rtlConsoleView ( byval topexpr as integer, byval botexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlConsoleView = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.CONSOLEVIEW)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' byval toprow as integer
-    astNewPARAM( proc, topexpr, INVALID )
+    if( astNewPARAM( proc, topexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     '' byval botrow as integer
-    astNewPARAM( proc, botexpr, INVALID )
+    if( astNewPARAM( proc, botexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
 
     astFlush proc, vr
 
-end sub
+    rtlConsoleView = TRUE
+
+end function
 
 '':::::
 function rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as integer, byval colorflagexpr as integer )
@@ -2644,13 +2836,13 @@ function rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as intege
 	''
 	f = ifuncTB(FB.RTL.CONSOLEREADXY)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
-	
+
 	'' byval column as integer
 	astNewPARAM( proc, columnexpr, INVALID )
-	
+
 	'' byval row as integer
 	astNewPARAM( proc, rowexpr, INVALID )
-	
+
 	'' byval colorflag as integer
 	if( colorflagexpr = INVALID ) then
 		colorflagexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
@@ -2847,33 +3039,47 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub rtlFileOpen( byval filename as integer, byval fmode as integer, byval faccess as integer, _
-				 byval flock, byval filenum as integer, byval flen as integer ) static
+function rtlFileOpen( byval filename as integer, byval fmode as integer, byval faccess as integer, _
+				      byval flock, byval filenum as integer, byval flen as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+	rtlFileOpen = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.FILEOPEN)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 6 )
 
     '' filename as string
-    astNewPARAM( proc, filename, INVALID )
+    if( astNewPARAM( proc, filename, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval mode as integer
-    astNewPARAM( proc, fmode, INVALID )
+    if( astNewPARAM( proc, fmode, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval access as integer
-    astNewPARAM( proc, faccess, INVALID )
+    if( astNewPARAM( proc, faccess, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval lock as integer
-    astNewPARAM( proc, flock, INVALID )
+    if( astNewPARAM( proc, flock, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval len as integer
-    astNewPARAM( proc, flen, INVALID )
+    if( astNewPARAM( proc, flen, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     if( env.clopt.resumeerr ) then
@@ -2888,20 +3094,26 @@ sub rtlFileOpen( byval filename as integer, byval fmode as integer, byval facces
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFileOpen = TRUE
+
+end function
 
 '':::::
-sub rtlFileClose( byval filenum as integer ) static
+function rtlFileClose( byval filenum as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+	rtlFileClose = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.FILECLOSE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     if( env.clopt.resumeerr ) then
@@ -2916,23 +3128,31 @@ sub rtlFileClose( byval filenum as integer ) static
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFileClose = TRUE
+
+end function
 
 '':::::
-sub rtlFileSeek( byval filenum as integer, byval newpos as integer ) static
+function rtlFileSeek( byval filenum as integer, byval newpos as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+	rtlFileSeek = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.FILESEEK)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval newpos as integer
-    astNewPARAM( proc, newpos, INVALID )
+    if( astNewPARAM( proc, newpos, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     if( env.clopt.resumeerr ) then
@@ -2947,20 +3167,25 @@ sub rtlFileSeek( byval filenum as integer, byval newpos as integer ) static
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFileSeek = TRUE
+
+end function
 
 '':::::
 function rtlFileTell( byval filenum as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-
     dim vr as integer
+
+    rtlFileTell = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.FILETELL)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     rtlFileTell = proc
@@ -2968,11 +3193,14 @@ function rtlFileTell( byval filenum as integer ) as integer static
 end function
 
 '':::::
-sub rtlFilePut( byval filenum as integer, byval offset as integer, byval src as integer ) static
+function rtlFilePut( byval filenum as integer, byval offset as integer, _
+					 byval src as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+    rtlFilePut = FALSE
 
 	''
 	dtype = astGetDataType( src )
@@ -2987,22 +3215,30 @@ sub rtlFilePut( byval filenum as integer, byval offset as integer, byval src as 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval offset as integer
     if( offset = INVALID ) then
     	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
     end if
-    astNewPARAM( proc, offset, INVALID )
+    if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' value as any | s as string
-    astNewPARAM( proc, src, INVALID )
+    if( astNewPARAM( proc, src, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( args = 4 ) then
     	'' byval valuelen as integer
     	lgt = hCalcExprLen( src )
     	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-    	astNewPARAM( proc, lgt, INVALID )
+    	if( astNewPARAM( proc, lgt, INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     ''
@@ -3018,31 +3254,40 @@ sub rtlFilePut( byval filenum as integer, byval offset as integer, byval src as 
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFilePut = TRUE
+
+end function
 
 '':::::
-sub rtlFilePutArray( byval filenum as integer, byval offset as integer, byval src as integer ) static
+function rtlFilePutArray( byval filenum as integer, byval offset as integer, _
+						  byval src as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+    rtlFilePutArray = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.FILEPUTARRAY)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval offset as integer
     if( offset = INVALID ) then
     	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
     end if
-    astNewPARAM( proc, offset, INVALID )
+    if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' array() as any
     if( astNewPARAM( proc, src, INVALID ) = INVALID ) then
-    	exit sub
+    	exit function
     end if
 
     ''
@@ -3058,14 +3303,19 @@ sub rtlFilePutArray( byval filenum as integer, byval offset as integer, byval sr
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFilePutArray = TRUE
+
+end function
 
 '':::::
-sub rtlFileGet( byval filenum as integer, byval offset as integer, byval dst as integer ) static
+function rtlFileGet( byval filenum as integer, byval offset as integer, _
+					 byval dst as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+    rtlFileGet = FALSE
 
 	''
 	dtype = astGetDataType( dst )
@@ -3080,22 +3330,30 @@ sub rtlFileGet( byval filenum as integer, byval offset as integer, byval dst as 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval offset as integer
     if( offset = INVALID ) then
     	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
     end if
-    astNewPARAM( proc, offset, INVALID )
+    if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' value as any | s as string
-    astNewPARAM( proc, dst, INVALID )
+    if( astNewPARAM( proc, dst, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( args = 4 ) then
     	'' byval valuelen as integer
     	lgt = hCalcExprLen( dst )
     	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-    	astNewPARAM( proc, lgt, INVALID )
+    	if( astNewPARAM( proc, lgt, INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     ''
@@ -3111,31 +3369,40 @@ sub rtlFileGet( byval filenum as integer, byval offset as integer, byval dst as 
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFileGet = TRUE
+
+end function
 
 '':::::
-sub rtlFileGetArray( byval filenum as integer, byval offset as integer, byval dst as integer ) static
+function rtlFileGetArray( byval filenum as integer, byval offset as integer, _
+						  byval dst as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+	rtlFileGetArray = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.FILEGETARRAY)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval offset as integer
     if( offset = INVALID ) then
     	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
     end if
-    astNewPARAM( proc, offset, INVALID )
+    if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' array() as any
     if( astNewPARAM( proc, dst, INVALID ) = INVALID ) then
-    	exit sub
+    	exit function
     end if
 
     ''
@@ -3151,22 +3418,29 @@ sub rtlFileGetArray( byval filenum as integer, byval offset as integer, byval ds
 
     rtlCheckError vr, reslabel
 
-end sub
+    rtlFileGetArray = TRUE
+
+end function
 
 '':::::
 function rtlFileStrInput( byval bytesexpr as integer, byval filenum as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
+    rtlFileStrInput = INVALID
 
 	''
 	f = ifuncTB(FB.RTL.FILESTRINPUT)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' byval bytes as integer
-    astNewPARAM( proc, bytesexpr, INVALID )
+    if( astNewPARAM( proc, bytesexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     rtlFileStrInput = proc
@@ -3174,11 +3448,13 @@ function rtlFileStrInput( byval bytesexpr as integer, byval filenum as integer )
 end function
 
 '':::::
-sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dstexpr as integer, _
-					  byval addquestion as integer, byval addnewline as integer )
+function rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dstexpr as integer, _
+					       byval addquestion as integer, byval addnewline as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
     dim vr as integer
 	dim lgt as integer
+
+	rtlFileLineInput = FALSE
 
 	''
 	if( isfile ) then
@@ -3196,10 +3472,14 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
 		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR )
 	end if
 
-    astNewPARAM( proc, expr, INVALID )
+    if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' dst as any
-    astNewPARAM( proc, dstexpr, INVALID )
+    if( astNewPARAM( proc, dstexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
 	'' byval dstlen as integer
 	lgt = -1
@@ -3207,26 +3487,35 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
 		lgt = hGetFixStrLen( dstexpr )
 		if( lgt < 0 ) then lgt = 0
 	end if
-	astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
+	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( args = 5 ) then
     	'' byval addquestion as integer
-    	astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID )
+ 		if( astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
 
     	'' byval addnewline as integer
-    	astNewPARAM( proc, astNewCONST( addnewline, IR.DATATYPE.INTEGER ), INVALID )
+    	if( astNewPARAM( proc, astNewCONST( addnewline, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     astFlush proc, vr
 
-end sub
+    rtlFileLineInput = TRUE
+
+end function
 
 '':::::
-sub rtlFileInput( byval isfile as integer, byval expr as integer, _
-				  byval addquestion as integer, byval addnewline as integer )
+function rtlFileInput( byval isfile as integer, byval expr as integer, _
+				       byval addquestion as integer, byval addnewline as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
     dim vr as integer
 
+	rtlFileInput = FALSE
 
 	''
 	if( isfile ) then
@@ -3244,25 +3533,34 @@ sub rtlFileInput( byval isfile as integer, byval expr as integer, _
 		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR )
 	end if
 
-	astNewPARAM( proc, expr, INVALID )
+	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( args = 3 ) then
     	'' byval addquestion as integer
-    	astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID )
+    	if( astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
 
     	'' byval addnewline as integer
-    	astNewPARAM( proc, astNewCONST( addnewline, IR.DATATYPE.INTEGER ), INVALID )
+    	if( astNewPARAM( proc, astNewCONST( addnewline, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     astFlush proc, vr
 
-end sub
+    rtlFileInput = TRUE
+
+end function
 
 '':::::
-sub rtlFileInputGet( byval dstexpr as integer )
+function rtlFileInputGet( byval dstexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
     dim vr as integer, lgt as integer
 
+	rtlFileInputGet = FALSE
 
 	''
     astUpdNodeResult dstexpr
@@ -3287,7 +3585,9 @@ sub rtlFileInputGet( byval dstexpr as integer )
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
 
     '' dst as any
-    astNewPARAM( proc, dstexpr, INVALID )
+    if( astNewPARAM( proc, dstexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     if( args > 1 ) then
 		lgt = -1
@@ -3296,18 +3596,24 @@ sub rtlFileInputGet( byval dstexpr as integer )
 			if( lgt < 0 ) then lgt = 0
 		end if
 		lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
-		astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+		if( astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER ) = INVALID ) then
+ 			exit function
+ 		end if
     end if
 
     astFlush proc, vr
 
-end sub
+    rtlFileInputGet = TRUE
+
+end function
 
 '':::::
-sub rtlFileLock( byval islock as integer, byval filenum as integer, byval iniexpr as integer, byval endexpr as integer )
+function rtlFileLock( byval islock as integer, byval filenum as integer, _
+					  byval iniexpr as integer, byval endexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlFileLock = FALSE
 
 	''
 	if( islock ) then
@@ -3319,17 +3625,25 @@ sub rtlFileLock( byval islock as integer, byval filenum as integer, byval iniexp
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' byval filenum as integer
-    astNewPARAM( proc, filenum, INVALID )
+    if( astNewPARAM( proc, filenum, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval inipos as integer
-    astNewPARAM( proc, iniexpr, INVALID )
+    if( astNewPARAM( proc, iniexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval endpos as integer
-    astNewPARAM( proc, endexpr, INVALID )
+    if( astNewPARAM( proc, endexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     astFlush proc, vr
 
-end sub
+    rtlFileLock = TRUE
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' gfx
@@ -3352,25 +3666,35 @@ end sub
 #endif
 
 '':::::
-sub rtlGfxPset( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, byval coordtype as integer )
+function rtlGfxPset( byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, _
+					 byval coordtype as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxPset = FALSE
 
 	f = ifuncTB(FB.RTL.GFXPSET)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
 
  	'' byval x as single
- 	astNewPARAM( proc, xexpr, INVALID )
+ 	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y as single
- 	astNewPARAM( proc, yexpr, INVALID )
+ 	if( astNewPARAM( proc, yexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval color as uinteger
- 	astNewPARAM( proc, cexpr, INVALID )
+ 	if( astNewPARAM( proc, cexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval coordtype as integer
- 	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3380,45 +3704,65 @@ sub rtlGfxPset( byval xexpr as integer, byval yexpr as integer, byval cexpr as i
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxPset = TRUE
+
+end function
 
 '':::::
-sub rtlGfxLine( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
-			    byval cexpr as integer, byval linetype as integer, byval styleexpr as integer, byval coordtype as integer )
+function rtlGfxLine( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, _
+					 byval y2expr as integer, byval cexpr as integer, byval linetype as integer, _
+					 byval styleexpr as integer, byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxLine = FALSE
 
 	f = ifuncTB(FB.RTL.GFXLINE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 8 )
 
  	'' byval x1 as single
- 	astNewPARAM( proc, x1expr, INVALID )
+ 	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y1 as single
- 	astNewPARAM( proc, y1expr, INVALID )
+ 	if( astNewPARAM( proc, y1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x2 as single
- 	astNewPARAM( proc, x2expr, INVALID )
+ 	if( astNewPARAM( proc, x2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y2 as single
- 	astNewPARAM( proc, y2expr, INVALID )
+ 	if( astNewPARAM( proc, y2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval color as uinteger
- 	astNewPARAM( proc, cexpr, INVALID )
+ 	if( astNewPARAM( proc, cexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval linetype as integer
- 	astNewPARAM( proc, astNewCONST( linetype, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( linetype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval style as uinteger
  	if( styleexpr = INVALID ) then
  		styleexpr = astNewCONST( &h0000FFFF, IR.DATATYPE.UINT )
  	end if
- 	astNewPARAM( proc, styleexpr, INVALID )
+ 	if( astNewPARAM( proc, styleexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval coordtype as integer
- 	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3428,55 +3772,76 @@ sub rtlGfxLine( byval x1expr as integer, byval y1expr as integer, byval x2expr a
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxLine = TRUE
+
+end function
 
 '':::::
-sub rtlGfxCircle( byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, byval cexpr as integer, _
-                  byval aspexpr as integer, byval iniexpr as integer, byval endexpr as integer, _
-                  byval fillflag as integer, byval coordtype as integer )
+function rtlGfxCircle( byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, _
+					   byval cexpr as integer, byval aspexpr as integer, byval iniexpr as integer, _
+					   byval endexpr as integer, byval fillflag as integer, byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxCircle = FALSE
 
 	f = ifuncTB(FB.RTL.GFXCIRCLE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 9 )
 
  	'' byval x as single
- 	astNewPARAM( proc, xexpr, INVALID )
+ 	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y as single
- 	astNewPARAM( proc, yexpr, INVALID )
+ 	if( astNewPARAM( proc, yexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval radians as single
- 	astNewPARAM( proc, radexpr, INVALID )
+ 	if( astNewPARAM( proc, radexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval color as uinteger
- 	astNewPARAM( proc, cexpr, INVALID )
+ 	if( astNewPARAM( proc, cexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval aspect as single
  	if( aspexpr = INVALID ) then
  		aspexpr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
  	end if
- 	astNewPARAM( proc, aspexpr, INVALID )
+ 	if( astNewPARAM( proc, aspexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval arcini as single
  	if( iniexpr = INVALID ) then
  		iniexpr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
  	end if
- 	astNewPARAM( proc, iniexpr, INVALID )
+ 	if( astNewPARAM( proc, iniexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval arcend as single
  	if( endexpr = INVALID ) then
  		endexpr = astNewCONST( 3.141593*2, IR.DATATYPE.SINGLE )
  	end if
- 	astNewPARAM( proc, endexpr, INVALID )
+ 	if( astNewPARAM( proc, endexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval fillflag as integer
- 	astNewPARAM( proc, astNewCONST( fillflag, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( fillflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval coordtype as integer
- 	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3486,49 +3851,73 @@ sub rtlGfxCircle( byval xexpr as integer, byval yexpr as integer, byval radexpr 
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxCircle = TRUE
+
+end function
 
 '':::::
-sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, byval bexpr as integer, _
-				 byval coord_type as integer )
+function rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, _
+					  byval bexpr as integer, byval coord_type as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
     dim pattern as integer
 
+    rtlGfxPaint = FALSE
+
 	f = ifuncTB(FB.RTL.GFXPAINT)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
 
  	'' byval x as single
- 	astNewPARAM( proc, xexpr, INVALID )
+ 	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y as single
- 	astNewPARAM( proc, yexpr, INVALID )
+ 	if( astNewPARAM( proc, yexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
 	'' byval color as uinteger
 	pattern = astGetDataType( pexpr )
 	if( ( pattern = IR.DATATYPE.FIXSTR ) or ( pattern = IR.DATATYPE.STRING ) ) then
 		pattern = TRUE
-		astNewPARAM( proc, astNewCONST( &hFFFF0000, IR.DATATYPE.INTEGER ), INVALID )
+		if( astNewPARAM( proc, astNewCONST( &hFFFF0000, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
 	else
 		pattern = FALSE
-		astNewPARAM( proc, pexpr )
+		if( astNewPARAM( proc, pexpr ) = INVALID ) then
+ 			exit function
+ 		end if
 	end if
 
 	'' byval border_color as uinteger
-	astNewPARAM( proc, bexpr, INVALID )
+	if( astNewPARAM( proc, bexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
 	'' pattern as string, byval mode as integer
 	if( pattern = TRUE ) then
-		astNewPARAM( proc, pexpr, INVALID )
-		astNewPARAM( proc, astNewCONST( 1, IR.DATATYPE.INTEGER ), INVALID )
+		if( astNewPARAM( proc, pexpr, INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
+		if( astNewPARAM( proc, astNewCONST( 1, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
 	else
-    	astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR ), INVALID )
-		astNewPARAM( proc, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
+    	if( astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
+		if( astNewPARAM( proc, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 			exit function
+ 		end if
 	end if
 
 	'' byval coord_type as integer
-	astNewPARAM( proc, astNewCONST( coord_type, IR.DATATYPE.INTEGER ), INVALID )
+	if( astNewPARAM( proc, astNewCONST( coord_type, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3538,15 +3927,20 @@ sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as 
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxPaint = TRUE
+
+end function
 
 '':::::
-sub rtlGfxView( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
-			    byval fillexpr as integer, byval bordexpr as integer, byval screenflag as integer )
+function rtlGfxView( byval x1expr as integer, byval y1expr as integer, _
+					 byval x2expr as integer, byval y2expr as integer, _
+			    	 byval fillexpr as integer, byval bordexpr as integer, _
+			    	 byval screenflag as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxView = FALSE
 
 	f = ifuncTB(FB.RTL.GFXVIEW)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 7 )
@@ -3555,40 +3949,54 @@ sub rtlGfxView( byval x1expr as integer, byval y1expr as integer, byval x2expr a
  	if( x1expr = INVALID ) then
         x1expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
     end if
- 	astNewPARAM( proc, x1expr, INVALID )
+ 	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y1 as integer
  	if( y1expr = INVALID ) then
         y1expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
     end if
- 	astNewPARAM( proc, y1expr, INVALID )
+ 	if( astNewPARAM( proc, y1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x2 as integer
  	if( x2expr = INVALID ) then
         x2expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
     end if
- 	astNewPARAM( proc, x2expr, INVALID )
+ 	if( astNewPARAM( proc, x2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y2 as integer
  	if( y2expr = INVALID ) then
         y2expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
     end if
- 	astNewPARAM( proc, y2expr, INVALID )
+ 	if( astNewPARAM( proc, y2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval fillcolor as uinteger
  	if( fillexpr = INVALID ) then
  		fillexpr = astNewCONST( &hffff0000, IR.DATATYPE.UINT )
  	end if
- 	astNewPARAM( proc, fillexpr, INVALID )
+ 	if( astNewPARAM( proc, fillexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval bordercolor as uinteger
  	if( bordexpr = INVALID ) then
  		bordexpr = astNewCONST( &hffff0000, IR.DATATYPE.UINT )
  	end if
- 	astNewPARAM( proc, bordexpr, INVALID )
+ 	if( astNewPARAM( proc, bordexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval screenflag as integer
- 	astNewPARAM( proc, astNewCONST( screenflag, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( screenflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3598,15 +4006,18 @@ sub rtlGfxView( byval x1expr as integer, byval y1expr as integer, byval x2expr a
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxView = TRUE
+
+end function
 
 '':::::
-sub rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
-			      byval screenflag as integer )
+function rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, _
+					   byval y2expr as integer, byval screenflag as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxWindow = FALSE
 
 	f = ifuncTB(FB.RTL.GFXWINDOW)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 5 )
@@ -3615,28 +4026,38 @@ sub rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x2expr
  	if( x1expr = INVALID ) then
         x1expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
     end if
- 	astNewPARAM( proc, x1expr, INVALID )
+ 	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y1 as single
  	if( y1expr = INVALID ) then
         y1expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
     end if
- 	astNewPARAM( proc, y1expr, INVALID )
+ 	if( astNewPARAM( proc, y1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x2 as single
  	if( x2expr = INVALID ) then
         x2expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
     end if
- 	astNewPARAM( proc, x2expr, INVALID )
+ 	if( astNewPARAM( proc, x2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y2 as single
  	if( y2expr = INVALID ) then
         y2expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
     end if
- 	astNewPARAM( proc, y2expr, INVALID )
+ 	if( astNewPARAM( proc, y2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval screenflag as integer
- 	astNewPARAM( proc, astNewCONST( screenflag, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( screenflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3646,13 +4067,16 @@ sub rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x2expr
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxWindow = TRUE
+
+end function
 
 '':::::
-sub rtlGfxPalette ( byval attexpr as integer, byval colexpr as integer )
+function rtlGfxPalette ( byval attexpr as integer, byval colexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxPalette = FALSE
 
     f = ifuncTB(FB.RTL.GFXPALETTE)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
@@ -3661,13 +4085,17 @@ sub rtlGfxPalette ( byval attexpr as integer, byval colexpr as integer )
  	if( attexpr = INVALID ) then
         attexpr = astNewCONST( -1, IR.DATATYPE.UINT )
     end if
- 	astNewPARAM( proc, attexpr, INVALID )
+ 	if( astNewPARAM( proc, attexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval color as uinteger
  	if( colexpr = INVALID ) then
         colexpr = astNewCONST( -1, IR.DATATYPE.UINT )
     end if
- 	astNewPARAM( proc, colexpr, INVALID )
+ 	if( astNewPARAM( proc, colexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3677,19 +4105,24 @@ sub rtlGfxPalette ( byval attexpr as integer, byval colexpr as integer )
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxPalette = TRUE
+
+end function
 
 '':::::
-sub rtlGfxPaletteUsing ( byval arrayexpr as integer )
+function rtlGfxPaletteUsing ( byval arrayexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
+	rtlGfxPaletteUsing = FALSE
 
     f = ifuncTB(FB.RTL.GFXPALETTEUSING)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
  	'' byref array as integer
- 	astNewPARAM( proc, arrayexpr, INVALID )
+ 	if( astNewPARAM( proc, arrayexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3699,31 +4132,52 @@ sub rtlGfxPaletteUsing ( byval arrayexpr as integer )
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxPaletteUsing = TRUE
+
+end function
 
 '':::::
-sub rtlGfxPut( byval xexpr as integer, byval yexpr as integer, byval arrayexpr as integer, byval mode as integer, byval coordtype as integer )
+function rtlGfxPut( byval xexpr as integer, byval yexpr as integer, _
+			   		byval arrayexpr as integer, byval isptr as integer, _
+			   		byval mode as integer, byval coordtype as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
+    dim argmode as integer
 
+    rtlGfxPut = FALSE
 
 	f = ifuncTB(FB.RTL.GFXPUT)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 5 )
 
  	'' byval x as single
- 	astNewPARAM( proc, xexpr, INVALID )
+ 	if( astNewPARAM( proc, xexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y as single
- 	astNewPARAM( proc, yexpr, INVALID )
+ 	if( astNewPARAM( proc, yexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byref array as any
- 	astNewPARAM( proc, arrayexpr, INVALID )
+	if( isptr ) then
+		argmode = FB.ARGMODE.BYVAL
+	else
+		argmode = INVALID
+	end if
+ 	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval coordtype as integer
- 	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval mode as integer
- 	astNewPARAM( proc, astNewCONST( mode, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( mode, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3733,40 +4187,64 @@ sub rtlGfxPut( byval xexpr as integer, byval yexpr as integer, byval arrayexpr a
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxPut = TRUE
+
+end function
 
 '':::::
-sub rtlGfxGet( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
-			   byval arrayexpr as integer, byval symbol as FBSYMBOL ptr, byval coordtype as integer )
+function rtlGfxGet( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
+			   		byval arrayexpr as integer, byval isptr as integer, byval symbol as FBSYMBOL ptr, _
+			   		byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
+    dim argmode as integer
 
+    rtlGfxGet = FALSE
 
 	f = ifuncTB(FB.RTL.GFXGET)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 7 )
 
  	'' byval x1 as single
- 	astNewPARAM( proc, x1expr, INVALID )
+ 	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y1 as single
- 	astNewPARAM( proc, y1expr, INVALID )
+ 	if( astNewPARAM( proc, y1expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval x2 as single
- 	astNewPARAM( proc, x2expr, INVALID )
+ 	if( astNewPARAM( proc, x2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval y2 as single
- 	astNewPARAM( proc, y2expr, INVALID )
+ 	if( astNewPARAM( proc, y2expr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byref array as any
- 	astNewPARAM( proc, arrayexpr, INVALID )
+	if( isptr ) then
+		argmode = FB.ARGMODE.BYVAL
+	else
+		argmode = INVALID
+	end if
+ 	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval coordtype as integer
- 	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
+ 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' array() as any
  	arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
- 	astNewPARAM( proc, arrayexpr, INVALID )
+ 	if( astNewPARAM( proc, arrayexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3776,36 +4254,49 @@ sub rtlGfxGet( byval x1expr as integer, byval y1expr as integer, byval x2expr as
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxGet = TRUE
+
+end function
 
 '':::::
-sub rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, byval fexpr as integer )
+function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, _
+						  byval fexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
+
+	rtlGfxScreenSet = FALSE
 
 	f = ifuncTB(FB.RTL.GFXSCREENSET)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
 
  	'' byval w as integer
- 	astNewPARAM( proc, wexpr, INVALID )
+ 	if( astNewPARAM( proc, wexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval h as integer
  	if( hexpr = INVALID ) then
  		hexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
  	end if
- 	astNewPARAM( proc, hexpr, INVALID )
+ 	if( astNewPARAM( proc, hexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval depth as integer
  	if( dexpr = INVALID ) then
  		dexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
  	end if
- 	astNewPARAM( proc, dexpr, INVALID )
+ 	if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	'' byval fullscreen s integer
  	if( fexpr = INVALID ) then
  		fexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
  	end if
- 	astNewPARAM( proc, fexpr, INVALID )
+ 	if( astNewPARAM( proc, fexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
  	''
  	astFlush proc, vr
@@ -3815,23 +4306,31 @@ sub rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxScreenSet = TRUE
+
+end function
 
 '':::::
-sub rtlGfxBload( byval filename as integer, byval dexpr as integer )
+function rtlGfxBload( byval filename as integer, byval dexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+    rtlGfxBload = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.GFXBLOAD)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
 
     '' filename as string
-    astNewPARAM( proc, filename, INVALID )
+    if( astNewPARAM( proc, filename, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval dexpr as integer
-    astNewPARAM( proc, dexpr, INVALID )
+    if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     if( env.clopt.resumeerr ) then
@@ -3851,26 +4350,36 @@ sub rtlGfxBload( byval filename as integer, byval dexpr as integer )
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxBload = TRUE
+
+end function
 
 '':::::
-sub rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr as integer )
+function rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
     dim vr as integer
+
+	rtlGfxBsave = FALSE
 
 	''
 	f = ifuncTB(FB.RTL.GFXBSAVE)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
 
     '' filename as string
-    astNewPARAM( proc, filename, INVALID )
+    if( astNewPARAM( proc, filename, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval sexpr as integer
-    astNewPARAM( proc, sexpr, INVALID )
+    if( astNewPARAM( proc, sexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     '' byval lexpr as integer
-    astNewPARAM( proc, lexpr, INVALID )
+    if( astNewPARAM( proc, lexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
 
     ''
     if( env.clopt.resumeerr ) then
@@ -3890,4 +4399,6 @@ sub rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr 
  	hAddGfxLibs
 #endif
 
-end sub
+	rtlGfxBsave = TRUE
+
+end function

@@ -94,7 +94,8 @@ declare function 	cAtom					( atom as integer ) as integer
 declare function 	cVariable				( varexpr as integer, _
 											  sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
 											  byval checkarray as integer = TRUE )
-declare function 	cVarOrDeref				( varexpr as integer, byval checkarray as integer = TRUE )
+declare function 	cVarOrDeref				( varexpr as integer, byval checkarray as integer = TRUE, _
+											  byval checkaddrof as integer = FALSE )
 declare function 	cFunction				( funcexpr as integer, sym as FBSYMBOL ptr ) as integer
 declare function 	cQuirkFunction			( funcexpr as integer ) as integer
 declare function 	cConstant				( constexpr as integer ) as integer

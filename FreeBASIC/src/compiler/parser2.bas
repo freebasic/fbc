@@ -790,7 +790,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, addrofexpr as integer
 	end if
 
 	expr = astNewVAR( proc, NULL, 0, IR.DATATYPE.UINT )
-	addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
+	addrofexpr = astNewADDR( IR.OP.ADDROF, expr, proc )
 
 	hProcPtrBody = TRUE
 
@@ -805,7 +805,7 @@ private function hVarPtrBody( addrofexpr as integer, sym as FBSYMBOL ptr, elm as
 		exit function
 	end if
 
-	addrofexpr = astNewADDR( IR.OP.ADDROF, addrofexpr )
+	addrofexpr = astNewADDR( IR.OP.ADDROF, addrofexpr, sym, elm )
 
     hVarPtrBody = TRUE
 
@@ -926,9 +926,9 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 		end if
 
 		if( hIsStrFixed( dtype ) ) then
-			addrofexpr = astNewADDR( IR.OP.ADDROF, expr )
+			addrofexpr = astNewADDR( IR.OP.ADDROF, expr, sym, elm )
 		else
-			addrofexpr = astNewADDR( IR.OP.DEREF, expr )
+			addrofexpr = astNewADDR( IR.OP.DEREF, expr, sym, elm )
 		end if
 
 		if( not hMatch( CHAR_RPRNT ) ) then

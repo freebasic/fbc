@@ -74,7 +74,7 @@ declare function 	emitGetIDXName		( byval mult as integer, byval ofs as integer,
 
 declare function 	emitIsRegPreserved 	( byval dtype as integer, byval dclass as integer, byval reg as integer ) as integer
 declare function 	emitGetResultReg 	( byval dtype as integer, byval dclass as integer ) as integer
-declare function 	emitGetFreePreservReg( byval dtype as integer, byval dclass as integer ) as integer
+declare function 	emitGetFreePreservedReg( byval dtype as integer, byval dclass as integer ) as integer
 
 declare function 	emitSave			( filename as string ) as integer
 

@@ -71,6 +71,11 @@ type PTRNode
 	ofs				as integer						'' offset
 end type
 
+type ADDRNode
+	sym				as FBSYMBOL ptr					'' symbol
+	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
+end type
+
 type ASTNode
 	prv				as integer						'' 'pointers' used by the allocator,
 	nxt				as integer						'' /  (can't be swapped/copied!)
@@ -83,7 +88,7 @@ type ASTNode
 	defined 		as integer						'' only true for constants
 	value			as double						'' /
 
-	op				as integer						'' f/ BOP & UOP nodes
+	op				as integer						'' f/ BOP, UOP, ... nodes
 	allocres 		as integer						'' /
 	ex				as FBSYMBOL ptr					'' / (extra: label, etc)
 
@@ -93,6 +98,7 @@ type ASTNode
 		ptr			as PTRNode
 		proc		as FUNCTNode
 		param		as PARAMNode
+		addr		as ADDRNode
 	end union
 
 	l				as integer						'' left node, index of ast tb
@@ -168,6 +174,7 @@ declare function 	astNewPARAM			( byval f as integer, byval p as integer, _
 declare sub 		astLoadFUNCT		( byval n as integer, vr as integer )
 
 declare function 	astNewADDR			( byval op as integer, byval p as integer, _
+										  byval sym as FBSYMBOL ptr = NULL, byval elm as FBSYMBOL ptr = NULL, _
 										  byval dtype as integer = INVALID, byval subtype as FBSYMBOL ptr = NULL ) as integer
 declare sub 		astLoadADDR			( byval n as integer, vr as integer )
 

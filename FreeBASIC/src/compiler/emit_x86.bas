@@ -421,11 +421,11 @@ function emitGetResultReg( byval dtype as integer, byval dclass as integer ) as 
 end function
 
 '':::::
-function emitGetFreePreservReg( byval dtype as integer, byval dclass as integer ) as integer 'static
+function emitGetFreePreservedReg( byval dtype as integer, byval dclass as integer ) as integer 'static
 
 	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
-	emitGetFreePreservReg = INVALID
+	emitGetFreePreservedReg = INVALID
 
 	'' fp? no other regs can be used
 	if( dclass = IR.DATACLASS.FPOINT ) then
@@ -434,13 +434,13 @@ function emitGetFreePreservReg( byval dtype as integer, byval dclass as integer 
 
 	'' try to reuse regs that are preserved between calls
 	if( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.EBX ) ) then
-		emitGetFreePreservReg = EMIT.INTREG.EBX
+		emitGetFreePreservedReg = EMIT.INTREG.EBX
 
 	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.ESI ) ) then
-		emitGetFreePreservReg = EMIT.INTREG.ESI
+		emitGetFreePreservedReg = EMIT.INTREG.ESI
 
 	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.EDI ) ) then
-		emitGetFreePreservReg = EMIT.INTREG.EDI
+		emitGetFreePreservedReg = EMIT.INTREG.EDI
 	end if
 
 end function
@@ -2496,7 +2496,12 @@ private sub hEmitBss( ) static
     	    			alloc = ".comm"
     	    		end if
 
-    	    		hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    		if( symbGetType( s ) = FB.SYMBTYPE.DOUBLE ) then
+    	    			hWriteStr ctx.outf, TRUE, ".balign 8"
+    	    		else
+    	    			hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    		end if
+
     	    		hWriteStr ctx.outf, TRUE,  alloc + TABCHAR + sname + "," + str$( lgt * elements )
     	    	end if
     		end if

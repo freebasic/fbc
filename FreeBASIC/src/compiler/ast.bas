@@ -1599,7 +1599,7 @@ function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
 	s = NULL
 
 	if( n <> INVALID ) then
-		select case astTB(n).class
+		select case as const astTB(n).class
 		case AST.NODECLASS.PTR
 			s = astTB(n).ptr.elm
 			if( s = NULL ) then
@@ -1623,6 +1623,12 @@ function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
 
 		case AST.NODECLASS.FUNCT
 			s = astTB(n).proc.sym
+
+		case AST.NODECLASS.ADDR
+			s = astTB(n).addr.elm
+			if( s = NULL ) then
+				s = astTB(n).addr.sym
+			end if
 		end select
 	end if
 
@@ -2546,6 +2552,7 @@ end sub
 
 '':::::
 function astNewADDR( byval op as integer, byval p as integer, _
+					 byval sym as FBSYMBOL ptr = NULL, byval elm as FBSYMBOL ptr = NULL, _
 					 byval dtype as integer = INVALID, byval subtype as FBSYMBOL ptr = NULL ) as integer static
     dim n as integer
 
@@ -2570,9 +2577,10 @@ function astNewADDR( byval op as integer, byval p as integer, _
 		exit function
 	end if
 
-	astTB(n).op = op
-	astTB(n).l  = p
-	astTB(n).r  = INVALID
+	astTB(n).op 		= op
+	astTB(n).l  		= p
+	astTB(n).addr.sym	= sym
+	astTB(n).addr.elm	= elm
 
 end function
 
@@ -2903,7 +2911,17 @@ sub astLoadBRANCH( byval n as integer, vr as integer )
 		astDel l
 	end if
 
-	irEmitBRANCHNF astTB(n).op, astTB(n).ex
+	'' pointer?
+	if( astTB(n).ex = NULL ) then
+		'' jump or call?
+		if( astTB(n).op = IR.OP.JUMPPTR ) then
+			irEmitBRANCHPTR vr
+		else
+			irEmitCALLPTR vr, INVALID, 0
+		end if
+	else
+		irEmitBRANCHNF astTB(n).op, astTB(n).ex
+	end if
 
 end sub
 
@@ -3022,6 +3040,12 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 			'' type field?
 			s = astGetSymbol( p )
+
+			if( s = NULL ) then
+				hReportParamError proc, f
+				exit function
+			end if
+
 			if( s->class = FB.SYMBCLASS.UDTELM ) then
 				'' not an array?
 				if( symbGetArrayDimensions( s ) = 0 ) then
@@ -3035,23 +3059,12 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 			else
 
-				if( s = NULL ) then
-					hReportParamError proc, f
-					exit function
-				end if
-
 				'' not an argument passed by descriptor?
 				if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
+					'' not an array?
 					if( symbGetArrayDescriptor( s ) = NULL ) then
-						if( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
-							
-							'' create a temp array descriptor
-							astTB(n).l = hAllocTmpArrayDesc( f, p )
-							astTB(n).param.mode = FB.ARGMODE.BYVAL
-						else
-							hReportParamError proc, f
-							exit function
-						end if
+						hReportParamError proc, f
+						exit function
 					end if
         		end if
         	end if
@@ -3154,7 +3167,6 @@ private function hCheckParam( byval f as integer, byval n as integer )
 			end if
 		end if
 
-
     end if
 
 
@@ -3164,7 +3176,8 @@ end function
 
 '':::::
 function astNewPARAM( byval f as integer, byval p as integer, _
-					  byval dtype as integer = INVALID, byval mode as integer = INVALID ) as integer
+					  byval dtype as integer = INVALID, _
+					  byval mode as integer = INVALID ) as integer
     dim n as integer
     dim t as integer
 
@@ -3344,7 +3357,7 @@ private sub hCallProc( byval n as integer, byval proc as FBSYMBOL ptr, byval mod
 		p = astTB(n).proc.p
 		astLoad p, vr
 		astDel p
-		irEmitBRANCHPTR vr
+		irEmitCALLPTR vr, INVALID, 0
 		exit sub
 	end if
 
@@ -3462,8 +3475,10 @@ private sub hFreeTempArrayDescs( byval f as integer )
 		ctx.temparraydescs = ctx.temparraydescs - 1
 
 		t = rtlArrayFreeTempDesc( temparraydescTB(ctx.temparraydescs).pdesc )
-		astLoad t, vr
-		astDel t
+		if( t <> INVALID ) then
+			astLoad t, vr
+			astDel t
+		end if
 	loop
 
 end sub

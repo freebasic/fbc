@@ -806,15 +806,21 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 end function
 
 '':::::
-''cVarOrDeref		= 	Deref | Variable
+''cVarOrDeref		= 	Deref | AddrOf | Variable
 ''
-function cVarOrDeref( varexpr as integer, byval checkarray as integer = TRUE )
+function cVarOrDeref( varexpr as integer, _
+					  byval checkarray as integer, byval checkaddrof as integer )
 	dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 	dim res as integer
 
 	res = cDerefExpression( varexpr )
 	if( not res ) then
-		res = cVariable( varexpr, sym, elm, checkarray )
+		if( checkaddrof ) then
+			res = cAddrOfExpression( varexpr, sym, elm )
+		end if
+		if( not res ) then
+			res = cVariable( varexpr, sym, elm, checkarray )
+		end if
 	end if
 
 	cVarOrDeref = res

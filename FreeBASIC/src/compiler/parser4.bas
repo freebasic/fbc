@@ -59,6 +59,8 @@ const FB.CASETYPE.ELSE  = 3
 const FB.MAXCASEEXPR 	= 1024
 const FB.MAXSWTCASEEXPR = 8192
 
+const FB.MAXSWTCASERANGE= 4096
+
 '' globals
 	dim shared selctx as FBSELECTCTX
 	dim shared swtctx as FBSWITCHCTX
@@ -1229,11 +1231,19 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 end function
 
 '':::::
-private sub hSelConstAddCase( byval swtbase as integer, byval value as uinteger, _
-							  byval label as FBSYMBOL ptr ) static
+private function hSelConstAddCase( byval swtbase as integer, byval value as uinteger, _
+							       byval label as FBSYMBOL ptr ) as integer static
 
 	dim probe as integer, high as integer, low as integer
 	dim v as uinteger, i as integer
+
+	'' nothing left?
+	if( swtctx.base >= FB.MAXSWTCASEEXPR ) then
+		hSelConstAddCase = FALSE
+		exit function
+	end if
+
+	hSelConstAddCase = TRUE
 
 	'' find the slot using bin-search
 	high = swtctx.base - swtbase
@@ -1247,7 +1257,7 @@ private sub hSelConstAddCase( byval swtbase as integer, byval value as uinteger,
 		elseif( v > value ) then
 			high = probe
 		else
-			exit sub
+			exit function
 		end if
 	loop
 
@@ -1261,7 +1271,7 @@ private sub hSelConstAddCase( byval swtbase as integer, byval value as uinteger,
 	swtcaseTB(swtbase+high).label = label
 	swtctx.base = swtctx.base + 1
 
-end sub
+end function
 
 '':::::
 ''SelConstCaseStmt =   CASE (ELSE | (ConstExpression{int} (COMMA ConstExpression{int})*)) Comment? SttSeparator
@@ -1272,7 +1282,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 						    minval as uinteger, maxval as uinteger, deflabel as FBSYMBOL ptr ) as integer
 
 	dim expr1 as integer, expr2 as integer
-	dim value as uinteger, tovalue as uinteger, v as uinteger
+	dim value as uinteger, tovalue as uinteger
 	dim label as FBSYMBOL ptr
 
 	cSelConstCaseStmt = FALSE
@@ -1320,22 +1330,26 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				tovalue = astGetValue( expr2 )
 				astDel expr2
 
+				for value = value to tovalue
+					if( value < minval ) then minval = value
+					if( value > maxval ) then maxval = value
+
+					'' add item
+					if( not hSelConstAddCase( swtbase, value, label ) ) then
+						exit function
+					end if
+				next
+
 			else
-				tovalue = value
-			end if
-
-			for v = value to tovalue
-				if( v < minval ) then
-					minval = v
-				end if
-
-				if( v > maxval ) then
-					maxval = v
-				end if
+				if( value < minval ) then minval = value
+				if( value > maxval ) then maxval = value
 
 				'' add item
-				hSelConstAddCase swtbase, v, label
-			next
+				if( not hSelConstAddCase( swtbase, value, label ) ) then
+					exit function
+				end if
+
+			end if
 
 		loop while( hMatch( CHAR_COMMA ) )
 
@@ -1375,14 +1389,6 @@ private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 							            1, dTB(), FB.ALLOCTYPE.SHARED, FALSE, FALSE, FALSE )
 
 end function
-
-'':::::
-private sub hSelConstFreeTbSym( byval tbsym as FBSYMBOL ptr ) static
-
-	symbDelVar symbGetArrayDescriptor( tbsym )
-	symbDelVar tbsym
-
-end sub
 
 '':::::
 ''SelectConstStmt =   SELECT CASE AS CONST Expression{int} Comment? SttSeparator
@@ -1462,6 +1468,12 @@ function cSelectConstStmt as integer
 
 	loop while( lexCurrentToken <> FB.TK.EOF )
 
+    '' too large?
+    if( (minval > maxval) or (maxval - minval > FB.MAXSWTCASERANGE) ) then
+    	hReportError FB.ERRMSG.RANGETOOLARGE
+    	exit function
+    end if
+
     if( deflabel = NULL ) then
     	deflabel = exitlabel
     end if
@@ -1491,7 +1503,7 @@ function cSelectConstStmt as integer
     expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
     				  IR.DATATYPE.UINT, NULL )
 
-    astFlush astNewFUNCTPTR( expr, NULL, INVALID, 0 ), vr
+    astFlush astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ), vr
 
     '' emit table
     irEmitLABEL tbsym, FALSE
@@ -1509,7 +1521,8 @@ function cSelectConstStmt as integer
     	end if
     next value
 
-    hSelConstFreeTbSym( tbsym )
+    '' the table is not needed anymore
+    symbDelVar tbsym
 
     swtctx.base = swtbase
 
@@ -1657,9 +1670,7 @@ function cEndStatement
   	end select
 
     ''
-    rtlExit errlevel
-
-	cEndStatement = TRUE
+	cEndStatement = rtlExit( errlevel )
 
 end function
 

@@ -147,9 +147,13 @@ function cArrayStmt
 			end if
 
 			if( symbGetIsDynamic( s ) ) then
-				rtlArrayErase expr1
+				if( not rtlArrayErase( expr1 ) ) then
+					exit function
+				end if
 			else
-				rtlArrayClear expr1
+				if( not rtlArrayClear( expr1 ) ) then
+					exit function
+				end if
 			end if
 
 		'' ','?
@@ -178,9 +182,9 @@ function cArrayStmt
 
 		select case astGetDataType( expr1 )
 		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
-			rtlStrSwap expr1, expr2
+			cArrayStmt = rtlStrSwap( expr1, expr2 )
 		case else
-			rtlMemSwap expr1, expr2
+			cArrayStmt = rtlMemSwap( expr1, expr2 )
 		end select
 
 	end select
@@ -273,8 +277,7 @@ function cDataStmt
 			lexSkipToken
 		end if
 
-		rtlDataRestore s
-		cDataStmt = TRUE
+		cDataStmt = rtlDataRestore( s )
 
 	'' READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 	case FB.TK.READ
@@ -286,7 +289,9 @@ function cDataStmt
 		    	exit function
 		    end if
 
-            rtlDataRead expr
+            if( not rtlDataRead( expr ) ) then
+            	exit function
+            end if
 
 			if( not hMatch( CHAR_COMMA ) ) then
 				exit do
@@ -334,7 +339,9 @@ function cDataStmt
   				astDel expr
 		    end if
 
-            rtlDataStore littext, litlen, typ
+            if( not rtlDataStore( littext, litlen, typ ) ) then
+            	exit function
+            end if
 
 			if( not hMatch( CHAR_COMMA ) ) then
 				exit do
@@ -395,7 +402,9 @@ function cPrintStmt
 			exit function
 		end if
 
-		rtlPrintUsingInit usingexpr
+		if( not rtlPrintUsingInit( usingexpr ) ) then
+			exit function
+		end if
     end if
 
     '' (Expression?|SPC(Expression)|TAB(Expression) ';'|"," )*
@@ -434,10 +443,14 @@ function cPrintStmt
     	if( (not iscomma) and (not issemicolon) and (expr = INVALID) ) then
     		if( usingexpr = INVALID ) then
     			if( expressions = 0 ) then
-    				rtlPrint filexprcopy, FALSE, FALSE, INVALID
+    				if( not rtlPrint( filexprcopy, FALSE, FALSE, INVALID ) ) then
+						exit function
+					end if
     			end if
     		else
-    			rtlPrintUsingEnd filexprcopy
+    			if( not rtlPrintUsingEnd( filexprcopy ) ) then
+					exit function
+				end if
     		end if
 
     		exit do
@@ -445,15 +458,23 @@ function cPrintStmt
 
     	if( usingexpr = INVALID ) then
     		if( isspc ) then
-    			rtlPrintSPC filexprcopy, expr
+    			if( not rtlPrintSPC( filexprcopy, expr ) ) then
+					exit function
+				end if
     		elseif( istab ) then
-    			rtlPrintTab filexprcopy, expr
+    			if( not rtlPrintTab( filexprcopy, expr ) ) then
+					exit function
+				end if
     		else
-    			rtlPrint filexprcopy, iscomma, issemicolon, expr
+    			if( not rtlPrint( filexprcopy, iscomma, issemicolon, expr ) ) then
+					exit function
+				end if
     		end if
 
     	else
-    		rtlPrintUsing filexprcopy, expr, issemicolon
+    		if( not rtlPrintUsing( filexprcopy, expr, issemicolon ) ) then
+				exit function
+			end if
     	end if
 
     	expressions = expressions + 1
@@ -602,9 +623,7 @@ function cLineInputStmt
     	end if
     end if
 
-    rtlFileLineInput isfile, expr, dstexpr, FALSE, addnewline
-
-    cLineInputStmt = TRUE
+    cLineInputStmt = rtlFileLineInput( isfile, expr, dstexpr, FALSE, addnewline )
 
 end function
 
@@ -664,7 +683,9 @@ function cInputStmt
 	end if
 
 	''
-	rtlFileInput isfile, filestrexpr, addquestion, addnewline
+	if( not rtlFileInput( isfile, filestrexpr, addquestion, addnewline ) ) then
+		exit function
+	end if
 
     '' Variable (',' Variable)*
     do
@@ -678,7 +699,9 @@ function cInputStmt
 			iscomma = TRUE
 		end if
 
-    	rtlFileInputGet dstexpr
+    	if( not rtlFileInputGet( dstexpr ) ) then
+			exit function
+		end if
     loop while( iscomma )
 
     cInputStmt = TRUE
@@ -723,10 +746,7 @@ function cViewStmt
 		expr2 = astNewCONST( 0, IR.DATATYPE.INTEGER )
 	end if
 
-
-    rtlConsoleView expr1, expr2
-
-    cViewStmt = TRUE
+    cViewStmt = rtlConsoleView( expr1, expr2 )
 
 end function
 
@@ -910,9 +930,7 @@ function cFileStmt
 		end if
 
 		''
-		rtlFileOpen filename, fmode, faccess, flock, filenum, flen
-
-		cFileStmt = TRUE
+		cFileStmt = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen )
 
 	'' CLOSE ('#'? Expression)*
 	case FB.TK.CLOSE
@@ -931,7 +949,9 @@ function cFileStmt
 				end if
 			end if
 
-			rtlFileClose filenum
+			if( not rtlFileClose( filenum ) ) then
+				exit function
+			end if
 			cnt = cnt + 1
 
 		loop while( hMatch( CHAR_COMMA ) )
@@ -956,9 +976,7 @@ function cFileStmt
 			exit function
 		end if
 
-		rtlFileSeek filenum, expr1
-
-		cFileStmt = TRUE
+		cFileStmt = rtlFileSeek( filenum, expr1 )
 
 	'' PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
 	case FB.TK.PUT
@@ -1000,12 +1018,10 @@ function cFileStmt
     	end if
 
 		if( not isarray ) then
-			rtlFilePut filenum, expr1, expr2
+			cFileStmt = rtlFilePut( filenum, expr1, expr2 )
 		else
-			rtlFilePutArray filenum, expr1, expr2
+			cFileStmt = rtlFilePutArray( filenum, expr1, expr2 )
 		end if
-
-		cFileStmt = TRUE
 
 	'' GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 	case FB.TK.GET
@@ -1047,12 +1063,10 @@ function cFileStmt
     	end if
 
 		if( not isarray ) then
-			rtlFileGet filenum, expr1, expr2
+			cFileStmt = rtlFileGet( filenum, expr1, expr2 )
 		else
-			rtlFileGetArray filenum, expr1, expr2
+			cFileStmt = rtlFileGetArray( filenum, expr1, expr2 )
 		end if
-
-		cFileStmt = TRUE
 
 	'' (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)?
 	case FB.TK.LOCK, FB.TK.UNLOCK
@@ -1087,10 +1101,112 @@ function cFileStmt
 			expr2 = astNewCONST( 0, IR.DATATYPE.INTEGER )
 		end if
 
-		rtlFileLock islock, filenum, expr1, expr2
-
-		cFileStmt = TRUE
+		cFileStmt = rtlFileLock( islock, filenum, expr1, expr2 )
 	end select
+
+end function
+
+'':::::
+private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
+	dim dTB(0) as FBARRAYDIM
+
+	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, FB.INTEGERSIZE, NULL, _
+							            1, dTB(), FB.ALLOCTYPE.SHARED, FALSE, FALSE, FALSE )
+
+end function
+
+'':::::
+function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
+    dim idxexpr as integer, vr as integer
+	dim sym as FBSYMBOL ptr
+	dim exitlabel as FBSYMBOL ptr
+	dim tbsym as FBSYMBOL ptr
+	dim l as integer, i as integer
+	dim labelTB(0 to FB.MAXGOTBITEMS-1) as FBSYMBOL ptr
+
+	cGOTBStmt = FALSE
+
+	'' convert to uinteger if needed
+	if( astGetDataType( expr ) <> IR.DATATYPE.UINT ) then
+		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
+	end if
+
+	'' store expression into a temp var
+	sym = symbAddTempVar( FB.SYMBTYPE.UINT )
+	if( sym = NULL ) then
+		exit function
+	end if
+
+	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), expr )
+	if( expr = INVALID ) then
+		exit function
+	end if
+	astFlush expr, vr
+
+	'' read labels
+	l = 0
+	do
+		if( (lexCurrentTokenClass <> FB.TKCLASS.NUMLITERAL) and _
+			(lexCurrentToken <> FB.TK.ID) ) then
+			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			exit function
+		end if
+
+		'' Label
+		labelTB(l) = symbLookupLabel( lexTokenText )
+		if( labelTB(l) = NULL ) then
+			labelTB(l) = symbAddLabelEx( lexTokenText, FALSE )
+		end if
+		lexSkipToken
+
+		l = l + 1
+	loop while( hMatch( CHAR_COMMA ) )
+
+	''
+	exitlabel = symbAddLabel( hMakeTmpStr )
+
+	'' < 1?
+	expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
+					  astNewCONST( 1, IR.DATATYPE.UINT ), exitlabel, FALSE )
+	astFlush expr, vr
+
+	'' > labels?
+	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
+					  astNewCONST( l, IR.DATATYPE.UINT ), exitlabel, FALSE )
+	astFlush expr, vr
+
+    '' jump to table[idx]
+    tbsym = hSelConstAllocTbSym( )
+
+	idxexpr = astNewBOP( IR.OP.MUL, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
+    				  			    astNewCONST( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
+
+    expr = astNewIDX( astNewVAR( tbsym, NULL, -1*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
+    				  IR.DATATYPE.UINT, NULL )
+
+    if( isgoto ) then
+    	astFlush astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ), vr
+    else
+    	astFlush astNewBRANCH( IR.OP.CALLPTR, NULL, expr ), vr
+    end if
+
+    '' emit table
+    irEmitLABEL tbsym, FALSE
+
+    irFlush
+
+    ''
+    for i = 0 to l-1
+    	emitTYPE IR.DATATYPE.UINT, symbGetLabelName( labelTB(i) )
+    next
+
+    '' the table is not needed anymore
+    symbDelVar tbsym
+
+    '' emit exit label
+    irEmitLABEL exitlabel, FALSE
+
+    cGOTBStmt = TRUE
 
 end function
 
@@ -1100,7 +1216,6 @@ end function
 function cOnStmt
 	dim expr as integer
 	dim isgoto as integer, label as FBSYMBOL ptr, islocal as integer
-	dim vr as integer, cr as integer, endlabel as FBSYMBOL ptr
 
 	cOnStmt = FALSE
 
@@ -1147,28 +1262,24 @@ function cOnStmt
 		exit function
 	end if
 
-	'' Label
-	label = symbLookupLabel( lexTokenText )
-	if( label = NULL ) then
-		label = symbAddLabelEx( lexTokenText, FALSE )
-	end if
-	lexSkipToken
-
     '' on error?
 	if( expr = INVALID ) then
+		'' Label
+		label = symbLookupLabel( lexTokenText )
+		if( label = NULL ) then
+			label = symbAddLabelEx( lexTokenText, FALSE )
+		end if
+		lexSkipToken
+
 		expr = astNewVAR( label, NULL, 0, IR.DATATYPE.UINT )
-		expr = astNewADDR( IR.OP.ADDROF, expr )
+		expr = astNewADDR( IR.OP.ADDROF, expr, label )
 		rtlErrorSetHandler expr, (islocal = TRUE)
 
+		cOnStmt = TRUE
+
 	else
-		'' !!!WRITEME!!! need to construct a jump table here
-		if( isgoto ) then
-
-		end if
-		astDelTree expr
+        cOnStmt = cGOTBStmt( expr, isgoto )
 	end if
-
-	cOnStmt = TRUE
 
 end function
 
@@ -1338,9 +1449,7 @@ function cArrayFunct( funcexpr as integer )
 
 		funcexpr = rtlArrayBound( sexpr, expr, islbound )
 
-		if( funcexpr <> INVALID ) then
-			cArrayFunct = TRUE
-		end if
+		cArrayFunct = funcexpr <> INVALID
 
 	end select
 
@@ -1816,7 +1925,7 @@ function cFileFunct( funcexpr as integer )
 
 		funcexpr = rtlFileTell( filenum )
 
-		cFileFunct = TRUE
+		cFileFunct = funcexpr <> INVALID
 
 	'' INPUT '(' Expr (',' '#'? Expr)? ')'
 	case FB.TK.INPUT
@@ -1850,7 +1959,7 @@ function cFileFunct( funcexpr as integer )
 
 		funcexpr = rtlFileStrInput( expr, filenum )
 
-		cFileFunct = TRUE
+		cFileFunct = funcexpr <> INVALID
 	end select
 
 end function

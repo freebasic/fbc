@@ -112,9 +112,7 @@ data "SINGLE"	, FB.TK.SINGLE		, FB.TKCLASS.KEYWORD
 data "DOUBLE"	, FB.TK.DOUBLE		, FB.TKCLASS.KEYWORD
 data "STRING"	, FB.TK.STRING		, FB.TKCLASS.KEYWORD
 data "CALL"		, FB.TK.CALL		, FB.TKCLASS.KEYWORD
-data "CALLS"	, FB.TK.CALLS		, FB.TKCLASS.KEYWORD
 data "BYVAL"	, FB.TK.BYVAL		, FB.TKCLASS.KEYWORD
-data "SEG"		, FB.TK.SEG			, FB.TKCLASS.KEYWORD
 data "INCLUDE"	, FB.TK.INCLUDE		, FB.TKCLASS.KEYWORD
 data "DYNAMIC"	, FB.TK.DYNAMIC		, FB.TKCLASS.KEYWORD
 data "AS"		, FB.TK.AS			, FB.TKCLASS.KEYWORD
@@ -264,7 +262,7 @@ data "BSAVE"	, FB.TK.BSAVE		, FB.TKCLASS.KEYWORD
 data "CHR"		, FB.TK.CHR			, FB.TKCLASS.KEYWORD
 data "ASC"		, FB.TK.ASC			, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 170
+const FB.MAXKEYWORDS 		= 168
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -3070,6 +3068,9 @@ sub symbDelVar( byval s as FBSYMBOL ptr )
 	if( freeup ) then
     	if( s->array.dims > 0 ) then
     		hDelVarDims s
+
+    		'' del the array descriptor, recursively
+    		symbDelVar s->array.desc
     	end if
 
     	listDelNode @ctx.symlist, s

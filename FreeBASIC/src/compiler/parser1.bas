@@ -1148,17 +1148,32 @@ function hDeclExternVar( id as string, byval typ as integer, byval subtype as FB
 end function
 
 '':::::
-''SymbolDef       =   ID ('('')' | ArrayDecl)? (AS SymbolType)? ('=' VarInitializer)?
-''                       (DECL_SEPARATOR SymbolDef)* .
+''SymbolDef       =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
+''                       (',' SymbolDef)* .
 ''
 function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
     dim id as string, idalias as string, symbol as FBSYMBOL ptr
-    dim addsuffix as integer, atype as integer, isdynamic as integer
+    dim addsuffix as integer, atype as integer, isdynamic as integer, ismultdecl as integer
     dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
 
     cSymbolDef = FALSE
+
+    '' (AS SymbolType)?
+    ismultdecl = FALSE
+    if( lexCurrentToken = FB.TK.AS ) then
+    	lexSkipToken
+
+    	if( not cSymbolType( typ, subtype, lgt ) ) then
+    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    		exit function
+    	end if
+
+    	addsuffix = FALSE
+
+    	ismultdecl = TRUE
+    end if
 
     do
     	'' ID
@@ -1167,21 +1182,40 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     		exit function
     	end if
 
-    	typ 		= lexTokenType
-    	subtype 	= NULL
-    	lgt			= 0
+    	if( not ismultdecl ) then
+    		typ 		= lexTokenType
+    		subtype 	= NULL
+    		lgt			= 0
+    		addsuffix 	= TRUE
+    	else
+    		if( lexTokenType <> INVALID ) then
+    			hReportError FB.ERRMSG.SYNTAXERROR
+    			exit function
+    		end if
+    	end if
+
     	id 			= lexEatToken
     	idalias		= ""
-    	addsuffix 	= TRUE
 
-    	'' ('('')' | ArrayDecl)?
+    	'' ('(' ArrayDecl? ')')?
 		dimensions = 0
-		if( (lexCurrentToken = CHAR_LPRNT) and (lexLookAhead(1) = CHAR_RPRNT) ) then
-			lexSkipToken
-			lexSkipToken
-			dimensions = -1 				'' fake it
-		else
-    		if( cArrayDecl( dimensions, exprTB() ) ) then
+		if( hMatch( CHAR_LPRNT ) ) then
+
+			if( lexCurrentToken = CHAR_RPRNT ) then
+				dimensions = -1 				'' fake it
+    		else
+    			'' only allow indexes if not COMMON
+    			if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
+    				if( not cArrayDecl( dimensions, exprTB() ) ) then
+    					exit function
+    				end if
+    			end if
+    		end if
+
+			'' ')'
+    		if( not hMatch( CHAR_RPRNT ) ) then
+    			hReportError FB.ERRMSG.EXPECTEDRPRNT
+    			exit function
     		end if
     	end if
 
@@ -1208,30 +1242,32 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 			end if
 		end if
 
-    	'' (AS SymbolType)?
-    	if( lexCurrentToken = FB.TK.AS ) then
+    	if( not ismultdecl ) then
+    		'' (AS SymbolType)?
+    		if( lexCurrentToken = FB.TK.AS ) then
 
-    		if( typ <> INVALID ) then
-    			hReportError FB.ERRMSG.SYNTAXERROR
-    			exit function
+    			if( typ <> INVALID ) then
+    				hReportError FB.ERRMSG.SYNTAXERROR
+    				exit function
+    			end if
+
+    			lexSkipToken
+
+    			if( not cSymbolType( typ, subtype, lgt ) ) then
+    				hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    				exit function
+    			end if
+
+    			addsuffix = FALSE
+
+    		else
+
+				if( typ = INVALID ) then
+					typ = hGetDefType( id )
+				end if
+    			lgt	= symbCalcLen( typ, subtype )
+
     		end if
-
-    		lexSkipToken
-
-    		if( not cSymbolType( typ, subtype, lgt ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-    			exit function
-    		end if
-
-    		addsuffix = FALSE
-
-    	else
-
-			if( typ = INVALID ) then
-				typ = hGetDefType( id )
-			end if
-    		lgt	= symbCalcLen( typ, subtype )
-
     	end if
 
     	''
@@ -1266,7 +1302,9 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 			if( env.scope > 0 ) then
 				if( dimensions > 0 ) then
 					if( (alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
-						rtlArraySetDesc symbol, lgt, dimensions, dTB()
+						if( not rtlArraySetDesc( symbol, lgt, dimensions, dTB() ) ) then
+							exit function
+						end if
 					end if
 				end if
 			end if
@@ -1374,7 +1412,9 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 
 	'' if it isn't a common array, redim it
 	if( ((alloctype and FB.ALLOCTYPE.COMMON) = 0) and (dimensions > 0) ) then
-		rtlArrayRedim s, lgt, dimensions, exprTB(), dopreserve
+		if( not rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) ) then
+			exit function
+		end if
 	end if
 
 	'' if common, check for max dimensions used
@@ -1573,9 +1613,9 @@ function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
 end function
 
 '':::::
-''ArrayDecl    	  =   IDX_OPEN Expression (TO Expression)?
+''ArrayDecl    	  =   '(' Expression (TO Expression)?
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
-''				      IDX_CLOSE .
+''				      ')' .
 ''
 function cArrayDecl( dimensions as integer, exprTB() as integer )
     dim i as integer, expr as integer
@@ -1583,11 +1623,6 @@ function cArrayDecl( dimensions as integer, exprTB() as integer )
     cArrayDecl = FALSE
 
     dimensions = 0
-
-    '' IDX_OPEN
-    if( not hMatch( FB.TK.IDXOPENCHAR ) ) then
-    	exit function
-    end if
 
     i = 0
     do
@@ -1631,12 +1666,6 @@ function cArrayDecl( dimensions as integer, exprTB() as integer )
 			exit function
 		end if
 	loop
-
-	'' IDX_CLOSE
-    if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDRPRNT
-    	exit function
-    end if
 
 	cArrayDecl = TRUE
 
@@ -2070,23 +2099,24 @@ private sub hReportParamError( byval argnum as integer, id as string )
 end sub
 
 '':::::
-''ArgDecl         =   (BYVAL|BYREF|SEG)? ID (('(' ')')? (AS SymbolType)?)? ('=" NUM_LIT)? .
+''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" NUM_LIT)? .
 ''
 function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as integer ) as integer
-	dim id as string
+	dim id as string, mode as integer
 	dim expr as integer, dclass as integer
 
 	cArgDecl = FALSE
 
-	'' (BYVAL|SEG)?
-	arg.mode = env.optargmode
+	'' (BYVAL|BYREF)?
 	select case lexCurrentToken
 	case FB.TK.BYVAL
-		arg.mode = FB.ARGMODE.BYVAL
+		mode = FB.ARGMODE.BYVAL
 		lexSkipToken
-	case FB.TK.BYREF, FB.TK.SEG
-		arg.mode = FB.ARGMODE.BYREF
+	case FB.TK.BYREF
+		mode = FB.ARGMODE.BYREF
 		lexSkipToken
+	case else
+		mode = INVALID
 	end select
 
 	'' only allow keywords as arg names on prototypes
@@ -2094,7 +2124,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
 		if( not isproto ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexCurrentTokenClass = FB.TKCLASS.KEYWORD ) then
-				hReportError FB.ERRMSG.ILLEGALPARAMSPEC
+				hReportParamError argc, lexTokenText
 				exit function
 			end if
 		end if
@@ -2117,14 +2147,19 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
 
 	'' ('('')')
 	if( hMatch( CHAR_LPRNT ) ) then
-		if( arg.mode <> FB.ARGMODE.BYREF ) then
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
+		if( (mode <> INVALID) or (not hMatch( CHAR_RPRNT )) ) then
+			hReportParamError argc, id
 			exit function
 		end if
 
 		arg.mode = FB.ARGMODE.BYDESC
+
+	else
+		if( mode = INVALID ) then
+			arg.mode = env.optargmode
+		else
+			arg.mode = mode
+		end if
 	end if
 
     '' (AS SymbolType)?
@@ -2484,10 +2519,12 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr, byv
 	''
 	if( pmode <> INVALID ) then
 		if( amode <> pmode ) then
-            '' allow BYVAL param passed to BYREF arg (to pass NULL to pointers and so on)
-            if( (amode <> FB.ARGMODE.BYREF) or (pmode <> FB.ARGMODE.BYVAL) ) then
-				hReportError FB.ERRMSG.PARAMTYPEMISMATCH
-				exit function
+            if( pmode <> FB.ARGMODE.BYVAL ) then
+				'' allow BYVAL params passed to BYREF/BYDESC args (to pass NULL to pointers and so on)
+				if( amode <> pmode ) then
+					hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+					exit function
+				end if
 			end if
 		end if
 	end if
@@ -2670,7 +2707,7 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 end function
 
 '':::::
-''ProcCallOrAssign=   (CALL|CALLS) ID ('(' ProcParamList ')')?
+''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
 ''                |   ID ProcParamList?
 ''				  |	  ID '=' Expression .						!!QB quirk!!
 ''
@@ -2680,8 +2717,8 @@ function cProcCallOrAssign
 	cProcCallOrAssign = FALSE
 
 	select case lexCurrentToken
-	'' (CALL|CALLS)
-	case FB.TK.CALL, FB.TK.CALLS
+	'' CALL?
+	case FB.TK.CALL
 		lexSkipToken
 
 		'' ID
@@ -2698,6 +2735,7 @@ function cProcCallOrAssign
 		    end if
 		end if
 
+	'' ID?
 	case FB.TK.ID
 
 		proc = symbLookupProc( lexTokenText )

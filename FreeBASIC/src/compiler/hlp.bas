@@ -114,8 +114,9 @@ data "Illegal inside a SUB or FUNCTION"
 data "Expected array"
 data "Too many expressions"
 data "Expected explicit result type"
+data "Range too large"
 
-const FB.ERRMSGS = 65
+const FB.ERRMSGS = 66
 
 
 '':::::

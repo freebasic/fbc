@@ -82,11 +82,8 @@ declare sub 		irFlushBRANCH		( byval op as integer, byval label as FBSYMBOL ptr 
 declare sub 		irFlushSTACK		( byval op as integer, byval v1 as integer, byval ex as integer )
 declare sub 		irFlushADDR			( byval op as integer, byval v1 as integer, byval vr as integer )
 
-
-declare sub 		irhFreeIDX			( byval vreg as integer )
-declare sub 		irhFreeIDXEx		( byval vreg as integer, byval force as integer )
-declare sub 		irhFreeREG			( byval vreg as integer )
-declare sub 		irhFreeREGEx		( byval vreg as integer, byval force as integer )
+declare sub 		irhFreeIDX			( byval vreg as integer, byval force as integer = FALSE )
+declare sub 		irhFreeREG			( byval vreg as integer, byval force as integer = FALSE )
 
 declare sub 		irOptimize			( )
 
@@ -1282,20 +1279,41 @@ sub irFlushBRANCH( byval op as integer, byval label as FBSYMBOL ptr ) 'static
 end sub
 
 '':::::
-private sub irhPreserveRegs 'static
+private sub irhPreserveRegs( byval ptrvreg as integer = INVALID ) 'static
     dim vr as integer, r as integer
     dim dclass as integer, dtype as integer, typ as integer
-    dim fr as integer
+    dim fr as integer							'' free reg
+    dim npr as integer							'' don't preserve reg (used with CALLPTR)
     dim class as integer
 
 	'' for each reg class
 	for class = 0 to EMIT.REGCLASSES-1
 
+    	'' set the register that shouldn't be preserved (used for CALLPTR only)
+    	npr = INVALID
+    	if( class = IR.DATACLASS.INTEGER ) then
+    		if( ptrvreg <> INVALID ) then
+
+    			select case vregTB(ptrvreg).typ
+    			case IR.VREGTYPE.REG
+    				npr = vregTB(ptrvreg).r
+
+    			case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
+    				ptrvreg = vregTB(ptrvreg).vi
+    				if( ptrvreg <> INVALID ) then
+    					npr = vregTB(ptrvreg).r
+    				end if
+    			end select
+
+    			ptrvreg = INVALID
+    		end if
+    	end if
+
 		'' for each register on that class
 		r = regTB(class)->getFirst( regTB(class) )
 		do until( r = INVALID )
 			'' if not free
-			if( not regTB(class)->isFree( regTB(class), r ) ) then
+			if( (not regTB(class)->isFree( regTB(class), r )) and (r <> npr) ) then
 
 				'' get the attached vreg
 				vr = regTB(class)->getVreg( regTB(class), r )
@@ -1305,7 +1323,7 @@ private sub irhPreserveRegs 'static
         		if( not emitIsRegPreserved( dtype, dclass, r ) ) then
 
         			'' find a preserved reg to copy to
-        			fr = emitGetFreePreservReg( dtype, dclass )
+        			fr = emitGetFreePreservedReg( dtype, dclass )
 
         			'' if none free, spill reg
         			if( fr = INVALID ) then
@@ -1333,10 +1351,12 @@ private sub irhPreserveRegs 'static
 end sub
 
 '':::::
-sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2pop as integer, byval v1 as integer, byval vr as integer ) 'static
+sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2pop as integer, _
+				 byval v1 as integer, byval vr as integer ) 'static
     dim pname as string, mode as integer
     dim rr as integer, rdclass as integer, rdtype as integer, rtyp as integer
 
+	'' call function
     if( proc <> NULL ) then
     	mode = symbGetFuncMode( proc )
     	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
@@ -1346,14 +1366,21 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
 		else
 			bytes2pop = 0
 		end if
-	end if
 
-    '' save used registers and free FPU stack
-    irhPreserveRegs
+    	'' save used registers and free the FPU stack
+    	irhPreserveRegs
 
-	'' call ptr
-	if( proc = NULL ) then
+		emitCALL symbGetProcName( proc ), bytes2pop, TRUE
 
+	'' call or jump to pointer
+	else
+
+    	'' if it's a CALL, save used registers and free the FPU stack
+    	if( op = IR.OP.CALLPTR ) then
+    		irhPreserveRegs v1
+    	end if
+
+		'' load pointer
 		irhGetVREG v1, rdtype, rdclass, rtyp
 		irhLoadIDX v1, rdtype, rdclass, rtyp
 		if( rtyp = IR.VREGTYPE.REG ) then
@@ -1362,18 +1389,16 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
 
 		pname = irGetVRName( v1 )
 
+		'' CALLPTR
 		if( op = IR.OP.CALLPTR ) then
 			emitCALLPTR pname, rdtype, rdclass, rtyp, bytes2pop
+		'' JUMPPTR
 		else
 			emitBRANCHPTR pname, rdtype, rdclass, rtyp
 		end if
 
+		'' free pointer
 		irhFreeREG v1
-
-	'' call function
-	else
-		pname = symbGetProcName( proc )
-		emitCALL pname, bytes2pop, TRUE
 	end if
 
 	'' load result
@@ -1383,7 +1408,7 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
 		vregTB(vr).r = regTB(rdclass)->allocateReg( regTB(rdclass), rr, vr )
 		vregTB(vr).typ = IR.VREGTYPE.REG
 
-    	'' fb allows function calls w/o saving the result (can be dangerous with strings!)
+    	'' fb allows function calls w/o saving the result
 		irhFreeREG vr
 	end if
 
@@ -1874,7 +1899,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irhFreeIDXEx( byval vreg as integer, byval force as integer )
+sub irhFreeIDX( byval vreg as integer, byval force as integer = FALSE )
 	dim vi as integer
 
 	if( vreg = INVALID ) then
@@ -1887,7 +1912,7 @@ sub irhFreeIDXEx( byval vreg as integer, byval force as integer )
 		vi = vregTB(vreg).vi
     	if( vi <> INVALID ) then
     		if( vregTB(vi).r <> INVALID ) then
-    			irhFreeREGEx vi, force				'' recursive...
+    			irhFreeREG vi, force				'' recursively
     			vregTB(vreg).vi = INVALID
 			end if
 		end if
@@ -1897,12 +1922,7 @@ sub irhFreeIDXEx( byval vreg as integer, byval force as integer )
 end sub
 
 '':::::
-sub irhFreeIDX( byval vreg as integer ) 'static
-	irhFreeIDXEx vreg, FALSE
-end sub
-
-'':::::
-sub irhFreeREGEx( byval vreg as integer, byval force as integer )
+sub irhFreeREG( byval vreg as integer, byval force as integer = FALSE )
 	dim reg as integer
 	dim rdtype as integer, rdclass as integer, rtyp as integer
 	dim freereg as integer
@@ -1912,7 +1932,7 @@ sub irhFreeREGEx( byval vreg as integer, byval force as integer )
 	end if
 
 	'' free any attached index
-	irhFreeIDXEx vreg, force
+	irhFreeIDX vreg, force
 
 	if( vregTB(vreg).typ <> IR.VREGTYPE.REG ) then
 		exit sub
@@ -1936,11 +1956,6 @@ sub irhFreeREGEx( byval vreg as integer, byval force as integer )
 		vregTB(vreg).r = INVALID
 	end if
 
-end sub
-
-'':::::
-sub irhFreeREG( byval vreg as integer ) 'static
-	irhFreeREGEx vreg, FALSE
 end sub
 
 '':::::
@@ -2093,7 +2108,7 @@ sub irLoadVR( byval reg as integer, byval vreg as integer ) 'static
 		emitLOAD rname, dtype, dclass, IR.VREGTYPE.REG, vname, dtype, dclass, vtyp
 
     	'' free any attached reg, forcing if needed
-    	irhFreeIDXEx vreg, TRUE
+    	irhFreeIDX vreg, TRUE
 
     	vregTB(vreg).dtype	= dtype
     end if
