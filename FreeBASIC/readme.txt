@@ -218,8 +218,8 @@ Most Important Features:
   o Completely free:
 
     - All third-party tools are also free. No piece of abandoned of copyrighted
-      software is used. The assembler, linker, archiver, and other command-line
-      tools come from the mingw32 project (the GCC port for Windows).
+      software is used (but GoRC on Win32). The assembler, linker, archiver, and 
+      other command-line applications come from the GNU binutil programming tools.
 
   o Portability:
 
@@ -291,7 +291,7 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to DOS; port maintainer.
     - Translated the Allegro headers (W.I.P.)
     - FreeBASIC Documentation project member.
-    - Wrote the DLL and static library automation.
+    - Wrote the DLL and static library automation, plus resource scripts support on Windows.
     - Completed the CRTDLL and DDRAW headers.
 
   o Edmond Leung (leung.edmond@gmail.com): 
@@ -332,7 +332,9 @@ Credits (in alphabetic order):
     - Wrote the calendar the toolbar examples at the GUI directory.
 
 
-  o All third-party tools from Mingw32: http://www.mingw.org/
+  o Third-party tools:
+    - Win32: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
+    - DOS32: DJGPP (http://www.delorie.com/)
 
   o Many run-time library console routines were based on the CONIO implementation
     for Mingw32.
@@ -357,9 +359,6 @@ Greetings:
 
   o Plasma: Wrote the first FB demos for fmod and BASS. Also the register of the freebasic.net
     domain.
-
-  o Jofers: Fitted a horse icon in just 16x16 pixels (awesome work, btw ;), also working on the
-    documentation (more info at http://freebasicdoc.sourceforge.net).
 
   o Wildcard: Created the biggest FB forum and helped making FB known even before it was
     released.
