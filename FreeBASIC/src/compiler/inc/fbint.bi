@@ -147,7 +147,9 @@ const CHAR_NULL   	= 00, _
       CHAR_AT		= 64, _
       CHAR_QUESTION	= 63, _
       CHAR_TILD		= 126, _
-      CHAR_ESC		= 27
+      CHAR_ESC		= 27, _
+      CHAR_LBRACKET	= 123, _
+      CHAR_RBRACKET	= 125
 
 
 const FB.INTSCAPECHAR		= CHAR_ESC			'' assuming it won't ever be used inside lit strings

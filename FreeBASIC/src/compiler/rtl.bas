@@ -1941,6 +1941,7 @@ function rtlMathLen( byval expr as integer ) as integer static
 
 	''
 	lgt = hCalcExprLen( expr, FALSE )
+	astDelTree expr
 
 	rtlMathLen = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 

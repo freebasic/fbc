@@ -1673,9 +1673,11 @@ function cMathFunct( funcexpr as integer )
 			else
 
 				if( not cSymbolType( typ, subtype, lgt ) ) then
-					if( not cVariable( expr, FALSE ) ) then
-						hReportError FB.ERRMSG.SYNTAXERROR
-						exit function
+					if( not cFunction( expr ) ) then
+						if( not cVariable( expr, FALSE ) ) then
+							hReportError FB.ERRMSG.SYNTAXERROR
+							exit function
+						end if
 					end if
 				end if
 			end if
@@ -1688,8 +1690,6 @@ function cMathFunct( funcexpr as integer )
 
 		if( expr <> INVALID ) then
 			funcexpr = rtlMathLen( expr )
-			astDelTree expr
-
 		else
 			funcexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 		end if

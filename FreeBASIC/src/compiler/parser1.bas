@@ -1821,7 +1821,13 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 	'' 2) types are known too, must be checked
 	'' 3) var-len strings can't be accepted on static/mod-level
 	'' 4) fix-len strings must be padded by emit if static/mod-level
-	'' 5) the goes with same with user types
+	'' 5) the same goes with same with user types
+
+	'' {
+	if( not hMatch( CHAR_LBRACKET ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLBRACKET
+		exit function
+	end if
 
 	do
 
@@ -1865,6 +1871,12 @@ function cSymbolInit( byval s as FBSYMBOL ptr ) as integer
 		end if
 
 	loop
+
+	'' }
+	if( not hMatch( CHAR_RBRACKET ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRBRACKET
+		exit function
+	end if
 
 
 end function
