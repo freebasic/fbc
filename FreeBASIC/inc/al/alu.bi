@@ -17,11 +17,13 @@ CONST FRACTIONMASK      = ((1 SHL FRACTIONBITS) - 1)
 const OUTPUTCHANNELS    = 2
 
 '$INCLUDE: 'al/altypes.bi'
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$INCLIB: 'OpenAL32'
 '$INCLIB: 'ALut'
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 '$INCLIB: 'openal'
+#else
+#error Platform not supported
 #endif
 
 

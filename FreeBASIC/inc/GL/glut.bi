@@ -10,11 +10,11 @@
 #ifndef __glut_bi__
 #define __glut_bi__
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #	inclib "glut32"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 #	inclib "glut" 
-#elseif defined(FB__DOS)
+#elseif defined(__FB_DOS__)
 #	inclib "GLUT" 
 #	inclib "alleg"
 #endif

@@ -13,7 +13,7 @@
 
 '$INCLUDE: 'al/al.bi'
 '$INCLUDE: 'al/alu.bi'
-#ifndef FB__LINUX
+#ifndef __FB_LINUX__
 '$INCLIB: 'ALut'
 #endif
 

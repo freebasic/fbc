@@ -1,11 +1,13 @@
 ' remember:
 ' this file is far from finished...
 '
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "libwx-c"
-#else
+#elseif defined(__FB_LINUX__)
 #inclib "wx-c"
 #inclib "wxGTK"
+#else
+#error Platform not supported!
 #endif
 '$include: "wxdefs.bi"
 'because i'm lazy...

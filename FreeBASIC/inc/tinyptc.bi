@@ -6,7 +6,7 @@
 ''
 '' add the -d PTC_WIN option to fbc's command-line to use the windowed version
 ''
-#if defined(PTC_WIN) and not defined(FB__DOS)
+#if defined(PTC_WIN) and not defined(__FB_DOS__)
 '$inclib: "tinyptc-win"
 #else
 '$inclib: "tinyptc"
@@ -21,10 +21,12 @@ declare function ptc_update	cdecl alias "ptc_update"	(byval buffer as integer pt
 
 declare function ptc_close	cdecl alias "ptc_close"		() as integer
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$inclib: "ddraw"
 '$inclib: "user32"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 '$inclib: "X11"
 '$libpath: "/usr/X11R6/lib"
+#else
+#error Platform not supported!
 #endif

@@ -303,7 +303,7 @@ end enum
 
 #define wxDEFAULT_FRAME_STYLE (wxSYSTEM_MENU or wxRESIZE_BORDER or wxMINIMIZE_BOX or wxMAXIMIZE_BOX or wxCAPTION or wxCLIP_CHILDREN)
 
-#if defined(FB__WIN32)
+#if defined(__FB_WIN32__)
 #   define wxDEFAULT_DIALOG_STYLE  (wxSYSTEM_MENU or wxCAPTION)
 #else
 '  Under Unix, the dialogs don't have a system menu. Specifying wxSYSTEM_MENU
@@ -320,7 +320,7 @@ end enum
 #define wxED_BUTTONS_RIGHT      &h0002
 #define wxED_STATIC_LINE        &h0001
 
-#if defined(FB__WIN32)
+#if defined(__FB_WIN32__)
 #   define wxEXT_DIALOG_STYLE  (wxDEFAULT_DIALOG_STYLEorwxED_CLIENT_MARGIN)
 #else
 #   define wxEXT_DIALOG_STYLE  (wxDEFAULT_DIALOG_STYLEorwxED_CLIENT_MARGINorwxED_STATIC_LINE)
@@ -1130,12 +1130,12 @@ end enum
 ' ----------------------------------------------------------------------------
 
 ' define this macro if font handling is done using the X font names
-#ifndef FB__WIN32
+#ifndef __FB_WIN32__
     #define _WX_X_FONTLIKE
 #endif
 
 ' macro to specify "All Files" on different platforms
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #   define wxALL_FILES_PATTERN   wxT("*.*")
 #   define wxALL_FILES           gettext_noop("All files (*.*)or*.*")
 #else
@@ -1274,10 +1274,10 @@ enum wxStockCursor
     wxCURSOR_WAIT
     wxCURSOR_WATCH
     wxCURSOR_BLANK
-#ifndef FB__WIN32
+#ifndef __FB_WIN32__
     wxCURSOR_DEFAULT ' standard X11 cursor
 #endif
-#ifndef FB__WIN32
+#ifndef __FB_WIN32__
     ' Not yet implemented for Windows
     wxCURSOR_CROSS_REVERSE
     wxCURSOR_DOUBLE_ARROW
@@ -1290,7 +1290,7 @@ enum wxStockCursor
     wxCURSOR_MAX
 end enum
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
     #define wxCURSOR_DEFAULT wxCURSOR_ARROW
 #endif
 

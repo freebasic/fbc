@@ -11,9 +11,9 @@
 
 #inclib "pango-1.0"
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "pangowin32-1.0"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 #inclib "pangox-1.0"
 #else
 #error Platform not supported!

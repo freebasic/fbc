@@ -8,7 +8,7 @@
 #define SDL_LIL_ENDIAN 1234
 #define SDL_BIG_ENDIAN 4321
 
-#if defined(FB__WIN32) or defined(FB__LINUX)
+#if defined(__FB_WIN32__) or defined(__FB_LINUX__)
 #define SDL_BYTEORDER SDL_LIL_ENDIAN
 #else
 #define SDL_BYTEORDER SDL_BIG_ENDIAN

@@ -22,6 +22,8 @@ Version 0.13 Beta:
 - the string argument in SHELL and DIR$ is optional now, as in QB (v1c)
 - #DEFINE won't report an error if declaring again a symbol with exactly the same text - won't work with macros (v1c)
 - #UNDEF won't report an error if un-defining an non-existent symbol (v1c)
+- FB__* built-in #defines are now named __FB_*__, please update your code if you used them! (lillo)
+- New built-in dynamic #defines: __FILE__, __FUNCTION__, __LINE__, __DATE__ and __TIME__ (lillo)
 
 [added]
 - runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded

@@ -19,7 +19,7 @@
 #define FREEIMAGE_RELEASE_SERIAL  0
 
 
-#if not defined(FB__WIN32) or not defined(WINGDIAPI)
+#if not defined(__FB_WIN32__) or not defined(WINGDIAPI)
 
 #ifndef FALSE
 #define FALSE 0
@@ -39,7 +39,7 @@
 
 
 Type RGBQUAD field=1
-#ifdef FB__BIGENDIAN
+#ifdef __FB_BIGENDIAN__
 		rgbRed As Byte
 		rgbGreen As Byte
 		rgbBlue As Byte
@@ -52,7 +52,7 @@ Type RGBQUAD field=1
 end type
 
 Type RGBTRIPLE field=1
-#ifdef FB__BIGENDIAN
+#ifdef __FB_BIGENDIAN__
 		rgbtRed As Byte
 		rgbtGreen As Byte
 		rgbtBlue As Byte
@@ -82,10 +82,10 @@ type BITMAPINFO
 	bmiColors		as RGBQUAD
 end type
 
-#endif '' FB__WIN32
+#endif '' __FB_WIN32__
 
 
-#ifndef FB__BIGENDIAN
+#ifndef __FB_BIGENDIAN__
 '' Little Endian (x86 / MS Windows, Linux) : BGR(A) order
 #define FI_RGBA_RED  2
 #define FI_RGBA_GREEN  1
@@ -113,7 +113,7 @@ Const FI_RGBA_GREEN_MASK=		&h00FF0000
 Const FI_RGBA_GREEN_SHIFT=		16
 Const FI_RGBA_BLUE_SHIFT=		8
 #define FI_RGBA_ALPHA_SHIFT 	0
-#endif '' FB__BIGENDIAN
+#endif '' __FB_BIGENDIAN__
 
 #define FI_RGBA_RGB_MASK  (FI_RGBA_RED_MASK or FI_RGBA_GREEN_MASK or FI_RGBA_BLUE_MASK)
 

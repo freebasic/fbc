@@ -9,9 +9,9 @@
 #ifndef __gdkgl_bi__
 #define __gdkgl_bi__
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "gdkglext-win32-1.0"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 #inclib "gdkglext-x11-1.0"
 #else
 #error Platform not supported!

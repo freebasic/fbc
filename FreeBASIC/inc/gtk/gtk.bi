@@ -9,9 +9,9 @@
 #ifndef __gtk_bi__
 #define __gtk_bi__
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "gtk-win32-2.0"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 #inclib "gtk-x11-2.0"
 #else
 #error Platform not supported!

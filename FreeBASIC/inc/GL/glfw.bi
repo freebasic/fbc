@@ -35,7 +35,7 @@
 
 #inclib "glfw"
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #	ifndef GLFW_DLL
 #		inclib "user32"
 #		inclib "gdi32"

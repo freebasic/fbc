@@ -5,7 +5,7 @@
 '' ported by DrV (i_am_drv@yahoo.com)
 ''
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$inclib: 'msvcrt'
 #endif
 
@@ -21,17 +21,17 @@ type FILE as any
 
 ' constants
 
-#if defined(FB__WIN32)
+#if defined(__FB_WIN32__)
 
 #	define CLOCKS_PER_SEC  1000
 #	define RAND_MAX  32767
 
-#elseif defined(FB__DOS)
+#elseif defined(__FB_DOS__)
 
 #	define CLOCKS_PER_SEC  91
 #	define RAND_MAX  2147483647
 
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 
 #	define CLOCKS_PER_SEC  1000000 ' as per http://www.die.net/doc/linux/man/man3/clock.3.html
 #	define RAND_MAX  ??? ' fixme
@@ -44,7 +44,7 @@ type FILE as any
 #	define NULL 0
 #endif
 
-'' #if defined(FB__X86)
+'' #if defined(__FB_X86__)
 	#define SCHAR_MAX   127
 	#define SCHAR_MIN  -128
 	#define UCHAR_MAX   255
@@ -251,7 +251,7 @@ declare function modf cdecl alias "modf" ( byval x as double, byval intptr as do
 
 declare sub perror cdecl alias "perror" ( byval s as string )
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 declare function popen cdecl alias "_popen" ( byval command as string, byval mode as string ) as FILE ptr
 declare function pclose cdecl alias "_pclose" ( byval f as FILE ptr ) as integer
 #else

@@ -5,7 +5,7 @@
 #ifndef SDL_main_bi_
 #define SDL_main_bi_
 
-#if defined(FB__WIN32)
+#if defined(__FB_WIN32__)
 '$include: 'SDL/SDL_types.bi'
 '$include: 'SDL/begin_code.bi'
 

@@ -12,7 +12,7 @@
 
 #inclib "japi"
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "coldname"
 #inclib "wsock32"
 #endif

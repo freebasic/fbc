@@ -227,15 +227,23 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, _
 					  	  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
 		end if
 
-	'' no args, just load text as-is
+	'' no args
 	else
 
-		if( s->def.isargless ) then
-			'' '(' ')'?
-			if( lexCurrentChar = CHAR_LPRNT ) then
-				if( lexLookAheadChar( TRUE ) = CHAR_RPRNT ) then
-					lexEatChar
-					lexEatChar
+		'' should we call a function to get definition text?
+		if( s->def.proc <> NULL ) then
+			'' call function
+			s->def.text = "\"" + s->def.proc( ) + "\""
+			lgt = len( s->def.text )
+		else
+			'' just load text as-is
+			if( s->def.isargless ) then
+				'' '(' ')'?
+				if( lexCurrentChar = CHAR_LPRNT ) then
+					if( lexLookAheadChar( TRUE ) = CHAR_RPRNT ) then
+						lexEatChar
+						lexEatChar
+					end if
 				end if
 			end if
 		end if
@@ -1137,7 +1145,7 @@ readid:
 			s = symbFindByClass( t.sym, FB.SYMBCLASS.DEFINE )
 			if( s <> NULL ) then
 				lgt = symbGetDefineLen( s )
-				if( lgt > 0 ) then
+				if( ( lgt > 0 ) or ( s->def.proc <> NULL ) ) then
 					hLoadDefine s, lgt
 				end if
 				goto reread

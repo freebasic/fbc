@@ -11,7 +11,7 @@
 
 #inclib "curses"
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "user32"
 #inclib "coldname"
 #endif
@@ -207,7 +207,7 @@ extern COLOR_PAIRS alias "COLOR_PAIRS" as integer
 #define A_STANDOUT (&h00800000 or &h00200000)
 #define A_PROTECT (&h00100000 or &h00020000 or &h00010000)
 
-#if defined(FB__LINUX)
+#if defined(__FB_LINUX__)
 # define COLOR_BLACK		0
 # define COLOR_RED		1
 # define COLOR_GREEN		2

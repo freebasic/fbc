@@ -558,6 +558,7 @@ type FBSDEFINE
 	args			as integer
 	arghead 		as FBDEFARG ptr
 	isargless		as integer
+	proc			as function( ) as string
 end type
 
 ''

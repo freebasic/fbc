@@ -11,7 +11,7 @@
 
 #inclib "grx20"
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "gdi32"
 #inclib "user32"
 #endif

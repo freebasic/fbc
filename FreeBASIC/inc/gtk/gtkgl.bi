@@ -9,9 +9,9 @@
 #ifndef __gtkgl_bi__
 #define __gtkgl_bi__
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "gtkglext-win32-1.0"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 #inclib "gtkglext-x11-1.0"
 #else
 #error Platform not supported!

@@ -14,10 +14,12 @@
 
 #define OPENAL
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$INCLIB: 'OpenAL32'
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 '$INCLIB: 'openal'
+#else
+#error Platform not supported
 #endif
 
 #ifndef AL_NO_PROTOTYPES

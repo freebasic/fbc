@@ -33,6 +33,7 @@ defint a-z
 '$include once: 'inc\ast.bi'
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
+'$include once: 'inc\lex.bi'
 
 type SYMBCTX
 	inited			as integer
@@ -59,22 +60,40 @@ declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM,
 
 declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer
 
+declare function	hDefFile		( ) as string
+declare function	hDefFunction	( ) as string
+declare function	hDefLine		( ) as string
+declare function	hDefDate		( ) as string
+declare function	hDefTime		( ) as string
+
 
 ''globals
 	dim shared ctx as SYMBCTX
 
+#define PROC_NONE			0
+#define PROC_FILE			1
+#define PROC_FUNCTION		2
+#define PROC_LINE			3
+#define PROC_DATE			4
+#define PROC_TIME			5
 
-'' predefined #defines: name, value, is_string
+
+'' predefined #defines: name, value, proc
 definesdata:
-data "FB__VERSION",			FB.VERSION,		TRUE
-data "FB__SIGNATURE",		FB.SIGN,		TRUE
+data "__FB_VERSION__",			FB.VERSION,		PROC_NONE
+data "__FB_SIGNATURE__",		FB.SIGN,		PROC_NONE
 #ifdef TARGET_WIN32
-data "FB__WIN32",			"",				FALSE
+data "__FB_WIN32__",			"",				PROC_NONE
 #elseif defined(TARGET_LINUX)
-data "FB__LINUX",			"",				FALSE
+data "__FB_LINUX__",			"",				PROC_NONE
 #elseif defined(TARGET_DOS)
-data "FB__DOS",			    "",				FALSE
+data "__FB_DOS__",			    "",				PROC_NONE
 #endif
+data "__FILE__",				"",				PROC_FILE
+data "__FUNCTION__",			"",				PROC_FUNCTION
+data "__LINE__",				"",				PROC_LINE
+data "__DATE__",				"",				PROC_DATE
+data "__TIME__",				"",				PROC_TIME
 data ""
 
 
@@ -311,7 +330,7 @@ end sub
 
 '':::::
 sub symbInitDefines static
-	dim def as string, value as string, is_string as integer
+	dim def as string, value as string, proc_id as integer, proc as function() as string
 
     listNew( @ctx.defarglist, FB.INITDEFARGNODES, len( FBDEFARG ) )
 
@@ -322,11 +341,25 @@ sub symbInitDefines static
     		exit do
     	end if
     	read value
-    	read is_string
-    	if( is_string ) then
+    	if( value <> "" ) then
     		value = "\"" + value + "\""
     	end if
-    	symbAddDefine( def, value )
+    	read proc_id
+    	select case as const proc_id
+    	case PROC_NONE
+    		proc = NULL
+    	case PROC_FILE
+    		proc = @hDefFile
+    	case PROC_FUNCTION
+    		proc = @hDefFunction
+    	case PROC_LINE
+    		proc = @hDefLine
+    	case PROC_DATE
+    		proc = @hDefDate
+    	case PROC_TIME
+    		proc = @hDefTime
+    	end select
+    	symbAddDefine( def, value, 0, NULL, FALSE, proc )
     loop
 
 end sub
@@ -425,6 +458,35 @@ sub symbEnd
 	ctx.inited = FALSE
 
 end sub
+
+'':::::
+function hDefFile( ) as string static
+	hDefFile = env.infile
+end function
+
+'':::::
+function hDefFunction( ) as string static
+	if( env.currproc = NULL ) then
+		hDefFunction = "(main)"
+	else
+		hDefFunction = symbGetName( env.currproc )
+	end if
+end function
+
+'':::::
+function hDefLine( ) as string static
+	hDefLine = ltrim$( str$( lexLineNum ) )
+end function
+
+'':::::
+function hDefDate( ) as string static
+	hDefDate = date$
+end function
+
+'':::::
+function hDefTime( ) as string static
+	hDefTime = time$
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
@@ -725,7 +787,8 @@ function symbAddDefine( byval symbol as string, _
 						byval text as string, _
 						byval args as integer = 0, _
 						byval arghead as FBDEFARG ptr = NULL, _
-						byval isargless as integer = FALSE ) as FBSYMBOL ptr static
+						byval isargless as integer = FALSE, _
+						byval proc as function( ) as string = NULL ) as FBSYMBOL ptr static
     dim d as FBSYMBOL ptr
 
     symbAddDefine = NULL
@@ -741,6 +804,7 @@ function symbAddDefine( byval symbol as string, _
 	d->def.args		= args
 	d->def.arghead	= arghead
 	d->def.isargless= isargless
+	d->def.proc     = proc
 
 	''
 	symbAddDefine = d

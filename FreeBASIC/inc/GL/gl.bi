@@ -9,11 +9,11 @@
 #ifndef __gl_bi__
 #define __gl_bi__
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$inclib: "opengl32"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 '$inclib: "GL"
-#elseif defined(FB__DOS)
+#elseif defined(__FB_DOS__)
 '$inclib: "gl"
 #endif
 

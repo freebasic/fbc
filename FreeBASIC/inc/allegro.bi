@@ -25,9 +25,9 @@
 
 ' -- platform-specific --
 
-#ifndef FB__LINUX
+#ifndef __FB_LINUX__
 
-	#ifdef FB__DOS
+	#ifdef __FB_DOS__
 
 		'$inclib: "alleg"
 
@@ -72,7 +72,7 @@
 
 		#define bmp_write24(addr, c)		_farnspokew addr, (c) and &HFFFF : _farnspokeb (addr)+2, (c) shr 16
 
-	#elseif defined(FB__WIN32)
+	#elseif defined(__FB_WIN32__)
 	
 		#ifdef ALLEGRO_STATICLINK
 			'$inclib: 'alleg_s'
@@ -175,7 +175,7 @@
 
 #endif
 
-#if not defined(FB__DOS)
+#if not defined(__FB_DOS__)
 
 	#define END_OF_FUNCTION(x)		if 0 then : end if
 	#define END_OF_STATIC_FUNCTION(x)	if 0 then : end if
@@ -1875,7 +1875,7 @@ end function
 
 ' -- random hacks --
 
-#ifdef FB__LINUX
+#ifdef __FB_LINUX__
 
 declare function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer
 declare function allegro_main alias "main" (byval argc as integer, byval argv as any ptr) as integer

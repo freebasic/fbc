@@ -8,7 +8,7 @@
 #define begin_code_bi_
 
 #ifndef SDLCALL
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #define SDLCALL cdecl
 #else
 #define SDLCALL

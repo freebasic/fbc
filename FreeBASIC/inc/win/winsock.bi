@@ -11,7 +11,7 @@
 #ifndef _WINSOCK_H
 #define _WINSOCK_H
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #inclib "wsock32"
 #else
 #endif

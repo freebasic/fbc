@@ -9,11 +9,11 @@
 #ifndef __glu_bi__
 #define __glu_bi__
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$inclib: "glu32"
-#elseif defined(FB__LINUX)
+#elseif defined(__FB_LINUX__)
 '$inclib: "GLU"
-#elseif defined(FB__DOS)
+#elseif defined(__FB_DOS__)
 '$inclib: "glu"
 #endif
 

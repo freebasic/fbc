@@ -21,7 +21,7 @@ type GModule as _GModule
 type GModuleCheckInit as function cdecl(byval as GModule ptr) as gchar
 type GModuleUnload as sub cdecl(byval as GModule ptr)
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 #define g_module_open g_module_open_utf8
 #define g_module_name g_module_name_utf8
 #endif

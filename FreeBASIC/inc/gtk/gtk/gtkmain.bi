@@ -17,7 +17,7 @@ type GtkKeySnoopFunc as function cdecl(byval as GtkWidget ptr, byval as GdkEvent
 declare function gtk_check_version cdecl alias "gtk_check_version" (byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as zstring ptr
 declare function gtk_parse_args cdecl alias "gtk_parse_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
 
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 declare sub gtk_init_abi_check cdecl alias "gtk_init_abi_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval num_checks as integer, byval sizeof_GtkWindow as integer, byval sizeof_GtkBox as integer)
 declare function gtk_init_check_abi_check cdecl alias "gtk_init_check_abi_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval num_checks as integer, byval sizeof_GtkWindow as integer, byval sizeof_GtkBox as integer) as gboolean
 #define gtk_init(c,v) gtk_init_abi_check (c,v,2,len( GtkWindow ),len( GtkBox ))
