@@ -147,8 +147,10 @@ const CHAR_NULL   	= 00, _
       CHAR_QUESTION	= 63, _
       CHAR_TILD		= 126, _
       CHAR_ESC		= 27, _
-      CHAR_LBRACKET	= 123, _
-      CHAR_RBRACKET	= 125
+      CHAR_LBRACE	= 123, _
+      CHAR_RBRACE	= 125, _
+      CHAR_LBRACKET	= 91, _
+      CHAR_RBRACKET	= 93
 
 
 const FB.INTSCAPECHAR		= CHAR_ESC			'' assuming it won't ever be used inside lit strings
@@ -334,6 +336,7 @@ enum FBTK_ENUM
 	FB.TK.STRPTR
 	FB.TK.WITH
 	FB.TK.EXPORT
+	FB.TK.IMPORT
 	FB.TK.LIBPATH
 end enum
 
@@ -423,6 +426,7 @@ enum FBALLOCTYPE_ENUM
 	FB.ALLOCTYPE.PUBLIC 		= 256
 	FB.ALLOCTYPE.EXTERN			= 512			'' extern's become public when DIM'ed
 	FB.ALLOCTYPE.EXPORT			= 1024
+	FB.ALLOCTYPE.IMPORT			= 2048
 end enum
 
 

@@ -1446,7 +1446,7 @@ sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval d
 				   exprTB() as integer, byval dopreserve as integer ) static
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim typ as integer, dtype as integer, t as integer, isvarlen as integer
+    dim dtype as integer, t as integer, isvarlen as integer
     dim i as integer, vr as integer
 
 	''
@@ -1454,8 +1454,7 @@ sub rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval d
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 5+dimensions*2 )
 
     '' array() as ANY
-    typ = symbGetType( s )
-    dtype =  hStyp2Dtype( typ )
+    dtype =  symbGetType( s )
 	t = astNewVAR( s, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
@@ -1563,7 +1562,7 @@ end sub
 sub rtlArrayStrErase( byval s as FBSYMBOL ptr ) static
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim typ as integer, dtype as integer, t as integer, isvarlen as integer
+    dim dtype as integer, t as integer, isvarlen as integer
     dim vr as integer
 
 	''
@@ -1571,8 +1570,7 @@ sub rtlArrayStrErase( byval s as FBSYMBOL ptr ) static
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
 
     '' array() as ANY
-    typ = symbGetType( s )
-    dtype =  hStyp2Dtype( typ )
+    dtype = symbGetType( s )
 	t = astNewVAR( s, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
@@ -1616,15 +1614,14 @@ sub rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
 					 byval dimensions as integer, dTB() as FBARRAYDIM ) static
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim typ as integer, dtype as integer, t as integer
+    dim dtype as integer, t as integer
     dim i as integer, vr as integer
 
 	f = ifuncTB(FB.RTL.ARRAYSETDESC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4+dimensions*2 )
 
     '' array() as ANY
-    typ = symbGetType( s )
-    dtype =  hStyp2Dtype( typ )
+    dtype =  symbGetType( s )
 	t = astNewVAR( s, 0, dtype )
     astNewPARAM( proc, t, dtype )
 
@@ -3112,13 +3109,11 @@ end sub
 
 #ifdef AUTOADDGFXLIBS
 private sub hAddGfxLibs
-	dim temp as integer
-	
 	symbAddLib( "fbgfx" )
 #ifdef TARGET_WIN32
 	symbAddLib( "user32" )
 #elseif defined(TARGET_LINUX)
-	temp = fbAddLibPath( "/usr/X11R6/lib" )
+	fbAddLibPath( "/usr/X11R6/lib" )
 	symbAddLib( "X11" )
 	symbAddLib( "Xext" )
 	symbAddLib( "Xxf86vm" )

@@ -257,9 +257,10 @@ data "EXTERN"	, FB.TK.EXTERN		, FB.TKCLASS.KEYWORD
 data "STRPTR"	, FB.TK.STRPTR		, FB.TKCLASS.KEYWORD
 data "WITH"		, FB.TK.WITH		, FB.TKCLASS.KEYWORD
 data "EXPORT"	, FB.TK.EXPORT		, FB.TKCLASS.KEYWORD
+data "IMPORT"	, FB.TK.IMPORT		, FB.TKCLASS.KEYWORD
 data "LIBPATH"	, FB.TK.LIBPATH		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 165
+const FB.MAXKEYWORDS 		= 166
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -989,7 +990,7 @@ end function
 function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, ofs as integer, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
-    dim elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr
+    dim elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr
     dim p as integer
 
 	hAllocFloatConst = NULL
@@ -1000,7 +1001,7 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL p
 
 	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, dTB(), FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
 	if( s = NULL ) then
-		hAllocFloatConst = symbLookupVar( cname, typ, ofs, elm, typesymbol, TRUE, FALSE, FALSE )
+		hAllocFloatConst = symbLookupVar( cname, typ, ofs, elm, subtype, TRUE, FALSE, FALSE )
 		exit function
 	end if
 
@@ -1020,7 +1021,7 @@ end function
 function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, ofs as integer, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
-    dim elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr
+    dim elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr
 
 	hAllocStringConst = NULL
 
@@ -1030,7 +1031,7 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
 
 	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, lgt + 1, 0, dTB(), FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
 	if( s = NULL ) then
-		s = symbLookupVar( cname, FB.SYMBTYPE.FIXSTR, ofs, elm, typesymbol, FALSE, TRUE, FALSE )
+		s = symbLookupVar( cname, FB.SYMBTYPE.FIXSTR, ofs, elm, subtype, FALSE, TRUE, FALSE )
 		hAllocStringConst = s 's->array.desc
 		exit function
 	end if
@@ -1550,7 +1551,7 @@ private function hSetupProc( id as string, aliasname as string, libname as strin
     end if
 
     if( instr( aname, "@" ) = 0 ) then
-    	aname = hCreateAliasName( aname, lgt, toupper, mode )
+    	aname = hCreateProcAlias( aname, lgt, toupper, mode )
     end if
 
     ''
@@ -1694,7 +1695,7 @@ end function
 
 
 '':::::
-function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, typ as integer, id as string ) as integer
+function symbGetUDTElmOffset( elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, typ as integer, id as string ) as integer
 	dim e as FBSYMBOL ptr, ename as string
 	dim p as integer, ofs as integer, o as integer
 
@@ -1710,11 +1711,11 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, t
 	elm = NULL
 	ofs = INVALID
 
-    if( typesymbol = NULL ) then
+    if( subtype = NULL ) then
     	exit function
     end if
 
-	e = typesymbol->udt.head
+	e = subtype->udt.head
 	do while( e <> NULL )
 
         if( strpGet( e->nameidx ) = ename ) then
@@ -1722,7 +1723,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, t
         	elm 		= e
         	ofs 		= e->elm.ofs
         	typ 		= e->typ
-        	typesymbol 	= e->subtype
+        	subtype 	= e->subtype
 
         	if( typ = FB.SYMBTYPE.USERDEF ) then
 
@@ -1730,7 +1731,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, t
     				exit do
     			end if
 
-    			o = symbGetUDTElmOffset( elm, typesymbol, typ, mid$( id, p+1 ) )
+    			o = symbGetUDTElmOffset( elm, subtype, typ, mid$( id, p+1 ) )
     			if( o = INVALID ) then
     				exit function
     			end if
@@ -1828,7 +1829,7 @@ end function
 
 '':::::
 function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
-					    elm as FBSYMBOL ptr, typesymbol as FBSYMBOL ptr, _
+					    elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, _
 					    byval addsuffix as integer = TRUE, _
 					    byval preservecase as integer = FALSE, _
 					    byval clearname as integer = TRUE ) as FBSYMBOL ptr static
@@ -1856,7 +1857,7 @@ function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
     	do
     		ofs 		= 0
     		elm	        = NULL
-    		typesymbol 	= NULL
+    		subtype 	= NULL
 
     		if( addsuffix ) then
     			t = typ
@@ -1879,7 +1880,7 @@ function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
 				end if
 
 				s->acccnt = s->acccnt + 1
-				typesymbol = s->subtype
+				subtype   = s->subtype
 
 				symbLookupVar = s
 				exit function
@@ -1895,10 +1896,10 @@ function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
 			''
 			s = hCheckTypeField( symbol, preservecase, clearname, fields )
 			if( s <> NULL ) then
-    			typesymbol 	= s->subtype
-    			typ 		= s->typ
+    			subtype	= s->subtype
+    			typ 	= s->typ
 
-    			ofs = symbGetUDTElmOffset( elm, typesymbol, typ, fields )
+    			ofs = symbGetUDTElmOffset( elm, subtype, typ, fields )
     			if( ofs = INVALID ) then
     				hReportError FB.ERRMSG.ELEMENTNOTDEFINED
     				exit function
@@ -2264,20 +2265,6 @@ function hCalcElements2( byval dimensions as integer, dTB() as FBARRAYDIM ) as i
 end function
 
 '':::::
-function hStyp2Dtype( byval typ as integer ) as integer static
-
-	hStyp2Dtype = typ						'' hack! assuming SYMBTYPE = DATATYPE
-
-end function
-
-'':::::
-function hDtype2Stype( byval dtype as integer ) as integer static
-
-	hDtype2Stype = dtype					'' hack! assuming DATATYPE = SYMBTYPE
-
-end function
-
-'':::::
 function hIsStrFixed( byval dtype as integer ) as integer static
 
     hIsStrFixed = (dtype = IR.DATATYPE.FIXSTR)
@@ -2293,11 +2280,8 @@ end function
 
 '':::::
 function symbIsString( byval s as FBSYMBOL ptr ) as integer static
-    dim dtype as integer
 
-    dtype = hStyp2Dtype( s->typ )
-
-    symbIsString = hIsString( dtype )
+    symbIsString = hIsString( s->typ )
 
 end function
 
@@ -2487,11 +2471,8 @@ end function
 
 '':::::
 function symbGetFuncDataType( byval f as FBSYMBOL ptr ) as integer static
-	dim typ as integer
 
-	typ = f->typ
-
-	symbGetFuncDataType = hStyp2Dtype( typ )
+	symbGetFuncDataType = f->typ
 
 end function
 
@@ -2701,7 +2682,7 @@ function symbGetArgDataType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr )
 
 	typ = a->typ
     if( typ <> INVALID ) then
-		symbGetArgDataType = hStyp2Dtype( typ )
+		symbGetArgDataType = typ
 		exit function
 	end if
 
@@ -2710,7 +2691,7 @@ function symbGetArgDataType( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr )
 	end if
 
 	'' it's really a "..." arg, so, it's always an integer
-	symbGetArgDataType = hStyp2Dtype( FB.SYMBTYPE.INTEGER )
+	symbGetArgDataType = FB.SYMBTYPE.INTEGER
 
 end function
 
