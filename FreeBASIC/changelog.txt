@@ -1,3 +1,8 @@
+Version 0.13 Beta:
+
+[fixed] CVS() was being done as CVD() (v1c)
+
+
 Version 0.12 Beta:
 
 [chged] IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
@@ -22,6 +27,7 @@ Version 0.12 Beta:
 [chged] DIM|REDIM array w/o explicit dimensions is not allowed anymore inside procs, as the descriptor size is unknown (v1c)
 [chged] RGB is now an intrinsic macro, not a function (so no UDT's called RGB are allowed anymore) (v1c)
 [chged] symbols can now start with an underscore as in "_1234 = 1234" (v1c)
+[chged] local labels can now have the same name in different procs (v1c)
 [added] resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
         compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
         used too (DrV)
