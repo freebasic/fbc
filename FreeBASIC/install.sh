@@ -1,9 +1,30 @@
-mkdir -p -m 0755 /usr/share/freebasic/bin
-mkdir -p -m 0755 /usr/share/freebasic/inc
-mkdir -p -m 0755 /usr/share/freebasic/lib
+#!/bin/sh
 
-cp lib/* /usr/share/freebasic/lib
-cp -r inc/* /usr/share/freebasic/inc
-cp fbc /usr/share/freebasic/bin
+base="/usr/share"
+dest="$base/freebasic"
+
+if [ ! -w $base ]
+then
+	echo
+	echo "You need root priviledges to run this install script!"
+	echo
+	exit 1
+fi
+
+mkdir -p -m 0755 "$dest"/bin
+mkdir -p -m 0755 "$dest"/inc
+mkdir -p -m 0755 "$dest"/lib
+
+cp lib/* "$dest"/lib
+cp -r inc/* "$dest"/inc
+cp fbc "$dest"/bin
 rm -f /usr/bin/fbc
-(cd /usr/bin; ln -s /usr/share/freebasic/bin/fbc fbc)
+(cd /usr/bin; ln -s "$dest"/bin/fbc fbc)
+
+echo
+echo "==================================================================="
+echo "FreeBASIC compiler successfully installed in $dest"
+echo "A link to the compiler binary has also been created as /usr/bin/fbc"
+echo "==================================================================="
+echo
+
