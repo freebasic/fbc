@@ -225,7 +225,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		lc = c;
 	}
 
-	/* any text first */
+	/* any text */
 	fb_PrintUsingFmtStr( fnum );
 
 	//
@@ -334,138 +334,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			if( nc == '^' || lc == '^' )
 				isexp = 1;
 			break;
-
+		
 		default:
-			//
-			if( isexp )
-			{
-                sprintf( buffer, "%e", value );
-                len = strlen( buffer );
-            }
-			else
-			{
-#ifdef WIN32
-				_gcvt( value, 16, buffer );
-#else
-				sprintf( buffer, "%g", value);
-#endif
-				len = strlen( buffer );
-				if( buffer[len-1] == '.' )
-				{
-					buffer[len-1] = '\0';
-					--len;
-				}
-			}
-
-			//
-			if( buffer[0] == '-' )
-			{
-                memmove( buffer, &buffer[1], len-1 + 1 );
-				isneg = 1;
-				--len;
-			}
-			else
-			{
-				if( len < intdigs )
-					++intdigs;
-				isneg = 0;
-			}
-
-			//
-			p = strchr( buffer, '.' );
-			if( p == NULL )
-				d = 0;
-			else
-				d = (int)(p - buffer) + 1;
-
-			if( d == 0 )
-				if( decdigs > 0 )
-				{
-					strcat( buffer, "." );
-					++len;
-					d = len;
-				}
-
-			if( d == 0 )
-				intlgt = len;
-			else
-				intlgt = d - 1;
-
-			if( addcomma )
-			{
-				len = strlen( buffer );
-				p = &buffer[intlgt-1];
-				for( i = intlgt, j = 0; i > 0; i--, p-- )
-				{
-					++j;
-					if( j == 3 )
-					{
-						if( i > 1 )
-						{
-							memmove( p+1, p, len-i+1+1 );
-							*p = ',';
-							++len;
-							++intlgt;
-						}
-						j = 0;
-					}
-				}
-			}
-
-			//
-			if( adddolar )
-			{
-				memmove( &buffer[1], buffer, strlen( buffer )+1 );
-				buffer[0] = '$';
-			}
-
-			// neg
-			if( isneg && !signatend )
-			{
-				memmove( &buffer[1], buffer, strlen( buffer )+1 );
-				buffer[0] = '-';
-			}
-
-			// padding
-			if( intdigs > 0 )
-			{
-				intdigs -= intlgt;
-
-				if( intdigs > 0 )
-				{
-					memmove( &buffer[intdigs], buffer, strlen( buffer )+1 );
-					memset( buffer, padchar, intdigs );
-				}
-			}
-
-			//
-			if( decdigs > 0 )
-			{
-				p = strchr( buffer, '.' );
-				if( p == NULL )
-					d = 0;
-				else
-					d = (int)(p - buffer) + 1;
-
-				len = strlen( buffer );
-				decdigs -= (len - d);
-				if( decdigs > 0 )
-				{
-					memset( &buffer[len], '0', decdigs );
-					buffer[len+decdigs] = '\0';
-				}
-			}
-
-			// neg
-			if( isneg && signatend )
-				strcat( buffer, "-" );
-
-			if( endcomma )
-				strcat( buffer, "," );
-
-			//
-			fb_PrintFixString( fnum, buffer, 0 );
-
 			doexit = 1;
 		}
 
@@ -478,7 +348,143 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		lc = c;
 	}
 
-	/* any text first */
+	/* ------------------------------------------------------ */
+	
+	//
+	if( isexp )
+	{
+    	sprintf( buffer, "%e", value );
+        len = strlen( buffer );
+	}
+	else
+	{
+		sprintf( buffer, "%g", value );
+		len = strlen( buffer );
+		if( buffer[len-1] == '.' )
+		{
+			buffer[len-1] = '\0';
+			--len;
+		}
+	}
+	
+	//
+	if( buffer[0] == '-' )
+	{
+      	memmove( buffer, &buffer[1], len-1 + 1 );
+		isneg = 1;
+		--len;
+	}
+	else
+		isneg = 0;
+
+	//
+	p = strchr( buffer, '.' );
+	if( p == NULL )
+		d = 0;
+	else
+		d = (int)(p - buffer) + 1;
+
+	if( d == 0 )
+		if( decdigs > 0 )
+		{
+			strcat( buffer, "." );
+			++len;
+			d = len;
+		}
+
+	if( d == 0 )
+		intlgt = len;
+	else
+		intlgt = d - 1;
+
+	if( addcomma )
+	{
+		len = strlen( buffer );
+		p = &buffer[intlgt-1];
+		for( i = intlgt, j = 0; i > 0; i--, p-- )
+		{
+			++j;
+			if( j == 3 )
+			{
+				if( i > 1 )
+				{
+					memmove( p+1, p, len-i+1+1 );
+					*p = ',';
+					++len;
+					++intlgt;
+				}
+				j = 0;
+			}
+		}
+	}
+
+	//
+	if( adddolar )
+	{
+		memmove( &buffer[1], buffer, strlen( buffer )+1 );
+		buffer[0] = '$';
+	}
+
+	// neg
+	if( !signatend )
+	{
+		memmove( &buffer[1], buffer, strlen( buffer )+1 );
+		if( isneg )		
+			buffer[0] = '-';
+		else
+			buffer[0] = ' ';
+			
+		++intlgt;
+	}
+
+	// padding
+	if( intdigs > 0 )
+	{		
+		intdigs -= intlgt;		
+
+		if( intdigs > 0 )
+		{
+			memmove( &buffer[intdigs], buffer, strlen( buffer )+1 );
+			memset( buffer, padchar, intdigs );
+		}
+	}
+
+	//
+	if( decdigs > 0 )
+	{
+		p = strchr( buffer, '.' );
+		if( p == NULL )
+			d = 0;
+		else
+			d = (int)(p - buffer) + 1;
+
+		len = strlen( buffer );
+		decdigs -= (len - d);
+		if( decdigs > 0 )
+		{
+			memset( &buffer[len], '0', decdigs );
+			buffer[len+decdigs] = '\0';
+		}
+	}
+
+	// neg
+	if( signatend )
+	{
+		if( isneg )
+			strcat( buffer, "-" );
+		else
+			strcat( buffer, " " );
+	}
+
+	if( endcomma )
+		strcat( buffer, "," );
+
+	//
+	fb_PrintFixString( fnum, buffer, 0 );
+
+	/* ------------------------------------------------------ */
+	
+	/* any text */
 	fb_PrintUsingFmtStr( fnum );
 
 	//
