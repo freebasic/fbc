@@ -720,6 +720,12 @@ data "getmouse", "fb_GfxGetMouse", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
 								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
 								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0
 
+'' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as void
+data "setmouse", "fb_GfxSetMouse", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+
 '' fb_GfxScreenInfo ( ) as any ptr
 data "screeninfo", "fb_GfxScreenInfo", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
 
