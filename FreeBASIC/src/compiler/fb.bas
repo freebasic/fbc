@@ -58,7 +58,6 @@ data "pthread"
 data "dl"
 #elseif defined(TARGET_DOS)
 data "c"
-data "gcc"
 #endif
 data ""
 

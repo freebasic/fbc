@@ -50,7 +50,7 @@ endif
 ifeq ($(osdeppath),dos)
     EXE := .exe
     LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o obj/dos/fbcentry.o
-    LDLIBS := -L../../lib/dos -( -lfb -lc -lgcc -)
+    LDLIBS := -L../../lib/dos -( -lfb -lc -)
     BC := ..\..\fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_DOS -nostdcall
     LD := ..\..\bin\dos\ld.exe
