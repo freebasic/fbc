@@ -229,7 +229,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_mode->driver = driver;
 		fb_mode->driver_flags = flags;
 
-		fb_GfxPalette(-1, 0);
+		fb_GfxPalette(-1, 0, 0, 0);
 
 		if (fb_mode->depth == 8)
 			fb_mode->fg_color = 15;
@@ -273,6 +273,10 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags)
 {
 	MODEINFO info;
 	
+	if ((w <= 0) || (h <= 0))
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	if ((depth != 8) && (depth != 15) && (depth != 16) && (depth != 24) && (depth != 32))
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	info.w = w;
 	info.h = h;
 	info.depth = depth;

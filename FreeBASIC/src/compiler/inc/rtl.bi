@@ -274,7 +274,7 @@ declare function	rtlGfxView			( byval x1expr as integer, byval y1expr as integer
 declare function	rtlGfxWindow		( byval x1expr as integer, byval y1expr as integer, _
 										  byval x2expr as integer, byval y2expr as integer, _
 			    						  byval screenflag as integer ) as integer
-declare function	rtlGfxPalette 		( byval attexpr as integer, byval colexpr as integer ) as integer
+declare function	rtlGfxPalette 		( byval attexpr as integer, byval rexpr as integer, byval gexpr as integer, byval bexpr as integer ) as integer
 declare function	rtlGfxPaletteUsing	( byval arrayexpr as integer ) as integer
 declare function 	rtlGfxPut			( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer, _
 										  byval arrayexpr as integer, byval isptr as integer, _

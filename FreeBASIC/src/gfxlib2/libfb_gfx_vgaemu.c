@@ -79,7 +79,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 			shift += 8;
 			if (shift > 18) {
 				if (fb_mode->default_palette == &fb_palette_256)
-					fb_GfxPalette(idx, color);
+					fb_GfxPalette(idx, color, -1, -1);
 				else {
 					fb_mode->driver->lock();
 					r = color & 0xFF;

@@ -37,9 +37,9 @@ void fb_GfxColor(int fg, int bg)
 	
 		case 1:
 			if (bg >= 0)
-				fb_GfxPalette(-(4 - (bg & 0x3)), 0);
+				fb_GfxPalette(-(4 - (bg & 0x3)), 0, 0, 0);
 			if (fg >= 0)
-				fb_GfxPalette(0, fg);
+				fb_GfxPalette(0, fg, -1, -1);
 			break;
 		
 		case 7:
@@ -48,7 +48,7 @@ void fb_GfxColor(int fg, int bg)
 			if (fg >= 0)
 				fb_mode->fg_color = (fg & 0xF);
 			if (bg >= 0)
-				fb_GfxPalette(0, bg);
+				fb_GfxPalette(0, bg, -1, -1);
 			break;
 		
 		default:

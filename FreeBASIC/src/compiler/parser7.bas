@@ -670,11 +670,11 @@ function cGfxView( byval isview as integer ) as integer
 end function
 
 '':::::
-'' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr)?)
+'' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr (',' Expr ',' Expr)?)?)
 ''
 function cGfxPalette as integer
     dim arrayexpr as integer, s as FBSYMBOL ptr
-    dim attexpr as integer, colexpr as integer
+    dim attexpr as integer, rexpr as integer, gexpr as integer, bexpr as integer
 
 	cGfxPalette = FALSE
 
@@ -705,7 +705,9 @@ function cGfxPalette as integer
 	else
 
 		attexpr = INVALID
-		colexpr = INVALID
+		rexpr = INVALID
+		gexpr = INVALID
+		bexpr = INVALID
 
 		if( cExpression( attexpr ) ) then
 			if( not hMatch( CHAR_COMMA ) ) then
@@ -713,13 +715,30 @@ function cGfxPalette as integer
 				exit function
 			end if
 
-			if( not cExpression( colexpr ) ) then
+			if( not cExpression( rexpr ) ) then
 				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 				exit function
 			end if
+			
+			if( hMatch( CHAR_COMMA ) ) then
+				if( not cExpression( gexpr ) ) then
+					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+					exit function
+				end if
+				
+				if( not hMatch( CHAR_COMMA ) ) then
+					hReportError FB.ERRMSG.EXPECTEDCOMMA
+					exit function
+				end if
+				
+				if( not cExpression( bexpr ) ) then
+					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+					exit function
+				end if
+			end if
 		end if
 
-		cGfxPalette = rtlGfxPalette( attexpr, colexpr )
+		cGfxPalette = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr )
 
 	end if
 

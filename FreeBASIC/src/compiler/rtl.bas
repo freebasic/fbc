@@ -625,8 +625,11 @@ data "fb_GfxWindow", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
 						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
-'' fb_GfxPalette( byval attribute as uinteger = -1, byval color as uinteger = -1 ) as integer
-data "fb_GfxPalette", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+'' fb_GfxPalette( byval attribute as integer = -1, byval r as integer = -1, _
+''				  byval g as integer = -1, byval b as integer = -1 ) as void
+data "fb_GfxPalette", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
@@ -4330,28 +4333,45 @@ function rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x
 end function
 
 '':::::
-function rtlGfxPalette ( byval attexpr as integer, byval colexpr as integer ) as integer
+function rtlGfxPalette ( byval attexpr as integer, byval rexpr as integer, _
+						 byval gexpr as integer, byval bexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim vr as integer
 
 	rtlGfxPalette = FALSE
 
     f = ifuncTB(FB.RTL.GFXPALETTE)
-	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 2 )
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
 
- 	'' byval attr as uinteger
+ 	'' byval attr as integer
  	if( attexpr = INVALID ) then
-        attexpr = astNewCONST( -1, IR.DATATYPE.UINT )
+        attexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, attexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
 
- 	'' byval color as uinteger
- 	if( colexpr = INVALID ) then
-        colexpr = astNewCONST( -1, IR.DATATYPE.UINT )
+ 	'' byval r as integer
+ 	if( rexpr = INVALID ) then
+        rexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
     end if
- 	if( astNewPARAM( proc, colexpr, INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, rexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
+
+ 	'' byval g as integer
+ 	if( gexpr = INVALID ) then
+        gexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
+    end if
+ 	if( astNewPARAM( proc, gexpr, INVALID ) = INVALID ) then
+ 		exit function
+ 	end if
+
+ 	'' byval b as integer
+ 	if( bexpr = INVALID ) then
+        bexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
+    end if
+ 	if( astNewPARAM( proc, bexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4581,7 +4601,7 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
 
  	'' byval d as integer
  	if( dexpr = INVALID ) then
- 		dexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		dexpr = astNewCONST( 8, IR.DATATYPE.INTEGER )
  	end if
  	if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
  		exit function

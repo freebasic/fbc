@@ -149,9 +149,10 @@ static void set_color(int index, unsigned int color)
 
 
 /*:::::*/
-FBCALL void fb_GfxPalette(int index, unsigned int color)
+FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 {
 	int i, r, g, b;
+	unsigned int color;
 	const PALETTE *palette;
 	const unsigned char *mode_association;
 	
@@ -198,8 +199,13 @@ FBCALL void fb_GfxPalette(int index, unsigned int color)
 			}
 		}
 	}
-	else
+	else {
+		if ((green < 0) || (blue < 0))
+			color = (unsigned int)red;
+		else
+			color = (red >> 2) | ((green >> 2) << 8) | ((blue >> 2) << 16);
 		set_color(index, color);
+	}
 	
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 	
