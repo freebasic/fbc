@@ -30,7 +30,7 @@
 #include <dlfcn.h>
 
 
-static int driver_init(char *title, int w, int h, int depth, int flags);
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
 static void driver_flip(void);
 
@@ -112,38 +112,25 @@ static int opengl_window_init(void)
 		XResizeWindow(fb_linux.display, fb_linux.window, fb_linux.w, fb_linux.h);
 		XMoveWindow(fb_linux.display, fb_linux.window, x, y);
 	}
+	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
 	if (fb_linux.fullscreen) {
 		display_name = XDisplayName(NULL);
 		if ((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) {
-			if (!XF86VidModeQueryExtension(fb_linux.display, &dummy, &dummy))
+			if (fb_hX11EnterFullscreen(fb_linux.h)) {
+				fb_hX11LeaveFullscreen();
 				return -1;
-			if ((!XF86VidModeQueryVersion(fb_linux.display, &version, &dummy)) || (version < 2))
-				return -1;
-			if (!XF86VidModeGetAllModeLines(fb_linux.display, fb_linux.screen, &num_modes, &modes_info))
-				return -1;
-			for (i = 0; i < num_modes; i++) {
-				if ((modes_info[i]->hdisplay == fb_linux.w) && (modes_info[i]->vdisplay == fb_linux.h))
-					break;
 			}
-			if (i == num_modes)
-				return -1;
-			if (!XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, modes_info[i]))
-				return -1;
-			mode = modes_info[i];
-			XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, True);
-			XF86VidModeSetViewPort(fb_linux.display, fb_linux.screen, 0, 0);
 		}
 		else
 			return -1;
 	}
 	
-	XMapRaised(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);
 	
-	if (fb_linux.fullscreen)
-		return fb_hX11EnterFullscreen();
+	fb_hX11FinalizeMode();
+	
 	return 0;
 }
 
@@ -153,17 +140,10 @@ static void opengl_window_exit(void)
 {
 	int i;
 	
-	XSync(fb_linux.display, False);
-	if (mode)
-		fb_hX11LeaveFullscreen(modes_info[0]);
-	if (modes_info) {
-		for (i = 0; i < num_modes; i++) {
-			if (modes_info[i]->privsize)
-				XFree(modes_info[i]->private);
-		}
-		XFree(modes_info);
-	}
 	XUnmapWindow(fb_linux.display, fb_linux.window);
+	XSync(fb_linux.display, False);
+	if (fb_linux.fullscreen)
+		fb_hX11LeaveFullscreen();
 }
 
 
@@ -174,7 +154,7 @@ static void opengl_window_update(void)
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int flags)
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	XVisualInfo *info;
 	int gl_attrs[21] = { GLX_RGBA, GLX_DOUBLEBUFFER,
@@ -193,7 +173,7 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_linux.update = opengl_window_update;
 	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 	
-	result = fb_hX11Init(title, w, h, depth, flags);
+	result = fb_hX11Init(title, w, h, depth, refresh_rate, flags);
 	if (result)
 		return result;
 	

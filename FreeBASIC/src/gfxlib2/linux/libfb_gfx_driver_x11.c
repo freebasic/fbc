@@ -28,7 +28,7 @@
 #include "fb_gfx_linux.h"
 
 
-static int driver_init(char *title, int w, int h, int depth, int flags);
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 
 GFXDRIVER fb_gfxDriverX11 =
 {
@@ -46,12 +46,10 @@ GFXDRIVER fb_gfxDriverX11 =
 };
 
 
-static XF86VidModeModeInfo *mode;
-static XF86VidModeModeInfo **modes_info;
 static XImage *image;
 static XShmSegmentInfo shm_info;
 static BLITTER *blitter;
-static int is_shm, num_modes;
+static int is_shm;
 
 
 /*:::::*/
@@ -76,12 +74,9 @@ static int calc_comp_height( int h )
 static int x11_init(void)
 {
 	XSetWindowAttributes attribs;
-	int i, x, y, h, is_rgb = FALSE;
-	int dummy, version;
+	int x, y, h, is_rgb = FALSE;
 	char *display_name;
 	
-	mode = NULL;
-	modes_info = NULL;
 	image = NULL;
 	is_shm = FALSE;
 	
@@ -102,41 +97,24 @@ static int x11_init(void)
 		XResizeWindow(fb_linux.display, fb_linux.window, fb_linux.w, fb_linux.h);
 		XMoveWindow(fb_linux.display, fb_linux.window, x, y);
 	}
+	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
 	display_name = XDisplayName(NULL);
 	if (((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) &&
 	    (XShmQueryExtension(fb_linux.display))) {
 		if (fb_linux.fullscreen) {
-			if (!XF86VidModeQueryExtension(fb_linux.display, &dummy, &dummy))
-				return -1;
-			if ((!XF86VidModeQueryVersion(fb_linux.display, &version, &dummy)) || (version < 2))
-				return -1;
-			if (!XF86VidModeGetAllModeLines(fb_linux.display, fb_linux.screen, &num_modes, &modes_info))
-				return -1;
-			h = fb_linux.h;
-			for (i = 0; i < num_modes; i++) {
-				if ((modes_info[i]->hdisplay == fb_linux.w) && (modes_info[i]->vdisplay == h))
-					break;
-			}
-			if (i == num_modes) {
-				h = calc_comp_height(fb_linux.h);
-				if (h) {
-					for (i = 0; i < num_modes; i++) {
-						if ((modes_info[i]->hdisplay == fb_linux.w) && (modes_info[i]->vdisplay == h))
-							break;
-					}
-				}
-				if (i == num_modes)
+			if (fb_hX11EnterFullscreen(fb_linux.h)) {
+				fb_hX11LeaveFullscreen();
+				if (!(h = calc_comp_height(fb_linux.h)))
 					return -1;
 				XResizeWindow(fb_linux.display, fb_linux.window, fb_linux.w, h);
+				fb_linux.display_offset = (h - fb_linux.h) >> 1;
+				if (fb_hX11EnterFullscreen(h)) {
+					fb_hX11LeaveFullscreen();
+					return -1;
+				}
 			}
-			fb_linux.display_offset = (h - fb_linux.h) >> 1;
-			if (!XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, modes_info[i]))
-				return -1;
-			mode = modes_info[i];
-			XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, True);
-			XF86VidModeSetViewPort(fb_linux.display, fb_linux.screen, 0, 0);
 		}
 		is_shm = TRUE;
 		image = XShmCreateImage(fb_linux.display, fb_linux.visual, XDefaultDepth(fb_linux.display, fb_linux.screen),
@@ -168,11 +146,10 @@ static int x11_init(void)
 	if (!image)
 		return -1;
 	
-	XMapRaised(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);
 	
-	if (fb_linux.fullscreen)
-		return fb_hX11EnterFullscreen();
+	fb_hX11FinalizeMode();
+	
 	return 0;
 }
 
@@ -182,16 +159,10 @@ static void x11_exit(void)
 {
 	int i;
 	
+	XUnmapWindow(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);
-	if (mode)
-		fb_hX11LeaveFullscreen(modes_info[0]);
-	if (modes_info) {
-		for (i = 0; i < num_modes; i++) {
-			if (modes_info[i]->privsize)
-				XFree(modes_info[i]->private);
-		}
-		XFree(modes_info);
-	}
+	if (fb_linux.fullscreen)
+		fb_hX11LeaveFullscreen();
 	if (image) {
 		if (is_shm) {
 			XShmDetach(fb_linux.display, &shm_info);
@@ -202,7 +173,6 @@ static void x11_exit(void)
 			free(image->data);
 		XDestroyImage(image);
 	}
-	XUnmapWindow(fb_linux.display, fb_linux.window);
 }
 
 
@@ -227,7 +197,7 @@ static void x11_update(void)
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int flags)
+static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	if (flags & DRIVER_OPENGL)
 		return -1;
@@ -236,5 +206,5 @@ static int driver_init(char *title, int w, int h, int depth, int flags)
 	fb_linux.exit = x11_exit;
 	fb_linux.update = x11_update;
 	
-	return fb_hX11Init(title, w, h, depth, flags);
+	return fb_hX11Init(title, w, h, depth, refresh_rate, flags);
 }

@@ -45,7 +45,8 @@ typedef struct LINUXDRIVER
 	int screen;
 	Window window;
 	GC gc;
-	int w, h, depth, visual_depth, fullscreen, display_offset;
+	int w, h, depth, visual_depth, fullscreen;
+	int refresh_rate, display_offset;
 	unsigned char keymap[256];
 	int (*init)(void);
 	void (*exit)(void);
@@ -59,7 +60,7 @@ extern GFXDRIVER fb_gfxDriverOpenGL;
 
 extern void *fb_program_icon;
 
-extern int fb_hX11Init(char *title, int w, int h, int depth, int flags);
+extern int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 extern void fb_hX11Exit(void);
 extern void fb_hX11Lock(void);
 extern void fb_hX11Unlock(void);
@@ -68,8 +69,8 @@ extern void fb_hX11WaitVSync(void);
 extern int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons);
 extern void fb_hX11SetMouse(int x, int y, int cursor);
 extern void fb_hX11SetWindowTitle(char *title);
-extern int fb_hX11EnterFullscreen(void);
-extern void fb_hX11LeaveFullscreen(XF86VidModeModeInfo *old_mode);
-
+extern int fb_hX11EnterFullscreen(int h);
+extern void fb_hX11LeaveFullscreen(void);
+extern void fb_hX11FinalizeMode(void);
 
 #endif

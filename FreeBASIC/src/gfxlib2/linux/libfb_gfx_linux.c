@@ -41,9 +41,11 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
+static XF86VidModeModeInfo **modes_info;
 static Atom wm_delete_window;
 static Colormap color_map;
 static Cursor blank_cursor, arrow_cursor;
+static int num_modes, is_switched;
 static int is_running, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 
@@ -225,10 +227,35 @@ static void *window_thread(void *arg)
 
 
 /*:::::*/
-int fb_hX11EnterFullscreen(void)
+int fb_hX11EnterFullscreen(int h)
 {
-	XMoveWindow(fb_linux.display, fb_linux.window, 0, 0);
+	int dummy, version, i;
+
+	num_modes = 0;
+	is_switched = FALSE;
+	
 	XSync(fb_linux.display, False);
+	
+	if (!XF86VidModeQueryExtension(fb_linux.display, &dummy, &dummy))
+		return -1;
+	if ((!XF86VidModeQueryVersion(fb_linux.display, &version, &dummy)) || (version < 2))
+		return -1;
+	if (!XF86VidModeGetAllModeLines(fb_linux.display, fb_linux.screen, &num_modes, &modes_info))
+		return -1;
+	for (i = 0; i < num_modes; i++) {
+		if ((fb_linux.refresh_rate) &&
+		    ((int)((((double)modes_info[i]->dotclock * 1000.0) / (modes_info[i]->htotal * modes_info[i]->vtotal)) + 0.5) < fb_linux.refresh_rate))
+			continue;
+		if ((modes_info[i]->hdisplay == fb_linux.w) && (modes_info[i]->vdisplay == h))
+			break;
+	}
+	if ((i == num_modes) || (!XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, modes_info[i])))
+		return -1;
+	is_switched = TRUE;
+	XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, True);
+	XMoveWindow(fb_linux.display, fb_linux.window, 0, 0);
+	XF86VidModeSetViewPort(fb_linux.display, fb_linux.screen, 0, 0);
+
 	/* workaround for some buggy X servers */
 	{
 		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, 0, 0);
@@ -248,18 +275,45 @@ int fb_hX11EnterFullscreen(void)
 
 
 /*:::::*/
-void fb_hX11LeaveFullscreen(XF86VidModeModeInfo *old_mode)
+void fb_hX11LeaveFullscreen()
 {
-	XUngrabPointer(fb_linux.display, CurrentTime);
-	XUngrabKeyboard(fb_linux.display, CurrentTime);
-	XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, False);
-	XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, old_mode);
-	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, old_mode->hdisplay >> 1, old_mode->vdisplay >> 1);
+	int i;
+	
+	if (num_modes == 0)
+		return;
+	if (is_switched) {
+		XUngrabPointer(fb_linux.display, CurrentTime);
+		XUngrabKeyboard(fb_linux.display, CurrentTime);
+		XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, False);
+		XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, modes_info[0]);
+		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, modes_info[0]->hdisplay >> 1, modes_info[0]->vdisplay >> 1);
+	}
+	for (i = 0; i < num_modes; i++) {
+		if (modes_info[i]->privsize)
+			XFree(modes_info[i]->private);
+	}
+	XFree(modes_info);
+	num_modes = 0;
+	is_switched = FALSE;
 }
 
 
 /*:::::*/
-int fb_hX11Init(char *title, int w, int h, int depth, int flags)
+void fb_hX11FinalizeMode(void)
+{
+	XF86VidModeModeLine modeline;
+	int dotclock;
+	
+	if (XF86VidModeGetModeLine(fb_linux.display, fb_linux.screen, &dotclock, &modeline))
+		fb_linux.refresh_rate = (int)((((double)dotclock * 1000.0) / (modeline.htotal * modeline.vtotal)) + 0.5);
+	else
+		fb_linux.refresh_rate = 0;
+	fb_mode->refresh_rate = fb_linux.refresh_rate;
+}
+
+
+/*:::::*/
+int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	XPixmapFormatValues *format;
 	XSetWindowAttributes attribs;
@@ -283,6 +337,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int flags)
 	fb_linux.h = h;
 	fb_linux.depth = depth;
 	fb_linux.fullscreen = (flags & DRIVER_FULLSCREEN) ? TRUE : FALSE;
+	fb_linux.refresh_rate = refresh_rate;
 	
 	color_map = None;
 	arrow_cursor = None;
