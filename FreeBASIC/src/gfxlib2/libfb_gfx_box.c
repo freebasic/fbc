@@ -37,8 +37,8 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, int color, int full)
 	unsigned char *dest;
 	int clipped_x1, clipped_y1, clipped_x2, clipped_y2, w, h;
 	
-	if ((x1 < fb_mode->view_x) || (y1 < fb_mode->view_y) ||
-	    (x2 >= fb_mode->view_x + fb_mode->view_w) || (y2 >= fb_mode->view_y + fb_mode->view_h))
+	if ((x2 < fb_mode->view_x) || (y2 < fb_mode->view_y) ||
+	    (x1 >= fb_mode->view_x + fb_mode->view_w) || (y1 >= fb_mode->view_y + fb_mode->view_h))
 		return;
 
 	clipped_x1 = MAX(x1, fb_mode->view_x);
