@@ -352,7 +352,7 @@ function cGfxCircle as integer
 end function
 
 '':::::
-'' GfxPaint   =   PAINT STEP? '(' expr ',' expr ')' (',' expr )? (',' expr )?
+'' GfxPaint   =   PAINT STEP? '(' expr ',' expr ')' (',' expr? (',' expr? ) )
 ''
 function cGfxPaint as integer
     dim xexpr as integer, yexpr as integer, pexpr as integer, bexpr as integer
@@ -396,19 +396,18 @@ function cGfxPaint as integer
 	pexpr = INVALID
 	bexpr = INVALID
 	
+	'' color/pattern
 	if( hMatch( CHAR_COMMA ) ) then
-	
-		'' color/pattern
 		if( not cExpression( pexpr ) ) then
 			pexpr = INVALID
 		end if
-	end if
-	
-	if( hMatch( CHAR_COMMA ) ) then
 		
 		'' background color
-		if( not cExpression( bexpr ) ) then
-			bexpr = INVALID
+		if( hMatch( CHAR_COMMA ) ) then
+			if( not cExpression( bexpr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
 		end if
 	end if
 	
