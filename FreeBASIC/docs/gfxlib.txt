@@ -2272,3 +2272,51 @@ Appendix F: Hints
   Of course the optional target buffer parameter passed to all gfx primitives
   can be an array as well as a pointer, as in the case of GET/PUT pixel data
   holders.
+
+- You can enhance the PRINT functionality by using a custom routine that uses
+  the internal predefined gfx fonts. The following snippet defines a new
+  GfxPrint function that allows to draw transparent text by specifying the
+  location in pixel coordinates, supports clipping and also allows to print
+  text on GET/PUT buffers:
+
+	DECLARE SUB GfxPrint( BYREF text AS STRING, _
+		BYVAL x AS INTEGER, BYVAL y AS INTEGER, _
+		BYVAL col AS INTEGER, BYVAL buffer AS ANY PTR = 0 )
+
+	TYPE fb_FontType
+		h AS INTEGER
+		data AS UBYTE PTR
+	END TYPE
+
+	' Uncomment the internal gfx font you want to use
+	EXTERN fb_FontData ALIAS "fb_font_8x8" AS fb_FontType
+	'EXTERN fb_FontData ALIAS "fb_font_8x14" AS fb_FontType
+	'EXTERN fb_FontData ALIAS "fb_font_8x16" AS fb_FontType
+
+	SUB GfxPrint( BYREF text AS STRING, _
+			BYVAL x AS INTEGER, BYVAL y AS INTEGER, _
+			BYVAL col AS INTEGER, BYVAL buffer AS ANY PTR = 0 )
+
+		DIM row AS INTEGER, i AS INTEGER
+		DIM bits AS UBYTE PTR
+	
+		FOR i = 1 TO LEN(text)
+			bits = fb_FontData.data + _
+				(ASC(MID$(text, i, 1)) * fb_FontData.h)
+			FOR row = 0 TO fb_FontData.h-1
+				IF (buffer) THEN
+					LINE buffer, (x + 7, y + row)_
+						-(x, y + row), col,, *bits
+				ELSE
+					LINE (x + 7, y + row)-(x, y + row),_
+						col,, *bits
+				END IF
+				bits += 1
+			NEXT row
+			x += 8
+		NEXT i
+	END SUB
+
+	SCREEN 13
+	GfxPrint "Hello world!", 112, 96, 15
+	SLEEP
