@@ -89,7 +89,7 @@
   IMP Operator
   INSTR Function
   INT Function
-  INKEY$ Function
+  INKEY$ Function	(diff: for extended scan-codes, 255 will be returned, not 0; check for chr$(255), not chr$(0))
   INPUT$ (Screen) Function
   INPUT$ (File) Function
   INPUT (Screen) Statement
@@ -246,6 +246,7 @@
 *****************************************************************************
 
   #DEFINE
+  #DEFINE(args)	      (note: between "#define" and "(", no spaces are allowed, as in C)
   #UNDEF
   #IFDEF
   #IFNDEF
@@ -291,6 +292,7 @@
   GETKEY Function
   GETMOUSE Statement
 
+  IIF()
   $INCLIB Directive
 
   LIB
