@@ -633,6 +633,10 @@ data "pcopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+data "screencopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+
 '' fb_GfxRgb ( byval r as ubyte, byval g as ubyte, byval b as ubyte ) as uinteger
 data "rgb", "fb_GfxRgb", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
@@ -687,6 +691,11 @@ data "screenunlock", "fb_GfxUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 
 '' fb_GfxScreenPtr ( ) as any ptr
 data "screenptr", "fb_GfxScreenPtr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+
+'' fb_GfxSetWindowTitle ( title as string ) as void
+data "windowtitle", "fb_GfxSetWindowTitle", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+											FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+
 
 
 
