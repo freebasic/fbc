@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_linux.h"
 
 
 /*:::::*/
