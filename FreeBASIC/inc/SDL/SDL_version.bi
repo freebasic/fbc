@@ -1,6 +1,6 @@
 ' SDL_version.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
 
-'$inclib: "sdl"
+'$inclib: "SDL"
 
 #ifndef SDL_version_bi_
 #define SDL_version_bi_

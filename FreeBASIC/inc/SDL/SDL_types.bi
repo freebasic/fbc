@@ -1,6 +1,6 @@
 ' SDL_types.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
 
-'$inclib: "sdl"
+'$inclib: "SDL"
 
 #ifndef SDL_types_bi_
 #define SDL_types_bi_
