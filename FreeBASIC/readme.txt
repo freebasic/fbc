@@ -287,6 +287,10 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
 
+  o Chris Davies (c.g.davies@gmail.com):
+    - Translated the OpenAL headers.
+    - Wrote the OpenAL demostration in the Sound directory.
+
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS; port maintainer.
     - Translated the Allegro headers (W.I.P.)
@@ -391,6 +395,8 @@ Links:
     - GLUT: http://www.xmission.com/~nate/glut.html
 
     - Lua: http://www.lua.org/
+
+    - OpenAL: http://www.openal.org/
 
     - OpenGL: http://www.opengl.org/
 
