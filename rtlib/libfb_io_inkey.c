@@ -34,6 +34,44 @@
 #endif
 #endif
 
+
+#if !defined WIN32 && !defined DISABLE_NCURSES
+
+/*:::::*/
+static int fb_hKeyCursesToQB( int key )
+{
+	switch( key )
+	{
+		case KEY_DOWN:		return 0xFF50;
+		case KEY_UP:		return 0xFF48;
+		case KEY_LEFT:		return 0xFF4B;
+		case KEY_RIGHT:		return 0xFF4D;
+		case KEY_HOME:		return 0xFF47;
+		case KEY_BACKSPACE:	return 0x0008;
+		case KEY_F(1):		return 0xFF3B;
+		case KEY_F(2):		return 0xFF3C;
+		case KEY_F(3):		return 0xFF3D;
+		case KEY_F(4):		return 0xFF3E;
+		case KEY_F(5):		return 0xFF3F;
+		case KEY_F(6):		return 0xFF40;
+		case KEY_F(7):		return 0xFF41;
+		case KEY_F(8):		return 0xFF42;
+		case KEY_F(9):		return 0xFF43;
+		case KEY_F(10):		return 0xFF44;
+		case KEY_F(11):		return 0xFF85;
+		case KEY_F(12):		return 0xFF86;
+		case KEY_DC:		return 0xFF53;
+		case KEY_IC:		return 0xFF52;
+		case KEY_NPAGE:		return 0xFF51;
+		case KEY_PPAGE:		return 0xFF49;
+		case KEY_END:		return 0xFF4F;
+	}
+	return -1;
+}
+
+#endif
+
+
 /*:::::*/
 FBSTRING *fb_ConsoleInkey( void )
 {
@@ -74,16 +112,28 @@ FBSTRING *fb_ConsoleInkey( void )
 	int ch;
 	
 	if ((ch = getch()) != ERR) {
-		res = (FBSTRING *)fb_hStrAllocTmpDesc();
+		chars = 1;
 		if (ch > 255) {
-			/* !!!WRITEME!!! convert extended key to QB compatible format !!!WRITEME!!! */
+			ch = fb_hKeyCursesToQB(ch);
+			if ((ch > 0) && (ch & 0xFF00)) {
+				chars = 2;
+				ch &= 0xFF;
+			}
+		}
+		if (ch > 0) {
+
+			res = (FBSTRING *)fb_hStrAllocTmpDesc();
+
+			fb_hStrAllocTemp(res, chars);
+
+			if( chars > 1 )
+				res->data[0] = 255;					/* note: can't use '\0' here as in qb */
+
+			res->data[chars-1] = (unsigned char)ch;
+			res->data[chars-0] = '\0';
+		}
+		else
 			res = &fb_strNullDesc;
-		}
-		else {
-			fb_hStrAllocTemp(res, 1);
-			res->data[0] = ch;
-			res->data[1] = '\0';
-		}
 	}
 	else
 #endif
@@ -110,9 +160,6 @@ int fb_ConsoleGetkey( void )
 #ifndef DISABLE_NCURSES
 	while ((k = getch()) == ERR)
 		;
-	if (k > 255) {
-		/* !!!WRITEME!!! handle extended keys !!!WRITEME!!! */
-	}
 #endif
 
 #endif
