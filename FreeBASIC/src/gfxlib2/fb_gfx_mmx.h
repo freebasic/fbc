@@ -46,6 +46,8 @@
 #define ARG5			24(%ebp)
 
 #define LOCAL1			-4(%ebp)
+#define LOCAL2			-8(%ebp)
+#define LOCAL3			-12(%ebp)
 
 #define MASK_COLOR_32		0xFF00FF
 #define MASK_COLOR_16		0xF81F

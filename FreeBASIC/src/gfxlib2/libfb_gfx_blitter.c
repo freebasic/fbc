@@ -27,6 +27,31 @@
 #include "fb_gfx.h"
 
 
+/* MMX functions declarations */
+extern void fb_hBlit8to15RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to15BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to16RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to16BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to24RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to24BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to32RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit8to32BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to15RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to15BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to16RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to24RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to24BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to32RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit16to32BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to15RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to15BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to16RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to16BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to24RGBMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to24BGRMMX(unsigned char *dest, int pitch);
+extern void fb_hBlit32to32RGBMMX(unsigned char *dest, int pitch);
+
+
 /*:::::*/
 static void fb_hBlitCopy(unsigned char *dest, int pitch)
 {
@@ -37,7 +62,7 @@ static void fb_hBlitCopy(unsigned char *dest, int pitch)
 
 	for (y = fb_mode->h * fb_mode->scanline_size; y; y--) {
 		if (*dirty)
-			fb_hPixelCpy(dest, src, fb_mode->w);
+			fb_hMemCpy(dest, src, fb_mode->pitch);
 		z++;
 		if (z >= fb_mode->scanline_size) {
 			z = 0;
@@ -773,6 +798,30 @@ static void fb_hBlit32to32RGB(unsigned char *dest, int pitch)
 /*:::::*/
 BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 {
+	BLITTER *all_blitters[] = {
+		/* RGB (C) */
+		fb_hBlit8to15RGB, fb_hBlit8to16RGB, fb_hBlit8to24RGB, fb_hBlit8to32RGB,
+		fb_hBlit16to15RGB, fb_hBlit16to16RGB, fb_hBlit16to24RGB, fb_hBlit16to32RGB,
+		fb_hBlit32to15RGB, fb_hBlit32to16RGB, fb_hBlit32to24RGB, fb_hBlit32to32RGB,
+		/* BGR (C) */
+		fb_hBlit8to15BGR, fb_hBlit8to16BGR, fb_hBlit8to24BGR, fb_hBlit8to32BGR,
+		fb_hBlit16to15BGR, fb_hBlitCopy, fb_hBlit16to24BGR, fb_hBlit16to32BGR,
+		fb_hBlit32to15BGR, fb_hBlit32to16BGR, fb_hBlit32to24BGR, fb_hBlitCopy,
+		/* RGB (MMX) */
+		fb_hBlit8to15RGBMMX, fb_hBlit8to16RGBMMX, fb_hBlit8to24RGBMMX, fb_hBlit8to32RGBMMX,
+		fb_hBlit16to15RGBMMX, fb_hBlit16to16RGBMMX, fb_hBlit16to24RGBMMX, fb_hBlit16to32RGBMMX,
+		fb_hBlit32to15RGBMMX, fb_hBlit32to16RGBMMX, fb_hBlit32to24RGBMMX, fb_hBlit32to32RGBMMX,
+		/* BGR (MMX) */
+		fb_hBlit8to15BGRMMX, fb_hBlit8to16BGRMMX, fb_hBlit8to24BGRMMX, fb_hBlit8to32BGRMMX,
+		fb_hBlit16to15BGRMMX, fb_hBlitCopy, fb_hBlit16to24BGRMMX, fb_hBlit16to32BGRMMX,
+		fb_hBlit32to15BGRMMX, fb_hBlit32to16BGRMMX, fb_hBlit32to24BGRMMX, fb_hBlitCopy,
+	}, **blitter = &all_blitters[0];
+	
+	if ((fb_mode->flags & HAS_MMX) && (fb_mode->scanline_size == 1))
+		blitter = &blitter[24];
+	if (!is_rgb)
+		blitter = &blitter[12];
+	
 	switch (fb_mode->depth) {
 		case 1:
 		case 2:
@@ -780,33 +829,32 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 		case 8:
 			switch (device_depth) {
 				case 8:		return fb_hBlitCopy;
-				case 15:	if (is_rgb) return fb_hBlit8to15RGB; else return fb_hBlit8to15BGR;
-				case 16:	if (is_rgb) return fb_hBlit8to16RGB; else return fb_hBlit8to16BGR;
-				case 24:	if (is_rgb) return fb_hBlit8to24RGB; else return fb_hBlit8to24BGR;
-				case 32:	if (is_rgb) return fb_hBlit8to32RGB; else return fb_hBlit8to32BGR;
+				case 15:	return blitter[0];
+				case 16:	return blitter[1];
+				case 24:	return blitter[2];
+				case 32:	return blitter[3];
 			}
 			break;
 		
 		case 15:
 		case 16:
 			switch (device_depth) {
-				case 15:	if (is_rgb) return fb_hBlit16to15RGB; else return fb_hBlit16to15BGR;
-				case 16:	if (is_rgb) return fb_hBlit16to16RGB; else return fb_hBlitCopy;
-				case 24:	if (is_rgb) return fb_hBlit16to24RGB; else return fb_hBlit16to24BGR;
-				case 32:	if (is_rgb) return fb_hBlit16to32RGB; else return fb_hBlit16to32BGR;
+				case 15:	return blitter[4];
+				case 16:	return blitter[5];
+				case 24:	return blitter[6];
+				case 32:	return blitter[7];
 			}
 			break;
 		
 		case 24:
 		case 32:
 			switch (device_depth) {
-				case 15:	if (is_rgb) return fb_hBlit32to15RGB; else return fb_hBlit32to15BGR;
-				case 16:	if (is_rgb) return fb_hBlit32to16RGB; else return fb_hBlit32to16BGR;
-				case 24:	if (is_rgb) return fb_hBlit32to24RGB; else return fb_hBlit32to24BGR;
-				case 32:	if (is_rgb) return fb_hBlit32to32RGB; else return fb_hBlitCopy;
+				case 15:	return blitter[8];
+				case 16:	return blitter[9];
+				case 24:	return blitter[10];
+				case 32:	return blitter[11];
 			}
 			break;
-	
 	}
 	return NULL;
 }
