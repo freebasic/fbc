@@ -111,7 +111,7 @@ option explicit
    	custom_cursor = create_bitmap(32, 32)
    	clear_to_color(custom_cursor, bitmap_mask_color(screen))
    	for c= 0 to 8-1
-		draw_circle(custom_cursor, 16, 16, c*2, palette_color[c])
+		circle(custom_cursor, 16, 16, c*2, palette_color[c])
     next c
 
    	'' select the custom cursor and set the focus point to the middle of it
