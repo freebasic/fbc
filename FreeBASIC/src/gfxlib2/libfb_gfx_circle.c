@@ -113,12 +113,13 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 /*:::::*/
 FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float aspect, float start, float end, int fill, int coord_type)
 {
-	int x, y, x1, y1, x2, y2;
+	int x, y, x1, y1, x2, y2, orig_color;
 	float a, b, x_start, y_start, x_end, y_end, points, increment;
 	
 	if (!fb_mode)
 		return;
 	
+	orig_color = color;
 	if (color == DEFAULT_COLOR)
 		color = fb_mode->fg_color;
 	else
@@ -154,14 +155,14 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 			get_arc_point(start, a, b, &x1, &y1);
 			x1 = x + x1;
 			y1 = y - y1;
-			fb_GfxLine(x, y, x1, y1, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+			fb_GfxLine(x, y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
 		}
 		if (end < 0) {
 			end = -end;
 			get_arc_point(end, a, b, &x1, &y1);
 			x1 = x + x1;
 			y1 = y - y1;
-			fb_GfxLine(x, y, x1, y1, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+			fb_GfxLine(x, y, x1, y1, orig_color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
 		}
 		
 		while (end < start)
