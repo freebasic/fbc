@@ -161,8 +161,6 @@ void fb_hInit ( void )
 	term_out.c_oflag |= OPOST;
 	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
 		return;
-	fb_con.char_buffer = NULL;
-	fb_con.resized = TRUE;
 	
 	/* Input setup */
 	if (init != INIT_CONSOLE) {
@@ -214,5 +212,7 @@ void fb_hInit ( void )
 	
 	fb_con.inited = init;
 
+	fb_con.char_buffer = NULL;
+	fb_con.resized = TRUE;
 	fb_hResize();
 }

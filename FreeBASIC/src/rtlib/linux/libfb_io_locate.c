@@ -102,7 +102,7 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 /*:::::*/
 FBCALL int fb_ConsoleReadXY( int x, int y, int colorflag )
 {
-	unsigned char *buffer = fb_con.char_buffer;
+	unsigned char *buffer;
 	
 	fb_hResize();
 	
@@ -111,5 +111,7 @@ FBCALL int fb_ConsoleReadXY( int x, int y, int colorflag )
 	
 	if (colorflag)
 		buffer = fb_con.attr_buffer;
+	else
+		buffer = fb_con.char_buffer;
 	return buffer[((y - 1) * fb_con.w) + x - 1];
 }
