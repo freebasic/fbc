@@ -17,7 +17,7 @@ Version 0.13 Beta:
 - WITH can now be used recursively (v1c)
 - local variables are now aligned to dword boundary to be more compatible with some C API's (v1c)
 - TIMER now uses the Win32 high resolution timer when available (lillo)
-- DOS port now detects if STDOUT is not the terminal and uses printf() if so, so shell I/O redirection works now
+- DOS port now detects if STDOUT is not the terminal and uses printf() if so, so shell I/O redirection works now (DrV)
 - more clear error messages when scalars variables are been accessed as arrays and vice-versa (v1c)
 - the string argument in SHELL and DIR$ is optional now, as in QB (v1c)
 
@@ -81,6 +81,7 @@ Version 0.13 Beta:
 - conversion to/from fpoint to byte vars could be wrong if too complex operations were used (v1c)
 - literal values passed as parameter were not been converted at compile-time, generating bad code is some cases (v1c)
 - CLS in gfx mode now clears viewport only if previously set via VIEW (lillo)
+- BEEP rtlib routine for DOS was missing (DrV)
 
 
 Version 0.12 Beta:
