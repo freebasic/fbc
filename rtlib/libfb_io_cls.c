@@ -90,7 +90,7 @@ void fb_ConsoleClear( int mode )
     else
     {
     	start_line = 0;
-    	end_line = getmaxy(stdscr);
+    	end_line = getmaxy(stdscr) - 1;
     }
     for (; start_line <= end_line; start_line++) {
     	move(start_line, 0);
@@ -127,7 +127,7 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 
 #ifndef DISABLE_NCURSES
 	if (cols != NULL)
-		*cols = getmaxx(stdscr) + 1;
+		*cols = getmaxx(stdscr);
 #endif
 
 #endif /* WIN32 */

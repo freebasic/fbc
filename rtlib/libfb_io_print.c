@@ -76,6 +76,7 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 	fb_ConsoleGetView( &toprow, &botrow );
 	fb_ConsoleGetXY( &col, &row );
 
+#ifdef WIN32
 	/* scrolling */
 	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
 	{
@@ -83,7 +84,7 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		row = botrow;
 	}
 
-		/* if no newline and row at bottom and col+string at right, disable scrolling */
+	/* if no newline and row at bottom and col+string at right, disable scrolling */
 	if( (mask & FB_PRINT_NEWLINE) == 0 )
 	{
 		if( row == botrow )
@@ -91,7 +92,6 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 				scrolloff = TRUE;
 	}
 
-#ifdef WIN32
 	HANDLE 	hnd;
 	DWORD 	mode;
 
@@ -101,7 +101,6 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		GetConsoleMode( hnd, &mode );
 		SetConsoleMode( hnd, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
 	}
-#endif
 
 	/* scrolling if VIEW was set */
 	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != fb_ConsoleGetMaxRow( )) )
@@ -117,24 +116,49 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
      		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1, -1 );
      	}
 	}
+	
+	printf( "%s", buffer );
 
-#if defined WIN32 || defined DISABLE_NCURSES
+	if( scrolloff )
+		SetConsoleMode( hnd, mode );
+
+#else
+
+#ifdef DISABLE_NCURSES
 	printf( "%s", buffer );
 #else
-    if( mask & FB_PRINT_NEWLINE ) {
-        /* curses does bad jokes on \n, so we skip it */
-        buffer[len - 1] = '\0';
-        printw( "%s", buffer );
-        move( row, 0 );
-    }
-    else
-        printw( "%s", buffer );
+	/* scrolling */
+	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
+	{
+		row = botrow + 1;
+		fb_ConsoleLocate(row, col, -1);
+	}
+
+	rowstoscroll = 0;
+	if (mask & FB_PRINT_NEWLINE) {
+		buffer[len - 1] = '\0';
+		len--;
+		rowstoscroll++;
+	}
+	if (col + len - 1 > cols)
+		rowstoscroll += 1 + ((len - (cols - col + 1)) / cols);
+	if (row + rowstoscroll > fb_ConsoleGetMaxRow()) {
+		fb_ConsoleScroll((row + rowstoscroll) - fb_ConsoleGetMaxRow());
+		fb_ConsoleLocate(fb_ConsoleGetMaxRow() - rowstoscroll, col, -1);
+	}
+	else {
+		rowsleft = botrow - (row - 1);
+		if (rowstoscroll > rowsleft) {
+			fb_ConsoleScroll(rowstoscroll - rowsleft);
+			fb_ConsoleLocate(botrow - rowstoscroll + 1, col, -1);
+		}
+	}
+	printw("%s", buffer);
+	if (mask & FB_PRINT_NEWLINE)
+		move(getcury(stdscr) + 1, 0);
 	refresh();
 #endif
 
-#ifdef WIN32
-	if( scrolloff )
-		SetConsoleMode( hnd, mode );
 #endif
 
 }

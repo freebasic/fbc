@@ -65,6 +65,8 @@ void fb_ConsoleScroll( int nrows )
 
     ScrollConsoleScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ), &srec, NULL, dcoord, &cinf );
 
+	fb_ConsoleLocate( botrow - (nrows-1), -1, -1 );
+	
 #else /* WIN32 */
 
 #ifndef DISABLE_NCURSES
@@ -80,13 +82,12 @@ void fb_ConsoleScroll( int nrows )
     	for (i = getmaxx(stdscr); i; i--)
     	    addch(' ');
 	}
+	
 	refresh();
 	delwin(view);
+
 #endif
 	
 #endif /* WIN32 */
-
-
-	fb_ConsoleLocate( botrow - (nrows-1), -1, -1 );
 
 }

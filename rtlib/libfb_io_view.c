@@ -91,7 +91,7 @@ int fb_ConsoleGetMaxRow( void )
 #else /* WIN32 */
 
 #ifndef DISABLE_NCURSES
-	return getmaxy(stdscr) + 1;
+	return getmaxy(stdscr);
 #else
 	return 0;
 #endif
