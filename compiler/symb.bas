@@ -248,8 +248,9 @@ data "CIRCLE"	, FB.TK.CIRCLE		, FB.TKCLASS.KEYWORD
 data "WINDOW"	, FB.TK.WINDOW		, FB.TKCLASS.KEYWORD
 data "PALETTE"	, FB.TK.PALETTE		, FB.TKCLASS.KEYWORD
 data "SCREEN"	, FB.TK.SCREEN		, FB.TKCLASS.KEYWORD
+data "EXTERN"	, FB.TK.EXTERN		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 159
+const FB.MAXKEYWORDS 		= 160
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -582,10 +583,10 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer)
 	isshared = (s->alloctype and FB.ALLOCTYPE.SHARED) > 0
 	isstatic = (s->alloctype and FB.ALLOCTYPE.STATIC) > 0
 
-	if( (s->alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
+	if( (s->alloctype and (FB.ALLOCTYPE.COMMON or FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) = 0 ) then
 		sname = hMakeTmpStr
 	else
-		sname = strpGet( s->nameidx )
+		sname = symbGetVarName( s )
 	end if
 
 	if( (env.scope = 0) or (isshared) or (isstatic) ) then
@@ -685,11 +686,12 @@ sub hSetupVar( byval s as FBSYMBOL ptr, sname as string, aname as string, _
 			   byval alloctype as integer, byval sentinel as FBSENTINEL ptr ) static
 
     dim i as integer, res as integer
-    dim isshared as integer, isstatic as integer, isdynamic as integer
+    dim isshared as integer, isstatic as integer, isdynamic as integer, ispublic as integer
 
     isshared  = (alloctype and FB.ALLOCTYPE.SHARED) > 0
     isstatic  = (alloctype and FB.ALLOCTYPE.STATIC) > 0
     isdynamic = (alloctype and FB.ALLOCTYPE.DYNAMIC) > 0
+    ispublic  = (alloctype and FB.ALLOCTYPE.PUBLIC) > 0
 
 	''
 	s->scope	= env.scope
@@ -848,11 +850,12 @@ function symbAddVarEx( symbol as string, aliasname as string, _
 					   byval lgt as integer, byval dimensions as integer, dTB() as FBARRAYDIM, _
 				       byval alloctype as integer, _
 				       byval addsuffix as integer, byval preservecase as integer, _
-				       byval clearname as integer ) as FBSYMBOL ptr 'static
+				       byval clearname as integer ) as FBSYMBOL ptr static
 
     dim s as FBSYMBOL ptr, sname as string, aname as string
     dim elms as integer, stype as integer, arglen as integer
-    dim isshared as integer, isstatic as integer, isarg as integer, islocal as integer
+    dim isshared as integer, isstatic as integer, ispublic as integer, isextern as integer
+    dim isarg as integer, islocal as integer
     dim sentinel as FBSENTINEL ptr
 
     symbAddVarEx = NULL
@@ -860,9 +863,11 @@ function symbAddVarEx( symbol as string, aliasname as string, _
     ''
     isshared = (alloctype and FB.ALLOCTYPE.SHARED) > 0
     isstatic = (alloctype and FB.ALLOCTYPE.STATIC) > 0
+    ispublic = (alloctype and FB.ALLOCTYPE.PUBLIC) > 0
+    isextern = (alloctype and FB.ALLOCTYPE.EXTERN) > 0
     isarg    = (alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
-    						  FB.ALLOCTYPE.ARGUMENTBYVAL or _
-    						  FB.ALLOCTYPE.ARGUMENTBYREF)) > 0
+    						   FB.ALLOCTYPE.ARGUMENTBYVAL or _
+    						   FB.ALLOCTYPE.ARGUMENTBYREF)) > 0
 	islocal  = FALSE
 
     ''
@@ -902,7 +907,9 @@ function symbAddVarEx( symbol as string, aliasname as string, _
 		if( (not isshared) and (isstatic) ) then
 			aname = hMakeTmpStr
 		else
-			if( (isshared) or (env.scope = 0) ) then
+			if( (ispublic) or (isextern) ) then
+			    aname = ""
+			elseif( (isshared) or (env.scope = 0) ) then
 				aname = ""
 			else
 				if( not isarg ) then
@@ -2324,6 +2331,13 @@ function symbGetAllocType( byval s as FBSYMBOL ptr ) as integer static
 	symbGetAllocType = s->alloctype
 
 end function
+
+'':::::
+sub symbSetAllocType( byval s as FBSYMBOL ptr, byval alloctype as integer ) static
+
+	s->alloctype = alloctype
+
+end sub
 
 '':::::
 function symbGetInitialized( byval s as FBSYMBOL ptr ) as integer static

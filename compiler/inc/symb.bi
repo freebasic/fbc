@@ -116,6 +116,7 @@ declare sub 		symbSetArgType			( byval f as FBSYMBOL ptr, byval a as FBPROCARG p
 declare sub 		symbSetArgSubType		( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval subtype as FBSYMBOL ptr )
 declare sub 		symbSetArgName			( byval f as FBSYMBOL ptr, byval a as FBPROCARG ptr, byval nameidx as integer )
 declare sub 		symbSetVarDimensions	( byval s as FBSYMBOL ptr, byval dims as integer )
+declare sub 		symbSetAllocType		( byval s as FBSYMBOL ptr, byval alloctype as integer )
 
 declare function 	symbIsProc				( id as string ) as integer
 declare function 	symbIsConst				( constname as string ) as integer

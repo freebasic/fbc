@@ -2335,6 +2335,7 @@ private sub hSaveAsmBss( ) 'static
     dim s as FBSYMBOL ptr
     dim lgt as integer, sname as string
     dim elements as integer, alloc as string
+    dim alloctype as integer
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global non-initialized vars"
     hWriteStr ctx.outf, FALSE, ".section .bss"
@@ -2347,27 +2348,34 @@ private sub hSaveAsmBss( ) 'static
     		(not symbGetInitialized( s )) and _
     		(not symbGetVarIsDynamic( s )) ) then
 
-    	    lgt = symbGetLen( s )
+    	    '' don't reserve space for externals
+    	    alloctype = symbGetAlloctype( s )
+    	    if( (alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
+    	    	lgt = symbGetLen( s )
 
-    	    '' don't add initialized string or array descriptors
-    	    if( lgt > 0 ) then
-    	    	elements = 1
-    	    	if( symbGetVarDimensions( s ) > 0 ) then
-    	    		elements = hCalcElements( s )
+    	    	'' don't add initialized string or array descriptors
+    	    	if( lgt > 0 ) then
+	    	    	elements = 1
+    	    		if( symbGetVarDimensions( s ) > 0 ) then
+    	    			elements = hCalcElements( s )
+    	    		end if
+
+    	    		sname = symbGetVarName( s )
+
+    	    		if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
+    	    			if( (alloctype and FB.ALLOCTYPE.PUBLIC) <> 0 ) then
+    	    				emitPUBLIC sname
+    	    			end if
+    	    			alloc = ".lcomm"
+    	    		else
+    	    			emitPUBLIC sname
+    	    			alloc = ".comm"
+    	    		end if
+
+    	    		hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    		hWriteStr ctx.outf, TRUE,  alloc + TABCHAR + sname + "," + str$( lgt * elements )
     	    	end if
-
-    	    	sname = symbGetVarName( s )
-
-    	    	if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.COMMON) = 0 ) then
-    	    		alloc = ".lcomm"
-    	    	else
-    	    		emitPUBLIC sname
-    	    		alloc = ".comm"
-    	    	end if
-
-    	    	hWriteStr ctx.outf, TRUE, ".balign 4"
-    	    	hWriteStr ctx.outf, TRUE,  alloc + TABCHAR + sname + "," + str$( lgt * elements )
-    	    end if
+    		end if
     	end if
 
     	s = symbGetNextNode( s )
@@ -2421,6 +2429,11 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
     dim l as integer, u as integer
     dim dims as integer, diff as integer
     dim sname as string, dname as string
+
+    '' extern?
+    if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.EXTERN) > 0 ) then
+    	exit sub
+    end if
 
     dims = symbGetVarDimensions( s )
     diff = symbGetVarDiff( s )

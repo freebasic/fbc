@@ -1276,9 +1276,9 @@ function cEnumDecl
 
 end function
 
-
 '':::::
 ''SymbolDecl      =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
+''				  |   EXTERN SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
 ''
 function cSymbolDecl
@@ -1288,11 +1288,13 @@ function cSymbolDecl
 	cSymbolDecl = FALSE
 
 	select case lexCurrentToken
-	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON
+	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON, FB.TK.EXTERN
+
 		alloctype = 0
 		dopreserve = FALSE
 
 		select case lexCurrentToken
+		'' REDIM
 		case FB.TK.REDIM
 			lexSkipToken
 			alloctype = alloctype or FB.ALLOCTYPE.DYNAMIC
@@ -1302,39 +1304,60 @@ function cSymbolDecl
 				dopreserve = TRUE
 			end if
 
+		'' COMMON
 		case FB.TK.COMMON
-			lexSkipToken
-			alloctype = alloctype or FB.ALLOCTYPE.COMMON or FB.ALLOCTYPE.DYNAMIC
-
 			'' can't use COMMON inside a proc
 			if( env.scope > 0 ) then
     			hReportError FB.ERRMSG.SYNTAXERROR
     			exit function
 			end if
 
+			lexSkipToken
+
+			alloctype = alloctype or FB.ALLOCTYPE.COMMON or FB.ALLOCTYPE.DYNAMIC
+
+		'' EXTERN
+		case FB.TK.EXTERN
+			'' can't use EXTERN inside a proc
+			if( env.scope > 0 ) then
+    			hReportError FB.ERRMSG.SYNTAXERROR
+    			exit function
+			end if
+
+			lexSkipToken
+
+			alloctype = alloctype or FB.ALLOCTYPE.EXTERN or FB.ALLOCTYPE.SHARED
+
 		case else
 			lexSkipToken
-			if( env.optdynamic ) then
-				alloctype = alloctype or FB.ALLOCTYPE.DYNAMIC
-			end if
 		end select
 
-		if( lexCurrentToken = FB.TK.SHARED ) then
-			lexSkipToken
-			alloctype = alloctype or FB.ALLOCTYPE.SHARED
+		''
+		if( env.optdynamic ) then
+			alloctype = alloctype or FB.ALLOCTYPE.DYNAMIC
 		end if
 
+		'' SHARED
+		if( (alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
+			if( lexCurrentToken = FB.TK.SHARED ) then
+				lexSkipToken
+				alloctype = alloctype or FB.ALLOCTYPE.SHARED
+			end if
+		end if
+
+		''
 		if( env.isprocstatic ) then
 			alloctype = alloctype or FB.ALLOCTYPE.STATIC
 		end if
 
+		''
 		cSymbolDecl = cSymbolDef( alloctype, dopreserve )
 
 	'' STATIC
 	case FB.TK.STATIC
 
 		'' check ambiguity with STATIC SUB|FUNCTION
-		select case lexLookAhead(1)
+		select case lexLookAhead( 1 )
 		case FB.TK.SUB, FB.TK.FUNCTION
 			exit function
 		end select
@@ -1342,6 +1365,7 @@ function cSymbolDecl
 		lexSkipToken
 
 		cSymbolDecl = cSymbolDef( FB.ALLOCTYPE.STATIC )
+
 	end select
 
 end function
@@ -1386,14 +1410,41 @@ sub hMakeArrayDimTB( byval dimensions as integer, exprTB() as integer, dTB() as 
 end sub
 
 '':::::
+function hDeclExternVar( id as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
+						 byval alloctype as integer, byval addsuffix as integer ) as FBSYMBOL ptr
+	dim symbol as FBSYMBOL ptr
+	dim ofs as integer, elm as FBTYPELEMENT ptr
+
+    hDeclExternVar = NULL
+
+    '' dup extern?
+    if( (alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
+    	exit function
+    end if
+
+    symbol = symbLookupVarEx( id, typ, ofs, elm, subtype, addsuffix, FALSE, TRUE )
+    if( symbol <> NULL ) then
+    	if( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
+    		exit function
+    	else
+    		symbSetAllocType symbol, (alloctype and not FB.ALLOCTYPE.EXTERN) or _
+    								 FB.ALLOCTYPE.PUBLIC or _
+    								 FB.ALLOCTYPE.SHARED
+    	end if
+    end if
+
+    hDeclExternVar = symbol
+
+end function
+
+'':::::
 ''SymbolDef       =   ID ('('')' | ArrayDecl)? (AS SymbolType)?
 ''                       (DECL_SEPARATOR SymbolDef)* .
 ''
 function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
-    dim id as string, symbol as FBSYMBOL ptr
+    dim id as string, idalias as string, symbol as FBSYMBOL ptr
     dim addsuffix as integer, atype as integer, isdynamic as integer
     dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer
-    dim elm as FBTYPELEMENT ptr
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
     dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
 
@@ -1410,6 +1461,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     	subtype 	= NULL
     	lgt			= 0
     	id 			= lexEatToken
+    	idalias		= ""
     	addsuffix 	= TRUE
 
     	'' ('('')' | ArrayDecl)?
@@ -1422,6 +1474,17 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     		if( cArrayDecl( dimensions, exprTB() ) ) then
     		end if
     	end if
+
+		'' ALIAS LIT_STR
+		if( (alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) > 0 ) then
+			if( hMatch( FB.TK.ALIAS ) ) then
+				if( lexCurrentTokenClass <> FB.TKCLASS.STRLITERAL ) then
+					hReportError FB.ERRMSG.SYNTAXERROR
+					exit function
+				end if
+				idalias = lexEatToken
+			end if
+		end if
 
     	'' dynamic?
     	isdynamic = FALSE
@@ -1464,7 +1527,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
     	''
     	if( isdynamic ) then
 
-    		if( not cDynArrayDef( id, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() ) ) then
+    		if( not cDynArrayDef( id, idalias, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() ) ) then
     			exit function
     		end if
 
@@ -1474,10 +1537,15 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 
             atype = alloctype and (not FB.ALLOCTYPE.DYNAMIC)
 
-    		symbol = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+    		symbol = symbAddVarEx( id, idalias, typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
     		if( symbol = NULL ) then
-    			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
-    			exit function
+
+                symbol = hDeclExternVar( id, typ, subtype, atype, addsuffix )
+
+    			if( symbol = NULL ) then
+    				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    				exit function
+    			end if
 			end if
 
 			'' another quirk: if array is local (ie, inside a proc) and it's not dynamic, it's
@@ -1486,8 +1554,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 			'' descriptor won't help, as that would break recursion)
 			if( env.scope > 0 ) then
 				if( dimensions > 0 ) then
-					if( ((alloctype and FB.ALLOCTYPE.SHARED) = 0) and _
-						((alloctype and FB.ALLOCTYPE.STATIC) = 0) ) then
+					if( (alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
 						rtlArraySetDesc symbol, lgt, dimensions, dTB()
 					end if
 				end if
@@ -1509,7 +1576,7 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 end function
 
 '':::::
-function cDynArrayDef( id as string, byval typ as integer, _
+function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 					   byval subtype as FBSYMBOL ptr, byval lgt as integer, _
 					   byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
 					   byval dimensions as integer, exprTB() as integer ) as integer
@@ -1525,21 +1592,47 @@ function cDynArrayDef( id as string, byval typ as integer, _
     ''
   	s = symbLookupVarEx( id, typ, 0, NULL, NULL, addsuffix, FALSE, TRUE )
    	if( s = NULL ) then
-   		s = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+   		s = symbAddVarEx( id, idalias, typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
    		if( s = NULL ) then
    			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
    			exit function
    		end if
 	else
+
 		if( not symbGetVarIsDynamic( s ) ) then
-   			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
-   			exit function
+
+   			s = hDeclExternVar( id, typ, subtype, atype, addsuffix )
+
+   			if( s = NULL ) then
+   				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+				exit function
+			end if
+
+		else
+
+			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXTERN) > 0 ) then
+				if( (atype and FB.ALLOCTYPE.EXTERN) > 0 ) then
+   					hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+					exit function
+				end if
+
+				symbSetAllocType s, (atype and not FB.ALLOCTYPE.EXTERN) or _
+    					            FB.ALLOCTYPE.PUBLIC or _
+    					            FB.ALLOCTYPE.SHARED
+			end if
 		end if
 	end if
 
+	alloctype = symbGetAllocType( s )
+
+	''
+	if( (alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
+		cDynArrayDef = TRUE
+		exit function
+	end if
+
 	'' not an argument passed by descriptor or a common array?
-	if( ((symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0) and _
-		((symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) = 0) ) then
+	if( (alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or FB.ALLOCTYPE.COMMON)) = 0 ) then
 
 		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
     		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
@@ -1567,7 +1660,7 @@ function cDynArrayDef( id as string, byval typ as integer, _
 	end if
 
 	'' if common, check for max dimensions used
-	if( (symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) > 0 ) then
+	if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
 		if( dimensions > symbGetVarDimensions( s ) ) then
 			symbSetVarDimensions s, dimensions
 		end if
@@ -2037,28 +2130,26 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 	''
 	mode = cFunctionMode
 
-	'' (ALIAS STR_LIT)?
-	if( hMatch( FB.TK.ALIAS ) ) then
-		aliasname = lexEatToken
-	else
-		aliasname = ""
-	end if
-
 	'' (LIB STR_LIT)?
 	if( hMatch( FB.TK.LIB ) ) then
+		if( lexCurrentTokenClass <> FB.TKCLASS.STRLITERAL ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		end if
 		libname = lexEatToken
 	else
 		libname = ""
 	end if
 
-	'' (ALIAS STR_LIT)? (in PB, 'ALIAS' can come after the 'LIB' def..)
+	'' (ALIAS STR_LIT)?
 	if( hMatch( FB.TK.ALIAS ) ) then
-		if( len( aliasname ) = 0 ) then
-			aliasname = lexEatToken
-		else
+		if( lexCurrentTokenClass <> FB.TKCLASS.STRLITERAL ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
+		aliasname = lexEatToken
+	else
+		aliasname = ""
 	end if
 
 	'' ('(' Arguments? ')')?

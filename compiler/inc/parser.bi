@@ -38,7 +38,7 @@ declare function 	cTypeDecl               ( ) as integer
 declare function 	cEnumDecl               ( ) as integer
 declare function 	cSymbolDecl             ( ) as integer
 declare function 	cSymbolDef 				( byval alloctype as integer, byval dopreserve as integer = FALSE ) as integer
-declare function 	cDynArrayDef			( id as string, _
+declare function 	cDynArrayDef			( id as string, idlias as string, _
 											  byval typ as integer, byval subtype as FBSYMBOL ptr, _
 											  byval lgt as integer, byval addsuffix as integer, _
 											  byval alloctype as integer, byval dopreserve as integer, _

@@ -2,6 +2,7 @@
 [ ] "ON expr GOTO|GOSUB label" is wrong, expr is an integer index into the label list
 
 *** *** *** *** ***
+[ ] var initializers: dim myvar as sometype = ( initialvalue ) -- has to support arrays and types too
 [ ] macros   -- with recursive expansion and local vars
 [ ] typedefs -- can be done with one pass? ie, it should allow:
 		typedef bleh as bar
