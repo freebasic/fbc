@@ -432,6 +432,8 @@ Links:
     - BASS and BASSMod: http://www.un4seen.com/
 
     - BIG_INT: http://chat.finalcombat.com/valyala/big_int/
+ 
+    - cgi-util: http://www.newbreedsoftware.com/cgi-util/
 
     - DevIL: http://openil.sourceforge.net/
     
@@ -440,7 +442,11 @@ Links:
     - FreeImage: http://freeimage.sourceforge.net/
 
     - GD: http://www.boutell.com/gd/ or http://gnuwin32.sourceforge.net/packages/gd.htm
+
+    - GDSL: http://www.nongnu.org/gdsl/
     
+    - GLFW: http://glfw.sourceforge.net/   
+ 
     - GLUT: http://www.xmission.com/~nate/glut.html
 
     - GSL: http://www.gnu.org/software/gsl/ or http://gnuwin32.sourceforge.net/packages/gsl.htm
@@ -452,8 +458,12 @@ Links:
     - LibXML: http://xmlsoft.org/
     
     - Lua: http://www.lua.org/
+
+    - Mini-XML: http://www.easysw.com/~mike/mxml/
     
     - MySQL: http://dev.mysql.com/
+
+    - ODE: http://ode.org/
 
     - OpenAL: http://www.openal.org/ or http://developer.creative.com/landing.asp?cat=1&sbcat=31&top=38
 
