@@ -29,21 +29,38 @@
 #include "fb.h"
 
 /*:::::*/
-static int fb_hStrComp( char *str1, int len1, char *str2, int len2 )
+static int fb_hStrComp( const char *str1, int len1, const char *str2, int len2 )
 {
-    int len;
-
+    int len, res;
+    
     /* min */
     len = (len1 <= len2? len1: len2);
 
+#ifndef TARGET_X86
 	for( ; len > 0; len--,str1++,str2++ )
 		if( *str1 != *str2 )
 			return (*str1 > *str2? 1: -1);
+			
+#else
+		asm (
+			"repe\n"
+			"cmpsb\n"
+			"je 0f\n"
+			"movl $1, %%ecx\n"
+			"jg 0f\n"
+			"neg %%ecx\n"
+			"0:\n"
+			: "=c" (res)
+			: "c" (len), "S" (str1), "D" (str2) );
+		
+		if( res != 0 ) 
+			return res;
+#endif
 
 	if( len1 != len2 )
 		return (len1 < len2? -1: 1);
-
-	return 0;
+	else
+		return 0;
 }
 
 /*:::::*/
@@ -53,16 +70,25 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 	int 	str1_len, str2_len;
 	int		res;
 
-	if( (str1 == NULL) || (str2 == NULL) )
-		return 0;
-
 	FB_STRLOCK();
 
-	FB_STRSETUP( str1, str1_size, str1_ptr, str1_len )
-	FB_STRSETUP( str2, str2_size, str2_ptr, str2_len )
+	if( (str1 != NULL) && (str2 != NULL) )
+	{
+		FB_STRSETUP( str1, str1_size, str1_ptr, str1_len )
+		FB_STRSETUP( str2, str2_size, str2_ptr, str2_len )
 
-    res = fb_hStrComp( str1_ptr, str1_len, str2_ptr, str2_len );
-
+    	res = fb_hStrComp( str1_ptr, str1_len, str2_ptr, str2_len );
+	}
+	else if( str1 == NULL )
+	{
+		if( str2 == NULL )
+			res = 0;
+		else
+			res = -1;
+	}
+	else
+		res = 1;
+	
 	/* delete temps? */
 	if( str1_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)str1 );
