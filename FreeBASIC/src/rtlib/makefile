@@ -42,6 +42,7 @@ lib = $(libpath)/libfb.a
 
 objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
 osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))
+osdepobjs += $(patsubst $(osdeppath)/%.s,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.s))
 headers := $(wildcard *.h)
 
 obj/$(osdeppath)/%.o : %.c $(headers)
@@ -53,6 +54,8 @@ obj/$(osdeppath)/%.o : $(osdeppath)/%.c $(headers)
 obj/$(osdeppath)/%.o : %.s $(headers)
 	$(AS) $< -o $@
 
+obj/$(osdeppath)/%.o : $(osdeppath)/%.s $(headers)
+	$(AS) $< -o $@
 
 all : $(objects) $(osdepobjs) $(lib)
 
