@@ -172,7 +172,7 @@ static void gdi_thread(HANDLE running_event)
 		fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
 		
 		GetKeyboardState(keystate);
-		for (i = 0; i < fb_keytable[i][0]; i++) {
+		for (i = 0; fb_keytable[i][0]; i++) {
 			if (fb_keytable[i][2])
 				fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
 								   (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
