@@ -2339,7 +2339,7 @@ private sub hSaveAsmInitProc( )
 end sub
 
 '':::::
-private sub hEmitFooter( )
+private sub hEmitFooter( byval tottime as double )
 
     hWriteStr ctx.outf, FALSE, ""
 
@@ -2354,7 +2354,8 @@ private sub hEmitFooter( )
 
     hSaveAsmInitProc
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation finished at " + time$ + " (" + FB.SIGN + ")"
+    hWriteStr ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation took " + _
+    						   str$( tottime ) + " secs"
 
 end sub
 
@@ -2416,7 +2417,7 @@ private sub hEmitBss( ) 'static
 
     	if( (symbGetClass( s ) = FB.SYMBCLASS.VAR) and _
     		(not symbGetInitialized( s )) and _
-    		(not symbGetVarIsDynamic( s )) ) then
+    		(not symbGetIsDynamic( s )) ) then
 
     	    '' don't reserve space for externals
     	    alloctype = symbGetAlloctype( s )
@@ -2426,7 +2427,7 @@ private sub hEmitBss( ) 'static
     	    	'' don't add initialized string or array descriptors
     	    	if( lgt > 0 ) then
 	    	    	elements = 1
-    	    		if( symbGetVarDimensions( s ) > 0 ) then
+    	    		if( symbGetArrayDimensions( s ) > 0 ) then
     	    			elements = hCalcElements( s )
     	    		end if
 
@@ -2506,7 +2507,6 @@ end sub
 '':::::
 private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
 	dim i as integer, d as FBVARDIM ptr
-    dim l as integer, u as integer
     dim dims as integer, diff as integer
     dim sname as string, dname as string
 
@@ -2515,13 +2515,13 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
     	exit sub
     end if
 
-    dims = symbGetVarDimensions( s )
-    diff = symbGetVarDiff( s )
+    dims = symbGetArrayDimensions( s )
+    diff = symbGetArrayDiff( s )
     if( dims = 0 ) then
     	exit sub
     end if
 
-    if( symbGetVarIsDynamic( s ) ) then
+    if( symbGetIsDynamic( s ) ) then
     	sname = "0"
 	else
     	sname = symbGetVarName( s )
@@ -2553,17 +2553,17 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
 	if( dims = -1 ) then dims = 1
 	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( dims )
 
-    if( not symbGetVarIsDynamic( s ) ) then
-    	d = symbGetFirstVarDim( s )
+    if( not symbGetIsDynamic( s ) ) then
+    	d = symbGetArrayFirstDim( s )
     	do while( d <> NULL )
-    		symbGetVarDims s, d, l, u
 
 			''	uint	dim_elemts
-			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( u - l + 1 )
+			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->upper - d->lower + 1 )
 			''	int		dim_first
-			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( l )
+			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->lower )
 
-			d = symbGetNextVarDim( s, d )
+            '' next
+			d = d->r
     	loop
 
     else
@@ -2602,7 +2602,7 @@ private sub hEmitDataHeader( )
     end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized vars"
-    hWriteStr ctx.outf, FALSE, ".section .data" + NEWLINE
+    hWriteStr ctx.outf, FALSE, ".section .data"
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
     ctx.datheader = TRUE
@@ -2617,7 +2617,7 @@ private sub hEmitData( ) 'static
     do while( s <> NULL )
 
     	if( symbGetClass( s ) = FB.SYMBCLASS.VAR ) then
-    	    d = symbGetVarDescriptor( s )
+    	    d = symbGetArrayDescriptor( s )
     	    if( d <> NULL ) then
     	    	hEmitDataHeader
     	    	select case symbGetSubtype( d )
@@ -2695,10 +2695,10 @@ eoerror:
 end function
 
 '':::::
-sub emitClose
+sub emitClose( byval tottime as double )
 
     '' footer
-    hEmitFooter
+    hEmitFooter tottime
 
 	'' const
 	hEmitConst
