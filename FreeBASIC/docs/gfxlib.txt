@@ -54,6 +54,7 @@ Functions reference:
 Appendix A: DOS keyboard scancodes
 Appendix B: Default palettes
 Appendix C: Internal pixel formats
+Appendix D: About speed and size
 
 
 
@@ -1123,13 +1124,16 @@ not, and behave accordingly; a way to check if SCREEN is successful is to
 test the return value of the SCREENPTR function, have a look at it for
 details.
 Once a gfx mode has been set, you can toggle fullscreen and windowed mode at
-any time by pressing ALT-ENTER, providing the system supports it.
+any time by pressing ALT-ENTER, providing the system supports it. While in
+windowed mode, clicking on the window close button will return CHR$(255)+"X"
+to INKEY$, while clicking on the maximize window button will switch to
+fullscreen mode if possible.
 A successful SCREEN call sets currently visible and working pages both to page
-number 0, resets the palette to the specified mode one, resets the clipping
-region to the size of the screen, disables custom coordinates mappings, moves
-the gfx cursor to the center of the screen, moves the text cursor to the
-top-left corner of the screen and sets foreground and background colors to
-bright white and black respectively.
+number 0, resets the palette to the specified mode one (see appendix B),
+resets the clipping region to the size of the screen, disables custom
+coordinates mappings, moves the gfx cursor to the center of the screen, moves
+the text cursor to the top-left corner of the screen and sets foreground and
+background colors to bright white and black respectively.
 
 
 Example:
@@ -1764,3 +1768,44 @@ Depth:		Mask color value:
 
 Indexed modes always use color index 0 for transparency, while direct color
 modes use bright pink.
+
+
+
+==============================================================================
+Appendix D: About speed and size
+==============================================================================
+
+About speed: internally gfxlib uses normal system memory as pages memory. All
+your read/writes on the page buffers (including direct writes via SCREENPTR)
+will be done in system memory. On Win32 and Linux, a separated thread does
+the screen updates as needed, running at the refresh rate speed; only dirty
+lines are updated. This thread also does color conversion if needed.
+While this may sound as an overhead in fullscreen modes, it is necessary for
+windowed modes; to keep the lib slim and simple, the same method has been used
+also in fullscreen, at the cost of a tiny speed penalty due to the memory
+copy. MMX is used whenever possible all over gfxlib though, so the lib is
+still pretty fast.
+
+About size: one of the goals of gfxlib was to be independent of external libs.
+Well, the goal has been achieved: the lib has its own tiny drivers (10-15 KB
+each) and does not depend on anything else. Of course your EXEs will have to
+include also other code at least for gfx initialization, fonts data, support
+for all color depths, default palettes and some other stuff. All this means if
+you use gfxlib routines your EXE size will increase in size from 40K up to
+about 90K, depending on the functionalities your program uses (fbc will link
+in just what you use). But your EXEs will be standalone.
+
+Of course by standalone it doesn't mean it has no dependencies at all, but
+just dependencies to system libraries you can assume to be always available.
+Here's a list of the additional dependencies your EXEs will have when using
+gfxlib:
+
+Win32:
+	user32.dll
+	(ddraw.dll and dinput.dll only loaded at runtime)
+Linux:
+	libX11
+	libXext
+	libXxf86vm
+	libpthread
+
