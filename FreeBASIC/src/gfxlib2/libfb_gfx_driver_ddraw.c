@@ -524,7 +524,7 @@ static int ddraw_get_key(int wait)
 	if (wait) {
 		do {
 			key = ddraw_get_key(FALSE);
-			Sleep(50);
+			Sleep(20);
 		} while(!key);
 		return key;
 	}
