@@ -15,6 +15,7 @@ Version 0.13 Beta:
 - fixed-length strings can now by referenced using the "$" suffix, as in QB (v1c)
 - #ifdef and #ifndef will find any kind of symbol, not #define's only as before (v1c)
 - TIMER now uses the Win32 high resolution timer when available (lillo)
+- DOS port now detects if STDOUT is not the terminal and uses printf() if so, so shell I/O redirection works now
 
 [added]
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
