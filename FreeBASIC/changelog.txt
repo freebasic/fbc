@@ -12,6 +12,7 @@ Version 0.13 Beta:
 - string constant expressions can now be used with CONST's (v1c)
 - glut include file, header completed with help of the SWIG FB wrapper (v1c)
 - SCREENCOPY now copies only the page area set by most recent VIEW call, or whole screen if no viewport is set (lillo)
+- fixed-length strings can now by referenced using the "$" suffix, as in QB (v1c)
 
 [added]
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
