@@ -294,6 +294,10 @@ Credits (in alphabetic order):
     - Wrote the DLL and static library automation.
     - Completed the CRTDLL and DDRAW headers.
 
+  o Edmond Leung (leung.edmond@gmail.com): 
+    - Translated the SDL headers, including SDL_mixer and SDL_image.
+    - Wrote/ported many of the examples at the SDL dir.
+
   o Eric Lope (vic_viperph@yahoo.com):
     - Translated the OpenGL and GLU headers
     - Wrote the rel-* graphics demonstrations in the GFX directory.
