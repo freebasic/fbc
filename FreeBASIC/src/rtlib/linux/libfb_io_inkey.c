@@ -191,7 +191,7 @@ int fb_ConsoleGetkey( void )
 	while ((k = fb_hGetCh()) < 0)
 		;
 
-	return k;
+	return k & 0xFF;
 }
 
 /*:::::*/
