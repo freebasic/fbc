@@ -697,8 +697,19 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 				end if
 			end if
 
-			if( (ddsize > 1) and _
-				((stype = IR.VREGTYPE.IMM) or (ddtype = sdtype) or (irMaxDataType( ddtype, sdtype ) = INVALID)) ) then
+			if( (stype = IR.VREGTYPE.IMM) or _
+				(ddtype = sdtype) or _
+				(irMaxDataType( ddtype, sdtype ) = INVALID) ) then
+
+				'' handle SI/DI as byte
+				if( ddsize = 1 ) then
+					reg = emitLookupReg( src, sdtype )
+					ext = emitGetRegName( ddtype, ddclass, reg )
+					if( right$( ext, 1 ) <> "l" ) then
+						goto storeSIDI
+					end if
+				end if
+
 				outp "mov " + dst + COMMA + src
 
 			else
@@ -714,7 +725,7 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 				else
 					'' handle DI/SI as byte
 					if( (ddsize = 1) and right$( ext, 1 ) <> "l" ) then
-						isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+storeSIDI:				isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
 						if( not isedxfree ) then
 							emithPUSH "edx"
 						end if
@@ -804,8 +815,15 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 				end if
 			end if
 
-			if( (ddsize > 1) and _
-				((ddtype = sdtype) or (irMaxDataType( ddtype, sdtype ) = INVALID)) ) then
+			if( (ddtype = sdtype) or (irMaxDataType( ddtype, sdtype ) = INVALID) ) then
+
+				'' handle SI/DI as byte
+				if( ddsize = 1 ) then
+					if( right$( dst, 1 ) <> "l" ) then
+						goto loadSIDI
+					end if
+				end if
+
 				outp "mov " + dst + COMMA + src
 
 			else
@@ -825,7 +843,7 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 					else
 						'' handle DI/SI as byte
 						if( (ddsize = 1) and right$( dst, 1 ) <> "l" ) then
-							isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
+loadSIDI:					isedxfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EDX )
 							if( not isedxfree ) then
 								emithPUSH "edx"
 							end if
