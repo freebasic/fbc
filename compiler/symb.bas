@@ -83,6 +83,8 @@ data "FB__SIGNATURE",		FB.SIGN,		TRUE
 data "FB__WIN32",			"",				FALSE
 #elseif defined(TARGET_LINUX)
 data "FB__LINUX",			"",				FALSE
+#elseif defined(TARGET_DOS)
+data "FB__DOS",			    "",				FALSE
 #endif
 data ""
 

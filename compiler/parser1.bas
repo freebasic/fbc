@@ -59,6 +59,8 @@ data "user32"
 data "c"
 data "m"
 data "ncurses"
+#elseif defined(TARGET_DOS)
+data "crt"
 #endif
 data ""
 
@@ -69,6 +71,8 @@ sub fbcAddIncPath( path as string )
 		incpathTB( env.incpaths ) = path
 
 #ifdef TARGET_WIN32
+const PATHDIV = "\\"
+#elseif TARGET_DOS
 const PATHDIV = "\\"
 #else
 const PATHDIV = "/"

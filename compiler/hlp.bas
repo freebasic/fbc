@@ -473,6 +473,8 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
 	if( addat ) then
 		nm = nm + "@" + ltrim$( str$( argslen ) )
 	end if
+#elseif defined(TARGET_DOS)
+    nm = "_" + symbol	
 #else
 	nm = symbol
 #endif

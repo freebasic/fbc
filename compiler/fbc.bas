@@ -20,6 +20,7 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 ''		 dec/2004 linux support added [lillo]
+''		 jan/2005 dos support added [DrV]
 
 
 defint a-z
@@ -73,6 +74,10 @@ declare function 	linkFiles 			( ) as integer
 declare function 	archiveFiles 		( ) as integer
 declare function 	delFiles 			( ) as integer
 declare function 	makeImpLib 			( dllpath as string, dllname as string ) as integer
+
+#ifdef TARGET_DOS
+declare function 	makeMain			( o_file as string ) as integer
+#endif
 
 
 ''globals
@@ -230,6 +235,8 @@ function assembleFiles as integer
     ''
 #ifdef TARGET_WIN32
     aspath = exepath$ + FB.BINPATH + "as.exe"
+#elseif defined(TARGET_DOS)
+    aspath = exepath$ + FB.BINPATH + "as-dos.exe"
 #elseif defined(TARGET_LINUX)
 	aspath = "as"
 #endif
@@ -270,6 +277,9 @@ function linkFiles as integer
 #ifdef TARGET_WIN32
 	dim libname as string, dllname as string
 #endif
+#ifdef TARGET_DOS
+    dim mainobj as string, respfile as string
+#endif
 
 	linkFiles = FALSE
 
@@ -299,6 +309,15 @@ function linkFiles as integer
 		case FB_OUTTYPE_DYNAMICLIB
 			ctx.outname = hStripFilename( ctx.outname ) + "lib" + hStripPath( ctx.outname ) + ".so"
 		end select
+		
+#elseif defined(TARGET_DOS)
+		select case ctx.outtype
+		case FB_OUTTYPE_EXECUTABLE
+			ctx.outname = ctx.outname + ".exe"
+		case FB_OUTTYPE_DYNAMICLIB
+			ctx.outname = ctx.outname + ".dxe"
+		end select
+
 #endif
 	end if
 
@@ -345,6 +364,16 @@ function linkFiles as integer
 	if( ctx.outtype = FB_OUTTYPE_EXECUTABLE) then
 		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
 	end if
+	
+#elseif defined(TARGET_DOS)
+
+    '' set script file
+    select case ctx.outtype
+	case FB_OUTTYPE_EXECUTABLE
+		ldcline = "-T \"" + exepath$ + FB.BINPATH + "i386go32.x\""
+	case FB_OUTTYPE_DYNAMICLIB
+	    ldcline = "-T \"" + exepath$ + FB.BINPATH + "dxe.ld\""
+	end select
 
 #endif
 
@@ -395,6 +424,9 @@ function linkFiles as integer
 	'' set entry point
 #ifdef TARGET_WIN32
 	ldcline = ldcline + " -e " + ctx.entrypoint + " "
+#elseif defined(TARGET_DOS)
+    '' default crt entry point 'start' calls 'main' which calls the fb entry point
+    ldcline = ldcline + " "
 #else
 	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
 		ldcline = ldcline + " -e " + ctx.entrypoint + " "
@@ -412,6 +444,15 @@ function linkFiles as integer
     for i = 0 to ctx.objs-1
     	ldcline = ldcline + QUOTE + objlist(i) + "\" "
     next i
+    
+#ifdef TARGET_DOS
+    '' add entry point wrapper
+    mainobj = hStripExt(ctx.outname) + ".~~~"
+	if not makeMain(mainobj) then
+	    exit function
+    end if
+    ldcline = ldcline + QUOTE + mainobj + "\" "
+#endif
 
     '' set executable name
     ldcline = ldcline + "-o \"" + ctx.outname + QUOTE
@@ -467,12 +508,35 @@ function linkFiles as integer
 
 #ifdef TARGET_WIN32
 	ldpath = exepath$ + FB.BINPATH + "ld.exe"
+#elseif defined(TARGET_DOS)
+    ldpath = exepath$ + FB.BINPATH + "ld.exe"
 #elseif defined(TARGET_LINUX)
 	ldpath = "ld"
 #endif
+
+#ifdef TARGET_DOS
+    '' stupid DOS 126-char command line length limit
+    '' use @ response file
+    f = freefile
+    respfile = hStripFilename(ctx.outname) + "fbcresp.~~~"
+
+    open respfile for output as #f
+    print #f, ldcline
+    close #f
+    
+    if (exec(ldpath, "@" + respfile) <> 0) then
+        exit function
+    end if
+    
+    '' delete temporary files
+    kill respfile
+    kill mainobj
+
+#else
     if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
     end if
+#endif
 
 #ifdef TARGET_WIN32
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
@@ -638,6 +702,8 @@ function archiveFiles as integer
 
 #ifdef TARGET_WIN32
 	arcpath = exepath$ + FB.BINPATH + "ar.exe"
+#elseif defined(TARGET_DOS)
+    arcpath = exepath$ + FB.BINPATH + "ar.exe"
 #elseif defined(TARGET_LINUX)
 	arcpath = "ar"
 #endif
@@ -686,6 +752,8 @@ sub printOptions
 	print "-dylib", "create a DLL, including the import library"
 #elseif defined(TARGET_LINUX)
 	print "-dylib", "create a shared library"
+#elseif defined(TARGET_DOS)
+    print "-dylib", "create a DXE"
 #endif
 	print "-e", "add error checking"
 	print "-entry <name>", "set a non-standard entry point, see -m"
@@ -1097,3 +1165,56 @@ sub getLibList
 	ctx.libs = ctx.libs + fbcListLibs( liblist(), ctx.libs )
 
 end sub
+
+#ifdef TARGET_DOS
+'':::::
+function makeMain ( main_obj as string ) as integer
+    '' ugly hack for DOS/DJGPP to let libc's init routine set up protected mode etc.
+    dim asm_file as string
+    dim f as integer
+    dim aspath as string, ascline as string
+
+    makeMain = FALSE
+
+    aspath = exepath$ + FB.BINPATH + "as.exe"
+
+    f = freefile()
+    if f = 0 then exit function
+
+    asm_file = hStripExt(main_obj) + ".s~~"
+    
+    open asm_file for output as #f
+    
+    print #f, ".section .text"
+    print #f, ".globl _main"
+    print #f, "_main:"
+
+	'' save argc and argv in rtlib vars
+    print #f, "movl 8(%esp), %eax"
+    print #f, "movl %eax, (_fb_argv)"
+
+    print #f, "movl 4(%esp), %eax"
+    print #f, "movl %eax, (_fb_argc)"
+
+	'' jump to real entry point ( will ret to crt startup code )
+    print #f, "jmp " + ctx.entrypoint
+    
+    close #f
+    
+    ascline = "--strip-local-absolute \"" + asm_file + "\" -o \"" + main_obj + QUOTE
+    
+    '' invoke as
+    if (ctx.verbose) then
+        print "assembling: ", ascline
+    end if
+    
+    if (exec(aspath, ascline) <> 0) then
+        exit function
+    end if
+    
+    kill asm_file
+    
+    makeMain = TRUE
+
+end function
+#endif
