@@ -68,10 +68,10 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 	switch (port) {
 
 		case 0x3C7:
-		    idx = value;
-		    shift = 2;
-		    color = 0;
-		    break;
+            idx = value;
+            shift = 2;
+            color = 0;
+            break;
 
 		case 0x3C8:
 			idx = value;
