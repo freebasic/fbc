@@ -35,6 +35,13 @@ static void fb_hFileCtx ( int doinit );
 static int is_exiting = FALSE;
 #endif
 
+/* don't use the coldnames symbols */
+#ifdef WIN32
+#undef popen
+#define popen(c,m) _popen(c,m)
+#undef pclose
+#define pclose(f) _pclose(f)
+#endif
 
 /*:::::*/
 static void fb_hFileExit( void )
@@ -186,7 +193,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 						unsigned int lock, int fnum, int len )
 {
 	char openmask[16];
-	char fname[MAX_PATH];
+	char fname[MAX_PATH], *pfname;
 	FILE* f;
 	int str_len;
 	int type, accesstype;
@@ -222,11 +229,14 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		type = FB_FILE_TYPE_CONSOLE;
 	else if( strcasecmp( fname, "ERR:" ) == 0 )
 		type = FB_FILE_TYPE_ERR;
+	else if( strncasecmp( fname, "PIPE:", 5 ) == 0 )
+		type = FB_FILE_TYPE_PIPE;
 
 	accesstype = (access != FB_FILE_ACCESS_ANY? access: FB_FILE_ACCESS_READWRITE);
 
-	if( type == FB_FILE_TYPE_NORMAL )
+	switch( type  )
 	{
+	case FB_FILE_TYPE_NORMAL:
 		/* check mode */
 		switch( mode )
 		{
@@ -286,9 +296,10 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		/* change the default buffer size */
 		setvbuf( f, NULL, _IOFBF, FB_FILE_BUFSIZE );
 
-	}
-	else
-	{
+		break;
+	
+	case FB_FILE_TYPE_CONSOLE:
+	case FB_FILE_TYPE_ERR:
 		/* check mode */
 		switch( mode )
 		{
@@ -312,6 +323,37 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 			FB_UNLOCK();
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
+		
+		break;
+
+	case FB_FILE_TYPE_PIPE:
+		pfname = &fname[5];				/* skip PIPE: */
+		
+		/* check mode */
+		switch( mode )
+		{
+		case FB_FILE_MODE_INPUT:
+			if( (f = popen( pfname, "r" )) == NULL )
+			{
+				FB_UNLOCK();
+				return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+			}
+			break;
+
+		case FB_FILE_MODE_OUTPUT:
+			if( (f = popen( pfname, "w" )) == NULL )
+			{
+				FB_UNLOCK();
+				return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+			}
+			break;
+
+		default:
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
+		
+		break;
 	}
 
 
@@ -376,9 +418,17 @@ FBCALL int fb_FileClose( int fnum )
 
 	FB_LOCK();
 
-	if( fb_fileTB[fnum-1].type == FB_FILE_TYPE_NORMAL )
-		if( fb_fileTB[fnum-1].f != NULL )
+	if( fb_fileTB[fnum-1].f != NULL )	
+		switch( fb_fileTB[fnum-1].type )
+		{
+		case FB_FILE_TYPE_NORMAL:		
 			fclose( fb_fileTB[fnum-1].f );
+			break;
+	
+		case FB_FILE_TYPE_PIPE:
+			pclose( fb_fileTB[fnum-1].f );
+			break;
+		}
 
 	fb_fileTB[fnum-1].f = NULL;
 	
