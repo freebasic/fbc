@@ -128,7 +128,7 @@ static int directx_init(void)
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
 	HRESULT res;
-	int i, depth, is_rgb = FALSE, height;
+	int i, depth, is_rgb = FALSE, height, flags;
 
 	lpDD = NULL;
 	lpDDS = NULL;
@@ -171,7 +171,9 @@ static int directx_init(void)
 		height = fb_win32.h;
 		while( 1 )
 		{
-			if (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, fb_win32.depth, fb_win32.refresh_rate, 0) == DD_OK)
+			flags = ((fb_win32.w == 320) && (height == 200) && (fb_win32.depth == 8)) ? DDSDM_STANDARDVGAMODE : 0;
+			
+			if (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, fb_win32.depth, fb_win32.refresh_rate, flags) == DD_OK)
 				break;
 
 			depth = fb_win32.depth;
@@ -183,7 +185,7 @@ static int directx_init(void)
 				case 32: depth = 24; break;
 			}
 
-			if ((depth == fb_win32.depth) || (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, depth, fb_win32.refresh_rate, 0) != DD_OK))
+			if ((depth == fb_win32.depth) || (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, depth, fb_win32.refresh_rate, flags) != DD_OK))
 			{
 				height = calc_comp_height( height );
 				if( height == 0 )
