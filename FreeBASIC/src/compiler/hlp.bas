@@ -464,7 +464,11 @@ function hCreateAliasName( symbol as string, byval argslen as integer, _
     dim addat as integer
 
 #ifdef TARGET_WIN32
-	nm = "_" + symbol
+    if( not env.clopt.nostdcall ) then
+		nm = "_" + symbol
+	else
+		nm = symbol
+	end if
 
     if( env.clopt.nostdcall ) then
     	addat = FALSE
