@@ -9,17 +9,21 @@ Version 0.13 Beta:
 - CHR$ now accepts multiple arguments as in "s = chr$( 65, 66, 67, 68 )" (v1c)
 - COMMAND$ can now return just a specific argument as in "argv3 = command$(3)" (v1c)
 - PEEK and POKE now accept STRING and UDT's as data type (v1c)
-- string constant expressions can now be used with CONST's (v1c)
+- literal string expressions can now be used with CONST's (v1c)
 - glut include file, header completed with help of the SWIG FB wrapper (v1c)
 - SCREENCOPY now copies only the page area set by most recent VIEW call, or whole screen if no viewport is set (lillo)
 - fixed-length strings can now by referenced using the "$" suffix, as in QB (v1c)
 - #ifdef and #ifndef will find any kind of symbol, not #define's only as before (v1c)
+- WITH can now be used recursively (v1c)
+- local variables are now aligned to dword boundary to be more compatible with some C API's (v1c)
 - TIMER now uses the Win32 high resolution timer when available (lillo)
 - DOS port now detects if STDOUT is not the terminal and uses printf() if so, so shell I/O redirection works now
+- more clear error messages when scalars variables are been accessed as arrays and vice-versa (v1c)
 
 [added]
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
 - typedefs with forward referencing support, as in C (but the syntax is "TYPE Name AS SymbolType") (v1c)
+- the ZSTRING type, null-terminated strings with fixed-length but that can be dereferenced and returned by functions (v1c)
 - on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
 - inline string indexing as in "char = somestring[idx]" (V1c)
 - variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
@@ -34,14 +38,14 @@ Version 0.13 Beta:
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
 - DYLIBLOAD and DYLIBSYMBOL intrinsic functions to manage dynamic libraries at runtime (lillo)
 - nameless inner TYPE's on UNION's (v1c)
-- byte ptr's can now by concatenated to or comparated against strings, ie: "s = s + *p" "if( s = *p ) then" (v1c)
 - strings passed by value to FB functions, ie: "sub foo(byval bar as string)" -- note: they are not copied to stack, 
-  they are just a fixed-len string with unknown size (v1c)
+  they are just a zstring with unknown size (v1c)
 - gfxlib internal data (default fonts and palettes) is now compressed in the EXE and decompressed on the fly using a tiny LZW codec,
   resulting in 5K smaller EXEs. Access to internal data without calling SCREEN first will return garbage (lillo)
 - inline asm now supports complete IA32 instruction set (lillo)
 - unsigned versions for STR$() (v1c)
 - the val64() intrinsic function, to convert a string to a longint (v1c)
+- the SIZEOF() intrinsic function, to return the size of any data type (v1c)
 - SCREEN/SCREENRES now accept an additional optional parameter allowing to request a specific refresh rate (lillo)
 
 [fixed]
@@ -68,7 +72,12 @@ Version 0.13 Beta:
 - programs using SCREENRES failed to compile when runtime error checking was enabled (lillo)
 - GET now triggers an illegal function call runtime error if image is partly offscreen (lillo)
 - PUT used to crash if sprites with null width/height were passed (lillo)
+- comma wasn't been skipped when quoted strings were read by INPUT (v1c)
+- strings and UDT's were being allowed in boolean tests when no relational operators were used (v1c)
+- different parameter types were being allowed with by descriptor arguments (v1c)
 - double locking on Linux was causing SETMOUSE/GETMOUSE to hang programs (lillo)
+- conversion to/from fpoint to byte vars could be wrong if too complex operations were used (v1c)
+- literal values passed as parameter were not been converted at compile-time, generating bad code is some cases (v1c)
 
 
 Version 0.12 Beta:

@@ -303,7 +303,7 @@ What FreeBASIC Isn't:
 
 Possible Additions to Later Versions:
 
-  o Headers for libraries like libxml, gsl, Gtk, ...
+  o Headers for libraries like gsl, Gtk, ...
 
   o Full debug support using GDB/Insight
 
