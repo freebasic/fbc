@@ -436,13 +436,10 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	// neg
-	if( !signatend )
+	if( !signatend && isneg )
 	{
 		memmove( &buffer[1], buffer, strlen( buffer )+1 );
-		if( isneg )
-			buffer[0] = '-';
-		else
-			buffer[0] = ' ';
+		buffer[0] = '-';
 
 		++intlgt;
 	}
@@ -478,12 +475,9 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	// neg
-	if( signatend )
+	if( signatend && isneg )
 	{
-		if( isneg )
-			strcat( buffer, "-" );
-		else
-			strcat( buffer, " " );
+		strcat( buffer, "-" );
 	}
 
 	if( endcomma )
