@@ -257,24 +257,23 @@ end function
 ''Comment         =   (COMMENT_CHAR | REM) ((DIRECTIVE_CHAR Directive)
 ''				                              |   (any_char_but_EOL*)) .
 ''
-function cComment
-    dim res as integer, token as integer
+function cComment( byval lexflags as LEXCHECK_ENUM )
 
-	res = FALSE
-
-	select case lexCurrentToken
+	select case lexCurrentToken( lexflags )
 	case FB.TK.COMMENTCHAR, FB.TK.REM
-    	lexSkipToken FALSE
-    	res = TRUE
-    	if( lexCurrentToken( FALSE ) = FB.TK.DIRECTIVECHAR ) then
-    		lexSkipToken
-    		res = cDirective
+    	lexSkipToken LEXCHECK_NOLINECONT
+
+    	if( lexCurrentToken( LEXCHECK_NOLINECONT ) = FB.TK.DIRECTIVECHAR ) then
+    		lexSkipToken LEXCHECK_NOLINECONT
+    		cComment = cDirective
     	else
     		lexSkipLine
+    		cComment = TRUE
     	end if
-	end select
 
-	cComment = res
+	case else
+		cComment = FALSE
+	end select
 
 end function
 
@@ -451,21 +450,19 @@ end function
 '':::
 ''SttSeparator    =   (STT_SEPARATOR | EOL)+ .
 ''
-function cSttSeparator
-    dim res as integer, token as integer
+function cSttSeparator( byval lexflags as LEXCHECK_ENUM )
+    dim token as integer
 
-	res = FALSE
+	cSttSeparator = FALSE
 
 	do
-		token = lexCurrentToken
+		token = lexCurrentToken( lexflags )
 		if( (token <> FB.TK.STATSEPCHAR) and (token <> FB.TK.EOL) ) then
 			exit do
 		end if
-		lexSkipToken
-		res = TRUE
+		lexSkipToken( lexflags )
+		cSttSeparator = TRUE
 	loop
-
-	cSttSeparator = res
 
 end function
 
@@ -2322,6 +2319,7 @@ end function
 ''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE|ESCAPE|DYNAMIC|STATIC)
 ''
 function cOptDecl
+	dim s as FBSYMBOL ptr
 
 	cOptDecl = FALSE
 
@@ -2359,14 +2357,56 @@ function cOptDecl
 
 	case else
 
-		'' ESCAPE (it's not a reserved word, there are too many already..)
-		if( ucase$( lexTokenText ) = "ESCAPE" ) then
+		'' ESCAPE? (it's not a reserved word, there are too many already..)
+		select case ucase$( lexTokenText )
+		case "ESCAPE"
 			lexSkipToken
 			env.optescapestr = TRUE
-		else
+
+		'' NOKEYWORD? (ditto..)
+		case "NOKEYWORD"
+			lexSkipToken
+
+			do
+				select case lexCurrentTokenClass
+				case FB.TKCLASS.KEYWORD
+					if( not symbDelKeyword( lexTokenText ) ) then
+						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+						exit function
+					end if
+
+					lexSkipToken
+
+				case FB.TKCLASS.IDENTIFIER
+					'' proc exists?
+					s = symbLookupProc( lexTokenText )
+					if( s = NULL ) then
+						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+						exit function
+					end if
+
+					'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
+					if( symbGetProcLib( s ) <> "fb" ) then
+						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+						exit function
+					end if
+
+					symbDelPrototype s
+
+					lexSkipToken
+
+				case else
+					hReportError FB.ERRMSG.SYNTAXERROR
+					exit function
+				end select
+
+			'' ','?
+			loop while( hMatch( CHAR_COMMA ) )
+
+		case else
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
-		end if
+		end select
 
 	end select
 
@@ -2818,7 +2858,7 @@ function cAssignmentOrPtrCall
 end function
 
 '':::::
-''AsmCode         =   (Text !(Comment|NEWLINE))*
+''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
 function cAsmCode
 	dim asmline as string, text as string
@@ -2827,16 +2867,17 @@ function cAsmCode
 	cAsmCode = FALSE
 
 	asmline = ""
+
 	do
-		'' !(Comment|NEWLINE)
-		select case lexCurrentToken
-		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+		'' !(END|Comment|NEWLINE)
+		select case lexCurrentToken( LEXCHECK_NOWHITESPC )
+		case FB.TK.END, FB.TK.EOL, FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOF
 			exit do
 		end select
 
 		text = lexTokenText
 
-		if( lexCurrentToken = FB.TK.ID ) then
+		if( lexCurrentToken( LEXCHECK_NOWHITESPC ) = FB.TK.ID ) then
 			if( not emitIsKeyword( text ) ) then
 				'' lookup functions
 				s = symbLookupProc( text )
@@ -2858,14 +2899,17 @@ function cAsmCode
 			end if
 		end if
 
-		lexSkipToken
+		asmline = asmline + text
 
-		asmline = asmline + text + " "
+		lexSkipToken LEXCHECK_NOWHITESPC
 
 	loop
 
-	irFlush
-	emitASM asmline
+	''
+	if( len( asmline ) > 0 ) then
+		irFlush
+		emitASM asmline
+	end if
 
 	cAsmCode = TRUE
 
@@ -2873,10 +2917,10 @@ end function
 
 '':::::
 ''AsmBlock        =   ASM Comment? SttSeparator
-''                        (AsmCode Comment? Newline)+
+''                        (AsmCode Comment? NewLine)+
 ''					  END ASM .
 function cAsmBlock
-    dim res as integer
+    dim issingleline as integer
 
 	cAsmBlock = FALSE
 
@@ -2885,46 +2929,53 @@ function cAsmBlock
 		exit function
 	end if
 
-	'' Comment? SttSeparator
-	res = cComment
-
-	if( not cSttSeparator ) then
-    	hReportError FB.ERRMSG.SYNTAXERROR
-    	exit function
-	end if
-
-	'' (AsmCode Comment? Newline)+
-	do
-		'' Comment? Newline?
-		do while( (cComment <> FALSE) or hMatch( FB.TK.EOL ) )
-		loop
-
-		if( lexCurrentToken = FB.TK.END ) then
-			exit do
-		end if
-
-		if( not cAsmCode ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
-			exit function
-		end if
-
-		'' Comment? Newline
-		res = cComment
-
-		if( not hMatch( FB.TK.EOL ) ) then
-    		hReportError FB.ERRMSG.SYNTAXERROR
+	'' (Comment SttSeparator)?
+	issingleline = FALSE
+	if( cComment ) then
+		if( not cSttSeparator ) then
+    		hReportError FB.ERRMSG.EXPECTEDEOL
     		exit function
 		end if
+	else
+		if( not cSttSeparator ) then
+			issingleline = TRUE
+        end if
+	end if
 
+	'' (AsmCode Comment? NewLine)+
+	do
+		cAsmCode
+
+		'' Comment?
+		cComment LEXCHECK_NOWHITESPC
+
+		'' NewLine
+		select case lexCurrentToken
+		case FB.TK.EOL
+			if( issingleline ) then
+				exit do
+			end if
+
+			lexSkipToken
+
+		case FB.TK.END
+			exit do
+
+		case else
+    		hReportError FB.ERRMSG.EXPECTEDEOL
+    		exit function
+		end select
 	loop
 
-	'' END ASM
-	if( not hMatch( FB.TK.END ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDENDASM
-    	exit function
-	elseif( not hMatch( FB.TK.ASM ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDENDASM
-    	exit function
+	if( not issingleline ) then
+		'' END ASM
+		if( not hMatch( FB.TK.END ) ) then
+    		hReportError FB.ERRMSG.EXPECTEDENDASM
+    		exit function
+		elseif( not hMatch( FB.TK.ASM ) ) then
+    		hReportError FB.ERRMSG.EXPECTEDENDASM
+    		exit function
+		end if
 	end if
 
 

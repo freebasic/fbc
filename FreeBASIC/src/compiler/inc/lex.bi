@@ -20,6 +20,13 @@
 '' lex protos
 ''
 
+enum LEXCHECK_ENUM
+	LEXCHECK_EVERYTHING	= 0
+	LEXCHECK_NOLINECONT	= 1
+	LEXCHECK_NODEFINE	= 2
+	LEXCHECK_NOWHITESPC	= 4
+end enum
+
 type FBTOKEN
 	id				as integer
 	class			as integer
@@ -39,17 +46,18 @@ declare sub 		lexRestoreCtx			( byval level as integer )
 
 declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as integer
 declare function 	lexEatChar              ( ) as integer
-declare function 	lexLookAheadChar        ( ) as integer
-declare sub 		lexNextToken 			( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE )
+declare function 	lexLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as integer
+declare sub 		lexNextToken 			( t as FBTOKEN, _
+											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
-declare function 	lexCurrentToken 		( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer
-declare function 	lexCurrentTokenClass 	( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer
+declare function 	lexCurrentToken 		( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexCurrentTokenClass 	( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 declare function 	lexTokenText 			( ) as string
 declare function 	lexTokenTextLen 		( ) as integer
 declare function 	lexTokenType 			( ) as integer
 
-declare function 	lexEatToken 			( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string
-declare sub 		lexSkipToken			( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE )
+declare function 	lexEatToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as string
+declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 declare function 	lexLookAheadClass 		( byval k as integer ) as integer
 declare function 	lexLookAhead 			( byval k as integer ) as integer

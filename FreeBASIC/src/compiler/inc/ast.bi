@@ -34,6 +34,7 @@ enum ASTNODECLASS_ENUM
 	AST.NODECLASS.ASSIGN
 	AST.NODECLASS.CONV
 	AST.NODECLASS.LOAD
+	AST.NODECLASS.BRANCH
 end enum
 
 type FUNCTNode
@@ -103,7 +104,7 @@ declare sub 		astInit				( )
 declare sub 		astEnd				( )
 declare function 	astNew				( byval typ as integer, byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as integer
-declare sub 		astDel				( n as integer )
+declare sub 		astDel				( byval n as integer )
 
 declare function 	astCloneTree		( byval n as integer ) as integer
 declare sub 		astDelTree			( byval n as integer )
@@ -121,7 +122,10 @@ declare sub 		astBinOperation		( byval op as integer, byval v1 as integer, byval
 declare sub 		astUnaOperation		( byval op as integer, byval v1 as integer, byval vr as integer )
 declare sub 		astAddrOperation	( byval op as integer, byval v1 as integer, byval vr as integer )
 
-declare function 	astFlush			( byval n as integer, vreg as integer, byval label as FBSYMBOL ptr = NULL, byval isinverse as integer = FALSE ) as integer
+declare sub 		astFlush			( byval n as integer, vreg as integer )
+
+declare sub 		astUpdComp2Branch	( n as integer, byval label as FBSYMBOL ptr, _
+						    			  byval isinverse as integer )
 
 declare sub 		astUpdNodeResult	( byval n as integer )
 
@@ -169,6 +173,10 @@ declare sub 		astLoadADDR			( byval n as integer, vr as integer )
 
 declare function 	astNewLOAD			( byval l as integer, byval dtype as integer ) as integer
 declare sub 		astLoadLOAD			( byval n as integer, vr as integer )
+
+declare function 	astNewBRANCH		( byval op as integer, byval label as FBSYMBOL ptr, _
+										  byval l as integer ) as integer
+declare sub 		astLoadBRANCH		( byval n as integer, vr as integer )
 
 declare sub 		astOptimize			( byval n as integer )
 

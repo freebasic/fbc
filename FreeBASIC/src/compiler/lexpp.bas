@@ -60,7 +60,7 @@ const QUOTE = "\""
 
     text = ""
     do
-    	select case lexCurrentToken
+    	select case lexCurrentToken( LEXCHECK_NOWHITESPC )
 		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			exit do
 		end select
@@ -69,10 +69,7 @@ const QUOTE = "\""
     	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
     		text = text + QUOTE + hUnescapeStr( lexEatToken ) + QUOTE
     	else
-    		if( len( text ) > 0 ) then
-    			text = text + " "
-    		end if
-    		text = text + lexEatToken
+    		text = text + lexEatToken( LEXCHECK_NOWHITESPC )
     	end if
     loop
 
@@ -104,7 +101,7 @@ function lexPreProcessor as integer
 
     '' DEFINE ID LITERAL+
     case FB.TK.DEFINE
-    	lexSkipToken , FALSE
+    	lexSkipToken LEXCHECK_NODEFINE
 
     	'' ID
     	if( symbLookupDefine( lexTokenText ) <> NULL ) then
@@ -121,7 +118,7 @@ function lexPreProcessor as integer
 
 	'' UNDEF ID
     case FB.TK.UNDEF
-    	lexSkipToken , FALSE
+    	lexSkipToken LEXCHECK_NODEFINE
 
     	if( not symbDelDefine( lexTokenText ) ) then
     		hReportError FB.ERRMSG.VARIABLENOTDECLARED
@@ -215,7 +212,7 @@ private function ppIf as integer
 	select case as const lexCurrenttoken
 	'' IFDEF ID
 	case FB.TK.IFDEF
-        lexSkipToken , FALSE
+        lexSkipToken LEXCHECK_NODEFINE
 
 		if( symbLookupDefine( lexEatToken ) <> NULL ) then
 			istrue = TRUE
@@ -223,7 +220,7 @@ private function ppIf as integer
 
 	'' IFNDEF ID
 	case FB.TK.IFNDEF
-        lexSkipToken , FALSE
+        lexSkipToken LEXCHECK_NODEFINE
 
 		if( symbLookupDefine( lexEatToken ) = NULL ) then
 			istrue = TRUE
@@ -575,7 +572,7 @@ private function ppParentExpr( parexpr as integer, atom as string, isnumber as i
     		hReportError FB.ERRMSG.EXPECTEDLPRNT
     		exit function
     	else
-    		lexSkipToken , FALSE
+    		lexSkipToken LEXCHECK_NODEFINE
     	end if
 
 		if( symbLookupDefine( lexEatToken ) <> NULL ) then

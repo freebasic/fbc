@@ -29,11 +29,11 @@ declare function 	cProgram				( ) as integer
 declare function 	cLine					( ) as integer
 declare function 	cSimpleLine             ( ) as integer
 declare function 	cLabel                  ( ) as integer
-declare function 	cComment                ( ) as integer
+declare function 	cComment                ( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 declare function 	cDirective              ( ) as integer
 declare function 	cStatement              ( ) as integer
 declare function 	cSimpleStatement        ( ) as integer
-declare function 	cSttSeparator 			( ) as integer
+declare function 	cSttSeparator 			( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 declare function 	cDeclaration            ( ) as integer
 declare function 	cConstDecl              ( ) as integer
 declare function 	cConstAssign            ( ) as integer

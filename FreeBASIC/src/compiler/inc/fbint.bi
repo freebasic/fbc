@@ -641,12 +641,7 @@ end type
 
 
 ''
-type FBSTRING
-	id				as integer
-	lgt				as integer
-end type
-
-const FB.STRSTRUCTSIZE		= 4+4
+const FB.STRSTRUCTSIZE		= FB.POINTERSIZE+FB.INTEGERSIZE+FB.INTEGERSIZE
 
 '' "fake" descriptors as UDT's
 const FB.DESCTYPE.ARRAY 	= -2

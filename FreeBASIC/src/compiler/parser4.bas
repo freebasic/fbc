@@ -133,7 +133,7 @@ end function
 ''                    (ELSE SimpleStatement*)?
 ''
 function cSingleIfStatement( byval expr as integer )
-	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as FBSYMBOL ptr
+	dim vr as integer
 	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr, l as FBSYMBOL ptr
 	dim lastcompstmt as integer
 
@@ -153,19 +153,10 @@ function cSingleIfStatement( byval expr as integer )
 	lastcompstmt = env.lastcompound
 	env.lastcompound = FB.TK.IF
 
-	'' try to optimize if an logical op is at top of tree
-	skipcompare = astFlush( expr, vr, nl, FALSE )
-
-	if( not skipcompare ) then
-		dtype = irGetVRDataType( vr )
-		if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-			cr = irAllocVRIMM( dtype, FALSE )
-		else
-			s = hAllocFloatConst( "0", dtype )
-			cr = irAllocVRVAR( dtype, s, 0 )
-		end if
-		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nl
-	end if
+	'' branch
+	astUpdNodeResult expr
+	astUpdComp2Branch expr, nl, FALSE
+	astFlush expr, vr
 
 	'' NUM_LIT | SimpleStatement*
 	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
@@ -219,24 +210,15 @@ end function
 '':::::
 function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el as FBSYMBOL ptr, _
 					  byval checkstmtsep as integer = TRUE ) as integer
-	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as FBSYMBOL ptr
+	dim vr as integer
 	dim res as integer
 
 	cIfStmtBody = FALSE
 
-	'' try to optimize if an logical op is at top of tree
-	skipcompare = astFlush( expr, vr, nl, FALSE )
-
-	if( not skipcompare ) then
-		dtype = irGetVRDataType( vr )
-        if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-			cr = irAllocVRIMM( dtype, FALSE )
-		else
-			s = hAllocFloatConst( "0", dtype )
-			cr = irAllocVRVAR( dtype, s, 0 )
-		end if
-		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nl
-	end if
+	'' branch
+	astUpdNodeResult expr
+	astUpdComp2Branch expr, nl, FALSE
+	astFlush expr, vr
 
 	if( checkstmtsep ) then
 		'' Comment?
@@ -727,12 +709,11 @@ end function
 ''					  LOOP ((WHILE | UNTIL) Expression)? .
 ''
 function cDoStatement
-    dim expr as integer, vr as integer, cr as integer, dtype as integer, op as integer
-    dim s as FBSYMBOL ptr
+    dim expr as integer, vr as integer, cr as integer, op as integer
 	dim iswhile as integer, isuntil as integer
     dim il as FBSYMBOL ptr, el as FBSYMBOL ptr, cl as FBSYMBOL ptr
     dim olddostmt as FBCMPSTMT, lastcompstmt as integer
-    dim res as integer, skipcompare as integer, isinverse as integer
+    dim res as integer, isinverse as integer
 
 	cDoStatement = FALSE
 
@@ -768,30 +749,15 @@ function cDoStatement
 			exit function
 		end if
 
-		'' try to optimize if an logical op is at top of tree
+		'' branch
 		if( iswhile ) then
 			isinverse = FALSE
 		else
 			isinverse = TRUE
 		end if
-		skipcompare = astFlush( expr, vr, el, isinverse )
-
-		if( not skipcompare ) then
-			if( iswhile ) then
-				op = IR.OP.EQ
-			else
-				op = IR.OP.NE
-			end if
-
-			dtype = irGetVRDataType( vr )
-			if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-				cr = irAllocVRIMM( dtype, FALSE )
-			else
-				s = hAllocFloatConst( "0", dtype )
-				cr = irAllocVRVAR( dtype, s, 0 )
-			end if
-			irEmitCOMPBRANCHNF op, vr, cr, el
-		end if
+		astUpdNodeResult expr
+		astUpdComp2Branch expr, el, isinverse
+		astFlush expr, vr
 
 		cl = il
 	else
@@ -855,30 +821,16 @@ function cDoStatement
 			exit function
 		end if
 
-		'' try to optimize if an logical op is at top of tree
+		'' branch
 		if( iswhile ) then
 			isinverse = TRUE
 		else
 			isinverse = FALSE
 		end if
-		skipcompare = astFlush( expr, vr, il, isinverse )
 
-		if( not skipcompare ) then
-			if( iswhile ) then
-				op = IR.OP.NE
-			else
-				op = IR.OP.EQ
-			end if
-
-			dtype = irGetVRDataType( vr )
-			if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-				cr = irAllocVRIMM( dtype, FALSE )
-			else
-				s = hAllocFloatConst( "0", dtype )
-				cr = irAllocVRVAR( dtype, s, 0 )
-			end if
-			irEmitCOMPBRANCHNF op, vr, cr, il
-		end if
+		astUpdNodeResult expr
+		astUpdComp2Branch expr, il, isinverse
+		astFlush expr, vr
 
 	else
 		irEMITBRANCHNF IR.OP.JMP, il
@@ -909,10 +861,10 @@ end function
 ''					  WEND .
 ''
 function cWhileStatement
-    dim expr as integer, vr as integer, cr as integer, dtype as integer, s as FBSYMBOL ptr
+    dim expr as integer, vr as integer
     dim il as FBSYMBOL ptr, el as FBSYMBOL ptr
     dim oldwhilestmt as FBCMPSTMT, lastcompstmt as integer
-    dim res as integer, skipcompare as integer
+    dim res as integer
 
 	cWhileStatement = FALSE
 
@@ -941,19 +893,10 @@ function cWhileStatement
 		exit function
 	end if
 
-	'' try to optimize if an logical op is at top of tree
-	skipcompare = astFlush( expr, vr, el, FALSE )
-
-	if( not skipcompare ) then
-		dtype = irGetVRDataType( vr )
-		if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-			cr = irAllocVRIMM( dtype, FALSE )
-		else
-			s = hAllocFloatConst( "0", dtype )
-			cr = irAllocVRVAR( dtype, s, 0 )
-		end if
-		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, el
-	end if
+	'' branch
+	astUpdNodeResult expr
+	astUpdComp2Branch expr, el, FALSE
+	astFlush expr, vr
 
 	'' Comment?
 	res = cComment

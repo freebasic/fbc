@@ -4,8 +4,6 @@
 # set OS env var to DOS to build for DOS
 #
 
-PLATFORM =
-
 ifeq ($(OS),Windows_NT)
     WINSYSDIR = $(SYSTEMROOT)
     ifeq ($(WINSYSDIR),)
@@ -19,19 +17,19 @@ else
 endif
 
 ifneq ($(WINSYSDIR),)
-    PLATFORM = WIN32
+    osdeppath := win32
 else
-    PLATFORM = LINUX
+    osdeppath := linux
 endif
 
 ifeq ($(OS),DOS)
     WINSYSDIR =
-    PLATFORM = DOS
+    osdeppath := dos
 endif
 
-BCFLAGS := -e -c -w 1 -arch 686
+BCFLAGS := -e -c -w 1 -arch 486
 
-ifeq ($(PLATFORM),WIN32)
+ifeq ($(osdeppath),win32)
     EXE := .exe
     LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
@@ -40,7 +38,7 @@ ifeq ($(PLATFORM),WIN32)
     LD := ..\..\bin\win32\ld.exe
 endif
 
-ifeq ($(PLATFORM),LINUX)
+ifeq ($(osdeppath),linux)
     EXE :=
     LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
     LDLIBS := -L../../lib -\( -lc -lm -lfb -\)
@@ -49,12 +47,12 @@ ifeq ($(PLATFORM),LINUX)
     LD := ld
 endif
 
-ifeq ($(PLATFORM),DOS)
+ifeq ($(osdeppath),dos)
     EXE := .exe
-    LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o obj/fbcentry.o
+    LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o obj/dos/fbcentry.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -lgcc -)
     BC := ..\..\fbc.exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_DOS -nostd
+    BCFLAGS := $(BCFLAGS) -d TARGET_DOS -nostdcall
     LD := ..\..\bin\dos\ld.exe
 endif
 
@@ -64,10 +62,10 @@ exepath = ../..
 TARGET = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 
 sources := $(wildcard *.bas)
-objects := $(patsubst %.bas,obj/%.o,$(main) $(filter-out $(main),$(sources)))
+objects := $(patsubst %.bas,obj/$(osdeppath)/%.o,$(main) $(filter-out $(main),$(sources)))
 headers := $(wildcard inc/*.bi)
 
-obj/%.o : %.bas $(headers)
+obj/$(osdeppath)/%.o : %.bas $(headers)
 	$(BC) $(BCFLAGS) $< -o $@
 
 all : $(TARGET)
@@ -78,7 +76,7 @@ $(TARGET) : $(objects)
 
 .PHONY : clean
 clean :
-ifeq ($(PLATFORM),WIN32)
+ifeq ($(osdeppath),win32)
 	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))
 else

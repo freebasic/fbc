@@ -508,35 +508,35 @@ function emitGetPos as integer static
 end function
 
 '':::::
-sub emitCOMMENT( s as string ) 'static
+sub emitCOMMENT( s as string ) static
 
 	outEX TABCHAR + "\35" + s + NEWLINE, FALSE
 
 end sub
 
 '':::::
-sub emitASM( s as string ) 'static
+sub emitASM( s as string ) static
 
 	outEX TABCHAR + s + NEWLINE, TRUE
 
 end sub
 
 '':::::
-sub emitALIGN( byval bytes as integer ) 'static
+sub emitALIGN( byval bytes as integer ) static
 
 	outp ".balign " + str$( bytes )
 
 end sub
 
 '':::::
-sub emitTYPE( byval typ as integer, text as string ) 'static
+sub emitTYPE( byval typ as integer, text as string ) static
 
 	outp hGetTypeString( typ ) + " " + text
 
 end sub
 
 '':::::
-sub emitCALL( pname as string, byval bytestopop as integer, byval ispublic as integer ) 'static
+sub emitCALL( pname as string, byval bytestopop as integer, byval ispublic as integer ) static
 
 	outp "call " + pname
 
@@ -547,7 +547,7 @@ sub emitCALL( pname as string, byval bytestopop as integer, byval ispublic as in
 end sub
 
 '':::::
-sub emitCALLPTR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, byval bytestopop as integer ) 'static
+sub emitCALLPTR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, byval bytestopop as integer ) static
 
 	dname = hPrepOperand( dname, ddtype, ddclass, dtype )
 
@@ -560,7 +560,7 @@ sub emitCALLPTR( dname as string, byval ddtype as integer, byval ddclass as inte
 end sub
 
 '':::::
-sub emitBRANCHPTR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) 'static
+sub emitBRANCHPTR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) static
 
 	dname = hPrepOperand( dname, ddtype, ddclass, dtype )
 
@@ -569,70 +569,70 @@ sub emitBRANCHPTR( dname as string, byval ddtype as integer, byval ddclass as in
 end sub
 
 '':::::
-sub emitPUBLIC( label as string ) 'static
+sub emitPUBLIC( label as string ) static
 
 	outEx NEWLINE + ".globl " + label + NEWLINE, FALSE
 
 end sub
 
 '':::::
-sub emitLABEL( label as string, byval ispublic as integer ) 'static
+sub emitLABEL( label as string, byval ispublic as integer ) static
 
 	outEx label + ":" + NEWLINE, FALSE
 
 end sub
 
 '':::::
-sub emitJMP( label as string, byval ispublic as integer ) 'static
+sub emitJMP( label as string, byval ispublic as integer ) static
 
 	outp "jmp " + label
 
 end sub
 
 '':::::
-sub emitJLE( label as string, byval ispublic as integer ) 'static
+sub emitJLE( label as string, byval ispublic as integer ) static
 
 	outp "jle " + label
 
 end sub
 
 '':::::
-sub emitBRANCH( mnemonic as string, label as string, byval ispublic as integer ) 'static
+sub emitBRANCH( mnemonic as string, label as string, byval ispublic as integer ) static
 
 	outp mnemonic + " " + label
 
 end sub
 
 '':::::
-sub emitRET( byval bytestopop as integer ) 'static
+sub emitRET( byval bytestopop as integer ) static
 
     outp "ret " + str$( bytestopop )
 
 end sub
 
 '':::::
-sub emithPUSH( rname as string ) 'static
+sub emithPUSH( rname as string ) static
 
 	outp "push " + rname
 
 end sub
 
 '':::::
-sub emithPOP( rname as string ) 'static
+sub emithPOP( rname as string ) static
 
 	outp "pop " + rname
 
 end sub
 
 '':::::
-sub emithMOV( dname as string, sname as string ) 'static
+sub emithMOV( dname as string, sname as string ) static
 
 	outp "mov " + dname + ", " + sname
 
 end sub
 
 '':::::
-sub emitFXCHG( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) 'static
+sub emitFXCHG( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) static
 
 	if( ddclass = IR.DATACLASS.FPOINT ) then
 		outp "fxch " + dname
@@ -646,7 +646,7 @@ end sub
 
 '':::::
 sub emitMOV( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -662,7 +662,7 @@ end sub
 
 '':::::
 sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim ext as string, reg as integer
     dim ddsize as integer, sdsize as integer
@@ -807,7 +807,7 @@ end sub
 
 '':::::
 sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			  sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			  sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim ext as string, reg as integer
     dim ddsize as integer, sdsize as integer
@@ -973,7 +973,7 @@ end sub
 
 '':::::
 sub emitADD( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim doinc as integer, dodec as integer
 
@@ -1017,7 +1017,7 @@ end sub
 
 '':::::
 sub emitSUB( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim doinc as integer, dodec as integer
 
@@ -1061,7 +1061,7 @@ end sub
 
 '':::::
 sub emithINTMUL( dst as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			     src as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			     src as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 
     dim eaxfree as integer, edxfree as integer
     dim edxtrashed as integer
@@ -1121,7 +1121,7 @@ sub emithINTMUL( dst as string, byval ddtype as integer, byval ddclass as intege
 end sub
 
 '':::::
-function emithFindRegButSrc( src as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) as integer 'static
+function emithFindRegButSrc( src as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) as integer static
     dim i as integer, reg as integer
 
 	emithFindRegButSrc = INVALID
@@ -1145,7 +1145,7 @@ end function
 
 '':::::
 sub emithINTIMUL( dst as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			      src as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			      src as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 
     dim reg as integer, isfree as integer, rname as string
 
@@ -1172,7 +1172,7 @@ end sub
 
 '':::::
 sub emitMUL( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1202,7 +1202,7 @@ end sub
 
 '':::::
 sub emitDIV( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1224,7 +1224,7 @@ end sub
 
 '':::::
 sub emitINTDIV( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			    sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			    sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim ecxtrashed as integer
     dim eaxfree as integer, ecxfree as integer, edxfree as integer
@@ -1308,7 +1308,7 @@ end sub
 
 '':::::
 sub emitMOD( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim ecxtrashed as integer
     dim eaxfree as integer, ecxfree as integer, edxfree as integer
@@ -1390,7 +1390,7 @@ end sub
 
 '':::::
 sub emitSHIFT( mnemonic as string, dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		       sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		       sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim eaxpreserved as integer, ecxpreserved as integer
     dim eaxfree as integer, ecxfree as integer
@@ -1483,7 +1483,7 @@ end sub
 
 '':::::
 sub emitSHL( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim inst as string
 
 	if( irIsSigned( ddtype ) ) then
@@ -1498,7 +1498,7 @@ end sub
 
 '':::::
 sub emitSHR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim inst as string
 
 	if( irIsSigned( ddtype ) ) then
@@ -1514,7 +1514,7 @@ end sub
 
 '':::::
 sub emitAND( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			 sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1528,7 +1528,7 @@ end sub
 
 '':::::
 sub emitOR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		    sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		    sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1542,7 +1542,7 @@ end sub
 
 '':::::
 sub emitXOR( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1556,7 +1556,7 @@ end sub
 
 '':::::
 sub emitEQV( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1571,7 +1571,7 @@ end sub
 
 '':::::
 sub emitIMP( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+		     sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1591,7 +1591,7 @@ end sub
 '':::::
 sub emithICMP( rname as string, label as string, mnemonic as string, _
 			   dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim dotest as integer
     dim reg as integer, rname8 as string, edx as string
@@ -1671,7 +1671,7 @@ end sub
 '':::::
 sub emithFCMP( rname as string, label as string, mnemonic as string, mask as string, _
 		   	   dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
     dim reg as integer, rname8 as string
     dim iseaxfree as integer, isedxfree as integer
@@ -1757,7 +1757,7 @@ end sub
 '':::::
 sub emitGT( rname as string, label as string, _
 			dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 	dim jmp as string
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
@@ -1776,7 +1776,7 @@ end sub
 '':::::
 sub emitLT( rname as string, label as string, _
 			dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 	dim jmp as string
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
@@ -1795,7 +1795,7 @@ end sub
 '':::::
 sub emitEQ( rname as string, label as string, _
 			dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
 		emithICMP rname, label, "e", dname, ddtype, ddclass, dtype, sname, sdtype, sdclass, stype
@@ -1808,7 +1808,7 @@ end sub
 '':::::
 sub emitNE( rname as string, label as string, _
 			dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
 		emithICMP rname, label, "ne", dname, ddtype, ddclass, dtype, sname, sdtype, sdclass, stype
@@ -1821,7 +1821,7 @@ end sub
 '':::::
 sub emitLE( rname as string, label as string, _
 			dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 	dim jmp as string
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
@@ -1840,7 +1840,7 @@ end sub
 '':::::
 sub emitGE( rname as string, label as string, _
 			dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 	dim jmp as string
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
@@ -1861,7 +1861,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitNEG( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) 'static
+sub emitNEG( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) static
     dim dst as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1877,7 +1877,7 @@ sub emitNEG( dname as string, byval ddtype as integer, byval ddclass as integer,
 end sub
 
 '':::::
-sub emitNOT( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) 'static
+sub emitNOT( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) static
     dim dst as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -1889,7 +1889,7 @@ sub emitNOT( dname as string, byval ddtype as integer, byval ddclass as integer,
 end sub
 
 '':::::
-sub emitABS( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) 'static
+sub emitABS( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) static
     dim dst as string
     dim reg as integer, isfree as integer, rname as string, bits as integer
 
@@ -1919,7 +1919,7 @@ sub emitABS( dname as string, byval ddtype as integer, byval ddclass as integer,
 end sub
 
 '':::::
-sub emitSGN( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) 'static
+sub emitSGN( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer ) static
     dim dst as string
     dim label as string
 
@@ -1944,7 +1944,7 @@ end sub
 
 
 '':::::
-sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim src as string, sdsize as integer
     dim reg as integer
 
@@ -1986,7 +1986,7 @@ sub emitPUSH( sname as string, byval sdtype as integer, byval sdclass as integer
 end sub
 
 '':::::
-sub emitPUSHUDT( sname as string, byval sdtype as integer, byval sdsize as integer, byval stype as integer ) 'static
+sub emitPUSHUDT( sname as string, byval sdtype as integer, byval sdsize as integer, byval stype as integer ) static
     dim i as integer
 
 	'' !!!FIXME!!! assuming it's okay to push over the UDT if's not dword aligned
@@ -1997,7 +1997,7 @@ sub emitPUSHUDT( sname as string, byval sdtype as integer, byval sdsize as integ
 end sub
 
 '':::::
-sub emitPOP( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+sub emitPOP( sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim src as string
     dim reg as integer
 
@@ -2048,7 +2048,7 @@ end sub
 
 '':::::
 sub emitADDROF( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			    sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			    sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
 
 	if( ddclass = IR.DATACLASS.INTEGER ) then
 		if( dtype = IR.VREGTYPE.REG ) then
@@ -2060,7 +2060,7 @@ end sub
 
 '':::::
 sub emitDEREF( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
-			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
+			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) static
     dim dst as string, src as string
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
@@ -2077,7 +2077,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval ispublic as integer ) 'static
+sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, byval ispublic as integer ) static
 	dim lname as string
 	dim id as string
 
@@ -2109,7 +2109,7 @@ sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, 
 end sub
 
 '':::::
-sub emitPROCEND( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr ) 'static
+sub emitPROCEND( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval initlabel as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr ) static
     dim currpos as integer
     dim bytestoalloc as integer
     dim i as integer
@@ -2182,7 +2182,7 @@ sub emitPROCEND( byval proc as FBSYMBOL ptr, byval bytestopop as integer, byval 
 end sub
 
 '':::::
-function emitAllocLocal( byval lgt as integer ) as string 'static
+function emitAllocLocal( byval lgt as integer ) as string static
 
     ctx.localptr = ctx.localptr - lgt
 
@@ -2191,14 +2191,14 @@ function emitAllocLocal( byval lgt as integer ) as string 'static
 end function
 
 '':::::
-sub emitFreeLocal( byval lgt as integer ) 'static
+sub emitFreeLocal( byval lgt as integer ) static
 
     ctx.localptr = ctx.localptr + lgt
 
 end sub
 
 '':::::
-function emitAllocArg( byval lgt as integer ) as string 'static
+function emitAllocArg( byval lgt as integer ) as string static
 
 	emitAllocArg = "ebp +" + str$( ctx.argptr )
 
@@ -2207,7 +2207,7 @@ function emitAllocArg( byval lgt as integer ) as string 'static
 end function
 
 '':::::
-sub emitFreeArg( byval lgt as integer ) 'static
+sub emitFreeArg( byval lgt as integer ) static
 
     ctx.argptr = ctx.argptr - ((lgt + 3) and not 3)
 
@@ -2218,7 +2218,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitSECTION( byval section as integer ) 'static
+sub emitSECTION( byval section as integer ) static
     dim sname as string
 
 	select case as const section
@@ -2237,7 +2237,7 @@ sub emitSECTION( byval section as integer ) 'static
 end sub
 
 '':::::
-sub emitDATABEGIN( lname as string ) 'static
+sub emitDATABEGIN( lname as string ) static
     dim currpos as integer
 
 	if( ctx.dataend <> 0 ) then
@@ -2252,7 +2252,7 @@ sub emitDATABEGIN( lname as string ) 'static
 end sub
 
 '':::::
-sub emitDATAEND 'static
+sub emitDATAEND static
 
     '' link + NULL
     outp ".short 0xffff"
@@ -2410,7 +2410,7 @@ end sub
 
 
 '':::::
-private function hGetTypeString( byval typ as integer ) as string 'static
+private function hGetTypeString( byval typ as integer ) as string static
 	dim tstr as string
 
 	select case as const typ
@@ -2457,7 +2457,7 @@ end sub
 
 
 '':::::
-private sub hEmitBss( ) 'static
+private sub hEmitBss( ) static
     dim s as FBSYMBOL ptr
     dim lgt as integer, sname as string
     dim elements as integer, alloc as string
@@ -2523,7 +2523,7 @@ private sub hEmitConstHeader( )
 end sub
 
 '':::::
-private sub hEmitConst( ) 'static
+private sub hEmitConst( ) static
     dim s as FBSYMBOL ptr, typ as integer
     dim sname as string, stext as string, stype as string
 
@@ -2556,7 +2556,7 @@ private sub hEmitConst( ) 'static
 end sub
 
 '':::::
-private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
+private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	dim i as integer, d as FBVARDIM ptr
     dim dims as integer, diff as integer
     dim sname as string, dname as string
@@ -2629,7 +2629,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) 'static
 end sub
 
 '':::::
-private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) 'static
+private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
     dim sname as string, dname as string
 
     sname = symbGetVarName( s )
@@ -2641,6 +2641,8 @@ private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) 'static
 	''	void		*data
 	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname
 	''	int			len
+	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
+	''	int			size
 	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
 
 end sub
@@ -2661,7 +2663,7 @@ private sub hEmitDataHeader( )
 end sub
 
 '':::::
-private sub hEmitData( ) 'static
+private sub hEmitData( ) static
     dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
 
     s = symbGetFirstNode
@@ -2700,7 +2702,7 @@ private sub hEmitExportHeader( )
 end sub
 
 '':::::
-private sub hEmitExport( ) 'static
+private sub hEmitExport( ) static
     dim s as FBSYMBOL ptr
     dim sname as string
 
@@ -2780,7 +2782,7 @@ sub emitDbgLine( byval lnum as integer, lname as string )
 end sub
 
 '':::::
-sub hWriteStr( byval f as integer, byval addtab as integer, s as string ) 'static
+sub hWriteStr( byval f as integer, byval addtab as integer, s as string ) static
     dim t as string
 
 	if( addtab ) then

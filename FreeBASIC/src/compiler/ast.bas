@@ -533,6 +533,7 @@ Sub astOptConstIDX( byval n as integer )
 				end if
 
 				astDel astTB(n).l
+				astTB(n).l = INVALID
 			end if
 		end if
 	end select
@@ -956,42 +957,6 @@ sub astOptAssignament( byval n as integer ) static
 
 end sub
 
-'':::::
-function astOptComp2Branch( byval n as integer, byval label as FBSYMBOL ptr, byval isinverse as integer ) as integer static
-	dim op as integer
-
-	astOptComp2Branch = FALSE
-
-	if( n = INVALID ) then
-		exit function
-	end if
-
-	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
-	if( astTB(n).class <> AST.NODECLASS.BOP ) then
-		exit function
-	end if
-
-	'' logical operator?
-	op = astTB(n).op
-	select case as const op
-	case IR.OP.EQ, IR.OP.NE, IR.OP.GT, IR.OP.LT, IR.OP.GE, IR.OP.LE
-	case else
-		exit function
-	end select
-
-	'' invert it
-	if( not isinverse ) then
-		astTB(n).op = irGetInverseLogOp( op )
-	end if
-
-	'' tell IR that the destine label is already set
-	astTB(n).ex = label
-
-	'' warn caller that the operation was optimized
-	astOptComp2Branch = TRUE
-
-end function
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' node type update (must be done before any loading)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1187,6 +1152,103 @@ sub astUpdNodeResult( byval n as integer )
 
 end sub
 
+'':::::
+sub astUpdComp2Branch( n as integer, byval label as FBSYMBOL ptr, byval isinverse as integer )
+	dim op as integer
+	dim l as integer
+
+	if( n = INVALID ) then
+		exit sub
+	end if
+
+	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
+	if( astTB(n).class <> AST.NODECLASS.BOP ) then
+		'' UOP? check if it's a NOT
+		if( astTB(n).class = AST.NODECLASS.UOP ) then
+			if( astTB(n).op = IR.OP.NOT ) then
+				l = astTB(n).l
+				astUpdComp2Branch( l, label, isinverse = FALSE )
+				astDel n
+				n = l
+				exit sub
+			end if
+		end if
+
+		'' CONST?
+		if( astTB(n).class = AST.NODECLASS.CONST ) then
+			if( not isinverse ) then
+				'' branch if false
+				if( astTB(n).value = 0 ) then
+					astDel n
+					n = astNewBRANCH( IR.OP.JMP, label, INVALID )
+				end if
+			else
+				'' branch if true
+				if( astTB(n).value <> 0 ) then
+					astDel n
+					n = astNewBRANCH( IR.OP.JMP, label, INVALID )
+				end if
+			end if
+
+		else
+			'' otherwise, check if zero (ie= FALSE)
+			if( not isinverse ) then
+				op = IR.OP.EQ
+			else
+				op = IR.OP.NE
+			end if
+			n = astNewBOP( op, n, astNewCONST( 0, astTB(n).dtype ), label, FALSE )
+
+		end if
+
+		exit sub
+	end if
+
+	'' logical operator?
+	op = astTB(n).op
+	select case as const op
+	case IR.OP.EQ, IR.OP.NE, IR.OP.GT, IR.OP.LT, IR.OP.GE, IR.OP.LE
+
+		'' invert it
+		if( not isinverse ) then
+			astTB(n).op = irGetInverseLogOp( op )
+		end if
+
+		'' tell IR that the destine label is already set
+		astTB(n).ex = label
+
+		exit sub
+
+	'' binary op that sets the flags? (x86 opt, may work on some RISC cpu's)
+	case IR.OP.ADD, IR.OP.SUB, IR.OP.SHL, IR.OP.SHR, _
+		 IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP
+
+		'' x86-quirk: only if integers, as FPU will set its own flags, that must copied back
+		if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.INTEGER ) then
+
+			'' check if zero (ie= FALSE)
+			if( not isinverse ) then
+				op = IR.OP.JEQ
+			else
+				op = IR.OP.JNE
+			end if
+
+			n = astNewBRANCH( op, label, n )
+
+			exit sub
+		end if
+
+	end select
+
+	'' if no optimization could be done, check if zero (ie= FALSE)
+	if( not isinverse ) then
+		op = IR.OP.EQ
+	else
+		op = IR.OP.NE
+	end if
+	n = astNewBOP( op, n, astNewCONST( 0, astTB(n).dtype ), label, FALSE )
+
+end sub
 
 '':::::
 sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, _
@@ -1436,7 +1498,7 @@ sub astEnd static
 end sub
 
 '':::::
-function astNew( byval typ as integer, byval dtype as integer, _
+function astNew( byval class as integer, byval dtype as integer, _
 				 byval subtype as FBSYMBOL ptr = NULL ) as integer static
 	dim n as integer, t as integer
 
@@ -1462,7 +1524,7 @@ function astNew( byval typ as integer, byval dtype as integer, _
 	astTB(n).nxt	= INVALID
 
 	''
-	astTB(n).class 	= typ
+	astTB(n).class 	= class
 	astTB(n).dtype 	= dtype
 	astTB(n).subtype= subtype
 	astTB(n).defined= FALSE
@@ -1475,7 +1537,7 @@ function astNew( byval typ as integer, byval dtype as integer, _
 end function
 
 '':::::
-sub astDel( n as integer ) static
+sub astDel( byval n as integer ) static
 	Dim pn as integer, nn as integer
 
 	if( n = INVALID ) Then
@@ -1503,9 +1565,6 @@ sub astDel( n as integer ) static
 	'' add to free list
 	astTB(n).nxt = ctx.fhead
 	ctx.fhead = n
-
-	''
-	n = INVALID
 
 end sub
 
@@ -1655,6 +1714,9 @@ sub astLoad( byval n as integer, vreg as integer )
 
 	case AST.NODECLASS.LOAD
 		astLoadLOAD n, vreg
+
+	case AST.NODECLASS.BRANCH
+		astLoadBRANCH n, vreg
     end select
 
 end sub
@@ -1680,11 +1742,11 @@ sub astOptimize( byval n as integer )
 
 	astOptToShift n
 
-	astUpdNodeResult n					'' <-- need even when not optimizing!
+	astUpdNodeResult n					'' need even when not optimizing
 
-	astOptAssignament n
+	astOptAssignament n                 '' ditto
 
-	astUpdStrConcat n
+	astUpdStrConcat n					'' ditto
 
 end sub
 
@@ -1704,28 +1766,19 @@ function astCntFreeNodes as integer static
 end function
 
 ''::::
-function astFlush( byval n as integer, vreg as integer, byval label as FBSYMBOL ptr = NULL, _
-				   byval isinverse as integer = FALSE ) as integer
-
-	astFlush = FALSE
+sub astFlush( byval n as integer, vreg as integer )
 
 	if( n = INVALID ) then
-		exit function
+		exit sub
 	end if
 
 	astOptimize n
-
-	if( label <> NULL ) then
-		astFlush = astOptComp2Branch( n, label, isinverse )
-	else
-		astFlush = TRUE
-	end if
 
 	astLoad n, vreg
 
 	astDel n
 
-end function
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' binary operations
@@ -1893,6 +1946,7 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 
 		''
 		astDel r
+		r = INVALID
 
 		astNewBOP = l
 		exit function
@@ -2804,6 +2858,52 @@ sub astLoadCONV( byval n as integer, vr as integer )
 	end if
 
 	astDel l
+
+end sub
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' branches
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewBRANCH( byval op as integer, byval label as FBSYMBOL ptr, byval l as integer ) as integer static
+    dim n as integer
+    dim dtype as integer
+
+	astNewBRANCH = INVALID
+
+    if( l = INVALID ) then
+    	dtype = INVALID
+    else
+    	dtype = astTB(l).dtype
+    end if
+
+	'' alloc new node
+	n = astNew( AST.NODECLASS.BRANCH, dtype )
+	astNewBRANCH = n
+
+	if( n = INVALID ) then
+		exit function
+	end if
+
+	astTB(n).l	= l
+	astTB(n).ex = label
+	astTB(n).op	= op
+
+end function
+
+'':::::
+sub astLoadBRANCH( byval n as integer, vr as integer )
+    dim l as integer
+
+	l  = astTB(n).l
+
+	if( l <> INVALID ) then
+		astLoad l, vr
+		astDel l
+	end if
+
+	irEmitBRANCHNF astTB(n).op, astTB(n).ex
 
 end sub
 

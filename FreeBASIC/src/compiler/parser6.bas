@@ -1100,8 +1100,7 @@ end function
 function cOnStmt
 	dim expr as integer
 	dim isgoto as integer, label as FBSYMBOL ptr, islocal as integer
-	dim vr as integer, cr as integer, skipcompare as integer, endlabel as FBSYMBOL ptr
-	dim s as FBSYMBOL ptr, dtype as integer
+	dim vr as integer, cr as integer, endlabel as FBSYMBOL ptr
 
 	cOnStmt = FALSE
 
@@ -1162,36 +1161,11 @@ function cOnStmt
 		rtlErrorSetHandler expr, (islocal = TRUE)
 
 	else
+		'' !!!WRITEME!!! need to construct a jump table here
 		if( isgoto ) then
-			'' try to optimize if an logical op is at top of tree
-			skipcompare = astFlush( expr, vr, label, TRUE )
 
-			if( not skipcompare ) then
-				dtype = irGetVRDataType( vr )
-				if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-					cr = irAllocVRIMM( dtype, FALSE )
-				else
-					s = hAllocFloatConst( "0", dtype )
-					cr = irAllocVRVAR( dtype, s, 0 )
-				end if
-				irEmitCOMPBRANCHNF IR.OP.NE, vr, cr, label
-			end if
-
-		else
-			endlabel = symbAddLabel( hMakeTmpStr )
-			astFlush expr, vr
-			dtype = irGetVRDataType( vr )
-			if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
-				cr = irAllocVRIMM( irGetVRDataType( vr ), FALSE )
-			else
-				s = hAllocFloatConst( "0", dtype )
-				cr = irAllocVRVAR( dtype, s, 0 )
-			end if
-			irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, endlabel
-			irEmitCALL symbGetLabelName( label ), 0, FALSE
-            irEmitLABEL endlabel, FALSE
 		end if
-
+		astDelTree expr
 	end if
 
 	cOnStmt = TRUE

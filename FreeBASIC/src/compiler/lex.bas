@@ -40,8 +40,8 @@ type LEXCTX
 	tokenTB(0 to FB.LEX.MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
 
-	char			as integer
-	lachar			as integer					'' lookahead
+	currchar		as integer					'' current char
+	lahdchar		as integer					'' look ahead char
 
 	linenum 		as integer
 	colnum 			as integer
@@ -95,8 +95,8 @@ sub lexInit
 		ctx.tokenTB(i).id = INVALID
 	next i
 
-	ctx.char		= INVALID
-	ctx.lachar		= INVALID
+	ctx.currchar 	= INVALID
+	ctx.lahdchar	= INVALID
 
 	ctx.linenum		= 1
 	ctx.colnum		= 1
@@ -106,8 +106,10 @@ sub lexInit
 
 	''
 	ctx.deflen		= 0
+	ctx.defptr		= NULL
 
 	ctx.withlen		= 0
+	ctx.withptr		= NULL
 
 	ctx.bufflen		= 0
 	ctx.buffptr		= NULL
@@ -135,17 +137,11 @@ function lexReadChar as integer static
 
 	'' any #define'd text?
 	if( ctx.deflen > 0 ) then
-
 		char = *ctx.defptr
-		ctx.defptr = ctx.defptr + 1
-		ctx.deflen = ctx.deflen - 1
 
 	'' any WITH text?
 	elseif( ctx.withlen > 0 ) then
-
 		char = *ctx.withptr
-		ctx.withptr = ctx.withptr + 1
-		ctx.withlen = ctx.withlen - 1
 
 	else
 
@@ -162,8 +158,6 @@ function lexReadChar as integer static
 		''
 		if( ctx.bufflen > 0 ) then
 			char = *ctx.buffptr
-			ctx.buffptr = ctx.buffptr + 1
-			ctx.bufflen = ctx.bufflen - 1
 		else
 			char = 0
 		end if
@@ -186,73 +180,99 @@ function lexReadChar as integer static
 end function
 
 '':::::
-sub lexUnreadChar static
+function lexEatChar as integer static
 
-	'' buffer not empty and last char not EOF? rewind
-	if( (ctx.buffptr > @ctx.buff) and (ctx.char <> 0) ) then
-		ctx.buffptr = ctx.buffptr - 1
-		ctx.bufflen = ctx.bufflen + 1
+	ctx.colnum = ctx.colnum + 1
+
+    ''
+    lexEatChar = ctx.currchar
+
+	'' update if a look ahead char wasn't read already
+	if( ctx.lahdchar = INVALID ) then
+
+		'' #define'd text?
+		if( ctx.deflen > 0 ) then
+			ctx.deflen -= 1
+			ctx.defptr += 1
+
+		'' WITH text?
+		elseif( ctx.withlen > 0 ) then
+			ctx.withlen -= 1
+			ctx.withptr += 1
+
+		'' input stream (not EOF?)
+		elseif( ctx.currchar <> 0 ) then
+			ctx.bufflen -= 1
+			ctx.buffptr += 1
+
+		end if
+
+    	ctx.currchar = INVALID
+
+    '' current= lookahead; lookhead = INVALID
+    else
+    	ctx.currchar = ctx.lahdchar
+    	ctx.lahdchar = INVALID
 	end if
 
-	ctx.char 	= INVALID
+end function
+
+'':::::
+sub lexSkipChar static
+
+	'' #define'd text?
+	if( ctx.deflen > 0 ) then
+		ctx.deflen -= 1
+		ctx.defptr += 1
+
+	'' WITH text?
+	elseif( ctx.withlen > 0 ) then
+		ctx.withlen -= 1
+		ctx.withptr += 1
+
+	'' input stream (not EOF?)
+	elseif( ctx.currchar <> 0 ) then
+		ctx.bufflen -= 1
+		ctx.buffptr += 1
+
+	end if
 
 end sub
 
 '':::::
 function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as integer static
 
-    if( ctx.char = INVALID ) then
-    	ctx.char = lexReadChar
+    if( ctx.currchar = INVALID ) then
+    	ctx.currchar = lexReadChar
     end if
 
     if( skipwhitespc ) then
-    	do while( (ctx.char = CHAR_TAB) or (ctx.char = CHAR_SPACE) )
-    		ctx.char = lexReadChar
+    	do while( (ctx.currchar = CHAR_TAB) or (ctx.currchar = CHAR_SPACE) )
+    		lexEatChar
+    		ctx.currchar = lexReadChar
     	loop
     end if
 
-    lexCurrentChar = ctx.char
+    lexCurrentChar = ctx.currchar
 
 end function
 
 '':::::
-function lexEatChar as integer static
+function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as integer
 
-	ctx.colnum = ctx.colnum + 1
-
-    ''
-    lexEatChar = ctx.char
-
-    if( ctx.lachar = INVALID ) then
-    	ctx.char = lexReadChar
-    else
-    	ctx.char = ctx.lachar
-    	ctx.lachar = INVALID
-    end if
-
-end function
-
-'':::::
-function lexLookAheadCharEx( byval skipwhitespc as integer ) as integer
-
-	if( ctx.lachar = INVALID ) then
-		ctx.lachar = lexReadChar
+	if( ctx.lahdchar = INVALID ) then
+		lexSkipChar
+		ctx.lahdchar = lexReadChar
 	end if
 
     if( skipwhitespc ) then
-    	do while( (ctx.lachar = CHAR_TAB) or (ctx.lachar = CHAR_SPACE) )
-    		ctx.lachar = lexReadChar
+    	do while( (ctx.lahdchar = CHAR_TAB) or (ctx.lahdchar = CHAR_SPACE) )
+    		lexSkipChar
+    		ctx.lahdchar = lexReadChar
     	loop
     end if
 
-	lexLookAheadCharEx = ctx.lachar
-
-end function
-
-'':::::
-function lexLookAheadChar as integer
-
-	lexLookAheadChar = 	lexLookAheadCharEx( FALSE )
+	lexLookAheadChar = ctx.lahdchar
 
 end function
 
@@ -341,9 +361,11 @@ sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 
 	v = 0
 
-	select case as const lexEatChar
+	select case as const lexCurrentChar
 	'' hex
 	case CHAR_HUPP, CHAR_HLOW
+		lexEatChar
+
 		do
 			select case lexCurrentChar
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
@@ -358,6 +380,8 @@ sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 
 	'' oct
 	case CHAR_OUPP, CHAR_OLOW
+		lexEatChar
+
 		do
 			select case lexCurrentChar
 			case CHAR_0 to CHAR_7
@@ -369,6 +393,8 @@ sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 
 	'' bin
 	case CHAR_BUPP, CHAR_BLOW
+		lexEatChar
+
 		do
 			select case lexCurrentChar
 			case CHAR_0, CHAR_1
@@ -378,6 +404,8 @@ sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 			end select
 		loop
 
+	case else
+		exit sub
 	end select
 
 	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
@@ -466,7 +494,7 @@ sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) stat
 
 		do
 			c = lexCurrentChar
-			select case c
+			select case as const c
 			case CHAR_0 to CHAR_9
 				*pnum = lexEatChar
 				pnum = pnum + 1
@@ -659,90 +687,97 @@ sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 end sub
 
 '':::::
-sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) static
-	dim c as integer
-	dim linecontinuation as integer
-	dim isnumber as integer
-	dim d as FBDEFINE ptr
+sub lexNextToken ( t as FBTOKEN, byval flags as LEXCHECK_ENUM ) static
+	dim char as integer
+	dim islinecont as integer, isnumber as integer, iswith as integer
+	dim d as FBDEFINE ptr, lgt as integer
 	dim token as string
-	dim iswith as integer
 
 reread:
 	poke @t.text, 0								''t.text = ""
 	t.tlen = 0
 
-	'':::::
 	'' skip white space
-	linecontinuation = FALSE
+	islinecont = FALSE
 	do
-		c  = lexCurrentChar
+		char = lexCurrentChar
 
 		'' !!!FIXME!!! this shouldn't be here
 		'' only emit current src line if it's not on an inc file
-		if( env.reclevel = 0 ) then
-			if( env.clopt.debug ) then
-				if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
+		if( env.clopt.debug ) then
+			if( env.reclevel = 0 ) then
+				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
 					emitCOMMENT curline
 					curline = ""
 				end if
 			end if
 		end if
 
-		'' check EOF
-		if( c = 0 ) then
-			t.id = FB.TK.EOF
+		select case as const char
+		'' EOF?
+		case 0
+			t.id    = FB.TK.EOF
 			t.class = FB.TKCLASS.DELIMITER
 			exit sub
-		end if
 
-		'' check for line continuation
-		if( c = CHAR_UNDER ) then
-			if( checkLineCont ) then
-				c = lexEatChar
-				linecontinuation = TRUE
+		'' line continuation?
+		case CHAR_UNDER
+			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+				lexEatChar
+				islinecont = TRUE
 				continue do
+			else
+				exit do
 			end if
-		end if
 
-		'' check EOL
-		if( (c = CHAR_CR) or (c = CHAR_LF) ) then
-			c = lexEatChar
+		'' EOL
+		case CHAR_CR, CHAR_LF
+			lexEatChar
 
 			'' CRLF on DOS, LF only on *NIX
-			if( c = CHAR_CR ) then
-				if( lexCurrentChar = CHAR_LF ) then c = lexEatChar
+			if( char = CHAR_CR ) then
+				if( lexCurrentChar = CHAR_LF ) then lexEatChar
 			end if
 
-			if( not linecontinuation ) then
-				t.id = FB.TK.EOL
+			if( not islinecont ) then
+				t.id    = FB.TK.EOL
 				t.class = FB.TKCLASS.DELIMITER
 				exit sub
 			else
 				ctx.linenum = ctx.linenum + 1
-				linecontinuation = FALSE
+				islinecont = FALSE
 				continue do
 			end if
-		end if
 
-		if( (not linecontinuation) and ((c <> CHAR_TAB) and (c <> CHAR_SPACE)) ) then
-			exit do
-		else
-			c = lexEatChar
-		end if
+		'' white-space?
+		case CHAR_TAB, CHAR_SPACE
+			if( (flags and LEXCHECK_NOWHITESPC) <> 0 ) then
+				exit do
+			end if
+
+			lexEatChar
+
+		''
+		case else
+			if( not islinecont ) then
+				exit do
+			end if
+		end select
+
 	loop
 
 	iswith = FALSE
 
-	select case as const c
+	select case as const char
 	'':::::
 	case CHAR_DOT
 
 	    isnumber = FALSE
 
 	    '' only check for fpoint literals if not inside a comment or parsing an $include
-	    if( checkLineCont ) then
-	    	c = lexLookAheadCharEx( TRUE )
-	    	if( c >= CHAR_0 and c <= CHAR_9 ) then
+	    if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+	    	char = lexLookAheadChar( TRUE )
+	    	if( char >= CHAR_0 and char <= CHAR_9 ) then
 				isnumber = TRUE
 			elseif( ctx.lasttoken <> CHAR_RPRNT ) then
 				if( ctx.lasttoken <> CHAR_RBRACKET ) then
@@ -774,14 +809,25 @@ readid:
 		lexReadIdentifier @t.text, t.tlen, t.typ
 		token = t.text
 
-		if( checkDefine ) then
+		if( (flags and LEXCHECK_NODEFINE) = 0 ) then
 			'' is it a define?
 			d = symbLookupDefine( token )
 			if( d <> NULL ) then
-				lexUnreadChar
-				ctx.deftext = symbGetDefineText( d )
-				ctx.deflen  = symbGetDefineLen( d )
-				ctx.defptr  = @ctx.deftext
+				lgt = symbGetDefineLen( d )
+				if( lgt > 0 ) then
+					if( ctx.deflen = 0 ) then
+						ctx.deftext = symbGetDefineText( d )
+					else
+						ctx.deftext = symbGetDefineText( d ) + _
+									  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
+					end if
+					ctx.defptr = @ctx.deftext
+					ctx.deflen = ctx.deflen + lgt
+
+					'' force a re-read
+					ctx.currchar = INVALID
+				end if
+
 				goto reread
         	end if
         end if
@@ -790,11 +836,14 @@ readid:
 
        	'' WITH hack
        	if( iswith ) then
-			lexUnreadChar
 			token = strpGet( env.withtextidx )
 			ctx.withtext = token + t.text
 			ctx.withlen  = len( token ) + t.tlen
 			ctx.withptr  = @ctx.withtext
+
+			'' force a re-read
+			ctx.currchar = INVALID
+
 			goto reread
        	end if
 
@@ -808,27 +857,28 @@ readid:
 	'':::::
 	case else
 		t.id		= lexEatChar
-''#ifndef FB__BIGENDIAN
-		pokei @t.text, c and &h000000FF			'' t.text = chr$( c )
-''#endif
 		t.tlen		= 1
 		t.typ		= t.id
 
-		select case as const c
+''#ifndef FB__BIGENDIAN
+		pokei @t.text, char and &h000000FF			'' t.text = chr$( char )
+''#endif
+
+		select case as const char
 		'':::
 		case CHAR_LT, CHAR_GT, CHAR_EQ
 			t.class = FB.TKCLASS.OPERATOR
 
-			select case c
+			select case char
 			case CHAR_LT
 				select case lexCurrentChar( TRUE )
 				case CHAR_EQ
-					c = lexEatChar
-					t.id = FB.TK.LE
+					lexEatChar
+					t.id   = FB.TK.LE
 					t.tlen = t.tlen + 1
 				case CHAR_GT
-					c = lexEatChar
-					t.id = FB.TK.NE
+					lexEatChar
+					t.id   = FB.TK.NE
 					t.tlen = t.tlen + 1
 				case else
 					t.id = FB.TK.LT
@@ -836,8 +886,8 @@ readid:
 
 			case CHAR_GT
 				if( lexCurrentChar( TRUE ) = CHAR_EQ ) then
-					c = lexEatChar
-					t.id = FB.TK.GE
+					lexEatChar
+					t.id   = FB.TK.GE
 					t.tlen = t.tlen + 1
 				else
 					t.id = FB.TK.GT
@@ -852,10 +902,10 @@ readid:
 			t.class = FB.TKCLASS.OPERATOR
 
 			'' check for type-field dereference
-			if( c = CHAR_MINUS ) then
+			if( char = CHAR_MINUS ) then
 				if( lexCurrentChar( TRUE ) = CHAR_GT ) then
-					c = lexEatChar
-					t.id = FB.TK.FIELDDEREF
+					lexEatChar
+					t.id   = FB.TK.FIELDDEREF
 					t.tlen = t.tlen + 1
 				end if
 			end if
@@ -863,6 +913,21 @@ readid:
 		'':::
 		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, CHAR_COLON, CHAR_SEMICOLON, CHAR_AT
 			t.class	= FB.TKCLASS.DELIMITER
+
+		'':::
+		case CHAR_SPACE, CHAR_TAB
+			t.class	= FB.TKCLASS.DELIMITER
+
+			do
+				select case as const lexCurrentChar
+				case CHAR_SPACE, CHAR_TAB
+					poke @t.text + t.tlen, lexEatChar		'' t.text = t.text + chr$( lexEatChar )
+					t.tlen = t.tlen + 1
+				case else
+					poke @t.text + t.tlen, 0				'' t.text = t.text + chr$( 0 )
+					exit do
+				end select
+			loop
 
 		'':::
 		case else
@@ -906,10 +971,10 @@ private sub hCheckPP
 end sub
 
 '':::::
-function lexCurrentToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer static
+function lexCurrentToken( byval flags as LEXCHECK_ENUM ) as integer static
 
     if( ctx.tokenTB(0).id = INVALID ) then
-    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    	lexNextToken ctx.tokenTB(0), flags
     	hCheckPP
     end if
 
@@ -918,10 +983,10 @@ function lexCurrentToken( byval checkLineCont as integer = TRUE, byval checkDefi
 end function
 
 '':::::
-function lexCurrentTokenClass( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer static
+function lexCurrentTokenClass( byval flags as LEXCHECK_ENUM ) as integer static
 
     if( ctx.tokenTB(0).id = INVALID ) then
-    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    	lexNextToken ctx.tokenTB(0), flags
     	hCheckPP
     end if
 
@@ -982,7 +1047,7 @@ private sub hMoveKDown static
 end sub
 
 '':::::
-function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string static
+function lexEatToken( byval flags as LEXCHECK_ENUM ) as string static
 
     ''
     if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
@@ -1000,7 +1065,7 @@ function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine a
     ctx.lasttoken = ctx.tokenTB(0).id
 
     if( ctx.k = 0 ) then
-    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    	lexNextToken ctx.tokenTB(0), flags
     else
     	hMoveKDown
     end if
@@ -1010,7 +1075,7 @@ function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine a
 end function
 
 '':::::
-sub lexSkipToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) static
+sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
     if( ctx.tokenTB(0).id = FB.TK.EOL ) then
     	ctx.linenum = ctx.linenum + 1
@@ -1021,7 +1086,7 @@ sub lexSkipToken( byval checkLineCont as integer = TRUE, byval checkDefine as in
 
     ''
     if( ctx.k = 0 ) then
-    	lexNextToken ctx.tokenTB(0), checkLineCont, checkDefine
+    	lexNextToken ctx.tokenTB(0), flags
     else
     	hMoveKDown
     end if
@@ -1032,7 +1097,7 @@ end sub
 
 '':::::
 sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipline as integer = FALSE ) static
-    dim c as integer
+    dim char as integer
 
 	if( not skipline ) then
 		dst = ""
@@ -1040,8 +1105,7 @@ sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipli
 
     '' check look ahead tokens if any
     do while( ctx.k > 0 )
-    	c = ctx.tokenTB(0).id
-    	select case c
+    	select case ctx.tokenTB(0).id
     	case FB.TK.EOF, FB.TK.EOL, endchar
     		exit sub
     	case else
@@ -1073,49 +1137,50 @@ sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipli
 
     ''
 	do
-		c  = lexCurrentChar
+		char = lexCurrentChar
 
 		'' !!!FIXME!!! this shouldn't be here
 		'' only emit current src line if it's not on an inc file
-		if( env.reclevel = 0 ) then
-			if( env.clopt.debug ) then
-				if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
+		if( env.clopt.debug ) then
+			if( env.reclevel = 0 ) then
+				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
 					emitCOMMENT curline
 					curline = ""
 				end if
 			end if
 		end if
 
-		'' check EOF
-		if( c = 0 ) then
+		'' EOF?
+		select case as const char
+		case 0
 			ctx.tokenTB(0).id = FB.TK.EOF
 			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
 			exit sub
-		end if
 
-		'' check EOL
-		if( (c = CHAR_CR) or (c = CHAR_LF) ) then
-			c = lexEatChar
+		'' EOL?
+		case CHAR_CR, CHAR_LF
+			lexEatChar
 			'' CRLF on DOS, LF only on *NIX
-			if( c = CHAR_CR ) then
-				if( lexCurrentChar = CHAR_LF ) then c = lexEatChar
+			if( char = CHAR_CR ) then
+				if( lexCurrentChar = CHAR_LF ) then lexEatChar
 			end if
 
 			ctx.tokenTB(0).id 	 = FB.TK.EOL
 			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
 			exit sub
 
-		'' closing char?
-		elseif( c = endchar ) then
-			ctx.tokenTB(0).id 	 = endchar
-			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
-			exit sub
+		case else
+			'' closing char?
+			if( char = endchar ) then
+				ctx.tokenTB(0).id 	 = endchar
+				ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
+				exit sub
+			end if
+		end select
 
-		end if
-
-		c = lexEatChar
+		lexEatChar
 		if( not skipline ) then
-			dst = dst + chr$( c )
+			dst = dst + chr$( char )
 		end if
 	loop
 

@@ -344,9 +344,9 @@ sub symbInitDefines static
 end sub
 
 '':::::
-sub symbInitKeywords
-	dim i as integer, sname as string
-	dim k as FBKEYWORD ptr
+sub symbInitKeywords static
+	dim i as integer, kname as string
+	dim id as integer, class as integer
 
 	listNew @ctx.keylist, FB.MAXKEYWORDS, len( FBKEYWORD )
 
@@ -354,12 +354,10 @@ sub symbInitKeywords
 
 	restore keyworddata
 	for i = 0 to FB.MAXKEYWORDS-1
-    	read sname
-    	k = listNewNode( @ctx.keylist )
-    	k->nameidx = strpAdd( sname )
-    	read k->id
-    	read k->class
-    	hashAdd ctx.keyhash, sname, k, k->nameidx
+    	read kname, id, class
+    	if( symbAddKeyword( kname, id, class ) = NULL ) then
+    		exit sub
+    	end if
     next i
 
 end sub
@@ -474,6 +472,26 @@ sub symbSetLastLabel( byval l as FBSYMBOL ptr ) static
 
 end sub
 
+
+'':::::
+function symbAddKeyword( kname as string, byval id as integer, byval class as integer ) as FBKEYWORD ptr
+    dim k as FBKEYWORD ptr
+
+    k = listNewNode( @ctx.keylist )
+    if( k = NULL ) then
+    	symbAddKeyword = NULL
+    	exit function
+    end if
+
+    k->nameidx	= strpAdd( kname )
+    k->id		= id
+    k->class	= class
+
+    hashAdd ctx.keyhash, kname, k, k->nameidx
+
+    symbAddKeyword = k
+
+end function
 
 '':::::
 function symbAddDefine( id as string, text as string ) as FBDEFINE ptr static
@@ -2920,6 +2938,29 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+function symbDelKeyword( kname as string ) as integer
+    dim k as FBKEYWORD ptr
+
+    symbDelKeyword = FALSE
+
+	kname = ucase$( kname )
+
+	k = hashLookup( ctx.keyhash, kname )
+	if( k = NULL ) then
+		exit function
+	end if
+
+	hashDel ctx.keyhash, kname
+
+	strpDel k->nameidx
+
+	listDelNode( @ctx.keylist, k )
+
+	symbDelKeyword = TRUE
+
+end function
+
+'':::::
 function symbDelDefine( id as string ) as integer static
     dim d as FBDEFINE ptr
 
@@ -3064,6 +3105,58 @@ sub symbDelConstUDTOrEnum( byval s as FBSYMBOL ptr )
     '' !!!FIXME!!! if it's an udt, del the elements too
 
     listDelNode @ctx.symlist, s
+
+end sub
+
+'':::::
+sub symbDelLib( byval l as FBLIBRARY ptr ) static
+
+	if( l = NULL ) then
+		exit sub
+	end if
+
+	hashDel ctx.libhash, strpGet( l->nameidx )
+
+	strpDel l->nameidx
+
+    listDelNode( @ctx.liblist, l )
+
+end sub
+
+'':::::
+private sub hDelArgs( byval f as FBSYMBOL ptr )
+	dim a as FBPROCARG ptr, n as FBPROCARG ptr
+
+    a = f->proc.arghead
+    do while( a <> NULL )
+    	n = a->r
+    	strpDel a->nameidx
+    	listDelNode( @ctx.arglist, a )
+    	a = n
+    loop
+
+end sub
+
+'':::::
+sub symbDelPrototype( byval f as FBSYMBOL ptr )
+
+    if( f = NULL ) then
+    	exit sub
+    end if
+
+	hashDel ctx.symhash, strpGet( f->nameidx )
+
+	strpDel f->nameidx
+	strpDel f->aliasidx
+
+    ''
+    hDelSentinel f->sentinel, TRUE
+
+	if( f->proc.args > 0 ) then
+		hDelArgs f
+	end if
+
+    listDelNode( @ctx.symlist, f )
 
 end sub
 

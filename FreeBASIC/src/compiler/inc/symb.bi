@@ -113,6 +113,7 @@ declare sub 		symbSetProcIsDeclared	( byval f as FBSYMBOL ptr, byval isdeclared 
 declare function 	symbIsProc				( id as string ) as integer
 declare function 	symbIsConst				( constname as string ) as integer
 
+declare function 	symbAddKeyword			( kname as string, byval id as integer, byval class as integer ) as FBKEYWORD ptr
 declare function 	symbAddDefine			( id as string, text as string ) as FBDEFINE ptr
 declare function 	symbAddLabel			( label as string ) as FBSYMBOL ptr
 declare function 	symbAddLabelEx			( label as string, byval declaring as integer, byval createalias as integer = FALSE ) as FBSYMBOL ptr
@@ -152,9 +153,12 @@ declare sub 		symbSetLastLabel		( byval l as FBSYMBOL ptr )
 declare sub 		symbFreeLocalDynSymbols	( byval proc as FBSYMBOL ptr, byval issub as integer )
 declare sub 		symbDelLocalSymbols		( )
 
+declare function 	symbDelKeyword			( kname as string ) as integer
 declare function 	symbDelDefine			( id as string ) as integer
 declare sub 		symbDelLabel			( byval l as FBSYMBOL ptr )
 declare sub 		symbDelVar				( byval s as FBSYMBOL ptr )
+declare sub 		symbDelPrototype		( byval f as FBSYMBOL ptr )
+declare sub 		symbDelLib				( byval l as FBLIBRARY ptr )
 
 declare function 	symbCalcLen				( byval typ as integer, byval subtype as FBSYMBOL ptr, _
 											  byval realsize as integer = FALSE ) as integer
