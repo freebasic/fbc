@@ -469,10 +469,6 @@ function processCompOptions as integer
 
 	processCompOptions = FALSE
 
-#ifndef TARGET_WIN32
-	fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
-#endif
-
 	'' reset options
 	fbcSetDefaultOptions
 
@@ -503,6 +499,10 @@ function processCompOptions as integer
 		end if
 
 	next i
+
+#ifndef TARGET_WIN32
+	fbcSetOption FB.COMPOPT.NOSTDCALL, TRUE
+#endif
 
 	processCompOptions = TRUE
 
