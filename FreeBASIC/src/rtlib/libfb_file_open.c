@@ -84,7 +84,8 @@ FBCALL void fb_FileReset ( void )
 	for( i = 0; i < FB_MAX_FILES; i++ )
 		if( fb_fileTB[i].f != NULL )
 		{
-			fclose( fb_fileTB[i].f );
+			if( fb_fileTB[i].type == FB_FILE_TYPE_NORMAL )
+				fclose( fb_fileTB[i].f );
 			fb_fileTB[i].f = NULL;
 		}
 }
@@ -130,12 +131,13 @@ FBCALL unsigned int fb_FileSize( int fnum )
 
 /*:::::*/
 FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
-						   unsigned int lock, int fnum, int len )
+						unsigned int lock, int fnum, int len )
 {
 	char openmask[16];
 	FILE* f;
 	int str_len;
 	char *filename;
+	int type;
 
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
@@ -157,57 +159,93 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	}
 
-	/* check mode */
-	switch( mode )
+	/* check for special file names */
+	type = FB_FILE_TYPE_NORMAL;
+	if( strcmp( str->data, "CONS:" ) == 0 )
+		type = FB_FILE_TYPE_CONSOLE;
+
+	if( type == FB_FILE_TYPE_NORMAL )
 	{
-	case FB_FILE_MODE_APPEND:
-		strcpy( openmask, "at" );				/* will create the file if it doesn't exist */
-		break;
-
-	case FB_FILE_MODE_INPUT:
-		strcpy( openmask, "rt" );				/* will fail if file doesn't exist */
-		break;
-
-	case FB_FILE_MODE_OUTPUT:
-		strcpy( openmask, "wt" );               /* will create the file if it doesn't exist */
-		break;
-
-	case FB_FILE_MODE_BINARY:
-	case FB_FILE_MODE_RANDOM:
-		strcpy( openmask, "r+b" );				/* w+ would erase the contents */
-		break;
-	}
-
-	/* Convert directory separators to whatever the current platform supports */
-	filename = fb_hConvertPath( str->data, str_len );
-
-	/* try opening */
-	if( (f = fopen( filename, openmask )) == NULL )
-	{
-		/* try creating the file if it doesn't exist */
-		if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
+		/* check mode */
+		switch( mode )
 		{
-			if( (f = fopen( filename, "w+b" )) == NULL )
+		case FB_FILE_MODE_APPEND:
+			strcpy( openmask, "at" );				/* will create the file if it doesn't exist */
+			break;
+
+		case FB_FILE_MODE_INPUT:
+			strcpy( openmask, "rt" );				/* will fail if file doesn't exist */
+			break;
+
+		case FB_FILE_MODE_OUTPUT:
+			strcpy( openmask, "wt" );               /* will create the file if it doesn't exist */
+			break;
+
+		case FB_FILE_MODE_BINARY:
+		case FB_FILE_MODE_RANDOM:
+			strcpy( openmask, "r+b" );				/* w+ would erase the contents */
+			break;
+
+		case FB_FILE_MODE_BINARYINPUT:
+			strcpy( openmask, "rb" );               /* will fail if file doesn't exist */
+			break;
+
+		case FB_FILE_MODE_BINARYOUTPUT:
+			strcpy( openmask, "wb" );				/* will create the file if it doesn't exist */
+			break;
+		}
+
+		/* Convert directory separators to whatever the current platform supports */
+		filename = fb_hConvertPath( str->data, str_len );
+
+		/* try opening */
+		if( (f = fopen( filename, openmask )) == NULL )
+		{
+			/* try creating the file if it doesn't exist */
+			if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
+			{
+				if( (f = fopen( filename, "w+b" )) == NULL )
+				{
+					free( filename );
+					return FB_RTERROR_FILENOTFOUND;
+				}
+			}
+			else
 			{
 				free( filename );
 				return FB_RTERROR_FILENOTFOUND;
 			}
 		}
-		else
+
+		free( filename );
+
+		/* change the default buffer size */
+		setvbuf( f, NULL, _IOFBF, FB_FILE_BUFSIZE );
+
+	}
+	else
+	{
+		/* check mode */
+		switch( mode )
 		{
-			free( filename );
-			return FB_RTERROR_FILENOTFOUND;
+		case FB_FILE_MODE_INPUT:
+			f = stdin;
+			break;
+
+		case FB_FILE_MODE_OUTPUT:
+			f = stdout;
+			break;
+
+		default:
+			return FB_RTERROR_ILLEGALFUNCTIONCALL;
 		}
 	}
 
-	free( filename );
-
-	/* change the default buffer size */
-	setvbuf( f, NULL, _IOFBF, FB_FILE_BUFSIZE );
 
 	/* fill struct */
 	fb_fileTB[fnum-1].f    = f;
 	fb_fileTB[fnum-1].mode = mode;
+	fb_fileTB[fnum-1].type = type;
 
 	/* reclen */
 	switch( mode )
@@ -225,17 +263,24 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	}
 
     /* size */
-	switch( mode )
+	if( type == FB_FILE_TYPE_NORMAL )
 	{
-	case FB_FILE_MODE_BINARY:
-	case FB_FILE_MODE_RANDOM:
-	case FB_FILE_MODE_INPUT:
-		fb_fileTB[fnum-1].size = fb_hFileSize( f );
-		break;
+		switch( mode )
+		{
+		case FB_FILE_MODE_BINARY:
+		case FB_FILE_MODE_RANDOM:
+		case FB_FILE_MODE_INPUT:
+		case FB_FILE_MODE_BINARYINPUT:
+			fb_fileTB[fnum-1].size = fb_hFileSize( f );
+			break;
 
-	default:
-		fb_fileTB[fnum-1].size = 0;
+		default:
+			fb_fileTB[fnum-1].size = 0;
+		}
 	}
+	else
+		fb_fileTB[fnum-1].size = 0;
+
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
@@ -257,8 +302,9 @@ FBCALL int fb_FileClose( int fnum )
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
-	if( fb_fileTB[fnum-1].f != NULL )
-		fclose( fb_fileTB[fnum-1].f );
+	if( fb_fileTB[fnum-1].type == FB_FILE_TYPE_NORMAL )
+		if( fb_fileTB[fnum-1].f != NULL )
+			fclose( fb_fileTB[fnum-1].f );
 
 	fb_fileTB[fnum-1].f = NULL;
 

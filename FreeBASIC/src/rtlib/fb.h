@@ -337,6 +337,7 @@ typedef struct _FB_FILE {
     int		mode;
     int		len;
     long	size;
+    int		type;
 } FB_FILE;
 
 
@@ -348,6 +349,8 @@ extern FB_FILE fb_fileTB[];
 #define FB_FILE_MODE_INPUT			2
 #define FB_FILE_MODE_OUTPUT			3
 #define FB_FILE_MODE_APPEND			4
+#define FB_FILE_MODE_BINARYINPUT	5
+#define FB_FILE_MODE_BINARYOUTPUT	6
 
 #define FB_FILE_ACCESS_READ			1
 #define FB_FILE_ACCESS_WRITE		2
@@ -358,6 +361,8 @@ extern FB_FILE fb_fileTB[];
 #define FB_FILE_LOCK_WRITE			2
 #define FB_FILE_LOCK_READWRITE		3
 
+#define FB_FILE_TYPE_NORMAL			0
+#define FB_FILE_TYPE_CONSOLE		1
 
 FBCALL int 			fb_FileFree 		( void );
 FBCALL int 			fb_FileOpen			( FBSTRING *str, unsigned int mode, unsigned int access,
