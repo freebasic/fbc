@@ -37,6 +37,8 @@ defint a-z
 
 declare function cConstExprValue			( littext as string ) as integer
 
+declare function cSymbUDTInit				( byval sym as FBSYMBOL ptr, _
+					   						  byval isstatic as integer ) as integer
 
 '':::::
 function hIsSttSeparatorOrComment( byval token as integer ) as integer static
@@ -1726,119 +1728,270 @@ end function
 
 '':::::
 function cSymbElmInit( byval sym as FBSYMBOL ptr, _
-					   byval elements as integer, _
 					   byval isstatic as integer ) as integer static
 
-	dim as integer dtype, expr, exprclass, elmcnt
+	dim as integer dtype, expr, exprclass
     dim as FBSYMBOL ptr litsym
 
-	elmcnt = 0
-	do
+	if( not cExpression( expr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		return FALSE
+	end if
 
-		elmcnt += 1
-		if( elmcnt > elements ) then
-			hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
-			return 0
-		end if
+    dtype = astGetDataType( expr )
+    exprclass = astGetClass( expr )
 
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			return 0
-		end if
+	'' if static or at module level, only constants can be used as initializers
+	if( isstatic or env.scope = 0 ) then
 
-    	dtype = astGetDataType( expr )
-    	exprclass = astGetClass( expr )
-
-		'' if static or at module level, only constants can be used as initializers
-		if( isstatic or env.scope = 0 ) then
-
-			'' check if it's a literal string
-			litsym = NULL
-			if( dtype = IR.DATATYPE.FIXSTR ) then
-				if( exprclass = AST.NODECLASS.VAR ) then
-					litsym = astGetSymbol( expr )
-					if( not symbGetVarInitialized( litsym ) ) then
-						litsym = NULL
-					end if
+		'' check if it's a literal string
+		litsym = NULL
+		if( dtype = IR.DATATYPE.FIXSTR ) then
+			if( exprclass = AST.NODECLASS.VAR ) then
+				litsym = astGetSymbol( expr )
+				if( not symbGetVarInitialized( litsym ) ) then
+					litsym = NULL
 				end if
 			end if
+		end if
 
-			'' not a literal string?
-			if( litsym = NULL ) then
+		'' not a literal string?
+		if( litsym = NULL ) then
 
-				'' not a constant?
-				if( exprclass <> AST.NODECLASS.CONST ) then
-					hReportError FB.ERRMSG.EXPECTEDCONST
-					return 0
-				end if
+			'' not a constant?
+			if( exprclass <> AST.NODECLASS.CONST ) then
+				hReportError FB.ERRMSG.EXPECTEDCONST
+				return FALSE
+			end if
 
-				'' string?
-				if( hIsString( sym->typ ) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
-					return 0
-				end if
+			'' string?
+			if( hIsString( sym->typ ) ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES
+				return FALSE
+			end if
 
-				'' different types?
-				if( dtype <> sym->typ ) then
-					expr = astNewCONV( INVALID, sym->typ, expr )
-				end if
+			'' different types?
+			if( dtype <> sym->typ ) then
+				expr = astNewCONV( INVALID, sym->typ, expr )
+			end if
 
-				if( (sym->typ = FB.SYMBTYPE.LONGINT) or (sym->typ = FB.SYMBTYPE.ULONGINT) ) then
-					irEmitVARINI64 sym->typ, astGetValue64( expr )
-				else
-					irEmitVARINI sym->typ, astGetValue( expr )
-				end if
-
+			if( (sym->typ = FB.SYMBTYPE.LONGINT) or (sym->typ = FB.SYMBTYPE.ULONGINT) ) then
+				irEmitVARINI64 sym->typ, astGetValue64( expr )
 			else
-
-				'' not a string?
-				if( not hIsString( sym->typ ) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
-					return 0
-				end if
-
-				'' can't be a variable-len string
-				if( sym->typ = FB.SYMBTYPE.STRING ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
-					return 0
-				end if
-
-				'' less the null-char
-				irEmitVARINISTR sym->lgt - 1, symbGetVarText( litsym )
-
-				if( symbGetAccessCnt( litsym ) = 0 ) then
-					symbDelVar litsym
-				end if
-
+				irEmitVARINI sym->typ, astGetValue( expr )
 			end if
 
 		else
 
-			'symbVarAddInitExpression s, expr
+			'' not a string?
+			if( not hIsString( sym->typ ) ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES
+				return FALSE
+			end if
+
+			'' can't be a variable-len string
+			if( sym->typ = FB.SYMBTYPE.STRING ) then
+				hReportError FB.ERRMSG.INVALIDDATATYPES
+				return FALSE
+			end if
+
+			'' less the null-char
+			irEmitVARINISTR sym->lgt - 1, symbGetVarText( litsym )
+
+			if( symbGetAccessCnt( litsym ) = 0 ) then
+				symbDelVar litsym
+			end if
 
 		end if
 
-
 		astDel expr
+
+	else
+
+		'symbVarAddInitExpression s, expr
+
+	end if
+
+	return TRUE
+
+end function
+
+'':::::
+function cSymbArrayInit( byval sym as FBSYMBOL ptr, _
+					     byval isstatic as integer, _
+					     byval isarray as integer ) as integer
+
+    dim as integer dimensions, dimcnt, elements, elmcnt
+    dim as integer isopen, lgt, totlgt
+    dim as FBVARDIM ptr d, ld
+
+	cSymbArrayInit = FALSE
+
+	dimensions = sym->var.array.dims
+    dimcnt = 0
+
+	if( isarray ) then
+		d = sym->var.array.dimhead
+	else
+		d = NULL
+	end if
+
+	lgt = 0
+
+	'' for each array dimension..
+	do
+		'' '{'?
+		isopen = FALSE
+		if( isarray ) then
+			if( hMatch( CHAR_LBRACE ) ) then
+				dimcnt += 1
+				if( dimcnt > dimensions ) then
+					hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
+					exit function
+				end if
+
+				ld = d
+				d = d->r
+
+				isopen = TRUE
+			end if
+		end if
+
+		if( d <> NULL ) then
+			elements = (d->upper - d->lower) + 1
+		else
+			elements = 1
+		end if
+
+		'' for each array element..
+		elmcnt = 0
+		do
+
+			if( sym->typ <> FB.SYMBTYPE.USERDEF ) then
+				if( not cSymbElmInit( sym, isstatic ) ) then
+					exit function
+				end if
+			else
+				if( not cSymbUDTInit( sym, isstatic ) ) then
+					exit function
+				end if
+			end if
+
+			elmcnt += 1
+			if( elmcnt >= elements ) then
+				exit do
+			end if
+
+		'' ','
+		loop while( hMatch( CHAR_COMMA ) )
+
+		'' pad
+		if( elmcnt < elements ) then
+			irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+		end if
+
+		lgt += elements * sym->lgt
+
+		if( not isopen ) then
+			exit do
+		end if
+
+		if( isarray ) then
+			'' '}'?
+			if( not hMatch( CHAR_RBRACE ) ) then
+				hReportError FB.ERRMSG.EXPECTEDRBRACKET
+				exit function
+			end if
+
+			dimcnt -= 1
+			d = ld
+		end if
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	if( elmcnt < elements ) then
-		irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+	if( isstatic ) then
+		totlgt = sym->lgt * hCalcElements( sym )
+		if( lgt < totlgt ) then
+			irEmitVARINIPAD totlgt - lgt
+		end if
 	end if
 
-	return sym->lgt * elements
+	cSymbArrayInit = TRUE
+
+end function
+
+'':::::
+function cSymbUDTInit( byval sym as FBSYMBOL ptr, _
+					   byval isstatic as integer ) as integer
+
+	dim as integer elements, elmcnt, isarray
+    dim as FBSYMBOL ptr elm, udt
+
+    cSymbUDTInit = FALSE
+
+	'' '('
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+
+	udt = sym->subtype
+	elm = udt->udt.head
+	elements = udt->udt.elements
+	elmcnt = 0
+
+	'' for each UDT element..
+	do
+
+		elmcnt += 1
+		if( elmcnt > elements ) then
+			hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
+			exit function
+		end if
+
+		'' '{'?
+		isarray = hMatch( CHAR_LBRACE )
+
+        if( not cSymbArrayInit( elm, isstatic, isarray ) ) then
+          	exit function
+        end if
+
+        if( isarray ) then
+			'' '}'
+			if( not hMatch( CHAR_RBRACE ) ) then
+				hReportError FB.ERRMSG.EXPECTEDRBRACKET
+				exit function
+			end if
+		end if
+
+		'' next
+		elm = elm->var.elm.r
+
+	'' ','
+	loop while( hMatch( CHAR_COMMA ) )
+
+	'' ')'
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+
+	'' pad
+	if( isstatic ) then
+		if( elmcnt < elements ) then
+			irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+		end if
+	end if
+
+	cSymbUDTInit = TRUE
 
 end function
 
 '':::::
 function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
-    dim as FBSYMBOL ptr subtype
-    dim as integer dimcnt, dimensions, elements
-    dim as integer isstatic, isopen, lgt, totlgt
-    dim as FBVARDIM ptr d, ld
+    dim as integer isstatic, isarray
 
 	cSymbolInit = FALSE
 
@@ -1865,65 +2018,19 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 	''
 	irEmitVARINIBEGIN sym
 
-	''
-	dimensions = symbGetArrayDimensions( sym )
-	dimcnt = 0
+	'' '{'?
+	isarray = hMatch( CHAR_LBRACE )
 
-	d = symbGetArrayFirstDim( sym )
-	lgt = 0
+	if( not cSymbArrayInit( sym, isstatic, isarray ) ) then
+		exit function
+	end if
 
-	do
-		'' '{'
-		isopen = FALSE
-		if( hMatch( CHAR_LBRACE ) ) then
-			dimcnt += 1
-			if( dimcnt > dimensions ) then
-				hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
-				exit function
-			end if
-
-			ld = d
-			d = d->r
-
-			isopen = TRUE
-		end if
-
-		if( d <> NULL ) then
-			elements = (d->upper - d->lower) + 1
-		else
-			elements = 1
-		end if
-
-		if( sym->typ <> FB.SYMBTYPE.USERDEF ) then
-			lgt += cSymbElmInit( sym, elements, isstatic )
-		else
-			'' lgt += cSymbUDTInit( sym, elements, isstatic )
-		end if
-
-		if( hGetLastError <> FB.ERRMSG.OK ) then
-			exit function
-		end if
-
-		if( not isopen ) then
-			exit do
-		end if
-
+    if( isarray ) then
 		'' '}'
 		if( not hMatch( CHAR_RBRACE ) ) then
 			hReportError FB.ERRMSG.EXPECTEDRBRACKET
 			exit function
 		end if
-
-		dimcnt -= 1
-		d = ld
-
-	'' ','
-	loop while( hMatch( CHAR_COMMA ) )
-
-	'' pad
-	totlgt = sym->lgt * hCalcElements( sym )
-	if( lgt < totlgt ) then
-		irEmitVARINIPAD totlgt - lgt
 	end if
 
 	''
@@ -1931,6 +2038,8 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 
 	''
 	sym->var.emited = TRUE
+
+	cSymbolInit = TRUE
 
 end function
 
