@@ -23,7 +23,7 @@
 const FB.MAXINCRECLEVEL%	= 16
 const FB.MAXINCPATHS%		= 16
 
-const FB.MAXNAMELEN%		= 128
+const FB.MAXNAMELEN%		= 64
 const FB.MAXLITLEN%			= 1024				'' literal strings max length
 
 const FB_MAXPROCARGS%		= 64
@@ -114,6 +114,9 @@ const CHAR_NULL   	= 00, _
       CHAR_OLOW    	= 111, _
       CHAR_ZUPP    	= 90, _
       CHAR_ZLOW  	= 122, _
+	  CHAR_NLOW		= 110, _
+	  CHAR_RLOW		= 114, _
+	  CHAR_TLOW		= 116, _
       CHAR_LPRNT  	= 40, _
       CHAR_RPRNT  	= 41, _
       CHAR_COMMA 	= 44, _
@@ -140,7 +143,12 @@ const CHAR_NULL   	= 00, _
       CHAR_COLON	= 58, _
       CHAR_SEMICOLON= 59, _
       CHAR_AT		= 64, _
-      CHAR_QUESTION	= 63
+      CHAR_QUESTION	= 63, _
+      CHAR_TILD		= 126, _
+      CHAR_ESC		= 27
+
+
+const FB.INTSCAPECHAR		= CHAR_ESC			'' assuming it won't ever be used inside lit strings
 
 
 '' tokens
@@ -557,6 +565,7 @@ type FBSYMBOL
 
 	scope			as integer
 	lgt				as integer
+	acccnt			as integer					'' access counter (number of lookup's)
 
 	initialized		as integer
 	inittextidx		as integer
@@ -662,10 +671,11 @@ type FBENV
 	optargmode		as integer					'' def    =byref
 	optexplicit		as integer					'' def    =false
 	optprocpublic	as integer					'' def    =true
+	optescapestr	as integer					'' def    =false
+	optdynamic		as integer					'' def    =false
 
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
-	isdynamic		as integer					'' TRUE with $dynamic, FALSE with $static
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
 end type

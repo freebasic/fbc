@@ -25,6 +25,7 @@
 defint a-z
 option explicit
 option private
+option escape
 
 '$include: 'inc\fb.bi'
 '$include: 'inc\hlp.bi'
@@ -86,9 +87,7 @@ declare function 	makeImpLib 			( dllpath as string, dllname as string ) as inte
 	dim shared pthlist(0 to FB_MAXARGS-1) as string
 	dim shared ctx as FBCCTX
 
-	dim shared QUOTE as string
-
-	QUOTE = chr$( 34 )
+const QUOTE = "\""
 
 
     ''
@@ -305,7 +304,7 @@ function linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T " + QUOTE + exepath$ + FB.BINPATH + "i386pe.x" + QUOTE + " -subsystem " + ctx.subsystem
+	ldcline = "-T \"" + exepath$ + FB.BINPATH + "i386pe.x\" -subsystem " + ctx.subsystem
 
 #elseif defined(TARGET_LINUX)
 
@@ -371,25 +370,25 @@ function linkFiles as integer
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
-    	ldcline = ldcline + QUOTE + outlist(i) + QUOTE + " "
+    	ldcline = ldcline + QUOTE + outlist(i) + "\" "
     next i
 
     '' add objects from cmm-line
     for i = 0 to ctx.objs-1
-    	ldcline = ldcline + QUOTE + objlist(i) + QUOTE + " "
+    	ldcline = ldcline + QUOTE + objlist(i) + "\" "
     next i
 
     '' set executable name
-    ldcline = ldcline + "-o " + QUOTE + ctx.outname + QUOTE
+    ldcline = ldcline + "-o \"" + ctx.outname + QUOTE
 
     '' default lib path
-    ldcline = ldcline + " -L " + QUOTE + exepath$ + FB.LIBPATH + QUOTE
+    ldcline = ldcline + " -L \"" + exepath$ + FB.LIBPATH + QUOTE
     '' and the current path to libs search list
-    ldcline = ldcline + " -L " + QUOTE +  "./" + QUOTE
+    ldcline = ldcline + " -L \"./\""
 
     '' add additional user-specified library search paths
     for i = 0 to ctx.pths-1
-    	ldcline = ldcline + " -L " + QUOTE + pthlist(i) + QUOTE
+    	ldcline = ldcline + " -L \"" + pthlist(i) + QUOTE
     next i
 
     '' init lib group
@@ -422,7 +421,7 @@ function linkFiles as integer
 #ifdef TARGET_WIN32
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
-        ldcline = ldcline + " --output-def " + QUOTE + hStripFilename( ctx.outname ) + dllname + ".def" + QUOTE
+        ldcline = ldcline + " --output-def \"" + hStripFilename( ctx.outname ) + dllname + ".def\""
 	end if
 #endif
 
@@ -492,6 +491,8 @@ function clearDefList( dllfile as string ) as integer
     outf = freefile
     open dllfile + ".clean.def" for output as #outf
 
+    '''''print #outf, "LIBRARY " + hStripPath( dllfile ) + ".dll"
+
     do until eof( inpf )
 
     	line input #inpf, ln
@@ -536,9 +537,9 @@ function makeImpLib( dllpath as string, dllname as string ) as integer
 
 	dtpath = exepath$ + FB.BINPATH + "dlltool.exe"
 
-	dtcline = "--def " + QUOTE + dllfile + ".def" + QUOTE + _
-			  " --dllname " + QUOTE + dllfile + ".dll" + QUOTE + _
-			  " --output-lib " + QUOTE + dllpath + "lib" + dllname + ".dll.a" + QUOTE
+	dtcline = "--def \"" + dllfile + ".def\"" + _
+			  " --dllname \"" + dllname + ".dll\"" + _
+			  " --output-lib \"" + dllpath + "lib" + dllname + ".dll.a\""
 
     if( ctx.verbose ) then
     	print "dlltool: ", dtcline
@@ -573,16 +574,16 @@ function archiveFiles as integer
     arcline = "-rsc "
 
     '' output library file name
-    arcline = arcline + QUOTE + ctx.outname + QUOTE + " "
+    arcline = arcline + QUOTE + ctx.outname + "\" "
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
-    	arcline = arcline + QUOTE + outlist(i) + QUOTE + " "
+    	arcline = arcline + QUOTE + outlist(i) + "\" "
     next i
 
     '' add objects from cmm-line
     for i = 0 to ctx.objs-1
-    	arcline = arcline + QUOTE + objlist(i) + QUOTE + " "
+    	arcline = arcline + QUOTE + objlist(i) + "\" "
     next i
 
     '' invoke ar
@@ -990,7 +991,7 @@ sub parseCmd ( argc as integer, argv() as string )
     dim p as integer, char as integer
     dim isstr as integer
 
-	cmd = command$ + chr$( 13 )
+	cmd = command$ + "\r"
 
 	p = 1
 	argc = 0

@@ -30,6 +30,7 @@
 
 defint a-z
 option explicit
+option escape
 
 '$include: 'inc\fb.bi'
 '$include: 'inc\fbint.bi'
@@ -46,18 +47,13 @@ type ASTCTX
 	tempstrs	as integer
 end Type
 
-type ASTTEMPSYMBOL
-	symbol		as FBSYMBOL ptr
-	ofs			as integer
-	elm			as FBTYPELEMENT ptr
-end type
-
 type ASTTEMPSTR
 	tmp			as FBSYMBOL ptr
-	src			as ASTTEMPSYMBOL
+	srctree		as integer
 end type
 
 
+declare sub 		astUpdStrConcat		( byval n as integer )
 
 '' globals
 	dim shared ctx as ASTCTX
@@ -67,7 +63,7 @@ end type
 	redim shared tempstrTB( 0 ) as ASTTEMPSTR
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' constant folding optimizations
+'' misc node copy/swap
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
@@ -116,6 +112,10 @@ Sub astSwap( byval d as integer, byval s as integer ) Static
 	astTB(s).nxt = sn
 
 End Sub
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' constant folding optimizations
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 Sub astOptConstRmNeg( byval n as integer, byval p as integer )
@@ -339,15 +339,17 @@ Sub astOptConstAccum2( byval n as integer )
 	If( astTB(n).typ = AST.NODETYPE.BOP ) Then
 		select case astTB(n).op
 		case IR.OP.ADD
-			c = 0
-			op = 1
-			asthConstAccumADDSUB astTB(n).l, c, op
-			op = 1
-			asthConstAccumADDSUB astTB(n).r, c, op
-			if( c <> 0 ) then
-				if( c - int(c) <> 0 ) then dtype = IR.DATATYPE.DOUBLE else dtype = IR.DATATYPE.INTEGER
-				astTB(n).l = astNewBOP( IR.OP.ADD, astTB(n).l, astTB(n).r )
-				astTB(n).r = astNewCONST( c, dtype )
+			if( irGetDataClass( astTB(n).dtype ) <> IR.DATACLASS.STRING ) then
+				c = 0
+				op = 1
+				asthConstAccumADDSUB astTB(n).l, c, op
+				op = 1
+				asthConstAccumADDSUB astTB(n).r, c, op
+				if( c <> 0 ) then
+					if( c - int(c) <> 0 ) then dtype = IR.DATATYPE.DOUBLE else dtype = IR.DATATYPE.INTEGER
+					astTB(n).l = astNewBOP( IR.OP.ADD, astTB(n).l, astTB(n).r )
+					astTB(n).r = astNewCONST( c, dtype )
+				end if
 			end if
 
 		case IR.OP.SUB
@@ -596,32 +598,34 @@ Sub astOptAssocADD( byval n as integer )
 	If( astTB(n).typ = AST.NODETYPE.BOP ) Then
 		op = astTB(n).op
 		if( op = IR.OP.ADD or op = IR.OP.SUB ) then
-			r = astTB(n).r
-			If( astTB(r).typ = AST.NODETYPE.BOP ) Then
-				rop = astTB(r).op
-				if( rop = IR.OP.ADD or rop = IR.OP.SUB ) then
-					astTB(n).r = astTB(r).r
-					astTB(r).r = astTB(r).l
-					astTB(r).l = astTB(n).l
-					astTB(n).l = r
+			if( irGetDataClass( astTB(n).dtype ) <> IR.DATACLASS.STRING ) then
+				r = astTB(n).r
+				If( astTB(r).typ = AST.NODETYPE.BOP ) Then
+					rop = astTB(r).op
+					if( rop = IR.OP.ADD or rop = IR.OP.SUB ) then
+						astTB(n).r = astTB(r).r
+						astTB(r).r = astTB(r).l
+						astTB(r).l = astTB(n).l
+						astTB(n).l = r
 
-					if( op = IR.OP.SUB ) then
-						if( rop = IR.OP.SUB ) then
-							op = IR.OP.ADD
+						if( op = IR.OP.SUB ) then
+							if( rop = IR.OP.SUB ) then
+								op = IR.OP.ADD
+							else
+								rop = IR.OP.SUB
+							end if
 						else
-							rop = IR.OP.SUB
+							if( rop = IR.OP.SUB ) then
+								op = IR.OP.SUB
+								rop = IR.OP.ADD
+							end if
 						end if
-					else
-						if( rop = IR.OP.SUB ) then
-							op = IR.OP.SUB
-							rop = IR.OP.ADD
-						end if
-					end if
-					astTB(n).op = op
-					astTB(r).op = rop
+						astTB(n).op = op
+						astTB(r).op = rop
 
-					astOptAssocADD n
-					exit sub
+						astOptAssocADD n
+						exit sub
+					end if
 				end if
 			end if
 		end if
@@ -782,6 +786,242 @@ Sub astOptToShift( byval n as integer )
 
 End Sub
 
+''::::
+sub astOptStrAssignament( byval n as integer, byval l as integer, byval r as integer ) static
+	dim rl as integer, f as integer
+	dim optimize as integer
+
+	optimize = FALSE
+
+	'' is left side a var?
+	if( astTB(l).typ = AST.NODETYPE.VAR ) then
+
+		'' is right side a bin operation?
+		if( astTB(r).typ = AST.NODETYPE.BOP ) then
+
+			'' is the left child a var too?
+			rl = astTB(r).l
+			if( astTB(rl).typ = AST.NODETYPE.VAR ) then
+
+				'' are both vars the same?
+				if( (astTB(rl).var.sym = astTB(l).var.sym) and (astTB(rl).var.ofs = astTB(l).var.ofs) ) then
+					optimize = TRUE
+				end if
+			end if
+		end if
+	end if
+
+	if( optimize ) then
+		''	=            f()
+		'' / \           / \
+		''d   +    =>   d   s
+		''   / \
+		''  d   s
+
+		astCopy n, r
+		astDel l
+		astDel r
+
+		astUpdStrConcat astTB(n).r
+
+		f = rtlStrConcatAssign( astTB(n).l, astTB(n).r )
+
+	else
+		''	=            f() -- assign
+		'' / \           / \
+		''d   +    =>   d   f() -- concat (done by UpdStrConcat)
+		''   / \           / \
+		''  d   s         d   s
+
+		astUpdStrConcat r
+
+		f = rtlStrAssign( astTB(n).l, astTB(n).r )
+	end if
+
+	astCopy n, f
+	astDel f
+
+end sub
+
+''::::
+sub astOptAssignament( byval n as integer ) static
+	dim l as integer, r as integer, rl as integer
+	dim dtype as integer, dclass as integer
+
+	'' try to convert "foo = foo op expr" to "foo op= expr" (including unary ops)
+	if( n = INVALID ) then
+		exit sub
+	end if
+
+	'' there's just one assignament per tree (always at top), so, just check this node
+	If( astTB(n).typ <> AST.NODETYPE.ASSIGN ) Then
+		exit sub
+	end if
+
+	l = astTB(n).l
+	r = astTB(n).r
+
+	dtype = astTB(n).dtype
+	dclass = irGetDataClass( dtype )
+
+	'' integer's only, no way to optimize with a FPU stack (x86 dep.)
+	If( dclass <> IR.DATACLASS.INTEGER ) Then
+
+		'' strings?
+		if( dclass = IR.DATACLASS.STRING ) then
+			astOptStrAssignament n, l, r
+			exit sub
+		end if
+
+		'' try to optimize if a constant is being assigned to a float var
+  		if( astTB(r).typ = AST.NODETYPE.CONST ) then
+  			if( dclass = IR.DATACLASS.FPOINT ) then
+				astTB(r).dtype = dtype
+			end if
+		end if
+
+		exit sub
+	end if
+
+	'' can't be byte either, as BOP will do cint(byte) op cint(byte)
+	If( irGetDataSize( dtype ) = 1 ) Then
+		exit sub
+	end if
+
+	'' is left side a var?
+	select case astTB(l).typ
+	case AST.NODETYPE.VAR
+	case else
+		exit sub
+	end select
+
+	'' is right side a bin or unary operation?
+	select case astTB(r).typ
+	case AST.NODETYPE.UOP, AST.NODETYPE.BOP
+	case else
+		exit sub
+	end select
+
+	'' node result is an integer too?
+	If( irGetDataClass( astTB(r).dtype ) <> IR.DATACLASS.INTEGER ) Then
+		exit sub
+	end if
+
+	'' is the left child a var too?
+	rl = astTB(r).l
+	if( astTB(rl).typ <> AST.NODETYPE.VAR ) then
+		exit sub
+	end if
+
+	'' are both vars the same?
+	if( (astTB(rl).var.sym <> astTB(l).var.sym) or (astTB(rl).var.ofs <> astTB(l).var.ofs) ) then
+		exit sub
+	end if
+
+	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
+	astTB(r).allocres = FALSE
+
+	''	=             o
+	'' / \           / \
+	''d   o     =>  d   s
+	''   / \
+	''  d   s
+
+    astCopy n, r
+	astDel l
+	astDel r
+
+end sub
+
+'':::::
+function astOptComp2Branch( byval n as integer, byval label as FBSYMBOL ptr, byval isinverse as integer ) as integer static
+	dim op as integer
+
+	astOptComp2Branch = FALSE
+
+	if( n = INVALID ) then
+		exit function
+	end if
+
+	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
+	if( astTB(n).typ <> AST.NODETYPE.BOP ) then
+		exit function
+	end if
+
+	'' logical operator?
+	op = astTB(n).op
+	select case op
+	case IR.OP.EQ, IR.OP.NE, IR.OP.GT, IR.OP.LT, IR.OP.GE, IR.OP.LE
+	case else
+		exit function
+	end select
+
+	'' invert it
+	if( not isinverse ) then
+		astTB(n).op = irGetInverseLogOp( op )
+	end if
+
+	'' tell IR that the destine label is already set
+	astTB(n).ex = label
+
+	'' warn caller that the operation was optimized
+	astOptComp2Branch = TRUE
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' node type update (must be done before any loading)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub astUpdStrConcat( byval n as integer )
+	Dim l as integer, r as integer
+	dim f as integer
+
+	if( n = INVALID ) then
+		exit sub
+	end if
+
+	'' walk
+	l = astTB(n).l
+	If( l <> INVALID ) Then
+		astUpdStrConcat l
+	End If
+
+	r = astTB(n).r
+	If( r <> INVALID ) Then
+		astUpdStrConcat r
+	End If
+
+	select case astTB(n).typ
+	'' function called through a pointer?
+	case AST.NODETYPE.FUNCT
+		if( astTB(n).proc.p <> INVALID ) then
+			astUpdStrConcat astTB(n).proc.p
+		end if
+
+	'' param node? call next if any
+	case AST.NODETYPE.PARAM
+		if( astTB(n).param.nxt <> INVALID ) then
+			astUpdStrConcat astTB(n).param.nxt
+		end if
+	end select
+
+	'' convert "string + string" to  "StrConcat( string, string )"
+	If( astTB(n).typ = AST.NODETYPE.BOP ) Then
+		if( astTB(n).op = IR.OP.ADD ) then
+			'' strings?
+			l = astTB(n).l
+			if( irGetDataClass( astTB(l).dtype ) = IR.DATACLASS.STRING ) then
+				r = astTB(n).r
+				f = rtlStrConcat( l, astTB(l).dtype, r, astTB(r).dtype )
+				astCopy n, f
+				astDel f
+			end if
+		end if
+	end if
+
+End Sub
 
 ''::::
 sub astUpdNodeResult( byval n as integer )
@@ -923,119 +1163,6 @@ sub astUpdNodeResult( byval n as integer )
 	end select
 
 end sub
-
-''::::
-sub astOptAssignament( byval n as integer ) static
-	dim l as integer, r as integer, rl as integer
-	dim dtype as integer
-
-	'' try to convert "foo = foo op expr" to "foo op= expr" (including unary ops)
-	if( n = INVALID ) then
-		exit sub
-	end if
-
-	'' there's just one assignament per tree (always at top), so, just check this node
-	If( astTB(n).typ <> AST.NODETYPE.ASSIGN ) Then
-		exit sub
-	end if
-
-	l = astTB(n).l
-	r = astTB(n).r
-
-	dtype = astTB(n).dtype
-
-	'' integer's only, no way to optimize with a FPU stack (x86 dep.)
-	If( irGetDataClass( dtype ) <> IR.DATACLASS.INTEGER ) Then
-
-		'' try to optimize if a constant is being assigned to a float var
-  		if( astTB(r).typ = AST.NODETYPE.CONST ) then
-  			if( irGetDataClass( dtype ) = IR.DATACLASS.FPOINT ) then
-				astTB(r).dtype = dtype
-			end if
-		end if
-
-		exit sub
-	end if
-
-	'' can't be byte either, as BOP will do cint(byte) op cint(byte)
-	If( irGetDataSize( dtype ) = 1 ) Then
-		exit sub
-	end if
-
-	'' is left side a var?
-	select case astTB(l).typ
-	case AST.NODETYPE.VAR
-	case else
-		exit sub
-	end select
-
-	'' is right side a bin or unary operation?
-	select case astTB(r).typ
-	case AST.NODETYPE.UOP, AST.NODETYPE.BOP
-	case else
-		exit sub
-	end select
-
-	'' node result is integer too?
-	If( irGetDataClass( astTB(r).dtype ) <> IR.DATACLASS.INTEGER ) Then
-		exit sub
-	end if
-
-	'' is the left child a var too?
-	rl = astTB(r).l
-	if( astTB(rl).typ <> AST.NODETYPE.VAR ) then
-		exit sub
-	end if
-
-	'' are both vars the same?
-	if( (astTB(rl).var.sym <> astTB(l).var.sym) or (astTB(rl).var.ofs <> astTB(l).var.ofs) ) then
-		exit sub
-	end if
-
-	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
-	astTB(r).allocres = FALSE
-
-    astCopy n, r
-	astDel l
-	astDel r
-
-end sub
-
-'':::::
-function astOptComp2Branch( byval n as integer, byval label as FBSYMBOL ptr, byval isinverse as integer ) as integer static
-	dim op as integer
-
-	astOptComp2Branch = FALSE
-
-	if( n = INVALID ) then
-		exit function
-	end if
-
-	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
-	if( astTB(n).typ <> AST.NODETYPE.BOP ) then
-		exit function
-	end if
-
-	'' logical operator?
-	op = astTB(n).op
-	select case op
-	case IR.OP.EQ, IR.OP.NE, IR.OP.GT, IR.OP.LT, IR.OP.GE, IR.OP.LE
-	case else
-		exit function
-	end select
-
-	'' invert it
-	if( not isinverse ) then
-		astTB(n).op = irGetInverseLogOp( op )
-	end if
-
-	'' tell IR that the destine label is already set
-	astTB(n).ex = label
-
-	'' warn caller that the operation was optimized
-	astOptComp2Branch = TRUE
-
-end function
 
 
 '':::::
@@ -1524,6 +1651,8 @@ sub astOptimize( byval n as integer )
 
 	astOptAssignament n
 
+	astUpdStrConcat n
+
 end sub
 
 '':::::
@@ -1569,6 +1698,33 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+private function hStrLiteralConcat( byval l as integer, byval r as integer ) as integer
+    dim s as FBSYMBOL ptr
+    dim ls as FBSYMBOL ptr, rs as FBSYMBOL ptr
+
+	ls = astGetSymbol( l )
+	rs = astGetSymbol( r )
+
+	s = hAllocStringConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
+						   symbGetLen( ls ) + symbGetLen( rs ) )
+
+	hStrLiteralConcat = astNewVAR( s, 0, IR.DATATYPE.FIXSTR )
+
+	'' delete both vars if they are never access before
+	if( symbGetAccessCnt( ls ) = 0 ) then
+		symbDelVar ls
+	end if
+
+	if( symbGetAccessCnt( rs ) = 0 ) then
+		symbDelVar rs
+	end if
+
+	astDel r
+	astDel l
+
+end function
+
+'':::::
 function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 					byval ex as FBSYMBOL ptr = NULL, byval allocres as integer = TRUE ) as integer static
     dim n as integer
@@ -1600,8 +1756,19 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 
 		select case op
 		case IR.OP.ADD
-			astNewBOP = rtlStrConcat( l, dt1, r, dt2 )
-			exit function
+			'' check for string literals
+			if( (dt1 = IR.DATATYPE.FIXSTR) and (dt2 = IR.DATATYPE.FIXSTR) ) then
+				if( astTB(l).typ = AST.NODETYPE.VAR ) then
+					if( astTB(r).typ = AST.NODETYPE.VAR ) then
+						if( symbGetInitialized( astGetSymbol( l ) ) ) then
+							if( symbGetInitialized( astGetSymbol( r ) ) ) then
+								astNewBOP = hStrLiteralConcat( l, r )
+								exit function
+							end if
+						end if
+					end if
+				end if
+			end if
 
 		case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 			l = rtlStrCompare( l, dt1, r, dt2 )
@@ -2485,10 +2652,11 @@ function astNewASSIGN( byval l as integer, byval r as integer ) as integer stati
 					exit function
 				end if
 			end if
-		end if
 
-		astNewASSIGN = rtlStrAssign( l, r )
-		exit function
+			astNewASSIGN = rtlStrAssign( l, r )
+			exit function
+
+		end if
 
 	'' UDT's?
 	elseif( (dt1 = IR.DATATYPE.USERDEF) or (dt2 = IR.DATATYPE.USERDEF) ) then
@@ -2776,22 +2944,27 @@ private function hCheckParam( byval f as integer, byval n as integer ) static
 					exit function
 				end if
 
-				'' param diff than arg can't passed by ref
+				'' param diff than arg can't passed by ref if a var/array/ptr
 				if( amode = FB.ARGMODE.BYREF ) then
-					if( (adclass <> pdclass) or _
-						(irGetDataSize( adtype ) <> irGetDataSize( pdtype )) ) then
+					select case typ
+					case AST.NODETYPE.VAR, AST.NODETYPE.IDX, AST.NODETYPE.PTR, AST.NODETYPE.CONST
 
-						'' unless it's a constant
-						if( typ <> AST.NODETYPE.CONST ) then
-							hReportParamError f
-							exit function
+						if( (adclass <> pdclass) or _
+							(irGetDataSize( adtype ) <> irGetDataSize( pdtype )) ) then
+
+							'' unless it's a constant
+							if( typ = AST.NODETYPE.CONST ) then
+								'' change const data type to arg data type
+								'' !!!FIXME!!! check if value is too big
+								astTB(p).dtype = adtype
+								astTB(n).dtype = adtype
+							else
+								hReportParamError f
+								exit function
+							end if
+
 						end if
-
-						'' change const data type to arg data type
-						'' !!!FIXME!!! check if value is too big
-						astTB(p).dtype = adtype
-						astTB(n).dtype = adtype
-					end if
+					end select
 				end if
 			end if
 		end if
@@ -2856,7 +3029,7 @@ end function
 
 '':::::
 private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as integer, byval arg as FBPROCARG ptr, _
-						       byval n as integer, src as ASTTEMPSYMBOL, isexpr as integer ) as FBSYMBOL ptr
+						       byval n as integer, srctree as integer, isexpr as integer ) as FBSYMBOL ptr
     dim adtype as integer, adclass as integer, amode as integer
     dim pdtype as integer, pdclass as integer, ptype as integer
     dim tempstr as FBSYMBOL ptr, t as integer
@@ -2864,7 +3037,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 	''
 	hCheckStrArg = NULL
 
-	src.symbol = NULL
+	srctree = INVALID
 	isexpr = FALSE
 
 
@@ -2931,10 +3104,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 
 			'' don't copy back if it's a function returning a fixed-len (ie: C functions)
 			if( ptype <> AST.NODETYPE.FUNCT ) then
-				''!!!FIXME!!! can only handle scalar fixed-len strings, not arrays (as in QB4.5)
-				src.symbol = astGetSymbol( n )
-				src.ofs    = astGetVarOfs( n )
-				src.elm	   = astGetUDTElm( n )
+				srctree = astCloneTree( astTB(n).l )
 			end if
 
     	'' byte ptr?
@@ -3018,7 +3188,7 @@ end sub
 
 '':::::
 private sub hCheckTmpStrings( byval inibase as integer )
-	dim d as FBSYMBOL ptr, s as integer, t as integer
+	dim srctree as integer, s as integer, t as integer, docopy as integer
 	dim vr as integer
 
 	'' copy-back any fix-len string passed as parameter and
@@ -3027,15 +3197,18 @@ private sub hCheckTmpStrings( byval inibase as integer )
         ctx.tempstrs = ctx.tempstrs - 1
 
 		'' copy back if needed
-		d = tempstrTB(ctx.tempstrs).src.symbol
-		if( d <> NULL ) then
+		srctree = tempstrTB(ctx.tempstrs).srctree
+		if( srctree <> INVALID ) then
         	'' only if not a literal string passed a fixed-len
-        	if( symbGetInitialized( d ) = FALSE ) then
-        		''!!!FIXME!!! can only handle scalar fixed-len strings, not arrays (as in QB4.5)
+        	if( astTB(srctree).typ = AST.NODETYPE.VAR ) then
+        	    docopy = symbGetInitialized( astGetSymbol( srctree ) ) = FALSE
+        	else
+        		docopy = TRUE
+        	end if
+
+        	if( docopy ) then
         		s = astNewVAR( tempstrTB(ctx.tempstrs).tmp, 0, IR.DATATYPE.STRING )
-        		t = astNewVAREx( d, tempstrTB(ctx.tempstrs).src.elm, _
-        						 tempstrTB(ctx.tempstrs).src.ofs, IR.DATATYPE.FIXSTR )
-				t = rtlStrAssign( t, s )
+				t = rtlStrAssign( srctree, s )
 				astLoad t, vr
 				astDel t
 			end if
@@ -3053,11 +3226,11 @@ end sub
 '':::::
 private function hPrepParam( byval proc as FBSYMBOL ptr, byval isrtl as integer, byval arg as FBPROCARG ptr, _
 				              byval param as integer, pmode as integer ) as integer
-    dim tsrc as ASTTEMPSYMBOL, isexpr as integer
+    dim srctree as integer, isexpr as integer
     dim t as FBSYMBOL ptr
 
 	'' check string parameters
-	t = hCheckStrArg( proc, isrtl, arg, astTB(param).l, tsrc, isexpr )
+	t = hCheckStrArg( proc, isrtl, arg, astTB(param).l, srctree, isexpr )
 
 	'' param had to be loaded to a temp string?
 	pmode = INVALID
@@ -3065,8 +3238,8 @@ private function hPrepParam( byval proc as FBSYMBOL ptr, byval isrtl as integer,
 		hPrepParam = t
 	else
 		if( t <> NULL ) then
-			tempstrTB(ctx.tempstrs).tmp = t
-			tempstrTB(ctx.tempstrs).src = tsrc
+			tempstrTB(ctx.tempstrs).tmp 	= t
+			tempstrTB(ctx.tempstrs).srctree = srctree
 			ctx.tempstrs = ctx.tempstrs + 1
 			hPrepParam = astNewVAR( t, 0, IR.DATATYPE.STRING )
 

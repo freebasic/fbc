@@ -23,6 +23,7 @@
 ''		 oct/2004 arrays on fields [v1c]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'

@@ -24,6 +24,7 @@
 '' chng: sep/2004 written [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -51,8 +52,13 @@ sub fbcAddIncPath( path as string )
 	if( env.incpaths < FB.MAXINCPATHS ) then
 		incpathTB( env.incpaths ) = path
 
-		if( right$( path, 1 ) <> "\" ) then
-			incpathTB( env.incpaths ) = incpathTB( env.incpaths ) + "\"
+#ifdef TARGET_WIN32
+const PATHDIV = "\\"
+#else
+const PATHDIV = "/"
+#endif
+		if( right$( path, 1 ) <> PATHDIV ) then
+			incpathTB( env.incpaths ) = incpathTB( env.incpaths ) + PATHDIV
 		end if
 
 		env.incpaths = env.incpaths + 1
@@ -82,10 +88,11 @@ sub hSetCtx
 	env.optargmode		= FB.ARGMODE.BYREF
 	env.optexplicit		= FALSE
 	env.optprocpublic	= TRUE
+	env.optescapestr	= FALSE
+	env.optdynamic		= FALSE
 
 	env.compoundcnt 	= 0
 	env.lastcompound	= INVALID
-	env.isdynamic		= FALSE
 	env.isprocstatic	= FALSE
 	env.procerrorhnd 	= NULL
 
@@ -239,7 +246,7 @@ function fbcCompile ( infname as string, outfname as string )
 
 	'' open source file
 	if( not hFileExists( infname ) ) then
-		hReportSimpleError FB.ERRMSG.FILENOTFOUND
+		hReportErrorEx FB.ERRMSG.FILENOTFOUND, infname, -1
 		exit function
 	end if
 
@@ -248,7 +255,7 @@ function fbcCompile ( infname as string, outfname as string )
 
 	''
 	if( not emitOpen ) then
-		hReportSimpleError FB.ERRMSG.FILEACCESSERROR
+		hReportErrorEx FB.ERRMSG.FILEACCESSERROR, infname, -1
 		exit function
 	end if
 
@@ -529,7 +536,7 @@ function hDoInclude( filename as string ) as integer
 	hDoInclude = FALSE
 
 	if( env.reclevel >= FB.MAXINCRECLEVEL ) then
-		hReportSimpleError FB.ERRMSG.RECLEVELTOODEPTH
+		hReportError FB.ERRMSG.RECLEVELTOODEPTH
 		exit function
 	end if
 
@@ -549,17 +556,16 @@ function hDoInclude( filename as string ) as integer
 	end if
 
 	''
-	envcopyTB(env.reclevel) = env
-	lexSaveCtx env.reclevel
-    env.reclevel	= env.reclevel + 1
-
-	env.infile		= filename
-
-	''
 	if( not hFileExists( incfile ) ) then
-		hReportSimpleError FB.ERRMSG.FILENOTFOUND
+		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + incfile + "\""
 
 	else
+		envcopyTB(env.reclevel) = env
+		lexSaveCtx env.reclevel
+    	env.reclevel	= env.reclevel + 1
+
+		env.infile		= filename
+
 		''
 		lexInit
 
@@ -573,12 +579,10 @@ function hDoInclude( filename as string ) as integer
 		'' close it
 		close #env.inf
 
+		''
+		lexRestoreCtx env.reclevel-1
+		env = envcopyTB(env.reclevel-1)
 	end if
-
-	''
-	lexRestoreCtx env.reclevel-1
-	env = envcopyTB(env.reclevel-1)
-
 
 end function
 
@@ -589,7 +593,7 @@ end function
 ''
 function cDirective
     dim res as integer
-    dim incfile as string, isinclude as integer
+    dim incfile as string
     dim token as integer
 
 	res = FALSE
@@ -597,26 +601,21 @@ function cDirective
 	select case lexCurrentToken
 	case FB.TK.DYNAMIC
 		lexSkipToken
-		env.isdynamic = TRUE
+		env.optdynamic = TRUE
 		res = TRUE
 
 	case FB.TK.STATIC
 		lexSkipToken
-		env.isdynamic = FALSE
+		env.optdynamic = FALSE
 		res = TRUE
 
 	case FB.TK.INCLUDE, FB.TK.INCLIB
 
-		if( lexCurrentToken = FB.TK.INCLUDE ) then
-			isinclude = TRUE
-		else
-			isinclude = FALSE
-		end if
-
+		token = lexCurrentToken
 		lexSkipToken
 
 		if( not hMatch( CHAR_COLON ) ) then
-			hReportSimpleError FB.ERRMSG.SYNTAXERROR
+			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
 
@@ -624,12 +623,12 @@ function cDirective
 
 		'' "STR_LIT"
 		if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
-			incfile = lexEatToken
+			incfile = hUnescapeStr( lexEatToken )
 
 		else
 			'' '\''
 			if( not hMatch( CHAR_APOST ) ) then
-				hReportSimpleError FB.ERRMSG.SYNTAXERROR
+				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
 			end if
 
@@ -637,20 +636,21 @@ function cDirective
 
 			'' '\''
 			if( not hMatch( CHAR_APOST ) ) then
-				hReportSimpleError FB.ERRMSG.SYNTAXERROR
+				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
 			end if
 		end if
 
-		if( isinclude ) then
+		select case token
+		case FB.TK.INCLUDE
 			res = hDoInclude( incfile )
-		else
+		case FB.TK.INCLIB
 			if( symbAddLib( incfile ) <> NULL ) then
 				res = TRUE
 			else
 				res = FALSE
 			end if
-		end if
+		end select
 
 	end select
 
@@ -874,7 +874,8 @@ function cConstAssign
 	'' STR_LITERAL
 	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
 
-		if( symbAddConst( id, FB.SYMBTYPE.STRING, lexEatToken ) = NULL ) then
+		lgt = lexTokenTextLen
+		if( symbAddConst( id, FB.SYMBTYPE.STRING, lexEatToken, lgt ) = NULL ) then
     		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
@@ -909,7 +910,7 @@ function cConstAssign
 
 		text = ltrim$( str$( value ) )
 
-		if( symbAddConst( id, typ, text ) = NULL ) then
+		if( symbAddConst( id, typ, text, 0 ) = NULL ) then
     		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
     		exit function
 		end if
@@ -1190,7 +1191,7 @@ function cEnumLine as integer
 	env.enumctx.elements = env.enumctx.elements + 1
 
 	if( cEnumConstDecl( ename ) ) then
-		if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ) ) = NULL ) then
+		if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ), 0 ) = NULL ) then
 			hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 			exit function
 		end if
@@ -1313,7 +1314,7 @@ function cSymbolDecl
 
 		case else
 			lexSkipToken
-			if( env.isdynamic ) then
+			if( env.optdynamic ) then
 				alloctype = alloctype or FB.ALLOCTYPE.DYNAMIC
 			end if
 		end select
@@ -2386,7 +2387,7 @@ function cDefDecl
 end function
 
 '':::::
-''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE)
+''OptDecl         =   OPTION (EXPLICIT|BASE NUM_LIT|BYVAL|PRIVATE|ESCAPE|DYNAMIC|STATIC)
 ''
 function cOptDecl
 
@@ -2418,9 +2419,24 @@ function cOptDecl
 		lexSkipToken
 		env.optprocpublic = FALSE
 
+	case FB.TK.DYNAMIC
+		lexSkipToken
+		env.optdynamic = TRUE
+
+	case FB.TK.STATIC
+		lexSkipToken
+		env.optdynamic = FALSE
+
 	case else
-		hReportError FB.ERRMSG.SYNTAXERROR
-		exit function
+
+		'' ESCAPE (it's not a reserved word, there are too many already..)
+		if( ucase$( lexTokenText ) = "ESCAPE" ) then
+			lexSkipToken
+			env.optescapestr = TRUE
+		else
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		end if
 
 	end select
 

@@ -21,6 +21,7 @@
 ''
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -182,23 +183,6 @@ function hGetLastError as integer
 end function
 
 '':::::
-sub hReportSimpleError( byval errnum as integer )
-    dim i as integer, msg as string
-
-	restore errordata
-	for i = 0 to FB.ERRMSGS-1
-		read msg
-		if( (i+1) = errnum ) then
-			exit for
-		end if
-	next i
-
-	print rtrim$( env.infile ); " : error ";
-	print str$( errnum ); ": "; msg
-
-end sub
-
-'':::::
 function hMakeTmpStr as string static
 	static c as integer
 	dim v as string
@@ -308,28 +292,67 @@ exitfunction:
 end function
 
 '':::::
-function hScapeStr( s as string ) as string 'static
-    dim c as string, i as integer
+function hScapeStr( text as string ) as string static
+    dim c as integer, l as byte ptr, p as byte ptr
     dim res as string
 
 	res = ""
 
-	for i = 1 to len( s )
+	p = sadd( text )
+	l = p + len( text )
+	do while( p < l )
+		c = *p
+		p = p + 1
 
-		c = mid$( s, i, 1 )
-
-		select case asc( c )
+		select case c
 		case CHAR_RSLASH, CHAR_QUOTE
 			res = res + chr$( CHAR_RSLASH )
+
+		case FB.INTSCAPECHAR
+			if( env.optescapestr ) then
+				res = res + chr$( CHAR_RSLASH )
+				c = *p
+				p = p + 1
+			end if
 		end select
 
-		res = res + c
-
-	next i
+		res = res + chr$( c )
+	loop
 
 	hScapeStr = res
 
 end function
+
+'':::::
+function hUnescapeStr( text as string ) as string static
+    dim c as integer, l as byte ptr, p as byte ptr
+    dim res as string
+
+	if( not env.optescapestr ) then
+    	hUnescapeStr = text
+    	exit function
+    end if
+
+	res = ""
+
+	p = sadd( text )
+	l = p + len( text )
+	do while( p < l )
+
+		c = *p
+		p = p + 1
+
+		if( c = FB.INTSCAPECHAR ) then
+			c = CHAR_RSLASH
+		end if
+
+		res = res + chr$( c )
+	loop
+
+	hUnescapeStr = res
+
+end function
+
 
 '':::::
 sub hClearName( src as string ) static
@@ -443,7 +466,7 @@ function hStripPath( filename as string ) as string 'static
 
 	lp = 0
 	do
-		p = instr( lp+1, filename, "\" )
+		p = instr( lp+1, filename, "\\" )
 	    if( p = 0 ) then
 	    	p = instr( lp+1, filename, "/" )
 	    	if( p = 0 ) then
@@ -467,7 +490,7 @@ function hStripFilename ( filename as string ) as string 'static
 
 	lp = 0
 	do
-		p = instr( lp+1, filename, "\" )
+		p = instr( lp+1, filename, "\\" )
 	    if( p = 0 ) then
 	    	p = instr( lp+1, filename, "/" )
 	    	if( p = 0 ) then

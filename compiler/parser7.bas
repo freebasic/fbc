@@ -21,6 +21,7 @@
 '' chng: dec/2004 written [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'

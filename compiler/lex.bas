@@ -23,6 +23,7 @@
 '' 	     dec/2004 pre-processor added (all code at lexpp.bas) [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -517,31 +518,56 @@ end function
 ''
 function lexReadString ( tlen as integer ) as string static
 	dim s as string
+	dim nval as string, ntyp as integer, nlen as integer
 
 	s = ""
 
 	lexEatChar									'' skip open quote
 
+	tlen = 0
+
 	do
 		select case lexCurrentChar
 		case 0, CHAR_CR, CHAR_LF
 			exit do
+
 		case CHAR_QUOTE
 			lexEatChar
 			'' check for double-quotes
 			if( lexCurrentChar <> CHAR_QUOTE ) then
 				exit do
 			end if
+
+		case CHAR_RSLASH
+			'' process the scape sequence
+			if( env.optescapestr ) then
+
+				'' can't use '\', it will be scaped anyway because GAS
+				lexEatChar
+				s = s + chr$( FB.INTSCAPECHAR )
+
+				select case lexCurrentChar
+				'' if it's a literal number, convert to octagonal
+				case CHAR_0 to CHAR_9, CHAR_AMP
+					nval = lexReadNumber( ntyp, nlen )
+					if( nlen > 3 ) then
+						nval = left$( nval, 3 )
+					end if
+					s = s + oct$( val( nval ) )
+					tlen = tlen + 1
+					continue do
+				end select
+
+			end if
 		end select
 
 		s = s + chr$( lexEatChar )
+		tlen = tlen + 1
 	loop
 
 	lexReadString = s
 
-	tlen = len( s )
-
-	if( tlen > FB.MAXLITLEN ) then
+	if( len( s ) > FB.MAXLITLEN ) then
 		hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
 	end if
 
@@ -650,7 +676,7 @@ readnumber:
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 readid:
 		t.text 		= lexReadIdentifier( t.tlen, t.typ )
-		token 		= left$( t.text, t.tlen )
+		token 		= t.text
 
 		if( checkDefine ) then
 			'' is it a define?
@@ -669,7 +695,7 @@ readid:
 	'':::::
 	case CHAR_QUOTE
 		t.id		= FB.TK.STRLIT
-		t.text 		= lexReadString( t.tlen )
+		t.littext	= lexReadString( t.tlen )
 		t.class 	= FB.TKCLASS.STRLITERAL
 		t.typ		= t.id
 
@@ -852,7 +878,11 @@ end sub
 function lexEatToken( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string static
 
     ''
-    lexEatToken = left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
+    if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
+    	lexEatToken = ctx.tokenTB(0).text
+    else
+    	lexEatToken = ctx.tokenTB(0).littext
+    end if
 
     ''
     if( ctx.tokenTB(0).id = FB.TK.EOL ) then
@@ -909,7 +939,11 @@ sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipli
     		exit sub
     	case else
     		if( not skipline ) then
-    			dst = dst + left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
+    			if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
+    				dst = dst + ctx.tokenTB(0).text
+    			else
+    				dst = dst + ctx.tokenTB(0).littext
+				end if
     		end if
     	end select
 
@@ -922,7 +956,11 @@ sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipli
    		exit sub
    	case else
    		if( not skipline ) then
-   			dst = dst + left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
+    		if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
+    			dst = dst + ctx.tokenTB(0).text
+    		else
+    			dst = dst + ctx.tokenTB(0).littext
+			end if
    		end if
    	end select
 
@@ -992,14 +1030,25 @@ end function
 ''::::
 function lexColNum as integer
 
-	lexColNum = ctx.colnum - len( left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen ) ) + 1
+	lexColNum = ctx.colnum - ctx.tokenTB(0).tlen + 1
 
 end function
 
 ''::::
 function lexTokenText as string
 
-	lexTokenText = left$( ctx.tokenTB(0).text, ctx.tokenTB(0).tlen )
+    if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
+    	lexTokenText = ctx.tokenTB(0).text
+    else
+    	lexTokenText = ctx.tokenTB(0).littext
+    end if
+
+end function
+
+''::::
+function lexTokenTextLen as integer
+
+	lexTokenTextLen = ctx.tokenTB(0).tlen
 
 end function
 

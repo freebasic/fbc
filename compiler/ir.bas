@@ -34,6 +34,7 @@
 
 defint a-z
 option explicit
+option escape
 
 '$include:'inc\fb.bi'
 '$include:'inc\fbint.bi'
@@ -149,7 +150,7 @@ data IR.OP.JLT		, IR.OPTYPE.BRANCH	, FALSE, "jlt"
 data IR.OP.JNE		, IR.OPTYPE.BRANCH	, FALSE, "jne"
 data IR.OP.JLE		, IR.OPTYPE.BRANCH	, FALSE, "jle"
 data IR.OP.JGE		, IR.OPTYPE.BRANCH	, FALSE, "jge"
-data IR.OP.INTDIV	, IR.OPTYPE.BINARY	, FALSE, "\"
+data IR.OP.INTDIV	, IR.OPTYPE.BINARY	, FALSE, "\\"
 data IR.OP.TOINT	, IR.OPTYPE.CONVERT	, FALSE, "2i"
 data IR.OP.TOFLT	, IR.OPTYPE.CONVERT	, FALSE, "2f"
 data IR.OP.LABEL	, IR.OPTYPE.BRANCH	, FALSE, "lbl"
@@ -290,6 +291,9 @@ function irMaxDataType( byval dtype1 as integer, byval dtype2 as integer ) as in
     	if( dtype1 - dtype2 = 1 ) then
     		exit function
     	end if
+    case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR
+    	irMaxDataType = IR.DATATYPE.STRING
+    	exit function
     case else
     	if( dtype1 - dtype2 = -1 ) then
     		exit function

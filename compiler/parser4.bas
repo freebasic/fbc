@@ -21,6 +21,7 @@
 '' chng: sep/2004 written [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -339,18 +340,31 @@ function cIfStatement
     end if
 
 	'' THEN
-	if( not hMatch( FB.TK.THEN ) ) then
-		hReportError FB.ERRMSG.EXPECTEDTHEN
-		exit function
-	end if
+	if( hMatch( FB.TK.THEN ) ) then
 
-	'' (BlockIfStatement | SingleIfStatement)
-	if( not cBlockIfStatement( expr ) ) then
+		'' (BlockIfStatement | SingleIfStatement)
+		if( not cBlockIfStatement( expr ) ) then
+			if( not cSingleIfStatement( expr ) ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			end if
+		end if
+
+	else
+
+		'' GOTO
+		if( lexCurrentToken <> FB.TK.GOTO ) then
+			hReportError FB.ERRMSG.EXPECTEDTHEN
+			exit function
+		end if
+
 		if( not cSingleIfStatement( expr ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
+
 	end if
+
 
 	cIfStatement = TRUE
 

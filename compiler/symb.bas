@@ -22,6 +22,7 @@
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -693,6 +694,7 @@ sub hSetupVar( byval s as FBSYMBOL ptr, sname as string, aname as string, _
 	''
 	s->scope	= env.scope
 	s->alloctype= alloctype
+	s->acccnt 	= 0
 
 	s->typ		= typ
 	s->subtype	= subtype
@@ -1004,7 +1006,7 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as integer st
 end function
 
 '':::::
-function hAllocStringConst( sname as string ) as FBSYMBOL ptr static
+function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, ofs as integer, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
     dim elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr
@@ -1015,7 +1017,7 @@ function hAllocStringConst( sname as string ) as FBSYMBOL ptr static
 
 	aname = hMakeTmpStr
 
-	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, len( sname ) + 1, 0, dTB(), FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
+	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, lgt + 1, 0, dTB(), FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
 	if( s = NULL ) then
 		s = symbLookupVarEx( cname, FB.SYMBTYPE.FIXSTR, ofs, elm, typesymbol, FALSE, TRUE, FALSE )
 		hAllocStringConst = s 's->v.desc
@@ -1033,7 +1035,7 @@ function hAllocStringConst( sname as string ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbAddConst( id as string, byval typ as integer, text as string ) as FBSYMBOL ptr static
+function symbAddConst( id as string, byval typ as integer, text as string, byval lgt as integer ) as FBSYMBOL ptr static
     dim c as FBSYMBOL ptr
     dim cname as string
     dim sentinel as FBSENTINEL ptr
@@ -1056,7 +1058,7 @@ function symbAddConst( id as string, byval typ as integer, text as string ) as F
 
 	c->scope   	= env.scope
 	c->typ 		= typ
-	c->lgt		= len( text )
+	c->lgt		= lgt
 	c->sentinel	= sentinel
 	c->c.textidx= strpAdd( text )
 
@@ -1704,12 +1706,12 @@ function symbGetUDTElmOffset( elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL pt
 
         if( strpGet( e->nameidx ) = ename ) then
 
-        	elm = e
-        	ofs = e->ofs
-        	typ = e->typ
+        	elm 		= e
+        	ofs 		= e->ofs
+        	typ 		= e->typ
+        	typesymbol 	= e->subtype
 
-        	if( (typ = FB.SYMBTYPE.USERDEF) or (typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF) ) then
-                typesymbol = e->subtype
+        	if( typ = FB.SYMBTYPE.USERDEF ) then
 
     			if( p >= len( id ) ) then
     				exit do
@@ -1793,6 +1795,7 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
 
 	s = hLookupVar( vname )
 	if( s <> NULL ) then
+		s->acccnt = s->acccnt + 1
 		typesymbol = s->subtype
 		symbLookupVarEx = s
 		exit function
@@ -1818,10 +1821,11 @@ function symbLookupVarEx( symbol as string, typ as integer, ofs as integer, _
 	end if
 
 	typ = s->typ
-	if( (typ <> FB.SYMBTYPE.USERDEF) and (typ <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF) ) then
+	if( typ <> FB.SYMBTYPE.USERDEF ) then
 		exit function
 	end if
 
+    s->acccnt = s->acccnt + 1
     typesymbol = s->subtype
 
     ofs = symbGetUDTElmOffset( elm, typesymbol, typ, mid$( symbol, p+1 ) )
@@ -2216,6 +2220,13 @@ function symbGetDefineLen( byval d as FBDEFINE ptr ) as integer static
 end function
 
 '':::::
+function symbGetAccessCnt( byval s as FBSYMBOL ptr ) as integer
+
+	symbGetAccessCnt = s->acccnt
+
+end function
+
+'':::::
 function symbGetLen( byval s as FBSYMBOL ptr ) as integer static
 
 	symbGetLen = s->lgt
@@ -2223,11 +2234,15 @@ function symbGetLen( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function symbGetUDTLen( byval s as FBSYMBOL ptr ) as integer static
+function symbGetUDTLen( byval s as FBSYMBOL ptr, byval realUDTsize as integer = TRUE ) as integer static
     dim e as FBTYPELEMENT ptr
 
-	e = s->u.tail
-	symbGetUDTLen = e->ofs + e->lgt
+	if( realUDTsize ) then
+		e = s->u.tail
+		symbGetUDTLen = e->ofs + e->lgt
+	else
+		symbGetUDTLen = s->lgt
+	end if
 
 end function
 
@@ -2302,7 +2317,11 @@ end function
 '':::::
 function symbGetInitialized( byval s as FBSYMBOL ptr ) as integer static
 
-	symbGetInitialized = s->initialized
+	if( s = NULL ) then
+		symbGetInitialized = FALSE
+	else
+		symbGetInitialized = s->initialized
+	end if
 
 end function
 

@@ -20,6 +20,7 @@ enum FBRTL_ENUM
 	FB.RTL.STRCONCAT
 	FB.RTL.STRCOMPARE
 	FB.RTL.STRASSIGN
+	FB.RTL.STRCONCATASSIGN
 	FB.RTL.STRDELETE
 	FB.RTL.STRALLOCTMPRES
 	FB.RTL.STRALLOCTMPDESC
@@ -151,6 +152,7 @@ declare function 	rtlStrCompare 		( byval str1 as integer, byval sdtype1 as inte
 declare function 	rtlStrConcat		( byval str1 as integer, byval sdtype1 as integer, _
 					   				  	  byval str2 as integer, byval sdtype2 as integer ) as integer
 declare function 	rtlStrAssign		( byval dst as integer, byval src as integer ) as integer
+declare function 	rtlStrConcatAssign	( byval dst as integer, byval src as integer ) as integer
 declare function 	rtlStrDelete		( byval strg as integer ) as integer
 declare function 	rtlStrAllocTmpResult( byval strg as integer ) as integer
 declare function 	rtlStrAllocTmpDesc	( byval strg as integer ) as integer
@@ -173,7 +175,7 @@ declare sub 		rtlArrayStrErase	( byval s as FBSYMBOL ptr )
 declare sub 		rtlDataRestore		( byval label as FBSYMBOL ptr )
 declare sub 		rtlDataRead			( byval varexpr as integer )
 declare sub 		rtlDataStoreBegin	( )
-declare sub 		rtlDataStore		( littext as string, byval typ as integer )
+declare sub 		rtlDataStore		( littext as string, byval litlen as integer, byval typ as integer )
 declare sub 		rtlDataStoreEnd		( )
 
 declare function	rtlMathPow			( byval xexpr as integer, byval yexpr as integer ) as integer

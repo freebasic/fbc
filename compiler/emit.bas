@@ -22,6 +22,7 @@
 
 defint a-z
 option explicit
+option escape
 
 '$include:'inc\fb.bi'
 '$include:'inc\fbint.bi'
@@ -69,9 +70,11 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 ''
 ''globals
 	dim shared ctx as EMITCTX
-	dim shared NEWLINE as string '* 2
-	dim shared COMMA as string '* 2
-	dim shared TABCHAR as string '* 1
+	dim shared COMMA as string
+
+const TABCHAR = "\t"
+const NEWLINE = "\r\n"
+const QUOTE   = "\""
 
 	redim shared dtypeTB( 0 ) as EMITDATATYPE
 	redim shared rnameTB( 0, 0 ) as string
@@ -199,16 +202,8 @@ sub emitInit
 		exit sub
 	end if
 
-	''
-#ifdef TARGET_WIN32
-	NEWLINE = chr$( CHAR_CR ) + chr$( CHAR_LF )
-#else
-	NEWLINE = chr$( CHAR_LF )
-#endif
-
 	COMMA = ", "
 
-	TABCHAR = chr$( CHAR_TAB )
 
 	''
 	redim dtypeTB(0 to IR.MAXDATATYPES-1) as EMITDATATYPE
@@ -295,7 +290,7 @@ function emitGetRegName( byval dtype as integer, byval dclass as integer, byval 
 	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
 
 	if( reg = INVALID ) then
-		emitGetRegName = "~"
+		emitGetRegName = ""
 	else
 		t = dtypeTB(dtype).rnametb
 
@@ -491,7 +486,7 @@ end function
 '':::::
 sub emitCOMMENT( s as string ) 'static
 
-	outEX TABCHAR + chr$( 35 ) + s + NEWLINE, FALSE
+	outEX TABCHAR + "\35" + s + NEWLINE, FALSE
 
 end sub
 
@@ -2175,15 +2170,15 @@ sub emitDATAEND 'static
 end sub
 
 '':::::
-sub emitDATA ( litext as string, byval typ as integer )
+sub emitDATA ( litext as string, byval litlen as integer, byval typ as integer )
     dim esctext as string
 
     esctext = hScapeStr( litext )
 
 	'' len + asciiz
 	if( typ <> INVALID ) then
-		outp ".short 0x" + hex$( len( litext ) )
-		outp ".asciz " + chr$( CHAR_QUOTE ) + esctext + chr$( CHAR_QUOTE )
+		outp ".short 0x" + hex$( litlen )
+		outp ".asciz " + QUOTE + esctext + QUOTE
 	else
 		outp ".short 0x0000"
 	end if
@@ -2406,7 +2401,7 @@ private sub hSaveAsmConst( ) 'static
     	    		stype = hGetTypeString( typ )
     	    		stext = symbGetVarText( s )
     	    		if( symbGetType( s ) = FB.SYMBTYPE.FIXSTR ) then
-    	    			stext = chr$( CHAR_QUOTE ) + hScapeStr( stext ) + chr$( CHAR_QUOTE )
+    	    			stext = QUOTE + hScapeStr( stext ) + QUOTE
     	    		end if
 
     	    		hWriteStr ctx.outf, TRUE, ".balign 4"

@@ -24,6 +24,7 @@
 
 defint a-z
 option explicit
+option escape
 
 '$include:'inc\fb.bi'
 '$include:'inc\fbint.bi'

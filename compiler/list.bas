@@ -22,6 +22,7 @@
 ''
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\list.bi'

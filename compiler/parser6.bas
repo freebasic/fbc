@@ -22,6 +22,7 @@
 '' chng: sep/2004 written [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -251,7 +252,7 @@ end function
 function cDataStmt
 	dim expr as integer, typ as integer
 	dim s as FBSYMBOL ptr
-	dim littext as string
+	dim littext as string, litlen as integer
 
 	cDataStmt = FALSE
 
@@ -304,8 +305,8 @@ function cDataStmt
 
   			if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
                 typ = FB.SYMBTYPE.FIXSTR
-				littext = lexTokenText
-				lexSkipToken
+				litlen  = lexTokenTextLen
+				littext = lexEatToken
 
 			else
 			    if( not cExpression( expr ) ) then
@@ -320,10 +321,11 @@ function cDataStmt
 
   				typ = IR.DATATYPE.FIXSTR
   				littext = ltrim$( str$( astGetValue( expr ) ) )
+  				litlen = len( littext )
   				astDel expr
 		    end if
 
-            rtlDataStore littext, typ
+            rtlDataStore littext, litlen, typ
 
 			if( not hMatch( CHAR_COMMA ) ) then
 				exit do
@@ -603,6 +605,7 @@ end function
 function cInputStmt
     dim filestrexpr as integer, dstexpr as integer
     dim iscomma as integer, isfile as integer, addnewline as integer, addquestion as integer
+    dim lgt as integer
 
 	cInputStmt = FALSE
 
@@ -631,7 +634,8 @@ function cInputStmt
     	isfile = FALSE
     	'' STRING_LIT?
     	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
-			filestrexpr = astNewVAR( hAllocStringConst( lexEatToken ), 0, IR.DATATYPE.FIXSTR )
+			lgt = lexTokenTextLen
+			filestrexpr = astNewVAR( hAllocStringConst( lexEatToken, lgt ), 0, IR.DATATYPE.FIXSTR )
     	else
     		filestrexpr = INVALID
     	end if

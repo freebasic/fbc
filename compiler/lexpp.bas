@@ -21,6 +21,7 @@
 '' chng: dec/2004 written [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -51,12 +52,11 @@ end type
 	dim shared ctx as FBPPCTX
 	dim shared pptb(1 to FB.PP.MAXRECLEVEL) as FBPPREC
 
-
 '':::::
 private function hLiteral as string
-    dim text as string, quote as string
+    dim text as string
 
-    quote = chr$( CHAR_QUOTE )
+const QUOTE = "\""
 
     text = ""
     do
@@ -67,8 +67,11 @@ private function hLiteral as string
 
     	'' preserve quotes if it's a string literal
     	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
-    		text = text + quote + lexEatToken + quote
+    		text = text + QUOTE + hUnescapeStr( lexEatToken ) + QUOTE
     	else
+    		if( len( text ) > 0 ) then
+    			text = text + " "
+    		end if
     		text = text + lexEatToken
     	end if
     loop

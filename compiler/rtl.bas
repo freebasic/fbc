@@ -22,6 +22,7 @@
 
 defint a-z
 option explicit
+option escape
 
 '$include: 'inc\fb.bi'
 '$include: 'inc\fbint.bi'
@@ -71,6 +72,13 @@ data "fb_StrAssign","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_StrConcatAssign ( dst as any, byval dst_len as integer, _
+'' 				        src as any, byval src_len as integer ) as void
+data "fb_StrConcatAssign","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+						      FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						      FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_StrDelete ( str as string ) as void
 data "fb_StrDelete","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
@@ -1121,11 +1129,53 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
 end function
 
 '':::::
-function rtlStrAssign( byval dst as integer, byval src as integer ) as integer static
+function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as integer static
     dim lgt as integer, dtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
 
+	''
+	f = ifuncTB(FB.RTL.STRCONCATASSIGN)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
+
+    ''
+   	dtype = astGetDataType( dst )
+
+	lgt = -1
+	if( dtype = IR.DATATYPE.BYTE ) then
+		lgt = 0
+	elseif( hIsStrFixed( dtype ) ) then
+		lgt = hGetFixStrLen( dst )
+		if( lgt < 0 ) then lgt = 0
+	end if
+	astNewPARAM( proc, dst, dtype )
+	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+
+   	''
+   	dtype = astGetDataType( src )
+
+	lgt = -1
+	if( dtype = IR.DATATYPE.BYTE ) then
+		lgt = 0
+	elseif( hIsStrFixed( dtype ) ) then
+		lgt = hGetFixStrLen( src )
+		if( lgt < 0 ) then lgt = 0
+	end if
+	astNewPARAM( proc, src, dtype )
+	lgt = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	astNewPARAM( proc, lgt, IR.DATATYPE.INTEGER )
+
+	''
+	rtlStrConcatAssign = proc
+
+end function
+
+'':::::
+function rtlStrAssign( byval dst as integer, byval src as integer ) as integer static
+    dim lgt as integer, dtype as integer
+    dim f as FBSYMBOL ptr, proc as integer
+    dim s as integer
 
 	''
 	f = ifuncTB(FB.RTL.STRASSIGN)
@@ -1684,10 +1734,10 @@ sub rtlDataStoreBegin static
 end sub
 
 '':::::
-sub rtlDataStore( littext as string, byval typ as integer ) static
+sub rtlDataStore( littext as string, byval litlen as integer, byval typ as integer ) static
 
 	'' emit will take care of all dirty details
-	emitDATA littext, typ
+	emitDATA littext, litlen, typ
 
 end sub
 
@@ -1782,7 +1832,7 @@ function rtlMathFIX ( byval expr as integer ) as integer static
 end function
 
 '':::::
-function hCalcExprLen( byval expr as integer ) as integer static
+function hCalcExprLen( byval expr as integer, byval realUDTsize as integer = TRUE ) as integer static
 	dim lgt as integer, e as FBTYPELEMENT ptr
 
 	lgt = -1
@@ -1805,7 +1855,7 @@ function hCalcExprLen( byval expr as integer ) as integer static
 		if( e <> NULL ) then
 			lgt = symbGetUDTELmLen( e )
 		else
-			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( expr ) ) )
+			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( expr ) ), realUDTsize )
 		end if
 	end select
 
@@ -1842,7 +1892,7 @@ function rtlMathLen( byval expr as integer ) as integer static
 	end if
 
 	''
-	lgt = hCalcExprLen( expr )
+	lgt = hCalcExprLen( expr, FALSE )
 
 	rtlMathLen = astNewCONST( lgt, IR.DATATYPE.INTEGER )
 
@@ -2783,7 +2833,7 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = INVALID) ) then
-		expr = astNewVAR( hAllocStringConst( "" ), 0, IR.DATATYPE.FIXSTR )
+		expr = astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR )
 	end if
 
     astNewPARAM( proc, expr, INVALID )
@@ -2823,7 +2873,7 @@ sub rtlFileInput( byval isfile as integer, byval expr as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = INVALID) ) then
-		expr = astNewVAR( hAllocStringConst( "" ), 0, IR.DATATYPE.FIXSTR )
+		expr = astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR )
 	end if
 
 	astNewPARAM( proc, expr, INVALID )

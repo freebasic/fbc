@@ -24,7 +24,8 @@ type FBTOKEN
 	id				as integer
 	class			as integer
 	typ				as integer
-	text			as string * FB.MAXLITLEN 	'' used by lit-strings too, can't be MAXNAMELEN
+	text			as string * FB.MAXNAMELEN
+	littext			as string * FB.MAXLITLEN 	'' used by lit-strings
 	tlen			as integer
 end type
 
@@ -47,6 +48,7 @@ declare sub 		lexNextToken 			( t as FBTOKEN, byval checkLineCont as integer = T
 declare function 	lexCurrentToken 		( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer
 declare function 	lexCurrentTokenClass 	( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as integer
 declare function 	lexTokenText 			( ) as string
+declare function 	lexTokenTextLen 		( ) as integer
 declare function 	lexTokenType 			( ) as integer
 
 declare function 	lexEatToken 			( byval checkLineCont as integer = TRUE, byval checkDefine as integer = TRUE ) as string

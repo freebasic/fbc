@@ -23,14 +23,14 @@ const NULL			= 0
 const INVALID		= -1
 
 ''
-#define FB.VERSION				"0.10"
-#define FB.SIGN					"FreeBASIC v0.10b"
+#define FB.VERSION				"0.11"
+#define FB.SIGN					"FreeBASIC v0.11b"
 
 '' paths
 #ifdef TARGET_WIN32
-const FB.BINPATH$				= "\bin\"
-const FB.INCPATH$				= "\inc\"
-const FB.LIBPATH$				= "\lib"
+const FB.BINPATH$				= "\\bin\\"
+const FB.INCPATH$				= "\\inc\\"
+const FB.LIBPATH$				= "\\lib"
 #else
 const FB.BINPATH$				= "/bin/"
 const FB.INCPATH$				= "/inc/"

@@ -23,12 +23,13 @@
 '' chng: sep/2004 written [v1ctor]
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 
-DefInt a-z
-Option Explicit
+defint a-z
+option explicit
+option escape
 
-'$include:'inc\hash.bi'
-'$include:'inc\list.bi'
-'$include:'inc\strpool.bi'
+'$include: 'inc\hash.bi'
+'$include: 'inc\list.bi'
+'$include: 'inc\strpool.bi'
 
 Const INVALID = -1
 Const TRUE = -1

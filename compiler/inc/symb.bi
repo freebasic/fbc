@@ -70,6 +70,7 @@ declare function 	symbGetFirstVarDim		( byval s as FBSYMBOL ptr ) as FBVARDIM pt
 declare function 	symbGetNextVarDim		( byval s as FBSYMBOL ptr, byval d as FBVARDIM ptr ) as integer
 declare sub 		symbGetVarDims			( byval s as FBSYMBOL ptr, byval d as FBVARDIM ptr, lb as integer, ub as integer )
 
+declare function 	symbGetAccessCnt		( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbGetLen				( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbGetType				( byval s as FBSYMBOL ptr ) as integer
 declare function 	symbGetSubType			( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -91,7 +92,7 @@ declare function 	symbGetProcTailArg		( byval f as FBSYMBOL ptr ) as FBPROCARG p
 declare function 	symbGetName				( byval s as FBSYMBOL ptr ) as string
 declare function 	symbGetAlias			( byval s as FBSYMBOL ptr ) as string
 
-declare function 	symbGetUDTLen			( byval s as FBSYMBOL ptr ) as integer
+declare function 	symbGetUDTLen			( byval s as FBSYMBOL ptr, byval realUDTsize as integer = TRUE ) as integer
 declare function 	symbGetUDTElmDiff		( byval e as FBTYPELEMENT ptr ) as integer
 declare sub 		symbGetUDTElmDims		( byval e as FBTYPELEMENT ptr, byval d as FBVARDIM ptr, lb as integer, ub as integer )
 declare function 	symbGetFirstUDTElmDim	( byval e as FBTYPELEMENT ptr ) as FBVARDIM ptr
@@ -130,7 +131,7 @@ declare function 	symbAddVarEx			( symbol as string, aliasname as string, byval 
 				       						  byval addsuffix as integer, byval preservecase as integer, _
 				       						  byval clearname as integer ) as FBSYMBOL ptr
 declare function 	symbAddTempVar			( byval typ as integer ) as FBSYMBOL ptr
-declare function 	symbAddConst			( id as string, byval typ as integer, text as string ) as FBSYMBOL ptr
+declare function 	symbAddConst			( id as string, byval typ as integer, text as string, byval lgt as integer ) as FBSYMBOL ptr
 declare function 	symbAddUDT				( id as string, byval isunion as integer, byval align as integer ) as FBSYMBOL ptr
 declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, id as string, _
 											  byval dimensions as integer, dTB() as FBARRAYDIM, _
@@ -159,6 +160,7 @@ declare sub 		symbDelLocalSymbols		( )
 
 declare function 	symbDelDefine			( id as string ) as integer
 declare sub 		symbDelLabel			( byval l as FBSYMBOL ptr )
+declare sub 		symbDelVar				( byval s as FBSYMBOL ptr )
 
 declare function 	symbCalcLen				( byval typ as integer, byval subtype as FBSYMBOL ptr, _
 											  byval realUDTlen as integer = FALSE ) as integer
@@ -168,7 +170,7 @@ declare function 	symbIsString			( byval s as FBSYMBOL ptr ) as integer
 declare function 	hIsString				( byval dtype as integer ) as integer
 
 declare function 	hAllocFloatConst		( sname as string, byval typ as integer ) as FBSYMBOL ptr
-declare function 	hAllocStringConst		( sname as string ) as FBSYMBOL ptr
+declare function 	hAllocStringConst		( sname as string, byval lgt as integer ) as FBSYMBOL ptr
 
 declare function 	hCalcElements 			( byval s as FBSYMBOL ptr ) as integer
 declare function 	hStyp2Dtype				( byval typ as integer ) as integer

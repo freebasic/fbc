@@ -21,6 +21,7 @@
 '' chng: sep/2004 written [v1ctor]
 
 option explicit
+option escape
 
 defint a-z
 '$include: 'inc\fb.bi'
@@ -783,7 +784,7 @@ function cConstant( constexpr as integer )
 
   			if( irGetDataClass( dtype ) = IR.DATACLASS.STRING ) then
 
-				c = hAllocStringConst( text )
+				c = hAllocStringConst( text, symbGetLen( c ) )
 				constexpr = astNewVAR( c, 0, IR.DATATYPE.FIXSTR )
 
   			else
@@ -816,7 +817,7 @@ function cLiteral( litexpr as integer )
 
   	elseif( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
 
-		tc = hAllocStringConst( lexTokenText )
+		tc = hAllocStringConst( lexTokenText, lexTokenTextLen )
 		litexpr = astNewVAR( tc, 0, IR.DATATYPE.FIXSTR )
 
 		lexSkipToken

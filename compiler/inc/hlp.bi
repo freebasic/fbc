@@ -28,7 +28,6 @@ declare function 	hMatch					( byval token as integer ) as integer
 
 declare sub 		hReportErrorEx			( byval errnum as integer, msgex as string, byval linenum as integer = 0 )
 declare sub 		hReportError			( byval errnum as integer, byval isbefore as integer = FALSE )
-declare sub 		hReportSimpleError		( byval errnum as integer )
 declare function 	hGetLastError 			( ) as integer
 
 declare function 	hMakeTmpStr 			( ) as string
@@ -36,7 +35,8 @@ declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
 
 declare function 	hFileExists				( filename as string ) as integer
 
-declare function 	hScapeStr				( s as string ) as string
+declare function 	hScapeStr				( text as string ) as string
+declare function 	hUnescapeStr			( text as string ) as string
 declare sub 		hClearName				( src as string )
 
 declare function 	hCreateAliasName		( symbol as string, byval argslen as integer, _

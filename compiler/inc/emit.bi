@@ -60,7 +60,7 @@ declare sub 		emitALIGN			( byval bytes as integer )
 declare sub 		emitSECTION			( byval section as integer )
 
 declare sub 		emitDATABEGIN		( lname as string )
-declare sub 		emitDATA			( litext as string, byval dtype as integer )
+declare sub 		emitDATA			( litext as string, byval litlen as integer, byval dtype as integer )
 declare sub 		emitDATAEND			( )
 
 declare function 	emitGetRegName		( byval dtype as integer, byval dclass as integer, byval reg as integer ) as string
