@@ -11,11 +11,16 @@ the QB built-in gfx routines, but also to give users more possibilities than
 QB provided, like high resolutions and hi/truecolor, MMX optimized routines,
 mouse and keyboard (multiple keypresses) handling, transparent PUT support
 with clipping done right, multiple offscreen pages in any gfx mode.
+It also supports setting up an OpenGL mode so you can do your own OpenGL
+coding without worrying about platform dependent initializations.
 
 This document holds a reference of the available functions in alphabetical
 order, together with small inline examples where appropriate and with remarked
 differences with their QB counterparts. You'll also find some appendices for
 special topics.
+
+Some useful constants are defined in the fbgfx.bi include file for you to use,
+you may want to have a look at it, it's in your FreeBASIC/inc directory.
 
 Happy coding!
 
@@ -49,6 +54,7 @@ Functions reference:
 	SCREENINFO	function
 	SCREENLOCK	statement
 	SCREENPTR	function
+	SCREENRES	statement
 	SCREENSET	statement
 	SCREENUNLOCK	statement
 	SETMOUSE	statement
@@ -1267,7 +1273,7 @@ Statement to set current gfx mode.
 
 
 Syntax:
-	SCREEN mode[,[depth][,[num_pages][,fullscreen]]]
+	SCREEN mode[,[depth][,[num_pages][,flags]]]
 
 
 Argument:	Description:
@@ -1279,8 +1285,7 @@ depth		Color depth in bits per pixel. If you omit this argument, the
 
 num_pages	Number of pages, see below. Default if omitted is 1.
 
-fullscreen	Set this argument to 0 to request a windowed mode, 1 to
-		request a fullscreen mode. Default if omitted is 0.
+flags		Mode options, see below. Default if omitted is 0.
 
 
 Insights:
@@ -1339,31 +1344,48 @@ Mode 21: 1280x1024
 
 For modes 14 and up, the depth parameter changes the color depth to the
 specified new one; if depth is not specified, these modes run in 8bpp. For
-modes 13 and below, depth has no effect.
+modes 13 and below, depth has no effect. If you need custom resolutions,
+have a look at the SCREENRES statement.
 The num_pages parameter specifies the number of "pages" supported by the
 video mode: a page is either the visible screen or an offscreen buffer the
 same size of the screen. You can show a page while working on another one;
 see the SCREENSET statement for details. You can request any number of pages
 for any video mode; if you omit num_pages, only the visible page (number 0)
 will be available.
-Depending on if the fullscreen parameter is 0 or 1, SCREEN will try to set
-the specified video mode in windowed or fullscreen mode, respectively. If
-fullscreen is 1 and the system cannot set specified mode in fullscreen, it'll
-try in windowed mode. If fullscreen is 0 and the system fails to open a window
-for specified mode, it'll try fullscreen. If everything fails, SCREEN will
-have no effect and execution will resume from the statement following the
-SCREEN call. You should take care of checking if a gfx mode has been set or
-not, and behave accordingly; a way to check if SCREEN is successful is to
-test the return value of the SCREENPTR function, have a look at it for
-details.
+The flags parameter can be an OR combination of the following values:
+
+Value:		Option description:
+&h1		Request fullscreen mode
+&h2		Request OpenGL mode
+&h10		Request stencil buffer for when in OpenGL mode
+&h20		Request accumulation buffer for when in OpenGL mode
+
+Depending on if the fullscreen flag is set or not, SCREEN will try to set
+the specified video mode in fullscreen or windowed mode, respectively. Note
+that the system may not be able to fulfill this request, fallbacking on a
+working alternative.
+If the OpenGL flag is set, gfxlib will enter OpenGL mode: all primitives
+drawing functions will have no effect and the screen will not be automatically
+updated for you. Basically in OpenGL mode you're just left alone with a
+working OpenGL window, and your OpenGL code should handle all rendering. When
+a frame is ready, you can request a page flip using the FLIP command, which
+has this special behaviour while in OpenGL mode.
+The stencil buffer flag has effect only when in OpenGL mode, and if set it
+requests the OpenGL context to have a stencil buffer.
+Similarly, the accumulation flag also only works when an OpenGL mode has been
+requested, and requests an accumulation buffer for it.
+Gfxlib will try its best to fulfill your gfx mode requests, but if everything
+fails no mode will be set and execution will resume from the statement next
+to the SCREEN call. So you should take particular care about checking if
+SCREEN is successful; a way to do this is to test the return value of the
+SCREENPTR function, have a look at it for details.
 Once a gfx mode has been set, you can toggle fullscreen and windowed mode at
 any time by pressing ALT-ENTER, providing the system supports it. While in
 windowed mode, clicking on the window close button will return CHR$(255)+"X"
 to INKEY$, while clicking on the maximize window button will switch to
 fullscreen mode if possible.
-If a windowed mode is set, the mouse cursor is displayed by default; you can
-hide it at any time using the SETMOUSE statement. In fullscreen mode the
-cursor is hidden and cannot be made visible.
+The system mouse cursor is displayed by default; you can hide it at any time
+using the SETMOUSE statement.
 A successful SCREEN call sets currently visible and working pages both to page
 number 0, resets the palette to the specified mode one (see appendix B),
 resets the clipping region to the size of the screen, disables custom
@@ -1390,8 +1412,8 @@ any number of pages in any mode.
 
 See also:
 
-PALETTE, SCREENLOCK, SCREENUNLOCK, SCREENPTR, SCREENSET, SCREENCOPY,
-SCREENINFO, SETMOUSE.
+SCREENRES, SCREENLOCK, SCREENUNLOCK, SCREENPTR, SCREENSET, SCREENCOPY,
+SCREENINFO, SETMOUSE, PALETTE.
 
 
 
@@ -1480,8 +1502,7 @@ pitch		Size of a framebuffer row in bytes.
 bpp		Bytes per pixel.
 mask_color	Color value for transparent pixels in current mode.
 num_pages	Number of available pages.
-flags		Mode flags. If bit 0 is set mode is fullscreen, otherwise it's
-		windowed.
+flags		Mode flags. Same as the flags you specify to SCREEN.
 
 If no gfx mode is set when you call this function, the returned structure will
 report "none" as driver_name and 0 to all other fields. If you change video
@@ -1601,6 +1622,51 @@ Function new in FB.
 See also:
 
 SCREEN, SCREENLOCK, SCREENUNLOCK.
+
+
+
++-----------+-----------------------------------------------------------------
+| SCREENRES |
++-----------+
+
+Statement to set a custom resolution gfx mode.
+
+
+Syntax:
+	SCREENRES width,height[,[depth][,[num_pages][,flags]]]
+
+
+Argument:	Description:
+
+width		Width of the new gfx mode in pixels.
+
+height		Height of the new gfx mode in pixels.
+
+depth		Same as for the SCREEN statement, look at it for details.
+
+num_pages	Same as for the SCREEN statement, look at it for details.
+
+flags		Same as for the SCREEN statement, look at it for details.
+
+
+Insights:
+
+SCREENRES works exactly like SCREEN, but allows to set custom resolutions.
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+SCREEN.
 
 
 
@@ -1733,8 +1799,7 @@ cursor		Pass 0 to hide the cursor, or 1 to show it.
 Insights:
 
 This statement is useful to set the current system mouse cursor position, and
-to hide or show it. The cursor cannot be shown while in fullscreen mode; in
-this case the cursor parameter has no effect.
+to hide or show it. The cursor is shown by default when you call SCREEN.
 
 
 Example:
@@ -1958,7 +2023,7 @@ Appendix A: DOS keyboard scancodes
 Here follows a list of hardware keyboard scancodes accepted by the MULTIKEY
 function. These are equal to DOS scancodes, and are guaranteed to be always
 recognized on all platforms.
-You are encouraged to cut and paste this list into a .BI file for inclusion in
+These constants are also defined in the fbgfx.bi include file you can use in
 your programs.
 
 #define SC_ESCAPE	&h01
