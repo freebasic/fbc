@@ -62,6 +62,7 @@ dim pal(256) as integer, r as integer, g as integer, b as integer
 dim i as integer, j as integer, size as integer
 dim pixel as byte ptr
 dim explosion(MAX_EXPLOSIONS) as EXPLOSION_TYPE
+dim work_page as integer
 
 screen 14, 8, 3
 randomize timer
@@ -88,9 +89,6 @@ for i = 0 to 63
 	pal(192+i) = pal(i)
 next i
 palette using pal
-screencopy 2, 1
-screencopy 2, 0
-screenset 1, 0
 
 '' create fire palette
 ''
@@ -103,8 +101,10 @@ palette using pal
 
 '' start demo
 ''
+screenset 1, 0
+work_page = 1
 do
-	screencopy 2, 1
+	screencopy 2, work_page
 	for i = 0 to MAX_EXPLOSIONS-1
 		if ((explosion(i).used = FALSE) and ((rnd*50) < 1)) then
 			size = (MAX_EXPLOSION_SIZE\4) + (rnd*((MAX_EXPLOSION_SIZE*3)/4))
@@ -130,6 +130,7 @@ do
 		
 	next i
 	wait &h3da,8
-	screencopy 1, 0
+	work_page xor= 1
+	screenset work_page, work_page xor 1
 	
 loop while inkey$ = ""
