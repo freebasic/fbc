@@ -15,11 +15,7 @@
 #include once "gtk/gtk/gtkadjustment.bi"
 #include once "gtk/gtk/gtkstyle.bi"
 #include once "gtk/gtk/gtksettings.bi"
-'''''''' #include once "gtk/gtk/atk/atkobject.bi"
-
-#ifndef AtkObject
-type AtkObject as any
-#endif
+#include once "gtk/atk/atkobject.bi"
 
 enum GtkWidgetFlags
 	GTK_TOPLEVEL = 1 shl 4

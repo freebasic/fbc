@@ -9,16 +9,8 @@
 #ifndef __gtkaccessible_bi__
 #define __gtkaccessible_bi__
 
-'''''''' #include once "gtk/gtk/atk/atk.bi"
+#include once "gtk/atk.bi"
 #include once "gtk/gtk/gtkwidget.bi"
-
-#ifndef AtkObject
-type AtkObject as any
-#endif
-
-#ifndef AtkObjectClass
-type AtkObjectClass as any ptr				'' !!!FIXME!!! it's a full struct, GtkAccessibleClass can't be used
-#endif
 
 type GtkAccessible as _GtkAccessible
 type GtkAccessibleClass as _GtkAccessibleClass
