@@ -107,16 +107,8 @@ typedef struct _FB_STR_TMPDESC {
 	char		*data;
 	int			len;
 
-    struct _FB_STR_TMPDESC *prev;
-    struct _FB_STR_TMPDESC *next;
+	FB_LISTELEM	elem;
 } FB_STR_TMPDESC;
-
-typedef struct _FB_STR_TMPDESCLIST {
-	int				cnt;
-	FB_STR_TMPDESC	*head;
-	FB_STR_TMPDESC	*tail;
-	FB_STR_TMPDESC	*fhead;
-} FB_STR_TMPDESCLIST;
 
 
 /* protos */
@@ -202,8 +194,7 @@ typedef struct _FBARRAY {
 } FBARRAY;
 
 typedef struct _FB_ARRAY_TMPDESC {
-    struct _FB_ARRAY_TMPDESC 	*prev;
-    struct _FB_ARRAY_TMPDESC 	*next;
+	FB_LISTELEM	elem;
 
 	FBARRAY		array;
 	FBARRAYDIM	dimTB[FB_MAXDIMENSIONS-1];
@@ -211,13 +202,6 @@ typedef struct _FB_ARRAY_TMPDESC {
 
 
 #define FB_ARRAY_TMPDESCRIPTORS (FB_STR_TMPDESCRIPTORS / 4)
-
-typedef struct _FB_ARRAY_TMPDESCLIST {
-	int					cnt;
-	FB_ARRAY_TMPDESC	*head;
-	FB_ARRAY_TMPDESC	*tail;
-	FB_ARRAY_TMPDESC	*fhead;
-} FB_ARRAY_TMPDESCLIST;
 
 /* protos */
 

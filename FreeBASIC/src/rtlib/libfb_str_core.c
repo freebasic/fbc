@@ -29,107 +29,41 @@
  *
  * chng: oct/2004 written [v1ctor]
  *       dec/2004 all functions called by FB are now in different modules [v1ctor]
+ *       feb/2005 modified to use the generic list routines [lillo]
  *
  */
 
 #include <malloc.h>
 #include <string.h>
+#include <stddef.h>
 #include "fb.h"
 
 /**********
  * temp string descriptors
  **********/
 
-static FB_STR_TMPDESCLIST tmpdsList = { 0 };
+static FB_LIST tmpdsList = { 0 };
 
-static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS] = { 0 };
-
-/*:::::*/
-static void fb_hStrInitTmpDesc( void )
-{
-    int 			i;
-    FB_STR_TMPDESC  *next;
-
-	tmpdsList.head 	= NULL;
-	tmpdsList.tail 	= NULL;
-	tmpdsList.fhead = &fb_tmpdsTB[0];
-	tmpdsList.cnt	= 0;
-
-	for( i = 0; i < FB_STR_TMPDESCRIPTORS; i++ )
-	{
-    	fb_tmpdsTB[i].data = NULL;
-    	fb_tmpdsTB[i].len  = 0;
-
-    	if( i < FB_STR_TMPDESCRIPTORS-1 )
-    		next = &fb_tmpdsTB[i+1];
-    	else
-    		next = NULL;
-
-    	fb_tmpdsTB[i].prev 	= NULL;
-    	fb_tmpdsTB[i].next 	= next;
-	}
-}
+static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
 /*:::::*/
 FB_STR_TMPDESC *fb_hStrAllocTmpDesc( void )
 {
 	FB_STR_TMPDESC *dsc;
+	char *addr;
 
 	if( (tmpdsList.fhead == NULL) && (tmpdsList.head == NULL) )
-		fb_hStrInitTmpDesc( );
+		fb_hListInit( &tmpdsList, (void *)((char *)fb_tmpdsTB + offsetof( FB_STR_TMPDESC, elem )), sizeof(FB_STR_TMPDESC), FB_STR_TMPDESCRIPTORS );
 
-	/* take from free list */
-	dsc = tmpdsList.fhead;
-	if( dsc == NULL )
+	addr = (char *)fb_hListAllocElem( &tmpdsList );
+	if( addr == NULL )
 		return NULL;
 
-	tmpdsList.fhead = dsc->next;
-
-	/* add to entry used list */
-	if( tmpdsList.tail != NULL )
-		tmpdsList.tail->next = dsc;
-	else
-		tmpdsList.head = dsc;
-
-	dsc->prev = tmpdsList.tail;
-	dsc->next = NULL;
-
-	tmpdsList.tail = dsc;
-
-	++tmpdsList.cnt;
-
-	/*  */
+	dsc = (FB_STR_TMPDESC *)( addr - offsetof( FB_STR_TMPDESC, elem ) );
 	dsc->data = NULL;
-	dsc->len  = 0;
+	dsc->len = 0;
 
 	return dsc;
-}
-
-/*:::::*/
-void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
-{
-
-    /* del from used list */
-	if( dsc->prev != NULL )
-		dsc->prev->next = dsc->next;
-	else
-		tmpdsList.head = dsc->next;
-
-	if( dsc->next != NULL )
-		dsc->next->prev = dsc->prev;
-	else
-		tmpdsList.tail = dsc->prev;
-
-	/* add to free list */
-	dsc->prev = NULL;
-	dsc->next = tmpdsList.fhead;
-	tmpdsList.fhead = dsc;
-
-	--tmpdsList.cnt;
-
-	/*  */
-	dsc->data = NULL;
-	dsc->len  = 0;
 }
 
 /*:::::*/
@@ -139,8 +73,8 @@ void fb_hStrDelTempDesc( FBSTRING *str )
 	if( ((FB_STR_TMPDESC *)str < &fb_tmpdsTB[0]) ||
 	    ((FB_STR_TMPDESC *)str > &fb_tmpdsTB[FB_STR_TMPDESCRIPTORS-1]) )
 		return ;
-
-	fb_hStrFreeTmpDesc( (FB_STR_TMPDESC *)str );
+	
+	fb_hListFreeElem( &tmpdsList, (FB_LISTELEM *)((char *)str + offsetof( FB_STR_TMPDESC, elem )) );
 }
 
 /**********

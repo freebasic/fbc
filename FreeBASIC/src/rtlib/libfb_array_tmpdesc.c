@@ -21,11 +21,13 @@
  * array_tmpdesc.c -- temp descriptor core, for array fields passed by descriptor
  *
  * chng: jan/2005 written [v1ctor]
+ *       feb/2005 modified to use the generic list routines [lillo]
  *
  */
 
 #include <malloc.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include "fb.h"
 
 
@@ -33,32 +35,9 @@
  * temp array descriptors
  **********/
 
-static FB_ARRAY_TMPDESCLIST tmpdsList = { 0 };
+static FB_LIST tmpdsList = { 0 };
 
-static FB_ARRAY_TMPDESC fb_tmpdsTB[FB_ARRAY_TMPDESCRIPTORS] = { 0 };
-
-/*:::::*/
-static void fb_hArrayInitTmpDesc( void )
-{
-    int 			i;
-    FB_ARRAY_TMPDESC  *next;
-
-	tmpdsList.head 	= NULL;
-	tmpdsList.tail 	= NULL;
-	tmpdsList.fhead = &fb_tmpdsTB[0];
-	tmpdsList.cnt	= 0;
-
-	for( i = 0; i < FB_ARRAY_TMPDESCRIPTORS; i++ )
-	{
-    	if( i < FB_ARRAY_TMPDESCRIPTORS-1 )
-    		next = &fb_tmpdsTB[i+1];
-    	else
-    		next = NULL;
-
-    	fb_tmpdsTB[i].prev 	= NULL;
-    	fb_tmpdsTB[i].next 	= next;
-	}
-}
+static FB_ARRAY_TMPDESC fb_tmpdsTB[FB_ARRAY_TMPDESCRIPTORS];
 
 /*:::::*/
 FBARRAY *fb_hArrayAllocTmpDesc( void )
@@ -66,29 +45,11 @@ FBARRAY *fb_hArrayAllocTmpDesc( void )
 	FB_ARRAY_TMPDESC *dsc;
 
 	if( (tmpdsList.fhead == NULL) && (tmpdsList.head == NULL) )
-		fb_hArrayInitTmpDesc( );
+		fb_hListInit( &tmpdsList, (void *)fb_tmpdsTB, sizeof(FB_ARRAY_TMPDESC), FB_ARRAY_TMPDESCRIPTORS );
 
-	/* take from free list */
-	dsc = tmpdsList.fhead;
+	dsc = (FB_ARRAY_TMPDESC *)fb_hListAllocElem( &tmpdsList );
 	if( dsc == NULL )
 		return NULL;
-
-	tmpdsList.fhead = dsc->next;
-
-	/* add to entry used list */
-	if( tmpdsList.tail != NULL )
-		tmpdsList.tail->next = dsc;
-	else
-		tmpdsList.head = dsc;
-
-	dsc->prev = tmpdsList.tail;
-	dsc->next = NULL;
-
-	tmpdsList.tail = dsc;
-
-	++tmpdsList.cnt;
-
-	/*  */
 
 	return (FBARRAY *)&dsc->array;
 }
@@ -98,25 +59,9 @@ void fb_hArrayFreeTmpDesc( FBARRAY *src )
 {
 	FB_ARRAY_TMPDESC *dsc;
 
-	dsc = (FB_ARRAY_TMPDESC *)(((char *)src) - (sizeof( void * ) * 2));
+	dsc = (FB_ARRAY_TMPDESC *)((char *)src - offsetof(FB_ARRAY_TMPDESC, array));
 
-    /* del from used list */
-	if( dsc->prev != NULL )
-		dsc->prev->next = dsc->next;
-	else
-		tmpdsList.head = dsc->next;
-
-	if( dsc->next != NULL )
-		dsc->next->prev = dsc->prev;
-	else
-		tmpdsList.tail = dsc->prev;
-
-	/* add to free list */
-	dsc->prev = NULL;
-	dsc->next = tmpdsList.fhead;
-	tmpdsList.fhead = dsc;
-
-	--tmpdsList.cnt;
+	fb_hListFreeElem( &tmpdsList, (FB_LISTELEM *)dsc );
 }
 
 /*:::::*/
