@@ -1,7 +1,12 @@
+#ifdef FB__LINUX
+#define CHAIN2	"chain2"
+#else
+#define CHAIN2	"chain2.exe"
+#endif
 
 	print "chain1 begins"
 	
-	chain "chain2.exe"
+	chain CHAIN2
 	
 	print "chain1 ends"
 	
