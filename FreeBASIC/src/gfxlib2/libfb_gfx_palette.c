@@ -142,18 +142,17 @@ static void set_palette(int index, unsigned int color)
 				break;
 		}
 		for (i = 0; i < palette->colors; i++) {
+			r = palette->data[i * 3];
+			g = palette->data[(i * 3) + 1];
+			b = palette->data[(i * 3) + 2];
+			fb_mode->palette[i] = r | (g << 8) | (b << 16);
 			if (mode_association) {
 				fb_mode->color_association[i] = mode_association[i];
 				r = palette->data[fb_mode->color_association[i] * 3];
 				g = palette->data[(fb_mode->color_association[i] * 3) + 1];
 				b = palette->data[(fb_mode->color_association[i] * 3) + 2];
 			}
-			else {
-				r = palette->data[i * 3];
-				g = palette->data[(i * 3) + 1];
-				b = palette->data[(i * 3) + 2];
-			}
-			fb_mode->palette[i] = r | (g << 8) | (b << 16);
+			fb_mode->device_palette[i] = r | (g << 8) | (b << 16);
 			fb_mode->driver->set_palette(i, r, g, b);
 		}
 	}
@@ -162,7 +161,6 @@ static void set_palette(int index, unsigned int color)
 			r = ((color & 0x3F) * 255.0) / 63.0;
 			g = (((color & 0x3F00) >> 8) * 255.0) / 63.0;
 			b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
-			fb_mode->palette[index] = r | (g << 8) | (b << 16);
 		}
 		else {
 			color &= (fb_mode->default_palette->colors - 1);
@@ -171,6 +169,7 @@ static void set_palette(int index, unsigned int color)
 			b = (fb_mode->palette[color] >> 16) & 0xFF;
 			fb_mode->color_association[index] = color;
 		}
+		fb_mode->device_palette[index] = r | (g << 8) | (b << 16);
 		fb_mode->driver->set_palette(index, r, g, b);
 	}
 }

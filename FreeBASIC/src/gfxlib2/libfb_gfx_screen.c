@@ -115,6 +115,8 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		}
 		if (fb_mode->line)
 			free(fb_mode->line);
+		if (fb_mode->device_palette)
+			free(fb_mode->device_palette);
 		if (fb_mode->palette)
 			free(fb_mode->palette);
 		if (fb_mode->color_association)
@@ -185,6 +187,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		/* dirty lines array may be bigger than needed; this is to please the
 		   gfx driver which is not aware of the scanline size */
 		fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
+		fb_mode->device_palette = (unsigned int *)calloc(1, sizeof(int) * 256);
 		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
 		fb_mode->color_association = (unsigned char *)malloc(16);
 		fb_mode->key = (unsigned char *)calloc(1, 128);

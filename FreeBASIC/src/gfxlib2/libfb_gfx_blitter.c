@@ -30,7 +30,7 @@
 /*:::::*/
 static void fb_hBlitCopy(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *src = fb_mode->framebuffer;
 	char *dirty = fb_mode->dirty;
 	int y, z = 0;
@@ -52,7 +52,7 @@ static void fb_hBlitCopy(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to15RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c1, c2, *d;
 	char *dirty = fb_mode->dirty;
@@ -85,7 +85,7 @@ static void fb_hBlit8to15RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to15BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c1, c2, *d;
 	char *dirty = fb_mode->dirty;
@@ -118,7 +118,7 @@ static void fb_hBlit8to15BGR(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to16RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c1, c2, *d;
 	char *dirty = fb_mode->dirty;
@@ -151,7 +151,7 @@ static void fb_hBlit8to16RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to16BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c1, c2, *d;
 	char *dirty = fb_mode->dirty;
@@ -184,7 +184,7 @@ static void fb_hBlit8to16BGR(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to24RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c;
 	unsigned char *d;
@@ -218,7 +218,7 @@ static void fb_hBlit8to24RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to24BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c;
 	unsigned char *d;
@@ -252,7 +252,7 @@ static void fb_hBlit8to24BGR(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to32RGB(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned int *d;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	char *dirty = fb_mode->dirty;
@@ -282,7 +282,7 @@ static void fb_hBlit8to32RGB(unsigned char *dest, int pitch)
 /*:::::*/
 static void fb_hBlit8to32BGR(unsigned char *dest, int pitch)
 {
-	unsigned int *pal = fb_mode->palette;
+	unsigned int *pal = fb_mode->device_palette;
 	unsigned int *d;
 	unsigned char *s, *src = fb_mode->framebuffer;
 	unsigned int c;

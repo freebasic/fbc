@@ -124,6 +124,7 @@ typedef struct MODE
 	int pitch;					/* Width of a framebuffer line in bytes */
 	int bpp;					/* Bytes per pixel */
 	unsigned int *palette;				/* Current RGB color values for each palette index */
+	unsigned int *device_palette;			/* Current RGB color values of visible device palette */
 	unsigned char *color_association;		/* Palette color index associations for CGA/EGA emulation */
 	char *dirty;					/* Dirty lines buffer */
 	const struct GFXDRIVER *driver;			/* Gfx driver in use */

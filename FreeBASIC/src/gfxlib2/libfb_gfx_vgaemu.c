@@ -87,8 +87,10 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 					b = (((color & 0x3F0000) >> 16) * 255.0) / 63.0;
 					fb_mode->palette[index] = r | (g << 8) | (b << 16);
 					for (i = 0; i < (1 << fb_mode->depth); i++) {
-						if (fb_mode->color_association[i] == index)
+						if (fb_mode->color_association[i] == index) {
+							fb_mode->device_palette[i] = r | (g << 8) | (b << 16);
 							fb_mode->driver->set_palette(i, r, g, b);
+						}
 					}
 					fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 					fb_mode->driver->unlock();
