@@ -11,11 +11,11 @@ declare sub		inportsb cdecl alias "inportsb"		( byval _port as ushort, byval _bu
 declare sub		inportsw cdecl alias "inportsw"		( byval _port as ushort, byval _buf as ubyte ptr, byval _len as uinteger )
 declare sub		inportsl cdecl alias "inportsl"		( byval _port as ushort, byval _buf as ubyte ptr, byval _len as uinteger )
 declare sub		outportb cdecl alias "outportb" 	( byval _port as ushort, byval _data as ubyte )
-declare sub		outportw cdecl alias "outportw" 	( byval _port as ushort, byval _data as ubyte )
-declare sub		outportl cdecl alias "outportl" 	( byval _port as ushort, byval _data as ubyte )
+declare sub		outportw cdecl alias "outportw" 	( byval _port as ushort, byval _data as ushort )
+declare sub		outportl cdecl alias "outportl" 	( byval _port as ushort, byval _data as uinteger )
 declare sub		outportsb cdecl alias "outportsb"	( byval _port as ushort, byval _buf as ubyte ptr, byval _len as uinteger )
-declare sub		outportsw cdecl alias "outportsw"	( byval _port as ushort, byval _buf as ubyte ptr, byval _len as uinteger )
-declare sub		outportsl cdecl alias "outportsl"	( byval _port as ushort, byval _buf as ubyte ptr, byval _len as uinteger )
+declare sub		outportsw cdecl alias "outportsw"	( byval _port as ushort, byval _buf as ushort ptr, byval _len as uinteger )
+declare sub		outportsl cdecl alias "outportsl"	( byval _port as ushort, byval _buf as uinteger ptr, byval _len as uinteger )
 
 declare function	dos_inp cdecl alias "inp"		( byval _port as ushort ) as ubyte '' originally called 'inp'
 declare function	inpw cdecl alias "inpw"			( byval _port as ushort ) as ushort
@@ -28,8 +28,8 @@ declare function	kbhit cdecl alias "kbhit"		( ) as integer
 declare function	pc_getkey cdecl alias "getkey"		( ) as integer	' ALT's have 0x100 set
 declare function	getxkey cdecl alias "getxkey"		( ) as integer	' ALT's have 0x100 set, 0xe0 sets 0x200
 
-declare sub		sound cdecl alias "sound"		( byval _frequency )
-#define	nosound		sound(0)
+declare sub		sound cdecl alias "sound"		( byval _frequency as integer )
+#define	nosound		sound 0
 
 extern ScreenAttrib alias "ScreenAttrib" as ubyte
 
