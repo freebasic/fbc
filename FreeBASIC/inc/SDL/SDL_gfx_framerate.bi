@@ -25,10 +25,10 @@ type FPSmanager
 	rate as Uint32 
 end type
 
-declare sub SDL_initFramerate alias "SDL_initFramerate" (byval manager as FPSmanager ptr)
-declare function SDL_setFramerate alias "SDL_setFramerate" (byval manager as FPSmanager ptr, byval rate as integer) as integer
-declare function SDL_getFramerate alias "SDL_getFramerate" (byval manager as FPSmanager ptr) as integer
-declare sub SDL_framerateDelay alias "SDL_framerateDelay" (byval manager as FPSmanager ptr)
+declare sub SDL_initFramerate cdecl alias "SDL_initFramerate" (byval manager as FPSmanager ptr)
+declare function SDL_setFramerate cdecl alias "SDL_setFramerate" (byval manager as FPSmanager ptr, byval rate as integer) as integer
+declare function SDL_getFramerate cdecl alias "SDL_getFramerate" (byval manager as FPSmanager ptr) as integer
+declare sub SDL_framerateDelay cdecl alias "SDL_framerateDelay" (byval manager as FPSmanager ptr)
 
 
 #endif
