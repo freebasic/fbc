@@ -21,7 +21,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 '' 	     dec/2004 pre-processor added (all code at lexpp.bas) [v1ctor]
-''       jan/2005 optimized to not create dynamic strings (but at NextToken:readid)
 
 option explicit
 option escape
@@ -141,11 +140,12 @@ sub lexEnd
 end sub
 
 ''::::
-private sub hLoadDefine( byval s as FBSYMBOL ptr, byval lgt as integer )
-    dim a as FBDEFARG ptr
-    dim text as string, oldtext as string, newtext as string
-    dim t as FBTOKEN
-    dim prntcnt as integer
+private sub hLoadDefine( byval s as FBSYMBOL ptr, _
+						 byval lgt as integer )
+    dim as FBDEFARG ptr a
+    dim as string text, oldtext, newtext
+    dim as FBTOKEN t
+    dim as integer prntcnt
 
 	'' define has args?
 	if( s->def.args > 0 ) then
@@ -416,8 +416,11 @@ end function
 '':::::
 ''indentifier    = (ALPHA | '_') { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
 ''
-private sub lexReadIdentifier( byval pid as zstring ptr, tlen as integer, typ as integer, _
-							   dpos as integer, byval flags as LEXCHECK_ENUM ) static
+private sub lexReadIdentifier( byval pid as zstring ptr, _
+							   tlen as integer, _
+							   typ as integer, _
+							   dpos as integer, _
+							   byval flags as LEXCHECK_ENUM ) static
 	dim c as uinteger
 
 	'' (ALPHA | '_')
@@ -484,7 +487,9 @@ end sub
 ''                | 'O' OCTDIG+
 ''                | 'B' BINDIG+
 ''
-private sub lexReadNonDecNumber( pnum as zstring ptr, tlen as integer, isneg as integer ) static
+private sub lexReadNonDecNumber( pnum as zstring ptr, _
+								 tlen as integer, _
+								 isneg as integer ) static
 	dim as uinteger value, c
 	dim as ulongint value64
 	dim as integer tb(0 to 15), i, lgt, islongint
@@ -629,7 +634,9 @@ end sub
 '':::::
 ''float           = DOT DIGIT { DIGIT } [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ].
 ''
-private sub lexReadFloatNumber( pnum as zstring ptr, tlen as integer, typ as integer ) static
+private sub lexReadFloatNumber( pnum as zstring ptr, _
+								tlen as integer, _
+								typ as integer ) static
     dim c as uinteger
     dim llen as integer
 
@@ -710,7 +717,9 @@ end sub
 ''                | FSUFFIX                       # is float
 ''                | .                             # is def### !!! context sensitive !!!
 ''
-private sub lexReadNumber( byval pnum as zstring ptr, typ as integer, tlen as integer, _
+private sub lexReadNumber( byval pnum as zstring ptr, _
+						   typ as integer, _
+						   tlen as integer, _
 				   		   byval flags as LEXCHECK_ENUM ) static
 	dim c as uinteger
 	dim isfloat as integer, isneg as integer
@@ -872,7 +881,8 @@ end sub
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private sub lexReadString ( byval ps as zstring ptr, tlen as integer ) static
+private sub lexReadString ( byval ps as zstring ptr, _
+							tlen as integer ) static
 	dim as integer rlen, p, ntyp, nlen
 	dim as zstring * 16 nval
 
@@ -949,7 +959,8 @@ private sub lexReadString ( byval ps as zstring ptr, tlen as integer ) static
 end sub
 
 '':::::
-private sub lexNextToken ( t as FBTOKEN, byval flags as LEXCHECK_ENUM ) static
+private sub lexNextToken ( t as FBTOKEN, _
+						   byval flags as LEXCHECK_ENUM ) static
 	dim as uinteger char
 	dim as integer islinecont, isnumber, iswith, lgt
 	dim as FBSYMBOL ptr s
@@ -1391,7 +1402,9 @@ sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 end sub
 
 '':::::
-sub lexReadLine( byval endchar as uinteger = INVALID, dst as string, byval skipline as integer = FALSE ) static
+sub lexReadLine( byval endchar as uinteger = INVALID, _
+				 dst as string, _
+				 byval skipline as integer = FALSE ) static
     dim char as uinteger
 
 	if( not skipline ) then
@@ -1543,7 +1556,8 @@ function lexTokenDotPos as integer
 end function
 
 '':::::
-sub lexSetCurrentToken( byval id as integer, byval class as integer )
+sub lexSetCurrentToken( byval id as integer, _
+						byval class as integer )
 
 	ctx.tokenTB(0).tlen 	= 0
 	ctx.tokenTB(0).id 		= id

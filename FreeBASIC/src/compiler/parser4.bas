@@ -142,7 +142,6 @@ end function
 ''                    (ELSE SimpleStatement*)?
 ''
 function cSingleIfStatement( byval expr as integer )
-	dim vr as integer
 	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr, l as FBSYMBOL ptr
 	dim lastcompstmt as integer
 
@@ -169,7 +168,7 @@ function cSingleIfStatement( byval expr as integer )
 		exit function
 	end if
 
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' NUM_LIT | SimpleStatement*
 	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
@@ -179,7 +178,7 @@ function cSingleIfStatement( byval expr as integer )
 		end if
 		lexSkipToken
 
-		astFlush astNewBRANCH( IR.OP.JMP, l ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, l ) )
 
 	elseif( not cSimpleStatement ) then
 		if( hGetLastError <> FB.ERRMSG.OK ) then
@@ -191,7 +190,7 @@ function cSingleIfStatement( byval expr as integer )
 	if( hMatch( FB.TK.ELSE ) ) then
 
 		'' exit if stmt
-		astFlush astNewBRANCH( IR.OP.JMP, el ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
 
 		'' emit next label
 		irEmitLABEL nl, FALSE
@@ -231,7 +230,6 @@ end function
 '':::::
 function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el as FBSYMBOL ptr, _
 					  byval checkstmtsep as integer = TRUE ) as integer
-	dim vr as integer
 	dim res as integer
 
 	cIfStmtBody = FALSE
@@ -242,7 +240,7 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	end if
-	astFlush expr, vr
+	astFlush( expr )
 
 	if( checkstmtsep ) then
 		'' Comment?
@@ -278,7 +276,6 @@ end function
 function cBlockIfStatement( byval expr as integer )
 	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr
 	dim lastcompstmt as integer
-	dim vr as integer
 
 	cBlockIfStatement = FALSE
 
@@ -307,7 +304,7 @@ function cBlockIfStatement( byval expr as integer )
     do while( hMatch( FB.TK.ELSEIF ) )
 
 		'' exit last if stmt
-		astFlush astNewBRANCH( IR.OP.JMP, el ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
 
 		'' emit next label
 		irEmitLABEL nl, FALSE
@@ -337,7 +334,7 @@ function cBlockIfStatement( byval expr as integer )
 	if( hMatch( FB.TK.ELSE ) ) then
 
 		'' exit last if stmt
-		astFlush astNewBRANCH( IR.OP.JMP, el ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
 
 		'' emit next label
 		irEmitLABEL nl, FALSE
@@ -423,7 +420,7 @@ private function cStoreTemp( byval expr as integer, _
 							 byval dtype as integer, byval dclass as integer, _
 					 		 value as double, value64 as longint ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
-    dim as integer v, vr, exprdtype
+    dim as integer v, exprdtype
 
 	cStoreTemp = NULL
 
@@ -433,7 +430,7 @@ private function cStoreTemp( byval expr as integer, _
 			exit function
 		end if
 		v = astNewVAR( s, NULL, 0, dtype )
-		astFlush astNewASSIGN( v, expr ), vr
+		astFlush( astNewASSIGN( v, expr ) )
 	else
 		exprdtype = astGetDataType( expr )
 		if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
@@ -464,7 +461,6 @@ private sub cFlushBOP( byval op as integer, byval dtype as integer, _
 			   		   byval v2 as FBSYMBOL ptr, byval v2value as double, byval v2value64 as longint, _
 			   		   byval ex as FBSYMBOL ptr ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
-	dim vr as integer
 
 	'' bop
 	if( v1 <> NULL ) then
@@ -490,7 +486,7 @@ private sub cFlushBOP( byval op as integer, byval dtype as integer, _
 	expr = astNewBOP( op, expr1, expr2, ex, FALSE )
 
 	''
-	astFlush expr, vr
+	astFlush( expr )
 
 end sub
 
@@ -499,7 +495,6 @@ private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	 		       		   byval v1 as FBSYMBOL PTR, _
 			       		   byval v2 as FBSYMBOL PTR, byval v2value as double, byval v2value64 as longint ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
-	dim vr as integer
 
 	'' bop
 	expr1 = astNewVAR( v1, NULL, 0, dtype )
@@ -522,7 +517,7 @@ private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	expr = astNewASSIGN( expr1, expr )
 
 	''
-	astFlush expr, vr
+	astFlush( expr )
 
 end sub
 
@@ -537,7 +532,6 @@ function cForStatement
     dim cnt as FBSYMBOL ptr, elm as FBSYMBOL ptr
     dim endc as FBSYMBOL ptr, endc_value as double, endc_value64 as longint
     dim stp as FBSYMBOL ptr, stp_value as double, stp_value64 as longint
-    dim vr as integer
     dim as integer idexpr, expr
     dim as integer dtype, dclass, typ, exprdtype
     dim oldforstmt as FBCMPSTMT, lastcompstmt as integer
@@ -578,7 +572,7 @@ function cForStatement
 
 	'' save initial condition into counter
 	expr = astNewASSIGN( idexpr, expr )
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' get counter type (endc and step must be the same type)
 	dtype  = typ
@@ -627,7 +621,7 @@ function cForStatement
 				exit function
 			end if
 
-			astFlush astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ), vr
+			astFlush( astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ) )
 
 		else
             '' get costant step
@@ -661,7 +655,7 @@ function cForStatement
     tl = symbAddLabel( hMakeTmpStr )
 
     '' !!!FIXME!!! this branch could be eliminated if inic, endc and step are constants !!!FIXME!!!
-    astFlush astNewBRANCH( IR.OP.JMP, tl ), vr
+    astFlush( astNewBRANCH( IR.OP.JMP, tl ) )
 
 	'' add start label
 	il = symbAddLabel( hMakeTmpStr )
@@ -740,7 +734,7 @@ function cForStatement
     	'' negative, loop if >=
 		cFlushBOP IR.OP.GE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
 		'' exit loop
-		astFlush astNewBRANCH( IR.OP.JMP, el ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
     	'' control label
     	irEmitLABELNF c2l
     	'' positive, loop if <=
@@ -773,11 +767,10 @@ end function
 ''					  LOOP ((WHILE | UNTIL) Expression)? .
 ''
 function cDoStatement
-    dim expr as integer, vr as integer, op as integer
-	dim iswhile as integer, isuntil as integer
-    dim il as FBSYMBOL ptr, el as FBSYMBOL ptr, cl as FBSYMBOL ptr
-    dim olddostmt as FBCMPSTMT, lastcompstmt as integer
-    dim isinverse as integer
+    dim as integer expr, op, vr
+	dim as integer iswhile, isuntil, isinverse, lastcompstmt
+    dim as FBSYMBOL ptr il, el, cl
+    dim as FBCMPSTMT olddostmt
 
 	cDoStatement = FALSE
 
@@ -792,8 +785,6 @@ function cDoStatement
 	irEmitLABEL il, FALSE
 
 	'' ((WHILE | UNTIL) Expression)?
-	vr = INVALID
-
 	iswhile = FALSE
 	isuntil = fALSE
 
@@ -825,10 +816,12 @@ function cDoStatement
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
 		end if
-		astFlush expr, vr
 
+		vr = astFlush( expr )
 		cl = il
+
 	else
+		vr = INVALID
 		cl = symbAddLabel( hMakeTmpStr )
 	end if
 
@@ -878,7 +871,9 @@ function cDoStatement
 	end if
 
 	'' emit comp label, if needed
-	if( cl <> il ) then irEmitLABEL cl, FALSE
+	if( cl <> il ) then
+		irEmitLABEL cl, FALSE
+	end if
 
 	if( iswhile or isuntil ) then
 		lexSkipToken
@@ -900,10 +895,10 @@ function cDoStatement
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
 		end if
-		astFlush expr, vr
+		astFlush( expr )
 
 	else
-		astFlush astNewBRANCH( IR.OP.JMP, il ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, il ) )
 	end if
 
     '' end label (loop exit)
@@ -931,9 +926,9 @@ end function
 ''					  WEND .
 ''
 function cWhileStatement
-    dim expr as integer, vr as integer
-    dim il as FBSYMBOL ptr, el as FBSYMBOL ptr
-    dim oldwhilestmt as FBCMPSTMT, lastcompstmt as integer
+    dim as integer expr, lastcompstmt
+    dim as FBSYMBOL ptr il, el
+    dim as FBCMPSTMT oldwhilestmt
 
 	cWhileStatement = FALSE
 
@@ -968,7 +963,7 @@ function cWhileStatement
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	end if
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' Comment?
 	cComment
@@ -989,7 +984,7 @@ function cWhileStatement
 		exit function
 	end if
 
-    astFlush astNewBRANCH( IR.OP.JMP, il ), vr
+    astFlush( astNewBRANCH( IR.OP.JMP, il ) )
 
     '' end label (loop exit)
     irEmitLABEL el, FALSE
@@ -1015,7 +1010,7 @@ end function
 ''				      END SELECT .
 ''
 function cSelectStatement
-    dim expr as integer, vr as integer, lastcompstmt as integer
+    dim expr as integer, lastcompstmt as integer
 	dim symbol as FBSYMBOL ptr, dtype as integer
 	dim elabel as FBSYMBOL ptr
 
@@ -1083,7 +1078,7 @@ function cSelectStatement
 	if( expr = INVALID ) then
 		exit function
 	end if
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' SelectLine*
 	do
@@ -1112,7 +1107,7 @@ function cSelectStatement
 	'' if a temp string was allocated, delete it
 	if( dtype = FB.SYMBTYPE.STRING ) then
 		expr = rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) )
-		astFlush expr, vr
+		astFlush( expr )
 	end if
 
 	env.lastcompound = lastcompstmt
@@ -1169,7 +1164,7 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 				           	    byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr, _
 				           		byval inverselogic as integer ) as integer static
 
-	dim vr as integer, v as integer, expr as integer
+	dim v as integer, expr as integer
 
 	if( casectx.typ <> FB.CASETYPE.RANGE ) then
 		v = astNewVAR( s, NULL, 0, sdtype )
@@ -1180,12 +1175,12 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 			expr = astNewBOP( irGetInverseLogOp( casectx.op ), v, casectx.expr1, nextlabel, FALSE )
 		end if
 
-		astFlush expr, vr
+		astFlush( expr )
 
 	else
 		v = astNewVAR( s, NULL, 0, sdtype )
 		expr = astNewBOP( IR.OP.LT, v, casectx.expr1, nextlabel, FALSE )
-		astFlush expr, vr
+		astFlush( expr )
 
 		if( expr = INVALID ) then
 			hExecCaseExpr = FALSE
@@ -1198,7 +1193,7 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 		else
 			expr = astNewBOP( IR.OP.GT, v, casectx.expr2, nextlabel, FALSE )
 		end if
-		astFlush expr, vr
+		astFlush( expr )
 	end if
 
 	hExecCaseExpr = expr <> INVALID
@@ -1214,7 +1209,6 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 	dim il as FBSYMBOL ptr, nl as FBSYMBOL ptr
 	dim iselse as integer, res as integer
 	dim cnt as integer, i as integer, cntbase as integer
-	dim vr as integer
 
 	cCaseStatement = FALSE
 
@@ -1289,7 +1283,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, byval sdtype as integer, byval
 			end if
 
 			'' break from block
-			astFlush astNewBRANCH( IR.OP.JMP, exitlabel ), vr
+			astFlush( astNewBRANCH( IR.OP.JMP, exitlabel ) )
 
 		end if
 
@@ -1359,7 +1353,6 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	dim expr1 as integer, expr2 as integer, dtype as integer
 	dim value as uinteger, tovalue as uinteger
 	dim label as FBSYMBOL ptr
-	dim vr as integer
 
 	cSelConstCaseStmt = FALSE
 
@@ -1461,7 +1454,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	end if
 
 	'' break from block
-	astFlush astNewBRANCH( IR.OP.JMP, exitlabel ), vr
+	astFlush( astNewBRANCH( IR.OP.JMP, exitlabel ) )
 
 	cSelConstCaseStmt = TRUE
 
@@ -1483,7 +1476,7 @@ end function
 ''				      END SELECT .
 ''
 function cSelectConstStmt as integer
-    dim expr as integer, idxexpr as integer, vr as integer, lastcompstmt as integer
+    dim expr as integer, idxexpr as integer, lastcompstmt as integer
 	dim sym as FBSYMBOL ptr
 	dim exitlabel as FBSYMBOL ptr, complabel as FBSYMBOL ptr, deflabel as FBSYMBOL ptr
 	dim tbsym as FBSYMBOL ptr
@@ -1533,10 +1526,10 @@ function cSelectConstStmt as integer
 	if( expr = INVALID ) then
 		exit function
 	end if
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' skip the statements
-	astFlush astNewBRANCH( IR.OP.JMP, complabel ), vr
+	astFlush( astNewBRANCH( IR.OP.JMP, complabel ) )
 
 	'' SwitchLine*
 	swtbase = ctx.swt.base
@@ -1573,13 +1566,13 @@ function cSelectConstStmt as integer
 	if( minval > 0 ) then
 		expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
 						  astNewCONST( minval, IR.DATATYPE.UINT ), deflabel, FALSE )
-		astFlush expr, vr
+		astFlush( expr )
 	end if
 
 	'' check max val
 	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
 					  astNewCONST( maxval, IR.DATATYPE.UINT ), deflabel, FALSE )
-	astFlush expr, vr
+	astFlush( expr )
 
     '' jump to table[idx]
     tbsym = hSelConstAllocTbSym( )
@@ -1590,7 +1583,7 @@ function cSelectConstStmt as integer
     expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
     				  IR.DATATYPE.UINT, NULL )
 
-    astFlush astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ), vr
+    astFlush( astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ) )
 
     '' emit table
     irEmitLABEL tbsym, FALSE
@@ -1635,7 +1628,6 @@ end function
 ''
 function cExitStatement
     dim label as FBSYMBOL ptr
-    dim vr as integer
 
 	cExitStatement = FALSE
 
@@ -1675,7 +1667,7 @@ function cExitStatement
 	lexSkipToken
 
 	''
-	astFlush astNewBRANCH( IR.OP.JMP, label ), vr
+	astFlush( astNewBRANCH( IR.OP.JMP, label ) )
 
 	cExitStatement = TRUE
 
@@ -1686,7 +1678,6 @@ end function
 ''
 function cContinueStatement
     dim label as FBSYMBOL ptr
-    dim vr as integer
 
 	cContinueStatement = FALSE
 
@@ -1717,7 +1708,7 @@ function cContinueStatement
 	lexSkipToken
 
 	''
-	astFlush astNewBRANCH( IR.OP.JMP, label ), vr
+	astFlush( astNewBRANCH( IR.OP.JMP, label ) )
 
 	cContinueStatement = TRUE
 
@@ -1727,7 +1718,7 @@ end function
 ''EndStatement	  =	  END (Expression | Keyword | ) .
 ''
 function cEndStatement
-	dim errlevel as integer, vr as integer
+	dim errlevel as integer
 
 	cEndStatement = FALSE
 

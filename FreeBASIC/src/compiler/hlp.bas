@@ -125,8 +125,9 @@ data "Forward references not allowed"
 data "Incomplete type"
 data "Array not dimensioned"
 data "Array access, index expected"
+data "Expected 'END ENUM'"
 
-const FB.ERRMSGS = 72
+const FB.ERRMSGS = 73
 
 
 '':::::

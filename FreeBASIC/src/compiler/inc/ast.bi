@@ -165,8 +165,7 @@ declare function 	astGetValue64		( byval n as integer ) as longint
 
 declare function	astLoad				( byval n as integer ) as integer
 
-declare function	astFlush			( byval n as integer, _
-										  vreg as integer ) as integer
+declare function	astFlush			( byval n as integer ) as integer
 
 declare function	astUpdComp2Branch	( byval n as integer, _
 										  byval label as FBSYMBOL ptr, _

@@ -1397,8 +1397,10 @@ end sub
 	end select
 
 '':::::
-function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
-					     byval str2 as integer, byval sdtype2 as integer ) as integer static
+function rtlStrCompare ( byval str1 as integer, _
+						 byval sdtype1 as integer, _
+					     byval str2 as integer, _
+					     byval sdtype2 as integer ) as integer static
     dim lgt as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim str1len as integer, str2len as integer
@@ -1437,8 +1439,10 @@ function rtlStrCompare ( byval str1 as integer, byval sdtype1 as integer, _
 end function
 
 '':::::
-function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
-					   byval str2 as integer, byval sdtype2 as integer ) as integer static
+function rtlStrConcat( byval str1 as integer, _
+					   byval sdtype1 as integer, _
+					   byval str2 as integer, _
+					   byval sdtype2 as integer ) as integer static
     dim lgt as integer, tstr as FBSYMBOL ptr
     dim proc as integer, f as FBSYMBOL ptr
     dim str1len as integer, str2len as integer
@@ -1483,7 +1487,8 @@ function rtlStrConcat( byval str1 as integer, byval sdtype1 as integer, _
 end function
 
 '':::::
-function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as integer static
+function rtlStrConcatAssign( byval dst as integer, _
+							 byval src as integer ) as integer static
     dim lgt as integer, ddtype as integer, sdtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
@@ -1535,7 +1540,8 @@ function rtlStrConcatAssign( byval dst as integer, byval src as integer ) as int
 end function
 
 '':::::
-function rtlStrAssign( byval dst as integer, byval src as integer ) as integer static
+function rtlStrAssign( byval dst as integer, _
+					   byval src as integer ) as integer static
     dim lgt as integer, ddtype as integer, sdtype as integer
     dim f as FBSYMBOL ptr, proc as integer
     dim s as integer
@@ -1704,7 +1710,9 @@ function rtlToStr( byval expr as integer ) as integer static
 end function
 
 '':::::
-function rtlStrInstr( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer ) as integer static
+function rtlStrInstr( byval expr1 as integer, _
+					  byval expr2 as integer, _
+					  byval expr3 as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
 
@@ -1732,7 +1740,9 @@ function rtlStrInstr( byval expr1 as integer, byval expr2 as integer, byval expr
 end function
 
 '':::::
-function rtlStrMid( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer ) as integer static
+function rtlStrMid( byval expr1 as integer, _
+					byval expr2 as integer, _
+					byval expr3 as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
 
@@ -1760,11 +1770,12 @@ function rtlStrMid( byval expr1 as integer, byval expr2 as integer, byval expr3 
 end function
 
 '':::::
-function rtlStrAssignMid( byval expr1 as integer, byval expr2 as integer, byval expr3 as integer, _
+function rtlStrAssignMid( byval expr1 as integer, _
+						  byval expr2 as integer, _
+						  byval expr3 as integer, _
 						  byval expr4 as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
     rtlStrAssignMid = INVALID
 
@@ -1790,14 +1801,15 @@ function rtlStrAssignMid( byval expr1 as integer, byval expr2 as integer, byval 
     end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlStrAssignMid = proc
 
 end function
 
 '':::::
-function rtlStrFill( byval expr1 as integer, byval expr2 as integer ) as integer static
+function rtlStrFill( byval expr1 as integer, _
+					 byval expr2 as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
 
@@ -1826,7 +1838,8 @@ function rtlStrFill( byval expr1 as integer, byval expr2 as integer ) as integer
 end function
 
 '':::::
-function rtlStrAsc( byval expr as integer, byval posexpr as integer ) as integer static
+function rtlStrAsc( byval expr as integer, _
+					byval posexpr as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
 
@@ -1854,7 +1867,8 @@ function rtlStrAsc( byval expr as integer, byval posexpr as integer ) as integer
 end function
 
 '':::::
-function rtlStrChr( byval args as integer, exprtb() as integer ) as integer static
+function rtlStrChr( byval args as integer, _
+					exprtb() as integer ) as integer static
 	dim i as integer, expr as integer
     dim proc as integer, f as FBSYMBOL ptr
 
@@ -1891,8 +1905,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function rtlArrayRedim( byval s as FBSYMBOL ptr, byval elementlen as integer, byval dimensions as integer, _
-				        exprTB() as integer, byval dopreserve as integer ) as integer static
+function rtlArrayRedim( byval s as FBSYMBOL ptr, _
+						byval elementlen as integer, _
+						byval dimensions as integer, _
+				        exprTB() as integer, _
+				        byval dopreserve as integer ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, expr as integer, isvarlen as integer
@@ -1979,7 +1996,6 @@ end function
 function rtlArrayErase( byval arrayexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim isvarlen as integer
-    dim vr as integer
 
 	rtlArrayErase = FALSE
 
@@ -1999,7 +2015,7 @@ function rtlArrayErase( byval arrayexpr as integer ) as integer static
     end if
 
     ''
-	astFlush proc, vr
+	astFlush( proc )
 
 	rtlArrayErase = TRUE
 
@@ -2009,7 +2025,6 @@ end function
 function rtlArrayClear( byval arrayexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim isvarlen as integer, dtype as integer
-    dim vr as integer
 
     rtlArrayClear = FALSE
 
@@ -2031,7 +2046,7 @@ function rtlArrayClear( byval arrayexpr as integer ) as integer static
     end if
 
     ''
-	astFlush proc, vr
+	astFlush( proc )
 
 	rtlArrayClear = TRUE
 
@@ -2041,7 +2056,6 @@ end function
 function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer, isvarlen as integer
-    dim vr as integer
 
 	rtlArrayStrErase = FALSE
 
@@ -2057,16 +2071,17 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
     end if
 
     ''
-	astFlush proc, vr
+	astFlush( proc )
 
 	rtlArrayStrErase = TRUE
 
 end function
 
 '':::::
-function rtlArrayBound( byval sexpr as integer, byval dimexpr as integer, byval islbound as integer ) as integer static
+function rtlArrayBound( byval sexpr as integer, _
+						byval dimexpr as integer, _
+						byval islbound as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlArrayBound = INVALID
 
@@ -2094,12 +2109,14 @@ function rtlArrayBound( byval sexpr as integer, byval dimexpr as integer, byval 
 end function
 
 '':::::
-function rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, _
-					      byval dimensions as integer, dTB() as FBARRAYDIM ) as integer static
+function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
+						  byval elementlen as integer, _
+					      byval dimensions as integer, _
+					      dTB() as FBARRAYDIM ) as integer static
 
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer
-    dim i as integer, vr as integer
+    dim i as integer
 
     rtlArraySetDesc = FALSE
 
@@ -2147,14 +2164,15 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, byval elementlen as integer, 
 	next i
 
     ''
-	astFlush proc, vr
+	astFlush( proc )
 
 	rtlArraySetDesc = TRUE
 
 end function
 
 '':::::
-function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMBOL ptr ) as integer
+function rtlArrayAllocTmpDesc( byval arrayexpr as integer, _
+							   byval pdesc as FBSYMBOL ptr ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer
     dim s as FBSYMBOL ptr
@@ -2243,7 +2261,7 @@ end function
 '':::::
 function rtlDataRead( byval varexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr, args as integer
-    dim vr as integer, dtype as integer, lgt as integer
+    dim dtype as integer, lgt as integer
 
     rtlDataRead = FALSE
 
@@ -2305,7 +2323,7 @@ function rtlDataRead( byval varexpr as integer ) as integer static
     end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlDataRead = TRUE
 
@@ -2314,7 +2332,6 @@ end function
 '':::::
 function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
     dim lname as string
     dim s as FBSYMBOL ptr
 
@@ -2344,7 +2361,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
  	end if
 
 	''
-	astFlush proc, vr
+	astFlush( proc )
 
 	rtlDataRestore = TRUE
 
@@ -2411,7 +2428,9 @@ sub rtlDataStoreBegin static
 end sub
 
 '':::::
-function rtlDataStore( littext as string, byval litlen as integer, byval typ as integer ) as integer static
+function rtlDataStore( littext as string, _
+					   byval litlen as integer, _
+					   byval typ as integer ) as integer static
 
 	'' emit will take care of all dirty details
 	emitDATA littext, litlen, typ
@@ -2436,7 +2455,8 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function rtlMathPow	( byval xexpr as integer, byval yexpr as integer ) as integer static
+function rtlMathPow	( byval xexpr as integer, _
+					  byval yexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
 	''
@@ -2508,7 +2528,8 @@ function rtlMathFIX ( byval expr as integer ) as integer static
 end function
 
 '':::::
-private function hCalcExprLen( byval expr as integer, byval realsize as integer = TRUE ) as integer static
+private function hCalcExprLen( byval expr as integer, _
+							   byval realsize as integer = TRUE ) as integer static
 	dim lgt as integer, s as FBSYMBOL ptr
 	dim dtype as integer
 
@@ -2565,7 +2586,8 @@ private function hCalcExprLen( byval expr as integer, byval realsize as integer 
 end function
 
 '':::::
-function rtlMathLen( byval expr as integer, byval checkstrings as integer = TRUE ) as integer static
+function rtlMathLen( byval expr as integer, _
+					 byval checkstrings as integer = TRUE ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, lgt as integer, s as integer
 
@@ -2611,8 +2633,10 @@ end function
 
 '':::::
 function rtlMathLongintDIV( byval dtype as integer, _
-							byval lexpr as integer, byval ldtype as integer, _
-					        byval rexpr as integer, byval rdtype as integer ) as integer static
+							byval lexpr as integer, _
+							byval ldtype as integer, _
+					        byval rexpr as integer, _
+					        byval rdtype as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
 	rtlMathLongintDIV = INVALID
@@ -2640,8 +2664,10 @@ end function
 
 '':::::
 function rtlMathLongintMOD( byval dtype as integer, _
-							byval lexpr as integer, byval ldtype as integer, _
-					        byval rexpr as integer, byval rdtype as integer ) as integer static
+							byval lexpr as integer, _
+							byval ldtype as integer, _
+					        byval rexpr as integer, _
+					        byval rdtype as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
 	rtlMathLongintMOD = INVALID
@@ -2672,11 +2698,13 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemicolon as integer, _
+function rtlPrint( byval fileexpr as integer, _
+				   byval iscomma as integer, _
+				   byval issemicolon as integer, _
 				   byval expr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer, args as integer
-    dim vr as integer, dtype as integer
+    dim dtype as integer
 
     rtlPrint = FALSE
 
@@ -2749,16 +2777,16 @@ function rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval is
  	end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlPrint = TRUE
 
 end function
 
 '':::::
-function rtlPrintSPC( byval fileexpr as integer, byval expr as integer ) as integer static
+function rtlPrintSPC( byval fileexpr as integer, _
+					  byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlPrintSPC = FALSE
 
@@ -2776,16 +2804,16 @@ function rtlPrintSPC( byval fileexpr as integer, byval expr as integer ) as inte
  		exit function
  	end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlPrintSPC = TRUE
 
 end function
 
 '':::::
-function rtlPrintTab( byval fileexpr as integer, byval expr as integer ) as integer static
+function rtlPrintTab( byval fileexpr as integer, _
+					  byval expr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlPrintTab = FALSE
 
@@ -2803,17 +2831,19 @@ function rtlPrintTab( byval fileexpr as integer, byval expr as integer ) as inte
  		exit function
  	end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlPrintTab = TRUE
 
 end function
 
 '':::::
-function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as integer ) as integer
+function rtlWrite( byval fileexpr as integer, _
+				   byval iscomma as integer, _
+				   byval expr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer, args as integer
-    dim vr as integer, dtype as integer
+    dim dtype as integer
 
 	rtlWrite = FALSE
 
@@ -2886,7 +2916,7 @@ function rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval ex
  	end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlWrite = FALSE
 
@@ -2895,7 +2925,6 @@ end function
 '':::::
 function rtlPrintUsingInit( byval usingexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlPrintUsingInit = FALSE
 
@@ -2908,7 +2937,7 @@ function rtlPrintUsingInit( byval usingexpr as integer ) as integer static
  		exit function
  	end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlPrintUsingInit = TRUE
 
@@ -2917,7 +2946,6 @@ end function
 '':::::
 function rtlPrintUsingEnd( byval fileexpr as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlPrintUsingEnd = FALSE
 
@@ -2930,18 +2958,18 @@ function rtlPrintUsingEnd( byval fileexpr as integer ) as integer static
  		exit function
  	end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlPrintUsingEnd = TRUE
 
 end function
 
 '':::::
-function rtlPrintUsing( byval fileexpr as integer, byval expr as integer, _
+function rtlPrintUsing( byval fileexpr as integer, _
+						byval expr as integer, _
 						byval issemicolon as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer
-    dim vr as integer
 
 	rtlPrintUsing = FALSE
 
@@ -2977,7 +3005,7 @@ function rtlPrintUsing( byval fileexpr as integer, byval expr as integer, _
  	end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlPrintUsing = TRUE
 
@@ -2990,7 +3018,6 @@ end function
 '':::::
 function rtlExit( byval errlevel as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlExit = FALSE
 
@@ -3006,14 +3033,16 @@ function rtlExit( byval errlevel as integer ) as integer static
     	exit function
     end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlExit = TRUE
 
 end function
 
 '':::::
-function rtlMemCopy( byval dst as integer, byval src as integer, byval bytes as integer ) as integer static
+function rtlMemCopy( byval dst as integer, _
+					 byval src as integer, _
+					 byval bytes as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer
 
@@ -3045,7 +3074,8 @@ function rtlMemCopy( byval dst as integer, byval src as integer, byval bytes as 
 end function
 
 '':::::
-function rtlMemSwap( byval dst as integer, byval src as integer ) as integer static
+function rtlMemSwap( byval dst as integer, _
+					 byval src as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, bytes as integer
     dim vr as integer, vs as integer
@@ -3101,17 +3131,17 @@ function rtlMemSwap( byval dst as integer, byval src as integer ) as integer sta
     end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlMemSwap = TRUE
 
 end function
 
 '':::::
-function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer static
+function rtlStrSwap( byval str1 as integer, _
+					 byval str2 as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim lgt as integer, s as integer, dtype as integer
-    dim vr as integer
 
 	rtlStrSwap = FALSE
 
@@ -3144,16 +3174,16 @@ function rtlStrSwap( byval str1 as integer, byval str2 as integer ) as integer s
     end if
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlStrSwap = TRUE
 
 end function
 
 '':::::
-function rtlConsoleView ( byval topexpr as integer, byval botexpr as integer ) as integer
+function rtlConsoleView ( byval topexpr as integer, _
+						  byval botexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlConsoleView = FALSE
 
@@ -3171,14 +3201,16 @@ function rtlConsoleView ( byval topexpr as integer, byval botexpr as integer ) a
     	exit function
     end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlConsoleView = TRUE
 
 end function
 
 '':::::
-function rtlConsoleReadXY ( byval rowexpr as integer, byval columnexpr as integer, byval colorflagexpr as integer )
+function rtlConsoleReadXY ( byval rowexpr as integer, _
+							byval columnexpr as integer, _
+							byval colorflagexpr as integer )
 	dim proc as integer, f as FBSYMBOL ptr
 
 	''
@@ -3205,16 +3237,16 @@ end function
 '' error
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function rtlCheckError( byval resexpr as integer, byval reslabel as FBSYMBOL ptr ) as integer static
+function rtlCheckError( byval resexpr as integer, _
+						byval reslabel as FBSYMBOL ptr ) as integer static
 	dim proc as integer, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr
 	dim param as integer, dst as integer
-	dim vr as integer
 
 	rtlCheckError = FALSE
 
 	if( not env.clopt.errorcheck ) then
-		astFlush resexpr, vr
+		astFlush( resexpr )
 		rtlCheckError = TRUE
 		exit function
 	end if
@@ -3229,7 +3261,7 @@ function rtlCheckError( byval resexpr as integer, byval reslabel as FBSYMBOL ptr
 	'' result == FB_RTERROR_OK? skip..
 	resexpr = astNewBOP( IR.OP.EQ, resexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), nxtlabel, FALSE )
 
-	astFlush resexpr, vr
+	astFlush( resexpr )
 
 	'' else, fb_ErrorThrow( reslabel, resnxtlabel ); -- CDECL
 
@@ -3256,7 +3288,7 @@ function rtlCheckError( byval resexpr as integer, byval reslabel as FBSYMBOL ptr
     '' dst
     dst = astNewBRANCH( IR.OP.JUMPPTR, NULL, proc )
 
-    astFlush dst, vr
+    astFlush( dst )
 
 	''
 	irEmitLABEL nxtlabel, FALSE
@@ -3273,7 +3305,6 @@ sub rtlErrorThrow( byval errexpr as integer ) static
 	dim proc as integer, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr, reslabel as FBSYMBOL ptr
 	dim param as integer, dst as integer
-	dim vr as integer
 
 	''
 	f = ifuncTB(FB.RTL.ERRORTHROWEX)
@@ -3315,7 +3346,7 @@ sub rtlErrorThrow( byval errexpr as integer ) static
     '' dst
     dst = astNewBRANCH( IR.OP.JUMPPTR, NULL, proc )
 
-    astFlush dst, vr
+    astFlush( dst )
 
 	''
 	irEmitLABEL nxtlabel, FALSE
@@ -3326,9 +3357,10 @@ sub rtlErrorThrow( byval errexpr as integer ) static
 end sub
 
 '':::::
-sub rtlErrorSetHandler( byval newhandler as integer, byval savecurrent as integer ) static
+sub rtlErrorSetHandler( byval newhandler as integer, _
+						byval savecurrent as integer ) static
     dim proc as integer, f as FBSYMBOL ptr
-    dim v as integer, vr as integer
+    dim v as integer
 
 	''
 	f = ifuncTB(FB.RTL.ERRORSETHANDLER)
@@ -3344,13 +3376,13 @@ sub rtlErrorSetHandler( byval newhandler as integer, byval savecurrent as intege
     		if( env.procerrorhnd = NULL ) then
 				env.procerrorhnd = symbAddTempVar( IR.DATATYPE.UINT )
                 v = astNewVAR( env.procerrorhnd, NULL, 0, IR.DATATYPE.UINT )
-                astFlush astNewASSIGN( v, proc ), vr
+                astFlush( astNewASSIGN( v, proc ) )
     		end if
 		end if
     end if
 
     if( v = INVALID ) then
-    	astFlush proc, vr
+    	astFlush( proc )
     end if
 
 end sub
@@ -3372,7 +3404,6 @@ end function
 '':::::
 sub rtlErrorSetNum( byval errexpr as integer ) static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	''
 	f = ifuncTB(FB.RTL.ERRORSETNUM)
@@ -3382,14 +3413,13 @@ sub rtlErrorSetNum( byval errexpr as integer ) static
     astNewPARAM( proc, errexpr, INVALID )
 
     ''
-    astFlush proc, vr
+    astFlush( proc )
 
 end sub
 
 '':::::
 sub rtlErrorResume( byval isnext as integer )
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
     dim dst as integer
 
 	''
@@ -3404,7 +3434,7 @@ sub rtlErrorResume( byval isnext as integer )
     ''
     dst = astNewBRANCH( IR.OP.JUMPPTR, NULL, proc )
 
-    astFlush dst, vr
+    astFlush( dst )
 
 end sub
 
@@ -3413,8 +3443,12 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function rtlFileOpen( byval filename as integer, byval fmode as integer, byval faccess as integer, _
-				      byval flock, byval filenum as integer, byval flen as integer ) as integer static
+function rtlFileOpen( byval filename as integer, _
+					  byval fmode as integer, _
+					  byval faccess as integer, _
+				      byval flock as integer, _
+				      byval filenum as integer, _
+				      byval flen as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
@@ -3497,7 +3531,8 @@ function rtlFileClose( byval filenum as integer ) as integer static
 end function
 
 '':::::
-function rtlFileSeek( byval filenum as integer, byval newpos as integer ) as integer static
+function rtlFileSeek( byval filenum as integer, _
+					  byval newpos as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
@@ -3533,7 +3568,6 @@ end function
 '':::::
 function rtlFileTell( byval filenum as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
     rtlFileTell = INVALID
 
@@ -3552,7 +3586,8 @@ function rtlFileTell( byval filenum as integer ) as integer static
 end function
 
 '':::::
-function rtlFilePut( byval filenum as integer, byval offset as integer, _
+function rtlFilePut( byval filenum as integer, _
+					 byval offset as integer, _
 					 byval src as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
@@ -3612,7 +3647,8 @@ function rtlFilePut( byval filenum as integer, byval offset as integer, _
 end function
 
 '':::::
-function rtlFilePutArray( byval filenum as integer, byval offset as integer, _
+function rtlFilePutArray( byval filenum as integer, _
+						  byval offset as integer, _
 						  byval src as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
@@ -3656,7 +3692,8 @@ function rtlFilePutArray( byval filenum as integer, byval offset as integer, _
 end function
 
 '':::::
-function rtlFileGet( byval filenum as integer, byval offset as integer, _
+function rtlFileGet( byval filenum as integer, _
+					 byval offset as integer, _
 					 byval dst as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, args as integer, lgt as integer
@@ -3716,7 +3753,8 @@ function rtlFileGet( byval filenum as integer, byval offset as integer, _
 end function
 
 '':::::
-function rtlFileGetArray( byval filenum as integer, byval offset as integer, _
+function rtlFileGetArray( byval filenum as integer, _
+						  byval offset as integer, _
 						  byval dst as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer
@@ -3760,7 +3798,8 @@ function rtlFileGetArray( byval filenum as integer, byval offset as integer, _
 end function
 
 '':::::
-function rtlFileStrInput( byval bytesexpr as integer, byval filenum as integer ) as integer static
+function rtlFileStrInput( byval bytesexpr as integer, _
+						  byval filenum as integer ) as integer static
     dim proc as integer, f as FBSYMBOL ptr
 
     rtlFileStrInput = INVALID
@@ -3785,10 +3824,12 @@ function rtlFileStrInput( byval bytesexpr as integer, byval filenum as integer )
 end function
 
 '':::::
-function rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dstexpr as integer, _
-					       byval addquestion as integer, byval addnewline as integer ) as integer
+function rtlFileLineInput( byval isfile as integer, _
+						   byval expr as integer, _
+						   byval dstexpr as integer, _
+					       byval addquestion as integer, _
+					       byval addnewline as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
-    dim vr as integer
 	dim lgt as integer, dtype as integer
 
 	rtlFileLineInput = FALSE
@@ -3842,17 +3883,18 @@ function rtlFileLineInput( byval isfile as integer, byval expr as integer, byval
  		end if
     end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlFileLineInput = TRUE
 
 end function
 
 '':::::
-function rtlFileInput( byval isfile as integer, byval expr as integer, _
-				       byval addquestion as integer, byval addnewline as integer ) as integer
+function rtlFileInput( byval isfile as integer, _
+					   byval expr as integer, _
+				       byval addquestion as integer, _
+				       byval addnewline as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
-    dim vr as integer
 
 	rtlFileInput = FALSE
 
@@ -3888,7 +3930,7 @@ function rtlFileInput( byval isfile as integer, byval expr as integer, _
  		end if
     end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlFileInput = TRUE
 
@@ -3897,7 +3939,7 @@ end function
 '':::::
 function rtlFileInputGet( byval dstexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr, args as integer
-    dim vr as integer, lgt as integer, dtype as integer
+    dim lgt as integer, dtype as integer
 
 	rtlFileInputGet = FALSE
 
@@ -3948,17 +3990,18 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
     	end if
     end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlFileInputGet = TRUE
 
 end function
 
 '':::::
-function rtlFileLock( byval islock as integer, byval filenum as integer, _
-					  byval iniexpr as integer, byval endexpr as integer ) as integer
+function rtlFileLock( byval islock as integer, _
+					  byval filenum as integer, _
+					  byval iniexpr as integer, _
+					  byval endexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlFileLock = FALSE
 
@@ -3986,7 +4029,7 @@ function rtlFileLock( byval islock as integer, byval filenum as integer, _
  		exit function
  	end if
 
-    astFlush proc, vr
+    astFlush( proc )
 
     rtlFileLock = TRUE
 
@@ -4014,11 +4057,14 @@ end sub
 #endif
 
 '':::::
-function rtlGfxPset( byval target as integer, byval targetisptr as integer, _
-					 byval xexpr as integer, byval yexpr as integer, byval cexpr as integer, _
+function rtlGfxPset( byval target as integer, _
+					 byval targetisptr as integer, _
+					 byval xexpr as integer, _
+					 byval yexpr as integer, _
+					 byval cexpr as integer, _
 					 byval coordtype as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
 
 	rtlGfxPset = FALSE
 
@@ -4061,7 +4107,7 @@ function rtlGfxPset( byval target as integer, byval targetisptr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4073,9 +4119,12 @@ function rtlGfxPset( byval target as integer, byval targetisptr as integer, _
 end function
 
 '':::::
-function rtlGfxPoint( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer )
+function rtlGfxPoint( byval target as integer, _
+					  byval targetisptr as integer, _
+					  byval xexpr as integer, _
+					  byval yexpr as integer )
 	dim proc as integer, f as FBSYMBOL ptr
-	dim vr as integer, targetmode as integer
+	dim targetmode as integer
 
 	rtlGfxPoint = FALSE
 
@@ -4115,13 +4164,19 @@ function rtlGfxPoint( byval target as integer, byval targetisptr as integer, byv
 end function
 
 '':::::
-function rtlGfxLine( byval target as integer, byval targetisptr as integer, _
-					 byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, _
-					 byval y2expr as integer, byval cexpr as integer, byval linetype as integer, _
-					 byval styleexpr as integer, byval coordtype as integer ) as integer
+function rtlGfxLine( byval target as integer, _
+					 byval targetisptr as integer, _
+					 byval x1expr as integer, _
+					 byval y1expr as integer, _
+					 byval x2expr as integer, _
+					 byval y2expr as integer, _
+					 byval cexpr as integer, _
+					 byval linetype as integer, _
+					 byval styleexpr as integer, _
+					 byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
 
 	rtlGfxLine = FALSE
 
@@ -4187,7 +4242,7 @@ function rtlGfxLine( byval target as integer, byval targetisptr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4199,13 +4254,20 @@ function rtlGfxLine( byval target as integer, byval targetisptr as integer, _
 end function
 
 '':::::
-function rtlGfxCircle( byval target as integer, byval targetisptr as integer, _
-					   byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, _
-					   byval cexpr as integer, byval aspexpr as integer, byval iniexpr as integer, _
-					   byval endexpr as integer, byval fillflag as integer, byval coordtype as integer ) as integer
+function rtlGfxCircle( byval target as integer, _
+					   byval targetisptr as integer, _
+					   byval xexpr as integer, _
+					   byval yexpr as integer, _
+					   byval radexpr as integer, _
+					   byval cexpr as integer, _
+					   byval aspexpr as integer, _
+					   byval iniexpr as integer, _
+					   byval endexpr as integer, _
+					   byval fillflag as integer, _
+					   byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
 
 	rtlGfxCircle = FALSE
 
@@ -4282,7 +4344,7 @@ function rtlGfxCircle( byval target as integer, byval targetisptr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4294,12 +4356,16 @@ function rtlGfxCircle( byval target as integer, byval targetisptr as integer, _
 end function
 
 '':::::
-function rtlGfxPaint( byval target as integer, byval targetisptr as integer, _
-					  byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, _
-					  byval bexpr as integer, byval coord_type as integer ) as integer
+function rtlGfxPaint( byval target as integer, _
+					  byval targetisptr as integer, _
+					  byval xexpr as integer, _
+					  byval yexpr as integer, _
+					  byval pexpr as integer, _
+					  byval bexpr as integer, _
+					  byval coord_type as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
     dim pattern as integer
 
     rtlGfxPaint = FALSE
@@ -4374,7 +4440,7 @@ function rtlGfxPaint( byval target as integer, byval targetisptr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4386,9 +4452,11 @@ function rtlGfxPaint( byval target as integer, byval targetisptr as integer, _
 end function
 
 '':::::
-function rtlGfxDraw( byval target as integer, byval targetisptr as integer, byval cexpr as integer )
+function rtlGfxDraw( byval target as integer, _
+					 byval targetisptr as integer, _
+					 byval cexpr as integer )
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
 
 	rtlGfxDraw = FALSE
 
@@ -4416,7 +4484,7 @@ function rtlGfxDraw( byval target as integer, byval targetisptr as integer, byva
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4428,13 +4496,15 @@ function rtlGfxDraw( byval target as integer, byval targetisptr as integer, byva
 end function
 
 '':::::
-function rtlGfxView( byval x1expr as integer, byval y1expr as integer, _
-					 byval x2expr as integer, byval y2expr as integer, _
-			    	 byval fillexpr as integer, byval bordexpr as integer, _
+function rtlGfxView( byval x1expr as integer, _
+					 byval y1expr as integer, _
+					 byval x2expr as integer, _
+					 byval y2expr as integer, _
+			    	 byval fillexpr as integer, _
+			    	 byval bordexpr as integer, _
 			    	 byval screenflag as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlGfxView = FALSE
 
@@ -4495,7 +4565,7 @@ function rtlGfxView( byval x1expr as integer, byval y1expr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4507,11 +4577,13 @@ function rtlGfxView( byval x1expr as integer, byval y1expr as integer, _
 end function
 
 '':::::
-function rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, _
-					   byval y2expr as integer, byval screenflag as integer ) as integer
+function rtlGfxWindow( byval x1expr as integer, _
+					   byval y1expr as integer, _
+					   byval x2expr as integer, _
+					   byval y2expr as integer, _
+					   byval screenflag as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlGfxWindow = FALSE
 
@@ -4556,7 +4628,7 @@ function rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4568,10 +4640,11 @@ function rtlGfxWindow( byval x1expr as integer, byval y1expr as integer, byval x
 end function
 
 '':::::
-function rtlGfxPalette ( byval attexpr as integer, byval rexpr as integer, _
-						 byval gexpr as integer, byval bexpr as integer ) as integer
+function rtlGfxPalette ( byval attexpr as integer, _
+						 byval rexpr as integer, _
+						 byval gexpr as integer, _
+						 byval bexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlGfxPalette = FALSE
 
@@ -4611,7 +4684,7 @@ function rtlGfxPalette ( byval attexpr as integer, byval rexpr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4625,7 +4698,6 @@ end function
 '':::::
 function rtlGfxPaletteUsing ( byval arrayexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer
 
 	rtlGfxPaletteUsing = FALSE
 
@@ -4638,7 +4710,7 @@ function rtlGfxPaletteUsing ( byval arrayexpr as integer ) as integer
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4650,12 +4722,16 @@ function rtlGfxPaletteUsing ( byval arrayexpr as integer ) as integer
 end function
 
 '':::::
-function rtlGfxPut( byval target as integer, byval targetisptr as integer, _
-					byval xexpr as integer, byval yexpr as integer, _
-			   		byval arrayexpr as integer, byval isptr as integer, _
-			   		byval mode as integer, byval coordtype as integer ) as integer
+function rtlGfxPut( byval target as integer, _
+					byval targetisptr as integer, _
+					byval xexpr as integer, _
+					byval yexpr as integer, _
+			   		byval arrayexpr as integer, _
+			   		byval isptr as integer, _
+			   		byval mode as integer, _
+			   		byval coordtype as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
     dim argmode as integer
 
     rtlGfxPut = FALSE
@@ -4709,7 +4785,7 @@ function rtlGfxPut( byval target as integer, byval targetisptr as integer, _
  	end if
 
  	''
- 	astFlush proc, vr
+ 	astFlush( proc )
 
  	''
 #ifdef AUTOADDGFXLIBS
@@ -4721,13 +4797,19 @@ function rtlGfxPut( byval target as integer, byval targetisptr as integer, _
 end function
 
 '':::::
-function rtlGfxGet( byval target as integer, byval targetisptr as integer, _
-					byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
-			   		byval arrayexpr as integer, byval isptr as integer, byval symbol as FBSYMBOL ptr, _
+function rtlGfxGet( byval target as integer, _
+					byval targetisptr as integer, _
+					byval x1expr as integer, _
+					byval y1expr as integer, _
+					byval x2expr as integer, _
+					byval y2expr as integer, _
+			   		byval arrayexpr as integer, _
+			   		byval isptr as integer, _
+			   		byval symbol as FBSYMBOL ptr, _
 			   		byval coordtype as integer ) as integer
 
     dim proc as integer, f as FBSYMBOL ptr
-    dim vr as integer, targetmode as integer
+    dim targetmode as integer
     dim argmode as integer
     dim reslabel as FBSYMBOL ptr
 
@@ -4814,8 +4896,12 @@ function rtlGfxGet( byval target as integer, byval targetisptr as integer, _
 end function
 
 '':::::
-function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval dexpr as integer, _
-						  byval pexpr as integer, byval fexpr as integer, byval rexpr as integer ) as integer
+function rtlGfxScreenSet( byval wexpr as integer, _
+						  byval hexpr as integer, _
+						  byval dexpr as integer, _
+						  byval pexpr as integer, _
+						  byval fexpr as integer, _
+						  byval rexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
@@ -4885,7 +4971,8 @@ function rtlGfxScreenSet( byval wexpr as integer, byval hexpr as integer, byval 
 end function
 
 '':::::
-function rtlGfxBload( byval filename as integer, byval dexpr as integer ) as integer
+function rtlGfxBload( byval filename as integer, _
+					  byval dexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
@@ -4927,7 +5014,9 @@ function rtlGfxBload( byval filename as integer, byval dexpr as integer ) as int
 end function
 
 '':::::
-function rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr as integer ) as integer
+function rtlGfxBsave( byval filename as integer, _
+					  byval sexpr as integer, _
+					  byval lexpr as integer ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 

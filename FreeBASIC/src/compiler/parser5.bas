@@ -311,7 +311,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	if( typ = FB.SYMBTYPE.STRING ) then
 		t = astNewVAR( s, NULL, 0, IR.DATATYPE.STRING )
 		n = rtlStrAllocTmpResult( t )
-		astFlush n, vr
+		astFlush( n )
 	else
 		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		vr = irAllocVRVAR( typ, s, s->ofs )

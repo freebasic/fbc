@@ -1855,12 +1855,12 @@ private function astOptimize( byval n as integer ) as integer
 end function
 
 ''::::
-function astFlush( byval n as integer, _
-				   vreg as integer ) as integer
+function astFlush( byval n as integer ) as integer
 
 	''
 	if( n = INVALID ) then
-		exit sub
+		astFlush = INVALID
+		exit function
 	end if
 
 	''
@@ -1871,11 +1871,9 @@ function astFlush( byval n as integer, _
 	n = astUpdStrConcat( n )
 
     ''
-	vreg = astLoad( n )
+	astFlush = astLoad( n )
 
 	astDel n
-
-	return n
 
 end function
 
@@ -4301,7 +4299,7 @@ end function
 '':::::
 function astLoadIIF( byval n as integer ) as integer
     dim as integer l, r
-    dim as integer vc, v1, vr
+    dim as integer v1, vr
     dim as FBSYMBOL ptr exitlabel
 
 	l = astTB(n).l
@@ -4310,7 +4308,7 @@ function astLoadIIF( byval n as integer ) as integer
 	exitlabel  = symbAddLabel( hMakeTmpStr )
 
 	''
-	astFlush( astTB(n).iif.cond, vc )
+	astFlush( astTB(n).iif.cond )
 
 	''
 	v1 = astLoad( l )

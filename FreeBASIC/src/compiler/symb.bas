@@ -430,7 +430,8 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hCanDuplicate( byval n as FBSYMBOL ptr, byval s as FBSYMBOL ptr ) as integer
+private function hCanDuplicate( byval n as FBSYMBOL ptr, _
+								byval s as FBSYMBOL ptr ) as integer
 
 	select case as const s->class
 	'' adding a define or keyword? no dups can exist
@@ -561,7 +562,8 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 end sub
 
 '':::::
-private sub hAddToFwdRef( byval f as FBSYMBOL ptr, byval ref as FBSYMBOL ptr ) static
+private sub hAddToFwdRef( byval f as FBSYMBOL ptr, _
+						  byval ref as FBSYMBOL ptr ) static
 	dim n as FBFWDREF ptr
 
 	n = listNewNode( @ctx.fwdlist )
@@ -575,11 +577,15 @@ private sub hAddToFwdRef( byval f as FBSYMBOL ptr, byval ref as FBSYMBOL ptr ) s
 end sub
 
 '':::::
-function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
-					 byval symbol as string, byval aliasname as string, _
+function hNewSymbol( byval class as integer, _
+					 byval dohash as integer = TRUE, _
+					 byval symbol as string, _
+					 byval aliasname as string, _
 					 byval islocal as integer = FALSE, _
-					 byval typ as integer = INVALID, byval subtype as FBSYMBOL ptr = NULL, _
-					 byval ptrcnt as integer = 0, byval suffix as integer = INVALID, _
+					 byval typ as integer = INVALID, _
+					 byval subtype as FBSYMBOL ptr = NULL, _
+					 byval ptrcnt as integer = 0, _
+					 byval suffix as integer = INVALID, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim l as FBLOCSYMBOL ptr
@@ -693,7 +699,9 @@ function hNewSymbol( byval class as integer, byval dohash as integer = TRUE, _
 end function
 
 '':::::
-function symbAddKeyword( byval symbol as string, byval id as integer, byval class as integer ) as FBSYMBOL ptr
+function symbAddKeyword( byval symbol as string, _
+						 byval id as integer, _
+						 byval class as integer ) as FBSYMBOL ptr
     dim k as FBSYMBOL ptr
 
     k = hNewSymbol( FB.SYMBCLASS.KEYWORD, TRUE, symbol, "" )
@@ -711,8 +719,10 @@ function symbAddKeyword( byval symbol as string, byval id as integer, byval clas
 end function
 
 '':::::
-function symbAddDefine( byval symbol as string, byval text as string, _
-						byval args as integer = 0, byval arghead as FBDEFARG ptr = NULL ) as FBSYMBOL ptr static
+function symbAddDefine( byval symbol as string, _
+						byval text as string, _
+						byval args as integer = 0, _
+						byval arghead as FBDEFARG ptr = NULL ) as FBSYMBOL ptr static
     dim d as FBSYMBOL ptr
 
     symbAddDefine = NULL
@@ -734,7 +744,8 @@ function symbAddDefine( byval symbol as string, byval text as string, _
 end function
 
 '':::::
-function symbAddDefineArg( byval lastarg as FBDEFARG ptr, byval symbol as string ) as FBDEFARG ptr static
+function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
+						   byval symbol as string ) as FBDEFARG ptr static
     dim a as FBDEFARG ptr
 
     symbAddDefineArg = NULL
@@ -757,7 +768,8 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, byval symbol as string
 end function
 
 '':::::
-private sub hCheckFwdRef( byval s as FBSYMBOL ptr, byval class as integer ) static
+private sub hCheckFwdRef( byval s as FBSYMBOL ptr, _
+						  byval class as integer ) static
 	dim as FBSYMBOL ptr f, n
 
 	'' go to head
@@ -775,8 +787,10 @@ end sub
 
 '':::::
 function symbAddTypedef( byval symbol as string, _
-						 byval typ as integer, byval subtype as FBSYMBOL ptr, _
-						 byval ptrcnt as integer, byval lgt as integer ) as FBSYMBOL ptr static
+						 byval typ as integer, _
+						 byval subtype as FBSYMBOL ptr, _
+						 byval ptrcnt as integer, _
+						 byval lgt as integer ) as FBSYMBOL ptr static
     dim as FBSYMBOL ptr t
 
     symbAddTypedef = NULL
@@ -823,7 +837,8 @@ function symbAddFwdRef( byval symbol as string ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer) as FBSYMBOL ptr static
+function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
+						   byval dimensions as integer ) as FBSYMBOL ptr static
     dim sname as string, aname as string, d as FBSYMBOL ptr
     dim lgt as integer, ofs as integer, isshared as integer, isstatic as integer
 
@@ -875,8 +890,10 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, byval dimensions as integer)
 end function
 
 '':::::
-function hNewDim( head as FBVARDIM ptr, tail as FBVARDIM ptr, _
-				  byval lower as integer, byval upper as integer ) as FBVARDIM ptr static
+function hNewDim( head as FBVARDIM ptr, _
+				  tail as FBVARDIM ptr, _
+				  byval lower as integer, _
+				  byval upper as integer ) as FBVARDIM ptr static
     dim d as FBVARDIM ptr, n as FBVARDIM ptr
 
     hNewDim = NULL
@@ -903,10 +920,15 @@ function hNewDim( head as FBVARDIM ptr, tail as FBVARDIM ptr, _
 end function
 
 '':::::
-sub hSetupVar( byval s as FBSYMBOL ptr, byval symbol as string, byval aname as string, _
-			   byval typ as integer, byval subtype as FBSYMBOL ptr, _
-			   byval lgt as integer, byval ofs as integer, _
-			   byval dimensions as integer, dTB() as FBARRAYDIM, _
+sub hSetupVar( byval s as FBSYMBOL ptr, _
+			   byval symbol as string, _
+			   byval aname as string, _
+			   byval typ as integer, _
+			   byval subtype as FBSYMBOL ptr, _
+			   byval lgt as integer, _
+			   byval ofs as integer, _
+			   byval dimensions as integer, _
+			   dTB() as FBARRAYDIM, _
 			   byval alloctype as integer ) static
 
     dim as integer i
@@ -948,9 +970,14 @@ sub hSetupVar( byval s as FBSYMBOL ptr, byval symbol as string, byval aname as s
 end sub
 
 '':::::
-function symbAddVarEx( byval symbol as string, byval aliasname as string, _
-					   byval typ as integer, byval subtype as FBSYMBOL ptr, byval ptrcnt as integer, _
-					   byval lgt as integer, byval dimensions as integer, dTB() as FBARRAYDIM, _
+function symbAddVarEx( byval symbol as string, _
+					   byval aliasname as string, _
+					   byval typ as integer, _
+					   byval subtype as FBSYMBOL ptr, _
+					   byval ptrcnt as integer, _
+					   byval lgt as integer, _
+					   byval dimensions as integer, _
+					   dTB() as FBARRAYDIM, _
 				       byval alloctype as integer, _
 				       byval addsuffix as integer, _
 				       byval preservecase as integer, _
@@ -1045,9 +1072,12 @@ function symbAddVarEx( byval symbol as string, byval aliasname as string, _
 end function
 
 '':::::
-function symbAddVar( byval symbol as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
+function symbAddVar( byval symbol as string, _
+					 byval typ as integer, _
+					 byval subtype as FBSYMBOL ptr, _
 				     byval ptrcnt as integer, _
-				     byval dimensions as integer, dTB() as FBARRAYDIM, _
+				     byval dimensions as integer, _
+				     dTB() as FBARRAYDIM, _
 				     byval alloctype as integer ) as FBSYMBOL ptr static
 
     symbAddVar = symbAddVarEx( symbol, "", typ, subtype, ptrcnt, _
@@ -1057,7 +1087,8 @@ function symbAddVar( byval symbol as string, byval typ as integer, byval subtype
 end function
 
 '':::::
-function symbAddTempVar( byval typ as integer, byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr static
+function symbAddTempVar( byval typ as integer, _
+						 byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr static
 	dim sname as string, s as FBSYMBOL ptr, alloctype as integer
     dim dTB(0) as FBARRAYDIM
 
@@ -1075,7 +1106,8 @@ function symbAddTempVar( byval typ as integer, byval subtype as FBSYMBOL ptr = N
 end function
 
 '':::::
-function hAllocNumericConst( byval sname as string, byval typ as integer ) as FBSYMBOL ptr static
+function hAllocNumericConst( byval sname as string, _
+							 byval typ as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
     dim p as integer
@@ -1109,7 +1141,8 @@ function hAllocNumericConst( byval sname as string, byval typ as integer ) as FB
 end function
 
 '':::::
-function hAllocStringConst( byval sname as string, byval lgt as integer ) as FBSYMBOL ptr static
+function hAllocStringConst( byval sname as string, _
+							byval lgt as integer ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr, dTB(0) as FBARRAYDIM
     dim cname as string, aname as string
 
@@ -1148,7 +1181,10 @@ function hAllocStringConst( byval sname as string, byval lgt as integer ) as FBS
 end function
 
 '':::::
-function symbAddConst( byval symbol as string, byval typ as integer, byval text as string, byval lgt as integer ) as FBSYMBOL ptr static
+function symbAddConst( byval symbol as string, _
+					   byval typ as integer, _
+					   byval text as string, _
+					   byval lgt as integer ) as FBSYMBOL ptr static
     dim c as FBSYMBOL ptr
 
     symbAddConst = NULL
@@ -1167,7 +1203,8 @@ function symbAddConst( byval symbol as string, byval typ as integer, byval text 
 end function
 
 '':::::
-function symbAddLabel( byval symbol as string, byval declaring as integer = TRUE, _
+function symbAddLabel( byval symbol as string, _
+					   byval declaring as integer = TRUE, _
 					   byval createalias as integer = FALSE ) as FBSYMBOL ptr static
     dim l as FBSYMBOL ptr
     dim lname as string, aname as string
@@ -1211,7 +1248,9 @@ end function
 
 
 '':::::
-function symbAddUDT( byval symbol as string, byval isunion as integer, byval align as integer ) as FBSYMBOL ptr static
+function symbAddUDT( byval symbol as string, _
+					 byval isunion as integer, _
+					 byval align as integer ) as FBSYMBOL ptr static
     dim t as FBSYMBOL ptr
 
     symbAddUDT = NULL
@@ -1235,8 +1274,11 @@ function symbAddUDT( byval symbol as string, byval isunion as integer, byval ali
 end function
 
 '':::::
-function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as integer, _
-					 byval typ as integer, byval subtype as FBSYMBOL ptr ) as integer static
+function hCalcALign( byval lgt as integer, _
+					 byval ofs as integer, _
+					 byval align as integer, _
+					 byval typ as integer, _
+					 byval subtype as FBSYMBOL ptr ) as integer static
     dim pad as integer
     dim e as FBSYMBOL ptr
 
@@ -1288,10 +1330,14 @@ function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as 
 end function
 
 '':::::
-function symbAddUDTElement( byval t as FBSYMBOL ptr, byval elmname as string, _
-						    byval dimensions as integer, dTB() as FBARRAYDIM, _
-						    byval typ as integer, byval subtype as FBSYMBOL ptr, _
-						    byval ptrcnt as integer, byval lgt as integer, _
+function symbAddUDTElement( byval t as FBSYMBOL ptr, _
+							byval elmname as string, _
+						    byval dimensions as integer, _
+						    dTB() as FBARRAYDIM, _
+						    byval typ as integer, _
+						    byval subtype as FBSYMBOL ptr, _
+						    byval ptrcnt as integer, _
+						    byval lgt as integer, _
 						    byval isinner as integer ) as FBSYMBOL ptr static
     dim i as integer
     dim e as FBSYMBOL ptr, n as FBSYMBOL ptr
@@ -1494,7 +1540,8 @@ function symbAddLib( byval libname as string ) as FBLIBRARY ptr static
 end function
 
 '':::::
-function hCalcProcArgsLen( byval args as integer, byval argtail as FBSYMBOL ptr ) as integer
+function hCalcProcArgsLen( byval args as integer, _
+						   byval argtail as FBSYMBOL ptr ) as integer
 	dim i as integer, lgt as integer
 
 	lgt	= 0
@@ -1515,10 +1562,16 @@ function hCalcProcArgsLen( byval args as integer, byval argtail as FBSYMBOL ptr 
 end function
 
 '':::::
-function symbAddArg( byval symbol as string, byval tail as FBSYMBOL ptr, _
-					 byval typ as integer, byval subtype as FBSYMBOL ptr, byval ptrcnt as integer, _
-					 byval lgt as integer, byval mode as integer, byval suffix as integer, _
-					 byval optional as integer, byval optval as FBVALUE ptr ) as FBSYMBOL ptr static
+function symbAddArg( byval symbol as string, _
+					 byval tail as FBSYMBOL ptr, _
+					 byval typ as integer, _
+					 byval subtype as FBSYMBOL ptr, _
+					 byval ptrcnt as integer, _
+					 byval lgt as integer, _
+					 byval mode as integer, _
+					 byval suffix as integer, _
+					 byval optional as integer, _
+					 byval optval as FBVALUE ptr ) as FBSYMBOL ptr static
     dim a as FBSYMBOL ptr
 
     symbAddArg = NULL
@@ -1654,12 +1707,18 @@ private function hGetProcRealType( byval typ as integer, _
 end function
 
 '':::::
-private function hSetupProc( byval symbol as string, byval aliasname as string, byval libname as string, _
-				             byval typ as integer, byval subtype as FBSYMBOL ptr, _
-				             byval ptrcnt as integer, byval alloctype as integer, _
+private function hSetupProc( byval symbol as string, _
+							 byval aliasname as string, _
+							 byval libname as string, _
+				             byval typ as integer, _
+				             byval subtype as FBSYMBOL ptr, _
+				             byval ptrcnt as integer, _
+				             byval alloctype as integer, _
 				             byval mode as integer, _
-				             byval argc as integer, byval argtail as FBSYMBOL ptr, _
-			                 byval declaring as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+				             byval argc as integer, _
+				             byval argtail as FBSYMBOL ptr, _
+			                 byval declaring as integer, _
+			                 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim as integer lgt, i, realtype
     dim as FBSYMBOL ptr f, a
@@ -1741,11 +1800,18 @@ private function hSetupProc( byval symbol as string, byval aliasname as string, 
 end function
 
 '':::::
-function symbAddPrototype( byval symbol as string, byval aliasname as string, byval libname as string, _
-						   byval typ as integer, byval subtype as FBSYMBOL ptr, _
-						   byval ptrcnt as integer, byval alloctype as integer, _
-						   byval mode as integer, byval argc as integer, byval argtail as FBSYMBOL ptr, _
-						   byval isexternal as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+function symbAddPrototype( byval symbol as string, _
+						   byval aliasname as string, _
+						   byval libname as string, _
+						   byval typ as integer, _
+						   byval subtype as FBSYMBOL ptr, _
+						   byval ptrcnt as integer, _
+						   byval alloctype as integer, _
+						   byval mode as integer, _
+						   byval argc as integer, _
+						   byval argtail as FBSYMBOL ptr, _
+						   byval isexternal as integer, _
+						   byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
@@ -1762,10 +1828,16 @@ function symbAddPrototype( byval symbol as string, byval aliasname as string, by
 end function
 
 '':::::
-function symbAddProc( byval symbol as string, byval aliasname as string, byval libname as string, _
-					  byval typ as integer, byval subtype as FBSYMBOL ptr, _
-					  byval ptrcnt as integer, byval alloctype as integer, _
-					  byval mode as integer, byval argc as integer, byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbAddProc( byval symbol as string, _
+					  byval aliasname as string, _
+					  byval libname as string, _
+					  byval typ as integer, _
+					  byval subtype as FBSYMBOL ptr, _
+					  byval ptrcnt as integer, _
+					  byval alloctype as integer, _
+					  byval mode as integer, _
+					  byval argc as integer, _
+					  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
@@ -1782,7 +1854,8 @@ function symbAddProc( byval symbol as string, byval aliasname as string, byval l
 end function
 
 '':::::
-function symbAddArgAsVar( byval symbol as string, byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
+function symbAddArgAsVar( byval symbol as string, _
+						  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim dTB(0) as FBARRAYDIM
     dim s as FBSYMBOL ptr, alloctype as integer, typ as integer
 
@@ -1837,7 +1910,9 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbLookup( byval symbol as string, id as integer, class as integer, _
+function symbLookup( byval symbol as string, _
+					 id as integer, _
+					 class as integer, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
 
@@ -1864,7 +1939,9 @@ function symbLookup( byval symbol as string, id as integer, class as integer, _
 end function
 
 '':::::
-function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL ptr, _
+function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
+							  typ as integer, _
+							  subtype as FBSYMBOL ptr, _
 							  byval fields as string ) as integer
 	dim e as FBSYMBOL ptr, ename as string
 	dim p as integer, ofs as integer, o as integer
@@ -1938,8 +2015,12 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, typ as integer, subtype as FB
 end function
 
 '':::::
-function symbLookupUDTVar( byval symbol as string, byval dotpos as integer, typ as integer, ofs as integer, _
-					       elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbLookupUDTVar( byval symbol as string, _
+						   byval dotpos as integer, _
+						   typ as integer, _
+						   ofs as integer, _
+					       elm as FBSYMBOL ptr, _
+					       subtype as FBSYMBOL ptr ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
     dim sname as string, fields as string
 
@@ -1994,7 +2075,8 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbFindByClass( byval s as FBSYMBOL ptr, byval class as integer ) as FBSYMBOL ptr static
+function symbFindByClass( byval s as FBSYMBOL ptr, _
+						  byval class as integer ) as FBSYMBOL ptr static
 
     '' lookup a symbol with the same class
     do while( s <> NULL )
@@ -2027,7 +2109,8 @@ function symbFindByClass( byval s as FBSYMBOL ptr, byval class as integer ) as F
 end function
 
 '':::::
-function symbFindBySuffix( byval s as FBSYMBOL ptr, byval suffix as integer, _
+function symbFindBySuffix( byval s as FBSYMBOL ptr, _
+						   byval suffix as integer, _
 						   byval deftyp as integer ) as FBSYMBOL ptr static
 
     '' symbol has a suffix? lookup a symbol with the same type, suffixed or not
@@ -2076,7 +2159,8 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, byval suffix as integer, _
 end function
 
 '':::::
-function symbFindByNameAndClass( byval symbol as string, byval class as integer, _
+function symbFindByNameAndClass( byval symbol as string, _
+								 byval class as integer, _
 								 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr
 	dim tkid as integer, tkclass as integer
@@ -2094,7 +2178,8 @@ function symbFindByNameAndClass( byval symbol as string, byval class as integer,
 end function
 
 '':::::
-function symbFindByNameAndSuffix( byval symbol as string, byval suffix as integer, _
+function symbFindByNameAndSuffix( byval symbol as string, _
+								  byval suffix as integer, _
 								  byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr
 	dim deftyp as integer
@@ -2123,7 +2208,9 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval realsize as integer = FALSE ) as integer static
+function symbCalcLen( byval typ as integer, _
+					  byval subtype as FBSYMBOL ptr, _
+					  byval realsize as integer = FALSE ) as integer static
     dim lgt as integer
     dim e as FBSYMBOL ptr
 
@@ -2183,7 +2270,9 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 end function
 
 '':::::
-function symbCalcArgLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval mode as integer ) as integer static
+function symbCalcArgLen( byval typ as integer, _
+						 byval subtype as FBSYMBOL ptr, _
+						 byval mode as integer ) as integer static
     dim lgt as integer
 
 	select case mode
@@ -2202,7 +2291,9 @@ function symbCalcArgLen( byval typ as integer, byval subtype as FBSYMBOL ptr, by
 end function
 
 '':::::
-function hCalcDiff( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as integer
+function hCalcDiff( byval dimensions as integer, _
+					dTB() as FBARRAYDIM, _
+					byval lgt as integer ) as integer
     dim d as integer, diff as integer, elms as integer, mult as integer
 
 	if( dimensions <= 0 ) then
@@ -2242,7 +2333,8 @@ function hCalcElements( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function hCalcElements2( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer static
+function hCalcElements2( byval dimensions as integer, _
+						 dTB() as FBARRAYDIM ) as integer static
     dim e as integer, i as integer, d as integer
 
 	e = 1
@@ -2297,7 +2389,8 @@ function symbGetLen( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function symbGetUDTLen( byval udt as FBSYMBOL ptr, byval realsize as integer = TRUE ) as integer static
+function symbGetUDTLen( byval udt as FBSYMBOL ptr, _
+						byval realsize as integer = TRUE ) as integer static
     dim e as FBSYMBOL ptr
 
 	if( not realsize ) then
@@ -2367,7 +2460,8 @@ function symbGetAllocType( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-sub symbSetAllocType( byval s as FBSYMBOL ptr, byval alloctype as integer ) static
+sub symbSetAllocType( byval s as FBSYMBOL ptr, _
+					  byval alloctype as integer ) static
 
 	s->alloctype = alloctype
 
@@ -2427,7 +2521,8 @@ function symbGetArrayDimensions( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-sub symbSetArrayDimensions( byval s as FBSYMBOL ptr, byval dims as integer ) static
+sub symbSetArrayDimensions( byval s as FBSYMBOL ptr, _
+							byval dims as integer ) static
 
 	s->var.array.dims = dims
 
@@ -2504,7 +2599,8 @@ function symbGetName( byval s as FBSYMBOL ptr ) as string static
 end function
 
 '':::::
-sub symbGetNameTo( byval s as FBSYMBOL ptr, sname as string )  static
+sub symbGetNameTo( byval s as FBSYMBOL ptr, _
+				   sname as string )  static
 
 	if( s <> NULL ) then
 		sname = s->alias
@@ -2571,7 +2667,8 @@ function symbGetProcIsDeclared( byval f as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-sub symbSetProcIsDeclared( byval f as FBSYMBOL ptr, byval isdeclared as integer ) static
+sub symbSetProcIsDeclared( byval f as FBSYMBOL ptr, _
+						   byval isdeclared as integer ) static
 
 	f->proc.isdeclared = isdeclared
 
@@ -2614,7 +2711,8 @@ function symbGetProcTailArg( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbGetProcPrevArg( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr, _
+function symbGetProcPrevArg( byval f as FBSYMBOL ptr, _
+							 byval a as FBSYMBOL ptr, _
 							 byval checkconv as integer = TRUE ) as FBSYMBOL ptr static
 
 	if( a = NULL ) then
@@ -2635,7 +2733,8 @@ function symbGetProcPrevArg( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbGetProcNextArg( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr, _
+function symbGetProcNextArg( byval f as FBSYMBOL ptr, _
+							 byval a as FBSYMBOL ptr, _
 							 byval checkconv as integer = TRUE ) as FBSYMBOL ptr static
 
 	if( a = NULL ) then
@@ -2656,7 +2755,8 @@ function symbGetProcNextArg( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer static
+function symbGetArgMode( byval f as FBSYMBOL ptr, _
+						 byval a as FBSYMBOL ptr ) as integer static
 
 	symbGetArgMode = INVALID
 
@@ -2669,7 +2769,8 @@ function symbGetArgMode( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as i
 end function
 
 '':::::
-function symbGetArgSuffix( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer static
+function symbGetArgSuffix( byval f as FBSYMBOL ptr, _
+						   byval a as FBSYMBOL ptr ) as integer static
 
 	if( a <> NULL ) then
 		symbGetArgSuffix = a->arg.suffix
@@ -2687,7 +2788,8 @@ function symbGetArgsLen( byval f as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function symbGetArgOptional( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer static
+function symbGetArgOptional( byval f as FBSYMBOL ptr, _
+							 byval a as FBSYMBOL ptr ) as integer static
 
 	if( a <> NULL ) then
 		symbGetArgOptional = a->arg.optional
@@ -2698,7 +2800,8 @@ function symbGetArgOptional( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) 
 end function
 
 '':::::
-function symbGetArgOptval( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as double static
+function symbGetArgOptval( byval f as FBSYMBOL ptr, _
+						   byval a as FBSYMBOL ptr ) as double static
 
 	if( a <> NULL ) then
 		symbGetArgOptval = a->arg.optval.value
@@ -2709,7 +2812,8 @@ function symbGetArgOptval( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as
 end function
 
 '':::::
-function symbGetArgOptval64( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as longint static
+function symbGetArgOptval64( byval f as FBSYMBOL ptr, _
+							 byval a as FBSYMBOL ptr ) as longint static
 
 	if( a <> NULL ) then
 		symbGetArgOptval64 = a->arg.optval.value64
@@ -2720,7 +2824,8 @@ function symbGetArgOptval64( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) 
 end function
 
 '':::::
-function symbGetArgOptvalStr( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbGetArgOptvalStr( byval f as FBSYMBOL ptr, _
+							  byval a as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	if( a <> NULL ) then
 		symbGetArgOptvalStr = a->arg.optval.valuestr
@@ -2736,7 +2841,8 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub hFreeSymbol( byval s as FBSYMBOL ptr, byval freeup as integer = TRUE )
+sub hFreeSymbol( byval s as FBSYMBOL ptr, _
+				 byval freeup as integer = TRUE )
     dim prv as FBSYMBOL ptr, nxt as FBSYMBOL ptr
 
     '' del from string pool
@@ -3023,10 +3129,11 @@ sub symbDelLocalSymbols static
 end sub
 
 '':::::
-sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, byval issub as integer ) static
+sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, _
+							 byval issub as integer ) static
     dim node as FBLOCSYMBOL ptr, nxt as FBLOCSYMBOL ptr
     dim s as FBSYMBOL ptr
-    dim strg as integer, expr as integer, vr as integer
+    dim strg as integer
     dim fres as FBSYMBOL ptr
 
     '' can't free function's result, that's will be done by the rtlib
@@ -3061,8 +3168,7 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, byval issub as integer 
 						'' not funct's result?
 						if( s <> fres ) then
 							strg = astNewVAR( s, NULL, 0, IR.DATATYPE.STRING )
-							expr = rtlStrDelete( strg )
-							astFlush expr, vr
+							astFlush( rtlStrDelete( strg ) )
 						end if
 					end if
 
@@ -3118,7 +3224,8 @@ function symbCheckLabels as FBSYMBOL ptr
 end function
 
 '':::::
-function hFindLib( libname as string, namelist() as string ) as integer
+function hFindLib( libname as string, _
+				   namelist() as string ) as integer
     dim i as integer
 
 	hFindLib = INVALID
@@ -3138,7 +3245,8 @@ function hFindLib( libname as string, namelist() as string ) as integer
 end function
 
 '':::::
-function symbListLibs( namelist() as string, byval index as integer ) as integer static
+function symbListLibs( namelist() as string, _
+					   byval index as integer ) as integer static
     dim cnt as integer, node as FBLIBRARY ptr
 
 	cnt = index

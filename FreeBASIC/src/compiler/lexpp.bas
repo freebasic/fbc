@@ -53,7 +53,8 @@ end type
 	dim shared pptb(1 to FB.PP.MAXRECLEVEL) as FBPPREC
 
 '':::::
-private function hLiteral( byval args as integer = 0, byval arghead as FBDEFARG ptr = NULL ) as string
+private function hLiteral( byval args as integer = 0, _
+						   byval arghead as FBDEFARG ptr = NULL ) as string
     dim text as string
     dim token as string, dpos as integer
     dim a as FBDEFARG ptr
@@ -143,9 +144,10 @@ end function
 ''				 |	 '#'LIBPATH LIT_STR .
 ''
 function lexPreProcessor as integer
-	dim id as string
-	dim isonce as integer
-	dim args as integer, arghead as FBDEFARG ptr, lastarg as FBDEFARG ptr
+	dim as string id, text
+	dim as integer isonce, args
+	dim as FBDEFARG ptr arghead, lastarg
+	dim as FBSYMBOL ptr s
 
 	lexPreProcessor = FALSE
 
@@ -156,12 +158,15 @@ function lexPreProcessor as integer
     	lexSkipToken LEXCHECK_NODEFINE
 
     	'' ID
-    	if( lexTokenSymbol <> NULL ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
-    		exit function
-    	else
-    		id = lexEatToken( LEXCHECK_NOWHITESPC )
+    	s = lexTokenSymbol
+    	if( s <> NULL ) then
+    		if( s->class <> FB.SYMBCLASS.DEFINE ) then
+    			hReportError FB.ERRMSG.DUPDEFINITION
+    			exit function
+    		end if
     	end if
+
+    	id = lexEatToken( LEXCHECK_NOWHITESPC )
 
     	args = 0
     	arghead = NULL
@@ -201,7 +206,18 @@ function lexPreProcessor as integer
     	end if
 
     	'' LITERAL+
-    	symbAddDefine( id, hLiteral( args, arghead ), args, arghead )
+    	text = hLiteral( args, arghead )
+
+    	'' already defined? if there are no differences, do nothing..
+    	if( s <> NULL ) then
+    		if( (s->def.args <> args) or (s->def.text <> text) ) then
+    			hReportError FB.ERRMSG.DUPDEFINITION
+    			exit function
+    		end if
+
+    	else
+    		symbAddDefine( id, text, args, arghead )
+    	end if
 
     	lexPreProcessor = TRUE
 
@@ -210,11 +226,11 @@ function lexPreProcessor as integer
     	lexSkipToken LEXCHECK_NODEFINE
 
     	if( not symbDelDefine( lexTokenSymbol ) ) then
-    		hReportError FB.ERRMSG.VARIABLENOTDECLARED
-    		exit function
-    	else
-    		lexSkipToken
+    	'''''hReportError FB.ERRMSG.VARIABLENOTDECLARED
+		'''''exit function
     	end if
+
+    	lexSkipToken
 
     	lexPreProcessor = TRUE
 
@@ -251,7 +267,8 @@ function lexPreProcessor as integer
 			end if
 		end if
 
-		lexPreProcessor = fbIncludeFile( hUnescapeStr( lexEatToken ), isonce )
+		text = hUnescapeStr( lexEatToken )
+		lexPreProcessor = fbIncludeFile( text, isonce )
 
 	'' INCLIB LIT_STR
 	case FB.TK.INCLIB

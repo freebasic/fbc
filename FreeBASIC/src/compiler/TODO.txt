@@ -1,7 +1,5 @@
 
-[ ] make tests with runtime check, put them at examples at the "tests" dir
-
-[ ] make PUT# and GET# accept a 4th option argument: bytes
+[ ] make PUT# and GET# accept a 4th optional argument: bytes
 
 [ ] make the runtime lib thread safe
 

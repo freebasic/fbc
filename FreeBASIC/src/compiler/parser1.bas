@@ -732,10 +732,13 @@ end function
 '':::::
 ''ElementDecl     =   ID ArrayDecl? AS SymbolType
 ''
-function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, _
-					   ptrcnt as integer, lgt as integer, _
-					   dimensions as integer, dTB() as FBARRAYDIM )
-	dim res as integer
+function cElementDecl( id as string, _
+					   typ as integer, _
+					   subtype as FBSYMBOL ptr, _
+					   ptrcnt as integer, _
+					   lgt as integer, _
+					   dimensions as integer, _
+					   dTB() as FBARRAYDIM )
 
 	cElementDecl = FALSE
 
@@ -743,6 +746,7 @@ function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, _
 	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
 		if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
     		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    		exit function
     	end if
     end if
 
@@ -752,9 +756,9 @@ function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, _
 	id = lexEatToken
 
 	'' ArrayDecl?
-	res = cStaticArrayDecl( dimensions, dTB() )
+	cStaticArrayDecl( dimensions, dTB() )
 
-    '' AS SumbolType
+    '' AS SymbolType
     if( not hMatch( FB.TK.AS ) or (typ <> INVALID) ) then
     	hReportError FB.ERRMSG.SYNTAXERROR
     	exit function
@@ -770,15 +774,65 @@ function cElementDecl( id as string, typ as integer, subtype as FBSYMBOL ptr, _
 end function
 
 '':::::
-''TypeLine      =   (UNION|TYPE Comment? SttSeparator
-''					 (ElementDecl? Comment? SttSeparator)+
-''					END UNION|TYPE)
-''              |   (ElementDecl? Comment? SttSeparator)+ .
+''AsElementDecl     =   AS SymbolType ID ArrayDecl? (',' ID ArrayDecl?)*
+''
+function cAsElementDecl( ) as integer
+    dim as FBSYMBOL ptr subtype
+    dim as integer dimensions, typ, lgt, ptrcnt
+    dim as string id
+    static as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
+
+    cAsElementDecl = FALSE
+
+    '' SymbolType
+    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	exit function
+    end if
+
+	do
+		'' allow keywords as field names
+		if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
+			if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+    			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    			exit function
+    		end if
+    	end if
+
+	    id = lexEatToken
+
+		'' ArrayDecl?
+		cStaticArrayDecl( dimensions, dTB() )
+
+		if( symbAddUDTElement( env.typectx.symbol, id, _
+							   dimensions, dTB(), _
+							   typ, subtype, ptrcnt, lgt, _
+							   env.typectx.innercnt > 0 ) = NULL ) then
+				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+				exit function
+		end if
+
+		env.typectx.elements += 1
+
+	'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
+
+	cAsElementDecl = TRUE
+
+end function
+
+'':::::
+''TypeLine      =   ( (UNION|TYPE Comment? SttSeparator
+''					   ElementDecl
+''					  END UNION|TYPE)
+''                  | ElementDecl
+''				    | AS AsElementDecl ) .
 ''
 function cTypeLine as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
-    dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
-    dim ename as string
+    dim as FBSYMBOL ptr subtype
+    dim as integer dimensions, typ, lgt, ptrcnt
+    dim as string ename
+    static as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
 
 	cTypeLine = FALSE
 
@@ -858,17 +912,35 @@ function cTypeLine as integer
 
 		end select
 
+	'' AS?
+	case FB.TK.AS
+		'' isn't it a field called "as"?
+		select case lexLookAhead( 1 )
+		case FB.TK.AS, CHAR_LPRNT
+			goto declfield
+		end select
+
+		lexSkipToken
+
+		if( not cAsElementDecl( ) ) then
+			exit function
+		end if
+
 	case else
 declfield:
 
 		env.typectx.elements += 1
 
 		if( cElementDecl( ename, typ, subtype, ptrcnt, lgt, dimensions, dTB() ) ) then
-			if( symbAddUDTElement( env.typectx.symbol, ename, dimensions, dTB(), _
-								   typ, subtype, ptrcnt, lgt, env.typectx.innercnt > 0 ) = NULL ) then
+
+			if( symbAddUDTElement( env.typectx.symbol, ename, _
+								   dimensions, dTB(), _
+								   typ, subtype, ptrcnt, lgt, _
+								   env.typectx.innercnt > 0 ) = NULL ) then
 				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 				exit function
 			end if
+
 		end if
 	end select
 
@@ -1053,7 +1125,7 @@ function cEnumConstDecl( id as string )
 end function
 
 '':::::
-''EnumLine      =   (EnumDecl? Comment? SttSeparator) .
+''EnumLine      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator) .
 ''
 function cEnumLine as integer
 	dim ename as string
@@ -1068,17 +1140,25 @@ function cEnumLine as integer
 		exit function
 	end if
 
-	env.enumctx.elements = env.enumctx.elements + 1
+	do
+		env.enumctx.elements += 1
 
-	if( cEnumConstDecl( ename ) ) then
-		if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ), 0 ) = NULL ) then
-			hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
-			exit function
+		if( cEnumConstDecl( ename ) ) then
+			if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ), 0 ) = NULL ) then
+				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
+				exit function
+			end if
 		end if
-	end if
 
-	''
-	env.enumctx.value = env.enumctx.value + 1
+		''
+		env.enumctx.value += 1
+
+		'' ','?
+		if( lexCurrentToken <> CHAR_COMMA ) then
+			exit do
+		end if
+		lexSkipToken
+	loop
 
 	'' Comment? SttSeparator
 	cComment
@@ -1141,10 +1221,10 @@ function cEnumDecl
 
 	'' END ENUM
 	if( not hMatch( FB.TK.END ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    	hReportError FB.ERRMSG.EXPECTEDENDENUM
     	exit function
 	elseif( not hMatch( FB.TK.ENUM ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    	hReportError FB.ERRMSG.EXPECTEDENDENUM
     	exit function
 	end if
 
@@ -3068,7 +3148,6 @@ end function
 function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer ) as integer static
     dim s as FBSYMBOL ptr
     dim assg as integer
-    dim vr as integer
 
     hAssignFunctResult = FALSE
 
@@ -3086,7 +3165,7 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
     	exit function
     end if
 
-    astFlush assg, vr
+    astFlush( assg )
 
     hAssignFunctResult = TRUE
 
@@ -3096,7 +3175,6 @@ end function
 function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 					byval checkparents as integer = FALSE ) as integer
 	dim procexpr as integer
-	dim vr as integer
 	dim typ as integer, dtype as integer
 
 	cProcCall = FALSE
@@ -3158,7 +3236,7 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
 	end if
 
 	''
-	astFlush procexpr, vr
+	astFlush( procexpr )
 
 
 	cProcCall = TRUE
@@ -3253,7 +3331,6 @@ end function
 function cAssignmentOrPtrCall
 	dim islet as integer
 	dim assgexpr as integer, expr as integer, dtype as integer
-	dim vr as integer
 	dim op as integer
 
 	cAssignmentOrPtrCall = FALSE
@@ -3284,7 +3361,7 @@ function cAssignmentOrPtrCall
 			end if
 
     		'' flush the call
-    		astFlush assgexpr, vr
+    		astFlush( assgexpr )
     		cAssignmentOrPtrCall = TRUE
     		exit function
     	end if
@@ -3361,7 +3438,7 @@ function cAssignmentOrPtrCall
             exit function
         end if
 
-        astFlush assgexpr, vr
+        astFlush( assgexpr )
         cAssignmentOrPtrCall = TRUE
 
 	else

@@ -34,8 +34,8 @@ defint a-z
 '$include once: 'inc\emit.bi'
 
 '':::::
-function cFuncReturn as integer
-    dim expr as integer, vr as integer
+function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
+    dim expr as integer
 
     cFuncReturn = FALSE
 
@@ -44,17 +44,19 @@ function cFuncReturn as integer
 		exit function
 	end if
 
-	if( not cExpression( expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	if( checkexpr ) then
+		if( not cExpression( expr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
 
-	if( not hAssignFunctResult( env.currproc, expr ) ) then
-		exit function
+		if( not hAssignFunctResult( env.currproc, expr ) ) then
+			exit function
+		end if
 	end if
 
 	'' do an implicit exit function
-	astFlush astNewBRANCH( IR.OP.JMP, env.procstmt.endlabel ), vr
+	astFlush( astNewBRANCH( IR.OP.JMP, env.procstmt.endlabel ) )
 
 	cFuncReturn = TRUE
 
@@ -69,7 +71,6 @@ end function
 function cGotoStmt
 	dim l as FBSYMBOL ptr
 	dim isglobal as integer, isnext as integer
-	dim vr as integer
 
 	cGotoStmt = FALSE
 
@@ -89,7 +90,7 @@ function cGotoStmt
 		end if
 		lexSkipToken
 
-		astFlush astNewBRANCH( IR.OP.JMP, l ), vr
+		astFlush( astNewBRANCH( IR.OP.JMP, l ) )
 
 		cGotoStmt = TRUE
 
@@ -108,7 +109,7 @@ function cGotoStmt
 		end if
 		lexSkipToken
 
-		astFlush astNewBRANCH( IR.OP.CALL, l ), vr
+		astFlush( astNewBRANCH( IR.OP.CALL, l ) )
 
 		cGotoStmt = TRUE
 
@@ -119,8 +120,25 @@ function cGotoStmt
 		'' Comment|StmtSep|EOF? just return
 		select case lexCurrentToken
 		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
-			''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-			irEmitRETURN 0
+
+			'' try to guess here.. if inside a proc currently and no user label was
+			'' emited, it's probably a FUNCTION return, no a GOSUB return
+			l = NULL
+			if( env.scope > 0 ) then
+				l = symbGetLastLabel
+				if( l <> NULL ) then
+					if( l->scope <> env.scope ) then
+						l = NULL
+					end if
+				end if
+			end if
+
+			if( (env.scope = 0) or (l <> NULL) ) then
+				''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+				irEmitRETURN 0
+			else
+				cGotoStmt = cFuncReturn( FALSE )
+			end if
 
 		case else
 
@@ -139,7 +157,7 @@ function cGotoStmt
 			'' label?
 			if( l <> NULL ) then
 				lexSkipToken
-				astFlush astNewBRANCH( IR.OP.JMP, l ), vr
+				astFlush( astNewBRANCH( IR.OP.JMP, l ) )
 				cGotoStmt = TRUE
 
 			'' must be a function return then
@@ -834,7 +852,6 @@ end function
 function cPokeStmt
 	dim expr1 as integer, expr2 as integer
 	dim poketype as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
-	dim vr as integer
 
 	cPokeStmt = FALSE
 
@@ -893,7 +910,7 @@ function cPokeStmt
 
     expr1 = astNewASSIGN( expr1, expr2 )
 
-	astFlush expr1, vr
+	astFlush( expr1 )
 
     cPokeStmt = TRUE
 
@@ -1204,7 +1221,7 @@ end function
 
 '':::::
 function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
-    dim idxexpr as integer, vr as integer
+    dim idxexpr as integer
 	dim sym as FBSYMBOL ptr
 	dim exitlabel as FBSYMBOL ptr
 	dim tbsym as FBSYMBOL ptr
@@ -1228,7 +1245,7 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 	if( expr = INVALID ) then
 		exit function
 	end if
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' read labels
 	l = 0
@@ -1255,12 +1272,12 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 	'' < 1?
 	expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
 					  astNewCONST( 1, IR.DATATYPE.UINT ), exitlabel, FALSE )
-	astFlush expr, vr
+	astFlush( expr )
 
 	'' > labels?
 	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
 					  astNewCONST( l, IR.DATATYPE.UINT ), exitlabel, FALSE )
-	astFlush expr, vr
+	astFlush( expr )
 
     '' jump to table[idx]
     tbsym = hSelConstAllocTbSym( )
@@ -1272,9 +1289,9 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
     				  IR.DATATYPE.UINT, NULL )
 
     if( isgoto ) then
-    	astFlush astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ), vr
+    	astFlush( astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ) )
     else
-    	astFlush astNewBRANCH( IR.OP.CALLPTR, NULL, expr ), vr
+    	astFlush( astNewBRANCH( IR.OP.CALLPTR, NULL, expr ) )
     end if
 
     '' emit table
