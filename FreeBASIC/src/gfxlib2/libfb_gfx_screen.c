@@ -195,6 +195,10 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 			strncpy(window_title, fb_hGetCommandLine(), WINDOW_TITLE_SIZE - 1);
 			if (c = strchr(window_title, ' '))
 				*c = '\0';
+#ifdef WIN32
+			if (c = strrchr(window_title, '.'))
+				*c = '\0';
+#endif
 			window_title[WINDOW_TITLE_SIZE - 1] = '\0';
 		}
 		
