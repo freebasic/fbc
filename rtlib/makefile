@@ -29,6 +29,11 @@ endif
 
 libpath = ../../lib
 lib = $(libpath)/libfb.a
+ifeq ($(WINSYSDIR),)
+    ifdef COMPILER
+    	lib := $(libpath)/libfb-nocurses.a
+    endif
+endif	
 
 objects := $(patsubst %.c,obj/%.o,$(wildcard *.c))
           
