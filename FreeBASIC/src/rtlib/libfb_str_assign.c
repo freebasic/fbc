@@ -80,9 +80,9 @@ FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 	}
 	else
 	{
-		/* byte ptr? */
+		/* byte ptr? as in C, assume dst is large enough */
 		if( dst_size == 0 )
-			dst_size = strlen( (char *)dst );
+			dst_size = src_len;
 
 		if( dst_size < src_len )
 			src_len = dst_size;
