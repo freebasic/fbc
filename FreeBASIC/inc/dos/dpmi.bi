@@ -3,12 +3,6 @@
 #ifndef __dj_include_dpmi_h_
 #define __dj_include_dpmi_h_
 
-'#ifndef __dj_ENFORCE_ANSI_FREESTANDING
-
-'#ifndef __STRICT_ANSI__
-
-'#ifndef _POSIX_SOURCE
-
 extern __dpmi_error alias "__dpmi_error" as unsigned short
 
 type __dpmi_raddr
@@ -359,13 +353,5 @@ declare function	_go32_dpmi_lock_data cdecl alias "_go32_dpmi_lock_data" ( byval
 
 declare function	__djgpp_set_page_attributes cdecl alias "__djgpp_set_page_attributes"	( byval our_addr as any ptr, byval num_bytes as uinteger, byval attributes as ushort ) as integer
 declare function	__djgpp_map_physical_memory cdecl alias "__djgpp_map_physical_memory"	( byval our_addr as any ptr, byval num_bytes as uinteger, byval phys_addr as uinteger ) as integer
-
-'#endif /* !_POSIX_SOURCE */
-'#endif /* !__STRICT_ANSI__ */
-'#endif /* !__dj_ENFORCE_ANSI_FREESTANDING */
-
-'#ifndef __dj_ENFORCE_FUNCTION_CALLS
-'#endif /* !__dj_ENFORCE_FUNCTION_CALLS */
-
 
 #endif ' !__dj_include_dpmi_h_
