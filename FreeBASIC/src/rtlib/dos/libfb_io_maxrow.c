@@ -25,11 +25,15 @@
  */
 
 #include "fb.h"
+#include <conio.h>
 
 /*:::::*/
 int fb_ConsoleGetMaxRow( void )
 {
-	/* warning: assumes VGA (max 50 rows) */
-	return 50;
+	struct text_info ti;
+
+	gettextinfo( &ti );
+
+	return ti.screenheight;
 }
 

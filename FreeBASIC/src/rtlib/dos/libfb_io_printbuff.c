@@ -30,39 +30,43 @@
 #include <go32.h>
 #include <pc.h>
 
-#define TEXT_ADDR	0xB8000
+
+#define TEXT_ADDR	ScreenPrimary
 
 /*:::::*/
 void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
-	int top, bot;
+    int col, row;
+    int toprow, botrow;
+	int cols, rows;
 	int no_scroll = FALSE;
 	int len;
-	int end_char;
-	
-	top = (fb_viewTopRow >= 0 ? fb_viewTopRow + 1 : 1);
-	bot = (fb_viewBotRow >= 0 ? fb_viewBotRow + 1 : 1);
-	
-	/* if no newline and row at bottom and col+string at right, don't scroll */
-	if ( ((mask & FB_PRINT_NEWLINE) == 0)  && (wherey() == bot - top + 1) ) {
-		len = strlen(buffer);
-		end_char = buffer[len - 1];
-		buffer[len - 1] = '\0';
-		no_scroll = TRUE;
-	}
-	
+	unsigned short end_char;
+
+	len = strlen( buffer );
+
+	fb_ConsoleGetSize( &cols, &rows );
+	fb_ConsoleGetView( &toprow, &botrow );
+	fb_ConsoleGetXY( &col, &row );
+
+	/* if no newline and row at bottom and col+string at right, disable scrolling */
+	if( (mask & FB_PRINT_NEWLINE) == 0 )
+		if( row == botrow )
+			if( col + len - 1 == cols )
+			{
+				end_char = ((unsigned char *)buffer)[len - 1];
+				buffer[len - 1] = '\0';
+				no_scroll = TRUE;
+			}
+
 	cprintf( "%s", buffer );
-	
+
 	if (no_scroll) {
-		/* write the last character */
-		/*_farpokew(	_dos_ds,
-				TEXT_ADDR + (wherey() + top - 2) * ScreenCols() * 2 + (wherex() - 1) * 2,
-				end_char | ScreenAttrib << 8);*/
 		_farpokew(	_dos_ds,
-				TEXT_ADDR + (((wherey() + top - 2) * ScreenCols() + wherex() - 1) << 1),
-				end_char | ScreenAttrib << 8);
+				TEXT_ADDR + (((wherey() + toprow - 2) * ScreenCols() + wherex() - 1) << 1),
+				 (((unsigned short)ScreenAttrib)<< 8) + end_char );
 	}
-	
+
 	if (mask & FB_PRINT_NEWLINE) {
 		gotoxy(1, wherey()); /* carriage return */
 	}
