@@ -248,7 +248,13 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
 {
     char buffer[BUFFLEN+14+1+1], *p;
     int chars, rmask;
-    
+
+    if( len == 0 )
+    {
+    	fb_PrintVoid( fnum, mask );
+    	return;
+    }
+
     rmask = mask;
     mask = 0;
 
@@ -262,14 +268,14 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
     	p = &buffer[0];
     	if( len == chars )
     	{
+    		mask = rmask;
+
     		if( mask & FB_PRINT_NEWLINE )
     			sprintf( buffer, "%s\n", s );
     		else if( mask & FB_PRINT_PAD )
     			sprintf( buffer, "%-14s", s );
     		else
     			p = s;
-    			
-    		mask = rmask;
     	}
     	else
     	{
