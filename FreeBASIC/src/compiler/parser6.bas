@@ -1292,45 +1292,39 @@ function cQuirkStmt
 		end if
 	end if
 
-	res = cGotoStmt
-	if( not res ) then
+	res = FALSE
+
+	select case lexCurrentToken
+	case FB.TK.GOTO, FB.TK.GOSUB, FB.TK.RETURN, FB.TK.RESUME
+		res = cGotoStmt
+	case FB.TK.PRINT, CHAR_QUESTION
+		res = cPrintStmt
+	case FB.TK.RESTORE, FB.TK.READ, FB.TK.DATA
+		res = cDataStmt
+	case FB.TK.ERASE, FB.TK.SWAP
 		res = cArrayStmt
-		if( not res ) then
-			res = cDataStmt
-			if( not res ) then
-				res = cPrintStmt
-				if( not res ) then
-					res = cPokeStmt
-					if( not res ) then
-						res = cMidStmt
-						if( not res ) then
-							res = cFileStmt
-							if( not res ) then
-								res = cOnStmt
-								if( not res ) then
-									res = cErrorStmt
-									if( not res ) then
-										res = cWriteStmt
-										if( not res ) then
-											res = cLineInputStmt
-											if( not res ) then
-												res = cInputStmt
-												if( not res ) then
-													res = cViewStmt
-													if( not res ) then
-														res = cGfxStmt
-													end if
-												end if
-											end if
-										end if
-									end if
-								end if
-							end if
-						end if
-					end if
-				end if
-			end if
-		end if
+	case FB.TK.LINE
+		res = cLineInputStmt
+	case FB.TK.INPUT
+		res = cInputStmt
+	case FB.TK.POKE, FB.TK.POKES, FB.TK.POKEI
+		res = cPokeStmt
+	case FB.TK.OPEN, FB.TK.CLOSE, FB.TK.SEEK, FB.TK.PUT, FB.TK.GET, FB.TK.LOCK, FB.TK.UNLOCK
+		res = cFileStmt
+	case FB.TK.ON
+		res = cOnStmt
+	case FB.TK.WRITE
+		res = cWriteStmt
+	case FB.TK.ERROR, FB.TK.ERR
+		res = cErrorStmt
+	case FB.TK.VIEW
+		res = cViewStmt
+	case FB.TK.MID
+		res = cMidStmt
+	end select
+
+	if( res = FALSE ) then
+		res = cGfxStmt
 	end if
 
 	cQuirkStmt = res
@@ -1875,24 +1869,25 @@ function cQuirkFunction( funcexpr as integer )
 		exit function
 	end if
 
-	res = cArrayFunct( funcexpr )
-	if( not res ) then
+	res = FALSE
+
+	select case lexCurrentToken
+	case FB.TK.STR, FB.TK.INSTR, FB.TK.MID, FB.TK.STRING
 		res = cStringFunct( funcexpr )
-		if( not res ) then
-			res = cMathFunct( funcexpr )
-			if( not res ) then
-				res = cPeekFunct( funcexpr )
-				if( not res ) then
-					res = cFileFunct( funcexpr )
-					if( not res ) then
-						res = cErrorFunct( funcexpr )
-						if( not res ) then
-							res = cGfxFunct( funcexpr )
-						end if
-					end if
-				end if
-			end if
-		end if
+	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN
+		res = cMathFunct( funcexpr )
+	case FB.TK.PEEK, FB.TK.PEEKS, FB.TK.PEEKI
+		res = cPeekFunct( funcexpr )
+	case FB.TK.LBOUND, FB.TK.UBOUND
+		res = cArrayFunct( funcexpr )
+	case FB.TK.SEEK, FB.TK.INPUT
+		res = cFileFunct( funcexpr )
+	case FB.TK.ERR
+		res = cErrorFunct( funcexpr )
+	end select
+
+	if( not res ) then
+		res = cGfxFunct( funcexpr )
 	end if
 
 	cQuirkFunction = res
