@@ -273,6 +273,7 @@ FBCALL void 		fb_WriteUInt 		( int fnum, unsigned int val, int mask );
 FBCALL void 		fb_WriteSingle 		( int fnum, float val, int mask );
 FBCALL void 		fb_WriteDouble 		( int fnum, double val, int mask );
 FBCALL void 		fb_WriteString 		( int fnum, FBSTRING *s, int mask );
+FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 
 
 	   int 			fb_ConsoleGetkey	( void );
