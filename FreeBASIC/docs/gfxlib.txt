@@ -51,6 +51,7 @@ Functions reference:
 	SCREENPTR	function
 	SCREENSET	statement
 	SCREENUNLOCK	statement
+	SETMOUSE	statement
 	VIEW		statement
 	WAIT		statement
 	WINDOW		statement
@@ -557,7 +558,7 @@ Function new in FB.
 
 See also:
 
-SCREEN, MULTIKEY.
+SETMOUSE, SCREEN, MULTIKEY.
 
 
 
@@ -1323,6 +1324,9 @@ any time by pressing ALT-ENTER, providing the system supports it. While in
 windowed mode, clicking on the window close button will return CHR$(255)+"X"
 to INKEY$, while clicking on the maximize window button will switch to
 fullscreen mode if possible.
+If a windowed mode is set, the mouse cursor is displayed by default; you can
+hide it at any time using the SETMOUSE statement. In fullscreen mode the
+cursor is hidden and cannot be made visible.
 A successful SCREEN call sets currently visible and working pages both to page
 number 0, resets the palette to the specified mode one (see appendix B),
 resets the clipping region to the size of the screen, disables custom
@@ -1350,7 +1354,7 @@ any number of pages in any mode.
 See also:
 
 PALETTE, SCREENLOCK, SCREENUNLOCK, SCREENPTR, SCREENSET, SCREENCOPY,
-SCREENINFO.
+SCREENINFO, SETMOUSE.
 
 
 
@@ -1668,6 +1672,47 @@ Function new in FB.
 See also:
 
 SCREEN, SCREENLOCK, SCREENPTR.
+
+
+
++----------+------------------------------------------------------------------
+| SETMOUSE |
++----------+
+
+Statement to position and show/hide the system mouse cursor.
+
+
+Syntax:
+	SETMOUSE [x][,[y][,cursor]]
+
+
+Argument:	Description:
+
+x,y		Screen coordinates of the new mouse cursor position.
+
+cursor		Pass 0 to hide the cursor, or 1 to show it.
+
+
+Insights:
+
+This statement is useful to set the current system mouse cursor position, and
+to hide or show it. The cursor cannot be shown while in fullscreen mode; in
+this case the cursor parameter has no effect.
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+GETMOUSE.
 
 
 
