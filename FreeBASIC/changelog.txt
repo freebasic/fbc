@@ -1,6 +1,8 @@
 Version 0.13 Beta:
 
-[changed] 
+[changed]
+- arrays and pointers will be optimized for shorthand when possible (before, only vars were), ie: 
+  "foo(a+b-c) = foo(a+b-c) * expr" will become "foo(a+b-c) *= expr" when code is generated (v1c)
 - RETURN can now be used as a shortcut to function result set + EXIT FUNCTION (as in C); with this modification, 
   the LABEL's (if used) must have been defined already, no forward references are allowed anymore (v1c)
 - ASC now has an optional parameter to retrieve a char at a specific position as in "c = asc( "abc", 2 )" (v1c)
@@ -10,7 +12,7 @@ Version 0.13 Beta:
 - string constant expressions can now be used with CONST's (v1c)
 - glut include file, header completed with help of the SWIG FB wrapper (v1c)
 
-[added] 
+[added]
 - on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
 - inline string indexing as in "char = somestring[idx]" (V1c)
 - variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
@@ -25,6 +27,9 @@ Version 0.13 Beta:
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
 - DYLIBLOAD and DYLIBSYMBOL intrinsic functions to manage dynamic libraries at runtime (lillo)
 - nameless inner TYPE's on UNION's (v1c)
+- byte ptr's can now by concatenated to or comparated against strings, ie: "s = s + *p" "if( s = *p ) then" (v1c)
+- strings passed by value to FB functions, ie: "sub foo(byval bar as string)" -- note: they are not copied to stack, 
+  they are just a fixed-len string with unknown size (v1c)
 
 [fixed]
 - CVS() was being done as CVD() (v1c)
