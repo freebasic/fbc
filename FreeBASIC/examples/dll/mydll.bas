@@ -1,7 +1,8 @@
 ''
 '' mydll -- simple dll test
 ''
-'' compile as: fbc -dll mydll.bas (will create the mydll.dll and libmydll.dll.a files) 
+'' compile as: fbc -dll mydll.bas (will create mydll.dll and libmydll.dll.a under Win32,
+''                                 or libmydll.so under Linux)
 ''
 '' note: libmydll.dll.a is an import library, it's only needed when creating 
 ''       an executable that calls any of mydll's functions, only distribute 

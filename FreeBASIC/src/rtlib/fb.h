@@ -227,6 +227,8 @@ FBCALL FBSTRING 	*fb_ExePath 		( void );
 FBCALL int 			fb_Run 				( FBSTRING *program );
 FBCALL int 			fb_Chain 			( FBSTRING *program );
 FBCALL int 			fb_Exec 			( FBSTRING *program, FBSTRING *args );
+FBCALL void 		*fb_DylibLoad		( FBSTRING *library );
+FBCALL void			*fb_DylibSymbol		( void *library, FBSTRING *symbol );
 
 	   char 		*fb_hGetShortPath	( char *src, char *dst, int maxlen );
 

@@ -21,6 +21,7 @@ Version 0.13 Beta:
 - ENUM's can now be nameless (v1c)
 - strcat, strchr, strcmp, strcpy, strlen, strncat, strncmp, strncpy, strrchr, strstr as intrinsic functions (v1c)
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
+- DYLIBLOAD and DYLIBSYMBOL intrinsic functions to manage dynamic libraries at runtime (lillo)
 
 [fixed]
 - CVS() was being done as CVD() (v1c)

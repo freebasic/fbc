@@ -1055,6 +1055,15 @@ data "condbroadcast","fb_CondBroadcast", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1
 data "condwait","fb_CondWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 							   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+'' dylibload ( filename as string ) as integer
+data "dylibload","fb_DylibLoad", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
+								 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+
+'' dylibsymbol( byval library as integer, symbol as string) as any ptr 
+data "dylibsymbol","fb_DylibSymbol", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+									 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '' strcat cdecl ( byval dst as string, byval src as string ) as byte ptr
