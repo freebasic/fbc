@@ -678,13 +678,15 @@ function cGfxPut as integer
 		exit function
 	end if
 
-	if( not symbIsArray( s ) ) then
+	if( symbIsArray( s ) ) then
+		if ( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
+			arrayexpr = hMakeArrayIndex( s, arrayexpr )
+		end if
+	elseif ( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+		arrayexpr = astNewLOAD( arrayexpr, IR.DATATYPE.INTEGER )
+	else
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
-	end if
-
-	if( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
-		arrayexpr = hMakeArrayIndex( s, arrayexpr )
 	end if
 
 	'' (',' Mode)?
@@ -837,13 +839,15 @@ function cGfxGet as integer
 		exit function
 	end if
 
-	if( not symbIsArray( s ) ) then
+	if( symbIsArray( s ) ) then
+		if ( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
+			arrayexpr = hMakeArrayIndex( s, arrayexpr )
+		end if
+	elseif ( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+		arrayexpr = astNewLOAD( arrayexpr, IR.DATATYPE.INTEGER )
+	else
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
-	end if
-
-	if( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
-		arrayexpr = hMakeArrayIndex( s, arrayexpr )
 	end if
 
     ''
