@@ -35,11 +35,12 @@ char *fb_hGetExePath( char *dst, int maxlen )
 
 	strncpy(dst, fb_argv[0], maxlen);
 
-	p = strrchr( dst, '\\' );
+	p = strrchr( dst, '/' );
 	if( p != NULL )
 		*p = '\0';
 	else
 		dst[0] = '\0';
+
 
 	return p;
 }

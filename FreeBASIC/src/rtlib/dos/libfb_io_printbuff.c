@@ -20,69 +20,52 @@
 /*
  * io_printbuff.c -- low-level print to console function for DOS
  *
- * chng: oct/2004 written [v1ctor]
- *       nov/2004 fixed scrolling problem if printing at bottom/right w/o a newline [v1ctor]
- *	 jan/2005 changed for DOS ( not working - fixme!!! )
+ * chng: jan/2005 written [DrV]
  *
  */
 
 #include "fb.h"
 #include <conio.h>
+#include <sys/farptr.h>
+#include <go32.h>
+#include <pc.h>
+
+#define TEXT_ADDR	0xB8000
 
 /*:::::*/
 void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
-	int col, row;
-	int toprow, botrow;
-	int cols, rows;
-	int len, scrolloff = FALSE;
-	int rowsleft, rowstoscroll;
-
-	len = strlen( buffer );
-
-	fb_ConsoleGetSize( &cols, &rows );
-	fb_ConsoleGetView( &toprow, &botrow );
-	fb_ConsoleGetXY( &col, &row );
-
-	/* scrolling */
-	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
-	{
-		fb_ConsoleScroll( 1 );
-		row = botrow;
+	int top, bot;
+	int no_scroll = FALSE;
+	int len;
+	int end_char;
+	
+	top = (fb_viewTopRow >= 0 ? fb_viewTopRow + 1 : 1);
+	bot = (fb_viewBotRow >= 0 ? fb_viewBotRow + 1 : 1);
+	
+	/* if no newline and row at bottom and col+string at right, don't scroll */
+	if ( ((mask & FB_PRINT_NEWLINE) == 0)  && (wherey() == bot - top + 1) ) {
+		len = strlen(buffer);
+		end_char = buffer[len - 1];
+		buffer[len - 1] = '\0';
+		no_scroll = TRUE;
 	}
-
-	/* if no newline and row at bottom and col+string at right, disable scrolling */
-	if( (mask & FB_PRINT_NEWLINE) == 0 )
-	{
-		if( row == botrow )
-			if( col + len - 1 == cols )
-				scrolloff = TRUE;
-	}
-
-	if( scrolloff )
-	{
-		/* */
-	}
-
-	/* scrolling if VIEW was set */
-	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != fb_ConsoleGetMaxRow( )) )
-	{
-    	rowsleft = (botrow - row) /*+ 1*/;
-    	rowstoscroll = 1 + (len - (cols - col + 1)) / cols;
-    	if( (mask & FB_PRINT_NEWLINE) != 0 )
-    		++rowstoscroll;
-
-     	if( rowstoscroll - rowsleft > 0 )
-     	{
-     		fb_ConsoleScroll( rowstoscroll - rowsleft );
-     		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1, -1 );
-     	}
-	}
-
+	
 	cprintf( "%s", buffer );
-
-	if( scrolloff )
-		; /* */
+	
+	if (no_scroll) {
+		/* write the last character */
+		/*_farpokew(	_dos_ds,
+				TEXT_ADDR + (wherey() + top - 2) * ScreenCols() * 2 + (wherex() - 1) * 2,
+				end_char | ScreenAttrib << 8);*/
+		_farpokew(	_dos_ds,
+				TEXT_ADDR + (((wherey() + top - 2) * ScreenCols() + wherex() - 1) << 1),
+				end_char | ScreenAttrib << 8);
+	}
+	
+	if (mask & FB_PRINT_NEWLINE) {
+		gotoxy(1, wherey()); /* carriage return */
+	}
 
 }
 

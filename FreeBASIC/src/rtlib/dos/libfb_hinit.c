@@ -44,7 +44,7 @@ void fb_hInit ( void )
 	int i;
 
 	/* set FPU precision to 64-bit and round to nearest (as in QB) */
-	control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
+	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
 
 	/* rebuild command line from argv */
 	for (i = 0; i < fb_argc; i++) {

@@ -42,6 +42,9 @@ void fb_ConsoleLocate( int row, int col, int cursor )
   	else
   		y = wherey();
 
+	if (fb_viewTopRow >= 0)
+		y = y - fb_viewTopRow;
+
 	if (cursor >= 0)
 		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
 	
