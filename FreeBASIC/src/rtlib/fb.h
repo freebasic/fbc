@@ -49,6 +49,25 @@
 #define MAX_PATH	1024
 #endif
 
+/**************************************************************************************************
+ * internal lists
+ **************************************************************************************************/
+
+typedef struct _FB_LISTELEM {
+	struct _FB_LISTELEM	*prev;
+	struct _FB_LISTELEM	*next;
+} FB_LISTELEM;
+
+typedef struct _FB_LIST {
+	int		cnt;
+	FB_LISTELEM	*head;
+	FB_LISTELEM	*tail;
+	FB_LISTELEM	*fhead;
+} FB_LIST;
+
+void		fb_hListInit		( FB_LIST *list, void *table, int elem_size, int size );
+FB_LISTELEM	*fb_hListAllocElem	( FB_LIST *list );
+void		fb_hListFreeElem	( FB_LIST *list, FB_LISTELEM *elem );
 
 /**************************************************************************************************
  * strings
@@ -434,6 +453,32 @@ FBCALL void 		*fb_ErrorSetHandler ( void *newhandler );
 FBCALL int 			fb_ErrorGetNum 		( void );
 	   void 		*fb_ErrorResume		( void );
 	   void 		*fb_ErrorResumeNext	( void );
+
+/**************************************************************************************************
+ * thread
+ **************************************************************************************************/
+
+#define FB_MAXTHREADS		256
+#define FB_MAXMUTEXES		256
+#define FB_MAXCONDS		256
+
+struct _FBTHREAD;
+struct _FBMUTEX;
+struct _FBCOND;
+
+FBCALL struct _FBTHREAD		*fb_ThreadCreate	( void *proc, int param );
+FBCALL void			fb_ThreadWait		( struct _FBTHREAD *thread );
+
+FBCALL struct _FBMUTEX		*fb_MutexCreate		( void );
+FBCALL void			fb_MutexDestroy		( struct _FBMUTEX *mutex );
+FBCALL void			fb_MutexLock		( struct _FBMUTEX *mutex );
+FBCALL void			fb_MutexUnlock		( struct _FBMUTEX *mutex );
+
+FBCALL struct _FBCOND		*fb_CondCreate		( void );
+FBCALL void			fb_CondDestroy		( struct _FBCOND *cond );
+FBCALL void			fb_CondSignal		( struct _FBCOND *cond );
+FBCALL void			fb_CondBroadcast	( struct _FBCOND *cond );
+FBCALL void			fb_CondWait		( struct _FBCOND *cond );
 
 /**************************************************************************************************
  * misc
