@@ -22,6 +22,7 @@ Version 0.12 Beta:
 [fixed] DATA should not be allowed inside procs (v1c)
 [fixed] invalid types in CASE statements were not been reported (v1c)
 [fixed] "blurry window" gfx bug in Win32 DirectX windowed mode (lillo)
+[fixed] Waiting for vertical retrace via WAIT under Win32 was waiting twice the time as needed (lillo)
 [fixed] DRAW had precision bugs that caused malformed shapes to be drawn (lillo)
 [fixed] bad negative coordinates transformations was affecting all gfx primitives (lillo)
 [fixed] SCREENPTR was always returning the pointer to the visible page memory instead of the working page (lillo)
