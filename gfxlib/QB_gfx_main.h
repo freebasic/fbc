@@ -114,8 +114,9 @@ extern struct fb_GfxInfoStruct fb_GfxInfo;
    Takes an int in the same format as SDL_PeepEvents */
 FBCALL void fb_GfxSetEventMask (int mask);
 
-       FBSTRING* fb_GfxInkey(void);
-       int fb_GfxInkeyEx    (void);
+       FBSTRING* fb_GfxInkey (void);
+       int  fb_GfxGetKey     (void);
+       int  fb_GfxInkeyEx    (void);
 
 FBCALL void fb_GfxTransCoord (float x, float y, Sint16 *rx, Sint16 *ry);
 FBCALL void fb_GfxConvertCoords (float *x1, float *y1, float *x2, float *y2, int coordType);

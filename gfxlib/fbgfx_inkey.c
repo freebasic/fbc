@@ -67,6 +67,20 @@ FBSTRING* fb_GfxInkey (void)
 
 }
 
+int fb_GfxGetKey (void)
+{
+    int k;
+    
+    do
+    {
+        SDL_WaitEvent(NULL);
+        k = fb_GfxInkeyEx();
+    }
+    while (k == 0);
+    
+    return k;
+}
+
 int fb_GfxInkeyEx(void)
 {
     int n;
