@@ -10,7 +10,7 @@ declare sub myprintf cdecl (fmtstr as string, ...)
 	
 	s = "bar"
 	
-	myprintf "integer=%i, single=%f, double=%d, string=%s, string=%s", 1, 2.2!, 3.3#, "foo", s
+	myprintf "integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s", 1, 1LL shl 32, 2.2!, 3.3#, "foo", s
 	
 	print
 	sleep
@@ -43,6 +43,10 @@ sub myprintf cdecl (fmtstr as string, ...)
 				print str$( va_arg( arg, integer ) );
 				'' different from C, va_next() must be used as va_arg() won't update the pointer
 				arg = va_next( arg, integer )
+
+			case asc( "l" )
+				print str$( va_arg( arg, longint ) );
+				arg = va_next( arg, longint )			'' /
 			
 			case asc( "f" )
 				print str$( va_arg( arg, single ) );

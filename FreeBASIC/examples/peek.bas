@@ -7,7 +7,7 @@
  	
  	p = @b
  	
- 	print "byte ="; peek( p )
+ 	print "byte =", peek( p )
 
  	'' -----------
  	dim w as short
@@ -15,7 +15,7 @@
  	
  	p = @w
  	
- 	print "short ="; peek( short, p )
+ 	print "short =", peek( short, p )
 
  	'' -----------
  	dim i as integer
@@ -23,31 +23,39 @@
  	
  	p = @i
  	
- 	print "integer ="; peek( integer, p )
+ 	print "integer =", peek( integer, p )
+
+ 	'' -----------
+ 	dim l as longint
+ 	l = 123456
+ 	
+ 	p = @l
+ 	
+ 	print "longint =", peek( longint, p )
 
  	'' -----------
  	dim f as single
- 	f = 12345.6
+ 	f = 123456.7
  	
  	p = @f
  	
- 	print "single ="; peek( single, p )
+ 	print "single =", peek( single, p )
 
  	'' -----------
  	dim d as double
- 	d = 123456.7
+ 	d = 1234567.8
  	
  	p = @d
  	
- 	print "double ="; peek( double, p )
+ 	print "double =", peek( double, p )
  	
  	'' -----------
  	dim s as string
- 	s = "abcde"
+ 	s = "abcdef"
  	
  	p = @s
  	
- 	print "string = "; peek( string, p )
+ 	print "string =", peek( string, p )
  	
  	
  	sleep
