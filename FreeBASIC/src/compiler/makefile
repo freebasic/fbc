@@ -36,6 +36,7 @@ ifeq ($(osdeppath),win32)
     BC := ../../fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
     LD := ../../bin/win32/ld.exe
+    AS := ../../bin/win32/as.exe
 endif
 
 ifeq ($(osdeppath),linux)
@@ -45,15 +46,17 @@ ifeq ($(osdeppath),linux)
     BC := ../../fbc
     BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
     LD := ld
+    AS := as
 endif
 
 ifeq ($(osdeppath),dos)
     EXE := .exe
-    LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o obj/dos/fbcentry.o
+    LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -)
-    BC := ..\..\fbc.exe
+    BC := ../../fbc.exe
     BCFLAGS := $(BCFLAGS) -d TARGET_DOS -nostdcall
-    LD := ..\..\bin\dos\ld.exe
+    LD := ../../bin/dos/ld.exe
+    AS := ../../bin/dos/as.exe
 endif
 
 main	:= fbc.bas
@@ -62,16 +65,28 @@ exepath = ../..
 TARGET = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 
 sources := $(wildcard *.bas)
+
 objects := $(patsubst %.bas,obj/$(osdeppath)/%.o,$(main) $(filter-out $(main),$(sources)))
+osdepobjs := $(patsubst $(osdeppath)/%.bas,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.bas))
+osdepobjs += $(patsubst $(osdeppath)/%.s,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.s))
 headers := $(wildcard inc/*.bi)
 
 obj/$(osdeppath)/%.o : %.bas $(headers)
 	$(BC) $(BCFLAGS) $< -o $@
 
+obj/$(osdeppath)/%.o : $(osdeppath)/%.bas $(headers)
+	$(BC) $(BCFLAGS) $< -o $@
+
+obj/$(osdeppath)/%.o : %.s $(headers)
+	$(AS) $< -o $@
+
+obj/$(osdeppath)/%.o : $(osdeppath)/%.s $(headers)
+	$(AS) $< -o $@
+
 all : $(TARGET)
 
-$(TARGET) : $(objects)
-	$(LD) $(LDFLAGS) $(objects) -o $@ $(LDLIBS)
+$(TARGET) : $(objects) $(osdepobjs)
+	$(LD) $(LDFLAGS) $(objects) $(osdepobjs) -o $@ $(LDLIBS)
 
 
 .PHONY : clean
