@@ -375,8 +375,8 @@ FBCALL unsigned int fb_FileSize			( int fnum );
 
 FBCALL FBSTRING 	*fb_FileStrInput	( int bytes, int fnum );
 
-FBCALL int 			fb_FileLineInput	( int fnum, FBSTRING *dst );
-FBCALL int 			fb_LineInput		( FBSTRING *text, FBSTRING *dst, int addquestion, int addnewline );
+FBCALL int 			fb_FileLineInput	( int fnum, void *dst, int dst_len );
+FBCALL int 			fb_LineInput		( FBSTRING *text, void *dst, int dst_len, int addquestion, int addnewline );
 
 	   int 			fb_hFilePrintBuffer	( int fnum, char *buffer );
 

@@ -32,7 +32,7 @@
 #define BUFFER_LEN 1024
 
 /*:::::*/
-static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
+static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 					          int addquestion, int addnewline )
 {
 	FILE 		*f;
@@ -72,8 +72,11 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 			fb_ConsoleGetXY( &lastcol, NULL );
 	}
 
-    /* - */
-	fb_StrDelete( dst );
+    /* del destine string */
+	if( dst_len == -1 )
+		fb_StrDelete( (FBSTRING *)dst );
+	else
+		*(char *)dst = '\0';
 
 	/* - */
 	do
@@ -94,8 +97,8 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 
 		buffer[len] = '\0';
 
-		fb_StrConcat( &tmp, (void *)dst, -1, (void *)buffer, len );
-		fb_StrAssign( (void *)dst, -1, (void *)&tmp, -1 );
+		fb_StrConcat( &tmp, dst, dst_len, (void *)buffer, len );
+		fb_StrAssign( dst, dst_len, (void *)&tmp, -1 );
 
 	} while( len == BUFFER_LEN );
 
@@ -116,18 +119,18 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, FBSTRING *dst,
 }
 
 /*:::::*/
-FBCALL int fb_FileLineInput( int fnum, FBSTRING *dst )
+FBCALL int fb_FileLineInput( int fnum, void *dst, int dst_len )
 {
 
-	return fb_hFileLineInput( fnum, NULL, dst, FB_FALSE, FB_FALSE );
+	return fb_hFileLineInput( fnum, NULL, dst, dst_len, FB_FALSE, FB_FALSE );
 
 }
 
 /*:::::*/
-FBCALL int fb_LineInput( FBSTRING *text, FBSTRING *dst, int addquestion, int addnewline )
+FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int addquestion, int addnewline )
 {
 
-	return fb_hFileLineInput( 0, text, dst, addquestion, addnewline );
+	return fb_hFileLineInput( 0, text, dst, dst_len, addquestion, addnewline );
 
 }
 

@@ -437,15 +437,17 @@ data "fb_FileStrInput", "", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
 						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
-'' fb_FileLineInput ( byval filenum as integer, dst as string ) as integer
-data "fb_FileLineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
+'' fb_FileLineInput ( byval filenum as integer, dst as any, byval dstlen as integer ) as integer
+data "fb_FileLineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-'' fb_LineInput ( text as string, dst as string, byval addquestion as integer, _
-''				  byval addnewline as integer ) as integer
-data "fb_LineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
+						     FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_LineInput ( text as string, dst as any, byval dstlen as integer, _
+''				  byval addquestion as integer, byval addnewline as integer ) as integer
+data "fb_LineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
 						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
@@ -2969,15 +2971,15 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
 					  byval addquestion as integer, byval addnewline as integer )
     dim proc as integer, f as FBSYMBOL ptr, args as integer
     dim vr as integer
-
+	dim lgt as integer
 
 	''
 	if( isfile ) then
 		f = ifuncTB(FB.RTL.FILELINEINPUT)
-		args = 2
+		args = 3
 	else
 		f = ifuncTB(FB.RTL.CONSOLELINEINPUT)
-		args = 4
+		args = 5
 	end if
 
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), args )
@@ -2989,10 +2991,18 @@ sub rtlFileLineInput( byval isfile as integer, byval expr as integer, byval dste
 
     astNewPARAM( proc, expr, INVALID )
 
-    '' dst as string
+    '' dst as any
     astNewPARAM( proc, dstexpr, INVALID )
 
-    if( args = 4 ) then
+	'' byval dstlen as integer
+	lgt = -1
+	if( hIsStrFixed( astGetDataType( dstexpr ) ) ) then
+		lgt = hGetFixStrLen( dstexpr )
+		if( lgt < 0 ) then lgt = 0
+	end if
+	astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
+
+    if( args = 5 ) then
     	'' byval addquestion as integer
     	astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID )
 
@@ -3650,7 +3660,7 @@ sub rtlGfxBsave( byval filename as integer, byval sexpr as integer, byval lexpr 
 
     '' byval sexpr as integer
     astNewPARAM( proc, sexpr, INVALID )
-    
+
     '' byval lexpr as integer
     astNewPARAM( proc, lexpr, INVALID )
 
