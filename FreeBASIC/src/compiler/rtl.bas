@@ -1093,7 +1093,7 @@ data "clear","memset", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 3, _
 
 '' dir ( mask as string, byval v as integer = &h33 ) as string
 data "dir","fb_Dir", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-                     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+                     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,"", _
                      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&h33
 
 '' settime ( time as string ) as integer
@@ -1259,7 +1259,9 @@ private sub hAddIntrinsicProcs
 			read atype, amode, optional
 
 			if( optional ) then
-				if( (atype <> IR.DATATYPE.LONGINT) and (atype <> IR.DATATYPE.ULONGINT) ) then
+				if( atype = IR.DATATYPE.STRING ) then
+					read optval.valuestr
+				elseif( (atype <> IR.DATATYPE.LONGINT) and (atype <> IR.DATATYPE.ULONGINT) ) then
 					read optval.value
 				else
 					read optval.value64

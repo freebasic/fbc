@@ -2435,7 +2435,7 @@ private sub hReportParamError( byval argnum as integer, id as string )
 end sub
 
 '':::::
-''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" NUM_LIT)? .
+''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" (NUM_LIT|STR_LIT))? .
 ''
 function cArgDecl( byval procmode as integer, _
 				   byval argc as integer, byval argtail as FBSYMBOL ptr, _
@@ -2599,11 +2599,11 @@ function cArgDecl( byval procmode as integer, _
     	end select
     end select
 
-    '' ('=' NUM_LIT)?
+    '' ('=' (NUM_LIT|STR_LIT))?
     if( hMatch( FB.TK.ASSIGN ) ) then
     	dclass = irGetDataClass( atype )
 
-    	if( (dclass <> IR.DATACLASS.INTEGER) and (dclass <> IR.DATACLASS.FPOINT) ) then
+    	if( (dclass <> IR.DATACLASS.INTEGER) and (dclass <> IR.DATACLASS.FPOINT) and (dclass <> IR.DATACLASS.STRING) ) then
  	   		hReportParamError argc, id
     		exit function
     	end if
@@ -2614,13 +2614,17 @@ function cArgDecl( byval procmode as integer, _
     	end if
 
     	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
-			hReportError FB.ERRMSG.EXPECTEDCONST
-			exit function
+    		if( (astGetClass( expr ) <> AST.NODECLASS.VAR) or ( astGetDataType( expr ) <> IR.DATATYPE.FIXSTR ) ) then
+				hReportError FB.ERRMSG.EXPECTEDCONST
+				exit function
+			end if
 		end if
 
     	optional = TRUE
     	dtype = astGetDataType( expr )
-    	if( (atype = IR.DATATYPE.LONGINT) or (atype = IR.DATATYPE.ULONGINT) ) then
+    	if( dtype = IR.DATATYPE.FIXSTR ) then
+    		optval.valuestr = symbGetVarText( astGetSymbol( expr ) )
+    	elseif( (atype = IR.DATATYPE.LONGINT) or (atype = IR.DATATYPE.ULONGINT) ) then
 			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
     			optval.value64 = astGetValue64( expr )
     		else
@@ -2853,6 +2857,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byva
 					 expr as integer, pmode as integer, byval optonly as integer ) as integer
 	dim amode as integer
 	dim typ as integer
+	dim strarg as string
 
 	cProcParam = FALSE
 
@@ -2899,7 +2904,10 @@ function cProcParam( byval proc as FBSYMBOL ptr, byval arg as FBSYMBOL ptr, byva
 
 		'' create an arg
 		typ = symbGetType( arg )
-		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+		if( (typ = IR.DATATYPE.FIXSTR) or (typ = IR.DATATYPE.STRING) or (typ = IR.DATATYPE.CHAR) ) then
+			strarg = symbGetArgOptvalStr( proc, arg )
+			expr = astNewVAR( hAllocStringConst( strarg, len( strarg ) ), NULL, 0, IR.DATATYPE.FIXSTR )
+		elseif( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
 			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
 		else
 			expr = astNewCONST( symbGetArgOptval( proc, arg ), typ )

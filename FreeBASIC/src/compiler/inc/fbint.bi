@@ -527,6 +527,7 @@ end enum
 union FBVALUE
 	value			as double
 	value64			as longint
+	valuestr		as string
 end union
 
 ''

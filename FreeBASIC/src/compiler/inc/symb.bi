@@ -58,6 +58,7 @@ declare function 	symbGetArgsLen			( byval f as FBSYMBOL ptr ) as integer
 declare function 	symbGetArgOptional		( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as integer
 declare function 	symbGetArgOptval		( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as double
 declare function 	symbGetArgOptval64		( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as longint
+declare function	symbGetArgOptvalStr		( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as string
 declare function 	symbGetFuncMode			( byval f as FBSYMBOL ptr ) as integer
 declare function 	symbGetFuncDataType		( byval f as FBSYMBOL ptr ) as integer
 

@@ -1537,7 +1537,9 @@ function symbAddArg( byval symbol as string, byval tail as FBSYMBOL ptr, _
 	a->arg.suffix	= suffix
 	a->arg.optional	= optional
 	if( optional ) then
-		if( (typ <> IR.DATATYPE.LONGINT) and (typ <> IR.DATATYPE.ULONGINT) ) then
+		if( (typ = IR.DATATYPE.FIXSTR) or (typ = IR.DATATYPE.STRING) or (typ = IR.DATATYPE.CHAR) ) then
+			a->arg.optval.valuestr = optval->valuestr
+		elseif( (typ <> IR.DATATYPE.LONGINT) and (typ <> IR.DATATYPE.ULONGINT) ) then
 			a->arg.optval.value	= optval->value
 		else
 			a->arg.optval.value64 = optval->value64
@@ -2591,6 +2593,18 @@ function symbGetArgOptval64( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) 
 	end if
 
 end function
+
+'':::::
+function symbGetArgOptvalStr( byval f as FBSYMBOL ptr, byval a as FBSYMBOL ptr ) as string static
+
+	if( a <> NULL ) then
+		symbGetArgOptvalStr = a->arg.optval.valuestr
+	else
+		symbGetArgOptvalStr = ""
+	end if
+
+end function
+
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del
