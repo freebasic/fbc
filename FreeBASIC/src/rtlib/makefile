@@ -23,16 +23,16 @@ endif
 CC := gcc
 CFLAGS := -O3 -I ./
 ifneq ($(WINSYSDIR),)
-    CFLAGS := $(CFLAGS) -DTARGET_WIN32
+    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86
     osdeppath := win32
 	libpath = ../../lib/win32
 else
     ifeq ($(OS),DOS)
-        CFLAGS := $(CFLAGS) -DTARGET_DOS
+        CFLAGS := $(CFLAGS) -DTARGET_DOS -DTARGET_X86
         osdeppath := dos
         libpath = ../../lib/dos
     else
-        CFLAGS := $(CFLAGS) -DTARGET_LINUX
+        CFLAGS := $(CFLAGS) -DTARGET_LINUX -DTARGET_X86
         osdeppath := linux
         libpath = ../../lib
     endif
@@ -42,19 +42,19 @@ lib = $(libpath)/libfb.a
 
 objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
 osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))
+headers := $(wildcard *.h)
+
+obj/$(osdeppath)/%.o : %.c $(headers)
+	$(CC) -c $(CFLAGS) $< -o $@
+
+obj/$(osdeppath)/%.o : $(osdeppath)/%.c $(headers)
+	$(CC) -c $(CFLAGS) $< -o $@
+
+obj/$(osdeppath)/%.o : %.s $(headers)
+	$(AS) $< -o $@
 
 
-obj/$(osdeppath)/%.o : %.c
-	$(CC) -c $(CFLAGS) $? -o $@
-
-obj/$(osdeppath)/%.o : $(osdeppath)/%.c
-	$(CC) -c $(CFLAGS) $? -o $@
-
-obj/$(osdeppath)/%.o : %.s
-	$(AS) $? -o $@
-
-
-all : $(objects) $(osdepobjs) $(lib) fb.h
+all : $(objects) $(osdepobjs) $(lib)
 
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)

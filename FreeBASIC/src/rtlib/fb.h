@@ -59,15 +59,15 @@ typedef struct _FB_LISTELEM {
 } FB_LISTELEM;
 
 typedef struct _FB_LIST {
-	int		cnt;
-	FB_LISTELEM	*head;
-	FB_LISTELEM	*tail;
-	FB_LISTELEM	*fhead;
+	int				cnt;
+	FB_LISTELEM		*head;
+	FB_LISTELEM		*tail;
+	FB_LISTELEM		*fhead;
 } FB_LIST;
 
-void		fb_hListInit		( FB_LIST *list, void *table, int elem_size, int size );
-FB_LISTELEM	*fb_hListAllocElem	( FB_LIST *list );
-void		fb_hListFreeElem	( FB_LIST *list, FB_LISTELEM *elem );
+void				fb_hListInit			( FB_LIST *list, void *table, int elem_size, int size );
+FB_LISTELEM			*fb_hListAllocElem		( FB_LIST *list );
+void				fb_hListFreeElem		( FB_LIST *list, FB_LISTELEM *elem );
 
 /**************************************************************************************************
  * strings
@@ -96,18 +96,18 @@ void		fb_hListFreeElem	( FB_LIST *list, FB_LISTELEM *elem );
 	}
 
 typedef struct _FBSTRING {
-	char		*data;							/* , must be at ofs 0! */
-	int			len;
+	char			*data;						/* must be at ofs 0! */
+	int				len;						/* length */
+	int				size;						/* real size */
 } FBSTRING;
 
 
 #define FB_STR_TMPDESCRIPTORS 256
 
 typedef struct _FB_STR_TMPDESC {
-	char		*data;
-	int			len;
+	FBSTRING		desc;
 
-	FB_LISTELEM	elem;
+	FB_LISTELEM		elem;
 } FB_STR_TMPDESC;
 
 
@@ -180,24 +180,24 @@ FBCALL void 		fb_StrAssignMid 		( FBSTRING *dst, int start, int len, FBSTRING *s
 #define FB_MAXDIMENSIONS 16
 
 typedef struct _FBARRAYDIM {
-	int			elements;
-	int			lbound;
+	int				elements;
+	int				lbound;
 } FBARRAYDIM;
 
 typedef struct _FBARRAY {
-    void		*data;						/* ptr + diff, must be at ofs 0! */
-	void		*ptr;
-    int			size;
-    int			element_len;
-    int			dimensions;
-	FBARRAYDIM	dimTB[1];					/* dimtb[dimensions] */
+    void			*data;					/* ptr + diff, must be at ofs 0! */
+	void			*ptr;
+    int				size;
+    int				element_len;
+    int				dimensions;
+	FBARRAYDIM		dimTB[1];				/* dimtb[dimensions] */
 } FBARRAY;
 
 typedef struct _FB_ARRAY_TMPDESC {
-	FB_LISTELEM	elem;
+	FB_LISTELEM		elem;
 
-	FBARRAY		array;
-	FBARRAYDIM	dimTB[FB_MAXDIMENSIONS-1];
+	FBARRAY			array;
+	FBARRAYDIM		dimTB[FB_MAXDIMENSIONS-1];
 } FB_ARRAY_TMPDESC;
 
 
@@ -302,7 +302,7 @@ FBCALL int			fb_ConsoleReadXY	( int col, int row, int colorflag );
 FBCALL void 		fb_ConsoleView		( int toprow, int botrow );
 	   void 		fb_ConsoleGetView	( int *toprow, int *botrow );
 	   int 			fb_ConsoleGetMaxRow ( void );
-	void fb_ConsoleViewUpdate ( void );
+	   void 		fb_ConsoleViewUpdate( void );
 
 	   void 		fb_ConsoleScroll	( int nrows );
 
@@ -339,7 +339,7 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 
 	   void 		fb_ConsolePrintBuffer( char *buffer, int mask );
 
-	   char 		*fb_ConsoleReadStr( char *buffer, int len );
+	   char 		*fb_ConsoleReadStr	( char *buffer, int len );
 
 /**************************************************************************************************
  * files
@@ -351,12 +351,12 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 #include <stdio.h>
 
 typedef struct _FB_FILE {
-	FILE	*f;
-    int		mode;
-    int		len;
-    long	size;
-    int		type;
-    int		access;
+	FILE			*f;
+    int				mode;
+    int				len;
+    long			size;
+    int				type;
+    int				access;
 } FB_FILE;
 
 

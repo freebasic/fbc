@@ -38,6 +38,7 @@ FBCALL void fb_StrDelete ( FBSTRING *str )
 
 	str->data = NULL;
 	str->len  = 0;
+	str->size = 0;
 }
 
 

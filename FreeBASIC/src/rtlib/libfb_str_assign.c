@@ -53,9 +53,11 @@ FBCALL void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 
 			dstr->data = src_ptr;
 			dstr->len  = src_len;
+			dstr->size = ((FBSTRING *)src)->size;
 
 			((FBSTRING *)src)->data = NULL;
 			((FBSTRING *)src)->len  = 0;
+			((FBSTRING *)src)->size = 0;
 
 			fb_hStrDelTempDesc( (FBSTRING *)src );
 

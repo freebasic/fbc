@@ -53,17 +53,32 @@ FB_STR_TMPDESC *fb_hStrAllocTmpDesc( void )
 	char *addr;
 
 	if( (tmpdsList.fhead == NULL) && (tmpdsList.head == NULL) )
-		fb_hListInit( &tmpdsList, (void *)((char *)fb_tmpdsTB + offsetof( FB_STR_TMPDESC, elem )), sizeof(FB_STR_TMPDESC), FB_STR_TMPDESCRIPTORS );
+		fb_hListInit( &tmpdsList, (void *)((char *)fb_tmpdsTB + offsetof( FB_STR_TMPDESC, elem )), 
+					  sizeof(FB_STR_TMPDESC), FB_STR_TMPDESCRIPTORS );
 
 	addr = (char *)fb_hListAllocElem( &tmpdsList );
 	if( addr == NULL )
 		return NULL;
 
 	dsc = (FB_STR_TMPDESC *)( addr - offsetof( FB_STR_TMPDESC, elem ) );
-	dsc->data = NULL;
-	dsc->len = 0;
+	
+	/*  */
+	dsc->desc.data = NULL;
+	dsc->desc.len  = 0;
+	dsc->desc.size = 0;
 
 	return dsc;
+}
+
+/*:::::*/
+void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
+{
+	fb_hListFreeElem( &tmpdsList, (FB_LISTELEM *)((char *)dsc + offsetof( FB_STR_TMPDESC, elem )) );
+	
+	/*  */
+	dsc->desc.data = NULL;
+	dsc->desc.len  = 0;
+	dsc->desc.size = 0;
 }
 
 /*:::::*/
@@ -74,7 +89,7 @@ void fb_hStrDelTempDesc( FBSTRING *str )
 	    ((FB_STR_TMPDESC *)str > &fb_tmpdsTB[FB_STR_TMPDESCRIPTORS-1]) )
 		return ;
 	
-	fb_hListFreeElem( &tmpdsList, (FB_LISTELEM *)((char *)str + offsetof( FB_STR_TMPDESC, elem )) );
+	fb_hStrFreeTmpDesc( (FB_STR_TMPDESC *)str );
 }
 
 /**********
@@ -84,26 +99,46 @@ void fb_hStrDelTempDesc( FBSTRING *str )
 /*:::::*/
 void fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 {
-#define FB_STR_REALSIZE(v) (((v) + 31) & ~31)
+	int newsize;
 
-	int realsize = FB_STR_REALSIZE( FB_STRSIZE( str ) );
+	newsize = (size + 31) & ~31;			/* alloc every 32-bytes */
+	newsize += (newsize >> 3);				/* plus 12.5% more */
 
-	if( str->data == NULL || realsize == 0 || size > realsize )
+	if( (str->data == NULL) || (size > str->size) || (newsize < (str->size - (str->size >> 3))) )
 	{
 		if( preserve == FB_FALSE )
 		{
 			fb_StrDelete( str );
-			str->data = (char *)malloc( FB_STR_REALSIZE( size ) + 1 );
+
+			str->data = (char *)malloc( newsize + 1 );
+			/* failed? try the original request */
+			if( str->data == NULL )
+			{
+				str->data = (char *)malloc( size + 1 );
+				newsize = size;
+			}
 		}
 		else
-			str->data = (char *)realloc( str->data, FB_STR_REALSIZE( size ) + 1 );
+		{
+			str->data = (char *)realloc( str->data, newsize + 1 );
+			/* failed? try the original request */
+			if( str->data == NULL )
+			{
+				str->data = (char *)realloc( str->data, size + 1 );
+				newsize = size;
+			}
+		}
 
 		if( str->data == NULL )
+		{
+			str->size = str->len = 0;
 			return;
+		}
+
+		str->size = newsize;
 	}
 
-	str->len  = size;
-
+	str->len = size;
 }
 
 /*:::::*/
@@ -123,13 +158,15 @@ void fb_hStrDelTemp( FBSTRING *str )
 	/* is it really a temp? */
 	if( !FB_ISTEMP( str ) )
 	{
-		fb_hStrDelTempDesc( str );			/* even not being a temp, the desc can be */
+		/* even not being a temp, the desc can be */
+		fb_hStrDelTempDesc( str );
 		return;
 	}
 
     fb_StrDelete( str );
 
-    fb_hStrDelTempDesc( str );				/* must be done after Delete, as desc is destroyed */
+    /* must be done after Delete, as desc is destroyed */
+    fb_hStrDelTempDesc( str );
 }
 
 /*:::::*/
@@ -139,6 +176,8 @@ void fb_hStrCopy( char *dst, char *src, int bytes )
 
 	if( (src != NULL) && (bytes > 0 ) )
 	{
+#ifndef TARGET_X86
+
 		/* words */
 		for( i = 0; i < (bytes >> 2); i++ )
 		{
@@ -150,9 +189,27 @@ void fb_hStrCopy( char *dst, char *src, int bytes )
 		/* remainder */
 		for( i = 0; i < (bytes & 3); i++ )
 			*dst++ = *src++;
-	}
+
+#else
+
+	asm (
+		"pushl %%ecx\n"
+		"shrl $2,%%ecx\n"
+		"rep\n"
+		"movsd\n"
+		"popl %%ecx\n"
+		"andl $3,%%ecx\n"
+		"rep\n"
+		"movsb"
+		: /* */
+		: "c" (bytes), "S" (src), "D" (dst) );
+
+#endif
 
 	*dst = '\0';
+
+	}
+
 }
 
 
@@ -178,7 +235,7 @@ char *fb_hStrSkipCharRev( char *s, int len, int c )
 
 	p = &s[len-1];
 
-	while( (--len >= 0) && (((int)*p == c) || ((int)*p == 0)) )	/* hack! strip nulls too */
+	while( (--len >= 0) && (((int)*p == c) || ((int)*p == 0)) )	/* strip nulls too */
 		--p;
 
     return p;
