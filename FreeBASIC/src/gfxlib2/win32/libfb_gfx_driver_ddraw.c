@@ -181,8 +181,8 @@ static int private_init()
 	wndclass.hInstance = hinstance;
 
 	rect.left = rect.top = 0;
-	rect.right = mode_w;
-	rect.bottom = mode_h;
+	rect.right = mode_w - 1;
+	rect.bottom = mode_h - 1;
 
 	if (mode_fullscreen) {
 		RegisterClass(&wndclass);
@@ -222,8 +222,8 @@ static int private_init()
 		wndclass.hCursor = LoadCursor(0, IDC_ARROW);
 		RegisterClass(&wndclass);
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
-		rect.right -= rect.left;
-		rect.bottom -= rect.top;
+		rect.right -= (rect.left + 1);
+		rect.bottom -= (rect.top + 1);
 		wnd = CreateWindow(window_class, window_title, (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
