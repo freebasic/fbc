@@ -819,6 +819,11 @@ function compileXpmFile as integer
 		print #fo, ".long 0"
 		close #fo
 	else
+		'' invoke
+		if( ctx.verbose ) then
+			print "compiling XPM icon resource: ", xpmfile
+		end if
+		
 		''
 		if( not hFileExists( xpmfile ) ) then
 			exit function
@@ -945,7 +950,7 @@ sub printOptions
 	print
 	print "options:"
 	print "-a <name>", "Add an object file to linker's list"
-	print "-arch <type>", "Select target architecture (def: 486)"
+	print "-arch <type>", "Set target architecture (def: 486)"
 	print "-b <name>", "Add a source file to compilation"
 	print "-c", "Compile only, do not link"
 	print "-d <name=val>", "Add a preprocessor's define"
