@@ -26,12 +26,12 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 
 '':::::
@@ -156,7 +156,7 @@ function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL pt
 			end if
 
     		ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )
-    		if( ofs = INVALID ) then
+    		if( ofs < 0 ) then
     			hReportError FB.ERRMSG.ELEMENTNOTDEFINED
     			cTypeField = FALSE
     			exit function
@@ -613,10 +613,10 @@ end function
 ''
 function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr, _
 					byval checkarray as integer = TRUE )
-	dim typ as integer, ofs as integer, idxexpr as integer, funcexpr as integer
+	dim as integer typ, deftyp, ofs, idxexpr, funcexpr
 	dim subtype as FBSYMBOL ptr
 	dim id as string, dtype as integer
-	dim isbyref as integer, isfunctionptr as integer, isbydesc as integer, isimport as integer
+	dim as integer isbyref, isfunctionptr, isbydesc, isimport
 
 	cVariable = FALSE
 
@@ -625,9 +625,6 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 		exit function
 	end if
 
-	id 	= lexTokenText
-	typ	= lexTokenType
-
     isfunctionptr 	= FALSE
 
 	''
@@ -635,30 +632,41 @@ function cVariable( varexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
 	ofs 		= 0
 	elm			= NULL
 	subtype 	= NULL
+	typ			= lexTokenType
+	id			= lexTokenText
+    if( typ = INVALID ) then
+    	deftyp = hGetDefType( id )
+    end if
 
-	sym = symbLookupVar( id, typ, ofs, elm, subtype )
+	sym = symbFindBySuffix( lexTokenSymbol, typ, deftyp )
+	if( sym <> NULL ) then
+		typ 	= sym->typ
+		subtype = sym->subtype
 
-	'' add undeclared variable
-	if( sym = NULL ) then
-		if( hGetLastError <> FB.ERRMSG.OK ) then
-			exit function
-		end if
+	else
 
-		if( not env.optexplicit ) then
-
-			if( typ = INVALID ) then
-				typ = hGetDefType( id )
-			end if
-
-			sym = hVarAddUndecl( id, typ )
-			if( sym = NULL ) then
-				hReportError FB.ERRMSG.DUPDEFINITION
+		sym = symbLookupUDTVar( id, lexTokenDotPos, typ, ofs, elm, subtype )
+		if( sym = NULL ) then
+			'' add undeclared variable
+			if( hGetLastError <> FB.ERRMSG.OK ) then
 				exit function
 			end if
-			subtype = symbGetSubtype( sym )
-		else
-			hReportError FB.ERRMSG.VARIABLENOTDECLARED
-			exit function
+
+			if( not env.optexplicit ) then
+				if( typ = INVALID ) then
+					typ = hGetDefType( id )
+				end if
+
+				sym = hVarAddUndecl( id, typ )
+				if( sym = NULL ) then
+					hReportError FB.ERRMSG.DUPDEFINITION
+					exit function
+				end if
+				subtype = symbGetSubtype( sym )
+			else
+				hReportError FB.ERRMSG.VARIABLENOTDECLARED
+				exit function
+			end if
 		end if
 	end if
 

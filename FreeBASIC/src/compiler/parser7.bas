@@ -24,12 +24,12 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
 
 const FBGFX_LINETYPE_LINE = 0
 const FBGFX_LINETYPE_B    = 1

@@ -27,10 +27,10 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\lex.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\lex.bi'
+'$include once: 'inc\emit.bi'
 
 ''
 const FB.LEX.MAXK%	= 1
@@ -64,6 +64,12 @@ type LEXCTX
 	buffptr			as byte ptr
 	buff			as string * 8192
 end type
+
+declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as integer
+declare function 	lexEatChar              ( ) as integer
+declare function 	lexLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as integer
+declare sub 		lexNextToken 			( t as FBTOKEN, _
+											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 '' globals
 	dim shared ctx as LEXCTX
@@ -130,8 +136,116 @@ sub lexEnd
 
 end sub
 
+''::::
+private sub hLoadDefine( byval s as FBSYMBOL ptr, byval lgt as integer )
+    dim a as FBDEFARG ptr
+    dim text as string, oldtext as string, newtext as string
+    dim t as FBTOKEN
+    dim prntcnt as integer
+
+	'' define has args?
+	if( s->def.args > 0 ) then
+
+		'' '('
+		lexNextToken( t, LEXCHECK_NOSUFFIX )
+		if( t.id <> CHAR_LPRNT ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit sub
+		end if
+
+		text = s->def.text
+
+		prntcnt = 1
+
+		'' for each arg
+		a = s->def.arghead
+		do
+			newtext = ""
+
+			'' read text until a comma or right-parent is found
+			do
+				lexNextToken( t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX )
+				select case t.id
+				'' (
+				case CHAR_LPRNT
+					prntcnt += 1
+				'' )
+				case CHAR_RPRNT
+					prntcnt -= 1
+					if( prntcnt = 0 ) then
+						exit do
+					end if
+				'' ,
+				case CHAR_COMMA
+					if( prntcnt = 1 ) then
+						exit do
+					end if
+				''
+				case FB.TK.EOL, FB.TK.EOF
+					hReportError FB.ERRMSG.EXPECTEDRPRNT
+					exit sub
+				end select
+
+                '' not a literal string?
+    			if( t.class <> FB.TKCLASS.STRLITERAL ) then
+    				newtext += t.text
+
+    			'' lit string, add quotes
+    			else
+    				newtext += "\"
+    				newtext += t.littext
+    				newtext += "\"
+    			end if
+            loop
+
+            '' replace pattern with new text
+            oldtext = "\27"
+            oldtext += hex$( a )
+            oldtext += "\27"
+            hReplace( text, oldtext, newtext )
+
+			'' closing parent?
+			if( prntcnt = 0 ) then
+				exit do
+			end if
+
+			'' next
+			a = a->r
+		loop while( a <> NULL )
+
+		lgt = len( text )
+
+		''
+		if( ctx.deflen = 0 ) then
+			ctx.deftext = text
+		else
+			ctx.deftext = text + _
+					  	  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
+		end if
+
+	'' no args, just load text as-is
+	else
+
+		if( ctx.deflen = 0 ) then
+			ctx.deftext = s->def.text
+		else
+			ctx.deftext = s->def.text + _
+					  	  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
+		end if
+
+	end if
+
+    ''
+	ctx.defptr = @ctx.deftext
+	ctx.deflen = ctx.deflen + lgt
+
+	'' force a re-read
+	ctx.currchar = INVALID
+
+end sub
+
 '':::::
-function lexReadChar as integer static
+private function lexReadChar as integer static
     dim char as integer
     dim p as integer
 
@@ -180,7 +294,7 @@ function lexReadChar as integer static
 end function
 
 '':::::
-function lexEatChar as integer static
+private function lexEatChar as integer static
 
 	ctx.colnum = ctx.colnum + 1
 
@@ -218,7 +332,7 @@ function lexEatChar as integer static
 end function
 
 '':::::
-sub lexSkipChar static
+private sub lexSkipChar static
 
 	'' #define'd text?
 	if( ctx.deflen > 0 ) then
@@ -240,7 +354,7 @@ sub lexSkipChar static
 end sub
 
 '':::::
-function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as integer static
+private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as integer static
 
     if( ctx.currchar = INVALID ) then
     	ctx.currchar = lexReadChar
@@ -258,7 +372,7 @@ function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as integer stat
 end function
 
 '':::::
-function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as integer
+private function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as integer
 
 	if( ctx.lahdchar = INVALID ) then
 		lexSkipChar
@@ -298,7 +412,8 @@ end function
 '':::::
 ''indentifier    = ALPHA { [ALPHADIGIT | '_' | '.'] } [SUFFIX].
 ''
-sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, dpos as integer ) static
+private sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, _
+							   dpos as integer, byval flags as LEXCHECK_ENUM ) static
 	dim c as integer
 
 	'' ALPHA
@@ -315,7 +430,9 @@ sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, d
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
 
 		case CHAR_DOT
-			dpos = tlen
+			if( dpos = 0 ) then
+				dpos = tlen + 1
+			end if
 
 		case else
 			exit do
@@ -338,19 +455,22 @@ sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer, d
 	'' [SUFFIX]
 	typ = INVALID
 
-	select case as const lexCurrentChar
-	case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
-		typ = FB.SYMBTYPE.INTEGER
-	case FB.TK.SGNTYPECHAR
-		typ = FB.SYMBTYPE.SINGLE
-	case FB.TK.DBLTYPECHAR
-		typ = FB.SYMBTYPE.DOUBLE
-	case FB.TK.STRTYPECHAR
-		typ = FB.SYMBTYPE.STRING
-	end select
+	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+		select case as const lexCurrentChar
+		case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
+			typ = FB.SYMBTYPE.INTEGER
+		case FB.TK.SGNTYPECHAR
+			typ = FB.SYMBTYPE.SINGLE
+		case FB.TK.DBLTYPECHAR
+			typ = FB.SYMBTYPE.DOUBLE
+		case FB.TK.STRTYPECHAR
+			typ = FB.SYMBTYPE.STRING
+		end select
 
-	if( typ <> INVALID ) then
-		c = lexEatChar
+		if( typ <> INVALID ) then
+			c = lexEatChar
+		end if
+
 	end if
 
 end sub
@@ -360,7 +480,7 @@ end sub
 ''                | 'O' OCTDIG+
 ''                | 'B' BINDIG+
 ''
-sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
+private sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 	dim v as uinteger, c as integer
 	dim tb(0 to 31) as integer, i as integer
 
@@ -452,7 +572,7 @@ end sub
 '':::::
 ''float           = DOT DIGIT { DIGIT } [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ].
 ''
-sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) static
+private sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) static
     dim c as integer
     dim llen as integer
 
@@ -533,7 +653,8 @@ end sub
 ''                | FSUFFIX                       # is float
 ''                | .                             # is def### !!! context sensitive !!!
 ''
-sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer ) static
+private sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer, _
+				   		   byval flags as LEXCHECK_ENUM ) static
 	dim c as integer
 	dim isfloat as integer
 
@@ -594,15 +715,17 @@ sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer ) sta
 
 	'' check suffix type
 	if( not isfloat ) then
-		select case as const lexCurrentChar
-		case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
-			typ = FB.SYMBTYPE.INTEGER
-		case FB.TK.SGNTYPECHAR, FB.TK.DBLTYPECHAR
-			typ = FB.SYMBTYPE.DOUBLE
-		end select
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			select case as const lexCurrentChar
+			case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
+				typ = FB.SYMBTYPE.INTEGER
+			case FB.TK.SGNTYPECHAR, FB.TK.DBLTYPECHAR
+				typ = FB.SYMBTYPE.DOUBLE
+			end select
 
-		if( typ <> INVALID ) then
-			c = lexEatChar
+			if( typ <> INVALID ) then
+				c = lexEatChar
+			end if
 		end if
 	end if
 
@@ -621,7 +744,7 @@ end sub
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
+private sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 	dim rlen as integer
 	dim nval as string * 16, ntyp as integer, nlen as integer, pval as byte ptr
 
@@ -656,7 +779,7 @@ sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 				select case lexCurrentChar
 				'' if it's a literal number, convert to octagonal
 				case CHAR_0 to CHAR_9, CHAR_AMP
-					lexReadNumber @nval, ntyp, nlen
+					lexReadNumber( @nval, ntyp, nlen, 0 )
 					if( nlen > 3 ) then
 						nval = left$( nval, 3 )
 					end if
@@ -692,10 +815,10 @@ sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 end sub
 
 '':::::
-sub lexNextToken ( t as FBTOKEN, byval flags as LEXCHECK_ENUM ) static
+private sub lexNextToken ( t as FBTOKEN, byval flags as LEXCHECK_ENUM ) static
 	dim char as integer
 	dim islinecont as integer, isnumber as integer, iswith as integer
-	dim token as string, lgt as integer, dotpos as integer
+	dim token as string, s as FBSYMBOL ptr, lgt as integer
 
 reread:
 	poke @t.text, 0								''t.text = ""
@@ -779,7 +902,7 @@ reread:
 	    isnumber = FALSE
 
 	    '' only check for fpoint literals if not inside a comment or parsing an $include
-	    if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 	    	char = lexLookAheadChar( TRUE )
 	    	if( char >= CHAR_0 and char <= CHAR_9 ) then
 				isnumber = TRUE
@@ -803,36 +926,26 @@ reread:
 	'':::::
 	case CHAR_AMP, CHAR_0 to CHAR_9
 readnumber:
-		lexReadNumber @t.text, t.id, t.tlen
+		lexReadNumber( @t.text, t.id, t.tlen, flags )
 		t.class 	= FB.TKCLASS.NUMLITERAL
 		t.typ		= t.id
 
 	'':::::
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 readid:
-		lexReadIdentifier @t.text, t.tlen, t.typ, dotpos
+		lexReadIdentifier( @t.text, t.tlen, t.typ, t.dotpos, flags )
 		token = t.text
 
 		t.sym = symbLookup( token, t.id, t.class )
 
 		if( (flags and LEXCHECK_NODEFINE) = 0 ) then
 			'' is it a define?
-			if( t.id = FB.TK.IDDEFINE ) then
-				lgt = symbGetDefineLen( t.sym )
+			s = symbFindByClass( t.sym, FB.SYMBCLASS.DEFINE )
+			if( s <> NULL ) then
+				lgt = symbGetDefineLen( s )
 				if( lgt > 0 ) then
-					if( ctx.deflen = 0 ) then
-						ctx.deftext = symbGetDefineText( t.sym )
-					else
-						ctx.deftext = symbGetDefineText( t.sym ) + _
-									  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
-					end if
-					ctx.defptr = @ctx.deftext
-					ctx.deflen = ctx.deflen + lgt
-
-					'' force a re-read
-					ctx.currchar = INVALID
+					hLoadDefine s, lgt
 				end if
-
 				goto reread
         	end if
         end if
@@ -864,7 +977,7 @@ readid:
 		t.typ		= t.id
 
 ''#ifndef FB__BIGENDIAN
-		pokei @t.text, char and &h000000FF			'' t.text = chr$( char )
+		poke integer, @t.text, char and &h000000FF	'' t.text = chr$( char )
 ''#endif
 
 		select case as const char
@@ -876,22 +989,25 @@ readid:
 			case CHAR_LT
 				select case lexCurrentChar( TRUE )
 				case CHAR_EQ
-					lexEatChar
+					'' t.text = t.text + chr$( lexEatChar )
+					poke integer, @t.text + t.tlen, lexEatChar
+					t.tlen = t.tlen + 1
 					t.id   = FB.TK.LE
-					t.tlen = t.tlen + 1
 				case CHAR_GT
-					lexEatChar
-					t.id   = FB.TK.NE
+					'' t.text = t.text + chr$( lexEatChar )
+					poke integer, @t.text + t.tlen, lexEatChar
 					t.tlen = t.tlen + 1
+					t.id   = FB.TK.NE
 				case else
 					t.id = FB.TK.LT
 				end select
 
 			case CHAR_GT
 				if( lexCurrentChar( TRUE ) = CHAR_EQ ) then
-					lexEatChar
-					t.id   = FB.TK.GE
+					'' t.text = t.text + chr$( lexEatChar )
+					poke integer, @t.text + t.tlen, lexEatChar
 					t.tlen = t.tlen + 1
+					t.id   = FB.TK.GE
 				else
 					t.id = FB.TK.GT
 				end if
@@ -907,9 +1023,10 @@ readid:
 			'' check for type-field dereference
 			if( char = CHAR_MINUS ) then
 				if( lexCurrentChar( TRUE ) = CHAR_GT ) then
-					lexEatChar
-					t.id   = FB.TK.FIELDDEREF
+					'' t.text = t.text + chr$( lexEatChar )
+					poke integer, @t.text + t.tlen, lexEatChar
 					t.tlen = t.tlen + 1
+					t.id   = FB.TK.FIELDDEREF
 				end if
 			end if
 
@@ -1240,6 +1357,13 @@ end function
 function lexTokenSymbol as FBSYMBOL ptr
 
 	lexTokenSymbol = ctx.tokenTB(0).sym
+
+end function
+
+''::::
+function lexTokenDotPos as integer
+
+	lexTokenDotPos = ctx.tokenTB(0).dotpos
 
 end function
 

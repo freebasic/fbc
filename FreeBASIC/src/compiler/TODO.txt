@@ -1,15 +1,8 @@
 
-[ ] allow single line IF and ELSE to have a stupid ':' before the first statement
-
-[ ] macros -- single line, with recursive expansion, same as in C's #define's -- problem with
-    "foo.bar" when "foo" is a macro argument, lookupdefine will have to check for dots and break
-    the tokens
-
-[ ] IFF() -- will need some kind of AST link node
+[ ] add RGB as macro (#define()) and maybe others -- SGN()? LOWORD, HIWORD, LOBYTE, HIBYTE,
+                                                     BITSET, BITRESET, BIT, etc
 
 [ ] OPTION's should be preserved when changed inside include files
-
-[ ] PEEK(SymbolType, Expression) and POKE(SymbolType, Expression) as in PB 8
 
 [ ] add support for BYVAL strings -- they are a pointers already, so when used as argument AST
     will have to handle that

@@ -25,7 +25,7 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\list.bi'
+'$include once: 'inc\list.bi'
 
 const NULL 	= 0
 const FALSE = 0
@@ -184,6 +184,8 @@ function listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as 
 	'' add to free list
 	node->nxt = list->fhead
 	list->fhead = node
+
+	clear byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2)
 
 end function
 

@@ -24,12 +24,12 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 '':::::
 ''Expression      =   LogExpression .
@@ -818,7 +818,7 @@ end function
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
 function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr )
-    dim expr as integer, dtype as integer, proc as FBSYMBOL ptr
+    dim expr as integer, dtype as integer, s as FBSYMBOL ptr
 
 	cAddrOfExpression = FALSE
 
@@ -827,14 +827,14 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 		lexSkipToken
 
 		'' proc?
-		if( lexCurrentToken = FB.TK.IDFUNCT ) then
-			proc = lexTokenSymbol
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+		if( s <> NULL ) then
 			lexSkipToken
 
-			if( not hProcPtrBody( proc, addrofexpr ) ) then
+			if( not hProcPtrBody( s, addrofexpr ) ) then
 				exit function
 			end if
-			sym = proc
+			sym = s
 			elm = NULL
 
 		else
@@ -879,15 +879,15 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 		end if
 
 		'' proc?
-		if( lexCurrentToken <> FB.TK.IDFUNCT ) then
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+		if( s = NULL ) then
 			hReportError FB.ERRMSG.UNDEFINEDSYMBOL
 			exit function
 		else
-			proc = lexTokenSymbol
 			lexSkipToken
 		end if
 
-		if( not hProcPtrBody( proc, addrofexpr ) ) then
+		if( not hProcPtrBody( s, addrofexpr ) ) then
 			exit function
 		end if
 
@@ -895,7 +895,7 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
 		end if
-		sym = proc
+		sym = s
 		elm	= NULL
 
 		cAddrOfExpression = TRUE
@@ -1018,32 +1018,28 @@ end function
 '' Constant       = ID .                                    !!ambiguity w/ var!!
 ''
 function cConstant( constexpr as integer )
-	dim res as integer, c as FBSYMBOL ptr, typ as integer, expr as integer
+	dim res as integer, s as FBSYMBOL ptr, typ as integer, expr as integer
 	dim text as string
 
 	res = FALSE
 
-	if( lexCurrentToken = FB.TK.IDCONST ) then
-		typ = lexTokenType
+	s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.CONST )
+	if( s <> NULL ) then
 
-		c = lexTokenSymbol
-		if( c <> NULL ) then
+  		text = symbGetConstText( s )
+  		typ = symbGetType( s )
 
-  			text = symbGetConstText( c )
-  			typ = symbGetType( c )
+  		if( irGetDataClass( typ ) = IR.DATACLASS.STRING ) then
 
-  			if( irGetDataClass( typ ) = IR.DATACLASS.STRING ) then
+			s = hAllocStringConst( text, symbGetLen( s ) )
+			constexpr = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
 
-				c = hAllocStringConst( text, symbGetLen( c ) )
-				constexpr = astNewVAR( c, NULL, 0, IR.DATATYPE.FIXSTR )
-
-  			else
-  				constexpr = astNewCONST( val( text ), typ )
-  			end if
-
-  			lexSkipToken
-  			res = TRUE
+  		else
+  			constexpr = astNewCONST( val( text ), typ )
   		end if
+
+  		lexSkipToken
+  		res = TRUE
   	end if
 
   	cConstant = res
@@ -1265,16 +1261,12 @@ function cFunction( funcexpr as integer, sym as FBSYMBOL ptr )
 	cFunction = FALSE
 
 	'' ID
-	if( lexCurrentToken <> FB.TK.IDFUNCT ) then
+	sym = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+	if( sym = NULL ) then
 		exit function
 	end if
 
-	sym = lexTokenSymbol
-	if( sym = NULL ) then
-		exit function
-	else
-		lexSkipToken
-	end if
+	lexSkipToken
 
 	cFunction = cFunctionCall( sym, funcexpr, INVALID )
 

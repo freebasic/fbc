@@ -24,13 +24,13 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 type FBSELECTCTX
 	base		as integer
@@ -162,7 +162,7 @@ function cSingleIfStatement( byval expr as integer )
 
 	'' NUM_LIT | SimpleStatement*
 	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-		l = symbLookupLabel( lexTokenText )
+		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
 			l = symbAddLabelEx( lexTokenText, FALSE )
 		end if
@@ -397,25 +397,25 @@ function cIfStatement
 end function
 
 '':::::
-private function cStoreTemp( byval expr as integer, byval dtype as integer, byval dclass as integer, _
-					 byval typ as integer, isvar as integer ) as FBSYMBOL ptr static
+private function cStoreTemp( byval expr as integer, _
+							 byval dtype as integer, byval dclass as integer, _
+					 		 byval typ as integer, value as double ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
     dim v as integer, vr as integer
 
 	cStoreTemp = NULL
 
-	if( (astGetClass( expr ) <> AST.NODECLASS.CONST) or (dclass = IR.DATACLASS.FPOINT) ) then
+	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
 		s = symbAddTempVar( typ )
 		if( s = NULL ) then
 			exit function
 		end if
 		v = astNewVAR( s, NULL, 0, dtype )
 		astFlush astNewASSIGN( v, expr ), vr
-		isvar = TRUE
 	else
-		s = cint( astGetValue( expr ) )
+		value = astGetValue( expr )
 		astDel expr
-		isvar = FALSE
+		s = NULL
 	end if
 
 	cStoreTemp = s
@@ -424,23 +424,23 @@ end function
 
 '':::::
 private sub cFlushBOP( byval op as integer, byval dtype as integer, _
-	 		   		   byval v1 as FBSYMBOL ptr, byval v1isvar as integer, _
-			   		   byval v2 as FBSYMBOL ptr, byval v2isvar as integer, _
+	 		   		   byval v1 as FBSYMBOL ptr, byval v1value as double, _
+			   		   byval v2 as FBSYMBOL ptr, byval v2value as double, _
 			   		   byval ex as FBSYMBOL ptr ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 	dim vr as integer
 
 	'' bop
-	if( v1isvar ) then
+	if( v1 <> NULL ) then
 		expr1 = astNewVAR( v1, NULL, 0, dtype )
 	else
-		expr1 = astNewCONST( v1, dtype )
+		expr1 = astNewCONST( v1value, dtype )
 	end if
 
-	if( v2isvar ) then
+	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
-		expr2 = astNewCONST( v2, dtype )
+		expr2 = astNewCONST( v2value, dtype )
 	end if
 
 	expr = astNewBOP( op, expr1, expr2, ex, FALSE )
@@ -452,18 +452,18 @@ end sub
 
 '':::::
 private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
-	 		       		   byval v1 as integer, _
-			       		   byval v2 as integer, byval v2isvar as integer ) static
+	 		       		   byval v1 as FBSYMBOL PTR, _
+			       		   byval v2 as FBSYMBOL PTR, byval v2value as double ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 	dim vr as integer
 
 	'' bop
 	expr1 = astNewVAR( v1, NULL, 0, dtype )
 
-	if( v2isvar ) then
+	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
-		expr2 = astNewCONST( v2, dtype )
+		expr2 = astNewCONST( v2value, dtype )
 	end if
 
 	expr = astNewBOP( op, expr1, expr2 )
@@ -484,15 +484,14 @@ end sub
 ''					  NEXT ID? .
 ''
 function cForStatement
-    dim res as integer, iscomplex as integer, ispositive as integer
-    dim il as FBSYMBOL ptr, tl as FBSYMBOL ptr, el as FBSYMBOL ptr, cl as FBSYMBOL ptr, c2l as FBSYMBOL ptr
-    dim cnt as integer, elm as FBSYMBOL ptr
-    dim endc as integer, endc_isvar as integer
-    dim stp as integer, stp_isvar as integer
-	dim cmp as integer, cmp_isvar as integer
-    dim vr as integer, vt as integer
-    dim idexpr as integer, expr as integer
-    dim dtype as integer, dclass as integer, typ as integer
+    dim as integer iscomplex, ispositive
+    dim as FBSYMBOL ptr il, tl, el, cl, c2l
+    dim cnt as FBSYMBOL ptr, elm as FBSYMBOL ptr
+    dim endc as FBSYMBOL ptr, endc_value as double
+    dim stp as FBSYMBOL ptr, stp_value as double
+    dim vr as integer
+    dim as integer idexpr, expr
+    dim as integer dtype, dclass, typ
     dim oldforstmt as FBCMPSTMT, lastcompstmt as integer
 
 	cForStatement = FALSE
@@ -550,12 +549,11 @@ function cForStatement
 	end if
 
 	'' store end condition into a temp var
-	endc = cStoreTemp( expr, dtype, dclass, typ, endc_isvar )
+	endc = cStoreTemp( expr, dtype, dclass, typ, endc_value )
 
 	'' STEP
 	ispositive 	= TRUE
 	iscomplex 	= FALSE
-	stp_isvar	= FALSE
 	if( lexCurrentToken = FB.TK.STEP ) then
 		lexSkipToken
 		if( not cExpression( expr ) ) then
@@ -569,7 +567,7 @@ function cForStatement
 			iscomplex = TRUE
 		end if
 
-		if( (iscomplex) or (dclass = IR.DATACLASS.FPOINT) ) then
+		if( iscomplex ) then
 
 			stp = symbAddTempVar( typ )
 			if( stp = NULL ) then
@@ -578,15 +576,15 @@ function cForStatement
 
 			astFlush astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ), vr
 
-			stp_isvar = TRUE
-
 		else
-			stp = astGetValue( expr )
+			stp_value = astGetValue( expr )
 			astDel expr
+			stp = NULL
 		end if
 
 	else
-		stp = 1
+		stp_value = 1.0
+		stp = NULL
 	end if
 
 	'' jump to test
@@ -614,7 +612,7 @@ function cForStatement
 	env.lastcompound = FB.TK.FOR
 
 	'' Comment?
-	res = cComment
+	cComment
 
 	'' separator
 	if( not cSttSeparator ) then
@@ -624,8 +622,7 @@ function cForStatement
 
 	'' loop body
 	do
-		res = cSimpleLine
-	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
 
 	'' NEXT
 	if( not hMatch( FB.TK.NEXT ) ) then
@@ -648,7 +645,7 @@ function cForStatement
 	irEmitLABEL cl, FALSE
 
 	'' counter += step
-	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, stp_isvar
+	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, stp_value
 
 	'' test label
 	irEmitLABEL tl, FALSE
@@ -657,10 +654,10 @@ function cForStatement
 
 		if( ispositive ) then
     		'' counter <= end cond?
-			cFlushBOP IR.OP.LE, dtype, cnt, TRUE, endc, endc_isvar, il
+			cFlushBOP IR.OP.LE, dtype, cnt, TRUE, endc, endc_value, il
     	else
     		'' counter >= end cond?
-			cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_isvar, il
+			cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_value, il
     	end if
 
 		c2l = NULL
@@ -668,24 +665,16 @@ function cForStatement
 		c2l = symbAddLabel( hMakeTmpStr )
 
     	'' test step sign and branch
-    	if( dclass = IR.DATACLASS.INTEGER ) then
-    		cmp = 0
-    		cmp_isvar = FALSE
-    	else
-    		cmp = hAllocFloatConst( "0", typ )
-    		cmp_isvar = TRUE
-    	end if
-
-		cFlushBOP IR.OP.GE, dtype, stp, stp_isvar, cmp, cmp_isvar, c2l
+		cFlushBOP IR.OP.GE, dtype, stp, stp_value, 0, FALSE, c2l
 
     	'' negative, loop if >=
-		cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_isvar, il
+		cFlushBOP IR.OP.GE, dtype, cnt, TRUE, endc, endc_value, il
 		'' exit loop
 		astFlush astNewBRANCH( IR.OP.JMP, el ), vr
     	'' control label
     	irEmitLABELNF c2l
     	'' positive, loop if <=
-		cFlushBOP IR.OP.LE, dtype, cnt, TRUE, endc, endc_isvar, il
+		cFlushBOP IR.OP.LE, dtype, cnt, TRUE, endc, endc_value, il
     end if
 
     '' end label (loop exit)
@@ -1387,8 +1376,9 @@ end function
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 	dim dTB(0) as FBARRAYDIM
 
-	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, FB.INTEGERSIZE, NULL, _
-							            1, dTB(), FB.ALLOCTYPE.SHARED, FALSE, FALSE, FALSE )
+	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, _
+										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
+										FALSE, FALSE, FALSE )
 
 end function
 
@@ -1517,10 +1507,10 @@ function cSelectConstStmt as integer
     l = swtbase
     for value = minval to maxval
     	if( value = swtcaseTB(l).value ) then
-    		emitTYPE IR.DATATYPE.UINT, symbGetLabelName( swtcaseTB(l).label )
+    		emitTYPE IR.DATATYPE.UINT, symbGetName( swtcaseTB(l).label )
     		l = l + 1
     	else
-    		emitTYPE IR.DATATYPE.UINT, symbGetLabelName( deflabel )
+    		emitTYPE IR.DATATYPE.UINT, symbGetName( deflabel )
     	end if
     next value
 

@@ -24,12 +24,12 @@ defint a-z
 option explicit
 option escape
 
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\emit.bi'
 
 #define AUTOADDGFXLIBS
 
@@ -2075,13 +2075,13 @@ function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
 
     '' begin of data or start from label?
     if( label <> NULL ) then
-    	lname = FB.DATALABELPREFIX + symbGetLabelName( label )
+    	lname = FB.DATALABELPREFIX + symbGetName( label )
     else
     	lname = FB.DATALABELNAME
     end if
 
     '' label already declared?
-    s = symbLookupLabel( lname )
+    s = symbFindByNameAndClass( lname, FB.SYMBCLASS.LABEL )
     if( s = NULL ) then
        	s = symbAddLabelEx( lname, TRUE, TRUE )
     end if
@@ -2117,14 +2117,14 @@ sub rtlDataStoreBegin static
 
 		l = symbAddLabelEx( FB.DATALABELNAME, TRUE, TRUE )
 		if( l = NULL ) then
-			l = symbLookupLabel( FB.DATALABELNAME )
+			l = symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL )
 		end if
 
-		lname = symbGetLabelName( l )
+		lname = symbGetName( l )
 		emitLABEL lname
 
 	else
-		lname = symbGetLabelName( symbLookupLabel( FB.DATALABELNAME ) )
+		lname = symbGetName( symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL ) )
 	end if
 
 	'' emit last label as a label in const section
@@ -2132,13 +2132,13 @@ sub rtlDataStoreBegin static
 	label = symbGetLastLabel
 	if( label <> NULL ) then
     	''
-    	lname = FB.DATALABELPREFIX + symbGetLabelName( label )
-    	l = symbLookupLabel( lname )
+    	lname = FB.DATALABELPREFIX + symbGetName( label )
+    	l = symbFindByNameAndClass( lname, FB.SYMBCLASS.LABEL )
     	if( l = NULL ) then
        		l = symbAddLabelEx( lname, TRUE, TRUE )
     	end if
 
-    	lname = symbGetLabelName( l )
+    	lname = symbGetName( l )
 
     	'' stills the same label as before? incrase counter to link DATA's
     	if( ctx.lastlabel = label ) then
@@ -2152,7 +2152,7 @@ sub rtlDataStoreBegin static
     	emitLABEL lname
 
     else
-    	symbSetLastLabel symbLookupLabel( FB.DATALABELNAME )
+    	symbSetLastLabel symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL )
     end if
 
 	'' emit will link the last DATA with this one if any exists

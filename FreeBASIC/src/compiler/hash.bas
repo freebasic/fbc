@@ -27,9 +27,8 @@ defint a-z
 option explicit
 option escape
 
-'$include: 'inc\hash.bi'
-'$include: 'inc\list.bi'
-'$include: 'inc\strpool.bi'
+'$include once: 'inc\hash.bi'
+'$include once: 'inc\list.bi'
 
 Const INVALID = -1
 Const TRUE = -1
@@ -57,16 +56,16 @@ sub hashInit static
 end sub
 
 '':::::
-sub hashNew( hash as THASH, byval nodes as integer ) static
+sub hashNew( byval hash as THASH ptr, byval nodes as integer ) static
     dim i as integer
     dim list as HASHLIST ptr
 
 	'' allocate a fixed list of internal linked-lists
-	hash.list = callocate( nodes * len( HASHLIST ) )
-	hash.nodes = nodes
+	hash->list = callocate( nodes * len( HASHLIST ) )
+	hash->nodes = nodes
 
 	'' initialize the list
-	list = hash.list
+	list = hash->list
 	for i = 0 to nodes-1
 		list->head = NULL
 		list->tail = NULL
@@ -76,19 +75,19 @@ sub hashNew( hash as THASH, byval nodes as integer ) static
 end sub
 
 ''::::::
-sub hashFree( hash as THASH ) static
+sub hashFree( byval hash as THASH ptr ) static
     dim i as integer
     dim item as HASHITEM ptr, nxt as HASHITEM ptr
     dim list as HASHLIST ptr
 
-    '' for each item on each list, deallocate it and the string from the pool
-    list = hash.list
-    for i = 0 to hash.nodes-1
+    '' for each item on each list, deallocate it and the name string
+    list = hash->list
+    for i = 0 to hash->nodes-1
 		item = list->head
 		do while( item <> NULL )
 			nxt = item->r
 
-			strpDel item->nameidx
+			item->name = ""
 			hashDelItem list, item
 
 			item = nxt
@@ -96,7 +95,7 @@ sub hashFree( hash as THASH ) static
 		list = list + len( HASHLIST )
 	next i
 
-	deallocate hash.list
+	deallocate hash->list
 
 end sub
 
@@ -119,16 +118,16 @@ function hashHash( symbol as string ) as uinteger static
 end function
 
 ''::::::
-function hashLookupEx( hash as THASH, symbol as string, byval index as uinteger ) as any ptr static
+function hashLookupEx( byval hash as THASH ptr, symbol as string, byval index as uinteger ) as any ptr static
     dim item as HASHITEM ptr
     dim list as HASHLIST ptr
 
     hashLookupEx = NULL
 
-    index = index mod hash.nodes
+    index = index mod hash->nodes
 
 	'' get the start of list
-	list = hash.list + (index * len( HASHLIST ))
+	list = hash->list + (index * len( HASHLIST ))
 	item = list->head
 	if( item = NULL ) then
 		exit function
@@ -136,7 +135,7 @@ function hashLookupEx( hash as THASH, symbol as string, byval index as uinteger 
 
 	'' loop until end of list or if item was found
 	do while( item <> NULL )
-		if( strpGet( item->nameidx ) = symbol ) then
+		if( item->name = symbol ) then
 			hashLookupEx = item->idx
 			exit function
 		end if
@@ -146,7 +145,7 @@ function hashLookupEx( hash as THASH, symbol as string, byval index as uinteger 
 end function
 
 ''::::::
-function hashLookup( hash as THASH, symbol as string ) as any ptr static
+function hashLookup( byval hash as THASH ptr, symbol as string ) as any ptr static
 
     hashLookup = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
@@ -205,65 +204,58 @@ private sub hashDelItem( byval list as HASHLIST ptr, byval item as HASHITEM ptr 
 end sub
 
 ''::::::
-sub hashAdd( hash as THASH, symbol as string, byval idx as any ptr, byval nameidx as integer ) static
-    dim index as uinteger
+function hashAdd( byval hash as THASH ptr, symbol as string, byval idx as any ptr, _
+			 	  index as uinteger ) as HASHITEM ptr static
     dim item as HASHITEM ptr
 
     '' calc hash
-    index = hashHash( symbol ) mod hash.nodes
+    index = hashHash( symbol ) mod hash->nodes
 
     '' allocate a new node
-    item = hashNewItem( hash.list + (index * len( HASHLIST )) )
+    item = hashNewItem( hash->list + (index * len( HASHLIST )) )
+
+    hashAdd = item
     if( item = NULL ) then
-    	exit sub
+    	exit function
 	end if
 
     '' fill node
-    item->nameidx = nameidx
+    item->name 	  = symbol
     item->idx	  = idx
 
-end sub
+end function
 
 ''::::::
-sub hashDel( hash as THASH, symbol as string ) static
-    dim index as uinteger
-    dim item as HASHITEM ptr
+sub hashDel( byval hash as THASH ptr, byval item as HASHITEM ptr, byval index as uinteger ) static
     dim list as HASHLIST ptr
 
-    '' calc hash
-    index = hashHash( symbol ) mod hash.nodes
-
-	'' get start of list
-	list = hash.list + (index * len( HASHLIST ))
-
-	item = list->head
 	if( item = NULL ) then
 		exit sub
 	end if
 
-	'' loop until item is found or if list ended
-	do while( item <> NULL )
-		if( strpGet( item->nameidx ) = symbol ) then
-			hashDelItem list, item
-			exit do
-		end if
-		item = item->r
-	loop
+	'' get start of list
+	list = hash->list + (index * len( HASHLIST ))
+
+	''
+	item->name = ""
+	item->idx  = NULL
+
+	hashDelItem list, item
 
 end sub
 
 
 ''::::::
-sub hashDump( hash as THASH ) static
+sub hashDump( byval hash as THASH ptr ) static
     dim i as integer
     dim item as HASHITEM ptr
     dim list as HASHLIST ptr
 
-    list = hash.list
-    for i = 0 to hash.nodes-1
+    list = hash->list
+    for i = 0 to hash->nodes-1
 		item = list->head
 		do while( item <> NULL )
-			print strpGet( item->nameidx ); " ";
+			print item->name; " ";
 			item = item->r
 		loop
 		list = list + len( HASHLIST )

@@ -24,11 +24,11 @@ defint a-z
 option explicit
 option escape
 
-'$include:'inc\fb.bi'
-'$include:'inc\fbint.bi'
-'$include:'inc\lex.bi'
-'$include:'inc\emit.bi'
-'$include:'inc\emitdbg.bi'
+'$include once:'inc\fb.bi'
+'$include once:'inc\fbint.bi'
+'$include once:'inc\lex.bi'
+'$include once:'inc\emit.bi'
+'$include once:'inc\emitdbg.bi'
 
 const STABS = ".stabs "
 const STABD = ".stabd "
@@ -165,7 +165,7 @@ sub edgbhCloseMain
     ''
     exitlabel = symbAddLabel( hMakeTmpStr )
 
-    lname = symbGetLabelName( exitlabel )
+    lname = symbGetName( exitlabel )
     emitLABEL lname
 
     edbgProcEnd NULL, ctx.maininitlabel, exitlabel
@@ -189,7 +189,7 @@ sub edbgLine( byval lnum as integer, lname as string )
 	end if
 
 	if( env.currproc <> NULL ) then
-		procname = symbGetProcName( env.currproc )
+		procname = symbGetName( env.currproc )
 	else
 		procname = EMIT_MAINPROC
 	end if
@@ -209,8 +209,8 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, byval ispublic as integer, byval
 			edgbhCloseMain
 		end if
 
-		realname = symbGetName( proc )
-		procname = symbGetProcName( proc )
+		realname = symbGetOrgName( proc )
+		procname = symbGetName( proc )
 	else
 		realname = EMIT_MAINPROC
 		procname = EMIT_MAINPROC
@@ -240,7 +240,7 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, b
 	if( not env.clopt.debug ) then exit sub
 
 	if( proc <> NULL ) then
-		procname = symbGetProcName( proc )
+		procname = symbGetName( proc )
 		iniline = ctx.procinitline
 		endline = lexLineNum
 	else
@@ -249,8 +249,8 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr, b
 		endline = 0
 	end if
 
-	ininame	 = symbGetLabelName( initlabel )
-	endname	 = symbGetLabelName( exitlabel )
+	ininame	 = symbGetName( initlabel )
+	endname	 = symbGetName( exitlabel )
 
 
 	hWriteStr ctx.asmf, TRUE, STABN + "192,0," + ltrim$( str$( iniline ) ) + "," + ininame + "-" + procname

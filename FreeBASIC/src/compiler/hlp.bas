@@ -24,20 +24,26 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\lex.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\lex.bi'
 
 type FBERRCTX
 	lasterror 	as integer
 	lastline	as integer
+
+	tmpcnt		as integer
+	tmppad 		as string
+	tmplen 		as integer
 end type
 
 ''globals
-	dim shared errctx as FBERRCTX
+	dim shared ctx as FBERRCTX
 
 	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
+
+	dim shared suffixTB( 0 to FB.SYMBOLTYPES-1 ) as string * 1
 
 
 ''warning msgs (level, msg)
@@ -113,9 +119,36 @@ data "Expected array"
 data "Too many expressions"
 data "Expected explicit result type"
 data "Range too large"
+data "Forward references not allowed"
 
-const FB.ERRMSGS = 66
+const FB.ERRMSGS = 67
 
+
+'':::::
+sub hlpInit
+    dim i as integer
+
+	''
+	for i = 0 to (90-65+1)-1
+		deftypeTB(i) = FB.SYMBTYPE.INTEGER
+	next i
+
+	''
+	for i = 0 to FB.SYMBOLTYPES-1
+		suffixTB(i) = chr$( CHAR_ALOW + i )
+	next i
+
+	''
+	ctx.tmpcnt	= 0
+	ctx.tmppad 	= ""
+	ctx.tmplen 	= 0
+
+end sub
+
+'':::::
+sub hlpEnd
+
+end sub
 
 '':::::
 function hMatch( byval token as integer ) as integer
@@ -135,12 +168,12 @@ sub hReportErrorEx( byval errnum as integer, msgex as string, byval linenum as i
 	if( linenum = 0 ) then
 		linenum = lexLineNum
 
-		if( linenum = errctx.lastline ) then
+		if( linenum = ctx.lastline ) then
 			exit sub
 		end if
 
-		errctx.lasterror = errnum
-		errctx.lastline  = linenum
+		ctx.lasterror = errnum
+		ctx.lastline  = linenum
 	end if
 
 	restore errordata
@@ -189,7 +222,7 @@ end sub
 '':::::
 function hGetLastError as integer
 
-	hGetLastError = errctx.lasterror
+	hGetLastError = ctx.lasterror
 
 end function
 
@@ -235,29 +268,43 @@ end sub
 
 '':::::
 function hMakeTmpStr as string static
-	static c as integer
 	dim v as string
+	dim l as integer
 
-	v = hex$( c )
+	v = hex$( ctx.tmpcnt )
 
-	hMakeTmpStr$ = "_t" + string$( 4-len(v), 48 ) + v
+	l = len( v )
+	if( l > ctx.tmplen ) then
+    	ctx.tmplen = l
+    	ctx.tmppad = "_t" + string$( 4-l, CHAR_0 )
+	end if
 
-	c = c + 1
+	hMakeTmpStr = ctx.tmppad + v
+
+	ctx.tmpcnt += 1
 
 end function
 
 '':::::
-function hGetDefType( symbol as string ) as integer
+function hGetDefType( symbol as string ) as integer static
     dim c as integer
+    dim p as byte ptr
 
-	c = asc( ucase$( mid$( symbol, 1, 1 ) ) )
+    p = strptr( symbol )
+
+	c = *p
+
+	'' to upper
+	if( (c >= 97) and (c <= 122) ) then
+		c = c - (97 - 65)
+	end if
 
 	hGetDefType = deftypeTB(c-65)
 
 end function
 
 '':::::
-sub hSetDefType( byval ichar as integer, byval echar as integer, byval typ as integer )
+sub hSetDefType( byval ichar as integer, byval echar as integer, byval typ as integer ) static
     dim i as integer
 
 	if( ichar < 65 ) then
@@ -279,22 +326,6 @@ sub hSetDefType( byval ichar as integer, byval echar as integer, byval typ as in
 	for i = ichar to echar
 		deftypeTB(i-65) = typ
 	next i
-
-end sub
-
-'':::::
-sub hlpInit
-    dim i as integer
-
-	''
-	for i = 0 to (90-65+1)-1
-		deftypeTB(i) = FB.SYMBTYPE.INTEGER
-	next i
-
-end sub
-
-'':::::
-sub hlpEnd
 
 end sub
 
@@ -339,16 +370,41 @@ exitfunction:
 end function
 
 '':::::
+sub hReplace( text as string, oldtext as string, newtext as string ) static
+    dim remtext as string
+    dim oldlen as integer, newlen as integer
+    dim p as integer
+
+	oldlen = len( oldtext )
+	newlen = len( newtext )
+
+	p = 0
+	do
+		p = instr( p+1, text, oldtext )
+	    if( p = 0 ) then
+	    	exit do
+	    end if
+
+		remtext = mid$( text, p + oldlen )
+		text = left$( text, p-1 )
+		text += newtext
+		text += remtext
+		p += newlen
+	loop
+
+end sub
+
+'':::::
 function hScapeStr( text as string ) as string static
     dim c as integer, l as byte ptr
     dim s as byte ptr, d as byte ptr
     dim res as string
 
-	s = sadd( text )
+	s = strptr( text )
 	l = len( text )
 
 	res = space$( l * 2 )
-	d = sadd( res )
+	d = strptr( res )
 
 	l = l + s
 
@@ -379,28 +435,30 @@ end function
 
 '':::::
 function hUnescapeStr( text as string ) as string static
-    dim c as integer, l as byte ptr, p as byte ptr
-    dim res as string
+    dim c as integer, l as byte ptr, s as byte ptr
+    dim res as string, d as byte ptr
 
 	if( not env.optescapestr ) then
     	hUnescapeStr = text
     	exit function
     end if
 
-	res = ""
+	res = text
 
-	p = sadd( text )
-	l = p + len( text )
-	do while( p < l )
+	s = strptr( text )
+	d = strptr( res )
 
-		c = *p
-		p = p + 1
+	l = s + len( text )
+	do while( s < l )
+
+		c = *s
+		s = s + 1
 
 		if( c = FB.INTSCAPECHAR ) then
-			c = CHAR_RSLASH
+			*d = CHAR_RSLASH
 		end if
 
-		res = res + chr$( c )
+		d = d + 1
 	loop
 
 	hUnescapeStr = res
@@ -412,7 +470,7 @@ sub hUcase( src as string ) static
     dim i as integer, c as integer
     dim p as byte ptr
 
-	p = sadd( src )
+	p = strptr( src )
 
 	for i = 1 to len( src )
 		c = *p
@@ -431,12 +489,14 @@ sub hClearName( src as string ) static
     dim i as integer
     dim p as byte ptr
 
-	p = sadd( src )
+	p = strptr( src )
 
 	for i = 1 to len( src )
 
 		select case as const *p
-		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE, CHAR_TILD
+		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
+
+		case else
 			*p = CHAR_ZLOW
 		end select
 
@@ -453,7 +513,8 @@ function hCreateName( symbol as string, byval typ as integer = INVALID, _
     dim sname as string
 
 	if( addunderscore ) then
-		sname = "_" + symbol
+		sname = "_"
+		sname += symbol
 	else
 		sname = symbol
 	end if
@@ -466,8 +527,8 @@ function hCreateName( symbol as string, byval typ as integer = INVALID, _
     	hClearName sname
     end if
 
-    if( typ <> INVALID ) then
-    	sname = sname + chr$( CHAR_ALOW + typ )
+    if( cunsg(typ) < FB.SYMBOLTYPES ) then
+    	sname += suffixTB( typ )
     end if
 
 	hCreateName = sname
@@ -477,14 +538,15 @@ end function
 '':::::
 function hCreateProcAlias( symbol as string, byval argslen as integer, _
 						   byval mode as integer ) as string static
-    dim nm as string
+    dim sname as string
     dim addat as integer
 
 #ifdef TARGET_WIN32
 	if( env.clopt.nounderprefix ) then
-		nm = symbol
+		sname = symbol
 	else
-		nm = "_" + symbol
+		sname = "_"
+		sname += symbol
 	end if
 
     if( env.clopt.nostdcall ) then
@@ -494,17 +556,19 @@ function hCreateProcAlias( symbol as string, byval argslen as integer, _
     end if
 
 	if( addat ) then
-		nm = nm + "@" + str$( argslen )
+		sname += "@"
+		sname += str$( argslen )
 	end if
 
+	hCreateProcAlias = sname
+
 #elseif defined(TARGET_DOS)
-    nm = "_" + symbol
+    hCreateProcAlias = "_" + symbol
 
 #else
-	nm = symbol
-#endif
+	hCreateProcAlias = symbol
 
-	hCreateProcAlias = nm
+#endif
 
 end function
 
@@ -549,7 +613,7 @@ function hStripUnderscore( symbol as string ) as string static
 end function
 
 '':::::
-function hStripExt( filename as string ) as string 'static
+function hStripExt( filename as string ) as string static
     dim p as integer, lp as integer
 
 	lp = 0
@@ -570,7 +634,7 @@ function hStripExt( filename as string ) as string 'static
 end function
 
 '':::::
-function hStripPath( filename as string ) as string 'static
+function hStripPath( filename as string ) as string static
     dim p as integer, lp as integer
 
 	lp = 0
@@ -594,7 +658,7 @@ function hStripPath( filename as string ) as string 'static
 end function
 
 '':::::
-function hStripFilename ( filename as string ) as string 'static
+function hStripFilename ( filename as string ) as string static
     dim p as integer, lp as integer
 
 	lp = 0

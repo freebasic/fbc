@@ -36,13 +36,13 @@ defint a-z
 option explicit
 option escape
 
-'$include:'inc\fb.bi'
-'$include:'inc\fbint.bi'
-'$include:'inc\reg.bi'
-'$include:'inc\emit.bi'
-'$include:'inc\emitdbg.bi'
-'$include:'inc\ir.bi'
-'$include:'inc\dag.bi'
+'$include once:'inc\fb.bi'
+'$include once:'inc\fbint.bi'
+'$include once:'inc\reg.bi'
+'$include once:'inc\emit.bi'
+'$include once:'inc\emitdbg.bi'
+'$include once:'inc\ir.bi'
+'$include once:'inc\dag.bi'
 
 type IRCTX
 	nodes			as integer
@@ -533,7 +533,7 @@ sub irEmitLABEL( byval label as FBSYMBOL ptr, byval isglobal as integer ) static
 
 	irFlush
 
-	lname = symbGetLabelName( label )
+	lname = symbGetName( label )
 
 	emitLABEL lname
 
@@ -588,7 +588,7 @@ sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, byval initlabel as FBSYMBOL ptr
     dim label as integer
     dim id as string
 
-    id = symbGetProcName( proc )
+    id = symbGetName( proc )
 
 	''
 	irEMITBRANCH IR.OP.JMP, endlabel
@@ -653,7 +653,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, byval arg as FBPROCARG ptr
 
     typ = irGetVRType( vr )
 
-	'print symbGetProcName(proc), arg, atype; aclass, ptype; pclass
+	'print symbGetName(proc), arg, atype; aclass, ptype; pclass
 
 	'' process by descriptor arguments..
 	if( amode = FB.ARGMODE.BYDESC ) then
@@ -1021,7 +1021,7 @@ sub irGetVRIndexName( byval vreg as integer, vname as string )
 	end if
 
 	if( sym <> NULL ) then
-		symbGetVarName( sym, sname )
+		symbGetNameTo( sym, sname )
 	else
 		sname = ""
 	end if
@@ -1041,13 +1041,13 @@ sub irGetVRNameEx( byval vreg as integer, byval typ as integer, vname as string 
 
 	select case as const typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR
-		symbGetVarName( vregTB(vreg).sym, vname )
+		symbGetNameTo( vregTB(vreg).sym, vname )
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
 	    irGetVRIndexName( vreg, vname )
 
 	case IR.VREGTYPE.IMM
-		vname =  str$( vregTB(vreg).value )
+		vname = str$( vregTB(vreg).value )
 
 	case IR.VREGTYPE.REG
 		irhGetVREG vreg, dtype, dclass, typ
@@ -1233,7 +1233,7 @@ end sub
 sub irFlushBRANCH( byval op as integer, byval label as FBSYMBOL ptr ) static
     dim lname as string
 
-	lname = symbGetLabelName( label )
+	lname = symbGetName( label )
 
 	''
 	select case as const op
@@ -1357,7 +1357,7 @@ sub irFlushCALL( byval op as integer, byval proc as FBSYMBOL ptr, byval bytes2po
     	'' save used registers and free the FPU stack
     	irhPreserveRegs
 
-		emitCALL symbGetProcName( proc ), bytes2pop
+		emitCALL symbGetName( proc ), bytes2pop
 
 	'' call or jump to pointer
 	else
@@ -1656,7 +1656,7 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	if( label = NULL ) then
 		lname = hMakeTmpStr
 	else
-		lname = symbGetLabelName( label )
+		lname = symbGetName( label )
 	end if
 
 	if( vr = INVALID ) then

@@ -24,9 +24,9 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
 
 declare function ppIf 						( ) as integer
 declare function ppElse 					( )  as integer
@@ -53,8 +53,10 @@ end type
 	dim shared pptb(1 to FB.PP.MAXRECLEVEL) as FBPPREC
 
 '':::::
-private function hLiteral as string
+private function hLiteral( byval args as integer = 0, byval arghead as FBDEFARG ptr = NULL ) as string
     dim text as string
+    dim token as string, dpos as integer
+    dim a as FBDEFARG ptr
 
 const QUOTE = "\""
 
@@ -67,9 +69,58 @@ const QUOTE = "\""
 
     	'' preserve quotes if it's a string literal
     	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
-    		text = text + QUOTE + hUnescapeStr( lexEatToken ) + QUOTE
+    		text += QUOTE
+    		text += hUnescapeStr( lexEatToken )
+    		text += QUOTE
+
     	else
-    		text = text + lexEatToken( LEXCHECK_NOWHITESPC )
+    		'' no args? just read as-is
+    		if( args = 0 ) then
+    			text += lexEatToken( LEXCHECK_NOWHITESPC )
+
+    		else
+    			'' not and identifier? read as-is
+    			if( lexCurrentToken <> FB.TK.ID ) then
+    				text += lexEatToken( LEXCHECK_NOWHITESPC )
+
+    			'' otherwise, check if it's an argument and replace it
+    			'' with an unique pattern
+    			else
+    				token = ucase$( lexTokenText( ) )
+    				'' contains a dot? assume it's an udt access
+    				dpos = lexTokenDotPos
+    				if( dpos > 1 ) then
+    					token = left$( token, dpos-1 )
+    				end if
+
+    				a = arghead
+    				do
+    					'' matches?
+    					if( token = a->name ) then
+    						'' replace
+    						text += "\27"
+    						text += hex$( a )
+    						text += "\27"
+    						'' add the remainder if it's an udt access
+    						if( dpos > 1 ) then
+    							text += mid$( lexEatToken( LEXCHECK_NOWHITESPC ), dpos )
+    						else
+    							lexSkipToken( LEXCHECK_NOWHITESPC )
+    						end if
+    						exit do
+    					end if
+
+    					'' next arg
+    					a = a->r
+    				loop while( a <> NULL )
+
+    				'' if none matched, read as-is
+    				if( a = NULL ) then
+    					text += lexEatToken( LEXCHECK_NOWHITESPC )
+    				end if
+    			end if
+
+    		end if
     	end if
     loop
 
@@ -78,7 +129,7 @@ const QUOTE = "\""
 end function
 
 '':::::
-'' PreProcess    =   '#'DEFINE ID LITERAL+
+'' PreProcess    =   '#'DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
 ''               |   '#'UNDEF ID
 ''               |   '#'IFDEF ID
 ''               |   '#'IFNDEF ID
@@ -94,12 +145,13 @@ end function
 function lexPreProcessor as integer
 	dim id as string
 	dim isonce as integer
+	dim args as integer, arghead as FBDEFARG ptr, lastarg as FBDEFARG ptr
 
 	lexPreProcessor = FALSE
 
     select case as const lexCurrentToken
 
-    '' DEFINE ID (!WHITESPC '(' ID+ ')')? LITERAL+
+    '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
     case FB.TK.DEFINE
     	lexSkipToken LEXCHECK_NODEFINE
 
@@ -111,8 +163,45 @@ function lexPreProcessor as integer
     		id = lexEatToken( LEXCHECK_NOWHITESPC )
     	end if
 
+    	args = 0
+    	arghead = NULL
+
+    	'' '('?
+    	if( lexCurrentToken = CHAR_LPRNT ) then
+    		lexSkipToken LEXCHECK_NODEFINE
+
+			lastarg = NULL
+			do
+			    lastarg = symbAddDefineArg( lastarg, lexEatToken( LEXCHECK_NODEFINE ) )
+			    args = args + 1
+
+			    if( arghead = NULL ) then
+			    	arghead = lastarg
+			    end if
+
+				'' ','?
+				if( lexCurrentToken <> CHAR_COMMA ) then
+					exit do
+				end if
+			    lexSkipToken LEXCHECK_NODEFINE
+			loop
+
+    		'' ')'
+    		if( not hMatch( CHAR_RPRNT ) ) then
+    			hReportError FB.ERRMSG.EXPECTEDRPRNT
+    			exit function
+    		end if
+
+    	else
+    		select case lexCurrentToken
+    		case CHAR_SPACE, CHAR_TAB
+    			'' skip white-space
+    			lexSkipToken
+    		end select
+    	end if
+
     	'' LITERAL+
-    	symbAddDefine( id, hLiteral )
+    	symbAddDefine( id, hLiteral( args, arghead ), args, arghead )
 
     	lexPreProcessor = TRUE
 

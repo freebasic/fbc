@@ -25,13 +25,13 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 '':::::
 ''GotoStmt   	  =   GOTO LABEL
@@ -50,7 +50,7 @@ function cGotoStmt
 	'' GOTO LABEL
 	case FB.TK.GOTO
 		lexSkipToken
-		l = symbLookupLabel( lexTokenText )
+		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
 			l = symbAddLabelEx( lexTokenText, FALSE )
 		end if
@@ -63,7 +63,7 @@ function cGotoStmt
 	'' GOSUB LABEL
 	case FB.TK.GOSUB
 		lexSkipToken
-		l = symbLookupLabel( lexTokenText )
+		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
 			l = symbAddLabelEx( lexTokenText, FALSE )
 		end if
@@ -80,7 +80,7 @@ function cGotoStmt
 		select case lexCurrentTokenClass
 		case FB.TKCLASS.NUMLITERAL, FB.TKCLASS.IDENTIFIER
 
-			l = symbLookupLabel( lexTokenText )
+			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 			if( l = NULL ) then
 				l = symbAddLabelEx( lexTokenText, FALSE )
 			end if
@@ -269,7 +269,7 @@ function cDataStmt
 		'' LABEL?
 		s = NULL
 		if( not hIsSttSeparatorOrComment( lexCurrentToken ) ) then
-			s = symbLookupLabel( lexTokenText )
+			s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 			if( s = NULL ) then
 				s = symbAddLabelEx( lexTokenText, FALSE )
 			end if
@@ -754,61 +754,73 @@ end function
 ''
 function cPokeStmt
 	dim expr1 as integer, expr2 as integer
-	dim poketype as integer
+	dim poketype as integer, subtype as FBSYMBOL ptr, lgt as integer
 	dim vr as integer
 
 	cPokeStmt = FALSE
 
-	'' POKE Expression, Expression
-	poketype = INVALID
-	select case lexCurrentToken
-	case FB.TK.POKE
-		poketype = IR.DATATYPE.BYTE
-	case FB.TK.POKES
-		poketype = IR.DATATYPE.SHORT
-	case FB.TK.POKEI
-		poketype = IR.DATATYPE.INTEGER
-	end select
+	'' POKE
+	lexSkipToken
 
-	if( poketype <> INVALID ) then
-		lexSkipToken
-
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+	'' (SymbolType ',')?
+	if( cSymbolType( poketype, subtype, lgt ) ) then
+		if( subtype <> NULL ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
 			exit function
 		end if
+
+		'' check for invalid types
+		select case as const poketype
+		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.USERDEF
+			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+			exit function
+		end select
+
+		'' ','
 		if( not hMatch( CHAR_COMMA ) ) then
 			hReportError FB.ERRMSG.EXPECTEDCOMMA
 			exit function
 		end if
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
 
-        astUpdNodeResult expr1
-        select case astGetDataClass( expr1 )
-        case IR.DATACLASS.STRING
+	else
+		poketype = IR.DATATYPE.BYTE
+	end if
+
+	'' Expression, Expression
+	if( not cExpression( expr1 ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+	if( not cExpression( expr2 ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+    astUpdNodeResult expr1
+    select case astGetDataClass( expr1 )
+    case IR.DATACLASS.STRING
+    	hReportError FB.ERRMSG.INVALIDDATATYPES
+        exit function
+	case IR.DATACLASS.FPOINT
+    	expr1 = astNewCONV( INVALID, IR.DATATYPE.UINT, expr1 )
+	case else
+        if( astGetDataSize( expr1 ) < FB.POINTERSIZE ) then
         	hReportError FB.ERRMSG.INVALIDDATATYPES
         	exit function
-        case IR.DATACLASS.FPOINT
-        	expr1 = astNewCONV( INVALID, IR.DATATYPE.UINT, expr1 )
-        case else
-        	if( astGetDataSize( expr1 ) < FB.POINTERSIZE ) then
-        		hReportError FB.ERRMSG.INVALIDDATATYPES
-        		exit function
-        	end if
-        end select
+        end if
+	end select
 
-        expr1 = astNewPTR( NULL, NULL, 0, expr1, poketype, NULL )
+    expr1 = astNewPTR( NULL, NULL, 0, expr1, poketype, NULL )
 
-        expr1 = astNewASSIGN( expr1, expr2 )
+    expr1 = astNewASSIGN( expr1, expr2 )
 
-		astFlush expr1, vr
+	astFlush expr1, vr
 
-        cPokeStmt = TRUE
-
-	end if
+    cPokeStmt = TRUE
 
 end function
 
@@ -1109,8 +1121,9 @@ end function
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 	dim dTB(0) as FBARRAYDIM
 
-	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, FB.INTEGERSIZE, NULL, _
-							            1, dTB(), FB.ALLOCTYPE.SHARED, FALSE, FALSE, FALSE )
+	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, _
+										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
+										FALSE, FALSE, FALSE )
 
 end function
 
@@ -1152,7 +1165,7 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 		end if
 
 		'' Label
-		labelTB(l) = symbLookupLabel( lexTokenText )
+		labelTB(l) = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( labelTB(l) = NULL ) then
 			labelTB(l) = symbAddLabelEx( lexTokenText, FALSE )
 		end if
@@ -1197,7 +1210,7 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 
     ''
     for i = 0 to l-1
-    	emitTYPE IR.DATATYPE.UINT, symbGetLabelName( labelTB(i) )
+    	emitTYPE IR.DATATYPE.UINT, symbGetName( labelTB(i) )
     next
 
     '' the table is not needed anymore
@@ -1265,7 +1278,7 @@ function cOnStmt
     '' on error?
 	if( expr = INVALID ) then
 		'' Label
-		label = symbLookupLabel( lexTokenText )
+		label = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( label = NULL ) then
 			label = symbAddLabelEx( lexTokenText, FALSE )
 		end if
@@ -1368,7 +1381,7 @@ function cQuirkStmt
 		res = cLineInputStmt
 	case FB.TK.INPUT
 		res = cInputStmt
-	case FB.TK.POKE, FB.TK.POKES, FB.TK.POKEI
+	case FB.TK.POKE
 		res = cPokeStmt
 	case FB.TK.OPEN, FB.TK.CLOSE, FB.TK.SEEK, FB.TK.PUT, FB.TK.GET, FB.TK.LOCK, FB.TK.UNLOCK
 		res = cFileStmt
@@ -1677,7 +1690,7 @@ function cStringFunct( funcexpr as integer )
 		if( astGetClass( expr1 ) = AST.NODECLASS.VAR ) then
 			if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
 				sym = astGetSymbol( expr1 )
-				if( symbGetInitialized( sym ) ) then
+				if( symbGetVarInitialized( sym ) ) then
 					funcexpr = astNewCONST( asc( symbGetVarText( sym ) ), IR.DATATYPE.INTEGER )
 
 					'' delete var if it was never accessed before
@@ -1833,65 +1846,81 @@ function cMathFunct( funcexpr as integer )
 end function
 
 '':::::
-'' PeekFunct =   (PEEK|PEEKS|PEEKI) '(' Expression ')' .
+'' PeekFunct =   PEEK '(' (SymbolType ',')? Expression ')' .
 ''
 function cPeekFunct( funcexpr as integer )
 	dim expr as integer
-	dim peektype as integer
+	dim peektype as integer, subtype as FBSYMBOL ptr, lgt as integer
 
 	cPeekFunct = FALSE
 
-	'' PEEK( Expression )
-	peektype = INVALID
-	select case lexCurrentToken
-	case FB.TK.PEEK
+	'' PEEK
+	lexSkipToken
+
+	'' '('
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT, TRUE
+		exit function
+	end if
+
+	'' (SymbolType ',')?
+	if( cSymbolType( peektype, subtype, lgt ) ) then
+		if( subtype <> NULL ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+			exit function
+		end if
+
+		'' check for invalid types
+		select case as const peektype
+		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.USERDEF
+			hReportError FB.ERRMSG.INVALIDDATATYPES
+			exit function
+		end select
+
+		'' ','
+		if( not hMatch( CHAR_COMMA ) ) then
+			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			exit function
+		end if
+
+	else
 		peektype = IR.DATATYPE.BYTE
-	case FB.TK.PEEKS
-		peektype = IR.DATATYPE.SHORT
-	case FB.TK.PEEKI
-		peektype = IR.DATATYPE.INTEGER
-	end select
+	end if
 
-	if( peektype <> INVALID ) then
-		lexSkipToken
+	'' Expression
+	if( not cExpression( expr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+	' ')'
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
 
-        astUpdNodeResult expr
-        select case astGetDataClass( expr )
-        case IR.DATACLASS.STRING
+    astUpdNodeResult expr
+    select case astGetDataClass( expr )
+    case IR.DATACLASS.STRING
+    	hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	case IR.DATACLASS.FPOINT
+		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
+	case else
+		if( astGetDataSize( expr ) < FB.POINTERSIZE ) then
         	hReportError FB.ERRMSG.INVALIDDATATYPES
         	exit function
-        case IR.DATACLASS.FPOINT
-        	expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
-        case else
-        	if( astGetDataSize( expr ) < FB.POINTERSIZE ) then
-        		hReportError FB.ERRMSG.INVALIDDATATYPES
-        		exit function
-        	end if
-        end select
+		end if
+	end select
 
-        funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, NULL )
+    funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, NULL )
 
-        '' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
-        if( peektype = IR.DATATYPE.BYTE ) then
-        	funcexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, funcexpr )
-        end if
-
-        cPeekFunct = TRUE
-
+	'' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
+    if( peektype = IR.DATATYPE.BYTE ) then
+    	funcexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, funcexpr )
 	end if
+
+    cPeekFunct = TRUE
 
 end function
 
@@ -1981,6 +2010,71 @@ function cErrorFunct( funcexpr as integer )
 end function
 
 '':::::
+''cIIFFunct =   IIF '(' condexpr ',' truexpr ',' falsexpr ')' .
+''
+function cIIFFunct( funcexpr as integer )
+	dim condexpr as integer, truexpr as integer, falsexpr as integer
+
+	cIIFFunct = FALSE
+
+	'' IIF
+	lexSkipToken
+
+	'' '('
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+
+	'' condexpr
+	if( not cExpression( condexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	'' ','
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	'' truexpr
+	if( not cExpression( truexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	'' ','
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	'' falsexpr
+	if( not cExpression( falsexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+
+	'' ')'
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+
+	''
+	funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
+
+	if( funcexpr = INVALID ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+		exit function
+	end if
+
+	cIIFFunct = TRUE
+
+end function
+
+'':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
 function cQuirkFunction( funcexpr as integer )
@@ -1999,7 +2093,7 @@ function cQuirkFunction( funcexpr as integer )
 		res = cStringFunct( funcexpr )
 	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN
 		res = cMathFunct( funcexpr )
-	case FB.TK.PEEK, FB.TK.PEEKS, FB.TK.PEEKI
+	case FB.TK.PEEK
 		res = cPeekFunct( funcexpr )
 	case FB.TK.LBOUND, FB.TK.UBOUND
 		res = cArrayFunct( funcexpr )
@@ -2007,6 +2101,8 @@ function cQuirkFunction( funcexpr as integer )
 		res = cFileFunct( funcexpr )
 	case FB.TK.ERR
 		res = cErrorFunct( funcexpr )
+	case FB.TK.IIF
+		res = cIIFFunct( funcexpr )
 	end select
 
 	if( not res ) then

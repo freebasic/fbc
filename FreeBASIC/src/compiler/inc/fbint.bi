@@ -40,6 +40,7 @@ const FB.INITSYMBOLNODES	= 10000
 const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 20
 
 const FB.INITARGNODES		= 4000
+const FB.INITDEFARGNODES	= 400
 
 const FB.INITDIMNODES		= 400
 
@@ -49,10 +50,17 @@ const FB.INITLIBNODES		= 50
 ''
 const FB.POINTERSIZE		= 4
 const FB.INTEGERSIZE		= 4
-const FB.ARRAYDESCSIZE		= FB.INTEGERSIZE*5
 
+const FB.ARRAYDESCSIZE		= FB.INTEGERSIZE*5
 const FB.ARRAYDESC.DATAOFFS = 0
 
+const FB.STRSTRUCTSIZE		= FB.POINTERSIZE+FB.INTEGERSIZE+FB.INTEGERSIZE
+
+'' "fake" descriptors as UDT's
+const FB.DESCTYPE.ARRAY 	= -2
+const FB.DESCTYPE.STR 		= -3
+
+''
 const FB.DATALABELNAME 		= "_fbdata_begin"
 const FB.DATALABELPREFIX	= "_fbdata_"
 
@@ -165,9 +173,6 @@ enum FBTK_ENUM
 	FB.TK.NUMLIT
 	FB.TK.STRLIT
 	FB.TK.ID
-	FB.TK.IDFUNCT
-	FB.TK.IDCONST
-	FB.TK.IDDEFINE
 
 	FB.TK.REM
 
@@ -310,11 +315,7 @@ enum FBTK_ENUM
 	FB.TK.USING
 	FB.TK.LEN
 	FB.TK.PEEK
-	FB.TK.PEEKS
-	FB.TK.PEEKI
 	FB.TK.POKE
-	FB.TK.POKES
-	FB.TK.POKEI
 	FB.TK.SWAP
 	FB.TK.OPEN
 	FB.TK.CLOSE
@@ -344,6 +345,7 @@ enum FBTK_ENUM
 	FB.TK.LOCAL
 	FB.TK.ERR
 	FB.TK.RESUME
+	FB.TK.IIF
 
 	FB.TK.DEFINE
 	FB.TK.UNDEF
@@ -431,10 +433,7 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.POINTER            				'' must be the last
 end enum
 
-const FB.SYMBOLTYPES			= 14-1			'' pointer not taken into account
-
-'' internal symbols, not processed by AST or IR
-const FB.SYMBTYPE.LABEL			= FB.SYMBTYPE.VOID
+const FB.SYMBOLTYPES			= 14
 
 
 '' allocation types mask
@@ -454,6 +453,7 @@ enum FBALLOCTYPE_ENUM
 	FB.ALLOCTYPE.IMPORT			= 4096
 end enum
 
+'$include once:'inc\hash.bi'
 
 ''
 type FBARRAYDIM
@@ -476,7 +476,10 @@ type FBLIBRARY
 	prv				as FBLIBRARY ptr			'' linked-list nodes
 	nxt				as FBLIBRARY ptr			'' /
 
-	nameidx			as integer
+	name			as string
+
+	hashitem		as HASHITEM ptr
+	hashindex		as uinteger
 end type
 
 
@@ -484,21 +487,13 @@ end type
 enum SYMBCLASS_ENUM
 	FB.SYMBCLASS.VAR			= 1
 	FB.SYMBCLASS.CONST
-	FB.SYMBCLASS.UDT
-	FB.SYMBCLASS.UDTELM
 	FB.SYMBCLASS.PROC
-	FB.SYMBCLASS.LABEL
-	FB.SYMBCLASS.ENUM
 	FB.SYMBCLASS.DEFINE
 	FB.SYMBCLASS.KEYWORD
-end enum
-
-
-''
-enum SYMBLOOKUPMODE_ENUM
-	FB.LOOKUPMODE.LOCAL			= 1
-	FB.LOOKUPMODE.GLOBAL		= 2
-	FB.LOOKUPMODE.ALL			= FB.LOOKUPMODE.LOCAL or FB.LOOKUPMODE.GLOBAL
+	FB.SYMBCLASS.LABEL
+	FB.SYMBCLASS.ENUM
+	FB.SYMBCLASS.UDT
+	FB.SYMBCLASS.UDTELM
 end enum
 
 
@@ -509,10 +504,20 @@ type FBSKEYWORD
 	class			as integer
 end type
 
+type FBDEFARG
+	prv				as FBDEFARG ptr			'' linked-list nodes
+	nxt				as FBDEFARG ptr			'' /
+
+	name			as string
+
+	r				as FBDEFARG ptr			'' right
+end type
+
 ''
 type FBSDEFINE
-	textidx			as integer
+	text			as string
 	args			as integer
+	arghead 		as FBDEFARG ptr
 end type
 
 ''
@@ -532,7 +537,7 @@ type FBSARRAY
 end type
 
 type FBSCONST
-	textidx			as integer
+	text			as string
 end type
 
 ''
@@ -582,18 +587,14 @@ type FBSPROC
 	isdeclared		as integer					'' FALSE = just the prototype
 end type
 
-''
-type FBSENTINEL
-	prv				as FBSENTINEL ptr			'' linked-list nodes
-	nxt				as FBSENTINEL ptr			'' /
-
-	class			as integer
-	scope			as integer
-	isglobal		as integer
-	nameidx			as integer
-
+type FBSVAR
 	suffix			as integer					'' QB quirk..
-	count			as integer
+	initialized		as integer
+	inittext		as string
+
+	array			as FBSARRAY
+
+	elm				as FBSUDTELM
 end type
 
 ''
@@ -606,8 +607,10 @@ type FBSYMBOL
 	subtype			as FBSYMBOL ptr				'' used by UDT's
 	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
 
-	nameidx			as integer
-	aliasidx		as integer
+	alias			as string					'' alias -- original name is only at the hashtb
+
+	hashitem		as HASHITEM ptr
+	hashindex		as uinteger
 
 	scope			as integer
 
@@ -616,22 +619,18 @@ type FBSYMBOL
 
 	acccnt			as integer					'' access counter (number of lookup's)
 
-	initialized		as integer
-	inittextidx		as integer
-
 	union
+		var			as FBSVAR
 		con			as FBSCONST
 		udt			as FBSUDT
-		elm			as FBSUDTELM
 		proc		as FBSPROC
 		lbl			as FBLABEL
 		def			as FBSDEFINE
 		key			as FBSKEYWORD
 	end union
 
-	array			as FBSARRAY					'' shared by var and elm
-
-	sentinel		as FBSENTINEL ptr
+	left			as FBSYMBOL ptr
+	right			as FBSYMBOL ptr
 end type
 
 type FBLOCSYMBOL
@@ -641,13 +640,6 @@ type FBLOCSYMBOL
     s				as FBSYMBOL ptr
 end type
 
-
-''
-const FB.STRSTRUCTSIZE		= FB.POINTERSIZE+FB.INTEGERSIZE+FB.INTEGERSIZE
-
-'' "fake" descriptors as UDT's
-const FB.DESCTYPE.ARRAY 	= -2
-const FB.DESCTYPE.STR 		= -3
 
 ''
 type FBCMPSTMT
@@ -723,11 +715,11 @@ type FBENV
 end type
 
 
-'$include:'inc\symb.bi'
+'$include once:'inc\symb.bi'
 
-'$include:'inc\strpool.bi'
+'$include once:'inc\strpool.bi'
 
-'$include:'inc\hlp.bi'
+'$include once:'inc\hlp.bi'
 
 
 ''

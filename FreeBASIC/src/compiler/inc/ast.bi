@@ -35,22 +35,21 @@ enum ASTNODECLASS_ENUM
 	AST.NODECLASS.CONV
 	AST.NODECLASS.LOAD
 	AST.NODECLASS.BRANCH
+	AST.NODECLASS.IIF
 end enum
 
 type FUNCTNode
 	sym				as FBSYMBOL ptr					'' symbol
-	p				as integer						'' ptr expr, f/ function pointers
 	args			as integer
 	argnum			as integer
 	arg				as FBPROCARG ptr
 	tmparraybase 	as integer
+	lastparam		as integer						'' used to speed up PASCAL calling conv. only
 end type
 
 type PARAMNode
 	mode			as integer						'' to pass NULL's to byref args, etc
 	lgt				as integer						'' length, used to push UDT's by value
-	prv				as integer						'' preview node
-	nxt				as integer						'' next    /
 end type
 
 type VARNode
@@ -62,7 +61,6 @@ end type
 type IDXNode
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
-	var				as integer						'' AST tb index to a VARNode
 end type
 
 type PTRNode
@@ -74,6 +72,10 @@ end type
 type ADDRNode
 	sym				as FBSYMBOL ptr					'' symbol
 	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
+end type
+
+type IIFNode
+	cond			as integer						'' conditonal expression
 end type
 
 type ASTNode
@@ -99,6 +101,7 @@ type ASTNode
 		proc		as FUNCTNode
 		param		as PARAMNode
 		addr		as ADDRNode
+		iif			as IIFNode
 	end union
 
 	l				as integer						'' left node, index of ast tb
@@ -184,6 +187,10 @@ declare sub 		astLoadLOAD			( byval n as integer, vr as integer )
 declare function 	astNewBRANCH		( byval op as integer, byval label as FBSYMBOL ptr, _
 										  byval l as integer = INVALID ) as integer
 declare sub 		astLoadBRANCH		( byval n as integer, vr as integer )
+
+declare function 	astNewIIF			( byval condexpr as integer, byval truexpr as integer, _
+										  byval falsexpr as integer ) as integer
+declare sub 		astLoadIIF			( byval n as integer, vr as integer )
 
 declare sub 		astOptimize			( byval n as integer )
 

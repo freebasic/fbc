@@ -76,6 +76,7 @@ declare sub 		emitDATAEND			( )
 declare sub 		emitGetRegName		( byval dtype as integer, byval dclass as integer, _
 										  byval reg as integer, rname as string )
 declare sub 		emitGetIDXName		( byval mult as integer, sname as string, idxname as string )
+declare function 	emitGetVarName		( byval s as FBSYMBOL ptr ) as string
 
 declare function 	emitIsRegPreserved 	( byval dtype as integer, byval dclass as integer, byval reg as integer ) as integer
 declare function 	emitGetResultReg 	( byval dtype as integer, byval dclass as integer ) as integer

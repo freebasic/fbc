@@ -24,13 +24,13 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 declare function cConstExprValue			( littext as string ) as integer
 
@@ -364,7 +364,7 @@ function fbCompile ( infname as string, outfname as string )
 	if( res = TRUE ) then
 		l = symbCheckLabels
 		if( l <> NULL ) then
-			hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetLabelName( l ), -1
+			hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetOrgName( l ), -1
 			res = FALSE
 		else
 			res = TRUE

@@ -28,8 +28,8 @@ option explicit
 option private
 option escape
 
-'$include: 'inc\fb.bi'
-'$include: 'inc\hlp.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\hlp.bi'
 
 const FB_MAXARGS	  = 100
 const FB_MINSTACKSIZE =   32 * 1024

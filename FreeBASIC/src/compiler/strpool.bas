@@ -24,8 +24,8 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
 
 type STRPCTX
 	inited	as integer

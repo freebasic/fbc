@@ -25,6 +25,7 @@ enum LEXCHECK_ENUM
 	LEXCHECK_NOLINECONT	= 1
 	LEXCHECK_NODEFINE	= 2
 	LEXCHECK_NOWHITESPC	= 4
+	LEXCHECK_NOSUFFIX	= 8
 end enum
 
 type FBTOKEN
@@ -33,8 +34,9 @@ type FBTOKEN
 	typ				as integer
 	text			as string * FB.MAXNAMELEN
 	littext			as string * FB.MAXLITLEN 	'' used by lit-strings
-	tlen			as integer
-	sym				as FBSYMBOL ptr
+	tlen			as integer                  '' lenght
+	dotpos			as integer                  '' first '.' position, if any
+	sym				as FBSYMBOL ptr				'' symbol found, if any
 end type
 
 
@@ -44,19 +46,13 @@ declare sub 		lexEnd					( )
 declare sub 		lexSaveCtx				( byval level as integer )
 declare sub 		lexRestoreCtx			( byval level as integer )
 
-
-declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as integer
-declare function 	lexEatChar              ( ) as integer
-declare function 	lexLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as integer
-declare sub 		lexNextToken 			( t as FBTOKEN, _
-											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
-
 declare function 	lexCurrentToken 		( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 declare function 	lexCurrentTokenClass 	( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 declare function 	lexTokenText 			( ) as string
 declare function 	lexTokenTextLen 		( ) as integer
 declare function 	lexTokenType 			( ) as integer
 declare function 	lexTokenSymbol 			( ) as FBSYMBOL ptr
+declare function 	lexTokenDotPos 			( ) as integer
 
 declare function 	lexEatToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as string
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )

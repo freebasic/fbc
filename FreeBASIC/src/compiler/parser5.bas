@@ -24,13 +24,13 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 '':::::
 private sub hReportParamError( byval argnum as integer, byval errnum as integer = FB.ERRMSG.PARAMTYPEMISMATCHAT )
@@ -50,13 +50,13 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
 
 	'' check arg count
 	if( argc <> symbGetProcArgs( proc ) ) then
-		hReportError FB.ERRMSG.ARGCNTMISMATCH
+		hReportError FB.ERRMSG.ARGCNTMISMATCH, TRUE
 		exit function
 	end if
 
 	'' check return type
 	if( proctyp <> symbGetType( proc ) ) then
-		hReportError FB.ERRMSG.TYPEMISMATCH
+		hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
 		exit function
 	end if
 
@@ -64,7 +64,7 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
 	if( procsubtype <> symbGetSubtype( proc ) ) then
     	'' if it's a function pointer, subtypes (protos) will be different.. doesn't matter
     	if( proctyp <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-        	hReportError FB.ERRMSG.TYPEMISMATCH
+        	hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
         	exit function
         end if
     end if
@@ -172,16 +172,6 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 
 	typ 	= lexTokenType
 	proc    = lexTokenSymbol
-
-    '' symbol found?
-    if( proc <> NULL ) then
-    	'' not a proc?
-    	if( proc->class <> FB.SYMBCLASS.PROC ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
-    		exit function
-    	end if
-    end if
-
 	id 		= lexEatToken
 	subtype = NULL
 
@@ -274,7 +264,11 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 		typ = hGetDefType( id )
 	end if
 
-    ''
+    '' symbol found?
+    if( proc <> NULL ) then
+    	proc = symbFindByClass( proc, FB.SYMBCLASS.PROC )
+    end if
+
     if( proc = NULL ) then
     	proc = symbAddProc( id, aliasid, "", typ, subtype, alloctype, mode, argc, argv() )
     	if( proc = NULL ) then
@@ -282,6 +276,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     		exit function
     	end if
     else
+
     	if( symbGetProcIsDeclared( proc ) ) then
     		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
     		exit function
@@ -302,7 +297,6 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     	symbSetProcIsDeclared proc, TRUE
 
     	symbSetAllocType proc, alloctype
-
     end if
 
     cSubOrFuncHeader = TRUE
@@ -314,7 +308,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
     dim s as FBSYMBOL ptr, typ as integer
     dim vr as integer, n as integer, t as integer
 
-	s = symbLookupFunctionResult( proc )
+	s = symbLookupProcResult( proc )
 	typ = symbGetType( s )
 
 	'' if result is a string, a temp descriptor is needed, as the current one (at stack)
@@ -489,7 +483,7 @@ function cProcStatement static
 	'' check undefined labels
 	l = symbCheckLabels
 	if( l <> NULL ) then
-		'''''hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetLabelName( l ), -1
+		'''''hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetOrgName( l ), -1
 		exit function
 	end if
 

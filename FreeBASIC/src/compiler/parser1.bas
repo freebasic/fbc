@@ -27,13 +27,13 @@ option explicit
 option escape
 
 defint a-z
-'$include: 'inc\fb.bi'
-'$include: 'inc\fbint.bi'
-'$include: 'inc\parser.bi'
-'$include: 'inc\rtl.bi'
-'$include: 'inc\ast.bi'
-'$include: 'inc\ir.bi'
-'$include: 'inc\emit.bi'
+'$include once: 'inc\fb.bi'
+'$include once: 'inc\fbint.bi'
+'$include once: 'inc\parser.bi'
+'$include once: 'inc\rtl.bi'
+'$include once: 'inc\ast.bi'
+'$include once: 'inc\ir.bi'
+'$include once: 'inc\emit.bi'
 
 declare function cConstExprValue			( littext as string ) as integer
 
@@ -227,7 +227,7 @@ function cLabel
 		if( lexLookAhead(1) = CHAR_COLON ) then
 
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
-			if( lexCurrentToken = FB.TK.IDFUNCT ) then
+			if( symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC ) <> NULL ) then
 				exit function
 			end if
 
@@ -247,7 +247,7 @@ function cLabel
 
     if( l <> NULL ) then
 
-    	lname = symbGetLabelName( l )
+    	lname = symbGetName( l )
     	irEmitLABEL l, (env.scope = 0)
 
     	symbSetLastLabel l
@@ -265,10 +265,10 @@ function cComment( byval lexflags as LEXCHECK_ENUM )
 
 	select case lexCurrentToken( lexflags )
 	case FB.TK.COMMENTCHAR, FB.TK.REM
-    	lexSkipToken LEXCHECK_NOLINECONT
+    	lexSkipToken LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE
 
-    	if( lexCurrentToken( LEXCHECK_NOLINECONT ) = FB.TK.DIRECTIVECHAR ) then
-    		lexSkipToken LEXCHECK_NOLINECONT
+    	if( lexCurrentToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE ) = FB.TK.DIRECTIVECHAR ) then
+    		lexSkipToken LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE
     		cComment = cDirective
     	else
     		lexSkipLine
@@ -374,26 +374,30 @@ function cDirective
 end function
 
 '':::::
-''Statement       =   (Declaration | ProcCall | CompoundStmt | cProcStatement | QuirkStmt | Assignment)
+''Statement       =   STT_SEPARATOR? ( Declaration
+''									 | ProcCallOrAssign
+''								     | CompoundStmt
+''									 | ProcStatement
+''									 | QuirkStmt
+''									 | AsmBlock
+''									 | AssignmentOrPtrCall )?
 ''                    (STT_SEPARATOR Statement)* .
 ''
-function cStatement
-    dim res as integer
+function cStatement as integer
+
+	'' ':'?
+	if( lexCurrentToken = FB.TK.STATSEPCHAR ) then
+		lexSkipToken
+	end if
 
 	do
-        res = cDeclaration
-		if( not res ) then
-			res = cProcCallOrAssign
-			if( not res ) then
-				res = cCompoundStmt
-				if( not res ) then
-					res = cProcStatement
-					if( not res ) then
-						res = cQuirkStmt
-						if( not res ) then
-							res = cAsmBlock
-							if( not res ) then
-								res = cAssignmentOrPtrCall
+		if( not cDeclaration ) then
+			if( not cProcCallOrAssign ) then
+				if( not cCompoundStmt ) then
+					if( not cProcStatement ) then
+						if( not cQuirkStmt ) then
+							if( not cAsmBlock ) then
+								cAssignmentOrPtrCall
 							end if
 						end if
 					end if
@@ -401,42 +405,42 @@ function cStatement
 			end if
 		end if
 
-		if( not res ) then
-			exit do
-		end if
-
+		'' ':'?
 		if( lexCurrentToken <> FB.TK.STATSEPCHAR ) then
 			exit do
 		end if
-
 		lexSkipToken
 	loop
 
-	cStatement = res
+	cStatement = (hGetLastError = FB.ERRMSG.OK)
 
 end function
 
 '':::::
-''SimpleStatement =   (ConstDecl | SymbolDecl | ProcCall | CompoundStmt | QuirkStmt | Assignment)
+''SimpleStatement =   STT_SEPARATOR? ( ConstDecl
+''									 | SymbolDecl
+''									 | ProcCallOrAssign
+''									 | CompoundStmt
+''									 | QuirkStmt
+''									 | AsmBlock
+''									 | AssignmentOrPtrCall )?
 ''                    (STT_SEPARATOR SimpleStatement)* .
 ''
-function cSimpleStatement
-    dim res as integer
+function cSimpleStatement as integer
+
+	'' ':'?
+	if( lexCurrentToken = FB.TK.STATSEPCHAR ) then
+		lexSkipToken
+	end if
 
 	do
-        res = cConstDecl
-		if( not res ) then
-        	res = cSymbolDecl
-			if( not res ) then
-				res = cProcCallOrAssign
-				if( not res ) then
-					res = cCompoundStmt
-					if( not res ) then
-						res = cQuirkStmt
-						if( not res ) then
-							res = cAsmBlock
-							if( not res ) then
-								res = cAssignmentOrPtrCall
+		if( not cConstDecl ) then
+			if( not cSymbolDecl ) then
+				if( not cProcCallOrAssign ) then
+					if( not cCompoundStmt ) then
+						if( not cQuirkStmt ) then
+							if( not cAsmBlock ) then
+								cAssignmentOrPtrCall
 							end if
 						end if
 					end if
@@ -444,18 +448,14 @@ function cSimpleStatement
 			end if
 		end if
 
-		if( not res ) then
-			exit do
-		end if
-
+		'' ':'?
 		if( lexCurrentToken <> FB.TK.STATSEPCHAR ) then
 			exit do
 		end if
-
 		lexSkipToken
 	loop
 
-	cSimpleStatement = res
+	cSimpleStatement = (hGetLastError = FB.ERRMSG.OK)
 
 end function
 
@@ -1135,7 +1135,6 @@ end sub
 function hDeclExternVar( id as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
 						 byval alloctype as integer, byval addsuffix as integer ) as FBSYMBOL ptr
 	dim symbol as FBSYMBOL ptr
-	dim ofs as integer, elm as FBSYMBOL ptr
 
     hDeclExternVar = NULL
 
@@ -1144,7 +1143,7 @@ function hDeclExternVar( id as string, byval typ as integer, byval subtype as FB
     	exit function
     end if
 
-    symbol = symbLookupVar( id, typ, ofs, elm, subtype )
+    symbol = symbFindByNameAndSuffix( id, typ )
     if( symbol <> NULL ) then
     	if( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
     		exit function
@@ -1214,6 +1213,12 @@ function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = F
 		if( hMatch( CHAR_LPRNT ) ) then
 
 			if( lexCurrentToken = CHAR_RPRNT ) then
+				'' can't predict the size needed by the descriptor on stack
+				if( env.scope > 0 ) then
+					hReportError FB.ERRMSG.ILLEGALINSIDEASUB, true
+					exit function
+				end if
+
 				dimensions = -1 				'' fake it
     		else
     			'' only allow indexes if not COMMON
@@ -1358,7 +1363,7 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
     atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
 
     ''
-  	s = symbLookupVar( id, typ, 0, NULL, NULL )
+  	s = symbFindByNameAndSuffix( id, typ )
    	if( s = NULL ) then
    		s = symbAddVarEx( id, idalias, typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
    		if( s = NULL ) then
@@ -1857,13 +1862,14 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 		end if
 
 	case else
-		s = symbLookupUDT( lexTokenText, lgt )
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.UDT )
 		if( s <> NULL ) then
-			typ = FB.SYMBTYPE.USERDEF
+			typ 	= FB.SYMBTYPE.USERDEF
 			subtype = s
+			lgt 	= s->lgt
 			lexSkipToken
 		else
-			s = symbLookupEnum( lexTokenText )
+			s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.ENUM )
 			if( s <> NULL ) then
 				typ = FB.SYMBTYPE.UINT
 				lgt = FB.INTEGERSIZE
@@ -2242,14 +2248,6 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
     	end select
     end select
 
-    '' if not a prototype, check if args are not dup-defined -- already done at hDeclareArgs()
-    '''''if( not isproto ) then
-    '''''	if( symbLookupSentinel( id, FB.SYMBCLASS.VAR, TRUE ) <> NULL ) then
-    '''''		hReportParamError argc, id
-    '''''		exit function
-    '''''	end if
-    '''''end if
-
     '' ('=' NUM_LIT)?
     if( hMatch( FB.TK.ASSIGN ) ) then
     	dclass = irGetDataClass( arg.typ )
@@ -2417,7 +2415,7 @@ function cOptDecl
 			do
 				select case lexCurrentTokenClass
 				case FB.TKCLASS.KEYWORD
-					if( not symbDelKeyword( lexTokenText ) ) then
+					if( not symbDelKeyword( lexTokenSymbol ) ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 						exit function
 					end if
@@ -2426,13 +2424,13 @@ function cOptDecl
 
 				case FB.TKCLASS.IDENTIFIER
 					'' proc?
-					if( lexCurrentToken <> FB.TK.IDFUNCT ) then
+					s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+					if( s = NULL ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 						exit function
 					end if
 
 					'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
-					s = lexTokenSymbol
 					if( symbGetProcLib( s ) <> "fb" ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 						exit function
@@ -2627,7 +2625,7 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
 
     hAssignFunctResult = FALSE
 
-    s = symbLookupFunctionResult( proc )
+    s = symbLookupProcResult( proc )
     if( s = NULL ) then
     	exit function
     end if
@@ -2724,7 +2722,7 @@ end function
 ''				  |	  ID '=' Expression .						!!QB quirk!!
 ''
 function cProcCallOrAssign
-	dim proc as FBSYMBOL ptr, expr as integer
+	dim s as FBSYMBOL ptr, expr as integer
 
 	cProcCallOrAssign = FALSE
 
@@ -2734,32 +2732,26 @@ function cProcCallOrAssign
 		lexSkipToken
 
 		'' ID
-		if( lexCurrentToken = FB.TK.IDFUNCT ) then
-			proc = lexTokenSymbol
-			if( proc <> NULL ) then
-				lexSkipToken
-
-				cProcCallOrAssign = cProcCall( proc, INVALID, TRUE )
-                exit function
-		    else
-				hReportError FB.ERRMSG.PROCNOTDECLARED
-				exit function
-		    end if
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+		if( s <> NULL ) then
+			lexSkipToken
+			cProcCallOrAssign = cProcCall( s, INVALID, TRUE )
+            exit function
 		else
 			hReportError FB.ERRMSG.PROCNOTDECLARED
 			exit function
 		end if
 
 	'' ID?
-	case FB.TK.IDFUNCT
+	case FB.TK.ID
 
-		proc = lexTokenSymbol
-		if( proc <> NULL ) then
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+		if( s <> NULL ) then
 			lexSkipToken
 
 			'' ID ProcParamList?
 			if( not hMatch( FB.TK.ASSIGN ) ) then
-				cProcCallOrAssign = cProcCall( proc, INVALID )
+				cProcCallOrAssign = cProcCall( s, INVALID )
             	exit function
 
 			'' ID '=' Expression
@@ -2769,7 +2761,7 @@ function cProcCallOrAssign
 					exit function
 				end if
 
-        		if( not hAssignFunctResult( proc, expr ) ) then
+        		if( not hAssignFunctResult( s, expr ) ) then
         			hReportError FB.ERRMSG.SYNTAXERROR
         			exit function
         		end if
@@ -2932,21 +2924,23 @@ function cAsmCode
 
 		if( lexCurrentTokenClass( LEXCHECK_NOWHITESPC ) = FB.TKCLASS.IDENTIFIER ) then
 			if( not emitIsKeyword( text ) ) then
-				select case lexCurrentToken
 				'' function?
-				case FB.TK.IDFUNCT
-					text = symbGetProcName( lexTokenSymbol )
-				'' const?
-				case FB.TK.IDCONST
-					text = symbGetConstText( lexTokenSymbol )
-				case else
-					'' lookup var's
-					s = symbLookupVar( text, lexTokenType, ofs, elm, subtype )
-					if( s <> NULL ) then
-						symbGetVarName( s, text )
-        			else
+				s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+				if( s <> NULL ) then
+					text = symbGetName( s )
+				else
+					'' const?
+					s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.CONST )
+				    if( s <> NULL ) then
+						text = symbGetConstText( lexTokenSymbol )
+					else
+						'' var?
+						s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.VAR )
+						if( s <> NULL ) then
+							text = EmitGetVarName( s )
+						end if
 					end if
-				end select
+				end if
 			end if
 		end if
 

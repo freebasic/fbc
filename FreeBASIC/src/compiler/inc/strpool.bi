@@ -20,7 +20,7 @@
 '' string pool protos
 ''
 
-const STRP.INITSTRINGNODES%	= 6000%
+const STRP.INITSTRINGNODES	= 1000
 
 declare sub 		strpInit 				( )
 declare sub 		strpEnd					( )

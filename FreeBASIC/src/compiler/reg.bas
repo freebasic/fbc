@@ -27,10 +27,10 @@ defint a-z
 option explicit
 option escape
 
-'$include:'inc\fb.bi'
-'$include:'inc\fbint.bi'
-'$include:'inc\ir.bi'
-'$include:'inc\reg.bi'
+'$include once:'inc\fb.bi'
+'$include once:'inc\fbint.bi'
+'$include once:'inc\ir.bi'
+'$include once:'inc\reg.bi'
 
 '' internals
 declare sub regInitClass		( byval reg as REGCLASS ptr )

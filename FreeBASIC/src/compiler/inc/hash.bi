@@ -25,7 +25,7 @@ type HASHITEM
 	prv			as HASHITEM ptr			'' linked-list nodes
 	nxt			as HASHITEM ptr			'' /
 
-	nameidx		as integer
+	name		as string				'' dynamic string
 	idx			as any ptr
 	l			as HASHITEM ptr			'' left node
 	r			as HASHITEM ptr			'' right node
@@ -42,14 +42,14 @@ type THASH
 end type
 
 declare sub 		hashInit	( )
-declare sub 		hashNew		( hash as THASH, byval nodes as integer )
-declare sub 		hashFree	( hash as THASH )
+declare sub 		hashNew		( byval hash as THASH ptr, byval nodes as integer )
+declare sub 		hashFree	( byval hash as THASH ptr )
 declare function 	hashHash	( symbol as string ) as uinteger
-declare function 	hashLookup	( hash as THASH, symbol as string ) as any ptr
-declare function 	hashLookupEx( hash as THASH, symbol as string, byval index as uinteger ) as any ptr
-declare sub 		hashAdd		( hash as THASH, symbol as string, byval idx as any ptr, byval nameidx as integer )
-declare sub 		hashDel		( hash as THASH, symbol as string )
+declare function 	hashLookup	( byval hash as THASH ptr, symbol as string ) as any ptr
+declare function 	hashLookupEx( byval hash as THASH ptr, symbol as string, byval index as uinteger ) as any ptr
+declare function	hashAdd		( byval hash as THASH ptr, symbol as string, byval idx as any ptr, index as uinteger ) as HASHITEM ptr
+declare sub 		hashDel		( byval hash as THASH ptr, byval item as HASHITEM ptr, byval index as uinteger )
 
-declare sub 		hashDump	( hash as THASH )
+declare sub 		hashDump	( byval hash as THASH ptr )
 
 #endif '' HASH_BI

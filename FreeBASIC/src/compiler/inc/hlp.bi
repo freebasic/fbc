@@ -40,6 +40,7 @@ declare function 	hScapeStr				( text as string ) as string
 declare function 	hUnescapeStr			( text as string ) as string
 declare sub 		hClearName				( src as string )
 declare sub 		hUcase					( src as string )
+declare sub 		hReplace				( text as string, oldtext as string, newtext as string )
 
 declare function 	hCreateProcAlias		( symbol as string, byval argslen as integer, _
 						   					  byval mode as integer ) as string

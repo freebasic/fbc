@@ -20,7 +20,7 @@
 '' parser protos
 ''
 
-'$include:'inc\lex.bi'
+'$include once:'inc\lex.bi'
 
 declare sub 		parser4Init				( )
 declare sub 		parser4End				( )
