@@ -26,40 +26,10 @@
 
 #include "fb_gfx.h"
 
-#define QUADRANT_START		0x1
-#define QUADRANT_END		0x2
-#define QUADRANT_USED		0x4
-#define QUADRANT_UR_START	0x0001
-#define QUADRANT_UR_END		0x0002
-#define QUADRANT_UR_START_END	0x0003
-#define QUADRANT_UR_USED	0x0004
-#define QUADRANT_UL_START	0x0010
-#define QUADRANT_UL_END		0x0020
-#define QUADRANT_UL_START_END	0x0030
-#define QUADRANT_UL_USED	0x0040
-#define QUADRANT_DL_START	0x0100
-#define QUADRANT_DL_END		0x0200
-#define QUADRANT_DL_START_END	0x0300
-#define QUADRANT_DL_USED	0x0400
-#define QUADRANT_DR_START	0x1000
-#define QUADRANT_DR_END		0x2000
-#define QUADRANT_DR_START_END	0x3000
-#define QUADRANT_DR_USED	0x4000
-
-
-static int x_start, y_start;
-static int x_end, y_end;
-static int y_center, quadrant;
-
-static void (*draw_scanline)(int, int, int, unsigned int, int);
-
 
 /*:::::*/
-static void draw_ellipse_scanline(int y, int x1, int x2, unsigned int color, int fill)
+static void draw_scanline(int y, int x1, int x2, unsigned int color, int fill)
 {
-	if ((x2 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w))
-		return;
-	
 	if ((y >= fb_mode->view_y) && (y < fb_mode->view_y + fb_mode->view_h)) {
 		if (fill) {
 			x1 = MAX(x1, fb_mode->view_x);
@@ -67,53 +37,10 @@ static void draw_ellipse_scanline(int y, int x1, int x2, unsigned int color, int
 			fb_hPixelSet(fb_mode->line[y] + (x1 * fb_mode->bpp), color, x2 - x1 + 1);
 		}
 		else {
-			if (x1 >= fb_mode->view_x)
+			if ((x1 >= fb_mode->view_x) && (x1 < fb_mode->view_x + fb_mode->view_w))
 				fb_hPutPixel(x1, y, color);
-			if (x2 < fb_mode->view_x + fb_mode->view_w)
+			if ((x2 >= fb_mode->view_x) && (x2 < fb_mode->view_x + fb_mode->view_w))
 				fb_hPutPixel(x2, y, color);
-		}
-	}
-}
-
-
-/*:::::*/
-static void draw_arc_scanline(int y, int x1, int x2, unsigned int color, int fill)
-{
-	if ((x2 < fb_mode->view_x) || (x1 >= fb_mode->view_x + fb_mode->view_w))
-		return;
-	
-	if ((y >= fb_mode->view_y) && (y < fb_mode->view_y + fb_mode->view_h)) {
-		if ((x1 >= fb_mode->view_x) && (x1 < fb_mode->view_x + fb_mode->view_w)) {
-			if (y > y_center) {
-				if ((quadrant & QUADRANT_DL_USED) ||
-				    (((quadrant & QUADRANT_DL_START_END) == QUADRANT_DL_START) && (x1 >= x_start) && (y >= y_start)) ||
-				    (((quadrant & QUADRANT_DL_START_END) == QUADRANT_DL_END) && (x1 <= x_end) && (y <= y_end)) ||
-				    (((quadrant & QUADRANT_DL_START_END) == QUADRANT_DL_START_END) && (x1 >= x_start) && (y >= y_start) && (x1 <= x_end) && (y <= y_end)))
-					fb_hPutPixel(x1, y, color);
-			}
-			else {
-				if ((quadrant & QUADRANT_UL_USED) ||
-				    (((quadrant & QUADRANT_UL_START_END) == QUADRANT_UL_START) && (x1 <= x_start) && (y >= y_start)) ||
-				    (((quadrant & QUADRANT_UL_START_END) == QUADRANT_UL_END) && (x1 >= x_end) && (y <= y_end)) ||
-				    (((quadrant & QUADRANT_UL_START_END) == QUADRANT_UL_START_END) && (x1 <= x_start) && (y >= y_start) && (x1 >= x_end) && (y <= y_end)))
-					fb_hPutPixel(x1, y, color);
-			}
-		}
-		if ((x1 >= fb_mode->view_x) && (x2 < fb_mode->view_x + fb_mode->view_w)) {
-			if (y > y_center) {
-				if ((quadrant & QUADRANT_DR_USED) ||
-				    (((quadrant & QUADRANT_DR_START_END) == QUADRANT_DR_START) && (x2 >= x_start) && (y <= y_start)) ||
-				    (((quadrant & QUADRANT_DR_START_END) == QUADRANT_DR_END) && (x2 <= x_end) && (y >= y_end)) ||
-				    (((quadrant & QUADRANT_DR_START_END) == QUADRANT_DR_START_END) && (x2 >= x_start) && (y <= y_start) && (x2 <= x_end) && (y >= y_end)))
-					fb_hPutPixel(x2, y, color);
-			}
-			else {
-				if ((quadrant & QUADRANT_UR_USED) ||
-				    (((quadrant & QUADRANT_UR_START_END) == QUADRANT_UR_START) && (x2 <= x_start) && (y <= y_start)) ||
-				    (((quadrant & QUADRANT_UR_START_END) == QUADRANT_UR_END) && (x2 >= x_end) && (y >= y_end)) ||
-				    (((quadrant & QUADRANT_UR_START_END) == QUADRANT_UR_START_END) && (x2 <= x_start) && (y <= y_start) && (x2 >= x_end) && (y >= y_end)))
-					fb_hPutPixel(x2, y, color);
-			}
 		}
 	}
 }
@@ -127,7 +54,7 @@ static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int
 
 	x1 = x - a;
 	x2 = x + a;
-	y1 = y2 = y_center = y;
+	y1 = y2 = y;
 	
 	if (!b) {
 		draw_scanline(y, x1, x2, color, TRUE);
@@ -166,10 +93,28 @@ static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int
 
 
 /*:::::*/
+static void get_arc_point(float angle, float a, float b, int *x, int *y)
+{
+	float c, s;
+	
+	c = cos(angle) * a;
+	s = sin(angle) * b;
+	if (c >= 0)
+		*x = (int)(c + 0.5);
+	else
+		*x = (int)(c - 0.5);
+	if (s >= 0)
+		*y = (int)(s + 0.5);
+	else
+		*y = (int)(s - 0.5);
+}
+
+
+/*:::::*/
 FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float aspect, float start, float end, int fill, int coord_type)
 {
-	int x, y, y1, y2, q1, q2;
-	float a, b, temp;
+	int x, y, x1, y1, x2, y2;
+	float a, b, x_start, y_start, x_end, y_end, increment;
 	
 	if (!fb_mode)
 		return;
@@ -199,53 +144,54 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		b = fabs((float)b - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
 	}
 	
-	if ((y + b < fb_mode->view_y) || (y - b >= fb_mode->view_y + fb_mode->view_h))
-		return;
-	
 	if ((start != 0.0) || (end != PI * 2.0)) {
-		x_start = (int)((float)x + 0.5 + (cos(fabs(start)) * (float)a));
-		y_start = (int)((float)y + 0.5 - (sin(fabs(start)) * (float)b));
-		if (start < 0.0) {
-			start = -start;
-			fb_GfxLine(x, y, x_start, y_start, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
-		}
-		x_end = (int)((float)x + 0.5 + (cos(fabs(end)) * (float)a));
-		y_end = (int)((float)y + 0.5 - (sin(fabs(end)) * (float)b));
-		if (end < 0.0) {
-			end = -end;
-			fb_GfxLine(x, y, x_end, y_end, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
-		}
-		q1 = (int)(start / (PI * 0.5)) & 0x3;
-		q2 = (int)(end / (PI * 0.5)) & 0x3;
-		quadrant = (QUADRANT_START << (q1 << 2)) | (QUADRANT_END << (q2 << 2));
-
-		if (q1 != q2) {
-			for (q1 = (q1 + 1) & 0x3; q1 != q2; q1 = (q1 + 1) & 0x3)
-				quadrant |= (QUADRANT_USED << (q1 << 2));
-		}
-		draw_scanline = draw_arc_scanline;
-	}
-	else
-		draw_scanline = draw_ellipse_scanline;
-	
-	fb_mode->driver->lock();
-	
-	draw_ellipse(x, y, a, b, color, fill);
-	
-	y1 = y - b;
-	y2 = y + b;
-	
-	if( y1 > y2 )
-		SWAP( y1, y2 );
 		
-	if (y1 < fb_mode->view_y)
-		y1 = fb_mode->view_y;
-	if (y2 >= fb_mode->view_y + fb_mode->view_h)
-		y2 = fb_mode->view_y + fb_mode->view_h - 1;
-	fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
-	
-	fb_mode->driver->unlock();
-	
+		a -= 0.5;
+		b -= 0.5;
+		
+		if (start < 0) {
+			start = -start;
+			get_arc_point(start, a, b, &x1, &y1);
+			x1 = x + x1;
+			y1 = y - y1;
+			fb_GfxLine(x, y, x1, y1, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+		}
+		if (end < 0) {
+			end = -end;
+			get_arc_point(end, a, b, &x1, &y1);
+			x1 = x + x1;
+			y1 = y - y1;
+			fb_GfxLine(x, y, x1, y1, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+		}
+		
+		while (end < start)
+			end += 2 * PI;
+		while (end - start > 2 * PI)
+			start += 2 * PI;
+		
+		/* This formula devides a full circle of radius 100 into 120 segments */
+		increment = (end - start) / (radius * (((end - start) * 2) / PI) * 1.2);
+		
+		get_arc_point(start, a, b, &x1, &y1);
+		for (; start < end - 0.0001; start += increment) {
+			get_arc_point(start + increment, a, b, &x2, &y2);
+			fb_GfxLine(x + x1, y - y1, x + x2, y - y2, color, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+			x1 = x2;
+			y1 = y2;
+		}
+	}
+	else {
+		fb_mode->driver->lock();
+		draw_ellipse(x, y, a, b, color, fill);
+		
+		y1 = MID(0, y - b, fb_mode->view_h - 1);
+		y2 = MID(0, y + b, fb_mode->view_h - 1);
+		if( y1 > y2 )
+			SWAP( y1, y2 );
+		fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
+		
+		fb_mode->driver->unlock();
+	}
 	fb_mode->last_x = fx;
 	fb_mode->last_y = fy;
 }
