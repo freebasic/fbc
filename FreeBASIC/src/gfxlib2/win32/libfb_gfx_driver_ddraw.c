@@ -148,6 +148,7 @@ static int calc_comp_height( int h )
 /*:::::*/
 static int private_init()
 {
+	HINSTANCE hinstance;
 	WNDCLASS wndclass;
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
 	DIRECTDRAWCREATE DirectDrawCreate;
@@ -156,6 +157,7 @@ static int private_init()
 	DDPIXELFORMAT format;
 	int i, depth, is_rgb = FALSE, height;
 
+	hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	lpDD = NULL;
 	lpDDS = NULL;
 	lpDDS_back = NULL;
@@ -175,12 +177,13 @@ static int private_init()
 	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK))
 		return -1;
-	if ((!DirectInputCreate) || (DirectInputCreate((HINSTANCE)GetModuleHandle(0), 0x0300, &lpDI, NULL) != DI_OK))
+	if ((!DirectInputCreate) || (DirectInputCreate(hinstance, 0x0300, &lpDI, NULL) != DI_OK))
 		return -1;
 
 	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
 	wndclass.lpfnWndProc = win_proc;
 	wndclass.lpszClassName = window_class;
+	wndclass.hInstance = hinstance;
 
 	rect.left = rect.top = 0;
 	rect.right = mode_w;
