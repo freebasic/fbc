@@ -23,7 +23,14 @@
 
 '$include: 'crt.bi'
 
+#ifndef FB__LINUX
 '$inclib: "alleg"
+#else
+'$libpath: "/usr/local/lib"
+'$libpath: "/usr/X11R6/lib"
+'$inclib: "alleg-4.0.3"
+'$inclib: "alleg_unsharable"
+#endif
 
 #define AL_VER	4.0
 
@@ -1249,3 +1256,28 @@ Dim Shared errno As Integer
 
 'Declare Function linear_vtable16 CDecl Alias "fb_linear_vtable16" () As GFX_VTABLE Ptr
 Extern Import linear_vtable16 Alias "linear_vtable16" As GFX_VTABLE Ptr
+
+
+#ifdef FB__LINUX
+
+declare function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer
+declare function allegro_main alias "main" (byval argc as integer, byval argv as any ptr) as integer
+declare function rtlib_get_exename alias "fb_hGetExeName" (byval buffer as byte ptr, byval length as integer) as byte ptr
+
+'':::::
+function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer
+end function
+
+
+extern allegro_mangled_main_address alias "_mangled_main_address" as any ptr
+dim allegro_mangled_main_address as any ptr
+dim allegro_argv as byte ptr, allegro_argv0 as string * 256
+
+
+allegro_mangled_main_address = procptr(allegro_mangled_main)
+rtlib_get_exename sadd(allegro_argv0), 256
+allegro_argv = sadd(allegro_argv0)
+
+allegro_main 1, @allegro_argv
+
+#endif
