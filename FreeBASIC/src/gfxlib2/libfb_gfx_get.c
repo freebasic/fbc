@@ -31,39 +31,40 @@
 FBCALL void fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, unsigned char *dest, int coord_type, FBARRAY *array)
 {
 	int x1, y1, x2, y2, w, h;
-	
+
 	if (!fb_mode)
 		return;
-	
+
 	fb_hPrepareTarget(target);
-	
+
 	fb_hFixRelative(coord_type, &fx1, &fy1, &fx2, &fy2);
-	
+
 	fb_hTranslateCoord(fx1, fy1, &x1, &y1);
 	fb_hTranslateCoord(fx2, fy2, &x2, &y2);
-	
+
 	fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
-	
+
 	if ((x1 < fb_mode->view_x) || (y1 < fb_mode->view_y) ||
 	    (x2 >= fb_mode->view_x + fb_mode->view_w) || (y2 >= fb_mode->view_y + fb_mode->view_h))
 		return;
-	
+
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
-	
-	if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->ptr + array->size))
-		return;
-	
+
+	if( array != NULL )
+		if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->ptr + array->size))
+			return;
+
 	*(unsigned short *)dest = w << 3;
 	*(unsigned short *)(dest + 2) = h;
 	dest += 4;
-	
+
 	DRIVER_LOCK();
-	
+
 	for (; y1 <= y2; y1++) {
 		fb_hPixelCpy(dest, fb_mode->line[y1] + (x1 * fb_mode->bpp), w);
 		dest += (w * fb_mode->bpp);
 	}
-	
+
 	DRIVER_UNLOCK();
 }

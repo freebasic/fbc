@@ -3736,12 +3736,12 @@ end function
 function rtlGfxPoint( byval target as integer, byval targetisptr as integer, byval xexpr as integer, byval yexpr as integer )
 	dim proc as integer, f as FBSYMBOL ptr
 	dim vr as integer, targetmode as integer
-	
+
 	rtlGfxPoint = FALSE
-	
+
 	f = ifuncTB(FB.RTL.GFXPOINT)
 	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 3 )
-	
+
 	'' byref target as any
 	if( target = INVALID ) then
  		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
@@ -4429,8 +4429,12 @@ function rtlGfxGet( byval target as integer, byval targetisptr as integer, _
  	end if
 
  	'' array() as any
- 	arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
- 	if( astNewPARAM( proc, arrayexpr, INVALID ) = INVALID ) then
+ 	if( not isptr ) then
+ 		arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
+ 	else
+ 		arrayexpr = astNewCONST( NULL, IR.DATATYPE.UINT )
+ 	end if
+ 	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = INVALID ) then
  		exit function
  	end if
 

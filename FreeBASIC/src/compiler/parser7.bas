@@ -85,12 +85,11 @@ end function
 '':::::
 private function hGetTarget( targetexpr as integer, isptr as integer, byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
 	dim s as FBSYMBOL ptr
-	
+
 	hGetTarget = NULL
-	
+
 	if( fetchexpr ) then
 		targetexpr = INVALID
-	
 		if( not cVarOrDeref( targetexpr, FALSE, TRUE ) ) then
 			exit function
 		end if
@@ -101,15 +100,24 @@ private function hGetTarget( targetexpr as integer, isptr as integer, byval fetc
 		exit function
 	end if
 
-	if( symbIsArray( s ) ) then
-		if ( astGetClass( targetexpr ) <> AST.NODECLASS.IDX ) then
-			targetexpr = hMakeArrayIndex( s, targetexpr )
-		end if
-		isptr = FALSE
-	elseif( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+	'' address of?
+	if( astGetClass( targetexpr ) = AST.NODECLASS.ADDR ) then
 		isptr = TRUE
 	else
-		exit function
+		'' array?
+		if( symbIsArray( s ) ) then
+			'' no index given?
+			if ( astGetClass( targetexpr ) <> AST.NODECLASS.IDX ) then
+				targetexpr = hMakeArrayIndex( s, targetexpr )
+			end if
+			isptr = FALSE
+		'' pointer?
+		elseif( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+			isptr = TRUE
+		'' fail..
+		else
+			exit function
+		end if
 	end if
 
 	hGetTarget = s
@@ -134,7 +142,7 @@ function cGfxPset as integer
 			exit function
 		end if
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -202,7 +210,7 @@ function cGfxLine as integer
 			exit function
 		end if
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -342,7 +350,7 @@ function cGfxCircle as integer
 			exit function
 		end if
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -456,7 +464,7 @@ function cGfxPaint as integer
 			exit function
 		end if
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coord_type = FBGFX_COORDTYPE_R
@@ -533,7 +541,7 @@ function cGfxDraw as integer
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	if( hMatch( CHAR_COMMA ) ) then
 		target = hGetTarget( texpr, tisptr, FALSE )
 		if( target = NULL ) then
@@ -548,7 +556,7 @@ function cGfxDraw as integer
 		cexpr = texpr
 		texpr = INVALID
 	end if
-	
+
 	cGfxDraw = rtlGfxDraw( texpr, tisptr, cexpr )
 
 end function
@@ -737,7 +745,7 @@ function cGfxPut as integer
 			exit function
 		end if
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -844,7 +852,7 @@ function cGfxGet as integer
 			exit function
 		end if
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB.TK.STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
@@ -1134,16 +1142,16 @@ function cGfxPoint( funcexpr as integer ) as integer
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	yexpr = INVALID
 	texpr = INVALID
-	
+
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( yexpr ) ) then
 			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 			exit function
 		end if
-		
+
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
 			if( target = NULL ) then
@@ -1152,14 +1160,14 @@ function cGfxPoint( funcexpr as integer ) as integer
 			end if
 		end if
 	end if
-	
+
 	if( not hMatch( CHAR_RPRNT ) ) then
 		hReportError FB.ERRMSG.EXPECTEDRPRNT
 		exit function
 	end if
 
 	funcexpr = rtlGfxPoint( texpr, tisptr, xexpr, yexpr )
-	
+
 	cGfxPoint = TRUE
 
 end function
