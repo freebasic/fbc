@@ -52,7 +52,7 @@ FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void)
 	else
 		info.mask_color = MASK_COLOR_32;
 	info.num_pages = fb_mode->num_pages;
-	info.flags = fb_mode->flags;
+	info.flags = fb_mode->driver_flags;
 	
 	return &info;
 }

@@ -92,7 +92,8 @@
 #define TEXT_W			148
 #define TEXT_H			152
 #define KEY			156
-#define FLAGS			160
+#define DRIVER_FLAGS		160
+#define FLAGS			164
 
 
 #endif

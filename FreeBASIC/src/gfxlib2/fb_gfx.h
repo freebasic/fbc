@@ -158,6 +158,7 @@ typedef struct MODE
 	float win_x, win_y, win_w, win_h;		/* WINDOW coordinates */
 	int text_w, text_h;				/* Graphical text console size in characters */
 	char *key;					/* Keyboard states */
+	int driver_flags;				/* Driver initialization flags */
 	int flags;					/* Status flags */
 } MODE;
 

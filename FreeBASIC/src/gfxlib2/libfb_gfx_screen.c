@@ -226,6 +226,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 			return -1;
 		}
 		fb_mode->driver = driver;
+		fb_mode->driver_flags = flags;
 
 		fb_GfxPalette(-1, 0);
 
