@@ -60,6 +60,7 @@ struct fb_GfxInfoStruct
     FB_WIDTHPROC   oldWidthHandler;
     FB_GETXPROC    oldGetXHandler;
     FB_GETYPROC    oldGetYHandler;
+    FB_PRINTBUFFPROC oldPrintHandler;
 
     /* boolean: */
     char           winActive;      /* Logical coordinate system active */
@@ -86,9 +87,6 @@ FBCALL void fb_GfxSetEventMask (int mask);
        int fb_GfxInkeyEx    (void);
 
 FBCALL int fb_GfxScreen     (int width, int height, int depth, int fullScreenFlag);
-
-/* fb_GfxScreen & Ex set this up to be called automatically at program exit: */
-          void fb_GfxQuit      (void);
 
 /* -32768 in each for full screen */
 FBCALL int fb_GfxView       (int x1, int y1, int x2, int y2,

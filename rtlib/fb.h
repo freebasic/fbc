@@ -90,6 +90,7 @@ typedef struct _FB_STR_TMPDESCLIST {
 /* protos */
 
 /* intern */
+extern    char 		fb_strNull;
 extern    FBSTRING 	fb_strNullDesc;
 
 FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
@@ -97,9 +98,7 @@ FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
 		  void 		fb_hStrRealloc			( FBSTRING *str, int size );
 		  void 		fb_hStrAllocTemp		( FBSTRING *str, int size );
 		  void 		fb_hStrDelTemp			( FBSTRING *str );
-		  int 		fb_hStrLen 				( char *str );
 		  void 		fb_hStrCopy				( char *dst, char *src, int bytes );
-		  void 		fb_hStrRevCopy			( char *dst, char *src, int bytes );
 		  char 		*fb_hStrSkipChar		( char *s, int len, int c );
 		  char 		*fb_hStrSkipCharRev		( char *s, int len, int c );
 
@@ -274,7 +273,7 @@ FBCALL void 		fb_WriteString 		( int fnum, FBSTRING *s, int mask );
 	   int 			fb_ConsoleGetkey	( void );
 	   FBSTRING 	*fb_ConsoleInkey	( void );
 
-	   void 		fb_hPrintBuffer		( char *buffer, int mask );
+	   void 		fb_ConsolePrintBuffer( char *buffer, int mask );
 
 /**************************************************************************************************
  * files
@@ -404,5 +403,10 @@ FBCALL int 			fb_GetX				( void );
 FBCALL FB_GETXPROC  fb_SetGetXProc		( FB_GETXPROC newproc );
 FBCALL int 			fb_GetY				( void );
 FBCALL FB_GETYPROC  fb_SetGetYProc		( FB_GETYPROC newproc );
+
+typedef void	  	(*FB_PRINTBUFFPROC)	( char *buffer, int mask );
+
+FBCALL void 		fb_PrintBuffer		( char *buffer, int mask );
+FBCALL FB_PRINTBUFFPROC fb_SetPrintBufferProc( FB_PRINTBUFFPROC newproc );
 
 #endif /*__FB_H__*/

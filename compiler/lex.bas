@@ -607,11 +607,14 @@ reread:
 
 	    isnumber = FALSE
 
-	    c = lexLookAheadCharEx( TRUE )
-	    if( c >= CHAR_0 and c <= CHAR_9 ) then
-			isnumber = TRUE
-		elseif( ctx.lasttoken <> CHAR_RPRNT ) then
-			isnumber = TRUE
+	    '' only check for fpoint literals if not inside a comment or parsing an $include
+	    if( checkLineCont ) then
+	    	c = lexLookAheadCharEx( TRUE )
+	    	if( c >= CHAR_0 and c <= CHAR_9 ) then
+				isnumber = TRUE
+			elseif( (ctx.lasttoken <> CHAR_RPRNT) ) then
+				isnumber = TRUE
+			end if
 		end if
 
 		if( isnumber ) then

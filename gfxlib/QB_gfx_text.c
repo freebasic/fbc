@@ -27,7 +27,7 @@
 #include "QB_gfx_text.h"
 
 #define SANITY_CHECK_CONDITION   (!fb_GfxInfo.sdlIsInitialized || !fb_GfxInfo.screen || !fb_GfxInfo.videoIsInitialized)
-#define SANITY_CHECK             if (SANITY_CHECK_CONDITION) return -1;
+#define SANITY_CHECK             if (SANITY_CHECK_CONDITION) return /*-1*/;
 
 extern struct fb_GfxVgaPalEmuStruct fb_GfxVgaPalEmu;
 extern struct fb_GfxInfoStruct fb_GfxInfo;
@@ -253,12 +253,12 @@ FBCALL int fb_GfxScrollUp (Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint16 sc
     return 0;
 }
 
-FBCALL int fb_GfxStringEx (const char *str, char after)
+void fb_GfxPrintBuffer (char *str, int mask)
 {
     SDL_Surface *surface;
     SDL_Color palette[2];
     SDL_Rect src, dst, oldClip;
-    char c, drawFlag;
+    char c, after, drawFlag;
     int ret, length;
     Sint16 ox, x, y;
 
@@ -271,7 +271,7 @@ FBCALL int fb_GfxStringEx (const char *str, char after)
                                        1, (fb_GfxInfo.charWidth+7) >> 3,
                                        0, 0, 0, 0);
 
-    if (surface == NULL) return -1;
+    if (surface == NULL) return;
 
     x = fb_GfxInfo.text_cursorX;
     y = fb_GfxInfo.text_cursorY;
@@ -317,7 +317,10 @@ FBCALL int fb_GfxStringEx (const char *str, char after)
 
     if (str == NULL) length = 0; else length = -1;
 
-//    for(; length > 0; length--)
+ 	after = 0;
+ 	if( (mask & FB_PRINT_NEWLINE) != 0 )
+ 		after = 13;
+
     while (length != 0 || after != 0)
     {
         if (length != 0) {
@@ -475,5 +478,5 @@ stringex_doTheCarriageReturnThang:
     fb_GfxInfo.text_cursorY = y;
 
 //    return (int)((Uint32)y << 16) | ((Uint32)x & 0xFFFF);
-    return 0;
+    return;
 }

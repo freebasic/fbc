@@ -50,7 +50,7 @@ void fb_ConsoleClear( int mode )
 
     fb_ConsoleGetView( &toprow, &botrow );
 
-	if( mode == 1 )
+	if( (mode == 1) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
 	{
     	startcoord.X = 0;
     	startcoord.Y = toprow - 1;

@@ -30,7 +30,6 @@
           document all default values
           fb inkey handler returns pointer to old handler, right?
           arg! why does ellipse from SDL_gfx leave gaps?
-          When cls is called with no param, FB passes 1 (blue, in 8 bit QB palette) to cls hook?
           Make numlock work, numpad + should return "+", etc
 */
 
@@ -38,6 +37,7 @@
 #include "QB_gfx_text.h"
 #include "QB_gfx_pal.h"
 
+static void fb_GfxQuit      			(void);
 static int 	fb_GfxScreenEx   			(int width, int height, int depth, int fullscreenFlag);
 static void fb_GfxRestoreHandlers 		(void);
 static void fb_GfxTakeHandlers 			(void);
@@ -71,29 +71,23 @@ extern struct fb_GfxVgaPalEmuStruct fb_GfxVgaPalEmu;
 //--------------------------------
 
 //struct fb_GfxVgaPalEmuStruct fb_GfxVgaPalEmu = {0, 0, 0, 0, {0, 0, 0}};
-struct fb_GfxInfoStruct fb_GfxInfo =
+struct fb_GfxInfoStruct fb_GfxInfo = { 0 };
+
+
+/*:::::*/
+static void fb_GfxSetDefaultInfo( void )
 {
-    NULL, 0,                               /* Font stuff */
-    0, 0,
-    0, 0, 0,
-    SDL_ALLEVENTS, 0,
-    0.0f, 0.0f,                            /* Cursor coords */
-    NULL,                                  /* screen surface pointer */
-    {0, 0, 0, 0},                          /* View */
-    0.0f, 0.0f, 0.0f, 0.0f,                /* Window */
-    /* FB function handlers */
-    NULL, 
-    NULL, 
-    NULL, 
-    NULL, 
-    NULL, 
-    NULL,
-    NULL,
-    NULL,
-    /* FB function handlers */
-    0, 0, 0, 0, 0,
-    0, 0, 0, 0
-};
+
+	if( (fb_GfxInfo.sdlIsInitialized != 0) || (fb_GfxInfo.screen != NULL) )
+		return;
+
+	memset( &fb_GfxInfo, 0, sizeof( fb_GfxInfo ) );
+
+	fb_GfxInfo.eventMask = SDL_ALLEVENTS;
+	fb_GfxInfo.fontBgTransparent = 1;
+
+}
+
 
 /* Sets what type of events Inkey/InkeyEx removes from the queue
    Default is SDL_ALLEVENTS
@@ -386,7 +380,7 @@ FBCALL float fb_GfxCursor (int number)
 
 /* Private function to move the cursor to the center in the viewport in window coordinates
    Does no error checking at all */
-void fb_GfxCenterCursor (void)
+static void fb_GfxCenterCursor (void)
 {
     if (fb_GfxInfo.winActive)
     {
@@ -442,6 +436,13 @@ static void fb_GfxRestoreHandlers (void)
         fb_SetGetYProc(fb_GfxInfo.oldGetYHandler);
         fb_GfxInfo.oldGetYHandler = NULL;
     }
+
+    if (fb_GfxInfo.oldPrintHandler != NULL)
+    {
+        fb_SetPrintBufferProc( fb_GfxInfo.oldPrintHandler );
+        fb_GfxInfo.oldPrintHandler = NULL;
+    }
+
 }
 
 static void fb_GfxTakeHandlers (void)
@@ -450,21 +451,30 @@ static void fb_GfxTakeHandlers (void)
         fb_GfxInfo.oldInkeyHandler = fb_SetInkeyProc((FB_INKEYPROC)fb_GfxInkey);
     if (fb_GfxInfo.oldGetkeyHandler == NULL)
         fb_GfxInfo.oldGetkeyHandler = fb_SetGetkeyProc((FB_GETKEYPROC)fb_GfxInkeyEx);
+
     if (fb_GfxInfo.oldClsHandler == NULL)
         fb_GfxInfo.oldClsHandler = fb_SetClsProc((FB_CLSPROC)fb_GfxCls);
+
     if (fb_GfxInfo.oldColorHandler == NULL)
         fb_GfxInfo.oldColorHandler = fb_SetColorProc((FB_COLORPROC)fb_GfxColor);
+
     if (fb_GfxInfo.oldLocateHandler == NULL)
         fb_GfxInfo.oldLocateHandler = fb_SetLocateProc((FB_LOCATEPROC)fb_GfxLocate);
+
     if (fb_GfxInfo.oldWidthHandler == NULL)
         fb_GfxInfo.oldWidthHandler = fb_SetWidthProc((FB_WIDTHPROC)fb_GfxWidth);
+
     if (fb_GfxInfo.oldGetXHandler == NULL)
         fb_GfxInfo.oldGetXHandler = fb_SetGetXProc((FB_GETXPROC)fb_GfxPos);
     if (fb_GfxInfo.oldGetYHandler == NULL)
-        fb_GfxInfo.oldGetYHandler = fb_SetGetXProc((FB_GETYPROC)fb_GfxCsrlin);
+        fb_GfxInfo.oldGetYHandler = fb_SetGetYProc((FB_GETYPROC)fb_GfxCsrlin);
+
+    if (fb_GfxInfo.oldPrintHandler == NULL)
+        fb_GfxInfo.oldPrintHandler = fb_SetPrintBufferProc((FB_PRINTBUFFPROC)fb_GfxPrintBuffer);
+
 }
 
-void fb_GfxQuit (void)
+static void fb_GfxQuit (void)
 {
 //    SDL_FreeSurface(fb_GfxInfo.font);
 
@@ -476,6 +486,8 @@ void fb_GfxQuit (void)
 FBCALL int fb_GfxScreen (int width, int height, int depth, int fullScreenFlag)
 {
     int screenNum = width;
+
+	fb_GfxSetDefaultInfo( );
 
 	/* calling the extended version? */
 	if( (height != 0) && (depth != 0) )
@@ -519,9 +531,9 @@ FBCALL int fb_GfxScreen (int width, int height, int depth, int fullScreenFlag)
     #if DEFAULT_DEPTH == 8
         /* casting to SDL_Color* kills a warning */
         SDL_SetColors(fb_GfxInfo.screen, (SDL_Color*)fb_GfxDefaultPal, 0, 256);
-        fb_GfxSetFontBg(0, 0);
+        fb_GfxSetFontBg(0, -1);
     #else
-        fb_GfxSetFontBg(0x000000FF, 0);
+        fb_GfxSetFontBg(0x000000FF, -1);
     #endif
 
     fb_GfxInfo.tabDist = 64;
@@ -560,7 +572,7 @@ static int fb_GfxScreenEx(int width, int height, int depth, int fullScreenFlag)
 
     fb_GfxInfo.screen = SDL_SetVideoMode(width, height, depth, flags);
     if (fb_GfxInfo.screen == NULL) return -1;
-    
+
     if( fullScreenFlag == 0 )
     {
     	char buff[64];
@@ -1763,7 +1775,7 @@ FBCALL int fb_GfxCircle (float x, float y, float radius, Uint32 color,
 }
 
 FBCALL int fb_GfxEllipse (float x, float y, float radius, Uint32 color,
-                          float aspect, float arcini, float arcend, 
+                          float aspect, float arcini, float arcend,
                           int fillFlag, int coordType)
 {
 //    SDL_Color *c;
@@ -1792,7 +1804,7 @@ FBCALL int fb_GfxEllipse (float x, float y, float radius, Uint32 color,
        on which would make a smaller circle. Why? */
     if( aspect == 0.0 )
     	aspect = 4.0 * ((float)fb_GfxInfo.screen->h / fb_GfxInfo.screen->w) / 3.0;
-    	
+
     if (aspect > 1.0)
     {
         radX = radius / aspect;
@@ -1922,7 +1934,7 @@ FBCALL int fb_GfxPut( float x, float y, void *sourceAddress, int coordType, int 
     int ret, depth, bytesPP, w, h;
 
     SANITY_CHECK
-    
+
     if( mode == FBGFX_PUTMODE_MASK )
     {
     	return fb_GfxPutKey( x, y, sourceAddress, coordType );

@@ -26,7 +26,6 @@ FBCALL int fb_GfxSetFormat  (int tabStopDistance, int affectedByViewFlag,
 FBCALL int fb_GfxScrollUp   (Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
                                 Uint16 scrollAmount, Uint32 fillColor);
 
-/* length=-1 to print a null terminated string, if after is nonzero it will be outputted after str */
-FBCALL int fb_GfxStringEx   (const char *str, char after);
+	  void fb_GfxPrintBuffer(char *str, int mask);
 
 #endif

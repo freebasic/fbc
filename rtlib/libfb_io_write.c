@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include "fb.h"
 
-#define FB_WRITENUM(fnum, val, mask, type) 			\
+#define FB_WRITENUM(fnum, val, mask, type) 				\
     char buffer[80];									\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
@@ -35,13 +35,13 @@
     else												\
     	sprintf( buffer, type ",", val );               \
     													\
-    if( fnum == 0 )									\
-    	fb_hPrintBuffer( buffer, mask );				\
+    if( fnum == 0 )										\
+    	fb_PrintBuffer( buffer, mask );					\
     else												\
     	fb_hFilePrintBuffer( fnum, buffer );
 
 
-#define FB_WRITESTR(fnum, val, mask, type) 			\
+#define FB_WRITESTR(fnum, val, mask, type) 				\
     char buffer[80*25+1];								\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
@@ -49,8 +49,8 @@
     else												\
     	sprintf( buffer, type ",", val );               \
     													\
-    if( fnum == 0 )									\
-    	fb_hPrintBuffer( buffer, mask );				\
+    if( fnum == 0 )										\
+    	fb_PrintBuffer( buffer, mask );					\
     else												\
     	fb_hFilePrintBuffer( fnum, buffer );
 

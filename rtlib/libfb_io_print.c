@@ -34,7 +34,7 @@
 #endif
 
 
-#define FB_PRINTNUM(fnum, val, mask, type) 			\
+#define FB_PRINTNUM(fnum, val, mask, type) 				\
     char buffer[80];									\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
@@ -44,30 +44,14 @@
     else												\
     	sprintf( buffer, "% " type, val );              \
     													\
-    if( fnum == 0 )									\
-    	fb_hPrintBuffer( buffer, mask );				\
-    else												\
-    	fb_hFilePrintBuffer( fnum, buffer );
-
-
-#define FB_PRINTSTR(fnum, val, mask, type) 				\
-    char buffer[80*25+1];								\
-    													\
-    if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, "%" type "\n", val );       	\
-    else if( mask & FB_PRINT_PAD )          			\
-    	sprintf( buffer, "%-14" type, val );			\
-    else												\
-    	sprintf( buffer, "%" type, val );               \
-    													\
     if( fnum == 0 )										\
-    	fb_hPrintBuffer( buffer, mask );				\
+    	fb_PrintBuffer( buffer, mask );					\
     else												\
     	fb_hFilePrintBuffer( fnum, buffer );
 
 
 /*:::::*/
-void fb_hPrintBuffer( char *buffer, int mask )
+void fb_ConsolePrintBuffer( char *buffer, int mask )
 {
     int col, row;
     int toprow, botrow;
@@ -149,7 +133,7 @@ FBCALL void fb_PrintVoid ( int fnum, int mask )
     if( buffer != NULL )
     {
     	if( fnum == 0 )
-    		fb_hPrintBuffer( buffer, mask );
+    		fb_PrintBuffer( buffer, mask );
     	else
     		fb_hFilePrintBuffer( fnum, buffer );
     }
@@ -203,10 +187,54 @@ FBCALL void fb_PrintDouble ( int fnum, double val, int mask )
     FB_PRINTNUM( fnum, val, mask, "lg" )
 }
 
+
+#define BUFFLEN 80*25
+
+/*:::::*/
+static void fb_hPrintStr( int fnum, char *s, int len, int mask )
+{
+    char buffer[BUFFLEN+14+1+1], *p;
+    int chars;
+
+    while( len > 0 )
+    {
+    	if( len > BUFFLEN )
+    		chars = BUFFLEN;
+    	else
+    		chars = len;
+
+    	p = &buffer[0];
+    	if( len == chars )
+    	{
+    		if( mask & FB_PRINT_NEWLINE )
+    			sprintf( buffer, "%s\n", s );
+    		else if( mask & FB_PRINT_PAD )
+    			sprintf( buffer, "%-14s", s );
+    		else
+    			p = s;
+    	}
+    	else
+    	{
+    		strncpy( buffer, s, chars );
+    		buffer[chars] = '\0';
+    	}
+
+
+    	if( fnum == 0 )
+    		fb_PrintBuffer( p, mask );
+    	else
+    		fb_hFilePrintBuffer( fnum, p );
+
+    	s += chars;
+    	len -= chars;
+    }
+}
+
+
 /*:::::*/
 FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 {
-    FB_PRINTSTR( fnum, s->data, mask, "s" )
+    fb_hPrintStr( fnum, s->data, FB_STRSIZE(s), mask );
 
 	/* del if temp */
 	fb_hStrDelTemp( s );
@@ -215,5 +243,5 @@ FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 /*:::::*/
 FBCALL void fb_PrintFixString ( int fnum, char *s, int mask )
 {
-    FB_PRINTSTR( fnum, s, mask, "s" )
+    fb_hPrintStr( fnum, s, strlen( s ), mask );
 }
