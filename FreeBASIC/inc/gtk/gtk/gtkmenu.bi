@@ -40,17 +40,14 @@ type _GtkMenu
 	timeout_id as guint
 	navigation_region as GdkRegion ptr
 	navigation_timeout as guint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		needs_destruction_ref_count as guint
-		torn_off as guint
-		tearoff_active as guint
-		scroll_fast as guint
-		upper_arrow_visible as guint
-		lower_arrow_visible as guint
-		upper_arrow_prelight as guint
-		lower_arrow_prelight as guint
-	end union
+	needs_destruction_ref_count:1 as guint
+	torn_off:1 as guint
+	tearoff_active:1 as guint
+	scroll_fast:1 as guint
+	upper_arrow_visible:1 as guint
+	lower_arrow_visible:1 as guint
+	upper_arrow_prelight:1 as guint
+	lower_arrow_prelight:1 as guint
 end type
 
 type _GtkMenuClass

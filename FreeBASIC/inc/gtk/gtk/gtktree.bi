@@ -29,12 +29,9 @@ type _GtkTree
 	level as guint
 	indent_value as guint
 	current_indent as guint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		selection_mode as guint
-		view_mode as guint
-		view_line as guint
-	end union
+	selection_mode:2 as guint
+	view_mode:1 as guint
+	view_line:1 as guint
 end type
 
 type _GtkTreeClass

@@ -42,18 +42,15 @@ type _GtkSpinButton
 	climb_rate as gdouble
 	timer_step as gdouble
 	update_policy as GtkSpinButtonUpdatePolicy
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		in_child as guint
-		click_child as guint
-		button as guint
-		need_timer as guint
-		timer_calls as guint
-		digits as guint
-		numeric as guint
-		wrap as guint
-		snap_to_ticks as guint
-	end union
+	in_child:2 as guint
+	click_child:2 as guint
+	button:2 as guint
+	need_timer:1 as guint
+	timer_calls:3 as guint
+	digits:10 as guint
+	numeric:1 as guint
+	wrap:1 as guint
+	snap_to_ticks:1 as guint
 end type
 
 type _GtkSpinButtonClass

@@ -32,25 +32,22 @@ type _GtkNotebook
 	timer as guint32
 	tab_hborder as guint16
 	tab_vborder as guint16
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		show_tabs as guint
-		homogeneous as guint
-		show_border as guint
-		tab_pos as guint
-		scrollable as guint
-		in_child as guint
-		click_child as guint
-		button as guint
-		need_timer as guint
-		child_has_focus as guint
-		have_visible_child as guint
-		focus_out as guint
-		has_before_previous as guint
-		has_before_next as guint
-		has_after_previous as guint
-		has_after_next as guint
-	end union
+	show_tabs:1 as guint
+	homogeneous:1 as guint
+	show_border:1 as guint
+	tab_pos:2 as guint
+	scrollable:1 as guint
+	in_child:3 as guint
+	click_child:3 as guint
+	button:2 as guint
+	need_timer:1 as guint
+	child_has_focus:1 as guint
+	have_visible_child:1 as guint
+	focus_out:1 as guint
+	has_before_previous:1 as guint
+	has_before_next:1 as guint
+	has_after_previous:1 as guint
+	has_after_next:1 as guint
 end type
 
 type _GtkNotebookClass

@@ -24,11 +24,8 @@ type _GtkPreview
 	bpp as guint16
 	rowstride as guint16
 	dither as GdkRgbDither
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		type as guint
-		expand as guint
-	end union
+	type:1 as guint
+	expand:1 as guint
 end type
 
 type _GtkPreviewInfo

@@ -17,12 +17,9 @@ type GtkToggleButtonClass as _GtkToggleButtonClass
 
 type _GtkToggleButton
 	button as GtkButton
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		active as guint
-		draw_indicator as guint
-		inconsistent as guint
-	end union
+	active:1 as guint
+	draw_indicator:1 as guint
+	inconsistent:1 as guint
 end type
 
 type _GtkToggleButtonClass

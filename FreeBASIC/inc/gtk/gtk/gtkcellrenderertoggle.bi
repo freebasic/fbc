@@ -16,12 +16,9 @@ type GtkCellRendererToggleClass as _GtkCellRendererToggleClass
 
 type _GtkCellRendererToggle
 	parent as GtkCellRenderer
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		active as guint
-		activatable as guint
-		radio as guint
-	end union
+	active:1 as guint
+	activatable:1 as guint
+	radio:1 as guint
 end type
 
 type _GtkCellRendererToggleClass

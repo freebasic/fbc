@@ -45,17 +45,14 @@ type _GtkTextView
 	right_margin as gint
 	indent as gint
 	tabs as PangoTabArray ptr
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		editable as guint
-		overwrite_mode as guint
-		cursor_visible as guint
-		need_im_reset as guint
-		accepts_tab as guint
-		reserved as guint
-		onscreen_validated as guint
-		mouse_cursor_obscured as guint
-	end union
+	editable:1 as guint
+	overwrite_mode:1 as guint
+	cursor_visible:1 as guint
+	need_im_reset:1 as guint
+	accepts_tab:1 as guint
+	reserved:1 as guint
+	onscreen_validated:1 as guint
+	mouse_cursor_obscured:1 as guint
 	text_window as GtkTextWindow ptr
 	left_window as GtkTextWindow ptr
 	right_window as GtkTextWindow ptr

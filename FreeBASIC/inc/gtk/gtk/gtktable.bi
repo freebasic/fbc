@@ -26,7 +26,7 @@ type _GtkTable
 	ncols as guint16
 	column_spacing as guint16
 	row_spacing as guint16
-	homogeneous as guint
+	homogeneous:1 as guint
 end type
 
 type _GtkTableClass
@@ -41,29 +41,23 @@ type _GtkTableChild
 	bottom_attach as guint16
 	xpadding as guint16
 	ypadding as guint16
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		xexpand as guint
-		yexpand as guint
-		xshrink as guint
-		yshrink as guint
-		xfill as guint
-		yfill as guint
-	end union
+	xexpand:1 as guint
+	yexpand:1 as guint
+	xshrink:1 as guint
+	yshrink:1 as guint
+	xfill:1 as guint
+	yfill:1 as guint
 end type
 
 type _GtkTableRowCol
 	requisition as guint16
 	allocation as guint16
 	spacing as guint16
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		need_expand as guint
-		need_shrink as guint
-		expand as guint
-		shrink as guint
-		empty as guint
-	end union
+	need_expand:1 as guint
+	need_shrink:1 as guint
+	expand:1 as guint
+	shrink:1 as guint
+	empty:1 as guint
 end type
 
 declare function gtk_table_get_type cdecl alias "gtk_table_get_type" () as GType

@@ -27,18 +27,15 @@ type _GtkPaned
 	last_allocation as gint
 	min_position as gint
 	max_position as gint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		position_set as guint
-		in_drag as guint
-		child1_shrink as guint
-		child1_resize as guint
-		child2_shrink as guint
-		child2_resize as guint
-		orientation as guint
-		in_recursion as guint
-		handle_prelit as guint
-	end union
+	position_set:1 as guint
+	in_drag:1 as guint
+	child1_shrink:1 as guint
+	child1_resize:1 as guint
+	child2_shrink:1 as guint
+	child2_resize:1 as guint
+	orientation:1 as guint
+	in_recursion:1 as guint
+	handle_prelit:1 as guint
 	last_child1_focus as GtkWidget ptr
 	last_child2_focus as GtkWidget ptr
 	priv as GtkPanedPrivate ptr

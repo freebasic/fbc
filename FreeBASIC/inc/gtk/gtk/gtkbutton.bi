@@ -22,18 +22,15 @@ type _GtkButton
 	event_window as GdkWindow ptr
 	label_text as zstring ptr
 	activate_timeout as guint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		constructed as guint
-		in_button as guint
-		button_down as guint
-		relief as guint
-		use_underline as guint
-		use_stock as guint
-		depressed as guint
-		depress_on_activate as guint
-		focus_on_click as guint
-	end union
+	constructed:1 as guint
+	in_button:1 as guint
+	button_down:1 as guint
+	relief:2 as guint
+	use_underline:1 as guint
+	use_stock:1 as guint
+	depressed:1 as guint
+	depress_on_activate:1 as guint
+	focus_on_click:1 as guint
 end type
 
 type _GtkButtonClass

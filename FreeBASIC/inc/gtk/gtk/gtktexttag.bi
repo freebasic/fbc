@@ -26,33 +26,30 @@ type _GtkTextTag
 	name as zstring ptr
 	priority as integer
 	values as GtkTextAttributes ptr
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		bg_color_set as guint
-		bg_stipple_set as guint
-		fg_color_set as guint
-		scale_set as guint
-		fg_stipple_set as guint
-		justification_set as guint
-		left_margin_set as guint
-		indent_set as guint
-		rise_set as guint
-		strikethrough_set as guint
-		right_margin_set as guint
-		pixels_above_lines_set as guint
-		pixels_below_lines_set as guint
-		pixels_inside_wrap_set as guint
-		tabs_set as guint
-		underline_set as guint
-		wrap_mode_set as guint
-		bg_full_height_set as guint
-		invisible_set as guint
-		editable_set as guint
-		language_set as guint
-		pad1 as guint
-		pad2 as guint
-		pad3 as guint
-	end union
+	bg_color_set:1 as guint
+	bg_stipple_set:1 as guint
+	fg_color_set:1 as guint
+	scale_set:1 as guint
+	fg_stipple_set:1 as guint
+	justification_set:1 as guint
+	left_margin_set:1 as guint
+	indent_set:1 as guint
+	rise_set:1 as guint
+	strikethrough_set:1 as guint
+	right_margin_set:1 as guint
+	pixels_above_lines_set:1 as guint
+	pixels_below_lines_set:1 as guint
+	pixels_inside_wrap_set:1 as guint
+	tabs_set:1 as guint
+	underline_set:1 as guint
+	wrap_mode_set:1 as guint
+	bg_full_height_set:1 as guint
+	invisible_set:1 as guint
+	editable_set:1 as guint
+	language_set:1 as guint
+	pad1:1 as guint
+	pad2:1 as guint
+	pad3:1 as guint
 end type
 
 type _GtkTextTagClass
@@ -79,18 +76,15 @@ type _GtkTextAppearance
 	fg_stipple as GdkBitmap ptr
 	rise as gint
 	padding1 as gpointer
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		underline as guint
-		strikethrough as guint
-		draw_bg as guint
-		inside_selection as guint
-		is_text as guint
-		pad1 as guint
-		pad2 as guint
-		pad3 as guint
-		pad4 as guint
-	end union
+	underline:4 as guint
+	strikethrough:1 as guint
+	draw_bg:1 as guint
+	inside_selection:1 as guint
+	is_text:1 as guint
+	pad1:1 as guint
+	pad2:1 as guint
+	pad3:1 as guint
+	pad4:1 as guint
 end type
 
 type _GtkTextAttributes
@@ -110,17 +104,14 @@ type _GtkTextAttributes
 	wrap_mode as GtkWrapMode
 	language as PangoLanguage ptr
 	padding1 as gpointer
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		invisible as guint
-		bg_full_height as guint
-		editable as guint
-		realized as guint
-		pad1 as guint
-		pad2 as guint
-		pad3 as guint
-		pad4 as guint
-	end union
+	invisible:1 as guint
+	bg_full_height:1 as guint
+	editable:1 as guint
+	realized:1 as guint
+	pad1:1 as guint
+	pad2:1 as guint
+	pad3:1 as guint
+	pad4:1 as guint
 end type
 
 declare function gtk_text_attributes_new cdecl alias "gtk_text_attributes_new" () as GtkTextAttributes ptr

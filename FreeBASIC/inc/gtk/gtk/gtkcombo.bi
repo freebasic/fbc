@@ -24,14 +24,11 @@ type _GtkCombo
 	list as GtkWidget ptr
 	entry_change_id as guint
 	list_change_id as guint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		value_in_list as guint
-		ok_if_empty as guint
-		case_sensitive as guint
-		use_arrows as guint
-		use_arrows_always as guint
-	end union
+	value_in_list:1 as guint
+	ok_if_empty:1 as guint
+	case_sensitive:1 as guint
+	use_arrows:1 as guint
+	use_arrows_always:1 as guint
 	current_button as guint16
 	activate_id as guint
 end type

@@ -26,18 +26,15 @@ type _GtkBindingSet
 	class_branch_pspecs as GSList ptr
 	entries as GtkBindingEntry ptr
 	current as GtkBindingEntry ptr
-	parsed as guint
+	parsed:1 as guint
 end type
 
 type _GtkBindingEntry
 	keyval as guint
 	modifiers as GdkModifierType
 	binding_set as GtkBindingSet ptr
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		destroyed as guint
-		in_emission as guint
-	end union
+	destroyed:1 as guint
+	in_emission:1 as guint
 	set_next as GtkBindingEntry ptr
 	hash_next as GtkBindingEntry ptr
 	signals as GtkBindingSignal ptr

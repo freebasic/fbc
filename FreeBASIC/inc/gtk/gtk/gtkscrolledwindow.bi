@@ -21,15 +21,12 @@ type _GtkScrolledWindow
 	container as GtkBin
 	hscrollbar as GtkWidget ptr
 	vscrollbar as GtkWidget ptr
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		hscrollbar_policy as guint
-		vscrollbar_policy as guint
-		hscrollbar_visible as guint
-		vscrollbar_visible as guint
-		window_placement as guint
-		focus_out as guint
-	end union
+	hscrollbar_policy:2 as guint
+	vscrollbar_policy:2 as guint
+	hscrollbar_visible:1 as guint
+	vscrollbar_visible:1 as guint
+	window_placement:2 as guint
+	focus_out:1 as guint
 	shadow_type as guint16
 end type
 

@@ -22,28 +22,22 @@ type _GtkRange
 	widget as GtkWidget
 	adjustment as GtkAdjustment ptr
 	update_policy as GtkUpdateType
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		inverted as guint
-		flippable as guint
-		has_stepper_a as guint
-		has_stepper_b as guint
-		has_stepper_c as guint
-		has_stepper_d as guint
-		need_recalc as guint
-		slider_size_fixed as guint
-	end union
+	inverted:1 as guint
+	flippable:1 as guint
+	has_stepper_a:1 as guint
+	has_stepper_b:1 as guint
+	has_stepper_c:1 as guint
+	has_stepper_d:1 as guint
+	need_recalc:1 as guint
+	slider_size_fixed:1 as guint
 	min_slider_size as gint
 	orientation as GtkOrientation
 	range_rect as GdkRectangle
 	slider_start as gint
 	slider_end as gint
 	round_digits as gint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		trough_click_forward as guint
-		update_pending as guint
-	end union
+	trough_click_forward:1 as guint
+	update_pending:1 as guint
 	layout as GtkRangeLayout ptr
 	timer as GtkRangeStepTimer ptr
 	slide_initial_slider_position as gint

@@ -46,11 +46,8 @@ type _PangoLayoutLine
 	start_index as gint
 	length as gint
 	runs as GSList ptr
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		is_paragraph_start as guint
-		resolved_dir as guint
-	end union
+	is_paragraph_start:1 as guint
+	resolved_dir:3 as guint
 end type
 
 declare function pango_layout_get_type cdecl alias "pango_layout_get_type" () as GType

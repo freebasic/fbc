@@ -57,12 +57,9 @@ type _GtkCTree
 	tree_indent as gint
 	tree_spacing as gint
 	tree_column as gint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		line_style as guint
-		expander_style as guint
-		show_stub as guint
-	end union
+	line_style:2 as guint
+	expander_style:2 as guint
+	show_stub:1 as guint
 	drag_compare as GtkCTreeCompareDragFunc
 end type
 
@@ -86,11 +83,8 @@ type _GtkCTreeRow
 	pixmap_opened as GdkPixmap ptr
 	mask_opened as GdkBitmap ptr
 	level as guint16
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		is_leaf as guint
-		expanded as guint
-	end union
+	is_leaf:1 as guint
+	expanded:1 as guint
 end type
 
 type _GtkCTreeNode

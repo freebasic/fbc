@@ -51,12 +51,9 @@ type _GtkText
 	first_cut_pixels as guint
 	first_onscreen_hor_pixel as guint
 	first_onscreen_ver_pixel as guint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		line_wrap as guint
-		word_wrap as guint
-		use_wchar as guint
-	end union
+	line_wrap:1 as guint
+	word_wrap:1 as guint
+	use_wchar:1 as guint
 	freeze_count as guint
 	text_properties as GList ptr
 	text_properties_end as GList ptr

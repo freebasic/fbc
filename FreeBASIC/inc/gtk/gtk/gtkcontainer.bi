@@ -20,15 +20,11 @@ type GtkContainerClass as _GtkContainerClass
 type _GtkContainer
 	widget as GtkWidget
 	focus_child as GtkWidget ptr
-	
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		border_width as guint
-		need_resize as guint
-		resize_mode as guint
-		reallocate_redraws as guint
-		has_focus_chain as guint
-	end union
+	border_width:16 as guint
+	need_resize:1 as guint
+	resize_mode:2 as guint
+	reallocate_redraws:1 as guint
+	has_focus_chain:1 as guint
 end type
 
 type _GtkContainerClass

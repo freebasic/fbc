@@ -20,15 +20,12 @@ type _GtkHandleBox
 	bin_window as GdkWindow ptr
 	float_window as GdkWindow ptr
 	shadow_type as GtkShadowType
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		handle_position as guint
-		float_window_mapped as guint
-		child_detached as guint
-		in_drag as guint
-		shrink_on_detach as guint
-		snap_edge as integer
-	end union
+	handle_position:2 as guint
+	float_window_mapped:1 as guint
+	child_detached:1 as guint
+	in_drag:1 as guint
+	shrink_on_detach:1 as guint
+	snap_edge:3 as integer
 	deskoff_x as gint
 	deskoff_y as gint
 	attach_allocation as GtkAllocation

@@ -62,14 +62,11 @@ end enum
 
 type _GDate
 	julian_days as guint
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		julian as guint
-		dmy as guint
-		day as guint
-		month as guint
-		year as guint
-	end union
+	julian:1 as guint
+	dmy:1 as guint
+	day:6 as guint
+	month:4 as guint
+	year:16 as guint
 end type
 
 declare function g_date_new cdecl alias "g_date_new" () as GDate ptr

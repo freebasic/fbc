@@ -171,14 +171,11 @@ type _GtkCListColumn
 	min_width as gint
 	max_width as gint
 	justification as GtkJustification
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		visible as guint
-		width_set as guint
-		resizeable as guint
-		auto_resize as guint
-		button_passive as guint
-	end union
+	visible:1 as guint
+	width_set:1 as guint
+	resizeable:1 as guint
+	auto_resize:1 as guint
+	button_passive:1 as guint
 end type
 
 type _GtkCListRow
@@ -189,12 +186,9 @@ type _GtkCListRow
 	style as GtkStyle ptr
 	data as gpointer
 	destroy as GtkDestroyNotify
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		fg_set as guint
-		bg_set as guint
-		selectable as guint
-	end union
+	fg_set:1 as guint
+	bg_set:1 as guint
+	selectable:1 as guint
 end type
 
 type _GtkCellText

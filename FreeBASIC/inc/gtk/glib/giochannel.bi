@@ -87,15 +87,12 @@ type _GIOChannel
 	encoded_read_buf as GString ptr
 	write_buf as GString ptr
 	partial_write_buf as zstring * 6
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		use_buffer as guint
-		do_encode as guint
-		close_on_unref as guint
-		is_readable as guint
-		is_writeable as guint
-		is_seekable as guint
-	end union
+	use_buffer:1 as guint
+	do_encode:1 as guint
+	close_on_unref:1 as guint
+	is_readable:1 as guint
+	is_writeable:1 as guint
+	is_seekable:1 as guint
 	reserved1 as gpointer
 	reserved2 as gpointer
 end type

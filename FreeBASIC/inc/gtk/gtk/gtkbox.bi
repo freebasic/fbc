@@ -20,7 +20,7 @@ type _GtkBox
 	container as GtkContainer
 	children as GList ptr
 	spacing as gint16
-	homogeneous as guint
+	homogeneous:1 as guint
 end type
 
 type _GtkBoxClass
@@ -30,13 +30,10 @@ end type
 type _GtkBoxChild
 	widget as GtkWidget ptr
 	padding as guint16
-	''!!!FIXME!!! bit-fields support is needed
-	union
-		expand as guint
-		fill as guint
-		pack as guint
-		is_secondary as guint
-	end union
+	expand:1 as guint
+	fill:1 as guint
+	pack:1 as guint
+	is_secondary:1 as guint
 end type
 
 declare function gtk_box_get_type cdecl alias "gtk_box_get_type" () as GType
