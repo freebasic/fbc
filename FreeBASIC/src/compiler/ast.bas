@@ -919,7 +919,7 @@ sub astOptAssignament( byval n as integer ) static
 	end select
 
 	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a register
-	select case astTB(r).op
+	select case as const astTB(r).op
 	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE, _
 		 IR.OP.INTDIV, IR.OP.MOD, IR.OP.MUL
 		exit sub
@@ -973,7 +973,7 @@ function astOptComp2Branch( byval n as integer, byval label as FBSYMBOL ptr, byv
 
 	'' logical operator?
 	op = astTB(n).op
-	select case op
+	select case as const op
 	case IR.OP.EQ, IR.OP.NE, IR.OP.GT, IR.OP.LT, IR.OP.GE, IR.OP.LE
 	case else
 		exit function
@@ -1622,7 +1622,7 @@ sub astLoad( byval n as integer, vreg as integer )
 		exit sub
 	end if
 
-	select case astTB(n).class
+	select case as const astTB(n).class
 	case AST.NODECLASS.ASSIGN
 		astLoadASSIGN n, vreg
 
@@ -1820,7 +1820,7 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	if( astTB(l).defined and astTB(r).defined ) then
 
-		select case op
+		select case as const op
 		case IR.OP.ADD
 			astTB(l).value = astTB(l).value + astTB(r).value
 		case IR.OP.SUB
@@ -1868,7 +1868,7 @@ function astNewBOP( byval op as integer, byval l as integer, r as integer, _
 		end select
 
 
-		select case op
+		select case as const op
 		'' for a / b, result is a double
 		case IR.OP.DIV, IR.OP.POW
 			astTB(l).dtype = IR.DATATYPE.DOUBLE
@@ -2218,7 +2218,7 @@ function astNewUOP( byval op as integer, byval o as integer ) as integer static
 
 	'' constant folding
 	if( astTB(o).defined ) then
-		select case op
+		select case as const op
 		case IR.OP.NOT
 			astTB(o).value = not int(astTB(o).value)
 			astTB(o).dtype = IR.DATATYPE.INTEGER
@@ -3009,7 +3009,7 @@ private function hCheckParam( byval f as integer, byval n as integer )
 
 				'' param diff than arg can't passed by ref if a var/array/ptr
 				if( amode = FB.ARGMODE.BYREF ) then
-					select case typ
+					select case as const typ
 					case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR, AST.NODECLASS.CONST
 
 						if( (adclass <> pdclass) or _

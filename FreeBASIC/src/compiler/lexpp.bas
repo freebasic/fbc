@@ -100,7 +100,7 @@ function lexPreProcessor as integer
 
 	lexPreProcessor = FALSE
 
-    select case lexCurrentToken
+    select case as const lexCurrentToken
 
     '' DEFINE ID LITERAL+
     case FB.TK.DEFINE
@@ -174,17 +174,17 @@ function lexPreProcessor as integer
 		if( symbAddLib( hUnescapeStr( lexEatToken ) ) <> NULL ) then
 			lexPreProcessor = TRUE
 		end if
-	
+
 	'' LIBPATH LIT_STR
 	case FB.TK.LIBPATH
 		lexSkipToken
-		
+
 		if( not fbAddLibPath( hUnescapeStr( lexEatToken ) ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
 		lexPreProcessor = TRUE
-		
+
 	case else
 		hReportError FB.ERRMSG.SYNTAXERROR
 		exit function
@@ -212,7 +212,7 @@ private function ppIf as integer
 
 	istrue = FALSE
 
-	select case lexCurrenttoken
+	select case as const lexCurrenttoken
 	'' IFDEF ID
 	case FB.TK.IFDEF
         lexSkipToken , FALSE
@@ -347,7 +347,7 @@ private function ppSkip as integer
         case CHAR_SHARP
         	lexSkipToken
 
-        	select case lexCurrentToken
+        	select case as const lexCurrentToken
         	case FB.TK.IF, FB.TK.IFDEF, FB.TK.IFNDEF
         		iflevel = iflevel + 1
 
@@ -472,7 +472,7 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
     do
     	'' Relational operator
     	op = lexCurrentToken
-    	select case op
+    	select case as const op
     	case FB.TK.EQ, FB.TK.GT, FB.TK.LT, FB.TK.NE, FB.TK.LE, FB.TK.GE
  			lexSkipToken
     	case else
@@ -493,7 +493,7 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
    		'' do operation
    		if( relisnum ) then
    			'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
-   			select case op
+   			select case as const op
    			case FB.TK.EQ
    				relexpr = val( rellit ) = val( parlit )
    			case FB.TK.GT
@@ -509,7 +509,7 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
    			end select
 
    		else
-   			select case op
+   			select case as const op
    			case FB.TK.EQ
    				relexpr = rellit = parlit
    			case FB.TK.GT

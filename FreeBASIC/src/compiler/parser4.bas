@@ -99,7 +99,7 @@ function cCompoundStmt
 
 	res = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.IF
 		res = cIfStatement
 	case FB.TK.FOR
@@ -1598,7 +1598,7 @@ function cExitStatement
 	lexSkipToken
 
 	'' (FOR | DO | WHILE | SUB | FUNCTION)
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.FOR
 		label = env.forstmt.endlabel
 
@@ -1648,7 +1648,7 @@ function cContinueStatement
 	lexSkipToken
 
 	'' (FOR | DO | WHILE)
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.FOR
 		label = env.forstmt.cmplabel
 
@@ -1730,7 +1730,7 @@ function cCompoundStmtElm
 	cCompoundStmtElm = FALSE
 
 	'' WEND | LOOP | NEXT | CASE | ELSE | ELSEIF
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.WEND
 		comp = FB.TK.WHILE
 	case FB.TK.LOOP

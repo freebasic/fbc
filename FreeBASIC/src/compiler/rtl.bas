@@ -2110,10 +2110,12 @@ end function
 '':::::
 private function hCalcExprLen( byval expr as integer, byval realsize as integer = TRUE ) as integer static
 	dim lgt as integer, s as FBSYMBOL ptr
+	dim dtype as integer
 
 	lgt = -1
 
-	select case astGetDataType( expr )
+	dtype = astGetDataType( expr )
+	select case as const dtype
 	case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
 		lgt = 1
 
@@ -2129,9 +2131,6 @@ private function hCalcExprLen( byval expr as integer, byval realsize as integer 
 	case IR.DATATYPE.DOUBLE
 		lgt = 8
 
-	case is >= IR.DATATYPE.POINTER
-		lgt = FB.POINTERSIZE
-
 	case IR.DATATYPE.USERDEF
 		s = astGetSymbol( expr )
 		'' if it's a type field that's an udt, no pad is ever added, realsize is always TRUE
@@ -2139,6 +2138,11 @@ private function hCalcExprLen( byval expr as integer, byval realsize as integer 
 			realsize = TRUE
 		end if
 		lgt = symbGetUDTLen( symbGetSubtype( s ), realsize )
+
+	case else
+		if( dtype >= IR.DATATYPE.POINTER ) then
+			lgt = FB.POINTERSIZE
+		end if
 	end select
 
 	hCalcExprLen = lgt
@@ -2189,7 +2193,7 @@ end function
 sub rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemicolon as integer, byval expr as integer )
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer, args as integer
-    dim vr as integer
+    dim vr as integer, dtype as integer
 
 	if( expr = INVALID ) then
 		f = ifuncTB(FB.RTL.PRINTVOID)
@@ -2197,7 +2201,8 @@ sub rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemic
 	else
         astUpdNodeResult expr
 
-		select case astGetDataType( expr )
+		dtype = astGetDataType( expr )
+		select case as const dtype
 		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
 			f = ifuncTB(FB.RTL.PRINTSTR)
 		case IR.DATATYPE.BYTE
@@ -2210,12 +2215,16 @@ sub rtlPrint( byval fileexpr as integer, byval iscomma as integer, byval issemic
 			f = ifuncTB(FB.RTL.PRINTUSHORT)
 		case IR.DATATYPE.INTEGER
 			f = ifuncTB(FB.RTL.PRINTINT)
-		case IR.DATATYPE.UINT, is >= IR.DATATYPE.POINTER
+		case IR.DATATYPE.UINT
 			f = ifuncTB(FB.RTL.PRINTUINT)
 		case IR.DATATYPE.SINGLE
 			f = ifuncTB(FB.RTL.PRINTSINGLE)
 		case IR.DATATYPE.DOUBLE
 			f = ifuncTB(FB.RTL.PRINTDOUBLE)
+		case else
+			if( dtype >= IR.DATATYPE.POINTER ) then
+				f = ifuncTB(FB.RTL.PRINTUINT)
+			end if
 		end select
 
 		args = 3
@@ -2292,7 +2301,7 @@ end sub
 sub rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as integer )
     dim proc as integer, f as FBSYMBOL ptr
     dim t as integer, mask as integer, args as integer
-    dim vr as integer
+    dim vr as integer, dtype as integer
 
 	if( expr = INVALID ) then
 		f = ifuncTB(FB.RTL.WRITEVOID)
@@ -2300,7 +2309,8 @@ sub rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as
 	else
         astUpdNodeResult expr
 
-		select case astGetDataType( expr )
+		dtype = astGetDataType( expr )
+		select case as const dtype
 		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING
 			f = ifuncTB(FB.RTL.WRITESTR)
 		case IR.DATATYPE.BYTE
@@ -2313,12 +2323,16 @@ sub rtlWrite( byval fileexpr as integer, byval iscomma as integer, byval expr as
 			f = ifuncTB(FB.RTL.WRITEUSHORT)
 		case IR.DATATYPE.INTEGER
 			f = ifuncTB(FB.RTL.WRITEINT)
-		case IR.DATATYPE.UINT, is >= IR.DATATYPE.POINTER
+		case IR.DATATYPE.UINT
 			f = ifuncTB(FB.RTL.WRITEUINT)
 		case IR.DATATYPE.SINGLE
 			f = ifuncTB(FB.RTL.WRITESINGLE)
 		case IR.DATATYPE.DOUBLE
 			f = ifuncTB(FB.RTL.WRITEDOUBLE)
+		case else
+			if( dtype >= IR.DATATYPE.POINTER ) then
+				f = ifuncTB(FB.RTL.WRITEUINT)
+			end if
 		end select
 
 		args = 3

@@ -1235,7 +1235,7 @@ function hCalcALign( byval lgt as integer, byval ofs as integer, byval align as 
 		end if
 	end if
 
-	select case lgt
+	select case as const lgt
 	'' align byte, short, int's, float's and double's to the nearest boundary
 	case 1, 2, 4, 8
 		pad = lgt - 1
@@ -2167,7 +2167,7 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 
 	lgt = 0
 
-	select case typ
+	select case as const typ
 	case FB.SYMBTYPE.BYTE, FB.SYMBTYPE.UBYTE
 		lgt = 1
 
@@ -2197,8 +2197,10 @@ function symbCalcLen( byval typ as integer, byval subtype as FBSYMBOL ptr, byval
 			lgt = e->elm.ofs + (e->lgt * e->array.elms)
 		end if
 
-	case is >= FB.SYMBTYPE.POINTER
-		lgt = FB.POINTERSIZE
+	case else
+		if( typ >= FB.SYMBTYPE.POINTER ) then
+			lgt = FB.POINTERSIZE
+		end if
 	end select
 
 	symbCalcLen = lgt
@@ -3077,7 +3079,7 @@ sub symbDelLocalSymbols static
     	s = node->s
     	if( (s->alloctype and FB.ALLOCTYPE.SHARED) = 0 ) then
 
-    		select case s->class
+    		select case as const s->class
     		case FB.SYMBCLASS.VAR
     			symbDelVar s
     		case FB.SYMBCLASS.CONST, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM

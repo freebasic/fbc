@@ -228,7 +228,7 @@ end sub
 '':::::
 sub fbSetOption ( byval opt as integer, byval value as integer )
 
-	select case opt
+	select case as const opt
 	case FB.COMPOPT.DEBUG
 		env.clopt.debug = value
 	case FB.COMPOPT.CPUTYPE
@@ -257,7 +257,7 @@ function fbGetOption ( byval opt as integer ) as integer
 
 	res = FALSE
 
-	select case opt
+	select case as const opt
 	case FB.COMPOPT.DEBUG
 		res = env.clopt.debug
 	case FB.COMPOPT.CPUTYPE

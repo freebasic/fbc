@@ -690,7 +690,7 @@ function cGfxPut as integer
 	'' (',' Mode)?
 	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
-		select case lexCurrentToken
+		select case as const lexCurrentToken
 
 		case FB.TK.PSET
 			lexSkipToken
@@ -945,13 +945,13 @@ function cGfxBsave as integer
 		hReportError FB.ERRMSG.EXPECTEDCOMMA
 		exit function
 	end if
-	
+
 	'' expr
 	if( not cExpression( sexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	'' ','
 	if( not hMatch( CHAR_COMMA ) ) then
 		hReportError FB.ERRMSG.EXPECTEDCOMMA
@@ -976,7 +976,7 @@ function cGfxStmt as integer
 
 	cGfxStmt = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.PSET, FB.TK.PRESET
 		lexSkipToken
 		cGfxStmt = cGfxPSet

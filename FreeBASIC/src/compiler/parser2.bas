@@ -57,7 +57,7 @@ function cLogExpression( logexpr as integer )
     do
     	'' Logical operator
     	op = lexCurrentToken
-    	select case op
+    	select case as const op
     	case FB.TK.AND, FB.TK.OR, FB.TK.XOR, FB.TK.EQV, FB.TK.IMP
  			lexSkipToken
     	case else
@@ -71,7 +71,7 @@ function cLogExpression( logexpr as integer )
     	end if
 
     	'' do operation
-    	select case op
+    	select case as const op
     	case FB.TK.AND
     		logexpr = astNewBOP( IR.OP.AND, logexpr, relexpr )
     	case FB.TK.OR
@@ -112,7 +112,7 @@ function cRelExpression( relexpr as integer )
     do
     	'' Relational operator
     	op = lexCurrentToken
-    	select case op
+    	select case as const op
     	case FB.TK.EQ, FB.TK.GT, FB.TK.LT, FB.TK.NE, FB.TK.LE, FB.TK.GE
  			lexSkipToken
     	case else
@@ -126,7 +126,7 @@ function cRelExpression( relexpr as integer )
     	end if
 
    		'' do operation
-   		select case op
+   		select case as const op
    		case FB.TK.EQ
    			relexpr = astNewBOP( IR.OP.EQ, relexpr, addexpr )
    		case FB.TK.GT
@@ -491,25 +491,34 @@ function cHighestPresExpr( highexpr as integer ) as integer
 
 	select case lexCurrentToken
 	'' AddrOfExpression
-	case FB.TK.VARPTR, FB.TK.PROCPTR, FB.TK.ADDROFCHAR, FB.TK.SADD, FB.TK.STRPTR
+	case FB.TK.ADDROFCHAR
 		res = cAddrOfExpression( highexpr, sym, elm )
 
 	'' DerefExpr
 	case FB.TK.DEREFCHAR
 		res = cDerefExpression( highexpr )
 
-	'' TypeConvExpr
-	case FB.TK.CBYTE, FB.TK.CSHORT, FB.TK.CINT, FB.TK.CLNG, FB.TK.CSNG, FB.TK.CDBL, _
-         FB.TK.CSIGN, FB.TK.CUNSG
-		res = cTypeConvExpr( highexpr )
-
 	'' ParentExpression
 	case CHAR_LPRNT
 		res = cParentExpression( highexpr )
 
-	'' Atom
 	case else
-		res = cAtom( highexpr )
+
+		select case as const lexCurrentToken
+		'' AddrOfExpression
+		case FB.TK.VARPTR, FB.TK.PROCPTR, FB.TK.SADD, FB.TK.STRPTR
+			res = cAddrOfExpression( highexpr, sym, elm )
+
+		'' TypeConvExpr
+		case FB.TK.CBYTE, FB.TK.CSHORT, FB.TK.CINT, FB.TK.CLNG, FB.TK.CSNG, FB.TK.CDBL, _
+         	 FB.TK.CSIGN, FB.TK.CUNSG
+			res = cTypeConvExpr( highexpr )
+
+		'' Atom
+		case else
+			res = cAtom( highexpr )
+
+		end select
 
 	end select
 
@@ -528,7 +537,7 @@ function cTypeConvExpr( tconvexpr as integer )
 	totype = INVALID
 	op = INVALID
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.CBYTE
 		totype = IR.DATATYPE.BYTE
 	case FB.TK.CSHORT
@@ -813,7 +822,31 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 
 	cAddrOfExpression = FALSE
 
-	select case lexCurrentToken
+	'' '@' (Proc ('('')')? | Variable)
+	if( lexCurrentToken = FB.TK.ADDROFCHAR ) then
+		lexSkipToken
+
+		proc = symbLookupProc( lexTokenText )
+		if( proc <> NULL ) then
+			lexSkipToken
+
+			if( not hProcPtrBody( proc, addrofexpr ) ) then
+				exit function
+			end if
+			sym = proc
+			elm = NULL
+
+		else
+			if( not hVarPtrBody( addrofexpr, sym, elm ) ) then
+				exit function
+			end if
+		end if
+
+		cAddrOfExpression = TRUE
+        exit function
+	end if
+
+	select case as const lexCurrentToken
 	'' VARPTR '(' Variable ')'
 	case FB.TK.VARPTR
 		lexSkipToken
@@ -866,28 +899,6 @@ function cAddrOfExpression( addrofexpr as integer, sym as FBSYMBOL ptr, elm as F
 		cAddrOfExpression = TRUE
         exit function
 
-	'' '@' (Proc ('('')')? | Variable)
-	case FB.TK.ADDROFCHAR
-		lexSkipToken
-
-		proc = symbLookupProc( lexTokenText )
-		if( proc <> NULL ) then
-			lexSkipToken
-
-			if( not hProcPtrBody( proc, addrofexpr ) ) then
-				exit function
-			end if
-			sym = proc
-			elm = NULL
-
-		else
-			if( not hVarPtrBody( addrofexpr, sym, elm ) ) then
-				exit function
-			end if
-		end if
-
-		cAddrOfExpression = TRUE
-        exit function
 
 	'' SADD|STRPTR '(' Variable{str} ')'
 	case FB.TK.SADD, FB.TK.STRPTR

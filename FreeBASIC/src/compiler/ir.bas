@@ -293,7 +293,7 @@ function irMaxDataType( byval dtype1 as integer, byval dtype2 as integer ) as in
     irMaxDataType = -1
 
     '' don't convert byte <-> char, word <-> short, dword <-> integer, single <-> double
-    select case dtype1
+    select case as const dtype1
     case IR.DATATYPE.UBYTE, IR.DATATYPE.USHORT, IR.DATATYPE.UINT, IR.DATATYPE.DOUBLE
     	if( dtype1 - dtype2 = 1 ) then
     		exit function
@@ -429,7 +429,7 @@ end sub
 '':::::
 function irGetInverseLogOp( byval op as integer ) as integer static
 
-	select case op
+	select case as const op
 	case IR.OP.EQ
 		op = IR.OP.NE
 	case IR.OP.NE
@@ -1207,7 +1207,7 @@ sub irFlush 'static
 		'irDump op, v1, v2, vr
 
         ''
-		select case opTB(op).typ
+		select case as const opTB(op).typ
 		case IR.OPTYPE.UNARY
 			irFlushUOP op, v1, vr
 
@@ -1258,7 +1258,7 @@ sub irFlushBRANCH( byval op as integer, byval label as FBSYMBOL ptr ) 'static
 	lname = symbGetLabelName( label )
 
 	''
-	select case op
+	select case as const op
 	case IR.OP.LABEL
 		emitLABEL lname, FALSE
 
@@ -1459,7 +1459,7 @@ sub irFlushUOP( byval op as integer, byval v1 as integer, byval vr as integer ) 
 	''
 	dst = irGetVRName( v1 )
 
-	select case op
+	select case as const op
 	case IR.OP.NEG
 		emitNEG dst, dt1, dc1, t1
 	case IR.OP.NOT
@@ -1526,7 +1526,7 @@ sub irFlushBOP( byval op as integer, byval v1 as integer, byval v2 as integer, b
 	dst = irGetVRName( v1 )
 
     ''
-	select case op
+	select case as const op
 	case IR.OP.ADD
 		emitADD dst, dt1, dc1, t1, src, dt2, dc2, t2
 	case IR.OP.SUB
@@ -1655,7 +1655,7 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	end if
 
 	''
-	select case op
+	select case as const op
 	case IR.OP.EQ
 		emitEQ res, lname, dst, dt1, dc1, t1, src, dt2, dc2, t2
 	case IR.OP.NE
@@ -2033,7 +2033,7 @@ function irGetVRSymbol( byval vreg as integer ) as FBSYMBOL ptr 'static
 		exit function
 	end if
 
-	select case vregTB(vreg).typ
+	select case as const vregTB(vreg).typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR, IR.VREGTYPE.IDX
 		irGetVRSymbol = vregTB(vreg).s
 	end select
@@ -2049,7 +2049,7 @@ function irGetVRNameEx( byval vreg as integer, byval typ as integer ) as string 
 		exit function
 	end if
 
-	select case typ
+	select case as const typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR
 		vname = symbGetVarName( vregTB(vreg).s )
 		if( vregTB(vreg).ofs <> 0 ) then
@@ -2187,7 +2187,7 @@ function irGetVRRealValue( byval vreg as integer ) as integer 'static
 		exit function
 	end if
 
-	select case vregTB(vreg).typ
+	select case as const vregTB(vreg).typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR
 		rval = vregTB(vreg).s
 
@@ -2225,7 +2225,7 @@ sub irOptimize 'static
 		'class= vregTB(v1).class
 
         ''
-		select case opTB(op).typ
+		select case as const opTB(op).typ
 		'':::::
 		case IR.OPTYPE.BINARY
 

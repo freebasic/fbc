@@ -48,7 +48,7 @@ function hIsSttSeparatorOrComment( byval token as integer ) as integer static
 	elseif( token = FB.TK.COMMENTCHAR ) then
 		hIsSttSeparatorOrComment = TRUE
 	else
-		select case token
+		select case as const token
 		case FB.TK.EOL, FB.TK.EOF, FB.TK.REM
 			hIsSttSeparatorOrComment = TRUE
 		end select
@@ -290,7 +290,7 @@ function cDirective
 
 	res = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.DYNAMIC
 		lexSkipToken
 		env.optdynamic = TRUE
@@ -477,7 +477,7 @@ function cDeclaration
 
 	res = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.CONST
 		res = cConstDecl
 	case FB.TK.DECLARE
@@ -980,13 +980,13 @@ function cSymbolDecl
 
 	cSymbolDecl = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON, FB.TK.EXTERN
 
 		alloctype = 0
 		dopreserve = FALSE
 
-		select case lexCurrentToken
+		select case as const lexCurrentToken
 		'' REDIM
 		case FB.TK.REDIM
 			lexSkipToken
@@ -1744,7 +1744,7 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 	isunsigned = hMatch( FB.TK.UNSIGNED )
 
 	''
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.ANY
 		typ = FB.SYMBTYPE.VOID
 		lgt = 0
@@ -1840,7 +1840,7 @@ function cSymbolType( typ as integer, subtype as FBSYMBOL ptr, lgt as integer )
 		res = TRUE
 
 		if( isunsigned ) then
-			select case typ
+			select case as const typ
 			case FB.SYMBTYPE.BYTE
 				typ = FB.SYMBTYPE.UBYTE
 			case FB.SYMBTYPE.SHORT
@@ -1917,7 +1917,7 @@ end function
 function cFunctionMode as integer
 
 	'' (CDECL|STDCALL|PASCAL)?
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.CDECL
 		cFunctionMode = FB.FUNCMODE.CDECL
 		lexSkipToken
@@ -2249,7 +2249,7 @@ function cDefDecl
 
 	typ = INVALID
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.DEFBYTE
 		typ = FB.SYMBTYPE.BYTE
 	case FB.TK.DEFUBYTE
@@ -2328,7 +2328,7 @@ function cOptDecl
 	'' OPTION
 	lexSkipToken
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.EXPLICIT
 		lexSkipToken
 		env.optexplicit = TRUE
@@ -2738,7 +2738,7 @@ function cAssignmentOrPtrCall
         if( lexCurrentToken <> FB.TK.ASSIGN ) then
         	if( lexCurrentTokenClass = FB.TKCLASS.OPERATOR ) then
 
-        		select case lexCurrentToken
+        		select case as const lexCurrentToken
         		case FB.TK.AND
         			op = IR.OP.AND
         		case FB.TK.OR
@@ -2749,25 +2749,30 @@ function cAssignmentOrPtrCall
 					op = IR.OP.EQV
 				case FB.TK.IMP
 					op = IR.OP.IMP
-        		case CHAR_PLUS
-        			op = IR.OP.ADD
-        		case CHAR_MINUS
-        			op = IR.OP.SUB
         		case FB.TK.SHL
         			op = IR.OP.SHL
         		case FB.TK.SHR
         			op = IR.OP.SHR
         		case FB.TK.MOD
         			op = IR.OP.MOD
-        		case CHAR_RSLASH
-        			op = IR.OP.INTDIV
-        		case CHAR_CARET
-        			op = IR.OP.MUL
-        		case CHAR_SLASH
-        			op = IR.OP.DIV
-        		case CHAR_CART
-        			op = IR.OP.POW
         		end select
+
+        		if( op = INVALID ) then
+        			select case as const lexCurrentToken
+        			case CHAR_PLUS
+        				op = IR.OP.ADD
+        			case CHAR_MINUS
+        				op = IR.OP.SUB
+        			case CHAR_RSLASH
+        				op = IR.OP.INTDIV
+        			case CHAR_CARET
+        				op = IR.OP.MUL
+        			case CHAR_SLASH
+        				op = IR.OP.DIV
+        			case CHAR_CART
+        				op = IR.OP.POW
+        			end select
+        		end if
 
         		if( op <> INVALID ) then
         			lexSkipToken

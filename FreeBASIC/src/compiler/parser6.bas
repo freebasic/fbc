@@ -45,7 +45,7 @@ function cGotoStmt
 
 	cGotoStmt = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	'' GOTO LABEL
 	case FB.TK.GOTO
 		lexSkipToken
@@ -810,7 +810,7 @@ function cFileStmt
 
 	cFileStmt = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	'' OPEN Expression{str} (FOR Expression)? (ACCESS Expression)?
 	'' (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
 	case FB.TK.OPEN
@@ -1262,17 +1262,18 @@ function cQuirkStmt
 	cQuirkStmt = FALSE
 
 	if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
-		if( lexCurrentToken <> CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
-			exit function
+		if( lexCurrentToken = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
+			cQuirkStmt = cPrintStmt
 		end if
+		exit function
 	end if
 
 	res = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.GOTO, FB.TK.GOSUB, FB.TK.RETURN, FB.TK.RESUME
 		res = cGotoStmt
-	case FB.TK.PRINT, CHAR_QUESTION
+	case FB.TK.PRINT
 		res = cPrintStmt
 	case FB.TK.RESTORE, FB.TK.READ, FB.TK.DATA
 		res = cDataStmt
@@ -1630,7 +1631,7 @@ function cMathFunct( funcexpr as integer )
 
 	cMathFunct = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	'' ABS( Expression )
 	case FB.TK.ABS
 		lexSkipToken
@@ -1910,7 +1911,7 @@ function cQuirkFunction( funcexpr as integer )
 
 	res = FALSE
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.STR, FB.TK.INSTR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
 		res = cStringFunct( funcexpr )
 	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN

@@ -290,7 +290,7 @@ sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer ) 
 	'' { [ALPHADIGIT | '_' | '.'] }
 	do
 		c = lexCurrentChar
-		select case c
+		select case as const c
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_DOT, CHAR_UNDER
 
 			tlen = tlen + 1
@@ -313,7 +313,7 @@ sub lexReadIdentifier( byval pid as byte ptr, tlen as integer, typ as integer ) 
 	'' [SUFFIX]
 	typ = INVALID
 
-	select case lexCurrentChar
+	select case as const lexCurrentChar
 	case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
 		typ = FB.SYMBTYPE.INTEGER
 	case FB.TK.SGNTYPECHAR
@@ -341,7 +341,7 @@ sub lexReadNonDecNumber( pnum as byte ptr, tlen as integer ) static
 
 	v = 0
 
-	select case lexEatChar
+	select case as const lexEatChar
 	'' hex
 	case CHAR_HUPP, CHAR_HLOW
 		do
@@ -441,7 +441,7 @@ sub lexReadFloatNumber( pnum as byte ptr, tlen as integer, typ as integer ) stat
 	loop
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
-	select case lexCurrentChar
+	select case as const lexCurrentChar
 	case FB.TK.SGNTYPECHAR
 		c = lexEatChar
 		typ = FB.SYMBTYPE.SINGLE
@@ -510,7 +510,7 @@ sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer ) sta
 
 	c = lexEatChar
 
-	select case c
+	select case as const c
 	'' integer part
 	case CHAR_0 to CHAR_9
 
@@ -520,7 +520,7 @@ sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer ) sta
 
 		do
 			c = lexCurrentChar
-			select case c
+			select case as const c
 			case CHAR_0 to CHAR_9
 				*pnum = lexEatChar
 				pnum = pnum + 1
@@ -561,7 +561,7 @@ sub lexReadNumber( byval pnum as byte ptr, typ as integer, tlen as integer ) sta
 
 	'' check suffix type
 	if( not isfloat ) then
-		select case lexCurrentChar
+		select case as const lexCurrentChar
 		case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
 			typ = FB.SYMBTYPE.INTEGER
 		case FB.TK.SGNTYPECHAR, FB.TK.DBLTYPECHAR
@@ -599,7 +599,7 @@ sub lexReadString ( byval ps as byte ptr, tlen as integer ) static
 	lexEatChar									'' skip open quote
 
 	do
-		select case lexCurrentChar
+		select case as const lexCurrentChar
 		case 0, CHAR_CR, CHAR_LF
 			exit do
 
@@ -733,7 +733,7 @@ reread:
 
 	iswith = FALSE
 
-	select case c
+	select case as const c
 	'':::::
 	case CHAR_DOT
 
@@ -814,7 +814,7 @@ readid:
 		t.tlen		= 1
 		t.typ		= t.id
 
-		select case c
+		select case as const c
 		'':::
 		case CHAR_LT, CHAR_GT, CHAR_EQ
 			t.class = FB.TKCLASS.OPERATOR

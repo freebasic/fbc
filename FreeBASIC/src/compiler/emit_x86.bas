@@ -398,7 +398,7 @@ function emitIsRegPreserved ( byval dtype as integer, byval dclass as integer, b
     	exit function
     end if
 
-    select case reg
+    select case as const reg
     case EMIT.INTREG.EAX, EMIT.INTREG.ECX, EMIT.INTREG.EDX
     	emitIsRegPreserved = FALSE
     case else
@@ -478,7 +478,7 @@ private function hPrepOperand( oname as string, byval odtype as integer, byval o
 
 	operand = oname
 
-	select case otype
+	select case as const otype
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.IDX, IR.VREGTYPE.PTR, IR.VREGTYPE.TMPVAR
 		operand = rtrim$(dtypeTB(odtype).mname) + " [" + operand + "]"
 	end select
@@ -2217,7 +2217,7 @@ end sub
 sub emitSECTION( byval section as integer ) 'static
     dim sname as string
 
-	select case section
+	select case as const section
 	case EMIT.SECTYPE.CONST
 		sname = "data"
 	case EMIT.SECTYPE.DATA
@@ -2286,7 +2286,7 @@ sub hSaveAsmHeader( )
 	edbgHeader ctx.outf, env.infile
 
 	hWriteStr ctx.outf, TRUE,  ".intel_syntax noprefix"
-	select case env.clopt.cputype
+	select case as const env.clopt.cputype
 	case FB.CPUTYPE.386
 		hWriteStr ctx.outf, TRUE,  ".arch i386"
 	case FB.CPUTYPE.486
@@ -2403,7 +2403,7 @@ end sub
 private function hGetTypeString( byval typ as integer ) as string 'static
 	dim tstr as string
 
-	select case typ
+	select case as const typ
     case FB.SYMBTYPE.UBYTE, FB.SYMBTYPE.BYTE
     	tstr = ".byte"
     case FB.SYMBTYPE.USHORT, FB.SYMBTYPE.SHORT
@@ -2420,8 +2420,10 @@ private function hGetTypeString( byval typ as integer ) as string 'static
     	tstr = ".int"
 	case FB.SYMBTYPE.USERDEF
 		tstr = "INVALID"
-    case is >= FB.SYMBTYPE.POINTER
-    	tstr = ".int"
+    case else
+    	if( typ >= FB.SYMBTYPE.POINTER ) then
+    		tstr = ".int"
+    	end if
 	end select
 
 	hGetTypeString = tstr
