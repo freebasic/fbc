@@ -31,6 +31,7 @@
 #include <string.h>
 #include <math.h>
 
+#include "fb_gfx_scancodes.h"
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_rterr.h"
 

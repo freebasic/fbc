@@ -57,5 +57,5 @@ FBCALL void *fb_GfxScreenPtr(void)
 {
 	if (!fb_mode)
 		return NULL;
-	return fb_mode->framebuffer;
+	return fb_mode->line[0];
 }

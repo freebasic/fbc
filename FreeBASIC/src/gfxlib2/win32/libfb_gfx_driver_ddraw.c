@@ -24,38 +24,29 @@
  *
  */
 
-#define WIN32_LEAN_AND_MEAN
+#include "../fb_gfx.h"
+#include "fb_gfx_win32.h"
+
 #define INITGUID
 #include <objbase.h>
 #include <ddraw.h>
 #include <dinput.h>
 
-#include "../fb_gfx.h"
 
-
-#define WINDOW_CLASS_PREFIX "fbgfxclass_"
-
-static int ddraw_init(char *title, int w, int h, int depth, int flags);
-static void ddraw_exit(void);
-static void ddraw_lock(void);
-static void ddraw_unlock(void);
-static void ddraw_set_palette(int index, int r, int g, int b);
-static void ddraw_wait_vsync(void);
-static int ddraw_get_mouse(int *x, int *y, int *z, int *buttons);
-static void ddraw_set_window_title(char *title);
+static int driver_init(char *title, int w, int h, int depth, int flags);
 
 
 GFXDRIVER fb_gfxDriverDirectDraw =
 {
 	"DirectX",		/* char *name; */
-	ddraw_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
-	ddraw_exit,		/* void (*exit)(void); */
-	ddraw_lock,		/* void (*lock)(void); */
-	ddraw_unlock,		/* void (*unlock)(void); */
-	ddraw_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	ddraw_wait_vsync,	/* void (*wait_vsync)(void); */
-	ddraw_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
-	ddraw_set_window_title	/* void (*set_window_title)(char *title); */
+	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
+	fb_hWin32Exit,		/* void (*exit)(void); */
+	fb_hWin32Lock,		/* void (*lock)(void); */
+	fb_hWin32Unlock,	/* void (*unlock)(void); */
+	fb_hWin32SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
+	fb_hWin32WaitVSync,	/* void (*wait_vsync)(void); */
+	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
+	fb_hWin32SetWindowTitle	/* void (*set_window_title)(char *title); */
 };
 
 
@@ -74,49 +65,33 @@ typedef HRESULT (WINAPI *DIRECTINPUTCREATE)(HINSTANCE hinst,DWORD dwVersion,LPDI
  */
 static DIOBJECTDATAFORMAT c_rgodfDIKeyboard[256];
 static const DIDATAFORMAT c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, c_rgodfDIKeyboard };
-
-static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-
-static HMODULE dd_library = NULL;
-static HMODULE di_library = NULL;
-static LPDIRECTDRAW lpDD = NULL;
-static LPDIRECTDRAWSURFACE lpDDS = NULL;
-static LPDIRECTDRAWSURFACE lpDDS_back = NULL;
-static LPDIRECTDRAWPALETTE lpDDP = NULL;
-static PALETTEENTRY palette[256];
-static BLITTER *blitter;
-static LPDIRECTINPUT lpDI = NULL;
-static LPDIRECTINPUTDEVICE lpDID = NULL;
-static int mouse_buttons, mouse_wheel;
-static HWND wnd;
+static HMODULE dd_library;
+static HMODULE di_library;
+static LPDIRECTDRAW lpDD;
+static LPDIRECTDRAWSURFACE lpDDS;
+static LPDIRECTDRAWSURFACE lpDDS_back;
+static LPDIRECTDRAWPALETTE lpDDP;
+static LPDIRECTINPUT lpDI;
+static LPDIRECTINPUTDEVICE lpDID;
 static RECT rect;
-static HANDLE handle = NULL;
-static HANDLE vsync_event = NULL;
-static CRITICAL_SECTION update_lock;
-static int is_running, is_palette_changed, is_active;
-static int mode_w, mode_h, mode_depth, mode_fullscreen;
-static char *window_title;
-static char window_class[WINDOW_TITLE_SIZE+sizeof( WINDOW_CLASS_PREFIX )] = { 0 };
 static int display_offset;
-static BOOL screensaver_active;
 
 
 /*:::::*/
-static void update_screen()
+static void directx_paint(void)
 {
 	RECT src, dest;
 	POINT point;
 
-	if (mode_fullscreen)
+	if (fb_win32.fullscreen)
 		return;
 
 	src.left = src.top = 0;
-	src.right = mode_w;
-	src.bottom = mode_h;
+	src.right = fb_win32.w;
+	src.bottom = fb_win32.h;
 	point.x = point.y = 0;
-	ClientToScreen(wnd, &point);
-	GetClientRect(wnd, &dest);
+	ClientToScreen(fb_win32.wnd, &point);
+	GetClientRect(fb_win32.wnd, &dest);
 	dest.left += point.x;
 	dest.top += point.y;
 	dest.right += point.x;
@@ -142,9 +117,8 @@ static int calc_comp_height( int h )
 }
 
 /*:::::*/
-static int private_init()
+static int directx_init(void)
 {
-	HINSTANCE hinstance;
 	WNDCLASS wndclass;
 	LPDIRECTDRAWCLIPPER lpDDC = NULL;
 	DIRECTDRAWCREATE DirectDrawCreate;
@@ -153,7 +127,6 @@ static int private_init()
 	DDPIXELFORMAT format;
 	int i, depth, is_rgb = FALSE, height;
 
-	hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	lpDD = NULL;
 	lpDDS = NULL;
 	lpDDS_back = NULL;
@@ -173,33 +146,35 @@ static int private_init()
 	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK))
 		return -1;
-	if ((!DirectInputCreate) || (DirectInputCreate(hinstance, 0x0300, &lpDI, NULL) != DI_OK))
+	if ((!DirectInputCreate) || (DirectInputCreate(fb_win32.hinstance, 0x0300, &lpDI, NULL) != DI_OK))
 		return -1;
 
 	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
-	wndclass.lpfnWndProc = win_proc;
-	wndclass.lpszClassName = window_class;
-	wndclass.hInstance = hinstance;
+	wndclass.lpfnWndProc = fb_hWin32WinProc;
+	wndclass.lpszClassName = fb_win32.window_class;
+	wndclass.hInstance = fb_win32.hinstance;
 
 	rect.left = rect.top = 0;
-	rect.right = mode_w - 1;
-	rect.bottom = mode_h - 1;
+	rect.right = fb_win32.w - 1;
+	rect.bottom = fb_win32.h - 1;
 
-	if (mode_fullscreen) {
+	if (fb_win32.fullscreen) {
 		RegisterClass(&wndclass);
-		wnd = CreateWindow(window_class, window_title, WS_POPUP | WS_VISIBLE, 0, 0,
+		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, WS_POPUP | WS_VISIBLE, 0, 0,
 				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, 0, NULL);
-		if (IDirectDraw_SetCooperativeLevel(lpDD, wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
+		if (!fb_win32.wnd)
+			return -1;
+		if (IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_ALLOWREBOOT | DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE) != DD_OK)
 			return -1;
 
-		height = mode_h;
+		height = fb_win32.h;
 		while( 1 )
 		{
-			if (IDirectDraw_SetDisplayMode(lpDD, mode_w, height, mode_depth) == DD_OK)
+			if (IDirectDraw_SetDisplayMode(lpDD, fb_win32.w, height, fb_win32.depth) == DD_OK)
 				break;
 
-			depth = mode_depth;
-			switch (mode_depth)
+			depth = fb_win32.depth;
+			switch (fb_win32.depth)
 			{
 				case 15: depth = 16; break;
 				case 16: depth = 15; break;
@@ -207,7 +182,7 @@ static int private_init()
 				case 32: depth = 24; break;
 			}
 
-			if ((depth == mode_depth) || (IDirectDraw_SetDisplayMode(lpDD, mode_w, height, depth) != DD_OK))
+			if ((depth == fb_win32.depth) || (IDirectDraw_SetDisplayMode(lpDD, fb_win32.w, height, depth) != DD_OK))
 			{
 				height = calc_comp_height( height );
 				if( height == 0 )
@@ -216,7 +191,7 @@ static int private_init()
 			else
 				break;
 		}
-		display_offset = ((height - mode_h) >> 1);
+		display_offset = ((height - fb_win32.h) >> 1);
 	}
 	else {
 		wndclass.style = CS_VREDRAW | CS_HREDRAW;
@@ -225,17 +200,18 @@ static int private_init()
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
 		rect.right -= (rect.left + 1);
 		rect.bottom -= (rect.top + 1);
-		wnd = CreateWindow(window_class, window_title, (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
+		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
+				   (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
 				   rect.right, rect.bottom, 0, 0, 0, 0);
-		if ( wnd == 0 )
+		if (!fb_win32.wnd)
 			return -1;
-		if (IDirectDraw_SetCooperativeLevel(lpDD, wnd, DDSCL_NORMAL) != DD_OK)
+		if (IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL) != DD_OK)
 			return -1;
 		if (IDirectDraw_CreateClipper(lpDD, 0, &lpDDC, NULL) != DD_OK)
 			return -1;
-		if (IDirectDrawClipper_SetHWnd(lpDDC, 0, wnd) != DD_OK)
+		if (IDirectDrawClipper_SetHWnd(lpDDC, 0, fb_win32.wnd) != DD_OK)
 			return -1;
 		display_offset = 0;
 	}
@@ -245,12 +221,12 @@ static int private_init()
 	if (IDirectDraw_CreateSurface(lpDD, &desc, &lpDDS, NULL) != DD_OK)
 		return -1;
 
-	if (!mode_fullscreen) {
+	if (!fb_win32.fullscreen) {
 		if (IDirectDrawSurface_SetClipper(lpDDS, lpDDC) != DD_OK)
 			return -1;
 		desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-		desc.dwWidth = mode_w;
-		desc.dwHeight = mode_h;
+		desc.dwWidth = fb_win32.w;
+		desc.dwHeight = fb_win32.h;
 		desc.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY;
 		if (IDirectDraw_CreateSurface(lpDD, &desc, &lpDDS_back, 0) != DD_OK)
 			return -1;
@@ -266,10 +242,10 @@ static int private_init()
 
 	if (format.dwRGBBitCount == 8) {
 		if (IDirectDraw_CreatePalette(lpDD, DDPCAPS_8BIT | DDPCAPS_INITIALIZE | DDPCAPS_ALLOW256,
-					      palette, &lpDDP, NULL) != DD_OK)
+					      fb_win32.palette, &lpDDP, NULL) != DD_OK)
 			return -1;
 		IDirectDrawSurface_SetPalette(lpDDS, lpDDP);
-		is_palette_changed = FALSE;
+		fb_win32.is_palette_changed = FALSE;
 	}
 
 	depth = format.dwRGBBitCount;
@@ -279,11 +255,11 @@ static int private_init()
 		is_rgb = TRUE;
 	else if ((format.dwRGBBitCount >= 16) && (format.dwRBitMask == 0x1F))
 		is_rgb = TRUE;
-	blitter = fb_hGetBlitter(depth, is_rgb);
-	if (!blitter)
+	fb_win32.blitter = fb_hGetBlitter(depth, is_rgb);
+	if (!fb_win32.blitter)
 		return -1;
 
-	SetForegroundWindow(wnd);
+	SetForegroundWindow(fb_win32.wnd);
 	
 	for (i = 0; i < 256; i++) {
 		c_rgodfDIKeyboard[i].pguid = &GUID_Key;
@@ -297,14 +273,13 @@ static int private_init()
 		return -1;
 	if (IDirectInputDevice_Acquire(lpDID) != DI_OK)
 		return -1;
-	mouse_buttons = mouse_wheel = 0;
 	
 	return 0;
 }
 
 
 /*:::::*/
-static void private_exit()
+static void directx_exit(void)
 {
 	DDBLTFX bltfx;
 	
@@ -317,7 +292,7 @@ static void private_exit()
 	}
 	
 	if (lpDD) {
-		if (mode_fullscreen && lpDDS) {
+		if (fb_win32.fullscreen && lpDDS) {
 			bltfx.dwSize = sizeof(bltfx);
 			bltfx.dwDDFX = 0;
 			bltfx.dwFillColor = 0;
@@ -325,16 +300,16 @@ static void private_exit()
 		}
 		if (lpDDS)
 			IDirectDrawSurface_Release(lpDDS);
-		if ((!mode_fullscreen) && (lpDDS_back))
+		if ((!fb_win32.fullscreen) && (lpDDS_back))
 			IDirectDrawSurface_Release(lpDDS_back);
-		if (mode_fullscreen)
+		if (fb_win32.fullscreen)
 			IDirectDraw_RestoreDisplayMode(lpDD);
-		if (mode_fullscreen)
-			IDirectDraw_SetCooperativeLevel(lpDD, wnd, DDSCL_NORMAL);
+		if (fb_win32.fullscreen)
+			IDirectDraw_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL);
 		IDirectDraw_Release(lpDD);
 	}
-	if (wnd)
-		DestroyWindow(wnd);
+	if (fb_win32.wnd)
+		DestroyWindow(fb_win32.wnd);
 	if (dd_library)
 		FreeLibrary(dd_library);
 	if (di_library)
@@ -343,125 +318,7 @@ static void private_exit()
 
 
 /*:::::*/
-static LRESULT CALLBACK win_proc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	int result;
-	char key_state[256];
-	WORD key = 0;
-
-	switch (message)
-	{
-		case WM_SETCURSOR:
-			if (mode_fullscreen) {
-				SetCursor(0);
-				return 0;
-			}
-			break;
-
-		case WM_ACTIVATEAPP:
-			is_active = (int)wParam;
-			fb_hMemSet(fb_mode->key, FALSE, 128);
-			mouse_buttons = 0;
-			fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
-			break;
-		
-		case WM_LBUTTONDOWN:
-			mouse_buttons |= 0x1;
-			break;
-		
-		case WM_LBUTTONUP:
-			mouse_buttons &= ~0x1;
-			break;
-		
-		case WM_RBUTTONDOWN:
-			mouse_buttons |= 0x2;
-			break;
-		
-		case WM_RBUTTONUP:
-			mouse_buttons &= ~0x2;
-			break;
-		
-		case WM_MBUTTONDOWN:
-			mouse_buttons |= 0x4;
-			break;
-		
-		case WM_MBUTTONUP:
-			mouse_buttons &= ~0x4;
-			break;
-		
-		case WM_MOUSEWHEEL:
-			if ((signed)wParam > 0)
-				mouse_wheel++;
-			else
-				mouse_wheel--;
-			break;
-		
-		case WM_SIZE:
-		case WM_SYSKEYDOWN:
-			if (((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED)) ||
-			    ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000))) {
-				private_exit();
-				mode_fullscreen ^= DRIVER_FULLSCREEN;
-				if (private_init()) {
-					private_exit();
-					mode_fullscreen ^= DRIVER_FULLSCREEN;
-					private_init();
-				}
-				fb_hRestorePalette();
-				fb_hMemSet(fb_mode->dirty, TRUE, mode_h);
-				is_active = TRUE;
-			}
-			return 0;
-
-		case WM_KEYDOWN:
-			switch (wParam) {
-
-				case VK_UP:		key = KEY_UP;		break;
-				case VK_DOWN:		key = KEY_DOWN;		break;
-				case VK_LEFT:		key = KEY_LEFT;		break;
-				case VK_RIGHT:		key = KEY_RIGHT;	break;
-				case VK_INSERT:		key = KEY_INS;		break;
-				case VK_DELETE:		key = KEY_DEL;		break;
-				case VK_HOME:		key = KEY_HOME;		break;
-				case VK_END:		key = KEY_END;		break;
-				case VK_PRIOR:		key = KEY_PAGE_UP;	break;
-				case VK_NEXT:		key = KEY_PAGE_DOWN;	break;
-				case VK_F1:
-				case VK_F2:
-				case VK_F3:
-				case VK_F4:
-				case VK_F5:
-				case VK_F6:
-				case VK_F7:
-				case VK_F8:
-				case VK_F9:
-				case VK_F10:		key = KEY_F(wParam - VK_F1 + 1); break;
-
-				default:
-					GetKeyboardState(key_state);
-					if (ToAscii(wParam, (lParam >> 16) & 0xff, key_state, &key, 0) != 1)
-						key = 0;
-					break;
-			}
-			if (key)
-				fb_hPostKey(key);
-			return 0;
-
-		case WM_CLOSE:
-			fb_hPostKey(KEY_QUIT);
-			return 0;
-
-		case WM_PAINT:
-			update_screen();
-			break;
-	}
-
-	return DefWindowProc(hWnd, message, wParam, lParam);
-}
-
-
-/*:::::*/
-static void window_thread(HANDLE running_event)
+static void directx_thread(HANDLE running_event)
 {
 	DDSURFACEDESC desc;
 	MSG message;
@@ -469,33 +326,33 @@ static void window_thread(HANDLE running_event)
 	unsigned char keystate[256];
 	int i;
 
-	if (private_init())
+	if (directx_init())
 		goto error;
 
 	SetEvent(running_event);
-	is_active = TRUE;
+	fb_win32.is_active = TRUE;
 
-	while (is_running)
+	while (fb_win32.is_running)
 	{
-		ddraw_lock();
+		fb_hWin32Lock();
 
-		if ((is_active) || (!mode_fullscreen)) {
+		if ((fb_win32.is_active) || (!fb_win32.fullscreen)) {
 			IDirectDrawSurface_Restore(lpDDS);
-			if (!mode_fullscreen)
+			if (!fb_win32.fullscreen)
 				IDirectDrawSurface_Restore(lpDDS_back);
 
-			if (is_palette_changed && lpDDP) {
-				IDirectDrawPalette_SetEntries(lpDDP, 0, 0, 256, palette);
-				is_palette_changed = FALSE;
+			if (fb_win32.is_palette_changed && lpDDP) {
+				IDirectDrawPalette_SetEntries(lpDDP, 0, 0, 256, fb_win32.palette);
+				fb_win32.is_palette_changed = FALSE;
 			}
 			desc.dwSize = sizeof(desc);
 			if (IDirectDrawSurface_Lock(lpDDS_back, NULL, &desc, DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR, NULL) == DD_OK) {
-				blitter((unsigned char *)desc.lpSurface + display_offset * desc.lPitch, desc.lPitch);
+				fb_win32.blitter((unsigned char *)desc.lpSurface + display_offset * desc.lPitch, desc.lPitch);
 				IDirectDrawSurface_Unlock(lpDDS_back, desc.lpSurface);
-				fb_hMemSet(fb_mode->dirty, FALSE, mode_h);
+				fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
 			}
 
-			update_screen();
+			directx_paint();
 		}
 
 		result = IDirectInputDevice_GetDeviceState(lpDID, 256, keystate);
@@ -507,139 +364,30 @@ static void window_thread(HANDLE running_event)
 				fb_mode->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
 		}
 		
-		while (PeekMessage(&message, wnd, 0, 0, PM_REMOVE)) {
+		while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
 
-		ddraw_unlock();
+		fb_hWin32Unlock();
 
 		Sleep(10);
 		IDirectDraw_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
-		SetEvent(vsync_event);
+		SetEvent(fb_win32.vsync_event);
 	}
 
 error:
-	private_exit();
+	directx_exit();
 }
 
 
 /*:::::*/
-static int ddraw_init(char *title, int w, int h, int depth, int flags)
+static int driver_init(char *title, int w, int h, int depth, int flags)
 {
-	HANDLE events[2];
-	long result;
-
-	window_title = title;
-	strcpy( window_class, WINDOW_CLASS_PREFIX );
-	strcat( window_class, window_title );
-	mode_w = w;
-	mode_h = h;
-	mode_depth = depth;
-	mode_fullscreen = flags & DRIVER_FULLSCREEN;
-
-	is_running = TRUE;
-
-	InitializeCriticalSection(&update_lock);
-	vsync_event = CreateEvent(NULL, FALSE, FALSE, NULL);
-	events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	events[1] = (HANDLE)_beginthread(window_thread, 0, events[0]);
-	result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
-	CloseHandle(events[0]);
-	handle = events[1];
-	if (result != WAIT_OBJECT_0) {
-		DeleteCriticalSection(&update_lock);
-		return -1;
-	}
-
-	SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
-
-	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
-	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
-
-	return 0;
-}
-
-
-/*:::::*/
-static void ddraw_exit(void)
-{
-	is_running = FALSE;
-	WaitForSingleObject(handle, INFINITE);
-	CloseHandle(vsync_event);
-	DeleteCriticalSection(&update_lock);
-	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
-}
-
-
-/*:::::*/
-static void ddraw_lock(void)
-{
-	EnterCriticalSection(&update_lock);
-}
-
-
-/*:::::*/
-static void ddraw_unlock(void)
-{
-	LeaveCriticalSection(&update_lock);
-}
-
-
-/*:::::*/
-static void ddraw_set_palette(int index, int r, int g, int b)
-{
-	/* assumes lock to be held */
-
-	palette[index].peRed = r;
-	palette[index].peGreen = g;
-	palette[index].peBlue = b;
-	palette[index].peFlags = PC_NOCOLLAPSE;
-	is_palette_changed = TRUE;
-}
-
-
-/*:::::*/
-static void ddraw_wait_vsync(void)
-{
-	WaitForSingleObject(vsync_event, 1000/60);
-}
-
-
-/*:::::*/
-int ddraw_get_mouse(int *x, int *y, int *z, int *buttons)
-{
-	POINT point;
-	
-	if (!is_active)
-		return -1;
-	
-	GetCursorPos(&point);
-	
-	if (mode_fullscreen) {
-		*x = MID(0, point.x, mode_w - 1);
-		*y = MID(0, point.y, mode_h - 1);
-	}
-	else {
-		ScreenToClient(wnd, &point);
-		if ((point.x < 0) || (point.x >= mode_w) || (point.y < 0) || (point.y >= mode_h)) {
-			mouse_buttons = 0;
-			return -1;
-		}
-		else {
-			*x = point.x;
-			*y = point.y;
-		}
-	}
-	*z = mouse_wheel;
-	*buttons = mouse_buttons;
-	
-	return 0;
-}
-
-
-/*:::::*/
-static void ddraw_set_window_title(char *title)
-{
-	SetWindowText(wnd, title);
+	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
+	fb_win32.init = directx_init;
+	fb_win32.exit = directx_exit;
+	fb_win32.paint = directx_paint;
+	fb_win32.thread = directx_thread;
+	fb_hWin32Init(title, w, h, depth, flags);
 }
