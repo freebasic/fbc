@@ -80,7 +80,11 @@ declare function 	makeImpLib 			( dllpath as string, dllname as string ) as inte
 declare function 	makeMain			( o_file as string ) as integer
 #endif
 
+#ifdef TARGET_WIN32
 declare function	compileResFiles		( ) as integer
+#elseif defined(TARGET_LINUX)
+declare function	compileXpmFile		( ) as integer
+#endif
 
 
 ''globals
@@ -93,7 +97,11 @@ declare function	compileResFiles		( ) as integer
 	dim shared deflist(0 to FB_MAXARGS-1) as string
 	dim shared inclist(0 to FB_MAXARGS-1) as string
 	dim shared pthlist(0 to FB_MAXARGS-1) as string
+#ifdef TARGET_WIN32
 	dim shared rclist (0 to FB_MAXARGS-1) as string
+#elseif defined(TARGET_LINUX)
+	dim shared xpmfile as string
+#endif
 	dim shared ctx as FBCCTX
 
 const QUOTE = "\""
@@ -156,6 +164,10 @@ const QUOTE = "\""
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
 #ifdef TARGET_WIN32
 		if (not compileResFiles) then
+			end 1
+		end if
+#elseif defined(TARGET_LINUX)
+		if( not compileXpmFile ) then
 			end 1
 		end if
 #endif
@@ -776,7 +788,113 @@ function compileResFiles as integer
 
 end function
 
-#endif '' TARGET_WIN32
+#elseif defined(TARGET_LINUX)
+
+#define STATE_OUT_STRING	0
+#define STATE_IN_STRING		1
+#define CHAR_QUOTE			34
+
+function compileXpmFile as integer
+	dim fi as integer, fo as integer
+	dim iconsrc as string
+	dim buffer as string, chunk as string * 4096
+	dim outstr_count as integer
+	dim buffer_len as integer, p as ubyte ptr
+	dim state as integer, label as integer
+	redim outstr(0) as string
+
+	compileXpmFile = FALSE
+	
+	if( len( xpmfile ) = 0 ) then
+		compileXpmFile = TRUE
+		exit function
+	end if
+	
+	''
+	if( not hFileExists( xpmfile ) ) then
+		exit function
+	end if
+	iconsrc = hStripExt( xpmfile ) + ".asm"
+	
+	''
+	fi = freefile()
+	open xpmfile for input as #fi
+	line input #1, buffer
+	if( ucase$( buffer ) <> "/* XPM */" ) then
+		close #fi
+		exit function
+	end if
+	buffer = ""
+	while not eof( fi )
+		buffer_len = seek( fi )
+		get #1,, chunk
+		buffer_len = seek( fi ) - buffer_len
+		buffer += mid$( chunk, 1, buffer_len )
+	wend
+	close #fi
+	buffer_len = len( buffer )
+	p = sadd( buffer )
+	
+	''
+	do
+		select case state
+		
+		case STATE_OUT_STRING
+			if( *p = CHAR_QUOTE ) then
+				state = STATE_IN_STRING
+				outstr_count += 1
+				redim preserve outstr(outstr_count) as string
+				outstr(outstr_count-1) = ""
+			end if
+		
+		case STATE_IN_STRING
+			if( *p = CHAR_QUOTE ) then
+				state = STATE_OUT_STRING
+			else
+				outstr(outstr_count-1) += chr$(*p)
+			end if
+		
+		end select
+		p += 1
+		buffer_len -= 1
+	loop while buffer_len > 0
+	close #fo
+	if( state <> STATE_OUT_STRING ) then
+		exit function
+	end if
+	
+	''
+	fo = freefile()
+	open iconsrc for output as #fo
+	print #fo, ".section .rodata"
+	for label = 0 to outstr_count-1
+		print #fo, "_l" + hex$( label ) + ":"
+		print #fo, ".string \"" + outstr( label ) + "\""
+	next label
+	print #fo, ".data"
+	print #fo, ".align 32"
+	print #fo, "fb_program_icon:"
+	for label = 0 to outstr_count-1
+		print #fo, ".long _l" + hex$( label )
+	next label
+	close #fo
+	
+	if( exec( "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+		kill iconsrc
+		exit function
+	end if
+	
+	kill iconsrc
+	
+	'' add to obj list
+	objlist(ctx.objs) = hStripExt( iconsrc ) + ".o"
+	ctx.objs = ctx.objs + 1
+	
+	compileXpmFile = TRUE
+	
+end function
+
+#endif
 
 '':::::
 function delFiles as integer
@@ -805,6 +923,8 @@ sub printOptions
 	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
 #ifdef TARGET_WIN32
 	print " "         , "xxx.rc = resource script, xxx.res = compiled resource"
+#elseif defined(TARGET_LINUX)
+	print " "         , "xxx.xpm = icon resource"
 #endif
 	print
 	print "options:"
@@ -1190,10 +1310,18 @@ function listFiles as integer
 				objlist(ctx.objs) = argv(i)
 				ctx.objs = ctx.objs + 1
 				argv(i) = ""
+#ifdef TARGET_WIN32
 			case "rc", "res"
 				rclist(ctx.rcs) = argv(i)
 				ctx.rcs = ctx.rcs + 1
 				argv(i) = ""
+#elseif defined(TARGET_LINUX)
+			case "xpm"
+				if( len( xpmfile ) <> 0 ) then
+					exit function
+				end if
+				xpmfile = argv(i)
+#endif
 			end select
 		end if
 	next i
