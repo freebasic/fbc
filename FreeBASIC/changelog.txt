@@ -33,6 +33,7 @@ Version 0.11 Beta:
 [added] UDT arguments now can be declared and passed by value too (v1c)
 [added] -nostdlibs cmm-line option, so no standard libraries are automatically linked (v1c)
 [added] "*([@]variable +|- expression)" and "*@variable" support (v1c)
+[added] pointer indexing support, as in "myptr[idx]" (v1c)
 [fixed] COMMON arrays shared between different sources had different descriptor names (v1c)
 [fixed] the UDT size returned for UDT vars when using LEN() was the real-one, w/o padding (v1c)
 [fixed] LEN() can now handle arrays with no indexes given, as in QB (v1c)

@@ -289,6 +289,7 @@ Credits (in alphabetic order):
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS; port maintainer.
+    - Translated the Allegro headers (W.I.P.)
     - FreeBASIC Documentation project member.
     - Wrote the DLL and static library automation.
     - Developed the SETDATE and SETTIME run-time library routines.
