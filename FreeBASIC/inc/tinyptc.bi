@@ -26,4 +26,5 @@ declare function ptc_close	cdecl alias "ptc_close"		() as integer
 '$inclib: "user32"
 #elseif defined(FB__LINUX)
 '$inclib: "X11"
+'$libpath: "/usr/X11R6/lib"
 #endif
