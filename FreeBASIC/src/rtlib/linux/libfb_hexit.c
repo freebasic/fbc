@@ -62,6 +62,7 @@ void fb_hEnd ( int errlevel )
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&fb_global_mutex);
+	pthread_mutex_destroy(&fb_string_mutex);
 	
 	/* allocate thread local storage vars for runtime error handling */
 	pthread_key_delete(fb_errctx.handler);

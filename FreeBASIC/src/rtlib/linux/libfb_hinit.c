@@ -31,6 +31,7 @@
 
 #ifdef MULTITHREADED
 pthread_mutex_t fb_global_mutex;
+pthread_mutex_t fb_string_mutex;
 #endif
 
 FBCONSOLE fb_con = { 0 };
@@ -144,6 +145,7 @@ void fb_hInit ( void )
 #ifdef MULTITHREADED
 	/* Init multithreading support */
 	pthread_mutex_init(&fb_global_mutex, NULL);
+	pthread_mutex_init(&fb_string_mutex, NULL);
 	
 	/* allocate thread local storage vars for runtime error handling */
 	pthread_key_create(&fb_errctx.handler,   NULL);
