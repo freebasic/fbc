@@ -205,6 +205,28 @@ Most Important Features:
       #DEFINE foo(x,y) bar(x-y,y-x)
       a = foo(b, c)
 
+  o Typedefs:
+
+    - Supporting forward referencing as in C:
+
+      TYPE foo AS bar
+
+      TYPE sometype
+           f   AS foo PTR
+      END TYPE
+
+      TYPE bar
+           st  AS sometype
+           a   AS INTEGER
+      END TYPE
+
+      DIM s AS SOMETYPE, b AS BAR
+      
+      b.st.f = @b
+      s.f = @b
+      
+      s.f->st.f->a = 1234
+
   o Escape characters inside literal strings:
 
     - Same as in C (except numbers are interpreted as decimal, not octagonal).
@@ -281,9 +303,11 @@ What FreeBASIC Isn't:
 
 Possible Additions to Later Versions:
 
+  o Headers for libraries like libxml, gsl, Gtk, ...
+
   o Full debug support using GDB/Insight
 
-  o TYPEDEF's
+  o Pointer type casting
 
   o Variable initializers:
 
@@ -293,23 +317,13 @@ Possible Additions to Later Versions:
 
     - GUI code would be much easier to write.
 
-  o More optimizations:
-
-    - Common sub-expression elimination: QB 4.5 and later had this type
-      of optimization 16 years ago. Today, you can't find any BASIC compiler that
-      utilizes this type of optimization - not even PowerBASIC, known as the BASIC
-      compiler that generates the fastest code.
-
-    - Direct Acyclic Graph (DAG) module has already been coded. All that remains is
-      getting it to work with the Intermediate Representation (IR) module.
-
 
 Credits (in alphabetic order):
 
   o Angelo Mottola (a.mottola@libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
-    - Added build-in threads support, besides many other runtime lib changes.
+    - Added build-in threads and dynlib support, besides many other runtime lib changes.
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
