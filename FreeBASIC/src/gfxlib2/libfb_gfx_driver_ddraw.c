@@ -184,7 +184,7 @@ static int private_init()
 			else
 				break;
 		}
-		display_offset = ((height - mode_h) >> 1) * mode_w * BYTES_PER_PIXEL(mode_depth);
+		display_offset = ((height - mode_h) >> 1);
 	}
 	else {
 		wndclass.style = CS_VREDRAW | CS_HREDRAW;
@@ -411,7 +411,7 @@ static void window_thread(HANDLE running_event)
 			}
 			desc.dwSize = sizeof(desc);
 			if (IDirectDrawSurface_Lock(lpDDS_back, NULL, &desc, DDLOCK_WAIT | DDLOCK_SURFACEMEMORYPTR, NULL) == DD_OK) {
-				blitter((unsigned char *)desc.lpSurface + display_offset, desc.lPitch);
+				blitter((unsigned char *)desc.lpSurface + display_offset * desc.lPitch, desc.lPitch);
 				IDirectDrawSurface_Unlock(lpDDS_back, desc.lpSurface);
 				fb_hMemSet(fb_mode->dirty, FALSE, mode_h);
 			}
