@@ -271,28 +271,28 @@ type GFX_DRIVER
    name as byte ptr
    desc as byte ptr
    ascii_name as byte ptr
-   init as function
-   exit as function
-   scroll as function
-   vsync as function
-   set_palette as function
-   request_scroll as function
-   poll_scroll as function
-   enable_triple_buffer as function
-   create_video_bitmap as function
-   destroy_video_bitmap as function
-   show_video_bitmap as function
-   request_video_bitmap as function
-   create_system_bitmap as function
-   destroy_system_bitmap as function
-   set_mouse_sprite as function
-   show_mouse as function
-   hide_mouse as function
-   move_mouse as function
-   drawing_mode as function
-   save_video_state as function
-   restore_video_state as function
-   fetch_mode_list as function
+   init as sub
+   exit as sub
+   scroll as sub
+   vsync as sub
+   set_palette as sub
+   request_scroll as sub
+   poll_scroll as sub
+   enable_triple_buffer as sub
+   create_video_bitmap as sub
+   destroy_video_bitmap as sub
+   show_video_bitmap as sub
+   request_video_bitmap as sub
+   create_system_bitmap as sub
+   destroy_system_bitmap as sub
+   set_mouse_sprite as sub
+   show_mouse as sub
+   hide_mouse as sub
+   move_mouse as sub
+   drawing_mode as sub
+   save_video_state as sub
+   restore_video_state as sub
+   fetch_mode_list as sub
    w as integer
    h as integer
    linear as integer
@@ -508,7 +508,7 @@ Type QUAT
 End Type
 
 Type DIALOG
-	proc As Function(msg As Integer, d As DIALOG Ptr, c As Integer)
+	proc as sub(msg As Integer, d As DIALOG Ptr, c As Integer)
 	x As Integer				' position and size of the object
 	y As Integer
 	w As Integer
@@ -526,7 +526,7 @@ End Type
 
 Type MENU					' a popup menu
 	text As UByte Ptr			' menu item text
-	proc As Function()			' callback function
+	proc as sub()			' callback function
 	child As MENU Ptr			' to allow nested menus
 	flags As Integer			' flags about the menu state
 	dp As UByte Ptr				' any data the menu might require
@@ -555,7 +555,7 @@ Type MENU_PLAYER				' stored information about the state of an active GUI menu
 	y As Integer
 	w As Integer
 	h As Integer
-	proc As Function()			' callback function
+	proc as sub()			' callback function
 	saved As BITMAP Ptr			' saved what was underneath it
 
 	mouse_button_was_pressed As Integer	' set if mouse button pressed on last iteration
@@ -628,7 +628,7 @@ End Type
 ' -- prototypes --
 
 ' system
-Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByRef errno_ptr As Integer, ByVal atexit_ptr As Function()) As Integer
+Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByRef errno_ptr As Integer, ByVal atexit_ptr as sub()) As Integer
 Declare Sub allegro_exit CDecl Alias "allegro_exit" ()
 Extern Import allegro_id Alias "allegro_id" As Byte Ptr
 Extern Import allegro_error Alias "allegro_error" As Byte Ptr
@@ -699,7 +699,7 @@ Declare Sub set_mouse_range CDecl Alias "set_mouse_range" (ByVal x1 As Integer, 
 Declare Sub set_mouse_speed CDecl Alias "set_mouse_speed" (ByVal xspeed As Integer, ByVal yspeed As Integer)
 Declare Sub set_mouse_sprite CDecl Alias "set_mouse_sprite" (ByVal sprite As BITMAP Ptr)
 Declare Sub set_mouse_sprite_focus CDecl Alias "set_mouse_sprite_focus" (ByVal x As Integer, ByVal y As Integer)
-Declare Sub get_mouse_mickeys CDecl Alias "get_mouse_mickeys) (ByRef mickeyx As Integer, ByRef mickeyy As Integer)
+Declare Sub get_mouse_mickeys CDecl Alias "get_mouse_mickeys" (ByRef mickeyx As Integer, ByRef mickeyy As Integer)
 Extern Import mouse_callback Alias "mouse_callback" As Sub(ByVal flags As Integer)
 
 ' timer routines
@@ -814,7 +814,7 @@ Declare Function save_bitmap CDecl Alias "save_bitmap" (ByVal filename As String
 Declare Function save_bmp CDecl Alias "save_bmp" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
 Declare Function save_pcx CDecl Alias "save_pcx" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
 Declare Function save_tga CDecl Alias "save_tga" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr) As Integer
-Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function(ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr, ByVal save As Function(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr))
+Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function(ByVal filename As String, ByVal pal As AL_RGB Ptr) As BITMAP Ptr, ByVal save As sub(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As AL_RGB Ptr))
 Declare Sub set_color_conversion CDecl Alias "set_color_conversion" (ByVal mode As Integer)
 Declare Function get_color_conversion CDecl Alias "get_color_conversion" () As Integer
 
@@ -1008,8 +1008,8 @@ Declare Sub set_luminance_blender CDecl Alias "set_luminance_blender" (byVal r A
 Declare Sub set_multiply_blender CDecl Alias "set_multiply_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 Declare Sub set_saturation_blender CDecl Alias "set_saturation_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 Declare Sub set_screen_blender CDecl Alias "set_screen_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_blender_mode CDecl Alias "set_blender_mode" (ByVal b15 As Function(), ByVal b16 As Function(), ByVal b24 As Function(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 As Function(), ByVal b16 As Function(), ByVal b24 As Function(), ByVal b32 As Function(), ByVal b15x As Function(), ByVal b16x As Function(), ByVal b24x As Function(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
+Declare Sub set_blender_mode CDecl Alias "set_blender_mode" (ByVal b15 As sub(), ByVal b16 as sub(), ByVal b24 as sub(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
+Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 as sub(), ByVal b16 as sub(), ByVal b24 as sub(), ByVal b32 as sub(), ByVal b15x as sub(), ByVal b16x as sub(), ByVal b24x as sub(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 
 ' converting between color formats
 Declare Function bestfit_color CDecl Alias "bestfit_color" (ByVal pal As AL_RGB ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer

@@ -12,7 +12,7 @@
 '$inclib: "glu32"
 
 #ifndef gl_bi
-	'$include: "\gl\gl.bi"
+	'$include: "GL/gl.bi"
 #endif
 
 
@@ -230,7 +230,7 @@
 
 '/* Internal convenience typedefs */
 
-#define GLUfuncptr FUNCTION
+#define GLUfuncptr sub
 
 
 DECLARE SUB  	  gluBeginCurve 		  ALIAS "gluBeginCurve" 	      (BYVAL nurb AS GLUnurbs PTR)

@@ -124,7 +124,7 @@ declare function	bsearch		CDECL alias "bsearch"		( byval key as any ptr, _
 									  byval base_ptr as any ptr, _
 									  byval num as integer, _
 									  byval size as integer, _
-									  byval compare_proc as function ) as any ptr
+									  byval compare_proc as function() as integer ) as any ptr
 
 declare function	calloc		CDECL alias "calloc"		( byval num as integer, _
 									  byval size as integer ) as any ptr
@@ -266,7 +266,7 @@ declare function	puts		CDECL alias "puts"		( byval s as string ) as integer
 declare sub		qsort		CDECL alias "qsort"		( byval baseptr as any ptr, _
 									  byval num As integer, _
 									  byval size as integer, _
-									  byval compare_func as function )
+									  byval compare_func as function() as integer )
 
 declare function	raise		CDECL alias "raise"		( byval sig as integer ) as integer
 
