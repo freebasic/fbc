@@ -780,7 +780,7 @@ data "kill", "fb_FileKill", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 '' fb_CVD ( str as string ) as double
 data "cvd","fb_CVD", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
 					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-data "cvs","fb_CVD", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
+data "cvs","fb_CVS", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
 					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_CVI ( str as string ) as integer
 data "cvi","fb_CVI", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _

@@ -32,7 +32,7 @@
 FBCALL double fb_CVD ( FBSTRING *str )
 {
     int		i, len;
-    double 	num;
+    double 	num = 0.0;
 
 	if( str == NULL )
 		return 0.0;
@@ -40,7 +40,7 @@ FBCALL double fb_CVD ( FBSTRING *str )
 	len = FB_STRSIZE( str );
 
 	num = 0.0;
-	if( (str->data != NULL) && ((len == sizeof( float )) || (len == sizeof( double ))) )
+	if( (str->data != NULL) && (len == sizeof( double )) )
 	{
 		for( i = 0; i < len; i++ )
 			((char *)&num)[i] = str->data[i];
@@ -51,6 +51,31 @@ FBCALL double fb_CVD ( FBSTRING *str )
 
 	return num;
 }
+
+/*:::::*/
+FBCALL float fb_CVS ( FBSTRING *str )
+{
+    int		i, len;
+    float 	num = 0.0;
+
+	if( str == NULL )
+		return 0.0;
+
+	len = FB_STRSIZE( str );
+
+	num = 0.0;
+	if( (str->data != NULL) && (len == sizeof( float )) )
+	{
+		for( i = 0; i < len; i++ )
+			((char *)&num)[i] = str->data[i];
+	}
+
+	/* del if temp */
+	fb_hStrDelTemp( str );
+
+	return num;
+}
+
 
 /*:::::*/
 FBCALL int fb_CVI ( FBSTRING *str )
