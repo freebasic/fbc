@@ -90,9 +90,9 @@ static void exit_proc(void)
 /*:::::*/
 FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 {
-	const GFXDRIVER *driver = NULL;
+	const GFXDRIVER *driver;
 	const MODEINFO *info;
-	int i;
+	int i, try;
 	char *c, *driver_name;
 
 	if ((mode < 0) || (mode > NUM_MODES))
@@ -203,21 +203,22 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		}
 		
 		driver_name = getenv("FBGFX");
-		do {
-			for (i = 0; fb_gfx_driver_list[i]; i++) {
-			    	if ((driver_name) && (strcasecmp(driver_name, fb_gfx_driver_list[i]->name)))
-			    		continue;
-				if ((!fb_gfx_driver_list[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags)) ||
-				    (!fb_gfx_driver_list[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags ^ DRIVER_FULLSCREEN))) {
-				    	driver = fb_gfx_driver_list[i];
+		for (try = (driver_name ? 4 : 2); try; try--) {
+			for (driver = fb_gfx_driver_list[0]; driver; driver++) {
+				if ((driver_name) && (try & 0x1) && (strcasecmp(driver_name, driver->name)))
+					continue;
+				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
 					break;
-				}
 			}
-			if (driver_name)
-				driver_name = NULL;
-			else
+			if (driver)
 				break;
-		} while (!driver);
+			if (driver_name) {
+				if (try == 2)
+					flags ^= DRIVER_FULLSCREEN;
+			}
+			else
+				flags ^= DRIVER_FULLSCREEN;
+		}
 		
 		if (!driver) {
 			exit_proc();
