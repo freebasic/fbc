@@ -617,6 +617,14 @@ data "fb_ErrorResume", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDEC
 '' fb_ErrorResumeNext( ) as any ptr
 data "fb_ErrorResumeNext", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
 
+
+''
+'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
+data "fb_ThreadCreate", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
+							FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
+
 ''
 '' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
 data "fb_GfxPset", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 5, _
@@ -1103,10 +1111,6 @@ data "settime","fb_SetTime", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 data "setdate","fb_SetDate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
                      		 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
-'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
-data "threadcreate","fb_ThreadCreate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-									   FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-									   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 '' threadwait ( byval id as integer ) as void
 data "threadwait","fb_ThreadWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
@@ -3230,6 +3234,30 @@ function rtlConsoleReadXY ( byval rowexpr as integer, _
 	astNewPARAM( proc, colorflagexpr, INVALID)
 
 	rtlConsoleReadXY = proc
+
+end function
+
+'':::::
+function rtlThreadCreate( byval procexpr as integer, _
+						  byval paramexpr as integer ) as integer
+	dim proc as integer, f as FBSYMBOL ptr
+
+	''
+	f = ifuncTB(FB.RTL.THREADCREATE)
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ) )
+
+	'' byval proc as integer
+	astNewPARAM( proc, procexpr, INVALID )
+
+	'' byval param as integer
+	if( paramexpr = INVALID ) then
+		paramexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+	end if
+	astNewPARAM( proc, paramexpr, INVALID )
+
+	env.clopt.multithreaded = TRUE
+
+	rtlThreadCreate = proc
 
 end function
 

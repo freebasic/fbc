@@ -2513,6 +2513,49 @@ function cVAFunct( funcexpr as integer )
 end function
 
 '':::::
+''cThreadCreate =   THREADCREATE '(' procexpr ( ',' paramexpr )? ')'
+''
+function cThreadCreate( funcexpr as integer )
+	dim procexpr as integer, paramexpr as integer
+	
+	cThreadCreate = FALSE
+	
+	'' THREADCREATE
+	lexSkipToken
+	
+	'' '('
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+	
+	'' procexpr
+	if( not cExpression( procexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	paramexpr = INVALID
+	if( hMatch( CHAR_COMMA ) ) then
+		if( not cExpression( paramexpr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+	end if
+
+	'' ')'
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+	
+	funcexpr = rtlThreadCreate( procexpr, paramexpr )
+	
+	cThreadCreate = TRUE
+
+end function
+
+'':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
 function cQuirkFunction( funcexpr as integer )
@@ -2543,6 +2586,8 @@ function cQuirkFunction( funcexpr as integer )
 		res = cIIFFunct( funcexpr )
 	case FB.TK.VA_FIRST
 		res = cVAFunct( funcexpr )
+	case FB.TK.THREADCREATE
+		res = cThreadCreate( funcexpr )
 	end select
 
 	if( not res ) then

@@ -54,6 +54,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.EXPORT
 	FB.COMPOPT.NODEFLIBS
 	FB.COMPOPT.SHOWERROR
+	FB.COMPOPT.MULTITHREADED
 end enum
 
 type FBCMMLINEOPT
@@ -68,6 +69,7 @@ type FBCMMLINEOPT
 	export			as integer					'' export all symbols declared as EXPORT (def= true)
 	nodeflibs		as integer					'' don't include default libs (def= false)
 	showerror		as integer					'' show line giving error (def= true)
+	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
 end type
 
 

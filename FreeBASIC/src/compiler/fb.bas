@@ -229,6 +229,7 @@ sub fbSetDefaultOptions
 	env.clopt.export		= TRUE
 	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
+	env.clopt.multithreaded	= FALSE
 
 end sub
 
@@ -259,6 +260,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.nodeflibs = value
 	case FB.COMPOPT.SHOWERROR
 		env.clopt.showerror = value
+	case FB.COMPOPT.MULTITHREADED
+		env.clopt.multithreaded = value
 	end select
 
 end sub
@@ -292,6 +295,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		res = env.clopt.nodeflibs
 	case FB.COMPOPT.SHOWERROR
 		res = env.clopt.showerror
+	case FB.COMPOPT.MULTITHREADED
+		res = env.clopt.multithreaded
 	end select
 
 	fbGetOption = res
@@ -386,8 +391,18 @@ end function
 
 '':::::
 function fbListLibs( namelist() as string, byval index as integer ) as integer
+	dim i as integer
 
 	fbListLibs = symbListLibs( namelist(), index )
+
+	if( env.clopt.multithreaded ) then
+		for i = 0 to index-1
+			if( namelist(i) = "fb" ) then
+				namelist(i) = "fbmt"
+				exit for
+			end if
+		next i
+	end if
 
 end function
 

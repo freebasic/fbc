@@ -23,7 +23,7 @@ endif
 CC := gcc
 CFLAGS := -O3 -Wall -I .
 ifneq ($(WINSYSDIR),)
-    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86 -DMULTITHREADED
+    CFLAGS := $(CFLAGS) -DTARGET_WIN32 -DTARGET_X86
     osdeppath := win32
 	libpath = ../../lib/win32
 else
@@ -38,7 +38,12 @@ else
     endif
 endif
 
-lib = $(libpath)/libfb.a
+ifneq ($(MULTITHREADED),)
+	CFLAGS += -DMULTITHREADED
+	lib = $(libpath)/libfbmt.a
+else
+	lib = $(libpath)/libfb.a
+endif
 
 objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
 osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))

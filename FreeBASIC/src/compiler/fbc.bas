@@ -244,7 +244,7 @@ function compileFiles as integer
 	next i
 
     '' no default libs will be added if no inp files were given
-    if( ctx.inps = 0 ) then
+    if( ctx.inps > 0 ) then
    		fbInit
    		fbAddDefaultLibs
    		getLibList
@@ -998,6 +998,7 @@ sub printOptions
 	print "-l <name>", "Add a library file to linker's list"
 	print "-lib", "Create a static library"
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
+	print "-mt", "Link with thread-safe runtime library for multithreaded apps"
 	print "-nodeflibs", "Do not include the default libraries"
 	print "-noerrline", "Do not show source line where error occured"
 #ifdef TARGET_WIN32
@@ -1051,7 +1052,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "arch", "e", "ex", "w", "nodeflibs", "noerrline", "nostdcall", "nounderscore"
+			case "arch", "e", "ex", "mt", "w", "nodeflibs", "noerrline", "nostdcall", "nounderscore"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -1246,6 +1247,9 @@ function processCompOptions as integer
 			case "ex"
 				fbSetOption FB.COMPOPT.ERRORCHECK, TRUE
 				fbSetOption FB.COMPOPT.RESUMEERROR, TRUE
+
+			case "mt"
+				fbSetOption FB.COMPOPT.MULTITHREADED, TRUE
 
 			case "w"
 				fbSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )

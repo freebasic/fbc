@@ -70,6 +70,10 @@ Version 0.13 Beta:
 - the PIPE: file type to OPEN, for read or write access, as in: "OPEN "PIPE:dir *.*" for input as #1" (v1c)
 - the ugly ON ERROR GOTO 0 (v1c)
 - OPEN, CLOSE, GET# and PUT# can be used as functions now, so errors can be checked w/o handlers (v1c)
+- runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded
+  applications to avoid unnecessary locking, latter is used when compiling multithreaded apps. The compiler detects if the
+  app in multithreaded if it makes use of THREADCREATE; to force linking with the thread-safe lib in any case, use the -mt
+  commandline option.
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported
