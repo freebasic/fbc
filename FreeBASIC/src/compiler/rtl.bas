@@ -673,6 +673,15 @@ data "fb_GfxBsave", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
+'' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
+''					 byval num_pages as integer = 1, byval flags as integer = 0 )
+data "screenres", "fb_GfxScreenRes", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 5, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,8, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1, _
+									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
 '' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void
 data "flip", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _

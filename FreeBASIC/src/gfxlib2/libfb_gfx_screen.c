@@ -89,21 +89,12 @@ static void exit_proc(void)
 
 
 /*:::::*/
-FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
+static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int flags)
 {
 	const GFXDRIVER *driver;
-	const MODEINFO *info;
 	int i, try;
 	char *c, *driver_name;
 
-	if ((mode < 0) || (mode > NUM_MODES))
-		return -1;
-
-	if (mode > 0) {
-		info = &mode_info[mode - 1];
-		if (info->w < 0)
-			return -1;
-	}
 	if (num_pages <= 0)
 		num_pages = 1;
 
@@ -255,6 +246,41 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		fb_Cls(-1);
 
 	return 0;
+}
+
+
+/*:::::*/
+FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
+{
+	const MODEINFO *info = NULL;
+	
+	if ((mode < 0) || (mode > NUM_MODES))
+		return -1;
+
+	if (mode > 0) {
+		info = &mode_info[mode - 1];
+		if (info->w < 0)
+			return -1;
+	}
+	return set_mode(info, mode, depth, num_pages, flags);
+}
+
+
+/*:::::*/
+FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags)
+{
+	MODEINFO info;
+	
+	info.w = w;
+	info.h = h;
+	info.depth = depth;
+	info.scanline_size = 1;
+	info.palette = &fb_palette_256;
+	info.font = &fb_font_8x8;
+	info.text_w = w / 8;
+	info.text_h = h / 8;
+	
+	return set_mode((const MODEINFO *)&info, -1, depth, num_pages, flags);
 }
 
 
