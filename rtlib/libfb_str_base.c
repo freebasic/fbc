@@ -43,7 +43,11 @@ FBCALL FBSTRING *fb_HEX ( int num )
 		fb_hStrAllocTemp( dst, sizeof( int ) * 2 );
 
 		/* convert */
+#ifdef WIN32
 		_itoa( num, dst->data, 16 );
+#else
+		sprintf( dst->data, "%X", num );
+#endif
 
 		dst->len = strlen( dst->data );				/* fake len */
 		dst->len |= FB_TEMPSTRBIT;
@@ -66,7 +70,11 @@ FBCALL FBSTRING *fb_OCT ( int num )
 		fb_hStrAllocTemp( dst, sizeof( int ) * 4 );
 
 		/* convert */
+#ifdef WIN32
 		_itoa( num, dst->data, 8 );
+#else
+		sprintf( dst->data, "%o", num );
+#endif
 
 		dst->len = strlen( dst->data );				/* fake len */
 		dst->len |= FB_TEMPSTRBIT;
@@ -81,6 +89,7 @@ FBCALL FBSTRING *fb_OCT ( int num )
 FBCALL FBSTRING *fb_BIN ( int num )
 {
 	FBSTRING 	*dst;
+	int			i;
 
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
@@ -89,7 +98,19 @@ FBCALL FBSTRING *fb_BIN ( int num )
 		fb_hStrAllocTemp( dst, sizeof( int ) * 8 );
 
 		/* convert */
+#ifdef WIN32
 		_itoa( num, dst->data, 2 );
+#else
+		dst->data[0] = '\0';
+		i = num;
+		i |= (i >> 1);
+		i |= (i >> 2);
+		i |= (i >> 4);
+		i |= (i >> 8);
+		i |= (i >> 16);
+		for (i = (i + 1) >> 1; i; i >>= 1)
+			strcat(dst->data, (num & i) ? "1" : "0");
+#endif
 
 		dst->len = strlen( dst->data );				/* fake len */
 		dst->len |= FB_TEMPSTRBIT;

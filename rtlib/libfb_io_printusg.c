@@ -344,7 +344,11 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
             }
 			else
 			{
+#ifdef WIN32
 				_gcvt( value, 16, buffer );
+#else
+				sprintf( buffer, "%g", value);
+#endif
 				len = strlen( buffer );
 				if( buffer[len-1] == '.' )
 				{

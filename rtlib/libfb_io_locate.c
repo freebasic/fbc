@@ -29,6 +29,10 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
 #endif
 
 /*:::::*/
@@ -52,7 +56,22 @@ void fb_ConsoleLocate( int row, int col )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	int x, y;
+	
+	if (col > 0)
+		x = col - 1;
+	else
+		x = getcurx(stdscr);
+	
+	if (row > 0)
+		y = row - 1;
+	else
+		y = getcury(stdscr);
+	
+	move(y, x);
+	refresh();
+#endif
 
 #endif /* WIN32 */
 
@@ -71,7 +90,11 @@ int fb_ConsoleGetX( void )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	return getcurx(stdscr) + 1;
+#else
+	return 0;
+#endif
 
 #endif /* WIN32 */
 
@@ -89,7 +112,11 @@ int fb_ConsoleGetY( void )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	return getcury(stdscr) + 1;
+#else
+	return 0;
+#endif
 
 #endif /* WIN32 */
 
@@ -111,7 +138,12 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	if (col != NULL)
+		*col = getcurx(stdscr) + 1;
+	if (row != NULL)
+		*row = getcury(stdscr) + 1;
+#endif
 
 #endif /* WIN32 */
 

@@ -29,6 +29,10 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
 #endif
 
 /*:::::*/
@@ -63,8 +67,21 @@ void fb_ConsoleScroll( int nrows )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
-
+#ifndef DISABLE_NCURSES
+	WINDOW *view;
+	
+	view = subwin(stdscr, botrow - toprow + 1, getmaxx(stdscr), toprow - 1, 0);
+	scrollok(view, TRUE);
+	wscrl(view, nrows);
+	touchwin(stdscr);
+	for (; nrows; nrows--) {
+		move(botrow - nrows, 0);
+		clrtoeol();
+	}
+	refresh();
+	delwin(view);
+#endif
+	
 #endif /* WIN32 */
 
 

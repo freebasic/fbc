@@ -29,6 +29,10 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
 #endif
 
 /* globals */
@@ -86,7 +90,11 @@ int fb_ConsoleGetMaxRow( void )
 
 #else /* WIN32 */
 
-		!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	return getmaxy(stdscr) + 1;
+#else
+	return 0;
+#endif
 
 #endif /* WIN32 */
 }

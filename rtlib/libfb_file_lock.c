@@ -31,6 +31,8 @@
 #include <io.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <fcntl.h>
 #endif
 
 /*:::::*/
@@ -66,13 +68,14 @@ FBCALL int fb_FileLock( int fnum, unsigned int inipos, unsigned int endpos )
 
     res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
 
+	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
+
 #else
 
-	!!!WRITEME!!!
+	return (flock(_fileno(f), LOCK_EX) ? FB_RTERROR_FILEIO : FB_RTERROR_OK);
 
 #endif
 
-	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
 }
 
 /*:::::*/
@@ -107,13 +110,14 @@ FBCALL int fb_FileUnlock( int fnum, unsigned int inipos, unsigned int endpos )
 #ifdef WIN32
 
     res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
-
+    
+	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
+	
 #else
 
-	!!!WRITEME!!!
+	return (flock(_fileno(f), LOCK_UN) ? FB_RTERROR_FILEIO : FB_RTERROR_OK);
 
 #endif
 
-	return (res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO);
 }
 

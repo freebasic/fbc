@@ -29,12 +29,19 @@
 
 #ifdef WIN32
 #include <float.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+
+static color[8] = { COLOR_BLACK, COLOR_BLUE, COLOR_GREEN, COLOR_CYAN,
+					COLOR_RED, COLOR_MAGENTA, COLOR_YELLOW, COLOR_WHITE };
+#endif
 #endif
 
 /*:::::*/
 FBCALL void fb_Init ( void )
 {
-
+	int i;
 
 #ifdef WIN32
 
@@ -42,6 +49,33 @@ FBCALL void fb_Init ( void )
 	_controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
 
 #else
+
+#if defined(__GNUC__) && defined(__i386__)
+	unsigned int control_word;
+
+	/* Get FPU control word */
+	__asm__ __volatile__( "fstcw %0" : "=m" (control_word) : );
+	/* Set 64-bit and round to nearest */
+	control_word = (control_word & 0xF0FF) | 0x300;
+	/* Write back FPU control word */
+	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
+#endif
+
+#ifndef DISABLE_NCURSES
+	/* Init ncurses */
+	initscr();
+	cbreak();
+	noecho();
+	nodelay(stdscr, TRUE);
+	keypad(stdscr, TRUE);
+	scrollok(stdscr, FALSE);
+	if (has_colors() && (start_color() == OK) && (COLOR_PAIRS >= 64)) {
+		for (i = 0; i < 64; i++) {
+			if (i == 0) continue;
+			init_pair(i, color[i % 8], color[i / 8]);
+		}
+	}
+#endif
 
 #endif
 

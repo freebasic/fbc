@@ -134,6 +134,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 {
 	char openmask[16];
 	FILE* f;
+	int i;
 
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
@@ -166,6 +167,17 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		break;
 	}
 
+	/* Convert directory separators to whatever the current platform supports */
+	for (i = 0; i < strlen( str->data ); i++) {
+#ifdef WIN32
+		if ( str->data[i] == '/' )
+			str->data[i] = '\\';
+#else
+		if ( str->data[i] == '\\' )
+			str->data[i] = '/';
+#endif
+	}
+	
 	/* try opening */
 	if( (f = fopen( str->data, openmask )) == NULL )
 	{

@@ -30,6 +30,10 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
 #endif
 
 
@@ -73,7 +77,27 @@ void fb_ConsoleClear( int mode )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+    int start_line, end_line, toprow, botrow;
+    
+#ifndef DISABLE_NCURSES
+    fb_ConsoleGetView( &toprow, &botrow );
+
+	if( mode == 1 )
+	{
+		start_line = toprow - 1;
+		end_line = botrow - 1;
+    }
+    else
+    {
+    	start_line = 0;
+    	end_line = getmaxy(stdscr);
+    }
+    for (; start_line <= end_line; start_line++) {
+    	move(start_line, 0);
+    	clrtoeol();
+    }
+    refresh();
+#endif
 
 #endif /* WIN32 */
 
@@ -100,7 +124,10 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	if (cols != NULL)
+		*cols = getmaxx(stdscr) + 1;
+#endif
 
 #endif /* WIN32 */
 

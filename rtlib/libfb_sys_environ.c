@@ -59,7 +59,7 @@ FBCALL int fb_SetEnviron ( FBSTRING *str )
 #if WIN32
 	res = _putenv( str->data );
 #else
-	!!!WRITEME!!!
+	res = putenv( str->data );
 #endif
 
 	/* del if temp */

@@ -30,7 +30,13 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
 #endif
+#endif
+
+#ifdef WIN32
 
 /* globals */
 int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
@@ -45,9 +51,17 @@ int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
 int fb_last_bc = FB_COLOR_BLACK,
 	fb_last_fc = FB_COLOR_WHITE;
 
+#else
+
+int fb_last_bc = 0,
+	fb_last_fc = 15;
+
+#endif
+
 /*:::::*/
 void fb_ConsoleColor( int fc, int bc )
 {
+#ifdef WIN32
 
     if( fc >= 0 )
     	fb_last_fc = colorlut[fc & 15];
@@ -55,13 +69,21 @@ void fb_ConsoleColor( int fc, int bc )
     if( bc >= 0 )
     	fb_last_bc = colorlut[bc & 7];
 
-#ifdef WIN32
-
     SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), fb_last_fc + (fb_last_bc << 4) );
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	int pair;
+	
+	if (fc >= 0)
+		fb_last_fc = (fc & 0xf);
+	if (bc >= 0)
+		fb_last_bc = (bc & 0x7);
+	
+	pair = ((fb_last_fc & 0x7) | (fb_last_bc << 3));
+	attrset(COLOR_PAIR(pair) | (fb_last_fc & 0x8 ? A_BOLD : 0));
+#endif
 
 #endif /* WIN32 */
 
@@ -79,7 +101,17 @@ int fb_ConsoleGetColorAtt( void )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+	int res = 0;
+	
+#ifndef DISABLE_NCURSES
+	attr_t attr;
+	short pair;
+	
+	attr_get(&attr, &pair, NULL);
+	res = (pair & 0x7) | (attr & A_BOLD ? 0x8 : 0) | ((pair & 0x38) << 4);
+#endif
+
+	return res;
 
 #endif /* WIN32 */
 

@@ -45,7 +45,11 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
 
 		/* convert */
+#ifdef WIN32
 		_itoa( num, dst->data, 10 );
+#else
+		sprintf( dst->data, "%d", num );
+#endif
 
 		dst->len = strlen( dst->data );				/* fake len */
 		dst->len |= FB_TEMPSTRBIT;
@@ -68,7 +72,11 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 		fb_hStrAllocTemp( dst, 8+8 );
 
 		/* convert */
+#ifdef WIN32
 		_gcvt( (double)num, 8, dst->data );
+#else
+		sprintf( dst->data, "%g", num);
+#endif
 
 		dst->len = strlen( dst->data );				/* fake len */
 
@@ -101,7 +109,11 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 		fb_hStrAllocTemp( dst, 16+8 );
 
 		/* convert */
+#ifdef WIN32
 		_gcvt( (double)num, 16, dst->data );
+#else
+		sprintf( dst->data, "%g", num);
+#endif
 
 		dst->len = strlen( dst->data );				/* fake len */
 

@@ -31,6 +31,12 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <unistd.h>
+
+/* global */
+char fb_commandline[1024] = { 0 };
+
 #endif
 
 /*:::::*/
@@ -42,15 +48,16 @@ FBCALL FBSTRING *fb_Command ( void )
 
 #ifdef WIN32
 	cline = GetCommandLine( );
+#else
+	cline = fb_commandline;
+#endif
 	/* skip argv[0] (exe's name) */
 	cline = strchr( cline, 32 );
-	if( cline != NULL ) ++cline;
-#else
-	!!!WRITEME!!!
-#endif
 
 	if( cline != NULL )
 	{
+		cline++;
+		
 		/* alloc temp string */
 		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 		if( dst != NULL )

@@ -106,7 +106,7 @@ FB_STR_TMPDESC *fb_hStrAllocTmpDesc( void )
 	/*  */
 	dsc->data = NULL;
 	dsc->len  = 0;
-
+	
 	return dsc;
 }
 

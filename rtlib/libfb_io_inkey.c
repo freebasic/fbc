@@ -28,6 +28,10 @@
 
 #ifdef WIN32
 #include <conio.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#endif
 #endif
 
 /*:::::*/
@@ -66,7 +70,24 @@ FBSTRING *fb_ConsoleInkey( void )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifndef DISABLE_NCURSES
+	int ch;
+	
+	if ((ch = getch()) != ERR) {
+		res = (FBSTRING *)fb_hStrAllocTmpDesc();
+		if (ch > 255) {
+			/* !!!WRITEME!!! convert extended key to QB compatible format !!!WRITEME!!! */
+			res = &fb_strNullDesc;
+		}
+		else {
+			fb_hStrAllocTemp(res, 1);
+			res->data[0] = ch;
+			res->data[1] = '\0';
+		}
+	}
+	else
+#endif
+		res = &fb_strNullDesc;
 
 #endif /* WIN32 */
 
@@ -77,7 +98,7 @@ FBSTRING *fb_ConsoleInkey( void )
 /*:::::*/
 int fb_ConsoleGetkey( void )
 {
-	int k;
+	int k = 0;
 
 #ifdef WIN32
 
@@ -85,8 +106,14 @@ int fb_ConsoleGetkey( void )
 	if( k == 0x00 || k == 0xE0 )
 		k = _getch( );
 #else
-
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+	
+#ifndef DISABLE_NCURSES
+	while ((k = getch()) == ERR)
+		;
+	if (k > 255) {
+		/* !!!WRITEME!!! handle extended keys !!!WRITEME!!! */
+	}
+#endif
 
 #endif
 

@@ -31,7 +31,9 @@
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
-
+#if !defined WIN32 && !defined DISABLE_NCURSES
+	endwin();
+#endif
 	exit( errlevel );
 
 }

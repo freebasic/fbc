@@ -31,6 +31,10 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <unistd.h>
+#include <sys/stat.h>
+#define MAX_PATH	1024
 #endif
 
 /*:::::*/
@@ -50,7 +54,22 @@ FBCALL FBSTRING *fb_ExePath ( void )
 	else
 		tmp[0] = '\0';
 #else
-	!!!WRITEME!!!
+	char linkname[1024];
+	struct stat finfo;
+	
+	sprintf(linkname, "/proc/%d/exe", getpid());
+	if ((!stat(linkname, &finfo)) && ((len = readlink(linkname, tmp, sizeof(tmp) - 1) > 0))) {
+		/* Linux-like proc fs is available */
+		tmp[len - 1] = '\0';
+		p = strrchr(tmp, '/');
+		if (p)
+			p = '\0';
+		else
+			tmp[0] = '\0';
+	}
+	else
+		p = NULL;
+
 #endif
 
 	if( p != NULL )

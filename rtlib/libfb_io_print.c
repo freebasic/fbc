@@ -31,6 +31,14 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#ifndef DISABLE_NCURSES
+#include <curses.h>
+#else
+#ifndef FALSE
+#define FALSE 0
+#endif
+#endif
 #endif
 
 
@@ -108,8 +116,12 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
      	}
 	}
 
+#if defined WIN32 || defined DISABLE_NCURSES
 	printf( "%s", buffer );
-
+#else
+	printw( "%s", buffer );
+	refresh();
+#endif
 
 #ifdef WIN32
 	if( scrolloff )

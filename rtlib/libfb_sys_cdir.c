@@ -31,6 +31,9 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <unistd.h>
+#define MAX_PATH	1024
 #endif
 
 /*:::::*/
@@ -43,7 +46,7 @@ FBCALL FBSTRING *fb_CurDir ( void )
 #ifdef WIN32
 	len = GetCurrentDirectory( MAX_PATH, tmp );
 #else
-    !!!WRITEME!!!
+	len = strlen(getcwd(tmp, MAX_PATH));
 #endif
 
 	/* alloc temp string */

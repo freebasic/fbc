@@ -53,7 +53,7 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 	int 	str1_len, str2_len;
 	int		res;
 
-	if( (str1 == NULL) || (str1 == NULL) )
+	if( (str1 == NULL) || (str2 == NULL) )
 		return 0;
 
 	FB_STRSETUP( str1, str1_size, str1_ptr, str1_len )

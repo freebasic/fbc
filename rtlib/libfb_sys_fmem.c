@@ -29,6 +29,8 @@
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include <sys/sysinfo.h>
 #endif
 
 /*:::::*/
@@ -44,7 +46,7 @@ FBCALL unsigned int fb_GetMemAvail ( int mode )
 	return ms.dwAvailPhys;
 
 #else
-	!!!WRITEME!!!
+	return get_avphys_pages() * 4096;
 #endif
 
 }

@@ -83,7 +83,28 @@ void fb_ConsoleWidth( int cols, int rows )
 
 #else /* WIN32 */
 
-	!!!WRITEME!!! use gnu curses here !!!WRITEME!!!
+#ifdef TIOCGSIZE
+    struct ttysize win;
+
+	if (ioctl(0, TIOCGSIZE, &win))
+		return;
+	win.ts_lines = rows;
+	win.ts_cols = cols;
+	if (ioctl(0, TIOCSSIZE, &win))
+		return;
+#elif defined(TIOCGWINSZ)
+    struct winsize win;
+
+	if (ioctl(0, TIOCGWINSZ, &win))
+		return;
+	win.ts_lines = rows;
+	win.ts_cols = cols;
+	if (ioctl(0, TIOCSWINSZ, &win))
+		return;
+#endif
+#ifndef DISABLE_NCURSES
+	resizeterm(rows, cols);
+#endif
 
 #endif /* WIN32 */
 
