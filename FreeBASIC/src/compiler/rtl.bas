@@ -3121,6 +3121,7 @@ private sub hAddGfxLibs
 	temp = fbAddLibPath( "/usr/X11R6/lib" )
 	symbAddLib( "X11" )
 	symbAddLib( "Xext" )
+	symbAddLib( "Xxf86vm" )
 	symbAddLib( "pthread" )
 #endif
 end sub
