@@ -167,7 +167,7 @@ int fb_GfxPos (void)
     return x;
 }
 
-void fb_GfxLocate (int xOrRow, int yOrColumn)
+void fb_GfxLocate (int xOrRow, int yOrColumn, int cursor)
 {
     int x, y, invalid;
 

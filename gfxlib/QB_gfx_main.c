@@ -448,29 +448,29 @@ static void fb_GfxRestoreHandlers (void)
 static void fb_GfxTakeHandlers (void)
 {
     if (fb_GfxInfo.oldInkeyHandler == NULL)
-        fb_GfxInfo.oldInkeyHandler = fb_SetInkeyProc((FB_INKEYPROC)fb_GfxInkey);
+        fb_GfxInfo.oldInkeyHandler = fb_SetInkeyProc(fb_GfxInkey);
     if (fb_GfxInfo.oldGetkeyHandler == NULL)
-        fb_GfxInfo.oldGetkeyHandler = fb_SetGetkeyProc((FB_GETKEYPROC)fb_GfxInkeyEx);
+        fb_GfxInfo.oldGetkeyHandler = fb_SetGetkeyProc(fb_GfxInkeyEx);
 
     if (fb_GfxInfo.oldClsHandler == NULL)
-        fb_GfxInfo.oldClsHandler = fb_SetClsProc((FB_CLSPROC)fb_GfxCls);
+        fb_GfxInfo.oldClsHandler = fb_SetClsProc(fb_GfxCls);
 
     if (fb_GfxInfo.oldColorHandler == NULL)
-        fb_GfxInfo.oldColorHandler = fb_SetColorProc((FB_COLORPROC)fb_GfxColor);
+        fb_GfxInfo.oldColorHandler = fb_SetColorProc(fb_GfxColor);
 
     if (fb_GfxInfo.oldLocateHandler == NULL)
-        fb_GfxInfo.oldLocateHandler = fb_SetLocateProc((FB_LOCATEPROC)fb_GfxLocate);
+        fb_GfxInfo.oldLocateHandler = fb_SetLocateProc(fb_GfxLocate);
 
     if (fb_GfxInfo.oldWidthHandler == NULL)
-        fb_GfxInfo.oldWidthHandler = fb_SetWidthProc((FB_WIDTHPROC)fb_GfxWidth);
+        fb_GfxInfo.oldWidthHandler = fb_SetWidthProc(fb_GfxWidth);
 
     if (fb_GfxInfo.oldGetXHandler == NULL)
-        fb_GfxInfo.oldGetXHandler = fb_SetGetXProc((FB_GETXPROC)fb_GfxPos);
+        fb_GfxInfo.oldGetXHandler = fb_SetGetXProc(fb_GfxPos);
     if (fb_GfxInfo.oldGetYHandler == NULL)
-        fb_GfxInfo.oldGetYHandler = fb_SetGetYProc((FB_GETYPROC)fb_GfxCsrlin);
+        fb_GfxInfo.oldGetYHandler = fb_SetGetYProc(fb_GfxCsrlin);
 
     if (fb_GfxInfo.oldPrintHandler == NULL)
-        fb_GfxInfo.oldPrintHandler = fb_SetPrintBufferProc((FB_PRINTBUFFPROC)fb_GfxPrintBuffer);
+        fb_GfxInfo.oldPrintHandler = fb_SetPrintBufferProc(fb_GfxPrintBuffer);
 
 }
 
