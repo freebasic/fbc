@@ -49,7 +49,7 @@ char *fb_GfxReadStr(char *buffer, int maxlen)
 	char *cursor = cursor_normal;
 	
 	if (!fb_mode)
-		return;
+		return NULL;
 	
 	do {
 		fb_GfxPrintBuffer(cursor, 0);
