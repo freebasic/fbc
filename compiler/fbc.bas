@@ -33,12 +33,6 @@ const FB_MAXARGS	  = 100
 const FB_MINSTACKSIZE =   32 * 1024
 const FB_DEFSTACKSIZE = 1024 * 1024
 
-enum FB_OUTTYPE_ENUM
-	FB_OUTTYPE_EXECUTABLE
-	FB_OUTTYPE_STATICLIB
-	FB_OUTTYPE_DYNAMICLIB
-end enum
-
 
 type FBCCTX
     libs			as integer
@@ -47,6 +41,7 @@ type FBCCTX
     outs			as integer
     defs			as integer
     incs			as integer
+    pths			as integer
 
 	compileonly		as integer
 	preserveasm		as integer
@@ -54,6 +49,7 @@ type FBCCTX
 	debug 			as integer
 	stacksize		as integer
 	outtype			as integer
+	showversion		as integer
 
 	outname 		as string
 	entrypoint 		as string
@@ -87,6 +83,7 @@ declare function 	makeImpLib 			( dllname as string ) as integer
 	dim shared objlist(0 to FB_MAXARGS-1) as string
 	dim shared deflist(0 to FB_MAXARGS-1) as string
 	dim shared inclist(0 to FB_MAXARGS-1) as string
+	dim shared pthlist(0 to FB_MAXARGS-1) as string
 	dim shared ctx as FBCCTX
 
     ''
@@ -101,7 +98,7 @@ declare function 	makeImpLib 			( dllname as string ) as integer
     setDefaultOptions
 
     '' list
-    if( (not listFiles) or (ctx.inps = 0) ) then
+    if( not listFiles ) then
     	printOptions
     	end 1
     end if
@@ -113,10 +110,19 @@ declare function 	makeImpLib 			( dllname as string ) as integer
     end if
 
     ''
-    if( ctx.verbose ) then
+    if( (ctx.inps = 0) and (not ctx.showversion) ) then
+    	printOptions
+    	end 1
+    end if
+
+    ''
+    if( ctx.verbose or ctx.showversion ) then
     	print "FreeBASIC Compiler - Version " + FB.VERSION
     	print "Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
     	print
+    	if( ctx.showversion ) then
+    		end 0
+    	end if
     end if
 
     '' compile
@@ -183,7 +189,7 @@ function compileFiles as integer
     		print "compiling: ", inplist(i); " -o "; asmlist(i)
     	end if
 
-    	if( not fbcCompile( inplist(i), asmlist(i) ) ) then
+    	if( not fbcCompile( inplist(i), asmlist(i), ctx.outtype ) ) then
     		end 1
     	end if
 
@@ -268,6 +274,11 @@ function linkFiles as integer
 		case FB_OUTTYPE_DYNAMICLIB
 			ctx.outname = ctx.outname + ".dll"
 		end select
+#elseif defined(TARGET_LINUX)
+		select case ctx.outtype
+		case FB_OUTTYPE_DYNAMICLIB
+			ctx.outname = "lib" + hStripPath( ctx.outname ) + ".so"
+		end select
 #endif
 	end if
 
@@ -296,13 +307,16 @@ function linkFiles as integer
 
 	'' set script file and subsystem
 	ldcline = "-T " + QUOTE + exepath$ + FB.BINPATH + "i386pe.x" + QUOTE + " -subsystem " + ctx.subsystem
-#endif
-#ifdef TARGET_LINUX
-	ldcline = "-dynamic-linker /lib/ld-linux.so.2"
+
+#elseif defined(TARGET_LINUX)
+
+	if( ctx.outtype = FB_OUTTYPE_EXECUTABLE) then
+		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
+	end if
 #endif
 
-#ifdef TARGET_WIN32
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+#ifdef TARGET_WIN32
 		''
 		dllname = hStripPath( hStripExt( ctx.outname ) )
 
@@ -326,8 +340,14 @@ function linkFiles as integer
 
     	'' don't export any symbol from rtlib
         ldcline = ldcline + " --exclude-libs libfb.a"
-    end if
+
+#elseif defined(TARGET_LINUX)
+
+		''
+		ldcline = "-shared --export-dynamic"
+		
 #endif
+    end if
 
 	if( not ctx.debug ) then
 		ldcline = ldcline + " -s"
@@ -339,7 +359,15 @@ function linkFiles as integer
 #endif
 
 	'' set entry point
+#ifdef TARGET_WIN32
 	ldcline = ldcline + " -e " + ctx.entrypoint + " "
+#else
+	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
+		ldcline = ldcline + " -e " + ctx.entrypoint + " "
+	else
+		ldcline = ldcline + " "
+	end if
+#endif
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
@@ -358,6 +386,11 @@ function linkFiles as integer
     ldcline = ldcline + " -L " + QUOTE + exepath$ + FB.LIBPATH + QUOTE
     '' and the current path to libs search list
     ldcline = ldcline + " -L " + QUOTE +  "./" + QUOTE
+    
+    '' add additional user-specified library search paths
+    for i = 0 to ctx.pths-1
+    	ldcline = ldcline + " -L " + QUOTE + pthlist(i) + QUOTE
+    next i
 
     '' init lib group
     ldcline = ldcline + " -( "
@@ -377,7 +410,9 @@ function linkFiles as integer
     		ldcline = ldcline + "-l" + libname + " "
     	end if
 #else
-    	ldcline = ldcline + "-l" + liblist(i) + " "
+		if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
+	    	ldcline = ldcline + "-l" + liblist(i) + " "
+	    end if
 #endif
     next i
 
@@ -398,8 +433,7 @@ function linkFiles as integer
 
 #ifdef TARGET_WIN32
 	ldpath = exepath$ + FB.BINPATH + "ld.exe"
-#endif
-#ifdef TARGET_LINUX
+#elseif defined(TARGET_LINUX)
 	ldpath = "ld"
 #endif
     if( exec( ldpath, ldcline ) <> 0 ) then
@@ -530,7 +564,7 @@ function archiveFiles as integer
        ctx.outname = "lib" + hStripPath( hStripExt( inplist(0) ) ) + ".a"
     end if
 
-    arcline = "-rs -c "
+    arcline = "-rsc "
 
     '' output library file name
     arcline = arcline + QUOTE + ctx.outname + QUOTE + " "
@@ -596,8 +630,11 @@ sub printOptions
 	print "-b <name>", "add a source file to compilation"
 	print "-c", "compile only, do not link"
 	print "-d <name=val>", "add a preprocessor's define"
+	print "-dll", "same as -dylib"
 #ifdef TARGET_WIN32
-	print "-dll", "create a DLL, including the import library"
+	print "-dylib", "create a DLL, including the import library"
+#elseif defined(TARGET_LINUX)
+	print "-dylib", "create a shared library"
 #endif
 	print "-e", "add error checking"
 	print "-g", "add debug info (testing)"
@@ -606,6 +643,7 @@ sub printOptions
 	print "-lib", "create a static library"
 	print "-m <name>", "main file w/o .ext (entry point)"
 	print "-o <name>", "output name (in the same number as source files)"
+	print "-p <name>", "add a path to search for libraries"
 	print "-r", "do not delete the asm file(s)"
 #ifdef TARGET_WIN32
 	print "-s <name>", "subsystem (gui, console)"
@@ -613,6 +651,7 @@ sub printOptions
 	print "-w", "treat stdcall calling convention as cdecl"
 #endif
 	print "-v", "verbose"
+	print "-version", "show compiler version"
 	print "-x <name>", "executable/library name"
 
 end sub
@@ -657,6 +696,9 @@ function processOptions as integer
 				ctx.compileonly = TRUE
 				argv(i) = ""
 
+			case "dylib", "dll"
+				ctx.outtype = FB_OUTTYPE_DYNAMICLIB
+
 			case "lib"
 				ctx.outtype = FB_OUTTYPE_STATICLIB
 
@@ -666,6 +708,10 @@ function processOptions as integer
 
 			case "v"
 				ctx.verbose = TRUE
+				argv(i) = ""
+
+			case "version"
+				ctx.showversion = TRUE
 				argv(i) = ""
 
 			case "x"
@@ -700,9 +746,6 @@ function processOptions as integer
 				end if
 				argv(i) = ""
 				argv(i+1) = ""
-
-			case "dll"
-				ctx.outtype = FB_OUTTYPE_DYNAMICLIB
 #endif
 
 			case else
@@ -867,6 +910,16 @@ function listFiles as integer
 					exit function
 				end if
 				ctx.libs = ctx.libs + 1
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' library paths
+			case "p"
+				pthlist(ctx.pths) = argv(i+1)
+				if( len( pthlist(ctx.pths) ) = 0 ) then
+					exit function
+				end if
+				ctx.pths = ctx.pths + 1
 				argv(i) = ""
 				argv(i+1) = ""
 

@@ -22,8 +22,8 @@ const FALSE%		= 0
 const INVALID%		= -1
 
 ''
-const FB.VERSION$				= "0.09b"
-const FB.SIGN$					= "FreeBASIC v0.09b"
+#define FB.VERSION				"0.09b"
+#define FB.SIGN					"FreeBASIC v0.09b"
 
 '' paths
 #ifdef TARGET_WIN32
@@ -126,7 +126,7 @@ const FB.DEFAULTCPUTYPE%	= FB.CPUTYPE.486
 ''
 declare function 	fbcInit			( ) as integer
 declare sub 		fbcEnd			( )
-declare function 	fbcCompile		( infname as string, outfname as string ) as integer
+declare function 	fbcCompile		( infname as string, outfname as string, outtype as integer ) as integer
 
 declare sub 		fbcSetDefaultOptions ( )
 declare sub 		fbcSetOption	( byval opt as integer, byval value as integer )

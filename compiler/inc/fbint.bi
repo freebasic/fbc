@@ -54,6 +54,13 @@ const FB.DATALABELNAME 		= "_fb_data_begin"
 const FB.DATALABELPREFIX 	= "_datalbl_"
 
 
+'' output file type
+enum FB_OUTTYPE_ENUM
+	FB_OUTTYPE_EXECUTABLE
+	FB_OUTTYPE_STATICLIB
+	FB_OUTTYPE_DYNAMICLIB
+end enum
+
 '' print modes (same as in rtlib/fb.h)
 enum FBPRINTMASK
 	FB.PRINTMASK.NEWLINE	= &h00000001

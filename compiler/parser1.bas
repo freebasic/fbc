@@ -197,7 +197,7 @@ sub fbcEnd
 end sub
 
 '':::::
-function fbcCompile ( infname as string, outfname as string )
+function fbcCompile ( infname as string, outfname as string, outtype as integer )
     dim res as integer, l as integer
 
 	fbcCompile = FALSE
@@ -216,7 +216,7 @@ function fbcCompile ( infname as string, outfname as string )
 	open infname for binary as #env.inf
 
 	''
-	if( not emitOpen ) then
+	if( not emitOpen( outtype ) ) then
 		hReportSimpleError FB.ERRMSG.FILEACCESSERROR
 		exit function
 	end if

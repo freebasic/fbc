@@ -57,7 +57,7 @@ end type
 ''
 declare sub 		outp				( s as string )
 
-declare sub 		hSaveAsmHeader		( byval asmf as integer )
+declare sub 		hSaveAsmHeader		( byval asmf as integer, byval outtype as integer )
 
 
 declare function 	hGetTypeString		( byval typ as integer ) as string
@@ -2012,7 +2012,11 @@ end sub
 '':::::
 sub emitPROCBEGIN( byval proc as integer, byval initlabel as integer, byval ispublic as integer ) 'static
 	dim lname as string
+	dim id as string
 
+	id = symbGetProcName( proc )
+	outp ".type" + TABCHAR + id + ", @function"
+	
     emithPUSH "ebp"
     outp "mov ebp, esp"
 
@@ -2040,6 +2044,9 @@ sub emitPROCEND( byval proc as integer, byval bytestopop as integer, byval initl
     dim currpos as long
     dim bytestoalloc as integer
     dim i as integer
+	dim id as string
+
+	id = symbGetProcName( proc )
 
     bytestoalloc = (-ctx.localptr + 3) and (not 3)
 
@@ -2049,6 +2056,8 @@ sub emitPROCEND( byval proc as integer, byval bytestopop as integer, byval initl
     outp "mov esp, ebp"
     emithPOP "ebp"
     outp "ret " + ltrim$( str$( bytestopop ) )
+
+    outp ".size" + TABCHAR + id + ", .-" + id
 
     edbgProcEnd proc, initlabel, exitlabel
 
@@ -2182,7 +2191,7 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub hSaveAsmHeader( byval asmf as integer )
+sub hSaveAsmHeader( byval asmf as integer, byval outtype as integer )
     dim res as long
     dim entry as string, lname as string
     dim maininitlabel as integer
@@ -2207,28 +2216,30 @@ sub hSaveAsmHeader( byval asmf as integer )
     hWriteStr asmf, FALSE, "fb_" + entry  + "_entry" + ":"
     hWriteStr asmf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
 #ifdef TARGET_LINUX
-	' Add small stub to get commandline under linux
-	hWriteStr asmf, TRUE, "pop" + TABCHAR + "ecx"
-	hWriteStr asmf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
-	hWriteStr asmf, TRUE, "mov" + TABCHAR + "edx, 1023"
-	hWriteStr asmf, TRUE, "cld"
-	hWriteStr asmf, FALSE, "fb_get_argv:"
-	hWriteStr asmf, TRUE, "pop" + TABCHAR + "esi"
-	hWriteStr asmf, FALSE, "fb_copy_arg:"
-	hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, [esi]"
-	hWriteStr asmf, TRUE, "test" + TABCHAR + "al, al"
-	hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_copy_arg"
-	hWriteStr asmf, TRUE, "movsb"
-	hWriteStr asmf, TRUE, "dec" + TABCHAR + "edx"
-	hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_get_argv"
-	hWriteStr asmf, TRUE, "jmp" + TABCHAR + "fb_copy_arg"
-	hWriteStr asmf, FALSE, "fb_end_copy_arg:"
-	hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, 32"
-	hWriteStr asmf, TRUE, "stosb"
-	hWriteStr asmf, TRUE, "dec" + TABCHAR + "ecx"
-	hWriteStr asmf, TRUE, "jnz" + TABCHAR + "fb_get_argv"
-	hWriteStr asmf, TRUE, "mov" + TABCHAR + "byte ptr [edi-1], 0"
-	hWriteStr asmf, FALSE, "fb_end_get_argv:"
+	if (outtype = FB_OUTTYPE_EXECUTABLE) then
+		' Add small stub to get commandline under linux
+		hWriteStr asmf, TRUE, "pop" + TABCHAR + "ecx"
+		hWriteStr asmf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
+		hWriteStr asmf, TRUE, "mov" + TABCHAR + "edx, 1023"
+		hWriteStr asmf, TRUE, "cld"
+		hWriteStr asmf, FALSE, "fb_get_argv:"
+		hWriteStr asmf, TRUE, "pop" + TABCHAR + "esi"
+		hWriteStr asmf, FALSE, "fb_copy_arg:"
+		hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, [esi]"
+		hWriteStr asmf, TRUE, "test" + TABCHAR + "al, al"
+		hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_copy_arg"
+		hWriteStr asmf, TRUE, "movsb"
+		hWriteStr asmf, TRUE, "dec" + TABCHAR + "edx"
+		hWriteStr asmf, TRUE, "jz" + TABCHAR + "fb_end_get_argv"
+		hWriteStr asmf, TRUE, "jmp" + TABCHAR + "fb_copy_arg"
+		hWriteStr asmf, FALSE, "fb_end_copy_arg:"
+		hWriteStr asmf, TRUE, "mov" + TABCHAR + "al, 32"
+		hWriteStr asmf, TRUE, "stosb"
+		hWriteStr asmf, TRUE, "dec" + TABCHAR + "ecx"
+		hWriteStr asmf, TRUE, "jnz" + TABCHAR + "fb_get_argv"
+		hWriteStr asmf, TRUE, "mov" + TABCHAR + "byte ptr [edi-1], 0"
+		hWriteStr asmf, FALSE, "fb_end_get_argv:"
+	end if
 #endif
     hWriteStr asmf, TRUE,  "call" + TABCHAR + "fb_moduleinit"
     hWriteStr asmf, TRUE,  "call" + TABCHAR + EMIT_MAINPROC
@@ -2520,7 +2531,7 @@ sub hSaveAsmData( byval asmf as integer ) 'static
 end sub
 
 '':::::
-function emitOpen
+function emitOpen( byval outtype as integer )
 
 	if( hFileExists( env.outfile ) ) then
 		kill env.outfile
@@ -2532,7 +2543,7 @@ function emitOpen
 	open env.outfile for binary as #ctx.outf
 
 	'' header
-	hSaveAsmHeader ctx.outf
+	hSaveAsmHeader ctx.outf, outtype
 
 
 	emitOpen = TRUE

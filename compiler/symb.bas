@@ -82,6 +82,18 @@ declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAY
 	redim shared defineTB( 0 ) as FBDEFINE, defhashTB( 0 ) as HASHTB
 
 
+'' predefined #defines: name, value, is_string
+definesdata:
+data "FB__VERSION",			FB.VERSION,		TRUE
+data "FB__SIGNATURE",		FB.SIGN,		TRUE
+#ifdef TARGET_WIN32
+data "FB__WIN32",			"",				FALSE
+#elseif defined(TARGET_LINUX)
+data "FB__LINUX",			"",				FALSE
+#endif
+data ""
+
+
 '' keywords: name, id (token), class
 keyworddata:
 data "AND"		, FB.TK.AND			, FB.TKCLASS.OPERATOR
@@ -844,6 +856,7 @@ end sub
 
 '':::::
 sub symbInitDefines static
+	dim def as string, value as string, is_string as integer
 
 	ctx.def.nodes 	= 0
 	ctx.def.head	= INVALID
@@ -852,6 +865,20 @@ sub symbInitDefines static
 	symbReallocDefineTB FB.INITDEFINENODES
 
     hashNew defhashTB(), FB.INITDEFINENODES
+    
+    restore definesdata
+    do
+    	read def
+    	if( def = "" ) then
+    		exit do
+    	end if
+    	read value
+    	read is_string
+    	if( is_string ) then
+    		value = chr$( CHAR_QUOTE ) + value + chr$( CHAR_QUOTE )
+    	end if
+    	symbAddDefine def, value
+    loop
 
 end sub
 

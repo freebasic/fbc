@@ -48,7 +48,7 @@ end enum
 declare sub 		emitInit			( )
 declare sub 		emitEnd				( )
 
-declare function 	emitOpen			( )
+declare function 	emitOpen			( byval outtype as integer )
 declare sub 		emitClose			( )
 
 declare function 	emitIsKeyword		( text as string ) as integer
