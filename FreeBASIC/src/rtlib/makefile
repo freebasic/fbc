@@ -70,13 +70,7 @@ ifneq ($(WINSYSDIR),)
 	del $(subst /,\,$(objects))
 	del $(subst /,\,$(osdepobjs))
 else
-ifeq ($(OS),DOS)
-	del $(subst /,\,$(lib))
-	del $(subst /,\,$(objects))
-	del $(subst /,\,$(osdepobjs))
-else
 	rm -f $(lib)
 	rm -f $(objects)
 	rm -f $(osdepobjs)
-endif
 endif
