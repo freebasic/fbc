@@ -179,6 +179,10 @@ FBCALL void 		fb_ArrayStrErase	( FBARRAY *array );
 FBCALL int 			fb_ArrayLBound		( FBARRAY *array, int dimension );
 FBCALL int 			fb_ArrayUBound		( FBARRAY *array, int dimension );
 
+	   int 			fb_hArrayCalcElements ( int dimensions, int *lboundTB, int *uboundTB );
+	   int 			fb_hArrayCalcDiff	( int dimensions, int *lboundTB, int *uboundTB );
+	   void 		fb_hArrayFreeVarLenStrs ( FBARRAY *array );
+
 
 /**************************************************************************************************
  * system
