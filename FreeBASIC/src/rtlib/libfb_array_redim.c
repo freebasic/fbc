@@ -27,10 +27,10 @@
 #include <malloc.h>
 #include <stdarg.h>
 #include "fb.h"
-
+#include "fb_rterr.h"
 
 /*:::::*/
-void fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, int dimensions, ... )
+int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, int dimensions, ... )
 {
     va_list 	ap;
     int			i;
@@ -72,10 +72,16 @@ void fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve,
     size	 = elements * element_len;
 
     if( (preserve == FB_FALSE) || (array->ptr == NULL) )
+    {
     	array->ptr = calloc( size, 1 );
+    	if( array->ptr == NULL )
+    		return FB_RTERROR_OUTOFMEM;
+    }
     else
     {
         array->ptr = realloc( array->ptr, size );
+    	if( array->ptr == NULL )
+    		return FB_RTERROR_OUTOFMEM;
 
         if( size > array->size )
         	memset( array->ptr + array->size, 0, size - array->size );
@@ -89,5 +95,7 @@ void fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve,
     	array->data = array->ptr + diff;
     else
     	array->data = NULL;
+
+    return FB_RTERROR_OK;
 }
 

@@ -25,7 +25,7 @@
  *
  */
 
-
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "fb.h"
 
@@ -48,19 +48,19 @@ static FB_LIST condList = { 0 };
 FBCALL FBCOND *fb_CondCreate( void )
 {
 	FBCOND *cond;
-	
+
 	if( (condList.fhead == NULL) && (condList.head == NULL) )
 		fb_hListInit( &condList, (void *)condTB, sizeof(FBCOND), FB_MAXCONDS );
-	
+
 	cond = (FBCOND *)fb_hListAllocElem( &condList );
 	if( !cond )
 		return NULL;
-	
+
 	cond->waiters = 0;
 	InitializeCriticalSection( &cond->lock );
 	cond->event[SIGNAL]    = CreateEvent( NULL, FALSE, FALSE, NULL );
 	cond->event[BROADCAST] = CreateEvent( NULL, TRUE, FALSE, NULL );
-	
+
 	return cond;
 }
 
@@ -70,7 +70,7 @@ FBCALL void fb_CondDestroy( FBCOND *cond )
 	/* dumb address checking */
 	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
 		return;
-	
+
 	DeleteCriticalSection( &cond->lock );
 	CloseHandle( cond->event[SIGNAL] );
 	CloseHandle( cond->event[BROADCAST] );
@@ -81,11 +81,11 @@ FBCALL void fb_CondDestroy( FBCOND *cond )
 FBCALL void fb_CondSignal( FBCOND *cond )
 {
 	int has_waiters;
-	
+
 	/* dumb address checking */
 	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
 		return;
-	
+
 	EnterCriticalSection( &cond->lock );
 	has_waiters = cond->waiters > 0;
 	LeaveCriticalSection( &cond->lock );
@@ -97,11 +97,11 @@ FBCALL void fb_CondSignal( FBCOND *cond )
 FBCALL void fb_CondBroadcast( FBCOND *cond )
 {
 	int has_waiters;
-	
+
 	/* dumb address checking */
 	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
 		return;
-	
+
 	EnterCriticalSection( &cond->lock );
 	has_waiters = cond->waiters > 0;
 	LeaveCriticalSection( &cond->lock );
@@ -113,22 +113,22 @@ FBCALL void fb_CondBroadcast( FBCOND *cond )
 FBCALL void fb_CondWait( FBCOND *cond )
 {
 	int result, last_waiter;
-	
+
 	/* dumb address checking */
 	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
 		return;
-	
+
 	EnterCriticalSection( &cond->lock );
 	cond->waiters++;
 	LeaveCriticalSection( &cond->lock );
-	
+
 	result = WaitForMultipleObjects( 2, cond->event, FALSE, INFINITE );
-	
+
 	EnterCriticalSection( &cond->lock );
 	cond->waiters--;
 	last_waiter = (result == WAIT_OBJECT_0 + BROADCAST) && (cond->waiters == 0);
 	LeaveCriticalSection( &cond->lock );
-	
+
 	if( last_waiter )
 		ResetEvent( cond->event[BROADCAST] );
 }

@@ -26,10 +26,10 @@
 
 #include <malloc.h>
 #include "fb.h"
-
+#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL void fb_ArrayClear( FBARRAY *array, int isvarlen )
+FBCALL int fb_ArrayClear( FBARRAY *array, int isvarlen )
 {
     if( array->ptr != NULL )
     {
@@ -38,5 +38,8 @@ FBCALL void fb_ArrayClear( FBARRAY *array, int isvarlen )
     	else
     		fb_hArrayFreeVarLenStrs( array );
 
+    	return FB_RTERROR_OK;
     }
+    else
+    	return FB_RTERROR_ILLEGALFUNCTIONCALL;
 }

@@ -27,10 +27,10 @@
 #include <malloc.h>
 #include <stdarg.h>
 #include "fb.h"
-
+#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL void fb_ArrayErase( FBARRAY *array, int isvarlen )
+FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen )
 {
     if( array->ptr != NULL )
     {
@@ -40,7 +40,11 @@ FBCALL void fb_ArrayErase( FBARRAY *array, int isvarlen )
     	free( array->ptr );
     	array->ptr  = NULL;
     	array->data = NULL;
+
+    	return FB_RTERROR_OK;
     }
+
+    return FB_RTERROR_ILLEGALFUNCTIONCALL;
 }
 
 

@@ -24,7 +24,7 @@
  *
  */
 
-
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "fb.h"
 
@@ -43,16 +43,16 @@ static FB_LIST thdList = { 0 };
 FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
 {
 	FBTHREAD *thread;
-	
+
 	if( (thdList.fhead == NULL) && (thdList.head == NULL) )
 		fb_hListInit( &thdList, (void *)thdTB, sizeof(FBTHREAD), FB_MAXTHREADS );
-	
+
 	thread = (FBTHREAD *)fb_hListAllocElem( &thdList );
 	if( !thread )
 		return NULL;
-	
+
 	thread->id = (HANDLE)_beginthread( proc, 0, (void *)param );
-	
+
 	return thread;
 }
 
@@ -62,7 +62,7 @@ FBCALL void fb_ThreadWait( FBTHREAD *thread )
 	/* dumb address checking */
 	if( (thread < thdTB) || (thread >= &thdTB[FB_MAXTHREADS]) )
 		return;
-	
+
 	WaitForSingleObject( thread->id, INFINITE );
 	fb_hListFreeElem( &thdList, (FB_LISTELEM *)thread );
 }

@@ -24,7 +24,7 @@
  *
  */
 
-
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "fb.h"
 
@@ -43,16 +43,16 @@ static FB_LIST mtxList = { 0 };
 FBCALL FBMUTEX *fb_MutexCreate( void )
 {
 	FBMUTEX *mutex;
-	
+
 	if( (mtxList.fhead == NULL) && (mtxList.head == NULL) )
 		fb_hListInit( &mtxList, (void *)mtxTB, sizeof(FBMUTEX), FB_MAXMUTEXES );
-	
+
 	mutex = (FBMUTEX *)fb_hListAllocElem( &mtxList );
 	if( !mutex )
 		return NULL;
-	
+
 	mutex->id = CreateMutex(NULL, FALSE, NULL);
-	
+
 	return mutex;
 }
 

@@ -205,16 +205,16 @@ typedef struct _FB_ARRAY_TMPDESC {
 
 /* protos */
 
-	   void 		fb_ArrayRedim		( FBARRAY *array, int element_len, int isvarlen, int preserve, int dimensions, ... );
+	   int 			fb_ArrayRedim		( FBARRAY *array, int element_len, int isvarlen, int preserve, int dimensions, ... );
 	   void 		fb_ArraySetDesc		( FBARRAY *array, void *ptr, int element_len, int dimensions, ... );
-FBCALL void 		fb_ArrayErase		( FBARRAY *array, int isvarlen );
+FBCALL int 			fb_ArrayErase		( FBARRAY *array, int isvarlen );
 FBCALL void 		fb_ArrayStrErase	( FBARRAY *array );
 FBCALL int 			fb_ArrayLBound		( FBARRAY *array, int dimension );
 FBCALL int 			fb_ArrayUBound		( FBARRAY *array, int dimension );
 
 	   int 			fb_hArrayCalcElements ( int dimensions, const int *lboundTB, const int *uboundTB );
 	   int 			fb_hArrayCalcDiff	( int dimensions, const int *lboundTB, const int *uboundTB );
-	   void 		fb_hArrayFreeVarLenStrs ( FBARRAY *array );
+	   int 			fb_hArrayFreeVarLenStrs ( FBARRAY *array );
 
 
 /**************************************************************************************************

@@ -60,7 +60,7 @@ int fb_hArrayCalcDiff( int dimensions, const int *lboundTB, const int *uboundTB 
 }
 
 /*:::::*/
-void fb_hArrayFreeVarLenStrs( FBARRAY *array )
+int fb_hArrayFreeVarLenStrs( FBARRAY *array )
 {
 	int			i;
 	int 		elements;
@@ -69,7 +69,7 @@ void fb_hArrayFreeVarLenStrs( FBARRAY *array )
 
 	p = (FBSTRING *)array->ptr;
 	if (p == NULL)
-		return;
+		return FB_FALSE;
 
     d = &array->dimTB[0];
     elements = 1;
@@ -87,6 +87,7 @@ void fb_hArrayFreeVarLenStrs( FBARRAY *array )
 		++p;
 	}
 
+	return FB_TRUE;
 }
 
 /*:::::*/
