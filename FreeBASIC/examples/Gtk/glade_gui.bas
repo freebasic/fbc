@@ -19,7 +19,7 @@ gtk_init( NULL, NULL )
 xml = glade_xml_new( "glade_gui.xml", NULL, NULL ) 
 
 
-toplevel = glade_xml_get_widget( xml, "window1" ) 
+toplevel = glade_xml_get_widget( xml, "window" ) 
 gtk_widget_show_all( toplevel ) 
 glade_xml_signal_autoconnect( xml ) 
 gtk_main( ) 
