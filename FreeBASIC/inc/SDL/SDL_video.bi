@@ -62,20 +62,20 @@ type SDL_Surface
 	pitch as Uint16
 	pixels as any ptr
 	offset as integer
-   
+
     #define private_hwdata any
 	hwdata as private_hwdata ptr
-   
+
 	clip_rect as SDL_Rect
 	unused1 as Uint32
-    
+
 	locked as Uint32
-    
+
 	#define SDL_BlitMap any
 	map as SDL_BlitMap ptr
-    
+
 	format_version as uinteger
-    
+
 	refcount as integer
 end type
 
@@ -135,7 +135,7 @@ type SDL_Overlay
     planes as integer
     pitches as Uint16 ptr
     pixels as Uint8 ptr ptr
-    
+
 	#define private_yuvhwfuncs any
     hwfuncs as private_yuvhwfuncs ptr
 	#define private_yuvhwdata any
@@ -236,7 +236,7 @@ declare sub SDL_GetRGBA SDLCALL alias "SDL_GetRGBA" _
 
 #define SDL_AllocSurface SDL_CreateRGBSurface
 declare function SDL_CreateRGBSurface SDLCALL alias "SDL_CreateRGBSurface" _
-   (byval flags as Uint32, width as integer, byval height as integer, _
+   (byval flags as Uint32, byval width as integer, byval height as integer, _
    byval depth as integer, byval Rmask as Uint32, byval Gmask as Uint32, _
    byval Bmask as Uint32, byval Amask as Uint32) as SDL_Surface ptr
 declare function SDL_CreateRGBSurfaceFrom SDLCALL _
@@ -256,7 +256,7 @@ declare sub SDL_UnlockSurface SDLCALL alias "SDL_UnlockSurface"_
 declare function SDL_LoadBMP_RW SDLCALL alias "SDL_LoadBMP_RW" _
    (byval src as SDL_RWops ptr, byval freesrc as integer) as SDL_Surface ptr
 
-private function SDL_LoadBMP (byref file as string) as SDL_Surface ptr 
+private function SDL_LoadBMP (byref file as string) as SDL_Surface ptr
     SDL_LoadBMP = SDL_LoadBMP_RW(SDL_RWFromFile(file, "rb"), 1)
 end function
 
@@ -335,7 +335,7 @@ declare function  SDL_GL_GetAttribute SDLCALL alias "SDL_GL_GetAttribute" _
    (byval attr as SDL_GLattr, byval value as integer ptr) as integer
 
 declare sub SDL_GL_SwapBuffers SDLCALL alias "SDL_GL_SwapBuffers" ()
-   
+
 declare sub SDL_GL_UpdateRects SDLCALL alias "SDL_GL_UpdateRects" _
    (byval numrects as integer, byval rects as SDL_Rect ptr)
 declare sub SDL_GL_Lock SDLCALL alias "SDL_GL_Lock" ()
