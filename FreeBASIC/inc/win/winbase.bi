@@ -30,10 +30,14 @@
 '| CONSTANTS |
 '-------------
 
-Const MAX_PATH = 260&
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
 
-Const CCHDEVICENAME = 32
-Const CCHFORMNAME = 32
+#ifndef CCHDEVICENAME
+#define CCHDEVICENAME 32
+#define CCHFORMNAME 32
+#endif
 
 '---------
 '| TYPES |

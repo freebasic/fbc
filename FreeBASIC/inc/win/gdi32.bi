@@ -56,8 +56,10 @@
 #define REFERENCE_BLACK_MAX	4000
 #define COLOR_ADJ_MIN	(-100)
 #define COLOR_ADJ_MAX	100
+#ifndef CCHDEVICENAME
 #define CCHDEVICENAME 32
 #define CCHFORMNAME 32
+#endif
 #define DI_COMPAT	4
 #define DI_DEFAULTSIZE	8
 #define DI_IMAGE	2
