@@ -217,7 +217,9 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 
 		case '"':
 			if( !isquote )
+			{
 				isquote = 1;
+			}
 			else
 			{
 				isquote = 0;
@@ -227,17 +229,29 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 
 			break;
 
+		case ',':
+			if( !isquote )
+			{
+				len = maxlen;					/* exit */
+				break;
+			}
+
+			goto savechar;
+
 		case 9:
 		case ' ':
-		case ',':
-			if( !isstring || ctx.f == NULL )
-				if( !isquote )
-				{
-					len = maxlen;					/* exit */
-					break;
-				}
+			if( len == 0 )
+			{
+				break;							/* skip white-space */
+			}
+			else if( !isstring && !isquote )
+			{
+				len = maxlen;					/* exit */
+				break;
+			}
 
 		default:
+savechar:
 			*p++ = (char)c;
 			++len;
 		}
