@@ -23,22 +23,186 @@
 
 '$include: 'crt.bi'
 
+' -- platform-specific --
+
 #ifndef FB__LINUX
-'$inclib: "alleg"
+
+	#ifdef FB__DOS
+
+		'$inclib: "alleg"
+
+		'$include: 'dos/go32.bi'
+		'$include: 'dos/dpmi.bi'
+
+		#define ALLEGRO_PLATFORM_STR  "djgpp"
+		#define ALLEGRO_DOS
+		#define ALLEGRO_I386
+		#define ALLEGRO_LITTLE_ENDIAN
+		#define ALLEGRO_CONSOLE_OK
+		#define ALLEGRO_VRAM_SINGLE_SURFACE
+		#define ALLEGRO_USE_CONSTRUCTOR
+
+		' memory locking macros
+		declare sub _unlock_dpmi_data cdecl alias "_unlock_dpmi_data" ( byval addr as any ptr, byval size as integer )
+
+		#define END_OF_FUNCTION(x)		sub x##_end() : end sub
+		#define END_OF_STATIC_FUNCTION(x)	private sub x##_end() : end sub
+		#define LOCK_DATA(d, s)			_go32_dpmi_lock_data d, s
+		#define LOCK_CODE(c, s)			_go32_dpmi_lock_code c, s
+		#define UNLOCK_DATA(d,s)		_unlock_dpmi_data d, s
+		#define LOCK_VARIABLE(x)		LOCK_DATA(@x, len(x))
+		#define LOCK_FUNCTION(x)		LOCK_CODE(x, @x##_end - @x)
+
+		' selector for video memory bitmaps
+		#define _video_ds _dos_ds
+
+		' helpers for talking to video memory
+		#define bmp_select(bmp)	_farsetsel (bmp)->seg
+
+		#define bmp_write8(addr, c)		_farnspokeb addr, c
+		#define bmp_write15(addr, c)		_farnspokew addr, c
+		#define bmp_write16(addr, c)		_farnspokew addr, c
+		#define bmp_write32(addr, c)		_farnspokel addr, c
+
+		#define bmp_read8(addr)			_farnspeekb(addr)
+		#define bmp_read15(addr)		_farnspeekw(addr)
+		#define bmp_read16(addr)		_farnspeekw(addr)
+		#define bmp_read32(addr)		_farnspeekl(addr)
+		#define bmp_read24(addr)		(_farnspeekl(addr) and &HFFFFFF)
+
+		#define bmp_write24(addr, c)		_farnspokew addr, (c) and &HFFFF : _farnspokeb (addr)+2, (c) shr 16
+		void bmp_write24(unsigned long addr, int c)
+
+	#elseif defined(FB__WIN32)
+	
+		#ifdef ALLEGRO_STATICLINK
+			'$inclib: 'alleg_s'
+			#define ALLEGRO_PLATFORM_STR  "MinGW32.s"
+		#else
+			'$inclib: 'alleg'
+			#define ALLEGRO_PLATFORM_STR  "MinGW32"
+		#endif
+
+		#define ALLEGRO_WINDOWS
+		#define ALLEGRO_I386
+		#define ALLEGRO_LITTLE_ENDIAN
+		#define ALLEGRO_USE_CONSTRUCTOR
+
+		#ifdef USE_CONSOLE
+			#define ALLEGRO_CONSOLE_OK
+		#endif
+
+		' describe how function prototypes look to MINGW32
+		#if defined(ALLEGRO_STATICLINK)
+			#define _AL_DLL
+		#else
+			#define _AL_DLL	Import ''__declspec(dllimport)
+		#endif
+
+		#define SYSTEM_DIRECTX		AL_ID(asc("D"),asc("X"),asc(" "),asc(" "))
+
+		#define TIMER_WIN32_HIGH_PERF	AL_ID(asc("W"),asc("3"),asc("2"),asc("H"))
+		#define TIMER_WIN32_LOW_PERF	AL_ID(asc("W"),asc("3"),asc("2"),asc("L"))
+	
+	#endif
+	
 #else
-'$libpath: "/usr/local/lib"
-'$libpath: "/usr/X11R6/lib"
-'$inclib: "alleg-4.0.3"
-'$inclib: "alleg_unsharable"
+	' linux
+	
+	#define ALLEGRO_UNIX
+	#define ALLEGRO_LINUX
+
+	'$libpath: "/usr/local/lib"
+	'$libpath: "/usr/X11R6/lib"
+	'$inclib: "alleg-4.0.3"
+	'$inclib: "alleg_unsharable"
+	
+	#define ALLEGRO_CONSOLE_OK
+	#define ALLEGRO_VRAM_SINGLE_SURFACE
+	
+	#define TIMERDRV_UNIX_PTHREADS	AL_ID(asc("P"),asc("T"),asc("H"),asc("R"))
+
+	declare sub split_modex_screen cdecl alias "split_modex_screen" ( byval _line as integer )
+
+	' Port I/O functions -- maybe these should be internal
+
+	private sub outportb ( byval port as ushort, byval value as ubyte)
+		asm
+			mov dx, [port]
+			mov al, [value]
+			out dx, al
+		end asm
+	end sub
+	
+	private sub outportw ( byval port as ushort, byval value as ushort )
+		asm
+			mov dx, [port]
+			mov ax, [value]
+			out dx, ax
+		end asm
+	end sub
+
+	private sub outportl ( byval port as ushort, byval value as uinteger )
+		asm
+			mov dx, [port]
+			mov eax, [value]
+			out dx, eax
+		end asm
+	end sub
+
+	private function inportb ( byval port as ushort ) as ubyte
+		asm
+			mov dx, [port]
+			in al, dx
+			mov [inportb], al
+		end asm
+	end function
+	
+	private function inportw ( byval port as ushort ) as ushort
+		asm
+			mov dx, [port]
+			in ax, dx
+			mov [inportw], ax
+		end asm
+	end function
+
+	private function inportl ( byval port as ushort ) as ushort
+		asm
+			mov dx, [port]
+			in eax, dx
+			mov [inportl], eax
+		end asm
+	end function
+
 #endif
 
-#define AL_VER	4.0
+#if not defined(FB__DOS)
+
+	#define END_OF_FUNCTION(x)		if 0 then : end if
+	#define END_OF_STATIC_FUNCTION(x)	if 0 then : end if
+	#define LOCK_DATA(d, s)			if 0 then : end if
+	#define LOCK_CODE(c, s)			if 0 then : end if
+	#define UNLOCK_DATA(d,s)		if 0 then : end if
+	#define LOCK_VARIABLE(x)		if 0 then : end if
+	#define LOCK_FUNCTION(x)		if 0 then : end if
+
+#endif
+
 
 ' -- constants --
 
 ' todo ... lots of missing constants
 
-'#define AL_ID(a,b,c,d)			(((a) shl 24) or ((b) shl 16) or ((c) shl 8) or (d))
+#define ALLEGRO_VERSION          4
+#define ALLEGRO_SUB_VERSION      0
+#define ALLEGRO_WIP_VERSION      3
+#define ALLEGRO_VERSION_STR      "4.0.3 (RC3)"
+#define ALLEGRO_DATE_STR         "2003"
+#define ALLEGRO_DATE             20030330    ' yyyymmdd
+
+#define AL_ID(a,b,c,d)			(((a) shl 24) or ((b) shl 16) or ((c) shl 8) or (d))
+
+#define AL_PI				3.14159265358979323846
 
 Const FALSE%				= 0
 Const TRUE%				= -1
@@ -49,14 +213,16 @@ Const JOY_TYPE_NONE%			= 0
 Const MAX_JOYSTICKS%			= 8
 Const MAX_JOYSTICK_AXIS%		= 3
 Const MAX_JOYSTICK_STICKS%		= 5
+#if ALLEGRO_SUB_VERSION = 1
 Const MAX_JOYSTICK_BUTTONS%		= 32
+#else
+Const MAX_JOYSTICK_BUTTONS%		= 16
+#endif
 
 Const PAL_SIZE%				= 256
 
 Const MIDI_VOICES%			= 64
 Const MIDI_TRACKS%			= 32
-
-Const F_BUF_SIZE%			= 4096
 
 Const TIMERS_PER_SECOND%		= 1193181
 
@@ -69,8 +235,21 @@ Const MASK_COLOR_32%			= &HFF00FF	' (8.8.8 pink)
 Const fixtorad_r%			= 1608		' 2pi/256
 Const radtofix_r%			= 2670177	' 256/2pi
 
+' joystick status flags
+#define JOYFLAG_DIGITAL             1
+#define JOYFLAG_ANALOGUE            2
+#define JOYFLAG_CALIB_DIGITAL       4
+#define JOYFLAG_CALIB_ANALOGUE      8
+#define JOYFLAG_CALIBRATE           16
+#define JOYFLAG_SIGNED              32
+#define JOYFLAG_UNSIGNED            64
+
+' alternative spellings
+#define JOYFLAG_ANALOG              JOYFLAG_ANALOGUE
+#define JOYFLAG_CALIB_ANALOG        JOYFLAG_CALIB_ANALOGUE
 
 Const SYSTEM_AUTODETECT% = 0
+#define SYSTEM_NONE        AL_ID(asc("N"),asc("O"),asc("N"),asc("E"))
 
 Const GFX_TEXT%				= -1
 Const GFX_AUTODETECT%			= 0
@@ -130,6 +309,8 @@ Const POLYTYPE_PTEX_MASK_TRANS%		= 14
 Const POLYTYPE_MAX%			= 15
 Const POLYTYPE_ZBUF%			= 16
 
+
+#ifndef ALLEGRO_NO_KEY_DEFINES
 
 #define KB_SHIFT_FLAG         &H0001
 #define KB_CTRL_FLAG          &H0002
@@ -266,14 +447,240 @@ Const POLYTYPE_ZBUF%			= 16
 
 #define KEY_MAX               115
 
+#endif ' ALLEGRO_NO_KEY_DEFINES
+
+#define QUAT_SHORT   0
+#define QUAT_LONG    1
+#define QUAT_CW      2
+#define QUAT_CCW     3
+#define QUAT_USER    4
+
+#define OSTYPE_UNKNOWN     0
+#define OSTYPE_WIN3        AL_ID(asc("W"),asc("I"),asc("N"),asc("3"))
+#define OSTYPE_WIN95       AL_ID(asc("W"),asc("9"),asc("5"),asc(" "))
+#define OSTYPE_WIN98       AL_ID(asc("W"),asc("9"),asc("8"),asc(" "))
+#define OSTYPE_WINME       AL_ID(asc("W"),asc("M"),asc("E"),asc(" "))
+#define OSTYPE_WINNT       AL_ID(asc("W"),asc("N"),asc("T"),asc(" "))
+#define OSTYPE_WIN2000     AL_ID(asc("W"),asc("2"),asc("K"),asc(" "))
+#define OSTYPE_WINXP       AL_ID(asc("W"),asc("X"),asc("P"),asc(" "))
+#define OSTYPE_OS2         AL_ID(asc("O"),asc("S"),asc("2"),asc(" "))
+#define OSTYPE_WARP        AL_ID(asc("W"),asc("A"),asc("R"),asc("P"))
+#define OSTYPE_DOSEMU      AL_ID(asc("D"),asc("E"),asc("M"),asc("U"))
+#define OSTYPE_OPENDOS     AL_ID(asc("O"),asc("D"),asc("O"),asc("S"))
+#define OSTYPE_LINUX       AL_ID(asc("T"),asc("U"),asc("X"),asc(" "))
+#define OSTYPE_SUNOS       AL_ID(asc("S"),asc("U"),asc("N"),asc(" "))
+#define OSTYPE_FREEBSD     AL_ID(asc("F"),asc("B"),asc("S"),asc("D"))
+#define OSTYPE_NETBSD      AL_ID(asc("N"),asc("B"),asc("S"),asc("D"))
+#define OSTYPE_IRIX        AL_ID(asc("I"),asc("R"),asc("I"),asc("X"))
+#define OSTYPE_QNX         AL_ID(asc("Q"),asc("N"),asc("X"),asc(" "))
+#define OSTYPE_UNIX        AL_ID(asc("U"),asc("N"),asc("I"),asc("X"))
+#define OSTYPE_BEOS        AL_ID(asc("B"),asc("E"),asc("O"),asc("S"))
+#define OSTYPE_MACOS       AL_ID(asc("M"),asc("A"),asc("C"),asc(" "))
+
+#define DAT_ID(a,b,c,d)    AL_ID(a,b,c,d)
+
+#define DAT_MAGIC          DAT_ID(asc("A"),asc("L"),asc("L"),asc("."))
+#define DAT_FILE           DAT_ID(asc("F"),asc("I"),asc("L"),asc("E"))
+#define DAT_DATA           DAT_ID(asc("D"),asc("A"),asc("T"),asc("A"))
+#define DAT_FONT           DAT_ID(asc("F"),asc("O"),asc("N"),asc("T"))
+#define DAT_SAMPLE         DAT_ID(asc("S"),asc("A"),asc("M"),asc("P"))
+#define DAT_MIDI           DAT_ID(asc("M"),asc("I"),asc("D"),asc("I"))
+#define DAT_PATCH          DAT_ID(asc("P"),asc("A"),asc("T"),asc(" "))
+#define DAT_FLI            DAT_ID(asc("F"),asc("L"),asc("I"),asc("C"))
+#define DAT_BITMAP         DAT_ID(asc("B"),asc("M"),asc("P"),asc(" "))
+#define DAT_RLE_SPRITE     DAT_ID(asc("R"),asc("L"),asc("E"),asc(" "))
+#define DAT_C_SPRITE       DAT_ID(asc("C"),asc("M"),asc("P"),asc(" "))
+#define DAT_XC_SPRITE      DAT_ID(asc("X"),asc("C"),asc("M"),asc("P"))
+#define DAT_PALETTE        DAT_ID(asc("P"),asc("A"),asc("L"),asc(" "))
+#define DAT_PROPERTY       DAT_ID(asc("p"),asc("r"),asc("o"),asc("p"))
+#define DAT_NAME           DAT_ID(asc("N"),asc("A"),asc("M"),asc("E"))
+#define DAT_END            -1
+
+#define DIGI_AUTODETECT		-1	' for passing to install_sound()
+#define DIGI_NONE		0
+
+#define PLAYMODE_PLAY           0
+#define PLAYMODE_LOOP           1
+#define PLAYMODE_FORWARD        0
+#define PLAYMODE_BACKWARD       2
+#define PLAYMODE_BIDIR          4
+
+#define SOUND_INPUT_MIC    1
+#define SOUND_INPUT_LINE   2
+#define SOUND_INPUT_CD     3
+
+#define DRAW_MODE_SOLID             0        ' flags for drawing_mode()
+#define DRAW_MODE_XOR               1
+#define DRAW_MODE_COPY_PATTERN      2
+#define DRAW_MODE_SOLID_PATTERN     3
+#define DRAW_MODE_MASKED_PATTERN    4
+#define DRAW_MODE_TRANS             5
+
+#define F_READ          "r"
+#define F_WRITE         "w"
+#define F_READ_PACKED   "rp"
+#define F_WRITE_PACKED  "wp"
+#define F_WRITE_NOPACK  "w!"
+
+#define F_BUF_SIZE      4096		' 4K buffer for caching data
+#define F_PACK_MAGIC    &H736C6821	' magic number for packed files
+#define F_NOPACK_MAGIC  &H736C682E	' magic number for autodetect
+#define F_EXE_MAGIC     &H736C682B	' magic number for appended data
+
+#define PACKFILE_FLAG_WRITE	1	' the file is being written
+#define PACKFILE_FLAG_PACK	2	' data is compressed
+#define PACKFILE_FLAG_CHUNK	4	' file is a sub-chunk
+#define PACKFILE_FLAG_EOF	8	' reached the end-of-file
+#define PACKFILE_FLAG_ERROR	16	' an error has occurred
+#define PACKFILE_FLAG_OLD_CRYPT	32	' backward compatibility mode
+#define PACKFILE_FLAG_EXEDAT	64	' reading from our executable
+
+#define BMP_ID_VIDEO       &H80000000
+#define BMP_ID_SYSTEM      &H40000000
+#define BMP_ID_SUB         &H20000000
+#define BMP_ID_PLANAR      &H10000000
+#define BMP_ID_NOBLIT      &H08000000
+#define BMP_ID_LOCKED      &H04000000
+#define BMP_ID_AUTOLOCK    &H02000000
+#define BMP_ID_MASK        &H01FFFFFF
+
+#define VIRTUAL_W    iif(screen <> 0, screen->w, 0)
+#define VIRTUAL_H    iif(screen <> 0, screen->h, 0)
+
+#define COLORCONV_NONE              0
+
+#define COLORCONV_8_TO_15           1
+#define COLORCONV_8_TO_16           2
+#define COLORCONV_8_TO_24           4
+#define COLORCONV_8_TO_32           8
+
+#define COLORCONV_15_TO_8           &H10
+#define COLORCONV_15_TO_16          &H20
+#define COLORCONV_15_TO_24          &H40
+#define COLORCONV_15_TO_32          &H80
+
+#define COLORCONV_16_TO_8           &H100
+#define COLORCONV_16_TO_15          &H200
+#define COLORCONV_16_TO_24          &H400
+#define COLORCONV_16_TO_32          &H800
+
+#define COLORCONV_24_TO_8           &H1000
+#define COLORCONV_24_TO_15          &H2000
+#define COLORCONV_24_TO_16          &H4000
+#define COLORCONV_24_TO_32          &H8000
+
+#define COLORCONV_32_TO_8           &H10000
+#define COLORCONV_32_TO_15          &H20000
+#define COLORCONV_32_TO_16          &H40000
+#define COLORCONV_32_TO_24          &H80000
+
+#define COLORCONV_32A_TO_8          &H100000
+#define COLORCONV_32A_TO_15         &H200000
+#define COLORCONV_32A_TO_16         &H400000
+#define COLORCONV_32A_TO_24         &H800000
+
+#define COLORCONV_DITHER_PAL        &H1000000
+#define COLORCONV_DITHER_HI         &H2000000
+#define COLORCONV_KEEP_TRANS        &H4000000
+
+#define COLORCONV_DITHER            (COLORCONV_DITHER_PAL or COLORCONV_DITHER_HI)
+
+#define COLORCONV_EXPAND_256        (COLORCONV_8_TO_15 or COLORCONV_8_TO_16 or COLORCONV_8_TO_24 or COLORCONV_8_TO_32)
+
+#define COLORCONV_REDUCE_TO_256     (COLORCONV_15_TO_8 or COLORCONV_16_TO_8 or COLORCONV_24_TO_8 or COLORCONV_32_TO_8 or COLORCONV_32A_TO_8)
+
+#define COLORCONV_EXPAND_15_TO_16    COLORCONV_15_TO_16
+
+#define COLORCONV_REDUCE_16_TO_15    COLORCONV_16_TO_15
+
+#define COLORCONV_EXPAND_HI_TO_TRUE (COLORCONV_15_TO_24 or COLORCONV_15_TO_32 or COLORCONV_16_TO_24 or COLORCONV_16_TO_32)
+
+#define COLORCONV_REDUCE_TRUE_TO_HI (COLORCONV_24_TO_15 or COLORCONV_24_TO_16 or COLORCONV_32_TO_15 or COLORCONV_32_TO_16)
+
+#define COLORCONV_24_EQUALS_32      (COLORCONV_24_TO_32 or COLORCONV_32_TO_24)
+
+#define COLORCONV_TOTAL             (COLORCONV_EXPAND_256 or COLORCONV_REDUCE_TO_256 or COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15 or COLORCONV_EXPAND_HI_TO_TRUE or COLORCONV_REDUCE_TRUE_TO_HI or COLORCONV_24_EQUALS_32 or COLORCONV_32A_TO_15 or COLORCONV_32A_TO_16 or COLORCONV_32A_TO_24)
+
+#define COLORCONV_PARTIAL           (COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15 or COLORCONV_24_EQUALS_32)
+
+#define COLORCONV_MOST              (COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15 or COLORCONV_EXPAND_HI_TO_TRUE or COLORCONV_REDUCE_TRUE_TO_HI or COLORCONV_24_EQUALS_32)
+
+#define SWITCH_NONE           0
+#define SWITCH_PAUSE          1
+#define SWITCH_AMNESIA        2
+#define SWITCH_BACKGROUND     3
+#define SWITCH_BACKAMNESIA    4
+
+#define SWITCH_IN             0
+#define SWITCH_OUT            1
+
+' bits for the flags field
+#define D_EXIT          1        ' object makes the dialog exit
+#define D_SELECTED      2        ' object is selected
+#define D_GOTFOCUS      4        ' object has the input focus 
+#define D_GOTMOUSE      8        ' mouse is on top of object
+#define D_HIDDEN        16       ' object is not visible
+#define D_DISABLED      32       ' object is visible but inactive
+#define D_DIRTY         64       ' object needs to be redrawn
+#define D_INTERNAL      128      ' reserved for internal use
+#define D_USER          256      ' from here on is free for your own use
+
+
+' return values for the dialog procedures
+#define D_O_K           0        ' normal exit status
+#define D_CLOSE         1        ' request to close the dialog
+#define D_REDRAW        2        ' request to redraw the dialog
+#define D_REDRAWME      4        ' request to redraw this object
+#define D_WANTFOCUS     8        ' this object wants the input focus
+#define D_USED_CHAR     16       ' object has used the keypress
+#define D_REDRAW_ALL    32       ' request to redraw all active dialogs
+
+
+' messages for the dialog procedures
+#define MSG_START       1        ' start the dialog, initialise 
+#define MSG_END         2        ' dialog is finished - cleanup
+#define MSG_DRAW        3        ' draw the object
+#define MSG_CLICK       4        ' mouse click on the object
+#define MSG_DCLICK      5        ' double click on the object
+#define MSG_KEY         6        ' keyboard shortcut
+#define MSG_CHAR        7        ' other keyboard input
+#define MSG_UCHAR       8        ' unicode keyboard input
+#define MSG_XCHAR       9        ' broadcast character to all objects
+#define MSG_WANTFOCUS   10       ' does object want the input focus?
+#define MSG_GOTFOCUS    11       ' got the input focus
+#define MSG_LOSTFOCUS   12       ' lost the input focus
+#define MSG_GOTMOUSE    13       ' mouse on top of object
+#define MSG_LOSTMOUSE   14       ' mouse moved away from object
+#define MSG_IDLE        15       ' update any background stuff
+#define MSG_RADIO       16       ' clear radio buttons
+#define MSG_WHEEL       17       ' mouse wheel moved
+#define MSG_LPRESS      18       ' mouse left button pressed
+#define MSG_LRELEASE    19       ' mouse left button released
+#define MSG_MPRESS      20       ' mouse middle button pressed
+#define MSG_MRELEASE    21       ' mouse middle button released
+#define MSG_RPRESS      22       ' mouse right button pressed
+#define MSG_RRELEASE    23       ' mouse right button released
+#define MSG_USER        24       ' from here on are free...
+
+#define OLD_FILESEL_WIDTH   -1
+#define OLD_FILESEL_HEIGHT  -1
+
 
 ' -- "typedefs" --
 
 #define ZBUFFER BITMAP				' 3D z-buffer type
 #define fixed Integer				' 32-bit 16.16 fixed-point type
 
+#define DIALOG_PROC	function(byval msg as integer, byval d as DIALOG ptr, byval c as integer) as integer
+
 
 ' -- structures and types --
+
+type _DRIVER_INFO		' info about a hardware driver
+	id as integer		' integer ID
+	driver as any ptr	' the driver structure
+	autodetect as integer	' set to allow autodetection
+end type
 
 type GFX_DRIVER
    id as integer
@@ -311,9 +718,6 @@ type GFX_DRIVER
    vid_phys_base as integer
    windowed as integer
 end type
-
-extern import gfx_driver alias "gfx_driver" as GFX_DRIVER ptr 
-
 
 Type GFX_VTABLE        ' functions for drawing onto bitmaps
 	color_depth As Integer
@@ -628,23 +1032,233 @@ Type PACKFILE					' our very own FILE structure...
 	buf(F_BUF_SIZE - 1) As UByte		' the actual data buffer
 End Type
 
+type FONT_GLYPH					' a single monochrome font character
+	w as short
+	h as short
+	dat as ubyte ptr
+end type
+
 Type FONT
 	data As UByte Ptr
 	height As Integer
 	vtable As UByte Ptr
 End Type
 
-' -- prototypes --
+Type SYSTEM_DRIVER
+	id as integer
+	name as byte ptr
+	desc as byte ptr
+	ascii_name as byte ptr
+	init as function() as integer
+	exit as sub()
+	get_executable_name as sub(byval output as byte ptr, byval size as integer)
+	find_resource as function(byval dest as byte ptr, byval resource as byte ptr, byval size as integer) as integer
+	set_window_title as sub(byval name as byte ptr)
+	set_window_close_button as function(byval enable as integer) as integer
+	set_window_close_hook as sub(byval proc as sub())
+	message as sub(byval msg as byte ptr)
+	assert as sub(byval msg as byte ptr)
+	save_console_state as sub()
+	restore_console_state as sub()
+	create_bitmap as function(byval color_depth as integer, byval width as integer, byval height as integer) as BITMAP ptr
+	created_bitmap as sub(byval bmp as BITMAP ptr)
+	create_sub_bitmap as function(byval parent as BITMAP ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer) as BITMAP ptr
+	created_sub_bitmap as sub(byval bmp as BITMAP ptr, byval parent as BITMAP ptr)
+	destroy_bitmap as function(byval bmp as BITMAP ptr) as integer
+	read_hardware_palette as sub()
+	set_palette_range as sub(byval p as RGB ptr, byval _from as integer, byval _to as integer, byval retracesync as integer)
+	get_vtable as function(byval color_depth as integer) as GFX_VTABLE ptr
+	set_display_switch_mode as function(byval mode as integer) as integer
+	set_display_switch_callback as function(byval _dir as integer, byval cb as sub()) as integer
+	remove_display_switch_callback as sub(byval cb as sub())
+	display_switch_lock as sub(byval _lock as integer, byval foreground as integer)
+	desktop_color_depth as function() as integer
+	get_desktop_resolution as function(byval width as integer ptr, byval height as integer ptr) as integer
+	yield_timeslice as sub()
+	gfx_drivers as function() as _DRIVER_INFO ptr
+	digi_drivers as function() as _DRIVER_INFO ptr
+	midi_drivers as function() as _DRIVER_INFO ptr
+	keyboard_drivers as function() as _DRIVER_INFO ptr
+	mouse_drivers as function() as _DRIVER_INFO ptr
+	joystick_drivers as function() as _DRIVER_INFO ptr
+	timer_drivers as function() as _DRIVER_INFO ptr
+end type
 
-' system
-Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByRef errno_ptr As Integer, ByVal atexit_ptr as sub()) As Integer
-Declare Sub allegro_exit CDecl Alias "allegro_exit" ()
+type TIMER_DRIVER
+	id as integer
+	name as byte ptr
+	desc as byte ptr
+	ascii_name as byte ptr
+	init as function() as integer
+	exit as sub()
+	install_int as function(byval proc as sub(), byval speed as integer) as integer
+	remove_int as sub(byval proc as sub())
+	install_param_int as function(byval proc as sub(byval param as any ptr), byval _param as any ptr, byval speed as integer) as integer
+	remove_param_int as sub(byval proc as sub(byval param as any ptr), byval _param as any ptr)
+	can_simulate_retrace as function() as integer
+	simulate_retrace as sub(byval enable as integer)
+	rest as sub(byval time_ as integer, byval callback as sub())
+end type
+
+type _VTABLE_INFO
+	color_depth as integer
+	vtable as GFX_VTABLE ptr
+end type
+
+' -- externs --
+
+extern import gfx_driver alias "gfx_driver" as GFX_DRIVER ptr
+
+extern import timer_driver as TIMER_DRIVER ptr
+extern import _timer_driver_list as _DRIVER_INFO
+
+extern import _system_none alias "system_none" as SYSTEM_DRIVER
+extern import system_driver alias "system_driver" as SYSTEM_DRIVER ptr
+extern import _system_driver_list alias "_system_driver_list" as _DRIVER_INFO
+
 Extern Import allegro_id Alias "allegro_id" As Byte Ptr
-Extern Import allegro_error Alias "allegro_error" As Byte Ptr
+Extern Import fb_allegro_error Alias "allegro_error" As Byte
+
 Extern Import os_type Alias "os_type" As Integer
 Extern Import os_version Alias "os_version" As Integer
 Extern Import os_revision Alias "os_revision" As Integer
 Extern Import os_multitasking Alias "os_multitasking" As Integer
+
+Extern Import cpu_vendor Alias "cpu_vendor" As Byte Ptr
+Extern Import cpu_family Alias "cpu_family" As Integer
+Extern Import cpu_model Alias "cpu_model" As Integer
+Extern Import cpu_capabilities Alias "cpu_capabilities" as Integer
+
+Extern Import mouse_x Alias "mouse_x" As Integer
+Extern Import mouse_y Alias "mouse_y" As Integer
+Extern Import mouse_z Alias "mouse_z" As Integer
+Extern Import mouse_b Alias "mouse_b" As Integer
+Extern Import mouse_pos Alias "mouse_pos" As Integer
+Extern Import mouse_sprite  Alias "mouse_sprite" As BITMAP Ptr
+Extern Import mouse_x_focus Alias "mouse_x_focus" As Integer
+Extern Import mouse_y_focus Alias "mouse_y_focus" As Integer
+Extern Import freeze_mouse_flag Alias "freeze_mouse_flag" As Integer
+Extern Import mouse_callback Alias "mouse_callback" As Sub(ByVal flags As Integer)
+
+Extern Import retrace_count Alias "retrace_count" As Integer
+Extern Import retrace_proc Alias "retrace_proc" As Sub()
+
+Extern Import keyboard_needs_poll Alias "keyboard_needs_poll" As Integer
+Extern Import al_key Alias "key" As Byte
+Extern Import key_shifts Alias "key_shifts" As Integer
+Extern Import keyboard_callback Alias "keyboard_callback" As Function(ByVal key As Integer) As Integer
+Extern Import keyboard_ucallback Alias "keyboard_ucallback" As Function(ByVal key As Integer, ByVal scancode As Integer Ptr) As Integer
+Extern Import keyboard_lowlevel_callback Alias "keyboard_lowlevel_callback" As Function(ByVal key As Integer) As Integer
+Extern Import three_finger_flag Alias "three_finger_flag" As Integer
+Extern Import key_led_flag Alias "key_led_flag" As Integer
+
+Extern Import num_joysticks Alias "num_joysticks" As Integer
+Extern Import joy Alias "joy" As JOYSTICK_INFO Ptr
+
+Extern Import gfx_capabilities Alias "gfx_capabilities" As Integer
+
+Extern Import screen Alias "screen" As BITMAP Ptr
+
+Extern Import default_palette Alias "default_palette" As RGB Ptr
+Extern Import black_palette Alias "black_palette" As RGB Ptr
+Extern Import desktop_palette Alias "desktop_palette" As RGB Ptr
+
+Extern Import rgb_map Alias "rgb_map" As RGB_MAP Ptr
+
+Extern Import scene_gap Alias "scene_gap" As Single
+
+Extern Import color_map Alias "color_map" As COLOR_MAP Ptr
+
+Extern Import midi_pos Alias "midi_pos" As Integer
+Extern Import midi_loop_start Alias "midi_loop_start" As Integer
+Extern Import midi_loop_end Alias "midi_loop_end" As Integer
+Extern Import midi_msg_callback Alias "midi_msg_callback" As Sub()
+Extern Import midi_meta_callback Alias "midi_meta_callback" As Sub()
+Extern Import midi_sysex_callback Alias "midi_sysex_callback" As Sub()
+
+Extern Import digi_recorder Alias "digi_recorder" As Sub()
+Extern Import midi_recorder Alias "midi_recorder" As Sub()
+
+Extern Import fli_bitmap Alias "fli_bitmap" As BITMAP Ptr
+Extern Import fli_palette Alias "fli_palette" As RGB Ptr
+Extern Import fli_bmp_dirty_to Alias "fli_bmp_dirty_to" As Integer
+Extern Import fli_bmp_dirty_from Alias "fli_bmp_dirty_from" As Integer
+extern import fli_pal_dirty_from alias "fli_pal_dirty_from" as integer
+extern import fli_pal_dirty_to alias "fli_pal_dirty_to" as integer
+Extern Import fli_frame alias "fli_frame" as integer
+Extern Import fli_timer Alias "fli_timer" As Integer
+
+Extern Import font Alias "font" As FONT Ptr
+Extern Import allegro_404_char Alias "allegro_404_char" As Integer
+
+extern import identity_matrix alias "identity_matrix" as MATRIX
+extern import identity_matrix_f alias "identity_matrix_f" as MATRIX_f
+
+Extern import identity_quat alias "identity_quat" As QUAT
+
+Extern Import linear_vtable16 Alias "linear_vtable16" As GFX_VTABLE Ptr
+
+extern import _persp_xscale alias "_persp_xscale" as fixed
+extern import _persp_yscale alias "_persp_yscale" as fixed
+extern import _persp_xoffset as fixed
+extern import _persp_yoffset as fixed
+
+extern import _persp_xscale_f as single
+extern import _persp_yscale_f as single
+extern import _persp_xoffset_f as single
+extern import _persp_yoffset_f as single
+
+extern import allegro_errno alias "allegro_error" as integer ptr
+
+extern import _rgb_r_shift_15 as integer
+extern import _rgb_g_shift_15 as integer
+extern import _rgb_b_shift_15 as integer
+extern import _rgb_r_shift_16 as integer
+extern import _rgb_g_shift_16 as integer
+extern import _rgb_b_shift_16 as integer
+extern import _rgb_r_shift_24 as integer
+extern import _rgb_g_shift_24 as integer
+extern import _rgb_b_shift_24 as integer
+extern import _rgb_r_shift_32 as integer
+extern import _rgb_g_shift_32 as integer
+extern import _rgb_b_shift_32 as integer
+extern import _rgb_a_shift_32 as integer
+extern import _rgb_scale_5 as integer
+extern import _rgb_scale_6 as integer
+
+Extern Import palette_color Alias "palette_color" As Integer Ptr
+
+extern import _cos_tbl alias "_cos_tbl" as fixed ptr
+extern import _tan_tbl alias "_tan_tbl" as fixed ptr
+extern import _acos_tbl alias "_acos_tbl" as fixed ptr
+
+extern import _vtable_list alias "_vtable_list" as _VTABLE_INFO ptr
+
+extern import gui_shadow_box_proc as DIALOG_PROC
+extern import gui_ctext_proc as DIALOG_PROC
+extern import gui_button_proc as DIALOG_PROC
+extern import gui_edit_proc as DIALOG_PROC
+extern import gui_list_proc as DIALOG_PROC
+extern import gui_text_list_proc as DIALOG_PROC
+extern import active_dialog as DIALOG ptr
+extern import active_menu as MENU ptr
+extern import gui_mouse_focus as integer
+extern import gui_fg_color as integer
+extern import gui_mg_color as integer
+extern import gui_bg_color as integer
+extern import gui_font_baseline as integer
+extern import gui_mouse_x as function() as integer
+extern import gui_mouse_y as function() as integer
+extern import gui_mouse_z as function() as integer
+extern import gui_mouse_b as function() as integer
+extern import gui_menu_draw_menu as sub(byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+extern import gui_menu_draw_menu_item as sub(byval m as MENU ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval bar as integer, byval sel as integer)
+
+' -- prototypes --
+
+' system
+Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByVal errno_ptr As Integer Ptr, ByVal atexit_ptr as sub()) As Integer
+Declare Sub allegro_exit CDecl Alias "allegro_exit" ()
 Declare Sub allegro_message CDecl Alias "allegro_message" (ByVal s As String)
 Declare Sub set_window_title CDecl Alias "set_window_title" (ByVal name As String)
 Declare Function set_close_button CDecl Alias "set_close_button" (ByVal enable As Integer) As Integer
@@ -653,10 +1267,6 @@ Declare Function desktop_color_depth CDecl Alias "desktop_color_depth" () As Int
 Declare Function get_desktop_resolution CDecl Alias "get_desktop_resolution" (ByRef width As Integer, ByRef height As Integer) As Integer
 Declare Sub yield_timeslice CDecl Alias "yield_timeslice" ()
 Declare Sub check_cpu CDecl Alias "check_cpu" ()
-Extern Import cpu_vendor Alias "cpu_vendor" As Byte Ptr
-Extern Import cpu_family Alias "cpu_family" As Integer
-Extern Import cpu_model Alias "cpu_model" As Integer
-Extern Import cpu_capabilities Alias "cpu_capabilities" as Integer
 
 ' unicode - todo
 
@@ -689,19 +1299,10 @@ Declare Function install_mouse CDecl Alias "install_mouse" () As Integer
 Declare Sub remove_mouse CDecl Alias "remove_mouse" ()
 Declare Function poll_mouse CDecl Alias "poll_mouse" () As Integer
 Declare Function mouse_needs_poll CDecl Alias "mouse_needs_poll" () As Integer
-Extern Import mouse_x Alias "mouse_x" As Integer
-Extern Import mouse_y Alias "mouse_y" As Integer
-Extern Import mouse_z Alias "mouse_z" As Integer
-Extern Import mouse_b Alias "mouse_b" As Integer
-Extern Import mouse_pos Alias "mouse_pos" As Integer
-Extern Import mouse_sprite  Alias "mouse_sprite" As BITMAP Ptr
-Extern Import mouse_x_focus Alias "mouse_x_focus" As Integer
-Extern Import mouse_y_focus Alias "mouse_y_focus" As Integer
 Declare Sub show_mouse CDecl Alias "show_mouse" (ByVal bmp As BITMAP Ptr)
 Declare Sub scare_mouse CDecl Alias "scare_mouse" ()
 Declare Sub scare_mouse_area CDecl Alias "scare_mouse_area" (ByVal x As Integer, ByVal y As Integer, ByVal w As Integer, ByVal h As Integer)
 Declare Sub unscare_mouse CDecl Alias "unscare_mouse" ()
-Extern Import freeze_mouse_flag Alias "freeze_mouse_flag" As Integer
 Declare Sub position_mouse CDecl Alias "position_mouse" (ByVal x As Integer, ByVal y As Integer)
 Declare Sub position_mouse_z CDecl Alias "position_mouse_z" (ByVal z As Integer)
 Declare Sub set_mouse_range CDecl Alias "set_mouse_range" (ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer)
@@ -709,7 +1310,6 @@ Declare Sub set_mouse_speed CDecl Alias "set_mouse_speed" (ByVal xspeed As Integ
 Declare Sub set_mouse_sprite CDecl Alias "set_mouse_sprite" (ByVal sprite As BITMAP Ptr)
 Declare Sub set_mouse_sprite_focus CDecl Alias "set_mouse_sprite_focus" (ByVal x As Integer, ByVal y As Integer)
 Declare Sub get_mouse_mickeys CDecl Alias "get_mouse_mickeys" (ByRef mickeyx As Integer, ByRef mickeyy As Integer)
-Extern Import mouse_callback Alias "mouse_callback" As Sub(ByVal flags As Integer)
 
 ' timer routines
 Declare Function install_timer CDecl Alias "install_timer" () As Integer
@@ -723,8 +1323,6 @@ Declare Sub remove_param_int CDecl Alias "remove_param_int" (ByVal proc As Sub(B
 Declare Function timer_can_simulate_retrace CDecl Alias "timer_can_simulate_retrace" () As Integer
 Declare Sub timer_simulate_retrace CDecl Alias "timer_simulate_retrace" (ByVal enable As Integer)
 Declare Function timer_is_using_retrace CDecl Alias "timer_is_using_retrace" () As Integer
-Extern Import retrace_count Alias "retrace_count" As Integer
-Extern Import retrace_proc Alias "retrace_proc" As Sub()
 Declare Sub rest CDecl Alias "rest" (ByVal time As Long)
 Declare Sub rest_callback CDecl Alias "rest_callback" (ByVal time As Long, ByVal callback As Sub())
 
@@ -733,30 +1331,20 @@ Declare Function install_keyboard CDecl Alias "install_keyboard" () As Integer
 Declare Sub remove_keyboard CDecl Alias "remove_keyboard" ()
 Declare Sub install_keyboard_hooks CDecl Alias "install_keyboard_hooks" (ByVal keypressed As Function() As Integer, ByVal readkey As Function() As Integer)
 Declare Function poll_keyboard CDecl Alias "poll_keyboard" () As Integer
-Extern Import keyboard_needs_poll Alias "keyboard_needs_poll" As Integer
-Extern Import al_key Alias "key" As Byte
-Extern Import key_shifts Alias "key_shifts" As Integer
 Declare Function keypressed CDecl Alias "keypressed" () As Integer
 Declare Function readkey CDecl Alias "readkey" () As Integer
 Declare Function ureadkey CDecl Alias "ureadkey" (ByRef scancode As Integer) As Integer
 Declare Function scancode_to_ascii CDecl Alias "scancode_to_ascii" (ByVal scancode As Integer) As Integer
 Declare Sub simulate_keypress CDecl Alias "simulate_keypress" (ByVal key As Integer)
 Declare Sub simulate_ukeypress CDecl Alias "simulate_ukeypress" (ByVal key As Integer, ByVal scancode As Integer)
-Extern Import keyboard_callback Alias "keyboard_callback" As Function(ByVal key As Integer) As Integer
-Extern Import keyboard_ucallback Alias "keyboard_ucallback" As Function(ByVal key As Integer, ByVal scancode As Integer Ptr) As Integer
-Extern Import keyboard_lowlevel_callback Alias "keyboard_lowlevel_callback" As Function(ByVal key As Integer) As Integer
 Declare Sub set_leds CDecl Alias "set_leds" (ByVal leds As Integer)
 Declare Sub set_keyboard_rate CDecl Alias "set_keyboard_rate" (ByVal delay As Integer, ByVal repeat As Integer)
 Declare Sub clear_keybuf CDecl Alias "clear_keybuf" ()
-Extern Import three_finger_flag Alias "three_finger_flag" As Integer
-Extern Import key_led_flag Alias "key_led_flag" As Integer
 
 ' joystick routines
 Declare Function install_joystick CDecl Alias "install_joystick" (ByVal jtype As Integer) As Integer
 Declare Sub remove_joystick CDecl Alias "remove_joystick" ()
 Declare Function poll_joystick CDecl Alias "poll_joystick" () As Integer
-Extern Import num_joysticks Alias "num_joysticks" As Integer
-Extern Import fb_joy Alias "joy" As JOYSTICK_INFO Ptr
 Declare Function calibrate_joystick_name CDecl Alias "calibrate_joystick_name" (ByVal n As Integer) As Byte Ptr
 Declare Function calibrate_joystick CDecl Alias "calibrate_joystick" (ByVal n As Integer) As Integer
 Declare Function save_joystick_data CDecl Alias "save_joystick_data" (ByVal filename As String) As Integer
@@ -774,7 +1362,6 @@ Declare Function set_display_switch_mode CDecl Alias "set_display_switch_mode" (
 Declare Function set_display_switch_callback CDecl Alias "set_display_switch_callback" (ByVal dir As Integer, ByVal cb As Sub()) As Integer
 Declare Sub remove_display_switch_callback CDecl Alias "remove_display_switch_callback" (ByVal cb As Sub())
 Declare Function get_display_switch_mode CDecl Alias "get_display_switch_mode" () As Integer
-Extern Import gfx_capabilities Alias "gfx_capabilities" As Integer
 Declare Function enable_triple_buffer CDecl Alias "enable_triple_buffer" () As Integer
 Declare Function scroll_screen CDecl Alias "scroll_screen" (ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function request_scroll CDecl Alias "request_scroll" (ByVal x As Integer, ByVal y As Integer) As Integer
@@ -784,7 +1371,6 @@ Declare Function request_video_bitmap CDecl Alias "request_video_bitmap" (ByVal 
 Declare Sub vsync CDecl Alias "vsync" ()
 
 ' bitmap objects
-Extern Import screen Alias "screen" As BITMAP Ptr
 Declare Function create_bitmap CDecl Alias "create_bitmap" (ByVal w As Integer, ByVal h As Integer) as BITMAP Ptr
 Declare Function create_bitmap_ex CDecl Alias "create_bitmap_ex" (ByVal color_depth As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
 Declare Function create_sub_bitmap CDecl Alias "create_sub_bitmap" (ByVal parent As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
@@ -845,9 +1431,6 @@ Declare Sub select_palette CDecl Alias "select_palette" (ByVal p As RGB Ptr)
 Declare Sub unselect_palette CDecl Alias "unselect_palette" ()
 Declare Sub generate_332_palette CDecl Alias "generate_332_palette" (ByVal pal As RGB ptr)
 Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, ByVal rsvd As String) As Integer
-Extern Import default_palette Alias "default_palette" As RGB Ptr
-Extern Import black_palette Alias "black_palette" As RGB Ptr
-Extern Import desktop_palette Alias "desktop_palette" As RGB Ptr
 
 ' truecolor pixel formats
 Declare Function makecol8 CDecl Alias "makecol8" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
@@ -886,7 +1469,6 @@ Declare Function getr_depth CDecl Alias "getr_depth" (ByVal color_depth As Integ
 Declare Function getg_depth CDecl Alias "getg_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
 Declare Function getb_depth CDecl Alias "getb_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
 Declare Function geta_depth CDecl Alias "geta_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
-Extern Import palette_color Alias "palette_color" As Integer Ptr
 
 ' drawing primitives
 Declare Sub putpixel CDecl Alias "putpixel" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
@@ -904,15 +1486,14 @@ Declare Function getpixel32 CDecl Alias "_getpixel32" (ByVal bmp As BITMAP Ptr, 
 Declare Sub vline CDecl Alias "vline" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y1 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub hline CDecl Alias "hline" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y As Integer, ByVal x2 As Integer, ByVal c As Integer)
 Declare Sub do_line CDecl Alias "do_line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
-' note: draw_line is the fb name for Allegro's line
-Declare Sub draw_line CDecl Alias "line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
+Declare Sub line CDecl Alias "line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub fastline CDecl Alias "fastline" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub triangle CDecl Alias "triangle" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal x3 As Integer, ByVal y3 As Integer, ByVal c As Integer)
 Declare Sub polygon CDecl Alias "polygon" (ByVal bmp As BITMAP Ptr, ByVal vertices As Integer, ByVal points As Integer Ptr, ByVal c As Integer)
 Declare Sub rect CDecl Alias "rect" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub rectfill CDecl Alias "rectfill" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub do_circle CDecl Alias "do_circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
-Declare Sub draw_circle CDecl Alias "circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer) ' note: this is called 'circle' in Allegro docs
+Declare Sub circle CDecl Alias "circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer) ' note: this is called 'circle' in Allegro docs
 Declare Sub circlefill CDecl Alias "circlefill" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer)
 Declare Sub do_ellipse CDecl Alias "do_ellipse" (ByVal bmp As BITMAP Ptr, BYVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
 Declare Sub ellipse CDecl Alias "ellipse" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal c As Integer)
@@ -948,14 +1529,15 @@ Declare Sub pivot_scaled_sprite CDecl Alias "pivot_scaled_sprite" (ByVal bmp As 
 Declare Sub pivot_scaled_sprite_v_flip CDecl Alias "pivot_scaled_sprite_v_flip" (ByVal bmp As BITMAP Ptr, ByVal sprite As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal cx As Integer, ByVal cy As Integer, ByVal angle As fixed, ByVal scale As fixed)
 
 ' RLE sprites
-' todo ...
+declare function get_rle_sprite cdecl alias "get_rle_sprite" ( byval bmp as BITMAP ptr ) as RLE_SPRITE ptr
+declare sub destroy_rle_sprite cdecl alias "destroy_rle_sprite" ( byval sprite as RLE_SPRITE ptr )
 
 ' compiled sprites
-' todo ...
+declare function get_compiled_sprite cdecl alias "get_compiled_sprite" ( byval bmp as BITMAP ptr , byval planar as integer ) as COMPILED_SPRITE ptr
+declare sub destroy_compiled_sprite cdecl alias "destroy_compiled_sprite" ( byval sprite as COMPILED_SPRITE ptr )
+declare sub draw_compiled_sprite cdecl alias "draw_compiled_sprite" ( byval bmp as BITMAP ptr, byval sprite as COMPILED_SPRITE ptr, byval x as integer, byval y as integer )
 
 ' text output
-Extern Import font Alias "font" As FONT Ptr
-Extern Import allegro_404_char Alias "allegro_404_char" As Integer
 Declare Function text_mode CDecl Alias "text_mode" (ByVal mode As Integer) As Integer
 Declare Sub textout CDecl Alias "textout" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
 Declare Sub textout_centre CDecl Alias "textout_centre" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
@@ -992,12 +1574,11 @@ Declare Sub destroy_scene CDecl Alias "destroy_scene" ()
 Declare Function scene_polygon3d CDecl Alias "scene_polygon3d" (ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D Ptr)
 Declare Function scene_polygon3d_f CDecl Alias "scene_polygon3d_f" (ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D_f Ptr)
 Declare Sub render_scene CDecl Alias "render_scene" ()
-Extern Import scene_gap Alias "scene_gap" As Single
 
 ' transparency and patterned drawing
+Declare Sub drawing_mode CDecl Alias "drawing_mode" ( byval mode as integer, byval pattern as BITMAP ptr, byval x_anchor as integer, byval y_anchor as integer )
 Declare Sub xor_mode CDecl Alias "xor_mode" (ByVal iOn As Integer)
 Declare Sub solid_mode CDecl Alias "solid_mode" ()
-Extern Import color_map Alias "color_map" As COLOR_MAP Ptr
 Declare Sub create_trans_table CDecl Alias "create_trans_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
 Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
 Declare Sub create_color_table CDecl Alias "create_color_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal blend As Sub(ByVal pal As RGB Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As RGB Ptr), ByVal callback As Sub(ByVal ipos As Integer))
@@ -1022,7 +1603,6 @@ Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 as 
 
 ' converting between color formats
 Declare Function bestfit_color CDecl Alias "bestfit_color" (ByVal pal As RGB ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
-Extern Import rgb_map Alias "rgb_map" As RGB_MAP Ptr
 Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
 Declare Sub hsv_to_rgb CDecl Alias "hsv_to_rgb" (ByVal h As Single, ByVal s As Single, ByVal v As Single, ByRef r As Integer, ByRef g As Integer, ByRef b As Integer)
 Declare Sub rgb_to_hsv CDecl Alias "rgb_to_hsv" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef h As Single, ByRef s As Single, ByRef v As Single)
@@ -1039,14 +1619,7 @@ Declare Function open_fli CDecl Alias "open_fli" (ByVal filename As String) As I
 Declare Function open_memory_fli CDecl Alias "open_memory_fli" (ByVal fli_data As Integer) As Integer
 Declare Sub close_fli CDecl Alias "close_fli" ()
 Declare Function next_fli_frame CDecl Alias "next_fli_frame" (ByVal iloop As Integer) As Integer
-Extern Import fli_bitmap Alias "fli_bitmap" As BITMAP Ptr
-Extern Import fli_palette Alias "fli_palette" As RGB Ptr
-'Declare Function fli_bmp_dirty_from CDecl Alias "fb_fli_bmp_dirty_from" () As Integer
-Extern Import fli_bmp_dirty_to Alias "fli_bmp_dirty_to" As Integer
-Extern Import fli_bmp_dirty_from Alias "fli_bmp_dirty_from" As Integer
 Declare Sub reset_fli_variables CDecl Alias "reset_fli_variables" ()
-Extern Import fli_frame alias "fli_frame" as integer
-Extern Import fli_timer Alias "fli_timer" As Integer
 
 ' sound init routines
 Declare Function detect_digi_driver CDecl Alias "detect_digi_driver" (ByVal driver_id As Integer) As Integer
@@ -1106,16 +1679,13 @@ Declare Sub midi_resume CDecl Alias "midi_resume" ()
 Declare Function midi_seek CDecl Alias "midi_seek" (ByVal target As Integer) As Integer
 Declare Sub midi_out CDecl Alias "midi_out" (ByVal dat As UByte Ptr, ByVal length As Integer)
 Declare Function load_midi_patches CDecl Alias "load_midi_patches" () As Integer
-Extern Import midi_pos Alias "midi_pos" As Integer
-Extern Import midi_loop_start Alias "midi_loop_start" As Integer
-Extern Import midi_loop_end Alias "midi_loop_end" As Integer
-Extern Import midi_msg_callback Alias "midi_msg_callback" As Sub()
-Extern Import midi_meta_callback Alias "midi_meta_callback" As Sub()
-Extern Import midi_sysex_callback Alias "midi_sysex_callback" As Sub()
 Declare Function load_ibk CDecl Alias "load_ibk" (ByVal filename As String, ByVal drums As Integer) As Integer
 
 ' audio stream routines
-' todo ...
+declare function play_audio_stream cdecl alias "play_audio_stream" ( byval length as integer, byval bits as integer, byval stereo as integer, byval freq as integer, byval vol as integer, byval pan as integer ) as AUDIOSTREAM ptr
+declare sub stop_audio_stream cdecl alias "stop_audio_stream" ( byval stream as AUDIOSTREAM ptr )
+declare function get_audio_stream_buffer cdecl alias "get_audio_stream_buffer" ( byval stream as AUDIOSTREAM ptr ) as any ptr
+declare sub free_audio_stream_buffer cdecl alias "get_audio_stream_buffer" ( byval stream as AUDIOSTREAM ptr )
 
 ' recording routines
 Declare Function install_sound_input CDecl Alias "install_sound_input" (ByVal digi As Integer, ByVal midi As Integer) As Integer
@@ -1128,8 +1698,6 @@ Declare Function set_sound_input_source CDecl Alias "set_sound_input_source" (By
 Declare Function start_sound_input CDecl Alias "start_sound_input" (ByVal rate As Integer, ByVal bits As Integer, ByVal stereo As Integer) As Integer
 Declare Sub stop_sound_input CDecl Alias "stop_sound_input" ()
 Declare Function read_sound_input CDecl Alias "read_sound_input" (ByVal buffer As UByte Ptr)
-Extern Import digi_recorder Alias "digi_recorder" As Sub()
-Extern Import midi_recorder Alias "midi_recorder" As Sub()
 
 ' file and compression routines
 ' todo ...
@@ -1167,8 +1735,6 @@ Declare Function fixsqrt CDecl Alias "fixsqrt" (ByVal x As fixed) As fixed
 Declare Function fixhypot CDecl Alias "fixhypot" (ByVal x As fixed, ByVal y As fixed) As fixed
 
 ' 3D math routines
-Declare Sub get_identity_matrix CDecl Alias "fb_get_identity_matrix" (ByVal m As MATRIX Ptr)
-Declare Sub get_identity_matrix_f CDecl Alias "fb_get_identity_matrix_f" (ByVal m As MATRIX_f Ptr)
 Declare Sub get_translation_matrix CDecl Alias "get_translation_matrix" (ByVal m As MATRIX Ptr, ByVal x As fixed, ByVal y As fixed, ByVal z As fixed)
 Declare Sub get_translation_matrix_f CDecl Alias "get_translation_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single)
 Declare Sub get_scaling_matrix CDecl Alias "get_scaling_matrix" (ByVal m As MATRIX Ptr, Byval x As fixed, ByVal y As fixed, ByVal z As fixed)
@@ -1212,22 +1778,74 @@ Declare Sub persp_project CDecl Alias "persp_project" (ByVal x As fixed, ByVal y
 Declare Sub persp_project_f CDecl Alias "persp_project_f" (ByVal x As Single, ByVal y As Single, ByVal z As Single, ByRef xout As Single, ByRef yout As Single)
 
 ' quaternion math routines
-' todo ...
-Declare Sub get_identity_quat CDecl Alias "fb_get_identity_quat" (ByVal q As QUAT Ptr)
+Declare Sub quat_mul CDecl Alias "quat_mul" (byval p as QUAT ptr, byval q as QUAT ptr, byval outp as QUAT ptr)
+Declare sub get_x_rotate_quat cdecl alias "get_x_rotate_quat" ( byval q as QUAT ptr, byval r as single)
+Declare sub get_y_rotate_quat cdecl alias "get_y_rotate_quat" ( byval q as QUAT ptr, byval r as single)
+Declare sub get_z_rotate_quat cdecl alias "get_z_rotate_quat" ( byval q as QUAT ptr, byval r as single)
+declare sub get_rotation_quat cdecl alias "get_rotation_quat" ( byval q as QUAT ptr, byval x as single, byval y as single, byval z as single )
+declare sub get_vector_rotation_quat cdecl alias "get_vector_rotation_quat" ( byval q as QUAT ptr, byval x as single, byval y as single, byval z as single, byval a as single )
+declare sub apply_quat cdecl alias "apply_quat" ( byval q as QUAT ptr, byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr )
+declare sub quat_slerp cdecl alias "quat_slerp" ( byval pfrom as QUAT ptr, byval pto as QUAT ptr, byval t as single, byval outp as QUAT ptr, byval how as integer )
+#define quat_interpolate(pfrom, pto, t, pout)   quat_slerp (pfrom), (pto), (t), (pout), QUAT_SHORT
+declare sub quat_to_matrix cdecl alias "quat_to_matrix" ( byval q as QUAT ptr, byval m as MATRIX_f ptr )
+declare sub matrix_to_quat cdecl alias "matrix_to_quat" ( byval m as MATRIX_f ptr, byval q as QUAT ptr )
 
 ' GUI routines
-' todo ...
+declare function d_yield_proc cdecl alias "d_yield_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_clear_proc cdecl alias "d_clear_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_box_proc cdecl alias "d_box_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_shadow_proc cdecl alias "d_shadow_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_bitmap_proc cdecl alias "d_bitmap_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_text_proc cdecl alias "d_text_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_ctext_proc cdecl alias "d_ctext_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_rtext_proc cdecl alias "d_rtext_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_button_proc cdecl alias "d_button_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_check_proc cdecl alias "d_check_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_radio_proc cdecl alias "d_radio_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_icon_proc cdecl alias "d_icon_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_keyboard_proc cdecl alias "d_keyboard_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_edit_proc cdecl alias "d_edit_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_list_proc cdecl alias "d_list_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_text_list_proc cdecl alias "d_text_list_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_textbox_proc cdecl alias "d_textbox_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_slider_proc cdecl alias "d_slider_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function d_menu_proc cdecl alias "d_menu_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
+declare function gui_textout cdecl alias "gui_textout" ( byval bmp as BITMAP ptr, byval s as string, byval x as integer, byval y as integer, byval _color as integer, byval centre as integer) as integer
+declare function gui_strlen cdecl alias "gui_strlen" ( byval s as string ) as integer
+declare sub position_dialog cdecl alias "position_dialog" ( byval dlg as DIALOG ptr, byval x as integer, byval y as integer )
+declare sub centre_dialog cdecl alias "centre_dialog" ( byval dlg as DiALOG ptr )
+declare sub set_dialog_color cdecl alias "set_dialog_color" ( byval dlg as DIALOG ptr, byval fg as integer, byval bg as integer )
+declare function find_dialog_focus cdecl alias "find_dialog_focus" ( byval dlg as DIALOG ptr ) as integer
+declare function offer_focus cdecl alias "offer_focus" ( byval d as DIALOG ptr, byval obj as integer, byval focus_obj as integer ptr, byval force as integer ) as integer
+declare function dialog_message cdecl alias "dialog_message" ( byval d as DIALOG ptr, byval msg as integer, byval c as integer, byval obj as integer ptr ) as integer
+declare function broadcast_dialog_message cdecl alias "broadcast_dialog_message" ( byval msg as integer, byval c as integer ) as integer
+declare function do_dialog cdecl alias "do_dialog" ( byval d as DIALOG ptr, byval focus_obj as integer ) as integer
+declare function popup_dialog cdecl alias "popup_dialog" ( byval dlg as DIALOG ptr, byval focus_obj as integer ) as integer
+declare function init_dialog cdecl alias "init_dialog" ( byval d as DIALOG ptr, byval focus_obj as integer ) as DIALOG_PLAYER ptr
+declare function update_dialog cdecl alias "update_dialog" ( byval player as DIALOG_PLAYER) as integer
+declare function shutdown_dialog cdecl alias "shutdown_dialog" ( byval player as DIALOG_PLAYER Ptr ) as integer
+declare function do_menu cdecl alias "do_menu" ( byval menu as MENU ptr, byval x as integer, byval y as integer ) as integer
 Declare Function alert CDecl Alias "alert" (ByVal s1 as String, ByVal s2 As String, ByVal s3 As String, ByVal b1 As String, ByVal b2 As String, ByVal c1 As String, ByVal c2 As String) As Integer
+declare function alert3 cdecl alias "alert3" ( byval s1 as string, byval s2 as string, byval s3 as string, byval b1 as string, byval b2 as string, byval b3 as string, byval c1 as integer, byval c2 as integer, byval c3 as integer ) as integer
+declare function file_select cdecl alias "file_select" ( byval message as string, byval path as byte ptr, byval ext as string ) as integer
+declare function file_select_ex cdecl alias "file_select_ex" ( byval message as string, byval path as byte ptr, byval ext as string, byval size as integer, byval w as integer, byval h as integer ) as integer
 Declare Function gfx_mode_select CDecl Alias "gfx_mode_select" (ByRef card As Integer, ByRef w As Integer, ByRef h As Integer) As Integer
 Declare Function gfx_mode_select_ex CDecl Alias "gfx_mode_select_ex" (ByVal card As Integer Ptr, ByVal w As Integer Ptr, ByVal h As Integer Ptr, ByVal color_depth As Integer Ptr)
+
+' debug facilities
+declare sub al_assert cdecl alias "al_assert" ( byval file as string, byval _line as integer )
+declare sub al_trace cdecl alias "al_trace" ( byval msg as string, ... )
+declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function(byval msg as byte ptr) as integer)
+declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function(byval msg as byte ptr) as integer)
 
 ' ---
 
 
 ' -- misc --
-Dim Shared errno As Integer
 
-#define allegro_init install_allegro(SYSTEM_AUTODETECT, errno, @atexit)
+dim shared errno as integer
+
+#define allegro_init install_allegro(SYSTEM_AUTODETECT, @errno, @atexit)
 
 #define SCREEN_W gfx_driver->w
 
@@ -1252,11 +1870,11 @@ Dim Shared errno As Integer
 
 #define key(keycode) *(@al_key + (keycode))
 
+private function allegro_error () as string
+	allegro_error = *(@fb_allegro_error)
+end function
+
 ' -- random hacks --
-
-'Declare Function linear_vtable16 CDecl Alias "fb_linear_vtable16" () As GFX_VTABLE Ptr
-Extern Import linear_vtable16 Alias "linear_vtable16" As GFX_VTABLE Ptr
-
 
 #ifdef FB__LINUX
 
