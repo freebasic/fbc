@@ -17,7 +17,6 @@
   BINARY
 
   CALL Statement        (diff: function must have being declared already)
-  CALLS Statement       (diff: same as above)
   CASE
   CONST Statement
   CDBL Function
@@ -337,13 +336,6 @@
   WITH..END WITH 	(compound statement -- won't work with field dereference "->")
 
 *****************************************************************************
-* To be implemented (someday...)                                            *
-*****************************************************************************
-
-* Keywords:
-  ON expr GOTO|GOSUB list
-
-*****************************************************************************
 * Unsupported (won't be implemented unless someone else does that...)       *
 *****************************************************************************
 
@@ -352,6 +344,7 @@
   CALL INTERRUPT Stmt   (reason: services are not the same; not needed with shared libs)
   CVDMBF Function       (reason: old and useless proprietary format)
   CVSMBF Function       (reason: old and useless proprietary format)
+  CALLS Statement       (reason: same as CALL)
 
   DEF FN Statement      (reason: use real functions instead, or macros when implemented)
   DEF SEG Statement     (reason: segments are not needed in 32-bit flat mode)
@@ -401,6 +394,7 @@
   STRIG Statements      (reason: ditto)
   SIGNAL                (reason: seldom if ever used)
   SOUND Statement       (reason: use real sound libraries instead)
+  SEG			(reason: segments are not needed in 32-bit flat mode)
 
   TIMER Statement       (reason: no "faked" events)
   TROFF Statement       (reason: use a real debugger)
