@@ -44,8 +44,13 @@ const FBGFX_COORDTYPE_R   = 5
 
 const FBGFX_DEFAULTCOLOR  = &HFFFF0000
 
-const FBGFX_PUTMODE_MASK  = 0
-const FBGFX_PUTMODE_SOLID = 1
+const FBGFX_PUTMODE_TRANS  = 0
+const FBGFX_PUTMODE_PSET   = 1
+const FBGFX_PUTMODE_PRESET = 2
+const FBGFX_PUTMODE_AND    = 3
+const FBGFX_PUTMODE_OR     = 4
+const FBGFX_PUTMODE_XOR    = 5
+
 
 
 '':::::
@@ -568,20 +573,38 @@ function cGfxPut as integer
 	end if
 
 	'' (',' Mode)?
-	mode = FBGFX_PUTMODE_MASK
+	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
 		select case lexCurrentToken
-		case FB.TK.PSET, FB.TK.PRESET
+		
+		case FB.TK.PSET
 			lexSkipToken
-			mode = FBGFX_PUTMODE_SOLID
-
-		case FB.TK.AND, FB.TK.OR, FB.TK.XOR
+			mode = FBGFX_PUTMODE_PSET
+		
+		case FB.TK.PRESET
 			lexSkipToken
-			mode = FBGFX_PUTMODE_MASK
+			mode = FBGFX_PUTMODE_PRESET
 
+		case FB.TK.AND
+			lexSkipToken
+			mode = FBGFX_PUTMODE_AND
+
+		case FB.TK.OR
+			lexSkipToken
+			mode = FBGFX_PUTMODE_OR
+			
+		case FB.TK.XOR
+			lexSkipToken
+			mode = FBGFX_PUTMODE_XOR
+			
 		case else
-			hReportError FB.ERRMSG.SYNTAXERROR
-			exit function
+			if (ucase$( lexTokenText ) = "TRANS") then
+				lexSkipToken
+				mode = FBGFX_PUTMODE_TRANS
+			else
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			end if
 		end select
 	end if
 
