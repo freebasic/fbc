@@ -42,11 +42,14 @@ Most Important Features:
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
-  o A large number of variable types available, like BYTE/SHORT/INTEGER, SINGLE/DOUBLE and STRING:
+  o A large number of variable types available, like BYTE/SHORT/INTEGER/LONGINT, 
+    SINGLE/DOUBLE and STRING:
 
-    - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER).
+    - All integer types have unsigned versions (UBYTE/USHORT/UINTEGER/ULONGINT).
 
     - Strings can be fixed or variable-length (up to 2GB long).
+
+    - The LONGINT and ULONGINT data types are 64-bit wide.
 
   o User-defined Types (UDT's):
 
@@ -364,6 +367,9 @@ Credits (in alphabetic order):
 
   o Many console routines used in the Win32 version of the run-time library were based 
     on the CONIO implementation for Mingw32.
+
+  o The long integers (64-bit) division and modulo routines are from the GCC's 
+    libgcc2 sources.
 
 
 Greetings:
