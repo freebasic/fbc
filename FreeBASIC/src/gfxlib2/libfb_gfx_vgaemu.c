@@ -59,7 +59,7 @@ FBCALL int fb_GfxPaletteInp(int port)
 FBCALL void fb_GfxPaletteOut(int port, int value)
 {
 	int i, r, g, b;
-	
+
 	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
 
@@ -68,6 +68,11 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 	switch (port) {
 
 		case 0x3C7:
+		    idx = value;
+		    shift = 2;
+		    color = 0;
+		    break;
+
 		case 0x3C8:
 			idx = value;
 			shift = 0;
