@@ -106,21 +106,21 @@ private function SDL_MUSTLOCK (surface as SDL_Surface ptr)
 end function
 
 type SDL_VideoInfo
-	hw_available as Uint32
-	wm_available as Uint32
-	UnusedBits1 as Uint32
-	UnusedBits2 as Uint32
-	blit_hw as Uint32
-	blit_hw_CC as Uint32
-	blit_hw_A as Uint32
-	blit_sw as Uint32
-	blit_sw_CC as Uint32
-	blit_sw_A as Uint32
-	blit_fill as Uint32
-	UnusedBits3 as Uint32
-	video_mem as Uint32
-	vfmt as SDL_PixelFormat ptr
+	flagBits	As Uint16
+	unusedBits3 as Uint16
+	video_mem 	as Uint32
+	vfmt 		as SDL_PixelFormat ptr
 end type
+
+#define SDL_HW_AVAILABLE &H00000001
+#define SDL_WM_AVAILABLE &H00000002
+#define SDL_BLIT_HW      &H00000002
+#define SDL_BLIT_HW_CC   &H00000004
+#define SDL_BLIT_HW_A    &H00000008
+#define SDL_BLIT_SW      &H00000010
+#define SDL_BLIT_SW_CC   &H00000020
+#define SDL_BLIT_SW_A    &H00000040
+#define SDL_BLIT_FILL    &H00000080
 
 #define SDL_YV12_OVERLAY &h32315659
 #define SDL_IYUV_OVERLAY &h56555949
