@@ -11,6 +11,7 @@
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/tree.bi"
+#include once "libxml/xpath.bi"
 
 declare sub xmlDebugDumpString cdecl alias "xmlDebugDumpString" (byval output as FILE ptr, byval str as xmlChar ptr)
 declare sub xmlDebugDumpAttr cdecl alias "xmlDebugDumpAttr" (byval output as FILE ptr, byval attr as xmlAttrPtr, byval depth as integer)

@@ -11,6 +11,10 @@
 
 #inclib "libxml2"
 
+#ifndef FILE
+type FILE as any
+#endif
+
 #include once "libxml/xmlexports.bi"
 
 declare sub xmlCheckVersion cdecl alias "xmlCheckVersion" (byval version as integer)
