@@ -308,6 +308,46 @@ function emitGetRegName( byval dtype as integer, byval dclass as integer, byval 
 
 end function
 
+'':::::
+function emitGetIDXName( byval lgt as integer, byval ofs as integer, idxname as string, _
+						 sname as string ) as string
+    dim scalestr as string, name as string
+    dim addone as integer
+
+	if( lgt > 1 ) then
+
+		addone = FALSE
+		select case lgt
+		case 3, 5, 9
+			lgt = lgt - 1
+			addone = TRUE
+		end select
+
+		scalestr = "*" + ltrim$( str$( lgt ) )
+
+		if( addone ) then
+			scalestr =  scalestr + "+" + idxname
+		end if
+
+	else
+		scalestr = ""
+	end if
+
+	if( ofs <> 0 ) then
+		scalestr = scalestr + " +" + str$( ofs )
+	end if
+
+	name = idxname + scalestr
+
+	if( len( sname ) > 0 ) then
+		name = sname + " + " + name
+	end if
+
+	emitGetIDXName = name
+
+end function
+
+'':::::
 private function emitLookupReg( rname as string, byval dtype as integer ) as integer 'static
 	dim t as integer, i as integer
 

@@ -100,7 +100,7 @@ declare function 	delFiles 			( ) as integer
 
     ''
     if( ctx.verbose ) then
-    	print "FreeBASIC Compiler - Version 0.01"
+    	print "FreeBASIC Compiler - Version " + FB.VERSION
     	print "Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
     	print
     end if

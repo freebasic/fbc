@@ -22,7 +22,8 @@ const FALSE%		= 0
 const INVALID%		= -1
 
 ''
-const FB.SIGN$					= "FreeBASIC v0.05b"
+const FB.VERSION$				= "0.06b"
+const FB.SIGN$					= "FreeBASIC v0.06b"
 
 '' paths
 const FB.BINPATH$				= "\bin\"

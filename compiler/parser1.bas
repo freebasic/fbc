@@ -1201,13 +1201,13 @@ end function
 
 '':::::
 ''SymbolDecl      =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
-''                |   STATIC SymbolDef .
+''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
 ''
 function cSymbolDecl
 	dim res as integer, alloctype as integer
 	dim dopreserve as integer
 
-	res = FALSE
+	cSymbolDecl = FALSE
 
 	select case lexCurrentToken
 	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON
@@ -1251,17 +1251,24 @@ function cSymbolDecl
 		end if
 
 		if( (alloctype and FB.ALLOCTYPE.DYNAMIC) = 0 ) then
-			res = cSymbolDef( alloctype )
+			cSymbolDecl = cSymbolDef( alloctype )
 		else
-			res = cDynSymbolDef( alloctype, dopreserve )
+			cSymbolDecl = cDynSymbolDef( alloctype, dopreserve )
 		end if
 
+	'' STATIC
 	case FB.TK.STATIC
-		lexSkipToken
-		res = cSymbolDef( FB.ALLOCTYPE.STATIC )
-	end select
 
-	cSymbolDecl = res
+		'' check ambiguity with STATIC SUB|FUNCTION
+		select case lexLookAhead(1)
+		case FB.TK.SUB, FB.TK.FUNCTION
+			exit function
+		end select
+
+		lexSkipToken
+
+		cSymbolDecl = cSymbolDef( FB.ALLOCTYPE.STATIC )
+	end select
 
 end function
 

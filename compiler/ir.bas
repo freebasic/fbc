@@ -675,11 +675,13 @@ sub irEmitPROCEND( byval proc as integer, byval initlabel as integer, byval exit
 end sub
 
 '':::::
-sub irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as integer, byval pmode as integer ) 'static
+function irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as integer, byval pmode as integer ) as integer 'static
     dim vt as integer, vp as integer
     dim atype as integer, aclass as integer
     dim ptype as integer, pclass as integer
     dim s as integer, amode as integer, typ as integer, isfixed as integer, desc as integer
+
+	irEmitPUSHPARAM = FALSE
 
 	amode = symbGetArgMode( proc, arg )
 
@@ -704,11 +706,21 @@ sub irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as in
         else
 
 			s = vregTB(vr).s
+			if( s = INVALID ) then
+				hReportError FB.ERRMSG.VARIABLENOTDECLARED
+				exit function
+			end if
 
 			'' not an argument passed by descriptor?
 			if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
 				ptype = IR.DATATYPE.VOID
+
         		desc = symbGetVarDescriptor( s )
+				if( desc = INVALID ) then
+					hReportError FB.ERRMSG.VARIABLENOTDECLARED
+					exit function
+				end if
+
         		vr = irAllocVRVAR( ptype, desc, 0 )
         		amode = FB.ARGMODE.BYREF
 
@@ -726,7 +738,7 @@ sub irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as in
     	if( pclass = IR.DATACLASS.STRING ) then
 			if( aclass <> IR.DATACLASS.STRING ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
-				exit sub
+				exit function
 			end if
 
 			'' byval and fixed   : pass the pointer as-is
@@ -758,21 +770,21 @@ sub irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as in
 			if( aclass = IR.DATACLASS.STRING ) then
 			    if( (pclass <> IR.DATACLASS.INTEGER) or (amode <> FB.ARGMODE.BYVAL) ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
-					exit sub
+					exit function
 			    end if
 
 	        '' passing NULL ptr to an byref arg?
 			elseif( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
 				if( pclass <> IR.DATACLASS.INTEGER ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
-					exit sub
+					exit function
 				end if
 
 			'' udt arg? check if the same, can't convert
 			elseif( atype = IR.DATATYPE.USERDEF ) then
 				if( (ptype <> IR.DATATYPE.USERDEF) and (ptype <> IR.DATATYPE.POINTER + IR.DATATYPE.USERDEF) ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
-					exit sub
+					exit function
 				end if
 			''
 			else
@@ -847,7 +859,10 @@ sub irEmitPUSHPARAM( byval proc as integer, byval arg as integer, byval vr as in
 		end if
 	end select
 
-end sub
+	''
+	irEmitPUSHPARAM = TRUE
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1949,7 +1964,7 @@ end function
 '':::::
 function irhGetVRIndexName( byval vreg as integer ) as string 'static
     dim s as integer, ofs as integer, lgt as integer, vi as integer
-    dim vname as string, mul as string, iname as string
+    dim varname as string, idxname as string
 
 	if( vreg = INVALID ) then
 		irhGetVRIndexName = "NULL"
@@ -1961,31 +1976,19 @@ function irhGetVRIndexName( byval vreg as integer ) as string 'static
     vi 	= vregTB(vreg).vi
     lgt	= vregTB(vreg).lgt
 
-	''!!!FIXME!!! this shouldn't be done here, EMIT dependent
-
-	if( lgt > 1 ) then
-		mul = "*" + ltrim$( str$( lgt ) )
-	else
-		mul = ""
-	end if
-
-	if( ofs <> 0 ) then
-		mul = mul + " +" + str$( ofs )
-	end if
-
 	if( vi <> INVALID ) then
-		iname = irGetVRName( vi )
+		idxname = irGetVRName( vi )
 	else
-		iname = ""
+		idxname = ""
 	end if
-
-	vname = iname + mul
 
 	if( s <> INVALID ) then
-		vname = symbGetVarName( s ) + " + " + vname
+		varname = symbGetVarName( s )
+	else
+		varname = ""
 	end if
 
-	irhGetVRIndexName = vname
+	irhGetVRIndexName = emitGetIDXName( lgt, ofs, idxname, varname )
 
 end function
 

@@ -495,7 +495,7 @@ End Sub
 
 '':::::
 Sub astOptConstIDX( byval n as integer )
-	dim l as integer, r as integer, op as integer, c as double
+	dim l as integer, r as integer, op as integer, c as double, v as integer
 	dim ll as integer, lr as integer
 
 	if( n = INVALID ) then
@@ -527,13 +527,16 @@ Sub astOptConstIDX( byval n as integer )
 			if( astTB(l).typ = AST.NODETYPE.BOP ) Then
 				if( astTB(l).op = IR.OP.MUL ) then
 					lr = astTB(l).r
-					if( (astTB(lr).defined) and (cint( astTB(lr).value ) < 10) ) then
-				    	astTB(n).v.lgt = cint( astTB(lr).value )
-				    	astDel lr
+					if( astTB(lr).defined ) then
+						v = cint( astTB(lr).value )
+						if( (v < 10) and (v <> 6) and (v <> 7) ) then
+				    		astTB(n).v.lgt = v
+				    		astDel lr
 
-						ll = astTB(l).l
-						astCopy l, ll
-						astDel ll
+							ll = astTB(l).l
+							astCopy l, ll
+							astDel ll
+						end if
 				    end if
 				end if
 			end if
@@ -2252,7 +2255,7 @@ function asthEmitIDX( byval n as integer, byval ofs as long, byval lgt as long, 
     ''
 	if( vi <> INVALID ) then
 
-		if( lgt >= 10 ) then
+		if( (lgt >= 10) or (lgt = 6) or (lgt = 7) ) then
 			lgt = 1
 		end if
 
@@ -2849,7 +2852,9 @@ sub astLoadFUNCT( byval n as integer, vreg as integer )
 		astLoad l, vr
 		astDel l
 
-		irEmitPUSHPARAM proc, a, vr, pmode
+		if( not irEmitPUSHPARAM( proc, a, vr, pmode ) ) then
+		'''''exit sub
+		end if
 
 		astDel p
 

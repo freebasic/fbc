@@ -194,7 +194,7 @@ declare sub 		irEmitBRANCHNF		( byval op as integer, byval label as integer )
 declare sub 		irEmitCOMPBRANCH	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as integer )
 declare sub 		irEmitCOMPBRANCHNF	( byval op as integer, byval v1 as integer, byval v2 as integer, byval label as integer )
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
-declare sub 		irEmitPUSHPARAM		( byval proc as integer, byval param as integer, byval vr as integer, byval pmode as integer )
+declare function	irEmitPUSHPARAM		( byval proc as integer, byval param as integer, byval vr as integer, byval pmode as integer ) as integer
 
 declare function 	irIsIMM				( byval vreg as integer ) as integer
 declare function 	irIsVAR				( byval vreg as integer ) as integer

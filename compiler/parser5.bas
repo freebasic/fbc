@@ -162,11 +162,11 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
     	typ = FB.SYMBTYPE.VOID
     end if
 
-    '' STATIC?
-    if( hMatch( FB.TK.STATIC ) ) then
-    	isstatic = TRUE
-    else
-    	isstatic = FALSE
+    if( isstatic = FALSE ) then
+    	'' STATIC?
+    	if( hMatch( FB.TK.STATIC ) ) then
+    		isstatic = TRUE
+    	end if
     end if
 
     proc = symbLookupProc( id )
@@ -251,7 +251,7 @@ sub hLoadResult ( byval proc as integer ) static
 end sub
 
 '':::::
-''ProcStatement	  =	  (PRIVATE|PUBLIC)? ((SUB SubDecl) | (FUNCTION FuncDecl)) Comment? SttSeparator
+''ProcStatement	  =	  (PRIVATE|PUBLIC)? STATIC? ((SUB SubDecl) | (FUNCTION FuncDecl)) Comment? SttSeparator
 ''					  SimpleLine*
 ''				      END (SUB | FUNCTION)
 ''
@@ -274,6 +274,13 @@ function cProcStatement static
 	case else
 		ispublic = env.optprocpublic
 	end select
+
+    '' STATIC?
+    if( hMatch( FB.TK.STATIC ) ) then
+    	env.isprocstatic = TRUE
+    else
+    	env.isprocstatic = FALSE
+    end if
 
 	'' SUB | FUNCTION
 	if( lexCurrentToken = FB.TK.SUB ) then

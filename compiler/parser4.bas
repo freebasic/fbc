@@ -80,12 +80,12 @@ function cCompoundStmt
 end function
 
 '':::::
-''SingleIfStatement=  !(COMMENT|NEWLINE) SimpleStatement*)
+''SingleIfStatement=  !(COMMENT|NEWLINE) NUM_LIT | SimpleStatement*)
 ''                    (ELSE SimpleStatement*)?
 ''
 function cSingleIfStatement( byval expr as integer )
 	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as integer
-	dim el as integer, nl as integer
+	dim el as integer, nl as integer, l as integer
 	dim lastcompstmt as integer
 
 	cSingleIfStatement = FALSE
@@ -118,8 +118,17 @@ function cSingleIfStatement( byval expr as integer )
 		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nl
 	end if
 
-	'' SimpleStatement*
-	if( not cSimpleStatement ) then
+	'' NUM_LIT | SimpleStatement*
+	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+		l = symbLookupLabel( lexTokenText )
+		if( l = INVALID ) then
+			l = symbAddLabelEx( lexTokenText, FALSE )
+		end if
+		lexSkipToken
+
+		irEmitBRANCH IR.OP.JMP, l, symbGetLabelScope( l ) = 0
+
+	elseif( not cSimpleStatement ) then
 		exit function
 	end if
 
@@ -157,7 +166,8 @@ function cSingleIfStatement( byval expr as integer )
 end function
 
 '':::::
-function cIfStmtBody( byval expr as integer, byval nl as integer, byval el as integer ) as integer
+function cIfStmtBody( byval expr as integer, byval nl as integer, byval el as integer, _
+					  byval checkstmtsep as integer = TRUE ) as integer
 	dim vr as integer, cr as integer, dtype as integer, skipcompare as integer, s as integer
 	dim res as integer
 
@@ -177,13 +187,15 @@ function cIfStmtBody( byval expr as integer, byval nl as integer, byval el as in
 		irEmitCOMPBRANCHNF IR.OP.EQ, vr, cr, nl
 	end if
 
-	'' Comment?
-	res = cComment
+	if( checkstmtsep ) then
+		'' Comment?
+		res = cComment
 
-	'' separator
-	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
-		exit function
+		'' separator
+		if( not cSttSeparator ) then
+			hReportError FB.ERRMSG.EXPECTEDEOL
+			exit function
+		end if
 	end if
 
 	'' loop body
@@ -232,7 +244,7 @@ function cBlockIfStatement( byval expr as integer )
 		exit function
 	end if
 
-	'' (ELSEIF Expression THEN Comment? SttSeparator SimpleLine*)?
+	'' (ELSEIF Expression THEN SimpleLine*)?
     do while( hMatch( FB.TK.ELSEIF ) )
 
 		'' exit last if stmt
@@ -256,13 +268,13 @@ function cBlockIfStatement( byval expr as integer )
 			exit function
 		end if
 
-		if( not cIfStmtBody( expr, nl, el ) ) then
+		if( not cIfStmtBody( expr, nl, el, FALSE ) ) then
 			exit function
 		end if
 
     loop
 
-	'' (ELSE Comment? SttSeparator SimpleLine*)?
+	'' (ELSE SimpleLine*)?
 	if( hMatch( FB.TK.ELSE ) ) then
 
 		'' exit last if stmt
@@ -271,15 +283,6 @@ function cBlockIfStatement( byval expr as integer )
 		'' emit next label
 		irEmitLABEL nl, FALSE
 		'''''symbDelLabel nl
-
-		'' Comment?
-		res = cComment
-
-		'' separator
-		if( not cSttSeparator ) then
-			hReportError FB.ERRMSG.EXPECTEDEOL
-			exit function
-		end if
 
 		'' loop body
 		do
