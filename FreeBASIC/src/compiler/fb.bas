@@ -49,9 +49,8 @@ declare function cConstExprValue			( littext as string ) as integer
 deflibsdata:
 data "fb"
 #ifdef TARGET_WIN32
-data "crtdll"
+data "msvcrt"
 data "kernel32"
-data "user32"
 #elseif defined(TARGET_LINUX)
 data "c"
 data "m"
@@ -216,6 +215,7 @@ sub fbSetDefaultOptions
 	env.clopt.outtype		= FB_OUTTYPE_EXECUTABLE
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= TRUE
+	env.clopt.nodeflibs		= FALSE
 
 end sub
 
@@ -239,6 +239,8 @@ sub fbSetOption ( byval opt as integer, byval value as integer )
 		env.clopt.warninglevel = value
 	case FB.COMPOPT.EXPORT
 		env.clopt.export = value
+	case FB.COMPOPT.NODEFLIBS
+		env.clopt.nodeflibs = value
 	end select
 
 end sub
@@ -266,6 +268,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		res = env.clopt.warninglevel
 	case FB.COMPOPT.EXPORT
 		res = env.clopt.export
+	case FB.COMPOPT.NODEFLIBS
+		res = env.clopt.nodeflibs
 	end select
 
 	fbGetOption = res
@@ -362,6 +366,10 @@ end function
 '':::::
 sub fbAddDefaultLibs
     dim lname as string
+
+	if( env.clopt.nodeflibs ) then
+		exit sub
+    end if
 
 	restore deflibsdata
 

@@ -3113,6 +3113,7 @@ end sub
 #ifdef AUTOADDGFXLIBS
 private sub hAddGfxLibs
  	symbAddLib( "fbgfx" )
+ 	symbAddLib( "user32" )
 end sub
 #endif
 

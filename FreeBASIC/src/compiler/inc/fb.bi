@@ -51,6 +51,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.RESUMEERROR
 	FB.COMPOPT.WARNINGLEVEL
 	FB.COMPOPT.EXPORT
+	FB.COMPOPT.NODEFLIBS
 end enum
 
 type FBCMMLINEOPT
@@ -60,8 +61,9 @@ type FBCMMLINEOPT
 	nostdcall		as integer
 	outtype			as integer					'' EXECUTABLE, STATICLIB, DYNAMICLIB, etc
 	resumeerr 		as integer					'' add support for RESUME (def= false)
-	warninglevel	as integer					'' def = 0
-	export			as integer					'' export all symbols declared as EXPORT, def= true
+	warninglevel	as integer					'' (def = 0)
+	export			as integer					'' export all symbols declared as EXPORT (def= true)
+	nodeflibs		as integer					'' don't include default libs (def= false)
 end type
 
 

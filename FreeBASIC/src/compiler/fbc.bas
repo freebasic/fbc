@@ -752,40 +752,41 @@ sub printOptions
 	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
 	print
 	print "options:"
-	print "-a <name>", "add an object file to linker's list"
-	print "-b <name>", "add a source file to compilation"
-	print "-c", "compile only, do not link"
-	print "-d <name=val>", "add a preprocessor's define"
+	print "-a <name>", "Add an object file to linker's list"
+	print "-b <name>", "Add a source file to compilation"
+	print "-c", "Compile only, do not link"
+	print "-d <name=val>", "Add a preprocessor's define"
 #ifndef TARGET_DOS
 	print "-dll", "same as -dylib"
 #endif
 #ifdef TARGET_WIN32
-	print "-dylib", "create a DLL, including the import library"
+	print "-dylib", "Create a DLL, including the import library"
 #elseif defined(TARGET_LINUX)
-	print "-dylib", "create a shared library"
+	print "-dylib", "Create a shared library"
 #endif
-	print "-e", "add error checking"
-	print "-entry <name>", "set a non-standard entry point, see -m"
-	print "-ex", "add error checking with RESUME support"
-	print "-g", "add debug info (testing)"
-	print "-i <name>", "add a path to search for include files"
-	print "-l <name>", "add a library file to linker's list"
-	print "-lib", "create a static library"
-	print "-m <name>", "main file w/o ext, the entry point (default: 1st .bas on list)"
+	print "-e", "Add error checking"
+	print "-entry <name>", "Set a non-standard entry point, see -m"
+	print "-ex", "Add error checking with RESUME support"
+	print "-g", "Add debug info (testing)"
+	print "-i <name>", "Add a path to search for include files"
+	print "-l <name>", "Add a library file to linker's list"
+	print "-lib", "Create a static library"
+	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
+	print "-nodeflibs", "Do not include the default libraries"
 #ifdef TARGET_WIN32
 	'''''print "-nostd", "treat stdcall calling convention as cdecl"
 #endif
-	print "-o <name>", "output name (in the same number as source files)"
-	print "-p <name>", "add a path to search for libraries"
-	print "-r", "do not delete the asm file(s)"
+	print "-o <name>", "Set output name (in the same number as source files)"
+	print "-p <name>", "Add a path to search for libraries"
+	print "-r", "Do not delete the asm file(s)"
 #ifdef TARGET_WIN32
-	print "-s <name>", "subsystem (gui, console)"
-	print "-t <value>", "stack size in kbytes (default: 1M)"
+	print "-s <name>", "Set subsystem (gui, console)"
+	print "-t <value>", "Set stack size in kbytes (default: 1M)"
 #endif
-	print "-v", "verbose"
-	print "-version", "show compiler version"
-	print "-x <name>", "executable/library name"
-	print "-w <value>", "set warning level"
+	print "-v", "Be verbose"
+	print "-version", "Show compiler version"
+	print "-x <name>", "Set executable/library name"
+	print "-w <value>", "Set min warning level"
 
 end sub
 
@@ -822,7 +823,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "e", "ex", "w", "nostd"
+			case "e", "ex", "w", "nostd", "nodeflibs"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -943,6 +944,9 @@ function processCompOptions as integer
 			case "nostd"
 				fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
 #endif
+
+			case "nodeflibs"
+				fbSetOption FB.COMPOPT.NODEFLIBS, TRUE
 
 			end select
 		end if
