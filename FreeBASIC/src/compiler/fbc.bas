@@ -276,8 +276,7 @@ function linkFiles as integer
 	dim entrypoint as string
 #ifdef TARGET_WIN32
 	dim libname as string, dllname as string
-#endif
-#ifdef TARGET_DOS
+#elseif defined(TARGET_DOS)
     dim mainobj as string, respfile as string
 #endif
 
@@ -506,10 +505,8 @@ function linkFiles as integer
     	print "linking: ", ldcline
     end if
 
-#ifdef TARGET_WIN32
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
 	ldpath = exepath$ + FB.BINPATH + "ld.exe"
-#elseif defined(TARGET_DOS)
-    ldpath = exepath$ + FB.BINPATH + "ld.exe"
 #elseif defined(TARGET_LINUX)
 	ldpath = "ld"
 #endif
