@@ -27,13 +27,16 @@
 #include "fb.h"
 
 #include <process.h>
+#include <stdlib.h>
 
 /*:::::*/
 FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
 	char	buffer[MAX_PATH+1];
-	char	*argv[256];
+	char	*argv[256], c, *startpos;
 	int	res;
+	int	i;
+	int	in_quotes = FALSE;
 
 	if( (program != NULL) && (program->data != NULL) )
 	{
@@ -45,9 +48,49 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 			argsdata = args->data;
 
 		argv[0] = &buffer[0];
-		argv[1] = argsdata;
-		argv[2] = NULL;
+		
+		for (i = 1, startpos = argsdata; (c = *argsdata) != '\0'; argsdata++) {
+			if (in_quotes) {
+				if (c == '"') {
+					in_quotes = FALSE;
+					argv[i] = (char*)malloc(argsdata - startpos + 1);
+					memcpy(argv[i], startpos, argsdata - startpos);
+					argv[i][argsdata - startpos] = '\0';
+					i++;
+					startpos = argsdata + 1;
+					if (*startpos == ' ') startpos++;
+				}
+			} else { /* in_quotes */
+				if (c == '"') {
+					in_quotes = TRUE;
+					startpos = argsdata + 1;
+				} else if (c == ' ') {
+					if (argsdata - startpos > 0) {
+						argv[i] = (char*)malloc(argsdata - startpos + 1);
+						memcpy(argv[i], startpos, argsdata - startpos);
+						argv[i][argsdata - startpos] = '\0';
+						i++;
+					}
+					startpos = argsdata + 1;
+				}
+			} /* in_quotes */
+		}
+		
+		/* get last arg */
+		if (startpos < argsdata) {
+			argv[i] = (char*)malloc(argsdata - startpos + 1);
+			memcpy(argv[i], startpos, argsdata - startpos);
+			argv[i][argsdata - startpos] = '\0';
+			i++;
+		}
+		
+		argv[i] = NULL;
+		
 		res = spawnv(P_WAIT, (const char*)fb_hGetShortPath(program->data, buffer, MAX_PATH), (const char **)argv);
+		
+		for (i = 1; argv[i] != NULL; i++) {
+			free(argv[i]);
+		}
 	}
 
 	/* del if temp */
