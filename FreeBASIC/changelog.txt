@@ -30,6 +30,7 @@ Version 0.11 Beta:
 [added] include file for the GLU library (thanks Rel for sending it) (v1c)
 [added] include file for the FreeImage library (thanks Eric) (v1c)
 [added] ONCE keyword to be used by $INCLUDE or #INCLUDE as in: '$include once: "includethisfileonlyonce.bi" (v1c)
+[added] UDT arguments now can be declared and passed by value too (v1c)
 [fixed] COMMON arrays shared between different sources had different descriptor names (v1c)
 [fixed] the UDT size returned for UDT vars when using LEN() was the real-one, w/o padding (v1c)
 [fixed] LEN() can now handle arrays with no indexes given, as in QB (v1c)
