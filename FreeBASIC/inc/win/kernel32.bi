@@ -21,1235 +21,1235 @@
 '| REQUIRED CONSTANTS |
 '----------------------
 
-Const DELETE       			= &H10000
-Const READ_CONTROL 			= &H20000
-Const WRITE_DAC    			= &H40000
-Const WRITE_OWNER  			= &H80000
-Const SYNCHRONIZE  			= &H100000
+#define DELETE  &H10000
+#define READ_CONTROL  &H20000
+#define WRITE_DAC  &H40000
+#define WRITE_OWNER  &H80000
+#define SYNCHRONIZE  &H100000
 
-Const STANDARD_RIGHTS_READ     		= &H20000
-Const STANDARD_RIGHTS_WRITE    		= &H20000
-Const STANDARD_RIGHTS_EXECUTE  		= &H20000
-Const STANDARD_RIGHTS_REQUIRED 		= &HF0000
-Const STANDARD_RIGHTS_ALL      		= &H1F0000
+#define STANDARD_RIGHTS_READ  &H20000
+#define STANDARD_RIGHTS_WRITE  &H20000
+#define STANDARD_RIGHTS_EXECUTE  &H20000
+#define STANDARD_RIGHTS_REQUIRED  &HF0000
+#define STANDARD_RIGHTS_ALL  &H1F0000
 
-Const SPECIFIC_RIGHTS_ALL      		= &HFFFF
+#define SPECIFIC_RIGHTS_ALL  &HFFFF
 
 'FILE_READ_DATA and FILE_WRITE_DATA constants
 
-Const FILE_READ_DATA      		= &H1           '  file pipe
-Const FILE_LIST_DIRECTORY 		= &H1           '  directory
+#define FILE_READ_DATA  &H1           '  file pipe
+#define FILE_LIST_DIRECTORY  &H1           '  directory
 
-Const FILE_WRITE_DATA 			= &H2           '  file pipe
-Const FILE_ADD_FILE   			= &H2           '  directory
+#define FILE_WRITE_DATA  &H2           '  file pipe
+#define FILE_ADD_FILE  &H2           '  directory
 
-Const FILE_APPEND_DATA          	= &H4           '  file
-Const FILE_ADD_SUBDIRECTORY     	= &H4           '  directory
-Const FILE_CREATE_PIPE_INSTANCE 	= &H4           '  named pipe
+#define FILE_APPEND_DATA  &H4           '  file
+#define FILE_ADD_SUBDIRECTORY  &H4           '  directory
+#define FILE_CREATE_PIPE_INSTANCE  &H4           '  named pipe
 
-Const FILE_READ_EA         		= &H8           '  file directory
-Const FILE_READ_PROPERTIES 		= &H8
+#define FILE_READ_EA  &H8           '  file directory
+#define FILE_READ_PROPERTIES  &H8
 
-Const FILE_WRITE_EA         		= &H10          '  file directory
-Const FILE_WRITE_PROPERTIES 		= &H10
+#define FILE_WRITE_EA  &H10          '  file directory
+#define FILE_WRITE_PROPERTIES  &H10
 
-Const FILE_EXECUTE  			= &H20          '  file
-Const FILE_TRAVERSE 			= &H20          '  directory
+#define FILE_EXECUTE  &H20          '  file
+#define FILE_TRAVERSE  &H20          '  directory
 
-Const FILE_DELETE_CHILD 		= &H40          '  directory
+#define FILE_DELETE_CHILD  &H40          '  directory
 
-Const FILE_READ_ATTRIBUTES  		= &H80          '  all
-Const FILE_WRITE_ATTRIBUTES 		= &H100         '  all
+#define FILE_READ_ATTRIBUTES  &H80          '  all
+#define FILE_WRITE_ATTRIBUTES  &H100         '  all
 
-Const FILE_ALL_ACCESS      		= &H1F01FF      ' (STANDARD_RIGHTS_REQUIRED Or SYNCHRONIZE Or &H1FF)
-Const FILE_GENERIC_READ    		= &H120089      ' (STANDARD_RIGHTS_READ Or FILE_READ_DATA Or FILE_READ_ATTRIBUTES Or FILE_READ_EA Or SYNCHRONIZE)
-Const FILE_GENERIC_WRITE   		= &H120116      ' (STANDARD_RIGHTS_WRITE Or FILE_WRITE_DATA Or FILE_WRITE_ATTRIBUTES Or FILE_WRITE_EA Or FILE_APPEND_DATA Or SYNCHRONIZE)
-Const FILE_GENERIC_EXECUTE 		= &H1200A0	' (STANDARD_RIGHTS_EXECUTE Or FILE_READ_ATTRIBUTES Or FILE_EXECUTE Or SYNCHRONIZE)
+#define FILE_ALL_ACCESS  &H1F01FF      ' (STANDARD_RIGHTS_REQUIRED Or SYNCHRONIZE Or &H1FF)
+#define FILE_GENERIC_READ  &H120089      ' (STANDARD_RIGHTS_READ Or FILE_READ_DATA Or FILE_READ_ATTRIBUTES Or FILE_READ_EA Or SYNCHRONIZE)
+#define FILE_GENERIC_WRITE  &H120116      ' (STANDARD_RIGHTS_WRITE Or FILE_WRITE_DATA Or FILE_WRITE_ATTRIBUTES Or FILE_WRITE_EA Or FILE_APPEND_DATA Or SYNCHRONIZE)
+#define FILE_GENERIC_EXECUTE  &H1200A0	' (STANDARD_RIGHTS_EXECUTE Or FILE_READ_ATTRIBUTES Or FILE_EXECUTE Or SYNCHRONIZE)
 
-Const FILE_SHARE_NONE           	= &H0
-Const FILE_SHARE_READ               	= &H1
-Const FILE_SHARE_WRITE              	= &H2
+#define FILE_SHARE_NONE  &H0
+#define FILE_SHARE_READ  &H1
+#define FILE_SHARE_WRITE  &H2
 
-Const FILE_ATTRIBUTE_READONLY       	= &H1
-Const FILE_ATTRIBUTE_HIDDEN         	= &H2
-Const FILE_ATTRIBUTE_SYSTEM         	= &H4
-Const FILE_ATTRIBUTE_DIRECTORY      	= &H10
-Const FILE_ATTRIBUTE_ARCHIVE        	= &H20
-Const FILE_ATTRIBUTE_NORMAL         	= &H80
-Const FILE_ATTRIBUTE_TEMPORARY      	= &H100
-Const FILE_ATTRIBUTE_ATOMIC_WRITE   	= &H200
-Const FILE_ATTRIBUTE_XACTION_WRITE  	= &H400
-Const FILE_ATTRIBUTE_COMPRESSED     	= &H800
+#define FILE_ATTRIBUTE_READONLY  &H1
+#define FILE_ATTRIBUTE_HIDDEN  &H2
+#define FILE_ATTRIBUTE_SYSTEM  &H4
+#define FILE_ATTRIBUTE_DIRECTORY  &H10
+#define FILE_ATTRIBUTE_ARCHIVE  &H20
+#define FILE_ATTRIBUTE_NORMAL  &H80
+#define FILE_ATTRIBUTE_TEMPORARY  &H100
+#define FILE_ATTRIBUTE_ATOMIC_WRITE  &H200
+#define FILE_ATTRIBUTE_XACTION_WRITE  &H400
+#define FILE_ATTRIBUTE_COMPRESSED  &H800
 
-Const FILE_NOTIFY_CHANGE_FILE_NAME  	= &H1
-Const FILE_NOTIFY_CHANGE_DIR_NAME   	= &H2
-Const FILE_NOTIFY_CHANGE_ATTRIBUTES 	= &H4
-Const FILE_NOTIFY_CHANGE_SIZE       	= &H8
-Const FILE_NOTIFY_CHANGE_LAST_WRITE 	= &H10
-Const FILE_NOTIFY_CHANGE_SECURITY   	= &H100
+#define FILE_NOTIFY_CHANGE_FILE_NAME  &H1
+#define FILE_NOTIFY_CHANGE_DIR_NAME  &H2
+#define FILE_NOTIFY_CHANGE_ATTRIBUTES  &H4
+#define FILE_NOTIFY_CHANGE_SIZE  &H8
+#define FILE_NOTIFY_CHANGE_LAST_WRITE  &H10
+#define FILE_NOTIFY_CHANGE_SECURITY  &H100
 
-Const MAILSLOT_NO_MESSAGE           	= (-1)
-Const MAILSLOT_WAIT_FOREVER         	= (-1)
+#define MAILSLOT_NO_MESSAGE  (-1)
+#define MAILSLOT_WAIT_FOREVER  (-1)
 
-Const FILE_CASE_SENSITIVE_SEARCH    	= &H1
-Const FILE_CASE_PRESERVED_NAMES     	= &H2
-Const FILE_UNICODE_ON_DISK          	= &H4
-Const FILE_PERSISTENT_ACLS          	= &H8
-Const FILE_FILE_COMPRESSION         	= &H10
-Const FILE_VOLUME_IS_COMPRESSED     	= &H8000
+#define FILE_CASE_SENSITIVE_SEARCH  &H1
+#define FILE_CASE_PRESERVED_NAMES  &H2
+#define FILE_UNICODE_ON_DISK  &H4
+#define FILE_PERSISTENT_ACLS  &H8
+#define FILE_FILE_COMPRESSION  &H10
+#define FILE_VOLUME_IS_COMPRESSED  &H8000
 
-Const IO_COMPLETION_MODIFY_STATE    	= &H2
-Const IO_COMPLETION_ALL_ACCESS      	= &H1F0003	' (STANDARD_RIGHTS_REQUIRED Or SYNCHRONIZE Or &H3)
+#define IO_COMPLETION_MODIFY_STATE  &H2
+#define IO_COMPLETION_ALL_ACCESS  &H1F0003	' (STANDARD_RIGHTS_REQUIRED Or SYNCHRONIZE Or &H3)
 
-Const DUPLICATE_CLOSE_SOURCE        	= &H1
-Const DUPLICATE_SAME_ACCESS         	= &H2
+#define DUPLICATE_CLOSE_SOURCE  &H1
+#define DUPLICATE_SAME_ACCESS  &H2
 
 '  Access Rights
 
 '  AccessSystemAcl access Type
 
-Const ACCESS_SYSTEM_SECURITY 		= &H1000000
+#define ACCESS_SYSTEM_SECURITY  &H1000000
 
 '  MaximumAllowed access Type
 
-Const MAXIMUM_ALLOWED 			= &H2000000
+#define MAXIMUM_ALLOWED  &H2000000
 
 '  These are the generic rights
 
-Const GENERIC_READ    			= &H80000000
-Const GENERIC_WRITE   			= &H40000000
-Const GENERIC_EXECUTE 			= &H20000000
-Const GENERIC_ALL     			= &H10000000
+#define GENERIC_READ  &H80000000
+#define GENERIC_WRITE  &H40000000
+#define GENERIC_EXECUTE  &H20000000
+#define GENERIC_ALL  &H10000000
 
-Const FILE_BEGIN   			= 0
-Const FILE_CURRENT 			= 1
-Const FILE_End     			= 2
+#define FILE_BEGIN  0
+#define FILE_CURRENT  1
+#define FILE_End  2
 
-Const FILE_FLAG_WRITE_THROUGH    	= &H80000000
-Const FILE_FLAG_OVERLAPPED       	= &H40000000
-Const FILE_FLAG_NO_BUFFERING     	= &H20000000
-Const FILE_FLAG_RANDOM_ACCESS    	= &H10000000
-Const FILE_FLAG_SEQUENTIAL_SCAN  	= &H08000000
-Const FILE_FLAG_DELETE_ON_CLOSE  	= &H04000000
-Const FILE_FLAG_BACKUP_SEMANTICS 	= &H02000000
-Const FILE_FLAG_POSIX_SEMANTICS  	= &H01000000
+#define FILE_FLAG_WRITE_THROUGH  &H80000000
+#define FILE_FLAG_OVERLAPPED  &H40000000
+#define FILE_FLAG_NO_BUFFERING  &H20000000
+#define FILE_FLAG_RANDOM_ACCESS  &H10000000
+#define FILE_FLAG_SEQUENTIAL_SCAN  &H08000000
+#define FILE_FLAG_DELETE_ON_CLOSE  &H04000000
+#define FILE_FLAG_BACKUP_SEMANTICS  &H02000000
+#define FILE_FLAG_POSIX_SEMANTICS  &H01000000
 
-Const CREATE_NEW        		= 1
-Const CREATE_ALWAYS     		= 2
-Const OPEN_EXISTING     		= 3
-Const OPEN_ALWAYS       		= 4
-Const TRUNCATE_EXISTING 		= 5
+#define CREATE_NEW  1
+#define CREATE_ALWAYS  2
+#define OPEN_EXISTING  3
+#define OPEN_ALWAYS  4
+#define TRUNCATE_EXISTING  5
 
 '  Define the dwOpenMode values for CreateNamedPipe
 
-Const PIPE_ACCESS_INBOUND  		= &H1
-Const PIPE_ACCESS_OUTBOUND 		= &H2
-Const PIPE_ACCESS_DUPLEX   		= &H3
+#define PIPE_ACCESS_INBOUND  &H1
+#define PIPE_ACCESS_OUTBOUND  &H2
+#define PIPE_ACCESS_DUPLEX  &H3
 
 ' Define the Named Pipe End flags for GetNamedPipeInfo
 
-Const PIPE_CLIENT_End 			= &H0
-Const PIPE_SERVER_End 			= &H1
+#define PIPE_CLIENT_End  &H0
+#define PIPE_SERVER_End  &H1
 
 ' Define the dwPipeMode values for CreateNamedPipe
 
-Const PIPE_WAIT             		= &H0
-Const PIPE_NOWAIT           		= &H1
-Const PIPE_READMODE_BYTE    		= &H0
-Const PIPE_READMODE_MESSAGE 		= &H2
-Const PIPE_Type_BYTE        		= &H0
-Const PIPE_Type_MESSAGE     		= &H4
+#define PIPE_WAIT  &H0
+#define PIPE_NOWAIT  &H1
+#define PIPE_READMODE_BYTE  &H0
+#define PIPE_READMODE_MESSAGE  &H2
+#define PIPE_Type_BYTE  &H0
+#define PIPE_Type_MESSAGE  &H4
 
 ' Define the well known values for CreateNamedPipe nMaxInstances
 
-Const PIPE_UNLIMITED_INSTANCES 		= 255
+#define PIPE_UNLIMITED_INSTANCES  255
 
 ' Define the Security Quality of Service bits to be passed into CreateFile
 
-Const SECURITY_ANONYMOUS             	= &H0
-Const SECURITY_IDENTIFICATION        	= &H10000
-Const SECURITY_IMPERSONATION         	= &H20000
-Const SECURITY_DELEGATION            	= &H30000
-Const SECURITY_CONTEXT_TRACKING      	= &H40000
-Const SECURITY_EFFECTIVE             	= &H80000
-Const SECURITY_EFFECTIVE_ONLY        	= &H80000
+#define SECURITY_ANONYMOUS  &H0
+#define SECURITY_IDENTIFICATION  &H10000
+#define SECURITY_IMPERSONATION  &H20000
+#define SECURITY_DELEGATION  &H30000
+#define SECURITY_CONTEXT_TRACKING  &H40000
+#define SECURITY_EFFECTIVE  &H80000
+#define SECURITY_EFFECTIVE_ONLY  &H80000
 
-Const SECURITY_SQOS_PRESENT          	= &H100000
-Const SECURITY_VALID_SQOS_FLAGS      	= &H1F0000
+#define SECURITY_SQOS_PRESENT  &H100000
+#define SECURITY_VALID_SQOS_FLAGS  &H1F0000
 
 '  Code Page Default Values
 
-Const CP_ACP   				= 0       	'  default to ANSI code page
-Const CP_OEMCP 				= 1             '  default to OEM  code page
+#define CP_ACP  0       	'  default to ANSI code page
+#define CP_OEMCP  1             '  default to OEM  code page
 
-Const DRIVE_UNKNOWN	  		= 0
-Const DRIVE_NO_ROOT_DIR   		= 1
-Const DRIVE_REMOVABLE	  		= 2
-Const DRIVE_FIXED	  		= 3
-Const DRIVE_REMOTE	  		= 4
-Const DRIVE_CDROM	  		= 5
-Const DRIVE_RAMDISK	  		= 6
+#define DRIVE_UNKNOWN  0
+#define DRIVE_NO_ROOT_DIR  1
+#define DRIVE_REMOVABLE  2
+#define DRIVE_FIXED  3
+#define DRIVE_REMOTE  4
+#define DRIVE_CDROM  5
+#define DRIVE_RAMDISK  6
 
 ' Global Memory Flags
 
-Const GMEM_FIXED                        = &H0
-Const GMEM_MOVEABLE                     = &H2
-Const GMEM_NOCOMPACT                    = &H10
-Const GMEM_NODISCARD                    = &H20
-Const GMEM_ZEROINIT                     = &H40
-Const GMEM_MODIFY                       = &H80
-Const GMEM_DISCARDABLE                  = &H100
-Const GMEM_NOT_BANKED                   = &H1000
-Const GMEM_SHARE                        = &H2000
-Const GMEM_DDESHARE                     = &H2000
-Const GMEM_NOTIFY                       = &H4000
-Const GMEM_LOWER                        = &H1000
-Const GMEM_VALID_FLAGS                  = &H7F72
-Const GMEM_INVALID_HANDLE               = &H8000
+#define GMEM_FIXED  &H0
+#define GMEM_MOVEABLE  &H2
+#define GMEM_NOCOMPACT  &H10
+#define GMEM_NODISCARD  &H20
+#define GMEM_ZEROINIT  &H40
+#define GMEM_MODIFY  &H80
+#define GMEM_DISCARDABLE  &H100
+#define GMEM_NOT_BANKED  &H1000
+#define GMEM_SHARE  &H2000
+#define GMEM_DDESHARE  &H2000
+#define GMEM_NOTIFY  &H4000
+#define GMEM_LOWER  &H1000
+#define GMEM_VALID_FLAGS  &H7F72
+#define GMEM_INVALID_HANDLE  &H8000
 
-Const GHND 				= &H42		'  (GMEM_MOVEABLE Or GMEM_ZEROINIT)
-Const GPTR 				= &H40		'  (GMEM_FIXED Or GMEM_ZEROINIT)
+#define GHND  &H42		'  (GMEM_MOVEABLE Or GMEM_ZEROINIT)
+#define GPTR  &H40		'  (GMEM_FIXED Or GMEM_ZEROINIT)
 
 ' Flags returned by GlobalFlags (in addition to GMEM_DISCARDABLE)
 
-Const GMEM_DISCARDED 			= &H4000
-Const GMEM_LOCKCOUNT 			= &HFF
+#define GMEM_DISCARDED  &H4000
+#define GMEM_LOCKCOUNT  &HFF
 
 '  Local Memory Flags
 
-Const LMEM_FIXED          		= &H0
-Const LMEM_MOVEABLE       		= &H2
-Const LMEM_NOCOMPACT      		= &H10
-Const LMEM_NODISCARD      		= &H20
-Const LMEM_ZEROINIT       		= &H40
-Const LMEM_MODIFY         		= &H80
-Const LMEM_DISCARDABLE    		= &HF00
-Const LMEM_VALID_FLAGS    		= &HF72
-Const LMEM_INVALID_HANDLE 		= &H8000
+#define LMEM_FIXED  &H0
+#define LMEM_MOVEABLE  &H2
+#define LMEM_NOCOMPACT  &H10
+#define LMEM_NODISCARD  &H20
+#define LMEM_ZEROINIT  &H40
+#define LMEM_MODIFY  &H80
+#define LMEM_DISCARDABLE  &HF00
+#define LMEM_VALID_FLAGS  &HF72
+#define LMEM_INVALID_HANDLE  &H8000
 
-Const LHND 				= 66		'  (LMEM_MOVEABLE + LMEM_ZEROINIT)
-Const LPTR 				= 64		'  (LMEM_FIXED + LMEM_ZEROINIT)
+#define LHND  66		'  (LMEM_MOVEABLE + LMEM_ZEROINIT)
+#define LPTR  64		'  (LMEM_FIXED + LMEM_ZEROINIT)
 
-Const NONZEROLHND 			= &H2
-Const NONZEROLPTR 			= &H0
+#define NONZEROLHND  &H2
+#define NONZEROLPTR  &H0
 
 ' Flags returned by LocalFlags (in addition to LMEM_DISCARDABLE)
 
-Const LMEM_DISCARDED 			= &H4000
-Const LMEM_LOCKCOUNT 			= &HFF
+#define LMEM_DISCARDED  &H4000
+#define LMEM_LOCKCOUNT  &HFF
 
 '  dwCreationFlag values
 
-Const DEBUG_PROCESS 			= &H1
-Const DEBUG_ONLY_THIS_PROCESS 		= &H2
+#define DEBUG_PROCESS  &H1
+#define DEBUG_ONLY_THIS_PROCESS  &H2
 
-Const CREATE_SUSPENDED 			= &H4
-Const DETACHED_PROCESS 			= &H8
-Const CREATE_NEW_CONSOLE 		= &H10
+#define CREATE_SUSPENDED  &H4
+#define DETACHED_PROCESS  &H8
+#define CREATE_NEW_CONSOLE  &H10
 
-Const NORMAL_PRIORITY_CLASS 		= &H20
-Const IDLE_PRIORITY_CLASS 		= &H40
-Const HIGH_PRIORITY_CLASS 		= &H80
-Const REALTIME_PRIORITY_CLASS 		= &H100
+#define NORMAL_PRIORITY_CLASS  &H20
+#define IDLE_PRIORITY_CLASS  &H40
+#define HIGH_PRIORITY_CLASS  &H80
+#define REALTIME_PRIORITY_CLASS  &H100
 
-Const CREATE_NEW_PROCESS_GROUP 		= &H200
-Const CREATE_NO_WINDOW 			= &H8000000
+#define CREATE_NEW_PROCESS_GROUP  &H200
+#define CREATE_NO_WINDOW  &H8000000
 
-Const STARTF_USESHOWWINDOW 		= &H1
-Const STARTF_USESIZE 			= &H2
-Const STARTF_USEPOSITION 		= &H4
-Const STARTF_USECOUNTCHARS 		= &H8
-Const STARTF_USEFILLATTRIBUTE 		= &H10
-Const STARTF_RUNFULLSCREEN 		= &H20        '  ignored for non-x86 platforms
-Const STARTF_FORCEONFEEDBACK 		= &H40
-Const STARTF_FORCEOFFFEEDBACK 		= &H80
-Const STARTF_USESTDHANDLES 		= &H100
+#define STARTF_USESHOWWINDOW  &H1
+#define STARTF_USESIZE  &H2
+#define STARTF_USEPOSITION  &H4
+#define STARTF_USECOUNTCHARS  &H8
+#define STARTF_USEFILLATTRIBUTE  &H10
+#define STARTF_RUNFULLSCREEN  &H20        '  ignored for non-x86 platforms
+#define STARTF_FORCEONFEEDBACK  &H40
+#define STARTF_FORCEOFFFEEDBACK  &H80
+#define STARTF_USESTDHANDLES  &H100
 
-Const PROFILE_USER 			= &H10000000
-Const PROFILE_KERNEL 			= &H20000000
-Const PROFILE_SERVER 			= &H40000000
+#define PROFILE_USER  &H10000000
+#define PROFILE_KERNEL  &H20000000
+#define PROFILE_SERVER  &H40000000
 
-Const MAlong 				= &H7FFFFFFF
-Const THREAD_BASE_PRIORITY_MIN 		= (-2)
-Const THREAD_BASE_PRIORITY_MAX 		= 2
-Const THREAD_BASE_PRIORITY_LOWRT 	= 15
-Const THREAD_BASE_PRIORITY_IDLE 	= (-15)
-Const THREAD_PRIORITY_LOWEST 		= (-2)
-Const THREAD_PRIORITY_BELOW_NORMAL 	= (-1)
-Const THREAD_PRIORITY_NORMAL 		= 0
-Const THREAD_PRIORITY_HIGHEST 		= 2
-Const THREAD_PRIORITY_ABOVE_NORMAL 	= 1
-Const THREAD_PRIORITY_ERROR_RETURN 	= &H7FFFFFFF
+#define MAlong  &H7FFFFFFF
+#define THREAD_BASE_PRIORITY_MIN  (-2)
+#define THREAD_BASE_PRIORITY_MAX  2
+#define THREAD_BASE_PRIORITY_LOWRT  15
+#define THREAD_BASE_PRIORITY_IDLE  (-15)
+#define THREAD_PRIORITY_LOWEST  (-2)
+#define THREAD_PRIORITY_BELOW_NORMAL  (-1)
+#define THREAD_PRIORITY_NORMAL  0
+#define THREAD_PRIORITY_HIGHEST  2
+#define THREAD_PRIORITY_ABOVE_NORMAL  1
+#define THREAD_PRIORITY_ERROR_RETURN  &H7FFFFFFF
 
-Const THREAD_PRIORITY_TIME_CRITICAL 	= 15
-Const THREAD_PRIORITY_IDLE 		= (-15)
+#define THREAD_PRIORITY_TIME_CRITICAL  15
+#define THREAD_PRIORITY_IDLE  (-15)
 
 '  DllMain reason flags
 
-Const DLL_PROCESS_DETACH  		= 0
-Const DLL_PROCESS_ATTACH  		= 1
-Const DLL_THREAD_ATTACH   		= 2
-Const DLL_THREAD_DETACH   		= 3
+#define DLL_PROCESS_DETACH  0
+#define DLL_PROCESS_ATTACH  1
+#define DLL_THREAD_ATTACH  2
+#define DLL_THREAD_DETACH  3
 
 '  standard io handles
 
-Const STD_ERR_HANDLE    		= (-12)
-Const STD_ERROR_HANDLE  		= (-12)
-Const STD_OUTPUT_HANDLE 		= (-11)
-Const STD_INPUT_HANDLE  		= (-10)
+#define STD_ERR_HANDLE  (-12)
+#define STD_ERROR_HANDLE  (-12)
+#define STD_OUTPUT_HANDLE  (-11)
+#define STD_INPUT_HANDLE  (-10)
 
-Const INVALID_HANDLE_VALUE 		= (-1)
+#define INVALID_HANDLE_VALUE  (-1)
 
-Const FORMAT_MESSAGE_ALLOCATE_BUFFER 	= &H100
-Const FORMAT_MESSAGE_IGNORE_INSERTS  	= &H200
-Const FORMAT_MESSAGE_FROM_STRING     	= &H400
-Const FORMAT_MESSAGE_FROM_HMODULE    	= &H800
-Const FORMAT_MESSAGE_FROM_SYSTEM     	= &H1000
-Const FORMAT_MESSAGE_ARGUMENT_ARRAY  	= &H2000
-Const FORMAT_MESSAGE_MAX_WIDTH_MASK  	= &HFF
+#define FORMAT_MESSAGE_ALLOCATE_BUFFER  &H100
+#define FORMAT_MESSAGE_IGNORE_INSERTS  &H200
+#define FORMAT_MESSAGE_FROM_STRING  &H400
+#define FORMAT_MESSAGE_FROM_HMODULE  &H800
+#define FORMAT_MESSAGE_FROM_SYSTEM  &H1000
+#define FORMAT_MESSAGE_ARGUMENT_ARRAY  &H2000
+#define FORMAT_MESSAGE_MAX_WIDTH_MASK  &HFF
 
 '  dwPlatformId defines
 
-Const VER_PLATFORM_WIN32s 		= 0
-Const VER_PLATFORM_WIN32_WINDOWS 	= 1
-Const VER_PLATFORM_WIN32_NT 		= 2
+#define VER_PLATFORM_WIN32s  0
+#define VER_PLATFORM_WIN32_WINDOWS  1
+#define VER_PLATFORM_WIN32_NT  2
 
 '  Serial provider Type
 
-Const SP_SERIALCOMM 			= &H1
+#define SP_SERIALCOMM  &H1
 
 '  Provider SubTypes
 
-Const PST_UNSPECIFIED 			= &H0
-Const PST_RS232 			= &H1
-Const PST_PARALLELPORT 			= &H2
-Const PST_RS422 			= &H3
-Const PST_RS423 			= &H4
-Const PST_RS449 			= &H5
-Const PST_FAX 				= &H21
-Const PST_SCANNER 			= &H22
-Const PST_NETWORK_BRIDGE 		= &H100
-Const PST_LAT 				= &H101
-Const PST_TCPIP_TELNET 			= &H102
-Const PST_X25 				= &H103
+#define PST_UNSPECIFIED  &H0
+#define PST_RS232  &H1
+#define PST_PARALLELPORT  &H2
+#define PST_RS422  &H3
+#define PST_RS423  &H4
+#define PST_RS449  &H5
+#define PST_FAX  &H21
+#define PST_SCANNER  &H22
+#define PST_NETWORK_BRIDGE  &H100
+#define PST_LAT  &H101
+#define PST_TCPIP_TELNET  &H102
+#define PST_X25  &H103
 
 '  Provider capabilities flags
 
-Const PCF_DTRDSR 			= &H1
-Const PCF_RTSCTS 			= &H2
-Const PCF_RLSD 				= &H4
-Const PCF_PARITY_CHECK 			= &H8
-Const PCF_XONXOFF 			= &H10
-Const PCF_SETXCHAR 			= &H20
-Const PCF_TOTALTIMEOUTS 		= &H40
-Const PCF_INTTIMEOUTS 			= &H80
-Const PCF_SPECIALCHARS 			= &H100
-Const PCF_16BITMODE 			= &H200
+#define PCF_DTRDSR  &H1
+#define PCF_RTSCTS  &H2
+#define PCF_RLSD  &H4
+#define PCF_PARITY_CHECK  &H8
+#define PCF_XONXOFF  &H10
+#define PCF_SETXCHAR  &H20
+#define PCF_TOTALTIMEOUTS  &H40
+#define PCF_INTTIMEOUTS  &H80
+#define PCF_SPECIALCHARS  &H100
+#define PCF_16BITMODE  &H200
 
 '  Comm provider settable parameters
 
-Const SP_PARITY 			= &H1
-Const SP_BAUD 				= &H2
-Const SP_DATABITS 			= &H4
-Const SP_STOPBITS 			= &H8
-Const SP_HANDSHAKING 			= &H10
-Const SP_PARITY_CHECK 			= &H20
-Const SP_RLSD 				= &H40
+#define SP_PARITY  &H1
+#define SP_BAUD  &H2
+#define SP_DATABITS  &H4
+#define SP_STOPBITS  &H8
+#define SP_HANDSHAKING  &H10
+#define SP_PARITY_CHECK  &H20
+#define SP_RLSD  &H40
 
 '  Settable baud rates in the provider
 
-Const BAUD_075 				= &H1
-Const BAUD_110 				= &H2
-Const BAUD_134_5 			= &H4
-Const BAUD_150 				= &H8
-Const BAUD_300 				= &H10
-Const BAUD_600 				= &H20
-Const BAUD_1200 			= &H40
-Const BAUD_1800 			= &H80
-Const BAUD_2400 			= &H100
-Const BAUD_4800 			= &H200
-Const BAUD_7200 			= &H400
-Const BAUD_9600 			= &H800
-Const BAUD_14400 			= &H1000
-Const BAUD_19200 			= &H2000
-Const BAUD_38400 			= &H4000
-Const BAUD_56K 				= &H8000
-Const BAUD_128K 			= &H10000
-Const BAUD_115200 			= &H20000
-Const BAUD_57600 			= &H40000
-Const BAUD_USER 			= &H10000000
+#define BAUD_075  &H1
+#define BAUD_110  &H2
+#define BAUD_134_5  &H4
+#define BAUD_150  &H8
+#define BAUD_300  &H10
+#define BAUD_600  &H20
+#define BAUD_1200  &H40
+#define BAUD_1800  &H80
+#define BAUD_2400  &H100
+#define BAUD_4800  &H200
+#define BAUD_7200  &H400
+#define BAUD_9600  &H800
+#define BAUD_14400  &H1000
+#define BAUD_19200  &H2000
+#define BAUD_38400  &H4000
+#define BAUD_56K  &H8000
+#define BAUD_128K  &H10000
+#define BAUD_115200  &H20000
+#define BAUD_57600  &H40000
+#define BAUD_USER  &H10000000
 
 '  Settable Data Bits
 
-Const DATABITS_5 			= &H1
-Const DATABITS_6 			= &H2
-Const DATABITS_7 			= &H4
-Const DATABITS_8 			= &H8
-Const DATABITS_16 			= &H10
-Const DATABITS_16X 			= &H20
+#define DATABITS_5  &H1
+#define DATABITS_6  &H2
+#define DATABITS_7  &H4
+#define DATABITS_8  &H8
+#define DATABITS_16  &H10
+#define DATABITS_16X  &H20
 
 '  Settable Stop and Parity bits.
 
-Const STOPBITS_10 			= &H1
-Const STOPBITS_15 			= &H2
-Const STOPBITS_20 			= &H4
-Const PARITY_NONE 			= &H100
-Const PARITY_ODD 			= &H200
-Const PARITY_EVEN 			= &H400
-Const PARITY_MARK 			= &H800
-Const PARITY_SPACE 			= &H1000
+#define STOPBITS_10  &H1
+#define STOPBITS_15  &H2
+#define STOPBITS_20  &H4
+#define PARITY_NONE  &H100
+#define PARITY_ODD  &H200
+#define PARITY_EVEN  &H400
+#define PARITY_MARK  &H800
+#define PARITY_SPACE  &H1000
 
-Const NOPARITY 				= 0
-Const ODDPARITY 			= 1
-Const EVENPARITY 			= 2
-Const MARKPARITY 			= 3
-Const SPACEPARITY 			= 4
+#define NOPARITY  0
+#define ODDPARITY  1
+#define EVENPARITY  2
+#define MARKPARITY  3
+#define SPACEPARITY  4
 
-Const ONESTOPBIT 			= 0
-Const ONE5STOPBITS 			= 1
-Const TWOSTOPBITS 			= 2
+#define ONESTOPBIT  0
+#define ONE5STOPBITS  1
+#define TWOSTOPBITS  2
 
-Const IGNORE 				= 0 		'  Ignore signal
-Const INFINITE 				= &HFFFFFFFF  	'  Infinite timeout
+#define IGNORE  0 		'  Ignore signal
+#define INFINITE  &HFFFFFFFF  	'  Infinite timeout
 
 '  Comm Baud Rate indices
 
-Const CBR_110 				= 110
-Const CBR_300 				= 300
-Const CBR_600 				= 600
-Const CBR_1200 				= 1200
-Const CBR_2400 				= 2400
-Const CBR_4800 				= 4800
-Const CBR_9600 				= 9600
-Const CBR_14400 			= 14400
-Const CBR_19200 			= 19200
-Const CBR_38400 			= 38400
-Const CBR_56000 			= 56000
-Const CBR_57600 			= 57600
-Const CBR_115200 			= 115200
-Const CBR_128000 			= 128000
-Const CBR_256000 			= 256000
+#define CBR_110  110
+#define CBR_300  300
+#define CBR_600  600
+#define CBR_1200  1200
+#define CBR_2400  2400
+#define CBR_4800  4800
+#define CBR_9600  9600
+#define CBR_14400  14400
+#define CBR_19200  19200
+#define CBR_38400  38400
+#define CBR_56000  56000
+#define CBR_57600  57600
+#define CBR_115200  115200
+#define CBR_128000  128000
+#define CBR_256000  256000
 
 '  DTR Control Flow Values.
 
-Const DTR_CONTROL_DISABLE 		= &H0
-Const DTR_CONTROL_ENABLE 		= &H1
-Const DTR_CONTROL_HANDSHAKE 		= &H2
+#define DTR_CONTROL_DISABLE  &H0
+#define DTR_CONTROL_ENABLE  &H1
+#define DTR_CONTROL_HANDSHAKE  &H2
 
 '  RTS Control Flow Values
 
-Const RTS_CONTROL_DISABLE 		= &H0
-Const RTS_CONTROL_ENABLE 		= &H1
-Const RTS_CONTROL_HANDSHAKE 		= &H2
-Const RTS_CONTROL_TOGGLE 		= &H3
+#define RTS_CONTROL_DISABLE  &H0
+#define RTS_CONTROL_ENABLE  &H1
+#define RTS_CONTROL_HANDSHAKE  &H2
+#define RTS_CONTROL_TOGGLE  &H3
 
 '  Escape Functions
 
-Const SETXOFF 				= 1  		'  Simulate XOFF received
-Const SETXON 				= 2 		'  Simulate XON received
-Const SETRTS 				= 3 		'  Set RTS high
-Const CLRRTS 				= 4 		'  Set RTS low
-Const SETDTR 				= 5 		'  Set DTR high
-Const CLRDTR 				= 6 		'  Set DTR low
-Const RESETDEV 				= 7       	'  Reset device if possible
-Const SETBREAK 				= 8  		'  Set the device break line
-Const CLRBREAK 				= 9 		'  Clear the device break line
+#define SETXOFF  1  		'  Simulate XOFF received
+#define SETXON  2 		'  Simulate XON received
+#define SETRTS  3 		'  Set RTS high
+#define CLRRTS  4 		'  Set RTS low
+#define SETDTR  5 		'  Set DTR high
+#define CLRDTR  6 		'  Set DTR low
+#define RESETDEV  7       	'  Reset device if possible
+#define SETBREAK  8  		'  Set the device break line
+#define CLRBREAK  9 		'  Clear the device break line
 
 '  PURGE function flags.	
 
-Const PURGE_TXABORT 			= &H1     	'  Kill the pending/current writes to the comm port.
-Const PURGE_RXABORT 			= &H2     	'  Kill the pending/current reads to the comm port.
-Const PURGE_TXCLEAR 			= &H4     	'  Kill the transmit queue if there.
-Const PURGE_RXCLEAR 			= &H8     	'  Kill the Typeahead buffer if there.
+#define PURGE_TXABORT  &H1     	'  Kill the pending/current writes to the comm port.
+#define PURGE_RXABORT  &H2     	'  Kill the pending/current reads to the comm port.
+#define PURGE_TXCLEAR  &H4     	'  Kill the transmit queue if there.
+#define PURGE_RXCLEAR  &H8     	'  Kill the Typeahead buffer if there.
 
 '  Locale Types.
 '  These Types are used for the GetLocaleInfoW NLS API routine.
 
-Const LOCALE_SYSTEM_DEFAULT 		= &H800
-Const LOCALE_USER_DEFAULT 		= &H400
+#define LOCALE_SYSTEM_DEFAULT  &H800
+#define LOCALE_USER_DEFAULT  &H400
 
 '  LOCALE_NOUSEROVERRIDE is also used in GetTimeFormatW and GetDateFormatW.
 
-Const LOCALE_NOUSEROVERRIDE 		= &H80000000  	'  do not use user overrides
+#define LOCALE_NOUSEROVERRIDE  &H80000000  	'  do not use user overrides
 
-Const LOCALE_ILANGUAGE 			= &H1         	'  language id
-Const LOCALE_SLANGUAGE 			= &H2         	'  localized name of language
-Const LOCALE_SENGLANGUAGE 		= &H1001      	'  English name of language
-Const LOCALE_SABBREVLANGNAME 		= &H3         	'  abbreviated language name
-Const LOCALE_SNATIVELANGNAME 		= &H4         	'  native name of language
-Const LOCALE_ICOUNTRY 			= &H5         	'  country code
-Const LOCALE_SCOUNTRY 			= &H6         	'  localized name of country
-Const LOCALE_SENGCOUNTRY 		= &H1002      	'  English name of country
-Const LOCALE_SABBREVCTRYNAME 		= &H7         	'  abbreviated country name
-Const LOCALE_SNATIVECTRYNAME 		= &H8         	'  native name of country
-Const LOCALE_IDEFAULTLANGUAGE 		= &H9         	'  default language id
-Const LOCALE_IDEFAULTCOUNTRY 		= &HA         	'  default country code
-Const LOCALE_IDEFAULTCODEPAGE 		= &HB         	'  default code page
+#define LOCALE_ILANGUAGE  &H1         	'  language id
+#define LOCALE_SLANGUAGE  &H2         	'  localized name of language
+#define LOCALE_SENGLANGUAGE  &H1001      	'  English name of language
+#define LOCALE_SABBREVLANGNAME  &H3         	'  abbreviated language name
+#define LOCALE_SNATIVELANGNAME  &H4         	'  native name of language
+#define LOCALE_ICOUNTRY  &H5         	'  country code
+#define LOCALE_SCOUNTRY  &H6         	'  localized name of country
+#define LOCALE_SENGCOUNTRY  &H1002      	'  English name of country
+#define LOCALE_SABBREVCTRYNAME  &H7         	'  abbreviated country name
+#define LOCALE_SNATIVECTRYNAME  &H8         	'  native name of country
+#define LOCALE_IDEFAULTLANGUAGE  &H9         	'  default language id
+#define LOCALE_IDEFAULTCOUNTRY  &HA         	'  default country code
+#define LOCALE_IDEFAULTCODEPAGE  &HB         	'  default code page
 
-Const LOCALE_SLIST 			= &HC         	'  list item separator
-Const LOCALE_IMEASURE 			= &HD         	'  0 = metric, 1 = US
+#define LOCALE_SLIST  &HC         	'  list item separator
+#define LOCALE_IMEASURE  &HD         	'  0 = metric, 1 = US
 
-Const LOCALE_SDECIMAL 			= &HE         	'  decimal separator
-Const LOCALE_STHOUSAND 			= &HF         	'  thousand separator
-Const LOCALE_SGROUPING 			= &H10        	'  digit grouping
-Const LOCALE_IDIGITS 			= &H11       	'  number of fractional digits
-Const LOCALE_ILZERO 			= &H12        	'  leading zeros for decimal
-Const LOCALE_SNATIVEDIGITS 		= &H13        	'  native ascii 0-9
+#define LOCALE_SDECIMAL  &HE         	'  decimal separator
+#define LOCALE_STHOUSAND  &HF         	'  thousand separator
+#define LOCALE_SGROUPING  &H10        	'  digit grouping
+#define LOCALE_IDIGITS  &H11       	'  number of fractional digits
+#define LOCALE_ILZERO  &H12        	'  leading zeros for decimal
+#define LOCALE_SNATIVEDIGITS  &H13        	'  native ascii 0-9
 
-Const LOCALE_SCURRENCY 			= &H14        	'  local monetary symbol
-Const LOCALE_SINTLSYMBOL 		= &H15        	'  intl monetary symbol
-Const LOCALE_SMONDECIMALSEP 		= &H16        	'  monetary decimal separator
-Const LOCALE_SMONTHOUSANDSEP 		= &H17        	'  monetary thousand separator
-Const LOCALE_SMONGROUPING 		= &H18        	'  monetary grouping
-Const LOCALE_ICURRDIGITS 		= &H19        	'  * local monetary digits
-Const LOCALE_IINTLCURRDIGITS 		= &H1A        	'  * intl monetary digits
-Const LOCALE_ICURRENCY 			= &H1B        	'  positive currency mode
-Const LOCALE_INEGCURR 			= &H1C        	'  negative currency mode
+#define LOCALE_SCURRENCY  &H14        	'  local monetary symbol
+#define LOCALE_SINTLSYMBOL  &H15        	'  intl monetary symbol
+#define LOCALE_SMONDECIMALSEP  &H16        	'  monetary decimal separator
+#define LOCALE_SMONTHOUSANDSEP  &H17        	'  monetary thousand separator
+#define LOCALE_SMONGROUPING  &H18        	'  monetary grouping
+#define LOCALE_ICURRDIGITS  &H19        	'  * local monetary digits
+#define LOCALE_IINTLCURRDIGITS  &H1A        	'  * intl monetary digits
+#define LOCALE_ICURRENCY  &H1B        	'  positive currency mode
+#define LOCALE_INEGCURR  &H1C        	'  negative currency mode
 
-Const LOCALE_SDATE 			= &H1D        	'  date separator
-Const LOCALE_STIME 			= &H1E        	'  time separator
-Const LOCALE_SSHORTDATE 		= &H1F        	'  short date format string
-Const LOCALE_integerDATE		= &H20        	'  long date format string
-Const LOCALE_STIMEFORMAT 		= &H1003      	'  time format string
-Const LOCALE_IDATE 			= &H21        	'  short date format ordering
-Const LOCALE_ILDATE 			= &H22        	'  long date format ordering
-Const LOCALE_ITIME 			= &H23        	'  time format specifier
-Const LOCALE_ICENTURY 			= &H24        	'  century format specifier
-Const LOCALE_ITLZERO 			= &H25        	'  leading zeros in time field
-Const LOCALE_IDAYLZERO 			= &H26        	'  leading zeros in day field
-Const LOCALE_IMONLZERO 			= &H27        	'  leading zeros in month field
-Const LOCALE_S1159 			= &H28        	'  AM designator
-Const LOCALE_S2359 			= &H29        	'  PM designator
+#define LOCALE_SDATE  &H1D        	'  date separator
+#define LOCALE_STIME  &H1E        	'  time separator
+#define LOCALE_SSHORTDATE  &H1F        	'  short date format string
+#define LOCALE_integerDATE  &H20        	'  long date format string
+#define LOCALE_STIMEFORMAT  &H1003      	'  time format string
+#define LOCALE_IDATE  &H21        	'  short date format ordering
+#define LOCALE_ILDATE  &H22        	'  long date format ordering
+#define LOCALE_ITIME  &H23        	'  time format specifier
+#define LOCALE_ICENTURY  &H24        	'  century format specifier
+#define LOCALE_ITLZERO  &H25        	'  leading zeros in time field
+#define LOCALE_IDAYLZERO  &H26        	'  leading zeros in day field
+#define LOCALE_IMONLZERO  &H27        	'  leading zeros in month field
+#define LOCALE_S1159  &H28        	'  AM designator
+#define LOCALE_S2359  &H29        	'  PM designator
 
-Const LOCALE_SDAYNAME1 			= &H2A        	'  long name for Monday
-Const LOCALE_SDAYNAME2 			= &H2B        	'  long name for Tuesday
-Const LOCALE_SDAYNAME3 			= &H2C        	'  long name for Wednesday
-Const LOCALE_SDAYNAME4 			= &H2D        	'  long name for Thursday
-Const LOCALE_SDAYNAME5 			= &H2E        	'  long name for Friday
-Const LOCALE_SDAYNAME6 			= &H2F        	'  long name for Saturday
-Const LOCALE_SDAYNAME7 			= &H30        	'  long name for Sunday
-Const LOCALE_SABBREVDAYNAME1 		= &H31        	'  abbreviated name for Monday
-Const LOCALE_SABBREVDAYNAME2 		= &H32        	'  abbreviated name for Tuesday
-Const LOCALE_SABBREVDAYNAME3 		= &H33        	'  abbreviated name for Wednesday
-Const LOCALE_SABBREVDAYNAME4 		= &H34        	'  abbreviated name for Thursday
-Const LOCALE_SABBREVDAYNAME5 		= &H35        	'  abbreviated name for Friday
-Const LOCALE_SABBREVDAYNAME6 		= &H36        	'  abbreviated name for Saturday
-Const LOCALE_SABBREVDAYNAME7 		= &H37        	'  abbreviated name for Sunday
-Const LOCALE_SMONTHNAME1 		= &H38        	'  long name for January
-Const LOCALE_SMONTHNAME2 		= &H39        	'  long name for February
-Const LOCALE_SMONTHNAME3 		= &H3A        	'  long name for March
-Const LOCALE_SMONTHNAME4		= &H3B        	'  long name for April
-Const LOCALE_SMONTHNAME5 		= &H3C        	'  long name for May
-Const LOCALE_SMONTHNAME6 		= &H3D        	'  long name for June
-Const LOCALE_SMONTHNAME7 		= &H3E        	'  long name for July
-Const LOCALE_SMONTHNAME8 		= &H3F        	'  long name for August
-Const LOCALE_SMONTHNAME9 		= &H40        	'  long name for September
-Const LOCALE_SMONTHNAME10		= &H41        	'  long name for October
-Const LOCALE_SMONTHNAME11 		= &H42        	'  long name for November
-Const LOCALE_SMONTHNAME12 		= &H43        	'  long name for December
-Const LOCALE_SABBREVMONTHNAME1 		= &H44        	'  abbreviated name for January
-Const LOCALE_SABBREVMONTHNAME2 		= &H45        	'  abbreviated name for February
-Const LOCALE_SABBREVMONTHNAME3 		= &H46        	'  abbreviated name for March
-Const LOCALE_SABBREVMONTHNAME4 		= &H47        	'  abbreviated name for April
-Const LOCALE_SABBREVMONTHNAME5 		= &H48        	'  abbreviated name for May
-Const LOCALE_SABBREVMONTHNAME6 		= &H49        	'  abbreviated name for June
-Const LOCALE_SABBREVMONTHNAME7 		= &H4A        	'  abbreviated name for July
-Const LOCALE_SABBREVMONTHNAME8 		= &H4B        	'  abbreviated name for August
-Const LOCALE_SABBREVMONTHNAME9 		= &H4C        	'  abbreviated name for September
-Const LOCALE_SABBREVMONTHNAME10		= &H4D        	'  abbreviated name for October
-Const LOCALE_SABBREVMONTHNAME11 	= &H4E        	'  abbreviated name for November
-Const LOCALE_SABBREVMONTHNAME12 	= &H4F        	'  abbreviated name for December
-Const LOCALE_SABBREVMONTHNAME13 	= &H100F
+#define LOCALE_SDAYNAME1  &H2A        	'  long name for Monday
+#define LOCALE_SDAYNAME2  &H2B        	'  long name for Tuesday
+#define LOCALE_SDAYNAME3  &H2C        	'  long name for Wednesday
+#define LOCALE_SDAYNAME4  &H2D        	'  long name for Thursday
+#define LOCALE_SDAYNAME5  &H2E        	'  long name for Friday
+#define LOCALE_SDAYNAME6  &H2F        	'  long name for Saturday
+#define LOCALE_SDAYNAME7  &H30        	'  long name for Sunday
+#define LOCALE_SABBREVDAYNAME1  &H31        	'  abbreviated name for Monday
+#define LOCALE_SABBREVDAYNAME2  &H32        	'  abbreviated name for Tuesday
+#define LOCALE_SABBREVDAYNAME3  &H33        	'  abbreviated name for Wednesday
+#define LOCALE_SABBREVDAYNAME4  &H34        	'  abbreviated name for Thursday
+#define LOCALE_SABBREVDAYNAME5  &H35        	'  abbreviated name for Friday
+#define LOCALE_SABBREVDAYNAME6  &H36        	'  abbreviated name for Saturday
+#define LOCALE_SABBREVDAYNAME7  &H37        	'  abbreviated name for Sunday
+#define LOCALE_SMONTHNAME1  &H38        	'  long name for January
+#define LOCALE_SMONTHNAME2  &H39        	'  long name for February
+#define LOCALE_SMONTHNAME3  &H3A        	'  long name for March
+#define LOCALE_SMONTHNAME4  &H3B        	'  long name for April
+#define LOCALE_SMONTHNAME5  &H3C        	'  long name for May
+#define LOCALE_SMONTHNAME6  &H3D        	'  long name for June
+#define LOCALE_SMONTHNAME7  &H3E        	'  long name for July
+#define LOCALE_SMONTHNAME8  &H3F        	'  long name for August
+#define LOCALE_SMONTHNAME9  &H40        	'  long name for September
+#define LOCALE_SMONTHNAME10  &H41        	'  long name for October
+#define LOCALE_SMONTHNAME11  &H42        	'  long name for November
+#define LOCALE_SMONTHNAME12  &H43        	'  long name for December
+#define LOCALE_SABBREVMONTHNAME1  &H44        	'  abbreviated name for January
+#define LOCALE_SABBREVMONTHNAME2  &H45        	'  abbreviated name for February
+#define LOCALE_SABBREVMONTHNAME3  &H46        	'  abbreviated name for March
+#define LOCALE_SABBREVMONTHNAME4  &H47        	'  abbreviated name for April
+#define LOCALE_SABBREVMONTHNAME5  &H48        	'  abbreviated name for May
+#define LOCALE_SABBREVMONTHNAME6  &H49        	'  abbreviated name for June
+#define LOCALE_SABBREVMONTHNAME7  &H4A        	'  abbreviated name for July
+#define LOCALE_SABBREVMONTHNAME8  &H4B        	'  abbreviated name for August
+#define LOCALE_SABBREVMONTHNAME9  &H4C        	'  abbreviated name for September
+#define LOCALE_SABBREVMONTHNAME10  &H4D        	'  abbreviated name for October
+#define LOCALE_SABBREVMONTHNAME11  &H4E        	'  abbreviated name for November
+#define LOCALE_SABBREVMONTHNAME12  &H4F        	'  abbreviated name for December
+#define LOCALE_SABBREVMONTHNAME13  &H100F
 
-Const LOCALE_SPOSITIVESIGN 		= &H50        	'  positive sign
-Const LOCALE_SNEGATIVESIGN 		= &H51        	'  negative sign
-Const LOCALE_IPOSSIGNPOSN 		= &H52        	'  positive sign position
-Const LOCALE_INEGSIGNPOSN 		= &H53        	'  negative sign position
-Const LOCALE_IPOSSYMPRECEDES 		= &H54        	'  mon sym precedes pos amt
-Const LOCALE_IPOSSEPBYSPACE 		= &H55        	'  mon sym sep by space from pos amt
-Const LOCALE_INEGSYMPRECEDES 		= &H56        	'  mon sym precedes neg amt
-Const LOCALE_INEGSEPBYSPACE 		= &H57        	'  mon sym sep by space from neg amt
+#define LOCALE_SPOSITIVESIGN  &H50        	'  positive sign
+#define LOCALE_SNEGATIVESIGN  &H51        	'  negative sign
+#define LOCALE_IPOSSIGNPOSN  &H52        	'  positive sign position
+#define LOCALE_INEGSIGNPOSN  &H53        	'  negative sign position
+#define LOCALE_IPOSSYMPRECEDES  &H54        	'  mon sym precedes pos amt
+#define LOCALE_IPOSSEPBYSPACE  &H55        	'  mon sym sep by space from pos amt
+#define LOCALE_INEGSYMPRECEDES  &H56        	'  mon sym precedes neg amt
+#define LOCALE_INEGSEPBYSPACE  &H57        	'  mon sym sep by space from neg amt
 
 '  Time Flags for GetTimeFormatW.
 
-Const TIME_NOMINUTESORSECONDS 		= &H1         	'  do not use minutes or seconds
-Const TIME_NOSECONDS 			= &H2         	'  do not use seconds
-Const TIME_NOTIMEMARKER 		= &H4         	'  do not use time marker
-Const TIME_FORCE24HOURFORMAT 		= &H8         	'  always use 24 hour format
+#define TIME_NOMINUTESORSECONDS  &H1         	'  do not use minutes or seconds
+#define TIME_NOSECONDS  &H2         	'  do not use seconds
+#define TIME_NOTIMEMARKER  &H4         	'  do not use time marker
+#define TIME_FORCE24HOURFORMAT  &H8         	'  always use 24 hour format
 
 '  Date Flags for GetDateFormatW.
 
-Const DATE_SHORTDATE 			= &H1         	'  use short date picture
-Const DATE_LONGDATE 			= &H2         	'  use long date picture
+#define DATE_SHORTDATE  &H1         	'  use short date picture
+#define DATE_LONGDATE  &H2         	'  use long date picture
 
-Const TIME_ZONE_ID_INVALID         	= &HFFFFFFFF
-Const TIME_ZONE_ID_UNKNOWN         	= 0
-Const TIME_ZONE_ID_STANDARD        	= 1
-Const TIME_ZONE_ID_DAYLIGHT        	= 2
+#define TIME_ZONE_ID_INVALID  &HFFFFFFFF
+#define TIME_ZONE_ID_UNKNOWN  0
+#define TIME_ZONE_ID_STANDARD  1
+#define TIME_ZONE_ID_DAYLIGHT  2
 
-Const HEAP_NO_SERIALIZE            	= &H1
-Const HEAP_GROWABLE                	= &H2
-Const HEAP_GENERATE_EXCEPTIONS     	= &H4
-Const HEAP_ZERO_MEMORY             	= &H8
+#define HEAP_NO_SERIALIZE  &H1
+#define HEAP_GROWABLE  &H2
+#define HEAP_GENERATE_EXCEPTIONS  &H4
+#define HEAP_ZERO_MEMORY  &H8
 
 '  ControlKeyState flags
 
-Const RIGHT_ALT_PRESSED 		= &H1     	'  the right alt key is pressed.
-Const LEFT_ALT_PRESSED 			= &H2     	'  the left alt key is pressed.
-Const RIGHT_CTRL_PRESSED 		= &H4     	'  the right ctrl key is pressed.
-Const LEFT_CTRL_PRESSED 		= &H8     	'  the left ctrl key is pressed.
-Const SHIFT_PRESSED 			= &H10    	'  the shift key is pressed.
-Const NUMLOCK_ON 			= &H20    	'  the numlock light is on.
-Const SCROLLLOCK_ON 			= &H40    	'  the scrolllock light is on.
-Const CAPSLOCK_ON 			= &H80    	'  the capslock light is on.
-Const ENHANCED_KEY 			= &H100   	'  the key is enhanced.
+#define RIGHT_ALT_PRESSED  &H1     	'  the right alt key is pressed.
+#define LEFT_ALT_PRESSED  &H2     	'  the left alt key is pressed.
+#define RIGHT_CTRL_PRESSED  &H4     	'  the right ctrl key is pressed.
+#define LEFT_CTRL_PRESSED  &H8     	'  the left ctrl key is pressed.
+#define SHIFT_PRESSED  &H10    	'  the shift key is pressed.
+#define NUMLOCK_ON  &H20    	'  the numlock light is on.
+#define SCROLLLOCK_ON  &H40    	'  the scrolllock light is on.
+#define CAPSLOCK_ON  &H80    	'  the capslock light is on.
+#define ENHANCED_KEY  &H100   	'  the key is enhanced.
 
 '  ButtonState flags
 
-Const FROM_LEFT_1ST_BUTTON_PRESSED 	= &H1
-Const RIGHTMOST_BUTTON_PRESSED 		= &H2
-Const FROM_LEFT_2ND_BUTTON_PRESSED 	= &H4
-Const FROM_LEFT_3RD_BUTTON_PRESSED 	= &H8
-Const FROM_LEFT_4TH_BUTTON_PRESSED 	= &H10
+#define FROM_LEFT_1ST_BUTTON_PRESSED  &H1
+#define RIGHTMOST_BUTTON_PRESSED  &H2
+#define FROM_LEFT_2ND_BUTTON_PRESSED  &H4
+#define FROM_LEFT_3RD_BUTTON_PRESSED  &H8
+#define FROM_LEFT_4TH_BUTTON_PRESSED  &H10
 
 '  EventFlags
 
-Const MOUSE_MOVED 			= &H1
-Const DOUBLE_CLICK 			= &H2
+#define MOUSE_MOVED  &H1
+#define DOUBLE_CLICK  &H2
 
 '  EventType flags
 
-Const EVT_KEY_EVENT                		= &H1     	'  Event contains key event record
-Const EVT_MOUSE_EVENT              		= &H2     	'  Event contains mouse event record
-Const EVT_WINDOW_BUFFER_SIZE_EVENT 		= &H4     	'  Event contains window change event record
-Const EVT_MENU_EVENT               		= &H8     	'  Event contains menu event record
-Const EVT_FOCUS_EVENT              		= &H10    	'  event contains focus change
+#define EVT_KEY_EVENT  &H1     	'  Event contains key event record
+#define EVT_MOUSE_EVENT  &H2     	'  Event contains mouse event record
+#define EVT_WINDOW_BUFFER_SIZE_EVENT  &H4     	'  Event contains window change event record
+#define EVT_MENU_EVENT  &H8     	'  Event contains menu event record
+#define EVT_FOCUS_EVENT  &H10    	'  event contains focus change
 
 '  Attributes flags
 
-Const FOREGROUND_BLUE      		= &H1     	'  text color contains blue.
-Const FOREGROUND_GREEN     		= &H2     	'  text color contains green.
-Const FOREGROUND_RED       		= &H4     	'  text color contains red.
-Const FOREGROUND_INTENSITY 		= &H8     	'  text color is intensified.
-Const BACKGROUND_BLUE      		= &H10    	'  background color contains blue.
-Const BACKGROUND_GREEN     		= &H20    	'  background color contains green.
-Const BACKGROUND_RED       		= &H40    	'  background color contains red.
-Const BACKGROUND_INTENSITY 		= &H80    	'  background color is intensified.
-Const CONSOLE_BLACKONWHITE 		= &HF0    	'  black text on white background
-Const CONSOLE_WHITEONBLACK 		= &H7     	'  white text on black background
+#define FOREGROUND_BLUE  &H1     	'  text color contains blue.
+#define FOREGROUND_GREEN  &H2     	'  text color contains green.
+#define FOREGROUND_RED  &H4     	'  text color contains red.
+#define FOREGROUND_INTENSITY  &H8     	'  text color is intensified.
+#define BACKGROUND_BLUE  &H10    	'  background color contains blue.
+#define BACKGROUND_GREEN  &H20    	'  background color contains green.
+#define BACKGROUND_RED  &H40    	'  background color contains red.
+#define BACKGROUND_INTENSITY  &H80    	'  background color is intensified.
+#define CONSOLE_BLACKONWHITE  &HF0    	'  black text on white background
+#define CONSOLE_WHITEONBLACK  &H7     	'  white text on black background
 
-Const CTRL_C_EVENT 			= 0
-Const CTRL_BREAK_EVENT 			= 1
-Const CTRL_CLOSE_EVENT 			= 2
+#define CTRL_C_EVENT  0
+#define CTRL_BREAK_EVENT  1
+#define CTRL_CLOSE_EVENT  2
 '  3 is reserved!
 '  4 is reserved!
-Const CTRL_LOGOFF_EVENT 		= 5
-Const CTRL_SHUTDOWN_EVENT 		= 6
+#define CTRL_LOGOFF_EVENT  5
+#define CTRL_SHUTDOWN_EVENT  6
 
 '  Input Mode flags
 
-Const ENABLE_PROCESSED_INPUT 		= &H1
-Const ENABLE_LINE_INPUT 		= &H2
-Const ENABLE_ECHO_INPUT 		= &H4
-Const ENABLE_WINDOW_INPUT 		= &H8
-Const ENABLE_MOUSE_INPUT 		= &H10
+#define ENABLE_PROCESSED_INPUT  &H1
+#define ENABLE_LINE_INPUT  &H2
+#define ENABLE_ECHO_INPUT  &H4
+#define ENABLE_WINDOW_INPUT  &H8
+#define ENABLE_MOUSE_INPUT  &H10
 
 '  Output Mode flags
 
-Const ENABLE_PROCESSED_OUTPUT 		= &H1
-Const ENABLE_WRAP_AT_EOL_OUTPUT 	= &H2
+#define ENABLE_PROCESSED_OUTPUT  &H1
+#define ENABLE_WRAP_AT_EOL_OUTPUT  &H2
 
-Const CONSOLE_TEXTMODE_BUFFER 		= 1
+#define CONSOLE_TEXTMODE_BUFFER  1
 
-Const WAIT_FAILED        		= &HFFFFFFFF
-Const WAIT_OBJECT_0      		= &H0
-Const WAIT_ABANDONED     		= &H00000080
-Const WAIT_ABANDONED_0   		= &H00000080
-Const WAIT_IO_COMPLETION 		= &H000000C0
+#define WAIT_FAILED  &HFFFFFFFF
+#define WAIT_OBJECT_0  &H0
+#define WAIT_ABANDONED  &H00000080
+#define WAIT_ABANDONED_0  &H00000080
+#define WAIT_IO_COMPLETION  &H000000C0
 
-Const STILL_ACTIVE       		= &H00000103
+#define STILL_ACTIVE  &H00000103
 
-Const HINSTANCE_ERROR			= 32
+#define HINSTANCE_ERROR  32
 
-Const NORM_CURSOR_SIZE 			= 10
-Const SOLID_CURSOR_SIZE 		= 99
-Const NOCURSOR 				= 0
-Const SOLIDCURSOR 			= 1
-Const NORMALCURSOR 			= 2
+#define NORM_CURSOR_SIZE  10
+#define SOLID_CURSOR_SIZE  99
+#define NOCURSOR  0
+#define SOLIDCURSOR  1
+#define NORMALCURSOR  2
 
 ' for EnumSystemLocales()
 
-Const LCID_INSTALLED 			= 1  ' Enumerate only installed locale identifiers
-Const LCID_SUPPORTED 			= 2  ' Enumerate all supported locale identifiers
+#define LCID_INSTALLED  1  ' Enumerate only installed locale identifiers
+#define LCID_SUPPORTED  2  ' Enumerate all supported locale identifiers
 
 ' Exception Constants
 
 ' Most or all of the following are sometimes referred to As STATUS_
 ' codes rather than EXCEPTION_ codes - eg., STATUS_ACCESS_VIOLATION, etc.
 
-Const EXCEPTION_ACCESS_VIOLATION          = &HC0000005
-Const EXCEPTION_ARRAY_BOUNDS_EXCEEDED     = &HC000008C
-Const EXCEPTION_BREAKPOINT                = &H80000003
-Const EXCEPTION_CONTROL_C_EXIT            = &HC000013A
-Const EXCEPTION_DATAType_MISALIGNMENT     = &H80000002
-Const EXCEPTION_FLOAT_DENORMAL_OPERAND    = &HC000008D
-Const EXCEPTION_FLOAT_DIVIDE_BY_ZERO      = &HC000008E
-Const EXCEPTION_FLOAT_INEXACT_RESULT      = &HC000008F
-Const EXCEPTION_FLOAT_INVALID_OPERATION	  = &HC0000090
-Const EXCEPTION_FLOAT_OVERFLOW            = &HC0000091
-Const EXCEPTION_FLOAT_STACK_CHECK         = &HC0000092
-Const EXCEPTION_FLOAT_UNDERFLOW           = &HC0000093
-Const EXCEPTION_GUARD_PAGE                = &H80000001
-Const EXCEPTION_ILLEGAL_INSTRUCTION       = &HC000001D
-Const EXCEPTION_IN_PAGE_ERROR             = &HC0000006
-Const EXCEPTION_INT_DIVIDE_BY_ZERO        = &HC0000094
-Const EXCEPTION_INT_OVERFLOW              = &HC0000095
-Const EXCEPTION_INVALID_DISPOSITION       = &HC0000026
-Const EXCEPTION_NONCONTINUABLE_EXCEPTION  = &HC0000025
-Const EXCEPTION_PRIV_INSTRUCTION          = &HC0000096
-Const EXCEPTION_SINGLE_STEP               = &H80000004
-Const EXCEPTION_STACK_OVERFLOW            = &HC00000FD
+#define EXCEPTION_ACCESS_VIOLATION  &HC0000005
+#define EXCEPTION_ARRAY_BOUNDS_EXCEEDED  &HC000008C
+#define EXCEPTION_BREAKPOINT  &H80000003
+#define EXCEPTION_CONTROL_C_EXIT  &HC000013A
+#define EXCEPTION_DATAType_MISALIGNMENT  &H80000002
+#define EXCEPTION_FLOAT_DENORMAL_OPERAND  &HC000008D
+#define EXCEPTION_FLOAT_DIVIDE_BY_ZERO  &HC000008E
+#define EXCEPTION_FLOAT_INEXACT_RESULT  &HC000008F
+#define EXCEPTION_FLOAT_INVALID_OPERATION  &HC0000090
+#define EXCEPTION_FLOAT_OVERFLOW  &HC0000091
+#define EXCEPTION_FLOAT_STACK_CHECK  &HC0000092
+#define EXCEPTION_FLOAT_UNDERFLOW  &HC0000093
+#define EXCEPTION_GUARD_PAGE  &H80000001
+#define EXCEPTION_ILLEGAL_INSTRUCTION  &HC000001D
+#define EXCEPTION_IN_PAGE_ERROR  &HC0000006
+#define EXCEPTION_INT_DIVIDE_BY_ZERO  &HC0000094
+#define EXCEPTION_INT_OVERFLOW  &HC0000095
+#define EXCEPTION_INVALID_DISPOSITION  &HC0000026
+#define EXCEPTION_NONCONTINUABLE_EXCEPTION  &HC0000025
+#define EXCEPTION_PRIV_INSTRUCTION  &HC0000096
+#define EXCEPTION_SINGLE_STEP  &H80000004
+#define EXCEPTION_STACK_OVERFLOW  &HC00000FD
 
-Const EXCEPTION_FLT_DENORMAL_OPERAND      = &HC000008D
-Const EXCEPTION_FLT_DIVIDE_BY_ZERO        = &HC000008E
-Const EXCEPTION_FLT_INEXACT_RESULT        = &HC000008F
-Const EXCEPTION_FLT_INVALID_OPERATION     = &HC0000090
-Const EXCEPTION_FLT_OVERFLOW              = &HC0000091
-Const EXCEPTION_FLT_STACK_CHECK           = &HC0000092
-Const EXCEPTION_FLT_UNDERFLOW             = &HC0000093
+#define EXCEPTION_FLT_DENORMAL_OPERAND  &HC000008D
+#define EXCEPTION_FLT_DIVIDE_BY_ZERO  &HC000008E
+#define EXCEPTION_FLT_INEXACT_RESULT  &HC000008F
+#define EXCEPTION_FLT_INVALID_OPERATION  &HC0000090
+#define EXCEPTION_FLT_OVERFLOW  &HC0000091
+#define EXCEPTION_FLT_STACK_CHECK  &HC0000092
+#define EXCEPTION_FLT_UNDERFLOW  &HC0000093
 
 'CONTEXT record .ContextFlags member
 
-Const CONTEXT_CONTROL        	= &H10001
-Const CONTEXT_INTEGER        	= &H10002
-Const CONTEXT_SEGMENTS       	= &H10004
-Const CONTEXT_FLOATING_POINT 	= &H10008
-Const CONTEXT_DEBUG_REGISTERS	= &H10010
-Const CONTEXT_FULL            	= &H10007
+#define CONTEXT_CONTROL  &H10001
+#define CONTEXT_INTEGER  &H10002
+#define CONTEXT_SEGMENTS  &H10004
+#define CONTEXT_FLOATING_POINT  &H10008
+#define CONTEXT_DEBUG_REGISTERS  &H10010
+#define CONTEXT_FULL  &H10007
 
-Const SIZE_OF_80387_REGISTERS	= 80
-Const CONTEXT_i386 		= &H10000
-Const CONTEXT_i486 		= &H10000
+#define SIZE_OF_80387_REGISTERS  80
+#define CONTEXT_i386  &H10000
+#define CONTEXT_i486  &H10000
 
-Const EXCEPTION_MAXIMUM_PARAMETERS 	= 15 		'maximum number of elements in EXCEPTION_RECORD.ExceptionInformation[]
+#define EXCEPTION_MAXIMUM_PARAMETERS  15 		'maximum number of elements in EXCEPTION_RECORD.ExceptionInformation[]
 
-Const EXCEPTION_CONTINUABLE	    	= 0		'flag for EXCEPTION_RECORD .ExceptionFlags
-Const EXCEPTION_NONCONTINUABLE		= 1		'flag for EXCEPTION_RECORD .ExceptionFlags
+#define EXCEPTION_CONTINUABLE  0		'flag for EXCEPTION_RECORD .ExceptionFlags
+#define EXCEPTION_NONCONTINUABLE  1		'flag for EXCEPTION_RECORD .ExceptionFlags
 
-Const EXCEPTION_CONTINUE_SEARCH     =  0
-Const EXCEPTION_EXECUTE_HANDLER     =  1
-Const EXCEPTION_CONTINUE_EXECUTION	= (-1)
+#define EXCEPTION_CONTINUE_SEARCH   0
+#define EXCEPTION_EXECUTE_HANDLER   1
+#define EXCEPTION_CONTINUE_EXECUTION  (-1)
 
 '  Operating System Error Constants
 
-Const ERROR_SUCCESS                           =    0
-Const ERROR_INVALID_FUNCTION                  =    1
-Const ERROR_FILE_NOT_FOUND                    =    2
-Const ERROR_PATH_NOT_FOUND                    =    3
-Const ERROR_TOO_MANY_OPEN_FILES               =    4
-Const ERROR_ACCESS_DENIED                     =    5
-Const ERROR_INVALID_HANDLE                    =    6
-Const ERROR_ARENA_TRASHED                     =    7
-Const ERROR_NOT_ENOUGH_MEMORY                 =    8
-Const ERROR_INVALID_BLOCK                     =    9
-Const ERROR_BAD_ENVIRONMENT                   =   10
-Const ERROR_BAD_FORMAT                        =   11
-Const ERROR_INVALID_ACCESS                    =   12
-Const ERROR_INVALID_DATA                      =   13
-Const ERROR_OUTOFMEMORY                       =   14
-Const ERROR_INVALID_DRIVE                     =   15
-Const ERROR_CURRENT_DIRECTORY                 =   16
-Const ERROR_NOT_SAME_DEVICE                   =   17
-Const ERROR_NO_MORE_FILES                     =   18
-Const ERROR_WRITE_PROTECT                     =   19
-Const ERROR_BAD_UNIT                          =   20
-Const ERROR_NOT_READY                         =   21
-Const ERROR_BAD_COMMAND                       =   22
-Const ERROR_CRC                               =   23
-Const ERROR_BAD_LENGTH                        =   24
-Const ERROR_SEEK                              =   25
-Const ERROR_NOT_DOS_DISK                      =   26
-Const ERROR_SECTOR_NOT_FOUND                  =   27
-Const ERROR_OUT_OF_PAPER                      =   28
-Const ERROR_WRITE_FAULT                       =   29
-Const ERROR_READ_FAULT                        =   30
-Const ERROR_GEN_FAILURE                       =   31
-Const ERROR_SHARING_VIOLATION                 =   32
-Const ERROR_LOCK_VIOLATION                    =   33
-Const ERROR_WRONG_DISK                        =   34
-Const ERROR_SHARING_BUFFER_EXCEEDED           =   36
-Const ERROR_HANDLE_EOF                        =   38
-Const ERROR_HANDLE_DISK_FULL                  =   39
-Const ERROR_NOT_SUPPORTED                     =   50
-Const ERROR_REM_NOT_LIST                      =   51
-Const ERROR_DUP_NAME                          =   52
-Const ERROR_BAD_NETPATH                       =   53
-Const ERROR_NETWORK_BUSY                      =   54
-Const ERROR_DEV_NOT_EXIST                     =   55
-Const ERROR_TOO_MANY_CMDS                     =   56
-Const ERROR_ADAP_HDW_ERR                      =   57
-Const ERROR_BAD_NET_RESP                      =   58
-Const ERROR_UNEXP_NET_ERR                     =   59
-Const ERROR_BAD_REM_ADAP                      =   60
-Const ERROR_PRINTQ_FULL                       =   61
-Const ERROR_NO_SPOOL_SPACE                    =   62
-Const ERROR_PRINT_CANCELLED                   =   63
-Const ERROR_NETNAME_DELETED                   =   64
-Const ERROR_NETWORK_ACCESS_DENIED             =   65
-Const ERROR_BAD_DEV_Type                      =   66
-Const ERROR_BAD_NET_NAME                      =   67
-Const ERROR_TOO_MANY_NAMES                    =   68
-Const ERROR_TOO_MANY_SESS                     =   69
-Const ERROR_SHARING_PAUSED                    =   70
-Const ERROR_REQ_NOT_ACCEP                     =   71
-Const ERROR_REDIR_PAUSED                      =   72
-Const ERROR_FILE_EXISTS                       =   80
-Const ERROR_CANNOT_MAKE                       =   82
-Const ERROR_FAIL_I24                          =   83
-Const ERROR_OUT_OF_STRUCTURES                 =   84
-Const ERROR_ALREADY_ASSIGNED                  =   85
-Const ERROR_INVALID_PASSWORD                  =   86
-Const ERROR_INVALID_PARAMETER                 =   87
-Const ERROR_NET_WRITE_FAULT                   =   88
-Const ERROR_NO_PROC_SLOTS                     =   89
-Const ERROR_TOO_MANY_SEMAPHORES               =  100
-Const ERROR_EXCL_SEM_ALREADY_OWNED            =  101
-Const ERROR_SEM_IS_SET                        =  102
-Const ERROR_TOO_MANY_SEM_REQUESTS             =  103
-Const ERROR_INVALID_AT_INTERRUPT_TIME         =  104
-Const ERROR_SEM_OWNER_DIED                    =  105
-Const ERROR_SEM_USER_LIMIT                    =  106
-Const ERROR_DISK_CHANGE                       =  107
-Const ERROR_DRIVE_LOCKED                      =  108
-Const ERROR_BROKEN_PIPE                       =  109
-Const ERROR_OPEN_FAILED                       =  110
-Const ERROR_BUFFER_OVERFLOW                   =  111
-Const ERROR_DISK_FULL                         =  112
-Const ERROR_NO_MORE_SEARCH_HANDLES            =  113
-Const ERROR_INVALID_TARGET_HANDLE             =  114
-Const ERROR_INVALID_CATEGORY                  =  117
-Const ERROR_INVALID_VERIFY_SWITCH             =  118
-Const ERROR_BAD_DRIVER_LEVEL                  =  119
-Const ERROR_CALL_NOT_IMPLEMENTED              =  120
-Const ERROR_SEM_TIMEOUT                       =  121
-Const ERROR_INSUFFICIENT_BUFFER               =  122
-Const ERROR_INVALID_NAME                      =  123
-Const ERROR_INVALID_LEVEL                     =  124
-Const ERROR_NO_VOLUME_LABEL                   =  125
-Const ERROR_MOD_NOT_FOUND                     =  126
-Const ERROR_PROC_NOT_FOUND                    =  127
-Const ERROR_WAIT_NO_CHILDREN                  =  128
-Const ERROR_CHILD_NOT_COMPLETE                =  129
-Const ERROR_DIRECT_ACCESS_HANDLE              =  130
-Const ERROR_NEGATIVE_SEEK                     =  131
-Const ERROR_SEEK_ON_DEVICE                    =  132
-Const ERROR_IS_JOIN_TARGET                    =  133
-Const ERROR_IS_JOINED                         =  134
-Const ERROR_IS_SUBSTED                        =  135
-Const ERROR_NOT_JOINED                        =  136
-Const ERROR_NOT_SUBSTED                       =  137
-Const ERROR_JOIN_TO_JOIN                      =  138
-Const ERROR_SUBST_TO_SUBST                    =  139
-Const ERROR_JOIN_TO_SUBST                     =  140
-Const ERROR_SUBST_TO_JOIN                     =  141
-Const ERROR_BUSY_DRIVE                        =  142
-Const ERROR_SAME_DRIVE                        =  143
-Const ERROR_DIR_NOT_ROOT                      =  144
-Const ERROR_DIR_NOT_EMPTY                     =  145
-Const ERROR_IS_SUBST_PATH                     =  146
-Const ERROR_IS_JOIN_PATH                      =  147
-Const ERROR_PATH_BUSY                         =  148
-Const ERROR_IS_SUBST_TARGET                   =  149
-Const ERROR_SYSTEM_TRACE                      =  150
-Const ERROR_INVALID_EVENT_COUNT               =  151
-Const ERROR_TOO_MANY_MUXWAITERS               =  152
-Const ERROR_INVALID_LIST_FORMAT               =  153
-Const ERROR_LABEL_TOO_LONG                    =  154
-Const ERROR_TOO_MANY_TCBS                     =  155
-Const ERROR_SIGNAL_REFUSED                    =  156
-Const ERROR_DISCARDED                         =  157
-Const ERROR_NOT_LOCKED                        =  158
-Const ERROR_BAD_THREADID_ADDR                 =  159
-Const ERROR_BAD_ARGUMENTS                     =  160
-Const ERROR_BAD_PATHNAME                      =  161
-Const ERROR_SIGNAL_PENDING                    =  162
-Const ERROR_MAX_THRDS_REACHED                 =  164
-Const ERROR_LOCK_FAILED                       =  167
-Const ERROR_BUSY                              =  170
-Const ERROR_CANCEL_VIOLATION                  =  173
-Const ERROR_ATOMIC_LOCKS_NOT_SUPPORTED        =  174
-Const ERROR_INVALID_SEGMENT_NUMBER            =  180
-Const ERROR_INVALID_ORDINAL                   =  182
-Const ERROR_ALREADY_EXISTS                    =  183
-Const ERROR_INVALID_FLAG_NUMBER               =  186
-Const ERROR_SEM_NOT_FOUND                     =  187
-Const ERROR_INVALID_STARTING_CODESEG          =  188
-Const ERROR_INVALID_STACKSEG                  =  189
-Const ERROR_INVALID_MODULEType                =  190
-Const ERROR_INVALID_EXE_SIGNATURE             =  191
-Const ERROR_EXE_MARKED_INVALID                =  192
-Const ERROR_BAD_EXE_FORMAT                    =  193
-Const ERROR_ITERATED_DATA_EXCEEDS_64k         =  194
-Const ERROR_INVALID_MINALLOCSIZE              =  195
-Const ERROR_DYNLINK_FROM_INVALID_RING         =  196
-Const ERROR_IOPL_NOT_ENABLED                  =  197
-Const ERROR_INVALID_SEGDPL                    =  198
-Const ERROR_AUTODATASEG_EXCEEDS_64k           =  199
-Const ERROR_RING2SEG_MUST_BE_MOVABLE          =  200
-Const ERROR_RELOC_CHAIN_XEEDS_SEGLIM          =  201
-Const ERROR_INFLOOP_IN_RELOC_CHAIN            =  202
-Const ERROR_ENVVAR_NOT_FOUND                  =  203
-Const ERROR_NO_SIGNAL_SENT                    =  205
-Const ERROR_FILENAME_EXCED_RANGE              =  206
-Const ERROR_RING2_STACK_IN_USE                =  207
-Const ERROR_META_EXPANSION_TOO_LONG           =  208
-Const ERROR_INVALID_SIGNAL_NUMBER             =  209
-Const ERROR_THREAD_1_INACTIVE                 =  210
-Const ERROR_LOCKED                            =  212
-Const ERROR_TOO_MANY_MODULES                  =  214
-Const ERROR_NESTING_NOT_ALLOWED               =  215
-Const ERROR_BAD_PIPE                          =  230
-Const ERROR_PIPE_BUSY                         =  231
-Const ERROR_NO_DATA                           =  232
-Const ERROR_PIPE_NOT_CONNECTED                =  233
-Const ERROR_MORE_DATA                         =  234
-Const ERROR_VC_DISCONNECTED                   =  240
-Const ERROR_INVALID_EA_NAME                   =  254
-Const ERROR_EA_LIST_INCONSISTENT              =  255
-Const WAIT_TIMEOUT                            =  258
-Const ERROR_NO_MORE_ITEMS                     =  259
-Const ERROR_CANNOT_COPY                       =  266
-Const ERROR_DIRECTORY                         =  267
-Const ERROR_EAS_DIDNT_FIT                     =  275
-Const ERROR_EA_FILE_CORRUPT                   =  276
-Const ERROR_EA_TABLE_FULL                     =  277
-Const ERROR_INVALID_EA_HANDLE                 =  278
-Const ERROR_EAS_NOT_SUPPORTED                 =  282
-Const ERROR_NOT_OWNER                         =  288
-Const ERROR_TOO_MANY_POSTS                    =  298
-Const ERROR_MR_MID_NOT_FOUND                  =  317
-Const ERROR_INVALID_ADDRESS                   =  487
-Const ERROR_ARITHMETIC_OVERFLOW               =  534
-Const ERROR_PIPE_CONNECTED                    =  535
-Const ERROR_PIPE_LISTENING                    =  536
-Const ERROR_EA_ACCESS_DENIED                  =  994
-Const ERROR_OPERATION_ABORTED                 =  995
-Const ERROR_IO_INCOMPLETE                     =  996
-Const ERROR_IO_PENDING                        =  997
-Const ERROR_NOACCESS                          =  998
-Const ERROR_SWAPERROR                         =  999
-Const ERROR_STACK_OVERFLOW                    = 1001
-Const ERROR_INVALID_MESSAGE                   = 1002
-Const ERROR_CAN_NOT_COMPLETE                  = 1003
-Const ERROR_INVALID_FLAGS                     = 1004
-Const ERROR_UNRECOGNIZED_VOLUME               = 1005
-Const ERROR_FILE_INVALID                      = 1006
-Const ERROR_FULLSCREEN_MODE                   = 1007
-Const ERROR_NO_TOKEN                          = 1008
-Const ERROR_BADDB                             = 1009
-Const ERROR_BADKEY                            = 1010
-Const ERROR_CANTOPEN                          = 1011
-Const ERROR_CANTREAD                          = 1012
-Const ERROR_CANTWRITE                         = 1013
-Const ERROR_REGISTRY_RECOVERED                = 1014
-Const ERROR_REGISTRY_CORRUPT                  = 1015
-Const ERROR_REGISTRY_IO_FAILED                = 1016
-Const ERROR_NOT_REGISTRY_FILE                 = 1017
-Const ERROR_KEY_DELETED                       = 1018
-Const ERROR_NO_LOG_SPACE                      = 1019
-Const ERROR_KEY_HAS_CHILDREN                  = 1020
-Const ERROR_CHILD_MUST_BE_VOLATILE            = 1021
-Const ERROR_NOTIFY_ENUM_DIR                   = 1022
-Const ERROR_DEPENDENT_SERVICES_RUNNING        = 1051
-Const ERROR_INVALID_SERVICE_CONTROL           = 1052
-Const ERROR_SERVICE_REQUEST_TIMEOUT           = 1053
-Const ERROR_SERVICE_NO_THREAD                 = 1054
-Const ERROR_SERVICE_DATABASE_LOCKED           = 1055
-Const ERROR_SERVICE_ALREADY_RUNNING           = 1056
-Const ERROR_INVALID_SERVICE_ACCOUNT           = 1057
-Const ERROR_SERVICE_DISABLED                  = 1058
-Const ERROR_CIRCULAR_DEPENDENCY               = 1059
-Const ERROR_SERVICE_DOES_NOT_EXIST            = 1060
-Const ERROR_SERVICE_CANNOT_ACCEPT_CTRL        = 1061
-Const ERROR_SERVICE_NOT_ACTIVE                = 1062
-Const ERROR_FAILED_SERVICE_CONTROLLER_CONNECT = 1063
-Const ERROR_EXCEPTION_IN_SERVICE              = 1064
-Const ERROR_DATABASE_DOES_NOT_EXIST           = 1065
-Const ERROR_SERVICE_SPECIFIC_ERROR            = 1066
-Const ERROR_PROCESS_ABORTED                   = 1067
-Const ERROR_SERVICE_DEPENDENCY_FAIL           = 1068
-Const ERROR_SERVICE_LOGON_FAILED              = 1069
-Const ERROR_SERVICE_START_HANG                = 1070
-Const ERROR_INVALID_SERVICE_LOCK              = 1071
-Const ERROR_SERVICE_MARKED_FOR_DELETE         = 1072
-Const ERROR_SERVICE_EXISTS                    = 1073
-Const ERROR_ALREADY_RUNNING_LKG               = 1074
-Const ERROR_SERVICE_DEPENDENCY_DELETED        = 1075
-Const ERROR_BOOT_ALREADY_ACCEPTED             = 1076
-Const ERROR_SERVICE_NEVER_STARTED             = 1077
-Const ERROR_DUPLICATE_SERVICE_NAME            = 1078
-Const ERROR_END_OF_MEDIA                      = 1100
-Const ERROR_FILEMARK_DETECTED                 = 1101
-Const ERROR_BEGINNING_OF_MEDIA                = 1102
-Const ERROR_SETMARK_DETECTED                  = 1103
-Const ERROR_NO_DATA_DETECTED                  = 1104
-Const ERROR_PARTITION_FAILURE                 = 1105
-Const ERROR_INVALID_BLOCK_LENGTH              = 1106
-Const ERROR_DEVICE_NOT_PARTITIONED            = 1107
-Const ERROR_UNABLE_TO_LOCK_MEDIA              = 1108
-Const ERROR_UNABLE_TO_UNLOAD_MEDIA            = 1109
-Const ERROR_MEDIA_CHANGED                     = 1110
-Const ERROR_BUS_RESET                         = 1111
-Const ERROR_NO_MEDIA_IN_DRIVE                 = 1112
-Const ERROR_NO_UNICODE_TRANSLATION            = 1113
-Const ERROR_DLL_INIT_FAILED                   = 1114
-Const ERROR_SHUTDOWN_IN_PROGRESS              = 1115
-Const ERROR_NO_SHUTDOWN_IN_PROGRESS           = 1116
-Const ERROR_IO_DEVICE                         = 1117
-Const ERROR_SERIAL_NO_DEVICE                  = 1118
-Const ERROR_IRQ_BUSY                          = 1119
-Const ERROR_MORE_WRITES                       = 1120
-Const ERROR_COUNTER_TIMEOUT                   = 1121
-Const ERROR_FLOPPY_ID_MARK_NOT_FOUND          = 1122
-Const ERROR_FLOPPY_WRONG_CYLINDER             = 1123
-Const ERROR_FLOPPY_UNKNOWN_ERROR              = 1124
-Const ERROR_FLOPPY_BAD_REGISTERS              = 1125
-Const ERROR_DISK_RECALIBRATE_FAILED           = 1126
-Const ERROR_DISK_OPERATION_FAILED             = 1127
-Const ERROR_DISK_RESET_FAILED                 = 1128
-Const ERROR_EOM_OVERFLOW                      = 1129
-Const ERROR_NOT_ENOUGH_SERVER_MEMORY          = 1130
-Const ERROR_POSSIBLE_DEADLOCK                 = 1131
-Const ERROR_MAPPED_ALIGNMENT                  = 1132
-Const ERROR_BAD_USERNAME                      = 2202
-Const ERROR_NOT_CONNECTED                     = 2250
-Const ERROR_OPEN_FILES                        = 2401
-Const ERROR_DEVICE_IN_USE                     = 2404
-Const ERROR_BAD_DEVICE                        = 1200
-Const ERROR_CONNECTION_UNAVAIL                = 1201
-Const ERROR_DEVICE_ALREADY_REMEMBERED         = 1202
-Const ERROR_NO_NET_OR_BAD_PATH                = 1203
-Const ERROR_BAD_PROVIDER                      = 1204
-Const ERROR_CANNOT_OPEN_PROFILE               = 1205
-Const ERROR_BAD_PROFILE                       = 1206
-Const ERROR_NOT_CONTAINER                     = 1207
-Const ERROR_EXTENDED_ERROR                    = 1208
-Const ERROR_INVALID_GROUPNAME                 = 1209
-Const ERROR_INVALID_COMPUTERNAME              = 1210
-Const ERROR_INVALID_EVENTNAME                 = 1211
-Const ERROR_INVALID_DOMAINNAME                = 1212
-Const ERROR_INVALID_SERVICENAME               = 1213
-Const ERROR_INVALID_NETNAME                   = 1214
-Const ERROR_INVALID_SHARENAME                 = 1215
-Const ERROR_INVALID_PASSWORDNAME              = 1216
-Const ERROR_INVALID_MESSAGENAME               = 1217
-Const ERROR_INVALID_MESSAGEDEST               = 1218
-Const ERROR_SESSION_CREDENTIAL_CONFLICT       = 1219
-Const ERROR_REMOTE_SESSION_LIMIT_EXCEEDED     = 1220
-Const ERROR_DUP_DOMAINNAME                    = 1221
-Const ERROR_NO_NETWORK                        = 1222
-Const ERROR_NOT_ALL_ASSIGNED                  = 1300
-Const ERROR_SOME_NOT_MAPPED                   = 1301
-Const ERROR_NO_QUOTAS_FOR_ACCOUNT             = 1302
-Const ERROR_LOCAL_USER_SESSION_KEY            = 1303
-Const ERROR_NULL_LM_PASSWORD                  = 1304
-Const ERROR_UNKNOWN_REVISION                  = 1305
-Const ERROR_REVISION_MISMATCH                 = 1306
-Const ERROR_INVALID_OWNER                     = 1307
-Const ERROR_INVALID_PRIMARY_GROUP             = 1308
-Const ERROR_NO_IMPERSONATION_TOKEN            = 1309
-Const ERROR_CANT_DISABLE_MANDATORY            = 1310
-Const ERROR_NO_LOGON_SERVERS                  = 1311
-Const ERROR_NO_SUCH_LOGON_SESSION             = 1312
-Const ERROR_NO_SUCH_PRIVILEGE                 = 1313
-Const ERROR_PRIVILEGE_NOT_HELD                = 1314
-Const ERROR_INVALID_ACCOUNT_NAME              = 1315
-Const ERROR_USER_EXISTS                       = 1316
-Const ERROR_NO_SUCH_USER                      = 1317
-Const ERROR_GROUP_EXISTS                      = 1318
-Const ERROR_NO_SUCH_GROUP                     = 1319
-Const ERROR_MEMBER_IN_GROUP                   = 1320
-Const ERROR_MEMBER_NOT_IN_GROUP               = 1321
-Const ERROR_LAST_ADMIN                        = 1322
-Const ERROR_WRONG_PASSWORD                    = 1323
-Const ERROR_ILL_FORMED_PASSWORD               = 1324
-Const ERROR_PASSWORD_RESTRICTION              = 1325
-Const ERROR_LOGON_FAILURE                     = 1326
-Const ERROR_ACCOUNT_RESTRICTION               = 1327
-Const ERROR_INVALID_LOGON_HOURS               = 1328
-Const ERROR_INVALID_WORKSTATION               = 1329
-Const ERROR_PASSWORD_EXPIRED                  = 1330
-Const ERROR_ACCOUNT_DISABLED                  = 1331
-Const ERROR_NONE_MAPPED                       = 1332
-Const ERROR_TOO_MANY_LUIDS_REQUESTED          = 1333
-Const ERROR_LUIDS_EXHAUSTED                   = 1334
-Const ERROR_INVALID_SUB_AUTHORITY             = 1335
-Const ERROR_INVALID_ACL                       = 1336
-Const ERROR_INVALID_SID                       = 1337
-Const ERROR_INVALID_SECURITY_DESCR            = 1338
-Const ERROR_BAD_INHERITANCE_ACL               = 1340
-Const ERROR_SERVER_DISABLED                   = 1341
-Const ERROR_SERVER_NOT_DISABLED               = 1342
-Const ERROR_INVALID_ID_AUTHORITY              = 1343
-Const ERROR_ALLOTTED_SPACE_EXCEEDED           = 1344
-Const ERROR_INVALID_GROUP_ATTRIBUTES          = 1345
-Const ERROR_BAD_IMPERSONATION_LEVEL           = 1346
-Const ERROR_CANT_OPEN_ANONYMOUS               = 1347
-Const ERROR_BAD_VALIDATION_CLASS              = 1348
-Const ERROR_BAD_TOKEN_Type                    = 1349
-Const ERROR_NO_SECURITY_ON_OBJECT             = 1350
-Const ERROR_CANT_ACCESS_DOMAIN_INFO           = 1351
-Const ERROR_INVALID_SERVER_STATE              = 1352
-Const ERROR_INVALID_DOMAIN_STATE              = 1353
-Const ERROR_INVALID_DOMAIN_ROLE               = 1354
-Const ERROR_NO_SUCH_DOMAIN                    = 1355
-Const ERROR_DOMAIN_EXISTS                     = 1356
-Const ERROR_DOMAIN_LIMIT_EXCEEDED             = 1357
-Const ERROR_INTERNAL_DB_CORRUPTION            = 1358
-Const ERROR_INTERNAL_ERROR                    = 1359
-Const ERROR_GENERIC_NOT_MAPPED                = 1360
-Const ERROR_BAD_DESCRIPTOR_FORMAT             = 1361
-Const ERROR_NOT_LOGON_PROCESS                 = 1362
-Const ERROR_LOGON_SESSION_EXISTS              = 1363
-Const ERROR_NO_SUCH_PACKAGE                   = 1364
-Const ERROR_BAD_LOGON_SESSION_STATE           = 1365
-Const ERROR_LOGON_SESSION_COLLISION           = 1366
-Const ERROR_INVALID_LOGON_Type                = 1367
-Const ERROR_CANNOT_IMPERSONATE                = 1368
-Const ERROR_RXACT_INVALID_STATE               = 1369
-Const ERROR_RXACT_COMMIT_FAILURE              = 1370
-Const ERROR_SPECIAL_ACCOUNT                   = 1371
-Const ERROR_SPECIAL_GROUP                     = 1372
-Const ERROR_SPECIAL_USER                      = 1373
-Const ERROR_MEMBERS_PRIMARY_GROUP             = 1374
-Const ERROR_TOKEN_ALREADY_IN_USE              = 1375
-Const ERROR_NO_SUCH_ALIAS                     = 1376
-Const ERROR_MEMBER_NOT_IN_ALIAS               = 1377
-Const ERROR_MEMBER_IN_ALIAS                   = 1378
-Const ERROR_ALIAS_EXISTS                      = 1379
-Const ERROR_LOGON_NOT_GRANTED                 = 1380
-Const ERROR_TOO_MANY_SECRETS                  = 1381
-Const ERROR_SECRET_TOO_LONG                   = 1382
-Const ERROR_INTERNAL_DB_ERROR                 = 1383
-Const ERROR_TOO_MANY_CONTEXT_IDS              = 1384
-Const ERROR_LOGON_Type_NOT_GRANTED            = 1385
-Const ERROR_NT_CROSS_ENCRYPTION_REQUIRED      = 1386
-Const ERROR_NO_SUCH_MEMBER                    = 1387
-Const ERROR_INVALID_MEMBER                    = 1388
-Const ERROR_TOO_MANY_SIDS                     = 1389
-Const ERROR_LM_CROSS_ENCRYPTION_REQUIRED      = 1390
-Const ERROR_NO_INHERITANCE                    = 1391
-Const ERROR_FILE_CORRUPT                      = 1392
-Const ERROR_DISK_CORRUPT                      = 1393
-Const ERROR_NO_USER_SESSION_KEY               = 1394
-Const ERROR_INVALID_WINDOW_HANDLE             = 1400
-Const ERROR_INVALID_MENU_HANDLE               = 1401
-Const ERROR_INVALID_CURSOR_HANDLE             = 1402
-Const ERROR_INVALID_ACCEL_HANDLE              = 1403
-Const ERROR_INVALID_HOOK_HANDLE               = 1404
-Const ERROR_INVALID_DWP_HANDLE                = 1405
-Const ERROR_TLW_WITH_WSCHILD                  = 1406
-Const ERROR_CANNOT_FIND_WND_CLASS             = 1407
-Const ERROR_WINDOW_OF_OTHER_THREAD            = 1408
-Const ERROR_HOTKEY_ALREADY_REGISTERED         = 1409
-Const ERROR_CLASS_ALREADY_EXISTS              = 1410
-Const ERROR_CLASS_DOES_NOT_EXIST              = 1411
-Const ERROR_CLASS_HAS_WINDOWS                 = 1412
-Const ERROR_INVALID_INDEX                     = 1413
-Const ERROR_INVALID_ICON_HANDLE               = 1414
-Const ERROR_PRIVATE_DIALOG_INDEX              = 1415
-Const ERROR_LISTBOX_ID_NOT_FOUND              = 1416
-Const ERROR_NO_WILDCARD_CHARACTERS            = 1417
-Const ERROR_CLIPBOARD_NOT_OPEN                = 1418
-Const ERROR_HOTKEY_NOT_REGISTERED             = 1419
-Const ERROR_WINDOW_NOT_DIALOG                 = 1420
-Const ERROR_CONTROL_ID_NOT_FOUND              = 1421
-Const ERROR_INVALID_COMBOBOX_MESSAGE          = 1422
-Const ERROR_WINDOW_NOT_COMBOBOX               = 1423
-Const ERROR_INVALID_EDIT_HEIGHT               = 1424
-Const ERROR_DC_NOT_FOUND                      = 1425
-Const ERROR_INVALID_HOOK_FILTER               = 1426
-Const ERROR_INVALID_FILTER_PROC               = 1427
-Const ERROR_HOOK_NEEDS_HMOD                   = 1428
-Const ERROR_GLOBAL_ONLY_HOOK                  = 1429
-Const ERROR_JOURNAL_HOOK_SET                  = 1430
-Const ERROR_HOOK_NOT_INSTALLED                = 1431
-Const ERROR_INVALID_LB_MESSAGE                = 1432
-Const ERROR_SETCOUNT_ON_BAD_LB                = 1433
-Const ERROR_LB_WITHOUT_TABSTOPS               = 1434
-Const ERROR_DESTROY_OBJECT_OF_OTHER_THREAD    = 1435
-Const ERROR_CHILD_WINDOW_MENU                 = 1436
-Const ERROR_NO_SYSTEM_MENU                    = 1437
-Const ERROR_INVALID_MSGBOX_STYLE              = 1438
-Const ERROR_INVALID_SPI_VALUE                 = 1439
-Const ERROR_SCREEN_ALREADY_LOCKED             = 1440
-Const ERROR_HWNDS_HAVE_DIFF_PARENT            = 1441
-Const ERROR_NOT_CHILD_WINDOW                  = 1442
-Const ERROR_INVALID_GW_COMMAND                = 1443
-Const ERROR_INVALID_THREAD_ID                 = 1444
-Const ERROR_NON_MDICHILD_WINDOW               = 1445
-Const ERROR_POPUP_ALREADY_ACTIVE              = 1446
-Const ERROR_NO_SCROLLBARS                     = 1447
-Const ERROR_INVALID_SCROLLBAR_RANGE           = 1448
-Const ERROR_INVALID_SHOWWIN_COMMAND           = 1449
-Const ERROR_EVENTLOG_FILE_CORRUPT             = 1500
-Const ERROR_EVENTLOG_CANT_START               = 1501
-Const ERROR_LOG_FILE_FULL                     = 1502
-Const ERROR_EVENTLOG_FILE_CHANGED             = 1503
-Const ERROR_INVALID_USER_BUFFER               = 1784
-Const ERROR_UNRECOGNIZED_MEDIA                = 1785
-Const ERROR_NO_TRUST_LSA_SECRET               = 1786
-Const ERROR_NO_TRUST_SAM_ACCOUNT              = 1787
-Const ERROR_TRUSTED_DOMAIN_FAILURE            = 1788
-Const ERROR_TRUSTED_RELATIONSHIP_FAILURE      = 1789
-Const ERROR_TRUST_FAILURE                     = 1790
-Const ERROR_NETLOGON_NOT_STARTED              = 1792
-Const ERROR_ACCOUNT_EXPIRED                   = 1793
-Const ERROR_REDIRECTOR_HAS_OPEN_HANDLES       = 1794
-Const ERROR_PRINTER_DRIVER_ALREADY_INSTALLED  = 1795
-Const ERROR_UNKNOWN_PORT                      = 1796
-Const ERROR_UNKNOWN_PRINTER_DRIVER            = 1797
-Const ERROR_UNKNOWN_PRINTPROCESSOR            = 1798
-Const ERROR_INVALID_SEPARATOR_FILE            = 1799
-Const ERROR_INVALID_PRIORITY                  = 1800
-Const ERROR_INVALID_PRINTER_NAME              = 1801
-Const ERROR_PRINTER_ALREADY_EXISTS            = 1802
-Const ERROR_INVALID_PRINTER_COMMAND           = 1803
-Const ERROR_INVALID_DATAType                  = 1804
-Const ERROR_INVALID_ENVIRONMENT               = 1805
-Const ERROR_NOLOGON_INTERDOMAIN_TRUST_ACCOUNT = 1807
-Const ERROR_NOLOGON_WORKSTATION_TRUST_ACCOUNT = 1808
-Const ERROR_NOLOGON_SERVER_TRUST_ACCOUNT      = 1809
-Const ERROR_DOMAIN_TRUST_INCONSISTENT         = 1810
-Const ERROR_SERVER_HAS_OPEN_HANDLES           = 1811
-Const ERROR_RESOURCE_DATA_NOT_FOUND           = 1812
-Const ERROR_RESOURCE_Type_NOT_FOUND           = 1813
-Const ERROR_RESOURCE_NAME_NOT_FOUND           = 1814
-Const ERROR_RESOURCE_LANG_NOT_FOUND           = 1815
-Const ERROR_NOT_ENOUGH_QUOTA                  = 1816
-Const ERROR_INVALID_TIME                      = 1901
-Const ERROR_INVALID_FORM_NAME                 = 1902
-Const ERROR_INVALID_FORM_SIZE                 = 1903
-Const ERROR_ALREADY_WAITING                   = 1904
-Const ERROR_PRINTER_DELETED                   = 1905
-Const ERROR_INVALID_PRINTER_STATE             = 1906
-Const ERROR_NO_BROWSER_SERVERS_FOUND          = 6118
-Const ERROR_LAST_OS_ERROR                     = 8191
+#define ERROR_SUCCESS     0
+#define ERROR_INVALID_FUNCTION     1
+#define ERROR_FILE_NOT_FOUND     2
+#define ERROR_PATH_NOT_FOUND     3
+#define ERROR_TOO_MANY_OPEN_FILES     4
+#define ERROR_ACCESS_DENIED     5
+#define ERROR_INVALID_HANDLE     6
+#define ERROR_ARENA_TRASHED     7
+#define ERROR_NOT_ENOUGH_MEMORY     8
+#define ERROR_INVALID_BLOCK     9
+#define ERROR_BAD_ENVIRONMENT    10
+#define ERROR_BAD_FORMAT    11
+#define ERROR_INVALID_ACCESS    12
+#define ERROR_INVALID_DATA    13
+#define ERROR_OUTOFMEMORY    14
+#define ERROR_INVALID_DRIVE    15
+#define ERROR_CURRENT_DIRECTORY    16
+#define ERROR_NOT_SAME_DEVICE    17
+#define ERROR_NO_MORE_FILES    18
+#define ERROR_WRITE_PROTECT    19
+#define ERROR_BAD_UNIT    20
+#define ERROR_NOT_READY    21
+#define ERROR_BAD_COMMAND    22
+#define ERROR_CRC    23
+#define ERROR_BAD_LENGTH    24
+#define ERROR_SEEK    25
+#define ERROR_NOT_DOS_DISK    26
+#define ERROR_SECTOR_NOT_FOUND    27
+#define ERROR_OUT_OF_PAPER    28
+#define ERROR_WRITE_FAULT    29
+#define ERROR_READ_FAULT    30
+#define ERROR_GEN_FAILURE    31
+#define ERROR_SHARING_VIOLATION    32
+#define ERROR_LOCK_VIOLATION    33
+#define ERROR_WRONG_DISK    34
+#define ERROR_SHARING_BUFFER_EXCEEDED    36
+#define ERROR_HANDLE_EOF    38
+#define ERROR_HANDLE_DISK_FULL    39
+#define ERROR_NOT_SUPPORTED    50
+#define ERROR_REM_NOT_LIST    51
+#define ERROR_DUP_NAME    52
+#define ERROR_BAD_NETPATH    53
+#define ERROR_NETWORK_BUSY    54
+#define ERROR_DEV_NOT_EXIST    55
+#define ERROR_TOO_MANY_CMDS    56
+#define ERROR_ADAP_HDW_ERR    57
+#define ERROR_BAD_NET_RESP    58
+#define ERROR_UNEXP_NET_ERR    59
+#define ERROR_BAD_REM_ADAP    60
+#define ERROR_PRINTQ_FULL    61
+#define ERROR_NO_SPOOL_SPACE    62
+#define ERROR_PRINT_CANCELLED    63
+#define ERROR_NETNAME_DELETED    64
+#define ERROR_NETWORK_ACCESS_DENIED    65
+#define ERROR_BAD_DEV_Type    66
+#define ERROR_BAD_NET_NAME    67
+#define ERROR_TOO_MANY_NAMES    68
+#define ERROR_TOO_MANY_SESS    69
+#define ERROR_SHARING_PAUSED    70
+#define ERROR_REQ_NOT_ACCEP    71
+#define ERROR_REDIR_PAUSED    72
+#define ERROR_FILE_EXISTS    80
+#define ERROR_CANNOT_MAKE    82
+#define ERROR_FAIL_I24    83
+#define ERROR_OUT_OF_STRUCTURES    84
+#define ERROR_ALREADY_ASSIGNED    85
+#define ERROR_INVALID_PASSWORD    86
+#define ERROR_INVALID_PARAMETER    87
+#define ERROR_NET_WRITE_FAULT    88
+#define ERROR_NO_PROC_SLOTS    89
+#define ERROR_TOO_MANY_SEMAPHORES   100
+#define ERROR_EXCL_SEM_ALREADY_OWNED   101
+#define ERROR_SEM_IS_SET   102
+#define ERROR_TOO_MANY_SEM_REQUESTS   103
+#define ERROR_INVALID_AT_INTERRUPT_TIME   104
+#define ERROR_SEM_OWNER_DIED   105
+#define ERROR_SEM_USER_LIMIT   106
+#define ERROR_DISK_CHANGE   107
+#define ERROR_DRIVE_LOCKED   108
+#define ERROR_BROKEN_PIPE   109
+#define ERROR_OPEN_FAILED   110
+#define ERROR_BUFFER_OVERFLOW   111
+#define ERROR_DISK_FULL   112
+#define ERROR_NO_MORE_SEARCH_HANDLES   113
+#define ERROR_INVALID_TARGET_HANDLE   114
+#define ERROR_INVALID_CATEGORY   117
+#define ERROR_INVALID_VERIFY_SWITCH   118
+#define ERROR_BAD_DRIVER_LEVEL   119
+#define ERROR_CALL_NOT_IMPLEMENTED   120
+#define ERROR_SEM_TIMEOUT   121
+#define ERROR_INSUFFICIENT_BUFFER   122
+#define ERROR_INVALID_NAME   123
+#define ERROR_INVALID_LEVEL   124
+#define ERROR_NO_VOLUME_LABEL   125
+#define ERROR_MOD_NOT_FOUND   126
+#define ERROR_PROC_NOT_FOUND   127
+#define ERROR_WAIT_NO_CHILDREN   128
+#define ERROR_CHILD_NOT_COMPLETE   129
+#define ERROR_DIRECT_ACCESS_HANDLE   130
+#define ERROR_NEGATIVE_SEEK   131
+#define ERROR_SEEK_ON_DEVICE   132
+#define ERROR_IS_JOIN_TARGET   133
+#define ERROR_IS_JOINED   134
+#define ERROR_IS_SUBSTED   135
+#define ERROR_NOT_JOINED   136
+#define ERROR_NOT_SUBSTED   137
+#define ERROR_JOIN_TO_JOIN   138
+#define ERROR_SUBST_TO_SUBST   139
+#define ERROR_JOIN_TO_SUBST   140
+#define ERROR_SUBST_TO_JOIN   141
+#define ERROR_BUSY_DRIVE   142
+#define ERROR_SAME_DRIVE   143
+#define ERROR_DIR_NOT_ROOT   144
+#define ERROR_DIR_NOT_EMPTY   145
+#define ERROR_IS_SUBST_PATH   146
+#define ERROR_IS_JOIN_PATH   147
+#define ERROR_PATH_BUSY   148
+#define ERROR_IS_SUBST_TARGET   149
+#define ERROR_SYSTEM_TRACE   150
+#define ERROR_INVALID_EVENT_COUNT   151
+#define ERROR_TOO_MANY_MUXWAITERS   152
+#define ERROR_INVALID_LIST_FORMAT   153
+#define ERROR_LABEL_TOO_LONG   154
+#define ERROR_TOO_MANY_TCBS   155
+#define ERROR_SIGNAL_REFUSED   156
+#define ERROR_DISCARDED   157
+#define ERROR_NOT_LOCKED   158
+#define ERROR_BAD_THREADID_ADDR   159
+#define ERROR_BAD_ARGUMENTS   160
+#define ERROR_BAD_PATHNAME   161
+#define ERROR_SIGNAL_PENDING   162
+#define ERROR_MAX_THRDS_REACHED   164
+#define ERROR_LOCK_FAILED   167
+#define ERROR_BUSY   170
+#define ERROR_CANCEL_VIOLATION   173
+#define ERROR_ATOMIC_LOCKS_NOT_SUPPORTED   174
+#define ERROR_INVALID_SEGMENT_NUMBER   180
+#define ERROR_INVALID_ORDINAL   182
+#define ERROR_ALREADY_EXISTS   183
+#define ERROR_INVALID_FLAG_NUMBER   186
+#define ERROR_SEM_NOT_FOUND   187
+#define ERROR_INVALID_STARTING_CODESEG   188
+#define ERROR_INVALID_STACKSEG   189
+#define ERROR_INVALID_MODULEType   190
+#define ERROR_INVALID_EXE_SIGNATURE   191
+#define ERROR_EXE_MARKED_INVALID   192
+#define ERROR_BAD_EXE_FORMAT   193
+#define ERROR_ITERATED_DATA_EXCEEDS_64k   194
+#define ERROR_INVALID_MINALLOCSIZE   195
+#define ERROR_DYNLINK_FROM_INVALID_RING   196
+#define ERROR_IOPL_NOT_ENABLED   197
+#define ERROR_INVALID_SEGDPL   198
+#define ERROR_AUTODATASEG_EXCEEDS_64k   199
+#define ERROR_RING2SEG_MUST_BE_MOVABLE   200
+#define ERROR_RELOC_CHAIN_XEEDS_SEGLIM   201
+#define ERROR_INFLOOP_IN_RELOC_CHAIN   202
+#define ERROR_ENVVAR_NOT_FOUND   203
+#define ERROR_NO_SIGNAL_SENT   205
+#define ERROR_FILENAME_EXCED_RANGE   206
+#define ERROR_RING2_STACK_IN_USE   207
+#define ERROR_META_EXPANSION_TOO_LONG   208
+#define ERROR_INVALID_SIGNAL_NUMBER   209
+#define ERROR_THREAD_1_INACTIVE   210
+#define ERROR_LOCKED   212
+#define ERROR_TOO_MANY_MODULES   214
+#define ERROR_NESTING_NOT_ALLOWED   215
+#define ERROR_BAD_PIPE   230
+#define ERROR_PIPE_BUSY   231
+#define ERROR_NO_DATA   232
+#define ERROR_PIPE_NOT_CONNECTED   233
+#define ERROR_MORE_DATA   234
+#define ERROR_VC_DISCONNECTED   240
+#define ERROR_INVALID_EA_NAME   254
+#define ERROR_EA_LIST_INCONSISTENT   255
+#define WAIT_TIMEOUT   258
+#define ERROR_NO_MORE_ITEMS   259
+#define ERROR_CANNOT_COPY   266
+#define ERROR_DIRECTORY   267
+#define ERROR_EAS_DIDNT_FIT   275
+#define ERROR_EA_FILE_CORRUPT   276
+#define ERROR_EA_TABLE_FULL   277
+#define ERROR_INVALID_EA_HANDLE   278
+#define ERROR_EAS_NOT_SUPPORTED   282
+#define ERROR_NOT_OWNER   288
+#define ERROR_TOO_MANY_POSTS   298
+#define ERROR_MR_MID_NOT_FOUND   317
+#define ERROR_INVALID_ADDRESS   487
+#define ERROR_ARITHMETIC_OVERFLOW   534
+#define ERROR_PIPE_CONNECTED   535
+#define ERROR_PIPE_LISTENING   536
+#define ERROR_EA_ACCESS_DENIED   994
+#define ERROR_OPERATION_ABORTED   995
+#define ERROR_IO_INCOMPLETE   996
+#define ERROR_IO_PENDING   997
+#define ERROR_NOACCESS   998
+#define ERROR_SWAPERROR   999
+#define ERROR_STACK_OVERFLOW  1001
+#define ERROR_INVALID_MESSAGE  1002
+#define ERROR_CAN_NOT_COMPLETE  1003
+#define ERROR_INVALID_FLAGS  1004
+#define ERROR_UNRECOGNIZED_VOLUME  1005
+#define ERROR_FILE_INVALID  1006
+#define ERROR_FULLSCREEN_MODE  1007
+#define ERROR_NO_TOKEN  1008
+#define ERROR_BADDB  1009
+#define ERROR_BADKEY  1010
+#define ERROR_CANTOPEN  1011
+#define ERROR_CANTREAD  1012
+#define ERROR_CANTWRITE  1013
+#define ERROR_REGISTRY_RECOVERED  1014
+#define ERROR_REGISTRY_CORRUPT  1015
+#define ERROR_REGISTRY_IO_FAILED  1016
+#define ERROR_NOT_REGISTRY_FILE  1017
+#define ERROR_KEY_DELETED  1018
+#define ERROR_NO_LOG_SPACE  1019
+#define ERROR_KEY_HAS_CHILDREN  1020
+#define ERROR_CHILD_MUST_BE_VOLATILE  1021
+#define ERROR_NOTIFY_ENUM_DIR  1022
+#define ERROR_DEPENDENT_SERVICES_RUNNING  1051
+#define ERROR_INVALID_SERVICE_CONTROL  1052
+#define ERROR_SERVICE_REQUEST_TIMEOUT  1053
+#define ERROR_SERVICE_NO_THREAD  1054
+#define ERROR_SERVICE_DATABASE_LOCKED  1055
+#define ERROR_SERVICE_ALREADY_RUNNING  1056
+#define ERROR_INVALID_SERVICE_ACCOUNT  1057
+#define ERROR_SERVICE_DISABLED  1058
+#define ERROR_CIRCULAR_DEPENDENCY  1059
+#define ERROR_SERVICE_DOES_NOT_EXIST  1060
+#define ERROR_SERVICE_CANNOT_ACCEPT_CTRL  1061
+#define ERROR_SERVICE_NOT_ACTIVE  1062
+#define ERROR_FAILED_SERVICE_CONTROLLER_CONNECT  1063
+#define ERROR_EXCEPTION_IN_SERVICE  1064
+#define ERROR_DATABASE_DOES_NOT_EXIST  1065
+#define ERROR_SERVICE_SPECIFIC_ERROR  1066
+#define ERROR_PROCESS_ABORTED  1067
+#define ERROR_SERVICE_DEPENDENCY_FAIL  1068
+#define ERROR_SERVICE_LOGON_FAILED  1069
+#define ERROR_SERVICE_START_HANG  1070
+#define ERROR_INVALID_SERVICE_LOCK  1071
+#define ERROR_SERVICE_MARKED_FOR_DELETE  1072
+#define ERROR_SERVICE_EXISTS  1073
+#define ERROR_ALREADY_RUNNING_LKG  1074
+#define ERROR_SERVICE_DEPENDENCY_DELETED  1075
+#define ERROR_BOOT_ALREADY_ACCEPTED  1076
+#define ERROR_SERVICE_NEVER_STARTED  1077
+#define ERROR_DUPLICATE_SERVICE_NAME  1078
+#define ERROR_END_OF_MEDIA  1100
+#define ERROR_FILEMARK_DETECTED  1101
+#define ERROR_BEGINNING_OF_MEDIA  1102
+#define ERROR_SETMARK_DETECTED  1103
+#define ERROR_NO_DATA_DETECTED  1104
+#define ERROR_PARTITION_FAILURE  1105
+#define ERROR_INVALID_BLOCK_LENGTH  1106
+#define ERROR_DEVICE_NOT_PARTITIONED  1107
+#define ERROR_UNABLE_TO_LOCK_MEDIA  1108
+#define ERROR_UNABLE_TO_UNLOAD_MEDIA  1109
+#define ERROR_MEDIA_CHANGED  1110
+#define ERROR_BUS_RESET  1111
+#define ERROR_NO_MEDIA_IN_DRIVE  1112
+#define ERROR_NO_UNICODE_TRANSLATION  1113
+#define ERROR_DLL_INIT_FAILED  1114
+#define ERROR_SHUTDOWN_IN_PROGRESS  1115
+#define ERROR_NO_SHUTDOWN_IN_PROGRESS  1116
+#define ERROR_IO_DEVICE  1117
+#define ERROR_SERIAL_NO_DEVICE  1118
+#define ERROR_IRQ_BUSY  1119
+#define ERROR_MORE_WRITES  1120
+#define ERROR_COUNTER_TIMEOUT  1121
+#define ERROR_FLOPPY_ID_MARK_NOT_FOUND  1122
+#define ERROR_FLOPPY_WRONG_CYLINDER  1123
+#define ERROR_FLOPPY_UNKNOWN_ERROR  1124
+#define ERROR_FLOPPY_BAD_REGISTERS  1125
+#define ERROR_DISK_RECALIBRATE_FAILED  1126
+#define ERROR_DISK_OPERATION_FAILED  1127
+#define ERROR_DISK_RESET_FAILED  1128
+#define ERROR_EOM_OVERFLOW  1129
+#define ERROR_NOT_ENOUGH_SERVER_MEMORY  1130
+#define ERROR_POSSIBLE_DEADLOCK  1131
+#define ERROR_MAPPED_ALIGNMENT  1132
+#define ERROR_BAD_USERNAME  2202
+#define ERROR_NOT_CONNECTED  2250
+#define ERROR_OPEN_FILES  2401
+#define ERROR_DEVICE_IN_USE  2404
+#define ERROR_BAD_DEVICE  1200
+#define ERROR_CONNECTION_UNAVAIL  1201
+#define ERROR_DEVICE_ALREADY_REMEMBERED  1202
+#define ERROR_NO_NET_OR_BAD_PATH  1203
+#define ERROR_BAD_PROVIDER  1204
+#define ERROR_CANNOT_OPEN_PROFILE  1205
+#define ERROR_BAD_PROFILE  1206
+#define ERROR_NOT_CONTAINER  1207
+#define ERROR_EXTENDED_ERROR  1208
+#define ERROR_INVALID_GROUPNAME  1209
+#define ERROR_INVALID_COMPUTERNAME  1210
+#define ERROR_INVALID_EVENTNAME  1211
+#define ERROR_INVALID_DOMAINNAME  1212
+#define ERROR_INVALID_SERVICENAME  1213
+#define ERROR_INVALID_NETNAME  1214
+#define ERROR_INVALID_SHARENAME  1215
+#define ERROR_INVALID_PASSWORDNAME  1216
+#define ERROR_INVALID_MESSAGENAME  1217
+#define ERROR_INVALID_MESSAGEDEST  1218
+#define ERROR_SESSION_CREDENTIAL_CONFLICT  1219
+#define ERROR_REMOTE_SESSION_LIMIT_EXCEEDED  1220
+#define ERROR_DUP_DOMAINNAME  1221
+#define ERROR_NO_NETWORK  1222
+#define ERROR_NOT_ALL_ASSIGNED  1300
+#define ERROR_SOME_NOT_MAPPED  1301
+#define ERROR_NO_QUOTAS_FOR_ACCOUNT  1302
+#define ERROR_LOCAL_USER_SESSION_KEY  1303
+#define ERROR_NULL_LM_PASSWORD  1304
+#define ERROR_UNKNOWN_REVISION  1305
+#define ERROR_REVISION_MISMATCH  1306
+#define ERROR_INVALID_OWNER  1307
+#define ERROR_INVALID_PRIMARY_GROUP  1308
+#define ERROR_NO_IMPERSONATION_TOKEN  1309
+#define ERROR_CANT_DISABLE_MANDATORY  1310
+#define ERROR_NO_LOGON_SERVERS  1311
+#define ERROR_NO_SUCH_LOGON_SESSION  1312
+#define ERROR_NO_SUCH_PRIVILEGE  1313
+#define ERROR_PRIVILEGE_NOT_HELD  1314
+#define ERROR_INVALID_ACCOUNT_NAME  1315
+#define ERROR_USER_EXISTS  1316
+#define ERROR_NO_SUCH_USER  1317
+#define ERROR_GROUP_EXISTS  1318
+#define ERROR_NO_SUCH_GROUP  1319
+#define ERROR_MEMBER_IN_GROUP  1320
+#define ERROR_MEMBER_NOT_IN_GROUP  1321
+#define ERROR_LAST_ADMIN  1322
+#define ERROR_WRONG_PASSWORD  1323
+#define ERROR_ILL_FORMED_PASSWORD  1324
+#define ERROR_PASSWORD_RESTRICTION  1325
+#define ERROR_LOGON_FAILURE  1326
+#define ERROR_ACCOUNT_RESTRICTION  1327
+#define ERROR_INVALID_LOGON_HOURS  1328
+#define ERROR_INVALID_WORKSTATION  1329
+#define ERROR_PASSWORD_EXPIRED  1330
+#define ERROR_ACCOUNT_DISABLED  1331
+#define ERROR_NONE_MAPPED  1332
+#define ERROR_TOO_MANY_LUIDS_REQUESTED  1333
+#define ERROR_LUIDS_EXHAUSTED  1334
+#define ERROR_INVALID_SUB_AUTHORITY  1335
+#define ERROR_INVALID_ACL  1336
+#define ERROR_INVALID_SID  1337
+#define ERROR_INVALID_SECURITY_DESCR  1338
+#define ERROR_BAD_INHERITANCE_ACL  1340
+#define ERROR_SERVER_DISABLED  1341
+#define ERROR_SERVER_NOT_DISABLED  1342
+#define ERROR_INVALID_ID_AUTHORITY  1343
+#define ERROR_ALLOTTED_SPACE_EXCEEDED  1344
+#define ERROR_INVALID_GROUP_ATTRIBUTES  1345
+#define ERROR_BAD_IMPERSONATION_LEVEL  1346
+#define ERROR_CANT_OPEN_ANONYMOUS  1347
+#define ERROR_BAD_VALIDATION_CLASS  1348
+#define ERROR_BAD_TOKEN_Type  1349
+#define ERROR_NO_SECURITY_ON_OBJECT  1350
+#define ERROR_CANT_ACCESS_DOMAIN_INFO  1351
+#define ERROR_INVALID_SERVER_STATE  1352
+#define ERROR_INVALID_DOMAIN_STATE  1353
+#define ERROR_INVALID_DOMAIN_ROLE  1354
+#define ERROR_NO_SUCH_DOMAIN  1355
+#define ERROR_DOMAIN_EXISTS  1356
+#define ERROR_DOMAIN_LIMIT_EXCEEDED  1357
+#define ERROR_INTERNAL_DB_CORRUPTION  1358
+#define ERROR_INTERNAL_ERROR  1359
+#define ERROR_GENERIC_NOT_MAPPED  1360
+#define ERROR_BAD_DESCRIPTOR_FORMAT  1361
+#define ERROR_NOT_LOGON_PROCESS  1362
+#define ERROR_LOGON_SESSION_EXISTS  1363
+#define ERROR_NO_SUCH_PACKAGE  1364
+#define ERROR_BAD_LOGON_SESSION_STATE  1365
+#define ERROR_LOGON_SESSION_COLLISION  1366
+#define ERROR_INVALID_LOGON_Type  1367
+#define ERROR_CANNOT_IMPERSONATE  1368
+#define ERROR_RXACT_INVALID_STATE  1369
+#define ERROR_RXACT_COMMIT_FAILURE  1370
+#define ERROR_SPECIAL_ACCOUNT  1371
+#define ERROR_SPECIAL_GROUP  1372
+#define ERROR_SPECIAL_USER  1373
+#define ERROR_MEMBERS_PRIMARY_GROUP  1374
+#define ERROR_TOKEN_ALREADY_IN_USE  1375
+#define ERROR_NO_SUCH_ALIAS  1376
+#define ERROR_MEMBER_NOT_IN_ALIAS  1377
+#define ERROR_MEMBER_IN_ALIAS  1378
+#define ERROR_ALIAS_EXISTS  1379
+#define ERROR_LOGON_NOT_GRANTED  1380
+#define ERROR_TOO_MANY_SECRETS  1381
+#define ERROR_SECRET_TOO_LONG  1382
+#define ERROR_INTERNAL_DB_ERROR  1383
+#define ERROR_TOO_MANY_CONTEXT_IDS  1384
+#define ERROR_LOGON_Type_NOT_GRANTED  1385
+#define ERROR_NT_CROSS_ENCRYPTION_REQUIRED  1386
+#define ERROR_NO_SUCH_MEMBER  1387
+#define ERROR_INVALID_MEMBER  1388
+#define ERROR_TOO_MANY_SIDS  1389
+#define ERROR_LM_CROSS_ENCRYPTION_REQUIRED  1390
+#define ERROR_NO_INHERITANCE  1391
+#define ERROR_FILE_CORRUPT  1392
+#define ERROR_DISK_CORRUPT  1393
+#define ERROR_NO_USER_SESSION_KEY  1394
+#define ERROR_INVALID_WINDOW_HANDLE  1400
+#define ERROR_INVALID_MENU_HANDLE  1401
+#define ERROR_INVALID_CURSOR_HANDLE  1402
+#define ERROR_INVALID_ACCEL_HANDLE  1403
+#define ERROR_INVALID_HOOK_HANDLE  1404
+#define ERROR_INVALID_DWP_HANDLE  1405
+#define ERROR_TLW_WITH_WSCHILD  1406
+#define ERROR_CANNOT_FIND_WND_CLASS  1407
+#define ERROR_WINDOW_OF_OTHER_THREAD  1408
+#define ERROR_HOTKEY_ALREADY_REGISTERED  1409
+#define ERROR_CLASS_ALREADY_EXISTS  1410
+#define ERROR_CLASS_DOES_NOT_EXIST  1411
+#define ERROR_CLASS_HAS_WINDOWS  1412
+#define ERROR_INVALID_INDEX  1413
+#define ERROR_INVALID_ICON_HANDLE  1414
+#define ERROR_PRIVATE_DIALOG_INDEX  1415
+#define ERROR_LISTBOX_ID_NOT_FOUND  1416
+#define ERROR_NO_WILDCARD_CHARACTERS  1417
+#define ERROR_CLIPBOARD_NOT_OPEN  1418
+#define ERROR_HOTKEY_NOT_REGISTERED  1419
+#define ERROR_WINDOW_NOT_DIALOG  1420
+#define ERROR_CONTROL_ID_NOT_FOUND  1421
+#define ERROR_INVALID_COMBOBOX_MESSAGE  1422
+#define ERROR_WINDOW_NOT_COMBOBOX  1423
+#define ERROR_INVALID_EDIT_HEIGHT  1424
+#define ERROR_DC_NOT_FOUND  1425
+#define ERROR_INVALID_HOOK_FILTER  1426
+#define ERROR_INVALID_FILTER_PROC  1427
+#define ERROR_HOOK_NEEDS_HMOD  1428
+#define ERROR_GLOBAL_ONLY_HOOK  1429
+#define ERROR_JOURNAL_HOOK_SET  1430
+#define ERROR_HOOK_NOT_INSTALLED  1431
+#define ERROR_INVALID_LB_MESSAGE  1432
+#define ERROR_SETCOUNT_ON_BAD_LB  1433
+#define ERROR_LB_WITHOUT_TABSTOPS  1434
+#define ERROR_DESTROY_OBJECT_OF_OTHER_THREAD  1435
+#define ERROR_CHILD_WINDOW_MENU  1436
+#define ERROR_NO_SYSTEM_MENU  1437
+#define ERROR_INVALID_MSGBOX_STYLE  1438
+#define ERROR_INVALID_SPI_VALUE  1439
+#define ERROR_SCREEN_ALREADY_LOCKED  1440
+#define ERROR_HWNDS_HAVE_DIFF_PARENT  1441
+#define ERROR_NOT_CHILD_WINDOW  1442
+#define ERROR_INVALID_GW_COMMAND  1443
+#define ERROR_INVALID_THREAD_ID  1444
+#define ERROR_NON_MDICHILD_WINDOW  1445
+#define ERROR_POPUP_ALREADY_ACTIVE  1446
+#define ERROR_NO_SCROLLBARS  1447
+#define ERROR_INVALID_SCROLLBAR_RANGE  1448
+#define ERROR_INVALID_SHOWWIN_COMMAND  1449
+#define ERROR_EVENTLOG_FILE_CORRUPT  1500
+#define ERROR_EVENTLOG_CANT_START  1501
+#define ERROR_LOG_FILE_FULL  1502
+#define ERROR_EVENTLOG_FILE_CHANGED  1503
+#define ERROR_INVALID_USER_BUFFER  1784
+#define ERROR_UNRECOGNIZED_MEDIA  1785
+#define ERROR_NO_TRUST_LSA_SECRET  1786
+#define ERROR_NO_TRUST_SAM_ACCOUNT  1787
+#define ERROR_TRUSTED_DOMAIN_FAILURE  1788
+#define ERROR_TRUSTED_RELATIONSHIP_FAILURE  1789
+#define ERROR_TRUST_FAILURE  1790
+#define ERROR_NETLOGON_NOT_STARTED  1792
+#define ERROR_ACCOUNT_EXPIRED  1793
+#define ERROR_REDIRECTOR_HAS_OPEN_HANDLES  1794
+#define ERROR_PRINTER_DRIVER_ALREADY_INSTALLED  1795
+#define ERROR_UNKNOWN_PORT  1796
+#define ERROR_UNKNOWN_PRINTER_DRIVER  1797
+#define ERROR_UNKNOWN_PRINTPROCESSOR  1798
+#define ERROR_INVALID_SEPARATOR_FILE  1799
+#define ERROR_INVALID_PRIORITY  1800
+#define ERROR_INVALID_PRINTER_NAME  1801
+#define ERROR_PRINTER_ALREADY_EXISTS  1802
+#define ERROR_INVALID_PRINTER_COMMAND  1803
+#define ERROR_INVALID_DATAType  1804
+#define ERROR_INVALID_ENVIRONMENT  1805
+#define ERROR_NOLOGON_INTERDOMAIN_TRUST_ACCOUNT  1807
+#define ERROR_NOLOGON_WORKSTATION_TRUST_ACCOUNT  1808
+#define ERROR_NOLOGON_SERVER_TRUST_ACCOUNT  1809
+#define ERROR_DOMAIN_TRUST_INCONSISTENT  1810
+#define ERROR_SERVER_HAS_OPEN_HANDLES  1811
+#define ERROR_RESOURCE_DATA_NOT_FOUND  1812
+#define ERROR_RESOURCE_Type_NOT_FOUND  1813
+#define ERROR_RESOURCE_NAME_NOT_FOUND  1814
+#define ERROR_RESOURCE_LANG_NOT_FOUND  1815
+#define ERROR_NOT_ENOUGH_QUOTA  1816
+#define ERROR_INVALID_TIME  1901
+#define ERROR_INVALID_FORM_NAME  1902
+#define ERROR_INVALID_FORM_SIZE  1903
+#define ERROR_ALREADY_WAITING  1904
+#define ERROR_PRINTER_DELETED  1905
+#define ERROR_INVALID_PRINTER_STATE  1906
+#define ERROR_NO_BROWSER_SERVERS_FOUND  6118
+#define ERROR_LAST_OS_ERROR  8191
 
-Const SEVERITY_SUCCESS = 0
-Const SEVERITY_ERROR = 1
-Const FACILITY_NT_BIT = &H10000000
-Const NOERROR = 0
-Const E_UNEXPECTED = &H8000FFFF
-Const E_NOTIMPL = &H80004001
-Const E_OUTOFMEMORY = &H8007000E
-Const E_INVALIDARG = &H80070057
-Const E_NOINTERFACE = &H80004002
-Const E_POINTER = &H80004003
-Const E_HANDLE = &H80070006
-Const E_ABORT = &H80004004
-Const E_FAIL = &H80004005
-Const E_ACCESSDENIED = &H80070005
+#define SEVERITY_SUCCESS  0
+#define SEVERITY_ERROR  1
+#define FACILITY_NT_BIT  &H10000000
+#define NOERROR  0
+#define E_UNEXPECTED  &H8000FFFF
+#define E_NOTIMPL  &H80004001
+#define E_OUTOFMEMORY  &H8007000E
+#define E_INVALIDARG  &H80070057
+#define E_NOINTERFACE  &H80004002
+#define E_POINTER  &H80004003
+#define E_HANDLE  &H80070006
+#define E_ABORT  &H80004004
+#define E_FAIL  &H80004005
+#define E_ACCESSDENIED  &H80070005
 
 '------------------
 '| REQUIRED TYPES |

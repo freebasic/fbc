@@ -13,17 +13,13 @@
 
 '$inclib: "FreeImage"
 
-#ifdef FB__WIN32
-'$include once: "win\gdi32.bi"
-#endif
+
+#define FREEIMAGE_MAJOR_VERSION  3
+#define FREEIMAGE_MINOR_VERSION  5
+#define FREEIMAGE_RELEASE_SERIAL  0
 
 
-Const FREEIMAGE_MAJOR_VERSION  = 3
-Const FREEIMAGE_MINOR_VERSION  = 5
-Const FREEIMAGE_RELEASE_SERIAL  = 0
-
-
-#ifndef FB__WIN32
+#if not defined(FB__WIN32) or not defined(WINGDIAPI)
 
 #ifndef FALSE
 #define FALSE 0
@@ -41,46 +37,44 @@ Const FREEIMAGE_RELEASE_SERIAL  = 0
 #define SEEK_END  2
 #endif
 
-#define WORD unsigned short
-#define DWORD unsigned integer
 
 Type RGBQUAD field=1
-#	ifdef FB__BIGENDIAN
+#ifdef FB__BIGENDIAN
 		rgbRed As Byte
 		rgbGreen As Byte
 		rgbBlue As Byte
-#	else
+#else
 		rgbBlue As Byte
 		rgbGreen As Byte
 		rgbRed As Byte
-#	endif
+#endif
   		rgbReserved as byte
 end type
 
 Type RGBTRIPLE field=1
-#	ifdef FB__BIGENDIAN
+#ifdef FB__BIGENDIAN
 		rgbtRed As Byte
 		rgbtGreen As Byte
 		rgbtBlue As Byte
-#	else
+#else
 		rgbtBlue As Byte
 		rgbtGreen As Byte
 		rgbtRed As Byte
-#	endif
+#endif
 End Type
 
 type BITMAPINFOHEADER field=1
-  	biSize	as DWORD
-  	biWidth	as DWORD
-  	biHeight	as DWORD
-  	biPlanes	as WORD
-  	biBitCount as WORD
-  	biCompression as DWORD
-  	biSizeImage as DWORD
-  	biXPelsPerMeter as DWORD
-  	biYPelsPerMeter as DWORD
-  	biClrUsed as DWORD
-  	biClrImportant as DWORD
+  	biSize	as uinteger
+  	biWidth	as uinteger
+  	biHeight	as uinteger
+  	biPlanes	as ushort
+  	biBitCount as ushort
+  	biCompression as uinteger
+  	biSizeImage as uinteger
+  	biXPelsPerMeter as uinteger
+  	biYPelsPerMeter as uinteger
+  	biClrUsed as uinteger
+  	biClrImportant as uinteger
 end type
 
 type BITMAPINFO 
@@ -93,101 +87,101 @@ end type
 
 #ifndef FB__BIGENDIAN
 '' Little Endian (x86 / MS Windows, Linux) : BGR(A) order
-Const FI_RGBA_RED  = 2
-Const FI_RGBA_GREEN  = 1
-Const FI_RGBA_BLUE  = 0
-Const FI_RGBA_ALPHA  = 3
-Const FI_RGBA_RED_MASK  = &H00FF0000
-Const FI_RGBA_GREEN_MASK  = &H0000FF00
-Const FI_RGBA_BLUE_MASK  = &H000000FF
-Const FI_RGBA_ALPHA_MASK  = &HFF000000
-Const FI_RGBA_RED_SHIFT  = 16
-Const FI_RGBA_GREEN_SHIFT  = 8
-Const FI_RGBA_BLUE_SHIFT  = 0
-Const FI_RGBA_ALPHA_SHIFT  = 24
+#define FI_RGBA_RED  2
+#define FI_RGBA_GREEN  1
+#define FI_RGBA_BLUE  0
+#define FI_RGBA_ALPHA  3
+#define FI_RGBA_RED_MASK  &H00FF0000
+#define FI_RGBA_GREEN_MASK  &H0000FF00
+#define FI_RGBA_BLUE_MASK  &H000000FF
+#define FI_RGBA_ALPHA_MASK  &HFF000000
+#define FI_RGBA_RED_SHIFT  16
+#define FI_RGBA_GREEN_SHIFT  8
+#define FI_RGBA_BLUE_SHIFT  0
+#define FI_RGBA_ALPHA_SHIFT  24
 #else
 '' Big Endian (PPC / Linux, MaxOSX) : RGB(A) order
-Const FI_RGBA_RED		=		0
-Const FI_RGBA_GREEN		=	1
-Const FI_RGBA_BLUE		=	2
-Const FI_RGBA_ALPHA		=	3
-Const FI_RGBA_RED_MASK	=	&hFF000000
+#define FI_RGBA_RED 		0
+#define FI_RGBA_GREEN 	1
+#define FI_RGBA_BLUE 	2
+#define FI_RGBA_ALPHA 	3
+#define FI_RGBA_RED_MASK 	&hFF000000
 Const FI_RGBA_GREEN_MASK=		&h00FF0000
-Const FI_RGBA_BLUE_MASK		=&h0000FF00
-Const FI_RGBA_ALPHA_MASK	=	&h000000FF
-Const FI_RGBA_RED_SHIFT		=24
+#define FI_RGBA_BLUE_MASK &h0000FF00
+#define FI_RGBA_ALPHA_MASK 	&h000000FF
+#define FI_RGBA_RED_SHIFT 24
 Const FI_RGBA_GREEN_SHIFT=		16
 Const FI_RGBA_BLUE_SHIFT=		8
-Const FI_RGBA_ALPHA_SHIFT	=	0
+#define FI_RGBA_ALPHA_SHIFT 	0
 #endif '' FB__BIGENDIAN
 
-const FI_RGBA_RGB_MASK = (FI_RGBA_RED_MASK or FI_RGBA_GREEN_MASK or FI_RGBA_BLUE_MASK)
+#define FI_RGBA_RGB_MASK  (FI_RGBA_RED_MASK or FI_RGBA_GREEN_MASK or FI_RGBA_BLUE_MASK)
 
 '' The 16bit macros only include masks and shifts, since each color element is not byte aligned
 
-Const FI16_555_RED_MASK  = &H7C00
-Const FI16_555_GREEN_MASK  = &H03E0
-Const FI16_555_BLUE_MASK  = &H001F
-Const FI16_555_RED_SHIFT  = 10
-Const FI16_555_GREEN_SHIFT  = 5
-Const FI16_555_BLUE_SHIFT  = 0
-Const FI16_565_RED_MASK  = &HF800
-Const FI16_565_GREEN_MASK  = &H07E0
-Const FI16_565_BLUE_MASK  = &H001F
-Const FI16_565_RED_SHIFT  = 11
-Const FI16_565_GREEN_SHIFT  = 5
-Const FI16_565_BLUE_SHIFT  = 0
+#define FI16_555_RED_MASK  &H7C00
+#define FI16_555_GREEN_MASK  &H03E0
+#define FI16_555_BLUE_MASK  &H001F
+#define FI16_555_RED_SHIFT  10
+#define FI16_555_GREEN_SHIFT  5
+#define FI16_555_BLUE_SHIFT  0
+#define FI16_565_RED_MASK  &HF800
+#define FI16_565_GREEN_MASK  &H07E0
+#define FI16_565_BLUE_MASK  &H001F
+#define FI16_565_RED_SHIFT  11
+#define FI16_565_GREEN_SHIFT  5
+#define FI16_565_BLUE_SHIFT  0
 
-Const FIICC_DEFAULT  = &H00
-Const FIICC_COLOR_IS_CMYK  = &H01
+#define FIICC_DEFAULT  &H00
+#define FIICC_COLOR_IS_CMYK  &H01
 
 '' Load / Save flag constants -----------------------------------------------
 
-Const BMP_DEFAULT  = 0
-Const BMP_SAVE_RLE  = 1
-Const CUT_DEFAULT  = 0
-Const DDS_DEFAULT  = 0
-Const GIF_DEFAULT  = 0
-Const ICO_DEFAULT  = 0
-Const ICO_MAKEALPHA  = 1
-Const IFF_DEFAULT  = 0
-Const JPEG_DEFAULT  = 0
-Const JPEG_FAST  = 1
-Const JPEG_ACCURATE  = 2
-Const JPEG_QUALITYSUPERB  = &H80
-Const JPEG_QUALITYGOOD  = &H100
-Const JPEG_QUALITYNORMAL  = &H200
-Const JPEG_QUALITYAVERAGE  = &H400
-Const JPEG_QUALITYBAD  = &H800
-Const KOALA_DEFAULT  = 0
-Const LBM_DEFAULT  = 0
-Const MNG_DEFAULT  = 0
-Const PCD_DEFAULT  = 0
-Const PCD_BASE  = 1
-Const PCD_BASEDIV4  = 2
-Const PCD_BASEDIV16  = 3
-Const PCX_DEFAULT  = 0
-Const PNG_DEFAULT  = 0
-Const PNG_IGNOREGAMMA  = 1
-Const PNM_DEFAULT  = 0
-Const PNM_SAVE_RAW  = 0
-Const PNM_SAVE_ASCII  = 1
-Const PSD_DEFAULT  = 0
-Const RAS_DEFAULT  = 0
-Const TARGA_DEFAULT  = 0
-Const TARGA_LOAD_RGB888  = 1
-Const TIFF_DEFAULT  = 0
-Const TIFF_CMYK  = &H0001
-Const TIFF_PACKBITS  = &H0100
-Const TIFF_DEFLATE  = &H0200
-Const TIFF_ADOBE_DEFLATE  = &H0400
-Const TIFF_NONE  = &H0800
-Const TIFF_CCITTFAX3  = &H1000
-Const TIFF_CCITTFAX4  = &H2000
-Const TIFF_LZW  = &H4000
-Const WBMP_DEFAULT  = 0
-Const XBM_DEFAULT  = 0
-Const XPM_DEFAULT  = 0
+#define BMP_DEFAULT  0
+#define BMP_SAVE_RLE  1
+#define CUT_DEFAULT  0
+#define DDS_DEFAULT  0
+#define GIF_DEFAULT  0
+#define ICO_DEFAULT  0
+#define ICO_MAKEALPHA  1
+#define IFF_DEFAULT  0
+#define JPEG_DEFAULT  0
+#define JPEG_FAST  1
+#define JPEG_ACCURATE  2
+#define JPEG_QUALITYSUPERB  &H80
+#define JPEG_QUALITYGOOD  &H100
+#define JPEG_QUALITYNORMAL  &H200
+#define JPEG_QUALITYAVERAGE  &H400
+#define JPEG_QUALITYBAD  &H800
+#define KOALA_DEFAULT  0
+#define LBM_DEFAULT  0
+#define MNG_DEFAULT  0
+#define PCD_DEFAULT  0
+#define PCD_BASE  1
+#define PCD_BASEDIV4  2
+#define PCD_BASEDIV16  3
+#define PCX_DEFAULT  0
+#define PNG_DEFAULT  0
+#define PNG_IGNOREGAMMA  1
+#define PNM_DEFAULT  0
+#define PNM_SAVE_RAW  0
+#define PNM_SAVE_ASCII  1
+#define PSD_DEFAULT  0
+#define RAS_DEFAULT  0
+#define TARGA_DEFAULT  0
+#define TARGA_LOAD_RGB888  1
+#define TIFF_DEFAULT  0
+#define TIFF_CMYK  &H0001
+#define TIFF_PACKBITS  &H0100
+#define TIFF_DEFLATE  &H0200
+#define TIFF_ADOBE_DEFLATE  &H0400
+#define TIFF_NONE  &H0800
+#define TIFF_CCITTFAX3  &H1000
+#define TIFF_CCITTFAX4  &H2000
+#define TIFF_LZW  &H4000
+#define WBMP_DEFAULT  0
+#define XBM_DEFAULT  0
+#define XPM_DEFAULT  0
 
 Enum FREE_IMAGE_FORMAT
 	FIF_UNKNOWN = -1

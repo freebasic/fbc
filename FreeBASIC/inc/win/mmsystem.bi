@@ -20,193 +20,193 @@
 '| REQUIRED CONSTANTS |
 '----------------------
 
-const MM_JOY1MOVE = &h3A0
-const MM_JOY2MOVE = &h3A1
-const MM_JOY1ZMOVE = &h3A2
-const MM_JOY2ZMOVE = &h3A3
-const MM_JOY1BUTTONDOWN = &h3B5
-const MM_JOY2BUTTONDOWN = &h3B6
-const MM_JOY1BUTTONUP = &h3B7
-const MM_JOY2BUTTONUP = &h3B8
-const MM_MCINOTIFY = &h3B9
-const MM_WOM_OPEN = &h3BB
-const MM_WOM_CLOSE = &h3BC
-const MM_WOM_DONE = &h3BD
-const MM_WIM_OPEN = &h3BE
-const MM_WIM_CLOSE = &h3BF
-const MM_WIM_DATA = &h3C0
-const MM_MIM_OPEN = &h3C1
-const MM_MIM_CLOSE = &h3C2
-const MM_MIM_DATA = &h3C3
-const MM_MIM_LONGDATA = &h3C4
-const MM_MIM_ERROR = &h3C5
-const MM_MIM_LONGERROR = &h3C6
-const MM_MOM_OPEN = &h3C7
-const MM_MOM_CLOSE = &h3C8
-const MM_MOM_DONE = &h3C9
-const MM_DRVM_OPEN = &h3D0
-const MM_DRVM_CLOSE = &h3D1
-const MM_DRVM_DATA = &h3D2
-const MM_DRVM_ERROR = &h3D3
-const MM_STREAM_OPEN = &h3D4
-const MM_STREAM_CLOSE = &h3D5
-const MM_STREAM_DONE = &h3D6
-const MM_STREAM_ERROR = &h3D7
-const MM_MOM_POSITIONCB = &h3CA
-const MM_MCISIGNAL = &h3CB
-const MM_MIM_MOREDATA = &h3CC
-const MM_MIXM_LINE_CHANGE = &h3D0
-const MM_MIXM_CONTROL_CHANGE = &h3D1
-const MMSYSERR_BASE = 0
-const WAVERR_BASE = 32
-const MIDIERR_BASE = 64
-const TIMERR_BASE = 96
-const JOYERR_BASE = 160
-const MCIERR_BASE = 256
-const MIXERR_BASE = 1024
-const MCI_STRING_OFFSET = 512
-const MCI_VD_OFFSET = 1024
-const MCI_CD_OFFSET = 1088
-const MCI_WAVE_OFFSET = 1152
-const MCI_SEQ_OFFSET = 1216
+#define MM_JOY1MOVE  &h3A0
+#define MM_JOY2MOVE  &h3A1
+#define MM_JOY1ZMOVE  &h3A2
+#define MM_JOY2ZMOVE  &h3A3
+#define MM_JOY1BUTTONDOWN  &h3B5
+#define MM_JOY2BUTTONDOWN  &h3B6
+#define MM_JOY1BUTTONUP  &h3B7
+#define MM_JOY2BUTTONUP  &h3B8
+#define MM_MCINOTIFY  &h3B9
+#define MM_WOM_OPEN  &h3BB
+#define MM_WOM_CLOSE  &h3BC
+#define MM_WOM_DONE  &h3BD
+#define MM_WIM_OPEN  &h3BE
+#define MM_WIM_CLOSE  &h3BF
+#define MM_WIM_DATA  &h3C0
+#define MM_MIM_OPEN  &h3C1
+#define MM_MIM_CLOSE  &h3C2
+#define MM_MIM_DATA  &h3C3
+#define MM_MIM_LONGDATA  &h3C4
+#define MM_MIM_ERROR  &h3C5
+#define MM_MIM_LONGERROR  &h3C6
+#define MM_MOM_OPEN  &h3C7
+#define MM_MOM_CLOSE  &h3C8
+#define MM_MOM_DONE  &h3C9
+#define MM_DRVM_OPEN  &h3D0
+#define MM_DRVM_CLOSE  &h3D1
+#define MM_DRVM_DATA  &h3D2
+#define MM_DRVM_ERROR  &h3D3
+#define MM_STREAM_OPEN  &h3D4
+#define MM_STREAM_CLOSE  &h3D5
+#define MM_STREAM_DONE  &h3D6
+#define MM_STREAM_ERROR  &h3D7
+#define MM_MOM_POSITIONCB  &h3CA
+#define MM_MCISIGNAL  &h3CB
+#define MM_MIM_MOREDATA  &h3CC
+#define MM_MIXM_LINE_CHANGE  &h3D0
+#define MM_MIXM_CONTROL_CHANGE  &h3D1
+#define MMSYSERR_BASE  0
+#define WAVERR_BASE  32
+#define MIDIERR_BASE  64
+#define TIMERR_BASE  96
+#define JOYERR_BASE  160
+#define MCIERR_BASE  256
+#define MIXERR_BASE  1024
+#define MCI_STRING_OFFSET  512
+#define MCI_VD_OFFSET  1024
+#define MCI_CD_OFFSET  1088
+#define MCI_WAVE_OFFSET  1152
+#define MCI_SEQ_OFFSET  1216
 
-Const MMSYSERR_ALLOCATED    = (MMSYSERR_BASE + 4)  ' device already allocated
-Const MMSYSERR_BADDEVICEID  = (MMSYSERR_BASE + 2)  ' device ID out of range
-Const MMSYSERR_BADERRNUM    = (MMSYSERR_BASE + 9)  ' error value out of range
-Const MMSYSERR_ERROR        = (MMSYSERR_BASE + 1)  ' unspecified error
-Const MMSYSERR_HANDLEBUSY   = (MMSYSERR_BASE + 12) ' handle being used
-Const MMSYSERR_INVALFLAG    = (MMSYSERR_BASE + 10) ' invalid flag passed
-Const MMSYSERR_INVALHANDLE  = (MMSYSERR_BASE + 5)  ' device handle is invalid
-Const MMSYSERR_INVALIDALIAS = (MMSYSERR_BASE + 13) ' "Specified alias not found in WIN.INI
-Const MMSYSERR_INVALPARAM   = (MMSYSERR_BASE + 11) ' invalid parameter passed
-Const MMSYSERR_LASTERROR    = (MMSYSERR_BASE + 13) ' last error in range
-Const MMSYSERR_NODRIVER     = (MMSYSERR_BASE + 6)  ' no device driver present
-Const MMSYSERR_NOERROR      = 0                    ' no error
-Const MMSYSERR_NOMEM        = (MMSYSERR_BASE + 7)  ' memory allocation error
-Const MMSYSERR_NOTENABLED   = (MMSYSERR_BASE + 3)  ' driver failed enable
-Const MMSYSERR_NOTSUPPORTED = (MMSYSERR_BASE + 8)  ' function isn't supported
+#define MMSYSERR_ALLOCATED  (MMSYSERR_BASE + 4)  ' device already allocated
+#define MMSYSERR_BADDEVICEID  (MMSYSERR_BASE + 2)  ' device ID out of range
+#define MMSYSERR_BADERRNUM  (MMSYSERR_BASE + 9)  ' error value out of range
+#define MMSYSERR_ERROR  (MMSYSERR_BASE + 1)  ' unspecified error
+#define MMSYSERR_HANDLEBUSY  (MMSYSERR_BASE + 12) ' handle being used
+#define MMSYSERR_INVALFLAG  (MMSYSERR_BASE + 10) ' invalid flag passed
+#define MMSYSERR_INVALHANDLE  (MMSYSERR_BASE + 5)  ' device handle is invalid
+#define MMSYSERR_INVALIDALIAS  (MMSYSERR_BASE + 13) ' "Specified alias not found in WIN.INI
+#define MMSYSERR_INVALPARAM  (MMSYSERR_BASE + 11) ' invalid parameter passed
+#define MMSYSERR_LASTERROR  (MMSYSERR_BASE + 13) ' last error in range
+#define MMSYSERR_NODRIVER  (MMSYSERR_BASE + 6)  ' no device driver present
+#define MMSYSERR_NOERROR  0                    ' no error
+#define MMSYSERR_NOMEM  (MMSYSERR_BASE + 7)  ' memory allocation error
+#define MMSYSERR_NOTENABLED  (MMSYSERR_BASE + 3)  ' driver failed enable
+#define MMSYSERR_NOTSUPPORTED  (MMSYSERR_BASE + 8)  ' function isn't supported
 
-Const MAXPNAMELEN = 32 ' max product name length (including NULL)
+#define MAXPNAMELEN  32 ' max product name length (including NULL)
 
-const DRV_LOAD = 1
-const DRV_ENABLE = 2
-const DRV_OPEN = 3
-const DRV_CLOSE = 4
-const DRV_DISABLE = 5
-const DRV_FREE = 6
-const DRV_CONFIGURE = 7
-const DRV_QUERYCONFIGURE = 8
-const DRV_INSTALL = 9
-const DRV_REMOVE = 10
-const DRV_EXITSESSION = 11
-const DRV_POWER = 15
-const DRV_RESERVED = &h800
-const DRV_USER = &h4000
-const DRVCNF_CANCEL = 0
-const DRVCNF_OK = 1
-const DRVCNF_RESTART = 2
-const DRV_CANCEL = DRVCNF_CANCEL
-const DRV_OK = DRVCNF_OK
-const DRV_RESTART = DRVCNF_RESTART
-const DRV_MCI_FIRST = DRV_RESERVED
-const DRV_MCI_LAST = (DRV_RESERVED+&hFFF)
-const CALLBACK_TYPEMASK = &h70000
-const CALLBACK_NULL = 0
-const CALLBACK_WINDOW = &h10000
-const CALLBACK_TASK = &h20000
-const CALLBACK_FUNCTION = &h30000
-const CALLBACK_THREAD = CALLBACK_TASK
-const CALLBACK_EVENT = &h50000
-const SND_SYNC = 0
-const SND_ASYNC = 1
-const SND_NODEFAULT = 2
-const SND_MEMORY = 4
-const SND_LOOP = 8
-const SND_NOSTOP = 16
-const SND_NOWAIT	= &h2000
-const SND_ALIAS = &h10000
-const SND_ALIAS_ID	= &h110000
-const SND_FILENAME = &h20000
-const SND_RESOURCE = &h40004
-const SND_PURGE = &h40
-const SND_APPLICATION = &h80
+#define DRV_LOAD  1
+#define DRV_ENABLE  2
+#define DRV_OPEN  3
+#define DRV_CLOSE  4
+#define DRV_DISABLE  5
+#define DRV_FREE  6
+#define DRV_CONFIGURE  7
+#define DRV_QUERYCONFIGURE  8
+#define DRV_INSTALL  9
+#define DRV_REMOVE  10
+#define DRV_EXITSESSION  11
+#define DRV_POWER  15
+#define DRV_RESERVED  &h800
+#define DRV_USER  &h4000
+#define DRVCNF_CANCEL  0
+#define DRVCNF_OK  1
+#define DRVCNF_RESTART  2
+#define DRV_CANCEL  DRVCNF_CANCEL
+#define DRV_OK  DRVCNF_OK
+#define DRV_RESTART  DRVCNF_RESTART
+#define DRV_MCI_FIRST  DRV_RESERVED
+#define DRV_MCI_LAST  (DRV_RESERVED+&hFFF)
+#define CALLBACK_TYPEMASK  &h70000
+#define CALLBACK_NULL  0
+#define CALLBACK_WINDOW  &h10000
+#define CALLBACK_TASK  &h20000
+#define CALLBACK_FUNCTION  &h30000
+#define CALLBACK_THREAD  CALLBACK_TASK
+#define CALLBACK_EVENT  &h50000
+#define SND_SYNC  0
+#define SND_ASYNC  1
+#define SND_NODEFAULT  2
+#define SND_MEMORY  4
+#define SND_LOOP  8
+#define SND_NOSTOP  16
+#define SND_NOWAIT  &h2000
+#define SND_ALIAS  &h10000
+#define SND_ALIAS_ID  &h110000
+#define SND_FILENAME  &h20000
+#define SND_RESOURCE  &h40004
+#define SND_PURGE  &h40
+#define SND_APPLICATION  &h80
 
-Const JOYERR_NOCANDO   = (JOYERR_BASE + 6) ' request not completed
-Const JOYERR_NOERROR   = 0                 ' no error
-Const JOYERR_PARMS     = (JOYERR_BASE + 5) ' bad parameters
-Const JOYERR_UNPLUGGED = (JOYERR_BASE + 7) ' joystick is unplugged
-Const JOYSTICKID1      = 0
-Const JOYSTICKID2      = 1
+#define JOYERR_NOCANDO  (JOYERR_BASE + 6) ' request not completed
+#define JOYERR_NOERROR  0                 ' no error
+#define JOYERR_PARMS  (JOYERR_BASE + 5) ' bad parameters
+#define JOYERR_UNPLUGGED  (JOYERR_BASE + 7) ' joystick is unplugged
+#define JOYSTICKID1  0
+#define JOYSTICKID2  1
 
 
-Const JOY_BUTTON1CHG     = &H100
-Const JOY_BUTTON2CHG     = &H200
-Const JOY_BUTTON3CHG     = &H400
-Const JOY_BUTTON4CHG     = &H800
-Const JOY_BUTTON1        = &H1
-Const JOY_BUTTON2        = &H2
-Const JOY_BUTTON3        = &H4
-Const JOY_BUTTON4        = &H8
-Const JOY_BUTTON5        = &H10&
-Const JOY_BUTTON6        = &H20&
-Const JOY_BUTTON7        = &H40&
-Const JOY_BUTTON8        = &H80&
-Const JOY_BUTTON9        = &H100&
-Const JOY_BUTTON10       = &H200&
-Const JOY_BUTTON11       = &H400&
-Const JOY_BUTTON12       = &H800&
-Const JOY_BUTTON13       = &H1000&
-Const JOY_BUTTON14       = &H2000&
-Const JOY_BUTTON15       = &H4000&
-Const JOY_BUTTON16       = &H8000&
-Const JOY_BUTTON17       = &H10000
-Const JOY_BUTTON18       = &H20000
-Const JOY_BUTTON19       = &H40000
-Const JOY_BUTTON20       = &H80000
-Const JOY_BUTTON21       = &H100000
-Const JOY_BUTTON22       = &H200000
-Const JOY_BUTTON23       = &H400000
-Const JOY_BUTTON24       = &H800000
-Const JOY_BUTTON25       = &H1000000
-Const JOY_BUTTON26       = &H2000000
-Const JOY_BUTTON27       = &H4000000
-Const JOY_BUTTON28       = &H8000000
-Const JOY_BUTTON29       = &H10000000
-Const JOY_BUTTON30       = &H20000000
-Const JOY_BUTTON31       = &H40000000
-Const JOY_BUTTON32       = &H80000000
-Const JOY_POVBACKWARD    = 18000
-Const JOY_POVCENTERED    = -1
-Const JOY_POVFORWARD     = 0
-Const JOY_POVLEFT        = 27000
-Const JOY_POVRIGHT       = 9000
-Const JOY_CAL_READ3      = &H40000
-Const JOY_CAL_READ4      = &H80000
-Const JOY_CAL_READ5      = &H400000
-Const JOY_CAL_READ6      = &H800000
-Const JOY_CAL_READALWAYS = &H10000
-Const JOY_CAL_READRONLY  = &H2000000
-Const JOY_CAL_READUONLY  = &H4000000
-Const JOY_CAL_READVONLY  = &H8000000
-Const JOY_CAL_READXONLY  = &H100000
-Const JOY_CAL_READXYONLY = &H20000
-Const JOY_CAL_READYONLY  = &H200000
-Const JOY_CAL_READZONLY  = &H1000000
-Const JOY_RETURNBUTTONS  = &H80&
-Const JOY_RETURNCENTERED = &H400&
-Const JOY_RETURNPOV      = &H40&
-Const JOY_RETURNPOVCTS   = &H200&
-Const JOY_RETURNR        = &H8&
-Const JOY_RETURNU        = &H10 ' axis 5
-Const JOY_RETURNV        = &H20 ' axis 6
-Const JOY_RETURNX        = &H1&
-Const JOY_RETURNY        = &H2&
-Const JOY_RETURNZ        = &H4&
-Const JOY_USEDEADZONE    = &H800&
-Const JOY_RETURNALL      = (JOY_RETURNX Or JOY_RETURNY Or JOY_RETURNZ Or JOY_RETURNR Or JOY_RETURNU Or JOY_RETURNV Or JOY_RETURNPOV Or JOY_RETURNBUTTONS)
+#define JOY_BUTTON1CHG  &H100
+#define JOY_BUTTON2CHG  &H200
+#define JOY_BUTTON3CHG  &H400
+#define JOY_BUTTON4CHG  &H800
+#define JOY_BUTTON1  &H1
+#define JOY_BUTTON2  &H2
+#define JOY_BUTTON3  &H4
+#define JOY_BUTTON4  &H8
+#define JOY_BUTTON5  &H10&
+#define JOY_BUTTON6  &H20&
+#define JOY_BUTTON7  &H40&
+#define JOY_BUTTON8  &H80&
+#define JOY_BUTTON9  &H100&
+#define JOY_BUTTON10  &H200&
+#define JOY_BUTTON11  &H400&
+#define JOY_BUTTON12  &H800&
+#define JOY_BUTTON13  &H1000&
+#define JOY_BUTTON14  &H2000&
+#define JOY_BUTTON15  &H4000&
+#define JOY_BUTTON16  &H8000&
+#define JOY_BUTTON17  &H10000
+#define JOY_BUTTON18  &H20000
+#define JOY_BUTTON19  &H40000
+#define JOY_BUTTON20  &H80000
+#define JOY_BUTTON21  &H100000
+#define JOY_BUTTON22  &H200000
+#define JOY_BUTTON23  &H400000
+#define JOY_BUTTON24  &H800000
+#define JOY_BUTTON25  &H1000000
+#define JOY_BUTTON26  &H2000000
+#define JOY_BUTTON27  &H4000000
+#define JOY_BUTTON28  &H8000000
+#define JOY_BUTTON29  &H10000000
+#define JOY_BUTTON30  &H20000000
+#define JOY_BUTTON31  &H40000000
+#define JOY_BUTTON32  &H80000000
+#define JOY_POVBACKWARD  18000
+#define JOY_POVCENTERED  -1
+#define JOY_POVFORWARD  0
+#define JOY_POVLEFT  27000
+#define JOY_POVRIGHT  9000
+#define JOY_CAL_READ3  &H40000
+#define JOY_CAL_READ4  &H80000
+#define JOY_CAL_READ5  &H400000
+#define JOY_CAL_READ6  &H800000
+#define JOY_CAL_READALWAYS  &H10000
+#define JOY_CAL_READRONLY  &H2000000
+#define JOY_CAL_READUONLY  &H4000000
+#define JOY_CAL_READVONLY  &H8000000
+#define JOY_CAL_READXONLY  &H100000
+#define JOY_CAL_READXYONLY  &H20000
+#define JOY_CAL_READYONLY  &H200000
+#define JOY_CAL_READZONLY  &H1000000
+#define JOY_RETURNBUTTONS  &H80&
+#define JOY_RETURNCENTERED  &H400&
+#define JOY_RETURNPOV  &H40&
+#define JOY_RETURNPOVCTS  &H200&
+#define JOY_RETURNR  &H8&
+#define JOY_RETURNU  &H10 ' axis 5
+#define JOY_RETURNV  &H20 ' axis 6
+#define JOY_RETURNX  &H1&
+#define JOY_RETURNY  &H2&
+#define JOY_RETURNZ  &H4&
+#define JOY_USEDEADZONE  &H800&
+#define JOY_RETURNALL  (JOY_RETURNX Or JOY_RETURNY Or JOY_RETURNZ Or JOY_RETURNR Or JOY_RETURNU Or JOY_RETURNV Or JOY_RETURNPOV Or JOY_RETURNBUTTONS)
 
-Const MIXER_SHORT_NAME_CHARS = 16&
-Const MIXER_LONG_NAME_CHARS  = 64&
+#define MIXER_SHORT_NAME_CHARS  16&
+#define MIXER_LONG_NAME_CHARS  64&
 
 '------------------
 '| REQUIRED TYPES |

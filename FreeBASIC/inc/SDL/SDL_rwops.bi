@@ -23,9 +23,11 @@ end type
 #define FILE_DEFINED_
 #endif
 
+#ifndef SEEK_SET
+#define SEEK_SET 0
 #define SEEK_CUR 1
 #define SEEK_END 2
-#define SEEK_SET 0
+#endif
 
 type stdio
    autoclose as integer
