@@ -347,9 +347,6 @@
 * Unsupported (won't be implemented unless someone else does that...)       *
 *****************************************************************************
 
-  BLOAD Statement
-  BSAVE Statement
-
   CALL ABSOLUTE Stmt    (reason: use inline ASM instead, much easier)
   COM Statement         (reason: user mode apps can't access IO ports directly)
   CALL INTERRUPT Stmt   (reason: services are not the same; not needed with shared libs)
