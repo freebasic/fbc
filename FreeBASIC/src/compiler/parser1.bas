@@ -889,7 +889,7 @@ function cTypeLine as integer
 	case FB.TK.END
 		'' isn't it a field called "end"?
 		select case lexLookAhead( 1 )
-		case FB.TK.AS, CHAR_LPRNT
+		case FB.TK.AS, CHAR_LPRNT, CHAR_COLON
 			goto declfield
 
 		case else
@@ -922,7 +922,7 @@ function cTypeLine as integer
 	case FB.TK.UNION
 		'' isn't it a field called UNION?
 		select case lexLookAhead( 1 )
-		case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			if( env.typectx.isunion ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
@@ -941,7 +941,7 @@ function cTypeLine as integer
 	case FB.TK.TYPE
 		'' isn't it a field called TYPE?
 		select case lexLookAhead( 1 )
-		case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			if( not env.typectx.isunion ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
@@ -960,7 +960,7 @@ function cTypeLine as integer
 	case FB.TK.AS
 		'' isn't it a field called "as"?
 		select case lexLookAhead( 1 )
-		case FB.TK.AS, CHAR_LPRNT
+		case FB.TK.AS, CHAR_LPRNT, CHAR_COLON
 			goto declfield
 		end select
 
