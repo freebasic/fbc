@@ -62,8 +62,6 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 {
 	void *proc = NULL;
-	char procname[1024];
-	int i;
 
 	if( library == NULL )
 		library = dlopen( NULL, RTLD_LAZY );
