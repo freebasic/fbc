@@ -73,11 +73,11 @@ static int gdi_init(void)
 		return -1;
 	
 	rect.left = rect.top = 0;
-	rect.right = fb_win32.w - 1;
-	rect.bottom = fb_win32.h - 1;
+	rect.right = fb_win32.w;
+	rect.bottom = fb_win32.h;
 	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
-	rect.right -= (rect.left + 1);
-	rect.bottom -= (rect.top + 1);
+	rect.right -= rect.left;
+	rect.bottom -= rect.top;
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
 			   (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX) | WS_VISIBLE,
 			   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
