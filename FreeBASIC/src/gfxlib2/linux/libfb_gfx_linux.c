@@ -439,9 +439,9 @@ void fb_hX11SetPalette(int index, int r, int g, int b)
 /*:::::*/
 void fb_hX11WaitVSync(void)
 {
-	fb_hX11Lock();
+	pthread_mutex_lock(&mutex);
 	pthread_cond_wait(&cond, &mutex);
-	fb_hX11Unlock();
+	pthread_mutex_unlock(&mutex);
 }
 
 
