@@ -42,7 +42,7 @@ endif
 ifeq ($(osdeppath),linux)
     EXE :=
     LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
-    LDLIBS := -L../../lib -\( -lc -lm -lfb -\)
+    LDLIBS := -L../../lib -\( -lc -lm -lfb -lpthread -\)
     BC := ../../fbc
     BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
     LD := ld
