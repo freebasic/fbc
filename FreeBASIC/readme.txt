@@ -351,11 +351,8 @@ Credits (in alphabetic order):
 
 Greetings:
 
-  o Blitz: The first to see the compiler when it was just a toy (delete the sources!).
-    Helped pointing me out the right paths to follow in order to generate better code.
-    Helped finding tons of bugs and wrote the first real apps.
-
-  o Marzec: Loads of tests, besides giving many ideas.
+  o Plasma: freebasic.net domain register and since mar/2005 hosts the main site too,
+    many thanks to him.
 
   o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch of
     kangaroos in the middle time.
@@ -366,11 +363,14 @@ Greetings:
 
   o Rel: Best beta tester ever, found loads of bugs.
 
-  o Plasma: Wrote the first FB demos for fmod and BASS. Also the register of the freebasic.net
-    domain.
-
   o Wildcard: Created the biggest FB forum and helped making FB known even before it was
     released.
+
+  o Blitz: The first to see the compiler when it was just a toy (delete the sources!).
+    Helped pointing me out the right paths to follow in order to generate better code.
+    Helped finding tons of bugs and wrote the first real apps.
+
+  o Marzec: Loads of tests, besides giving many ideas.
 
   o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of bugs found.
 
@@ -383,7 +383,9 @@ Greetings:
 
 Links:
 
-  o Official site: http://fbc.sourceforge.net/ (or http://www.sourceforge.net/projects/fbc)
+  o Official site: http://www.freebasic.net/ or 
+                   http://fbc.sourceforge.net/ or 
+                   http://www.sourceforge.net/projects/fbc
 
   o IRC channel: irc://irc.freenode.net/freeBASIC
 
