@@ -334,6 +334,7 @@ enum FBTK_ENUM
 	FB.TK.STRPTR
 	FB.TK.WITH
 	FB.TK.EXPORT
+	FB.TK.LIBPATH
 end enum
 
 '' single char tokens

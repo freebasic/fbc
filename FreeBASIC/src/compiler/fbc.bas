@@ -1075,10 +1075,9 @@ function listFiles as integer
 
 			'' library paths
 			case "p"
-				if( len( argv(i+1) ) = 0 ) then
+				if( not fbAddLibPath( argv(i+1) ) ) then
 					exit function
 				end if
-				fbAddLibPath( argv(i+1) )
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1237,9 +1236,18 @@ end function
 #endif
 
 '':::::
-public sub fbAddLibPath ( path as string )
+public function fbAddLibPath ( path as string ) as integer
+	fbAddLibPath = FALSE
+	
+	if( ( len( path ) = 0 ) or ( ctx.pths = FB_MAXARGS-1 ) ) then
+		exit function
+	end if
+	
 	pthlist(ctx.pths) = path
 	ctx.pths = ctx.pths + 1
-end sub
+	
+	fbAddLibPath = TRUE
+	
+end function
 
 

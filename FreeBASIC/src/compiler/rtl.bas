@@ -3112,11 +3112,13 @@ end sub
 
 #ifdef AUTOADDGFXLIBS
 private sub hAddGfxLibs
+	dim temp as integer
+	
 	symbAddLib( "fbgfx" )
 #ifdef TARGET_WIN32
 	symbAddLib( "user32" )
 #elseif defined(TARGET_LINUX)
-	fbAddLibPath( "/usr/X11R6/lib" )
+	temp = fbAddLibPath( "/usr/X11R6/lib" )
 	symbAddLib( "X11" )
 	symbAddLib( "Xext" )
 	symbAddLib( "pthread" )

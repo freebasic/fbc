@@ -257,8 +257,9 @@ data "EXTERN"	, FB.TK.EXTERN		, FB.TKCLASS.KEYWORD
 data "STRPTR"	, FB.TK.STRPTR		, FB.TKCLASS.KEYWORD
 data "WITH"		, FB.TK.WITH		, FB.TKCLASS.KEYWORD
 data "EXPORT"	, FB.TK.EXPORT		, FB.TKCLASS.KEYWORD
+data "LIBPATH"	, FB.TK.LIBPATH		, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 164
+const FB.MAXKEYWORDS 		= 165
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

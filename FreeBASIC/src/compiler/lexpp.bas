@@ -91,7 +91,8 @@ end function
 ''               |   '#'ENDIF
 ''               |   '#'PRINT LITERAL*
 ''				 |   '#'INCLUDE ONCE? LIT_STR
-''				 |   '#'INCLIB LIT_STR .
+''				 |   '#'INCLIB LIT_STR
+''				 |	 '#'LIBPATH LIT_STR .
 ''
 function lexPreProcessor as integer
 	dim id as string
@@ -173,7 +174,17 @@ function lexPreProcessor as integer
 		if( symbAddLib( hUnescapeStr( lexEatToken ) ) <> NULL ) then
 			lexPreProcessor = TRUE
 		end if
-
+	
+	'' LIBPATH LIT_STR
+	case FB.TK.LIBPATH
+		lexSkipToken
+		
+		if( not fbAddLibPath( hUnescapeStr( lexEatToken ) ) ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		end if
+		lexPreProcessor = TRUE
+		
 	case else
 		hReportError FB.ERRMSG.SYNTAXERROR
 		exit function
