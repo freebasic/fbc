@@ -1,3 +1,18 @@
+Version 0.12 Beta:
+
+[added] "operator =" shortcut, as in "a += b * c" (v1ctor)
+[added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
+        faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
+[added] "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
+[fixed] ACCESS clause was not being checked with OPEN (v1c)
+[fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
+[fixed] local labels not found weren't being reported (v1c)
+[fixed] LEN() now accepts PTR's when used with ENUM's and UDT's (v1c)
+[fixed] ERASE should accept multiple arguments (v1c)
+[fixed] DATA should not be allowed inside procs (v1c)
+[fixed] invalid types in CASE statements were not been reported (v1c)
+
+
 Version 0.11 Beta:
 
 [chged] the internal GFX library is now the former alternative one written by lillo, many thanks to Sterling
