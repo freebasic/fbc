@@ -326,7 +326,7 @@ function cGfxCircle as integer
             		if( not cExpression( aspexpr ) ) then
             			aspexpr = INVALID
             		end if
-            		
+
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
             			if( ucase$( lexTokenText ) <> "F" ) then
@@ -357,7 +357,7 @@ end function
 function cGfxPaint as integer
     dim xexpr as integer, yexpr as integer, pexpr as integer, bexpr as integer
 	dim coord_type as integer
-	
+
 	cGfxPaint = FALSE
 
 	'' STEP?
@@ -372,36 +372,36 @@ function cGfxPaint as integer
 		hReportError FB.ERRMSG.EXPECTEDLPRNT
 		exit function
 	end if
-	
+
 	if( not cExpression( xexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	if( not hMatch( CHAR_COMMA ) ) then
 		hReportError FB.ERRMSG.EXPECTEDCOMMA
 		exit function
 	end if
-	
+
 	if( not cExpression( yexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	if( not hMatch( CHAR_RPRNT ) ) then
 		hReportError FB.ERRMSG.EXPECTEDRPRNT
 		exit function
 	end if
-	
+
 	pexpr = INVALID
 	bexpr = INVALID
-	
+
 	'' color/pattern
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( pexpr ) ) then
 			pexpr = INVALID
 		end if
-		
+
 		'' background color
 		if( hMatch( CHAR_COMMA ) ) then
 			if( not cExpression( bexpr ) ) then
@@ -410,17 +410,17 @@ function cGfxPaint as integer
 			end if
 		end if
 	end if
-	
+
 	if( pexpr = INVALID ) then
 		pexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
-	
+
 	if( bexpr = INVALID ) then
 		bexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
-	
+
 	rtlGfxPaint xexpr, yexpr, pexpr, bexpr, coord_type
-	
+
 	cGfxPaint = TRUE
 
 end function
@@ -546,7 +546,7 @@ function cGfxPalette as integer
 
 	if( hMatch( FB.TK.USING ) ) then
 
-		if( not cVariable( arrayexpr ) ) then
+		if( not cVarOrDeref( arrayexpr ) ) then
             hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
             exit function
         end if
@@ -638,7 +638,7 @@ function cGfxPut as integer
 		exit function
 	end if
 
-	if( not cVariable( arrayexpr ) ) then
+	if( not cVarOrDeref( arrayexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -658,11 +658,11 @@ function cGfxPut as integer
 	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
 		select case lexCurrentToken
-		
+
 		case FB.TK.PSET
 			lexSkipToken
 			mode = FBGFX_PUTMODE_PSET
-		
+
 		case FB.TK.PRESET
 			lexSkipToken
 			mode = FBGFX_PUTMODE_PRESET
@@ -674,11 +674,11 @@ function cGfxPut as integer
 		case FB.TK.OR
 			lexSkipToken
 			mode = FBGFX_PUTMODE_OR
-			
+
 		case FB.TK.XOR
 			lexSkipToken
 			mode = FBGFX_PUTMODE_XOR
-			
+
 		case else
 			if (ucase$( lexTokenText ) = "TRANS") then
 				lexSkipToken
@@ -793,7 +793,7 @@ function cGfxGet as integer
 		exit function
 	end if
 
-	if( not cVariable( arrayexpr ) ) then
+	if( not cVarOrDeref( arrayexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 		exit function
 	end if
@@ -839,14 +839,14 @@ function cGfxScreen as integer
 			hexpr = INVALID
 		end if
 	end if
-	
+
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( dexpr ) ) then
 			dexpr = INVALID
 		end if
 	end if
-	
+
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( fexpr ) ) then
@@ -878,11 +878,11 @@ function cGfxStmt as integer
 	case FB.TK.CIRCLE
 		lexSkipToken
 		cGfxStmt = cGfxCircle
-	
+
 	case FB.TK.PAINT
 		lexSkipToken
 		cGfxStmt = cGfxPaint
-	
+
 	case FB.TK.VIEW
 		lexSkipToken
 		cGfxStmt = cGfxView( TRUE )

@@ -757,7 +757,7 @@ sub printOptions
 	print "-c", "Compile only, do not link"
 	print "-d <name=val>", "Add a preprocessor's define"
 #ifndef TARGET_DOS
-	print "-dll", "same as -dylib"
+	print "-dll", "Same as -dylib"
 #endif
 #ifdef TARGET_WIN32
 	print "-dylib", "Create a DLL, including the import library"
@@ -774,7 +774,7 @@ sub printOptions
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
 	print "-nodeflibs", "Do not include the default libraries"
 #ifdef TARGET_WIN32
-	'''''print "-nostd", "treat stdcall calling convention as cdecl"
+	'''''print "-nostd", "Treat stdcall calling convention as cdecl"
 #endif
 	print "-o <name>", "Set output name (in the same number as source files)"
 	print "-p <name>", "Add a path to search for libraries"
@@ -1020,12 +1020,6 @@ function getFileExt( fname as string ) as string
 end function
 
 '':::::
-public sub fbAddLibPath ( path as string )
-	pthlist(ctx.pths) = path
-	ctx.pths = ctx.pths + 1
-end sub
-
-'':::::
 function listFiles as integer
     dim i as integer
 
@@ -1239,4 +1233,13 @@ function makeMain ( main_obj as string ) as integer
     makeMain = TRUE
 
 end function
+
 #endif
+
+'':::::
+public sub fbAddLibPath ( path as string )
+	pthlist(ctx.pths) = path
+	ctx.pths = ctx.pths + 1
+end sub
+
+

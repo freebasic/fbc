@@ -909,7 +909,7 @@ data "setenviron","fb_SetEnviron", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 				       			   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' sleep ( byval msecs as integer ) as void
-data "sleep","fb_Sleep", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
+data "sleep","fb_Sleep", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
 					     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE, -1
 
 '' reset ( ) as void
@@ -1075,11 +1075,11 @@ end sub
 
 '':::::
 function hGetFixStrLen( byval expr as integer ) as integer
-	dim s as FBSYMBOL ptr, e as FBTYPELEMENT ptr
+	dim s as FBSYMBOL ptr, e as FBSYMBOL ptr
 
 	e = astGetUDTElm( expr )
 	if( e <> NULL ) then
-		hGetFixStrLen = symbGetUDTElmLen( e ) - 1
+		hGetFixStrLen = symbGetLen( e ) - 1
 	else
 		s = astGetSymbol( expr )
 		hGetFixStrLen = symbGetLen( s ) - 1
@@ -1526,7 +1526,7 @@ end sub
 
 '':::::
 sub rtlArrayClear( byval arrayexpr as integer ) static
-    dim e as FBTYPELEMENT ptr
+    dim e as FBSYMBOL ptr
     dim proc as integer, f as FBSYMBOL ptr
     dim isvarlen as integer, dtype as integer
     dim vr as integer
@@ -1543,7 +1543,7 @@ sub rtlArrayClear( byval arrayexpr as integer ) static
 	'' byval isvarlen as integer
 	e = astGetUDTElm( arrayexpr )
 	if( e <> NULL ) then
-		dtype = symbGetUDTElmType( e )
+		dtype = symbGetType( e )
 	else
 		dtype = symbGetType( astGetSymbol( arrayexpr ) )
 	end if
@@ -1657,14 +1657,14 @@ end sub
 function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMBOL ptr ) as integer
     dim proc as integer, f as FBSYMBOL ptr
     dim dtype as integer, t as integer
-    dim s as FBSYMBOL ptr, e as FBTYPELEMENT ptr
-    dim d as FBVARDIM ptr, l as integer, u as integer
+    dim s as FBSYMBOL ptr, e as FBSYMBOL ptr
+    dim d as FBVARDIM ptr
     dim dimensions as integer
 
 	s = astGetSymbol( arrayexpr )
 	e = astGetUDTElm( arrayexpr )
 
-	dimensions = symbGetUDTElmDimensions( e )
+	dimensions = symbGetArrayDimensions( e )
 
 	f = ifuncTB(FB.RTL.ARRAYALLOCTMPDESC)
     proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4+dimensions*2 )
@@ -1677,7 +1677,7 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMB
     astNewPARAM( proc, arrayexpr, IR.DATATYPE.VOID )
 
 	'' byval element_len as integer
-	t = astNewCONST( symbGetUDTElmLen( e ), IR.DATATYPE.INTEGER )
+	t = astNewCONST( symbGetLen( e ), IR.DATATYPE.INTEGER )
 	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
 
 	'' byval dimensions as integer
@@ -1685,15 +1685,15 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, byval pdesc as FBSYMB
 	astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
 
 	'' ...
-    d = symbGetFirstUDTElmDim( e )
+    d = symbGetArrayFirstDim( e )
     do while( d <> NULL )
-    	symbGetUDTElmDims e, d, l, u
-		t = astNewCONST( l, IR.DATATYPE.INTEGER )
+		t = astNewCONST( d->lower, IR.DATATYPE.INTEGER )
 		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
-		t = astNewCONST( u, IR.DATATYPE.INTEGER )
+		t = astNewCONST( d->upper, IR.DATATYPE.INTEGER )
 		astNewPARAM( proc, t, IR.DATATYPE.INTEGER )
 
-		d = symbGetNextUDTElmDim( e, d )
+		'' next
+		d = d->r
 	loop
 
 	rtlArrayAllocTmpDesc = proc
@@ -1973,7 +1973,7 @@ end function
 
 '':::::
 private function hCalcExprLen( byval expr as integer, byval realUDTsize as integer = TRUE ) as integer static
-	dim lgt as integer, elm as FBTYPELEMENT ptr
+	dim lgt as integer, elm as FBSYMBOL ptr
 
 	lgt = -1
 
@@ -1995,7 +1995,7 @@ private function hCalcExprLen( byval expr as integer, byval realUDTsize as integ
 		if( elm <> NULL ) then
 			'' if it's a type field that's also a type, no pad is ever added, then
 			'' readUDTsize is always true
-			lgt = symbGetUDTLen( symbGetUDTElmSubtype( elm ) )
+			lgt = symbGetUDTLen( symbGetSubtype( elm ) )
 		else
 			lgt = symbGetUDTLen( symbGetSubtype( astGetSymbol( expr ) ), realUDTsize )
 		end if

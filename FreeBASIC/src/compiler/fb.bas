@@ -147,6 +147,9 @@ private sub hSetCtx
 	env.procerrorhnd 	= NULL
 	env.withtextidx		= INVALID
 
+	env.prntcnt			= 0
+	env.prntopt			= FALSE
+
 	''
 	env.forstmt.endlabel	= NULL
 	env.forstmt.cmplabel	= NULL
@@ -308,6 +311,7 @@ end sub
 '':::::
 function fbCompile ( infname as string, outfname as string )
     dim res as integer, l as FBSYMBOL ptr
+	dim tmr as double
 
 	fbCompile = FALSE
 
@@ -331,12 +335,14 @@ function fbCompile ( infname as string, outfname as string )
 	end if
 
 	'' parse
+	tmr = timer
 	res = cProgram
+	tmr = timer - tmr
 
 	irFlush
 
 	'' save
-	emitClose
+	emitClose tmr
 
 	'' close src
 	close #env.inf
