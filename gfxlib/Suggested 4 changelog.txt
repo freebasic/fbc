@@ -1,5 +1,5 @@
 0.11b
- - Fixed GetKey and Sleep (GeyKey now waits for keypress)
+ - Fixed GetKey (now waits for keypress), which means Sleep works now
  - Screen QbScreenMode, FullScreenFlag
 (if third parameter is zero or omitted, second is interpretted as the fullScreenFlag)
  - Inkey$/Getkey in graphics modes now returns the same as in console for every key on my (US English) keyboard
