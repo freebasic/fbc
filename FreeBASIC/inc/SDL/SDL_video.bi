@@ -102,21 +102,21 @@ type SDL_blit as function (byval src as SDL_Surface ptr, byval srcrect as SDL_Re
 #define SDL_MUSTLOCK(surface) (surface->offset or ((surface->flags and (SDL_HWSURFACE or SDL_ASYNCBLIT or SDL_RLEACCEL)) <> 0))
 
 type SDL_VideoInfo
-	flagBits	As Uint16
-	unusedBits3 as Uint16
-	video_mem 	as Uint32
-	vfmt 		as SDL_PixelFormat ptr
+	hw_available:1	as Uint32
+	wm_available:1	as Uint32
+	UnusedBits1:6	as Uint32
+	UnusedBits2:1	as Uint32
+	blit_hw:1		as Uint32
+	blit_hw_CC:1	as Uint32
+	blit_hw_A:1		as Uint32
+	blit_sw:1		as Uint32
+	blit_sw_CC:1	as Uint32
+	blit_sw_A:1		as Uint32
+	blit_fill:1		as Uint32
+	UnusedBits3:16	as Uint32
+	video_mem 		as Uint32
+	vfmt 			as SDL_PixelFormat ptr
 end type
-
-#define SDL_HW_AVAILABLE &H00000001
-#define SDL_WM_AVAILABLE &H00000002
-#define SDL_BLIT_HW      &H00000200
-#define SDL_BLIT_HW_CC   &H00000400
-#define SDL_BLIT_HW_A    &H00000800
-#define SDL_BLIT_SW      &H00001000
-#define SDL_BLIT_SW_CC   &H00002000
-#define SDL_BLIT_SW_A    &H00004000
-#define SDL_BLIT_FILL    &H00008000
 
 #define SDL_YV12_OVERLAY &h32315659
 #define SDL_IYUV_OVERLAY &h56555949

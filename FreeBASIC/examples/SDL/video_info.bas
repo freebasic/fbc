@@ -22,15 +22,15 @@
 		
 		Print Using "VRAM: ###,### KB"; Video->video_mem
 
-		If ( Video->flagBits And SDL_HW_AVAILABLE ) Then Print "  + Hardware surfaces available"
-		If ( Video->flagBits And SDL_WM_AVAILABLE ) Then Print "  + Window manager available"
-		If ( Video->flagBits And SDL_BLIT_HW      ) Then Print "  + Hardware to hardware blits accelerated"
-		If ( Video->flagBits And SDL_BLIT_HW_CC   ) Then Print "  + Hardware to hardware colorkey blits accelerated"
-		If ( Video->flagBits And SDL_BLIT_HW_A    ) Then Print "  + Hardware to hardware alpha blits accelerated"
-		If ( Video->flagBits And SDL_BLIT_SW      ) Then Print "  + Software to hardware blits accelerated"
-		If ( Video->flagBits And SDL_BLIT_SW_CC   ) Then Print "  + Software to hardware colorkey blits accelerated"
-		If ( Video->flagBits And SDL_BLIT_SW_A    ) Then Print "  + Software to hardware alpha blits accelerated"
-		If ( Video->flagBits And SDL_BLIT_FILL    ) Then Print "  + Color fills accelerated"
+		If ( Video->hw_available ) Then Print "  + Hardware surfaces available"
+		If ( Video->wm_available ) Then Print "  + Window manager available"
+		If ( Video->blit_hw      ) Then Print "  + Hardware to hardware blits accelerated"
+		If ( Video->blit_hw_CC   ) Then Print "  + Hardware to hardware colorkey blits accelerated"
+		If ( Video->blit_hw_A    ) Then Print "  + Hardware to hardware alpha blits accelerated"
+		If ( Video->blit_sw      ) Then Print "  + Software to hardware blits accelerated"
+		If ( Video->blit_sw_CC   ) Then Print "  + Software to hardware colorkey blits accelerated"
+		If ( Video->blit_sw_A    ) Then Print "  + Software to hardware alpha blits accelerated"
+		If ( Video->blit_fill    ) Then Print "  + Color fills accelerated"
 
 	End If
 
