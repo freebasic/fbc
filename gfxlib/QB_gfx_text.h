@@ -46,9 +46,6 @@ FBCALL int fb_GfxSetFormat  (int tabStopDistance, int affectedByViewFlag,
 	   int fb_GfxPos        (void);
       void fb_GfxLocate     (int xOrRow, int yOrColumn, int cursor);
 
-FBCALL int fb_GfxScrollUp   (Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2,
-                                Uint16 scrollAmount, Uint32 fillColor);
-
 	  void fb_GfxPrintBuffer(char *str, int mask);
 
 #endif

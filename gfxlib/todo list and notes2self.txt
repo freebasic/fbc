@@ -1,6 +1,3 @@
-MAJOR: why is fb_GfxPrintBuffer doubling the newline?
-
-- fb_GfxPrintBuffer could probably be smaller
 - bc parameter on Color makes fb_GfxSetFontBg obsolete
 - what should floating point functions like pmap return for error?
 - what does locate get passed when a parameter is missing?
