@@ -197,22 +197,24 @@ static int fb_hUnreadChar( int c )
 /*:::::*/
 static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 {
-    int 	c, len, isquote;
+    int 	c, len, isquote, skipcomma;
     char    *p;
 
 	/* skip white spc */
-	while( (c = fb_hReadChar( )) != EOF )
-		if( (c != 32) && (c != 9) && (c != 10) && (c != 13) )
-		{
-			fb_hUnreadChar( c );
+	do
+	{
+		c = fb_hReadChar( );
+		if( c == EOF )
 			break;
-		}
+	} while( (c == 32) || (c == 9) || (c == 10) || (c == 13) );
 
 	/* */
 	isquote = 0;
 	p = buffer;
 	len = 0;
-	while( (c = fb_hReadChar( )) != EOF )
+	skipcomma = 0;
+	
+	while( c != EOF )
 	{
 		switch( c )
 		{
@@ -234,9 +236,12 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 			}
 			else
 			{
-				isquote = 0;
+				isquote = 0;				
 				if( isstring )
+				{
+					skipcomma = 1;
 					len = maxlen;				/* exit */
+				}
 			}
 
 			break;
@@ -267,12 +272,21 @@ savechar:
 			*p++ = (char)c;
 			++len;
 		}
-
+		
 		if( len >= maxlen )
 			break;
+			
+		c = fb_hReadChar( );
 	}
 
 	/* null term */
 	*p = '\0';
+
+	/* skip comma */
+	if( skipcomma )
+	{
+		while( (c != ',') && (c != 10) && (c != 13) && (c != EOF) )
+			c = fb_hReadChar( );
+	}
 
 }
