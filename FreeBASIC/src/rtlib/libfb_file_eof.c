@@ -45,7 +45,6 @@ FBCALL int fb_FileEof( int fnum )
 		case FB_FILE_MODE_BINARY:
 		case FB_FILE_MODE_RANDOM:
 		case FB_FILE_MODE_INPUT:
-		case FB_FILE_MODE_BINARYINPUT:
 			if( ftell( fb_fileTB[fnum-1].f ) >= fb_fileTB[fnum-1].size )
 	        	return FB_TRUE;
     	    else

@@ -130,6 +130,28 @@ FBCALL unsigned int fb_FileSize( int fnum )
 }
 
 /*:::::*/
+static void getaccessmask( char *dst, int type )
+{
+
+	switch( type )
+	{
+	case FB_FILE_ACCESS_READWRITE:
+		strcpy( dst, "r+b" );				/* w+ would erase the contents */
+		break;
+	case FB_FILE_ACCESS_WRITE:
+		strcpy( dst, "wb" );
+		break;
+	case FB_FILE_ACCESS_READ:
+		strcpy( dst, "rb" );
+		break;
+	default:
+		strcpy( dst, "r+b" );				/* w+ would erase the contents */
+		break;
+	}
+
+}
+
+/*:::::*/
 FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 						unsigned int lock, int fnum, int len )
 {
@@ -137,7 +159,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	FILE* f;
 	int str_len;
 	char *filename;
-	int type;
+	int type, accesstype;
 
 	/* init fb table if needed */
 	fb_hFileCtx( 1 );
@@ -161,8 +183,12 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 
 	/* check for special file names */
 	type = FB_FILE_TYPE_NORMAL;
-	if( strcmp( str->data, "CONS:" ) == 0 )
+	if( strcasecmp( str->data, "CONS:" ) == 0 )
 		type = FB_FILE_TYPE_CONSOLE;
+	else if( strcasecmp( str->data, "ERR:" ) == 0 )
+		type = FB_FILE_TYPE_ERR;
+
+	accesstype = (access != FB_FILE_ACCESS_ANY? access: FB_FILE_ACCESS_READWRITE);
 
 	if( type == FB_FILE_TYPE_NORMAL )
 	{
@@ -183,34 +209,43 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 
 		case FB_FILE_MODE_BINARY:
 		case FB_FILE_MODE_RANDOM:
-			strcpy( openmask, "r+b" );				/* w+ would erase the contents */
-			break;
+			getaccessmask( openmask, accesstype );
 
-		case FB_FILE_MODE_BINARYINPUT:
-			strcpy( openmask, "rb" );               /* will fail if file doesn't exist */
-			break;
-
-		case FB_FILE_MODE_BINARYOUTPUT:
-			strcpy( openmask, "wb" );				/* will create the file if it doesn't exist */
-			break;
 		}
 
 		/* Convert directory separators to whatever the current platform supports */
 		filename = fb_hConvertPath( str->data, str_len );
 
-		/* try opening */
-		if( (f = fopen( filename, openmask )) == NULL )
+		if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
 		{
-			/* try creating the file if it doesn't exist */
-			if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
+			/* try opening */
+			if( (f = fopen( filename, openmask )) == NULL )
 			{
-				if( (f = fopen( filename, "w+b" )) == NULL )
-				{
-					free( filename );
-					return FB_RTERROR_FILENOTFOUND;
-				}
+				if( accesstype == FB_FILE_ACCESS_READWRITE )
+					f = fopen( filename,  "w+b" );
+
+				if( (f == NULL) && (access == FB_FILE_ACCESS_ANY) )
+            		do
+            		{
+	            		--accesstype;
+            			if( accesstype <= FB_FILE_ACCESS_ANY )
+            				break;
+
+            			getaccessmask( openmask, accesstype );
+
+            		} while( (f = fopen( filename, openmask )) == NULL );
+
+            	if( f == NULL )
+            	{
+            		free( filename );
+            		return FB_RTERROR_FILENOTFOUND;
+            	}
 			}
-			else
+		}
+		else
+		{
+			/* try opening */
+			if( (f = fopen( filename, openmask )) == NULL )
 			{
 				free( filename );
 				return FB_RTERROR_FILENOTFOUND;
@@ -229,11 +264,17 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		switch( mode )
 		{
 		case FB_FILE_MODE_INPUT:
-			f = stdin;
+			if( type == FB_FILE_TYPE_CONSOLE )
+				f = stdin;
+			else
+				return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			break;
 
 		case FB_FILE_MODE_OUTPUT:
-			f = stdout;
+			if( type == FB_FILE_TYPE_CONSOLE )
+				f = stdout;
+			else
+				f = stderr;
 			break;
 
 		default:
@@ -243,9 +284,10 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 
 
 	/* fill struct */
-	fb_fileTB[fnum-1].f    = f;
-	fb_fileTB[fnum-1].mode = mode;
-	fb_fileTB[fnum-1].type = type;
+	fb_fileTB[fnum-1].f    	 = f;
+	fb_fileTB[fnum-1].mode 	 = mode;
+	fb_fileTB[fnum-1].type 	 = type;
+	fb_fileTB[fnum-1].access = accesstype;
 
 	/* reclen */
 	switch( mode )
@@ -270,7 +312,6 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		case FB_FILE_MODE_BINARY:
 		case FB_FILE_MODE_RANDOM:
 		case FB_FILE_MODE_INPUT:
-		case FB_FILE_MODE_BINARYINPUT:
 			fb_fileTB[fnum-1].size = fb_hFileSize( f );
 			break;
 
