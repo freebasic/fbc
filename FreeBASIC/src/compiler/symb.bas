@@ -1559,72 +1559,95 @@ end function
 private function hGetProcRealType( byval typ as integer, _
 								   byval subtype as FBSYMBOL ptr ) as integer static
 
-    dim as integer lgt
-
     select case typ
     '' string? it's actually a pointer to a string descriptor
     case FB.SYMBTYPE.STRING
-    	 hGetProcRealType = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.STRING
+    	 return FB.SYMBTYPE.POINTER + FB.SYMBTYPE.STRING
 
     '' UDT? follow GCC 3.x's ABI
     case FB.SYMBTYPE.USERDEF
 
-    	'' assume it will be returned by address
-		hGetProcRealType = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF
-
-		'' get the un-padded UDT len
-		lgt = symbGetUDTLen( subtype, FALSE )
-
-		select case as const lgt
+		'' use the un-padded UDT len
+		select case as const symbGetUDTLen( subtype )
 		case 1
-			hGetProcRealType = FB.SYMBTYPE.BYTE
+			return FB.SYMBTYPE.BYTE
 
 		case 2
-			hGetProcRealType = FB.SYMBTYPE.SHORT
+			return FB.SYMBTYPE.SHORT
 
 		case 3
 			'' return as int only if first is a short
 			if( subtype->udt.head->lgt = 2 ) then
 				'' and if the struct is not packed
 				if( subtype->lgt >= FB.INTEGERSIZE ) then
-					hGetProcRealType = FB.SYMBTYPE.INTEGER
+					return FB.SYMBTYPE.INTEGER
 				end if
 			end if
 
 		case FB.INTEGERSIZE
-			hGetProcRealType = FB.SYMBTYPE.INTEGER
 
 			'' return in ST(0) if there's only one element and it's a SINGLE
 			if( subtype->udt.elements = 1 ) then
-				if( subtype->udt.head->typ = FB.SYMBTYPE.SINGLE ) then
-					hGetProcRealType = FB.SYMBTYPE.SINGLE
-				end if
+				do
+					if( subtype->udt.head->typ = FB.SYMBTYPE.SINGLE ) then
+						return FB.SYMBTYPE.SINGLE
+					end if
+
+					if( subtype->udt.head->typ <> FB.SYMBTYPE.USERDEF ) then
+						exit do
+					end if
+
+					subtype = subtype->udt.head->subtype
+
+					if( subtype->udt.elements <> 1 ) then
+						exit do
+					end if
+				loop
 			end if
 
+			return FB.SYMBTYPE.INTEGER
+
 		case FB.INTEGERSIZE + 1, FB.INTEGERSIZE + 2, FB.INTEGERSIZE + 3
+
 			'' return as longint only if first is a int
 			if( subtype->udt.head->lgt = FB.INTEGERSIZE ) then
 				'' and if the struct is not packed
 				if( subtype->lgt >= FB.INTEGERSIZE*2 ) then
-					hGetProcRealType = FB.SYMBTYPE.LONGINT
+					return FB.SYMBTYPE.LONGINT
 				end if
 			end if
 
 		case FB.INTEGERSIZE*2
-			hGetProcRealType = FB.SYMBTYPE.LONGINT
 
 			'' return in ST(0) if there's only one element and it's a DOUBLE
 			if( subtype->udt.elements = 1 ) then
-				if( subtype->udt.head->typ = FB.SYMBTYPE.DOUBLE ) then
-					hGetProcRealType = FB.SYMBTYPE.DOUBLE
-				end if
+				do
+					if( subtype->udt.head->typ = FB.SYMBTYPE.DOUBLE ) then
+						return FB.SYMBTYPE.DOUBLE
+					end if
+
+					if( subtype->udt.head->typ <> FB.SYMBTYPE.USERDEF ) then
+						exit do
+					end if
+
+					subtype = subtype->udt.head->subtype
+
+					if( subtype->udt.elements <> 1 ) then
+						exit do
+					end if
+				loop
 			end if
+
+			return FB.SYMBTYPE.LONGINT
 
 		end select
 
+		'' if nothing matched, it's the pointer that was passed as the 1st arg
+		return FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF
+
 	'' type is the same
 	case else
-    	hGetProcRealType = typ
+    	return typ
 
 	end select
 
