@@ -30,13 +30,13 @@
 
 
 /*:::::*/
-FBCALL void *fb_ThreadCreate( void *proc, int param )
+FBCALL struct _FBTHREAD	*fb_ThreadCreate( void *proc, int param )
 {
 	return NULL;
 }
 
 /*:::::*/
-FBCALL void fb_ThreadWait( FBTHREAD *thread )
+FBCALL void fb_ThreadWait( struct _FBTHREAD	*thread )
 {
 	/* */
 }
