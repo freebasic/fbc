@@ -344,6 +344,81 @@ function cGfxCircle as integer
 end function
 
 '':::::
+'' GfxPaint   =   PAINT STEP? '(' expr ',' expr ')' (',' expr )? (',' expr )?
+''
+function cGfxPaint as integer
+    dim xexpr as integer, yexpr as integer, pexpr as integer, bexpr as integer
+	dim coord_type as integer
+	
+	cGfxPaint = FALSE
+
+	'' STEP?
+	if( hMatch( FB.TK.STEP ) ) then
+		coord_type = FBGFX_COORDTYPE_R
+	else
+		coord_type = FBGFX_COORDTYPE_A
+	end if
+
+	'' '(' Expr ',' Expr ')' - x and y
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		exit function
+	end if
+	
+	if( not cExpression( xexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+	
+	if( not cExpression( yexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		exit function
+	end if
+	
+	if( not hMatch( CHAR_RPRNT ) ) then
+		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		exit function
+	end if
+	
+	pexpr = INVALID
+	bexpr = INVALID
+	
+	if( hMatch( CHAR_COMMA ) ) then
+	
+		'' color/pattern
+		if( not cExpression( pexpr ) ) then
+			pexpr = INVALID
+		end if
+	end if
+	
+	if( hMatch( CHAR_COMMA ) ) then
+		
+		'' background color
+		if( not cExpression( bexpr ) ) then
+			bexpr = INVALID
+		end if
+	end if
+	
+	if( pexpr = INVALID ) then
+		pexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+	end if
+	
+	if( bexpr = INVALID ) then
+		bexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+	end if
+	
+	rtlGfxPaint xexpr, yexpr, pexpr, bexpr, coord_type
+	
+	cGfxPaint = TRUE
+
+end function
+
+'':::::
 '' GfxView    =   VIEW (SCREEN? '(' Expr ',' Expr ')' '-' '(' Expr ',' Expr ')' (',' Expr? (',' Expr)?)? )?
 ''
 function cGfxView( byval isview as integer ) as integer
@@ -799,7 +874,11 @@ function cGfxStmt as integer
 	case FB.TK.CIRCLE
 		lexSkipToken
 		cGfxStmt = cGfxCircle
-
+	
+	case FB.TK.PAINT
+		lexSkipToken
+		cGfxStmt = cGfxPaint
+	
 	case FB.TK.VIEW
 		lexSkipToken
 		cGfxStmt = cGfxView( TRUE )

@@ -333,6 +333,7 @@ enum FBTK_ENUM
 	FB.TK.EXTERN
 	FB.TK.STRPTR
 	FB.TK.WITH
+	FB.TK.PAINT
 end enum
 
 '' single char tokens

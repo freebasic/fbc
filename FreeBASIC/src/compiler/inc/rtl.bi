@@ -134,6 +134,7 @@ enum FBRTL_ENUM
 	FB.RTL.GFXPSET
 	FB.RTL.GFXLINE
 	FB.RTL.GFXCIRCLE
+	FB.RTL.GFXPAINT
 	FB.RTL.GFXVIEW
 	FB.RTL.GFXWINDOW
 	FB.RTL.GFXPALETTE
@@ -233,6 +234,8 @@ declare sub 		rtlGfxLine			( byval x1expr as integer, byval y1expr as integer, b
 declare sub 		rtlGfxCircle		( byval xexpr as integer, byval yexpr as integer, byval radexpr as integer, byval cexpr as integer, _
 										  byval aspexpr as integer, byval iniexpr as integer, byval endexpr as integer, _
 										  byval fillflag as integer, byval coordtype as integer )
+declare sub		rtlGfxPaint		( byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, byval bexpr as integer, _
+									 byval coord_type as integer )
 declare sub 		rtlGfxView			( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _
 			    						  byval fillexpr as integer, byval bordexpr as integer, byval screenflag as integer )
 declare sub 		rtlGfxWindow		( byval x1expr as integer, byval y1expr as integer, byval x2expr as integer, byval y2expr as integer, _

@@ -545,6 +545,18 @@ data "fb_GfxEllipse", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 9, _
 					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+'' fb_GfxPaint ( byval x as single, byval y as single, byval color as uinteger = DEFAULT_COLOR, _
+''				 byval border_color as uinteger = DEFAULT_COLOR, pattern as string, _
+''				 byval mode as integer = PAINT_TYPE_FILL, byval coord_type as integer = COORD_TYPE_A ) as integer
+data "fb_GfxPaint", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 7, _
+						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
 '' fb_GfxView ( byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''              byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''				byval fillcol as uinteger = DEFAULT_COLOR, byval bordercol as uinteger = DEFAULT_COLOR, _
@@ -632,6 +644,9 @@ data "point", "fb_GfxPoint", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 2, _
 data "pointcoord", "fb_GfxCursor", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
 						           FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+'' fb_GfxDraw ( cmd as string ) as void
+data "draw", "fb_GfxDraw", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxPMap ( byval Coord as single, byval num as integer ) as single
 data "pmap", "fb_GfxPMap", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 2, _
@@ -3150,6 +3165,58 @@ sub rtlGfxCircle( byval xexpr as integer, byval yexpr as integer, byval radexpr 
  	'' byval coordtype as integer
  	astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID )
 
+ 	''
+ 	astFlush proc, vr
+
+ 	''
+#ifdef AUTOADDGFXLIBS
+ 	hAddGfxLibs
+#endif
+
+end sub
+
+'':::::
+sub rtlGfxPaint( byval xexpr as integer, byval yexpr as integer, byval pexpr as integer, byval bexpr as integer, _
+				 byval coord_type as integer )
+
+    dim proc as integer, f as FBSYMBOL ptr
+    dim vr as integer
+    dim pattern as integer
+	
+	f = ifuncTB(FB.RTL.GFXPAINT)
+	proc = astNewFUNCT( f, symbGetFuncDataType( f ), 4 )
+	
+ 	'' byval x as single
+ 	astNewPARAM( proc, xexpr, INVALID )
+
+ 	'' byval y as single
+ 	astNewPARAM( proc, yexpr, INVALID )
+
+	'' byval color as uinteger
+	pattern = astGetDataType( pexpr )
+	if( ( pattern = IR.DATATYPE.FIXSTR ) or ( pattern = IR.DATATYPE.STRING ) ) then
+		pattern = TRUE
+		astNewPARAM( proc, astNewCONST( &hFFFF0000, IR.DATATYPE.INTEGER ), INVALID )
+	else
+		pattern = FALSE
+		astNewPARAM( proc, pexpr )
+	end if
+	
+	'' byval border_color as uinteger
+	astNewPARAM( proc, bexpr, INVALID )
+	
+	'' pattern as string, byval mode as integer
+	if( pattern = TRUE ) then
+		astNewPARAM( proc, pexpr, INVALID )
+		astNewPARAM( proc, astNewCONST( 1, IR.DATATYPE.INTEGER ), INVALID )
+	else
+    	astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), 0, IR.DATATYPE.FIXSTR ), INVALID )
+		astNewPARAM( proc, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID )
+	end if
+	
+	'' byval coord_type as integer
+	astNewPARAM( proc, astNewCONST( coord_type, IR.DATATYPE.INTEGER ), INVALID )
+	
  	''
  	astFlush proc, vr
 
