@@ -466,8 +466,22 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(fb_mode->key, FALSE, 128);
 						}
-						else if (XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1)
+						else if ((XLookupString(&event.xkey, &key, 1, NULL, NULL) == 1) && (key != 0x7F))
 							fb_hPostKey(key);
+						else {
+							switch (XKeycodeToKeysym(display, event.xkey.keycode, 0)) {
+								case XK_Up:	fb_hPostKey(KEY_UP);		break;
+								case XK_Down:	fb_hPostKey(KEY_DOWN);		break;
+								case XK_Left:	fb_hPostKey(KEY_LEFT);		break;
+								case XK_Right:	fb_hPostKey(KEY_RIGHT);		break;
+								case XK_Insert:	fb_hPostKey(KEY_INS);		break;
+								case XK_Delete: fb_hPostKey(KEY_DEL);		break;
+								case XK_Home:	fb_hPostKey(KEY_HOME);		break;
+								case XK_End:	fb_hPostKey(KEY_END);		break;
+								case XK_Page_Up:fb_hPostKey(KEY_PAGE_UP);	break;
+								case XK_Page_Down:fb_hPostKey(KEY_PAGE_DOWN);	break;
+							}
+						}
 					}
 					break;
 				
@@ -495,6 +509,7 @@ static void *window_thread(void *arg)
 	
 	return NULL;
 }
+
 
 
 /*:::::*/
