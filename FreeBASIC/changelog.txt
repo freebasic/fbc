@@ -84,6 +84,8 @@ Version 0.13 Beta:
 - OPEN, CLOSE, GET# and PUT# can be used as functions now, so errors can be checked w/o handlers (v1c)
 - argument-less #define's can now be declared and referenced using optional ()'s (v1c)
 - #ERROR metacommand to interrupt compiling with user defined errors (lillo)
+- include file and static lib for the libcaca library (DrV)
+- include file and import lib for the wx-c library, ported by dumbledore (DrV)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported
