@@ -51,6 +51,32 @@ Most Important Features:
 
     - The LONGINT and ULONGINT data types are 64-bit wide.
 
+  o Most of the big and known C libraries and API's can be used without wrappers or helpers: 
+
+    - GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including support for Glade)
+
+    - libxml and libxslt: defacto XML and XLT libraries
+
+    - GSL - GNU Scientific library
+
+    - SDL - Simple DirectMedia Layer: multimedia library for audio, user input, 
+            3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
+    
+    - OpenGL: portable library for developing interactive 2D and 3D graphics games and 
+              applications (including support for frameworks such as GLUT and GLFW)
+
+    - Allegro: game programming library (graphics, sounds, player input, etc)
+    
+    - GD, DevIL, FreeImage, GRX and other graphic-related libraries
+
+    - OpenAL, Fmod, BASS: 2D and 3D sound systems, including support for mod, mp3, ogg, etc
+
+    - ODE - Open Dynamics Engine: library for simulating rigid body dynamics
+
+    - DirectX and the Windows API (W.I.P.)
+
+    - more to come...
+
   o User-defined Types (UDT's):
 
     - Unlimited nesting.
@@ -303,8 +329,6 @@ What FreeBASIC Isn't:
 
 Possible Additions to Later Versions:
 
-  o Headers for libraries like Gtk, ...
-
   o Full debug support using GDB/Insight
 
   o Pointer type casting
@@ -449,9 +473,11 @@ Links:
  
     - GLUT: http://www.xmission.com/~nate/glut.html
 
+    - GRX: http://grx.gnu.de/
+
     - GSL: http://www.gnu.org/software/gsl/ or http://gnuwin32.sourceforge.net/packages/gsl.htm
 
-    - GRX: http://grx.gnu.de/
+    - GTK+: http://www.gtk.org/ or http://gladewin32.sourceforge.net/modules.php?name=Downloads
     
     - IUP: http://luaforge.net/projects/iup
 
