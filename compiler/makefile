@@ -24,7 +24,7 @@ ifneq ($(WINSYSDIR),)
 else
     EXE :=
     LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
-    LDLIBS := -L../../lib -\( -lc -lm -lfb -\)
+    LDLIBS := -L../../lib -\( -lc -lm -lfb-nocurses -\)
     BC := ../../fbc
     BCFLAGS := -e -c -d TARGET_LINUX
 endif
