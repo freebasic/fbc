@@ -248,7 +248,6 @@ extern FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void);
 extern FBCALL void fb_GfxPalette(int index, unsigned int color);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
 extern FBCALL int fb_GfxPaletteInp(int port);
-extern FBCALL int fb_GfxRgb(unsigned char r, unsigned char g, unsigned char b);
 extern FBCALL void fb_GfxPset(void *target, float x, float y, int color, int coord_type);
 extern FBCALL int fb_GfxPoint(void *target, float x, float y);
 extern FBCALL float fb_GfxPMap(float coord, int func);
