@@ -33,6 +33,9 @@ char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
 {
 	int len;
 	char *p;
+#ifndef WIN32
+	char fmtstr[16];
+#endif	
 
 	if( addblank == FB_TRUE )
 		p = &buffer[1];
@@ -43,8 +46,6 @@ char *fb_hFloat2Str( double val, char *buffer, int precision, int addblank )
 	_gcvt( val, precision, p );
 
 #else
-	char fmtstr[16];
-
 	sprintf( fmtstr, "%%.%dg", precision );
 
 	sprintf( p, fmtstr, val );
