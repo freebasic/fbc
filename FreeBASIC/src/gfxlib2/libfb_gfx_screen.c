@@ -202,7 +202,8 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags)
 		}
 
 		for (i = 0; fb_gfx_driver_list[i]; i++) {
-			if (!fb_gfx_driver_list[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags))
+			if ((!fb_gfx_driver_list[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags)) ||
+			    (!fb_gfx_driver_list[i]->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), flags ^ DRIVER_FULLSCREEN)))
 				break;
 		}
 		if (!fb_gfx_driver_list[i]) {
