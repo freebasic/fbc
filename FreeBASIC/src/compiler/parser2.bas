@@ -41,32 +41,16 @@ function cExpression( expr as integer )
 end function
 
 '':::::
-''LogExpression      =   NOT? RelExpression ( (AND | OR | XOR | EQV | IMP) NOT? RelExpression )* .
+''LogExpression      =   RelExpression ( (AND | OR | XOR | EQV | IMP) RelExpression )* .
 ''
 function cLogExpression( logexpr as integer )
-    dim donot as integer, op as integer, relexpr as integer
+    dim op as integer, relexpr as integer
 
 	cLogExpression = FALSE
-
-    '' NOT?
-    donot = FALSE
-    if( hMatch( FB.TK.NOT ) ) then
-    	donot = TRUE
-    end if
 
     '' RelExpression
     if( not cRelExpression( logexpr ) ) then
 	   	exit function
-    end if
-
-    '' exec not
-    if( donot ) then
-    	logexpr = astNewUOP( IR.OP.NOT, logexpr )
-
-       	if( logexpr = INVALID ) then
-			hReportError FB.ERRMSG.TYPEMISMATCH
-           	exit function
-       	end if
     end if
 
     '' ( ... )*
@@ -80,26 +64,10 @@ function cLogExpression( logexpr as integer )
       		exit do
     	end select
 
-    	'' NOT?
-    	donot = FALSE
-    	if( hMatch( FB.TK.NOT ) ) then
-    		donot = TRUE
-    	end if
-
     	'' RelExpression
     	if( not cRelExpression( relexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
     		exit function
-    	end if
-
-    	'' exec not
-    	if( donot ) then
-    		relexpr = astNewUOP( IR.OP.NOT, relexpr )
-
-        	if( relexpr = INVALID ) then
-				hReportError FB.ERRMSG.TYPEMISMATCH
-            	exit function
-        	end if
     	end if
 
     	'' do operation
@@ -136,7 +104,6 @@ function cRelExpression( relexpr as integer )
     cRelExpression = FALSE
 
    	'' AddExpression
-   	relexpr = INVALID
    	if( not cAddExpression( relexpr ) ) then
    		exit function
    	end if
@@ -153,7 +120,6 @@ function cRelExpression( relexpr as integer )
     	end select
 
     	'' AddExpression
-    	addexpr = INVALID
     	if( not cAddExpression( addexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
     		exit function
@@ -193,12 +159,10 @@ function cAddExpression( addexpr as integer )
 
     cAddExpression = FALSE
 
-    if( addexpr = INVALID ) then
-    	'' ShiftExpression
-    	if( not cShiftExpression( addexpr ) ) then
-    		exit function
-    	end if
-    end if
+ 	'' ShiftExpression
+   	if( not cShiftExpression( addexpr ) ) then
+   		exit function
+   	end if
 
     '' ( ... )*
     do
@@ -414,19 +378,19 @@ function cMultExpression( mulexpr as integer )
 end function
 
 '':::::
-''ExpExpression   =   NegExpression ( '^' NegExpression )* .
+''ExpExpression   =   NegNotExpression ( '^' NegNotExpression )* .
 ''
 function cExpExpression( expexpr as integer )
 	dim negexpr as integer
 
     cExpExpression = FALSE
 
-   	'' NegExpression
-   	if( not cNegExpression( expexpr ) ) then
+   	'' NegNotExpression
+   	if( not cNegNotExpression( expexpr ) ) then
    		exit function
    	end if
 
-    '' ( '^' NegExpression )*
+    '' ( '^' NegNotExpression )*
     do
     	if( lexCurrentToken <> CHAR_CART ) then
     		exit do
@@ -434,8 +398,8 @@ function cExpExpression( expexpr as integer )
     		lexSkipToken
     	end if
 
-    	'' NegExpression
-    	if( not cNegExpression( negexpr ) ) then
+    	'' NegNotExpression
+    	if( not cNegNotExpression( negexpr ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
     		exit do
     	end if
@@ -454,13 +418,13 @@ function cExpExpression( expexpr as integer )
 end function
 
 '':::::
-''NegExpression   =   ('-'|'+') ExpExpression
+''NegNotExpression=   ('-'|'+'|NOT) ExpExpression
 ''				  |   HighestPresExpr .
 ''
-function cNegExpression( negexpr as integer )
+function cNegNotExpression( negexpr as integer )
     dim res as integer
 
-	cNegExpression = FALSE
+	cNegNotExpression = FALSE
 
 	select case lexCurrentToken
 	'' '-'
@@ -477,19 +441,35 @@ function cNegExpression( negexpr as integer )
     		exit function
     	end if
 
-		cNegExpression = TRUE
+		cNegNotExpression = TRUE
 		exit function
 
 	'' '+'
 	case CHAR_PLUS
 		lexSkipToken
 
-		cNegExpression = cExpExpression( negexpr )
+		cNegNotExpression = cExpExpression( negexpr )
 		exit function
 
+	'' NOT
+	case FB.TK.NOT
+		lexSkipToken
+		if( not cExpExpression( negexpr ) ) then
+			exit function
+		end if
+
+		negexpr = astNewUOP( IR.OP.NOT, negexpr )
+
+    	if( negexpr = INVALID ) Then
+    		hReportError FB.ERRMSG.TYPEMISMATCH
+    		exit function
+    	end if
+
+		cNegNotExpression = TRUE
+		exit function
 	end select
 
-	cNegExpression = cHighestPresExpr( negexpr )
+	cNegNotExpression = cHighestPresExpr( negexpr )
 
 end function
 

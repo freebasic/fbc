@@ -84,7 +84,7 @@ declare function 	cModExpression			( modexpr as integer ) as integer
 declare function 	cIntDivExpression		( idivexpr as integer ) as integer
 declare function 	cMultExpression			( mulexpr as integer ) as integer
 declare function 	cExpExpression 			( expexpr as integer ) as integer
-declare function 	cNegExpression			( negexpr as integer ) as integer
+declare function 	cNegNotExpression		( negexpr as integer ) as integer
 declare function 	cHighestPresExpr		( highexpr as integer ) as integer
 declare function 	cDerefExpression		( derefexpr as integer ) as integer
 declare function 	cAddrOfExpression		( addrofexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBOL ptr ) as integer
