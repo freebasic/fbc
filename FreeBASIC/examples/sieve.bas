@@ -48,5 +48,5 @@ const INTERATIONS = 1000
 #else
   print "msecs taken: " + str$( x )
 
-  sleep 0
+  sleep
 #endif
