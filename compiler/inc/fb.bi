@@ -26,9 +26,15 @@ const FB.VERSION$				= "0.09b"
 const FB.SIGN$					= "FreeBASIC v0.09b"
 
 '' paths
+#ifdef TARGET_WIN32
 const FB.BINPATH$				= "\bin\"
 const FB.INCPATH$				= "\inc\"
 const FB.LIBPATH$				= "\lib"
+#else
+const FB.BINPATH$				= "/bin/"
+const FB.INCPATH$				= "/inc/"
+const FB.LIBPATH$				= "/lib"
+#endif
 
 '' compiler options
 enum FBCOMPOPT_ENUM

@@ -23,8 +23,8 @@ ifneq ($(WINSYSDIR),)
     BCFLAGS := -e -c -d TARGET_WIN32
 else
     EXE :=
-    LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -e fb_fbc_entry
-    LDLIBS := -L../../lib -( -lc -lm -lfb -lncurses -)
+    LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
+    LDLIBS := -L../../lib -\( -lc -lm -lfb -\)
     BC := ../../fbc32
     BCFLAGS := -e -c -d TARGET_LINUX
 endif
@@ -52,5 +52,10 @@ $(TARGET) : $(objects)
 
 .PHONY : clean
 clean :
+ifneq ($(WINSYSDIR),)
 	del $(subst /,\,$(TARGET))
 	del $(subst /,\,$(objects))
+else
+	rm -f $(TARGET)
+	rm -f $(objects)
+endif

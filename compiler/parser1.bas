@@ -140,7 +140,7 @@ function fbcInit as integer static
 	hSetCtx
 
 	env.libpathidx	= strpAdd( exepath$ + FB.LIBPATH )
-
+	
 	''
 	fbcInit = TRUE
 
