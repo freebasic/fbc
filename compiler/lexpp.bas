@@ -84,6 +84,7 @@ end function
 ''               |   '#'IFNDEF ID
 ''               |   '#'IF Expression
 ''				 |	 '#'ELSE
+''				 |   '#'ELSEIF Expression
 ''               |   '#'ENDIF
 ''               |   '#'PRINT LITERAL* .
 ''
@@ -131,7 +132,7 @@ function lexPreProcessor as integer
     	lexPreProcessor = ppIf
 
 	'' ELSE
-	case FB.TK.ELSE
+	case FB.TK.ELSE, FB.TK.ELSEIF
     	lexPreProcessor = ppElse
 
 	'' ENDIF
@@ -210,8 +211,11 @@ end function
 
 '':::::
 private function ppElse as integer
+	dim istrue as integer
 
    	ppElse = FALSE
+
+   	istrue = FALSE
 
 	if( ctx.level = 0 ) then
         hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
@@ -223,12 +227,26 @@ private function ppElse as integer
        	exit function
     end if
 
-   	'' ELSE
-   	lexSkipToken
+	if( lexCurrentToken = FB.TK.ELSEIF ) then
+		'' ELSEIF
 
-    pptb(ctx.level).elsecnt = pptb(ctx.level).elsecnt + 1
+        lexSkipToken
 
-    pptb(ctx.level).istrue = not pptb(ctx.level).istrue
+		if( not ppLogExpression( istrue ) ) then
+			exit function
+		end if
+
+		pptb(ctx.level).istrue = istrue
+	else
+		'' ELSE
+
+		lexSkipToken
+	
+        pptb(ctx.level).elsecnt = pptb(ctx.level).elsecnt + 1
+
+        pptb(ctx.level).istrue = not pptb(ctx.level).istrue
+
+    end if
 
     if( not pptb(ctx.level).istrue ) then
     	ppElse = ppSkip
@@ -284,7 +302,7 @@ private function ppSkip as integer
         	case FB.TK.IF, FB.TK.IFDEF, FB.TK.IFNDEF
         		iflevel = iflevel + 1
 
-        	case FB.TK.ELSE
+        	case FB.TK.ELSE, FB.TK.ELSEIF
         		if( iflevel = ctx.level ) then
         			ppSkip = ppElse
         			exit function
