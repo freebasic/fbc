@@ -54,7 +54,7 @@ FBCALL int fb_SetTime( FBSTRING *time )
 	{
 
     	char *t, c;
-    	int i, h, m, s;
+    	int i, h, m = 0, s = 0;
 
     	/* get hours */
     	h = 0;
