@@ -45,9 +45,9 @@ static int ddraw_get_mouse(int *x, int *y, int *z, int *buttons);
 static void ddraw_set_window_title(char *title);
 
 
-
 GFXDRIVER fb_gfxDriverDirectDraw =
 {
+	"DirectX",		/* char *name; */
 	ddraw_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
 	ddraw_exit,		/* void (*exit)(void); */
 	ddraw_lock,		/* void (*lock)(void); */

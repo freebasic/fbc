@@ -148,8 +148,22 @@ typedef struct MODE
 } MODE;
 
 
+typedef struct GFXDRIVERINFO
+{
+	FBSTRING driver_name;
+	int w, h;
+	int depth;
+	int pitch;
+	int bpp;
+	int mask_color;
+	int num_pages;
+	int flags;
+} GFXDRIVERINFO;
+
+
 typedef struct GFXDRIVER
 {
+	char *name;
 	int (*init)(char *title, int w, int h, int depth, int flags);
 	void (*exit)(void);
 	void (*lock)(void);
@@ -211,6 +225,7 @@ extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 
 /* Public API */
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags);
+extern FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void);
 extern FBCALL void fb_GfxPalette(int index, unsigned int color);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
 extern FBCALL int fb_GfxPaletteInp(int port);
