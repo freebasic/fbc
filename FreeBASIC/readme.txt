@@ -42,28 +42,22 @@ Most Important Features:
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
-  o A large number of variable types available, like BYTE, SHORT, INTEGER, LONGINT, 
-    SINGLE, DOUBLE and STRING:
+  o Most of the known C libraries and API's can be used without wrappers or helpers: 
 
-    - All integer types have unsigned versions (UBYTE, USHORT, UINTEGER, ULONGINT).
-
-    - Strings can be fixed, variable-length or null-terminated (zstring's), up to 2GB long.
-
-    - The LONGINT and ULONGINT data types are 64-bit wide.
-
-  o Most of the big and known C libraries and API's can be used without wrappers or helpers: 
-
-    - GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including support for Glade)
+    - GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including support for 
+      Glade, libart and glGtk)
 
     - libxml and libxslt: defacto standard XML and XSL libraries
 
-    - GSL - GNU Scientific library
+    - GSL - GNU Scientific library: complex numbers, vectors and matrices, FFT,
+      linear algebra, statistics, sorting, differential equations, and a dozen other 
+      sub-libraries with mathematical routines
 
     - SDL - Simple DirectMedia Layer: multimedia library for audio, user input, 
-            3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
+      3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
     
     - OpenGL: portable library for developing interactive 2D and 3D graphics games and 
-              applications (including support for frameworks such as GLUT and GLFW)
+      applications (including support for frameworks such as GLUT and GLFW)
 
     - Allegro: game programming library (graphics, sounds, player input, etc)
     
@@ -76,6 +70,15 @@ Most Important Features:
     - DirectX and the Windows API (W.I.P.)
 
     - more to come...
+
+  o A large number of variable types available, like BYTE, SHORT, INTEGER, LONGINT, 
+    SINGLE, DOUBLE and STRING:
+
+    - All integer types have unsigned versions (UBYTE, USHORT, UINTEGER, ULONGINT).
+
+    - Strings can be fixed, variable-length or null-terminated (zstring's), up to 2GB long.
+
+    - The LONGINT and ULONGINT data types are 64-bit wide.
 
   o User-defined Types (UDT's):
 
@@ -188,15 +191,17 @@ Most Important Features:
       text = "BAR"
       print text[0]  			'' output will be 66 = ASC("B")
 
-  o Variable initializers, for variables and arrays, static, module-level or local:
+  o Variable initializers, for static, module-level or local variables, arrays and UDT's:
 
-      DIM foo( 0 to 3 ) as integer = 1, 2, 3, 4
+      DIM foo( 0 to 3 ) AS INTEGER = { 1, 2, 3, 4 }
 
-      STATIC bar( 0 to 1, 0 to 1 ) as zstring * 10 = { "abc", "def" }, { "ghi", "jkl" }
+      STATIC as zstring * 10 bar( 0 to 1, 0 to 1 ) = { { "abc", "def" }, { "ghi", "jkl" } }
 
       DIM mytype as MYTYPE = ( "a", 1, 2.0 )
 
-      DIM mytypearray(0 to 1) as MYTYPE = ( "a", 1, 2.0 ), ( "b", 3, 4.0 )
+      DIM mytypearray(0 to 1) as MYTYPE = { ( "a", 1, 2.0 ), ( "b", 3, 4.0 ) }
+
+      DIM localvar AS INTEGER = a + b * d
 
   o Optional function arguments (numeric and strings):
 
@@ -358,7 +363,7 @@ Credits (in alphabetic order):
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
-    - Wrote the OpenAL demonstration in the Sound directory.
+    - Wrote the OpenAL demonstration in the examples/sound directory.
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS; port maintainer.
@@ -370,18 +375,19 @@ Credits (in alphabetic order):
 
   o Edmond Leung (leung.edmond@gmail.com): 
     - Translated the SDL headers, including SDL_mixer and SDL_image.
-    - Wrote/ported many of the examples at the SDL dir.
+    - Wrote/ported many of the examples in the examples/SDL dir.
 
   o Eric Lope (vic_viperph@yahoo.com):
     - Translated the OpenGL and GLU headers
-    - Wrote the rel-* graphics demonstrations in the GFX directory.
+    - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
 
   o fsw:
-    - Translated most of the Windows API headers, besides the Gtk/GLADE and the 
-      wx-c GUI examples (not included yet).
+    - Translated most of the Windows API headers.
+    - Wrote the glade_gui demo at the examples/Gtk directory, besides the 
+      wx-c GUI examples (not included).
       
-  o keeling (...@...):
-    - Wrote the GSL matrix test.
+  o Randy Keeling (randy@keeling.com):
+    - Wrote the GSL matrix test at the examples/GSL directory.
 
   o Matthias Faust (matthias_faust@web.de):
     - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was sent by
@@ -397,7 +403,7 @@ Credits (in alphabetic order):
 
   o plasma:
     - Translated the FMOD and BASS headers.
-    - Wrote the fmod.bas test in the SOUND directory.
+    - Wrote the fmod.bas test in the examples/sound directory.
 
   o Sterling Christensen (sterling@engineer.com) - Project Member:
     - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
@@ -407,15 +413,15 @@ Credits (in alphabetic order):
       KrisKhaos for version 0.12).
 
   o zydon:
-    - Wrote many of the examples at the Windows/gui directory.
+    - Wrote many of the examples in the examples/Windows/gui directory.
 
 
   o Third-party tools:
     - Win32: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
     - DOS32: DJGPP (http://www.delorie.com/)
 
-  o Many console routines used in the Win32 version of the run-time library were based 
-    on the CONIO implementation for Mingw32.
+  o Many console routines used in the Win32 version of the run-time library were 
+    based on the CONIO implementation for Mingw32.
 
   o The long integers (64-bit) division and modulo routines are from the GCC's 
     libgcc2 sources.

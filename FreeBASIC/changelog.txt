@@ -31,6 +31,7 @@ Version 0.13 Beta:
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
 - typedefs with forward referencing support, as in C (but the syntax is "TYPE Name AS SymbolType") (v1c)
 - the ZSTRING type, null-terminated strings with fixed-length but that can be dereferenced and returned by functions (v1c)
+- variable-initializers, as in "DIM foo AS INTEGER = 123", "DIM bar(2) AS DOUBLE = { 1, 2, 3 }", etc (v1c)
 - on compile error, the line where error occured is shown with a "^" under offending token. Disable with -noerrline (lillo)
 - inline string indexing as in "char = somestring[idx]" (V1c)
 - variable-arguments, as in C: "sub foo(byval bar as integer, ...)" (v1c)
