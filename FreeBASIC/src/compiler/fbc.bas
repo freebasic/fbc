@@ -1020,6 +1020,12 @@ function getFileExt( fname as string ) as string
 end function
 
 '':::::
+public sub fbAddLibPath ( path as string )
+	pthlist(ctx.pths) = path
+	ctx.pths = ctx.pths + 1
+end sub
+
+'':::::
 function listFiles as integer
     dim i as integer
 
@@ -1075,11 +1081,10 @@ function listFiles as integer
 
 			'' library paths
 			case "p"
-				pthlist(ctx.pths) = argv(i+1)
-				if( len( pthlist(ctx.pths) ) = 0 ) then
+				if( len( argv(i+1) ) = 0 ) then
 					exit function
 				end if
-				ctx.pths = ctx.pths + 1
+				fbAddLibPath( argv(i+1) )
 				argv(i) = ""
 				argv(i+1) = ""
 

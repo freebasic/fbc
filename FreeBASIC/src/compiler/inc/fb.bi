@@ -174,6 +174,7 @@ declare function 	fbGetOption 	( byval opt as integer ) as integer
 
 declare function 	fbListLibs		( namelist() as string, byval index as integer ) as integer
 declare sub 		fbAddIncPath	( path as string )
+declare sub			fbAddLibPath	( path as string )
 declare sub 		fbAddDefine		( dname as string, dtext as string )
 
 declare function 	fbIncludeFile	( filename as string, byval isonce as integer ) as integer

@@ -3112,8 +3112,15 @@ end sub
 
 #ifdef AUTOADDGFXLIBS
 private sub hAddGfxLibs
- 	symbAddLib( "fbgfx" )
- 	symbAddLib( "user32" )
+	symbAddLib( "fbgfx" )
+#ifdef TARGET_WIN32
+	symbAddLib( "user32" )
+#elseif defined(TARGET_LINUX)
+	fbAddLibPath( "/usr/X11R6/lib" )
+	symbAddLib( "X11" )
+	symbAddLib( "Xext" )
+	symbAddLib( "pthread" )
+#endif
 end sub
 #endif
 
