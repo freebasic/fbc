@@ -30,36 +30,120 @@
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_Command ( void )
+FBCALL FBSTRING *fb_Command ( int argc )
 {
 	FBSTRING 	*dst;
-	char		*cline;
-	int			len;
+	char		*cline, *p, c;
+	int			len, arg, isstr;
 
 	cline = fb_hGetCommandLine( );
 
-	/* skip argv[0] (exe's name) */
-	cline = strchr( cline, ' ' );
+	if( cline == NULL )
+		return &fb_strNullDesc;
 
-	if( cline != NULL )
+	if( argc < 0 )
 	{
-		cline++;
 
-		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-		if( dst != NULL )
+#if WIN32
+		/* exe paths with white-spaces are quoted on Windows */
+		if( cline[0] == '"' )
 		{
-			len = strlen( cline );
-
-			fb_hStrAllocTemp( dst, len );
-
-			strncpy( dst->data, cline, len + 1 );
+			cline = strchr( &cline[1], '"' );
+			if( cline != NULL )
+				++cline;
+			else
+				return &fb_strNullDesc;
 		}
-		else
-			dst = &fb_strNullDesc;
+#endif
+
+		/* skip argv[0] */
+		cline = strchr( cline, ' ' );
+
+		if( cline == NULL )
+			return &fb_strNullDesc;
+		++cline;
+
+		len = strlen( cline );
 	}
 	else
-		dst = &fb_strNullDesc;
+	{
+		p = cline;
+		arg = 0;
+		len = 0;
+
+		while( *p != '\0' )
+		{
+			/* skip white-spc */
+			while( 1 )
+			{
+				c = *p;
+				if( (c != ' ') && (c != '\t') )
+					break;
+				++p;
+			}
+
+			/* end? */
+			if( (c == '\r') || (c == '\0') )
+				break;
+
+			cline = p;
+
+			/* read until next white-space */
+			isstr = 0;
+			do
+			{
+				++p;
+
+				/* handle quotes */
+				if( c == '"' )
+				{
+					if( isstr != 0 )
+					{
+						if( arg == argc )
+							--p;
+						break;
+					}
+					else
+					{
+						isstr = 1;
+						if( arg == argc )
+							++cline;
+					}
+				}
+
+				c = *p;
+				if( isstr == 0 )
+					if( (c == ' ') || (c == '\t') )
+						break;
+
+			} while( (c != '\r') && (c != '\0') );
+
+			/* found? */
+			if( arg == argc )
+			{
+				len = p - cline;
+				break;
+			}
+
+			++arg;
+		}
+	}
+
+	if( len <= 0 )
+		return &fb_strNullDesc;
+
+	/* alloc temp string */
+	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+	if( dst != NULL )
+	{
+		fb_hStrAllocTemp( dst, len );
+
+		strncpy( dst->data, cline, len );
+
+		dst->data[len] = '\0';
+	}
+	else
+		return &fb_strNullDesc;
 
 	return dst;
 }

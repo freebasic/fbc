@@ -36,8 +36,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 					          int addquestion, int addnewline )
 {
 	FILE 		*f;
-	int			c, len;
-	FBSTRING	tmp = { 0 };
+	int			c, len, readlen;
 	char		buffer[BUFFER_LEN];
 	int			lastcol, cols;
 
@@ -72,17 +71,24 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 			fb_ConsoleGetXY( &lastcol, NULL );
 	}
 
-    /* del destine string */
-	if( dst_len == -1 )
-		fb_StrDelete( (FBSTRING *)dst );
-	else
-		*(char *)dst = '\0';
 
 	/* - */
+	readlen = 0;
 	do
 	{
 		if( fb_ReadString( buffer, BUFFER_LEN, f ) == NULL )
+		{
+		    if( readlen == 0 )
+		    {
+    			/* del destine string */
+				if( dst_len == -1 )
+					fb_StrDelete( (FBSTRING *)dst );
+				else
+					*(char *)dst = '\0';
+			}
+
 			break;
+		}
 
 		len = strlen( buffer );
 
@@ -97,8 +103,12 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
 
 		buffer[len] = '\0';
 
-		fb_StrConcat( &tmp, dst, dst_len, (void *)buffer, len );
-		fb_StrAssign( dst, dst_len, (void *)&tmp, -1 );
+		if( readlen == 0 )
+			fb_StrAssign( dst, dst_len, (void *)buffer, len );
+		else
+			fb_StrConcatAssign( dst, dst_len, (void *)buffer, len );
+
+		readlen += len;
 
 	} while( len == BUFFER_LEN-1 );
 

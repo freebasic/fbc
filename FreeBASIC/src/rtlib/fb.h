@@ -148,8 +148,8 @@ FBCALL double 		fb_hStr2Double			( char *src, int len );
 	   char 		*fb_hFloat2Str			( double val, char *buffer, int digits, int mask );
 
 
-FBCALL FBSTRING 	*fb_CHR 				( unsigned int num );
-FBCALL unsigned int fb_ASC 					( FBSTRING *str );
+	   FBSTRING 	*fb_CHR 				( int args, ... );
+FBCALL unsigned int fb_ASC 					( FBSTRING *str, int pos );
 FBCALL double 		fb_VAL 					( FBSTRING *str );
 FBCALL double 		fb_CVD 					( FBSTRING *str );
 FBCALL int 			fb_CVI 					( FBSTRING *str );
@@ -221,7 +221,7 @@ FBCALL int 			fb_ArrayUBound		( FBARRAY *array, int dimension );
  * system
  **************************************************************************************************/
 
-FBCALL FBSTRING 	*fb_Command 		( void );
+FBCALL FBSTRING 	*fb_Command 		( int argc );
 FBCALL FBSTRING 	*fb_CurDir 			( void );
 FBCALL FBSTRING 	*fb_ExePath 		( void );
 FBCALL int 			fb_Run 				( FBSTRING *program );

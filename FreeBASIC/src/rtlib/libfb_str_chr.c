@@ -18,23 +18,49 @@
  */
 
 /*
- * sys_getcmd.c -- get command line for Windows
+ * str_chr.c -- chr$ routine
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <malloc.h>
-#include <string.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /*:::::*/
-char *fb_hGetCommandLine( void )
+FBSTRING *fb_CHR ( int args, ... )
 {
+	FBSTRING 	*dst;
+	va_list 	ap;
+	unsigned int num;
+	int i;
 
-	return GetCommandLine( );
+	if( args <= 0 )
+		return &fb_strNullDesc;
 
+	va_start( ap, args );
+
+	/* alloc temp string */
+	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+	if( dst != NULL )
+	{
+		fb_hStrAllocTemp( dst, args );
+
+		/* convert */
+		for( i = 0; i < args; i++ )
+		{
+			num = va_arg( ap, unsigned int );
+			dst->data[i] = (unsigned char)num;
+		}
+
+		dst->data[args] = '\0';
+	}
+	else
+		dst = &fb_strNullDesc;
+
+	va_end( ap );
+
+	return dst;
 }
+

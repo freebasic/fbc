@@ -18,7 +18,7 @@
  */
 
 /*
- * str_convfrom.c -- val and asc
+ * str_convfrom.c -- val function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -127,22 +127,4 @@ FBCALL double fb_VAL ( FBSTRING *str )
 	return val;
 }
 
-/*:::::*/
-FBCALL unsigned int fb_ASC ( FBSTRING *str )
-{
-    unsigned int a;
-
-	if( str == NULL )
-		return 0;
-
-	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
-		a = 0;
-	else
-		a = (unsigned char)str->data[0];
-
-	/* del if temp */
-	fb_hStrDelTemp( str );
-
-	return a;
-}
 

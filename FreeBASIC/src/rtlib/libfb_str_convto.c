@@ -135,24 +135,4 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 }
 
 
-/*:::::*/
-FBCALL FBSTRING *fb_CHR ( unsigned int num )
-{
-	FBSTRING 	*dst;
-
-	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-	if( dst != NULL )
-	{
-		fb_hStrAllocTemp( dst, 1 );
-
-		/* convert */
-		dst->data[0] = (unsigned char)num;
-		dst->data[1] = '\0';
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	return dst;
-}
 

@@ -18,23 +18,34 @@
  */
 
 /*
- * sys_getcmd.c -- get command line for Windows
+ * str_asc.c -- asc function
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
 #include <malloc.h>
-#include <string.h>
+#include <stdlib.h>
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /*:::::*/
-char *fb_hGetCommandLine( void )
+FBCALL unsigned int fb_ASC ( FBSTRING *str, int pos )
 {
+    unsigned int a;
+    int len;
 
-	return GetCommandLine( );
+	if( str == NULL || pos <= 0 )
+		return 0;
 
+	len = FB_STRSIZE( str );
+	if( (str->data == NULL) || (len == 0) || (pos > len) )
+		a = 0;
+	else
+		a = (unsigned char)str->data[pos-1];
+
+	/* del if temp */
+	fb_hStrDelTemp( str );
+
+	return a;
 }
+
