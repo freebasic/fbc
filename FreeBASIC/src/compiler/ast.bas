@@ -39,6 +39,8 @@ option escape
 '$include once: 'inc\ast.bi'
 '$include once: 'inc\list.bi'
 
+'''''#define DO_STACK_ALIGN
+
 type ASTCTX
 	head			as integer
 	tail			as integer
@@ -2258,7 +2260,13 @@ function astNewBOP( byval op as integer, _
 		dtype = irMaxDataType( dt1, dt2 )
 		'' don't convert?
 		if( dtype = -1 ) then
-			dtype = dt1
+			'' as type are different, if class is fp,
+			'' the result type will be always a double
+			if( dc1 = IR.DATACLASS.FPOINT ) then
+				dtype = IR.DATATYPE.DOUBLE
+			else
+				dtype = dt1
+			end if
 
 		else
 			'' convert the l operand?
@@ -4003,7 +4011,8 @@ end function
 private function hCallProc( byval n as integer, _
 					   		byval proc as FBSYMBOL ptr, _
 					   		byval mode as integer, _
-					   		byval bytestopop as integer ) static
+					   		byval bytestopop as integer, _
+					   		byval bytesaligned as integer ) static
     dim as integer vreg, vr, p, dtype
 
 	'' ordinary pointer?
@@ -4038,6 +4047,9 @@ private function hCallProc( byval n as integer, _
 		else
 			bytestopop = 0
 		end if
+	else
+		bytestopop += bytesaligned
+		bytesaligned = 0
 	end if
 
 	'' call function or ptr
@@ -4048,6 +4060,10 @@ private function hCallProc( byval n as integer, _
 		vr = astLoad( p )
 		astDel p
 		irEmitCALLPTR vr, vreg, bytestopop
+	end if
+
+	if( bytesaligned > 0 ) then
+		irEmitSTACKALIGN -bytesaligned
 	end if
 
 	'' handle strings and UDT's returned by functions that are actually pointers to
@@ -4145,7 +4161,7 @@ end sub
 function astLoadFUNCT( byval n as integer ) as integer
     dim as integer p, np
     dim as FBSYMBOL ptr proc
-    dim as integer mode, bytestopop
+    dim as integer mode, bytestopop, toalign
     dim as integer params, inc, l
     dim as FBSYMBOL ptr arg, lastarg
     dim as integer args, vr
@@ -4155,7 +4171,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 
 	'' ordinary pointer?
 	if( proc = NULL ) then
-		return hCallProc( n, NULL, INVALID, 0 )
+		return hCallProc( n, NULL, INVALID, 0, 0 )
 	end if
 
     mode = proc->proc.mode
@@ -4169,6 +4185,9 @@ function astLoadFUNCT( byval n as integer ) as integer
 		inc = -1
 	end if
 
+	bytestopop = proc->lgt
+	toalign = 0
+
 	''
 	args 	= proc->proc.args
 	lastarg = proc->proc.argtail
@@ -4179,13 +4198,19 @@ function astLoadFUNCT( byval n as integer ) as integer
 			if( mode <> FB.FUNCMODE.PASCAL ) then
 				arg = symbGetProcNextArg( proc, arg )
 			end if
+
+		else
+#ifdef DO_STACK_ALIGN
+			toalign = (16 - (bytestopop and 15)) and 15
+			if( toalign > 0 ) then
+				irEmitSTACKALIGN toalign
+			end if
+#endif
 		end if
 	'' vararg
 	else
 		arg = lastarg
 	end if
-
-	bytestopop = proc->lgt
 
 	p = astTB(n).r
 	do while( p <> INVALID )
@@ -4223,7 +4248,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 	hAllocTempStruct( n, proc )
 
 	'' return the result (same type as function ones)
-	vr = hCallProc( n, proc, mode, bytestopop )
+	vr = hCallProc( n, proc, mode, bytestopop, toalign )
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )

@@ -73,6 +73,8 @@ declare sub 		emitTYPE			( byval typ as integer, _
 
 declare sub 		emitALIGN			( byval bytes as integer )
 
+declare sub 		emitSTACKALIGN		( byval bytes as integer )
+
 declare sub 		emitSECTION			( byval section as integer )
 
 declare sub 		emitDATABEGIN		( byval lname as string )

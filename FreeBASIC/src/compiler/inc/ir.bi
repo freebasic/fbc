@@ -131,6 +131,7 @@ enum IROP_ENUM
 	IR.OP.DEREF
 	IR.OP.CALLFUNCT
 	IR.OP.CALLPTR
+	IR.OP.STACKALIGN
 	IR.OP.JUMPPTR
 end enum
 
@@ -264,6 +265,8 @@ declare sub 		irEmitCALLFUNCT		( byval proc as FBSYMBOL ptr, _
 declare sub 		irEmitCALLPTR		( byval v1 as integer, _
 										  byval vr as integer, _
 										  byval bytestopop as integer )
+
+declare sub 		irEmitSTACKALIGN	( byval bytes as integer )
 
 declare sub 		irEmitBRANCHPTR		( byval v1 as integer )
 

@@ -809,6 +809,22 @@ sub emitALIGN( byval bytes as integer ) static
 end sub
 
 '':::::
+sub emitSTACKALIGN( byval bytes as integer ) static
+    dim ostr as string
+
+    if( bytes > 0 ) then
+    	ostr = "sub esp, "
+    	ostr += str$( bytes )
+    else
+    	ostr = "add esp, "
+    	ostr += str$( -bytes )
+    end if
+
+	outp ostr
+
+end sub
+
+'':::::
 sub emitTYPE( byval typ as integer, _
 			  byval text as string ) static
 

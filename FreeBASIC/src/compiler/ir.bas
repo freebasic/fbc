@@ -208,6 +208,7 @@ data IR.OP.SGN		, IR.OPTYPE.UNARY	, FALSE, "sgn"
 data IR.OP.CALLPTR	, IR.OPTYPE.CALL	, FALSE, "ca@"
 data IR.OP.JUMPPTR	, IR.OPTYPE.CALL	, FALSE, "jm@"
 data IR.OP.PUSHUDT	, IR.OPTYPE.STACK	, FALSE, "psh"
+data IR.OP.STACKALIGN, IR.OPTYPE.STACK	, FALSE, "alg"
 
 data -1
 
@@ -656,6 +657,14 @@ sub irEmitCALLPTR( byval v1 as integer, _
     irEmitEx IR.OP.CALLPTR, v1, INVALID, vr, NULL, bytestopop
 
 end sub
+
+'':::::
+sub irEmitSTACKALIGN( byval bytes as integer ) static
+
+    irEmitEx IR.OP.STACKALIGN, INVALID, INVALID, INVALID, NULL, bytes
+
+end sub
+
 
 '':::::
 sub irEmitBRANCHPTR( byval v1 as integer ) static
@@ -1660,6 +1669,12 @@ sub irFlushSTACK( byval op as integer, _
 				  byval ex as integer ) static
 	dim as string dst
 	dim as integer r1, t1, dt1, dc1
+
+	''
+	if( op = IR.OP.STACKALIGN ) then
+		emitSTACKALIGN ex
+		exit sub
+	end if
 
 	''
 	irhGetVREG( v1, dt1, dc1, t1 )
