@@ -20,15 +20,13 @@ declare function SDL_CreateMutext SDLCALL alias "SDL_CreateMutext" _
 
 declare function SDL_mutexP SDLCALL alias "SDL_mutexP" _
    (byval mutex as SDL_mutex ptr) as integer
-private function SDL_LockMutex (byval m as SDL_mutex ptr) as integer
-   SDL_LockMutex = SDL_mutexP(m)
-end function
+
+#define SDL_LockMutex(m) SDL_mutexP(m)
 
 declare function SDL_mutexV SDLCALL alias "SDL_mutexV" _
    (byval mutex as SDL_mutex ptr) as integer
-private function SDL_UnlockMutex (byval m as SDL_mutex ptr) as integer
-   SDL_UnlockMutex = SDL_mutexP(m)
-end function
+
+#define SDL_UnlockMutex(m) SDL_mutexP(m)
 
 declare sub SDL_DestroyMutex SDLCALL alias "SDL_DestroyMutex" _
    (byval mutex as SDL_mutex ptr)

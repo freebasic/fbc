@@ -14,11 +14,7 @@
 #define SDL_IMAGE_MINOR_VERSION 2
 #define SDL_IMAGE_PATCHLEVEL 4
 
-private sub SDL_IMAGE_VERSION (byval X as SDL_version ptr)
-   X->major = SDL_IMAGE_MAJOR_VERSION
-   X->minor = SDL_IMAGE_MINOR_VERSION
-   X->patch = SDL_IMAGE_PATCHLEVEL
-end sub
+#define SDL_IMAGE_VERSION(X) X->major = SDL_IMAGE_MAJOR_VERSION : X->minor = SDL_IMAGE_MINOR_VERSION : X->patch = SDL_IMAGE_PATCHLEVEL
 
 declare function IMG_Linked_Version SDLCALL alias "IMG_Linked_Version" _
    () as SDL_version ptr

@@ -101,9 +101,7 @@ end type
 #define SDL_SRCALPHA &h00010000
 #define SDL_PREALLOC &h01000000
 
-private function SDL_MUSTLOCK (surface as SDL_Surface ptr)
-    SDL_MUSTLOCK = (surface->offset or ((surface->flags and (SDL_HWSURFACE or SDL_ASYNCBLIT or SDL_RLEACCEL)) <> 0))
-end function
+#define SDL_MUSTLOCK(surface) (surface->offset or ((surface->flags and (SDL_HWSURFACE or SDL_ASYNCBLIT or SDL_RLEACCEL)) <> 0))
 
 type SDL_VideoInfo
 	flagBits	As Uint16
@@ -256,18 +254,13 @@ declare sub SDL_UnlockSurface SDLCALL alias "SDL_UnlockSurface"_
 declare function SDL_LoadBMP_RW SDLCALL alias "SDL_LoadBMP_RW" _
    (byval src as SDL_RWops ptr, byval freesrc as integer) as SDL_Surface ptr
 
-private function SDL_LoadBMP (byref file as string) as SDL_Surface ptr
-    SDL_LoadBMP = SDL_LoadBMP_RW(SDL_RWFromFile(file, "rb"), 1)
-end function
+#define SDL_LoadBMP(file) SDL_LoadBMP_RW(SDL_RWFromFile(file, "rb"), 1)
 
 declare function SDL_SaveBMP_RW SDLCALL alias "SDL_SaveBMP_RW" _
    (byval surface as SDL_Surface ptr, byval dst as SDL_RWops ptr, _
    byval freedst as integer) as integer
 
-private function SDL_SaveBMP _
-   (byval surface as SDL_Surface ptr, byref file as string) as integer
-    SDL_SaveBMP_Rw(surface, SDL_RWFromFile(file, "wb"), 1)
-end function
+#define SDL_SaveBMP(surface,file) SDL_SaveBMP_Rw(surface, SDL_RWFromFile(file, "wb"), 1)
 
 declare function SDL_SetColorKey SDLCALL alias "SDL_SetColorKey" _
    (byval surface as SDL_Surface ptr, byval flag as Uint32, _

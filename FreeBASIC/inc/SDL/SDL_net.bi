@@ -121,29 +121,19 @@ declare function SDLNet_AllocSocketSet SDLCALL alias "SDLNet_AllocSocketSet" (by
 
 declare function SDLNet_AddSocket SDLCALL alias "SDLNet_AddSocket" (byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as integer
 
-private function SDLNet_TCP_AddSocket(byval set as SDLNet_SocketSet, byval sock as TCPsocket) as integer
-			SDLNet_TCP_AddSocket = SDLNet_AddSocket(set, sock)
-end function
+#define SDLNet_TCP_AddSocket(set,sock) SDLNet_AddSocket(set, sock)
 
-private function SDLNet_UDP_AddSocket(byval set as SDLNet_SocketSet, byval sock as UDPsocket) as integer
-			SDLNet_UDP_AddSocket = SDLNet_AddSocket(set, sock)
-end function
+#define SDLNet_UDP_AddSocket(set,sock) SDLNet_AddSocket(set, sock)
 
 declare function SDLNet_DelSocket SDLCALL alias "SDLNet_DelSocket" (byval set as SDLNet_SocketSet, byval sock as SDLNet_GenericSocket) as integer
 
-private function SDLNet_TCP_DelSocket(byval set as SDLNet_SocketSet, byval sock as TCPsocket) as integer
-			SDLNet_TCP_DelSocket = SDLNet_DelSocket(set, sock)
-end function			
+#define SDLNet_TCP_DelSocket(set,sock) SDLNet_DelSocket(set, sock)
 
-private function SDLNet_UDP_DelSocket(byval set as SDLNet_SocketSet, byval sock as UDPsocket) as integer
-			SDLNet_UDP_DelSocket = SDLNet_DelSocket(set, sock)
-end function
+#define SDLNet_UDP_DelSocket(set,sock) SDLNet_DelSocket(set, sock)
 
 declare function SDLNet_CheckSockets SDLCALL alias "SDLNet_CheckSockets" (byval set as SDLNet_SocketSet, byval timeout as Uint32) as integer
 
-private function SDLNet_SocketReady(byval sock as SDLNet_GenericSocket) as integer
-		SDLNet_SocketReady = (sock <> NULL) and (sock->ready = 1)
-end function
+#define SDLNet_SocketReady(sock) ((sock <> NULL) and (sock->ready = 1))
 
 declare sub SDLNet_FreeSocketSet SDLCALL alias "SDLNet_FreeSocketSet" (byval set as SDLNet_SocketSet)
 

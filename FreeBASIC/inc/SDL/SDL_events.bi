@@ -46,9 +46,8 @@ enum events
    SDL_NUMEVENTS = 32
 end enum
 
-private function SDL_EVENTMASK (byval X as integer) as integer
-   SDL_EVENTMASK = 1 SHL X
-end function
+#define SDL_EVENTMASK(X) (1 SHL (X))
+
 enum eventmasks
    SDL_ACTIVEEVENTMASK = 1 SHL SDL_ACTIVEEVENT
 	SDL_KEYDOWNMASK = 1 SHL SDL_KEYDOWN

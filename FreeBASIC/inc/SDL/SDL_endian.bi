@@ -11,41 +11,20 @@
 
 '$include: 'SDL/begin_code.bi'
 
-private function SDL_Swap16 (byval x as Uint16) as Uint16
-   SDL_Swap16 = (x SHL 8) or (x SHR 8)
-end function
+#define SDL_Swap16(x) (((x) SHL 8) or ((x) SHR 8))
 
-private function SDL_Swap32 (byval x as Uint32) as Uint32
-   SDL_Swap32 = (x SHL 24) or ((x SHL 8) and &h00ff0000) or ((x SHR 8) and _
-      &h0000ff00) or (x SHR 24)
-end function
+#define SDL_Swap32(x) (((x) SHL 24) or (((x) SHL 8) and &h00ff0000) or (((x) SHR 8) and &h0000ff00) or ((x) SHR 24))
 
 #if SDL_BYTEORDER = SDL_LIL_ENDIAN
-private function SDL_SwapLE16 (byval X as Uint16) as Uint16
-   SDL_SwapLE16 = X
-end function
-private function SDL_SwapLE32 (byval X as Uint32) as Uint32
-   SDL_SwapLE32 = X
-end function
-private function SDL_SwapBE16 (byval X as Uint16) as Uint16
-   SDL_SwapBE16 = SDL_Swap16(X)
-end function
-private function SDL_SwapBE32 (byval X as Uint32) as Uint32
-   SDL_SwapBE32 = SDL_Swap32(X)
-end function
+#define SDL_SwapLE16(X) (X)
+#define SDL_SwapLE32(X) (X)
+#define SDL_SwapBE16(X) SDL_Swap16(X)
+#define SDL_SwapBE32(X) SDL_Swap32(X)
 #else
-private function SDL_SwapLE16 (byval X as Uint16) as Uint16
-   SDL_SwapLE16 = SDL_Swap16(X)
-end function
-private function SDL_SwapLE32 (byval X as Uint32) as Uint32
-   SDL_SwapLE32 = SDL_Swap32(X)
-end function
-private function SDL_SwapBE16 (byval X as Uint16) as Uint16
-   SDL_SwapBE16 = X
-end function
-private function SDL_SwapBE32 (byval X as Uint32) as Uint32
-   SDL_SwapBE32 = X
-end function
+#define SDL_SwapLE16(X) SDL_Swap16(X)
+#define SDL_SwapLE32(X) SDL_Swap32(X)
+#define SDL_SwapBE16(X) (X)
+#define SDL_SwapBE32(X) (X)
 #endif
 
 declare function SDL_ReadLE16 SDLCALL alias "SDL_ReadLE16" _

@@ -15,16 +15,12 @@
 #define SDL_TTF_MINOR_VERSION	0
 #define SDL_TTF_PATCHLEVEL	7
 
-private sub SDL_TTF_VERSION(byval x as SDL_version ptr)
-	X->major = SDL_TTF_MAJOR_VERSION
-	X->minor = SDL_TTF_MINOR_VERSION
-	X->patch = SDL_TTF_PATCHLEVEL
-end sub
+#define SDL_TTF_VERSION(X) X->major = SDL_TTF_MAJOR_VERSION : X->minor = SDL_TTF_MINOR_VERSION : X->patch = SDL_TTF_PATCHLEVEL
 
 #define TTF_MAJOR_VERSION	SDL_TTF_MAJOR_VERSION
 #define TTF_MINOR_VERSION	SDL_TTF_MINOR_VERSION
 #define TTF_PATCHLEVEL		SDL_TTF_PATCHLEVEL
-#define TTF_VERSION 		SDL_TTF_VERSION
+#define TTF_VERSION(X) 		SDL_TTF_VERSION(X)
 
 declare function TTF_Linked_Version SDLCALL alias "TTF_Linked_Version" () as SDL_version ptr
 

@@ -17,11 +17,7 @@
 #define MIX_MINOR_VERSION 2
 #define MIX_PATCHLEVEL 6
 
-private sub MIX_VERSION (byval X as SDL_version ptr)
-   X->major = MIX_MAJOR_VERSION
-   X->minor = MIX_MINOR_VERSION
-   X->patch = MIX_PATCHLEVEL
-end sub
+#define MIX_VERSION(X) X->major = MIX_MAJOR_VERSION : X->minor = MIX_MINOR_VERSION : X->patch = MIX_PATCHLEVEL
 
 declare function Mix_Linked_Version SDLCALL alias "Mix_Linked_Version" _
    () as SDL_version ptr
@@ -77,9 +73,9 @@ declare function Mix_QuerySpec SDLCALL alias "Mix_QuerySpec" _
 
 declare function Mix_LoadWAV_RW SDLCALL alias "Mix_LoadWAV_RW" _
    (byval src as SDL_RWops ptr, byval freesrc as integer) as Mix_Chunk ptr
-private function Mix_LoadWav (byref file as string) as Mix_Chunk ptr
-   Mix_LoadWav = Mix_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1)
-end function
+
+#define Mix_LoadWav(file) Mix_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1)
+
 declare function Mix_LoadMUS SDLCALL alias "Mix_LoadMUS" _
    (byval file as string) as Mix_Music ptr
 
@@ -178,11 +174,9 @@ declare function Mix_GroupNewer SDLCALL alias "Mix_GroupNewer" _
 declare function Mix_PlayChannelTimed SDLCALL alias "Mix_PlayChannelTimed" _
    (byval channel as integer, byval chunk as Mix_Chunk ptr, _
    byval loops as integer, byval ticks as integer) as integer
-private function Mix_PlayChannel _
-   (byval channel as integer, byval chunk as Mix_Chunk ptr, _
-   byval loops as integer) as integer
-   Mix_PlayChannel = Mix_PlayChannelTimed(channel, chunk, loops, -1)
-end function
+
+#define Mix_PlayChannel(channel,chunk,loops) Mix_PlayChannelTimed(channel, chunk, loops, -1)
+
 declare function Mix_PlayMusic SDLCALL alias "Mix_PlayMusic" _
    (byval music as Mix_Music ptr, byval loops as integer) as integer
 

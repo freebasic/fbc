@@ -19,24 +19,13 @@ type SDL_version
    patch as Uint8
 end type
 
-private sub SDL_VERSION (byval X as SDL_version ptr)
-   X->major = SDL_MAJOR_VERSION
-   X->minor = SDL_MINOR_VERSION
-   X->patch = SDL_PATCHLEVEL
-end sub
+#define SDL_VERSION_(X) X->major = SDL_MAJOR_VERSION : X->minor = SDL_MINOR_VERSION : X->patch = SDL_PATCHLEVEL
 
-private function SDL_VERSIONNUM (byval X as Uint8, byval Y as Uint8, byval Z as Uint8) _
-   as uinteger
-   SDL_VERSIONNUM = X * 1000 + Y * 100 + Z
-end function
+#define SDL_VERSIONNUM(X,Y,Z) ((X) * 1000 + (Y) * 100 + (Z))
 
-#define SDL_COMPILEDVERSION _
-   SDL_VERSIONNUM(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL)
+#define SDL_COMPILEDVERSION SDL_VERSIONNUM(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL)
 
-private function SDL_VERSION_ATLEAST _
-   (byval X as Uint8, byval Y as Uint8, byval Z as Uint8) as byte
-   SDL_VERSION_ATLEAST = SDL_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z)
-end function
+#define SDL_VERSION_ATLEAST(X,Y,Z) (SDL_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
 
 declare function SDL_Linked_Version SDLCALL alias "SDL_Linked_Version" _
    () as SDL_Version ptr

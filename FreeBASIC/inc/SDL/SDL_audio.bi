@@ -87,11 +87,8 @@ declare function SDL_LoadWAV_RW SDLCALL alias "SDL_LoadWAV_RW" _
    byval spec as SDL_AudioSpec ptr, byval audio_buf as Uint8 ptr ptr, _
    byval audio_len as Uint32 ptr) as SDL_AudioSpec ptr
 
-private function SDL_LoadWAV _
-   (byref file as string, byval spec as SDL_AudioSpec ptr, _
-   byval audio_buf as Uint8 ptr, byval audio_len as Uint32 ptr)
-   SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1, spec, audio_buf, audio_len)
-end function
+#define SDL_LoadWAV(file,spec,audio_buf,audio_len) SDL_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1, spec, audio_buf, audio_len)
+
 
 declare sub SDL_FreeWav SDLCALL alias "SDL_FreeWav" _
    (byval audio_buf as Uint8 ptr)

@@ -80,31 +80,15 @@ declare function SDL_AllocRW SDLCALL alias "SDL_AllocRW" () as SDL_RWops ptr
 declare function SDL_FreeRW SDLCALL alias "SDL_FreeRW" _
    (area as SDL_RWops ptr) as SDL_RWops ptr
 
-private function SDL_RWseek _
-   (byval ctx as SDL_RWops ptr, byval offset as integer, _
-   byval whence as integer)
-   ctx->seek(ctx, offset, whence)
-end function
+#define SDL_RWseek(ctx,offset,whence) ctx->seek(ctx, offset, whence)
 
-private function SDL_RWtell (byval ctx as SDL_RWops ptr)
-   ctx->seek(ctx, 0, SEEK_CUR)
-end function
+#define SDL_RWtell(ctx) ctx->seek(ctx, 0, SEEK_CUR)
 
-private function SDL_RWread _
-   (byval ctx as SDL_RWops ptr, byval pntr as any ptr, _
-   byval size as integer, byval n as integer)
-   ctx->read(ctx, pntr, size, n)
-end function
+#define SDL_RWread(ctx,pntr,size,n) ctx->read(ctx, pntr, size, n)
 
-private function SDL_RWwrite _
-   (byval ctx as SDL_RWops ptr, byval pntr as any ptr, _
-   byval size as integer, byval n as integer)
-   ctx->write(ctx, pntr, size, n)
-end function
+#define SDL_RWwrite(ctx,pntr,size,n) ctx->write(ctx, pntr, size, n)
 
-private function SDL_RWclose (byval ctx as SDL_RWops ptr)
-   ctx->close(ctx)
-end function
+#define SDL_RWclose(ctx) ctx->close(ctx)
 
 '$include: 'SDL/close_code.bi'
 

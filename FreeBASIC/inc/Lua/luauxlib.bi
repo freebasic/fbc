@@ -105,9 +105,7 @@ private sub luaL_putchar(byval B as luaL_Buffer ptr, byval c as byte)
    	B->p = B->p + 1
 end sub
 
-private sub luaL_addsize(byval B as luaL_Buffer ptr, byval n as integer)	
-	B->p = B->p + n
-end sub
+#define luaL_addsize(B,n) B->p += (n)
 
 
 '' }====================================================== ''

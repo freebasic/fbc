@@ -1220,41 +1220,19 @@ Declare Function gfx_mode_select_ex CDecl Alias "gfx_mode_select_ex" (ByVal card
 ' -- misc --
 Dim Shared errno As Integer
 
-' -- macros converted to functions --
+#define allegro_init install_allegro(SYSTEM_AUTODETECT, errno, @atexit)
 
-'Function allegro_init() As Integer
-'	allegro_init = install_allegro(SYSTEM_AUTODETECT, errno, ProcPtr(atexit))
-'End Function
+#define SCREEN_W gfx_driver->w
 
-#define allegro_init	install_allegro(SYSTEM_AUTODETECT, errno, ProcPtr(atexit))
+#define SCREEN_H gfx_driver->h
 
-private Function SCREEN_W() As Integer
-	SCREEN_W = gfx_driver->w
-End Function
+#define SECS_TO_TIMER(secs) ((secs) * TIMERS_PER_SECOND)
 
-private Function SCREEN_H() As Integer
-	SCREEN_H = gfx_driver->h
-End Function
+#define MSEC_TO_TIMER(msec) ((msec) * (TIMERS_PER_SECOND / 1000))
 
-private Function SECS_TO_TIMER(ByVal secs As fixed) As fixed
-	SECS_TO_TIMER = secs * TIMERS_PER_SECOND
-End Function
+#define BPS_TO_TIMER(bps) (TIMERS_PER_SECOND / (bps))
 
-private Function MSEC_TO_TIMER(ByVal msec As fixed) As fixed
-	MSEC_TO_TIMER = msec * (TIMERS_PER_SECOND / 1000)
-End Function
-
-private Function BPS_TO_TIMER(ByVal bps As fixed) As fixed
-	BPS_TO_TIMER = TIMERS_PER_SECOND / bps
-End Function
-
-private Function BPM_TO_TIMER(ByVal bpm As fixed) As fixed
-	BPM_TO_TIMER = (60 * TIMERS_PER_SECOND) / bpm
-End Function
-
-'Function rand() As Integer	' included in crtdll.bi as of fB 0.08b
-'	rand = rnd * RAND_MAX
-'End Function
+#define BPM_TO_TIMER(bpm) ((60 * TIMERS_PER_SECOND) / (bpm))
 
 #define AL_RAND	rand()
 
@@ -1276,13 +1254,9 @@ private Function AL_MAX(ByVal x As Integer, ByVal y As Integer) As Integer
 End Function
 
 ' AL_MID is the fb equivalent of Allegro's MID
-private Function AL_MID(ByVal x As Integer, ByVal y As Integer, ByVal z As Integer) As Integer
-	AL_MID = AL_MAX(x, AL_MIN(y, z))
-End Function
+#define AL_MID(x,y,z) AL_MAX(x, AL_MIN(y, z))
 
-private function key(byval keycode as integer) as ubyte
-	key = *(@al_key + keycode)
-end function
+#define key(keycode) *(@al_key + (keycode))
 
 ' -- random hacks --
 

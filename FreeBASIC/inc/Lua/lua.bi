@@ -211,59 +211,31 @@ declare sub lua_concat LUA_API alias "lua_concat" (byval L as lua_State ptr, byv
 '' ===============================================================
 ''
 
-private sub lua_boxpointer(byval L as lua_State ptr, byval u as integer)
-	*lua_newuserdata(L, len( any ptr )) = u			'' (*(void **)(lua_newuserdata(L, sizeof(void *))) = (u))
-end sub
+#define lua_boxpointer(L,u) *lua_newuserdata(L,len(any ptr)) = (u)	'' (*(void **)(lua_newuserdata(L, sizeof(void *))) = (u))
 
-private function lua_unboxpointer(byval L as lua_State ptr, byval i as integer) as any ptr	
-	lua_unboxpointer = lua_touserdata(L, i)			'' (*(void **)(lua_touserdata(L, i)))
-end function
+#define lua_unboxpointer(L,i) lua_touserdata(L,i) '' (*(void **)(lua_touserdata(L, i)))
 
-private sub lua_pop(byval L as lua_State ptr, byval n as integer)
-	lua_settop L, -(n)-1
-end sub
+#define lua_pop(L,n) lua_settop(L,-(n)-1)
 
-private sub lua_pushcfunction(byval L as lua_State ptr, byval f as lua_CFunction)
-	lua_pushcclosure L, f, 0 
-end sub
+#define lua_pushcfunction(L,f) lua_pushcclosure(L,f,0)
 
-private sub lua_register(byval L as lua_State ptr, n as string, byval f as lua_CFunction)
-	lua_pushstring L, n
-	lua_pushcfunction L, f
-	lua_settable L, LUA_GLOBALSINDEX
-end sub
+#define lua_register(L,n,f) lua_pushstring(L,n) : lua_pushcfunction(L,f) : lua_settable(L,LUA_GLOBALSINDEX)
 
-private function lua_isfunction(byval L as lua_State ptr, byval n as integer) as integer
-	lua_isfunction = lua_type(L,n) = LUA_TFUNCTION
-end function
+#define lua_isfunction(L,n) (lua_type(L,n) = LUA_TFUNCTION)
 
-private function lua_istable(byval L as lua_State ptr, byval n as integer) as integer
-	lua_istable = lua_type(L,n) = LUA_TTABLE
-end function
+#define lua_istable(L,n) (lua_type(L,n) = LUA_TTABLE)
 
-private function lua_islightuserdata(byval L as lua_State ptr, byval n as integer) as integer
-	lua_islightuserdata = lua_type(L,n) = LUA_TLIGHTUSERDATA
-end function
+#define lua_islightuserdata(L,n) (lua_type(L,n) = LUA_TLIGHTUSERDATA)
 
-private function lua_isnil(byval L as lua_State ptr, byval n as integer) as integer
-	lua_isnil = lua_type(L,n) = LUA_TNIL
-end function
+#define lua_isnil(L,n) (lua_type(L,n) = LUA_TNIL)
 
-private function lua_isboolean(byval L as lua_State ptr, byval n as integer) as integer
-	lua_isboolean = lua_type(L,n) = LUA_TBOOLEAN
-end function
+#define lua_isboolean(L,n) (lua_type(L,n) = LUA_TBOOLEAN)
 
-private function lua_isnone(byval L as lua_State ptr, byval n as integer) as integer
-	lua_isnone = lua_type(L,n) = LUA_TNONE
-end function
+#define lua_isnone(L,n) (lua_type(L,n) = LUA_TNONE)
 
-private function lua_isnoneornil(byval L as lua_State ptr, byval n as integer) as integer
-	lua_isnoneornil = lua_type(L,n) <= 0
-end function
+#define lua_isnoneornil(L,n) (lua_type(L,n) <= 0)
 
-private sub lua_pushliteral(byval L as lua_State ptr, s as string)
-	lua_pushlstring L, s, len( s )
-end sub
+#define lua_pushliteral(L,s) lua_pushlstring(L,s,len( s ))
 
 
 ''

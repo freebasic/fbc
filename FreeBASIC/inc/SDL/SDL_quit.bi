@@ -5,7 +5,6 @@
 #ifndef SDL_quit_bi_
 #define SDL_quit_bi_
 
-#define SDL_QuitRequested() _
-   (SDL_PumpEvents(), SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUITMASK))
+#define SDL_QuitRequested (SDL_PumpEvents(), SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUITMASK))
 
 #endif

@@ -47,9 +47,7 @@ declare sub SDL_FreeCursor SDLCALL alias "SDL_FreeCursor" _
 declare function SDL_ShowCursor SDLCALL alias "SDL_ShowCursor" _
    (byval toggle as integer) as integer
    
-private function SDL_BUTTON (byval X as integer) as ubyte
-   SDL_BUTTON = SDL_PRESSED SHL (X - 1)
-end function
+#define SDL_BUTTON(X) (SDL_PRESSED SHL ((X) - 1))
 
 #define SDL_BUTTON_LEFT 1
 #define SDL_BUTTON_MIDDLE 2

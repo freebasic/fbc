@@ -11,7 +11,7 @@ declare sub SDL_SetError SDLCALL alias "SDL_SetError" (byval errorMsg as string)
 declare function SDL_GetError SDLCALL alias "SDL_GetError" () as byte ptr
 declare sub SDL_ClearError SDLCALL alias "SDL_ClearError" ()
 
-#define SDL_OutOfMemory() SDL_Error(SDL_ENONEM)
+#define SDL_OutOfMemory SDL_Error(SDL_ENONEM)
 enum SDL_errorcode
    SDL_ENOMEM
    SDL_EFREAD

@@ -22,9 +22,7 @@ enum CDstatus
    CD_ERROR = -1
 end enum
 
-private function CD_INDRIVE(byval status as integer) as byte
-   CD_INDRIVE = status > 0
-end function
+#define CD_INDRIVE(status) ((status) > 0)
 
 type SDL_CDTrack
    id as Uint8
@@ -45,21 +43,10 @@ type SDL_CD
 end type
 
 #define CD_FPS 75
-private sub FRAMES_TO_MSF _
-   (byval f as integer, byval M as integer ptr, byval S as integer ptr, _
-   byval Fr as integer ptr)
-   dim value as integer
-   value = f
-   *Fr = value mod CD_FPS
-   value = value \ CD_FPS
-   *S = value mod 60
-   value = value \ 60
-   *M = value
-end sub
-private function MSF_TO_FRAMES _
-   (byval M as integer, byval S as integer, byval F as integer) as integer
-   MSF_TO_FRAMES = M * 60 * CD_FPS + S * CD_FPS + F
-end function
+
+#define FRAMES_TO_MSF(f,M,S,Fr) *Fr = (f) mod CD_FPS : *S = ((f) \ CD_FPS) mod 60: *M = ((f) \ CD_FPS) \ 60
+
+#define MSF_TO_FRAMES(M,S,F) ((M) * 60 * CD_FPS + (S) * CD_FPS + (F))
 
 declare function SDL_CDNumDrives SDLCALL alias "SDL_CDNumDrives" () as integer
 

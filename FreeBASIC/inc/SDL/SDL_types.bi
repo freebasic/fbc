@@ -5,9 +5,7 @@
 #ifndef SDL_types_bi_
 #define SDL_types_bi_
 
-private function SDL_TABLESIZE (table()) as integer
-   SDL_TABLESIZE = ubound(table) - lbound(table) + 1
-end function
+#define SDL_TABLESIZE(table) (ubound(table) - lbound(table) + 1)
 
 enum SDL_bool
    SDL_FALSE = 0
