@@ -62,11 +62,8 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
 
 	'' and sub type
 	if( procsubtype <> symbGetSubtype( proc ) ) then
-    	'' if it's a function pointer, subtypes (protos) will be different.. doesn't matter
-    	if( proctyp <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-        	hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
-        	exit function
-        end if
+        hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
+        exit function
     end if
 
 	'' check each arg
@@ -88,15 +85,8 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
                 exit function
 
             elseif( argv(a).subtype <> symbGetArgSubtype( proc, arg ) ) then
-
-    			'' if it's a function pointer, subtypes (protos) will be different.. doesn't matter
-    			if( atype <> FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-                	hReportParamError a
-                	exit function
-    			else
-    				'' !!!FIXME!!! delete prototype as it isn't needed
-    			end if
-
+                hReportParamError a
+                exit function
     		end if
     	end if
 

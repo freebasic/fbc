@@ -132,7 +132,7 @@ declare function 	symbAddEnum				( symbol as string ) as FBSYMBOL ptr
 declare function 	symbAddPrototype		( symbol as string, aliasname as string, libname as string, _
 											  byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
 											  byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
-											  byval isexternal as integer ) as FBSYMBOL ptr
+											  byval isexternal as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr
 declare function 	symbAddProc				( symbol as string, aliasname as string, libname as string, _
 					  						  byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
 					  						  byval mode as integer, byval argc as integer, argv() as FBPROCARG ) as FBSYMBOL ptr

@@ -1713,10 +1713,44 @@ function cConstExprValue( littext as string ) as integer
 end function
 
 '':::::
+function hMangleFuncPtrName( sname as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
+					    	 byval mode as integer, _
+						  	 byval argc as integer, argv() as FBPROCARG ) as string static
+    dim i as integer
+    dim mname as string
+    dim aname as string
+
+    mname = sname
+
+    for i = 0 to argc-1
+    	mname += "_"
+
+    	if( argv(i).subtype = NULL ) then
+    		aname = hex$( argv(i).typ * argv(i).mode )
+    	else
+    		aname = hex$( argv(i).subtype )
+    	end if
+
+    	mname += aname
+    next i
+
+    mname += "@"
+
+	if( subtype = NULL ) then
+		mname += hex$( typ * mode )
+	else
+		mname += hex$( subtype )
+	end if
+
+	hMangleFuncPtrName = mname
+
+end function
+
+'':::::
 function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 	dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, mode as integer
 	dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
-	dim res as integer
+	dim sname as string, s as FBSYMBOL ptr
 
 	cSymbolTypeFuncPtr = NULL
 
@@ -1725,7 +1759,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	'' ('(' Argument? ')')
 	if( hMatch( CHAR_LPRNT ) ) then
-		res = cArguments( argc, argv(), TRUE )
+		cArguments( argc, argv(), TRUE )
 
     	if( not hMatch( CHAR_RPRNT ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
@@ -1753,8 +1787,14 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 		typ = FB.SYMBTYPE.VOID
 	end if
 
-	cSymbolTypeFuncPtr = symbAddPrototype( hMakeTmpStr, "", "", typ, subtype, 0, mode, _
-										   argc, argv(), TRUE )
+	sname = hMangleFuncPtrName( "_fbfp_", typ, subtype, mode, argc, argv() )
+
+	s = symbFindByNameAndClass( sname, FB.SYMBCLASS.PROC, TRUE )
+	if( s = NULL ) then
+		s = symbAddPrototype( sname, "", "", typ, subtype, 0, mode, argc, argv(), TRUE, TRUE )
+	end if
+
+	cSymbolTypeFuncPtr = s
 
 end function
 

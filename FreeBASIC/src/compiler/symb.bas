@@ -925,7 +925,7 @@ function hAllocFloatConst( sname as string, byval typ as integer ) as FBSYMBOL p
 
 	hAllocFloatConst = NULL
 
-	cname = "_fc_" + sname
+	cname = "_fbfc_" + sname
 
 	s = symbFindByNameAndSuffix( cname, typ, FALSE )
 	if( s <> NULL ) then
@@ -956,7 +956,7 @@ function hAllocStringConst( sname as string, byval lgt as integer ) as FBSYMBOL 
 
 	hAllocStringConst = NULL
 
-	cname = "_sc_" + sname
+	cname = "_fbsc_" + sname
 
 	''
 	s = symbFindByNameAndClass( cname, FB.SYMBCLASS.VAR, TRUE )
@@ -1354,7 +1354,7 @@ end function
 private function hSetupProc( symbol as string, aliasname as string, libname as string, _
 				             byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
 				             byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
-			                 byval declaring as integer ) as FBSYMBOL ptr static
+			                 byval declaring as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim lgt as integer
     dim f as FBSYMBOL ptr
@@ -1390,7 +1390,7 @@ private function hSetupProc( symbol as string, aliasname as string, libname as s
 	aname = hCreateProcAlias( aname, lgt, mode )
 #endif
 
-	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname )
+	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, , , preservecase )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -1429,13 +1429,13 @@ end function
 function symbAddPrototype( symbol as string, aliasname as string, libname as string, _
 						   byval typ as integer, byval subtype as FBSYMBOL ptr, byval alloctype as integer, _
 						   byval mode as integer, byval argc as integer, argv() as FBPROCARG, _
-						   byval isexternal as integer ) as FBSYMBOL ptr static
+						   byval isexternal as integer, byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     symbAddPrototype = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), isexternal )
+	f = hSetupProc( symbol, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), isexternal, preservecase )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -1453,7 +1453,7 @@ function symbAddProc( symbol as string, aliasname as string, libname as string, 
 
     symbAddProc = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), TRUE )
+	f = hSetupProc( symbol, aliasname, libname, typ, subtype, alloctype, mode, argc, argv(), TRUE, FALSE )
 	if( f = NULL ) then
 		exit function
 	end if

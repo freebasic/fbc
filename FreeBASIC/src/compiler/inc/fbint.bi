@@ -399,16 +399,16 @@ end enum
 
 '' argument modes
 enum FBARGMODE_ENUM
-	FB.ARGMODE.BYDESC			= 1
-	FB.ARGMODE.BYVAL
+	FB.ARGMODE.BYVAL 			= 1				'' must start at 1! used for mangling
 	FB.ARGMODE.BYREF
+	FB.ARGMODE.BYDESC
 end enum
 
 '' call conventions
 enum FBFUNCMODE_ENUM
-	FB.FUNCMODE.PASCAL			= 1
+	FB.FUNCMODE.STDCALL			= 1             '' ditto
 	FB.FUNCMODE.CDECL
-	FB.FUNCMODE.STDCALL
+	FB.FUNCMODE.PASCAL
 end enum
 
 const FB.DEFAULT.FUNCMODE		= FB.FUNCMODE.STDCALL
