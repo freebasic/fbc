@@ -20,7 +20,7 @@
 /*
  * gdi.c -- GDI gfx driver
  *
- * chng: jan/2005 written [lillo]
+ * chng: feb/2005 written [lillo]
  *
  */
 
@@ -163,7 +163,6 @@ static int gdi_init(void)
 	SetForegroundWindow(fb_win32.wnd);
 	hdc = GetDC(fb_win32.wnd);
 	
-
 	return 0;
 }
 
@@ -184,7 +183,7 @@ static void gdi_exit(void)
 static void gdi_thread(HANDLE running_event)
 {
 	MSG message;
-	int i, y, h;
+	int i, y1, y2, h;
 	unsigned char *source, keystate[256];
 	
 	if (gdi_init())
@@ -197,31 +196,34 @@ static void gdi_thread(HANDLE running_event)
 	{
 		fb_hWin32Lock();
 		
-		if (fb_win32.is_active) {
-			if (fb_win32.is_palette_changed) {
-				/* Can't use fb_hMemCpy as structure layout is different :( */
-				for (i = 0; i < 256; i++) {
-					bitmap_info->bmiColors[i].rgbRed = fb_win32.palette[i].peRed;
-					bitmap_info->bmiColors[i].rgbGreen = fb_win32.palette[i].peGreen;
-					bitmap_info->bmiColors[i].rgbBlue = fb_win32.palette[i].peBlue;
-				}
+		if (fb_win32.is_palette_changed) {
+			/* Can't use fb_hMemCpy as structure layout is different :( */
+			for (i = 0; i < 256; i++) {
+				bitmap_info->bmiColors[i].rgbRed = fb_win32.palette[i].peRed;
+				bitmap_info->bmiColors[i].rgbGreen = fb_win32.palette[i].peGreen;
+				bitmap_info->bmiColors[i].rgbBlue = fb_win32.palette[i].peBlue;
 			}
-			if (fb_win32.blitter) {
-				fb_win32.blitter(buffer, (fb_mode->pitch + 3) & ~3);
-				source = buffer;
-			}
-			else
-				source = fb_mode->framebuffer;
-			for (i = 0; i < fb_win32.h; i++) {
-				if (fb_mode->dirty[i]) {
-					for (y = i, h = 0; (fb_mode->dirty[i]) && (i < fb_win32.h); h++, i++)
-						;
-					StretchDIBits(hdc, 0, y, fb_win32.w, h, 0, fb_win32.h - y - h, fb_win32.w, h,
-						      source, bitmap_info, DIB_RGB_COLORS, SRCCOPY);
-				}
-			}
-			fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
+			fb_win32.is_palette_changed = FALSE;
 		}
+		if (fb_win32.blitter) {
+			fb_win32.blitter(buffer, (fb_mode->pitch + 3) & ~3);
+			source = buffer;
+		}
+		else
+			source = fb_mode->framebuffer;
+		/* Only do a single StretchDIBits call per frame */
+		for (y1 = 0; y1 < fb_win32.h; y1++) {
+			if (fb_mode->dirty[y1]) {
+				for (y2 = fb_win32.h - 1; !fb_mode->dirty[y2]; y2--)
+					;
+				h = y2 - y1 + 1;
+				y1 = fb_win32.h - y1 - h;
+				StretchDIBits(hdc, 0, y1, fb_win32.w, h, 0, y1, fb_win32.w, h,
+					      source, bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+				break;
+			}
+		}
+		fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
 		
 		GetKeyboardState(keystate);
 		for (i = 0; i < keytable[i][0]; i++) {
