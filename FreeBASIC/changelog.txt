@@ -29,7 +29,7 @@ Version 0.12 Beta:
 [added] SCREENRES gfx statement to set custom resolution modes (lillo)
 [added] SETMOUSE gfx statement to set mouse position and cursor visibility (lillo)
 [added] Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
-[added] OpenGL internal gfx driver (lillo)
+[added] OpenGL internal gfx driver for both Win32 and Linux (lillo)
 [added] possibility to select default internal gfx driver to be used via FBGFX environmental variable (lillo)
 [added] the OpenAL headers, ported by Chris Davies (v1c)
 [added] the ASM statement can be used on a single line as in "ASM mov eax, 1234" (v1c)
