@@ -54,7 +54,10 @@ FBCALL void fb_ConsoleView( int toprow, int botrow )
     else
     	fb_viewBotRow = maxrow;
 
-    fb_ConsoleViewUpdate();
+    fb_ConsoleViewUpdate( );
+
+    /* to top row */
+    fb_ConsoleLocate( fb_viewTopRow + 1, 1, -1 );
 }
 
 /*:::::*/
