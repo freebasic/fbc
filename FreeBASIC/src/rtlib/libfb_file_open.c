@@ -134,7 +134,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 {
 	char openmask[16];
 	FILE* f;
-	int strlen;
+	int str_len;
 	char *filename;
 
 	/* init fb table if needed */
@@ -147,9 +147,9 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	if( fb_fileTB[fnum-1].f != NULL )
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
-	strlen = FB_STRSIZE( str );
+	str_len = FB_STRSIZE( str );
 
-	if( (str->data == NULL) || (strlen == 0) )
+	if( (str->data == NULL) || (str_len == 0) )
 	{
 		/* del if temp */
 		fb_hStrDelTemp( str );
@@ -179,7 +179,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	}
 
 	/* Convert directory separators to whatever the current platform supports */
-	filename = fb_hConvertPath( str->data, strlen );
+	filename = fb_hConvertPath( str->data, str_len );
 
 	/* try opening */
 	if( (f = fopen( filename, openmask )) == NULL )
