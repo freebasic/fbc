@@ -28,10 +28,6 @@
 #include <string.h>
 #include "fb.h"
 
-#ifndef WIN32
-#define MAX_PATH	1024
-#endif
-
 /*:::::*/
 FBCALL FBSTRING *fb_ExePath ( void )
 {
