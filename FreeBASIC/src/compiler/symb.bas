@@ -70,6 +70,9 @@ declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM,
 
 declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer
 
+declare function 	hCheckTypeField	( symbol as string, byval preservecase as integer, _
+					      			  byval clearname as integer, fields as string ) as FBSYMBOL ptr
+
 
 ''globals
 	dim shared ctx as SYMBCTX
@@ -863,8 +866,16 @@ function symbAddVarEx( symbol as string, aliasname as string, _
     dim isshared as integer, isstatic as integer, ispublic as integer, isextern as integer
     dim isarg as integer, islocal as integer
     dim sentinel as FBSENTINEL ptr
+    dim fields as string
 
     symbAddVarEx = NULL
+
+    '' check for UDT symbols already declared if the symbol to be added contains an '.'
+    if( clearname ) then
+    	if( hCheckTypeField( symbol, preservecase, TRUE, fields ) <> NULL ) then
+    		exit function
+    	end if
+    end if
 
     ''
     isshared = (alloctype and FB.ALLOCTYPE.SHARED) > 0
@@ -902,7 +913,7 @@ function symbAddVarEx( symbol as string, aliasname as string, _
 			stype = hGetDefType( symbol )
 		else
 			stype = typ
-		end if
+ 		end if
     	lgt	= symbCalcLen( stype, subtype )
     end if
 
@@ -944,6 +955,10 @@ function symbAddVarEx( symbol as string, aliasname as string, _
 		elseif( isarg ) then
 			emitFreeArg arglen
 		end if
+
+		'' remove sentinel too
+		hDelSentinel sentinel, isshared
+
 		exit function
 	end if
 
@@ -1793,9 +1808,8 @@ function hLookupVar( vname as string, byval lookupmode as integer ) as FBSYMBOL 
 end function
 
 '':::::
-function hCheckTypeField( symbol as string, typ as integer, ofs as integer, _
-						  elm as FBTYPELEMENT ptr, typesymbol as FBSYMBOL ptr, _
-					      byval preservecase as integer, byval clearname as integer ) as FBSYMBOL ptr static
+function hCheckTypeField( symbol as string, byval preservecase as integer, _
+					      byval clearname as integer, fields as string ) as FBSYMBOL ptr static
 
   	dim s as FBSYMBOL ptr
   	dim p as integer
@@ -1819,18 +1833,11 @@ function hCheckTypeField( symbol as string, typ as integer, ofs as integer, _
 		exit function
 	end if
 
-	typ = s->typ
-	if( typ <> FB.SYMBTYPE.USERDEF ) then
+	if( s->typ <> FB.SYMBTYPE.USERDEF ) then
 		exit function
 	end if
 
-    s->acccnt = s->acccnt + 1
-    typesymbol = s->subtype
-
-    ofs = symbGetUDTElmOffset( elm, typesymbol, typ, mid$( symbol, p+1 ) )
-    if( ofs = INVALID ) then
-    	exit function
-    end if
+	fields = mid$( symbol, p+1 )
 
     hCheckTypeField = s
 
@@ -1847,6 +1854,7 @@ function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
     dim vname as string
     dim cnt as integer
     dim lookupmode as integer
+    dim fields as string
 
     symbLookupVar = NULL
 
@@ -1902,18 +1910,21 @@ function symbLookupVar( symbol as string, typ as integer, ofs as integer, _
 			''
 			'' check if it's an UDT field
 			''
-			s = hCheckTypeField( symbol, typ, ofs, elm, typesymbol, preservecase, clearname )
+			s = hCheckTypeField( symbol, preservecase, clearname, fields )
 			if( s <> NULL ) then
-				s->acccnt = s->acccnt + 1
+    			typesymbol 	= s->subtype
+    			typ 		= s->typ
+
+    			ofs = symbGetUDTElmOffset( elm, typesymbol, typ, fields )
+    			if( ofs = INVALID ) then
+    				hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+    				exit function
+    			end if
+
+    			s->acccnt = s->acccnt + 1
 
 				symbLookupVar = s
 				exit function
-
-			else
-				if( typesymbol <> NULL ) then
-					hReportError FB.ERRMSG.ELEMENTNOTDEFINED
-					exit function
-				end if
 			end if
 
 			''
