@@ -2124,6 +2124,7 @@ end sub
 function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as integer ) as integer
 	dim id as string, mode as integer
 	dim expr as integer, dclass as integer
+	dim readid as integer
 
 	cArgDecl = FALSE
 
@@ -2140,6 +2141,7 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
 	end select
 
 	'' only allow keywords as arg names on prototypes
+	readid = TRUE
 	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
 		if( not isproto ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
@@ -2152,29 +2154,48 @@ function cArgDecl( byval argc as integer, arg as FBPROCARG, byval isproto as int
 		if(	lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
 			exit function
 		end if
+
+		'' AS?
+		if( lexCurrentToken = FB.TK.AS ) then
+			readid = FALSE
+		end if
 	end if
 
-	'' ID
-	arg.typ = lexTokenType
-	id = lexEatToken
+	if( readid ) then
+		'' ID
+		arg.typ = lexTokenType
+		id = lexEatToken
 
-	'' don't save arg's name if it's just a prototype
-	if( not isproto ) then
-		arg.nameidx = strpAdd( id )
-	else
-		arg.nameidx = INVALID
-	end if
-
-	'' ('('')')
-	if( hMatch( CHAR_LPRNT ) ) then
-		if( (mode <> INVALID) or (not hMatch( CHAR_RPRNT )) ) then
-			hReportParamError argc, id
-			exit function
+		'' don't save arg's name if it's just a prototype
+		if( not isproto ) then
+			arg.nameidx = strpAdd( id )
+		else
+			arg.nameidx = INVALID
 		end if
 
-		arg.mode = FB.ARGMODE.BYDESC
+		'' ('('')')
+		if( hMatch( CHAR_LPRNT ) ) then
+			if( (mode <> INVALID) or (not hMatch( CHAR_RPRNT )) ) then
+				hReportParamError argc, id
+				exit function
+			end if
 
+			arg.mode = FB.ARGMODE.BYDESC
+
+		else
+			if( mode = INVALID ) then
+				arg.mode = env.optargmode
+			else
+				arg.mode = mode
+			end if
+		end if
+
+	'' no id
 	else
+		arg.typ = INVALID
+
+		arg.nameidx = INVALID
+
 		if( mode = INVALID ) then
 			arg.mode = env.optargmode
 		else

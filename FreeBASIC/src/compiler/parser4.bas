@@ -198,6 +198,14 @@ function cSingleIfStatement( byval expr as integer )
 		irEmitLABEL nl, FALSE
 	end if
 
+	'' END IF? -- added to make complex macros easier to be done
+	if( lexCurrentToken = FB.TK.END ) then
+		if( lexLookahead(1) = FB.TK.IF ) then
+			lexSkipToken
+			lexSkipToken
+		end if
+	end if
+
 	''
 	env.lastcompound = lastcompstmt
 
