@@ -126,8 +126,9 @@ data "Incomplete type"
 data "Array not dimensioned"
 data "Array access, index expected"
 data "Expected 'END ENUM'"
+data "Cannot initialize dynamic arrays"
 
-const FB.ERRMSGS = 73
+const FB.ERRMSGS = 74
 
 
 '':::::

@@ -37,8 +37,10 @@ defint a-z
 
 declare function cConstExprValue			( littext as string ) as integer
 
-declare function cSymbUDTInit				( byval sym as FBSYMBOL ptr, _
-					   						  byval isstatic as integer ) as integer
+declare function cSymbUDTInit				( byval basesym as FBSYMBOL ptr, _
+											  byval sym as FBSYMBOL ptr, _
+											  ofs as integer, _
+					   						  byval islocal as integer ) as integer
 
 '':::::
 function hIsSttSeparatorOrComment( byval token as integer ) as integer static
@@ -1727,10 +1729,12 @@ function cDynArrayDef( id as string, idalias as string, byval typ as integer, _
 end function
 
 '':::::
-function cSymbElmInit( byval sym as FBSYMBOL ptr, _
-					   byval isstatic as integer ) as integer static
+function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
+					   byval sym as FBSYMBOL ptr, _
+					   ofs as integer, _
+					   byval islocal as integer ) as integer static
 
-	dim as integer dtype, expr, exprclass
+	dim as integer dtype, expr, exprclass, assgexpr
     dim as FBSYMBOL ptr litsym
 
 	if( not cExpression( expr ) ) then
@@ -1742,7 +1746,7 @@ function cSymbElmInit( byval sym as FBSYMBOL ptr, _
     exprclass = astGetClass( expr )
 
 	'' if static or at module level, only constants can be used as initializers
-	if( isstatic or env.scope = 0 ) then
+	if( not islocal ) then
 
 		'' check if it's a literal string
 		litsym = NULL
@@ -1808,17 +1812,30 @@ function cSymbElmInit( byval sym as FBSYMBOL ptr, _
 
 	else
 
-		'symbVarAddInitExpression s, expr
+        assgexpr = astNewVAR( basesym, NULL, ofs, sym->typ, NULL )
+
+        assgexpr = astNewASSIGN( assgexpr, expr )
+
+        if( assgexpr = INVALID ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES
+            return FALSE
+        end if
+
+        astFlush( assgexpr )
 
 	end if
+
+	ofs += sym->lgt
 
 	return TRUE
 
 end function
 
 '':::::
-function cSymbArrayInit( byval sym as FBSYMBOL ptr, _
-					     byval isstatic as integer, _
+function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
+						 byval sym as FBSYMBOL ptr, _
+					     ofs as integer, _
+					     byval islocal as integer, _
 					     byval isarray as integer ) as integer
 
     dim as integer dimensions, dimcnt, elements, elmcnt
@@ -1868,11 +1885,11 @@ function cSymbArrayInit( byval sym as FBSYMBOL ptr, _
 		do
 
 			if( sym->typ <> FB.SYMBTYPE.USERDEF ) then
-				if( not cSymbElmInit( sym, isstatic ) ) then
+				if( not cSymbElmInit( basesym, sym, ofs, islocal ) ) then
 					exit function
 				end if
 			else
-				if( not cSymbUDTInit( sym, isstatic ) ) then
+				if( not cSymbUDTInit( basesym, sym, ofs, islocal ) ) then
 					exit function
 				end if
 			end if
@@ -1886,11 +1903,14 @@ function cSymbArrayInit( byval sym as FBSYMBOL ptr, _
 		loop while( hMatch( CHAR_COMMA ) )
 
 		'' pad
-		if( elmcnt < elements ) then
-			irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+		if( not islocal ) then
+			if( elmcnt < elements ) then
+				irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+			end if
+			lgt += elements * sym->lgt
+		else
+			lgt += elmcnt * sym->lgt
 		end if
-
-		lgt += elements * sym->lgt
 
 		if( not isopen ) then
 			exit do
@@ -1911,10 +1931,12 @@ function cSymbArrayInit( byval sym as FBSYMBOL ptr, _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	if( isstatic ) then
-		totlgt = sym->lgt * hCalcElements( sym )
-		if( lgt < totlgt ) then
+	totlgt = sym->lgt * hCalcElements( sym )
+	if( lgt < totlgt ) then
+		if( not islocal ) then
 			irEmitVARINIPAD totlgt - lgt
+		else
+			ofs += totlgt - lgt
 		end if
 	end if
 
@@ -1923,10 +1945,12 @@ function cSymbArrayInit( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function cSymbUDTInit( byval sym as FBSYMBOL ptr, _
-					   byval isstatic as integer ) as integer
+function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
+					   byval sym as FBSYMBOL ptr, _
+					   ofs as integer, _
+					   byval islocal as integer ) as integer
 
-	dim as integer elements, elmcnt, isarray
+	dim as integer elements, elmcnt, isarray, elmofs
     dim as FBSYMBOL ptr elm, udt
 
     cSymbUDTInit = FALSE
@@ -1954,7 +1978,9 @@ function cSymbUDTInit( byval sym as FBSYMBOL ptr, _
 		'' '{'?
 		isarray = hMatch( CHAR_LBRACE )
 
-        if( not cSymbArrayInit( elm, isstatic, isarray ) ) then
+		elmofs = ofs + elm->var.elm.ofs
+
+        if( not cSymbArrayInit( basesym, elm, elmofs, islocal, isarray ) ) then
           	exit function
         end if
 
@@ -1972,6 +1998,8 @@ function cSymbUDTInit( byval sym as FBSYMBOL ptr, _
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
 
+	ofs += sym->lgt
+
 	'' ')'
 	if( not hMatch( CHAR_RPRNT ) ) then
 		hReportError FB.ERRMSG.EXPECTEDRPRNT
@@ -1979,7 +2007,7 @@ function cSymbUDTInit( byval sym as FBSYMBOL ptr, _
 	end if
 
 	'' pad
-	if( isstatic ) then
+	if( not islocal ) then
 		if( elmcnt < elements ) then
 			irEmitVARINIPAD (elements - elmcnt) * sym->lgt
 		end if
@@ -1991,37 +2019,41 @@ end function
 
 '':::::
 function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
-    dim as integer isstatic, isarray
+    dim as integer islocal, isarray, ofs
 
 	cSymbolInit = FALSE
 
 	'' cannot initialize dynamic vars
 	if( symbGetIsDynamic( sym ) ) then
-		hReportError FB.ERRMSG.SYNTAXERROR
+		hReportError FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE
 		exit function
 	end if
 
-	'' nor common
+	'' common?? impossible but..
 	if( (sym->alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
-		hReportError FB.ERRMSG.SYNTAXERROR
+		hReportError FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE
 		exit function
 	end if
 
-	'' already emited?
+	'' already emited?? impossible but..
 	if( sym->var.emited ) then
-		hReportError FB.ERRMSG.SYNTAXERROR
+		hReportError FB.ERRMSG.SYNTAXERROR, TRUE
 		exit function
 	end if
 
-	isstatic = (sym->alloctype and FB.ALLOCTYPE.STATIC) > 0
+	islocal = ((sym->alloctype and FB.ALLOCTYPE.STATIC) = 0) and (env.scope > 0)
 
 	''
-	irEmitVARINIBEGIN sym
+	if( not islocal ) then
+		irEmitVARINIBEGIN sym
+	end if
 
 	'' '{'?
 	isarray = hMatch( CHAR_LBRACE )
 
-	if( not cSymbArrayInit( sym, isstatic, isarray ) ) then
+	ofs = 0
+
+	if( not cSymbArrayInit( sym, sym, ofs, islocal, isarray ) ) then
 		exit function
 	end if
 
@@ -2034,7 +2066,9 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	''
-	irEmitVARINIEND sym
+	if( not islocal ) then
+		irEmitVARINIEND sym
+	end if
 
 	''
 	sym->var.emited = TRUE

@@ -2922,7 +2922,7 @@ function rtlWrite( byval fileexpr as integer, _
     ''
     astFlush( proc )
 
-    rtlWrite = FALSE
+    rtlWrite = TRUE
 
 end function
 

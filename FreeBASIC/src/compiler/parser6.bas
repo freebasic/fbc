@@ -511,15 +511,37 @@ function cPrintStmt
         istab = FALSE
         if( hMatch( FB.TK.SPC ) ) then
         	isspc = TRUE
-			if( not hMatch( CHAR_LPRNT ) ) then exit function
-			if( not cExpression( expr ) ) then exit function
-			if( not hMatch( CHAR_RPRNT ) ) then exit function
+			if( not hMatch( CHAR_LPRNT ) ) then
+				hReportError FB.ERRMSG.EXPECTEDLPRNT
+				exit function
+			end if
+
+			if( not cExpression( expr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+
+			if( not hMatch( CHAR_RPRNT ) ) then
+				hReportError FB.ERRMSG.EXPECTEDRPRNT
+				exit function
+			end if
 
         elseif( hMatch( FB.TK.TAB ) ) then
             istab = TRUE
-			if( not hMatch( CHAR_LPRNT ) ) then exit function
-			if( not cExpression( expr ) ) then exit function
-			if( not hMatch( CHAR_RPRNT ) ) then exit function
+			if( not hMatch( CHAR_LPRNT ) ) then
+				hReportError FB.ERRMSG.EXPECTEDLPRNT
+				exit function
+			end if
+
+			if( not cExpression( expr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+
+			if( not hMatch( CHAR_RPRNT ) ) then
+				hReportError FB.ERRMSG.EXPECTEDRPRNT
+				exit function
+			end if
 
         elseif( not cExpression( expr ) ) then
         	expr = INVALID
@@ -563,17 +585,19 @@ function cPrintStmt
 				end if
     		else
     			if( not rtlPrint( filexprcopy, iscomma, issemicolon, expr ) ) then
+					hReportError FB.ERRMSG.INVALIDDATATYPES
 					exit function
 				end if
     		end if
 
     	else
     		if( not rtlPrintUsing( filexprcopy, expr, issemicolon ) ) then
+    			hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
     	end if
 
-    	expressions = expressions + 1
+    	expressions += 1
     loop while( iscomma or issemicolon )
 
     ''
@@ -630,15 +654,18 @@ function cWriteStmt
     	'' handle WRITE w/o expressions
     	if( (not iscomma) and (expr = INVALID) ) then
     		if( expressions = 0 ) then
-    			rtlWrite filexprcopy, FALSE, INVALID
+    			rtlWrite( filexprcopy, FALSE, INVALID )
     		end if
 
     		exit do
     	end if
 
-    	rtlWrite filexprcopy, iscomma, expr
+    	if( not rtlWrite( filexprcopy, iscomma, expr ) ) then
+    		hReportError FB.ERRMSG.INVALIDDATATYPES
+    		exit function
+    	end if
 
-    	expressions = expressions + 1
+    	expressions += 1
     loop while( iscomma )
 
     ''
@@ -2517,24 +2544,24 @@ end function
 ''
 function cThreadCreate( funcexpr as integer )
 	dim procexpr as integer, paramexpr as integer
-	
+
 	cThreadCreate = FALSE
-	
+
 	'' THREADCREATE
 	lexSkipToken
-	
+
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
 		hReportError FB.ERRMSG.EXPECTEDLPRNT
 		exit function
 	end if
-	
+
 	'' procexpr
 	if( not cExpression( procexpr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 		exit function
 	end if
-	
+
 	paramexpr = INVALID
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( paramexpr ) ) then
@@ -2548,9 +2575,9 @@ function cThreadCreate( funcexpr as integer )
 		hReportError FB.ERRMSG.EXPECTEDRPRNT
 		exit function
 	end if
-	
+
 	funcexpr = rtlThreadCreate( procexpr, paramexpr )
-	
+
 	cThreadCreate = TRUE
 
 end function
