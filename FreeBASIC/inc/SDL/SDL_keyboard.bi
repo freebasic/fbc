@@ -13,7 +13,7 @@
 type SDL_keysym
    scancode as Uint8
    sym as SDLKey
-   mod as SDLMod
+   mod_ as SDLMod
    unicode as Uint16
 end type
 
