@@ -173,9 +173,9 @@ static int private_init()
 	DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(dd_library, "DirectDrawCreate");
 	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
 	
-	if (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK)
+	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD, NULL) != DD_OK))
 		return -1;
-	if (DirectInputCreate(NULL, 0x0300, &lpDI, NULL) != DI_OK)
+	if ((!DirectInputCreate) || (DirectInputCreate(NULL, 0x0300, &lpDI, NULL) != DI_OK))
 		return -1;
 
 	fb_hMemSet(&wndclass, 0, sizeof(wndclass));
