@@ -61,9 +61,9 @@ FBCALL void fb_WriteVoid ( int fnum, int mask )
     char *buffer;
 
     if( mask & FB_PRINT_NEWLINE )
-    	buffer = "\n";
+    	buffer = "\n\0";
     else if( mask & FB_PRINT_PAD )
-    	buffer = "%-14";
+    	buffer = "%-14\0";
     else
     	buffer = NULL;
 
