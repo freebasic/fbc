@@ -36,6 +36,7 @@ Version 0.12 Beta:
 [added] "OPTION NOKEYWORD", to remove intrinsic routines/statements (v1c)
 [added] "DIM|REDIM|STATIC|COMMON AS SymbolType" for multiple declarations like "DIM AS INTEGER a, b, c(10)" (v1c)
 [added] all gfx primitives now accept as optional first parameter a target buffer where drawing will take place (lillo)
+[added] BLOAD now supports loading BMP files (lillo)
 [fixed] ACCESS clause was not being checked with OPEN (v1c)
 [fixed] BINARY and RANDOM modes should try opening the file as write- or read-only when no access was given (v1c)
 [fixed] local labels not found weren't being reported (v1c)
