@@ -30,7 +30,7 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-const char *error_msg[] = {
+static const char *error_msg[] = {
 	"",				/* FB_RTERROR_OK */
 	"illegal function call",	/* FB_RTERROR_ILLEGALFUNCTIONCALL */
 	"file not found",		/* FB_RTERROR_FILENOTFOUND */
