@@ -31,6 +31,7 @@ Version 0.12 Beta:
         focus, had memory leaks if executed on a remote X server (lillo)
 [fixed] using gfx primitives on a non-visible working page was still causing screen updates (lillo)
 [fixed] BSAVE was not expecting commas as parameters separator (lillo)
+[fixed] Linux port had precision problems with the TIMER function (lillo)
 
 
 Version 0.11 Beta:
