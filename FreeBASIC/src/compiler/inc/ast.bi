@@ -78,11 +78,6 @@ type IIFNode
 	falselabel 		as FBSYMBOL ptr
 end type
 
-type longlong
-	low				as uinteger
-	high			as integer
-end type
-
 type ASTNode
 	prv				as integer						'' 'pointers' used by the allocator,
 	nxt				as integer						'' /  (can't be swapped/copied!)
@@ -95,7 +90,7 @@ type ASTNode
 	defined 		as integer						'' only true for constants
 	union
 		value		as double						'' /
-		quadval		as longlong
+		value64		as longint
 	end union
 
 	op				as integer						'' f/ BOP, UOP, ... nodes
@@ -116,7 +111,6 @@ type ASTNode
 	r				as integer						'' right /     /
 end type
 
-
 declare sub 		astInit				( )
 declare sub 		astEnd				( )
 declare function 	astNew				( byval typ as integer, byval dtype as integer, _
@@ -132,20 +126,20 @@ declare function 	astGetDataType		( byval n as integer ) as integer
 declare function 	astGetSubtype		( byval n as integer ) as FBSYMBOL ptr
 declare function 	astGetDataClass		( byval n as integer ) as integer
 declare function 	astGetDataSize		( byval n as integer ) as integer
-declare function 	astGetValue			( byval n as integer ) as double
 declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
+
+declare function 	astGetValue			( byval n as integer ) as double
+declare function 	astGetValue64		( byval n as integer ) as longint
 
 declare sub 		astLoad				( byval n as integer, dst as integer )
 declare sub 		astBinOperation		( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr )
 declare sub 		astUnaOperation		( byval op as integer, byval v1 as integer, byval vr as integer )
 declare sub 		astAddrOperation	( byval op as integer, byval v1 as integer, byval vr as integer )
 
-declare sub 		astFlush			( byval n as integer, vreg as integer )
+declare function	astFlush			( byval n as integer, vreg as integer ) as integer
 
-declare sub 		astUpdComp2Branch	( n as integer, byval label as FBSYMBOL ptr, _
-						    			  byval isinverse as integer )
-
-declare sub 		astUpdNodeResult	( byval n as integer )
+declare function	astUpdComp2Branch	( byval n as integer, byval label as FBSYMBOL ptr, _
+						    			  byval isinverse as integer ) as integer
 
 declare function 	astNewASSIGN		( byval l as integer, byval r as integer ) as integer
 declare sub 		astLoadASSIGN		( byval n as integer, vr as integer )
@@ -161,6 +155,7 @@ declare function 	astNewUOP			( byval op as integer, byval o as integer ) as int
 declare sub 		astLoadUOP			( byval n as integer, vr as integer )
 
 declare function 	astNewCONST			( byval value as double, byval dtype as integer ) as integer
+declare function 	astNewCONST64		( byval value as longint, byval dtype as integer ) as integer
 declare sub 		astLoadCONST		( byval n as integer, vr as integer )
 
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, byval elm as FBSYMBOL ptr, _
