@@ -1,15 +1,22 @@
 Version 0.12 Beta:
 
+[chged] IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
+        functions won't be automatically exported anymore, because that would make it hard to write DLL's with
+        multiple modules where not all global functions should be exported (v1ctor)
 [chged] Linux port does not use ncurses anymore, but its own internal lowlevel routines for console access.
         Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
         at programs startup and proper colors support under X11. Compatibility issues may rise though, so
         feedback is welcome (lillo)
 [chged] generated EXEs size can now be up to 5-6K smaller than before (lillo)
 [chged] Linux port install script will now warn users if not run with root priviledges (lillo)
-[added] "operator =" shortcut, as in "a += b * c" (v1ctor)
+[added] resource files support on Windows, just add the .rc's or .res' to the list, they will be automatically
+        compiled -- the Windows C headers were also added, so complex scripts (ie: dialogs and menus) can be
+        used too (DrV)
+[added] "operator =" shorthand, as in "a += b * c" (v1ctor)
 [added] SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
         faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
 [added] "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
+[added] compile-time evaluation for the CHR$ and ASC intrinsic routines (v1c)
 [added] SCREENINFO gfx function to get informations on current gfx mode (lillo)
 [added] SETMOUSE gfx statement to set mouse position and cursor visibility (lillo)
 [added] Win32 GDI internal gfx driver for systems where DirectX is not installed (lillo)
@@ -21,6 +28,8 @@ Version 0.12 Beta:
 [fixed] ERASE should accept multiple arguments (v1c)
 [fixed] DATA should not be allowed inside procs (v1c)
 [fixed] invalid types in CASE statements were not been reported (v1c)
+[fixed] byref UDT arguments with array fields would be wrongly accessed because an error at parser3 (v1c)
+[fixed] length of array fields on UDT's was wrong, as the elements weren't taken into account by the symb mod (v1c)
 [fixed] "blurry window" gfx bug in Win32 DirectX windowed mode (lillo)
 [fixed] Waiting for vertical retrace via WAIT under Win32 was waiting twice the time as needed (lillo)
 [fixed] DRAW had precision bugs that caused malformed shapes to be drawn (lillo)
