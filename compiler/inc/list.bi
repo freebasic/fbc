@@ -42,6 +42,6 @@ declare function listNew		( byval list as TLIST ptr, byval nodes as integer, byv
 declare function listFree		( byval list as TLIST ptr ) as integer
 
 declare function listNewNode	( byval list as TLIST ptr ) as TLISTNODE ptr
-declare sub 	 listDelNode	( byval list as TLIST ptr, byval node as TLISTNODE ptr )
+declare function listDelNode	( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as integer
 
 #endif '' LIST_BI

@@ -2698,10 +2698,12 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, byval expr as integer )
 end function
 
 '':::::
-function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer ) as integer
+function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
+					byval checkparents as integer = FALSE ) as integer
 	dim procexpr as integer
 	dim vr as integer
 	dim typ as integer, dtype as integer
+	dim isfunc as integer, isopened as integer
 
 	cProcCall = FALSE
 
@@ -2711,24 +2713,42 @@ function cProcCall( byval proc as FBSYMBOL ptr, byval ptrexpr as integer ) as in
     	procexpr = astNewFUNCTPTR( ptrexpr, proc, IR.DATATYPE.VOID, symbGetProcArgs( proc ) )
     end if
 
+	isfunc = FALSE
+	if( ptrexpr <> INVALID ) then
+		checkparents = TRUE
+	elseif( symbGetType( proc ) <> FB.SYMBTYPE.VOID ) then
+		isfunc = TRUE
+		'' function has args?
+		if( symbGetProcArgs( proc ) > 0 ) then
+			checkparents = TRUE
+		end if
+	end if
+
 	'' '('
-	if( hMatch( CHAR_LPRNT ) ) then
-
-		'' ProcParamList
-		if( not cProcParamList( proc, procexpr ) ) then
-			exit function
+	isopened = FALSE
+	if( checkparents ) then
+		if( not hMatch( CHAR_LPRNT ) ) then
+			if( not isfunc ) then
+				hReportError FB.ERRMSG.EXPECTEDLPRNT
+				exit function
+			end if
+		else
+			isopened = TRUE
 		end if
+	end if
 
-		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+	'' ProcParamList
+	if( not cProcParamList( proc, procexpr ) ) then
+		exit function
+	end if
 
-	else
-		'' ProcParamList
-		if( not cProcParamList( proc, procexpr ) ) then
-			exit function
+	'' ')'
+	if( checkparents ) then
+		if( isopened ) then
+			if( not hMatch( CHAR_RPRNT ) ) then
+				hReportError FB.ERRMSG.EXPECTEDRPRNT
+				exit function
+			end if
 		end if
 	end if
 
@@ -2771,7 +2791,7 @@ function cProcCallOrAssign
 			if( proc <> NULL ) then
 				lexSkipToken
 
-				cProcCallOrAssign = cProcCall( proc, INVALID )
+				cProcCallOrAssign = cProcCall( proc, INVALID, TRUE )
                 exit function
 		    else
 				hReportError FB.ERRMSG.PROCNOTDECLARED

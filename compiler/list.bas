@@ -159,11 +159,11 @@ function listNewNode( byval list as TLIST ptr ) as TLISTNODE ptr static
 end function
 
 '':::::
-sub listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) static
+function listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as integer static
 	Dim prv as TLISTNODE ptr, nxt as TLISTNODE ptr
 
 	if( node = NULL ) then
-		exit sub
+		exit function
 	end if
 
 	'' remove from used list
@@ -185,5 +185,5 @@ sub listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) static
 	node->nxt = list->fhead
 	list->fhead = node
 
-end sub
+end function
 

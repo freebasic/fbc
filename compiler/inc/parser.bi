@@ -98,7 +98,8 @@ declare function 	cProcParam				( byval proc as FBSYMBOL ptr, byval arg as FBPRO
 declare function 	cAsmBlock				( ) as integer
 declare function 	cFunctionMode 			( ) as integer
 declare function 	cFunctionCall			( byval proc as FBSYMBOL ptr, funcexpr as integer, byval ptrexpr as integer ) as integer
-declare function 	cProcCall				( byval proc as FBSYMBOL ptr, byval ptrexpr as integer ) as integer
+declare function 	cProcCall				( byval proc as FBSYMBOL ptr, byval ptrexpr as integer, _
+											  byval checkparents as integer = FALSE ) as integer
 
 declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
 
