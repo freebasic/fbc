@@ -254,6 +254,10 @@ function assembleFiles as integer
     	'' invoke as
     	if( ctx.verbose ) then
     		print "assembling: ", ascline
+
+'' --------------
+	print "aspath = '" + aspath + "'"
+'' -------------
     	end if
 
     	if( exec( aspath, ascline ) <> 0 ) then
@@ -311,8 +315,6 @@ function linkFiles as integer
 		select case ctx.outtype
 		case FB_OUTTYPE_EXECUTABLE
 			ctx.outname = ctx.outname + ".exe"
-		case FB_OUTTYPE_DYNAMICLIB
-			ctx.outname = ctx.outname + ".dxe"
 		end select
 
 #endif
@@ -368,8 +370,6 @@ function linkFiles as integer
     select case ctx.outtype
 	case FB_OUTTYPE_EXECUTABLE
 		ldcline = "-T \"" + exepath$ + FB.BINPATH + "i386go32.x\""
-	case FB_OUTTYPE_DYNAMICLIB
-	    ldcline = "-T \"" + exepath$ + FB.BINPATH + "dxe.ld\""
 	end select
 
 #endif
@@ -444,11 +444,16 @@ function linkFiles as integer
 
 #ifdef TARGET_DOS
     '' add entry point wrapper
-    mainobj = hStripExt(ctx.outname) + ".~~~"
+	mainobj = hStripExt(ctx.outname) + ".~~~"
 	if not makeMain(mainobj) then
-	    exit function
-    end if
-    ldcline = ldcline + QUOTE + mainobj + "\" "
+		print "makemain failed"
+		exit function
+	end if
+	ldcline = ldcline + QUOTE + mainobj + "\" "
+
+	'' link with crt0.o and crt1.o (C runtime init)
+	ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt0.o\" "
+	ldcline = ldcline + QUOTE + exepath$ + FB.LIBPATH + "/crt1.o\" "
 #endif
 
     '' set executable name
@@ -482,9 +487,9 @@ function linkFiles as integer
     		ldcline = ldcline + "-l" + libname + " "
     	end if
 #else
-		if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
-	    	ldcline = ldcline + "-l" + liblist(i) + " "
-	    end if
+	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
+		ldcline = ldcline + "-l" + liblist(i) + " "
+	end if
 #endif
     next i
 
@@ -509,28 +514,33 @@ function linkFiles as integer
 	ldpath = "ld"
 #endif
 
-#ifdef TARGET_DOS
-    '' stupid DOS 126-char command line length limit
-    '' use @ response file
-    f = freefile
-    respfile = hStripFilename(ctx.outname) + "fbcresp.~~~"
-
-    open respfile for output as #f
-    print #f, ldcline
-    close #f
-
-    if (exec(ldpath, "@" + respfile) <> 0) then
-        exit function
-    end if
-
-    '' delete temporary files
-    kill respfile
-    kill mainobj
-
-#else
+'#ifdef TARGET_DOS
+'    '' stupid DOS 126-char command line length limit
+'    '' use @ response file
+'    '' no longer needed as DJGPP exes can call other DJGPP exes with long cmds
+'    f = freefile
+'    respfile = hStripFilename(ctx.outname) + "fbcresp.~~~"
+'
+'    open respfile for output as #f
+'    print #f, ldcline
+'    close #f
+'
+'    if (exec(ldpath, "@" + respfile) <> 0) then
+'        exit function
+'    end if
+'
+'    '' delete temporary files
+'    kill respfile
+'
+'#else
     if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
     end if
+'#endif
+
+#ifdef TARGET_DOS
+	'' delete temporary files
+	kill mainobj
 #endif
 
 #ifdef TARGET_WIN32
@@ -740,13 +750,13 @@ sub printOptions
 	print "-b <name>", "add a source file to compilation"
 	print "-c", "compile only, do not link"
 	print "-d <name=val>", "add a preprocessor's define"
+#ifndef TARGET_DOS
 	print "-dll", "same as -dylib"
+#endif
 #ifdef TARGET_WIN32
 	print "-dylib", "create a DLL, including the import library"
 #elseif defined(TARGET_LINUX)
 	print "-dylib", "create a shared library"
-#elseif defined(TARGET_DOS)
-    print "-dylib", "create a DXE"
 #endif
 	print "-e", "add error checking"
 	print "-entry <name>", "set a non-standard entry point, see -m"
@@ -1182,15 +1192,19 @@ function makeMain ( main_obj as string ) as integer
     print #f, ".globl _main"
     print #f, "_main:"
 
-	'' save argc and argv in rtlib vars
-    print #f, "movl 8(%esp), %eax"
-    print #f, "movl %eax, (_fb_argv)"
+	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
 
-    print #f, "movl 4(%esp), %eax"
-    print #f, "movl %eax, (_fb_argc)"
+		'' save argc and argv in rtlib vars
+		print #f, "movl 8(%esp), %eax"
+		print #f, "movl %eax, (_fb_argv)"
 
-	'' jump to real entry point ( will ret to crt startup code )
-    print #f, "jmp " + ctx.entrypoint
+		print #f, "movl 4(%esp), %eax"
+		print #f, "movl %eax, (_fb_argc)"
+
+		'' jump to real entry point ( will ret to crt startup code )
+		print #f, "jmp " + ctx.entrypoint
+
+	end if
 
     close #f
 
