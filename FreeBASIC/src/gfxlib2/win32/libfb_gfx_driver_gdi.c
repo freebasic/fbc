@@ -220,7 +220,7 @@ static void gdi_thread(HANDLE running_event)
 						      source, bitmap_info, DIB_RGB_COLORS, SRCCOPY);
 				}
 			}
-			fb_hMemSet(fb_mode->dirty, FALSE, fb_mode->h);
+			fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
 		}
 		
 		GetKeyboardState(keystate);
