@@ -38,6 +38,7 @@ char *fb_hGetExeName( char *dst, int maxlen )
 	char *p;
 	char linkname[1024];
 	struct stat finfo;
+	int len;
 
 	sprintf(linkname, "/proc/%d/exe", getpid());
 	if ((stat(linkname, &finfo) == 0) && ((len = readlink(linkname, dst, maxlen - 1)) > -1)) {
