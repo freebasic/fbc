@@ -1280,6 +1280,13 @@ function astCloneTree( byval n as integer ) as integer
 	End If
 
 	select case astTB(n).typ
+	'' array?
+	case AST.NODETYPE.IDX
+		p = astTB(n).idx.var
+		if( p <> INVALID ) then
+			astTB(nn).idx.var = astCloneTree( p )
+		end if
+
 	'' function called through a pointer?
 	case AST.NODETYPE.FUNCT
 		p = astTB(n).proc.p
@@ -1320,6 +1327,13 @@ sub astDelTree ( byval n as integer )
 	End If
 
 	select case astTB(n).typ
+	'' array?
+	case AST.NODETYPE.IDX
+		p = astTB(n).idx.var
+		if( p <> INVALID ) then
+			astDelTree p
+		end if
+
 	'' function called through a pointer?
 	case AST.NODETYPE.FUNCT
 		p = astTB(n).proc.p
@@ -1509,14 +1523,13 @@ function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
 	astGetSymbol = NULL
 
 	if( n <> INVALID ) then
-		if( astTB(n).typ = AST.NODETYPE.PTR ) then
-			astGetSymbol = astTB(n).ptr.sym
-			exit function
-		end if
-
 		select case astTB(n).typ
+		case AST.NODETYPE.PTR
+			astGetSymbol = astTB(n).ptr.sym
+
 		case AST.NODETYPE.VAR
 			astGetSymbol = astTB(n).var.sym
+
 		case AST.NODETYPE.IDX
 			n = astTB(n).idx.var
 			if( n <> INVALID ) then
@@ -1533,14 +1546,13 @@ function astGetUDTElm( byval n as integer ) as FBTYPELEMENT ptr static
 	astGetUDTElm = NULL
 
 	if( n <> INVALID ) then
-		if( astTB(n).typ = AST.NODETYPE.PTR ) then
-			astGetUDTElm = astTB(n).ptr.elm
-			exit function
-		end if
-
 		select case astTB(n).typ
+		case AST.NODETYPE.PTR
+			astGetUDTElm = astTB(n).ptr.elm
+
 		case AST.NODETYPE.VAR
 			astGetUDTElm = astTB(n).var.elm
+
 		case AST.NODETYPE.IDX
 			n = astTB(n).idx.var
 			if( n <> INVALID ) then
@@ -1550,6 +1562,25 @@ function astGetUDTElm( byval n as integer ) as FBTYPELEMENT ptr static
 	end if
 
 end function
+
+'':::::
+function astGetOffset( byval n as integer ) as integer static
+
+	if( n <> INVALID ) then
+		select case astTB(n).typ
+		case AST.NODETYPE.PTR
+			astGetOffset = astTB(n).ptr.ofs
+		case AST.NODETYPE.VAR
+			astGetOffset = astTB(n).var.ofs
+		case AST.NODETYPE.IDX
+			astGetOffset = astTB(n).idx.ofs
+		end select
+	else
+		astGetOffset = 0
+	end if
+
+end function
+
 
 '':::::
 function astGetDataType( byval n as integer ) as integer static
@@ -2366,18 +2397,6 @@ sub astLoadVAR( byval n as integer, vreg as integer ) static
 
 end sub
 
-'':::::
-function astGetVAROfs( byval n as integer ) as integer static
-
-	if( n <> INVALID ) then
-		astGetVAROfs = astTB(n).var.ofs
-	else
-		astGetVAROfs = 0
-	end if
-
-end function
-
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' indexes
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2414,7 +2433,7 @@ function asthEmitIDX( byval v as integer, byval ofs as integer, byval lgt as int
 
     s = astTB(v).var.sym
 
-    isdyn = symbGetVarIsDynamic( s ) or ((symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0)
+    isdyn = symbGetVarIsDynamic( s )
     diff  = symbGetVarDiff( s )
 
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
@@ -3140,7 +3159,7 @@ private function hCheckStrArg( byval proc as FBSYMBOL ptr, byval isrtl as intege
 
 			'' don't copy back if it's a function returning a fixed-len (ie: C functions)
 			if( ptype <> AST.NODETYPE.FUNCT ) then
-				srctree = astCloneTree( astTB(n).l )
+				srctree = astCloneTree( n )
 			end if
 
     	'' byte ptr?

@@ -2596,11 +2596,11 @@ sub emitClose
 	'' const
 	hSaveAsmConst
 
-	'' BSS
-	hSaveAsmBss
-
 	'' data
 	hSaveAsmData
+
+	'' bss
+	hSaveAsmBss
 
 	''
 	edbgFooter

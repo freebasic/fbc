@@ -95,6 +95,7 @@ sub hSetCtx
 	env.lastcompound	= INVALID
 	env.isprocstatic	= FALSE
 	env.procerrorhnd 	= NULL
+	env.withtextidx		= INVALID
 
 	''
 	env.forstmt.endlabel	= NULL

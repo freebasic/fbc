@@ -113,7 +113,7 @@ declare function 	astGetDataSize		( byval n as integer ) as integer
 declare function 	astGetValue			( byval n as integer ) as double
 declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
 declare function 	astGetUDTElm		( byval n as integer ) as FBTYPELEMENT ptr
-declare function 	astGetVAROfs		( byval n as integer ) as integer
+declare function 	astGetOffset		( byval n as integer ) as integer
 
 declare sub 		astLoad				( byval n as integer, dst as integer )
 declare sub 		astBinOperation		( byval op as integer, byval v1 as integer, byval v2 as integer, byval vr as integer, byval ex as FBSYMBOL ptr )

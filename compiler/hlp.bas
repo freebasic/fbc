@@ -102,8 +102,9 @@ data "Identifier's name too big"
 data "Illegal without the -ex option"
 data "Type mismatch"
 data "Illegal specification"
+data "Expected 'END WITH'"
 
-const FB.ERRMSGS = 60
+const FB.ERRMSGS = 61
 
 
 '':::::

@@ -74,6 +74,9 @@ function cCompoundStmt
 								res = cEndStatement
 								if( not res ) then
 									res = cCompoundStmtElm
+									if( not res ) then
+										res = cWithStatement
+									end if
 								end if
 							end if
 						end if
@@ -492,7 +495,7 @@ function cForStatement
 	end if
 
 	if( (astGetType( idexpr ) <> AST.NODETYPE.VAR) or _
-		(astGetVAROfs( idexpr ) <> 0) ) then
+		(astGetOffset( idexpr ) <> 0) ) then
 		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
 		exit function
 	end if
@@ -1394,3 +1397,79 @@ function cCompoundStmtElm
 	cCompoundStmtElm = TRUE
 
 end function
+
+'':::::
+private function hReadWithText as string
+    dim text as string
+
+    text = ""
+    do
+    	select case lexCurrentToken
+		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOF
+			exit do
+		end select
+
+    	text = text + lexEatToken
+    loop
+
+	hReadWithText = text
+
+end function
+
+'':::::
+''WithStatement   =   WITH Variable Comment?
+''					  SimpleLine*
+''					  END WITH .
+''
+function cWithStatement
+    dim oldwithtextidx as integer, lastcompstmt as integer
+    dim res as integer
+
+	cWithStatement = FALSE
+
+	'' WITH
+	if( not hMatch( FB.TK.WITH ) ) then
+		exit function
+	end if
+
+	'' save old
+	oldwithtextidx = env.withtextidx
+
+	'' Variable
+	env.withtextidx = strpAdd( hReadWithText )
+
+	''
+	lastcompstmt     = env.lastcompound
+	env.lastcompound = FB.TK.WITH
+
+	'' Comment?
+	res = cComment
+
+	'' separator
+	if( not cSttSeparator ) then
+		hReportError FB.ERRMSG.EXPECTEDEOL
+		exit function
+	end if
+
+	'' loop body
+	do
+		res = cSimpleLine
+	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+
+	'' END WITH
+	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.WITH )) ) then
+		hReportError FB.ERRMSG.EXPECTEDENDWITH
+		exit function
+	end if
+
+	'' restore old
+	strpDel env.withtextidx
+	env.withtextidx = oldwithtextidx
+
+	''
+	env.lastcompound = lastcompstmt
+
+	cWithStatement = TRUE
+
+end function
+

@@ -47,13 +47,18 @@ type LEXCTX
 	lasttoken 		as integer
 
 	'' last #define's text
-	deftext			as string * 1024
-	defptr 			as integer
+	deftext			as string * FB.MAXLITLEN
+	defptr 			as byte ptr
 	deflen 			as integer
+
+	'' last WITH's text
+	withtext		as string * FB.MAXNAMELEN
+	withptr 		as byte ptr
+	withlen 		as integer
 
 	'' input buffer
 	bufflen			as integer
-	buffptr			as integer
+	buffptr			as byte ptr
 	buff			as string * 8192
 end type
 
@@ -96,8 +101,10 @@ sub lexInit
 
 	ctx.deflen		= 0
 
+	ctx.withlen		= 0
+
 	ctx.bufflen		= 0
-	ctx.buffptr		= 0
+	ctx.buffptr		= NULL
 
 	'' only if it's not on an inc file
 	if( env.reclevel = 0 ) then
@@ -123,38 +130,47 @@ function lexReadChar as integer static
 	'' any #define'd text?
 	if( ctx.deflen > 0 ) then
 
-		char = peek( varptr( ctx.deftext ) + ctx.defptr )
+		char = *ctx.defptr
 		ctx.defptr = ctx.defptr + 1
 		ctx.deflen = ctx.deflen - 1
 
+	'' any WITH text?
+	elseif( ctx.withlen > 0 ) then
+
+		char = *ctx.withptr
+		ctx.withptr = ctx.withptr + 1
+		ctx.withlen = ctx.withlen - 1
+
 	else
 
-		'' buffer not empty?
-		if( ctx.buffptr < ctx.bufflen ) then
-			char = peek( varptr( ctx.buff ) + ctx.buffptr )
-			ctx.buffptr = ctx.buffptr + 1
-
-		'' refill buffer
-		else
+		'' buffer empty?
+		if( ctx.bufflen = 0 ) then
 			if( not eof( env.inf ) ) then
 				p = seek( env.inf )
 				get #env.inf, , ctx.buff
 				ctx.bufflen = seek( env.inf ) - p
-
-				char = peek( varptr( ctx.buff ) )
-				ctx.buffptr = 1
-			else
-				char = 0
+				ctx.buffptr = @ctx.buff
 			end if
+		end if
+
+		''
+		if( ctx.bufflen > 0 ) then
+			char = *ctx.buffptr
+			ctx.buffptr = ctx.buffptr + 1
+			ctx.bufflen = ctx.bufflen - 1
+		else
+			char = 0
 		end if
 
 		'' only save current src line if it's not on an inc file
 		if( env.reclevel = 0 ) then
-			select case char
-			case 0, 13, 10
-			case else
-				curline = curline + chr$( char )
-			end select
+			if( env.clopt.debug ) then
+				select case char
+				case 0, 13, 10
+				case else
+					curline = curline + chr$( char )
+				end select
+			end if
 		end if
 
 	end if
@@ -167,8 +183,9 @@ end function
 sub lexUnreadChar static
 
 	'' buffer not empty and last char not EOF? rewind
-	if( (ctx.buffptr > 0) and (ctx.char <> 0) ) then
+	if( (ctx.buffptr > @ctx.buff) and (ctx.char <> 0) ) then
 		ctx.buffptr = ctx.buffptr - 1
+		ctx.bufflen = ctx.bufflen + 1
 	end if
 
 	ctx.char 	= INVALID
@@ -580,6 +597,7 @@ sub lexNextToken ( t as FBTOKEN, byval checkLineCont as integer = TRUE, byval ch
 	dim isnumber as integer
 	dim d as FBDEFINE ptr
 	dim token as string
+	dim iswith as integer
 
 reread:
 	t.text = ""
@@ -594,9 +612,11 @@ reread:
 		'' !!!FIXME!!! this shouldn't be here :P
 		'' only emit current src line if it's not on an inc file
 		if( env.reclevel = 0 ) then
-			if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
-				emitCOMMENT curline
-				curline = ""
+			if( env.clopt.debug ) then
+				if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
+					emitCOMMENT curline
+					curline = ""
+				end if
 			end if
 		end if
 
@@ -643,6 +663,8 @@ reread:
 		end if
 	loop
 
+	iswith = FALSE
+
 	select case c
 	'':::::
 	case CHAR_DOT
@@ -654,8 +676,12 @@ reread:
 	    	c = lexLookAheadCharEx( TRUE )
 	    	if( c >= CHAR_0 and c <= CHAR_9 ) then
 				isnumber = TRUE
-			elseif( (ctx.lasttoken <> CHAR_RPRNT) ) then
-				isnumber = TRUE
+			elseif( ctx.lasttoken <> CHAR_RPRNT ) then
+				if( env.withtextidx = INVALID ) then
+					isnumber = TRUE
+				else
+					iswith = TRUE
+				end if
 			end if
 		end if
 
@@ -685,12 +711,22 @@ readid:
 				lexUnreadChar
 				ctx.deftext = symbGetDefineText( d )
 				ctx.deflen  = symbGetDefineLen( d )
-				ctx.defptr  = 0
+				ctx.defptr  = @ctx.deftext
 				goto reread
         	end if
         end if
 
        	t.id 		= symbLookupKeyword( token, t.class, t.typ )
+
+       	'' WITH hack
+       	if( iswith ) then
+			lexUnreadChar
+			token = strpGet( env.withtextidx )
+			ctx.withtext = token + t.text
+			ctx.withlen  = len( token ) + t.tlen
+			ctx.withptr  = @ctx.withtext
+			goto reread
+       	end if
 
 	'':::::
 	case CHAR_QUOTE
@@ -971,9 +1007,11 @@ sub lexReadLine( byval endchar as integer = INVALID, dst as string, byval skipli
 		'' !!!FIXME!!! this shouldn't be here :P
 		'' only emit current src line if it's not on an inc file
 		if( env.reclevel = 0 ) then
-			if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
-				emitCOMMENT curline
-				curline = ""
+			if( env.clopt.debug ) then
+				if( (c = CHAR_CR) or (c = CHAR_LF) or (c = 0) ) then
+					emitCOMMENT curline
+					curline = ""
+				end if
 			end if
 		end if
 

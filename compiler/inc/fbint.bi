@@ -328,6 +328,7 @@ enum FBTK_ENUM
 	FB.TK.SCREEN
 	FB.TK.EXTERN
 	FB.TK.STRPTR
+	FB.TK.WITH
 end enum
 
 '' single char tokens
@@ -661,6 +662,7 @@ type FBENV
 	scope			as integer					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
+	withtextidx		as integer					'' WITH's text
 
 	'' cmm-line options
 	clopt			as FBCMMLINEOPT

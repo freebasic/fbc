@@ -661,15 +661,18 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
        	end if
 	end if
 
+    isfunctionptr 	= FALSE
+
+	''
 	'' lookup
 	if( not hVarLookup( id, s, typ, ofs, elm, typesymbol ) ) then
-	    if( typesymbol = NULL ) then
-	    	hReportError FB.ERRMSG.DUPDEFINITION
-        else
-        	hReportError FB.ERRMSG.ELEMENTNOTDEFINED
-        end if
+	   	if( typesymbol = NULL ) then
+	   		hReportError FB.ERRMSG.DUPDEFINITION
+       	else
+       		hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+       	end if
 
-        exit function
+       	exit function
 	end if
 
 	'' add undeclared variable
@@ -687,6 +690,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
 		end if
 	end if
 
+    ''
 	lexSkipToken
 
     ''
@@ -694,12 +698,10 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
 
     isbyref = (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYREF) > 0
 
-    isfunctionptr = FALSE
-
     ''
-    idxexpr = INVALID
-    isbydesc = FALSE
     '' check for '('')', it's not an array, just passing by desc
+    idxexpr  = INVALID
+    isbydesc = FALSE
     if( lexCurrentToken = FB.TK.IDXOPENCHAR ) then
     	if( lexLookahead(1) <> FB.TK.IDXCLOSECHAR ) then
 
@@ -719,7 +721,7 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
     		else
    				'' check if calling functions through pointers
    				if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
-      				isfunctionptr = TRUE
+	   				isfunctionptr = TRUE
     			end if
 
     		end if
@@ -729,7 +731,9 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
     	end if
     end if
 
+   	''
    	if( not isfunctionptr ) then
+
    		'' TypeField?
    		cTypeField( elm, typesymbol, typ, idxexpr, FALSE, checkarray )
 
@@ -741,35 +745,37 @@ function cVariable( varexpr as integer, byval checkarray as integer = TRUE, _
    		end if
    	end if
 
-   	'' AST will handle descriptor pointers
-   	dtype = hStyp2Dtype( typ )
+   	''
+	dtype = hStyp2Dtype( typ )
 
-   	if( not isbyref ) then
-   		varexpr = astNewVAREx( s, elm, ofs, dtype )
-   	else
-   		varexpr = astNewVAREx( s, elm, 0, dtype )
-   	end if
+	'' AST will handle descriptor pointers
+	if( not isbyref ) then
+		varexpr = astNewVAREx( s, elm, ofs, dtype )
+	else
+		varexpr = astNewVAREx( s, elm, 0, dtype )
+	end if
 
 	if( idxexpr <> INVALID ) then
 		varexpr = astNewIDX( varexpr, idxexpr, dtype )
 	else
 		'' array and no index?
 		if( not isbydesc ) then
-   			if( symbIsArray( s ) ) then
-   				if( checkarray ) then
-    				hReportError FB.ERRMSG.EXPECTEDLPRNT
-    				exit function
-    			end if
-    		end if
-	    end if
+  				if( symbIsArray( s ) ) then
+  					if( checkarray ) then
+   					hReportError FB.ERRMSG.EXPECTEDLPRNT
+   					exit function
+   				end if
+   			end if
+    	end if
 	end if
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( isbyref ) then
-    	dtype = astGetDataType( varexpr )
-    	varexpr = astNewPTREx( s, elm, ofs, dtype, varexpr )
+   		dtype = astGetDataType( varexpr )
+   		varexpr = astNewPTREx( s, elm, ofs, dtype, varexpr )
 	end if
 
+	''
 	if( not isfunctionptr ) then
 		'' DerefFields?
 		cDerefFields( elm, typesymbol, typ, varexpr, checkarray )

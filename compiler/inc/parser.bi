@@ -71,6 +71,7 @@ declare function 	cProcStatement         	( ) as integer
 declare function 	cExitStatement			( ) as integer
 declare function 	cEndStatement			( ) as integer
 declare function 	cContinueStatement		( ) as integer
+declare function 	cWithStatement          ( ) as integer
 declare function 	cAssignment				( ) as integer
 declare function 	cExpression				( expr as integer ) as integer
 declare function 	cLogExpression			( logexpr as integer ) as integer
