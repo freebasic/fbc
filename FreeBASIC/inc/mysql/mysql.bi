@@ -40,7 +40,7 @@ end type
 #define MYSQL_FIELD_OFFSET uinteger
 #define my_ulonglong uinteger
 
-#define MYSQL_COUNT_ERROR (not 0)
+#define MYSQL_COUNT_ERROR ( not 0)
 
 type st_mysql_rows
 	next as st_mysql_rows ptr
@@ -219,7 +219,7 @@ declare function mysql_character_set_name alias "mysql_character_set_name" (byva
 declare function mysql_init alias "mysql_init" (byval mysql as MYSQL ptr) as MYSQL ptr
 declare function mysql_ssl_set alias "mysql_ssl_set" (byval mysql as MYSQL ptr, byval key as string, byval cert as string, byval ca as string, byval capath as string, byval cipher as string) as integer
 declare function mysql_change_user alias "mysql_change_user" (byval mysql as MYSQL ptr, byval user as string, byval passwd as string, byval db as string) as my_bool
-declare function mysql_real_connect alias "mysql_real_connect" (byval mysql as MYSQL ptr, byval host as string, byval user as string, byval passwd as string, byval db as string, byval port as uinteger, byval unix_socket as string, byval clientflag as uinteger) as MYSQL  ptr
+declare function mysql_real_connect alias "mysql_real_connect" (byval mysql as MYSQL ptr, byval host as string, byval user as string, byval passwd as string, byval db as string, byval port as uinteger, byval unix_socket as string, byval clientflag as uinteger) as MYSQL ptr
 declare sub mysql_close alias "mysql_close" (byval sock as MYSQL ptr)
 declare function mysql_select_db alias "mysql_select_db" (byval mysql as MYSQL ptr, byval db as string) as integer
 declare function mysql_query alias "mysql_query" (byval mysql as MYSQL ptr, byval q as string) as integer

@@ -225,9 +225,3 @@ declare sub my_thread_end alias "my_thread_end" ()
 #define NULL_LENGTH ( not 0)
 
 #endif
-
-
-'' List of symbols not found:
-
-'' #define sockaddr integer
-
