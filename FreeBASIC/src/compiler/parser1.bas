@@ -714,7 +714,8 @@ function cTypeLine as integer
 	do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
 	loop
 
-	select case lexCurrentToken
+	select case as const lexCurrentToken
+	'' END?
 	case FB.TK.END
 		if( env.typectx.innercnt = 0 ) then
 			exit function
@@ -740,27 +741,47 @@ function cTypeLine as integer
 			symbRecalcUDTSize env.typectx.symbol
 		end if
 
+	'' UNION?
 	case FB.TK.UNION
-		if( env.typectx.isunion ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
-			exit function
-		else
+		'' isn't it a field called UNION?
+		select case lexLookAhead( 1 )
+		case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+			if( env.typectx.isunion ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			end if
+
 			lexSkipToken
-		end if
 
-		env.typectx.innercnt += 1
+			env.typectx.innercnt += 1
 
+		case else
+			goto declfield
+
+		end select
+
+	'' TYPE?
 	case FB.TK.TYPE
-		if( not env.typectx.isunion ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
-			exit function
-		else
-			lexSkipToken
-		end if
+		'' isn't it a field called TYPE?
+		select case lexLookAhead( 1 )
+		case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+			if( not env.typectx.isunion ) then
+				hReportError FB.ERRMSG.SYNTAXERROR
+				exit function
+			end if
 
-		env.typectx.innercnt += 1
+			lexSkipToken
+
+			env.typectx.innercnt += 1
+
+		case else
+			goto declfield
+
+		end select
 
 	case else
+declfield:
+
 		env.typectx.elements += 1
 
 		if( cElementDecl( ename, typ, subtype, lgt, dimensions, dTB() ) ) then
