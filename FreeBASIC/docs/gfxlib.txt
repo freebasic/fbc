@@ -1421,7 +1421,8 @@ SCREENINFO, SETMOUSE, PALETTE.
 | SCREENCOPY |
 +------------+
 
-Statement to copy the contents of a graphical page into another graphical page.
+Statement to copy the contents of a graphical page into another graphical page,
+or to swap OpenGL buffers.
 
 
 Syntax:
@@ -1442,6 +1443,9 @@ Insights:
 You can use this function to add a double buffer to your graphics. Any SCREEN
 mode supports this function; you must supply valid page numbers otherwise
 SCREENCOPY will have no effect.
+If in OpenGL mode, calling this function will result in a hardware page flip,
+causing the rendered frame to be displayed; in this case the from_page and
+to_page parameters have no meaning and are always not used.
 This function has two aliases: FLIP and PCOPY.
 
 
