@@ -34,7 +34,7 @@ ifeq ($(PLATFORM),WIN32)
     LDFLAGS := -T ../../bin/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib -( -lcrtdll -lfb -lkernel32 -luser32 -)
     BC := ..\..\fbc.exe
-    BCFLAGS := -e -c -d TARGET_WIN32 -g
+    BCFLAGS := -e -c -d TARGET_WIN32
     LD := ..\..\bin\ld.exe
 endif
 
