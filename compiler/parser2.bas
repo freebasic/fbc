@@ -845,8 +845,8 @@ function cFuncParam( byval proc as integer, byval arg as integer, byval procexpr
 
     dtype = astGetDataType( paramexpr )
     if( astNewPARAMEx( procexpr, paramexpr, dtype, pmode ) = INVALID ) then
-    	hReportError FB.ERRMSG.INTERNAL
-    	exit function
+		hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+		exit function
     end if
 
     cFuncParam = TRUE

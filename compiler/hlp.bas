@@ -85,8 +85,9 @@ data "SUB or FUNCTION not declared"
 data "Expected ';'"
 data "Undefined label"
 data "Too many array dimensions"
+data "Expected scalar"
 
-const FB.ERRMSGS = 49
+const FB.ERRMSGS = 50
 
 
 '':::::
@@ -325,7 +326,7 @@ sub hClearName( src as string ) static
 	for i = 1 to len( src )
 		c = peek( ofs )
 		select case c
-		case CHAR_DOT, CHAR_MINUS
+		case CHAR_DOT, CHAR_MINUS, CHAR_SPACE
 			poke ofs, CHAR_ZLOW
 		end select
 		ofs = ofs + 1

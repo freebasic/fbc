@@ -177,8 +177,11 @@ end function
 function assembleFiles as integer
 	dim i as integer, f as integer
 	dim aspath as string, ascline as string
+	dim QUOTE as string
 
 	assembleFiles = FALSE
+
+	QUOTE = chr$( 34 )
 
     ''
     aspath = exepath$ + FB.BINPATH + "as.exe"
@@ -189,7 +192,7 @@ function assembleFiles as integer
     	'' as' options
     	ascline = "--strip-local-absolute "
 
-		ascline = ascline + asmlist(i) + " -o " + outlist(i) + " "
+		ascline = ascline + QUOTE + asmlist(i) + QUOTE + " -o " + QUOTE + outlist(i) + QUOTE + " "
 
     	'' invoke as
     	if( ctx.verbose ) then
@@ -210,8 +213,11 @@ end function
 function linkFiles as integer
 	dim i as integer, f as integer
 	dim ldcline as string
+	dim QUOTE as string
 
 	linkFiles = FALSE
+
+	QUOTE = chr$( 34 )
 
 	'' if no executable name was defined, assume it's the same as the first source file
 	if( len( ctx.exefile ) = 0 ) then
@@ -234,7 +240,7 @@ function linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T " + exepath$ + FB.BINPATH + "i386pe.x -s -subsystem " + ctx.subsystem
+	ldcline = "-T " + QUOTE + exepath$ + FB.BINPATH + "i386pe.x" + QUOTE + " -s -subsystem " + ctx.subsystem
 
 	'' stack size
 	ldcline = ldcline + " --stack " + str$( ctx.stacksize ) + "," + + str$( ctx.stacksize )
@@ -244,19 +250,19 @@ function linkFiles as integer
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
-    	ldcline = ldcline + outlist(i) + " "
+    	ldcline = ldcline + QUOTE + outlist(i) + QUOTE + " "
     next i
 
     '' add objects from cmm-line
     for i = 0 to ctx.objs-1
-    	ldcline = ldcline + objlist(i) + " "
+    	ldcline = ldcline + QUOTE + objlist(i) + QUOTE + " "
     next i
 
     '' set executable name
-    ldcline = ldcline + "-o " + ctx.exefile
+    ldcline = ldcline + "-o " + QUOTE + ctx.exefile + QUOTE
 
     '' default lib path
-    ldcline = ldcline + " -L " + exepath$ + FB.LIBPATH
+    ldcline = ldcline + " -L " + QUOTE + exepath$ + FB.LIBPATH + QUOTE
 
     '' init lib group
     ldcline = ldcline + " -( "

@@ -28,7 +28,7 @@ const FB.SIGN$					= "FreeBASIC v0.06b"
 '' paths
 const FB.BINPATH$				= "\bin\"
 const FB.INCPATH$				= "\inc\"
-const FB.LIBPATH$				= "\lib\"
+const FB.LIBPATH$				= "\lib"
 
 '' compiler options
 enum FBCOMPOPT_ENUM
@@ -97,6 +97,7 @@ enum FBERRMSG_ENUM
 	FB.ERRMSG.EXPECTEDSEMICOLON
 	FB.ERRMSG.UNDEFINEDLABEL
 	FB.ERRMSG.TOOMANYDIMENSIONS
+	FB.ERRMSG.EXPECTEDSCALAR
 end enum
 
 '' cpu types

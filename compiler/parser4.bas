@@ -468,12 +468,19 @@ function cForStatement
 		exit function
 	end if
 
-	if( astGetType( idexpr ) <> AST.NODETYPE.VAR ) then
-		hReportError FB.ERRMSG.EXPECTEDVAR
+	if( (astGetType( idexpr ) <> AST.NODETYPE.VAR) or _
+		(astGetVAROfs( idexpr ) <> 0) ) then
+		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
 		exit function
 	end if
 
 	cnt = astGetSymbol( idexpr )
+	typ = symbGetType( cnt )
+
+	if( typ < FB.SYMBTYPE.BYTE or typ > FB.SYMBTYPE.DOUBLE ) then
+		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
+		exit function
+	end if
 
 	'' =
 	if( not hMatch( FB.TK.ASSIGN ) ) then
@@ -489,7 +496,6 @@ function cForStatement
 	astFlush expr, vr
 
 	'' get counter type (endc and step must be the same type)
-	typ    = symbGetType( cnt )
 	dtype  = hStyp2Dtype( typ )
 	dclass = irGetDataClass( dtype )
 

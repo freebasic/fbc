@@ -2439,7 +2439,10 @@ function cProcParamList( byval proc as integer, byval procexpr as integer ) as i
 	for p = 0 to args-1
 
 		dtype = astGetDataType( elist(p) )
-		res = astNewPARAMEx( procexpr, elist(p), dtype, mlist(p) )
+		if( astNewPARAMEx( procexpr, elist(p), dtype, mlist(p) ) = INVALID ) then
+			hReportError FB.ERRMSG.PARAMTYPEMISMATCH
+			exit function
+		end if
 
 	next p
 

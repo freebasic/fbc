@@ -691,6 +691,10 @@ data "rset","fb_StrRset", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
+'' fre ( ) as uinteger
+data "fre","fb_GetMemAvail", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
+				            FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '' beep ( ) as void

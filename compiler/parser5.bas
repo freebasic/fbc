@@ -95,11 +95,11 @@ function hCheckArgs( byval proc as integer, byval argc as integer, argv() as FBP
 end function
 
 '':::::
-''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) ('(' Arguments? ')')? (AS SymbolType)? STATIC?
+''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) (ALIAS LIT_STRING)? ('(' Arguments? ')')? (AS SymbolType)? STATIC?
 ''
 function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as integer ) static
     dim res as integer
-    dim id as string, typ as integer, subtype as integer, mode as integer, lgt as integer
+    dim id as string, aliasid as string, typ as integer, subtype as integer, mode as integer, lgt as integer
     dim argc as integer, argv(0 to FB_MAXPROCARGS-1) as FBPROCARG
 
 	cSubOrFuncHeader = FALSE
@@ -132,6 +132,13 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
 	case else
 		mode = FB.DEFAULT.FUNCMODE
 	end select
+
+	'' (ALIAS LIT_STRING)?
+	if( hMatch( FB.TK.ALIAS ) ) then
+		aliasid = lexEatToken
+	else
+		aliasid = ""
+	end if
 
 	'' ('(' Arguments? ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
@@ -171,7 +178,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
 
     proc = symbLookupProc( id )
     if( proc = INVALID ) then
-    	proc = symbAddProc( id, "", "", typ, mode, argc, argv(), TRUE )
+    	proc = symbAddProc( id, aliasid, "", typ, mode, argc, argv(), TRUE )
     else
     	if( symbGetProcIsDeclared( proc ) ) then
     		hReportError FB.ERRMSG.DUPDEFINITION
