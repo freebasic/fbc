@@ -63,6 +63,7 @@ FBCALL void fb_Init ( void )
 
 #ifndef DISABLE_NCURSES
 	/* Init ncurses */
+	system("echo -e \"\\033(U\"");
 	initscr();
 	cbreak();
 	noecho();
