@@ -3259,7 +3259,7 @@ private function hSetBitField( byval l as integer, _
 							   byval s as FBSYMBOL ptr ) as integer static
 
 	l = astNewBOP( IR.OP.AND, astCloneTree( l ), _
-				   astNewCONST( bitmaskTB(s->var.elm.bits) shl s->var.elm.bitpos, IR.DATATYPE.UINT ) )
+				   astNewCONST( not (bitmaskTB(s->var.elm.bits) shl s->var.elm.bitpos), IR.DATATYPE.UINT ) )
 
 	if( s->var.elm.bitpos > 0 ) then
 		r = astNewBOP( IR.OP.SHL, r, _
