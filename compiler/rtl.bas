@@ -853,6 +853,8 @@ data "clear","memset", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 3, _
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
+#ifdef TARGET_WIN32
+
 '' beep ( ) as void
 data "beep","_beep", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
 
@@ -865,6 +867,24 @@ data "rmdir","_rmdir", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
 '' chdir ( byval path as string ) as integer
 data "chdir","_chdir", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
 					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+
+#else
+
+'' beep ( ) as void
+data "beep","", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
+
+'' mkdir ( byval path as string, byval mode as integer = &o644 ) as integer
+data "mkdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 2, _
+				 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
+				 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&o644
+'' rmdir ( byval path as string ) as integer
+data "rmdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
+				 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+'' chdir ( byval path as string ) as integer
+data "chdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
+				 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+
+#endif
 
 
 
