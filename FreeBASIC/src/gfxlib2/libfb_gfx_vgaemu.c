@@ -1,0 +1,95 @@
+/*
+ *  libgfx2 - FreeBASIC's alternative gfx library
+ *	Copyright (C) 2005 Angelo Mottola (a.mottola@libero.it)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+
+/*
+ * vgaemu.c -- VGA in/out emulation
+ *
+ * chng: jan/2005 written [lillo]
+ *
+ */
+
+#include "fb_gfx.h"
+
+
+static int index = 0, shift = 2, color = 0;
+
+
+/*:::::*/
+FBCALL int fb_GfxPaletteIn(int port)
+{
+	int value;
+	
+	if (!fb_mode)
+		return;
+	
+	switch (port) {
+		
+		case 0x3C9:
+			value = (fb_mode->palette[index] >> shift) & 0x3F;
+			shift += 8;
+			if (shift > 18) {
+				shift = 2;
+				index++;
+				index &= fb_mode->color_mask;
+			}
+			break;
+	}
+	
+	return value;
+}
+
+
+/*:::::*/
+FBCALL void fb_GfxPaletteOut(int port, int value)
+{
+	if (!fb_mode)
+		return;
+	
+	value &= 0xFF;
+	
+	switch (port) {
+	
+		case 0x3C7:
+		case 0x3C8:
+			index = value;
+			shift = 2;
+			color = 0;
+			break;
+		
+		case 0x3C9:
+			color |= ((value & 0x3F) << shift);
+			shift += 8;
+			if (shift > 18) {
+				fb_GfxPalette(index, color);
+				shift = 2;
+				color = 0;
+				index++;
+				index &= fb_mode->color_mask;
+			}
+			break;
+	}
+
+}
+
+
+FBCALL void fb_GfxWaitVSync(int port, int and_mask, int xor_mask)
+{
+	if ((port == 0x3DA) && (and_mask == 8) && (!xor_mask) && (fb_mode))
+			fb_mode->driver->wait_vsync();
+}
