@@ -216,24 +216,20 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		/* Convert directory separators to whatever the current platform supports */
 		filename = fb_hConvertPath( str->data, str_len );
 
-		if( mode == FB_FILE_MODE_BINARY || mode == FB_FILE_MODE_RANDOM )
+		if( (mode == FB_FILE_MODE_BINARY) || (mode == FB_FILE_MODE_RANDOM) )
 		{
 			/* try opening */
 			if( (f = fopen( filename, openmask )) == NULL )
 			{
+				/* if file was not found and in READ/WRITE mode, create it */
 				if( accesstype == FB_FILE_ACCESS_READWRITE )
+				{					
 					f = fopen( filename,  "w+b" );
 
-				if( (f == NULL) && (access == FB_FILE_ACCESS_ANY) )
-            		do
-            		{
-	            		--accesstype;
-            			if( accesstype <= FB_FILE_ACCESS_ANY )
-            				break;
-
-            			getaccessmask( openmask, accesstype );
-
-            		} while( (f = fopen( filename, openmask )) == NULL );
+					/* if file could not be created and in ANY mode, try opening as read-only */
+					if( (f == NULL) && (access == FB_FILE_ACCESS_ANY) )
+            			f = fopen( filename,  "rb" );
+            	}
 
             	if( f == NULL )
             	{
