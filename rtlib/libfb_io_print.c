@@ -50,7 +50,7 @@
     	fb_hFilePrintBuffer( fnum, buffer );
 
 
-#define FB_PRINTSTR(fnum, val, mask, type) 			\
+#define FB_PRINTSTR(fnum, val, mask, type) 				\
     char buffer[80*25+1];								\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
@@ -60,7 +60,7 @@
     else												\
     	sprintf( buffer, "%" type, val );               \
     													\
-    if( fnum == 0 )									\
+    if( fnum == 0 )										\
     	fb_hPrintBuffer( buffer, mask );				\
     else												\
     	fb_hFilePrintBuffer( fnum, buffer );
@@ -124,7 +124,7 @@ void fb_hPrintBuffer( char *buffer, int mask )
      	}
 	}
 
-	printf( buffer );
+	printf( "%s", buffer );
 
 
 #ifdef WIN32

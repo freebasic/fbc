@@ -1595,7 +1595,7 @@ sub irFlushCOMP( byval op as integer, byval v1 as integer, byval v2 as integer, 
 	if( (vr <> INVALID) or _
 		(t1 = IR.VREGTYPE.REG) or _
 		(dc1 = IR.DATACLASS.FPOINT) or _
-		((t1 = IR.VREGTYPE.IMM) and (t2 = IR.VREGTYPE.IMM)) ) then
+		(t1 = IR.VREGTYPE.IMM) ) then
 		r1 = regEnsure( dt1, dc1, v1 )
 		t1 = IR.VREGTYPE.REG
 	end if

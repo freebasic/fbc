@@ -40,7 +40,7 @@ __stdcall FBSTRING *fb_Date ( void )
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, 2+1+2+1+2 );
+		fb_hStrAllocTemp( dst, 2+1+2+1+4 );
 
   		time( &rawtime );
   		ptm = localtime( &rawtime );

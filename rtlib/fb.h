@@ -10,6 +10,8 @@
  * strings
  **************************************************************************************************/
 
+#include <string.h>
+
 #define FB_TEMPSTRBIT 0x80000000L
 
 #define FB_ISTEMP(s) ((((FBSTRING *)s)->len & FB_TEMPSTRBIT) != 0)
@@ -27,7 +29,7 @@
 		ptr = (char *)s;                                        \
 		/* always get the real len, as fix-len string will */	\
 		/* have garbage at end (nulls or spaces) */				\
-		len = fb_hStrLen( (char *)s );                      	\
+		len = strlen( (char *)s );                      		\
 	}
 
 

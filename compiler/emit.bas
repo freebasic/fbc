@@ -638,12 +638,14 @@ end sub
 sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
 			   sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
     dim dst as string, src as string
-    dim ext as string, reg as integer, stk as integer, ddsize as integer
+    dim ext as string, reg as integer
+    dim ddsize as integer, sdsize as integer
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
 
 	ddsize = irGetDataSize( ddtype )
+	sdsize = irGetDataSize( sdtype )
 
 	select case ddclass
 	'' integer destine
@@ -719,7 +721,7 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 	case IR.DATACLASS.FPOINT
 
 		'' byte source? damn..
-		if( irGetDataSize( sdtype ) = 1 ) then
+		if( sdsize = 1 ) then
 
 			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 				emithPUSH "edx"
@@ -743,10 +745,14 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 			'' integer source
 			if( sdclass <> IR.DATACLASS.FPOINT ) then
 				if( (stype = IR.VREGTYPE.REG) or (stype = IR.VREGTYPE.IMM) ) then
-					stk = (irGetDataSize( sdtype ) + 3) and not 3
+					'' not an integer? make it
+					if( (stype = IR.VREGTYPE.REG) and (sdsize < FB.INTEGERSIZE) ) then
+						src = emitGetRegName( IR.DATATYPE.INTEGER, sdclass, emitLookupReg( src, sdtype ) )
+					end if
+
 					outp "push " + src
 					outp "fild " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
-					outp "add " + "esp," + str$( stk )
+					outp "add esp, 4"
 				else
 					outp "fild "  + src
 				end if
@@ -762,12 +768,13 @@ end sub
 sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer, byval dtype as integer, _
 			  sname as string, byval sdtype as integer, byval sdclass as integer, byval stype as integer ) 'static
     dim dst as string, src as string
-    dim ext as string, reg as integer, stk as integer, ddsize as integer
+    dim ext as string, reg as integer
+    dim ddsize as integer, sdsize as integer
 
 	dst = hPrepOperand( dname, ddtype, ddclass, dtype )
 	src = hPrepOperand( sname, sdtype, sdclass, stype )
 
-
+    sdsize = irGetDataSize( sdtype )
 	ddsize = irGetDataSize( ddtype )
 
 	select case ddclass
@@ -849,9 +856,14 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 				end if
 
             else
-				stk = (ddsize + 3) and not 3
-				outp "sub esp," + str$( stk )
+				outp "sub esp, 4"
 				outp "fistp " + rtrim$(dtypeTB(ddtype).mname) + " [esp]"
+
+				'' not an integer? make it
+				if( ddsize < FB.INTEGERSIZE ) then
+					dst = emitGetRegName( IR.DATATYPE.INTEGER, ddclass, emitLookupReg( dst, ddtype ) )
+				end if
+
 				outp "pop " + dst
 			end if
 		end if
@@ -859,7 +871,7 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 	'' fpoint destine
 	case IR.DATACLASS.FPOINT
 		'' byte source? damn..
-		if( irGetDataSize( sdtype ) = 1 ) then
+		if( sdsize = 1 ) then
 			if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 				emithPUSH "edx"
 			end if
@@ -886,10 +898,14 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 			'' integer source
 			else
 				if( (stype = IR.VREGTYPE.REG) or (stype = IR.VREGTYPE.IMM) ) then
-					stk = (irGetDataSize( sdtype ) + 3) and not 3
+					'' not an integer? make it
+					if( (stype = IR.VREGTYPE.REG) and (sdsize < FB.INTEGERSIZE) ) then
+						src = emitGetRegName( IR.DATATYPE.INTEGER, sdclass, emitLookupReg( src, sdtype ) )
+					end if
+
 					outp "push " + src
 					outp "fild " + rtrim$(dtypeTB(sdtype).mname) + " [esp]"
-					outp "add " + "esp," + str$( stk )
+					outp "add esp, 4"
 				else
 					outp "fild " + src
 				end if
@@ -2169,7 +2185,7 @@ sub hSaveAsmHeader( byval asmf as integer )
 
 	edbgHeader asmf, env.infile
 
-	hWriteStr asmf, TRUE,  ".intel_syntax"
+	hWriteStr asmf, TRUE,  ".intel_syntax noprefix"
 	hWriteStr asmf, TRUE,  ".arch i386"
 
     hWriteStr asmf, FALSE, ""
@@ -2380,7 +2396,7 @@ sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
     '' common?
     if( (symbGetAlloctype( s ) and FB.ALLOCTYPE.COMMON) > 0 ) then
     	if( dims = -1 ) then dims = 1
-    	hWriteStr asmf, TRUE, "balign 4"
+    	hWriteStr asmf, TRUE, ".balign 4"
     	hWriteStr asmf, TRUE,  ".comm" + TABCHAR + dname + "," + _
     					str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
     	exit sub
@@ -2399,19 +2415,30 @@ sub hWriteArrayDesc( byval asmf as integer, byval s as integer ) 'static
 	''	uint		element_len
     hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( symbGetLen( s ) )
 	''	uint		dimensions
+	if( dims = -1 ) then dims = 1
 	hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( dims )
 
-    d = symbGetFirstVarDim( s )
-    do while( d <> INVALID )
-    	symbGetVarDims s, d, l, u
+    if( not symbGetVarIsDynamic( s ) ) then
+    	d = symbGetFirstVarDim( s )
+    	do while( d <> INVALID )
+    		symbGetVarDims s, d, l, u
 
-		''	uint	dim_elemts
-		hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( u - l + 1 )
-		''	int		dim_first
-		hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( l )
+			''	uint	dim_elemts
+			hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( u - l + 1 )
+			''	int		dim_first
+			hWriteStr asmf, TRUE,  ".int" + TABCHAR + str$( l )
 
-		d = symbGetNextVarDim( s, d )
-    loop
+			d = symbGetNextVarDim( s, d )
+    	loop
+
+    else
+        for d = 0 to dims-1
+			''	uint	dim_elemts
+			hWriteStr asmf, TRUE,  ".int" + TABCHAR + "0"
+			''	int		dim_first
+			hWriteStr asmf, TRUE,  ".int" + TABCHAR + "0"
+        next d
+    end if
 
 end sub
 

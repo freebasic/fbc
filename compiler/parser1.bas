@@ -94,6 +94,17 @@ sub hSetCtx
 	env.procerrorhnd 	= INVALID
 
 	''
+	env.forstmt.endlabel	= INVALID
+	env.forstmt.cmplabel	= INVALID
+	env.dostmt.endlabel		= INVALID
+	env.dostmt.cmplabel		= INVALID
+	env.whilestmt.endlabel	= INVALID
+	env.whilestmt.cmplabel	= INVALID
+	env.procstmt.endlabel	= INVALID
+	env.procstmt.cmplabel	= INVALID
+
+
+	''
 	env.incpaths		= 0
 
 	fbcAddIncPath exepath$ + FB.INCPATH
@@ -890,7 +901,7 @@ function cElementDecl( id as string, typ as integer, subtype as integer, lgt as 
 	id = lexEatToken
 
 	'' ArrayDecl?
-	res = cArrayDecl( dimensions, dTB() )
+	res = cStaticArrayDecl( dimensions, dTB() )
 
     '' AS SumbolType
     if( not hMatch( FB.TK.AS ) or (typ <> INVALID) ) then
@@ -1250,11 +1261,7 @@ function cSymbolDecl
 			alloctype = alloctype or FB.ALLOCTYPE.STATIC
 		end if
 
-		if( (alloctype and FB.ALLOCTYPE.DYNAMIC) = 0 ) then
-			cSymbolDecl = cSymbolDef( alloctype )
-		else
-			cSymbolDecl = cDynSymbolDef( alloctype, dopreserve )
-		end if
+		cSymbolDecl = cSymbolDef( alloctype, dopreserve )
 
 	'' STATIC
 	case FB.TK.STATIC
@@ -1273,14 +1280,55 @@ function cSymbolDecl
 end function
 
 '':::::
-''SymbolDef       =   ID ArrayDecl? (AS SymbolType)?
+function hIsDynamic( byval dimensions as integer, exprTB() as integer ) as integer
+    dim i as integer
+
+	hIsDynamic = TRUE
+
+	if( dimensions = -1 ) then
+		exit function
+	end if
+
+	for i = 0 to dimensions-1
+		if( astGetType( exprTB(i, 0) ) <> AST.NODETYPE.CONST ) then
+			exit function
+		elseif( astGetType( exprTB(i, 1) ) <> AST.NODETYPE.CONST ) then
+			exit function
+		end if
+	next i
+
+	hIsDynamic = FALSE
+
+end function
+
+''::::
+sub hMakeArrayDimTB( byval dimensions as integer, exprTB() as integer, dTB() as FBARRAYDIM )
+    dim i as integer
+
+	if( dimensions = -1 ) then
+		exit function
+	end if
+
+	for i = 0 to dimensions-1
+		dTB(i).lower = cint( astGetValue( exprTB(i, 0) ) )
+		dTB(i).upper = cint( astGetValue( exprTB(i, 1) ) )
+		astDel exprTB(i, 0)
+		astDel exprTB(i, 1)
+	next i
+
+end sub
+
+'':::::
+''SymbolDef       =   ID ('('')' | ArrayDecl)? (AS SymbolType)?
 ''                       (DECL_SEPARATOR SymbolDef)* .
 ''
-function cSymbolDef( byval alloctype as integer )
-    dim id as string, s as integer, addsuffix as integer
+function cSymbolDef( byval alloctype as integer, byval dopreserve as integer = FALSE )
+    dim id as string, symbol as integer
+    dim addsuffix as integer, atype as integer, isdynamic as integer
     dim typ as integer, subtype as integer, lgt as integer, ofs as integer
     dim elm as integer, typesymbol as integer
     dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
+    dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
 
     cSymbolDef = FALSE
 
@@ -1295,14 +1343,33 @@ function cSymbolDef( byval alloctype as integer )
     	subtype 	= INVALID
     	lgt			= 0
     	id 			= lexEatToken
-    	dimensions 	= 0
     	addsuffix 	= TRUE
 
-    	'' ArrayDecl?
-    	if( cArrayDecl( dimensions, dTB() ) ) then
+    	'' ('('')' | ArrayDecl)?
+		dimensions = 0
+		if( (lexCurrentToken = CHAR_LPRNT) and (lexLookAhead(1) = CHAR_RPRNT) ) then
+			lexSkipToken
+			lexSkipToken
+			dimensions = -1 				'' fake it
+		else
+    		if( cArrayDecl( dimensions, exprTB() ) ) then
+    		end if
     	end if
 
+    	'' dynamic?
+    	isdynamic = FALSE
+    	if( dimensions <> 0 ) then
+			if( (alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
+				isdynamic = TRUE
+			else
+				if( (dimensions = -1) or hIsDynamic( dimensions, exprTB() ) ) then
+    				isdynamic = TRUE
+				end if
+			end if
+		end if
+
     	'' (AS SymbolType)?
+    	symbol = INVALID
     	if( lexCurrentToken = FB.TK.AS ) then
 
     		if( typ <> INVALID ) then
@@ -1320,13 +1387,28 @@ function cSymbolDef( byval alloctype as integer )
     		addsuffix = FALSE
 
     		'' check if any suffixed var with same name was already declared
-    		'' ...
+
+			'' if symbol already exists, check if dynamic
+			symbol = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
+			if( symbol <> INVALID ) then
+   				if( not symbGetVarIsDynamic( symbol ) ) then
+   					hReportError FB.ERRMSG.ARRAYALREADYDIMENSIONED
+   					exit function
+   				end if
+			end if
+
     	else
+
 			'' check if any non-suffixed var with same name was already declared
-			s = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
-			if( s <> INVALID ) then
-    			hReportError FB.ERRMSG.DUPDEFINITION
-    			exit function
+			symbol = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
+			if( symbol <> INVALID ) then
+   				if( not isdynamic ) then
+   					hReportError FB.ERRMSG.DUPDEFINITION
+   					exit function
+   				elseif( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
+   					hReportError FB.ERRMSG.DUPDEFINITION
+   					exit function
+   				end if
 			end if
 
 			if( typ = INVALID ) then
@@ -1335,23 +1417,45 @@ function cSymbolDef( byval alloctype as integer )
     		lgt	= symbCalcLen( typ, subtype )
     	end if
 
-    	s = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), alloctype, addsuffix, FALSE, TRUE )
-    	if( s = INVALID ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION
-    		exit function
-		end if
+    	''
+    	if( (isdynamic) or (symbol <> INVALID) ) then
 
-		'' another quirk: if array is local (ie, inside a proc) and it's not dynamic, it's
-		'' descriptor won't will be filled ever, so a call to another rtl routine is needed,
-		'' or that array coulnd't be passed by descriptor to other procs (allocating a static
-		'' descriptor won't help, as that would break recursion)
-		if( env.scope > 0 ) then
-			if( dimensions > 0 ) then
-				if( ((alloctype and FB.ALLOCTYPE.SHARED) = 0) and _
-					((alloctype and FB.ALLOCTYPE.STATIC) = 0) ) then
-					rtlArraySetDesc s, lgt, dimensions, dTB()
+    		if( symbol <> INVALID ) then
+    			if( not symbGetVarIsDynamic( symbol ) ) then
+    				hReportError FB.ERRMSG.ARRAYALREADYDIMENSIONED
+    				exit function
+    			end if
+    		end if
+
+    		if( not cDynArrayDef( symbol, id, typ, subtype, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() ) ) then
+    			exit function
+    		end if
+
+    	else
+
+            hMakeArrayDimTB dimensions, exprTB(), dTB()
+
+            atype = alloctype and (not FB.ALLOCTYPE.DYNAMIC)
+
+    		symbol = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+    		if( symbol = INVALID ) then
+    			hReportError FB.ERRMSG.DUPDEFINITION
+    			exit function
+			end if
+
+			'' another quirk: if array is local (ie, inside a proc) and it's not dynamic, it's
+			'' descriptor won't will be filled ever, so a call to another rtl routine is needed,
+			'' or that array coulnd't be passed by descriptor to other procs (allocating a static
+			'' descriptor won't help, as that would break recursion)
+			if( env.scope > 0 ) then
+				if( dimensions > 0 ) then
+					if( ((alloctype and FB.ALLOCTYPE.SHARED) = 0) and _
+						((alloctype and FB.ALLOCTYPE.STATIC) = 0) ) then
+						rtlArraySetDesc symbol, lgt, dimensions, dTB()
+					end if
 				end if
 			end if
+
 		end if
 
 		'' (DECL_SEPARATOR SymbolDef)*
@@ -1368,151 +1472,67 @@ function cSymbolDef( byval alloctype as integer )
 end function
 
 '':::::
-''DynSymbolDef    =   ID ArrayDecl? (AS SymbolType)?
-''                       (DECL_SEPARATOR SymbolDef)* .
-''
-function cDynSymbolDef( byval alloctype as integer, byval dopreserve as integer )
+function cDynArrayDef( byval s as integer, id as string, byval typ as integer, byval subtype as integer, byval lgt as integer, _
+					   byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
+					   byval dimensions as integer, exprTB() as integer ) as integer
     dim res as integer
-    dim id as string, s as integer, addsuffix as integer, isdynamic as integer
-    dim elm as integer, typesymbol as integer
-    dim typ as integer, subtype as integer, lgt as integer, ofs as integer, atype as integer
-    dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
-    dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
+    dim atype as integer
+    dim dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
 
-    cDynSymbolDef = FALSE
+    cDynArrayDef = FALSE
 
-    do
-        '' ID
-    	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-    		exit function
-    	end if
+    atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
 
-    	typ 		= lexTokenType
-    	subtype 	= INVALID
-    	lgt			= 0
-    	id 			= lexEatToken
-    	dimensions 	= 0
-    	addsuffix 	= TRUE
-
-		'' common type?
-		if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
-			'' ('(' ')')?
-			if( hMatch( CHAR_LPRNT ) ) then
-				if( not hMatch( CHAR_RPRNT) ) then
-					hReportError FB.ERRMSG.EXPECTEDRPRNT
-					exit function
-				end if
-
-				dimensions = -1 				'' fake it
-			end if
-
-		else
-    		'' ArrayDecl?
-    		if( cDynArrayDecl( dimensions, exprTB() ) ) then
-    		end if
-    	end if
-
-    	'' (AS SymbolType)?
-    	s = INVALID
-    	if( lexCurrentToken = FB.TK.AS ) then
-
-    		if( typ <> INVALID ) then
-    			hReportError FB.ERRMSG.SYNTAXERROR
-    			exit function
-    		end if
-
-    		lexSkipToken
-
-    		if( not cSymbolType( typ, subtype, lgt ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-    			exit function
-    		end if
-
-    		addsuffix = FALSE
-    		'' check if any suffixed var with same name was already declared
-    		'' ...
-
-    	else
-			'' check if any non-suffixed var with same name was already declared
-			s = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
-			if( s <> INVALID ) then
-    			if ( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
-    				hReportError FB.ERRMSG.DUPDEFINITION
-    				exit function
-    			end if
-			end if
-
-			if( typ = INVALID ) then
-				typ = hGetDefType( id )
-			end if
-    		lgt	= symbCalcLen( typ, subtype )
-    	end if
-
-    	if( dimensions <> 0 ) then
-    		atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
-    	else
-    		atype = alloctype and not FB.ALLOCTYPE.DYNAMIC
-    	end if
-
-    	isdynamic = (atype and FB.ALLOCTYPE.DYNAMIC) > 0
-
-    	''
+    ''
+    if( s = INVALID ) then
+    	s = symbLookupVarEx( id, typ, 0, 0, 0, addsuffix, FALSE, TRUE )
     	if( s = INVALID ) then
-    		s = symbLookupVarEx( id, typ, ofs, elm, typesymbol, addsuffix, FALSE, TRUE )
-    		if( s <> INVALID ) then
-    			if( not isdynamic ) then
-    				hReportError FB.ERRMSG.DUPDEFINITION
-    				exit function
-    			end if
-    		else
-    			s = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
-			end if
+    		s = symbAddVarEx( id, "", typ, subtype, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+		end if
+	end if
+
+	'' not an argument passed by descriptor or a common array?
+	if( ((symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0) and _
+		((symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) = 0) ) then
+
+		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) or _
+	    	(not symbGetVarIsDynamic( s )) ) then
+    		hReportError FB.ERRMSG.DUPDEFINITION
+    		exit function
 		end if
 
-		if( isdynamic ) then
-			'' not an argument passed by descriptor or a common array?
-			if( ((symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0) and _
-				((symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) = 0) ) then
-				if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) or _
-			    	(dimensions <> symbGetVarDimensions( s )) or _
-			    	(not symbGetVarIsDynamic( s )) ) then
-    				hReportError FB.ERRMSG.DUPDEFINITION
-    				exit function
-				end if
-
-			'' else, can't check it's dimensions at compile-time
-			else
-				if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
-    				hReportError FB.ERRMSG.DUPDEFINITION
-    				exit function
-				end if
-			end if
-
-			'' if it isn't a common array, redim it
-			if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
-				rtlArrayRedim s, lgt, dimensions, exprTB(), dopreserve
-			end if
-
-			'' if common, check for max dimensions used
-			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) > 0 ) then
-				if( dimensions > symbGetVarDimensions( s ) ) then
-					symbSetVarDimensions s, dimensions
-				end if
-			end if
-
+		if( symbGetVarDimensions( s ) > 0 ) then
+			if( dimensions <> symbGetVarDimensions( s ) ) then
+    			hReportError FB.ERRMSG.WRONGDIMENSIONS
+    			exit function
+    		end if
 		end if
 
-		'' (DECL_SEPARATOR SymbolDef)*
-		if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
-			exit do
+	'' else, can't check it's dimensions at compile-time
+	else
+		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
+    		hReportError FB.ERRMSG.DUPDEFINITION
+    		exit function
+		end if
+	end if
+
+	'' if it isn't a common array, redim it
+	if( ((alloctype and FB.ALLOCTYPE.COMMON) = 0) and (dimensions > 0) ) then
+		rtlArrayRedim s, lgt, dimensions, exprTB(), dopreserve
+	end if
+
+	'' if common, check for max dimensions used
+	if( (symbGetAllocType( s ) and FB.ALLOCTYPE.COMMON) > 0 ) then
+		if( dimensions > symbGetVarDimensions( s ) ) then
+			symbSetVarDimensions s, dimensions
 		end if
 
-		lexSkipToken
+	'' or if dims = -1 (cause of "redim|dim array()")
+	elseif( symbGetVarDimensions( s ) = -1 ) then
+		symbSetVarDimensions s, dimensions
+	end if
 
-    loop
-
-    cDynSymbolDef = TRUE
+    cDynArrayDef = TRUE
 
 end function
 
@@ -1521,12 +1541,12 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      IDX_CLOSE .
 ''
-function cArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
+function cStaticArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
     dim res as integer
     dim i as integer, expr as integer
 
     res = FALSE
-    cArrayDecl = FALSE
+    cStaticArrayDecl = FALSE
 
     dimensions = 0
 
@@ -1597,21 +1617,19 @@ function cArrayDecl( dimensions as integer, dTB() as FBARRAYDIM )
     	res = FALSE
     end if
 
-	cArrayDecl = res
+	cStaticArrayDecl = res
 
 end function
 
 '':::::
-''DynArrayDecl    =   IDX_OPEN Expression (TO Expression)?
+''ArrayDecl    	  =   IDX_OPEN Expression (TO Expression)?
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      IDX_CLOSE .
 ''
-function cDynArrayDecl( dimensions as integer, exprTB() as integer )
-    dim res as integer
+function cArrayDecl( dimensions as integer, exprTB() as integer )
     dim i as integer, expr as integer
 
-    res = FALSE
-    cDynArrayDecl = FALSE
+    cArrayDecl = FALSE
 
     dimensions = 0
 
@@ -1664,13 +1682,12 @@ function cDynArrayDecl( dimensions as integer, exprTB() as integer )
 	loop
 
 	'' IDX_CLOSE
-    res = TRUE
     if( not hMatch( FB.TK.IDXCLOSECHAR ) ) then
     	hReportError FB.ERRMSG.EXPECTEDRPRNT
-    	res = FALSE
+    	exit function
     end if
 
-	cDynArrayDecl = res
+	cArrayDecl = TRUE
 
 end function
 
@@ -2013,6 +2030,11 @@ function cSubOrFuncDecl( byval isSub as integer ) static
 
     	if( not cSymbolType( typ, subtype, lgt ) ) then
     		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    		exit function
+    	end if
+
+    	if( typ = FB.SYMBTYPE.USERDEF ) then
+    		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
     		exit function
     	end if
     end if

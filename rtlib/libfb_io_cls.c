@@ -25,6 +25,7 @@
  */
 
 #include "fb.h"
+#include <stdio.h>
 
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -89,10 +90,13 @@ __stdcall void fb_ConsoleGetSize( int *cols, int *rows )
 #ifdef WIN32
     CONSOLE_SCREEN_BUFFER_INFO info;
 
-    GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info );
-
     if( cols != NULL )
-    	*cols = info.dwSize.X;
+    {
+    	if( !GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info ) )
+    		*cols = 80;
+    	else
+    		*cols = info.dwSize.X;
+    }
 
 #else /* WIN32 */
 

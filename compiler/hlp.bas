@@ -85,9 +85,13 @@ data "SUB or FUNCTION not declared"
 data "Expected ';'"
 data "Undefined label"
 data "Too many array dimensions"
-data "Expected scalar"
+data "Expected scalar counter"
+data "Illegal outside a SUB or FUNCTION"
+data "Expected dynamic array"
+data "Cannot return TYPE's or UNION's from functions"
+data "Array already dimensioned"
 
-const FB.ERRMSGS = 50
+const FB.ERRMSGS = 54
 
 
 '':::::

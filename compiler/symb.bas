@@ -2405,7 +2405,7 @@ end function
 '':::::
 function symbGetVarIsDynamic( byval s as integer ) as integer static
 
-	symbGetVarIsDynamic = (symbolTB(s).alloctype and FB.ALLOCTYPE.DYNAMIC) > 0
+	symbGetVarIsDynamic = (symbolTB(s).alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0
 
 end function
 

@@ -495,7 +495,6 @@ end function
 '':::::
 function hVarLookup( id as string, s as integer, typ as integer, ofs as integer, _
 					 elm as integer, typesymbol as integer ) as integer
-	dim stype as integer
 
 	hVarLookup = FALSE
 
@@ -518,11 +517,10 @@ function hVarLookup( id as string, s as integer, typ as integer, ofs as integer,
 		s = symbLookupVar( id, typ, ofs, elm, typesymbol )
 		if( s = INVALID ) then
 			'' now w/o suffixes
-			stype = INVALID
-			s = symbLookupVar( id, stype, ofs, elm, typesymbol )
+			s = symbLookupVar( id, INVALID, ofs, elm, typesymbol )
 			if( s <> INVALID ) then
 				'' same type?
-				if( typ <> stype ) then
+				if( typ <> symbGetType( s ) ) then
 					exit function
 				end if
 			end if

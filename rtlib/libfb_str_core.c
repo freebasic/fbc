@@ -32,6 +32,7 @@
  */
 
 #include <malloc.h>
+#include <string.h>
 #include "fb.h"
 
 /* globals */
@@ -190,11 +191,7 @@ void fb_hStrDelTemp( FBSTRING *str )
 /*:::::*/
 int fb_hStrLen ( char *str )
 {
-	int l;
-
-	for( l=0; *str != '\0'; ++str,++l ) ;
-
-	return l;
+	return strlen( str );
 }
 
 /*:::::*/
@@ -310,7 +307,7 @@ __stdcall int fb_StrLen( void *str, int str_size )
 		fb_hStrDelTemp( (FBSTRING *)str );
 	}
 	else if( str_size == 0 )
-		len = fb_hStrLen( (char *)str );
+		len = strlen( (char *)str );
 	else
 		len = str_size;
 
@@ -374,6 +371,11 @@ __stdcall void fb_StrAssign ( void *dst, int dst_size, void *src, int src_size )
 			src_len = dst_size;
 
 		fb_hStrCopy( (char *)dst, src_ptr, src_len );
+
+		/* fill reminder with null's */
+		dst_size -= src_len;
+		if( dst_size > 0 )
+			memset( &(((char *)dst)[src_len]), 0, dst_size );
 	}
 
 
@@ -487,7 +489,7 @@ __stdcall FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
 		if( str_size != 0 )
 			dsc->len  = str_size;
 		else
-			dsc->len  = fb_hStrLen( str );
+			dsc->len  = strlen( str );
 	}
 
 	return (FBSTRING *)dsc;

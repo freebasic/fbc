@@ -219,18 +219,23 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 			if( !isquote )
 				isquote = 1;
 			else
+			{
 				isquote = 0;
+				if( isstring )
+					len = maxlen;				/* exit */
+			}
 
 			break;
 
 		case 9:
-		case ',':
 		case ' ':
-			if( !isquote && !isstring )
-			{
-				len = maxlen;					/* exit */
-				break;
-			}
+		case ',':
+			if( !isstring || ctx.f == NULL )
+				if( !isquote )
+				{
+					len = maxlen;					/* exit */
+					break;
+				}
 
 		default:
 			*p++ = (char)c;

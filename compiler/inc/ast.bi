@@ -37,6 +37,7 @@ type FUNCTNode
 	s			as integer							'' index of symbol tb
 	p			as integer							'' ptr expr, f/ function pointers
 	args		as integer
+	arg			as integer
 end type
 
 type PARAMNode

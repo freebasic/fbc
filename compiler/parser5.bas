@@ -163,6 +163,11 @@ function cSubOrFuncHeader( byval issub as integer, proc as integer, isstatic as 
     		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
     		exit function
     	end if
+
+    	if( typ = FB.SYMBTYPE.USERDEF ) then
+    		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
+    		exit function
+    	end if
     end if
 
     if( issub ) then
@@ -418,11 +423,13 @@ function cProcStatement static
 	symbDelLocalSymbols
 
 	'' back to old state
-	env.procerrorhnd 	= INVALID
-	env.currproc 		= INVALID
-	env.compoundcnt 	= env.compoundcnt - 1
-	env.isprocstatic 	= FALSE
-	env.scope 			= 0
+	env.procerrorhnd 		= INVALID
+	env.currproc 			= INVALID
+	env.compoundcnt 		= env.compoundcnt - 1
+	env.isprocstatic 	 	= FALSE
+	env.procstmt.cmplabel 	= INVALID
+	env.procstmt.endlabel 	= INVALID
+	env.scope 				= 0
 
 	''
 	cProcStatement = TRUE

@@ -37,10 +37,12 @@ declare function 	cConstAssign            ( ) as integer
 declare function 	cTypeDecl               ( ) as integer
 declare function 	cEnumDecl               ( ) as integer
 declare function 	cSymbolDecl             ( ) as integer
-declare function 	cSymbolDef 				( byval alloctype as integer ) as integer
-declare function 	cDynSymbolDef 			( byval alloctype as integer, byval dopreserve as integer ) as integer
-declare function 	cArrayDecl 				( dimensions as integer, dTB() as FBARRAYDIM ) as integer
-declare function 	cDynArrayDecl			( dimensions as integer, exprTB() as integer ) as integer
+declare function 	cSymbolDef 				( byval alloctype as integer, byval dopreserve as integer = FALSE ) as integer
+declare function 	cDynArrayDef			( byval s as integer, id as string, byval typ as integer, byval subtype as integer, byval lgt as integer, _
+					   						  byval addsuffix as integer, byval alloctype as integer, byval dopreserve as integer, _
+					   						  byval dimensions as integer, exprTB() as integer ) as integer
+declare function 	cStaticArrayDecl 		( dimensions as integer, dTB() as FBARRAYDIM ) as integer
+declare function 	cArrayDecl				( dimensions as integer, exprTB() as integer ) as integer
 declare function 	cSymbolType 			( typ as integer, subtype as integer, lgt as integer ) as integer
 declare function 	cProcDecl               ( ) as integer
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer

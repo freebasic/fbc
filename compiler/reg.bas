@@ -462,18 +462,18 @@ End Function
 
 '':::::
 sub sregFree( byval t as integer, byval c as integer, byval r as integer ) static
-	Dim i as integer, reg as integer
+	Dim i as integer, realreg as integer
 
 	if( sreg.reg(r) = INVALID ) then
 		exit sub
 	end if
 
-	reg 		= sreg.reg(r)
+	realreg 	= sreg.reg(r)
 	sreg.reg(r) = INVALID
 
 	For i = 0 to sreg.regs-1
 		if( sreg.reg(i) <> INVALID ) then
-			if( sreg.reg(i) > reg ) then
+			if( sreg.reg(i) > realreg ) then
 				sreg.reg(i) = sreg.reg(i) - 1
 			end if
 		end If

@@ -1211,16 +1211,24 @@ function cExitStatement
 	case FB.TK.WHILE
 		label = env.whilestmt.endlabel
 
-	case FB.TK.SUB
+	case FB.TK.SUB, FB.TK.FUNCTION
 		label = env.procstmt.endlabel
 
-	case FB.TK.FUNCTION
-		label = env.procstmt.endlabel
+		if( label = INVALID ) then
+			hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+			exit function
+		end if
 
 	case else
 		hReportError FB.ERRMSG.ILLEGALOUTSIDEASTMT
 		exit function
 	end select
+
+	''
+	if( label = INVALID ) then
+		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+		exit function
+	end if
 
 	lexSkipToken
 
@@ -1259,6 +1267,11 @@ function cContinueStatement
 		hReportError FB.ERRMSG.ILLEGALOUTSIDEASTMT
 		exit function
 	end select
+
+	if( label = INVALID ) then
+		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+		exit function
+	end if
 
 	lexSkipToken
 

@@ -116,9 +116,15 @@ function cArrayStmt
 		if( s = INVALID ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 			exit function
-		else
-			lexSkipToken
 		end if
+
+		'' array and dynamic?
+		if( not symbIsArray( s ) or not symbGetVarIsDynamic( s ) ) then
+			hReportError FB.ERRMSG.EXPECTEDDYNAMICARRAY
+			exit function
+		end if
+
+		lexSkipToken
 
 		rtlArrayErase s
 
@@ -570,12 +576,11 @@ function cLineInputStmt
 end function
 
 '':::::
-'' InputStmt	  =   INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? (',' Variable)*
+'' InputStmt	  =   INPUT ';'? (('#' Expression| STRING_LIT) (','|';'))? Variable (',' Variable)*
 ''
 function cInputStmt
     dim filestrexpr as integer, dstexpr as integer
     dim iscomma as integer, isfile as integer, addnewline as integer, addquestion as integer
-    dim issep as integer
 
 	cInputStmt = FALSE
 
@@ -593,52 +598,45 @@ function cInputStmt
 
 	'' '#'?
 	if( hMatch( CHAR_SHARP ) ) then
-        isfile = TRUE
-    else
-    	isfile = FALSE
-	end if
-
-	'' Expression?
-	if( not cExpression( filestrexpr ) ) then
-		if( isfile ) then
+		isfile = TRUE
+		'' Expression
+		if( not cExpression( filestrexpr ) ) then
 			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 			exit function
 		end if
-		filestrexpr = INVALID
+
+    else
+    	isfile = FALSE
+    	'' STRING_LIT?
+    	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
+			filestrexpr = astNewVAR( hAllocStringConst( lexEatToken ), 0, IR.DATATYPE.FIXSTR )
+    	else
+    		filestrexpr = INVALID
+    	end if
 	end if
 
 	'' ','|';'
-	issep = TRUE
-	if( not hMatch( CHAR_COMMA ) ) then
-		if( not hMatch( CHAR_SEMICOLON ) ) then
-			issep = FALSE
-			if( (filestrexpr = INVALID) or (isfile) ) then
+	addquestion = FALSE
+	if( (isfile) or (filestrexpr <> INVALID) ) then
+		if( not hMatch( CHAR_COMMA ) ) then
+			if( not hMatch( CHAR_SEMICOLON ) ) then
 				hReportError FB.ERRMSG.EXPECTEDCOMMA
 				exit function
+			else
+				addquestion = TRUE
 			end if
 		end if
-		addquestion = TRUE
-	else
-		addquestion = FALSE
 	end if
 
+	''
 	rtlFileInput isfile, filestrexpr, addquestion, addnewline
 
     '' Variable (',' Variable)*
     do
 		if( not cVariable( dstexpr ) ) then
-       		if( (filestrexpr = INVALID) or (isfile) ) then
-       			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-       			exit function
-       		end if
-       		dstexpr = filestrexpr
-       		filestrexpr = INVALID
-    	else
-    		if( issep = FALSE ) then
-				hReportError FB.ERRMSG.EXPECTEDCOMMA
-				exit function
-    		end if
-    	end if
+       		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+       		exit function
+       	end if
 
 		iscomma = FALSE
 		if( hMatch( CHAR_COMMA ) ) then

@@ -2591,31 +2591,12 @@ end sub
 '' functions
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function astNewFUNCT( byval symbol as integer, byval dtype as integer, byval args as integer ) as integer static
+function astNewFUNCTEx( byval ptrexpr as integer, byval symbol as integer, byval dtype as integer, byval args as integer ) as integer static
     dim n as integer
 
 	'' alloc new node
 	n = astNew( AST.NODETYPE.FUNCT, dtype )
-	astNewFUNCT = n
-
-	if( n = INVALID ) then
-		exit function
-	end if
-
-	astTB(n).f.s 		= symbol
-	astTB(n).f.p 		= INVALID
-	astTB(n).f.args 	= args
-
-end function
-
-'':::::
-function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as integer, byval dtype as integer, byval args as integer ) as integer static
-    dim n as integer
-
-	'' alloc new node
-	n = astNew( AST.NODETYPE.FUNCT, dtype )
-	astNewFUNCTPTR = n
+	astNewFUNCTEx = n
 
 	if( n = INVALID ) then
 		exit function
@@ -2624,6 +2605,26 @@ function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as integer, byva
 	astTB(n).f.s 		= symbol
 	astTB(n).f.p 		= ptrexpr
 	astTB(n).f.args 	= args
+
+	if( symbGetFuncMode( symbol ) = FB.FUNCMODE.PASCAL ) then
+		astTB(n).f.arg = 0
+	else
+		astTB(n).f.arg = args-1
+	end if
+
+end function
+
+'':::::
+function astNewFUNCT( byval symbol as integer, byval dtype as integer, byval args as integer ) as integer static
+
+	astNewFUNCT = astNewFUNCTEx( INVALID, symbol, dtype, args )
+
+end function
+
+'':::::
+function astNewFUNCTPTR( byval ptrexpr as integer, byval symbol as integer, byval dtype as integer, byval args as integer ) as integer static
+
+	astNewFUNCTPTR = astNewFUNCTEx( ptrexpr, symbol, dtype, args )
 
 end function
 
@@ -2658,6 +2659,13 @@ function astNewPARAMEx( byval f as integer, byval p as integer, byval dtype as i
 		astTB(t).p.nxt = n						'' tail next= node
 	else
 		astTB(f).l = n							'' func head= node
+	end if
+
+	''
+	if( symbGetFuncMode( astTB(f).f.s ) = FB.FUNCMODE.PASCAL ) then
+		astTB(f).f.arg = astTB(f).f.arg + 1
+	else
+		astTB(f).f.arg = astTB(f).f.arg - 1
 	end if
 
 end function
