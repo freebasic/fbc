@@ -78,7 +78,7 @@ const PATHDIV = "/"
 			incpathTB( env.incpaths ) = incpathTB( env.incpaths ) + PATHDIV
 		end if
 
-		env.incpaths = env.incpaths + 1
+		env.incpaths += 1
 	end if
 
 end sub
@@ -112,14 +112,18 @@ end function
 '':::::
 sub fbAddIncFile( byval filename as string )
     dim fname as string
+    dim i as integer
 
 	fname = ucase$( filename )
 
-	if( incfiles < FB.MAXINCFILES ) then
-		if( not fbFindIncFile( fname ) ) then
-			incfileTB( incfiles ) = fname
-			incfiles = incfiles + 1
-		end if
+	if( incfiles >= ubound( incfileTB ) ) then
+		i = ubound( incfileTB )
+		redim preserve incfileTB(0 to (i + (i \ 2))-1) as string
+	end if
+
+	if( not fbFindIncFile( fname ) ) then
+		incfileTB( incfiles ) = fname
+		incfiles += 1
 	end if
 
 end sub
@@ -201,7 +205,7 @@ function fbInit as integer static
 
 	redim incpathTB( 0 to FB.MAXINCPATHS-1 ) as string
 
-	redim incfileTB( 0 to FB.MAXINCFILES-1 ) as string
+	redim incfileTB( 0 to FB.INITINCFILES-1 ) as string
 
 	''
 	hSetCtx
@@ -456,7 +460,7 @@ function fbIncludeFile( byval filename as string, _
 		''
 		envcopyTB(env.reclevel) = env
 		lexSaveCtx env.reclevel
-    	env.reclevel	= env.reclevel + 1
+    	env.reclevel	+= 1
 
 		env.infile		= filename
 

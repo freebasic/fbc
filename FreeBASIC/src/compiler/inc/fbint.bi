@@ -24,7 +24,7 @@ const FB.MAXINCRECLEVEL		= 16
 const FB.MAXWITHLEVELS		= 4
 
 const FB.MAXINCPATHS		= 16
-const FB.MAXINCFILES		= 128
+const FB.INITINCFILES		= 256
 
 const FB.MAXNAMELEN			= 64
 const FB.MAXLITLEN			= 1024				'' literal strings max length

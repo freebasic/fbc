@@ -3592,6 +3592,11 @@ private function hCheckStringParam( byval f as integer, _
 					   				byval pdtype as integer, _
 					   				byval pdclass as integer )
 
+	'' rtl? don't mess..
+	if( astTB(f).proc.isrtl ) then
+		return TRUE
+	end if
+
 	''
 	if( pdclass = IR.DATACLASS.STRING ) then
 

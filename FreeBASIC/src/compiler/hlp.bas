@@ -493,13 +493,13 @@ function hUnescapeStr( byval text as string ) as string static
 	do while( s < l )
 
 		c = *s
-		s = s + 1
+		s += 1
 
 		if( c = FB.INTSCAPECHAR ) then
 			*d = CHAR_RSLASH
 		end if
 
-		d = d + 1
+		d += 1
 	loop
 
 	hUnescapeStr = res
@@ -520,7 +520,7 @@ sub hUcase( byval src as string ) static
 			*p = c - (97 - 65)
 		end if
 
-		p = p + 1
+		p += 1
 	next i
 
 end sub
