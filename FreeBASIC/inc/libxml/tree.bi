@@ -85,9 +85,9 @@ enum xmlElementType
 end enum
 
 type _xmlNotation
-	name as xmlChar ptr
-	PublicID as xmlChar ptr
-	SystemID as xmlChar ptr
+	name as zstring ptr
+	PublicID as zstring ptr
+	SystemID as zstring ptr
 end type
 
 enum xmlAttributeType
@@ -113,13 +113,13 @@ end enum
 
 type _xmlEnumeration
 	next as _xmlEnumeration ptr
-	name as xmlChar ptr
+	name as zstring ptr
 end type
 
 type _xmlAttribute
 	_private as any ptr
 	type as xmlElementType
-	name as xmlChar ptr
+	name as zstring ptr
 	children as xmlNode ptr
 	last as xmlNode ptr
 	parent as xmlDtd ptr
@@ -129,10 +129,10 @@ type _xmlAttribute
 	nexth as xmlAttribute ptr
 	atype as xmlAttributeType
 	def as xmlAttributeDefault
-	defaultValue as xmlChar ptr
+	defaultValue as zstring ptr
 	tree as xmlEnumerationPtr
-	prefix as xmlChar ptr
-	elem as xmlChar ptr
+	prefix as zstring ptr
+	elem as zstring ptr
 end type
 
 enum xmlElementContentType
@@ -153,11 +153,11 @@ end enum
 type _xmlElementContent
 	type as xmlElementContentType
 	ocur as xmlElementContentOccur
-	name as xmlChar ptr
+	name as zstring ptr
 	c1 as _xmlElementContent ptr
 	c2 as _xmlElementContent ptr
 	parent as _xmlElementContent ptr
-	prefix as xmlChar ptr
+	prefix as zstring ptr
 end type
 
 enum xmlElementTypeVal
@@ -174,7 +174,7 @@ end enum
 type _xmlElement
 	_private as any ptr
 	type as xmlElementType
-	name as xmlChar ptr
+	name as zstring ptr
 	children as xmlNode ptr
 	last as xmlNode ptr
 	parent as xmlDtd ptr
@@ -184,22 +184,22 @@ type _xmlElement
 	etype as xmlElementTypeVal
 	content as xmlElementContentPtr
 	attributes as xmlAttributePtr
-	prefix as xmlChar ptr
+	prefix as zstring ptr
 	contModel as xmlRegexpPtr
 end type
 
 type _xmlNs
 	next as _xmlNs ptr
 	type as xmlNsType
-	href as xmlChar ptr
-	prefix as xmlChar ptr
+	href as zstring ptr
+	prefix as zstring ptr
 	_private as any ptr
 end type
 
 type _xmlDtd
 	_private as any ptr
 	type as xmlElementType
-	name as xmlChar ptr
+	name as zstring ptr
 	children as xmlNode ptr
 	last as xmlNode ptr
 	parent as xmlDoc ptr
@@ -210,15 +210,15 @@ type _xmlDtd
 	elements as any ptr
 	attributes as any ptr
 	entities as any ptr
-	ExternalID as xmlChar ptr
-	SystemID as xmlChar ptr
+	ExternalID as zstring ptr
+	SystemID as zstring ptr
 	pentities as any ptr
 end type
 
 type _xmlAttr
 	_private as any ptr
 	type as xmlElementType
-	name as xmlChar ptr
+	name as zstring ptr
 	children as xmlNode ptr
 	last as xmlNode ptr
 	parent as xmlNode ptr
@@ -232,18 +232,18 @@ end type
 
 type _xmlID
 	next as _xmlID ptr
-	value as xmlChar ptr
+	value as zstring ptr
 	attr as xmlAttrPtr
-	name as xmlChar ptr
+	name as zstring ptr
 	lineno as integer
 	doc as xmlDoc ptr
 end type
 
 type _xmlRef
 	next as _xmlRef ptr
-	value as xmlChar ptr
+	value as zstring ptr
 	attr as xmlAttrPtr
-	name as xmlChar ptr
+	name as zstring ptr
 	lineno as integer
 end type
 
@@ -257,7 +257,7 @@ type xmlBuffer as _xmlBuffer
 type xmlBufferPtr as xmlBuffer ptr
 
 type _xmlBuffer
-	content as xmlChar ptr
+	content as zstring ptr
 	use as uinteger
 	size as uinteger
 	alloc as xmlBufferAllocationScheme
@@ -266,7 +266,7 @@ end type
 type _xmlNode
 	_private as any ptr
 	type as xmlElementType
-	name as xmlChar ptr
+	name as zstring ptr
 	children as _xmlNode ptr
 	last as _xmlNode ptr
 	parent as _xmlNode ptr
@@ -274,7 +274,7 @@ type _xmlNode
 	prev as _xmlNode ptr
 	doc as xmlDoc ptr
 	ns as xmlNs ptr
-	content as xmlChar ptr
+	content as zstring ptr
 	properties as xmlAttr ptr
 	nsDef as xmlNs ptr
 	psvi as any ptr
@@ -297,23 +297,23 @@ type _xmlDoc
 	intSubset as xmlDtd ptr
 	extSubset as xmlDtd ptr
 	oldNs as xmlNs ptr
-	version as xmlChar ptr
-	encoding as xmlChar ptr
+	version as zstring ptr
+	encoding as zstring ptr
 	ids as any ptr
 	refs as any ptr
-	URL as xmlChar ptr
+	URL as zstring ptr
 	charset as integer
 	dict as xmlDict ptr
 	psvi as any ptr
 end type
 
-declare function xmlValidateNCName cdecl alias "xmlValidateNCName" (byval value as xmlChar ptr, byval space as integer) as integer
-declare function xmlValidateQName cdecl alias "xmlValidateQName" (byval value as xmlChar ptr, byval space as integer) as integer
-declare function xmlValidateName cdecl alias "xmlValidateName" (byval value as xmlChar ptr, byval space as integer) as integer
-declare function xmlValidateNMToken cdecl alias "xmlValidateNMToken" (byval value as xmlChar ptr, byval space as integer) as integer
-declare function xmlBuildQName cdecl alias "xmlBuildQName" (byval ncname as xmlChar ptr, byval prefix as xmlChar ptr, byval memory as xmlChar ptr, byval len as integer) as xmlChar ptr
-declare function xmlSplitQName2 cdecl alias "xmlSplitQName2" (byval name as xmlChar ptr, byval prefix as xmlChar ptr ptr) as xmlChar ptr
-declare function xmlSplitQName3 cdecl alias "xmlSplitQName3" (byval name as xmlChar ptr, byval len as integer ptr) as xmlChar ptr
+declare function xmlValidateNCName cdecl alias "xmlValidateNCName" (byval value as string, byval space as integer) as integer
+declare function xmlValidateQName cdecl alias "xmlValidateQName" (byval value as string, byval space as integer) as integer
+declare function xmlValidateName cdecl alias "xmlValidateName" (byval value as string, byval space as integer) as integer
+declare function xmlValidateNMToken cdecl alias "xmlValidateNMToken" (byval value as string, byval space as integer) as integer
+declare function xmlBuildQName cdecl alias "xmlBuildQName" (byval ncname as string, byval prefix as string, byval memory as string, byval len as integer) as zstring ptr
+declare function xmlSplitQName2 cdecl alias "xmlSplitQName2" (byval name as string, byval prefix as zstring ptr ptr) as zstring ptr
+declare function xmlSplitQName3 cdecl alias "xmlSplitQName3" (byval name as string, byval len as integer ptr) as zstring ptr
 declare sub xmlSetBufferAllocationScheme cdecl alias "xmlSetBufferAllocationScheme" (byval scheme as xmlBufferAllocationScheme)
 declare function xmlGetBufferAllocationScheme cdecl alias "xmlGetBufferAllocationScheme" () as xmlBufferAllocationScheme
 declare function xmlBufferCreate cdecl alias "xmlBufferCreate" () as xmlBufferPtr
@@ -322,67 +322,67 @@ declare function xmlBufferCreateStatic cdecl alias "xmlBufferCreateStatic" (byva
 declare function xmlBufferResize cdecl alias "xmlBufferResize" (byval buf as xmlBufferPtr, byval size as uinteger) as integer
 declare sub xmlBufferFree cdecl alias "xmlBufferFree" (byval buf as xmlBufferPtr)
 declare function xmlBufferDump cdecl alias "xmlBufferDump" (byval file as FILE ptr, byval buf as xmlBufferPtr) as integer
-declare function xmlBufferAdd cdecl alias "xmlBufferAdd" (byval buf as xmlBufferPtr, byval str as xmlChar ptr, byval len as integer) as integer
-declare function xmlBufferAddHead cdecl alias "xmlBufferAddHead" (byval buf as xmlBufferPtr, byval str as xmlChar ptr, byval len as integer) as integer
-declare function xmlBufferCat cdecl alias "xmlBufferCat" (byval buf as xmlBufferPtr, byval str as xmlChar ptr) as integer
+declare function xmlBufferAdd cdecl alias "xmlBufferAdd" (byval buf as xmlBufferPtr, byval str as string, byval len as integer) as integer
+declare function xmlBufferAddHead cdecl alias "xmlBufferAddHead" (byval buf as xmlBufferPtr, byval str as string, byval len as integer) as integer
+declare function xmlBufferCat cdecl alias "xmlBufferCat" (byval buf as xmlBufferPtr, byval str as string) as integer
 declare function xmlBufferCCat cdecl alias "xmlBufferCCat" (byval buf as xmlBufferPtr, byval str as string) as integer
 declare function xmlBufferShrink cdecl alias "xmlBufferShrink" (byval buf as xmlBufferPtr, byval len as uinteger) as integer
 declare function xmlBufferGrow cdecl alias "xmlBufferGrow" (byval buf as xmlBufferPtr, byval len as uinteger) as integer
 declare sub xmlBufferEmpty cdecl alias "xmlBufferEmpty" (byval buf as xmlBufferPtr)
-declare function xmlBufferContent cdecl alias "xmlBufferContent" (byval buf as xmlBufferPtr) as xmlChar ptr
+declare function xmlBufferContent cdecl alias "xmlBufferContent" (byval buf as xmlBufferPtr) as zstring ptr
 declare sub xmlBufferSetAllocationScheme cdecl alias "xmlBufferSetAllocationScheme" (byval buf as xmlBufferPtr, byval scheme as xmlBufferAllocationScheme)
 declare function xmlBufferLength cdecl alias "xmlBufferLength" (byval buf as xmlBufferPtr) as integer
-declare function xmlCreateIntSubset cdecl alias "xmlCreateIntSubset" (byval doc as xmlDocPtr, byval name as xmlChar ptr, byval ExternalID as xmlChar ptr, byval SystemID as xmlChar ptr) as xmlDtdPtr
-declare function xmlNewDtd cdecl alias "xmlNewDtd" (byval doc as xmlDocPtr, byval name as xmlChar ptr, byval ExternalID as xmlChar ptr, byval SystemID as xmlChar ptr) as xmlDtdPtr
+declare function xmlCreateIntSubset cdecl alias "xmlCreateIntSubset" (byval doc as xmlDocPtr, byval name as string, byval ExternalID as string, byval SystemID as string) as xmlDtdPtr
+declare function xmlNewDtd cdecl alias "xmlNewDtd" (byval doc as xmlDocPtr, byval name as string, byval ExternalID as string, byval SystemID as string) as xmlDtdPtr
 declare function xmlGetIntSubset cdecl alias "xmlGetIntSubset" (byval doc as xmlDocPtr) as xmlDtdPtr
 declare sub xmlFreeDtd cdecl alias "xmlFreeDtd" (byval cur as xmlDtdPtr)
-declare function xmlNewGlobalNs cdecl alias "xmlNewGlobalNs" (byval doc as xmlDocPtr, byval href as xmlChar ptr, byval prefix as xmlChar ptr) as xmlNsPtr
-declare function xmlNewNs cdecl alias "xmlNewNs" (byval node as xmlNodePtr, byval href as xmlChar ptr, byval prefix as xmlChar ptr) as xmlNsPtr
+declare function xmlNewGlobalNs cdecl alias "xmlNewGlobalNs" (byval doc as xmlDocPtr, byval href as string, byval prefix as string) as xmlNsPtr
+declare function xmlNewNs cdecl alias "xmlNewNs" (byval node as xmlNodePtr, byval href as string, byval prefix as string) as xmlNsPtr
 declare sub xmlFreeNs cdecl alias "xmlFreeNs" (byval cur as xmlNsPtr)
 declare sub xmlFreeNsList cdecl alias "xmlFreeNsList" (byval cur as xmlNsPtr)
-declare function xmlNewDoc cdecl alias "xmlNewDoc" (byval version as xmlChar ptr) as xmlDocPtr
+declare function xmlNewDoc cdecl alias "xmlNewDoc" (byval version as string) as xmlDocPtr
 declare sub xmlFreeDoc cdecl alias "xmlFreeDoc" (byval cur as xmlDocPtr)
-declare function xmlNewDocProp cdecl alias "xmlNewDocProp" (byval doc as xmlDocPtr, byval name as xmlChar ptr, byval value as xmlChar ptr) as xmlAttrPtr
-declare function xmlNewProp cdecl alias "xmlNewProp" (byval node as xmlNodePtr, byval name as xmlChar ptr, byval value as xmlChar ptr) as xmlAttrPtr
-declare function xmlNewNsProp cdecl alias "xmlNewNsProp" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval value as xmlChar ptr) as xmlAttrPtr
-declare function xmlNewNsPropEatName cdecl alias "xmlNewNsPropEatName" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval value as xmlChar ptr) as xmlAttrPtr
+declare function xmlNewDocProp cdecl alias "xmlNewDocProp" (byval doc as xmlDocPtr, byval name as string, byval value as string) as xmlAttrPtr
+declare function xmlNewProp cdecl alias "xmlNewProp" (byval node as xmlNodePtr, byval name as string, byval value as string) as xmlAttrPtr
+declare function xmlNewNsProp cdecl alias "xmlNewNsProp" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as string, byval value as string) as xmlAttrPtr
+declare function xmlNewNsPropEatName cdecl alias "xmlNewNsPropEatName" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as string, byval value as string) as xmlAttrPtr
 declare sub xmlFreePropList cdecl alias "xmlFreePropList" (byval cur as xmlAttrPtr)
 declare sub xmlFreeProp cdecl alias "xmlFreeProp" (byval cur as xmlAttrPtr)
 declare function xmlCopyProp cdecl alias "xmlCopyProp" (byval target as xmlNodePtr, byval cur as xmlAttrPtr) as xmlAttrPtr
 declare function xmlCopyPropList cdecl alias "xmlCopyPropList" (byval target as xmlNodePtr, byval cur as xmlAttrPtr) as xmlAttrPtr
 declare function xmlCopyDtd cdecl alias "xmlCopyDtd" (byval dtd as xmlDtdPtr) as xmlDtdPtr
 declare function xmlCopyDoc cdecl alias "xmlCopyDoc" (byval doc as xmlDocPtr, byval recursive as integer) as xmlDocPtr
-declare function xmlNewDocNode cdecl alias "xmlNewDocNode" (byval doc as xmlDocPtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewDocNodeEatName cdecl alias "xmlNewDocNodeEatName" (byval doc as xmlDocPtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewNode cdecl alias "xmlNewNode" (byval ns as xmlNsPtr, byval name as xmlChar ptr) as xmlNodePtr
-declare function xmlNewNodeEatName cdecl alias "xmlNewNodeEatName" (byval ns as xmlNsPtr, byval name as xmlChar ptr) as xmlNodePtr
-declare function xmlNewChild cdecl alias "xmlNewChild" (byval parent as xmlNodePtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewDocText cdecl alias "xmlNewDocText" (byval doc as xmlDocPtr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewText cdecl alias "xmlNewText" (byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewDocPI cdecl alias "xmlNewDocPI" (byval doc as xmlDocPtr, byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewPI cdecl alias "xmlNewPI" (byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewDocTextLen cdecl alias "xmlNewDocTextLen" (byval doc as xmlDocPtr, byval content as xmlChar ptr, byval len as integer) as xmlNodePtr
-declare function xmlNewTextLen cdecl alias "xmlNewTextLen" (byval content as xmlChar ptr, byval len as integer) as xmlNodePtr
-declare function xmlNewDocComment cdecl alias "xmlNewDocComment" (byval doc as xmlDocPtr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewComment cdecl alias "xmlNewComment" (byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewCDataBlock cdecl alias "xmlNewCDataBlock" (byval doc as xmlDocPtr, byval content as xmlChar ptr, byval len as integer) as xmlNodePtr
-declare function xmlNewCharRef cdecl alias "xmlNewCharRef" (byval doc as xmlDocPtr, byval name as xmlChar ptr) as xmlNodePtr
-declare function xmlNewReference cdecl alias "xmlNewReference" (byval doc as xmlDocPtr, byval name as xmlChar ptr) as xmlNodePtr
+declare function xmlNewDocNode cdecl alias "xmlNewDocNode" (byval doc as xmlDocPtr, byval ns as xmlNsPtr, byval name as string, byval content as string) as xmlNodePtr
+declare function xmlNewDocNodeEatName cdecl alias "xmlNewDocNodeEatName" (byval doc as xmlDocPtr, byval ns as xmlNsPtr, byval name as string, byval content as string) as xmlNodePtr
+declare function xmlNewNode cdecl alias "xmlNewNode" (byval ns as xmlNsPtr, byval name as string) as xmlNodePtr
+declare function xmlNewNodeEatName cdecl alias "xmlNewNodeEatName" (byval ns as xmlNsPtr, byval name as string) as xmlNodePtr
+declare function xmlNewChild cdecl alias "xmlNewChild" (byval parent as xmlNodePtr, byval ns as xmlNsPtr, byval name as string, byval content as string) as xmlNodePtr
+declare function xmlNewDocText cdecl alias "xmlNewDocText" (byval doc as xmlDocPtr, byval content as string) as xmlNodePtr
+declare function xmlNewText cdecl alias "xmlNewText" (byval content as string) as xmlNodePtr
+declare function xmlNewDocPI cdecl alias "xmlNewDocPI" (byval doc as xmlDocPtr, byval name as string, byval content as string) as xmlNodePtr
+declare function xmlNewPI cdecl alias "xmlNewPI" (byval name as string, byval content as string) as xmlNodePtr
+declare function xmlNewDocTextLen cdecl alias "xmlNewDocTextLen" (byval doc as xmlDocPtr, byval content as string, byval len as integer) as xmlNodePtr
+declare function xmlNewTextLen cdecl alias "xmlNewTextLen" (byval content as string, byval len as integer) as xmlNodePtr
+declare function xmlNewDocComment cdecl alias "xmlNewDocComment" (byval doc as xmlDocPtr, byval content as string) as xmlNodePtr
+declare function xmlNewComment cdecl alias "xmlNewComment" (byval content as string) as xmlNodePtr
+declare function xmlNewCDataBlock cdecl alias "xmlNewCDataBlock" (byval doc as xmlDocPtr, byval content as string, byval len as integer) as xmlNodePtr
+declare function xmlNewCharRef cdecl alias "xmlNewCharRef" (byval doc as xmlDocPtr, byval name as string) as xmlNodePtr
+declare function xmlNewReference cdecl alias "xmlNewReference" (byval doc as xmlDocPtr, byval name as string) as xmlNodePtr
 declare function xmlCopyNode cdecl alias "xmlCopyNode" (byval node as xmlNodePtr, byval recursive as integer) as xmlNodePtr
 declare function xmlDocCopyNode cdecl alias "xmlDocCopyNode" (byval node as xmlNodePtr, byval doc as xmlDocPtr, byval recursive as integer) as xmlNodePtr
 declare function xmlDocCopyNodeList cdecl alias "xmlDocCopyNodeList" (byval doc as xmlDocPtr, byval node as xmlNodePtr) as xmlNodePtr
 declare function xmlCopyNodeList cdecl alias "xmlCopyNodeList" (byval node as xmlNodePtr) as xmlNodePtr
-declare function xmlNewTextChild cdecl alias "xmlNewTextChild" (byval parent as xmlNodePtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
-declare function xmlNewDocRawNode cdecl alias "xmlNewDocRawNode" (byval doc as xmlDocPtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval content as xmlChar ptr) as xmlNodePtr
+declare function xmlNewTextChild cdecl alias "xmlNewTextChild" (byval parent as xmlNodePtr, byval ns as xmlNsPtr, byval name as string, byval content as string) as xmlNodePtr
+declare function xmlNewDocRawNode cdecl alias "xmlNewDocRawNode" (byval doc as xmlDocPtr, byval ns as xmlNsPtr, byval name as string, byval content as string) as xmlNodePtr
 declare function xmlNewDocFragment cdecl alias "xmlNewDocFragment" (byval doc as xmlDocPtr) as xmlNodePtr
 declare function xmlGetLineNo cdecl alias "xmlGetLineNo" (byval node as xmlNodePtr) as integer
-declare function xmlGetNodePath cdecl alias "xmlGetNodePath" (byval node as xmlNodePtr) as xmlChar ptr
+declare function xmlGetNodePath cdecl alias "xmlGetNodePath" (byval node as xmlNodePtr) as zstring ptr
 declare function xmlDocGetRootElement cdecl alias "xmlDocGetRootElement" (byval doc as xmlDocPtr) as xmlNodePtr
 declare function xmlGetLastChild cdecl alias "xmlGetLastChild" (byval parent as xmlNodePtr) as xmlNodePtr
 declare function xmlNodeIsText cdecl alias "xmlNodeIsText" (byval node as xmlNodePtr) as integer
 declare function xmlIsBlankNode cdecl alias "xmlIsBlankNode" (byval node as xmlNodePtr) as integer
 declare function xmlDocSetRootElement cdecl alias "xmlDocSetRootElement" (byval doc as xmlDocPtr, byval root as xmlNodePtr) as xmlNodePtr
-declare sub xmlNodeSetName cdecl alias "xmlNodeSetName" (byval cur as xmlNodePtr, byval name as xmlChar ptr)
+declare sub xmlNodeSetName cdecl alias "xmlNodeSetName" (byval cur as xmlNodePtr, byval name as string)
 declare function xmlAddChild cdecl alias "xmlAddChild" (byval parent as xmlNodePtr, byval cur as xmlNodePtr) as xmlNodePtr
 declare function xmlAddChildList cdecl alias "xmlAddChildList" (byval parent as xmlNodePtr, byval cur as xmlNodePtr) as xmlNodePtr
 declare function xmlReplaceNode cdecl alias "xmlReplaceNode" (byval old as xmlNodePtr, byval cur as xmlNodePtr) as xmlNodePtr
@@ -391,52 +391,52 @@ declare function xmlAddSibling cdecl alias "xmlAddSibling" (byval cur as xmlNode
 declare function xmlAddNextSibling cdecl alias "xmlAddNextSibling" (byval cur as xmlNodePtr, byval elem as xmlNodePtr) as xmlNodePtr
 declare sub xmlUnlinkNode cdecl alias "xmlUnlinkNode" (byval cur as xmlNodePtr)
 declare function xmlTextMerge cdecl alias "xmlTextMerge" (byval first as xmlNodePtr, byval second as xmlNodePtr) as xmlNodePtr
-declare function xmlTextConcat cdecl alias "xmlTextConcat" (byval node as xmlNodePtr, byval content as xmlChar ptr, byval len as integer) as integer
+declare function xmlTextConcat cdecl alias "xmlTextConcat" (byval node as xmlNodePtr, byval content as string, byval len as integer) as integer
 declare sub xmlFreeNodeList cdecl alias "xmlFreeNodeList" (byval cur as xmlNodePtr)
 declare sub xmlFreeNode cdecl alias "xmlFreeNode" (byval cur as xmlNodePtr)
 declare sub xmlSetTreeDoc cdecl alias "xmlSetTreeDoc" (byval tree as xmlNodePtr, byval doc as xmlDocPtr)
 declare sub xmlSetListDoc cdecl alias "xmlSetListDoc" (byval list as xmlNodePtr, byval doc as xmlDocPtr)
-declare function xmlSearchNs cdecl alias "xmlSearchNs" (byval doc as xmlDocPtr, byval node as xmlNodePtr, byval nameSpace as xmlChar ptr) as xmlNsPtr
-declare function xmlSearchNsByHref cdecl alias "xmlSearchNsByHref" (byval doc as xmlDocPtr, byval node as xmlNodePtr, byval href as xmlChar ptr) as xmlNsPtr
+declare function xmlSearchNs cdecl alias "xmlSearchNs" (byval doc as xmlDocPtr, byval node as xmlNodePtr, byval nameSpace as string) as xmlNsPtr
+declare function xmlSearchNsByHref cdecl alias "xmlSearchNsByHref" (byval doc as xmlDocPtr, byval node as xmlNodePtr, byval href as string) as xmlNsPtr
 declare function xmlGetNsList cdecl alias "xmlGetNsList" (byval doc as xmlDocPtr, byval node as xmlNodePtr) as xmlNsPtr ptr
 declare sub xmlSetNs cdecl alias "xmlSetNs" (byval node as xmlNodePtr, byval ns as xmlNsPtr)
 declare function xmlCopyNamespace cdecl alias "xmlCopyNamespace" (byval cur as xmlNsPtr) as xmlNsPtr
 declare function xmlCopyNamespaceList cdecl alias "xmlCopyNamespaceList" (byval cur as xmlNsPtr) as xmlNsPtr
-declare function xmlSetProp cdecl alias "xmlSetProp" (byval node as xmlNodePtr, byval name as xmlChar ptr, byval value as xmlChar ptr) as xmlAttrPtr
-declare function xmlSetNsProp cdecl alias "xmlSetNsProp" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as xmlChar ptr, byval value as xmlChar ptr) as xmlAttrPtr
-declare function xmlGetNoNsProp cdecl alias "xmlGetNoNsProp" (byval node as xmlNodePtr, byval name as xmlChar ptr) as xmlChar ptr
-declare function xmlGetProp cdecl alias "xmlGetProp" (byval node as xmlNodePtr, byval name as xmlChar ptr) as xmlChar ptr
-declare function xmlHasProp cdecl alias "xmlHasProp" (byval node as xmlNodePtr, byval name as xmlChar ptr) as xmlAttrPtr
-declare function xmlHasNsProp cdecl alias "xmlHasNsProp" (byval node as xmlNodePtr, byval name as xmlChar ptr, byval nameSpace as xmlChar ptr) as xmlAttrPtr
-declare function xmlGetNsProp cdecl alias "xmlGetNsProp" (byval node as xmlNodePtr, byval name as xmlChar ptr, byval nameSpace as xmlChar ptr) as xmlChar ptr
-declare function xmlStringGetNodeList cdecl alias "xmlStringGetNodeList" (byval doc as xmlDocPtr, byval value as xmlChar ptr) as xmlNodePtr
-declare function xmlStringLenGetNodeList cdecl alias "xmlStringLenGetNodeList" (byval doc as xmlDocPtr, byval value as xmlChar ptr, byval len as integer) as xmlNodePtr
-declare function xmlNodeListGetString cdecl alias "xmlNodeListGetString" (byval doc as xmlDocPtr, byval list as xmlNodePtr, byval inLine as integer) as xmlChar ptr
-declare function xmlNodeListGetRawString cdecl alias "xmlNodeListGetRawString" (byval doc as xmlDocPtr, byval list as xmlNodePtr, byval inLine as integer) as xmlChar ptr
-declare sub xmlNodeSetContent cdecl alias "xmlNodeSetContent" (byval cur as xmlNodePtr, byval content as xmlChar ptr)
-declare sub xmlNodeSetContentLen cdecl alias "xmlNodeSetContentLen" (byval cur as xmlNodePtr, byval content as xmlChar ptr, byval len as integer)
-declare sub xmlNodeAddContent cdecl alias "xmlNodeAddContent" (byval cur as xmlNodePtr, byval content as xmlChar ptr)
-declare sub xmlNodeAddContentLen cdecl alias "xmlNodeAddContentLen" (byval cur as xmlNodePtr, byval content as xmlChar ptr, byval len as integer)
-declare function xmlNodeGetContent cdecl alias "xmlNodeGetContent" (byval cur as xmlNodePtr) as xmlChar ptr
+declare function xmlSetProp cdecl alias "xmlSetProp" (byval node as xmlNodePtr, byval name as string, byval value as string) as xmlAttrPtr
+declare function xmlSetNsProp cdecl alias "xmlSetNsProp" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as string, byval value as string) as xmlAttrPtr
+declare function xmlGetNoNsProp cdecl alias "xmlGetNoNsProp" (byval node as xmlNodePtr, byval name as string) as zstring ptr
+declare function xmlGetProp cdecl alias "xmlGetProp" (byval node as xmlNodePtr, byval name as string) as zstring ptr
+declare function xmlHasProp cdecl alias "xmlHasProp" (byval node as xmlNodePtr, byval name as string) as xmlAttrPtr
+declare function xmlHasNsProp cdecl alias "xmlHasNsProp" (byval node as xmlNodePtr, byval name as string, byval nameSpace as string) as xmlAttrPtr
+declare function xmlGetNsProp cdecl alias "xmlGetNsProp" (byval node as xmlNodePtr, byval name as string, byval nameSpace as string) as zstring ptr
+declare function xmlStringGetNodeList cdecl alias "xmlStringGetNodeList" (byval doc as xmlDocPtr, byval value as string) as xmlNodePtr
+declare function xmlStringLenGetNodeList cdecl alias "xmlStringLenGetNodeList" (byval doc as xmlDocPtr, byval value as string, byval len as integer) as xmlNodePtr
+declare function xmlNodeListGetString cdecl alias "xmlNodeListGetString" (byval doc as xmlDocPtr, byval list as xmlNodePtr, byval inLine as integer) as zstring ptr
+declare function xmlNodeListGetRawString cdecl alias "xmlNodeListGetRawString" (byval doc as xmlDocPtr, byval list as xmlNodePtr, byval inLine as integer) as zstring ptr
+declare sub xmlNodeSetContent cdecl alias "xmlNodeSetContent" (byval cur as xmlNodePtr, byval content as string)
+declare sub xmlNodeSetContentLen cdecl alias "xmlNodeSetContentLen" (byval cur as xmlNodePtr, byval content as string, byval len as integer)
+declare sub xmlNodeAddContent cdecl alias "xmlNodeAddContent" (byval cur as xmlNodePtr, byval content as string)
+declare sub xmlNodeAddContentLen cdecl alias "xmlNodeAddContentLen" (byval cur as xmlNodePtr, byval content as string, byval len as integer)
+declare function xmlNodeGetContent cdecl alias "xmlNodeGetContent" (byval cur as xmlNodePtr) as zstring ptr
 declare function xmlNodeBufGetContent cdecl alias "xmlNodeBufGetContent" (byval buffer as xmlBufferPtr, byval cur as xmlNodePtr) as integer
-declare function xmlNodeGetLang cdecl alias "xmlNodeGetLang" (byval cur as xmlNodePtr) as xmlChar ptr
+declare function xmlNodeGetLang cdecl alias "xmlNodeGetLang" (byval cur as xmlNodePtr) as zstring ptr
 declare function xmlNodeGetSpacePreserve cdecl alias "xmlNodeGetSpacePreserve" (byval cur as xmlNodePtr) as integer
-declare sub xmlNodeSetLang cdecl alias "xmlNodeSetLang" (byval cur as xmlNodePtr, byval lang as xmlChar ptr)
+declare sub xmlNodeSetLang cdecl alias "xmlNodeSetLang" (byval cur as xmlNodePtr, byval lang as string)
 declare sub xmlNodeSetSpacePreserve cdecl alias "xmlNodeSetSpacePreserve" (byval cur as xmlNodePtr, byval val as integer)
-declare function xmlNodeGetBase cdecl alias "xmlNodeGetBase" (byval doc as xmlDocPtr, byval cur as xmlNodePtr) as xmlChar ptr
-declare sub xmlNodeSetBase cdecl alias "xmlNodeSetBase" (byval cur as xmlNodePtr, byval uri as xmlChar ptr)
+declare function xmlNodeGetBase cdecl alias "xmlNodeGetBase" (byval doc as xmlDocPtr, byval cur as xmlNodePtr) as zstring ptr
+declare sub xmlNodeSetBase cdecl alias "xmlNodeSetBase" (byval cur as xmlNodePtr, byval uri as string)
 declare function xmlRemoveProp cdecl alias "xmlRemoveProp" (byval cur as xmlAttrPtr) as integer
-declare function xmlUnsetNsProp cdecl alias "xmlUnsetNsProp" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as xmlChar ptr) as integer
-declare function xmlUnsetProp cdecl alias "xmlUnsetProp" (byval node as xmlNodePtr, byval name as xmlChar ptr) as integer
-declare sub xmlBufferWriteCHAR cdecl alias "xmlBufferWriteCHAR" (byval buf as xmlBufferPtr, byval string as xmlChar ptr)
+declare function xmlUnsetNsProp cdecl alias "xmlUnsetNsProp" (byval node as xmlNodePtr, byval ns as xmlNsPtr, byval name as string) as integer
+declare function xmlUnsetProp cdecl alias "xmlUnsetProp" (byval node as xmlNodePtr, byval name as string) as integer
+declare sub xmlBufferWriteCHAR cdecl alias "xmlBufferWriteCHAR" (byval buf as xmlBufferPtr, byval string as string)
 ''''''' declare sub xmlBufferWriteChar cdecl alias "xmlBufferWriteChar" (byval buf as xmlBufferPtr, byval string as string)
-declare sub xmlBufferWriteQuotedString cdecl alias "xmlBufferWriteQuotedString" (byval buf as xmlBufferPtr, byval string as xmlChar ptr)
-declare sub xmlAttrSerializeTxtContent cdecl alias "xmlAttrSerializeTxtContent" (byval buf as xmlBufferPtr, byval doc as xmlDocPtr, byval attr as xmlAttrPtr, byval string as xmlChar ptr)
+declare sub xmlBufferWriteQuotedString cdecl alias "xmlBufferWriteQuotedString" (byval buf as xmlBufferPtr, byval string as string)
+declare sub xmlAttrSerializeTxtContent cdecl alias "xmlAttrSerializeTxtContent" (byval buf as xmlBufferPtr, byval doc as xmlDocPtr, byval attr as xmlAttrPtr, byval string as string)
 declare function xmlReconciliateNs cdecl alias "xmlReconciliateNs" (byval doc as xmlDocPtr, byval tree as xmlNodePtr) as integer
-declare sub xmlDocDumpFormatMemory cdecl alias "xmlDocDumpFormatMemory" (byval cur as xmlDocPtr, byval mem as xmlChar ptr ptr, byval size as integer ptr, byval format as integer)
-declare sub xmlDocDumpMemory cdecl alias "xmlDocDumpMemory" (byval cur as xmlDocPtr, byval mem as xmlChar ptr ptr, byval size as integer ptr)
-declare sub xmlDocDumpMemoryEnc cdecl alias "xmlDocDumpMemoryEnc" (byval out_doc as xmlDocPtr, byval doc_txt_ptr as xmlChar ptr ptr, byval doc_txt_len as integer ptr, byval txt_encoding as string)
-declare sub xmlDocDumpFormatMemoryEnc cdecl alias "xmlDocDumpFormatMemoryEnc" (byval out_doc as xmlDocPtr, byval doc_txt_ptr as xmlChar ptr ptr, byval doc_txt_len as integer ptr, byval txt_encoding as string, byval format as integer)
+declare sub xmlDocDumpFormatMemory cdecl alias "xmlDocDumpFormatMemory" (byval cur as xmlDocPtr, byval mem as zstring ptr ptr, byval size as integer ptr, byval format as integer)
+declare sub xmlDocDumpMemory cdecl alias "xmlDocDumpMemory" (byval cur as xmlDocPtr, byval mem as zstring ptr ptr, byval size as integer ptr)
+declare sub xmlDocDumpMemoryEnc cdecl alias "xmlDocDumpMemoryEnc" (byval out_doc as xmlDocPtr, byval doc_txt_ptr as zstring ptr ptr, byval doc_txt_len as integer ptr, byval txt_encoding as string)
+declare sub xmlDocDumpFormatMemoryEnc cdecl alias "xmlDocDumpFormatMemoryEnc" (byval out_doc as xmlDocPtr, byval doc_txt_ptr as zstring ptr ptr, byval doc_txt_len as integer ptr, byval txt_encoding as string, byval format as integer)
 declare function xmlDocFormatDump cdecl alias "xmlDocFormatDump" (byval f as FILE ptr, byval cur as xmlDocPtr, byval format as integer) as integer
 declare function xmlDocDump cdecl alias "xmlDocDump" (byval f as FILE ptr, byval cur as xmlDocPtr) as integer
 declare sub xmlElemDump cdecl alias "xmlElemDump" (byval f as FILE ptr, byval doc as xmlDocPtr, byval cur as xmlNodePtr)
@@ -448,7 +448,7 @@ declare function xmlSaveFormatFileTo cdecl alias "xmlSaveFormatFileTo" (byval bu
 declare sub xmlNodeDumpOutput cdecl alias "xmlNodeDumpOutput" (byval buf as xmlOutputBufferPtr, byval doc as xmlDocPtr, byval cur as xmlNodePtr, byval level as integer, byval format as integer, byval encoding as string)
 declare function xmlSaveFormatFileEnc cdecl alias "xmlSaveFormatFileEnc" (byval filename as string, byval cur as xmlDocPtr, byval encoding as string, byval format as integer) as integer
 declare function xmlSaveFileEnc cdecl alias "xmlSaveFileEnc" (byval filename as string, byval cur as xmlDocPtr, byval encoding as string) as integer
-declare function xmlIsXHTML cdecl alias "xmlIsXHTML" (byval systemID as xmlChar ptr, byval publicID as xmlChar ptr) as integer
+declare function xmlIsXHTML cdecl alias "xmlIsXHTML" (byval systemID as string, byval publicID as string) as integer
 declare function xmlGetDocCompressMode cdecl alias "xmlGetDocCompressMode" (byval doc as xmlDocPtr) as integer
 declare sub xmlSetDocCompressMode cdecl alias "xmlSetDocCompressMode" (byval doc as xmlDocPtr, byval mode as integer)
 declare function xmlGetCompressMode cdecl alias "xmlGetCompressMode" () as integer

@@ -75,7 +75,7 @@ type _xmlXPathObject
 	nodesetval as xmlNodeSetPtr
 	boolval as integer
 	floatval as double
-	stringval as xmlChar ptr
+	stringval as zstring ptr
 	user as any ptr
 	index as integer
 	user2 as any ptr
@@ -87,7 +87,7 @@ type xmlXPathType as _xmlXPathType
 type xmlXPathTypePtr as xmlXPathType ptr
 
 type _xmlXPathType
-	name as xmlChar ptr
+	name as zstring ptr
 	func as xmlXPathConvertFunc
 end type
 
@@ -95,7 +95,7 @@ type xmlXPathVariable as _xmlXPathVariable
 type xmlXPathVariablePtr as xmlXPathVariable ptr
 
 type _xmlXPathVariable
-	name as xmlChar ptr
+	name as zstring ptr
 	value as xmlXPathObjectPtr
 end type
 
@@ -104,7 +104,7 @@ type xmlXPathFunct as _xmlXPathFunct
 type xmlXPathFuncPtr as xmlXPathFunct ptr
 
 type _xmlXPathFunct
-	name as xmlChar ptr
+	name as zstring ptr
 	func as xmlXPathEvalFunc
 end type
 
@@ -113,7 +113,7 @@ type xmlXPathAxis as _xmlXPathAxis
 type xmlXPathAxisPtr as xmlXPathAxis ptr
 
 type _xmlXPathAxis
-	name as xmlChar ptr
+	name as zstring ptr
 	func as xmlXPathAxisFunc
 end type
 
@@ -148,8 +148,8 @@ type _xmlXPathContext
 	varLookupFunc as xmlXPathVariableLookupFunc
 	varLookupData as any ptr
 	extra as any ptr
-	function as xmlChar ptr
-	functionURI as xmlChar ptr
+	function as zstring ptr
+	functionURI as zstring ptr
 	funcLookupFunc as xmlXPathFuncLookupFunc
 	funcLookupData as any ptr
 	tmpNsList as xmlNsPtr ptr
@@ -165,8 +165,8 @@ type xmlXPathCompExpr as _xmlXPathCompExpr
 type xmlXPathCompExprPtr as xmlXPathCompExpr ptr
 
 type _xmlXPathParserContext
-	cur as xmlChar ptr
-	base as xmlChar ptr
+	cur as zstring ptr
+	base as zstring ptr
 	error as integer
 	context as xmlXPathContextPtr
 	value as xmlXPathObjectPtr
@@ -185,30 +185,30 @@ declare sub xmlXPathFreeNodeSet cdecl alias "xmlXPathFreeNodeSet" (byval obj as 
 declare function xmlXPathObjectCopy cdecl alias "xmlXPathObjectCopy" (byval val as xmlXPathObjectPtr) as xmlXPathObjectPtr
 declare function xmlXPathCmpNodes cdecl alias "xmlXPathCmpNodes" (byval node1 as xmlNodePtr, byval node2 as xmlNodePtr) as integer
 declare function xmlXPathCastNumberToBoolean cdecl alias "xmlXPathCastNumberToBoolean" (byval val as double) as integer
-declare function xmlXPathCastStringToBoolean cdecl alias "xmlXPathCastStringToBoolean" (byval val as xmlChar ptr) as integer
+declare function xmlXPathCastStringToBoolean cdecl alias "xmlXPathCastStringToBoolean" (byval val as string) as integer
 declare function xmlXPathCastNodeSetToBoolean cdecl alias "xmlXPathCastNodeSetToBoolean" (byval ns as xmlNodeSetPtr) as integer
 declare function xmlXPathCastToBoolean cdecl alias "xmlXPathCastToBoolean" (byval val as xmlXPathObjectPtr) as integer
 declare function xmlXPathCastBooleanToNumber cdecl alias "xmlXPathCastBooleanToNumber" (byval val as integer) as double
-declare function xmlXPathCastStringToNumber cdecl alias "xmlXPathCastStringToNumber" (byval val as xmlChar ptr) as double
+declare function xmlXPathCastStringToNumber cdecl alias "xmlXPathCastStringToNumber" (byval val as string) as double
 declare function xmlXPathCastNodeToNumber cdecl alias "xmlXPathCastNodeToNumber" (byval node as xmlNodePtr) as double
 declare function xmlXPathCastNodeSetToNumber cdecl alias "xmlXPathCastNodeSetToNumber" (byval ns as xmlNodeSetPtr) as double
 declare function xmlXPathCastToNumber cdecl alias "xmlXPathCastToNumber" (byval val as xmlXPathObjectPtr) as double
-declare function xmlXPathCastBooleanToString cdecl alias "xmlXPathCastBooleanToString" (byval val as integer) as xmlChar ptr
-declare function xmlXPathCastNumberToString cdecl alias "xmlXPathCastNumberToString" (byval val as double) as xmlChar ptr
-declare function xmlXPathCastNodeToString cdecl alias "xmlXPathCastNodeToString" (byval node as xmlNodePtr) as xmlChar ptr
-declare function xmlXPathCastNodeSetToString cdecl alias "xmlXPathCastNodeSetToString" (byval ns as xmlNodeSetPtr) as xmlChar ptr
-declare function xmlXPathCastToString cdecl alias "xmlXPathCastToString" (byval val as xmlXPathObjectPtr) as xmlChar ptr
+declare function xmlXPathCastBooleanToString cdecl alias "xmlXPathCastBooleanToString" (byval val as integer) as zstring ptr
+declare function xmlXPathCastNumberToString cdecl alias "xmlXPathCastNumberToString" (byval val as double) as zstring ptr
+declare function xmlXPathCastNodeToString cdecl alias "xmlXPathCastNodeToString" (byval node as xmlNodePtr) as zstring ptr
+declare function xmlXPathCastNodeSetToString cdecl alias "xmlXPathCastNodeSetToString" (byval ns as xmlNodeSetPtr) as zstring ptr
+declare function xmlXPathCastToString cdecl alias "xmlXPathCastToString" (byval val as xmlXPathObjectPtr) as zstring ptr
 declare function xmlXPathConvertBoolean cdecl alias "xmlXPathConvertBoolean" (byval val as xmlXPathObjectPtr) as xmlXPathObjectPtr
 declare function xmlXPathConvertNumber cdecl alias "xmlXPathConvertNumber" (byval val as xmlXPathObjectPtr) as xmlXPathObjectPtr
 declare function xmlXPathConvertString cdecl alias "xmlXPathConvertString" (byval val as xmlXPathObjectPtr) as xmlXPathObjectPtr
 declare function xmlXPathNewContext cdecl alias "xmlXPathNewContext" (byval doc as xmlDocPtr) as xmlXPathContextPtr
 declare sub xmlXPathFreeContext cdecl alias "xmlXPathFreeContext" (byval ctxt as xmlXPathContextPtr)
 declare function xmlXPathOrderDocElems cdecl alias "xmlXPathOrderDocElems" (byval doc as xmlDocPtr) as integer
-declare function xmlXPathEval cdecl alias "xmlXPathEval" (byval str as xmlChar ptr, byval ctx as xmlXPathContextPtr) as xmlXPathObjectPtr
-declare function xmlXPathEvalExpression cdecl alias "xmlXPathEvalExpression" (byval str as xmlChar ptr, byval ctxt as xmlXPathContextPtr) as xmlXPathObjectPtr
+declare function xmlXPathEval cdecl alias "xmlXPathEval" (byval str as string, byval ctx as xmlXPathContextPtr) as xmlXPathObjectPtr
+declare function xmlXPathEvalExpression cdecl alias "xmlXPathEvalExpression" (byval str as string, byval ctxt as xmlXPathContextPtr) as xmlXPathObjectPtr
 declare function xmlXPathEvalPredicate cdecl alias "xmlXPathEvalPredicate" (byval ctxt as xmlXPathContextPtr, byval res as xmlXPathObjectPtr) as integer
-declare function xmlXPathCompile cdecl alias "xmlXPathCompile" (byval str as xmlChar ptr) as xmlXPathCompExprPtr
-declare function xmlXPathCtxtCompile cdecl alias "xmlXPathCtxtCompile" (byval ctxt as xmlXPathContextPtr, byval str as xmlChar ptr) as xmlXPathCompExprPtr
+declare function xmlXPathCompile cdecl alias "xmlXPathCompile" (byval str as string) as xmlXPathCompExprPtr
+declare function xmlXPathCtxtCompile cdecl alias "xmlXPathCtxtCompile" (byval ctxt as xmlXPathContextPtr, byval str as string) as xmlXPathCompExprPtr
 declare function xmlXPathCompiledEval cdecl alias "xmlXPathCompiledEval" (byval comp as xmlXPathCompExprPtr, byval ctx as xmlXPathContextPtr) as xmlXPathObjectPtr
 declare sub xmlXPathFreeCompExpr cdecl alias "xmlXPathFreeCompExpr" (byval comp as xmlXPathCompExprPtr)
 declare sub xmlXPathInit cdecl alias "xmlXPathInit" ()

@@ -9,7 +9,7 @@
 #ifndef __xmlversion_bi__
 #define __xmlversion_bi__
 
-#inclib "libxml2"
+#inclib "xml2"
 
 #ifndef FILE
 type FILE as any

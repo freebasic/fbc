@@ -75,7 +75,7 @@ declare function xmlOutputBufferCreateFd cdecl alias "xmlOutputBufferCreateFd" (
 declare function xmlOutputBufferCreateIO cdecl alias "xmlOutputBufferCreateIO" (byval iowrite as xmlOutputWriteCallback, byval ioclose as xmlOutputCloseCallback, byval ioctx as any ptr, byval encoder as xmlCharEncodingHandlerPtr) as xmlOutputBufferPtr
 declare function xmlOutputBufferWrite cdecl alias "xmlOutputBufferWrite" (byval out as xmlOutputBufferPtr, byval len as integer, byval buf as string) as integer
 declare function xmlOutputBufferWriteString cdecl alias "xmlOutputBufferWriteString" (byval out as xmlOutputBufferPtr, byval str as string) as integer
-declare function xmlOutputBufferWriteEscape cdecl alias "xmlOutputBufferWriteEscape" (byval out as xmlOutputBufferPtr, byval str as xmlChar ptr, byval escaping as xmlCharEncodingOutputFunc) as integer
+declare function xmlOutputBufferWriteEscape cdecl alias "xmlOutputBufferWriteEscape" (byval out as xmlOutputBufferPtr, byval str as string, byval escaping as xmlCharEncodingOutputFunc) as integer
 declare function xmlOutputBufferFlush cdecl alias "xmlOutputBufferFlush" (byval out as xmlOutputBufferPtr) as integer
 declare function xmlOutputBufferClose cdecl alias "xmlOutputBufferClose" (byval out as xmlOutputBufferPtr) as integer
 declare function xmlRegisterOutputCallbacks cdecl alias "xmlRegisterOutputCallbacks" (byval matchFunc as xmlOutputMatchCallback, byval openFunc as xmlOutputOpenCallback, byval writeFunc as xmlOutputWriteCallback, byval closeFunc as xmlOutputCloseCallback) as integer
@@ -83,7 +83,7 @@ declare function __xmlOutputBufferCreateFilename cdecl alias "__xmlOutputBufferC
 declare sub xmlRegisterHTTPPostCallbacks cdecl alias "xmlRegisterHTTPPostCallbacks" ()
 declare function xmlCheckHTTPInput cdecl alias "xmlCheckHTTPInput" (byval ctxt as xmlParserCtxtPtr, byval ret as xmlParserInputPtr) as xmlParserInputPtr
 declare function xmlNoNetExternalEntityLoader cdecl alias "xmlNoNetExternalEntityLoader" (byval URL as string, byval ID as string, byval ctxt as xmlParserCtxtPtr) as xmlParserInputPtr
-declare function xmlNormalizeWindowsPath cdecl alias "xmlNormalizeWindowsPath" (byval path as xmlChar ptr) as xmlChar ptr
+declare function xmlNormalizeWindowsPath cdecl alias "xmlNormalizeWindowsPath" (byval path as string) as zstring ptr
 declare function xmlCheckFilename cdecl alias "xmlCheckFilename" (byval path as string) as integer
 declare function xmlFileMatch cdecl alias "xmlFileMatch" (byval filename as string) as integer
 declare function xmlFileOpen cdecl alias "xmlFileOpen" (byval filename as string) as any ptr

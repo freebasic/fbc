@@ -92,7 +92,7 @@ declare function xmlRelaxNGNewValidCtxt cdecl alias "xmlRelaxNGNewValidCtxt" (by
 declare sub xmlRelaxNGFreeValidCtxt cdecl alias "xmlRelaxNGFreeValidCtxt" (byval ctxt as xmlRelaxNGValidCtxtPtr)
 declare function xmlRelaxNGValidateDoc cdecl alias "xmlRelaxNGValidateDoc" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr) as integer
 declare function xmlRelaxNGValidatePushElement cdecl alias "xmlRelaxNGValidatePushElement" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
-declare function xmlRelaxNGValidatePushCData cdecl alias "xmlRelaxNGValidatePushCData" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval data as xmlChar ptr, byval len as integer) as integer
+declare function xmlRelaxNGValidatePushCData cdecl alias "xmlRelaxNGValidatePushCData" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval data as string, byval len as integer) as integer
 declare function xmlRelaxNGValidatePopElement cdecl alias "xmlRelaxNGValidatePopElement" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
 declare function xmlRelaxNGValidateFullElement cdecl alias "xmlRelaxNGValidateFullElement" (byval ctxt as xmlRelaxNGValidCtxtPtr, byval doc as xmlDocPtr, byval elem as xmlNodePtr) as integer
 

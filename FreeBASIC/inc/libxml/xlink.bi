@@ -12,9 +12,9 @@
 #include once "libxml/xmlversion.bi"
 #include once "libxml/tree.bi"
 
-type xlinkHRef as xmlChar ptr
-type xlinkRole as xmlChar ptr
-type xlinkTitle as xmlChar ptr
+type xlinkHRef as zstring ptr
+type xlinkRole as zstring ptr
+type xlinkTitle as zstring ptr
 
 enum xlinkType
 	XLINK_TYPE_NONE = 0
