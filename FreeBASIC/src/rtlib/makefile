@@ -1,6 +1,7 @@
 #
 # make file to build FB's Run-Time Library
 # needs GNU make and GCC
+# set OS env var to DOS to build DOS rtlib
 #
 
 ifeq ($(OS),Windows_NT)
@@ -15,24 +16,35 @@ else
     endif
 endif
 
+ifeq ($(OS),DOS)
+    WINSYSDIR =
+endif
+
 CC := gcc
 CFLAGS := -O3 -I ./
 ifneq ($(WINSYSDIR),)
     CFLAGS := $(CFLAGS) -DTARGET_WIN32
     osdeppath := win32
 else
-    osdeppath := linux
-    CFLAGS := $(CFLAGS) -DTARGET_LINUX
-    ifdef COMPILER
-        CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
+    ifeq ($(OS),DOS)
+        osdeppath := dos
+        CFLAGS := $(CFLAGS) -DTARGET_DOS
+    else
+        osdeppath := linux
+        CFLAGS := $(CFLAGS) -DTARGET_LINUX
+        ifdef COMPILER
+            CFLAGS := $(CFLAGS) -DDISABLE_NCURSES
+        endif
     endif
 endif
 
 libpath = ../../lib
 lib = $(libpath)/libfb.a
 ifeq ($(WINSYSDIR),)
-    ifdef COMPILER
-    	lib := $(libpath)/libfb-nocurses.a
+    ifneq ($(OS),DOS)
+        ifdef COMPILER
+            lib := $(libpath)/libfb-nocurses.a
+        endif
     endif
 endif
 
