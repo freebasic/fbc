@@ -48,8 +48,9 @@ FBCALL void fb_GfxPset(float fx, float fy, int color, int coord_type)
 	    (x >= fb_mode->view_x + fb_mode->view_w) || (y >= fb_mode->view_y + fb_mode->view_h))
 		return;
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	fb_hPutPixel(x, y, color);
-	fb_mode->dirty[y] = TRUE;
-	fb_mode->driver->unlock();
+	if (fb_mode->framebuffer == fb_mode->line[0])
+		fb_mode->dirty[y] = TRUE;
+	DRIVER_UNLOCK();
 }

@@ -34,6 +34,9 @@
 #define SQRT_2		1.4142135623730950488016
 
 
+static float base_scale = 4.0, base_angle = 0.0;
+
+
 /*:::::*/
 static int parse_number(char **str)
 {
@@ -63,7 +66,7 @@ static int parse_number(char **str)
 /*:::::*/
 FBCALL void fb_GfxDraw(FBSTRING *command)
 {
-	float x, y, dx, dy, ax, ay, base_scale = 1.0, scale = 1.0, base_angle = 0.0, angle = 0.0;
+	float x, y, dx, dy, ax, ay, x2, y2, scale = 1.0, angle = 0.0;
 	char *c = command->data;
 	int draw = TRUE, move = TRUE, length = 0, value1, value2, flags, rel, ix, iy;
 
@@ -73,7 +76,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 	x = fb_mode->last_x + 0.5;
 	y = fb_mode->last_y + 0.5;
 
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 
 	flags = fb_mode->flags;
 	fb_mode->flags = VIEW_SCREEN;
@@ -102,7 +105,7 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 				c++;
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
-				base_scale = value1;
+				base_scale = (float)value1 / 4.0;
 				break;
 
 			case 'A':
@@ -141,9 +144,9 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 					if ((value2 = parse_number(&c)) == NAN)
 						goto error;
 				}
-				fb_mode->driver->unlock();
+				DRIVER_UNLOCK();
 				fb_GfxPaint(x, y, value1 & fb_mode->color_mask, value2 & fb_mode->color_mask, NULL, PAINT_TYPE_FILL, COORD_TYPE_A);
-				fb_mode->driver->lock();
+				DRIVER_LOCK();
 				break;
 
 			case 'M':
@@ -159,22 +162,28 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 					goto error;
 				if ((value1 < 0) || (value2 < 0))
 					rel = TRUE;
+				x2 = (float)value1;
+				y2 = (float)value2;
 				if (rel) {
 					ax = cos(base_angle);
-					ay = sin(base_angle);
-					dx = value1;
-					dy = value2;
-					value1 = (((dx * ax) - (dy * ay)) * base_scale) + x;
-					value2 = -(((dy * ax) + (dx * ay)) * base_scale) + y;
+					ay = -sin(base_angle);
+					dx = x2;
+					dy = y2;
+					x2 = (((dx * ax) - (dy * ay)) * base_scale) + x;
+					y2 = (((dy * ax) + (dx * ay)) * base_scale) + y;
+				}
+				else {
+					x2 += 0.5;
+					y2 += 0.5;
 				}
 				if (draw) {
-					fb_mode->driver->unlock();
-					fb_GfxLine(x, y, (float)value1, (float)value2, DEFAULT_COLOR, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
-					fb_mode->driver->lock();
+					DRIVER_UNLOCK();
+					fb_GfxLine((int)x, (int)y, (int)x2, (int)y2, DEFAULT_COLOR, LINE_TYPE_LINE, 0xFFFF, COORD_TYPE_AA);
+					DRIVER_LOCK();
 				}
 				if (move) {
-					x = value1;
-					y = value2;
+					x = x2;
+					y = y2;
 				}
 				move = draw = TRUE;
 				break;
@@ -215,14 +224,15 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 			dx = x;
 			dy = y;
 
-			for (; length; length--) {
+			for (; length >= 0; length--) {
 				if (draw) {
 					ix = dx;
 					iy = dy;
 					if ((ix >= fb_mode->view_x) && (ix < fb_mode->view_x + fb_mode->view_w) &&
 					    (iy >= fb_mode->view_y) && (iy < fb_mode->view_y + fb_mode->view_h)) {
 					    	fb_hPutPixel(ix, iy, fb_mode->fg_color);
-						fb_mode->dirty[iy] = TRUE;
+						if (fb_mode->framebuffer == fb_mode->line[0])
+							fb_mode->dirty[iy] = TRUE;
 					}
 				}
 				if (length) {
@@ -247,9 +257,8 @@ FBCALL void fb_GfxDraw(FBSTRING *command)
 error:
 	fb_mode->flags = flags;
 
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 
 	/* del if temp */
 	fb_hStrDelTemp( command );
-
 }

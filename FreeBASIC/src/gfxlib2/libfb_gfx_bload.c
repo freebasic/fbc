@@ -63,16 +63,16 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 			if (!fb_mode)
 				result = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			else {
-				fb_mode->driver->lock();
+				DRIVER_LOCK();
 				size = MIN(size, fb_mode->pitch * fb_mode->h);
 				if ((!fread(fb_mode->line[0], size, 1, f)) && (!feof(f)))
 					result = FB_RTERROR_FILEIO;
-				fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
+				SET_DIRTY(0, fb_mode->h);
 				if (!feof(f)) {
 					fread(fb_mode->device_palette, 1024, 1, f);
 					fb_hRestorePalette();
 				}
-				fb_mode->driver->unlock();
+				DRIVER_UNLOCK();
 			}
 		}
 		else {

@@ -124,7 +124,7 @@ FBCALL void fb_GfxLine(float fx1, float fy1, float fx2, float fy2, int color, in
 		if (clip_line(&x1, &y1, &x2, &y2))
 			return;
 
-		fb_mode->driver->lock();
+		DRIVER_LOCK();
 		if (x1 == x2) {
 			if (y1 > y2)
 				SWAP(y1, y2);
@@ -206,8 +206,8 @@ FBCALL void fb_GfxLine(float fx1, float fy1, float fx2, float fy2, int color, in
 		}
 		if (y1 > y2)
 			SWAP(y1, y2);
-		fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
-		fb_mode->driver->unlock();
+		SET_DIRTY(y1, y2 - y1 + 1);
+		DRIVER_UNLOCK();
 	}
 	else {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);

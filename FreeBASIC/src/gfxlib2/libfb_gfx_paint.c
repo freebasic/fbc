@@ -131,7 +131,7 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 		tail = tail->next;
 	}
 
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 
 	/* Fill spans */
 	for (y = 0; y < fb_mode->h; y++) {
@@ -160,12 +160,13 @@ FBCALL void fb_GfxPaint(float fx, float fy, int color, int border_color, FBSTRIN
 					fb_hPixelCpy(dest, src, s->x2 & 0x7);
 			}
 
-			fb_mode->dirty[y] = TRUE;
+			if (fb_mode->framebuffer == fb_mode->line[0])
+				fb_mode->dirty[y] = TRUE;
 		}
 	}
 	free(span);
 
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 
 	/* del if temp */
 	fb_hStrDelTemp( pattern );

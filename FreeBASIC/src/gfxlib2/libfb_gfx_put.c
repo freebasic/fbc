@@ -345,8 +345,8 @@ FBCALL void fb_GfxPut(float fx, float fy, unsigned char *src, int coord_type, in
 		default:		put = fb_hPutPSet;	break;
 	}
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch);
-	fb_hMemSet(fb_mode->dirty + y, TRUE, h);
-	fb_mode->driver->unlock();
+	SET_DIRTY(y, h);
+	DRIVER_UNLOCK();
 }

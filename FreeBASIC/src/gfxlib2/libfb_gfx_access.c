@@ -45,7 +45,7 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 		start_line = 0;
 	if (end_line < 0)
 		end_line = fb_mode->view_h - 1;
-	if ((start_line <= end_line) && (end_line < fb_mode->view_h))
+	if ((fb_mode->framebuffer == fb_mode->line[0]) && (start_line <= end_line) && (end_line < fb_mode->view_h))
 		fb_hMemSet(fb_mode->dirty, TRUE, end_line - start_line + 1);
 	
 	fb_mode->driver->unlock();

@@ -46,7 +46,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, int color, int full)
 	clipped_x2 = MIN(x2, fb_mode->view_x + fb_mode->view_w - 1);
 	clipped_y2 = MIN(y2, fb_mode->view_y + fb_mode->view_h - 1);
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	
 	if (full) {
 		w = clipped_x2 - clipped_x1 + 1;
@@ -72,7 +72,7 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, int color, int full)
 			fb_hPixelSet(fb_mode->line[y2] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
 	}
 	
-	fb_hMemSet(fb_mode->dirty + clipped_y1, TRUE, clipped_y2 - clipped_y1 + 1);
+	SET_DIRTY(clipped_y1, clipped_y2 - clipped_y1 + 1);
 	
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 }

@@ -66,6 +66,10 @@
 
 #define BYTES_PER_PIXEL(d)	(((d) + 7) / 8);
 
+#define DRIVER_LOCK()		fb_mode->driver->lock()
+#define DRIVER_UNLOCK()		fb_mode->driver->unlock()
+#define SET_DIRTY(y,h)		{ if (fb_mode->framebuffer == fb_mode->line[0]) fb_hMemSet(fb_mode->dirty + (y), TRUE, (h)); }
+
 #define DRIVER_FULLSCREEN	0x00000001
 
 #define HAS_MMX			0x01000000

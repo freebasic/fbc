@@ -44,9 +44,9 @@ FBCALL int fb_GfxPoint(float fx, float fy)
 	    (x >= fb_mode->view_x + fb_mode->view_w) || (y >= fb_mode->view_y + fb_mode->view_h))
 		return -1;
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	color = fb_hGetPixel(x, y);
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 	
 	if (fb_mode->depth == 16)
 		/* approximate: for each component we also report high bits in lower bits of new value */

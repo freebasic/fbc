@@ -144,8 +144,6 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		b = fabs((float)b - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
 	}
 	
-	fb_mode->driver->lock();
-	
 	if ((start != 0.0) || (end != 3.141593f * 2.0)) {
 		
 		a -= 0.5;
@@ -173,6 +171,8 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 		
 		increment = 1 / (sqrt(a) * sqrt(b) * 1.5);
 		
+		DRIVER_LOCK();
+		
 		for (; start < end + (increment / 2); start += increment) {
 			get_arc_point(start, a, b, &x1, &y1);
 			x1 = x + x1;
@@ -183,16 +183,19 @@ FBCALL void fb_GfxEllipse(float fx, float fy, float radius, int color, float asp
 			fb_hPutPixel(x1, y1, color);
 		}
 	}
-	else
+	else {
+		DRIVER_LOCK();
+		
 		draw_ellipse(x, y, a, b, color, fill);
+	}
 		
 	y1 = MID(0, y - b, fb_mode->view_h - 1);
 	y2 = MID(0, y + b, fb_mode->view_h - 1);
 	if( y1 > y2 )
 		SWAP( y1, y2 );
-	fb_hMemSet(fb_mode->dirty + y1, TRUE, y2 - y1 + 1);
+	SET_DIRTY(y1, y2 - y1 + 1);
 	
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 	
 	fb_mode->last_x = fx;
 	fb_mode->last_y = fy;

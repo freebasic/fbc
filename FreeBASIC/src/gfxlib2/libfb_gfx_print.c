@@ -69,7 +69,7 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 	int dirty_start = fb_mode->cursor_y, dirty_len = 0;
 	unsigned char *dest;
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	
 	check_scroll(&dirty_start, &dirty_len);
 	
@@ -111,9 +111,9 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 				break;
 		}
 	}
-	fb_hMemSet(fb_mode->dirty + (dirty_start * fb_mode->font->h), TRUE, dirty_len * fb_mode->font->h);
+	SET_DIRTY(dirty_start * fb_mode->font->h, dirty_len * fb_mode->font->h);
 	
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 }
 
 

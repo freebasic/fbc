@@ -53,8 +53,7 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 /* We don't want to directly link with DDRAW.DLL and DINPUT.DLL,
  * as this way generated exes will not depend on them to run.
  * This will ensure if DirectX is not installed in the system,
- * the programs will still run, maybe fallbacking on a GDI
- * driver.
+ * the programs will still run, fallbacking on the GDI driver.
  */
 typedef HRESULT (WINAPI *DIRECTDRAWCREATE)(GUID FAR *lpGUID,LPDIRECTDRAW FAR *lplpDD,IUnknown FAR *pUnkOuter);
 typedef HRESULT (WINAPI *DIRECTINPUTCREATE)(HINSTANCE hinst,DWORD dwVersion,LPDIRECTINPUT *lplpDI,LPUNKNOWN pUnkOuter);

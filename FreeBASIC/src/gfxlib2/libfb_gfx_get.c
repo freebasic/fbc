@@ -56,12 +56,12 @@ FBCALL void fb_GfxGet(float fx1, float fy1, float fx2, float fy2, unsigned char 
 	*(unsigned short *)(dest + 2) = h;
 	dest += 4;
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	
 	for (; y1 <= y2; y1++) {
 		fb_hPixelCpy(dest, fb_mode->line[y1] + (x1 * fb_mode->bpp), w);
 		dest += (w * fb_mode->bpp);
 	}
 	
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 }

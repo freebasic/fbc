@@ -44,11 +44,11 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 	fputc(size >> 24, f);
 	
 	if (!src) {
-		fb_mode->driver->lock();
+		DRIVER_LOCK();
 		size = MIN(size, fb_mode->pitch * fb_mode->h);
 		if (!fwrite(fb_mode->line[0], size, 1, f))
 			result = FB_RTERROR_FILEIO;
-		fb_mode->driver->unlock();
+		DRIVER_UNLOCK();
 		if (fb_mode->depth <= 8) {
 			size = (1 << fb_mode->depth) * sizeof(int);
 			if (!fwrite(fb_mode->device_palette, size, 1, f) != size)

@@ -31,10 +31,9 @@
 void fb_GfxClear(int mode)
 {
 	unsigned char *dest;
-	unsigned char *dirty;
-	int i, dirty_len;
+	int i, dirty, dirty_len;
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	
 	switch (mode) {
 		
@@ -45,7 +44,7 @@ void fb_GfxClear(int mode)
 				fb_hPixelSet(dest, fb_mode->bg_color, fb_mode->view_w);
 				dest += fb_mode->pitch;
 			}
-			dirty = fb_mode->dirty + fb_mode->view_y;
+			dirty = fb_mode->view_y;
 			dirty_len = fb_mode->view_h;
 			break;
 		
@@ -56,13 +55,13 @@ void fb_GfxClear(int mode)
 		default:
 			/* Clear entire screen */
 			fb_hPixelSet(fb_mode->line[0], fb_mode->bg_color, fb_mode->w * fb_mode->h);
-			dirty = fb_mode->dirty;
+			dirty = 0;
 			dirty_len = fb_mode->h;
 			break;
 	}
-	fb_hMemSet(dirty, TRUE, dirty_len);
+	SET_DIRTY(dirty, dirty_len);
 	
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 	
 	fb_mode->cursor_x = 0;
 	fb_mode->cursor_y = 0;
