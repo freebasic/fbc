@@ -48,16 +48,28 @@ FBCALL FBSTRING *fb_Command ( void )
 
 #ifdef WIN32
 	cline = GetCommandLine( );
+
+	/* exe paths with white-spaces are quoted on Windows */
+	if( cline[0] == '"' )
+	{
+		cline = strchr( &cline[1], '"' );
+		if( cline != NULL )
+			++cline;
+	}
+
 #else
+
 	cline = fb_commandline;
+
 #endif
+
 	/* skip argv[0] (exe's name) */
-	cline = strchr( cline, 32 );
+	cline = strchr( cline, ' ' );
 
 	if( cline != NULL )
 	{
 		cline++;
-		
+
 		/* alloc temp string */
 		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 		if( dst != NULL )
