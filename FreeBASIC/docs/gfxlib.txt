@@ -241,7 +241,7 @@ Statement to save a block of pixels data into an array for later use.
 
 
 Syntax:
-	GET [STEP](x1,y1)-[STEP](x2,y2), arrayname(idx)
+	GET [STEP](x1,y1)-[STEP](x2,y2), arrayname[(idx)]
 
 
 Argument:	Description:
@@ -253,8 +253,10 @@ STEP		STEP specifies a pair of coordinates is relative to the last
 		graphics cursor position. STEP before the second pair of
 		coordinates specifies those are relative to the first pair.
 
-arrayname(idx)	Array where to save the graphical block: data is stored
-		starting at specified index idx into the array.
+arrayname	Array where to save the graphical block
+
+idx		Index into arrayname where to begin storing data. If idx is
+		omitted, it is assumed to be 0.
 
 
 Insights:
@@ -896,7 +898,7 @@ Statement to draw a block of pixels previously saved by GET.
 
 
 Syntax:
-	PUT [STEP](x,y), arrayname(idx) [,mode]
+	PUT [STEP](x,y), arrayname[(idx)] [,mode]
 
 
 Argument:	Description:
@@ -907,8 +909,10 @@ STEP		The STEP option specify that x and y are offsets relative to
 x,y		Coordinates where to place the top-left corner of the block to
 		be drawn.
 
-arrayname(idx)	Array holding saved block pixels data. Data is assumed to
-		start at idx index inside the array.
+arrayname	Array holding saved block pixels data.
+
+idx		Index into arrayname where data is assumed to start. If idx is
+		omitted, it is assumed to be 0.
 
 mode		One of PSET, PRESET, AND, OR, XOR or TRANS; see below. If
 		omitted, this defaults to XOR.
@@ -958,18 +962,18 @@ LINE (0,0)-(31,31), &h00FF00, B
 LINE (8,8)-(23,23), &hFF00FF, BF
 LINE (1,1)-(30,30), &h0000FF
 LINE (30,1)-(1,30), &h0000FF
-GET (0,0)-(31,31), sprite(0)
+GET (0,0)-(31,31), sprite
 ' Showtime!
 CLS
 FOR i = 0 TO 63
 	LINE (0,i)-(319,i), RGB(i * 4, i * 4, i * 4)
 NEXT i
-PUT (19, 16), sprite(0), PSET
-PUT (69, 16), sprite(0), PRESET
-PUT (119, 16), sprite(0), AND
-PUT (169, 16), sprite(0), OR
-PUT (219, 16), sprite(0), XOR
-PUT (269, 16), sprite(0), TRANS
+PUT (19, 16), sprite, PSET
+PUT (69, 16), sprite, PRESET
+PUT (119, 16), sprite, AND
+PUT (169, 16), sprite, OR
+PUT (219, 16), sprite, XOR
+PUT (269, 16), sprite, TRANS
 SLEEP
 
 
