@@ -2661,7 +2661,7 @@ private sub hEmitExport( ) 'static
     			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXPORT) > 0 ) then
     				hEmitExportHeader
     				sname = hStripUnderscore( symbGetProcName( s ) )
-    				hWriteStr ctx.outf, TRUE, ".ascii \"-export:" + sname + "\"" + NEWLINE
+    				hWriteStr ctx.outf, TRUE, ".ascii \" -export:" + sname + "\"" + NEWLINE
     			end if
     		end if
     	end if
