@@ -30,11 +30,17 @@
 /*:::::*/
 FBCALL void fb_GfxFlip(int from_page, int to_page)
 {
-	unsigned char *dest;
+	unsigned char *dest, *src;
 	
-	if ((!fb_mode) || (from_page < 0) || (from_page >= fb_mode->num_pages) || (from_page == to_page))
+	if (!fb_mode)
 		return;
 	
+	if (from_page < 0)
+		src = fb_mode->line[0];
+	else if (from_page >= fb_mode->num_pages)
+		return
+	else
+		src = fb_mode->page[from_page];
 	if (to_page < 0)
 		dest = fb_mode->framebuffer;
 	else if (to_page >= fb_mode->num_pages)
@@ -44,7 +50,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 		
 	if (dest == fb_mode->framebuffer)
 		fb_mode->driver->lock();
-	fb_hMemCpy(dest, fb_mode->page[from_page], fb_mode->pitch * fb_mode->h);
+	fb_hMemCpy(dest, src, fb_mode->pitch * fb_mode->h);
 	if (dest == fb_mode->framebuffer) {
 		fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 		fb_mode->driver->unlock();
