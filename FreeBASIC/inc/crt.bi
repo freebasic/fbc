@@ -150,6 +150,8 @@ declare function freopen cdecl alias "freopen" (byval as string, byval as string
 declare function fflush cdecl alias "fflush" (byval as FILE ptr) as integer
 declare function fclose cdecl alias "fclose" (byval as FILE ptr) as integer
 
+declare function feof cdecl alias "feof" (byval as FILE ptr) as integer
+
 declare function fgetc cdecl alias "fgetc" (byval as FILE ptr) as integer
 declare function fgets cdecl alias "fgets" (byval as string, byval as integer, byval as FILE ptr) as zstring ptr
 declare function fputc cdecl alias "fputc" (byval as integer, byval as FILE ptr) as integer
@@ -244,6 +246,14 @@ declare function mktime cdecl alias "mktime" ( byval timeptr as tm ptr ) as long
 declare function modf cdecl alias "modf" ( byval x as double, byval intptr as double ptr ) as double
 
 declare sub perror cdecl alias "perror" ( byval s as string )
+
+#ifdef FB__WIN32
+declare function popen cdecl alias "_popen" ( byval command as string, byval mode as string ) as FILE ptr
+declare function pclose cdecl alias "_pclose" ( byval f as FILE ptr ) as integer
+#else
+declare function popen cdecl alias "popen" ( byval command as string, byval mode as string ) as FILE ptr
+declare function pclose cdecl alias "pclose" ( byval f as FILE ptr ) as integer
+#endif
 
 declare function pow cdecl alias "pow" ( byval x as double, byval y as double ) as double
 
