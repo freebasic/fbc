@@ -11,22 +11,22 @@
 
 #inclib "DevIL"
 
-#define ILenum uinteger
-#define ILboolean ubyte
-#define ILbitfield uinteger
-#define ILbyte byte
-#define ILshort short
-#define ILint integer
-#define ILsizei integer
-#define ILubyte ubyte
-#define ILushort ushort
-#define ILuint uinteger
-#define ILfloat single
-#define ILclampf single
-#define ILdouble double
-#define ILclampd double
-#define ILvoid any
-#define ILstring string
+type ILenum as uinteger
+type ILboolean as ubyte
+type ILbitfield as uinteger
+type ILbyte as byte
+type ILshort as short
+type ILint as integer
+type ILsizei as integer
+type ILubyte as ubyte
+type ILushort as ushort
+type ILuint as uinteger
+type ILfloat as single
+type ILclampf as single
+type ILdouble as double
+type ILclampd as double
+type ILvoid as any
+type ILstring as string
 
 #define IL_FALSE 0
 #define IL_TRUE 1
@@ -232,24 +232,24 @@
 #define IL_SEEK_END 2
 #define IL_EOF -1
 
-#define ILHANDLE any ptr
-#define fCloseRProc ILvoid ptr
-#define fEofProc ILboolean ptr
-#define fGetcProc ILint ptr
-#define fOpenRProc ILHANDLE ptr
-#define fReadProc ILint ptr
-#define fSeekRProc ILint ptr
-#define fTellRProc ILint ptr
-#define fCloseWProc ILvoid ptr
-#define fOpenWProc ILHANDLE ptr
-#define fPutcProc ILint ptr
-#define fSeekWProc ILint ptr
-#define fTellWProc ILint ptr
-#define fWriteProc ILint ptr
-#define mAlloc ILvoid ptr
-#define mFree ILvoid ptr
-#define IL_LOADPROC ILenum ptr
-#define IL_SAVEPROC ILenum ptr
+type ILHANDLE as any ptr
+type fCloseRProc as ILvoid ptr
+type fEofProc as ILboolean ptr
+type fGetcProc as ILint ptr
+type fOpenRProc as ILHANDLE ptr
+type fReadProc as ILint ptr
+type fSeekRProc as ILint ptr
+type fTellRProc as ILint ptr
+type fCloseWProc as ILvoid ptr
+type fOpenWProc as ILHANDLE ptr
+type fPutcProc as ILint ptr
+type fSeekWProc as ILint ptr
+type fTellWProc as ILint ptr
+type fWriteProc as ILint ptr
+type mAlloc as ILvoid ptr
+type mFree as ILvoid ptr
+type IL_LOADPROC as ILenum ptr
+type IL_SAVEPROC as ILenum ptr
 
 declare function ilActiveImage cdecl alias "ilActiveImage" (byval Number as ILuint) as ILboolean
 declare function ilActiveLayer cdecl alias "ilActiveLayer" (byval Number as ILuint) as ILboolean

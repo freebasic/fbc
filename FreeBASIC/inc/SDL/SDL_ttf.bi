@@ -25,12 +25,12 @@
 declare function TTF_Linked_Version SDLCALL alias "TTF_Linked_Version" () as SDL_version ptr
 
 
-const UNICODE_BOM_NATIVE = &Hfeff
-const UNICODE_BOM_SWAPPED = &Hfffe
+#define UNICODE_BOM_NATIVE &Hfeff
+#define UNICODE_BOM_SWAPPED &Hfffe
 
 Declare Sub TTF_ByteSwappedUNICODE SDLCALL alias "TTF_ByteSwappedUNICODE" (byval swapped as integer)
 
-#define TTF_Font any ptr
+type TTF_Font as any ptr
 
 Declare Function TTF_Init SDLCALL alias "TTF_Init" () as integer
 
@@ -39,10 +39,10 @@ Declare Function TTF_OpenFontIndex SDLCALL alias "TTF_OpenFontIndex" (byval file
 Declare Function TTF_OpenFontRW SDLCALL alias "TTF_OpenFontRW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval ptsize as integer) as TTF_Font
 Declare Function TTF_OpenFontIndexRW SDLCALL alias "TTF_OpenFontIndexRW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval ptsize as integer, byval index as integer) as TTF_Font
 
-const TTF_STYLE_NORMAL = 0
-const TTF_STYLE_BOLD = 1
-const TTF_STYLE_ITALIC = 2
-const TTF_STYLE_UNDERLINE = 4
+#define TTF_STYLE_NORMAL 0
+#define TTF_STYLE_BOLD 1
+#define TTF_STYLE_ITALIC 2
+#define TTF_STYLE_UNDERLINE 4
 
 Declare Function TTF_GetFontStyle SDLCALL alias "TTF_GetFontStyle" (byval font as TTF_Font) as integer
 Declare Sub TTF_SetFontStyle SDLCALL alias "TTF_SetFontStyle" (byval font as TTF_Font, byval style as integer)

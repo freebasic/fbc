@@ -369,7 +369,7 @@ Declare Sub FreeImage_Initialise Alias "FreeImage_Initialise" (ByVal load_local_
 Declare Sub FreeImage_DeInitialise Alias "FreeImage_DeInitialise" ()
 Declare Function FreeImage_GetVersion Alias "FreeImage_GetVersion" () As Byte Ptr
 Declare Function FreeImage_GetCopyrightMessage Alias "FreeImage_GetCopyrightMessage" () As byte ptr
-''''''''Declare Sub FreeImage_OutputMessageProc Alias "FreeImage_OutputMessageProc" (ByVal fif As Integer, ByVal fmt As String, ...)
+Declare Sub FreeImage_OutputMessageProc CDECL Alias "FreeImage_OutputMessageProc" (ByVal fif As Integer, ByVal fmt As String, ...)
 Declare Sub FreeImage_SetOutputMessage Alias "FreeImage_SetOutputMessage" (ByVal omf As Integer)
 Declare Function FreeImage_Allocate Alias "FreeImage_Allocate" (ByVal width As Integer, ByVal height As Integer, ByVal bpp As Integer, ByVal red_mask As Integer = 0, ByVal green_mask As Integer = 0, ByVal blue_mask As Integer = 0) As FIBITMAP ptr
 Declare Function FreeImage_AllocateT Alias "FreeImage_AllocateT" (ByVal type As FREE_IMAGE_TYPE, ByVal width As Integer, ByVal height As Integer, ByVal bpp As Integer = 8, ByVal red_mask As Integer = 0, ByVal green_mask As Integer = 0, ByVal blue_mask As Integer = 0) As FIBITMAP ptr

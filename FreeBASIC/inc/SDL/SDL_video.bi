@@ -79,9 +79,7 @@ type SDL_Surface
 	refcount as integer
 end type
 
-#define SDL_blit function _
-   (src as SDL_Surface ptr, srcrect as SDL_Rect ptr, dst as SDL_Surface ptr, _
-   dstrect as SDL_Rect ptr) as integer
+type SDL_blit as function (byval src as SDL_Surface ptr, byval srcrect as SDL_Rect ptr, byval dst as SDL_Surface ptr, byval dstrect as SDL_Rect ptr) as integer
 
 #define SDL_SWSURFACE &h00000000
 #define SDL_HWSURFACE &h00000001

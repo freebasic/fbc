@@ -58,7 +58,7 @@ enum Mix_MusicType
    MUS_MP3
 end enum
 
-#define Mix_Music any
+type Mix_Music as any
 
 declare function Mix_OpenAudio SDLCALL alias "Mix_OpenAudio" _
    (byval frequency as integer, byval format as Uint16, _

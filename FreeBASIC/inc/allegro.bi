@@ -666,12 +666,10 @@ Const POLYTYPE_ZBUF%			= 16
 #define OLD_FILESEL_HEIGHT  -1
 
 
-' -- "typedefs" --
+' -- typedefs --
 
-#define ZBUFFER BITMAP				' 3D z-buffer type
-#define fixed Integer				' 32-bit 16.16 fixed-point type
-
-#define DIALOG_PROC	function(byval msg as integer, byval d as DIALOG ptr, byval c as integer) as integer
+type ZBUFFER as BITMAP				' 3D z-buffer type
+type fixed as Integer				' 32-bit 16.16 fixed-point type
 
 
 ' -- structures and types --
@@ -1104,6 +1102,8 @@ type _VTABLE_INFO
 	color_depth as integer
 	vtable as GFX_VTABLE ptr
 end type
+
+type DIALOG_PROC as function(byval msg as integer, byval d as DIALOG ptr, byval c as integer) as integer
 
 ' -- externs --
 

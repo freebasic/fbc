@@ -1,6 +1,6 @@
 ''
 ''
-'' glu -- header translation done with help from the SWIG's FB wrapper.
+'' glu -- header translated with help of SWIG FB wrapper
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
@@ -173,17 +173,17 @@
 #define GLU_TESS_WINDING_NEGATIVE 100133
 #define GLU_TESS_WINDING_ABS_GEQ_TWO 100134
 
-#define GLUnurbs any
-#define GLUquadric any
-#define GLUtesselator any
-#define GLUnurbsObj GLUnurbs
-#define GLUquadricObj GLUquadric
-#define GLUtesselatorObj GLUtesselator
-#define GLUtriangulatorObj GLUtesselator
+type GLUnurbs as any
+type GLUquadric as any
+type GLUtesselator as any
+type GLUnurbsObj as GLUnurbs
+type GLUquadricObj as GLUquadric
+type GLUtesselatorObj as GLUtesselator
+type GLUtriangulatorObj as GLUtesselator
 
 #define GLU_TESS_MAX_COORD 1.0e150
 
-#define _GLUfuncptr any ptr
+type _GLUfuncptr as any ptr
 
 declare sub gluBeginCurve alias "gluBeginCurve" (byval nurb as GLUnurbs ptr)
 declare sub gluBeginPolygon alias "gluBeginPolygon" (byval tess as GLUtesselator ptr)

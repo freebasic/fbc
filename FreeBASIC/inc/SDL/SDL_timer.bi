@@ -18,17 +18,14 @@ declare function SDL_GetTicks SDLCALL alias "SDL_GetTicks" () as Uint32
 
 declare sub SDL_Delay SDLCALL alias "SDL_Delay" (byval ms as Uint32)
 
-#define SDL_TimerCallBack _
-   function SDLCALL (byval interval as Uint32) as Uint32
+type SDL_TimerCallBack as function SDLCALL (byval interval as Uint32) as Uint32
 
 declare function SDL_SetTimer SDLCALL alias "SDL_SetTimer" _
    (byval interval as Uint32, byval callback as SDL_TimerCallBack ) as integer
 
-#define SDL_NewTimerCallBack _
-   function SDLCALL (byval interval as Uint32, byval param as any ptr) _
-   as Uint32
+type SDL_NewTimerCallBack as function SDLCALL (byval interval as Uint32, byval param as any ptr) as Uint32
 
-#define SDL_TimerID any ptr
+type SDL_TimerID as any ptr
 
 declare function SDL_AddTimer SDLCALL alias "SDL_AddTimer" _
    (byval interval as Uint32, byval callback as SDL_NewTimerCallBack, _

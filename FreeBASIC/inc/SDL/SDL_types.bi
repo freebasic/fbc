@@ -12,12 +12,12 @@ enum SDL_bool
    SDL_TRUE = 1
 end enum
 
-#define Uint8 ubyte
-#define Sint8 byte
-#define Uint16 ushort
-#define Sint16 short
-#define Uint32 uinteger
-#define Sint32 integer
+type Uint8 as ubyte
+type Sint8 as byte
+type Uint16 as ushort
+type Sint16 as short
+type Uint32 as uinteger
+type Sint32 as integer
 
 enum inputstates
    SDL_PRESSED = &h01

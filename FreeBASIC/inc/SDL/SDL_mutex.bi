@@ -13,7 +13,7 @@
 #define SDL_MUTEX_TIMEDOUT 1
 #define SDL_MUTEX_MAXWAIT not 0
 
-#define SDL_mutex any
+type SDL_mutex as any
 
 declare function SDL_CreateMutext SDLCALL alias "SDL_CreateMutext" _
    () as SDL_mutex ptr
@@ -31,7 +31,7 @@ declare function SDL_mutexV SDLCALL alias "SDL_mutexV" _
 declare sub SDL_DestroyMutex SDLCALL alias "SDL_DestroyMutex" _
    (byval mutex as SDL_mutex ptr)
 
-#define SDL_sem any
+type SDL_sem as any
 
 declare function SDL_CreateSemaphore SDLCALL alias "SDL_CreateSemaphore" _
    (byval initial_value as Uint32) as SDL_sem ptr
@@ -54,7 +54,7 @@ declare function SDL_SemPost SDLCALL alias "SDL_SemPost" _
 declare function SDL_SemValue SDLCALL alias "SDL_SemValue" _
    (byval sem as SDL_sem ptr) as Uint32
 
-#define SDL_cond any
+type SDL_cond as any
 
 declare function SDL_CreateCond SDLCALL alias "SDL_CreateCond" _
    as SDL_cond ptr

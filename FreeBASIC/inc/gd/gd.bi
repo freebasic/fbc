@@ -62,8 +62,8 @@ type gdImageStruct
 	cy2 as integer
 end type
 
-#define gdImage gdImageStruct
-#define gdImagePtr gdImage ptr
+type gdImage as gdImageStruct
+type gdImagePtr as gdImage ptr
 
 type gdFont
 	nchars as integer
@@ -73,7 +73,7 @@ type gdFont
 	data as byte ptr
 end type
 
-#define gdFontPtr gdFont ptr
+type gdFontPtr as gdFont ptr
 
 #define gdDashSize 4
 #define gdStyled (-2)
@@ -103,7 +103,7 @@ type gdSource
 	context as any ptr
 end type
 
-#define gdSourcePtr gdSource ptr
+type gdSourcePtr as gdSource ptr
 
 declare function gdImageCreateFromPngSource alias "gdImageCreateFromPngSource" (byval in as gdSourcePtr) as gdImagePtr
 declare function gdImageCreateFromGd alias "gdImageCreateFromGd" (byval in as FILE ptr) as gdImagePtr
@@ -151,7 +151,7 @@ type gdFTStringExtra
 	fontpath as byte ptr
 end type
 
-#define gdFTStringExtraPtr gdFTStringExtra ptr
+type gdFTStringExtraPtr as gdFTStringExtra ptr
 
 #define gdFTEX_LINESPACE 1
 #define gdFTEX_CHARMAP 2
@@ -175,7 +175,7 @@ type gdPoint
 	y as integer
 end type
 
-#define gdPointPtr gdPoint ptr
+type gdPointPtr as gdPoint ptr
 
 declare sub gdImagePolygon alias "gdImagePolygon" (byval im as gdImagePtr, byval p as gdPointPtr, byval n as integer, byval c as integer)
 declare sub gdImageOpenPolygon alias "gdImageOpenPolygon" (byval im as gdImagePtr, byval p as gdPointPtr, byval n as integer, byval c as integer)
@@ -230,7 +230,7 @@ type gdSink
 	context as any ptr
 end type
 
-#define gdSinkPtr gdSink ptr
+type gdSinkPtr as gdSink ptr
 
 declare sub gdImagePngToSink alias "gdImagePngToSink" (byval im as gdImagePtr, byval out as gdSinkPtr)
 declare sub gdImageGd alias "gdImageGd" (byval im as gdImagePtr, byval out as FILE ptr)

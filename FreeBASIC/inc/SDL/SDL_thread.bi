@@ -12,7 +12,7 @@
 
 '$include: 'SDL/begin_code.bi'
 
-#define SDL_Thread any
+type SDL_Thread as any
 
 declare function SDL_CreateThread SDLCALL alias "SDL_CreateThread" _
    (byval fn as function(byval pntr as any ptr) as integer, _

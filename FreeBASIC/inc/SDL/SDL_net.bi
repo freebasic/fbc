@@ -46,7 +46,7 @@ declare function SDLNet_ResolveIP SDLCALL alias "SDLNet_ResolveIP" (byval ip as 
 ''/* TCP network API                                                     */
 ''/***********************************************************************/
 
-#define TCPsocket any ptr
+type TCPsocket as any ptr
 
 declare function SDLNet_TCP_Open SDLCALL alias "SDLNet_TCP_Open" (byval ip as IPaddress ptr) as TCPsocket
 
@@ -68,7 +68,7 @@ declare sub SDLNet_TCP_Close SDLCALL alias "SDLNet_TCP_Close" (byval sock as TCP
 #define SDLNET_MAX_UDPCHANNELS	32
 #define SDLNET_MAX_UDPADDRESSES	4
 
-#define UDPsocket any ptr
+type UDPsocket as any ptr
 
 type UDPpacket
 	channel	as integer
@@ -109,13 +109,13 @@ declare sub SDLNet_UDP_Close SDLCALL alias "SDLNet_UDP_Close" (byval sock as UDP
 ''/* Hooks for checking sockets for available data                       */
 ''/***********************************************************************/
 
-#define SDLNet_SocketSet any ptr
+type SDLNet_SocketSet as any ptr
 
 type SDLNet_TGenericSocket
 	ready		as integer
 end type
 
-#define SDLNet_GenericSocket SDLNet_TGenericSocket ptr
+type SDLNet_GenericSocket as SDLNet_TGenericSocket ptr
 
 declare function SDLNet_AllocSocketSet SDLCALL alias "SDLNet_AllocSocketSet" (byval maxsockets as integer) as SDLNet_SocketSet
 

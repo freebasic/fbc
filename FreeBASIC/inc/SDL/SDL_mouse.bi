@@ -10,7 +10,7 @@
 
 '$include: 'SDL/begin_code.bi'
 
-#define WMcursor any
+type WMcursor as any
 type SDL_Cursor
    area as SDL_Rect
    hot_x as Sint16

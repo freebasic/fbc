@@ -43,12 +43,9 @@
 '| TYPES |
 '---------
 
-type LARGE_INTEGER
-    LowPart  as uinteger
-    HighPart as integer
-end type
+type LARGE_INTEGER as longint
 
-#define INT64 LARGE_INTEGER
+type INT64 as LARGE_INTEGER
 
 Type DEVMODE Field = 1
   dmDeviceName       As String * CCHDEVICENAME-1

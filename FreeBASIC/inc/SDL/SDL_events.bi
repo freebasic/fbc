@@ -158,7 +158,7 @@ type SDL_UserEvent
 end type
 
 #ifndef SDL_syswm_bi_
-#define SDL_SysWMmsg any
+type SDL_SysWMmsg as any
 #endif
 type SDL_SysWMEvent
    type as Uint8
@@ -202,8 +202,7 @@ declare function SDL_WaitEvent SDLCALL alias "SDL_WaitEvent" _
 declare function SDL_PushEvent SDLCALL alias "SDL_PushEvent" _
    (byval event as SDL_Event ptr) as integer
 
-#define SDL_EventFilter function SDLCALL _
-   (byval event as SDL_Event ptr) as integer
+type SDL_EventFilter as function SDLCALL (byval event as SDL_Event ptr) as integer
 
 declare sub SDL_SetEventFilter SDLCALL alias "SDL_SetEventFilter" _
    (byval filter as SDL_EventFilter)

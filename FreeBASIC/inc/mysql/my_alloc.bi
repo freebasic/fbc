@@ -18,7 +18,7 @@ type st_used_mem
 	size as uinteger
 end type
 
-#define USED_MEM st_used_mem
+type USED_MEM as st_used_mem
 
 type st_mem_root
 	free as USED_MEM ptr
@@ -31,6 +31,6 @@ type st_mem_root
 	error_handler as sub()
 end type
 
-#define MEM_ROOT st_mem_root
+type MEM_ROOT as st_mem_root
 
 #endif

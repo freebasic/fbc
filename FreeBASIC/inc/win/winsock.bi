@@ -17,10 +17,10 @@
 #endif
 
 #if not defined( _BSDTYPES_DEFINED )
-#define u_char ubyte
-#define u_short ushort
-#define u_int uinteger
-#define u_long uinteger
+type u_char as ubyte
+type u_short as ushort
+type u_int as uinteger
+type u_long as uinteger
 #define _BSDTYPES_DEFINED
 #endif
 
@@ -229,7 +229,7 @@ type WSAData
 	iMaxUdpDg		as ushort
 	lpVendorInfo	as byte ptr
 end type
-#define LPWSADATA WSADATA ptr
+type LPWSADATA as WSADATA ptr
 
 #define IP_OPTIONS	1
 #define SO_DEBUG	1
@@ -483,23 +483,23 @@ declare function gethostname alias "gethostname" (byval as byte ptr, byval as in
 #define WSAGETSELECTEVENT(l)	LOWORD(l)
 #define WSAGETSELECTERROR(l)	HIWORD(l)
 
-#define PSOCKADDR sockaddr ptr
-#define LPSOCKADDR sockaddr ptr
-#define PSOCKADDR_IN sockaddr_in ptr
-#define LPSOCKADDR_IN sockaddr_in ptr
-#define PLINGER linger ptr
-#define LPLINGER linger ptr
-#define PIN_ADDR in_addr ptr
-#define LPIN_ADDR in_addr ptr
-#define PFD_SET fd_set ptr
-#define LPFD_SET fd_set ptr
-#define PHOSTENT hostent ptr
-#define LPHOSTENT hostent ptr
-#define PSERVENT servent ptr
-#define LPSERVENT servent ptr
-#define PPROTOENT protoent ptr
-#define LPPROTOENT protoent ptr
-#define PTIMEVAL timeval ptr
-#define LPTIMEVAL timeval ptr
+type PSOCKADDR as sockaddr ptr
+type LPSOCKADDR as sockaddr ptr
+type PSOCKADDR_IN as sockaddr_in ptr
+type LPSOCKADDR_IN as ockaddr_in ptr
+type PLINGER as linger ptr
+type LPLINGER as linger ptr
+type PIN_ADDR as in_addr ptr
+type LPIN_ADDR as in_addr ptr
+type PFD_SET as fd_set ptr
+type LPFD_SET as fd_set ptr
+type PHOSTENT as hostent ptr
+type LPHOSTENT as hostent ptr
+type PSERVENT as servent ptr
+type LPSERVENT as servent ptr
+type PPROTOENT as protoent ptr
+type LPPROTOENT as protoent ptr
+type PTIMEVAL as timeval ptr
+type LPTIMEVAL as timeval ptr
 
 #endif

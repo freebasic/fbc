@@ -11,10 +11,10 @@
 
 #inclib "mySQL"
 
-#define my_bool byte
-#define gptr byte ptr
-#define my_socket integer
-#define charset_info_st any
+type my_bool as byte
+type gptr as byte ptr
+type my_socket as integer
+type charset_info_st as any
 
 #include once "mysql/mysql_com.bi"
 #include once "mysql/mysql_version.bi"
@@ -35,10 +35,10 @@ type st_mysql_field
 	type as enum_field_types
 end type
 
-#define MYSQL_FIELD st_mysql_field
-#define MYSQL_ROW byte ptr ptr
-#define MYSQL_FIELD_OFFSET uinteger
-#define my_ulonglong ulongint
+type MYSQL_FIELD as st_mysql_field
+type MYSQL_ROW as byte ptr ptr
+type MYSQL_FIELD_OFFSET as uinteger
+type my_ulonglong as ulongint
 
 #define MYSQL_COUNT_ERROR ( not 0)
 
@@ -47,8 +47,8 @@ type st_mysql_rows
 	data as MYSQL_ROW
 end type
 
-#define MYSQL_ROWS st_mysql_rows
-#define MYSQL_ROW_OFFSET MYSQL_ROWS ptr
+type MYSQL_ROWS as st_mysql_rows
+type MYSQL_ROW_OFFSET as MYSQL_ROWS ptr
 
 #include once "mysql/my_alloc.bi"
 
@@ -59,7 +59,7 @@ type st_mysql_data
 	alloc as MEM_ROOT
 end type
 
-#define MYSQL_DATA st_mysql_data
+type MYSQL_DATA as st_mysql_data
 
 type st_mysql_options
 	connect_timeout as uinteger
@@ -151,7 +151,7 @@ type st_mysql
 	last_used_con as st_mysql ptr
 end type
 
-#define MYSQL st_mysql
+type MYSQL as st_mysql
 
 type st_mysql_res
 	row_count as my_ulonglong
@@ -168,7 +168,7 @@ type st_mysql_res
 	eof as my_bool
 end type
 
-#define MYSQL_RES st_mysql_res
+type MYSQL_RES as st_mysql_res
 
 #define MAX_MYSQL_MANAGER_ERR 256
 #define MAX_MYSQL_MANAGER_MSG 256
@@ -195,7 +195,7 @@ type st_mysql_manager
 	last_error as string * 256-1
 end type
 
-#define MYSQL_MANAGER st_mysql_manager
+type MYSQL_MANAGER as st_mysql_manager
 
 declare function mysql_server_init alias "mysql_server_init" (byval argc as integer, byval argv as byte ptr ptr, byval groups as byte ptr ptr) as integer
 declare sub mysql_server_end alias "mysql_server_end" ()

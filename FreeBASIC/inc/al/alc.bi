@@ -26,8 +26,8 @@ type ALCcontext_struct
    placeholder as byte
 end type
 
-#define ALCdevice       ALCdevice_struct
-#define ALCcontext      ALCcontext_struct
+type ALCdevice       as ALCdevice_struct
+type ALCcontext  	 as ALCcontext_struct
 
 
 

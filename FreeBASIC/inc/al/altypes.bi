@@ -11,111 +11,111 @@
 #define ALTYPES_BI
 
 
-#define ALboolean       byte
-#define ALbyte          byte
-#define ALubyte         ubyte
-#define ALshort         short
-#define ALushort        ushort
-#define ALuint          uinteger
-#define ALint           integer
-#define ALfloat         single
-#define ALdouble        double
-#define ALsizei         unsigned long
-#define ALvoid          any
-#define ALenum          integer
+type ALboolean       as byte
+type ALbyte          as byte
+type ALubyte         as ubyte
+type ALshort         as short
+type ALushort        as ushort
+type ALuint          as uinteger
+type ALint           as integer
+type ALfloat         as single
+type ALdouble        as double
+type ALsizei         as unsigned long
+type ALvoid          as any
+type ALenum          as integer
 
 
-CONST AL_INVALID     = -1
+#define AL_INVALID      -1
 
 ' Boolean Defs
-CONST AL_FALSE       = 0
-CONST AL_TRUE        = 1
+#define AL_FALSE        0
+#define AL_TRUE         1
 
 
 ' Sound Defs
-CONST AL_SOURCE_TYPE          = &H200
-CONST AL_SOURCE_ABSOLUTE      = &H201
-CONST AL_SOURCE_RELATIVE      = &H202
+#define AL_SOURCE_TYPE           &H200
+#define AL_SOURCE_ABSOLUTE       &H201
+#define AL_SOURCE_RELATIVE       &H202
 
-CONST AL_CONE_INNER_ANGLE     = &H1001
-CONST AL_CONE_OUTER_ANGLE     = &H1002
+#define AL_CONE_INNER_ANGLE      &H1001
+#define AL_CONE_OUTER_ANGLE      &H1002
 
-CONST AL_PITCH                = &H1003
-CONST AL_POSITION             = &H1004
-CONST AL_DIRECTION            = &H1005
-CONST AL_VELOCITY             = &H1006
-CONST AL_LOOPING              = &H1007
-CONST AL_BUFFER               = &H1009
-CONST AL_GAIN                 = &H100A
-CONST AL_MIN_GAIN             = &H100D
-CONST AL_MAX_GAIN             = &H100E
-CONST AL_ORIENTATION          = &H100F
-CONST AL_REFERENCE_DISTANCE   = &H1020
-CONST AL_ROLLOFF_FACTOR       = &H1021
-CONST AL_CONE_OUTER_GAIN      = &H1022
-CONST AL_MAX_DISTANCE         = &H1023
-CONST AL_CHANNEL_MASK         = &H3000
+#define AL_PITCH                 &H1003
+#define AL_POSITION              &H1004
+#define AL_DIRECTION             &H1005
+#define AL_VELOCITY              &H1006
+#define AL_LOOPING               &H1007
+#define AL_BUFFER                &H1009
+#define AL_GAIN                  &H100A
+#define AL_MIN_GAIN              &H100D
+#define AL_MAX_GAIN              &H100E
+#define AL_ORIENTATION           &H100F
+#define AL_REFERENCE_DISTANCE    &H1020
+#define AL_ROLLOFF_FACTOR        &H1021
+#define AL_CONE_OUTER_GAIN       &H1022
+#define AL_MAX_DISTANCE          &H1023
+#define AL_CHANNEL_MASK          &H3000
 
 ' Source State Information
-CONST AL_SOURCE_STATE         = &H1010
-CONST AL_INITIAL              = &H1011
-CONST AL_PLAYING              = &H1012
-CONST AL_PAUSED               = &H1013
-CONST AL_STOPPED              = &H1014
+#define AL_SOURCE_STATE          &H1010
+#define AL_INITIAL               &H1011
+#define AL_PLAYING               &H1012
+#define AL_PAUSED                &H1013
+#define AL_STOPPED               &H1014
 
 
 ' Buffer Queue Parameters
-CONST AL_BUFFERS_QUEUED       = &H1015
-CONST AL_BUFFERS_PROCESSED    = &H1016
+#define AL_BUFFERS_QUEUED        &H1015
+#define AL_BUFFERS_PROCESSED     &H1016
 
 
 ' Sound Buffer Format Specifiers
-CONST AL_FORMAT_MONO8         = &H1100
-CONST AL_FORMAT_MONO16        = &H1101
-CONST AL_FORMAT_STEREO8       = &H1102
-CONST AL_FORMAT_STEREO16      = &H1103
+#define AL_FORMAT_MONO8          &H1100
+#define AL_FORMAT_MONO16         &H1101
+#define AL_FORMAT_STEREO8        &H1102
+#define AL_FORMAT_STEREO16       &H1103
 
-CONST AL_FREQUENCY            = &H2001
-CONST AL_BITS                 = &H2002
-CONST AL_CHANNELS             = &H2003
-CONST AL_SIZE                 = &H2004
-CONST AL_DATA                 = &H2005
+#define AL_FREQUENCY             &H2001
+#define AL_BITS                  &H2002
+#define AL_CHANNELS              &H2003
+#define AL_SIZE                  &H2004
+#define AL_DATA                  &H2005
 
 
 ' Buffer States
-CONST AL_UNUSED               = &H2010
-CONST AL_PENDING              = &H2011
-CONST AL_PROCESSED            = &H2012
+#define AL_UNUSED                &H2010
+#define AL_PENDING               &H2011
+#define AL_PROCESSED             &H2012
 
 
 ' NoError Def
-CONST AL_NO_ERROR             = AL_FALSE
+#define AL_NO_ERROR              AL_FALSE
 
 
 ' Error Messages (Invalid XXXX)
-CONST AL_INVALID_NAME                  = &HA001
-CONST AL_INVALID_ENUM                  = &HA002
-CONST AL_INVALID_VALUE                 = &HA003
-CONST AL_INVALID_OPERATION             = &HA004
+#define AL_INVALID_NAME                   &HA001
+#define AL_INVALID_ENUM                   &HA002
+#define AL_INVALID_VALUE                  &HA003
+#define AL_INVALID_OPERATION              &HA004
 
 
 ' Out-of-memory
-CONST AL_OUT_OF_MEMORY                 = &HA005
+#define AL_OUT_OF_MEMORY                  &HA005
 
 
 ' Context Strings
-CONST AL_VENDOR         = &HB001
-CONST AL_VERSION        = &HB002
-CONST AL_RENDERER       = &HB003
-CONST AL_EXTENSIONS     = &HB004
+#define AL_VENDOR          &HB001
+#define AL_VERSION         &HB002
+#define AL_RENDERER        &HB003
+#define AL_EXTENSIONS      &HB004
 
 
 ' "Global Tweakage"
-CONST AL_DOPPLER_FACTOR             = &HC000
-CONST AL_DOPPLER_VELOCITY           = &HC001
-CONST AL_DISTANCE_MODEL             = &HD000
-CONST AL_INVERSE_DISTANCE           = &HD001
-CONST AL_INVERSE_DISTANCE_CLAMPED   = &HD002
+#define AL_DOPPLER_FACTOR              &HC000
+#define AL_DOPPLER_VELOCITY            &HC001
+#define AL_DISTANCE_MODEL              &HD000
+#define AL_INVERSE_DISTANCE            &HD001
+#define AL_INVERSE_DISTANCE_CLAMPED    &HD002
 
 
 #endif      ' ndef ALTYPES_BI

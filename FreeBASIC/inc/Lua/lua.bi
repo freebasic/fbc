@@ -30,7 +30,7 @@
 #define LUA_ERRERR	5
 
 
-#define lua_State any
+type lua_State as any
 
 #define lua_CFunction function(byval L as lua_State ptr) as integer
 
@@ -279,7 +279,7 @@ type lua_Debug
   i_ci		as integer
 end type
 
-#define lua_Hook sub(byval L as lua_State ptr, byval ar as lua_Debug ptr)
+type lua_Hook as sub(byval L as lua_State ptr, byval ar as lua_Debug ptr)
 
 declare function lua_getstack LUA_API alias "lua_getstack" (byval L as lua_State ptr, byval level as integer, byval ar as lua_Debug ptr) as integer
 declare function lua_getinfo LUA_API alias "lua_getinfo" (byval L as lua_State ptr, byval what as string, byval ar as lua_Debug ptr) as integer

@@ -17,13 +17,13 @@
 declare function sqlite3_libversion cdecl alias "sqlite3_libversion" () as byte ptr
 ''''''' declare function sqlite3_libversion_number cdecl alias "sqlite3_libversion_number" () as integer
 
-#define sqlite3 any
-#define sqlite_int64 longint
-#define sqlite_uint64 ulongint
+type sqlite3 as any
+type sqlite_int64 as longint
+type sqlite_uint64 as ulongint
 
 declare function sqlite3_close cdecl alias "sqlite3_close" (byval as sqlite3 ptr) as integer
 
-#define sqlite3_callback integer ptr
+type sqlite3_callback as integer ptr
 
 declare function sqlite3_exec cdecl alias "sqlite3_exec" (byval as sqlite3 ptr, byval sql as string, byval as sqlite3_callback, byval as any ptr, byval errmsg as byte ptr ptr) as integer
 
@@ -113,13 +113,13 @@ declare function sqlite3_errcode cdecl alias "sqlite3_errcode" (byval db as sqli
 declare function sqlite3_errmsg cdecl alias "sqlite3_errmsg" (byval as sqlite3 ptr) as byte ptr
 declare function sqlite3_errmsg16 cdecl alias "sqlite3_errmsg16" (byval as sqlite3 ptr) as any ptr
 
-#define sqlite3_stmt any
+type sqlite3_stmt as any
 
 declare function sqlite3_prepare cdecl alias "sqlite3_prepare" (byval db as sqlite3 ptr, byval zSql as string, byval nBytes as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as byte ptr ptr) as integer
 declare function sqlite3_prepare16 cdecl alias "sqlite3_prepare16" (byval db as sqlite3 ptr, byval zSql as any ptr, byval nBytes as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as any ptr ptr) as integer
 
-#define sqlite3_context any
-#define sqlite3_value any
+type sqlite3_context as any
+type sqlite3_value as any
 
 declare function sqlite3_bind_blob cdecl alias "sqlite3_bind_blob" (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval n as integer, byval as sub(byval as any ptr)) as integer
 declare function sqlite3_bind_double cdecl alias "sqlite3_bind_double" (byval as sqlite3_stmt ptr, byval as integer, byval as double) as integer

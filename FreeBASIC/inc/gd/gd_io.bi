@@ -19,7 +19,7 @@ type gdIOCtx
 	gd_free as sub(byval as gdIOCtx ptr)
 end type
 
-#define gdIOCtxPtr gdIOCtx ptr
+type gdIOCtxPtr as gdIOCtx ptr
 
 declare sub Putword alias "Putword" (byval w as integer, byval ctx as gdIOCtx ptr)
 declare sub Putchar_ alias "Putchar" (byval c as integer, byval ctx as gdIOCtx ptr)

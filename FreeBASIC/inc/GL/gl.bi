@@ -1,6 +1,6 @@
 ''
 ''
-'' gl -- header translation done with help from the SWIG's FB wrapper.
+'' gl -- OpenGL include file (header translated with help of SWIG FB wrapper)
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
@@ -22,21 +22,21 @@
 #define GL_VERSION_1_3 1
 #define GL_ARB_imaging 1
 
-#define GLenum uinteger
-#define GLboolean ubyte
-#define GLbitfield uinteger
-#define GLvoid any
-#define GLbyte byte
-#define GLshort short
-#define GLint integer
-#define GLubyte ubyte
-#define GLushort ushort
-#define GLuint uinteger
-#define GLsizei integer
-#define GLfloat single
-#define GLclampf single
-#define GLdouble double
-#define GLclampd double
+type GLenum as uinteger
+type GLboolean as ubyte
+type GLbitfield as uinteger
+type GLvoid as any
+type GLbyte as byte
+type GLshort as short
+type GLint as integer
+type GLubyte as ubyte
+type GLushort as ushort
+type GLuint as uinteger
+type GLsizei as integer
+type GLfloat as single
+type GLclampf as single
+type GLdouble as double
+type GLclampd as double
 
 #define GL_FALSE &h0
 #define GL_TRUE &h1

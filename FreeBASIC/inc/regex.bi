@@ -24,10 +24,10 @@
 #inclib "tre"
 
 #ifndef size_t
-#define size_t integer
+type size_t as integer
 #endif
 
-#define regoff_t integer
+type regoff_t as integer
 
 type regex_t
 	re_nsub 	as integer  	'' Number of parenthesized subexpressions.

@@ -92,8 +92,8 @@ end enum
 #define NET_WRITE_TIMEOUT 60
 #define NET_WAIT_TIMEOUT 8*60*60
 
-#define st_vio any
-#define Vio st_vio
+type st_vio as any
+type Vio as st_vio
 
 #define MAX_CHAR_WIDTH 255
 #define MAX_BLOB_WIDTH 8192
@@ -129,7 +129,7 @@ type st_net
 	query_cache_query as gptr
 end type
 
-#define NET st_net
+type NET as st_net
 
 #define packet_error ( not 0)
 
@@ -170,7 +170,7 @@ declare function net_write_command alias "net_write_command" (byval net as NET p
 declare function net_real_write alias "net_real_write" (byval net as NET ptr, byval packet as string, byval len as uinteger) as integer
 declare function my_net_read alias "my_net_read" (byval net as NET ptr) as uinteger
 #ifndef sockaddr
-#define sockaddr any
+type sockaddr as any
 #endif
 declare function my_connect alias "my_connect" (byval s as my_socket, byval name as sockaddr ptr, byval namelen as uinteger, byval timeout as uinteger) as integer
 
@@ -195,7 +195,7 @@ type st_udf_args
 	maybe_null as byte ptr
 end type
 
-#define UDF_ARGS st_udf_args
+type UDF_ARGS as st_udf_args
 
 type st_udf_init
 	maybe_null as my_bool
@@ -205,7 +205,7 @@ type st_udf_init
 	const_item as my_bool
 end type
 
-#define UDF_INIT st_udf_init
+type UDF_INIT as st_udf_init
 
 #define NET_HEADER_SIZE 4
 #define COMP_HEADER_SIZE 3
