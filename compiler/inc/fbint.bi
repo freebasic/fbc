@@ -298,6 +298,8 @@ enum FBTK_ENUM
 	FB.TK.VIEW
 	FB.TK.UNLOCK
 	FB.TK.FIELD
+	FB.TK.LOCAL
+	FB.TK.ERR
 end enum
 
 '' single char tokens

@@ -178,7 +178,7 @@ sub hReportSimpleError( byval errnum as integer )
 		end if
 	next i
 
-	print rtrim$( env.infile ); " : error";
+	print rtrim$( env.infile ); " : error ";
 	print str$( errnum ); ": "; msg
 
 end sub
@@ -280,7 +280,7 @@ function hFileExists( filename as string ) as integer static
 
 	hFileExists = FALSE
 
-	on error goto exitfunction
+	on local error goto exitfunction
 
 	f = freefile
 	open filename for input as #f

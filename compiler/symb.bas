@@ -225,8 +225,10 @@ data "LINE"		, FB.TK.LINE		, FB.TKCLASS.KEYWORD
 data "VIEW"		, FB.TK.VIEW		, FB.TKCLASS.KEYWORD
 data "UNLOCK"	, FB.TK.UNLOCK		, FB.TKCLASS.KEYWORD
 data "FIELD"	, FB.TK.FIELD		, FB.TKCLASS.KEYWORD
+data "LOCAL"	, FB.TK.LOCAL		, FB.TKCLASS.KEYWORD
+data "ERR"		, FB.TK.ERR			, FB.TKCLASS.KEYWORD
 
-const FB.MAXKEYWORDS 		= 144
+const FB.MAXKEYWORDS 		= 146
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' linked-lists
@@ -2624,6 +2626,13 @@ end function
 function symbGetConstText( byval c as integer ) as string static
 
 	symbGetConstText = strpGet( symbolTB(c).c.textidx )
+
+end function
+
+'':::::
+function symbGetLabelIsDeclared( byval l as integer ) as integer static
+
+	symbGetLabelIsDeclared = symbolTB(l).l.declared
 
 end function
 

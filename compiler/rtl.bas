@@ -464,10 +464,13 @@ data "fb_ErrorThrow","", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
 data "fb_ErrorSetHandler","", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
 							  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::
-
 '' fb_ErrorGetNum( ) as integer
-data "err","fb_ErrorGetNum", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "fb_ErrorGetNum", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+'' fb_ErrorSetNum( byval errnum as integer ) as void
+data "fb_ErrorSetNum", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
+						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '' fb_FileFree ( ) as integer
 data "freefile", "fb_FileFree", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
@@ -1415,10 +1418,9 @@ sub rtlDataStoreBegin static
 		s = symbAddVarEx( FB.DATALABELNAME, rname, FB.SYMBTYPE.DATALABEL, 0, 1, 0, dTB(), FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC, TRUE, FALSE, TRUE )
 		if( s = INVALID ) then
 			s = symbLookupVar( FB.DATALABELNAME, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
-		else
-			rname = symbGetVarName( s )
 		end if
 
+		rname = symbGetVarName( s )
 		emitLABEL rname, TRUE
 
 	else
@@ -2105,6 +2107,38 @@ sub rtlErrorSetHandler( byval newhandler as integer, byval savecurrent as intege
     		end if
 		end if
     end if
+
+end sub
+
+'':::::
+function rtlErrorGetNum as integer static
+    dim proc as integer, f as integer
+    dim res as integer
+
+	''
+	f = ifuncTB(FB.RTL.ERRORGETNUM)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 0 )
+
+    ''
+    rtlErrorGetNum = proc
+
+end function
+
+'':::::
+sub rtlErrorSetNum( byval errexpr as integer ) static
+    dim proc as integer, f as integer
+    dim res as integer
+    dim vr as integer
+
+	''
+	f = ifuncTB(FB.RTL.ERRORSETNUM)
+    proc = astNewFUNCT( f, symbGetFuncDataType( f ), 1 )
+
+    '' byval errnum as integer
+    res = astNewPARAM( proc, errexpr, INVALID )
+
+    ''
+    astFlush proc, vr
 
 end sub
 

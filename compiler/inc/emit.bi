@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-const EMIT_MAINPROC			= "fb_main"
+const EMIT_MAINPROC			= "fb_modulemain"
 const EMIT_LOCALPREFIX		= "L"
 
 const EMIT.VAR.OPENCHAR		= 91		'' [

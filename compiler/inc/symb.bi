@@ -39,6 +39,7 @@ declare function 	symbLookupFunctionResult( byval f as integer ) as integer
 
 declare function 	symbGetLabelName		( byval l as integer ) as string
 declare function 	symbGetLabelScope		( byval l as integer ) as integer
+declare function 	symbGetLabelIsDeclared	( byval l as integer ) as integer
 
 declare	function 	symbGetFirstNode 		( ) as integer
 declare	function 	symbGetNextNode			( byval n as integer ) as integer

@@ -121,6 +121,8 @@ enum FBRTL_ENUM
 
 	FB.RTL.ERRORTHROW
 	FB.RTL.ERRORSETHANDLER
+	FB.RTL.ERRORGETNUM
+	FB.RTL.ERRORSETNUM
 end enum
 
 const FB.RTL.MAXFUNCTIONS%		= 512
@@ -196,5 +198,7 @@ declare sub 		rtlFileLock			( byval islock as integer, byval filenum as integer,
 
 declare sub 		rtlErrorThrow		( byval errexpr as integer )
 declare sub 		rtlErrorSetHandler	( byval newhandler as integer, byval savecurrent as integer )
+declare function	rtlErrorGetNum		( ) as integer
+declare sub 		rtlErrorSetNum		( byval errexpr as integer )
 
 declare sub 		rtlConsoleView		( byval topexpr as integer, byval botexpr as integer )

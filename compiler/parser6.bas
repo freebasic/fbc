@@ -977,11 +977,11 @@ function cFileStmt
 end function
 
 '':::::
-''OnStmt 		=	ON (Keyword | Expression) (GOTO|GOSUB) Label .
+''OnStmt 		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
 ''
 function cOnStmt
 	dim expr as integer
-	dim isgoto as integer, label as integer
+	dim isgoto as integer, label as integer, islocal as integer
 	dim vr as integer, cr as integer, skipcompare as integer, endlabel as integer
 	dim s as integer, dtype as integer
 
@@ -990,6 +990,17 @@ function cOnStmt
 	'' ON
 	if( not hMatch( FB.TK.ON ) ) then
 		exit function
+	end if
+
+	'' LOCAL?
+	if( hMatch( FB.TK.LOCAL ) ) then
+		if( env.scope = 0 ) then
+			hReportError FB.ERRMSG.SYNTAXERROR, TRUE
+			exit function
+		end if
+		islocal = TRUE
+	else
+		islocal = FALSE
 	end if
 
 	'' ERROR | Expression
@@ -1025,7 +1036,7 @@ function cOnStmt
 	if( expr = INVALID ) then
 		expr = astNewVAR( label, 0, IR.DATATYPE.UINT )
 		expr = astNewADDR( IR.OP.ADDROF, expr )
-		rtlErrorSetHandler expr, TRUE
+		rtlErrorSetHandler expr, (islocal = TRUE)
 
 	else
 		if( isgoto ) then
@@ -1065,28 +1076,52 @@ function cOnStmt
 end function
 
 '':::::
-''ErrorStmt 	=	ERROR Expression .
+''ErrorStmt 	=	ERROR Expression
+''				|   ERR '=' Expression .
 ''
 function cErrorStmt
 	dim expr as integer
 
 	cErrorStmt = FALSE
 
+
+	select case lexCurrentToken
+
 	'' ERROR
-	if( not hMatch( FB.TK.ERROR ) ) then
-		exit function
-	end if
+	case FB.TK.ERROR
+		lexSkipToken
 
-	'' Expression
-	if( not cExpression( expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+		'' Expression
+		if( not cExpression( expr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
 
-	rtlErrorThrow expr
+		rtlErrorThrow expr
 
-	''
-	cErrorStmt = TRUE
+		cErrorStmt = TRUE
+
+	'' ERR '=' Expression
+	case FB.TK.ERR
+		lexSkipToken
+
+		'' '='
+		if( not hMatch( FB.TK.ASSIGN ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEQ
+			exit function
+		end if
+
+		'' Expression
+		if( not cExpression( expr ) ) then
+			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			exit function
+		end if
+
+		rtlErrorSetnum expr
+
+		cErrorStmt = TRUE
+
+	end select
 
 end function
 
@@ -1646,6 +1681,22 @@ function cFileFunct( funcexpr as integer )
 end function
 
 '':::::
+''cErrorFunct =   ERR .
+''
+function cErrorFunct( funcexpr as integer )
+
+	cErrorFunct = FALSE
+
+	if( hMatch( FB.TK.ERR ) ) then
+
+		funcexpr = rtlErrorGetNum
+
+		cErrorFunct = TRUE
+	end if
+
+end function
+
+'':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
 function cQuirkFunction( funcexpr as integer )
@@ -1666,6 +1717,9 @@ function cQuirkFunction( funcexpr as integer )
 				res = cPeekFunct( funcexpr )
 				if( not res ) then
 					res = cFileFunct( funcexpr )
+					if( not res ) then
+						res = cErrorFunct( funcexpr )
+					end if
 				end if
 			end if
 		end if

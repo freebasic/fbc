@@ -387,7 +387,7 @@ end function
 '':::::
 private sub outEx( s as string, byval updpos as integer ) 'static
 
-	on error goto outerror
+	on local error goto outerror
 
 	put #ctx.outf, , s
 
@@ -640,7 +640,7 @@ sub emitSTORE( dname as string, byval ddtype as integer, byval ddclass as intege
 						if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 							emithPUSH "edx"
 						end if
-						outp "mov " + "dx" + COMMAS + ext
+						outp "mov dx" + COMMAS + ext
 						outp "mov " + dst + COMMAS + "dl"
 						if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 							emithPOP "edx"
@@ -718,12 +718,16 @@ sub emitLOAD( dname as string, byval ddtype as integer, byval ddclass as integer
 							if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 								emithPUSH "edx"
 							end if
+
+							src = hPrepOperand( sname, ddtype, ddclass, stype )
 							outp "mov " + "dl" + COMMAS + src
+
 							if( irIsSigned( sdtype ) ) then
 								outp "movsx " + dst + COMMAS + "dl"
 							else
 								outp "movzx " + dst + COMMAS + "dl"
 							end if
+
 							if( not regIsFree( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, EMIT.INTREG.EDX ) ) then
 								emithPOP "edx"
 							end if
@@ -2053,7 +2057,7 @@ sub hSaveAsmHeader( byval asmf as integer )
     hWriteStr asmf, FALSE, ".globl " + "fb_" + ucase$( entry ) + "_entry"
     hWriteStr asmf, FALSE, "fb_" + entry  + "_entry" + ":"
     hWriteStr asmf, FALSE, "fb_" + ucase$( entry )  + "_entry" + ":"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + "fb_init"
+    hWriteStr asmf, TRUE,  "call" + TABCHAR + "fb_moduleinit"
     hWriteStr asmf, TRUE,  "call" + TABCHAR + EMIT_MAINPROC
     hWriteStr asmf, TRUE,  "ret"
 
@@ -2078,21 +2082,19 @@ sub hSaveAsmInitProc( byval asmf as integer )
     dim s as integer
 
     hWriteStr asmf, FALSE, NEWLINE + "#initialization"
-    hWriteStr asmf, FALSE, "fb_init:"
-    hWriteStr asmf, TRUE,  "finit"
+    hWriteStr asmf, FALSE, "fb_moduleinit:"
 
-    '' set precision to 64-bit.. Windows only!
-    hWriteStr asmf, TRUE,  "push" + TABCHAR + "0x00030000"
-    hWriteStr asmf, TRUE,  "push" + TABCHAR + "0x00000000"
-    hWriteStr asmf, TRUE,  "call" + TABCHAR + "__controlfp"
-    hWriteStr asmf, TRUE,  "add" + TABCHAR + "esp, 4+4"
+    hWriteStr asmf, TRUE,  "finit"
+    hWriteStr asmf, TRUE,  "call" + TABCHAR + "_fb_Init@0"
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out were to start)
     s = symbLookupVar( FB.DATALABELNAME, FB.SYMBTYPE.DATALABEL, 0, 0, 0 )
     if( s <> INVALID ) then
-    	hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetVarName( s )
-    	hWriteStr asmf, TRUE,  "call" + TABCHAR + "_fb_DataRestore@4"
+    	'if( symbGetLabelIsDeclared( s ) ) then
+    		hWriteStr asmf, TRUE,  "push" + TABCHAR + "offset " + symbGetVarName( s )
+    		hWriteStr asmf, TRUE,  "call" + TABCHAR + "_fb_DataRestore@4"
+    	'end if
     end if
 
     hWriteStr asmf, TRUE,  "ret"
@@ -2336,7 +2338,7 @@ function emitOpen
 		kill env.outfile
 	end if
 
-	on error goto eoerror
+	on local error goto eoerror
 
 	ctx.outf = freefile
 	open env.outfile for binary as #ctx.outf
@@ -2391,7 +2393,7 @@ sub hWriteStr( byval f as integer, byval addtab as integer, s as string ) 'stati
 		t = s + NEWLINE
 	end if
 
-	on error goto writeerror
+	on local error goto writeerror
 
 	put #f, , t
 
