@@ -33,6 +33,8 @@ defint a-z
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
 
+declare function cThreadCreate		( funcexpr as integer, byval isfunc as integer ) as integer
+
 '':::::
 function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
     dim expr as integer
@@ -1616,7 +1618,8 @@ end function
 ''				  |   etc .
 ''
 function cQuirkStmt
-	dim res as integer
+	dim as integer res
+	dim as integer funcexpr
 
 	cQuirkStmt = FALSE
 
@@ -1656,10 +1659,17 @@ function cQuirkStmt
 		res = cViewStmt
 	case FB.TK.MID
 		res = cMidStmt
+	case FB.TK.THREADCREATE
+		if( cThreadCreate( funcexpr, FALSE ) ) then
+			astFlush( funcexpr )
+			return TRUE
+		end if
 	end select
 
 	if( res = FALSE ) then
-		res = cGfxStmt
+		if( hGetLastError = FB.ERRMSG.OK ) then
+			res = cGfxStmt
+		end if
 	end if
 
 	cQuirkStmt = res
@@ -2547,7 +2557,8 @@ end function
 '':::::
 ''cThreadCreate =   THREADCREATE '(' procexpr ( ',' paramexpr )? ')'
 ''
-function cThreadCreate( funcexpr as integer )
+function cThreadCreate( funcexpr as integer, _
+						byval isfunc as integer )
 	dim procexpr as integer, paramexpr as integer
 
 	cThreadCreate = FALSE
@@ -2557,8 +2568,10 @@ function cThreadCreate( funcexpr as integer )
 
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
+		if( isfunc ) then
+			hReportError FB.ERRMSG.EXPECTEDLPRNT
+			exit function
+		end if
 	end if
 
 	'' procexpr
@@ -2577,8 +2590,10 @@ function cThreadCreate( funcexpr as integer )
 
 	'' ')'
 	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
+		if( isfunc ) then
+			hReportError FB.ERRMSG.EXPECTEDRPRNT
+			exit function
+		end if
 	end if
 
 	funcexpr = rtlThreadCreate( procexpr, paramexpr )
@@ -2619,11 +2634,13 @@ function cQuirkFunction( funcexpr as integer )
 	case FB.TK.VA_FIRST
 		res = cVAFunct( funcexpr )
 	case FB.TK.THREADCREATE
-		res = cThreadCreate( funcexpr )
+		res = cThreadCreate( funcexpr, TRUE )
 	end select
 
 	if( not res ) then
-		res = cGfxFunct( funcexpr )
+		if( hGetLastError = FB.ERRMSG.OK ) then
+			res = cGfxFunct( funcexpr )
+		end if
 	end if
 
 	cQuirkFunction = res
