@@ -69,6 +69,8 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 	int dirty_start = fb_mode->cursor_y, dirty_len = 0;
 	unsigned char *dest;
 	
+	fb_hPrepareTarget(NULL);
+	
 	DRIVER_LOCK();
 	
 	check_scroll(&dirty_start, &dirty_len);
