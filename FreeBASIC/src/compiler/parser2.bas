@@ -828,10 +828,10 @@ function cDerefExpression( derefexpr as integer ) as integer
 				derefexpr = funcexpr
 
 			else
-				if( not cProcCall( sym, derefexpr ) ) then
+				if( not cProcCall( sym, funcexpr, derefexpr ) ) then
 					exit function
 				end if
-		    	derefexpr = INVALID
+		    	derefexpr = funcexpr
 			end if
 		end if
 	end if

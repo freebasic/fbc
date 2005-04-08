@@ -222,6 +222,7 @@ declare function 	cFunctionCall			( byval sym as FBSYMBOL ptr, _
 											  byval ptrexpr as integer ) as integer
 
 declare function 	cProcCall				( byval sym as FBSYMBOL ptr, _
+											  procexpr as integer, _
 											  byval ptrexpr as integer, _
 											  byval checkparents as integer = FALSE ) as integer
 

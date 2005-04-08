@@ -462,10 +462,10 @@ function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
 			varexpr = funcexpr
 
 		else
-			if( not cProcCall( sym, varexpr ) ) then
+			if( not cProcCall( sym, funcexpr, varexpr ) ) then
 				exit function
 			end if
-		    varexpr = INVALID
+		    varexpr = funcexpr
 		end if
 
 	end if

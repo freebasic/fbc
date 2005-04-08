@@ -1830,6 +1830,16 @@ function astGetDataSize( byval n as integer ) as integer static
 
 end function
 
+'':::::
+sub astSetDataType( byval n as integer, _
+					byval dtype as integer ) static
+
+	if( n <> INVALID ) then
+		astTB(n).dtype = dtype
+	end if
+
+end sub
+
 ''::::
 function astLoad( byval n as integer ) as integer
 
@@ -3151,7 +3161,7 @@ end function
 '':::::
 function astNewASSIGN( byval l as integer, _
 					   byval r as integer ) as integer static
-    dim as integer n, dtype, lgt
+    dim as integer n, dtype
     dim as integer dt1, dt2
     dim as integer dc1, dc2
     dim as FBSYMBOL ptr proc
@@ -3200,14 +3210,19 @@ function astNewASSIGN( byval l as integer, _
 	'' UDT's?
 	elseif( (dt1 = IR.DATATYPE.USERDEF) or (dt2 = IR.DATATYPE.USERDEF) ) then
 
-		'' both not UDT's?
+		'' l node must be an UDT's,
 		if( dt1 <> IR.DATATYPE.USERDEF ) then
 			exit function
+		else
+			'' "udtfunct() = udt" is not allowed, l node must be a variable
+			if( astTB(l).class = AST.NODECLASS.FUNCT ) then
+				exit function
+			end if
 		end if
 
-		lgt = symbGetUDTLen( astGetSubtype( l ) )
-
+        '' r is not an UDT?
 		if( dt2 <> IR.DATATYPE.USERDEF ) then
+			'' not a function returning an UDT on regs?
 			if( astTB(r).class <> AST.NODECLASS.FUNCT ) then
 				exit function
 			end if
@@ -3219,11 +3234,13 @@ function astNewASSIGN( byval l as integer, _
             	exit function
             end if
 
+            '' fake l's type
             dt1 = proc->proc.realtype
             astTB(l).dtype = dt1
 
+		'' both are UDT's, do a mem copy..
 		else
-			return rtlMemCopy( l, r, lgt )
+			return rtlMemCopy( l, r, symbGetUDTLen( astTB(l).subtype ) )
 		end if
 
     '' zstrings?
@@ -4027,7 +4044,7 @@ private function hCheckParam( byval f as integer, _
 
 				else
 					if( pclass <> AST.NODECLASS.FUNCT ) then
-						s = astGetSubtype( p )
+						s = astTB(p).subtype
 					else
 						s = astTB(p).proc.sym->subtype
 					end if

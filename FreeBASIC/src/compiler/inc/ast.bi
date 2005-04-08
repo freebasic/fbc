@@ -164,6 +164,9 @@ declare function 	astGetValue			( byval n as integer ) as double
 
 declare function 	astGetValue64		( byval n as integer ) as longint
 
+declare sub 		astSetDataType		( byval n as integer, _
+										  byval dtype as integer )
+
 declare function	astLoad				( byval n as integer ) as integer
 
 declare function	astFlush			( byval n as integer ) as integer

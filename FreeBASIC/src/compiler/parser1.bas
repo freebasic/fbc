@@ -398,11 +398,11 @@ function cStatement as integer
 
 	do
 		if( not cDeclaration ) then
-			if( not cProcCallOrAssign ) then
-				if( not cCompoundStmt ) then
-					if( not cProcStatement ) then
-						if( not cQuirkStmt ) then
-							if( not cAsmBlock ) then
+			if( not cCompoundStmt ) then
+				if( not cProcStatement ) then
+					if( not cQuirkStmt ) then
+						if( not cAsmBlock ) then
+							if( not cProcCallOrAssign ) then
 								cAssignmentOrPtrCall
 							end if
 						end if
@@ -442,10 +442,10 @@ function cSimpleStatement as integer
 	do
 		if( not cConstDecl ) then
 			if( not cSymbolDecl ) then
-				if( not cProcCallOrAssign ) then
-					if( not cCompoundStmt ) then
-						if( not cQuirkStmt ) then
-							if( not cAsmBlock ) then
+				if( not cCompoundStmt ) then
+					if( not cQuirkStmt ) then
+						if( not cAsmBlock ) then
+							if( not cProcCallOrAssign ) then
 								cAssignmentOrPtrCall
 							end if
 						end if
@@ -3519,14 +3519,17 @@ end function
 
 '':::::
 function cProcCall( byval sym as FBSYMBOL ptr, _
+					procexpr as integer, _
 					byval ptrexpr as integer, _
 					byval checkparents as integer = FALSE ) as integer
-	dim procexpr as integer
-	dim typ as integer, dtype as integer
+	dim as integer typ, isfuncptr, doflush
+	dim as FBSYMBOL ptr subtype, elm
 
 	cProcCall = FALSE
 
-	procexpr = astNewFUNCT( sym, IR.DATATYPE.VOID, ptrexpr )
+	typ = symbGetType( sym )
+
+	procexpr = astNewFUNCT( sym, typ, ptrexpr )
 
 	if( checkparents = TRUE ) then
 		'' if the sub has no args, parents are optional
@@ -3572,102 +3575,144 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 	env.prntopt	= FALSE
 
-	'' can proc's result be skipped?
-	typ = symbGetType( sym )
-	if( typ <> FB.SYMBTYPE.VOID ) then
-		if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or _
-			(typ = IR.DATATYPE.STRING) ) then
-			hReportError FB.ERRMSG.VARIABLEREQUIRED
-			exit function
+	'' if function returns a pointer, check for field deref
+	doflush = TRUE
+	if( typ >= FB.SYMBTYPE.POINTER ) then
+		elm = NULL
+    	subtype = symbGetSubType( sym )
+
+		isfuncptr = FALSE
+   		if( lexCurrentToken = CHAR_LPRNT ) then
+   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+				isfuncptr = TRUE
+   			end if
+   		end if
+
+		'' FuncPtrOrDerefFields?
+		if( not cFuncPtrOrDerefFields( sym, elm, typ, subtype, procexpr, isfuncptr, TRUE ) ) then
+			'' error?
+			if( hGetLastError <> FB.ERRMSG.OK ) then
+				exit function
+			end if
+
+		'' type changed
+		else
+			doflush = FALSE
+			typ = astGetDataType( procexpr )
+
+			'' if it stills a function, unless type = string (ie: implict pointer),
+			'' flush it, as the assignament would be invalid
+			if( astGetClass( procexpr ) = AST.NODECLASS.FUNCT ) then
+				if( typ <> IR.DATATYPE.STRING ) then
+					doflush = TRUE
+				end if
+			end if
+
 		end if
+
 	end if
 
 	''
-	astFlush( procexpr )
+	if( doflush ) then
+		'' can proc's result be skipped?
+		if( typ <> FB.SYMBTYPE.VOID ) then
+			if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or _
+				(typ = IR.DATATYPE.STRING) ) then
+				hReportError FB.ERRMSG.VARIABLEREQUIRED
+				exit function
+			end if
+		end if
 
+		astSetDataType( procexpr, IR.DATATYPE.VOID )
+		astFlush( procexpr )
+		procexpr = INVALID
+	end if
 
 	cProcCall = TRUE
 
 end function
 
 '':::::
-''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
-''                |   ID ProcParamList?
-''				  |	  (ID | FUNCTION) '=' Expression .
-''
-function cProcCallOrAssign
-	dim s as FBSYMBOL ptr, expr as integer
+private function hAssign( byval assgexpr as integer ) as integer
+	dim as integer expr, op
 
-	cProcCallOrAssign = FALSE
+	hAssign = FALSE
 
-	select case lexCurrentToken
-	'' CALL?
-	case FB.TK.CALL
-		lexSkipToken
+	'' BOP?
+    op = INVALID
+    if( lexCurrentToken <> FB.TK.ASSIGN ) then
+    	if( lexCurrentTokenClass = FB.TKCLASS.OPERATOR ) then
 
-		'' ID
-		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
-		if( s <> NULL ) then
-			lexSkipToken
-			cProcCallOrAssign = cProcCall( s, INVALID, TRUE )
-            exit function
-		else
-			hReportError FB.ERRMSG.PROCNOTDECLARED
-			exit function
-		end if
+        	select case as const lexCurrentToken
+        	case FB.TK.AND
+        		op = IR.OP.AND
+        	case FB.TK.OR
+        		op = IR.OP.OR
+        	case FB.TK.XOR
+        		op = IR.OP.XOR
+			case FB.TK.EQV
+				op = IR.OP.EQV
+			case FB.TK.IMP
+				op = IR.OP.IMP
+        	case FB.TK.SHL
+        		op = IR.OP.SHL
+        	case FB.TK.SHR
+        		op = IR.OP.SHR
+        	case FB.TK.MOD
+        		op = IR.OP.MOD
+        	end select
 
-	'' ID?
-	case FB.TK.ID
-
-		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
-		if( s <> NULL ) then
-			lexSkipToken
-
-			'' ID ProcParamList?
-			if( not hMatch( FB.TK.ASSIGN ) ) then
-				cProcCallOrAssign = cProcCall( s, INVALID )
-            	exit function
-
-			'' ID '=' Expression
-			else
-				if( not cExpression( expr ) ) then
-					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-					exit function
-				end if
-
-        		if( not hAssignFunctResult( s, expr ) ) then
-        			exit function
-        		end if
-
-        		cProcCallOrAssign = TRUE
-        		exit function
-			end if
-
-		end if
-
-	'' FUNCTION?
-	case FB.TK.FUNCTION
-		'' '='?
-		if( lexLookAhead(1) = FB.TK.ASSIGN ) then
-			if( env.currproc = NULL ) then
-				hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
-				exit function
-			end if
-
-			lexSkipToken
-			lexSkipToken
-
-			'' Expression
-			if( not cExpression( expr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
-
-        	if( not hAssignFunctResult( env.currproc, expr ) ) then
-        		exit function
+        	if( op = INVALID ) then
+        		select case as const lexCurrentToken
+        		case CHAR_PLUS
+        			op = IR.OP.ADD
+        		case CHAR_MINUS
+        			op = IR.OP.SUB
+        		case CHAR_RSLASH
+        			op = IR.OP.INTDIV
+        		case CHAR_CARET
+        			op = IR.OP.MUL
+        		case CHAR_SLASH
+        			op = IR.OP.DIV
+        		case CHAR_CART
+        			op = IR.OP.POW
+        		end select
         	end if
-		end if
-	end select
+
+        	if( op <> INVALID ) then
+        		lexSkipToken
+        	end if
+        end if
+	end if
+
+	'' '='
+    if( not hMatch( FB.TK.ASSIGN ) ) then
+    	hReportError FB.ERRMSG.EXPECTEDEQ
+    	exit function
+    end if
+
+    '' Expression
+    if( not cExpression( expr ) ) then
+       	hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+       	exit function
+    end if
+
+    '' BOP?
+    if( op <> INVALID ) then
+    	expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
+	end if
+
+    '' do assign
+    assgexpr = astNewASSIGN( assgexpr, expr )
+
+    if( assgexpr = INVALID ) then
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+        exit function
+	end if
+
+    astFlush( assgexpr )
+
+    hAssign = TRUE
 
 end function
 
@@ -3676,9 +3721,8 @@ end function
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
 function cAssignmentOrPtrCall
-	dim islet as integer
-	dim assgexpr as integer, expr as integer, dtype as integer
-	dim op as integer
+	dim as integer islet, dtype
+	dim as integer assgexpr
 
 	cAssignmentOrPtrCall = FALSE
 
@@ -3710,83 +3754,14 @@ function cAssignmentOrPtrCall
     		'' flush the call
     		astFlush( assgexpr )
     		cAssignmentOrPtrCall = TRUE
-    		exit function
+
+    	'' ordinary assignament..
+    	else
+
+    		cAssignmentOrPtrCall = hAssign( assgexpr )
+
     	end if
 
-        '' BOP?
-        op = INVALID
-        if( lexCurrentToken <> FB.TK.ASSIGN ) then
-        	if( lexCurrentTokenClass = FB.TKCLASS.OPERATOR ) then
-
-        		select case as const lexCurrentToken
-        		case FB.TK.AND
-        			op = IR.OP.AND
-        		case FB.TK.OR
-        			op = IR.OP.OR
-        		case FB.TK.XOR
-        			op = IR.OP.XOR
-				case FB.TK.EQV
-					op = IR.OP.EQV
-				case FB.TK.IMP
-					op = IR.OP.IMP
-        		case FB.TK.SHL
-        			op = IR.OP.SHL
-        		case FB.TK.SHR
-        			op = IR.OP.SHR
-        		case FB.TK.MOD
-        			op = IR.OP.MOD
-        		end select
-
-        		if( op = INVALID ) then
-        			select case as const lexCurrentToken
-        			case CHAR_PLUS
-        				op = IR.OP.ADD
-        			case CHAR_MINUS
-        				op = IR.OP.SUB
-        			case CHAR_RSLASH
-        				op = IR.OP.INTDIV
-        			case CHAR_CARET
-        				op = IR.OP.MUL
-        			case CHAR_SLASH
-        				op = IR.OP.DIV
-        			case CHAR_CART
-        				op = IR.OP.POW
-        			end select
-        		end if
-
-        		if( op <> INVALID ) then
-        			lexSkipToken
-        		end if
-        	end if
-        end if
-
-        '' '='
-        if( not hMatch( FB.TK.ASSIGN ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDEQ
-    		exit function
-    	end if
-
-        '' Expression
-        if( not cExpression( expr ) ) then
-        	hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-        	exit function
-        end if
-
-        '' BOP?
-        if( op <> INVALID ) then
-            expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
-        end if
-
-        '' do assign
-        assgexpr = astNewASSIGN( assgexpr, expr )
-
-        if( assgexpr = INVALID ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
-            exit function
-        end if
-
-        astFlush( assgexpr )
-        cAssignmentOrPtrCall = TRUE
 
 	else
 		if( islet ) then
@@ -3798,11 +3773,105 @@ function cAssignmentOrPtrCall
 end function
 
 '':::::
+''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
+''                |   ID ProcParamList?
+''				  |	  (ID | FUNCTION) '=' Expression .
+''
+function cProcCallOrAssign
+	dim as FBSYMBOL ptr s
+	dim as integer expr, procexpr, dtype
+
+	cProcCallOrAssign = FALSE
+
+	select case lexCurrentToken
+	'' CALL?
+	case FB.TK.CALL
+		lexSkipToken
+
+		'' ID
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+		if( s = NULL ) then
+			hReportError FB.ERRMSG.PROCNOTDECLARED
+			exit function
+		end if
+
+		lexSkipToken
+		if( not cProcCall( s, procexpr, INVALID, TRUE ) ) then
+			exit function
+		end if
+
+		'' can't assign deref'ed functions with CALL's
+		if( procexpr <> INVALID ) then
+			hReportError FB.ERRMSG.SYNTAXERROR
+			exit function
+		end if
+
+		return TRUE
+
+	'' ID?
+	case FB.TK.ID
+
+		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC )
+		if( s <> NULL ) then
+			lexSkipToken
+
+			'' ID ProcParamList?
+			if( not hMatch( FB.TK.ASSIGN ) ) then
+				if( not cProcCall( s, procexpr, INVALID ) ) then
+					exit function
+				end if
+
+				'' assignament of a function deref?
+				if( procexpr <> INVALID ) then
+					return hAssign( procexpr )
+            	end if
+
+            	return TRUE
+
+			'' ID '=' Expression
+			else
+				if( not cExpression( expr ) ) then
+					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+					exit function
+				end if
+
+        		return hAssignFunctResult( s, expr )
+			end if
+
+		end if
+
+	'' FUNCTION?
+	case FB.TK.FUNCTION
+		'' '='?
+		if( lexLookAhead(1) = FB.TK.ASSIGN ) then
+			if( env.currproc = NULL ) then
+				hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+				exit function
+			end if
+
+			lexSkipToken
+			lexSkipToken
+
+			'' Expression
+			if( not cExpression( expr ) ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
+			end if
+
+        	return hAssignFunctResult( env.currproc, expr )
+		end if
+	end select
+
+end function
+
+
+'':::::
 ''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
 function cAsmCode
-	dim asmline as string, text as string
-	dim ofs as integer, elm as FBSYMBOL ptr, subtype as FBSYMBOL ptr, s as FBSYMBOL ptr
+	dim as FBSYMBOL ptr elm, subtype, s
+	dim as string asmline, text
+	dim as integer ofs
 
 	cAsmCode = FALSE
 
@@ -3861,7 +3930,7 @@ end function
 ''                        (AsmCode Comment? NewLine)+
 ''					  END ASM .
 function cAsmBlock
-    dim issingleline as integer
+    dim as integer issingleline
 
 	cAsmBlock = FALSE
 
