@@ -27,7 +27,7 @@ ifeq ($(OS),DOS)
     osdeppath := dos
 endif
 
-BCFLAGS := -e -c -arch 486 -profile
+BCFLAGS := -e -c -arch 486
 
 ifeq ($(osdeppath),win32)
     EXE := .exe
