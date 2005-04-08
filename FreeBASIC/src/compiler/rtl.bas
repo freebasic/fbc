@@ -1638,7 +1638,7 @@ function rtlStrAllocTmpResult( byval strg as integer ) as integer static
 
 	''
 	f = ifuncTB(FB.RTL.STRALLOCTMPRES)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
 
     '' src as string
     if( astNewPARAM( proc, strg, IR.DATATYPE.STRING ) = INVALID ) then
@@ -3046,7 +3046,7 @@ function rtlExit( byval errlevel as integer ) as integer static
 		proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
 		astFlush( proc )
 	end if
-	
+
 	''
 	f = ifuncTB(FB.RTL.END)
     proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
@@ -5163,7 +5163,7 @@ function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
 	end if
 
   	astFlush( proc )
-  	
+
   	rtlProfileSetProc = TRUE
 end function
 
@@ -5171,12 +5171,12 @@ end function
 function rtlProfileStartCall( byval symbol as FBSYMBOL ptr ) as integer
 	dim proc as integer, f as FBSYMBOL ptr, s as FBSYMBOL ptr
 	dim expr as integer
-	
+
 	rtlProfileStartCall = INVALID
 
 	f = ifuncTB(FB.RTL.PROFILESTARTCALL)
 	proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
-	
+
 	if( symbol <> NULL ) then
 		s = hAllocStringConst( symbGetName( symbol ), -1 )
 	else
