@@ -55,6 +55,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.NODEFLIBS
 	FB.COMPOPT.SHOWERROR
 	FB.COMPOPT.MULTITHREADED
+	FB.COMPOPT.PROFILE
 end enum
 
 type FBCMMLINEOPT
@@ -70,6 +71,7 @@ type FBCMMLINEOPT
 	nodeflibs		as integer					'' don't include default libs (def= false)
 	showerror		as integer					'' show line giving error (def= true)
 	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
+	profile			as integer					'' build profiling code (def= false)
 end type
 
 

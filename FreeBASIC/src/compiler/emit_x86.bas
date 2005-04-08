@@ -4778,13 +4778,18 @@ private sub hSaveAsmInitProc( )
     hWriteStr ctx.outf, TRUE,  "finit"
     hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateProcAlias( "fb_Init", 0, FB.FUNCMODE.STDCALL )
 
+    '' start profiling if requested
+    if( env.clopt.profile ) then
+	    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
+    end if
+
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
     if( symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL ) <> NULL ) then
     	rtlDataRestore NULL
     	irFlush
     end if
-
+    
     hWriteStr ctx.outf, TRUE,  "ret"
 
 end sub

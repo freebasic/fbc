@@ -86,6 +86,8 @@ Version 0.13 Beta:
 - #ERROR metacommand to interrupt compiling with user defined errors (lillo)
 - include file and static lib for the libcaca library (DrV)
 - include file and import lib for the wx-c library, ported by dumbledore (DrV)
+- profiling: use the -profile commandline option to enable function profiling code generation. Running a profiled
+  program will generate the profile.txt file on exit, containing timing results for all function calls (lillo)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported

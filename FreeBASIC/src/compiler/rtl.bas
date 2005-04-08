@@ -774,6 +774,23 @@ data "fb_GfxBsave", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 						FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
 						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
+
+'' fb_ProfileSetProc ( procname as string ) as void
+data "fb_ProfileSetProc", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
+							  FB.SYMBTYPE.CHAR,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_ProfileStartCall ( procname as string ) as any ptr
+data "fb_ProfileStartCall", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
+								FB.SYMBTYPE.CHAR,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_ProfileEndCall ( call as any ptr ) as void
+data "fb_ProfileEndCall", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
+							  FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+
+'' fb_ProfileEnd ( ) as void
+data "fb_ProfileEnd", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
+
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -3023,9 +3040,16 @@ function rtlExit( byval errlevel as integer ) as integer static
 
 	rtlExit = FALSE
 
+	'' exit profiling?
+	if( env.clopt.profile ) then
+		f = ifuncTB(FB.RTL.PROFILEEND)
+		proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
+		astFlush( proc )
+	end if
+	
 	''
 	f = ifuncTB(FB.RTL.END)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
 
     '' errlevel
     if( errlevel = INVALID ) then
@@ -5111,5 +5135,73 @@ function rtlGfxBsave( byval filename as integer, _
 #endif
 
 	rtlGfxBsave = rtlCheckError( proc, reslabel )
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' profiling
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
+    dim proc as integer, f as FBSYMBOL ptr, s as FBSYMBOL ptr
+	dim expr as integer
+
+	rtlProfileSetProc = FALSE
+
+	f = ifuncTB(FB.RTL.PROFILESETPROC)
+    proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
+
+	if( symbol <> NULL ) then
+		s = hAllocStringConst( symbGetName( symbol ), -1 )
+		expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
+	else
+		expr = astNewCONST( 0, IR.DATATYPE.CHAR )
+	end if
+	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+		exit function
+	end if
+
+  	astFlush( proc )
+  	
+  	rtlProfileSetProc = TRUE
+end function
+
+'':::::
+function rtlProfileStartCall( byval symbol as FBSYMBOL ptr ) as integer
+	dim proc as integer, f as FBSYMBOL ptr, s as FBSYMBOL ptr
+	dim expr as integer
+	
+	rtlProfileStartCall = INVALID
+
+	f = ifuncTB(FB.RTL.PROFILESTARTCALL)
+	proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
+	
+	if( symbol <> NULL ) then
+		s = hAllocStringConst( symbGetName( symbol ), -1 )
+	else
+		s = hAllocStringConst( "(??)", -1 )
+	end if
+
+	expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
+	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
+		exit function
+	end if
+
+	rtlProfileStartCall = proc
+
+end function
+
+'':::::
+function rtlProfileEndCall( ) as integer
+    dim proc as integer
+    dim f as FBSYMBOL ptr
+
+	rtlProfileEndCall = INVALID
+
+	f = ifuncTB(FB.RTL.PROFILEENDCALL)
+    proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
+
+  	rtlProfileEndCall = proc
 
 end function

@@ -395,6 +395,14 @@ function cProcStatement static
 	'' emit proc setup
 	irEmitPROCBEGIN proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0
 
+	'' profiling?
+	if( env.clopt.profile ) then
+		if( not rtlProfileSetProc( proc ) ) then
+			hReportError FB.ERRMSG.INTERNAL
+			exit function
+		end if
+	end if
+
 	'' save old proc stmt info
 	oldprocstmt = env.procstmt
 
@@ -462,6 +470,14 @@ function cProcStatement static
 
 	'' del dyn arrays and all var-len strings (less the result one if its a string func!)
 	symbFreeLocalDynSymbols proc, issub
+
+	'' profiling?
+	if( env.clopt.profile ) then
+		if( not rtlProfileSetProc( NULL ) ) then
+			hReportError FB.ERRMSG.INTERNAL
+			exit function
+		end if
+	end if
 
 	'' if function, put result var at result register (EAX or ST0)
 	if( not issub ) then

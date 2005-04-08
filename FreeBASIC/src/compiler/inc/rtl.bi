@@ -172,6 +172,11 @@ enum FBRTL_ENUM
 	FB.RTL.GFXSCREENRES
 	FB.RTL.GFXBLOAD
 	FB.RTL.GFXBSAVE
+	
+	FB.RTL.PROFILESETPROC
+	FB.RTL.PROFILESTARTCALL
+	FB.RTL.PROFILEENDCALL
+	FB.RTL.PROFILEEND
 end enum
 
 const FB.RTL.MAXFUNCTIONS		= 512
@@ -515,3 +520,9 @@ declare function	rtlGfxBload			( byval filename as integer, _
 declare function	rtlGfxBsave			( byval filaname as integer, _
 										  byval sexpr as integer, _
 										  byval lexpr as integer ) as integer
+
+declare function	rtlProfileSetProc	( byval symbol as FBSYMBOL ptr ) as integer
+
+declare function	rtlProfileStartCall ( byval symbol as FBSYMBOL ptr ) as integer
+
+declare function	rtlProfileEndCall	( ) as integer

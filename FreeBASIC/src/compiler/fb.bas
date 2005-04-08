@@ -230,6 +230,7 @@ sub fbSetDefaultOptions
 	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE
+	env.clopt.profile       = FALSE
 
 end sub
 
@@ -262,6 +263,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.showerror = value
 	case FB.COMPOPT.MULTITHREADED
 		env.clopt.multithreaded = value
+	case FB.COMPOPT.PROFILE
+		env.clopt.profile = value
 	end select
 
 end sub
@@ -297,6 +300,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		res = env.clopt.showerror
 	case FB.COMPOPT.MULTITHREADED
 		res = env.clopt.multithreaded
+	case FB.COMPOPT.PROFILE
+		res = env.clopt.profile
 	end select
 
 	fbGetOption = res

@@ -1007,6 +1007,7 @@ sub printOptions
 #endif
 	print "-o <name>", "Set output name (in the same number as source files)"
 	print "-p <name>", "Add a path to search for libraries"
+	print "-profile", "Enable function profiling"
 	print "-r", "Do not delete the asm file(s)"
 #ifdef TARGET_WIN32
 	print "-s <name>", "Set subsystem (gui, console)"
@@ -1052,7 +1053,7 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "arch", "e", "ex", "mt", "w", "nodeflibs", "noerrline", "nostdcall", "nounderscore"
+			case "arch", "e", "ex", "mt", "profile", "w", "nodeflibs", "noerrline", "nostdcall", "nounderscore"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -1250,6 +1251,9 @@ function processCompOptions as integer
 
 			case "mt"
 				fbSetOption FB.COMPOPT.MULTITHREADED, TRUE
+
+			case "profile"
+				fbSetOption FB.COMPOPT.PROFILE, TRUE
 
 			case "w"
 				fbSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )

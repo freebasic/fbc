@@ -1339,6 +1339,16 @@ function astCloneTree( byval n as integer ) as integer
 			astTB(nn).iif.cond = astCloneTree( p )
 		end if
 	end if
+	
+	'' Profiled function have sub nodes
+	if( astTB(n).class = AST.NODECLASS.FUNCT ) then
+		p = astTB(n).proc.profstart
+		if( p <> INVALID ) then
+			astTB(nn).proc.profstart = astCloneTree( p )
+			p = astTB(n).proc.profend
+			astTB(nn).proc.profend = astCloneTree( p )
+		end if
+	end if
 
 	astCloneTree = nn
 
@@ -1368,6 +1378,16 @@ sub astDelTree ( byval n as integer )
 	if( astTB(n).class = AST.NODECLASS.IIF ) then
 		p = astTB(n).iif.cond
 		if( p <> INVALID ) then
+			astDelTree p
+		end if
+	end if
+	
+	'' Profiled functions have sub nodes
+	if( astTB(n).class = AST.NODECLASS.FUNCT ) then
+		p = astTB(n).proc.profstart
+		if( p <> INVALID ) then
+			astDelTree p
+			p = astTB(n).proc.profend
 			astDelTree p
 		end if
 	end if
@@ -3577,8 +3597,9 @@ end function
 '':::::
 function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 					  byval dtype as integer, _
-					  byval ptrexpr as integer = INVALID ) as integer static
-    dim n as integer
+					  byval ptrexpr as integer = INVALID, _
+					  byval isprofiler as integer = FALSE ) as integer
+    dim as integer n, np, pstart, pend
 
 	'' if return type is an UDT, change to the real one
 	if( sym <> NULL ) then
@@ -3614,6 +3635,17 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 
 	astTB(n).proc.arraytail = NULL
 	astTB(n).proc.strtail = NULL
+	
+	'' function profiling
+	astTB(n).proc.profstart = INVALID
+	astTB(n).proc.profend   = INVALID
+	if( env.clopt.profile ) then
+		if( not isprofiler ) then
+			astTB(n).proc.profstart = rtlProfileStartCall( sym )
+			astTB(n).proc.profend   = rtlProfileEndCall( )
+		end if
+	end if
+
 
 end function
 
@@ -4188,6 +4220,7 @@ private function hCallProc( byval n as integer, _
 		vr = astLoad( p )
 		astDel p
 		irEmitCALLPTR vr, INVALID, 0
+
 		return INVALID
 	end if
 
@@ -4333,14 +4366,34 @@ function astLoadFUNCT( byval n as integer ) as integer
     dim as integer mode, bytestopop, toalign
     dim as integer params, inc, l
     dim as FBSYMBOL ptr arg, lastarg
-    dim as integer args, vr
+    dim as integer args, vr, pstart, pend, pcvr
 
 	'' execute each param and push the result
 	proc = astTB(n).proc.sym
 
+	pstart = astTB(n).proc.profstart
+	pend   = astTB(n).proc.profend
+
 	'' ordinary pointer?
 	if( proc = NULL ) then
-		return hCallProc( n, NULL, INVALID, 0, 0 )
+
+		'' signal function start for profiling
+		if( pstart <> INVALID ) then
+			pcvr = astLoad( pstart )
+			astDel( pstart )
+		end if
+
+		vr = hCallProc( n, NULL, INVALID, 0, 0 )
+
+		'' signal function end for profiling
+		if( pend <> INVALID ) then
+			irEmitPUSH pcvr
+			proc = astTB(pend).proc.sym
+			hCallProc( n, proc, proc->proc.mode, 0, 0 )
+			astDel( pend )
+		end if
+
+		return vr
 	end if
 
     mode = proc->proc.mode
@@ -4416,9 +4469,23 @@ function astLoadFUNCT( byval n as integer ) as integer
 	'' handle functions returning structs
 	hAllocTempStruct( n, proc )
 
+	'' signal function start for profiling
+	if( pstart <> INVALID ) then
+		pcvr = astLoad( pstart )
+		astDel( pstart )
+	end if
+
 	'' return the result (same type as function ones)
 	vr = hCallProc( n, proc, mode, bytestopop, toalign )
 
+	'' signal function end for profiling
+	if( pend <> INVALID ) then
+		irEmitPUSH pcvr
+		proc = astTB(pend).proc.sym
+		hCallProc( n, proc, proc->proc.mode, 0, 0 )
+		astDel( pend )
+	end if
+	
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
 
@@ -4428,7 +4495,6 @@ function astLoadFUNCT( byval n as integer ) as integer
     return vr
 
 end function
-
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' IIF

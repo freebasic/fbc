@@ -63,6 +63,8 @@ type FUNCTNode
 	isrtl			as integer
 	arraytail 		as ASTTEMPARRAY ptr
 	strtail 		as ASTTEMPSTR ptr
+	profstart		as integer
+	profend			as integer
 end type
 
 type PARAMNode
@@ -233,7 +235,8 @@ declare function 	astLoadPTR			( byval n as integer ) as integer
 
 declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, _
 										  byval dtype as integer, _
-										  byval ptrexpr as integer = INVALID ) as integer
+										  byval ptrexpr as integer = INVALID, _
+										  byval isprofiler as integer = FALSE ) as integer
 
 declare function 	astNewPARAM			( byval f as integer, _
 										  byval p as integer, _
