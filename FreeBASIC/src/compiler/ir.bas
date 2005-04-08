@@ -144,7 +144,7 @@ datatypedata:
 data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "void"
 data IR.DATACLASS.INTEGER, 1			 	, 8*1				, TRUE , "byte"
 data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "ubyte"
-data IR.DATACLASS.INTEGER, 0			 	, 8*1				, FALSE, "char"
+data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "char"
 data IR.DATACLASS.INTEGER, 2			 	, 8*2				, TRUE , "short"
 data IR.DATACLASS.INTEGER, 2			 	, 8*2				, FALSE, "ushort"
 data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, TRUE , "integer"
@@ -335,7 +335,7 @@ function irMaxDataType( byval dtype1 as integer, _
 
     ''
     if( dtype2 = IR.DATATYPE.CHAR ) then
- 		select case dtype2
+ 		select case dtype1
  		case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
  			exit function
     	end select
