@@ -124,6 +124,8 @@ Version 0.13 Beta:
 - BYREF AS ANY arguments when variables weren't passed would create a temp vars with the VOID type (v1c)
 - SCREEN function rtlib routine for DOS was missing (DrV)
 - SETDATE/SETTIME support under Linux was missing (lillo)
+- size of identifiers and literals as being checked inside comments (v1c)
+- LSET should accept UDT's too (v1c)
 
 
 Version 0.12 Beta:
