@@ -104,7 +104,7 @@ Most Important Features:
 
       UNION MyUnion
          A AS INTEGER
-         B AS INTEGER
+         B AS LONGINT
          C AS DOUBLE
       END UNION
 
@@ -191,11 +191,15 @@ Most Important Features:
       text = "BAR"
       print text[0]  			'' output will be 66 = ASC("B")
 
+    - function dereferencing:
+
+      value = somefunc( )->somefuncptr( )->somefield
+
   o Variable initializers, for static, module-level or local variables, arrays and UDT's:
 
       DIM foo( 0 to 3 ) AS INTEGER = { 1, 2, 3, 4 }
 
-      STATIC as zstring * 10 bar( 0 to 1, 0 to 1 ) = { { "abc", "def" }, { "ghi", "jkl" } }
+      STATIC bar( 0 to 1, 0 to 1 ) as zstring * 10 => { { "abc", "def" }, { "ghi", "jkl" } }
 
       DIM mytype as MYTYPE = ( "a", 1, 2.0 )
 
@@ -547,7 +551,7 @@ Links:
     
     - SQLite: http://www.sqlite.org/
 
-    - TinyPTC: http://www.gaffer.org/tinyptc/
+    - TinyPTC: http://sourceforge.net/projects/tinyptc/
     
     - TRE (Regular Expressions): http://laurikari.net/tre/
 
