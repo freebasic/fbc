@@ -699,8 +699,8 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 	case FB.TK.SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 		c = lexEatChar
 		typ = FB.SYMBTYPE.SINGLE
-	'' '#' | 'D' | 'd'
-	case FB.TK.DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
+	'' '#'
+	case FB.TK.DBLTYPECHAR
 		c = lexEatChar
 		typ = FB.SYMBTYPE.DOUBLE
 
