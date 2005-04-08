@@ -325,6 +325,74 @@ function cMidStmt
 end function
 
 '':::::
+'' LsetStmt		=	LSET String|UDT ',' String|UDT
+function cLSetStmt( ) as integer
+    dim as integer dstexpr, srcexpr
+    dim as integer dtype1, dtype2
+    dim as FBSYMBOL ptr dst, src
+
+    cLSetStmt = FALSE
+
+	'' LSET
+	lexSkipToken
+
+	'' Expression
+	if( not cVarOrDeref( dstexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		exit function
+	end if
+
+	dtype1 = astGetDataType( dstexpr )
+	select case dtype1
+	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR, IR.DATATYPE.USERDEF
+	case else
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	end select
+
+	'' ','
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError FB.ERRMSG.EXPECTEDCOMMA
+		exit function
+	end if
+
+	'' Expression
+	if( not cVarOrDeref( srcexpr ) ) then
+		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		exit function
+	end if
+
+	dtype2 = astGetDataType( srcexpr )
+	select case dtype2
+	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR, IR.DATATYPE.USERDEF
+	case else
+		hReportError FB.ERRMSG.INVALIDDATATYPES
+		exit function
+	end select
+
+	if( (dtype1 = IR.DATATYPE.USERDEF) or (dtype2 = IR.DATATYPE.USERDEF) ) then
+
+		if( dtype1 <> dtype2 ) then
+			hReportError FB.ERRMSG.INVALIDDATATYPES
+			exit function
+		end if
+
+		dst = astGetSymbol( dstexpr )
+		src = astGetSymbol( srcexpr )
+		if( (dst = NULL) or (src = NULL) ) then
+			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			exit function
+		end if
+
+		cLSetStmt = rtlMemCopyClear( dstexpr, symbGetUDTLen( dst->subtype ), _
+									 srcexpr, symbGetUDTLen( src->subtype ) )
+	else
+		cLSetStmt = rtlStrLset( dstexpr, srcexpr )
+	end if
+
+end function
+
+'':::::
 ''DataStmt   	  =   RESTORE LABEL?
 ''				  |   READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 ''				  |   DATA literal|constant (',' literal|constant)*
@@ -1659,6 +1727,8 @@ function cQuirkStmt
 		res = cViewStmt
 	case FB.TK.MID
 		res = cMidStmt
+	case FB.TK.LSET
+		res = cLSetStmt
 	case FB.TK.THREADCREATE
 		if( cThreadCreate( funcexpr, FALSE ) ) then
 			astFlush( funcexpr )

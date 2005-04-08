@@ -53,6 +53,7 @@ enum FBRTL_ENUM
 	FB.RTL.STRFILL1
 	FB.RTL.STRFILL2
 	FB.RTL.STRLEN
+	FB.RTL.STRLSET
 	FB.RTL.STRASC
 	FB.RTL.STRCHR
 
@@ -116,6 +117,7 @@ enum FBRTL_ENUM
 	FB.RTL.MEMCOPY
 	FB.RTL.MEMSWAP
 	FB.RTL.STRSWAP
+	FB.RTL.MEMCOPYCLEAR
 
 	FB.RTL.FILEOPEN
 	FB.RTL.FILECLOSE
@@ -153,7 +155,7 @@ enum FBRTL_ENUM
 	FB.RTL.ERRORSETNUM
 	FB.RTL.ERRORRESUME
 	FB.RTL.ERRORRESUMENEXT
-	
+
 	FB.RTL.THREADCREATE
 
 	FB.RTL.GFXPSET
@@ -172,7 +174,7 @@ enum FBRTL_ENUM
 	FB.RTL.GFXSCREENRES
 	FB.RTL.GFXBLOAD
 	FB.RTL.GFXBSAVE
-	
+
 	FB.RTL.PROFILESETPROC
 	FB.RTL.PROFILESTARTCALL
 	FB.RTL.PROFILEENDCALL
@@ -222,6 +224,9 @@ declare function	rtlStrAssignMid		( byval expr1 as integer, _
 										  byval expr2 as integer, _
 										  byval expr3 as integer, _
 										  byval expr4 as integer ) as integer
+
+declare function 	rtlStrLSet			( byval dstexpr as integer, _
+					 					  byval srcexpr as integer ) as integer
 
 declare function 	rtlStrFill			( byval expr1 as integer, _
 										  byval expr2 as integer ) as integer
@@ -317,6 +322,11 @@ declare function	rtlMemSwap			( byval dst as integer, _
 
 declare function	rtlStrSwap			( byval str1 as integer, _
 										  byval str2 as integer ) as integer
+
+declare function 	rtlMemCopyClear		( byval dstexpr as integer, _
+					      				  byval dstlen as integer, _
+					      				  byval srcexpr as integer, _
+					      				  byval srclen as integer ) as integer
 
 declare function	rtlPrint			( byval fileexpr as integer, _
 										  byval iscomma as integer, _

@@ -464,9 +464,14 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 		end select
 
 		tlen += 1
-		if( tlen > FB.MAXNAMELEN ) then
- 			hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
-			exit function
+		if( tlen > FB.MAXNUMLEN ) then
+ 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 				hReportError FB.ERRMSG.IDNAMETOOBIG, TRUE
+				exit function
+			else
+				tlen -= 1
+				exit do
+			end if
 		end if
 
 		*pid = lexEatChar
@@ -507,7 +512,8 @@ end sub
 ''
 private sub lexReadNonDecNumber( pnum as zstring ptr, _
 								 tlen as integer, _
-								 isneg as integer ) static
+								 isneg as integer, _
+								 byval flags as LEXCHECK_ENUM ) static
 	dim as uinteger value, c
 	dim as ulongint value64
 	dim as integer tb(0 to 15), i, lgt, islongint
@@ -654,7 +660,8 @@ end sub
 ''
 private sub lexReadFloatNumber( pnum as zstring ptr, _
 								tlen as integer, _
-								typ as integer ) static
+								typ as integer, _
+								byval flags as LEXCHECK_ENUM ) static
     dim c as uinteger
     dim llen as integer
 
@@ -673,6 +680,17 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 		case else
 			exit do
 		end select
+
+		if( tlen > FB.MAXNUMLEN ) then
+ 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 				hReportError FB.ERRMSG.NUMBERTOOBIG, TRUE
+				exit function
+			else
+				tlen -= 1
+				exit do
+			end if
+		end if
+
 	loop
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
@@ -786,12 +804,23 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 					pnum += 1
 					tlen += 1
 				end if
-				lexReadFloatNumber pnum, tlen, typ
+				lexReadFloatNumber( pnum, tlen, typ, flags )
 				exit do
 
 			case else
 				exit do
 			end select
+
+			if( tlen > FB.MAXNUMLEN ) then
+ 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 					hReportError FB.ERRMSG.NUMBERTOOBIG, TRUE
+					exit function
+				else
+					tlen -= 1
+					exit do
+				end if
+			end if
+
 		loop
 
 		if( tlen = 0 ) then
@@ -807,12 +836,12 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 		*pnum = CHAR_DOT
 		pnum += 1
 		tlen = 1
-        lexReadFloatNumber pnum, tlen, typ
+        lexReadFloatNumber( pnum, tlen, typ, flags )
 
 	'' hex, oct, bin
 	case CHAR_AMP
 		tlen = 0
-		lexReadNonDecNumber pnum, tlen, isneg
+		lexReadNonDecNumber( pnum, tlen, isneg, flags )
 	end select
 
 	'' null-term
@@ -902,7 +931,8 @@ end sub
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
 private sub lexReadString ( byval ps as zstring ptr, _
-							tlen as integer ) static
+							tlen as integer, _
+							byval flags as LEXCHECK_ENUM ) static
 	dim as integer rlen, p, ntyp, nlen
 	dim as zstring * 16 nval
 
@@ -964,8 +994,13 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 		rlen += 1
 		if( rlen > FB.MAXLITLEN ) then
-			hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
-			exit function
+			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+				hReportError FB.ERRMSG.LITSTRINGTOOBIG, TRUE
+				exit function
+			else
+				rlen -= 1
+				exit do
+			end if
 		end if
 
 		*ps = lexEatChar
@@ -1169,7 +1204,7 @@ readid:
 	'':::::
 	case CHAR_QUOTE
 		t.id		= FB.TK.STRLIT
-		lexReadString @t.littext, t.tlen
+		lexReadString( @t.littext, t.tlen, flags )
 		t.class 	= FB.TKCLASS.STRLITERAL
 		t.typ		= t.id
 

@@ -216,6 +216,10 @@ data "fb_StrFill2","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
 data "fb_StrLen","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
 					 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' lset ( dst as string, src as string ) as void
+data "fb_StrLset","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
+				      FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+				      FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_ASC ( str as string, byval pos as integer = 0 ) as uinteger
 data "fb_ASC", "", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 2, _
 				   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
@@ -466,6 +470,12 @@ data "fb_StrSwap","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
 					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void
+data "fb_MemCopyClear","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
+					       FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+					       FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_FileOpen( s as string, byval mode as integer, byval access as integer,
@@ -1083,10 +1093,6 @@ data "lof","fb_FileSize", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
 data "loc","fb_FileLocation", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
 						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-'' lset ( dst as string, src as string ) as void
-data "lset","fb_StrLset", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' rset ( dst as string, src as string ) as void
 data "rset","fb_StrRset", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
 				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
@@ -1822,6 +1828,34 @@ function rtlStrAssignMid( byval expr1 as integer, _
 
     rtlStrAssignMid = proc
 
+end function
+
+'':::::
+function rtlStrLSet( byval dstexpr as integer, _
+					 byval srcexpr as integer ) as integer static
+
+    dim proc as integer, f as FBSYMBOL ptr
+
+    rtlStrLSet = FALSE
+
+	''
+	f = ifuncTB(FB.RTL.STRLSET)
+    proc = astNewFUNCT( f, symbGetType( f ) )
+
+    '' dst as string
+    if( astNewPARAM( proc, dstexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    '' src as string
+    if( astNewPARAM( proc, srcexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    ''
+    astFlush( proc )
+
+    rtlStrLSet = TRUE
 end function
 
 '':::::
@@ -3203,6 +3237,49 @@ function rtlStrSwap( byval str1 as integer, _
     astFlush( proc )
 
     rtlStrSwap = TRUE
+
+end function
+
+'':::::
+function rtlMemCopyClear( byval dstexpr as integer, _
+					      byval dstlen as integer, _
+					      byval srcexpr as integer, _
+					      byval srclen as integer ) as integer static
+    dim proc as integer, f as FBSYMBOL ptr
+    dim t as integer
+
+	rtlMemCopyClear = FALSE
+
+	''
+	f = ifuncTB(FB.RTL.MEMCOPYCLEAR)
+    proc = astNewFUNCT( f, symbGetType( f ) )
+
+    '' dst as any
+    if( astNewPARAM( proc, dstexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    '' byval dstlen as integer
+    t = astNewCONST( dstlen, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    '' src as any
+    if( astNewPARAM( proc, srcexpr, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    '' byval srclen as integer
+    t = astNewCONST( srclen, IR.DATATYPE.INTEGER )
+    if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
+    	exit function
+    end if
+
+    ''
+    astFlush( proc )
+
+    rtlMemCopyClear = TRUE
 
 end function
 

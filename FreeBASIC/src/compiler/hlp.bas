@@ -128,8 +128,9 @@ data "Array access, index expected"
 data "Expected 'END ENUM'"
 data "Cannot initialize dynamic arrays"
 data "Invalid bitfield"
+data "Literal number too big"
 
-const FB.ERRMSGS = 75
+const FB.ERRMSGS = 76
 
 
 '':::::
