@@ -914,13 +914,16 @@ function cVariable( varexpr as integer, _
 	dtype = typ
 
 	'' AST will handle descriptor pointers
-	if( not isbyref and not isimport ) then
-		varexpr = astNewVAR( sym, elm, ofs, dtype, subtype )
+	if( isbyref or isimport ) then
+		'' byref or import? by now it's a pointer var, the real type will be set bellow
+		varexpr = astNewVAR( sym, elm, 0, IR.DATATYPE.UINT, NULL )
 	else
-		varexpr = astNewVAR( sym, elm, 0, dtype, subtype )
+		varexpr = astNewVAR( sym, elm, ofs, dtype, subtype )
 	end if
 
+	'' has index?
 	if( idxexpr <> INVALID ) then
+		'' byref or import's are already pointers
 		if( isbyref or isimport ) then
 			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
 		else
@@ -940,7 +943,6 @@ function cVariable( varexpr as integer, _
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( isbyref or isimport ) then
-   		dtype = astGetDataType( varexpr )
    		varexpr = astNewPTR( sym, elm, ofs, varexpr, dtype, subtype )
 	end if
 
