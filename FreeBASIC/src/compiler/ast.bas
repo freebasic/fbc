@@ -4389,7 +4389,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 		if( pend <> INVALID ) then
 			irEmitPUSH pcvr
 			proc = astTB(pend).proc.sym
-			hCallProc( n, proc, proc->proc.mode, 0, 0 )
+			hCallProc( pend, proc, proc->proc.mode, 4, 0 )
 			astDel( pend )
 		end if
 
@@ -4482,7 +4482,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 	if( pend <> INVALID ) then
 		irEmitPUSH pcvr
 		proc = astTB(pend).proc.sym
-		hCallProc( n, proc, proc->proc.mode, 0, 0 )
+		hCallProc( pend, proc, proc->proc.mode, 4, 0 )
 		astDel( pend )
 	end if
 	

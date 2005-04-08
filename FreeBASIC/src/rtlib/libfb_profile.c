@@ -226,7 +226,6 @@ void fb_ProfileInit( void )
 	start_prog_time = fb_Timer();
 }
 
-
 /*:::::*/
 void fb_ProfileEnd( void )
 {
