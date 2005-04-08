@@ -525,6 +525,8 @@ Links:
 
     - JAPI: http://www.japi.de/
 
+    - libcaca: http://sam.zoy.org/libcaca/
+
     - LibXML: http://xmlsoft.org/
     
     - Lua: http://www.lua.org/
@@ -554,6 +556,8 @@ Links:
     - TinyPTC: http://sourceforge.net/projects/tinyptc/
     
     - TRE (Regular Expressions): http://laurikari.net/tre/
+
+    - wx-c: http://wxnet.sourceforge.net/
 
     - Zlib: http://www.zlib.net/ or http://gnuwin32.sourceforge.net/packages/zlib.htm
 
