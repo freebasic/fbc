@@ -1339,7 +1339,7 @@ function astCloneTree( byval n as integer ) as integer
 			astTB(nn).iif.cond = astCloneTree( p )
 		end if
 	end if
-	
+
 	'' Profiled function have sub nodes
 	if( astTB(n).class = AST.NODECLASS.FUNCT ) then
 		p = astTB(n).proc.profstart
@@ -1381,7 +1381,7 @@ sub astDelTree ( byval n as integer )
 			astDelTree p
 		end if
 	end if
-	
+
 	'' Profiled functions have sub nodes
 	if( astTB(n).class = AST.NODECLASS.FUNCT ) then
 		p = astTB(n).proc.profstart
@@ -3599,7 +3599,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 					  byval dtype as integer, _
 					  byval ptrexpr as integer = INVALID, _
 					  byval isprofiler as integer = FALSE ) as integer
-    dim as integer n, np, pstart, pend
+    dim as integer n
 
 	'' if return type is an UDT, change to the real one
 	if( sym <> NULL ) then
@@ -3635,7 +3635,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 
 	astTB(n).proc.arraytail = NULL
 	astTB(n).proc.strtail = NULL
-	
+
 	'' function profiling
 	astTB(n).proc.profstart = INVALID
 	astTB(n).proc.profend   = INVALID
@@ -4485,7 +4485,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 		hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 		astDel( pend )
 	end if
-	
+
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
 
