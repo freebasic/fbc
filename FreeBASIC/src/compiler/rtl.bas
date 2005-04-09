@@ -5220,6 +5220,35 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+private function hGetProcName( byval proc as FBSYMBOL ptr ) as integer
+	dim procname as string
+	dim s as FBSYMBOL ptr
+	dim expr as integer, at as integer
+	
+	if( proc = NULL ) then
+		s = hAllocStringConst( "(??)", -1 )
+	else
+		procname = symbGetName( proc )
+#ifdef TARGET_WIN32
+		procname = mid$( procname, 2)
+		at = instr( procname, "@" )
+		if( at ) then
+			procname = mid$( procname, 1, at - 1 )
+		end if
+#endif
+		if( len( procname ) and 3 ) then
+			procname += string$( 4 - ( len( procname ) and 3 ), 32 )
+		end if
+		s = hAllocStringConst( procname, -1 )
+	end if
+	
+	expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
+	
+	hGetProcName = expr
+	
+end function
+
+'':::::
 function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
     dim proc as integer, f as FBSYMBOL ptr, s as FBSYMBOL ptr
 	dim expr as integer
@@ -5230,8 +5259,7 @@ function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
     proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
 
 	if( symbol <> NULL ) then
-		s = hAllocStringConst( symbGetName( symbol ), -1 )
-		expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
+		expr = hGetProcName( symbol )
 	else
 		expr = astNewCONST( 0, IR.DATATYPE.CHAR )
 	end if
@@ -5254,13 +5282,7 @@ function rtlProfileStartCall( byval symbol as FBSYMBOL ptr ) as integer
 	f = ifuncTB(FB.RTL.PROFILESTARTCALL)
 	proc = astNewFUNCT( f, symbGetType( f ), INVALID, TRUE )
 
-	if( symbol <> NULL ) then
-		s = hAllocStringConst( symbGetName( symbol ), -1 )
-	else
-		s = hAllocStringConst( "(??)", -1 )
-	end if
-
-	expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
+	expr = hGetProcName( symbol )
 	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
 		exit function
 	end if

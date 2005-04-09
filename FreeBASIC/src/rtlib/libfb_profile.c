@@ -29,7 +29,7 @@
 #include <time.h>
 #include "fb.h"
 
-#define MAIN_PROC_NAME		"(main)"
+#define MAIN_PROC_NAME		"(main)  "
 #define PROC_TABLE_SIZE		512
 #define CALL_TABLE_SIZE		2048
 #define PROFILE_FILE		"profile.txt"
@@ -61,15 +61,15 @@ static void add_proc( const char *procname )
 {
 	PROC *proc, *last = NULL;
 	const char *p;
-	int hash = 0;
-	
-	for( p = procname; *p; p++ )
-		hash = ((hash << 3) | (hash >> 29)) ^ (int)(*p);
+	unsigned int hash = 0;
+
+	for( p = procname; *p; p += 4 )
+		hash = ((hash << 3) | (hash >> 29)) ^ (*(unsigned int *)p);
 	hash &= (PROC_TABLE_SIZE - 1);
 	proc = &proc_table[hash];
 	
 	while( (proc) && (proc->name) ) {
-		if( !strcmp( procname, proc->name ) )
+		if( procname == proc->name )
 			return;
 		last = proc;
 		proc = proc->next;
@@ -80,38 +80,6 @@ static void add_proc( const char *procname )
 		last->next = proc;
 	}
 	proc->name = procname;
-}
-
-/*:::::*/
-static CALL *add_call( const char *procname, const char *fromprocname )
-{
-	CALL *call, *last = NULL;
-	const char *p;
-	int hash = 0;
-	
-	for( p = procname; *p; p++ )
-		hash = ((hash << 3) | (hash >> 29)) ^ (int)(*p);
-	for( p = fromprocname; *p; p++ )
-		hash = ((hash << 3) | (hash >> 29)) ^ (int)(*p);
-	hash &= (CALL_TABLE_SIZE - 1);
-	call = &call_table[hash];
-	
-	while( (call) && (call->name) ) {
-		if( (!strcmp( procname, call->name )) && (!strcmp( fromprocname, call->fromproc )) )
-			return call;
-		last = call;
-		call = call->next;
-	}
-	if( !call ) {
-		call = (CALL *)malloc( sizeof(CALL) );
-		call->next = NULL;
-		last->next = call;
-	}
-	call->name = procname;
-	call->fromproc = fromprocname;
-	call->totaltime = 0.0;
-	
-	return call;
 }
 
 /*:::::*/
@@ -166,22 +134,45 @@ void fb_ProfileSetProc( const char *procname )
 /*:::::*/
 void *fb_ProfileStartCall( const char *procname )
 {
-	CALL *c;
-	const char *curprocname;
+	CALL *call, *last = NULL;
+	const char *curprocname, *p;
+	unsigned int hash = 0;
 	
 	curprocname = (const char *)FB_TLSGET(cur_proc);
 	
 	FB_LOCK();
 	
-	c = add_call( procname, curprocname );
+	for( p = procname; *p; p += 4 )
+		hash = ((hash << 3) | (hash >> 29)) ^ (*(unsigned int *)p);
+	for( p = curprocname; *p; p += 4 )
+		hash = ((hash << 3) | (hash >> 29)) ^ (*(unsigned int *)p);
+	hash &= (CALL_TABLE_SIZE - 1);
+	call = &call_table[hash];
+	
+	while( (call) && (call->name) ) {
+		if( (procname == call->name) && (curprocname == call->fromproc) )
+			goto fill_call;
+		last = call;
+		call = call->next;
+	}
+	if( !call ) {
+		call = (CALL *)malloc( sizeof(CALL) );
+		call->next = NULL;
+		last->next = call;
+	}
+	call->name = procname;
+	call->fromproc = curprocname;
+	call->totaltime = 0.0;
+	
+fill_call:
 	
 	FB_TLSSET( cur_proc, procname );
 	
-	c->time = fb_Timer();
+	call->time = fb_Timer();
 	
 	FB_UNLOCK();
 	
-	return (void *)c;
+	return (void *)call;
 }
 
 /*:::::*/
@@ -234,7 +225,7 @@ void fb_ProfileEnd( void )
 	FILE *f;
 	PROC *p, *aux_p;
 	CALL *c, *aux_c, *calls = NULL;
-	double totaltime;
+	double totaltime, proctime;
 	const char **procs = NULL;
 	int num_calls = 0, num_procs = 0;
 	
@@ -257,7 +248,7 @@ void fb_ProfileEnd( void )
 	fprintf( f, "Launched on: %s\n", launch_time );
 	fprintf( f, "Total program execution time: %5.4g seconds\n\n", totaltime );
 	fprintf( f, "Per function timings:\n\n" );
-	fprintf( f, "        Function:                               Time:\n" );
+	fprintf( f, "        Function:                               Time:         Total%%:   Proc%%:" );
 	
 	for( i = 0; i < PROC_TABLE_SIZE; i++ ) {
 		p = &proc_table[i];
@@ -271,9 +262,26 @@ void fb_ProfileEnd( void )
 	qsort( procs, num_procs, sizeof(char *), string_sorter );
 	
 	for( i = 0; i < num_procs; i++ ) {
-		if( i )
-			fprintf( f, "\n" );
-		fprintf( f, "%s\n", procs[i] );
+		if( strcmp( procs[i], MAIN_PROC_NAME ) ) {
+			proctime = 0.0;
+			for( j = 0; j < CALL_TABLE_SIZE; j++ ) {
+				c = &call_table[j];
+				while( (c) && (c->name) ) {
+					if( !strcmp( c->name, procs[i] ) )
+						proctime += c->totaltime;
+					c = c->next;
+				}
+			}
+		}
+		else
+			proctime = totaltime;
+		len = fprintf( f, "\n\n%s", procs[i] );
+		for( len = 50 - len; len; len-- )
+			fprintf( f, " " );
+		len = fprintf( f, "%5.5f", proctime );
+		for( len = 14 - len; len; len-- )
+			fprintf( f, " " );
+		fprintf( f, "%03.2f%%\n\n", (proctime * 100.0) / totaltime );
 		calls = NULL;
 		num_calls = 0;
 		for( j = 0; j < CALL_TABLE_SIZE; j++ ) {
@@ -293,13 +301,19 @@ void fb_ProfileEnd( void )
 			len = fprintf( f, "        %s", calls[j].name );
 			for( len = 48 - len; len; len-- )
 				fprintf( f, " " );
-			fprintf( f, "%5.5f (%03.2f%%)\n", calls[j].totaltime, (calls[j].totaltime * 100.0) / totaltime );
+			len = fprintf( f, "%5.5f", calls[j].totaltime );
+			for( len = 14 - len; len; len-- )
+				fprintf( f, " " );
+			len = fprintf( f, "%03.2f%%", (calls[j].totaltime * 100.0) / totaltime );
+			for( len = 10 - len; len; len-- )
+				fprintf( f, " " );
+			fprintf( f, "%03.2f%%\n", (calls[j].totaltime * 100.0) / proctime );
 		}
 		free( calls );
 	}
 	free( procs );
 	
-	fprintf( f, "\n\nGlobal timings:\n\n" );
+	fprintf( f, "\n\n\nGlobal timings:\n\n" );
 	calls = NULL;
 	num_calls = 0;
 	for( i = 0; i < CALL_TABLE_SIZE; i++ ) {
@@ -325,7 +339,7 @@ void fb_ProfileEnd( void )
 		len = fprintf( f, "%s", calls[i].name );
 		for( len = 48 - len; len; len-- )
 			fprintf( f, " " );
-		fprintf( f, "%5.5f (%03.2f%%)\n", calls[i].totaltime, (calls[i].totaltime * 100.0) / totaltime );
+		fprintf( f, "%5.5f  (%03.2f%%)\n", calls[i].totaltime, (calls[i].totaltime * 100.0) / totaltime );
 	}
 	free( calls );
 	
