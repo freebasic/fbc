@@ -7,7 +7,7 @@
 
 defint a - z
 '$include: 'TinyPTC.bi'
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$include: 'win\user32.bi'
 #endif
 
@@ -84,7 +84,7 @@ next i
 
 
 dim hwnd as long
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 hwnd = GetActiveWindow
 #endif
 
@@ -206,9 +206,9 @@ do
      fps2 = fps
      fps = 0
      stime = timer
-     #ifdef FB__WIN32
+#ifdef __FB_WIN32__
      SetWindowText hwnd, "FreeBasic Julia Rings FPS:" + str$(Fps2)
-     #endif
+#endif
     end if
     ptc_update @buffer(0)
 loop until inkey$ <> ""
