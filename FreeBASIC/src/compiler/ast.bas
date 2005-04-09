@@ -1120,6 +1120,11 @@ function astUpdComp2Branch( byval n as integer, _
 				op = IR.OP.NE
 			end if
 
+			'' zstring? astNewBOP will think both are zstrings..
+			if( dtype = IR.DATATYPE.CHAR ) then
+				dtype = IR.DATATYPE.INTEGER
+			end if
+			
 			n = astNewBOP( op, n, astNewCONST( 0, dtype ), label, FALSE )
 			if( n = INVALID ) then
 				return INVALID
