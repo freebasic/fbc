@@ -2904,6 +2904,9 @@ function cArgDecl( byval procmode as integer, _
 		end if
 
 		if(	lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+			if( argc > 0 ) then
+				hReportParamError argc, lexTokenText
+			end if
 			exit function
 		end if
 
