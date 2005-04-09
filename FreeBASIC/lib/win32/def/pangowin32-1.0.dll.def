@@ -1,0 +1,26 @@
+LIBRARY "libpangowin32-1.0-0.dll"
+EXPORTS
+pango_win32_font_cache_free	@1
+pango_win32_font_cache_load	@2
+pango_win32_font_cache_new	@3
+pango_win32_font_cache_unload	@4
+pango_win32_font_entry_get_coverage	@5
+pango_win32_font_entry_remove	@6
+pango_win32_font_get_glyph_index	@7
+pango_win32_font_logfont	@8
+pango_win32_font_map_for_display	@9
+pango_win32_font_map_get_font_cache	@10
+pango_win32_font_new    	@11
+pango_win32_fontmap_cache_add	@12
+pango_win32_fontmap_cache_remove	@13
+pango_win32_get_context 	@14
+pango_win32_get_dc      	@15
+pango_win32_get_debug_flag	@16
+pango_win32_get_shaper_map	@17
+pango_win32_get_unknown_glyph	@18
+pango_win32_make_matching_logfont	@19
+pango_win32_render      	@20
+pango_win32_render_layout	@21
+pango_win32_render_layout_line	@22
+pango_win32_render_transformed	@23
+pango_win32_shutdown_display	@24
