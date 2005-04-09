@@ -24,6 +24,7 @@ Version 0.13 Beta:
 - #UNDEF won't report an error if un-defining an non-existent symbol (v1c)
 - FB__* built-in #defines are now named __FB_*__, please update your code if you used them! (lillo)
 - New built-in dynamic #defines: __FILE__, __FUNCTION__, __LINE__, __DATE__ and __TIME__ (lillo)
+- in Win32, the import libraries are now created from .def files when the install.bat is executed by the user (v1c)
 
 [added]
 - runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded
