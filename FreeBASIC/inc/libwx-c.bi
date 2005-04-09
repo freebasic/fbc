@@ -5,7 +5,6 @@
 #inclib "libwx-c"
 #elseif defined(__FB_LINUX__)
 #inclib "wx-c"
-#inclib "wxGTK"
 #else
 #error Platform not supported!
 #endif
