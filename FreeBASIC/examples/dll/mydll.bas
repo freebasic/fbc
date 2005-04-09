@@ -11,7 +11,7 @@
 ''
 
 option explicit
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 '$include: 'win\kernel32.bi'
 #endif
 
@@ -25,7 +25,7 @@ option explicit
 	'' is invoked by Windows at the initialization
 	''
 	
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 ''::::::
 ''
 '' DllMain is the entry-point (ALWAYS needed with DLL's), don't change the prototype
