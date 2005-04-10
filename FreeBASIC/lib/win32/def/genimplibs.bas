@@ -18,12 +18,13 @@ declare sub genlibs( byval dpath as string, byval killat as integer )
 	
 	
 '':::::	
-sub genlibs( byval dpath as string, byval killat as integer )
+sub genlibs( byval path as string, byval killat as integer )
 	dim as string filename, deffile, libfile, options
-	dim as string bpath, lpath, dlltool
+	dim as string bpath, lpath, dpath, dlltool
 	
 	bpath = exepath$ + "\..\..\..\bin\win32\"
 	lpath = exepath$ + "\..\"
+	dpath = exepath$ + path
 
 	dlltool = bpath + "dlltool.exe"
 
@@ -35,7 +36,7 @@ sub genlibs( byval dpath as string, byval killat as integer )
 	
 	options += "-d "
 	
-	filename = dir$( exepath$ + dpath + "*.def" )	
+	filename = dir$( dpath + "*.def" )	
 	do while( len( filename ) > 0 ) 
 		
 		deffile = hStripPath( filename )
