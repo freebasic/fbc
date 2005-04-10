@@ -30,7 +30,7 @@ Version 0.13 Beta:
 - runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded
   applications to avoid unnecessary locking, latter is used when compiling multithreaded apps. The compiler detects if the
   app in multithreaded if it makes use of THREADCREATE; to force linking with the thread-safe lib in any case, use the -mt
-  commandline option.
+  commandline option (lillo)
 - long integer (64-bit) data types (signed and unsigned), all operations done inline but for division and modulo (v1c)
 - typedefs with forward referencing support, as in C (but the syntax is "TYPE Name AS SymbolType") (v1c)
 - the ZSTRING type, null-terminated strings with fixed-length but that can be dereferenced and returned by functions (v1c)
