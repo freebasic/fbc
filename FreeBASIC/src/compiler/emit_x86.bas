@@ -2064,6 +2064,12 @@ sub emitLOAD2FLT( byval dname as string, _
 					select case sdsize
 					'' ulongint? damn..
 					case FB.INTEGERSIZE*2
+						hPrepOperand64( sname, svreg, src, aux )
+						emithPUSH aux
+						emithPUSH src
+						outp "fild qword ptr [esp]"
+						outp "add esp, 8"
+						emithULONG2DBL sname, svreg
 
 					'' uint..
 					case FB.INTEGERSIZE
@@ -2095,7 +2101,6 @@ sub emitLOAD2FLT( byval dname as string, _
 
 				'' signed?
 				if( irIsSigned( svreg->dtype ) ) then
-
 					ostr = "fild "
 					ostr += src
 					outp ostr
@@ -2105,7 +2110,9 @@ sub emitLOAD2FLT( byval dname as string, _
 					select case sdsize
 					'' ulongint? damn..
 					case FB.INTEGERSIZE*2
-                    	'' !!!WRITEME!!!
+						outp "fild " + src
+						emithULONG2DBL sname, svreg
+
 					'' uint..
 					case FB.INTEGERSIZE
 						emithPUSH "0"
