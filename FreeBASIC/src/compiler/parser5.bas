@@ -315,7 +315,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	else
 		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		vr = irAllocVRVAR( typ, s, s->ofs )
-		irEmitLOAD IR.OP.LDFUNCRESULT, vr
+		irEmitLOAD IR.OP.LOADRESULT, vr
 	end if
 
 end sub

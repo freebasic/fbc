@@ -36,6 +36,7 @@ enum ASTNODECLASS_ENUM
 	AST.NODECLASS.LOAD
 	AST.NODECLASS.BRANCH
 	AST.NODECLASS.IIF
+	AST.NODECLASS.OFFSET
 end enum
 
 type ASTTEMPSTR
@@ -150,24 +151,9 @@ declare sub 		astDelTree			( byval n as integer )
 declare function 	astIsTreeEqual		( byval l as integer, _
 										  byval r as integer ) as integer
 
-declare function 	astGetClass			( byval n as integer ) as integer
-
-declare function 	astGetDataType		( byval n as integer ) as integer
-
-declare function 	astGetSubtype		( byval n as integer ) as FBSYMBOL ptr
-
-declare function 	astGetDataClass		( byval n as integer ) as integer
-
-declare function 	astGetDataSize		( byval n as integer ) as integer
+declare function 	astIsADDR			( byval n as integer ) as integer
 
 declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
-
-declare function 	astGetValue			( byval n as integer ) as double
-
-declare function 	astGetValue64		( byval n as integer ) as longint
-
-declare sub 		astSetDataType		( byval n as integer, _
-										  byval dtype as integer )
 
 declare function	astLoad				( byval n as integer ) as integer
 
@@ -271,8 +257,57 @@ declare function 	astNewIIF			( byval condexpr as integer, _
 
 declare function 	astLoadIIF			( byval n as integer ) as integer
 
+declare function 	astNewOFFSET		( byval v as integer, _
+					   					  byval sym as FBSYMBOL ptr = NULL, _
+					   					  byval elm as FBSYMBOL ptr = NULL, _
+					   					  byval dtype as integer = INVALID, _
+					   					  byval subtype as FBSYMBOL ptr = NULL ) as integer
+
+declare function 	astLoadOFFSET		( byval n as integer ) as integer
+
 declare sub 		astDump1 			( byval p as integer, _
 										  byval n as integer, _
 										  byval isleft as integer, _
 										  byval ln as integer, _
 										  byval cn as integer )
+
+
+''
+'' globals
+''
+common shared astTB( ) as ASTNODE
+
+''
+'' macros
+''
+#define astGetClass(n) iif( n <> INVALID, astTB(n).class, INVALID )
+
+#define astIsCONST(n) (astTB(n).class = AST.NODECLASS.CONST)
+
+#define astIsVAR(n) (astTB(n).class = AST.NODECLASS.VAR)
+
+#define astIsIDX(n) (astTB(n).class = AST.NODECLASS.IDX)
+
+#define astIsFUNCT(n) (astTB(n).class = AST.NODECLASS.FUNCT)
+
+#define astIsPTR(n) (astTB(n).class = AST.NODECLASS.PTR)
+
+#define astIsOFFSET(n) (astTB(n).class = AST.NODECLASS.OFFSET)
+
+#define astGetValue(n) iif( astTB(n).defined, astTB(n).value, 0.0# )
+
+''''''''#define astGetValue64(n) iif( astTB(n).defined, astTB(n).value64, 0LL )
+
+#define astGetDataType(n) iif( n <> INVALID, astTB(n).dtype, INVALID )
+
+#define astGetSubtype(n) iif( n <> INVALID, astTB(n).subtype, NULL )
+
+#define astGetDataClass(n) iif( n <> INVALID, irGetDataClass( astTB(n).dtype ), INVALID )
+
+#define astGetDataSize(n) iif( n <> INVALID, irGetDataSize( astTB(n).dtype ), INVALID )
+
+#define astSetDataType(n,t) if( n <> INVALID ) then astTB(n).dtype = t end if
+
+
+
+declare function astGetValue64(byval n as integer) as longint

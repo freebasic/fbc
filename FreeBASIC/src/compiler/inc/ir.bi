@@ -65,6 +65,7 @@ enum IRVREGTYPE_ENUM
 	IR.VREGTYPE.PTR
 	IR.VREGTYPE.TMPVAR
 	IR.VREGTYPE.REG
+	IR.VREGTYPE.OFS
 end enum
 
 ''
@@ -86,7 +87,7 @@ const IR.OP.NOP			= 255
 
 enum IROP_ENUM
 	IR.OP.LOAD
-	IR.OP.LDFUNCRESULT
+	IR.OP.LOADRESULT
 	IR.OP.STORE
 	IR.OP.ADD
 	IR.OP.SUB
@@ -193,6 +194,9 @@ declare function 	irAllocVRPTR		( byval dtype as integer, _
 										  byval ofs as integer, _
 										  byval vidx as integer ) as integer
 
+declare function 	irAllocVROFS		( byval dtype as integer, _
+					   					  byval symbol as FBSYMBOL ptr ) as integer
+
 declare sub 		irEmitPROCBEGIN		( byval proc as FBSYMBOL ptr, _
 										  byval initlabel as FBSYMBOL ptr, _
 										  byval endlabel as FBSYMBOL ptr, _
@@ -211,6 +215,8 @@ declare sub 		irEmitVARINI		( byval dtype as integer, _
 
 declare sub 		irEmitVARINI64		( byval dtype as integer, _
 										  byval value as longint )
+
+declare sub 		irEmitVARINIOFS		( byval sym as FBSYMBOL ptr )
 
 declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
 				     					  byval s as string )

@@ -202,7 +202,7 @@ data IR.OP.SHR		, IR.OPTYPE.BINARY	, FALSE, ">>"
 data IR.OP.POW		, IR.OPTYPE.BINARY	, FALSE, "^"
 data IR.OP.EQV		, IR.OPTYPE.BINARY	, FALSE, "eqv"
 data IR.OP.IMP		, IR.OPTYPE.BINARY	, FALSE, "imp"
-data IR.OP.LDFUNCRESULT, IR.OPTYPE.LOAD	, FALSE, "ldr"
+data IR.OP.LOADRESULT, IR.OPTYPE.LOAD	, FALSE, "ldr"
 data IR.OP.ABS		, IR.OPTYPE.UNARY	, FALSE, "abs"
 data IR.OP.SGN		, IR.OPTYPE.UNARY	, FALSE, "sgn"
 data IR.OP.CALLPTR	, IR.OPTYPE.CALL	, FALSE, "ca@"
@@ -827,7 +827,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     		end if
 
     	'' passing an immediate?
-    	elseif( irIsIMM( vr ) ) then
+    	elseif( irIsIMM( vr ) or (vregTB(vr).typ = IR.VREGTYPE.OFS) ) then
         	amode = FB.ARGMODE.BYVAL
 
     	'' anything else, use the param type to create a temp var if needed
@@ -921,14 +921,14 @@ sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
 	irFlush
 
-	emitVARINIBEGIN sym
+	emitVARINIBEGIN( sym )
 
 end sub
 
 '':::::
 sub irEmitVARINIEND( byval sym as FBSYMBOL ptr ) static
 
-	emitVARINIEND sym
+	emitVARINIEND( sym )
 
 end sub
 
@@ -936,7 +936,7 @@ end sub
 sub irEmitVARINI( byval dtype as integer, _
 				  byval value as double ) static
 
-	emitVARINI dtype, value
+	emitVARINI( dtype, value )
 
 end sub
 
@@ -944,7 +944,14 @@ end sub
 sub irEmitVARINI64( byval dtype as integer, _
 					byval value as longint ) static
 
-	emitVARINI64 dtype, value
+	emitVARINI64( dtype, value )
+
+end sub
+
+'':::::
+sub irEmitVARINIOFS( byval sym as FBSYMBOL ptr ) static
+
+	emitVARINIOFS( symbGetName( sym ) )
 
 end sub
 
@@ -956,7 +963,7 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
-		emitVARINI IR.DATATYPE.BYTE, 0
+		emitVARINI( IR.DATATYPE.BYTE, 0 )
 		exit sub
 	end if
 
@@ -964,12 +971,12 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 	lgt = len( s )
 
 	if( lgt > totlgt ) then
-		emitVARINISTR totlgt, left$( s, totlgt )
+		emitVARINISTR( totlgt, left$( s, totlgt ) )
 	else
-		emitVARINISTR lgt, s
+		emitVARINISTR( lgt, s )
 
 		if( lgt < totlgt ) then
-			emitVARINIPAD totlgt - lgt
+			emitVARINIPAD( totlgt - lgt )
 		end if
 	end if
 
@@ -978,7 +985,7 @@ end sub
 '':::::
 sub irEmitVARINIPAD( byval bytes as integer ) static
 
-	emitVARINIPAD bytes
+	emitVARINIPAD( bytes )
 
 end sub
 
@@ -991,7 +998,9 @@ function irNewVR( byval dtype as integer, _
 	dim v as integer
 	dim p as IRVREG ptr
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
 	if( ctx.vregs >= ctx.vrnodes ) then
 		irReallocVregTB ctx.vrnodes \ 2
@@ -1161,6 +1170,24 @@ function irAllocVRPTR( byval dtype as integer, _
 end function
 
 '':::::
+function irAllocVROFS( byval dtype as integer, _
+					   byval symbol as FBSYMBOL ptr ) as integer static
+	dim vr as integer
+
+	vr = irNewVR( dtype, IR.VREGTYPE.OFS )
+
+	irAllocVROFS = vr
+
+	if( vr = INVALID ) then
+		exit function
+	end if
+
+	vregTB(vr).sym 	= symbol
+	vregTB(vr).ofs 	= 0
+
+end function
+
+'':::::
 function irIsVAR( byval vreg as integer ) as integer static
 
 	irIsVAR = FALSE
@@ -1256,14 +1283,13 @@ sub irGetVRNameEx( byval vreg as integer, _
 	end if
 
 	select case as const typ
-	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR
+	case IR.VREGTYPE.VAR, IR.VREGTYPE.TMPVAR, IR.VREGTYPE.OFS
 		vname = symbGetName( vregTB(vreg).sym )
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
 	    irGetVRIndexName( vreg, vname )
 
 	case IR.VREGTYPE.IMM
-		dtype = vregTB(vreg).dtype
 		vname = str$( vregTB(vreg).value )
 
 	case IR.VREGTYPE.REG
@@ -1568,7 +1594,8 @@ sub irFlushCALL( byval op as integer, _
 	'' call function
     if( proc <> NULL ) then
     	mode = symbGetFuncMode( proc )
-    	if( (mode = FB.FUNCMODE.CDECL) or ((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
+    	if( (mode = FB.FUNCMODE.CDECL) or _
+    		((mode = FB.FUNCMODE.STDCALL) and (env.clopt.nostdcall)) ) then
 			if( bytes2pop = 0 ) then
 				bytes2pop = symbGetLen( proc )
 			end if
@@ -1638,6 +1665,7 @@ sub irFlushSTACK( byval op as integer, _
 				  byval ex as integer ) static
 	dim as string dst
 	dim as integer r1, t1, dt1, dc1
+	dim as integer va
 
 	''
 	if( op = IR.OP.STACKALIGN ) then
@@ -1651,11 +1679,17 @@ sub irFlushSTACK( byval op as integer, _
 	irhLoadIDX v1, t1
 
 	'' only load fp's, if they are on the fpu stack (x86 assumption)
-	if( dc1 = IR.DATACLASS.FPOINT )  then
+	'if( dc1 = IR.DATACLASS.FPOINT )  then
 		if( t1 = IR.VREGTYPE.REG ) then
+			'' handle longint
+			if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
+				va = vregTB(v1).va
+				vregTB(va).reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
+			end if
+
 			r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
 		end if
-	end if
+	'end if
 
 	''
 	irGetVRName( v1, dst )
@@ -2053,8 +2087,8 @@ sub irFlushLOAD( byval op as integer, _
 				 byval v1 as integer ) static
 	dim as string src, dst
 	dim as integer r1, t1, dt1, dc1
-	dim as integer rr, rr2, vr
-	dim as integer va
+	dim as integer rr, rr2
+	dim as integer va, vr
 
 	''
 	irhGetVREG( v1, dt1, dc1, t1 )
@@ -2074,7 +2108,7 @@ sub irFlushLOAD( byval op as integer, _
 
 		r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
 
-	case IR.OP.LDFUNCRESULT
+	case IR.OP.LOADRESULT
 		if( t1 = IR.VREGTYPE.REG ) then
 			'' handle longint
 			if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then

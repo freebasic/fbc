@@ -695,7 +695,6 @@ private sub hPrepOperand( byval oname as string, _
 
 	select case as const typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.IDX, IR.VREGTYPE.PTR, IR.VREGTYPE.TMPVAR
-
 		operand = dtypeTB(dtype).mname
 		operand += " ["
 		operand += oname
@@ -706,6 +705,10 @@ private sub hPrepOperand( byval oname as string, _
 			operand += str$( ofs )
 		end if
 		operand += "]"
+
+	case IR.VREGTYPE.OFS
+		operand = "offset "
+		operand += oname
 
 	case else
 		operand = oname
@@ -4352,7 +4355,7 @@ sub emitPOP( byval sname as string, _
 				outp ostr
 			end if
 		else
-			ostr = "fstp "
+			ostr = "fld "
 			ostr += dtypeTB(svreg->dtype).mname
 			ostr += " [esp]"
 			outp ostr
@@ -4671,6 +4674,13 @@ sub emitVARINI64( byval dtype as integer, _
 end sub
 
 '':::::
+sub emitVARINIOFS( byval sname as string ) static
+
+	outp ".int " + sname
+
+end sub
+
+'':::::
 sub emitVARINISTR( byval lgt as integer, _
 				   byval s as string ) static
 
@@ -4789,7 +4799,7 @@ private sub hSaveAsmInitProc( )
     	rtlDataRestore NULL
     	irFlush
     end if
-    
+
     hWriteStr ctx.outf, TRUE,  "ret"
 
 end sub

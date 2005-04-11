@@ -424,7 +424,7 @@ private function cStoreTemp( byval expr as integer, _
 
 	cStoreTemp = NULL
 
-	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+	if( not astIsCONST( expr ) ) then
 		s = symbAddTempVar( dtype )
 		if( s = NULL ) then
 			exit function
@@ -547,7 +547,7 @@ function cForStatement
 		exit function
 	end if
 
-	if( (astGetClass( idexpr ) <> AST.NODECLASS.VAR) or (elm <> NULL) ) then
+	if( (not astIsVAR( idexpr )) or (elm <> NULL) ) then
 		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
 		exit function
 	end if
@@ -604,7 +604,7 @@ function cForStatement
 
 		'' store step into a temp var
 		exprdtype = astGetDataType( expr )
-		if( astGetClass( expr ) = AST.NODECLASS.CONST ) then
+		if( astIsCONST( expr ) ) then
 			if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
 				ispositive = (astGetValue64( expr ) >= 0)
 			else
@@ -1380,7 +1380,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				exit function
 			end if
 
-			if( astGetClass( expr1 ) <> AST.NODECLASS.CONST ) then
+			if( not astIsCONST( expr1 ) ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			end if
@@ -1399,7 +1399,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 					exit function
 				end if
 
-				if( astGetClass( expr2 ) <> AST.NODECLASS.CONST ) then
+				if( not astIsCONST( expr2 ) ) then
 					hReportError FB.ERRMSG.EXPECTEDCONST
 					exit function
 				end if

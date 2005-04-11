@@ -1124,7 +1124,7 @@ function astUpdComp2Branch( byval n as integer, _
 			if( dtype = IR.DATATYPE.CHAR ) then
 				dtype = IR.DATATYPE.INTEGER
 			end if
-			
+
 			n = astNewBOP( op, n, astNewCONST( 0, dtype ), label, FALSE )
 			if( n = INVALID ) then
 				return INVALID
@@ -1502,7 +1502,7 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 			exit function
 		end if
 
-	case AST.NODECLASS.ADDR
+	case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
 		if( pl->addr.sym <> pr->addr.sym ) then
 			exit function
 		end if
@@ -1705,40 +1705,14 @@ sub astDel( byval n as integer ) static
 end sub
 
 '':::::
-function astGetClass( byval n as integer ) as integer static
+function astIsADDR( byval n as integer ) as integer static
 
-	if( n <> INVALID ) then
-		astGetClass = astTB(n).class
-	else
-		astGetClass = INVALID
-	end if
-
-end function
-
-'':::::
-function astGetValue( byval n as integer ) as double static
-
-	astGetValue = 0
-
-	if( n <> INVALID ) then
-		if( astTB(n).defined ) then
-			astGetValue = astTB(n).value
-		end if
-	end if
-
-end function
-
-'':::::
-function astGetValue64( byval n as integer ) as longint static
-
-	astGetValue64 = 0
-
-	if( n <> INVALID ) then
-		if( astTB(n).defined ) then
-			astGetValue64 = astTB(n).value64
-		end if
-	end if
-
+	select case astTB(n).class
+	case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
+		return TRUE
+	case else
+		return FALSE
+	end select
 end function
 
 '':::::
@@ -1773,7 +1747,7 @@ function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
 		case AST.NODECLASS.FUNCT
 			s = astTB(n).proc.sym
 
-		case AST.NODECLASS.ADDR
+		case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
 			s = astTB(n).addr.elm
 			if( s = NULL ) then
 				s = astTB(n).addr.sym
@@ -1802,7 +1776,7 @@ private function astGetUDTElm( byval n as integer ) as FBSYMBOL ptr static
 				return astTB(n).var.elm
 			end if
 
-		case AST.NODECLASS.ADDR
+		case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
 			return astTB(n).addr.elm
 		end select
 	end if
@@ -1810,60 +1784,6 @@ private function astGetUDTElm( byval n as integer ) as FBSYMBOL ptr static
 	return NULL
 
 end function
-
-'':::::
-function astGetDataType( byval n as integer ) as integer static
-
-	if( n <> INVALID ) then
-		astGetDataType = astTB(n).dtype
-	else
-		astGetDataType = INVALID
-	end if
-
-end function
-
-'':::::
-function astGetSubtype( byval n as integer ) as FBSYMBOL ptr static
-
-	if( n <> INVALID ) then
-		astGetSubtype = astTB(n).subtype
-	else
-		astGetSubtype = NULL
-	end if
-
-end function
-
-'':::::
-function astGetDataClass( byval n as integer ) as integer static
-
-	if( n <> INVALID ) then
-		astGetDataClass = irGetDataClass( astTB(n).dtype )
-	else
-		astGetDataClass = INVALID
-	end if
-
-end function
-
-'':::::
-function astGetDataSize( byval n as integer ) as integer static
-
-	if( n <> INVALID ) then
-		astGetDataSize = irGetDataSize( astTB(n).dtype )
-	else
-		astGetDataSize = INVALID
-	end if
-
-end function
-
-'':::::
-sub astSetDataType( byval n as integer, _
-					byval dtype as integer ) static
-
-	if( n <> INVALID ) then
-		astTB(n).dtype = dtype
-	end if
-
-end sub
 
 ''::::
 function astLoad( byval n as integer ) as integer
@@ -1902,6 +1822,9 @@ function astLoad( byval n as integer ) as integer
 
 	case AST.NODECLASS.ADDR
 		return astLoadADDR( n )
+
+	case AST.NODECLASS.OFFSET
+		return astLoadOFFSET( n )
 
 	case AST.NODECLASS.LOAD
 		return astLoadLOAD( n )
@@ -2998,6 +2921,60 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+function astNewOFFSET( byval v as integer, _
+					   byval sym as FBSYMBOL ptr = NULL, _
+					   byval elm as FBSYMBOL ptr = NULL, _
+					   byval dtype as integer = INVALID, _
+					   byval subtype as FBSYMBOL ptr = NULL ) as integer static
+	dim n as integer
+
+	if( v = INVALID ) then
+		return INVALID
+	end if
+
+	if( dtype = INVALID ) then
+		dtype = astTB(v).dtype
+	end if
+
+	if( subtype = NULL ) then
+		subtype = astTB(v).subtype
+	end if
+
+	'' alloc new node
+	n = astNew( AST.NODECLASS.OFFSET, IR.DATATYPE.POINTER + dtype, subtype )
+
+	if( n = INVALID ) then
+		return INVALID
+	end if
+
+	astTB(n).l  		= v
+	astTB(n).addr.sym	= sym
+	astTB(n).addr.elm	= elm
+	astTB(n).chkbitfld	= elm <> NULL
+
+	return n
+
+end function
+
+'':::::
+function astLoadOFFSET( byval n as integer ) as integer
+    dim as integer v
+    dim as integer vr
+
+	v  = astTB(n).l
+	if( v = INVALID ) then
+		return INVALID
+	end if
+
+	vr = irAllocVROFS( astTB(n).dtype, astTB(v).var.sym )
+
+	astDel v
+
+	return vr
+
+end function
+
+'':::::
 function astNewADDR( byval op as integer, _
 					 byval p as integer, _
 					 byval sym as FBSYMBOL ptr = NULL, _
@@ -3017,6 +2994,15 @@ function astNewADDR( byval op as integer, _
 
 	if( subtype = NULL ) then
 		subtype = astTB(p).subtype
+	end if
+
+	if( op = IR.OP.ADDROF ) then
+		if( astTB(p).class = AST.NODECLASS.VAR ) then
+			if( astTB(p).var.ofs = 0 ) then
+				astNewADDR = astNewOFFSET( p, sym, elm, dtype, subtype )
+				exit function
+			end if
+		end if
 	end if
 
 	'' alloc new node
@@ -3883,7 +3869,7 @@ private function hCheckArrayParam( byval f as integer, _
 		end if
 
 		'' address of?
-		if( astTB(p).class = AST.NODECLASS.ADDR ) then
+		if( astIsADDR( p ) ) then
 			hReportParamError f
 			return FALSE
 		end if
@@ -4564,7 +4550,7 @@ end function
 '':::::
 function astLoadIIF( byval n as integer ) as integer
     dim as integer l, r
-    dim as integer v1, vr
+    dim as integer vr
     dim as FBSYMBOL ptr exitlabel
 
 	l = astTB(n).l
@@ -4576,17 +4562,15 @@ function astLoadIIF( byval n as integer ) as integer
 	astFlush( astTB(n).iif.cond )
 
 	''
-	v1 = astLoad( l )
-	irEmitLOAD IR.OP.LOAD, v1
+	irEmitPUSH astLoad( l )
 	irEmitBRANCH IR.OP.JMP, exitlabel
 
     irEmitLABELNF astTB(n).iif.falselabel
-	v1 = astLoad( r )
-	irEmitLOAD IR.OP.LOAD, v1
+	irEmitPUSH astLoad( r )
 
 	irEmitLABELNF exitlabel
-
-	vr = v1
+	vr = irAllocVREG( astTB(n).dtype )
+	irEmitPOP vr
 
 	astDel l
 	astDel r
@@ -4595,3 +4579,16 @@ function astLoadIIF( byval n as integer ) as integer
 
 end function
 
+
+
+
+
+function astGetValue64(byval n as integer) as longint static
+
+	if( astTB(n).defined ) then
+		return astTB(n).value64
+	else
+		return 0
+	end if
+
+end function

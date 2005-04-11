@@ -18,8 +18,6 @@
 
 '' generic hash tables
 ''
-'' obs: uses the string pool to not duplicate the symbol table string names
-''
 '' chng: sep/2004 written [v1ctor]
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 

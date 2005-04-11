@@ -1402,10 +1402,14 @@ end sub
 '' strings
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-#define FIXSTRGETLEN(e) symbGetLen2( astGetSymbol( e ) )
+private function symbGetLen2( byval s as FBSYMBOL ptr ) as integer
+	return s->lgt
+end function
 
-#define ZSTRGETLEN(e) iif( astGetClass( e ) = AST.NODECLASS.PTR, 0, symbGetLen2( astGetSymbol( e ) ) )
+'':::::
+#define FIXSTRGETLEN(e) symbGetLen( astGetSymbol( e ) )
+
+#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen2( astGetSymbol( e ) ) )
 
 #define STRGETLEN(e,t,l)												_
 	select case as const t                                              :_
@@ -3146,7 +3150,7 @@ function rtlMemSwap( byval dst as integer, _
 
 	'' simple type?
 	dtype = astGetDataType( dst )
-	if( (dtype <> IR.DATATYPE.USERDEF) and (astGetClass( dst ) = AST.NODECLASS.VAR) ) then
+	if( (dtype <> IR.DATATYPE.USERDEF) and (astIsVAR( dst )) ) then
 
 		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		d = astGetSymbol( dst )

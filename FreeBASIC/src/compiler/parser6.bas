@@ -467,7 +467,7 @@ function cDataStmt
 			'' check if it's an string
 			s = NULL
 			if( astGetDataType( expr ) = IR.DATATYPE.FIXSTR ) then
-				if( astGetClass( expr ) = AST.NODECLASS.VAR ) then
+				if( astIsVAR( expr ) ) then
 					s = astGetSymbol( expr )
 					if( not symbGetVarInitialized( s ) ) then
 						s = NULL
@@ -488,20 +488,28 @@ function cDataStmt
 				end if
 
 			else
-				if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
-					hReportError FB.ERRMSG.EXPECTEDCONST
-					exit function
-				end if
 
-  				typ = astGetDataType( expr )
-  				if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
-  					littext = str$( astGetValue64( expr ) )
-  				else
-  					littext = str$( astGetValue( expr ) )
+				if( astIsOFFSET( expr ) ) then
+					littext = symbGetName( astGetSymbol( expr ) )
+
+				else
+
+					if( not astIsCONST( expr ) ) then
+						hReportError FB.ERRMSG.EXPECTEDCONST
+						exit function
+					end if
+
+  					typ = astGetDataType( expr )
+  					if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+  						littext = str$( astGetValue64( expr ) )
+  					else
+  						littext = str$( astGetValue( expr ) )
+  					end if
+  					litlen = len( littext )
+
   				end if
-  				litlen = len( littext )
-
   				typ = IR.DATATYPE.FIXSTR
+
   				astDel expr
 		    end if
 
@@ -1842,7 +1850,7 @@ private function cStrCHR( funcexpr as integer ) as integer
 	'' constant? evaluate at compile-time
 	isconst = TRUE
 	for i = 0 to cnt-1
-		if( astGetClass( exprtb(i) ) <> AST.NODECLASS.CONST ) then
+		if( not astIsCONST( exprtb(i) ) ) then
 			isconst = FALSE
 			exit for
 		end if
@@ -1918,14 +1926,14 @@ private function cStrASC( funcexpr as integer ) as integer
 	end if
 
 	'' constant? evaluate at compile-time
-	if( astGetClass( expr1 ) = AST.NODECLASS.VAR ) then
+	if( astIsVAR( expr1 ) ) then
 		if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
 			sym = astGetSymbol( expr1 )
 			if( symbGetVarInitialized( sym ) ) then
 
 				'' pos is an constant too?
 				if( posexpr <> INVALID ) then
-					if( astGetClass( posexpr ) = AST.NODECLASS.CONST ) then
+					if( astIsCONST( posexpr ) ) then
 
   						dtype = astGetDataType( posexpr )
   						if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
@@ -2267,7 +2275,7 @@ function cMathFunct( funcexpr as integer )
 		if( expr <> INVALID ) then
 			if( not islen ) then
 				if( astGetDataClass( expr ) = IR.DATACLASS.STRING ) then
-					if( (astGetSymbol( expr ) = NULL) or (astGetClass( expr ) = AST.NODECLASS.FUNCT) ) then
+					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
 						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER, TRUE
 						exit function
 					end if

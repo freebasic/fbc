@@ -605,7 +605,7 @@ function cConstAssign
 	'' check if it's an string
 	sym = NULL
 	if( astGetDataType( expr ) = IR.DATATYPE.FIXSTR ) then
-		if( astGetClass( expr ) = AST.NODECLASS.VAR ) then
+		if( astIsVAR( expr ) ) then
 			sym = astGetSymbol( expr )
 			if( not symbGetVarInitialized( sym ) ) then
 				sym = NULL
@@ -629,7 +629,7 @@ function cConstAssign
 
 	else
 
-		if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+		if( not astIsCONST( expr ) ) then
 			hReportErrorEx FB.ERRMSG.EXPECTEDCONST, id
 			exit function
 		end if
@@ -1059,7 +1059,7 @@ function cTypeDecl
     		exit function
     	end if
 
-		if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+		if( not astIsCONST( expr ) ) then
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		end if
@@ -1148,7 +1148,7 @@ function cEnumConstDecl( id as string )
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		else
-			if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+			if( not astIsCONST( expr ) ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			end if
@@ -1402,9 +1402,9 @@ function hIsDynamic( byval dimensions as integer, exprTB() as integer ) as integ
 	end if
 
 	for i = 0 to dimensions-1
-		if( astGetClass( exprTB(i, 0) ) <> AST.NODECLASS.CONST ) then
+		if( not astIsCONST( exprTB(i, 0) ) ) then
 			exit function
-		elseif( astGetClass( exprTB(i, 1) ) <> AST.NODECLASS.CONST ) then
+		elseif( not astIsCONST( exprTB(i, 1) ) ) then
 			exit function
 		end if
 	next i
@@ -1785,7 +1785,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 					   ofs as integer, _
 					   byval islocal as integer ) as integer static
 
-	dim as integer dtype, expr, exprclass, assgexpr
+	dim as integer dtype, expr, assgexpr
     dim as FBSYMBOL ptr litsym
 
 	if( not cExpression( expr ) ) then
@@ -1794,7 +1794,6 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 	end if
 
     dtype = astGetDataType( expr )
-    exprclass = astGetClass( expr )
 
 	'' if static or at module level, only constants can be used as initializers
 	if( not islocal ) then
@@ -1802,7 +1801,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		'' check if it's a literal string
 		litsym = NULL
 		if( dtype = IR.DATATYPE.FIXSTR ) then
-			if( exprclass = AST.NODECLASS.VAR ) then
+			if( astIsVAR( expr ) ) then
 				litsym = astGetSymbol( expr )
 				if( not symbGetVarInitialized( litsym ) ) then
 					litsym = NULL
@@ -1813,27 +1812,42 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		'' not a literal string?
 		if( litsym = NULL ) then
 
-			'' not a constant?
-			if( exprclass <> AST.NODECLASS.CONST ) then
-				hReportError FB.ERRMSG.EXPECTEDCONST
-				return FALSE
-			end if
-
 			'' string?
 			if( hIsString( sym->typ ) ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				return FALSE
 			end if
 
-			'' different types?
-			if( dtype <> sym->typ ) then
-				expr = astNewCONV( INVALID, sym->typ, expr )
-			end if
+			'' offset?
+			if( astIsOFFSET( expr ) ) then
 
-			if( (sym->typ = FB.SYMBTYPE.LONGINT) or (sym->typ = FB.SYMBTYPE.ULONGINT) ) then
-				irEmitVARINI64 sym->typ, astGetValue64( expr )
+				'' different types?
+				if( (irGetDataClass( sym->typ ) <> IR.DATACLASS.INTEGER) or _
+					(irGetDataSize( sym->typ ) <> FB.POINTERSIZE) ) then
+					hReportError FB.ERRMSG.INVALIDDATATYPES
+					return FALSE
+				end if
+
+				irEmitVARINIOFS( astGetSymbol( expr ) )
+
 			else
-				irEmitVARINI sym->typ, astGetValue( expr )
+				'' not a constant?
+				if( not astIsCONST( expr ) ) then
+					hReportError FB.ERRMSG.EXPECTEDCONST
+					return FALSE
+				end if
+
+				'' different types?
+				if( dtype <> sym->typ ) then
+					expr = astNewCONV( INVALID, sym->typ, expr )
+				end if
+
+				if( (sym->typ = FB.SYMBTYPE.LONGINT) or (sym->typ = FB.SYMBTYPE.ULONGINT) ) then
+					irEmitVARINI64( sym->typ, astGetValue64( expr ) )
+				else
+					irEmitVARINI( sym->typ, astGetValue( expr ) )
+				end if
+
 			end if
 
 		else
@@ -1851,7 +1865,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			end if
 
 			'' less the null-char
-			irEmitVARINISTR sym->lgt - 1, symbGetVarText( litsym )
+			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ) )
 
 			if( symbGetAccessCnt( litsym ) = 0 ) then
 				symbDelVar litsym
@@ -2173,7 +2187,7 @@ function cStaticArrayDecl( dimensions as integer, _
 			hReportError FB.ERRMSG.EXPECTEDCONST
 			exit function
 		else
-			if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+			if( not astIsCONST( expr ) ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			end if
@@ -2196,7 +2210,7 @@ function cStaticArrayDecl( dimensions as integer, _
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			else
-				if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+				if( not astIsCONST( expr ) ) then
 					hReportError FB.ERRMSG.EXPECTEDCONST
 					exit function
 				end if
@@ -2313,7 +2327,7 @@ function cConstExprValue( littext as string ) as integer
     	exit function
     end if
 
-	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+	if( not astIsCONST( expr ) ) then
 		hReportError FB.ERRMSG.EXPECTEDCONST
 		exit function
 	end if
@@ -3047,9 +3061,9 @@ function cArgDecl( byval procmode as integer, _
 
     	dtype = astGetDataType( expr )
     	'' not a constant?
-    	if( astGetClass( expr ) <> AST.NODECLASS.CONST ) then
+    	if( not astIsCONST( expr ) ) then
     		'' not a literal string?
-    		if( (astGetClass( expr ) <> AST.NODECLASS.VAR) or (dtype <> IR.DATATYPE.FIXSTR) ) then
+    		if( (not astIsVAR( expr )) or (dtype <> IR.DATATYPE.FIXSTR) ) then
 				hReportError FB.ERRMSG.EXPECTEDCONST
 				exit function
 			end if
@@ -3605,7 +3619,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 			'' if it stills a function, unless type = string (ie: implict pointer),
 			'' flush it, as the assignament would be invalid
-			if( astGetClass( procexpr ) = AST.NODECLASS.FUNCT ) then
+			if( astIsFUNCT( procexpr ) ) then
 				if( typ <> IR.DATATYPE.STRING ) then
 					doflush = TRUE
 				end if
@@ -3745,7 +3759,7 @@ function cAssignmentOrPtrCall
     	end if
 
     	'' calling a FUNCTION ptr?
-    	if( astGetClass( assgexpr ) = AST.NODECLASS.FUNCT ) then
+    	if( astIsFUNCT( assgexpr ) ) then
 			'' can the result be skipped?
 			dtype = astGetDataType( assgexpr )
 			if( (irGetDataClass( dtype ) = IR.DATACLASS.FPOINT) or _

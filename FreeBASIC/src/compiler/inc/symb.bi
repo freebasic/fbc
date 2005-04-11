@@ -324,6 +324,4 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 #define hIsString(t) ((t = IR.DATATYPE.STRING) or (t = IR.DATATYPE.FIXSTR) or (t = IR.DATATYPE.CHAR))
 
 
-declare function symbGetLen2(byval s as FBSYMBOL ptr) as integer
-
 

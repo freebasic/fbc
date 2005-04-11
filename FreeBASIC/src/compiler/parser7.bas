@@ -101,13 +101,13 @@ private function hGetTarget( targetexpr as integer, isptr as integer, byval fetc
 	end if
 
 	'' address of?
-	if( astGetClass( targetexpr ) = AST.NODECLASS.ADDR ) then
+	if( astIsADDR( targetexpr ) ) then
 		isptr = TRUE
 	else
 		'' array?
 		if( symbIsArray( s ) ) then
 			'' no index given?
-			if ( astGetClass( targetexpr ) <> AST.NODECLASS.IDX ) then
+			if( not astIsIDX( targetexpr ) ) then
 				targetexpr = hMakeArrayIndex( s, targetexpr )
 			end if
 			isptr = FALSE
@@ -692,7 +692,7 @@ function cGfxPalette as integer
         end if
 
 		if( symbIsArray( s ) ) then
-			if ( astGetClass( arrayexpr ) <> AST.NODECLASS.IDX ) then
+			if( not astIsIDX( arrayexpr ) ) then
 				arrayexpr = hMakeArrayIndex( s, arrayexpr )
 			end if
 		elseif( symbGetType( s ) < FB.SYMBTYPE.POINTER ) then
@@ -719,18 +719,18 @@ function cGfxPalette as integer
 				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 				exit function
 			end if
-			
+
 			if( hMatch( CHAR_COMMA ) ) then
 				if( not cExpression( gexpr ) ) then
 					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 					exit function
 				end if
-				
+
 				if( not hMatch( CHAR_COMMA ) ) then
 					hReportError FB.ERRMSG.EXPECTEDCOMMA
 					exit function
 				end if
-				
+
 				if( not cExpression( bexpr ) ) then
 					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 					exit function

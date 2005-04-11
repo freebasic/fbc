@@ -95,6 +95,8 @@ declare sub 		emitVARINI			( byval dtype as integer, _
 declare sub 		emitVARINI64		( byval dtype as integer, _
 										  byval value as longint )
 
+declare sub 		emitVARINIOFS		( byval sname as string )
+
 declare sub 		emitVARINISTR		( byval lgt as integer, _
 				   						  byval s as string )
 

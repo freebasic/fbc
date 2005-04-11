@@ -55,15 +55,17 @@ end type
 '':::::
 private function hLiteral( byval args as integer = 0, _
 						   byval arghead as FBDEFARG ptr = NULL ) as string
-    dim text as string
-    dim token as string, dpos as integer
-    dim a as FBDEFARG ptr
+    dim as string text, token
+    dim as integer dpos, flags
+    dim as FBDEFARG ptr a
 
 const QUOTE = "\""
 
+	flags = LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX
+
     text = ""
     do
-    	select case lexCurrentToken( LEXCHECK_NOWHITESPC )
+    	select case lexCurrentToken( flags )
 		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			exit do
 		end select
@@ -77,12 +79,12 @@ const QUOTE = "\""
     	else
     		'' no args? just read as-is
     		if( args = 0 ) then
-    			text += lexEatToken( LEXCHECK_NOWHITESPC )
+    			text += lexEatToken( flags )
 
     		else
     			'' not and identifier? read as-is
     			if( lexCurrentToken <> FB.TK.ID ) then
-    				text += lexEatToken( LEXCHECK_NOWHITESPC )
+    				text += lexEatToken( flags )
 
     			'' otherwise, check if it's an argument and replace it
     			'' with an unique pattern
@@ -104,9 +106,9 @@ const QUOTE = "\""
     						text += "\27"
     						'' add the remainder if it's an udt access
     						if( dpos > 1 ) then
-    							text += mid$( lexEatToken( LEXCHECK_NOWHITESPC ), dpos )
+    							text += mid$( lexEatToken( flags ), dpos )
     						else
-    							lexSkipToken( LEXCHECK_NOWHITESPC )
+    							lexSkipToken( flags )
     						end if
     						exit do
     					end if
@@ -117,7 +119,7 @@ const QUOTE = "\""
 
     				'' if none matched, read as-is
     				if( a = NULL ) then
-    					text += lexEatToken( LEXCHECK_NOWHITESPC )
+    					text += lexEatToken( flags )
     				end if
     			end if
 
@@ -261,7 +263,7 @@ function lexPreProcessor as integer
 		lexSkipToken
 		print hLiteral
 		lexPreProcessor = TRUE
-	
+
 	'' ERROR LITERAL*
 	case FB.TK.ERROR
 		lexSkipToken
