@@ -95,9 +95,8 @@ static void convert_8to32(unsigned char *src, unsigned char *dest, int w)
 static void convert_24to16(unsigned char *src, unsigned char *dest, int w)
 {
 	unsigned short *d = (unsigned short *)dest;
-	
 	for (; w; w--) {
-		*d++ = (src[0] >> 3) | ((src[1] << 3) & 0x07E0) | ((src[2] << 8) & 0xF800);
+		*d++ = ((unsigned short)src[0] >> 3) | (((unsigned short)src[1] << 3) & 0x07E0) | (((unsigned short)src[2] << 8) & 0xF800);
 		src += 3;
 	}
 }
@@ -109,7 +108,7 @@ static void convert_24to32(unsigned char *src, unsigned char *dest, int w)
 	unsigned int *d = (unsigned int *)dest;
 	
 	for (; w; w--) {
-		*d++ = *(unsigned int *)src;
+		*d++ = *(unsigned int *)src & 0xFFFFFF;
 		src += 3;
 	}
 }

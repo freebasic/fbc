@@ -128,6 +128,8 @@ Version 0.13 Beta:
 - SETDATE/SETTIME support under Linux was missing (lillo)
 - size of identifiers and literals as being checked inside comments (v1c)
 - LSET should accept UDT's too (v1c)
+- SCREENCOPY gave corrupted image display if called after a primitive targeted against a user buffer (lillo)
+- Fixed some minor issues when BLOADing BMPs (lillo)
 
 
 Version 0.12 Beta:
