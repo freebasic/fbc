@@ -34,6 +34,7 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 #	define BITS_PER_UNIT 8
 #	define MIN_UNITS_PER_WORD 4
 #	define LONG_LONG_TYPE_SIZE 64
+#	define DOUBLE_TYPE_SIZE 64
 #else
 #	error "extend this"
 #endif

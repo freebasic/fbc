@@ -56,6 +56,7 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
   (LIBGCC2_DOUBLE_TYPE_SIZE == 64 || LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 64)
 #endif
 
+/*
 #ifndef LIBGCC2_HAS_XF_MODE
 #define LIBGCC2_HAS_XF_MODE (LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 80)
 #endif
@@ -63,6 +64,7 @@ Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 #ifndef LIBGCC2_HAS_TF_MODE
 #define LIBGCC2_HAS_TF_MODE (LIBGCC2_LONG_DOUBLE_TYPE_SIZE == 128)
 #endif
+*/
 
 #ifndef MIN_UNITS_PER_WORD
 #define MIN_UNITS_PER_WORD UNITS_PER_WORD
@@ -102,17 +104,17 @@ typedef unsigned int UTItype	__attribute__ ((mode (TI)));
 typedef 	float SFtype	__attribute__ ((mode (SF)));
 /*typedef _Complex float SCtype	__attribute__ ((mode (SC)));*/
 
-#if LIBGCC2_HAS_DF_MODE
+#ifdef LIBGCC2_HAS_DF_MODE
 typedef		float DFtype	__attribute__ ((mode (DF)));
-typedef _Complex float DCtype	__attribute__ ((mode (DC)));
+/*typedef _Complex float DCtype	__attribute__ ((mode (DC)));*/
 #endif
-#if LIBGCC2_HAS_XF_MODE
+#ifdef LIBGCC2_HAS_XF_MODE
 typedef		float XFtype	__attribute__ ((mode (XF)));
-typedef _Complex float XCtype	__attribute__ ((mode (XC)));
+/*typedef _Complex float XCtype	__attribute__ ((mode (XC)));*/
 #endif
-#if LIBGCC2_HAS_TF_MODE
+#ifdef LIBGCC2_HAS_TF_MODE
 typedef		float TFtype	__attribute__ ((mode (TF)));
-typedef _Complex float TCtype	__attribute__ ((mode (TC)));
+/*typedef _Complex float TCtype	__attribute__ ((mode (TC)));*/
 #endif
 
 #else /* BITS_PER_UNIT != 8 */
@@ -332,17 +334,17 @@ extern SFtype __powisf2 (SFtype, Wtype);
 /*extern SCtype __divsc3 (SFtype, SFtype, SFtype, SFtype);
 extern SCtype __mulsc3 (SFtype, SFtype, SFtype, SFtype);*/
 
-#if LIBGCC2_HAS_DF_MODE
+#ifdef LIBGCC2_HAS_DF_MODE
 extern DWtype __fixdfdi (DFtype);
 extern DFtype __floatdidf (DWtype);
 extern UWtype __fixunsdfSI (DFtype);
 extern DWtype __fixunsdfDI (DFtype);
 extern DFtype __powidf2 (DFtype, Wtype);
-extern DCtype __divdc3 (DFtype, DFtype, DFtype, DFtype);
-extern DCtype __muldc3 (DFtype, DFtype, DFtype, DFtype);
+/*extern DCtype __divdc3 (DFtype, DFtype, DFtype, DFtype);
+extern DCtype __muldc3 (DFtype, DFtype, DFtype, DFtype);*/
 #endif
 
-#if LIBGCC2_HAS_XF_MODE
+#ifdef LIBGCC2_HAS_XF_MODE
 extern DWtype __fixxfdi (XFtype);
 extern DWtype __fixunsxfDI (XFtype);
 extern XFtype __floatdixf (DWtype);
@@ -352,7 +354,7 @@ extern XCtype __divxc3 (XFtype, XFtype, XFtype, XFtype);
 extern XCtype __mulxc3 (XFtype, XFtype, XFtype, XFtype);
 #endif
 
-#if LIBGCC2_HAS_TF_MODE
+#ifdef LIBGCC2_HAS_TF_MODE
 extern DWtype __fixunstfDI (TFtype);
 extern DWtype __fixtfdi (TFtype);
 extern TFtype __floatditf (DWtype);
