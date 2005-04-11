@@ -29,6 +29,7 @@ enum FBRTL_ENUM
 	FB.RTL.ULONGINTDIV
 	FB.RTL.LONGINTMOD
 	FB.RTL.ULONGINTMOD
+	FB.RTL.DBL2ULONGINT
 
 	FB.RTL.ARRAYREDIM
 	FB.RTL.ARRAYERASE
@@ -310,6 +311,9 @@ declare function 	rtlMathLongintMOD	( byval dtype as integer, _
 										  byval ldtype as integer, _
 					        			  byval rexpr as integer, _
 					        			  byval rdtype as integer ) as integer
+
+declare function 	rtlMathFp2ULongint	( byval expr as integer, _
+										  byval dtype as integer ) as integer
 
 declare function	rtlExit				( byval errlevel as integer ) as integer
 

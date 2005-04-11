@@ -1224,9 +1224,35 @@ sub emitSTORE2INT ( byval dname as string, _
 			end if
 
         else
-			ostr = "fistp "
-			ostr += dst
-			outp ostr
+			'' signed?
+			if( irIsSigned( dvreg->dtype ) ) then
+				ostr = "fistp "
+				ostr += dst
+				outp ostr
+
+			'' unsigned.. try a bigger type
+			else
+
+				select case ddsize
+				'' ulongint? handled by AST already
+				case FB.INTEGERSIZE*2
+                	hReportError FB.ERRMSG.INTERNAL
+				'' uint..
+				case FB.INTEGERSIZE
+					outp "sub esp, 8"
+					outp "fistp qword ptr [esp]"
+					emithPOP dst
+					outp  "add esp, 4"
+
+				'' ushort..
+				case else
+					outp "sub esp, 4"
+					outp "fistp dword ptr [esp]"
+					emithPOP dst
+					outp  "add esp, 2"
+				end select
+
+			end if
 		end if
 
 	'' integer source
@@ -1338,6 +1364,25 @@ storeSIDI:			reg = emitFindRegNotInVreg( dvreg, TRUE )
 end sub
 
 '':::::
+private sub emithULONG2DBL( byval sname as string, _
+			        	    byval svreg as IRVREG ptr ) static
+	dim as string label
+
+	label = hMakeTmpStr
+
+	outp "cmp dword ptr [" +  sname + hGetOfs( svreg->ofs + 4 ) + "], 0"
+	outp "jns " + label
+	emithPUSH "16447
+	emithPUSH "-2147483648"
+	emithPUSH "0"
+	outp "fldt [esp]"
+	outp "add esp, 12"
+	outp "faddp"
+	emitLABEL label
+
+end sub
+
+'':::::
 sub emitSTORE2FLT ( byval dname as string, _
 					byval dvreg as IRVREG ptr, _
 					byval ddclass as integer, _
@@ -1394,39 +1439,110 @@ sub emitSTORE2FLT ( byval dname as string, _
 		if( sdclass <> IR.DATACLASS.FPOINT ) then
 			if( (svreg->typ = IR.VREGTYPE.REG) or (svreg->typ = IR.VREGTYPE.IMM) ) then
 
-				'' longint?
-				if( sdsize = FB.INTEGERSIZE*2 ) then
-					hPrepOperand64( sname, svreg, src, aux )
+				'' signed?
+				if( irIsSigned( svreg->dtype ) ) then
 
-					emithPUSH aux
-					emithPUSH src
+					'' longint?
+					if( sdsize = FB.INTEGERSIZE*2 ) then
+						hPrepOperand64( sname, svreg, src, aux )
 
-				else
-					'' not an integer? make it
-					if( (svreg->typ = IR.VREGTYPE.REG) and (sdsize < FB.INTEGERSIZE) ) then
-						emitGetRegName( IR.DATATYPE.INTEGER, sdclass, svreg->reg, src )
+						emithPUSH aux
+						emithPUSH src
+
+					else
+						'' not an integer? make it
+						if( (svreg->typ = IR.VREGTYPE.REG) and (sdsize < FB.INTEGERSIZE) ) then
+							emitGetRegName( IR.DATATYPE.INTEGER, sdclass, svreg->reg, src )
+						end if
+
+						emithPUSH src
+
 					end if
 
-					emithPUSH src
+					ostr = "fild "
+					ostr += dtypeTB(svreg->dtype).mname
+					ostr += " [esp]"
+					outp ostr
 
-				end if
+					'' longint?
+					if( sdsize = FB.INTEGERSIZE*2 ) then
+						outp "add esp, 8"
+					else
+						outp "add esp, 4"
+					end if
 
-				ostr = "fild "
-				ostr += dtypeTB(svreg->dtype).mname
-				ostr += " [esp]"
-				outp ostr
-
-				'' longint?
-				if( sdsize = FB.INTEGERSIZE*2 ) then
-					outp "add esp, 8"
+				'' unsigned..
 				else
-					outp "add esp, 4"
+
+					select case sdsize
+					'' ulongint? damn..
+					case FB.INTEGERSIZE*2
+						hPrepOperand64( sname, svreg, src, aux )
+						emithPUSH aux
+						emithPUSH src
+						outp "fild qword ptr [esp]"
+						outp "add esp, 8"
+						emithULONG2DBL sname, svreg
+
+					'' uint..
+					case FB.INTEGERSIZE
+						emithPUSH "0"
+						emithPUSH src
+						outp "fild qword ptr [esp]"
+						outp "add esp, 8"
+
+					'' ushort..
+					case else
+						if( svreg->typ <> IR.VREGTYPE.IMM ) then
+							emithPUSH "0"
+						end if
+
+						emithPUSH src
+						outp "fild dword ptr [esp]"
+
+						if( svreg->typ <> IR.VREGTYPE.IMM ) then
+							outp "add esp, 6"
+						else
+							outp "add esp, 4"
+						end if
+					end select
+
 				end if
 
+			'' not a reg or imm
 			else
-				ostr = "fild "
-				ostr += src
-				outp ostr
+
+				'' signed?
+				if( irIsSigned( svreg->dtype ) ) then
+					ostr = "fild "
+					ostr += src
+					outp ostr
+
+				'' unsigned, try a bigger type..
+				else
+
+					select case sdsize
+					'' ulongint? damn..
+					case FB.INTEGERSIZE*2
+						outp "fild " + src
+						emithULONG2DBL sname, svreg
+
+					'' uint..
+					case FB.INTEGERSIZE
+						emithPUSH "0"
+						emithPUSH src
+						outp "fild qword ptr [esp]"
+						outp "add esp, 8"
+
+					'' ushort..
+					case else
+						emithPUSH "0"
+						emithPUSH src
+						outp "fild dword ptr [esp]"
+						outp "add esp, 6"
+					end select
+
+				end if
 			end if
 
 			ostr = "fstp "
@@ -1787,33 +1903,62 @@ loadSIDI:				reg = emitFindRegNotInVreg( dvreg, TRUE )
             end if
 
 		else
-			'' longint?
-			if( ddsize = FB.INTEGERSIZE*2 ) then
-				outp "sub esp, 8"
-			else
-				outp "sub esp, 4"
-			end if
 
-			ostr = "fistp "
-			ostr += dtypeTB(dvreg->dtype).mname
-			ostr += " [esp]"
-			outp ostr
+			'' signed?
+			if( irIsSigned( dvreg->dtype ) ) then
 
-			'' longint?
-			if( ddsize = FB.INTEGERSIZE*2 ) then
-			    hPrepOperand64 dname, dvreg, dst, aux
-
-				emithPOP dst
-				emithPOP aux
-
-			else
-				'' not an integer? make it
-				if( ddsize < FB.INTEGERSIZE ) then
-					emitGetRegName( IR.DATATYPE.INTEGER, ddclass, dvreg->reg, dst )
+				'' longint?
+				if( ddsize = FB.INTEGERSIZE*2 ) then
+					outp "sub esp, 8"
+				else
+					outp "sub esp, 4"
 				end if
 
-				emithPOP dst
+				ostr = "fistp "
+				ostr += dtypeTB(dvreg->dtype).mname
+				ostr += " [esp]"
+				outp ostr
+
+				'' longint?
+				if( ddsize = FB.INTEGERSIZE*2 ) then
+			    	hPrepOperand64 dname, dvreg, dst, aux
+
+					emithPOP dst
+					emithPOP aux
+
+				else
+					'' not an integer? make it
+					if( ddsize < FB.INTEGERSIZE ) then
+						emitGetRegName( IR.DATATYPE.INTEGER, ddclass, dvreg->reg, dst )
+					end if
+
+					emithPOP dst
+				end if
+
+			'' unsigned.. try a bigger type
+			else
+
+				select case ddsize
+				'' ulongint? handled by AST already..
+				case FB.INTEGERSIZE*2
+                    hReportError FB.ERRMSG.INTERNAL
+				'' uint..
+				case FB.INTEGERSIZE
+					outp "sub esp, 8"
+					outp "fistp qword ptr [esp]"
+					emithPOP dst
+					outp  "add esp, 4"
+
+				'' ushort..
+				case else
+					outp "sub esp, 4"
+					outp "fistp dword ptr [esp]"
+					emithPOP dst
+					outp  "add esp, 2"
+				end select
+
 			end if
+
 		end if
 	end if
 
@@ -1882,38 +2027,101 @@ sub emitLOAD2FLT( byval dname as string, _
 		else
 			if( (svreg->typ = IR.VREGTYPE.REG) or (svreg->typ = IR.VREGTYPE.IMM) ) then
 
-				'' longint?
-				if( sdsize = FB.INTEGERSIZE*2 ) then
-					hPrepOperand64( sname, svreg, src, aux )
+				'' signed?
+				if( irIsSigned( svreg->dtype ) ) then
 
-					emithPUSH aux
-					emithPUSH src
+					'' longint?
+					if( sdsize = FB.INTEGERSIZE*2 ) then
+						hPrepOperand64( sname, svreg, src, aux )
 
-				else
-					'' not an integer? make it
-					if( (svreg->typ = IR.VREGTYPE.REG) and (sdsize < FB.INTEGERSIZE) ) then
-						emitGetRegName( IR.DATATYPE.INTEGER, sdclass, svreg->reg, src )
+						emithPUSH aux
+						emithPUSH src
+
+					else
+						'' not an integer? make it
+						if( (svreg->typ = IR.VREGTYPE.REG) and (sdsize < FB.INTEGERSIZE) ) then
+							emitGetRegName( IR.DATATYPE.INTEGER, sdclass, svreg->reg, src )
+						end if
+
+						emithPUSH src
 					end if
 
-					emithPUSH src
-				end if
+					ostr = "fild "
+					ostr += dtypeTB(svreg->dtype).mname
+					ostr += " [esp]"
+					outp ostr
 
-				ostr = "fild "
-				ostr += dtypeTB(svreg->dtype).mname
-				ostr += " [esp]"
-				outp ostr
+					'' longint?
+					if( sdsize = FB.INTEGERSIZE*2 ) then
+						outp "add esp, 8"
+					else
+						outp "add esp, 4"
+					end if
 
-				'' longint?
-				if( sdsize = FB.INTEGERSIZE*2 ) then
-					outp "add esp, 8"
+				'' unsigned, try a bigger type..
 				else
-					outp "add esp, 4"
+
+					select case sdsize
+					'' ulongint? damn..
+					case FB.INTEGERSIZE*2
+
+					'' uint..
+					case FB.INTEGERSIZE
+						emithPUSH "0"
+						emithPUSH src
+						outp "fild qword ptr [esp]"
+						outp "add esp, 8"
+
+					'' ushort..
+					case else
+						if( svreg->typ <> IR.VREGTYPE.IMM ) then
+							emithPUSH "0"
+						end if
+
+						emithPUSH src
+						outp "fild dword ptr [esp]"
+
+						if( svreg->typ <> IR.VREGTYPE.IMM ) then
+							outp "add esp, 6"
+						else
+							outp "add esp, 4"
+						end if
+					end select
+
 				end if
 
+			'' not a reg or imm
 			else
-				ostr = "fild "
-				ostr += src
-				outp ostr
+
+				'' signed?
+				if( irIsSigned( svreg->dtype ) ) then
+
+					ostr = "fild "
+					ostr += src
+					outp ostr
+
+				'' unsigned, try a bigger type..
+				else
+					select case sdsize
+					'' ulongint? damn..
+					case FB.INTEGERSIZE*2
+                    	'' !!!WRITEME!!!
+					'' uint..
+					case FB.INTEGERSIZE
+						emithPUSH "0"
+						emithPUSH src
+						outp "fild qword ptr [esp]"
+						outp "add esp, 8"
+
+					'' ushort..
+					case else
+						emithPUSH "0"
+						emithPUSH src
+						outp "fild dword ptr [esp]"
+						outp "add esp, 6"
+					end select
+				end if
+
 			end if
 		end if
 	end if

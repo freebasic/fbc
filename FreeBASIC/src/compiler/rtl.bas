@@ -117,7 +117,9 @@ data "__moddi3","", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, 2, _
 data "__umoddi3","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 2, _
 					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
 					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
-
+'' fb_Dbl2ULongint ( byval x as double ) as ulongint
+data "__fixunsdfdi","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 1, _
+					 	FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ArrayRedim CDECL ( array() as ANY, byval elementlen as integer, _
 ''					     byval isvarlen as integer, byval preserve as integer, _
@@ -2750,6 +2752,25 @@ function rtlMathLongintMOD( byval dtype as integer, _
 
 end function
 
+'':::::
+function rtlMathFp2ULongint( byval expr as integer, _
+							 byval dtype as integer ) as integer static
+    dim proc as integer, f as FBSYMBOL ptr
+
+	rtlMathFp2ULongint = INVALID
+
+	f = ifuncTB(FB.RTL.DBL2ULONGINT)
+    proc = astNewFUNCT( f, symbGetType( f ) )
+
+    ''
+    if( astNewPARAM( proc, expr, dtype ) = INVALID ) then
+    	exit function
+    end if
+
+    rtlMathFp2ULongint = proc
+
+end function
+
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' console
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -5228,7 +5249,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as integer
 	dim procname as string
 	dim s as FBSYMBOL ptr
 	dim expr as integer, at as integer
-	
+
 	if( proc = NULL ) then
 		s = hAllocStringConst( "(??)", -1 )
 	else
@@ -5245,11 +5266,11 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as integer
 		end if
 		s = hAllocStringConst( procname, -1 )
 	end if
-	
+
 	expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
-	
+
 	hGetProcName = expr
-	
+
 end function
 
 '':::::
