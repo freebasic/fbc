@@ -851,6 +851,82 @@ sub astOptToShift( byval n as integer )
 end sub
 
 ''::::
+function astOptNullOp( byval n as integer ) static
+	dim l as integer, r as integer
+	dim v as integer, op as integer
+
+	if( n = INVALID ) then
+		return n
+	end if
+
+	'' convert 'a * 0'   to '0'
+	''         'a MOD 1' to '0'
+	''         'a * 1'   to 'a'
+	''         'a \ 1'   to 'a'
+	''         'a + 0'   to 'a'
+	''         'a - 0'   to 'a'
+	''         'a SHR 0' to 'a'
+	''         'a SHL 0' to 'a'
+	''         'a OR 0'  to 'a'
+	''         'a XOR 0' to 'a'
+	if( astTB(n).class = AST.NODECLASS.BOP ) then
+		op = astTB(n).op
+		l = astTB(n).l
+		r = astTB(n).r
+		if( astTB(r).defined ) then
+			if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.INTEGER ) then
+				if( irGetDataSize( astTB(r).dtype ) <= FB.INTEGERSIZE ) then
+					v = cint( astTB(r).value )
+					select case as const op
+					case IR.OP.MUL
+						if( v = 0 ) then
+							astDelTree l
+							return r
+						elseif( v = 1 ) then
+							astDel r
+							return l
+						end if
+					
+					case IR.OP.MOD
+						if( v = 1 ) then
+							astTB(r).value = 0
+							astDelTree l
+							return r
+						end if
+					
+					case IR.OP.INTDIV
+						if( v = 1 ) then
+							astDel r
+							return l
+						end if
+					
+					case IR.OP.ADD, IR.OP.SUB, IR.OP.SHR, IR.OP.SHL, IR.OP.OR, IR.OP.XOR
+						if( v = 0 ) then
+							astDel r
+							return l
+						end if
+					end select
+				end if
+		 	end if
+		end if
+	end if
+		
+	'' walk
+	l = astTB(n).l
+	if( l <> INVALID ) then
+		astTB(n).l = astOptNullOp( l )
+	end if
+
+	r = astTB(n).r
+	if( r <> INVALID ) then
+		astTB(n).r = astOptNullOp( r )
+	end if
+
+	return n
+
+end function
+
+''::::
 function astOptStrAssignament( byval n as integer, _
 							   byval l as integer, _
 							   byval r as integer ) as integer static
@@ -1858,6 +1934,8 @@ private function astOptimize( byval n as integer ) as integer
 	astOptConstIDX( n )
 
 	astOptToShift( n )
+	
+	n = astOptNullOp( n )
 
 	return n
 
