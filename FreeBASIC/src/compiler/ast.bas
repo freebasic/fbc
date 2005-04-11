@@ -2377,7 +2377,10 @@ function astNewBOP( byval op as integer, _
 							if( irGetDataSize( dt2 ) < FB.INTEGERSIZE*2 ) then
 								select case astTB(r).class
 								case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
-									doconv = FALSE
+									'' can't be unsigned either
+									if( irIsSigned( dt2 ) ) then
+										doconv = FALSE
+									end if
 								end select
 							end if
 						end if
@@ -2795,12 +2798,17 @@ function astLoadCONST( byval n as integer ) as integer static
 		return irAllocVRVAR( dtype, s, s->ofs )
 
 	else
+		select case as const dtype
 		'' longints?
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			return irAllocVRIMM64( dtype, astTB(n).value64 )
-		else
+
+		case IR.DATATYPE.UINT
+		    return irAllocVRIMM( dtype, cuint( astTB(n).value ) )
+
+		case else
 			return irAllocVRIMM( dtype, cint( astTB(n).value ) )
-		end if
+		end select
 
 	end if
 
@@ -3345,6 +3353,14 @@ function astNewASSIGN( byval l as integer, _
 
 	end if
 
+	'' convert types if needed
+	if( dt1 <> dt2 ) then
+		'' don't convert strings
+		if( dc2 <> IR.DATACLASS.STRING ) then
+			r = astNewCONV( INVALID, dt1, r )
+		end if
+	end if
+
 	'' alloc new node
 	n = astNew( AST.NODECLASS.ASSIGN, dt1 )
 
@@ -3495,8 +3511,8 @@ end sub
 function astNewCONV( byval op as integer, _
 					 byval dtype as integer, _
 					 byval l as integer ) as integer static
-    dim n as integer
-    dim dclass as integer
+    dim as integer n
+    dim as integer dclass, ldtype
 
 	astNewCONV = INVALID
 
@@ -3504,7 +3520,9 @@ function astNewCONV( byval op as integer, _
     	exit function
     end if
 
-    dclass = irGetDataClass( astTB(l).dtype )
+    ldtype = astTB(l).dtype
+
+    dclass = irGetDataClass( ldtype )
 
     '' string? can't operate
     if( dclass = IR.DATACLASS.STRING ) then
@@ -3512,7 +3530,7 @@ function astNewCONV( byval op as integer, _
     end if
 
 	'' UDT's? ditto
-	if( astTB(l).dtype = IR.DATATYPE.USERDEF ) then
+	if( ldtype = IR.DATATYPE.USERDEF ) then
 		exit function
     end if
 
@@ -3525,9 +3543,9 @@ function astNewCONV( byval op as integer, _
 		end if
 
 		if( op = IR.OP.TOSIGNED ) then
-			astTB(l).dtype = irGetSignedType( astTB(l).dtype )
+			astTB(l).dtype = irGetSignedType( ldtype )
 		else
-			astTB(l).dtype = irGetUnsignedType( astTB(l).dtype )
+			astTB(l).dtype = irGetUnsignedType( ldtype )
 		end if
 
 		astNewCONV = l
@@ -3537,7 +3555,7 @@ function astNewCONV( byval op as integer, _
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
 	if( (dclass = irGetDataClass( dtype )) and _
-		(irGetDataSize( astTB(l).dtype ) = irGetDataSize( dtype )) ) then
+		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
 
 		astTB(l).dtype = dtype
 
@@ -3558,6 +3576,14 @@ function astNewCONV( byval op as integer, _
 
 		astNewCONV = l
 		exit function
+	end if
+
+	'' handle special cases..
+	if( dtype = IR.DATATYPE.ULONGINT ) then
+		if( dclass = IR.DATACLASS.FPOINT ) then
+			astNewCONV = rtlMathFp2ULongint( l, ldtype )
+			exit function
+		end if
 	end if
 
 	'' alloc new node

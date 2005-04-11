@@ -1,4 +1,11 @@
 
+[ ] the double "value" field can't be used with unsigned int's by AST, all CONST nodes 
+    handling will have to be modified, adding astGetValueDBL and astNewCONSTDBL just for 
+    floats, etc, etc, ...
+
+[ ] relational ops plus div, mod and mul must be done differently for unsigned and 
+    signed integers constants
+
 -- BASS/BASSMod definition files, stdcall w/o @'s at the DLL..
 
 -- delete symbGetLen2 from rtl.bas and convert astGetValue64 from ast.bas to a macro
