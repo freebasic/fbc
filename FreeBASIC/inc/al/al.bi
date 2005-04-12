@@ -117,92 +117,92 @@
 
 
    ' State Management
-   dim alEnable as sub (byval capability as ALenum)
-   dim alDisable as sub (byval capability as ALenum)
-   dim alIsEnabled as function (byval capability as ALenum)
+   type alEnable as sub cdecl (byval capability as ALenum)
+   type alDisable as sub cdecl (byval capability as ALenum)
+   type alIsEnabled as function cdecl (byval capability as ALenum)
    
    ' Application Preferences for Driver Performance Choices
-   dim alHint as sub (target as ALenum, mode as ALenum)
+   type alHint as sub cdecl (target as ALenum, mode as ALenum)
    
    ' State Retrieval
-   dim alGetBoolean as function (byval param as ALenum)
-   dim alGetInteger as function (byval param as ALenum)
-   dim alGetFloat as function (byval param as ALenum)
-   dim alGetDouble as function (byval param as ALenum)
-   dim alGetBooleanv as sub (byval param as ALenum, byval dst as ALboolean ptr)
-   dim alGetIntegerv as sub (byval param as ALenum, byval dst as ALint ptr)
-   dim alGetFloatv as sub (byval param as ALenum, byval dst as ALfloat ptr)
-   dim alGetDoublev as sub (byval param as ALenum, byval dst as ALfloat ptr)
-   dim alGetString as function (byval param as ALenum)
+   type alGetBoolean as function cdecl (byval param as ALenum)
+   type alGetInteger as function cdecl (byval param as ALenum)
+   type alGetFloat as function cdecl (byval param as ALenum)
+   type alGetDouble as function cdecl (byval param as ALenum)
+   type alGetBooleanv as sub cdecl (byval param as ALenum, byval dst as ALboolean ptr)
+   type alGetIntegerv as sub cdecl (byval param as ALenum, byval dst as ALint ptr)
+   type alGetFloatv as sub cdecl (byval param as ALenum, byval dst as ALfloat ptr)
+   type alGetDoublev as sub cdecl (byval param as ALenum, byval dst as ALfloat ptr)
+   type alGetString as function cdecl (byval param as ALenum)
    
    ' Error Support
-   dim alGetError as function ()
+   type alGetError as function cdecl ()
    
    ' Extension Support
-   dim alIsExtensionPresent as function (byval fname as ALubyte ptr)
-   dim alGetProcAddress as function (byval fname as ALubyte ptr)
-   dim alGetEnumValue as function (byval ename as ALubyte ptr)
+   type alIsExtensionPresent as function cdecl (byval fname as ALubyte ptr)
+   type alGetProcAddress as function cdecl (byval fname as ALubyte ptr)
+   type alGetEnumValue as function cdecl (byval ename as ALubyte ptr)
    
    
    ' Listener Functions
-   dim alListeneri as sub (byval param as ALenum, byval value as ALint)
-   dim alListenerf as sub (byval param as ALenum, byval value as ALfloat)
-   dim alListener3f as sub (byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
-   dim alListenerfv as sub (byval param as ALenum, byval values as ALfloat ptr)
+   type alListeneri as sub cdecl (byval param as ALenum, byval value as ALint)
+   type alListenerf as sub cdecl (byval param as ALenum, byval value as ALfloat)
+   type alListener3f as sub cdecl (byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
+   type alListenerfv as sub cdecl (byval param as ALenum, byval values as ALfloat ptr)
    
-   dim alGetListeneri as sub (byval param as ALenum, byval value as ALint ptr)
-   dim alGetListenerf as sub (byval param as ALenum, byval value as ALfloat ptr)
-   dim alGetListener3f as sub (byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
-   dim alGetListenerfv as sub (byval param as ALenum, byval values as ALfloat ptr)
+   type alGetListeneri as sub cdecl (byval param as ALenum, byval value as ALint ptr)
+   type alGetListenerf as sub cdecl (byval param as ALenum, byval value as ALfloat ptr)
+   type alGetListener3f as sub cdecl (byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
+   type alGetListenerfv as sub cdecl (byval param as ALenum, byval values as ALfloat ptr)
    
    
    ' Source Functions
-   dim alGenSources as sub (byval n as ALsizei, byval sources as ALuint ptr)
-   dim alDeleteSources as sub (byval n as ALsizei, byval source as ALuint ptr)
+   type alGenSources as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
+   type alDeleteSources as sub cdecl (byval n as ALsizei, byval source as ALuint ptr)
    
-   dim alIsSource as function (byval id as ALuint)
+   type alIsSource as function cdecl (byval id as ALuint)
    
-   dim alSourcei as sub (byval source as ALuint, byval param as ALenum, byval value as ALint)
-   dim alSourcef as sub (byval source as ALuint, byval param as ALenum, byval value as ALfloat)
-   dim alSource3f as sub (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
-   dim alSourcefv as sub (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
+   type alSourcei as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALint)
+   type alSourcef as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALfloat)
+   type alSource3f as sub cdecl (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
+   type alSourcefv as sub cdecl (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
    
-   dim alGetSourcei as sub (byval source as ALuint, byval param as ALenum, byval value as ALint ptr)
-   dim alGetSourcef as sub (byval source as ALuint, byval param as ALenum, byval value as ALfloat ptr)
-   dim alGetSource3f as sub (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
-   dim alGetSourcefv as sub (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
+   type alGetSourcei as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALint ptr)
+   type alGetSourcef as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALfloat ptr)
+   type alGetSource3f as sub cdecl (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
+   type alGetSourcefv as sub cdecl (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
    
-   dim alSourcePlayv as sub (byval n as ALsizei, byval sources as ALuint ptr)
-   dim alSourcePausev as sub (byval n as ALsizei, byval sources as ALuint ptr)
-   dim alSourceStopv as sub (byval n as ALsizei, byval sources as ALuint ptr)
-   dim alSourceRewindv as sub (byval n as ALsizei, byval sources as ALuint ptr)
+   type alSourcePlayv as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
+   type alSourcePausev as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
+   type alSourceStopv as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
+   type alSourceRewindv as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
    
-   dim alSourcePlay as sub (byval source as ALuint)
-   dim alSourcePause as sub (byval source as ALuint)
-   dim alSourceStop as sub (byval source as ALuint)
-   dim alSourceRewind as sub (byval source as ALuint)
+   type alSourcePlay as sub cdecl (byval source as ALuint)
+   type alSourcePause as sub cdecl (byval source as ALuint)
+   type alSourceStop as sub cdecl (byval source as ALuint)
+   type alSourceRewind as sub cdecl (byval source as ALuint)
    
    
    ' Buffer Functions
-   dim alGenBuffers as sub (byval n as ALsizei, byval buffers as ALuint ptr)
-   dim alDeleteBuffers as sub (byval n as ALsizei, byval buffers as ALuint ptr)
-   dim alIsBuffer as function (byval buffer as ALuint)
+   type alGenBuffers as sub cdecl (byval n as ALsizei, byval buffers as ALuint ptr)
+   type alDeleteBuffers as sub cdecl (byval n as ALsizei, byval buffers as ALuint ptr)
+   type alIsBuffer as function cdecl (byval buffer as ALuint)
    
-   dim alBufferData as sub (byval buffer as ALuint, byval format as ALenum, byval dat as any ptr, byval size as ALsizei, byval freq as ALsizei)
+   type alBufferData as sub cdecl (byval buffer as ALuint, byval format as ALenum, byval dat as any ptr, byval size as ALsizei, byval freq as ALsizei)
    
-   dim alGetBufferi as sub (byval buffer as ALuint, byval param as ALenum, byval value as ALint ptr)
-   dim alGetBufferf as sub (byval buffer as ALuint, byval param as ALenum, byval value as ALfloat ptr)
+   type alGetBufferi as sub cdecl (byval buffer as ALuint, byval param as ALenum, byval value as ALint ptr)
+   type alGetBufferf as sub cdecl (byval buffer as ALuint, byval param as ALenum, byval value as ALfloat ptr)
    
    
    ' Queue Functions
-   dim alSourceQueueBuffers as sub (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
-   dim alSourceUnqueueBuffers as sub (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
+   type alSourceQueueBuffers as sub cdecl (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
+   type alSourceUnqueueBuffers as sub cdecl (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
    
    
    ' Tweaker Functions
-   dim alDistanceModel as sub (byval value as ALenum)
-   dim alDopplerFactor as sub (byval value as ALfloat)
-   dim alDopplerVelocity as sub (byval value as ALfloat)
+   type alDistanceModel as sub cdecl (byval value as ALenum)
+   type alDopplerFactor as sub cdecl (byval value as ALfloat)
+   type alDopplerVelocity as sub cdecl (byval value as ALfloat)
    
 
 #endif      ' ndef AL_NO_PROTOTYPES

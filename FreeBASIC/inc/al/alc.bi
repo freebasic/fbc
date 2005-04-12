@@ -62,28 +62,28 @@ type ALCcontext  	 as ALCcontext_struct
 
 
    ' Device Functions
-   dim alcGetString as function (byval device as ALCdevice ptr, byval param as ALCenum)
-   dim alcGetIntegerv as sub (BYVAL device as ALCdevice ptr, byval param as ALCenum, byval size as ALCsizei, byval dat as ALCint ptr)
+   type alcGetString as function cdecl (byval device as ALCdevice ptr, byval param as ALCenum)
+   type alcGetIntegerv as sub cdecl (BYVAL device as ALCdevice ptr, byval param as ALCenum, byval size as ALCsizei, byval dat as ALCint ptr)
 
-   dim alcOpenDevice as function (byval deviceName as ALCubyte ptr)
-   dim alcCloseDevice as sub (byval device as ALCdevice ptr)
+   type alcOpenDevice as function cdecl (byval deviceName as ALCubyte ptr)
+   type alcCloseDevice as sub cdecl (byval device as ALCdevice ptr)
    
    ' Context Functions
-   dim alcCreateContext as function (byval device as ALCdevice ptr, byval attrList as ALCint ptr)
-   dim alcMakeContextCurrent as function (byval context as ALCcontext ptr)
-   dim alcProcessContext as sub (byval context as ALCcontext ptr)
-   dim alcGetCurrentContext as function ()
-   dim alcGetContextsDevice as function (byval context as ALCcontext ptr)
-   dim alcSuspendContext as sub (byval context as ALCcontext ptr)
-   dim alcDestroyContext as sub (byval context as ALCcontext ptr)
+   type alcCreateContext as function cdecl (byval device as ALCdevice ptr, byval attrList as ALCint ptr)
+   type alcMakeContextCurrent as function cdecl (byval context as ALCcontext ptr)
+   type alcProcessContext as sub cdecl (byval context as ALCcontext ptr)
+   type alcGetCurrentContext as function cdecl ()
+   type alcGetContextsDevice as function cdecl (byval context as ALCcontext ptr)
+   type alcSuspendContext as sub cdecl (byval context as ALCcontext ptr)
+   type alcDestroyContext as sub cdecl (byval context as ALCcontext ptr)
    
    ' Error Functions
-   dim alcGetError as function (byval device as ALCdevice ptr)
+   type alcGetError as function cdecl (byval device as ALCdevice ptr)
    
    ' Driver Extension Functions
-   dim alcIsExtensionPresent as function (byval device as ALCdevice ptr, byval extName as ALCubyte ptr)
-   dim alcGetProcAddress as function (byval device as ALCdevice ptr, byval funcName as ALCubyte ptr)
-   dim alcGetEnumValue as function (byval device as ALCdevice ptr, byval enumName as ALCubyte ptr)
+   type alcIsExtensionPresent as function cdecl (byval device as ALCdevice ptr, byval extName as ALCubyte ptr)
+   type alcGetProcAddress as function cdecl (byval device as ALCdevice ptr, byval funcName as ALCubyte ptr)
+   type alcGetEnumValue as function cdecl (byval device as ALCdevice ptr, byval enumName as ALCubyte ptr)
 
 
 #endif      ' ndef ALC_NO_PROTOTYPES
