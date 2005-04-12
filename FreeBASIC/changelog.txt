@@ -90,6 +90,7 @@ Version 0.13 Beta:
 - profiling: use the -profile commandline option to enable function profiling code generation. Running a profiled
   program will generate the profile.txt file on exit, containing timing results for all function calls (lillo)
 - algebraic identities optimizations at ast (lillo)
+- include file for the OpenGL extensions, ported by Bryan Stoeberl (v1c)
 
 [fixed]
 - IMPORTANT: fixed a bug with horizontal/vertical styled LINE drawing; this means the GfxPrint routine as was reported

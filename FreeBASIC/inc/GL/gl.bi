@@ -819,7 +819,7 @@ declare sub glPushClientAttrib alias "glPushClientAttrib" (byval mask as GLbitfi
 declare sub glPopClientAttrib alias "glPopClientAttrib" ()
 declare function glRenderMode alias "glRenderMode" (byval mode as GLenum) as GLint
 declare function glGetError alias "glGetError" () as GLenum
-declare function glGetString alias "glGetString" (byval name as GLenum) as GLubyte ptr
+declare function glGetString alias "glGetString" (byval name as GLenum) as zstring ptr
 declare sub glFinish alias "glFinish" ()
 declare sub glFlush alias "glFlush" ()
 declare sub glHint alias "glHint" (byval target as GLenum, byval mode as GLenum)

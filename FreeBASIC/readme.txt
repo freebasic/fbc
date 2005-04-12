@@ -153,7 +153,8 @@ Most Important Features:
       3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
     
     - OpenGL: portable library for developing interactive 2D and 3D graphics games 
-      and applications (including support for frameworks such as GLUT and GLFW)
+      and applications (including support for frameworks such as GLUT and GLFW, plus
+      the GL Extensions)
 
     - Allegro: game programming library (graphics, sounds, player input, etc)
     
@@ -486,6 +487,10 @@ Credits (in alphabetic order):
     - Added profiling support.
     - Added build-in threads and dynlib support, made the rtlib thread-safe, 
       besides many other runtime lib and compiler improvements.
+
+  o Bryan Stoeberl (b_stoeberl@yahoo.com):
+    - Translated the OpenGL Extensions header.
+    - Wrote the glext example at the examples/GL dir.
 
   o Chris Davies (c.g.davies@gmail.com):
     - Translated the OpenAL headers.
