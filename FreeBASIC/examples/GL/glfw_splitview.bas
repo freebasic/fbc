@@ -448,15 +448,15 @@ end sub
 
     do
         if( doredraw ) then
+        	doredraw = FALSE
+        	
         	'' Draw all views
         	DrawAllViews( )
-
-        	doredraw = FALSE
         	
         else
         
         	'' Idle process
-        	glfwSleep( 0.05 )
+        	glfwSleep( 0.025 )
         	
         end if
 

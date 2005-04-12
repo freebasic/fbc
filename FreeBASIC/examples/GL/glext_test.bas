@@ -26,6 +26,7 @@ type CONTEXT
 	height		as integer
 	updviewport	as integer
 	mouse		as MOUSECTX
+	redraw		as integer
 end type
 
 const WIN_WIDTH 	= 400
@@ -38,7 +39,7 @@ declare sub shutdown ()
 ''
 '' globals	
 ''
-	dim shared ctx as CONTEXT = ( WIN_WIDTH, WIN_HEIGHT, TRUE, (WIN_WIDTH\2, WIN_HEIGHT\2) )
+	dim shared ctx as CONTEXT = ( WIN_WIDTH, WIN_HEIGHT, TRUE, (WIN_WIDTH\2, WIN_HEIGHT\2), TRUE )
 	
 	dim shared TexID(1) as uinteger		'our Texture Objects
 
@@ -55,6 +56,7 @@ sub windowSizeCB GLFWCALL( byval w as integer, byval h as integer )
     ctx.updviewport = TRUE
     ctx.mouse.xpos = w \ 2
     ctx.mouse.ypos = h \ 2
+    ctx.redraw = TRUE
     
 end sub
 
@@ -63,6 +65,7 @@ sub mousePosCB GLFWCALL ( byval x as integer, byval y as integer )
 
 	ctx.mouse.xpos = x
 	ctx.mouse.ypos = y
+	ctx.redraw = TRUE
 
 end sub
 
@@ -225,8 +228,8 @@ sub renderScene
 	''
 	glClear GL_COLOR_BUFFER_BIT
 	glPushMatrix
-		glTranslatef 1.0 - ctx.mouse.xpos / ctx.width, _
-					 ctx.mouse.ypos / ctx.height, _
+		glTranslatef 1.0 - (ctx.mouse.xpos*2) / ctx.width, _
+					 (ctx.mouse.ypos*2) / ctx.height, _
 					 -5.0	'set the quad back 5 units
          
 		glBegin GL_QUADS
@@ -261,8 +264,18 @@ sub main
     ''
     do
     
-    	'' render the scene
-    	renderScene( )
+    	if( ctx.redraw ) then
+    		ctx.redraw = FALSE
+    		
+    		'' render the scene
+    		renderScene( )
+    	
+        else
+        
+        	'' Idle process
+        	glfwSleep( 0.05 )
+        	
+        end if
 
         '' Swap buffers
         glfwSwapBuffers( )
