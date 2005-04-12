@@ -50,10 +50,10 @@ end function
 
 '':::::
 function func ( ) as sometype ptr
-	static st as sometype = ( 4, 5 )
+	static st as sometype = ( 4, 5, @bytefunc, @strfunc )
 	
-	st.bytefunc = @bytefunc
-	st.strfunc  = @strfunc
+	'st.bytefunc = @bytefunc
+	'st.strfunc  = @strfunc
 	
 	function = @st
 
@@ -61,9 +61,9 @@ end function
 
 '':::::
 function foo ( ) as bar ptr
-	static bar as bar = ( 1, 2, 3 )
+	static bar as bar = ( 1, 2, 3, @func )
 	
-	bar.func = @func
+	'bar.func = @func
 	
 	function = @bar
 

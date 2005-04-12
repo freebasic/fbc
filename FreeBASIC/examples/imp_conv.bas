@@ -12,6 +12,8 @@
 	dim si as integer
 	dim sl as longint
 	
+	dim d as double
+	
 	''------------------
 	ub = 255
 	
@@ -64,4 +66,17 @@
 	
 	print si, sl
 
+	''------------------
+	d = (2 ^ 32) - 1
+	ui = d
+	d = ui
+	
+	print ui, d,
+	
+	d = -1
+	si = d
+	d = si
+	
+	print si, d
+	
 	sleep
