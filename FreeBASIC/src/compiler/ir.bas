@@ -933,10 +933,18 @@ sub irEmitVARINIEND( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irEmitVARINI( byval dtype as integer, _
-				  byval value as double ) static
+sub irEmitVARINIi( byval dtype as integer, _
+				   byval value as integer ) static
 
-	emitVARINI( dtype, value )
+	emitVARINIi( dtype, value )
+
+end sub
+
+'':::::
+sub irEmitVARINIf( byval dtype as integer, _
+				   byval value as double ) static
+
+	emitVARINIf( dtype, value )
 
 end sub
 
@@ -963,7 +971,7 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
-		emitVARINI( IR.DATATYPE.BYTE, 0 )
+		emitVARINIi( IR.DATATYPE.BYTE, 0 )
 		exit sub
 	end if
 

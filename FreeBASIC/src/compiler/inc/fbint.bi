@@ -535,7 +535,8 @@ type FBSYMBOL_ as FBSYMBOL
 ''
 union FBVALUE
 	valuestr		as FBSYMBOL_ ptr
-	value			as double
+	valuei			as integer
+	valuef			as double
 	value64			as longint
 end union
 

@@ -100,20 +100,18 @@ type IIFNode
 	falselabel 		as FBSYMBOL ptr
 end type
 
+''
 type ASTNODE
 	prv				as integer						'' 'pointers' used by the allocator,
 	nxt				as integer						'' /  (can't be swapped/copied!)
 
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
 
-	dtype			as integer						'' BYTE, INTEGER, SINGLE, DOUBLE, USERDEF, etc
+	dtype			as integer
 	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF
 
 	defined 		as integer						'' only true for constants
-	union
-		value		as double						'' /
-		value64		as longint
-	end union
+	v				as FBVALUE
 
 	op				as integer						'' f/ BOP, UOP, ... nodes
 	allocres 		as integer						'' /
@@ -187,7 +185,10 @@ declare function 	astNewUOP			( byval op as integer, _
 
 declare function 	astLoadUOP			( byval n as integer ) as integer
 
-declare function 	astNewCONST			( byval value as double, _
+declare function 	astNewCONSTi		( byval value as integer, _
+										  byval dtype as integer ) as integer
+
+declare function 	astNewCONSTf		( byval value as double, _
 										  byval dtype as integer ) as integer
 
 declare function 	astNewCONST64		( byval value as longint, _
@@ -294,9 +295,11 @@ common shared astTB( ) as ASTNODE
 
 #define astIsOFFSET(n) (astTB(n).class = AST.NODECLASS.OFFSET)
 
-#define astGetValue(n) iif( astTB(n).defined, astTB(n).value, 0.0# )
+#define astGetValuei(n) iif( astTB(n).defined, astTB(n).v.valuei, 0 )
 
-''''''''#define astGetValue64(n) iif( astTB(n).defined, astTB(n).value64, 0LL )
+#define astGetValuef(n) iif( astTB(n).defined, astTB(n).v.valuef, 0.0# )
+
+#define astGetValue64(n) iif( astTB(n).defined, astTB(n).v.value64, 0LL )
 
 #define astGetDataType(n) iif( n <> INVALID, astTB(n).dtype, INVALID )
 
@@ -307,7 +310,3 @@ common shared astTB( ) as ASTNODE
 #define astGetDataSize(n) iif( n <> INVALID, irGetDataSize( astTB(n).dtype ), INVALID )
 
 #define astSetDataType(n,t) if( n <> INVALID ) then astTB(n).dtype = t end if
-
-
-
-declare function astGetValue64(byval n as integer) as longint

@@ -88,7 +88,7 @@ function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr a
         '' next
         d = d->r
 
-    	constexpr = astNewCONST( (d->upper - d->lower)+1, IR.DATATYPE.INTEGER )
+    	constexpr = astNewCONSTi( (d->upper - d->lower)+1, IR.DATATYPE.INTEGER )
     	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
 	loop
 
@@ -102,13 +102,13 @@ function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr a
 
 	'' times length
 	lgt = symbGetLen( elm )
-	constexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
 	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
 
     '' plus difference
     diff = symbGetArrayDiff( elm )
     if( diff <> 0 ) then
-    	constexpr = astNewCONST( diff, IR.DATATYPE.INTEGER )
+    	constexpr = astNewCONSTi( diff, IR.DATATYPE.INTEGER )
     	expr = astNewBOP( IR.OP.ADD, expr, constexpr )
     end if
 
@@ -171,7 +171,7 @@ function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL pt
     		end if
 
     		if( ofs <> 0 ) then
-    			constexpr = astNewCONST( ofs, IR.DATATYPE.INTEGER )
+    			constexpr = astNewCONSTi( ofs, IR.DATATYPE.INTEGER )
     			if( idxexpr = INVALID ) then
     				idxexpr = constexpr
     			else
@@ -334,7 +334,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 				exit function
 			end if
 
-			idxexpr = astNewBOP( IR.OP.MUL, idxexpr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
+			idxexpr = astNewBOP( IR.OP.MUL, idxexpr, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) )
 
 		case else
 			if( not isderef ) then
@@ -544,7 +544,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 
 	'' times length
 	lgt = symbGetLen( sym )
-	constexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
 	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
 
     '' check dimensions, if not common
@@ -619,7 +619,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 
 	'' times length
 	lgt = symbGetLen( sym )
-	constexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
 	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
 
    	'' plus dsc->data (= ptr + diff)
@@ -702,7 +702,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
         '' next
         d = d->r
 
-    	constexpr = astNewCONST( (d->upper - d->lower) + 1, IR.DATATYPE.INTEGER )
+    	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, IR.DATATYPE.INTEGER )
     	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
 	loop
 
@@ -714,7 +714,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 
 	'' times length (this will be optimized if len < 10 and there's no arrays on following fields)
 	lgt = symbGetLen( s )
-	constexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
 	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
 
 	idxexpr = expr

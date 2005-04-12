@@ -727,7 +727,7 @@ function cParentDeref( derefexpr as integer, sym as FBSYMBOL ptr, elm as FBSYMBO
 			exit function
 		end if
 
-		expr = astNewBOP( IR.OP.MUL, expr, astNewCONST( lgt, IR.DATATYPE.INTEGER ) )
+		expr = astNewBOP( IR.OP.MUL, expr, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) )
 
 	end if
 
@@ -1103,11 +1103,14 @@ function cConstant( constexpr as integer )
 			constexpr = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
 
   		else
-  			if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+  			select case as const typ
+  			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
   				constexpr = astNewCONST64( val64( text ), typ )
-  			else
-  				constexpr = astNewCONST( val( text ), typ )
-  			end if
+  			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+  				constexpr = astNewCONSTf( val( text ), typ )
+  			case else
+  				constexpr = astNewCONSTi( val( text ), typ )
+  			end select
   		end if
 
   		lexSkipToken
@@ -1131,11 +1134,16 @@ function cLiteral( litexpr as integer )
 	select case lexCurrentTokenClass
 	case FB.TKCLASS.NUMLITERAL
   		typ = lexTokenType
-  		if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+  		select case as const typ
+  		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			litexpr = astNewCONST64( val64( lexTokenText ), typ )
-		else
-			litexpr = astNewCONST( val( lexTokenText ), typ )
-  		end if
+  		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			litexpr = astNewCONSTf( val( lexTokenText ), typ )
+		case IR.DATATYPE.UINT
+			litexpr = astNewCONSTi( cuint( val( lexTokenText ) ), typ )
+		case else
+			litexpr = astNewCONSTi( cint( val( lexTokenText ) ), typ )
+  		end select
 
   		lexSkipToken
   		cLiteral = TRUE
@@ -1199,8 +1207,11 @@ function cFuncParam( byval proc as FBSYMBOL ptr, _
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			paramexpr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
 
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			paramexpr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), typ )
+
 		case else
-			paramexpr = astNewCONST( symbGetArgOptval( proc, arg ), typ )
+			paramexpr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), typ )
 		end select
 
 	else

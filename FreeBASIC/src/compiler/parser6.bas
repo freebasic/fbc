@@ -301,7 +301,7 @@ function cMidStmt
 				exit function
 			end if
 		else
-			expr3 = astNewCONST( -1, IR.DATATYPE.INTEGER )
+			expr3 = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
 		end if
 
 		if( not hMatch( CHAR_RPRNT ) ) then
@@ -499,12 +499,15 @@ function cDataStmt
 						exit function
 					end if
 
-  					typ = astGetDataType( expr )
-  					if( (typ = IR.DATATYPE.LONGINT) or (typ = IR.DATATYPE.ULONGINT) ) then
+  					select case as const astGetDataType( expr )
+  					case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
   						littext = str$( astGetValue64( expr ) )
-  					else
-  						littext = str$( astGetValue( expr ) )
-  					end if
+  					case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+  						littext = str$( astGetValueF( expr ) )
+  					case else
+  						littext = str$( astGetValueI( expr ) )
+  					end select
+
   					litlen = len( littext )
 
   				end if
@@ -560,7 +563,7 @@ function cPrintStmt
 		end if
 
     else
-    	filexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	filexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 
 	'' (USING Expression{str} ';')?
@@ -712,7 +715,7 @@ function cWriteStmt
 		end if
 
     else
-    	filexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	filexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 
     '' (Expression? "," )*
@@ -943,8 +946,8 @@ function cViewStmt
 		end if
 
 	else
-		expr1 = astNewCONST( 0, IR.DATATYPE.INTEGER )
-		expr2 = astNewCONST( 0, IR.DATATYPE.INTEGER )
+		expr1 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+		expr2 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 
     cViewStmt = rtlConsoleView( expr1, expr2 )
@@ -1044,7 +1047,7 @@ private function hFileClose( byval isfunc as integer ) as integer
 
     	if( not cExpression( filenum ) ) then
 			if( cnt = 0 ) then
-				filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
+				filenum = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 			else
 				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 				exit function
@@ -1235,7 +1238,7 @@ private function hFileOpen( byval isfunc as integer ) as integer
 		fmode = FB.FILE.MODE.RANDOM
 	end if
 
-	fmode = astNewCONST( fmode, IR.DATATYPE.INTEGER )
+	fmode = astNewCONSTi( fmode, IR.DATATYPE.INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -1247,17 +1250,17 @@ private function hFileOpen( byval isfunc as integer ) as integer
 		select case lexCurrentToken
 		case FB.TK.WRITE
 			lexSkipToken
-			faccess = astNewCONST( FB.FILE.ACCESS.WRITE, IR.DATATYPE.INTEGER )
+			faccess = astNewCONSTi( FB.FILE.ACCESS.WRITE, IR.DATATYPE.INTEGER )
 		case FB.TK.READ
 			lexSkipToken
 			if( hMatch( FB.TK.WRITE ) ) then
-				faccess = astNewCONST( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
+				faccess = astNewCONSTi( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
 			else
-				faccess = astNewCONST( FB.FILE.ACCESS.READ, IR.DATATYPE.INTEGER )
+				faccess = astNewCONSTi( FB.FILE.ACCESS.READ, IR.DATATYPE.INTEGER )
 			end if
 		end select
 	else
-		faccess = astNewCONST( FB.FILE.ACCESS.ANY, IR.DATATYPE.INTEGER )
+		faccess = astNewCONSTi( FB.FILE.ACCESS.ANY, IR.DATATYPE.INTEGER )
 	end if
 
 	if( isfunc ) then
@@ -1267,22 +1270,22 @@ private function hFileOpen( byval isfunc as integer ) as integer
 
 	'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
 	if( hMatch( FB.TK.SHARED ) ) then
-		flock = astNewCONST( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
+		flock = astNewCONSTi( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
 	elseif( hMatch( FB.TK.LOCK ) ) then
 		select case lexCurrentToken
 		case FB.TK.WRITE
 			lexSkipToken
-			flock = astNewCONST( FB.FILE.LOCK.WRITE, IR.DATATYPE.INTEGER )
+			flock = astNewCONSTi( FB.FILE.LOCK.WRITE, IR.DATATYPE.INTEGER )
 		case FB.TK.READ
 			lexSkipToken
 			if( hMatch( FB.TK.WRITE ) ) then
-				flock = astNewCONST( FB.FILE.LOCK.READWRITE, IR.DATATYPE.INTEGER )
+				flock = astNewCONSTi( FB.FILE.LOCK.READWRITE, IR.DATATYPE.INTEGER )
 			else
-				flock = astNewCONST( FB.FILE.LOCK.READ, IR.DATATYPE.INTEGER )
+				flock = astNewCONSTi( FB.FILE.LOCK.READ, IR.DATATYPE.INTEGER )
 			end if
 		end select
 	else
-		flock = astNewCONST( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
+		flock = astNewCONSTi( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
 	end if
 
 	if( isfunc ) then
@@ -1319,7 +1322,7 @@ private function hFileOpen( byval isfunc as integer ) as integer
 			exit function
 		end if
 	else
-		flen = astNewCONST( 0, IR.DATATYPE.INTEGER )
+		flen = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 
 	if( isfunc ) then
@@ -1434,7 +1437,7 @@ function cFileStmt
 				exit function
 			end if
 		else
-			expr2 = astNewCONST( 0, IR.DATATYPE.INTEGER )
+			expr2 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 		end if
 
 		cFileStmt = rtlFileLock( islock, filenum, expr1, expr2 )
@@ -1504,19 +1507,19 @@ function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
 
 	'' < 1?
 	expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-					  astNewCONST( 1, IR.DATATYPE.UINT ), exitlabel, FALSE )
+					  astNewCONSTi( 1, IR.DATATYPE.UINT ), exitlabel, FALSE )
 	astFlush( expr )
 
 	'' > labels?
 	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-					  astNewCONST( l, IR.DATATYPE.UINT ), exitlabel, FALSE )
+					  astNewCONSTi( l, IR.DATATYPE.UINT ), exitlabel, FALSE )
 	astFlush( expr )
 
     '' jump to table[idx]
     tbsym = hSelConstAllocTbSym( )
 
 	idxexpr = astNewBOP( IR.OP.MUL, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-    				  			    astNewCONST( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
+    				  			    astNewCONSTi( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
 
     expr = astNewIDX( astNewVAR( tbsym, NULL, -1*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
     				  IR.DATATYPE.UINT, NULL )
@@ -1624,7 +1627,7 @@ function cOnStmt
 			rtlErrorSetHandler expr, (islocal = TRUE)
 
 		else
-        	rtlErrorSetHandler astNewCONST( NULL, IR.DATATYPE.UINT ), (islocal = TRUE)
+        	rtlErrorSetHandler astNewCONSTi( NULL, IR.DATATYPE.UINT ), (islocal = TRUE)
 		end if
 
 		cOnStmt = TRUE
@@ -1801,7 +1804,7 @@ function cArrayFunct( funcexpr as integer )
 				exit function
 			end if
 		else
-			expr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+			expr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 		end if
 
 		'' ')'
@@ -1821,7 +1824,7 @@ end function
 '':::::
 private function cStrCHR( funcexpr as integer ) as integer
 	dim as string s, o
-	dim as integer v, i, cnt, isconst, dtype, exprtb(0 to 31), expr
+	dim as integer v, i, cnt, isconst, exprtb(0 to 31), expr
 
 	cStrCHR = FALSE
 
@@ -1861,12 +1864,14 @@ private function cStrCHR( funcexpr as integer ) as integer
 
 		for i = 0 to cnt-1
   			expr = exprtb(i)
-  			dtype = astGetDataType( expr )
-  			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-  				v = cint( astGetValue64( expr ) )
-			else
-				v = cint( astGetValue( expr ) )
-			end if
+  			select case as const astGetDataType( expr )
+  			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+  				v = astGetValue64( expr )
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				v = astGetValueF( expr )
+			case else
+				v = astGetValueI( expr )
+			end select
 
 			if( (v < CHAR_SPACE) or (v > 127) ) then
 				s += "\27"
@@ -1894,7 +1899,7 @@ end function
 
 '':::::
 private function cStrASC( funcexpr as integer ) as integer
-    dim as integer expr1, posexpr, p, dtype
+    dim as integer expr1, posexpr, p
     dim as FBSYMBOL ptr sym
 
 	cStrASC = FALSE
@@ -1935,12 +1940,14 @@ private function cStrASC( funcexpr as integer ) as integer
 				if( posexpr <> INVALID ) then
 					if( astIsCONST( posexpr ) ) then
 
-  						dtype = astGetDataType( posexpr )
-  						if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-							p = cint( astGetValue64( posexpr ) )
-						else
-							p = cint( astGetValue( posexpr ) )
-						end if
+  						select case as const astGetDataType( posexpr )
+  						case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+							p = astGetValue64( posexpr )
+						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+							p = astGetValueF( posexpr )
+						case else
+							p = astGetValueI( posexpr )
+						end select
 
 						if( p < 0 ) then
 							p = 0
@@ -1954,7 +1961,7 @@ private function cStrASC( funcexpr as integer ) as integer
 				end if
 
 				if( p >= 0 ) then
-					funcexpr = astNewCONST( asc( symbGetVarText( sym ), p ), IR.DATATYPE.INTEGER )
+					funcexpr = astNewCONSTi( asc( symbGetVarText( sym ), p ), IR.DATATYPE.INTEGER )
 
 					'' delete var if it was never accessed before
 					if( symbGetAccessCnt( sym ) = 0 ) then
@@ -2041,7 +2048,7 @@ function cStringFunct( funcexpr as integer )
 		'' (Expression{str} ',' Expression{str})
 		else
 			expr2 = expr1
-			expr1 = astNewCONST( 1, IR.DATATYPE.INTEGER )
+			expr1 = astNewCONSTi( 1, IR.DATATYPE.INTEGER )
 		end if
 
 		if( not hMatch( CHAR_COMMA ) ) then
@@ -2093,7 +2100,7 @@ function cStringFunct( funcexpr as integer )
 				exit function
 			end if
 		else
-			expr3 = astNewCONST( -1, IR.DATATYPE.INTEGER )
+			expr3 = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
 		end if
 
 		if( not hMatch( CHAR_RPRNT ) ) then
@@ -2291,7 +2298,7 @@ function cMathFunct( funcexpr as integer )
 		if( expr <> INVALID ) then
 			funcexpr = rtlMathLen( expr, islen )
 		else
-			funcexpr = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+			funcexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
 		end if
 
 		cMathFunct = TRUE
@@ -2430,7 +2437,7 @@ function cFileFunct( funcexpr as integer )
 				exit function
 			end if
 		else
-			filenum = astNewCONST( 0, IR.DATATYPE.INTEGER )
+			filenum = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 		end if
 
 		if( not hMatch( CHAR_RPRNT ) ) then
@@ -2623,8 +2630,8 @@ function cVAFunct( funcexpr as integer )
 	'' + arglen( arg )
 	funcexpr = astNewBOP( IR.OP.ADD, _
 						  expr, _
-						  astNewCONST( symbCalcArgLen( arg->typ, arg->subtype, arg->arg.mode ), _
-						  IR.DATATYPE.UINT ) )
+						  astNewCONSTi( symbCalcArgLen( arg->typ, arg->subtype, arg->arg.mode ), _
+						  				IR.DATATYPE.UINT ) )
 
 
 

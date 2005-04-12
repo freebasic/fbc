@@ -89,7 +89,10 @@ declare sub 		emitVARINIBEGIN		( byval sym as FBSYMBOL ptr )
 
 declare sub 		emitVARINIEND		( byval sym as FBSYMBOL ptr )
 
-declare sub 		emitVARINI			( byval dtype as integer, _
+declare sub 		emitVARINIi			( byval dtype as integer, _
+										  byval value as integer )
+
+declare sub 		emitVARINIf			( byval dtype as integer, _
 										  byval value as double )
 
 declare sub 		emitVARINI64		( byval dtype as integer, _

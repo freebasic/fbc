@@ -1287,16 +1287,17 @@ private sub hAddIntrinsicProcs
 			read atype, amode, optional
 
 			if( optional ) then
-				if( atype = IR.DATATYPE.STRING ) then
+				select case as const atype
+				case IR.DATATYPE.STRING
 					read optstr
 					optval.valuestr = hAllocStringConst( optstr, 0 )
-
-				elseif( (atype <> IR.DATATYPE.LONGINT) and (atype <> IR.DATATYPE.ULONGINT) ) then
-					read optval.value
-
-				else
+				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 					read optval.value64
-				end if
+				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+					read optval.valuef
+				case else
+					read optval.valuei
+				end select
 			end if
 
 			if( atype <> INVALID ) then
@@ -1307,7 +1308,8 @@ private sub hAddIntrinsicProcs
 
 			cntptr( atype, typ, ptrcnt )
 
-			argtail = symbAddArg( "", argtail, atype, NULL, ptrcnt, alen, amode, INVALID, optional, @optval )
+			argtail = symbAddArg( "", argtail, atype, NULL, ptrcnt, _
+								  alen, amode, INVALID, optional, @optval )
 		next a
 
 		cntptr( ptype, typ, ptrcnt )
@@ -1409,7 +1411,7 @@ private function symbGetLen2( byval s as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
-#define FIXSTRGETLEN(e) symbGetLen( astGetSymbol( e ) )
+#define FIXSTRGETLEN(e) symbGetLen2( astGetSymbol( e ) )
 
 #define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen2( astGetSymbol( e ) ) )
 
@@ -1451,7 +1453,7 @@ function rtlStrCompare ( byval str1 as integer, _
     	exit function
     end if
 
-    if( astNewPARAM( proc, astNewCONST( str1len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    if( astNewPARAM( proc, astNewCONSTi( str1len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1459,7 +1461,7 @@ function rtlStrCompare ( byval str1 as integer, _
     	exit function
     end if
 
-    if( astNewPARAM( proc, astNewCONST( str2len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    if( astNewPARAM( proc, astNewCONSTi( str2len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1499,7 +1501,7 @@ function rtlStrConcat( byval str1 as integer, _
     	exit function
     end if
 
-    if( astNewPARAM( proc, astNewCONST( str1len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    if( astNewPARAM( proc, astNewCONSTi( str1len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1507,7 +1509,7 @@ function rtlStrConcat( byval str1 as integer, _
     	exit function
     end if
 
-    if( astNewPARAM( proc, astNewCONST( str2len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+    if( astNewPARAM( proc, astNewCONSTi( str2len, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1539,7 +1541,7 @@ function rtlStrConcatAssign( byval dst as integer, _
 	'' byval dstlen as integer
 	STRGETLEN( dst, ddtype, lgt )
 
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1554,12 +1556,12 @@ function rtlStrConcatAssign( byval dst as integer, _
 	'' byval srclen as integer
 	STRGETLEN( src, sdtype, lgt )
 
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval fillrem as integer
-	if( astNewPARAM( proc, astNewCONST( ddtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( ddtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1592,7 +1594,7 @@ function rtlStrAssign( byval dst as integer, _
 	'' byval dstlen as integer
 	STRGETLEN( dst, ddtype, lgt )
 
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1607,12 +1609,12 @@ function rtlStrAssign( byval dst as integer, _
 	'' byval srclen as integer
 	STRGETLEN( src, sdtype, lgt )
 
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval fillrem as integer
-	if( astNewPARAM( proc, astNewCONST( ddtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( ddtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1683,7 +1685,7 @@ function rtlStrAllocTmpDesc	( byval strg as integer ) as integer static
 
 	STRGETLEN( strg, dtype, lgt )
 
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -1912,7 +1914,7 @@ function rtlStrAsc( byval expr as integer, _
 
     '' byval pos as integer
     if( posexpr = INVALID ) then
-    	posexpr = astNewCONST( 1, IR.DATATYPE.INTEGER )
+    	posexpr = astNewCONSTi( 1, IR.DATATYPE.INTEGER )
     end if
 
     if( astNewPARAM( proc, posexpr, INVALID ) = INVALID ) then
@@ -1935,7 +1937,7 @@ function rtlStrChr( byval args as integer, _
     proc = astNewFUNCT( f, symbGetType( f ) )
 
     '' byval args as integer
-    if( astNewPARAM( proc, astNewCONST( args, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+    if( astNewPARAM( proc, astNewCONSTi( args, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
     	exit function
     end if
 
@@ -1987,24 +1989,24 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     end if
 
 	'' byval element_len as integer
-	expr = astNewCONST( elementlen, IR.DATATYPE.INTEGER )
+	expr = astNewCONSTi( elementlen, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval isvarlen as integer
 	isvarlen = (dtype = IR.DATATYPE.STRING)
-	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval preserve as integer
-	if( astNewPARAM( proc, astNewCONST( dopreserve, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( dopreserve, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval dimensions as integer
-	if( astNewPARAM( proc, astNewCONST( dimensions, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( dimensions, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -2067,7 +2069,7 @@ function rtlArrayErase( byval arrayexpr as integer ) as integer static
 
 	'' byval isvarlen as integer
 	isvarlen = (astGetDataType( arrayexpr ) = IR.DATATYPE.STRING)
-	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -2099,7 +2101,7 @@ function rtlArrayClear( byval arrayexpr as integer ) as integer static
 	dtype = symbGetType( s )
 
     isvarlen = (dtype = IR.DATATYPE.STRING)
-	if( astNewPARAM( proc, astNewCONST( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( isvarlen, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -2195,13 +2197,13 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 	end if
 
 	'' byval element_len as integer
-	t = astNewCONST( elementlen, IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( elementlen, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
 		exit function
 	end if
 
 	'' byval dimensions as integer
-	t = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( dimensions, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
 		exit function
 	end if
@@ -2209,13 +2211,13 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 	'' ...
 	for i = 0 to dimensions-1
 		'' lbound
-		t = astNewCONST( dTB(i).lower, IR.DATATYPE.INTEGER )
+		t = astNewCONSTi( dTB(i).lower, IR.DATATYPE.INTEGER )
 		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
 			exit function
 		end if
 
 		'' ubound
-		t = astNewCONST( dTB(i).upper, IR.DATATYPE.INTEGER )
+		t = astNewCONSTi( dTB(i).upper, IR.DATATYPE.INTEGER )
 		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
 			exit function
 		end if
@@ -2258,13 +2260,13 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, _
     end if
 
 	'' byval element_len as integer
-	t = astNewCONST( symbGetLen( s ), IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( symbGetLen( s ), IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
 	'' byval dimensions as integer
-	t = astNewCONST( dimensions, IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( dimensions, IR.DATATYPE.INTEGER )
 	if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
@@ -2273,13 +2275,13 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as integer, _
     d = symbGetArrayFirstDim( s )
     do while( d <> NULL )
 		'' lbound
-		t = astNewCONST( d->lower, IR.DATATYPE.INTEGER )
+		t = astNewCONSTi( d->lower, IR.DATATYPE.INTEGER )
 		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
     		exit function
     	end if
 
 		'' ubound
-		t = astNewCONST( d->upper, IR.DATATYPE.INTEGER )
+		t = astNewCONSTi( d->upper, IR.DATATYPE.INTEGER )
 		if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
     		exit function
     	end if
@@ -2370,12 +2372,12 @@ function rtlDataRead( byval varexpr as integer ) as integer static
 		'' byval dst_size as integer
 		dtype = astGetDataType( varexpr )
 		STRGETLEN( varexpr, dtype, lgt )
-		if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  			exit function
  		end if
 
 		'' byval fillrem as integer
-		if( astNewPARAM( proc, astNewCONST( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     		exit function
     	end if
     end if
@@ -2665,7 +2667,7 @@ function rtlMathLen( byval expr as integer, _
     		'' byval strlen as integer
 			STRGETLEN( expr, dtype, lgt )
 
-			astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
+			astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER )
 
 			rtlMathLen = proc
 			exit function
@@ -2684,7 +2686,7 @@ function rtlMathLen( byval expr as integer, _
 		end if
 	end if
 
-	rtlMathLen = astNewCONST( lgt, IR.DATATYPE.INTEGER )
+	rtlMathLen = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
 
 	astDelTree expr
 
@@ -2849,7 +2851,7 @@ function rtlPrint( byval fileexpr as integer, _
 		mask = mask or FB.PRINTMASK.NEWLINE
 	end if
 
-	t = astNewCONST( mask, IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( mask, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
  		exit function
  	end if
@@ -2988,7 +2990,7 @@ function rtlWrite( byval fileexpr as integer, _
 		mask = mask or FB.PRINTMASK.NEWLINE
 	end if
 
-	t = astNewCONST( mask, IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( mask, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
  		exit function
  	end if
@@ -3077,7 +3079,7 @@ function rtlPrintUsing( byval fileexpr as integer, _
 		mask = mask or FB.PRINTMASK.NEWLINE or FB.PRINTMASK.ISLAST
 	end if
 
-	t = astNewCONST( mask, IR.DATATYPE.INTEGER )
+	t = astNewCONSTi( mask, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, IR.DATATYPE.INTEGER ) = INVALID ) then
  		exit function
  	end if
@@ -3112,7 +3114,7 @@ function rtlExit( byval errlevel as integer ) as integer static
 
     '' errlevel
     if( errlevel = INVALID ) then
-    	errlevel = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	errlevel = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
     end if
     if( astNewPARAM( proc, errlevel, INVALID ) = INVALID ) then
     	exit function
@@ -3148,7 +3150,7 @@ function rtlMemCopy( byval dst as integer, _
     end if
 
     '' byval bytes as integer
-    t = astNewCONST( bytes, IR.DATATYPE.INTEGER )
+    t = astNewCONSTi( bytes, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
     	exit function
     end if
@@ -3210,7 +3212,7 @@ function rtlMemSwap( byval dst as integer, _
     '' byval bytes as integer
 	bytes = hCalcExprLen( dst )
 
-    t = astNewCONST( bytes, IR.DATATYPE.INTEGER )
+    t = astNewCONSTi( bytes, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
     	exit function
     end if
@@ -3242,7 +3244,7 @@ function rtlStrSwap( byval str1 as integer, _
     '' byval str1len as integer
 	dtype = astGetDataType( str1 )
 	STRGETLEN( str1, dtype, lgt )
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -3254,7 +3256,7 @@ function rtlStrSwap( byval str1 as integer, _
     '' byval str1len as integer
 	dtype = astGetDataType( str2 )
 	STRGETLEN( str2, dtype, lgt )
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
@@ -3285,7 +3287,7 @@ function rtlMemCopyClear( byval dstexpr as integer, _
     end if
 
     '' byval dstlen as integer
-    t = astNewCONST( dstlen, IR.DATATYPE.INTEGER )
+    t = astNewCONSTi( dstlen, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
     	exit function
     end if
@@ -3296,7 +3298,7 @@ function rtlMemCopyClear( byval dstexpr as integer, _
     end if
 
     '' byval srclen as integer
-    t = astNewCONST( srclen, IR.DATATYPE.INTEGER )
+    t = astNewCONSTi( srclen, IR.DATATYPE.INTEGER )
     if( astNewPARAM( proc, t, INVALID ) = INVALID ) then
     	exit function
     end if
@@ -3353,7 +3355,7 @@ function rtlConsoleReadXY ( byval rowexpr as integer, _
 
 	'' byval colorflag as integer
 	if( colorflagexpr = INVALID ) then
-		colorflagexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+		colorflagexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 	astNewPARAM( proc, colorflagexpr, INVALID)
 
@@ -3375,7 +3377,7 @@ function rtlThreadCreate( byval procexpr as integer, _
 
 	'' byval param as integer
 	if( paramexpr = INVALID ) then
-		paramexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+		paramexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 	astNewPARAM( proc, paramexpr, INVALID )
 
@@ -3411,7 +3413,7 @@ function rtlCheckError( byval resexpr as integer, _
 	nxtlabel = symbAddLabel( hMakeTmpStr )
 
 	'' result == FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( IR.OP.EQ, resexpr, astNewCONST( 0, IR.DATATYPE.INTEGER ), nxtlabel, FALSE )
+	resexpr = astNewBOP( IR.OP.EQ, resexpr, astNewCONSTi( 0, IR.DATATYPE.INTEGER ), nxtlabel, FALSE )
 
 	astFlush( resexpr )
 
@@ -3421,7 +3423,7 @@ function rtlCheckError( byval resexpr as integer, _
 	if( reslabel <> NULL ) then
 		param = astNewADDR( IR.OP.ADDROF, astNewVAR( reslabel, NULL, 0, IR.DATATYPE.UINT ) )
 	else
-		param = astNewCONST( NULL, IR.DATATYPE.UINT )
+		param = astNewCONSTi( NULL, IR.DATATYPE.UINT )
 	end if
 	if( astNewPARAM( proc, param ) = INVALID ) then
 		exit function
@@ -3431,7 +3433,7 @@ function rtlCheckError( byval resexpr as integer, _
 	if( env.clopt.resumeerr ) then
 		param = astNewADDR( IR.OP.ADDROF, astNewVAR( nxtlabel, NULL, 0, IR.DATATYPE.UINT ) )
 	else
-		param = astNewCONST( NULL, IR.DATATYPE.UINT )
+		param = astNewCONSTi( NULL, IR.DATATYPE.UINT )
 	end if
 	if( astNewPARAM( proc, param ) = INVALID ) then
 		exit function
@@ -3479,7 +3481,7 @@ sub rtlErrorThrow( byval errexpr as integer ) static
 	if( env.clopt.resumeerr ) then
 		param = astNewADDR( IR.OP.ADDROF, astNewVAR( reslabel, NULL, 0, IR.DATATYPE.UINT ) )
 	else
-		param = astNewCONST( NULL, IR.DATATYPE.UINT )
+		param = astNewCONSTi( NULL, IR.DATATYPE.UINT )
 	end if
 	if( astNewPARAM( proc, param ) = INVALID ) then
 		exit function
@@ -3489,7 +3491,7 @@ sub rtlErrorThrow( byval errexpr as integer ) static
 	if( env.clopt.resumeerr ) then
 		param = astNewADDR( IR.OP.ADDROF, astNewVAR( nxtlabel, NULL, 0, IR.DATATYPE.UINT ) )
 	else
-		param = astNewCONST( NULL, IR.DATATYPE.UINT )
+		param = astNewCONSTi( NULL, IR.DATATYPE.UINT )
 	end if
 	if( astNewPARAM( proc, param ) = INVALID ) then
 		exit function
@@ -3777,7 +3779,7 @@ function rtlFilePut( byval filenum as integer, _
 
     '' byval offset as integer
     if( offset = INVALID ) then
-    	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	offset = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
     end if
     if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
  		exit function
@@ -3791,7 +3793,7 @@ function rtlFilePut( byval filenum as integer, _
     if( args = 4 ) then
     	'' byval valuelen as integer
     	lgt = hCalcExprLen( src )
-    	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
     end if
@@ -3835,7 +3837,7 @@ function rtlFilePutArray( byval filenum as integer, _
 
     '' byval offset as integer
     if( offset = INVALID ) then
-    	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	offset = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
     end if
     if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
  		exit function
@@ -3893,7 +3895,7 @@ function rtlFileGet( byval filenum as integer, _
 
     '' byval offset as integer
     if( offset = INVALID ) then
-    	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	offset = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
     end if
     if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
  		exit function
@@ -3907,7 +3909,7 @@ function rtlFileGet( byval filenum as integer, _
     if( args = 4 ) then
     	'' byval valuelen as integer
     	lgt = hCalcExprLen( dst )
-    	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
     end if
@@ -3951,7 +3953,7 @@ function rtlFileGetArray( byval filenum as integer, _
 
     '' byval offset as integer
     if( offset = INVALID ) then
-    	offset = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	offset = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
     end if
     if( astNewPARAM( proc, offset, INVALID ) = INVALID ) then
  		exit function
@@ -4044,23 +4046,23 @@ function rtlFileLineInput( byval isfile as integer, _
 	'' byval dstlen as integer
 	dtype = astGetDataType( dstexpr )
 	STRGETLEN( dstexpr, dtype, lgt )
-	if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  		exit function
  	end if
 
 	'' byval fillrem as integer
-	if( astNewPARAM( proc, astNewCONST( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     	exit function
     end if
 
     if( args = 6 ) then
     	'' byval addquestion as integer
- 		if( astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 		if( astNewPARAM( proc, astNewCONSTi( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
 
     	'' byval addnewline as integer
-    	if( astNewPARAM( proc, astNewCONST( addnewline, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONSTi( addnewline, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
     end if
@@ -4102,12 +4104,12 @@ function rtlFileInput( byval isfile as integer, _
 
     if( args = 3 ) then
     	'' byval addquestion as integer
-    	if( astNewPARAM( proc, astNewCONST( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONSTi( addquestion, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
 
     	'' byval addnewline as integer
-    	if( astNewPARAM( proc, astNewCONST( addnewline, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+    	if( astNewPARAM( proc, astNewCONSTi( addnewline, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
     end if
@@ -4162,12 +4164,12 @@ function rtlFileInputGet( byval dstexpr as integer ) as integer
     if( args > 1 ) then
 		'' byval dstlen as integer
 		STRGETLEN( dstexpr, dtype, lgt )
-		if( astNewPARAM( proc, astNewCONST( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
  			exit function
  		end if
 
 		'' byval fillrem as integer
-		if( astNewPARAM( proc, astNewCONST( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( dtype = IR.DATATYPE.FIXSTR, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = INVALID ) then
     		exit function
     	end if
     end if
@@ -4255,7 +4257,7 @@ function rtlGfxPset( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4284,7 +4286,7 @@ function rtlGfxPset( byval target as integer, _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4315,7 +4317,7 @@ function rtlGfxPoint( byval target as integer, _
 
 	'' byref target as any
 	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4335,7 +4337,7 @@ function rtlGfxPoint( byval target as integer, _
 
  	'' byval y as single
  	if( yexpr = INVALID ) then
- 		yexpr = astNewCONST( -1, IR.DATATYPE.SINGLE )
+ 		yexpr = astNewCONSTf( -1, IR.DATATYPE.SINGLE )
  	end if
  	if( astNewPARAM( proc, yexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4367,7 +4369,7 @@ function rtlGfxLine( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4406,20 +4408,20 @@ function rtlGfxLine( byval target as integer, _
  	end if
 
  	'' byval linetype as integer
- 	if( astNewPARAM( proc, astNewCONST( linetype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( linetype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval style as uinteger
  	if( styleexpr = INVALID ) then
- 		styleexpr = astNewCONST( &h0000FFFF, IR.DATATYPE.UINT )
+ 		styleexpr = astNewCONSTi( &h0000FFFF, IR.DATATYPE.UINT )
  	end if
  	if( astNewPARAM( proc, styleexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4458,7 +4460,7 @@ function rtlGfxCircle( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4493,7 +4495,7 @@ function rtlGfxCircle( byval target as integer, _
 
  	'' byval aspect as single
  	if( aspexpr = INVALID ) then
- 		aspexpr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
+ 		aspexpr = astNewCONSTf( 0.0, IR.DATATYPE.SINGLE )
  	end if
  	if( astNewPARAM( proc, aspexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4501,7 +4503,7 @@ function rtlGfxCircle( byval target as integer, _
 
  	'' byval arcini as single
  	if( iniexpr = INVALID ) then
- 		iniexpr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
+ 		iniexpr = astNewCONSTf( 0.0, IR.DATATYPE.SINGLE )
  	end if
  	if( astNewPARAM( proc, iniexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4509,19 +4511,19 @@ function rtlGfxCircle( byval target as integer, _
 
  	'' byval arcend as single
  	if( endexpr = INVALID ) then
- 		endexpr = astNewCONST( 3.141593*2, IR.DATATYPE.SINGLE )
+ 		endexpr = astNewCONSTf( 3.141593*2, IR.DATATYPE.SINGLE )
  	end if
  	if( astNewPARAM( proc, endexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval fillflag as integer
- 	if( astNewPARAM( proc, astNewCONST( fillflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( fillflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4557,7 +4559,7 @@ function rtlGfxPaint( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4584,7 +4586,7 @@ function rtlGfxPaint( byval target as integer, _
 	pattern = astGetDataType( pexpr )
 	if( ( pattern = IR.DATATYPE.FIXSTR ) or ( pattern = IR.DATATYPE.STRING ) ) then
 		pattern = TRUE
-		if( astNewPARAM( proc, astNewCONST( &hFFFF0000, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( &hFFFF0000, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
 	else
@@ -4604,20 +4606,20 @@ function rtlGfxPaint( byval target as integer, _
 		if( astNewPARAM( proc, pexpr, INVALID ) = INVALID ) then
  			exit function
  		end if
-		if( astNewPARAM( proc, astNewCONST( 1, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( 1, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
 	else
     	if( astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR.DATATYPE.FIXSTR ), INVALID ) = INVALID ) then
  			exit function
  		end if
-		if( astNewPARAM( proc, astNewCONST( 0, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+		if( astNewPARAM( proc, astNewCONSTi( 0, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  			exit function
  		end if
 	end if
 
 	'' byval coord_type as integer
-	if( astNewPARAM( proc, astNewCONST( coord_type, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+	if( astNewPARAM( proc, astNewCONSTi( coord_type, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4647,7 +4649,7 @@ function rtlGfxDraw( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4695,7 +4697,7 @@ function rtlGfxView( byval x1expr as integer, _
 
  	'' byval x1 as integer
  	if( x1expr = INVALID ) then
-        x1expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
+        x1expr = astNewCONSTi( -32768, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
  		exit function
@@ -4703,7 +4705,7 @@ function rtlGfxView( byval x1expr as integer, _
 
  	'' byval y1 as integer
  	if( y1expr = INVALID ) then
-        y1expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
+        y1expr = astNewCONSTi( -32768, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, y1expr, INVALID ) = INVALID ) then
  		exit function
@@ -4711,7 +4713,7 @@ function rtlGfxView( byval x1expr as integer, _
 
  	'' byval x2 as integer
  	if( x2expr = INVALID ) then
-        x2expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
+        x2expr = astNewCONSTi( -32768, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, x2expr, INVALID ) = INVALID ) then
  		exit function
@@ -4719,7 +4721,7 @@ function rtlGfxView( byval x1expr as integer, _
 
  	'' byval y2 as integer
  	if( y2expr = INVALID ) then
-        y2expr = astNewCONST( -32768, IR.DATATYPE.INTEGER )
+        y2expr = astNewCONSTi( -32768, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, y2expr, INVALID ) = INVALID ) then
  		exit function
@@ -4727,7 +4729,7 @@ function rtlGfxView( byval x1expr as integer, _
 
  	'' byval fillcolor as uinteger
  	if( fillexpr = INVALID ) then
- 		fillexpr = astNewCONST( &hffff0000, IR.DATATYPE.UINT )
+ 		fillexpr = astNewCONSTi( &hffff0000, IR.DATATYPE.UINT )
  	end if
  	if( astNewPARAM( proc, fillexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4735,14 +4737,14 @@ function rtlGfxView( byval x1expr as integer, _
 
  	'' byval bordercolor as uinteger
  	if( bordexpr = INVALID ) then
- 		bordexpr = astNewCONST( &hffff0000, IR.DATATYPE.UINT )
+ 		bordexpr = astNewCONSTi( &hffff0000, IR.DATATYPE.UINT )
  	end if
  	if( astNewPARAM( proc, bordexpr, INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval screenflag as integer
- 	if( astNewPARAM( proc, astNewCONST( screenflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( screenflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4774,7 +4776,7 @@ function rtlGfxWindow( byval x1expr as integer, _
 
  	'' byval x1 as single
  	if( x1expr = INVALID ) then
-        x1expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
+        x1expr = astNewCONSTf( 0.0, IR.DATATYPE.SINGLE )
     end if
  	if( astNewPARAM( proc, x1expr, INVALID ) = INVALID ) then
  		exit function
@@ -4782,7 +4784,7 @@ function rtlGfxWindow( byval x1expr as integer, _
 
  	'' byval y1 as single
  	if( y1expr = INVALID ) then
-        y1expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
+        y1expr = astNewCONSTf( 0.0, IR.DATATYPE.SINGLE )
     end if
  	if( astNewPARAM( proc, y1expr, INVALID ) = INVALID ) then
  		exit function
@@ -4790,7 +4792,7 @@ function rtlGfxWindow( byval x1expr as integer, _
 
  	'' byval x2 as single
  	if( x2expr = INVALID ) then
-        x2expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
+        x2expr = astNewCONSTf( 0.0, IR.DATATYPE.SINGLE )
     end if
  	if( astNewPARAM( proc, x2expr, INVALID ) = INVALID ) then
  		exit function
@@ -4798,14 +4800,14 @@ function rtlGfxWindow( byval x1expr as integer, _
 
  	'' byval y2 as single
  	if( y2expr = INVALID ) then
-        y2expr = astNewCONST( 0.0, IR.DATATYPE.SINGLE )
+        y2expr = astNewCONSTf( 0.0, IR.DATATYPE.SINGLE )
     end if
  	if( astNewPARAM( proc, y2expr, INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval screenflag as integer
- 	if( astNewPARAM( proc, astNewCONST( screenflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( screenflag, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -4835,7 +4837,7 @@ function rtlGfxPalette ( byval attexpr as integer, _
 
  	'' byval attr as integer
  	if( attexpr = INVALID ) then
-        attexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
+        attexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, attexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4843,7 +4845,7 @@ function rtlGfxPalette ( byval attexpr as integer, _
 
  	'' byval r as integer
  	if( rexpr = INVALID ) then
-        rexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
+        rexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, rexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4851,7 +4853,7 @@ function rtlGfxPalette ( byval attexpr as integer, _
 
  	'' byval g as integer
  	if( gexpr = INVALID ) then
-        gexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
+        gexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, gexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4859,7 +4861,7 @@ function rtlGfxPalette ( byval attexpr as integer, _
 
  	'' byval b as integer
  	if( bexpr = INVALID ) then
-        bexpr = astNewCONST( -1, IR.DATATYPE.INTEGER )
+        bexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
     end if
  	if( astNewPARAM( proc, bexpr, INVALID ) = INVALID ) then
  		exit function
@@ -4923,7 +4925,7 @@ function rtlGfxPut( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -4957,12 +4959,12 @@ function rtlGfxPut( byval target as integer, _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
  	'' byval mode as integer
- 	if( astNewPARAM( proc, astNewCONST( mode, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( mode, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -5002,7 +5004,7 @@ function rtlGfxGet( byval target as integer, _
 
  	'' byref target as any
  	if( target = INVALID ) then
- 		target = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		target = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  		targetmode = INVALID
  	else
 		if( targetisptr ) then
@@ -5046,7 +5048,7 @@ function rtlGfxGet( byval target as integer, _
  	end if
 
  	'' byval coordtype as integer
- 	if( astNewPARAM( proc, astNewCONST( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
+ 	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR.DATATYPE.INTEGER ), INVALID ) = INVALID ) then
  		exit function
  	end if
 
@@ -5054,7 +5056,7 @@ function rtlGfxGet( byval target as integer, _
  	if( not isptr ) then
  		arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
  	else
- 		arrayexpr = astNewCONST( NULL, IR.DATATYPE.UINT )
+ 		arrayexpr = astNewCONSTi( NULL, IR.DATATYPE.UINT )
  	end if
  	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = INVALID ) then
  		exit function
@@ -5105,7 +5107,7 @@ function rtlGfxScreenSet( byval wexpr as integer, _
 
  	'' byval d as integer
  	if( dexpr = INVALID ) then
- 		dexpr = astNewCONST( 8, IR.DATATYPE.INTEGER )
+ 		dexpr = astNewCONSTi( 8, IR.DATATYPE.INTEGER )
  	end if
  	if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
  		exit function
@@ -5113,7 +5115,7 @@ function rtlGfxScreenSet( byval wexpr as integer, _
 
  	'' byval depth as integer
  	if( pexpr = INVALID ) then
- 		pexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		pexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  	end if
  	if( astNewPARAM( proc, pexpr, INVALID ) = INVALID ) then
  		exit function
@@ -5121,7 +5123,7 @@ function rtlGfxScreenSet( byval wexpr as integer, _
 
  	'' byval fullscreen s integer
  	if( fexpr = INVALID ) then
- 		fexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+ 		fexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
  	end if
  	if( astNewPARAM( proc, fexpr, INVALID ) = INVALID ) then
  		exit function
@@ -5129,7 +5131,7 @@ function rtlGfxScreenSet( byval wexpr as integer, _
 
 	'' byval refresh_rate as integer
 	if( rexpr = INVALID ) then
-		rexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+		rexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
  	if( astNewPARAM( proc, rexpr, INVALID ) = INVALID ) then
  		exit function
@@ -5171,7 +5173,7 @@ function rtlGfxBload( byval filename as integer, _
 
     '' byval dexpr as integer
     if( dexpr = INVALID ) then
-    	dexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	dexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
     end if
     if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
  		exit function
@@ -5286,7 +5288,7 @@ function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
 	if( symbol <> NULL ) then
 		expr = hGetProcName( symbol )
 	else
-		expr = astNewCONST( 0, IR.DATATYPE.CHAR )
+		expr = astNewCONSTi( 0, IR.DATATYPE.CHAR )
 	end if
 	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
 		exit function

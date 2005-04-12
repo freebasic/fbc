@@ -4873,8 +4873,16 @@ sub emitVARINIEND( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub emitVARINI( byval dtype as integer, _
-				byval value as double ) static
+sub emitVARINIi( byval dtype as integer, _
+				 byval value as integer ) static
+
+	outp hGetTypeString( dtype ) + " " + str$( value )
+
+end sub
+
+'':::::
+sub emitVARINIf( byval dtype as integer, _
+				 byval value as double ) static
 
 	outp hGetTypeString( dtype ) + " " + str$( value )
 

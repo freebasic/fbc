@@ -310,7 +310,9 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetArgOptional(f,a) a->arg.optional
 
-#define symbGetArgOptval(f,a) a->arg.optval.value
+#define symbGetArgOptvalI(f,a) a->arg.optval.valuei
+
+#define symbGetArgOptvalF(f,a) a->arg.optval.valuef
 
 #define symbGetArgOptval64(f,a) a->arg.optval.value64
 

@@ -547,12 +547,10 @@ end function
 '':::
 ''ConstAssign     =   ID (AS SymbolType)? ASSIGN ConstExpression .
 ''
-function cConstAssign
-    dim id as string, valtext as string
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
-    dim value as double, c as integer, dtype as integer
-    dim expr as integer
-    dim sym as FBSYMBOL ptr
+function cConstAssign as integer static
+    dim as string id, valtext
+    dim as integer typ, lgt, ptrcnt, expr
+    dim as FBSYMBOL ptr sym, subtype
 
 	cConstAssign = FALSE
 
@@ -634,34 +632,15 @@ function cConstAssign
 			exit function
 		end if
 
-		dtype = astGetDataType( expr )
-		if( (dtype <> IR.DATATYPE.LONGINT) and (dtype <> IR.DATATYPE.ULONGINT) ) then
-			'' QB quirks..
-			value = astGetValue( expr )
-
-			if( value - int( value ) <> 0 ) then
-				if( typ = INVALID ) then
-					typ = FB.SYMBTYPE.DOUBLE
-				else
-					if( typ = FB.SYMBTYPE.INTEGER ) then
-						value = int( value )
-					end if
-				end if
-			else
-				if( typ = INVALID ) then
-					typ = hGetDefType( id )
-				end if
-			end if
-
-			valtext = str$( value )
-
-		'' longints..
-		else
+		typ = astGetDataType( expr )
+		select case as const typ
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			valtext = str$( astGetValue64( expr ) )
-			if( typ = INVALID ) then
-				typ = dtype
-			end if
-        end if
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			valtext = str$( astGetValuef( expr ) )
+		case else
+			valtext = str$( astGetValuei( expr ) )
+        end select
 
 		astDel expr
 
@@ -1064,7 +1043,15 @@ function cTypeDecl
 			exit function
 		end if
 
-  		align = cint( astGetValue( expr ) )
+  		select case as const astGetDataType( expr )
+  		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+  		    align = astGetValue64( expr )
+  		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+  			align = astGetValuef( expr )
+  		case else
+  			align = astGetValuei( expr )
+  		end select
+
   		if( align < 0 ) then
   			align = FB.INTEGERSIZE
   		elseif( align > FB.INTEGERSIZE*4 ) then
@@ -1130,7 +1117,7 @@ end function
 ''EnumConstDecl     =   ID (ASSIGN ConstExpression)? .
 ''
 function cEnumConstDecl( id as string )
-    static as integer expr, dtype
+    static as integer expr
 
 	cEnumConstDecl = FALSE
 
@@ -1154,12 +1141,15 @@ function cEnumConstDecl( id as string )
 			end if
 		end if
 
-		dtype = astGetDataType( expr )
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			env.enumctx.value = cint( astGetValue64( expr ) )
-		else
-			env.enumctx.value = cint( astGetValue( expr ) )
-		end if
+		select case as const astGetDataType( expr )
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			env.enumctx.value = astGetValue64( expr )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			env.enumctx.value = astGetValuef( expr )
+		case else
+			env.enumctx.value = astGetValuei( expr )
+		end select
+
 		astDel expr
 
     end if
@@ -1415,7 +1405,7 @@ end function
 
 ''::::
 sub hMakeArrayDimTB( byval dimensions as integer, exprTB() as integer, dTB() as FBARRAYDIM )
-    static as integer i, expr, dtype
+    static as integer i, expr
 
 	if( dimensions = -1 ) then
 		exit function
@@ -1425,24 +1415,28 @@ sub hMakeArrayDimTB( byval dimensions as integer, exprTB() as integer, dTB() as 
 		'' lower bound
 		expr = exprTB(i, 0)
 
-		dtype = astGetDataType( expr )
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			dTB(i).lower = cint( astGetValue64( expr ) )
-		else
-			dTB(i).lower = cint( astGetValue( expr ) )
-		end if
+		select case as const astGetDataType( expr )
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			dTB(i).lower = astGetValue64( expr )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			dTB(i).lower = astGetValuef( expr )
+		case else
+			dTB(i).lower = astGetValuei( expr )
+		end select
 
 		astDel expr
 
 		'' upper bound
 		expr = exprTB(i, 1)
 
-		dtype = astGetDataType( expr )
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			dTB(i).upper = cint( astGetValue64( expr ) )
-		else
-			dTB(i).upper = cint( astGetValue( expr ) )
-		end if
+		select case as const astGetDataType( expr )
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			dTB(i).upper = astGetValue64( expr )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			dTB(i).upper = astGetValuef( expr )
+		case else
+			dTB(i).upper = astGetValuei( expr )
+		end select
 
 		astDel expr
 	next i
@@ -1842,11 +1836,14 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 					expr = astNewCONV( INVALID, sym->typ, expr )
 				end if
 
-				if( (sym->typ = FB.SYMBTYPE.LONGINT) or (sym->typ = FB.SYMBTYPE.ULONGINT) ) then
+				select case as const sym->typ
+				case FB.SYMBTYPE.LONGINT, FB.SYMBTYPE.ULONGINT
 					irEmitVARINI64( sym->typ, astGetValue64( expr ) )
-				else
-					irEmitVARINI( sym->typ, astGetValue( expr ) )
-				end if
+				case FB.SYMBTYPE.SINGLE, FB.SYMBTYPE.DOUBLE
+					irEmitVARINIf( sym->typ, astGetValuef( expr ) )
+				case else
+					irEmitVARINIi( sym->typ, astGetValuei( expr ) )
+				end select
 
 			end if
 
@@ -2169,7 +2166,7 @@ end function
 function cStaticArrayDecl( dimensions as integer, _
 						   dTB() as FBARRAYDIM )
 
-    static as integer i, expr, dtype
+    static as integer i, expr
 
     cStaticArrayDecl = FALSE
 
@@ -2193,12 +2190,15 @@ function cStaticArrayDecl( dimensions as integer, _
 			end if
 		end if
 
-		dtype = astGetDataType( expr )
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			dTB(i).lower = cint( astGetValue64( expr ) )
-		else
-			dTB(i).lower = cint( astGetValue( expr ) )
-		end if
+		select case as const astGetDataType( expr )
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			dTB(i).lower = astGetValue64( expr )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			dTB(i).lower = astGetValuef( expr )
+		case else
+			dTB(i).lower = astGetValuei( expr )
+		end select
+
 		astDel expr
 
         '' TO
@@ -2216,12 +2216,15 @@ function cStaticArrayDecl( dimensions as integer, _
 				end if
 			end if
 
-			dtype = astGetDataType( expr )
-			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-				dTB(i).upper = cint( astGetValue64( expr ) )
-			else
-				dTB(i).upper = cint( astGetValue( expr ) )
-			end if
+			select case as const astGetDataType( expr )
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+				dTB(i).upper = astGetValue64( expr )
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				dTB(i).upper = astGetValuef( expr )
+			case else
+				dTB(i).upper = astGetValuei( expr )
+			end select
+
 			astDel expr
 
     	else
@@ -2229,8 +2232,8 @@ function cStaticArrayDecl( dimensions as integer, _
     		dTB(i).lower = env.optbase
     	end if
 
-    	dimensions = dimensions + 1
-    	i = i + 1
+    	dimensions += 1
+    	i += 1
 
     	'' separator
     	if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
@@ -2293,7 +2296,7 @@ function cArrayDecl( dimensions as integer, _
 
     	else
     	    exprTB(i,1) = exprTB(i,0)
-    		exprTB(i,0) = astNewCONST( env.optbase, IR.DATATYPE.INTEGER )
+    		exprTB(i,0) = astNewCONSTi( env.optbase, IR.DATATYPE.INTEGER )
     	end if
 
     	dimensions = dimensions + 1
@@ -2318,7 +2321,7 @@ end function
 
 ''::::
 function cConstExprValue( littext as string ) as integer
-    dim as integer expr, dtype
+    dim as integer expr
 
     cConstExprValue = FALSE
 
@@ -2332,12 +2335,14 @@ function cConstExprValue( littext as string ) as integer
 		exit function
 	end if
 
-	dtype = astGetDataType( expr )
-	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-		littext = str$( cint( astGetValue64( expr ) ) )
-	else
-		littext = str$( cint( astGetValue( expr ) ) )
-  	end if
+	select case as const astGetDataType( expr )
+	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		littext = str$( astGetValue64( expr ) )
+	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		littext = str$( cint( astGetValuef( expr ) ) )
+	case else
+		littext = str$( astGetValuei( expr ) )
+  	end select
 
   	astDel expr
 
@@ -3085,25 +3090,42 @@ function cArgDecl( byval procmode as integer, _
 
     	optional = TRUE
     	'' string?
-    	if( dtype = IR.DATATYPE.FIXSTR ) then
+    	select case as const atype
+    	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR
     		optval.valuestr = sym
 
-    	'' longint?
-    	elseif( (atype = IR.DATATYPE.LONGINT) or (atype = IR.DATATYPE.ULONGINT) ) then
-			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
+    	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			select case as const dtype
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
     			optval.value64 = astGetValue64( expr )
-    		else
-    			optval.value64 = clngint( astGetValue( expr ) )
-    		end if
+    		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+    			optval.value64 = astGetValuef( expr )
+    		case else
+    			optval.value64 = astGetValuei( expr )
+    		end select
 
-    	''
-    	else
-			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-				optval.value = cdbl( astGetValue64( expr ) )
-			else
-    			optval.value = astGetValue( expr )
-    		end if
-    	end if
+    	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			select case as const dtype
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+    			optval.valuef = astGetValue64( expr )
+    		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+    			optval.valuef = astGetValuef( expr )
+    		case else
+    			optval.valuef = astGetValuei( expr )
+    		end select
+
+    	case else
+			select case as const dtype
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+    			optval.valuei = astGetValue64( expr )
+    		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+    			optval.valuei = astGetValuef( expr )
+    		case else
+    			optval.valuei = astGetValuei( expr )
+    		end select
+
+    	end select
+
     	astDel expr
 
     else
@@ -3380,8 +3402,10 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 			expr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR.DATATYPE.FIXSTR )
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			expr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), typ )
 		case else
-			expr = astNewCONST( symbGetArgOptval( proc, arg ), typ )
+			expr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), typ )
 		end select
 
 	else

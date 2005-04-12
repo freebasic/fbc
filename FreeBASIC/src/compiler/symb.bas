@@ -1707,7 +1707,8 @@ function symbAddArg( byval symbol as string, _
 
     symbAddArg = NULL
 
-    a = hNewSymbol( FB.SYMBCLASS.PROCARG, FALSE, "", symbol, FALSE, typ, subtype, ptrcnt, INVALID, TRUE )
+    a = hNewSymbol( FB.SYMBCLASS.PROCARG, FALSE, "", _
+    				symbol, FALSE, typ, subtype, ptrcnt, INVALID, TRUE )
     if( a = NULL ) then
     	exit function
     end if
@@ -1730,8 +1731,10 @@ function symbAddArg( byval symbol as string, _
 			a->arg.optval.valuestr = optval->valuestr
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 			a->arg.optval.value64 = optval->value64
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			a->arg.optval.valuef = optval->valuef
 		case else
-			a->arg.optval.value	= optval->value
+			a->arg.optval.valuei = optval->valuei
 		end select
 	end if
 
@@ -3035,12 +3038,3 @@ function symbListLibs( namelist() as string, _
 
 end function
 
-
-
-
-
-
-
-function symbGetLen2(byval s as FBSYMBOL ptr) as integer
-	return s->lgt
-end function

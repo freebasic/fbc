@@ -418,9 +418,9 @@ end function
 '':::::
 private function cStoreTemp( byval expr as integer, _
 							 byval dtype as integer, byval dclass as integer, _
-					 		 value as double, value64 as longint ) as FBSYMBOL ptr static
+					 		 byval v as FBVALUE ptr ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
-    dim as integer v, exprdtype
+    dim as integer vexpr
 
 	cStoreTemp = NULL
 
@@ -429,23 +429,41 @@ private function cStoreTemp( byval expr as integer, _
 		if( s = NULL ) then
 			exit function
 		end if
-		v = astNewVAR( s, NULL, 0, dtype )
-		astFlush( astNewASSIGN( v, expr ) )
+		vexpr = astNewVAR( s, NULL, 0, dtype )
+		astFlush( astNewASSIGN( vexpr, expr ) )
 	else
-		exprdtype = astGetDataType( expr )
-		if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
-			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-				value64 = astGetValue64( expr )
-			else
-				value = cdbl( astGetValue64( expr ) )
-			end if
-		else
-			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-				value64 = clngint( astGetValue( expr ) )
-			else
-				value = astGetValue( expr )
-			end if
-		end if
+
+		select case as const astGetDataType( expr )
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			select case as const dtype
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+				v->value64 = astGetValue64( expr )
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				v->valuef = astGetValue64( expr )
+			case else
+				v->valuei = astGetValue64( expr )
+			end select
+
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			select case as const dtype
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+				v->value64 = astGetValuef( expr )
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				v->valuef = astGetValuef( expr )
+			case else
+				v->valuei = astGetValuef( expr )
+			end select
+
+		case else
+			select case as const dtype
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+				v->value64 = astGetValuei( expr )
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				v->valuef = astGetValuei( expr )
+			case else
+				v->valuei = astGetValuei( expr )
+			end select
+		end select
 
 		astDel expr
 		s = NULL
@@ -456,9 +474,12 @@ private function cStoreTemp( byval expr as integer, _
 end function
 
 '':::::
-private sub cFlushBOP( byval op as integer, byval dtype as integer, _
-	 		   		   byval v1 as FBSYMBOL ptr, byval v1value as double, byval v1value64 as longint, _
-			   		   byval v2 as FBSYMBOL ptr, byval v2value as double, byval v2value64 as longint, _
+private sub cFlushBOP( byval op as integer, _
+					   byval dtype as integer, _
+	 		   		   byval v1 as FBSYMBOL ptr, _
+	 		   		   byval val1 as FBVALUE ptr, _
+			   		   byval v2 as FBSYMBOL ptr, _
+			   		   byval val2 as FBVALUE ptr, _
 			   		   byval ex as FBSYMBOL ptr ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 
@@ -466,21 +487,27 @@ private sub cFlushBOP( byval op as integer, byval dtype as integer, _
 	if( v1 <> NULL ) then
 		expr1 = astNewVAR( v1, NULL, 0, dtype )
 	else
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			expr1 = astNewCONST64( v1value64, dtype )
-		else
-			expr1 = astNewCONST( v1value, dtype )
-		end if
+		select case as const dtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			expr1 = astNewCONST64( val1->value64, dtype )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			expr1 = astNewCONSTf( val1->valuef, dtype )
+		case else
+			expr1 = astNewCONSTi( val1->valuei, dtype )
+		end select
 	end if
 
 	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			expr2 = astNewCONST64( v2value64, dtype )
-		else
-			expr2 = astNewCONST( v2value, dtype )
-		end if
+		select case as const dtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			expr2 = astNewCONST64( val2->value64, dtype )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			expr2 = astNewCONSTf( val2->valuef, dtype )
+		case else
+			expr2 = astNewCONSTi( val2->valuei, dtype )
+		end select
 	end if
 
 	expr = astNewBOP( op, expr1, expr2, ex, FALSE )
@@ -491,9 +518,11 @@ private sub cFlushBOP( byval op as integer, byval dtype as integer, _
 end sub
 
 '':::::
-private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
+private sub cFlushSelfBOP( byval op as integer, _
+						   byval dtype as integer, _
 	 		       		   byval v1 as FBSYMBOL PTR, _
-			       		   byval v2 as FBSYMBOL PTR, byval v2value as double, byval v2value64 as longint ) static
+			       		   byval v2 as FBSYMBOL PTR, _
+			       		   byval val2 as FBVALUE ptr ) static
 	dim expr1 as integer, expr2 as integer, expr as integer
 
 	'' bop
@@ -502,11 +531,14 @@ private sub cFlushSelfBOP( byval op as integer, byval dtype as integer, _
 	if( v2 <> NULL ) then
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			expr2 = astNewCONST64( v2value64, dtype )
-		else
-			expr2 = astNewCONST( v2value, dtype )
-		end if
+		select case as const dtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			expr2 = astNewCONST64( val2->value64, dtype )
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			expr2 = astNewCONSTf( val2->valuef, dtype )
+		case else
+			expr2 = astNewCONSTi( val2->valuei, dtype )
+		end select
 	end if
 
 	expr = astNewBOP( op, expr1, expr2 )
@@ -529,12 +561,11 @@ end sub
 function cForStatement
     dim as integer iscomplex, ispositive
     dim as FBSYMBOL ptr il, tl, el, cl, c2l
-    dim cnt as FBSYMBOL ptr, elm as FBSYMBOL ptr
-    dim endc as FBSYMBOL ptr, endc_value as double, endc_value64 as longint
-    dim stp as FBSYMBOL ptr, stp_value as double, stp_value64 as longint
+    dim as FBSYMBOL ptr cnt, endc, stp, elm
+    dim as FBVALUE sval, eval, cval
     dim as integer idexpr, expr
-    dim as integer dtype, dclass, typ, exprdtype
-    dim oldforstmt as FBCMPSTMT, lastcompstmt as integer
+    dim as integer dtype, dclass, typ, lastcompstmt
+    dim as FBCMPSTMT oldforstmt
 
 	cForStatement = FALSE
 
@@ -591,7 +622,7 @@ function cForStatement
 	end if
 
 	'' store end condition into a temp var
-	endc = cStoreTemp( expr, dtype, dclass, endc_value, endc_value64 )
+	endc = cStoreTemp( expr, dtype, dclass, @eval )
 
 	'' STEP
 	ispositive 	= TRUE
@@ -603,13 +634,15 @@ function cForStatement
 		end if
 
 		'' store step into a temp var
-		exprdtype = astGetDataType( expr )
 		if( astIsCONST( expr ) ) then
-			if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
+			select case as const astGetDataType( expr )
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 				ispositive = (astGetValue64( expr ) >= 0)
-			else
-				ispositive = (astGetValue( expr ) >= 0)
-			end if
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				ispositive = (astGetValueF( expr ) >= 0)
+			case else
+				ispositive = (astGetValueI( expr ) >= 0)
+			end select
 		else
 			iscomplex = TRUE
 		end if
@@ -625,29 +658,51 @@ function cForStatement
 
 		else
             '' get costant step
-            if( (exprdtype = IR.DATATYPE.LONGINT) or (exprdtype = IR.DATATYPE.ULONGINT) ) then
-				if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-					stp_value64 = astGetValue64( expr )
-				else
-					stp_value = cdbl( astGetValue64( expr ) )
-				end if
-			else
-				if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-					stp_value64 = clngint( astGetValue( expr ) )
-				else
-					stp_value = astGetValue( expr )
-				end if
-			end if
+			select case as const astGetDataType( expr )
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+				select case as const dtype
+				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+					sval.value64 = astGetValue64( expr )
+				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+					sval.valuef = astGetValue64( expr )
+				case else
+					sval.valuei = astGetValue64( expr )
+				end select
+
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				select case as const dtype
+				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+					sval.value64 = astGetValueF( expr )
+				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+                    sval.valuef = astGetValueF( expr )
+				case else
+					sval.valuei = astGetValueF( expr )
+				end select
+
+			case else
+				select case as const dtype
+				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+					sval.value64 = astGetValueI( expr )
+				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+                    sval.valuef = astGetValueI( expr )
+				case else
+					sval.valuei = astGetValueI( expr )
+				end select
+			end select
+
 			astDel expr
 			stp = NULL
 		end if
 
 	else
-		if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-			stp_value64 = 1
-		else
-			stp_value = 1.0
-		end if
+		select case as const dtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			sval.value64 = 1
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			sval.valuef = 1.0
+		case else
+			sval.valuei = 1
+		end select
 		stp = NULL
 	end if
 
@@ -709,7 +764,7 @@ function cForStatement
 	irEmitLABEL cl, FALSE
 
 	'' counter += step
-	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, stp_value, stp_value64
+	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, @sval
 
 	'' test label
 	irEmitLABEL tl, FALSE
@@ -718,10 +773,10 @@ function cForStatement
 
 		if( ispositive ) then
     		'' counter <= end cond?
-			cFlushBOP IR.OP.LE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
+			cFlushBOP IR.OP.LE, dtype, cnt, NULL, endc, @eval, il
     	else
     		'' counter >= end cond?
-			cFlushBOP IR.OP.GE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
+			cFlushBOP IR.OP.GE, dtype, cnt, NULL, endc, @eval, il
     	end if
 
 		c2l = NULL
@@ -729,16 +784,25 @@ function cForStatement
 		c2l = symbAddLabel( hMakeTmpStr )
 
     	'' test step sign and branch
-		cFlushBOP IR.OP.GE, dtype, stp, stp_value, stp_value64, NULL, 0, 0, c2l
+		select case as const dtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			cval.value64 = 0
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			cval.valuef = 0.0
+		case else
+			cval.valuei = 0
+		end select
+
+		cFlushBOP IR.OP.GE, dtype, stp, @sval, NULL, @cval, c2l
 
     	'' negative, loop if >=
-		cFlushBOP IR.OP.GE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
+		cFlushBOP IR.OP.GE, dtype, cnt, NULL, endc, @eval, il
 		'' exit loop
 		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
     	'' control label
     	irEmitLABELNF c2l
     	'' positive, loop if <=
-		cFlushBOP IR.OP.LE, dtype, cnt, 0, 0, endc, endc_value, endc_value64, il
+		cFlushBOP IR.OP.LE, dtype, cnt, NULL, endc, @eval, il
     end if
 
     '' end label (loop exit)
@@ -1353,9 +1417,9 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 						    byval sym as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr, _
 						    minval as uinteger, maxval as uinteger, deflabel as FBSYMBOL ptr ) as integer
 
-	dim expr1 as integer, expr2 as integer, dtype as integer
-	dim value as uinteger, tovalue as uinteger
-	dim label as FBSYMBOL ptr
+	dim as integer expr1, expr2
+	dim as uinteger value, tovalue
+	dim as FBSYMBOL ptr label
 
 	cSelConstCaseStmt = FALSE
 
@@ -1385,12 +1449,15 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				exit function
 			end if
 
-			dtype = astGetDataType( expr1 )
-			if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-				value = cuint( astGetValue64( expr1 ) )
-			else
-				value = cuint( astGetValue( expr1 ) )
-			end if
+			select case as const astGetDataType( expr1 )
+			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+				value = astGetValue64( expr1 )
+			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+				value = astGetValueF( expr1 )
+			case else
+				value = astGetValueI( expr1 )
+			end select
+
 			astDel expr1
 
 			'' TO?
@@ -1404,12 +1471,15 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 					exit function
 				end if
 
-				dtype = astGetDataType( expr2 )
-				if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-					tovalue = cuint( astGetValue64( expr2 ) )
-				else
-					tovalue = cuint( astGetValue( expr2 ) )
-				end if
+				select case as const astGetDataType( expr2 )
+				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+					tovalue = astGetValue64( expr2 )
+				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+					tovalue = astGetValueF( expr2 )
+				case else
+					tovalue = astGetValueI( expr2 )
+				end select
+
 				astDel expr2
 
 				for value = value to tovalue
@@ -1568,20 +1638,20 @@ function cSelectConstStmt as integer
 	'' check min val
 	if( minval > 0 ) then
 		expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-						  astNewCONST( minval, IR.DATATYPE.UINT ), deflabel, FALSE )
+						  astNewCONSTi( minval, IR.DATATYPE.UINT ), deflabel, FALSE )
 		astFlush( expr )
 	end if
 
 	'' check max val
 	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-					  astNewCONST( maxval, IR.DATATYPE.UINT ), deflabel, FALSE )
+					  astNewCONSTi( maxval, IR.DATATYPE.UINT ), deflabel, FALSE )
 	astFlush( expr )
 
     '' jump to table[idx]
     tbsym = hSelConstAllocTbSym( )
 
 	idxexpr = astNewBOP( IR.OP.MUL, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-    				  			    astNewCONST( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
+    				  			    astNewCONSTi( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
 
     expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
     				  IR.DATATYPE.UINT, NULL )
@@ -1747,7 +1817,7 @@ function cEndStatement
   	'' (Expression | )
   	select case lexCurrentToken
   	case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
-  		errlevel = astNewCONST( 0, IR.DATATYPE.INTEGER )
+  		errlevel = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
   	case else
   		if( not cExpression( errlevel ) ) then
   		end if

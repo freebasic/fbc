@@ -74,7 +74,7 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, byval arrayexpr as 
     '' static array
     else
 
-    	idxexpr = astNewCONST( 0, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 
     end if
 
@@ -183,7 +183,7 @@ function cGfxPset as integer
 			exit function
 		end if
 	else
-		cexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
 	''
@@ -243,8 +243,8 @@ function cGfxLine as integer
 
 	else
 		coordtype = FBGFX_COORDTYPE_R
-		x1expr = astNewCONST( 0, IR.DATATYPE.SINGLE )
-		y1expr = astNewCONST( 0, IR.DATATYPE.SINGLE )
+		x1expr = astNewCONSTf( 0, IR.DATATYPE.SINGLE )
+		y1expr = astNewCONSTf( 0, IR.DATATYPE.SINGLE )
 	end if
 
 	'' '-'
@@ -300,7 +300,7 @@ function cGfxLine as integer
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( cexpr ) ) then
-			cexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 		end if
 
 		'' ',' LIT_STRING? - linetype
@@ -323,7 +323,7 @@ function cGfxLine as integer
 			end if
 		end if
 	else
-		cexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
 	''
@@ -403,7 +403,7 @@ function cGfxCircle as integer
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( cexpr ) ) then
-			cexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 		end if
 
         '' (',' Expr? )? - iniarc
@@ -438,7 +438,7 @@ function cGfxCircle as integer
         end if
 
 	else
-		cexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
 	''
@@ -517,11 +517,11 @@ function cGfxPaint as integer
 	end if
 
 	if( pexpr = INVALID ) then
-		pexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
 	if( bexpr = INVALID ) then
-		bexpr = astNewCONST( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
 	cGfxPaint = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )

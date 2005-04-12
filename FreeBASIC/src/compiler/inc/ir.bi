@@ -210,7 +210,10 @@ declare sub 		irEmitVARINIBEGIN	( byval sym as FBSYMBOL ptr )
 
 declare sub 		irEmitVARINIEND		( byval sym as FBSYMBOL ptr )
 
-declare sub 		irEmitVARINI		( byval dtype as integer, _
+declare sub 		irEmitVARINIi		( byval dtype as integer, _
+										  byval value as integer )
+
+declare sub 		irEmitVARINIf		( byval dtype as integer, _
 										  byval value as double )
 
 declare sub 		irEmitVARINI64		( byval dtype as integer, _
