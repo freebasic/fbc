@@ -1477,11 +1477,12 @@ end function
 function cSymbolDef( byval alloctype as integer, _
 					 byval dopreserve as integer = FALSE )
 
-    dim id as string, idalias as string, symbol as FBSYMBOL ptr
-    dim addsuffix as integer, atype as integer, isdynamic as integer, ismultdecl as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ofs as integer, ptrcnt as integer
-    dim dimensions as integer, dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
-    dim exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) as integer
+    dim as string id, idalias
+    dim as FBSYMBOL ptr symbol, subtype
+    dim as integer addsuffix, atype, isdynamic, ismultdecl, istypeless
+    dim as integer typ, lgt, ofs, ptrcnt
+    dim as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
+    dim as integer exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1) , dimensions
 
     cSymbolDef = FALSE
 
@@ -1521,6 +1522,7 @@ function cSymbolDef( byval alloctype as integer, _
 
     	id 			= lexEatToken
     	idalias		= ""
+    	istypeless	= FALSE
 
     	'' ('(' ArrayDecl? ')')?
 		dimensions = 0
@@ -1594,6 +1596,7 @@ function cSymbolDef( byval alloctype as integer, _
     		else
 
 				if( typ = INVALID ) then
+					istypeless = TRUE
 					typ = hGetDefType( id )
 				end if
     			lgt	= symbCalcLen( typ, subtype )
@@ -1604,18 +1607,22 @@ function cSymbolDef( byval alloctype as integer, _
     	''
     	if( isdynamic ) then
 
-    		symbol = cDynArrayDef( id, idalias, typ, subtype, ptrcnt, lgt, addsuffix, alloctype, dopreserve, dimensions, exprTB() )
+    		symbol = cDynArrayDef( id, idalias, typ, subtype, ptrcnt, istypeless, _
+    							   lgt, addsuffix, alloctype, dopreserve, _
+    							   dimensions, exprTB() )
     		if( symbol = NULL ) then
     			exit function
     		end if
 
     	else
 
-            hMakeArrayDimTB dimensions, exprTB(), dTB()
+            hMakeArrayDimTB( dimensions, exprTB(), dTB() )
 
             atype = alloctype and (not FB.ALLOCTYPE.DYNAMIC)
 
-    		symbol = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
+    		symbol = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
+    							   lgt, dimensions, dTB(), _
+    							   atype, addsuffix, FALSE, TRUE )
     		if( symbol = NULL ) then
 
                 symbol = hDeclExternVar( id, typ, subtype, atype, addsuffix )
@@ -1670,36 +1677,59 @@ function cDynArrayDef( id as string, _
 					   byval typ as integer, _
 					   byval subtype as FBSYMBOL ptr, _
 					   byval ptrcnt as integer, _
+					   byval istypeless as integer, _
 					   byval lgt as integer, _
 					   byval addsuffix as integer, _
 					   byval alloctype as integer, _
 					   byval dopreserve as integer, _
 					   byval dimensions as integer, _
-					   exprTB() as integer ) as FBSYMBOL ptr
+					   exprTB() as integer ) as FBSYMBOL ptr static
 
-    dim s as FBSYMBOL ptr
-    dim res as integer
-    dim atype as integer
-    dim dTB(0 to FB.MAXARRAYDIMS-1) as FBARRAYDIM
+    dim as FBSYMBOL ptr s
+    dim as integer atype, isrealloc
+    dim as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
 
     cDynArrayDef = NULL
 
     atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
 
     ''
+  	isrealloc = TRUE
   	s = symbFindByNameAndSuffix( id, typ )
    	if( s = NULL ) then
-   		s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, lgt, dimensions, dTB(), atype, addsuffix, FALSE, TRUE )
-   		if( s = NULL ) then
-   			hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
-   			exit function
-   		end if
-	else
 
+   		'' typeless REDIM's?
+   		if( istypeless ) then
+   			'' try to find a var with the same name
+   			s = symbFindByNameAndClass( id, FB.SYMBCLASS.VAR )
+   			'' copy type
+   			if( s <> NULL ) then
+   				typ 	= s->typ
+   				subtype = s->subtype
+   				lgt		= s->lgt
+   			end if
+   		end if
+
+   		if( s = NULL ) then
+   			isrealloc = FALSE
+   			s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
+   							  lgt, dimensions, dTB(), _
+   							  atype, addsuffix, FALSE, TRUE )
+   			if( s = NULL ) then
+   				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+   				exit function
+   			end if
+   		end if
+
+   	end if
+
+	'' check reallocation
+	if( isrealloc ) then
+		'' not dynamic?
 		if( not symbGetIsDynamic( s ) ) then
 
+   			'' could be an external..
    			s = hDeclExternVar( id, typ, subtype, atype, addsuffix )
-
    			if( s = NULL ) then
    				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
 				exit function
@@ -1707,6 +1737,7 @@ function cDynArrayDef( id as string, _
 
 		else
 
+			'' external?
 			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXTERN) > 0 ) then
 				if( (atype and FB.ALLOCTYPE.EXTERN) > 0 ) then
    					hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
@@ -1722,7 +1753,7 @@ function cDynArrayDef( id as string, _
 
 	alloctype = symbGetAllocType( s )
 
-	''
+	'' external? don't do any checks
 	if( (alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
 		cDynArrayDef = TRUE
 		exit function
