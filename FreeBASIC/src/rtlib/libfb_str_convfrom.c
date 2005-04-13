@@ -29,45 +29,6 @@
 #include "fb.h"
 
 /*:::::*/
-static int fb_hStrToInt( char *s, int len, int radix )
-{
-	int c, v;
-
-	v = 0;
-
-	switch( radix )
-	{
-		/* hex */
-		case 16:
-			while( --len >= 0 )
-			{
-				c = (int)*s++ - 48;
-                if( c > 9 )
-                	c -= (65 - 57 - 1);
-				if( c > 16 )
-					c -= (97 - 65);
-
-				v = (v * 16) + c;
-			}
-		break;
-
-		/* oct */
-		case 8:
-			while( --len >= 0 )
-				v = (v * 8) + ((int)*s++ - 48);
-		break;
-
-		/* bin */
-		case 2:
-			while( --len >= 0 )
-				v = (v * 2) + ((int)*s++ - 48);
-		break;
-	}
-
-	return v;
-}
-
-/*:::::*/
 FBCALL double fb_hStr2Double( char *src, int len )
 {
     char 	*p;
@@ -100,7 +61,7 @@ FBCALL double fb_hStr2Double( char *src, int len )
 		}
 
 		if( radix != 0 )
-			return (double)fb_hStrToInt( &p[2], len-2, radix );
+			return (double)fb_hStrRadix2Int( &p[2], len-2, radix );
 	}
 	return atof( p );
 

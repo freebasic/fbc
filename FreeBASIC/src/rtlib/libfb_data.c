@@ -96,7 +96,7 @@ FBCALL void fb_DataReadByte( char *dst )
 		*dst = 0;
 	else
 	{
-        *dst = (char)fb_hStr2Double( (char *)fb_dataptr, len );
+        *dst = (char)fb_hStr2Int( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -117,7 +117,7 @@ FBCALL void fb_DataReadUByte( unsigned char *dst )
 		*dst = 0;
 	else
 	{
-        *dst = (unsigned char)fb_hStr2Double( (char *)fb_dataptr, len );
+        *dst = (unsigned char)fb_hStr2Int( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -138,7 +138,7 @@ FBCALL void fb_DataReadShort( short *dst )
 		*dst = 0;
 	else
 	{
-        *dst = (short)fb_hStr2Double( (char *)fb_dataptr, len );
+        *dst = (short)fb_hStr2Int( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -159,7 +159,7 @@ FBCALL void fb_DataReadUShort( unsigned short *dst )
 		*dst = 0;
 	else
 	{
-        *dst = (unsigned short)fb_hStr2Double( (char *)fb_dataptr, len );
+        *dst = (unsigned short)fb_hStr2Int( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -180,7 +180,7 @@ FBCALL void fb_DataReadInt( int *dst )
 		*dst = 0;
 	else
 	{
-        *dst = (int)fb_hStr2Double( (char *)fb_dataptr, len );
+        *dst = (int)fb_hStr2Int( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -201,7 +201,7 @@ FBCALL void fb_DataReadUInt( unsigned int *dst )
 		*dst = 0;
 	else
 	{
-        *dst = (unsigned int)fb_hStr2Double( (char *)fb_dataptr, len );
+        *dst = (unsigned int)fb_hStr2Int( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -222,11 +222,7 @@ FBCALL void fb_DataReadLongint( long long *dst )
 		*dst = 0;
 	else
 	{
-#ifndef TARGET_DOS
-        *dst = (long long)atoll( (char *)fb_dataptr );
-#else
-		*dst = (long long)strtoll( (char *)fb_dataptr, NULL, 10 );
-#endif
+		*dst = (long long)fb_hStr2Longint( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}
@@ -247,11 +243,7 @@ FBCALL void fb_DataReadULongint( unsigned long long *dst )
 		*dst = 0;
 	else
 	{
-#ifndef TARGET_DOS
-        *dst = (unsigned long long)atoll( (char *)fb_dataptr );
-#else
-		*dst = (unsigned long long)strtoll( (char *)fb_dataptr, NULL, 10 );
-#endif
+		*dst = (unsigned long long)fb_hStr2Longint( (char *)fb_dataptr, len );
 
 		fb_dataptr += len + 1;
 	}

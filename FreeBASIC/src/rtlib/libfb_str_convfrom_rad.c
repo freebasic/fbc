@@ -17,21 +17,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * str_convfrom_lng.c -- val64 function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
-
-#include <malloc.h>
 #include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-static long long fb_hStrRadix2Longint( char *s, int len, int radix )
+FBCALL int fb_hStrRadix2Int( char *src, int len, int radix )
 {
-	long long c, v;
+	int c, v;
 
 	v = 0;
 
@@ -41,7 +33,7 @@ static long long fb_hStrRadix2Longint( char *s, int len, int radix )
 		case 16:
 			while( --len >= 0 )
 			{
-				c = (long long)*s++ - 48;
+				c = (int)*src++ - 48;
                 if( c > 9 )
                 	c -= (65 - 57 - 1);
 				if( c > 16 )
@@ -54,83 +46,15 @@ static long long fb_hStrRadix2Longint( char *s, int len, int radix )
 		/* oct */
 		case 8:
 			while( --len >= 0 )
-				v = (v * 8) + ((long long)*s++ - 48);
+				v = (v * 8) + ((int)*src++ - 48);
 		break;
 
 		/* bin */
 		case 2:
 			while( --len >= 0 )
-				v = (v * 2) + ((long long)*s++ - 48);
+				v = (v * 2) + ((int)*src++ - 48);
 		break;
 	}
 
 	return v;
 }
-
-/*:::::*/
-FBCALL long long fb_hStr2Longint( char *src, int len )
-{
-    char 	*p;
-    int 	radix;
-
-	/* skip white spc */
-	p = fb_hStrSkipChar( src, len, 32 );
-
-	len -= (int)(p - src);
-	if( len < 1 )
-		return 0;
-
-	else if( (len >= 2) && (p[0] == '&') )
-	{
-		radix = 0;
-		switch( p[1] )
-		{
-			case 'h':
-			case 'H':
-				radix = 16;
-			break;
-			case 'o':
-			case 'O':
-				radix = 8;
-			break;
-			case 'b':
-			case 'B':
-				radix = 2;
-			break;
-		}
-
-		if( radix != 0 )
-			return fb_hStrRadix2Longint( &p[2], len-2, radix );
-	}
-#ifndef TARGET_DOS
-	return atoll( p );
-#else
-	return strtoll( p, NULL, 10 );
-#endif
-
-}
-
-/*:::::*/
-FBCALL long long fb_VAL64 ( FBSTRING *str )
-{
-    long long	val;
-
-	if( str == NULL )
-	    return 0;
-
-	FB_STRLOCK();
-
-	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
-		val = 0;
-	else
-		val = fb_hStr2Longint( str->data, FB_STRSIZE( str ) );
-
-	/* del if temp */
-	fb_hStrDelTemp( str );
-
-	FB_STRUNLOCK();
-
-	return val;
-}
-
-

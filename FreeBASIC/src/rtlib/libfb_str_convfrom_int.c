@@ -18,7 +18,7 @@
  */
 
 /*
- * str_convfrom_lng.c -- val64 function
+ * str_convfrom_int.c -- valint function
  *
  * chng: mar/2005 written [v1ctor]
  *
@@ -29,46 +29,7 @@
 #include "fb.h"
 
 /*:::::*/
-static long long fb_hStrRadix2Longint( char *s, int len, int radix )
-{
-	long long c, v;
-
-	v = 0;
-
-	switch( radix )
-	{
-		/* hex */
-		case 16:
-			while( --len >= 0 )
-			{
-				c = (long long)*s++ - 48;
-                if( c > 9 )
-                	c -= (65 - 57 - 1);
-				if( c > 16 )
-					c -= (97 - 65);
-
-				v = (v * 16) + c;
-			}
-		break;
-
-		/* oct */
-		case 8:
-			while( --len >= 0 )
-				v = (v * 8) + ((long long)*s++ - 48);
-		break;
-
-		/* bin */
-		case 2:
-			while( --len >= 0 )
-				v = (v * 2) + ((long long)*s++ - 48);
-		break;
-	}
-
-	return v;
-}
-
-/*:::::*/
-FBCALL long long fb_hStr2Longint( char *src, int len )
+FBCALL int fb_hStr2Int( char *src, int len )
 {
     char 	*p;
     int 	radix;
@@ -100,20 +61,16 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 		}
 
 		if( radix != 0 )
-			return fb_hStrRadix2Longint( &p[2], len-2, radix );
+			return fb_hStrRadix2Int( &p[2], len-2, radix );
 	}
-#ifndef TARGET_DOS
-	return atoll( p );
-#else
-	return strtoll( p, NULL, 10 );
-#endif
 
+	return atoi( p );
 }
 
 /*:::::*/
-FBCALL long long fb_VAL64 ( FBSTRING *str )
+FBCALL int fb_VALINT ( FBSTRING *str )
 {
-    long long	val;
+    int	val;
 
 	if( str == NULL )
 	    return 0;
@@ -123,7 +80,7 @@ FBCALL long long fb_VAL64 ( FBSTRING *str )
 	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
 		val = 0;
 	else
-		val = fb_hStr2Longint( str->data, FB_STRSIZE( str ) );
+		val = fb_hStr2Int( str->data, FB_STRSIZE( str ) );
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
@@ -132,5 +89,3 @@ FBCALL long long fb_VAL64 ( FBSTRING *str )
 
 	return val;
 }
-
-

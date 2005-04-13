@@ -199,8 +199,10 @@ FBCALL FBSTRING 	*fb_DoubleToStr 		( double num );
 #define FB_F2A_NOEXP	 0x00000002
 
 FBCALL double 		fb_hStr2Double			( char *src, int len );
+FBCALL int 			fb_hStr2Int				( char *src, int len );
+FBCALL long long 	fb_hStr2Longint			( char *src, int len );
+FBCALL int 			fb_hStrRadix2Int		( char *src, int len, int radix );
 	   char 		*fb_hFloat2Str			( double val, char *buffer, int digits, int mask );
-
 
 	   FBSTRING 	*fb_CHR 				( int args, ... );
 FBCALL unsigned int fb_ASC 					( FBSTRING *str, int pos );
