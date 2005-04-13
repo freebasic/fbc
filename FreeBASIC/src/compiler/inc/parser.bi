@@ -64,6 +64,7 @@ declare function 	cDynArrayDef			( id as string, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _
+											  byval istypeless as integer, _
 											  byval lgt as integer, _
 											  byval addsuffix as integer, _
 											  byval alloctype as integer, _
