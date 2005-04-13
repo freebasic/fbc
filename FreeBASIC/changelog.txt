@@ -77,6 +77,7 @@ Version 0.13 Beta:
 - inline asm now supports complete IA32 instruction set (lillo)
 - unsigned versions for STR$() (v1c)
 - the val64() intrinsic function, to convert a string to a longint (v1c)
+- the valint() intrinsic function, to convert a string to an integer (VAL() returns a DOUBLE) (v1c)
 - the SIZEOF() intrinsic function, to return the size of any data type (v1c)
 - SCREEN/SCREENRES now accept an additional optional parameter allowing to request a specific refresh rate (lillo)
 - optional sub/function parameters can now be strings as well, as in: "declare sub test(arg as string = "default")" (lillo)
