@@ -665,6 +665,10 @@ function cTypedefDecl( id as string ) as integer
 
     if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
 
+    	if( hGetLastError <> FB.ERRMSG.OK ) then
+    		exit function
+    	end if
+    	
     	tname = lexTokenText
     	'' pointing to itself? then it's a void..
     	if( tname = id ) then
@@ -809,6 +813,10 @@ function cAsElementDecl( ) as integer
 
 		'' ArrayDecl?
 		if( not cStaticArrayDecl( dimensions, dTB() ) ) then
+
+    		if( hGetLastError <> FB.ERRMSG.OK ) then
+    			exit function
+    		end if
 
 			'' ':' NUMLIT?
 			if( lexCurrentToken = CHAR_COLON ) then
