@@ -1,0 +1,29 @@
+''
+''
+'' spinbutton -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __spinbutton_bi__
+#define __spinbutton_bi__
+
+#include once "wx-c/wx.bi"
+
+
+declare function wxSpinButton cdecl alias "wxSpinButton_ctor" () as wxSpinButton ptr
+declare function wxSpinButton_Create cdecl alias "wxSpinButton_Create" (byval self as wxSpinButton ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxSpinButton_GetValue cdecl alias "wxSpinButton_GetValue" (byval self as wxSpinButton ptr) as integer
+declare function wxSpinButton_GetMin cdecl alias "wxSpinButton_GetMin" (byval self as wxSpinButton ptr) as integer
+declare function wxSpinButton_GetMax cdecl alias "wxSpinButton_GetMax" (byval self as wxSpinButton ptr) as integer
+declare sub wxSpinButton_SetValue cdecl alias "wxSpinButton_SetValue" (byval self as wxSpinButton ptr, byval val as integer)
+declare sub wxSpinButton_SetRange cdecl alias "wxSpinButton_SetRange" (byval self as wxSpinButton ptr, byval minVal as integer, byval maxVal as integer)
+declare function wxSpinEvent cdecl alias "wxSpinEvent_ctor" (byval commandType as wxEventType, byval id as integer) as wxSpinEvent ptr
+declare function wxSpinEvent_GetPosition cdecl alias "wxSpinEvent_GetPosition" (byval self as wxSpinEvent ptr) as integer
+declare sub wxSpinEvent_SetPosition cdecl alias "wxSpinEvent_SetPosition" (byval self as wxSpinEvent ptr, byval pos as integer)
+declare sub wxSpinEvent_Veto cdecl alias "wxSpinEvent_Veto" (byval self as wxSpinEvent ptr)
+declare sub wxSpinEvent_Allow cdecl alias "wxSpinEvent_Allow" (byval self as wxSpinEvent ptr)
+declare function wxSpinEvent_IsAllowed cdecl alias "wxSpinEvent_IsAllowed" (byval self as wxSpinEvent ptr) as integer
+
+#endif

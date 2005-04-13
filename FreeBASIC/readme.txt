@@ -504,6 +504,10 @@ Credits (in alphabetic order):
       support on Windows.
     - Completed the CRTDLL and DDRAW headers.
 
+  o Dumbledore
+    - Ported the wx-c header (later replaced by the SWIG FB wrapper version)
+    - Wrote the wx demonstration in the examples/wx-c dir.
+
   o Edmond Leung (leung.edmond@gmail.com): 
     - Translated the SDL headers, including SDL_mixer and SDL_image.
     - Wrote/ported many of the examples in the examples/SDL dir.
