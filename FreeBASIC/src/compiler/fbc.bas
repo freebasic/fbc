@@ -1186,7 +1186,7 @@ function processOptions as integer
 				argv(i+1) = ""
 
 			case "t"
-				ctx.stacksize = cint( val( argv(i+1) ) ) * 1024
+				ctx.stacksize = valint( argv(i+1) ) * 1024
 				if( ctx.stacksize < FB_MINSTACKSIZE ) then
 					ctx.stacksize = FB_MINSTACKSIZE
 				end if
@@ -1256,7 +1256,7 @@ function processCompOptions as integer
 				fbSetOption FB.COMPOPT.PROFILE, TRUE
 
 			case "w"
-				fbSetOption FB.COMPOPT.WARNINGLEVEL, val( argv(i+1) )
+				fbSetOption FB.COMPOPT.WARNINGLEVEL, valint( argv(i+1) )
 
 			case "noerrline"
 				fbSetOption FB.COMPOPT.SHOWERROR, FALSE

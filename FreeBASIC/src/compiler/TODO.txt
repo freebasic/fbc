@@ -1,4 +1,6 @@
 
+[ ] check for references to self on TYPE fields (field AS parent)
+
 [ ] make PUT# and GET# accept a 4th optional argument: bytes
 
 [ ] rewrite the IR module using pointers instead of indexes, to be able to make fast links between

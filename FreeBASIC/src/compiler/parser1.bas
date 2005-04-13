@@ -668,7 +668,7 @@ function cTypedefDecl( id as string ) as integer
     	if( hGetLastError <> FB.ERRMSG.OK ) then
     		exit function
     	end if
-    	
+
     	tname = lexTokenText
     	'' pointing to itself? then it's a void..
     	if( tname = id ) then
@@ -750,7 +750,7 @@ function cElementDecl( id as string, _
 		if( lexCurrentToken = CHAR_COLON ) then
 			if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
 				lexSkipToken
-				bits = val( lexEatToken )
+				bits = valint( lexEatToken )
 				if( bits <= 0 ) then
     				hReportError FB.ERRMSG.SYNTAXERROR, TRUE
     				exit function
@@ -822,7 +822,7 @@ function cAsElementDecl( ) as integer
 			if( lexCurrentToken = CHAR_COLON ) then
 				if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
 					lexSkipToken
-					bits = val( lexEatToken )
+					bits = valint( lexEatToken )
 				end if
 
 				if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
@@ -2575,7 +2575,7 @@ function cSymbolType( typ as integer, _
 			if( not cConstExprValue( text ) ) then
 				exit function
 			end if
-			lgt = val( text ) + 1
+			lgt = valint( text ) + 1
 			'' min 1 char + null-term
 			if( lgt <= 1 ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
@@ -2596,7 +2596,7 @@ function cSymbolType( typ as integer, _
 				exit function
 			end if
 			typ = FB.SYMBTYPE.CHAR
-			lgt = val( text )
+			lgt = valint( text )
 			'' min 1 char
 			if( lgt < 1 ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
@@ -3287,7 +3287,7 @@ function cOptDecl
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
-		env.optbase = val( lexEatToken )
+		env.optbase = valint( lexEatToken )
 
 	case FB.TK.BYVAL
 		lexSkipToken

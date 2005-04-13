@@ -1091,7 +1091,7 @@ sub emitSTORETOINT64 ( byval dname as string, _
 	if( svreg->typ = IR.VREGTYPE.IMM ) then
 		emithMOV dst1, src1
 
-		if( val( src1 ) < -1 ) then
+		if( valint( src1 ) < -1 ) then
 			emithMOV dst2, "-1"
 		else
 			emithMOV dst2, "0"
@@ -1666,7 +1666,7 @@ sub emitLOADTOINT64( byval dname as string, _
 
         emithMOV dst1, src1
 
-		if( val( src1 ) < -1 ) then
+		if( valint( src1 ) < -1 ) then
 			emithMOV dst2, "-1"
 		else
 			emithMOV dst2, "0"
@@ -2209,7 +2209,7 @@ sub emitADD( byval dname as string, _
 		doinc = FALSE
 		dodec = FALSE
 		if( svreg->typ = IR.VREGTYPE.IMM ) then
-			select case val( src )
+			select case valint( src )
 			case 1
 				doinc = TRUE
 			case -1
@@ -2300,7 +2300,7 @@ sub emitSUB( byval dname as string, _
 		doinc = FALSE
 		dodec = FALSE
 		if( svreg->typ = IR.VREGTYPE.IMM ) then
-			select case val( src )
+			select case valint( src )
 			case 1
 				dodec = TRUE
 			case -1
@@ -3092,7 +3092,7 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 	'' immediate
 	else
 
-		if( val( src ) <> 32 ) then
+		if( valint( src ) <> 32 ) then
 			if( op = IR.OP.SHL ) then
 				outp "shld edx, eax, " + src
 				outp mnemonic + " eax, " + src
@@ -3686,7 +3686,7 @@ sub emithICMP( byval rname as string, _
 	if( len( src ) = 0 ) then
 		dotest = TRUE
 	elseif( (svreg->typ = IR.VREGTYPE.IMM) and (dvreg->typ = IR.VREGTYPE.REG) ) then
-		if( val( src ) = 0 ) then
+		if( valint( src ) = 0 ) then
 			dotest = TRUE
 		end if
 	end if

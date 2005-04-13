@@ -972,7 +972,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 						nval[3] = 0
 					end if
 
-					nval = oct$( val( nval ) )
+					nval = oct$( valint( nval ) )
 					'' save the oct len, or concatenation would fail if number chars follow
 					*ps = len( nval )
 					ps += 1

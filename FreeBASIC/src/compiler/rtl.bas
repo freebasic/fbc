@@ -961,7 +961,7 @@ data "ucase","fb_UCASE", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
 '' fb_VAL ( str as string ) as double
 data "val","fb_VAL", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
 					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-'' fb_VAL64 ( str as string ) as integer
+'' fb_VALINT ( str as string ) as integer
 data "valint","fb_VALINT", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
 					       FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_VAL64 ( str as string ) as longint

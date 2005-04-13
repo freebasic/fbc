@@ -1109,7 +1109,7 @@ function cConstant( constexpr as integer )
   			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
   				constexpr = astNewCONSTf( val( text ), typ )
   			case else
-  				constexpr = astNewCONSTi( val( text ), typ )
+  				constexpr = astNewCONSTi( valint( text ), typ )
   			end select
   		end if
 
@@ -1139,10 +1139,8 @@ function cLiteral( litexpr as integer )
 			litexpr = astNewCONST64( val64( lexTokenText ), typ )
   		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
 			litexpr = astNewCONSTf( val( lexTokenText ), typ )
-		case IR.DATATYPE.UINT
-			litexpr = astNewCONSTi( cuint( val( lexTokenText ) ), typ )
 		case else
-			litexpr = astNewCONSTi( cint( val( lexTokenText ) ), typ )
+			litexpr = astNewCONSTi( valint( lexTokenText ), typ )
   		end select
 
   		lexSkipToken
