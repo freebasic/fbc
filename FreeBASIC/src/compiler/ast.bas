@@ -2035,6 +2035,45 @@ private function astGetUDTElm( byval n as integer ) as FBSYMBOL ptr static
 
 end function
 
+'':::::
+sub astConvertValue( byval n as integer, _
+					 byval v as FBVALUE ptr, _
+					 byval todtype as integer ) static
+
+	select case as const astTB(n).dtype
+	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		select case as const todtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			v->value64 = astTB(n).v.value64
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			v->valuef  = astTB(n).v.value64
+		case else
+			v->valuei  = astTB(n).v.value64
+		end select
+
+	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		select case as const todtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			v->value64 = astTB(n).v.valuef
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			v->valuef  = astTB(n).v.valuef
+		case else
+			v->valuei  = astTB(n).v.valuef
+		end select
+
+	case else
+		select case as const todtype
+		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			v->value64 = astTB(n).v.valuei
+		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			v->valuef  = astTB(n).v.valuei
+		case else
+			v->valuei  = astTB(n).v.valuei
+		end select
+	end select
+
+end sub
+
 ''::::
 function astLoad( byval n as integer ) as integer
 
@@ -3362,6 +3401,32 @@ function astNewCONST64( byval value as longint, _
 
 	astTB(n).v.value64 = value
 	astTB(n).defined   = TRUE
+
+end function
+
+'':::::
+function astNewCONST( byval v as FBVALUE ptr, _
+					  byval dtype as integer ) as integer static
+    dim n as integer
+
+	'' alloc new node
+	n = astNew( AST.NODECLASS.CONST, dtype )
+	astNewCONST = n
+
+	if( n = INVALID ) then
+		exit function
+	end if
+
+	select case as const dtype
+	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		astTB(n).v.value64 = v->value64
+	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		astTB(n).v.valuef = v->valuef
+	case else
+		astTB(n).v.valuei = v->valuei
+	end select
+
+	astTB(n).defined = TRUE
 
 end function
 

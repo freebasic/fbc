@@ -153,6 +153,10 @@ declare function 	astIsADDR			( byval n as integer ) as integer
 
 declare function 	astGetSymbol		( byval n as integer ) as FBSYMBOL ptr
 
+declare sub 		astConvertValue     ( byval n as integer, _
+					       				  byval v as FBVALUE ptr, _
+					       				  byval todtype as integer )
+
 declare function	astLoad				( byval n as integer ) as integer
 
 declare function	astFlush			( byval n as integer ) as integer
@@ -184,6 +188,9 @@ declare function 	astNewUOP			( byval op as integer, _
 										  byval o as integer ) as integer
 
 declare function 	astLoadUOP			( byval n as integer ) as integer
+
+declare function 	astNewCONST			( byval v as FBVALUE ptr, _
+					  					  byval dtype as integer ) as integer
 
 declare function 	astNewCONSTi		( byval value as integer, _
 										  byval dtype as integer ) as integer
@@ -295,11 +302,11 @@ common shared astTB( ) as ASTNODE
 
 #define astIsOFFSET(n) (astTB(n).class = AST.NODECLASS.OFFSET)
 
-#define astGetValuei(n) iif( astTB(n).defined, astTB(n).v.valuei, 0 )
+#define astGetValuei(n) astTB(n).v.valuei
 
-#define astGetValuef(n) iif( astTB(n).defined, astTB(n).v.valuef, 0.0# )
+#define astGetValuef(n) astTB(n).v.valuef
 
-#define astGetValue64(n) iif( astTB(n).defined, astTB(n).v.value64, 0LL )
+#define astGetValue64(n) astTB(n).v.value64
 
 #define astGetDataType(n) iif( n <> INVALID, astTB(n).dtype, INVALID )
 
