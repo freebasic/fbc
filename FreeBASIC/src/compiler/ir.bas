@@ -1964,6 +1964,7 @@ sub irFlushCOMP( byval op as integer, _
 	end if
 
 	'' destine allocation comes *after* source, 'cause the FPU stack
+	doload = FALSE
 	if( (vr <> INVALID) and (vr = v1) ) then	'' x86 assumption
 		doload = TRUE
 	elseif( dc1 = IR.DATACLASS.FPOINT ) then	'' /
@@ -1971,9 +1972,9 @@ sub irFlushCOMP( byval op as integer, _
 	elseif( t1 = IR.VREGTYPE.IMM) then          '' /
 		doload = TRUE
 	elseif( t2 <> IR.VREGTYPE.REG ) then        '' /
-		doload = TRUE
-	else
-		doload = FALSE
+		if( t2 <> IR.VREGTYPE.IMM ) then
+			doload = TRUE
+		end if
 	end if
 
 	if( (t1 = IR.VREGTYPE.REG) or doload ) then
