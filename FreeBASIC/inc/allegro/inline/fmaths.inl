@@ -1,0 +1,210 @@
+'         ______   ___    ___
+'        /\  _  \ /\_ \  /\_ \
+'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
+'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
+'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
+'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
+'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
+'                                           /\____/
+'                                           \_/__/
+'
+'      Fixed point math inline functions (generic C).
+'
+'      By Shawn Hargreaves.
+'
+'      See readme.txt for copyright information.
+'
+
+#ifndef ALLEGRO_FMATHS_INL
+#define ALLEGRO_FMATHS_INL
+
+
+#define ALLEGRO_IMPORT_MATH_ASM
+#include "allegro/inline/asm.inl"
+#undef ALLEGRO_IMPORT_MATH_ASM
+
+Declare Function itofix CDecl Alias "itofix" (ByVal x As Integer) As fixed
+Declare Function fixtoi CDecl Alias "fixtoi" (ByVal x As fixed) As Integer
+Declare Function fixfloor CDecl Alias "fixfloor" (ByVal x As fixed) As Integer
+Declare Function fixceil CDecl Alias "fixceil" (ByVal x As fixed) As Integer
+Declare Function ftofix CDecl Alias "ftofix" (ByVal x As Double) As fixed
+Declare Function fixtof CDecl Alias "fixtof" (ByVal x As fixed) As Double
+Declare Function fixmul CDecl Alias "fixmul" (ByVal x As fixed, ByVal y As fixed) As fixed
+Declare Function fixdiv CDecl Alias "fixdiv" (ByVal x As fixed, ByVal y As fixed) As fixed
+Declare Function fixadd CDecl Alias "fixadd" (ByVal x As fixed, ByVal y As fixed) As fixed
+Declare Function fixsub CDecl Alias "fixsub" (ByVal x As fixed, ByVal y As fixed) As fixed
+Declare Function fixsin CDecl Alias "fixsin" (ByVal x As fixed) As fixed
+Declare Function fixcos CDecl Alias "fixcos" (ByVal x As fixed) As fixed
+Declare Function fixtan CDecl Alias "fixtan" (ByVal x As fixed) As fixed
+Declare Function fixasin CDecl Alias "fixasin" (ByVal x As fixed) As fixed
+Declare Function fixacos CDecl Alias "fixacos" (ByVal x As fixed) As fixed
+
+#if 0
+
+/* ftofix and fixtof are used in generic C versions of fixmul and fixdiv */
+AL_INLINE(fixed, ftofix, (double x),
+{
+   if (x > 32767.0) {
+      *allegro_errno = ERANGE;
+      return 0x7FFFFFFF;
+   }
+
+   if (x < -32767.0) {
+      *allegro_errno = ERANGE;
+      return -0x7FFFFFFF;
+   }
+
+   return (long)(x * 65536.0 + (x < 0 ? -0.5 : 0.5));
+})
+
+
+AL_INLINE(double, fixtof, (fixed x),
+{
+   return (double)x / 65536.0;
+})
+
+
+#ifdef ALLEGRO_NO_ASM
+
+/* use generic C versions */
+
+AL_INLINE(fixed, fixadd, (fixed x, fixed y),
+{
+   fixed result = x + y;
+
+   if (result >= 0) {
+      if ((x < 0) && (y < 0)) {
+         *allegro_errno = ERANGE;
+         return -0x7FFFFFFF;
+      }
+      else
+         return result;
+   }
+   else {
+      if ((x > 0) && (y > 0)) {
+         *allegro_errno = ERANGE;
+         return 0x7FFFFFFF;
+      }
+      else
+         return result;
+   }
+})
+
+
+AL_INLINE(fixed, fixsub, (fixed x, fixed y),
+{
+   fixed result = x - y;
+
+   if (result >= 0) {
+      if ((x < 0) && (y > 0)) {
+         *allegro_errno = ERANGE;
+         return -0x7FFFFFFF;
+      }
+      else
+         return result;
+   }
+   else {
+      if ((x > 0) && (y < 0)) {
+         *allegro_errno = ERANGE;
+         return 0x7FFFFFFF;
+      }
+      else
+         return result;
+   }
+})
+
+
+AL_INLINE(fixed, fixmul, (fixed x, fixed y),
+{
+   return ftofix(fixtof(x) * fixtof(y));
+})
+
+
+AL_INLINE(fixed, fixdiv, (fixed x, fixed y),
+{
+   if (y == 0) {
+      *allegro_errno = ERANGE;
+      return (x < 0) ? -0x7FFFFFFF : 0x7FFFFFFF;
+   }
+   else
+      return ftofix(fixtof(x) / fixtof(y));
+})
+
+
+AL_INLINE(int, fixfloor, (fixed x),
+{
+   /* (x >> 16) is not portable */
+   if (x >= 0)
+      return (x >> 16);
+   else
+      return ~((~x) >> 16);
+})
+
+
+AL_INLINE(int, fixceil, (fixed x),
+{
+   if (x > (long)(0x7FFF0000)) {
+      *allegro_errno = ERANGE;
+      return 0x7FFF;
+   }
+
+   return fixfloor(x + 0xFFFF);
+})
+
+#endif      /* C vs. inline asm */
+
+
+AL_INLINE(fixed, itofix, (int x),
+{
+   return x << 16;
+})
+
+
+AL_INLINE(int, fixtoi, (fixed x),
+{
+   return fixfloor(x) + ((x & 0x8000) >> 15);
+})
+
+
+AL_INLINE(fixed, fixcos, (fixed x),
+{
+   return _cos_tbl[((x + 0x4000) >> 15) & 0x1FF];
+})
+
+
+AL_INLINE(fixed, fixsin, (fixed x),
+{
+   return _cos_tbl[((x - 0x400000 + 0x4000) >> 15) & 0x1FF];
+})
+
+
+AL_INLINE(fixed, fixtan, (fixed x),
+{
+   return _tan_tbl[((x + 0x4000) >> 15) & 0xFF];
+})
+
+
+AL_INLINE(fixed, fixacos, (fixed x),
+{
+   if ((x < -65536) || (x > 65536)) {
+      *allegro_errno = EDOM;
+      return 0;
+   }
+
+   return _acos_tbl[(x+65536+127)>>8];
+})
+
+
+AL_INLINE(fixed, fixasin, (fixed x),
+{
+   if ((x < -65536) || (x > 65536)) {
+      *allegro_errno = EDOM;
+      return 0;
+   }
+
+   return 0x00400000 - _acos_tbl[(x+65536+127)>>8];
+})
+
+#endif
+
+#endif          ' ifndef ALLEGRO_FMATHS_INL
