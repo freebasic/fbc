@@ -2234,9 +2234,9 @@ private sub hBOPConstFoldInt( byval op as integer, _
 
 	select case as const l->dtype
 	case IR.DATATYPE.UBYTE, IR.DATATYPE.USHORT, IR.DATATYPE.UINT
-		issigned = TRUE
-	case else
 		issigned = FALSE
+	case else
+		issigned = TRUE
 	end select
 
 	select case as const op
