@@ -62,21 +62,44 @@ data "c"
 data ""
 
 '':::::
+private function hFixPath( byval path as string ) as string
+	dim i as integer
+	dim res as string
+	
+	res = ""
+	for i = 0 to len(path)-1
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
+		if( path[i] = CHAR_SLASH ) then
+			res += "\\"
+		else
+#else
+		if( path[i] = CHAR_RSLASH ) then
+			res += "/"
+		else
+#endif
+			res += chr$( path[i] )
+		end if
+	next i
+
+	return res
+
+end function
+
+'':::::
 sub fbAddIncPath( byval path as string )
 
-	if( env.incpaths < FB.MAXINCPATHS ) then
-		incpathTB( env.incpaths ) = path
-
-#ifdef TARGET_WIN32
-const PATHDIV = "\\"
-#elseif TARGET_DOS
-const PATHDIV = "\\"
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
+	const PATHDIV = "\\"
 #else
-const PATHDIV = "/"
+	const PATHDIV = "/"
 #endif
+
+	if( env.incpaths < FB.MAXINCPATHS ) then
 		if( right$( path, 1 ) <> PATHDIV ) then
-			incpathTB( env.incpaths ) = incpathTB( env.incpaths ) + PATHDIV
+			path += PATHDIV
 		end if
+		path = hFixPath( path )
+		incpathTB( env.incpaths ) = path
 
 		env.incpaths += 1
 	end if
@@ -98,7 +121,7 @@ function fbFindIncFile( byval filename as string ) as integer
 
 	fbFindIncFile = FALSE
 
-	fname = ucase$( filename )
+	fname = hFixPath( ucase$( filename ) )
 
 	for i = 0 to incfiles-1
 		if( incfileTB( i ) = fname ) then
@@ -114,7 +137,7 @@ sub fbAddIncFile( byval filename as string )
     dim fname as string
     dim i as integer
 
-	fname = ucase$( filename )
+	fname = hFixPath( ucase$( filename ) )
 
 	if( incfiles >= ubound( incfileTB ) ) then
 		i = ubound( incfileTB )
@@ -446,6 +469,7 @@ function fbIncludeFile( byval filename as string, _
 	end if
 
 	'' open include file
+	filename = hFixPath( filename )
 	if( not hFileExists( filename ) ) then
 
 		'' try finding it at the inc paths
@@ -462,7 +486,7 @@ function fbIncludeFile( byval filename as string, _
 
 	''
 	if( not hFileExists( incfile ) ) then
-		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + incfile + "\""
+		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + filename + "\""
 
 	else
 

@@ -4234,7 +4234,8 @@ private sub hAddGfxLibs
 	symbAddLib( "X11" )
 	symbAddLib( "Xext" )
 	symbAddLib( "Xpm" )
-	symbAddLib( "Xxf86vm" )
+	symbAddLib( "Xrandr" )
+	symbAddLib( "Xrender" )
 	symbAddLib( "pthread" )
 #endif
 end sub

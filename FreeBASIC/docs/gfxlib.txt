@@ -2253,12 +2253,15 @@ gfxlib:
 Win32:
 	user32.dll
 	gdi32.dll
-	(ddraw.dll and dinput.dll only loaded at runtime)
+	(ddraw.dll, dinput.dll and opengl32.dll only loaded at runtime)
 Linux:
 	libX11
+	libXpm
 	libXext
-	libXxf86vm
+	libXrender
+	libXrandr
 	libpthread
+	(libGL only loaded at runtime)
 
 
 
@@ -2292,13 +2295,12 @@ Win32:
 Linux:
 	X11
 		Raw Xlib based driver; it always works, providing an X11
-		server is reachable. If your program runs locally, it uses the
-		Xshm extension to provide faster framebuffer access via shared
-		memory. For fullscreen mode to work, the Xvidmode extension
-		is used; your X11 gfx driver must also support resolution
-		switching. Also, program needs to be executed locally, and
-		corresponding modelines should be supported by your X11
-		server, otherwise fullscreen will not be available.
+		server is reachable (at least XFree86 4.3.0 or Xorg required).
+		If your program runs locally, it uses the Xshm extension to
+		provide faster framebuffer access via shared memory. For
+		fullscreen mode switching, the Xrandr extension is used (your X11
+		gfx driver must support resolution switching, and your program
+		needs to be executed locally, otherwise fullscreen will not work).
 	OpenGL
 		OpenGL driver; likely to be hardware accelerated on every system,
 		it works as long as your X server is configured for OpenGL support.
@@ -2495,7 +2497,9 @@ Appendix F: Hints
 	PRINT "done."
 	
 	PRINT "Data size after compression:", dest_size
-	PRINT
+	PRINTglTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
+   glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+
 	
 	src_size = 100000
 	PRINT "Decompressing...";
@@ -2513,4 +2517,77 @@ Appendix F: Hints
 		FOR i = 3 TO 36: PRINT CHR$(src_buffer(i)); : NEXT
 		PRINT " [...]"
 		RETURN
+
+
+- Creating an OpenGL texture out of a GET/PUT buffer is easy; here's a small
+  snippet that does it:
+  
+	#DEFINE TEX_MASKED		&h1
+	#DEFINE TEX_MIPMAP		&h2
 	
+	FUNCTION CreateTexture( BYVAL buffer AS ANY PTR, BYVAL flags AS INTEGER _
+							= 0 ) AS GLuint
+		REDIM dat(0) AS UBYTE
+		DIM p AS UINTEGER PTR, s AS USHORT PTR
+		DIM AS INTEGER w, h, x, y, col
+		DIM tex AS GLuint
+		DIM AS GLenum format, minfilter
+		
+		CreateTexture = 0
+		
+		s = buffer
+		w = s[0] SHR 3
+		h = s[1]
+		
+		IF( (w < 64) OR (h < 64) ) THEN
+			EXIT FUNCTION
+		END IF
+		IF( (w AND (w-1)) OR (h AND (h-1)) ) THEN
+			'' Width/height not powers of 2
+			EXIT FUNCTION
+		END IF
+		
+		REDIM dat(w * h * 4) AS UBYTE
+		p = @dat(0)
+		
+		glGenTextures 1, @tex
+		glBindTexture GL_TEXTURE_2D, tex
+		
+		FOR y = h-1 TO 0 STEP -1
+			FOR x = 0 TO w-1
+				col = POINT(x, y, buffer)
+				'' Swap R and B so we can use the GL_RGBA texture format
+				col = RGB(col AND &hFF, _
+						  (col SHR 8) AND &hFF, _
+						  (col SHR 16) AND &hFF)
+				IF( (flags AND TEX_MASKED) AND (col = &hFF00FF) ) THEN
+					*p = 0
+				ELSE
+					*p = col OR &hFF000000
+				END IF
+				p += 4
+			NEXT x
+		NEXT y
+		
+		IF( flags AND TEX_MASKED ) THEN
+			format = GL_RGBA
+		ELSE
+			format = GL_RGB
+		END IF
+		
+		IF( flags AND TEX_MIPMAP ) THEN
+			gluBuild2DMipmaps GL_TEXTURE_2D, format, w, h, GL_RGBA, _
+							  GL_UNSIGNED_BYTE, @dat(0)
+			minfilter = GL_LINEAR_MIPMAP_LINEAR
+		ELSE
+			minfilter = GL_LINEAR
+		END IF
+		glTexImage2D GL_TEXTURE_2D, 0, format, w, h, 0, GL_RGBA, _
+					 GL_UNSIGNED_BYTE, @dat(0)
+		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
+		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+		
+		CreateTexture = tex
+	
+	END FUNCTION
+

@@ -26,6 +26,9 @@ Version 0.13 Beta:
 - New built-in dynamic #defines: __FILE__, __FUNCTION__, __LINE__, __DATE__ and __TIME__ (lillo)
 - in Win32, the import libraries are now created from .def files when the install.bat is executed by the user (v1c)
 - type-less REDIM's will check for already allocated arrays, as in VB (v1c)
+- internally replaced the use of the Xxf86vidmode extension with the Xrandr extension to toggle fullscreen gfx mode
+  under Linux. This works much better and is more compatible with more recent distros, but it makes FB gfx programs
+  to require at least XFree86 4.3.0 or any version of Xorg to run. (lillo)
 
 [added]
 - runtime library is now split into a thread-unsafe and a thread-safe versions. Former is used when compiling singlethreaded
@@ -134,6 +137,9 @@ Version 0.13 Beta:
 - some minor issues when BLOADing BMPs (lillo)
 - floating-point to unsigned integer could saturate values above 2 ^ 31 due the x86 FISTP nature (v1c)
 - unsigned integer constants were being saturated, due the problem above (v1c)
+- include/lib paths now accept both "/" and "\" as path separators on all platforms (lillo)
+- PRINT in gfx mode now detects CR+LF as an unique new line (lillo)
+
 
 Version 0.12 Beta:
 

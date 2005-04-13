@@ -36,7 +36,7 @@
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 #include <X11/extensions/XShm.h>
-#include <X11/extensions/xf86vmode.h>
+#include <X11/extensions/Xrandr.h>
 
 typedef struct LINUXDRIVER
 {
@@ -71,6 +71,5 @@ extern void fb_hX11SetMouse(int x, int y, int cursor);
 extern void fb_hX11SetWindowTitle(char *title);
 extern int fb_hX11EnterFullscreen(int h);
 extern void fb_hX11LeaveFullscreen(void);
-extern void fb_hX11FinalizeMode(void);
 
 #endif

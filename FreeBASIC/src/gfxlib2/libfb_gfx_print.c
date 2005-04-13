@@ -97,8 +97,10 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 				fb_mode->cursor_x = new_x;
 				break;
 			
-			case '\n':
 			case '\r':
+				if (buffer[i+1] == '\n')
+					i++;
+			case '\n':
 				fb_mode->cursor_x = 0;
 				fb_mode->cursor_y++;
 				dirty_len++;

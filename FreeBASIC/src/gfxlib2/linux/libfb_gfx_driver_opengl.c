@@ -94,18 +94,16 @@ static int load_library(void)
 static int opengl_window_init(void)
 {
 	XSetWindowAttributes attribs;
-	int x, y;
+	int x = 0, y = 0;
 	char *display_name;
-	
-	attribs.override_redirect = (fb_linux.fullscreen ? True : False);
-	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
 	
 	if (!fb_linux.fullscreen) {
 		x = (XDisplayWidth(fb_linux.display, fb_linux.screen) - fb_linux.w) >> 1;
 		y = (XDisplayHeight(fb_linux.display, fb_linux.screen) - fb_linux.h) >> 1;
-		XResizeWindow(fb_linux.display, fb_linux.window, fb_linux.w, fb_linux.h);
-		XMoveWindow(fb_linux.display, fb_linux.window, x, y);
 	}
+	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
+	attribs.override_redirect = (fb_linux.fullscreen ? True : False);
+	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
 	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
@@ -123,8 +121,6 @@ static int opengl_window_init(void)
 	
 	XSync(fb_linux.display, False);
 	
-	fb_hX11FinalizeMode();
-	
 	return 0;
 }
 
@@ -132,10 +128,10 @@ static int opengl_window_init(void)
 /*:::::*/
 static void opengl_window_exit(void)
 {
-	XUnmapWindow(fb_linux.display, fb_linux.window);
-	XSync(fb_linux.display, False);
 	if (fb_linux.fullscreen)
 		fb_hX11LeaveFullscreen();
+	XUnmapWindow(fb_linux.display, fb_linux.window);
+	XSync(fb_linux.display, False);
 }
 
 

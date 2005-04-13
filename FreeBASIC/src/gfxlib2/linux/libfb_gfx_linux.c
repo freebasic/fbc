@@ -44,11 +44,14 @@ static pthread_cond_t cond;
 
 static XIC xic;
 static XIM xim;
-static XF86VidModeModeInfo **modes_info;
+static Drawable root_window;
 static Atom wm_delete_window;
 static Colormap color_map;
+static XRRScreenConfiguration* config;
+static int orig_size, target_size, current_size;
+static int orig_rate, target_rate;
+static Rotation orig_rotation;
 static Cursor blank_cursor, arrow_cursor;
-static int num_modes, is_switched;
 static int is_running, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 
@@ -245,47 +248,29 @@ static void *window_thread(void *arg)
 /*:::::*/
 int fb_hX11EnterFullscreen(int h)
 {
-	int dummy, version, i;
-
-	num_modes = 0;
-	is_switched = FALSE;
+	if ((!config) || (target_size < 0))
+		return -1;
+	
+	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, fb_linux.h >> 1);
+	if (target_rate < 0) {
+		if (XRRSetScreenConfig(fb_linux.display, config, root_window, target_size, orig_rotation, CurrentTime) == BadValue)
+			return -1;
+	}
+	else {
+		if (XRRSetScreenConfigAndRate(fb_linux.display, config, root_window, target_size, orig_rotation, target_rate, CurrentTime) == BadValue)
+			return -1;
+	}
 	
 	XSync(fb_linux.display, False);
-	
-	if (!XF86VidModeQueryExtension(fb_linux.display, &dummy, &dummy))
-		return -1;
-	if ((!XF86VidModeQueryVersion(fb_linux.display, &version, &dummy)) || (version < 2))
-		return -1;
-	if (!XF86VidModeGetAllModeLines(fb_linux.display, fb_linux.screen, &num_modes, &modes_info))
-		return -1;
-	for (i = 0; i < num_modes; i++) {
-		if ((fb_linux.refresh_rate) &&
-		    ((int)((((double)modes_info[i]->dotclock * 1000.0) / (modes_info[i]->htotal * modes_info[i]->vtotal)) + 0.5) < fb_linux.refresh_rate))
-			continue;
-		if ((modes_info[i]->hdisplay == fb_linux.w) && (modes_info[i]->vdisplay == h))
-			break;
-	}
-	if ((i == num_modes) || (!XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, modes_info[i])))
-		return -1;
-	is_switched = TRUE;
-	XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, True);
-	XMoveWindow(fb_linux.display, fb_linux.window, 0, 0);
-	XF86VidModeSetViewPort(fb_linux.display, fb_linux.screen, 0, 0);
-
-	/* workaround for some buggy X servers */
-	{
-		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, 0, 0);
-		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w-1, 0);
-		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w-1, fb_linux.h-1);
-		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, 0, fb_linux.h-1);
-	}
-	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, fb_linux.h >> 1);
-	if (XGrabKeyboard(fb_linux.display, XDefaultRootWindow(fb_linux.display), False,
+	while (XGrabPointer(fb_linux.display, fb_linux.window, True, 0,
+			    GrabModeAsync, GrabModeAsync, fb_linux.window, None, CurrentTime) != GrabSuccess)
+		usleep(10000);
+	if (XGrabKeyboard(fb_linux.display, root_window, False,
 	    GrabModeAsync, GrabModeAsync, CurrentTime) != GrabSuccess)
 		return -1;
-	if (XGrabPointer(fb_linux.display, fb_linux.window, False, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
-	    GrabModeAsync, GrabModeAsync, fb_linux.window, None, CurrentTime) != GrabSuccess)
-		return -1;
+
+	current_size = target_size;
+
 	return 0;
 }
 
@@ -293,38 +278,16 @@ int fb_hX11EnterFullscreen(int h)
 /*:::::*/
 void fb_hX11LeaveFullscreen()
 {
-	int i;
-	
-	if (num_modes == 0)
+	if ((!config) || (target_size < 0))
 		return;
-	if (is_switched) {
+	
+	if (current_size != orig_size) {
 		XUngrabPointer(fb_linux.display, CurrentTime);
 		XUngrabKeyboard(fb_linux.display, CurrentTime);
-		XF86VidModeLockModeSwitch(fb_linux.display, fb_linux.screen, False);
-		XF86VidModeSwitchToMode(fb_linux.display, fb_linux.screen, modes_info[0]);
-		XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, modes_info[0]->hdisplay >> 1, modes_info[0]->vdisplay >> 1);
+		if (XRRSetScreenConfigAndRate(fb_linux.display, config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
+			return;
+		current_size = orig_size;
 	}
-	for (i = 0; i < num_modes; i++) {
-		if (modes_info[i]->privsize)
-			XFree(modes_info[i]->private);
-	}
-	XFree(modes_info);
-	num_modes = 0;
-	is_switched = FALSE;
-}
-
-
-/*:::::*/
-void fb_hX11FinalizeMode(void)
-{
-	XF86VidModeModeLine modeline;
-	int dotclock;
-	
-	if (XF86VidModeGetModeLine(fb_linux.display, fb_linux.screen, &dotclock, &modeline))
-		fb_linux.refresh_rate = (int)((((double)dotclock * 1000.0) / (modeline.htotal * modeline.vtotal)) + 0.5);
-	else
-		fb_linux.refresh_rate = 0;
-	fb_mode->refresh_rate = fb_linux.refresh_rate;
 }
 
 
@@ -335,11 +298,14 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	XSetWindowAttributes attribs;
 	XWMHints hints;
 	XpmAttributes xpm_attribs;
-	XSizeHints size;
+	XSizeHints *size;
 	Pixmap pixmap;
 	XColor color;
 	XGCValues gc_values;
-	int i, j, num_formats;
+	XRRScreenSize *sizes;
+	short *rates;
+	int version, dummy;
+	int i, j, num_formats, num_sizes, num_rates;
 	int gc_mask, keycode_min, keycode_max;
 	KeySym keysym;
 	
@@ -359,10 +325,12 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	arrow_cursor = None;
 	xim = NULL;
 	xic = NULL;
+	config = NULL;
 	fb_linux.display = XOpenDisplay(NULL);
 	if (!fb_linux.display)
 		return -1;
 	fb_linux.screen = XDefaultScreen(fb_linux.display);
+	root_window = XDefaultRootWindow(fb_linux.display);
 	
 	fb_linux.visual = XDefaultVisual(fb_linux.display, fb_linux.screen);
 	format = XListPixmapFormats(fb_linux.display, &num_formats);
@@ -381,7 +349,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	attribs.event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
 			     PointerMotionMask | FocusChangeMask | EnterWindowMask | LeaveWindowMask | ExposureMask;
 	attribs.backing_store = NotUseful;
-	fb_linux.window = XCreateWindow(fb_linux.display, XDefaultRootWindow(fb_linux.display), 0, 0, fb_linux.w, fb_linux.h,
+	fb_linux.window = XCreateWindow(fb_linux.display, root_window, 0, 0, fb_linux.w, fb_linux.h,
 					0, XDefaultDepth(fb_linux.display, fb_linux.screen), InputOutput, fb_linux.visual,
 					CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore, &attribs);
 	if (!fb_linux.window)
@@ -393,11 +361,15 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		XpmCreatePixmapFromData(fb_linux.display, fb_linux.window, fb_program_icon, &hints.icon_pixmap, &hints.icon_mask, &xpm_attribs);
 		XSetWMHints(fb_linux.display, fb_linux.window, &hints);
 	}
-	size.flags = PPosition | PMinSize | PMaxSize;
-	size.x = size.y = 0;
-	size.min_width = size.max_width = fb_linux.w;
-	size.min_height = size.max_height = fb_linux.h;
-	XSetWMNormalHints(fb_linux.display, fb_linux.window, &size);
+	
+	size = XAllocSizeHints();
+	size->flags = PPosition | PBaseSize | PMinSize | PMaxSize;
+	size->x = size->y = 0;
+	size->min_width = size->max_width = size->base_width = fb_linux.w;
+	size->min_height = size->max_height = size->base_height = fb_linux.h;
+	XSetWMNormalHints(fb_linux.display, fb_linux.window, size);
+	XFree(size);
+	
 	wm_delete_window = XInternAtom(fb_linux.display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(fb_linux.display, fb_linux.window, &wm_delete_window, 1);
 	if (!(xim = XOpenIM(fb_linux.display, NULL, NULL, NULL)))
@@ -406,11 +378,11 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		return -1;
 	
 	if (fb_linux.visual->class == PseudoColor) {
-		color_map = XCreateColormap(fb_linux.display, XDefaultRootWindow(fb_linux.display), fb_linux.visual, AllocAll);
+		color_map = XCreateColormap(fb_linux.display, root_window, fb_linux.visual, AllocAll);
 		XSetWindowColormap(fb_linux.display, fb_linux.window, color_map);
 	}
 	XClearWindow(fb_linux.display, fb_linux.window);
-
+	
 	pixmap = XCreatePixmap(fb_linux.display, fb_linux.window, 1, 1, 1);
 	gc_mask = GCFunction | GCForeground | GCBackground;
 	gc_values.function = GXcopy;
@@ -425,6 +397,35 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	XFreePixmap(fb_linux.display, pixmap);
 	fb_linux.gc = DefaultGC(fb_linux.display, fb_linux.screen);
 	XSync(fb_linux.display, False);
+	
+	if (XRRQueryExtension(fb_linux.display, &dummy, &dummy) &&
+	    XRRQueryVersion(fb_linux.display, &version, &dummy) && (version >= 1)) {
+		config = XRRGetScreenInfo(fb_linux.display, root_window);
+		orig_size = current_size = XRRConfigCurrentConfiguration(config, &orig_rotation);
+		orig_rate = XRRConfigCurrentRate(config);
+		sizes = XRRConfigSizes(config, &num_sizes);
+		target_size = -1;
+		for (i = 0; i < num_sizes; i++) {
+			if ((sizes[i].width == fb_linux.w) && (sizes[i].height == fb_linux.h)) {
+				target_size = i;
+				break;
+			}
+		}
+		target_rate = -1;
+		if ((fb_linux.refresh_rate > 0) && (target_size >= 0)) {
+			rates = XRRConfigRates(config, target_size, &num_rates);
+			for (i = 0; i < num_rates; i++) {
+				if (rates[i] == fb_linux.refresh_rate) {
+					target_rate = i;
+					break;
+				}
+			}
+		}
+		else {
+			rates = XRRConfigRates(config, orig_size, &num_rates);
+			fb_linux.refresh_rate = rates[orig_rate];
+		}
+	}
 	
 	XDisplayKeycodes(fb_linux.display, &keycode_min, &keycode_max);
 	keycode_min = MAX(keycode_min, 0);
@@ -488,6 +489,13 @@ void fb_hX11Exit(void)
 			XDestroyIC(xic);
 		if (xim)
 			XCloseIM(xim);
+		if (config) {
+			if ((target_size >= 0) && (current_size != orig_size))
+				XRRSetScreenConfig(fb_linux.display, config, root_window, orig_size, orig_rotation, CurrentTime);
+			XSync(fb_linux.display, False);
+			XRRFreeScreenConfigInfo(config);
+			config = NULL;
+		}
 		XCloseDisplay(fb_linux.display);
 	}
 

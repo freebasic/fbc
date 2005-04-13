@@ -29,7 +29,7 @@ declare sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 	
 	dim w as integer, h as integer, x as integer, y as integer, i as integer
-	dim c0 as uinteger, c1 as uinteger, c2 as uinteger, c3 as uinteger
+	dim c0 as integer, c1 as integer, c2 as integer, c3 as integer
 	dim header as short ptr
 	
 	header = buffer
