@@ -789,11 +789,11 @@ data "fb_GfxBsave", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
 
 '' fb_ProfileSetProc ( procname as string ) as void
 data "fb_ProfileSetProc", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-							  FB.SYMBTYPE.CHAR,FB.ARGMODE.BYVAL, FALSE
+							  FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileStartCall ( procname as string ) as any ptr
 data "fb_ProfileStartCall", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-								FB.SYMBTYPE.CHAR,FB.ARGMODE.BYVAL, FALSE
+								FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileEndCall ( call as any ptr ) as void
 data "fb_ProfileEndCall", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
@@ -5292,7 +5292,7 @@ function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
 	if( symbol <> NULL ) then
 		expr = hGetProcName( symbol )
 	else
-		expr = astNewCONSTi( 0, IR.DATATYPE.CHAR )
+		expr = astNewCONSTi( 0, IR.DATATYPE.POINTER+IR.DATATYPE.CHAR )
 	end if
 	if( astNewPARAM( proc, expr, INVALID ) = INVALID ) then
 		exit function
