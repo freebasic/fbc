@@ -1409,14 +1409,10 @@ end sub
 '' strings
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-private function symbGetLen2( byval s as FBSYMBOL ptr ) as integer
-	return s->lgt
-end function
-
 '':::::
-#define FIXSTRGETLEN(e) symbGetLen2( astGetSymbol( e ) )
+#define FIXSTRGETLEN(e) symbGetLen( astGetSymbol( e ) )
 
-#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen2( astGetSymbol( e ) ) )
+#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen( astGetSymbol( e ) ) )
 
 #define STRGETLEN(e,t,l)												_
 	select case as const t                                              :_

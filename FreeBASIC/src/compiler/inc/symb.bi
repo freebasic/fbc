@@ -250,7 +250,7 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetAccessCnt(s) s->acccnt
 
-#define symbGetLen(s) s->lgt
+#define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
 
 #define symbGetType(s) s->typ
 
