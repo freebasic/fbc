@@ -247,7 +247,7 @@ static void *window_thread(void *arg)
 		
 		fb_hX11Unlock();
 		
-		usleep(1000000 / 60);
+		usleep(1000000 / ((fb_linux.refresh_rate > 0) ? fb_linux.refresh_rate : 60));
 	}
 	
 	fb_linux.exit();
