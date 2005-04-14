@@ -12,9 +12,9 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_voidDcRectSizeT as sub cdecl(byval as wxDC ptr, byval as wxRect ptr, byval as integer)
+type Virtual_voidDcRectSizeT as sub (byval as wxDC ptr, byval as wxRect ptr, byval as integer)
 #ifndef Virtual_IntInt
-type Virtual_IntInt as function cdecl(byval as integer) as integer
+type Virtual_IntInt as function (byval as integer) as integer
 #endif
 
 declare function wxVListBox cdecl alias "wxVListBox_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxVListBox ptr

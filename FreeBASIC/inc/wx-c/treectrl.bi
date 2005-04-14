@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_OnCompareItems as function cdecl(byval as wxTreeItemId ptr, byval as wxTreeItemId ptr) as integer
+type Virtual_OnCompareItems as function (byval as wxTreeItemId ptr, byval as wxTreeItemId ptr) as integer
 
 declare function wxTreeCtrl_Create cdecl alias "wxTreeCtrl_Create" (byval self as wxTreeCtrl ptr, byval parent as wxWindow ptr, byval id as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval val as wxValidator ptr, byval name as string) as integer
 declare function wxTreeCtrl_GetDefaultStyle cdecl alias "wxTreeCtrl_GetDefaultStyle" () as integer

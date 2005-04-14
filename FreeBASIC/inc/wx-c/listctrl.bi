@@ -11,6 +11,8 @@
 
 #include once "wx-c/wx.bi"
 
+type wxListCtrlCompare as function (byval item1 as integer, byval item2 as integer, byval sortData as integer) as integer
+
 
 declare function wxListCtrl cdecl alias "wxListCtrl_ctor" () as wxListCtrl ptr
 declare function wxListCtrl_Create cdecl alias "wxListCtrl_Create" (byval self as wxListCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer

@@ -12,12 +12,12 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_VoidNoParams as sub cdecl( )
-type Virtual_VoidSizeT as sub cdecl(byval as integer)
-type Virtual_wxStringSizeT as function cdecl(byval as integer) as byte
-type Virtual_wxColourwxColour as function cdecl(byval as wxColour ptr) as wxColour
-type Virtual_OnDrawItem as sub cdecl(byval as wxDC ptr, byval as wxRect ptr, byval as integer)
-type Virtual_OnMeasureItem as function cdecl(byval as integer) as wxCoord
+type Virtual_VoidNoParams as sub ( )
+type Virtual_VoidSizeT as sub (byval as integer)
+type Virtual_wxStringSizeT as function (byval as integer) as byte
+type Virtual_wxColourwxColour as function (byval as wxColour ptr) as wxColour
+type Virtual_OnDrawItem as sub (byval as wxDC ptr, byval as wxRect ptr, byval as integer)
+type Virtual_OnMeasureItem as function (byval as integer) as wxCoord
 
 declare function wxHtmlListBox_ctor2 cdecl alias "wxHtmlListBox_ctor2" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxHtmlListBox ptr
 declare sub wxHtmlListBox_RegisterVirtual cdecl alias "wxHtmlListBox_RegisterVirtual" (byval self as _HtmlListBox ptr, byval refreshAll as Virtual_VoidNoParams, byval setItemCount as Virtual_VoidSizeT, byval onGetItem as Virtual_wxStringSizeT, byval onGetItemMarkup as Virtual_wxStringSizeT, byval getSelectedTextColour as Virtual_wxColourwxColour, byval getSelectedTextBgColour as Virtual_wxColourwxColour, byval onDrawItem as Virtual_OnDrawItem, byval onMeasureItem as Virtual_OnMeasureItem, byval onDrawSeparator as Virtual_OnDrawItem, byval onDrawBackground as Virtual_OnDrawItem, byval onGetLineHeight as Virtual_OnMeasureItem)

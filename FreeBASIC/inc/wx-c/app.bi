@@ -11,8 +11,8 @@
 
 #include once "wx-c/wx.bi"
 
-type Virtual_OnInit as function cdecl () as integer
-type Virtual_OnExit as function cdecl () as integer
+type Virtual_OnInit as function  () as integer
+type Virtual_OnExit as function  () as integer
 
 declare function wxCreateApp cdecl alias "wxCreateApp" () as wxApp ptr
 declare function wxApp cdecl alias "wxApp_ctor" () as _App ptr

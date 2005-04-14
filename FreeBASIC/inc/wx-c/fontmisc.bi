@@ -29,10 +29,10 @@ declare function wxEncodingConverter cdecl alias "wxEncodingConverter_ctor" () a
 declare function wxEncodingConverter_Init cdecl alias "wxEncodingConverter_Init" (byval self as wxEncodingConverter ptr, byval input_enc as wxFontEncoding, byval output_enc as wxFontEncoding, byval method as integer) as integer
 declare function wxEncodingConverter_Convert cdecl alias "wxEncodingConverter_Convert" (byval self as wxEncodingConverter ptr, byval input as string) as wxString ptr
 
-type Virtual_EnumerateFacenames as function cdecl(byval as wxFontEncoding, byval as integer) as integer
-type Virtual_EnumerateEncodings as function cdecl(byval as wxString ptr) as integer
-type Virtual_OnFacename as function cdecl(byval as wxString ptr) as integer
-type Virtual_OnFontEncoding as function cdecl(byval as wxString ptr, byval as wxString ptr) as integer
+type Virtual_EnumerateFacenames as function (byval as wxFontEncoding, byval as integer) as integer
+type Virtual_EnumerateEncodings as function (byval as wxString ptr) as integer
+type Virtual_OnFacename as function (byval as wxString ptr) as integer
+type Virtual_OnFontEncoding as function (byval as wxString ptr, byval as wxString ptr) as integer
 
 declare function wxFontEnumerator cdecl alias "wxFontEnumerator_ctor" () as wxFontEnumerator ptr
 declare sub wxFontEnumerator_dtor cdecl alias "wxFontEnumerator_dtor" (byval self as _FontEnumerator ptr)

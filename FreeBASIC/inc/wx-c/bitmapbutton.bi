@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_OnSetBitmap as sub cdecl( )
+type Virtual_OnSetBitmap as sub ( )
 
 declare function wxBitmapButton cdecl alias "wxBitmapButton_ctor" () as wxBitmapButton ptr
 declare sub wxBitmapButton_RegisterVirtual cdecl alias "wxBitmapButton_RegisterVirtual" (byval self as _BitmapButton ptr, byval onSetBitmap as Virtual_OnSetBitmap)

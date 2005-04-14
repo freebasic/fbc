@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-type EventListener as sub cdecl(byval as wxEvent ptr, byval as integer)
+type EventListener as sub (byval as wxEvent ptr, byval as integer)
 
 type wxProxyData
 	iListener as integer

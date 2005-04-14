@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 #ifndef Virtual_IntInt
-type Virtual_IntInt as function cdecl(byval as integer) as integer
+type Virtual_IntInt as function (byval as integer) as integer
 #endif
 
 declare function wxVScrollWnd cdecl alias "wxVScrollWnd_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxVScrolledWindow ptr

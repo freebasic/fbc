@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_DoDragDrop as function cdecl(byval as integer) as wxDragResult
+type Virtual_DoDragDrop as function (byval as integer) as wxDragResult
 
 declare function wxDropSource_Win cdecl alias "wxDropSource_Win_ctor" (byval win as wxWindow ptr) as wxDropSource ptr
 declare function wxDropSource_DataObject cdecl alias "wxDropSource_DataObject_ctor" (byval dataObject as wxDataObject ptr, byval win as wxWindow ptr) as wxDropSource ptr
@@ -24,12 +24,12 @@ declare function wxDropSource_GetDataObject cdecl alias "wxDropSource_GetDataObj
 declare sub wxDropSource_SetCursor cdecl alias "wxDropSource_SetCursor" (byval self as _DropSource ptr, byval res as wxDragResult ptr, byval cursor as wxCursor ptr)
 declare function wxDropSource_GiveFeedback cdecl alias "wxDropSource_GiveFeedback" (byval self as _DropSource ptr, byval effect as wxDragResult ptr) as integer
 
-type Virtual_OnDragOver as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
-type Virtual_OnDrop as function cdecl(byval as wxCoord, byval as wxCoord) as integer
-type Virtual_OnData3 as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
-type Virtual_GetData as function cdecl( ) as integer
-type Virtual_OnLeave as sub cdecl( )
-type Virtual_OnEnter as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
+type Virtual_OnDragOver as function (byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
+type Virtual_OnDrop as function (byval as wxCoord, byval as wxCoord) as integer
+type Virtual_OnData3 as function (byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
+type Virtual_GetData as function ( ) as integer
+type Virtual_OnLeave as sub ( )
+type Virtual_OnEnter as function (byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
 
 declare function wxDropTarget cdecl alias "wxDropTarget_ctor" (byval dataObject as wxDataObject ptr) as wxDropTarget ptr
 declare sub wxDropTarget_dtor cdecl alias "wxDropTarget_dtor" (byval self as _DropTarget ptr)
@@ -42,8 +42,8 @@ declare sub wxDropTarget_OnLeave cdecl alias "wxDropTarget_OnLeave" (byval self 
 declare function wxDropTarget_OnDrop cdecl alias "wxDropTarget_OnDrop" (byval self as _DropTarget ptr, byval x as wxCoord, byval y as wxCoord) as integer
 declare function wxDropTarget_GetData cdecl alias "wxDropTarget_GetData" (byval self as _DropTarget ptr) as integer
 
-type Virtual_OnDropText as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxString ptr) as integer
-type Virtual_OnData as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
+type Virtual_OnDropText as function (byval as wxCoord, byval as wxCoord, byval as wxString ptr) as integer
+type Virtual_OnData as function (byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
 
 declare function wxTextDropTarget cdecl alias "wxTextDropTarget_ctor" () as wxTextDropTarget ptr
 declare sub wxTextDropTarget_RegisterVirtual cdecl alias "wxTextDropTarget_RegisterVirtual" (byval self as _TextDropTarget ptr, byval onDropText as Virtual_OnDropText, byval onData as Virtual_OnData)
@@ -51,8 +51,8 @@ declare function wxTextDropTarget_OnData cdecl alias "wxTextDropTarget_OnData" (
 declare function wxTextDropTarget_OnDrop cdecl alias "wxTextDropTarget_OnDrop" (byval self as _TextDropTarget ptr, byval x as integer, byval y as integer) as integer
 declare function wxTextDropTarget_GetData cdecl alias "wxTextDropTarget_GetData" (byval self as _TextDropTarget ptr) as integer
 
-type Virtual_OnDropFiles as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxArrayString ptr) as integer
-type Virtual_OnData2 as function cdecl(byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
+type Virtual_OnDropFiles as function (byval as wxCoord, byval as wxCoord, byval as wxArrayString ptr) as integer
+type Virtual_OnData2 as function (byval as wxCoord, byval as wxCoord, byval as wxDragResult) as wxDragResult
 
 declare function wxFileDropTarget cdecl alias "wxFileDropTarget_ctor" () as wxFileDropTarget ptr
 declare sub wxFileDropTarget_RegisterVirtual cdecl alias "wxFileDropTarget_RegisterVirtual" (byval self as _FileDropTarget ptr, byval onDropFiles as Virtual_OnDropFiles, byval onData as Virtual_OnData2)

@@ -11,7 +11,7 @@
 
 #include once "wx-c/wx.bi"
 
-type XmlSubclassCreate as function cdecl(byval as wxString ptr) as wxObject
+type XmlSubclassCreate as function (byval as wxString ptr) as wxObject
 
 declare sub wxXmlSubclassFactory cdecl alias "wxXmlSubclassFactory_ctor" (byval create as XmlSubclassCreate)
 declare function wxXmlResource_ctorByFilemask cdecl alias "wxXmlResource_ctorByFilemask" (byval filemask as string, byval flags as integer) as wxXmlResource ptr

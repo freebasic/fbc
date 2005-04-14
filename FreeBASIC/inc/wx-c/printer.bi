@@ -22,10 +22,10 @@ declare function wxPrinter_Setup cdecl alias "wxPrinter_Setup" (byval self as wx
 declare function wxPrinter_Print cdecl alias "wxPrinter_Print" (byval self as wxPrinter ptr, byval parent as wxWindow ptr, byval printout as wxPrintout ptr, byval prompt as integer) as integer
 declare function wxPrinter_PrintDialog cdecl alias "wxPrinter_PrintDialog" (byval self as wxPrinter ptr, byval parent as wxWindow ptr) as wxDC ptr
 
-type Virtual_NoParams as sub cdecl( )
-type Virtual_ParamsInt as function cdecl(byval as integer) as integer
-type Virtual_OnBeginDocument as function cdecl(byval as integer, byval as integer) as integer
-type Virtual_GetPageInfo as sub cdecl(byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr)
+type Virtual_NoParams as sub ( )
+type Virtual_ParamsInt as function (byval as integer) as integer
+type Virtual_OnBeginDocument as function (byval as integer, byval as integer) as integer
+type Virtual_GetPageInfo as sub (byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr)
 
 declare function wxPrintout cdecl alias "wxPrintout_ctor" (byval title as string) as wxPrintout ptr
 declare sub wxPrintout_RegisterVirtual cdecl alias "wxPrintout_RegisterVirtual" (byval self as _Printout ptr, byval onBeginDocument as Virtual_OnBeginDocument, byval onEndDocument as Virtual_NoParams, byval onBeginPrinting as Virtual_NoParams, byval onEndPrinting as Virtual_NoParams, byval onPreparePrinting as Virtual_NoParams, byval hasPage as Virtual_ParamsInt, byval onPrintPage as Virtual_ParamsInt, byval getPageInfo as Virtual_GetPageInfo)

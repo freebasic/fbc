@@ -20,7 +20,7 @@ declare sub wxSizerItem_DeleteWindows cdecl alias "wxSizerItem_DeleteWindows" (b
 declare sub wxSizerItem_DetachSizer cdecl alias "wxSizerItem_DetachSizer" (byval self as wxSizerItem ptr)
 declare sub wxSizerItem_GetSize cdecl alias "wxSizerItem_GetSize" (byval self as wxSizerItem ptr, byval size as wxSize ptr)
 declare sub wxSizerItem_CalcMin cdecl alias "wxSizerItem_CalcMin" (byval self as wxSizerItem ptr, byval min as wxSize ptr)
-declare sub wxSizerItem_SetDimension cdecl alias "wxSizerItem_SetDimension" (byval self as wxSizerItem ptr, byval pos as wxPoint, byval size as wxSize)
+''''''' declare sub wxSizerItem_SetDimension cdecl alias "wxSizerItem_SetDimension" (byval self as wxSizerItem ptr, byval pos as wxPoint, byval size as wxSize)
 declare sub wxSizerItem_GetMinSize cdecl alias "wxSizerItem_GetMinSize" (byval self as wxSizerItem ptr, byval size as wxSize ptr)
 declare sub wxSizerItem_SetInitSize cdecl alias "wxSizerItem_SetInitSize" (byval self as wxSizerItem ptr, byval x as integer, byval y as integer)
 declare sub wxSizerItem_SetRatio cdecl alias "wxSizerItem_SetRatio" (byval self as wxSizerItem ptr, byval width as integer, byval height as integer)

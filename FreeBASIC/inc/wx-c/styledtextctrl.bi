@@ -59,7 +59,7 @@ declare sub wxStyledTextCtrl_MarkerDeleteHandle cdecl alias "wxStyledTextCtrl_Ma
 declare function wxStyledTextCtrl_GetUndoCollection cdecl alias "wxStyledTextCtrl_GetUndoCollection" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_GetViewWhiteSpace cdecl alias "wxStyledTextCtrl_GetViewWhiteSpace" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetViewWhiteSpace cdecl alias "wxStyledTextCtrl_SetViewWhiteSpace" (byval self as wxStyledTextCtrl ptr, byval viewWS as integer)
-declare function wxStyledTextCtrl_PositionFromPoint cdecl alias "wxStyledTextCtrl_PositionFromPoint" (byval self as wxStyledTextCtrl ptr, byval pt as wxPoint) as integer
+''''''' declare function wxStyledTextCtrl_PositionFromPoint cdecl alias "wxStyledTextCtrl_PositionFromPoint" (byval self as wxStyledTextCtrl ptr, byval pt as wxPoint) as integer
 declare function wxStyledTextCtrl_PositionFromPointClose cdecl alias "wxStyledTextCtrl_PositionFromPointClose" (byval self as wxStyledTextCtrl ptr, byval x as integer, byval y as integer) as integer
 declare sub wxStyledTextCtrl_GotoLine cdecl alias "wxStyledTextCtrl_GotoLine" (byval self as wxStyledTextCtrl ptr, byval line as integer)
 declare sub wxStyledTextCtrl_GotoPos cdecl alias "wxStyledTextCtrl_GotoPos" (byval self as wxStyledTextCtrl ptr, byval pos as integer)
@@ -189,7 +189,7 @@ declare function wxStyledTextCtrl_GetPrintMagnification cdecl alias "wxStyledTex
 declare sub wxStyledTextCtrl_SetPrintColourMode cdecl alias "wxStyledTextCtrl_SetPrintColourMode" (byval self as wxStyledTextCtrl ptr, byval mode as integer)
 declare function wxStyledTextCtrl_GetPrintColourMode cdecl alias "wxStyledTextCtrl_GetPrintColourMode" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_FindText cdecl alias "wxStyledTextCtrl_FindText" (byval self as wxStyledTextCtrl ptr, byval minPos as integer, byval maxPos as integer, byval text as string, byval flags as integer) as integer
-declare function wxStyledTextCtrl_FormatRange cdecl alias "wxStyledTextCtrl_FormatRange" (byval self as wxStyledTextCtrl ptr, byval doDraw as integer, byval startPos as integer, byval endPos as integer, byval draw as wxDC ptr, byval target as wxDC ptr, byval renderRect as wxRect, byval pageRect as wxRect) as integer
+''''''' declare function wxStyledTextCtrl_FormatRange cdecl alias "wxStyledTextCtrl_FormatRange" (byval self as wxStyledTextCtrl ptr, byval doDraw as integer, byval startPos as integer, byval endPos as integer, byval draw as wxDC ptr, byval target as wxDC ptr, byval renderRect as wxRect, byval pageRect as wxRect) as integer
 declare function wxStyledTextCtrl_GetFirstVisibleLine cdecl alias "wxStyledTextCtrl_GetFirstVisibleLine" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_GetLine cdecl alias "wxStyledTextCtrl_GetLine" (byval self as wxStyledTextCtrl ptr, byval line as integer) as wxString ptr
 declare function wxStyledTextCtrl_GetLineCount cdecl alias "wxStyledTextCtrl_GetLineCount" (byval self as wxStyledTextCtrl ptr) as integer

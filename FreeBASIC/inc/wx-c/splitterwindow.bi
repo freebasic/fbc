@@ -12,9 +12,9 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_OnDoubleClickSash as sub cdecl(byval as integer, byval as integer)
-type Virtual_OnUnsplit as sub cdecl(byval as wxWindow ptr)
-type Virtual_OnSashPositionChange as function cdecl(byval as integer) as integer
+type Virtual_OnDoubleClickSash as sub (byval as integer, byval as integer)
+type Virtual_OnUnsplit as sub (byval as wxWindow ptr)
+type Virtual_OnSashPositionChange as function (byval as integer) as integer
 
 declare function wxSplitWnd cdecl alias "wxSplitWnd_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as wxChar ptr) as wxSplitterWindow ptr
 declare sub wxSplitWnd_RegisterVirtual cdecl alias "wxSplitWnd_RegisterVirtual" (byval self as _SplitterWindow ptr, byval onDoubleClickSash as Virtual_OnDoubleClickSash, byval onUnsplit as Virtual_OnUnsplit, byval onSashPositionChange as Virtual_OnSashPositionChange)

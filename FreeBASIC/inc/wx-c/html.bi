@@ -12,11 +12,11 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_OnLinkClicked as sub cdecl(byval as wxHtmlLinkInfo ptr)
-type Virtual_OnSetTitle as sub cdecl(byval as wxString ptr)
-type Virtual_OnCellMouseHover as sub cdecl(byval as wxHtmlCell ptr, byval as wxCoord, byval as wxCoord)
-type Virtual_OnCellClicked as sub cdecl(byval as wxHtmlCell ptr, byval as wxCoord, byval as wxCoord, byval as wxMouseEvent ptr)
-type Virtual_OnOpeningURL as function cdecl(byval as wxHtmlURLType, byval as wxString ptr, byval as wxString ptr) as wxHtmlOpeningStatus
+type Virtual_OnLinkClicked as sub (byval as wxHtmlLinkInfo ptr)
+type Virtual_OnSetTitle as sub (byval as wxString ptr)
+type Virtual_OnCellMouseHover as sub (byval as wxHtmlCell ptr, byval as wxCoord, byval as wxCoord)
+type Virtual_OnCellClicked as sub (byval as wxHtmlCell ptr, byval as wxCoord, byval as wxCoord, byval as wxMouseEvent ptr)
+type Virtual_OnOpeningURL as function (byval as wxHtmlURLType, byval as wxString ptr, byval as wxString ptr) as wxHtmlOpeningStatus
 
 declare function wxHtmlWindow cdecl alias "wxHtmlWindow_ctor" () as wxHtmlWindow ptr
 declare function wxHtmlWindow_ctor2 cdecl alias "wxHtmlWindow_ctor2" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxHtmlWindow ptr
