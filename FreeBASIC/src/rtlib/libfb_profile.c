@@ -307,7 +307,7 @@ void fb_ProfileEnd( void )
 			len = fprintf( f, "%03.2f%%", (calls[j].totaltime * 100.0) / totaltime );
 			for( len = 10 - len; len; len-- )
 				fprintf( f, " " );
-			fprintf( f, "%03.2f%%\n", (calls[j].totaltime * 100.0) / proctime );
+			fprintf( f, "%03.2f%%\n", (proctime > 0.0) ? (calls[j].totaltime * 100.0) / proctime : 0.0 );
 		}
 		free( calls );
 	}
