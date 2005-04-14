@@ -41,25 +41,27 @@ endif
 ifneq ($(MULTITHREADED),)
 	CFLAGS += -DMULTITHREADED
 	lib = $(libpath)/libfbmt.a
+	objpath = obj/$(osdeppath)/mt
 else
 	lib = $(libpath)/libfb.a
+	objpath = obj/$(osdeppath)
 endif
 
-objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
-osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))
-osdepobjs += $(patsubst $(osdeppath)/%.s,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.s))
+objects := $(patsubst %.c,$(objpath)/%.o,$(wildcard *.c))
+osdepobjs := $(patsubst $(osdeppath)/%.c,$(objpath)/%.o,$(wildcard $(osdeppath)/*.c))
+osdepobjs += $(patsubst $(osdeppath)/%.s,$(objpath)/%.o,$(wildcard $(osdeppath)/*.s))
 headers := $(wildcard *.h)
 
-obj/$(osdeppath)/%.o : %.c $(headers)
+$(objpath)/%.o : %.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/$(osdeppath)/%.o : $(osdeppath)/%.c $(headers)
+$(objpath)/%.o : $(osdeppath)/%.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/$(osdeppath)/%.o : %.s $(headers)
+$(objpath)/%.o : %.s $(headers)
 	$(AS) $< -o $@
 
-obj/$(osdeppath)/%.o : $(osdeppath)/%.s $(headers)
+$(objpath)/%.o : $(osdeppath)/%.s $(headers)
 	$(AS) $< -o $@
 
 all : $(objects) $(osdepobjs) $(lib)
