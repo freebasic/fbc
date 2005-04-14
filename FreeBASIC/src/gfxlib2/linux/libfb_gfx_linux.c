@@ -192,6 +192,7 @@ static void *window_thread(void *arg)
 							fb_linux.fullscreen ^= TRUE;
 							if (fb_linux.init()) {
 								fb_linux.exit();
+								XSync(fb_linux.display, True);
 								fb_linux.fullscreen ^= TRUE;
 								fb_linux.init();
 							}
