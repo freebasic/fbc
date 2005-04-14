@@ -236,7 +236,7 @@ void fb_ProfileEnd( void )
 #ifdef TARGET_WIN32
 	TlsFree(cur_proc);
 #elif defined(TARGET_LINUX)
-	pthread_key_delete( &cur_proc );
+	pthread_key_delete( cur_proc );
 #endif
 #endif
 	
