@@ -35,10 +35,10 @@
 #define PROFILE_FILE		"profile.txt"
 
 
-typedef struct _PROC {
+typedef struct _PROFPROC {
 	const char *name;
-	struct _PROC *next;
-} PROC;
+	struct _PROFPROC *next;
+} PROFPROC;
 
 typedef struct _CALL {
 	const char *name;
@@ -48,7 +48,7 @@ typedef struct _CALL {
 	struct _CALL *next;
 } CALL;
 
-static PROC proc_table[PROC_TABLE_SIZE] = { { 0 } };
+static PROFPROC proc_table[PROC_TABLE_SIZE] = { { 0 } };
 static CALL call_table[CALL_TABLE_SIZE] = { { 0 } };
 
 static FB_TLSENTRY cur_proc;
@@ -59,7 +59,7 @@ static char launch_time[32];
 /*:::::*/
 static void add_proc( const char *procname )
 {
-	PROC *proc, *last = NULL;
+	PROFPROC *proc, *last = NULL;
 	const char *p;
 	unsigned int hash = 0;
 
@@ -75,7 +75,7 @@ static void add_proc( const char *procname )
 		proc = proc->next;
 	}
 	if( !proc ) {
-		proc = (PROC *)malloc( sizeof(PROC) );
+		proc = (PROFPROC *)malloc( sizeof(PROFPROC) );
 		proc->next = NULL;
 		last->next = proc;
 	}
@@ -223,7 +223,7 @@ void fb_ProfileEnd( void )
 	char exename[256];
 	int i, j, len;
 	FILE *f;
-	PROC *p, *aux_p;
+	PROFPROC *p, *aux_p;
 	CALL *c, *aux_c, *calls = NULL;
 	double totaltime, proctime;
 	const char **procs = NULL;
