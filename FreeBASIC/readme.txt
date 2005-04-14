@@ -96,10 +96,10 @@ Requirements:
       and should be available by default on all modern distros.
     
     - When using the gfx routines, the dependencies will increase. FreeBASIC gfx
-      programs will also need libX11, libXext, libXpm and libXxf86vm to be
-      installed on the host system to be executed. This is usually not a problem
-      as long as there's an X11 server installed in the system (XFree86 or X.org
-      both provide these libs).
+      programs will also need libX11, libXext, libXpm, libXrender and libXrandr
+      to be installed on the host system to be executed. This is usually not a
+      problem as long as there's a recent X11 server installed in the system
+      (at least XFree86 4.3.0 or any X.org version).
     
     - If having a working X11 installation is enough to run FreeBASIC gfx programs,
       it may be not enough to compile them; you may need to install the X11
@@ -515,6 +515,7 @@ Credits (in alphabetic order):
   o Eric Lope (vic_viperph@yahoo.com):
     - Translated the OpenGL and GLU headers
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
+    - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
 
   o fsw:
     - Translated most of the Windows API headers.
