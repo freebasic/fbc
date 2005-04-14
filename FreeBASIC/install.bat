@@ -8,7 +8,8 @@ rem
 
 if not exist %_defpath_%\genimplibs.exe goto deferr
 
-%_defpath_%\genimplibs.exe
+cd %_defpath_%
+genimplibs.exe
 goto defend
 
 rem ----------------

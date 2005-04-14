@@ -2428,7 +2428,7 @@ Appendix F: Hints
 			FOR row = 0 TO fb_FontData.h-1
 				IF (buffer) THEN
 					LINE buffer, (x + 7, y + row)_
-						-(x, y + row), col,,
+						-(x, y + row), col,, _
 						*bits SHL 8
 				ELSE
 					LINE (x + 7, y + row)-(x, y + row),_
