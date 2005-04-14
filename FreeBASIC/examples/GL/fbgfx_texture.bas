@@ -26,8 +26,8 @@ TYPE SCREENINFOTYPE						'FBgfx screen information structure
 END TYPE
 
 
-'$include: "GL\gl.bi"                  'OpenGL funks and consts
-'$include: "GL\glu.bi"                 'GL standard utility lib
+'$include: "GL/gl.bi"                  'OpenGL funks and consts
+'$include: "GL/glu.bi"                 'GL standard utility lib
 
 
 'Declarations
