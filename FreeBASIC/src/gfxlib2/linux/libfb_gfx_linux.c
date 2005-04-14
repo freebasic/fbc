@@ -173,9 +173,20 @@ static void *window_thread(void *arg)
 					}
 					break;
 				
+				
+				case ConfigureNotify:
+					if ((event.xconfigure.width != fb_linux.w) || (event.xconfigure.height != fb_linux.h)) {
+						/* Window has been maximized: simulate ALT-Enter */
+						fb_mode->key[0x1C] = fb_mode->key[0x38] = TRUE;
+					}
+					else
+						break;
+					/* fallthrough */
+
 				case KeyPress:
 					if (has_focus) {
-						fb_mode->key[fb_linux.keymap[event.xkey.keycode]] = TRUE;
+						if (event.type == KeyPress)
+							fb_mode->key[fb_linux.keymap[event.xkey.keycode]] = TRUE;
 						if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38])) {
 							fb_linux.exit();
 							fb_linux.fullscreen ^= TRUE;
@@ -251,7 +262,6 @@ int fb_hX11EnterFullscreen(int h)
 	if ((!config) || (target_size < 0))
 		return -1;
 	
-	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, fb_linux.h >> 1);
 	if (target_rate < 0) {
 		if (XRRSetScreenConfig(fb_linux.display, config, root_window, target_size, orig_rotation, CurrentTime) == BadValue)
 			return -1;
@@ -261,6 +271,7 @@ int fb_hX11EnterFullscreen(int h)
 			return -1;
 	}
 	
+	XWarpPointer(fb_linux.display, None, fb_linux.window, 0, 0, 0, 0, fb_linux.w >> 1, fb_linux.h >> 1);
 	XSync(fb_linux.display, False);
 	while (XGrabPointer(fb_linux.display, fb_linux.window, True, 0,
 			    GrabModeAsync, GrabModeAsync, fb_linux.window, None, CurrentTime) != GrabSuccess)
@@ -347,7 +358,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	attribs.border_pixel = attribs.background_pixel = XBlackPixel(fb_linux.display, fb_linux.screen);
 	attribs.event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
-			     PointerMotionMask | FocusChangeMask | EnterWindowMask | LeaveWindowMask | ExposureMask;
+			     PointerMotionMask | FocusChangeMask | EnterWindowMask | LeaveWindowMask | ExposureMask | StructureNotifyMask;
 	attribs.backing_store = NotUseful;
 	fb_linux.window = XCreateWindow(fb_linux.display, root_window, 0, 0, fb_linux.w, fb_linux.h,
 					0, XDefaultDepth(fb_linux.display, fb_linux.screen), InputOutput, fb_linux.visual,
@@ -363,10 +374,14 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	}
 	
 	size = XAllocSizeHints();
-	size->flags = PPosition | PBaseSize | PMinSize | PMaxSize;
+	size->flags = PPosition | PBaseSize | PMinSize | PMaxSize | PResizeInc;
 	size->x = size->y = 0;
-	size->min_width = size->max_width = size->base_width = fb_linux.w;
-	size->min_height = size->max_height = size->base_height = fb_linux.h;
+	size->min_width = size->base_width = fb_linux.w;
+	size->min_height = size->base_height = fb_linux.h;
+	size->max_width = XDisplayWidth(fb_linux.display, fb_linux.screen);
+	size->max_height = XDisplayHeight(fb_linux.display, fb_linux.screen);
+	size->width_inc = 0x10000;
+	size->height_inc = 0x10000;
 	XSetWMNormalHints(fb_linux.display, fb_linux.window, size);
 	XFree(size);
 	

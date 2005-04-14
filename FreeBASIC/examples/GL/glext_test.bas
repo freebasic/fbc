@@ -4,10 +4,10 @@
 option explicit
 option private
 
-'$include once: 'gl/gl.bi'
-'$include once: 'gl/glu.bi'
-'$include once: 'gl/glext.bi'
-'$include once: 'gl/glfw.bi'
+'$include once: 'GL/gl.bi'
+'$include once: 'GL/glu.bi'
+'$include once: 'GL/glext.bi'
+'$include once: 'GL/glfw.bi'
 
 #ifndef FALSE
 #define FALSE 0

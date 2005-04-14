@@ -140,6 +140,7 @@ Version 0.13 Beta:
 - unsigned integer constants were being saturated, due the problem above (v1c)
 - include/lib paths now accept both "/" and "\" as path separators on all platforms (lillo)
 - PRINT in gfx mode now detects CR+LF as an unique new line (lillo)
+- Enabled maximize button on X11 windows under Linux, switching to fullscreen like under Win32 (lillo)
 
 
 Version 0.12 Beta:
