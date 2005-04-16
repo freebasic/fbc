@@ -1,4 +1,4 @@
-#ifdef FB__LINUX
+#ifdef __FB_LINUX__
 const ls = "ls *"
 #else
 const ls = "dir *.*"
