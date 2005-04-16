@@ -1388,7 +1388,8 @@ function astUpdComp2Branch( byval n as integer, _
 
 	'' binary op that sets the flags? (x86 opt, may work on some RISC cpu's)
 	case IR.OP.ADD, IR.OP.SUB, IR.OP.SHL, IR.OP.SHR, _
-		 IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.EQV, IR.OP.IMP
+		 IR.OP.AND, IR.OP.OR, IR.OP.XOR, IR.OP.IMP
+		 ', IR.OP.EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
 		'' x86-quirk: only if integers, as FPU will set its own flags, that must copied back
 		if( irGetDataClass( dtype ) = IR.DATACLASS.INTEGER ) then
