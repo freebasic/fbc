@@ -6,6 +6,7 @@ Version 0.14 Beta:
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 
 [fixed]
+- EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
 
 
 Version 0.13 Beta:
