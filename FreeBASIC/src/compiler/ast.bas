@@ -1016,7 +1016,7 @@ function astOptNullOp( byval n as integer ) static
 						elseif( v = 1 ) then
 							astDel r
 							astDel n
-							return l
+							return astOptNullOp( l )
 						end if
 
 					case IR.OP.MOD
@@ -1031,21 +1031,21 @@ function astOptNullOp( byval n as integer ) static
 						if( v = 1 ) then
 							astDel r
 							astDel n
-							return l
+							return astOptNullOp( l )
 						end if
 
 					case IR.OP.ADD, IR.OP.SUB, IR.OP.SHR, IR.OP.SHL, IR.OP.OR, IR.OP.XOR
 						if( v = 0 ) then
 							astDel r
 							astDel n
-							return l
+							return astOptNullOp( l )
 						end if
 
 					case IR.OP.AND
 						if( v = -1 ) then
 							astDel r
 							astDel n
-							return l
+							return astOptNullOp( l )
 						end if
 					end select
 				end if
