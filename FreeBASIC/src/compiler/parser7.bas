@@ -42,7 +42,7 @@ const FBGFX_COORDTYPE_RR  = 3
 const FBGFX_COORDTYPE_A   = 4
 const FBGFX_COORDTYPE_R   = 5
 
-const FBGFX_DEFAULTCOLOR  = &HFFFF0000
+const FBGFX_DEFAULTCOLOR  = &HFFFFFFFF
 
 const FBGFX_PUTMODE_TRANS  = 0
 const FBGFX_PUTMODE_PSET   = 1
@@ -50,6 +50,7 @@ const FBGFX_PUTMODE_PRESET = 2
 const FBGFX_PUTMODE_AND    = 3
 const FBGFX_PUTMODE_OR     = 4
 const FBGFX_PUTMODE_XOR    = 5
+const FBGFX_PUTMODE_ALPHA  = 6
 
 
 
@@ -839,6 +840,9 @@ function cGfxPut as integer
 			if (ucase$( lexTokenText ) = "TRANS") then
 				lexSkipToken
 				mode = FBGFX_PUTMODE_TRANS
+			elseif (ucase$( lexTokenText ) = "ALPHA") then
+				lexSkipToken
+				mode = FBGFX_PUTMODE_ALPHA
 			else
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function

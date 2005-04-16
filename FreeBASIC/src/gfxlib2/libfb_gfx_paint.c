@@ -36,7 +36,7 @@ typedef struct SPAN
 
 
 /*:::::*/
-static SPAN *add_span(SPAN **span, int *x, int y, int border_color)
+static SPAN *add_span(SPAN **span, int *x, int y, unsigned int border_color)
 {
 	SPAN *s;
 	int x1, x2;
@@ -64,7 +64,7 @@ static SPAN *add_span(SPAN **span, int *x, int y, int border_color)
 
 
 /*:::::*/
-FBCALL void fb_GfxPaint(void *target, float fx, float fy, int color, int border_color, FBSTRING *pattern, int mode, int coord_type)
+FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type)
 {
 	int size, x, y;
 	unsigned char data[256], *dest, *src;

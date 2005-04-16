@@ -30,7 +30,8 @@
 /*:::::*/
 FBCALL int fb_GfxPoint(void *target, float fx, float fy)
 {
-	int x, y, color;
+	int x, y;
+	unsigned int color;
 	
 	if (!fb_mode)
 		return -1;
@@ -56,5 +57,5 @@ FBCALL int fb_GfxPoint(void *target, float fx, float fy)
 			 ((color & 0x07E0) << 5) | ((color >> 1) & 0x300) |
 			 ((color & 0xF800) << 8) | ((color << 3) & 0x70000));
 	
-	return color;
+	return (int)color;
 }

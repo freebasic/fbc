@@ -52,6 +52,9 @@
 #define MASK_COLOR_32		0xFF00FF
 #define MASK_COLOR_16		0xF81F
 
+#define MASK_RB_32			0x00FF00FF
+#define MASK_G_32			0x0000FF00
+
 #define MODE_NUM		0
 #define PAGE			4
 #define NUM_PAGES		8

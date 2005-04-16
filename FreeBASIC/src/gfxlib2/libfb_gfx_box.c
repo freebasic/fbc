@@ -32,7 +32,7 @@
  * Also assumes color is already masked. */
 
 /*:::::*/
-void fb_hGfxBox(int x1, int y1, int x2, int y2, int color, int full)
+void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full)
 {
 	unsigned char *dest;
 	int clipped_x1, clipped_y1, clipped_x2, clipped_y2, w, h;

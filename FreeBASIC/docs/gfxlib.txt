@@ -1162,8 +1162,8 @@ arrayname	Array holding saved block pixels data.
 idx		Index into arrayname where data is assumed to start. If idx is
 		omitted, it is assumed to be 0.
 
-mode		One of PSET, PRESET, AND, OR, XOR or TRANS; see below. If
-		omitted, this defaults to XOR.
+mode		One of PSET, PRESET, AND, OR, XOR, TRANS or ALPHA; see below.
+		If omitted, this defaults to XOR.
 
 
 Insights:
@@ -1184,6 +1184,8 @@ OR		Destination pixels are bitwise ORed with source pixels.
 XOR		Destination pixels are bitwise XORed with source pixels.
 TRANS		Source pixels overwrite destination pixels. If a source pixel
 		is the mask color (see below), the pixel is skipped.
+ALPHA		Source pixels are blended on top of destination pixels
+		accordingly to the source pixel alpha value.
 
 The AND, OR and XOR modes produce different results depending on the current
 color depth, as pixels are stored in different formats; see appendix C for
@@ -1192,6 +1194,9 @@ If the TRANS mode is used, pixels using the mask color are not drawn. The mask
 color depends on the current color depth: in paletted modes (up to 8 bpp) it
 is equal to color index 0, while on hi/truecolor modes (15, 16, 24 and 32 bpp)
 it is equal to color &hFF00FF (bright pink).
+The ALPHA mode only works if in 32bit color depth; if used while in a lower
+depth, it will behave like the PSET mode. In alpha mode bright pink pixels are
+not skipped; instead, use a pixel alpha value of 0 to skip that pixel.
 The pixels data stored in given array must be compatible with current gfx mode
 color depth; that is, if you acquire an image using GET and you later change
 screen mode via SCREEN, the image data may not be valid in the new gfx mode,
@@ -1227,10 +1232,10 @@ SLEEP
 
 Differences from QB:
 
-FB version supports hi/truecolor sprites, transparency and clipping. For modes
-with color depth up to 8bpp, it always assumes 1 byte equals 1 pixel into
-arrayname, whereas QB packs more pixels per byte if color depth is less than
-8bpp.
+FB version supports hi/truecolor sprites, transparency, alpha blending and
+clipping. For modes with color depth up to 8bpp, it always assumes 1 byte
+equals 1 pixel into arrayname, whereas QB packs more pixels per byte if color
+depth is less than 8bpp.
 
 
 See also:
@@ -2200,7 +2205,7 @@ Depth:	Pixel format:
 4	1 byte per pixel, indexed, index ranging 0-15.
 8	1 byte per pixel, indexed, index ranging 0-255.
 15,16	2 bytes per pixel, direct color, RRRRRGGGGGGBBBBB.
-24,32	4 bytes per pixel, direct color, xxxxxxxxRRRRRRRRGGGGGGGGBBBBBBBB.
+24,32	4 bytes per pixel, direct color, AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB.
 
 As you can see, 15 and 16bpp modes internally have the same 16bpp format. The
 same can be said for 24 and 32bpp modes, both using the 32bpp format.

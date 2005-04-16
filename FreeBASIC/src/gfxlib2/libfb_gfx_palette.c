@@ -37,7 +37,7 @@ static const unsigned char ega_association[2][16] = {
 
 
 /*:::::*/
-unsigned int fb_hMakeColor(int index, int r, int g, int b)
+unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b)
 {
 	unsigned int color;
 

@@ -114,7 +114,7 @@ static int clip_line(int *x1, int *y1, int *x2, int *y2)
 
 
 /*:::::*/
-FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2, int color, int type, unsigned int style, int coord_type)
+FBCALL void fb_GfxLine(void *target, float fx1, float fy1, float fx2, float fy2, unsigned int color, int type, unsigned int style, int coord_type)
 {
 	int x1, y1, x2, y2;
 	int x, y, len, d, dx, dy, ax, ay, bit = 0x8000;

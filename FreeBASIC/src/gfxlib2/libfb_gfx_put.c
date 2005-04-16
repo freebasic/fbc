@@ -25,9 +25,11 @@
  */
 
 #include "fb_gfx.h"
+#include "fb_gfx_mmx.h"
 
 
 /* MMX functions declarations */
+extern void fb_hPutAlpha4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
 extern void fb_hPutTrans1MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
 extern void fb_hPutTrans2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
 extern void fb_hPutTrans4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
@@ -39,6 +41,7 @@ extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h,
 
 
 /* Local vars */
+static void (*fb_hPutAlpha)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
 static void (*fb_hPutTrans)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
 static void (*fb_hPutPSet)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
 static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
@@ -46,6 +49,34 @@ static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h,
 static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
 static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
 static int put_initialized_depth = 0;
+
+
+/*:::::*/
+static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+{
+	unsigned int *s = (unsigned int *)src;
+	unsigned int *d, sc, dc, a, drb, dg, srb, sg;
+	int x;
+	
+	pitch = (pitch >> 2) - w;
+	for (; h; h--) {
+		d = (unsigned int *)dest;
+		for (x = w; x; x--) {
+			sc = *s++;
+			dc = *d;
+			a = (sc >> 24) + 1;
+			srb = sc & MASK_RB_32;
+			sg = sc & MASK_G_32;
+			drb = dc & MASK_RB_32;
+			dg = dc & MASK_G_32;
+			srb = ((srb - drb) * a) >> 8;
+			sg = ((sg - dg) * a) >> 8;
+			*d++ = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32);
+		}
+		s += pitch;
+		dest += fb_mode->target_pitch;
+	}
+}
 
 
 /*:::::*/
@@ -96,15 +127,16 @@ static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h
 static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
 {
 	unsigned int *s = (unsigned int *)src;
-	unsigned int *d;
+	unsigned int *d, c;
 	int x;
 	
 	pitch = (pitch >> 2) - w;
 	for (; h; h--) {
 		d = (unsigned int *)dest;
 		for (x = w; x; x--) {
-			if (*s != MASK_COLOR_32)
-				*d = *s;
+			c = *s & 0x00FFFFFF;
+			if (c != MASK_COLOR_32)
+				*d = c;
 			s++;
 			d++;
 		}
@@ -248,16 +280,19 @@ static void init_put(void)
 			case 4:
 			case 8:
 				fb_hPutTrans = fb_hPutTrans1MMX;
+				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
 				break;
 			
 			case 15:
 			case 16:
 				fb_hPutTrans = fb_hPutTrans2MMX;
+				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
 				break;
 			
 			case 24:
 			case 32:
 				fb_hPutTrans = fb_hPutTrans4MMX;
+				fb_hPutAlpha = fb_hPutAlpha4MMX;
 				break;
 		}
 	}
@@ -273,16 +308,19 @@ static void init_put(void)
 			case 4:
 			case 8:
 				fb_hPutTrans = fb_hPutTrans1C;
+				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
 				break;
 			
 			case 15:
 			case 16:
 				fb_hPutTrans = fb_hPutTrans2C;
+				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
 				break;
 			
 			case 24:
 			case 32:
 				fb_hPutTrans = fb_hPutTrans4C;
+				fb_hPutAlpha = fb_hPutAlpha4C;
 				break;
 		}
 	}
@@ -344,6 +382,7 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 		case PUT_MODE_AND:	put = fb_hPutAnd;	break;
 		case PUT_MODE_OR:	put = fb_hPutOr;	break;
 		case PUT_MODE_XOR:	put = fb_hPutXor;	break;
+		case PUT_MODE_ALPHA:	put = fb_hPutAlpha;	break;
 		case PUT_MODE_PSET:
 		default:		put = fb_hPutPSet;	break;
 	}

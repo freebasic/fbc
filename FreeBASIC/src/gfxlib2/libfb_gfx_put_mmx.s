@@ -33,6 +33,9 @@
 
 mask_16:	.short	MASK_COLOR_16, MASK_COLOR_16, MASK_COLOR_16, MASK_COLOR_16
 mask_32:	.long	MASK_COLOR_32, MASK_COLOR_32
+rgb_32:		.long	0x00FFFFFF, 0x00FFFFFF
+rb_32:		.long	MASK_RB_32, MASK_RB_32
+one:		.long	0x00010001, 0x00010001
 
 
 .text
@@ -637,6 +640,7 @@ FUNC(fb_hPutTrans4MMX)
 	movl ARG2, %edi
 	subl %ebx, %edx
 	movq (mask_32), %mm1
+	movq (rgb_32), %mm5
 	shrl $2, %ebx
 
 LABEL(trans4_y_loop)
@@ -645,6 +649,7 @@ LABEL(trans4_y_loop)
 	jnc trans4_skip_1
 	addl $4, %edi
 	lodsl
+	andl $0xFFFFFF, %eax
 	cmpl $MASK_COLOR_32, %eax
 	je trans4_skip_1
 	movl %eax, -4(%edi)
@@ -654,6 +659,7 @@ LABEL(trans4_skip_1)
 	jnc trans4_skip_2
 	movq (%esi), %mm0
 	movq (%edi), %mm2
+	pand %mm5, %mm0
 	movq %mm0, %mm3
 	pcmpeqd %mm1, %mm0
 	pand %mm0, %mm2
@@ -672,6 +678,8 @@ LABEL(trans4_x_loop)
 	movq 8(%esi), %mm4
 	movq (%edi), %mm2
 	movq 8(%edi), %mm6
+	pand %mm5, %mm0
+	pand %mm5, %mm4
 	movq %mm0, %mm3
 	movq %mm4, %mm7
 	pcmpeqd %mm1, %mm0
@@ -700,5 +708,106 @@ LABEL(trans4_next_line)
 	popl %edi
 	popl %esi
 	FREE_LOCALS(1)
+	popl %ebp
+	ret
+
+
+/*:::::*/
+FUNC(fb_hPutAlpha4MMX)
+	pushl %ebp
+	movl %esp, %ebp
+	RESERVE_LOCALS(2)
+	pushl %esi
+	pushl %edi
+	pushl %ebx
+	
+	movl ARG3, %ebx
+	movl GLOBL(fb_mode), %eax
+	shll $2, %ebx
+	movl ARG4, %edx
+	subl %ebx, ARG5
+	movl %edx, LOCAL1
+	movl ARG1, %esi
+	movl TARGET_PITCH(%eax), %edx
+	movl ARG2, %edi
+	subl %ebx, %edx
+	movl %edx, LOCAL2
+	movq (rb_32), %mm5
+	movq %mm5, %mm6
+	movq (one), %mm7
+	psllw $8, %mm6
+
+LABEL(alpha4_y_loop)
+	movl ARG3, %ecx
+	shrl $1, %ecx
+	jnc alpha4_skip_1
+	addl $4, %edi
+	lodsl
+	movl %eax, %ebx
+	movl %eax, %ecx
+	shrl $24, %ebx
+	andl $MASK_RB_32, %eax
+	mull %ebx
+	xchg %ecx, %eax
+	andl $MASK_G_32, %eax
+	mull %ebx
+	andl $(MASK_RB_32 << 8), %ecx
+	andl $(MASK_G_32 << 8), %eax
+	orl %ecx, %eax
+	shrl $8, %eax
+	movl %eax, -4(%edi)
+
+LABEL(alpha4_skip_1)
+	movl ARG3, %ecx
+	shrl $1, %ecx
+	jz alpha4_next_line
+
+LABEL(alpha4_x_loop)
+	movq (%esi), %mm0
+	movq (%edi), %mm1
+
+	movq %mm0, %mm2
+	movq %mm0, %mm3
+	psrld $24, %mm2
+	movq %mm1, %mm4
+	packssdw %mm2, %mm2
+	pand %mm5, %mm0
+	punpcklwd %mm2, %mm2
+	pand %mm5, %mm1
+	paddw %mm7, %mm2
+	psrlw $8, %mm3
+	psubw %mm1, %mm0
+	psrlw $8, %mm4
+	pmullw %mm2, %mm0
+	psubw %mm4, %mm3
+	psllw $8, %mm4
+	pmullw %mm2, %mm3
+	por %mm4, %mm1
+	addl $8, %edi
+	movq %mm6, %mm4
+	psrlw $8, %mm0
+	pand %mm4, %mm3
+	paddb %mm1, %mm0
+	paddb %mm1, %mm3
+	pand %mm5, %mm0
+	pand %mm4, %mm3
+	por %mm3, %mm0
+
+	addl $8, %esi
+	movq %mm0, -8(%edi)
+	decl %ecx
+	jnz alpha4_x_loop
+
+LABEL(alpha4_next_line)
+	addl ARG5, %esi
+	addl LOCAL2, %edi
+	decl LOCAL1
+	jnz alpha4_y_loop
+
+	emms
+	popl %ebx
+	popl %edi
+	popl %esi
+	FREE_LOCALS(2)
 	popl %ebp
 	ret

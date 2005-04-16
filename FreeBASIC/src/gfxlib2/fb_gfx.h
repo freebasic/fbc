@@ -78,7 +78,7 @@
 
 #define HAS_MMX			0x01000000
 #define SCREEN_EXIT		0x80000000
-#define DEFAULT_COLOR		0xFFFF0000
+#define DEFAULT_COLOR		0xFFFFFFFF
 #define WINDOW_ACTIVE		0x00000001
 #define WINDOW_SCREEN		0x00000002
 #define VIEW_SCREEN		0x00000004
@@ -107,6 +107,7 @@
 #define PUT_MODE_AND		3
 #define PUT_MODE_OR		4
 #define PUT_MODE_XOR		5
+#define PUT_MODE_ALPHA		6
 
 #define KEY_BUFFER_LEN		16
 
@@ -150,7 +151,7 @@ typedef struct MODE
 	int color_mask;					/* Color bit mask for colordepth emulation */
 	const struct PALETTE *default_palette;		/* Default palette for current mode */
 	int scanline_size;				/* Vertical size of a single scanline in pixels */
-	int fg_color, bg_color;				/* Current foreground and background colors */
+	unsigned int fg_color, bg_color;		/* Current foreground and background colors */
 	float last_x, last_y;				/* Last pen position */
 	int cursor_x, cursor_y;				/* Current graphical text cursor position (in chars, 0 based) */
 	const struct FONT *font;			/* Current font */
@@ -235,14 +236,14 @@ extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsign
 extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
-extern unsigned int fb_hMakeColor(int index, int r, int g, int b);
+extern unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);
 extern void fb_hRestorePalette(void);
 extern void fb_hPrepareTarget(void *target);
 extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
-extern void fb_hGfxBox(int x1, int y1, int x2, int y2, int color, int full);
+extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full);
 extern int fb_hHasMMX(void);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
@@ -254,18 +255,18 @@ extern FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
 extern FBCALL int fb_GfxPaletteInp(int port);
-extern FBCALL void fb_GfxPset(void *target, float x, float y, int color, int coord_type);
+extern FBCALL void fb_GfxPset(void *target, float x, float y, unsigned int color, int coord_type);
 extern FBCALL int fb_GfxPoint(void *target, float x, float y);
 extern FBCALL float fb_GfxPMap(float coord, int func);
 extern FBCALL float fb_GfxCursor(int func);
-extern FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, int fill_color, int border_color, int screen);
+extern FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int screen);
 extern FBCALL void fb_GfxWindow(float x1, float y1, float x2, float y2, int screen);
-extern FBCALL void fb_GfxLine(void *target, float x1, float y1, float x2, float y2, int color, int type, unsigned int style, int coord_type);
-extern FBCALL void fb_GfxEllipse(void *target, float x, float y, float radius, int color, float aspect, float start, float end, int fill, int coord_type);
+extern FBCALL void fb_GfxLine(void *target, float x1, float y1, float x2, float y2, unsigned int color, int type, unsigned int style, int coord_type);
+extern FBCALL void fb_GfxEllipse(void *target, float x, float y, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type);
 extern FBCALL int fb_GfxGet(void *target, float x1, float y1, float x2, float y2, unsigned char *dest, int coord_type, FBARRAY *array);
 extern FBCALL void fb_GfxPut(void *target, float x, float y, unsigned char *src, int coord_type, int mode);
 extern FBCALL void fb_GfxWaitVSync(int port, int and_mask, int xor_mask);
-extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, int color, int border_color, FBSTRING *pattern, int mode, int coord_type);
+extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type);
 extern FBCALL void fb_GfxDraw(void *target, FBSTRING *command);
 extern FBCALL void fb_GfxFlip(int from_page, int to_page);
 extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);

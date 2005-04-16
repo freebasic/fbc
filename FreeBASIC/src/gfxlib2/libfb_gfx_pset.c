@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxPset(void *target, float fx, float fy, int color, int coord_type)
+FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int coord_type)
 {
 	int x, y;
 	

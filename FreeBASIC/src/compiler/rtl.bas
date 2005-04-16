@@ -1224,6 +1224,8 @@ data ""
 imacrodata:
 ''#define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b))
 data "RGB", 3, "R", "G", "B", "((cuint(#R#) shl 16) or (cuint(#G#) shl 8) or cuint(#B#))"
+''#define RGBA(r,g,b,a) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24))
+data "RGBA", 4, "R", "G", "B", "A", "((cuint(#R#) shl 16) or (cuint(#G#) shl 8) or cuint(#B#) or (cuint(#A#) shl 24))"
 
 ''#define va_arg(a,t) peek( t, a )
 data "VA_ARG", 2, "A", "T", "peek( #T#, #A# )"

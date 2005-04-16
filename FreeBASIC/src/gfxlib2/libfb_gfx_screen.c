@@ -169,7 +169,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 			case 15:
 			case 16:	fb_mode->color_mask = 0xFFFF; fb_mode->depth = 16; break;
 			case 24:
-			case 32:	fb_mode->color_mask = 0xFFFFFF; fb_mode->depth = 32; break;
+			case 32:	fb_mode->color_mask = 0xFFFFFFFF; fb_mode->depth = 32; break;
 			default:	fb_mode->color_mask = (1 << fb_mode->depth) - 1;
 		}
 

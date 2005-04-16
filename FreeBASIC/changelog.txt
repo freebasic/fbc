@@ -1,3 +1,13 @@
+Version 0.14 Beta:
+
+[changed]
+
+[added]
+- alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
+
+[fixed]
+
+
 Version 0.13 Beta:
 
 [changed]

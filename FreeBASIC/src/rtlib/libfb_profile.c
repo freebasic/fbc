@@ -329,7 +329,7 @@ void fb_ProfileEnd( void )
 				calls[num_calls-1].name = c->name;
 				calls[num_calls-1].totaltime = c->totaltime;
 			}
-			else
+			else if( strcmp( c->name, c->fromproc ) )
 				calls[j].totaltime += c->totaltime;
 			c = c->next;
 		}

@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, int fill_color, int border_color, int screen)
+FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int screen)
 {
 	if (!fb_mode)
 		return;
