@@ -7,6 +7,8 @@ Version 0.14 Beta:
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
+- INPUT$() for console was reading a char less, causing INPUT$(1) to fail (v1c)
+- PRINT USING ^^ should be used to set the number of exponent digits (v1c)
 
 
 Version 0.13 Beta:
