@@ -364,16 +364,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			break;
 
 		case '^':
-			if( nc == '^' )
-			{
-				if( lc != '^' )
-				{
-					++expdigs;
-					isexp = 1;
-				}
-				else
-					c = -1;
-			}
+			++expdigs;
+			isexp = 1;
 			break;
 
 		default:
@@ -534,19 +526,18 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	{
 		if( expdigs > 0 )
 		{
-			p = &expbuff[1];
-			if( (*p == '-') || (*p == '+') )
-				++p;
-			
-			len = strlen( p );
+			len = strlen( expbuff );
 			if( len > expdigs )
 			{
-				memmove( p, &p[len-expdigs], expdigs+1 );
+				if( expdigs > 2 ) 
+					memmove( &expbuff[2], &expbuff[len-(expdigs-2)], expdigs-2+1 );
+				else
+					expbuff[expdigs] = '\0';
 			}
 			else if( len < expdigs )
 			{
-				memmove( &p[expdigs-len], p, len+1 );
-				memset( p, '0', expdigs - len );
+				memmove( &expbuff[(2+expdigs)-len], &expbuff[2], len-2+1 );
+				memset( &expbuff[2], '0', (expdigs-2) - len );
 			}
 		}	
 			
