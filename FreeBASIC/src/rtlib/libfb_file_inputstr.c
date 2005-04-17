@@ -71,7 +71,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 
 	if( fnum == 0 )
 	{
-		if( fb_ReadString( dst->data, bytes, f ) != NULL )
+		if( fb_ReadString( dst->data, bytes + 1, f ) != NULL )
 			len = strlen( dst->data );
 		else
 			len = 0;
