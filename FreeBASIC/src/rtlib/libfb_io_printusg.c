@@ -275,9 +275,9 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 {
 	FBSTRING s;
-	char 	buffer[BUFFERLEN+1], *p, *ptr;
+	char 	buffer[BUFFERLEN+1], expbuff[16+1+1+1], *p, *ptr;
 	int 	c, nc, lc, d, i, j, len, intlgt;
-	int 	doexit, padchar, intdigs, decdigs, totdigs;
+	int 	doexit, padchar, intdigs, decdigs, totdigs, expdigs;
 	int		adddolar, addcomma, endcomma, signatend, isexp, isneg;
 
 
@@ -295,6 +295,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	padchar 	= ' ';
 	intdigs 	= 0;
 	decdigs 	= -1;
+	expdigs		= 0;
 	adddolar 	= 0;
 	addcomma	= 0;
 	endcomma 	= 0;
@@ -363,8 +364,16 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			break;
 
 		case '^':
-			if( nc == '^' || lc == '^' )
-				isexp = 1;
+			if( nc == '^' )
+			{
+				if( lc != '^' )
+				{
+					++expdigs;
+					isexp = 1;
+				}
+				else
+					c = -1;
+			}
 			break;
 
 		default:
@@ -386,7 +395,12 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	if( isexp )
 	{
     	sprintf( buffer, "%e", value );
+        
+        p = strchr( buffer, 'e' );
+        strcpy( expbuff, p );
+        *p = '\0';
         len = strlen( buffer );
+
 	}
 	else
 	{
@@ -515,6 +529,29 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			*p = '\0';
 	}
 
+	//
+	if( isexp )
+	{
+		if( expdigs > 0 )
+		{
+			p = &expbuff[1];
+			if( (*p == '-') || (*p == '+') )
+				++p;
+			
+			len = strlen( p );
+			if( len > expdigs )
+			{
+				memmove( p, &p[len-expdigs], expdigs+1 );
+			}
+			else if( len < expdigs )
+			{
+				memmove( &p[expdigs-len], p, len+1 );
+				memset( p, '0', expdigs - len );
+			}
+		}	
+			
+		strcat( buffer, expbuff );
+	}
 
 	// neg
 	if( signatend && isneg )
