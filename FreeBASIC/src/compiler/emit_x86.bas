@@ -4781,20 +4781,24 @@ end sub
 
 '':::::
 sub emitSECTION( byval section as integer ) static
-    dim sname as string
+    dim as string ostr
+
+	ostr = NEWLINE + ".section ."
 
 	select case as const section
 	case EMIT.SECTYPE.CONST
-		sname = "data"
+		ostr += "data" + NEWLINE
 	case EMIT.SECTYPE.DATA
-		sname = "data"
+		ostr += "data" + NEWLINE
 	case EMIT.SECTYPE.BSS
-		sname = "bss"
+		ostr += "bss" + NEWLINE
 	case EMIT.SECTYPE.CODE
-		sname = "text"
+		ostr += "text" + NEWLINE
+	case EMIT.SECTYPE.DIRECTIVE
+		ostr += "drectve" + NEWLINE
 	end select
 
-	outEx ".section ." + sname + NEWLINE, TRUE
+	outEx ostr, TRUE
 
 end sub
 
@@ -4853,7 +4857,7 @@ end sub
 '':::::
 sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
-	outEx "\n.section .data\n", TRUE
+	emitSECTION EMIT.SECTYPE.DATA
 
    	if( sym->typ = FB.SYMBTYPE.DOUBLE ) then
     	outEx ".balign 8\n", TRUE
@@ -4868,7 +4872,7 @@ end sub
 '':::::
 sub emitVARINIEND( byval sym as FBSYMBOL ptr ) static
 
-	outEx ".section .text\n\n", TRUE
+	emitSECTION EMIT.SECTYPE.CODE
 
 end sub
 
@@ -4924,11 +4928,14 @@ end sub
 
 '':::::
 sub hSaveAsmHeader( )
-    dim res as integer
-    dim entry as string, lname as string
+    dim as string entryname, modulename
     dim maininitlabel as FBSYMBOL ptr
 
-	edbgHeader ctx.outf, env.infile
+    modulename = hStripPath( hStripExt( env.infile ) )
+    hClearName( modulename )
+    entryname = hMakeEntryPointName( modulename )
+
+	edbgHeader( ctx.outf, env.infile, modulename, entryname )
 
 	hWriteStr ctx.outf, TRUE,  ".intel_syntax noprefix"
 	select case as const env.clopt.cputype
@@ -4945,18 +4952,17 @@ sub hSaveAsmHeader( )
     hWriteStr ctx.outf, FALSE, ""
     hWriteStr ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"
 
-    entry = env.infile
-    entry = hStripPath( hStripExt( entry ) )
-    hClearName entry
-
     hWriteStr ctx.outf, FALSE, NEWLINE + "#entry point"
-    hWriteStr ctx.outf, FALSE, ".section .text"
+
+    emitSECTION EMIT.SECTYPE.CODE
+
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
-    hWriteStr ctx.outf, FALSE, ".globl " + hMakeEntryPointName( entry )
-    hWriteStr ctx.outf, FALSE, ".globl " + hMakeEntryPointName( ucase$( entry ) )
-    hWriteStr ctx.outf, FALSE, hMakeEntryPointName( entry ) + ":"
-    hWriteStr ctx.outf, FALSE, hMakeEntryPointName( ucase$( entry ) ) + ":"
+
+    hWriteStr ctx.outf, FALSE, ".globl " + entryname
+    hWriteStr ctx.outf, FALSE, entryname + ":"
+
 #ifdef TARGET_LINUX
+
 	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
 		' Add small stub to get commandline under linux
 		hWriteStr ctx.outf, TRUE, "pop" + TABCHAR + "ecx"
@@ -4997,23 +5003,28 @@ sub hSaveAsmHeader( )
     hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "ebp, esp"
     hWriteStr ctx.outf, FALSE, ""
 
-    lname = symbGetName( maininitlabel )
-    emitLABEL lname
+    emitLABEL symbGetName( maininitlabel )
 
 end sub
 
 '':::::
-private sub hSaveAsmInitProc( )
+private sub hEmitInitProc( )
+    dim as string id
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#initialization"
+    emitSECTION EMIT.SECTYPE.CODE
+
+    hWriteStr ctx.outf, FALSE, "#initialization"
     hWriteStr ctx.outf, FALSE, "fb_moduleinit:"
 
     hWriteStr ctx.outf, TRUE,  "finit"
-    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateProcAlias( "fb_Init", 0, FB.FUNCMODE.STDCALL )
+
+    id = hCreateProcAlias( "fb_Init", 0, FB.FUNCMODE.STDCALL )
+    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + id
 
     '' start profiling if requested
     if( env.clopt.profile ) then
-	    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
+	    id = hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
+	    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + id
     end if
 
     '' set default data label (def label isn't global as it could clash with other
@@ -5040,8 +5051,6 @@ private sub hEmitFooter( byval tottime as double )
     hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp"
     hWriteStr ctx.outf, TRUE,  "pop" + TABCHAR + "ebp"
     hWriteStr ctx.outf, TRUE,  "ret"
-
-    hSaveAsmInitProc
 
     hWriteStr ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation took " + _
     						   str$( tottime ) + " secs"
@@ -5090,7 +5099,7 @@ private sub hEmitBssHeader( )
     end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global non-initialized vars"
-    hWriteStr ctx.outf, FALSE, ".section .bss"
+    emitSECTION EMIT.SECTYPE.BSS
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
     ctx.bssheader = TRUE
@@ -5176,7 +5185,7 @@ private sub hEmitConstHeader( )
     end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized constants"
-	hWriteStr ctx.outf, FALSE, ".section .data"
+	emitSECTION EMIT.SECTYPE.DATA
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
     ctx.conheader = TRUE
@@ -5262,17 +5271,26 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	end if
 	dname = symbGetVarDscName( s )
 
-    '' common?
+    '' COMMON?
     if( (s->alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
     	if( dims = -1 ) then
     		dims = 1
     	end if
+
+    	emitPUBLIC dname
     	hWriteStr ctx.outf, TRUE, ".balign 4"
     	hWriteStr ctx.outf, TRUE,  ".comm" + TABCHAR + dname + "," + _
     							   str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
+
     	exit sub
     end if
 
+    '' non COMMON arrays..
+
+    '' public?
+    if( (s->alloctype and FB.ALLOCTYPE.PUBLIC) > 0 ) then
+    	emitPUBLIC dname
+    end if
 
     hWriteStr ctx.outf, TRUE, ".balign 4"
     hWriteStr ctx.outf, FALSE, dname + ":"
@@ -5337,7 +5355,7 @@ private sub hEmitDataHeader( )
     end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized vars"
-    hWriteStr ctx.outf, FALSE, ".section .data"
+    emitSECTION EMIT.SECTYPE.DATA
     hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
 
     ctx.datheader = TRUE
@@ -5382,7 +5400,7 @@ private sub hEmitExportHeader( )
     end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#exported functions"
-    hWriteStr ctx.outf, FALSE, ".section .drectve" + NEWLINE
+    emitSECTION EMIT.SECTYPE.DIRECTIVE
 
     ctx.expheader = TRUE
 
@@ -5455,6 +5473,9 @@ sub emitClose( byval tottime as double )
 
 	''
 	edbgFooter
+
+    '' init proc must be the lastest or GDB will get confused
+    hEmitInitProc
 
 	''
 	close #ctx.outf

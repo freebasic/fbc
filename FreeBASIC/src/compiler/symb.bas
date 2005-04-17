@@ -908,25 +908,30 @@ end function
 '':::::
 function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 						   byval dimensions as integer ) as FBSYMBOL ptr static
-    dim sname as string, aname as string, d as FBSYMBOL ptr
-    dim lgt as integer, ofs as integer, isshared as integer, isstatic as integer
+    dim as string sname, aname
+    dim as FBSYMBOL ptr d
+    dim as integer lgt, ofs
+    dim as integer isshared, isstatic, isdynamic, iscommon, ispubext
 
 	hCreateArrayDesc = NULL
 
-	isshared = (s->alloctype and FB.ALLOCTYPE.SHARED) > 0
-	isstatic = (s->alloctype and FB.ALLOCTYPE.STATIC) > 0
+	isshared 	= (s->alloctype and FB.ALLOCTYPE.SHARED) > 0
+	isstatic 	= (s->alloctype and FB.ALLOCTYPE.STATIC) > 0
+	isdynamic	= (s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0
+	iscommon 	= (s->alloctype and FB.ALLOCTYPE.COMMON) > 0
+	ispubext 	= (s->alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) > 0
 
-	if( (s->alloctype and (FB.ALLOCTYPE.COMMON or FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) = 0 ) then
-		sname = hMakeTmpStr
-	else
+	if( (iscommon) or (ispubext and isdynamic) ) then
 		sname = symbGetName( s )
+	else
+		sname = hMakeTmpStr
 	end if
 
 	if( (env.scope = 0) or (isshared) or (isstatic) ) then
 		aname = sname
 		ofs = 0
 	else
-		lgt = FB.ARRAYDESCSIZE + dimensions * (4+4)
+		lgt = FB.ARRAYDESCSIZE + dimensions * (FB.INTEGERSIZE+FB.INTEGERSIZE)
 		aname = emitAllocLocal( lgt, ofs )
 	end if
 
@@ -963,7 +968,7 @@ function hNewDim( head as FBVARDIM ptr, _
 				  tail as FBVARDIM ptr, _
 				  byval lower as integer, _
 				  byval upper as integer ) as FBVARDIM ptr static
-    dim d as FBVARDIM ptr, n as FBVARDIM ptr
+    dim as FBVARDIM ptr d, n
 
     hNewDim = NULL
 
@@ -989,18 +994,59 @@ function hNewDim( head as FBVARDIM ptr, _
 end function
 
 '':::::
-sub hSetupVar( byval s as FBSYMBOL ptr, _
-			   byval symbol as string, _
-			   byval aname as string, _
-			   byval typ as integer, _
-			   byval subtype as FBSYMBOL ptr, _
-			   byval lgt as integer, _
-			   byval ofs as integer, _
-			   byval dimensions as integer, _
-			   dTB() as FBARRAYDIM, _
-			   byval alloctype as integer ) static
+sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
+					  byval dimensions as integer, _
+					  dTB() as FBARRAYDIM )
 
     dim as integer i
+    dim as FBVARDIM ptr d
+
+	s->var.array.dims = dimensions
+
+	if( dimensions > 0 ) then
+		s->var.array.dif = hCalcDiff( dimensions, dTB(), s->lgt )
+
+		if( s->var.array.dimhead = NULL ) then
+			for i = 0 to dimensions-1
+				if( hNewDim( s->var.array.dimhead, s->var.array.dimtail, _
+							 dTB(i).lower, dTB(i).upper ) = NULL ) then
+				end if
+			next i
+		else
+			d = s->var.array.dimhead
+			for i = 0 to dimensions-1
+				d->lower = dTB(i).lower
+				d->upper = dTB(i).upper
+				d = d->r
+			next i
+		end if
+
+	else
+		s->var.array.dif = 0
+	end if
+
+	'' dims can be -1 with COMMON arrays..
+	if( dimensions <> 0 ) then
+		if( s->var.array.desc = NULL ) then
+			s->var.array.desc = hCreateArrayDesc( s, dimensions )
+		end if
+	else
+		s->var.array.desc = NULL
+	end if
+
+end sub
+
+'':::::
+private sub hSetupVar( byval s as FBSYMBOL ptr, _
+			   		   byval symbol as string, _
+			   		   byval aname as string, _
+			   		   byval typ as integer, _
+			   		   byval subtype as FBSYMBOL ptr, _
+			   		   byval lgt as integer, _
+			   		   byval ofs as integer, _
+			   		   byval dimensions as integer, _
+			   		   dTB() as FBARRAYDIM, _
+			   		   byval alloctype as integer ) static
 
 	if( typ = INVALID ) then
 		typ = hGetDefType( symbol )
@@ -1017,20 +1063,13 @@ sub hSetupVar( byval s as FBSYMBOL ptr, _
 	s->var.array.dimhead = NULL
 	s->var.array.dimtail = NULL
 
-	s->var.array.dif	= hCalcDiff( dimensions, dTB(), s->lgt )
-	s->var.array.dims	= dimensions
-	s->var.array.elms	= 0						'' real value doesn't matter
-	if( dimensions > 0 ) then
-		for i = 0 to dimensions-1
-			if( hNewDim( s->var.array.dimhead, s->var.array.dimtail, dTB(i).lower, dTB(i).upper ) = NULL ) then
-			end if
-		next i
-	end if
-
+	s->var.array.elms = 0						'' real value doesn't matter
+	s->var.array.desc = NULL
 	if( dimensions <> 0 ) then
-		s->var.array.desc = hCreateArrayDesc( s, dimensions )
+		symbSetArrayDims( s, dimensions, dTB() )
 	else
-		s->var.array.desc = NULL
+		s->var.array.dims = 0
+		s->var.array.dif  = 0
 	end if
 
 	''
@@ -1125,16 +1164,16 @@ function symbAddVarEx( byval symbol as string, _
 	if( s = NULL ) then
 		'' remove a local or arg or else emit will reserve unused space for it..
 		if( islocal ) then
-			emitFreeLocal lgt * elms
+			emitFreeLocal( lgt * elms )
 		elseif( isarg ) then
-			emitFreeArg arglen
+			emitFreeArg( arglen )
 		end if
 
 		exit function
 	end if
 
 	''
-	hSetupVar s, symbol, aname, typ, subtype, lgt, ofs, dimensions, dTB(), alloctype
+	hSetupVar( s, symbol, aname, typ, subtype, lgt, ofs, dimensions, dTB(), alloctype )
 
 	symbAddVarEx = s
 

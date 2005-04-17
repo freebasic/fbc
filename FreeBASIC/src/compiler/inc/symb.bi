@@ -206,6 +206,10 @@ declare function 	symbGetLastLabel 		( ) as FBSYMBOL ptr
 
 declare sub 		symbSetLastLabel		( byval l as FBSYMBOL ptr )
 
+declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
+					  						  byval dimensions as integer, _
+					  						  dTB() as FBARRAYDIM )
+
 declare sub 		symbFreeLocalDynSymbols	( byval proc as FBSYMBOL ptr, _
 											  byval issub as integer )
 

@@ -17,7 +17,9 @@
 
 
 declare sub 		edbgHeader			( byval asmf as integer, _
-										  byval filename as string )
+										  byval filename as string, _
+										  byval modulename as string, _
+										  byval entryname as string )
 
 declare sub 		edbgMain			( byval initlabel as FBSYMBOL ptr )
 

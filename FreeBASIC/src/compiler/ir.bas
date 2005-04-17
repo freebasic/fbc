@@ -732,6 +732,7 @@ sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, _
 	if( ispublic ) then
 		emitPUBLIC id
 	end if
+
 	emitLABEL id
 
 	emitPROCBEGIN proc, initlabel, ispublic

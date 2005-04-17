@@ -1452,9 +1452,15 @@ sub hMakeArrayDimTB( byval dimensions as integer, exprTB() as integer, dTB() as 
 end sub
 
 '':::::
-function hDeclExternVar( id as string, byval typ as integer, byval subtype as FBSYMBOL ptr, _
-						 byval alloctype as integer, byval addsuffix as integer ) as FBSYMBOL ptr
-	dim symbol as FBSYMBOL ptr
+function hDeclExternVar( id as string, _
+						 byval typ as integer, _
+						 byval subtype as FBSYMBOL ptr, _
+						 byval alloctype as integer, _
+						 byval addsuffix as integer, _
+						 byval dimensions as integer, _
+					   	 dTB() as FBARRAYDIM ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr s
+	dim as integer isdynamic
 
     hDeclExternVar = NULL
 
@@ -1463,18 +1469,61 @@ function hDeclExternVar( id as string, byval typ as integer, byval subtype as FB
     	exit function
     end if
 
-    symbol = symbFindByNameAndSuffix( id, typ )
-    if( symbol <> NULL ) then
-    	if( (symbGetAllocType( symbol ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
+    s = symbFindByNameAndSuffix( id, typ )
+    if( s <> NULL ) then
+
+    	'' no extern?
+    	if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
     		exit function
-    	else
-    		symbSetAllocType( symbol, (alloctype and not FB.ALLOCTYPE.EXTERN) or _
-    								 FB.ALLOCTYPE.PUBLIC or _
-    								 FB.ALLOCTYPE.SHARED )
     	end if
+
+    	'' check type
+		if( (typ <> symbGetType( s )) or _
+			(subtype <> symbGetSubType( s )) ) then
+    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    		exit function
+		end if
+
+		'' dynamic?
+		isdynamic = (symbGetAllocType( s ) and FB.ALLOCTYPE.DYNAMIC) > 0
+		if( isdynamic ) then
+			if( (alloctype and FB.ALLOCTYPE.DYNAMIC) = 0 ) then
+    			hReportErrorEx FB.ERRMSG.EXPECTEDDYNAMICARRAY, id
+    			exit function
+    		end if
+    	else
+			if( (alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
+    			hReportErrorEx FB.ERRMSG.EXPECTEDDYNAMICARRAY, id
+    			exit function
+    		end if
+
+    		'' no static as local
+    		if( env.scope > 0 ) then
+    			hReportErrorEx FB.ERRMSG.ILLEGALINSIDEASUB, id
+    			exit function
+    		end if
+    	end if
+
+    	'' set type
+    	symbSetAllocType( s, (alloctype and not FB.ALLOCTYPE.EXTERN) or _
+    					     FB.ALLOCTYPE.PUBLIC or _
+    					     FB.ALLOCTYPE.SHARED )
+
+		'' check dimensions
+		if( symbGetArrayDimensions( s ) <> 0 ) then
+			if( dimensions <> symbGetArrayDimensions( s ) ) then
+    			hReportErrorEx FB.ERRMSG.WRONGDIMENSIONS, id
+    			exit function
+    		end if
+
+			'' set dims
+			symbSetArrayDims( s, dimensions, dTB() )
+
+		end if
+
     end if
 
-    hDeclExternVar = symbol
+    hDeclExternVar = s
 
 end function
 
@@ -1618,6 +1667,7 @@ function cSymbolDef( byval alloctype as integer, _
     		symbol = cDynArrayDef( id, idalias, typ, subtype, ptrcnt, istypeless, _
     							   lgt, addsuffix, alloctype, dopreserve, _
     							   dimensions, exprTB() )
+
     		if( symbol = NULL ) then
     			exit function
     		end if
@@ -1631,9 +1681,11 @@ function cSymbolDef( byval alloctype as integer, _
     		symbol = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
     							   lgt, dimensions, dTB(), _
     							   atype, addsuffix, FALSE, TRUE )
+
     		if( symbol = NULL ) then
 
-                symbol = hDeclExternVar( id, typ, subtype, atype, addsuffix )
+                symbol = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
+                						 dimensions, dTB() )
 
     			if( symbol = NULL ) then
     				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
@@ -1737,7 +1789,8 @@ function cDynArrayDef( id as string, _
 		if( not symbGetIsDynamic( s ) ) then
 
    			'' could be an external..
-   			s = hDeclExternVar( id, typ, subtype, atype, addsuffix )
+   			s = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
+   								dimensions, dTB() )
    			if( s = NULL ) then
    				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
 				exit function
