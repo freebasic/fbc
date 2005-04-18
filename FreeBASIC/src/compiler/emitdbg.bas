@@ -29,11 +29,7 @@ option escape
 '$include once:'inc\lex.bi'
 '$include once:'inc\emit.bi'
 '$include once:'inc\emitdbg.bi'
-
-const STABS = ".stabs "
-const STABD = ".stabd "
-const STABN = ".stabn "
-const QUOTE = "\""
+'$include once:'inc\stabs.bi'
 
 type EDBGCTX
 	asmf			as integer
@@ -43,7 +39,6 @@ type EDBGCTX
 	mainopened		as integer
 	mainclosed		as integer
 	maininitlabel	as FBSYMBOL ptr
-	mainoffs		as integer
 
 	procinitline 	as integer
 end type
@@ -63,34 +58,76 @@ data "void:t4=4"
 const STABS_TYPEDEFS = 4
 
 '':::::
-function hRevertSlash( byval s as string ) as string 'static
-    dim c as string, i as integer
-    dim res as string
+private sub hEmitSTABS( byval _type as integer, _
+						byval _string as string, _
+						byval _other as integer = 0, _
+						byval _desc as integer = 0, _
+						byval _value as string = "0" ) static
 
-	res = ""
+	dim as string ostr
 
-	for i = 1 to len( s )
+	ostr = ".stabs \""
+	ostr += _string
+	ostr += "\","
+	ostr += str$( _type )
+	ostr += ","
+	ostr += str$( _other )
+	ostr += ","
+	ostr += str$( _desc )
+	ostr += ","
+	ostr += _value
 
-		c = mid$( s, i, 1 )
-		if( asc( c ) = CHAR_RSLASH ) then
-			res += chr$( CHAR_SLASH )
-		else
-			res += lcase$( c )
-		end if
+	hWriteStr( ctx.asmf, TRUE, ostr )
 
-	next i
+end sub
 
-	hRevertSlash = res
+'':::::
+private sub hEmitSTABN( byval _type as integer, _
+						byval _other as integer = 0, _
+						byval _desc as integer = 0, _
+						byval _value as string = "0" ) static
 
-end function
+	dim as string ostr
+
+	ostr = ".stabn "
+	ostr += str$( _type )
+	ostr += ","
+	ostr += str$( _other )
+	ostr += ","
+	ostr += str$( _desc )
+	ostr += ","
+	ostr += _value
+
+	hWriteStr( ctx.asmf, TRUE, ostr )
+
+end sub
+
+'':::::
+private sub hEmitSTABD( byval _type as integer, _
+						byval _other as integer = 0, _
+						byval _desc as integer = 0 ) static
+
+	dim as string ostr
+
+	ostr = ".stabd "
+	ostr += str$( _type )
+	ostr += ","
+	ostr += str$( _other )
+	ostr += ","
+	ostr += str$( _desc )
+
+	hWriteStr( ctx.asmf, TRUE, ostr )
+
+end sub
+
 
 '':::::
 sub edbgHeader( byval asmf as integer, _
 				byval filename as string, _
 				byval modulename as string, _
 				byval entryname as string )
-    dim i as integer
-    dim s as string
+    dim as integer i
+    dim as string s
 
 	if( not env.clopt.debug ) then exit sub
 
@@ -99,34 +136,29 @@ sub edbgHeader( byval asmf as integer, _
 	ctx.entryname = entryname
 	ctx.modulename = modulename
 
-	'' source file
-    s = QUOTE + hRevertSlash( filename ) + QUOTE
-    hWriteStr asmf, TRUE, ".file " + s
+	'' emit source file
+    s = hRevertSlash( filename )
+    hWriteStr asmf, TRUE, ".file \"" + s + "\""
     if( instr( s, "/" ) = 0 ) then
-    	hWriteStr asmf, TRUE, STABS + QUOTE + hRevertSlash( curdir$ + "/" ) + QUOTE + ",100,0,0,__stabini"
+    	hEmitSTABS( STAB_TYPE_SO, hRevertSlash( curdir$ + "/" ), 0, 0, "__stabini" )
     end if
-    hWriteStr asmf, TRUE, STABS + s + ",100,0,0,__stabini"
 
-	'' type defs
-	emitSECTION EMIT.SECTYPE.CODE
-	hWriteStr asmf, FALSE, "__stabini:"
+    hEmitSTABS( STAB_TYPE_SO, s, 0, 0, "__stabini" )
 
-	hWriteStr asmf, TRUE, STABD + "68,0,    "
-#ifdef TARGET_WIN32
-	ctx.mainoffs = seek( asmf ) - (4+2)
-#else
-	'' under Unix newline is NL only so we need to adjust the position by 1, not 2
-	ctx.mainoffs = seek( asmf ) - (4+1)
-#endif
+	'' (known) type defs
+	emitSECTION( EMIT.SECTYPE.CODE )
+	hWriteStr( asmf, FALSE, "__stabini:" )
 
 	restore stabstdef
 	for i = 0 to STABS_TYPEDEFS-1
 		read s
-		hWriteStr asmf, TRUE, STABS + QUOTE + s + QUOTE + ",128,0,0,0"
+		hEmitSTABS( STAB_TYPE_LSYM, s, 0, 0, "0" )
 	next i
 
-	hWriteStr asmf, FALSE, ""
-	hWriteStr asmf, TRUE, STABS + QUOTE + modulename + QUOTE + ",42,0,1," + entryname
+	hWriteStr( asmf, FALSE, "" )
+
+	'' main proc (the entry point)
+	hEmitSTABS( STAB_TYPE_MAIN, modulename, 0, 1, entryname )
 
 end sub
 
@@ -135,14 +167,16 @@ sub edbgFooter
 
 	if( not env.clopt.debug ) then exit sub
 
-	emitSECTION EMIT.SECTYPE.CODE
+	emitSECTION( EMIT.SECTYPE.CODE )
 
 	if( ctx.mainopened and not ctx.mainclosed ) then
-		edgbhCloseMain
+		edgbhCloseMain( )
 	end if
 
-	hWriteStr ctx.asmf, TRUE, STABS + QUOTE + QUOTE + ",100,0,0,__stabend"
-	hWriteStr ctx.asmf, FALSE, "__stabend:"
+	'' no checkings after this
+	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, "__stabend" )
+
+	hWriteStr( ctx.asmf, FALSE, "__stabend:" )
 
 end sub
 
@@ -158,22 +192,21 @@ end sub
 
 '':::::
 sub edgbhCloseMain
-    dim exitlabel as FBSYMBOL ptr, currpos as integer
-    dim lname as string
+    dim as FBSYMBOL ptr exitlabel
+    dim as integer currpos
+    dim as string lname
 
-    ''
-    currpos = seek( ctx.asmf )
-    seek #ctx.asmf, ctx.mainoffs
-    hWriteStr ctx.asmf, FALSE, str$( ctx.procinitline )
-    seek #ctx.asmf, currpos
+    '' set entry line
+    hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.procinitline )
 
     ''
     exitlabel = symbAddLabel( hMakeTmpStr )
 
     lname = symbGetName( exitlabel )
-    emitLABEL lname
+    emitLABEL( lname )
 
-    edbgProcEnd NULL, ctx.maininitlabel, exitlabel
+    '' close main()
+    edbgProcEnd( NULL, ctx.maininitlabel, exitlabel )
 
 	'''''symbDelLabel exitlabel
 
@@ -183,42 +216,53 @@ end sub
 
 '':::::
 sub edbgLine( byval lnum as integer, _
-			  byval lname as string )
-    dim procname as string
+			  byval lname as string ) static
+
+    dim as string procname
 
 	if( not env.clopt.debug ) then exit sub
 
+	'' module level and main() header not emited yet?
 	if( not ctx.mainopened ) then
-		edbgProcBegin NULL, FALSE, lnum
+		edbgProcBegin( NULL, FALSE, lnum )
 		ctx.mainopened = TRUE
 		ctx.mainclosed = FALSE
 	end if
 
+	'' not at module level?
 	if( env.currproc <> NULL ) then
 		procname = symbGetName( env.currproc )
+
+	'' module level..
 	else
 		procname = ctx.entryname
 	end if
 
-	hWriteStr ctx.asmf, TRUE, STABN + "68,0," + ltrim$( str$( lnum ) ) + "," + lname + "-" + procname
+	'' emit current line
+	hEmitSTABN( STAB_TYPE_SLINE, 0, lnum, lname + "-" + procname )
 
 end sub
 
 '':::::
 sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
 					byval ispublic as integer, _
-					byval lnum as integer )
-    dim realname as string, procname as string, prochar as string
+					byval lnum as integer ) static
+
+    dim as string realname, procname, prochar
 
 	if( not env.clopt.debug ) then exit sub
 
+	'' not at module level?
 	if( proc <> NULL ) then
+		'' main() not closed yet?
 		if( ctx.mainopened and not ctx.mainclosed ) then
 			edgbhCloseMain
 		end if
 
 		realname = symbGetOrgName( proc )
 		procname = symbGetName( proc )
+
+	'' module-level..
 	else
 		realname = ctx.modulename
 		procname = ctx.entryname
@@ -236,24 +280,28 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
 		ctx.procinitline = lnum
 	end if
 
-	hWriteStr ctx.asmf, TRUE, STABS + QUOTE + realname + ":" + prochar + "4" + QUOTE + ",36,0," + ltrim$( str$( ctx.procinitline ) ) + "," + procname
+	hEmitSTABS( STAB_TYPE_FUN, realname + ":" + prochar + "4", 0, ctx.procinitline, procname )
 
 end sub
 
 '':::::
 sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 				  byval initlabel as FBSYMBOL ptr, _
-				  byval exitlabel as FBSYMBOL ptr )
-    dim procname as string, ininame as string, endname as string, lname as string
-    dim iniline as integer, endline as integer
+				  byval exitlabel as FBSYMBOL ptr ) static
+
+    dim as string procname, ininame, endname, lname
+    dim as integer iniline, endline
 
 	if( not env.clopt.debug ) then exit sub
 
 	iniline = ctx.procinitline
 	endline = lexLineNum
 
+	'' not at module level?
 	if( proc <> NULL ) then
 		procname = symbGetName( proc )
+
+	'' module level..
 	else
 		procname = ctx.entryname
 		endline -= 1
@@ -262,11 +310,14 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 	ininame	 = symbGetName( initlabel )
 	endname	 = symbGetName( exitlabel )
 
-	hWriteStr ctx.asmf, TRUE, STABN + "192,0," + str$( iniline ) + "," + ininame + "-" + procname
-	hWriteStr ctx.asmf, TRUE, STABN + "224,0," + str$( endline ) + "," + endname + "-" + procname
+	'' emit block (change the scope)
+	hEmitSTABN( STAB_TYPE_LBRAC, 0, iniline, ininame + "-" + procname )
+	hEmitSTABN( STAB_TYPE_RBRAC, 0, endline, endname + "-" + procname )
 
-	lname = hMakeTmpStr
-	emitLABEL lname
-	hWriteStr ctx.asmf, TRUE, STABS + QUOTE+QUOTE + ",36,0,0," + lname + "-" + procname
+	lname = hMakeTmpStr( )
+	emitLABEL( lname )
+
+	'' emit end proc (FUN with a null string)
+	hEmitSTABS( STAB_TYPE_FUN, "", 0, 0, lname + "-" + procname )
 
 end sub

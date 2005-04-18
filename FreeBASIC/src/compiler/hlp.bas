@@ -737,6 +737,23 @@ function hStripFilename ( byval filename as string ) as string static
 end function
 
 '':::::
+function hRevertSlash( byval s as string ) as string static
+    dim as integer i
+    dim as string res
+
+	res = s
+
+	for i = 0 to len( s )-1
+		if( res[i] = CHAR_RSLASH ) then
+			res[i] = CHAR_SLASH
+		end if
+	next i
+
+	hRevertSlash = res
+
+end function
+
+'':::::
 function hToPow2( byval value as uinteger ) as uinteger static
     dim n as uinteger
 
@@ -768,26 +785,6 @@ function hToPow2( byval value as uinteger ) as uinteger static
     end if
 
 end function
-
-'':::::
-'function hToPow2( byval value as integer ) as integer static
-'	dim c as integer, remainder as integer
-'
-'  	c = 0
-'  	remainder = value and 1
-'  	do while( (value > 1) and (remainder = 0) )
-'    	remainder = value and 1
-'    	value = value shr 1
-'    	c = c + 1
-'  	loop
-'
-'	if( remainder = 0 ) then
-'		hToPow2 = c
-'	else
-'		hToPow2 = 0
-'	end if
-'
-'end function
 
 '':::::
 function hMakeEntryPointName( byval entrypoint as string ) as string
