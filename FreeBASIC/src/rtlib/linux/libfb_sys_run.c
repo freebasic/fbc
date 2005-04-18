@@ -33,6 +33,7 @@
 #define MAX_PATH	1024
 
 #include "fb.h"
+#include "fb_linux.h"
 
 /*:::::*/
 FBCALL int fb_Run ( FBSTRING *program )
@@ -40,10 +41,15 @@ FBCALL int fb_Run ( FBSTRING *program )
     char	buffer[MAX_PATH+1];
     int		res = 0;
 
+	FB_STRLOCK();
+	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		char buffer2[MAX_PATH+3];
+		
+		FB_UNLOCK();
 
+		fb_hExitConsole();
 		fb_hGetShortPath( program->data, buffer, MAX_PATH );
 		res = execlp( buffer, buffer, NULL);
 		/* Ok, an error occured. Probably the file could not be found;
@@ -59,6 +65,8 @@ FBCALL int fb_Run ( FBSTRING *program )
 
 	/* del if temp */
 	fb_hStrDelTemp( program );
+
+	FB_STRUNLOCK();
 
 	return res;
 }

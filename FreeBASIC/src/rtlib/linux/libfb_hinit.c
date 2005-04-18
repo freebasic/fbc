@@ -126,10 +126,83 @@ void fb_hResize()
 
 
 /*:::::*/
+int fb_hInitConsole ( int init )
+{
+	char *tty_name;
+	int i;
+	
+	/* Init terminal I/O */
+	fb_con.h_out = fileno(stdout);
+	fb_con.h_in = fileno(stdin);
+	fb_con.f_out = stdout;
+	fb_con.f_in = stdin;
+	if (!isatty(fb_con.h_out) || !isatty(fb_con.h_in))
+		return -1;
+	
+	/* Output setup */
+	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
+		return -1;
+	memcpy(&term_out, &fb_con.old_term_out, sizeof(term_out));
+	term_out.c_oflag |= OPOST;
+	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
+		return -1;
+	
+	/* Input setup */
+	if (init != INIT_CONSOLE) {
+		tty_name = ttyname(fb_con.h_in);
+		if (!tty_name)
+			return -1;
+		fb_con.f_in = fopen(tty_name, "r+b");
+		if (!fb_con.f_in)
+			return -1;
+		fb_con.h_in = fileno(fb_con.f_in);
+	}
+	if (tcgetattr(fb_con.h_in, &fb_con.old_term_in))
+		return -1;
+	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
+	/* Ignore breaks */
+	term_in.c_iflag |= (IGNBRK | BRKINT);
+	/* Disable Xon/off */
+	term_in.c_iflag &= ~(IXOFF | IXON);
+	/* Character oriented, no echo */
+	term_in.c_lflag &= ~(ICANON | ECHO);
+	/* No timeout, just don't block */
+	term_in.c_cc[VMIN] = 1;
+	term_in.c_cc[VTIME] = 0;
+	if (tcsetattr(fb_con.h_in, TCSAFLUSH, &term_in))
+		return -1;
+	/* Don't block */
+	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
+	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
+	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
+	
+	if (init == INIT_CONSOLE) {
+		/* Set our default palette */
+		for (i = 0; i < 16; i++)
+			fprintf(fb_con.f_out, "\e]P%1.1X%2.2X%2.2X%2.2X", color_map[i], color[i*3], color[(i*3)+1], color[(i*3)+2]);
+	}
+	fb_con.fg_color = 0x7;
+	/* Set IBM PC 437 charset */
+	fputs("\e(U", fb_con.f_out);
+	
+	signal(SIGABRT, signal_handler);
+	signal(SIGFPE,  signal_handler);
+	signal(SIGILL,  signal_handler);
+	signal(SIGSEGV, signal_handler);
+	signal(SIGTERM, signal_handler);
+	signal(SIGINT,  signal_handler);
+	signal(SIGQUIT, signal_handler);
+	signal(SIGWINCH,console_resize);
+	
+	return 0;
+}
+
+
+/*:::::*/
 void fb_hInit ( void )
 {
-	int i, init = FALSE;
-	char *tty_name, *term;
+	int init = FALSE;
+	char *term;
 	
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
@@ -168,7 +241,6 @@ void fb_hInit ( void )
 	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
 #endif
 	
-	/* Init terminal I/O */
 	term = getenv("TERM");
 	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
 		init = INIT_CONSOLE;
@@ -179,59 +251,10 @@ void fb_hInit ( void )
 	if (!init)
 		return;
 	
-	fb_con.h_out = fileno(stdout);
-	fb_con.h_in = fileno(stdin);
-	fb_con.f_out = stdout;
-	fb_con.f_in = stdin;
-	if (!isatty(fb_con.h_out) || !isatty(fb_con.h_in))
+	if (fb_hInitConsole(init))
 		return;
-	
-	/* Output setup */
-	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
-		return;
-	memcpy(&term_out, &fb_con.old_term_out, sizeof(term_out));
-	term_out.c_oflag |= OPOST;
-	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
-		return;
-	
-	/* Input setup */
-	if (init != INIT_CONSOLE) {
-		tty_name = ttyname(fb_con.h_in);
-		if (!tty_name)
-			return;
-		fb_con.f_in = fopen(tty_name, "r+b");
-		if (!fb_con.f_in)
-			return;
-		fb_con.h_in = fileno(fb_con.f_in);
-	}
-	if (tcgetattr(fb_con.h_in, &fb_con.old_term_in))
-		return;
-	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
-	/* Ignore breaks */
-	term_in.c_iflag |= (IGNBRK | BRKINT);
-	/* Disable Xon/off */
-	term_in.c_iflag &= ~(IXOFF | IXON);
-	/* Character oriented, no echo */
-	term_in.c_lflag &= ~(ICANON | ECHO);
-	/* No timeout, just don't block */
-	term_in.c_cc[VMIN] = 1;
-	term_in.c_cc[VTIME] = 0;
-	if (tcsetattr(fb_con.h_in, TCSAFLUSH, &term_in))
-		return;
-	/* Don't block */
-	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
-	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
-	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
-	
-	if (init == INIT_CONSOLE) {
-		/* Set our default palette */
-		for (i = 0; i < 16; i++)
-			fprintf(fb_con.f_out, "\e]P%1.1X%2.2X%2.2X%2.2X", color_map[i], color[i*3], color[(i*3)+1], color[(i*3)+2]);
-	}
-	fb_con.fg_color = 0x7;
-	/* Set IBM PC 437 charset */
-	fputs("\e(U", fb_con.f_out);
-	
+	fb_con.inited = init;
+
 	/* Install signal handlers to quietly shut down */
 	old_sigabrt = signal(SIGABRT, signal_handler);
 	old_sigfpe  = signal(SIGFPE,  signal_handler);
@@ -241,8 +264,6 @@ void fb_hInit ( void )
 	old_sigint  = signal(SIGINT,  signal_handler);
 	old_sigquit = signal(SIGQUIT, signal_handler);
 	signal(SIGWINCH, console_resize);
-	
-	fb_con.inited = init;
 
 	fb_con.char_buffer = NULL;
 	fb_con.resized = TRUE;

@@ -59,8 +59,10 @@ typedef struct FBCONSOLE
 extern FBCONSOLE fb_con;
 
 
-extern int fb_hGetCh();
-extern void fb_hResize();
+extern int fb_hGetCh(void);
+extern void fb_hResize(void);
+extern int fb_hInitConsole(int);
+extern void fb_hExitConsole(void);
 
 
 #endif

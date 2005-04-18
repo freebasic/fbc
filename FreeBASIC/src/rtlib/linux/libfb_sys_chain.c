@@ -33,6 +33,7 @@
 #define MAX_PATH	1024
 
 #include "fb.h"
+#include "fb_linux.h"
 
 /*:::::*/
 FBCALL int fb_Chain ( FBSTRING *program )
@@ -40,14 +41,19 @@ FBCALL int fb_Chain ( FBSTRING *program )
     char	buffer[MAX_PATH+1];
     int		res = 0;
 
+	FB_STRLOCK();
+	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		pid_t pid;
 		int status;
 
+		fb_hExitConsole();
 		if ((pid = fork()) == 0)
 		{
 			char buffer2[MAX_PATH+3];
+
+			FB_STRUNLOCK();
 
 			fb_hGetShortPath( program->data, buffer, MAX_PATH );
 			execlp( buffer, buffer, NULL );
@@ -69,10 +75,13 @@ FBCALL int fb_Chain ( FBSTRING *program )
 			else
 				res = -1;
 		}
+		fb_hInitConsole(fb_con.inited);
 	}
 
 	/* del if temp */
 	fb_hStrDelTemp( program );
+
+	FB_STRUNLOCK();
 
 	return res;
 }

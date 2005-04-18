@@ -18,52 +18,30 @@
  */
 
 /*
- * sys_exec.c -- exec function for Windows
+ * sys_shell.c -- SHELL command for Win32
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: apr/2005 written [lillo]
  *
  */
 
-#include <malloc.h>
-#include <string.h>
-
-#include <process.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <stdlib.h>
 
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+FBCALL int fb_Shell ( FBSTRING *program )
 {
-    char	buffer[MAX_PATH+1];
-    char	*argv[256];
-    int		res = 0;
-
+	int errcode = -1;
+	
 	FB_STRLOCK();
 	
-	if( (program != NULL) && (program->data != NULL) )
-	{
-		char *argsdata;
-
-		if( (args == NULL) || (args->data == NULL) )
-			argsdata = "\0";
-		else
-			argsdata = args->data;
-
-		argv[0] = &buffer[0];
-		argv[1] = argsdata;
-		argv[2] = NULL;
-		res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), (const char **)argv );
-	}
-
+	if( (program) && (program->data))
+		errcode = system( program->data );
+	
 	/* del if temp */
-	fb_hStrDelTemp( args );
 	fb_hStrDelTemp( program );
 
 	FB_STRUNLOCK();
 	
-	return res;
+	return errcode;
 }
-

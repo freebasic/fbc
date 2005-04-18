@@ -1052,8 +1052,8 @@ data "inkey","fb_Inkey", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
 data "getkey","fb_Getkey", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
 
 '' shell ( byval cmm as string = "" ) as integer
-data "shell","system", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, TRUE,""
+data "shell","fb_Shell", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
+					     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,""
 
 '' name ( byval oldname as string, byval newname as string ) as integer
 data "name","rename", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 2, _

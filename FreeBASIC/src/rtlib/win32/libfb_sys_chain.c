@@ -40,6 +40,8 @@ FBCALL int fb_Chain ( FBSTRING *program )
     char 	arg0[] = "";
     int		res = 0;
 
+	FB_STRLOCK();
+	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		res = _spawnl( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
@@ -47,6 +49,8 @@ FBCALL int fb_Chain ( FBSTRING *program )
 
 	/* del if temp */
 	fb_hStrDelTemp( program );
+	
+	FB_STRUNLOCK();
 
 	return res;
 }

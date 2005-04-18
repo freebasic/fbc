@@ -280,6 +280,7 @@ FBCALL int 			fb_ArrayUBound		( FBARRAY *array, int dimension );
 FBCALL FBSTRING 	*fb_Command 		( int argc );
 FBCALL FBSTRING 	*fb_CurDir 			( void );
 FBCALL FBSTRING 	*fb_ExePath 		( void );
+FBCALL int			fb_Shell			( FBSTRING *program );
 FBCALL int 			fb_Run 				( FBSTRING *program );
 FBCALL int 			fb_Chain 			( FBSTRING *program );
 FBCALL int 			fb_Exec 			( FBSTRING *program, FBSTRING *args );

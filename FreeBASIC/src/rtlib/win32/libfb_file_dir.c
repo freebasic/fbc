@@ -80,6 +80,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	int		len;
 	char		*name;
 
+	FB_STRLOCK();
+	
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
@@ -132,6 +134,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		res = &fb_strNullDesc;
 
 	fb_hStrDelTemp( filespec );
+	
+	FB_STRUNLOCK();
 
 	return res;
 }

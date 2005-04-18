@@ -1,4 +1,4 @@
-#ifdef FB__LINUX
+#ifdef __FB_LINUX__
 #define CHAIN2	"chain2"
 #else
 #define CHAIN2	"chain2.exe"

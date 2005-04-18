@@ -9,6 +9,8 @@ Version 0.14 Beta:
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
 - INPUT$() for console was reading a char less, causing INPUT$(1) to fail (v1c)
 - PRINT USING ^^ should be used to set the number of exponent digits (v1c)
+- more thread-safetiness checks in platform dependent rtlib routines (lillo)
+- SHELL in Linux was not restoring console state before calling sub-process, resulting in bad keyboard I/O (lillo)
 
 
 Version 0.13 Beta:

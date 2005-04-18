@@ -40,6 +40,8 @@ FBCALL int fb_Run ( FBSTRING *program )
     char 	arg0[] = "";
     int		res = 0;
 
+	FB_STRLOCK();
+	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		res = _execl( fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
@@ -48,5 +50,7 @@ FBCALL int fb_Run ( FBSTRING *program )
 	/* del if temp */
 	fb_hStrDelTemp( program );
 
+	FB_STRUNLOCK();
+	
 	return res;
 }

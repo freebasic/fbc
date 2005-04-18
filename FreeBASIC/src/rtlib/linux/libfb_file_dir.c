@@ -163,6 +163,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	char		*name, *p;
 	struct stat	info;
 
+	FB_STRLOCK();
+	
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
@@ -254,6 +256,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		res = &fb_strNullDesc;
 
 	fb_hStrDelTemp( filespec );
+	
+	FB_STRUNLOCK();
 
 	return res;
 }

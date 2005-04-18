@@ -29,7 +29,7 @@
 #include "fb_linux.h"
 
 /*:::::*/
-void fb_hEnd ( int errlevel )
+void fb_hExitConsole( void )
 {
 	int bottom;
 	
@@ -55,9 +55,14 @@ void fb_hEnd ( int errlevel )
 		if (fb_con.inited != INIT_CONSOLE)
 			fcntl(fb_con.h_in, F_SETFL, fb_con.old_in_flags);
 		tcsetattr(fb_con.h_in, TCSAFLUSH, &fb_con.old_term_in);
-		
-		fb_con.inited = FALSE;
 	}
+}
+
+/*:::::*/
+void fb_hEnd ( int errlevel )
+{
+	fb_hExitConsole();
+	fb_con.inited = FALSE;
 
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */

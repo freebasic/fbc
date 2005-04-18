@@ -22,7 +22,7 @@ depth(1) = 16
 depth(2) = 32
 
 FOR i = 0 to 2
-	SCREEN 14, depth(i)
+	SCREENres 400,400, depth(i)
 	info = SCREENINFO
 	LOCATE 1: PRINT "Mode: " + STR$(info->w) + "x" + STR$(info->h) + "x" + STR$(info->depth);
 	PRINT " (" + info->driver_name + ")"

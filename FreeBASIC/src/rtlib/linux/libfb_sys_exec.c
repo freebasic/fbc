@@ -33,6 +33,7 @@
 #define MAX_PATH	1024
 
 #include "fb.h"
+#include "fb_linux.h"
 
 
 /*:::::*/
@@ -49,7 +50,8 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	pid_t	pid;
 	int		status;
 
-
+	FB_STRLOCK();
+	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		if( (args == NULL) || (args->data == NULL) )
@@ -80,6 +82,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 		argv[argc] = NULL;
 
 		/* Launch */
+		fb_hExitConsole();
 		if ((pid = fork()) == 0) {
 			exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
 		}
@@ -90,6 +93,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 			else
 				res = -1;
 		}
+		fb_hInitConsole(fb_con.inited);
 		free(cmdline);
 		for (i = 1; i < argc; i++)
 			free(argv[i]);
@@ -99,6 +103,8 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	/* del if temp */
 	fb_hStrDelTemp( args );
 	fb_hStrDelTemp( program );
+	
+	FB_STRUNLOCK();
 
 	return res;
 }
