@@ -1158,9 +1158,9 @@ Extern Import gfx_capabilities Alias "gfx_capabilities" As Integer
 
 Extern Import screen Alias "screen" As BITMAP Ptr
 
-Extern Import default_palette Alias "default_palette" As RGB Ptr
-Extern Import black_palette Alias "black_palette" As RGB Ptr
-Extern Import desktop_palette Alias "desktop_palette" As RGB Ptr
+Extern Import default_palette(0 to PAL_SIZE-1) Alias "default_palette" As RGB
+Extern Import black_palette(0 to PAL_SIZE-1) Alias "black_palette" As RGB
+Extern Import desktop_palette(0 to PAL_SIZE-1) Alias "desktop_palette" As RGB
 
 Extern Import rgb_map Alias "rgb_map" As RGB_MAP Ptr
 
@@ -1844,7 +1844,7 @@ declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval 
 
 dim shared errno as integer
 
-#define allegro_init install_allegro(SYSTEM_AUTODETECT, @errno, @atexit)
+#define allegro_init() install_allegro(SYSTEM_AUTODETECT, @errno, @atexit)
 
 #define SCREEN_W gfx_driver->w
 
@@ -1858,7 +1858,7 @@ dim shared errno as integer
 
 #define BPM_TO_TIMER(bpm) ((60 * TIMERS_PER_SECOND) / (bpm))
 
-#define AL_RAND	rand()
+#define AL_RAND() rand()
 
 #define AL_MIN(x,y) iif( (x) <= (y), (x), (y) )
 
