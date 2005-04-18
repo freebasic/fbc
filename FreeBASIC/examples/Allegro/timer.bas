@@ -40,7 +40,7 @@ end sub
 		end 1
    	end if
    
-   	'set_palette(desktop_palette)
+   	set_palette(@desktop_palette(0))
    	clear_to_color(screen, makecol(255, 255, 255))
    	text_mode(makecol(255, 255, 255))
 

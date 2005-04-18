@@ -21,7 +21,7 @@ option explicit
 		end 1 
 	end if
    
-	'set_palette( desktop_palette )
+	set_palette( @desktop_palette(0) )
    	text_mode(makecol(255, 255, 255))
    	clear_to_color(screen, makecol(255, 255, 255))
 
