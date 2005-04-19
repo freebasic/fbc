@@ -3386,7 +3386,7 @@ function cOptDecl
 					if( s <> NULL ) then
 
 						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
-						if( symbGetProcLib( s ) <> "fb" ) then
+						if( not symbGetProcIsRTL( s ) ) then
 							hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 							exit function
 						end if

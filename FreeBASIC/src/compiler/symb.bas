@@ -281,7 +281,6 @@ data "LONGINT"	, FB.TK.LONGINT		, FB.TKCLASS.KEYWORD
 data "ULONGINT" , FB.TK.ULONGINT	, FB.TKCLASS.KEYWORD
 data "ZSTRING"	, FB.TK.ZSTRING		, FB.TKCLASS.KEYWORD
 data "SIZEOF"	, FB.TK.SIZEOF		, FB.TKCLASS.KEYWORD
-data "THREADCREATE", FB.TK.THREADCREATE, FB.TKCLASS.KEYWORD
 data ""
 
 
@@ -1928,14 +1927,14 @@ private function hSetupProc( byval symbol as string, _
 	aname = hCreateProcAlias( aname, lgt, mode )
 #endif
 
-	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, FALSE, typ, subtype, ptrcnt, _
-					INVALID, preservecase )
+	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, FALSE, _
+					typ, subtype, ptrcnt, INVALID, preservecase )
 	if( f = NULL ) then
 		exit function
 	end if
 
     ''
-	f->alloctype	= alloctype or FB.ALLOCTYPE.SHARED
+	f->alloctype		= alloctype or FB.ALLOCTYPE.SHARED
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( typ = FB.SYMBTYPE.USERDEF ) then
@@ -1944,21 +1943,24 @@ private function hSetupProc( byval symbol as string, _
     	end if
     end if
 
-	f->lgt			= lgt
+	f->lgt				= lgt
 
-	f->proc.isdeclared = declaring
-	f->proc.mode	= mode
-	f->proc.realtype= realtype
+	f->proc.isdeclared 	= declaring
+	f->proc.mode		= mode
+	f->proc.realtype	= realtype
+
+	f->proc.isrtl		= FALSE
+	f->proc.rtlcallback = NULL
 
 	if( len( libname ) > 0 ) then
-		f->proc.lib = symbAddLib( libname )
+		f->proc.lib 	= symbAddLib( libname )
 	else
-		f->proc.lib = NULL
+		f->proc.lib 	= NULL
 	end if
 
 	'' add arguments (w/o declaring them as symbols)
-	f->proc.args 	= argc
-	f->proc.argtail	= argtail
+	f->proc.args 		= argc
+	f->proc.argtail		= argtail
 
 	if( argtail <> NULL ) then
 		do while( argtail->arg.l <> NULL )
@@ -1966,7 +1968,7 @@ private function hSetupProc( byval symbol as string, _
 		loop
 	end if
 
-	f->proc.arghead	= argtail
+	f->proc.arghead		= argtail
 
 	hSetupProc = f
 

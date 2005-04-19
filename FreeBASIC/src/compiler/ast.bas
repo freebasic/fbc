@@ -4142,6 +4142,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 					  byval ptrexpr as integer = INVALID, _
 					  byval isprofiler as integer = FALSE ) as integer
     dim as integer n
+    dim as FBRTLCALLBACK callback
 
 	'' if return type is an UDT, change to the real one
 	if( sym <> NULL ) then
@@ -4169,7 +4170,13 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 
 	if( sym <> NULL ) then
 		astTB(n).proc.arg	= symbGetProcHeadArg( sym )
-		astTB(n).proc.isrtl = symbGetProcLib( sym ) = "fb"
+		astTB(n).proc.isrtl = symbGetProcIsRTL( sym )
+
+		callback = symbGetProcCallback( sym )
+		if( callback <> NULL ) then
+			callback( sym )
+		end if
+
 	else
 		astTB(n).proc.arg	= NULL
 		astTB(n).proc.isrtl = FALSE

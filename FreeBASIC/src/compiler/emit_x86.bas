@@ -4828,9 +4828,10 @@ sub emitDATAEND static
 end sub
 
 '':::::
-sub emitDATA ( byval litext as string, byval litlen as integer, byval typ as integer )
-    dim esctext as string
-    dim ostr as string
+sub emitDATA ( byval litext as string, _
+			   byval litlen as integer, _
+			   byval typ as integer ) static
+    dim as string ostr, esctext
 
     esctext = hScapeStr( litext )
 
@@ -4847,6 +4848,18 @@ sub emitDATA ( byval litext as string, byval litlen as integer, byval typ as int
 	else
 		outp ".short 0x0000"
 	end if
+
+end sub
+
+'':::::
+sub emitDATAOFS ( byval sname as string ) static
+    dim ostr as string
+
+	outp ".short 0xfffe"
+
+	ostr = ".int "
+	ostr += sname
+	outp ostr
 
 end sub
 

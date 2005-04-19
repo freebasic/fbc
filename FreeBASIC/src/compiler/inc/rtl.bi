@@ -157,8 +157,6 @@ enum FBRTL_ENUM
 	FB.RTL.ERRORRESUME
 	FB.RTL.ERRORRESUMENEXT
 
-	FB.RTL.THREADCREATE
-
 	FB.RTL.GFXPSET
 	FB.RTL.GFXPOINT
 	FB.RTL.GFXLINE
@@ -274,6 +272,8 @@ declare sub 		rtlDataStoreBegin	( )
 declare function	rtlDataStore		( littext as string, _
 										  byval litlen as integer, _
 										  byval typ as integer ) as integer
+
+declare function 	rtlDataStoreOFS		( byval sym as FBSYMBOL ptr ) as integer
 
 declare sub 		rtlDataStoreEnd		( )
 
@@ -422,9 +422,6 @@ declare function	rtlErrorGetNum		( ) as integer
 declare sub 		rtlErrorSetNum		( byval errexpr as integer )
 
 declare sub 		rtlErrorResume		( byval isnext as integer )
-
-declare function	rtlThreadCreate		( byval proc as integer, _
-										  byval param as integer ) as integer
 
 declare function	rtlConsoleView		( byval topexpr as integer, _
 										  byval botexpr as integer ) as integer

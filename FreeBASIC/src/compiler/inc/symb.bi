@@ -308,6 +308,14 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetProcTailArg(f) f->proc.argtail
 
+#define symbGetProcCallback(f) f->proc.rtlcallback
+
+#define symbSetProcCallback(f,cb) f->proc.rtlcallback = cb
+
+#define symbGetProcIsRTL(f) f->proc.isrtl
+
+#define symbSetProcIsRTL(f,v) f->proc.isrtl = v
+
 #define symbGetArgMode(f,a) iif( a = NULL, INVALID, a->arg.mode )
 
 #define symbGetArgSuffix(f,a) iif( a = NULL, INVALID, a->arg.suffix )

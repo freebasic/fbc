@@ -376,8 +376,6 @@ enum FBTK_ENUM
 	FB.TK.ENDIF
 	FB.TK.DEFINED
 
-	FB.TK.THREADCREATE
-
 	FB.TK.PSET
 	FB.TK.PRESET
 	FB.TK.POINT
@@ -633,6 +631,8 @@ type FBSPROCARG
 	r				as FBSYMBOL_ ptr			'' right
 end type
 
+type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
+
 type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
@@ -641,6 +641,9 @@ type FBSPROC
 	arghead 		as FBSYMBOL_ ptr
 	argtail			as FBSYMBOL_ ptr
 	isdeclared		as integer					'' FALSE = just the prototype
+
+	isrtl			as integer
+	rtlcallback		as FBRTLCALLBACK
 end type
 
 type FBSVAR

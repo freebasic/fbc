@@ -33,8 +33,6 @@ defint a-z
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
 
-declare function cThreadCreate		( funcexpr as integer, byval isfunc as integer ) as integer
-
 '':::::
 function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
     dim expr as integer
@@ -487,10 +485,16 @@ function cDataStmt
 					symbDelVar s
 				end if
 
+            	if( not rtlDataStore( littext, litlen, typ ) ) then
+	            	exit function
+    	        end if
+
 			else
 
 				if( astIsOFFSET( expr ) ) then
-					littext = symbGetName( astGetSymbol( expr ) )
+            		if( not rtlDataStoreOFS( astGetSymbol( expr ) ) ) then
+	            		exit function
+    	        	end if
 
 				else
 
@@ -510,15 +514,15 @@ function cDataStmt
 
   					litlen = len( littext )
 
+            		if( not rtlDataStore( littext, litlen, IR.DATATYPE.FIXSTR ) ) then
+	            		exit function
+    	        	end if
+
   				end if
-  				typ = IR.DATATYPE.FIXSTR
 
   				astDel expr
-		    end if
 
-            if( not rtlDataStore( littext, litlen, typ ) ) then
-            	exit function
-            end if
+		    end if
 
 			if( not hMatch( CHAR_COMMA ) ) then
 				exit do
@@ -1740,11 +1744,6 @@ function cQuirkStmt
 		res = cMidStmt
 	case FB.TK.LSET
 		res = cLSetStmt
-	case FB.TK.THREADCREATE
-		if( cThreadCreate( funcexpr, FALSE ) ) then
-			astFlush( funcexpr )
-			return TRUE
-		end if
 	end select
 
 	if( res = FALSE ) then
@@ -2640,54 +2639,6 @@ function cVAFunct( funcexpr as integer )
 end function
 
 '':::::
-''cThreadCreate =   THREADCREATE '(' procexpr ( ',' paramexpr )? ')'
-''
-function cThreadCreate( funcexpr as integer, _
-						byval isfunc as integer )
-	dim procexpr as integer, paramexpr as integer
-
-	cThreadCreate = FALSE
-
-	'' THREADCREATE
-	lexSkipToken
-
-	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
-		if( isfunc ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-	end if
-
-	'' procexpr
-	if( not cExpression( procexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-
-	paramexpr = INVALID
-	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( paramexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-	end if
-
-	'' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
-		if( isfunc ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
-	end if
-
-	funcexpr = rtlThreadCreate( procexpr, paramexpr )
-
-	cThreadCreate = TRUE
-
-end function
-
-'':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
 function cQuirkFunction( funcexpr as integer )
@@ -2718,8 +2669,6 @@ function cQuirkFunction( funcexpr as integer )
 		res = cIIFFunct( funcexpr )
 	case FB.TK.VA_FIRST
 		res = cVAFunct( funcexpr )
-	case FB.TK.THREADCREATE
-		res = cThreadCreate( funcexpr, TRUE )
 	end select
 
 	if( not res ) then

@@ -84,6 +84,8 @@ declare sub 		emitDATA			( byval litext as string, _
 										  byval litlen as integer, _
 										  byval dtype as integer )
 
+declare sub 		emitDATAOFS			( byval sname as string )
+
 declare sub 		emitDATAEND			( )
 
 declare sub 		emitVARINIBEGIN		( byval sym as FBSYMBOL ptr )

@@ -39,7 +39,10 @@ type RTLCTX
     labelcnt 		as integer
 end type
 
+
 declare function	rtlCheckError		( byval resexpr as integer, byval reslabel as FBSYMBOL ptr ) as integer
+
+declare function 	hThreadCreate_cb	( byval sym as FBSYMBOL ptr ) as integer
 
 
 ''globals
@@ -52,1163 +55,1928 @@ declare function	rtlCheckError		( byval resexpr as integer, byval reslabel as FB
 '' FUNCTIONS
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'' name,alias,typ,mode, args, [arg typ,mode,optional[,value]]*args (same order as FB.IFUNC)
+'' name, alias, _
+'' type, mode, _
+'' callback, checkerror, _
+'' args, _
+'' [arg typ,mode,optional[,value]]*args
 ifuncdata:
 
 '' fb_StrConcat ( dst as string, _
 ''				  str1 as any, byval str1len as integer, _
 ''				  str2 as any, byval str2len as integer ) as string
-data "fb_StrConcat","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 5, _
-						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrConcat","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+
 '' fb_StrCompare ( str1 as any, byval str1len as integer, _
 ''				   str2 as any, byval str2len as integer ) as integer
 '' returns: 0= equal; -1=str1 < str2; 1=str1 > str2
-data "fb_StrCompare","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
-						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrCompare","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_StrAssign ( dst as any, byval dst_len as integer, _
 '' 				  src as any, byval src_len as integer, _
 ''                byval fillrem as integer = 1 ) as string
-data "fb_StrAssign","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 5, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "fb_StrAssign","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_StrConcatAssign ( dst as any, byval dst_len as integer, _
 '' 				        src as any, byval src_len as integer, _
 ''					    byval fillrem as integer = 1 ) as string
-data "fb_StrConcatAssign","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 5, _
-						      FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						      FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "fb_StrConcatAssign","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_StrDelete ( str as string ) as void
-data "fb_StrDelete","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_StrDelete","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrAllocTempResult ( str as string ) as string
-data "fb_StrAllocTempResult","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						         FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_StrAllocTempResult","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrAllocTempDesc ( str as any, byval strlen as integer ) as string
-data "fb_StrAllocTempDesc","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-						       FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrAllocTempDesc","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
-data "__divdi3","", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, 2, _
-					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
-					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
+data "__divdi3","", _
+	 FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint
-data "__udivdi3","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 2, _
-					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
+data "__udivdi3","", _
+	 FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint
-data "__moddi3","", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, 2, _
-					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
-					FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
+data "__moddi3","", _
+	 FB.SYMBTYPE.LONGINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint
-data "__umoddi3","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 2, _
-					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
+data "__umoddi3","", _
+	 FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_Dbl2ULongint ( byval x as double ) as ulongint
-data "__fixunsdfdi","", FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, 1, _
-					 	FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "__fixunsdfdi","", _
+	 FB.SYMBTYPE.ULONGINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ArrayRedim CDECL ( array() as ANY, byval elementlen as integer, _
 ''					     byval isvarlen as integer, byval preserve as integer, _
 ''						 byval dimensions as integer, ... ) as integer
-data "fb_ArrayRedim","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 6, _
-						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						             INVALID,FB.ARGMODE.VARARG, FALSE
+data "fb_ArrayRedim","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 6, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 INVALID,FB.ARGMODE.VARARG, FALSE
 '' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as integer
-data "fb_ArrayErase","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_ArrayErase","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as integer
-data "fb_ArrayClear","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_ArrayClear","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer
-data "fb_ArrayLBound","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_ArrayLBound","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ArrayUBound ( array() as ANY, byval dimension as integer ) as integer
-data "fb_ArrayUBound","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_ArrayUBound","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ArraySetDesc CDECL ( array() as ANY, arraydata as any, byval elementlen as integer, _
 ''						   byval dimensions as integer, ... ) as void
-data "fb_ArraySetDesc","", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 5, _
-						   FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
-						   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						               INVALID,FB.ARGMODE.VARARG, FALSE
+data "fb_ArraySetDesc","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 INVALID,FB.ARGMODE.VARARG, FALSE
 '' fb_ArrayStrErase ( array() as any ) as void
-data "fb_ArrayStrErase","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-							FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
+data "fb_ArrayStrErase","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
 '' fb_ArrayAllocTempDesc CDECL ( byref pdesc as any ptr, arraydata as any, byval elementlen as integer, _
 ''						         byval dimensions as integer, ... ) as void ptr
-data "fb_ArrayAllocTempDesc","", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 5, _
-					 	         FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						         FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						         FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						         FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						                     INVALID,FB.ARGMODE.VARARG, FALSE
+data "fb_ArrayAllocTempDesc","", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 INVALID,FB.ARGMODE.VARARG, FALSE
 '' fb_ArrayFreeTempDesc ( byval pdesc as any ptr) as void
-data "fb_ArrayFreeTempDesc","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						        FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+data "fb_ArrayFreeTempDesc","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_IntToStr ( byval number as integer ) as string
-data "fb_IntToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_IntToStr","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_UIntToStr ( byval number as uinteger ) as string
-data "fb_UIntToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					    FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
+data "fb_UIntToStr","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_LongintToStr ( byval number as longint ) as string
-data "fb_LongintToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					       FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
+data "fb_LongintToStr","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_ULongintToStr ( byval number as ulongint ) as string
-data "fb_ULongintToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					        FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
+data "fb_ULongintToStr","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_FloatToStr ( byval number as single ) as string
-data "fb_FloatToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_FloatToStr","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_DoubleToStr ( byval number as double ) as string
-data "fb_DoubleToStr","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_DoubleToStr","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_StrInstr ( byval start as integer, srcstr as string, pattern as string ) as integer
-data "fb_StrInstr","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_StrInstr","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrMid ( str as string, byval start as integer, byval len as integer ) as string
-data "fb_StrMid","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 3, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrMid","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_StrAssignMid ( dst as string, byval start as integer, byval len as integer, src as string ) as void
-data "fb_StrAssignMid","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_StrAssignMid","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrFill1 ( byval cnt as integer, byval char as integer ) as string
-data "fb_StrFill1","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrFill1","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_StrFill2 ( byval cnt as integer, str as string ) as string
-data "fb_StrFill2","", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_StrFill2","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_StrLen ( str as any, byval strlen as integer ) as integer
-data "fb_StrLen","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-					 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrLen","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' lset ( dst as string, src as string ) as void
-data "fb_StrLset","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-				      FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-				      FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_StrLset","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_ASC ( str as string, byval pos as integer = 0 ) as uinteger
-data "fb_ASC", "", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 2, _
-				   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-				   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE, 0
+data "fb_ASC", "", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE, 0
 '' fb_CHR CDECL ( byval args as integer, ... ) as string
-data "fb_CHR", "", FB.SYMBTYPE.STRING,FB.FUNCMODE.CDECL, 2, _
-				   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-				               INVALID,FB.ARGMODE.VARARG, FALSE
+data "fb_CHR", "", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 INVALID,FB.ARGMODE.VARARG, FALSE
 
 ''
 '' fb_END ( byval errlevel as integer ) as void
-data "fb_End","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-				  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_End","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_DataRestore ( byval labeladdrs as void ptr ) as void
-data "fb_DataRestore","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
+data "fb_DataRestore","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
 '' fb_DataReadStr ( dst as any, byval dst_size as integer, _
 ''                  byval fillrem as integer = 1 ) as void
-data "fb_DataReadStr","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "fb_DataReadStr","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_DataReadByte ( dst as byte ) as void
-data "fb_DataReadByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						   FB.SYMBTYPE.BYTE,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadByte","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.BYTE,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadShort ( dst as short ) as void
-data "fb_DataReadShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-							FB.SYMBTYPE.SHORT,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadShort","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadInt ( dst as integer ) as void
-data "fb_DataReadInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadInt","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadLongint ( dst as longint ) as void
-data "fb_DataReadLongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						      FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadLongint","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadUByte ( dst as ubyte ) as void
-data "fb_DataReadUByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						    FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadUByte","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadUShort ( dst as ushort ) as void
-data "fb_DataReadUShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-							 FB.SYMBTYPE.USHORT,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadUShort","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.USHORT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadUInt ( dst as uinteger ) as void
-data "fb_DataReadUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						   FB.SYMBTYPE.UINT,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadUInt","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadULongint ( dst as ulongint ) as void
-data "fb_DataReadULongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						       FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadULongint","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadSingle ( dst as single ) as void
-data "fb_DataReadSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						     FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadSingle","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
 '' fb_DataReadDouble ( dst as single ) as void
-data "fb_DataReadDouble","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						     FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYREF, FALSE
+data "fb_DataReadDouble","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYREF, FALSE
 
 ''
 '' fb_Pow CDECL ( byval x as double, byval y as double ) as double
-data "fb_Pow","pow", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 2, _
-					 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
-					 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_Pow","pow", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_SGNSingle ( byval x as single ) as integer
-data "fb_SGNSingle","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_SGNSingle","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_SGNDouble ( byval x as double ) as integer
-data "fb_SGNDouble","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_SGNDouble","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_FIXSingle ( byval x as single ) as single
-data "fb_FIXSingle","", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_FIXSingle","", _
+	 FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_FIXDouble ( byval x as double ) as double
-data "fb_FIXDouble","", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_FIXDouble","", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_PrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void
-data "fb_PrintVoid","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintVoid","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintByte ( byval filenum as integer = 0, byval x as byte, byval mask as integer ) as void
-data "fb_PrintByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						FB.SYMBTYPE.BYTE,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintByte","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.BYTE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintUByte ( byval filenum as integer = 0, byval x as ubyte, byval mask as integer ) as void
-data "fb_PrintUByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintUByte","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintShort ( byval filenum as integer = 0, byval x as short, byval mask as integer ) as void
-data "fb_PrintShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintShort","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintUShort ( byval filenum as integer = 0, byval x as ushort, byval mask as integer ) as void
-data "fb_PrintUShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.USHORT,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintUShort","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.USHORT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintInt ( byval filenum as integer = 0, byval x as integer, byval mask as integer ) as void
-data "fb_PrintInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintInt","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintUInt ( byval filenum as integer = 0, byval x as uinteger, byval mask as integer ) as void
-data "fb_PrintUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintUInt","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void
-data "fb_PrintLongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					      FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintLongint","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void
-data "fb_PrintULongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						    FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintULongint","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void
-data "fb_PrintSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintSingle","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintDouble ( byval filenum as integer = 0, byval x as double, byval mask as integer ) as void
-data "fb_PrintDouble","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintDouble","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintString ( byval filenum as integer = 0, x as string, byval mask as integer ) as void
-data "fb_PrintString","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintString","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' spc ( byval filenum as integer = 0, byval n as integer ) as void
-data "fb_PrintSPC","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintSPC","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' tab ( byval filenum as integer = 0, byval newcol as integer ) as void
-data "fb_PrintTab","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintTab","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_WriteVoid ( byval filenum as integer = 0, byval mask as integer ) as void
-data "fb_WriteVoid","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteVoid","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteByte ( byval filenum as integer = 0, byval x as byte, byval mask as integer ) as void
-data "fb_WriteByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						FB.SYMBTYPE.BYTE,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteByte","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.BYTE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteUByte ( byval filenum as integer = 0, byval x as ubyte, byval mask as integer ) as void
-data "fb_WriteUByte","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteUByte","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteShort ( byval filenum as integer = 0, byval x as short, byval mask as integer ) as void
-data "fb_WriteShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteShort","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteUShort ( byval filenum as integer = 0, byval x as ushort, byval mask as integer ) as void
-data "fb_WriteUShort","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.USHORT,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteUShort","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.USHORT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteInt ( byval filenum as integer = 0, byval x as integer, byval mask as integer ) as void
-data "fb_WriteInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteInt","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteUInt ( byval filenum as integer = 0, byval x as uinteger, byval mask as integer ) as void
-data "fb_WriteUInt","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteUInt","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void
-data "fb_WriteLongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					       FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
-					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteLongint","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void
-data "fb_WriteULongint","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						    FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteULongint","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void
-data "fb_WriteSingle","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteSingle","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteDouble ( byval filenum as integer = 0, byval x as double, byval mask as integer ) as void
-data "fb_WriteDouble","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteDouble","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_WriteString ( byval filenum as integer = 0, x as string, byval mask as integer ) as void
-data "fb_WriteString","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_WriteString","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_PrintUsingInit ( fmtstr as string ) as integer
-data "fb_PrintUsingInit","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_PrintUsingInit","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_PrintUsingStr ( byval filenum as integer, s as string, byval mask as integer ) as integer
-data "fb_PrintUsingStr","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintUsingStr","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintUsingVal ( byval filenum as integer, byval v as double, byval mask as integer ) as integer
-data "fb_PrintUsingVal","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintUsingVal","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_PrintUsingEnd ( byval filenum as integer ) as integer
-data "fb_PrintUsingEnd","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_PrintUsingEnd","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
-data "fb_ConsoleView","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_ConsoleView","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 '' fb_ConsoleReadXY ( byval y as integer, byval x as integer, byval colorflag as integer ) as integer
-data "fb_ConsoleReadXY","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_ConsoleReadXY","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 
 ''
 '' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void
-data "fb_MemCopy","memcpy", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 3, _
-							FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-							FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_MemCopy","memcpy", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void
-data "fb_MemSwap","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_MemSwap","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_StrSwap ( str1 as any, byval str1len as integer, str2 as any, byval str2len as integer ) as void
-data "fb_StrSwap","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_StrSwap","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void
-data "fb_MemCopyClear","", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
-					       FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					       FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_MemCopyClear","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 ''
 '' fb_FileOpen( s as string, byval mode as integer, byval access as integer,
 ''		        byval lock as integer, byval filenum as integer, byval len as integer ) as integer
-data "fb_FileOpen","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 6, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_FileOpen","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 6, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FileClose	( byval filenum as integer ) as integer
-data "fb_FileClose","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_FileClose","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FilePut ( byval filenum as integer, byval offset as uinteger, value as any, byval valuelen as integer ) as integer
-data "fb_FilePut","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_FilePut","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FilePutStr ( byval filenum as integer, byval offset as uinteger, s as string ) as integer
-data "fb_FilePutStr","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_FilePutStr","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_FilePutArray ( byval filenum as integer, byval offset as uinteger, array() as any ) as integer
-data "fb_FilePutArray","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
+data "fb_FilePutArray","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
 '' fb_FileGet ( byval filenum as integer, byval offset as uinteger, value as any, byval valuelen as integer ) as integer
-data "fb_FileGet","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_FileGet","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FileGetStr ( byval filenum as integer, byval offset as uinteger, s as string ) as integer
-data "fb_FileGetStr","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_FileGetStr","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_FileGetArray ( byval filenum as integer, byval offset as uinteger, array() as any ) as integer
-data "fb_FileGetArray","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
+data "fb_FileGetArray","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
 
 '' fb_FileTell ( byval filenum as integer ) as uinteger
-data "fb_FileTell","", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_FileTell","", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FileSeek ( byval filenum as integer, byval newpos as uinteger ) as integer
-data "fb_FileSeek","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
+data "fb_FileSeek","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_FileStrInput ( byval bytes as integer, byval filenum as integer = 0 ) as string
-data "fb_FileStrInput", "", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_FileStrInput", "", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_FileLineInput ( byval filenum as integer, _
 ''					  dst as any, byval dstlen as integer, byval fillrem as integer = 1 ) as integer
-data "fb_FileLineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 4, _
-						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						     FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "fb_FileLineInput", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' fb_LineInput ( text as string, _
 ''				  dst as any, byval dstlen as integer, byval fillrem as integer = 1, _
 ''				  byval addquestion as integer, byval addnewline as integer ) as integer
-data "fb_LineInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 6, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "fb_LineInput", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 6, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 
 '' fb_FileInput ( byval filenum as integer ) as integer
-data "fb_FileInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_FileInput", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_ConsoleInput ( text as string,  byval addquestion as integer, _
 ''				     byval addnewline as integer ) as integer
-data "fb_ConsoleInput", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						    FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_ConsoleInput", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_InputByte ( x as byte ) as void
-data "fb_InputByte","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						FB.SYMBTYPE.BYTE,FB.ARGMODE.BYREF, FALSE
+data "fb_InputByte","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.BYTE,FB.ARGMODE.BYREF, FALSE
 '' fb_InputShort ( x as short ) as void
-data "fb_InputShort","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYREF, FALSE
+data "fb_InputShort","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYREF, FALSE
 '' fb_InputInt ( x as integer ) as void
-data "fb_InputInt","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+data "fb_InputInt","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 '' fb_InputLongint ( x as longint ) as void
-data "fb_InputLongint","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-					       FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
+data "fb_InputLongint","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
 '' fb_InputSingle ( x as single ) as void
-data "fb_InputSingle","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
+data "fb_InputSingle","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
 '' fb_InputDouble ( x as double ) as void
-data "fb_InputDouble","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYREF, FALSE
+data "fb_InputDouble","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYREF, FALSE
 '' fb_InputString ( x as any, byval strlen as integer, byval fillrem as integer = 1 ) as void
-data "fb_InputString","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "fb_InputString","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 
 '' fb_FileLock ( byval inipos as integer, byval endpos as integer ) as integer
-data "fb_FileLock","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_FileLock","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 '' fb_FileUnlock ( byval inipos as integer, byval endpos as integer ) as integer
-data "fb_FileUnlock","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_FileUnlock","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 
 ''
 '' fb_ErrorThrow cdecl ( byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
-data "fb_ErrorThrow","", FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, 2, _
-						 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+data "fb_ErrorThrow","", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 ''
 '' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval reslabel as any ptr, _
 ''                        byval resnxtlabel as any ptr ) as any ptr
-data "fb_ErrorThrowEx","", FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, 3, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+data "fb_ErrorThrowEx","", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 '' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
-data "fb_ErrorSetHandler","", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
-							  FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
+data "fb_ErrorSetHandler","", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ErrorGetNum( ) as integer
-data "fb_ErrorGetNum", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "fb_ErrorGetNum", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' fb_ErrorSetNum( byval errnum as integer ) as void
-data "fb_ErrorSetNum", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_ErrorSetNum", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ErrorResume( ) as any ptr
-data "fb_ErrorResume", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
+data "fb_ErrorResume", "", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 0
 '' fb_ErrorResumeNext( ) as any ptr
-data "fb_ErrorResumeNext", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
-
-
-''
-'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
-data "fb_ThreadCreate", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-							FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_ErrorResumeNext", "", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 0
 
 
 ''
 '' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
-data "fb_GfxPset", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 5, _
-					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxPset", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxPoint ( byref target as any, byval x as single, byval y as single ) as integer
-data "fb_GfxPoint", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxPoint", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxLine ( byref target as any, byval x1 as single = 0, byval y1 as single = 0, byval x2 as single = 0, byval y2 as single = 0, _
 ''              byval color as uinteger = DEFAULT_COLOR, byval line_type as integer = LINE_TYPE_LINE, _
 ''              byval style as uinteger = &hFFFF, byval coordType as integer = COORD_TYPE_AA ) as integer
-data "fb_GfxLine", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 9, _
-					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxLine", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 9, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxEllipse ( byref target as any, byval x as single, byval y as single, byval radius as single, _
 ''				   byval color as uinteger = DEFAULT_COLOR, byval aspect as single = 0.0, _
 ''				   byval iniarc as single = 0.0, byval endarc as single = 6.283185, _
 ''				   byval FillFlag as integer = 0, byval CoordType as integer = COORD_TYPE_A ) as integer
-data "fb_GfxEllipse", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 10, _
-						  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxEllipse", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 10, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxPaint ( byref target as any, byval x as single, byval y as single, byval color as uinteger = DEFAULT_COLOR, _
 ''				 byval border_color as uinteger = DEFAULT_COLOR, pattern as string, _
 ''				 byval mode as integer = PAINT_TYPE_FILL, byval coord_type as integer = COORD_TYPE_A ) as integer
-data "fb_GfxPaint", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 8, _
-						FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxPaint", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 8, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxDraw ( byval target as any, cmd as string )
-data "fb_GfxDraw", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "fb_GfxDraw", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxView ( byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''              byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''				byval fillcol as uinteger = DEFAULT_COLOR, byval bordercol as uinteger = DEFAULT_COLOR, _
 ''              byval screenFlag as integer = 0) as integer
-data "fb_GfxView", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 7, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxView", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 7, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxWindow (byval x1 as single = 0, byval y1 as single = 0, byval x2 as single = 0, _
 '' 				 byval y2 as single = 0, byval screenflag as integer = 0 ) as integer
-data "fb_GfxWindow", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
-						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_GfxWindow", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxPalette( byval attribute as integer = -1, byval r as integer = -1, _
 ''				  byval g as integer = -1, byval b as integer = -1 ) as void
-data "fb_GfxPalette", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "fb_GfxPalette", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxPaletteUsing ( array as integer ) as void
-data "fb_GfxPaletteUsing", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-						       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+data "fb_GfxPaletteUsing", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
 ''			   byval coordType as integer, byval mode as integer )  as void
-data "fb_GfxPut", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 6, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxPut", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 6, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxGet ( byref target as any, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
 ''			   byref array as any, byval coordType as integer, array() as any ) as integer
-data "fb_GfxGet", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 8, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
+data "fb_GfxGet", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 8, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE
 
 '' fb_GfxScreen ( byval w as integer, byval h as integer = 0, byval depth as integer = 0, _
 ''                byval fullscreenFlag as integer = 0 ) as integer
-data "fb_GfxScreen", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 5, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_GfxScreen", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 5, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxScreenRes ( byval w as integer, byval h as integer, byval depth as integer = 8, _
 ''					 byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 )
-data "fb_GfxScreenRes", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 6, _
-					 		FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,8, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_GfxScreenRes", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 6, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,8, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxBload ( filename as string, byval dest as any ptr )
-data "fb_GfxBload", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,0
+data "fb_GfxBload", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer )
-data "fb_GfxBsave", "", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-						FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-						FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "fb_GfxBsave", "", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 
 '' fb_ProfileSetProc ( procname as string ) as void
-data "fb_ProfileSetProc", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-							  FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "fb_ProfileSetProc", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileStartCall ( procname as string ) as any ptr
-data "fb_ProfileStartCall", "", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-								FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "fb_ProfileStartCall", "", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileEndCall ( call as any ptr ) as void
-data "fb_ProfileEndCall", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-							  FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+data "fb_ProfileEndCall", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileEnd ( ) as void
-data "fb_ProfileEnd", "", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
+data "fb_ProfileEnd", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 0
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
 '' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void
-data "flip", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "flip", "fb_GfxFlip", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' pcopy ( byval frompage as integer, byval topage as integer ) as void
-data "pcopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "pcopy", "fb_GfxFlip", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-data "screencopy", "fb_GfxFlip", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "screencopy", "fb_GfxFlip", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxCursor ( number as integer) as single
-data "pointcoord", "fb_GfxCursor", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
-						           FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "pointcoord", "fb_GfxCursor", _
+	 FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxPMap ( byval Coord as single, byval num as integer ) as single
-data "pmap", "fb_GfxPMap", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 2, _
-						   FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
-						   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "pmap", "fb_GfxPMap", _
+	 FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxPaletteOut( byval port as integer, byval data as integer ) as void
-data "out", "fb_GfxPaletteOut", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-							    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-							    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "out", "fb_GfxPaletteOut", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxPaletteInp( byval port as integer ) as integer
-data "inp", "fb_GfxPaletteInp", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-							    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "inp", "fb_GfxPaletteInp", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxWaitVSync ( byval port as integer, byval and_mask as integer, byval xor_mask as integer = 0 )
-data "wait", "fb_GfxWaitVSync", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 3, _
-								FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-								FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-								FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "wait", "fb_GfxWaitVSync", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void
-data "screenset", "fb_GfxSetPage", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "screenset", "fb_GfxSetPage", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxLock ( ) as void
-data "screenlock", "fb_GfxLock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+data "screenlock", "fb_GfxLock", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 
 '' fb_GfxUnlock ( ) as void
-data "screenunlock", "fb_GfxUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "screenunlock", "fb_GfxUnlock", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxScreenPtr ( ) as any ptr
-data "screenptr", "fb_GfxScreenPtr", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+data "screenptr", "fb_GfxScreenPtr", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 
 '' fb_GfxSetWindowTitle ( title as string ) as void
-data "windowtitle", "fb_GfxSetWindowTitle", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-											FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "windowtitle", "fb_GfxSetWindowTitle", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxMultikey ( scancode as integer ) as integer
-data "multikey", "fb_GfxMultikey", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "multikey", "fb_GfxMultikey", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as void
-data "getmouse", "fb_GfxGetMouse", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 4, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0
+data "getmouse", "fb_GfxGetMouse", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0
 
 '' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as void
-data "setmouse", "fb_GfxSetMouse", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "setmouse", "fb_GfxSetMouse", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 
 '' fb_GfxScreenInfo ( ) as any ptr
-data "screeninfo", "fb_GfxScreenInfo", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+data "screeninfo", "fb_GfxScreenInfo", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
+'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
+data "threadcreate", "fb_ThreadCreate", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _			'' !!! NULL will be changed to @hThreadCreate_cb !!!
+	 2, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
 '' fb_FileFree ( ) as integer
-data "freefile", "fb_FileFree", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "freefile", "fb_FileFree", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' fb_FileEof ( byval filenum as integer ) as integer
-data "eof", "fb_FileEof", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "eof", "fb_FileEof", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FileKill ( s as string ) as integer
-data "kill", "fb_FileKill", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-							FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "kill", "fb_FileKill", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_CVD ( str as string ) as double
-data "cvd","fb_CVD", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-data "cvs","fb_CVS", FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "cvd","fb_CVD", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "cvs","fb_CVS", _
+	 FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_CVI ( str as string ) as integer
-data "cvi","fb_CVI", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-data "cvl","fb_CVI", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "cvi","fb_CVI", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "cvl","fb_CVI", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_HEX ( byval number as integer ) as string
-data "hex","fb_HEX", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "hex","fb_HEX", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_OCT ( byval number as integer ) as string
-data "oct","fb_OCT", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "oct","fb_OCT", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_BIN ( byval number as integer ) as string
-data "bin","fb_BIN", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "bin","fb_BIN", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_MKD ( byval number as double ) as string
-data "mkd","fb_MKD", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "mkd","fb_MKD", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_MKI ( byval number as integer ) as string
-data "mki","fb_MKI", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-data "mkl","fb_MKI", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "mki","fb_MKI", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "mkl","fb_MKI", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_MKS ( byval number as single ) as string
-data "mks","fb_MKS", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+data "mks","fb_MKS", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_LEFT ( str as string, byval n as integer ) as string
-data "left","fb_LEFT", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "left","fb_LEFT", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_RIGHT ( str as string, byval n as integer ) as string
-data "right","fb_RIGHT", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "right","fb_RIGHT", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_SPACE ( byval n as integer ) as string
-data "space","fb_SPACE", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "space","fb_SPACE", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_LTRIM ( str as string ) as string
-data "ltrim","fb_LTRIM", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "ltrim","fb_LTRIM", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_RTRIM ( str as string ) as string
-data "rtrim","fb_RTRIM", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "rtrim","fb_RTRIM", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_TRIM ( str as string ) as string
-data "trim","fb_TRIM", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "trim","fb_TRIM", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_LCASE ( str as string ) as string
-data "lcase","fb_LCASE", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "lcase","fb_LCASE", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_UCASE ( str as string ) as string
-data "ucase","fb_UCASE", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-						 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "ucase","fb_UCASE", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_VAL ( str as string ) as double
-data "val","fb_VAL", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "val","fb_VAL", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_VALINT ( str as string ) as integer
-data "valint","fb_VALINT", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-					       FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "valint","fb_VALINT", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' fb_VAL64 ( str as string ) as longint
-data "val64","fb_VAL64", FB.SYMBTYPE.LONGINT,FB.FUNCMODE.STDCALL, 1, _
-					     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "val64","fb_VAL64", _
+	 FB.SYMBTYPE.LONGINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' cos CDECL ( byval rad as double ) as double
-data "cos","cos", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "cos","cos", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' acos CDECL ( byval x as double ) as double
-data "acos","acos", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-					FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "acos","acos", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' sin CDECL ( byval rad as double ) as double
-data "sin","sin", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "sin","sin", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' asin CDECL ( byval x as double ) as double
-data "asin","asin", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-					FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "asin","asin", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' tan CDECL ( byval rad as double ) as double
-data "tan","tan", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "tan","tan", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' atn CDECL ( byval x as double ) as double
-data "atn","atan", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				   FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "atn","atan", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' atan2 CDECL ( byval x as double, byval y as double ) as double
-data "atan2","atan2", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 2, _
-					  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "atan2","atan2", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' sqr CDECL ( byval rad as double ) as double
-data "sqr","sqrt", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				   FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "sqr","sqrt", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' log CDECL ( byval rad as double ) as double
-data "log","log", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "log","log", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' exp CDECL ( byval rad as double ) as double
-data "exp","exp", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-				  FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "exp","exp", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' int CDECL ( byval val as double ) as double
-data "int","floor", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, 1, _
-					FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+data "int","floor", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
 '' command ( byval argc as integer = -1 ) as string
-data "command","fb_Command", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-							 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "command","fb_Command", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 '' curdir ( ) as string
-data "curdir","fb_CurDir", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
+data "curdir","fb_CurDir", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' exepath ( ) as string
-data "exepath","fb_ExePath", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
+data "exepath","fb_ExePath", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 
 '' randomize ( byval seed as double = -1.0 ) as void
-data "randomize","fb_Randomize", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-					             FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, TRUE, -1.0
+data "randomize","fb_Randomize", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, TRUE, -1.0
 '' rnd ( byval n as integer ) as double
-data "rnd","fb_Rnd", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 1, _
-					 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "rnd","fb_Rnd", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 
 '' timer ( ) as double
-data "timer","fb_Timer", FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, 0
+data "timer","fb_Timer", _
+	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' time ( ) as string
-data "time","fb_Time", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
+data "time","fb_Time", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' date ( ) as string
-data "date","fb_Date", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
+data "date","fb_Date", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 
 '' pos( ) as integer
-data "pos", "fb_GetX", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "pos", "fb_GetX", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' csrlin( ) as integer
-data "csrlin", "fb_GetY", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "csrlin", "fb_GetY", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' cls( byval n as integer = 1 ) as void
-data "cls", "fb_Cls", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-					  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&hFFFF0000
+data "cls", "fb_Cls", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&hFFFF0000
 '' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as void
-data "locate", "fb_Locate", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 3, _
-				 		    FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-							FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "locate", "fb_Locate", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 '' color( byval fc as integer = -1, byval bc as integer = -1 ) as void
-data "color", "fb_Color", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+data "color", "fb_Color", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
 '' width( byval cols as integer = 0, byval rows as integer = 0 ) as void
-data "width", "fb_Width", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "width", "fb_Width", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' inkey ( ) as string
-data "inkey","fb_Inkey", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 0
+data "inkey","fb_Inkey", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' getkey ( ) as integer
-data "getkey","fb_Getkey", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "getkey","fb_Getkey", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 
 '' shell ( byval cmm as string = "" ) as integer
-data "shell","fb_Shell", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-					     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,""
+data "shell","fb_Shell", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,""
 
 '' name ( byval oldname as string, byval newname as string ) as integer
-data "name","rename", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 2, _
-					  FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-					  FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "name","rename", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' system ( ) as void
-data "system","fb_End", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-				        FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "system","fb_End", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 '' stop ( ) as void
-data "stop","fb_End", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-				      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "stop","fb_End", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' run ( exename as string ) as integer
-data "run","fb_Run", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-				      FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "run","fb_Run", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' chain ( exename as string ) as integer
-data "chain","fb_Chain", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-				         FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "chain","fb_Chain", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' exec ( exename as string, arguments as string ) as integer
-data "exec","fb_Exec", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 2, _
-				       FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-				       FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "exec","fb_Exec", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' environ ( varname as string ) as string
-data "environ","fb_GetEnviron", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 1, _
-				       			FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "environ","fb_GetEnviron", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' setenviron ( varname as string ) as integer
-data "setenviron","fb_SetEnviron", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-				       			   FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "setenviron","fb_SetEnviron", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' sleep ( byval msecs as integer ) as void
-data "sleep","fb_Sleep", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-					     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE, -1
+data "sleep","fb_Sleep", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE, -1
 
 '' reset ( ) as void
-data "reset","fb_FileReset", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 0
+data "reset","fb_FileReset", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' lof ( byval filenum as integer ) as uinteger
-data "lof","fb_FileSize", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
-						  FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "lof","fb_FileSize", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' loc ( byval filenum as integer ) as uinteger
-data "loc","fb_FileLocation", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
-						      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "loc","fb_FileLocation", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' rset ( dst as string, src as string ) as void
-data "rset","fb_StrRset", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-				          FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "rset","fb_StrRset", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fre ( ) as uinteger
-data "fre","fb_GetMemAvail", FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, 1, _
-				            FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+data "fre","fb_GetMemAvail", _
+	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' allocate ( byval bytes as integer ) as any ptr
-data "allocate","malloc", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-					      FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "allocate","malloc", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' callocate ( byval bytes as integer ) as any ptr
-data "callocate","calloc", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 2, _
-					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-					       FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
+data "callocate","calloc", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
 '' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr
-data "reallocate","realloc", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 2, _
-					         FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-					         FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "reallocate","realloc", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' deallocate ( byval p as any ptr ) as void
-data "deallocate","free", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 1, _
-					      FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+data "deallocate","free", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 '' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void
-data "clear","memset", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 3, _
-					   FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
-					   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "clear","memset", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' dir ( mask as string, byval v as integer = &h33 ) as string
-data "dir","fb_Dir", FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, 2, _
-                     FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,"", _
-                     FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&h33
+data "dir","fb_Dir", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,"", _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&h33
 
 '' settime ( time as string ) as integer
-data "settime","fb_SetTime", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-                     		 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "settime","fb_SetTime", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 '' setdate ( date as string ) as integer
-data "setdate","fb_SetDate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-                     		 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "setdate","fb_SetDate", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' threadwait ( byval id as integer ) as void
-data "threadwait","fb_ThreadWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "threadwait","fb_ThreadWait", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' mutexcreate ( ) as integer
-data "mutexcreate","fb_MutexCreate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "mutexcreate","fb_MutexCreate", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' mutexdestroy ( byval id as integer ) as void
-data "mutexdestroy","fb_MutexDestroy", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-									   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "mutexdestroy","fb_MutexDestroy", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' mutexlock ( byval id as integer ) as void
-data "mutexlock","fb_MutexLock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-								 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "mutexlock","fb_MutexLock", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' mutexunlock ( byval id as integer ) as void
-data "mutexunlock","fb_MutexUnlock", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "mutexunlock","fb_MutexUnlock", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' condcreate ( ) as integer
-data "condcreate","fb_CondCreate", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 0
+data "condcreate","fb_CondCreate", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 0
 '' conddestroy ( byval id as integer ) as void
-data "conddestroy","fb_CondDestroy", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "conddestroy","fb_CondDestroy", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' condsignal ( byval id as integer ) as void
-data "condsignal","fb_CondSignal", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-								   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "condsignal","fb_CondSignal", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' condbroadcast ( byval id as integer ) as void
-data "condbroadcast","fb_CondBroadcast", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-										 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "condbroadcast","fb_CondBroadcast", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' condwait ( byval id as integer ) as void
-data "condwait","fb_CondWait", FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 1, _
-							   FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+data "condwait","fb_CondWait", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' dylibload ( filename as string ) as integer
-data "dylibload","fb_DylibLoad", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, 1, _
-								 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "dylibload","fb_DylibLoad", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' dylibsymbol( byval library as integer, symbol as string) as any ptr
-data "dylibsymbol","fb_DylibSymbol", FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, 2, _
-									 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
-									 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+data "dylibsymbol","fb_DylibSymbol", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
 #ifdef TARGET_WIN32
 
 '' beep ( ) as void
-data "beep","_beep", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
+data "beep","_beep", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 0
 
 '' mkdir ( byval path as string ) as integer
-data "mkdir","_mkdir", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "mkdir","_mkdir", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 '' rmdir ( byval path as string ) as integer
-data "rmdir","_rmdir", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "rmdir","_rmdir", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 '' chdir ( byval path as string ) as integer
-data "chdir","_chdir", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-					   FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "chdir","_chdir", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 #else
 
 '' beep ( ) as void
-data "beep","", FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, 0
+data "beep","", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 0
 
 '' mkdir ( byval path as string, byval mode as integer = &o644 ) as integer
-data "mkdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 2, _
-                 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
-                 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&o644
+data "mkdir","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&o644
 '' rmdir ( byval path as string ) as integer
-data "rmdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-                 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "rmdir","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 '' chdir ( byval path as string ) as integer
-data "chdir","", FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, 1, _
-                 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
+data "chdir","", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.CDECL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 #endif
 
@@ -1271,8 +2039,8 @@ private sub hAddIntrinsicProcs
 	dim as integer i, typ
 	dim as string pname, aname, optstr
 	dim as integer p, ptype, pmode, pargs
-	dim as integer a, atype, alen, amode, optional, ptrcnt
-	dim as FBSYMBOL ptr argtail
+	dim as integer a, atype, alen, amode, optional, ptrcnt, checkerror
+	dim as FBSYMBOL ptr proc, argtail, pcallback
 	dim as FBVALUE optval
 
 	''
@@ -1286,7 +2054,11 @@ private sub hAddIntrinsicProcs
 			exit do
 		end if
 
-		read aname, ptype, pmode, pargs
+		read aname
+		read ptype, pmode
+		read pcallback, checkerror
+		read pargs
+
 		argtail = NULL
 		for a = 0 to pargs-1
 			read atype, amode, optional
@@ -1318,8 +2090,15 @@ private sub hAddIntrinsicProcs
 		next a
 
 		cntptr( ptype, typ, ptrcnt )
-		ifuncTB(i) = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, 0, pmode, _
-									   pargs, argtail, TRUE )
+
+		proc = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, 0, pmode, _
+							     pargs, argtail, TRUE )
+
+		ifuncTB(i) = proc
+
+		symbSetProcIsRTL( proc, TRUE )
+		symbSetProcCallback( proc, pcallback )
+
 		i += 1
 	loop
 
@@ -2495,9 +3274,18 @@ function rtlDataStore( littext as string, _
 					   byval typ as integer ) as integer static
 
 	'' emit will take care of all dirty details
-	emitDATA littext, litlen, typ
+	emitDATA( littext, litlen, typ )
 
 	rtlDataStore = TRUE
+
+end function
+
+'':::::
+function rtlDataStoreOFS( byval sym as FBSYMBOL ptr ) as integer static
+
+	emitDATAOFS( symbGetName( sym ) )
+
+	rtlDataStoreOFS = TRUE
 
 end function
 
@@ -3365,26 +4153,11 @@ function rtlConsoleReadXY ( byval rowexpr as integer, _
 end function
 
 '':::::
-function rtlThreadCreate( byval procexpr as integer, _
-						  byval paramexpr as integer ) as integer
-	dim proc as integer, f as FBSYMBOL ptr
-
-	''
-	f = ifuncTB(FB.RTL.THREADCREATE)
-	proc = astNewFUNCT( f, symbGetType( f ) )
-
-	'' byval proc as integer
-	astNewPARAM( proc, procexpr, INVALID )
-
-	'' byval param as integer
-	if( paramexpr = INVALID ) then
-		paramexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
-	end if
-	astNewPARAM( proc, paramexpr, INVALID )
+private function hThreadCreate_cb( byval sym as FBSYMBOL ptr ) as integer
 
 	env.clopt.multithreaded = TRUE
 
-	rtlThreadCreate = proc
+	return TRUE
 
 end function
 
