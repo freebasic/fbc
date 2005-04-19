@@ -30,7 +30,8 @@
 
 static char *fb_dataptr = NULL;
 
-#define FB_DATA_LINK -1
+#define FB_DATATYPE_LINK -1
+#define FB_DATATYPE_OFS  -2
 
 
 /*:::::*/
@@ -54,7 +55,7 @@ static short fb_hDataRead( void )
 	fb_dataptr += sizeof(short);
 
 	/* link? */
-	while ( len == FB_DATA_LINK )
+	while ( len == FB_DATATYPE_LINK )
 	{
 		fb_dataptr = (char *)(*(int *)fb_dataptr);
 		if( fb_dataptr == NULL )
@@ -76,9 +77,17 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 
 	len = fb_hDataRead();
 
-	fb_StrAssign( dst, dst_size, (void *)fb_dataptr, 0, fillrem );
+	if( len == FB_DATATYPE_OFS )
+	{
+		/* !!!WRITEME!!! */
+		fb_dataptr += sizeof( unsigned int );
+	}
+	else
+	{
+		fb_StrAssign( dst, dst_size, (void *)fb_dataptr, 0, fillrem );
 
-	fb_dataptr += len + 1;
+		fb_dataptr += len + 1;
+	}
 
 	FB_UNLOCK();
 }
@@ -93,7 +102,14 @@ FBCALL void fb_DataReadByte( char *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (char)fb_hStr2Int( (char *)fb_dataptr, len );
@@ -114,7 +130,14 @@ FBCALL void fb_DataReadUByte( unsigned char *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (unsigned char)fb_hStr2Int( (char *)fb_dataptr, len );
@@ -135,7 +158,14 @@ FBCALL void fb_DataReadShort( short *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (short)fb_hStr2Int( (char *)fb_dataptr, len );
@@ -156,7 +186,14 @@ FBCALL void fb_DataReadUShort( unsigned short *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (unsigned short)fb_hStr2Int( (char *)fb_dataptr, len );
@@ -177,7 +214,14 @@ FBCALL void fb_DataReadInt( int *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (int)fb_hStr2Int( (char *)fb_dataptr, len );
@@ -198,7 +242,14 @@ FBCALL void fb_DataReadUInt( unsigned int *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (unsigned int)fb_hStr2Int( (char *)fb_dataptr, len );
@@ -219,7 +270,14 @@ FBCALL void fb_DataReadLongint( long long *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
 		*dst = (long long)fb_hStr2Longint( (char *)fb_dataptr, len );
@@ -240,7 +298,14 @@ FBCALL void fb_DataReadULongint( unsigned long long *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
 		*dst = (unsigned long long)fb_hStr2Longint( (char *)fb_dataptr, len );
@@ -261,7 +326,14 @@ FBCALL void fb_DataReadSingle( float *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0.0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = (float)fb_hStr2Double( (char *)fb_dataptr, len );
@@ -282,7 +354,14 @@ FBCALL void fb_DataReadDouble( double *dst )
 	len = fb_hDataRead();
 
 	if( len == 0 )
+	{
 		*dst = 0.0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_dataptr;
+		fb_dataptr += sizeof( unsigned int );
+	}
 	else
 	{
         *dst = fb_hStr2Double( (char *)fb_dataptr, len );
