@@ -11,6 +11,7 @@ Version 0.14 Beta:
 - PRINT USING ^^ should be used to set the number of exponent digits (v1c)
 - more thread-safetiness checks in platform dependent rtlib routines (lillo)
 - SHELL in Linux was not restoring console state before calling sub-process, resulting in bad keyboard I/O (lillo)
+- @'s used on DATA stmts were storing the names, not the addresses of var's or proc's (v1c)
 
 
 Version 0.13 Beta:
