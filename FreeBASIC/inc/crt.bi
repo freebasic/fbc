@@ -19,6 +19,14 @@ type ulong as uinteger
 type FILE as any
 #endif
 
+#ifndef time_t
+type time_t as uinteger
+#endif
+
+#ifndef size_t
+type size_t as uinteger
+#endif
+
 ' constants
 
 #if defined(__FB_WIN32__)
