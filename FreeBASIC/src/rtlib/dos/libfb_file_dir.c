@@ -49,7 +49,6 @@ static void close_dir ( void )
 /*:::::*/
 static char *find_next ( void )
 {
-	char *name = NULL;
 
 	if (findnext(&dir_data.f) == 0)
 		return dir_data.f.ff_name;
@@ -63,7 +62,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 {
 	FBSTRING	*res;
 	int		len;
-	char		*name, *p;
+	char		*name;
 
 	len = FB_STRSIZE( filespec );
 	name = NULL;

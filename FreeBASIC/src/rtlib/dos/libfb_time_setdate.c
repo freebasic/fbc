@@ -38,4 +38,6 @@ int fb_hSetDate( int y, int m, int d )
 	dt.da_mon = m;
 	dt.da_day = d;
 	setdate(&dt);
+	
+	return 0;
 }

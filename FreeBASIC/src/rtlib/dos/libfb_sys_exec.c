@@ -34,7 +34,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
 	char	buffer[MAX_PATH+1];
 	char	*argv[256], c, *startpos;
-	int	res;
+	int	res = 0;
 	int	i;
 	int	in_quotes = FALSE;
 
@@ -86,7 +86,12 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 		
 		argv[i] = NULL;
 		
-		res = spawnv(P_WAIT, (const char*)fb_hGetShortPath(program->data, buffer, MAX_PATH), (const char **)argv);
+	
+		/* NOTE: DJGPP info on 3rd arg of spawnv* functions is inconsistent;
+		   in docs, defined as const char **;
+		   in process.h, defined as char *const _argv[]
+		*/
+		res = spawnv(P_WAIT, (const char*)fb_hGetShortPath(program->data, buffer, MAX_PATH), (char * const *)argv);
 		
 		for (i = 1; argv[i] != NULL; i++) {
 			free(argv[i]);

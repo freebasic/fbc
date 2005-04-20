@@ -49,7 +49,7 @@ void fb_ConsolePrintBufferConio(char * buffer, int mask)
 	int cols, rows;
 	int no_scroll = FALSE;
 	int len;
-	unsigned short end_char;
+	unsigned short end_char = 0;
 
 	len = strlen( buffer );
 

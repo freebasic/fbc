@@ -40,6 +40,7 @@ int fb_hSetTime( int h, int m, int s )
 	t.ti_hund = 0;
 
 	settime(&t);
-
+	
+	return 0;
 }
 

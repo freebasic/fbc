@@ -27,6 +27,7 @@
 #include "fb.h"
 
 #include <conio.h>
+#include <pc.h>
 
 /*:::::*/
 void fb_ConsoleViewUpdate( void )
