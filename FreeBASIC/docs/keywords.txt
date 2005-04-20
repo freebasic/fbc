@@ -367,7 +367,7 @@
   ZSTRING               (a null-terminated string with a fixed size (known or not) that can be concatenated, 
                          comparated against or assigned to/from other strings and also comparated and assigned
                          to/from numeric types, making it really powerful if proper used -- btw, if the size
-                         is known as compile time (that's it, the zstring is not a pointer), zstrings are
+                         is known as compile time (that is, the zstring is not a pointer), zstrings are
                          safer than char strings in C, as the max size won't ever be overflowed)
 
 *****************************************************************************
