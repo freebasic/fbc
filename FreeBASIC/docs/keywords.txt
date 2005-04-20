@@ -176,7 +176,7 @@
   SPACE$ Function
   SQR Function
   SIN Function
-  STR$ Function
+  STR$ Function			(diff: blanks are NOT added for positive signed integers)
   STRING$ Function
   SADD Function
   SGN Function
