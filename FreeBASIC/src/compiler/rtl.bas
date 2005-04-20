@@ -16,7 +16,8 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' runtime-lib helpers, for when simple calls can't be done, 'cause args of diff types, etc
+'' runtime-lib helpers -- for when simple calls can't be done, because args of
+'' 						  diff types, quirk syntaxes, etc
 ''
 '' chng: oct/2004 written [v1ctor]
 
@@ -31,8 +32,6 @@ option escape
 '$include once: 'inc\ast.bi'
 '$include once: 'inc\emit.bi'
 
-#define AUTOADDGFXLIBS
-
 type RTLCTX
 	datainited		as integer
 	lastlabel		as FBSYMBOL ptr
@@ -40,9 +39,8 @@ type RTLCTX
 end type
 
 
-declare function	rtlCheckError		( byval resexpr as integer, byval reslabel as FBSYMBOL ptr ) as integer
-
-declare function 	hThreadCreate_cb	( byval sym as FBSYMBOL ptr ) as integer
+declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
+declare function 	hGfxlib_cb			( byval sym as FBSYMBOL ptr ) as integer
 
 
 ''globals
@@ -1005,7 +1003,7 @@ data "fb_ErrorResumeNext", "", _
 '' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
 data "fb_GfxPset", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 5, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1016,7 +1014,7 @@ data "fb_GfxPset", "", _
 '' fb_GfxPoint ( byref target as any, byval x as single, byval y as single ) as integer
 data "fb_GfxPoint", "", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 3, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1027,7 +1025,7 @@ data "fb_GfxPoint", "", _
 ''              byval style as uinteger = &hFFFF, byval coordType as integer = COORD_TYPE_AA ) as integer
 data "fb_GfxLine", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 9, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1045,7 +1043,7 @@ data "fb_GfxLine", "", _
 ''				   byval FillFlag as integer = 0, byval CoordType as integer = COORD_TYPE_A ) as integer
 data "fb_GfxEllipse", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 10, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1063,7 +1061,7 @@ data "fb_GfxEllipse", "", _
 ''				 byval mode as integer = PAINT_TYPE_FILL, byval coord_type as integer = COORD_TYPE_A ) as integer
 data "fb_GfxPaint", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 8, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1077,7 +1075,7 @@ data "fb_GfxPaint", "", _
 '' fb_GfxDraw ( byval target as any, cmd as string )
 data "fb_GfxDraw", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
@@ -1088,7 +1086,7 @@ data "fb_GfxDraw", "", _
 ''              byval screenFlag as integer = 0) as integer
 data "fb_GfxView", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 7, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
@@ -1102,7 +1100,7 @@ data "fb_GfxView", "", _
 '' 				 byval y2 as single = 0, byval screenflag as integer = 0 ) as integer
 data "fb_GfxWindow", "", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 5, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, TRUE,0, _
@@ -1114,7 +1112,7 @@ data "fb_GfxWindow", "", _
 ''				  byval g as integer = -1, byval b as integer = -1 ) as void
 data "fb_GfxPalette", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 4, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
@@ -1124,7 +1122,7 @@ data "fb_GfxPalette", "", _
 '' fb_GfxPaletteUsing ( array as integer ) as void
 data "fb_GfxPaletteUsing", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 
@@ -1132,7 +1130,7 @@ data "fb_GfxPaletteUsing", "", _
 ''			   byval coordType as integer, byval mode as integer )  as void
 data "fb_GfxPut", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 6, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1145,7 +1143,7 @@ data "fb_GfxPut", "", _
 ''			   byref array as any, byval coordType as integer, array() as any ) as integer
 data "fb_GfxGet", "", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 8, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
@@ -1160,7 +1158,7 @@ data "fb_GfxGet", "", _
 ''                byval fullscreenFlag as integer = 0 ) as integer
 data "fb_GfxScreen", "", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 5, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
@@ -1172,7 +1170,7 @@ data "fb_GfxScreen", "", _
 ''					 byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 )
 data "fb_GfxScreenRes", "", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 6, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
@@ -1181,18 +1179,18 @@ data "fb_GfxScreenRes", "", _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
-'' fb_GfxBload ( filename as string, byval dest as any ptr )
-data "fb_GfxBload", "", _
+'' fb_GfxBload ( filename as string, byval dest as any ptr = NULL ) as integer
+data "bload", "fb_GfxBload", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, TRUE, _
 	 2, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,0
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,NULL
 
-'' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer )
-data "fb_GfxBsave", "", _
+'' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer ) as integer
+data "bsave", "fb_GfxBsave", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, TRUE, _
 	 3, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
@@ -1233,7 +1231,7 @@ data "fb_ProfileEnd", "", _
 '' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void
 data "flip", "fb_GfxFlip", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
@@ -1241,14 +1239,14 @@ data "flip", "fb_GfxFlip", _
 '' pcopy ( byval frompage as integer, byval topage as integer ) as void
 data "pcopy", "fb_GfxFlip", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 data "screencopy", "fb_GfxFlip", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
@@ -1256,14 +1254,14 @@ data "screencopy", "fb_GfxFlip", _
 '' fb_GfxCursor ( number as integer) as single
 data "pointcoord", "fb_GfxCursor", _
 	 FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxPMap ( byval Coord as single, byval num as integer ) as single
 data "pmap", "fb_GfxPMap", _
 	 FB.SYMBTYPE.SINGLE,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
@@ -1271,7 +1269,7 @@ data "pmap", "fb_GfxPMap", _
 '' fb_GfxPaletteOut( byval port as integer, byval data as integer ) as void
 data "out", "fb_GfxPaletteOut", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
@@ -1279,14 +1277,14 @@ data "out", "fb_GfxPaletteOut", _
 '' fb_GfxPaletteInp( byval port as integer ) as integer
 data "inp", "fb_GfxPaletteInp", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxWaitVSync ( byval port as integer, byval and_mask as integer, byval xor_mask as integer = 0 )
 data "wait", "fb_GfxWaitVSync", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 3, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
@@ -1295,7 +1293,7 @@ data "wait", "fb_GfxWaitVSync", _
 '' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void
 data "screenset", "fb_GfxSetPage", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
@@ -1303,13 +1301,13 @@ data "screenset", "fb_GfxSetPage", _
 '' fb_GfxLock ( ) as void
 data "screenlock", "fb_GfxLock", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 0
 
 '' fb_GfxUnlock ( ) as void
 data "screenunlock", "fb_GfxUnlock", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
@@ -1317,27 +1315,27 @@ data "screenunlock", "fb_GfxUnlock", _
 '' fb_GfxScreenPtr ( ) as any ptr
 data "screenptr", "fb_GfxScreenPtr", _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 0
 
 '' fb_GfxSetWindowTitle ( title as string ) as void
 data "windowtitle", "fb_GfxSetWindowTitle", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxMultikey ( scancode as integer ) as integer
 data "multikey", "fb_GfxMultikey", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as void
 data "getmouse", "fb_GfxGetMouse", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 4, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
@@ -1347,7 +1345,7 @@ data "getmouse", "fb_GfxGetMouse", _
 '' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as void
 data "setmouse", "fb_GfxSetMouse", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 3, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
@@ -1356,19 +1354,11 @@ data "setmouse", "fb_GfxSetMouse", _
 '' fb_GfxScreenInfo ( ) as any ptr
 data "screeninfo", "fb_GfxScreenInfo", _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hGfxlib_cb, FALSE, _
 	 0
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
-data "threadcreate", "fb_ThreadCreate", _
-	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _			'' !!! NULL will be changed to @hThreadCreate_cb !!!
-	 2, _
-	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_FileFree ( ) as integer
 data "freefile", "fb_FileFree", _
@@ -1847,10 +1837,17 @@ data "setdate","fb_SetDate", _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
+'' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
+data "threadcreate", "fb_ThreadCreate", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hMultithread_cb, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 '' threadwait ( byval id as integer ) as void
 data "threadwait","fb_ThreadWait", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 NULL, FALSE, _
+	 @hMultithread_cb, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' mutexcreate ( ) as integer
@@ -2039,7 +2036,7 @@ private sub hAddIntrinsicProcs
 	dim as integer i, typ
 	dim as string pname, aname, optstr
 	dim as integer p, ptype, pmode, pargs
-	dim as integer a, atype, alen, amode, optional, ptrcnt, checkerror
+	dim as integer a, atype, alen, amode, optional, ptrcnt, errorcheck
 	dim as FBSYMBOL ptr proc, argtail, pcallback
 	dim as FBVALUE optval
 
@@ -2056,7 +2053,7 @@ private sub hAddIntrinsicProcs
 
 		read aname
 		read ptype, pmode
-		read pcallback, checkerror
+		read pcallback, errorcheck
 		read pargs
 
 		argtail = NULL
@@ -2091,13 +2088,16 @@ private sub hAddIntrinsicProcs
 
 		cntptr( ptype, typ, ptrcnt )
 
-		proc = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, 0, pmode, _
-							     pargs, argtail, TRUE )
+		proc = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, _
+								 0, pmode, pargs, argtail, TRUE )
 
 		ifuncTB(i) = proc
 
-		symbSetProcIsRTL( proc, TRUE )
-		symbSetProcCallback( proc, pcallback )
+		if( proc <> NULL ) then
+			symbSetProcIsRTL( proc, TRUE )
+			symbSetProcCallback( proc, pcallback )
+			symbSetProcErrorCheck( proc, errorcheck )
+		end if
 
 		i += 1
 	loop
@@ -2827,7 +2827,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     end if
 
     ''
-	rtlArrayRedim = rtlCheckError( proc, reslabel )
+	rtlArrayRedim = rtlErrorCheck( proc, reslabel )
 
 end function
 
@@ -4153,7 +4153,7 @@ function rtlConsoleReadXY ( byval rowexpr as integer, _
 end function
 
 '':::::
-private function hThreadCreate_cb( byval sym as FBSYMBOL ptr ) as integer
+private function hMultithread_cb( byval sym as FBSYMBOL ptr ) as integer
 
 	env.clopt.multithreaded = TRUE
 
@@ -4165,17 +4165,17 @@ end function
 '' error
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function rtlCheckError( byval resexpr as integer, _
+function rtlErrorCheck( byval resexpr as integer, _
 						byval reslabel as FBSYMBOL ptr ) as integer static
 	dim proc as integer, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr
 	dim param as integer, dst as integer
 
-	rtlCheckError = FALSE
+	rtlErrorCheck = FALSE
 
 	if( not env.clopt.errorcheck ) then
 		astFlush( resexpr )
-		rtlCheckError = TRUE
+		rtlErrorCheck = TRUE
 		exit function
 	end if
 
@@ -4224,7 +4224,7 @@ function rtlCheckError( byval resexpr as integer, _
 	'''''symbDelLabel nxtlabel
 	'''''symbDelLabel reslabel
 
-	rtlCheckError = TRUE
+	rtlErrorCheck = TRUE
 
 end function
 
@@ -4426,7 +4426,7 @@ function rtlFileOpen( byval filename as integer, _
     		reslabel = NULL
     	end if
 
-    	rtlFileOpen = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+    	rtlFileOpen = iif( rtlErrorCheck( proc, reslabel ), proc, INVALID )
 
     else
     	rtlFileOpen = proc
@@ -4460,7 +4460,7 @@ function rtlFileClose( byval filenum as integer, _
     		reslabel = NULL
     	end if
 
-    	rtlFileClose = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+    	rtlFileClose = iif( rtlErrorCheck( proc, reslabel ), proc, INVALID )
 
     else
     	rtlFileClose = proc
@@ -4499,7 +4499,7 @@ function rtlFileSeek( byval filenum as integer, _
     end if
 
     ''
-    rtlFileSeek = rtlCheckError( proc, reslabel )
+    rtlFileSeek = rtlErrorCheck( proc, reslabel )
 
 end function
 
@@ -4581,7 +4581,7 @@ function rtlFilePut( byval filenum as integer, _
     		reslabel = NULL
     	end if
 
-    	rtlFilePut = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+    	rtlFilePut = iif( rtlErrorCheck( proc, reslabel ), proc, INVALID )
 
     else
     	rtlFilePut = proc
@@ -4631,7 +4631,7 @@ function rtlFilePutArray( byval filenum as integer, _
 	    	reslabel = NULL
     	end if
 
-    	rtlFilePutArray = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+    	rtlFilePutArray = iif( rtlErrorCheck( proc, reslabel ), proc, INVALID )
 
     else
     	rtlFilePutArray = proc
@@ -4697,7 +4697,7 @@ function rtlFileGet( byval filenum as integer, _
     		reslabel = NULL
     	end if
 
-    	rtlFileGet = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+    	rtlFileGet = iif( rtlErrorCheck( proc, reslabel ), proc, INVALID )
 
     else
     	rtlFileGet = proc
@@ -4747,7 +4747,7 @@ function rtlFileGetArray( byval filenum as integer, _
     		reslabel = NULL
     	end if
 
-    	rtlFileGetArray = iif( rtlCheckError( proc, reslabel ), proc, INVALID )
+    	rtlFileGetArray = iif( rtlErrorCheck( proc, reslabel ), proc, INVALID )
 
     else
     	rtlFileGetArray = proc
@@ -4997,23 +4997,31 @@ end function
 '' gfx
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#ifdef AUTOADDGFXLIBS
-private sub hAddGfxLibs
-	symbAddLib( "fbgfx" )
+'':::::
+private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
+    static as integer libsAdded = FALSE
+
+	if( not libsadded ) then
+		libsAdded = TRUE
+
+		symbAddLib( "fbgfx" )
 #ifdef TARGET_WIN32
-	symbAddLib( "user32" )
-	symbAddLib( "gdi32" )
+		symbAddLib( "user32" )
+		symbAddLib( "gdi32" )
 #elseif defined(TARGET_LINUX)
-	fbAddLibPath( "/usr/X11R6/lib" )
-	symbAddLib( "X11" )
-	symbAddLib( "Xext" )
-	symbAddLib( "Xpm" )
-	symbAddLib( "Xrandr" )
-	symbAddLib( "Xrender" )
-	symbAddLib( "pthread" )
+		fbAddLibPath( "/usr/X11R6/lib" )
+		symbAddLib( "X11" )
+		symbAddLib( "Xext" )
+		symbAddLib( "Xpm" )
+		symbAddLib( "Xrandr" )
+		symbAddLib( "Xrender" )
+		symbAddLib( "pthread" )
 #endif
-end sub
-#endif
+
+	end if
+
+	return TRUE
+end function
 
 '':::::
 function rtlGfxPset( byval target as integer, _
@@ -5067,11 +5075,6 @@ function rtlGfxPset( byval target as integer, _
 
  	''
  	astFlush( proc )
-
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
 
 	rtlGfxPset = TRUE
 
@@ -5203,11 +5206,6 @@ function rtlGfxLine( byval target as integer, _
  	''
  	astFlush( proc )
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
 	rtlGfxLine = TRUE
 
 end function
@@ -5305,11 +5303,6 @@ function rtlGfxCircle( byval target as integer, _
  	''
  	astFlush( proc )
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
 	rtlGfxCircle = TRUE
 
 end function
@@ -5401,11 +5394,6 @@ function rtlGfxPaint( byval target as integer, _
  	''
  	astFlush( proc )
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
 	rtlGfxPaint = TRUE
 
 end function
@@ -5444,11 +5432,6 @@ function rtlGfxDraw( byval target as integer, _
 
  	''
  	astFlush( proc )
-
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
 
 	rtlGfxDraw = TRUE
 
@@ -5526,11 +5509,6 @@ function rtlGfxView( byval x1expr as integer, _
  	''
  	astFlush( proc )
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
 	rtlGfxView = TRUE
 
 end function
@@ -5589,11 +5567,6 @@ function rtlGfxWindow( byval x1expr as integer, _
  	''
  	astFlush( proc )
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
 	rtlGfxWindow = TRUE
 
 end function
@@ -5645,11 +5618,6 @@ function rtlGfxPalette ( byval attexpr as integer, _
  	''
  	astFlush( proc )
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
 	rtlGfxPalette = TRUE
 
 end function
@@ -5670,11 +5638,6 @@ function rtlGfxPaletteUsing ( byval arrayexpr as integer ) as integer
 
  	''
  	astFlush( proc )
-
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
 
 	rtlGfxPaletteUsing = TRUE
 
@@ -5745,11 +5708,6 @@ function rtlGfxPut( byval target as integer, _
 
  	''
  	astFlush( proc )
-
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
 
 	rtlGfxPut = TRUE
 
@@ -5845,12 +5803,7 @@ function rtlGfxGet( byval target as integer, _
     	reslabel = NULL
     end if
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
-	rtlGfxGet = rtlCheckError( proc, reslabel )
+	rtlGfxGet = rtlErrorCheck( proc, reslabel )
 
 end function
 
@@ -5920,100 +5873,7 @@ function rtlGfxScreenSet( byval wexpr as integer, _
     	reslabel = NULL
     end if
 
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
-	rtlGfxScreenSet = rtlCheckError( proc, reslabel )
-
-end function
-
-'':::::
-function rtlGfxBload( byval filename as integer, _
-					  byval dexpr as integer ) as integer
-    dim proc as integer, f as FBSYMBOL ptr
-    dim reslabel as FBSYMBOL ptr
-
-    rtlGfxBload = FALSE
-
-	''
-	f = ifuncTB(FB.RTL.GFXBLOAD)
-    proc = astNewFUNCT( f, symbGetType( f ) )
-
-    '' filename as string
-    if( astNewPARAM( proc, filename, INVALID ) = INVALID ) then
- 		exit function
- 	end if
-
-    '' byval dexpr as integer
-    if( dexpr = INVALID ) then
-    	dexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
-    end if
-    if( astNewPARAM( proc, dexpr, INVALID ) = INVALID ) then
- 		exit function
- 	end if
-
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
-
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
-    ''
-	rtlGfxBload = rtlCheckError( proc, reslabel )
-
-end function
-
-'':::::
-function rtlGfxBsave( byval filename as integer, _
-					  byval sexpr as integer, _
-					  byval lexpr as integer ) as integer
-    dim proc as integer, f as FBSYMBOL ptr
-    dim reslabel as FBSYMBOL ptr
-
-	rtlGfxBsave = FALSE
-
-	''
-	f = ifuncTB(FB.RTL.GFXBSAVE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
-
-    '' filename as string
-    if( astNewPARAM( proc, filename, INVALID ) = INVALID ) then
- 		exit function
- 	end if
-
-    '' byval sexpr as integer
-    if( astNewPARAM( proc, sexpr, INVALID ) = INVALID ) then
- 		exit function
- 	end if
-
-    '' byval lexpr as integer
-    if( astNewPARAM( proc, lexpr, INVALID ) = INVALID ) then
- 		exit function
- 	end if
-
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
-    	irEmitLABEL reslabel, FALSE
-    else
-    	reslabel = NULL
-    end if
-
- 	''
-#ifdef AUTOADDGFXLIBS
- 	hAddGfxLibs
-#endif
-
-	rtlGfxBsave = rtlCheckError( proc, reslabel )
+	rtlGfxScreenSet = rtlErrorCheck( proc, reslabel )
 
 end function
 

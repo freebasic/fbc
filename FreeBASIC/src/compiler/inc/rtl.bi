@@ -412,6 +412,9 @@ declare function	rtlFileLock			( byval islock as integer, _
 										  byval iniexpr as integer, _
 										  byval endexpr as integer ) as integer
 
+declare function	rtlErrorCheck		( byval resexpr as integer, _
+										  byval reslabel as FBSYMBOL ptr ) as integer
+
 declare sub 		rtlErrorThrow		( byval errexpr as integer )
 
 declare sub 		rtlErrorSetHandler	( byval newhandler as integer, _

@@ -60,40 +60,34 @@ declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM,
 
 declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer
 
-declare function	hDefFile		( ) as string
-declare function	hDefFunction	( ) as string
-declare function	hDefLine		( ) as string
-declare function	hDefDate		( ) as string
-declare function	hDefTime		( ) as string
+type DEFCALLBACK as function() as string
+
+declare function	hDefFile_cb		( ) as string
+declare function	hDefFunction_cb	( ) as string
+declare function	hDefLine_cb		( ) as string
+declare function	hDefDate_cb		( ) as string
+declare function	hDefTime_cb		( ) as string
 
 
 ''globals
 	dim shared ctx as SYMBCTX
 
-#define PROC_NONE			0
-#define PROC_FILE			1
-#define PROC_FUNCTION		2
-#define PROC_LINE			3
-#define PROC_DATE			4
-#define PROC_TIME			5
-
-
 '' predefined #defines: name, value, proc
 definesdata:
-data "__FB_VERSION__",			FB.VERSION,		PROC_NONE
-data "__FB_SIGNATURE__",		FB.SIGN,		PROC_NONE
+data "__FB_VERSION__",			FB.VERSION,		NULL
+data "__FB_SIGNATURE__",		FB.SIGN,		NULL
 #ifdef TARGET_WIN32
-data "__FB_WIN32__",			"",				PROC_NONE
+data "__FB_WIN32__",			"",				NULL
 #elseif defined(TARGET_LINUX)
-data "__FB_LINUX__",			"",				PROC_NONE
+data "__FB_LINUX__",			"",				NULL
 #elseif defined(TARGET_DOS)
-data "__FB_DOS__",			    "",				PROC_NONE
+data "__FB_DOS__",			    "",				NULL
 #endif
-data "__FILE__",				"",				PROC_FILE
-data "__FUNCTION__",			"",				PROC_FUNCTION
-data "__LINE__",				"",				PROC_LINE
-data "__DATE__",				"",				PROC_DATE
-data "__TIME__",				"",				PROC_TIME
+data "__FILE__",				"",				@hDefFile_cb
+data "__FUNCTION__",			"",				@hDefFunction_cb
+data "__LINE__",				"",				@hDefLine_cb
+data "__DATE__",				"",				@hDefDate_cb
+data "__TIME__",				"",				@hDefTime_cb
 data ""
 
 
@@ -269,8 +263,6 @@ data "WITH"		, FB.TK.WITH		, FB.TKCLASS.KEYWORD
 data "EXPORT"	, FB.TK.EXPORT		, FB.TKCLASS.KEYWORD
 data "IMPORT"	, FB.TK.IMPORT		, FB.TKCLASS.KEYWORD
 data "LIBPATH"	, FB.TK.LIBPATH		, FB.TKCLASS.KEYWORD
-data "BLOAD"	, FB.TK.BLOAD		, FB.TKCLASS.KEYWORD
-data "BSAVE"	, FB.TK.BSAVE		, FB.TKCLASS.KEYWORD
 data "CHR"		, FB.TK.CHR			, FB.TKCLASS.KEYWORD
 data "ASC"		, FB.TK.ASC			, FB.TKCLASS.KEYWORD
 data "LSET"		, FB.TK.LSET		, FB.TKCLASS.KEYWORD
@@ -330,7 +322,8 @@ end sub
 
 '':::::
 sub symbInitDefines static
-	dim def as string, value as string, proc_id as integer, proc as function() as string
+	dim as string def, value
+	dim as DEFCALLBACK proc
 
     listNew( @ctx.defarglist, FB.INITDEFARGNODES, len( FBDEFARG ) )
 
@@ -340,25 +333,13 @@ sub symbInitDefines static
     	if( len( def ) = 0 ) then
     		exit do
     	end if
+
     	read value
     	if( value <> "" ) then
     		value = "\"" + value + "\""
     	end if
-    	read proc_id
-    	select case as const proc_id
-    	case PROC_NONE
-    		proc = NULL
-    	case PROC_FILE
-    		proc = @hDefFile
-    	case PROC_FUNCTION
-    		proc = @hDefFunction
-    	case PROC_LINE
-    		proc = @hDefLine
-    	case PROC_DATE
-    		proc = @hDefDate
-    	case PROC_TIME
-    		proc = @hDefTime
-    	end select
+    	read proc
+
     	symbAddDefine( def, value, 0, NULL, FALSE, proc )
     loop
 
@@ -366,8 +347,8 @@ end sub
 
 '':::::
 sub symbInitKeywords static
-	dim kname as string
-	dim id as integer, class as integer
+	dim as string kname
+	dim as integer id, class
 
 	restore keyworddata
 	do
@@ -460,32 +441,32 @@ sub symbEnd
 end sub
 
 '':::::
-function hDefFile( ) as string static
-	hDefFile = env.infile
+function hDefFile_cb( ) as string static
+	hDefFile_cb = env.infile
 end function
 
 '':::::
-function hDefFunction( ) as string static
+function hDefFunction_cb( ) as string static
 	if( env.currproc = NULL ) then
-		hDefFunction = "(main)"
+		hDefFunction_cb = "(main)"
 	else
-		hDefFunction = symbGetName( env.currproc )
+		hDefFunction_cb = symbGetName( env.currproc )
 	end if
 end function
 
 '':::::
-function hDefLine( ) as string static
-	hDefLine = ltrim$( str$( lexLineNum ) )
+function hDefLine_cb( ) as string static
+	hDefLine_cb = ltrim$( str$( lexLineNum ) )
 end function
 
 '':::::
-function hDefDate( ) as string static
-	hDefDate = date$
+function hDefDate_cb( ) as string static
+	hDefDate_cb = date$
 end function
 
 '':::::
-function hDefTime( ) as string static
-	hDefTime = time$
+function hDefTime_cb( ) as string static
+	hDefTime_cb = time$
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1951,6 +1932,7 @@ private function hSetupProc( byval symbol as string, _
 
 	f->proc.isrtl		= FALSE
 	f->proc.rtlcallback = NULL
+	f->proc.errorcheck	= FALSE
 
 	if( len( libname ) > 0 ) then
 		f->proc.lib 	= symbAddLib( libname )
