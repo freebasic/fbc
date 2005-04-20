@@ -4176,7 +4176,6 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 		if( callback <> NULL ) then
 			callback( sym )
 		end if
-
 	else
 		astTB(n).proc.arg	= NULL
 		astTB(n).proc.isrtl = FALSE
@@ -4194,7 +4193,6 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 			astTB(n).proc.profend   = rtlProfileEndCall( )
 		end if
 	end if
-
 
 end function
 

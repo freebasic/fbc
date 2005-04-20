@@ -58,12 +58,15 @@ end type
 
 type FUNCTNode
 	sym				as FBSYMBOL ptr					'' symbol
+	isrtl			as integer
+
 	params			as integer
 	arg				as FBSYMBOL ptr
 	lastparam		as integer						'' used to speed up PASCAL calling conv. only
-	isrtl			as integer
+
 	arraytail 		as ASTTEMPARRAY ptr
 	strtail 		as ASTTEMPSTR ptr
+
 	profstart		as integer
 	profend			as integer
 end type

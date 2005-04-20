@@ -55,8 +55,9 @@ const FBGFX_PUTMODE_ALPHA  = 6
 
 
 '':::::
-private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, byval arrayexpr as integer ) as integer
-    dim idxexpr as integer
+private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
+								  byval arrayexpr as integer ) as integer
+    dim as integer idxexpr
 
     ''  argument passed by descriptor?
     if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
@@ -84,8 +85,10 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, byval arrayexpr as 
 end function
 
 '':::::
-private function hGetTarget( targetexpr as integer, isptr as integer, byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
-	dim s as FBSYMBOL ptr
+private function hGetTarget( targetexpr as integer, _
+							 isptr as integer, _
+							 byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr s
 
 	hGetTarget = NULL
 
@@ -129,19 +132,16 @@ end function
 '' GfxPset     =   PSET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' (',' Expr )?
 ''
 function cGfxPset as integer
-    dim coordtype as integer
-    dim xexpr as integer, yexpr as integer, cexpr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+    dim as integer coordtype, tisptr
+    dim as integer xexpr, yexpr, cexpr, texpr
+    dim as FBSYMBOL ptr target
 
 	cGfxPset = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( target ) then
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 	end if
 
 	'' STEP?
@@ -152,37 +152,19 @@ function cGfxPset as integer
 	end if
 
 	'' '(' Expr ',' Expr ')'
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( xexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( xexpr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( yexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( yexpr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( cexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( cexpr )
 	else
 		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
@@ -196,20 +178,16 @@ end function
 '' LINE ( Expr ',' )? STEP? ('(' Expr ',' Expr ')')? '-' STEP? '(' Expr ',' Expr ')' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 ''
 function cGfxLine as integer
-    dim coordtype as integer, linetype as integer, styleexpr as integer
-    dim x1expr as integer, y1expr as integer, x2expr as integer, y2expr as integer
-    dim cexpr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+    dim as integer coordtype, linetype, tisptr
+    dim as integer styleexpr, x1expr, y1expr, x2expr, y2expr, cexpr, texpr
+    dim as FBSYMBOL ptr target
 
 	cGfxLine = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( target ) then
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 	end if
 
 	'' STEP?
@@ -222,25 +200,13 @@ function cGfxLine as integer
 	'' ('(' Expr ',' Expr ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
 
-		if( not cExpression( x1expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( x1expr )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( y1expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( y1expr )
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 	else
 		coordtype = FBGFX_COORDTYPE_R
@@ -270,30 +236,15 @@ function cGfxLine as integer
 	end if
 
 	'' '(' Expr ',' Expr ')'
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( x2expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( x2expr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( y2expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( y2expr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	linetype = FBGFX_LINETYPE_LINE
 	styleexpr = INVALID
@@ -317,10 +268,7 @@ function cGfxLine as integer
 
 			''  (',' Expr )? - style
 			if( hMatch( CHAR_COMMA ) ) then
-				if( not cExpression( styleexpr ) ) then
-					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-					exit function
-				end if
+				hMatchExpression( styleexpr )
 			end if
 		end if
 	else
@@ -328,7 +276,8 @@ function cGfxLine as integer
 	end if
 
 	''
-	cGfxLine = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, cexpr, linetype, styleexpr, coordtype )
+	cGfxLine = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
+						   cexpr, linetype, styleexpr, coordtype )
 
 end function
 
@@ -336,20 +285,16 @@ end function
 '' GfxCircle     =   CIRCLE ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Expr ((',' Expr? (',' Expr? (',' Expr? (',' Expr (',' Expr)? )? )?)?)?)?
 ''
 function cGfxCircle as integer
-    dim coordtype as integer, fillflag as integer
-    dim xexpr as integer, yexpr as integer, cexpr as integer
-    dim radexpr as integer, iniexpr as integer, endexpr as integer, aspexpr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+    dim as integer coordtype, fillflag, tisptr
+    dim as integer xexpr, yexpr, cexpr, radexpr, iniexpr, endexpr, aspexpr, texpr
+    dim as FBSYMBOL ptr target
 
 	cGfxCircle = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( target ) then
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 	end if
 
 	'' STEP?
@@ -360,41 +305,20 @@ function cGfxCircle as integer
 	end if
 
 	'' '(' Expr ',' Expr ')'
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( xexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( xexpr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( yexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( yexpr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' ',' Expr - radius
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( radexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( radexpr )
 
 	aspexpr = INVALID
 	iniexpr = INVALID
@@ -443,7 +367,8 @@ function cGfxCircle as integer
 	end if
 
 	''
-	cGfxCircle = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, aspexpr, iniexpr, endexpr, fillflag, coordtype )
+	cGfxCircle = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, _
+							   aspexpr, iniexpr, endexpr, fillflag, coordtype )
 
 end function
 
@@ -451,19 +376,16 @@ end function
 '' GfxPaint   =   PAINT ( Expr ',' )? STEP? '(' expr ',' expr ')' (',' expr? (',' expr? ) )
 ''
 function cGfxPaint as integer
-    dim xexpr as integer, yexpr as integer, pexpr as integer, bexpr as integer
-	dim coord_type as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+    dim as integer xexpr, yexpr, pexpr, bexpr, texpr
+	dim as integer coord_type, tisptr
+    dim as FBSYMBOL ptr target
 
 	cGfxPaint = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( target ) then
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 	end if
 
 	'' STEP?
@@ -474,30 +396,15 @@ function cGfxPaint as integer
 	end if
 
 	'' '(' Expr ',' Expr ')' - x and y
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( xexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( xexpr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( yexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( yexpr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	pexpr = INVALID
 	bexpr = INVALID
@@ -510,10 +417,7 @@ function cGfxPaint as integer
 
 		'' background color
 		if( hMatch( CHAR_COMMA ) ) then
-			if( not cExpression( bexpr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( bexpr )
 		end if
 	end if
 
@@ -533,15 +437,13 @@ end function
 '' GfxDraw    =   DRAW ( Expr ',' )? Expr
 ''
 function cGfxDraw as integer
-	dim cexpr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+	dim as integer cexpr, texpr
+    dim as integer tisptr
+    dim as FBSYMBOL ptr target
 
 	cGfxDraw = FALSE
 
-	if( not cExpression( texpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( texpr )
 
 	if( hMatch( CHAR_COMMA ) ) then
 		target = hGetTarget( texpr, tisptr, FALSE )
@@ -549,10 +451,7 @@ function cGfxDraw as integer
 			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 			exit function
 		end if
-		if( not cExpression( cexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( cexpr )
 	else
 		cexpr = texpr
 		texpr = INVALID
@@ -566,9 +465,8 @@ end function
 '' GfxView    =   VIEW (SCREEN? '(' Expr ',' Expr ')' '-' '(' Expr ',' Expr ')' (',' Expr? (',' Expr)?)? )?
 ''
 function cGfxView( byval isview as integer ) as integer
-    dim screenflag as integer
-    dim x1expr as integer, y1expr as integer, x2expr as integer, y2expr as integer
-    dim fillexpr as integer, bordexpr as integer
+    dim as integer screenflag
+    dim as integer x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr
 
 	cGfxView = FALSE
 
@@ -590,25 +488,13 @@ function cGfxView( byval isview as integer ) as integer
 
 	if( hMatch( CHAR_LPRNT ) ) then
 		'' '(' Expr ',' Expr ')' - x1 and y1
-		if( not cExpression( x1expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( x1expr )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( y1expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( y1expr )
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		'' '-'
 		if( not hMatch( CHAR_MINUS ) ) then
@@ -617,30 +503,15 @@ function cGfxView( byval isview as integer ) as integer
 		end if
 
 		'' '(' Expr ',' Expr ')' - x2 and y2
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
-		if( not cExpression( x2expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( x2expr )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( y2expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( y2expr )
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		if( isview ) then
 			'' (',' Expr? )? - color
@@ -651,10 +522,7 @@ function cGfxView( byval isview as integer ) as integer
 
         		'' (',' Expr? )? - border
         		if( hMatch( CHAR_COMMA ) ) then
-					if( not cExpression( bordexpr ) ) then
-						hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-						exit function
-					end if
+					hMatchExpression( bordexpr )
         		end if
         	end if
         end if
@@ -674,8 +542,8 @@ end function
 '' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr (',' Expr ',' Expr)?)?)
 ''
 function cGfxPalette as integer
-    dim arrayexpr as integer, s as FBSYMBOL ptr
-    dim attexpr as integer, rexpr as integer, gexpr as integer, bexpr as integer
+    dim as integer arrayexpr, attexpr, rexpr, gexpr, bexpr
+    dim as FBSYMBOL ptr s
 
 	cGfxPalette = FALSE
 
@@ -711,31 +579,16 @@ function cGfxPalette as integer
 		bexpr = INVALID
 
 		if( cExpression( attexpr ) ) then
-			if( not hMatch( CHAR_COMMA ) ) then
-				hReportError FB.ERRMSG.EXPECTEDCOMMA
-				exit function
-			end if
+			hMatchCOMMA( )
 
-			if( not cExpression( rexpr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( rexpr )
 
 			if( hMatch( CHAR_COMMA ) ) then
-				if( not cExpression( gexpr ) ) then
-					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-					exit function
-				end if
+				hMatchExpression( gexpr )
 
-				if( not hMatch( CHAR_COMMA ) ) then
-					hReportError FB.ERRMSG.EXPECTEDCOMMA
-					exit function
-				end if
+				hMatchCOMMA( )
 
-				if( not cExpression( bexpr ) ) then
-					hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-					exit function
-				end if
+				hMatchExpression( bexpr )
 			end if
 		end if
 
@@ -749,21 +602,16 @@ end function
 '' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode)?
 ''
 function cGfxPut as integer
-    dim coordtype as integer, mode as integer
-    dim xexpr as integer, yexpr as integer
-    dim arrayexpr as integer, s as FBSYMBOL ptr
-    dim isptr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+    dim as integer coordtype, mode, isptr, tisptr
+    dim as integer xexpr, yexpr, arrayexpr, texpr
+    dim as FBSYMBOL ptr s, target
 
 	cGfxPut = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( target ) then
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 	end if
 
 	'' STEP?
@@ -774,36 +622,18 @@ function cGfxPut as integer
 	end if
 
 	'' '(' Expr ',' Expr ')'
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( xexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( xexpr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( yexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( yexpr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' ',' Variable
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	s = hGetTarget( arrayexpr, isptr )
 	if( s = NULL ) then
@@ -859,21 +689,16 @@ end function
 '' GfxGet   =   GET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' '-' STEP? '(' Expr ',' Expr ')' ',' Variable
 ''
 function cGfxGet as integer
-    dim coordtype as integer
-    dim x1expr as integer, y1expr as integer, x2expr as integer, y2expr as integer
-    dim arrayexpr as integer, s as FBSYMBOL ptr
-    dim isptr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+    dim as integer coordtype, isptr, tisptr
+    dim as integer x1expr, y1expr, x2expr, y2expr, arrayexpr, texpr
+    dim as FBSYMBOL ptr s, target
 
 	cGfxGet = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( target ) then
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 	end if
 
 	'' STEP?
@@ -884,30 +709,15 @@ function cGfxGet as integer
 	end if
 
 	'' '(' Expr ',' Expr ')' - x1 and y1
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( x1expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( x1expr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( y1expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( y1expr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' '-'
 	if( not hMatch( CHAR_MINUS ) ) then
@@ -931,36 +741,18 @@ function cGfxGet as integer
 	end if
 
 	'' '(' Expr ',' Expr ')' - x2 and y2
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( x2expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( x2expr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( y2expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( y2expr )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' ',' Variable
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	s = hGetTarget( arrayexpr, isptr )
 	if( s = NULL ) then
@@ -969,7 +761,8 @@ function cGfxGet as integer
 	end if
 
     ''
-	cGfxGet = rtlGfxGet( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, arrayexpr, isptr, s, coordtype )
+	cGfxGet = rtlGfxGet( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
+						 arrayexpr, isptr, s, coordtype )
 
 end function
 
@@ -977,14 +770,11 @@ end function
 '' GfxScreen     =   SCREEN (num | ((expr (((',' expr)? ',' expr)? expr)? ',' expr))
 ''
 function cGfxScreen as integer
-    dim mexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer, rexpr
+    dim as integer mexpr, dexpr, pexpr, fexpr, rexpr
 
 	cGfxScreen = FALSE
 
-	if( not cExpression( mexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( mexpr )
 
 	dexpr = INVALID
 	pexpr = INVALID
@@ -1028,24 +818,15 @@ end function
 '' GfxScreenRes     =   SCREENRES expr ',' expr (((',' expr)? ',' expr)? ',' expr)?
 ''
 function cGfxScreenRes as integer
-    dim wexpr as integer, hexpr as integer, dexpr as integer, pexpr as integer, fexpr as integer, rexpr as integer
+    dim as integer wexpr, hexpr, dexpr, pexpr, fexpr, rexpr
 
 	cGfxScreenRes = FALSE
 
-	if( not cExpression( wexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( wexpr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( hexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( hexpr )
 
 	dexpr = INVALID
 	pexpr = INVALID
@@ -1082,75 +863,6 @@ function cGfxScreenRes as integer
 
 	''
 	cGfxScreenRes = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr, rexpr )
-
-end function
-
-'':::::
-'' GfxBload   =   BLOAD str (',' expr)?
-''
-function cGfxBload as integer
-	dim fexpr as integer, dexpr as integer
-
-	cGfxBload = FALSE
-
-	if( not cExpression( fexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-
-	dexpr = INVALID
-	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( dexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-	end if
-
-	''
-	cGfxBload = rtlGfxBload( fexpr, dexpr )
-
-end function
-
-'':::::
-'' GfxBsave   =   BSAVE str ',' expr ',' expr
-''
-function cGfxBsave as integer
-	dim fexpr as integer, sexpr as integer, lexpr as integer
-
-	cGfxBsave = FALSE
-
-	'' str
-	if( not cExpression( fexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-
-	'' ','
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
-
-	'' expr
-	if( not cExpression( sexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-
-	'' ','
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
-
-	'' expr
-	if( not cExpression( lexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-
-	''
-	cGfxBsave = rtlGfxBsave( fexpr, sexpr, lexpr )
 
 end function
 
@@ -1208,14 +920,6 @@ function cGfxStmt as integer
 		lexSkipToken
 		cGfxStmt = cGfxScreenRes
 
-	case FB.TK.BLOAD
-		lexSkipToken
-		cGfxStmt = cGfxBload
-
-	case FB.TK.BSAVE
-		lexSkipToken
-		cGfxStmt = cGfxBsave
-
 	end select
 
 end function
@@ -1224,29 +928,21 @@ end function
 '' GfxPoint    =   POINT '(' Expr ( ',' ( Expr )? ( ',' Expr )? )? ')'
 ''
 function cGfxPoint( funcexpr as integer ) as integer
-	dim xexpr as integer, yexpr as integer
-    dim texpr as integer, tisptr as integer, target as FBSYMBOL ptr
+	dim as integer xexpr, yexpr, texpr
+    dim as integer tisptr
+    dim as FBSYMBOL ptr target
 
 	cGfxPoint = FALSE
 
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( xexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( xexpr )
 
 	yexpr = INVALID
 	texpr = INVALID
 
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( yexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( yexpr )
 
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
@@ -1257,10 +953,7 @@ function cGfxPoint( funcexpr as integer ) as integer
 		end if
 	end if
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	funcexpr = rtlGfxPoint( texpr, tisptr, xexpr, yexpr )
 
@@ -1273,42 +966,24 @@ end function
 '' ConsoleReadXY   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
 function cConsoleReadXY( funcexpr as integer ) as integer
-    dim yexpr as integer, xexpr as integer, fexpr as integer
+    dim as integer yexpr, xexpr, fexpr
 
 	cConsoleReadXY = FALSE
 
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( yexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( yexpr )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( xexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( xexpr )
 
 	fexpr = INVALID
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( fexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( fexpr )
 	end if
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
 

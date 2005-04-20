@@ -33,9 +33,10 @@ defint a-z
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
 
+
 '':::::
 function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
-    dim expr as integer
+    dim as integer expr
 
     cFuncReturn = FALSE
 
@@ -45,10 +46,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
 	end if
 
 	if( checkexpr ) then
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr )
 
 		if( not hAssignFunctResult( env.currproc, expr ) ) then
 			exit function
@@ -68,9 +66,9 @@ end function
 ''				  |	  RETURN LABEL?
 ''				  |   RESUME NEXT? .
 ''
-function cGotoStmt
-	dim l as FBSYMBOL ptr
-	dim isglobal as integer, isnext as integer
+function cGotoStmt as integer
+	dim as FBSYMBOL ptr l
+	dim as integer isglobal, isnext
 
 	cGotoStmt = FALSE
 
@@ -195,9 +193,9 @@ end function
 ''ArrayStmt   	  =   ERASE ID (',' ID)*;
 ''				  |   SWAP Variable, Variable .
 ''
-function cArrayStmt
-	dim s as FBSYMBOL ptr
-	dim expr1 as integer, expr2 as integer
+function cArrayStmt as integer
+	dim as FBSYMBOL ptr s
+	dim as integer expr1, expr2
 
 	cArrayStmt = FALSE
 
@@ -242,10 +240,7 @@ function cArrayStmt
 			exit function
 		end if
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
 		if( not cVarOrDeref( expr2 ) ) then
 			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
@@ -266,56 +261,35 @@ end function
 '':::::
 ''MidStmt   	  =   MID '(' Expression{str}, Expression{int} (',' Expression{int}) ')' '=' Expression{str} .
 ''
-function cMidStmt
-	dim expr1 as integer, expr2 as integer, expr3 as integer, expr4 as integer
+function cMidStmt as integer
+	dim as integer expr1, expr2, expr3, expr4
 
 	cMidStmt = FALSE
 
 	if( hMatch( FB.TK.MID ) ) then
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT()
 
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr1 )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr2 )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			if( not cExpression( expr3 ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( expr3 )
 		else
 			expr3 = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
 		end if
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		if( not hMatch( FB.TK.ASSIGN ) ) then
 			hReportError FB.ERRMSG.EXPECTEDEQ
 			exit function
 		end if
 
-		if( not cExpression( expr4 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr4 )
 
 		cMidStmt = rtlStrAssignMid( expr1, expr2, expr3, expr4 ) <> INVALID
 	end if
@@ -323,7 +297,7 @@ function cMidStmt
 end function
 
 '':::::
-'' LsetStmt		=	LSET String|UDT ',' String|UDT
+'' LsetStmt		=	LSET String|UDT ',' Expression|UDT
 function cLSetStmt( ) as integer
     dim as integer dstexpr, srcexpr
     dim as integer dtype1, dtype2
@@ -349,16 +323,10 @@ function cLSetStmt( ) as integer
 	end select
 
 	'' ','
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	'' Expression
-	if( not cVarOrDeref( srcexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
-		exit function
-	end if
+	hMatchExpression( srcexpr )
 
 	dtype2 = astGetDataType( srcexpr )
 	select case dtype2
@@ -395,10 +363,11 @@ end function
 ''				  |   READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 ''				  |   DATA literal|constant (',' literal|constant)*
 ''
-function cDataStmt
-	dim expr as integer, typ as integer
-	dim s as FBSYMBOL ptr
-	dim littext as string, litlen as integer
+function cDataStmt as integer
+	dim as integer expr
+	dim as integer typ, litlen
+	dim as FBSYMBOL ptr s
+	dim as string littext
 
 	cDataStmt = FALSE
 
@@ -433,10 +402,7 @@ function cDataStmt
             	exit function
             end if
 
-			if( not hMatch( CHAR_COMMA ) ) then
-				exit do
-			end if
-		loop
+		loop while( hMatch( CHAR_COMMA ) )
 
 		cDataStmt = TRUE
 
@@ -457,10 +423,7 @@ function cDataStmt
 			littext = ""
 			typ = INVALID
 
-			if( not cExpression( expr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			    exit function
-			end if
+			hMatchExpression( expr )
 
 			'' check if it's an string
 			s = NULL
@@ -524,10 +487,7 @@ function cDataStmt
 
 		    end if
 
-			if( not hMatch( CHAR_COMMA ) ) then
-				exit do
-			end if
-		loop
+		loop while( hMatch( CHAR_COMMA ) )
 
 		rtlDataStoreEnd
 
@@ -540,10 +500,9 @@ end function
 '':::::
 '' PrintStmt	  =   (PRINT|'?') ('#' Expression ',')? (USING Expression{str} ';')? (Expression? ';'|"," )*
 ''
-function cPrintStmt
-    dim usingexpr as integer, filexpr as integer, filexprcopy as integer, expr as integer
-    dim issemicolon as integer, iscomma as integer, istab as integer, isspc as integer
-    dim expressions as integer
+function cPrintStmt as integer
+    dim as integer usingexpr, filexpr, filexprcopy, expr
+    dim as integer expressions, issemicolon, iscomma, istab, isspc
 
 	cPrintStmt = FALSE
 
@@ -556,15 +515,9 @@ function cPrintStmt
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
-		if( not cExpression( filexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( filexpr )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
     else
     	filexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
@@ -573,10 +526,7 @@ function cPrintStmt
 	'' (USING Expression{str} ';')?
 	usingexpr = INVALID
 	if( hMatch( FB.TK.USING ) ) then
-		if( not cExpression( usingexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( usingexpr )
 
 		if( not hMatch( CHAR_SEMICOLON ) ) then
 			hReportError FB.ERRMSG.EXPECTEDSEMICOLON
@@ -596,37 +546,19 @@ function cPrintStmt
         istab = FALSE
         if( hMatch( FB.TK.SPC ) ) then
         	isspc = TRUE
-			if( not hMatch( CHAR_LPRNT ) ) then
-				hReportError FB.ERRMSG.EXPECTEDLPRNT
-				exit function
-			end if
+			hMatchLPRNT( )
 
-			if( not cExpression( expr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( expr )
 
-			if( not hMatch( CHAR_RPRNT ) ) then
-				hReportError FB.ERRMSG.EXPECTEDRPRNT
-				exit function
-			end if
+			hMatchRPRNT( )
 
         elseif( hMatch( FB.TK.TAB ) ) then
             istab = TRUE
-			if( not hMatch( CHAR_LPRNT ) ) then
-				hReportError FB.ERRMSG.EXPECTEDLPRNT
-				exit function
-			end if
+			hMatchLPRNT( )
 
-			if( not cExpression( expr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( expr )
 
-			if( not hMatch( CHAR_RPRNT ) ) then
-				hReportError FB.ERRMSG.EXPECTEDRPRNT
-				exit function
-			end if
+			hMatchRPRNT( )
 
         elseif( not cExpression( expr ) ) then
         	expr = INVALID
@@ -695,9 +627,9 @@ end function
 '':::::
 '' WriteStmt	  =   WRITE ('#' Expression)? (Expression? "," )*
 ''
-function cWriteStmt
-    dim filexpr as integer, filexprcopy as integer, expr as integer
-    dim expressions as integer, iscomma as integer
+function cWriteStmt as integer
+    dim as integer filexpr, filexprcopy, expr
+    dim as integer expressions, iscomma
 
 	cWriteStmt = FALSE
 
@@ -708,15 +640,9 @@ function cWriteStmt
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
-		if( not cExpression( filexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( filexpr )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
     else
     	filexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
@@ -763,9 +689,9 @@ end function
 '':::::
 '' LineInputStmt	  =   LINE INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? .
 ''
-function cLineInputStmt
-    dim expr as integer, dstexpr as integer
-    dim isfile as integer, addnewline as integer, issep as integer
+function cLineInputStmt as integer
+    dim as integer expr, dstexpr
+    dim as integer isfile, addnewline, issep
 
 	cLineInputStmt = FALSE
 
@@ -838,10 +764,9 @@ end function
 '':::::
 '' InputStmt	  =   INPUT ';'? (('#' Expression| STRING_LIT) (','|';'))? Variable (',' Variable)*
 ''
-function cInputStmt
-    dim filestrexpr as integer, dstexpr as integer
-    dim iscomma as integer, isfile as integer, addnewline as integer, addquestion as integer
-    dim lgt as integer
+function cInputStmt as integer
+    dim as integer filestrexpr, dstexpr
+    dim as integer iscomma, isfile, addnewline, addquestion, lgt
 
 	cInputStmt = FALSE
 
@@ -861,10 +786,7 @@ function cInputStmt
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
-		if( not cExpression( filestrexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( filestrexpr )
 
     else
     	isfile = FALSE
@@ -919,8 +841,8 @@ end function
 '':::::
 '' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
 ''
-function cViewStmt
-    dim expr1 as integer, expr2 as integer
+function cViewStmt as integer
+    dim as integer expr1, expr2
 
 	cViewStmt = FALSE
 
@@ -944,10 +866,7 @@ function cViewStmt
 			exit function
 		end if
 
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr2 )
 
 	else
 		expr1 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
@@ -961,9 +880,10 @@ end function
 '':::::
 ''PokeStmt =   POKE Expression, Expression .
 ''
-function cPokeStmt
-	dim expr1 as integer, expr2 as integer
-	dim poketype as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
+function cPokeStmt as integer
+	dim as integer expr1, expr2
+	dim as integer poketype, lgt, ptrcnt
+	dim as FBSYMBOL ptr subtype
 
 	cPokeStmt = FALSE
 
@@ -981,10 +901,7 @@ function cPokeStmt
 		end select
 
 		'' ','
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
 	else
 		poketype = IR.DATATYPE.BYTE
@@ -992,18 +909,11 @@ function cPokeStmt
 	end if
 
 	'' Expression, Expression
-	if( not cExpression( expr1 ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
-	if( not cExpression( expr2 ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( expr1 )
+
+	hMatchCOMMA( )
+
+	hMatchExpression( expr2 )
 
     select case astGetDataClass( expr1 )
     case IR.DATACLASS.STRING
@@ -1039,10 +949,7 @@ private function hFileClose( byval isfunc as integer ) as integer
 
 	if( isfunc ) then
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 	end if
 
 	cnt = 0
@@ -1073,10 +980,7 @@ private function hFileClose( byval isfunc as integer ) as integer
 
 	if( isfunc ) then
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 	end if
 
 	hFileClose = proc
@@ -1095,29 +999,17 @@ private function hFilePut( byval isfunc as integer ) as integer
 		lexSkipToken
 	end if
 
-	if( not cExpression( filenum ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( filenum )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	if( not cExpression( expr1 ) ) then
 		expr1 = INVALID
 	end if
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
-	if( not cExpression( expr2 ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( expr2 )
 
     isarray = FALSE
     if( lexCurrentToken = CHAR_LPRNT ) then
@@ -1151,24 +1043,15 @@ private function hFileGet( byval isfunc as integer ) as integer
 		lexSkipToken
 	end if
 
-	if( not cExpression( filenum ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( filenum )
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	if( not cExpression( expr1 ) ) then
 		expr1 = INVALID
 	end if
 
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	if( not cVarOrDeref( expr2 ) ) then
 		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
@@ -1204,16 +1087,10 @@ private function hFileOpen( byval isfunc as integer ) as integer
 
 	if( isfunc ) then
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 	end if
 
-	if( not cExpression( filename ) ) then
-		hReportError FB.ERRMSG.SYNTAXERROR
-		exit function
-	end if
+	hMatchExpression( filename )
 
 	if( isfunc ) then
 		'' ','?
@@ -1305,10 +1182,7 @@ private function hFileOpen( byval isfunc as integer ) as integer
 
 	hMatch( CHAR_SHARP )
 
-	if( not cExpression( filenum ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( filenum )
 
 	if( isfunc ) then
 		'' ','?
@@ -1321,20 +1195,14 @@ private function hFileOpen( byval isfunc as integer ) as integer
 			hReportError FB.ERRMSG.EXPECTEDEQ
 			exit function
 		end if
-		if( not cExpression( flen ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( flen )
 	else
 		flen = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 	end if
 
 	if( isfunc ) then
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 	end if
 
 	''
@@ -1351,9 +1219,9 @@ end function
 ''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
 ''				  |	   GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 ''				  |    (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)? .
-function cFileStmt
-    dim filenum as integer, expr1 as integer, expr2 as integer
-    dim res as integer, islock as integer
+function cFileStmt as integer
+    dim as integer filenum, expr1, expr2
+    dim as integer islock
 
 	cFileStmt = FALSE
 
@@ -1374,20 +1242,13 @@ function cFileStmt
 	'' SEEK '#'? Expression ',' Expression
 	case FB.TK.SEEK
 		lexSkipToken
-		res = hMatch( CHAR_SHARP )
+		hMatch( CHAR_SHARP )
 
-		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( filenum )
+
+		hMatchCOMMA( )
+
+		hMatchExpression( expr1 )
 
 		cFileStmt = rtlFileSeek( filenum, expr1 )
 
@@ -1420,26 +1281,16 @@ function cFileStmt
 		end if
 
 		lexSkipToken
-		res = hMatch( CHAR_SHARP )
+		hMatch( CHAR_SHARP )
 
-		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( filenum )
+
+		hMatchCOMMA( )
+
+		hMatchExpression( expr1 )
 
 		if( hMatch( FB.TK.TO ) ) then
-			if( not cExpression( expr2 ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( expr2 )
 		else
 			expr2 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 		end if
@@ -1451,7 +1302,7 @@ end function
 
 '':::::
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
-	dim dTB(0) as FBARRAYDIM
+	dim as FBARRAYDIM dTB(0)
 
 	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
 										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
@@ -1460,13 +1311,11 @@ private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function cGOTBStmt( byval expr as integer, byval isgoto as integer ) as integer
-    dim idxexpr as integer
-	dim sym as FBSYMBOL ptr
-	dim exitlabel as FBSYMBOL ptr
-	dim tbsym as FBSYMBOL ptr
-	dim l as integer, i as integer
-	dim labelTB(0 to FB.MAXGOTBITEMS-1) as FBSYMBOL ptr
+function cGOTBStmt( byval expr as integer, _
+					byval isgoto as integer ) as integer
+    dim as integer idxexpr
+	dim as integer l, i
+	dim as FBSYMBOL ptr sym, exitlabel, tbsym, labelTB(0 to FB.MAXGOTBITEMS-1)
 
 	cGOTBStmt = FALSE
 
@@ -1558,7 +1407,7 @@ end function
 '':::::
 ''OnStmt 		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
 ''
-function cOnStmt
+function cOnStmt as integer
 	dim as integer expr, isgoto, islocal, isrestore
 	dim as FBSYMBOL ptr label
 
@@ -1586,10 +1435,7 @@ function cOnStmt
 	case FB.TK.ERROR
 		lexSkipToken
 	case else
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr )
 	end select
 
 	'' GOTO|GOSUB
@@ -1646,8 +1492,8 @@ end function
 ''ErrorStmt 	=	ERROR Expression
 ''				|   ERR '=' Expression .
 ''
-function cErrorStmt
-	dim expr as integer
+function cErrorStmt as integer
+	dim as integer expr
 
 	cErrorStmt = FALSE
 
@@ -1659,10 +1505,7 @@ function cErrorStmt
 		lexSkipToken
 
 		'' Expression
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr )
 
 		rtlErrorThrow expr
 
@@ -1679,10 +1522,7 @@ function cErrorStmt
 		end if
 
 		'' Expression
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr )
 
 		rtlErrorSetnum expr
 
@@ -1700,7 +1540,7 @@ end function
 ''				  |   DataStmt
 ''				  |   etc .
 ''
-function cQuirkStmt
+function cQuirkStmt as integer
 	dim as integer res
 	dim as integer funcexpr
 
@@ -1760,7 +1600,7 @@ end function
 '':::::
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
-function cArrayFunct( funcexpr as integer )
+function cArrayFunct( funcexpr as integer ) as integer
 	dim as integer sexpr, islbound, expr
 	dim as FBSYMBOL ptr s
 
@@ -1778,10 +1618,7 @@ function cArrayFunct( funcexpr as integer )
 		lexSkipToken
 
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDLPRNT
-    		exit function
-		end if
+		hMatchLPRNT( )
 
 		'' ID
 		if( not cVarOrDeref( sexpr, FALSE ) ) then
@@ -1798,19 +1635,13 @@ function cArrayFunct( funcexpr as integer )
 
 		'' (',' Expression)?
 		if( hMatch( CHAR_COMMA ) ) then
-			if( not cExpression( expr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( expr )
 		else
 			expr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 		end if
 
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDRPRNT
-    		exit function
-		end if
+		hMatchRPRNT( )
 
 		funcexpr = rtlArrayBound( sexpr, expr, islbound )
 
@@ -1827,27 +1658,18 @@ private function cStrCHR( funcexpr as integer ) as integer
 
 	cStrCHR = FALSE
 
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
 	cnt = 0
 	do
-		if( not cExpression( exprtb(cnt) ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( exprtb(cnt) )
 		cnt += 1
 		if( cnt >= 32 ) then
 			exit do
 		end if
 	loop while( hMatch( CHAR_COMMA ) )
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' constant? evaluate at compile-time
 	isconst = TRUE
@@ -1903,31 +1725,18 @@ private function cStrASC( funcexpr as integer ) as integer
 
 	cStrASC = FALSE
 
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	if( not cExpression( expr1 ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( expr1 )
 
 	'' (',' Expression)?
 	if( hMatch( CHAR_COMMA ) ) then
-
-		if( not cExpression( posexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( posexpr )
 	else
 		posexpr = INVALID
 	end if
 
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	'' constant? evaluate at compile-time
 	if( astIsVAR( expr1 ) ) then
@@ -1989,7 +1798,7 @@ end function
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''
-function cStringFunct( funcexpr as integer )
+function cStringFunct( funcexpr as integer ) as integer
     dim as integer expr1, expr2, expr3
     dim as integer dclass, dtype
 
@@ -1999,18 +1808,11 @@ function cStringFunct( funcexpr as integer )
 	'' STR$ '(' Expression{int|float|double} ')'
 	case FB.TK.STR
 		lexSkipToken
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
+
+		hMatchExpression( expr1 )
+
+		hMatchRPRNT( )
 
 		funcexpr = rtlToStr( expr1 )
 
@@ -2020,29 +1822,18 @@ function cStringFunct( funcexpr as integer )
 	''			  (Expression{str} ',' Expression{int})) ')'
 	case FB.TK.INSTR
 		lexSkipToken
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr1 )
 
 		dtype = astGetDataType( expr1 )
 		dclass = irGetDataClass( dtype )
 		'' (Expression{int} ',' Expression{str} ',' Expression{str})
 		if( (dclass <> IR.DATACLASS.STRING) and (dtype <> IR.DATATYPE.CHAR) ) then
-			if( not hMatch( CHAR_COMMA ) ) then
-				hReportError FB.ERRMSG.EXPECTEDCOMMA
-				exit function
-			end if
 
-			if( not cExpression( expr2 ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchCOMMA( )
+
+			hMatchExpression( expr2 )
 
 		'' (Expression{str} ',' Expression{str})
 		else
@@ -2050,20 +1841,11 @@ function cStringFunct( funcexpr as integer )
 			expr1 = astNewCONSTi( 1, IR.DATATYPE.INTEGER )
 		end if
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( expr3 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr3 )
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		funcexpr = rtlStrInstr( expr1, expr2, expr3 )
 
@@ -2073,39 +1855,21 @@ function cStringFunct( funcexpr as integer )
 	case FB.TK.MID
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr1 )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr2 )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			if( not cExpression( expr3 ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( expr3 )
 		else
 			expr3 = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
 		end if
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		funcexpr = rtlStrMid( expr1, expr2, expr3 )
 
@@ -2116,30 +1880,15 @@ function cStringFunct( funcexpr as integer )
 	case FB.TK.STRING
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
-		if( not cExpression( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr1 )
 
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
-		if( not cExpression( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr2 )
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		funcexpr = rtlStrFill( expr1, expr2 )
 
@@ -2168,10 +1917,10 @@ end function
 ''				|   INT( Expression )
 ''				|	LEN( data type | Expression ) .
 ''
-function cMathFunct( funcexpr as integer )
-    dim expr as integer, islen as integer
-    dim typ as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
-    dim sym as FBSYMBOL ptr
+function cMathFunct( funcexpr as integer ) as integer
+    dim as integer expr
+    dim as integer islen, typ, lgt, ptrcnt
+    dim as FBSYMBOL ptr sym, subtype
 
 	cMathFunct = FALSE
 
@@ -2180,18 +1929,11 @@ function cMathFunct( funcexpr as integer )
 	case FB.TK.ABS
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
+
+		hMatchExpression( expr )
+
+		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( IR.OP.ABS, expr )
@@ -2206,18 +1948,11 @@ function cMathFunct( funcexpr as integer )
 	case FB.TK.SGN
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
+
+		hMatchExpression( expr )
+
+		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( IR.OP.SGN, expr )
@@ -2232,18 +1967,11 @@ function cMathFunct( funcexpr as integer )
 	case FB.TK.FIX
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
+
+		hMatchExpression( expr )
+
+		hMatchRPRNT( )
 
 		funcexpr = rtlMathFIX( expr )
 		if( funcexpr = INVALID ) then
@@ -2261,10 +1989,7 @@ function cMathFunct( funcexpr as integer )
 		islen = (lexCurrentToken = FB.TK.LEN)
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
 		expr = INVALID
 		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
@@ -2289,10 +2014,7 @@ function cMathFunct( funcexpr as integer )
 			end if
 		end if
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		if( expr <> INVALID ) then
 			funcexpr = rtlMathLen( expr, islen )
@@ -2309,9 +2031,10 @@ end function
 '':::::
 '' PeekFunct =   PEEK '(' (SymbolType ',')? Expression ')' .
 ''
-function cPeekFunct( funcexpr as integer )
-	dim expr as integer
-	dim peektype as integer, subtype as FBSYMBOL ptr, lgt as integer, ptrcnt as integer
+function cPeekFunct( funcexpr as integer ) as integer
+	dim as integer expr
+	dim as integer peektype, lgt, ptrcnt
+	dim as FBSYMBOL ptr subtype
 
 	cPeekFunct = FALSE
 
@@ -2319,10 +2042,7 @@ function cPeekFunct( funcexpr as integer )
 	lexSkipToken
 
 	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT, TRUE
-		exit function
-	end if
+	hMatchLPRNT( )
 
 	'' (SymbolType ',')?
 	if( cSymbolType( peektype, subtype, lgt, ptrcnt ) ) then
@@ -2335,10 +2055,7 @@ function cPeekFunct( funcexpr as integer )
 		end select
 
 		'' ','
-		if( not hMatch( CHAR_COMMA ) ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
-			exit function
-		end if
+		hMatchCOMMA( )
 
 	else
 		peektype = IR.DATATYPE.BYTE
@@ -2346,16 +2063,10 @@ function cPeekFunct( funcexpr as integer )
 	end if
 
 	'' Expression
-	if( not cExpression( expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( expr )
 
 	' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
     ''
     select case astGetDataClass( expr )
@@ -2386,9 +2097,8 @@ end function
 '' FileFunct =   SEEK '(' Expression ')' |
 ''				 INPUT '(' Expr, (',' '#'? Expr)? ')'.
 ''
-function cFileFunct( funcexpr as integer )
-	dim filenum as integer, expr as integer
-	dim res as integer
+function cFileFunct( funcexpr as integer ) as integer
+	dim as integer filenum, expr
 
 	cFileFunct = FALSE
 
@@ -2397,18 +2107,11 @@ function cFileFunct( funcexpr as integer )
 	case FB.TK.SEEK
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
-		if( not cExpression( filenum ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
+
+		hMatchExpression( filenum )
+
+		hMatchRPRNT( )
 
 		funcexpr = rtlFileTell( filenum )
 
@@ -2418,31 +2121,19 @@ function cFileFunct( funcexpr as integer )
 	case FB.TK.INPUT
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
-		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-			exit function
-		end if
+		hMatchExpression( expr )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			res = hMatch( CHAR_SHARP )
+			hMatch( CHAR_SHARP )
 
-			if( not cExpression( filenum ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-				exit function
-			end if
+			hMatchExpression( filenum )
 		else
 			filenum = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 		end if
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 		funcexpr = rtlFileStrInput( expr, filenum )
 
@@ -2465,35 +2156,23 @@ function cFileFunct( funcexpr as integer )
 	case FB.TK.PUT
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
 		funcexpr = hFilePut( TRUE )
 		cFileFunct = funcexpr <> INVALID
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 	'' GET '(' '#'? Expr, Expr?, Expr ')'
 	case FB.TK.GET
 		lexSkipToken
 
-		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDLPRNT
-			exit function
-		end if
+		hMatchLPRNT( )
 
 		funcexpr = hFileGet( TRUE )
 		cFileFunct = funcexpr <> INVALID
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 
 	end select
 
@@ -2502,7 +2181,7 @@ end function
 '':::::
 ''cErrorFunct =   ERR .
 ''
-function cErrorFunct( funcexpr as integer )
+function cErrorFunct( funcexpr as integer ) as integer
 
 	cErrorFunct = FALSE
 
@@ -2518,8 +2197,8 @@ end function
 '':::::
 ''cIIFFunct =   IIF '(' condexpr ',' truexpr ',' falsexpr ')' .
 ''
-function cIIFFunct( funcexpr as integer )
-	dim condexpr as integer, truexpr as integer, falsexpr as integer
+function cIIFFunct( funcexpr as integer ) as integer
+	dim as integer condexpr, truexpr, falsexpr
 
 	cIIFFunct = FALSE
 
@@ -2527,46 +2206,25 @@ function cIIFFunct( funcexpr as integer )
 	lexSkipToken
 
 	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
-		exit function
-	end if
+	hMatchLPRNT( )
 
 	'' condexpr
-	if( not cExpression( condexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( condexpr )
 
 	'' ','
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	'' truexpr
-	if( not cExpression( truexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( truexpr )
 
 	'' ','
-	if( not hMatch( CHAR_COMMA ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCOMMA
-		exit function
-	end if
+	hMatchCOMMA( )
 
 	'' falsexpr
-	if( not cExpression( falsexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
-		exit function
-	end if
+	hMatchExpression( falsexpr )
 
 	'' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
-		exit function
-	end if
+	hMatchRPRNT( )
 
 	''
 	funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
@@ -2583,10 +2241,9 @@ end function
 '':::::
 ''cVAFunct =     VA_FIRST ('(' ')')? .
 ''
-function cVAFunct( funcexpr as integer )
-    dim expr as integer
-    dim arg as FBSYMBOL ptr
-    dim proc as FBSYMBOL ptr, sym as FBSYMBOL ptr
+function cVAFunct( funcexpr as integer ) as integer
+    dim as integer expr
+    dim as FBSYMBOL ptr arg, proc, sym
 
 	cVAFunct = FALSE
 
@@ -2616,10 +2273,7 @@ function cVAFunct( funcexpr as integer )
 
 	'' ('(' ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
-			exit function
-		end if
+		hMatchRPRNT( )
 	end if
 
 	'' @arg
@@ -2642,7 +2296,7 @@ end function
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
 function cQuirkFunction( funcexpr as integer )
-	dim res as integer
+	dim as integer res
 
 	cQuirkFunction = FALSE
 

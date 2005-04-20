@@ -3544,10 +3544,9 @@ end function
 function cProcParamList( byval proc as FBSYMBOL ptr, _
 						 byval procexpr as integer ) as integer
 
-    dim p as integer, params as integer
-    dim res as integer, dtype as integer
-    dim args as integer, arg as FBSYMBOL ptr
-    dim elist(0 to FB_MAXPROCARGS-1) as integer, mlist(0 to FB_MAXPROCARGS-1) as integer
+    dim as integer p, params, dtype, args
+    dim as FBSYMBOL ptr arg
+    dim as integer elist(0 to FB_MAXPROCARGS-1), mlist(0 to FB_MAXPROCARGS-1)
 
 	args = symbGetProcArgs( proc )
 
@@ -3578,6 +3577,11 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 			end if
 		end if
 
+		if( params >= FB_MAXPROCARGS ) then
+			hReportError FB.ERRMSG.TOOMANYPARAMS
+			exit function
+		end if
+
 		if( not cProcParam( proc, arg, params, elist(params), mlist(params), FALSE ) ) then
 			if( hGetLastError <> FB.ERRMSG.OK ) then
 				exit function
@@ -3598,6 +3602,11 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 	do while( params < args )
 		if( arg->arg.mode = FB.ARGMODE.VARARG ) then
 			exit do
+		end if
+
+		if( params >= FB_MAXPROCARGS ) then
+			hReportError FB.ERRMSG.TOOMANYPARAMS
+			exit function
 		end if
 
 		if( not cProcParam( proc, arg, params, elist(params), mlist(params), TRUE ) ) then
@@ -3656,7 +3665,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 					byval ptrexpr as integer, _
 					byval checkparents as integer = FALSE ) as integer
 	dim as integer typ, isfuncptr, doflush
-	dim as FBSYMBOL ptr subtype, elm
+	dim as FBSYMBOL ptr subtype, elm, reslabel
 
 	cProcCall = FALSE
 
@@ -3752,6 +3761,22 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			if( (irGetDataClass( typ ) = IR.DATACLASS.FPOINT) or _
 				(typ = IR.DATATYPE.STRING) ) then
 				hReportError FB.ERRMSG.VARIABLEREQUIRED
+				exit function
+			end if
+		end if
+
+		'' check error?
+		if( sym <> NULL ) then
+			if( symbGetProcErrorCheck( sym ) ) then
+    			if( env.clopt.resumeerr ) then
+					reslabel = symbAddLabel( hMakeTmpStr )
+    				irEmitLABEL reslabel, FALSE
+    			else
+    				reslabel = NULL
+    			end if
+
+				cProcCall = rtlErrorCheck( procexpr, reslabel )
+				procexpr = INVALID
 				exit function
 			end if
 		end if

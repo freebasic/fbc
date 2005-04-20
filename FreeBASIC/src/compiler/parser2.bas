@@ -1056,8 +1056,8 @@ end function
 ''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
 ''
 function cAtom( atom as integer )
-    dim sym as FBSYMBOL ptr, elm as FBSYMBOL ptr
-    dim res as integer
+    dim as FBSYMBOL ptr sym, elm
+    dim as integer res
 
   	atom = INVALID
 
@@ -1085,11 +1085,12 @@ end function
 '':::::
 '' Constant       = ID .                                    !!ambiguity w/ var!!
 ''
-function cConstant( constexpr as integer )
-	dim res as integer, s as FBSYMBOL ptr, typ as integer, expr as integer
-	dim text as string
+function cConstant( constexpr as integer ) as integer static
+	dim as FBSYMBOL ptr s
+	dim as integer typ
+	dim as string text
 
-	res = FALSE
+	cConstant = FALSE
 
 	s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.CONST )
 	if( s <> NULL ) then
@@ -1114,10 +1115,8 @@ function cConstant( constexpr as integer )
   		end if
 
   		lexSkipToken
-  		res = TRUE
+  		cConstant = TRUE
   	end if
-
-  	cConstant = res
 
 end function
 
@@ -1125,9 +1124,8 @@ end function
 ''Literal		  = NUM_LITERAL | STR_LITERAL .
 ''
 function cLiteral( litexpr as integer )
-	dim res as integer
-	dim tc as FBSYMBOL ptr, p as integer, expr as integer
-	dim typ as integer
+	dim as FBSYMBOL ptr tc
+	dim as integer typ
 
 	cLiteral = FALSE
 
@@ -1164,8 +1162,7 @@ function cFuncParam( byval proc as FBSYMBOL ptr, _
 					 byval procexpr as integer, _
 					 byval optonly as integer ) as integer
 
-	dim paramexpr as integer, amode as integer, pmode as integer
-	dim typ as integer
+	dim as integer paramexpr, amode, pmode, typ
 
 	cFuncParam = FALSE
 
@@ -1259,7 +1256,8 @@ function cFuncParamList( byval proc as FBSYMBOL ptr, _
 						 byval procexpr as integer, _
 						 byval optonly as integer ) as integer
 
-    dim params as integer, args as integer, arg as FBSYMBOL ptr
+    dim as integer params, args
+    dim as FBSYMBOL ptr arg
 
 	cFuncParamList = FALSE
 

@@ -251,3 +251,33 @@ declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, _
 declare function 	cGfxStmt 				( ) as integer
 
 declare function 	cGfxFunct				( funcexpr as integer ) as integer
+
+
+'':::::
+#define hMatchLPRNT()											 _
+	if( not hMatch( CHAR_LPRNT ) ) then							:_
+		hReportError FB.ERRMSG.EXPECTEDLPRNT                    :_
+		exit function											:_
+	end if
+
+'':::::
+#define hMatchRPRNT()											 _
+	if( not hMatch( CHAR_RPRNT ) ) then							:_
+		hReportError FB.ERRMSG.EXPECTEDRPRNT                    :_
+		exit function											:_
+	end if
+
+'':::::
+#define hMatchCOMMA()											 _
+	if( not hMatch( CHAR_COMMA ) ) then							:_
+		hReportError FB.ERRMSG.EXPECTEDCOMMA                    :_
+		exit function											:_
+	end if
+
+'':::::
+#define hMatchExpression(e)										 _
+	if( not cExpression( e ) ) then                         	:_
+		hReportError FB.ERRMSG.EXPECTEDEXPRESSION				:_
+		exit function											:_
+	end if
+

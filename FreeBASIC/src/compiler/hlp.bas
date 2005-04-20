@@ -129,8 +129,9 @@ data "Expected 'END ENUM'"
 data "Cannot initialize dynamic arrays"
 data "Invalid bitfield"
 data "Literal number too big"
+data "Too many parameters"
 
-const FB.ERRMSGS = 76
+const FB.ERRMSGS = 77
 
 
 '':::::

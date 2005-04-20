@@ -23,8 +23,8 @@ const NULL			= 0
 const INVALID		= -1
 
 ''
-#define FB.VERSION				"0.13"
-#define FB.SIGN					"FreeBASIC v0.13b"
+#define FB.VERSION				"0.14"
+#define FB.SIGN					"FreeBASIC v0.14b"
 
 '' paths
 #if defined(TARGET_WIN32)
@@ -155,6 +155,7 @@ enum FBERRMSG_ENUM
 	FB.ERRMSG.CANTINITDYNAMICARRAYS
 	FB.ERRMSG.INVALIDBITFIELD
 	FB.ERRMSG.NUMBERTOOBIG
+	FB.ERRMSG.TOOMANYPARAMS
 end enum
 
 enum FBWARNINGMSG_ENUM

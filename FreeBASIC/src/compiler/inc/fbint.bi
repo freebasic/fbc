@@ -386,8 +386,6 @@ enum FBTK_ENUM
 	FB.TK.SCREENRES
 	FB.TK.PAINT
 	FB.TK.DRAW
-	FB.TK.BLOAD
-	FB.TK.BSAVE
 end enum
 
 '' single char tokens
@@ -637,13 +635,16 @@ type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
 	lib				as FBLIBRARY ptr
+
 	args			as integer
 	arghead 		as FBSYMBOL_ ptr
 	argtail			as FBSYMBOL_ ptr
+
 	isdeclared		as integer					'' FALSE = just the prototype
 
 	isrtl			as integer
 	rtlcallback		as FBRTLCALLBACK
+	errorcheck		as integer
 end type
 
 type FBSVAR
