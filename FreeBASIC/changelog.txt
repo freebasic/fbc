@@ -3,7 +3,9 @@ Version 0.14 Beta:
 [changed]
 
 [added]
+- function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
+- CVSHORT(), CVLONGINT(), MKSHORT$() and MKLONGINT$() (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
