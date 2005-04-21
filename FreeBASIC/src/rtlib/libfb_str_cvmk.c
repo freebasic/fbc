@@ -27,31 +27,35 @@
 #include <malloc.h>
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL double fb_CVD ( FBSTRING *str )
+static void hCV( FBSTRING *str, int len, void *num )
 {
-    int		i, len;
-    double 	num = 0.0;
-
-	if( str == NULL )
-		return 0.0;
+	int	i;
 
 	FB_STRLOCK();
 
-	len = FB_STRSIZE( str );
-
-	num = 0.0;
-	if( (str->data != NULL) && (len == sizeof( double )) )
+	if( (str->data != NULL) && (FB_STRSIZE( str ) == len) )
 	{
 		for( i = 0; i < len; i++ )
-			((char *)&num)[i] = str->data[i];
+			((char *)num)[i] = str->data[i];
 	}
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
 	FB_STRUNLOCK();
+}
+
+/*:::::*/
+FBCALL double fb_CVD ( FBSTRING *str )
+{
+    double num;
+
+	if( str == NULL )
+		return 0.0;
+
+	num = 0.0;
+	hCV( str, sizeof( double ), &num );
 	
 	return num;
 }
@@ -59,63 +63,64 @@ FBCALL double fb_CVD ( FBSTRING *str )
 /*:::::*/
 FBCALL float fb_CVS ( FBSTRING *str )
 {
-    int		i, len;
-    float 	num = 0.0;
+    float num;
 
 	if( str == NULL )
 		return 0.0;
 
-	FB_STRLOCK();
-
-	len = FB_STRSIZE( str );
-
 	num = 0.0;
-	if( (str->data != NULL) && (len == sizeof( float )) )
-	{
-		for( i = 0; i < len; i++ )
-			((char *)&num)[i] = str->data[i];
-	}
-
-	/* del if temp */
-	fb_hStrDelTemp( str );
-
-	FB_STRUNLOCK();
+	hCV( str, sizeof( float ), &num );
 
 	return num;
 }
-
 
 /*:::::*/
 FBCALL int fb_CVI ( FBSTRING *str )
 {
-    int		i, num;
+    int	num;
 
 	if( str == NULL )
 		return 0;
 
-	FB_STRLOCK();
-
 	num = 0;
-	if( (str->data != NULL) && (FB_STRSIZE( str ) == sizeof( int )) )
-	{
-		for( i = 0; i < sizeof( int ); i++ )
-			((char *)&num)[i] = str->data[i];
-	}
-
-	/* del if temp */
-	fb_hStrDelTemp( str );
-
-	FB_STRUNLOCK();
+	hCV( str, sizeof( int ), &num );
 
 	return num;
 }
 
+/*:::::*/
+FBCALL short fb_CVSHORT ( FBSTRING *str )
+{
+    short num;
+
+	if( str == NULL )
+		return 0;
+
+	num = 0;
+	hCV( str, sizeof( short ), &num );
+
+	return num;
+}
 
 /*:::::*/
-FBCALL FBSTRING *fb_MKD ( double num )
+FBCALL long long fb_CVLONGINT ( FBSTRING *str )
 {
-	FBSTRING 	*dst;
-	int			i;
+    long long num;
+
+	if( str == NULL )
+		return 0;
+
+	num = 0;
+	hCV( str, sizeof( long long ), &num );
+
+	return num;
+}
+
+/*:::::*/
+static FBSTRING *hMK( int len, void *num )
+{
+	int	i;
+	FBSTRING *dst;
 
 	FB_STRLOCK();
 
@@ -123,75 +128,51 @@ FBCALL FBSTRING *fb_MKD ( double num )
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( double ) );
+		fb_hStrAllocTemp( dst, len );
 
 		/* convert */
-		for( i = 0; i < sizeof( double ); i++ )
-			dst->data[i] = ((char *)&num)[i];
+		for( i = 0; i < len; i++ )
+			dst->data[i] = ((char *)num)[i];
 
-		dst->data[sizeof( double )] = '\0';
+		dst->data[len] = '\0';
 	}
 	else
 		dst = &fb_strNullDesc;
 
 	FB_STRUNLOCK();
-
+	
 	return dst;
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_MKI ( int num )
+FBCALL FBSTRING *fb_MKD ( double num )
 {
-	FBSTRING 	*dst;
-	int			i;
-
-	FB_STRLOCK();
-
-	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-	if( dst != NULL )
-	{
-		fb_hStrAllocTemp( dst, sizeof( int ) );
-
-		/* convert */
-		for( i = 0; i < sizeof( int ); i++ )
-			dst->data[i] = ((char *)&num)[i];
-
-		dst->data[sizeof( int )] = '\0';
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
-
-	return dst;
+	return hMK( sizeof( double ), &num );
 }
 
 /*:::::*/
 FBCALL FBSTRING *fb_MKS ( float num )
 {
-	FBSTRING 	*dst;
-	int			i;
-
-	FB_STRLOCK();
-
-	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-	if( dst != NULL )
-	{
-		fb_hStrAllocTemp( dst, sizeof( float ) );
-
-		/* convert */
-		for( i = 0; i < sizeof( float ); i++ )
-			dst->data[i] = ((char *)&num)[i];
-
-		dst->data[sizeof( float )] = '\0';
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
-
-	return dst;
+	return hMK( sizeof( float ), &num );
 }
+
+/*:::::*/
+FBCALL FBSTRING *fb_MKI ( int num )
+{
+	return hMK( sizeof( int ), &num );
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_MKSHORT ( short num )
+{
+	return hMK( sizeof( short ), &num );
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_MKLONGINT ( long long num )
+{
+	return hMK( sizeof( long long ), &num );
+}
+
+
 
