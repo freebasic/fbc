@@ -273,6 +273,7 @@ data "LONGINT"	, FB.TK.LONGINT		, FB.TKCLASS.KEYWORD
 data "ULONGINT" , FB.TK.ULONGINT	, FB.TKCLASS.KEYWORD
 data "ZSTRING"	, FB.TK.ZSTRING		, FB.TKCLASS.KEYWORD
 data "SIZEOF"	, FB.TK.SIZEOF		, FB.TKCLASS.KEYWORD
+data "OVERLOAD"	, FB.TK.OVERLOAD	, FB.TKCLASS.KEYWORD
 data ""
 
 
@@ -735,7 +736,7 @@ function hNewSymbol( byval class as integer, _
 	''
 	typ -= ptrcnt * FB.SYMBTYPE.POINTER
 	if( typ = FB.SYMBTYPE.FWDREF ) then
-		hAddToFwdRef subtype, s
+		hAddToFwdRef( subtype, s )
 	end if
 
     ''
@@ -1860,6 +1861,102 @@ private function hGetProcRealType( byval typ as integer, _
 end function
 
 '':::::
+private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
+							  byval symbol as string, _
+							  byval aname as string, _
+							  byval typ as integer, _
+							  byval subtype as FBSYMBOL ptr, _
+							  byval ptrcnt as integer, _
+				              byval argc as integer, _
+				              byval argtail as FBSYMBOL ptr, _
+				              byval preservecase as integer ) as FBSYMBOL ptr static
+
+	dim as FBSYMBOL ptr f, farg, parg
+	dim as integer optcnt
+
+	function = NULL
+
+	'' arg-less?
+	if( argc = 0 ) then
+		exit function
+	end if
+
+	'' can't be vararg..
+	if( argtail->arg.mode = FB.ARGMODE.VARARG ) then
+		exit function
+	end if
+
+	'' all args can't be optional
+	optcnt = 0
+	parg = argtail
+	do while( parg <> NULL )
+		if( parg->arg.optional ) then
+			optcnt += 1
+		end if
+		parg = parg->arg.l
+	loop
+
+	if( optcnt = argc ) then
+		exit function
+	end if
+
+	'' for each overloaded proc..
+	f = ovlf
+	do while( f <> NULL )
+
+		'' same number of args?
+		if( f->proc.args = argc ) then
+
+			'' for each arg..
+			parg = argtail
+			farg = f->proc.argtail
+
+			do while( parg <> NULL )
+				'' not the same type? check next proc..
+				if( parg->typ <> farg->typ ) then
+					exit do
+				end if
+
+				if( parg->subtype <> farg->subtype ) then
+					exit do
+				end if
+
+				parg = parg->arg.l
+				farg = farg->arg.l
+			loop
+
+			'' all args equal? can't overload..
+			if( parg = NULL ) then
+				exit function
+			end if
+
+		end if
+
+		f = f->proc.ovl.nxt
+	loop
+
+
+    '' add the new proc symbol, w/o adding it to the hash table
+	f = hNewSymbol( FB.SYMBCLASS.PROC, FALSE, symbol, aname, FALSE, _
+					typ, subtype, ptrcnt, INVALID, preservecase )
+
+	if( f = NULL ) then
+		exit function
+	end if
+
+	'' add to linked-list or getOrgName will fail
+	ovlf->right = f
+	f->left     = ovlf
+
+	f->hashitem  = ovlf->hashitem
+	f->hashindex = ovlf->hashindex
+
+    ''
+	function = f
+
+end function
+
+'':::::
 private function hSetupProc( byval symbol as string, _
 							 byval aliasname as string, _
 							 byval libname as string, _
@@ -1874,7 +1971,7 @@ private function hSetupProc( byval symbol as string, _
 			                 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
     dim as integer lgt, i, realtype
-    dim as FBSYMBOL ptr f, a
+    dim as FBSYMBOL ptr f, ovlf
     dim as string sname, aname
 
     hSetupProc = NULL
@@ -1889,13 +1986,20 @@ private function hSetupProc( byval symbol as string, _
 
     lgt = hCalcProcArgsLen( argc, argtail )
 
-    ''
+    '' no alias? make one..
     if( len( aliasname ) = 0 ) then
+
     	if( len( libname ) = 0 ) then
     		aname = ucase$( symbol )
     	else
     		aname = symbol
     	end if
+
+    	'' overloaded?
+		if( (alloctype and FB.ALLOCTYPE.OVERLOADED) > 0 ) then
+			aname = hCreateOvlProcAlias( aname, argc, argtail )
+		end if
+
     else
     	aname = aliasname
     end if
@@ -1910,8 +2014,39 @@ private function hSetupProc( byval symbol as string, _
 
 	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, FALSE, _
 					typ, subtype, ptrcnt, INVALID, preservecase )
+
+	'' dup def?
 	if( f = NULL ) then
-		exit function
+		'' is the dup a proc symbol?
+		ovlf = symbFindByNameAndClass( symbol, FB.SYMBCLASS.PROC, preservecase )
+		if( ovlf = NULL ) then
+			exit function
+		end if
+
+		'' proc was defined as overloadable?
+		if( (ovlf->alloctype and FB.ALLOCTYPE.OVERLOADED) = 0 ) then
+			exit function
+		end if
+
+    	'' no alias?
+    	if( len( aliasname ) = 0 ) then
+			if( (alloctype and FB.ALLOCTYPE.OVERLOADED) = 0 ) then
+				aname = hCreateOvlProcAlias( aname, argc, argtail )
+				aname = hCreateProcAlias( aname, lgt, mode )
+			end if
+		end if
+
+		'' try to overload..
+		f = hAddOvlProc( ovlf, symbol, aname, typ, subtype, ptrcnt, _
+						 argc, argtail, preservecase )
+		if( f = NULL ) then
+			exit function
+		end if
+
+		alloctype or= FB.ALLOCTYPE.OVERLOADED
+
+	else
+		ovlf = NULL
 	end if
 
     ''
@@ -1951,6 +2086,21 @@ private function hSetupProc( byval symbol as string, _
 	end if
 
 	f->proc.arghead		= argtail
+
+	'' if overloading, update the linked-list
+	if( (alloctype and FB.ALLOCTYPE.OVERLOADED) > 0 ) then
+		if( ovlf <> NULL ) then
+			f->proc.ovl.nxt	= ovlf->proc.ovl.nxt
+			ovlf->proc.ovl.nxt = f
+
+			if( argc > ovlf->proc.ovl.maxargs ) then
+				ovlf->proc.ovl.maxargs = argc
+			end if
+		else
+			f->proc.ovl.nxt	= NULL
+			f->proc.ovl.maxargs	= 0
+		end if
+	end if
 
 	hSetupProc = f
 
@@ -2359,6 +2509,159 @@ function symbFindByNameAndSuffix( byval symbol as string, _
 
 end function
 
+'':::::
+function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
+					   	       byval argc as integer, _
+					   	       byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
+
+	dim as FBSYMBOL ptr f, farg, parg
+
+	'' for each proc..
+	f = proc
+	do while( f <> NULL )
+
+		if( argc = f->proc.args ) then
+
+			'' for each arg..
+			farg = f->proc.argtail
+			parg = argtail
+			do while( parg <> NULL )
+
+				'' not the same type? check next proc..
+				if( parg->typ <> farg->typ ) then
+					exit do
+				end if
+
+				if( parg->subtype <> farg->subtype ) then
+					exit do
+				end if
+
+				parg = parg->arg.l
+				farg = farg->arg.l
+			loop
+
+			'' all args equal?
+			if( parg = NULL ) then
+				return f
+			end if
+
+		end if
+
+		f = f->proc.ovl.nxt
+	loop
+
+	function = NULL
+
+end function
+
+'':::::
+function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
+					   		     byval params as integer, _
+					   		     exprTB() as integer, _
+					   		     modeTB() as integer ) as FBSYMBOL ptr static
+
+	dim as FBSYMBOL ptr f, farg, marg, match
+	dim as integer p, adclass, pdclass, dtype, fmatches, mmatches
+
+	match = NULL
+
+	'' for each proc..
+	f = proc
+	do while( f <> NULL )
+
+		if( params <= f->proc.args ) then
+
+			'' for each arg..
+			farg = f->proc.argtail
+			for p = 0 to params-1
+
+				'' optional?
+				if( exprTB(p) = INVALID ) then
+					if( not farg->arg.optional ) then
+						exit for
+					end if
+				else
+
+					'' check mode............
+
+					'' same class?
+					adclass = irGetDataClass( farg->typ )
+					pdclass = astGetDataClass( exprTB(p) )
+					if( adclass <> pdclass ) then
+						'' could be a float passed to an int arg or vice-versa
+						if( adclass >= IR.DATACLASS.STRING ) then
+							'' check for zstring's..........
+							exit for
+						end if
+						if( pdclass >= IR.DATACLASS.STRING ) then
+							exit for
+						end if
+					end if
+
+					if( farg->subtype <> astGetSubtype( exprTB(p) ) ) then
+						exit for
+					end if
+				end if
+
+				farg = farg->arg.l
+			next
+
+			'' all params okay?
+			if( p = params ) then
+				'' not preview matches?
+				if( match = NULL ) then
+					match = f
+				else
+					'' proc will less args has more precedence
+					if( f->proc.args < match->proc.args ) then
+						match = f
+
+					'' same num of args, check the closest..
+					else
+						farg = f->proc.argtail
+						marg = match->proc.argtail
+						fmatches = 0
+						mmatches = 0
+
+						'' for each param..
+						for p = 0 to params-1
+							'' not optional?
+							if( exprTB(p) <> INVALID ) then
+								'' different types?
+								if( farg->typ <> marg->typ ) then
+									dtype = astGetDataType( exprTB(p) )
+									'' get the distance..
+									if( abs( farg->typ - dtype ) < _
+										abs( marg->typ - dtype ) ) then
+										fmatches += 1
+									else
+										mmatches += 1
+									end if
+
+								end if
+							end if
+
+		                	farg = farg->arg.l
+		                	marg = marg->arg.l
+		                next
+
+		                '' proc has more args close to the final?
+		                if( fmatches > mmatches ) then
+		                	match = f
+		                end if
+
+					end if
+				end if
+			end if
+
+		end if
+
+		f = f->proc.ovl.nxt
+	loop
+
+	function = match
+
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' helpers

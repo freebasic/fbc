@@ -163,9 +163,9 @@ end sub
 '':::::
 function hMatch( byval token as integer ) as integer
 
-	hMatch = FALSE
+	function = FALSE
 	if( lexCurrentToken = token ) then
-		hMatch = TRUE
+		function = TRUE
 		lexSkipToken
 	end if
 
@@ -242,14 +242,14 @@ sub hReportError( byval errnum as integer, _
 	end if
 
     ''
-	hReportErrorEx errnum, msgex
+	hReportErrorEx( errnum, msgex )
 
 end sub
 
 '':::::
 function hGetLastError as integer
 
-	hGetLastError = ctx.lasterror
+	function = ctx.lasterror
 
 end function
 
@@ -307,7 +307,7 @@ function hMakeTmpStr as string static
     	ctx.tmppad = "_t" + string$( 4-l, CHAR_0 )
 	end if
 
-	hMakeTmpStr = ctx.tmppad + v
+	function = ctx.tmppad + v
 
 	ctx.tmpcnt += 1
 
@@ -327,7 +327,7 @@ function hGetDefType( byval symbol as string ) as integer static
 		c = c - (97 - 65)
 	end if
 
-	hGetDefType = deftypeTB(c-65)
+	function = deftypeTB(c-65)
 
 end function
 
@@ -377,7 +377,7 @@ function hFBrelop2IRrelop( byval op as integer ) as integer static
     	op = IR.OP.GE
     end select
 
-    hFBrelop2IRrelop = op
+    function = op
 
 end function
 
@@ -385,18 +385,15 @@ end function
 function hFileExists( byval filename as string ) as integer static
     dim f as integer
 
-	hFileExists = FALSE
+    f = freefile
 
-	on local error goto exitfunction
+	if( open( filename, for input, as #f ) = 0 ) then
+		function = TRUE
+		close #f
+	else
+		function = FALSE
+	end if
 
-	f = freefile
-	open filename for input as #f
-	close #f
-
-	hFileExists = TRUE
-
-exitfunction:
-    exit function
 end function
 
 '':::::
@@ -482,7 +479,7 @@ function hScapeStr( byval text as string ) as string static
 		end if
 	loop
 
-	hScapeStr = left$( res, d - strptr( res ) )
+	function = left$( res, d - strptr( res ) )
 
 end function
 
@@ -492,7 +489,7 @@ function hUnescapeStr( byval text as string ) as string static
     dim res as string, d as byte ptr
 
 	if( not env.optescapestr ) then
-    	hUnescapeStr = text
+    	function = text
     	exit function
     end if
 
@@ -514,7 +511,7 @@ function hUnescapeStr( byval text as string ) as string static
 		d += 1
 	loop
 
-	hUnescapeStr = res
+	function = res
 
 end function
 
@@ -574,18 +571,18 @@ function hCreateName( byval symbol as string, _
 	end if
 
 	if( not preservecase ) then
-		hUcase sname
+		hUcase( sname )
 	end if
 
     if( clearname ) then
-    	hClearName sname
+    	hClearName( sname )
     end if
 
     if( cunsg(typ) < FB.SYMBOLTYPES ) then
     	sname += suffixTB( typ )
     end if
 
-	hCreateName = sname
+	function = sname
 
 end function
 
@@ -615,17 +612,42 @@ function hCreateProcAlias( byval symbol as string, _
 		sname += str$( argslen )
 	end if
 
-	hCreateProcAlias = sname
+	function = sname
 
 #elseif defined(TARGET_DOS)
-    hCreateProcAlias = "_" + symbol
+    function = "_" + symbol
 
 #else
-	hCreateProcAlias = symbol
+	function = symbol
 
 #endif
 
 end function
+
+'':::::
+function hCreateOvlProcAlias( byval symbol as string, _
+					    	  byval argc as integer, _
+					    	  byval argtail as FBSYMBOL ptr ) as string static
+    dim i as integer
+    dim aname as string
+
+    aname = symbol
+    aname += "__ovl_"
+
+    for i = 0 to argc-1
+    	aname += "_"
+
+    	if( cunsg(argtail->typ) < FB.SYMBOLTYPES ) then
+    		aname += suffixTB( argtail->typ )
+    	end if
+
+    	argtail = argtail->arg.l
+    next i
+
+	function = aname
+
+end function
+
 
 '':::::
 function hCreateDataAlias( byval symbol as string, _
@@ -633,16 +655,16 @@ function hCreateDataAlias( byval symbol as string, _
 
 #if defined(TARGET_WIN32)
 	if( isimport ) then
-		hCreateDataAlias = "__imp__" + symbol
+		function = "__imp__" + symbol
 	else
-		hCreateDataAlias = "_" + symbol
+		function = "_" + symbol
 	end if
 
 #elseif defined(TARGET_DOS)
-	hCreateDataAlias = "_" + symbol
+	function = "_" + symbol
 
 #else
-	hCreateDataAlias = symbol
+	function = symbol
 
 #endif
 
@@ -653,16 +675,16 @@ function hStripUnderscore( byval symbol as string ) as string static
 
 #ifdef TARGET_WIN32
     if( not env.clopt.nostdcall ) then
-		hStripUnderscore = mid$( symbol, 2 )
+		function = mid$( symbol, 2 )
 	else
-		hStripUnderscore = symbol
+		function = symbol
 	end if
 
 #elseif defined(TARGET_DOS)
-    hStripUnderscore = mid$( symbol, 2 )
+    function = mid$( symbol, 2 )
 
 #else
-	hStripUnderscore = symbol
+	function = symbol
 
 #endif
 
@@ -682,9 +704,9 @@ function hStripExt( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		hStripExt = left$( filename, lp-1 )
+		function = left$( filename, lp-1 )
 	else
-		hStripExt = filename
+		function = filename
 	end if
 
 end function
@@ -706,9 +728,9 @@ function hStripPath( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		hStripPath = mid$( filename, lp+1 )
+		function = mid$( filename, lp+1 )
 	else
-		hStripPath = filename
+		function = filename
 	end if
 
 end function
@@ -730,9 +752,9 @@ function hStripFilename ( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		hStripFilename = left$( filename, lp )
+		function = left$( filename, lp )
 	else
-		hStripFilename = ""
+		function = ""
 	end if
 
 end function
@@ -750,7 +772,7 @@ function hRevertSlash( byval s as string ) as string static
 		end if
 	next i
 
-	hRevertSlash = res
+	function = res
 
 end function
 
@@ -780,9 +802,9 @@ function hToPow2( byval value as uinteger ) as uinteger static
 
     '' is this really a power of 2?
     if( value - (1 shl n) = 0 ) then
-    	return n
+    	function = n
     else
-    	return 0
+    	function = 0
     end if
 
 end function
@@ -790,6 +812,6 @@ end function
 '':::::
 function hMakeEntryPointName( byval entrypoint as string ) as string
 
-	hMakeEntryPointName = "fb_" + entrypoint + "_entry"
+	function = "fb_" + entrypoint + "_entry"
 
 end function

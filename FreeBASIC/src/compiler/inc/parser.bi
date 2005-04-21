@@ -194,24 +194,10 @@ declare function 	cConstant				( constexpr as integer ) as integer
 
 declare function 	cLiteral 				( litexpr as integer ) as integer
 
-declare function 	cFuncParamList			( byval proc as FBSYMBOL ptr, _
-											  byval procexpr as integer, _
-											  byval optonly as integer ) as integer
-
-declare function 	cFuncParam				( byval proc as FBSYMBOL ptr, _
-											  byval arg as FBSYMBOL ptr, _
-											  byval procexpr as integer, _
-											  byval optonly as integer ) as integer
-
 declare function 	cProcParamList			( byval proc as FBSYMBOL ptr, _
-											  byval procexpr as integer ) as integer
-
-declare function 	cProcParam				( byval proc as FBSYMBOL ptr, _
-											  byval arg as FBSYMBOL ptr, _
-											  byval param as integer, _
-											  expr as integer, _
-											  pmode as integer, _
-											  byval optonly as integer ) as integer
+						 					  byval ptrexpr as integer, _
+						 					  byval isfunc as integer, _
+						 					  byval optonly as integer ) as integer
 
 declare function 	cAsmBlock				( ) as integer
 

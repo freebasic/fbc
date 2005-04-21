@@ -143,17 +143,19 @@ private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
 
 end function
 
-
 '':::::
-''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) (ALIAS LIT_STRING)? ('(' Arguments? ')')? (AS SymbolType)? STATIC? EXPORT?
+''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) OVERLOAD? (ALIAS LIT_STRING)?
+''                     ('(' Arguments? ')')? (AS SymbolType)? STATIC? EXPORT?
 ''
-function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, alloctype as integer ) static
-    dim res as integer
-    dim id as string, aliasid as string
-    dim typ as integer, subtype as FBSYMBOL ptr, mode as integer, lgt as integer, ptrcnt as integer
-    dim argc as integer, argtail as FBSYMBOL ptr
+function cSubOrFuncHeader( byval issub as integer, _
+						   proc as FBSYMBOL ptr, _
+						   alloctype as integer ) static
 
-	cSubOrFuncHeader = FALSE
+    dim as string id, aliasid
+    dim as integer typ, mode, lgt, ptrcnt, argc
+    dim as FBSYMBOL ptr subtype, argtail
+
+	function = FALSE
 
 	'' ID
 	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
@@ -173,7 +175,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 	end if
 
 	'' (CDECL|STDCALL|PASCAL)?
-	select case lexCurrentToken
+	select case as const lexCurrentToken
 	case FB.TK.CDECL
 		mode = FB.FUNCMODE.CDECL
 		lexSkipToken
@@ -187,16 +189,26 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 		mode = FB.DEFAULT.FUNCMODE
 	end select
 
+	'' OVERLOAD?
+	if( lexCurrentToken = FB.TK.OVERLOAD ) then
+		lexSkipToken
+		alloctype or= FB.ALLOCTYPE.OVERLOADED
+	end if
+
 	'' (ALIAS LIT_STRING)?
-	if( hMatch( FB.TK.ALIAS ) ) then
+	if( lexCurrentToken = FB.TK.ALIAS ) then
+		lexSkipToken
 		aliasid = lexEatToken
 	else
 		aliasid = ""
 	end if
 
 	'' ('(' Arguments? ')')?
-	if( hMatch( CHAR_LPRNT ) ) then
+	if( lexCurrentToken = CHAR_LPRNT ) then
+		lexSkipToken
+
 		argtail = cArguments( mode, argc, argtail, FALSE )
+
 		if( not hMatch( CHAR_RPRNT ) or (hGetLastError <> FB.ERRMSG.OK) ) then
 			hReportError FB.ERRMSG.EXPECTEDRPRNT
 			exit function
@@ -207,7 +219,8 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
 	end if
 
     '' (AS SymbolType)?
-    if( hMatch( FB.TK.AS ) ) then
+    if( lexCurrentToken = FB.TK.AS ) then
+    	lexSkipToken
 
     	if( (typ <> INVALID) or (isSub) ) then
     		hReportError FB.ERRMSG.SYNTAXERROR
@@ -238,7 +251,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     if( (alloctype and FB.ALLOCTYPE.STATIC) = 0 ) then
     	'' STATIC?
     	if( hMatch( FB.TK.STATIC ) ) then
-    		alloctype = alloctype or FB.ALLOCTYPE.STATIC
+    		alloctype or= FB.ALLOCTYPE.STATIC
     	end if
     end if
 
@@ -249,7 +262,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     		hReportError FB.ERRMSG.SYNTAXERROR
     		exit function
     	end if
-    	alloctype = alloctype or FB.ALLOCTYPE.EXPORT or FB.ALLOCTYPE.PUBLIC
+    	alloctype or= FB.ALLOCTYPE.EXPORT or FB.ALLOCTYPE.PUBLIC
     end if
 
 	''
@@ -263,13 +276,37 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     end if
 
     if( proc = NULL ) then
-    	proc = symbAddProc( id, aliasid, "", typ, subtype, ptrcnt, alloctype, mode, argc, argtail )
+    	proc = symbAddProc( id, aliasid, "", typ, subtype, ptrcnt, _
+    						alloctype, mode, argc, argtail )
     	if( proc = NULL ) then
     		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
     		exit function
     	end if
     else
 
+    	'' overloaded?
+    	if( symbGetProcIsOverloaded( proc ) ) then
+
+            '' try to find a prototype with the same signature
+    		proc = symbFindOverloadProc( proc, argc, argtail )
+
+    		'' none found? try to overload..
+    		if( proc = NULL ) then
+    			proc = symbAddProc( id, aliasid, "", typ, subtype, ptrcnt, _
+    								alloctype, mode, argc, argtail )
+    			'' dup def?
+    			if( proc = NULL ) then
+    				hReportError FB.ERRMSG.DUPDEFINITION, TRUE
+    				exit function
+    			else
+    				return TRUE
+    			end if
+    		end if
+
+    		alloctype or= FB.ALLOCTYPE.OVERLOADED
+    	end if
+
+    	''
     	if( symbGetProcIsDeclared( proc ) ) then
     		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
     		exit function
@@ -292,7 +329,7 @@ function cSubOrFuncHeader( byval issub as integer, proc as FBSYMBOL ptr, allocty
     	symbSetAllocType( proc, alloctype )
     end if
 
-    cSubOrFuncHeader = TRUE
+    function = TRUE
 
 end function
 

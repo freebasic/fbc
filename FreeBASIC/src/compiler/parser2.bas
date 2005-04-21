@@ -1155,167 +1155,6 @@ function cLiteral( litexpr as integer )
 end function
 
 '':::::
-''FuncParam         =   BYVAL? (ID(('(' ')')? | Expression) .
-''
-function cFuncParam( byval proc as FBSYMBOL ptr, _
-					 byval arg as FBSYMBOL ptr, _
-					 byval procexpr as integer, _
-					 byval optonly as integer ) as integer
-
-	dim as integer paramexpr, amode, pmode, typ
-
-	cFuncParam = FALSE
-
-	amode = symbGetArgMode( proc, arg )
-
-	pmode = INVALID
-	paramexpr = INVALID
-
-	if( not optonly ) then
-		'' BYVAL?
-		if( hMatch( FB.TK.BYVAL ) ) then
-			pmode = FB.ARGMODE.BYVAL
-		end if
-
-		'' Expression
-		if( not cExpression( paramexpr ) ) then
-			paramexpr = INVALID
-		end if
-	end if
-
-	if( paramexpr = INVALID ) then
-
-		'' check if argument is optional
-		if( not symbGetArgOptional( proc, arg ) ) then
-			if( amode <> FB.ARGMODE.VARARG ) then
-				hReportError FB.ERRMSG.ARGCNTMISMATCH
-			end if
-			exit function
-		end if
-
-		'' create an arg
-		typ = symbGetType( arg )
-		select case as const typ
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
-			paramexpr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR.DATATYPE.FIXSTR )
-
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			paramexpr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
-
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			paramexpr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), typ )
-
-		case else
-			paramexpr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), typ )
-		end select
-
-	else
-
-		'' '('')'?
-		if( amode = FB.ARGMODE.BYDESC ) then
-			if( lexCurrentToken = CHAR_LPRNT ) then
-				if( lexLookahead(1) = CHAR_RPRNT ) then
-					if( pmode <> INVALID ) then
-						hReportError FB.ERRMSG.PARAMTYPEMISMATCH
-						exit function
-					end if
-					lexSkipToken
-					lexSkipToken
-					pmode = FB.ARGMODE.BYDESC
-				end if
-			end if
-    	end if
-
-    end if
-
-	if( pmode <> INVALID ) then
-		if( amode <> pmode ) then
-            if( amode <> FB.ARGMODE.VARARG ) then
-            	'' allow BYVAL param passed to BYREF arg (to pass NULL to pointers and so on)
-            	if( pmode <> FB.ARGMODE.BYVAL ) then
-					hReportError FB.ERRMSG.PARAMTYPEMISMATCH
-					exit function
-				end if
-			end if
-		end if
-	end if
-
-    if( astNewPARAM( procexpr, paramexpr, INVALID, pmode ) = INVALID ) then
-		hReportError FB.ERRMSG.PARAMTYPEMISMATCH
-		exit function
-    end if
-
-    cFuncParam = TRUE
-
-end function
-
-'':::::
-''FuncParamList     =    FuncParam (DECL_SEPARATOR FuncParam)* .
-''
-function cFuncParamList( byval proc as FBSYMBOL ptr, _
-						 byval procexpr as integer, _
-						 byval optonly as integer ) as integer
-
-    dim as integer params, args
-    dim as FBSYMBOL ptr arg
-
-	cFuncParamList = FALSE
-
-	args = symbGetProcArgs( proc )
-
-	'' function has no args?
-	if( args = 0 ) then
-		cFuncParamList = TRUE
-		exit function
-	end if
-
-	params = 0
-	arg = symbGetProcLastArg( proc )
-	if( not optonly ) then
-		do
-			if( params >= args ) then
-				if( arg->arg.mode <> FB.ARGMODE.VARARG ) then
-					hReportError FB.ERRMSG.ARGCNTMISMATCH
-					exit function
-				end if
-			end if
-
-			if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
-				if( hGetLastError <> FB.ERRMSG.OK ) then
-					exit function
-				else
-					exit do
-				end if
-			end if
-
-			params += 1
-
-			if( params < args ) then
-				arg = symbGetProcPrevArg( proc, arg )
-			end if
-
-		loop while( hMatch( CHAR_COMMA ) )
-	end if
-
-	''
-	do while( params < args )
-		if( arg->arg.mode = FB.ARGMODE.VARARG ) then
-			exit do
-		end if
-
-		if( not cFuncParam( proc, arg, procexpr, optonly ) ) then
-			exit function
-		end if
-
-		params += 1
-		arg = symbGetProcPrevArg( proc, arg )
-	loop
-
-	cFuncParamList = TRUE
-
-end function
-
-'':::::
 function cFunctionCall( byval sym as FBSYMBOL ptr, _
 						elm as FBSYMBOL ptr, _
 						funcexpr as integer, _
@@ -1332,8 +1171,6 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 
     typ = symbGetType( sym )
 
-    funcexpr = astNewFUNCT( sym, typ, ptrexpr )
-
 	'' is it really a function?
 	if( typ = FB.SYMBTYPE.VOID ) then
 		hReportError FB.ERRMSG.SYNTAXERROR
@@ -1345,7 +1182,8 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 		lexSkipToken
 
 		'' ProcParamList
-		if( not cFuncParamList( sym, funcexpr, FALSE ) ) then
+		funcexpr = cProcParamList( sym, ptrexpr, TRUE, FALSE )
+		if( funcexpr = INVALID ) then
 			exit function
 		end if
 
@@ -1356,14 +1194,10 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 		end if
 
 	else
-		'' function has no args?
-		if( symbGetProcArgs( sym ) <> 0 ) then
-
-			'' ProcParamList (function can have optional args)
-			if( not cFuncParamList( sym, funcexpr, TRUE ) ) then
-				exit function
-			end if
-
+		'' ProcParamList (function can have optional args)
+		funcexpr = cProcParamList( sym, ptrexpr, TRUE, TRUE )
+		if( funcexpr = INVALID ) then
+			exit function
 		end if
 	end if
 

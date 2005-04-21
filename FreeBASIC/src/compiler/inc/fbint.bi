@@ -291,6 +291,7 @@ enum FBTK_ENUM
 	FB.TK.STDCALL
 	FB.TK.ALIAS
 	FB.TK.LIB
+	FB.TK.OVERLOAD
 
 	FB.TK.LET
 	FB.TK.RETURN
@@ -476,6 +477,7 @@ enum FBALLOCTYPE_ENUM
 	FB.ALLOCTYPE.EXTERN			= 1024			'' extern's become public when DIM'ed
 	FB.ALLOCTYPE.EXPORT			= 2048
 	FB.ALLOCTYPE.IMPORT			= 4096
+	FB.ALLOCTYPE.OVERLOADED		= 8192			'' functions only
 end enum
 
 '$include once:'inc\hash.bi'
@@ -631,6 +633,11 @@ end type
 
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
 
+type FBPROCOVL
+	maxargs			as integer
+	nxt				as FBSYMBOL_ ptr
+end type
+
 type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
@@ -645,6 +652,8 @@ type FBSPROC
 	isrtl			as integer
 	rtlcallback		as FBRTLCALLBACK
 	errorcheck		as integer
+
+	ovl				as FBPROCOVL				'' used for overloading
 end type
 
 type FBSVAR

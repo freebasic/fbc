@@ -1400,6 +1400,18 @@ data "cvl","fb_CVI", _
 	 NULL, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+'' fb_CVSHORT ( str as string ) as short
+data "cvshort","fb_CVSHORT", _
+	 FB.SYMBTYPE.SHORT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+'' fb_CVLONGINT ( str as string ) as longint
+data "cvlongint","fb_CVLONGINT", _
+	 FB.SYMBTYPE.LONGINT,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
 '' fb_HEX ( byval number as integer ) as string
 data "hex","fb_HEX", _
@@ -1426,6 +1438,12 @@ data "mkd","fb_MKD", _
 	 NULL, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
+'' fb_MKS ( byval number as single ) as string
+data "mks","fb_MKS", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
 '' fb_MKI ( byval number as integer ) as string
 data "mki","fb_MKI", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
@@ -1437,12 +1455,18 @@ data "mkl","fb_MKI", _
 	 NULL, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_MKS ( byval number as single ) as string
-data "mks","fb_MKS", _
+'' fb_MKSHORT ( byval number as short ) as string
+data "mkshort","fb_MKSHORT", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, _
 	 1, _
-	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE
+	 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYVAL, FALSE
+'' fb_MKLONGINT ( byval number as longint ) as string
+data "mklongint","fb_MKLONGINT", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_LEFT ( str as string, byval n as integer ) as string
 data "left","fb_LEFT", _

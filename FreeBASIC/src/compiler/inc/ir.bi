@@ -29,6 +29,9 @@ enum IRDATACLASS_ENUM
 	IR.DATACLASS.INTEGER                        '' must be the first
 	IR.DATACLASS.FPOINT
 	IR.DATACLASS.STRING							'' /    /  /   last
+	IR.DATACLASS.UDT
+	IR.DATACLASS.FUNCT
+	IR.DATACLASS.UNKNOWN
 end enum
 
 '' data types (must be in order of precision and in the other signed/non-signed!)

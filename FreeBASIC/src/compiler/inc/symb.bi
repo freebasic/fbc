@@ -44,6 +44,15 @@ declare function 	symbFindByNameAndSuffix	( byval symbol as string, _
 											  byval suffix as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
 
+declare function 	symbFindOverloadProc	( byval proc as FBSYMBOL ptr, _
+					   	       				  byval argc as integer, _
+					   	       				  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr
+
+declare function 	symbFindClosestOvlProc	( byval proc as FBSYMBOL ptr, _
+					   		    			  byval params as integer, _
+					   		    			  exprTB() as integer, _
+					   		    			  modeTB() as integer ) as FBSYMBOL ptr
+
 declare function 	symbLookupUDTVar		( byval symbol as string, _
 											  byval dotpos as integer, _
 											  suffix as integer, _
@@ -319,6 +328,10 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 #define symbGetProcErrorCheck(f) f->proc.errorcheck
 
 #define symbSetProcErrorCheck(f,v) f->proc.errorcheck = v
+
+#define symbGetProcIsOverloaded(f) ((f->alloctype and FB.ALLOCTYPE.OVERLOADED) > 0)
+
+#define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
 
 #define symbGetArgMode(f,a) iif( a = NULL, INVALID, a->arg.mode )
 

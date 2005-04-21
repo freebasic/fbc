@@ -141,7 +141,7 @@ declare sub 		irDump				( byval op as integer, _
 
 '' class, size, bits, signed?, name
 datatypedata:
-data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "void"
+data IR.DATACLASS.UNKNOWN, 0			 	, 0					, FALSE, "void"
 data IR.DATACLASS.INTEGER, 1			 	, 8*1				, TRUE , "byte"
 data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "ubyte"
 data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "char"
@@ -155,9 +155,9 @@ data IR.DATACLASS.FPOINT , 4             	, 8*4				, TRUE , "single"
 data IR.DATACLASS.FPOINT , 8			 	, 8*8				, TRUE , "double"
 data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, 0					, FALSE, "string"
 data IR.DATACLASS.STRING , 1			 	, 8*1				, FALSE, "fixstr"
-data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "udt"
-data IR.DATACLASS.INTEGER, 0			 	, 0					, FALSE, "func"
-data IR.DATACLASS.INTEGER, 1			 	, 0					, FALSE, "typedef"
+data IR.DATACLASS.UDT	 , 0			 	, 0					, FALSE, "udt"
+data IR.DATACLASS.FUNCT	 , 0			 	, 0					, FALSE, "func"
+data IR.DATACLASS.UNKNOWN, 0			 	, 0					, FALSE, "typedef"
 
 ''op, type(binary=0,unary=1,...), cummutative, name
 opcodedata:

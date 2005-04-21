@@ -1,7 +1,11 @@
 
-[ ] check for references to self on TYPE fields (field AS parent)
+[ ] function overloading:
+-- arglist with optionals with different types at the same arg num (?)
+-- delPrototype must check for overloads
+-- check different modes and types if they are working
+-- check optional args, this can be tricky
 
-[ ] make PUT# and GET# accept a 4th optional argument: bytes
+[ ] check for references to self on TYPE fields (field AS parent)
 
 [ ] rewrite the IR module using pointers instead of indexes, to be able to make fast links between
     a vreg and a TAC node later, so no MaxDistance will be needed
