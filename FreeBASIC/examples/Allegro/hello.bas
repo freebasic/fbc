@@ -22,7 +22,7 @@
 	end if
 
 	' set the color palette
-	set_palette(@desktop_palette)
+	set_palette(@desktop_palette(0))
 
 	' clear the screen to white
 	clear_to_color(screen, makecol(255, 255, 255))
