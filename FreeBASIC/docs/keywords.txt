@@ -176,7 +176,7 @@
   SPACE$ Function
   SQR Function
   SIN Function
-  STR$ Function			(diff: blanks are NOT added for positive signed integers)
+  STR$ Function	        (diff: blanks are NOT added for positive signed integers)
   STRING$ Function
   SADD Function
   SGN Function
@@ -216,7 +216,7 @@
   XOR Operator
 
 *****************************************************************************
-* Implemented GFX - all details at the docs/gfxlib.txt file                 * 
+* Implemented GFX - all details in the docs/gfxlib.txt file                 * 
 *****************************************************************************
 
   SCREEN Statement
@@ -280,8 +280,9 @@
   CUNSG Function
   CONTINUE Statement
   CURDIR Function
+  CVLONGINT Function
+  CVSHORT Function
   
-
   DEALLOCATE Statement  (sub( byval src as any ptr ))
   DEFBYTE Statement
   DEFUBYTE Statement
@@ -311,6 +312,8 @@
   LOBYTE macro          (foo = LOBYTE(bar) -- same as "foo = bar and &h000000ff")
   LOWORD macro          (foo = LOWORD(bar) -- same as "foo = bar and &h0000ffff")
 
+  MKLONGINT Function
+  MKSHORT Function
   MULTIKEY Function
 
   PRESERVE
@@ -360,6 +363,7 @@
   VA_ARG(a,t) macro     (returns the current var-arg, a= argument, t= argument type)
   VA_NEXT(a,t) macro    (returns a pointer to the next var-arg, a= current argument, t= current argument type)
   VAL64()               (converts a string to a long integer (64 bits))
+  VALINT()		(converts a string to an integer (32 bits))
 
   WINDOWTITLE Statement
   WITH..END WITH        (compound statement -- won't work with field dereference "->")
@@ -429,7 +433,7 @@
   STRIG Statements      (reason: ditto)
   SIGNAL                (reason: seldom if ever used)
   SOUND Statement       (reason: use real sound libraries instead)
-  SEG           (reason: segments are not needed in 32-bit flat mode)
+  SEG                   (reason: segments are not needed in 32-bit flat mode)
 
   TIMER Statement       (reason: no "faked" events)
   TROFF Statement       (reason: use a real debugger)
