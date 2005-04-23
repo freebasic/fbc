@@ -62,3 +62,9 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
 
 	return r;
 }
+
+/*:::::*/
+FBCALL int fb_StrInstrRe ( FBSTRING *src, FBSTRING *patt )
+{
+	return fb_StrInstr( 1, src, patt );
+}

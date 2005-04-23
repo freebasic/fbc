@@ -48,7 +48,6 @@ enum FBRTL_ENUM
 	FB.RTL.FLT2STR
 	FB.RTL.DBL2STR
 
-	FB.RTL.STRINSTR
 	FB.RTL.STRMID
 	FB.RTL.STRASSIGNMID
 	FB.RTL.STRFILL1
@@ -208,10 +207,6 @@ declare function 	rtlStrAllocTmpResult( byval strg as integer ) as integer
 declare function 	rtlStrAllocTmpDesc	( byval strg as integer ) as integer
 
 declare function 	rtlToStr			( byval expr as integer ) as integer
-
-declare function 	rtlStrInstr			( byval expr1 as integer, _
-										  byval expr2 as integer, _
-										  byval expr3 as integer ) as integer
 
 declare function 	rtlStrMid			( byval expr1 as integer, _
 										  byval expr2 as integer, _
