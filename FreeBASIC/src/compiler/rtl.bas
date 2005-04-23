@@ -1334,8 +1334,8 @@ data "multikey", "fb_GfxMultikey", _
 
 '' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as void
 data "getmouse", "fb_GfxGetMouse", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 @hGfxlib_cb, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, TRUE, _
 	 4, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
@@ -1344,12 +1344,28 @@ data "getmouse", "fb_GfxGetMouse", _
 
 '' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as void
 data "setmouse", "fb_GfxSetMouse", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
-	 @hGfxlib_cb, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, TRUE, _
 	 3, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
+
+'' fb_GfxGetJoystick ( byval id as integer, byref buttons as integer = 0, _
+''					   byref a1 as single = 0, byref a2 as single = 0, byref a3 as single = 0, _
+''					   byref a4 as single = 0, byref a5 as single = 0, byref a6 as single = 0 ) as integer
+data "getjoystick", "fb_GfxGetJoystick", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, TRUE, _
+	 8, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0
 
 '' fb_GfxScreenInfo ( ) as any ptr
 data "screeninfo", "fb_GfxScreenInfo", _
@@ -5032,6 +5048,7 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 #ifdef TARGET_WIN32
 		symbAddLib( "user32" )
 		symbAddLib( "gdi32" )
+		symbAddLib( "winmm" )
 #elseif defined(TARGET_LINUX)
 		fbAddLibPath( "/usr/X11R6/lib" )
 		symbAddLib( "X11" )

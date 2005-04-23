@@ -52,6 +52,8 @@ static int parse_number(char **str)
 	}
 	if (*c == '+')
 		c++;
+	while ((*c == ' ') || (*c == '\t'))
+		c++;
 	while ((*c >= '0') && (*c <= '9')) {
 		if (n == NAN)
 			n = 0;

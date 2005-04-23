@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxGetMouse(int *x, int *y, int *z, int *buttons)
+FBCALL int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons)
 {
 	int failure = TRUE;
 	int temp_z, temp_buttons;
@@ -42,6 +42,9 @@ FBCALL void fb_GfxGetMouse(int *x, int *y, int *z, int *buttons)
 		failure = fb_mode->driver->get_mouse(x, y, z, buttons);
 		fb_mode->driver->unlock();
 	}
-	if (failure)
+	if (failure) {
 		*x = *y = *z = *buttons = -1;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	}
+	return FB_RTERROR_OK;
 }

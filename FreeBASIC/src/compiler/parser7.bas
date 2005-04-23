@@ -443,19 +443,18 @@ function cGfxDraw as integer
 
 	cGfxDraw = FALSE
 
-	hMatchExpression( texpr )
-
-	if( hMatch( CHAR_COMMA ) ) then
-		target = hGetTarget( texpr, tisptr, FALSE )
+	texpr = INVALID
+	
+	if( lexLookAhead( 1 ) = CHAR_COMMA ) then
+		target = hGetTarget( texpr, tisptr )
 		if( target = NULL ) then
 			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 			exit function
 		end if
-		hMatchExpression( cexpr )
-	else
-		cexpr = texpr
-		texpr = INVALID
+		hMatch( CHAR_COMMA )
 	end if
+
+	hMatchExpression( cexpr )
 
 	cGfxDraw = rtlGfxDraw( texpr, tisptr, cexpr )
 

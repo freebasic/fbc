@@ -275,8 +275,9 @@ extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
 extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
 extern FBCALL int fb_GfxMultikey(int scancode);
-extern FBCALL void fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
-extern FBCALL void fb_GfxSetMouse(int x, int y, int cursor);
+extern FBCALL int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
+extern FBCALL int fb_GfxSetMouse(int x, int y, int cursor);
+extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6);
 
 /* Runtime library hooks */
 int fb_GfxGetkey(void);

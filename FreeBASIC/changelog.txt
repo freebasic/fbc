@@ -6,6 +6,7 @@ Version 0.14 Beta:
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 - CVSHORT(), CVLONGINT(), MKSHORT$() and MKLONGINT$() (v1c)
+- GETJOYSTICK function in gfxlib to get the full state of an attached joystick (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -14,6 +15,7 @@ Version 0.14 Beta:
 - more thread-safetiness checks in platform dependent rtlib routines (lillo)
 - SHELL in Linux was not restoring console state before calling sub-process, resulting in bad keyboard I/O (lillo)
 - @'s used on DATA stmts were storing the names, not the addresses of var's or proc's (v1c)
+- DRAW had a parsing problem when directed towards an offscreen GET/PUT buffer (lillo)
 
 
 Version 0.13 Beta:
