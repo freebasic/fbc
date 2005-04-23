@@ -6,6 +6,7 @@ Version 0.14 Beta:
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 - CVSHORT(), CVLONGINT(), MKSHORT$() and MKLONGINT$() (v1c)
+- byte, short and longint overload versions of HEX$, OCT$ and BIN$ (v1c)
 - GETJOYSTICK function in gfxlib to get the full state of an attached joystick (lillo)
 
 [fixed]
