@@ -1793,8 +1793,6 @@ end function
 
 '':::::
 '' cStringFunct	=	STR$ '(' Expression{int|float|double} ')'
-'' 				|   INSTR '(' ((Expression{int} ',' Expression ',' Expression)|
-''							   (Expression{str} ',' Expression)) ')'
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''
@@ -1815,39 +1813,6 @@ function cStringFunct( funcexpr as integer ) as integer
 		hMatchRPRNT( )
 
 		funcexpr = rtlToStr( expr1 )
-
-		cStringFunct = funcexpr <> INVALID
-
-	'' INSTR '(' ((Expression{int} ',' Expression{str} ',' Expression{int})|
-	''			  (Expression{str} ',' Expression{int})) ')'
-	case FB.TK.INSTR
-		lexSkipToken
-		hMatchLPRNT( )
-
-		hMatchExpression( expr1 )
-
-		dtype = astGetDataType( expr1 )
-		dclass = irGetDataClass( dtype )
-		'' (Expression{int} ',' Expression{str} ',' Expression{str})
-		if( (dclass <> IR.DATACLASS.STRING) and (dtype <> IR.DATATYPE.CHAR) ) then
-
-			hMatchCOMMA( )
-
-			hMatchExpression( expr2 )
-
-		'' (Expression{str} ',' Expression{str})
-		else
-			expr2 = expr1
-			expr1 = astNewCONSTi( 1, IR.DATATYPE.INTEGER )
-		end if
-
-		hMatchCOMMA( )
-
-		hMatchExpression( expr3 )
-
-		hMatchRPRNT( )
-
-		funcexpr = rtlStrInstr( expr1, expr2, expr3 )
 
 		cStringFunct = funcexpr <> INVALID
 
@@ -2307,7 +2272,7 @@ function cQuirkFunction( funcexpr as integer )
 	res = FALSE
 
 	select case as const lexCurrentToken
-	case FB.TK.STR, FB.TK.INSTR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
+	case FB.TK.STR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
 		res = cStringFunct( funcexpr )
 	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN, FB.TK.SIZEOF
 		res = cMathFunct( funcexpr )

@@ -45,16 +45,16 @@ declare function cSymbUDTInit				( byval basesym as FBSYMBOL ptr, _
 '':::::
 function hIsSttSeparatorOrComment( byval token as integer ) as integer static
 
-	hIsSttSeparatorOrComment = FALSE
+	function = FALSE
 
 	if( token = FB.TK.STATSEPCHAR ) then
-		hIsSttSeparatorOrComment = TRUE
+		function = TRUE
 	elseif( token = FB.TK.COMMENTCHAR ) then
-		hIsSttSeparatorOrComment = TRUE
+		function = TRUE
 	else
 		select case as const token
 		case FB.TK.EOL, FB.TK.EOF, FB.TK.REM
-			hIsSttSeparatorOrComment = TRUE
+			function = TRUE
 		end select
 	end if
 
@@ -2812,8 +2812,10 @@ end function
 
 
 '':::::
-''SubOrFuncDecl      =  ID (CDECL|STDCALL|PASCAL)? (ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')?
-''					 |	ID (CDECL|STDCALL|PASCAL)? (ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')? (AS SymbolType)? .
+''SubOrFuncDecl      =  ID (CDECL|STDCALL|PASCAL)? OVERLOAD?
+''						(ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')?
+''					 |	ID (CDECL|STDCALL|PASCAL)? OVERLOAD?
+''						(ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')? (AS SymbolType)? .
 ''
 function cSubOrFuncDecl( byval isSub as integer ) static
     dim as string id, libname, aliasname
@@ -3666,9 +3668,6 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
 	''
 	proc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
-	if( proc = NULL ) then
-		exit function
-	end if
 
 	''
 	args = symbGetProcArgs( proc )

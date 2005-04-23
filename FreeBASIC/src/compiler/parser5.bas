@@ -33,9 +33,10 @@ defint a-z
 '$include once: 'inc\emit.bi'
 
 '':::::
-private sub hReportParamError( byval argnum as integer, byval errnum as integer = FB.ERRMSG.PARAMTYPEMISMATCHAT )
+private sub hReportParamError( byval argnum as integer, _
+							   byval errnum as integer = FB.ERRMSG.PARAMTYPEMISMATCHAT )
 
-	hReportErrorEx errnum, "at parameter: " + str$( argnum+1 )
+	hReportErrorEx( errnum, "at parameter: " + str$( argnum ) )
 
 end sub
 

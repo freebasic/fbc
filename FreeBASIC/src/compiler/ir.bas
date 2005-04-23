@@ -133,31 +133,28 @@ declare sub 		irDump				( byval op as integer, _
 
 	dim shared regTB(0 to EMIT.REGCLASSES-1) as REGCLASS ptr
 
-	dim shared dtypeTB( 0 to IR.MAXDATATYPES-1 ) as IRDATATYPE
 	dim shared opTB( 0 to 255 ) as IROPCODE
 	dim shared tacTB( ) as IRTAC
 	dim shared vregTB( ) as IRVREG
 
-
-'' class, size, bits, signed?, name
-datatypedata:
-data IR.DATACLASS.UNKNOWN, 0			 	, 0					, FALSE, "void"
-data IR.DATACLASS.INTEGER, 1			 	, 8*1				, TRUE , "byte"
-data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "ubyte"
-data IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "char"
-data IR.DATACLASS.INTEGER, 2			 	, 8*2				, TRUE , "short"
-data IR.DATACLASS.INTEGER, 2			 	, 8*2				, FALSE, "ushort"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, TRUE , "integer"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, FALSE, "uint"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, TRUE , "quad"
-data IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, FALSE, "uquad"
-data IR.DATACLASS.FPOINT , 4             	, 8*4				, TRUE , "single"
-data IR.DATACLASS.FPOINT , 8			 	, 8*8				, TRUE , "double"
-data IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, 0					, FALSE, "string"
-data IR.DATACLASS.STRING , 1			 	, 8*1				, FALSE, "fixstr"
-data IR.DATACLASS.UDT	 , 0			 	, 0					, FALSE, "udt"
-data IR.DATACLASS.FUNCT	 , 0			 	, 0					, FALSE, "func"
-data IR.DATACLASS.UNKNOWN, 0			 	, 0					, FALSE, "typedef"
+	dim shared dtypeTB( 0 to IR.MAXDATATYPES-1 ) as IRDATATYPE = { _
+			(IR.DATACLASS.UNKNOWN, 0			 	, 0					, FALSE, "void"		), _
+			(IR.DATACLASS.INTEGER, 1			 	, 8*1				, TRUE , "byte"		), _
+			(IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "ubyte"	), _
+			(IR.DATACLASS.INTEGER, 1			 	, 8*1				, FALSE, "char"		), _
+			(IR.DATACLASS.INTEGER, 2			 	, 8*2				, TRUE , "short"	), _
+			(IR.DATACLASS.INTEGER, 2			 	, 8*2				, FALSE, "ushort"	), _
+			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, TRUE , "integer"	), _
+			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, FALSE, "uint"		), _
+			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, TRUE , "quad"		), _
+			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, FALSE, "uquad"	), _
+			(IR.DATACLASS.FPOINT , 4             	, 8*4				, TRUE , "single"	), _
+			(IR.DATACLASS.FPOINT , 8			 	, 8*8				, TRUE , "double"	), _
+			(IR.DATACLASS.STRING , FB.STRSTRUCTSIZE	, 0					, FALSE, "string"	), _
+			(IR.DATACLASS.STRING , 1			 	, 8*1				, FALSE, "fixstr"	), _
+			(IR.DATACLASS.UDT	 , 0			 	, 0					, FALSE, "udt"		), _
+			(IR.DATACLASS.FUNCT	 , 0			 	, 0					, FALSE, "func"		), _
+			(IR.DATACLASS.UNKNOWN, 0			 	, 0					, FALSE, "typedef"	) }
 
 ''op, type(binary=0,unary=1,...), cummutative, name
 opcodedata:
@@ -209,7 +206,6 @@ data IR.OP.CALLPTR	, IR.OPTYPE.CALL	, FALSE, "ca@"
 data IR.OP.JUMPPTR	, IR.OPTYPE.CALL	, FALSE, "jm@"
 data IR.OP.PUSHUDT	, IR.OPTYPE.STACK	, FALSE, "psh"
 data IR.OP.STACKALIGN, IR.OPTYPE.STACK	, FALSE, "alg"
-
 data -1
 
 '':::::
@@ -249,17 +245,6 @@ end sub
 '':::::
 sub irInit
 	dim i as integer, op as integer
-
-	''
-	restore datatypedata
-	for i = 0 to IR.MAXDATATYPES-1
-		read dtypeTB(i).class
-		read dtypeTB(i).size
-		read dtypeTB(i).bits
-		read dtypeTB(i).signed
-		read dtypeTB(i).dname
-	next i
-
 
 	''
 	ctx.nodes	= 0
@@ -348,7 +333,8 @@ function irMaxDataType( byval dtype1 as integer, _
 
     '' don't convert byte <-> char, word <-> short, dword <-> integer, single <-> double
     select case as const dtype1
-    case IR.DATATYPE.UBYTE, IR.DATATYPE.USHORT, IR.DATATYPE.UINT, IR.DATATYPE.ULONGINT, IR.DATATYPE.DOUBLE
+    case IR.DATATYPE.UBYTE, IR.DATATYPE.USHORT, IR.DATATYPE.UINT, _
+    	 IR.DATATYPE.ULONGINT, IR.DATATYPE.DOUBLE
     	if( dtype1 - dtype2 = 1 ) then
     		exit function
     	end if

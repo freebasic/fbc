@@ -5008,7 +5008,7 @@ sub hSaveAsmHeader( )
     ''
     maininitlabel = symbAddLabel( hMakeTmpStr )
 
-    edbgMain maininitlabel
+    edbgMainBegin( maininitlabel )
 
     hWriteStr ctx.outf, FALSE, NEWLINE + "#user code"
     hWriteStr ctx.outf, FALSE, EMIT_MAINPROC + ":"
@@ -5159,7 +5159,7 @@ private sub hEmitBss( ) static
     	    	elements = hCalcElements( s )
     	    end if
 
-    	    hEmitBssHeader
+    	    hEmitBssHeader( )
 
     	    if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
     	    	if( (alloctype and FB.ALLOCTYPE.PUBLIC) <> 0 ) then
@@ -5183,6 +5183,9 @@ private sub hEmitBss( ) static
     	    ostr += ","
     	    ostr += str$( s->lgt * elements )
     	    hWriteStr ctx.outf, TRUE, ostr
+
+    	    edbgGlobalVar( s, EMIT.SECTYPE.BSS )
+
     	end if
 
     	s = s->nxt
@@ -5253,6 +5256,9 @@ private sub hEmitConst( ) static
     	    ostr += TABCHAR
     	    ostr += stext
     	    hWriteStr ctx.outf, FALSE, ostr
+
+    	    'edbgGlobalVar( s, EMIT.SECTYPE.CONST )
+
     	end if
 
     	s = s->nxt
@@ -5284,6 +5290,8 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	end if
 	dname = symbGetVarDscName( s )
 
+    edbgGlobalVar( symbGetArrayDescriptor( s ), EMIT.SECTYPE.DATA )
+
     '' COMMON?
     if( (s->alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
     	if( dims = -1 ) then
@@ -5291,6 +5299,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     	end if
 
     	emitPUBLIC dname
+
     	hWriteStr ctx.outf, TRUE, ".balign 4"
     	hWriteStr ctx.outf, TRUE,  ".comm" + TABCHAR + dname + "," + _
     							   str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
@@ -5468,27 +5477,30 @@ end function
 sub emitClose( byval tottime as double )
 
     '' footer
-    hEmitFooter tottime
+    hEmitFooter( tottime )
+
+    ''
+    edgbMainEnd( )
 
 	'' const
-	hEmitConst
+	hEmitConst( )
 
 	'' data
-	hEmitData
+	hEmitData( )
 
 	'' bss
-	hEmitBss
+	hEmitBss( )
 
 	''
 	if( env.clopt.export ) then
-		hEmitExport
+		hEmitExport( )
 	end if
 
 	''
-	edbgFooter
+	edbgFooter( )
 
     '' init proc must be the lastest or GDB will get confused
-    hEmitInitProc
+    hEmitInitProc( )
 
 	''
 	close #ctx.outf

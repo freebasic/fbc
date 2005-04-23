@@ -191,7 +191,6 @@ data "UNION"	, FB.TK.UNION		, FB.TKCLASS.KEYWORD
 data "PUBLIC"	, FB.TK.PUBLIC		, FB.TKCLASS.KEYWORD
 data "PRIVATE"	, FB.TK.PRIVATE		, FB.TKCLASS.KEYWORD
 data "STR"		, FB.TK.STR			, FB.TKCLASS.KEYWORD
-data "INSTR"	, FB.TK.INSTR		, FB.TKCLASS.KEYWORD
 data "MID"		, FB.TK.MID			, FB.TKCLASS.KEYWORD
 data "BYREF"	, FB.TK.BYREF		, FB.TKCLASS.KEYWORD
 data "OPTION"	, FB.TK.OPTION		, FB.TKCLASS.KEYWORD
@@ -2561,7 +2560,8 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     modeTB() as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, marg, match
-	dim as integer p, adclass, pdclass, dtype, fmatches, mmatches
+	dim as integer p, adclass, pdclass, dtype
+	dim as integer fdtype, mdtype, fmatches, mmatches
 
 	match = NULL
 
@@ -2629,13 +2629,32 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 							if( exprTB(p) <> INVALID ) then
 								'' different types?
 								if( farg->typ <> marg->typ ) then
+
 									dtype = astGetDataType( exprTB(p) )
-									'' get the distance..
-									if( abs( farg->typ - dtype ) < _
-										abs( marg->typ - dtype ) ) then
+									if( dtype >= IR.DATATYPE.POINTER ) then
+										dtype = IR.DATATYPE.UINT
+									end if
+
+									fdtype = farg->typ
+									if( fdtype >= IR.DATATYPE.POINTER ) then
+										fdtype = IR.DATATYPE.UINT
+									end if
+
+									mdtype = marg->typ
+									if( mdtype >= IR.DATATYPE.POINTER ) then
+										mdtype = IR.DATATYPE.UINT
+									end if
+
+									if( irMaxDataType( fdtype, dtype ) = INVALID ) then
 										fmatches += 1
 									else
-										mmatches += 1
+										'' get the distance..
+										if( abs( fdtype - dtype ) < _
+											abs( mdtype - dtype ) ) then
+											fmatches += 1
+										else
+											mmatches += 1
+										end if
 									end if
 
 								end if
@@ -2659,7 +2678,11 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 		f = f->proc.ovl.nxt
 	loop
 
-	function = match
+	if( match <> NULL ) then
+		function = match
+	else
+		function = proc
+	end if
 
 end function
 
@@ -3109,17 +3132,31 @@ end sub
 
 '':::::
 sub symbDelPrototype( byval s as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr n
 
     s = symbFindByClass( s, FB.SYMBCLASS.PROC )
     if( s = NULL ) then
     	exit sub
     end if
 
-	if( s->proc.args > 0 ) then
-		hDelArgs s
-	end if
+	do
+		'' overloaded?
+		if( (s->alloctype and FB.ALLOCTYPE.OVERLOADED) > 0 ) then
+			n = s->proc.ovl.nxt
+		else
+			n = NULL
+		end if
 
-    hFreeSymbol s
+		'' del args..
+		if( s->proc.args > 0 ) then
+			hDelArgs s
+		end if
+
+    	hFreeSymbol s
+
+    	'' next overload
+    	s = n
+    loop while( s <> NULL )
 
 end sub
 
