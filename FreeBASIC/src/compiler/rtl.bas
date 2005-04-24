@@ -55,7 +55,7 @@ declare function 	hGfxlib_cb			( byval sym as FBSYMBOL ptr ) as integer
 
 '' name, alias, _
 '' type, mode, _
-'' callback, checkerror, _
+'' callback, checkerror, overloaded, _
 '' args, _
 '' [arg typ,mode,optional[,value]]*args
 ifuncdata:
@@ -1348,7 +1348,7 @@ data "setmouse", "fb_GfxSetMouse", _
 ''					   byref a4 as single = 0, byref a5 as single = 0, byref a6 as single = 0 ) as integer
 data "getjoystick", "fb_GfxGetJoystick", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 @hGfxlib_cb, TRUE, _
+	 @hGfxlib_cb, TRUE, FALSE, _
 	 8, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
@@ -2155,7 +2155,7 @@ private sub hAddIntrinsicProcs
 		if( len( pname ) = 0 ) then
 			exit do
 		end if
-
+		
 		read aname
 		read ptype, pmode
 		read pcallback, errorcheck, overloaded
