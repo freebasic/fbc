@@ -31,7 +31,7 @@
     char buffer[80];									\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, type "\n", val );       		\
+    	sprintf( buffer, type FB_NEWLINE, val );       	\
     else												\
     	sprintf( buffer, type ",", val );               \
     													\
@@ -45,7 +45,7 @@
     char buffer[80*25+1];								\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, type "\n", val );       		\
+    	sprintf( buffer, type FB_NEWLINE, val );       	\
     else												\
     	sprintf( buffer, type ",", val );               \
     													\
@@ -67,7 +67,7 @@ FBCALL void fb_WriteVoid ( int fnum, int mask )
 #ifndef WIN32
 		buffer = nl;
 #else
-    	buffer = "\n";
+    	buffer = FB_NEWLINE;
 #endif
 
     else if( mask & FB_PRINT_PAD )

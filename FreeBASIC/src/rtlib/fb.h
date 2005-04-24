@@ -92,6 +92,14 @@ extern pthread_mutex_t fb_string_mutex;
 # define FB_TLSGET(key)				key
 #endif
 
+
+#if defined(TARGET_WIN32) || defined(TARGET_DOS)
+# define FB_NEWLINE "\r\n"
+#elif defined(TARGET_LINUX)
+# define FB_NEWLINE "\n"
+#endif
+
+
 /**************************************************************************************************
  * internal lists
  **************************************************************************************************/
@@ -157,7 +165,7 @@ typedef struct _FBSTRING {
 
 typedef struct _FB_STR_TMPDESC {
 	FBSTRING		desc;
-	
+
 	FB_LISTELEM		elem;
 } FB_STR_TMPDESC;
 
@@ -340,7 +348,7 @@ typedef struct _FB_PRINTUSGCTX {
     char buffer[80];									\
     													\
     if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, fmt type "\n", val );       	\
+    	sprintf( buffer, fmt type FB_NEWLINE, val );    \
     else if( mask & FB_PRINT_PAD )          			\
     	sprintf( buffer, fmt "-14" type, val );			\
     else												\

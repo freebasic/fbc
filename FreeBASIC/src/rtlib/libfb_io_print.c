@@ -41,7 +41,7 @@ FBCALL void fb_PrintVoid ( int fnum, int mask )
 #ifndef WIN32
 		buffer = nl;
 #else
-    	buffer = "\n";
+    	buffer = FB_NEWLINE;
 #endif
 
     else if( mask & FB_PRINT_PAD )
@@ -90,7 +90,7 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
     		mask = rmask;
 
     		if( mask & FB_PRINT_NEWLINE )
-    			sprintf( buffer, "%s\n", s );
+    			sprintf( buffer, "%s" FB_NEWLINE, s );
     		else if( mask & FB_PRINT_PAD )
     			sprintf( buffer, "%-14s", s );
     		else
@@ -118,7 +118,7 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
 FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 {
 	FB_STRLOCK();
-	
+
     if( (s == NULL) || (s->data == NULL) )
     	fb_PrintVoid( fnum, mask );
     else
