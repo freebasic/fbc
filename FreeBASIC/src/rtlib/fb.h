@@ -93,12 +93,7 @@ extern pthread_mutex_t fb_string_mutex;
 #endif
 
 
-#if defined(TARGET_WIN32) || defined(TARGET_DOS)
-# define FB_NEWLINE "\r\n"
-#elif defined(TARGET_LINUX)
-# define FB_NEWLINE "\n"
-#endif
-
+#define FB_NEWLINE "\n"
 
 /**************************************************************************************************
  * internal lists
