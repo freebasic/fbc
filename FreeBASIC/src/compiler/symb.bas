@@ -2593,7 +2593,7 @@ end function
 '':::::
 function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     byval params as integer, _
-					   		     exprTB() as integer, _
+					   		     exprTB() as ASTNODE ptr, _
 					   		     modeTB() as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, marg, match, psubtype, fsubtype
@@ -2613,7 +2613,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 			for p = 0 to params-1
 
 				'' optional?
-				if( exprTB(p) = INVALID ) then
+				if( exprTB(p) = NULL ) then
 					if( not farg->arg.optional ) then
 						exit for
 					end if
@@ -2682,7 +2682,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 						'' for each param..
 						for p = 0 to params-1
 							'' not optional?
-							if( exprTB(p) <> INVALID ) then
+							if( exprTB(p) <> NULL ) then
 								'' different types?
 								if( farg->typ <> marg->typ ) then
 
@@ -3323,10 +3323,9 @@ end sub
 '':::::
 sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, _
 							 byval issub as integer ) static
-    dim node as FBLOCSYMBOL ptr, nxt as FBLOCSYMBOL ptr
-    dim s as FBSYMBOL ptr
-    dim strg as integer
-    dim fres as FBSYMBOL ptr
+    dim as FBLOCSYMBOL ptr node, nxt
+    dim as FBSYMBOL ptr s, fres
+    dim as ASTNODE ptr strg
 
     '' can't free function's result, that's will be done by the rtlib
     if( issub ) then

@@ -42,10 +42,7 @@ option escape
 '''''#define DO_STACK_ALIGN
 
 type ASTCTX
-	head			as integer
-	tail			as integer
-	fhead			as integer
-	nodes			as integer
+	astTB			as TLIST
 
 	tempstr			as TLIST
 	temparray		as TLIST
@@ -56,14 +53,12 @@ type ASTVALUE
 	v				as FBVALUE
 end type
 
-declare function	astUpdStrConcat		( byval n as integer ) as integer
+declare function	astUpdStrConcat		( byval n as ASTNODE ptr ) as ASTNODE ptr
 
-declare function 	astGetUDTElm		( byval n as integer ) as FBSYMBOL ptr
+declare function 	astGetUDTElm		( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 '' globals
 	dim shared ctx as ASTCTX
-
-	dim shared astTB( ) as ASTNODE
 
 	dim shared bitmaskTB( 0 to 32 ) as uinteger = { 0, _
 		1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65565, _
@@ -76,24 +71,24 @@ declare function 	astGetUDTElm		( byval n as integer ) as FBSYMBOL ptr
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astOptConstRmNeg( byval n as integer, _
-					  byval p as integer )
-	static as integer l, r
+sub astOptConstRmNeg( byval n as ASTNODE ptr, _
+					  byval p as ASTNODE ptr )
+	static as ASTNODE ptr l, r
 
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
-	if( p <> INVALID ) then
-		if( astTB(n).class = AST.NODECLASS.UOP ) then
-			if( astTB(n).op = IR.OP.NEG ) then
-				l = astTB(n).l
-				if( astTB(l).class = AST.NODECLASS.VAR ) then
-					if( astTB(p).class = AST.NODECLASS.BOP ) then
-						if( astTB(p).op = IR.OP.ADD ) then
-							r = astTB(p).r
-							if( astTB(r).defined ) then
-								astTB(p).op = IR.OP.SUB
-								astTB(p).l = astTB(p).r
-								astTB(p).r = astTB(n).l
-								astDel n
+	if( p <> NULL ) then
+		if( n->class = AST.NODECLASS.UOP ) then
+			if( n->op = IR.OP.NEG ) then
+				l = n->l
+				if( l->class = AST.NODECLASS.VAR ) then
+					if( p->class = AST.NODECLASS.BOP ) then
+						if( p->op = IR.OP.ADD ) then
+							r = p->r
+							if( r->defined ) then
+								p->op = IR.OP.SUB
+								p->l = p->r
+								p->r = n->l
+								astDel( n )
 								exit sub
 							end if
 						end if
@@ -104,13 +99,13 @@ sub astOptConstRmNeg( byval n as integer, _
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
+	l = n->l
+	if( l <> NULL ) then
 		astOptConstRmNeg( l, n )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
+	r = n->r
+	if( r <> NULL ) then
 		astOptConstRmNeg( r, n )
 	end if
 
@@ -230,28 +225,29 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 end function
 
 '':::::
-function asthConstAccumADDSUB( byval n as integer, _
+function asthConstAccumADDSUB( byval n as ASTNODE ptr, _
 							   byval v as ASTVALUE ptr, _
-							   byval op as integer ) as integer
-	dim as integer l, r, o
+							   byval op as integer ) as ASTNODE ptr
+	dim as ASTNODE ptr l, r
+	dim as integer o
 	static as integer dtype
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
-	if( astTB(n).class <> AST.NODECLASS.BOP ) then
+	if( n->class <> AST.NODECLASS.BOP ) then
 		return n
 	end if
 
-    o = astTB(n).op
+    o = n->op
 
 	select case o
 	case IR.OP.ADD, IR.OP.SUB
-		l = astTB(n).l
-		r = astTB(n).r
+		l = n->l
+		r = n->r
 
-		if( astTB(r).defined ) then
+		if( r->defined ) then
 
 			if( op < 0 ) then
 				if( o = IR.OP.ADD ) then
@@ -261,124 +257,124 @@ function asthConstAccumADDSUB( byval n as integer, _
 				end if
 			end if
 
-			dtype = hPrepConst( v, @astTB(r) )
+			dtype = hPrepConst( v, r )
 
 			if( dtype <> INVALID ) then
 				select case o
 				case IR.OP.ADD
 					select case as const dtype
 					case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-						v->v.value64 += astTB(r).v.value64
+						v->v.value64 += r->v.value64
 					case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-						v->v.valuef += astTB(r).v.valuef
+						v->v.valuef += r->v.valuef
 					case else
-				    	v->v.valuei += astTB(r).v.valuei
+				    	v->v.valuei += r->v.valuei
 					end select
 
 				case IR.OP.SUB
 					select case as const dtype
 					case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-						v->v.value64 -= astTB(r).v.value64
+						v->v.value64 -= r->v.value64
 					case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-						v->v.valuef -= astTB(r).v.valuef
+						v->v.valuef -= r->v.valuef
 					case else
-						v->v.valuei -= astTB(r).v.valuei
+						v->v.valuei -= r->v.valuei
 					end select
 				end select
 			end if
 
 			'' del BOP and const node
-			astDel r
-			astDel n
+			astDel( r )
+			astDel( n )
 
 			'' top node is now the left one
 			n = asthConstAccumADDSUB( l, v, op )
 
 		else
 			'' walk
-			astTB(n).l = asthConstAccumADDSUB( l, v, op )
+			n->l = asthConstAccumADDSUB( l, v, op )
 
 			if( o = IR.OP.SUB ) then
 				op = -op
 			end if
 
-			astTB(n).r = asthConstAccumADDSUB( r, v, op )
+			n->r = asthConstAccumADDSUB( r, v, op )
 		end if
 	end select
 
-	return n
+	function = n
 
 end function
 
 '':::::
-function asthConstAccumMUL( byval n as integer, _
-							byval v as ASTVALUE ptr ) as integer
-	dim as integer l, r
+function asthConstAccumMUL( byval n as ASTNODE ptr, _
+							byval v as ASTVALUE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l, r
 	static as integer dtype
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
-	if( astTB(n).class <> AST.NODECLASS.BOP ) then
+	if( n->class <> AST.NODECLASS.BOP ) then
 		return n
 	end if
 
-	if( astTB(n).op = IR.OP.MUL ) then
-		l = astTB(n).l
-		r = astTB(n).r
+	if( n->op = IR.OP.MUL ) then
+		l = n->l
+		r = n->r
 
-		if( astTB(r).defined ) then
+		if( r->defined ) then
 
-			dtype = hPrepConst( v, @astTB(r) )
+			dtype = hPrepConst( v, r )
 
 			if( dtype <> INVALID ) then
 				select case as const dtype
 				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					v->v.value64 *= astTB(r).v.value64
+					v->v.value64 *= r->v.value64
 				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					v->v.valuef *= astTB(r).v.valuef
+					v->v.valuef *= r->v.valuef
 				case else
-					v->v.valuei *= astTB(r).v.valuei
+					v->v.valuei *= r->v.valuei
 				end select
 			end if
 
 			'' del BOP and const node
-			astDel r
-			astDel n
+			astDel( r )
+			astDel( n )
 
 			'' top node is now the left one
 			n = asthConstAccumMUL( l, v )
 
 		else
 			'' walk
-			astTB(n).l = asthConstAccumMUL( l, v )
-			astTB(n).r = asthConstAccumMUL( r, v )
+			n->l = asthConstAccumMUL( l, v )
+			n->r = asthConstAccumMUL( r, v )
 		end if
 	end if
 
-	return n
+	function = n
 
 end function
 
 '':::::
-function astOptConstAccum1( byval n as integer ) as integer
-	static as integer l, r, nn
+function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
+	static as ASTNODE ptr l, r, nn
 	static as ASTVALUE v
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
 	'' check any ADD|SUB|MUL BOP node with a constant at the right leaf and
 	'' then begin accumulating the other constants at the nodes below the
 	'' current, deleting any constant leaf that were added
 	'' (this will handle for ex. a+1+b+2-3, that will become a+b
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		r = astTB(n).r
-		if( astTB(r).defined ) then
+	if( n->class = AST.NODECLASS.BOP ) then
+		r = n->r
+		if( r->defined ) then
 
-			select case as const astTB(n).op
+			select case as const n->op
 			case IR.OP.ADD
 				v.dtype = INVALID
 				n = asthConstAccumADDSUB( n, @v, 1 )
@@ -430,50 +426,51 @@ function astOptConstAccum1( byval n as integer ) as integer
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astTB(n).l = astOptConstAccum1( l )
+	l = n->l
+	if( l <> NULL ) then
+		n->l = astOptConstAccum1( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astTB(n).r = astOptConstAccum1( r )
+	r = n->r
+	if( r <> NULL ) then
+		n->r = astOptConstAccum1( r )
 	end if
 
-	return n
+	function = n
 
 end function
 
 '':::::
-sub astOptConstAccum2( byval n as integer )
-	static as integer l, r, dtype, checktype
+sub astOptConstAccum2( byval n as ASTNODE ptr )
+	static as ASTNODE ptr l, r
+	static as integer dtype, checktype
 	static as ASTVALUE v
 
 	'' check any ADD|SUB|MUL BOP node and then go to child leafs accumulating
 	'' any constants found there, deleting those nodes and then adding the
 	'' result to a new node, at right side of the current one
 	'' (this will handle for ex. a+1+(b+2)+(c+3), that will become a+b+c+6)
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
+	if( n->class = AST.NODECLASS.BOP ) then
 
 		checktype = FALSE
 
-		select case astTB(n).op
+		select case n->op
 		case IR.OP.ADD
-			if( irGetDataClass( astTB(n).dtype ) <> IR.DATACLASS.STRING ) then
+			if( irGetDataClass( n->dtype ) <> IR.DATACLASS.STRING ) then
 
 				v.dtype = INVALID
-				astTB(n).l = asthConstAccumADDSUB( astTB(n).l, @v, 1 )
-				astTB(n).r = asthConstAccumADDSUB( astTB(n).r, @v, 1 )
+				n->l = asthConstAccumADDSUB( n->l, @v, 1 )
+				n->r = asthConstAccumADDSUB( n->r, @v, 1 )
 
 				if( v.dtype <> INVALID ) then
-					astTB(n).l = astNewBOP( IR.OP.ADD, astTB(n).l, astTB(n).r )
+					n->l = astNewBOP( IR.OP.ADD, n->l, n->r )
 					select case as const v.dtype
 					case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-						astTB(n).r = astNewCONST64( v.v.value64, v.dtype )
+						n->r = astNewCONST64( v.v.value64, v.dtype )
 					case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-						astTB(n).r = astNewCONSTf( v.v.valuef, v.dtype )
+						n->r = astNewCONSTf( v.v.valuef, v.dtype )
 					case else
-						astTB(n).r = astNewCONSTi( v.v.valuei, v.dtype )
+						n->r = astNewCONSTi( v.v.valuei, v.dtype )
 					end select
 					checktype = TRUE
 				end if
@@ -481,35 +478,35 @@ sub astOptConstAccum2( byval n as integer )
 
 		'case IR.OP.SUB
 		'	c = 0
-		'	asthConstAccumADDSUB astTB(n).l, c, -1
-		'	asthConstAccumADDSUB astTB(n).r, c, -1
+		'	asthConstAccumADDSUB n->l, c, -1
+		'	asthConstAccumADDSUB n->r, c, -1
 		'	if( c <> 0 ) then
 		'		if( c - int(c) <> 0 ) then
 		'			dtype = IR.DATATYPE.DOUBLE
 		'		else
 		'			dtype = IR.DATATYPE.INTEGER
 		'		end if
-		'		astTB(n).l = astNewBOP( IR.OP.SUB, astTB(n).l, astTB(n).r )
-		'		astTB(n).op = IR.OP.ADD
-		'		astTB(n).r = astNewCONST( c, dtype )
+		'		n->l = astNewBOP( IR.OP.SUB, n->l, n->r )
+		'		n->op = IR.OP.ADD
+		'		n->r = astNewCONST( c, dtype )
 		'		checktype = TRUE
 		'	end if
 
 		case IR.OP.MUL
 
 			v.dtype = INVALID
-			astTB(n).l = asthConstAccumMUL( astTB(n).l, @v )
-			astTB(n).r = asthConstAccumMUL( astTB(n).r, @v )
+			n->l = asthConstAccumMUL( n->l, @v )
+			n->r = asthConstAccumMUL( n->r, @v )
 
 			if( v.dtype <> INVALID ) then
-				astTB(n).l = astNewBOP( IR.OP.MUL, astTB(n).l, astTB(n).r )
+				n->l = astNewBOP( IR.OP.MUL, n->l, n->r )
 				select case as const v.dtype
 				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					astTB(n).r = astNewCONST64( v.v.value64, v.dtype )
+					n->r = astNewCONST64( v.v.value64, v.dtype )
 				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					astTB(n).r = astNewCONSTf( v.v.valuef, v.dtype )
+					n->r = astNewCONSTf( v.v.valuef, v.dtype )
 				case else
-					astTB(n).r = astNewCONSTi( v.v.valuei, v.dtype )
+					n->r = astNewCONSTi( v.v.valuei, v.dtype )
 				end select
 				checktype = TRUE
 			end if
@@ -517,161 +514,161 @@ sub astOptConstAccum2( byval n as integer )
 
 		if( checktype ) then
 			'' update the node data type
-			l = astTB(n).l
-			r = astTB(n).r
-			dtype = irMaxDataType( astTB(l).dtype, astTB(r).dtype )
+			l = n->l
+			r = n->r
+			dtype = irMaxDataType( l->dtype, r->dtype )
 			if( dtype <> INVALID ) then
-				if( dtype <> astTB(l).dtype ) then
-					astTB(n).l = astNewCONV( INVALID, dtype, l )
+				if( dtype <> l->dtype ) then
+					n->l = astNewCONV( INVALID, dtype, l )
 				else
-					astTB(n).r = astNewCONV( INVALID, dtype, r )
+					n->r = astNewCONV( INVALID, dtype, r )
 				end if
-				astTB(n).dtype = dtype
+				n->dtype = dtype
 			else
-				astTB(n).dtype = astTB(l).dtype
+				n->dtype = l->dtype
 			end if
 		end if
 
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
+	l = n->l
+	if( l <> NULL ) then
 		astOptConstAccum2( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
+	r = n->r
+	if( r <> NULL ) then
 		astOptConstAccum2( r )
 	end if
 
 end sub
 
 '':::::
-function asthConstDistMUL( byval n as integer, _
-						   byval v as ASTVALUE ptr ) as integer
-	dim as integer l, r
+function asthConstDistMUL( byval n as ASTNODE ptr, _
+						   byval v as ASTVALUE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l, r
 	static as integer dtype
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
-	if( astTB(n).class <> AST.NODECLASS.BOP ) then
+	if( n->class <> AST.NODECLASS.BOP ) then
 		return n
 	end if
 
-	if( astTB(n).op = IR.OP.ADD ) then
-		l = astTB(n).l
-		r = astTB(n).r
+	if( n->op = IR.OP.ADD ) then
+		l = n->l
+		r = n->r
 
-		if( astTB(r).defined ) then
+		if( r->defined ) then
 
-			dtype = hPrepConst( v, @astTB(r) )
+			dtype = hPrepConst( v, r )
 
 			if( dtype <> INVALID ) then
 				select case as const dtype
 				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					v->v.value64 += astTB(r).v.value64
+					v->v.value64 += r->v.value64
 				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					v->v.valuef += astTB(r).v.valuef
+					v->v.valuef += r->v.valuef
 				case else
-					v->v.valuei += astTB(r).v.valuei
+					v->v.valuei += r->v.valuei
 				end select
 			end if
 
 			'' del BOP and const node
-			astDel r
-			astDel n
+			astDel( r )
+			astDel( n )
 
 			'' top node is now the left one
 			n = asthConstDistMUL( l, v )
 
 		else
-			astTB(n).l = asthConstDistMUL( l, v )
-			astTB(n).r = asthConstDistMUL( r, v )
+			n->l = asthConstDistMUL( l, v )
+			n->r = asthConstDistMUL( r, v )
 		end if
 	end if
 
-	return n
+	function = n
 
 end function
 
 '':::::
-function astOptConstDistMUL( byval n as integer ) as integer
-	static l as integer, r as integer
-	static v as ASTVALUE
+function astOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
+	static as ASTNODE ptr l, r
+	static as ASTVALUE v
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
 	'' check any MUL BOP node with a constant at the right leaf and then scan
 	'' the left leaf for ADD BOP nodes, applying the distributive, deleting those
 	'' nodes and adding the result of all sums to a new node
 	'' (this will handle for ex. 2 * (3 + a * 2) that will become 6 + a * 4 (with Accum2's help))
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		r = astTB(n).r
-		if( astTB(r).defined ) then
-			if( astTB(n).op = IR.OP.MUL ) then
+	if( n->class = AST.NODECLASS.BOP ) then
+		r = n->r
+		if( r->defined ) then
+			if( n->op = IR.OP.MUL ) then
 
 				v.dtype = INVALID
-				astTB(n).l = asthConstDistMUL( astTB(n).l, @v )
+				n->l = asthConstDistMUL( n->l, @v )
 
 				if( v.dtype <> INVALID ) then
 					select case as const v.dtype
 					''
 					case IR.DATATYPE.LONGINT
-						select case as const astTB(r).dtype
+						select case as const r->dtype
 						case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-							v.v.value64 *= astTB(r).v.value64
+							v.v.value64 *= r->v.value64
 						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-							v.v.value64 *= clngint( astTB(r).v.valuef )
+							v.v.value64 *= clngint( r->v.valuef )
 						case else
-							v.v.value64 *= clngint( astTB(r).v.valuei )
+							v.v.value64 *= clngint( r->v.valuei )
 						end select
 
 						r = astNewCONST64( v.v.value64, v.dtype )
 
 					''
 					case IR.DATATYPE.ULONGINT
-						select case as const astTB(r).dtype
+						select case as const r->dtype
 						case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-							v.v.value64 *= cunsg( astTB(r).v.value64 )
+							v.v.value64 *= cunsg( r->v.value64 )
 						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-							v.v.value64 *= culngint( astTB(r).v.valuef )
+							v.v.value64 *= culngint( r->v.valuef )
 						case else
-							v.v.value64 *= culngint( astTB(r).v.valuei )
+							v.v.value64 *= culngint( r->v.valuei )
 						end select
 
 						r = astNewCONST64( v.v.value64, v.dtype )
 
 					''
 					case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-						select case as const astTB(r).dtype
+						select case as const r->dtype
 						case IR.DATATYPE.LONGINT
-							v.v.valuef *= cdbl( astTB(r).v.value64 )
+							v.v.valuef *= cdbl( r->v.value64 )
 						case IR.DATATYPE.ULONGINT
-							v.v.valuef *= cdbl( cunsg( astTB(r).v.value64 ) )
+							v.v.valuef *= cdbl( cunsg( r->v.value64 ) )
 						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-							v.v.valuef *= astTB(r).v.valuef
+							v.v.valuef *= r->v.valuef
 						case IR.DATATYPE.UINT
-							v.v.valuef *= cdbl( cunsg( astTB(r).v.valuei ) )
+							v.v.valuef *= cdbl( cunsg( r->v.valuei ) )
 						case else
-							v.v.valuef *= cdbl( astTB(r).v.valuei )
+							v.v.valuef *= cdbl( r->v.valuei )
 						end select
 
 						r = astNewCONSTf( v.v.valuef, v.dtype )
 
 					''
 					case else
-						select case as const astTB(r).dtype
+						select case as const r->dtype
 						case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-							v.v.valuei *= cint( astTB(r).v.value64 )
+							v.v.valuei *= cint( r->v.value64 )
 						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-							v.v.valuei *= cint( astTB(r).v.valuef )
+							v.v.valuei *= cint( r->v.valuef )
 						case else
-							v.v.valuei *= astTB(r).v.valuei
+							v.v.valuei *= r->v.valuei
 						end select
 
 						r = astNewCONSTi( v.v.valuei, v.dtype )
@@ -685,36 +682,37 @@ function astOptConstDistMUL( byval n as integer ) as integer
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astTB(n).l = astOptConstDistMUL( l )
+	l = n->l
+	if( l <> NULL ) then
+		n->l = astOptConstDistMUL( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astTB(n).r = astOptConstDistMUL( r )
+	r = n->r
+	if( r <> NULL ) then
+		n->r = astOptConstDistMUL( r )
 	end if
 
-	return n
+	function = n
 
 end function
 
 '':::::
-sub astOptConstIDX( byval n as integer )
-	static l as integer, r as integer, c as integer, lr as integer
-	static v as ASTVALUE
+sub astOptConstIDX( byval n as ASTNODE ptr )
+	static as ASTNODE ptr l, r, lr
+	static as integer c
+	static as ASTVALUE v
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit sub
 	end if
 
 	'' opt must be done in this order: addsub accum and then idx * lgt
-	select case astTB(n).class
+	select case n->class
 	case AST.NODECLASS.IDX, AST.NODECLASS.PTR
-		l = astTB(n).l
-		if( l <> INVALID ) then
+		l = n->l
+		if( l <> NULL ) then
 			v.dtype = INVALID
-			astTB(n).l = asthConstAccumADDSUB( l, @v, 1 )
+			n->l = asthConstAccumADDSUB( l, @v, 1 )
 
         	if( v.dtype <> INVALID ) then
         		select case as const v.dtype
@@ -726,67 +724,67 @@ sub astOptConstIDX( byval n as integer )
         			c = v.v.valuei
         		end select
 
-        		if( astTB(n).class = AST.NODECLASS.IDX ) then
-        			astTB(n).idx.ofs += c
+        		if( n->class = AST.NODECLASS.IDX ) then
+        			n->idx.ofs += c
         		else
-        			astTB(n).ptr.ofs += c
+        			n->ptr.ofs += c
         		end if
         	end if
 
         	'' remove l node if it's a const and add it to parent's offset
-        	l = astTB(n).l
-        	if( astTB(l).defined ) then
-				select case as const astTB(l).dtype
+        	l = n->l
+        	if( l->defined ) then
+				select case as const l->dtype
 				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					c = cint( astTB(l).v.value64 )
+					c = cint( l->v.value64 )
 				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					c = cint( astTB(l).v.valuef )
+					c = cint( l->v.valuef )
 				case else
-					c = cint( astTB(l).v.valuei )
+					c = cint( l->v.valuei )
 				end select
 
-				if( astTB(n).class = AST.NODECLASS.IDX ) then
-					astTB(n).idx.ofs += c
+				if( n->class = AST.NODECLASS.IDX ) then
+					n->idx.ofs += c
 				else
-					astTB(n).ptr.ofs += c
+					n->ptr.ofs += c
 				end if
 
-				astDel l
-				astTB(n).l = INVALID
+				astDel( l )
+				n->l = NULL
 			end if
 		end if
 	end select
 
-	if( astTB(n).class = AST.NODECLASS.IDX ) then
-		l = astTB(n).l
-		if( l <> INVALID ) then
+	if( n->class = AST.NODECLASS.IDX ) then
+		l = n->l
+		if( l <> NULL ) then
 			'' x86 assumption: if top of tree = idx * lgt, and lgt < 10, save lgt and delete * node
-			if( astTB(l).class = AST.NODECLASS.BOP ) then
-				if( astTB(l).op = IR.OP.MUL ) then
-					lr = astTB(l).r
-					if( astTB(lr).defined ) then
+			if( l->class = AST.NODECLASS.BOP ) then
+				if( l->op = IR.OP.MUL ) then
+					lr = l->r
+					if( lr->defined ) then
 
-						select case as const astTB(lr).dtype
+						select case as const lr->dtype
 						case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-							c = cint( astTB(lr).v.value64 )
+							c = cint( lr->v.value64 )
 						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-							c = cint( astTB(lr).v.valuef )
+							c = cint( lr->v.valuef )
 						case else
-							c = cint( astTB(lr).v.valuei )
+							c = cint( lr->v.valuei )
 						end select
 
 						if( c < 10 ) then
 				    		if( (c <> 6) and (c <> 7) ) then
-				    			astTB(n).idx.mult = c
+				    			n->idx.mult = c
 
 								'' relink
-								astTB(n).l = astTB(l).l
+								n->l = l->l
 
 				    			'' del const node and the BOP itself
-				    			astDel lr
-								astDel l
+				    			astDel( lr )
+								astDel( l )
 
-								l = astTB(n).l
+								l = n->l
 							end if
 						end if
 				    end if
@@ -794,22 +792,22 @@ sub astOptConstIDX( byval n as integer )
 			end if
 
 			'' convert to integer if needed
-			if( (irGetDataClass( astTB(l).dtype ) <> IR.DATACLASS.INTEGER) or _
-			    (irGetDataSize( astTB(l).dtype ) <> FB.POINTERSIZE) ) then
-				astTB(n).l = astNewCONV( INVALID, IR.DATATYPE.INTEGER, l )
+			if( (irGetDataClass( l->dtype ) <> IR.DATACLASS.INTEGER) or _
+			    (irGetDataSize( l->dtype ) <> FB.POINTERSIZE) ) then
+				n->l = astNewCONV( INVALID, IR.DATATYPE.INTEGER, l )
 			end if
 
         end if
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
+	l = n->l
+	if( l <> NULL ) then
 		astOptConstIDX( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
+	r = n->r
+	if( r <> NULL ) then
 		astOptConstIDX( r )
 	end if
 
@@ -820,26 +818,27 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astOptAssocADD( byval n as integer )
-	static l as integer, r as integer, op as integer, rop as integer
+sub astOptAssocADD( byval n as ASTNODE ptr )
+	static as ASTNODE ptr l, r
+	static as integer op, rop
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit sub
 	end if
 
     '' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		op = astTB(n).op
+	if( n->class = AST.NODECLASS.BOP ) then
+		op = n->op
 		if( op = IR.OP.ADD or op = IR.OP.SUB ) then
-			if( irGetDataClass( astTB(n).dtype ) <> IR.DATACLASS.STRING ) then
-				r = astTB(n).r
-				if( astTB(r).class = AST.NODECLASS.BOP ) then
-					rop = astTB(r).op
+			if( irGetDataClass( n->dtype ) <> IR.DATACLASS.STRING ) then
+				r = n->r
+				if( r->class = AST.NODECLASS.BOP ) then
+					rop = r->op
 					if( rop = IR.OP.ADD or rop = IR.OP.SUB ) then
-						astTB(n).r = astTB(r).r
-						astTB(r).r = astTB(r).l
-						astTB(r).l = astTB(n).l
-						astTB(n).l = r
+						n->r = r->r
+						r->r = r->l
+						r->l = n->l
+						n->l = r
 
 						if( op = IR.OP.SUB ) then
 							if( rop = IR.OP.SUB ) then
@@ -853,10 +852,10 @@ sub astOptAssocADD( byval n as integer )
 								rop = IR.OP.ADD
 							end if
 						end if
-						astTB(n).op = op
-						astTB(r).op = rop
+						n->op = op
+						r->op = rop
 
-						astOptAssocADD n
+						astOptAssocADD( n )
 						exit sub
 					end if
 				end if
@@ -865,37 +864,37 @@ sub astOptAssocADD( byval n as integer )
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astOptAssocADD l
+	l = n->l
+	if( l <> NULL ) then
+		astOptAssocADD( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astOptAssocADD r
+	r = n->r
+	if( r <> NULL ) then
+		astOptAssocADD( r )
 	end if
 
 end sub
 
 '':::::
-sub astOptAssocMUL( byval n as integer )
-	static l as integer, r as integer
+sub astOptAssocMUL( byval n as ASTNODE ptr )
+	static as ASTNODE ptr l, r
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit sub
 	end if
 
 	'' convert a*(b*c) to a*b*c
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		if( astTB(n).op = IR.OP.MUL ) then
-			r = astTB(n).r
-			if( astTB(r).class = AST.NODECLASS.BOP ) then
-				if( astTB(r).op = IR.OP.MUL ) then
-					astTB(n).r = astTB(r).r
-					astTB(r).r = astTB(r).l
-					astTB(r).l = astTB(n).l
-					astTB(n).l = r
-					astOptAssocMUL n
+	if( n->class = AST.NODECLASS.BOP ) then
+		if( n->op = IR.OP.MUL ) then
+			r = n->r
+			if( r->class = AST.NODECLASS.BOP ) then
+				if( r->op = IR.OP.MUL ) then
+					n->r = r->r
+					r->r = r->l
+					r->l = n->l
+					n->l = r
+					astOptAssocMUL( n )
 					Exit Sub
 				end if
 			end if
@@ -903,14 +902,14 @@ sub astOptAssocMUL( byval n as integer )
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astOptAssocMUL l
+	l = n->l
+	if( l <> NULL ) then
+		astOptAssocMUL( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astOptAssocMUL r
+	r = n->r
+	if( r <> NULL ) then
+		astOptAssocMUL( r )
 	end if
 
 end sub
@@ -920,43 +919,43 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astOptToShift( byval n as integer )
-	static l as integer, r as integer
-	static v as integer, op as integer
+sub astOptToShift( byval n as ASTNODE ptr )
+	static as ASTNODE ptr l, r
+	static as integer v, op
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit sub
 	end if
 
 	'' convert 'a * pow2 imm'   to 'a SHL pow2',
 	''         'a \ pow2 imm'   to 'a SHR pow2' and
 	''         'a MOD pow2 imm' to 'a AND pow2-1'
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		op = astTB(n).op
+	if( n->class = AST.NODECLASS.BOP ) then
+		op = n->op
 		select case op
 		case IR.OP.MUL, IR.OP.INTDIV, IR.OP.MOD
-			r = astTB(n).r
-			if( astTB(r).defined ) then
-				if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.INTEGER ) then
-					if( irGetDataSize( astTB(r).dtype ) <= FB.INTEGERSIZE ) then
-						v = astTB(r).v.valuei
+			r = n->r
+			if( r->defined ) then
+				if( irGetDataClass( n->dtype ) = IR.DATACLASS.INTEGER ) then
+					if( irGetDataSize( r->dtype ) <= FB.INTEGERSIZE ) then
+						v = r->v.valuei
 						if( v > 0 ) then
 							v = hToPow2( v )
 							if( v > 0 ) then
 								select case op
 								case IR.OP.MUL
 									if( v <= 32 ) then
-										astTB(n).op = IR.OP.SHL
-										astTB(r).v.valuei = v
+										n->op = IR.OP.SHL
+										r->v.valuei = v
 									end if
 								case IR.OP.INTDIV
 									if( v <= 32 ) then
-										astTB(n).op = IR.OP.SHR
-										astTB(r).v.valuei = v
+										n->op = IR.OP.SHR
+										r->v.valuei = v
 									end if
 								case IR.OP.MOD
-									astTB(n).op = IR.OP.AND
-									astTB(r).v.valuei -= 1
+									n->op = IR.OP.AND
+									r->v.valuei -= 1
 								end select
 							end if
 						end if
@@ -967,24 +966,24 @@ sub astOptToShift( byval n as integer )
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astOptToShift l
+	l = n->l
+	if( l <> NULL ) then
+		astOptToShift( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astOptToShift r
+	r = n->r
+	if( r <> NULL ) then
+		astOptToShift( r )
 	end if
 
 end sub
 
 ''::::
-function astOptNullOp( byval n as integer ) static
-	dim l as integer, r as integer
-	dim v as integer, op as integer
+function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
+	dim as ASTNODE ptr l, r
+	dim as integer v, op
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		return n
 	end if
 
@@ -999,52 +998,52 @@ function astOptNullOp( byval n as integer ) static
 	''         'a OR 0'  to 'a'
 	''         'a XOR 0' to 'a'
 	''         'a AND -1' to 'a'
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		op = astTB(n).op
-		l = astTB(n).l
-		r = astTB(n).r
-		if( astTB(r).defined ) then
-			if( irGetDataClass( astTB(n).dtype ) = IR.DATACLASS.INTEGER ) then
-				if( irGetDataSize( astTB(r).dtype ) <= FB.INTEGERSIZE ) then
-					v = astTB(r).v.valuei
+	if( n->class = AST.NODECLASS.BOP ) then
+		op = n->op
+		l = n->l
+		r = n->r
+		if( r->defined ) then
+			if( irGetDataClass( n->dtype ) = IR.DATACLASS.INTEGER ) then
+				if( irGetDataSize( r->dtype ) <= FB.INTEGERSIZE ) then
+					v = r->v.valuei
 					select case as const op
 					case IR.OP.MUL
 						if( v = 0 ) then
-							astDelTree l
-							astDel n
+							astDelTree( l )
+							astDel( n )
 							return r
 						elseif( v = 1 ) then
-							astDel r
-							astDel n
+							astDel( r )
+							astDel( n )
 							return astOptNullOp( l )
 						end if
 
 					case IR.OP.MOD
 						if( v = 1 ) then
-							astTB(r).v.valuei = 0
-							astDelTree l
-							astDel n
+							r->v.valuei = 0
+							astDelTree( l )
+							astDel( n )
 							return r
 						end if
 
 					case IR.OP.INTDIV
 						if( v = 1 ) then
-							astDel r
-							astDel n
+							astDel( r )
+							astDel( n )
 							return astOptNullOp( l )
 						end if
 
 					case IR.OP.ADD, IR.OP.SUB, IR.OP.SHR, IR.OP.SHL, IR.OP.OR, IR.OP.XOR
 						if( v = 0 ) then
-							astDel r
-							astDel n
+							astDel( r )
+							astDel( n )
 							return astOptNullOp( l )
 						end if
 
 					case IR.OP.AND
 						if( v = -1 ) then
-							astDel r
-							astDel n
+							astDel( r )
+							astDel( n )
 							return astOptNullOp( l )
 						end if
 					end select
@@ -1054,34 +1053,34 @@ function astOptNullOp( byval n as integer ) static
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astTB(n).l = astOptNullOp( l )
+	l = n->l
+	if( l <> NULL ) then
+		n->l = astOptNullOp( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astTB(n).r = astOptNullOp( r )
+	r = n->r
+	if( r <> NULL ) then
+		n->r = astOptNullOp( r )
 	end if
 
-	return n
+	function = n
 
 end function
 
 ''::::
-function astOptStrAssignament( byval n as integer, _
-							   byval l as integer, _
-							   byval r as integer ) as integer static
+function astOptStrAssignament( byval n as ASTNODE ptr, _
+							   byval l as ASTNODE ptr, _
+							   byval r as ASTNODE ptr ) as ASTNODE ptr static
 	dim optimize as integer
 
 	optimize = FALSE
 
 	'' is right side a bin operation?
-	if( astTB(r).class = AST.NODECLASS.BOP ) then
+	if( r->class = AST.NODECLASS.BOP ) then
 		'' is left side a var?
-		select case astTB(l).class
+		select case l->class
 		case AST.NODECLASS.VAR, AST.NODECLASS.PTR, AST.NODECLASS.IDX
-			optimize = astIsTreeEqual( l, astTB(r).l )
+			optimize = astIsTreeEqual( l, r->l )
 		end select
 	end if
 
@@ -1092,13 +1091,13 @@ function astOptStrAssignament( byval n as integer, _
 		''   / \
 		''  d   expr
 
-		astDel n
-		astDelTree l
+		astDel( n )
+		astDelTree( l )
 		n = r
 
-		astTB(n).r = astUpdStrConcat( astTB(n).r )
+		n->r = astUpdStrConcat( n->r )
 
-		astOptStrAssignament = rtlStrConcatAssign( astTB(n).l, astTB(n).r )
+		function = rtlStrConcatAssign( n->l, n->r )
 
 	else
 		''	=            f() -- assign
@@ -1107,35 +1106,35 @@ function astOptStrAssignament( byval n as integer, _
 		''   / \           / \
 		''  d   expr      d   expr
 
-		astTB(n).r = astUpdStrConcat( astTB(n).r )
+		n->r = astUpdStrConcat( n->r )
 
-		astOptStrAssignament = rtlStrAssign( astTB(n).l, astTB(n).r )
+		function = rtlStrAssign( n->l, n->r )
 	end if
 
 end function
 
 ''::::
-function astOptAssignament( byval n as integer ) as integer static
-	dim as integer l, r
+function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
+	dim as ASTNODE ptr l, r
 	dim as integer dtype, dclass
 	dim as FBSYMBOL ptr s
 
-	astOptAssignament = n
+	function = n
 
 	'' try to convert "foo = foo op expr" to "foo op= expr" (including unary ops)
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
 	'' there's just one assignament per tree (always at top), so, just check this node
-	if( astTB(n).class <> AST.NODECLASS.ASSIGN ) then
+	if( n->class <> AST.NODECLASS.ASSIGN ) then
 		exit function
 	end if
 
-	l = astTB(n).l
-	r = astTB(n).r
+	l = n->l
+	r = n->r
 
-	dtype = astTB(n).dtype
+	dtype = n->dtype
 	dclass = irGetDataClass( dtype )
 
 	'' integer's only, no way to optimize with a FPU stack (x86 assumption)
@@ -1143,14 +1142,13 @@ function astOptAssignament( byval n as integer ) as integer static
 
 		'' strings?
 		if( dclass = IR.DATACLASS.STRING ) then
-			astOptAssignament = astOptStrAssignament( n, l, r )
-			exit function
+			return astOptStrAssignament( n, l, r )
 		end if
 
 		'' try to optimize if a constant is being assigned to a float var
-  		if( astTB(r).class = AST.NODECLASS.CONST ) then
+  		if( r->class = AST.NODECLASS.CONST ) then
   			if( dclass = IR.DATACLASS.FPOINT ) then
-				astTB(r).dtype = dtype
+				r->dtype = dtype
 			end if
 		end if
 
@@ -1163,37 +1161,37 @@ function astOptAssignament( byval n as integer ) as integer static
 	end if
 
 	'' is left side a var, idx or ptr?
-	select case astTB(l).class
+	select case l->class
 	case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 	case else
 		exit function
 	end select
 
 	'' is right side a bin or unary operation?
-	select case astTB(r).class
+	select case r->class
 	case AST.NODECLASS.UOP, AST.NODECLASS.BOP
 	case else
 		exit function
 	end select
 
 	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a register
-	select case as const astTB(r).op
+	select case as const r->op
 	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 		exit function
 	end select
 
 	'' node result is an integer too?
-	if( irGetDataClass( astTB(r).dtype ) <> IR.DATACLASS.INTEGER ) then
+	if( irGetDataClass( r->dtype ) <> IR.DATACLASS.INTEGER ) then
 		exit function
 	end if
 
 	'' is the left child the same?
-	if( not astIsTreeEqual( l, astTB(r).l ) ) then
+	if( not astIsTreeEqual( l, r->l ) ) then
 		exit function
 	end if
 
 	'' isn't it a bitfield?
-	if( astTB(l).chkbitfld ) then
+	if( l->chkbitfld ) then
 		s = astGetUDTElm( l )
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
@@ -1203,7 +1201,7 @@ function astOptAssignament( byval n as integer ) as integer static
 	end if
 
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
-	astTB(r).allocres = FALSE
+	r->allocres = FALSE
 
 	''	=             o
 	'' / \           / \
@@ -1211,9 +1209,10 @@ function astOptAssignament( byval n as integer ) as integer static
 	''   / \
 	''  d   expr
 
-    astDel n
-	astDelTree l
-    astOptAssignament = r
+    astDel( n )
+	astDelTree( l )
+
+    function = r
 
 end function
 
@@ -1222,17 +1221,16 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astUpdStrConcat( byval n as integer ) as integer
-	static l as integer, r as integer
-	static f as integer
+function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
+	static as ASTNODE ptr l, r
 
-	astUpdStrConcat = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	if( irGetDataClass( astTB(n).dtype ) <> IR.DATACLASS.STRING ) then
+	if( irGetDataClass( n->dtype ) <> IR.DATACLASS.STRING ) then
 		'' this proc will be called for each function param, same
 		'' with assignament -- assuming here that IIF won't
 		'' support strings
@@ -1240,98 +1238,99 @@ function astUpdStrConcat( byval n as integer ) as integer
 	end if
 
 	'' walk
-	l = astTB(n).l
-	if( l <> INVALID ) then
-		astTB(n).l = astUpdStrConcat( l )
+	l = n->l
+	if( l <> NULL ) then
+		n->l = astUpdStrConcat( l )
 	end if
 
-	r = astTB(n).r
-	if( r <> INVALID ) then
-		astTB(n).r = astUpdStrConcat( r )
+	r = n->r
+	if( r <> NULL ) then
+		n->r = astUpdStrConcat( r )
 	end if
 
 	'' convert "string + string" to "StrConcat( string, string )"
-	if( astTB(n).class = AST.NODECLASS.BOP ) then
-		if( astTB(n).op = IR.OP.ADD ) then
-			l = astTB(n).l
-			r = astTB(n).r
-			astUpdStrConcat = rtlStrConcat( l, astTB(l).dtype, r, astTB(r).dtype )
-			astDel n
+	if( n->class = AST.NODECLASS.BOP ) then
+		if( n->op = IR.OP.ADD ) then
+			l = n->l
+			r = n->r
+			function = rtlStrConcat( l, l->dtype, r, r->dtype )
+			astDel( n )
 		end if
 	end if
 
 end function
 
 '':::::
-function astUpdComp2Branch( byval n as integer, _
+function astUpdComp2Branch( byval n as ASTNODE ptr, _
 							byval label as FBSYMBOL ptr, _
-							byval isinverse as integer ) as integer
-	dim as integer op, l
-	static as integer dtype, istrue, expr
+							byval isinverse as integer ) as ASTNODE ptr
+	dim as integer op
+	dim as ASTNODE ptr l, expr
+	static as integer dtype, istrue
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
-	dtype = astTB(n).dtype
+	dtype = n->dtype
 
 	'' string? invalid..
 	if( irGetDataClass( dtype ) = IR.DATACLASS.STRING ) then
-		return INVALID
+		return NULL
 	end if
 
 	'' UDT? ditto..
 	if( dtype = IR.DATATYPE.USERDEF ) then
-		return INVALID
+		return NULL
 	end if
 
 	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
-	if( astTB(n).class <> AST.NODECLASS.BOP ) then
+	if( n->class <> AST.NODECLASS.BOP ) then
 		'' UOP? check if it's a NOT
-		if( astTB(n).class = AST.NODECLASS.UOP ) then
-			if( astTB(n).op = IR.OP.NOT ) then
-				l = astUpdComp2Branch( astTB(n).l, label, isinverse = FALSE )
-				astDel n
+		if( n->class = AST.NODECLASS.UOP ) then
+			if( n->op = IR.OP.NOT ) then
+				l = astUpdComp2Branch( n->l, label, isinverse = FALSE )
+				astDel( n )
 				return l
 			end if
 		end if
 
 		'' CONST?
-		if( astTB(n).class = AST.NODECLASS.CONST ) then
+		if( n->class = AST.NODECLASS.CONST ) then
 			if( not isinverse ) then
 				'' branch if false
 				select case as const dtype
 				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					istrue = astTB(n).v.value64 = 0
+					istrue = n->v.value64 = 0
 				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					istrue = astTB(n).v.valuef = 0
+					istrue = n->v.valuef = 0
 				case else
-					istrue = astTB(n).v.valuei = 0
+					istrue = n->v.valuei = 0
 				end select
 
 				if( istrue ) then
-					astDel n
-					n = astNewBRANCH( IR.OP.JMP, label, INVALID )
-					if( n = INVALID ) then
-						return INVALID
+					astDel( n )
+					n = astNewBRANCH( IR.OP.JMP, label, NULL )
+					if( n = NULL ) then
+						return NULL
 					end if
 				end if
 			else
 				'' branch if true
 				select case as const dtype
 				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					istrue = astTB(n).v.value64 <> 0
+					istrue = n->v.value64 <> 0
 				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					istrue = astTB(n).v.valuef <> 0
+					istrue = n->v.valuef <> 0
 				case else
-					istrue = astTB(n).v.valuei <> 0
+					istrue = n->v.valuei <> 0
 				end select
 
 				if( istrue ) then
-					astDel n
-					n = astNewBRANCH( IR.OP.JMP, label, INVALID )
-					if( n = INVALID ) then
-						return INVALID
+					astDel( n )
+					n = astNewBRANCH( IR.OP.JMP, label, NULL )
+					if( n = NULL ) then
+						return NULL
 					end if
 				end if
 			end if
@@ -1360,8 +1359,8 @@ function astUpdComp2Branch( byval n as integer, _
 
 			n = astNewBOP( op, n, expr, label, FALSE )
 
-			if( n = INVALID ) then
-				return INVALID
+			if( n = NULL ) then
+				return NULL
 			end if
 		end if
 
@@ -1370,7 +1369,7 @@ function astUpdComp2Branch( byval n as integer, _
 	end if
 
 	''
-	op 	  = astTB(n).op
+	op 	  = n->op
 
 	'' logical operator?
 	select case as const op
@@ -1378,11 +1377,11 @@ function astUpdComp2Branch( byval n as integer, _
 
 		'' invert it
 		if( not isinverse ) then
-			astTB(n).op = irGetInverseLogOp( op )
+			n->op = irGetInverseLogOp( op )
 		end if
 
 		'' tell IR that the destine label is already set
-		astTB(n).ex = label
+		n->ex = label
 
 		return n
 
@@ -1425,20 +1424,24 @@ function astUpdComp2Branch( byval n as integer, _
 		expr = astNewCONSTi( 0, dtype )
 	end select
 
-	return astNewBOP( op, n, expr, label, FALSE )
+	function = astNewBOP( op, n, expr, label, FALSE )
 
 end function
 
 #if 0
 '':::::
-sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, _
-			   byval ln as integer, byval cn as integer )
-   dim v as string, l as integer, c as integer
+sub astDump1 ( byval p as ASTNODE ptr, _
+			   byval n as ASTNODE ptr, _
+			   byval isleft as integer, _
+			   byval ln as integer, _
+			   byval cn integer )
+   dim as string v
+   dim as integer c
 
 	v = ""
-	select case astTB(n).class
+	select case n->class
 	case AST.NODECLASS.BOP
-		select case astTB(n).op
+		select case n->op
 		case IR.OP.ADD
 			v = "+"
 		case IR.OP.SUB
@@ -1463,7 +1466,7 @@ sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, 
 		v = "(" + v + ")"
 
 	case AST.NODECLASS.UOP
-		select case astTB(n).op
+		select case n->op
 		case IR.OP.NEG
 			v = "-"
 		case IR.OP.NOT
@@ -1472,26 +1475,26 @@ sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, 
 		v = "(" + v + ")"
 
 	case AST.NODECLASS.VAR
-		v = "[" + mid$( symbGetName( astTB(n).var.sym ), 2 ) + "]"
+		v = "[" + mid$( symbGetName( n->var.sym ), 2 ) + "]"
 	case AST.NODECLASS.CONST
-		v = "<" + str$( astTB(n).v.value ) + ">"
+		v = "<" + str$( n->v.value ) + ">"
 	case AST.NODECLASS.CONV
-		v = "{" + str$( astTB(n).dtype ) + "}"
+		v = "{" + str$( n->dtype ) + "}"
 '	case AST.NODECLASS.IDX
-'		c = astTB(n).idx.sym
-'		v = "{" + rtrim$( mid$( symbGetVarName( astTB(c).idx.sym ), 2 ) ) + "}"
+'		c = n->idx.sym
+'		v = "{" + rtrim$( mid$( symbGetVarName( c->idx.sym ), 2 ) ) + "}"
 
 '	case AST.NODECLASS.FUNCT
-'		v = rtrim$( mid$( symbGetProcName( astTB(n).proc.s ), 2 ) ) + "()"
+'		v = rtrim$( mid$( symbGetProcName( n->proc.s ), 2 ) ) + "()"
 
 '	case AST.NODECLASS.PARAM
-'		v = "(" + ltrim$( str$( astTB(n).l ) ) + ")"
+'		v = "(" + ltrim$( str$( n->l ) ) + ")"
 	end select
 
 	if( len( v ) > 0 and ln <= 50 ) then
 
 		v = ltrim$( str$( n ) ) + v
-		if( p <> INVALID ) then
+		if( p <> NULL ) then
         	if( isleft ) then
         		v = v + "/"
         	else
@@ -1506,12 +1509,12 @@ sub astDump1 ( byval p as integer, byval n as integer, byval isleft as integer, 
 		end if
 	end if
 
-	if( astTB(n).l <> INVALID ) then
-		astDump1 n, astTB(n).l, TRUE, ln+2, cn-4
+	if( n->l <> NULL ) then
+		astDump1( n, n->l, TRUE, ln+2, cn-4 )
 	end if
 
-	if( astTB(n).r <> INVALID ) then
-		astDump1 n, astTB(n).r, FALSE, ln+2, cn+4
+	if( n->r <> NULL ) then
+		astDump1( n, n->r, FALSE, ln+2, cn+4 )
 	end if
 
 end sub
@@ -1522,252 +1525,249 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-Sub astCopy( byval d as integer, _
-			 byval s as integer ) Static
-	Dim p as integer, n as integer
+sub astCopy( byval d as ASTNODE ptr, _
+			 byval s as ASTNODE ptr ) static
 
-	p = astTB(d).prv
-	n = astTB(d).nxt
+	dim as ASTNODE ptr p, n
 
-	astTB(d) = astTB(s)
+	p = d->prv
+	n = d->nxt
 
-	astTB(d).prv = p
-	astTB(d).nxt = n
+	*d = *s
 
-End Sub
+	d->prv = p
+	d->nxt = n
 
-'':::::
-Sub astSwap( byval d as integer, _
-			 byval s as integer ) Static
-	Dim dp as integer, dn as integer
-	Dim sp as integer, sn as integer
-
-	dp = astTB(d).prv
-	dn = astTB(d).nxt
-	sp = astTB(s).prv
-	sn = astTB(s).nxt
-
-	swap astTB(d), astTB(s)
-
-	astTB(d).prv = dp
-	astTB(d).nxt = dn
-	astTB(s).prv = sp
-	astTB(s).nxt = sn
-
-End Sub
+end sub
 
 '':::::
-function astCloneTree( byval n as integer ) as integer
-	dim p as integer, nn as integer
+sub astSwap( byval d as ASTNODE ptr, _
+			 byval s as ASTNODE ptr ) static
+
+	dim as ASTNODE ptr dp, dn
+	dim as ASTNODE ptr sp, sn
+
+	dp = d->prv
+	dn = d->nxt
+	sp = s->prv
+	sn = s->nxt
+
+	swap *d, *s
+
+	d->prv = dp
+	d->nxt = dn
+	s->prv = sp
+	s->nxt = sn
+
+end sub
+
+'':::::
+function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr nn, p
 
 	''
-	if( n = INVALID ) then
-		astCloneTree = INVALID
-		exit function
+	if( n = NULL ) then
+		return NULL
 	end if
 
 	''
 	nn = astNew( INVALID, INVALID )
-	astCopy nn, n
+	astCopy( nn, n )
 
 	'' walk
-	p = astTB(n).l
-	if( p <> INVALID ) then
-		astTB(nn).l = astCloneTree( p )
+	p = n->l
+	if( p <> NULL ) then
+		nn->l = astCloneTree( p )
 	end if
 
-	p = astTB(n).r
-	if( p <> INVALID ) then
-		astTB(nn).r = astCloneTree( p )
+	p = n->r
+	if( p <> NULL ) then
+		nn->r = astCloneTree( p )
 	end if
 
 	'' special nodes
-	select case astTB(n).class
+	select case n->class
 	'' IIF has a 3rd tree node..
 	case AST.NODECLASS.IIF
-		p = astTB(n).iif.cond
-		if( p <> INVALID ) then
-			astTB(nn).iif.cond = astCloneTree( p )
+		p = n->iif.cond
+		if( p <> NULL ) then
+			nn->iif.cond = astCloneTree( p )
 		end if
 
 	'' Profiled function have sub nodes
 	case AST.NODECLASS.FUNCT
-		p = astTB(n).proc.profstart
-		if( p <> INVALID ) then
-			astTB(nn).proc.profstart = astCloneTree( p )
-			p = astTB(n).proc.profend
-			astTB(nn).proc.profend = astCloneTree( p )
+		p = n->proc.profstart
+		if( p <> NULL ) then
+			nn->proc.profstart = astCloneTree( p )
+			p = n->proc.profend
+			nn->proc.profend = astCloneTree( p )
 		end if
 	end select
 
-	astCloneTree = nn
+	function = nn
 
 end function
 
 '':::::
-sub astDelTree ( byval n as integer )
-	dim p as integer
+sub astDelTree ( byval n as ASTNODE ptr )
+	dim as ASTNODE ptr p
 
 	''
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit sub
 	end if
 
 	'' walk
-	p = astTB(n).l
-	if( p <> INVALID ) then
-		astDelTree p
+	p = n->l
+	if( p <> NULL ) then
+		astDelTree( p )
 	end if
 
-	p = astTB(n).r
-	if( p <> INVALID ) then
-		astDelTree p
+	p = n->r
+	if( p <> NULL ) then
+		astDelTree( p )
 	end if
 
 	'' special nodes
-	select case astTB(n).class
+	select case n->class
 	'' IIF has a 3rd tree node..
 	case AST.NODECLASS.IIF
-		p = astTB(n).iif.cond
-		if( p <> INVALID ) then
-			astDelTree p
+		p = n->iif.cond
+		if( p <> NULL ) then
+			astDelTree( p )
 		end if
 
 	'' Profiled functions have sub nodes
 	case AST.NODECLASS.FUNCT
-		p = astTB(n).proc.profstart
-		if( p <> INVALID ) then
-			astDelTree p
-			p = astTB(n).proc.profend
-			astDelTree p
+		p = n->proc.profstart
+		if( p <> NULL ) then
+			astDelTree( p )
+			p = n->proc.profend
+			astDelTree( p )
 		end if
 	end select
 
 	''
-	astDel n
+	astDel( n )
 
 End Sub
 
 ''::::
-function astIsTreeEqual( byval l as integer, _
-						 byval r as integer ) as integer
-    dim pl as ASTNode ptr, pr as ASTNode ptr
+function astIsTreeEqual( byval l as ASTNODE ptr, _
+						 byval r as ASTNODE ptr ) as integer
 
-    astIsTreeEqual = FALSE
+    function = FALSE
 
-    if( (l = INVALID) or (r = INVALID) ) then
+    if( (l = NULL) or (r = NULL) ) then
     	if( l = r ) then
-    		astIsTreeEqual = TRUE
+    		function = TRUE
     	end if
     	exit function
     end if
 
-	pl = @astTB(l)
-	pr = @astTB(r)
-
-	if( pl->class <> pr->class ) then
+	if( l->class <> r->class ) then
 		exit function
 	end if
 
-	if( pl->dtype <> pr->dtype ) then
+	if( l->dtype <> r->dtype ) then
 		exit function
 	end if
 
-	if( pl->subtype <> pr->subtype ) then
+	if( l->subtype <> r->subtype ) then
 		exit function
 	end if
 
-	select case as const pl->class
+	select case as const l->class
 	case AST.NODECLASS.VAR
-		if( pl->var.sym <> pr->var.sym ) then
+		if( l->var.sym <> r->var.sym ) then
 			exit function
 		end if
 
-		if( pl->var.elm <> pr->var.elm ) then
+		if( l->var.elm <> r->var.elm ) then
 			exit function
 		end if
 
-		if( pl->var.ofs <> pr->var.ofs ) then
+		if( l->var.ofs <> r->var.ofs ) then
 			exit function
 		end if
 
 	case AST.NODECLASS.CONST
 const DBL_EPSILON# = 2.2204460492503131e-016
 
-		select case as const pl->dtype
+		select case as const l->dtype
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			if( pl->v.value64 <> pr->v.value64 ) then
+			if( l->v.value64 <> r->v.value64 ) then
 				exit function
 			end if
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			if( abs( pl->v.valuef - pr->v.valuef ) > DBL_EPSILON ) then
+			if( abs( l->v.valuef - r->v.valuef ) > DBL_EPSILON ) then
 				exit function
 			end if
 		case else
-			if( pl->v.valuei <> pr->v.valuei ) then
+			if( l->v.valuei <> r->v.valuei ) then
 				exit function
 			end if
 		end select
 
 	case AST.NODECLASS.PTR
-		if( pl->ptr.sym <> pr->ptr.sym ) then
+		if( l->ptr.sym <> r->ptr.sym ) then
 			exit function
 		end if
 
-		if( pl->ptr.elm <> pr->ptr.elm ) then
+		if( l->ptr.elm <> r->ptr.elm ) then
 			exit function
 		end if
 
-		if( pl->ptr.ofs <> pr->ptr.ofs ) then
+		if( l->ptr.ofs <> r->ptr.ofs ) then
 			exit function
 		end if
 
 	case AST.NODECLASS.IDX
-		if( pl->idx.ofs <> pr->idx.ofs ) then
+		if( l->idx.ofs <> r->idx.ofs ) then
 			exit function
 		end if
 
-		if( pl->idx.mult <> pr->idx.mult ) then
+		if( l->idx.mult <> r->idx.mult ) then
 			exit function
 		end if
 
 	case AST.NODECLASS.BOP
-		if( pl->op <> pr->op ) then
+		if( l->op <> r->op ) then
 			exit function
 		end if
 
-		if( pl->allocres <> pr->allocres ) then
+		if( l->allocres <> r->allocres ) then
 			exit function
 		end if
 
-		if( pl->ex <> pr->ex ) then
+		if( l->ex <> r->ex ) then
 			exit function
 		end if
 
 	case AST.NODECLASS.UOP
-		if( pl->op <> pr->op ) then
+		if( l->op <> r->op ) then
 			exit function
 		end if
 
-		if( pl->allocres <> pr->allocres ) then
+		if( l->allocres <> r->allocres ) then
 			exit function
 		end if
 
 	case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
-		if( pl->addr.sym <> pr->addr.sym ) then
+		if( l->addr.sym <> r->addr.sym ) then
 			exit function
 		end if
 
-		if( pl->addr.elm <> pr->addr.elm ) then
+		if( l->addr.elm <> r->addr.elm ) then
 			exit function
 		end if
 
-		if( pl->op <> pr->op ) then
+		if( l->op <> r->op ) then
 			exit function
 		end if
 
 	case AST.NODECLASS.IIF
-		if( not astIsTreeEqual( pl->iif.cond, pr->iif.cond ) ) then
+		if( not astIsTreeEqual( l->iif.cond, r->iif.cond ) ) then
 			exit function
 		end if
 
@@ -1781,52 +1781,22 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 	end select
 
     '' check childs
-	if( not astIsTreeEqual( pl->l, pr->l ) ) then
+	if( not astIsTreeEqual( l->l, r->l ) ) then
 		exit function
 	end if
 
-	if( not astIsTreeEqual( pl->r, pr->r ) ) then
+	if( not astIsTreeEqual( l->r, r->r ) ) then
 		exit function
 	end if
 
     ''
-	astIsTreeEqual = TRUE
+	function = TRUE
 
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree routines
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub astRealloc( byval nodes as integer ) static
-	dim i as integer
-	dim lb as integer, ub as integer
-
-	lb = ctx.nodes
-	ub = ctx.nodes + (nodes - 1)
-
-	redim preserve astTB( 0 to ub ) as ASTNODE
-
-	for i = lb to ub
-		astTB(i).l    = INVALID
-		astTB(i).r    = INVALID
-
-		astTB(i).prv  = i-1
-		astTB(i).nxt  = i+1
-	next i
-
-	if( lb = 0 ) then
-		astTB(lb).prv = INVALID
-	end if
-
-	astTB(ub).nxt = INVALID
-
-	''
-	ctx.fhead 		= lb
-	ctx.nodes 		= ctx.nodes + nodes
-
-end sub
 
 '':::::
 private sub astInitTempLists
@@ -1850,14 +1820,10 @@ end sub
 sub astInit static
 
 	''
-	ctx.head 			= INVALID
-	ctx.tail 			= INVALID
-	ctx.nodes			= 0
-
-    astRealloc AST.INITNODES
+    listNew( @ctx.astTB, AST.INITNODES, len( ASTNODE ), FALSE )
 
     ''
-    astInitTempLists
+    astInitTempLists( )
 
 end sub
 
@@ -1865,224 +1831,176 @@ end sub
 sub astEnd static
 
 	''
-	astEndTempLists
+	astEndTempLists( )
 
 	''
-	erase astTB
-
-	''
-	ctx.head 		= INVALID
-	ctx.tail 		= INVALID
-	ctx.fhead 		= 0
-	ctx.nodes		= 0
+	listFree( @ctx.astTB )
 
 end sub
 
 '':::::
 function astNew( byval class as integer, _
 				 byval dtype as integer, _
-				 byval subtype as FBSYMBOL ptr = NULL ) as integer static
+				 byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
 
-	dim as integer n, t
-	dim as ASTNODE ptr p
+	dim as ASTNODE ptr n
 
-	'' realloc node list if it's full
-	if( ctx.fhead = INVALID ) then
-		astRealloc ctx.nodes \ 2
-	end if
-
-	'' take from free list
-	n = ctx.fhead
-	ctx.fhead = astTB(n).nxt
-
-	'' add to used list
-	t = ctx.tail
-	ctx.tail = n
-	if( t <> INVALID ) then
-		astTB(t).nxt = n
-	Else
-		ctx.head = n
-	end if
-
-	p = @astTB(n)
-
-	p->prv			= t
-	p->nxt			= INVALID
+	n = listNewNode( @ctx.astTB )
 
 	''
-	p->class 		= class
-	p->dtype 		= dtype
-	p->subtype		= subtype
-	p->defined		= FALSE
-	p->op			= INVALID
-	p->l    		= INVALID
-	p->r    		= INVALID
-	p->chkbitfld	= FALSE
+	n->class 		= class
+	n->dtype 		= dtype
+	n->subtype		= subtype
+	n->defined		= FALSE
+	n->op			= INVALID
+	n->l    		= NULL
+	n->r    		= NULL
+	n->chkbitfld	= FALSE
 
-	astNew = n
+	function = n
 
 end function
 
 '':::::
-sub astDel( byval n as integer ) static
-	Dim pn as integer, nn as integer
+sub astDel( byval n as ASTNODE ptr ) static
 
-	if( n = INVALID ) then
-		Exit Sub
+	if( n = NULL ) then
+		exit sub
 	end if
 
-	astTB(n).l    = INVALID
-	astTB(n).r    = INVALID
-
-	'' remove from used list
-	pn = astTB(n).prv
-	nn = astTB(n).nxt
-	if( pn <> INVALID ) then
-		astTB(pn).nxt = nn
-	Else
-		ctx.head = nn
-	end if
-
-	if( nn <> INVALID ) then
-		astTB(nn).prv = pn
-	Else
-		ctx.tail = pn
-	end if
-
-	'' add to free list
-	astTB(n).nxt = ctx.fhead
-	ctx.fhead = n
+	listDelNode( @ctx.astTB, n )
 
 end sub
 
 '':::::
-function astIsADDR( byval n as integer ) as integer static
+function astIsADDR( byval n as ASTNODE ptr ) as integer static
 
-	select case astTB(n).class
+	select case n->class
 	case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
 		return TRUE
 	case else
 		return FALSE
 	end select
+
 end function
 
 '':::::
-function astGetSymbol( byval n as integer ) as FBSYMBOL ptr static
+function astGetSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
 
 	s = NULL
 
-	if( n <> INVALID ) then
-		select case as const astTB(n).class
+	if( n <> NULL ) then
+		select case as const n->class
 		case AST.NODECLASS.PTR
-			s = astTB(n).ptr.elm
+			s = n->ptr.elm
 			if( s = NULL ) then
-				s = astTB(n).ptr.sym
+				s = n->ptr.sym
 			end if
 
 		case AST.NODECLASS.VAR
-			s = astTB(n).var.elm
+			s = n->var.elm
 			if( s = NULL ) then
-				s = astTB(n).var.sym
+				s = n->var.sym
 			end if
 
 		case AST.NODECLASS.IDX
-			n = astTB(n).r
-			if( n <> INVALID ) then
-				s = astTB(n).var.elm
+			n = n->r
+			if( n <> NULL ) then
+				s = n->var.elm
 				if( s = NULL ) then
-					s = astTB(n).var.sym
+					s = n->var.sym
 				end if
 			end if
 
 		case AST.NODECLASS.FUNCT
-			s = astTB(n).proc.sym
+			s = n->proc.sym
 
 		case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
-			s = astTB(n).addr.elm
+			s = n->addr.elm
 			if( s = NULL ) then
-				s = astTB(n).addr.sym
+				s = n->addr.sym
 			end if
 		end select
 	end if
 
-	astGetSymbol = s
+	function = s
 
 end function
 
 '':::::
-private function astGetUDTElm( byval n as integer ) as FBSYMBOL ptr static
+private function astGetUDTElm( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
 
-	if( n <> INVALID ) then
-		select case as const astTB(n).class
+	if( n <> NULL ) then
+		select case as const n->class
 		case AST.NODECLASS.PTR
-			return astTB(n).ptr.elm
+			return n->ptr.elm
 
 		case AST.NODECLASS.VAR
-			return astTB(n).var.elm
+			return n->var.elm
 
 		case AST.NODECLASS.IDX
-			n = astTB(n).r
-			if( n <> INVALID ) then
-				return astTB(n).var.elm
+			n = n->r
+			if( n <> NULL ) then
+				return n->var.elm
 			end if
 
 		case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
-			return astTB(n).addr.elm
+			return n->addr.elm
 		end select
 	end if
 
-	return NULL
+	function = NULL
 
 end function
 
 '':::::
-sub astConvertValue( byval n as integer, _
+sub astConvertValue( byval n as ASTNODE ptr, _
 					 byval v as FBVALUE ptr, _
 					 byval todtype as integer ) static
 
-	select case as const astTB(n).dtype
+	select case as const n->dtype
 	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 		select case as const todtype
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			v->value64 = astTB(n).v.value64
+			v->value64 = n->v.value64
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			v->valuef  = astTB(n).v.value64
+			v->valuef  = n->v.value64
 		case else
-			v->valuei  = astTB(n).v.value64
+			v->valuei  = n->v.value64
 		end select
 
 	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
 		select case as const todtype
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			v->value64 = astTB(n).v.valuef
+			v->value64 = n->v.valuef
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			v->valuef  = astTB(n).v.valuef
+			v->valuef  = n->v.valuef
 		case else
-			v->valuei  = astTB(n).v.valuef
+			v->valuei  = n->v.valuef
 		end select
 
 	case else
 		select case as const todtype
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			v->value64 = astTB(n).v.valuei
+			v->value64 = n->v.valuei
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			v->valuef  = astTB(n).v.valuei
+			v->valuef  = n->v.valuei
 		case else
-			v->valuei  = astTB(n).v.valuei
+			v->valuei  = n->v.valuei
 		end select
 	end select
 
 end sub
 
 ''::::
-function astLoad( byval n as integer ) as IRVREG ptr
+function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		return NULL
 	end if
 
-	select case as const astTB(n).class
+	select case as const n->class
 	case AST.NODECLASS.ASSIGN
 		return astLoadASSIGN( n )
 
@@ -2129,7 +2047,7 @@ function astLoad( byval n as integer ) as IRVREG ptr
 end function
 
 ''::::
-private function astOptimize( byval n as integer ) as integer
+private function astOptimize( byval n as ASTNODE ptr ) as integer
 
 	'' calls must be done in the order below
 
@@ -2143,7 +2061,7 @@ private function astOptimize( byval n as integer ) as integer
 
 	astOptConstAccum2( n )
 
-	astOptConstRmNeg( n, INVALID )
+	astOptConstRmNeg( n, NULL )
 
 	astOptConstIDX( n )
 
@@ -2151,15 +2069,15 @@ private function astOptimize( byval n as integer ) as integer
 
 	n = astOptNullOp( n )
 
-	return n
+	function = n
 
 end function
 
 ''::::
-function astFlush( byval n as integer ) as IRVREG ptr
+function astFlush( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	''
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		return NULL
 	end if
 
@@ -2177,30 +2095,14 @@ function astFlush( byval n as integer ) as IRVREG ptr
 
 end function
 
-'':::::
-function astCntFreeNodes as integer static
-	dim n as integer, c as integer
-
-	c = 0
-	n = ctx.fhead
-	do while( n <> INVALID  )
-		c = c + 1
-		n = astTB(n).nxt
-	loop
-
-	astCntFreeNodes = c
-
-end function
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' binary operations (l = left operand expression ; r = right operand expression)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hStrLiteralConcat( byval l as integer, _
-									byval r as integer ) as integer
-    dim s as FBSYMBOL ptr
-    dim ls as FBSYMBOL ptr, rs as FBSYMBOL ptr
+private function hStrLiteralConcat( byval l as ASTNODE ptr, _
+									byval r as ASTNODE ptr ) as ASTNODE ptr
+    dim as FBSYMBOL ptr s, ls, rs
 
 	ls = astGetSymbol( l )
 	rs = astGetSymbol( r )
@@ -2209,19 +2111,19 @@ private function hStrLiteralConcat( byval l as integer, _
 	s = hAllocStringConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
 						   symbGetLen( ls ) - 1 + symbGetLen( rs ) - 1 )
 
-	hStrLiteralConcat = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
+	function = astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR )
 
 	'' delete both vars if they were never accessed before
 	if( symbGetAccessCnt( ls ) = 0 ) then
-		symbDelVar ls
+		symbDelVar( ls )
 	end if
 
 	if( symbGetAccessCnt( rs ) = 0 ) then
-		symbDelVar rs
+		symbDelVar( rs )
 	end if
 
-	astDel r
-	astDel l
+	astDel( r )
+	astDel( l )
 
 end function
 
@@ -2486,24 +2388,24 @@ end sub
 
 '':::::
 function astNewBOP( byval op as integer, _
-					byval l as integer, _
-					r as integer, _
+					byval l as ASTNODE ptr, _
+					r as ASTNODE ptr, _
 					byval ex as FBSYMBOL ptr = NULL, _
-					byval allocres as integer = TRUE ) as integer static
-    dim as integer n
+					byval allocres as integer = TRUE ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
     dim as integer dt1, dt2, dtype
     dim as integer dc1, dc2
     dim as integer ispow2, doconv
     dim as FBSYMBOL ptr s
 
-	astNewBOP = INVALID
+	function = NULL
 
-	if( (l = INVALID) or (r = INVALID) ) then
+	if( (l = NULL) or (r = NULL) ) then
 		exit function
 	end if
 
-	dt1 = astTB(l).dtype
-	dt2 = astTB(r).dtype
+	dt1 = l->dtype
+	dt2 = r->dtype
 	dc1 = irGetDataClass( dt1 )
 	dc2 = irGetDataClass( dt2 )
 
@@ -2541,12 +2443,10 @@ function astNewBOP( byval op as integer, _
 		if( dtype <> INVALID ) then
 			select case op
 			case IR.OP.INTDIV
-				astNewBOP = rtlMathLongintDIV( dtype, l, dt1, r, dt2 )
-				exit function
+				return rtlMathLongintDIV( dtype, l, dt1, r, dt2 )
 
 			case IR.OP.MOD
-				astNewBOP = rtlMathLongintMOD( dtype, l, dt1, r, dt2 )
-				exit function
+				return rtlMathLongintMOD( dtype, l, dt1, r, dt2 )
 
 			end select
 		end if
@@ -2583,14 +2483,13 @@ function astNewBOP( byval op as integer, _
 		case IR.OP.ADD
 			'' check for string literals
 			if( (dt1 = IR.DATATYPE.FIXSTR) and (dt2 = IR.DATATYPE.FIXSTR) ) then
-				if( astTB(l).class = AST.NODECLASS.VAR ) then
-					if( astTB(r).class = AST.NODECLASS.VAR ) then
+				if( l->class = AST.NODECLASS.VAR ) then
+					if( r->class = AST.NODECLASS.VAR ) then
 						s = astGetSymbol( l )
 						if( symbGetVarInitialized( s ) ) then
 							s = astGetSymbol( r )
 							if( symbGetVarInitialized( s ) ) then
-								astNewBOP = hStrLiteralConcat( l, r )
-								exit function
+								return hStrLiteralConcat( l, r )
 							end if
 						end if
 					end if
@@ -2607,9 +2506,9 @@ function astNewBOP( byval op as integer, _
 			l = rtlStrCompare( l, dt1, r, dt2 )
 			r = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
 
-			dt1 = astTB(l).dtype
+			dt1 = l->dtype
 			dc1 = IR.DATACLASS.INTEGER
-			dt2 = astTB(r).dtype
+			dt2 = r->dtype
 			dc2 = IR.DATACLASS.INTEGER
 
 		case else
@@ -2651,7 +2550,7 @@ function astNewBOP( byval op as integer, _
 
 		if( dc2 <> IR.DATACLASS.FPOINT ) then
 			'' x86 assumption: if it's an int var, let the FPU do it
-			if( (astTB(r).class = AST.NODECLASS.VAR) and (dt2 = IR.DATATYPE.INTEGER) ) then
+			if( (r->class = AST.NODECLASS.VAR) and (dt2 = IR.DATATYPE.INTEGER) ) then
 				dt2 = IR.DATATYPE.DOUBLE
 			else
 				dt2 = IR.DATATYPE.DOUBLE
@@ -2711,7 +2610,7 @@ function astNewBOP( byval op as integer, _
 						if( dc2 = IR.DATACLASS.INTEGER ) then
 							'' can't be an longint nor a byte (byte operands are converted above)
 							if( irGetDataSize( dt2 ) < FB.INTEGERSIZE*2 ) then
-								select case astTB(r).class
+								select case r->class
 								case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 									'' can't be unsigned either
 									if( irIsSigned( dt2 ) ) then
@@ -2761,50 +2660,49 @@ function astNewBOP( byval op as integer, _
 	''::::::
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
-	if( astTB(l).defined and astTB(r).defined ) then
+	if( l->defined and r->defined ) then
 
 		select case as const dt1
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-		    hBOPConstFold64 op, @astTB(l), @astTB(r)
+		    hBOPConstFold64( op, l, r )
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			hBOPConstFoldFlt op, @astTB(l), @astTB(r)
+			hBOPConstFoldFlt( op, l, r )
 		case else
-			hBOPConstFoldInt op, @astTB(l), @astTB(r)
+			hBOPConstFoldInt( op, l, r )
 		end select
 
-		astTB(l).dtype = dtype
+		l->dtype = dtype
 
 		''
-		astDel r
-		r = INVALID
+		astDel( r )
+		r = NULL
 
-		astNewBOP = l
-		exit function
+		return l
 
-	elseif( astTB(l).defined ) then
+	elseif( l->defined ) then
 		select case op
 		case IR.OP.ADD, IR.OP.MUL
 			'' ? + c = c + ?  |  ? * c = ? * c
-			astSwap r, l
+			astSwap( r, l )
 
 		case IR.OP.SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
 			r = astNewUOP( IR.OP.NEG, r )
-			astSwap r, l
+			astSwap( r, l )
 			op = IR.OP.ADD
 		end select
 
-	elseif( astTB(r).defined ) then
+	elseif( r->defined ) then
 		select case op
 		case IR.OP.SUB
 			'' ? - c = ? + -c
 			select case as const dt2
 			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-				astTB(r).v.value64 = -astTB(r).v.value64
+				r->v.value64 = -r->v.value64
 			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-				astTB(r).v.valuef = -astTB(r).v.valuef
+				r->v.valuef = -r->v.valuef
 			case else
-				astTB(r).v.valuei = -astTB(r).v.valuei
+				r->v.valuei = -r->v.valuei
 			end select
 			op = IR.OP.ADD
 
@@ -2814,23 +2712,23 @@ function astNewBOP( byval op as integer, _
 			ispow2 = FALSE
 			select case as const dt1
 			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-				if( astTB(r).v.value64 = 2LL ) then
+				if( r->v.value64 = 2LL ) then
 					ispow2 = TRUE
 				end if
 			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-				if( astTB(r).v.valuef = 2.0 ) then
+				if( r->v.valuef = 2.0 ) then
 					ispow2 = TRUE
 				end if
 			case else
-				if( astTB(r).v.valuei = 2 ) then
+				if( r->v.valuei = 2 ) then
 					ispow2 = TRUE
 				end if
 			end select
 
 			if( ispow2 ) then
-				select case astTB(l).class
+				select case l->class
 				case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
-					astDel r
+					astDel( r )
 					r = astCloneTree( l )
 					op = IR.OP.MUL
 					dtype = dt1
@@ -2843,37 +2741,37 @@ function astNewBOP( byval op as integer, _
 
 	'' handle pow
 	if( op = IR.OP.POW ) then
-		astNewBOP = rtlMathPow( l, r )
-		exit function
+		return rtlMathPow( l, r )
 	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.BOP, dtype )
-	astNewBOP = n
-
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
 	'' fill it
-	astTB(n).op 		= op
-	astTB(n).l  		= l
-	astTB(n).r  		= r
-	astTB(n).ex 		= ex
-	astTB(n).allocres	= allocres
+	n->op 		= op
+	n->l  		= l
+	n->r  		= r
+	n->ex 		= ex
+	n->allocres	= allocres
+
+	function = n
 
 end function
 
 '':::::
-function astLoadBOP( byval n as integer ) as IRVREG ptr
-    dim as integer l, r, op
+function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l, r
+    dim as integer op
     dim as IRVREG ptr v1, v2, vr
 
-	op = astTB(n).op
-	l  = astTB(n).l
-	r  = astTB(n).r
+	op = n->op
+	l  = n->l
+	r  = n->r
 
-	if( (l = INVALID) or (r = INVALID) ) then
+	if( (l = NULL) or (r = NULL) ) then
 		return NULL
 	end if
 
@@ -2884,16 +2782,16 @@ function astLoadBOP( byval n as integer ) as IRVREG ptr
 	v2 = astLoad( r )
 
 	'' result type can be different, with boolean operations on floats
-	if( astTB(n).allocres ) then
-		vr = irAllocVREG( astTB(n).dtype )
+	if( n->allocres ) then
+		vr = irAllocVREG( n->dtype )
 	else
 		vr = NULL
 	end if
 
 	'' execute the operation
-	if( astTB(n).ex <> NULL ) then
+	if( n->ex <> NULL ) then
 		'' hack! ex=label, vr being NULL 'll gen better code at IR..
-		irEmitBOPEx( op, v1, v2, NULL, astTB(n).ex )
+		irEmitBOPEx( op, v1, v2, NULL, n->ex )
 	else
 		irEmitBOPEx( op, v1, v2, vr, NULL )
 	end if
@@ -2977,16 +2875,17 @@ end sub
 
 '':::::
 function astNewUOP( byval op as integer, _
-					byval o as integer ) as integer static
-    dim n as integer, dclass as integer, dtype as integer
+					byval o as ASTNODE ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+    dim as integer dclass, dtype
 
-	astNewUOP = INVALID
+	function = NULL
 
-	if( o = INVALID ) then
+	if( o = NULL ) then
 		exit function
 	end if
 
-	dtype = astTB(o).dtype
+	dtype = o->dtype
 
     '' string? can't operate
     dclass = irGetDataClass( dtype )
@@ -3027,63 +2926,62 @@ function astNewUOP( byval op as integer, _
 	end select
 
 	'' constant folding
-	if( astTB(o).defined ) then
+	if( o->defined ) then
 
-		select case as const astTB(o).dtype
+		select case as const o->dtype
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-		    hUOPConstFold64 op, @astTB(o)
+		    hUOPConstFold64( op, o )
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			hUOPConstFoldFlt op, @astTB(o)
+			hUOPConstFoldFlt( op, o )
 		case else
-			hUOPConstFoldInt op, @astTB(o)
+			hUOPConstFoldInt( op, o )
 		end select
 
-		astTB(o).dtype = dtype
+		o->dtype = dtype
 
-		astNewUOP = o
-		exit function
+		return o
 	end if
 
 	if( op = IR.OP.SGN ) then
 		'' hack! SGN with floats is handled by a function
 		if( dclass = IR.DATACLASS.FPOINT ) then
-			astNewUOP = rtlMathFSGN( o )
-			exit function
+			return rtlMathFSGN( o )
 		end if
 	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.UOP, dtype )
-	astNewUOP = n
-
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).op 		= op
-	astTB(n).l  		= o
-	astTB(n).r  		= INVALID
-	astTB(n).allocres	= TRUE
-	astTB(n).ex 		= NULL
+	n->op 		= op
+	n->l  		= o
+	n->r  		= NULL
+	n->allocres	= TRUE
+	n->ex 		= NULL
+
+	function = n
 
 end function
 
 '':::::
-function astLoadUOP( byval n as integer ) as IRVREG ptr
-    dim as integer o, op
+function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr o
+    dim as integer op
     dim as IRVREG ptr v1, vr
 
-	o  = astTB(n).l
-	op = astTB(n).op
+	o  = n->l
+	op = n->op
 
-	if( o = INVALID ) then
+	if( o = NULL ) then
 		return NULL
 	end if
 
 	v1 = astLoad( o )
 
-	if( astTB(n).allocres ) then
-		vr = irAllocVREG( astTB(o).dtype )
+	if( n->allocres ) then
+		vr = irAllocVREG( o->dtype )
 	else
 		vr = NULL
 	end if
@@ -3231,17 +3129,17 @@ end sub
 '':::::
 function astNewCONV( byval op as integer, _
 					 byval dtype as integer, _
-					 byval l as integer ) as integer static
-    dim as integer n
+					 byval l as ASTNODE ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
     dim as integer dclass, ldtype
 
-	astNewCONV = INVALID
+	function = NULL
 
-    if( l = INVALID ) then
+    if( l = NULL ) then
     	exit function
     end if
 
-    ldtype = astTB(l).dtype
+    ldtype = l->dtype
 
     dclass = irGetDataClass( ldtype )
 
@@ -3264,13 +3162,12 @@ function astNewCONV( byval op as integer, _
 		end if
 
 		if( op = IR.OP.TOSIGNED ) then
-			astTB(l).dtype = irGetSignedType( ldtype )
+			l->dtype = irGetSignedType( ldtype )
 		else
-			astTB(l).dtype = irGetUnsignedType( ldtype )
+			l->dtype = irGetUnsignedType( ldtype )
 		end if
 
-		astNewCONV = l
-		exit function
+		return l
 	end if
 
 	'' only convert if the classes are different (ie, floating<->integer) or
@@ -3278,64 +3175,62 @@ function astNewCONV( byval op as integer, _
 	if( (dclass = irGetDataClass( dtype )) and _
 		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
 
-		astTB(l).dtype = dtype
+		l->dtype = dtype
 
-		astNewCONV = l
-		exit function
+		return l
 	end if
 
 	'' constant? evaluate at compile-time
-	if( astTB(l).defined ) then
+	if( l->defined ) then
 
 		select case as const dtype
 		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			hCONVConstEval64 dtype, @astTB(l)
+			hCONVConstEval64( dtype, l )
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			hCONVConstEvalFlt dtype, @astTB(l)
+			hCONVConstEvalFlt( dtype, l )
 		case else
-			hCONVConstEvalInt dtype, @astTB(l)
+			hCONVConstEvalInt( dtype, l )
 		end select
 
-		astTB(l).dtype = dtype
+		l->dtype = dtype
 
-		astNewCONV = l
-		exit function
+		return l
 	end if
 
 	'' handle special cases..
 	if( dtype = IR.DATATYPE.ULONGINT ) then
 		if( dclass = IR.DATACLASS.FPOINT ) then
-			astNewCONV = rtlMathFp2ULongint( l, ldtype )
-			exit function
+			return rtlMathFp2ULongint( l, ldtype )
 		end if
 	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.CONV, dtype )
-	astNewCONV = n
-
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l  = l
+	n->l  = l
+
+	function = n
 
 end function
 
 '':::::
-function astLoadCONV( byval n as integer ) as IRVREG ptr
-    dim as integer l, dtype
+function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l
+    dim as integer dtype
     dim as IRVREG ptr vs, vr
 
-	l  = astTB(n).l
+	l  = n->l
 
-	if( l = INVALID ) then
+	if( l = NULL ) then
 		return NULL
 	end if
 
 	vs = astLoad( l )
 
-	dtype = astTB(n).dtype
+	dtype = n->dtype
 
 	vr = irAllocVREG( dtype )
 	irEmitCONVERT( vr, dtype, vs, INVALID )
@@ -3352,104 +3247,104 @@ end function
 
 '':::::
 function astNewCONSTi( byval value as integer, _
-					   byval dtype as integer ) as integer static
-    dim n as integer
+					   byval dtype as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.CONST, dtype )
-	astNewCONSTi = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).v.valuei= value
-	astTB(n).defined = TRUE
+	n->v.valuei= value
+	n->defined = TRUE
 
 end function
 
 '':::::
 function astNewCONSTf( byval value as double, _
-					   byval dtype as integer ) as integer static
-    dim n as integer
+					   byval dtype as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.CONST, dtype )
-	astNewCONSTf = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).v.valuef= value
-	astTB(n).defined = TRUE
+	n->v.valuef= value
+	n->defined = TRUE
 
 end function
 
 '':::::
 function astNewCONST64( byval value as longint, _
-					    byval dtype as integer ) as integer static
-    dim n as integer
+					    byval dtype as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.CONST, dtype )
-	astNewCONST64 = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).v.value64 = value
-	astTB(n).defined   = TRUE
+	n->v.value64 = value
+	n->defined   = TRUE
 
 end function
 
 '':::::
 function astNewCONST( byval v as FBVALUE ptr, _
-					  byval dtype as integer ) as integer static
-    dim n as integer
+					  byval dtype as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.CONST, dtype )
-	astNewCONST = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
 	select case as const dtype
 	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-		astTB(n).v.value64 = v->value64
+		n->v.value64 = v->value64
 	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-		astTB(n).v.valuef = v->valuef
+		n->v.valuef = v->valuef
 	case else
-		astTB(n).v.valuei = v->valuei
+		n->v.valuei = v->valuei
 	end select
 
-	astTB(n).defined = TRUE
+	n->defined = TRUE
 
 end function
 
 '':::::
-function astLoadCONST( byval n as integer ) as IRVREG ptr static
+function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 	dim as FBSYMBOL ptr s
 	dim as integer dtype
 
-	dtype = astTB(n).dtype
+	dtype = n->dtype
 
 	select case dtype
 	'' longints?
 	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-		return irAllocVRIMM64( dtype, astTB(n).v.value64 )
+		return irAllocVRIMM64( dtype, n->v.value64 )
 
 	'' if node is a float, create a temp float var (x86 assumption)
 	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-		s = hAllocNumericConst( str$( astTB(n).v.valuef ), dtype )
+		s = hAllocNumericConst( str$( n->v.valuef ), dtype )
 		return irAllocVRVAR( dtype, s, s->ofs )
 
 	''
 	case else
-		return irAllocVRIMM( dtype, astTB(n).v.valuei )
+		return irAllocVRIMM( dtype, n->v.valuei )
 	end select
 
 end function
@@ -3463,36 +3358,36 @@ function astNewVAR( byval sym as FBSYMBOL ptr, _
 					byval elm as FBSYMBOL ptr, _
 					byval ofs as integer, _
 					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr = NULL ) as integer static
-    dim n as integer
+					byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.VAR, dtype, subtype )
-	astNewVAR = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).var.sym 	= sym
-	astTB(n).var.elm 	= elm
+	n->var.sym 	= sym
+	n->var.elm 	= elm
 	if( sym <> NULL ) then
 		ofs += sym->ofs
 	end if
-	astTB(n).var.ofs	= ofs
-	astTB(n).chkbitfld	= elm <> NULL
+	n->var.ofs	= ofs
+	n->chkbitfld= elm <> NULL
 
 end function
 
 '':::::
-private function hGetBitField( byval n as integer, _
-							   byval s as FBSYMBOL ptr ) as integer static
+private function hGetBitField( byval n as ASTNODE ptr, _
+							   byval s as FBSYMBOL ptr ) as ASTNODE ptr static
 
-	dim as integer c
+	dim as ASTNODE ptr c
 
 	'' make a copy, the node itself can't be used or it will be deleted twice
 	c = astNew( INVALID, INVALID )
-	astCopy c, n
+	astCopy( c, n )
 
 	if( s->var.elm.bitpos > 0 ) then
 		n = astNewBOP( IR.OP.SHR, c, _
@@ -3504,18 +3399,18 @@ private function hGetBitField( byval n as integer, _
 	n = astNewBOP( IR.OP.AND, n, _
 				   astNewCONSTi( bitmaskTB(s->var.elm.bits), IR.DATATYPE.UINT ) )
 
-	return n
+	function = n
 
 end function
 
 '':::::
-function astLoadVAR( byval n as integer ) as IRVREG ptr static
+function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
 
 	'' handle bitfields..
-	if( astTB(n).chkbitfld ) then
-		astTB(n).chkbitfld = FALSE
-		s = astTB(n).var.elm
+	if( n->chkbitfld ) then
+		n->chkbitfld = FALSE
+		s = n->var.elm
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
 				n = hGetBitField( n, s )
@@ -3526,7 +3421,7 @@ function astLoadVAR( byval n as integer ) as IRVREG ptr static
 		end if
 	end if
 
-	function = irAllocVRVAR( astTB(n).dtype, astTB(n).var.sym, astTB(n).var.ofs )
+	function = irAllocVRVAR( n->dtype, n->var.sym, n->var.ofs )
 
 end function
 
@@ -3535,11 +3430,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewIDX( byval v as integer, _
-					byval i as integer, _
+function astNewIDX( byval v as ASTNODE ptr, _
+					byval i as ASTNODE ptr, _
 					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr ) as integer static
-    dim n as integer
+					byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	if( dtype = INVALID ) then
 		dtype = astGetDataType( i )
@@ -3547,33 +3442,33 @@ function astNewIDX( byval v as integer, _
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.IDX, dtype, subtype )
-	astNewIDX = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l 			= i
-	astTB(n).r 			= v
-	astTB(n).idx.mult 	= 1
-	astTB(n).idx.ofs 	= 0
-	astTB(n).chkbitfld  = v <> INVALID
+	n->l 			= i
+	n->r 			= v
+	n->idx.mult 	= 1
+	n->idx.ofs 		= 0
+	n->chkbitfld  	= v <> NULL
 
 end function
 
 '':::::
-function asthEmitIDX( byval v as integer, _
+function asthEmitIDX( byval v as ASTNODE ptr, _
 					  byval ofs as integer, _
 					  byval mult as integer, _
 					  byval vi as IRVREG ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
     dim as IRVREG ptr vd
 
-    s = astTB(v).var.sym
+    s = v->var.sym
 
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
 	if( not symbGetIsDynamic( s ) ) then
-		ofs = ofs + symbGetArrayDiff( s ) + astTB(v).var.ofs
+		ofs = ofs + symbGetArrayDiff( s ) + v->var.ofs
 	else
 		s = NULL
 	end if
@@ -3585,14 +3480,14 @@ function asthEmitIDX( byval v as integer, _
 			mult = 1
 		end if
 
-		vd = irAllocVRIDX( astTB(v).dtype, s, ofs, mult, vi )
+		vd = irAllocVRIDX( v->dtype, s, ofs, mult, vi )
 
 		if( irIsIDX( vi ) or irIsVAR( vi ) ) then
 			irEmitLOAD( IR.OP.LOAD, vi )
 		end if
 
 	else
-		vd = irAllocVRVAR( astTB(v).dtype, s, ofs )
+		vd = irAllocVRVAR( v->dtype, s, ofs )
 	end if
 
 	function = vd
@@ -3600,22 +3495,22 @@ function asthEmitIDX( byval v as integer, _
 end function
 
 '':::::
-function astLoadIDX( byval n as integer ) as IRVREG ptr
-    dim as integer v, i
+function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr v, i
     dim as IRVREG ptr vi, vr
     dim as FBSYMBOL ptr s
 
-	v = astTB(n).r
-	if( v = INVALID ) then
+	v = n->r
+	if( v = NULL ) then
 		return NULL
 	end if
 
 	'' handle bitfields..
-	if( astTB(n).chkbitfld ) then
-		astTB(n).chkbitfld = FALSE
-		if( astTB(v).chkbitfld ) then
-			astTB(v).chkbitfld = FALSE
-			s = astTB(v).var.elm
+	if( n->chkbitfld ) then
+		n->chkbitfld = FALSE
+		if( v->chkbitfld ) then
+			v->chkbitfld = FALSE
+			s = v->var.elm
 			if( s <> NULL ) then
 				if( s->var.elm.bits > 0 ) then
 					n = hGetBitField( n, s )
@@ -3627,14 +3522,14 @@ function astLoadIDX( byval n as integer ) as IRVREG ptr
 		end if
 	end if
 
-	i = astTB(n).l
-	if( i <> INVALID ) then
+	i = n->l
+	if( i <> NULL ) then
 		vi = astLoad( i )
 	else
 		vi = NULL
 	end if
 
-    vr = asthEmitIDX( v, astTB(n).idx.ofs, astTB(n).idx.mult, vi )
+    vr = asthEmitIDX( v, n->idx.ofs, n->idx.mult, vi )
 
 	astDel( i )
 	astDel( v )
@@ -3648,52 +3543,52 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewOFFSET( byval v as integer, _
+function astNewOFFSET( byval v as ASTNODE ptr, _
 					   byval sym as FBSYMBOL ptr = NULL, _
 					   byval elm as FBSYMBOL ptr = NULL, _
 					   byval dtype as integer = INVALID, _
-					   byval subtype as FBSYMBOL ptr = NULL ) as integer static
-	dim n as integer
+					   byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+	dim as ASTNODE ptr n
 
-	if( v = INVALID ) then
-		return INVALID
+	if( v = NULL ) then
+		return NULL
 	end if
 
 	if( dtype = INVALID ) then
-		dtype = astTB(v).dtype
+		dtype = v->dtype
 	end if
 
 	if( subtype = NULL ) then
-		subtype = astTB(v).subtype
+		subtype = v->subtype
 	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.OFFSET, IR.DATATYPE.POINTER + dtype, subtype )
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
-	astTB(n).l  		= v
-	astTB(n).addr.sym	= sym
-	astTB(n).addr.elm	= elm
-	astTB(n).chkbitfld	= elm <> NULL
+	n->l  		= v
+	n->addr.sym	= sym
+	n->addr.elm	= elm
+	n->chkbitfld= elm <> NULL
 
-	return n
+	function = n
 
 end function
 
 '':::::
-function astLoadOFFSET( byval n as integer ) as IRVREG ptr
-    dim as integer v
+function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr v
     dim as IRVREG ptr vr
 
-	v  = astTB(n).l
-	if( v = INVALID ) then
+	v  = n->l
+	if( v = NULL ) then
 		return NULL
 	end if
 
-	vr = irAllocVROFS( astTB(n).dtype, astTB(v).var.sym )
+	vr = irAllocVROFS( n->dtype, v->var.sym )
 
 	astDel( v )
 
@@ -3703,58 +3598,56 @@ end function
 
 '':::::
 function astNewADDR( byval op as integer, _
-					 byval p as integer, _
+					 byval p as ASTNODE ptr, _
 					 byval sym as FBSYMBOL ptr = NULL, _
 					 byval elm as FBSYMBOL ptr = NULL, _
 					 byval dtype as integer = INVALID, _
-					 byval subtype as FBSYMBOL ptr = NULL ) as integer static
-    dim n as integer
+					 byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
-	if( p = INVALID ) then
-		astNewADDR = INVALID
-		exit function
+	if( p = NULL ) then
+		return NULL
 	end if
 
 	if( dtype = INVALID ) then
-		dtype = astTB(p).dtype
+		dtype = p->dtype
 	end if
 
 	if( subtype = NULL ) then
-		subtype = astTB(p).subtype
+		subtype = p->subtype
 	end if
 
 	if( op = IR.OP.ADDROF ) then
-		if( astTB(p).class = AST.NODECLASS.VAR ) then
-			if( astTB(p).var.ofs = 0 ) then
-				astNewADDR = astNewOFFSET( p, sym, elm, dtype, subtype )
-				exit function
+		if( p->class = AST.NODECLASS.VAR ) then
+			if( p->var.ofs = 0 ) then
+				return astNewOFFSET( p, sym, elm, dtype, subtype )
 			end if
 		end if
 	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.ADDR, IR.DATATYPE.POINTER + dtype, subtype )
-	astNewADDR = n
-
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).op 		= op
-	astTB(n).l  		= p
-	astTB(n).addr.sym	= sym
-	astTB(n).addr.elm	= elm
-	astTB(n).chkbitfld	= elm <> NULL
+	n->op 		= op
+	n->l  		= p
+	n->addr.sym	= sym
+	n->addr.elm	= elm
+	n->chkbitfld= elm <> NULL
+
+	function = n
 
 end function
 
 '':::::
-function astLoadADDR( byval n as integer ) as IRVREG ptr
-    dim as integer p
+function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr p
     dim as IRVREG ptr v1, vr
 
-	p  = astTB(n).l
-	if( p = INVALID ) then
+	p  = n->l
+	if( p = NULL ) then
 		return NULL
 	end if
 
@@ -3765,7 +3658,7 @@ function astLoadADDR( byval n as integer ) as IRVREG ptr
 
 	vr = irAllocVREG( IR.DATATYPE.UINT )
 
-	irEmitADDR( astTB(n).op, v1, vr )
+	irEmitADDR( n->op, v1, vr )
 
 	astDel( p )
 
@@ -3778,29 +3671,29 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewLOAD( byval l as integer, _
-					 byval dtype as integer ) as integer static
-    dim n as integer
+function astNewLOAD( byval l as ASTNODE ptr, _
+					 byval dtype as integer ) as ASTNODE ptr static
+    dim n as ASTNODE ptr
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.LOAD, dtype )
-	astNewLOAD = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l  = l
+	n->l  = l
 
 end function
 
 '':::::
-function astLoadLOAD( byval n as integer ) as IRVREG ptr
-    dim as integer l
+function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l
     dim as IRVREG ptr vr
 
-	l = astTB(n).l
-	if( l = INVALID ) then
+	l = n->l
+	if( l = NULL ) then
 		return NULL
 	end if
 
@@ -3822,42 +3715,43 @@ end function
 function astNewPTR( byval sym as FBSYMBOL ptr, _
 					byval elm as FBSYMBOL ptr, _
 					byval ofs as integer, _
-					byval expr as integer, _
+					byval expr as ASTNODE ptr, _
 					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr ) as integer static
-    dim n as integer
+					byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.PTR, dtype, subtype )
-	astNewPTR = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l   		= expr
-	astTB(n).ptr.sym	= sym
-	astTB(n).ptr.elm	= elm
-	astTB(n).ptr.ofs	= ofs
-	astTB(n).chkbitfld	= elm <> NULL
+	n->l   		= expr
+	n->ptr.sym	= sym
+	n->ptr.elm	= elm
+	n->ptr.ofs	= ofs
+	n->chkbitfld= elm <> NULL
 
 end function
 
 '':::::
-function astLoadPTR( byval n as integer ) as IRVREG ptr
-    dim as integer l, dtype
+function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l
+    dim as integer dtype
     dim as IRVREG ptr v1, vp, vr
     dim as FBSYMBOL ptr s
 
-	l = astTB(n).l
-	if( l = INVALID ) then
+	l = n->l
+	if( l = NULL ) then
 		return NULL
 	end if
 
 	'' handle bitfields..
-	if( astTB(n).chkbitfld ) then
-		astTB(n).chkbitfld = FALSE
-		s = astTB(n).ptr.elm
+	if( n->chkbitfld ) then
+		n->chkbitfld = FALSE
+		s = n->ptr.elm
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
 				n = hGetBitField( n, s )
@@ -3871,7 +3765,7 @@ function astLoadPTR( byval n as integer ) as IRVREG ptr
 	v1 = astLoad( l )
 
 	''
-	dtype = astTB(n).dtype
+	dtype = n->dtype
 
 	'' src is already a reg?
 	if( (not irIsREG( v1 )) or _
@@ -3884,7 +3778,7 @@ function astLoadPTR( byval n as integer ) as IRVREG ptr
 		vp = v1
 	end if
 
-	vr = irAllocVRPTR( dtype, astTB(n).ptr.ofs, vp )
+	vr = irAllocVRPTR( dtype, n->ptr.ofs, vp )
 
 	astDel( l )
 
@@ -3897,17 +3791,18 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewASSIGN( byval l as integer, _
-					   byval r as integer ) as integer static
-    dim as integer n, dtype
+function astNewASSIGN( byval l as ASTNODE ptr, _
+					   byval r as ASTNODE ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+    dim as integer dtype
     dim as integer dt1, dt2
     dim as integer dc1, dc2
     dim as FBSYMBOL ptr proc
 
-	astNewASSIGN = INVALID
+	function = NULL
 
-	dt1 = astTB(l).dtype
-	dt2 = astTB(r).dtype
+	dt1 = l->dtype
+	dt2 = r->dtype
 	dc1 = irGetDataClass( dt1 )
 	dc2 = irGetDataClass( dt2 )
 
@@ -3920,7 +3815,7 @@ function astNewASSIGN( byval l as integer, _
 			if( dc1 = IR.DATACLASS.STRING ) then
 				'' not a zstring?
 				if( dt2 <> IR.DATATYPE.CHAR ) then
-					if( astTB(r).class <> AST.NODECLASS.PTR ) then
+					if( r->class <> AST.NODECLASS.PTR ) then
 						exit function
 					elseif( dt2 <> IR.DATATYPE.BYTE ) then
 						if( dt2 <> IR.DATATYPE.UBYTE ) then
@@ -3931,7 +3826,7 @@ function astNewASSIGN( byval l as integer, _
 			else
 				'' not a zstring?
 				if( dt1 <> IR.DATATYPE.CHAR ) then
-					if( astTB(l).class <> AST.NODECLASS.PTR ) then
+					if( l->class <> AST.NODECLASS.PTR ) then
 						exit function
 					elseif( dt1 <> IR.DATATYPE.BYTE ) then
 						if( dt1 <> IR.DATATYPE.UBYTE ) then
@@ -3953,7 +3848,7 @@ function astNewASSIGN( byval l as integer, _
 			exit function
 		else
 			'' "udtfunct() = udt" is not allowed, l node must be a variable
-			if( astTB(l).class = AST.NODECLASS.FUNCT ) then
+			if( l->class = AST.NODECLASS.FUNCT ) then
 				exit function
 			end if
 		end if
@@ -3961,24 +3856,24 @@ function astNewASSIGN( byval l as integer, _
         '' r is not an UDT?
 		if( dt2 <> IR.DATATYPE.USERDEF ) then
 			'' not a function returning an UDT on regs?
-			if( astTB(r).class <> AST.NODECLASS.FUNCT ) then
+			if( r->class <> AST.NODECLASS.FUNCT ) then
 				exit function
 			end if
 
             '' handle functions returning UDT's when type isn't a pointer,
             '' but an integer or fpoint register
-            proc = astTB(r).proc.sym
+            proc = r->proc.sym
             if( proc->typ <> IR.DATATYPE.USERDEF ) then
             	exit function
             end if
 
             '' fake l's type
             dt1 = proc->proc.realtype
-            astTB(l).dtype = dt1
+            l->dtype = dt1
 
 		'' both are UDT's, do a mem copy..
 		else
-			return rtlMemCopy( l, r, symbGetUDTLen( astTB(l).subtype ) )
+			return rtlMemCopy( l, r, symbGetUDTLen( l->subtype ) )
 		end if
 
     '' zstrings?
@@ -4005,21 +3900,21 @@ function astNewASSIGN( byval l as integer, _
 	'' alloc new node
 	n = astNew( AST.NODECLASS.ASSIGN, dt1 )
 
-	if( n = INVALID ) then
-		return INVALID
+	if( n = NULL ) then
+		return NULL
 	end if
 
-	astTB(n).l  = l
-	astTB(n).r  = r
+	n->l  = l
+	n->r  = r
 
-	return n
+	function = n
 
 end function
 
 '':::::
-private function hSetBitField( byval l as integer, _
-							   byval r as integer, _
-							   byval s as FBSYMBOL ptr ) as integer static
+private function hSetBitField( byval l as ASTNODE ptr, _
+							   byval r as ASTNODE ptr, _
+							   byval s as FBSYMBOL ptr ) as ASTNODE ptr static
 
 	l = astNewBOP( IR.OP.AND, astCloneTree( l ), _
 				   astNewCONSTi( not (bitmaskTB(s->var.elm.bits) shl s->var.elm.bitpos), _
@@ -4030,25 +3925,25 @@ private function hSetBitField( byval l as integer, _
 				   	   astNewCONSTi( s->var.elm.bitpos, IR.DATATYPE.UINT ) )
 	end if
 
-	return astNewBOP( IR.OP.OR, l, r )
+	function = astNewBOP( IR.OP.OR, l, r )
 
 end function
 
 '':::::
-function astLoadASSIGN( byval n as integer ) as IRVREG ptr
-    dim as integer l, r
+function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l, r
     dim as IRVREG ptr vs, vr
     dim as FBSYMBOL ptr s
 
-	l = astTB(n).l
-	r = astTB(n).r
-	if( (l = INVALID) or (r = INVALID) ) then
+	l = n->l
+	r = n->r
+	if( (l = NULL) or (r = NULL) ) then
 		return NULL
 	end if
 
 	'' handle bitfields..
-	if( astTB(l).chkbitfld ) then
-		astTB(l).chkbitfld = FALSE
+	if( l->chkbitfld ) then
+		l->chkbitfld = FALSE
 		s = astGetUDTElm( l )
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
@@ -4076,40 +3971,38 @@ end function
 '':::::
 function astNewBRANCH( byval op as integer, _
 					   byval label as FBSYMBOL ptr, _
-					   byval l as integer = INVALID ) as integer static
-    dim n as integer
-    dim dtype as integer
+					   byval l as ASTNODE ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+    dim as integer dtype
 
-	astNewBRANCH = INVALID
-
-    if( l = INVALID ) then
+    if( l = NULL ) then
     	dtype = INVALID
     else
-    	dtype = astTB(l).dtype
+    	dtype = l->dtype
     end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.BRANCH, dtype )
-	astNewBRANCH = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l	= l
-	astTB(n).ex = label
-	astTB(n).op	= op
+	n->l  = l
+	n->ex = label
+	n->op = op
 
 end function
 
 '':::::
-function astLoadBRANCH( byval n as integer ) as IRVREG ptr
-    dim as integer l
+function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l
     dim as IRVREG ptr vr
 
-	l  = astTB(n).l
+	l  = n->l
 
-	if( l <> INVALID ) then
+	if( l <> NULL ) then
 		vr = astLoad( l )
 		astDel( l )
 	else
@@ -4117,15 +4010,15 @@ function astLoadBRANCH( byval n as integer ) as IRVREG ptr
 	end if
 
 	'' pointer?
-	if( astTB(n).ex = NULL ) then
+	if( n->ex = NULL ) then
 		'' jump or call?
-		if( astTB(n).op = IR.OP.JUMPPTR ) then
+		if( n->op = IR.OP.JUMPPTR ) then
 			irEmitBRANCHPTR( vr )
 		else
 			irEmitCALLPTR( vr, NULL, 0 )
 		end if
 	else
-		irEmitBRANCH( astTB(n).op, astTB(n).ex )
+		irEmitBRANCH( n->op, n->ex )
 	end if
 
 	function = vr
@@ -4139,9 +4032,9 @@ end function
 '':::::
 function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 					  byval dtype as integer, _
-					  byval ptrexpr as integer = INVALID, _
-					  byval isprofiler as integer = FALSE ) as integer
-    dim as integer n
+					  byval ptrexpr as ASTNODE ptr = NULL, _
+					  byval isprofiler as integer = FALSE ) as ASTNODE ptr
+    dim as ASTNODE ptr n
     dim as FBRTLCALLBACK callback
 
 	'' if return type is an UDT, change to the real one
@@ -4158,69 +4051,69 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.FUNCT, dtype )
-	astNewFUNCT = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).proc.sym 		= sym
-	astTB(n).l 				= ptrexpr
-	astTB(n).proc.params 	= 0
+	n->proc.sym 	= sym
+	n->l 			= ptrexpr
+	n->proc.params 	= 0
 
 	if( sym <> NULL ) then
-		astTB(n).proc.arg	= symbGetProcHeadArg( sym )
-		astTB(n).proc.isrtl = symbGetProcIsRTL( sym )
+		n->proc.arg	= symbGetProcHeadArg( sym )
+		n->proc.isrtl = symbGetProcIsRTL( sym )
 
 		callback = symbGetProcCallback( sym )
 		if( callback <> NULL ) then
 			callback( sym )
 		end if
 	else
-		astTB(n).proc.arg	= NULL
-		astTB(n).proc.isrtl = FALSE
+		n->proc.arg	= NULL
+		n->proc.isrtl = FALSE
 	end if
 
-	astTB(n).proc.arraytail = NULL
-	astTB(n).proc.strtail = NULL
+	n->proc.arraytail = NULL
+	n->proc.strtail = NULL
 
 	'' function profiling
-	astTB(n).proc.profstart = INVALID
-	astTB(n).proc.profend   = INVALID
+	n->proc.profstart = NULL
+	n->proc.profend   = NULL
 	if( env.clopt.profile ) then
 		if( not isprofiler ) then
-			astTB(n).proc.profstart = rtlProfileStartCall( sym )
-			astTB(n).proc.profend   = rtlProfileEndCall( )
+			n->proc.profstart = rtlProfileStartCall( sym )
+			n->proc.profend   = rtlProfileEndCall( )
 		end if
 	end if
 
 end function
 
 '':::::
-private sub hReportParamError( byval f as integer )
+private sub hReportParamError( byval f as ASTNODE ptr )
 
-	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( astTB(f).proc.params+1 )
+	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( f->proc.params+1 )
 
 end sub
 
 '':::::
-private sub hReportParamWarning( byval f as integer, _
+private sub hReportParamWarning( byval f as ASTNODE ptr, _
 								 byval msgnum as integer )
 
-	hReportWarning msgnum, "at parameter: " + str$( astTB(f).proc.params+1 )
+	hReportWarning msgnum, "at parameter: " + str$( f->proc.params+1 )
 
 end sub
 
 '':::::
-private function hAllocTmpArrayDesc( byval f as integer, _
-									 byval n as integer ) as integer
+private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
+									 byval n as ASTNODE ptr ) as integer
 	dim s as FBSYMBOL ptr
 	dim t as ASTTEMPARRAY ptr
 
 	'' alloc a node
 	t = listNewNode( @ctx.temparray )
-	t->left = astTB(f).proc.arraytail
-	astTB(f).proc.arraytail = t
+	t->left = f->proc.arraytail
+	f->proc.arraytail = t
 
 	'' create a pointer
 	s = symbAddTempVar( FB.SYMBTYPE.UINT )
@@ -4233,16 +4126,16 @@ private function hAllocTmpArrayDesc( byval f as integer, _
 end function
 
 '':::::
-private function hAllocTmpString( byval f as integer, _
-								  byval n as integer, _
+private function hAllocTmpString( byval f as ASTNODE ptr, _
+								  byval n as ASTNODE ptr, _
 								  byval copyback as integer ) as integer
-	dim s as FBSYMBOL ptr
-	dim t as ASTTEMPSTR ptr
+	dim as FBSYMBOL ptr s
+	dim as ASTTEMPSTR ptr t
 
 	'' alloc a node
 	t = listNewNode( @ctx.tempstr )
-	t->left = astTB(f).proc.strtail
-	astTB(f).proc.strtail = t
+	t->left = f->proc.strtail
+	f->proc.strtail = t
 
 	'' create temp string to pass as paramenter
 	s = symbAddTempVar( FB.SYMBTYPE.STRING )
@@ -4251,7 +4144,7 @@ private function hAllocTmpString( byval f as integer, _
 	if( copyback ) then
 		t->srctree = astCloneTree( n )
 	else
-		t->srctree = INVALID
+		t->srctree = NULL
 	end if
 
 	'' temp string = src string
@@ -4260,22 +4153,22 @@ private function hAllocTmpString( byval f as integer, _
 end function
 
 '':::::
-private function hCheckStringArg( byval f as integer, _
+private function hCheckStringArg( byval f as ASTNODE ptr, _
 							      byval arg as FBSYMBOL ptr, _
-							      byval p as integer ) as integer
+							      byval p as ASTNODE ptr ) as integer
 
     dim as integer adtype, pdtype, pclass, copyback
 
-	hCheckStringArg = p
+	function = p
 
 	copyback = FALSE
 
 	'' get param and arg data types
 	adtype  = symbGetType( arg )
-	pdtype  = astTB(p).dtype
+	pdtype  = p->dtype
 
 	'' calling the runtime lib?
-	if( astTB(f).proc.isrtl ) then
+	if( f->proc.isrtl ) then
 
 		'' byref arg (rtlib str args are ALWAYS byref), fixed-len param: just alloc a temp descriptor
 		'' (assuming here that no rtlib function will EVER change the strings passed as param)
@@ -4291,10 +4184,10 @@ private function hCheckStringArg( byval f as integer, _
 
 
 	'' param class
-	pclass = astTB(p).class
+	pclass = p->class
 
 	''
-	select case symbGetArgMode( astTB(f).proc.sym, arg )
+	select case symbGetArgMode( f->proc.sym, arg )
 
 	'' passing by reference?
 	case FB.ARGMODE.BYREF
@@ -4333,19 +4226,19 @@ private function hCheckStringArg( byval f as integer, _
 	end select
 
 	'' create temp string to pass as paramenter
-	return hAllocTmpString( f, p, copyback )
+	function = hAllocTmpString( f, p, copyback )
 
 end function
 
 '':::::
-private function hCheckStringParam( byval f as integer, _
-									byval n as integer, _
+private function hCheckStringParam( byval f as ASTNODE ptr, _
+									byval n as ASTNODE ptr, _
 					   				byval pclass as integer, _
 					   				byval pdtype as integer, _
 					   				byval pdclass as integer )
 
 	'' rtl? don't mess..
-	if( astTB(f).proc.isrtl ) then
+	if( f->proc.isrtl ) then
 		return TRUE
 	end if
 
@@ -4357,48 +4250,48 @@ private function hCheckStringParam( byval f as integer, _
 		if( pclass = AST.NODECLASS.FUNCT ) then
 			'' create temp string to pass as paramenter (no copy is
 			'' done at rtlib, as the returned string is a temp one)
-			astTB(n).l = hAllocTmpString( f, astTB(n).l, FALSE )
+			n->l = hAllocTmpString( f, n->l, FALSE )
 			pdtype = IR.DATATYPE.STRING
 			pclass = AST.NODECLASS.PTR
-			astTB(n).dtype = pdtype
+			n->dtype = pdtype
 		end if
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
 		if( pdtype <> IR.DATATYPE.FIXSTR ) then
-    		astTB(n).l     = astNewADDR( IR.OP.DEREF, astTB(n).l )
-			astTB(n).dtype = IR.DATATYPE.POINTER + IR.DATATYPE.CHAR
+    		n->l     = astNewADDR( IR.OP.DEREF, n->l )
+			n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.CHAR
 
         '' fixed-len? get the address of
         elseif( pclass <> AST.NODECLASS.PTR ) then
-			astTB(n).l     = astNewADDR( IR.OP.ADDROF, astTB(n).l )
-			astTB(n).dtype = IR.DATATYPE.POINTER + IR.DATATYPE.CHAR
+			n->l     = astNewADDR( IR.OP.ADDROF, n->l )
+			n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.CHAR
 		end if
 
 	else
     	'' zstring? if not a ptr yet, get the address of
     	if( pdtype = IR.DATATYPE.CHAR ) then
 			if( pclass <> AST.NODECLASS.PTR ) then
-				astTB(n).l     = astNewADDR( IR.OP.ADDROF, astTB(n).l )
-				astTB(n).dtype = IR.DATATYPE.POINTER + IR.DATATYPE.CHAR
+				n->l     = astNewADDR( IR.OP.ADDROF, n->l )
+				n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.CHAR
 			end if
 		end if
 
 	end if
 
-	return TRUE
+	function = TRUE
 
 end function
 
 '':::::
-private function hCheckArrayParam( byval f as integer, _
-								   byval n as integer, _
+private function hCheckArrayParam( byval f as ASTNODE ptr, _
+								   byval n as ASTNODE ptr, _
 					   	   		   byval adtype as integer, _
 					   	   		   byval adclass as integer )
 
 	dim as FBSYMBOL ptr s, d
-    dim as integer p
+    dim as ASTNODE ptr p
 
-	p = astTB(n).l
+	p = n->l
 
 	'' type field?
 	s = astGetSymbol( p )
@@ -4409,7 +4302,7 @@ private function hCheckArrayParam( byval f as integer, _
 	end if
 
 	'' same type? (don't check if it's a rtl proc)
-	if( not astTB(f).proc.isrtl ) then
+	if( not f->proc.isrtl ) then
 		if( (adclass <> irGetDataClass( s->typ ) ) or _
 			(irGetDataSize( adtype ) <> irGetDataSize( s->typ )) ) then
 			hReportParamError f
@@ -4431,8 +4324,8 @@ private function hCheckArrayParam( byval f as integer, _
 		end if
 
 		'' create a temp array descriptor
-		astTB(n).l     = hAllocTmpArrayDesc( f, p )
-		astTB(n).dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
+		n->l     = hAllocTmpArrayDesc( f, p )
+		n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
 
 	else
 
@@ -4447,39 +4340,40 @@ private function hCheckArrayParam( byval f as integer, _
 			end if
 
         	''
-        	astTB(n).l     = astNewADDR( IR.OP.ADDROF, astNewVAR( d, NULL, 0, IR.DATATYPE.UINT ) )
-        	astTB(n).dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
+        	n->l     = astNewADDR( IR.OP.ADDROF, astNewVAR( d, NULL, 0, IR.DATATYPE.UINT ) )
+        	n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
 
     	else
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
-        	astTB(n).l     = astNewVAR( s, NULL, 0, IR.DATATYPE.UINT )
-        	astTB(n).dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
+        	n->l     = astNewVAR( s, NULL, 0, IR.DATATYPE.UINT )
+        	n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
     	end if
 
     end if
 
-    return TRUE
+    function = TRUE
 
 end function
 
 '':::::
-private function hCheckParam( byval f as integer, _
-							  byval n as integer )
+private function hCheckParam( byval f as ASTNODE ptr, _
+							  byval n as ASTNODE ptr )
 
     dim as FBSYMBOL ptr proc, arg, s
     dim as integer adtype, adclass, amode
-    dim as integer p, pdtype, pdclass, pmode, pclass
+    dim as ASTNODE ptr p
+    dim as integer pdtype, pdclass, pmode, pclass
 
-    hCheckParam = FALSE
+    function = FALSE
 
 	''
-	proc = astTB(f).proc.sym
+	proc = f->proc.sym
 
-	if( astTB(f).proc.params >= proc->proc.args ) then
+	if( f->proc.params >= proc->proc.args ) then
 		arg = symbGetProcTailArg( proc )
 	else
-		arg = astTB(f).proc.arg
+		arg = f->proc.arg
 	end if
 
 	'' argument
@@ -4490,14 +4384,14 @@ private function hCheckParam( byval f as integer, _
 	end if
 
 	'' string concatenation is delayed for optimization reasons..
-	astTB(n).l = astUpdStrConcat( astTB(n).l )
+	n->l = astUpdStrConcat( n->l )
 
     '' parameter
-	p = astTB(n).l
-	pmode    	= astTB(n).param.mode
-	pdtype   	= astTB(p).dtype
+	p = n->l
+	pmode    	= n->param.mode
+	pdtype   	= p->dtype
 	pdclass  	= irGetDataClass( pdtype )
-	pclass	 	= astTB(p).class
+	pclass	 	= p->class
 
 	'' by descriptor?
 	if( amode = FB.ARGMODE.BYDESC ) then
@@ -4563,22 +4457,22 @@ private function hCheckParam( byval f as integer, _
 
 			'' alloc a temp string if needed
 			p = hCheckStringArg( f, arg, p )
-			if( p <> astTB(n).l ) then
+			if( p <> n->l ) then
 				'' node will be a function returning a PTR to a string descriptor
 				pdtype  = IR.DATATYPE.STRING
 				pdclass = IR.DATACLASS.STRING
 				pclass	= AST.NODECLASS.PTR
 
-				astTB(n).l     = p
-				astTB(n).dtype = pdtype
+				n->l     = p
+				n->dtype = pdtype
 			end if
 
 			''
 			if( amode = FB.ARGMODE.BYVAL ) then
 				'' deref var-len (ptr at offset 0)
 				if( pdtype = IR.DATATYPE.STRING ) then
-					astTB(n).l     = astNewADDR( IR.OP.DEREF, p )
-					astTB(n).dtype = IR.DATATYPE.UINT
+					n->l     = astNewADDR( IR.OP.DEREF, p )
+					n->dtype = IR.DATATYPE.UINT
 					pdclass = IR.DATACLASS.INTEGER
 					pdtype  = IR.DATATYPE.UINT
 				end if
@@ -4588,8 +4482,8 @@ private function hCheckParam( byval f as integer, _
 			if( pclass <> AST.NODECLASS.PTR ) then
 				'' descriptor or fixed-len? get the address of
 				if( (pdclass = IR.DATACLASS.STRING) or (pdtype = IR.DATATYPE.CHAR) ) then
-					astTB(n).l     = astNewADDR( IR.OP.ADDROF, p )
-					astTB(n).dtype = IR.DATATYPE.UINT
+					n->l     = astNewADDR( IR.OP.ADDROF, p )
+					n->dtype = IR.DATATYPE.UINT
 				end if
 			end if
 
@@ -4612,20 +4506,20 @@ private function hCheckParam( byval f as integer, _
 						exit function
 					end if
 
-					s = astTB(p).proc.sym
+					s = p->proc.sym
 					if( s->typ <> FB.SYMBTYPE.USERDEF ) then
 						hReportParamError f
 						exit function
 					end if
 
-					astTB(n).dtype = pdtype
+					n->dtype = pdtype
 					s = s->subtype
 
 				else
 					if( pclass <> AST.NODECLASS.FUNCT ) then
-						s = astTB(p).subtype
+						s = p->subtype
 					else
-						s = astTB(p).proc.sym->subtype
+						s = p->proc.sym->subtype
 					end if
 				end if
 
@@ -4638,7 +4532,7 @@ private function hCheckParam( byval f as integer, _
 				'' set the length if it's been passed by value
 				if( amode = FB.ARGMODE.BYVAL ) then
 					if( pdtype = IR.DATATYPE.USERDEF ) then
-						astTB(n).param.lgt = symbGetUDTLen( s )
+						n->param.lgt = symbGetUDTLen( s )
 					end if
 				end if
 
@@ -4664,14 +4558,14 @@ private function hCheckParam( byval f as integer, _
 					end if
 
 					p = astNewCONV( INVALID, adtype, p )
-					astTB(n).dtype = astTB(p).dtype
-					astTB(n).l     = p
+					n->dtype = p->dtype
+					n->l     = p
 
 				end if
 
 				'' pointer checking
 				if( adtype >= IR.DATATYPE.POINTER ) then
-					if( astTB(p).dtype < IR.DATATYPE.POINTER ) then
+					if( p->dtype < IR.DATATYPE.POINTER ) then
 						select case as const pclass
 						case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 							hReportParamWarning f, FB.WARNINGMSG.INVALIDPOINTER
@@ -4686,17 +4580,16 @@ private function hCheckParam( byval f as integer, _
     end if
 
 
-    hCheckParam = TRUE
+    function = TRUE
 
 end function
 
 '':::::
-function astNewPARAM( byval f as integer, _
-					  byval p as integer, _
+function astNewPARAM( byval f as ASTNODE ptr, _
+					  byval p as ASTNODE ptr, _
 					  byval dtype as integer = INVALID, _
-					  byval mode as integer = INVALID ) as integer
-    dim n as integer
-    dim t as integer
+					  byval mode as integer = INVALID ) as ASTNODE ptr
+    dim as ASTNODE ptr n, t
     dim proc as FBSYMBOL ptr
 
 	if( dtype = INVALID ) then
@@ -4705,66 +4598,66 @@ function astNewPARAM( byval f as integer, _
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.PARAM, dtype )
-	astNewPARAM = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l = p
-	astTB(n).param.mode = mode
-	astTB(n).param.lgt	= 0
+	n->l 		  = p
+	n->param.mode = mode
+	n->param.lgt  = 0
 
 	'' add param node to function's list
-	proc = astTB(f).proc.sym
+	proc = f->proc.sym
 
-	t = astTB(f).r
+	t = f->r
 
 	'' pascal mode, first param added will be the first pushed
 	if( proc->proc.mode = FB.FUNCMODE.PASCAL ) then
-		if( t = INVALID ) then
-			astTB(f).r = n
+		if( t = NULL ) then
+			f->r = n
 		else
-			t = astTB(f).proc.lastparam
-			astTB(t).r = n
+			t = f->proc.lastparam
+			t->r = n
 		end if
 
-		astTB(f).proc.lastparam = n
-		astTB(n).r = INVALID
+		f->proc.lastparam = n
+		n->r = NULL
 
 	else
 		'' non-pascal, the lastest param added will be the first pushed
-		astTB(f).r = n
-		astTB(n).r = t
+		f->r = n
+		n->r = t
 	end if
 
 	''
 	if( not hCheckParam( f, n ) ) then
-		astNewPARAM = INVALID
-		exit function
+		return NULL
 	end if
 
 	''
-	astTB(f).proc.params += 1
+	f->proc.params += 1
 
-	if( astTB(f).proc.params < proc->proc.args ) then
-		astTB(f).proc.arg = symbGetProcNextArg( proc, astTB(f).proc.arg, FALSE )
+	if( f->proc.params < proc->proc.args ) then
+		f->proc.arg = symbGetProcNextArg( proc, f->proc.arg, FALSE )
 	end if
 
 end function
 
 '':::::
-private function hCallProc( byval n as integer, _
+private function hCallProc( byval n as ASTNODE ptr, _
 					   		byval proc as FBSYMBOL ptr, _
 					   		byval mode as integer, _
 					   		byval bytestopop as integer, _
 					   		byval bytesaligned as integer ) as IRVREG ptr static
     dim as IRVREG ptr vreg, vr
-    dim as integer p, dtype
+    dim as ASTNODE ptr p
+    dim as integer dtype
 
 	'' ordinary pointer?
 	if( proc = NULL ) then
-		p = astTB(n).l
+		p = n->l
 		vr = astLoad( p )
 		astDel( p )
 		irEmitCALLPTR( vr, NULL, 0 )
@@ -4772,7 +4665,7 @@ private function hCallProc( byval n as integer, _
 		return NULL
 	end if
 
-	dtype = astTB(n).dtype
+	dtype = n->dtype
 
 	'' function returns as string? it's actually a pointer to a string descriptor..
 	'' same with UDT's..
@@ -4801,8 +4694,8 @@ private function hCallProc( byval n as integer, _
 	end if
 
 	'' call function or ptr
-	p = astTB(n).l
-	if( p = INVALID ) then
+	p = n->l
+	if( p = NULL ) then
 		irEmitCALLFUNCT( proc, bytestopop, vreg )
 	else
 		vr = astLoad( p )
@@ -4816,9 +4709,9 @@ private function hCallProc( byval n as integer, _
 
 	'' handle strings and UDT's returned by functions that are actually pointers to
 	'' string descriptors or the hidden pointer passed as the 1st argument
-	select case astTB(n).dtype
+	select case n->dtype
 	case IR.DATATYPE.STRING, IR.DATATYPE.USERDEF
-		vreg = irAllocVRPTR( astTB(n).dtype, 0, vreg )
+		vreg = irAllocVRPTR( n->dtype, 0, vreg )
 	end select
 
 	function = vreg
@@ -4826,21 +4719,22 @@ private function hCallProc( byval n as integer, _
 end function
 
 '':::::
-private sub hCheckTmpStrings( byval f as integer )
-    dim as integer t, copyback
+private sub hCheckTmpStrings( byval f as ASTNODE ptr )
+    dim as ASTNODE ptr t
+    dim as integer copyback
     dim as ASTTEMPSTR ptr n, p
     dim as FBSYMBOL ptr s
 
 	'' copy-back any fix-len string passed as parameter and
 	'' delete all temp strings used as parameters
-	n = astTB(f).proc.strtail
+	n = f->proc.strtail
 	do while( n <> NULL )
 
 		'' copy back if needed
-		if( n->srctree <> INVALID ) then
+		if( n->srctree <> NULL ) then
         	'' only if not a literal string passed a fixed-len
         	copyback = TRUE
-        	if( astTB(n->srctree).class = AST.NODECLASS.VAR ) then
+        	if( n->srctree->class = AST.NODECLASS.VAR ) then
         	    s = astGetSymbol( n->srctree )
         	    copyback = symbGetVarInitialized( s ) = FALSE
         	end if
@@ -4855,7 +4749,7 @@ private sub hCheckTmpStrings( byval f as integer )
 		'' delete the temp string
 		t = rtlStrDelete( astNewVAR( n->tmpsym, NULL, 0, IR.DATATYPE.STRING ) )
 		astLoad( t )
-		astDel t
+		astDel( t )
 
 		p = n->left
 		listDelNode( @ctx.tempstr, n )
@@ -4865,17 +4759,17 @@ private sub hCheckTmpStrings( byval f as integer )
 end sub
 
 '':::::
-private sub hFreeTempArrayDescs( byval f as integer )
-    dim as integer t
+private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
+    dim as ASTNODE ptr t
     dim as ASTTEMPARRAY ptr n, p
 
-	n = astTB(f).proc.arraytail
+	n = f->proc.arraytail
 	do while( n <> NULL )
 
 		t = rtlArrayFreeTempDesc( n->pdesc )
-		if( t <> INVALID ) then
+		if( t <> NULL ) then
 			astLoad( t )
-			astDel t
+			astDel( t )
 		end if
 
 		p = n->left
@@ -4886,10 +4780,10 @@ private sub hFreeTempArrayDescs( byval f as integer )
 end sub
 
 '':::::
-private sub hAllocTempStruct( byval n as integer, _
+private sub hAllocTempStruct( byval n as ASTNODE ptr, _
 							  byval proc as FBSYMBOL ptr ) static
 	dim as FBSYMBOL ptr v
-	dim as integer p
+	dim as ASTNODE ptr p
 	dim as IRVREG ptr vr
 	dim as FBSYMBOL a
 
@@ -4910,26 +4804,25 @@ private sub hAllocTempStruct( byval n as integer, _
 end sub
 
 '':::::
-function astLoadFUNCT( byval n as integer ) as IRVREG ptr
-    dim as integer p, np
-    dim as FBSYMBOL ptr proc
+function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr p, np, l, pstart, pend
+    dim as FBSYMBOL ptr proc, arg, lastarg
     dim as integer mode, bytestopop, toalign
-    dim as integer params, inc, l
-    dim as FBSYMBOL ptr arg, lastarg
-    dim as integer args, pstart, pend
+    dim as integer params, inc
+    dim as integer args
     dim as IRVREG ptr vr, pcvr
 
 	'' execute each param and push the result
-	proc = astTB(n).proc.sym
+	proc = n->proc.sym
 
-	pstart = astTB(n).proc.profstart
-	pend   = astTB(n).proc.profend
+	pstart = n->proc.profstart
+	pend   = n->proc.profend
 
 	'' ordinary pointer?
 	if( proc = NULL ) then
 
 		'' signal function start for profiling
-		if( pstart <> INVALID ) then
+		if( pstart <> NULL ) then
 			pcvr = astLoad( pstart )
 			astDel( pstart )
 		end if
@@ -4937,9 +4830,9 @@ function astLoadFUNCT( byval n as integer ) as IRVREG ptr
 		vr = hCallProc( n, NULL, INVALID, 0, 0 )
 
 		'' signal function end for profiling
-		if( pend <> INVALID ) then
+		if( pend <> NULL ) then
 			irEmitPUSH( pcvr )
-			proc = astTB(pend).proc.sym
+			proc = pend->proc.sym
 			hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 			astDel( pend )
 		end if
@@ -4954,7 +4847,7 @@ function astLoadFUNCT( byval n as integer ) as IRVREG ptr
 		params = 0
 		inc = 1
 	else
-		params = astTB(n).proc.params
+		params = n->proc.params
 		inc = -1
 	end if
 
@@ -4985,16 +4878,16 @@ function astLoadFUNCT( byval n as integer ) as IRVREG ptr
 		arg = lastarg
 	end if
 
-	p = astTB(n).r
-	do while( p <> INVALID )
-		np = astTB(p).r
+	p = n->r
+	do while( p <> NULL )
+		np = p->r
 
-		l = astTB(p).l
+		l = p->l
 
 		''
 		if( arg = lastarg ) then
 			if( arg->arg.mode = FB.ARGMODE.VARARG ) then
-				bytestopop += (symbCalcLen( astTB(l).dtype, NULL ) + 3) and not 3 '' x86 assumption!
+				bytestopop += (symbCalcLen( l->dtype, NULL ) + 3) and not 3 '' x86 assumption!
 			end if
 		end if
 
@@ -5002,8 +4895,8 @@ function astLoadFUNCT( byval n as integer ) as IRVREG ptr
 		vr = astLoad( l )
 		astDel( l )
 
-		if( not irEmitPUSHPARAM( proc, arg, vr, astTB(p).param.mode, astTB(p).param.lgt ) ) then
-			'''''return INVALID
+		if( not irEmitPUSHPARAM( proc, arg, vr, p->param.mode, p->param.lgt ) ) then
+			'''''return NULL
 		end if
 
 		astDel( p )
@@ -5021,7 +4914,7 @@ function astLoadFUNCT( byval n as integer ) as IRVREG ptr
 	hAllocTempStruct( n, proc )
 
 	'' signal function start for profiling
-	if( pstart <> INVALID ) then
+	if( pstart <> NULL ) then
 		pcvr = astLoad( pstart )
 		astDel( pstart )
 	end if
@@ -5030,9 +4923,9 @@ function astLoadFUNCT( byval n as integer ) as IRVREG ptr
 	vr = hCallProc( n, proc, mode, bytestopop, toalign )
 
 	'' signal function end for profiling
-	if( pend <> INVALID ) then
+	if( pend <> NULL ) then
 		irEmitPUSH( pcvr )
-		proc = astTB(pend).proc.sym
+		proc = pend->proc.sym
 		hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 		astDel( pend )
 	end if
@@ -5052,20 +4945,21 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewIIF( byval condexpr as integer, _
-					byval truexpr as integer, _
-					byval falsexpr as integer ) as integer static
-    dim as integer n, truedtype, falsedtype
+function astNewIIF( byval condexpr as ASTNODE ptr, _
+					byval truexpr as ASTNODE ptr, _
+					byval falsexpr as ASTNODE ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+    dim as integer truedtype, falsedtype
     dim as FBSYMBOL ptr falselabel
 
-	astNewIIF = INVALID
+	function = NULL
 
-	if( condexpr = INVALID ) then
+	if( condexpr = NULL ) then
 		exit function
 	end if
 
-	truedtype = astTB(truexpr).dtype
-	falsedtype = astTB(falsexpr).dtype
+	truedtype = truexpr->dtype
+	falsedtype = falsexpr->dtype
 
     '' string? invalid
     if( irGetDataClass( truedtype ) = IR.DATACLASS.STRING ) then
@@ -5088,51 +4982,51 @@ function astNewIIF( byval condexpr as integer, _
     	end if
     end if
 
-	falselabel = symbAddLabel( hMakeTmpStr )
+	falselabel = symbAddLabel( hMakeTmpStr( ) )
 
 	condexpr = astUpdComp2Branch( condexpr, falselabel, FALSE )
-	if( condexpr = INVALID ) then
+	if( condexpr = NULL ) then
 		exit function
 	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.IIF, truedtype )
-	astNewIIF = n
+	function = n
 
-	if( n = INVALID ) then
+	if( n = NULL ) then
 		exit function
 	end if
 
-	astTB(n).l  			= truexpr
-	astTB(n).r  			= falsexpr
-	astTB(n).iif.falselabel = falselabel
-	astTB(n).iif.cond		= condexpr
+	n->l  			= truexpr
+	n->r  			= falsexpr
+	n->iif.falselabel = falselabel
+	n->iif.cond		= condexpr
 
 end function
 
 '':::::
-function astLoadIIF( byval n as integer ) as IRVREG ptr
-    dim as integer l, r
+function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l, r
     dim as IRVREG ptr vr
     dim as FBSYMBOL ptr exitlabel
 
-	l = astTB(n).l
-	r = astTB(n).r
+	l = n->l
+	r = n->r
 
 	exitlabel  = symbAddLabel( hMakeTmpStr )
 
 	''
-	astFlush( astTB(n).iif.cond )
+	astFlush( n->iif.cond )
 
 	''
 	irEmitPUSH( astLoad( l ) )
 	irEmitBRANCH( IR.OP.JMP, exitlabel )
 
-    irEmitLABELNF( astTB(n).iif.falselabel )
+    irEmitLABELNF( n->iif.falselabel )
 	irEmitPUSH( astLoad( r ) )
 
 	irEmitLABELNF( exitlabel )
-	vr = irAllocVREG( astTB(n).dtype )
+	vr = irAllocVREG( n->dtype )
 	irEmitPOP( vr )
 
 	astDel( l )

@@ -38,7 +38,7 @@ function flistNew( byval flist as TFLIST ptr, _
 	flist->totitems	= items
 	flist->items 	= items
 
-	function = listNew( @flist->list, items, itemlen, FALSE )
+	function = listNew( @flist->list, items, itemlen, FALSE, FALSE )
 
 	flist->listtb 	= flist->list.tbtail
 	flist->index 	= 0

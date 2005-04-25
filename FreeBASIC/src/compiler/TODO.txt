@@ -1,7 +1,12 @@
 
+[ ] add FUNCTION to inline asm's evaluation
+
+[ ] add a warning if macro expansion text is too long
+
+[ ] incrase macro text to 4096
+
 [ ] function overloading:
 -- arglist with optionals with different types at the same arg num (?)
--- delPrototype must check for overloads
 -- check different modes and types if they are working
 -- check optional args, this can be tricky
 

@@ -20,6 +20,8 @@
 '' symbol table protos
 ''
 
+'$include once:'inc\ast.bi'
+
 declare sub 		symbInit				( )
 
 declare sub 		symbEnd					( )
@@ -50,7 +52,7 @@ declare function 	symbFindOverloadProc	( byval proc as FBSYMBOL ptr, _
 
 declare function 	symbFindClosestOvlProc	( byval proc as FBSYMBOL ptr, _
 					   		    			  byval params as integer, _
-					   		    			  exprTB() as integer, _
+					   		    			  exprTB() as ASTNODE ptr, _
 					   		    			  modeTB() as integer ) as FBSYMBOL ptr
 
 declare function 	symbLookupUDTVar		( byval symbol as string, _

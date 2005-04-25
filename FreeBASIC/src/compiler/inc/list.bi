@@ -44,11 +44,13 @@ type TLIST
 	fhead	as TLISTNODE ptr
 	head	as TLISTNODE ptr
 	tail	as TLISTNODE ptr
+	clear	as integer
 end type
 
 declare function listNew		( byval list as TLIST ptr, _
 								  byval nodes as integer, _
 								  byval nodelen as integer, _
+								  byval doclear as integer = TRUE, _
 								  byval relink as integer = TRUE ) as integer
 
 declare function listFree		( byval list as TLIST ptr ) as integer

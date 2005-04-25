@@ -34,7 +34,8 @@ const NULL = 0
 function listNew( byval list as TLIST ptr, _
 				  byval nodes as integer, _
 				  byval nodelen as integer, _
-				  byval relink as integer = TRUE ) as integer
+				  byval doclear as integer, _
+				  byval relink as integer ) as integer
 
 	'' fill ctrl struct
 	list->tbhead 	= NULL
@@ -43,6 +44,7 @@ function listNew( byval list as TLIST ptr, _
 	list->nodelen	= nodelen
 	list->head		= NULL
 	list->tail		= NULL
+	list->clear		= doclear
 
 	'' allocate the initial pool
 	function = listAllocTB( list, nodes, relink )
@@ -85,7 +87,11 @@ function listAllocTB( byval list as TLIST ptr, _
 	end if
 
 	'' allocate the pool
-	nodetb = callocate( nodes * list->nodelen )
+	if( list->clear ) then
+		nodetb = callocate( nodes * list->nodelen )
+	else
+		nodetb = allocate( nodes * list->nodelen )
+	end if
 	if( nodetb = NULL ) then
 		exit function
 	end if
@@ -195,7 +201,9 @@ function listDelNode( byval list as TLIST ptr, _
 	list->fhead = node
 
 	'' node can contain strings descriptors, so, erase it..
-	clear( byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2) )
+	if( list->clear ) then
+		clear( byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2) )
+	end if
 
 end function
 

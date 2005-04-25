@@ -5080,8 +5080,8 @@ private sub hEmitFooter( byval tottime as double )
     hWriteStr ctx.outf, FALSE, ""
 
     '' end( 0 )
-    rtlExit INVALID
-    irFlush
+    rtlExit( NULL )
+    irFlush( )
 
     '' end() will never return but..
     hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp"

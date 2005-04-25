@@ -44,8 +44,8 @@ const FB.MAXSWTCASERANGE= 4096
 type FBCASECTX
 	typ 		as integer
 	op 			as integer
-	expr1		as integer
-	expr2		as integer
+	expr1		as ASTNODE ptr
+	expr2		as ASTNODE ptr
 end type
 
 type FBSELECTCTX
@@ -104,7 +104,7 @@ end sub
 function cCompoundStmt
     dim res as integer
 
-    env.compoundcnt = env.compoundcnt + 1
+    env.compoundcnt += 1
 
 	res = FALSE
 
@@ -131,7 +131,7 @@ function cCompoundStmt
 		res = cWithStatement
 	end select
 
-	env.compoundcnt = env.compoundcnt - 1
+	env.compoundcnt -= 1
 
 	cCompoundStmt = res
 
@@ -141,11 +141,11 @@ end function
 ''SingleIfStatement=  !(COMMENT|NEWLINE) NUM_LIT | SimpleStatement*)
 ''                    (ELSE SimpleStatement*)?
 ''
-function cSingleIfStatement( byval expr as integer )
-	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr, l as FBSYMBOL ptr
-	dim lastcompstmt as integer
+function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
+	dim as FBSYMBOL ptr el, nl, l
+	dim as integer lastcompstmt
 
-	cSingleIfStatement = FALSE
+	function = FALSE
 
 	'' !COMMENT|NEWLINE
 	select case lexCurrentToken
@@ -163,7 +163,7 @@ function cSingleIfStatement( byval expr as integer )
 
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
-	if( expr = INVALID ) then
+	if( expr = NULL ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	end if
@@ -223,20 +223,21 @@ function cSingleIfStatement( byval expr as integer )
 	'''''symbDelLabel el
 	'''''symbDelLabel nl
 
-	cSingleIfStatement = TRUE
+	function = TRUE
 
 end function
 
 '':::::
-function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el as FBSYMBOL ptr, _
+function cIfStmtBody( byval expr as ASTNODE ptr, _
+					  byval nl as FBSYMBOL ptr, _
+					  byval el as FBSYMBOL ptr, _
 					  byval checkstmtsep as integer = TRUE ) as integer
-	dim res as integer
 
-	cIfStmtBody = FALSE
+	function = FALSE
 
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
-	if( expr = INVALID ) then
+	if( expr = NULL ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	end if
@@ -244,7 +245,7 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 
 	if( checkstmtsep ) then
 		'' Comment?
-		res = cComment
+		cComment
 
 		'' separator
 		if( not cSttSeparator ) then
@@ -255,11 +256,10 @@ function cIfStmtBody( byval expr as integer, byval nl as FBSYMBOL ptr, byval el 
 
 	'' loop body
 	do
-		res = cSimpleLine
-	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
 
 	if( hGetLastError = FB.ERRMSG.OK ) then
-		cIfStmtBody = TRUE
+		function = TRUE
 	end if
 
 end function
@@ -273,11 +273,11 @@ end function
 ''					   SimpleLine*)?
 ''					  END IF.
 ''
-function cBlockIfStatement( byval expr as integer )
+function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr
 	dim lastcompstmt as integer
 
-	cBlockIfStatement = FALSE
+	function = FALSE
 
 	'' COMMENT|NEWLINE
 	select case lexCurrentToken
@@ -362,17 +362,17 @@ function cBlockIfStatement( byval expr as integer )
 	''
 	env.lastcompound = lastcompstmt
 
-	cBlockIfStatement = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 ''IfStatement	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
 ''
-function cIfStatement
-	dim expr as integer
+function cIfStatement as integer
+	dim expr as ASTNODE ptr
 
-	cIfStatement = FALSE
+	function = FALSE
 
 	'' IF
 	lexSkipToken
@@ -411,15 +411,15 @@ function cIfStatement
 	end if
 
 
-	cIfStatement = TRUE
+	function = TRUE
 
 end function
 
 '':::::
-private function cStoreTemp( byval expr as integer, _
+private function cStoreTemp( byval expr as ASTNODE ptr, _
 							 byval dtype as integer ) as FBSYMBOL ptr static
     dim s as FBSYMBOL ptr
-    dim as integer vexpr
+    dim as ASTNODE ptr vexpr
 
 	cStoreTemp = NULL
 
@@ -442,7 +442,8 @@ private sub cFlushBOP( byval op as integer, _
 			   		   byval v2 as FBSYMBOL ptr, _
 			   		   byval val2 as FBVALUE ptr, _
 			   		   byval ex as FBSYMBOL ptr ) static
-	dim expr1 as integer, expr2 as integer, expr as integer
+
+	dim as ASTNODE ptr expr1, expr2, expr
 
 	'' bop
 	if( v1 <> NULL ) then
@@ -484,7 +485,8 @@ private sub cFlushSelfBOP( byval op as integer, _
 	 		       		   byval v1 as FBSYMBOL PTR, _
 			       		   byval v2 as FBSYMBOL PTR, _
 			       		   byval val2 as FBVALUE ptr ) static
-	dim expr1 as integer, expr2 as integer, expr as integer
+
+	dim as ASTNODE ptr expr1, expr2, expr
 
 	'' bop
 	expr1 = astNewVAR( v1, NULL, 0, dtype )
@@ -519,16 +521,16 @@ end sub
 ''					  SimpleLine*
 ''					  NEXT ID? .
 ''
-function cForStatement
+function cForStatement as integer
     dim as integer iscomplex, ispositive, isconst
     dim as FBSYMBOL ptr il, tl, el, cl, c2l
     dim as FBSYMBOL ptr cnt, endc, stp, elm
     dim as FBVALUE sval, eval, ival
-    dim as integer idexpr, expr, op
-    dim as integer dtype, dclass, typ, lastcompstmt
+    dim as ASTNODE ptr idexpr, expr
+    dim as integer op, dtype, dclass, typ, lastcompstmt
     dim as FBCMPSTMT oldforstmt
 
-	cForStatement = FALSE
+	function = FALSE
 
 	'' FOR
 	lexSkipToken
@@ -785,7 +787,7 @@ function cForStatement
     '''''symbDelLabel il
     '''''symbDelLabel tl
 
-	cForStatement = TRUE
+	function = TRUE
 
 end function
 
@@ -794,14 +796,14 @@ end function
 ''					  SimpleLine*
 ''					  LOOP ((WHILE | UNTIL) Expression)? .
 ''
-function cDoStatement
-    dim as integer expr, op
+function cDoStatement as integer
+    dim as ASTNODE ptr expr
     dim as IRVREG ptr vr
-	dim as integer iswhile, isuntil, isinverse, lastcompstmt
+	dim as integer iswhile, isuntil, isinverse, lastcompstmt, op
     dim as FBSYMBOL ptr il, el, cl
     dim as FBCMPSTMT olddostmt
 
-	cDoStatement = FALSE
+	function = FALSE
 
 	'' DO
 	lexSkipToken
@@ -841,7 +843,7 @@ function cDoStatement
 		end if
 
 		expr = astUpdComp2Branch( expr, el, isinverse )
-		if( expr = INVALID ) then
+		if( expr = NULL ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
 		end if
@@ -920,7 +922,7 @@ function cDoStatement
 		end if
 
 		expr = astUpdComp2Branch( expr, il, isinverse )
-		if( expr = INVALID ) then
+		if( expr = NULL ) then
 			hReportError FB.ERRMSG.INVALIDDATATYPES
 			exit function
 		end if
@@ -945,7 +947,7 @@ function cDoStatement
     '''''symbDelLabel il
 
 
-	cDoStatement = TRUE
+	function = TRUE
 
 end function
 
@@ -954,12 +956,13 @@ end function
 ''					  SimpleLine*
 ''					  WEND .
 ''
-function cWhileStatement
-    dim as integer expr, lastcompstmt
+function cWhileStatement as integer
+    dim as ASTNODE ptr expr
+    dim as integer lastcompstmt
     dim as FBSYMBOL ptr il, el
     dim as FBCMPSTMT oldwhilestmt
 
-	cWhileStatement = FALSE
+	function = FALSE
 
 	'' WHILE
 	lexSkipToken
@@ -988,7 +991,7 @@ function cWhileStatement
 
 	'' branch
 	expr = astUpdComp2Branch( expr, el, FALSE )
-	if( expr = INVALID ) then
+	if( expr = NULL ) then
 		hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	end if
@@ -1029,7 +1032,7 @@ function cWhileStatement
     '''''symbDelLabel il
 
 
-	cWhileStatement = TRUE
+	function = TRUE
 
 end function
 
@@ -1038,12 +1041,13 @@ end function
 ''					   cComment? cSttSeparator? CaseStatement*
 ''				      END SELECT .
 ''
-function cSelectStatement
-    dim expr as integer, lastcompstmt as integer
+function cSelectStatement as integer
+    dim as ASTNODE ptr expr
+    dim as integer lastcompstmt
 	dim symbol as FBSYMBOL ptr, dtype as integer
 	dim elabel as FBSYMBOL ptr
 
-	cSelectStatement = FALSE
+	function = FALSE
 
 	'' SELECT
 	lexSkipToken
@@ -1058,7 +1062,7 @@ function cSelectStatement
 	if( hMatch( FB.TK.AS ) ) then
 		'' CONST?
 		if( hMatch( FB.TK.CONST ) ) then
-			cSelectStatement = cSelectConstStmt
+			function = cSelectConstStmt( )
 		else
 			hReportError FB.ERRMSG.SYNTAXERROR
 		end if
@@ -1104,7 +1108,7 @@ function cSelectStatement
 	end if
 
 	expr = astNewASSIGN( astNewVAR( symbol, NULL, 0, dtype ), expr )
-	if( expr = INVALID ) then
+	if( expr = NULL ) then
 		exit function
 	end if
 	astFlush( expr )
@@ -1141,7 +1145,7 @@ function cSelectStatement
 
 	env.lastcompound = lastcompstmt
 
-	cSelectStatement = TRUE
+	function = TRUE
 
 end function
 
@@ -1149,9 +1153,9 @@ end function
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-function cCaseExpression( casectx as FBCASECTX )
+function cCaseExpression( casectx as FBCASECTX ) as integer
 
-	cCaseExpression = FALSE
+	function = FALSE
 
 	casectx.op 	= IR.OP.EQ
 
@@ -1183,17 +1187,19 @@ function cCaseExpression( casectx as FBCASECTX )
 		casectx.typ =  FB.CASETYPE.RANGE
 	end if
 
-	cCaseExpression = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 private function hExecCaseExpr( casectx as FBCASECTX, _
-				           	    byval s as FBSYMBOL ptr, byval sdtype as integer, _
-				           	    byval initlabel as FBSYMBOL ptr, byval nextlabel as FBSYMBOL ptr, _
+				           	    byval s as FBSYMBOL ptr, _
+				           	    byval sdtype as integer, _
+				           	    byval initlabel as FBSYMBOL ptr, _
+				           	    byval nextlabel as FBSYMBOL ptr, _
 				           		byval inverselogic as integer ) as integer static
 
-	dim v as integer, expr as integer
+	dim as ASTNODE ptr expr, v
 
 	if( casectx.typ <> FB.CASETYPE.RANGE ) then
 		v = astNewVAR( s, NULL, 0, sdtype )
@@ -1211,9 +1217,8 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 		expr = astNewBOP( IR.OP.LT, v, casectx.expr1, nextlabel, FALSE )
 		astFlush( expr )
 
-		if( expr = INVALID ) then
-			hExecCaseExpr = FALSE
-			exit function
+		if( expr = NULL ) then
+			return FALSE
 		end if
 
 		v = astNewVAR( s, NULL, 0, sdtype )
@@ -1225,7 +1230,7 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 		astFlush( expr )
 	end if
 
-	hExecCaseExpr = expr <> INVALID
+	function = expr <> NULL
 
 end function
 
@@ -1242,7 +1247,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	dim iselse as integer, res as integer
 	dim cnt as integer, i as integer, cntbase as integer
 
-	cCaseStatement = FALSE
+	function = FALSE
 
 	'' CASE
 	if( not hMatch( FB.TK.CASE ) ) then
@@ -1327,12 +1332,13 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 
 	ctx.sel.base -= cnt
 
-	cCaseStatement = TRUE
+	function = TRUE
 
 end function
 
 '':::::
-private function hSelConstAddCase( byval swtbase as integer, byval value as uinteger, _
+private function hSelConstAddCase( byval swtbase as integer, _
+								   byval value as uinteger, _
 							       byval label as FBSYMBOL ptr ) as integer static
 
 	dim probe as integer, high as integer, low as integer
@@ -1340,11 +1346,10 @@ private function hSelConstAddCase( byval swtbase as integer, byval value as uint
 
 	'' nothing left?
 	if( ctx.swt.base >= FB.MAXSWTCASEEXPR ) then
-		hSelConstAddCase = FALSE
-		exit function
+		return FALSE
 	end if
 
-	hSelConstAddCase = TRUE
+	function = TRUE
 
 	'' find the slot using bin-search
 	high = ctx.swt.base - swtbase
@@ -1370,7 +1375,7 @@ private function hSelConstAddCase( byval swtbase as integer, byval value as uint
 	'' insert new item
 	ctx.swt.caseTB(swtbase+high).value = value
 	ctx.swt.caseTB(swtbase+high).label = label
-	ctx.swt.base = ctx.swt.base + 1
+	ctx.swt.base += 1
 
 end function
 
@@ -1379,14 +1384,17 @@ end function
 ''					       SimpleLine*.
 ''
 function cSelConstCaseStmt( byval swtbase as integer, _
-						    byval sym as FBSYMBOL ptr, byval exitlabel as FBSYMBOL ptr, _
-						    minval as uinteger, maxval as uinteger, deflabel as FBSYMBOL ptr ) as integer
+						    byval sym as FBSYMBOL ptr, _
+						    byval exitlabel as FBSYMBOL ptr, _
+						    minval as uinteger, _
+						    maxval as uinteger, _
+						    deflabel as FBSYMBOL ptr ) as integer
 
-	dim as integer expr1, expr2
+	dim as ASTNODE ptr expr1, expr2
 	dim as uinteger value, tovalue
 	dim as FBSYMBOL ptr label
 
-	cSelConstCaseStmt = FALSE
+	function = FALSE
 
 	'' CASE
 	if( not hMatch( FB.TK.CASE ) ) then
@@ -1494,7 +1502,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	'' break from block
 	astFlush( astNewBRANCH( IR.OP.JMP, exitlabel ) )
 
-	cSelConstCaseStmt = TRUE
+	function = TRUE
 
 end function
 
@@ -1514,14 +1522,13 @@ end function
 ''				      END SELECT .
 ''
 function cSelectConstStmt as integer
-    dim expr as integer, idxexpr as integer, lastcompstmt as integer
-	dim sym as FBSYMBOL ptr
-	dim exitlabel as FBSYMBOL ptr, complabel as FBSYMBOL ptr, deflabel as FBSYMBOL ptr
-	dim tbsym as FBSYMBOL ptr
-	dim minval as uinteger, maxval as uinteger
-	dim value as uinteger, l as integer, swtbase as integer
+    dim as ASTNODE ptr expr, idxexpr
+    dim as integer lastcompstmt
+	dim as FBSYMBOL ptr sym, exitlabel, complabel, deflabel, tbsym
+	dim as uinteger minval, maxval, value
+	dim as integer l, swtbase
 
-	cSelectConstStmt = FALSE
+	function = FALSE
 
 	'' Expression
 	if( not cExpression( expr ) ) then
@@ -1561,7 +1568,7 @@ function cSelectConstStmt as integer
 	end if
 
 	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), expr )
-	if( expr = INVALID ) then
+	if( expr = NULL ) then
 		exit function
 	end if
 	astFlush( expr )
@@ -1634,7 +1641,7 @@ function cSelectConstStmt as integer
     for value = minval to maxval
     	if( value = ctx.swt.caseTB(l).value ) then
     		emitTYPE IR.DATATYPE.UINT, symbGetName( ctx.swt.caseTB(l).label )
-    		l = l + 1
+    		l += 1
     	else
     		emitTYPE IR.DATATYPE.UINT, symbGetName( deflabel )
     	end if
@@ -1657,17 +1664,17 @@ function cSelectConstStmt as integer
 
 	env.lastcompound = lastcompstmt
 
-	cSelectConstStmt = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 ''ExitStatement	  =	  EXIT (FOR | DO | WHILE | SUB | FUNCTION)
 ''
-function cExitStatement
+function cExitStatement as integer
     dim label as FBSYMBOL ptr
 
-	cExitStatement = FALSE
+	function = FALSE
 
 	'' EXIT
 	lexSkipToken
@@ -1707,17 +1714,17 @@ function cExitStatement
 	''
 	astFlush( astNewBRANCH( IR.OP.JMP, label ) )
 
-	cExitStatement = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 ''ContinueStatement	  =	  CONTINUE (FOR | DO | WHILE)
 ''
-function cContinueStatement
+function cContinueStatement as integer
     dim label as FBSYMBOL ptr
 
-	cContinueStatement = FALSE
+	function = FALSE
 
 	'' CONTINUE
 	lexSkipToken
@@ -1748,17 +1755,17 @@ function cContinueStatement
 	''
 	astFlush( astNewBRANCH( IR.OP.JMP, label ) )
 
-	cContinueStatement = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 ''EndStatement	  =	  END (Expression | Keyword | ) .
 ''
-function cEndStatement
-	dim errlevel as integer
+function cEndStatement as integer
+	dim as ASTNODE ptr errlevel
 
-	cEndStatement = FALSE
+	function = FALSE
 
 	if( lexCurrentToken <> FB.TK.END ) then
 		exit function
@@ -1772,8 +1779,7 @@ function cEndStatement
 			exit function
 		end if
 
-		cEndStatement = TRUE
-		exit function
+		return TRUE
 
 	else
 		lexSkipToken							'' END
@@ -1789,7 +1795,7 @@ function cEndStatement
   	end select
 
     ''
-	cEndStatement = rtlExit( errlevel )
+	function = rtlExit( errlevel )
 
 end function
 
@@ -1797,10 +1803,10 @@ end function
 '':::::
 ''CompoundStmtElm  =  WEND | LOOP | NEXT | CASE | ELSE | ELSEIF .
 ''
-function cCompoundStmtElm
+function cCompoundStmtElm as integer
     dim comp as integer
 
-	cCompoundStmtElm = FALSE
+	function = FALSE
 
 	'' WEND | LOOP | NEXT | CASE | ELSE | ELSEIF
 	select case as const lexCurrentToken
@@ -1823,7 +1829,7 @@ function cCompoundStmtElm
 		exit function
 	end if
 
-	cCompoundStmtElm = TRUE
+	function = TRUE
 
 end function
 
@@ -1877,7 +1883,7 @@ function cWithStatement
     dim oldwithtext as zstring * FB.MAXWITHLEN+1, lastcompstmt as integer
     dim res as integer
 
-	cWithStatement = FALSE
+	function = FALSE
 
 	if( ctx.withcnt >= FB.MAXWITHLEVELS ) then
 		hReportError FB.ERRMSG.RECLEVELTOODEPTH
@@ -1931,7 +1937,7 @@ function cWithStatement
 		exit function
 	end if
 
-	cWithStatement = TRUE
+	function = TRUE
 
 end function
 

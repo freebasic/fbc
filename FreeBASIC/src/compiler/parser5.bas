@@ -42,8 +42,10 @@ end sub
 
 '':::::
 private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
-								  byval proctyp as integer, byval procsubtype as FBSYMBOL ptr, _
-								  byval argc as integer, byval argtail as FBSYMBOL ptr ) as integer static
+								  byval proctyp as integer, _
+								  byval procsubtype as FBSYMBOL ptr, _
+								  byval argc as integer, _
+								  byval argtail as FBSYMBOL ptr ) as integer static
     dim a as integer
     dim arg as FBSYMBOL ptr, typ as integer
 
@@ -338,7 +340,8 @@ end function
 private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
     dim as FBSYMBOL ptr s
     dim as IRVREG ptr vr
-    dim as integer n, t, typ
+    dim as ASTNODE ptr n, t
+    dim as integer typ
 
 	s = symbLookupProcResult( proc )
 	typ = symbGetType( s )
@@ -365,12 +368,12 @@ end sub
 ''				      END (SUB | FUNCTION)
 ''
 function cProcStatement static
-	dim issub as integer, proc as FBSYMBOL ptr, alloctype as integer
-    dim oldprocstmt as FBCMPSTMT
-    dim endlabel as FBSYMBOL ptr, exitlabel as FBSYMBOL ptr, initlabel as FBSYMBOL ptr
-    dim res as integer, expr as integer, l as FBSYMBOL ptr
+	dim as integer res, issub, alloctype
+    dim as FBCMPSTMT oldprocstmt
+    dim as FBSYMBOL ptr proc, endlabel, exitlabel, initlabel, l
+    dim as ASTNODE ptr expr
 
-	cProcStatement = FALSE
+	function = FALSE
 
 	'' (PRIVATE|PUBLIC)?
 	select case lexCurrentToken
@@ -463,7 +466,7 @@ function cProcStatement static
 	end if
 
 	'' Comment?
-	res = cComment
+	cComment
 
 	'' SttSeparator
 	if( not cSttSeparator ) then
@@ -473,8 +476,7 @@ function cProcStatement static
 
 	'' proc body
 	do
-		res = cSimpleLine
-	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
 
 	'' END (SUB | FUNCTION)
 	if( not hMatch( FB.TK.END ) ) then
@@ -504,7 +506,7 @@ function cProcStatement static
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
         expr = astNewVAR( env.procerrorhnd, NULL, 0, IR.DATATYPE.UINT )
-        rtlErrorSetHandler expr, FALSE
+        rtlErrorSetHandler( expr, FALSE )
 	end if
 
 	'' del dyn arrays and all var-len strings (less the result one if its a string func!)
@@ -553,7 +555,7 @@ function cProcStatement static
 	env.scope 				= 0
 
 	''
-	cProcStatement = TRUE
+	function = TRUE
 
 end function
 

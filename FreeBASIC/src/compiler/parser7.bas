@@ -56,13 +56,13 @@ const FBGFX_PUTMODE_ALPHA  = 6
 
 '':::::
 private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
-								  byval arrayexpr as integer ) as integer
-    dim as integer idxexpr
+								  byval arrayexpr as ASTNODE ptr ) as integer
+    dim as ASTNODE ptr idxexpr
 
     ''  argument passed by descriptor?
     if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
 
-    	astDelTree arrayexpr
+    	astDelTree( arrayexpr )
     	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
     	idxexpr = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, arrayexpr, IR.DATATYPE.INTEGER, NULL )
     	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
@@ -80,20 +80,20 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 
     end if
 
-    hMakeArrayIndex = astNewIDX( arrayexpr, idxexpr, INVALID, NULL )
+    function = astNewIDX( arrayexpr, idxexpr, INVALID, NULL )
 
 end function
 
 '':::::
-private function hGetTarget( targetexpr as integer, _
+private function hGetTarget( targetexpr as ASTNODE ptr, _
 							 isptr as integer, _
 							 byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
 
-	hGetTarget = NULL
+	function = NULL
 
 	if( fetchexpr ) then
-		targetexpr = INVALID
+		targetexpr = NULL
 		if( not cVarOrDeref( targetexpr, FALSE, TRUE ) ) then
 			exit function
 		end if
@@ -124,7 +124,7 @@ private function hGetTarget( targetexpr as integer, _
 		end if
 	end if
 
-	hGetTarget = s
+	function = s
 
 end function
 
@@ -133,10 +133,10 @@ end function
 ''
 function cGfxPset as integer
     dim as integer coordtype, tisptr
-    dim as integer xexpr, yexpr, cexpr, texpr
+    dim as ASTNODE ptr xexpr, yexpr, cexpr, texpr
     dim as FBSYMBOL ptr target
 
-	cGfxPset = FALSE
+	function = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -170,7 +170,7 @@ function cGfxPset as integer
 	end if
 
 	''
-	cGfxPset = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, coordtype )
+	function = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, coordtype )
 
 end function
 
@@ -179,10 +179,10 @@ end function
 ''
 function cGfxLine as integer
     dim as integer coordtype, linetype, tisptr
-    dim as integer styleexpr, x1expr, y1expr, x2expr, y2expr, cexpr, texpr
+    dim as ASTNODE ptr styleexpr, x1expr, y1expr, x2expr, y2expr, cexpr, texpr
     dim as FBSYMBOL ptr target
 
-	cGfxLine = FALSE
+	function = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -247,7 +247,7 @@ function cGfxLine as integer
 	hMatchRPRNT( )
 
 	linetype = FBGFX_LINETYPE_LINE
-	styleexpr = INVALID
+	styleexpr = NULL
 
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
@@ -276,7 +276,7 @@ function cGfxLine as integer
 	end if
 
 	''
-	cGfxLine = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
+	function = rtlGfxLine( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
 						   cexpr, linetype, styleexpr, coordtype )
 
 end function
@@ -286,10 +286,10 @@ end function
 ''
 function cGfxCircle as integer
     dim as integer coordtype, fillflag, tisptr
-    dim as integer xexpr, yexpr, cexpr, radexpr, iniexpr, endexpr, aspexpr, texpr
+    dim as ASTNODE ptr xexpr, yexpr, cexpr, radexpr, iniexpr, endexpr, aspexpr, texpr
     dim as FBSYMBOL ptr target
 
-	cGfxCircle = FALSE
+	function = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -320,9 +320,9 @@ function cGfxCircle as integer
 
 	hMatchExpression( radexpr )
 
-	aspexpr = INVALID
-	iniexpr = INVALID
-	endexpr = INVALID
+	aspexpr = NULL
+	iniexpr = NULL
+	endexpr = NULL
 	fillflag = FALSE
 
 	'' (',' Expr? )? - color
@@ -334,19 +334,19 @@ function cGfxCircle as integer
         '' (',' Expr? )? - iniarc
         if( hMatch( CHAR_COMMA ) ) then
         	if( not cExpression( iniexpr ) ) then
-        		iniexpr = INVALID
+        		iniexpr = NULL
         	end if
 
         	'' (',' Expr? )? - endarc
         	if( hMatch( CHAR_COMMA ) ) then
         		if( not cExpression( endexpr ) ) then
-        			endexpr = INVALID
+        			endexpr = NULL
         		end if
 
             	'' (',' Expr )? - aspect
             	if( hMatch( CHAR_COMMA ) ) then
             		if( not cExpression( aspexpr ) ) then
-            			aspexpr = INVALID
+            			aspexpr = NULL
             		end if
 
             		'' (',' Expr )? - fillflag
@@ -367,8 +367,8 @@ function cGfxCircle as integer
 	end if
 
 	''
-	cGfxCircle = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, _
-							   aspexpr, iniexpr, endexpr, fillflag, coordtype )
+	function = rtlGfxCircle( texpr, tisptr, xexpr, yexpr, radexpr, cexpr, _
+			  			     aspexpr, iniexpr, endexpr, fillflag, coordtype )
 
 end function
 
@@ -376,11 +376,11 @@ end function
 '' GfxPaint   =   PAINT ( Expr ',' )? STEP? '(' expr ',' expr ')' (',' expr? (',' expr? ) )
 ''
 function cGfxPaint as integer
-    dim as integer xexpr, yexpr, pexpr, bexpr, texpr
+    dim as ASTNODE ptr xexpr, yexpr, pexpr, bexpr, texpr
 	dim as integer coord_type, tisptr
     dim as FBSYMBOL ptr target
 
-	cGfxPaint = FALSE
+	function = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -406,13 +406,13 @@ function cGfxPaint as integer
 
 	hMatchRPRNT( )
 
-	pexpr = INVALID
-	bexpr = INVALID
+	pexpr = NULL
+	bexpr = NULL
 
 	'' color/pattern
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( pexpr ) ) then
-			pexpr = INVALID
+			pexpr = NULL
 		end if
 
 		'' background color
@@ -421,15 +421,15 @@ function cGfxPaint as integer
 		end if
 	end if
 
-	if( pexpr = INVALID ) then
+	if( pexpr = NULL ) then
 		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
-	if( bexpr = INVALID ) then
+	if( bexpr = NULL ) then
 		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
 	end if
 
-	cGfxPaint = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )
+	function = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )
 
 end function
 
@@ -437,14 +437,14 @@ end function
 '' GfxDraw    =   DRAW ( Expr ',' )? Expr
 ''
 function cGfxDraw as integer
-	dim as integer cexpr, texpr
+	dim as ASTNODE ptr cexpr, texpr
     dim as integer tisptr
     dim as FBSYMBOL ptr target
 
-	cGfxDraw = FALSE
+	function = FALSE
 
-	texpr = INVALID
-	
+	texpr = NULL
+
 	if( lexLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
 		if( target = NULL ) then
@@ -456,7 +456,7 @@ function cGfxDraw as integer
 
 	hMatchExpression( cexpr )
 
-	cGfxDraw = rtlGfxDraw( texpr, tisptr, cexpr )
+	function = rtlGfxDraw( texpr, tisptr, cexpr )
 
 end function
 
@@ -465,9 +465,9 @@ end function
 ''
 function cGfxView( byval isview as integer ) as integer
     dim as integer screenflag
-    dim as integer x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr
+    dim as ASTNODE ptr x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr
 
-	cGfxView = FALSE
+	function = FALSE
 
 	'' SCREEN? (not a keyword or the Screen stmt would need a parser routine too)
 	if( ucase$( lexTokenText ) = "SCREEN" ) then
@@ -478,12 +478,12 @@ function cGfxView( byval isview as integer ) as integer
 	end if
 
 	''
-	x1expr = INVALID
-	y1expr = INVALID
-	x2expr = INVALID
-	y2expr = INVALID
-	fillexpr = INVALID
-    bordexpr = INVALID
+	x1expr = NULL
+	y1expr = NULL
+	x2expr = NULL
+	y2expr = NULL
+	fillexpr = NULL
+    bordexpr = NULL
 
 	if( hMatch( CHAR_LPRNT ) ) then
 		'' '(' Expr ',' Expr ')' - x1 and y1
@@ -516,7 +516,7 @@ function cGfxView( byval isview as integer ) as integer
 			'' (',' Expr? )? - color
 			if( hMatch( CHAR_COMMA ) ) then
 				if( not cExpression( fillexpr ) ) then
-					fillexpr = INVALID
+					fillexpr = NULL
 				end if
 
         		'' (',' Expr? )? - border
@@ -530,9 +530,9 @@ function cGfxView( byval isview as integer ) as integer
 
 	''
 	if( isview ) then
-		cGfxView = rtlGfxView( x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr, screenflag )
+		function = rtlGfxView( x1expr, y1expr, x2expr, y2expr, fillexpr, bordexpr, screenflag )
 	else
-		cGfxView = rtlGfxWindow( x1expr, y1expr, x2expr, y2expr, screenflag )
+		function = rtlGfxWindow( x1expr, y1expr, x2expr, y2expr, screenflag )
 	end if
 
 end function
@@ -541,10 +541,10 @@ end function
 '' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr (',' Expr ',' Expr)?)?)
 ''
 function cGfxPalette as integer
-    dim as integer arrayexpr, attexpr, rexpr, gexpr, bexpr
+    dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
     dim as FBSYMBOL ptr s
 
-	cGfxPalette = FALSE
+	function = FALSE
 
 	if( hMatch( FB.TK.USING ) ) then
 
@@ -568,14 +568,14 @@ function cGfxPalette as integer
 			exit function
 		end if
 
-        cGfxPalette = rtlGfxPaletteUsing( arrayexpr )
+        function = rtlGfxPaletteUsing( arrayexpr )
 
 	else
 
-		attexpr = INVALID
-		rexpr = INVALID
-		gexpr = INVALID
-		bexpr = INVALID
+		attexpr = NULL
+		rexpr = NULL
+		gexpr = NULL
+		bexpr = NULL
 
 		if( cExpression( attexpr ) ) then
 			hMatchCOMMA( )
@@ -591,7 +591,7 @@ function cGfxPalette as integer
 			end if
 		end if
 
-		cGfxPalette = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr )
+		function = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr )
 
 	end if
 
@@ -602,10 +602,10 @@ end function
 ''
 function cGfxPut as integer
     dim as integer coordtype, mode, isptr, tisptr
-    dim as integer xexpr, yexpr, arrayexpr, texpr
+    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr
     dim as FBSYMBOL ptr s, target
 
-	cGfxPut = FALSE
+	function = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -680,7 +680,7 @@ function cGfxPut as integer
 	end if
 
 	''
-	cGfxPut = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, coordtype )
+	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, coordtype )
 
 end function
 
@@ -689,10 +689,10 @@ end function
 ''
 function cGfxGet as integer
     dim as integer coordtype, isptr, tisptr
-    dim as integer x1expr, y1expr, x2expr, y2expr, arrayexpr, texpr
+    dim as ASTNODE ptr x1expr, y1expr, x2expr, y2expr, arrayexpr, texpr
     dim as FBSYMBOL ptr s, target
 
-	cGfxGet = FALSE
+	function = FALSE
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -760,8 +760,8 @@ function cGfxGet as integer
 	end if
 
     ''
-	cGfxGet = rtlGfxGet( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
-						 arrayexpr, isptr, s, coordtype )
+	function = rtlGfxGet( texpr, tisptr, x1expr, y1expr, x2expr, y2expr, _
+						  arrayexpr, isptr, s, coordtype )
 
 end function
 
@@ -769,47 +769,47 @@ end function
 '' GfxScreen     =   SCREEN (num | ((expr (((',' expr)? ',' expr)? expr)? ',' expr))
 ''
 function cGfxScreen as integer
-    dim as integer mexpr, dexpr, pexpr, fexpr, rexpr
+    dim as ASTNODE ptr mexpr, dexpr, pexpr, fexpr, rexpr
 
-	cGfxScreen = FALSE
+	function = FALSE
 
 	hMatchExpression( mexpr )
 
-	dexpr = INVALID
-	pexpr = INVALID
-	fexpr = INVALID
-	rexpr = INVALID
+	dexpr = NULL
+	pexpr = NULL
+	fexpr = NULL
+	rexpr = NULL
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( dexpr ) ) then
-			dexpr = INVALID
+			dexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( pexpr ) ) then
-			pexpr = INVALID
+			pexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( fexpr ) ) then
-			fexpr = INVALID
+			fexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( rexpr ) ) then
-			rexpr = INVALID
+			rexpr = NULL
 		end if
 	end if
 
 	''
-	cGfxScreen = rtlGfxScreenSet( mexpr, INVALID, dexpr, pexpr, fexpr, rexpr )
+	function = rtlGfxScreenSet( mexpr, NULL, dexpr, pexpr, fexpr, rexpr )
 
 end function
 
@@ -817,9 +817,9 @@ end function
 '' GfxScreenRes     =   SCREENRES expr ',' expr (((',' expr)? ',' expr)? ',' expr)?
 ''
 function cGfxScreenRes as integer
-    dim as integer wexpr, hexpr, dexpr, pexpr, fexpr, rexpr
+    dim as ASTNODE ptr wexpr, hexpr, dexpr, pexpr, fexpr, rexpr
 
-	cGfxScreenRes = FALSE
+	function = FALSE
 
 	hMatchExpression( wexpr )
 
@@ -827,97 +827,97 @@ function cGfxScreenRes as integer
 
 	hMatchExpression( hexpr )
 
-	dexpr = INVALID
-	pexpr = INVALID
-	fexpr = INVALID
-	rexpr = INVALID
+	dexpr = NULL
+	pexpr = NULL
+	fexpr = NULL
+	rexpr = NULL
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( dexpr ) ) then
-			dexpr = INVALID
+			dexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( pexpr ) ) then
-			pexpr = INVALID
+			pexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( fexpr ) ) then
-			fexpr = INVALID
+			fexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( rexpr ) ) then
-			rexpr = INVALID
+			rexpr = NULL
 		end if
 	end if
 
 	''
-	cGfxScreenRes = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr, rexpr )
+	function = rtlGfxScreenSet( wexpr, hexpr, dexpr, pexpr, fexpr, rexpr )
 
 end function
 
 '':::::
 function cGfxStmt as integer
 
-	cGfxStmt = FALSE
+	function = FALSE
 
 	select case as const lexCurrentToken
 	case FB.TK.PSET, FB.TK.PRESET
 		lexSkipToken
-		cGfxStmt = cGfxPSet
+		function = cGfxPSet
 
 	case FB.TK.LINE
 		lexSkipToken
-		cGfxStmt = cGfxLine
+		function = cGfxLine
 
 	case FB.TK.CIRCLE
 		lexSkipToken
-		cGfxStmt = cGfxCircle
+		function = cGfxCircle
 
 	case FB.TK.PAINT
 		lexSkipToken
-		cGfxStmt = cGfxPaint
+		function = cGfxPaint
 
 	case FB.TK.DRAW
 		lexSkipToken
-		cGfxStmt = cGfxDraw
+		function = cGfxDraw
 
 	case FB.TK.VIEW
 		lexSkipToken
-		cGfxStmt = cGfxView( TRUE )
+		function = cGfxView( TRUE )
 
 	case FB.TK.WINDOW
 		lexSkipToken
-		cGfxStmt = cGfxView( FALSE )
+		function = cGfxView( FALSE )
 
 	case FB.TK.PALETTE
 		lexSkipToken
-		cGfxStmt = cGfxPalette
+		function = cGfxPalette
 
 	case FB.TK.PUT
 		lexSkipToken
-		cGfxStmt = cGfxPut
+		function = cGfxPut
 
 	case FB.TK.GET
 		lexSkipToken
-		cGfxStmt = cGfxGet
+		function = cGfxGet
 
 	case FB.TK.SCREEN
 		lexSkipToken
-		cGfxStmt = cGfxScreen
+		function = cGfxScreen
 
 	case FB.TK.SCREENRES
 		lexSkipToken
-		cGfxStmt = cGfxScreenRes
+		function = cGfxScreenRes
 
 	end select
 
@@ -926,19 +926,19 @@ end function
 '':::::
 '' GfxPoint    =   POINT '(' Expr ( ',' ( Expr )? ( ',' Expr )? )? ')'
 ''
-function cGfxPoint( funcexpr as integer ) as integer
-	dim as integer xexpr, yexpr, texpr
+function cGfxPoint( funcexpr as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr xexpr, yexpr, texpr
     dim as integer tisptr
     dim as FBSYMBOL ptr target
 
-	cGfxPoint = FALSE
+	function = FALSE
 
 	hMatchLPRNT( )
 
 	hMatchExpression( xexpr )
 
-	yexpr = INVALID
-	texpr = INVALID
+	yexpr = NULL
+	texpr = NULL
 
 	if( hMatch( CHAR_COMMA ) ) then
 		hMatchExpression( yexpr )
@@ -956,7 +956,7 @@ function cGfxPoint( funcexpr as integer ) as integer
 
 	funcexpr = rtlGfxPoint( texpr, tisptr, xexpr, yexpr )
 
-	cGfxPoint = TRUE
+	function = funcexpr <> NULL
 
 end function
 
@@ -964,10 +964,10 @@ end function
 '':::::
 '' ConsoleReadXY   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
-function cConsoleReadXY( funcexpr as integer ) as integer
-    dim as integer yexpr, xexpr, fexpr
+function cConsoleReadXY( funcexpr as ASTNODE ptr ) as integer
+    dim as ASTNODE ptr yexpr, xexpr, fexpr
 
-	cConsoleReadXY = FALSE
+	function = FALSE
 
 	hMatchLPRNT( )
 
@@ -977,7 +977,7 @@ function cConsoleReadXY( funcexpr as integer ) as integer
 
 	hMatchExpression( xexpr )
 
-	fexpr = INVALID
+	fexpr = NULL
 	if( hMatch( CHAR_COMMA ) ) then
 		hMatchExpression( fexpr )
 	end if
@@ -986,23 +986,23 @@ function cConsoleReadXY( funcexpr as integer ) as integer
 
 	funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
 
-	cConsoleReadXY = TRUE
+	function = funcexpr <> NULL
 
 end function
 
 '':::::
-function cGfxFunct ( funcexpr as integer ) as integer
+function cGfxFunct ( funcexpr as ASTNODE ptr ) as integer
 
-	cGfxFunct = FALSE
+	function = FALSE
 
 	select case lexCurrentToken
 	case FB.TK.POINT
 		lexSkipToken
-		cGfxFunct = cGfxPoint( funcexpr )
+		function = cGfxPoint( funcexpr )
 
 	case FB.TK.SCREEN
 		lexSkipToken
-		cGfxFunct = cConsoleReadXY( funcexpr )
+		function = cConsoleReadXY( funcexpr )
 
 	end select
 

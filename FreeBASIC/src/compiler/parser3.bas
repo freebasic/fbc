@@ -37,20 +37,24 @@ defint a-z
 '':::::
 ''FieldArray    =   '(' Expression (',' Expression)* ')' .
 ''
-function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr as integer ) as integer
-    dim d as FBVARDIM ptr, maxdims as integer, dims as integer
-    dim expr as integer, dimexpr as integer, constexpr as integer
-    dim diff as integer, lgt as integer
+function cFieldArray( byval elm as FBSYMBOL ptr, _
+					  byval typ as integer, _
+					  idxexpr as ASTNODE ptr ) as integer
 
-    cFieldArray = FALSE
+    dim as FBVARDIM ptr d
+    dim as integer maxdims, dims
+    dim as ASTNODE ptr expr, dimexpr, constexpr
+    dim as integer diff, lgt
+
+    function = FALSE
 
     ''
     maxdims = symbGetArrayDimensions( elm )
     dims = 0
     d = symbGetArrayFirstDim( elm )
-    expr = INVALID
+    expr = NULL
     do
-    	dims = dims + 1
+    	dims += 1
     	if( dims > maxdims ) then
 			hReportError FB.ERRMSG.WRONGDIMENSIONS
 			exit function
@@ -66,13 +70,13 @@ function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr a
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
-			if( dimexpr = INVALID ) then
+			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
 		end if
 
-    	if( expr = INVALID ) then
+    	if( expr = NULL ) then
     		expr = dimexpr
     	else
     		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
@@ -113,30 +117,35 @@ function cFieldArray( byval elm as FBSYMBOL ptr, byval typ as integer, idxexpr a
     end if
 
     '' plus initial expression
-    if( idxexpr = INVALID ) then
+    if( idxexpr = NULL ) then
     	idxexpr = expr
     else
     	idxexpr = astNewBOP( IR.OP.ADD, idxexpr, expr )
     end if
 
     ''
-    cFieldArray = TRUE
+    function = TRUE
 
 end function
 
 '':::::
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
-function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL ptr, idxexpr as integer, _
-					 byval isderef as integer, byval checkarray as integer ) as integer
-    dim fields as string, ofs as integer
-    dim constexpr as integer
-    dim res as integer
+function cTypeField( elm as FBSYMBOL ptr, _
+					 typ as integer, _
+					 subtype as FBSYMBOL ptr, _
+					 idxexpr as ASTNODE ptr, _
+					 byval isderef as integer, _
+					 byval checkarray as integer ) as integer
+
+    dim as string fields
+    dim as ASTNODE ptr constexpr
+    dim as integer res, ofs
 
 	res = FALSE
 
 	do
-		cTypeField = res
+		function = res
 
 		if( lexCurrentToken <> CHAR_LPRNT ) then
 
@@ -164,15 +173,14 @@ function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL pt
     		ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )
     		if( ofs < 0 ) then
     			hReportError FB.ERRMSG.ELEMENTNOTDEFINED
-    			cTypeField = FALSE
-    			exit function
+    			return FALSE
     		else
 				lexSkipToken
     		end if
 
     		if( ofs <> 0 ) then
     			constexpr = astNewCONSTi( ofs, IR.DATATYPE.INTEGER )
-    			if( idxexpr = INVALID ) then
+    			if( idxexpr = NULL ) then
     				idxexpr = constexpr
     			else
 	    			idxexpr = astNewBOP( IR.OP.ADD, idxexpr, constexpr )
@@ -206,8 +214,7 @@ function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL pt
 			if( symbGetArrayDimensions( elm ) <> 0 ) then
     			if( checkarray ) then
     				hReportError FB.ERRMSG.EXPECTEDINDEX
-   					cTypeField = FALSE
-    				exit function
+   					return FALSE
     			end if
 			end if
 
@@ -220,13 +227,12 @@ function cTypeField( elm as FBSYMBOL ptr, typ as integer, subtype as FBSYMBOL pt
 
     	if( not hMatch( CHAR_RPRNT ) ) then
     		hReportError FB.ERRMSG.EXPECTEDRPRNT
-   			cTypeField = FALSE
-    		exit function
+   			return FALSE
     	end if
 
     loop
 
-    cTypeField = res
+    function = res
 
 end function
 
@@ -237,19 +243,19 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 					   elm as FBSYMBOL ptr, _
 					   typ as integer, _
 					   subtype as FBSYMBOL ptr, _
-					   varexpr as integer, _
+					   varexpr as ASTNODE ptr, _
 					   byval isderef as integer, _
 					   byval checkarray as integer ) as integer
 
-	dim cnt as integer, lgt as integer
-	dim expr as integer, idxexpr as integer
-	dim isfieldderef as integer
+	dim as integer cnt, lgt
+	dim as ASTNODE ptr expr, idxexpr
+	dim as integer isfieldderef
 
-	cDerefFields = FALSE
+	function = FALSE
 
 	do
 
-		idxexpr = INVALID
+		idxexpr = NULL
 		cnt		= 0
 
         select case lexCurrentToken
@@ -279,7 +285,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			if( (astGetDataClass( idxexpr ) <> IR.DATACLASS.INTEGER) or _
 				(astGetDataSize( idxexpr ) <> FB.POINTERSIZE) ) then
 				idxexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, idxexpr )
-				if( idxexpr = INVALID ) then
+				if( idxexpr = NULL ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
 					exit function
 				end if
@@ -288,8 +294,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			'' ']'
 			if( not hMatch( CHAR_RBRACKET ) ) then
 				hReportError FB.ERRMSG.SYNTAXERROR
-				cDerefFields = FALSE
-				exit function
+				return FALSE
 			end if
 
 			'' string, fixstr, zstring?
@@ -316,8 +321,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 					subtype = NULL
 					elm = NULL
 
-					cDerefFields = TRUE
-					exit function
+					return TRUE
 
 				case else
 					hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
@@ -359,9 +363,9 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' TypeField
-		expr = INVALID
+		expr = NULL
 		if( not cTypeField( elm, typ, subtype, expr, isfieldderef, checkarray ) ) then
-			if( idxexpr = INVALID ) then
+			if( idxexpr = NULL ) then
 				if( not isderef ) then
 					hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 					return FALSE
@@ -371,12 +375,12 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' this should be optimized by AST, when expr is a constant and varexpr is a scalar var
-		if( expr <> INVALID ) then
+		if( expr <> NULL ) then
 			varexpr = astNewBOP( IR.OP.ADD, varexpr, expr )
 		end if
 
 		''
-		if( idxexpr <> INVALID ) then
+		if( idxexpr <> NULL ) then
 			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
 		end if
 
@@ -404,7 +408,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 		loop
 
 		isderef = FALSE
-		cDerefFields = TRUE
+		function = TRUE
 	loop
 
 end function
@@ -417,13 +421,13 @@ function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
 					      		elm as FBSYMBOL ptr, _
 					      		byval typ as integer, _
 					      		byval subtype as FBSYMBOL ptr, _
-					      		varexpr as integer, _
+					      		varexpr as ASTNODE ptr, _
 					      		byval isfuncptr as integer, _
 					      		byval checkarray as integer ) as integer
 
-	dim as integer funcexpr
+	dim as ASTNODE ptr funcexpr
 
-	cFuncPtrOrDerefFields = FALSE
+	function = FALSE
 
 	''
 	if( not isfuncptr ) then
@@ -470,19 +474,21 @@ function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
 
 	end if
 
-	cFuncPtrOrDerefFields = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 ''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
-function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as integer
-    dim i as integer, dims as integer, maxdims as integer, d as FBSYMBOL ptr
-    dim lgt as integer
-    dim expr as integer, dimexpr as integer, constexpr as integer, varexpr as integer
+function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
+					   idxexpr as ASTNODE ptr ) as integer
 
-    cDynArrayIdx = FALSE
+    dim as FBSYMBOL ptr d
+    dim as integer lgt, i, dims, maxdims
+    dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
+
+    function = FALSE
 
     d = symbGetArrayDescriptor( sym )
     dims = 0
@@ -495,9 +501,9 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 
     ''
     i = 0
-    expr = INVALID
+    expr = NULL
     do
-    	dims = dims + 1
+    	dims += 1
 
     	'' check dimensions, if not common
     	if( maxdims <> INVALID ) then
@@ -517,13 +523,13 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
-			if( dimexpr = INVALID ) then
+			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
 		end if
 
-    	if( expr = INVALID ) then
+    	if( expr = NULL ) then
     		expr = dimexpr
     	else
     		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
@@ -536,7 +542,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
     		lexSkipToken
     	end if
 
-    	i = i + 1
+    	i += 1
 
     	varexpr = astNewVAR( d, NULL, FB.ARRAYDESCSIZE + i*(FB.INTEGERSIZE*2), IR.DATATYPE.INTEGER )
     	expr = astNewBOP( IR.OP.MUL, expr, varexpr )
@@ -562,23 +568,24 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
     idxexpr = expr
 
     ''
-    cDynArrayIdx = TRUE
+    function = TRUE
 
 end function
 
 '':::::
 ''ArgArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
-function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as integer
-    dim i as integer, t as integer
-    dim lgt as integer
-    dim expr as integer, dimexpr as integer, constexpr as integer, varexpr as integer
+function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
+					   idxexpr as ASTNODE ptr ) as integer
 
-    cArgArrayIdx = FALSE
+    dim as integer i, lgt
+    dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr, t
+
+    function = FALSE
 
     ''
     i = 0
-    expr = INVALID
+    expr = NULL
     do
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
@@ -590,13 +597,13 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
-			if( dimexpr = INVALID ) then
+			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
 		end if
 
-    	if( expr = INVALID ) then
+    	if( expr = NULL ) then
     		expr = dimexpr
     	else
     		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
@@ -609,7 +616,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
     		lexSkipToken
     	end if
 
-    	i = i + 1
+    	i += 1
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
     	t = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
@@ -630,29 +637,29 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, idxexpr as integer ) as intege
     idxexpr = expr
 
 	''
-	cArgArrayIdx = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 ''ArrayIdx        =   '(' Expression (',' Expression)* ')' .
 ''
-function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
-    dim d as FBVARDIM ptr, dims as integer, maxdims as integer
-    dim dtype as integer, lgt as integer
-    dim expr as integer, dimexpr as integer, constexpr as integer, varexpr as integer
+function cArrayIdx( byval s as FBSYMBOL ptr, _
+					idxexpr as ASTNODE ptr ) as integer
 
-    cArrayIdx = FALSE
+    dim as FBVARDIM ptr d
+    dim as integer dtype, lgt, dims, maxdims
+    dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
+
+    function = FALSE
 
     ''  argument passed by descriptor?
     if( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
-    	cArrayIdx = cArgArrayIdx( s, idxexpr )
-    	exit function
+    	return cArgArrayIdx( s, idxexpr )
 
     '' dynamic array? (will handle common's too)
     elseif( symbGetIsDynamic( s ) ) then
-    	cArrayIdx = cDynArrayIdx( s, idxexpr )
-    	exit function
+    	return cDynArrayIdx( s, idxexpr )
 
     end if
 
@@ -662,7 +669,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 
     ''
     d = symbGetArrayFirstDim( s )
-    expr = INVALID
+    expr = NULL
     do
     	dims += 1
     	if( dims > maxdims ) then
@@ -680,13 +687,13 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
-			if( dimexpr = INVALID ) then
+			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
 		end if
 
-    	if( expr = INVALID ) then
+    	if( expr = NULL ) then
     		expr = dimexpr
     	else
     		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
@@ -720,16 +727,18 @@ function cArrayIdx( byval s as FBSYMBOL ptr, idxexpr as integer ) as integer
 	idxexpr = expr
 
 	''
-	cArrayIdx = TRUE
+	function = TRUE
 
 end function
 
 '':::::
-function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
-	dim s as FBSYMBOL ptr
-	dim dTB(0) as FBARRAYDIM, alloctype as integer
+function hVarAddUndecl( id as string, _
+						byval typ as integer ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr s
+	dim as FBARRAYDIM dTB(0)
+	dim as integer alloctype
 
-	hVarAddUndecl = NULL
+	function = NULL
 
 	if( env.isprocstatic ) then
 		alloctype = FB.ALLOCTYPE.STATIC
@@ -742,24 +751,25 @@ function hVarAddUndecl( id as string, byval typ as integer ) as FBSYMBOL ptr
 		exit function
 	end if
 
-	hVarAddUndecl = s
+	function = s
 
 end function
 
 '':::::
 ''Variable        =   ID ArrayIdx? ((TypeField|FuncPtrOrDerefFields) FieldIdx?)* .
 ''
-function cVariable( varexpr as integer, _
+function cVariable( varexpr as ASTNODE ptr, _
 					sym as FBSYMBOL ptr, _
 					elm as FBSYMBOL ptr, _
-					byval checkarray as integer = TRUE )
+					byval checkarray as integer = TRUE ) as integer
 
-	dim as integer typ, deftyp, ofs, idxexpr, dtype
+	dim as integer typ, deftyp, ofs, dtype
+	dim as ASTNODE ptr idxexpr
 	dim as FBSYMBOL ptr subtype
 	dim as string id
 	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
 
-	cVariable = FALSE
+	function = FALSE
 
 	'' ID
 	if( lexCurrentToken <> FB.TK.ID ) then
@@ -850,7 +860,7 @@ function cVariable( varexpr as integer, _
 #endif
 
     ''
-    idxexpr  = INVALID
+    idxexpr  = NULL
     isbydesc = FALSE
     isarray  = symbIsArray( sym )
 
@@ -922,7 +932,7 @@ function cVariable( varexpr as integer, _
 	end if
 
 	'' has index?
-	if( idxexpr <> INVALID ) then
+	if( idxexpr <> NULL ) then
 		'' byref or import's are already pointers
 		if( isbyref or isimport ) then
 			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
@@ -949,16 +959,16 @@ function cVariable( varexpr as integer, _
     '' FuncPtrOrDerefFields?
 	cFuncPtrOrDerefFields( sym, elm, typ, subtype, varexpr, isfuncptr, checkarray )
 
-	cVariable = (hGetLastError() = FB.ERRMSG.OK)
+	function = (hGetLastError() = FB.ERRMSG.OK)
 
 end function
 
 '':::::
 ''cVarOrDeref		= 	Deref | AddrOf | Variable
 ''
-function cVarOrDeref( varexpr as integer, _
+function cVarOrDeref( varexpr as ASTNODE ptr, _
 					  byval checkarray as integer, _
-					  byval checkaddrof as integer )
+					  byval checkaddrof as integer ) as integer
 
 	dim as FBSYMBOL ptr sym, elm
 	dim as integer res
@@ -973,6 +983,6 @@ function cVarOrDeref( varexpr as integer, _
 		end if
 	end if
 
-	cVarOrDeref = res
+	function = res
 
 end function
