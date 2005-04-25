@@ -1870,8 +1870,8 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 				              byval argtail as FBSYMBOL ptr, _
 				              byval preservecase as integer ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, parg
-	dim as integer optcnt
+	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
+	dim as integer fdtype, pdtype, optcnt
 
 	function = NULL
 
@@ -1911,12 +1911,30 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 			farg = f->proc.argtail
 
 			do while( parg <> NULL )
+				''
+				pdtype = parg->typ
+				if( pdtype >= IR.DATATYPE.POINTER ) then
+					pdtype = IR.DATATYPE.UINT
+					psubtype = NULL
+				else
+					psubtype = parg->subtype
+				end if
+
+				''
+				fdtype = farg->typ
+				if( fdtype >= IR.DATATYPE.POINTER ) then
+					fdtype = IR.DATATYPE.UINT
+					fsubtype = NULL
+				else
+					fsubtype = farg->subtype
+				end if
+
 				'' not the same type? check next proc..
-				if( parg->typ <> farg->typ ) then
+				if( pdtype <> fdtype ) then
 					exit do
 				end if
 
-				if( parg->subtype <> farg->subtype ) then
+				if( psubtype <> fsubtype ) then
 					exit do
 				end if
 
@@ -2513,7 +2531,8 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 					   	       byval argc as integer, _
 					   	       byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, parg
+	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
+	dim as integer fdtype, pdtype
 
 	'' for each proc..
 	f = proc
@@ -2526,12 +2545,30 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 			parg = argtail
 			do while( parg <> NULL )
 
+				''
+				pdtype = parg->typ
+				if( pdtype >= IR.DATATYPE.POINTER ) then
+					pdtype = IR.DATATYPE.UINT
+					psubtype = NULL
+				else
+					psubtype = parg->subtype
+				end if
+
+				''
+				fdtype = farg->typ
+				if( fdtype >= IR.DATATYPE.POINTER ) then
+					fdtype = IR.DATATYPE.UINT
+					fsubtype = NULL
+				else
+					fsubtype = farg->subtype
+				end if
+
 				'' not the same type? check next proc..
-				if( parg->typ <> farg->typ ) then
+				if( pdtype <> fdtype ) then
 					exit do
 				end if
 
-				if( parg->subtype <> farg->subtype ) then
+				if( psubtype <> fsubtype ) then
 					exit do
 				end if
 
@@ -2559,8 +2596,8 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     exprTB() as integer, _
 					   		     modeTB() as integer ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, marg, match
-	dim as integer p, adclass, pdclass, dtype
+	dim as FBSYMBOL ptr f, farg, marg, match, psubtype, fsubtype
+	dim as integer p, pdclass, pdtype, fdclass
 	dim as integer fdtype, mdtype, fmatches, mmatches
 
 	match = NULL
@@ -2584,21 +2621,40 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 					'' check mode............
 
+					''
+					pdtype = astGetDataType( exprTB(p) )
+					if( pdtype >= IR.DATATYPE.POINTER ) then
+						psubtype = NULL
+					else
+						psubtype = astGetSubtype( exprTB(p) )
+					end if
+
+					''
+					fdtype = farg->typ
+					if( fdtype >= IR.DATATYPE.POINTER ) then
+						fsubtype = NULL
+					else
+						fsubtype = farg->subtype
+					end if
+
 					'' same class?
-					adclass = irGetDataClass( farg->typ )
-					pdclass = astGetDataClass( exprTB(p) )
-					if( adclass <> pdclass ) then
+					fdclass = irGetDataClass( fdtype )
+					pdclass = irGetDataClass( pdtype )
+					if( fdclass <> pdclass ) then
 						'' could be a float passed to an int arg or vice-versa
-						if( adclass >= IR.DATACLASS.STRING ) then
-							'' check for zstring's..........
-							exit for
-						end if
-						if( pdclass >= IR.DATACLASS.STRING ) then
-							exit for
+						if( fdclass >= IR.DATACLASS.STRING ) then
+							'' zstring?
+							if( pdtype <> IR.DATATYPE.CHAR ) then
+								exit for
+							end if
+						else
+							if( pdclass >= IR.DATACLASS.STRING ) then
+								exit for
+							end if
 						end if
 					end if
 
-					if( farg->subtype <> astGetSubtype( exprTB(p) ) ) then
+					if( fsubtype <> psubtype ) then
 						exit for
 					end if
 				end if
@@ -2630,9 +2686,9 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 								'' different types?
 								if( farg->typ <> marg->typ ) then
 
-									dtype = astGetDataType( exprTB(p) )
-									if( dtype >= IR.DATATYPE.POINTER ) then
-										dtype = IR.DATATYPE.UINT
+									pdtype = astGetDataType( exprTB(p) )
+									if( pdtype >= IR.DATATYPE.POINTER ) then
+										pdtype = IR.DATATYPE.UINT
 									end if
 
 									fdtype = farg->typ
@@ -2645,12 +2701,12 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 										mdtype = IR.DATATYPE.UINT
 									end if
 
-									if( irMaxDataType( fdtype, dtype ) = INVALID ) then
+									if( irMaxDataType( fdtype, pdtype ) = INVALID ) then
 										fmatches += 1
 									else
 										'' get the distance..
-										if( abs( fdtype - dtype ) < _
-											abs( mdtype - dtype ) ) then
+										if( abs( fdtype - pdtype ) < _
+											abs( mdtype - pdtype ) ) then
 											fmatches += 1
 										else
 											mmatches += 1
