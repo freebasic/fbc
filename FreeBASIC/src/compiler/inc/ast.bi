@@ -1,3 +1,6 @@
+#ifndef __AST_BI__
+#define __AST_BI__
+
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 ''
@@ -15,6 +18,8 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+
+'$include once: 'inc\ir.bi'
 
 const AST.MAXTEMPSTRINGS		= 32
 const AST.MAXTEMPARRAYS			= 32
@@ -160,9 +165,9 @@ declare sub 		astConvertValue     ( byval n as integer, _
 					       				  byval v as FBVALUE ptr, _
 					       				  byval todtype as integer )
 
-declare function	astLoad				( byval n as integer ) as integer
+declare function	astLoad				( byval n as integer ) as IRVREG ptr
 
-declare function	astFlush			( byval n as integer ) as integer
+declare function	astFlush			( byval n as integer ) as IRVREG ptr
 
 declare function	astUpdComp2Branch	( byval n as integer, _
 										  byval label as FBSYMBOL ptr, _
@@ -171,13 +176,13 @@ declare function	astUpdComp2Branch	( byval n as integer, _
 declare function 	astNewASSIGN		( byval l as integer, _
 										  byval r as integer ) as integer
 
-declare function 	astLoadASSIGN		( byval n as integer ) as integer
+declare function 	astLoadASSIGN		( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewCONV			( byval op as integer, _
 										  byval dtype as integer, _
 										  byval l as integer ) as integer
 
-declare function 	astLoadCONV			( byval n as integer ) as integer
+declare function 	astLoadCONV			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewBOP			( byval op as integer, _
 										  byval l as integer, _
@@ -185,12 +190,12 @@ declare function 	astNewBOP			( byval op as integer, _
 					  					  byval ex as FBSYMBOL ptr = NULL, _
 					  					  byval allocres as integer = TRUE ) as integer
 
-declare function 	astLoadBOP			( byval n as integer ) as integer
+declare function 	astLoadBOP			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewUOP			( byval op as integer, _
 										  byval o as integer ) as integer
 
-declare function 	astLoadUOP			( byval n as integer ) as integer
+declare function 	astLoadUOP			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewCONST			( byval v as FBVALUE ptr, _
 					  					  byval dtype as integer ) as integer
@@ -204,7 +209,7 @@ declare function 	astNewCONSTf		( byval value as double, _
 declare function 	astNewCONST64		( byval value as longint, _
 										  byval dtype as integer ) as integer
 
-declare function 	astLoadCONST		( byval n as integer ) as integer
+declare function 	astLoadCONST		( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
 										  byval elm as FBSYMBOL ptr, _
@@ -212,14 +217,14 @@ declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as integer
 
-declare function 	astLoadVAR			( byval n as integer ) as integer
+declare function 	astLoadVAR			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewIDX			( byval v as integer, _
 										  byval i as integer, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as integer
 
-declare function 	astLoadIDX			( byval n as integer ) as integer
+declare function 	astLoadIDX			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, _
 										  byval elm as FBSYMBOL ptr, _
@@ -228,7 +233,7 @@ declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as integer
 
-declare function 	astLoadPTR			( byval n as integer ) as integer
+declare function 	astLoadPTR			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, _
 										  byval dtype as integer, _
@@ -240,7 +245,7 @@ declare function 	astNewPARAM			( byval f as integer, _
 										  byval dtype as integer = INVALID, _
 										  byval mode as integer = INVALID ) as integer
 
-declare function 	astLoadFUNCT		( byval n as integer ) as integer
+declare function 	astLoadFUNCT		( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewADDR			( byval op as integer, _
 										  byval p as integer, _
@@ -249,24 +254,24 @@ declare function 	astNewADDR			( byval op as integer, _
 										  byval dtype as integer = INVALID, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as integer
 
-declare function 	astLoadADDR			( byval n as integer ) as integer
+declare function 	astLoadADDR			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewLOAD			( byval l as integer, _
 										  byval dtype as integer ) as integer
 
-declare function 	astLoadLOAD			( byval n as integer ) as integer
+declare function 	astLoadLOAD			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewBRANCH		( byval op as integer, _
 										  byval label as FBSYMBOL ptr, _
 										  byval l as integer = INVALID ) as integer
 
-declare function 	astLoadBRANCH		( byval n as integer ) as integer
+declare function 	astLoadBRANCH		( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewIIF			( byval condexpr as integer, _
 										  byval truexpr as integer, _
 										  byval falsexpr as integer ) as integer
 
-declare function 	astLoadIIF			( byval n as integer ) as integer
+declare function 	astLoadIIF			( byval n as integer ) as IRVREG ptr
 
 declare function 	astNewOFFSET		( byval v as integer, _
 					   					  byval sym as FBSYMBOL ptr = NULL, _
@@ -274,7 +279,7 @@ declare function 	astNewOFFSET		( byval v as integer, _
 					   					  byval dtype as integer = INVALID, _
 					   					  byval subtype as FBSYMBOL ptr = NULL ) as integer
 
-declare function 	astLoadOFFSET		( byval n as integer ) as integer
+declare function 	astLoadOFFSET		( byval n as integer ) as IRVREG ptr
 
 declare sub 		astDump1 			( byval p as integer, _
 										  byval n as integer, _
@@ -320,3 +325,5 @@ common shared astTB( ) as ASTNODE
 #define astGetDataSize(n) iif( n <> INVALID, irGetDataSize( astTB(n).dtype ), INVALID )
 
 #define astSetDataType(n,t) if( n <> INVALID ) then astTB(n).dtype = t end if
+
+#endif '' __AST_BI__

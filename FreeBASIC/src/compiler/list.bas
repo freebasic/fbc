@@ -21,120 +21,128 @@
 '' chng: jan/2005 written [v1ctor]
 ''
 
+defint a-z
 option explicit
 option escape
 
-defint a-z
+const NULL = 0
+
 '$include once: 'inc\list.bi'
 
-const NULL 	= 0
-const FALSE = 0
-const TRUE  = -1
-
-
-declare function listAllocTB		( byval list as TLIST ptr, byval nodes as integer ) as integer
 
 '':::::
-function listNew( byval list as TLIST ptr, byval nodes as integer, byval nodelen as integer ) as integer
+function listNew( byval list as TLIST ptr, _
+				  byval nodes as integer, _
+				  byval nodelen as integer, _
+				  byval relink as integer = TRUE ) as integer
 
 	'' fill ctrl struct
+	list->tbhead 	= NULL
+	list->tbtail 	= NULL
 	list->nodes 	= 0
-	list->tblist 	= NULL
 	list->nodelen	= nodelen
 	list->head		= NULL
 	list->tail		= NULL
 
 	'' allocate the initial pool
-	listNew = listAllocTB( list, nodes )
+	function = listAllocTB( list, nodes, relink )
 
 end function
 
 '':::::
 function listFree( byval list as TLIST ptr ) as integer
-    dim tb as TLISTTB ptr, nxt as TLISTTB ptr
+    dim as TLISTTB ptr tb, nxt
 
 	'' for each pool, free the mem block and the pool ctrl struct
-	tb = list->tblist
+	tb = list->tbhead
 	do while( tb <> NULL )
 		nxt = tb->nxt
-		deallocate tb->ptr
-		deallocate tb
+		deallocate( tb->nodetb )
+		deallocate( tb )
 		tb = nxt
 	loop
 
-	list->tblist 	= NULL
+	list->tbhead 	= NULL
+	list->tbtail 	= NULL
 	list->nodes		= 0
 
-	listFree = TRUE
+	function = TRUE
 
 end function
 
 '':::::
-private function listAllocTB( byval list as TLIST ptr, byval nodes as integer ) as integer static
-	dim i as integer
-	dim node as TLISTNODE ptr, prv as TLISTNODE ptr
-	dim tb as TLISTTB ptr
+function listAllocTB( byval list as TLIST ptr, _
+					  byval nodes as integer, _
+					  byval relink as integer = TRUE ) as integer static
+	dim as integer i
+	dim as TLISTNODE ptr nodetb, node, prv
+	dim as TLISTTB ptr tb
 
-	listAllocTB = FALSE
+	function = FALSE
 
 	if( nodes <= 1 ) then
 		exit function
 	end if
 
 	'' allocate the pool
-	node = callocate( nodes * list->nodelen )
-	if( node = NULL ) then
+	nodetb = callocate( nodes * list->nodelen )
+	if( nodetb = NULL ) then
 		exit function
 	end if
 
 	'' and the pool ctrl struct
 	tb = allocate( len( TLISTTB ) )
 	if( tb = NULL ) then
-		deallocate node
+		deallocate( nodetb )
 		exit function
 	end if
 
 	'' add the ctrl struct to pool list
-	if( list->tblist <> NULL ) then
-		list->tblist->nxt = tb
-	else
-		list->tblist = tb
+	if( list->tbhead = NULL ) then
+		list->tbhead = tb
 	end if
-	tb->ptr = node
-	tb->nxt = NULL
+	if( list->tbtail <> NULL ) then
+		list->tbtail->nxt = tb
+	end if
+	list->tbtail = tb
+
+	tb->nxt 	= NULL
+	tb->nodetb 	= nodetb
+	tb->nodes 	= nodes
 
 	'' add new nodes to the free list
-	list->fhead = node
-	list->nodes = list->nodes + nodes
+	list->fhead = nodetb
+	list->nodes += nodes
 
 	''
-	prv = NULL
-	node = list->fhead
+	if( relink ) then
+		prv = NULL
+		node = list->fhead
 
-	For i = 1 to nodes-1
-		node->prv	= prv
-		node->nxt	= node + list->nodelen
+		for i = 1 to nodes-1
+			node->prv	= prv
+			node->nxt	= node + list->nodelen
 
-		prv 	   	= node
-		node 		= node->nxt
-	Next i
+			prv 	   	= node
+			node 		= node->nxt
+		next
 
-	node->prv = prv
-	node->nxt = NULL
+		node->prv = prv
+		node->nxt = NULL
+	end if
 
 	''
-	listAllocTB = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 function listNewNode( byval list as TLIST ptr ) as TLISTNODE ptr static
-	dim node as TLISTNODE ptr
-	dim tail as TLISTNODE ptr
+	dim as TLISTNODE ptr node, tail
 
 	'' alloc new node list if there are no free nodes
 	if( list->fhead = NULL ) Then
-		listAllocTB list, list->nodes \ 2
+		listAllocTB( list, list->nodes \ 2 )
 	end if
 
 	'' take from free list
@@ -154,13 +162,14 @@ function listNewNode( byval list as TLIST ptr ) as TLISTNODE ptr static
 	node->nxt	= NULL
 
 	''
-	listNewNode = node
+	function = node
 
 end function
 
 '':::::
-function listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as integer static
-	Dim prv as TLISTNODE ptr, nxt as TLISTNODE ptr
+function listDelNode( byval list as TLIST ptr, _
+					  byval node as TLISTNODE ptr ) as integer static
+	dim as TLISTNODE ptr prv, nxt
 
 	if( node = NULL ) then
 		exit function
@@ -186,7 +195,7 @@ function listDelNode( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as 
 	list->fhead = node
 
 	'' node can contain strings descriptors, so, erase it..
-	clear byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2)
+	clear( byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2) )
 
 end function
 

@@ -764,7 +764,7 @@ function cForStatement
 		'' exit loop
 		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
     	'' control label
-    	irEmitLABELNF c2l
+    	irEmitLABELNF( c2l )
     	'' positive, loop if <=
 		cFlushBOP IR.OP.LE, dtype, cnt, NULL, endc, @eval, il
     end if
@@ -795,7 +795,8 @@ end function
 ''					  LOOP ((WHILE | UNTIL) Expression)? .
 ''
 function cDoStatement
-    dim as integer expr, op, vr
+    dim as integer expr, op
+    dim as IRVREG ptr vr
 	dim as integer iswhile, isuntil, isinverse, lastcompstmt
     dim as FBSYMBOL ptr il, el, cl
     dim as FBCMPSTMT olddostmt
@@ -849,7 +850,7 @@ function cDoStatement
 		cl = il
 
 	else
-		vr = INVALID
+		vr = NULL
 		cl = symbAddLabel( hMakeTmpStr )
 	end if
 
@@ -893,7 +894,7 @@ function cDoStatement
 		isuntil = TRUE
 	end select
 
-	if( (iswhile or isuntil) and (vr <> INVALID) ) then
+	if( (iswhile or isuntil) and (vr <> NULL) ) then
 		hReportError FB.ERRMSG.SYNTAXERROR
 		exit function
 	end if

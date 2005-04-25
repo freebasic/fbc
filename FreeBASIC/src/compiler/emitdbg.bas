@@ -367,9 +367,9 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 	dim as string desc
 	dim as FBVARDIM ptr d
 
-	if( not env.clopt.debug ) then
+	'if( not env.clopt.debug ) then
 		exit sub
-	end if
+	'end if
 
 	'' depends on section
 	select case section

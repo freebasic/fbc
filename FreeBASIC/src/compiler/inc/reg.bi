@@ -1,5 +1,5 @@
-#ifndef REG_BI__
-#define REG_BI__
+#ifndef __REG_BI__
+#define __REG_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -24,20 +24,22 @@ const REG.MAXREGS	= 8
 '#else
 '#endif
 
+'$include once:'inc\ir.bi'
+
 
 type REGCLASS
 
 	'' methods
 	ensure						as function ( byval this_ as REGCLASS ptr, _
-								  			  byval vreg as integer, _
+								  			  byval vreg as IRVREG ptr, _
 								  			  byval doload as integer = TRUE ) as integer
 
 	allocate					as function ( byval this_ as REGCLASS ptr, _
-											  byval vreg as integer ) as integer
+											  byval vreg as IRVREG ptr ) as integer
 
 	allocateReg					as function ( byval this_ as REGCLASS ptr, _
 								  			  byval r as integer, _
-								  			  byval vreg as integer ) as integer
+								  			  byval vreg as IRVREG ptr ) as integer
 
 	free						as sub 		( byval this_ as REGCLASS ptr, _
 								  			  byval r as integer )
@@ -47,7 +49,7 @@ type REGCLASS
 
 	setOwner					as sub 		( byval this_ as REGCLASS ptr, _
 								  			  byval r as integer, _
-								  			  byval vreg as integer )
+								  			  byval vreg as IRVREG ptr )
 
 	getMaxRegs					as function ( byval this_ as REGCLASS ptr ) as integer
 
@@ -57,7 +59,7 @@ type REGCLASS
 								  			  byval r as integer ) as integer
 
 	getVreg						as function ( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer ) as integer
+								  			  byval r as integer ) as IRVREG ptr
 
 	getRealReg					as function ( byval this_ as REGCLASS ptr, _
 								  			  byval r as integer ) as integer
@@ -67,10 +69,10 @@ type REGCLASS
 	isstack						as integer
 	regs						as integer
 
-	vregTB(0 to REG.MAXREGS-1) 	as integer		'' virtual register name (index)
+	vregTB(0 to REG.MAXREGS-1) 	as IRVREG ptr	'' virtual register name (index)
 
 	'' f/ non-stack sets only
-	nextTB(0 to REG.MAXREGS-1) 	as integer		'' distance of next vreg usage
+	nextTB(0 to REG.MAXREGS-1) 	as uinteger		'' distance of next vreg usage
 	freeTB(0 to REG.MAXREGS-1) 	as integer      '' true or false
 	fstack(0 to REG.MAXREGS-1) 	as integer		'' free regs stack
     sp							as integer      '' stack pointer
@@ -85,7 +87,10 @@ end type
 ''
 ''
 ''
-declare function 	regNewClass			( byval class as integer, byval regs as integer, byval isstack as integer ) as REGCLASS ptr
+declare function 	regNewClass			( byval class as integer, _
+										  byval regs as integer, _
+										  byval isstack as integer ) as REGCLASS ptr
+
 declare function 	regDelClass			( byval reg as REGCLASS ptr ) as integer
 
-#endif '' REG_BI__
+#endif '' __REG_BI__

@@ -359,7 +359,7 @@ end sub
 '':::::
 function emitGetRegClass( byval dclass as integer ) as REGCLASS ptr
 
-	emitGetRegClass = regTB(dclass)
+	function = regTB(dclass)
 
 end function
 
@@ -430,9 +430,9 @@ function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
 
 	if( s <> NULL ) then
 		sname = symbGetName( s )
-		emitGetVarName = sname + hGetOfs( s->ofs )
+		function = sname + hGetOfs( s->ofs )
 	else
-		emitGetVarName = ""
+		function = ""
 	end if
 
 end function
@@ -442,19 +442,20 @@ function emitIsRegPreserved ( byval dtype as integer, _
 							  byval dclass as integer, _
 							  byval reg as integer ) as integer static
 
-    if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+    if( dtype >= IR.DATATYPE.POINTER ) then
+    	dtype = IR.DATATYPE.UINT
+    end if
 
     '' fp? fpu stack *must* be cleared before calling any function
     if( dclass = IR.DATACLASS.FPOINT ) then
-    	emitIsRegPreserved = FALSE
-    	exit function
+    	return FALSE
     end if
 
     select case as const reg
     case EMIT.INTREG.EAX, EMIT.INTREG.ECX, EMIT.INTREG.EDX
-    	emitIsRegPreserved = FALSE
+    	return FALSE
     case else
-    	emitIsRegPreserved = TRUE
+    	return TRUE
 	end select
 
 end function
@@ -487,9 +488,11 @@ end sub
 function emitGetFreePreservedReg( byval dtype as integer, _
 								  byval dclass as integer ) as integer static
 
-	if( dtype >= IR.DATATYPE.POINTER ) then dtype = IR.DATATYPE.UINT
+	if( dtype >= IR.DATATYPE.POINTER ) then
+		dtype = IR.DATATYPE.UINT
+	end if
 
-	emitGetFreePreservedReg = INVALID
+	function = INVALID
 
 	'' fp? no other regs can be used
 	if( dclass = IR.DATACLASS.FPOINT ) then
@@ -498,13 +501,13 @@ function emitGetFreePreservedReg( byval dtype as integer, _
 
 	'' try to reuse regs that are preserved between calls
 	if( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.EBX ) ) then
-		emitGetFreePreservedReg = EMIT.INTREG.EBX
+		function = EMIT.INTREG.EBX
 
 	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.ESI ) ) then
-		emitGetFreePreservedReg = EMIT.INTREG.ESI
+		function = EMIT.INTREG.ESI
 
 	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT.INTREG.EDI ) ) then
-		emitGetFreePreservedReg = EMIT.INTREG.EDI
+		function = EMIT.INTREG.EDI
 	end if
 
 end function
@@ -515,7 +518,7 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 
     dim as integer r, reg, reg2, dclass
 
-	emitFindRegNotInVreg = INVALID
+	function = INVALID
 
 	reg = INVALID
 
@@ -524,18 +527,18 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 		reg = vreg->reg
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
-		if( vreg->vi <> INVALID ) then
-			if( vregTB(vreg->vi).typ = IR.VREGTYPE.REG ) then
-				reg = vregTB(vreg->vi).reg
+		if( vreg->vi <> NULL ) then
+			if( vreg->vi->typ = IR.VREGTYPE.REG ) then
+				reg = vreg->vi->reg
 			end if
 		end if
 	end select
 
 	'' longint..
 	reg2 = INVALID
-	if( vreg->va <> INVALID ) then
-		if( vregTB(vreg->va).typ = IR.VREGTYPE.REG ) then
-			reg2 = vregTB(vreg->va).reg
+	if( vreg->va <> NULL ) then
+		if( vreg->va->typ = IR.VREGTYPE.REG ) then
+			reg2 = vreg->va->reg
 		end if
 	end if
 
@@ -548,7 +551,7 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 
 			for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
 				if( r <> reg ) then
-					emitFindRegNotInVreg = r
+					function = r
 					if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
 						exit function
 					end if
@@ -562,7 +565,7 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 				if( r <> reg ) then
 					if( r <> EMIT.INTREG.ESI ) then
 						if( r <> EMIT.INTREG.EDI ) then
-							emitFindRegNotInVreg = r
+							function = r
 							if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
 							exit function
 							end if
@@ -580,7 +583,7 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 
 			for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
-					emitFindRegNotInVreg = r
+					function = r
 					if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
 						exit function
 					end if
@@ -594,7 +597,7 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 				if( (r <> reg) and (r <> reg2) ) then
 					if( r <> EMIT.INTREG.ESI ) then
 						if( r <> EMIT.INTREG.EDI ) then
-							emitFindRegNotInVreg = r
+							function = r
 							if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
 								exit function
 							end if
@@ -613,32 +616,29 @@ end function
 function emitIsRegInVreg( byval vreg as IRVREG ptr, _
 						  byval reg as integer ) as integer static
 
-	emitIsRegInVreg = FALSE
+	function = FALSE
 
 	select case vreg->typ
 	case IR.VREGTYPE.REG
 		if( vreg->reg = reg ) then
-			emitIsRegInVreg = TRUE
-			exit function
+			return TRUE
 		end if
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
-		if( vreg->vi <> INVALID ) then
-			if( vregTB(vreg->vi).typ = IR.VREGTYPE.REG ) then
-				if( vregTB(vreg->vi).reg = reg ) then
-					emitIsRegInVreg = TRUE
-					exit function
+		if( vreg->vi <> NULL ) then
+			if( vreg->vi->typ = IR.VREGTYPE.REG ) then
+				if( vreg->vi->reg = reg ) then
+					return TRUE
 				end if
 			end if
 		end if
 	end select
 
 	'' longints..
-	if( vreg->va <> INVALID ) then
-		if( vregTB(vreg->va).typ = IR.VREGTYPE.REG ) then
-			if( vregTB(vreg->va).reg = reg ) then
-				emitIsRegInVreg = TRUE
-				exit function
+	if( vreg->va <> NULL ) then
+		if( vreg->va->typ = IR.VREGTYPE.REG ) then
+			if( vreg->va->reg = reg ) then
+				return TRUE
 			end if
 		end if
 	end if
@@ -649,15 +649,12 @@ end function
 private sub outEx( byval s as string, _
 				   byval updpos as integer ) static
 
-	on local error goto outerror
-
-	put #ctx.outf, , s
-
-	if( updpos ) then
-		ctx.pos += 1
+	if( put( #ctx.outf, , s ) = 0 ) then
+		if( updpos ) then
+			ctx.pos += 1
+		end if
 	end if
 
-outerror:
 end sub
 
 '':::::
@@ -674,13 +671,13 @@ private sub outp( byval s as string ) static
 		ostr = TABCHAR
 		ostr += s
 		ostr += NEWLINE
-		outEX ostr, TRUE
+		outEX( ostr, TRUE )
 
 	else
 
 		ostr = s
 		ostr += NEWLINE
-		outEX ostr, TRUE
+		outEX( ostr, TRUE )
 
 	end if
 
@@ -724,16 +721,16 @@ private sub hPrepOperand64( byval oname as string, _
 
 	select case as const vreg->typ
 	case IR.VREGTYPE.VAR, IR.VREGTYPE.IDX, IR.VREGTYPE.PTR, IR.VREGTYPE.TMPVAR
-		hPrepOperand oname, vreg->ofs               , IR.DATATYPE.UINT   , vreg->typ, operand1
-		hPrepOperand oname, vreg->ofs+FB.INTEGERSIZE, IR.DATATYPE.INTEGER, vreg->typ, operand2
+		hPrepOperand( oname, vreg->ofs               , IR.DATATYPE.UINT   , vreg->typ, operand1 )
+		hPrepOperand( oname, vreg->ofs+FB.INTEGERSIZE, IR.DATATYPE.INTEGER, vreg->typ, operand2 )
 
 	case IR.VREGTYPE.REG
 		operand1 = oname
-		emitGetRegName( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, vregTB(vreg->va).reg, operand2 )
+		emitGetRegName( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, vreg->va->reg, operand2 )
 
 	case IR.VREGTYPE.IMM
 		operand1 = oname
-		operand2 = str$( vregTB(vreg->va).value )
+		operand2 = str$( vreg->va->value )
 	end select
 
 end sub
@@ -743,11 +740,11 @@ end sub
 private function hGetOfs( byval ofs as integer ) as string static
 
 	if( ofs > 0 ) then
-		hGetOfs = "+" + str$( ofs )
+		function = "+" + str$( ofs )
 	elseif( ofs < 0 ) then
-		hGetOfs = str$( ofs )
+		function = str$( ofs )
 	else
-		hGetOfs = ""
+		function = ""
 	end if
 
 end function
@@ -756,13 +753,13 @@ end function
 function emitIsKeyword( byval text as string ) as integer static
 
 	if( not ctx.keyinited ) then
-		hInitKeywordsTB
+		hInitKeywordsTB( )
 	end if
 
 	if( hashLookup( @ctx.keyhash, text ) <> NULL ) then
-		emitIsKeyword = TRUE
+		function = TRUE
 	else
-		emitIsKeyword = FALSE
+		function = FALSE
 	end if
 
 end function
@@ -772,7 +769,7 @@ end function
 '':::::
 function emitGetPos as integer static
 
-	emitGetPos = ctx.pos
+	function = ctx.pos
 
 end function
 
@@ -784,7 +781,7 @@ sub emitCOMMENT( byval s as string ) static
     ostr += s
     ostr += NEWLINE
 
-	outEX ostr, FALSE
+	outEX( ostr, FALSE )
 
 end sub
 
@@ -796,7 +793,7 @@ sub emitASM( byval s as string ) static
     ostr += s
     ostr += NEWLINE
 
-	outEX ostr, TRUE
+	outEX( ostr, TRUE )
 
 end sub
 
@@ -807,7 +804,7 @@ sub emitALIGN( byval bytes as integer ) static
     ostr = ".balign "
     ostr += str$( bytes )
 
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -823,7 +820,7 @@ sub emitSTACKALIGN( byval bytes as integer ) static
     	ostr += str$( -bytes )
     end if
 
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -831,7 +828,7 @@ end sub
 sub emitTYPE( byval typ as integer, _
 			  byval text as string ) static
 
-	outp hGetTypeString( typ ) + " " + text
+	outp( hGetTypeString( typ ) + " " + text )
 
 end sub
 
@@ -842,12 +839,12 @@ sub emitCALL( byval pname as string, _
 
 	ostr = "call "
 	ostr += pname
-	outp ostr
+	outp( ostr )
 
     if( bytestopop <> 0 ) then
     	ostr = "add esp, "
     	ostr += str$( bytestopop )
-    	outp ostr
+    	outp( ostr )
     end if
 
 end sub
@@ -863,15 +860,41 @@ sub emitCALLPTR( byval sname as string, _
 
 	ostr = "call "
 	ostr += src
-	outp ostr
+	outp( ostr )
 
     if( bytestopop <> 0 ) then
     	ostr = "add esp, "
     	ostr += str$( bytestopop )
-    	outp ostr
+    	outp( ostr )
     end if
 
 end sub
+
+'':::::
+sub emitBRANCH( byval op as integer, _
+		 		byval label as string ) static
+    dim ostr as string
+
+	select case as const op
+	case IR.OP.JLE
+		ostr = "jle "
+	case IR.OP.JGE
+		ostr = "jge "
+	case IR.OP.JLT
+		ostr = "jl "
+	case IR.OP.JGT
+		ostr = "jg "
+	case IR.OP.JEQ
+		ostr = "je "
+	case IR.OP.JNE
+		ostr = "jne "
+	end select
+
+	ostr += label
+	outp( ostr )
+
+end sub
+
 
 '':::::
 sub emitBRANCHPTR( byval sname as string, _
@@ -883,7 +906,7 @@ sub emitBRANCHPTR( byval sname as string, _
 
 	ostr = "jmp "
 	ostr += src
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -894,7 +917,7 @@ sub emitPUBLIC( byval label as string ) static
 	ostr = "\r\n.globl "
 	ostr += label
 	ostr += NEWLINE
-	outEx ostr, FALSE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -904,7 +927,7 @@ sub emitLABEL( byval label as string ) static
 
 	ostr = label
 	ostr += ":\r\n"
-	outEx ostr, FALSE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -914,19 +937,7 @@ sub emitJMP( byval label as string ) static
 
 	ostr = "jmp "
 	ostr += label
-	outp ostr
-
-end sub
-
-'':::::
-sub emitBRANCH( byval mnemonic as string, _
-				byval label as string ) static
-    dim ostr as string
-
-	ostr = mnemonic
-	ostr += " "
-	ostr += label
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -936,7 +947,19 @@ sub emitRET( byval bytestopop as integer ) static
 
     ostr = "ret "
     ostr += str$( bytestopop )
-    outp ostr
+    outp( ostr )
+
+end sub
+
+'':::::
+private sub emithBRANCH( byval mnemonic as string, _
+		 		 		 byval label as string ) static
+    dim ostr as string
+
+	ostr = mnemonic
+	ostr += " "
+	ostr += label
+	outp( ostr )
 
 end sub
 
@@ -946,7 +969,7 @@ sub emithPUSH( byval rname as string ) static
 
 	ostr = "push "
 	ostr += rname
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -956,7 +979,7 @@ sub emithPOP( byval rname as string ) static
 
     ostr = "pop "
     ostr += rname
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -969,7 +992,7 @@ sub emithMOV( byval dname as string, _
 	ostr += dname
 	ostr += ", "
 	ostr += sname
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -982,7 +1005,7 @@ sub emithXCHG( byval dname as string, _
 	ostr += dname
 	ostr += ", "
 	ostr += sname
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -992,7 +1015,7 @@ sub emitFXCHG( byval dname as string, byval svreg as IRVREG ptr ) static
 
 	ostr = "fxch "
 	ostr += dname
-	outp ostr
+	outp( ostr )
 
 end sub
 
@@ -3069,7 +3092,7 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 		end if
 
 		outp "test cl, 32"
-		emitBRANCH "jz", label
+		emithBRANCH "jz", label
 
 		if( op = IR.OP.SHL ) then
 			outp "mov edx, eax"
@@ -3627,15 +3650,15 @@ sub emitICMP64( byval rname as string, _
 	ostr = "j"
 	ostr += mnemonic
 	if( not isinverse ) then
-		emitBRANCH ostr, label
+		emithBRANCH ostr, label
 	else
-		emitBRANCH ostr, falselabel
+		emithBRANCH ostr, falselabel
 	end if
 
 	if( len( rev_mnemonic ) > 0 ) then
 		ostr = "j"
 		ostr += rev_mnemonic
-		emitBRANCH ostr, falselabel
+		emithBRANCH ostr, falselabel
 	end if
 
 	'' check low
@@ -3647,7 +3670,7 @@ sub emitICMP64( byval rname as string, _
 
 	ostr = "j"
 	ostr += usg_mnemonic
-	emitBRANCH ostr, label
+	emithBRANCH ostr, label
 
 	emitLabel falselabel
 
@@ -3709,7 +3732,7 @@ sub emithICMP( byval rname as string, _
 	if( len( rname ) = 0 ) then
 		ostr = "j"
 		ostr += mnemonic
-		emitBRANCH ostr, label
+		emithBRANCH ostr, label
 
 	'' can it be optimized?
 	elseif( (env.clopt.cputype >= FB.CPUTYPE.486) and (rvreg->typ = IR.VREGTYPE.REG) ) then
@@ -3769,7 +3792,7 @@ sub emithICMP( byval rname as string, _
 
 		ostr = "j"
 		ostr += mnemonic
-		emitBRANCH ostr, label
+		emithBRANCH ostr, label
 
 		ostr = "xor "
 		ostr += rname
@@ -3851,7 +3874,7 @@ sub emithFCMP( byval rname as string, _
     if( len( rname ) = 0 ) then
     	ostr = "j"
     	ostr += mnemonic
-    	emitBRANCH ostr, label
+    	emithBRANCH ostr, label
 
 	'' can it be optimized?
 	elseif( env.clopt.cputype >= FB.CPUTYPE.486 ) then
@@ -3908,7 +3931,7 @@ sub emithFCMP( byval rname as string, _
 
     	ostr = "j"
     	ostr += mnemonic
-    	emitBRANCH ostr, label
+    	emithBRANCH ostr, label
 
 		ostr = "xor "
 		ostr += rname
@@ -4334,18 +4357,18 @@ sub emitSGN64( byval dname as string, _
 	ostr += dst2
 	ostr += ", 0"
 	outp ostr
-	emitBRANCH "jne", label1
+	emithBRANCH "jne", label1
 
 	ostr = "cmp "
 	ostr += dst1
 	ostr += ", 0"
 	outp ostr
-	emitBRANCH "je", label2
+	emithBRANCH "je", label2
 
 	emitLABEL label1
 	emithMOV dst1, "1"
 	emithMOV dst2, "0"
-	emitBRANCH "jg", label2
+	emithBRANCH "jg", label2
 	emithMOV dst1, "-1"
 	emithMOV dst2, "-1"
 
@@ -4377,9 +4400,9 @@ sub emitSGN( byval dname as string, _
 		ostr += ", 0"
 		outp ostr
 
-		emitBRANCH "je", label
+		emithBRANCH "je", label
 		emithMOV dst, "1"
-		emitBRANCH "jg", label
+		emithBRANCH "jg", label
 		emithMOV dst, "-1"
 
 		emitLABEL label
@@ -5453,24 +5476,22 @@ end sub
 
 
 '':::::
-function emitOpen
+function emitOpen as integer
 
 	if( hFileExists( env.outfile ) ) then
 		kill env.outfile
 	end if
 
-	on local error goto eoerror
-
 	ctx.outf = freefile
-	open env.outfile for binary access read write as #ctx.outf
+	if( open( env.outfile, for binary, access read write, as #ctx.outf ) <> 0 ) then
+		return FALSE
+	end if
 
 	'' header
-	hSaveAsmHeader
+	hSaveAsmHeader( )
 
-	emitOpen = TRUE
+	function = TRUE
 
-eoerror:
-	exit function
 end function
 
 '':::::
@@ -5503,32 +5524,35 @@ sub emitClose( byval tottime as double )
     hEmitInitProc( )
 
 	''
-	close #ctx.outf
+	if( close( #ctx.outf ) <> 0 ) then
+		'' ...
+	end if
 
 end sub
 
 '':::::
 sub emitDbgLine( byval lnum as integer, byval lname as string )
 
-	edbgLine lnum, lname
+	edbgLine( lnum, lname )
 
 end sub
 
 '':::::
 sub hWriteStr( byval f as integer, byval addtab as integer, byval s as string ) static
-    dim t as string
+    dim as string ostr
 
 	if( addtab ) then
-		t = TABCHAR + s + NEWLINE
+		ostr = TABCHAR
+		ostr += s
 	else
-		t = s + NEWLINE
+		ostr = s
 	end if
 
-	on local error goto writeerror
+	ostr += NEWLINE
 
-	put #f, , t
-
-writeerror:
+	if( put( #f, , ostr ) <> 0 ) then
+		'' ...
+	end if
 
 end sub
 

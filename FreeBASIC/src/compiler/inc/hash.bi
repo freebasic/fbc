@@ -18,8 +18,8 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-Const HASH.INITENTRYNODES%	= 1000
-Const HASH.INITITEMNODES%	= HASH.INITENTRYNODES*8
+const HASH.INITENTRYNODES	= 1000
+const HASH.INITITEMNODES	= HASH.INITENTRYNODES*8
 
 type HASHITEM
 	prv			as HASHITEM ptr			'' linked-list nodes
@@ -31,10 +31,10 @@ type HASHITEM
 	r			as HASHITEM ptr			'' right node
 end type
 
-Type HASHLIST
+type HASHLIST
 	head		as HASHITEM ptr
 	tail		as HASHITEM ptr
-End Type
+end type
 
 type THASH
 	list		as HASHLIST ptr

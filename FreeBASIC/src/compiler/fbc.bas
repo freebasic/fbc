@@ -73,12 +73,12 @@ declare function 	compileFiles 		( ) as integer
 declare function 	assembleFiles 		( ) as integer
 declare function 	linkFiles 			( ) as integer
 declare function 	archiveFiles 		( ) as integer
-declare sub			safeKill			( filename as string )
+declare sub			safeKill			( byval filename as string )
 declare function 	delFiles 			( ) as integer
-declare function 	makeImpLib 			( dllpath as string, dllname as string ) as integer
+declare function 	makeImpLib 			( byval dllpath as string, byval dllname as string ) as integer
 
 #ifdef TARGET_DOS
-declare function 	makeMain			( o_file as string ) as integer
+declare function 	makeMain			( byval o_file as string ) as integer
 #endif
 
 #ifdef TARGET_WIN32
@@ -572,7 +572,7 @@ function linkFiles as integer
 
 #ifdef TARGET_DOS
 	'' delete temporary files
-	kill mainobj
+	kill( mainobj )
 #endif
 
 #ifdef TARGET_WIN32
@@ -643,15 +643,16 @@ function clearDefList( dllfile as string ) as integer
     close #outf
     close #inpf
 
-    kill dllfile + ".def"
-    name dllfile + ".clean.def", dllfile + ".def"
+    kill( dllfile + ".def" )
+    name( dllfile + ".clean.def", dllfile + ".def" )
 
     clearDefList = TRUE
 
 end function
 
 '':::::
-function makeImpLib( dllpath as string, dllname as string ) as integer
+function makeImpLib( byval dllpath as string, _
+					 byval dllname as string ) as integer
 	dim dtpath as string
 	dim dtcline as string
 	dim dllfile as string
@@ -686,7 +687,7 @@ function makeImpLib( dllpath as string, dllname as string ) as integer
     end if
 
 	''
-	kill dllfile + ".def"
+	kill( dllfile + ".def" )
 
     makeImpLib = TRUE
 
@@ -910,11 +911,11 @@ function compileXpmFile as integer
 
 	'' compile icon source file
 	if( exec( "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
-		kill iconsrc
+		kill( iconsrc )
 		exit function
 	end if
 
-	kill iconsrc
+	kill( iconsrc )
 
 	'' add to obj list
 	objlist(ctx.objs) = hStripExt( iconsrc ) + ".o"
@@ -927,13 +928,12 @@ end function
 #endif
 
 '':::::
-sub safeKill( filename as string )
+sub safeKill( byval filename as string )
 
-	on local error goto safeKillError
+	if( kill( filename ) <> 0 ) then
+		'' ...
+	end if
 
-	kill filename
-
-safeKillError:
 end sub
 
 '':::::
@@ -944,19 +944,19 @@ function delFiles as integer
 
     for i = 0 to ctx.inps-1
 		if( not ctx.preserveasm ) then
-			safeKill asmlist(i)
+			safeKill( asmlist(i) )
 		end if
 		if( not ctx.compileonly ) then
-			safeKill outlist(i)
+			safeKill( outlist(i) )
 		end if
     next i
 
 #ifdef TARGET_LINUX
 	'' delete compiled icon object
 	if( len( xpmfile ) = 0 ) then
-		safeKill "$$fb_icon$$.o"
+		safeKill( "$$fb_icon$$.o" )
 	else
-		safeKill hStripExt( hStripPath( xpmfile ) ) + ".o"
+		safeKill( hStripExt( hStripPath( xpmfile ) ) + ".o" )
 	end if
 #endif
 
@@ -1441,7 +1441,7 @@ end sub
 
 #ifdef TARGET_DOS
 '':::::
-function makeMain ( main_obj as string ) as integer
+function makeMain ( byval main_obj as string ) as integer
     '' ugly hack for DOS/DJGPP to let libc's init routine set up protected mode etc.
     dim asm_file as string
     dim f as integer
@@ -1489,7 +1489,7 @@ function makeMain ( main_obj as string ) as integer
         exit function
     end if
 
-    kill asm_file
+    kill( asm_file )
 
     makeMain = TRUE
 

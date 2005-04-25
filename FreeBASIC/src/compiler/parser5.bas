@@ -336,8 +336,9 @@ end function
 
 '':::::
 private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
-    dim s as FBSYMBOL ptr, typ as integer
-    dim vr as integer, n as integer, t as integer
+    dim as FBSYMBOL ptr s
+    dim as IRVREG ptr vr
+    dim as integer n, t, typ
 
 	s = symbLookupProcResult( proc )
 	typ = symbGetType( s )
@@ -353,7 +354,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	else
 		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		vr = irAllocVRVAR( typ, s, s->ofs )
-		irEmitLOAD IR.OP.LOADRESULT, vr
+		irEmitLOAD( IR.OP.LOADRESULT, vr )
 	end if
 
 end sub

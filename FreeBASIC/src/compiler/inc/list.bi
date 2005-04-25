@@ -18,6 +18,12 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+#ifndef FALSE
+const FALSE = 0
+const TRUE  = -1
+#endif
+
+
 type TLISTNODE
 	prv		as TLISTNODE ptr
 	nxt		as TLISTNODE ptr
@@ -26,22 +32,33 @@ end type
 
 type TLISTTB
 	nxt		as TLISTTB ptr
-	ptr		as any ptr
+	nodetb	as any ptr
+	nodes	as integer
 end type
 
 type TLIST
+	tbhead	as TLISTTB ptr
+	tbtail	as TLISTTB ptr
 	nodes 	as integer
-	tblist	as TLISTTB ptr
 	nodelen	as integer
 	fhead	as TLISTNODE ptr
 	head	as TLISTNODE ptr
 	tail	as TLISTNODE ptr
 end type
 
-declare function listNew		( byval list as TLIST ptr, byval nodes as integer, byval nodelen as integer ) as integer
+declare function listNew		( byval list as TLIST ptr, _
+								  byval nodes as integer, _
+								  byval nodelen as integer, _
+								  byval relink as integer = TRUE ) as integer
+
 declare function listFree		( byval list as TLIST ptr ) as integer
 
 declare function listNewNode	( byval list as TLIST ptr ) as TLISTNODE ptr
-declare function listDelNode	( byval list as TLIST ptr, byval node as TLISTNODE ptr ) as integer
 
+declare function listDelNode	( byval list as TLIST ptr, _
+								  byval node as TLISTNODE ptr ) as integer
+
+declare function listAllocTB	( byval list as TLIST ptr, _
+					  			  byval nodes as integer, _
+					  			  byval relink as integer = TRUE ) as integer
 #endif '' LIST_BI

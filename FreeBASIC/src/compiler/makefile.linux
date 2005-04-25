@@ -1,0 +1,31 @@
+#
+# make file to build FBC
+# needs GNU make and FBC itself
+#
+
+BCFLAGS := -e -c -arch 486 -nostdcall -nounderscore -r
+
+BC := ../../fbc.exe
+BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
+
+
+main	:= fbc.bas
+
+exepath = ../..
+TARGET = $(exepath)/$(subst .bas,_new,$(main))
+
+sources := $(wildcard *.bas)
+objects := $(patsubst %.bas,obj/linux/%.o,$(main) $(filter-out $(main),$(sources)))
+headers := $(wildcard inc/*.bi)
+
+obj/linux/%.o : %.bas
+	$(BC) $(BCFLAGS) $? -o $@
+
+all : $(TARGET)
+
+$(TARGET) : $(objects)
+
+
+.PHONY : clean
+clean :
+	del $(subst /,\,$(objects))

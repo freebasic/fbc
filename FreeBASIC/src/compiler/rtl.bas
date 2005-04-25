@@ -2155,7 +2155,7 @@ private sub hAddIntrinsicProcs
 		if( len( pname ) = 0 ) then
 			exit do
 		end if
-		
+
 		read aname
 		read ptype, pmode
 		read pcallback, errorcheck, overloaded
@@ -4036,11 +4036,10 @@ end function
 '':::::
 function rtlMemSwap( byval dst as integer, _
 					 byval src as integer ) as integer static
-    dim proc as integer, f as FBSYMBOL ptr
-    dim t as integer, bytes as integer
-    dim vr as integer, vs as integer
-    dim s as FBSYMBOL ptr, d as FBSYMBOL ptr
-    dim dtype as integer, typ as integer
+    dim as integer proc
+    dim as FBSYMBOL ptr f, s, d
+    dim as integer t, bytes, dtype, typ
+    dim as IRVREG ptr vr, vs
 
     rtlMemSwap = FALSE
 
@@ -4054,16 +4053,16 @@ function rtlMemSwap( byval dst as integer, _
 
 		'' push src
 		vr = irAllocVRVAR( dtype, s, s->ofs )
-		irEmitPUSH vr
+		irEmitPUSH( vr )
 
 		'' src = dst
 		vr = irAllocVRVAR( dtype, s, s->ofs )
 		vs = irAllocVRVAR( dtype, d, d->ofs )
-		irEmitSTORE vr, vs
+		irEmitSTORE( vr, vs )
 
 		'' pop dst
 		vr = irAllocVRVAR( dtype, d, d->ofs )
-		irEmitPOP vr
+		irEmitPOP( vr )
 
 		exit sub
 	end if

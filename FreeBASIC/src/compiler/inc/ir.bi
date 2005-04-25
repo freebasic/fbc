@@ -1,5 +1,5 @@
-#ifndef IR_BI__
-#define IR_BI__
+#ifndef __IR_BI__
+#define __IR_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -23,7 +23,7 @@ const IR.INITVREGNODES		= 1024
 
 const IR.INITADDRNODES		= 2048
 
-const IR.MAXDIST			= 32767
+const IR.MAXDIST			= 2UL ^ 31
 
 enum IRDATACLASS_ENUM
 	IR.DATACLASS.INTEGER                        '' must be the first
@@ -146,6 +146,8 @@ const IR.OP.TOUNSIGNED		= 254
 
 ''
 type IRVREG
+	nxt			as IRVREG ptr					'' linked-list field
+
 	typ			as integer						'' VAR, IMM, IDX, etc
 	dtype		as integer						'' CHAR, INTEGER, ...
 
@@ -154,8 +156,8 @@ type IRVREG
 	sym			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
 	mult		as integer						'' multipler
-	vi			as integer						'' index vreg
-	va			as integer						'' aux vreg (used with longint's)
+	vi			as IRVREG ptr					'' index vreg
+	va			as IRVREG ptr					'' aux vreg (used with longint's)
 
 	value		as integer						'' imm value (high word of longint's at va->value)
 end type
@@ -175,30 +177,37 @@ declare sub 		irInit				( )
 
 declare sub 		irEnd				( )
 
-declare function 	irAllocVREG			( byval dtype as integer ) as integer
+declare function 	irAllocVREG			( byval dtype as integer ) as IRVREG ptr
 
 declare function 	irAllocVRIMM		( byval dtype as integer, _
-										  byval value as integer ) as integer
+										  byval value as integer ) as IRVREG ptr
 
 declare function 	irAllocVRIMM64		( byval dtype as integer, _
-										  byval value as longint ) as integer
+										  byval value as longint ) as IRVREG ptr
 
 declare function 	irAllocVRVAR		( byval dtype as integer, _
 										  byval symbol as FBSYMBOL ptr, _
-										  byval ofs as integer ) as integer
+										  byval ofs as integer ) as IRVREG ptr
 
 declare function 	irAllocVRIDX		( byval dtype as integer, _
 										  byval symbol as FBSYMBOL ptr, _
 										  byval ofs as integer, _
 										  byval mult as integer, _
-										  byval vidx as integer ) as integer
+										  byval vidx as IRVREG ptr ) as IRVREG ptr
 
 declare function 	irAllocVRPTR		( byval dtype as integer, _
 										  byval ofs as integer, _
-										  byval vidx as integer ) as integer
+										  byval vidx as IRVREG ptr ) as IRVREG ptr
 
 declare function 	irAllocVROFS		( byval dtype as integer, _
-					   					  byval symbol as FBSYMBOL ptr ) as integer
+					   					  byval symbol as FBSYMBOL ptr ) as IRVREG ptr
+
+declare sub 		irEmit				( byval op as integer, _
+										  byval v1 as IRVREG ptr, _
+										  byval v2 as IRVREG ptr, _
+										  byval vr as IRVREG ptr, _
+										  byval ex1 as FBSYMBOL ptr = NULL, _
+										  byval ex2 as integer = 0 )
 
 declare sub 		irEmitPROCBEGIN		( byval proc as FBSYMBOL ptr, _
 										  byval initlabel as FBSYMBOL ptr, _
@@ -229,80 +238,31 @@ declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
 
 declare sub 		irEmitVARINIPAD		( byval bytes as integer )
 
-declare sub 		irEmitPUSH			( byval v1 as integer )
-
-declare sub 		irEmitPUSHUDT		( byval v1 as integer, _
-										  byval lgt as integer )
-
-declare sub 		irEmitPOP			( byval v1 as integer )
-
-declare sub 		irEmitBOP			( byval op as integer, _
-										  byval v1 as integer, _
-										  byval v2 as integer, _
-										  byval vr as integer )
-
-declare sub 		irEmitBOPEx			( byval op as integer, _
-										  byval v1 as integer, _
-										  byval v2 as integer, _
-										  byval vr as integer, _
-										  byval ex as FBSYMBOL ptr )
-
-declare sub 		irEmitUOP			( byval op as integer, _
-										  byval v1 as integer, _
-										  byval vr as integer )
-
-declare sub 		irEmitSTORE			( byval v1 as integer, _
-										  byval v2 as integer )
-
-declare sub 		irEmitLOAD			( byval op as integer, _
-										  byval v1 as integer )
-
-declare sub 		irEmitCONVERT		( byval v1 as integer, _
+declare sub 		irEmitCONVERT		( byval v1 as IRVREG ptr, _
 										  byval dtype1 as integer, _
-										  byval v2 as integer, _
+										  byval v2 as IRVREG ptr, _
 										  byval dtype2 as integer )
-
-declare sub 		irEmitADDR			( byval op as integer, _
-										  byval v1 as integer, _
-										  byval vr as integer )
 
 declare sub 		irEmitLABEL			( byval label as FBSYMBOL ptr, _
 										  byval isglobal as integer )
-
-declare sub 		irEmitLABELNF		( byval label as FBSYMBOL ptr )
-
-declare sub 		irEmitCALLFUNCT		( byval proc as FBSYMBOL ptr, _
-										  byval bytestopop as integer, _
-										  byval vr as integer )
-
-declare sub 		irEmitCALLPTR		( byval v1 as integer, _
-										  byval vr as integer, _
-										  byval bytestopop as integer )
-
-declare sub 		irEmitSTACKALIGN	( byval bytes as integer )
-
-declare sub 		irEmitBRANCHPTR		( byval v1 as integer )
-
-declare sub 		irEmitBRANCH		( byval op as integer, _
-										  byval label as FBSYMBOL ptr )
 
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
 
 declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, _
 										  byval arg as FBSYMBOL ptr, _
-										  byval vr as integer, _
+										  byval vr as IRVREG ptr, _
 										  byval pmode as integer, _
 										  byval plen as integer ) as integer
 
-declare function 	irIsVAR				( byval vreg as integer ) as integer
+declare function 	irIsVAR				( byval vreg as IRVREG ptr ) as integer
 
-declare function 	irIsIDX				( byval vreg as integer ) as integer
+declare function 	irIsIDX				( byval vreg as IRVREG ptr ) as integer
 
-declare function 	irGetVRDataClass	( byval vreg as integer ) as integer
+declare function 	irGetVRDataClass	( byval vreg as IRVREG ptr ) as integer
 
-declare function 	irGetVRDataSize		( byval vreg as integer ) as integer
+declare function 	irGetVRDataSize		( byval vreg as IRVREG ptr ) as integer
 
-declare sub 		irGetVRNameEx		( byval vreg as integer, _
+declare sub 		irGetVRNameEx		( byval vreg as IRVREG ptr, _
 										  byval typ as integer, _
 										  vname as string )
 
@@ -323,21 +283,19 @@ declare function 	irGetUnsignedType	( byval dtype as integer ) as integer
 
 declare sub 		irFlush 			( )
 
-declare function 	irGetDistance		( byval vreg as integer ) as integer
-
-declare function 	irGetVRRealValue	( byval vreg as integer ) as integer
+declare function 	irGetDistance		( byval vreg as IRVREG ptr ) as uinteger
 
 declare function 	irGetInverseLogOp	( byval op as integer ) as integer
 
 declare sub 		irLoadVR			( byval reg as integer, _
-										  byval vreg as integer, _
+										  byval vreg as IRVREG ptr, _
 										  byval doload as integer = TRUE )
 
-declare sub 		irStoreVR			( byval vreg as integer, _
+declare sub 		irStoreVR			( byval vreg as IRVREG ptr, _
 										  byval reg as integer )
 
 declare sub 		irSetVR				( byval reg as integer, _
-										  byval vreg as integer )
+										  byval vreg as IRVREG ptr )
 
 declare sub 		irXchgTOS			( byval reg as integer )
 
@@ -345,19 +303,47 @@ declare sub 		irXchgTOS			( byval reg as integer )
 ''
 '' macros
 ''
-#define irIsREG(v) iif( vregTB(v).typ = IR.VREGTYPE.REG, TRUE, FALSE )
+#define irIsREG(v) iif( v->typ = IR.VREGTYPE.REG, TRUE, FALSE )
 
-#define irIsIMM(v) iif( vregTB(v).typ = IR.VREGTYPE.IMM, TRUE, FALSE )
+#define irIsIMM(v) iif( v->typ = IR.VREGTYPE.IMM, TRUE, FALSE )
 
-#define irGetVRType(v) vregTB(v).typ
 
-#define irGetVRDataType(v) vregTB(v).dtype
+#define irGetVRType(v) v->typ
 
-#define irGetVRName(v,n) irGetVRNameEx( v, vregTB(v).typ, n )
+#define irGetVRDataType(v) v->dtype
 
-''
-'' globals
-''
-common shared vregTB() as IRVREG
+#define irGetVRName(v,n) irGetVRNameEx( v, v->typ, n )
 
-#endif '' IR_BI__
+
+#define irEmitBOP(op,v1,v2,vr) irEmit( op, v1, v2, vr )
+
+#define irEmitBOPEx(op,v1,v2,vr,ex) irEmit( op, v1, v2, vr, ex )
+
+#define irEmitUOP(op,v1,vr) irEmit( op, v1, NULL, vr )
+
+#define irEmitSTORE(v1,v2) irEmit( IR.OP.STORE, v1, v2, NULL )
+
+#define irEmitLOAD(op,v1) irEmit( op, v1, NULL, NULL )
+
+#define irEmitPUSH(v1) irEmit( IR.OP.PUSH, v1, NULL, NULL )
+
+#define irEmitPUSHUDT(v1,lgt) irEmit( IR.OP.PUSHUDT, v1, NULL, NULL, NULL, lgt )
+
+#define irEmitPOP(v1) irEmit( IR.OP.POP, v1, NULL, NULL )
+
+#define irEmitADDR(op,v1,vr) irEmit( op, v1, NULL, vr )
+
+#define irEmitLABELNF(l) irEmit( IR.OP.LABEL, NULL, NULL, NULL, l )
+
+#define irEmitCALLFUNCT(proc,bytestopop,vr) irEmit( IR.OP.CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
+
+#define irEmitCALLPTR(v1,vr,bytestopop) irEmit( IR.OP.CALLPTR, v1, NULL, vr, NULL, bytestopop )
+
+#define irEmitSTACKALIGN(bytes) irEmit( IR.OP.STACKALIGN, NULL, NULL, NULL, NULL, bytes )
+
+#define irEmitBRANCHPTR(v1) irEmit( IR.OP.JUMPPTR, v1, NULL, NULL, NULL )
+
+#define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
+
+
+#endif '' __IR_BI__

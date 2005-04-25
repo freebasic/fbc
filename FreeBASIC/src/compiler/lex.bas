@@ -284,10 +284,11 @@ private function lexReadChar as uinteger static
 		if( ctx.bufflen = 0 ) then
 			if( not eof( env.inf ) ) then
 				ctx.filepos = seek( env.inf )
-				get #env.inf, , ctx.buff
-				ctx.bufflen = seek( env.inf ) - ctx.filepos
-				ctx.buffptr = @ctx.buff
-				ctx.filepos += ctx.bufflen
+				if( get( #env.inf, , ctx.buff ) = 0 ) then
+					ctx.bufflen = seek( env.inf ) - ctx.filepos
+					ctx.buffptr = @ctx.buff
+					ctx.filepos += ctx.bufflen
+				end if
 			end if
 		end if
 

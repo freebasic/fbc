@@ -1,5 +1,5 @@
-#ifndef EMIT_BI__
-#define EMIT_BI__
+#ifndef __EMIT_BI__
+#define __EMIT_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -169,7 +169,7 @@ declare sub 		emitRET				( byval bytestopop as integer )
 
 declare sub 		emitPUBLIC			( byval label as string )
 
-declare sub 		emitBRANCH			( byval mnemonic as string, _
+declare sub 		emitBRANCH			( byval op as integer, _
 										  byval label as string )
 
 declare sub 		emitFXCHG			( byval dname as string, _
@@ -346,4 +346,4 @@ declare sub 		hWriteStr			( byval f as integer, _
 										  byval addtab as integer, _
 										  byval s as string )
 
-#endif '' EMIT_BI__
+#endif '' __EMIT_BI__

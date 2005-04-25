@@ -2076,10 +2076,10 @@ sub astConvertValue( byval n as integer, _
 end sub
 
 ''::::
-function astLoad( byval n as integer ) as integer
+function astLoad( byval n as integer ) as IRVREG ptr
 
 	if( n = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	select case as const astTB(n).class
@@ -2156,12 +2156,11 @@ private function astOptimize( byval n as integer ) as integer
 end function
 
 ''::::
-function astFlush( byval n as integer ) as integer
+function astFlush( byval n as integer ) as IRVREG ptr
 
 	''
 	if( n = INVALID ) then
-		astFlush = INVALID
-		exit function
+		return NULL
 	end if
 
 	''
@@ -2172,9 +2171,9 @@ function astFlush( byval n as integer ) as integer
 	n = astUpdStrConcat( n )
 
     ''
-	astFlush = astLoad( n )
+	function = astLoad( n )
 
-	astDel n
+	astDel( n )
 
 end function
 
@@ -2866,16 +2865,16 @@ function astNewBOP( byval op as integer, _
 end function
 
 '':::::
-function astLoadBOP( byval n as integer ) as integer
+function astLoadBOP( byval n as integer ) as IRVREG ptr
     dim as integer l, r, op
-    dim as integer v1, v2, vr
+    dim as IRVREG ptr v1, v2, vr
 
 	op = astTB(n).op
 	l  = astTB(n).l
 	r  = astTB(n).r
 
 	if( (l = INVALID) or (r = INVALID) ) then
-		return INVALID
+		return NULL
 	end if
 
 	'' need some other algo here to select which operand is better to evaluate
@@ -2888,27 +2887,27 @@ function astLoadBOP( byval n as integer ) as integer
 	if( astTB(n).allocres ) then
 		vr = irAllocVREG( astTB(n).dtype )
 	else
-		vr = INVALID
+		vr = NULL
 	end if
 
 	'' execute the operation
 	if( astTB(n).ex <> NULL ) then
-		'' hack! ex=label, vr being INVALID 'll gen better code at IR..
-		irEmitBOPEx op, v1, v2, INVALID, astTB(n).ex
+		'' hack! ex=label, vr being NULL 'll gen better code at IR..
+		irEmitBOPEx( op, v1, v2, NULL, astTB(n).ex )
 	else
-		irEmitBOPEx op, v1, v2, vr, NULL
+		irEmitBOPEx( op, v1, v2, vr, NULL )
 	end if
 
 	'' nodes not needed anymore
-	astDel l
-	astDel r
+	astDel( l )
+	astDel( r )
 
 	'' "var op= expr" optimizations
-	if( vr = INVALID ) then
+	if( vr = NULL ) then
 		vr = v1
 	end if
 
-	return vr
+	function = vr
 
 end function
 
@@ -3070,15 +3069,15 @@ function astNewUOP( byval op as integer, _
 end function
 
 '':::::
-function astLoadUOP( byval n as integer ) as integer
+function astLoadUOP( byval n as integer ) as IRVREG ptr
     dim as integer o, op
-    dim as integer v1, vr
+    dim as IRVREG ptr v1, vr
 
 	o  = astTB(n).l
 	op = astTB(n).op
 
 	if( o = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	v1 = astLoad( o )
@@ -3086,19 +3085,19 @@ function astLoadUOP( byval n as integer ) as integer
 	if( astTB(n).allocres ) then
 		vr = irAllocVREG( astTB(o).dtype )
 	else
-		vr = INVALID
+		vr = NULL
 	end if
 
-	irEmitUOP op, v1, vr
+	irEmitUOP( op, v1, vr )
 
-	astDel o
+	astDel( o )
 
 	'' "op var" optimizations
-	if( vr = INVALID ) then
+	if( vr = NULL ) then
 		vr = v1
 	end if
 
-	return vr
+	function = vr
 
 end function
 
@@ -3324,14 +3323,14 @@ function astNewCONV( byval op as integer, _
 end function
 
 '':::::
-function astLoadCONV( byval n as integer ) as integer
+function astLoadCONV( byval n as integer ) as IRVREG ptr
     dim as integer l, dtype
-    dim as integer vs, vr
+    dim as IRVREG ptr vs, vr
 
 	l  = astTB(n).l
 
 	if( l = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	vs = astLoad( l )
@@ -3339,11 +3338,11 @@ function astLoadCONV( byval n as integer ) as integer
 	dtype = astTB(n).dtype
 
 	vr = irAllocVREG( dtype )
-	irEmitCONVERT vr, dtype, vs, INVALID
+	irEmitCONVERT( vr, dtype, vs, INVALID )
 
-	astDel l
+	astDel( l )
 
-	return vr
+	function = vr
 
 end function
 
@@ -3432,7 +3431,7 @@ function astNewCONST( byval v as FBVALUE ptr, _
 end function
 
 '':::::
-function astLoadCONST( byval n as integer ) as integer static
+function astLoadCONST( byval n as integer ) as IRVREG ptr static
 	dim as FBSYMBOL ptr s
 	dim as integer dtype
 
@@ -3510,7 +3509,7 @@ private function hGetBitField( byval n as integer, _
 end function
 
 '':::::
-function astLoadVAR( byval n as integer ) as integer static
+function astLoadVAR( byval n as integer ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
 
 	'' handle bitfields..
@@ -3520,14 +3519,14 @@ function astLoadVAR( byval n as integer ) as integer static
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
 				n = hGetBitField( n, s )
-				astLoadVAR = astLoad( n )
-				astDel n
+				function = astLoad( n )
+				astDel( n )
 				exit function
 			end if
 		end if
 	end if
 
-	astLoadVAR = irAllocVRVAR( astTB(n).dtype, astTB(n).var.sym, astTB(n).var.ofs )
+	function = irAllocVRVAR( astTB(n).dtype, astTB(n).var.sym, astTB(n).var.ofs )
 
 end function
 
@@ -3566,8 +3565,9 @@ end function
 function asthEmitIDX( byval v as integer, _
 					  byval ofs as integer, _
 					  byval mult as integer, _
-					  byval vi as integer ) as integer static
-    dim s as FBSYMBOL ptr, vd as integer
+					  byval vi as IRVREG ptr ) as IRVREG ptr static
+    dim as FBSYMBOL ptr s
+    dim as IRVREG ptr vd
 
     s = astTB(v).var.sym
 
@@ -3579,7 +3579,7 @@ function asthEmitIDX( byval v as integer, _
 	end if
 
     ''
-	if( vi <> INVALID ) then
+	if( vi <> NULL ) then
 
 		if( (mult >= 10) or (mult = 6) or (mult = 7) ) then
 			mult = 1
@@ -3588,26 +3588,26 @@ function asthEmitIDX( byval v as integer, _
 		vd = irAllocVRIDX( astTB(v).dtype, s, ofs, mult, vi )
 
 		if( irIsIDX( vi ) or irIsVAR( vi ) ) then
-			irEmitLOAD IR.OP.LOAD, vi
+			irEmitLOAD( IR.OP.LOAD, vi )
 		end if
 
 	else
 		vd = irAllocVRVAR( astTB(v).dtype, s, ofs )
 	end if
 
-	asthEmitIDX = vd
+	function = vd
 
 end function
 
 '':::::
-function astLoadIDX( byval n as integer ) as integer
+function astLoadIDX( byval n as integer ) as IRVREG ptr
     dim as integer v, i
-    dim as integer vi, vr
+    dim as IRVREG ptr vi, vr
     dim as FBSYMBOL ptr s
 
 	v = astTB(n).r
 	if( v = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	'' handle bitfields..
@@ -3619,8 +3619,8 @@ function astLoadIDX( byval n as integer ) as integer
 			if( s <> NULL ) then
 				if( s->var.elm.bits > 0 ) then
 					n = hGetBitField( n, s )
-					astLoadIDX = astLoad( n )
-					astDel n
+					function = astLoad( n )
+					astDel( n )
 					exit function
 				end if
 			end if
@@ -3631,15 +3631,15 @@ function astLoadIDX( byval n as integer ) as integer
 	if( i <> INVALID ) then
 		vi = astLoad( i )
 	else
-		vi = INVALID
+		vi = NULL
 	end if
 
     vr = asthEmitIDX( v, astTB(n).idx.ofs, astTB(n).idx.mult, vi )
 
-	astDel i
-	astDel v
+	astDel( i )
+	astDel( v )
 
-	astLoadIDX = vr
+	function = vr
 
 end function
 
@@ -3684,20 +3684,20 @@ function astNewOFFSET( byval v as integer, _
 end function
 
 '':::::
-function astLoadOFFSET( byval n as integer ) as integer
+function astLoadOFFSET( byval n as integer ) as IRVREG ptr
     dim as integer v
-    dim as integer vr
+    dim as IRVREG ptr vr
 
 	v  = astTB(n).l
 	if( v = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	vr = irAllocVROFS( astTB(n).dtype, astTB(v).var.sym )
 
-	astDel v
+	astDel( v )
 
-	return vr
+	function = vr
 
 end function
 
@@ -3749,13 +3749,13 @@ function astNewADDR( byval op as integer, _
 end function
 
 '':::::
-function astLoadADDR( byval n as integer ) as integer
+function astLoadADDR( byval n as integer ) as IRVREG ptr
     dim as integer p
-    dim as integer v1, vr
+    dim as IRVREG ptr v1, vr
 
 	p  = astTB(n).l
 	if( p = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	v1 = astLoad( p )
@@ -3765,11 +3765,11 @@ function astLoadADDR( byval n as integer ) as integer
 
 	vr = irAllocVREG( IR.DATATYPE.UINT )
 
-	irEmitADDR astTB(n).op, v1, vr
+	irEmitADDR( astTB(n).op, v1, vr )
 
-	astDel p
+	astDel( p )
 
-	return vr
+	function = vr
 
 end function
 
@@ -3795,22 +3795,22 @@ function astNewLOAD( byval l as integer, _
 end function
 
 '':::::
-function astLoadLOAD( byval n as integer ) as integer
+function astLoadLOAD( byval n as integer ) as IRVREG ptr
     dim as integer l
-    dim as integer vr
+    dim as IRVREG ptr vr
 
 	l = astTB(n).l
 	if( l = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	vr = astLoad( l )
 
-	irEmitLOAD IR.OP.LOAD, vr
+	irEmitLOAD( IR.OP.LOAD, vr )
 
-	astDel l
+	astDel( l )
 
-	return vr
+	function = vr
 
 end function
 
@@ -3844,14 +3844,14 @@ function astNewPTR( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function astLoadPTR( byval n as integer ) as integer
+function astLoadPTR( byval n as integer ) as IRVREG ptr
     dim as integer l, dtype
-    dim as integer v1, vp, vr
+    dim as IRVREG ptr v1, vp, vr
     dim as FBSYMBOL ptr s
 
 	l = astTB(n).l
 	if( l = INVALID ) then
-		return INVALID
+		return NULL
 	end if
 
 	'' handle bitfields..
@@ -3861,8 +3861,8 @@ function astLoadPTR( byval n as integer ) as integer
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
 				n = hGetBitField( n, s )
-				astLoadPTR = astLoad( n )
-				astDel n
+				function = astLoad( n )
+				astDel( n )
 				exit function
 			end if
 		end if
@@ -3879,16 +3879,16 @@ function astLoadPTR( byval n as integer ) as integer
 		(irGetVRDataSize( v1 ) <> FB.POINTERSIZE) ) then
 
 		vp = irAllocVREG( IR.DATATYPE.UINT )
-		irEmitADDR IR.OP.DEREF, v1, vp
+		irEmitADDR( IR.OP.DEREF, v1, vp )
 	else
 		vp = v1
 	end if
 
 	vr = irAllocVRPTR( dtype, astTB(n).ptr.ofs, vp )
 
-	astDel l
+	astDel( l )
 
-	astLoadPTR = vr
+	function = vr
 
 end function
 
@@ -4035,15 +4035,15 @@ private function hSetBitField( byval l as integer, _
 end function
 
 '':::::
-function astLoadASSIGN( byval n as integer ) as integer
+function astLoadASSIGN( byval n as integer ) as IRVREG ptr
     dim as integer l, r
-    dim as integer vs, vr
+    dim as IRVREG ptr vs, vr
     dim as FBSYMBOL ptr s
 
 	l = astTB(n).l
 	r = astTB(n).r
 	if( (l = INVALID) or (r = INVALID) ) then
-		return INVALID
+		return NULL
 	end if
 
 	'' handle bitfields..
@@ -4060,12 +4060,12 @@ function astLoadASSIGN( byval n as integer ) as integer
 	vs = astLoad( r )
 	vr = astLoad( l )
 
-	irEmitSTORE vr, vs
+	irEmitSTORE( vr, vs )
 
-	astDel l
-	astDel r
+	astDel( l )
+	astDel( r )
 
-	return vr
+	function = vr
 
 end function
 
@@ -4103,32 +4103,32 @@ function astNewBRANCH( byval op as integer, _
 end function
 
 '':::::
-function astLoadBRANCH( byval n as integer ) as integer
+function astLoadBRANCH( byval n as integer ) as IRVREG ptr
     dim as integer l
-    dim as integer vr
+    dim as IRVREG ptr vr
 
 	l  = astTB(n).l
 
 	if( l <> INVALID ) then
 		vr = astLoad( l )
-		astDel l
+		astDel( l )
 	else
-		vr = INVALID
+		vr = NULL
 	end if
 
 	'' pointer?
 	if( astTB(n).ex = NULL ) then
 		'' jump or call?
 		if( astTB(n).op = IR.OP.JUMPPTR ) then
-			irEmitBRANCHPTR vr
+			irEmitBRANCHPTR( vr )
 		else
-			irEmitCALLPTR vr, INVALID, 0
+			irEmitCALLPTR( vr, NULL, 0 )
 		end if
 	else
-		irEmitBRANCH astTB(n).op, astTB(n).ex
+		irEmitBRANCH( astTB(n).op, astTB(n).ex )
 	end if
 
-	return vr
+	function = vr
 
 end function
 
@@ -4758,17 +4758,18 @@ private function hCallProc( byval n as integer, _
 					   		byval proc as FBSYMBOL ptr, _
 					   		byval mode as integer, _
 					   		byval bytestopop as integer, _
-					   		byval bytesaligned as integer ) static
-    dim as integer vreg, vr, p, dtype
+					   		byval bytesaligned as integer ) as IRVREG ptr static
+    dim as IRVREG ptr vreg, vr
+    dim as integer p, dtype
 
 	'' ordinary pointer?
 	if( proc = NULL ) then
 		p = astTB(n).l
 		vr = astLoad( p )
-		astDel p
-		irEmitCALLPTR vr, INVALID, 0
+		astDel( p )
+		irEmitCALLPTR( vr, NULL, 0 )
 
-		return INVALID
+		return NULL
 	end if
 
 	dtype = astTB(n).dtype
@@ -4783,7 +4784,7 @@ private function hCallProc( byval n as integer, _
 	if( dtype <> IR.DATATYPE.VOID ) then
 		vreg = irAllocVREG( dtype )
 	else
-		vreg = INVALID
+		vreg = NULL
 	end if
 
 	if( mode <> FB.FUNCMODE.CDECL ) then
@@ -4802,15 +4803,15 @@ private function hCallProc( byval n as integer, _
 	'' call function or ptr
 	p = astTB(n).l
 	if( p = INVALID ) then
-		irEmitCALLFUNCT proc, bytestopop, vreg
+		irEmitCALLFUNCT( proc, bytestopop, vreg )
 	else
 		vr = astLoad( p )
-		astDel p
-		irEmitCALLPTR vr, vreg, bytestopop
+		astDel( p )
+		irEmitCALLPTR( vr, vreg, bytestopop )
 	end if
 
 	if( bytesaligned > 0 ) then
-		irEmitSTACKALIGN -bytesaligned
+		irEmitSTACKALIGN( -bytesaligned )
 	end if
 
 	'' handle strings and UDT's returned by functions that are actually pointers to
@@ -4820,7 +4821,7 @@ private function hCallProc( byval n as integer, _
 		vreg = irAllocVRPTR( astTB(n).dtype, 0, vreg )
 	end select
 
-	return vreg
+	function = vreg
 
 end function
 
@@ -4885,9 +4886,11 @@ private sub hFreeTempArrayDescs( byval f as integer )
 end sub
 
 '':::::
-private sub hAllocTempStruct( byval n as integer, byval proc as FBSYMBOL ptr ) static
+private sub hAllocTempStruct( byval n as integer, _
+							  byval proc as FBSYMBOL ptr ) static
 	dim as FBSYMBOL ptr v
-	dim as integer p, vr
+	dim as integer p
+	dim as IRVREG ptr vr
 	dim as FBSYMBOL a
 
 	'' follow GCC 3.x's ABI
@@ -4907,13 +4910,14 @@ private sub hAllocTempStruct( byval n as integer, byval proc as FBSYMBOL ptr ) s
 end sub
 
 '':::::
-function astLoadFUNCT( byval n as integer ) as integer
+function astLoadFUNCT( byval n as integer ) as IRVREG ptr
     dim as integer p, np
     dim as FBSYMBOL ptr proc
     dim as integer mode, bytestopop, toalign
     dim as integer params, inc, l
     dim as FBSYMBOL ptr arg, lastarg
-    dim as integer args, vr, pstart, pend, pcvr
+    dim as integer args, pstart, pend
+    dim as IRVREG ptr vr, pcvr
 
 	'' execute each param and push the result
 	proc = astTB(n).proc.sym
@@ -4934,7 +4938,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 
 		'' signal function end for profiling
 		if( pend <> INVALID ) then
-			irEmitPUSH pcvr
+			irEmitPUSH( pcvr )
 			proc = astTB(pend).proc.sym
 			hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 			astDel( pend )
@@ -4972,7 +4976,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 #ifdef DO_STACK_ALIGN
 			toalign = (16 - (bytestopop and 15)) and 15
 			if( toalign > 0 ) then
-				irEmitSTACKALIGN toalign
+				irEmitSTACKALIGN( toalign )
 			end if
 #endif
 		end if
@@ -4996,13 +5000,13 @@ function astLoadFUNCT( byval n as integer ) as integer
 
 		'' flush the param expression
 		vr = astLoad( l )
-		astDel l
+		astDel( l )
 
 		if( not irEmitPUSHPARAM( proc, arg, vr, astTB(p).param.mode, astTB(p).param.lgt ) ) then
 			'''''return INVALID
 		end if
 
-		astDel p
+		astDel( p )
 
 		params += inc
 
@@ -5027,7 +5031,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 
 	'' signal function end for profiling
 	if( pend <> INVALID ) then
-		irEmitPUSH pcvr
+		irEmitPUSH( pcvr )
 		proc = astTB(pend).proc.sym
 		hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 		astDel( pend )
@@ -5039,7 +5043,7 @@ function astLoadFUNCT( byval n as integer ) as integer
 	'' del temp arrays descriptors created for array fields passed by desc
 	hFreeTempArrayDescs( n )
 
-    return vr
+    function = vr
 
 end function
 
@@ -5107,9 +5111,9 @@ function astNewIIF( byval condexpr as integer, _
 end function
 
 '':::::
-function astLoadIIF( byval n as integer ) as integer
+function astLoadIIF( byval n as integer ) as IRVREG ptr
     dim as integer l, r
-    dim as integer vr
+    dim as IRVREG ptr vr
     dim as FBSYMBOL ptr exitlabel
 
 	l = astTB(n).l
@@ -5121,19 +5125,19 @@ function astLoadIIF( byval n as integer ) as integer
 	astFlush( astTB(n).iif.cond )
 
 	''
-	irEmitPUSH astLoad( l )
-	irEmitBRANCH IR.OP.JMP, exitlabel
+	irEmitPUSH( astLoad( l ) )
+	irEmitBRANCH( IR.OP.JMP, exitlabel )
 
-    irEmitLABELNF astTB(n).iif.falselabel
-	irEmitPUSH astLoad( r )
+    irEmitLABELNF( astTB(n).iif.falselabel )
+	irEmitPUSH( astLoad( r ) )
 
-	irEmitLABELNF exitlabel
+	irEmitLABELNF( exitlabel )
 	vr = irAllocVREG( astTB(n).dtype )
-	irEmitPOP vr
+	irEmitPOP( vr )
 
-	astDel l
-	astDel r
+	astDel( l )
+	astDel( r )
 
-	return vr
+	function = vr
 
 end function
