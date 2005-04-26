@@ -36,6 +36,7 @@ Functions reference:
 	DRAW		statement
 	FLIP		statement
 	GET		statement
+	GETJOYSTICK	statement
 	GETMOUSE	statement
 	INP		function
 	LINE		statement
@@ -49,6 +50,7 @@ Functions reference:
 	PSET		statement
 	PUT		statement
 	RGB		macro
+	RGBA		macro
 	SCREEN		statement
 	SCREENCOPY	statement
 	SCREENINFO	function
@@ -523,6 +525,84 @@ PUT, SCREEN, WINDOW, VIEW.
 
 
 
++-------------+---------------------------------------------------------------
+| GETJOYSTICK |
++-------------+
+
+Statement to retrieve joystick position and buttons status
+
+
+Syntax:
+	GETJOYSTICK id,buttons[,[x][,[y][,[z][,[r][,[u][,v]]]]]]
+
+
+Argument:	Description:
+
+id		Joystick ID number. Valid IDs range 0-15.
+
+buttons		On function termination, this will return a bitmask holding
+		buttons status. Each bit is 1 if the corresponding button is
+		currently pressed, 0 otherwise.
+
+x,y		On function termination, these will hold the current x,y axes
+		position of the given joystick, ranging -1.0 to 1.0.
+
+z,r,u,v		Additional joystick axes for which to fetch current position.
+		Returned values range -1.0 to 1.0.
+
+
+Insights:
+
+This function is used to get the status of a given joystick device, identified
+by an unique numeric ID. Up to 16 joysticks are supported, with the ID ranging
+0-15. Once GETJOYSTICK is called, it'll return the joystick buttons/axes
+status in the parameters passed by reference to it. Buttons must be an integer
+variable and will hold a bitmask specifying which joystick buttons are
+currently pressed; up to 32 buttons are supported, and the first button status
+is reported in the least significant bit. Axes information is returned in the
+remaining single variables passed to the function; the returned axis value
+will range -1.0 to 1.0, with 0.0 being the still position. A joystick will
+always at least support the x,y axes, but it may also support other axes. If
+an additional axis is available, its status will be returned in the
+corresponding variable and will also range -1.0 to 1.0; if the axis is not
+available, a value strictly less than -1.0 will be returned.
+If the joystick with specified ID number is not available, buttons will hold
+-1, and all axes will hold a value strictly less than -1.0.
+
+
+Example:
+
+' Set video mode and enter loop
+DIM x AS SINGLE, y AS SINGLE, throttle AS SINGLE, buttons AS INTEGER
+SCREEN 13
+DO
+	' Get buttons, x, y, and 3rd axis status of joystick 0; assumes
+	' 3rd axis to be throttle. Discard other axes.
+	GETJOYSTICK 0, buttons, x, y, throttle
+	LOCATE 1, 1
+	IF x < -1.0 THEN
+		PRINT "Joystick 0 not available"
+	ELSE
+		PRINT "Joystick 0:"
+		PRINT USING "   Position: ##.##:##.##"; x; y
+		PRINT USING "   Throttle: ##.##"; throttle
+		PRINT "   Buttons: " + BIN$(buttons) + SPACE$(32)
+	END IF
+LOOP WHILE INKEY$ = ""
+END
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+GETMOUSE, MULTIKEY.
+
+
+
 +----------+------------------------------------------------------------------
 | GETMOUSE |
 +----------+
@@ -588,7 +668,7 @@ Function new in FB.
 
 See also:
 
-SETMOUSE, SCREEN, MULTIKEY.
+SETMOUSE, SCREEN, MULTIKEY, GETJOYSTICK.
 
 
 

@@ -40,7 +40,7 @@ static int inited = FALSE;
 
 
 /*:::::*/
-STDCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6)
+FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6)
 {
 	JOYINFOEX info;
 	JOYDATA *j;
