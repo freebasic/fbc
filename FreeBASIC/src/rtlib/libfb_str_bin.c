@@ -57,9 +57,6 @@ static void hToBin( unsigned int num, char *dst, int len )
 static FBSTRING *hBIN ( unsigned int num, int len )
 {
 	FBSTRING 	*dst;
-#ifndef WIN32
-	int			i;
-#endif
 
 	FB_STRLOCK();
 

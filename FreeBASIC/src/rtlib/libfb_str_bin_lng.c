@@ -56,9 +56,6 @@ static void hToBin( unsigned long long num, char *dst )
 FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 {
 	FBSTRING 	*dst;
-#ifndef WIN32
-	int			i;
-#endif
 
 	FB_STRLOCK();
 
