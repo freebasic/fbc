@@ -101,39 +101,36 @@ end sub
 ''				  |   ContinueStatement
 ''				  |   EndStatement
 ''
-function cCompoundStmt
-    dim res as integer
+function cCompoundStmt as integer
 
     env.compoundcnt += 1
 
-	res = FALSE
-
 	select case as const lexCurrentToken
 	case FB.TK.IF
-		res = cIfStatement
+		function = cIfStatement( )
 	case FB.TK.FOR
-		res = cForStatement
+		function = cForStatement( )
 	case FB.TK.DO
-		res = cDoStatement
+		function = cDoStatement( )
 	case FB.TK.WHILE
-		res = cWhileStatement
+		function = cWhileStatement( )
 	case FB.TK.ELSE, FB.TK.ELSEIF, FB.TK.CASE, FB.TK.LOOP, FB.TK.NEXT, FB.TK.WEND
-		res = cCompoundStmtElm
+		function = cCompoundStmtElm( )
 	case FB.TK.SELECT
-		res = cSelectStatement
+		function = cSelectStatement( )
 	case FB.TK.EXIT
-		res = cExitStatement
+		function = cExitStatement( )
 	case FB.TK.CONTINUE
-		res = cContinueStatement
+		function = cContinueStatement( )
 	case FB.TK.END
-		res = cEndStatement
+		function = cEndStatement( )
 	case FB.TK.WITH
-		res = cWithStatement
+		function = cWithStatement( )
+	case else
+		function = FALSE
 	end select
 
 	env.compoundcnt -= 1
-
-	cCompoundStmt = res
 
 end function
 
@@ -418,19 +415,20 @@ end function
 '':::::
 private function cStoreTemp( byval expr as ASTNODE ptr, _
 							 byval dtype as integer ) as FBSYMBOL ptr static
-    dim s as FBSYMBOL ptr
+    dim as FBSYMBOL ptr s
     dim as ASTNODE ptr vexpr
 
-	cStoreTemp = NULL
+	function = NULL
 
 	s = symbAddTempVar( dtype )
 	if( s = NULL ) then
 		exit function
 	end if
+
 	vexpr = astNewVAR( s, NULL, 0, dtype )
 	astFlush( astNewASSIGN( vexpr, expr ) )
 
-	cStoreTemp = s
+	function = s
 
 end function
 
@@ -1510,9 +1508,9 @@ end function
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
 	dim dTB(0) as FBARRAYDIM
 
-	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
-										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
-										FALSE, FALSE, FALSE )
+	function = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
+							 FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
+							 FALSE, FALSE, FALSE )
 
 end function
 
@@ -1536,7 +1534,7 @@ function cSelectConstStmt as integer
 	end if
 
 	if( astGetDataClass( expr ) <> IR.DATACLASS.INTEGER ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError( FB.ERRMSG.INVALIDDATATYPES )
 		exit function
 	end if
 
@@ -1545,11 +1543,11 @@ function cSelectConstStmt as integer
 	end if
 
 	'' Comment?
-	cComment
+	cComment( )
 
 	'' separator
 	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+		hReportError( FB.ERRMSG.EXPECTEDEOL )
 		exit function
 	end if
 
@@ -1595,7 +1593,7 @@ function cSelectConstStmt as integer
 
     '' too large?
     if( (minval > maxval) or (maxval - minval > FB.MAXSWTCASERANGE) ) then
-    	hReportError FB.ERRMSG.RANGETOOLARGE
+    	hReportError( FB.ERRMSG.RANGETOOLARGE )
     	exit function
     end if
 
@@ -1604,7 +1602,7 @@ function cSelectConstStmt as integer
     end if
 
     '' emit comp label
-    irEmitLABEL complabel, FALSE
+    irEmitLABEL( complabel, FALSE )
     '''''symbDelLabel complabel
 
 	'' check min val
@@ -1634,26 +1632,26 @@ function cSelectConstStmt as integer
     irEmitLABEL tbsym, FALSE
 
     ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    irFlush
+    irFlush( )
 
     ''
     l = swtbase
     for value = minval to maxval
     	if( value = ctx.swt.caseTB(l).value ) then
-    		emitTYPE IR.DATATYPE.UINT, symbGetName( ctx.swt.caseTB(l).label )
+    		emitTYPE( IR.DATATYPE.UINT, symbGetName( ctx.swt.caseTB(l).label ) )
     		l += 1
     	else
-    		emitTYPE IR.DATATYPE.UINT, symbGetName( deflabel )
+    		emitTYPE( IR.DATATYPE.UINT, symbGetName( deflabel ) )
     	end if
     next value
 
     '' the table is not needed anymore
-    symbDelVar tbsym
+    symbDelVar( tbsym )
 
     ctx.swt.base = swtbase
 
     '' emit exit label
-    irEmitLABEL exitlabel, FALSE
+    irEmitLABEL( exitlabel, FALSE )
     '''''symbDelLabel exitlabel
 
 	'' END SELECT
@@ -1835,34 +1833,34 @@ end function
 
 '':::::
 private function hReadWithText( byval text as string ) as integer
+    static as zstring * FB.MAXNAMELEN+1 id
     dim as FBSYMBOL ptr sym
     dim as integer dpos
-    dim as string id
 
     ''
-    dpos = lexTokenDotpos
-    id = lexTokenText
+    dpos = lexTokenDotpos( )
+    id = lexTokenText( )
 
     if( dpos > 0 ) then
-    	id = left$( id, dpos-1 )
+    	id[dpos-1] = 0 							'' left$( id, dpos-1 )
     end if
 
     sym = symbFindByNameAndClass( id, FB.SYMBCLASS.VAR )
     if( sym = NULL ) then
-    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     	return FALSE
     end if
 
 	if( sym->typ <> FB.SYMBTYPE.USERDEF ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
 		return FALSE
 	end if
 
     ''
-    text = lexEatToken
+    text = lexEatToken( )
 
     do
-    	select case lexCurrentToken
+    	select case lexCurrentToken( )
 		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOF
 			exit do
 		end select
@@ -1879,19 +1877,19 @@ end function
 ''					  SimpleLine*
 ''					  END WITH .
 ''
-function cWithStatement
-    dim oldwithtext as zstring * FB.MAXWITHLEN+1, lastcompstmt as integer
-    dim res as integer
+function cWithStatement as integer
+    dim as zstring * FB.MAXWITHLEN+1 oldwithtext
+    dim as integer lastcompstmt
 
 	function = FALSE
 
 	if( ctx.withcnt >= FB.MAXWITHLEVELS ) then
-		hReportError FB.ERRMSG.RECLEVELTOODEPTH
+		hReportError( FB.ERRMSG.RECLEVELTOODEPTH )
 		exit function
 	end if
 
 	'' WITH
-	lexSkipToken
+	lexSkipToken( )
 
 	'' save old
 	oldwithtext = env.withtext
@@ -1903,7 +1901,7 @@ function cWithStatement
 	end if
 
 	'' Comment?
-	res = cComment
+	cComment( )
 
 	'' separator
 	if( not cSttSeparator ) then
@@ -1920,8 +1918,7 @@ function cWithStatement
 
 	'' loop body
 	do
-		res = cSimpleLine
-	loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB.TK.EOF) )
 
 	'' restore old
 	env.withtext = oldwithtext
@@ -1933,7 +1930,7 @@ function cWithStatement
 
 	'' END WITH
 	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.WITH )) ) then
-		hReportError FB.ERRMSG.EXPECTEDENDWITH
+		hReportError( FB.ERRMSG.EXPECTEDENDWITH )
 		exit function
 	end if
 

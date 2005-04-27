@@ -1,3 +1,6 @@
+#ifndef __FBINT_BI__
+#define __FBINT_BI__
+
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 ''
@@ -15,31 +18,21 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-
 ''
 '' internal compiler definitions
 ''
 
-const FB.MAXINCRECLEVEL		= 16
-const FB.MAXWITHLEVELS		= 4
+'$include once:'inc\fb.bi'
 
-const FB.MAXINCPATHS		= 16
-const FB.INITINCFILES		= 256
-
-const FB.MAXNAMELEN			= 96
-const FB.MAXLITLEN			= 1024				'' literal strings max length
-const FB.MAXNUMLEN			= 64
-const FB.MAXOPERANDLEN		= FB.MAXNAMELEN + 2 + 16 + 2 + 1
-const FB.MAXWITHLEN			= FB.MAXNAMELEN * FB.MAXWITHLEVELS
-
-const FB_MAXPROCARGS		= 64
-const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
+const FB.MAXINTNAMELEN		= FB.MAXNAMELEN + 1 + 1 + 2 + 1 + _
+							  (FB_MAXPROCARGS * len( integer ))		'' mangling..
+const FB.MAXINTLITLEN		= FB.MAXLITLEN + 32
 
 const FB.MAXGOTBITEMS		= 64
 
 ''
-const FB.INITSYMBOLNODES	= 15000
-const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 30
+const FB.INITSYMBOLNODES	= 10000
+const FB.INITLOCSYMBOLNODES	= FB.INITSYMBOLNODES \ 20
 
 const FB.INITDEFARGNODES	= 400
 
@@ -502,7 +495,7 @@ type FBLIBRARY
 	prv				as FBLIBRARY ptr			'' linked-list nodes
 	nxt				as FBLIBRARY ptr			'' /
 
-	name			as string
+	name			as zstring * FB.MAXPATHLEN+1
 
 	hashitem		as HASHITEM ptr
 	hashindex		as uinteger
@@ -678,7 +671,7 @@ type FBSYMBOL
 	ptrcnt 			as integer
 	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
 
-	alias			as string					'' alias -- original name is only at the hashtb
+	alias			as string					'' original name is only at the hashtb
 
 	hashitem		as HASHITEM ptr
 	hashindex		as uinteger
@@ -739,10 +732,10 @@ type FBENV
 
 	'' source file
 	inf				as integer
-	infile			as zstring * 260+1
+	infile			as zstring * FB.MAXPATHLEN+1
 
 	'' destine file
-	outfile			as zstring * 260+1
+	outfile			as zstring * FB.MAXPATHLEN+1
 
 	'' stmt recursion
 	forstmt			as FBCMPSTMT
@@ -799,3 +792,5 @@ end type
 '' super globals
 ''
 common shared env as FBENV
+
+#endif ''__FBINT_BI__

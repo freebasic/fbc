@@ -363,11 +363,11 @@ end function
 ''				  |   READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 ''				  |   DATA literal|constant (',' literal|constant)*
 ''
-function cDataStmt as integer
+function cDataStmt as integer static
 	dim as ASTNODE ptr expr
 	dim as integer typ, litlen
 	dim as FBSYMBOL ptr s
-	dim as string littext
+	static as zstring * FB.MAXLITLEN+1 littext
 
 	function = FALSE
 
@@ -1013,14 +1013,23 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
 
 	hMatchExpression( expr2 )
 
+	'' don't allow literal values, due the way "byref as
+	'' any" args work (ie, the VB-way: literals are passed by value)
+	if( astIsCONST( expr2 ) or astIsOFFSET( expr2 ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER, TRUE )
+		exit function
+	end if
+
     isarray = FALSE
     if( lexCurrentToken = CHAR_LPRNT ) then
     	if( lexLookahead(1) = CHAR_RPRNT ) then
     		s = astGetSymbol( expr2 )
-    		isarray = symbIsArray( s )
-    		if( isarray ) then
-    			lexSkipToken
-    			lexSkipToken
+    		if( s <> NULL ) then
+    			isarray = symbIsArray( s )
+    			if( isarray ) then
+    				lexSkipToken
+    				lexSkipToken
+    			end if
     		end if
     	end if
     end if
@@ -1658,7 +1667,8 @@ end function
 
 '':::::
 private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
-	dim as string s, o
+	static as zstring * 32*6+1 s
+	static as zstring * 8+1 o
 	dim as integer v, i, cnt, isconst
 	dim as ASTNODE ptr exprtb(0 to 31), expr
 
@@ -1709,7 +1719,7 @@ private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
 				s += chr$( v )
 			end if
 
-			astDel expr
+			astDel( expr )
 		next i
 
 		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR.DATATYPE.FIXSTR )

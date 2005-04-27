@@ -1801,9 +1801,9 @@ end function
 '':::::
 private sub astInitTempLists
 
-	listNew( @ctx.tempstr, AST.MAXTEMPSTRINGS, len( ASTTEMPSTR ) )
+	listNew( @ctx.tempstr, AST.MAXTEMPSTRINGS, len( ASTTEMPSTR ), FALSE )
 
-	listNew( @ctx.temparray, AST.MAXTEMPARRAYS, len( ASTTEMPARRAY ) )
+	listNew( @ctx.temparray, AST.MAXTEMPARRAYS, len( ASTTEMPARRAY ), FALSE )
 
 end sub
 
@@ -4170,15 +4170,18 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 	'' calling the runtime lib?
 	if( f->proc.isrtl ) then
 
-		'' byref arg (rtlib str args are ALWAYS byref), fixed-len param: just alloc a temp descriptor
-		'' (assuming here that no rtlib function will EVER change the strings passed as param)
-		select case pdtype
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR, IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
-			return rtlStrAllocTmpDesc( p )
-		case else
-			'' all rtlib procs that accept strings will delete temps automatically
+		'' byref arg (rtlib str args are ALWAYS byref)
+
+		'' var-len param: all rtlib procs will delete temps automatically
+		if( pdtype = IR.DATATYPE.STRING ) then
 			exit function
-		end select
+
+		'' fixed-len/byte/zstring/ptr param: just alloc a temp descriptor
+		'' (assuming here that no rtlib function will EVER change the strings
+		'' passed as param)
+		else
+			return rtlStrAllocTmpDesc( p )
+		end if
 
 	end if
 
@@ -4189,37 +4192,47 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 	''
 	select case symbGetArgMode( f->proc.sym, arg )
 
-	'' passing by reference?
+	'' by reference arg?
 	case FB.ARGMODE.BYREF
 
     	'' fixed-length?
     	select case pdtype
     	case IR.DATATYPE.FIXSTR
-    		'' byref and fixed: alloc a temp string, copy fixed to temp and pass temp
-			'' (ast will have to copy temp back to fixed when function returns and delete temp)
+    		'' byref arg and fixed-len param: alloc a temp string, copy
+    		'' fixed to temp and pass temp
+			'' (ast will have to copy temp back to fixed when function
+			'' returns and delete temp)
 
 			'' don't copy back if it's a function returning a fixed-len
 			if( pclass <> AST.NODECLASS.FUNCT ) then
 				copyback = TRUE
 			end if
 
-    	'' zstring or byte ptr?
-    	case IR.DATATYPE.CHAR, IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
-    		'' byref and byte ptr: alloc a temp string, copy byte ptr to temp and pass temp
-
-    	'' string descriptor..
-    	case else
+    	'' var-len param..
+    	case IR.DATATYPE.STRING
     		'' if not a function's result, skip..
     		if( pclass <> AST.NODECLASS.FUNCT ) then
     			exit function
             end if
+
+    	'' byte/zstring/ptr param..
+    	case else
+    		'' byref arg and byte/zstring/ptr param: alloc a temp string,
+    		'' copy byte ptr to temp and pass temp
+
     	end select
 
-    '' byval?
+    '' by value arg?
     case FB.ARGMODE.BYVAL
 
-		'' skip, unless it's a temp string, that must be deleted when the called proc returns
+		'' skip, unless it's a temp var-len (return by functions), that
+		'' must be deleted when the called proc returns
 		if( pclass <> AST.NODECLASS.FUNCT ) then
+			exit function
+		end if
+
+		'' only if var-len
+		if( pdtype <> IR.DATATYPE.STRING ) then
 			exit function
 		end if
 
@@ -4235,7 +4248,7 @@ private function hCheckStringParam( byval f as ASTNODE ptr, _
 									byval n as ASTNODE ptr, _
 					   				byval pclass as integer, _
 					   				byval pdtype as integer, _
-					   				byval pdclass as integer )
+					   				byval pdclass as integer ) as integer
 
 	'' rtl? don't mess..
 	if( f->proc.isrtl ) then
@@ -4286,7 +4299,7 @@ end function
 private function hCheckArrayParam( byval f as ASTNODE ptr, _
 								   byval n as ASTNODE ptr, _
 					   	   		   byval adtype as integer, _
-					   	   		   byval adclass as integer )
+					   	   		   byval adclass as integer ) as integer
 
 	dim as FBSYMBOL ptr s, d
     dim as ASTNODE ptr p
@@ -4358,7 +4371,7 @@ end function
 
 '':::::
 private function hCheckParam( byval f as ASTNODE ptr, _
-							  byval n as ASTNODE ptr )
+							  byval n as ASTNODE ptr ) as integer
 
     dim as FBSYMBOL ptr proc, arg, s
     dim as integer adtype, adclass, amode
@@ -4438,13 +4451,31 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 					'' check if not a byte ptr
 					if( (pclass <> AST.NODECLASS.PTR) or _
 						((pdtype <> IR.DATATYPE.BYTE) and (pdtype <> IR.DATATYPE.UBYTE)) ) then
-						'' or if passing a ptr to a BYVAL string arg
+
+						'' or if passing a ptr as byval to a byval string arg
 			    		if( (pdclass <> IR.DATACLASS.INTEGER) or _
 			    			(amode <> FB.ARGMODE.BYVAL) or _
 			    			(irGetDataSize( pdtype ) <> FB.POINTERSIZE) ) then
-							hReportParamError f
+							hReportParamError( f )
 							exit function
 			    		end if
+
+			    		'' the BYVAL modifier was not used?
+			    		if( pmode <> FB.ARGMODE.BYVAL ) then
+							'' const? only accept if it's NULL
+			    			if( pclass = AST.NODECLASS.CONST ) then
+			    				if( p->v.valuei <> NULL ) then
+									hReportParamError( f )
+									exit function
+			    				end if
+
+			    			'' not a pointer?
+			    			elseif( pdtype < IR.DATATYPE.POINTER ) then
+								hReportParamError( f )
+								exit function
+			    			end if
+			    		end if
+
 			    	end if
 				end if
 			end if
@@ -4568,7 +4599,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 					if( p->dtype < IR.DATATYPE.POINTER ) then
 						select case as const pclass
 						case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
-							hReportParamWarning f, FB.WARNINGMSG.INVALIDPOINTER
+							hReportParamWarning( f, FB.WARNINGMSG.INVALIDPOINTER )
 						end select
 					end if
 				end if

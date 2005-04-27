@@ -25,10 +25,11 @@ defint a-z
 option explicit
 option escape
 
+const NULL = 0
+
 '$include once: 'inc\hash.bi'
 '$include once: 'inc\list.bi'
-
-const NULL = 0
+'$include once: 'inc\hlp.bi'
 
 type HASHCTX
 	itemlist    as TLIST
@@ -47,7 +48,7 @@ declare sub 		hashDelItem	( byval list as HASHLIST ptr, _
 sub hashInit static
 
 	'' allocate the initial item list pool
-	listNew( @ctx.itemlist, HASH.INITITEMNODES, len( HASHITEM ) )
+	listNew( @ctx.itemlist, HASH.INITITEMNODES, len( HASHITEM ), FALSE )
 
 end sub
 
@@ -219,6 +220,7 @@ function hashAdd( byval hash as THASH ptr, _
 	end if
 
     '' fill node
+    ZEROSTRDESC( item->name )
     item->name 	  = symbol
     item->idx	  = idx
 

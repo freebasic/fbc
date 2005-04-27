@@ -60,8 +60,8 @@ declare function 	cSymbolDecl             ( ) as integer
 declare function 	cSymbolDef 				( byval alloctype as integer, _
 											  byval dopreserve as integer = FALSE ) as integer
 
-declare function 	cDynArrayDef			( id as string, _
-											  idlias as string, _
+declare function 	cDynArrayDef			( byval id as string, _
+											  byval idlias as string, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _

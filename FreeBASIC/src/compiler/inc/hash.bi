@@ -1,5 +1,5 @@
-#ifndef HASH_BI
-#define HASH_BI
+#ifndef __HASH_BI__
+#define __HASH_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -25,7 +25,7 @@ type HASHITEM
 	prv			as HASHITEM ptr			'' linked-list nodes
 	nxt			as HASHITEM ptr			'' /
 
-	name		as string				'' dynamic string
+	name		as string
 	idx			as any ptr
 	l			as HASHITEM ptr			'' left node
 	r			as HASHITEM ptr			'' right node
@@ -68,4 +68,4 @@ declare sub 		hashDel			( byval hash as THASH ptr, _
 
 declare sub 		hashDump		( byval hash as THASH ptr )
 
-#endif '' HASH_BI
+#endif '' __HASH_BI__

@@ -527,18 +527,18 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 		reg = vreg->reg
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
-		if( vreg->vi <> NULL ) then
-			if( vreg->vi->typ = IR.VREGTYPE.REG ) then
-				reg = vreg->vi->reg
+		if( vreg->vidx <> NULL ) then
+			if( vreg->vidx->typ = IR.VREGTYPE.REG ) then
+				reg = vreg->vidx->reg
 			end if
 		end if
 	end select
 
 	'' longint..
 	reg2 = INVALID
-	if( vreg->va <> NULL ) then
-		if( vreg->va->typ = IR.VREGTYPE.REG ) then
-			reg2 = vreg->va->reg
+	if( vreg->vaux <> NULL ) then
+		if( vreg->vaux->typ = IR.VREGTYPE.REG ) then
+			reg2 = vreg->vaux->reg
 		end if
 	end if
 
@@ -625,9 +625,9 @@ function emitIsRegInVreg( byval vreg as IRVREG ptr, _
 		end if
 
 	case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
-		if( vreg->vi <> NULL ) then
-			if( vreg->vi->typ = IR.VREGTYPE.REG ) then
-				if( vreg->vi->reg = reg ) then
+		if( vreg->vidx <> NULL ) then
+			if( vreg->vidx->typ = IR.VREGTYPE.REG ) then
+				if( vreg->vidx->reg = reg ) then
 					return TRUE
 				end if
 			end if
@@ -635,9 +635,9 @@ function emitIsRegInVreg( byval vreg as IRVREG ptr, _
 	end select
 
 	'' longints..
-	if( vreg->va <> NULL ) then
-		if( vreg->va->typ = IR.VREGTYPE.REG ) then
-			if( vreg->va->reg = reg ) then
+	if( vreg->vaux <> NULL ) then
+		if( vreg->vaux->typ = IR.VREGTYPE.REG ) then
+			if( vreg->vaux->reg = reg ) then
 				return TRUE
 			end if
 		end if
@@ -726,11 +726,11 @@ private sub hPrepOperand64( byval oname as string, _
 
 	case IR.VREGTYPE.REG
 		operand1 = oname
-		emitGetRegName( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, vreg->va->reg, operand2 )
+		emitGetRegName( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, vreg->vaux->reg, operand2 )
 
 	case IR.VREGTYPE.IMM
 		operand1 = oname
-		operand2 = str$( vreg->va->value )
+		operand2 = str$( vreg->vaux->value )
 	end select
 
 end sub
@@ -4762,39 +4762,43 @@ end sub
 
 '':::::
 function emitAllocLocal( byval lgt as integer, _
-						 ofs as integer ) as string static
+						 ofs as integer ) as zstring ptr static
 
-    ctx.localptr = ctx.localptr - ((lgt + 3) and not 3)
+    static as zstring * 3+1 sname = "ebp"
+
+    ctx.localptr -= ((lgt + 3) and not 3)
 
 	ofs = ctx.localptr
 
-	emitAllocLocal = "ebp"
+	function = @sname
 
 end function
 
 '':::::
 sub emitFreeLocal( byval lgt as integer ) static
 
-    ctx.localptr = ctx.localptr + ((lgt + 3) and not 3)
+    ctx.localptr += ((lgt + 3) and not 3)
 
 end sub
 
 '':::::
 function emitAllocArg( byval lgt as integer, _
-					   ofs as integer ) as string static
+					   ofs as integer ) as zstring ptr static
 
-	emitAllocArg = "ebp"
+    static as zstring * 3+1 sname = "ebp"
 
 	ofs = ctx.argptr
 
-    ctx.argptr = ctx.argptr + ((lgt + 3) and not 3)
+    ctx.argptr += ((lgt + 3) and not 3)
+
+	function = @sname
 
 end function
 
 '':::::
 sub emitFreeArg( byval lgt as integer ) static
 
-    ctx.argptr = ctx.argptr - ((lgt + 3) and not 3)
+    ctx.argptr -= ((lgt + 3) and not 3)
 
 end sub
 
@@ -4854,7 +4858,9 @@ end sub
 sub emitDATA ( byval litext as string, _
 			   byval litlen as integer, _
 			   byval typ as integer ) static
-    dim as string ostr, esctext
+
+    static as zstring * FB.MAXLITLEN*2+1 esctext
+    dim as string ostr
 
     esctext = hScapeStr( litext )
 
@@ -5044,33 +5050,33 @@ sub hSaveAsmHeader( )
 end sub
 
 '':::::
-private sub hEmitInitProc( )
-    dim as string id
+private sub hEmitInitProc( ) static
+    static as zstring * FB.MAXINTNAMELEN+1 id
 
-    emitSECTION EMIT.SECTYPE.CODE
+    emitSECTION( EMIT.SECTYPE.CODE )
 
-    hWriteStr ctx.outf, FALSE, "#initialization"
-    hWriteStr ctx.outf, FALSE, "fb_moduleinit:"
+    hWriteStr( ctx.outf, FALSE, "#initialization" )
+    hWriteStr( ctx.outf, FALSE, "fb_moduleinit:" )
 
-    hWriteStr ctx.outf, TRUE,  "finit"
+    hWriteStr( ctx.outf, TRUE,  "finit" )
 
-    id = hCreateProcAlias( "fb_Init", 0, FB.FUNCMODE.STDCALL )
-    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + id
+    id = *hCreateProcAlias( "fb_Init", 0, FB.FUNCMODE.STDCALL )
+    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + id )
 
     '' start profiling if requested
     if( env.clopt.profile ) then
-	    id = hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
-	    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + id
+	    id = *hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
+	    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + id )
     end if
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
     if( symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL ) <> NULL ) then
-    	rtlDataRestore NULL
-    	irFlush
+    	rtlDataRestore( NULL )
+    	irFlush( )
     end if
 
-    hWriteStr ctx.outf, TRUE,  "ret"
+    hWriteStr( ctx.outf, TRUE,  "ret" )
 
 end sub
 

@@ -143,12 +143,12 @@ declare sub 		emitPROCEND			( byval proc as FBSYMBOL ptr, _
 										  byval exitlabel as FBSYMBOL ptr )
 
 declare function 	emitAllocLocal		( byval lgt as integer, _
-										  ofs as integer ) as string
+										  ofs as integer ) as zstring ptr
 
 declare sub 		emitFreeLocal		( byval lgt as integer )
 
 declare function 	emitAllocArg		( byval lgt as integer, _
-										  ofs as integer ) as string
+										  ofs as integer ) as zstring ptr
 
 declare sub 		emitFreeArg			( byval lgt as integer )
 

@@ -3352,7 +3352,7 @@ sub rtlDataStoreBegin static
 end sub
 
 '':::::
-function rtlDataStore( littext as string, _
+function rtlDataStore( byval littext as string, _
 					   byval litlen as integer, _
 					   byval typ as integer ) as integer static
 

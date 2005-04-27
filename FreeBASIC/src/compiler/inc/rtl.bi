@@ -264,7 +264,7 @@ declare function	rtlDataRead			( byval varexpr as ASTNODE ptr ) as integer
 
 declare sub 		rtlDataStoreBegin	( )
 
-declare function	rtlDataStore		( littext as string, _
+declare function	rtlDataStore		( byval littext as string, _
 										  byval litlen as integer, _
 										  byval typ as integer ) as integer
 

@@ -32,7 +32,7 @@ option escape
 '$include once: 'inc\hlp.bi'
 
 const FB_MAXARGS	  = 100
-const FB_MINSTACKSIZE =   32 * 1024
+const FB_MINSTACKSIZE = 32 * 1024
 const FB_DEFSTACKSIZE = 1024 * 1024
 
 
@@ -54,9 +54,9 @@ type FBCCTX
 	outtype			as integer
 	showversion		as integer
 
-	outname 		as string
-	entrypoint 		as string
-	subsystem		as string
+	outname 		as zstring * FB.MAXPATHLEN+1
+	entrypoint 		as zstring * 3+FB.MAXNAMELEN+6+1
+	subsystem		as zstring * FB.MAXNAMELEN+1
 end type
 
 declare sub 		parseCmd 			( argc as integer, argv() as string )
@@ -90,6 +90,7 @@ declare function	compileXpmFile		( ) as integer
 
 ''globals
 	dim shared argc as integer, argv(0 to FB_MAXARGS-1) as string
+
 	dim shared inplist(0 to FB_MAXARGS-1) as string
 	dim shared asmlist(0 to FB_MAXARGS-1) as string
 	dim shared outlist(0 to FB_MAXARGS-1) as string
@@ -103,38 +104,39 @@ declare function	compileXpmFile		( ) as integer
 #elseif defined(TARGET_LINUX)
 	dim shared xpmfile as string
 #endif
+
 	dim shared ctx as FBCCTX
 
 const QUOTE = "\""
 
 
     ''
-    parseCmd argc, argv()
+    parseCmd( argc, argv() )
 
     if( argc = 0 ) then
-    	printOptions
+    	printOptions( )
     	end 1
     end if
 
     ''
-    setDefaultOptions
+    setDefaultOptions( )
 
     ''
-    if( not processOptions ) then
-    	printOptions
+    if( not processOptions( ) ) then
+    	printOptions( )
     	end 1
     end if
 
     '' list
-    if( not listFiles ) then
-    	printOptions
+    if( not listFiles( ) ) then
+    	printOptions( )
     	end 1
     end if
 
     ''
     if( not ctx.showversion ) then
     	if( (ctx.inps = 0) and (ctx.objs = 0) and (ctx.libs = 0) ) then
-    		printOptions
+    		printOptions( )
     		end 1
     	end if
     end if
@@ -150,14 +152,14 @@ const QUOTE = "\""
     end if
 
     '' compile
-    if( not compileFiles ) then
-    	delFiles
+    if( not compileFiles( ) ) then
+    	delFiles( )
     	end 1
     end if
 
     '' assemble
-   	if( not assembleFiles ) then
-   		delFiles
+   	if( not assembleFiles( ) ) then
+   		delFiles( )
    		end 1
    	end if
 
@@ -166,32 +168,32 @@ const QUOTE = "\""
     	'' link
     	if( ctx.outtype <> FB_OUTTYPE_STATICLIB ) then
 #ifdef TARGET_WIN32
-		if (not compileResFiles) then
-			delFiles
+		if( not compileResFiles( ) ) then
+			delFiles( )
 			end 1
 		end if
 #elseif defined(TARGET_LINUX)
 		if( ctx.outtype = FB_OUTTYPE_EXECUTABLE ) then
-			if ( not compileXpmFile ) then
-				delFiles
+			if( not compileXpmFile( ) ) then
+				delFiles( )
 				end 1
 			end if
 		end if
 #endif
-    		if( not linkFiles ) then
-    			delFiles
+    		if( not linkFiles( ) ) then
+    			delFiles( )
     			end 1
     		end if
     	else
-    		if( not archiveFiles ) then
-    			delFiles
+    		if( not archiveFiles( ) ) then
+    			delFiles( )
     			end 1
     		end if
     	end if
     end if
 
     '' del temps
-    if( not delFiles ) then
+    if( not delFiles( ) ) then
     	end 1
     end if
 
@@ -201,23 +203,23 @@ const QUOTE = "\""
 function compileFiles as integer
 	dim i as integer
 
-	compileFiles = FALSE
+	function = FALSE
 
     for i = 0 to ctx.inps-1
 
     	'' this must be done before Init coz rtlib initialization depends on nostdcall to be defined
-    	if( not processCompOptions ) then
-    		printOptions
+    	if( not processCompOptions( ) ) then
+    		printOptions( )
     		exit function
     	end if
 
     	'' init the parser
-    	if( not fbInit ) then
+    	if( not fbInit( ) ) then
     		exit function
     	end if
 
     	'' add include paths and defines
-    	processCompLists
+    	processCompLists( )
 
     	'' if no output file given, assume it's the same name as input, with the .o extension
     	if( len( outlist(i) ) = 0 ) then
@@ -236,22 +238,22 @@ function compileFiles as integer
     	end if
 
 		'' get list with all referenced libraries
-		getLibList
+		getLibList( )
 
 		'' shutdown the parser
-		fbEnd
+		fbEnd( )
 
 	next i
 
     '' no default libs will be added if no inp files were given
     if( ctx.inps > 0 ) then
-   		fbInit
-   		fbAddDefaultLibs
-   		getLibList
-   		fbend
+   		fbInit( )
+   		fbAddDefaultLibs( )
+   		getLibList( )
+   		fbend( )
     end if
 
-	compileFiles = TRUE
+	function = TRUE
 
 end function
 
@@ -260,7 +262,7 @@ function assembleFiles as integer
 	dim i as integer, f as integer
 	dim aspath as string, ascline as string
 
-	assembleFiles = FALSE
+	function = FALSE
 
     ''
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
@@ -279,7 +281,7 @@ function assembleFiles as integer
     		ascline = ""
     	end if
 
-		ascline = ascline + QUOTE + asmlist(i) + QUOTE + " -o " + QUOTE + outlist(i) + QUOTE + " "
+		ascline += "\"" + asmlist(i) + "\" -o \"" + outlist(i) + "\" "
 
     	'' invoke as
     	if( ctx.verbose ) then
@@ -292,7 +294,7 @@ function assembleFiles as integer
     next i
 
 
-    assembleFiles = TRUE
+    function = TRUE
 
 end function
 
@@ -308,7 +310,7 @@ function linkFiles as integer
     dim mainobj as string, respfile as string
 #endif
 
-	linkFiles = FALSE
+	function = FALSE
 
 	'' if no executable name was defined, assume it's the same as the first source file
 	if( len( ctx.outname ) = 0 ) then
@@ -326,9 +328,9 @@ function linkFiles as integer
 #ifdef TARGET_WIN32
 		select case ctx.outtype
 		case FB_OUTTYPE_EXECUTABLE
-			ctx.outname = ctx.outname + ".exe"
+			ctx.outname += ".exe"
 		case FB_OUTTYPE_DYNAMICLIB
-			ctx.outname = ctx.outname + ".dll"
+			ctx.outname += ".dll"
 		end select
 
 #elseif defined(TARGET_LINUX)
@@ -340,7 +342,7 @@ function linkFiles as integer
 #elseif defined(TARGET_DOS)
 		select case ctx.outtype
 		case FB_OUTTYPE_EXECUTABLE
-			ctx.outname = ctx.outname + ".exe"
+			ctx.outname += ".exe"
 		end select
 
 #endif
@@ -368,7 +370,8 @@ function linkFiles as integer
 #endif
 		end select
 	end if
-	hClearName ctx.entrypoint
+
+	hClearName( ctx.entrypoint )
 
 #ifdef TARGET_WIN32
 
@@ -406,18 +409,18 @@ function linkFiles as integer
 		dllname = hStripPath( hStripExt( ctx.outname ) )
 
 		'' create a dll
-		ldcline = ldcline + " --dll --enable-stdcall-fixup"
+		ldcline += " --dll --enable-stdcall-fixup"
 
 		'' add aliases for functions without @nn
 		if( fbGetOption( FB.COMPOPT.NOSTDCALL ) ) then
-	   		ldcline = ldcline + " --add-stdcall-alias"
+	   		ldcline += " --add-stdcall-alias"
     	end if
 
 		'' export all symbols declared as EXPORT
-		ldcline = ldcline + " --export-dynamic"
+		ldcline += " --export-dynamic"
 
     	'' don't export any symbol from rtlib
-        ldcline = ldcline + " --exclude-libs libfb.a"
+        ldcline += " --exclude-libs libfb.a"
 
 #elseif defined(TARGET_LINUX)
 
@@ -431,43 +434,43 @@ function linkFiles as integer
 #ifndef TARGET_DOS
     	'' tell LD to add all symbols declared as EXPORT to the symbol table
     	if( fbGetOption( FB.COMPOPT.EXPORT ) ) then
-    		ldcline = ldcline + " --export-dynamic"
+    		ldcline += " --export-dynamic"
     	end if
 #endif
 
     end if
 
 	if( not ctx.debug ) then
-		ldcline = ldcline + " -s"
+		ldcline += " -s"
 	end if
 
 #ifdef TARGET_WIN32
 	'' stack size
-	ldcline = ldcline + " --stack " + str$( ctx.stacksize ) + "," + + str$( ctx.stacksize )
+	ldcline += " --stack " + str$( ctx.stacksize ) + "," + + str$( ctx.stacksize )
 #endif
 
 	'' set entry point
 #ifdef TARGET_WIN32
-	ldcline = ldcline + " -e " + ctx.entrypoint + " "
+	ldcline += " -e " + ctx.entrypoint + " "
 #elseif defined(TARGET_DOS)
     '' default crt entry point 'start' calls 'main' which calls the fb entry point
-    ldcline = ldcline + " "
+    ldcline += " "
 #else
 	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
-		ldcline = ldcline + " -e " + ctx.entrypoint + " "
+		ldcline += " -e " + ctx.entrypoint + " "
 	else
-		ldcline = ldcline + " "
+		ldcline += " "
 	end if
 #endif
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
-    	ldcline = ldcline + QUOTE + outlist(i) + "\" "
+    	ldcline += QUOTE + outlist(i) + "\" "
     next i
 
     '' add objects from cmm-line
     for i = 0 to ctx.objs-1
-    	ldcline = ldcline + QUOTE + objlist(i) + "\" "
+    	ldcline += QUOTE + objlist(i) + "\" "
     next i
 
 #ifdef TARGET_DOS
@@ -477,32 +480,32 @@ function linkFiles as integer
 		print "makemain failed"
 		exit function
 	end if
-	ldcline = ldcline + QUOTE + mainobj + "\" "
+	ldcline += QUOTE + mainobj + "\" "
 
 	'' link with crt0.o and crt1.o (C runtime init)
-	ldcline = ldcline + QUOTE + exepath( ) + FB.LIBPATH + "/crt0.o\" "
+	ldcline += QUOTE + exepath( ) + FB.LIBPATH + "/crt0.o\" "
 	'''''ldcline = ldcline + QUOTE + exepath( ) + FB.LIBPATH + "/crt1.o\" "
 #endif
 
     '' set executable name
-    ldcline = ldcline + "-o \"" + ctx.outname + QUOTE
+    ldcline += "-o \"" + ctx.outname + QUOTE
 
     '' default lib path
 #ifndef TARGET_LINUX
-    ldcline = ldcline + " -L \"" + exepath( ) + FB.LIBPATH + QUOTE
+    ldcline += " -L \"" + exepath( ) + FB.LIBPATH + QUOTE
 #else
-    ldcline = ldcline + " -L \"" + FB.LIBPATH + QUOTE
+    ldcline += " -L \"" + FB.LIBPATH + QUOTE
 #endif
     '' and the current path to libs search list
-    ldcline = ldcline + " -L \"./\""
+    ldcline += " -L \"./\""
 
     '' add additional user-specified library search paths
     for i = 0 to ctx.pths-1
-    	ldcline = ldcline + " -L \"" + pthlist(i) + QUOTE
+    	ldcline += " -L \"" + pthlist(i) + QUOTE
     next i
 
     '' init lib group
-    ldcline = ldcline + " -( "
+    ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
     for i = 0 to ctx.libs-1
@@ -516,22 +519,22 @@ function linkFiles as integer
     	end if
 
     	if( len( libname ) > 0 ) then
-    		ldcline = ldcline + "-l" + libname + " "
+    		ldcline += "-l" + libname + " "
     	end if
 #else
 	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
-		ldcline = ldcline + "-l" + liblist(i) + " "
+		ldcline += "-l" + liblist(i) + " "
 	end if
 #endif
     next i
 
     '' end lib group
-    ldcline = ldcline + "-) "
+    ldcline += "-) "
 
 #ifdef TARGET_WIN32
     if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
-        ldcline = ldcline + " --output-def \"" + hStripFilename( ctx.outname ) + dllname + ".def\""
+        ldcline += " --output-def \"" + hStripFilename( ctx.outname ) + dllname + ".def\""
 	end if
 #endif
 
@@ -584,7 +587,7 @@ function linkFiles as integer
 	end if
 #endif
 
-    linkFiles = TRUE
+    function = TRUE
 
 end function
 
@@ -594,7 +597,7 @@ function makeDefList( dllname as string ) as integer
 	dim pxpath as string
 	dim pxcline as string
 
-	makeDefList = FALSE
+	function = FALSE
 
    	pxpath = exepath( ) + FB.BINPATH + "pexports.exe"
 
@@ -607,7 +610,7 @@ function makeDefList( dllname as string ) as integer
 
 	shell pxpath + " " + pxcline
 
-    makeDefList = TRUE
+    function = TRUE
 
 end function
 
@@ -616,7 +619,7 @@ function clearDefList( dllfile as string ) as integer
 	dim inpf as integer, outf as integer
 	dim ln as string
 
-	clearDefList = FALSE
+	function = FALSE
 
     if( not hFileExists( dllfile + ".def" ) ) then
     	exit function
@@ -646,7 +649,7 @@ function clearDefList( dllfile as string ) as integer
     kill( dllfile + ".def" )
     name( dllfile + ".clean.def", dllfile + ".def" )
 
-    clearDefList = TRUE
+    function = TRUE
 
 end function
 
@@ -657,7 +660,7 @@ function makeImpLib( byval dllpath as string, _
 	dim dtcline as string
 	dim dllfile as string
 
-	makeImpLib = FALSE
+	function = FALSE
 
 	dllfile = dllpath + dllname
 
@@ -689,7 +692,7 @@ function makeImpLib( byval dllpath as string, _
 	''
 	kill( dllfile + ".def" )
 
-    makeImpLib = TRUE
+    function = TRUE
 
 end function
 #endif
@@ -700,7 +703,7 @@ function archiveFiles as integer
     dim i as integer
     dim arcpath as string, arcline as string
 
-	archiveFiles = FALSE
+	function = FALSE
 
     '' if no exe file name given, assume "lib" + first source name + ".a"
     '' ( exe filename is actually lib filename for static libs )
@@ -721,16 +724,16 @@ function archiveFiles as integer
     arcline = "-rsc "
 
     '' output library file name
-    arcline = arcline + QUOTE + ctx.outname + "\" "
+    arcline += QUOTE + ctx.outname + "\" "
 
     '' add objects from output list
     for i = 0 to ctx.inps-1
-    	arcline = arcline + QUOTE + outlist(i) + "\" "
+    	arcline += QUOTE + outlist(i) + "\" "
     next i
 
     '' add objects from cmm-line
     for i = 0 to ctx.objs-1
-    	arcline = arcline + QUOTE + objlist(i) + "\" "
+    	arcline += QUOTE + objlist(i) + "\" "
     next i
 
     '' invoke ar
@@ -748,7 +751,7 @@ function archiveFiles as integer
 		exit function
     end if
 
-    archiveFiles = TRUE
+    function = TRUE
 
 end function
 
@@ -760,7 +763,7 @@ function compileResFiles as integer
 	dim rescmppath as string, rescmpcline as string
 	dim oldinclude as string
 
-	compileResFiles = FALSE
+	function = FALSE
 
 	'' change the include env var
 	oldinclude = trim$( environ$( "INCLUDE" ) )
@@ -786,7 +789,7 @@ function compileResFiles as integer
 
 		'' add to obj list
 		objlist(ctx.objs) = hStripExt(rclist(i)) + ".obj"
-		ctx.objs = ctx.objs + 1
+		ctx.objs += 1
 	next i
 
 	'' restore the include env var
@@ -794,7 +797,7 @@ function compileResFiles as integer
 		setenviron "INCLUDE=" + oldinclude
 	end if
 
-	compileResFiles = TRUE
+	function = TRUE
 
 end function
 
@@ -814,7 +817,7 @@ function compileXpmFile as integer
 	dim state as integer, label as integer
 	redim outstr(0) as string
 
-	compileXpmFile = FALSE
+	function = FALSE
 
 	if( len( xpmfile ) = 0 ) then
 
@@ -919,9 +922,9 @@ function compileXpmFile as integer
 
 	'' add to obj list
 	objlist(ctx.objs) = hStripExt( iconsrc ) + ".o"
-	ctx.objs = ctx.objs + 1
+	ctx.objs += 1
 
-	compileXpmFile = TRUE
+	function = TRUE
 
 end function
 
@@ -940,7 +943,7 @@ end sub
 function delFiles as integer
 	dim i as integer
 
-    delFiles = FALSE
+    function = FALSE
 
     for i = 0 to ctx.inps-1
 		if( not ctx.preserveasm ) then
@@ -960,7 +963,7 @@ function delFiles as integer
 	end if
 #endif
 
-    delFiles = TRUE
+    function = TRUE
 
 end function
 
@@ -1037,7 +1040,7 @@ end sub
 function processOptions as integer
     dim i as integer
 
-	processOptions = FALSE
+	function = FALSE
 
 	''
 	for i = 0 to argc-1
@@ -1053,7 +1056,8 @@ function processOptions as integer
 			end if
 
 			select case mid$( argv(i), 2 )
-			case "arch", "e", "ex", "mt", "profile", "w", "nodeflibs", "noerrline", "nostdcall", "nounderscore"
+			case "arch", "e", "ex", "mt", "profile", "w", _
+				 "nodeflibs", "noerrline", "nostdcall", "nounderscore"
 				'' compiler options, will be processed by processCompOptions
 
 			case "g"
@@ -1122,7 +1126,7 @@ function processOptions as integer
 				if( len( inclist(ctx.incs) ) = 0 ) then
 					exit function
 				end if
-				ctx.incs = ctx.incs + 1
+				ctx.incs += 1
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1132,7 +1136,7 @@ function processOptions as integer
 				if( len( deflist(ctx.defs) ) = 0 ) then
 					exit function
 				end if
-				ctx.defs = ctx.defs + 1
+				ctx.defs += 1
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1142,7 +1146,7 @@ function processOptions as integer
 				if( len( inplist(ctx.inps) ) = 0 ) then
 					exit function
 				end if
-				ctx.inps = ctx.inps + 1
+				ctx.inps += 1
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1152,7 +1156,7 @@ function processOptions as integer
 				if( len( outlist(ctx.outs) ) = 0 ) then
 					exit function
 				end if
-				ctx.outs = ctx.outs + 1
+				ctx.outs += 1
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1162,7 +1166,7 @@ function processOptions as integer
 				if( len( objlist(ctx.objs) ) = 0 ) then
 					exit function
 				end if
-				ctx.objs = ctx.objs + 1
+				ctx.objs += 1
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1172,7 +1176,7 @@ function processOptions as integer
 				if( len( liblist(ctx.libs) ) = 0 ) then
 					exit function
 				end if
-				ctx.libs = ctx.libs + 1
+				ctx.libs += 1
 				argv(i) = ""
 				argv(i+1) = ""
 
@@ -1201,7 +1205,7 @@ function processOptions as integer
 
 	next i
 
-	processOptions = TRUE
+	function = TRUE
 
 end function
 
@@ -1209,10 +1213,10 @@ end function
 function processCompOptions as integer
     dim i as integer
 
-	processCompOptions = FALSE
+	function = FALSE
 
 	'' reset options
-	fbSetDefaultOptions
+	fbSetDefaultOptions( )
 
 	''
 	for i = 0 to argc-1
@@ -1231,45 +1235,45 @@ function processCompOptions as integer
 			case "arch"
 				select case argv(i+1)
 				case "386"
-					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.386
+					fbSetOption( FB.COMPOPT.CPUTYPE, FB.CPUTYPE.386 )
 				case "486"
-					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.486
+					fbSetOption( FB.COMPOPT.CPUTYPE, FB.CPUTYPE.486 )
 				case "586"
-					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.586
+					fbSetOption( FB.COMPOPT.CPUTYPE, FB.CPUTYPE.586 )
 				case "686"
-					fbSetOption FB.COMPOPT.CPUTYPE, FB.CPUTYPE.686
+					fbSetOption( FB.COMPOPT.CPUTYPE, FB.CPUTYPE.686 )
 				case else
 					exit function
 				end select
 
 			case "e"
-				fbSetOption FB.COMPOPT.ERRORCHECK, TRUE
+				fbSetOption( FB.COMPOPT.ERRORCHECK, TRUE )
 
 			case "ex"
-				fbSetOption FB.COMPOPT.ERRORCHECK, TRUE
-				fbSetOption FB.COMPOPT.RESUMEERROR, TRUE
+				fbSetOption( FB.COMPOPT.ERRORCHECK, TRUE )
+				fbSetOption( FB.COMPOPT.RESUMEERROR, TRUE )
 
 			case "mt"
-				fbSetOption FB.COMPOPT.MULTITHREADED, TRUE
+				fbSetOption( FB.COMPOPT.MULTITHREADED, TRUE )
 
 			case "profile"
-				fbSetOption FB.COMPOPT.PROFILE, TRUE
+				fbSetOption( FB.COMPOPT.PROFILE, TRUE )
 
 			case "w"
-				fbSetOption FB.COMPOPT.WARNINGLEVEL, valint( argv(i+1) )
+				fbSetOption( FB.COMPOPT.WARNINGLEVEL, valint( argv(i+1) ) )
 
 			case "noerrline"
-				fbSetOption FB.COMPOPT.SHOWERROR, FALSE
+				fbSetOption( FB.COMPOPT.SHOWERROR, FALSE )
 
 #ifdef TARGET_WIN32
 			case "nostdcall"
-				fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
+				fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
 			case "nounderscore"
-				fbSetOption FB.COMPOPT.NOUNDERPREFIX, TRUE
+				fbSetOption( FB.COMPOPT.NOUNDERPREFIX, TRUE )
 #endif
 
 			case "nodeflibs"
-				fbSetOption FB.COMPOPT.NODEFLIBS, TRUE
+				fbSetOption( FB.COMPOPT.NODEFLIBS, TRUE )
 
 			end select
 		end if
@@ -1277,13 +1281,13 @@ function processCompOptions as integer
 	next i
 
 	''
-	fbSetOption FB.COMPOPT.DEBUG, ctx.debug
-	fbSetOption FB.COMPOPT.OUTTYPE, ctx.outtype
+	fbSetOption( FB.COMPOPT.DEBUG, ctx.debug )
+	fbSetOption( FB.COMPOPT.OUTTYPE, ctx.outtype )
 #ifndef TARGET_WIN32
-	fbSetOption FB.COMPOPT.NOSTDCALL, TRUE
+	fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
 #endif
 
-	processCompOptions = TRUE
+	function = TRUE
 
 end function
 
@@ -1292,11 +1296,11 @@ function processCompLists as integer
     dim i as integer, p as integer
     dim dname as string, dtext as string
 
-	processCompLists = FALSE
+	function = FALSE
 
     '' add inc files
     for i = 0 to ctx.incs-1
-    	fbAddIncPath inclist(i)
+    	fbAddIncPath( inclist(i) )
     next i
 
     '' add defines
@@ -1314,10 +1318,10 @@ function processCompLists as integer
 			dtext = "1"
     	end if
 
-    	fbAddDefine dname, dtext
+    	fbAddDefine( dname, dtext )
     next i
 
-    processCompLists = FALSE
+    function = FALSE
 
 end function
 
@@ -1335,9 +1339,9 @@ function getFileExt( fname as string ) as string
 	loop
 
     if( lp = 0 ) then
-    	getFileExt = ""
+    	function = ""
     else
-    	getFileExt = lcase$( mid$( fname, lp+1 ) )
+    	function = lcase$( mid$( fname, lp+1 ) )
     end if
 
 end function
@@ -1346,7 +1350,7 @@ end function
 function listFiles as integer
     dim i as integer
 
-	listFiles = FALSE
+	function = FALSE
 
 	''
 	for i = 0 to argc-1
@@ -1357,20 +1361,20 @@ function listFiles as integer
 		select case getFileExt( argv(i) )
 		case "bas"
 			inplist(ctx.inps) = argv(i)
-			ctx.inps = ctx.inps + 1
+			ctx.inps += 1
 			argv(i) = ""
 		case "a"
 			liblist(ctx.libs) = argv(i)
-			ctx.libs = ctx.libs + 1
+			ctx.libs += 1
 			argv(i) = ""
 		case "o"
 			objlist(ctx.objs) = argv(i)
-			ctx.objs = ctx.objs + 1
+			ctx.objs += 1
 			argv(i) = ""
 #ifdef TARGET_WIN32
 		case "rc", "res"
 			rclist(ctx.rcs) = argv(i)
-			ctx.rcs = ctx.rcs + 1
+			ctx.rcs += 1
 			argv(i) = ""
 #elseif defined(TARGET_LINUX)
 		case "xpm"
@@ -1382,7 +1386,7 @@ function listFiles as integer
 		end select
 	next i
 
-	listFiles = TRUE
+	function = TRUE
 
 end function
 
@@ -1435,7 +1439,7 @@ end sub
 '':::::
 sub getLibList
 
-	ctx.libs = ctx.libs + fbListLibs( liblist(), ctx.libs )
+	ctx.libs += fbListLibs( liblist(), ctx.libs )
 
 end sub
 
@@ -1447,7 +1451,7 @@ function makeMain ( byval main_obj as string ) as integer
     dim f as integer
     dim aspath as string, ascline as string
 
-    makeMain = FALSE
+    function = FALSE
 
     aspath = exepath( ) + FB.BINPATH + "as.exe"
 
@@ -1491,7 +1495,7 @@ function makeMain ( byval main_obj as string ) as integer
 
     kill( asm_file )
 
-    makeMain = TRUE
+    function = TRUE
 
 end function
 
@@ -1501,13 +1505,13 @@ end function
 public function fbAddLibPath ( byval path as string ) as integer
 	dim i as integer
 
-	fbAddLibPath = FALSE
+	function = FALSE
 
 	if( ( len( path ) = 0 ) or ( ctx.pths = FB_MAXARGS-1 ) ) then
 		exit function
 	end if
 
-	fbAddLibPath = TRUE
+	function = TRUE
 
 	for i = 0 to ctx.pths-1
 		if( pthlist(i) = path ) then
@@ -1516,7 +1520,7 @@ public function fbAddLibPath ( byval path as string ) as integer
 	next i
 
 	pthlist(ctx.pths) = path
-	ctx.pths = ctx.pths + 1
+	ctx.pths += 1
 
 end function
 

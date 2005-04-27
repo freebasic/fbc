@@ -1,4 +1,11 @@
 
+[ ] add fix-len and zstring * support to arrays args passed by descriptor
+
+[ ] cArgDecl's id should be redeclared as zstring, but function can't be static as
+    args be function ptrs with another args.. non-static zstring local vars
+    will be filled with 0's slowing everything down.. add another option to
+    functions??? NOZERO NOFILL NOCLEAR?
+
 [ ] add FUNCTION to inline asm's evaluation
 
 [ ] add a warning if macro expansion text is too long
@@ -11,9 +18,6 @@
 -- check optional args, this can be tricky
 
 [ ] check for references to self on TYPE fields (field AS parent)
-
-[ ] rewrite the IR module using pointers instead of indexes, to be able to make fast links between
-    a vreg and a TAC node later, so no MaxDistance will be needed
 
 *** *** *** *** ***
 [ ] parser should never call IR directly, or no inline functions can be added (or never-called

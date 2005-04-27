@@ -1,5 +1,5 @@
-#ifndef LIST_BI
-#define LIST_BI
+#ifndef __LIST_BI__
+#define __LIST_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -63,4 +63,4 @@ declare function listDelNode	( byval list as TLIST ptr, _
 declare function listAllocTB	( byval list as TLIST ptr, _
 					  			  byval nodes as integer, _
 					  			  byval relink as integer = TRUE ) as integer
-#endif '' LIST_BI
+#endif '' __LIST_BI__

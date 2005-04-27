@@ -1091,13 +1091,13 @@ end function
 '' Constant       = ID .                                    !!ambiguity w/ var!!
 ''
 function cConstant( constexpr as ASTNODE ptr ) as integer static
+	static as zstring * FB.MAXLITLEN+1 text
 	dim as FBSYMBOL ptr s
 	dim as integer typ
-	dim as string text
 
 	function = FALSE
 
-	s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.CONST )
+	s = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.CONST )
 	if( s <> NULL ) then
 
   		text = symbGetConstText( s )
@@ -1119,7 +1119,7 @@ function cConstant( constexpr as ASTNODE ptr ) as integer static
   			end select
   		end if
 
-  		lexSkipToken
+  		lexSkipToken( )
   		function = TRUE
   	end if
 

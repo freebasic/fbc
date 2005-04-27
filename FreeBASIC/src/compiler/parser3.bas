@@ -138,22 +138,21 @@ function cTypeField( elm as FBSYMBOL ptr, _
 					 byval isderef as integer, _
 					 byval checkarray as integer ) as integer
 
-    dim as string fields
+    static as zstring * FB.MAXNAMELEN+1 fields
+    dim as zstring ptr fldptr
     dim as ASTNODE ptr constexpr
-    dim as integer res, ofs
+    dim as integer ofs
 
-	res = FALSE
+	function = FALSE
 
 	do
-		function = res
-
-		if( lexCurrentToken <> CHAR_LPRNT ) then
+		if( lexCurrentToken( ) <> CHAR_LPRNT ) then
 
 			if( typ <> FB.SYMBTYPE.USERDEF ) then
 				exit function
 			end if
 
-			fields = lexTokenText
+			fields = lexTokenText( )
 			if( len( fields ) = 0 ) then
 				exit function
 			end if
@@ -164,13 +163,15 @@ function cTypeField( elm as FBSYMBOL ptr, _
 					exit function
 				end if
 
-				fields = mid$( fields, 2 )
+				fldptr = @fields[1] 			'' mid$( fields, 2 )
 
 			else
+				fldptr = @fields
+
 				isderef = FALSE
 			end if
 
-    		ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )
+    		ofs = symbGetUDTElmOffset( elm, typ, subtype, *fldptr )
     		if( ofs < 0 ) then
     			hReportError FB.ERRMSG.ELEMENTNOTDEFINED
     			return FALSE
@@ -189,7 +190,7 @@ function cTypeField( elm as FBSYMBOL ptr, _
 
 		end if
 
-    	res = TRUE
+    	function = TRUE
 
 		''
 		if( elm = NULL ) then
@@ -231,8 +232,6 @@ function cTypeField( elm as FBSYMBOL ptr, _
     	end if
 
     loop
-
-    function = res
 
 end function
 
@@ -732,7 +731,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function hVarAddUndecl( id as string, _
+function hVarAddUndecl( byval id as string, _
 						byval typ as integer ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
@@ -763,16 +762,16 @@ function cVariable( varexpr as ASTNODE ptr, _
 					elm as FBSYMBOL ptr, _
 					byval checkarray as integer = TRUE ) as integer
 
+	static as zstring * FB.MAXNAMELEN+1 id
 	dim as integer typ, deftyp, ofs, dtype
 	dim as ASTNODE ptr idxexpr
 	dim as FBSYMBOL ptr subtype
-	dim as string id
 	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
 
 	function = FALSE
 
 	'' ID
-	if( lexCurrentToken <> FB.TK.ID ) then
+	if( lexCurrentToken( ) <> FB.TK.ID ) then
 		exit function
 	end if
 
@@ -783,8 +782,8 @@ function cVariable( varexpr as ASTNODE ptr, _
 	ofs 		= 0
 	elm			= NULL
 	subtype 	= NULL
-	typ			= lexTokenType
-	id			= lexTokenText
+	typ			= lexTokenType( )
+	id			= lexTokenText( )
     if( typ = INVALID ) then
     	deftyp = hGetDefType( id )
     else
@@ -844,7 +843,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 	end if
 
     ''
-	lexSkipToken
+	lexSkipToken( )
 
 	if( typ = INVALID ) then
 		typ = symbGetType( sym )

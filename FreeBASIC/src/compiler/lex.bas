@@ -312,17 +312,17 @@ private function lexReadChar as uinteger static
 
 	end if
 
-	lexReadChar = char
+	function = char
 
 end function
 
 '':::::
 private function lexEatChar as uinteger static
 
-	ctx.colnum = ctx.colnum + 1
+	ctx.colnum += 1
 
     ''
-    lexEatChar = ctx.currchar
+    function = ctx.currchar
 
 	'' update if a look ahead char wasn't read already
 	if( ctx.lahdchar = INVALID ) then
@@ -380,17 +380,17 @@ end sub
 private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as uinteger static
 
     if( ctx.currchar = INVALID ) then
-    	ctx.currchar = lexReadChar
+    	ctx.currchar = lexReadChar( )
     end if
 
     if( skipwhitespc ) then
     	do while( (ctx.currchar = CHAR_TAB) or (ctx.currchar = CHAR_SPACE) )
-    		lexEatChar
-    		ctx.currchar = lexReadChar
+    		lexEatChar( )
+    		ctx.currchar = lexReadChar( )
     	loop
     end if
 
-    lexCurrentChar = ctx.currchar
+    function = ctx.currchar
 
 end function
 
@@ -398,18 +398,18 @@ end function
 private function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as uinteger
 
 	if( ctx.lahdchar = INVALID ) then
-		lexSkipChar
+		lexSkipChar( )
 		ctx.lahdchar = lexReadChar
 	end if
 
     if( skipwhitespc ) then
     	do while( (ctx.lahdchar = CHAR_TAB) or (ctx.lahdchar = CHAR_SPACE) )
-    		lexSkipChar
-    		ctx.lahdchar = lexReadChar
+    		lexSkipChar( )
+    		ctx.lahdchar = lexReadChar( )
     	loop
     end if
 
-	lexLookAheadChar = ctx.lahdchar
+	function = ctx.lahdchar
 
 end function
 
@@ -934,8 +934,9 @@ end sub
 private sub lexReadString ( byval ps as zstring ptr, _
 							tlen as integer, _
 							byval flags as LEXCHECK_ENUM ) static
+
+	static as zstring * 16 nval
 	dim as integer rlen, p, ntyp, nlen
-	dim as zstring * 16 nval
 
 	*ps = 0
 	tlen = 0
@@ -1028,14 +1029,14 @@ reread:
 	'' skip white space
 	islinecont = FALSE
 	do
-		char = lexCurrentChar
+		char = lexCurrentChar( )
 
 		'' !!!FIXME!!! this shouldn't be here
 		'' only emit current src line if it's not on an inc file
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
 				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					emitCOMMENT curline
+					emitCOMMENT( curline )
 					curline = ""
 				end if
 			end if
@@ -1053,7 +1054,7 @@ reread:
 
 			'' alread skipping?
 			if( islinecont ) then
-				lexEatChar
+				lexEatChar( )
 				continue do
 			end if
 
@@ -1067,7 +1068,7 @@ reread:
 
 				'' otherwise, skip until new-line is found
 				case else
-					lexEatChar
+					lexEatChar( )
 					islinecont = TRUE
 					continue do
 				end select
@@ -1079,11 +1080,13 @@ reread:
 
 		'' EOL
 		case CHAR_CR, CHAR_LF
-			lexEatChar
+			lexEatChar( )
 
 			'' CRLF on DOS, LF only on *NIX
 			if( char = CHAR_CR ) then
-				if( lexCurrentChar = CHAR_LF ) then lexEatChar
+				if( lexCurrentChar( ) = CHAR_LF ) then
+					lexEatChar( )
+				end if
 			end if
 
 			if( not islinecont ) then
@@ -1104,7 +1107,7 @@ reread:
 				end if
 			end if
 
-			lexEatChar
+			lexEatChar( )
 
 		''
 		case else
@@ -1112,7 +1115,7 @@ reread:
 				exit do
 			end if
 
-			lexEatChar
+			lexEatChar( )
 		end select
 
 	loop
@@ -1182,11 +1185,13 @@ readid:
 			'' is it a define?
 			s = symbFindByClass( t.sym, FB.SYMBCLASS.DEFINE )
 			if( s <> NULL ) then
+
 				lgt = symbGetDefineLen( s )
 				if( ( lgt > 0 ) or ( s->def.proc <> NULL ) ) then
-					hLoadDefine s, lgt
+					hLoadDefine( s, lgt )
 				end if
 				goto reread
+
         	end if
         end if
 
@@ -1316,7 +1321,7 @@ readid:
 end sub
 
 '':::::
-private sub hCheckPP
+private sub hCheckPP( )
 
 	'' not already inside the PP? (ie: not skipping a false #IF or #ELSE)
 	if( ctx.reclevel = 0 ) then
@@ -1325,7 +1330,7 @@ private sub hCheckPP
 			'' at beginning of line (or top of source-file)?
 			if( (ctx.lasttoken = FB.TK.EOL) or (ctx.lasttoken = INVALID) ) then
                 ctx.reclevel += 1
-                lexSkipToken
+                lexSkipToken( )
 
        			'' not a keyword? error, parser will catch it..
        			if( ctx.tokenTB(0).class <> FB.TKCLASS.KEYWORD ) then
@@ -1334,7 +1339,7 @@ private sub hCheckPP
        			end if
 
        			'' pp failed? exit
-       			if( not lexPreProcessor ) then
+       			if( not lexPreProcessor( ) ) then
        				ctx.reclevel -= 1
        				exit sub
        			end if
@@ -1350,11 +1355,11 @@ end sub
 function lexCurrentToken( byval flags as LEXCHECK_ENUM ) as integer static
 
     if( ctx.tokenTB(0).id = INVALID ) then
-    	lexNextToken ctx.tokenTB(0), flags
-    	hCheckPP
+    	lexNextToken( ctx.tokenTB(0), flags )
+    	hCheckPP( )
     end if
 
-    lexCurrentToken = ctx.tokenTB(0).id
+    function = ctx.tokenTB(0).id
 
 end function
 
@@ -1362,11 +1367,11 @@ end function
 function lexCurrentTokenClass( byval flags as LEXCHECK_ENUM ) as integer static
 
     if( ctx.tokenTB(0).id = INVALID ) then
-    	lexNextToken ctx.tokenTB(0), flags
-    	hCheckPP
+    	lexNextToken( ctx.tokenTB(0), flags )
+    	hCheckPP( )
     end if
 
-    lexCurrentTokenClass = ctx.tokenTB(0).class
+    function = ctx.tokenTB(0).class
 
 end function
 
@@ -1378,14 +1383,14 @@ function lexLookAhead( byval k as integer ) as integer static
     end if
 
     if( ctx.tokenTB(k).id = INVALID ) then
-	    lexNextToken ctx.tokenTB(k)
+	    lexNextToken( ctx.tokenTB(k) )
 	end if
 
 	if( k > ctx.k ) then
 		ctx.k = k
 	end if
 
-	lexLookAhead = ctx.tokenTB(k).id
+	function = ctx.tokenTB(k).id
 
 end function
 
@@ -1397,14 +1402,14 @@ function lexLookAheadClass( byval k as integer ) as integer static
     end if
 
     if( ctx.tokenTB(k).id = INVALID ) then
-    	lexNextToken ctx.tokenTB(k)
+    	lexNextToken( ctx.tokenTB(k) )
     end if
 
 	if( k > ctx.k ) then
 		ctx.k = k
 	end if
 
-    lexLookAheadClass = ctx.tokenTB(k).class
+    function = ctx.tokenTB(k).class
 
 end function
 
@@ -1418,7 +1423,7 @@ private sub hMoveKDown static
 
     ctx.tokenTB(ctx.k).id = INVALID
 
-    ctx.k = ctx.k - 1
+    ctx.k -= 1
 
 end sub
 
@@ -1427,26 +1432,26 @@ function lexEatToken( byval flags as LEXCHECK_ENUM ) as string static
 
     ''
     if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
-    	lexEatToken = ctx.tokenTB(0).text
+    	function = ctx.tokenTB(0).text
     else
-    	lexEatToken = ctx.tokenTB(0).littext
+    	function = ctx.tokenTB(0).littext
     end if
 
     ''
     if( ctx.tokenTB(0).id = FB.TK.EOL ) then
-    	ctx.linenum = ctx.linenum + 1
+    	ctx.linenum += 1
     	ctx.colnum  = 1
     end if
 
     ctx.lasttoken = ctx.tokenTB(0).id
 
     if( ctx.k = 0 ) then
-    	lexNextToken ctx.tokenTB(0), flags
+    	lexNextToken( ctx.tokenTB(0), flags )
     else
-    	hMoveKDown
+    	hMoveKDown( )
     end if
 
-    hCheckPP
+    hCheckPP( )
 
 end function
 
@@ -1454,7 +1459,7 @@ end function
 sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
     if( ctx.tokenTB(0).id = FB.TK.EOL ) then
-    	ctx.linenum = ctx.linenum + 1
+    	ctx.linenum += 1
     	ctx.colnum  = 1
     end if
 
@@ -1462,19 +1467,20 @@ sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
     ''
     if( ctx.k = 0 ) then
-    	lexNextToken ctx.tokenTB(0), flags
+    	lexNextToken( ctx.tokenTB(0), flags )
     else
-    	hMoveKDown
+    	hMoveKDown( )
     end if
 
-    hCheckPP
+    hCheckPP( )
 
 end sub
 
 '':::::
 sub lexReadLine( byval endchar as uinteger = INVALID, _
-				 dst as string, _
+				 byval dst as string, _
 				 byval skipline as integer = FALSE ) static
+
     dim char as uinteger
 
 	if( not skipline ) then
@@ -1496,7 +1502,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
     		end if
     	end select
 
-    	hMoveKDown
+    	hMoveKDown( )
     loop
 
    	'' check current token
@@ -1515,14 +1521,14 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 
     ''
 	do
-		char = lexCurrentChar
+		char = lexCurrentChar( )
 
 		'' !!!FIXME!!! this shouldn't be here
 		'' only emit current src line if it's not on an inc file
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
 				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					emitCOMMENT curline
+					emitCOMMENT( curline )
 					curline = ""
 				end if
 			end if
@@ -1537,10 +1543,10 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 
 		'' EOL?
 		case CHAR_CR, CHAR_LF
-			lexEatChar
+			lexEatChar( )
 			'' CRLF on DOS, LF only on *NIX
 			if( char = CHAR_CR ) then
-				if( lexCurrentChar = CHAR_LF ) then lexEatChar
+				if( lexCurrentChar( ) = CHAR_LF ) then lexEatChar
 			end if
 
 			ctx.tokenTB(0).id 	 = FB.TK.EOL
@@ -1556,7 +1562,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 			end if
 		end select
 
-		lexEatChar
+		lexEatChar( )
 		if( not skipline ) then
 			dst += chr$( char )
 		end if
@@ -1567,7 +1573,7 @@ end sub
 '':::::
 sub lexSkipLine static
 
-	lexReadLine , "", TRUE
+	lexReadLine( , byval NULL, TRUE )
 
 end sub
 
@@ -1575,14 +1581,14 @@ end sub
 ''::::
 function lexLineNum as integer
 
-	lexLineNum = ctx.linenum
+	function = ctx.linenum
 
 end function
 
 ''::::
 function lexColNum as integer
 
-	lexColNum = ctx.colnum - ctx.tokenTB(0).tlen + 1
+	function = ctx.colnum - ctx.tokenTB(0).tlen + 1
 
 end function
 
@@ -1590,9 +1596,9 @@ end function
 function lexTokenText as string
 
     if( ctx.tokenTB(0).class <> FB.TKCLASS.STRLITERAL ) then
-    	lexTokenText = ctx.tokenTB(0).text
+    	function = ctx.tokenTB(0).text
     else
-    	lexTokenText = ctx.tokenTB(0).littext
+    	function = ctx.tokenTB(0).littext
     end if
 
 end function
@@ -1600,28 +1606,28 @@ end function
 ''::::
 function lexTokenTextLen as integer
 
-	lexTokenTextLen = ctx.tokenTB(0).tlen
+	function = ctx.tokenTB(0).tlen
 
 end function
 
 ''::::
 function lexTokenType as integer
 
-	lexTokenType = ctx.tokenTB(0).typ
+	function = ctx.tokenTB(0).typ
 
 end function
 
 ''::::
 function lexTokenSymbol as FBSYMBOL ptr
 
-	lexTokenSymbol = ctx.tokenTB(0).sym
+	function = ctx.tokenTB(0).sym
 
 end function
 
 ''::::
 function lexTokenDotPos as integer
 
-	lexTokenDotPos = ctx.tokenTB(0).dotpos
+	function = ctx.tokenTB(0).dotpos
 
 end function
 
@@ -1637,11 +1643,12 @@ end sub
 
 '':::::
 function lexPeekCurrentLine( token_pos as string ) as string
-	dim res as string, buffer as zstring * 1024+1
-	dim p as integer, old_p as integer, start as integer
-	dim c as ubyte ptr, token_len as integer
+	static as zstring * 1024+1 buffer
+	dim as string res
+	dim as integer p, old_p, start, token_len
+	dim as ubyte ptr c
 
-	lexPeekCurrentLine = ""
+	function = ""
 
 	'' get file contents around current token
 	old_p = seek( env.inf )
@@ -1682,5 +1689,6 @@ function lexPeekCurrentLine( token_pos as string ) as string
 	wend
 	token_pos += "^"
 
-	lexPeekCurrentLine = res
+	function = res
+
 end function

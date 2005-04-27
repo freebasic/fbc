@@ -1,3 +1,6 @@
+#ifndef __FB_BI__
+#define __FB_BI__
+
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 ''
@@ -15,6 +18,25 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+
+''
+const FB.MAXPATHLEN			= 260
+
+const FB.MAXINCRECLEVEL		= 16
+const FB.MAXWITHLEVELS		= 4
+
+const FB.MAXINCPATHS		= 16
+const FB.INITINCFILES		= 256
+
+const FB_MAXPROCARGS		= 64
+const FB.MAXARRAYDIMS		= FB_MAXPROCARGS \ 4
+
+const FB.MAXNAMELEN			= 96
+const FB.MAXLITLEN			= 1024				'' literal strings max length
+const FB.MAXNUMLEN			= 64
+const FB.MAXOPERANDLEN		= FB.MAXNAMELEN + 2 + 16 + 2 + 1
+const FB.MAXWITHLEN			= FB.MAXNAMELEN * FB.MAXWITHLEVELS
+const FB.MAXDEFINELEN		= FB.MAXLITLEN*4
 
 ''
 const TRUE			= -1
@@ -203,4 +225,6 @@ declare sub 		fbAddDefine		( byval dname as string, _
 declare function 	fbIncludeFile	( byval filename as string, _
 									  byval isonce as integer ) as integer
 
-declare sub 		fbAddDefaultLibs
+declare sub 		fbAddDefaultLibs( )
+
+#endif '' __FB_BI__

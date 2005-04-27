@@ -516,23 +516,34 @@ function hUnescapeStr( byval text as string ) as string static
 end function
 
 '':::::
-sub hUcase( byval src as string ) static
-    dim i as integer, c as integer
-    dim p as byte ptr
+sub hUcase( byval src as string, _
+		    byval dst as string ) static
 
-	p = strptr( src )
+    dim as integer i, c
+    dim as ubyte ptr s, d
+
+	s = strptr( src )
+	d = strptr( dst )
 
 	for i = 1 to len( src )
-		c = *p
+		c = *s
 
-		if( (c >= 97) and (c <= 122) ) then
-			*p = c - (97 - 65)
+		if( c >= 97 ) then
+			if( c <= 122 ) then
+				c -= (97 - 65)
+			end if
 		end if
 
-		p += 1
+		*d = c
+
+		s += 1
+		d += 1
 	next i
 
+	*d = 0
+
 end sub
+
 
 '':::::
 sub hClearName( byval src as string ) static
@@ -560,8 +571,9 @@ function hCreateName( byval symbol as string, _
 					  byval typ as integer = INVALID, _
 					  byval preservecase as integer = FALSE, _
 					  byval addunderscore as integer = TRUE, _
-					  byval clearname as integer = TRUE ) as string static
-    dim sname as string
+					  byval clearname as integer = TRUE ) as zstring ptr static
+
+    static sname as zstring * FB.MAXINTNAMELEN+1
 
 	if( addunderscore ) then
 		sname = "_"
@@ -571,7 +583,7 @@ function hCreateName( byval symbol as string, _
 	end if
 
 	if( not preservecase ) then
-		hUcase( sname )
+		hUcase( sname, sname )
 	end if
 
     if( clearname ) then
@@ -582,18 +594,20 @@ function hCreateName( byval symbol as string, _
     	sname += suffixTB( typ )
     end if
 
-	function = sname
+	function = @sname
 
 end function
 
 '':::::
 function hCreateProcAlias( byval symbol as string, _
 						   byval argslen as integer, _
-						   byval mode as integer ) as string static
-    dim sname as string
-    dim addat as integer
+						   byval mode as integer ) as zstring ptr static
+
+    static sname as zstring * FB.MAXINTNAMELEN+1
 
 #ifdef TARGET_WIN32
+    dim addat as integer
+
 	if( env.clopt.nounderprefix ) then
 		sname = symbol
 	else
@@ -612,24 +626,27 @@ function hCreateProcAlias( byval symbol as string, _
 		sname += str$( argslen )
 	end if
 
-	function = sname
-
 #elseif defined(TARGET_DOS)
-    function = "_" + symbol
+
+	sname = "_"
+	sname += symbol
 
 #else
-	function = symbol
+
+	sname = symbol
 
 #endif
+
+	function = @sname
 
 end function
 
 '':::::
 function hCreateOvlProcAlias( byval symbol as string, _
 					    	  byval argc as integer, _
-					    	  byval argtail as FBSYMBOL ptr ) as string static
-    dim i as integer
-    dim aname as string
+					    	  byval argtail as FBSYMBOL ptr ) as zstring ptr static
+    dim as integer i
+    static as zstring * FB.MAXINTNAMELEN+1 aname
 
     aname = symbol
     aname += "__ovl_"
@@ -644,7 +661,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
     	argtail = argtail->arg.l
     next i
 
-	function = aname
+	function = @aname
 
 end function
 

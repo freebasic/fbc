@@ -41,32 +41,47 @@ end type
 
 
 declare sub 		lexInit                 ( )
+
 declare sub 		lexEnd					( )
 
 declare sub 		lexSaveCtx				( byval level as integer )
+
 declare sub 		lexRestoreCtx			( byval level as integer )
 
 declare function 	lexCurrentToken 		( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+
 declare function 	lexCurrentTokenClass 	( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+
 declare function 	lexTokenText 			( ) as string
+
 declare function 	lexTokenTextLen 		( ) as integer
+
 declare function 	lexTokenType 			( ) as integer
+
 declare function 	lexTokenSymbol 			( ) as FBSYMBOL ptr
+
 declare function 	lexTokenDotPos 			( ) as integer
 
 declare function 	lexEatToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as string
+
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 declare function 	lexLookAheadClass 		( byval k as integer ) as integer
+
 declare function 	lexLookAhead 			( byval k as integer ) as integer
 
 declare function 	lexLineNum 				( ) as integer
+
 declare function 	lexColNum 				( ) as integer
 
-declare sub 		lexReadLine				( byval endchar as uinteger = INVALID, dst as string, byval skipline as integer = FALSE )
+declare sub 		lexReadLine				( byval endchar as uinteger = INVALID, _
+											  byval dst as string, _
+											  byval skipline as integer = FALSE )
+
 declare sub 		lexSkipLine				( )
 
-declare sub 		lexSetCurrentToken		( byval id as integer, byval class as integer )
+declare sub 		lexSetCurrentToken		( byval id as integer, _
+											  byval class as integer )
 
 declare function 	lexPreProcessor 		( ) as integer
 

@@ -32,14 +32,12 @@ defint a-z
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
 
-declare function cConstExprValue			( littext as string ) as integer
-
 '' globals
 	dim shared incfiles as integer			'' can't be on ENV as it is restored on recursion
 
 	dim shared envcopyTB( ) as FBENV
-	dim shared incpathTB( ) as string
-	dim shared incfileTB( ) as string
+	dim shared incpathTB( ) as zstring * FB.MAXPATHLEN+1
+	dim shared incfileTB( ) as zstring * FB.MAXPATHLEN+1
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -62,30 +60,6 @@ data "c"
 data ""
 
 '':::::
-private function hFixPath( byval path as string ) as string
-	dim i as integer
-	dim res as string
-	
-	res = ""
-	for i = 0 to len(path)-1
-#if defined(TARGET_WIN32) or defined(TARGET_DOS)
-		if( path[i] = CHAR_SLASH ) then
-			res += "\\"
-		else
-#else
-		if( path[i] = CHAR_RSLASH ) then
-			res += "/"
-		else
-#endif
-			res += chr$( path[i] )
-		end if
-	next i
-
-	return res
-
-end function
-
-'':::::
 sub fbAddIncPath( byval path as string )
 
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
@@ -98,7 +72,7 @@ sub fbAddIncPath( byval path as string )
 		if( right$( path, 1 ) <> PATHDIV ) then
 			path += PATHDIV
 		end if
-		path = hFixPath( path )
+
 		incpathTB( env.incpaths ) = path
 
 		env.incpaths += 1
@@ -115,33 +89,32 @@ sub fbAddDefine( byval dname as string, _
 end sub
 
 '':::::
-function fbFindIncFile( byval filename as string ) as integer
-	dim i as integer
-	dim fname as string
+function fbFindIncFile( byval filename as string ) as integer static
+	static as zstring * FB.MAXPATHLEN+1 fname
+	dim as integer i
 
-	fbFindIncFile = FALSE
-
-	fname = hFixPath( ucase$( filename ) )
+	fname = ucase$( filename )
 
 	for i = 0 to incfiles-1
 		if( incfileTB( i ) = fname ) then
-			fbFindIncFile = TRUE
-			exit function
+			return TRUE
 		end if
 	next i
+
+	function = FALSE
 
 end function
 
 '':::::
-sub fbAddIncFile( byval filename as string )
-    dim fname as string
-    dim i as integer
+sub fbAddIncFile( byval filename as string ) static
+    static as zstring * FB.MAXPATHLEN+1 fname
+    dim as integer i
 
-	fname = hFixPath( ucase$( filename ) )
+	fname = ucase$( filename )
 
 	if( incfiles >= ubound( incfileTB ) ) then
 		i = ubound( incfileTB )
-		redim preserve incfileTB(0 to (i + (i \ 2))-1) as string
+		redim preserve incfileTB(0 to (i + (i \ 2))-1)
 	end if
 
 	if( not fbFindIncFile( fname ) ) then
@@ -195,9 +168,9 @@ private sub hSetCtx
 	incfiles			= 0
 
 #ifndef TARGET_LINUX
-	fbAddIncPath exepath$ + FB.INCPATH
+	fbAddIncPath( exepath$ + FB.INCPATH )
 #else
-	fbAddIncPath FB.INCPATH
+	fbAddIncPath( FB.INCPATH )
 #endif
 
 end sub
@@ -206,35 +179,35 @@ end sub
 function fbInit as integer static
 
 	''
-	fbInit = FALSE
+	function = FALSE
 
 	''
-	symbInit
+	symbInit( )
 
-	hlpInit
+	hlpInit( )
 
-	astInit
+	astInit( )
 
-	irInit
+	irInit( )
 
-	rtlInit
+	rtlInit( )
 
-	lexInit
+	lexInit( )
 
-	emitInit
-
-	''
-	redim envcopyTB( 0 to FB.MAXINCRECLEVEL-1 ) as FBENV
-
-	redim incpathTB( 0 to FB.MAXINCPATHS-1 ) as string
-
-	redim incfileTB( 0 to FB.INITINCFILES-1 ) as string
+	emitInit( )
 
 	''
-	hSetCtx
+	redim envcopyTB( 0 to FB.MAXINCRECLEVEL-1 )
+
+	redim incpathTB( 0 to FB.MAXINCPATHS-1 )
+
+	redim incfileTB( 0 to FB.INITINCFILES-1 )
 
 	''
-	fbInit = TRUE
+	hSetCtx( )
+
+	''
+	function = TRUE
 
 end function
 
@@ -294,40 +267,37 @@ end sub
 
 '':::::
 function fbGetOption ( byval opt as integer ) as integer
-    dim res as integer
-
-	res = FALSE
 
 	select case as const opt
 	case FB.COMPOPT.DEBUG
-		res = env.clopt.debug
+		function = env.clopt.debug
 	case FB.COMPOPT.CPUTYPE
-		res = env.clopt.cputype
+		function = env.clopt.cputype
 	case FB.COMPOPT.ERRORCHECK
-		res = env.clopt.errorcheck
+		function = env.clopt.errorcheck
 	case FB.COMPOPT.NOSTDCALL
-		res = env.clopt.nostdcall
+		function = env.clopt.nostdcall
 	case FB.COMPOPT.NOUNDERPREFIX
-		res = env.clopt.nounderprefix
+		function = env.clopt.nounderprefix
 	case FB.COMPOPT.OUTTYPE
-		res = env.clopt.outtype
+		function = env.clopt.outtype
 	case FB.COMPOPT.RESUMEERROR
-		res = env.clopt.resumeerr
+		function = env.clopt.resumeerr
 	case FB.COMPOPT.WARNINGLEVEL
-		res = env.clopt.warninglevel
+		function = env.clopt.warninglevel
 	case FB.COMPOPT.EXPORT
-		res = env.clopt.export
+		function = env.clopt.export
 	case FB.COMPOPT.NODEFLIBS
-		res = env.clopt.nodeflibs
+		function = env.clopt.nodeflibs
 	case FB.COMPOPT.SHOWERROR
-		res = env.clopt.showerror
+		function = env.clopt.showerror
 	case FB.COMPOPT.MULTITHREADED
-		res = env.clopt.multithreaded
+		function = env.clopt.multithreaded
 	case FB.COMPOPT.PROFILE
-		res = env.clopt.profile
+		function = env.clopt.profile
+	case else
+		function = FALSE
 	end select
-
-	fbGetOption = res
 
 end function
 
@@ -342,29 +312,29 @@ sub fbEnd
 	erase envcopyTB
 
 	''
-	emitEnd
+	emitEnd( )
 
-	lexEnd
+	lexEnd( )
 
-	rtlEnd
+	rtlEnd( )
 
-	irEnd
+	irEnd( )
 
-	astEnd
+	astEnd( )
 
-	hlpEnd
+	hlpEnd( )
 
-	symbEnd
+	symbEnd( )
 
 end sub
 
 '':::::
 function fbCompile ( byval infname as string, _
-				     byval outfname as string )
+				     byval outfname as string ) as integer
     dim res as integer, l as FBSYMBOL ptr
 	dim tmr as double
 
-	fbCompile = FALSE
+	function = FALSE
 
 	''
 	env.infile	= infname
@@ -372,48 +342,53 @@ function fbCompile ( byval infname as string, _
 
 	'' open source file
 	if( not hFileExists( infname ) ) then
-		hReportErrorEx FB.ERRMSG.FILENOTFOUND, infname, -1
+		hReportErrorEx( FB.ERRMSG.FILENOTFOUND, infname, -1 )
 		exit function
 	end if
 
 	env.inf = freefile
-	open infname for binary access read as #env.inf
+	if( open( infname, for binary, access read, as #env.inf ) <> 0 ) then
+		hReportErrorEx( FB.ERRMSG.FILEACCESSERROR, infname, -1 )
+		exit function
+	end if
 
 	''
-	if( not emitOpen ) then
-		hReportErrorEx FB.ERRMSG.FILEACCESSERROR, infname, -1
+	if( not emitOpen( ) ) then
+		hReportErrorEx( FB.ERRMSG.FILEACCESSERROR, infname, -1 )
 		exit function
 	end if
 
 	'' parse
 	tmr = timer
 
-	parser4Init
+	parser4Init( )
 	res = cProgram
-	parser4End
+	parser4End( )
 
 	tmr = timer - tmr
 
-	irFlush
+	irFlush( )
 
 	'' save
-	emitClose tmr
+	emitClose( tmr )
 
 	'' close src
-	close #env.inf
+	if( close( #env.inf ) <> 0 ) then
+		'' ...
+	end if
 
 	'' check if any label undefined was used
 	if( res = TRUE ) then
 		l = symbCheckLabels
 		if( l <> NULL ) then
-			hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetOrgName( l ), -1
-			res = FALSE
+			hReportErrorEx( FB.ERRMSG.UNDEFINEDLABEL, symbGetOrgName( l ), -1 )
+			function = FALSE
 		else
-			res = TRUE
+			function = TRUE
 		end if
+	else
+		function = FALSE
 	end if
-
-	fbCompile = res
 
 end function
 
@@ -421,7 +396,7 @@ end function
 function fbListLibs( namelist() as string, byval index as integer ) as integer
 	dim i as integer
 
-	fbListLibs = symbListLibs( namelist(), index )
+	function = symbListLibs( namelist(), index )
 
 	if( env.clopt.multithreaded ) then
 		for i = 0 to index-1
@@ -435,7 +410,7 @@ function fbListLibs( namelist() as string, byval index as integer ) as integer
 end function
 
 '':::::
-sub fbAddDefaultLibs
+sub fbAddDefaultLibs( ) static
     dim lname as string
 
 	if( env.clopt.nodeflibs ) then
@@ -450,7 +425,7 @@ sub fbAddDefaultLibs
 			exit do
 		end if
 
-		symbAddLib lname
+		symbAddLib( lname )
 	loop
 
 end sub
@@ -458,26 +433,28 @@ end sub
 ''::::
 function fbIncludeFile( byval filename as string, _
 						byval isonce as integer ) as integer
-    dim incfile as string
-    dim i as integer
 
-	fbIncludeFile = FALSE
+    static as zstring * FB.MAXPATHLEN incfile
+    dim as integer i
+
+	function = FALSE
 
 	if( env.reclevel >= FB.MAXINCRECLEVEL ) then
-		hReportError FB.ERRMSG.RECLEVELTOODEPTH
+		hReportError( FB.ERRMSG.RECLEVELTOODEPTH )
 		exit function
 	end if
 
 	'' open include file
-	filename = hFixPath( filename )
 	if( not hFileExists( filename ) ) then
 
 		'' try finding it at the inc paths
 		for i = env.incpaths-1 to 0 step -1
+
 			incfile = incpathTB(i) + filename
 			if( hFileExists( incfile ) ) then
 				exit for
 			end if
+
 		next i
 
 	else
@@ -486,43 +463,47 @@ function fbIncludeFile( byval filename as string, _
 
 	''
 	if( not hFileExists( incfile ) ) then
-		hReportErrorEx FB.ERRMSG.FILENOTFOUND, "\"" + filename + "\""
+		hReportErrorEx( FB.ERRMSG.FILENOTFOUND, "\"" + filename + "\"" )
 
 	else
 
 		''
 		if( isonce ) then
         	if( fbFindIncFile( filename ) ) then
-        		fbIncludeFile = TRUE
-        		exit function
+        		return TRUE
         	end if
 		end if
 
 		''
-		fbAddIncFile filename
+		fbAddIncFile( filename )
 
 		''
 		envcopyTB(env.reclevel) = env
-		lexSaveCtx env.reclevel
-    	env.reclevel	+= 1
+		lexSaveCtx( env.reclevel )
+    	env.reclevel += 1
 
-		env.infile		= filename
+		env.infile = filename
 
 		''
-		lexInit
+		lexInit( )
 
 		''
 		env.inf = freefile
-		open incfile for binary access read as #env.inf
+		if( open( incfile, for binary, access read, as #env.inf ) <> 0 ) then
+			hReportErrorEx( FB.ERRMSG.FILENOTFOUND, "\"" + filename + "\"" )
+			exit function
+		end if
 
 		'' parse
-		fbIncludeFile = cProgram
+		function = cProgram( )
 
 		'' close it
-		close #env.inf
+		if( close( #env.inf ) <> 0 ) then
+			'' ...
+		end if
 
 		''
-		lexRestoreCtx env.reclevel-1
+		lexRestoreCtx( env.reclevel-1 )
 		env = envcopyTB(env.reclevel-1)
 	end if
 

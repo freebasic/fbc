@@ -469,8 +469,8 @@ function cGfxView( byval isview as integer ) as integer
 
 	function = FALSE
 
-	'' SCREEN? (not a keyword or the Screen stmt would need a parser routine too)
-	if( ucase$( lexTokenText ) = "SCREEN" ) then
+	'' SCREEN?
+	if( lexCurrentToken() = FB.TK.SCREEN ) then
 		lexSkipToken
 		screenflag = TRUE
 	else
