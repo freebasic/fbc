@@ -26,13 +26,6 @@
 
 #include "fb.h"
 
-static FB_INKEYPROC fb_inkeyhook = &fb_ConsoleInkey;
-
-static FB_GETKEYPROC fb_getkeyhook = &fb_ConsoleGetkey;
-
-static FB_KEYHITPROC fb_keyhithook = &fb_ConsoleKeyHit;
-
-
 /*:::::*/
 FBCALL FBSTRING *fb_Inkey( void )
 {
@@ -40,21 +33,14 @@ FBCALL FBSTRING *fb_Inkey( void )
 	
 	FB_LOCK();
 	
-	res = fb_inkeyhook( );
+	if( fb_hooks.inkeyproc )
+		res = fb_hooks.inkeyproc( );
+	else
+		res = fb_ConsoleInkey( );
 
 	FB_UNLOCK();
 	
 	return res;
-}
-
-/*:::::*/
-FBCALL FB_INKEYPROC fb_SetInkeyProc( FB_INKEYPROC newproc )
-{
-    FB_INKEYPROC oldproc = fb_inkeyhook;
-
-    fb_inkeyhook = newproc;
-
-	return oldproc;
 }
 
 /*:::::*/
@@ -64,21 +50,14 @@ FBCALL int fb_Getkey( void )
 	
 	FB_LOCK();
 	
-	res = fb_getkeyhook( );
+	if( fb_hooks.getkeyproc )
+		res = fb_hooks.getkeyproc( );
+	else
+		res = fb_ConsoleGetkey( );
 
 	FB_UNLOCK();
 	
 	return res;
-}
-
-/*:::::*/
-FBCALL FB_GETKEYPROC fb_SetGetkeyProc( FB_GETKEYPROC newproc )
-{
-    FB_GETKEYPROC oldproc = fb_getkeyhook;
-
-    fb_getkeyhook = newproc;
-
-	return oldproc;
 }
 
 /*:::::*/
@@ -88,20 +67,12 @@ FBCALL int fb_KeyHit( void )
 	
 	FB_LOCK();
 
-	res = fb_keyhithook( );
+	if( fb_hooks.keyhitproc )
+		res = fb_hooks.keyhitproc( );
+	else
+		res = fb_ConsoleKeyHit( );
 	
 	FB_UNLOCK();
 	
 	return res;
 }
-
-/*:::::*/
-FBCALL FB_KEYHITPROC fb_SetKeyHitProc( FB_KEYHITPROC newproc )
-{
-    FB_KEYHITPROC oldproc = fb_keyhithook;
-
-    fb_keyhithook = newproc;
-
-	return oldproc;
-}
-

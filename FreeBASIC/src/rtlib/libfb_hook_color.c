@@ -26,27 +26,17 @@
 
 #include "fb.h"
 
-static FB_COLORPROC fb_colorhook = &fb_ConsoleColor;
-
-
 /*:::::*/
 FBCALL void fb_Color( int fc, int bc )
 {
 
 	FB_LOCK();
 
-	fb_colorhook( fc, bc );
+	if( fb_hooks.colorproc )
+		fb_hooks.colorproc( fc, bc );
+	else
+		fb_ConsoleColor( fc, bc );
 
 	FB_UNLOCK();
 
-}
-
-/*:::::*/
-FBCALL FB_COLORPROC fb_SetColorProc( FB_COLORPROC newproc )
-{
-    FB_COLORPROC oldproc = fb_colorhook;
-
-    fb_colorhook = newproc;
-	
-	return oldproc;
 }

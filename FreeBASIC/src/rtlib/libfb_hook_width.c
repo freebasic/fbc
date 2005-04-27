@@ -26,27 +26,17 @@
 
 #include "fb.h"
 
-static FB_WIDTHPROC fb_widhook = &fb_ConsoleWidth;
-
-
 /*:::::*/
 FBCALL void fb_Width( int cols, int rows )
 {
 
 	FB_LOCK();
 
-	fb_widhook( cols, rows );
+	if( fb_hooks.widthproc )
+		fb_hooks.widthproc( cols, rows );
+	else
+		fb_ConsoleWidth( cols, rows );
 
 	FB_UNLOCK();
 
-}
-
-/*:::::*/
-FBCALL FB_WIDTHPROC fb_SetWidthProc( FB_WIDTHPROC newproc )
-{
-    FB_WIDTHPROC oldproc = fb_widhook;
-
-    fb_widhook = newproc;
-
-	return oldproc;
 }

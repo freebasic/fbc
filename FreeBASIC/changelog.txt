@@ -1,6 +1,7 @@
 Version 0.14 Beta:
 
 [changed]
+- Some internal changes to reduce final executables size (lillo)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)

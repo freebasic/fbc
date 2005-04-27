@@ -124,31 +124,21 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 	}
 
 	if (mode == 0) {
-		fb_SetInkeyProc(fb_ConsoleInkey);
-		fb_SetGetkeyProc(fb_ConsoleGetkey);
-		fb_SetKeyHitProc(fb_ConsoleKeyHit);
-		fb_SetClsProc(fb_ConsoleClear);
-		fb_SetColorProc(fb_ConsoleColor);
-		fb_SetLocateProc(fb_ConsoleLocate);
-		fb_SetWidthProc(fb_ConsoleWidth);
-		fb_SetGetXProc(fb_ConsoleGetX);
-		fb_SetGetYProc(fb_ConsoleGetY);
-		fb_SetPrintBufferProc(fb_ConsolePrintBuffer);
-		fb_SetReadStrProc(fb_ConsoleReadStr);
+		memset(&fb_hooks, 0, sizeof(fb_hooks));
 		fb_mode = NULL;
 	}
 	else {
-		fb_SetInkeyProc(fb_GfxInkey);
-		fb_SetGetkeyProc(fb_GfxGetkey);
-		fb_SetKeyHitProc(fb_GfxKeyHit);
-		fb_SetClsProc(fb_GfxClear);
-		fb_SetColorProc(fb_GfxColor);
-		fb_SetLocateProc(fb_GfxLocate);
-		fb_SetWidthProc(fb_GfxWidth);
-		fb_SetGetXProc(fb_GfxGetX);
-		fb_SetGetYProc(fb_GfxGetY);
-		fb_SetPrintBufferProc(fb_GfxPrintBuffer);
-		fb_SetReadStrProc(fb_GfxReadStr);
+		fb_hooks.inkeyproc = fb_GfxInkey;
+		fb_hooks.getkeyproc = fb_GfxGetkey;
+		fb_hooks.keyhitproc = fb_GfxKeyHit;
+		fb_hooks.clsproc = fb_GfxClear;
+		fb_hooks.colorproc = fb_GfxColor;
+		fb_hooks.locateproc = fb_GfxLocate;
+		fb_hooks.widthproc = fb_GfxWidth;
+		fb_hooks.getxproc = fb_GfxGetX;
+		fb_hooks.getyproc = fb_GfxGetY;
+		fb_hooks.printbuffproc = fb_GfxPrintBuffer;
+		fb_hooks.readstrproc = fb_GfxReadStr;
 		fb_mode = (MODE *)calloc(1, sizeof(MODE));
 	}
 
@@ -244,9 +234,6 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
 		fb_AtExit(exit_proc);
 	}
-
-	if (flags != SCREEN_EXIT)
-		fb_Cls(-1);
 
 	return FB_RTERROR_OK;
 }

@@ -26,27 +26,17 @@
 
 #include "fb.h"
 
-static FB_LOCATEPROC fb_lochook = &fb_ConsoleLocate;
-
-
 /*:::::*/
 FBCALL void fb_Locate( int row, int col, int cursor )
 {
 
 	FB_LOCK();
 	
-	fb_lochook( row, col, cursor );
+	if( fb_hooks.locateproc )
+		fb_hooks.locateproc( row, col, cursor );
+	else
+		fb_ConsoleLocate( row, col, cursor );
 
 	FB_UNLOCK();
 
-}
-
-/*:::::*/
-FBCALL FB_LOCATEPROC fb_SetLocateProc( FB_LOCATEPROC newproc )
-{
-    FB_LOCATEPROC oldproc = fb_lochook;
-
-    fb_lochook = newproc;
-
-	return oldproc;
 }

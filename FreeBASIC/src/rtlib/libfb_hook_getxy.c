@@ -26,10 +26,6 @@
 
 #include "fb.h"
 
-static FB_GETXPROC fb_getxhook = &fb_ConsoleGetX;
-static FB_GETYPROC fb_getyhook = &fb_ConsoleGetY;
-
-
 /*:::::*/
 FBCALL int fb_GetX( void )
 {
@@ -37,21 +33,14 @@ FBCALL int fb_GetX( void )
 
 	FB_LOCK();
 
-	res = fb_getxhook( );
+	if( fb_hooks.getxproc )
+		res = fb_hooks.getxproc( );
+	else
+		res = fb_ConsoleGetX( );
 	
 	FB_UNLOCK();
 	
 	return res;
-}
-
-/*:::::*/
-FBCALL FB_GETXPROC fb_SetGetXProc( FB_GETXPROC newproc )
-{
-    FB_GETXPROC oldproc = fb_getxhook;
-
-    fb_getxhook = newproc;
-
-	return oldproc;
 }
 
 /*:::::*/
@@ -61,19 +50,12 @@ FBCALL int fb_GetY( void )
 	
 	FB_LOCK();
 	
-	res = fb_getyhook( );
+	if( fb_hooks.getyproc )
+		res = fb_hooks.getyproc( );
+	else
+		res = fb_ConsoleGetY( );
 	
 	FB_UNLOCK();
 	
 	return res;
-}
-
-/*:::::*/
-FBCALL FB_GETYPROC fb_SetGetYProc( FB_GETYPROC newproc )
-{
-    FB_GETYPROC oldproc = fb_getyhook;
-
-    fb_getyhook = newproc;
-	
-	return oldproc;
 }

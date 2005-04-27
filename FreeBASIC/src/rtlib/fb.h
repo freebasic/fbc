@@ -590,47 +590,52 @@ typedef int		  	(*FB_GETKEYPROC)	( void );
 typedef int		  	(*FB_KEYHITPROC)	( void );
 
 FBCALL FBSTRING 	*fb_Inkey			( void );
-FBCALL FB_INKEYPROC fb_SetInkeyProc		( FB_INKEYPROC newproc );
 FBCALL int		 	fb_Getkey			( void );
-FBCALL FB_GETKEYPROC fb_SetGetkeyProc	( FB_GETKEYPROC newproc );
 FBCALL int		 	fb_KeyHit			( void );
-FBCALL FB_KEYHITPROC fb_SetKeyHitProc	( FB_KEYHITPROC newproc );
 
 typedef void	  	(*FB_CLSPROC)		( int mode );
 
 FBCALL void 		fb_Cls				( int mode );
-FBCALL FB_CLSPROC 	fb_SetClsProc		( FB_CLSPROC newproc );
 
 typedef void	  	(*FB_COLORPROC)		( int fc, int bc );
 
 FBCALL void 		fb_Color			( int fc, int bc );
-FBCALL FB_COLORPROC fb_SetColorProc		( FB_COLORPROC newproc );
 
 typedef void	  	(*FB_LOCATEPROC)	( int row, int col, int cursor );
 
 FBCALL void 		fb_Locate			( int row, int col, int cursor );
-FBCALL FB_LOCATEPROC fb_SetLocateProc	( FB_LOCATEPROC newproc );
 
 typedef void	  	(*FB_WIDTHPROC)		( int cols, int rows );
 
 FBCALL void 		fb_Width			( int cols, int rows );
-FBCALL FB_WIDTHPROC fb_SetWidthProc		( FB_WIDTHPROC newproc );
 
 typedef int	  		(*FB_GETXPROC)		( void );
 typedef int	  		(*FB_GETYPROC)		( void );
 
 FBCALL int 			fb_GetX				( void );
-FBCALL FB_GETXPROC  fb_SetGetXProc		( FB_GETXPROC newproc );
 FBCALL int 			fb_GetY				( void );
-FBCALL FB_GETYPROC  fb_SetGetYProc		( FB_GETYPROC newproc );
 
 typedef void	  	(*FB_PRINTBUFFPROC)	( char *buffer, int mask );
 
 FBCALL void 		fb_PrintBuffer		( char *buffer, int mask );
-FBCALL FB_PRINTBUFFPROC fb_SetPrintBufferProc( FB_PRINTBUFFPROC newproc );
 
 typedef char 		*(*FB_READSTRPROC)	( char *buffer, int len );
 		char 		*fb_ReadString		( char *buffer, int len, FILE *f );
-FBCALL FB_READSTRPROC fb_SetReadStrProc	( FB_READSTRPROC newproc );
+
+typedef struct _FB_HOOKSTB {
+	FB_INKEYPROC		inkeyproc;
+	FB_GETKEYPROC		getkeyproc;
+	FB_KEYHITPROC		keyhitproc;
+	FB_CLSPROC			clsproc;
+	FB_COLORPROC		colorproc;
+	FB_LOCATEPROC		locateproc;
+	FB_WIDTHPROC		widthproc;
+	FB_GETXPROC			getxproc;
+	FB_GETYPROC			getyproc;
+	FB_PRINTBUFFPROC	printbuffproc;
+	FB_READSTRPROC		readstrproc;
+} FB_HOOKSTB;
+
+extern FB_HOOKSTB fb_hooks;
 
 #endif /*__FB_H__*/

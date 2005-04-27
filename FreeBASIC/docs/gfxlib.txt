@@ -1362,7 +1362,49 @@ Macro new in FB.
 
 See also:
 
-COLOR.
+RGBA, COLOR.
+
+
+
++------+----------------------------------------------------------------------
+| RGBA |
++------+
+
+Macro to compute valid color value for hi/truecolor modes.
+
+
+Syntax:
+	RGBA(red,green,blue,alpha)
+
+
+Argument:	Description:
+
+red,green,	Red, green, blue and alpha components ranging 0-255.
+blue,alpha
+
+
+Insights:
+
+The RGBA macro works exactly like the RGB one, but also allows to specify an
+alpha component, for use in 32bpp modes. Internally it's defined as:
+
+#define RGBA(r,g,b,a)   ((cint(a) shl 24) or (cint(r) shl 16) or _
+                         (cint(g) shl 8) or cint(b))
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+Macro new in FB.
+
+
+See also:
+
+RGB, COLOR.
 
 
 

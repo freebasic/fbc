@@ -26,27 +26,17 @@
 
 #include "fb.h"
 
-static FB_CLSPROC fb_clshook = &fb_ConsoleClear;
-
-
 /*:::::*/
 FBCALL void fb_Cls( int mode )
 {
 
 	FB_LOCK();
 
-	fb_clshook( mode );
+	if( fb_hooks.clsproc )
+		fb_hooks.clsproc( mode );
+	else
+		fb_ConsoleClear( mode );
 
 	FB_UNLOCK();
 
-}
-
-/*:::::*/
-FBCALL FB_CLSPROC fb_SetClsProc( FB_CLSPROC newproc )
-{
-    FB_CLSPROC oldproc = fb_clshook;
-    
-    fb_clshook = newproc;
-	
-	return oldproc;
 }

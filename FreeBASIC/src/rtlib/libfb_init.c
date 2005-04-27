@@ -29,6 +29,7 @@
 
 
 /* globals */
+FB_HOOKSTB fb_hooks = { NULL };
 FBSTRING fb_strNullDesc = { NULL, 0 };
 FB_FILE fb_fileTB[FB_MAX_FILES];
 int fb_viewTopRow = -1;

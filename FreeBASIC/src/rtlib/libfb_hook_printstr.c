@@ -26,27 +26,17 @@
 
 #include "fb.h"
 
-static FB_PRINTBUFFPROC fb_printbuffhook = &fb_ConsolePrintBuffer;
-
-
 /*:::::*/
 FBCALL void fb_PrintBuffer( char *buffer, int mask )
 {
 
 	FB_LOCK();
 	
-	fb_printbuffhook( buffer, mask );
+	if( fb_hooks.printbuffproc )
+		fb_hooks.printbuffproc( buffer, mask );
+	else
+		fb_ConsolePrintBuffer( buffer, mask );
 
 	FB_UNLOCK();
 
-}
-
-/*:::::*/
-FBCALL FB_PRINTBUFFPROC fb_SetPrintBufferProc( FB_PRINTBUFFPROC newproc )
-{
-    FB_PRINTBUFFPROC oldproc = fb_printbuffhook;
-
-    fb_printbuffhook = newproc;
-
-	return oldproc;
 }
