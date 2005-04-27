@@ -222,9 +222,9 @@ function WinMain( byval hInstance as integer, byval hPrevInst as integer, lpszCm
    		.cbClsExtra 	= 0
    		.cbWndExtra 	= 0
    		.hInstance 		= hInst
-   		.hIcon 			= LoadIcon( hInst, IDI_APPLICATION )
-   		.hCursor 		= LoadCursor( NULL, IDC_ARROW )
-   		.hbrBackground 	= GetStockObject( BLACK_BRUSH )
+   		.hIcon 			= LoadIcon( hInst, byval IDI_APPLICATION )
+   		.hCursor 		= LoadCursor( NULL, byval IDC_ARROW )
+   		.hbrBackground 	= GetStockObject( byval BLACK_BRUSH )
    		.lpszMenuName 	= NULL
    		.lpszClassName 	= strptr( szAppName )
    	end with

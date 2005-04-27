@@ -187,9 +187,9 @@ function WinMain ( byval hInstance as long, _
      	.cbClsExtra    = 0
      	.cbWndExtra    = 0
      	.hInstance     = hInstance
-     	.hIcon         = LoadIcon( null, IDI_APPLICATION )
-     	.hCursor       = LoadCursor( null, IDC_ARROW )
-     	.hbrBackground = GetStockObject( WHITE_BRUSH )
+     	.hIcon         = LoadIcon( null, byval IDI_APPLICATION )
+     	.hCursor       = LoadCursor( null, byval IDC_ARROW )
+     	.hbrBackground = GetStockObject( byval WHITE_BRUSH )
      	.lpszMenuName  = IDC_MAINMENU
      	.lpszClassName = strptr( szAppName )
      end with

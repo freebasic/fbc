@@ -120,8 +120,8 @@ end function
 		.cbClsExtra    = 0 
 		.cbWndExtra    = 0 
 		.hInstance     = hInstance 
-		.hIcon         = LoadIcon( null, IDI_APPLICATION ) 
-		.hCursor       = LoadCursor( null, IDC_ARROW ) 
+		.hIcon         = LoadIcon( null, byval IDI_APPLICATION ) 
+		.hCursor       = LoadCursor( null, byval IDC_ARROW ) 
 		.hbrBackground = 16  ' btnface color 
 		.lpszMenuName  = null 
 		.lpszClassName = strptr( szAppName ) 
