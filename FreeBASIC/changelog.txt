@@ -1,6 +1,8 @@
 Version 0.14 Beta:
 
 [changed]
+- to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not 
+  passing pointers or numeric values such as NULL or 0, the BYVAL modifier will have to be used now (v1c)
 - Some internal changes to reduce final executables size (lillo)
 
 [added]
@@ -8,7 +10,7 @@ Version 0.14 Beta:
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 - RGBA() built-in macro, works like RGB() but allows to specify an alpha value (lillo)
 - CVSHORT(), CVLONGINT(), MKSHORT$() and MKLONGINT$() (v1c)
-- byte, short and longint overload versions of HEX$, OCT$ and BIN$ (v1c)
+- byte, short and longint overloaded versions of HEX$, OCT$ and BIN$ (v1c)
 - GETJOYSTICK function in gfxlib to get the full state of an attached joystick (lillo)
 
 [fixed]
@@ -19,6 +21,8 @@ Version 0.14 Beta:
 - SHELL in Linux was not restoring console state before calling sub-process, resulting in bad keyboard I/O (lillo)
 - @'s used on DATA stmts were storing the names, not the addresses of var's or proc's (v1c)
 - DRAW had a parsing problem when directed towards an offscreen GET/PUT buffer (lillo)
+- parameters passed explicitly using BYVAL weren't been checked with byval string arguments (v1c)
+- PUT was accepting literal values, what will fail because the way BYREF AS ANY args pass numeric values (v1c)
 
 
 Version 0.13 Beta:
