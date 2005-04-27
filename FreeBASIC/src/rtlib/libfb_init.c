@@ -30,7 +30,7 @@
 
 /* globals */
 FBSTRING fb_strNullDesc = { NULL, 0 };
-FB_FILE fb_fileTB[FB_MAX_FILES] = { { NULL } };
+FB_FILE fb_fileTB[FB_MAX_FILES];
 int fb_viewTopRow = -1;
 int fb_viewBotRow = -1;
 
@@ -42,6 +42,9 @@ FB_PRINTUSGCTX fb_printusgctx = { 0 };
 /*:::::*/
 FBCALL void fb_Init ( void )
 {
+
+	/* initialize files table */
+	memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
 
 	/* os-dep initialization */
 	fb_hInit( );
