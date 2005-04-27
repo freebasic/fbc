@@ -36,14 +36,14 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 	int 		src_len, dst_len;
 
 	FB_STRLOCK();
-	
+
 	if( dst == NULL )
 	{
 		if( src_size == -1 )
 			fb_hStrDelTemp( (FBSTRING *)src );
 
 		FB_STRUNLOCK();
-		
+
 		return dst;
 	}
 
@@ -101,23 +101,31 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 	}
 	else
 	{
-		/* byte ptr? as in C, assume dst is large enough */
-		if( dst_size == 0 )
-			dst_size = src_len;
+		/* src NULL? */
+		if( src_len == 0 )
+		{
+			*(char *)dst = '\0';
+		}
 		else
 		{
-			--dst_size; 						/* less the null-term */
-			if( dst_size < src_len )
-				src_len = dst_size;
-		}
+			/* byte ptr? as in C, assume dst is large enough */
+			if( dst_size == 0 )
+				dst_size = src_len;
+			else
+			{
+				--dst_size; 						/* less the null-term */
+				if( dst_size < src_len )
+					src_len = dst_size;
+			}
 
-		fb_hStrCopy( (char *)dst, src_ptr, src_len );
+			fb_hStrCopy( (char *)dst, src_ptr, src_len );
+		}
 
 		/* fill reminder with null's */
 		if( fillrem != 0 )
 		{
 			dst_size -= src_len;
-			if( (dst_size > 0) && (fillrem) )
+			if( dst_size > 0 )
 				memset( &(((char *)dst)[src_len]), 0, dst_size );
 		}
 	}
@@ -128,7 +136,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 		fb_hStrDelTemp( (FBSTRING *)src );
 
 	FB_STRUNLOCK();
-	
+
 	return dst;
 }
 
