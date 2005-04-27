@@ -27,8 +27,6 @@
 ''      4) when the 3-addr-code stream is flushed, it's first sent to DAG, where
 ''         common sub-expressions inside the basic block are eliminated and virtual regs
 ''         are re-assigned; when the DAG returns, the code is converted to machine-code
-''		5) current getDistance function takes too long to execute; to it speed up, a chain
-''         for every vreg is needed, but w/o pointers and linked-lists, that's too hard
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -52,21 +50,10 @@ type IROPCODE
 	name		as string * 3
 end type
 
-type IRTAC
-	nxt			as IRTAC ptr					'' linked-list field
-
-	op			as integer						'' opcode
-	vr			as IRVREG ptr					'' result
-	v1			as IRVREG ptr					'' operand 1
-	v2			as IRVREG ptr					'' operand 2
-	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
-	ex2			as integer						'' /
-end type
-
 type IRCTX
 	tacTB			as TFLIST
-	tachead			as IRTAC ptr
-	tactail			as IRTAC ptr
+	taccnt			as integer
+	tacidx			as IRTAC ptr
 
 	vregTB			as TFLIST
 end type
@@ -214,8 +201,8 @@ sub irInit
 	dim as integer i, op
 
 	''
-	ctx.tachead	= NULL
-	ctx.tactail	= NULL
+	ctx.tacidx = NULL
+	ctx.taccnt = 0
 
 	flistNew( @ctx.tacTB, IR.INITADDRNODES, len( IRTAC ) )
 
@@ -251,8 +238,8 @@ sub irEnd
 	''
 	flistFree( @ctx.tacTB )
 
-	ctx.tachead	= NULL
-	ctx.tactail	= NULL
+	ctx.tacidx = NULL
+	ctx.taccnt = 0
 
 end sub
 
@@ -415,7 +402,7 @@ sub irhLoadIDX( byval vreg as IRVREG ptr, _
 	end select
 
 	'' any vreg attached?
-	vi = vreg->vi
+	vi = vreg->vidx
 	if( vi = NULL ) then
 		exit sub
 	end if
@@ -472,11 +459,31 @@ end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+#define hRelinkVreg(v,t)										_
+    t->v.next = NULL											:_
+																:_
+    if( v <> NULL ) then										:_
+    	if( v->tacvhead = NULL ) then							:_
+    		v->tacvhead = @t->v									:_
+    	else													:_
+    		v->tacvtail->next = @t->v							:_
+    	end if													:_
+    	v->tacvtail = @t->v										:_
+                                                                :_
+    	v->taclast = t                                          :_
+    	if( v->vidx <> NULL ) then                              :_
+    		v->vidx->taclast = t                                :_
+    	end if                                                  :_
+    	if( v->vaux <> NULL ) then                              :_
+    		v->vaux->taclast = t                                :_
+    	end if													:_
+    end if
+
 '':::::
 sub irEmit( byval op as integer, _
-			byval v1 as IRVREG ptr, _
-			byval v2 as IRVREG ptr, _
-			byval vr as IRVREG ptr, _
+			byval arg1 as IRVREG ptr, _
+			byval arg2 as IRVREG ptr, _
+			byval res as IRVREG ptr, _
 			byval ex1 as FBSYMBOL ptr = NULL, _
 			byval ex2 as integer = 0 ) static
 
@@ -484,14 +491,23 @@ sub irEmit( byval op as integer, _
 
     t = flistNewItem( @ctx.tacTB )
 
-    t->op  = op
-    t->v1  = v1
-    t->v2  = v2
-    t->vr  = vr
-    t->ex1 = ex1
-    t->ex2 = ex2
+    t->pos		 = ctx.taccnt
 
-    ctx.tactail = t
+    t->op  		 = op
+
+    t->arg1.vreg = arg1
+    hRelinkVreg( arg1, t )
+
+    t->arg2.vreg = arg2
+    hRelinkVreg( arg2, t )
+
+    t->res.vreg  = res
+    hRelinkVreg( res, t )
+
+    t->ex1 		 = ex1
+    t->ex2 		 = ex2
+
+    ctx.taccnt += 1
 
 end sub
 
@@ -673,14 +689,22 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 
     	'' string argument?
     	if( adclass = IR.DATACLASS.STRING ) then
-			'' not a pointer yet?
-			if( pclass = IR.VREGTYPE.PTR ) then
-				'' BYVAL or not the mode has to be changed to byref, as
-				'' BYVAL AS STRING is actually BYREF AS ZSTRING
-				amode = FB.ARGMODE.BYREF
+
+			if( pmode <> FB.ARGMODE.BYVAL ) then
+
+				'' not a pointer yet?
+				if( pclass = IR.VREGTYPE.PTR ) then
+					'' BYVAL or not the mode has to be changed to byref, as
+					'' BYVAL AS STRING is actually BYREF AS ZSTRING
+					amode = FB.ARGMODE.BYREF
+				else
+					amode = FB.ARGMODE.BYVAL
+				end if
+
 			else
 				amode = FB.ARGMODE.BYVAL
 			end if
+
 		end if
 
 	end if
@@ -723,7 +747,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 			end select
 
 			if( isptr ) then
-				irEmitPUSH( vr->vi )
+				irEmitPUSH( vr->vidx )
 
 			else
 				'' byref arg and it's not a var? create a temp one..
@@ -848,9 +872,13 @@ function irNewVR( byval dtype as integer, _
 	v->dtype= dtype
 	v->sym	= NULL
 	v->reg	= INVALID
-	v->vi	= NULL
-	v->va	= NULL
+	v->vidx	= NULL
+	v->vaux	= NULL
 	v->ofs	= 0
+
+	v->tacvhead = NULL
+	v->tacvtail = NULL
+	v->taclast  = NULL
 
 	function = v
 
@@ -866,7 +894,7 @@ function irAllocVREG( byval dtype as integer ) as IRVREG ptr static
 
 	'' longint?
 	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-		 vr->va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.REG )
+		 vr->vaux = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.REG )
 	end if
 
 end function
@@ -884,8 +912,8 @@ function irAllocVRIMM( byval dtype as integer, _
 
 	'' longint?
 	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
-		 vr->va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IMM )
-		 vr->va->value = 0
+		 vr->vaux = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IMM )
+		 vr->vaux->value = 0
 	end if
 
 end function
@@ -902,9 +930,9 @@ function irAllocVRIMM64( byval dtype as integer, _
 	vr->value = cuint( value )
 
 	'' aux
-	vr->va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IMM )
+	vr->vaux = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IMM )
 
-	vr->va->value = cint( value shr 32 )
+	vr->vaux->value = cint( value shr 32 )
 
 end function
 
@@ -924,7 +952,7 @@ function irAllocVRVAR( byval dtype as integer, _
 	'' longint?
 	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
 		va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.VAR )
-		vr->va	= va
+		vr->vaux = va
 		va->ofs = ofs + FB.INTEGERSIZE
 	end if
 
@@ -945,12 +973,12 @@ function irAllocVRIDX( byval dtype as integer, _
 	vr->sym 	= symbol
 	vr->ofs 	= ofs
 	vr->mult	= mult
-	vr->vi 		= vidx
+	vr->vidx	= vidx
 
 	'' longint?
 	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
 		va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IDX )
-		vr->va	= va
+		vr->vaux= va
 		va->ofs = ofs + FB.INTEGERSIZE
 	end if
 
@@ -968,12 +996,12 @@ function irAllocVRPTR( byval dtype as integer, _
 
 	vr->ofs 	= ofs
 	vr->mult 	= 1
-	vr->vi 		= vidx
+	vr->vidx	= vidx
 
 	'' longint?
 	if( (dtype = IR.DATATYPE.LONGINT) or (dtype = IR.DATATYPE.ULONGINT) ) then
 		va = irNewVR( IR.DATATYPE.INTEGER, IR.VREGTYPE.IDX )
-		vr->va	= va
+		vr->vaux= va
 		va->ofs = ofs + FB.INTEGERSIZE
 	end if
 
@@ -1051,7 +1079,6 @@ sub irGetVRIndexName( byval vreg as IRVREG ptr, _
 					  vname as string )
 
     dim as FBSYMBOL ptr sym
-    dim as integer mult
     dim as IRVREG ptr vi
     dim as string sname
 
@@ -1060,23 +1087,21 @@ sub irGetVRIndexName( byval vreg as IRVREG ptr, _
 		exit sub
 	end if
 
-    sym = vreg->sym
-    vi 	= vreg->vi
-    mult= vreg->mult
-
+    vi = vreg->vidx
 	if( vi <> NULL ) then
 		irGetVRName( vi, vname )
 	else
 		vname = ""
 	end if
 
+	sym = vreg->sym
 	if( sym <> NULL ) then
 		sname = symbGetName( sym )
 	else
 		sname = ""
 	end if
 
-	emitGetIDXName( mult, sname, vname )
+	emitGetIDXName( vreg->mult, sname, vname )
 
 end sub
 
@@ -1115,55 +1140,55 @@ end sub
 sub irRename( byval vold as IRVREG ptr, _
 			  byval vnew as IRVREG ptr ) static
 
-    dim as IRTAC ptr t
+    dim as IRTACVREG ptr t
     dim as IRVREG ptr v
 
-	t = ctx.tachead
+	'' reassign tac table vregs
+	'' (assuming res, arg1 and arg2 will never point to the same vreg!)
+	t = vold->tacvhead
 	do
-		if( t->v1 = vold ) then
-			t->v1 = vnew
-		elseif( t->v2 = vold ) then
-			t->v2 = vnew
-		elseif( t->vr = vold ) then
-			t->vr = vnew
-		end if
-
-		t = t->nxt
+		t->vreg = vnew
+		t = t->next
 	loop while( t <> NULL )
 
+	vnew->tacvhead = vold->tacvhead
+	vnew->tacvtail = vold->tacvtail
+
+	'' index and auxiliar regs must be checked one by one..
 	v = flistGetHead( @ctx.vregTB )
 	do while( v <> NULL )
 		select case v->typ
 		case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
-			if( v->vi = vold ) then
-				v->vi = vnew
+			if( v->vidx = vold ) then
+				v->vidx = vnew
 			end if
 		end select
 
-		if( v->va = vold ) then
-			v->va = vnew
+		if( v->vaux = vold ) then
+			v->vaux = vnew
 		end if
 
 		v = v->nxt
 	loop
 
+	vnew->taclast = vold->taclast
+
 end sub
 
 '':::::
 sub irReuse( byval t as IRTAC ptr ) static
-    dim as integer op
     dim as IRVREG ptr v1
-    dim as integer dt1, dc1, t1
     dim as IRVREG ptr v2
-    dim as integer dt2, dc2, t2
     dim as IRVREG ptr vr
+    dim as integer dt1, dc1, t1
+    dim as integer dt2, dc2, t2
     dim as integer dtr, dcr, tr
-    dim as integer v1rename, v2rename
+    dim as integer op, tmp, v1rename, v2rename
 
-	op 	 = t->op
-	v1   = t->v1
-	v2   = t->v2
-	vr   = t->vr
+	op	 = t->op
+	v1   = t->arg1.vreg
+	v2   = t->arg2.vreg
+	vr   = t->res.vreg
 
 	irhGetVREG( v1, dt1, dc1, t1 )
 	irhGetVREG( v2, dt2, dc2, t2 )
@@ -1171,9 +1196,11 @@ sub irReuse( byval t as IRTAC ptr ) static
 
 	select case opTB(op).typ
 	case IR.OPTYPE.UNARY
-		if( (vr <> v1) and (dtr = dt1) ) then
-           	if( irGetDistance( v1 ) = IR.MAXDIST ) then
-           		irRename vr, v1
+		if( vr <> v1 ) then
+			if( dtr = dt1 ) then
+           		if( irGetDistance( v1 ) = IR.MAXDIST ) then
+           			irRename( vr, v1 )
+           		end if
            	end if
 		end if
 
@@ -1189,17 +1216,23 @@ sub irReuse( byval t as IRTAC ptr ) static
 		end if
 
 		v1rename = FALSE
-		if( (vr <> v1) and (dtr = dt1) ) then
-           	if( irGetDistance( v1 ) = IR.MAXDIST ) then
-           		v1rename = TRUE
+		if( vr <> v1 ) then
+			if( dtr = dt1 ) then
+           		if( irGetDistance( v1 ) = IR.MAXDIST ) then
+           			v1rename = TRUE
+           		end if
            	end if
 		end if
 
 		v2rename = FALSE
 		if( opTB(op).cummutative ) then
-			if( (vr <> v2) and (dtr = dt2) and (t2 <> IR.VREGTYPE.IMM) ) then
-           		if( irGetDistance( v2 ) = IR.MAXDIST ) then
-           			v2rename = TRUE
+			if( vr <> v2 ) then
+				if( dtr = dt2 ) then
+					if( t2 <> IR.VREGTYPE.IMM ) then
+           				if( irGetDistance( v2 ) = IR.MAXDIST ) then
+           					v2rename = TRUE
+           				end if
+           			end if
            		end if
 			end if
 		end if
@@ -1213,7 +1246,15 @@ sub irReuse( byval t as IRTAC ptr ) static
 		if( v1rename ) then
            	irRename( vr, v1 )
 		elseif( v2rename ) then
-			swap t->v1, t->v2
+
+			'' swap t->arg1, t->arg2
+			t->arg2.vreg = v1
+			t->arg1.vreg = v2
+
+			tmp = t->arg2.next
+			t->arg2.next = t->arg1.next
+			t->arg1.next = tmp
+
 			irRename( vr, v2 )
 		end if
 
@@ -1226,7 +1267,7 @@ sub irFlush static
     dim as integer op
     dim as IRTAC ptr t
 
-	if( ctx.tactail = NULL ) then
+	if( ctx.taccnt = 0 ) then
 		exit sub
 	end if
 
@@ -1234,57 +1275,58 @@ sub irFlush static
 
 	t = flistGetHead( @ctx.tacTB )
 	do
-		ctx.tachead = t
+		ctx.tacidx = t
+
 
 		irReuse( t )
 
 		op = t->op
 
 		''
-		'irDump( op, t->v1, t->v2, t->vr )
+		''irDump( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
 
         ''
 		select case as const opTB(op).typ
 		case IR.OPTYPE.UNARY
-			irFlushUOP( op, t->v1, t->vr )
+			irFlushUOP( op, t->arg1.vreg, t->res.vreg )
 
 		case IR.OPTYPE.BINARY
-			irFlushBOP( op, t->v1, t->v2, t->vr )
+			irFlushBOP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
 
 		case IR.OPTYPE.COMP
-			irFlushCOMP( op, t->v1, t->v2, t->vr, t->ex1 )
+			irFlushCOMP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg, t->ex1 )
 
 		case IR.OPTYPE.STORE
-			irFlushSTORE( op, t->v1, t->v2 )
+			irFlushSTORE( op, t->arg1.vreg, t->arg2.vreg )
 
 		case IR.OPTYPE.LOAD
-			irFlushLOAD( op, t->v1 )
+			irFlushLOAD( op, t->arg1.vreg )
 
 		case IR.OPTYPE.CONVERT
-			irFlushCONVERT( op, t->v1, t->v2 )
+			irFlushCONVERT( op, t->arg1.vreg, t->arg2.vreg )
 
 		case IR.OPTYPE.STACK
-			irFlushSTACK( op, t->v1, t->ex2 )
+			irFlushSTACK( op, t->arg1.vreg, t->ex2 )
 
 		case IR.OPTYPE.CALL
-			irFlushCALL( op, t->ex1, t->ex2, t->v1, t->vr )
+			irFlushCALL( op, t->ex1, t->ex2, t->arg1.vreg, t->res.vreg )
 
 		case IR.OPTYPE.BRANCH
 			irFlushBRANCH( op, t->ex1 )
 
 		case IR.OPTYPE.ADDRESSING
-			irFlushADDR( op, t->v1, t->vr )
+			irFlushADDR( op, t->arg1.vreg, t->res.vreg )
 		end select
 
 		''
-		'irDump( op, t->v1, t->v2, t->vr )
+		'irDump( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
 
 		t = t->nxt
 	loop while( t <> NULL )
 
 	''
-	ctx.tachead	= NULL
-	ctx.tactail	= NULL
+	ctx.tacidx = NULL
+	ctx.taccnt = 0
 	flistReset( @ctx.tacTB )
 
 	''
@@ -1338,7 +1380,7 @@ private sub irhPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
     				npr = ptrvreg->reg
 
     			case IR.VREGTYPE.IDX, IR.VREGTYPE.PTR
-    				ptrvreg = ptrvreg->vi
+    				ptrvreg = ptrvreg->vidx
     				if( ptrvreg <> NULL ) then
     					npr = ptrvreg->reg
     				end if
@@ -1457,7 +1499,7 @@ sub irFlushCALL( byval op as integer, _
 
 		'' longints..
 		if( (rdtype = IR.DATATYPE.LONGINT) or (rdtype = IR.DATATYPE.ULONGINT) ) then
-			va = vr->va
+			va = vr->vaux
 			va->reg = regTB(rdclass)->allocateReg( regTB(rdclass), rr2, va )
 			va->typ = IR.VREGTYPE.REG
 		end if
@@ -1495,7 +1537,7 @@ sub irFlushSTACK( byval op as integer, _
 		if( t1 = IR.VREGTYPE.REG ) then
 			'' handle longint
 			if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-				va = v1->va
+				va = v1->vaux
 				va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
 			end if
 
@@ -1546,7 +1588,7 @@ sub irFlushUOP( byval op as integer, _
 		if( v1 <> vr ) then
 			'' handle longint
 			if( (dtr = IR.DATATYPE.LONGINT) or (dtr = IR.DATATYPE.ULONGINT) ) then
-				va = vr->va
+				va = vr->vaux
 				va->reg = regTB(dcr)->ensure( regTB(dcr), va, FALSE )
 			end if
 
@@ -1560,7 +1602,7 @@ sub irFlushUOP( byval op as integer, _
 	if( vr <> NULL ) then
 		'' handle longint
 		if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-			va = v1->va
+			va = v1->vaux
 			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
 		end if
 
@@ -1625,7 +1667,7 @@ sub irFlushBOP( byval op as integer, _
 		if( t2 <> IR.VREGTYPE.IMM ) then		'' x86 assumption
 			'' handle longint
 			if( (dt2 = IR.DATATYPE.LONGINT) or (dt2 = IR.DATATYPE.ULONGINT) ) then
-				va = v2->va
+				va = v2->vaux
 				va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
 			end if
 
@@ -1637,7 +1679,7 @@ sub irFlushBOP( byval op as integer, _
 		if( t2 = IR.VREGTYPE.REG ) then			'' x86 assumption
 			'' handle longint
 			if( (dt2 = IR.DATATYPE.LONGINT) or (dt2 = IR.DATATYPE.ULONGINT) ) then
-				va = v2->va
+				va = v2->vaux
 				va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
 			end if
 
@@ -1647,7 +1689,7 @@ sub irFlushBOP( byval op as integer, _
 		'' destine allocation comes *after* source, 'cause the FPU stack
 		'' handle longint
 		if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-			va = v1->va
+			va = v1->vaux
 			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
 		end if
 
@@ -1700,7 +1742,7 @@ sub irFlushBOP( byval op as integer, _
 		if( (v1 <> vr) ) then
 			'' handle longint
 			if( (dtr = IR.DATATYPE.LONGINT) or (dtr = IR.DATATYPE.ULONGINT) ) then
-				va = vr->va
+				va = vr->vaux
 				va->reg = regTB(dcr)->ensure( regTB(dcr), va, FALSE )
 			end if
 
@@ -1759,7 +1801,7 @@ sub irFlushCOMP( byval op as integer, _
 	if( (t2 = IR.VREGTYPE.REG) or doload ) then
 		'' handle longint
 		if( (dt2 = IR.DATATYPE.LONGINT) or (dt2 = IR.DATATYPE.ULONGINT) ) then
-			va = v2->va
+			va = v2->vaux
 			va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
 		end if
 
@@ -1784,7 +1826,7 @@ sub irFlushCOMP( byval op as integer, _
 	if( (t1 = IR.VREGTYPE.REG) or doload ) then
 		'' handle longint
 		if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-			va = v1->va
+			va = v1->vaux
 			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
 		end if
 
@@ -1876,7 +1918,7 @@ sub irFlushSTORE( byval op as integer, _
 	if( (t2 = IR.VREGTYPE.REG) or ((t2 <> IR.VREGTYPE.IMM) and (dc1 = IR.DATACLASS.INTEGER)) ) then
 		'' handle longint
 		if( (dt2 = IR.DATATYPE.LONGINT) or (dt2 = IR.DATATYPE.ULONGINT) ) then
-			va = v2->va
+			va = v2->vaux
 			va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
 		end if
 
@@ -1915,7 +1957,7 @@ sub irFlushLOAD( byval op as integer, _
 	case IR.OP.LOAD
 		'' handle longint
 		if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-			va = v1->va
+			va = v1->vaux
 			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
 		end if
 
@@ -1925,7 +1967,7 @@ sub irFlushLOAD( byval op as integer, _
 		if( t1 = IR.VREGTYPE.REG ) then
 			'' handle longint
 			if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-				va = v1->va
+				va = v1->vaux
 				va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
 			end if
 
@@ -1939,7 +1981,7 @@ sub irFlushLOAD( byval op as integer, _
 
 			'' handle longint
 			if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-				va = vr->va
+				va = vr->vaux
 				va->reg = regTB(dc1)->allocateReg( regTB(dc1), rr2, va )
 				va->typ = IR.VREGTYPE.REG
 			end if
@@ -2019,7 +2061,7 @@ sub irFlushCONVERT( byval op as integer, _
 		if( t2 = IR.VREGTYPE.REG ) then			'' x86 assumption
 			'' handle longint
 			if( (dt2 = IR.DATATYPE.LONGINT) or (dt2 = IR.DATATYPE.ULONGINT) ) then
-				va = v2->va
+				va = v2->vaux
 				va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
 			end if
 
@@ -2028,7 +2070,7 @@ sub irFlushCONVERT( byval op as integer, _
 
 		'' handle longint
 		if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) ) then
-			va = v1->va
+			va = v1->vaux
 			va->reg = regTB(dc1)->allocate( regTB(dc1), va )
 			va->typ = IR.VREGTYPE.REG
 		end if
@@ -2110,11 +2152,11 @@ sub irhFreeIDX( byval vreg as IRVREG ptr, _
 		exit sub
 	end if
 
-	vi = vreg->vi
+	vi = vreg->vidx
     if( vi <> NULL ) then
     	if( vi->reg <> INVALID ) then
     		irhFreeREG( vi, force )				'' recursively
-    		vreg->vi = NULL
+    		vreg->vidx = NULL
 		end if
 	end if
 
@@ -2136,8 +2178,8 @@ sub irhFreeREG( byval vreg as IRVREG ptr, _
 	irhFreeIDX( vreg, force )
 
 	'' aux?
-	if( vreg->va <> NULL ) then
-		va = vreg->va
+	if( vreg->vaux <> NULL ) then
+		va = vreg->vaux
 		if( va->reg <> INVALID ) then
 			irhFreeREG( va )
 		end if
@@ -2170,7 +2212,7 @@ end sub
 
 '':::::
 function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
-    dim as IRVREG ptr v, vi, va
+    dim as IRVREG ptr v
     dim as IRTAC ptr t
     dim as integer dist
 
@@ -2178,51 +2220,19 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 		return IR.MAXDIST
 	end if
 
-	'' check if there's any index with the vreg attached
-	vi = NULL
-	va = NULL
-	v = flistGetHead( @ctx.vregTB )
-	do while( v <> NULL )
-		if( v->vi = vreg ) then
-			vi = v
-			exit do
-		end if
+	'' skipping the current tac
+	t = ctx.tacidx->nxt
+	if( t = NULL ) then
+		return IR.MAXDIST
+	end if
 
-		if( v->va = vreg ) then
-			va = v
-			exit do
-		end if
-
-		v = v->nxt
-	loop
-
-	'' check all 3-addr-codes, skipping the current one
-	dist = 0
-	t = ctx.tachead->nxt
-	do while( t <> NULL )
-
-		'' vr is not checked, as it doesn't count as an operand
-		if( (t->v2 = vreg) or (t->v1 = vreg) ) then
-			return dist
-		end if
-
-		if( vi <> NULL ) then
-			if( (t->v2 = vi) or (t->v1 = vi) ) then
-				return dist
-			end if
-		end if
-
-		if( va <> NULL ) then
-			if( (t->v2 = va) or (t->v1 = va) ) then
-				return dist
-			end if
-		end if
-
-		dist += 1
-		t = t->nxt
-	loop
-
-	function = IR.MAXDIST
+	''
+	dist = vreg->taclast->pos - t->pos
+	if( dist < 0 ) then
+		function = IR.MAXDIST
+	else
+		function = dist
+	end if
 
 end function
 
@@ -2241,7 +2251,7 @@ sub irLoadVR( byval reg as integer, _
 			rvreg.typ 	= IR.VREGTYPE.REG
 			rvreg.dtype = vreg->dtype
 			rvreg.reg	= reg
-			rvreg.va	= vreg->va
+			rvreg.vaux	= vreg->vaux
 
 			emitGetRegName( vreg->dtype, irGetDataClass( vreg->dtype ), reg, rname )
 
@@ -2287,7 +2297,7 @@ sub irStoreVR( byval vreg as IRVREG ptr, _
 	rvreg.typ		= IR.VREGTYPE.REG
 	rvreg.dtype		= vreg->dtype
 	rvreg.reg		= reg
-	rvreg.va		= vreg->va
+	rvreg.vaux		= vreg->vaux
 
 	irCreateTMPVAR( vreg, vname )
 
@@ -2297,7 +2307,7 @@ sub irStoreVR( byval vreg as IRVREG ptr, _
 
 	'' handle longints
 	if( (vreg->dtype = IR.DATATYPE.LONGINT) or (vreg->dtype = IR.DATATYPE.ULONGINT) ) then
-		vareg = vreg->va
+		vareg = vreg->vaux
 		if( vareg->typ <> IR.VREGTYPE.TMPVAR ) then
 			regTB(IR.DATACLASS.INTEGER)->free( regTB(IR.DATACLASS.INTEGER), vareg->reg )
 			vareg->reg = INVALID
@@ -2323,7 +2333,7 @@ sub irXchgTOS( byval reg as integer ) static
 
 end sub
 
-#if 0
+'#if 0
 '':::::
 sub irDump( byval op as integer, _
 			byval v1 as IRVREG ptr, _
@@ -2352,7 +2362,7 @@ sub irDump( byval op as integer, _
 	end if
 
 end sub
-#endif
+'#endif
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 

@@ -23,7 +23,7 @@ const IR.INITVREGNODES		= 1024
 
 const IR.INITADDRNODES		= 2048
 
-const IR.MAXDIST			= 2UL ^ 31
+const IR.MAXDIST			= 65536
 
 enum IRDATACLASS_ENUM
 	IR.DATACLASS.INTEGER                        '' must be the first
@@ -143,8 +143,30 @@ end enum
 const IR.OP.TOSIGNED		= 253
 const IR.OP.TOUNSIGNED		= 254
 
-
 ''
+type IRVREG_ as IRVREG
+type IRTAC_ as IRTAC
+
+type IRTACVREG
+	vreg		as IRVREG_ ptr
+	next		as IRTACVREG ptr
+end type
+
+type IRTAC
+	nxt			as IRTAC ptr					'' linked-list field
+
+	pos			as integer
+
+	op			as integer						'' opcode
+
+	res			as IRTACVREG                    '' result
+	arg1		as IRTACVREG                    '' operand 1
+	arg2		as IRTACVREG					'' operand 2
+
+	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
+	ex2			as integer						'' /
+end type
+
 type IRVREG
 	nxt			as IRVREG ptr					'' linked-list field
 
@@ -152,14 +174,18 @@ type IRVREG
 	dtype		as integer						'' CHAR, INTEGER, ...
 
 	reg			as integer						'' reg
+	value		as integer						'' imm value (high word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
 	mult		as integer						'' multipler
-	vi			as IRVREG ptr					'' index vreg
-	va			as IRVREG ptr					'' aux vreg (used with longint's)
 
-	value		as integer						'' imm value (high word of longint's at va->value)
+	vidx		as IRVREG ptr					'' index vreg
+	vaux		as IRVREG ptr					'' aux vreg (used with longint's)
+
+	tacvhead	as IRTACVREG ptr				'' back-link to tac table
+	tacvtail	as IRTACVREG ptr				'' /
+	taclast		as IRTAC ptr					'' /
 end type
 
 type IRDATATYPE
