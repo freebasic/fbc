@@ -4810,7 +4810,7 @@ sub emitSECTION( byval section as integer ) static
 
 	select case as const section
 	case EMIT.SECTYPE.CONST
-		ostr += "data" + NEWLINE
+		ostr += "rodata" + NEWLINE
 	case EMIT.SECTYPE.DATA
 		ostr += "data" + NEWLINE
 	case EMIT.SECTYPE.BSS
