@@ -4,6 +4,7 @@ Version 0.14 Beta:
 - to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not 
   passing pointers or numeric values such as NULL or 0, the BYVAL modifier will have to be used now (v1c)
 - Some internal changes to reduce final executables size (lillo)
+- macro text will be expanded on comments emited when the -g command-line option is used (v1c)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -12,6 +13,8 @@ Version 0.14 Beta:
 - CVSHORT(), CVLONGINT(), MKSHORT$() and MKLONGINT$() (v1c)
 - byte, short and longint overloaded versions of HEX$, OCT$ and BIN$ (v1c)
 - GETJOYSTICK function in gfxlib to get the full state of an attached joystick (lillo)
+- FUNCTION can now be used inside inline assembly blocks to set the function's result (v1c)
+- error message when macro text is too long (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -23,6 +26,7 @@ Version 0.14 Beta:
 - DRAW had a parsing problem when directed towards an offscreen GET/PUT buffer (lillo)
 - parameters passed explicitly using BYVAL weren't been checked with byval string arguments (v1c)
 - PUT was accepting literal values, what will fail because the way BYREF AS ANY args pass numeric values (v1c)
+- complex pointer expressions would not be parsed if used as parameters to functions (v1c)
 
 
 Version 0.13 Beta:
