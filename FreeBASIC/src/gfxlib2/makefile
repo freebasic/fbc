@@ -47,6 +47,7 @@ lib = $(libpath)/libfbgfx.a
 objects := $(patsubst %.c,obj/$(osdeppath)/%.o,$(wildcard *.c))
 objects += $(patsubst %.s,obj/$(osdeppath)/%.o,$(wildcard *.s))
 osdepobjs := $(patsubst $(osdeppath)/%.c,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.c))
+osdepobjs := $(patsubst $(osdeppath)/%.s,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.s))
 headers := $(wildcard *.h)
 headers += $(wildcard $(osdeppath)/*.h)
 
@@ -58,6 +59,9 @@ obj/$(osdeppath)/%.o : %.s $(headers)
 
 obj/$(osdeppath)/%.o : $(osdeppath)/%.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
+
+obj/$(osdeppath)/%.o : $(osdeppath)/%.s $(headers)
+	$(CC) -c $(AFLAGS) $< -o $@
 
 
 all : $(objects) $(osdepobjs) $(lib)
