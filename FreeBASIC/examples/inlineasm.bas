@@ -15,15 +15,12 @@ declare function mulintegers( byval x as integer, byval y as integer ) as intege
 
 '':::::
 function mulintegers( byval x as integer, byval y as integer ) as integer
-	dim res as integer
 	
 	asm 
 		mov		eax, [x]
 		imul	eax, [y]
-		mov		[res], eax
+		mov		[function], eax
 	end asm
-	
-	mulintegers = res
 	
 end function
 	

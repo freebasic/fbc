@@ -27,3 +27,5 @@
 	print bin$( i )
 	print bin$( l )	
 		
+		
+	sleep

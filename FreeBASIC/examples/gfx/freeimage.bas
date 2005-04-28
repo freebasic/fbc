@@ -8,7 +8,7 @@ option explicit
 option escape
 
 '$include: "FreeImage.bi"
-'$include: "SDL\SDL.bi"
+'$include: "SDL/SDL.bi"
 
 const SCR_WIDTH = 800
 const SCR_HEIGHT= 600
