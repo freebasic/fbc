@@ -240,13 +240,13 @@ end function
 ''
 function cDerefFields( byval sym as FBSYMBOL ptr, _
 					   elm as FBSYMBOL ptr, _
-					   typ as integer, _
+					   dtype as integer, _
 					   subtype as FBSYMBOL ptr, _
 					   varexpr as ASTNODE ptr, _
 					   byval isderef as integer, _
 					   byval checkarray as integer ) as integer
 
-	dim as integer cnt, lgt
+	dim as integer cnt, lgt, typ
 	dim as ASTNODE ptr expr, idxexpr
 	dim as integer isfieldderef
 
@@ -297,14 +297,14 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			end if
 
 			'' string, fixstr, zstring?
-			if( typ < FB.SYMBTYPE.POINTER ) then
+			if( dtype < FB.SYMBTYPE.POINTER ) then
 
-				select case typ
+				select case dtype
 				case FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
 
-					if( typ = FB.SYMBTYPE.STRING ) then
+					if( dtype = FB.SYMBTYPE.STRING ) then
 						'' deref
-						varexpr = astNewADDR( IR.OP.DEREF, varexpr, sym, elm, IR.DATATYPE.UINT )
+						varexpr = astNewADDR( IR.OP.DEREF, varexpr, sym, elm )
 					else
 						'' address of
 						varexpr = astNewADDR( IR.OP.ADDROF, varexpr, sym, elm )
@@ -316,7 +316,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 					varexpr = astNewPTR( NULL, NULL, 0, varexpr, IR.DATATYPE.UBYTE, NULL )
 
 					'' reset type
-					typ = IR.DATATYPE.UBYTE
+					dtype = IR.DATATYPE.UBYTE
 					subtype = NULL
 					elm = NULL
 
@@ -330,7 +330,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			end if
 
 			'' times length
-			lgt = symbCalcLen( typ - FB.SYMBTYPE.POINTER, subtype )
+			lgt = symbCalcLen( dtype - FB.SYMBTYPE.POINTER, subtype )
 
 			if( lgt = 0 ) then
 				hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
@@ -348,22 +348,25 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 		end select
 
-		if( typ < FB.SYMBTYPE.POINTER ) then
+		if( dtype < FB.SYMBTYPE.POINTER ) then
 			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 			return FALSE
 		end if
 
-		typ -= FB.SYMBTYPE.POINTER
-
 		'' incomplete type?
-		if( typ = FB.SYMBTYPE.FWDREF ) then
+		if( dtype-FB.SYMBTYPE.POINTER = FB.SYMBTYPE.FWDREF ) then
 			hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
 			return FALSE
 		end if
 
 		'' TypeField
+		typ = dtype - FB.SYMBTYPE.POINTER
+
 		expr = NULL
-		if( not cTypeField( elm, typ, subtype, expr, isfieldderef, checkarray ) ) then
+		if( cTypeField( elm, typ, subtype, expr, isfieldderef, checkarray ) ) then
+			dtype = typ
+
+		else
 			if( idxexpr = NULL ) then
 				if( not isderef ) then
 					hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
@@ -384,24 +387,24 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 		end if
 
 		''
-		varexpr = astNewPTR( sym, elm, 0, varexpr, typ, subtype )
+		varexpr = astNewPTR( sym, elm, 0, varexpr, dtype, subtype )
 
 		''
 		do while( cnt > 0 )
-			if( typ < FB.SYMBTYPE.POINTER ) then
+			if( dtype < FB.SYMBTYPE.POINTER ) then
 				hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
 				return FALSE
 			end if
 
-			typ -= FB.SYMBTYPE.POINTER
+			dtype -= FB.SYMBTYPE.POINTER
 
 			'' incomplete type?
-			if( typ = FB.SYMBTYPE.FWDREF ) then
+			if( dtype = FB.SYMBTYPE.FWDREF ) then
 				hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
 				return FALSE
 			end if
 
-			varexpr = astNewPTR( sym, elm, 0, varexpr, typ, subtype )
+			varexpr = astNewPTR( sym, elm, 0, varexpr, dtype, subtype )
 
 			cnt -= 1
 		loop

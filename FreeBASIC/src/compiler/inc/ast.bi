@@ -252,9 +252,7 @@ declare function 	astLoadFUNCT		( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function 	astNewADDR			( byval op as integer, _
 										  byval p as ASTNODE ptr, _
 										  byval sym as FBSYMBOL ptr = NULL, _
-										  byval elm as FBSYMBOL ptr = NULL, _
-										  byval dtype as integer = INVALID, _
-										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
+										  byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astLoadADDR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
@@ -277,9 +275,7 @@ declare function 	astLoadIIF			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewOFFSET		( byval v as ASTNODE ptr, _
 					   					  byval sym as FBSYMBOL ptr = NULL, _
-					   					  byval elm as FBSYMBOL ptr = NULL, _
-					   					  byval dtype as integer = INVALID, _
-					   					  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
+					   					  byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astLoadOFFSET		( byval n as ASTNODE ptr ) as IRVREG ptr
 

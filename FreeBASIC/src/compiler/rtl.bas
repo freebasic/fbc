@@ -1171,24 +1171,6 @@ data "fb_GfxScreenRes", "", _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
-'' fb_GfxBload ( filename as string, byval dest as any ptr = NULL ) as integer
-data "bload", "fb_GfxBload", _
-	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
-	 2, _
-	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,NULL
-
-'' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer ) as integer
-data "bsave", "fb_GfxBsave", _
-	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
-	 3, _
-	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
-	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-
-
 '' fb_ProfileSetProc ( procname as string ) as void
 data "fb_ProfileSetProc", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
@@ -1216,8 +1198,24 @@ data "fb_ProfileEnd", "", _
 	 NULL, FALSE, FALSE, _
 	 0
 
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'' fb_GfxBload ( filename as string, byval dest as any ptr = NULL ) as integer
+data "bload", "fb_GfxBload", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, TRUE, FALSE, _
+	 2, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, TRUE,NULL
+
+'' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer ) as integer
+data "bsave", "fb_GfxBsave", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, TRUE, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 
 '' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void
@@ -6005,7 +6003,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		s = hAllocStringConst( procname, -1 )
 	end if
 
-	expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.CHAR ), s )
+	expr = astNewADDR( IR.OP.ADDROF, astNewVAR( s, NULL, 0, IR.DATATYPE.FIXSTR ), s, NULL )
 
 	function = expr
 
@@ -6026,7 +6024,7 @@ function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
 	else
 		expr = astNewCONSTi( 0, IR.DATATYPE.POINTER+IR.DATATYPE.CHAR )
 	end if
-	if( astNewPARAM( proc, expr ) = NULL ) then
+	if( astNewPARAM( proc, expr, INVALID, FB.ARGMODE.BYVAL ) = NULL ) then
 		exit function
 	end if
 
@@ -6047,7 +6045,7 @@ function rtlProfileStartCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 	proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
 
 	expr = hGetProcName( symbol )
-	if( astNewPARAM( proc, expr ) = NULL ) then
+	if( astNewPARAM( proc, expr, INVALID, FB.ARGMODE.BYVAL ) = NULL ) then
 		exit function
 	end if
 

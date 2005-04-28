@@ -1599,8 +1599,7 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 		p = n->proc.profstart
 		if( p <> NULL ) then
 			nn->proc.profstart = astCloneTree( p )
-			p = n->proc.profend
-			nn->proc.profend = astCloneTree( p )
+			nn->proc.profend = astCloneTree( n->proc.profend )
 		end if
 	end select
 
@@ -1642,8 +1641,7 @@ sub astDelTree ( byval n as ASTNODE ptr )
 		p = n->proc.profstart
 		if( p <> NULL ) then
 			astDelTree( p )
-			p = n->proc.profend
-			astDelTree( p )
+			astDelTree( n->proc.profend )
 		end if
 	end select
 
@@ -3545,25 +3543,15 @@ end function
 '':::::
 function astNewOFFSET( byval v as ASTNODE ptr, _
 					   byval sym as FBSYMBOL ptr = NULL, _
-					   byval elm as FBSYMBOL ptr = NULL, _
-					   byval dtype as integer = INVALID, _
-					   byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+					   byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
 	dim as ASTNODE ptr n
 
 	if( v = NULL ) then
 		return NULL
 	end if
 
-	if( dtype = INVALID ) then
-		dtype = v->dtype
-	end if
-
-	if( subtype = NULL ) then
-		subtype = v->subtype
-	end if
-
 	'' alloc new node
-	n = astNew( AST.NODECLASS.OFFSET, IR.DATATYPE.POINTER + dtype, subtype )
+	n = astNew( AST.NODECLASS.OFFSET, IR.DATATYPE.POINTER + IR.DATATYPE.VOID, NULL )
 
 	if( n = NULL ) then
 		return NULL
@@ -3600,33 +3588,23 @@ end function
 function astNewADDR( byval op as integer, _
 					 byval p as ASTNODE ptr, _
 					 byval sym as FBSYMBOL ptr = NULL, _
-					 byval elm as FBSYMBOL ptr = NULL, _
-					 byval dtype as integer = INVALID, _
-					 byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+					 byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	if( p = NULL ) then
 		return NULL
 	end if
 
-	if( dtype = INVALID ) then
-		dtype = p->dtype
-	end if
-
-	if( subtype = NULL ) then
-		subtype = p->subtype
-	end if
-
 	if( op = IR.OP.ADDROF ) then
 		if( p->class = AST.NODECLASS.VAR ) then
 			if( p->var.ofs = 0 ) then
-				return astNewOFFSET( p, sym, elm, dtype, subtype )
+				return astNewOFFSET( p, sym, elm )
 			end if
 		end if
 	end if
 
 	'' alloc new node
-	n = astNew( AST.NODECLASS.ADDR, IR.DATATYPE.POINTER + dtype, subtype )
+	n = astNew( AST.NODECLASS.ADDR, IR.DATATYPE.POINTER + IR.DATATYPE.VOID, NULL )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -4083,7 +4061,9 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 	if( env.clopt.profile ) then
 		if( not isprofiler ) then
 			n->proc.profstart = rtlProfileStartCall( sym )
-			n->proc.profend   = rtlProfileEndCall( )
+			if( n->proc.profstart <> NULL ) then
+				n->proc.profend   = rtlProfileEndCall( )
+			end if
 		end if
 	end if
 
@@ -4157,7 +4137,7 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 							      byval arg as FBSYMBOL ptr, _
 							      byval p as ASTNODE ptr ) as integer
 
-    dim as integer adtype, pdtype, pclass, copyback
+    dim as integer adtype, pdtype, pclass, copyback, amode
 
 	function = p
 
@@ -4167,20 +4147,40 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 	adtype  = symbGetType( arg )
 	pdtype  = p->dtype
 
+	amode = symbGetArgMode( f->proc.sym, arg )
+
 	'' calling the runtime lib?
 	if( f->proc.isrtl ) then
 
-		'' byref arg (rtlib str args are ALWAYS byref)
+		'' byref arg?
+		if( amode = FB.ARGMODE.BYREF ) then
 
-		'' var-len param: all rtlib procs will delete temps automatically
-		if( pdtype = IR.DATATYPE.STRING ) then
-			exit function
+			'' var-len param: all rtlib procs will delete temps automatically
+			if( pdtype = IR.DATATYPE.STRING ) then
+				exit function
 
-		'' fixed-len/byte/zstring/ptr param: just alloc a temp descriptor
-		'' (assuming here that no rtlib function will EVER change the strings
-		'' passed as param)
+			'' fixed-len/byte/zstring/ptr param: just alloc a temp descriptor
+			'' (assuming here that no rtlib function will EVER change the strings
+			'' passed as param)
+			else
+				return rtlStrAllocTmpDesc( p )
+			end if
+
 		else
-			return rtlStrAllocTmpDesc( p )
+
+			'' skip, unless it's a temp var-len (return by functions), that
+			'' must be deleted when the called proc returns
+			if( pclass <> AST.NODECLASS.FUNCT ) then
+				exit function
+			end if
+
+			'' only if var-len
+			if( pdtype <> IR.DATATYPE.STRING ) then
+				exit function
+			end if
+
+			'' create temp string to pass as paramenter
+			return hAllocTmpString( f, p, FALSE )
 		end if
 
 	end if
@@ -4190,7 +4190,7 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 	pclass = p->class
 
 	''
-	select case symbGetArgMode( f->proc.sym, arg )
+	select case amode
 
 	'' by reference arg?
 	case FB.ARGMODE.BYREF

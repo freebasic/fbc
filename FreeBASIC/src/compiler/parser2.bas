@@ -604,12 +604,9 @@ end function
 private function hDoDeref( byval cnt as integer, _
 						   expr as ASTNODE ptr, _
 					       byval sym as FBSYMBOL ptr, _
-					       byval elm as FBSYMBOL ptr ) as integer
-
-	dim dtype as integer, subtype as FBSYMBOL ptr
-
-	dtype   = astGetDataType( expr )
-	subtype = astGetSubType( expr )
+					       byval elm as FBSYMBOL ptr, _
+					       byval dtype as integer, _
+					       byval subtype as FBSYMBOL ptr ) as integer
 
 	function = INVALID
 
@@ -663,24 +660,31 @@ end function
 function cParentDeref( derefexpr as ASTNODE ptr, _
 					   sym as FBSYMBOL ptr, _
 					   elm as FBSYMBOL ptr, _
-					   derefcnt as integer ) as integer
+					   derefcnt as integer, _
+					   dtype as integer, _
+					   subtype as FBSYMBOL ptr ) as integer
 
-    dim as FBSYMBOL ptr s, subtype
-    dim as integer lgt, dtype, op
+    dim as FBSYMBOL ptr s
+    dim as integer lgt, op
     dim as ASTNODE ptr expr
 
 	function = FALSE
 
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
 		exit function
 	end if
 
   	'' AddrOfExpression
 	if( cAddrOfExpression( derefexpr, sym, elm ) ) then
 
-		dtype = astGetDataType( derefexpr )
+		if( elm <> NULL ) then
+			dtype   = IR.DATATYPE.POINTER + symbGetType( elm )
+			subtype = symbGetSubtype( elm )
+		else
+			dtype   = IR.DATATYPE.POINTER + symbGetType( sym )
+			subtype = symbGetSubtype( sym )
+		end if
 
 	else
 		'' Variable
@@ -689,10 +693,10 @@ function cParentDeref( derefexpr as ASTNODE ptr, _
 		    exit function
 		end if
 
-  		dtype = astGetDataType( derefexpr )
+  		dtype   = astGetDataType( derefexpr )
+		subtype = astGetSubType( derefexpr )
   	end if
 
-	subtype = astGetSubType( derefexpr )
 
 	'' '-' | '+'
 	select case lexCurrentToken
@@ -746,12 +750,12 @@ function cParentDeref( derefexpr as ASTNODE ptr, _
 	end if
 
     ''
-	if( not cDerefFields( sym, elm, dtype, subtype, derefexpr, TRUE, FALSE ) ) then
+	if( cDerefFields( sym, elm, dtype, subtype, derefexpr, TRUE, FALSE ) ) then
+		derefcnt -= 1
+	else
 		if( hGetLastError <> FB.ERRMSG.OK ) then
 			exit function
 		end if
-	else
-		derefcnt -= 1
 	end if
 
 	function = TRUE
@@ -765,7 +769,7 @@ end function
 ''							  | ParentDeref) .
 ''
 function cDerefExpression( derefexpr as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr sym, elm
+    dim as FBSYMBOL ptr sym, elm, subtype
     dim as integer derefcnt, dtype
     dim as ASTNODE ptr funcexpr
 
@@ -779,35 +783,54 @@ function cDerefExpression( derefexpr as ASTNODE ptr ) as integer
 	'' DREF+
     derefcnt = 0
 	do
-		lexSkipToken
+		lexSkipToken( )
 		derefcnt += 1
-	loop while( lexCurrentToken = FB.TK.DEREFCHAR )
+	loop while( lexCurrentToken( ) = FB.TK.DEREFCHAR )
 
 	'' AddrOfExpression
-	if( not cAddrOfExpression( derefexpr, sym, elm ) ) then
+	if(  cAddrOfExpression( derefexpr, sym, elm ) ) then
+
+		if( elm <> NULL ) then
+			dtype   = IR.DATATYPE.POINTER + symbGetType( elm )
+			subtype = symbGetSubtype( elm )
+		else
+			dtype   = IR.DATATYPE.POINTER + symbGetType( sym )
+			subtype = symbGetSubtype( sym )
+		end if
+
+	else
 
   		sym = NULL
   		elm = NULL
 
-  		'' can be PEEK() or VA_ARG()..
-  		if( not cQuirkFunction( derefexpr ) ) then
-  			'' Function
-  			if( not cFunction( derefexpr, sym, elm ) ) then
-  				'' Variable
-  				if( not cVariable( derefexpr, sym, elm ) ) then
-                	'' ParentDeref
-  					if( not cParentDeref( derefexpr, sym, elm, derefcnt ) ) then
-  						exit function
-  					end if
-		    	end if
+        '' ParentDeref
+  		if( not cParentDeref( derefexpr, sym, elm, derefcnt, dtype, subtype ) ) then
+
+			if( hGetLastError <> FB.ERRMSG.OK ) then
+				exit function
 			end if
+
+  			'' can be PEEK() or VA_ARG()..
+  			if( not cQuirkFunction( derefexpr ) ) then
+  				'' Function
+  				if( not cFunction( derefexpr, sym, elm ) ) then
+  					'' Variable
+  					if( not cVariable( derefexpr, sym, elm ) ) then
+  						exit function
+		    		end if
+				end if
+			end if
+
+			dtype   = astGetDataType( derefexpr )
+			subtype = astGetSubType( derefexpr )
+
 		end if
 
 	end if
 
 	''
 	if( derefcnt > 0 ) then
-		dtype = hDoDeref( derefcnt, derefexpr, sym, elm )
+		dtype = hDoDeref( derefcnt, derefexpr, sym, elm, dtype, subtype )
 		if( dtype = INVALID ) then
 			exit function
 		end if
@@ -1245,7 +1268,7 @@ function cFunction( funcexpr as ASTNODE ptr, _
 		exit function
 	end if
 
-	lexSkipToken
+	lexSkipToken( )
 
 	function = cFunctionCall( sym, elm, funcexpr, NULL )
 
