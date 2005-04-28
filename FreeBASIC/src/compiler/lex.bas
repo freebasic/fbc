@@ -1029,7 +1029,8 @@ private sub lexNextToken ( t as FBTOKEN, _
 
 reread:
 	t.text[0] = 0									'' t.text = ""
-	t.tlen = 0
+	t.tlen 	  = 0
+	t.sym 	  = NULL
 
 	'' skip white space
 	islinecont = FALSE
