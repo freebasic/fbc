@@ -30,7 +30,7 @@
 
 
 
-
+/*
 
 
 TODO:
@@ -42,15 +42,17 @@ mouse - use timer int to draw + polling or install mouse handler?
 
 
 
-
+*/
 
 
 /* driver list */
 
 extern GFXDRIVER fb_gfxDriverVGA;
+extern GFXDRIVER fb_gfxDriverModeX;
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
 	&fb_gfxDriverVGA,
+	&fb_gfxDriverModeX,
 	NULL
 };
 
