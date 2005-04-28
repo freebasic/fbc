@@ -2256,7 +2256,7 @@ private sub hAddIntrinsicMacros
         	oldname += "#"
 
         	newname = "\27"
-        	newname += hex$( arg )
+        	newname += hex$( arg->id )
         	newname += "\27"
 
         	hReplace( mtext, oldname, newname )

@@ -53,6 +53,7 @@ type SYMBCTX
 	lastlbl			as FBSYMBOL ptr
 
 	fwdrefcnt 		as integer
+	defargcnt		as integer
 end type
 
 declare sub 		hFreeSymbol		( byval s as FBSYMBOL ptr, byval freeup as integer = TRUE )
@@ -327,6 +328,8 @@ sub symbInitDefines static
 	dim as DEFCALLBACK proc
 
     listNew( @ctx.defarglist, FB.INITDEFARGNODES, len( FBDEFARG ), FALSE )
+
+    ctx.defargcnt = 0
 
     restore definesdata
     do
@@ -823,6 +826,8 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
     ZEROSTRDESC( a->name )
     a->name 	= ucase$( symbol )
     a->r		= NULL
+    a->id		= ctx.defargcnt
+    ctx.defargcnt += 1
 
     function = a
 
@@ -2434,6 +2439,10 @@ end function
 '':::::
 function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	static as zstring * FB.MAXINTNAMELEN+1 rname
+
+	if( f = NULL ) then
+		return NULL
+	end if
 
 	rname = "_fbpr_"
 	rname += f->alias

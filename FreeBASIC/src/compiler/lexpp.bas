@@ -65,10 +65,10 @@ end type
 
 '':::::
 private function hLiteral( byval args as integer = 0, _
-						   byval arghead as FBDEFARG ptr = NULL ) as string
+						   byval arghead as FBDEFARG ptr = NULL ) as zstring ptr
 
 	static as zstring * FB.MAXNAMELEN+1 token
-	static as zstring * FB.MAXDEFINELEN+1 text
+	static as zstring * FB.MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
     dim as integer dpos, flags
     dim as FBDEFARG ptr a
 
@@ -115,7 +115,7 @@ const QUOTE = "\""
     					if( token = a->name ) then
     						'' replace
     						text += "\27"
-    						text += hex$( a )
+    						text += hex$( a->id )
     						text += "\27"
     						'' add the remainder if it's an udt access
     						if( dpos > 1 ) then
@@ -138,9 +138,10 @@ const QUOTE = "\""
 
     		end if
     	end if
+
     loop
 
-	function = text
+	function = @text
 
 end function
 
@@ -202,13 +203,13 @@ function lexPreProcessor as integer
 	'' PRINT LITERAL*
 	case FB.TK.PRINT
 		lexSkipToken( )
-		print hLiteral( )
+		print *hLiteral( )
 		function = TRUE
 
 	'' ERROR LITERAL*
 	case FB.TK.ERROR
 		lexSkipToken( )
-		hReportErrorEx( -1, hLiteral( ) )
+		hReportErrorEx( -1, *hLiteral( ) )
 		exit function
 
 	'' INCLUDE ONCE? LIT_STR
@@ -263,9 +264,9 @@ function lexPreProcessor as integer
 end function
 
 '':::::
-function ppDefine( ) as integer
+private function ppDefine( ) as integer
 	static as zstring * FB.MAXNAMELEN+1 defname, argname
-	static as zstring * FB.MAXDEFINELEN+1 text
+	dim as zstring ptr text
 	dim as integer args, isargless
 	dim as FBDEFARG ptr arghead, lastarg
 	dim as FBSYMBOL ptr s
@@ -331,9 +332,15 @@ function ppDefine( ) as integer
     '' LITERAL+
     text = hLiteral( args, arghead )
 
+    '' check len, use the sentinel as "text" is a static zstring
+    if( len( *text ) = FB.MAXINTDEFINELEN+1 ) then
+		hReportError( FB.ERRMSG.MACROTEXTTOOLONG )
+		exit function
+    end if
+
     '' already defined? if there are no differences, do nothing..
     if( s <> NULL ) then
-    	if( (s->def.args <> args) or (s->def.text <> text) ) then
+    	if( (s->def.args <> args) or (s->def.text <> *text) ) then
     		hReportError( FB.ERRMSG.DUPDEFINITION )
     		exit function
     	end if

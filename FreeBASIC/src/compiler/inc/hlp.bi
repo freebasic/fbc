@@ -110,7 +110,7 @@ declare function 	hMakeEntryPointName		( byval entrypoint as string ) as string
 
 
 '':::::
-#define ZEROSTRDESC(s)	                                	_
+#define ZEROSTRDESC(s)	                                _
 	poke integer, @s + len( integer )*0, NULL 			:_
 	poke integer, @s + len( integer )*1, NULL			:_
 	poke integer, @s + len( integer )*2, NULL

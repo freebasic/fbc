@@ -130,8 +130,10 @@ data "Cannot initialize dynamic arrays"
 data "Invalid bitfield"
 data "Literal number too big"
 data "Too many parameters"
+data "Macro text too long"
 
-const FB.ERRMSGS = 77
+
+const FB.ERRMSGS = 78
 
 
 '':::::

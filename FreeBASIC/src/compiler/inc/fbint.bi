@@ -26,7 +26,11 @@
 
 const FB.MAXINTNAMELEN		= FB.MAXNAMELEN + 1 + 1 + 2 + 1 + _
 							  (FB_MAXPROCARGS * len( integer ))		'' mangling..
+
 const FB.MAXINTLITLEN		= FB.MAXLITLEN + 32
+
+const FB.MAXINTDEFINELEN	= FB.MAXDEFINELEN + _
+							  (FB_MAXPROCARGS * (len( short ) + 2))	'' arg pattern..
 
 const FB.MAXGOTBITEMS		= 64
 
@@ -541,6 +545,7 @@ type FBDEFARG
 	nxt				as FBDEFARG ptr				'' /
 
 	name			as string
+	id				as short					'' unique id
 
 	r				as FBDEFARG ptr				'' right
 end type

@@ -4233,7 +4233,7 @@ function cAsmCode as integer static
 			exit do
 		end select
 
-		text = lexTokenText
+		text = lexTokenText( )
 
 		if( lexCurrentTokenClass( LEXCHECK_NOWHITESPC ) = FB.TKCLASS.IDENTIFIER ) then
 			if( not emitIsKeyword( text ) ) then
@@ -4250,16 +4250,27 @@ function cAsmCode as integer static
 						'' var?
 						s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.VAR )
 						if( s <> NULL ) then
-							text = EmitGetVarName( s )
+							text = emitGetVarName( s )
 						end if
 					end if
 				end if
+			end if
+
+		else
+			'' FUNCTION?
+			if( lexCurrentToken( LEXCHECK_NOWHITESPC ) = FB.TK.FUNCTION ) then
+    			s = symbLookupProcResult( env.currproc )
+    			if( s = NULL ) then
+    				hReportError( FB.ERRMSG.SYNTAXERROR )
+    				exit function
+    			end if
+    			text = emitGetVarName( s )
 			end if
 		end if
 
 		asmline += text
 
-		lexSkipToken LEXCHECK_NOWHITESPC
+		lexSkipToken( LEXCHECK_NOWHITESPC )
 
 	loop
 
@@ -4290,38 +4301,38 @@ function cAsmBlock as integer
 
 	'' (Comment SttSeparator)?
 	issingleline = FALSE
-	if( cComment ) then
-		if( not cSttSeparator ) then
+	if( cComment( ) ) then
+		if( not cSttSeparator( ) ) then
     		hReportError FB.ERRMSG.EXPECTEDEOL
     		exit function
 		end if
 	else
-		if( not cSttSeparator ) then
+		if( not cSttSeparator( ) ) then
 			issingleline = TRUE
         end if
 	end if
 
 	'' (AsmCode Comment? NewLine)+
 	do
-		cAsmCode
+		cAsmCode( )
 
 		'' Comment?
-		cComment LEXCHECK_NOWHITESPC
+		cComment( LEXCHECK_NOWHITESPC )
 
 		'' NewLine
-		select case lexCurrentToken
+		select case lexCurrentToken( )
 		case FB.TK.EOL
 			if( issingleline ) then
 				exit do
 			end if
 
-			lexSkipToken
+			lexSkipToken( )
 
 		case FB.TK.END
 			exit do
 
 		case else
-    		hReportError FB.ERRMSG.EXPECTEDEOL
+    		hReportError( FB.ERRMSG.EXPECTEDEOL )
     		exit function
 		end select
 	loop
@@ -4329,10 +4340,10 @@ function cAsmBlock as integer
 	if( not issingleline ) then
 		'' END ASM
 		if( not hMatch( FB.TK.END ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDENDASM
+    		hReportError( FB.ERRMSG.EXPECTEDENDASM )
     		exit function
 		elseif( not hMatch( FB.TK.ASM ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDENDASM
+    		hReportError( FB.ERRMSG.EXPECTEDENDASM )
     		exit function
 		end if
 	end if

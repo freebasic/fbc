@@ -2,18 +2,12 @@
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
 [ ] cArgDecl's id should be redeclared as zstring, but function can't be static as
-    args be function ptrs with another args.. non-static zstring local vars
+    args can be function ptrs with another args.. non-static zstring local vars
     will be filled with 0's slowing everything down.. add another option to
     functions??? NOZERO NOFILL NOCLEAR?
 
-[ ] add FUNCTION to inline asm's evaluation
-
-[ ] add a warning if macro expansion text is too long
-
-[ ] incrase macro text to 4096
-
 [ ] function overloading:
--- arglist with optionals with different types at the same arg num (?)
+-- check arglist with optionals with different types at the same arg num (?)
 -- check different modes and types if they are working
 -- check optional args, this can be tricky
 
