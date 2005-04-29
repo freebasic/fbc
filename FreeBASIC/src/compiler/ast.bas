@@ -2274,6 +2274,9 @@ private sub hBOPConstFoldFlt( byval op as integer, _
 
 	case IR.OP.GE
 		l->v.valuei = l->v.valuef >= r->v.valuef
+
+    case IR.OP.ATAN2
+		l->v.valuef = atan2( l->v.valuef, r->v.valuef )
 	end select
 
 end sub
@@ -2573,6 +2576,21 @@ function astNewBOP( byval op as integer, _
 			dc2 = IR.DATACLASS.INTEGER
 		end if
 
+	'' atan2 can only operate on floats
+	case IR.OP.ATAN2
+
+		if( dc1 <> IR.DATACLASS.FPOINT ) then
+			dt1 = IR.DATATYPE.DOUBLE
+			l = astNewCONV( INVALID, dt1, l )
+			dc1 = IR.DATACLASS.FPOINT
+		end if
+
+		if( dc2 <> IR.DATACLASS.FPOINT ) then
+			dt2 = IR.DATATYPE.DOUBLE
+			r = astNewCONV( INVALID, dt2, r )
+			dc2 = IR.DATACLASS.FPOINT
+		end if
+
 	end select
 
     '' convert types to the most precise if needed
@@ -2847,6 +2865,30 @@ private sub hUOPConstFoldFlt( byval op as integer, _
 
 	case IR.OP.SGN
 		v->v.valuei = sgn( v->v.valuef )
+
+	case IR.OP.SIN
+		v->v.valuef = sin( v->v.valuef )
+
+	case IR.OP.ASIN
+		v->v.valuef = asin( v->v.valuef )
+
+	case IR.OP.COS
+		v->v.valuef = cos( v->v.valuef )
+
+	case IR.OP.ACOS
+		v->v.valuef = acos( v->v.valuef )
+
+	case IR.OP.TAN
+		v->v.valuef = tan( v->v.valuef )
+
+	case IR.OP.ATAN
+		v->v.valuef = atn( v->v.valuef )
+
+	case IR.OP.SQRT
+		v->v.valuef = sqr( v->v.valuef )
+
+	case IR.OP.LOG
+		v->v.valuef = log( v->v.valuef )
 	end select
 
 end sub
@@ -2906,7 +2948,7 @@ function astNewUOP( byval op as integer, _
 		o = astNewCONV( INVALID, dtype, o )
 	end if
 
-	select case op
+	select case as const op
 	'' NOT can only be operate on integers
 	case IR.OP.NOT
 		if( dclass <> IR.DATACLASS.INTEGER ) then
@@ -2920,6 +2962,14 @@ function astNewUOP( byval op as integer, _
 			dtype = IR.DATATYPE.INTEGER
 		else
 			dtype = irGetSignedType( dtype )
+		end if
+
+	'' transcendental result is a double
+	case IR.OP.SIN, IR.OP.ASIN, IR.OP.COS, IR.OP.ACOS, _
+		 IR.OP.TAN, IR.OP.ATAN, IR.OP.SQRT, IR.OP.LOG
+		if( dclass <> IR.DATACLASS.FPOINT ) then
+			dtype = IR.DATATYPE.DOUBLE
+			o = astNewCONV( INVALID, dtype, o )
 		end if
 	end select
 

@@ -194,6 +194,15 @@ data IR.OP.CALLPTR	, IR.OPTYPE.CALL	, FALSE, "ca@"
 data IR.OP.JUMPPTR	, IR.OPTYPE.CALL	, FALSE, "jm@"
 data IR.OP.PUSHUDT	, IR.OPTYPE.STACK	, FALSE, "psh"
 data IR.OP.STACKALIGN, IR.OPTYPE.STACK	, FALSE, "alg"
+data IR.OP.SIN		, IR.OPTYPE.UNARY	, FALSE, "sin"
+data IR.OP.ASIN		, IR.OPTYPE.UNARY	, FALSE, "asn"
+data IR.OP.COS		, IR.OPTYPE.UNARY	, FALSE, "cos"
+data IR.OP.ACOS		, IR.OPTYPE.UNARY	, FALSE, "acs"
+data IR.OP.TAN		, IR.OPTYPE.UNARY	, FALSE, "tan"
+data IR.OP.ATAN		, IR.OPTYPE.UNARY	, FALSE, "atn"
+data IR.OP.SQRT		, IR.OPTYPE.UNARY	, FALSE, "sqr"
+data IR.OP.LOG		, IR.OPTYPE.UNARY	, FALSE, "log"
+data IR.OP.ATAN2	, IR.OPTYPE.BINARY	, FALSE, "at2"
 data -1
 
 '':::::
@@ -1623,6 +1632,23 @@ sub irFlushUOP( byval op as integer, _
 		emitABS( dst, v1 )
 	case IR.OP.SGN
 		emitSGN( dst, v1 )
+
+	case IR.OP.SIN
+		emitSIN( dst, v1 )
+	case IR.OP.ASIN
+		emitASIN( dst, v1 )
+	case IR.OP.COS
+		emitCOS( dst, v1 )
+	case IR.OP.ACOS
+		emitACOS( dst, v1 )
+	case IR.OP.TAN
+		emitTAN( dst, v1 )
+	case IR.OP.ATAN
+		emitATAN( dst, v1 )
+	case IR.OP.SQRT
+		emitSQRT( dst, v1 )
+	case IR.OP.LOG
+		emitLOG( dst, v1 )
 	end select
 
     ''
@@ -1734,6 +1760,9 @@ sub irFlushBOP( byval op as integer, _
 
 	case IR.OP.MOV
 		emitMOV( dst, v1, src, v2 )
+
+	case IR.OP.ATAN2
+        emitATAN2( dst, v1, src, v2 )
 	end select
 
     '' not BOP to self?

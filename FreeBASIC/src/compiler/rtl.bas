@@ -1619,61 +1619,6 @@ data "val64","fb_VAL64", _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
-'' cos CDECL ( byval rad as double ) as double
-data "cos","cos", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' acos CDECL ( byval x as double ) as double
-data "acos","acos", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' sin CDECL ( byval rad as double ) as double
-data "sin","sin", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' asin CDECL ( byval x as double ) as double
-data "asin","asin", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' tan CDECL ( byval rad as double ) as double
-data "tan","tan", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' atn CDECL ( byval x as double ) as double
-data "atn","atan", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' atan2 CDECL ( byval x as double, byval y as double ) as double
-data "atan2","atan2", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 2, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' sqr CDECL ( byval rad as double ) as double
-data "sqr","sqrt", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' log CDECL ( byval rad as double ) as double
-data "log","log", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 '' exp CDECL ( byval rad as double ) as double
 data "exp","exp", _
 	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _

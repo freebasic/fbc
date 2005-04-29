@@ -1900,8 +1900,8 @@ end function
 ''				|	LEN( data type | Expression ) .
 ''
 function cMathFunct( funcexpr as ASTNODE ptr ) as integer
-    dim as ASTNODE ptr expr
-    dim as integer islen, typ, lgt, ptrcnt
+    dim as ASTNODE ptr expr, expr2
+    dim as integer islen, typ, lgt, ptrcnt, op
     dim as FBSYMBOL ptr sym, subtype
 
 	function = FALSE
@@ -1965,6 +1965,68 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 
 	'' INT( Expression ) is implemented by libc's floor( )
 
+	'' SIN/COS/...( Expression )
+	case FB.TK.SIN, FB.TK.ASIN, FB.TK.COS, FB.TK.ACOS, FB.TK.TAN, FB.TK.ATN, _
+		 FB.TK.SQR, FB.TK.LOG
+
+		select case as const lexCurrentToken( )
+		case FB.TK.SIN
+			op = IR.OP.SIN
+		case FB.TK.ASIN
+			op = IR.OP.ASIN
+		case FB.TK.COS
+			op = IR.OP.COS
+		case FB.TK.ACOS
+			op = IR.OP.ACOS
+		case FB.TK.TAN
+			op = IR.OP.TAN
+		case FB.TK.ATN
+			op = IR.OP.ATAN
+		case FB.TK.SQR
+			op = IR.OP.SQRT
+		case FB.TK.LOG
+			op = IR.OP.LOG
+		end select
+
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+
+		hMatchExpression( expr )
+
+		hMatchRPRNT( )
+
+		'' hack! implemented as Unary OP for better speed on x86's
+		funcexpr = astNewUOP( op, expr )
+		if( funcexpr = NULL ) then
+			hReportError( FB.ERRMSG.INVALIDDATATYPES )
+			exit function
+		end if
+
+		function = TRUE
+
+	'' ATAN2( Expression ',' Expression )
+	case FB.TK.ATAN2
+		lexSkipToken( )
+
+		hMatchLPRNT( )
+
+		hMatchExpression( expr )
+
+		hMatchCOMMA( )
+
+		hMatchExpression( expr2 )
+
+		hMatchRPRNT( )
+
+		'' hack! implemented as Binary OP for better speed on x86's
+		funcexpr = astNewBOP( IR.OP.ATAN2, expr, expr2 )
+		if( funcexpr = NULL ) then
+			hReportError( FB.ERRMSG.INVALIDDATATYPES )
+			exit function
+		end if
+
+		function = TRUE
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB.TK.LEN, FB.TK.SIZEOF
@@ -2291,7 +2353,9 @@ function cQuirkFunction( funcexpr as ASTNODE ptr ) as integer
 	select case as const lexCurrentToken
 	case FB.TK.STR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
 		res = cStringFunct( funcexpr )
-	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN, FB.TK.SIZEOF
+	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN, FB.TK.SIZEOF, _
+		 FB.TK.SIN, FB.TK.ASIN, FB.TK.COS, FB.TK.ACOS, FB.TK.TAN, FB.TK.ATN, _
+		 FB.TK.SQR, FB.TK.LOG, FB.TK.ATAN2
 		res = cMathFunct( funcexpr )
 	case FB.TK.PEEK
 		res = cPeekFunct( funcexpr )

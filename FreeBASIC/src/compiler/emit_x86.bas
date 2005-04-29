@@ -4134,6 +4134,28 @@ sub emitGE( byval rname as string, _
 
 end sub
 
+'':::::
+sub emitATAN2( byval dname as string, _
+			   byval dvreg as IRVREG ptr, _
+			   byval sname as string, _
+			   byval svreg as IRVREG ptr ) static
+
+    dim src as string
+    dim ostr as string
+
+	hPrepOperand( sname, svreg->ofs, svreg->dtype, svreg->typ, src )
+
+	if( svreg->typ <> IR.VREGTYPE.REG ) then
+		ostr = "fld "
+		ostr += src
+		outp ostr
+	else
+		outp "fxch"
+	end if
+	outp "fpatan"
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' unary ops
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -4410,6 +4432,96 @@ sub emitSGN( byval dname as string, _
 	end if
 
 	'' hack! floating-point SGN is done by a rtlib function, called by AST
+
+end sub
+
+'':::::
+sub emitSIN( byval dname as string, _
+			 byval dvreg as IRVREG ptr ) static
+
+	outp "fsin"
+
+end sub
+
+'':::::
+sub emitASIN( byval dname as string, _
+			  byval dvreg as IRVREG ptr ) static
+
+	'' asin( x ) = atn( sqr( (x*x) / (1-x*x) ) )
+	outp "fld st(0)"
+	outp "fmulp"
+	outp "fld st(0)"
+	outp "fld1"
+	outp "fsubrp"
+    outp "fdivp"
+    outp "fsqrt"
+    outp "fld1"
+    outp "fpatan"
+
+end sub
+
+'':::::
+sub emitCOS( byval dname as string, _
+			 byval dvreg as IRVREG ptr ) static
+
+	outp "fcos"
+
+end sub
+
+'':::::
+sub emitACOS( byval dname as string, _
+			  byval dvreg as IRVREG ptr ) static
+
+	'' acos( x ) = atn( sqr( (1-x*x) / (x*x) ) )
+	outp "fld st(0)"
+    outp "fmulp"
+	outp "fld st(0)"
+    outp "fld1"
+	outp "fsubrp"
+	outp "fdivrp"
+	outp "fsqrt"
+	outp "fld1"
+	outp "fpatan"
+
+end sub
+
+'':::::
+sub emitTAN( byval dname as string, _
+			 byval dvreg as IRVREG ptr ) static
+
+	outp "fptan"
+	outp "fstp st(0)"
+
+end sub
+
+'':::::
+sub emitATAN( byval dname as string, _
+			  byval dvreg as IRVREG ptr ) static
+
+	outp "fld1"
+	outp "fpatan"
+
+end sub
+
+'':::::
+sub emitSQRT( byval dname as string, _
+			  byval dvreg as IRVREG ptr ) static
+
+	outp "fsqrt"
+
+end sub
+
+'':::::
+sub emitLOG( byval dname as string, _
+			 byval dvreg as IRVREG ptr ) static
+
+	'' log( x ) = log2( x ) / log2( e ).
+
+	outp "fld1"
+	outp "fxch"
+	outp "fyl2x"
+	outp "fldl2e"
+	outp "fdivp"
 
 end sub
 

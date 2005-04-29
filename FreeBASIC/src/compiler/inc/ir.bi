@@ -137,6 +137,15 @@ enum IROP_ENUM
 	IR.OP.CALLPTR
 	IR.OP.STACKALIGN
 	IR.OP.JUMPPTR
+	IR.OP.SIN
+	IR.OP.ASIN
+	IR.OP.COS
+	IR.OP.ACOS
+	IR.OP.TAN
+	IR.OP.ATAN
+	IR.OP.SQRT
+	IR.OP.LOG
+	IR.OP.ATAN2
 end enum
 
 '' operations below won't reach IR, used by AST

@@ -314,6 +314,11 @@ declare sub 		emitGE				( byval rname as string, _
 			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
+declare sub 		emitATAN2			( byval dname as string, _
+			   							  byval dvreg as IRVREG ptr, _
+			   							  byval sname as string, _
+			   							  byval svreg as IRVREG ptr )
+
 declare sub 		emitNEG				( byval dname as string, _
 										  byval dvreg as IRVREG ptr )
 
@@ -325,6 +330,30 @@ declare sub 		emitABS				( byval dname as string, _
 
 declare sub 		emitSGN				( byval dname as string, _
 										  byval dvreg as IRVREG ptr )
+
+declare sub 		emitSIN				( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitASIN			( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitCOS				( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitACOS			( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitTAN				( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitATAN			( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitSQRT			( byval dname as string, _
+			  							  byval dvreg as IRVREG ptr )
+
+declare sub 		emitLOG				( byval dname as string, _
+			 							  byval dvreg as IRVREG ptr )
 
 declare sub 		emitPUSH			( byval sname as string, _
 										  byval svreg as IRVREG ptr )
