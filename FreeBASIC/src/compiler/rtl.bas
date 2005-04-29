@@ -4047,32 +4047,23 @@ end function
 function rtlMemSwap( byval dst as ASTNODE ptr, _
 					 byval src as ASTNODE ptr ) as integer static
     dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f, s, d
-    dim as integer bytes, dtype, typ
-    dim as IRVREG ptr vr, vs
+    dim as FBSYMBOL ptr f
+    dim as integer bytes
 
     function = FALSE
 
 	'' simple type?
-	dtype = astGetDataType( dst )
-	if( (dtype <> IR.DATATYPE.USERDEF) and (astIsVAR( dst )) ) then
+	if( (astGetDataType( dst ) <> IR.DATATYPE.USERDEF) and (astIsVAR( dst )) ) then
 
 		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-		d = astGetSymbol( dst )
-		s = astGetSymbol( src )
-
 		'' push src
-		vr = irAllocVRVAR( dtype, s, s->ofs )
-		irEmitPUSH( vr )
+		irEmitPUSH( astFlush( astCloneTree( src ) )  )
 
 		'' src = dst
-		vr = irAllocVRVAR( dtype, s, s->ofs )
-		vs = irAllocVRVAR( dtype, d, d->ofs )
-		irEmitSTORE( vr, vs )
+		astFlush( astNewASSIGN( src, astCloneTree( dst ) ) )
 
 		'' pop dst
-		vr = irAllocVRVAR( dtype, d, d->ofs )
-		irEmitPOP( vr )
+		irEmitPOP( astFlush( dst ) )
 
 		exit sub
 	end if
