@@ -357,6 +357,9 @@ declare sub 		emitSQRT			( byval dname as string, _
 declare sub 		emitLOG				( byval dname as string, _
 			 							  byval dvreg as IRVREG ptr )
 
+declare sub 		emitFLOOR			( byval dname as string, _
+			   							  byval dvreg as IRVREG ptr )
+
 declare sub 		emitPUSH			( byval sname as string, _
 										  byval svreg as IRVREG ptr )
 

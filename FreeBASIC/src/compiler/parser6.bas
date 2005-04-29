@@ -1963,11 +1963,9 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 
 		function = TRUE
 
-	'' INT( Expression ) is implemented by libc's floor( )
-
 	'' SIN/COS/...( Expression )
 	case FB.TK.SIN, FB.TK.ASIN, FB.TK.COS, FB.TK.ACOS, FB.TK.TAN, FB.TK.ATN, _
-		 FB.TK.SQR, FB.TK.LOG
+		 FB.TK.SQR, FB.TK.LOG, FB.TK.INT
 
 		select case as const lexCurrentToken( )
 		case FB.TK.SIN
@@ -1986,6 +1984,8 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 			op = IR.OP.SQRT
 		case FB.TK.LOG
 			op = IR.OP.LOG
+		case FB.TK.INT
+			op = IR.OP.FLOOR
 		end select
 
 		lexSkipToken( )
@@ -2355,7 +2355,7 @@ function cQuirkFunction( funcexpr as ASTNODE ptr ) as integer
 		res = cStringFunct( funcexpr )
 	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN, FB.TK.SIZEOF, _
 		 FB.TK.SIN, FB.TK.ASIN, FB.TK.COS, FB.TK.ACOS, FB.TK.TAN, FB.TK.ATN, _
-		 FB.TK.SQR, FB.TK.LOG, FB.TK.ATAN2
+		 FB.TK.SQR, FB.TK.LOG, FB.TK.ATAN2, FB.TK.INT
 		res = cMathFunct( funcexpr )
 	case FB.TK.PEEK
 		res = cPeekFunct( funcexpr )

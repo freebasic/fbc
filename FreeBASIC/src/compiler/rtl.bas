@@ -1625,12 +1625,6 @@ data "exp","exp", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
-'' int CDECL ( byval val as double ) as double
-data "int","floor", _
-	 FB.SYMBTYPE.DOUBLE,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
 '' command ( byval argc as integer = -1 ) as string
 data "command","fb_Command", _

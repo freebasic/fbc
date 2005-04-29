@@ -202,6 +202,7 @@ data IR.OP.TAN		, IR.OPTYPE.UNARY	, FALSE, "tan"
 data IR.OP.ATAN		, IR.OPTYPE.UNARY	, FALSE, "atn"
 data IR.OP.SQRT		, IR.OPTYPE.UNARY	, FALSE, "sqr"
 data IR.OP.LOG		, IR.OPTYPE.UNARY	, FALSE, "log"
+data IR.OP.FLOOR	, IR.OPTYPE.UNARY	, FALSE, "flo"
 data IR.OP.ATAN2	, IR.OPTYPE.BINARY	, FALSE, "at2"
 data -1
 
@@ -1649,6 +1650,8 @@ sub irFlushUOP( byval op as integer, _
 		emitSQRT( dst, v1 )
 	case IR.OP.LOG
 		emitLOG( dst, v1 )
+	case IR.OP.FLOOR
+		emitFLOOR( dst, v1 )
 	end select
 
     ''

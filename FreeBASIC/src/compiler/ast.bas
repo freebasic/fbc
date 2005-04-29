@@ -2858,6 +2858,9 @@ private sub hUOPConstFoldFlt( byval op as integer, _
 
 	case IR.OP.LOG
 		v->v.valuef = log( v->v.valuef )
+
+	case IR.OP.FLOOR
+		v->v.valuef = int( v->v.valuef )
 	end select
 
 end sub
@@ -2918,7 +2921,7 @@ function astNewUOP( byval op as integer, _
 	end if
 
 	select case as const op
-	'' NOT can only be operate on integers
+	'' NOT can only operate on integers
 	case IR.OP.NOT
 		if( dclass <> IR.DATACLASS.INTEGER ) then
 			dtype = IR.DATATYPE.INTEGER
@@ -2933,9 +2936,9 @@ function astNewUOP( byval op as integer, _
 			dtype = irGetSignedType( dtype )
 		end if
 
-	'' transcendental result is a double
+	'' transcendental can only operate on floats
 	case IR.OP.SIN, IR.OP.ASIN, IR.OP.COS, IR.OP.ACOS, _
-		 IR.OP.TAN, IR.OP.ATAN, IR.OP.SQRT, IR.OP.LOG
+		 IR.OP.TAN, IR.OP.ATAN, IR.OP.SQRT, IR.OP.LOG, IR.OP.FLOOR
 		if( dclass <> IR.DATACLASS.FPOINT ) then
 			dtype = IR.DATATYPE.DOUBLE
 			o = astNewCONV( INVALID, dtype, o )

@@ -613,6 +613,21 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 end function
 
 '':::::
+function emitFindFreeReg( byval dclass as integer ) as integer static
+    dim as integer r
+
+	function = INVALID
+
+	for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
+		function = r
+		if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
+			exit function
+		end if
+	next r
+
+end function
+
+'':::::
 function emitIsRegInVreg( byval vreg as IRVREG ptr, _
 						  byval reg as integer ) as integer static
 
@@ -4551,6 +4566,39 @@ sub emitLOG( byval dname as string, _
 	outp "fyl2x"
 	outp "fldl2e"
 	outp "fdivp"
+
+end sub
+
+'':::::
+sub emitFLOOR( byval dname as string, _
+			   byval dvreg as IRVREG ptr ) static
+
+	dim as integer reg, isfree
+	dim as string rname
+
+	reg = emitFindFreeReg( IR.DATACLASS.INTEGER )
+	emitGetRegName( IR.DATATYPE.INTEGER, IR.DATACLASS.INTEGER, reg, rname )
+
+	isfree = regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), reg )
+
+	if( not isfree ) then
+		emithPUSH rname
+	end if
+
+	outp "sub esp, 4"
+	outp "fnstcw [esp]"
+	emithMOV rname, "[esp]"
+	outp "or " + rname + ", 0b0000110000000000"
+	emithPUSH rname
+	outp "fldcw [esp]"
+	outp "add esp, 4"
+	outp "frndint"
+	outp "fldcw [esp]"
+	outp "add esp, 4"
+
+	if( not isfree ) then
+		emithPOP rname
+	end if
 
 end sub
 
