@@ -140,7 +140,7 @@ data IR.DATACLASS.FPOINT, 3: 'st(3)
 data IR.DATACLASS.FPOINT, 4: 'st(4)
 data IR.DATACLASS.FPOINT, 5: 'st(5)
 data IR.DATACLASS.FPOINT, 6: 'st(6)
-data IR.DATACLASS.FPOINT, 7: 'st(7)
+'''' IR.DATACLASS.FPOINT, 7: 'st(7)			'' STORE/LOAD/POW/.. need a free reg to work
 data -1
 
 ''
@@ -282,7 +282,7 @@ private sub hInitRegTB
 		end if
 
 		read reg
-		regs = regs + 1
+		regs += 1
 	loop
 
 end sub
@@ -1635,8 +1635,6 @@ sub emitSTORE( byval dname as string, _
 
 	ddclass = irGetDataClass( dvreg->dtype )
 	sdclass = irGetDataClass( svreg->dtype )
-
-	''!!!FIXME!!! assuming there's always a free fpu reg to convert between formats
 
 	'' integer destine
 	if( ddclass = IR.DATACLASS.INTEGER ) then
@@ -4164,17 +4162,16 @@ sub emitPOW( byval dname as string, _
 
 	dim src as string
 	dim ostr as string
-	
+
 	hPrepOperand( sname, svreg->ofs, svreg->dtype, svreg->typ, src )
-	
+
 	if( svreg->typ <> IR.VREGTYPE.REG ) then
 		ostr = "fld "
 		ostr += src
 		outp ostr
-	else
 		outp "fxch"
 	end if
-	
+
 	outp "fyl2x"
 	outp "fld st(0)"
 	outp "frndint"
@@ -4185,7 +4182,7 @@ sub emitPOW( byval dname as string, _
 	outp "faddp"
 	outp "fscale"
 	outp "fstp st(1)"
-	
+
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

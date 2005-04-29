@@ -26,9 +26,6 @@
 const EMIT_MAINPROC			= "fb_modulemain"
 const EMIT_LOCALPREFIX		= "L"
 
-const EMIT.VAR.OPENCHAR		= 91				'' [
-const EMIT.VAR.CLOSECHAR	= 93				'' ]
-
 const EMIT.REGCLASSES		= 2					'' assuming IR.DATACLASS. will start at 0!
 
 enum EMITINTREG

@@ -2196,9 +2196,6 @@ private sub hBOPConstFoldInt( byval op as integer, _
 	case IR.OP.IMP
 		l->v.valuei = l->v.valuei imp r->v.valuei
 
-    case IR.OP.POW
-		l->v.valuef = l->v.valuei ^ r->v.valuei
-
 	case IR.OP.NE
 		l->v.valuei = l->v.valuei <> r->v.valuei
 
@@ -2347,9 +2344,6 @@ private sub hBOPConstFold64( byval op as integer, _
 	case IR.OP.IMP
 		l->v.value64 = l->v.value64 imp r->v.value64
 
-    case IR.OP.POW
-		l->v.valuef = l->v.value64 ^ r->v.value64
-
 	case IR.OP.NE
 		l->v.valuei = l->v.value64 <> r->v.value64
 
@@ -2396,7 +2390,7 @@ function astNewBOP( byval op as integer, _
     dim as ASTNODE ptr n
     dim as integer dt1, dt2, dtype
     dim as integer dc1, dc2
-    dim as integer ispow2, doconv
+    dim as integer doconv
     dim as FBSYMBOL ptr s
 
 	function = NULL
@@ -2654,10 +2648,6 @@ function astNewBOP( byval op as integer, _
 
 	'' post check
 	select case as const op
-	'' result is always a double with pow()
-	case IR.OP.POW
-		dtype = IR.DATATYPE.DOUBLE
-
 	'' relative ops, the result is always an integer
 	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 		dtype = IR.DATATYPE.INTEGER
@@ -2725,23 +2715,7 @@ function astNewBOP( byval op as integer, _
 		case IR.OP.POW
 
 			'' convert var ^ 2 to var * var
-			ispow2 = FALSE
-			select case as const dt1
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-				if( r->v.value64 = 2LL ) then
-					ispow2 = TRUE
-				end if
-			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-				if( r->v.valuef = 2.0 ) then
-					ispow2 = TRUE
-				end if
-			case else
-				if( r->v.valuei = 2 ) then
-					ispow2 = TRUE
-				end if
-			end select
-
-			if( ispow2 ) then
+			if( r->v.valuef = 2.0 ) then
 				select case l->class
 				case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 					astDel( r )
@@ -2754,11 +2728,6 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	''::::::
-
-	'' handle pow
-	if( op = IR.OP.POW ) then
-		astSwap( r, l )
-	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.BOP, dtype )
