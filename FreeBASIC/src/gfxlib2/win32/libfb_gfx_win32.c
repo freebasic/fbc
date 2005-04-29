@@ -109,7 +109,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		case WM_ACTIVATEAPP:
 			fb_win32.is_active = (int)wParam;
 			fb_hMemSet(fb_mode->key, FALSE, 128);
-			mouse_buttons = mouse_wheel = 0;
+			mouse_buttons = 0;
 			fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
 			break;
 		
@@ -247,6 +247,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.wndclass.style = CS_VREDRAW | CS_HREDRAW | (flags & DRIVER_OPENGL ? CS_OWNDC : 0);
 	RegisterClass(&fb_win32.wndclass);
 
+	mouse_buttons = mouse_wheel = 0;
 	fb_win32.is_running = TRUE;
 
 	InitializeCriticalSection(&update_lock);

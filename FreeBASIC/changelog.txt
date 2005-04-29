@@ -31,6 +31,7 @@ Version 0.14 Beta:
 - PUT was accepting literal values, what will fail because the way BYREF AS ANY args pass numeric values (v1c)
 - complex pointer expressions would not be parsed if used as parameters to functions (v1c)
 - SWAP wasn't working with type fields (v1c)
+- Mouse wheel position was reset to 0 under Win32 when window was put out of focus (lillo)
 
 
 Version 0.13 Beta:
