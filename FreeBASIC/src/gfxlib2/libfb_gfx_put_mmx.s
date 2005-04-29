@@ -80,14 +80,24 @@ LABEL(pset_skip_2)
 	movsd
 
 LABEL(pset_skip_4)
-	orl %ecx, %ecx
-	jz pset_next_line
-
-LABEL(pset_x_loop)
+	shrl $1, %ecx
+	jnc pset_skip_8
 	addl $8, %edi
 	movq (%esi), %mm0
 	addl $8, %esi
 	movq %mm0, -8(%edi)
+
+LABEL(pset_skip_8)
+	orl %ecx, %ecx
+	jz pset_next_line
+
+LABEL(pset_x_loop)
+	addl $16, %esi
+	addl $16, %edi
+	movq -16(%esi), %mm0
+	movq -8(%esi), %mm1
+	movq %mm0, -16(%edi)
+	movq %mm1, -8(%edi)
 	decl %ecx
 	jnz pset_x_loop
 
@@ -128,8 +138,8 @@ FUNC(fb_hPutPResetMMX)
 	movl ARG2, %edi
 	movl $0xFFFFFFFF, %eax
 	subl %ebx, %edx
-	movd %eax, %mm1
-	punpckldq %mm1, %mm1
+	movd %eax, %mm2
+	punpckldq %mm2, %mm2
 
 LABEL(preset_y_loop)
 	movl %ebx, %ecx
@@ -154,15 +164,27 @@ LABEL(preset_skip_2)
 	stosl
 
 LABEL(preset_skip_4)
+	shrl $1, %ecx
+	jnc preset_skip_8
+	addl $8, %edi
+	movq (%esi), %mm0
+	pxor %mm2, %mm0
+	addl $8, %esi
+	movq %mm0, -8(%edi)
+
+LABEL(preset_skip_8)
 	orl %ecx, %ecx
 	jz preset_next_line
 
 LABEL(preset_x_loop)
-	addl $8, %edi
-	movq (%esi), %mm0
-	pxor %mm1, %mm0
-	addl $8, %esi
-	movq %mm0, -8(%edi)
+	addl $16, %esi
+	addl $16, %edi
+	movq -16(%esi), %mm0
+	movq -8(%esi), %mm1
+	pxor %mm2, %mm0
+	pxor %mm2, %mm1
+	movq %mm0, -16(%edi)
+	movq %mm1, -8(%edi)
 	decl %ecx
 	jnz preset_x_loop
 
@@ -226,15 +248,27 @@ LABEL(and_skip_2)
 	addl $4, %edi
 
 LABEL(and_skip_4)
-	orl %ecx, %ecx
-	jz and_next_line
-
-LABEL(and_x_loop)
+	shrl $1, %ecx
+	jnc and_skip_8
 	addl $8, %esi
 	movq (%edi), %mm0
 	addl $8, %edi
 	pand -8(%esi), %mm0
 	movq %mm0, -8(%edi)
+
+LABEL(and_skip_8)
+	orl %ecx, %ecx
+	jz and_next_line
+
+LABEL(and_x_loop)
+	addl $16, %edi
+	addl $16, %esi
+	movq -16(%edi), %mm0
+	movq -8(%edi), %mm1
+	pand -16(%esi), %mm0
+	pand -8(%esi), %mm1
+	movq %mm0, -16(%edi)
+	movq %mm1, -8(%edi)
 	decl %ecx
 	jnz and_x_loop
 
@@ -298,15 +332,27 @@ LABEL(or_skip_2)
 	addl $4, %edi
 
 LABEL(or_skip_4)
-	orl %ecx, %ecx
-	jz or_next_line
-
-LABEL(or_x_loop)
+	shrl $1, %ecx
+	jnc or_skip_8
 	addl $8, %esi
 	movq (%edi), %mm0
 	addl $8, %edi
 	por -8(%esi), %mm0
 	movq %mm0, -8(%edi)
+
+LABEL(or_skip_8)
+	orl %ecx, %ecx
+	jz or_next_line
+
+LABEL(or_x_loop)
+	addl $16, %edi
+	addl $16, %esi
+	movq -16(%edi), %mm0
+	movq -8(%edi), %mm1
+	por -16(%esi), %mm0
+	por -8(%esi), %mm1
+	movq %mm0, -16(%edi)
+	movq %mm1, -8(%edi)
 	decl %ecx
 	jnz or_x_loop
 
@@ -370,15 +416,27 @@ LABEL(xor_skip_2)
 	addl $4, %edi
 
 LABEL(xor_skip_4)
-	orl %ecx, %ecx
-	jz xor_next_line
-
-LABEL(xor_x_loop)
+	shrl $1, %ecx
+	jnc xor_skip_8
 	addl $8, %esi
 	movq (%edi), %mm0
 	addl $8, %edi
 	pxor -8(%esi), %mm0
 	movq %mm0, -8(%edi)
+
+LABEL(xor_skip_8)
+	orl %ecx, %ecx
+	jz xor_next_line
+
+LABEL(xor_x_loop)
+	addl $16, %edi
+	addl $16, %esi
+	movq -16(%edi), %mm0
+	movq -8(%edi), %mm1
+	pxor -16(%esi), %mm0
+	pxor -8(%esi), %mm1
+	movq %mm0, -16(%edi)
+	movq %mm1, -8(%edi)
 	decl %ecx
 	jnz xor_x_loop
 

@@ -4156,6 +4156,38 @@ sub emitATAN2( byval dname as string, _
 
 end sub
 
+'':::::
+sub emitPOW( byval dname as string, _
+			 byval dvreg as IRVREG ptr, _
+			 byval sname as string, _
+			 byval svreg as IRVREG ptr ) static
+
+	dim src as string
+	dim ostr as string
+	
+	hPrepOperand( sname, svreg->ofs, svreg->dtype, svreg->typ, src )
+	
+	if( svreg->typ <> IR.VREGTYPE.REG ) then
+		ostr = "fld "
+		ostr += src
+		outp ostr
+	else
+		outp "fxch"
+	end if
+	
+	outp "fyl2x"
+	outp "fld st(0)"
+	outp "frndint"
+	outp "fsub st(1), st(0)"
+	outp "fxch"
+	outp "f2xm1"
+	outp "fld1"
+	outp "faddp"
+	outp "fscale"
+	outp "fstp st(1)"
+	
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' unary ops
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

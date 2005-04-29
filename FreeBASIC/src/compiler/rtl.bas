@@ -3331,32 +3331,6 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function rtlMathPow	( byval xexpr as ASTNODE ptr, _
-					  byval yexpr as ASTNODE ptr ) as ASTNODE ptr static
-    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
-
-	function = NULL
-
-	''
-	f = ifuncTB(FB.RTL.POW)
-    proc = astNewFUNCT( f, symbGetType( f ) )
-
-    '' byval x as double
-    if( astNewPARAM( proc, xexpr ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval y as double
-    if( astNewPARAM( proc, yexpr ) = NULL ) then
- 		exit function
- 	end if
-
-    ''
-    function = proc
-
-end function
-
-'':::::
 function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 

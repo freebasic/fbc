@@ -2577,7 +2577,7 @@ function astNewBOP( byval op as integer, _
 		end if
 
 	'' atan2 can only operate on floats
-	case IR.OP.ATAN2
+	case IR.OP.ATAN2, IR.OP.POW
 
 		if( dc1 <> IR.DATACLASS.FPOINT ) then
 			dt1 = IR.DATATYPE.DOUBLE
@@ -2757,7 +2757,7 @@ function astNewBOP( byval op as integer, _
 
 	'' handle pow
 	if( op = IR.OP.POW ) then
-		return rtlMathPow( l, r )
+		astSwap( r, l )
 	end if
 
 	'' alloc new node

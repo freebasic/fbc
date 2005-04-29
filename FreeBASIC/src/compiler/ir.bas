@@ -1763,6 +1763,8 @@ sub irFlushBOP( byval op as integer, _
 
 	case IR.OP.ATAN2
         emitATAN2( dst, v1, src, v2 )
+    case IR.OP.POW
+    	emitPOW( dst, v1, src, v2 )
 	end select
 
     '' not BOP to self?

@@ -319,6 +319,11 @@ declare sub 		emitATAN2			( byval dname as string, _
 			   							  byval sname as string, _
 			   							  byval svreg as IRVREG ptr )
 
+declare sub 		emitPOW				( byval dname as string, _
+			   							  byval dvreg as IRVREG ptr, _
+			   							  byval sname as string, _
+			   							  byval svreg as IRVREG ptr )
+
 declare sub 		emitNEG				( byval dname as string, _
 										  byval dvreg as IRVREG ptr )
 
