@@ -255,7 +255,8 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 	do
 
 		idxexpr = NULL
-		cnt		= 0
+		isfieldderef = FALSE
+		cnt	= 0
 
         select case lexCurrentToken
         '' (FIELDDEREF DREF* TypeField)*
@@ -269,17 +270,9 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 				cnt += 1
 			loop
 
-			if( dtype < FB.SYMBTYPE.POINTER ) then
-				hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
-				return FALSE
-			end if
-
-			dtype -= FB.SYMBTYPE.POINTER
-
 		'' '['
 		case CHAR_LBRACKET
 			lexSkipToken
-			isfieldderef = FALSE
 
 			'' Expression
 			if( not cExpression( idxexpr ) ) then
@@ -336,10 +329,8 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 			end if
 
-			dtype -= FB.SYMBTYPE.POINTER
-
 			'' times length
-			lgt = symbCalcLen( dtype, subtype )
+			lgt = symbCalcLen( dtype - FB.SYMBTYPE.POINTER, subtype )
 
 			if( lgt = 0 ) then
 				hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
@@ -354,16 +345,14 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 				exit do
 			end if
 
-			isfieldderef = FALSE
-
-			if( dtype < FB.SYMBTYPE.POINTER ) then
-				hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
-				return FALSE
-			end if
-
-			dtype -= FB.SYMBTYPE.POINTER
-
 		end select
+
+		if( dtype < FB.SYMBTYPE.POINTER ) then
+			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+			return FALSE
+		end if
+
+		dtype -= FB.SYMBTYPE.POINTER
 
 		'' incomplete type?
 		if( dtype = FB.SYMBTYPE.FWDREF ) then
@@ -379,6 +368,8 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 					hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
 					return FALSE
 				end if
+
+				dtype += FB.SYMBTYPE.POINTER
 				exit function
 			end if
 		end if
