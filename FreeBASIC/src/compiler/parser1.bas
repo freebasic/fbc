@@ -2494,7 +2494,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 	if( hMatch( CHAR_LPRNT ) ) then
 
 		argtail = cArguments( mode, argc, argtail, TRUE )
-		if( argtail = NULL ) then
+		if( hGetLastError( ) <> FB.ERRMSG.OK ) then
 			exit function
 		end if
 
