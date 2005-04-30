@@ -854,10 +854,10 @@ function cTypeLine as integer static
 	function = FALSE
 
 	'' Comment? SttSeparator?
-	do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
+	do while( (cComment( ) <> FALSE) or (cSttSeparator( ) <> FALSE) )
 	loop
 
-	select case as const lexCurrentToken
+	select case as const lexCurrentToken( )
 	'' END?
 	case FB.TK.END
 		'' isn't it a field called "end"?
@@ -869,17 +869,17 @@ function cTypeLine as integer static
 			if( env.typectx.innercnt = 0 ) then
 				exit function
 			else
-				lexSkipToken
+				lexSkipToken( )
 			end if
 
 			if( env.typectx.isunion ) then
 				if( not hMatch( FB.TK.TYPE ) ) then
-	    			hReportError FB.ERRMSG.EXPECTEDENDTYPE
+	    			hReportError( FB.ERRMSG.EXPECTEDENDTYPE )
     				exit function
 				end if
 			else
 				if( not hMatch( FB.TK.UNION ) ) then
-    				hReportError FB.ERRMSG.EXPECTEDENDTYPE
+    				hReportError( FB.ERRMSG.EXPECTEDENDTYPE )
     				exit function
 				end if
 			end if
@@ -887,7 +887,7 @@ function cTypeLine as integer static
 			env.typectx.innercnt -= 1
 
 			if( env.typectx.innercnt = 0 ) then
-				symbRecalcUDTSize env.typectx.symbol
+				symbRecalcUDTSize( env.typectx.symbol )
 			end if
 		end select
 
@@ -897,11 +897,11 @@ function cTypeLine as integer static
 		select case lexLookAhead( 1 )
 		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			if( env.typectx.isunion ) then
-				hReportError FB.ERRMSG.SYNTAXERROR
+				hReportError( FB.ERRMSG.SYNTAXERROR )
 				exit function
 			end if
 
-			lexSkipToken
+			lexSkipToken( )
 
 			env.typectx.innercnt += 1
 
@@ -916,11 +916,11 @@ function cTypeLine as integer static
 		select case lexLookAhead( 1 )
 		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 			if( not env.typectx.isunion ) then
-				hReportError FB.ERRMSG.SYNTAXERROR
+				hReportError( FB.ERRMSG.SYNTAXERROR )
 				exit function
 			end if
 
-			lexSkipToken
+			lexSkipToken( )
 
 			env.typectx.innercnt += 1
 
@@ -937,7 +937,7 @@ function cTypeLine as integer static
 			goto declfield
 		end select
 
-		lexSkipToken
+		lexSkipToken( )
 
 		if( not cAsElementDecl( ) ) then
 			exit function
@@ -946,27 +946,29 @@ function cTypeLine as integer static
 	case else
 declfield:
 
+		if( not cElementDecl( ename, typ, subtype, ptrcnt, _
+							  lgt, bits, dimensions, dTB() ) ) then
+			exit function
+		end if
+
 		env.typectx.elements += 1
 
-		if( cElementDecl( ename, typ, subtype, ptrcnt, lgt, bits, dimensions, dTB() ) ) then
-
-			if( symbAddUDTElement( env.typectx.symbol, ename, _
-								   dimensions, dTB(), _
-								   typ, subtype, ptrcnt, lgt, bits, _
-								   env.typectx.innercnt > 0 ) = NULL ) then
-				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
-				exit function
-			end if
-
+		if( symbAddUDTElement( env.typectx.symbol, ename, _
+							   dimensions, dTB(), _
+							   typ, subtype, ptrcnt, lgt, bits, _
+							   env.typectx.innercnt > 0 ) = NULL ) then
+			hReportErrorEx( FB.ERRMSG.DUPDEFINITION, ename )
+			exit function
 		end if
+
 	end select
 
 
 	'' Comment? SttSeparator
-	cComment
+	cComment( )
 
-    if( not cSttSeparator ) then
-    	hReportError FB.ERRMSG.SYNTAXERROR
+    if( not cSttSeparator( ) ) then
+    	hReportError( FB.ERRMSG.SYNTAXERROR )
     	exit function
 	end if
 
@@ -1076,6 +1078,10 @@ function cTypeDecl as integer static
 	env.typectx.innercnt = 0
 	do
 	loop while( (cTypeLine) and (lexCurrentToken <> FB.TK.EOF) )
+
+	if( hGetLastError() <> FB.ERRMSG.OK ) then
+		exit function
+	end if
 
 	''
 	if( env.typectx.elements = 0 ) then
@@ -2486,7 +2492,11 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	'' ('(' Argument? ')')
 	if( hMatch( CHAR_LPRNT ) ) then
+
 		argtail = cArguments( mode, argc, argtail, TRUE )
+		if( argtail = NULL ) then
+			exit function
+		end if
 
     	if( not hMatch( CHAR_RPRNT ) ) then
 			hReportError FB.ERRMSG.SYNTAXERROR
@@ -2503,8 +2513,8 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
 			exit function
 		end if
-	else
 
+	else
 		'' if it's a function and type was not given, it can't be guessed
 		if( isfunction ) then
 			hReportError FB.ERRMSG.EXPECTEDRESTYPE
