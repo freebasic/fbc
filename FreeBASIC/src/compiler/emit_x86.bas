@@ -4187,6 +4187,7 @@ sub emitPOW( byval dname as string, _
 		outp "fxch"
 	end if
 
+	outp "fabs"
 	outp "fyl2x"
 	outp "fld st(0)"
 	outp "frndint"
@@ -4588,7 +4589,8 @@ sub emitFLOOR( byval dname as string, _
 	outp "sub esp, 4"
 	outp "fnstcw [esp]"
 	emithMOV rname, "[esp]"
-	outp "or " + rname + ", 0b0000110000000000"
+	outp "and " + rname + ", 0b1111001111111111"
+	outp "or " + rname +  ", 0b0000010000000000"
 	emithPUSH rname
 	outp "fldcw [esp]"
 	outp "add esp, 4"

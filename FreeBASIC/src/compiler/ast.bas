@@ -2716,6 +2716,18 @@ function astNewBOP( byval op as integer, _
 
 			'' convert var ^ 2 to var * var
 			if( r->v.valuef = 2.0 ) then
+
+				'' operands will be converted to DOUBLE if not floats..
+				if( l->class = AST.NODECLASS.CONV ) then
+					select case l->l->class
+					case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
+						n = l
+						l = l->l
+						astDel( n )
+						dt1 = l->dtype
+					end select
+				end if
+
 				select case l->class
 				case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
 					astDel( r )
@@ -2728,6 +2740,10 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	''::::::
+	'' handle pow
+	if( op = IR.OP.POW ) then
+		return rtlMathPow( l, r )
+	end if
 
 	'' alloc new node
 	n = astNew( AST.NODECLASS.BOP, dtype )

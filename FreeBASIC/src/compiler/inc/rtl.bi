@@ -272,6 +272,9 @@ declare function 	rtlDataStoreOFS		( byval sym as FBSYMBOL ptr ) as integer
 
 declare sub 		rtlDataStoreEnd		( )
 
+declare function 	rtlMathPow			( byval xexpr as ASTNODE ptr, _
+					  					  byval yexpr as ASTNODE ptr ) as ASTNODE ptr
+
 declare function 	rtlMathFSGN 		( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlMathFIX 			( byval expr as ASTNODE ptr ) as ASTNODE ptr
