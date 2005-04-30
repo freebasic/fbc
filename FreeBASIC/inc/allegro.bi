@@ -1143,7 +1143,7 @@ Extern Import retrace_count Alias "retrace_count" As Integer
 Extern Import retrace_proc Alias "retrace_proc" As Sub()
 
 Extern Import keyboard_needs_poll Alias "keyboard_needs_poll" As Integer
-Extern Import al_key Alias "key" As Byte
+Extern Import key(0 to KEY_MAX-1) Alias "key" As Byte
 Extern Import key_shifts Alias "key_shifts" As Integer
 Extern Import keyboard_callback Alias "keyboard_callback" As Function(ByVal key As Integer) As Integer
 Extern Import keyboard_ucallback Alias "keyboard_ucallback" As Function(ByVal key As Integer, ByVal scancode As Integer Ptr) As Integer
@@ -1866,8 +1866,6 @@ dim shared errno as integer
 
 ' AL_MID is the fb equivalent of Allegro's MID
 #define AL_MID(x,y,z) AL_MAX(x, AL_MIN(y, z))
-
-#define key(keycode) *(@al_key + (keycode))
 
 private function allegro_error () as string
 	allegro_error = *(@fb_allegro_error)
