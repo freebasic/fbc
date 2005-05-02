@@ -48,21 +48,6 @@ const INVALID		= -1
 #define FB.VERSION				"0.14"
 #define FB.SIGN					"FreeBASIC v0.14b"
 
-'' paths
-#if defined(TARGET_WIN32)
-const FB.BINPATH$				= "\\bin\\win32\\"
-const FB.INCPATH$				= "\\inc\\"
-const FB.LIBPATH$				= "\\lib\\win32"
-#elseif defined(TARGET_DOS)
-const FB.BINPATH$				= "\\bin\\dos\\"
-const FB.INCPATH$				= "\\inc\\"
-const FB.LIBPATH$				= "\\lib\\dos"
-#else
-const FB.BINPATH$				= "/usr/share/freebasic/bin/"
-const FB.INCPATH$				= "/usr/share/freebasic/inc/"
-const FB.LIBPATH$				= "/usr/share/freebasic/lib"
-#endif
-
 '' compiler options
 enum FBCOMPOPT_ENUM
 	FB.COMPOPT.DEBUG
@@ -78,6 +63,7 @@ enum FBCOMPOPT_ENUM
 	FB.COMPOPT.SHOWERROR
 	FB.COMPOPT.MULTITHREADED
 	FB.COMPOPT.PROFILE
+	FB.COMPOPT.TARGET
 end enum
 
 type FBCMMLINEOPT
@@ -94,6 +80,7 @@ type FBCMMLINEOPT
 	showerror		as integer					'' show line giving error (def= true)
 	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
 	profile			as integer					'' build profiling code (def= false)
+	target			as integer					'' target platform
 end type
 
 
@@ -193,13 +180,38 @@ enum FBCPUTYPE_ENUM
 	FB.CPUTYPE.686
 end enum
 
-const FB.DEFAULTCPUTYPE%	= FB.CPUTYPE.486
+const FB.DEFAULTCPUTYPE	= FB.CPUTYPE.486
 
 '' output file type
 enum FBOUTTYPE_ENUM
 	FB_OUTTYPE_EXECUTABLE
 	FB_OUTTYPE_STATICLIB
 	FB_OUTTYPE_DYNAMICLIB
+end enum
+
+'' target platform
+enum FB_COMPTARGET_ENUM
+	FB_COMPTARGET_WIN32
+	FB_COMPTARGET_LINUX
+	FB_COMPTARGET_DOS
+end enum
+
+#if defined(TARGET_WIN32)
+const FB_DEFAULTTARGET = FB_COMPTARGET_WIN32
+#elseif defined(TARGET_LINUX)
+const FB_DEFAULTTARGET = FB_COMPTARGET_LINUX
+#elseif defined(TARGET_DOS)
+const FB_DEFAULTTARGET = FB_COMPTARGET_DOS
+#else
+#error Unsupported target
+#endif
+
+'' paths
+enum FB_PATH_ENUM
+	FB_PATH_BIN
+	FB_PATH_INC
+	FB_PATH_LIB
+	FB_MAXPATHS
 end enum
 
 
@@ -210,6 +222,9 @@ declare function 	fbInit			( ) as integer
 declare sub 		fbEnd			( )
 declare function 	fbCompile		( byval infname as string, _
 									  byval outfname as string ) as integer
+
+declare sub 		fbSetPaths		( byval target as integer )
+declare function 	fbGetPath		( byval path as integer ) as zstring ptr
 
 declare sub 		fbSetDefaultOptions ( )
 declare sub 		fbSetOption		( byval opt as integer, _

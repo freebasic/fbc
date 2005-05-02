@@ -54,7 +54,7 @@ ifeq ($(osdeppath),dos)
     LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -)
     BC := ../../fbc.exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_DOS -nostdcall
+    BCFLAGS := $(BCFLAGS) -d TARGET_DOS -target dos
     LD := ../../bin/dos/ld.exe
     AS := ../../bin/dos/as.exe
 endif

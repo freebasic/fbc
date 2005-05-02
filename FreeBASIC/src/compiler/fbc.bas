@@ -53,6 +53,7 @@ type FBCCTX
 	stacksize		as integer
 	outtype			as integer
 	showversion		as integer
+	target			as integer
 
 	outname 		as zstring * FB.MAXPATHLEN+1
 	entrypoint 		as zstring * 3+FB.MAXNAMELEN+6+1
@@ -150,6 +151,9 @@ const QUOTE = "\""
     		end 0
     	end if
     end if
+
+    ''
+    fbSetPaths( ctx.target )
 
     '' compile
     if( not compileFiles( ) ) then
@@ -266,7 +270,7 @@ function assembleFiles as integer
 
     ''
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-    aspath = exepath( ) + FB.BINPATH + "as.exe"
+    aspath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe"
 #elseif defined(TARGET_LINUX)
 	aspath = "as"
 #endif
@@ -385,7 +389,7 @@ function linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T \"" + exepath( ) + FB.BINPATH + "i386pe.x\" -subsystem " + ctx.subsystem
+	ldcline = "-T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386pe.x\" -subsystem " + ctx.subsystem
 
 #elseif defined(TARGET_LINUX)
 
@@ -398,7 +402,7 @@ function linkFiles as integer
     '' set script file
     select case ctx.outtype
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = "-T \"" + exepath( ) + FB.BINPATH + "i386go32.x\""
+		ldcline = "-T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386go32.x\""
 	end select
 
 #endif
@@ -483,8 +487,8 @@ function linkFiles as integer
 	ldcline += QUOTE + mainobj + "\" "
 
 	'' link with crt0.o and crt1.o (C runtime init)
-	ldcline += QUOTE + exepath( ) + FB.LIBPATH + "/crt0.o\" "
-	'''''ldcline = ldcline + QUOTE + exepath( ) + FB.LIBPATH + "/crt1.o\" "
+	ldcline += QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + "/crt0.o\" "
+	'''''ldcline = ldcline + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + "/crt1.o\" "
 #endif
 
     '' set executable name
@@ -492,9 +496,9 @@ function linkFiles as integer
 
     '' default lib path
 #ifndef TARGET_LINUX
-    ldcline += " -L \"" + exepath( ) + FB.LIBPATH + QUOTE
+    ldcline += " -L \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
 #else
-    ldcline += " -L \"" + FB.LIBPATH + QUOTE
+    ldcline += " -L \"" + *fbGetPath( FB_PATH_LIB ) + QUOTE
 #endif
     '' and the current path to libs search list
     ldcline += " -L \"./\""
@@ -544,7 +548,7 @@ function linkFiles as integer
     end if
 
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-	ldpath = exepath( ) + FB.BINPATH + "ld.exe"
+	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
 #elseif defined(TARGET_LINUX)
 	ldpath = "ld"
 #endif
@@ -599,7 +603,7 @@ function makeDefList( dllname as string ) as integer
 
 	function = FALSE
 
-   	pxpath = exepath( ) + FB.BINPATH + "pexports.exe"
+   	pxpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "pexports.exe"
 
    	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
 
@@ -675,7 +679,7 @@ function makeImpLib( byval dllpath as string, _
 		exit function
 	end if
 
-	dtpath = exepath( ) + FB.BINPATH + "dlltool.exe"
+	dtpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "dlltool.exe"
 
 	dtcline = "--def \"" + dllfile + ".def\"" + _
 			  " --dllname \"" + dllname + ".dll\"" + _
@@ -742,7 +746,7 @@ function archiveFiles as integer
     end if
 
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-	arcpath = exepath( ) + FB.BINPATH + "ar.exe"
+	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
 #elseif defined(TARGET_LINUX)
 	arcpath = "ar"
 #endif
@@ -767,10 +771,10 @@ function compileResFiles as integer
 
 	'' change the include env var
 	oldinclude = trim$( environ$( "INCLUDE" ) )
-	setenviron "INCLUDE=" + exepath( ) + FB.INCPATH + "win\\rc"
+	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + "win\\rc"
 
 	''
-	rescmppath = exepath( ) + FB.BINPATH + "GoRC.exe"
+	rescmppath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
 
 	'' set input files (.rc's and .res') and output files (.obj's)
 	for i = 0 to ctx.rcs-1
@@ -1015,6 +1019,7 @@ sub printOptions
 #ifdef TARGET_WIN32
 	print "-s <name>", "Set subsystem (gui, console)"
 	print "-t <value>", "Set stack size in kbytes (default: 1M)"
+	'''''print "-target <name>", "Change the default target platform (dos, win32 or linux)"
 #endif
 	print "-v", "Be verbose"
 	print "-version", "Show compiler version"
@@ -1033,6 +1038,7 @@ sub setDefaultOptions
 	ctx.debug 		= FALSE
 	ctx.stacksize	= FB_DEFSTACKSIZE
 	ctx.outtype 	= FB_OUTTYPE_EXECUTABLE
+	ctx.target		= FB_DEFAULTTARGET
 
 end sub
 
@@ -1196,6 +1202,20 @@ function processOptions as integer
 				end if
 				argv(i) = ""
 				argv(i+1) = ""
+
+			case "target"
+				select case argv(i+1)
+				case "win32"
+					ctx.target = FB_COMPTARGET_WIN32
+				case "linux"
+					ctx.target = FB_COMPTARGET_LINUX
+				case "dos"
+					ctx.target = FB_COMPTARGET_DOS
+				case else
+					exit function
+				end select
+				argv(i) = ""
+				argv(i+1) = ""
 #endif
 
 			case else
@@ -1262,6 +1282,7 @@ function processCompOptions as integer
 			case "w"
 				fbSetOption( FB.COMPOPT.WARNINGLEVEL, valint( argv(i+1) ) )
 
+
 			case "noerrline"
 				fbSetOption( FB.COMPOPT.SHOWERROR, FALSE )
 
@@ -1281,11 +1302,19 @@ function processCompOptions as integer
 	next i
 
 	''
+#ifdef TARGET_WIN32
+	select case ctx.target
+	case FB_COMPTARGET_LINUX
+		fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
+		fbSetOption( FB.COMPOPT.NOUNDERPREFIX, TRUE )
+	case FB_COMPTARGET_DOS
+		fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
+	end select
+#endif
+
+	fbSetOption( FB.COMPOPT.TARGET, ctx.target )
 	fbSetOption( FB.COMPOPT.DEBUG, ctx.debug )
 	fbSetOption( FB.COMPOPT.OUTTYPE, ctx.outtype )
-#ifndef TARGET_WIN32
-	fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
-#endif
 
 	function = TRUE
 
@@ -1453,7 +1482,7 @@ function makeMain ( byval main_obj as string ) as integer
 
     function = FALSE
 
-    aspath = exepath( ) + FB.BINPATH + "as.exe"
+    aspath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe"
 
     f = freefile()
     if f = 0 then exit function

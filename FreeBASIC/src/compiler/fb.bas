@@ -34,10 +34,10 @@ defint a-z
 
 '' globals
 	dim shared incfiles as integer			'' can't be on ENV as it is restored on recursion
-
 	dim shared envcopyTB( ) as FBENV
 	dim shared incpathTB( ) as zstring * FB.MAXPATHLEN+1
 	dim shared incfileTB( ) as zstring * FB.MAXPATHLEN+1
+	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB.MAXPATHLEN+1
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -168,9 +168,9 @@ private sub hSetCtx
 	incfiles			= 0
 
 #ifndef TARGET_LINUX
-	fbAddIncPath( exepath$ + FB.INCPATH )
+	fbAddIncPath( exepath( ) + *fbGetPath( FB_PATH_INC ) )
 #else
-	fbAddIncPath( FB.INCPATH )
+	fbAddIncPath( *fbGetPath( FB_PATH_INC ) )
 #endif
 
 end sub
@@ -218,7 +218,11 @@ sub fbSetDefaultOptions
 	env.clopt.cputype 		= FB.DEFAULTCPUTYPE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
+#ifdef TARGET_WIN32
 	env.clopt.nostdcall 	= FALSE
+#else
+	env.clopt.nostdcall 	= TRUE
+#endif
 	env.clopt.nounderprefix	= FALSE
 	env.clopt.outtype		= FB_OUTTYPE_EXECUTABLE
 	env.clopt.warninglevel 	= 0
@@ -227,6 +231,7 @@ sub fbSetDefaultOptions
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE
 	env.clopt.profile       = FALSE
+	env.clopt.target		= FB_DEFAULTTARGET
 
 end sub
 
@@ -261,6 +266,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.multithreaded = value
 	case FB.COMPOPT.PROFILE
 		env.clopt.profile = value
+	case FB.COMPOPT.TARGET
+		env.clopt.target = value
 	end select
 
 end sub
@@ -295,9 +302,42 @@ function fbGetOption ( byval opt as integer ) as integer
 		function = env.clopt.multithreaded
 	case FB.COMPOPT.PROFILE
 		function = env.clopt.profile
+	case FB.COMPOPT.TARGET
+		function = env.clopt.target
 	case else
 		function = FALSE
 	end select
+
+end function
+
+'':::::
+sub fbSetPaths( byval target as integer ) static
+
+	select case target
+	case FB_COMPTARGET_WIN32
+		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
+		pathTB(FB_PATH_INC) = "\\inc\\"
+		pathTB(FB_PATH_LIB) = "\\lib\\win32"
+	case FB_COMPTARGET_DOS
+		pathTB(FB_PATH_BIN)	= "\\bin\\dos\\"
+		pathTB(FB_PATH_INC)	= "\\inc\\"
+		pathTB(FB_PATH_LIB)	= "\\lib\\dos"
+	case FB_COMPTARGET_LINUX
+#ifdef TARGET_WIN32
+		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
+#else
+		pathTB(FB_PATH_BIN)	= "/usr/share/freebasic/bin/"
+#endif
+		pathTB(FB_PATH_INC)	= "/usr/share/freebasic/inc/"
+		pathTB(FB_PATH_LIB)	= "/usr/share/freebasic/lib"
+	end select
+
+end sub
+
+'':::::
+function fbGetPath( byval path as integer ) as zstring ptr static
+
+	function = @pathTB( path )
 
 end function
 

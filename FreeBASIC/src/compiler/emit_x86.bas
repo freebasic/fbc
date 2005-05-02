@@ -5164,85 +5164,63 @@ sub hSaveAsmHeader( )
     dim as string entryname, modulename
     dim maininitlabel as FBSYMBOL ptr
 
-    modulename = hStripPath( hStripExt( env.infile ) )
-    hClearName( modulename )
-    entryname = hMakeEntryPointName( modulename )
+   	modulename = hStripPath( hStripExt( env.infile ) )
+   	hClearName( modulename )
+   	entryname = hMakeEntryPointName( modulename )
 
 	edbgHeader( ctx.outf, env.infile, modulename, entryname )
 
-	hWriteStr ctx.outf, TRUE,  ".intel_syntax noprefix"
+	hWriteStr( ctx.outf, TRUE,  ".intel_syntax noprefix" )
 	select case as const env.clopt.cputype
 	case FB.CPUTYPE.386
-		hWriteStr ctx.outf, TRUE,  ".arch i386"
+		hWriteStr( ctx.outf, TRUE,  ".arch i386" )
 	case FB.CPUTYPE.486
-		hWriteStr ctx.outf, TRUE,  ".arch i486"
+		hWriteStr( ctx.outf, TRUE,  ".arch i486" )
 	case FB.CPUTYPE.586
-		hWriteStr ctx.outf, TRUE,  ".arch i586"
+		hWriteStr( ctx.outf, TRUE,  ".arch i586" )
 	case FB.CPUTYPE.686
-		hWriteStr ctx.outf, TRUE,  ".arch i686"
+		hWriteStr( ctx.outf, TRUE,  ".arch i686" )
 	end select
 
-    hWriteStr ctx.outf, FALSE, ""
-    hWriteStr ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")"
+    hWriteStr( ctx.outf, FALSE, "" )
+    hWriteStr( ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")" )
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#entry point"
+    emitSECTION( EMIT.SECTYPE.CODE )
 
-    emitSECTION EMIT.SECTYPE.CODE
+   	hWriteStr( ctx.outf, FALSE, NEWLINE + "#entry point" )
+   	hWriteStr( ctx.outf, TRUE,  ".balign 16" + NEWLINE )
 
-    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
-
-    hWriteStr ctx.outf, FALSE, ".globl " + entryname
-    hWriteStr ctx.outf, FALSE, entryname + ":"
-
-#ifdef TARGET_LINUX
+   	hWriteStr( ctx.outf, FALSE, ".globl " + entryname )
+   	hWriteStr( ctx.outf, FALSE, entryname + ":" )
 
 	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
-		' Add small stub to get commandline under linux
-		hWriteStr ctx.outf, TRUE, "pop" + TABCHAR + "ecx"
-		hWriteStr ctx.outf, TRUE, "lea" + TABCHAR + "edi, [fb_commandline]"
-		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "edx, 1023"
-		hWriteStr ctx.outf, TRUE, "cld"
-		hWriteStr ctx.outf, FALSE, "fb_get_argv:"
-		hWriteStr ctx.outf, TRUE, "pop" + TABCHAR + "esi"
-		hWriteStr ctx.outf, FALSE, "fb_copy_arg:"
-		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "al, [esi]"
-		hWriteStr ctx.outf, TRUE, "test" + TABCHAR + "al, al"
-		hWriteStr ctx.outf, TRUE, "jz" + TABCHAR + "fb_end_copy_arg"
-		hWriteStr ctx.outf, TRUE, "movsb"
-		hWriteStr ctx.outf, TRUE, "dec" + TABCHAR + "edx"
-		hWriteStr ctx.outf, TRUE, "jz" + TABCHAR + "fb_end_get_argv"
-		hWriteStr ctx.outf, TRUE, "jmp" + TABCHAR + "fb_copy_arg"
-		hWriteStr ctx.outf, FALSE, "fb_end_copy_arg:"
-		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "al, 32"
-		hWriteStr ctx.outf, TRUE, "stosb"
-		hWriteStr ctx.outf, TRUE, "dec" + TABCHAR + "ecx"
-		hWriteStr ctx.outf, TRUE, "jnz" + TABCHAR + "fb_get_argv"
-		hWriteStr ctx.outf, TRUE, "mov" + TABCHAR + "byte ptr [edi-1], 0"
-		hWriteStr ctx.outf, FALSE, "fb_end_get_argv:"
-	end if
-#endif
-    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + "fb_moduleinit"
-    hWriteStr ctx.outf, TRUE,  "call" + TABCHAR + EMIT_MAINPROC
-    hWriteStr ctx.outf, TRUE,  "ret"
+   		hWriteStr( ctx.outf, TRUE, "call" + TABCHAR + "fb_moduleinit" )
+   		hWriteStr( ctx.outf, TRUE, "call" + TABCHAR + EMIT_MAINPROC )
+   	end if
 
     ''
-    maininitlabel = symbAddLabel( hMakeTmpStr )
-
+    maininitlabel =  symbAddLabel( hMakeTmpStr( ) )
     edbgMainBegin( maininitlabel )
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#user code"
-    hWriteStr ctx.outf, FALSE, EMIT_MAINPROC + ":"
-    hWriteStr ctx.outf, TRUE,  "push" + TABCHAR + "ebp"
-    hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "ebp, esp"
-    hWriteStr ctx.outf, FALSE, ""
+ 	hWriteStr( ctx.outf, FALSE, NEWLINE + "#user code" )
+   	hWriteStr( ctx.outf, FALSE, EMIT_MAINPROC + ":" )
+   	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
+   		hWriteStr( ctx.outf, TRUE, "push" + TABCHAR + "ebp" )
+   		hWriteStr( ctx.outf, TRUE, "mov" + TABCHAR + "ebp, esp" )
+   		hWriteStr( ctx.outf, FALSE, "" )
+   	end if
 
-    emitLABEL symbGetName( maininitlabel )
+   	emitLABEL( symbGetName( maininitlabel ) )
 
 end sub
 
 '':::::
 private sub hEmitInitProc( ) static
-    static as zstring * FB.MAXINTNAMELEN+1 id
+    dim as zstring ptr id
+
+    if( env.clopt.outtype <> FB_OUTTYPE_EXECUTABLE ) then
+    	exit sub
+    end if
 
     emitSECTION( EMIT.SECTYPE.CODE )
 
@@ -5251,13 +5229,24 @@ private sub hEmitInitProc( ) static
 
     hWriteStr( ctx.outf, TRUE,  "finit" )
 
-    id = *hCreateProcAlias( "fb_Init", 0, FB.FUNCMODE.STDCALL )
-    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + id )
+	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		hWriteStr( ctx.outf, TRUE, "push 0			#argv" )
+		hWriteStr( ctx.outf, TRUE, "push 0			#argc" )
+	else
+		hWriteStr( ctx.outf, TRUE, "push [esp+12]	#argv" )
+		hWriteStr( ctx.outf, TRUE, "push [esp+12]	#argc" )
+	end if
+
+    id = hCreateProcAlias( "fb_Init", 8, FB.FUNCMODE.STDCALL )
+    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + *id )
+    if( env.clopt.nostdcall ) then
+    	hWriteStr( ctx.outf, TRUE,  "add esp, 8" )
+    end if
 
     '' start profiling if requested
     if( env.clopt.profile ) then
-	    id = *hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
-	    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + id )
+	    id = hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
+	    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + *id )
     end if
 
     '' set default data label (def label isn't global as it could clash with other
@@ -5281,9 +5270,11 @@ private sub hEmitFooter( byval tottime as double )
     irFlush( )
 
     '' end() will never return but..
-    hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp"
-    hWriteStr ctx.outf, TRUE,  "pop" + TABCHAR + "ebp"
-    hWriteStr ctx.outf, TRUE,  "ret"
+    if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
+    	hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp"
+    	hWriteStr ctx.outf, TRUE,  "pop" + TABCHAR + "ebp"
+    	hWriteStr ctx.outf, TRUE,  "ret"
+    end if
 
     hWriteStr ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation took " + _
     						   str$( tottime ) + " secs"
@@ -5673,7 +5664,7 @@ end sub
 
 
 '':::::
-function emitOpen as integer
+function emitOpen( ) as integer
 
 	if( hFileExists( env.outfile ) ) then
 		kill env.outfile

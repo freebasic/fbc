@@ -24,9 +24,9 @@
 .section .text
 .globl _main
 _main:
-movl 8(%esp), %eax
-movl %eax, (_fb_argv)
+movl 8(%esp), %edx
 movl 4(%esp), %eax
-movl %eax, (_fb_argc)
-jmp fb_fbc_entry
+pushl %edx
+pushl %eax
+call fb_fbc_entry
 
