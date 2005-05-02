@@ -28,7 +28,6 @@ declare sub drawscene ()
 	dim result as unsigned integer
 	dim vpage as SDL_Surface ptr
 	dim i as integer, j as integer
-	dim SDL_flags as integer
 	dim FOVy as double
 	dim Aspect as double
 	dim znear as double
@@ -37,13 +36,12 @@ declare sub drawscene ()
     randomize timer
 
 
-    SDL_flags = SDL_HWSURFACE or SDL_DOUBLEBUF or SDL_OPENGL or SDL_OPENGLBLIT or SDL_FULLSCREEN
 	result = SDL_Init(SDL_INIT_EVERYTHING)
 	if result <> 0 then
   		end 1
 	end if
 
-	vpage = SDL_SetVideoMode(SCR_WIDTH, SCR_HEIGHT, BPP, SDL_flags)
+	vpage = SDL_SetVideoMode(SCR_WIDTH, SCR_HEIGHT, BPP, SDL_OPENGL or SDL_OPENGLBLIT)
 	if vpage = 0 then
 		SDL_Quit
 		end 1
@@ -74,59 +72,21 @@ declare sub drawscene ()
 
     'lighting
     'Materials (objects)
-    dim Mat_Ambient(3) as single
-    dim Mat_Specular(3) as single
-    dim Mat_Shininess(0) as single
-    Mat_Ambient(0) = 0.5
-    Mat_Ambient(1) = 0.5
-    Mat_Ambient(2) = 0.5
-    Mat_Ambient(3) = 1.0
-    Mat_Specular(0) = 1.0
-    Mat_Specular(1) = 1.0
-    Mat_Specular(2) = 1.0
-    Mat_Specular(3) = 1.0
-    Mat_Shininess(0) = 50.0
+    dim Mat_Ambient(3) as single = {0.5, 0.5, 0.5, 1.0}
+    dim Mat_Specular(3) as single = {1.0, 1.0, 1.0, 1.0}
+    dim Mat_Shininess as single = {50.0}
 
     glMaterialfv GL_FRONT, GL_AMBIENT, @Mat_Ambient(0)
     glMaterialfv GL_FRONT, GL_SPECULAR, @Mat_Specular(0)
-    glMaterialfv GL_FRONT, GL_SHININESS, @Mat_Shininess(0)
+    glMaterialfv GL_FRONT, GL_SHININESS, @Mat_Shininess
 
 
     'Light
-    dim Light_Ambient(3) as single
-    dim Light_Diffuse(3) as single
-    dim Light_Specular(3) as single
-    dim Light_Position(3) as single
-    dim Model_Ambient(3) as single
-
-
-
-
-    Light_Ambient(0) = 0.0
-    Light_Ambient(1) = 0.5
-    Light_Ambient(2) = 0.2
-    Light_Ambient(3) = 0.0
-
-    Light_Diffuse(0) = 1.0
-    Light_Diffuse(1) = 0.5
-    Light_Diffuse(2) = 1.0
-    Light_Diffuse(3) = 1.0
-
-    Light_Specular(0) = 1.0
-    Light_Specular(1) = 1.0
-    Light_Specular(2) = 1.0
-    Light_Specular(3) = 1.0
-
-    Light_Position(0) = 1.0
-    Light_Position(1) = 1.0
-    Light_Position(2) = 1.0
-    Light_Position(3) = 0.0
-
-    Model_Ambient(0) = 0.5
-    Model_Ambient(1) = 0.5
-    Model_Ambient(2) = 0.5
-    Model_Ambient(3) = 1.0
-
+    dim Light_Ambient(3) as single = {0.0, 0.5, 0.2, 0.0}
+    dim Light_Diffuse(3) as single = {1.0, 0.5, 1.0, 1.0}
+    dim Light_Specular(3) as single = {1.0, 1.0, 1.0, 1.0}
+    dim Light_Position(3) as single = {1.0, 1.0, 1.0, 0.0}
+    dim Model_Ambient(3) as single = {0.5, 0.5, 0.5, 1.0}
 
     'Load light parameters to GL states
     glLightfv GL_LIGHT0, GL_AMBIENT, @Light_Ambient(0)
