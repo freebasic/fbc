@@ -28,6 +28,7 @@
 #include "fb.h"
 #include "fb_linux.h"
 
+extern char fb_commandline[];
 
 #ifdef MULTITHREADED
 pthread_mutex_t fb_global_mutex;
@@ -199,11 +200,20 @@ int fb_hInitConsole ( int init )
 
 
 /*:::::*/
-void fb_hInit ( void )
+void fb_hInit ( int argc, char **argv )
 {
 	int init = FALSE;
 	char *term;
+	int i;
 	
+	/* rebuild command line from argv */
+	for( i = 0; i < argc; i++ ) 
+	{
+		strncat( fb_commandline, argv[i], 1024 );
+		if( i != argc-1 ) 
+			strncat( fb_commandline, " ", 1024 );
+	}
+
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
 

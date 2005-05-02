@@ -566,13 +566,13 @@ FBCALL void			fb_CondWait		( struct _FBCOND *cond );
 
 FBCALL void 		fb_AtExit 			( void (*proc)(void) );
 
-FBCALL void 		fb_Init 			( void );
+FBCALL void 		fb_Init 			( int argc, char **argv );
 FBCALL void 		fb_End 				( int errlevel );
 
 FBCALL void			fb_MemSwap			( unsigned char *dst, unsigned char *src, int bytes );
 FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_size );
 
-	   void 		fb_hInit 			( void );
+	   void 		fb_hInit 			( int argc, char **argv );
 	   void 		fb_hEnd 			( int errlevel );
 
 	   void			fb_ProfileInit		( void );

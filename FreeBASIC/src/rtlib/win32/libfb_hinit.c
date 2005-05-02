@@ -38,7 +38,7 @@ CRITICAL_SECTION fb_string_mutex;
 
 
 /*:::::*/
-void fb_hInit ( void )
+void fb_hInit ( int argc, char **argv )
 {
 
     /* set FPU precision to 64-bit and round to nearest (as in QB) */

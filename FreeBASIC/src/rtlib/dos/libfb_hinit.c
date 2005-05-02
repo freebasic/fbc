@@ -43,19 +43,23 @@ extern void fb_ConsolePrintBufferPrintf(char *buffer, int mask);
 
 
 /*:::::*/
-void fb_hInit ( void )
+void fb_hInit ( int argc, char **argv )
 {
-
 	int i;
+	
+	/* rebuild command line from argv */
+	for( i = 0; i < argc; i++ ) 
+	{
+		strncat( fb_commandline, argv[i], 1024 );
+		if( i != argc-1 ) 
+			strncat( fb_commandline, " ", 1024 );
+	}
+	
+	fb_argc = argc;
+	fb_argv = argv;
 
 	/* set FPU precision to 64-bit and round to nearest (as in QB) */
 	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
-
-	/* rebuild command line from argv */
-	for (i = 0; i < fb_argc; i++) {
-		strncat(fb_commandline, fb_argv[i], 1024);
-		if (i != fb_argc-1) strncat(fb_commandline, " ", 1024);
-	}
 
 	/* turn off blink */
 	intensevideo();
