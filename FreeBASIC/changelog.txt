@@ -8,6 +8,7 @@ Version 0.14 Beta:
 - the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as 
   inline and will be evaluated at compile-time when constants are used as parameters (v1c)
 - speeded up PUT routine when using PSET/PRESET/AND/OR/XOR drawing mode (lillo)
+- the compiler is now a bit easier to be cross-compiled using the Win32 version (v1c)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
