@@ -138,8 +138,7 @@ function cTypeField( elm as FBSYMBOL ptr, _
 					 byval isderef as integer, _
 					 byval checkarray as integer ) as integer
 
-    static as zstring * FB.MAXNAMELEN+1 fields
-    dim as zstring ptr fldptr
+    dim as zstring ptr fields
     dim as ASTNODE ptr constexpr
     dim as integer ofs
 
@@ -153,7 +152,7 @@ function cTypeField( elm as FBSYMBOL ptr, _
 			end if
 
 			fields = lexTokenText( )
-			if( len( fields ) = 0 ) then
+			if( fields[0] = 0 ) then				'' len( *fields )
 				exit function
 			end if
 
@@ -163,20 +162,18 @@ function cTypeField( elm as FBSYMBOL ptr, _
 					exit function
 				end if
 
-				fldptr = @fields[1] 			'' mid$( fields, 2 )
+				fields += 1 						'' mid$( *fields, 2 )
 
 			else
-				fldptr = @fields
-
 				isderef = FALSE
 			end if
 
-    		ofs = symbGetUDTElmOffset( elm, typ, subtype, *fldptr )
+    		ofs = symbGetUDTElmOffset( elm, typ, subtype, *fields )
     		if( ofs < 0 ) then
-    			hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+    			hReportError( FB.ERRMSG.ELEMENTNOTDEFINED )
     			return FALSE
     		else
-				lexSkipToken
+				lexSkipToken( )
     		end if
 
     		if( ofs <> 0 ) then
@@ -763,7 +760,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 					elm as FBSYMBOL ptr, _
 					byval checkarray as integer = TRUE ) as integer
 
-	static as zstring * FB.MAXNAMELEN+1 id
+	dim as zstring ptr id
 	dim as integer typ, deftyp, ofs, dtype
 	dim as ASTNODE ptr idxexpr
 	dim as FBSYMBOL ptr subtype
@@ -786,26 +783,26 @@ function cVariable( varexpr as ASTNODE ptr, _
 	typ			= lexTokenType( )
 	id			= lexTokenText( )
     if( typ = INVALID ) then
-    	deftyp = hGetDefType( id )
+    	deftyp = hGetDefType( *id )
     else
     	deftyp = INVALID
     end if
 
-	sym = symbFindBySuffix( lexTokenSymbol, typ, deftyp )
+	sym = symbFindBySuffix( lexTokenSymbol( ), typ, deftyp )
 	if( sym = NULL ) then
 		'' QB quirk: fixed-len strings referenced using '$' as suffix..
 		if( typ = FB.SYMBTYPE.STRING ) then
-			sym = symbFindBySuffix( lexTokenSymbol, FB.SYMBTYPE.FIXSTR, deftyp )
+			sym = symbFindBySuffix( lexTokenSymbol( ), FB.SYMBTYPE.FIXSTR, deftyp )
 			'' check zstrings too..
 			if( sym = NULL ) then
-				sym = symbFindBySuffix( lexTokenSymbol, FB.SYMBTYPE.CHAR, deftyp )
+				sym = symbFindBySuffix( lexTokenSymbol( ), FB.SYMBTYPE.CHAR, deftyp )
 			end if
 
 		elseif( deftyp = FB.SYMBTYPE.STRING ) then
-			sym = symbFindBySuffix( lexTokenSymbol, INVALID, FB.SYMBTYPE.FIXSTR )
+			sym = symbFindBySuffix( lexTokenSymbol( ), INVALID, FB.SYMBTYPE.FIXSTR )
 			'' check zstrings too..
 			if( sym = NULL ) then
-				sym = symbFindBySuffix( lexTokenSymbol, INVALID, FB.SYMBTYPE.CHAR )
+				sym = symbFindBySuffix( lexTokenSymbol( ), INVALID, FB.SYMBTYPE.CHAR )
 			end if
 		end if
 	end if
@@ -817,20 +814,20 @@ function cVariable( varexpr as ASTNODE ptr, _
 	else
 
 		'' it can be also an UDT, as dots can be part of symbol names..
-		sym = symbLookupUDTVar( id, lexTokenDotPos, typ, ofs, elm, subtype )
+		sym = symbLookupUDTVar( *id, lexTokenDotPos, typ, ofs, elm, subtype )
 		if( sym = NULL ) then
 			'' add undeclared variable
-			if( hGetLastError <> FB.ERRMSG.OK ) then
+			if( hGetLastError( ) <> FB.ERRMSG.OK ) then
 				exit function
 			end if
 
 			'' add undeclared var
 			if( not env.optexplicit ) then
 				if( typ = INVALID ) then
-					typ = hGetDefType( id )
+					typ = hGetDefType( *id )
 				end if
 
-				sym = hVarAddUndecl( id, typ )
+				sym = hVarAddUndecl( *id, typ )
 				if( sym = NULL ) then
 					hReportError FB.ERRMSG.DUPDEFINITION
 					exit function

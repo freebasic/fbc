@@ -171,9 +171,9 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
 		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( l = NULL ) then
-			l = symbAddLabel( lexTokenText, FALSE, TRUE )
+			l = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 		end if
-		lexSkipToken
+		lexSkipToken( )
 
 		astFlush( astNewBRANCH( IR.OP.JMP, l ) )
 
@@ -1839,7 +1839,7 @@ private function hReadWithText( byval text as string ) as integer
 
     ''
     dpos = lexTokenDotpos( )
-    id = lexTokenText( )
+    id = *lexTokenText( )
 
     if( dpos > 0 ) then
     	id[dpos-1] = 0 							'' left$( id, dpos-1 )
@@ -1857,7 +1857,7 @@ private function hReadWithText( byval text as string ) as integer
 	end if
 
     ''
-    text = lexEatToken( )
+    lexEatToken( text )
 
     do
     	select case lexCurrentToken( )
@@ -1865,7 +1865,8 @@ private function hReadWithText( byval text as string ) as integer
 			exit do
 		end select
 
-    	text += lexEatToken
+    	text += *lexTokenText( )
+    	lexSkipToken( )
     loop
 
 	return TRUE

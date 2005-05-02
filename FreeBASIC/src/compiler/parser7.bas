@@ -257,12 +257,12 @@ function cGfxLine as integer
 
 		'' ',' LIT_STRING? - linetype
 		if( hMatch( CHAR_COMMA ) ) then
-			select case ucase$( lexTokenText )
+			select case ucase$( *lexTokenText( ) )
 			case "B"
-				lexSkipToken
+				lexSkipToken( )
 				linetype = FBGFX_LINETYPE_B
 			case "BF"
-				lexSkipToken
+				lexSkipToken( )
 		    	linetype = FBGFX_LINETYPE_BF
 		    end select
 
@@ -351,11 +351,11 @@ function cGfxCircle as integer
 
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
-            			if( ucase$( lexTokenText ) <> "F" ) then
+            			if( ucase$( *lexTokenText( ) ) <> "F" ) then
 							hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 							exit function
 						end if
-						lexSkipToken
+						lexSkipToken( )
 						fillflag = TRUE
             		end if
             	end if
@@ -666,11 +666,11 @@ function cGfxPut as integer
 			mode = FBGFX_PUTMODE_XOR
 
 		case else
-			if (ucase$( lexTokenText ) = "TRANS") then
-				lexSkipToken
+			if (ucase$( *lexTokenText( ) ) = "TRANS") then
+				lexSkipToken( )
 				mode = FBGFX_PUTMODE_TRANS
-			elseif (ucase$( lexTokenText ) = "ALPHA") then
-				lexSkipToken
+			elseif (ucase$( *lexTokenText( ) ) = "ALPHA") then
+				lexSkipToken( )
 				mode = FBGFX_PUTMODE_ALPHA
 			else
 				hReportError FB.ERRMSG.SYNTAXERROR

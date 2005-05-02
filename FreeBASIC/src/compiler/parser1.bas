@@ -216,12 +216,12 @@ function cLabel as integer
     select case lexCurrentTokenClass
     case FB.TKCLASS.NUMLITERAL
 		if( lexTokenType = FB.SYMBTYPE.INTEGER ) then
-			l = symbAddLabel( lexTokenText, TRUE, TRUE )
+			l = symbAddLabel( *lexTokenText( ), TRUE, TRUE )
 			if( l = NULL ) then
 				hReportError FB.ERRMSG.DUPDEFINITION
 				exit function
 			else
-				lexSkipToken
+				lexSkipToken( )
 			end if
 		end if
 
@@ -235,16 +235,16 @@ function cLabel as integer
 				exit function
 			end if
 
-			l = symbAddLabel( lexTokenText, TRUE, TRUE )
+			l = symbAddLabel( *lexTokenText( ), TRUE, TRUE )
 			if( l = NULL ) then
-				hReportError FB.ERRMSG.DUPDEFINITION
+				hReportError( FB.ERRMSG.DUPDEFINITION )
 				exit function
 			else
-				lexSkipToken
+				lexSkipToken( )
 			end if
 
 			'' skip ':'
-			lexSkipToken
+			lexSkipToken( )
 
 		end if
     end select
@@ -316,7 +316,7 @@ function cDirective as integer static
 
 		'' ONCE?
 		isonce = FALSE
-		if( ucase$( lexTokenText( ) ) = "ONCE" ) then
+		if( ucase$( *lexTokenText( ) ) = "ONCE" ) then
 			lexSkipToken( )
 			isonce = TRUE
 		end if
@@ -329,7 +329,10 @@ function cDirective as integer static
 
 		'' "STR_LIT"
 		if( lexCurrentTokenClass( ) = FB.TKCLASS.STRLITERAL ) then
-			incfile = hUnescapeStr( lexEatToken )
+			lexEatToken( incfile )
+			if( env.optescapestr ) then
+				incfile = hUnescapeStr( incfile )
+			end if
 
 		else
 			'' '\''
@@ -547,7 +550,7 @@ function cConstAssign as integer static
 
 	'' ID
 	typ = lexTokenType( )
-	id = lexEatToken( )
+	lexEatToken( id )
 
 	'' (AS SymbolType)?
 	if( hMatch( FB.TK.AS ) ) then
@@ -643,7 +646,7 @@ end function
 
 '':::::
 function cTypedefDecl( byval id as string ) as integer
-    static as zstring * FB.MAXNAMELEN+1 tname
+    dim as zstring ptr tname
     dim as integer typ, lgt, ptrcnt
     dim as FBSYMBOL ptr subtype
 
@@ -655,9 +658,9 @@ function cTypedefDecl( byval id as string ) as integer
     		exit function
     	end if
 
-    	tname = lexTokenText
+    	tname = lexTokenText( )
     	'' pointing to itself? then it's a void..
-    	if( tname = id ) then
+    	if( *tname = id ) then
     		typ 	= FB.SYMBTYPE.VOID
     		subtype = NULL
     		lgt 	= 0
@@ -665,10 +668,10 @@ function cTypedefDecl( byval id as string ) as integer
     	'' else, create a forward reference (or lookup one)
     	else
     		typ 	= FB.SYMBTYPE.FWDREF
-    		subtype = symbAddFwdRef( tname )
+    		subtype = symbAddFwdRef( *tname )
 			lgt 	= -1
 			if( subtype = NULL ) then
-				subtype = symbFindByNameAndClass( tname, FB.SYMBCLASS.FWDREF )
+				subtype = symbFindByNameAndClass( *tname, FB.SYMBCLASS.FWDREF )
 				if( subtype = NULL ) then
 					hReportError FB.ERRMSG.DUPDEFINITION
 					exit function
@@ -676,7 +679,7 @@ function cTypedefDecl( byval id as string ) as integer
 			end if
     	end if
 
-    	lexSkipToken
+    	lexSkipToken( )
     end if
 
 	if( ptrcnt = 0 ) then
@@ -727,7 +730,7 @@ function cElementDecl( byval id as string, _
 	'' ID
 	typ = lexTokenType
 	subtype = NULL
-	id = lexEatToken
+	lexEatToken( id )
 	bits = 0
 
 	'' ArrayDecl?
@@ -736,7 +739,8 @@ function cElementDecl( byval id as string, _
 		if( lexCurrentToken = CHAR_COLON ) then
 			if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
 				lexSkipToken
-				bits = valint( lexEatToken )
+				bits = valint( *lexTokenText( ) )
+				lexSkipToken( )
 				if( bits <= 0 ) then
     				hReportError FB.ERRMSG.SYNTAXERROR, TRUE
     				exit function
@@ -794,7 +798,7 @@ function cAsElementDecl( ) as integer static
     		end if
     	end if
 
-	    id = lexEatToken( )
+	    lexEatToken( id )
 	    bits = 0
 
 		'' ArrayDecl?
@@ -808,7 +812,8 @@ function cAsElementDecl( ) as integer static
 			if( lexCurrentToken = CHAR_COLON ) then
 				if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
 					lexSkipToken
-					bits = valint( lexEatToken )
+					bits = valint( *lexTokenText( ) )
+					lexSkipToken( )
 				end if
 
 				if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
@@ -1005,7 +1010,7 @@ function cTypeDecl as integer static
     	exit function
     end if
 
-	id = lexEatToken( )
+	lexEatToken( id )
 
 	''
 	select case lexCurrentToken( )
@@ -1125,7 +1130,7 @@ function cEnumConstDecl( byval id as string ) as integer
 	end if
 
 	'' ID
-	id = lexEatToken( )
+	lexEatToken( id )
 
 	'' ASSIGN
 	if( hMatch( FB.TK.ASSIGN ) ) then
@@ -1220,7 +1225,7 @@ function cEnumDecl as integer static
 
 	'' ID?
 	if( lexCurrentTokenClass = FB.TKCLASS.IDENTIFIER ) then
-    	id = lexEatToken( )
+    	lexEatToken( id )
     else
     	id = hMakeTmpStr( )
     end if
@@ -1572,7 +1577,7 @@ function cSymbolDef( byval alloctype as integer, _
     		end if
     	end if
 
-    	id 			= lexEatToken
+    	lexEatToken( id )
     	idalias		= ""
     	istypeless	= FALSE
 
@@ -1611,7 +1616,8 @@ function cSymbolDef( byval alloctype as integer, _
 					hReportError FB.ERRMSG.SYNTAXERROR
 					exit function
 				end if
-				idalias = hCreateDataAlias( lexEatToken, (alloctype and FB.ALLOCTYPE.IMPORT) > 0 )
+				lexEatToken( idalias )
+				idalias = hCreateDataAlias( idalias, (alloctype and FB.ALLOCTYPE.IMPORT) > 0 )
 			end if
 		end if
 
@@ -2835,7 +2841,7 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 	end if
 
 	typ = lexTokenType
-	id = lexEatToken( )
+	lexEatToken( id )
 	subtype = NULL
 	ptrcnt = 0
 
@@ -2861,7 +2867,7 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
-		libname = lexEatToken( )
+		lexEatToken( libname )
 	else
 		libname = ""
 	end if
@@ -2873,7 +2879,7 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
-		aliasname = lexEatToken( )
+		lexEatToken( aliasname )
 	else
 		aliasname = ""
 	end if
@@ -2986,7 +2992,9 @@ function cArgDecl( byval procmode as integer, _
 				   byval argtail as FBSYMBOL ptr, _
 				   byval isproto as integer ) as FBSYMBOL ptr
 
-	dim as string id
+	static as zstring * FB.MAXNAMELEN+1 idTB(0 to FB.MAXARGRECLEVEL-1)
+	static as integer arglevel = 0
+	dim as zstring ptr id
 	dim as ASTNODE ptr expr
 	dim as integer dclass, dtype, readid, mode
 	dim as integer atype, amode, alen, asuffix, optional, ptrcnt
@@ -2999,11 +3007,11 @@ function cArgDecl( byval procmode as integer, _
 	if( lexCurrentToken = FB.TK.VARARG ) then
 		'' not cdecl or is it the first arg?
 		if( (procmode <> FB.FUNCMODE.CDECL) or (argc = 0) ) then
-			hReportParamError argc, lexTokenText
+			hReportParamError( argc, *lexTokenText( ) )
 			exit function
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
 		return symbAddArg( "", argtail, INVALID, NULL, 0, _
 						   0, FB.ARGMODE.VARARG, INVALID, FALSE, NULL )
@@ -3023,39 +3031,48 @@ function cArgDecl( byval procmode as integer, _
 
 	'' only allow keywords as arg names on prototypes
 	readid = TRUE
-	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
+	if( lexCurrentTokenClass( ) <> FB.TKCLASS.IDENTIFIER ) then
 		if( not isproto ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
-			if( lexCurrentTokenClass = FB.TKCLASS.KEYWORD ) then
-				hReportParamError argc, lexTokenText
+			if( lexCurrentTokenClass( ) = FB.TKCLASS.KEYWORD ) then
+				hReportParamError( argc, *lexTokenText( ) )
 				exit function
 			end if
 		end if
 
-		if(	lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+		if(	lexCurrentTokenClass( ) <> FB.TKCLASS.KEYWORD ) then
 			if( argc > 0 ) then
-				hReportParamError argc, lexTokenText
+				hReportParamError( argc, *lexTokenText( ) )
 			end if
 			exit function
 		end if
 
 		if( isproto ) then
 			'' AS?
-			if( lexCurrentToken = FB.TK.AS ) then
+			if( lexCurrentToken( ) = FB.TK.AS ) then
 				readid = FALSE
 			end if
 		end if
 	end if
 
+	''
+	if( arglevel >= FB.MAXARGRECLEVEL ) then
+		hReportError( FB.ERRMSG.RECLEVELTOODEPTH )
+		exit function
+	end if
+
+	id = @idTB(arglevel)
+
+	''
 	if( readid ) then
 		'' ID
 		atype = lexTokenType
-		id = lexEatToken
+		lexEatToken( *id )
 
 		'' ('('')')
 		if( hMatch( CHAR_LPRNT ) ) then
 			if( (mode <> INVALID) or (not hMatch( CHAR_RPRNT )) ) then
-				hReportParamError argc, id
+				hReportParamError( argc, *id )
 				exit function
 			end if
 
@@ -3083,19 +3100,23 @@ function cArgDecl( byval procmode as integer, _
     '' (AS SymbolType)?
     if( hMatch( FB.TK.AS ) ) then
     	if( atype <> INVALID ) then
-    		hReportParamError argc, id
+    		hReportParamError( argc, *id )
     		exit function
     	end if
+
+    	arglevel += 1
     	if( not cSymbolType( atype, subtype, alen, ptrcnt ) ) then
-    		hReportParamError argc, id
+    		hReportParamError( argc, *id )
+    		arglevel -= 1
     		exit function
     	end if
+    	arglevel -= 1
 
     	asuffix = INVALID
 
     else
     	if( not readid ) then
-    		hReportParamError argc, ""
+    		hReportParamError( argc, "" )
     		exit function
     	end if
 
@@ -3106,7 +3127,7 @@ function cArgDecl( byval procmode as integer, _
 
     ''
     if( atype = INVALID ) then
-        atype = hGetDefType( id )
+        atype = hGetDefType( *id )
         asuffix = atype
     end if
 
@@ -3114,13 +3135,13 @@ function cArgDecl( byval procmode as integer, _
     select case atype
     '' can't be a fixed-len string
     case FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
-    	hReportParamError argc, id
+    	hReportParamError( argc, *id )
     	exit function
 
 	'' can't be as ANY on non-prototypes
     case FB.SYMBTYPE.VOID
     	if( not isproto ) then
-    		hReportParamError argc, id
+    		hReportParamError( argc, *id )
     		exit function
     	end if
     end select
@@ -3136,7 +3157,7 @@ function cArgDecl( byval procmode as integer, _
     	if( isproto ) then
     		select case atype
     		case FB.SYMBTYPE.VOID
-    			hReportParamError argc, id
+    			hReportParamError( argc, *id )
     			exit function
     		end select
     	end if
@@ -3154,7 +3175,7 @@ function cArgDecl( byval procmode as integer, _
 
     	'' not byval or byref?
     	if( (amode <> FB.ARGMODE.BYVAL) and (amode <> FB.ARGMODE.BYREF) ) then
- 	   		hReportParamError argc, id
+ 	   		hReportParamError( argc, *id )
     		exit function
     	end if
 
@@ -3163,7 +3184,7 @@ function cArgDecl( byval procmode as integer, _
     	if( dclass <> IR.DATACLASS.INTEGER ) then
     		if( dclass <> IR.DATACLASS.FPOINT ) then
     			if( dclass <> IR.DATACLASS.STRING ) then
- 	   				hReportParamError argc, id
+ 	   				hReportParamError( argc, *id )
     				exit function
     			end if
     		end if
@@ -3243,11 +3264,11 @@ function cArgDecl( byval procmode as integer, _
     end if
 
     if( isproto ) then
-    	id = ""
+    	*id = ""
     end if
 
-    function = symbAddArg( id, argtail, atype, subtype, ptrcnt, _
-    					   alen, amode, asuffix, optional, @optval )
+    function = symbAddArg( *id, argtail, atype, subtype, ptrcnt, _
+    					    alen, amode, asuffix, optional, @optval )
 
 end function
 
@@ -3295,13 +3316,13 @@ function cDefDecl as integer static
 		'' (CHAR '-' CHAR ','?)*
 		do
 			'' CHAR
-			char = ucase$( lexTokenText )
+			char = ucase$( *lexTokenText( ) )
 			if( len( char ) <> 1 ) then
 				hReportError FB.ERRMSG.EXPECTEDCOMMA
 				exit do
 			end if
 			ichar = asc( char )
-			lexSkipToken
+			lexSkipToken( )
 
 			'' '-'
 			if( not hMatch( CHAR_MINUS ) ) then
@@ -3310,13 +3331,13 @@ function cDefDecl as integer static
 			end if
 
 			'' CHAR
-			char = ucase$( lexTokenText )
+			char = ucase$( *lexTokenText( ) )
 			if( len( char ) <> 1 ) then
 				hReportError FB.ERRMSG.EXPECTEDCOMMA
 				exit do
 			end if
 			echar = asc( char )
-			lexSkipToken
+			lexSkipToken( )
 
 			''
 			hSetDefType( ichar, echar, typ )
@@ -3357,7 +3378,8 @@ function cOptDecl as integer
 			hReportError FB.ERRMSG.SYNTAXERROR
 			exit function
 		end if
-		env.optbase = valint( lexEatToken )
+		env.optbase = valint( *lexTokenText( ) )
+		lexSkipToken( )
 
 	case FB.TK.BYVAL
 		lexSkipToken
@@ -3378,9 +3400,9 @@ function cOptDecl as integer
 	case else
 
 		'' ESCAPE? (it's not a reserved word, there are too many already..)
-		select case ucase$( lexTokenText )
+		select case ucase$( *lexTokenText( ) )
 		case "ESCAPE"
-			lexSkipToken
+			lexSkipToken( )
 			env.optescapestr = TRUE
 
 		'' NOKEYWORD? (ditto..)
@@ -4228,8 +4250,9 @@ end function
 ''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
 function cAsmCode as integer static
+	static as zstring * FB.MAXLITLEN+1 text
 	dim as FBSYMBOL ptr elm, subtype, s
-	dim as string asmline, text
+	dim as string asmline
 	dim as integer ofs
 
 	function = FALSE
@@ -4243,7 +4266,7 @@ function cAsmCode as integer static
 			exit do
 		end select
 
-		text = lexTokenText( )
+		text = *lexTokenText( )
 
 		if( lexCurrentTokenClass( LEXCHECK_NOWHITESPC ) = FB.TKCLASS.IDENTIFIER ) then
 			if( not emitIsKeyword( text ) ) then

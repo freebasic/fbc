@@ -72,21 +72,21 @@ function cGotoStmt as integer
 
 	function = FALSE
 
-	select case as const lexCurrentToken
+	select case as const lexCurrentToken( )
 	'' GOTO LABEL
 	case FB.TK.GOTO
-		lexSkipToken
+		lexSkipToken( )
 
-		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-			l = symbFindByNameAndClass( lexTokenText, FB.SYMBCLASS.LABEL )
+		if( lexCurrentTokenClass( ) = FB.TKCLASS.NUMLITERAL ) then
+			l = symbFindByNameAndClass( *lexTokenText( ), FB.SYMBCLASS.LABEL )
 		else
-			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+			l = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
 		end if
 
 		if( l = NULL ) then
-			l = symbAddLabel( lexTokenText, FALSE, TRUE )
+			l = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 		end if
-		lexSkipToken
+		lexSkipToken( )
 
 		astFlush( astNewBRANCH( IR.OP.JMP, l ) )
 
@@ -94,18 +94,18 @@ function cGotoStmt as integer
 
 	'' GOSUB LABEL
 	case FB.TK.GOSUB
-		lexSkipToken
+		lexSkipToken( )
 
 		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-			l = symbFindByNameAndClass( lexTokenText, FB.SYMBCLASS.LABEL )
+			l = symbFindByNameAndClass( *lexTokenText( ), FB.SYMBCLASS.LABEL )
 		else
-			l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+			l = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
 		end if
 
 		if( l = NULL ) then
-			l = symbAddLabel( lexTokenText, FALSE, TRUE )
+			l = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 		end if
-		lexSkipToken
+		lexSkipToken( )
 
 		astFlush( astNewBRANCH( IR.OP.CALL, l ) )
 
@@ -113,17 +113,17 @@ function cGotoStmt as integer
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB.TK.RETURN
-		lexSkipToken
+		lexSkipToken( )
 
 		'' Comment|StmtSep|EOF? just return
-		select case lexCurrentToken
+		select case lexCurrentToken( )
 		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
 
 			'' try to guess here.. if inside a proc currently and no user label was
 			'' emited, it's probably a FUNCTION return, no a GOSUB return
 			l = NULL
 			if( env.scope > 0 ) then
-				l = symbGetLastLabel
+				l = symbGetLastLabel( )
 				if( l <> NULL ) then
 					if( l->scope <> env.scope ) then
 						l = NULL
@@ -133,7 +133,7 @@ function cGotoStmt as integer
 
 			if( (env.scope = 0) or (l <> NULL) ) then
 				''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-				irEmitRETURN 0
+				irEmitRETURN( 0 )
 			else
 				function = cFuncReturn( FALSE )
 			end if
@@ -145,16 +145,16 @@ function cGotoStmt as integer
 			'' Comment|StmtSep|EOF following? check if it's not an already defined label
 			select case lexLookAhead( 1 )
 			case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
-				if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-					l = symbFindByNameAndClass( lexTokenText, FB.SYMBCLASS.LABEL )
+				if( lexCurrentTokenClass( ) = FB.TKCLASS.NUMLITERAL ) then
+					l = symbFindByNameAndClass( *lexTokenText( ), FB.SYMBCLASS.LABEL )
 				else
-					l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+					l = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
 				end if
 			end select
 
 			'' label?
 			if( l <> NULL ) then
-				lexSkipToken
+				lexSkipToken( )
 				astFlush( astNewBRANCH( IR.OP.JMP, l ) )
 				function = TRUE
 
@@ -170,11 +170,11 @@ function cGotoStmt as integer
 	case FB.TK.RESUME
 
 		if( not env.clopt.resumeerr ) then
-			hReportError FB.ERRMSG.ILLEGALRESUMEERROR
+			hReportError( FB.ERRMSG.ILLEGALRESUMEERROR )
 			exit function
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
 		if( hMatch( FB.TK.NEXT ) ) then
 			isnext = TRUE
@@ -371,26 +371,26 @@ function cDataStmt as integer static
 
 	function = FALSE
 
-	select case lexCurrentToken
+	select case lexCurrentToken( )
 	'' RESTORE LABEL?
 	case FB.TK.RESTORE
-		lexSkipToken
+		lexSkipToken( )
 
 		'' LABEL?
 		s = NULL
-		if( not hIsSttSeparatorOrComment( lexCurrentToken ) ) then
-			s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+		if( not hIsSttSeparatorOrComment( lexCurrentToken( ) ) ) then
+			s = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
 			if( s = NULL ) then
-				s = symbAddLabel( lexTokenText, FALSE, TRUE )
+				s = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 			end if
-			lexSkipToken
+			lexSkipToken( )
 		end if
 
 		function = rtlDataRestore( s )
 
 	'' READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 	case FB.TK.READ
-		lexSkipToken
+		lexSkipToken( )
 
 		do
 		    if( not cVarOrDeref( expr ) ) then
@@ -792,8 +792,10 @@ function cInputStmt as integer
     	isfile = FALSE
     	'' STRING_LIT?
     	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
-			lgt = lexTokenTextLen
-			filestrexpr = astNewVAR( hAllocStringConst( lexEatToken, lgt ), NULL, 0, IR.DATATYPE.FIXSTR )
+			lgt = lexTokenTextLen( )
+			filestrexpr = astNewVAR( hAllocStringConst( *lexTokenText( ), lgt ), _
+									 NULL, 0, IR.DATATYPE.FIXSTR )
+			lexSkipToken( )
     	else
     		filestrexpr = NULL
     	end if
@@ -1361,9 +1363,9 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 		'' Label
 		labelTB(l) = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 		if( labelTB(l) = NULL ) then
-			labelTB(l) = symbAddLabel( lexTokenText, FALSE, TRUE )
+			labelTB(l) = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 		end if
-		lexSkipToken
+		lexSkipToken( )
 
 		l += 1
 	loop while( hMatch( CHAR_COMMA ) )
@@ -1445,9 +1447,9 @@ function cOnStmt as integer
 
 	'' ERROR | Expression
 	expr = NULL
-	select case lexCurrentToken
+	select case lexCurrentToken( )
 	case FB.TK.ERROR
-		lexSkipToken
+		lexSkipToken( )
 	case else
 		hMatchExpression( expr )
 	end select
@@ -1472,8 +1474,8 @@ function cOnStmt as integer
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
 		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-			if( lexTokenText = "0" ) then
-				lexSkipToken
+			if( *lexTokenText( ) = "0" ) then
+				lexSkipToken( )
 				isrestore = TRUE
 			end if
         end if
@@ -1482,16 +1484,16 @@ function cOnStmt as integer
 			'' Label
 			label = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
 			if( label = NULL ) then
-				label = symbAddLabel( lexTokenText, FALSE, TRUE )
+				label = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 			end if
-			lexSkipToken
+			lexSkipToken( )
 
 			expr = astNewVAR( label, NULL, 0, IR.DATATYPE.UINT )
 			expr = astNewADDR( IR.OP.ADDROF, expr, label )
-			rtlErrorSetHandler expr, (islocal = TRUE)
+			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else
-        	rtlErrorSetHandler astNewCONSTi( NULL, IR.DATATYPE.UINT ), (islocal = TRUE)
+        	rtlErrorSetHandler( astNewCONSTi( NULL, IR.DATATYPE.UINT ), (islocal = TRUE) )
 		end if
 
 		function = TRUE

@@ -28,6 +28,12 @@ defint a-z
 '$include once: 'inc\fbint.bi'
 '$include once: 'inc\parser.bi'
 
+declare function ppInclude					( ) as integer
+
+declare function ppIncLib					( ) as integer
+
+declare function ppLibPath					( ) as integer
+
 declare function ppDefine					( ) as integer
 
 declare function ppIf 						( ) as integer
@@ -86,23 +92,26 @@ const QUOTE = "\""
     	'' preserve quotes if it's a string literal
     	if( lexCurrentTokenClass( ) = FB.TKCLASS.STRLITERAL ) then
     		text += QUOTE
-    		text += hUnescapeStr( lexEatToken )
+    		lexEatToken( token )
+    		text += hUnescapeStr( token )
     		text += QUOTE
 
     	else
     		'' no args? just read as-is
     		if( args = 0 ) then
-    			text += lexEatToken( flags )
+    			lexEatToken( token, flags )
+    			text += token
 
     		else
     			'' not and identifier? read as-is
     			if( lexCurrentToken( ) <> FB.TK.ID ) then
-    				text += lexEatToken( flags )
+    				lexEatToken( token, flags )
+    				text += token
 
     			'' otherwise, check if it's an argument and replace it
     			'' with an unique pattern
     			else
-    				token = ucase$( lexTokenText( ) )
+    				token = ucase$( *lexTokenText( ) )
     				'' contains a dot? assume it's an udt access
     				dpos = lexTokenDotPos( )
     				if( dpos > 1 ) then
@@ -119,7 +128,8 @@ const QUOTE = "\""
     						text += "\27"
     						'' add the remainder if it's an udt access
     						if( dpos > 1 ) then
-    							text += mid$( lexEatToken( flags ), dpos )
+    							lexEatToken( token, flags )
+    							text += mid$( token, dpos )
     						else
     							lexSkipToken( flags )
     						end if
@@ -132,7 +142,8 @@ const QUOTE = "\""
 
     				'' if none matched, read as-is
     				if( a = NULL ) then
-    					text += lexEatToken( flags )
+    					lexEatToken( token, flags )
+    					text += token
     				end if
     			end if
 
@@ -161,7 +172,6 @@ end function
 ''				 |	 '#'ERROR LIT_STR .
 ''
 function lexPreProcessor as integer
-    dim as integer isonce
 
 	function = FALSE
 
@@ -215,35 +225,17 @@ function lexPreProcessor as integer
 	'' INCLUDE ONCE? LIT_STR
 	case FB.TK.INCLUDE
 		lexSkipToken( )
-
-		'' ONCE?
-		isonce = FALSE
-		if( lexCurrentTokenClass( ) = FB.TKCLASS.IDENTIFIER ) then
-			if( ucase$( lexTokenText( ) ) = "ONCE" ) then
-				lexSkipToken( )
-				isonce = TRUE
-			end if
-		end if
-
-		function = fbIncludeFile( hUnescapeStr( lexEatToken ), isonce )
+		function = ppInclude( )
 
 	'' INCLIB LIT_STR
 	case FB.TK.INCLIB
 		lexSkipToken( )
-
-		if( symbAddLib( hUnescapeStr( lexEatToken( ) ) ) <> NULL ) then
-			function = TRUE
-		end if
+        function = ppIncLib( )
 
 	'' LIBPATH LIT_STR
 	case FB.TK.LIBPATH
 		lexSkipToken
-
-		if( not fbAddLibPath( hUnescapeStr( lexEatToken( ) ) ) ) then
-			hReportError( FB.ERRMSG.SYNTAXERROR )
-			exit function
-		end if
-		function = TRUE
+		function = ppLibPath( )
 
 	case else
 		hReportError( FB.ERRMSG.SYNTAXERROR )
@@ -260,6 +252,53 @@ function lexPreProcessor as integer
 			return FALSE
 		end if
 	end if
+
+end function
+
+'':::::
+private function ppInclude( ) as integer
+    static as zstring * FB.MAXPATHLEN+1 incfile
+    dim as integer isonce
+
+	function = FALSE
+
+	'' ONCE?
+	isonce = FALSE
+	if( lexCurrentTokenClass( ) = FB.TKCLASS.IDENTIFIER ) then
+		if( ucase$( *lexTokenText( ) ) = "ONCE" ) then
+			lexSkipToken( )
+			isonce = TRUE
+		end if
+	end if
+
+	lexEatToken( incfile )
+
+	function = fbIncludeFile( hUnescapeStr( incfile ), isonce )
+
+end function
+
+'':::::
+private function ppIncLib( ) as integer
+    static as zstring * FB.MAXPATHLEN+1 libfile
+
+	lexEatToken( libfile )
+
+	function = symbAddLib( hUnescapeStr( libfile ) ) <> NULL
+
+end function
+
+'':::::
+private function ppLibPath( ) as integer
+    static as zstring * FB.MAXPATHLEN+1 path
+
+	lexEatToken( path )
+
+	if( not fbAddLibPath( hUnescapeStr( path ) ) ) then
+		hReportError( FB.ERRMSG.SYNTAXERROR, TRUE )
+		return FALSE
+	end if
+
+	function = TRUE
 
 end function
 
@@ -282,7 +321,7 @@ private function ppDefine( ) as integer
     	end if
     end if
 
-    defname = lexEatToken( LEXCHECK_NOWHITESPC )
+    lexEatToken( defname, LEXCHECK_NOWHITESPC )
 
     args = 0
     arghead = NULL
@@ -296,7 +335,7 @@ private function ppDefine( ) as integer
 		if( lexCurrentToken( ) <> CHAR_RPRNT ) then
 			lastarg = NULL
 			do
-		    	argname = lexEatToken( LEXCHECK_NODEFINE )
+		    	lexEatToken( argname, LEXCHECK_NODEFINE )
 		    	lastarg = symbAddDefineArg( lastarg, argname )
 		    	args += 1
 
@@ -769,9 +808,10 @@ private function ppParentExpr( parexpr as integer, _
   			isnumber = TRUE
   		end if
 
-  		atom = lexEatToken
+  		atom = *lexTokenText( )
+  		lexSkipToken( )
   		if( len( atom ) = 0 ) then
-  			hReportError FB.ERRMSG.SYNTAXERROR
+  			hReportError( FB.ERRMSG.SYNTAXERROR )
   			exit function
   		end if
 

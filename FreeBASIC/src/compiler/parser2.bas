@@ -1157,26 +1157,26 @@ function cLiteral( litexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	select case lexCurrentTokenClass
+	select case lexCurrentTokenClass( )
 	case FB.TKCLASS.NUMLITERAL
-  		typ = lexTokenType
+  		typ = lexTokenType( )
   		select case as const typ
   		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			litexpr = astNewCONST64( val64( lexTokenText ), typ )
+			litexpr = astNewCONST64( val64( *lexTokenText( ) ), typ )
   		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			litexpr = astNewCONSTf( val( lexTokenText ), typ )
+			litexpr = astNewCONSTf( val( *lexTokenText( ) ), typ )
 		case else
-			litexpr = astNewCONSTi( valint( lexTokenText ), typ )
+			litexpr = astNewCONSTi( valint( *lexTokenText( ) ), typ )
   		end select
 
-  		lexSkipToken
+  		lexSkipToken( )
   		function = TRUE
 
   	case FB.TKCLASS.STRLITERAL
-		tc = hAllocStringConst( lexTokenText, lexTokenTextLen )
+		tc = hAllocStringConst( *lexTokenText( ), lexTokenTextLen( ) )
 		litexpr = astNewVAR( tc, NULL, 0, IR.DATATYPE.FIXSTR )
 
-		lexSkipToken
+		lexSkipToken( )
         function = TRUE
   	end select
 

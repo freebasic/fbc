@@ -1435,10 +1435,11 @@ private sub hMoveKDown( ) static
 end sub
 
 '':::::
-function lexEatToken( byval flags as LEXCHECK_ENUM ) as string static
+sub lexEatToken( byval token as string, _
+				 byval flags as LEXCHECK_ENUM ) static
 
     ''
-    function = ctx.tokenTB(0).text
+    token = ctx.tokenTB(0).text
 
     ''
     if( ctx.tokenTB(0).id = FB.TK.EOL ) then
@@ -1456,7 +1457,7 @@ function lexEatToken( byval flags as LEXCHECK_ENUM ) as string static
 
     hCheckPP( )
 
-end function
+end sub
 
 '':::::
 sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
@@ -1588,9 +1589,9 @@ function lexColNum( ) as integer
 end function
 
 ''::::
-function lexTokenText( ) as string
+function lexTokenText( ) as zstring ptr
 
-    function = ctx.tokenTB(0).text
+    function = @ctx.tokenTB(0).text
 
 end function
 

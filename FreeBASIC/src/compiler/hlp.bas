@@ -231,7 +231,7 @@ sub hReportError( byval errnum as integer, _
 				  byval isbefore as integer = FALSE )
     dim token as string, msgex as string
 
-	token = lexTokenText
+	token = *lexTokenText( )
 	if( len( token ) > 0 ) then
 		if( isbefore ) then
 			msgex = "before: '"

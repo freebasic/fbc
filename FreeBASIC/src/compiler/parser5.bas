@@ -154,7 +154,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 						   proc as FBSYMBOL ptr, _
 						   alloctype as integer ) static
 
-    dim as string id, aliasid
+    static as zstring * FB.MAXNAMELEN+1 id, aliasid
     dim as integer typ, mode, lgt, ptrcnt, argc
     dim as FBSYMBOL ptr subtype, argtail
 
@@ -168,7 +168,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 
 	typ 	= lexTokenType
 	proc    = lexTokenSymbol
-	id 		= lexEatToken
+	lexEatToken( id )
 	subtype = NULL
 	ptrcnt  = 0
 
@@ -201,7 +201,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 	'' (ALIAS LIT_STRING)?
 	if( lexCurrentToken = FB.TK.ALIAS ) then
 		lexSkipToken
-		aliasid = lexEatToken
+		lexEatToken( aliasid )
 	else
 		aliasid = ""
 	end if

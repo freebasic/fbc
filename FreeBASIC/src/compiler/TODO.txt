@@ -1,10 +1,12 @@
 
+[ ] optimize "a = b + c + d" to "a = b: a += c: a += d" to speedup multiple string assignaments
+    (but only if the l-side var isn't in the right-size, course), then clean up emit.bas, that
+    looks like a mess right now -- problem: some kind of high level link will be needed, as
+    assignaments aren't linked
+
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
-[ ] cArgDecl's id should be redeclared as zstring, but function can't be static as
-    args can be function ptrs with another args.. non-static zstring local vars
-    will be filled with 0's slowing everything down.. add another option to
-    functions??? NOZERO NOFILL NOCLEAR?
+[ ] full debug support
 
 [ ] function overloading:
 -- check arglist with optionals with different types at the same arg num (?)
@@ -12,6 +14,8 @@
 -- check optional args, this can be tricky
 
 [ ] check for references to self on TYPE fields (field AS parent)
+
+[ ] make the emiter modules modular (duh), so multiple cpu targets could be supported.. some day
 
 *** *** *** *** ***
 [ ] parser should never call IR directly, or no inline functions can be added (or never-called
@@ -28,8 +32,6 @@
                         initializers, etc)
 
 [ ] pointer type casting
-
-[ ] full debug support
 
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 

@@ -51,7 +51,7 @@ declare function 	lexCurrentToken 		( byval flags as LEXCHECK_ENUM = LEXCHECK_EV
 
 declare function 	lexCurrentTokenClass 	( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
-declare function 	lexTokenText 			( ) as string
+declare function 	lexTokenText 			( ) as zstring ptr
 
 declare function 	lexTokenTextLen 		( ) as integer
 
@@ -61,7 +61,8 @@ declare function 	lexTokenSymbol 			( ) as FBSYMBOL ptr
 
 declare function 	lexTokenDotPos 			( ) as integer
 
-declare function 	lexEatToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as string
+declare sub 		lexEatToken 			( byval token as string, _
+											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
