@@ -7,6 +7,8 @@ Version 0.14 Beta:
 - macro text will be expanded on comments emited when the -g command-line option is used (v1c)
 - the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as 
   inline and will be evaluated at compile-time when constants are used as parameters (v1c)
+- multiple strings concatenation such as "a = b + c + d + ..." will be converted to 
+  "a = b: a += c: a += d: ...", giving a speed up, because no temporary dynamic strings will be used (v1c)
 - speeded up PUT routine when using PSET/PRESET/AND/OR/XOR drawing mode (lillo)
 - the compiler is now a bit easier to be cross-compiled using the Win32 version (v1c)
 
@@ -33,6 +35,10 @@ Version 0.14 Beta:
 - complex pointer expressions would not be parsed if used as parameters to functions (v1c)
 - SWAP wasn't working with type fields (v1c)
 - Mouse wheel position was reset to 0 under Win32 when window was put out of focus (lillo)
+- non-numeric variables were been allowed in CHR$() (v1c)
+- the unary operator "+" was been allowed with string operands (v1c)
+- intrinsic string functions when used with "zstring *" arguments would operate on the full strings, not only until 
+  the null-terminators (v1c)
 
 
 Version 0.13 Beta:
