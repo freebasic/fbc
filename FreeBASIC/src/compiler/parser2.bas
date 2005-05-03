@@ -455,7 +455,17 @@ function cNegNotExpression( negexpr as ASTNODE ptr ) as integer
 		lexSkipToken
 
 		'' ExpExpression
-		return cExpExpression( negexpr )
+		if( not cExpExpression( negexpr ) ) then
+			exit function
+		end if
+
+    	'' not numeric? can't operate..
+    	if( astGetDataClass( negexpr ) >= IR.DATACLASS.STRING ) then
+    		hReportError( FB.ERRMSG.TYPEMISMATCH )
+    		exit function
+    	end if
+
+    	return TRUE
 
 	'' NOT
 	case FB.TK.NOT
