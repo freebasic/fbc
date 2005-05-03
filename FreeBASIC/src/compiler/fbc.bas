@@ -450,7 +450,7 @@ function linkFiles as integer
 
 #ifdef TARGET_WIN32
 	'' stack size
-	ldcline += " --stack " + str$( ctx.stacksize ) + "," + + str$( ctx.stacksize )
+	ldcline += " --stack " + str$( ctx.stacksize ) + "," + str$( ctx.stacksize )
 #endif
 
 	'' set entry point
