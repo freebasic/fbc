@@ -473,10 +473,10 @@ FBCALL int 			fb_FileOpen			( FBSTRING *str, unsigned int mode, unsigned int acc
 										  unsigned int lock, int fnum, int len );
 FBCALL int 			fb_FileClose		( int fnum );
 FBCALL int 			fb_FilePut			( int fnum, long pos, void* value, unsigned int valuelen );
-FBCALL int 			fb_FilePutStr		( int fnum, long pos, FBSTRING *str );
+FBCALL int 			fb_FilePutStr		( int fnum, long pos, void *str, int str_len );
 FBCALL int 			fb_FilePutArray		( int fnum, long pos, FBARRAY *src );
 FBCALL int 			fb_FileGet			( int fnum, long pos, void* value, unsigned int valuelen );
-FBCALL int 			fb_FileGetStr		( int fnum, long pos, FBSTRING *str );
+FBCALL int 			fb_FileGetStr		( int fnum, long pos, void *str, int str_len );
 FBCALL int 			fb_FileGetArray		( int fnum, long pos, FBARRAY *dst );
 FBCALL int 			fb_FileEof			( int fnum );
 FBCALL long 		fb_FileTell			( int fnum );

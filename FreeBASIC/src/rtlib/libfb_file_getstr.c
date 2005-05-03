@@ -20,7 +20,7 @@
 /*
  *	file_get - get # function for strings
  *
- * chng: oct/2004 written [marzec/v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
@@ -31,9 +31,10 @@
 
 
 /*:::::*/
-FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
+FBCALL int fb_FileGetStr( int fnum, long pos, void *str, int str_len )
 {
 	int result, len, rlen, i;
+	char *data;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -62,13 +63,33 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 	}
 
 	FB_STRLOCK();
-	
-	len = FB_STRSIZE( str );
 
-	if( (str->data == NULL) || (len == 0) )
+	/* get string len */
+	if( str_len == -1 )
+	{
+		data = ((FBSTRING *)str)->data;
+		len = FB_STRSIZE( str );
+	}
+	else
+	{
+		data = (char *)str;
+		if( str_len > 0 )
+			len = str_len - 1;						/* less the null-term */
+		else
+		{
+			if( data != NULL )
+				len = strlen( data );
+			else
+				len = 0;
+		}
+	}
+
+	/* */
+	if( (data == NULL) || (len <= 0) )
 	{
 		/* del if temp */
-		fb_hStrDelTemp( str );
+		if( str_len == -1 )
+			fb_hStrDelTemp( (FBSTRING *)str );
 
 		FB_STRUNLOCK();
 		FB_UNLOCK();
@@ -76,14 +97,16 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 	}
 
 	/* do read */
-	rlen = fread( str->data, 1, len, fb_fileTB[fnum-1].f );
+	rlen = fread( data, 1, len, fb_fileTB[fnum-1].f );
 	if( rlen != len )
 	{
 		/* fill with nulls if at eof */
 		for( i = rlen; i <= len; i++ )
-			str->data[i] = '\0';
-		/*return FB_FALSE*/;						/* do nothing, not an error */
+			data[i] = '\0';
+		/*return FB_FALSE*/;					/* do nothing, not an error */
 	}
+	else
+		data[len] = '\0';						/* add the null-term */
 
     /* if in random mode, reads must be of reclen */
 	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
@@ -94,7 +117,8 @@ FBCALL int fb_FileGetStr( int fnum, long pos, FBSTRING *str )
 	}
 
 	/* del if temp */
-	fb_hStrDelTemp( str );						/* will free the temp desc if fix-len passed */
+	if( str_len == -1 )
+		fb_hStrDelTemp( (FBSTRING *)str );		/* will free the temp desc if fix-len passed */
 
 	FB_STRUNLOCK();
 	FB_UNLOCK();

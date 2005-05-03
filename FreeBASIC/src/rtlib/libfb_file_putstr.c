@@ -20,7 +20,7 @@
 /*
  *	file_put - put # function for strings
  *
- * chng: oct/2004 written [marzec/v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
@@ -30,9 +30,10 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
+FBCALL int fb_FilePutStr( int fnum, long pos, void *str, int str_len )
 {
 	int result, len;
+	char *data;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -59,15 +60,35 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 		}
 	}
-	
+
 	FB_STRLOCK();
 
-	len = FB_STRSIZE( str );
+	/* get string len */
+	if( str_len == -1 )
+	{
+		data = ((FBSTRING *)str)->data;
+		len = FB_STRSIZE( str );
+	}
+	else
+	{
+		data = (char *)str;
+		if( str_len > 0 )
+			len = str_len - 1;						/* less the null-term */
+		else
+		{
+			if( data != NULL )
+				len = strlen( data );
+			else
+				len = 0;
+		}
+	}
 
-	if( (str->data == NULL) || (len == 0) )
+	/* */
+	if( (data == NULL) || (len <= 0) )
 	{
 		/* del if temp */
-		fb_hStrDelTemp( str );
+		if( str_len == -1 )
+			fb_hStrDelTemp( (FBSTRING *)str );
 
 		FB_STRUNLOCK();
 		FB_UNLOCK();
@@ -75,7 +96,7 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 	}
 
 	/* do write */
-	if( fwrite( str->data, 1, len, fb_fileTB[fnum-1].f ) != len ) {
+	if( fwrite( data, 1, len, fb_fileTB[fnum-1].f ) != len ) {
 		FB_STRUNLOCK();
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
@@ -90,7 +111,8 @@ FBCALL int fb_FilePutStr( int fnum, long pos, FBSTRING *str )
 	}
 
 	/* del if temp */
-	fb_hStrDelTemp( str );
+	if( str_len == -1 )
+		fb_hStrDelTemp( (FBSTRING *)str );
 
 	FB_STRUNLOCK();
 	FB_UNLOCK();
