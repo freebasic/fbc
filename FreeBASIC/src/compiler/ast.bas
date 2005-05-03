@@ -1067,11 +1067,143 @@ function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 end function
 
+'':::::
+function astOptStrMultConcat( byval lnk as ASTNODE ptr, _
+							  byval dst as ASTNODE ptr, _
+							  byval n as ASTNODE ptr ) as ASTNODE ptr
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	''     +
+	''    / \           f(:=) --> f(+=) --> f(+=)
+	''   +   d   =>    /  \      / \       / \
+	''  / \           a    b    a   c     a   d
+	'' b   c
+
+	'' lowest node first..
+	if( n->l <> NULL ) then
+		if( n->l->class = AST.NODECLASS.BOP ) then
+			lnk = astOptStrMultConcat( lnk, dst, n->l )
+			n->l = NULL
+		end if
+	end if
+
+    '' concat?
+    if( n->class = AST.NODECLASS.BOP ) then
+    	if( n->l <> NULL ) then
+    	    '' first concatenation? do an assignament..
+    	    if( lnk = NULL ) then
+    	    	lnk = rtlStrAssign( astCloneTree( dst ), n->l )
+    	    else
+    	    	lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->l ) )
+    	    end if
+    	end if
+
+    	if( n->r <> NULL ) then
+    	    lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->r ) )
+    	end if
+
+    	astDel( n )
+
+    '' string..
+    else
+		if( lnk = NULL ) then
+    		lnk = rtlStrAssign( astCloneTree( dst ), n )
+		else
+    		lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n ) )
+		end if
+    end if
+
+    function = lnk
+
+end function
+
+''::::
+function astIsSymbolOnTree( byval sym as FBSYMBOL ptr, _
+							byval n as ASTNODE ptr ) as integer
+
+	dim as FBSYMBOL ptr s
+
+	if( n = NULL ) then
+		return FALSE
+	end if
+
+	select case as const n->class
+	case AST.NODECLASS.VAR, AST.NODECLASS.IDX, _
+		 AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
+
+		s = astGetSymbol( n )
+
+		'' same symbol?
+		if( s = sym ) then
+			return TRUE
+		end if
+
+		'' passed by ref or by desc? can't do any assumption..
+		if( s <> NULL ) then
+			if( (s->alloctype and _
+				(FB.ALLOCTYPE.ARGUMENTBYDESC or FB.ALLOCTYPE.ARGUMENTBYREF)) > 0 ) then
+				return TRUE
+			end if
+		end if
+
+	'' pointer? could be pointing to source symbol too..
+	case AST.NODECLASS.PTR
+		return TRUE
+	end select
+
+	'' walk
+	if( n->l <> NULL ) then
+		if( astIsSymbolOnTree( sym, n->l ) ) then
+			return TRUE
+		end if
+	end if
+
+	if( n->r <> NULL ) then
+		if( astIsSymbolOnTree( sym, n->r ) ) then
+			return TRUE
+		end if
+	end if
+
+	function = FALSE
+
+end function
+
+''::::
+private function hIsMultStrConcat( byval l as ASTNODE ptr, _
+								   byval r as ASTNODE ptr ) as integer
+
+	dim as FBSYMBOL ptr sym
+
+	function = FALSE
+
+	if( r->class = AST.NODECLASS.BOP ) then
+		select case l->class
+		case AST.NODECLASS.VAR, AST.NODECLASS.IDX
+			sym = astGetSymbol( l )
+			if( sym <> NULL ) then
+				if( (sym->alloctype and _
+					(FB.ALLOCTYPE.ARGUMENTBYDESC or FB.ALLOCTYPE.ARGUMENTBYREF)) = 0 ) then
+
+					if( not astIsSymbolOnTree( sym, r ) ) then
+						function = TRUE
+					end if
+
+				end if
+			end if
+		end select
+	end if
+
+end function
+
 ''::::
 function astOptStrAssignament( byval n as ASTNODE ptr, _
 							   byval l as ASTNODE ptr, _
 							   byval r as ASTNODE ptr ) as ASTNODE ptr static
-	dim optimize as integer
+
+	dim as integer optimize
 
 	optimize = FALSE
 
@@ -1085,31 +1217,44 @@ function astOptStrAssignament( byval n as ASTNODE ptr, _
 	end if
 
 	if( optimize ) then
-		''	=            f() -- concatassign
-		'' / \           / \
-		''d   +    =>   d   expr
-		''   / \
-		''  d   expr
-
 		astDel( n )
-		astDelTree( l )
 		n = r
+		astDelTree( l )
+		l = n->l
+		r = n->r
 
-		n->r = astUpdStrConcat( n->r )
+		if( hIsMultStrConcat( l, r ) ) then
+			function = astOptStrMultConcat( l, l, r )
 
-		function = rtlStrConcatAssign( n->l, n->r )
+		else
+			''	=            f() -- concatassign
+			'' / \           / \
+			''a   +    =>   a   expr
+			''   / \
+			''  a   expr
+
+			function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
+		end if
 
 	else
-		''	=            f() -- assign
-		'' / \           / \
-		''d   +    =>   d   f() -- concat (done by UpdStrConcat)
-		''   / \           / \
-		''  d   expr      d   expr
 
-		n->r = astUpdStrConcat( n->r )
+		'' convert "a = b + c + d" to "a = b: a += c: a += d"
+		if( hIsMultStrConcat( l, r ) ) then
 
-		function = rtlStrAssign( n->l, n->r )
+			function = astOptStrMultConcat( NULL, l, r )
+
+		else
+			''	=            f() -- assign
+			'' / \           / \
+			''a   +    =>   a   f() -- concat (done by UpdStrConcat)
+			''   / \           / \
+			''  b   expr      b   expr
+
+			function = rtlStrAssign( l, astUpdStrConcat( r ) )
+		end if
 	end if
+
+	astDel( n )
 
 end function
 
@@ -1430,11 +1575,12 @@ end function
 
 #if 0
 '':::::
-sub astDump1 ( byval p as ASTNODE ptr, _
-			   byval n as ASTNODE ptr, _
-			   byval isleft as integer, _
-			   byval ln as integer, _
-			   byval cn integer )
+sub astDump ( byval p as ASTNODE ptr, _
+			  byval n as ASTNODE ptr, _
+			  byval isleft as integer, _
+			  byval ln as integer, _
+			  byval cn as integer )
+
    dim as string v
    dim as integer c
 
@@ -1477,7 +1623,7 @@ sub astDump1 ( byval p as ASTNODE ptr, _
 	case AST.NODECLASS.VAR
 		v = "[" + mid$( symbGetName( n->var.sym ), 2 ) + "]"
 	case AST.NODECLASS.CONST
-		v = "<" + str$( n->v.value ) + ">"
+		v = "<" + str$( n->v.valuei ) + ">"
 	case AST.NODECLASS.CONV
 		v = "{" + str$( n->dtype ) + "}"
 '	case AST.NODECLASS.IDX
@@ -1493,7 +1639,7 @@ sub astDump1 ( byval p as ASTNODE ptr, _
 
 	if( len( v ) > 0 and ln <= 50 ) then
 
-		v = ltrim$( str$( n ) ) + v
+		'v = str$( n ) + v
 		if( p <> NULL ) then
         	if( isleft ) then
         		v = v + "/"
@@ -1510,11 +1656,11 @@ sub astDump1 ( byval p as ASTNODE ptr, _
 	end if
 
 	if( n->l <> NULL ) then
-		astDump1( n, n->l, TRUE, ln+2, cn-4 )
+		astDump( n, n->l, TRUE, ln+2, cn-4 )
 	end if
 
 	if( n->r <> NULL ) then
-		astDump1( n, n->r, FALSE, ln+2, cn+4 )
+		astDump( n, n->r, FALSE, ln+2, cn+4 )
 	end if
 
 end sub
@@ -1772,7 +1918,9 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 	case AST.NODECLASS.CONV
 		'' do nothing, the l child will be checked below
 
-	case AST.NODECLASS.FUNCT, AST.NODECLASS.BRANCH, AST.NODECLASS.LOAD, AST.NODECLASS.ASSIGN
+	case AST.NODECLASS.FUNCT, AST.NODECLASS.BRANCH, _
+		 AST.NODECLASS.LOAD, AST.NODECLASS.ASSIGN, _
+		 AST.NODECLASS.LINK
 		'' unpredictable nodes
 		exit function
 
@@ -1799,9 +1947,9 @@ end function
 '':::::
 private sub astInitTempLists
 
-	listNew( @ctx.tempstr, AST.MAXTEMPSTRINGS, len( ASTTEMPSTR ), FALSE )
+	listNew( @ctx.tempstr, AST.INITTEMPSTRINGS, len( ASTTEMPSTR ), FALSE )
 
-	listNew( @ctx.temparray, AST.MAXTEMPARRAYS, len( ASTTEMPARRAY ), FALSE )
+	listNew( @ctx.temparray, AST.INITTEMPARRAYS, len( ASTTEMPARRAY ), FALSE )
 
 end sub
 
@@ -1999,6 +2147,9 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	select case as const n->class
+	case AST.NODECLASS.LINK
+		return astLoadLINK( n )
+
 	case AST.NODECLASS.ASSIGN
 		return astLoadASSIGN( n )
 
@@ -2090,6 +2241,45 @@ function astFlush( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = astLoad( n )
 
 	astDel( n )
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' link nodes (l = curr node; r = next link)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewLINK( byval l as ASTNODE ptr, _
+					 byval r as ASTNODE ptr ) as ASTNODE ptr static
+
+	dim as ASTNODE ptr n
+
+	''
+	n = astNew( AST.NODECLASS.LINK, l->dtype )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	''
+	n->l = l
+	n->r = r
+
+	function = n
+
+end function
+
+'':::::
+function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	function = astLoad( n->l )
+	astDel( n->l )
+
+	astLoad( n->r )
+	astDel( n->r )
 
 end function
 

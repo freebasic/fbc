@@ -21,12 +21,13 @@
 
 '$include once: 'inc\ir.bi'
 
-const AST.MAXTEMPSTRINGS		= 32
-const AST.MAXTEMPARRAYS			= 32
+const AST.INITTEMPSTRINGS		= 32*4
+const AST.INITTEMPARRAYS		= 32*4
 
-const AST.INITNODES				= 2048
+const AST.INITNODES				= 8192
 
 enum ASTNODECLASS_ENUM
+	AST.NODECLASS.LINK
 	AST.NODECLASS.CONST
 	AST.NODECLASS.VAR
 	AST.NODECLASS.BOP
@@ -279,7 +280,12 @@ declare function 	astNewOFFSET		( byval v as ASTNODE ptr, _
 
 declare function 	astLoadOFFSET		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare sub 		astDump1 			( byval p as ASTNODE ptr, _
+declare function 	astNewLINK			( byval l as ASTNODE ptr, _
+					 					  byval r as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	astLoadLINK			( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _
 										  byval isleft as integer, _
 										  byval ln as integer, _
