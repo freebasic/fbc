@@ -2376,6 +2376,12 @@ function cArrayDecl( dimensions as integer, _
 			exit function
 		end if
 
+    	'' check if non-numeric
+    	if( astGetDataClass( expr ) >= IR.DATACLASS.STRING ) then
+    		hReportError( FB.ERRMSG.INVALIDDATATYPES, TRUE )
+    		exit function
+    	end if
+
 		exprTB(i,0) = expr
 
         '' TO
@@ -2387,6 +2393,12 @@ function cArrayDecl( dimensions as integer, _
 				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
 				exit function
 			end if
+
+    		'' check if non-numeric
+    		if( astGetDataClass( expr ) >= IR.DATACLASS.STRING ) then
+    			hReportError( FB.ERRMSG.INVALIDDATATYPES, TRUE )
+    			exit function
+    		end if
 
 			exprTB(i,1) = expr
 
