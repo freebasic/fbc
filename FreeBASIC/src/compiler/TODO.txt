@@ -1,9 +1,4 @@
 
-[ ] optimize "a = b + c + d" to "a = b: a += c: a += d" to speedup multiple string assignaments
-    (but only if the l-side var isn't in the right-size, course), then clean up emit.bas, that
-    looks like a mess right now -- problem: some kind of high level link will be needed, as
-    assignaments aren't linked
-
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
 [ ] full debug support

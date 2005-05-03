@@ -60,9 +60,9 @@ declare function 	hGfxlib_cb			( byval sym as FBSYMBOL ptr ) as integer
 '' [arg typ,mode,optional[,value]]*args
 ifuncdata:
 
-'' fb_StrConcat ( dst as string, _
-''				  str1 as any, byval str1len as integer, _
-''				  str2 as any, byval str2len as integer ) as string
+'' fb_StrConcat ( byref dst as string, _
+''				  byref str1 as any, byval str1len as integer, _
+''				  byref str2 as any, byval str2len as integer ) as string
 data "fb_StrConcat","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -73,8 +73,8 @@ data "fb_StrConcat","", _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_StrCompare ( str1 as any, byval str1len as integer, _
-''				   str2 as any, byval str2len as integer ) as integer
+'' fb_StrCompare ( byref str1 as any, byval str1len as integer, _
+''				   byref str2 as any, byval str2len as integer ) as integer
 '' returns: 0= equal; -1=str1 < str2; 1=str1 > str2
 data "fb_StrCompare","", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
@@ -84,8 +84,8 @@ data "fb_StrCompare","", _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_StrAssign ( dst as any, byval dst_len as integer, _
-'' 				  src as any, byval src_len as integer, _
+'' fb_StrAssign ( byref dst as any, byval dst_len as integer, _
+'' 				  byref src as any, byval src_len as integer, _
 ''                byval fillrem as integer = 1 ) as string
 data "fb_StrAssign","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
@@ -96,8 +96,8 @@ data "fb_StrAssign","", _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
-'' fb_StrConcatAssign ( dst as any, byval dst_len as integer, _
-'' 				        src as any, byval src_len as integer, _
+'' fb_StrConcatAssign ( byref dst as any, byval dst_len as integer, _
+'' 				        byref src as any, byval src_len as integer, _
 ''					    byval fillrem as integer = 1 ) as string
 data "fb_StrConcatAssign","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
@@ -108,25 +108,37 @@ data "fb_StrConcatAssign","", _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
-'' fb_StrDelete ( str as string ) as void
+'' fb_StrDelete ( byref str as string ) as void
 data "fb_StrDelete","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-'' fb_StrAllocTempResult ( str as string ) as string
+'' fb_StrAllocTempResult ( byref str as string ) as string
 data "fb_StrAllocTempResult","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-'' fb_StrAllocTempDesc ( str as any, byval strlen as integer ) as string
-data "fb_StrAllocTempDesc","", _
+'' fb_StrAllocTempDescV ( byref str as string ) as string
+data "fb_StrAllocTempDescV","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+'' fb_StrAllocTempDescF ( byref str as any, byval strlen as integer ) as string
+data "fb_StrAllocTempDescF","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+'' fb_StrAllocTempDescZ ( byval str as string ) as string
+data "fb_StrAllocTempDescZ","", _
+	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
 data "__divdi3","", _
@@ -204,7 +216,7 @@ data "fb_ArrayUBound","", _
 	 2, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYDESC, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_ArraySetDesc CDECL ( array() as ANY, arraydata as any, byval elementlen as integer, _
+'' fb_ArraySetDesc CDECL ( array() as ANY, byref arraydata as any, byval elementlen as integer, _
 ''						   byval dimensions as integer, ... ) as void
 data "fb_ArraySetDesc","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
@@ -277,7 +289,7 @@ data "fb_DoubleToStr","", _
 	 1, _
 	 FB.SYMBTYPE.DOUBLE,FB.ARGMODE.BYVAL, FALSE
 
-'' fb_StrMid ( str as string, byval start as integer, byval len as integer ) as string
+'' fb_StrMid ( byref str as string, byval start as integer, byval len as integer ) as string
 data "fb_StrMid","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -285,7 +297,7 @@ data "fb_StrMid","", _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_StrAssignMid ( dst as string, byval start as integer, byval len as integer, src as string ) as void
+'' fb_StrAssignMid ( byref dst as string, byval start as integer, byval len as integer, src as string ) as void
 data "fb_StrAssignMid","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -301,28 +313,28 @@ data "fb_StrFill1","", _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_StrFill2 ( byval cnt as integer, str as string ) as string
+'' fb_StrFill2 ( byval cnt as integer, byref str as string ) as string
 data "fb_StrFill2","", _
 	 FB.SYMBTYPE.STRING,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-'' fb_StrLen ( str as any, byval strlen as integer ) as integer
+'' fb_StrLen ( byref str as any, byval strlen as integer ) as integer
 data "fb_StrLen","", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' lset ( dst as string, src as string ) as void
+'' lset ( byref dst as string, byref src as string ) as void
 data "fb_StrLset","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
-'' fb_ASC ( str as string, byval pos as integer = 0 ) as uinteger
+'' fb_ASC ( byref str as string, byval pos as integer = 0 ) as uinteger
 data "fb_ASC", "", _
 	 FB.SYMBTYPE.UINT,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -352,7 +364,7 @@ data "fb_DataRestore","", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE
-'' fb_DataReadStr ( dst as any, byval dst_size as integer, _
+'' fb_DataReadStr ( byref dst as any, byval dst_size as integer, _
 ''                  byval fillrem as integer = 1 ) as void
 data "fb_DataReadStr","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
@@ -361,61 +373,61 @@ data "fb_DataReadStr","", _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,1
-'' fb_DataReadByte ( dst as byte ) as void
+'' fb_DataReadByte ( byref dst as byte ) as void
 data "fb_DataReadByte","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.BYTE,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadShort ( dst as short ) as void
+'' fb_DataReadShort ( byref dst as short ) as void
 data "fb_DataReadShort","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.SHORT,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadInt ( dst as integer ) as void
+'' fb_DataReadInt ( byref dst as integer ) as void
 data "fb_DataReadInt","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadLongint ( dst as longint ) as void
+'' fb_DataReadLongint ( byref dst as longint ) as void
 data "fb_DataReadLongint","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.LONGINT,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadUByte ( dst as ubyte ) as void
+'' fb_DataReadUByte ( byref dst as ubyte ) as void
 data "fb_DataReadUByte","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.UBYTE,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadUShort ( dst as ushort ) as void
+'' fb_DataReadUShort ( byref dst as ushort ) as void
 data "fb_DataReadUShort","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.USHORT,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadUInt ( dst as uinteger ) as void
+'' fb_DataReadUInt ( byref dst as uinteger ) as void
 data "fb_DataReadUInt","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadULongint ( dst as ulongint ) as void
+'' fb_DataReadULongint ( byref dst as ulongint ) as void
 data "fb_DataReadULongint","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.ULONGINT,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadSingle ( dst as single ) as void
+'' fb_DataReadSingle ( byref dst as single ) as void
 data "fb_DataReadSingle","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, FALSE
-'' fb_DataReadDouble ( dst as single ) as void
+'' fb_DataReadDouble ( byref dst as single ) as void
 data "fb_DataReadDouble","", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -775,14 +787,15 @@ data "fb_FilePut","", _
 	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_FilePutStr ( byval filenum as integer, byval offset as uinteger, s as string ) as integer
+'' fb_FilePutStr ( byval filenum as integer, byval offset as uinteger, str as any, byval strlen as integer ) as integer
 data "fb_FilePutStr","", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 3, _
+	 4, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FilePutArray ( byval filenum as integer, byval offset as uinteger, array() as any ) as integer
 data "fb_FilePutArray","", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
@@ -800,14 +813,15 @@ data "fb_FileGet","", _
 	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
-'' fb_FileGetStr ( byval filenum as integer, byval offset as uinteger, s as string ) as integer
+'' fb_FileGetStr ( byval filenum as integer, byval offset as uinteger, str as any, byval strlen as integer ) as integer
 data "fb_FileGetStr","", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 3, _
+	 4, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.UINT,FB.ARGMODE.BYVAL, FALSE, _
-	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 '' fb_FileGetArray ( byval filenum as integer, byval offset as uinteger, array() as any ) as integer
 data "fb_FileGetArray","", _
 	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
@@ -2502,22 +2516,44 @@ function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
     function = NULL
 
 	''
-	f = ifuncTB(FB.RTL.STRALLOCTMPDESC)
-    proc = astNewFUNCT( f, symbGetType( f ) )
-
-    '' str as any
-    if( astNewPARAM( proc, strg, IR.DATATYPE.STRING ) = NULL ) then
-    	exit function
-    end if
-
-    '' byval strlen as integer
    	dtype = astGetDataType( strg )
 
-	STRGETLEN( strg, dtype, lgt )
+	select case dtype
+	case IR.DATATYPE.STRING
+		f = ifuncTB(FB.RTL.STRALLOCTMPDESCV)
+    	proc = astNewFUNCT( f, symbGetType( f ) )
 
-	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = NULL ) then
-    	exit function
-    end if
+    	'' str as string
+    	if( astNewPARAM( proc, strg ) = NULL ) then
+    		exit function
+    	end if
+
+	case IR.DATATYPE.CHAR
+		f = ifuncTB(FB.RTL.STRALLOCTMPDESCZ)
+    	proc = astNewFUNCT( f, symbGetType( f ) )
+
+    	'' byval str as string
+    	if( astNewPARAM( proc, strg ) = NULL ) then
+    		exit function
+    	end if
+
+	case IR.DATATYPE.FIXSTR
+		f = ifuncTB(FB.RTL.STRALLOCTMPDESCF)
+    	proc = astNewFUNCT( f, symbGetType( f ) )
+
+    	'' str as any
+    	if( astNewPARAM( proc, strg ) = NULL ) then
+    		exit function
+    	end if
+
+    	'' byval strlen as integer
+		STRGETLEN( strg, dtype, lgt )
+
+		if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = NULL ) then
+    		exit function
+    	end if
+
+    end select
 
 	''
 	function = proc
@@ -2744,6 +2780,12 @@ function rtlStrChr( byval args as integer, _
     '' ...
     for i = 0 to args-1
     	expr = exprtb(i)
+
+    	'' check if non-numeric
+    	if( astGetDataClass( expr ) >= IR.DATACLASS.STRING ) then
+    		hReportErrorEx( FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( i+1 ) )
+    		exit function
+    	end if
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
@@ -4556,20 +4598,20 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
 					 byval offset as ASTNODE ptr, _
 					 byval src as ASTNODE ptr, _
 					 byval isfunc as integer ) as ASTNODE ptr static
-    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
-    dim dtype as integer, args as integer, lgt as integer
-    dim reslabel as FBSYMBOL ptr
+
+    dim as ASTNODE ptr proc
+    dim as integer dtype, lgt, isstring
+    dim as FBSYMBOL ptr f, reslabel
 
     function = NULL
 
 	''
 	dtype = astGetDataType( src )
-	if( hIsString( dtype ) ) then
+	isstring = hIsString( dtype )
+	if( isstring ) then
 		f = ifuncTB(FB.RTL.FILEPUTSTR)
-		args = 3
 	else
 		f = ifuncTB(FB.RTL.FILEPUT)
-		args = 4
 	end if
 
     proc = astNewFUNCT( f, symbGetType( f ) )
@@ -4592,13 +4634,16 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
  		exit function
  	end if
 
-    if( args = 4 ) then
-    	'' byval valuelen as integer
+    '' byval valuelen as integer
+    if( isstring ) then
+    	STRGETLEN( src, dtype, lgt )
+    else
     	lgt = hCalcExprLen( src )
-    	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
     end if
+
+   	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) ) = NULL ) then
+		exit function
+	end if
 
     ''
     if( not isfunc ) then
@@ -4672,20 +4717,20 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
 					 byval offset as ASTNODE ptr, _
 					 byval dst as ASTNODE ptr, _
 					 byval isfunc as integer ) as ASTNODE ptr static
-    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
-    dim dtype as integer, args as integer, lgt as integer
-    dim reslabel as FBSYMBOL ptr
+
+    dim as ASTNODE ptr proc
+    dim as integer dtype, lgt, isstring
+    dim as FBSYMBOL ptr f, reslabel
 
     function = NULL
 
 	''
 	dtype = astGetDataType( dst )
-	if( hIsString( dtype ) ) then
+	isstring = hIsString( dtype )
+	if( isstring ) then
 		f = ifuncTB(FB.RTL.FILEGETSTR)
-		args = 3
 	else
 		f = ifuncTB(FB.RTL.FILEGET)
-		args = 4
 	end if
 
     proc = astNewFUNCT( f, symbGetType( f ) )
@@ -4703,18 +4748,21 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
  		exit function
  	end if
 
-    '' value as any | s as string
+    '' value as any
     if( astNewPARAM( proc, dst ) = NULL ) then
  		exit function
  	end if
 
-    if( args = 4 ) then
-    	'' byval valuelen as integer
+    '' byval valuelen as integer
+    if( isstring ) then
+    	STRGETLEN( dst, dtype, lgt )
+    else
     	lgt = hCalcExprLen( dst )
-    	if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) ) = NULL ) then
- 			exit function
- 		end if
     end if
+
+    if( astNewPARAM( proc, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) ) = NULL ) then
+ 		exit function
+ 	end if
 
     ''
     if( not isfunc ) then
