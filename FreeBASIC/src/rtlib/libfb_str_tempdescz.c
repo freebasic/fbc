@@ -18,9 +18,9 @@
  */
 
 /*
- * str_tempdesc.c -- temp string descriptor allocation
+ * str_tempdescz.c -- temp string descriptor allocation for zstring's
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: may/2005 written [v1ctor]
  *
  */
 
@@ -29,7 +29,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
+FBCALL FBSTRING *fb_StrAllocTempDescZ( char *str )
 {
 	FBSTRING *dsc;
 
@@ -37,36 +37,21 @@ FBCALL FBSTRING *fb_StrAllocTempDesc( void *str, int str_size )
 
  	/* alloc a temporary descriptor */
  	dsc = (FBSTRING *)fb_hStrAllocTmpDesc( );
-    if( dsc == NULL ) {
+    if( dsc == NULL )
+    {
     	FB_STRUNLOCK();
     	return &fb_strNullDesc;
     }
 
-	/* fill it */
-	if( str_size == -1 )
-	{
-		dsc->data = ((FBSTRING *)str)->data;
-		dsc->len  = FB_STRSIZE( str );
-		dsc->size = ((FBSTRING *)str)->size;
-	}
+	dsc->data = (char *)str;
+
+	/* find the true size */
+	if( str != NULL )
+		dsc->len = strlen( str );
 	else
-	{
-		dsc->data = (char *)str;
-		/* can't use strlen() if the size is known, otherwise GET# or PUT# 
-		  would not work with fixed-len's */
-		if( str_size != 0 )
-		{
-			dsc->len = str_size - 1;			/* less the null-term */
-		}
-		else
-		{
-			if( str != NULL )
-				dsc->len = strlen( str );
-			else
-				dsc->len = 0;
-		}
-		dsc->size = dsc->len;
-	}
+		dsc->len = 0;
+
+	dsc->size = dsc->len;
 
 	FB_STRUNLOCK();
 
