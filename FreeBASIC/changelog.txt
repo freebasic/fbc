@@ -39,6 +39,7 @@ Version 0.14 Beta:
 - the unary operator "+" was been allowed with string operands (v1c)
 - intrinsic string functions when used with "zstring *" arguments would operate on the full strings, not only until 
   the null-terminators (v1c)
+- ENUM elements separated by commas would update the values twice (v1c)
 
 
 Version 0.13 Beta:
