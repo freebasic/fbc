@@ -81,4 +81,3 @@ else
 	rm -f $(objects)
 	rm -f $(osdepobjs)
 endif
-endif
