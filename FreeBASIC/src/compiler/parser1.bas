@@ -1179,17 +1179,18 @@ function cEnumLine as integer
 	end if
 
 	do
-		env.enumctx.elements += 1
-
 		if( cEnumConstDecl( ename ) ) then
+
+			env.enumctx.elements += 1
+
 			if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ), 0 ) = NULL ) then
 				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
 				exit function
 			end if
-		end if
 
-		''
-		env.enumctx.value += 1
+			env.enumctx.value += 1
+
+		end if
 
 		'' ','?
 		if( lexCurrentToken <> CHAR_COMMA ) then
