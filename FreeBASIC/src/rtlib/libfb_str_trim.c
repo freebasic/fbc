@@ -40,13 +40,13 @@ FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 
 	FB_STRLOCK();
 
+	len = 0;
 	if( src->data != NULL )
 	{
 		p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
-		len = (int)(p - src->data) + 1;
+		if( p != src->data )
+			len = (int)(p - src->data) + 1;
 	}
-	else
-		len = 0;
 
 	if( len > 0 )
 	{
