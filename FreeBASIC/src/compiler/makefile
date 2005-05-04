@@ -92,4 +92,5 @@ $(TARGET) : $(objects) $(osdepobjs)
 .PHONY : clean
 clean :
 	rm -f $(objects)
+	rm -f $(osdepobjs)
 	rm -f $(TARGET)

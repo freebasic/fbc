@@ -102,6 +102,8 @@ declare function 	hStripPath				( byval filename as string ) as string
 
 declare function 	hStripFilename 			( byval filename as string ) as string
 
+declare function 	hGetFileExt				( fname as string ) as string
+
 declare function 	hRevertSlash			( byval s as string ) as string
 
 declare function 	hToPow2					( byval value as uinteger ) as uinteger

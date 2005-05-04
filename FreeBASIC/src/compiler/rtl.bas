@@ -2225,13 +2225,13 @@ end sub
 sub rtlInit static
 
     ''
-	fbAddDefaultLibs
+	fbAddDefaultLibs( )
 
 	''
-	hAddIntrinsicProcs
+	hAddIntrinsicProcs( )
 
 	''
-	hAddIntrinsicMacros
+	hAddIntrinsicMacros( )
 
 	''
 	ctx.datainited	= FALSE

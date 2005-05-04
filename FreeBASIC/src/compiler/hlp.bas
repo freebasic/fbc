@@ -131,9 +131,10 @@ data "Invalid bitfield"
 data "Literal number too big"
 data "Too many parameters"
 data "Macro text too long"
+data "Invalid command-line option"
 
 
-const FB.ERRMSGS = 78
+const FB.ERRMSGS = 79
 
 
 '':::::
@@ -201,11 +202,15 @@ sub hReportErrorEx( byval errnum as integer, _
 		next i
 	end if
 
-	print rtrim$( env.infile ); "(";
-	if( linenum > 0 ) then
-		print str$( linenum );
+	if( len( env.infile ) > 0 ) then
+		print env.infile; "(";
+		if( linenum > 0 ) then
+			print str$( linenum );
+		end if
+		print ") : ";
 	end if
-	print ") : error";
+
+	print "error";
 
 	if( errnum >= 0 ) then
 		print " "; str$( errnum ); ": "; msg;
@@ -775,6 +780,27 @@ function hStripFilename ( byval filename as string ) as string static
 	else
 		function = ""
 	end if
+
+end function
+
+'':::::
+function hGetFileExt( fname as string ) as string static
+    dim p as integer, lp as integer
+
+	lp = 0
+	do
+		p = instr( lp+1, fname, "." )
+		if( p = 0 ) then
+			exit do
+		end if
+		lp = p
+	loop
+
+    if( lp = 0 ) then
+    	function = ""
+    else
+    	function = lcase$( mid$( fname, lp+1 ) )
+    end if
 
 end function
 
