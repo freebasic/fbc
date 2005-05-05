@@ -4830,13 +4830,18 @@ private sub hEmitInitProc( ) static
 
     hWriteStr( ctx.outf, TRUE,  "finit" )
 
-	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+	select case env.clopt.target
+	case FB_COMPTARGET_WIN32
 		hWriteStr( ctx.outf, TRUE, "push 0			#argv" )
 		hWriteStr( ctx.outf, TRUE, "push 0			#argc" )
-	else
+	case FB_COMPTARGET_DOS
 		hWriteStr( ctx.outf, TRUE, "push [esp+12]	#argv" )
 		hWriteStr( ctx.outf, TRUE, "push [esp+12]	#argc" )
-	end if
+	case FB_COMPTARGET_LINUX
+		hWriteStr( ctx.outf, TRUE, "lea  eax, [esp+8] " )
+		hWriteStr( ctx.outf, TRUE, "push eax	    #argv" )
+		hWriteStr( ctx.outf, TRUE, "push [esp+8]	#argc" )
+	end select
 
     id = hCreateProcAlias( "fb_Init", 8, FB.FUNCMODE.STDCALL )
     hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + *id )
