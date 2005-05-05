@@ -21,6 +21,10 @@ else
 		else
        		ifdef windir
        			HOST := win32
+		else
+		ifdef HOME
+			HOST := linux
+		endif
        		endif
    		endif
 	endif
