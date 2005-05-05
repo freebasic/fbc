@@ -44,20 +44,19 @@ CFLAGS := -O2 -ffast-math -Wall -Wno-format -I .
 ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     CFLAGS += -DTARGET_WIN32 -DTARGET_X86
-	libpath = ../../lib/win32
 endif
     
 ifeq ($(TARGET),dos)
     OSDEPPATH := dos
 	CFLAGS += -DTARGET_DOS -DTARGET_X86
-    libpath = ../../lib/dos
 endif
     
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
 	CFLAGS += -DTARGET_LINUX -DTARGET_X86
-    libpath = ../../lib
 endif
+
+libpath = ../../lib/$(TARGET)
 
 ifdef MULTITHREADED
 	CFLAGS += -DMULTITHREADED
