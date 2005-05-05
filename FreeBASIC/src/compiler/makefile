@@ -1,96 +1,146 @@
 #
 # make file to build FBC
 # needs GNU make and FBC itself
-# set OS env var to DOS to build for DOS
+# set TARGET to dos, win32 or linux -- if not defined, it will be 
+# the same as HOST, if it was guessed
 #
 
-ifeq ($(OS),Windows_NT)
-    WINSYSDIR = $(SYSTEMROOT)
-    ifeq ($(WINSYSDIR),)
-        WINSYSDIR = $(SystemRoot)
-    endif
-else
-    WINSYSDIR = $(WINDIR)
-    ifeq ($(WINSYSDIR),)
-        WINSYSDIR = $(windir)
-    endif
-endif
+##################################################################
 
-ifneq ($(WINSYSDIR),)
-    osdeppath := win32
-else
-    osdeppath := linux
-endif
-
+HOST :=
 ifeq ($(OS),DOS)
-    WINSYSDIR =
-    osdeppath := dos
+	HOST := dos
+else
+	ifeq ($(OS),Windows_NT)
+   		HOST := win32
+	else
+   		ifdef WINDIR
+   			HOST := win32
+		else
+       		ifdef windir
+       			HOST := win32
+       		endif
+   		endif
+	endif
 endif
 
+ifndef TARGET
+	ifndef HOST
+		CHECKHOST_MSG := $(error error: TARGET not defined and HOST couldn't be guessed)
+	else
+		CHECKHOST_MSG :=
+	endif
+	TARGET := $(HOST)
+endif
+
+
+##################################################################
+
+OSDEPPATH :=
 BCFLAGS := -e -c -arch 486
 
-ifeq ($(osdeppath),win32)
+ifeq ($(HOST),win32)
+    BC := ../../fbc.exe
+endif
+
+ifeq ($(HOST),linux)
+    BC := fbc
+endif
+
+ifeq ($(HOST),dos)
+    BC := ../../fbc.exe
+endif
+
+
+ifeq ($(TARGET),win32)
     EXE := .exe
+    BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
+    OSDEPPATH := win32
     LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
-    BC := ../../fbc.exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
     LD := ../../bin/win32/ld.exe
     AS := ../../bin/win32/as.exe
 endif
 
-ifeq ($(osdeppath),linux)
+ifeq ($(TARGET),linux)
     EXE :=
-    LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
-    LDLIBS := -L../../lib -\( -lc -lm -lfb -lpthread -\)
-    BC := ../../fbc
     BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
-    LD := ld
-    AS := as
+    OSDEPPATH := linux
+    LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -\)
+	ifeq ($(HOST),win32)
+    	LDFLAGS := -T ../../bin/linux/elf_i386.x -s -e fb_fbc_entry
+    	LD := ../../bin/linux/ld.exe
+    	AS := ../../bin/linux/as.exe
+	else
+    	LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
+    	LD := ld
+    	AS := as
+	endif
 endif
 
-ifeq ($(osdeppath),dos)
+ifeq ($(TARGET),dos)
     EXE := .exe
+    BCFLAGS := $(BCFLAGS) -d TARGET_DOS
+    OSDEPPATH := dos
     LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -)
-    BC := ../../fbc.exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_DOS -target dos
     LD := ../../bin/dos/ld.exe
     AS := ../../bin/dos/as.exe
 endif
 
+ifneq ($(TARGET),$(HOST))
+ 	BCFLAGS += -target $(TARGET)
+endif
+
+ifndef OSDEPPATH
+	CHECKTARGET_MSG := $(error error: TARGET not supported)  
+else
+	CHECKTARGET_MSG :=
+endif
+
+##################################################################
+
 main	:= fbc.bas
 
 exepath = ../..
-TARGET = $(exepath)/$(subst .bas,_new$(EXE),$(main))
+compiler = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 
 sources := $(wildcard *.bas)
 
-objects := $(patsubst %.bas,obj/$(osdeppath)/%.o,$(main) $(filter-out $(main),$(sources)))
-osdepobjs := $(patsubst $(osdeppath)/%.bas,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.bas))
-osdepobjs += $(patsubst $(osdeppath)/%.s,obj/$(osdeppath)/%.o,$(wildcard $(osdeppath)/*.s))
+objects := $(patsubst %.bas,obj/$(OSDEPPATH)/%.o,$(main) $(filter-out $(main),$(sources)))
+osdepobjs := $(patsubst $(OSDEPPATH)/%.bas,obj/$(OSDEPPATH)/%.o,$(wildcard $(OSDEPPATH)/*.bas))
+osdepobjs += $(patsubst $(OSDEPPATH)/%.s,obj/$(OSDEPPATH)/%.o,$(wildcard $(OSDEPPATH)/*.s))
 headers := $(wildcard inc/*.bi)
 
-obj/$(osdeppath)/%.o : %.bas $(headers)
+##################################################################
+
+all : checkhost checktarget $(compiler)
+
+obj/$(OSDEPPATH)/%.o : %.bas $(headers)
 	$(BC) $(BCFLAGS) $< -o $@
 
-obj/$(osdeppath)/%.o : $(osdeppath)/%.bas $(headers)
+obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.bas $(headers)
 	$(BC) $(BCFLAGS) $< -o $@
 
-obj/$(osdeppath)/%.o : %.s $(headers)
+obj/$(OSDEPPATH)/%.o : %.s $(headers)
 	$(AS) $< -o $@
 
-obj/$(osdeppath)/%.o : $(osdeppath)/%.s $(headers)
+obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.s $(headers)
 	$(AS) $< -o $@
 
-all : $(TARGET)
-
-$(TARGET) : $(objects) $(osdepobjs)
+$(compiler) : $(objects) $(osdepobjs)
 	$(LD) $(LDFLAGS) $(objects) $(osdepobjs) -o $@ $(LDLIBS)
+
+
+.PHONY: checktarget
+checktarget : ; $(CHECKTARGET_MSG)
+
+.PHONY: checkhost
+checkhost : ; $(CHECKHOST_MSG)
 
 
 .PHONY : clean
 clean :
 	rm -f $(objects)
 	rm -f $(osdepobjs)
-	rm -f $(TARGET)
+	rm -f $(compiler)
