@@ -1326,7 +1326,7 @@ private sub emithULONG2DBL( byval sname as string, _
 			        	    byval svreg as IRVREG ptr ) static
 	dim as string label, ostr
 
-	label = hMakeTmpStr( )
+	label = *hMakeTmpStr( )
 
 	ostr = "cmp dword ptr [" +  sname + hGetOfs( svreg->ofs + 4 ) + "], 0"
 	outp ostr
@@ -2896,7 +2896,7 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 
 	'' if src is not an imm, use cl and check for the x86 glitches
 	if( svreg->typ <> IR.VREGTYPE.IMM ) then
-		label = hMakeTmpStr
+		label = *hMakeTmpStr( )
 
 		if( op = IR.OP.SHL ) then
 			outp "shld edx, eax, cl"
@@ -3388,7 +3388,7 @@ sub emitICMP64( byval rname as string, _
 	ostr = "cmp " + dst2 + COMMA + src2
 	outp ostr
 
-	falselabel = hMakeTmpStr
+	falselabel = *hMakeTmpStr( )
 
 	'' set the boolean result?
 	if( len( rname ) > 0 ) then
@@ -4058,8 +4058,8 @@ sub emitSGN64( byval dname as string, _
 
 	hPrepOperand64( dname, dvreg, dst1, dst2 )
 
-	label1 = hMakeTmpStr
-	label2 = hMakeTmpStr
+	label1 = *hMakeTmpStr( )
+	label2 = *hMakeTmpStr( )
 
 	ostr = "cmp " + dst2 + ", 0"
 	outp ostr
@@ -4097,7 +4097,7 @@ sub emitSGN( byval dname as string, _
 
 	if( irGetDataClass( dvreg->dtype ) = IR.DATACLASS.INTEGER ) then
 
-		label = hMakeTmpStr
+		label = *hMakeTmpStr( )
 
 		ostr = "cmp " + dst + ", 0"
 		outp ostr
@@ -4800,7 +4800,7 @@ sub hSaveAsmHeader( )
    	end if
 
     ''
-    maininitlabel =  symbAddLabel( hMakeTmpStr( ) )
+    maininitlabel =  symbAddLabel( "" )
     edbgMainBegin( maininitlabel )
 
  	hWriteStr( ctx.outf, FALSE, NEWLINE + "#user code" )

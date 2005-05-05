@@ -386,6 +386,8 @@ function cProcStatement static
 	case else
 		if( env.optprocpublic ) then
 			alloctype = FB.ALLOCTYPE.PUBLIC
+		else
+			alloctype = FB.ALLOCTYPE.PRIVATE
 		end if
 	end select
 
@@ -430,9 +432,9 @@ function cProcStatement static
 
 	''
 	'' add end and exit labels (will be used by any EXIT SUB/FUNCTION)
-	endlabel  = symbAddLabel( hMakeTmpStr )
-	exitlabel = symbAddLabel( hMakeTmpStr )
-	initlabel = symbAddLabel( hMakeTmpStr )
+	endlabel  = symbAddLabel( "" )
+	exitlabel = symbAddLabel( "" )
+	initlabel = symbAddLabel( "" )
 
 	'' emit proc setup
 	irEmitPROCBEGIN proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0

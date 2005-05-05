@@ -2882,7 +2882,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
+    	reslabel = symbAddLabel( "" )
     	irEmitLABEL reslabel, FALSE
     else
     	reslabel = NULL
@@ -4251,7 +4251,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	proc = astNewFUNCT( f, symbGetType( f ) )
 
 	''
-	nxtlabel = symbAddLabel( hMakeTmpStr )
+	nxtlabel = symbAddLabel( "" )
 
 	'' result == FB_RTERROR_OK? skip..
 	resexpr = astNewBOP( IR.OP.EQ, resexpr, astNewCONSTi( 0, IR.DATATYPE.INTEGER ), nxtlabel, FALSE )
@@ -4306,10 +4306,10 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
 	proc = astNewFUNCT( f, symbGetType( f ) )
 
 	''
-    reslabel = symbAddLabel( hMakeTmpStr )
+    reslabel = symbAddLabel( "" )
     irEmitLABEL reslabel, FALSE
 
-	nxtlabel = symbAddLabel( hMakeTmpStr )
+	nxtlabel = symbAddLabel( "" )
 
 	'' fb_ErrorThrowEx( errnum, reslabel, resnxtlabel ); -- CDECL
 
@@ -4490,7 +4490,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( hMakeTmpStr )
+    		reslabel = symbAddLabel( "" )
     		irEmitLABEL reslabel, FALSE
     	else
     		reslabel = NULL
@@ -4524,7 +4524,7 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( hMakeTmpStr )
+    		reslabel = symbAddLabel( "" )
     		irEmitLABEL reslabel, FALSE
     	else
     		reslabel = NULL
@@ -4562,7 +4562,7 @@ function rtlFileSeek( byval filenum as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
+    	reslabel = symbAddLabel( "" )
     	irEmitLABEL reslabel, FALSE
     else
     	reslabel = NULL
@@ -4648,7 +4648,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( hMakeTmpStr )
+    		reslabel = symbAddLabel( "" )
     		irEmitLABEL reslabel, FALSE
     	else
     		reslabel = NULL
@@ -4698,7 +4698,7 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( hMakeTmpStr )
+    		reslabel = symbAddLabel( "" )
     		irEmitLABEL reslabel, FALSE
     	else
 	    	reslabel = NULL
@@ -4767,7 +4767,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( hMakeTmpStr )
+    		reslabel = symbAddLabel( "" )
     		irEmitLABEL reslabel, FALSE
     	else
     		reslabel = NULL
@@ -4817,7 +4817,7 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( hMakeTmpStr )
+    		reslabel = symbAddLabel( "" )
     		irEmitLABEL reslabel, FALSE
     	else
     		reslabel = NULL
@@ -5874,7 +5874,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
+    	reslabel = symbAddLabel( "" )
     	irEmitLABEL reslabel, FALSE
     else
     	reslabel = NULL
@@ -5944,7 +5944,7 @@ function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( hMakeTmpStr )
+    	reslabel = symbAddLabel( "" )
     	irEmitLABEL reslabel, FALSE
     else
     	reslabel = NULL

@@ -34,7 +34,7 @@ type FBERRCTX
 	lastline	as integer
 
 	tmpcnt		as integer
-	tmppad 		as string
+	tmppad 		as zstring * 8+1
 	tmplen 		as integer
 end type
 
@@ -302,21 +302,32 @@ end sub
 
 
 '':::::
-function hMakeTmpStr as string static
-	dim v as string
-	dim l as integer
+function hMakeTmpStr( ) as zstring ptr static
+	static as zstring * 8 + 3 + 1 res
+	static as zstring * 8 cnt
+	dim as integer l, p
 
-	v = hex$( ctx.tmpcnt )
+	static padtb(0 to 7) as zstring * 8+1 => { "", "0", "00", "000", "0000", _
+											   "00000", "000000", "0000000" }
 
-	l = len( v )
+	cnt = hex$( ctx.tmpcnt )
+
+	l = len( cnt )
 	if( l > ctx.tmplen ) then
     	ctx.tmplen = l
-    	ctx.tmppad = "_t" + string$( 4-l, CHAR_0 )
+    	if( l <= 4 ) then
+    		p = 4 - l
+    	else
+    		p = 8 - l
+    	end if
+    	ctx.tmppad = "Lt_" + padTB(p)
 	end if
 
-	function = ctx.tmppad + v
+	res = ctx.tmppad + cnt
 
 	ctx.tmpcnt += 1
+
+	function = @res
 
 end function
 

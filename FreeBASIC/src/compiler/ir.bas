@@ -1895,7 +1895,7 @@ sub irFlushCOMP( byval op as integer, _
 
 	''
 	if( label = NULL ) then
-		lname = hMakeTmpStr( )
+		lname = *hMakeTmpStr( )
 	else
 		lname = symbGetName( label )
 	end if

@@ -932,7 +932,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	if( (iscommon) or (ispubext and isdynamic) ) then
 		sname = symbGetName( s )
 	else
-		sname = hMakeTmpStr( )
+		sname = *hMakeTmpStr( )
 	end if
 
 	if( (env.scope = 0) or (isshared) or (isstatic) ) then
@@ -1143,7 +1143,7 @@ function symbAddVarEx( byval symbol as string, _
 
 	else
 		if( (not isshared) and (isstatic) ) then
-			aname = hMakeTmpStr( )
+			aname = *hMakeTmpStr( )
 
 		else
 			if( (ispublic) or (isextern) ) then
@@ -1219,7 +1219,7 @@ function symbAddTempVar( byval typ as integer, _
 	dim as integer alloctype
     dim as FBARRAYDIM dTB(0)
 
-	sname = hMakeTmpStr( )
+	sname = *hMakeTmpStr( )
 
 	alloctype = FB.ALLOCTYPE.TEMP
 	if( (env.scope > 0) and (env.isprocstatic) ) then
@@ -1249,7 +1249,7 @@ function hAllocNumericConst( byval sname as string, _
 		return s
 	end if
 
-	aname = hMakeTmpStr( )
+	aname = *hMakeTmpStr( )
 
 	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, 0, dTB(), _
 					  FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
@@ -1289,7 +1289,7 @@ function hAllocStringConst( byval sname as string, _
 		cname = "_fbsc_"
 		cname += sname
 	else
-		cname = hMakeTmpStr( )
+		cname = *hMakeTmpStr( )
 	end if
 
 	''
@@ -1298,7 +1298,7 @@ function hAllocStringConst( byval sname as string, _
 		return s 's->var.array.desc
 	end if
 
-	aname = hMakeTmpStr( )
+	aname = *hMakeTmpStr( )
 
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
@@ -1346,34 +1346,42 @@ function symbAddLabel( byval symbol as string, _
 					   byval declaring as integer = TRUE, _
 					   byval createalias as integer = FALSE ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 lname, aname
+    dim as zstring ptr lname, aname
     dim as FBSYMBOL ptr l
 
     function = NULL
 
-    '' check if label already exists
-    l = symbFindByNameAndClass( symbol, FB.SYMBCLASS.LABEL )
-    if( l <> NULL ) then
-    	if( declaring ) then
-    		if( l->lbl.declared ) then
-    			exit function
+    if( len( symbol ) > 0 ) then
+    	'' check if label already exists
+    	l = symbFindByNameAndClass( symbol, FB.SYMBCLASS.LABEL )
+    	if( l <> NULL ) then
+    		if( declaring ) then
+    			if( l->lbl.declared ) then
+	    			exit function
+    			else
+    				l->lbl.declared = TRUE
+    				return l
+    			end if
     		else
-    			l->lbl.declared = TRUE
     			return l
     		end if
-    	else
-    		return l
     	end if
-    end if
 
-	'' add the new label
-	if( not createalias ) then
-    	aname = symbol
+		'' add the new label
+		if( not createalias ) then
+    		aname = strptr( symbol )
+		else
+			aname = hMakeTmpStr( )
+		end if
+
+		lname = strptr( symbol )
+
 	else
-		aname = hMakeTmpStr( )
+		lname = hMakeTmpStr( )
+		aname = lname
 	end if
 
-    l = hNewSymbol( FB.SYMBCLASS.LABEL, TRUE, symbol, aname, env.scope > 0 )
+    l = hNewSymbol( FB.SYMBCLASS.LABEL, TRUE, lname, aname, env.scope > 0 )
     if( l = NULL ) then
     	exit function
     end if
@@ -2037,7 +2045,7 @@ private function hSetupProc( byval symbol as string, _
 			                 byval declaring as integer, _
 			                 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 sname, aname
+    static as zstring * FB.MAXINTNAMELEN+1 aname
     dim as integer lgt, i, realtype
     dim as FBSYMBOL ptr f, ovlf
 
@@ -2067,17 +2075,22 @@ private function hSetupProc( byval symbol as string, _
 			aname = *hCreateOvlProcAlias( aname, argc, argtail )
 		end if
 
+		aname = *hCreateProcAlias( aname, lgt, mode )
+
+    '' alias given..
     else
     	aname = aliasname
-    end if
 
 #ifdef TARGET_WIN32
-    if( instr( aname, "@" ) = 0 ) then
-    	aname = *hCreateProcAlias( aname, lgt, mode )
-    end if
+   		if( instr( aname, "@" ) = 0 ) then
+   			aname = *hCreateProcAlias( aname, lgt, mode )
+   		end if
 #else
-	aname = *hCreateProcAlias( aname, lgt, mode )
+		aname = *hCreateProcAlias( aname, lgt, mode )
 #endif
+
+    end if
+
 
 	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, FALSE, _
 					typ, subtype, ptrcnt, INVALID, preservecase )
@@ -2098,7 +2111,14 @@ private function hSetupProc( byval symbol as string, _
     	'' no alias?
     	if( len( aliasname ) = 0 ) then
 			if( (alloctype and FB.ALLOCTYPE.OVERLOADED) = 0 ) then
+    			if( len( libname ) = 0 ) then
+    				hUcase( symbol, aname )
+    			else
+    				aname = symbol
+    			end if
+
 				aname = *hCreateOvlProcAlias( aname, argc, argtail )
+
 				aname = *hCreateProcAlias( aname, lgt, mode )
 			end if
 		end if

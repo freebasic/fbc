@@ -5241,7 +5241,7 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
     	end if
     end if
 
-	falselabel = symbAddLabel( hMakeTmpStr( ) )
+	falselabel = symbAddLabel( "" )
 
 	condexpr = astUpdComp2Branch( condexpr, falselabel, FALSE )
 	if( condexpr = NULL ) then
@@ -5272,7 +5272,7 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	l = n->l
 	r = n->r
 
-	exitlabel  = symbAddLabel( hMakeTmpStr )
+	exitlabel  = symbAddLabel( "" )
 
 	''
 	astFlush( n->iif.cond )

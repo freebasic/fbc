@@ -1,9 +1,4 @@
 
-[ ] temp names should start with L so GAS will not add them to the obj's symbol table
-
-[ ] any private function should have a temp name or LD will complain if 2 obj's have the same
-    symbols
-
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
 [ ] full debug support

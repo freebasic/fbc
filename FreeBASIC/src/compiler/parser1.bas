@@ -90,18 +90,18 @@ sub cDebugLineBegin
     if( env.clopt.debug and (env.reclevel = 0) ) then
     	if( env.dbglnum > 0 ) then
     		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    		irFlush
-    		env.dbgpos = emitGetPos - env.dbgpos
+    		irFlush( )
+    		env.dbgpos = emitGetPos( ) - env.dbgpos
     		if( env.dbgpos > 0 ) then
-    			emitDbgLine env.dbglnum, env.dbglname
+    			emitDbgLine( env.dbglnum, env.dbglname )
     		end if
     	end if
     	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irFlush
-    	env.dbgpos	 = emitGetPos
-    	env.dbglnum  = lexLineNum
-    	env.dbglname = hMakeTmpStr
-    	emitLABEL env.dbglname
+    	irFlush( )
+    	env.dbgpos	 = emitGetPos( )
+    	env.dbglnum  = lexLineNum( )
+    	env.dbglname = *hMakeTmpStr( )
+    	emitLABEL( env.dbglname )
     end if
 
 end sub
@@ -112,10 +112,10 @@ sub cDebugLineEnd
     if( env.clopt.debug and (env.reclevel = 0) ) then
     	if( env.dbglnum > 0 ) then
     		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    		irFlush
-     		env.dbgpos = emitGetPos - env.dbgpos
+    		irFlush( )
+     		env.dbgpos = emitGetPos( ) - env.dbgpos
     		if( env.dbgpos > 0 ) then
-   				emitDbgLine env.dbglnum, env.dbglname
+   				emitDbgLine( env.dbglnum, env.dbglname )
    			end if
     		env.dbglnum = 0
     	end if
@@ -127,34 +127,27 @@ end sub
 ''Line            =   Label? Statement? Comment? EOL .
 ''
 function cLine as integer
-    dim res as integer
 
-	cDebugLineBegin
+	cDebugLineBegin( )
 
-    res = cLabel
-    res = cStatement
-    res = cComment
+    cLabel( )
+    cStatement( )
+    cComment( )
 
-	if( hGetLastError = FB.ERRMSG.OK ) then
-		if( not hMatch( FB.TK.EOL ) ) then
-			if( lexCurrentToken <> FB.TK.EOF ) then
-				hReportError FB.ERRMSG.EXPECTEDEOL
-				res = FALSE
-			else
-				res = TRUE
-			end if
-		else
-			res = TRUE
-    	end if
-    else
-    	res = FALSE
+	if( hGetLastError( ) <> FB.ERRMSG.OK ) then
+		return FALSE
+	end if
+
+	if( not hMatch( FB.TK.EOL ) ) then
+		if( lexCurrentToken( ) <> FB.TK.EOF ) then
+			hReportError( FB.ERRMSG.EXPECTEDEOL )
+			return FALSE
+		end if
     end if
 
-    if( res = TRUE ) then
-    	cDebugLineEnd
-    end if
+    cDebugLineEnd( )
 
-    cLine = res
+    function = TRUE
 
 end function
 
@@ -162,39 +155,32 @@ end function
 ''SimpleLine      =   Label? SimpleStatement? Comment? EOL .
 ''
 function cSimpleLine as integer
-    dim res as integer, stmtres as integer
+    dim res as integer
 
-    cDebugLineBegin
+    cDebugLineBegin( )
 
-    res = cLabel
-    stmtres = cSimpleStatement
+    cLabel( )
+    res = cSimpleStatement( )
+    cComment( )
 
-    res = cComment
+	if( hGetLastError( ) <> FB.ERRMSG.OK ) then
+		return FALSE
+	end if
 
-	if( hGetLastError = FB.ERRMSG.OK ) then
-		if( not hMatch( FB.TK.EOL ) ) then
-			if( (stmtres = FALSE) and (lexCurrentToken <> FB.TK.EOF) ) then
-				hReportError FB.ERRMSG.EXPECTEDEOL
-				res = FALSE
-			else
-				if( stmtres ) then
-					res = FALSE
-				else
-					res = TRUE
-				end if
-			end if
+	if( not hMatch( FB.TK.EOL ) ) then
+		if( res ) then
+			return FALSE
 		else
-			res = TRUE
-    	end if
-    else
-    	res = FALSE
-    end if
+			if( lexCurrentToken( ) <> FB.TK.EOF ) then
+				hReportError( FB.ERRMSG.EXPECTEDEOL )
+				return FALSE
+			end if
+		end if
+	end if
 
-    if( res = TRUE ) then
-    	cDebugLineEnd
-    end if
+    cDebugLineEnd( )
 
-    function = res
+    function = TRUE
 
 end function
 
@@ -204,21 +190,19 @@ end function
 ''                |   ID ':' .
 ''
 function cLabel as integer
-    dim token as integer, l as FBSYMBOL ptr
+    dim l as FBSYMBOL ptr
 
     function = FALSE
-
-    token = lexCurrentToken
 
     l = NULL
 
     '' NUM_LIT
-    select case lexCurrentTokenClass
+    select case lexCurrentTokenClass( )
     case FB.TKCLASS.NUMLITERAL
-		if( lexTokenType = FB.SYMBTYPE.INTEGER ) then
+		if( lexTokenType( ) = FB.SYMBTYPE.INTEGER ) then
 			l = symbAddLabel( *lexTokenText( ), TRUE, TRUE )
 			if( l = NULL ) then
-				hReportError FB.ERRMSG.DUPDEFINITION
+				hReportError( FB.ERRMSG.DUPDEFINITION )
 				exit function
 			else
 				lexSkipToken( )
@@ -231,7 +215,7 @@ function cLabel as integer
 		if( lexLookAhead(1) = CHAR_COLON ) then
 
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
-			if( symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.PROC ) <> NULL ) then
+			if( symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.PROC ) <> NULL ) then
 				exit function
 			end if
 
@@ -252,9 +236,9 @@ function cLabel as integer
     if( l <> NULL ) then
 
     	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irEmitLABEL l, (env.scope = 0)
+    	irEmitLABEL( l, (env.scope = 0) )
 
-    	symbSetLastLabel l
+    	symbSetLastLabel( l )
 
     	function = TRUE
     end if
@@ -269,13 +253,13 @@ function cComment( byval lexflags as LEXCHECK_ENUM ) as integer
 
 	select case lexCurrentToken( lexflags )
 	case FB.TK.COMMENTCHAR, FB.TK.REM
-    	lexSkipToken LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE
+    	lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE )
 
     	if( lexCurrentToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE ) = FB.TK.DIRECTIVECHAR ) then
-    		lexSkipToken LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE
-    		cComment = cDirective
+    		lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE )
+    		function = cDirective( )
     	else
-    		lexSkipLine
+    		lexSkipLine( )
     		function = TRUE
     	end if
 
@@ -469,6 +453,7 @@ function cSttSeparator( byval lexflags as LEXCHECK_ENUM ) as integer
 			exit do
 		end if
 		lexSkipToken( lexflags )
+
 		function = TRUE
 	loop
 
@@ -654,7 +639,7 @@ function cTypedefDecl( byval id as string ) as integer
 
     if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
 
-    	if( hGetLastError <> FB.ERRMSG.OK ) then
+    	if( hGetLastError( ) <> FB.ERRMSG.OK ) then
     		exit function
     	end if
 
@@ -673,7 +658,7 @@ function cTypedefDecl( byval id as string ) as integer
 			if( subtype = NULL ) then
 				subtype = symbFindByNameAndClass( *tname, FB.SYMBCLASS.FWDREF )
 				if( subtype = NULL ) then
-					hReportError FB.ERRMSG.DUPDEFINITION
+					hReportError( FB.ERRMSG.DUPDEFINITION )
 					exit function
 				end if
 			end if
@@ -685,9 +670,9 @@ function cTypedefDecl( byval id as string ) as integer
 	if( ptrcnt = 0 ) then
 		'' (PTR|POINTER)*
 		do
-			select case lexCurrentToken
+			select case lexCurrentToken( )
 			case FB.TK.PTR, FB.TK.POINTER
-				lexSkipToken
+				lexSkipToken( )
 				typ += FB.SYMBTYPE.POINTER
 				ptrcnt += 1
 			case else
@@ -697,7 +682,7 @@ function cTypedefDecl( byval id as string ) as integer
 	end if
 
     if( symbAddTypedef( id, typ, subtype, ptrcnt, lgt ) = NULL ) then
-		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
+		hReportError( FB.ERRMSG.DUPDEFINITION, TRUE )
 		exit function
     end if
 
@@ -720,15 +705,15 @@ function cElementDecl( byval id as string, _
 	function = FALSE
 
 	'' allow keywords as field names
-	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-		if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
-    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+	if( lexCurrentTokenClass( ) <> FB.TKCLASS.IDENTIFIER ) then
+		if( lexCurrentTokenClass( ) <> FB.TKCLASS.KEYWORD ) then
+    		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     		exit function
     	end if
     end if
 
 	'' ID
-	typ = lexTokenType
+	typ = lexTokenType( )
 	subtype = NULL
 	lexEatToken( id )
 	bits = 0
@@ -736,13 +721,13 @@ function cElementDecl( byval id as string, _
 	'' ArrayDecl?
 	if( not cStaticArrayDecl( dimensions, dTB() ) ) then
 		'' ':' NUMLIT?
-		if( lexCurrentToken = CHAR_COLON ) then
+		if( lexCurrentToken( ) = CHAR_COLON ) then
 			if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
-				lexSkipToken
+				lexSkipToken( )
 				bits = valint( *lexTokenText( ) )
 				lexSkipToken( )
 				if( bits <= 0 ) then
-    				hReportError FB.ERRMSG.SYNTAXERROR, TRUE
+    				hReportError( FB.ERRMSG.SYNTAXERROR, TRUE )
     				exit function
     			end if
 			end if
@@ -751,19 +736,19 @@ function cElementDecl( byval id as string, _
 
     '' AS SymbolType
     if( not hMatch( FB.TK.AS ) or (typ <> INVALID) ) then
-    	hReportError FB.ERRMSG.SYNTAXERROR
+    	hReportError( FB.ERRMSG.SYNTAXERROR )
     	exit function
     end if
 
     if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     	exit function
     end if
 
 	''
 	if( bits <> 0 ) then
 		if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
-    		hReportError FB.ERRMSG.INVALIDBITFIELD, TRUE
+    		hReportError( FB.ERRMSG.INVALIDBITFIELD, TRUE )
     		exit function
 		end if
 	end if
@@ -785,15 +770,15 @@ function cAsElementDecl( ) as integer static
 
     '' SymbolType
     if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     	exit function
     end if
 
 	do
 		'' allow keywords as field names
-		if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-			if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
-    			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		if( lexCurrentTokenClass( ) <> FB.TKCLASS.IDENTIFIER ) then
+			if( lexCurrentTokenClass( ) <> FB.TKCLASS.KEYWORD ) then
+    			hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     			exit function
     		end if
     	end if
@@ -804,20 +789,20 @@ function cAsElementDecl( ) as integer static
 		'' ArrayDecl?
 		if( not cStaticArrayDecl( dimensions, dTB() ) ) then
 
-    		if( hGetLastError <> FB.ERRMSG.OK ) then
+    		if( hGetLastError( ) <> FB.ERRMSG.OK ) then
     			exit function
     		end if
 
 			'' ':' NUMLIT?
-			if( lexCurrentToken = CHAR_COLON ) then
+			if( lexCurrentToken( ) = CHAR_COLON ) then
 				if( lexLookAheadClass( 1 ) = FB.TKCLASS.NUMLITERAL ) then
-					lexSkipToken
+					lexSkipToken( )
 					bits = valint( *lexTokenText( ) )
 					lexSkipToken( )
 				end if
 
 				if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
-    				hReportError FB.ERRMSG.INVALIDBITFIELD, TRUE
+    				hReportError( FB.ERRMSG.INVALIDBITFIELD, TRUE )
     				exit function
 				end if
 
@@ -830,7 +815,7 @@ function cAsElementDecl( ) as integer static
 							   dimensions, dTB(), _
 							   typ, subtype, ptrcnt, lgt, bits, _
 							   env.typectx.innercnt > 0 ) = NULL ) then
-				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
 				exit function
 		end if
 
@@ -1071,7 +1056,7 @@ function cTypeDecl as integer static
 	end if
 
 	'' Comment? SttSeparator
-	cComment
+	cComment( )
 
 	if( not cSttSeparator( ) ) then
     	hReportError( FB.ERRMSG.SYNTAXERROR )
@@ -1125,7 +1110,7 @@ function cEnumConstDecl( byval id as string ) as integer
 
 	function = FALSE
 
-	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
+	if( lexCurrentTokenClass( ) <> FB.TKCLASS.IDENTIFIER ) then
 		exit function
 	end if
 
@@ -1171,10 +1156,10 @@ function cEnumLine as integer
 	function = FALSE
 
 	'' Comment? SttSeparator?
-	do while( (cComment <> FALSE) or (cSttSeparator <> FALSE) )
+	do while( (cComment( ) <> FALSE) or (cSttSeparator( ) <> FALSE) )
 	loop
 
-	if( lexCurrentToken = FB.TK.END ) then
+	if( lexCurrentToken( ) = FB.TK.END ) then
 		exit function
 	end if
 
@@ -1184,7 +1169,7 @@ function cEnumLine as integer
 			env.enumctx.elements += 1
 
 			if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ), 0 ) = NULL ) then
-				hReportErrorEx FB.ERRMSG.DUPDEFINITION, ename
+				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, ename )
 				exit function
 			end if
 
@@ -1193,17 +1178,17 @@ function cEnumLine as integer
 		end if
 
 		'' ','?
-		if( lexCurrentToken <> CHAR_COMMA ) then
+		if( lexCurrentToken( ) <> CHAR_COMMA ) then
 			exit do
 		end if
-		lexSkipToken
+		lexSkipToken( )
 	loop
 
 	'' Comment? SttSeparator
-	cComment
+	cComment( )
 
-	if( not cSttSeparator ) then
-    	hReportError FB.ERRMSG.EXPECTEDEOL
+	if( not cSttSeparator( ) ) then
+    	hReportError( FB.ERRMSG.EXPECTEDEOL )
     	exit function
 	end if
 
@@ -1222,26 +1207,26 @@ function cEnumDecl as integer static
 	function = FALSE
 
 	'' ENUM
-	lexSkipToken
+	lexSkipToken( )
 
 	'' ID?
-	if( lexCurrentTokenClass = FB.TKCLASS.IDENTIFIER ) then
+	if( lexCurrentTokenClass( ) = FB.TKCLASS.IDENTIFIER ) then
     	lexEatToken( id )
     else
-    	id = hMakeTmpStr( )
+    	id = *hMakeTmpStr( )
     end if
 
 	e = symbAddEnum( id )
 	if( e = NULL ) then
-    	hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    	hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     	exit function
 	end if
 
 	'' Comment? SttSeparator
-	cComment
+	cComment( )
 
-	if( not cSttSeparator ) then
-    	hReportError FB.ERRMSG.SYNTAXERROR
+	if( not cSttSeparator( ) ) then
+    	hReportError( FB.ERRMSG.SYNTAXERROR )
     	exit function
 	end if
 
@@ -1249,20 +1234,20 @@ function cEnumDecl as integer static
 	env.enumctx.elements = 0
 	env.enumctx.value = 0
 	do
-	loop while( (cEnumLine( )) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cEnumLine( )) and (lexCurrentToken( ) <> FB.TK.EOF) )
 
 	''
 	if( env.enumctx.elements = 0 ) then
-		hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+		hReportError( FB.ERRMSG.ELEMENTNOTDEFINED )
 		exit function
 	end if
 
 	'' END ENUM
 	if( not hMatch( FB.TK.END ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDENDENUM
+    	hReportError( FB.ERRMSG.EXPECTEDENDENUM )
     	exit function
 	elseif( not hMatch( FB.TK.ENUM ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDENDENUM
+    	hReportError( FB.ERRMSG.EXPECTEDENDENUM )
     	exit function
 	end if
 
@@ -1282,16 +1267,16 @@ function cSymbolDecl as integer
 
 	function = FALSE
 
-	select case as const lexCurrentToken
+	select case as const lexCurrentToken( )
 	case FB.TK.DIM, FB.TK.REDIM, FB.TK.COMMON, FB.TK.EXTERN
 
 		alloctype = 0
 		dopreserve = FALSE
 
-		select case as const lexCurrentToken
+		select case as const lexCurrentToken( )
 		'' REDIM
 		case FB.TK.REDIM
-			lexSkipToken
+			lexSkipToken( )
 			alloctype = alloctype or FB.ALLOCTYPE.DYNAMIC
 
 			'' PRESERVE?
@@ -1303,11 +1288,11 @@ function cSymbolDecl as integer
 		case FB.TK.COMMON
 			'' can't use COMMON inside a proc
 			if( env.scope > 0 ) then
-    			hReportError FB.ERRMSG.ILLEGALINSIDEASUB
+    			hReportError( FB.ERRMSG.ILLEGALINSIDEASUB )
     			exit function
 			end if
 
-			lexSkipToken
+			lexSkipToken( )
 
 			alloctype = alloctype or FB.ALLOCTYPE.COMMON or FB.ALLOCTYPE.DYNAMIC
 
@@ -1315,16 +1300,16 @@ function cSymbolDecl as integer
 		case FB.TK.EXTERN
 			'' can't use EXTERN inside a proc
 			if( env.scope > 0 ) then
-    			hReportError FB.ERRMSG.ILLEGALINSIDEASUB
+    			hReportError( FB.ERRMSG.ILLEGALINSIDEASUB )
     			exit function
 			end if
 
-			lexSkipToken
+			lexSkipToken( )
 
 			alloctype = alloctype or FB.ALLOCTYPE.EXTERN or FB.ALLOCTYPE.SHARED
 
 		case else
-			lexSkipToken
+			lexSkipToken( )
 		end select
 
 		''
@@ -1334,14 +1319,14 @@ function cSymbolDecl as integer
 
 		if( (alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
 			'' SHARED?
-			if( lexCurrentToken = FB.TK.SHARED ) then
+			if( lexCurrentToken( ) = FB.TK.SHARED ) then
 				'' can't use SHARED inside a proc
 				if( env.scope > 0 ) then
-    				hReportError FB.ERRMSG.ILLEGALINSIDEASUB
+    				hReportError( FB.ERRMSG.ILLEGALINSIDEASUB )
     				exit function
 				end if
 
-				lexSkipToken
+				lexSkipToken( )
 				alloctype = alloctype or FB.ALLOCTYPE.SHARED
 			end if
 
@@ -1373,11 +1358,11 @@ function cSymbolDecl as integer
 
 		'' can't use STATIC outside a proc
 		if( env.scope = 0 ) then
-   			hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+   			hReportError( FB.ERRMSG.ILLEGALOUTSIDEASUB )
    			exit function
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
 		function = cSymbolDef( FB.ALLOCTYPE.STATIC )
 
@@ -1480,7 +1465,7 @@ function hDeclExternVar( byval id as string, _
     	'' check type
 		if( (typ <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     		exit function
 		end if
 
@@ -1488,18 +1473,18 @@ function hDeclExternVar( byval id as string, _
 		isdynamic = (symbGetAllocType( s ) and FB.ALLOCTYPE.DYNAMIC) > 0
 		if( isdynamic ) then
 			if( (alloctype and FB.ALLOCTYPE.DYNAMIC) = 0 ) then
-    			hReportErrorEx FB.ERRMSG.EXPECTEDDYNAMICARRAY, id
+    			hReportErrorEx( FB.ERRMSG.EXPECTEDDYNAMICARRAY, id )
     			exit function
     		end if
     	else
 			if( (alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
-    			hReportErrorEx FB.ERRMSG.EXPECTEDDYNAMICARRAY, id
+    			hReportErrorEx( FB.ERRMSG.EXPECTEDDYNAMICARRAY, id )
     			exit function
     		end if
 
     		'' no static as local
     		if( env.scope > 0 ) then
-    			hReportErrorEx FB.ERRMSG.ILLEGALINSIDEASUB, id
+    			hReportErrorEx( FB.ERRMSG.ILLEGALINSIDEASUB, id )
     			exit function
     		end if
     	end if
@@ -1512,7 +1497,7 @@ function hDeclExternVar( byval id as string, _
 		'' check dimensions
 		if( symbGetArrayDimensions( s ) <> 0 ) then
 			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			hReportErrorEx FB.ERRMSG.WRONGDIMENSIONS, id
+    			hReportErrorEx( FB.ERRMSG.WRONGDIMENSIONS, id )
     			exit function
     		end if
 
@@ -1546,11 +1531,11 @@ function cSymbolDef( byval alloctype as integer, _
 
     '' (AS SymbolType)?
     ismultdecl = FALSE
-    if( lexCurrentToken = FB.TK.AS ) then
-    	lexSkipToken
+    if( lexCurrentToken( ) = FB.TK.AS ) then
+    	lexSkipToken( )
 
     	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     		exit function
     	end if
 
@@ -1561,8 +1546,8 @@ function cSymbolDef( byval alloctype as integer, _
 
     do
     	'' ID
-    	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    	if( lexCurrentTokenClass( ) <> FB.TKCLASS.IDENTIFIER ) then
+    		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     		exit function
     	end if
 
@@ -1572,8 +1557,8 @@ function cSymbolDef( byval alloctype as integer, _
     		lgt			= 0
     		addsuffix 	= TRUE
     	else
-    		if( lexTokenType <> INVALID ) then
-    			hReportError FB.ERRMSG.SYNTAXERROR
+    		if( lexTokenType( ) <> INVALID ) then
+    			hReportError( FB.ERRMSG.SYNTAXERROR )
     			exit function
     		end if
     	end if
@@ -1586,10 +1571,10 @@ function cSymbolDef( byval alloctype as integer, _
 		dimensions = 0
 		if( hMatch( CHAR_LPRNT ) ) then
 
-			if( lexCurrentToken = CHAR_RPRNT ) then
+			if( lexCurrentToken( ) = CHAR_RPRNT ) then
 				'' can't predict the size needed by the descriptor on stack
 				if( env.scope > 0 ) then
-					hReportError FB.ERRMSG.ILLEGALINSIDEASUB, true
+					hReportError( FB.ERRMSG.ILLEGALINSIDEASUB, true )
 					exit function
 				end if
 
@@ -1605,7 +1590,7 @@ function cSymbolDef( byval alloctype as integer, _
 
 			'' ')'
     		if( not hMatch( CHAR_RPRNT ) ) then
-    			hReportError FB.ERRMSG.EXPECTEDRPRNT
+    			hReportError( FB.ERRMSG.EXPECTEDRPRNT )
     			exit function
     		end if
     	end if
@@ -1613,8 +1598,8 @@ function cSymbolDef( byval alloctype as integer, _
 		'' ALIAS LIT_STR
 		if( (alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) > 0 ) then
 			if( hMatch( FB.TK.ALIAS ) ) then
-				if( lexCurrentTokenClass <> FB.TKCLASS.STRLITERAL ) then
-					hReportError FB.ERRMSG.SYNTAXERROR
+				if( lexCurrentTokenClass( ) <> FB.TKCLASS.STRLITERAL ) then
+					hReportError( FB.ERRMSG.SYNTAXERROR )
 					exit function
 				end if
 				lexEatToken( idalias )
@@ -1639,14 +1624,14 @@ function cSymbolDef( byval alloctype as integer, _
     		if( lexCurrentToken = FB.TK.AS ) then
 
     			if( typ <> INVALID ) then
-    				hReportError FB.ERRMSG.SYNTAXERROR
+    				hReportError( FB.ERRMSG.SYNTAXERROR )
     				exit function
     			end if
 
-    			lexSkipToken
+    			lexSkipToken( )
 
     			if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
-    				hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    				hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
     				exit function
     			end if
 
@@ -1690,7 +1675,7 @@ function cSymbolDef( byval alloctype as integer, _
                 						 dimensions, dTB() )
 
     			if( symbol = NULL ) then
-    				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     				exit function
     			end if
 			end if
@@ -1712,20 +1697,20 @@ function cSymbolDef( byval alloctype as integer, _
 		end if
 
 		'' ('=' SymbolInitializer)?
-		select case lexCurrentToken
+		select case lexCurrentToken( )
 		case FB.TK.DBLEQ, FB.TK.EQ
-			lexSkipToken
+			lexSkipToken( )
         	if( not cSymbolInit( symbol ) ) then
         		exit function
         	end if
 		end select
 
 		'' (DECL_SEPARATOR SymbolDef)*
-		if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
+		if( lexCurrentToken( ) <> FB.TK.DECLSEPCHAR ) then
 			exit do
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
     loop
 
@@ -1778,7 +1763,7 @@ function cDynArrayDef( byval id as string, _
    							  lgt, dimensions, dTB(), _
    							  atype, addsuffix, FALSE, TRUE )
    			if( s = NULL ) then
-   				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+   				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
    				exit function
    			end if
    		end if
@@ -1794,7 +1779,7 @@ function cDynArrayDef( byval id as string, _
    			s = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
    								dimensions, dTB() )
    			if( s = NULL ) then
-   				hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+   				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
 				exit function
 			end if
 
@@ -1803,7 +1788,7 @@ function cDynArrayDef( byval id as string, _
 			'' external?
 			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXTERN) > 0 ) then
 				if( (atype and FB.ALLOCTYPE.EXTERN) > 0 ) then
-   					hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+   					hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
 					exit function
 				end if
 
@@ -1826,13 +1811,13 @@ function cDynArrayDef( byval id as string, _
 	if( (alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or FB.ALLOCTYPE.COMMON)) = 0 ) then
 
 		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     		exit function
 		end if
 
 		if( symbGetArrayDimensions( s ) > 0 ) then
 			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			hReportErrorEx FB.ERRMSG.WRONGDIMENSIONS, id
+    			hReportErrorEx( FB.ERRMSG.WRONGDIMENSIONS, id )
     			exit function
     		end if
 		end if
@@ -1840,7 +1825,7 @@ function cDynArrayDef( byval id as string, _
 	'' else, can't check it's dimensions at compile-time
 	else
 		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx FB.ERRMSG.DUPDEFINITION, id
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     		exit function
 		end if
 	end if
@@ -1878,7 +1863,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
     dim as FBSYMBOL ptr litsym
 
 	if( not cExpression( expr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 		return FALSE
 	end if
 
@@ -1903,7 +1888,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			'' string?
 			if( hIsString( sym->typ ) ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError( FB.ERRMSG.INVALIDDATATYPES )
 				return FALSE
 			end if
 
@@ -1913,7 +1898,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 				'' different types?
 				if( (irGetDataClass( sym->typ ) <> IR.DATACLASS.INTEGER) or _
 					(irGetDataSize( sym->typ ) <> FB.POINTERSIZE) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
+					hReportError( FB.ERRMSG.INVALIDDATATYPES )
 					return FALSE
 				end if
 
@@ -1922,7 +1907,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			else
 				'' not a constant?
 				if( not astIsCONST( expr ) ) then
-					hReportError FB.ERRMSG.EXPECTEDCONST
+					hReportError( FB.ERRMSG.EXPECTEDCONST )
 					return FALSE
 				end if
 
@@ -1946,13 +1931,13 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			'' not a string?
 			if( not hIsString( sym->typ ) ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError( FB.ERRMSG.INVALIDDATATYPES )
 				return FALSE
 			end if
 
 			'' can't be a variable-len string
 			if( sym->typ = FB.SYMBTYPE.STRING ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError( FB.ERRMSG.INVALIDDATATYPES )
 				return FALSE
 			end if
 
@@ -1960,7 +1945,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ) )
 
 			if( symbGetAccessCnt( litsym ) = 0 ) then
-				symbDelVar litsym
+				symbDelVar( litsym )
 			end if
 
 		end if
@@ -1974,7 +1959,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
         assgexpr = astNewASSIGN( assgexpr, expr )
 
         if( assgexpr = NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError( FB.ERRMSG.INVALIDDATATYPES )
             return FALSE
         end if
 
@@ -4004,7 +3989,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 		if( sym <> NULL ) then
 			if( symbGetProcErrorCheck( sym ) ) then
     			if( env.clopt.resumeerr ) then
-					reslabel = symbAddLabel( hMakeTmpStr )
+					reslabel = symbAddLabel( "" )
     				irEmitLABEL reslabel, FALSE
     			else
     				reslabel = NULL

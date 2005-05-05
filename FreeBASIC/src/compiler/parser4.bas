@@ -151,8 +151,8 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	end select
 
 	'' add end and next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( hMakeTmpStr )
-	el = symbAddLabel( hMakeTmpStr )
+	nl = symbAddLabel( "" )
+	el = symbAddLabel( "" )
 
 	''
 	lastcompstmt = env.lastcompound
@@ -284,10 +284,10 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	end select
 
 	'' add end label (at ENDIF)
-	el = symbAddLabel( hMakeTmpStr )
+	el = symbAddLabel( "" )
 
 	'' add next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( hMakeTmpStr )
+	nl = symbAddLabel( "" )
 
 	''
 	lastcompstmt = env.lastcompound
@@ -308,7 +308,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 		'''''symbDelLabel nl
 
 		'' add next label (at ELSE/ELSEIF)
-		nl = symbAddLabel( hMakeTmpStr )
+		nl = symbAddLabel( "" )
 
 	    '' Expression
     	if( not cExpression( expr ) ) then
@@ -654,10 +654,10 @@ function cForStatement as integer
 	end if
 
 	'' labels
-    tl = symbAddLabel( hMakeTmpStr )
+    tl = symbAddLabel( "" )
 	'' add comp and end label (will be used by any CONTINUE/EXIT FOR)
-	cl = symbAddLabel( hMakeTmpStr )
-	el = symbAddLabel( hMakeTmpStr )
+	cl = symbAddLabel( "" )
+	el = symbAddLabel( "" )
 
     '' if inic, endc and stepc are all constants,
     '' check if this branch is needed
@@ -680,7 +680,7 @@ function cForStatement as integer
     end if
 
 	'' add start label
-	il = symbAddLabel( hMakeTmpStr )
+	il = symbAddLabel( "" )
 	irEmitLABEL il, FALSE
 
 	'' save old for stmt info
@@ -745,7 +745,7 @@ function cForStatement as integer
 
 		c2l = NULL
     else
-		c2l = symbAddLabel( hMakeTmpStr )
+		c2l = symbAddLabel( "" )
 
     	'' test step sign and branch
 		select case as const dtype
@@ -807,8 +807,8 @@ function cDoStatement as integer
 	lexSkipToken
 
 	'' add ini and end labels (will be used by any EXIT DO)
-	il = symbAddLabel( hMakeTmpStr )
-	el = symbAddLabel( hMakeTmpStr )
+	il = symbAddLabel( "" )
+	el = symbAddLabel( "" )
 
 	'' emit ini label
 	irEmitLABEL il, FALSE
@@ -851,7 +851,7 @@ function cDoStatement as integer
 
 	else
 		vr = NULL
-		cl = symbAddLabel( hMakeTmpStr )
+		cl = symbAddLabel( "" )
 	end if
 
 	'' save old do stmt info
@@ -966,8 +966,8 @@ function cWhileStatement as integer
 	lexSkipToken
 
 	'' add ini and end labels
-	il = symbAddLabel( hMakeTmpStr )
-	el = symbAddLabel( hMakeTmpStr )
+	il = symbAddLabel( "" )
+	el = symbAddLabel( "" )
 
 	'' save old while stmt info
 	oldwhilestmt = env.whilestmt
@@ -1092,7 +1092,7 @@ function cSelectStatement as integer
 	env.lastcompound = FB.TK.SELECT
 
 	'' add exit label
-	elabel = symbAddLabel( hMakeTmpStr )
+	elabel = symbAddLabel( "" )
 
 	'' store expression into a temp var
 	dtype  = astGetDataType( expr )
@@ -1253,7 +1253,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	end if
 
 	'' add labels
-	il = symbAddLabel( hMakeTmpStr )
+	il = symbAddLabel( "" )
 
 	'' CaseExpression (COMMA CaseExpression)*
 	cnt = 0
@@ -1294,7 +1294,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	for i = cntbase to cntbase + cnt-1
 
 		'' add next label
-		nl = symbAddLabel( hMakeTmpStr )
+		nl = symbAddLabel( "" )
 
 		if( ctx.sel.caseTB(i).typ <> FB.CASETYPE.ELSE ) then
 			if( not hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
@@ -1401,13 +1401,13 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 
 	'' ELSE
 	if( hMatch( FB.TK.ELSE ) ) then
-		deflabel = symbAddLabel( hMakeTmpStr )
+		deflabel = symbAddLabel( "" )
 		irEmitLABEL deflabel, FALSE
 
 	else
 
 		'' add label
-		label = symbAddLabel( hMakeTmpStr )
+		label = symbAddLabel( "" )
 
 		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
 		do
@@ -1506,9 +1506,12 @@ end function
 
 '':::::
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
+	static as zstring * FB.MAXNAMELEN+1 sname
 	dim dTB(0) as FBARRAYDIM
 
-	function = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
+	sname = *hMakeTmpStr( )
+
+	function = symbAddVarEx( sname, "", FB.SYMBTYPE.UINT, NULL, 0, _
 							 FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
 							 FALSE, FALSE, FALSE )
 
@@ -1556,8 +1559,8 @@ function cSelectConstStmt as integer
 	env.lastcompound = FB.TK.SELECT
 
 	'' add labels
-	exitlabel = symbAddLabel( hMakeTmpStr )
-	complabel = symbAddLabel( hMakeTmpStr )
+	exitlabel = symbAddLabel( "" )
+	complabel = symbAddLabel( "" )
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB.SYMBTYPE.UINT )

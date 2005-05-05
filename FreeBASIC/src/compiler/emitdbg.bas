@@ -231,7 +231,7 @@ sub edgbMainEnd( )
     hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.procinitline )
 
     ''
-    exitlabel = symbAddLabel( hMakeTmpStr )
+    exitlabel = symbAddLabel( "" )
 
     lname = symbGetName( exitlabel )
     emitLABEL( lname )
@@ -351,7 +351,7 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 	hEmitSTABN( STAB_TYPE_LBRAC, 0, iniline, ininame + "-" + procname )
 	hEmitSTABN( STAB_TYPE_RBRAC, 0, endline, endname + "-" + procname )
 
-	lname = hMakeTmpStr( )
+	lname = *hMakeTmpStr( )
 	emitLABEL( lname )
 
 	'' emit end proc (FUN with a null string)

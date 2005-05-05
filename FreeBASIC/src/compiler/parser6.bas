@@ -1317,9 +1317,12 @@ end function
 
 '':::::
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
+	static as zstring * FB.MAXNAMELEN+1 sname
 	dim as FBARRAYDIM dTB(0)
 
-	hSelConstAllocTbSym = symbAddVarEx( hMakeTmpStr, "", FB.SYMBTYPE.UINT, NULL, 0, _
+	sname = *hMakeTmpStr( )
+
+	hSelConstAllocTbSym = symbAddVarEx( sname, "", FB.SYMBTYPE.UINT, NULL, 0, _
 										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
 										FALSE, FALSE, FALSE )
 
@@ -1371,7 +1374,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	''
-	exitlabel = symbAddLabel( hMakeTmpStr )
+	exitlabel = symbAddLabel( "" )
 
 	'' < 1?
 	expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
