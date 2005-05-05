@@ -39,25 +39,25 @@ endif
 ##################################################################
 
 OSDEPPATH :=
-BCFLAGS := -e -c -arch 486
+FBCFLAGS := -e -c -arch 486
 
 ifeq ($(HOST),win32)
-    BC := ../../fbc.exe
+    FBC := ../../fbc.exe
 endif
 
 ifeq ($(HOST),linux)
-    BC := fbc
+    FBC := fbc
 endif
 
 ifeq ($(HOST),dos)
-    BC := ../../fbc.exe
+    FBC := ../../fbc.exe
 endif
 
 
 ifeq ($(TARGET),win32)
-    EXE := .exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_WIN32
     OSDEPPATH := win32
+    EXE := .exe
+    FBCFLAGS += -d TARGET_WIN32
     LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
     LD := ../../bin/win32/ld.exe
@@ -65,9 +65,9 @@ ifeq ($(TARGET),win32)
 endif
 
 ifeq ($(TARGET),linux)
-    EXE :=
-    BCFLAGS := $(BCFLAGS) -d TARGET_LINUX
     OSDEPPATH := linux
+    EXE :=
+    FBCFLAGS += -d TARGET_LINUX
     LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -\)
 	ifeq ($(HOST),win32)
     	LDFLAGS := -T ../../bin/linux/elf_i386.x -s -e fb_fbc_entry
@@ -81,9 +81,9 @@ ifeq ($(TARGET),linux)
 endif
 
 ifeq ($(TARGET),dos)
-    EXE := .exe
-    BCFLAGS := $(BCFLAGS) -d TARGET_DOS
     OSDEPPATH := dos
+    EXE := .exe
+    FBCFLAGS += -d TARGET_DOS
     LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -)
     LD := ../../bin/dos/ld.exe
@@ -91,7 +91,7 @@ ifeq ($(TARGET),dos)
 endif
 
 ifneq ($(TARGET),$(HOST))
- 	BCFLAGS += -target $(TARGET)
+ 	FBCFLAGS += -target $(TARGET)
 endif
 
 ifndef OSDEPPATH
@@ -119,10 +119,10 @@ headers := $(wildcard inc/*.bi)
 all : checkhost checktarget $(compiler)
 
 obj/$(OSDEPPATH)/%.o : %.bas $(headers)
-	$(BC) $(BCFLAGS) $< -o $@
+	$(FBC) $(FBCFLAGS) $< -o $@
 
 obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.bas $(headers)
-	$(BC) $(BCFLAGS) $< -o $@
+	$(FBC) $(FBCFLAGS) $< -o $@
 
 obj/$(OSDEPPATH)/%.o : %.s $(headers)
 	$(AS) $< -o $@
