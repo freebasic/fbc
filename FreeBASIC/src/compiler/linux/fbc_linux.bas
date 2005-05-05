@@ -217,7 +217,7 @@ function _compileResFiles as integer
 		close #fo
 	else
 		'' invoke
-		if( ctx.verbose ) then
+		if( fbc.verbose ) then
 			print "compiling XPM icon resource: ", xpmfile
 		end if
 
@@ -305,8 +305,8 @@ function _compileResFiles as integer
 	kill( iconsrc )
 
 	'' add to obj list
-	fbc.objlist(ctx.objs) = hStripExt( iconsrc ) + ".o"
-	ctx.objs += 1
+	fbc.objlist(fbc.objs) = hStripExt( iconsrc ) + ".o"
+	fbc.objs += 1
 
 	function = TRUE
 
