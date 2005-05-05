@@ -1,8 +1,10 @@
 #
 # make file to build FBC
-# needs GNU make and FBC itself
-# set TARGET to dos, win32 or linux -- if not defined, it will be 
-# the same as HOST, if it was guessed
+#
+# needed: GNU make, GAS, LD and FBC itself
+#
+# set TARGET to dos, win32 or linux -- if not defined, it will 
+# be the same as HOST, if the later could be guessed
 #
 
 ##################################################################
