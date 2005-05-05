@@ -200,7 +200,7 @@ function _compileResFiles as integer
 	function = FALSE
 
 	if( fbc.outtype <> FB_OUTTYPE_EXECUTABLE ) then
-		exit function
+		return TRUE
 	end if
 
 	if( len( xpmfile ) = 0 ) then
