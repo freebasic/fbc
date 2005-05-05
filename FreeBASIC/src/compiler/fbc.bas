@@ -47,7 +47,6 @@ declare function assembleFiles 			( ) as integer
 declare function linkFiles 				( ) as integer
 declare function archiveFiles 			( ) as integer
 declare function compileResFiles 		( ) as integer
-declare sub		 safeKill				( byval filename as string )
 declare function delFiles 				( ) as integer
 
 
@@ -306,15 +305,6 @@ function compileResFiles as integer
 	function = fbc.compileResFiles( )
 
 end function
-
-'':::::
-sub safeKill( byval filename as string )
-
-	if( kill( filename ) <> 0 ) then
-		'' ...
-	end if
-
-end sub
 
 '':::::
 function delFiles as integer

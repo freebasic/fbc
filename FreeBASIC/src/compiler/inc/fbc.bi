@@ -98,6 +98,11 @@ end type
                                                                     	:_
 	fbc.entrypoint = hMakeEntryPointName( fbc.entrypoint )
 
+#define safeKill(f)														_
+	if( kill( f ) <> 0 ) then                                           :_
+	end if
+
+
 
 ''
 '' prototypes

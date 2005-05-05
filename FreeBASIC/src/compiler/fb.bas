@@ -324,12 +324,14 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_LIB)	= "\\lib\\dos"
 	case FB_COMPTARGET_LINUX
 #ifdef TARGET_WIN32
-		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
+		pathTB(FB_PATH_BIN) = "\\bin\\linux\\"
+		pathTB(FB_PATH_INC) = "\\inc\\"
+		pathTB(FB_PATH_LIB) = "\\lib\\linux"
 #else
 		pathTB(FB_PATH_BIN)	= "/usr/share/freebasic/bin/"
-#endif
 		pathTB(FB_PATH_INC)	= "/usr/share/freebasic/inc/"
 		pathTB(FB_PATH_LIB)	= "/usr/share/freebasic/lib"
+#endif
 	end select
 
 end sub
