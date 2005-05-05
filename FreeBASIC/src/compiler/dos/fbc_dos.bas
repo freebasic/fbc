@@ -68,19 +68,19 @@ function _linkFiles as integer
 	function = FALSE
 
 	'' if no executable name was defined, assume it's the same as the first source file
-	if( len( ctx.outname ) = 0 ) then
+	if( len( fbc.outname ) = 0 ) then
 
         SETUP_OUTNAME()
 
-		select case ctx.outtype
+		select case fbc.outtype
 		case FB_OUTTYPE_EXECUTABLE
-			ctx.outname += ".exe"
+			fbc.outname += ".exe"
 		end select
 	end if
 
     '' if entry point was not defined, assume it's at the first source file
-	if( len( ctx.entrypoint ) = 0 ) then
-		select case ctx.outtype
+	if( len( fbc.entrypoint ) = 0 ) then
+		select case fbc.outtype
 		case FB_OUTTYPE_EXECUTABLE
 
 			SETUP_ENTRYPOINT()
@@ -88,15 +88,15 @@ function _linkFiles as integer
 		end select
 	end if
 
-	hClearName( ctx.entrypoint )
+	hClearName( fbc.entrypoint )
 
     '' set script file
-    select case ctx.outtype
+    select case fbc.outtype
 	case FB_OUTTYPE_EXECUTABLE
 		ldcline = "-T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386go32.x\""
 	end select
 
-	if( not ctx.debug ) then
+	if( not fbc.debug ) then
 		ldcline += " -s"
 	end if
 
@@ -105,17 +105,17 @@ function _linkFiles as integer
     ldcline += " "
 
     '' add objects from output list
-    for i = 0 to ctx.inps-1
+    for i = 0 to fbc.inps-1
     	ldcline += QUOTE + fbc.outlist(i) + "\" "
     next i
 
     '' add objects from cmm-line
-    for i = 0 to ctx.objs-1
+    for i = 0 to fbc.objs-1
     	ldcline += QUOTE + fbc.objlist(i) + "\" "
     next i
 
     '' add entry point wrapper
-	mainobj = hStripExt(ctx.outname) + ".~~~"
+	mainobj = hStripExt(fbc.outname) + ".~~~"
 	if not makeMain(mainobj) then
 		print "makemain failed"
 		exit function
@@ -127,7 +127,7 @@ function _linkFiles as integer
 	'''''ldcline = ldcline + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + "/crt1.o\" "
 
     '' set executable name
-    ldcline += "-o \"" + ctx.outname + QUOTE
+    ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' default lib path
     ldcline += " -L \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
@@ -135,7 +135,7 @@ function _linkFiles as integer
     ldcline += " -L \"./\""
 
     '' add additional user-specified library search paths
-    for i = 0 to ctx.pths-1
+    for i = 0 to fbc.pths-1
     	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
     next i
 
@@ -143,8 +143,8 @@ function _linkFiles as integer
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-    for i = 0 to ctx.libs-1
-		if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
+    for i = 0 to fbc.libs-1
+		if fbc.outtype = FB_OUTTYPE_EXECUTABLE then
 			ldcline += "-l" + fbc.liblist(i) + " "
 		end if
     next i
@@ -152,13 +152,8 @@ function _linkFiles as integer
     '' end lib group
     ldcline += "-) "
 
-    if( ctx.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-        '' create the def list to use when creating the import library
-        ldcline += " --output-def \"" + hStripFilename( ctx.outname ) + dllname + ".def\""
-	end if
-
     '' invoke ld
-    if( ctx.verbose ) then
+    if( fbc.verbose ) then
     	print "linking: ", ldcline
     end if
 
@@ -255,7 +250,7 @@ function makeMain ( byval main_obj as string ) as integer
     print #f, ".globl _main"
     print #f, "_main:"
 
-	if ctx.outtype = FB_OUTTYPE_EXECUTABLE then
+	if fbc.outtype = FB_OUTTYPE_EXECUTABLE then
 
 		'' save argc and argv in rtlib vars
 		print #f, "movl 8(%esp), %eax"
@@ -265,7 +260,7 @@ function makeMain ( byval main_obj as string ) as integer
 		print #f, "movl %eax, (_fb_argc)"
 
 		'' jump to real entry point ( will ret to crt startup code )
-		print #f, "jmp " + ctx.entrypoint
+		print #f, "jmp " + fbc.entrypoint
 
 	end if
 
@@ -274,7 +269,7 @@ function makeMain ( byval main_obj as string ) as integer
     ascline = "--strip-local-absolute \"" + asm_file + "\" -o \"" + main_obj + QUOTE
 
     '' invoke as
-    if (ctx.verbose) then
+    if (fbc.verbose) then
         print "assembling: ", ascline
     end if
 
