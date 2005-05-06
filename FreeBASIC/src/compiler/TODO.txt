@@ -1,7 +1,14 @@
+[ ] full debug support
+-- add pointers
+-- add var-len strings (show the descriptor or the contents directly?)
+-- add dynamic arrays (...)
+-- add arguments
+-- add local symbols + byref
+-- add typedefs (symbol type is "resolved" when a typedef is found though)
+-- add enums (sym tb must link the elements with the parent enum)
+-- add include files
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
-
-[ ] full debug support
 
 [ ] function overloading:
 -- check arglist with optionals with different types at the same arg num (?)
@@ -31,8 +38,7 @@
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 
 *** yet another optimizations ***
-[ ] reuse temp vars (or just strings), so less mem is used and less strDel's are needed inside procs
-[ ] get hide of double fxch's (needs peephole optimization at EMIT)
+[ ] reuse temp vars (or just strings), so less mem is used
 [ ] load after store elimination (at IR?)
 [ ] use CMOV when possible on 686 (maybe at IR, but probably requires peephole at EMIT)
 [ ] unreachable code removal

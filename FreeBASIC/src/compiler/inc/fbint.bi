@@ -675,6 +675,10 @@ type FBSVAR
 	elm				as FBSUDTELM
 end type
 
+type FBDBG
+	typenum			as integer
+end type
+
 ''
 type FBSYMBOL
 	prv				as FBSYMBOL ptr				'' linked-list nodes
@@ -709,6 +713,8 @@ type FBSYMBOL
 		key			as FBSKEYWORD
 		fwd			as FBSFWDREF
 	end union
+
+	dbg				as FBDBG
 
 	left			as FBSYMBOL ptr
 	right			as FBSYMBOL ptr

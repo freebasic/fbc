@@ -879,6 +879,7 @@ function symbAddTypedef( byval symbol as string, _
 
 	''
 	t->lgt 	= lgt
+	t->dbg.typenum = INVALID
 
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
@@ -1416,6 +1417,8 @@ function symbAddUDT( byval symbol as string, _
 	t->udt.innerlgt	= 0
 	t->udt.bitpos	= 0
 
+	t->dbg.typenum	= INVALID
+
 	function = t
 
 end function
@@ -1707,11 +1710,12 @@ function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
 		exit function
 	end if
 
+	e->dbg.typenum = INVALID
+
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
 		hCheckFwdRef( e, FB.SYMBCLASS.ENUM )
 	end if
-
 
 	function = e
 
@@ -2996,6 +3000,7 @@ function symbGetUDTLen( byval udt as FBSYMBOL ptr, _
 	end if
 
 end function
+
 
 '':::::
 function symbGetFirstNode as FBSYMBOL ptr static

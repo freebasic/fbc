@@ -305,6 +305,14 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetConstText(c) c->con.text
 
+#define symbGetUDTFirstElm(s) s->udt.head
+
+#define symbGetUDTNextElm(e) e->var.elm.r
+
+#define symbGetUDTElmBitOfs(e) (e->var.elm.ofs * 8 + e->var.elm.bitpos)
+
+#define symbGetUDTElmBitLen(e) iif( e->var.elm.bits <> 0, e->var.elm.bits, e->lgt * e->var.array.elms * 8 )
+
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
 #define symbGetProcIsDeclared(f) f->proc.isdeclared
