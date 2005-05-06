@@ -71,7 +71,7 @@ FBCALL void fb_WriteVoid ( int fnum, int mask )
 #endif
 
     else if( mask & FB_PRINT_PAD )
-    	buffer = "%-14";
+    	buffer = "              ";
 
     else
     	buffer = NULL;
