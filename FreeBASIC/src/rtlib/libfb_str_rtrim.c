@@ -43,9 +43,12 @@ FBCALL FBSTRING *fb_RTRIM ( FBSTRING *src )
 	len = 0;
 	if( src->data != NULL )
 	{
-		p = fb_hStrSkipCharRev( src->data, FB_STRSIZE( src ), 32 );
-		if( p != src->data )
+		len = FB_STRSIZE( src );
+		if( len > 0 )
+		{
+			p = fb_hStrSkipCharRev( src->data, len, 32 );
 			len = (int)(p - src->data) + 1;
+		}
 	}
 
 	if( len > 0 )
