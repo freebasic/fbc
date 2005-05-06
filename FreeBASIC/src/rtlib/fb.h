@@ -143,9 +143,12 @@ void				fb_hListFreeElem		( FB_LIST *list, FB_LISTELEM *elem );
 		else                                                        \
 		{                                                           \
 			ptr = (char *)s;                                        \
-			/* always get the real len, as fix-len string will */	\
-			/* have garbage at end (nulls or spaces) */				\
-			len = strlen( (char *)s );                      		\
+			/* always get the real len, as fix-len string */		\
+			/* will have garbage at end (nulls or spaces) */		\
+			if( ptr != NULL )										\
+				len = strlen( (char *)s );                      	\
+			else													\
+				len = 0;											\
 		}															\
 	}
 
