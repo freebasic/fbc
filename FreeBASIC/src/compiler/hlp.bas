@@ -33,9 +33,7 @@ type FBERRCTX
 	lasterror 	as integer
 	lastline	as integer
 
-	tmpcnt		as integer
-	tmppad 		as zstring * 8+1
-	tmplen 		as integer
+	tmpcnt		as uinteger
 end type
 
 ''globals
@@ -153,8 +151,6 @@ sub hlpInit
 
 	''
 	ctx.tmpcnt	= 0
-	ctx.tmppad 	= ""
-	ctx.tmplen 	= 0
 
 end sub
 
@@ -300,30 +296,46 @@ sub hReportWarning( byval msgnum as integer, _
 
 end sub
 
+'':::::
+function hHexUInt( byval value as uinteger ) as zstring ptr static
+    static as zstring * 8 + 1 res
+    dim as zstring ptr p
+    dim as integer lgt, maxlen
+
+	static hexTB(0 to 15) as integer = { asc( "0" ), asc( "1" ), asc( "2" ), asc( "3" ), _
+									  	 asc( "4" ), asc( "5" ), asc( "6" ), asc( "7" ), _
+										 asc( "8" ), asc( "9" ), asc( "A" ), asc( "B" ), _
+										 asc( "C" ), asc( "D" ), asc( "E" ), asc( "F" ) }
+
+	maxlen = 4
+	if( value > 65535 ) then
+		maxlen = 8
+	end if
+
+	p = @res + 8-1
+	lgt = 0
+
+	do
+		*p = hexTB( value and &h0000000F )
+
+		lgt +=1
+		if( lgt = maxlen ) then
+			exit do
+		end if
+
+		p -= 1
+		value shr= 4
+	loop
+
+	function = p
+
+end function
 
 '':::::
 function hMakeTmpStr( ) as zstring ptr static
 	static as zstring * 8 + 3 + 1 res
-	static as zstring * 8 cnt
-	dim as integer l, p
 
-	static padtb(0 to 7) as zstring * 8+1 => { "", "0", "00", "000", "0000", _
-											   "00000", "000000", "0000000" }
-
-	cnt = hex$( ctx.tmpcnt )
-
-	l = len( cnt )
-	if( l > ctx.tmplen ) then
-    	ctx.tmplen = l
-    	if( l <= 4 ) then
-    		p = 4 - l
-    	else
-    		p = 8 - l
-    	end if
-    	ctx.tmppad = "Lt_" + padTB(p)
-	end if
-
-	res = ctx.tmppad + cnt
+	res = "Lt_" + *hHexUInt( ctx.tmpcnt )
 
 	ctx.tmpcnt += 1
 
