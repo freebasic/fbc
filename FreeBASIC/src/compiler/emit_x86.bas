@@ -4685,15 +4685,20 @@ end sub
 '':::::
 sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
-	emitSECTION EMIT.SECTYPE.DATA
+	emitSECTION( EMIT.SECTYPE.DATA )
 
    	if( sym->typ = FB.SYMBTYPE.DOUBLE ) then
-    	outEx ".balign 8\n", TRUE
+    	outEx( ".balign 8\n", TRUE )
 	else
-    	outEx ".balign 4\n", TRUE
+    	outEx( ".balign 4\n", TRUE )
 	end if
 
-	emitLABEL sym->alias
+	'' public?
+	if( symbIsPublic( sym ) ) then
+		emitPUBLIC( sym->alias )
+	end if
+
+	emitLABEL( sym->alias )
 
 end sub
 
@@ -4869,7 +4874,7 @@ end sub
 '':::::
 private sub hEmitFooter( byval tottime as double )
 
-    hWriteStr ctx.outf, FALSE, ""
+    hWriteStr( ctx.outf, FALSE, "" )
 
     '' end( 0 )
     rtlExit( NULL )
@@ -4877,13 +4882,13 @@ private sub hEmitFooter( byval tottime as double )
 
     '' end() will never return but..
     if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
-    	hWriteStr ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp"
-    	hWriteStr ctx.outf, TRUE,  "pop" + TABCHAR + "ebp"
-    	hWriteStr ctx.outf, TRUE,  "ret"
+    	hWriteStr( ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp" )
+    	hWriteStr( ctx.outf, TRUE,  "pop" + TABCHAR + "ebp" )
+    	hWriteStr( ctx.outf, TRUE,  "ret" )
     end if
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + "' compilation took " + _
-    						   str$( tottime ) + " secs"
+    hWriteStr( ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + _
+    							"' compilation took " + str$( tottime ) + " secs" )
 
 end sub
 
@@ -4928,9 +4933,9 @@ private sub hEmitBssHeader( )
     	exit sub
     end if
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#global non-initialized vars"
-    emitSECTION EMIT.SECTYPE.BSS
-    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr( ctx.outf, FALSE, NEWLINE + "#global non-initialized vars" )
+    emitSECTION( EMIT.SECTYPE.BSS )
+    hWriteStr( ctx.outf, TRUE,  ".balign 16" + NEWLINE )
 
     ctx.bssheader = TRUE
 
@@ -4943,7 +4948,7 @@ private sub hEmitBss( ) static
     dim as FBSYMBOL ptr s
     dim as integer alloctype, elements, doemit
 
-    s = symbGetFirstNode
+    s = symbGetFirstNode( )
     do while( s <> NULL )
 
 		doemit = FALSE
@@ -4952,10 +4957,10 @@ private sub hEmitBss( ) static
 		if( s->class = FB.SYMBCLASS.VAR ) then
 			'' not initialized?
 			if( not s->var.initialized ) then
-				'' not emited alreayd?
+				'' not emited already?
 				if( not s->var.emited ) then
     				'' not extern?
-    				if( (s->alloctype and FB.ALLOCTYPE.EXTERN) = 0 ) then
+    				if( not symbIsExtern( s ) ) then
     	    			'' not a string or array descriptor?
     	    			if( s->lgt > 0 ) then
     						'' not dynamic?
@@ -4979,23 +4984,23 @@ private sub hEmitBss( ) static
     	    hEmitBssHeader( )
 
     	    if( (alloctype and FB.ALLOCTYPE.COMMON) = 0 ) then
-    	    	if( (alloctype and FB.ALLOCTYPE.PUBLIC) <> 0 ) then
-    	    		emitPUBLIC s->alias
+    	    	if( (alloctype and FB.ALLOCTYPE.PUBLIC) > 0 ) then
+    	    		emitPUBLIC( s->alias )
 				end if
     	    	alloc = ".lcomm"
 			else
-    	    	emitPUBLIC s->alias
+    	    	emitPUBLIC( s->alias )
     	    	alloc = ".comm"
     	    end if
 
     	    if( s->typ = FB.SYMBTYPE.DOUBLE ) then
-    	    	hWriteStr ctx.outf, TRUE, ".balign 8"
+    	    	hWriteStr( ctx.outf, TRUE, ".balign 8" )
     	    else
-    	    	hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    	hWriteStr( ctx.outf, TRUE, ".balign 4" )
     	    end if
 
     	    ostr = alloc + TABCHAR + s->alias + "," + str$( s->lgt * elements )
-    	    hWriteStr ctx.outf, TRUE, ostr
+    	    hWriteStr( ctx.outf, TRUE, ostr )
 
     	    edbgGlobalVar( s, EMIT.SECTYPE.BSS )
 
@@ -5013,9 +5018,9 @@ private sub hEmitConstHeader( )
     	exit sub
     end if
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized constants"
-	emitSECTION EMIT.SECTYPE.DATA
-    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr( ctx.outf, FALSE, NEWLINE + "#global initialized constants" )
+	emitSECTION( EMIT.SECTYPE.DATA )
+    hWriteStr( ctx.outf, TRUE,  ".balign 16" + NEWLINE )
 
     ctx.conheader = TRUE
 
@@ -5027,7 +5032,7 @@ private sub hEmitConst( ) static
     dim as FBSYMBOL ptr s
     dim as integer typ, doemit
 
-    s = symbGetFirstNode
+    s = symbGetFirstNode( )
     do while( s <> NULL )
 
     	doemit = FALSE
@@ -5055,16 +5060,16 @@ private sub hEmitConst( ) static
     	    	stext = s->var.inittext
     	    end if
 
-    	    hEmitConstHeader
+    	    hEmitConstHeader( )
 
     	    if( typ = FB.SYMBTYPE.DOUBLE ) then
-    	    	hWriteStr ctx.outf, TRUE, ".balign 8"
+    	    	hWriteStr( ctx.outf, TRUE, ".balign 8" )
     	    else
-    	    	hWriteStr ctx.outf, TRUE, ".balign 4"
+    	    	hWriteStr( ctx.outf, TRUE, ".balign 4" )
     	    end if
 
     	    ostr = s->alias + ":\t" + stype + TABCHAR + stext
-    	    hWriteStr ctx.outf, FALSE, ostr
+    	    hWriteStr( ctx.outf, FALSE, ostr )
 
     	    'edbgGlobalVar( s, EMIT.SECTYPE.CONST )
 
@@ -5082,8 +5087,12 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     dim as string sname, dname
 
     '' extern?
-    if( (s->alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
-    	exit sub
+    if( symbIsExtern( s ) ) then
+    	'' not static? (even if extern, the descriptor will be needed with
+    	'' a static array, if it get passed by descriptor to some function)
+    	if( symbGetIsDynamic( s ) ) then
+    		exit sub
+    	end if
     end if
 
     dims = s->var.array.dims
@@ -5097,21 +5106,22 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	else
     	sname = s->alias
 	end if
-	dname = symbGetVarDscName( s )
+
+	dname = symbGetVarDescName( s )
 
     edbgGlobalVar( symbGetArrayDescriptor( s ), EMIT.SECTYPE.DATA )
 
     '' COMMON?
-    if( (s->alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
+    if( symbIsCommon( s ) ) then
     	if( dims = -1 ) then
     		dims = 1
     	end if
 
-    	emitPUBLIC dname
+    	emitPUBLIC( dname )
 
-    	hWriteStr ctx.outf, TRUE, ".balign 4"
-    	hWriteStr ctx.outf, TRUE,  ".comm" + TABCHAR + dname + "," + _
-    							   str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 )
+    	hWriteStr( ctx.outf, TRUE, ".balign 4" )
+    	hWriteStr( ctx.outf, TRUE,  ".comm" + TABCHAR + dname + "," + _
+    							    str$( FB.ARRAYDESCSIZE + dims * FB.INTEGERSIZE*2 ) )
 
     	exit sub
     end if
@@ -5119,32 +5129,35 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     '' non COMMON arrays..
 
     '' public?
-    if( (s->alloctype and FB.ALLOCTYPE.PUBLIC) > 0 ) then
-    	emitPUBLIC dname
+    if( symbIsPublic( s ) ) then
+    	'' don't make the descriptor global if it's a static array
+    	if( symbGetIsDynamic( s ) ) then
+    		emitPUBLIC( dname )
+    	end if
     end if
 
-    hWriteStr ctx.outf, TRUE, ".balign 4"
-    hWriteStr ctx.outf, FALSE, dname + ":"
+    hWriteStr( ctx.outf, TRUE, ".balign 4" )
+    hWriteStr( ctx.outf, FALSE, dname + ":" )
 
 	''	void		*data 	// ptr + diff
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname + " +" + str$( diff )
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + sname + " +" + str$( diff ) )
 	''	void		*ptr
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + sname
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + sname )
 	''	uint		size
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt * hCalcElements( s ) )
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt * hCalcElements( s ) ) )
 	''	uint		element_len
-    hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt )
+    hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt ) )
 	''	uint		dimensions
 	if( dims = -1 ) then dims = 1
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( dims )
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( dims ) )
 
     if( not symbGetIsDynamic( s ) ) then
     	d = s->var.array.dimhead
     	do while( d <> NULL )
 			''	uint	dim_elemts
-			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->upper - d->lower + 1 )
+			hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->upper - d->lower + 1 ) )
 			''	int		dim_first
-			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->lower )
+			hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( d->lower ) )
             '' next
 			d = d->r
     	loop
@@ -5152,9 +5165,9 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     else
         for i = 0 to dims-1
 			''	uint	dim_elemts
-			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + "0"
+			hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + "0"  )
 			''	int		dim_first
-			hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + "0"
+			hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + "0" )
         next i
     end if
 
@@ -5164,17 +5177,17 @@ end sub
 private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
     dim as string dname
 
-	dname = symbGetVarDscName( s )
+	dname = symbGetVarDescName( s )
 
-    hWriteStr ctx.outf, TRUE, ".balign 4"
-    hWriteStr ctx.outf, FALSE, dname + ":"
+    hWriteStr( ctx.outf, TRUE, ".balign 4" )
+    hWriteStr( ctx.outf, FALSE, dname + ":" )
 
 	''	void		*data
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + s->alias
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + s->alias )
 	''	int			len
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt )
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt ) )
 	''	int			size
-	hWriteStr ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt )
+	hWriteStr( ctx.outf, TRUE,  ".int" + TABCHAR + str$( s->lgt ) )
 
 end sub
 
@@ -5185,9 +5198,9 @@ private sub hEmitDataHeader( )
     	exit sub
     end if
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#global initialized vars"
-    emitSECTION EMIT.SECTYPE.DATA
-    hWriteStr ctx.outf, TRUE,  ".balign 16" + NEWLINE
+    hWriteStr( ctx.outf, FALSE, NEWLINE + "#global initialized vars" )
+    emitSECTION( EMIT.SECTYPE.DATA )
+    hWriteStr( ctx.outf, TRUE,  ".balign 16" + NEWLINE )
 
     ctx.datheader = TRUE
 
@@ -5197,7 +5210,7 @@ end sub
 private sub hEmitData( ) static
     dim as FBSYMBOL ptr s, d
 
-    s = symbGetFirstNode
+    s = symbGetFirstNode( )
     do while( s <> NULL )
 
     	'' var?
@@ -5208,12 +5221,12 @@ private sub hEmitData( ) static
     	    	'' subtype is an array or string descriptor?
     	    	select case d->subtype
     	    	case FB.DESCTYPE.ARRAY
-    	    		hEmitDataHeader
-    	    		hWriteArrayDesc s
+    	    		hEmitDataHeader( )
+    	    		hWriteArrayDesc( s )
 
     	    	case FB.DESCTYPE.STR
-    	    		hEmitDataHeader
-    	    		hWriteStringDesc s
+    	    		hEmitDataHeader( )
+    	    		hWriteStringDesc( s )
     	    	end select
     	    end if
     	end if
@@ -5230,8 +5243,8 @@ private sub hEmitExportHeader( )
     	exit sub
     end if
 
-    hWriteStr ctx.outf, FALSE, NEWLINE + "#exported functions"
-    emitSECTION EMIT.SECTYPE.DIRECTIVE
+    hWriteStr( ctx.outf, FALSE, NEWLINE + "#exported functions" )
+    emitSECTION( EMIT.SECTYPE.DIRECTIVE )
 
     ctx.expheader = TRUE
 
@@ -5242,15 +5255,15 @@ private sub hEmitExport( ) static
     dim s as FBSYMBOL ptr
     dim sname as string
 
-    s = symbGetFirstNode
+    s = symbGetFirstNode( )
     do while( s <> NULL )
 
     	if( symbGetClass( s ) = FB.SYMBCLASS.PROC ) then
     		if( symbGetProcIsDeclared( s ) ) then
-    			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXPORT) > 0 ) then
-    				hEmitExportHeader
+    			if( symbIsExport( s ) ) then
+    				hEmitExportHeader( )
     				sname = hStripUnderscore( symbGetName( s ) )
-    				hWriteStr ctx.outf, TRUE, ".ascii \" -export:" + sname + "\"" + NEWLINE
+    				hWriteStr( ctx.outf, TRUE, ".ascii \" -export:" + sname + "\"" + NEWLINE )
     			end if
     		end if
     	end if
