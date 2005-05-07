@@ -70,7 +70,7 @@ declare	function 	symbGetNextNode			( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 
-declare function 	symbGetVarDscName		( byval s as FBSYMBOL ptr ) as string
+declare function 	symbGetVarDescName		( byval s as FBSYMBOL ptr ) as string
 
 declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
 
@@ -360,6 +360,34 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 #define symbGetIsDynamic(s) iif( s->class = FB.SYMBCLASS.UDTELM, FALSE, (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0 )
 
 #define symbIsArray(s) iif( (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0, TRUE, s->var.array.dims > 0 )
+
+#define symbIsShared(s) ((s->alloctype and FB.ALLOCTYPE.SHARED) > 0)
+
+#define symbIsStatic(s) ((s->alloctype and FB.ALLOCTYPE.STATIC) > 0)
+
+#define symbIsDynamic(s) ((s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0)
+
+#define symbIsCommon(s) ((s->alloctype and FB.ALLOCTYPE.COMMON) > 0)
+
+#define symbIsTemp(s) ((s->alloctype and FB.ALLOCTYPE.TEMP) > 0)
+
+#define symbIsArgByDesc(s) ((s->alloctype and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0)
+
+#define symbIsArgByVal(s) ((s->alloctype and FB.ALLOCTYPE.ARGUMENTBYVAL) > 0)
+
+#define symbIsArgByRef(s) ((s->alloctype and FB.ALLOCTYPE.ARGUMENTBYREF) > 0)
+
+#define symbIsPublic(s) ((s->alloctype and FB.ALLOCTYPE.PUBLIC) > 0)
+
+#define symbIsPrivate(s) ((s->alloctype and FB.ALLOCTYPE.PRIVATE) > 0)
+
+#define symbIsExtern(s) ((s->alloctype and FB.ALLOCTYPE.EXTERN) > 0)
+
+#define symbIsExport(s) ((s->alloctype and FB.ALLOCTYPE.EXPORT) > 0)
+
+#define symbIsImport(s) ((s->alloctype and FB.ALLOCTYPE.IMPORT) > 0)
+
+#define symbIsOverloaded(s) ((s->alloctype and FB.ALLOCTYPE.OVERLOADED) > 0)
 
 
 #define hIsString(t) ((t = IR.DATATYPE.STRING) or (t = IR.DATATYPE.FIXSTR) or (t = IR.DATATYPE.CHAR))

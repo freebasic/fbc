@@ -4570,9 +4570,14 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 
 	else
 
-		'' not an argument passed by descriptor?
-		if ( (s->alloctype and FB.ALLOCTYPE.ARGUMENTBYDESC) = 0 ) then
+		'' an argument passed by descriptor?
+		if( symbIsArgByDesc( s ) ) then
+        	'' it's a pointer, but could be seen as anything else
+        	'' (ie: if it were "s() as string"), so, create an alias
+        	n->l     = astNewVAR( s, NULL, 0, IR.DATATYPE.UINT )
+        	n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
 
+    	else
 			'' not an array?
 			d = s->var.array.desc
 			if( d = NULL ) then
@@ -4584,11 +4589,6 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
         	n->l     = astNewADDR( IR.OP.ADDROF, astNewVAR( d, NULL, 0, IR.DATATYPE.UINT ) )
         	n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
 
-    	else
-        	'' it's a pointer, but could be seen as anything else
-        	'' (ie: if it were "s() as string"), so, create an alias
-        	n->l     = astNewVAR( s, NULL, 0, IR.DATATYPE.UINT )
-        	n->dtype = IR.DATATYPE.POINTER + IR.DATATYPE.VOID
     	end if
 
     end if

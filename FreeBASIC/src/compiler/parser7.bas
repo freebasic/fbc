@@ -60,7 +60,7 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
     dim as ASTNODE ptr idxexpr
 
     ''  argument passed by descriptor?
-    if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
+    if( symbIsArgByDesc( sym ) ) then
 
     	astDelTree( arrayexpr )
     	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )

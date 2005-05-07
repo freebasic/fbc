@@ -1445,7 +1445,6 @@ function hDeclExternVar( byval id as string, _
 						 byval dimensions as integer, _
 					   	 dTB() as FBARRAYDIM ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
-	dim as integer isdynamic
 
     function = NULL
 
@@ -1458,7 +1457,7 @@ function hDeclExternVar( byval id as string, _
     if( s <> NULL ) then
 
     	'' no extern?
-    	if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXTERN) = 0 ) then
+    	if( not symbIsExtern( s ) ) then
     		exit function
     	end if
 
@@ -1470,8 +1469,7 @@ function hDeclExternVar( byval id as string, _
 		end if
 
 		'' dynamic?
-		isdynamic = (symbGetAllocType( s ) and FB.ALLOCTYPE.DYNAMIC) > 0
-		if( isdynamic ) then
+		if( symbIsDynamic( s ) ) then
 			if( (alloctype and FB.ALLOCTYPE.DYNAMIC) = 0 ) then
     			hReportErrorEx( FB.ERRMSG.EXPECTEDDYNAMICARRAY, id )
     			exit function
@@ -1491,8 +1489,8 @@ function hDeclExternVar( byval id as string, _
 
     	'' set type
     	symbSetAllocType( s, (alloctype and not FB.ALLOCTYPE.EXTERN) or _
-    					     FB.ALLOCTYPE.PUBLIC or _
-    					     FB.ALLOCTYPE.SHARED )
+    					      FB.ALLOCTYPE.PUBLIC or _
+    					      FB.ALLOCTYPE.SHARED )
 
 		'' check dimensions
 		if( symbGetArrayDimensions( s ) <> 0 ) then
@@ -1786,7 +1784,7 @@ function cDynArrayDef( byval id as string, _
 		else
 
 			'' external?
-			if( (symbGetAllocType( s ) and FB.ALLOCTYPE.EXTERN) > 0 ) then
+			if( symbIsExtern( s ) ) then
 				if( (atype and FB.ALLOCTYPE.EXTERN) > 0 ) then
    					hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
 					exit function
@@ -2191,7 +2189,7 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' common?? impossible but..
-	if( (sym->alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
+	if( symbIsCommon( sym ) ) then
 		hReportError FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE
 		exit function
 	end if
@@ -2202,7 +2200,7 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 		exit function
 	end if
 
-	islocal = ((sym->alloctype and FB.ALLOCTYPE.STATIC) = 0) and (env.scope > 0)
+	islocal = (not symbIsStatic( sym )) and (env.scope > 0)
 
 	''
 	if( not islocal ) then

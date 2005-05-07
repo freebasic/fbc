@@ -924,10 +924,10 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	function = NULL
 
-	isshared 	= (s->alloctype and FB.ALLOCTYPE.SHARED) > 0
-	isstatic 	= (s->alloctype and FB.ALLOCTYPE.STATIC) > 0
-	isdynamic	= (s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0
-	iscommon 	= (s->alloctype and FB.ALLOCTYPE.COMMON) > 0
+	isshared 	= symbIsShared( s )
+	isstatic 	= symbIsStatic( s )
+	isdynamic	= symbIsDynamic( s )
+	iscommon 	= symbIsCommon( s )
 	ispubext 	= (s->alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) > 0
 
 	if( (iscommon) or (ispubext and isdynamic) ) then
@@ -2108,7 +2108,7 @@ private function hSetupProc( byval symbol as string, _
 		end if
 
 		'' proc was defined as overloadable?
-		if( (ovlf->alloctype and FB.ALLOCTYPE.OVERLOADED) = 0 ) then
+		if( not symbIsOverloaded( ovlf ) ) then
 			exit function
 		end if
 
@@ -3035,7 +3035,7 @@ end function
 
 
 '':::::
-function symbGetVarDscName( byval s as FBSYMBOL ptr ) as string static
+function symbGetVarDescName( byval s as FBSYMBOL ptr ) as string static
 	dim d as FBSYMBOL ptr
 
 	d = s->var.array.desc
@@ -3283,7 +3283,7 @@ sub symbDelPrototype( byval s as FBSYMBOL ptr )
 
 	do
 		'' overloaded?
-		if( (s->alloctype and FB.ALLOCTYPE.OVERLOADED) > 0 ) then
+		if( symbIsOverloaded( s ) ) then
 			n = s->proc.ovl.nxt
 		else
 			n = NULL
@@ -3334,7 +3334,7 @@ sub symbDelVar( byval s as FBSYMBOL ptr )
 	'' local?
 	if( s->scope > 0 ) then
     	'' static? don't remove node or EMIT won't output it
-    	if( (s->alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then
+    	if( symbIsStatic( s ) ) then
     		freeup = FALSE
     	end if
 	end if
@@ -3382,7 +3382,7 @@ sub symbDelLocalSymbols static
     	nxt = node->nxt
 
     	s = node->s
-    	if( (s->alloctype and FB.ALLOCTYPE.SHARED) = 0 ) then
+    	if( not symbIsShared( s ) ) then
 
     		select case as const s->class
     		case FB.SYMBCLASS.VAR
@@ -3435,7 +3435,7 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, _
     				  				   FB.ALLOCTYPE.TEMP)) = 0 ) then
 
 					if( s->var.array.dims > 0 ) then
-						if( (s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0 ) then
+						if( symbIsDynamic( s ) ) then
 							rtlArrayErase( astNewVAR( s, NULL, 0, s->typ ) )
 						elseif( s->typ = FB.SYMBTYPE.STRING ) then
 							rtlArrayStrErase( s )

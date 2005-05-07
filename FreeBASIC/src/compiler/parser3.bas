@@ -490,7 +490,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     d = symbGetArrayDescriptor( sym )
     dims = 0
 
-    if( (symbGetAllocType( sym ) and FB.ALLOCTYPE.COMMON) = 0 ) then
+    if( not symbIsCommon( sym ) ) then
     	maxdims = symbGetArrayDimensions( sym )
     else
     	maxdims = INVALID
@@ -651,7 +651,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     function = FALSE
 
     ''  argument passed by descriptor?
-    if( (symbGetAllocType( s ) and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0 ) then
+    if( symbIsArgByDesc( s ) ) then
     	return cArgArrayIdx( s, idxexpr )
 
     '' dynamic array? (will handle common's too)
@@ -848,10 +848,10 @@ function cVariable( varexpr as ASTNODE ptr, _
 	end if
 
     ''
-    isbyref = (symbGetAllocType( sym ) and FB.ALLOCTYPE.ARGUMENTBYREF) > 0
+    isbyref = symbIsArgByRef( sym )
 
 #ifdef TARGET_WIN32
-	isimport = (symbGetAllocType( sym ) and FB.ALLOCTYPE.IMPORT) > 0
+	isimport = symbIsImport( sym )
 #else
 	isimport = FALSE
 #endif
