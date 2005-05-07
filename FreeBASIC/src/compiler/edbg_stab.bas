@@ -42,7 +42,7 @@ type EDBGCTX
 
 	procinitline 	as integer
 
-	typecnt			as integer
+	typecnt			as uinteger
 end type
 
 declare sub hDeclUDT			( byval sym as FBSYMBOL ptr )
@@ -55,10 +55,10 @@ declare sub hDeclUDT			( byval sym as FBSYMBOL ptr )
 
 stabstdef:
 data "int:t1=r1;-2147483648;2147483647;"
-data "void:t7=r2"
+data "void:t7=r2;"
 data "byte:t2=r1;-128;127;"
 data "ubyte:t3=r1;0;255;"
-data "char:t4=r1;-128;127;"
+data "char:t4=r2;0;255;"
 data "short:t5=r1;-32768;32767;"
 data "ushort:t6=r1;0;65535;"
 data "uinteger:t8=r1;0;-1;"
@@ -66,9 +66,10 @@ data "longint:t9=r1;0;-1;"
 data "ulongint:t10=r1;0;-1;"
 data "single:t11=r1;4;0"
 data "double:t12=r1;8;0"
-data "ubyte:t13=r1;0;255;"
-data "ubyte:t14=r1;0;255;"
+data "string:t13=s12data:16,0,32;len:1,32,32;size:1,64,32;;"
+data "fixstr:t14=r1;0;255;"
 data "ubyte:t15=r1;0;255;"
+data "pchar:t16=*4;"
 data ""
 
 '':::::
@@ -370,14 +371,13 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 
     '' array?
     if( symbGetArrayDimensions( sym ) > 0 ) then
-    	desc = str$( ctx.typecnt )
+    	desc = str$( ctx.typecnt ) + "="
     	ctx.typecnt += 1
-    	desc += "=ar1;"
     	d = symbGetArrayFirstDim( sym )
     	do while( d <> NULL )
-    		desc += str$( d->lower )
-    		desc += ";"
-    		desc += str$( d->upper )
+    		desc += "ar1;"
+    		desc += str$( d->lower ) + ";"
+    		desc += str$( d->upper ) + ";"
     		d = d->r
     	loop
     else
@@ -385,7 +385,16 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     end if
 
     dtype = symbGetType( sym )
+
+    '' pointer?
+    do while( dtype >= FB.SYMBTYPE.POINTER )
+    	dtype -= FB.SYMBTYPE.POINTER
+    	desc += str$( ctx.typecnt ) + "=*"
+    	ctx.typecnt += 1
+    loop
+
     select case dtype
+    '' UDT?
     case FB.SYMBTYPE.USERDEF
     	udt = sym->subtype
     	if( udt->dbg.typenum = INVALID ) then
@@ -394,11 +403,14 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 
     	desc += str$( udt->dbg.typenum )
 
-    case else
-    	if( dtype >= FB.SYMBTYPE.POINTER ) then
-    		dtype = FB.SYMBTYPE.UINT
-    	end if
+    '' function pointer?
+    case FB.SYMBTYPE.FUNCTION
+    	desc += str$( ctx.typecnt ) + "=f"
+    	ctx.typecnt += 1
+    	desc += hGetDataType( sym->subtype )
 
+    '' ordinary type..
+    case else
     	desc += str$( remapTB(dtype) )
     end select
 

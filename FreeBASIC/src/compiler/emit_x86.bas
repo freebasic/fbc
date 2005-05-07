@@ -4687,6 +4687,8 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
 	emitSECTION( EMIT.SECTYPE.DATA )
 
+   	edbgGlobalVar( sym, EMIT.SECTYPE.DATA )
+
    	if( sym->typ = FB.SYMBTYPE.DOUBLE ) then
     	outEx( ".balign 8\n", TRUE )
 	else

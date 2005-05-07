@@ -1,9 +1,7 @@
 [ ] full debug support
--- add pointers
--- add var-len strings (show the descriptor or the contents directly?)
--- add dynamic arrays (...)
--- add arguments
--- add local symbols + byref
+-- add dynamic arrays
+-- add arguments + byref
+-- add local symbols
 -- add typedefs (symbol type is "resolved" when a typedef is found though)
 -- add enums (sym tb must link the elements with the parent enum)
 -- add include files
