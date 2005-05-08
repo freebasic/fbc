@@ -39,6 +39,13 @@ void fb_hPostKey(int key)
 	key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
 }
 
+#ifdef __DJGPP__
+void fb_hPostKey_End(void)
+{ /* this function is here to get the length of the fb_hPostKey function so
+     the DOS gfxlib driver can lock it into physical memory for use in an
+     interrupt handler */ }
+#endif
+
 
 /*:::::*/
 static int get_key(void)
