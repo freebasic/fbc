@@ -45,7 +45,9 @@ type EDBGCTX
 	typecnt			as uinteger
 end type
 
-declare sub hDeclUDT			( byval sym as FBSYMBOL ptr )
+declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
+
+declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 
 '' globals
 	dim shared ctx as EDBGCTX
@@ -323,6 +325,39 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
+private sub edbgLocalVars( byval proc as FBSYMBOL ptr ) static
+	dim as FBLOCSYMBOL ptr l
+	dim as FBSYMBOL ptr s, funcres
+
+	if( proc->typ <> FB.SYMBTYPE.VOID ) then
+		funcres = symbLookupProcResult( proc )
+	else
+		funcres = NULL
+	end if
+
+	l = symbGetFirstLocalNode( )
+	do while( l <> NULL )
+
+    	s = l->s
+    	if( symbIsVar( s ) ) then
+			'' not an argument?
+    		if( (s->alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
+    			  				   FB.ALLOCTYPE.ARGUMENTBYVAL or _
+    			  				   FB.ALLOCTYPE.ARGUMENTBYREF or _
+    			  				   FB.ALLOCTYPE.TEMP)) = 0 ) then
+
+				if( s <> funcres ) then
+					edbgLocalVar( s )
+				end if
+			end if
+		end if
+
+		l = symbGetNextLocalNode( l )
+	loop
+
+end sub
+
+'':::::
 sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 				  byval initlabel as FBSYMBOL ptr, _
 				  byval exitlabel as FBSYMBOL ptr ) static
@@ -335,11 +370,13 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 	end if
 
 	iniline = ctx.procinitline
-	endline = lexLineNum
+	endline = lexLineNum( )
 
 	'' not at module level?
 	if( proc <> NULL ) then
 		procname = symbGetName( proc )
+
+		edbgLocalVars( proc )
 
 	'' module level..
 	else
@@ -409,6 +446,10 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     	ctx.typecnt += 1
     	desc += hGetDataType( sym->subtype )
 
+    '' forward reference?
+    case FB.SYMBTYPE.FWDREF
+    	desc += str$( remapTB(FB.SYMBTYPE.VOID) )
+
     '' ordinary type..
     case else
     	desc += str$( remapTB(dtype) )
@@ -446,10 +487,15 @@ end sub
 sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 				   byval section as integer ) static
 
-	dim as integer t, alloctype, dtype
+	dim as integer t, alloctype
 	dim as string desc
 
 	if( not env.clopt.debug ) then
+		exit sub
+	end if
+
+	'' local declared as static..
+	if( sym->scope > 0 ) then
 		exit sub
 	end if
 
@@ -466,19 +512,93 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
     '' alloc type
     alloctype = symbGetAllocType( sym )
 
+    desc = symbGetOrgName( sym )
+
     if( (alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.COMMON)) > 0 ) then
-    	desc = ":G"
+    	desc += ":G"
     elseif( (sym->scope = 0) or (alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then
-        desc = ":S"
+        desc += ":S"
     else
-    	desc = ":"
+    	desc += ":"
     end if
 
     '' data type
     desc += hGetDataType( sym )
 
     ''
-    hEmitSTABS( t, symbGetOrgName( sym ) + desc, 0, 0, symbGetName( sym ) )
+    hEmitSTABS( t, desc, 0, 0, symbGetName( sym ) )
 
 end sub
+
+'':::::
+sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
+	dim as integer t
+	dim as string desc, value
+
+	if( not env.clopt.debug ) then
+		exit sub
+	end if
+
+    desc = symbGetOrgName( sym )
+
+    ''
+    if( symbIsStatic( sym ) ) then
+		if( symbGetVarEmited( sym ) ) then
+			t = STAB_TYPE_STSYM
+		else
+			t = STAB_TYPE_LCSYM
+		end if
+		desc += ":V"
+		value = symbGetName( sym )
+    else
+    	t = STAB_TYPE_LSYM
+    	desc += ":"
+    	value = str$( symbGetVarOfs( sym ) )
+    end if
+
+    '' data type
+    desc += hGetDataType( sym )
+
+    ''
+    hEmitSTABS( t, desc, 0, 0, value )
+
+end sub
+
+'':::::
+sub edbgProcArg( byval arg as FBSYMBOL ptr, _
+				 byval typ as integer, _
+				 byval mode as integer, _
+				 byval ofs as integer ) static
+
+	dim as string desc
+
+	if( not env.clopt.debug ) then
+		exit sub
+	end if
+
+    desc = symbGetName( arg ) + ":"
+
+    select case mode
+    case FB.ARGMODE.BYVAL
+	    desc += "p"
+
+	case FB.ARGMODE.BYREF
+		desc += "v"
+
+	case FB.ARGMODE.BYDESC
+    	desc += "v"
+	end select
+
+    '' data type
+    if( typ <> arg->typ ) then
+    	desc += str$( remapTB(typ) )
+    else
+    	desc += hGetDataType( arg )
+    end if
+
+    ''
+    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str$( ofs ) )
+
+end sub
+
 

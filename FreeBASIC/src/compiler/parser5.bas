@@ -49,7 +49,7 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
     dim a as integer
     dim arg as FBSYMBOL ptr, typ as integer
 
-	hCheckPrototype = FALSE
+	function = FALSE
 
 	'' check arg count
 	if( argc <> symbGetProcArgs( proc ) ) then
@@ -115,7 +115,7 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
     loop
 
     ''
-    hCheckPrototype = TRUE
+    function = TRUE
 
 end function
 
@@ -124,7 +124,7 @@ private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
     dim a as integer
     dim arg as FBSYMBOL ptr
 
-	hDeclareArgs = FALSE
+	function = FALSE
 
 	''
 	a = 0
@@ -133,7 +133,7 @@ private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
 
 		if( arg->arg.mode <> FB.ARGMODE.VARARG ) then
 			if( symbAddArgAsVar( arg->alias, arg ) = NULL ) then
-				hReportParamError a, FB.ERRMSG.DUPDEFINITION
+				hReportParamError( a, FB.ERRMSG.DUPDEFINITION )
 				exit function
 			end if
 		end if
@@ -142,7 +142,7 @@ private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
 		a += 1
 	loop
 
-	hDeclareArgs = TRUE
+	function = TRUE
 
 end function
 
@@ -376,12 +376,12 @@ function cProcStatement static
 	function = FALSE
 
 	'' (PRIVATE|PUBLIC)?
-	select case lexCurrentToken
+	select case lexCurrentToken( )
 	case FB.TK.PRIVATE
+		lexSkipToken( )
 		alloctype = FB.ALLOCTYPE.PRIVATE
-		lexSkipToken
 	case FB.TK.PUBLIC
-		lexSkipToken
+		lexSkipToken( )
 		alloctype = FB.ALLOCTYPE.PUBLIC
 	case else
 		if( env.optprocpublic ) then
@@ -397,19 +397,20 @@ function cProcStatement static
     end if
 
 	'' SUB | FUNCTION
-	if( lexCurrentToken = FB.TK.SUB ) then
+	select case lexCurrentToken( )
+	case FB.TK.SUB
 		issub = TRUE
-	elseif( lexCurrentToken = FB.TK.FUNCTION ) then
+	case FB.TK.FUNCTION
 		issub = FALSE
-	else
+	case else
 		exit function
-	end if
+	end select
 
-	lexSkipToken
+	lexSkipToken( )
 
 	''
 	if( env.scope > 0 ) then
-        hReportError FB.ERRMSG.INNERPROCNOTALLOWED
+        hReportError( FB.ERRMSG.INNERPROCNOTALLOWED )
         exit function
 	end if
 
@@ -436,17 +437,6 @@ function cProcStatement static
 	exitlabel = symbAddLabel( "" )
 	initlabel = symbAddLabel( "" )
 
-	'' emit proc setup
-	irEmitPROCBEGIN proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0
-
-	'' profiling?
-	if( env.clopt.profile ) then
-		if( not rtlProfileSetProc( proc ) ) then
-			hReportError FB.ERRMSG.INTERNAL
-			exit function
-		end if
-	end if
-
 	'' save old proc stmt info
 	oldprocstmt = env.procstmt
 
@@ -455,6 +445,17 @@ function cProcStatement static
 
 	'' restore error old handle if any was set
 	env.procerrorhnd 	  = NULL
+
+	'' emit proc setup
+	irEmitPROCBEGIN( proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0 )
+
+	'' profiling?
+	if( env.clopt.profile ) then
+		if( not rtlProfileSetProc( proc ) ) then
+			hReportError( FB.ERRMSG.INTERNAL )
+			exit function
+		end if
+	end if
 
     '' alloc args
     if( not hDeclareArgs( proc ) ) then
@@ -468,21 +469,21 @@ function cProcStatement static
 	end if
 
 	'' Comment?
-	cComment
+	cComment( )
 
 	'' SttSeparator
-	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+	if( not cSttSeparator( ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDEOL )
 		exit function
 	end if
 
 	'' proc body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB.TK.EOF) )
 
 	'' END (SUB | FUNCTION)
 	if( not hMatch( FB.TK.END ) ) then
-		hReportError FB.ERRMSG.EXPECTEDENDSUBORFUNCT
+		hReportError( FB.ERRMSG.EXPECTEDENDSUBORFUNCT )
 		exit function
 	else
 		res = FALSE
@@ -497,13 +498,13 @@ function cProcStatement static
 		end if
 
 		if( not res ) then
-			hReportError FB.ERRMSG.EXPECTEDENDSUBORFUNCT
+			hReportError( FB.ERRMSG.EXPECTEDENDSUBORFUNCT )
 			exit function
 		end if
 	end if
 
 	'' exit
-	irEmitLABEL exitlabel, FALSE
+	irEmitLABEL( exitlabel, FALSE )
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
@@ -512,7 +513,7 @@ function cProcStatement static
 	end if
 
 	'' del dyn arrays and all var-len strings (less the result one if its a string func!)
-	symbFreeLocalDynSymbols proc, issub
+	symbFreeLocalDynVars( proc, issub )
 
 	'' profiling?
 	if( env.clopt.profile ) then
@@ -522,18 +523,18 @@ function cProcStatement static
 		end if
 	end if
 
-	'' if function, put result var at result register (EAX or ST0)
+	'' if it's a function, put the result var in the result register
 	if( not issub ) then
-        hLoadResult proc
+        hLoadResult( proc )
 	end if
 
 	'' end
-	irEmitPROCEND proc, initlabel, exitlabel
+	irEmitPROCEND( proc, initlabel, exitlabel )
 
-	irEmitLABEL endlabel, FALSE
+	irEmitLABEL( endlabel, FALSE )
 
 	'' check undefined labels
-	l = symbCheckLabels
+	l = symbCheckLabels( )
 	if( l <> NULL ) then
 		'''''hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetOrgName( l ), -1
 		exit function
@@ -545,7 +546,7 @@ function cProcStatement static
 	'''''symbDelLabel exitlabel
 	'''''symbDelLabel endlabel
 	''
-	symbDelLocalSymbols
+	symbDelLocalSymbols( )
 
 	'' back to old state
 	env.procerrorhnd 		= NULL

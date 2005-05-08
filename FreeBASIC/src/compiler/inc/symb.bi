@@ -68,6 +68,10 @@ declare	function 	symbGetFirstNode 		( ) as FBSYMBOL ptr
 
 declare	function 	symbGetNextNode			( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
 
+declare	function 	symbGetFirstLocalNode 	( ) as FBSYMBOL ptr
+
+declare	function 	symbGetNextLocalNode	( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
+
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 
 declare function 	symbGetVarDescName		( byval s as FBSYMBOL ptr ) as string
@@ -221,7 +225,7 @@ declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 					  						  byval dimensions as integer, _
 					  						  dTB() as FBARRAYDIM )
 
-declare sub 		symbFreeLocalDynSymbols	( byval proc as FBSYMBOL ptr, _
+declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
 											  byval issub as integer )
 
 declare sub 		symbDelLocalSymbols		( )
@@ -273,6 +277,30 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetClass(s) s->class
 
+#define symbIsVar(s) (s->class = FB.SYMBCLASS.VAR)
+
+#define symbIsConst(s) (s->class = FB.SYMBCLASS.CONST)
+
+#define symbIsProc(s) (s->class = FB.SYMBCLASS.PROC)
+
+#define symbIsProcArg(s) (s->class = FB.SYMBCLASS.PROCARG)
+
+#define symbIsDefine(s) (s->class = FB.SYMBCLASS.DEFINE)
+
+#define symbIsKeyword(s) (s->class = FB.SYMBCLASS.KEYWORD)
+
+#define symbIsLabel(s) (s->class = FB.SYMBCLASS.LABEL)
+
+#define symbIsEnum(s) (s->class = FB.SYMBCLASS.ENUM)
+
+#define symbIsUDT(s) (s->class = FB.SYMBCLASS.UDT)
+
+#define symbIsUDTElm(s) (s->class = FB.SYMBCLASS.UDTELM)
+
+#define symbIsTypedef(s) (s->class = FB.SYMBCLASS.TYPEDEF)
+
+#define symbIsFwdRef(s) (s->class = FB.SYMBCLASS.FWDREF)
+
 #define symbGetAllocType(s) s->alloctype
 
 #define symbSetAllocType(s,t) s->alloctype = t
@@ -282,6 +310,8 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 #define symbGetDefineLen(d) len( d->def.text )
 
 #define symbGetVarInitialized(s) s->var.initialized
+
+#define symbGetVarEmited(s) s->var.emited
 
 #define symbGetArrayDiff(s) s->var.array.dif
 

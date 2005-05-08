@@ -40,3 +40,10 @@ declare sub 		edbgFooter			( )
 
 declare sub 		edbgGlobalVar		( byval sym as FBSYMBOL ptr, _
 				   						  byval section as integer )
+
+declare sub 		edbgLocalVar		( byval sym as FBSYMBOL ptr )
+
+declare sub 		edbgProcArg			( byval arg as FBSYMBOL ptr, _
+				 						  byval typ as integer, _
+				 						  byval mode as integer, _
+				 						  byval ofs as integer )

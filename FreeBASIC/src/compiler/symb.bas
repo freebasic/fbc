@@ -33,6 +33,7 @@ defint a-z
 '$include once: 'inc\ast.bi'
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
+'$include once: 'inc\emitdbg.bi'
 '$include once: 'inc\lex.bi'
 
 
@@ -2257,7 +2258,7 @@ function symbAddArgAsVar( byval symbol as string, _
 
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
-    dim as integer alloctype, typ
+    dim as integer alloctype, typ, mode
 
 	function = NULL
 
@@ -2289,6 +2290,17 @@ function symbAddArgAsVar( byval symbol as string, _
     if( s = NULL ) then
     	exit function
     end if
+
+	'' debug..
+	if( env.clopt.debug ) then
+		if( typ <> arg->typ ) then
+			mode = FB.ARGMODE.BYREF
+		else
+			mode = arg->arg.mode
+		end if
+
+		edbgProcArg( arg, typ, mode, symbGetVarOfs( s ) )
+	end if
 
 	function = s
 
@@ -3021,6 +3033,24 @@ function symbGetNextNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
+function symbGetFirstLocalNode as FBSYMBOL ptr static
+
+	function = ctx.loclist.head
+
+end function
+
+'':::::
+function symbGetNextLocalNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
+
+	if( n <> NULL ) then
+		function = n->nxt
+	else
+		function = NULL
+	end if
+
+end function
+
+'':::::
 function symbGetProcLib( byval p as FBSYMBOL ptr ) as string static
     dim l as FBLIBRARY ptr
 
@@ -3407,9 +3437,9 @@ sub symbDelLocalSymbols static
 end sub
 
 '':::::
-sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, _
-							 byval issub as integer ) static
-    dim as FBLOCSYMBOL ptr node, nxt
+sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
+						  byval issub as integer ) static
+    dim as FBLOCSYMBOL ptr node
     dim as FBSYMBOL ptr s, fres
     dim as ASTNODE ptr strg
 
@@ -3422,8 +3452,6 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, _
 
 	node = ctx.loclist.head
     do while( node <> NULL )
-    	nxt = node->nxt
-
     	s = node->s
     	if( s->class = FB.SYMBCLASS.VAR ) then
     		if( (s->alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
@@ -3454,7 +3482,7 @@ sub symbFreeLocalDynSymbols( byval proc as FBSYMBOL ptr, _
     		end if
     	end if
 
-    	node = nxt
+    	node = node->nxt
     loop
 
 end sub

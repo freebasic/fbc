@@ -4470,7 +4470,7 @@ sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, _
 
     ''
     ctx.localptr = 0
-    ctx.argptr	 = FB.POINTERSIZE + 4			'' skip return address + pushed ebp
+    ctx.argptr	 = FB.POINTERSIZE + FB.INTEGERSIZE	'' skip return address + pushed ebp
 
 end sub
 
@@ -4499,7 +4499,7 @@ sub emitPROCEND( byval proc as FBSYMBOL ptr, _
     outp ".size " + id + ", .-" + id
 #endif
 
-    edbgProcEnd proc, initlabel, exitlabel
+    edbgProcEnd( proc, initlabel, exitlabel )
 
 	''
 	if( bytestoalloc > 0 ) then

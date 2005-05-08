@@ -2003,7 +2003,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 			if( hMatch( CHAR_LBRACE ) ) then
 				dimcnt += 1
 				if( dimcnt > dimensions ) then
-					hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
+					hReportError( FB.ERRMSG.TOOMANYEXPRESSIONS )
 					exit function
 				end if
 
@@ -2059,7 +2059,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 		if( isarray ) then
 			'' '}'?
 			if( not hMatch( CHAR_RBRACE ) ) then
-				hReportError FB.ERRMSG.EXPECTEDRBRACKET
+				hReportError( FB.ERRMSG.EXPECTEDRBRACKET )
 				exit function
 			end if
 
@@ -2074,7 +2074,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 	pad = (sym->lgt * hCalcElements( sym )) - lgt
 	if( pad > 0 ) then
 		if( not islocal ) then
-			irEmitVARINIPAD pad
+			irEmitVARINIPAD( pad )
 		else
 			ofs += pad
 		end if
@@ -2097,7 +2097,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLPRNT
+		hReportError( FB.ERRMSG.EXPECTEDLPRNT )
 		exit function
 	end if
 
@@ -2115,7 +2115,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 		elmcnt += 1
 		if( elmcnt > elements ) then
-			hReportError FB.ERRMSG.TOOMANYEXPRESSIONS
+			hReportError( FB.ERRMSG.TOOMANYEXPRESSIONS )
 			exit function
 		end if
 
@@ -2127,7 +2127,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 			if( lelm <> NULL ) then
 				pad = (elmofs - lelm->var.elm.ofs) - lelm->lgt
 				if( pad > 0 ) then
-					irEmitVARINIPAD pad
+					irEmitVARINIPAD( pad )
 					lgt += pad
 				end if
 			end if
@@ -2142,7 +2142,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
         if( isarray ) then
 			'' '}'
 			if( not hMatch( CHAR_RBRACE ) ) then
-				hReportError FB.ERRMSG.EXPECTEDRBRACKET
+				hReportError( FB.ERRMSG.EXPECTEDRBRACKET )
 				exit function
 			end if
 		end if
@@ -2160,7 +2160,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' ')'
 	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDRPRNT
+		hReportError( FB.ERRMSG.EXPECTEDRPRNT )
 		exit function
 	end if
 
@@ -2168,7 +2168,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 	if( not islocal ) then
 		pad = sym->lgt - lgt
 		if( pad > 0 ) then
-			irEmitVARINIPAD pad
+			irEmitVARINIPAD( pad )
 		end if
 	end if
 
@@ -2184,27 +2184,29 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 
 	'' cannot initialize dynamic vars
 	if( symbGetIsDynamic( sym ) ) then
-		hReportError FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE
+		hReportError( FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE )
 		exit function
 	end if
 
 	'' common?? impossible but..
 	if( symbIsCommon( sym ) ) then
-		hReportError FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE
+		hReportError( FB.ERRMSG.CANTINITDYNAMICARRAYS, TRUE )
 		exit function
 	end if
 
 	'' already emited?? impossible but..
-	if( sym->var.emited ) then
-		hReportError FB.ERRMSG.SYNTAXERROR, TRUE
+	if( symbGetVarEmited( sym ) ) then
+		hReportError( FB.ERRMSG.SYNTAXERROR, TRUE )
 		exit function
 	end if
+
+	sym->var.emited = TRUE
 
 	islocal = (not symbIsStatic( sym )) and (env.scope > 0)
 
 	''
 	if( not islocal ) then
-		irEmitVARINIBEGIN sym
+		irEmitVARINIBEGIN( sym )
 	end if
 
 	'' '{'?
@@ -2219,19 +2221,17 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
     if( isarray ) then
 		'' '}'
 		if( not hMatch( CHAR_RBRACE ) ) then
-			hReportError FB.ERRMSG.EXPECTEDRBRACKET
+			hReportError( FB.ERRMSG.EXPECTEDRBRACKET )
 			exit function
 		end if
 	end if
 
 	''
 	if( not islocal ) then
-		irEmitVARINIEND sym
+		irEmitVARINIEND( sym )
 	end if
 
 	''
-	sym->var.emited = TRUE
-
 	function = TRUE
 
 end function
