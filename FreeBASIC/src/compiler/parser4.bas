@@ -312,6 +312,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	    '' Expression
     	if( not cExpression( expr ) ) then
+    		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
     		exit function
     	end if
 
@@ -372,10 +373,11 @@ function cIfStatement as integer
 	function = FALSE
 
 	'' IF
-	lexSkipToken
+	lexSkipToken( )
 
     '' Expression
     if( not cExpression( expr ) ) then
+    	hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
     	exit function
     end if
 
@@ -564,6 +566,7 @@ function cForStatement as integer
 
     '' Expression
     if( not cExpression( expr ) ) then
+    	hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
     	exit function
     end if
 
@@ -585,6 +588,7 @@ function cForStatement as integer
 
 	'' end condition (Expression)
 	if( not cExpression( expr ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 		exit function
 	end if
 
@@ -603,9 +607,10 @@ function cForStatement as integer
 	'' STEP
 	ispositive 	= TRUE
 	iscomplex 	= FALSE
-	if( lexCurrentToken = FB.TK.STEP ) then
-		lexSkipToken
+	if( lexCurrentToken( ) = FB.TK.STEP ) then
+		lexSkipToken( )
 		if( not cExpression( expr ) ) then
+			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -829,7 +834,7 @@ function cDoStatement as integer
 
 		'' Expression
 		if( not cExpression( expr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -909,6 +914,7 @@ function cDoStatement as integer
 
 		'' Expression
 		if( not cExpression( expr ) ) then
+			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -984,6 +990,7 @@ function cWhileStatement as integer
 
 	'' Expression
 	if( not cExpression( expr ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 		exit function
 	end if
 
@@ -1069,6 +1076,7 @@ function cSelectStatement as integer
 
 	'' Expression
 	if( not cExpression( expr ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 		exit function
 	end if
 
@@ -1168,6 +1176,7 @@ function cCaseExpression( casectx as FBCASECTX ) as integer
 
 	'' Expression
 	if( not cExpression( casectx.expr1 ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 		exit function
 	end if
 
@@ -1179,6 +1188,7 @@ function cCaseExpression( casectx as FBCASECTX ) as integer
 		end if
 
 		if( not cExpression( casectx.expr2 ) ) then
+			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -1269,6 +1279,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 		end if
 
 		if( not cCaseExpression( ctx.sel.caseTB(cntbase + cnt) ) ) then
+			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -1280,11 +1291,11 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	cComment
 
 	'' SttSeparator
-	if( not cSttSeparator ) then
+	if( not cSttSeparator( ) ) then
 		exit function
 	end if
 
-	if( hGetLastError <> FB.ERRMSG.OK ) then
+	if( hGetLastError( ) <> FB.ERRMSG.OK ) then
 		exit function
 	end if
 
@@ -1412,6 +1423,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
 		do
 			if( not cExpression( expr1 ) ) then
+				hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 				exit function
 			end if
 
@@ -1434,6 +1446,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 			'' TO?
 			if( hMatch( FB.TK.TO ) ) then
 				if( not cExpression( expr2 ) ) then
+					hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 					exit function
 				end if
 
@@ -1533,6 +1546,7 @@ function cSelectConstStmt as integer
 
 	'' Expression
 	if( not cExpression( expr ) ) then
+		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 		exit function
 	end if
 
@@ -1792,6 +1806,7 @@ function cEndStatement as integer
   		errlevel = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
   	case else
   		if( not cExpression( errlevel ) ) then
+  			errlevel = NULL
   		end if
   	end select
 
