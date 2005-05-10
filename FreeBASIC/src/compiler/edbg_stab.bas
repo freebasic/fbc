@@ -33,12 +33,12 @@ option escape
 
 type EDBGCTX
 	asmf			as integer
-	modulename		as string
-	entryname		as string
+	modulename		as zstring * FB.MAXNAMELEN+1
+	entryname		as zstring * FB.MAXNAMELEN+1
 
 	mainopened		as integer
 	mainclosed		as integer
-	maininitlabel	as FBSYMBOL ptr
+	mainininame		as zstring * FB.MAXNAMELEN+1
 
 	procinitline 	as integer
 
@@ -52,26 +52,25 @@ declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 '' globals
 	dim shared ctx as EDBGCTX
 
-	dim shared remapTB(0 to FB.SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 9, 10, 11, 12, 13, 14, 15 }
+	dim shared remapTB(0 to FB.SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 9, 10, 11, 12, 13, 14 }
 
 
 stabstdef:
-data "int:t1=r1;-2147483648;2147483647;"
-data "void:t7=r2;"
-data "byte:t2=r1;-128;127;"
-data "ubyte:t3=r1;0;255;"
-data "char:t4=r2;0;255;"
-data "short:t5=r1;-32768;32767;"
-data "ushort:t6=r1;0;65535;"
-data "uinteger:t8=r1;0;-1;"
-data "longint:t9=r1;0;-1;"
-data "ulongint:t10=r1;0;-1;"
-data "single:t11=r1;4;0"
-data "double:t12=r1;8;0"
-data "string:t13=s12data:16,0,32;len:1,32,32;size:1,64,32;;"
-data "fixstr:t14=r1;0;255;"
-data "ubyte:t15=r1;0;255;"
-data "pchar:t16=*4;"
+data "integer:t1=-1"
+data "void:t7=-11"
+data "byte:t2=-6"
+data "ubyte:t3=-5"
+data "char:t4=-2"
+data "short:t5=-3"
+data "ushort:t6=-7"
+data "uinteger:t8=-8"
+data "longint:t9=-31"
+data "ulongint:t10=-32"
+data "single:t11=-12"
+data "double:t12=-13"
+data "string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;"
+data "fixstr:t14=-2"
+data "pchar:t15=*4;"
 data ""
 
 '':::::
@@ -142,9 +141,9 @@ end sub
 sub edbgHeader( byval asmf as integer, _
 				byval filename as string, _
 				byval modulename as string, _
-				byval entryname as string )
+				byval entryname as string ) static
     dim as integer i
-    dim as string s
+    dim as string fname, stab
 
 	if( not env.clopt.debug ) then
 		exit sub
@@ -159,32 +158,35 @@ sub edbgHeader( byval asmf as integer, _
 	ctx.typecnt 	= 1
 
 	'' emit source file
-    s = hRevertSlash( filename )
-    hWriteStr asmf, TRUE, ".file \"" + s + "\""
-    if( instr( s, "/" ) = 0 ) then
+    fname = hRevertSlash( filename )
+    hWriteStr( asmf, TRUE, ".file \"" + fname + "\"" )
+    if( instr( fname, "/" ) = 0 ) then
     	hEmitSTABS( STAB_TYPE_SO, hRevertSlash( curdir$ + "/" ), 0, 0, "__stabini" )
     end if
 
-    hEmitSTABS( STAB_TYPE_SO, s, 0, 0, "__stabini" )
+    hEmitSTABS( STAB_TYPE_SO, fname, 0, 0, "__stabini" )
+
+	''
+	emitSECTION( EMIT.SECTYPE.CODE )
+	emitLABEL( "__stabini" )
 
 	'' (known) type defs
-	emitSECTION( EMIT.SECTYPE.CODE )
-	hWriteStr( asmf, FALSE, "__stabini:" )
-
 	restore stabstdef
 	do
-		read s
-		if( len( s ) = 0 ) then
+		read stab
+		if( len( stab ) = 0 ) then
 			exit do
 		end if
-		hEmitSTABS( STAB_TYPE_LSYM, s, 0, 0, "0" )
+		hEmitSTABS( STAB_TYPE_LSYM, stab, 0, 0, "0" )
 		ctx.typecnt += 1
 	loop
 
 	hWriteStr( asmf, FALSE, "" )
 
+	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
+
 	'' main proc (the entry point)
-	hEmitSTABS( STAB_TYPE_MAIN, modulename, 0, 1, entryname )
+	hEmitSTABS( STAB_TYPE_MAIN, ctx.modulename, 0, 1, ctx.entryname )
 
 end sub
 
@@ -202,25 +204,24 @@ sub edbgFooter( )
 	'' no checkings after this
 	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, "__stabend" )
 
-	hWriteStr( ctx.asmf, FALSE, "__stabend:" )
+	emitLABEL( "__stabend" )
 
 end sub
 
 '':::::
-sub edbgMainBegin( byval initlabel as FBSYMBOL ptr )
+sub edbgMainBegin( byval lnum as integer, _
+			       byval lname as string ) static
 
-	if( not env.clopt.debug ) then
-		exit sub
-	end if
-
+	ctx.mainopened = TRUE
 	ctx.mainclosed = FALSE
-	ctx.maininitlabel = initlabel
+	ctx.mainininame = lname
+
+	edbgProcBegin( NULL, FALSE, lnum )
 
 end sub
 
 '':::::
 sub edgbMainEnd( )
-    dim as FBSYMBOL ptr exitlabel
     dim as integer currpos
     dim as string lname
 
@@ -236,15 +237,11 @@ sub edgbMainEnd( )
     hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.procinitline )
 
     ''
-    exitlabel = symbAddLabel( "" )
-
-    lname = symbGetName( exitlabel )
+    lname = *hMakeTmpStr( )
     emitLABEL( lname )
 
     '' close main()
-    edbgProcEnd( NULL, ctx.maininitlabel, exitlabel )
-
-	'''''symbDelLabel exitlabel
+    edbgProcEnd( NULL, ctx.mainininame, lname )
 
 	ctx.mainclosed = TRUE
 
@@ -260,11 +257,8 @@ sub edbgLine( byval lnum as integer, _
 		exit sub
 	end if
 
-	'' module level and main() header not emited yet?
 	if( not ctx.mainopened ) then
-		edbgProcBegin( NULL, FALSE, lnum )
-		ctx.mainopened = TRUE
-		ctx.mainclosed = FALSE
+		edbgMainBegin( lnum, lname )
 	end if
 
 	'' not at module level?
@@ -286,7 +280,7 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
 					byval ispublic as integer, _
 					byval lnum as integer ) static
 
-    dim as string realname, procname, prochar
+    dim as string desc, procname
 
 	if( not env.clopt.debug ) then
 		exit sub
@@ -299,28 +293,30 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
 			edgbMainEnd( )
 		end if
 
-		realname = symbGetOrgName( proc )
+		desc = symbGetOrgName( proc )
 		procname = symbGetName( proc )
 
 	'' module-level..
 	else
-		realname = ctx.modulename
+		desc = ctx.modulename
 		procname = ctx.entryname
 	end if
 
 	if( ispublic ) then
-		prochar = "F"
+		desc += ":F"
 	else
-		prochar = "f"
+		desc += ":f"
 	end if
 
 	if( lnum = -1 ) then
-		ctx.procinitline = lexLineNum
+		ctx.procinitline = lexLineNum( )
 	else
 		ctx.procinitline = lnum
 	end if
 
-	hEmitSTABS( STAB_TYPE_FUN, realname + ":" + prochar + "4", 0, ctx.procinitline, procname )
+	desc += hGetDataType( proc )
+
+	hEmitSTABS( STAB_TYPE_FUN, desc, 0, ctx.procinitline, procname )
 
 end sub
 
@@ -359,10 +355,10 @@ end sub
 
 '':::::
 sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
-				  byval initlabel as FBSYMBOL ptr, _
-				  byval exitlabel as FBSYMBOL ptr ) static
+				  byval ininame as string, _
+				  byval endname as string ) static
 
-    dim as string procname, ininame, endname, lname
+    dim as string procname, lname
     dim as integer iniline, endline
 
 	if( not env.clopt.debug ) then
@@ -384,9 +380,6 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 		endline -= 1
 	end if
 
-	ininame	 = symbGetName( initlabel )
-	endname	 = symbGetName( exitlabel )
-
 	'' emit block (change the scope)
 	hEmitSTABN( STAB_TYPE_LBRAC, 0, iniline, ininame + "-" + procname )
 	hEmitSTABN( STAB_TYPE_RBRAC, 0, endline, endname + "-" + procname )
@@ -406,10 +399,20 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 	dim as FBSYMBOL ptr udt
 	dim as string desc
 
+    if( sym = NULL ) then
+    	return str$( remapTB(FB.SYMBTYPE.VOID) )
+    end if
+
     '' array?
     if( symbGetArrayDimensions( sym ) > 0 ) then
     	desc = str$( ctx.typecnt ) + "="
     	ctx.typecnt += 1
+
+    	if( symbIsDynamic( sym ) ) then
+    		desc += str$( ctx.typecnt ) + "=*"
+    		ctx.typecnt += 1
+    	end if
+
     	d = symbGetArrayFirstDim( sym )
     	do while( d <> NULL )
     		desc += "ar1;"
@@ -434,11 +437,13 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     '' UDT?
     case FB.SYMBTYPE.USERDEF
     	udt = sym->subtype
-    	if( udt->dbg.typenum = INVALID ) then
-    		hDeclUDT( udt )
-    	end if
+    	if( udt <> FB.DESCTYPE.ARRAY ) then
+    		if( udt->dbg.typenum = INVALID ) then
+    			hDeclUDT( udt )
+    		end if
 
-    	desc += str$( udt->dbg.typenum )
+    		desc += str$( udt->dbg.typenum )
+    	end if
 
     '' function pointer?
     case FB.SYMBTYPE.FUNCTION
@@ -453,6 +458,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     '' ordinary type..
     case else
     	desc += str$( remapTB(dtype) )
+
     end select
 
     function = desc
@@ -467,7 +473,13 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 	sym->dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = symbGetOrgName( sym ) + ":T" + str$( sym->dbg.typenum ) + "=s" + str$( symbGetUDTLen( sym ) )
+    if( sym->hashitem = NULL ) then
+    	desc = symbGetName( sym )
+    else
+		desc = symbGetOrgName( sym )
+	end if
+
+	desc += ":T" + str$( sym->dbg.typenum ) + "=s" + str$( symbGetUDTLen( sym ) )
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
@@ -488,7 +500,7 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 				   byval section as integer ) static
 
 	dim as integer t, alloctype
-	dim as string desc
+	dim as string desc, sname
 
 	if( not env.clopt.debug ) then
 		exit sub
@@ -496,6 +508,11 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 
 	'' local declared as static..
 	if( sym->scope > 0 ) then
+		exit sub
+	end if
+
+	'' external static arrays..
+	if( symbIsExtern( sym ) ) then
 		exit sub
 	end if
 
@@ -512,7 +529,11 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
     '' alloc type
     alloctype = symbGetAllocType( sym )
 
-    desc = symbGetOrgName( sym )
+    if( sym->hashitem = NULL ) then
+    	desc = symbGetName( sym )
+    else
+    	desc = symbGetOrgName( sym )
+    end if
 
     if( (alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.COMMON)) > 0 ) then
     	desc += ":G"
@@ -526,7 +547,14 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
     desc += hGetDataType( sym )
 
     ''
-    hEmitSTABS( t, desc, 0, 0, symbGetName( sym ) )
+    if( symbIsDynamic( sym ) ) then
+    	sname = symbGetVarDescName( sym )
+    else
+    	sname = symbGetName( sym )
+    end if
+
+    ''
+    hEmitSTABS( t, desc, 0, 0, sname )
 
 end sub
 
@@ -539,7 +567,11 @@ sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
 		exit sub
 	end if
 
-    desc = symbGetOrgName( sym )
+    if( sym->hashitem = NULL ) then
+    	desc = symbGetName( sym )
+    else
+    	desc = symbGetOrgName( sym )
+    end if
 
     ''
     if( symbIsStatic( sym ) ) then
@@ -565,10 +597,9 @@ sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgProcArg( byval arg as FBSYMBOL ptr, _
+sub edbgProcArg( byval sym as FBSYMBOL ptr, _
 				 byval typ as integer, _
-				 byval mode as integer, _
-				 byval ofs as integer ) static
+				 byval mode as integer ) static
 
 	dim as string desc
 
@@ -576,7 +607,7 @@ sub edbgProcArg( byval arg as FBSYMBOL ptr, _
 		exit sub
 	end if
 
-    desc = symbGetName( arg ) + ":"
+    desc = symbGetOrgName( sym ) + ":"
 
     select case mode
     case FB.ARGMODE.BYVAL
@@ -590,14 +621,47 @@ sub edbgProcArg( byval arg as FBSYMBOL ptr, _
 	end select
 
     '' data type
-    if( typ <> arg->typ ) then
+    if( typ <> sym->typ ) then
     	desc += str$( remapTB(typ) )
     else
-    	desc += hGetDataType( arg )
+    	desc += hGetDataType( sym )
     end if
 
     ''
-    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str$( ofs ) )
+    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str$( symbGetVarOfs( sym ) ) )
+
+end sub
+
+'':::::
+sub edbgIncludeBegin ( byval incfile as string ) static
+	dim as string fname, lname
+
+	if( not env.clopt.debug ) then
+		exit sub
+	end if
+
+	fname = hRevertSlash( incfile )
+
+	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
+
+	emitSECTION( EMIT.SECTYPE.CODE )
+
+	lname = *hMakeTmpStr( )
+
+	hEmitSTABS( STAB_TYPE_SOL, fname, 0, 0, lname )
+
+	emitLABEL( lname )
+
+end sub
+
+'':::::
+sub edbgIncludeEnd ( ) static
+
+	if( not env.clopt.debug ) then
+		exit sub
+	end if
+
+	hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
 
 end sub
 

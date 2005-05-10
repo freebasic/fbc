@@ -31,6 +31,7 @@ defint a-z
 '$include once: 'inc\ast.bi'
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
+'$include once: 'inc\emitdbg.bi'
 
 '' globals
 	dim shared incfiles as integer			'' can't be on ENV as it is restored on recursion
@@ -536,8 +537,20 @@ function fbIncludeFile( byval filename as string, _
 			exit function
 		end if
 
+		''
+		if( env.clopt.debug ) then
+			irFlush( )
+			edbgIncludeBegin( incfile )
+		end if
+
 		'' parse
 		function = cProgram( )
+
+		''
+		if( env.clopt.debug ) then
+			irFlush( )
+			edbgIncludeEnd( )
+		end if
 
 		'' close it
 		if( close( #env.inf ) <> 0 ) then

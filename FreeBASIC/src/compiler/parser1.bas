@@ -87,38 +87,43 @@ end function
 '':::::
 sub cDebugLineBegin
 
-    if( env.clopt.debug and (env.reclevel = 0) ) then
-    	if( env.dbglnum > 0 ) then
-    		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    		irFlush( )
-    		env.dbgpos = emitGetPos( ) - env.dbgpos
-    		if( env.dbgpos > 0 ) then
-    			emitDbgLine( env.dbglnum, env.dbglname )
-    		end if
-    	end if
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+    if( env.dbglnum > 0 ) then
     	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
     	irFlush( )
-    	env.dbgpos	 = emitGetPos( )
-    	env.dbglnum  = lexLineNum( )
-    	env.dbglname = *hMakeTmpStr( )
-    	emitLABEL( env.dbglname )
+    	env.dbgpos = emitGetPos( ) - env.dbgpos
+    	if( env.dbgpos > 0 ) then
+    		emitDbgLine( env.dbglnum, env.dbglname )
+    	end if
     end if
+
+    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+    irFlush( )
+    env.dbgpos	 = emitGetPos( )
+    env.dbglnum  = lexLineNum( )
+    env.dbglname = *hMakeTmpStr( )
+    emitLABEL( env.dbglname )
 
 end sub
 
 '':::::
 sub cDebugLineEnd
 
-    if( env.clopt.debug and (env.reclevel = 0) ) then
-    	if( env.dbglnum > 0 ) then
-    		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    		irFlush( )
-     		env.dbgpos = emitGetPos( ) - env.dbgpos
-    		if( env.dbgpos > 0 ) then
-   				emitDbgLine( env.dbglnum, env.dbglname )
-   			end if
-    		env.dbglnum = 0
-    	end if
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+    if( env.dbglnum > 0 ) then
+    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+    	irFlush( )
+    	env.dbgpos = emitGetPos( ) - env.dbgpos
+    	if( env.dbgpos > 0 ) then
+   			emitDbgLine( env.dbglnum, env.dbglname )
+   		end if
+    	env.dbglnum = 0
     end if
 
 end sub

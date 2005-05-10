@@ -45,6 +45,8 @@ type EMITCTX
 
 	dataend			as integer
 
+	lastsection		as integer
+
 	localptr		as integer
 	argptr			as integer
 
@@ -332,6 +334,7 @@ sub emitInit
 	ctx.inited 		= TRUE
 	ctx.dataend 	= 0
 	ctx.pos			= 0
+	ctx.lastsection = INVALID
 
 	ctx.bssheader	= FALSE
 	ctx.conheader	= FALSE
@@ -4444,33 +4447,36 @@ end sub
 sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, _
 				   byval initlabel as FBSYMBOL ptr, _
 				   byval ispublic as integer ) static
-	dim lname as string
-	dim id as string
+	dim as string id, lname
+	dim as integer oldpos
+
+	oldpos = ctx.pos
 
 	id = symbGetName( proc )
 #ifdef TARGET_LINUX
-	outp ".type " + id + ", @function"
+	outEx( ".type " + id + ", @function" + NEWLINE, FALSE )
 #endif
 
-    emithPUSH "ebp"
-    outp "mov ebp, esp"
+    emithPUSH( "ebp" )
+    outp( "mov ebp, esp" )
 
     ctx.procstksetup = seek( ctx.outf )
-    outp space$( 32 )
+    outEx( space$( 32 ) + NEWLINE, FALSE )
 
-    emithPUSH "ebx"
-    emithPUSH "esi"
-    emithPUSH "edi"
+    emithPUSH( "ebx" )
+    emithPUSH( "esi" )
+    emithPUSH( "edi" )
 
     ctx.procstkcleanup = seek( ctx.outf )
-   	outp space$( 180 )
+   	outEx( space$( 180 ) + NEWLINE, FALSE )
 
     lname = symbGetName( initlabel )
-    emitLABEL lname
+    emitLABEL( lname)
 
     ''
     ctx.localptr = 0
     ctx.argptr	 = FB.POINTERSIZE + FB.INTEGERSIZE	'' skip return address + pushed ebp
+    ctx.pos		 = oldpos
 
 end sub
 
@@ -4479,74 +4485,76 @@ sub emitPROCEND( byval proc as FBSYMBOL ptr, _
 				 byval bytestopop as integer, _
 				 byval initlabel as FBSYMBOL ptr, _
 				 byval exitlabel as FBSYMBOL ptr ) static
-    dim currpos as integer
-    dim bytestoalloc as integer
-    dim i as integer
-	dim id as string
-	dim lname as string
+
+    dim as integer currpos, oldpos, bytestoalloc, i
+	dim as string id, lname
+
+	oldpos = ctx.pos
 
 	id = symbGetName( proc )
 
     bytestoalloc = (-ctx.localptr + 3) and (not 3)
 
-    emithPOP "edi"
-    emithPOP "esi"
-    emithPOP "ebx"
-    outp "mov esp, ebp"
-    emithPOP "ebp"
-    outp "ret " + ltrim$( str$( bytestopop ) )
+    emithPOP( "edi" )
+    emithPOP( "esi" )
+    emithPOP( "ebx" )
+    outp( "mov esp, ebp" )
+    emithPOP( "ebp" )
+    outp( "ret " + str$( bytestopop ) )
 #ifdef TARGET_LINUX
-    outp ".size " + id + ", .-" + id
+    outEx( ".size " + id + ", .-" + id + NEWLINE, FALSE )
 #endif
 
-    edbgProcEnd( proc, initlabel, exitlabel )
+    edbgProcEnd( proc, symbGetName( initlabel ), symbGetName( exitlabel ) )
 
 	''
 	if( bytestoalloc > 0 ) then
 		currpos = seek( ctx.outf )
 
 		seek #ctx.outf, ctx.procstksetup
-		outEx TABCHAR + "sub" + TABCHAR + "esp," + str$( bytestoalloc ), TRUE
+		outEx( TABCHAR + "sub" + TABCHAR + "esp," + str$( bytestoalloc ), TRUE )
 
 		seek #ctx.outf, ctx.procstkcleanup
 
 		if( env.clopt.cputype >= FB.CPUTYPE.686 ) then
 			if( bytestoalloc \ 8 > 7 ) then
-				outp "lea edi, [ebp-" + ltrim$( str$( bytestoalloc ) ) + "]"
-				outp "mov ecx," + str$( bytestoalloc \ 8 )
-				outp "pxor mm0, mm0"
+				outp( "lea edi, [ebp-" + str$( bytestoalloc ) + "]" )
+				outp( "mov ecx," + str$( bytestoalloc \ 8 ) )
+				outp( "pxor mm0, mm0" )
 			    lname = symbGetName( initlabel ) + "_init"
-			    emitLABEL lname
-				outp "movq [edi], mm0"
-				outp "add edi, 8"
-				outp "dec ecx"
-				outp "jnz " + lname
-				outp "emms"
+			    emitLABEL( lname )
+				outp( "movq [edi], mm0" )
+				outp( "add edi, 8" )
+				outp( "dec ecx" )
+				outp( "jnz " + lname )
+				outp( "emms" )
 			elseif( bytestoalloc \ 8 > 0 ) then
-				outp "pxor mm0, mm0"
+				outp( "pxor mm0, mm0" )
 				for i = bytestoalloc\8 to 1 step -1
-					outp "movq [ebp-" + ltrim$( str$( i*8 ) ) + "], mm0"
+					outp( "movq [ebp-" + str$( i*8 ) + "], mm0" )
 				next i
-				outp "emms"
+				outp( "emms" )
 			end if
 			if( bytestoalloc and 4 ) then
-				outp "mov dword ptr [ebp-" + ltrim$( str$( bytestoalloc ) ) + "], 0"
+				outp( "mov dword ptr [ebp-" + str$( bytestoalloc ) + "], 0" )
 			end if
 		else
 			if( bytestoalloc \ 4 > 4 ) then
-				outp "lea edi, [ebp-" + ltrim$( str$( bytestoalloc ) ) + "]"
-				outp "mov ecx," + str$( bytestoalloc \ 4 )
-				outp "xor eax, eax"
-				outEx TABCHAR + "rep stosd", TRUE
+				outp( "lea edi, [ebp-" + str$( bytestoalloc ) + "]" )
+				outp( "mov ecx," + str$( bytestoalloc \ 4 ) )
+				outp( "xor eax, eax" )
+				outEx( TABCHAR + "rep stosd", TRUE )
 			else
 				for i = bytestoalloc\4 to 1 step -1
-					 outp "mov dword ptr [ebp-" + ltrim$( str$( i*4 ) ) + "], 0"
+					 outp( "mov dword ptr [ebp-" + str$( i*4 ) + "], 0" )
 				next i
 			end if
 		end if
 
 		seek #ctx.outf, currpos
 	end if
+
+	ctx.pos = oldpos
 
 end sub
 
@@ -4600,6 +4608,10 @@ end sub
 sub emitSECTION( byval section as integer ) static
     dim as string ostr
 
+    if( section = ctx.lastsection ) then
+    	exit sub
+    end if
+
 	ostr = NEWLINE + ".section ."
 
 	select case as const section
@@ -4615,19 +4627,25 @@ sub emitSECTION( byval section as integer ) static
 		ostr += "drectve" + NEWLINE
 	end select
 
-	outEx ostr, TRUE
+	outEx( ostr, FALSE )
+
+	ctx.lastsection = section
 
 end sub
 
 '':::::
 sub emitDATABEGIN( byval lname as string ) static
-    dim currpos as integer
+    dim as string ostr
+    dim as integer currpos
 
 	if( ctx.dataend <> 0 ) then
 		currpos = seek( ctx.outf )
 
 		seek #ctx.outf, ctx.dataend
-		outp ".int " + lname
+
+		ostr = ".int " + lname + NEWLINE
+		outEx( ostr, FALSE )
+
 		seek #ctx.outf, currpos
 
     end if
@@ -4636,11 +4654,15 @@ end sub
 
 '':::::
 sub emitDATAEND static
+    dim as string ostr
 
     '' link + NULL
-    outp ".short 0xffff"
+    outEx( ".short 0xffff" + NEWLINE, FALSE )
+
     ctx.dataend = seek( ctx.outf )
-    outp ".int 0" + space$( FB.MAXNAMELEN )
+
+    ostr = ".int 0" + space$( FB.MAXNAMELEN ) + NEWLINE
+    outEx( ostr, FALSE )
 
 end sub
 
@@ -4656,13 +4678,13 @@ sub emitDATA ( byval litext as string, _
 
 	'' len + asciiz
 	if( typ <> INVALID ) then
-		ostr = ".short 0x" + hex$( litlen )
-		outp ostr
+		ostr = ".short 0x" + hex$( litlen ) + NEWLINE
+		outEx( ostr, FALSE )
 
-		ostr = ".ascii \"" + esctext + "\\0\"
-		outp ostr
+		ostr = ".ascii \"" + esctext + "\\0\"" + NEWLINE
+		outEx( ostr, FALSE )
 	else
-		outp ".short 0x0000"
+		outEx( ".short 0x0000" + NEWLINE, FALSE )
 	end if
 
 end sub
@@ -4671,10 +4693,10 @@ end sub
 sub emitDATAOFS ( byval sname as string ) static
     dim ostr as string
 
-	outp ".short 0xfffe"
+	outEx( ".short 0xfffe" + NEWLINE, FALSE )
 
-	ostr = ".int " + sname
-	outp ostr
+	ostr = ".int " + sname + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -4690,9 +4712,9 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
    	edbgGlobalVar( sym, EMIT.SECTYPE.DATA )
 
    	if( sym->typ = FB.SYMBTYPE.DOUBLE ) then
-    	outEx( ".balign 8\n", TRUE )
+    	outEx( ".balign 8" + NEWLINE, FALSE )
 	else
-    	outEx( ".balign 4\n", TRUE )
+    	outEx( ".balign 4" + NEWLINE, FALSE )
 	end if
 
 	'' public?
@@ -4707,31 +4729,37 @@ end sub
 '':::::
 sub emitVARINIEND( byval sym as FBSYMBOL ptr ) static
 
-	emitSECTION EMIT.SECTYPE.CODE
+	emitSECTION( EMIT.SECTYPE.CODE )
 
 end sub
 
 '':::::
 sub emitVARINIi( byval dtype as integer, _
 				 byval value as integer ) static
+	dim ostr as string
 
-	outp hGetTypeString( dtype ) + " " + str$( value )
+	ostr = hGetTypeString( dtype ) + " " + str$( value ) + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
 '':::::
 sub emitVARINIf( byval dtype as integer, _
 				 byval value as double ) static
+	dim ostr as string
 
-	outp hGetTypeString( dtype ) + " " + str$( value )
+	ostr = hGetTypeString( dtype ) + " " + str$( value ) + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
 '':::::
 sub emitVARINI64( byval dtype as integer, _
 				  byval value as longint ) static
+	dim ostr as string
 
-	outp hGetTypeString( dtype ) + " " + str$( value )
+	ostr = hGetTypeString( dtype ) + " " + str$( value ) + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -4739,8 +4767,8 @@ end sub
 sub emitVARINIOFS( byval sname as string ) static
 	dim ostr as string
 
-	ostr = ".int " + sname
-	outp ostr
+	ostr = ".int " + sname + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -4749,8 +4777,8 @@ sub emitVARINISTR( byval lgt as integer, _
 				   byval s as string ) static
     dim ostr as string
 
-	ostr = ".ascii \"" + s + "\\0\""
-	outp ostr
+	ostr = ".ascii \"" + s + "\\0\"" + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -4758,8 +4786,8 @@ end sub
 sub emitVARINIPAD( byval bytes as integer ) static
     dim ostr as string
 
-	ostr = ".skip " + str$( bytes ) + ",0"
-	outp ostr
+	ostr = ".skip " + str$( bytes ) + ",0" + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
@@ -4803,20 +4831,10 @@ sub hSaveAsmHeader( )
 
 	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
    		hWriteStr( ctx.outf, TRUE, "call" + TABCHAR + "fb_moduleinit" )
-   		hWriteStr( ctx.outf, TRUE, "call" + TABCHAR + EMIT_MAINPROC )
    	end if
 
     ''
     maininitlabel =  symbAddLabel( "" )
-    edbgMainBegin( maininitlabel )
-
- 	hWriteStr( ctx.outf, FALSE, NEWLINE + "#user code" )
-   	hWriteStr( ctx.outf, FALSE, EMIT_MAINPROC + ":" )
-   	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
-   		hWriteStr( ctx.outf, TRUE, "push" + TABCHAR + "ebp" )
-   		hWriteStr( ctx.outf, TRUE, "mov" + TABCHAR + "ebp, esp" )
-   		hWriteStr( ctx.outf, FALSE, "" )
-   	end if
 
    	emitLABEL( symbGetName( maininitlabel ) )
 
@@ -4881,13 +4899,6 @@ private sub hEmitFooter( byval tottime as double )
     '' end( 0 )
     rtlExit( NULL )
     irFlush( )
-
-    '' end() will never return but..
-    if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
-    	hWriteStr( ctx.outf, TRUE,  "mov" + TABCHAR + "esp, ebp" )
-    	hWriteStr( ctx.outf, TRUE,  "pop" + TABCHAR + "ebp" )
-    	hWriteStr( ctx.outf, TRUE,  "ret" )
-    end if
 
     hWriteStr( ctx.outf, FALSE, NEWLINE + TABCHAR + "#'" + env.infile + _
     							"' compilation took " + str$( tottime ) + " secs" )
@@ -5111,7 +5122,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 
 	dname = symbGetVarDescName( s )
 
-    edbgGlobalVar( symbGetArrayDescriptor( s ), EMIT.SECTYPE.DATA )
+    edbgGlobalVar( s, EMIT.SECTYPE.DATA )
 
     '' COMMON?
     if( symbIsCommon( s ) ) then
@@ -5298,11 +5309,12 @@ end function
 '':::::
 sub emitClose( byval tottime as double )
 
+    ''
+    irFlush( )
+    edgbMainEnd( )
+
     '' footer
     hEmitFooter( tottime )
-
-    ''
-    edgbMainEnd( )
 
 	'' const
 	hEmitConst( )

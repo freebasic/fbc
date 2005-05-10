@@ -1,14 +1,32 @@
+
+[ ] rewrite the emit module, using pseudo-opcode lists (as in IR), never emit any text
+    - keep track of functions
+    - the main module can be "updated" between functions, as that is allowed
+    - handle DATA's
+    - handle static initializers - can include strings
+    - handle jump-tables - emited by SELECT AS CONST
+    - handle debug info - can include strings
+    - handle labels - strings, can't use the symbol as it can be deleted
+    - handle variables - strings, offsets, but can't include the registers!
+    - handle comments - strings
+    - handle index registers, so pipelining optimizations would be possible
+    - optimize load after store
+    - re-ordering optimization if target cpu is +586
+
 [ ] full debug support
--- add dynamic arrays
--- add enums (sym tb must link the elements with the parent enum)
--- add include files
+    - GDB is getting nuts with the "main" function overlapping the real ones, so the main module can't be 
+      emited until all real functions are. Emit will have to use a buffer or such. Include files CAN'T 
+      be part of the main module either
+    - add include files - module level code won't be supported, only sub-routines, it's bad practic anyways..
+    - add dynamic arrays - can't get GDB to use Fortran-like arrays
+    - add enums (sym tb must link the elements with the parent enum)
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
 [ ] function overloading:
--- check arglist with optionals with different types at the same arg num (?)
--- check different modes and types if they are working
--- check optional args, this can be tricky
+    - check arglist with optionals with different types at the same arg num (?)
+    - check different modes and types if they are working
+    - check optional args, this can be tricky
 
 [ ] check for references to self on TYPE fields (field AS parent)
 

@@ -21,8 +21,6 @@ declare sub 		edbgHeader			( byval asmf as integer, _
 										  byval modulename as string, _
 										  byval entryname as string )
 
-declare sub 		edbgMainBegin		( byval initlabel as FBSYMBOL ptr )
-
 declare sub 		edgbMainEnd			( )
 
 declare sub 		edbgLine			( byval lnum as integer, _
@@ -33,8 +31,8 @@ declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer )
 
 declare sub 		edbgProcEnd			( byval proc as FBSYMBOL ptr, _
-										  byval initlabel as FBSYMBOL ptr, _
-										  byval exitlabel as FBSYMBOL ptr )
+										  byval ininame as string, _
+										  byval endname as string )
 
 declare sub 		edbgFooter			( )
 
@@ -45,5 +43,9 @@ declare sub 		edbgLocalVar		( byval sym as FBSYMBOL ptr )
 
 declare sub 		edbgProcArg			( byval arg as FBSYMBOL ptr, _
 				 						  byval typ as integer, _
-				 						  byval mode as integer, _
-				 						  byval ofs as integer )
+				 						  byval mode as integer )
+
+declare sub 		edbgIncludeBegin 	( byval incfile as string )
+
+declare sub 		edbgIncludeEnd 		( )
+

@@ -2299,7 +2299,7 @@ function symbAddArgAsVar( byval symbol as string, _
 			mode = arg->arg.mode
 		end if
 
-		edbgProcArg( arg, typ, mode, symbGetVarOfs( s ) )
+		edbgProcArg( s, typ, mode )
 	end if
 
 	function = s
