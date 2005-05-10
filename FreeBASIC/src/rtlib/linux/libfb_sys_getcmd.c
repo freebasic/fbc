@@ -31,7 +31,7 @@
 #include <unistd.h>
 
 /* global */
-char fb_commandline[1024] = { 0 };
+char fb_commandline[1024];
 
 
 /*:::::*/

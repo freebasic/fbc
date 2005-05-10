@@ -35,7 +35,7 @@ pthread_mutex_t fb_global_mutex;
 pthread_mutex_t fb_string_mutex;
 #endif
 
-FBCONSOLE fb_con = { 0 };
+FBCONSOLE fb_con;
 
 
 static void (*old_sigabrt)(int);
@@ -45,7 +45,6 @@ static void (*old_sigsegv)(int);
 static void (*old_sigterm)(int);
 static void (*old_sigint) (int);
 static void (*old_sigquit)(int);
-static struct termios term_out, term_in;
 static const char color_map[16]= { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
 static const unsigned char color[] =  { 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0x00, 0x00, 0xA8, 0xA8,
 					0xA8, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0xA8, 0x54, 0x00, 0xA8, 0xA8, 0xA8,
@@ -129,6 +128,7 @@ void fb_hResize()
 /*:::::*/
 int fb_hInitConsole ( int init )
 {
+	struct termios term_out, term_in;
 	char *tty_name;
 	int i;
 	
@@ -207,6 +207,7 @@ void fb_hInit ( int argc, char **argv )
 	int i;
 	
 	/* rebuild command line from argv */
+	fb_commandline[0] = '\0';
 	for( i = 0; i < argc; i++ ) 
 	{
 		strncat( fb_commandline, argv[i], 1024 );
@@ -251,12 +252,14 @@ void fb_hInit ( int argc, char **argv )
 	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
 #endif
 	
+	memset(&fb_con, 0, sizeof(fb_con));
+	
 	term = getenv("TERM");
 	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
 		init = INIT_CONSOLE;
 	if ((term) && (!strncmp(term, "xterm", 5)))
 		init = INIT_XTERM;
-	if ((term) && (!strncmp(term, "eterm", 5)))
+	if ((term) && (!strncmp(term, "Eterm", 5)))
 		init = INIT_ETERM;
 	if (!init)
 		return;

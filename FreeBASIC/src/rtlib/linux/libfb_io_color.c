@@ -40,15 +40,19 @@ void fb_ConsoleColor( int fc, int bc )
 	if (fc >= 0)
 		fb_con.fg_color = (fc & 0xF);
 	if (bc >= 0)
-		fb_con.bg_color = (bc & 0x7);
+		fb_con.bg_color = (bc & 0xF);
 	if (fb_con.inited == INIT_ETERM)
 		fprintf(fb_con.f_out, "\e[%d;%dm",
-			(fb_con.fg_color > 7 ? 90 : 30) + map[fb_con.fg_color & 0x7],
-			40 + map[fb_con.bg_color]);
+			30 + map[fb_con.fg_color & 0x7],
+			40 + map[fb_con.bg_color & 0x7]);
+	else if (fb_con.inited == INIT_XTERM)
+		fprintf(fb_con.f_out, "\e[%d;%d;25;%dm",
+			(fb_con.fg_color > 7 ? 1 : 22), 30 + map[fb_con.fg_color & 0x7],
+			(fb_con.bg_color > 7 ? 100 : 40) + map[fb_con.bg_color & 0x7]);
 	else
 		fprintf(fb_con.f_out, "\e[%d;%d;25;%dm",
 			(fb_con.fg_color > 7 ? 1 : 22), 30 + map[fb_con.fg_color & 0x7],
-			40 + map[fb_con.bg_color]);
+			40 + map[fb_con.bg_color & 0x7]);
 }
 
 /*:::::*/

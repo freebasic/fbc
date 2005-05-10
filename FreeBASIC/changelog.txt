@@ -21,6 +21,7 @@ Version 0.14 Beta:
 - GETJOYSTICK function in gfxlib to get the full state of an attached joystick (lillo)
 - FUNCTION can now be used inside inline assembly blocks to set the function's result (v1c)
 - error message when macro text is too long (v1c)
+- support for 16 background colors if in text mode under Xterm in Linux (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -40,6 +41,7 @@ Version 0.14 Beta:
 - intrinsic string functions when used with "zstring *" arguments would operate on the full strings, not only until 
   the null-terminators (v1c)
 - ENUM elements separated by commas would update the values twice (v1c)
+- Text mode colors now behave correctly under Eterm in Linux (lillo)
 
 
 Version 0.13 Beta:
