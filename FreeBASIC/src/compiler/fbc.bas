@@ -362,6 +362,7 @@ sub printOptions
 	print "-mt", "Link with thread-safe runtime library for multithreaded apps"
 	print "-nodeflibs", "Do not include the default libraries"
 	print "-noerrline", "Do not show source line where error occured"
+	print "-noexport", "Do not export any symbol for dynamic linkage"
 #ifdef TARGET_WIN32
 	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
 	'''''print "-nounderscore", "Don't add the underscore prefix to function names"
@@ -423,7 +424,8 @@ function processOptions as integer
 
 			'' compiler options, will be processed by processCompOptions
 			case "e", "ex", "mt", "profile", _
-				 "nodeflibs", "noerrline", "nostdcall", "nounderscore"
+				 "nodeflibs", "noerrline", "nostdcall", _
+				 "nounderscore", "noexport"
 
 			'' cpu type
 			case "arch"
@@ -655,6 +657,9 @@ function processCompOptions as integer
 
 			case "nodeflibs"
 				fbSetOption( FB.COMPOPT.NODEFLIBS, TRUE )
+
+			case "noexport"
+				fbSetOption( FB.COMPOPT.EXPORT, FALSE )
 
 			case else
 				fbc.processCompOptions( argv(i) )
