@@ -181,6 +181,10 @@ SCREENUNLOCK
 When saving pixel data, the data will be saved in the current gfx mode pixel
 format; see appendix C for details. Also keep in mind a pixel may require
 more than one byte, so the size argument will need to be adjusted accordingly.
+BSAVE can also be used to save BMP image files; it is sufficient the specified
+filename has a .bmp extension. In this case the size argument is ignored, and
+the image dimensions will be deducted automatically from either the screen
+mode, either the GET/PUT buffer, depending on if addr is 0 or not.
 
 
 Example:

@@ -236,7 +236,6 @@ function assembleFiles as integer
     	end if
     next i
 
-
     function = TRUE
 
 end function

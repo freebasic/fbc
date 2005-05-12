@@ -23,6 +23,7 @@ Version 0.14 Beta:
 - error message when macro text is too long (v1c)
 - support for 16 background colors if in text mode under Xterm in Linux (lillo)
 - enabled -noexport command-line option forcing not to export any symbol for dynamic linkage (lillo)
+- added BMP saving capabilities to BSAVE, due to popular demand (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)

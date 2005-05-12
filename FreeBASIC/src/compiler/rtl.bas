@@ -1229,7 +1229,7 @@ data "bsave", "fb_GfxBsave", _
 	 3, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE, _
-	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE, 0
 
 
 '' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void
