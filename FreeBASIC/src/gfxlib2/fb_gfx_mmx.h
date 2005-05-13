@@ -44,16 +44,23 @@
 #define ARG3			16(%ebp)
 #define ARG4			20(%ebp)
 #define ARG5			24(%ebp)
+#define ARG6			28(%ebp)
 
 #define LOCAL1			-4(%ebp)
 #define LOCAL2			-8(%ebp)
 #define LOCAL3			-12(%ebp)
+#define LOCAL4			-16(%ebp)
 
 #define MASK_COLOR_32		0xFF00FF
 #define MASK_COLOR_16		0xF81F
 
 #define MASK_RB_32			0x00FF00FF
 #define MASK_G_32			0x0000FF00
+
+#define MASK_RB_16			0xF81F
+#define MASK_R_16			0xF800
+#define MASK_G_16			0x07E0
+#define MASK_B_16			0x001F
 
 #define MODE_NUM		0
 #define PAGE			4

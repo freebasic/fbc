@@ -598,14 +598,16 @@ function cGfxPalette as integer
 end function
 
 '':::::
-'' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode)?
+'' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode (',' Alpha)?)?
 ''
 function cGfxPut as integer
     dim as integer coordtype, mode, isptr, tisptr
-    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr
+    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr
     dim as FBSYMBOL ptr s, target
 
 	function = FALSE
+	
+	alphaexpr = NULL
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -672,6 +674,9 @@ function cGfxPut as integer
 			elseif (ucase$( *lexTokenText( ) ) = "ALPHA") then
 				lexSkipToken( )
 				mode = FBGFX_PUTMODE_ALPHA
+				if( hMatch( CHAR_COMMA ) ) then
+					hMatchExpression( alphaexpr )
+				end if
 			else
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
@@ -680,7 +685,7 @@ function cGfxPut as integer
 	end if
 
 	''
-	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, coordtype )
+	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, alphaexpr, coordtype )
 
 end function
 

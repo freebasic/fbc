@@ -29,30 +29,33 @@
 
 
 /* MMX functions declarations */
-extern void fb_hPutAlpha4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutTrans1MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutTrans2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutTrans4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutPSetMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutPResetMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutAndMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutOrMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
-extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch);
+extern void fb_hPutAlpha4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutBlend2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutBlend4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutTrans1MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutTrans2MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutTrans4MMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutPSetMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutPResetMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutAndMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutOrMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
+extern void fb_hPutXorMMX(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha);
 
 
 /* Local vars */
-static void (*fb_hPutAlpha)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
-static void (*fb_hPutTrans)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
-static void (*fb_hPutPSet)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
-static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
-static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
-static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
-static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int pitch) = NULL;
+static void (*fb_hPutAlpha)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutBlend)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutTrans)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutPSet)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
 static int put_initialized_depth = 0;
 
 
 /*:::::*/
-static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d, sc, dc, a, drb, dg, srb, sg;
@@ -80,7 +83,92 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
-static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutBlend2C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
+{
+	unsigned short *s = (unsigned short *)src, *d;
+	unsigned int sc, dc, drb, dg, srb, sg, dt, st;
+	int x;
+	
+	alpha = (alpha + 7) >> 3;
+	pitch = (pitch >> 1) - w;
+	for (; h; h--) {
+		d = (unsigned short *)dest;
+		if (w & 1) {
+			sc = *s++;
+			if (sc != 0xF81F) {
+				dc = *(unsigned short *)d;
+				srb = sc & MASK_RB_16;
+				sg = sc & MASK_G_16;
+				drb = dc & MASK_RB_16;
+				dg = dc & MASK_G_16;
+				srb = ((srb - drb) * alpha) >> 5;
+				sg = ((sg - dg) * alpha) >> 5;
+				*(unsigned short *)d = ((drb + srb) & MASK_RB_16) | ((dg + sg) & MASK_G_16);
+			}
+			d++;
+		}
+		for (x = w >> 1; x; x--) {
+			sc = *(unsigned int *)s;
+			if (sc != 0xF81FF81F) {
+				dc = *(unsigned int *)d;
+				if ((sc & 0xFFFF) == 0xF81F) {
+					sc &= 0xFFFF0000;
+					sc |= (dc & 0xFFFF);
+				}
+				if ((sc & 0xFFFF0000) == 0xF81F0000) {
+					sc &= 0xFFFF;
+					sc |= (dc & 0xFFFF0000);
+				}
+				st = sc & (MASK_RB_16 | (MASK_G_16 << 16));
+				sc &= (MASK_G_16 | (MASK_RB_16 << 16));
+				dt = dc & (MASK_RB_16 | (MASK_G_16 << 16));
+				dc &= (MASK_G_16 | (MASK_RB_16 << 16));
+				dc = ((((sc >> 5) - (dc >> 5)) * alpha) + dc) & (MASK_G_16 | (MASK_RB_16 << 16));
+				sc = ((((st - dt) * alpha) >> 5) + dt) & (MASK_RB_16 | (MASK_G_16 << 16));
+				*(unsigned int *)d = dc | sc;
+			}
+			s += 2;
+			d += 2;
+		}
+		s += pitch;
+		dest += fb_mode->target_pitch;
+	}
+}
+
+
+/*:::::*/
+static void fb_hPutBlend4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
+{
+	unsigned int *s = (unsigned int *)src;
+	unsigned int *d, sc, dc, drb, dg, srb, sg;
+	int x;
+	
+	alpha++;
+	pitch = (pitch >> 2) - w;
+	for (; h; h--) {
+		d = (unsigned int *)dest;
+		for (x = w; x; x--) {
+			sc = *s++;
+			if ((sc & 0xFFFFFF) != 0xFF00FF) {
+				dc = *d;
+				srb = sc & MASK_RB_32;
+				sg = sc & MASK_G_32;
+				drb = dc & MASK_RB_32;
+				dg = dc & MASK_G_32;
+				srb = ((srb - drb) * alpha) >> 8;
+				sg = ((sg - dg) * alpha) >> 8;
+				*d = ((drb + srb) & MASK_RB_32) | ((dg + sg) & MASK_G_32);
+			}
+			d++;
+		}
+		s += pitch;
+		dest += fb_mode->target_pitch;
+	}
+}
+
+
+/*:::::*/
+static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	unsigned char *s = (unsigned char *)src;
 	unsigned char *d;
@@ -102,7 +190,7 @@ static void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
-static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	unsigned short *s = (unsigned short *)src;
 	unsigned short *d;
@@ -124,7 +212,7 @@ static void fb_hPutTrans2C(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
-static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	unsigned int *s = (unsigned int *)src;
 	unsigned int *d, c;
@@ -147,7 +235,7 @@ static void fb_hPutTrans4C(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
-static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	for (; h; h--) {
 		fb_hPixelCpy(dest, src, w);
@@ -158,7 +246,7 @@ static void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, 
 
 
 /*:::::*/
-static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	int x, dpitch;
 	
@@ -185,7 +273,7 @@ static void fb_hPutPResetC(unsigned char *src, unsigned char *dest, int w, int h
 
 
 /*:::::*/
-static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	int x, dpitch;
 	
@@ -212,7 +300,7 @@ static void fb_hPutAndC(unsigned char *src, unsigned char *dest, int w, int h, i
 
 
 /*:::::*/
-static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	int x, dpitch;
 	
@@ -239,7 +327,7 @@ static void fb_hPutOrC(unsigned char *src, unsigned char *dest, int w, int h, in
 
 
 /*:::::*/
-static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, int pitch)
+static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
 {
 	int x, dpitch;
 	
@@ -281,18 +369,21 @@ static void init_put(void)
 			case 8:
 				fb_hPutTrans = fb_hPutTrans1MMX;
 				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
+				fb_hPutBlend = fb_hPutTrans1MMX;	/* Cannot blend in paletted mode */
 				break;
 			
 			case 15:
 			case 16:
 				fb_hPutTrans = fb_hPutTrans2MMX;
 				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
+				fb_hPutBlend = fb_hPutBlend2MMX;
 				break;
 			
 			case 24:
 			case 32:
 				fb_hPutTrans = fb_hPutTrans4MMX;
 				fb_hPutAlpha = fb_hPutAlpha4MMX;
+				fb_hPutBlend = fb_hPutBlend4MMX;
 				break;
 		}
 	}
@@ -309,18 +400,21 @@ static void init_put(void)
 			case 8:
 				fb_hPutTrans = fb_hPutTrans1C;
 				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
+				fb_hPutBlend = fb_hPutTrans1C;		/* Cannot blend in paletted mode */
 				break;
 			
 			case 15:
 			case 16:
 				fb_hPutTrans = fb_hPutTrans2C;
 				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
+				fb_hPutBlend = fb_hPutBlend2C;
 				break;
 			
 			case 24:
 			case 32:
 				fb_hPutTrans = fb_hPutTrans4C;
 				fb_hPutAlpha = fb_hPutAlpha4C;
+				fb_hPutBlend = fb_hPutBlend4C;
 				break;
 		}
 	}
@@ -329,10 +423,10 @@ static void init_put(void)
 
 
 /*:::::*/
-FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode)
+FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode, int alpha)
 {
 	int x, y, w, h, pitch;
-	void (*put)(unsigned char *, unsigned char *, int, int, int);
+	void (*put)(unsigned char *, unsigned char *, int, int, int, int);
 	
 	if (!fb_mode)
 		return;
@@ -382,13 +476,24 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 		case PUT_MODE_AND:	put = fb_hPutAnd;	break;
 		case PUT_MODE_OR:	put = fb_hPutOr;	break;
 		case PUT_MODE_XOR:	put = fb_hPutXor;	break;
-		case PUT_MODE_ALPHA:	put = fb_hPutAlpha;	break;
+		case PUT_MODE_ALPHA:	if (alpha < 0)
+						put = fb_hPutAlpha;
+					else if (alpha == 0)
+						return;
+					else {
+						alpha &= 0xFF;
+						if (alpha == 0xFF)
+							put = fb_hPutTrans;
+						else
+							put = fb_hPutBlend;
+					}
+					break;
 		case PUT_MODE_PSET:
 		default:		put = fb_hPutPSet;	break;
 	}
 	
 	DRIVER_LOCK();
-	put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch);
+	put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch, alpha);
 	SET_DIRTY(y, h);
 	DRIVER_UNLOCK();
 }

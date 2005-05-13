@@ -1133,15 +1133,16 @@ data "fb_GfxPaletteUsing", "", _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 
 '' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
-''			   byval coordType as integer, byval mode as integer )  as void
+''			   byval coordType as integer, byval mode as integer, byval alpha as integer = -1 )  as void
 data "fb_GfxPut", "", _
 	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 @hGfxlib_cb, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.VOID,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
@@ -5728,6 +5729,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 			   		byval arrayexpr as ASTNODE ptr, _
 			   		byval isptr as integer, _
 			   		byval mode as integer, _
+			   		byval alphaexpr as ASTNODE ptr, _
 			   		byval coordtype as integer ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim targetmode as integer
@@ -5780,6 +5782,14 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 
  	'' byval mode as integer
  	if( astNewPARAM( proc, astNewCONSTi( mode, IR.DATATYPE.INTEGER ) ) = NULL ) then
+ 		exit function
+ 	end if
+
+	'' byval alpha as integer
+	if( alphaexpr = NULL ) then
+		alphaexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
+	end if
+ 	if( astNewPARAM( proc, alphaexpr ) = NULL ) then
  		exit function
  	end if
 

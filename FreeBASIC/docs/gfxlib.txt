@@ -1227,7 +1227,7 @@ Statement to draw a block of pixels previously saved by GET.
 
 
 Syntax:
-	PUT [buffer,][STEP](x,y), arrayname[(idx)] [,mode]
+	PUT [buffer,][STEP](x,y), arrayname[(idx)] [,mode[,alpha]]
 
 
 Argument:	Description:
@@ -1249,6 +1249,8 @@ idx		Index into arrayname where data is assumed to start. If idx is
 mode		One of PSET, PRESET, AND, OR, XOR, TRANS or ALPHA; see below.
 		If omitted, this defaults to XOR.
 
+alpha		Uniform alpha value for sprite blending; see below.
+
 
 Insights:
 
@@ -1269,7 +1271,8 @@ XOR		Destination pixels are bitwise XORed with source pixels.
 TRANS		Source pixels overwrite destination pixels. If a source pixel
 		is the mask color (see below), the pixel is skipped.
 ALPHA		Source pixels are blended on top of destination pixels
-		accordingly to the source pixel alpha value.
+		accordingly to either the source pixel alpha value, either
+		the value specified in the alpha parameter, if present.
 
 The AND, OR and XOR modes produce different results depending on the current
 color depth, as pixels are stored in different formats; see appendix C for
@@ -1278,9 +1281,14 @@ If the TRANS mode is used, pixels using the mask color are not drawn. The mask
 color depends on the current color depth: in paletted modes (up to 8 bpp) it
 is equal to color index 0, while on hi/truecolor modes (15, 16, 24 and 32 bpp)
 it is equal to color &hFF00FF (bright pink).
-The ALPHA mode only works if in 32bit color depth; if used while in a lower
-depth, it will behave like the PSET mode. In alpha mode bright pink pixels are
-not skipped; instead, use a pixel alpha value of 0 to skip that pixel.
+If the ALPHA mode is used, you can also specify an optional alpha parameter,
+ranging 0-255. If the alpha parameter is present, PUT will use it for all the
+pixels of your sprite, and will skip mask colors like in the TRANS mode; this
+will work only if you're in 15, 16, 24 or 32bit color depth. If you omit the
+alpha parameter, PUT will only work if you're in 32bit color depth, and it
+will use the alpha values embedded in each pixel; pixels using the mask color
+will not be skipped in this case, as it is assumed the sprite has a properly
+set up alpha channel.
 The pixels data stored in given array must be compatible with current gfx mode
 color depth; that is, if you acquire an image using GET and you later change
 screen mode via SCREEN, the image data may not be valid in the new gfx mode,
@@ -1292,7 +1300,7 @@ Example:
 ' Set 320x240 mode using 16bpp color depth
 SCREEN 14, 16
 ' Let's allocate space for a 32x32 sprite
-DIM sprite((32 * 32 * 2) + 4)
+DIM sprite((32 * 32 * 2) + 4) AS UBYTE
 ' Let's prepare our sprite
 LINE (0,0)-(31,31), &hFF0000, BF
 LINE (0,0)-(31,31), &h00FF00, B
@@ -1303,14 +1311,16 @@ GET (0,0)-(31,31), sprite
 ' Showtime!
 CLS
 FOR i = 0 TO 63
-	LINE (0,i)-(319,i), RGB(i * 4, i * 4, i * 4)
+	v = ABS(SIN(CSNG(i) / 8.0)) * 255.0
+	LINE (0,i)-(319,i), RGB(v, v, v)
 NEXT i
-PUT (19, 16), sprite, PSET
-PUT (69, 16), sprite, PRESET
-PUT (119, 16), sprite, AND
-PUT (169, 16), sprite, OR
-PUT (219, 16), sprite, XOR
-PUT (269, 16), sprite, TRANS
+PUT (12, 16), sprite, PSET
+PUT (56, 16), sprite, PRESET
+PUT (100, 16), sprite, AND
+PUT (144, 16), sprite, OR
+PUT (188, 16), sprite, XOR
+PUT (232, 16), sprite, TRANS
+PUT (276, 16), sprite, ALPHA, 96
 SLEEP
 
 
