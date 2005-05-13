@@ -454,7 +454,7 @@ sub hReplace( text as string, _
 end sub
 
 '':::::
-function hScapeStr( byval text as string ) as string static
+function hEscapeStr( byval text as string ) as string static
     dim c as integer, l as byte ptr
     dim s as byte ptr, d as byte ptr
     dim res as string

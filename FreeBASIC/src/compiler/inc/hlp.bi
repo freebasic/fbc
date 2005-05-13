@@ -62,7 +62,7 @@ declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
 
 declare function 	hFileExists				( byval filename as string ) as integer
 
-declare function 	hScapeStr				( byval text as string ) as string
+declare function 	hEscapeStr				( byval text as string ) as string
 
 declare function 	hUnescapeStr			( byval text as string ) as string
 

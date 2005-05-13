@@ -1945,7 +1945,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			end if
 
 			'' less the null-char
-			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ) )
+			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ), symbGetLen( litsym ) )
 
 			if( symbGetAccessCnt( litsym ) = 0 ) then
 				symbDelVar( litsym )

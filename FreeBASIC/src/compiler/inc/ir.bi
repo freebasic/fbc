@@ -270,7 +270,8 @@ declare sub 		irEmitVARINI64		( byval dtype as integer, _
 declare sub 		irEmitVARINIOFS		( byval sym as FBSYMBOL ptr )
 
 declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
-				     					  byval s as string )
+				     					  byval litstr as string, _
+				     					  byval litlgt as integer )
 
 declare sub 		irEmitVARINIPAD		( byval bytes as integer )
 

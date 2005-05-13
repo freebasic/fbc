@@ -832,9 +832,10 @@ end sub
 
 '':::::
 sub irEmitVARINISTR( byval totlgt as integer, _
-				     byval s as string ) static
+				     byval litstr as string, _
+				     byval litlgt as integer ) static
 
-	dim as integer lgt
+	dim as string s
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
@@ -843,15 +844,16 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 	end if
 
 	''
-	lgt = len( s )
+	s = hEscapeStr( litstr )
 
-	if( lgt > totlgt ) then
+	''
+	if( litlgt > totlgt ) then
 		emitVARINISTR( totlgt, left$( s, totlgt ) )
 	else
-		emitVARINISTR( lgt, s )
+		emitVARINISTR( litlgt, s )
 
-		if( lgt < totlgt ) then
-			emitVARINIPAD( totlgt - lgt )
+		if( litlgt < totlgt ) then
+			emitVARINIPAD( totlgt - litlgt )
 		end if
 	end if
 

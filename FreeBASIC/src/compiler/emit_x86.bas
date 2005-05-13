@@ -4674,7 +4674,7 @@ sub emitDATA ( byval litext as string, _
     static as zstring * FB.MAXLITLEN*2+1 esctext
     dim as string ostr
 
-    esctext = hScapeStr( litext )
+    esctext = hEscapeStr( litext )
 
 	'' len + asciiz
 	if( typ <> INVALID ) then
@@ -5068,7 +5068,7 @@ private sub hEmitConst( ) static
     	if( doemit ) then
     		stype = hGetTypeString( typ )
     	    if( typ = FB.SYMBTYPE.FIXSTR ) then
-    	    	stext = "\"" + hScapeStr( s->var.inittext ) + "\\0\""
+    	    	stext = "\"" + hEscapeStr( s->var.inittext ) + "\\0\""
     	    else
     	    	stext = s->var.inittext
     	    end if

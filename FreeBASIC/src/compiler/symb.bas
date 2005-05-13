@@ -1287,7 +1287,7 @@ function hAllocStringConst( byval sname as string, _
 		lgt = len( sname )
 	end if
 
-	if( lgt <= FB.MAXNAMELEN ) then
+	if( lgt <= FB.MAXNAMELEN-6 ) then
 		cname = "_fbsc_"
 		cname += sname
 	else
