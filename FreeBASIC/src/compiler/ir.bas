@@ -1195,7 +1195,8 @@ sub irReuse( byval t as IRTAC ptr ) static
     dim as integer dt1, dc1, t1
     dim as integer dt2, dc2, t2
     dim as integer dtr, dcr, tr
-    dim as integer op, tmp, v1rename, v2rename
+    dim as integer op, v1rename, v2rename
+    dim as IRTACVREG ptr tmp
 
 	op	 = t->op
 	v1   = t->arg1.vreg

@@ -47,6 +47,7 @@ end type
 ''warning msgs (level, msg)
 warningdata:
 data 0, "Passing scalar as pointer"
+data 0, "Suspicious pointer assignament"
 data -1
 
 '' error msgs
@@ -130,9 +131,10 @@ data "Literal number too big"
 data "Too many parameters"
 data "Macro text too long"
 data "Invalid command-line option"
+data "Cannot initialize dynamic strings"
 
 
-const FB.ERRMSGS = 79
+const FB.ERRMSGS = 80
 
 
 '':::::
@@ -259,7 +261,7 @@ end function
 
 '':::::
 sub hReportWarning( byval msgnum as integer, _
-				 	byval msgex as string )
+				 	byval msgex as string = "" )
     dim i as integer
     dim level as integer, msg as string
 
@@ -282,9 +284,9 @@ sub hReportWarning( byval msgnum as integer, _
 		exit sub
 	end if
 
-	print rtrim$( env.infile ); "(";
-	if( lexLineNum > 0 ) then
-		print str$( lexLineNum );
+	print env.infile; "(";
+	if( lexLineNum( ) > 0 ) then
+		print str$( lexLineNum( ) );
 	end if
 	print ") : warning level"; level;
 	print ": "; msg;
@@ -455,10 +457,10 @@ end sub
 
 '':::::
 function hEscapeStr( byval text as string ) as string static
-    dim c as integer, l as byte ptr
-    dim s as byte ptr, d as byte ptr
-    dim res as string
-    dim octlen as integer
+    dim as integer c, l
+    dim as byte ptr s, d
+    dim as string res
+    dim as integer octlen
 
 	s = strptr( text )
 	l = len( text )

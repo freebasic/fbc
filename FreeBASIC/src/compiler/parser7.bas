@@ -56,7 +56,7 @@ const FBGFX_PUTMODE_ALPHA  = 6
 
 '':::::
 private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
-								  byval arrayexpr as ASTNODE ptr ) as integer
+								  byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
     dim as ASTNODE ptr idxexpr
 
     ''  argument passed by descriptor?

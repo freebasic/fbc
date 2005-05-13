@@ -1940,12 +1940,12 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			'' can't be a variable-len string
 			if( sym->typ = FB.SYMBTYPE.STRING ) then
-				hReportError( FB.ERRMSG.INVALIDDATATYPES )
+				hReportError( FB.ERRMSG.CANTINITDYNAMICSTRINGS )
 				return FALSE
 			end if
 
 			'' less the null-char
-			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ), symbGetLen( litsym ) )
+			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ), symbGetLen( litsym ) - 1 )
 
 			if( symbGetAccessCnt( litsym ) = 0 ) then
 				symbDelVar( litsym )
@@ -4014,18 +4014,146 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
+private function hCheckPtrAssign( byval l as ASTNODE ptr, _
+								  byval r as ASTNODE ptr ) as integer static
+
+	function = FALSE
+
+	'' don't check for different sub-types while there's no pointer typecasting
+
+	select case as const astGetClass( r )
+	case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.FUNCT, AST.NODECLASS.PTR
+
+    	'' not a pointer?
+    	if( astGetDataType( r ) < IR.DATATYPE.POINTER ) then
+    		hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+    		exit function
+    	end if
+
+	case else
+		exit function
+	end select
+
+	function = TRUE
+
+end function
+
+'':::::
+private function hCheckFuncPtrAssign( byval l as ASTNODE ptr, _
+									  byval r as ASTNODE ptr ) as integer static
+
+	dim as FBSYMBOL ptr procl, procr
+	dim as FBSYMBOL ptr argl, argr
+
+	function = FALSE
+
+	select case as const astGetClass( r )
+	'' address?
+	case AST.NODECLASS.ADDR, AST.NODECLASS.OFFSET
+
+    	'' don't check if node isn't a proc
+    	procr = astGetSymbol( r )
+    	if( procr = NULL ) then
+    		exit function
+    	end if
+
+    	if( not symbIsProc( procr ) ) then
+    		exit function
+    	end if
+
+	'' func, var, ..
+	case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.FUNCT, AST.NODECLASS.PTR
+
+    	'' not a pointer?
+    	if( astGetDataType( r ) <> IR.DATATYPE.POINTER + IR.DATATYPE.FUNCTION ) then
+    		exit function
+    	end if
+
+    	procr = astGetSymbol( r )
+    	if( procr = NULL ) then
+    		exit function
+    	end if
+
+    	procr = symbGetSubtype( procr )
+    	if( procr = NULL ) then
+    		exit function
+    	end if
+
+	'' const, expression, ..
+	case else
+		exit function
+	end select
+
+    procl = symbGetSubtype( astGetSymbol( l ) )
+
+    '' different return types?
+    if( symbGetType( procl ) <> symbGetType( procr ) ) then
+    	hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+    	exit function
+    end if
+
+	'' and sub type
+	if( symbGetSubtype( procl ) <> symbGetSubtype( procr ) ) then
+        hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+        exit function
+    end if
+
+    '' not the same number of args?
+    if( symbGetProcArgs( procl ) <> symbGetProcArgs( procr ) ) then
+    	hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+    	exit function
+    end if
+
+    '' check calling convention
+    if( symbGetFuncMode( procl ) <> symbGetFuncMode( procr ) ) then
+    	hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+    	exit function
+    end if
+
+    argl = symbGetProcHeadArg( procl )
+    argr = symbGetProcHeadArg( procr )
+
+    do while( argr <> NULL )
+    	'' different types?
+    	if( argl->typ <> argr->typ ) then
+         	hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+         	exit function
+        end if
+
+        '' sub-types?
+        if( argl->subtype <> argr->subtype ) then
+            hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+            exit function
+		end if
+
+    	'' mode?
+    	if( argl->arg.mode <> argr->arg.mode ) then
+			hReportWarning( FB.WARNINGMSG.SUSPICIOUSPTRASSIGN )
+            exit function
+    	end if
+
+    	'' next arg..
+    	argl = argl->arg.r
+    	argr = argr->arg.r
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
 private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr expr
-	dim as integer op
+	dim as integer op, dtype
 
 	function = FALSE
 
 	'' BOP?
     op = INVALID
-    if( lexCurrentToken <> FB.TK.ASSIGN ) then
-    	if( lexCurrentTokenClass = FB.TKCLASS.OPERATOR ) then
+    if( lexCurrentToken( ) <> FB.TK.ASSIGN ) then
+    	if( lexCurrentTokenClass( ) = FB.TKCLASS.OPERATOR ) then
 
-        	select case as const lexCurrentToken
+        	select case as const lexCurrentToken( )
         	case FB.TK.AND
         		op = IR.OP.AND
         	case FB.TK.OR
@@ -4045,7 +4173,7 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
         	end select
 
         	if( op = INVALID ) then
-        		select case as const lexCurrentToken
+        		select case as const lexCurrentToken( )
         		case CHAR_PLUS
         			op = IR.OP.ADD
         		case CHAR_MINUS
@@ -4062,20 +4190,20 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
         	end if
 
         	if( op <> INVALID ) then
-        		lexSkipToken
+        		lexSkipToken( )
         	end if
         end if
 	end if
 
 	'' '='
     if( not hMatch( FB.TK.ASSIGN ) ) then
-    	hReportError FB.ERRMSG.EXPECTEDEQ
+    	hReportError( FB.ERRMSG.EXPECTEDEQ )
     	exit function
     end if
 
     '' Expression
     if( not cExpression( expr ) ) then
-       	hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+       	hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
        	exit function
     end if
 
@@ -4084,11 +4212,23 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
     	expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
 	end if
 
+    '' check pointers
+    dtype = astGetDataType( assgexpr )
+    if( dtype >= IR.DATATYPE.POINTER ) then
+    	if( dtype = IR.DATATYPE.POINTER + IR.DATATYPE.FUNCTION ) then
+    		if( not hCheckFuncPtrAssign( assgexpr, expr ) ) then
+   				hCheckPtrAssign( assgexpr, expr )
+    		end if
+    	else
+			hCheckPtrAssign( assgexpr, expr )
+		end if
+    end if
+
     '' do assign
     assgexpr = astNewASSIGN( assgexpr, expr )
 
     if( assgexpr = NULL ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError( FB.ERRMSG.INVALIDDATATYPES )
         exit function
 	end if
 

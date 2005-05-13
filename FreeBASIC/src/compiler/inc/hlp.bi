@@ -54,7 +54,7 @@ declare sub 		hReportError			( byval errnum as integer, _
 declare function 	hGetLastError 			( ) as integer
 
 declare sub 		hReportWarning			( byval msgnum as integer, _
-											  byval msgex as string )
+											  byval msgex as string = "" )
 
 declare function 	hMakeTmpStr 			( ) as zstring ptr
 

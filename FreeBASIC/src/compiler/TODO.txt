@@ -1,4 +1,3 @@
-
 [ ] rewrite the emit module, using pseudo-opcode lists (as in IR), never emit any text
     - keep track of functions
     - the main module can be "updated" between functions, as that is allowed
@@ -33,11 +32,15 @@
     - check different modes and types if they are working
     - check optional args, this can be tricky
 
+[ ] allow FB functions to return UDT's - must follow the GCC 3.x ABI
+
 [ ] check for references to self on TYPE fields (field AS parent)
 
-[ ] make the emiter modules modular (duh), so multiple cpu targets could be supported.. some day
+[ ] better pointers checking - only when pointer type-casting is added
 
 *** *** *** *** ***
+[ ] pointer type casting
+
 [ ] parser should never call IR directly, or no inline functions can be added (or never-called
     private functions eliminated). For that be done, all labels must be handled by AST, ASM,
     var initializers and jump tbs too (DATA can't be defined inside procs), all IR/AST flush
@@ -51,13 +54,12 @@
                         must be done at the AST then, no IR calls at the parser.. quite hard to do due the var
                         initializers, etc)
 
-[ ] pointer type casting
+[ ] make the emiter modules modular (duh), so multiple cpu targets could be supported.. some day
 
 [ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
 
 *** yet another optimizations ***
 [ ] reuse temp vars (or just strings), so less mem is used
-[ ] use CMOV when possible on 686 (maybe at IR, but probably requires peephole at EMIT)
 [ ] unreachable code removal
 
 *** future ***

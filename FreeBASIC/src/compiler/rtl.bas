@@ -5161,11 +5161,11 @@ end function
 function rtlGfxPoint( byval target as ASTNODE ptr, _
 					  byval targetisptr as integer, _
 					  byval xexpr as ASTNODE ptr, _
-					  byval yexpr as ASTNODE ptr )
+					  byval yexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 	dim targetmode as integer
 
-	function = FALSE
+	function = NULL
 
 	f = ifuncTB(FB.RTL.GFXPOINT)
 	proc = astNewFUNCT( f, symbGetType( f ) )

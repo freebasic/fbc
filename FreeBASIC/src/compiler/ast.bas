@@ -2196,7 +2196,7 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 end function
 
 ''::::
-private function astOptimize( byval n as ASTNODE ptr ) as integer
+private function astOptimize( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' calls must be done in the order below
 
@@ -4300,7 +4300,7 @@ end function
 '':::::
 private sub hReportParamError( byval f as ASTNODE ptr )
 
-	hReportErrorEx FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( f->proc.params+1 )
+	hReportErrorEx( FB.ERRMSG.PARAMTYPEMISMATCHAT, "at parameter: " + str$( f->proc.params+1 ) )
 
 end sub
 
@@ -4308,13 +4308,13 @@ end sub
 private sub hReportParamWarning( byval f as ASTNODE ptr, _
 								 byval msgnum as integer )
 
-	hReportWarning msgnum, "at parameter: " + str$( f->proc.params+1 )
+	hReportWarning( msgnum, "at parameter: " + str$( f->proc.params+1 ) )
 
 end sub
 
 '':::::
 private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
-									 byval n as ASTNODE ptr ) as integer
+									 byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim s as FBSYMBOL ptr
 	dim t as ASTTEMPARRAY ptr
 
@@ -4336,7 +4336,7 @@ end function
 '':::::
 private function hAllocTmpString( byval f as ASTNODE ptr, _
 								  byval n as ASTNODE ptr, _
-								  byval copyback as integer ) as integer
+								  byval copyback as integer ) as ASTNODE ptr
 	dim as FBSYMBOL ptr s
 	dim as ASTTEMPSTR ptr t
 
@@ -4363,7 +4363,7 @@ end function
 '':::::
 private function hCheckStringArg( byval f as ASTNODE ptr, _
 							      byval arg as FBSYMBOL ptr, _
-							      byval p as ASTNODE ptr ) as integer
+							      byval p as ASTNODE ptr ) as ASTNODE ptr
 
     dim as integer adtype, pdtype, pclass, copyback, amode
 

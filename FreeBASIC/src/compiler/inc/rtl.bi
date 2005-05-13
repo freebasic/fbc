@@ -440,7 +440,7 @@ declare function	rtlGfxPset			( byval target as ASTNODE ptr, _
 declare function	rtlGfxPoint			( byval target as ASTNODE ptr, _
 										  byval targetisptr as integer, _
 										  byval xexpr as ASTNODE ptr, _
-										  byval yexpr as ASTNODE ptr )
+										  byval yexpr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function	rtlGfxLine			( byval target as ASTNODE ptr, _
 										  byval targetisptr as integer, _

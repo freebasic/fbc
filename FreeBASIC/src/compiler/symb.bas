@@ -3007,7 +3007,7 @@ function symbGetUDTLen( byval udt as FBSYMBOL ptr, _
 
 		'' union, use the largest field len
 		else
-			e = udt->udt.lfldlen
+			function = udt->udt.lfldlen
 		end if
 	end if
 
