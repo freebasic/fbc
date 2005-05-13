@@ -24,6 +24,7 @@ Version 0.14 Beta:
 - support for 16 background colors if in text mode under Xterm in Linux (lillo)
 - enabled -noexport command-line option forcing not to export any symbol for dynamic linkage (lillo)
 - added BMP saving capabilities to BSAVE, due to popular demand (lillo)
+- warning message for suspicious pointer assignaments (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -44,6 +45,8 @@ Version 0.14 Beta:
   the null-terminators (v1c)
 - ENUM elements separated by commas would update the values twice (v1c)
 - Text mode colors now behave correctly under Eterm in Linux (lillo)
+- PRINT'ing nothing followed by commas "PRINT," would not print the padding correctly (v1c)
+- escape sequences were not being converted when used within var initializers (v1c)
 
 
 Version 0.13 Beta:
