@@ -51,6 +51,8 @@ static void (*fb_hPutPReset)(unsigned char *src, unsigned char *dest, int w, int
 static void (*fb_hPutAnd)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
 static void (*fb_hPutOr)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
 static void (*fb_hPutXor)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static void (*fb_hPutCustom)(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha) = NULL;
+static BLENDER *blender = NULL;
 static int put_initialized_depth = 0;
 
 
@@ -354,6 +356,77 @@ static void fb_hPutXorC(unsigned char *src, unsigned char *dest, int w, int h, i
 
 
 /*:::::*/
+static void fb_hPutCustom1(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
+{
+	unsigned char *s = (unsigned char *)src;
+	unsigned char *d;
+	int x;
+	
+	pitch -= w;
+	for (; h; h--) {
+		d = (unsigned char *)dest;
+		for (x = w; x; x--) {
+			*d = (unsigned char)blender((unsigned int)*s, (unsigned int)*d);
+			s++;
+			d++;
+		}
+		s += pitch;
+		dest += fb_mode->target_pitch;
+	}
+}
+
+
+/*:::::*/
+static void fb_hPutCustom2(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
+{
+	unsigned short *s = (unsigned short *)src;
+	unsigned short *d;
+	int x;
+	unsigned int cs, cd;
+	
+	pitch = (pitch >> 1) - w;
+	for (; h; h--) {
+		d = (unsigned short *)dest;
+		for (x = w; x; x--) {
+			cs = *s++;
+			cs = (((cs & 0x001F) << 3) | ((cs >> 2) & 0x7) |
+			      ((cs & 0x07E0) << 5) | ((cs >> 1) & 0x300) |
+			      ((cs & 0xF800) << 8) | ((cs << 3) & 0x70000));
+			cd = *d;
+			cd = (((cd & 0x001F) << 3) | ((cd >> 2) & 0x7) |
+			      ((cd & 0x07E0) << 5) | ((cd >> 1) & 0x300) |
+			      ((cd & 0xF800) << 8) | ((cd << 3) & 0x70000));
+			cd = blender(cs, cd);
+			*d++ = (unsigned short)((cd >> 3) & 0x001F) | ((cd >> 5) & 0x07E0) | ((cd >> 8) & 0xF800);
+		}
+		s += pitch;
+		dest += fb_mode->target_pitch;
+	}
+}
+
+
+/*:::::*/
+static void fb_hPutCustom4(unsigned char *src, unsigned char *dest, int w, int h, int pitch, int alpha)
+{
+	unsigned int *s = (unsigned int *)src;
+	unsigned int *d;
+	int x;
+	
+	pitch = (pitch >> 2) - w;
+	for (; h; h--) {
+		d = (unsigned int *)dest;
+		for (x = w; x; x--) {
+			*d = blender(*s, *d);
+			s++;
+			d++;
+		}
+		s += pitch;
+		dest += fb_mode->target_pitch;
+	}
+}
+
+
+/*:::::*/
 static void init_put(void)
 {
 	if (fb_mode->flags & HAS_MMX) {
@@ -370,6 +443,7 @@ static void init_put(void)
 				fb_hPutTrans = fb_hPutTrans1MMX;
 				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
 				fb_hPutBlend = fb_hPutTrans1MMX;	/* Cannot blend in paletted mode */
+				fb_hPutCustom = fb_hPutCustom1;
 				break;
 			
 			case 15:
@@ -377,6 +451,7 @@ static void init_put(void)
 				fb_hPutTrans = fb_hPutTrans2MMX;
 				fb_hPutAlpha = fb_hPutPSetMMX;		/* No alpha channel: default to all solid PUT */
 				fb_hPutBlend = fb_hPutBlend2MMX;
+				fb_hPutCustom = fb_hPutCustom2;
 				break;
 			
 			case 24:
@@ -384,6 +459,7 @@ static void init_put(void)
 				fb_hPutTrans = fb_hPutTrans4MMX;
 				fb_hPutAlpha = fb_hPutAlpha4MMX;
 				fb_hPutBlend = fb_hPutBlend4MMX;
+				fb_hPutCustom = fb_hPutCustom4;
 				break;
 		}
 	}
@@ -401,6 +477,7 @@ static void init_put(void)
 				fb_hPutTrans = fb_hPutTrans1C;
 				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
 				fb_hPutBlend = fb_hPutTrans1C;		/* Cannot blend in paletted mode */
+				fb_hPutCustom = fb_hPutCustom1;
 				break;
 			
 			case 15:
@@ -408,6 +485,7 @@ static void init_put(void)
 				fb_hPutTrans = fb_hPutTrans2C;
 				fb_hPutAlpha = fb_hPutPSetC;		/* No alpha channel: default to all solid PUT */
 				fb_hPutBlend = fb_hPutBlend2C;
+				fb_hPutCustom = fb_hPutCustom2;
 				break;
 			
 			case 24:
@@ -415,6 +493,7 @@ static void init_put(void)
 				fb_hPutTrans = fb_hPutTrans4C;
 				fb_hPutAlpha = fb_hPutAlpha4C;
 				fb_hPutBlend = fb_hPutBlend4C;
+				fb_hPutCustom = fb_hPutCustom4;
 				break;
 		}
 	}
@@ -423,7 +502,7 @@ static void init_put(void)
 
 
 /*:::::*/
-FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode, int alpha)
+FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode, int alpha, BLENDER *func)
 {
 	int x, y, w, h, pitch;
 	void (*put)(unsigned char *, unsigned char *, int, int, int, int);
@@ -487,6 +566,9 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 						else
 							put = fb_hPutBlend;
 					}
+					break;
+		case PUT_MODE_CUSTOM:	blender = func;
+					put = fb_hPutCustom;
 					break;
 		case PUT_MODE_PSET:
 		default:		put = fb_hPutPSet;	break;

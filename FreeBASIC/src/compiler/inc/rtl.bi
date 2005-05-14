@@ -506,6 +506,7 @@ declare function 	rtlGfxPut			( byval target as ASTNODE ptr, _
 										  byval isptr as integer, _
 										  byval mode as integer, _
 										  byval alphaexpr as ASTNODE ptr, _
+										  byval funcexpr as ASTNODE ptr, _
 										  byval coordtype as integer ) as integer
 
 declare function	rtlGfxGet			( byval target as ASTNODE ptr, _

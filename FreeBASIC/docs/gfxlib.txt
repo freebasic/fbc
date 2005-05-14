@@ -1227,7 +1227,7 @@ Statement to draw a block of pixels previously saved by GET.
 
 
 Syntax:
-	PUT [buffer,][STEP](x,y), arrayname[(idx)] [,mode[,alpha]]
+	PUT [buffer,][STEP](x,y), arrayname[(idx)] [,mode[,(alpha|blender)]]
 
 
 Argument:	Description:
@@ -1251,6 +1251,8 @@ mode		One of PSET, PRESET, AND, OR, XOR, TRANS or ALPHA; see below.
 
 alpha		Uniform alpha value for sprite blending; see below.
 
+blender		Pointer to custom blender function; see below.
+
 
 Insights:
 
@@ -1273,6 +1275,9 @@ TRANS		Source pixels overwrite destination pixels. If a source pixel
 ALPHA		Source pixels are blended on top of destination pixels
 		accordingly to either the source pixel alpha value, either
 		the value specified in the alpha parameter, if present.
+CUSTOM		Source pixels are blended on top of destination pixels
+		accordingly to the user-specified function passed in the
+		blender parameter.
 
 The AND, OR and XOR modes produce different results depending on the current
 color depth, as pixels are stored in different formats; see appendix C for
@@ -1289,6 +1294,16 @@ alpha parameter, PUT will only work if you're in 32bit color depth, and it
 will use the alpha values embedded in each pixel; pixels using the mask color
 will not be skipped in this case, as it is assumed the sprite has a properly
 set up alpha channel.
+If the CUSTOM mode is used, you must also specify the blender parameter, which
+must be a pointer to a function of the form:
+
+FUNCTION MyBlender (BYVAL src AS UINTEGER, BYVAL dest AS UINTEGER) AS UINTEGER
+
+Such a function will be called for each pixel of your sprite, will receive the
+source sprite pixel and the destination pixel where it is going to be drawn,
+and must return the new pixel to be drawn. All color values are in the same
+format as accepted by all other gfx primitives, that is color indices for
+paletted modes, and &hRRGGBB values for hi/truecolor modes.
 The pixels data stored in given array must be compatible with current gfx mode
 color depth; that is, if you acquire an image using GET and you later change
 screen mode via SCREEN, the image data may not be valid in the new gfx mode,

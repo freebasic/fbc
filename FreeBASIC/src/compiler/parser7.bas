@@ -51,6 +51,7 @@ const FBGFX_PUTMODE_AND    = 3
 const FBGFX_PUTMODE_OR     = 4
 const FBGFX_PUTMODE_XOR    = 5
 const FBGFX_PUTMODE_ALPHA  = 6
+const FBGFX_PUTMODE_CUSTOM = 7
 
 
 
@@ -602,12 +603,13 @@ end function
 ''
 function cGfxPut as integer
     dim as integer coordtype, mode, isptr, tisptr
-    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr
-    dim as FBSYMBOL ptr s, target
+    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, funcexpr
+    dim as FBSYMBOL ptr s, target, arg1, arg2
 
 	function = FALSE
 	
 	alphaexpr = NULL
+	funcexpr = NULL
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -677,6 +679,34 @@ function cGfxPut as integer
 				if( hMatch( CHAR_COMMA ) ) then
 					hMatchExpression( alphaexpr )
 				end if
+			elseif (ucase$( *lexTokenText( ) ) = "CUSTOM") then
+				lexSkipToken( )
+				mode = FBGFX_PUTMODE_CUSTOM
+				hMatchCOMMA( )
+				hMatchExpression( funcexpr )
+				s = astGetSymbol( funcexpr )
+				if( s = NULL ) then
+					hReportError FB.ERRMSG.TYPEMISMATCH
+					exit function
+				end if
+				if( not symbIsProc( s ) ) then
+					hReportError FB.ERRMSG.TYPEMISMATCH
+					exit function
+				end if
+				if( ( symbGetType( s ) <> FB.SYMBTYPE.UINT ) or _
+					( symbGetProcArgs( s ) <> 2 ) ) then
+					hReportError FB.ERRMSG.TYPEMISMATCH
+					exit function
+				end if
+				arg1 = symbGetProcHeadArg( s )
+				arg2 = symbGetProcNextArg( s, arg1, FALSE )
+				if( ( symbGetType( arg1 ) <> FB.SYMBTYPE.UINT ) or _
+					( symbGetType( arg2 ) <> FB.SYMBTYPE.UINT ) or _
+					( arg1->arg.mode <> FB.ARGMODE.BYVAL ) or _
+					( arg2->arg.mode <> FB.ARGMODE.BYVAL ) ) then
+					hReportError FB.ERRMSG.TYPEMISMATCH
+					exit function
+				end if
 			else
 				hReportError FB.ERRMSG.SYNTAXERROR
 				exit function
@@ -685,7 +715,7 @@ function cGfxPut as integer
 	end if
 
 	''
-	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, alphaexpr, coordtype )
+	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, alphaexpr, funcexpr, coordtype )
 
 end function
 
