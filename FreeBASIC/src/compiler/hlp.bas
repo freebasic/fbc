@@ -47,7 +47,7 @@ end type
 ''warning msgs (level, msg)
 warningdata:
 data 0, "Passing scalar as pointer"
-data 0, "Suspicious pointer assignament"
+data 0, "Suspicious pointer assignment"
 data -1
 
 '' error msgs
