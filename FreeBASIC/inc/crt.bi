@@ -372,5 +372,10 @@ declare function toupper cdecl alias "toupper" ( byval c as integer ) as integer
 
 ' ungetc() uses a FILE*
 
+''
+'' globals
+''
+
+extern import errno alias "errno" as integer
 
 #endif ' CRT_BI

@@ -1,14 +1,14 @@
 ' SDL_image.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
 
-'$inclib: "SDL"
-'$inclib: "SDL_image"
-
 #ifndef SDL_IMAGE_BI_
 #define SDL_IMAGE_BI_
 
-'$include: "SDL/SDL.bi"
-'$include: "SDL/SDL_version.bi"
-'$include: "SDL/begin_code.bi"
+#inclib "SDL"
+#inclib "SDL_image"
+
+#include once "SDL/SDL.bi"
+#include once "SDL/SDL_version.bi"
+#include once "SDL/begin_code.bi"
 
 #define SDL_IMAGE_MAJOR_VERSION 1
 #define SDL_IMAGE_MINOR_VERSION 2
@@ -80,6 +80,6 @@ declare function IMG_ReadXMPFromArray SDLCALL alias "IMG_ReadXMPFromArray" _
 #define IMG_SetError	SDL_SetError
 #define IMG_GetError	SDL_GetError
 
-'$include: "SDL/close_code.bi"
+#include once "SDL/close_code.bi"
 
 #endif

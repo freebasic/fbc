@@ -21,7 +21,7 @@
 	option nokeyword screen, circle, line, palette, rgb
 
 
-'$include: 'crt.bi'
+#include once "crt.bi"
 
 ' -- platform-specific --
 
