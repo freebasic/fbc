@@ -52,6 +52,7 @@ Version 0.14 Beta:
 - Text mode colors now behave correctly under Eterm in Linux (lillo)
 - PRINT'ing nothing followed by commas "PRINT," would not print the padding correctly (v1c)
 - escape sequences were not being converted when used within var initializers (v1c)
+- MMX inline asm wasn't compiling as GAS didn't understand it even if .arch i686 was used (lillo)
 
 
 Version 0.13 Beta:

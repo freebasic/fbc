@@ -4807,17 +4807,6 @@ sub hSaveAsmHeader( )
 	edbgHeader( ctx.outf, env.infile, modulename, entryname )
 
 	hWriteStr( ctx.outf, TRUE,  ".intel_syntax noprefix" )
-	select case as const env.clopt.cputype
-	case FB.CPUTYPE.386
-		hWriteStr( ctx.outf, TRUE,  ".arch i386" )
-	case FB.CPUTYPE.486
-		hWriteStr( ctx.outf, TRUE,  ".arch i486" )
-	case FB.CPUTYPE.586
-		hWriteStr( ctx.outf, TRUE,  ".arch i586" )
-	case FB.CPUTYPE.686
-		hWriteStr( ctx.outf, TRUE,  ".arch i686" )
-	end select
-
     hWriteStr( ctx.outf, FALSE, "" )
     hWriteStr( ctx.outf, TRUE, "#'" + env.infile + "' compilation started at " + time$ + " (" + FB.SIGN + ")" )
 
