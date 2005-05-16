@@ -16,8 +16,6 @@ function ok_cb cdecl () as integer
   dim as integer green
   dim as integer blue
   
-  end 1
-
   red_text = IupGetHandle("red_text")
   green_text = IupGetHandle("green_text")
   blue_text = IupGetHandle("blue_text")
@@ -50,6 +48,8 @@ end function
   dim as Ihandle ptr color_text
   dim as Ihandle ptr ok_button
   dim as Ihandle ptr main_dlg
+
+  IupOpen()
 
   label = IupLabel("Enter RGB values")
   red_label = IupLabel("Red")
@@ -104,8 +104,6 @@ end function
   IupSetHandle("ok_button", ok_button)
   
   IupSetFunction("ok_act", @ok_cb)
-
-  IupOpen()
 
   IupPopup(main_dlg, IUP_CENTER, IUP_CENTER)
 
