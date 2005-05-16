@@ -109,16 +109,16 @@ private function hGetTarget( targetexpr as ASTNODE ptr, _
 	if( astIsADDR( targetexpr ) ) then
 		isptr = TRUE
 	else
+		'' pointer?
+		if( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+			isptr = TRUE
 		'' array?
-		if( symbIsArray( s ) ) then
+		elseif( symbIsArray( s ) ) then
 			'' no index given?
 			if( not astIsIDX( targetexpr ) ) then
 				targetexpr = hMakeArrayIndex( s, targetexpr )
 			end if
 			isptr = FALSE
-		'' pointer?
-		elseif( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
-			isptr = TRUE
 		'' fail..
 		else
 			exit function
