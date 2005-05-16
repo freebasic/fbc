@@ -337,7 +337,7 @@ end function
 function hMakeTmpStr( ) as zstring ptr static
 	static as zstring * 8 + 3 + 1 res
 
-	res = "Lt_" + *hHexUInt( ctx.tmpcnt )
+	res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
 
 	ctx.tmpcnt += 1
 
