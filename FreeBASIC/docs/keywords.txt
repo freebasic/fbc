@@ -278,6 +278,11 @@
   CULNGINT Function
   CSIGN Function
   CUNSG Function
+  CONDCREATE Function
+  CONDDESTROY Statement
+  CONDBROADCAST Statement
+  CONDSIGNAL Statement
+  CONDWAIT Statement
   CONTINUE Statement
   CURDIR Function
   CVLONGINT Function
@@ -290,6 +295,8 @@
   DEFUSHORT Statement
   DEFUINT Statement  
   DEFINED Function      (Pre-processor)
+  DYLIBLOAD Function
+  DYLIBSYMBOL Function
 
   ENUM Statement
   EXEPATH Function
@@ -301,6 +308,7 @@
 
   GETKEY Function
   GETMOUSE Statement
+  GETJOYSTICK Statement
   
   HIBYTE macro          (foo = HIBYTE(bar) -- same as "foo = cunsg(bar) shr 8")
   HIWORD macro          (foo = HIWORD(bar) -- same as "foo = cunsg(bar) shr 16")
@@ -315,6 +323,10 @@
   MKLONGINT Function
   MKSHORT Function
   MULTIKEY Function
+  MUTEXCREATE Function
+  MUTEXDESTROY Statement
+  MUTEXLOCK Statement
+  MUTEXUNLOCK Statement
 
   PRESERVE
   POKES Function
@@ -329,14 +341,17 @@
   PRIVATE Statement
 
   REALLOCATE Function   (function( byval src as any ptr, byval bytes as integer ) as any ptr)
-  RGB Function
+  RGB Macro
+  RGBA Macro
 
   SCREENCOPY Statement
   SCREENINFO Function
   SCREENLOCK Statement
   SCREENPTR Function
+  SCREENRES Statement
   SCREENSET Statement
   SCREENUNLOCK Statement
+  SETMOUSE Statement
   SHORT
   STDCALL
   SHL
@@ -351,6 +366,8 @@
   STRNCMP, STRNCPY, 
   STRRCHR, STRSTR       (C string functions, can operate on byte ptr's and on ordinary FB strings)
 
+  THREADCREATE Function
+  THREADWAIT Statement
   TRIM$ Function
 
   UNION Statement
