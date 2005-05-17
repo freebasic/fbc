@@ -1307,6 +1307,14 @@ Type BITMAPINFO Field = 1
   bmiColors As RGBQUAD
 End Type
 
+type BITMAPFILEHEADER Field = 1
+	bfType		as ushort
+    bfSize		as uinteger
+    bfReserved1	as ushort
+    bfReserved2 as ushort
+    bfOffBits	as uinteger
+end type
+
 Type LOGPALETTE Field = 1
   palVersion     As Short
   palNumEntries  As Short
