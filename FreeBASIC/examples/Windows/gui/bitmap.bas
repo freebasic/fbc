@@ -42,7 +42,7 @@ function WndProc ( byval hWnd as long, _
 		'' pointer to bitmap file
 		dim logo as BITMAPFILEHEADER ptr = @fblogo_data(0) 
 
-		'' ponter to bitmap header
+		'' pointer to bitmap header
   		logoinfo = logo + len( BITMAPFILEHEADER ) 
 
   		'' create a DIB
