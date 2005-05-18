@@ -622,7 +622,10 @@ function hCreateName( byval symbol as string, _
     	hClearName( sname )
     end if
 
-    if( cunsg(typ) < FB.SYMBOLTYPES ) then
+    if( typ <> INVALID ) then
+    	if( typ > FB.SYMBTYPE.POINTER ) then
+    		typ = FB.SYMBTYPE.POINTER
+    	end if
     	sname += suffixTB( typ )
     end if
 
@@ -677,7 +680,7 @@ end function
 function hCreateOvlProcAlias( byval symbol as string, _
 					    	  byval argc as integer, _
 					    	  byval argtail as FBSYMBOL ptr ) as zstring ptr static
-    dim as integer i
+    dim as integer i, typ
     static as zstring * FB.MAXINTNAMELEN+1 aname
 
     aname = symbol
@@ -686,9 +689,12 @@ function hCreateOvlProcAlias( byval symbol as string, _
     for i = 0 to argc-1
     	aname += "_"
 
-    	if( cunsg(argtail->typ) < FB.SYMBOLTYPES ) then
-    		aname += suffixTB( argtail->typ )
+    	typ = argtail->typ
+    	if( typ > FB.SYMBTYPE.POINTER ) then
+    		typ = FB.SYMBTYPE.POINTER
     	end if
+
+    	aname += suffixTB( typ )
 
     	argtail = argtail->arg.l
     next i

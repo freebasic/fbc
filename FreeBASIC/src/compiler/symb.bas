@@ -510,10 +510,9 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 	'' adding a type field? anything is allowed (udt elms are not added to a hash tb)
 	case FB.SYMBCLASS.UDTELM, FB.SYMBCLASS.PROCARG
 
-	'' adding a label, udt or enum? anything but a define or keyword is
-	'' allowed, if the same class doesn't exist already
-	case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, _
-		 FB.SYMBCLASS.TYPEDEF, FB.SYMBCLASS.FWDREF
+	'' adding a label or forward ref? anything but a define and keyword is allowed,
+	'' if the same class doesn't exist yet
+	case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.FWDREF
 
 		function = FALSE
 
@@ -526,6 +525,22 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 				if( n->class = s->class ) then
 					exit function
 				end if
+			end select
+
+			n = n->right
+		loop while( n <> NULL )
+
+	'' adding an udt, enum or typedef? anything but a define, keyword or
+	'' themselves is allowed
+	case FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, FB.SYMBCLASS.TYPEDEF
+
+		function = FALSE
+
+		do
+			select case as const n->class
+			case FB.SYMBCLASS.DEFINE, FB.SYMBCLASS.KEYWORD, _
+				 FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, FB.SYMBCLASS.TYPEDEF
+				exit function
 			end select
 
 			n = n->right
@@ -1977,7 +1992,7 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 				''
 				pdtype = parg->typ
 				if( pdtype >= IR.DATATYPE.POINTER ) then
-					pdtype = IR.DATATYPE.UINT
+					pdtype = IR.DATATYPE.POINTER
 					psubtype = NULL
 				else
 					psubtype = parg->subtype
@@ -1986,7 +2001,7 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 				''
 				fdtype = farg->typ
 				if( fdtype >= IR.DATATYPE.POINTER ) then
-					fdtype = IR.DATATYPE.UINT
+					fdtype = IR.DATATYPE.POINTER
 					fsubtype = NULL
 				else
 					fsubtype = farg->subtype
@@ -2025,8 +2040,8 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 	end if
 
 	'' add to linked-list or getOrgName will fail
-	ovlf->right = f
-	f->left     = ovlf
+	ovlf->right  = f
+	f->left      = ovlf
 
 	f->hashitem  = ovlf->hashitem
 	f->hashindex = ovlf->hashindex
@@ -2647,7 +2662,7 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 				''
 				pdtype = parg->typ
 				if( pdtype >= IR.DATATYPE.POINTER ) then
-					pdtype = IR.DATATYPE.UINT
+					pdtype = IR.DATATYPE.POINTER
 					psubtype = NULL
 				else
 					psubtype = parg->subtype
@@ -2656,7 +2671,7 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 				''
 				fdtype = farg->typ
 				if( fdtype >= IR.DATATYPE.POINTER ) then
-					fdtype = IR.DATATYPE.UINT
+					fdtype = IR.DATATYPE.POINTER
 					fsubtype = NULL
 				else
 					fsubtype = farg->subtype
@@ -2787,17 +2802,17 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 									pdtype = astGetDataType( exprTB(p) )
 									if( pdtype >= IR.DATATYPE.POINTER ) then
-										pdtype = IR.DATATYPE.UINT
+										pdtype = IR.DATATYPE.POINTER
 									end if
 
 									fdtype = farg->typ
 									if( fdtype >= IR.DATATYPE.POINTER ) then
-										fdtype = IR.DATATYPE.UINT
+										fdtype = IR.DATATYPE.POINTER
 									end if
 
 									mdtype = marg->typ
 									if( mdtype >= IR.DATATYPE.POINTER ) then
-										mdtype = IR.DATATYPE.UINT
+										mdtype = IR.DATATYPE.POINTER
 									end if
 
 									if( irMaxDataType( fdtype, pdtype ) = INVALID ) then
