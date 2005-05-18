@@ -38,7 +38,6 @@ rb_32:		.long	MASK_RB_32, MASK_RB_32
 r_16:		.short	MASK_R_16, MASK_R_16, MASK_R_16, MASK_R_16
 g_16:		.short	MASK_G_16, MASK_G_16, MASK_G_16, MASK_G_16
 b_16:		.short	MASK_B_16, MASK_B_16, MASK_B_16, MASK_B_16
-one:		.long	0x00010001, 0x00010001
 
 
 .text
@@ -794,9 +793,11 @@ FUNC(fb_hPutAlpha4MMX)
 	subl %ebx, %edx
 	movl %edx, LOCAL2
 	movq (rb_32), %mm5
+	movl $0x10001, %eax
 	movq %mm5, %mm6
-	movq (one), %mm7
+	movd %eax, %mm7
 	psllw $8, %mm6
+	punpckldq %mm7, %mm7
 
 LABEL(alpha4_y_loop)
 	movl ARG3, %ecx
