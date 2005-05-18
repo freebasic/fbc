@@ -6,12 +6,13 @@
 '' Visit My Site At nehe.gamedev.net
 ''
 
-'' compile as: fbc -s gui lesson07.bas bmpload.bas
+'' compile as: fbc -s gui lesson08.bas bmpload.bas
 
 ''------------------------------------------------------------------------------
 '' Use ESC key to quit
-'' L key to toggle lighting (on, off)
-'' F key to cycle filters (0=Nearest, 1=Linear , 2=MipMapped)
+'' L key to toggle lighting (on/off)
+'' F key to cycle filters (Nearest, Linear , MipMapped)
+'' B key to toggle blending (on/off)
 '' PgUp key and PgDn key to Zoom in and out
 '' UpArrow, DnArrow, RightArrow, Left Arrow to change rotate speed of cube
 ''
@@ -33,13 +34,15 @@ declare function LoadGLTextures() as integer
 	dim shared filter as uinteger                  '' Which Filter To Use
 	dim shared texture(0 to 2) as uinteger         '' Storage For 3 Textures
 	
-	dim shared light as integer                    '' Lighting ON/OFF ( NEW )
-	dim shared lp as integer                       '' L Pressed? ( NEW )
-	dim shared fp as integer                       '' F Pressed? ( NEW )
+	dim shared light as integer                    '' Lighting ON/OFF
+	dim shared blend as integer                    '' Blending OFF/ON? ( NEW )
+	dim shared lp as integer                       '' L Pressed?
+	dim shared fp as integer                       '' F Pressed?
+	dim shared bp as integer                       '' B Pressed? ( NEW )
 	
-	dim LightAmbient(0 to 3) as single => {0.5, 0.5, 0.5, 1.0}   '' Ambient Light Values ( NEW )
-	dim LightDiffuse(0 to 3) as single => {1.0, 1.0, 1.0, 1.0}   '' Diffuse Light Values ( NEW
-	dim LightPosition(0 to 3) as single => {0.0, 0.0, 2.0, 1.0}  '' Light Position ( NEW )
+	dim LightAmbient(0 to 3) as single => {0.5, 0.5, 0.5, 1.0}   '' Ambient Light Values
+	dim LightDiffuse(0 to 3) as single => {1.0, 1.0, 1.0, 1.0}   '' Diffuse Light Values
+	dim LightPosition(0 to 3) as single => {0.0, 0.0, 2.0, 1.0}  '' Light Position
 	
 	dim xrot as single                             '' X Rotation
 	dim yrot as single                             '' Y Rotation
@@ -76,11 +79,13 @@ declare function LoadGLTextures() as integer
 	glLightfv GL_LIGHT1, GL_POSITION, @LightPosition(0) '' Position The Light
 	glEnable GL_LIGHT1                                  '' Enable Light One
 	
+	glColor4f 1.0, 1.0, 1.0, 0.5                        '' Full Brightness.  50% Alpha
+	glBlendFunc GL_SRC_ALPHA, GL_ONE                    '' Set The Blending Function For Translucency
 	
 	do
 		glClear GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT      '' Clear Screen And Depth Buffer
 		glLoadIdentity                                          '' Reset The View
-		glTranslatef 0.0,0.0,z                                  '' Translate Into/Out Of The Screen By z
+		glTranslatef 0.0,0.0,z
 	
 		glRotatef xrot,1.0,0.0,0.0                              '' Rotate On The X Axis By xrot
 		glRotatef yrot,0.0,1.0,0.0                              '' Rotate On The Y Axis By yrot
@@ -134,9 +139,9 @@ declare function LoadGLTextures() as integer
 			lp = true
 			light = not light                     '' toggle light on /off
 			if (not light) then
-			  glDisable(GL_LIGHTING)              '' disable lighting
+				glDisable(GL_LIGHTING)              '' disable lighting
 			else
-			  glEnable(GL_LIGHTING)               '' enable lighting
+				glEnable(GL_LIGHTING)               '' enable lighting
 			end if
 		end if
 		if not MULTIKEY(SC_L) then lp = false   '' L key up
@@ -147,6 +152,21 @@ declare function LoadGLTextures() as integer
 			if (filter > 2) then filter = 0       '' 2 -> 0
 		end if
 		if not MULTIKEY(SC_F) then fp = false   '' F Key Up
+	
+		'' Blending Code Starts Here
+		if MULTIKEY(SC_B) and not bp then       '' B Key down
+			bp = true
+			blend = not blend                     '' toggle blending On/Off
+			if blend then
+				glEnable(GL_BLEND)                  '' Turn Blending On
+				glDisable(GL_DEPTH_TEST)            '' Turn Depth Testing Off
+			else
+				glDisable(GL_BLEND)                 '' Turn Blending Off
+				glEnable(GL_DEPTH_TEST)             '' Turn Depth Testing On
+			end if
+		end if
+		if not MULTIKEY(SC_B) then bp = false   '' B Key up
+		'' Blending Code Ends Here
 	
 		if MULTIKEY(SC_PAGEUP) then z-=0.02     '' If Page Up is Being Pressed, Move Into The Screen
 		if MULTIKEY(SC_PAGEDOWN) then z+=0.02   '' If Page Down is Being Pressed, Move Towards The Viewer
@@ -169,7 +189,7 @@ function LoadGLTextures() as integer
   dim TextureImage(0) as BITMAP_RGBImageRec ptr     '' Create Storage Space For The Texture
 
   ' Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
-  TextureImage(0) = LoadBMP("data/Crate.bmp")
+  TextureImage(0) = LoadBMP("data/Glass.bmp")
   if TextureImage(0) then
     Status = true                                   '' Set The Status To TRUE
     glGenTextures 3, @texture(0)                    '' Create The Texture
