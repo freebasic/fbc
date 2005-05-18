@@ -5333,13 +5333,6 @@ sub emitClose( byval tottime as double )
 end sub
 
 '':::::
-sub emitDbgLine( byval lnum as integer, byval lname as string )
-
-	edbgLine( lnum, lname )
-
-end sub
-
-'':::::
 sub hWriteStr( byval f as integer, byval addtab as integer, byval s as string ) static
     dim as string ostr
 

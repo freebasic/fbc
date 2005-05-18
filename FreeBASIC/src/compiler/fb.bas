@@ -132,10 +132,6 @@ private sub hSetCtx
 	env.reclevel		= 0
 	env.currproc 		= NULL
 
-	env.dbglname 		= ""
-	env.dbglnum 		= 0
-	env.dbgpos 			= 0
-
 	env.optbase			= 0
 	env.optargmode		= FB.ARGMODE.BYREF
 	env.optexplicit		= FALSE

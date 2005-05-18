@@ -34,6 +34,7 @@ defint a-z
 '$include once: 'inc\ast.bi'
 '$include once: 'inc\ir.bi'
 '$include once: 'inc\emit.bi'
+'$include once: 'inc\emitdbg.bi'
 
 declare function cConstExprValue			( value as integer ) as integer
 
@@ -43,33 +44,14 @@ declare function cSymbUDTInit				( byval basesym as FBSYMBOL ptr, _
 					   						  byval islocal as integer ) as integer
 
 '':::::
-function hIsSttSeparatorOrComment( byval token as integer ) as integer static
-
-	function = FALSE
-
-	if( token = FB.TK.STATSEPCHAR ) then
-		function = TRUE
-	elseif( token = FB.TK.COMMENTCHAR ) then
-		function = TRUE
-	else
-		select case as const token
-		case FB.TK.EOL, FB.TK.EOF, FB.TK.REM
-			function = TRUE
-		end select
-	end if
-
-end function
-
-
-'':::::
 ''Program         =   Line* EOF .
 ''
 function cProgram as integer
     dim res as integer
 
     do
-    	res = cLine
-    loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+    	res = cLine( )
+    loop while( (res) and (lexCurrentToken( ) <> FB.TK.EOF) )
 
     if( res ) then
     	if( not hMatch( FB.TK.EOF ) ) then
@@ -85,55 +67,11 @@ function cProgram as integer
 end function
 
 '':::::
-sub cDebugLineBegin
-
-    if( not env.clopt.debug ) then
-    	exit sub
-    end if
-
-    if( env.dbglnum > 0 ) then
-    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irFlush( )
-    	env.dbgpos = emitGetPos( ) - env.dbgpos
-    	if( env.dbgpos > 0 ) then
-    		emitDbgLine( env.dbglnum, env.dbglname )
-    	end if
-    end if
-
-    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    irFlush( )
-    env.dbgpos	 = emitGetPos( )
-    env.dbglnum  = lexLineNum( )
-    env.dbglname = *hMakeTmpStr( )
-    emitLABEL( env.dbglname )
-
-end sub
-
-'':::::
-sub cDebugLineEnd
-
-    if( not env.clopt.debug ) then
-    	exit sub
-    end if
-
-    if( env.dbglnum > 0 ) then
-    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irFlush( )
-    	env.dbgpos = emitGetPos( ) - env.dbgpos
-    	if( env.dbgpos > 0 ) then
-   			emitDbgLine( env.dbglnum, env.dbglname )
-   		end if
-    	env.dbglnum = 0
-    end if
-
-end sub
-
-'':::::
 ''Line            =   Label? Statement? Comment? EOL .
 ''
 function cLine as integer
 
-	cDebugLineBegin( )
+	edbgLineBegin( )
 
     cLabel( )
     cStatement( )
@@ -150,7 +88,7 @@ function cLine as integer
 		end if
     end if
 
-    cDebugLineEnd( )
+    edbgLineEnd( )
 
     function = TRUE
 
@@ -162,7 +100,7 @@ end function
 function cSimpleLine as integer
     dim res as integer
 
-    cDebugLineBegin( )
+    edbgLineBegin( )
 
     cLabel( )
     res = cSimpleStatement( )
@@ -183,7 +121,7 @@ function cSimpleLine as integer
 		end if
 	end if
 
-    cDebugLineEnd( )
+    edbgLineEnd( )
 
     function = TRUE
 

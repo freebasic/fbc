@@ -370,9 +370,6 @@ declare sub 		emitPUSHUDT			( byval sname as string, _
 declare sub 		emitPOP				( byval sname as string, _
 										  byval svreg as IRVREG ptr )
 
-declare	sub 		emitDbgLine			( byval lnum as integer, _
-										  byval lname as string )
-
 declare	function 	emitGetPos 			( ) as integer
 
 

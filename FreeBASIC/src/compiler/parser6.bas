@@ -378,13 +378,14 @@ function cDataStmt as integer static
 
 		'' LABEL?
 		s = NULL
-		if( not hIsSttSeparatorOrComment( lexCurrentToken( ) ) ) then
+		select case lexCurrentTokenClass( )
+		case FB.TKCLASS.IDENTIFIER, FB.TKCLASS.NUMLITERAL
 			s = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
 			if( s = NULL ) then
 				s = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 			end if
 			lexSkipToken( )
-		end if
+		end select
 
 		function = rtlDataRestore( s )
 

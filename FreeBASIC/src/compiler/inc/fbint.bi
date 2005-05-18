@@ -789,11 +789,6 @@ type FBENV
 	'' cmm-line options
 	clopt			as FBCMMLINEOPT
 
-	'' debug states
-	dbglname 		as zstring * 32+1
-	dbglnum 		as integer
-	dbgpos 			as integer
-
 	'' options
 	optbase			as integer					'' default= 0
 	optargmode		as integer					'' def    = byref

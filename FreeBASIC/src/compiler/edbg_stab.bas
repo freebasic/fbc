@@ -43,6 +43,11 @@ type EDBGCTX
 	procinitline 	as integer
 
 	typecnt			as uinteger
+
+	lname 			as zstring * 32+1
+	lnum 			as integer
+	pos 			as integer
+	isnewline		as integer
 end type
 
 declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
@@ -157,6 +162,10 @@ sub edbgHeader( byval asmf as integer, _
 	ctx.mainclosed	= FALSE
 	ctx.typecnt 	= 1
 
+	ctx.lname 		= ""
+	ctx.lnum 		= 0
+	ctx.isnewline 	= TRUE
+
 	'' emit source file
     fname = hRevertSlash( filename )
     hWriteStr( asmf, TRUE, ".file \"" + fname + "\"" )
@@ -248,6 +257,55 @@ sub edgbMainEnd( )
 end sub
 
 '':::::
+sub edbgLineBegin( )
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+    if( ctx.lnum > 0 ) then
+    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+    	irFlush( )
+    	ctx.pos = emitGetPos( ) - ctx.pos
+    	if( ctx.pos > 0 ) then
+    		edbgLine( ctx.lnum, ctx.lname )
+    		ctx.isnewline = TRUE
+    	end if
+    end if
+
+    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+    irFlush( )
+    ctx.pos	 = emitGetPos( )
+    ctx.lnum  = lexLineNum( )
+    if( ctx.isnewline ) then
+    	ctx.lname = *hMakeTmpStr( )
+    	emitLABEL( ctx.lname )
+    	ctx.isnewline = FALSE
+    end if
+
+end sub
+
+'':::::
+sub edbgLineEnd( )
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+    if( ctx.lnum > 0 ) then
+    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
+    	irFlush( )
+    	ctx.pos = emitGetPos( ) - ctx.pos
+    	if( ctx.pos > 0 ) then
+   			edbgLine( ctx.lnum, ctx.lname )
+   			ctx.isnewline = TRUE
+   		end if
+    	ctx.lnum = 0
+    end if
+
+end sub
+
+'':::::
 sub edbgLine( byval lnum as integer, _
 			  byval lname as string ) static
 
@@ -317,6 +375,8 @@ sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
 	desc += hGetDataType( proc )
 
 	hEmitSTABS( STAB_TYPE_FUN, desc, 0, ctx.procinitline, procname )
+
+	ctx.isnewline = TRUE
 
 end sub
 
@@ -389,6 +449,8 @@ sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
 
 	'' emit end proc (FUN with a null string)
 	hEmitSTABS( STAB_TYPE_FUN, "", 0, 0, lname + "-" + procname )
+
+	ctx.isnewline = TRUE
 
 end sub
 
@@ -652,6 +714,8 @@ sub edbgIncludeBegin ( byval incfile as string ) static
 
 	emitLABEL( lname )
 
+	ctx.isnewline = TRUE
+
 end sub
 
 '':::::
@@ -662,6 +726,8 @@ sub edbgIncludeEnd ( ) static
 	end if
 
 	hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
+
+	ctx.isnewline = TRUE
 
 end sub
 

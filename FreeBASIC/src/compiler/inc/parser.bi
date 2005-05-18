@@ -232,8 +232,6 @@ declare function    cFuncPtrOrDerefFields	( sym as FBSYMBOL ptr, _
 					      					  byval isfuncptr as integer, _
 					      					  byval checkarray as integer ) as integer
 
-declare function 	hIsSttSeparatorOrComment( byval token as integer ) as integer
-
 declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, _
 											  byval expr as ASTNODE ptr ) as integer
 

@@ -23,6 +23,10 @@ declare sub 		edbgHeader			( byval asmf as integer, _
 
 declare sub 		edgbMainEnd			( )
 
+declare sub 		edbgLineBegin		( )
+
+declare sub 		edbgLineEnd			( )
+
 declare sub 		edbgLine			( byval lnum as integer, _
 										  byval lname as string )
 
