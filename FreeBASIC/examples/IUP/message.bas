@@ -1,4 +1,4 @@
-#include once "iup/iup.bi"
+#include once "IUP/iup.bi"
 
   '' Initializes IUP
   IupOpen()

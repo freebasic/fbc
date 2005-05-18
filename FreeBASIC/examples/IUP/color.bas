@@ -1,7 +1,7 @@
 option explicit
 option escape
 
-#include once "iup/iup.bi"
+#include once "IUP/iup.bi"
 
 #define NULL 0
 
