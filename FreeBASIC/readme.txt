@@ -522,6 +522,9 @@ Credits (in alphabetic order):
     - Wrote the glade_gui demo at the examples/Gtk directory, besides the 
       wx-c GUI examples (not included).
       
+  o Garvan O'Keeffe (sisophon2001@yahoo.com):
+    - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
+
   o Randy Keeling (randy@keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
 

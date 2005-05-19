@@ -30,6 +30,8 @@ Version 0.14 Beta:
 - enabled -noexport command-line option forcing not to export any symbol for dynamic linkage (lillo)
 - added BMP saving capabilities to BSAVE, due to popular demand (lillo)
 - warning message for suspicious pointer assignaments (v1c)
+- include file and import lib for the CGUI library (v1c)
+- many NeHe OpenGL lessons, ported by sisophon2001 (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
