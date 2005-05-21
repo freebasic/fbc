@@ -442,7 +442,7 @@ Declare Function auxOutMessage Lib "winmm" (ByVal uDeviceID As Integer, ByVal ms
 Declare Function auxSetVolume Lib "winmm" (ByVal uDeviceID As Integer, ByVal dwVolume As Integer) As Integer
 Declare Function GetDriverModuleHandle Lib "winmm" (ByVal hDriver As Integer) As Integer
 Declare Function joyGetDevCaps Lib "winmm" Alias "joyGetDevCapsA" (ByVal id As Integer, lpCaps As JOYCAPS, ByVal uSize As Integer) As Integer
-Declare Function joyGetNumDevs Lib "winmm" Alias "joyGetNumDev" () As Integer
+Declare Function joyGetNumDevs Lib "winmm" Alias "joyGetNumDevs" () As Integer
 Declare Function joyGetPos Lib "winmm" (ByVal uJoyID As Integer, pji As JOYINFO) As Integer
 Declare Function joyGetPosEx Lib "winmm" (ByVal uJoyID As Integer, pji As JOYINFOEX) As Integer
 Declare Function joyGetThreshold Lib "winmm" (ByVal id As Integer, lpuThreshold As Integer) As Integer
