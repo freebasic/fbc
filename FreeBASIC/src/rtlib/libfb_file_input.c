@@ -36,7 +36,7 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
 FBCALL int fb_FileInput( int fnum )
 {
 	FBSTRING s;
-	
+
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
@@ -67,7 +67,7 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 {
 	FBSTRING s;
 	int res;
-	
+
 	FB_TLSSET( fb_inpctx.f, 0 );
 	FB_TLSSET( fb_inpctx.i, 0 );
 	s.data = (char *)FB_TLSGET( fb_inpctx.s.data );
@@ -75,7 +75,7 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 	s.size = (int)FB_TLSGET( fb_inpctx.s.size );
 
 	res = fb_LineInput( text, &s, -1, 0, addquestion, addnewline );
-	
+
 	FB_TLSSET( fb_inpctx.s.data, s.data );
 	FB_TLSSET( fb_inpctx.s.len, s.len );
 	FB_TLSSET( fb_inpctx.s.size, s.size );
@@ -225,7 +225,7 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
     int 	c, len, isquote, skipcomma;
     char    *p;
 
-	/* skip white spc */
+	/* skip white space */
 	do
 	{
 		c = fb_hReadChar( );
@@ -238,7 +238,7 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 	p = buffer;
 	len = 0;
 	skipcomma = 0;
-	
+
 	while( c != EOF )
 	{
 		switch( c )
@@ -257,13 +257,17 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 		case '"':
 			if( !isquote )
 			{
-				isquote = 1;
+				if( len == 0 )
+					isquote = 1;
+				else
+					goto savechar;
 			}
 			else
 			{
-				isquote = 0;				
+				isquote = 0;
 				if( isstring )
 				{
+					c = fb_hReadChar( );
 					skipcomma = 1;
 					len = maxlen;				/* exit */
 				}
@@ -284,7 +288,8 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 		case ' ':
 			if( len == 0 )
 			{
-				break;							/* skip white-space */
+				if( !isstring || !isquote )
+					break;						/* skip white-space */
 			}
 			else if( !isstring && !isquote )
 			{
@@ -297,21 +302,36 @@ savechar:
 			*p++ = (char)c;
 			++len;
 		}
-		
+
 		if( len >= maxlen )
 			break;
-			
+
 		c = fb_hReadChar( );
 	}
 
 	/* null term */
 	*p = '\0';
 
-	/* skip comma */
+	/* skip comma or newline */
 	if( skipcomma )
 	{
-		while( (c != ',') && (c != 10) && (c != 13) && (c != EOF) )
+		/* skip white space */
+		while( (c == 32) || (c == 9) )
 			c = fb_hReadChar( );
-	}
 
+		switch( c )
+		{
+		case ',':
+		case EOF:
+			break;
+
+		case 13:
+			if( (c = fb_hReadChar( )) != 10 )
+				fb_hUnreadChar( c );
+			break;
+
+		default:
+			fb_hUnreadChar( c );
+		}
+	}
 }
