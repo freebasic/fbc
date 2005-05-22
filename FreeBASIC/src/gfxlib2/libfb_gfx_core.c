@@ -98,10 +98,6 @@ void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2)
 	switch (coord_type) {
 		
 		case COORD_TYPE_R:
-			*x1 = fb_mode->last_x;
-			*y1 = fb_mode->last_y;
-			break;
-		
 		case COORD_TYPE_RA:
 			*x1 += fb_mode->last_x;
 			*y1 += fb_mode->last_y;

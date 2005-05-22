@@ -32,6 +32,7 @@ Version 0.14 Beta:
 - warning message for suspicious pointer assignaments (v1c)
 - include file and import lib for the CGUI library (v1c)
 - many NeHe OpenGL lessons, ported by sisophon2001 (v1c)
+- IMAGECREATE and IMAGEDESTROY built-in function to create and destroy gfx image buffers (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -55,6 +56,8 @@ Version 0.14 Beta:
 - PRINT'ing nothing followed by commas "PRINT," would not print the padding correctly (v1c)
 - escape sequences were not being converted when used within var initializers (v1c)
 - MMX inline asm wasn't compiling as GAS didn't understand it even if .arch i686 was used (lillo)
+- WIDTH in gfx mode was crashing if either one of width or height was not specified (lillo)
+- STEP clause applied to PSET was not forcing coordinates to be relative to last gfx cursor position (lillo)
 
 
 Version 0.13 Beta:

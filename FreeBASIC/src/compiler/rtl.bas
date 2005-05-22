@@ -1380,6 +1380,22 @@ data "screeninfo", "fb_GfxScreenInfo", _
 	 @hGfxlib_cb, FALSE, FALSE, _
 	 0
 
+'' fb_GfxImageCreate ( byval width as integer, byval height as integer ) as any ptr
+data "imagecreate", "fb_GfxImageCreate", _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, FALSE, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&hFEFF00FF
+
+'' fb_GfxImageDestroy ( byval image as any ptr ) as void
+data "imagedestroy", "fb_GfxImageDestroy", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, FALSE, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
+	 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -6013,6 +6029,8 @@ function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr, s as FBSYMBOL ptr
 	dim expr as ASTNODE ptr
 
+	return TRUE
+	
 	function = FALSE
 
 	f = ifuncTB(FB.RTL.PROFILESETPROC)

@@ -254,6 +254,8 @@ extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void);
+extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color);
+extern FBCALL void fb_GfxImageDestroy(void *image);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
 extern FBCALL int fb_GfxPaletteInp(int port);

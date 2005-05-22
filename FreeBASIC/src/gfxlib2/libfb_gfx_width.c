@@ -33,8 +33,14 @@ void fb_GfxWidth(int w, int h)
 	int font_w, font_h;
 	const FONT *font = NULL;
 	
-	font_w = fb_mode->w / w;
-	font_h = fb_mode->h / h;
+	if (w)
+		font_w = fb_mode->w / w;
+	else
+		font_w = 8;
+	if (h)
+		font_h = fb_mode->h / h;
+	else
+		font_h = fb_mode->font->h;
 	if (font_w != 8)
 		return;
 	switch (font_h) {

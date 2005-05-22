@@ -8,6 +8,8 @@ DEFINT A - Z
 
 #define TEX_MASKED      &h1 
 #define TEX_MIPMAP      &h2
+#DEFINE TEX_NOFILTER    &h4
+#DEFINE TEX_HASALPHA    &h8
 
 const PI = 3.141593                     'PI for rotation
 
@@ -366,7 +368,7 @@ End Sub
 		DIM p AS UINTEGER PTR, s AS USHORT PTR
 		DIM AS INTEGER w, h, x, y, col
 		DIM tex AS GLuint
-		DIM AS GLenum format, minfilter
+		DIM AS GLenum format, minfilter, magfilter
 		
 		CreateTexture = 0
 		
@@ -392,35 +394,51 @@ End Sub
 			FOR x = 0 TO w-1
 				col = POINT(x, y, buffer)
 				'' Swap R and B so we can use the GL_RGBA texture format
-				col = RGB(col AND &hFF, _
+				col = RGBA(col AND &hFF, _
 						  (col SHR 8) AND &hFF, _
-						  (col SHR 16) AND &hFF)
-				IF( (flags AND TEX_MASKED) AND (col = &hFF00FF) ) THEN
-					*p = 0
+						  (col SHR 16) AND &hFF, _
+						  col SHR 24)
+				IF( flags AND TEX_HASALPHA ) THEN
+					*p = col
 				ELSE
-					*p = col OR &hFF000000
+					IF( (flags AND TEX_MASKED) AND _
+							(col = &hFF00FF) ) THEN
+						*p = 0
+					ELSE
+						*p = col OR &hFF000000
+					END IF
 				END IF
 				p += 4
 			NEXT x
 		NEXT y
 		
-		IF( flags AND TEX_MASKED ) THEN
+		IF( flags AND ( TEX_MASKED OR TEX_HASALPHA ) ) THEN
 			format = GL_RGBA
 		ELSE
 			format = GL_RGB
 		END IF
 		
+		IF( flags AND TEX_NOFILTER ) THEN
+			magfilter = GL_NEAREST
+		ELSE
+			magfilter = GL_LINEAR
+		END IF
+		
 		IF( flags AND TEX_MIPMAP ) THEN
 			gluBuild2DMipmaps GL_TEXTURE_2D, format, w, h, GL_RGBA, _
 							  GL_UNSIGNED_BYTE, @dat(0)
-			minfilter = GL_LINEAR_MIPMAP_LINEAR
+			IF( flags AND TEX_NOFILTER ) THEN
+				minfilter = GL_NEAREST_MIPMAP_NEAREST
+			ELSE
+				minfilter = GL_LINEAR_MIPMAP_LINEAR
+			END IF
 		ELSE
-			minfilter = GL_LINEAR
+			glTexImage2D GL_TEXTURE_2D, 0, format, w, h, 0, GL_RGBA, _
+							 GL_UNSIGNED_BYTE, @dat(0)
+			minfilter = magfilter
 		END IF
-		glTexImage2D GL_TEXTURE_2D, 0, format, w, h, 0, GL_RGBA, _
-					 GL_UNSIGNED_BYTE, @dat(0)
 		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
-		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter
 		
 		CreateTexture = tex
 	

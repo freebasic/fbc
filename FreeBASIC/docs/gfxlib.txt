@@ -17,10 +17,13 @@ coding without worrying about platform dependent initializations.
 This document holds a reference of the available functions in alphabetical
 order, together with small inline examples where appropriate and with remarked
 differences with their QB counterparts. You'll also find some appendices for
-special topics.
+special topics. Be sure to have a look at Appendix F, as it provides many
+hints and shows some of the new features GFXlib comes with.
 
 Some useful constants are defined in the fbgfx.bi include file for you to use,
 you may want to have a look at it, it's in your FreeBASIC/inc directory.
+Note that this include file is not mandatory for using GFXlib; it is just
+provided to supply some useful constants, nothing more.
 
 Happy coding!
 
@@ -38,6 +41,8 @@ Functions reference:
 	GET		statement
 	GETJOYSTICK	statement
 	GETMOUSE	statement
+	IMAGECREATE	function
+	IMAGEDESTROY	statement
 	INP		function
 	LINE		statement
 	MULTIKEY	function
@@ -676,6 +681,99 @@ SETMOUSE, SCREEN, MULTIKEY, GETJOYSTICK.
 
 
 
++-------------+---------------------------------------------------------------
+| IMAGECREATE |
++-------------+
+
+Function to create a new image buffer.
+
+
+Syntax:
+	IMAGECREATE(width,height[,color])
+
+
+Argument:	Description:
+
+width,height	Size of the image in pixels.
+
+color		Optional color with which to clear the image upon creation.
+		If omitted, defaults to the trasparent color.
+
+
+Insights:
+
+Use this function to allocate and set up a memory buffer for pixel data; once
+created, the image can be used as target to all gfx primitives.
+Upon creation, the image is cleared to color if specified, otherwise it is
+cleared to the transparent color for the current color depth, that is, 0 for
+indexed modes and &hFF00FF for hi/truecolor modes.
+IMAGECREATE returns a pointer to the allocated image block, and will succeed
+only if a gfx mode has already been set by calling SCREEN or SCREENRES; on
+failure, 0 is returned.
+Images created by IMAGECREATE must be freed by calling IMAGEDESTROY once you
+are done using them in order to free allocated memory.
+
+
+Example:
+
+DIM buffer AS ANY PTR
+SCREEN 15, 32
+buffer = IMAGECREATE(64, 64, RGBA(64, 160, 0, 255))
+CIRCLE buffer, (32, 32), 28, RGBA(255, 0, 0, 128),,,,F
+PUT (160, 120), buffer, PSET
+PUT (180, 140), buffer, ALPHA
+IMAGEDESTROY buffer
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+IMAGEDESTROY, SCREEN, SCREENRES.
+
+
+
++--------------+--------------------------------------------------------------
+| IMAGEDESTROY |
++--------------+
+
+Function to free the memory allocated for an image created by IMAGECREATE.
+
+
+Syntax:
+	IMAGEDESTROY image
+
+
+Argument:	Description:
+
+image		The image to be freed.
+
+
+Insights:
+
+IMAGEDESTROY frees the memory allocated for the given image, assuming it was
+previously created by calling IMAGECREATE.
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+IMAGECREATE.
+
+
+
 +-----+-----------------------------------------------------------------------
 | INP |
 +-----+
@@ -1256,12 +1354,13 @@ blender		Pointer to custom blender function; see below.
 
 Insights:
 
-PUT can be used to draw images previously saved by the GET statement. The x
-and y coordinates are affected by the last call to the VIEW and WINDOW
-statements, and plotted image respects the current clipping region set by last
-call to the VIEW statement. Pixels stored in given array (source pixels) are
-drawn on the screen interacting with the pixels onto which they are going to
-be drawn (destination pixels); the interaction depends on the mode parameter:
+PUT can be used to draw images previously saved by the GET statement or
+created by the IMAGECREATE function. The x and y coordinates are affected by
+the last call to the VIEW and WINDOW statements, and plotted image respects
+the current clipping region set by last call to the VIEW statement. Pixels
+stored in given array (source pixels) are drawn on the screen interacting with
+the pixels onto which they are going to be drawn (destination pixels); the
+interaction depends on the mode parameter:
 
 mode:		interaction:
 PSET		Source pixels overwrite destination pixels.
@@ -2544,6 +2643,28 @@ Appendix F: Hints
 	PUT buffer, (50,50), sprite, PSET
 	PUT (80,40),buffer, PSET
 
+  An easier way to create a GET/PUT buffer is to use the IMAGECREATE function:
+  this will automatically allocate and set up the image buffer for you. The
+  above example would become:
+  
+	DIM buffer AS ANY PTR
+	DIM sprite AS ANY PTR
+	
+	SCREEN 13
+	
+	buffer = IMAGECREATE(160, 120)
+	sprite = IMAGECREATE(32, 32)
+	
+	CIRCLE buffer, (16,16), 15, 12,,, 1, F
+	GET buffer, (0,0)-(31,31), sprite
+	PSET sprite, (16,16), 15
+	LINE buffer, (0,0)-(159,119), 2, B
+	PUT buffer, (50,50), sprite, PSET
+	PUT (80,40),buffer, PSET
+	
+	IMAGEDESTROY buffer
+	IMAGEDESTROY sprite
+
   When drawing onto a buffer, coordinates are affected by the most recent call
   to WINDOW, but VIEW has no effect; clipping is set to the whole buffer area.
   Of course the optional target buffer parameter passed to all gfx primitives
@@ -2680,6 +2801,8 @@ Appendix F: Hints
   
 	#DEFINE TEX_MASKED		&h1
 	#DEFINE TEX_MIPMAP		&h2
+	#DEFINE TEX_NOFILTER		&h4
+	#DEFINE TEX_HASALPHA		&h8
 	
 	FUNCTION CreateTexture( BYVAL buffer AS ANY PTR, BYVAL flags AS INTEGER _
 							= 0 ) AS GLuint
@@ -2687,7 +2810,7 @@ Appendix F: Hints
 		DIM p AS UINTEGER PTR, s AS USHORT PTR
 		DIM AS INTEGER w, h, x, y, col
 		DIM tex AS GLuint
-		DIM AS GLenum format, minfilter
+		DIM AS GLenum format, minfilter, magfilter
 		
 		CreateTexture = 0
 		
@@ -2713,35 +2836,51 @@ Appendix F: Hints
 			FOR x = 0 TO w-1
 				col = POINT(x, y, buffer)
 				'' Swap R and B so we can use the GL_RGBA texture format
-				col = RGB(col AND &hFF, _
+				col = RGBA(col AND &hFF, _
 						  (col SHR 8) AND &hFF, _
-						  (col SHR 16) AND &hFF)
-				IF( (flags AND TEX_MASKED) AND (col = &hFF00FF) ) THEN
-					*p = 0
+						  (col SHR 16) AND &hFF, _
+						  col SHR 24)
+				IF( flags AND TEX_HASALPHA ) THEN
+					*p = col
 				ELSE
-					*p = col OR &hFF000000
+					IF( (flags AND TEX_MASKED) AND _
+							(col = &hFF00FF) ) THEN
+						*p = 0
+					ELSE
+						*p = col OR &hFF000000
+					END IF
 				END IF
 				p += 4
 			NEXT x
 		NEXT y
 		
-		IF( flags AND TEX_MASKED ) THEN
+		IF( flags AND ( TEX_MASKED OR TEX_HASALPHA ) ) THEN
 			format = GL_RGBA
 		ELSE
 			format = GL_RGB
 		END IF
 		
+		IF( flags AND TEX_NOFILTER ) THEN
+			magfilter = GL_NEAREST
+		ELSE
+			magfilter = GL_LINEAR
+		END IF
+		
 		IF( flags AND TEX_MIPMAP ) THEN
 			gluBuild2DMipmaps GL_TEXTURE_2D, format, w, h, GL_RGBA, _
 							  GL_UNSIGNED_BYTE, @dat(0)
-			minfilter = GL_LINEAR_MIPMAP_LINEAR
+			IF( flags AND TEX_NOFILTER ) THEN
+				minfilter = GL_NEAREST_MIPMAP_NEAREST
+			ELSE
+				minfilter = GL_LINEAR_MIPMAP_LINEAR
+			END IF
 		ELSE
-			minfilter = GL_LINEAR
+			glTexImage2D GL_TEXTURE_2D, 0, format, w, h, 0, GL_RGBA, _
+							 GL_UNSIGNED_BYTE, @dat(0)
+			minfilter = magfilter
 		END IF
-		glTexImage2D GL_TEXTURE_2D, 0, format, w, h, 0, GL_RGBA, _
-					 GL_UNSIGNED_BYTE, @dat(0)
 		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
-		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+		glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter
 		
 		CreateTexture = tex
 	
