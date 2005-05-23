@@ -58,6 +58,7 @@ Version 0.14 Beta:
 - MMX inline asm wasn't compiling as GAS didn't understand it even if .arch i686 was used (lillo)
 - WIDTH in gfx mode was crashing if either one of width or height was not specified (lillo)
 - STEP clause applied to PSET was not forcing coordinates to be relative to last gfx cursor position (lillo)
+- function profiler rewritten to fix recursive functions profiling (lillo)
 
 
 Version 0.13 Beta:

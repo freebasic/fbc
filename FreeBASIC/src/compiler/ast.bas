@@ -1742,9 +1742,9 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' Profiled function have sub nodes
 	case AST.NODECLASS.FUNCT
-		p = n->proc.profstart
+		p = n->proc.profbegin
 		if( p <> NULL ) then
-			nn->proc.profstart = astCloneTree( p )
+			nn->proc.profbegin = astCloneTree( p )
 			nn->proc.profend = astCloneTree( n->proc.profend )
 		end if
 	end select
@@ -1784,7 +1784,7 @@ sub astDelTree ( byval n as ASTNODE ptr )
 
 	'' Profiled functions have sub nodes
 	case AST.NODECLASS.FUNCT
-		p = n->proc.profstart
+		p = n->proc.profbegin
 		if( p <> NULL ) then
 			astDelTree( p )
 			astDelTree( n->proc.profend )
@@ -4284,12 +4284,12 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 	n->proc.strtail = NULL
 
 	'' function profiling
-	n->proc.profstart = NULL
+	n->proc.profbegin = NULL
 	n->proc.profend   = NULL
 	if( env.clopt.profile ) then
 		if( not isprofiler ) then
-			n->proc.profstart = rtlProfileStartCall( sym )
-			if( n->proc.profstart <> NULL ) then
+			n->proc.profbegin = rtlProfileBeginCall( sym )
+			if( n->proc.profbegin <> NULL ) then
 				n->proc.profend   = rtlProfileEndCall( )
 			end if
 		end if
@@ -5074,7 +5074,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' execute each param and push the result
 	proc = n->proc.sym
 
-	pstart = n->proc.profstart
+	pstart = n->proc.profbegin
 	pend   = n->proc.profend
 
 	'' ordinary pointer?

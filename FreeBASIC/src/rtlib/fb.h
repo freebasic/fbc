@@ -580,8 +580,7 @@ FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_siz
 
 	   void			fb_ProfileInit		( void );
 	   void			fb_ProfileEnd		( void );
-	   void			fb_ProfileSetProc	( const char *procname );
-	   void			*fb_ProfileStartCall( const char *procname );
+	   void			*fb_ProfileBeginCall( const char *procname );
 	   void			fb_ProfileEndCall	( void *call );
 
 /**************************************************************************************************

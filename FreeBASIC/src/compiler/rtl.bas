@@ -1188,15 +1188,8 @@ data "fb_GfxScreenRes", "", _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
-'' fb_ProfileSetProc ( procname as string ) as void
-data "fb_ProfileSetProc", "", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
-
-'' fb_ProfileStartCall ( procname as string ) as any ptr
-data "fb_ProfileStartCall", "", _
+'' fb_ProfileBeginCall ( procname as string ) as any ptr
+data "fb_ProfileBeginCall", "", _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
@@ -6025,40 +6018,13 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function rtlProfileSetProc( byval symbol as FBSYMBOL ptr ) as integer
-    dim proc as ASTNODE ptr, f as FBSYMBOL ptr, s as FBSYMBOL ptr
-	dim expr as ASTNODE ptr
-
-	return TRUE
-	
-	function = FALSE
-
-	f = ifuncTB(FB.RTL.PROFILESETPROC)
-    proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
-
-	if( symbol <> NULL ) then
-		expr = hGetProcName( symbol )
-	else
-		expr = astNewCONSTi( 0, IR.DATATYPE.POINTER+IR.DATATYPE.CHAR )
-	end if
-	if( astNewPARAM( proc, expr, INVALID, FB.ARGMODE.BYVAL ) = NULL ) then
-		exit function
-	end if
-
-  	astFlush( proc )
-
-  	function = TRUE
-
-end function
-
-'':::::
-function rtlProfileStartCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
+function rtlProfileBeginCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 	dim proc as ASTNODE ptr, f as FBSYMBOL ptr, s as FBSYMBOL ptr
 	dim expr as ASTNODE ptr
 
 	function = NULL
 
-	f = ifuncTB(FB.RTL.PROFILESTARTCALL)
+	f = ifuncTB(FB.RTL.PROFILEBEGINCALL)
 	proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
 
 	expr = hGetProcName( symbol )

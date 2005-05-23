@@ -75,7 +75,67 @@ static FBPROC *alloc_proc(void)
 
 
 /*:::::*/
-void *fb_ProfileStartCall( const char *procname )
+static int name_sorter( const void *e1, const void *e2 )
+{
+	FBPROC *p1 = *(FBPROC **)e1;
+	FBPROC *p2 = *(FBPROC **)e2;
+
+	return strcmp(p1->name, p2->name);
+}
+
+
+/*:::::*/
+static int time_sorter( const void *e1, const void *e2 )
+{
+	FBPROC *p1 = *(FBPROC **)e1;
+	FBPROC *p2 = *(FBPROC **)e2;
+	
+	if (p1->total_time > p2->total_time)
+		return -1;
+	else if (p1->total_time < p2->total_time)
+		return 1;
+	else
+		return 0;
+}
+
+
+/*:::::*/
+static void add_proc(FBPROC ***array, int *size, FBPROC *proc)
+{
+	FBPROC **a = *array;
+	int s = *size;
+	a = (FBPROC **)realloc(a, (s + 1) * sizeof(FBPROC *));
+	a[s] = proc;
+	(*size)++;
+	*array = a;
+}
+
+
+/*:::::*/
+static void find_all_procs(FBPROC *proc, FBPROC ***array, int *size)
+{
+	FBPROC *p, **a;
+	int add_self = TRUE;
+	int i;
+	
+	a = *array;
+	for (i = 0; i < *size; i++) {
+		if (!strcmp(a[i]->name, proc->name))
+			add_self = FALSE;
+	}
+	if (add_self)
+		add_proc(array, size, proc);
+	for (p = proc; p; p = p->next) {
+		for (i = 0; i < MAX_CHILDREN; i++) {
+			if (p->child[i])
+				find_all_procs(p->child[i], array, size);
+		}
+	}
+}
+
+
+/*:::::*/
+void *fb_ProfileBeginCall( const char *procname )
 {
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
 	const char *p;
@@ -142,43 +202,6 @@ void fb_ProfileEndCall( void *p )
 
 
 /*:::::*/
-static int name_sorter( const void *e1, const void *e2 )
-{
-	FBPROC *p1 = *(FBPROC **)e1;
-	FBPROC *p2 = *(FBPROC **)e2;
-
-	return strcmp(p1->name, p2->name);
-}
-
-
-/*:::::*/
-static int time_sorter( const void *e1, const void *e2 )
-{
-	FBPROC *p1 = *(FBPROC **)e1;
-	FBPROC *p2 = *(FBPROC **)e2;
-	
-	if (p1->total_time > p2->total_time)
-		return -1;
-	else if (p1->total_time < p2->total_time)
-		return 1;
-	else
-		return 0;
-}
-
-
-/*:::::*/
-static void add_proc(FBPROC ***array, int *size, FBPROC *proc)
-{
-	FBPROC **a = *array;
-	int s = *size;
-	a = (FBPROC **)realloc(a, (s + 1) * sizeof(FBPROC *));
-	a[s] = proc;
-	(*size)++;
-	*array = a;
-}
-
-
-/*:::::*/
 void fb_ProfileInit( void )
 {
 	time_t rawtime = { 0 };
@@ -205,13 +228,15 @@ void fb_ProfileInit( void )
 	main_proc->time = fb_Timer();
 }
 
+
 /*:::::*/
 void fb_ProfileEnd( void )
 {
 	char exename[256];
-	int i, j, len;
+	int i, j, len, skip_proc;
+	BIN *bin;
 	FILE *f;
-	FBPROC **parent_proc_list = NULL, **proc_list = NULL, *proc;
+	FBPROC **parent_proc_list = NULL, **proc_list = NULL, *proc, *parent_proc;
 	int parent_proc_size = 0, proc_size = 0;
 
 	main_proc->total_time = fb_Timer() - main_proc->time;
@@ -234,30 +259,28 @@ void fb_ProfileEnd( void )
 
 	fprintf( f, "Per function timings:\n\n" );
 	fprintf( f, "        Function:                               Time:         Total%%:   Proc%%:" );
-	add_proc(&parent_proc_list, &parent_proc_size, main_proc);
-	for (proc = main_proc; proc; proc = proc->next) {
-		for (i = 0; i < MAX_CHILDREN; i++) {
-			if (proc->child[i])
-				add_proc(&parent_proc_list, &parent_proc_size, proc->child[i]);
-		}
-	}
-	printf("%d functions called by main\n", parent_proc_size);
+	find_all_procs(main_proc, &parent_proc_list, &parent_proc_size);
 	qsort(parent_proc_list, parent_proc_size, sizeof(FBPROC *), name_sorter);
 	for( i = 0; i < parent_proc_size; i++ ) {
-		proc = parent_proc_list[i];
-		len = fprintf( f, "\n\n%s", proc->name );
-		for( len = 50 - len; len; len-- )
-			fprintf( f, " " );
-		len = fprintf( f, "%5.5f", proc->total_time );
-		for( len = 14 - len; len; len-- )
-			fprintf( f, " " );
-		fprintf( f, "%03.2f%%\n\n", (proc->total_time * 100.0) / main_proc->total_time );
-		for (proc = parent_proc_list[i]; proc; proc = proc->next) {
+		parent_proc = parent_proc_list[i];
+		skip_proc = TRUE;
+		for (proc = parent_proc; proc; proc = proc->next) {
 			for (j = 0; j < MAX_CHILDREN; j++) {
-				if (proc->child[j])
+				if (proc->child[j]) {
 					add_proc(&proc_list, &proc_size, proc->child[j]);
+					skip_proc = FALSE;
+				}
 			}
 		}
+		if (skip_proc)
+			continue;
+		len = fprintf( f, "\n\n%s", parent_proc->name );
+		for( len = 50 - len; len; len-- )
+			fprintf( f, " " );
+		len = fprintf( f, "%5.5f", parent_proc->total_time );
+		for( len = 14 - len; len; len-- )
+			fprintf( f, " " );
+		fprintf( f, "%03.2f%%\n\n", (parent_proc->total_time * 100.0) / main_proc->total_time );
 		qsort(proc_list, proc_size, sizeof(FBPROC *), time_sorter);
 		for( j = 0; j < proc_size; j++ ) {
 			proc = proc_list[j];
@@ -277,148 +300,23 @@ void fb_ProfileEnd( void )
 		proc_list = NULL;
 		proc_size = 0;
 	}
-
-	fclose( f );
-
-
-
-#if 0
-	PROFPROC *p, *aux_p;
-	CALL *c, *aux_c, *calls = NULL;
-	double totaltime, proctime;
-	const char **procs = NULL;
-	int num_calls = 0, num_procs = 0;
-	
-	main_proc->total_time = fb_Timer() - main_proc->time;
-	
-#ifdef MULTITHREADED
-#ifdef TARGET_WIN32
-	TlsFree(cur_proc);
-#elif defined(TARGET_LINUX)
-	pthread_key_delete( cur_proc );
-#endif
-#endif
-	
-	f = fopen( PROFILE_FILE, "w" );
-	fprintf( f, "Profiling results:\n"
-			    "------------------\n\n" );
-	fb_hGetExeName( exename, 255 );
-	fprintf( f, "Executable name: %s\n", exename );
-	fprintf( f, "Launched on: %s\n", launch_time );
-	fprintf( f, "Total program execution time: %5.4g seconds\n\n", main_proc->totaltime );
-	fprintf( f, "Per function timings:\n\n" );
-	fprintf( f, "        Function:                               Time:         Total%%:   Proc%%:" );
-	
-	for( i = 0; i < PROC_TABLE_SIZE; i++ ) {
-		p = &proc_table[i];
-		while( (p) && (p->name) ) {
-			num_procs++;
-			procs = realloc(procs, sizeof(char *) * num_procs);
-			procs[num_procs-1] = p->name;
-			p = p->next;
-		}
-	}
-	qsort( procs, num_procs, sizeof(char *), string_sorter );
-	
-	for( i = 0; i < num_procs; i++ ) {
-		if( strcmp( procs[i], MAIN_PROC_NAME ) ) {
-			proctime = 0.0;
-			for( j = 0; j < CALL_TABLE_SIZE; j++ ) {
-				c = &call_table[j];
-				while( (c) && (c->name) ) {
-					if( !strcmp( c->name, procs[i] ) )
-						proctime += c->totaltime;
-					c = c->next;
-				}
-			}
-		}
-		else
-			proctime = totaltime;
-		len = fprintf( f, "\n\n%s", procs[i] );
-		for( len = 50 - len; len; len-- )
-			fprintf( f, " " );
-		len = fprintf( f, "%5.5f", proctime );
-		for( len = 14 - len; len; len-- )
-			fprintf( f, " " );
-		fprintf( f, "%03.2f%%\n\n", (proctime * 100.0) / totaltime );
-		calls = NULL;
-		num_calls = 0;
-		for( j = 0; j < CALL_TABLE_SIZE; j++ ) {
-			c = &call_table[j];
-			while( (c) && (c->name) ) {
-				if( !strcmp( c->fromproc, procs[i] ) ) {
-					num_calls++;
-					calls = realloc(calls, sizeof(CALL) * num_calls);
-					calls[num_calls-1].name = c->name;
-					calls[num_calls-1].totaltime = c->totaltime;
-				}
-				c = c->next;
-			}
-		}
-		qsort( calls, num_calls, sizeof(CALL), call_sorter );
-		for( j = 0; j < num_calls; j++ ) {
-			len = fprintf( f, "        %s", calls[j].name );
-			for( len = 48 - len; len; len-- )
-				fprintf( f, " " );
-			len = fprintf( f, "%5.5f", calls[j].totaltime );
-			for( len = 14 - len; len; len-- )
-				fprintf( f, " " );
-			len = fprintf( f, "%03.2f%%", (calls[j].totaltime * 100.0) / totaltime );
-			for( len = 10 - len; len; len-- )
-				fprintf( f, " " );
-			fprintf( f, "%03.2f%%\n", (proctime > 0.0) ? (calls[j].totaltime * 100.0) / proctime : 0.0 );
-		}
-		free( calls );
-	}
-	free( procs );
 	
 	fprintf( f, "\n\n\nGlobal timings:\n\n" );
-	calls = NULL;
-	num_calls = 0;
-	for( i = 0; i < CALL_TABLE_SIZE; i++ ) {
-		c = &call_table[i];
-		while( (c) && (c->name) ) {
-			for( j = 0; j < num_calls; j++ ) {
-				if( !strcmp( calls[j].name, c->name ) )
-					break;
-			}
-			if( j == num_calls ) {
-				num_calls++;
-				calls = realloc(calls, sizeof(CALL) * num_calls);
-				calls[num_calls-1].name = c->name;
-				calls[num_calls-1].totaltime = c->totaltime;
-			}
-			else if( strcmp( c->name, c->fromproc ) )
-				calls[j].totaltime += c->totaltime;
-			c = c->next;
-		}
-	}
-	qsort( calls, num_calls, sizeof(CALL), call_sorter );
-	for( i = 0; i < num_calls; i++ ) {
-		len = fprintf( f, "%s", calls[i].name );
+	qsort(parent_proc_list, parent_proc_size, sizeof(FBPROC *), time_sorter);
+	for( i = 0; i < parent_proc_size; i++ ) {
+		proc = parent_proc_list[i];
+		len = fprintf( f, "%s", proc->name );
 		for( len = 48 - len; len; len-- )
 			fprintf( f, " " );
-		fprintf( f, "%5.5f  (%03.2f%%)\n", calls[i].totaltime, (calls[i].totaltime * 100.0) / totaltime );
+		fprintf( f, "%5.5f  (%03.2f%%)\n", proc->total_time, (proc->total_time * 100.0) / main_proc->total_time );
 	}
-	free( calls );
 	
+	free(parent_proc_list);
 	fclose( f );
 
-	for( i = 0; i < PROC_TABLE_SIZE; i++ ) {
-		p = proc_table[i].next;
-		while( p ) {
-			aux_p = p->next;
-			free( p );
-			p = aux_p;
-		}
+	while (bin_head) {
+		bin = bin_head->next;
+		free(bin_head);
+		bin_head = bin;
 	}
-	for( i = 0; i < CALL_TABLE_SIZE; i++ ) {
-		c = call_table[i].next;
-		while( c ) {
-			aux_c = c->next;
-			free( c );
-			c = aux_c;
-		}
-	}
-#endif
 }

@@ -75,7 +75,7 @@ type FUNCTNode
 	arraytail 		as ASTTEMPARRAY ptr
 	strtail 		as ASTTEMPSTR ptr
 
-	profstart		as ASTNODE_ ptr
+	profbegin		as ASTNODE_ ptr
 	profend			as ASTNODE_ ptr
 end type
 

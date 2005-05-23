@@ -175,8 +175,7 @@ enum FBRTL_ENUM
 	FB.RTL.GFXSCREENSET
 	FB.RTL.GFXSCREENRES
 
-	FB.RTL.PROFILESETPROC
-	FB.RTL.PROFILESTARTCALL
+	FB.RTL.PROFILEBEGINCALL
 	FB.RTL.PROFILEENDCALL
 	FB.RTL.PROFILEEND
 end enum
@@ -527,8 +526,6 @@ declare function	rtlGfxScreenSet		( byval wexpr as ASTNODE ptr, _
 										  byval fexpr as ASTNODE ptr, _
 										  byval rexpr as ASTNODE ptr ) as integer
 
-declare function	rtlProfileSetProc	( byval symbol as FBSYMBOL ptr ) as integer
-
-declare function	rtlProfileStartCall ( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
+declare function	rtlProfileBeginCall ( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function	rtlProfileEndCall	( ) as ASTNODE ptr
