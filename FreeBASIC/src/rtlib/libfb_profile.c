@@ -34,19 +34,19 @@
 #define MAX_CHILDREN		257
 #define BIN_SIZE			1024
 
-typedef struct FBPROC {
+typedef struct _FBPROC {
 	const char *name;
-	struct FBPROC *parent;
+	struct _FBPROC *parent;
 	double time;
 	double total_time;
-	struct FBPROC *child[MAX_CHILDREN];
-	struct FBPROC *next;
+	struct _FBPROC *child[MAX_CHILDREN];
+	struct _FBPROC *next;
 } FBPROC;
 
-typedef struct BIN {
+typedef struct _BIN {
 	FBPROC fbproc[BIN_SIZE];
 	int next_free;
-	struct BIN *next;
+	struct _BIN *next;
 } BIN;
 
 
@@ -56,13 +56,14 @@ static FBPROC *main_proc;
 static char launch_time[32];
 
 
-static FBPROC *alloc_proc(void)
+/*:::::*/
+static FBPROC *alloc_proc( void )
 {
 	BIN *bin;
 	FBPROC *proc;
 	
-	if ((!bin_head) || (bin_head->next_free >= BIN_SIZE)) {
-		bin = (BIN *)calloc(1, sizeof(BIN));
+	if ( ( !bin_head ) || ( bin_head->next_free >= BIN_SIZE ) ) {
+		bin = (BIN *)calloc( 1, sizeof(BIN) );
 		bin->next = bin_head;
 		bin_head = bin;
 	}
@@ -80,7 +81,7 @@ static int name_sorter( const void *e1, const void *e2 )
 	FBPROC *p1 = *(FBPROC **)e1;
 	FBPROC *p2 = *(FBPROC **)e2;
 
-	return strcmp(p1->name, p2->name);
+	return strcmp( p1->name, p2->name );
 }
 
 
@@ -90,9 +91,9 @@ static int time_sorter( const void *e1, const void *e2 )
 	FBPROC *p1 = *(FBPROC **)e1;
 	FBPROC *p2 = *(FBPROC **)e2;
 	
-	if (p1->total_time > p2->total_time)
+	if ( p1->total_time > p2->total_time )
 		return -1;
-	else if (p1->total_time < p2->total_time)
+	else if ( p1->total_time < p2->total_time )
 		return 1;
 	else
 		return 0;
@@ -100,11 +101,11 @@ static int time_sorter( const void *e1, const void *e2 )
 
 
 /*:::::*/
-static void add_proc(FBPROC ***array, int *size, FBPROC *proc)
+static void add_proc( FBPROC ***array, int *size, FBPROC *proc )
 {
 	FBPROC **a = *array;
 	int s = *size;
-	a = (FBPROC **)realloc(a, (s + 1) * sizeof(FBPROC *));
+	a = (FBPROC **)realloc( a, (s + 1) * sizeof(FBPROC *) );
 	a[s] = proc;
 	(*size)++;
 	*array = a;
@@ -112,23 +113,23 @@ static void add_proc(FBPROC ***array, int *size, FBPROC *proc)
 
 
 /*:::::*/
-static void find_all_procs(FBPROC *proc, FBPROC ***array, int *size)
+static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 {
 	FBPROC *p, **a;
 	int add_self = TRUE;
 	int i;
 	
 	a = *array;
-	for (i = 0; i < *size; i++) {
-		if (!strcmp(a[i]->name, proc->name))
+	for ( i = 0; i < *size; i++ ) {
+		if ( !strcmp( a[i]->name, proc->name ) )
 			add_self = FALSE;
 	}
-	if (add_self)
-		add_proc(array, size, proc);
-	for (p = proc; p; p = p->next) {
-		for (i = 0; i < MAX_CHILDREN; i++) {
-			if (p->child[i])
-				find_all_procs(p->child[i], array, size);
+	if ( add_self )
+		add_proc( array, size, proc );
+	for ( p = proc; p; p = p->next ) {
+		for ( i = 0; i < MAX_CHILDREN; i++ ) {
+			if ( p->child[i] )
+				find_all_procs( p->child[i], array, size );
 		}
 	}
 }
@@ -141,22 +142,22 @@ void *fb_ProfileBeginCall( const char *procname )
 	const char *p;
 	unsigned int i, hash = 0, offset = 1;
 	
-	orig_parent_proc = parent_proc = (FBPROC *)FB_TLSGET(cur_proc);
+	orig_parent_proc = parent_proc = (FBPROC *)FB_TLSGET( cur_proc );
 	
 	FB_LOCK();
 	
-	for (p = procname; *p; p += 4 )
-		hash = ((hash << 3) | (hash >> 29)) ^ (*(unsigned int *)p);
+	for ( p = procname; *p; p += 4 )
+		hash = ( (hash << 3) | (hash >> 29) ) ^ ( *(unsigned int *)p );
 	hash %= MAX_CHILDREN;
-	if (hash)
+	if ( hash )
 		offset = MAX_CHILDREN - hash;
 	for (;;) {
-		for (i = 0; i < MAX_CHILDREN; i++) {
+		for ( i = 0; i < MAX_CHILDREN; i++ ) {
 			proc = parent_proc->child[hash];
-			if (proc) {
-				if (!strcmp(proc->name, procname))
+			if ( proc ) {
+				if ( !strcmp( proc->name, procname ) )
 					goto fill_proc;
-				hash = (hash + offset) % MAX_CHILDREN;
+				hash = ( hash + offset ) % MAX_CHILDREN;
 			}
 			else {
 				proc = alloc_proc();
@@ -167,7 +168,7 @@ void *fb_ProfileBeginCall( const char *procname )
 				goto fill_proc;
 			}
 		}
-		if (!parent_proc->next)
+		if ( !parent_proc->next )
 			parent_proc->next = alloc_proc();
 		parent_proc = parent_proc->next;
 	}
@@ -243,7 +244,7 @@ void fb_ProfileEnd( void )
 	
 #ifdef MULTITHREADED
 #ifdef TARGET_WIN32
-	TlsFree(cur_proc);
+	TlsFree( cur_proc );
 #elif defined(TARGET_LINUX)
 	pthread_key_delete( cur_proc );
 #endif
@@ -259,20 +260,20 @@ void fb_ProfileEnd( void )
 
 	fprintf( f, "Per function timings:\n\n" );
 	fprintf( f, "        Function:                               Time:         Total%%:   Proc%%:" );
-	find_all_procs(main_proc, &parent_proc_list, &parent_proc_size);
-	qsort(parent_proc_list, parent_proc_size, sizeof(FBPROC *), name_sorter);
+	find_all_procs( main_proc, &parent_proc_list, &parent_proc_size );
+	qsort( parent_proc_list, parent_proc_size, sizeof(FBPROC *), name_sorter );
 	for( i = 0; i < parent_proc_size; i++ ) {
 		parent_proc = parent_proc_list[i];
 		skip_proc = TRUE;
-		for (proc = parent_proc; proc; proc = proc->next) {
-			for (j = 0; j < MAX_CHILDREN; j++) {
-				if (proc->child[j]) {
-					add_proc(&proc_list, &proc_size, proc->child[j]);
+		for ( proc = parent_proc; proc; proc = proc->next ) {
+			for ( j = 0; j < MAX_CHILDREN; j++ ) {
+				if ( proc->child[j] ) {
+					add_proc( &proc_list, &proc_size, proc->child[j] );
 					skip_proc = FALSE;
 				}
 			}
 		}
-		if (skip_proc)
+		if ( skip_proc )
 			continue;
 		len = fprintf( f, "\n\n%s", parent_proc->name );
 		for( len = 50 - len; len; len-- )
@@ -281,7 +282,7 @@ void fb_ProfileEnd( void )
 		for( len = 14 - len; len; len-- )
 			fprintf( f, " " );
 		fprintf( f, "%03.2f%%\n\n", (parent_proc->total_time * 100.0) / main_proc->total_time );
-		qsort(proc_list, proc_size, sizeof(FBPROC *), time_sorter);
+		qsort( proc_list, proc_size, sizeof(FBPROC *), time_sorter );
 		for( j = 0; j < proc_size; j++ ) {
 			proc = proc_list[j];
 			len = fprintf( f, "        %s", proc->name );
@@ -290,33 +291,33 @@ void fb_ProfileEnd( void )
 			len = fprintf( f, "%5.5f", proc->total_time );
 			for( len = 14 - len; len; len-- )
 				fprintf( f, " " );
-			len = fprintf( f, "%03.2f%%", (proc->total_time * 100.0) / main_proc->total_time );
+			len = fprintf( f, "%03.2f%%", ( proc->total_time * 100.0 ) / main_proc->total_time );
 			for( len = 10 - len; len; len-- )
 				fprintf( f, " " );
-			fprintf( f, "%03.2f%%\n", (parent_proc_list[i]->total_time > 0.0) ?
-				(proc->total_time * 100.0) / parent_proc_list[i]->total_time : 0.0 );
+			fprintf( f, "%03.2f%%\n", ( parent_proc_list[i]->total_time > 0.0 ) ?
+				( proc->total_time * 100.0 ) / parent_proc_list[i]->total_time : 0.0 );
 		}
-		free(proc_list);
+		free( proc_list );
 		proc_list = NULL;
 		proc_size = 0;
 	}
 	
 	fprintf( f, "\n\n\nGlobal timings:\n\n" );
-	qsort(parent_proc_list, parent_proc_size, sizeof(FBPROC *), time_sorter);
+	qsort( parent_proc_list, parent_proc_size, sizeof(FBPROC *), time_sorter );
 	for( i = 0; i < parent_proc_size; i++ ) {
 		proc = parent_proc_list[i];
 		len = fprintf( f, "%s", proc->name );
 		for( len = 48 - len; len; len-- )
 			fprintf( f, " " );
-		fprintf( f, "%5.5f  (%03.2f%%)\n", proc->total_time, (proc->total_time * 100.0) / main_proc->total_time );
+		fprintf( f, "%5.5f  (%03.2f%%)\n", proc->total_time, ( proc->total_time * 100.0 ) / main_proc->total_time );
 	}
 	
-	free(parent_proc_list);
+	free( parent_proc_list );
 	fclose( f );
 
-	while (bin_head) {
+	while ( bin_head ) {
 		bin = bin_head->next;
-		free(bin_head);
+		free( bin_head );
 		bin_head = bin;
 	}
 }
