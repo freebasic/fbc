@@ -199,7 +199,6 @@ type wxBackgroundStyle as integer
 type wxBitmap as any
 type wxBitmapButton as any
 type wxBitmapList as any
-type wxBitmapType as integer
 type wxBoxSizer as any
 type wxBrush as any
 type wxBrushList as any
@@ -270,7 +269,6 @@ type wxFocusEvent as any
 type wxFont as any
 type wxFontData as any
 type wxFontDialog as any
-type wxFontEncoding as any
 type wxFontEnumerator as integer
 type wxFontList as any
 type wxFontMapper as any
