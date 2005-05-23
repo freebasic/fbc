@@ -46,7 +46,7 @@ OSDEPPATH :=
 FBCFLAGS := -e -c -arch 486
 
 ifeq ($(HOST),win32)
-    FBC := ../../fbc_new.exe
+    FBC := ../../fbc.exe
 endif
 
 ifeq ($(HOST),linux)
