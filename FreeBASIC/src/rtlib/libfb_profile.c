@@ -57,6 +57,22 @@ static char launch_time[32];
 
 
 /*:::::*/
+static int strcmp4(const char *s1, const char *s2)
+{
+	
+	while ((*s1) && (*s2)) {
+		if (*(int *)s1 != *(int *)s2)
+			return -1;
+		s1 += 4;
+		s2 += 4;
+	}
+	if ((*s1) || (*s2))
+		return -1;
+	return 0;
+}
+
+
+/*:::::*/
 static FBPROC *alloc_proc( void )
 {
 	BIN *bin;
@@ -121,7 +137,7 @@ static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 	
 	a = *array;
 	for ( i = 0; i < *size; i++ ) {
-		if ( !strcmp( a[i]->name, proc->name ) )
+		if ( !strcmp4( a[i]->name, proc->name ) )
 			add_self = FALSE;
 	}
 	if ( add_self )
@@ -136,7 +152,7 @@ static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 
 
 /*:::::*/
-void *fb_ProfileBeginCall( const char *procname )
+FBCALL void *fb_ProfileBeginCall( const char *procname )
 {
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
 	const char *p;
@@ -155,7 +171,7 @@ void *fb_ProfileBeginCall( const char *procname )
 		for ( i = 0; i < MAX_CHILDREN; i++ ) {
 			proc = parent_proc->child[hash];
 			if ( proc ) {
-				if ( !strcmp( proc->name, procname ) )
+				if ( !strcmp4( proc->name, procname ) )
 					goto fill_proc;
 				hash = ( hash + offset ) % MAX_CHILDREN;
 			}
@@ -185,7 +201,7 @@ fill_proc:
 
 
 /*:::::*/
-void fb_ProfileEndCall( void *p )
+FBCALL void fb_ProfileEndCall( void *p )
 {
 	FBPROC *proc;
 	double end_time;
@@ -203,7 +219,7 @@ void fb_ProfileEndCall( void *p )
 
 
 /*:::::*/
-void fb_ProfileInit( void )
+FBCALL void fb_ProfileInit( void )
 {
 	time_t rawtime = { 0 };
   	struct tm *ptm = { 0 };
@@ -231,7 +247,7 @@ void fb_ProfileInit( void )
 
 
 /*:::::*/
-void fb_ProfileEnd( void )
+FBCALL void fb_ProfileEnd( void )
 {
 	char exename[256];
 	int i, j, len, skip_proc;

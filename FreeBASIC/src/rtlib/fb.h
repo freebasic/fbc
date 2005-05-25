@@ -578,10 +578,10 @@ FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_siz
 	   void 		fb_hInit 			( int argc, char **argv );
 	   void 		fb_hEnd 			( int errlevel );
 
-	   void			fb_ProfileInit		( void );
-	   void			fb_ProfileEnd		( void );
-	   void			*fb_ProfileBeginCall( const char *procname );
-	   void			fb_ProfileEndCall	( void *call );
+FBCALL void			fb_ProfileInit		( void );
+FBCALL void			fb_ProfileEnd		( void );
+FBCALL void			*fb_ProfileBeginCall( const char *procname );
+FBCALL void			fb_ProfileEndCall	( void *call );
 
 /**************************************************************************************************
  * hooks

@@ -1190,21 +1190,21 @@ data "fb_GfxScreenRes", "", _
 
 '' fb_ProfileBeginCall ( procname as string ) as any ptr
 data "fb_ProfileBeginCall", "", _
-	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileEndCall ( call as any ptr ) as void
 data "fb_ProfileEndCall", "", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
 
 '' fb_ProfileEnd ( ) as void
 data "fb_ProfileEnd", "", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.CDECL, _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
@@ -3244,7 +3244,8 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
+function rtlDataRestore( byval label as FBSYMBOL ptr, _
+						 byval isprofiler as integer = FALSE ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim lname as string
     dim s as FBSYMBOL ptr
@@ -3252,7 +3253,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr ) as integer static
     function = FALSE
 
 	f = ifuncTB(FB.RTL.DATARESTORE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f, symbGetType( f ), NULL, isprofiler )
 
     '' begin of data or start from label?
     if( label <> NULL ) then

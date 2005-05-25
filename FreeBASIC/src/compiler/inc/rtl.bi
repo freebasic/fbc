@@ -259,7 +259,8 @@ declare function 	rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 
 
-declare function	rtlDataRestore		( byval label as FBSYMBOL ptr ) as integer
+declare function	rtlDataRestore		( byval label as FBSYMBOL ptr, _
+										  byval isprofiler as integer = FALSE ) as integer
 
 declare function	rtlDataRead			( byval varexpr as ASTNODE ptr ) as integer
 

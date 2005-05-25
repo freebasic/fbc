@@ -4863,17 +4863,17 @@ private sub hEmitInitProc( ) static
     	hWriteStr( ctx.outf, TRUE,  "add esp, 8" )
     end if
 
-    '' start profiling if requested
-    if( env.clopt.profile ) then
-	    id = hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.CDECL )
-	    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + *id )
-    end if
-
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
     if( symbFindByNameAndClass( FB.DATALABELNAME, FB.SYMBCLASS.LABEL ) <> NULL ) then
-    	rtlDataRestore( NULL )
+    	rtlDataRestore( NULL, TRUE )
     	irFlush( )
+    end if
+
+    '' start profiling if requested
+    if( env.clopt.profile ) then
+	    id = hCreateProcAlias( "fb_ProfileInit", 0, FB.FUNCMODE.STDCALL )
+	    hWriteStr( ctx.outf, TRUE,  "call" + TABCHAR + *id )
     end if
 
     hWriteStr( ctx.outf, TRUE,  "ret" )
