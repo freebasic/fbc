@@ -372,6 +372,8 @@ declare function toupper cdecl alias "toupper" ( byval c as integer ) as integer
 
 ' ungetc() uses a FILE*
 
+declare function vsprintf cdecl alias "vsprintf" (byval buffer as string, byval format as string, byval argptr as any ptr) as integer
+
 ''
 '' globals
 ''

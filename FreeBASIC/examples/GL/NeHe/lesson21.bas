@@ -43,9 +43,6 @@ declare sub BuildFont()
 declare sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, fmt as string, ...)
 declare sub ResetObjects()
 
-'' vsprintf is missing from crt.bi in 0.14 beta (crt.bi was written before variable args were introduced).
-declare function vsprintf  cdecl alias "vsprintf" (byval buffer as string, byval format as string, byval argptr as any ptr) as integer
-
 '-------------------------------------------------------------------------------
 dim shared player as OBJECT
 dim shared loop1                                            '' Generic Loop1
