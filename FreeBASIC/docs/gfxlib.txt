@@ -1773,6 +1773,7 @@ TYPE SCREENINFOTYPE
 	depth AS INTEGER
 	pitch AS INTEGER
 	bpp AS INTEGER
+	refresh_rate AS INTEGER
 	mask_color AS INTEGER
 	num_pages AS INTEGER
 	flags AS INTEGER
@@ -1787,6 +1788,7 @@ depth		Current pixel format bits per pixel: this can be 1, 2, 4, 8,
 		16 or 32. See appendix C for details.
 pitch		Size of a framebuffer row in bytes.
 bpp		Bytes per pixel.
+refresh_rate	Current screen refresh rate in Hertz.
 mask_color	Color value for transparent pixels in current mode.
 num_pages	Number of available pages.
 flags		Mode flags. Same as the flags you specify to SCREEN.
@@ -2774,9 +2776,7 @@ Appendix F: Hints
 	PRINT "done."
 	
 	PRINT "Data size after compression:", dest_size
-	PRINTglTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
-   glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
-
+	PRINT
 	
 	src_size = 100000
 	PRINT "Decompressing...";
