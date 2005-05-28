@@ -1,8 +1,24 @@
 ''
 '' FreeBASIC gfx library constants
 ''
-#ifndef FBGFX_BI
-#define FBGFX_BI
+#ifndef __fbgfx_bi__
+#define __fbgfx_bi__
+
+#inclib "fbgfx"
+#ifdef __FB_WIN32__
+	#inclib "user32"
+	#inclib "gdi32"
+	#inclib "winmm"
+#elseif defined(__FB_LINUX__)
+	#libpath "/usr/X11R6/lib"
+	#inclib "X11"
+	#inclib "Xext"
+	#inclib "Xpm"
+	#inclib "Xrandr"
+	#inclib "Xrender"
+	#inclib "pthread"
+#endif
+
 
 '' Flags accepted by SCREEN and SCREENRES
 ''
