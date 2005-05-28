@@ -37,7 +37,7 @@ type _GHookList
 	hooks as GHook ptr
 	hook_memchunk as GMemChunk ptr
 	finalize_hook as GHookFinalizeFunc
-	dummy(0 to 2-1) as gpointer ptr
+	dummy(0 to 2-1) as gpointer
 end type
 
 type _GHook

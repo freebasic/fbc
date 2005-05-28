@@ -27,30 +27,30 @@ type GtkWidget as _GtkWidget
 
 type _GtkStyle
 	parent_instance as GObject
-	fg(0 to 5-1) as GdkColor ptr
-	bg(0 to 5-1) as GdkColor ptr
-	light(0 to 5-1) as GdkColor ptr
-	dark(0 to 5-1) as GdkColor ptr
-	mid(0 to 5-1) as GdkColor ptr
-	text(0 to 5-1) as GdkColor ptr
-	base(0 to 5-1) as GdkColor ptr
-	text_aa(0 to 5-1) as GdkColor ptr
+	fg(0 to 5-1) as GdkColor
+	bg(0 to 5-1) as GdkColor
+	light(0 to 5-1) as GdkColor
+	dark(0 to 5-1) as GdkColor
+	mid(0 to 5-1) as GdkColor
+	text(0 to 5-1) as GdkColor
+	base(0 to 5-1) as GdkColor
+	text_aa(0 to 5-1) as GdkColor
 	black as GdkColor
 	white as GdkColor
 	font_desc as PangoFontDescription ptr
 	xthickness as gint
 	ythickness as gint
-	fg_gc(0 to 5-1) as GdkGC ptr ptr
-	bg_gc(0 to 5-1) as GdkGC ptr ptr
-	light_gc(0 to 5-1) as GdkGC ptr ptr
-	dark_gc(0 to 5-1) as GdkGC ptr ptr
-	mid_gc(0 to 5-1) as GdkGC ptr ptr
-	text_gc(0 to 5-1) as GdkGC ptr ptr
-	base_gc(0 to 5-1) as GdkGC ptr ptr
-	text_aa_gc(0 to 5-1) as GdkGC ptr ptr
+	fg_gc(0 to 5-1) as GdkGC ptr
+	bg_gc(0 to 5-1) as GdkGC ptr
+	light_gc(0 to 5-1) as GdkGC ptr
+	dark_gc(0 to 5-1) as GdkGC ptr
+	mid_gc(0 to 5-1) as GdkGC ptr
+	text_gc(0 to 5-1) as GdkGC ptr
+	base_gc(0 to 5-1) as GdkGC ptr
+	text_aa_gc(0 to 5-1) as GdkGC ptr
 	black_gc as GdkGC ptr
 	white_gc as GdkGC ptr
-	bg_pixmap(0 to 5-1) as GdkPixmap ptr ptr
+	bg_pixmap(0 to 5-1) as GdkPixmap ptr
 	attach_count as gint
 	depth as gint
 	colormap as GdkColormap ptr

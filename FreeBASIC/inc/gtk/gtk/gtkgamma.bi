@@ -19,7 +19,7 @@ type _GtkGammaCurve
 	vbox as GtkVBox
 	table as GtkWidget ptr
 	curve as GtkWidget ptr
-	button(0 to 5-1) as GtkWidget ptr ptr
+	button(0 to 5-1) as GtkWidget ptr
 	gamma as gfloat
 	gamma_dialog as GtkWidget ptr
 	gamma_text as GtkWidget ptr

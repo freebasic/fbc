@@ -105,7 +105,7 @@ type _GtkCList
 	undo_selection as GList ptr
 	undo_unselection as GList ptr
 	undo_anchor as gint
-	button_actions(0 to 5-1) as guint8 ptr
+	button_actions(0 to 5-1) as guint8
 	drag_button as guint8
 	click_cell as GtkCListCellInfo
 	hadjustment as GtkAdjustment ptr

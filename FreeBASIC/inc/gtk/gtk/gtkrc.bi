@@ -26,13 +26,13 @@ end enum
 type _GtkRcStyle
 	parent_instance as GObject
 	name as zstring ptr
-	bg_pixmap_name(0 to 5-1) as zstring ptr ptr
+	bg_pixmap_name(0 to 5-1) as gchar
 	font_desc as PangoFontDescription ptr
-	color_flags(0 to 5-1) as GtkRcFlags ptr
-	fg(0 to 5-1) as GdkColor ptr
-	bg(0 to 5-1) as GdkColor ptr
-	text(0 to 5-1) as GdkColor ptr
-	base(0 to 5-1) as GdkColor ptr
+	color_flags(0 to 5-1) as GtkRcFlags
+	fg(0 to 5-1) as GdkColor
+	bg(0 to 5-1) as GdkColor
+	text(0 to 5-1) as GdkColor
+	base(0 to 5-1) as GdkColor
 	xthickness as gint
 	ythickness as gint
 	rc_properties as GArray ptr

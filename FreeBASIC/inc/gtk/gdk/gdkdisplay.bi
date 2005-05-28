@@ -20,16 +20,16 @@ type _GdkDisplay
 	parent_instance as GObject
 	queued_events as GList ptr
 	queued_tail as GList ptr
-	button_click_time(0 to 2-1) as guint32 ptr
-	button_window(0 to 2-1) as GdkWindow ptr ptr
-	button_number(0 to 2-1) as gint ptr
+	button_click_time(0 to 2-1) as guint32
+	button_window(0 to 2-1) as GdkWindow ptr
+	button_number(0 to 2-1) as gint
 	double_click_time as guint
 	core_pointer as GdkDevice ptr
 	pointer_hooks as GdkDisplayPointerHooks ptr
 	closed as guint
 	double_click_distance as guint
-	button_x(0 to 2-1) as gint ptr
-	button_y(0 to 2-1) as gint ptr
+	button_x(0 to 2-1) as gint
+	button_y(0 to 2-1) as gint
 end type
 
 type _GdkDisplayClass

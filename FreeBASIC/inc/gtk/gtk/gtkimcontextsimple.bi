@@ -19,7 +19,7 @@ type GtkIMContextSimpleClass as _GtkIMContextSimpleClass
 type _GtkIMContextSimple
 	object as GtkIMContext
 	tables as GSList ptr
-	compose_buffer(0 to 7+1-1) as guint ptr
+	compose_buffer(0 to 7+1-1) as guint
 	tentative_match as gunichar
 	tentative_match_len as gint
 	in_hex_sequence as guint

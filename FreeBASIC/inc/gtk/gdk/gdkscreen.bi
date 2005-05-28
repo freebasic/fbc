@@ -17,8 +17,8 @@ type GdkScreenClass as _GdkScreenClass
 type _GdkScreen
 	parent_instance as GObject
 	closed as guint
-	normal_gcs(0 to 32-1) as GdkGC ptr ptr
-	exposure_gcs(0 to 32-1) as GdkGC ptr ptr
+	normal_gcs(0 to 32-1) as GdkGC ptr
+	exposure_gcs(0 to 32-1) as GdkGC ptr
 end type
 
 type _GdkScreenClass

@@ -39,7 +39,7 @@ type _GObjectClass
 	finalize as sub cdecl(byval as GObject ptr)
 	dispatch_properties_changed as sub cdecl(byval as GObject ptr, byval as guint, byval as GParamSpec ptr ptr)
 	notify as sub cdecl(byval as GObject ptr, byval as GParamSpec ptr)
-	pdummy(0 to 8-1) as gpointer ptr
+	pdummy(0 to 8-1) as gpointer
 end type
 
 type _GObjectConstructParam

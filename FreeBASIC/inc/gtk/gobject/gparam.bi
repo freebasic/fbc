@@ -49,7 +49,7 @@ type _GParamSpecClass
 	value_set_default as sub cdecl(byval as GParamSpec ptr, byval as GValue ptr)
 	value_validate as function cdecl(byval as GParamSpec ptr, byval as GValue ptr) as gboolean
 	values_cmp as function cdecl(byval as GParamSpec ptr, byval as GValue ptr, byval as GValue ptr) as gint
-	dummy(0 to 4-1) as gpointer ptr
+	dummy(0 to 4-1) as gpointer
 end type
 
 type _GParameter

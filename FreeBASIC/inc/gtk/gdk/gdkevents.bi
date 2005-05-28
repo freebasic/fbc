@@ -333,8 +333,8 @@ end type
 
 union _GdkEventClient_data
 	b as zstring * 20
-	s(0 to 10-1) as short ptr
-	l(0 to 5-1) as integer ptr
+	s(0 to 10-1) as short
+	l(0 to 5-1) as integer
 end union
 
 type _GdkEventClient

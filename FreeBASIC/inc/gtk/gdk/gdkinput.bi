@@ -78,7 +78,7 @@ end type
 
 type _GdkTimeCoord
 	time as guint32
-	axes(0 to 128-1) as gdouble ptr
+	axes(0 to 128-1) as gdouble
 end type
 
 declare function gdk_device_get_type cdecl alias "gdk_device_get_type" () as GType

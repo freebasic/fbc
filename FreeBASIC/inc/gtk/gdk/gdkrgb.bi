@@ -14,7 +14,7 @@
 type GdkRgbCmap as _GdkRgbCmap
 
 type _GdkRgbCmap
-	colors(0 to 256-1) as guint32 ptr
+	colors(0 to 256-1) as guint32
 	n_colors as gint
 	info_list as GSList ptr
 end type

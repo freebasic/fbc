@@ -22,7 +22,7 @@ type _GtkInputDialog
 	mode_optionmenu as GtkWidget ptr
 	close_button as GtkWidget ptr
 	save_button as GtkWidget ptr
-	axis_items(0 to GDK_AXIS_LAST-1) as GtkWidget ptr ptr
+	axis_items(0 to GDK_AXIS_LAST-1) as GtkWidget ptr
 	current_device as GdkDevice ptr
 	keys_list as GtkWidget ptr
 	keys_listbox as GtkWidget ptr

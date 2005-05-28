@@ -16,8 +16,8 @@ type ArtAlphaGamma as _ArtAlphaGamma
 type _ArtAlphaGamma
 	gamma as double
 	invtable_size as integer
-	table(0 to 256-1) as integer ptr
-	invtable(0 to 1-1) as art_u8 ptr
+	table(0 to 256-1) as integer
+	invtable(0 to 1-1) as art_u8
 end type
 
 declare function art_alphagamma_new cdecl alias "art_alphagamma_new" (byval gamma as double) as ArtAlphaGamma ptr

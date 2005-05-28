@@ -34,8 +34,8 @@ type _GtkPreviewInfo
 end type
 
 union _GtkDitherInfo
-	s(0 to 2-1) as gushort ptr
-	c(0 to 4-1) as guchar ptr
+	s(0 to 2-1) as gushort
+	c(0 to 4-1) as guchar
 end union
 
 type _GtkPreviewClass

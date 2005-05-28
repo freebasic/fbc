@@ -44,8 +44,8 @@ type _GtkRulerMetric
 	metric_name as zstring ptr
 	abbrev as zstring ptr
 	pixels_per_unit as gdouble
-	ruler_scale(0 to 10-1) as gdouble ptr
-	subdivide(0 to 5-1) as gint ptr
+	ruler_scale(0 to 10-1) as gdouble
+	subdivide(0 to 5-1) as gint
 end type
 
 declare function gtk_ruler_get_type cdecl alias "gtk_ruler_get_type" () as GType

@@ -24,7 +24,7 @@ end type
 
 type _ArtSVP
 	n_segs as integer
-	segs(0 to 1-1) as ArtSVPSeg ptr
+	segs(0 to 1-1) as ArtSVPSeg
 end type
 
 declare function art_svp_add_segment cdecl alias "art_svp_add_segment" (byval p_vp as ArtSVP ptr ptr, byval pn_segs_max as integer ptr, byval pn_points_max as integer ptr ptr, byval n_points as integer, byval dir as integer, byval points as ArtPoint ptr, byval bbox as ArtDRect ptr) as integer

@@ -32,12 +32,12 @@ type _GtkCalendar
 	month as gint
 	year as gint
 	selected_day as gint
-	day_month(0 to 6-1, 0 to 7-1) as gint ptr ptr ptr
-	day(0 to 6-1, 0 to 7-1) as gint ptr ptr ptr
+	day_month(0 to 6-1, 0 to 7-1) as gint
+	day(0 to 6-1, 0 to 7-1) as gint
 	num_marked_dates as gint
-	marked_date(0 to 31-1) as gint ptr
+	marked_date(0 to 31-1) as gint
 	display_flags as GtkCalendarDisplayOptions
-	marked_date_color(0 to 31-1) as GdkColor ptr
+	marked_date_color(0 to 31-1) as GdkColor
 	gc as GdkGC ptr
 	xor_gc as GdkGC ptr
 	focus_row as gint
@@ -45,7 +45,7 @@ type _GtkCalendar
 	highlight_row as gint
 	highlight_col as gint
 	private_data as gpointer
-	grow_space(0 to 32-1) as zstring ptr
+	grow_space(0 to 32-1) as gchar
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 	_gtk_reserved3 as sub cdecl()
