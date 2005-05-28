@@ -1258,8 +1258,8 @@ sub irReuse( byval t as IRTAC ptr ) static
 
 		if( v1rename ) then
            	irRename( vr, v1 )
-		elseif( v2rename ) then
 
+		elseif( v2rename ) then
 			'' swap t->arg1, t->arg2
 			t->arg2.vreg = v1
 			t->arg1.vreg = v2
@@ -2214,14 +2214,6 @@ sub irhFreeREG( byval vreg as IRVREG ptr, _
 	'' free any attached index
 	irhFreeIDX( vreg, force )
 
-	'' aux?
-	if( vreg->vaux <> NULL ) then
-		va = vreg->vaux
-		if( va->reg <> INVALID ) then
-			irhFreeREG( va )
-		end if
-	end if
-
     ''
 	if( vreg->typ <> IR.VREGTYPE.REG ) then
 		exit sub
@@ -2240,6 +2232,14 @@ sub irhFreeREG( byval vreg as IRVREG ptr, _
 	end if
 
 	if( freereg ) then
+		'' aux?
+		if( vreg->vaux <> NULL ) then
+			va = vreg->vaux
+			if( va->reg <> INVALID ) then
+				irhFreeREG( va, TRUE )
+			end if
+		end if
+
     	irhGetVREG( vreg, rdtype, rdclass, rtyp )
 		regTB(rdclass)->free( regTB(rdclass), reg )
 		vreg->reg = INVALID

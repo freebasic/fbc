@@ -549,7 +549,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 					if( lgt > 8 ) then
 						if( lgt = 9 ) then
 							islongint = TRUE
-				    		value64 = (clngint( value ) * 16) + c
+				    		value64 = (culngint( value ) * 16) + c
 				    	else
 				    		value64 = (value64 * 16) + c
 				    	end if
