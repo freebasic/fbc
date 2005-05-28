@@ -60,6 +60,7 @@ Version 0.14 Beta:
 - STEP clause applied to PSET was not forcing coordinates to be relative to last gfx cursor position (lillo)
 - function profiler rewritten to fix recursive functions profiling (lillo)
 - swapping fixed-len and z-strings would not swap or set the null-terminators (v1c)
+- wrong code could be generated when 64-bit integers (longint's) were used in complex expressions (v1c)
 
 
 Version 0.13 Beta:
