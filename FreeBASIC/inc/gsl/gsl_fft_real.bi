@@ -19,8 +19,8 @@ declare function gsl_fft_real_radix2_transform cdecl alias "gsl_fft_real_radix2_
 type gsl_fft_real_wavetable
 	n as integer
 	nf as integer
-	factor(0 to 64-1) as integer ptr
-	twiddle(0 to 64-1) as gsl_complex ptr ptr
+	factor(0 to 64-1) as integer
+	twiddle(0 to 64-1) as gsl_complex ptr
 	trig as gsl_complex ptr
 end type
 

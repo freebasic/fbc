@@ -795,41 +795,41 @@ type CRYPT_OBJECT_INFO
 	cryptAlgo as CRYPT_ALGO_TYPE
 	cryptMode as CRYPT_MODE_TYPE
 	hashAlgo as CRYPT_ALGO_TYPE
-	salt(0 to 32-1) as ubyte ptr
+	salt(0 to 32-1) as ubyte
 	saltSize as integer
 end type
 
 type CRYPT_PKCINFO_RSA
 	isPublicKey as integer
-	n(0 to 512-1) as ubyte ptr
+	n(0 to 512-1) as ubyte
 	nLen as integer
-	e(0 to 512-1) as ubyte ptr
+	e(0 to 512-1) as ubyte
 	eLen as integer
-	d(0 to 512-1) as ubyte ptr
+	d(0 to 512-1) as ubyte
 	dLen as integer
-	p(0 to 512-1) as ubyte ptr
+	p(0 to 512-1) as ubyte
 	pLen as integer
-	q(0 to 512-1) as ubyte ptr
+	q(0 to 512-1) as ubyte
 	qLen as integer
-	u(0 to 512-1) as ubyte ptr
+	u(0 to 512-1) as ubyte
 	uLen as integer
-	e1(0 to 512-1) as ubyte ptr
+	e1(0 to 512-1) as ubyte
 	e1Len as integer
-	e2(0 to 512-1) as ubyte ptr
+	e2(0 to 512-1) as ubyte
 	e2Len as integer
 end type
 
 type CRYPT_PKCINFO_DLP
 	isPublicKey as integer
-	p(0 to 512-1) as ubyte ptr
+	p(0 to 512-1) as ubyte
 	pLen as integer
-	q(0 to 512-1) as ubyte ptr
+	q(0 to 512-1) as ubyte
 	qLen as integer
-	g(0 to 512-1) as ubyte ptr
+	g(0 to 512-1) as ubyte
 	gLen as integer
-	y(0 to 512-1) as ubyte ptr
+	y(0 to 512-1) as ubyte
 	yLen as integer
-	x(0 to 512-1) as ubyte ptr
+	x(0 to 512-1) as ubyte
 	xLen as integer
 end type
 

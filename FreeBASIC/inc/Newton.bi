@@ -34,8 +34,8 @@ type NewtonRagDoll as any
 type NewtonRagDollBone as any
 
 type NewtonUserMeshCollisionCollideDescTag
-	m_boxP0(0 to 4-1) as dFloat ptr
-	m_boxP1(0 to 4-1) as dFloat ptr
+	m_boxP0(0 to 4-1) as dFloat
+	m_boxP1(0 to 4-1) as dFloat
 	m_userData as any ptr
 	m_faceCount as integer
 	m_vertex as dFloat ptr
@@ -50,9 +50,9 @@ end type
 type NewtonUserMeshCollisionCollideDesc as NewtonUserMeshCollisionCollideDescTag
 
 type NewtonUserMeshCollisionRayHitDescTag
-	m_p0(0 to 4-1) as dFloat ptr
-	m_p1(0 to 4-1) as dFloat ptr
-	m_normalOut(0 to 4-1) as dFloat ptr
+	m_p0(0 to 4-1) as dFloat
+	m_p1(0 to 4-1) as dFloat
+	m_normalOut(0 to 4-1) as dFloat
 	m_userIdOut as integer
 	m_userData as any ptr
 end type

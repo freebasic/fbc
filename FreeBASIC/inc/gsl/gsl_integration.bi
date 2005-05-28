@@ -34,10 +34,10 @@ type gsl_integration_qaws_table
 	beta as double
 	mu as integer
 	nu as integer
-	ri(0 to 25-1) as double ptr
-	rj(0 to 25-1) as double ptr
-	rg(0 to 25-1) as double ptr
-	rh(0 to 25-1) as double ptr
+	ri(0 to 25-1) as double
+	rj(0 to 25-1) as double
+	rg(0 to 25-1) as double
+	rh(0 to 25-1) as double
 end type
 
 declare function gsl_integration_qaws_table_alloc cdecl alias "gsl_integration_qaws_table_alloc" (byval alpha as double, byval beta as double, byval mu as integer, byval nu as integer) as gsl_integration_qaws_table ptr

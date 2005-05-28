@@ -13,7 +13,7 @@
 
 type dStopwatch
 	time as double
-	cc(0 to 2-1) as uinteger ptr
+	cc(0 to 2-1) as uinteger
 end type
 
 type dStopwatch as any

@@ -29,15 +29,15 @@ type gsl_const_complex_packed_float_ptr as single ptr
 type gsl_const_complex_packed_long_double_ptr as double ptr
 
 type gsl_complex_long_double
-	dat(0 to 2-1) as double ptr
+	dat(0 to 2-1) as double
 end type
 
 type gsl_complex
-	dat(0 to 2-1) as double ptr
+	dat(0 to 2-1) as double
 end type
 
 type gsl_complex_float
-	dat(0 to 2-1) as single ptr
+	dat(0 to 2-1) as single
 end type
 
 #endif

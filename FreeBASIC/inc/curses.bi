@@ -46,7 +46,7 @@ type FILE as any
 type MOUSE_STATUS
 	x as integer
 	y as integer
-	button(0 to 3-1) as short ptr
+	button(0 to 3-1) as short
 	changes as integer
 end type
 

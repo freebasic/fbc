@@ -22,8 +22,8 @@ declare function gsl_fft_halfcomplex_float_radix2_transform cdecl alias "gsl_fft
 type gsl_fft_halfcomplex_wavetable_float
 	n as integer
 	nf as integer
-	factor(0 to 64-1) as integer ptr
-	twiddle(0 to 64-1) as gsl_complex_float ptr ptr
+	factor(0 to 64-1) as integer
+	twiddle(0 to 64-1) as gsl_complex_float ptr
 	trig as gsl_complex_float ptr
 end type
 
