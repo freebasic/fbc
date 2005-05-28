@@ -1545,8 +1545,11 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	tail = t->udt.tail
 
-    ''
-	if( (lgt <= 0) or (typ = FB.SYMBTYPE.USERDEF) ) then
+    '' calc length if it wasn't given or if it's a scalar UDT
+    '' field (the packed len w/o padding is needed); for array of UDT's
+    '' fields, the padded len will be used to be GCC 3.x compatible
+	if( (lgt <= 0) or _
+		((typ = FB.SYMBTYPE.USERDEF) and (dimensions = 0)) ) then
 		lgt	= symbCalcLen( typ, subtype, TRUE )
 	end if
 
