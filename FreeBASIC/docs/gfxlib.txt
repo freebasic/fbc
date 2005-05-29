@@ -1838,12 +1838,12 @@ Insights:
 
 The SCREENLOCK function locks the current work page framebuffer for direct
 memory access. Once the page is locked, the screen contents stop being updated
-automatically and you can't call any of the primitive drawing functions until
-you unlock the page with the SCREENUNLOCK statement.
+automatically until you unlock the page with the SCREENUNLOCK statement.
 While the work page is locked, you can read/write its memory freely; you must
 call SCREENUNLOCK when you are done. It is strongly recommended that you hold
-a page locked for a time as short as possible, and you should also note that
-you are not supposed to call SCREENLOCK if a lock has not been unlocked first.
+a page locked for a time as short as possible; and you should also note that
+you are not supposed to call SCREENLOCK if a lock has not been unlocked first,
+even though nested calls will simply have no effects.
 If the work page is the same as the visible page, any modifications to the
 page memory while locked will not become visible until SCREENUNLOCK is called.
 
@@ -2045,12 +2045,10 @@ end_line	Optional argument specifying last screen line to be updated.
 Insights:
 
 SCREENUNLOCK unlocks the current work page assuming it was previously locked
-by calling SCREENLOCK; do not call SCREENUNLOCK if no page has been locked
-yet. This function lets the system restart updating the screen regularly,
-and when called produces the immediate update of the screen region marked by
-the given start and end lines. When no lock is held, you can again safely
-call the gfx primitive statements, but you cannot access the work page
-framebuffer directly via SCREENPTR.
+by calling SCREENLOCK. This function lets the system restart updating the
+screen regularly, and when called produces the immediate update of the screen
+region marked by the given start and end lines. When no lock is held, you can
+no longer directly access the work page framebuffer via SCREENPTR.
 
 
 Example:
