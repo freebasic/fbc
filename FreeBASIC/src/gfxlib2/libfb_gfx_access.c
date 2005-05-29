@@ -50,7 +50,7 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 	if (end_line < 0)
 		end_line = fb_mode->view_h - 1;
 	if ((fb_mode->framebuffer == fb_mode->line[0]) && (start_line <= end_line) && (end_line < fb_mode->view_h))
-		fb_hMemSet(fb_mode->dirty, TRUE, end_line - start_line + 1);
+		fb_hMemSet(fb_mode->dirty + start_line, TRUE, end_line - start_line + 1);
 
 	if (fb_mode->flags & SCREEN_LOCKED) {
 		fb_mode->driver->unlock();
