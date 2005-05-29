@@ -284,7 +284,7 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 	strncpy(window_title_buff, title->data, WINDOW_TITLE_SIZE - 1);
 	window_title = window_title_buff;
 
-	if (fb_mode)
+	if ((fb_mode) && (fb_mode->driver->set_window_title))
 		fb_mode->driver->set_window_title(window_title);
 
 	/* del if temp */

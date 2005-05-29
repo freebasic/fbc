@@ -79,7 +79,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 				if (fb_mode->default_palette == &fb_palette_256)
 					fb_GfxPalette(idx, (color >> 2) & 0x3F3F3F, -1, -1);
 				else {
-					fb_mode->driver->lock();
+					DRIVER_LOCK();
 					r = color & 0xFF;
 					g = (color >> 8) & 0xFF;
 					b = (color >> 16) & 0xFF;
@@ -91,7 +91,7 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 						}
 					}
 					fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
-					fb_mode->driver->unlock();
+					DRIVER_UNLOCK();
 				}
 				shift = 2;
 				color = 0;

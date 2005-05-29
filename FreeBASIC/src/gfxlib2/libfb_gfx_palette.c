@@ -103,7 +103,7 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
 
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	
 	if (index < 0) {
 		palette = fb_mode->default_palette;
@@ -153,7 +153,7 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 	
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 	
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 }
 
 
@@ -165,7 +165,7 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 	if ((!fb_mode) || (fb_mode->depth > 8))
 		return;
 
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 
 	for (i = 0; i < (1 << fb_mode->depth); i++) {
 		if (data[i] >= 0)
@@ -174,5 +174,5 @@ FBCALL void fb_GfxPaletteUsing(int *data)
 
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 }

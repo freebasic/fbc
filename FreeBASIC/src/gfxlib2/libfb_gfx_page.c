@@ -58,7 +58,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	
 	if (src == dest)
 		return;
-	if (dest == fb_mode->framebuffer)
+	if ((dest == fb_mode->framebuffer) && (!(fb_mode->flags & SCREEN_LOCKED)))
 		lock = TRUE;
 	
 	src += (fb_mode->view_y * fb_mode->pitch) + (fb_mode->view_x * fb_mode->bpp);
@@ -96,9 +96,9 @@ FBCALL void fb_GfxSetPage(int work_page, int visible_page)
 		fb_mode->work_page = work_page;
 	}
 	if ((visible_page >= 0) && (visible_page < fb_mode->num_pages) && (fb_mode->page[visible_page] != fb_mode->framebuffer)) {
-		fb_mode->driver->lock();
+		DRIVER_LOCK();
 		fb_mode->framebuffer = fb_mode->page[visible_page];
 		fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
-		fb_mode->driver->unlock();
+		DRIVER_UNLOCK();
 	}
 }

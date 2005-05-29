@@ -52,14 +52,14 @@ static int get_key(void)
 {
 	int key = 0;
 
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
 
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 
 	return key;
 }
@@ -86,11 +86,11 @@ int fb_GfxKeyHit(void)
 {
 	int res;
 
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 
 	res = (key_head != key_tail? 1: 0);
 
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 
 	return res;
 }

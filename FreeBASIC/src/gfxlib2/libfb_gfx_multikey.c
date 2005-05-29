@@ -33,9 +33,9 @@ FBCALL int fb_GfxMultikey(int scancode)
 	int result = 0;
 	
 	if ((fb_mode) && (scancode >= 0) && (scancode < 128)) {
-		fb_mode->driver->lock();
+		DRIVER_LOCK();
 		result = fb_mode->key[scancode];
-		fb_mode->driver->unlock();
+		DRIVER_UNLOCK();
 	}
 	
 	return result;

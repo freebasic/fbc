@@ -33,9 +33,9 @@ FBCALL int fb_GfxSetMouse(int x, int y, int cursor)
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
-	fb_mode->driver->lock();
+	DRIVER_LOCK();
 	fb_mode->driver->set_mouse(x, y, cursor);
-	fb_mode->driver->unlock();
+	DRIVER_UNLOCK();
 	
 	return FB_RTERROR_OK;
 }

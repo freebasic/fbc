@@ -27,23 +27,23 @@
 #include "fb_gfx.h"
 
 
-static int locked = FALSE;
-
-
 /*:::::*/
 FBCALL void fb_GfxLock(void)
 {
-	if ((!fb_mode) || (locked))
+	if (!fb_mode)
 		return;
-	fb_mode->driver->lock();
-	locked = TRUE;
+
+	if (!(fb_mode->flags & SCREEN_LOCKED)) {
+		fb_mode->driver->lock();
+		fb_mode->flags |= SCREEN_LOCKED;
+	}
 }
 
 
 /*:::::*/
 FBCALL void fb_GfxUnlock(int start_line, int end_line)
 {
-	if ((!fb_mode) || (!locked))
+	if (!fb_mode)
 		return;
 	if (start_line < 0)
 		start_line = 0;
@@ -51,9 +51,11 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 		end_line = fb_mode->view_h - 1;
 	if ((fb_mode->framebuffer == fb_mode->line[0]) && (start_line <= end_line) && (end_line < fb_mode->view_h))
 		fb_hMemSet(fb_mode->dirty, TRUE, end_line - start_line + 1);
-	
-	locked = FALSE;
-	fb_mode->driver->unlock();
+
+	if (fb_mode->flags & SCREEN_LOCKED) {
+		fb_mode->driver->unlock();
+		fb_mode->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED);
+	}
 }
 
 
