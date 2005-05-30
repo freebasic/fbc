@@ -71,7 +71,7 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 
 	dim steps(0 to 5) as integer => {1, 2, 4, 5, 10, 20}    '' Stepping Values For Slow Video Adjustment
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                '' Reset The Current Viewport

@@ -147,7 +147,7 @@ dim shared filter as integer =1                                '' Which Filter T
 	'' Initialize GLFW
 	glfwInit()
 	'' Open an OpenGL window
-	if( glfwOpenWindow( 640,480, 0,0,0,0,32,0, GLFW_WINDOW )= 0 ) then
+	if( glfwOpenWindow( 640,480, 0,0,0,0,16,0, GLFW_WINDOW )= 0 ) then
 		glfwTerminate()
 		end 1
 	end if

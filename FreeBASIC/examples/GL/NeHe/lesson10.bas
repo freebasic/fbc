@@ -90,7 +90,7 @@ dim shared bp as integer                       '' B Pressed?
 	dim as integer numtriangles  '' Integer To Hold The Number Of Triangles
 	dim as integer loop_m        '' Loop counter
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

@@ -54,7 +54,7 @@ dim shared top as uinteger               '' Storage For The Top Display List
 		{0.0, 0.5, 0.0}, _     '' Dark: Green,
 		{0.0, 0.5, 0.5}}       '' Dark: Blue
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

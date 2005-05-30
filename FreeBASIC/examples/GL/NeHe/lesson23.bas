@@ -60,7 +60,7 @@ declare sub glDrawCube()
 	dim object as uinteger = 1                             '' Which Object To Draw
 
 	windowtitle "NeHe & TipTup's Environment Mapping Tutorial"   '' Set window title
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

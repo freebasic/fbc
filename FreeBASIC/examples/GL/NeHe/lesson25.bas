@@ -72,7 +72,7 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 	dim q as VERTEX                              '' Holds Returned Calculated Values For One Vertex
 
 	windowtitle "Piotr Cieslak & NeHe's Morphing Points Tutorial"   '' Set window title
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

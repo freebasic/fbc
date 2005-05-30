@@ -54,7 +54,7 @@ dim shared gbase as uinteger                       '' Base Display List For The 
 	dim as integer i, j                            '' counters for parsing extension list
 
 	windowtitle "NeHe's Token, Extensions, Scissoring & TGA Loading Tutorial"   '' Set window title
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	swidth=640                                     '' Set Scissor Width To Window Width

@@ -41,7 +41,7 @@ declare function CreateTexture( byval buffer as any ptr, byval flags as integer 
 	dim as integer x, y                           '' Loop Variables
 	dim as single float_x, float_y, float_xb, float_yb  '' Used To Break The Flag Into Tiny Quads
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

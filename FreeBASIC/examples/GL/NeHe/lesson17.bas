@@ -39,7 +39,7 @@ dim shared gloop as integer                       '' Generic Loop Variable
 	dim cnt1 as single                            '' 1st Counter Used To Move Text & For Coloring
 	dim cnt2 as single                            '' 2nd Counter Used To Move Text & For Coloring
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

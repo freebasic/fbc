@@ -55,7 +55,7 @@ declare function CreateTexture( byval buffer as any ptr, byval flags as integer 
 	dim yspeed as single                           '' Y Rotation Speed
 	dim z as single = -5.0                         '' Depth Into The Screen
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport

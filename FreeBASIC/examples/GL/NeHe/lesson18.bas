@@ -63,7 +63,7 @@ declare sub glDrawCube()
 
 	dim quadratic as GLUquadricObj ptr             '' Storage For Our Quadratic Objects ( NEW )
 
-	screen 18, 32, , 2
+	screen 18, 16, , 2
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                      '' Reset The Current Viewport
