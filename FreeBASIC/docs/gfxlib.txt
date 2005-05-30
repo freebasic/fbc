@@ -63,6 +63,7 @@ Functions reference:
 	SCREENPTR	function
 	SCREENRES	statement
 	SCREENSET	statement
+	SCREENSYNC	statement
 	SCREENUNLOCK	statement
 	SETMOUSE	statement
 	VIEW		statement
@@ -1066,28 +1067,29 @@ COLOR, WINDOW, VIEW.
 | PALETTE |
 +---------+
 
-Statement to customize current palette.
+Statement to set or get current palette.
 
 
 Syntax:
-	PALETTE [index,color]
-	PALETTE [index,r,g,b]
-	PALETTE USING arrayname(idx)
+	PALETTE [GET] [index,color]
+	PALETTE [GET] [index,r,g,b]
+	PALETTE [GET] USING arrayname(idx)
 
 
 Argument:	Description:
 
-index		Index of the color to be customized.
+index		Index of the color to be set/get.
 
-color		New color packed RGB value for specified index.
+color		Packed color RGB value for specified index.
 
-r		New color red component, ranging 0-255.
+r		Color red component, ranging 0-255.
 
-g		New color green component, ranging 0-255.
+g		Color green component, ranging 0-255.
 
-b		New color blue component, ranging 0-255.
+b		Color blue component, ranging 0-255.
 
-arrayname(idx)	Array of packed RGB color values to be set.
+arrayname(idx)	Array of packed RGB color values to be set, or destination
+		array for current palette packed RGB color values.
 
 
 Insights:
@@ -1133,6 +1135,10 @@ for your current gfx mode color depth (2 for 1bpp, 4 for 2bpp, 16 for 4bpp or
 in the form described above. The colors stored into arrayname starting with
 given idx index are then assigned to each palette index, starting with index
 0. Any change to the palette is immediately visible on screen.
+If the GET option is specified, PALETTE retrieves instead of setting color
+values for the current palette. The parameters have the same meaning as
+specified for the set form, but in this case color, r, g and b must be
+variables that will hold the color RGB values on function exit.
 
 
 Example:
@@ -2022,6 +2028,39 @@ SCREEN, SCREENCOPY.
 
 
 
++------------+----------------------------------------------------------------
+| SCREENSYNC |
++------------+
+
+Statement to wait for screen vertical blank.
+
+
+Syntax:
+	SCREENSYNC
+
+
+Insights:
+
+SCREENSYNC waits for the screen vertical blank to occur, then returns control
+to the caller program.
+
+
+Example:
+
+none
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+SCREEN, WAIT.
+
+
+
 +--------------+--------------------------------------------------------------
 | SCREENUNLOCK |
 +--------------+
@@ -2195,6 +2234,9 @@ should only call WAIT this way:
 WAIT &h3DA, 8
 
 Any other combination of port, and_expr and xor_expr will have no effect.
+This function is supported for backwards QB compatibility only; it is
+recommended that you use SCREENSYNC in your programs if you want to wait for
+the vertical blank.
 
 
 Example:
@@ -2210,7 +2252,7 @@ number &h3DA.
 
 See also:
 
-INP, OUT.
+SCREENSYNC, INP, OUT.
 
 
 

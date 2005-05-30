@@ -539,13 +539,20 @@ function cGfxView( byval isview as integer ) as integer
 end function
 
 '':::::
-'' GfxPalette   =   PALETTE ((USING Variable) | (Expr ',' Expr (',' Expr ',' Expr)?)?)
+'' GfxPalette   =   PALETTE GET? ((USING Variable) | (Expr ',' Expr (',' Expr ',' Expr)?)?)
 ''
 function cGfxPalette as integer
     dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
     dim as FBSYMBOL ptr s
+    dim as integer isget
 
 	function = FALSE
+	
+	if( hMatch( FB.TK.GET ) ) then
+		isget = TRUE
+	else
+		isget = FALSE
+	end if
 
 	if( hMatch( FB.TK.USING ) ) then
 
@@ -569,7 +576,7 @@ function cGfxPalette as integer
 			exit function
 		end if
 
-        function = rtlGfxPaletteUsing( arrayexpr )
+        function = rtlGfxPaletteUsing( arrayexpr, isget )
 
 	else
 
@@ -581,18 +588,44 @@ function cGfxPalette as integer
 		if( cExpression( attexpr ) ) then
 			hMatchCOMMA( )
 
-			hMatchExpression( rexpr )
+			if( isget ) then
+				if( not cVarOrDeref( rexpr, FALSE, TRUE ) ) then
+		            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		            exit function
+		        end if
+	        else
+				hMatchExpression( rexpr )
+    	    end if
 
 			if( hMatch( CHAR_COMMA ) ) then
-				hMatchExpression( gexpr )
+				if( isget ) then
+					if( not cVarOrDeref( gexpr, FALSE, TRUE ) ) then
+			            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			            exit function
+			        end if
+				else
+					hMatchExpression( gexpr )
+				end if
 
 				hMatchCOMMA( )
 
-				hMatchExpression( bexpr )
+				if( isget ) then
+					if( not cVarOrDeref( bexpr, FALSE, TRUE ) ) then
+			            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			            exit function
+			        end if
+				else
+					hMatchExpression( bexpr )
+				end if
+			end if
+		else
+			if( isget ) then
+				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				exit function
 			end if
 		end if
 
-		function = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr )
+		function = rtlGfxPalette( attexpr, rexpr, gexpr, bexpr, isget )
 
 	end if
 

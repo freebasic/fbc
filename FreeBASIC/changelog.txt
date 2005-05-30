@@ -33,6 +33,9 @@ Version 0.14 Beta:
 - include file and import lib for the CGUI library (v1c)
 - many NeHe OpenGL lessons, ported by sisophon2001 (v1c)
 - IMAGECREATE and IMAGEDESTROY built-in function to create and destroy gfx image buffers (lillo)
+- PALETTE [USING] now supports the new PALETTE GET [USING] construct to get current palette color(s), so you can
+  do "PALETTE GET index, r, g, b" or "PALETTE GET USING pal" instead of using the old INP/OUT tricks (lillo)
+- added SCREENSYNC to wait for vertical blank, so you can use it instead of the old WAIT &h3DA,8 trick (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)

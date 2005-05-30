@@ -1132,6 +1132,24 @@ data "fb_GfxPaletteUsing", "", _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
 
+'' fb_GfxPaletteGet( byval attribute as integer, byref r as integer, _
+''					 byref g as integer, byref b as integer ) as void
+data "fb_GfxPaletteGet", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, FALSE, FALSE, _
+	 4, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+
+'' fb_GfxPaletteGetUsing ( array as integer ) as void
+data "fb_GfxPaletteGetUsing", "", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, FALSE, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, FALSE
+
 '' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
 ''			   byval coordType as integer, byval mode as integer, byval alpha as integer = -1, _
 ''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 )  as void
@@ -1288,6 +1306,15 @@ data "wait", "fb_GfxWaitVSync", _
 	 3, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
+'' fb_GfxWaitVSync ( byval port as integer, byval and_mask as integer, byval xor_mask as integer = 0 )
+data "screensync", "fb_GfxWaitVSync", _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, FALSE, FALSE, _
+	 3, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&h3DA, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,8, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
 
 '' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void
@@ -5665,13 +5692,23 @@ end function
 function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
 						 byval rexpr as ASTNODE ptr, _
 						 byval gexpr as ASTNODE ptr, _
-						 byval bexpr as ASTNODE ptr ) as integer
+						 byval bexpr as ASTNODE ptr, _
+						 byval isget as integer ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+    dim defval as integer, targetmode as integer
 
 	function = FALSE
 
-    f = ifuncTB(FB.RTL.GFXPALETTE)
+    f = ifuncTB( iif( isget, FB.RTL.GFXPALETTEGET, FB.RTL.GFXPALETTE ) )
 	proc = astNewFUNCT( f, symbGetType( f ) )
+	
+	if( isget ) then
+		targetmode = FB.ARGMODE.BYREF
+		defval = 0
+	else
+		targetmode = FB.ARGMODE.BYVAL
+		defval = -1
+	end if
 
  	'' byval attr as integer
  	if( attexpr = NULL ) then
@@ -5691,17 +5728,18 @@ function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
 
  	'' byval g as integer
  	if( gexpr = NULL ) then
-        gexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
+ 		targetmode = FB.ARGMODE.BYVAL
+        gexpr = astNewCONSTi( defval, IR.DATATYPE.INTEGER )
     end if
- 	if( astNewPARAM( proc, gexpr ) = NULL ) then
+ 	if( astNewPARAM( proc, gexpr, INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
  	'' byval b as integer
  	if( bexpr = NULL ) then
-        bexpr = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
+        bexpr = astNewCONSTi( defval, IR.DATATYPE.INTEGER )
     end if
- 	if( astNewPARAM( proc, bexpr ) = NULL ) then
+ 	if( astNewPARAM( proc, bexpr, INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
 
@@ -5713,12 +5751,13 @@ function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr ) as integer
+function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
+							  byval isget as integer ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = FALSE
 
-    f = ifuncTB(FB.RTL.GFXPALETTEUSING)
+    f = ifuncTB( iif( isget, FB.RTL.GFXPALETTEGETUSING, FB.RTL.GFXPALETTEUSING ) )
 	proc = astNewFUNCT( f, symbGetType( f ) )
 
  	'' byref array as integer

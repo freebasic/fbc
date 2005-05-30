@@ -71,10 +71,7 @@ randomize timer
 ''
 screenset 2
 bload "fblogo.bmp"
-out &h3C7, 0
-for i = 0 to 255
-	pal(i) = inp(&h3C9) or (inp(&h3C9) shl 8) or (inp(&h3C9) shl 16)
-next i
+palette get using pal
 
 '' image uses first 64 colors; since we need colors 0-191, we need to move
 '' these 64 colors into colors 192-255.
@@ -88,7 +85,6 @@ screenunlock
 for i = 0 to 63
 	pal(192+i) = pal(i)
 next i
-palette using pal
 
 '' create fire palette
 ''
@@ -129,7 +125,7 @@ do
 		end if
 		
 	next i
-	wait &h3da,8
+	screensync
 	work_page xor= 1
 	screenset work_page, work_page xor 1
 	

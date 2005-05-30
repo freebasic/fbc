@@ -102,10 +102,3 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 	}
 
 }
-
-
-FBCALL void fb_GfxWaitVSync(int port, int and_mask, int xor_mask)
-{
-	if ((port == 0x3DA) && (and_mask == 8) && (!xor_mask) && (fb_mode))
-			fb_mode->driver->wait_vsync();
-}

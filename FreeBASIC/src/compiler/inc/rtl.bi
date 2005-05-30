@@ -170,6 +170,8 @@ enum FBRTL_ENUM
 	FB.RTL.GFXWINDOW
 	FB.RTL.GFXPALETTE
 	FB.RTL.GFXPALETTEUSING
+	FB.RTL.GFXPALETTEGET
+	FB.RTL.GFXPALETTEGETUSING
 	FB.RTL.GFXPUT
 	FB.RTL.GFXGET
 	FB.RTL.GFXSCREENSET
@@ -494,9 +496,11 @@ declare function	rtlGfxWindow		( byval x1expr as ASTNODE ptr, _
 declare function	rtlGfxPalette 		( byval attexpr as ASTNODE ptr, _
 										  byval rexpr as ASTNODE ptr, _
 										  byval gexpr as ASTNODE ptr, _
-										  byval bexpr as ASTNODE ptr ) as integer
+										  byval bexpr as ASTNODE ptr, _
+										  byval isget as integer ) as integer
 
-declare function	rtlGfxPaletteUsing	( byval arrayexpr as ASTNODE ptr ) as integer
+declare function	rtlGfxPaletteUsing	( byval arrayexpr as ASTNODE ptr, _
+										  byval isget as integer ) as integer
 
 declare function 	rtlGfxPut			( byval target as ASTNODE ptr, _
 										  byval targetisptr as integer, _
