@@ -30,7 +30,7 @@ const null = false
 #include once "fbgfx.bi"                '' for Scan code constants
 #include once "crt.bi"
 
-#include once "3dobject.bas"            '' Header File For 3D Object Handling
+#include once "3Dobject.bas"            '' Header File For 3D Object Handling
 
 
 ''------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ end sub
 function InitGLObjects() as integer
 	dim as uinteger i
 
-	if (ReadObject("Data/Object2.txt", @obj) = 0) then    '' Read Object2 Into obj
+	if (ReadObject("data/Object2.txt", @obj) = 0) then    '' Read Object2 Into obj
 		return FALSE                                      '' If Failed Return False
 	end if
 

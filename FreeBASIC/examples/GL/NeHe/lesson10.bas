@@ -253,7 +253,7 @@ sub SetupWorld()
 
 	fp = freefile
 	'' File To Load World Data From, quit if file not found
-	if (open ("data\world.txt", for input, as #fp) <> 0) then end 1
+	if (open ("data\World.txt", for input, as #fp) <> 0) then end 1
 	readstr(fp, oneline)                                      '' Get Single Line Of Data
 	if oneline = "" then end 1                                '' Data file error, exit
 	sscanf(strptr(oneline), "NUMPOLLIES %d\n", @numtriangles) '' Read In Number Of Triangles

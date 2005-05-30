@@ -73,11 +73,11 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 
 	'' All Setup For OpenGL Goes Here
 	redim buffer(256*256*4+4) as ubyte           '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "Data/EnvWall.bmp", @buffer(0)         '' BLOAD data from bitmap
+	bload "data/Envwall.bmp", @buffer(0)         '' BLOAD data from bitmap
 	texture(0) = CreateTexture(@buffer(0))       '' GL_LINEAR Texture
-	bload "Data/Ball.bmp", @buffer(0)            '' BLOAD data from bitmap
+	bload "data/Ball.bmp", @buffer(0)            '' BLOAD data from bitmap
 	texture(1) = CreateTexture(@buffer(0))       '' GL_LINEAR Texture
-	bload "Data/EnvRoll.bmp", @buffer(0)         '' BLOAD data from bitmap
+	bload "data/Envroll.bmp", @buffer(0)         '' BLOAD data from bitmap
 	texture(2) = CreateTexture(@buffer(0))       '' GL_LINEAR Texture
 	if not(texture(0) or texture(1) or texture(2)) then end 1  '' Exit if error loading data files
 

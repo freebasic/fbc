@@ -92,9 +92,9 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT , GL_NICEST)     '' Really Nice Perspective Calculations
 
 	maxver = 0                                              '' Sets Max Vertices To 0 By Default
-	objload ("data/sphere.txt" , @morph1)                   '' Load The First Object Into morph1 From File sphere.txt
-	objload ("data/torus.txt" , @morph2)                    '' Load The Second Object Into morph2 From File torus.txt
-	objload ("data/tube.txt" , @morph3)                     '' Load The Third Object Into morph3 From File tube.txt
+	objload ("data/Sphere.txt" , @morph1)                   '' Load The First Object Into morph1 From File sphere.txt
+	objload ("data/Torus.txt" , @morph2)                    '' Load The Second Object Into morph2 From File torus.txt
+	objload ("data/Tube.txt" , @morph3)                     '' Load The Third Object Into morph3 From File tube.txt
 
 	objallocate (@morph4 , 486)                             '' Manually Reserver Ram For A 4th 468 Vertice Object (morph4)
 
@@ -107,7 +107,7 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 		i = i + 1
 	wend
 
-	objload ("data/sphere.txt" , @helper)   '' Load sphere.txt Object Into Helper (Used As Starting Point)
+	objload ("data/Sphere.txt" , @helper)   '' Load sphere.txt Object Into Helper (Used As Starting Point)
 	dest = @morph1          '' Source & Destination Are Set To Equal First Object (morph1)
     sour = @morph1
 

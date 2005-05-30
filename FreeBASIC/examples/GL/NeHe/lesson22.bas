@@ -389,7 +389,7 @@ function LoadGLTextures() as integer
 	'' sector1.triangle = new TRIANGLE(numtriangles)
 
 	'' Load The Logo-Bitmaps
-	Image=LoadBMP("data/OpenGL_ALPHA.bmp")
+	Image=LoadBMP("data/OpenGL_Alpha.bmp")
 	if (Image) then
 		alpha = allocate( 4*Image->sizeX*Image->sizeY)      '' Create Memory For RGBA8-Texture
 		for a=0 to Image->sizeX*Image->sizeY - 1
@@ -423,13 +423,13 @@ function LoadGLTextures() as integer
 	end if
 
 	'' Load The "Extension Enabled"-Logo
-	Image=LoadBMP("data/multi_on_alpha.bmp")
+	Image=LoadBMP("data/Multi_On_Alpha.bmp")
 	if Image then
 		alpha = allocate(4*Image->sizeX*Image->sizeY)       '' Create Memory For RGBA8-Texture
 		for a=0 to Image->sizeX*Image->sizeY - 1
 			alpha[4*a+3] = Image->buffer[a*3]               '' Pick Only Red Value As Alpha!
 		next
-		Image=LoadBMP("data/multi_on.bmp")
+		Image=LoadBMP("data/Multi_On.bmp")
 		if not (Image) then status=false
 		for a=0 to Image->sizeX*Image->sizeY -1
 			alpha[4*a] = Image->buffer[a*3]                 '' R

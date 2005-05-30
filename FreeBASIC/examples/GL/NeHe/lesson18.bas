@@ -75,7 +75,7 @@ declare sub glDrawCube()
 
 	'' Use BLOAD to load the bitmaps.
 	redim buffer(256*256*4+4) as ubyte       '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "data/wall.bmp", @buffer(0)        '' BLOAD the bitmap
+	bload "data/Wall.bmp", @buffer(0)        '' BLOAD the bitmap
 	texture(0) = CreateTexture(@buffer(0),TEX_NOFILTER)  '' Nearest Texture
 	texture(1) = CreateTexture(@buffer(0))               '' Linear Texture (default)
 	texture(2) = CreateTexture(@buffer(0),TEX_MIPMAP)    '' MipMapped Texture
