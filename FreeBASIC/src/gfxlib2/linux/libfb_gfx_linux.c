@@ -602,3 +602,40 @@ void fb_hX11SetWindowTitle(char *title)
 	XStoreName(fb_linux.display, fb_linux.window, title);
 }
 
+
+/*:::::*/
+int *fb_hX11FetchModes(int depth, int *size)
+{
+	Display *dpy;
+	XRRScreenConfiguration *cfg;
+	XRRScreenSize *rr_sizes;
+	int i, *sizes = NULL;
+
+	if ((depth != 8) && (depth != 15) && (depth != 16) && (depth != 24) && (depth != 32))
+		return NULL;
+
+	if (fb_linux.display)
+		dpy = fb_linux.display;
+	else
+		dpy = XOpenDisplay(NULL);
+	if (config)
+		cfg = config;
+	else
+		cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
+	
+	if ((!dpy) || (!cfg))
+		return NULL;
+	
+	rr_sizes = XRRConfigSizes(cfg, size);
+	if ((rr_sizes) && (*size > 0)) {
+		sizes = (int *)malloc(*size * sizeof(int));
+		for (i = 0; i < *size; i++)
+			sizes[i] = (rr_sizes[i].width << 16) | (rr_sizes[i].height);
+	}	
+	if (!config)
+		XRRFreeScreenConfigInfo(cfg);
+	if (!fb_linux.display)
+		XCloseDisplay(dpy);
+	
+	return sizes;
+}

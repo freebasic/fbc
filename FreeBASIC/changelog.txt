@@ -36,6 +36,7 @@ Version 0.14 Beta:
 - PALETTE [USING] now supports the new PALETTE GET [USING] construct to get current palette color(s), so you can
   do "PALETTE GET index, r, g, b" or "PALETTE GET USING pal" instead of using the old INP/OUT tricks (lillo)
 - added SCREENSYNC to wait for vertical blank, so you can use it instead of the old WAIT &h3DA,8 trick (lillo)
+- added SCREENLIST to fetch available screen modes (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)

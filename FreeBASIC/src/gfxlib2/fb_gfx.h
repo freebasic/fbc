@@ -194,6 +194,7 @@ typedef struct GFXDRIVER
 	int (*get_mouse)(int *x, int *y, int *z, int *buttons);
 	void (*set_mouse)(int x, int y, int cursor);
 	void (*set_window_title)(char *title);
+	int *(*fetch_modes)(int depth, int *size);
 	void (*flip)(void);
 } GFXDRIVER;
 

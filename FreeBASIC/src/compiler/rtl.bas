@@ -1400,6 +1400,13 @@ data "screeninfo", "fb_GfxScreenInfo", _
 	 @hGfxlib_cb, FALSE, FALSE, _
 	 0
 
+'' fb_GfxScreenList ( byval depth as integer ) as integer
+data "screenlist", "fb_GfxScreenList", _
+FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
+	 @hGfxlib_cb, TRUE, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0
+
 '' fb_GfxImageCreate ( byval width as integer, byval height as integer ) as any ptr
 data "imagecreate", "fb_GfxImageCreate", _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _

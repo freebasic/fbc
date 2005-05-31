@@ -59,6 +59,7 @@ Functions reference:
 	SCREEN		statement
 	SCREENCOPY	statement
 	SCREENINFO	function
+	SCREENLIST	function
 	SCREENLOCK	statement
 	SCREENPTR	function
 	SCREENRES	statement
@@ -1667,6 +1668,8 @@ SCREEN is successful; a way to do this is to test the return value of the
 SCREENPTR function, have a look at it for details. Another way is just to
 check for errors with ON ERROR; SCREEN will cause an illegal function call
 error on failure.
+To find out which video modes are supported by the host system, you can use
+the SCREENLIST function.
 Once a gfx mode has been set, you can toggle fullscreen and windowed mode at
 any time by pressing ALT-ENTER, providing the system supports it. While in
 windowed mode, clicking on the window close button will return CHR$(255)+"X"
@@ -1826,6 +1829,56 @@ Function new in FB.
 See also:
 
 SCREEN, Appendix C.
+
+
+
++------------+----------------------------------------------------------------
+| SCREENLIST |
++------------+
+
+Function to fetch supported video modes.
+
+
+Syntax:
+	SCREENLIST ([depth])
+
+
+Insights:
+
+The SCREENLIST function can be used to find out at runtime which fullscreen
+video modes are available on the host machine. This works like the DIR$
+function: you first have to call this function once requesting the list of
+supported resolutions for a given color depth (supported depths are 8, 15, 16,
+24 and 32); this will return the first supported resolution for the request,
+encoded in an integer result such that the screen width and height are stored
+in the high and low word respectively.
+Next, continue calling SCREENLIST without parameters to get the next supported
+resolutions, until 0 is returned.
+Resolutions are returned from lowest to highest supported ones. Also, it is
+safe to call this function at any time.
+
+
+Example:
+
+DIM AS INTEGER mode, w, h
+'' Find which 8bit resolutions are supported
+mode = SCREENLIST(8)
+WHILE (mode)
+	w = HIWORD(mode)
+	h = LOWORD(mode)
+	PRINT STR$(w) + "x" + STR$(h)
+	mode = SCREENLIST
+WEND
+
+
+Differences from QB:
+
+Function new in FB.
+
+
+See also:
+
+SCREEN, SCREENRES.
 
 
 
