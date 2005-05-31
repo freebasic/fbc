@@ -130,7 +130,7 @@ static int load_bmp(FILE *f, void *dest)
 	if ((!fread(&header, 54, 1, f)) || (header.bfType != 19778) || (header.biSize != 40))
 		return FB_RTERROR_FILEIO;
 	
-	if ((header.biBitCount == 15) || (header.biBitCount == 16))
+	if ((header.biBitCount == 15) || (header.biBitCount == 16) || (header.biBitCount < 8))
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	for (i = 0; i < (header.bfOffBits - 54) >> 2; i++) {
 		palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
