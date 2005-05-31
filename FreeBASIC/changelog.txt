@@ -67,6 +67,7 @@ Version 0.14 Beta:
 - wrong code could be generated when 64-bit integers (longint's) were used in complex expressions (v1c)
 - field arrays of UDT's are now padded to follow the GCC 3.x ABI (v1c)
 - using gfx primitives inside a screenlock/screenunlock pair will not hang programs anymore (lillo)
+- BLOADing a 2 or 16 colors BMP was giving screwed images (lillo)
 
 
 Version 0.13 Beta:

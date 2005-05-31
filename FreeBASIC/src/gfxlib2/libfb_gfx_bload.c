@@ -120,7 +120,7 @@ static int load_bmp(FILE *f, void *dest)
 	BMP_HEADER header;
 	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
-	int i, j, color, rgb[3], expand, size, palette[256];
+	int i, j, color, rgb[3], expand, size, padding, palette[256];
 	void (*convert)(unsigned char *, unsigned char *, int) = NULL;
 	
 	if (!fb_mode)
@@ -130,7 +130,7 @@ static int load_bmp(FILE *f, void *dest)
 	if ((!fread(&header, 54, 1, f)) || (header.bfType != 19778) || (header.biSize != 40))
 		return FB_RTERROR_FILEIO;
 	
-	if ((header.biBitCount == 15) || (header.biBitCount == 16) || (header.biBitCount < 8))
+	if ((header.biBitCount == 15) || (header.biBitCount == 16))
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	for (i = 0; i < (header.bfOffBits - 54) >> 2; i++) {
 		palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
@@ -171,6 +171,12 @@ static int load_bmp(FILE *f, void *dest)
 	fb_hRestorePalette();
 	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size);
+	switch (expand) {
+		case 1: padding = 4 - (((header.biWidth + 7) >> 3) & 0x3); break;
+		case 4: padding = 4 - (((header.biWidth + 1) >> 1) & 0x3); break;
+		default: padding = 4 - ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) & 0x3); break;
+	}
+	padding &= 0x3;
 	for (i = header.biHeight - 1; i >= 0; i--) {
 		if (expand) {
 			color = 0;
@@ -182,9 +188,9 @@ static int load_bmp(FILE *f, void *dest)
 					}
 				}
 				buffer[j] = color >> (8 - expand);
-				color <<= expand;
+				color = (color << expand) & 0xFF;
 			}
-			for (; j < size; j++)
+			for (j = 0; j < padding; j++)
 				fgetc(f);
 		}
 		else if (!fread(buffer, size, 1, f)) {
