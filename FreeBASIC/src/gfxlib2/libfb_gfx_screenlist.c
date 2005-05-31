@@ -42,14 +42,13 @@ static void add_mode(int mode)
 		list_size = 1;
 	}
 	else {
-		for (i = 0; list[i]; i++) {
+		for (i = 0; i < list_size; i++) {
 			if (list[i] == mode)
 				return;
 		}
-		list = (int *)realloc(list, sizeof(int) * (list_size + 2));
+		list = (int *)realloc(list, sizeof(int) * (list_size + 1));
 		list[list_size] = mode;
 		list_size++;
-		list[list_size] = 0;
 	}
 }
 
