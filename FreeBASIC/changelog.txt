@@ -68,6 +68,8 @@ Version 0.14 Beta:
 - field arrays of UDT's are now padded to follow the GCC 3.x ABI (v1c)
 - using gfx primitives inside a screenlock/screenunlock pair will not hang programs anymore (lillo)
 - BLOADing a 2 or 16 colors BMP was giving screwed images (lillo)
+- ON expr GOSUB would crash because the jump-table was not skipped as with GOTO (v1c)
+- strptr(lit string) when used to initialize static or module-level variables would generate an exception (v1c)
 
 
 Version 0.13 Beta:
