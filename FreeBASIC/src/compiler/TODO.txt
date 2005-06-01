@@ -1,3 +1,14 @@
+
+[ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
+    - all fields initialized must be named as a special parser routine will have to be used,
+      that will keep track of what wasn't initialized to fill 'em with 0's
+
+[ ] Enum's shouldn't become integer's, or it won't be possible to use overloading with
+    parameters where only the enum's are different
+    - AST will have to deal with that, on BOP, UOP, ASSIGN, IIF and anything else, they should
+      be seen as integers to IR
+    - with the change, AST can check for different enums and show warnings
+
 [ ] rewrite the emit module, using pseudo-opcode lists (as in IR), never emit any text
     - keep track of functions
     - the main module can be "updated" between functions, as that is allowed
