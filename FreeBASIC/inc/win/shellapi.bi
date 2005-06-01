@@ -220,7 +220,7 @@ Declare Function ExtractIconEx Alias "ExtractIconExA" (ByVal lpszFile As String,
 Declare Function FindExecutable Alias "FindExecutableA" (ByVal lpFile As String, ByVal lpDirectory As String, ByVal lpResult As String) As Integer
 Declare Sub SHAddToRecentDocs Alias "SHAddToRecentDocs" (ByVal uFlags As Integer, ByRef pv As Any)
 Declare Function SHAppBarMessage Alias "SHAppBarMessage" (ByVal dwMessage As Integer, ByRef pData As APPBARDATA) As Integer
-Declare Function SHBrowseForFolder Alias "SHBrowseForFolderA" (lpBrowseInfo As BROWSEINFO) As Integer
+Declare Function SHBrowseForFolder Alias "SHBrowseForFolderA" (ByRef lpBrowseInfo As BROWSEINFO) As Integer
 Declare Sub SHChangeNotify Alias "SHChangeNotify" (ByVal wEventId As Integer, ByVal uFlags As Integer, ByRef dwItem1 As Any, ByRef dwItem2 As Any)
 Declare Sub SHEmptyRecycleBin Alias "SHEmptyRecycleBinA" (ByVal hwnd As Integer, ByVal pszRootPath As String, ByVal dwFlags As Integer)
 Declare Function SHFileOperation Alias "SHFileOperationA" (ByRef lpFileOp As SHFILEOPSTRUCT) As Integer

@@ -2416,6 +2416,7 @@ type TINPUT
     hi			as HARDWAREINPUT
   end union
 end type
+
 '-----------------
 '| API FUNCTIONS |
 '-----------------
@@ -2423,19 +2424,19 @@ end type
 Declare Function ActivateKeyboardLayout Alias "ActivateKeyboardLayout" (ByVal HKL As Integer, ByVal Flags As Integer) As Integer
 Declare Function AdjustWindowRect Alias "AdjustWindowRect" (ByRef lpRect As RECT, ByVal dwStyle As Integer, ByVal bMenu As Integer) As Integer
 Declare Function AdjustWindowRectEx Alias "AdjustWindowRectEx" (ByRef lpRect As RECT, ByVal dsStyle As Integer, ByVal bMenu As Integer, ByVal dwEsStyle As Integer) As Integer
-Declare Function AlignRects Alias "AlignRects" (arc As RECT, cCount As Integer, iPrimary As Integer, dwFlags As Integer) As Integer
+Declare Function AlignRects Alias "AlignRects" ( ByRef arc As RECT, ByRef cCount As Integer, ByRef iPrimary As Integer, ByRef dwFlags As Integer) As Integer
 Declare Function AnimateWindow Alias "AnimateWindow" (ByVal hwnd As Integer, ByVal dwTime As Integer, ByVal dwFlags As Integer) As Integer
 Declare Function AnyPopup Alias "AnyPopup" () As Integer
-Declare Function AppendMenu Alias "AppendMenuA" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, lpNewItem As Any) As Integer
+Declare Function AppendMenu Alias "AppendMenuA" (ByVal hMenu As Integer, ByVal wFlags As Integer, ByVal wIDNewItem As Integer, ByRef lpNewItem As Any) As Integer
 Declare Function ArrangeIconicWindows Alias "ArrangeIconicWindows" (ByVal hwnd As Integer) As Integer
 Declare Function AttachThreadInput Alias "AttachThreadInput" (ByVal idAttach As Integer, ByVal idAttachTo As Integer, ByVal fAttach As Integer) As Integer
 Declare Function BeginDeferWindowPos Alias "BeginDeferWindowPos" (ByVal nNumWindows As Integer) As Integer
-Declare Function BeginPaint Alias "BeginPaint" (ByVal hwnd As Integer, lpPaint As PAINTSTRUCT) As Integer
+Declare Function BeginPaint Alias "BeginPaint" (ByVal hwnd As Integer, ByRef lpPaint As PAINTSTRUCT) As Integer
 Declare Function BlockInput Alias "BlockInput" (ByVal fBlockIt As Integer) As Integer
 Declare Function BringWindowToTop Alias "BringWindowToTop" (ByVal hwnd As Integer) As Integer
 Declare Function BroadcastSystemMessage Alias "BroadcastSystemMessage" (ByVal dw As Integer, ByRef pdw As Integer, ByVal un As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
 Declare Function CallMsgFilter Alias "CallMsgFilterA" (ByRef lpMsg As msg, ByVal ncode As Integer) As Integer
-Declare Function CallNextHookEx Alias "CallNextHookEx" (ByVal hHook As Integer, ByVal ncode As Integer, ByVal wParam As Integer, lParam As Any) As Integer
+Declare Function CallNextHookEx Alias "CallNextHookEx" (ByVal hHook As Integer, ByVal ncode As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
 Declare Function CallWindowProc Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Integer, ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
 Declare Function CascadeWindows Alias "CascadeWindows" (ByVal hWndParent As Integer, ByVal wHow As Integer, byref lpRect As RECT, ByVal cKids As Integer, ByRef lpkids As Integer) As Short
 Declare Function ChangeClipboardChain Alias "ChangeClipboardChain" (ByVal hwnd As Integer, ByVal hWndNext As Integer) As Integer
@@ -2483,7 +2484,7 @@ Declare Function CreateIconIndirect Alias "CreateIconIndirect" (ByRef piconinfo 
 Declare Function CreateMDIWindow Alias "CreateMDIWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hInstance As Integer, ByVal lParam As Integer) As Integer
 Declare Function CreateMenu Alias "CreateMenu" () As Integer
 Declare Function CreatePopupMenu Alias "CreatePopupMenu" () As Integer
-Declare Function CreateWindowEx Alias "CreateWindowExA" (ByVal dwExStyle As Integer, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hMenu As Integer, ByVal hInstance As Integer, lpParam as Any) As Integer
+Declare Function CreateWindowEx Alias "CreateWindowExA" (ByVal dwExStyle As Integer, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hWndParent As Integer, ByVal hMenu As Integer, ByVal hInstance As Integer, ByRef lpParam as Any) As Integer
 Declare Function CreateWindowStation Alias "CreateWindowStationA" (ByVal lpwinsta As String, ByVal dwReserved As Integer, ByVal dwDesiredAccess As Integer, ByRef lpsa As SECURITY_ATTRIBUTES) As Integer
 Declare Function DdeAbandonTransaction Alias "DdeAbandonTransaction" (ByVal idInst As Integer, ByVal hConv As Integer, ByVal idTransaction As Integer) As Integer
 Declare Function DdeAccessData Alias "DdeAccessData" (ByVal hData As Integer, ByRef pcbDataSize As Integer) As Integer
@@ -2528,7 +2529,7 @@ Declare Function DestroyMenu Alias "DestroyMenu" (ByVal hMenu As Integer) As Int
 Declare Function DestroyWindow Alias "DestroyWindow" (ByVal hwnd As Integer) As Integer
 Declare Function DialogBoxIndirectParam Alias "DialogBoxIndirectParamA" (ByVal hInstance As Integer, ByRef hDialogTemplate As DLGTEMPLATE, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) As Integer
 Declare Function DialogBoxParam Alias "DialogBoxParamA" (ByVal hInstance As Integer, ByVal lpTemplateName As String, ByVal hWndParent As Integer, ByVal lpDialogFunc As Integer, ByVal dwInitParam As Integer) as integer
-Declare Function DispatchMessage Alias "DispatchMessageA" (lpMsg As MSG) As Integer
+Declare Function DispatchMessage Alias "DispatchMessageA" ( ByRef lpMsg As MSG) As Integer
 Declare Function DlgDirList Alias "DlgDirListA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDListBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
 Declare Function DlgDirListComboBox Alias "DlgDirListComboBoxA" (ByVal hDlg As Integer, ByVal lpPathSpec As String, ByVal nIDComboBox As Integer, ByVal nIDStaticPath As Integer, ByVal wFileType As Integer) As Integer
 Declare Function DlgDirSelectComboBoxEx Alias "DlgDirSelectComboBoxExA" (ByVal hWndDlg As Integer, ByVal lpszPath As String, ByVal cbPath As Integer, ByVal idComboBox As Integer) As Integer
@@ -2544,7 +2545,7 @@ Declare Function DrawIcon Alias "DrawIcon" (ByVal hdc As Integer, ByVal x As Int
 Declare Function DrawIconEx Alias "DrawIconEx" (ByVal hdc As Integer, ByVal xLeft As Integer, ByVal yTop As Integer, ByVal hIcon As Integer, ByVal cxWidth As Integer, ByVal cyWidth As Integer, ByVal istepIfAniCur As Integer, ByVal hbrFlickerFreeDraw As Integer, ByVal diFlags As Integer) As Integer
 Declare Function DrawMenuBar Alias "DrawMenuBar" (ByVal hwnd As Integer) As Integer
 Declare Function DrawState Alias "DrawStateA" (ByVal hDC As Integer, ByVal hBrush As Integer, ByVal lpDrawStateProc As Integer, ByVal lParam As Integer, ByVal wParam As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal n3 As Integer, ByVal n4 As Integer, ByVal un As Integer) As Integer
-Declare Function DrawText Alias "DrawTextA" (ByVal hdc As Integer, ByVal lpStr As String, ByVal nCount As Integer, lpRect As RECT, ByVal wFormat As Integer) As Integer
+Declare Function DrawText Alias "DrawTextA" (ByVal hdc As Integer, ByVal lpStr As String, ByVal nCount As Integer, ByRef lpRect As RECT, ByVal wFormat As Integer) As Integer
 Declare Function DrawTextEx Alias "DrawTextExA" (ByVal hDC As Integer, ByVal lpsz As String, ByVal n As Integer, ByRef lpRect As RECT, ByVal un As Integer, ByRef lpDrawTextParams As DRAWTEXTPARAMS) As Integer
 Declare Function EmptyClipboard Alias "EmptyClipboard" () As Integer
 Declare Function EnableMenuItem Alias "EnableMenuItem" (ByVal hMenu As Integer, ByVal wIDEnableItem As Integer, ByVal wEnable As Integer) As Integer
@@ -2553,7 +2554,7 @@ Declare Function EnableWindow Alias "EnableWindow" (ByVal hwnd As Integer, ByVal
 Declare Function EndDeferWindowPos Alias "EndDeferWindowPos" (ByVal hWinPosInfo As Integer) As Integer
 Declare Function EndDialog Alias "EndDialog" (ByVal hDlg As Integer, ByVal nResult As Integer) As Integer
 Declare Function EndMenu Alias "EndMenu" () As Integer
-Declare Function EndPaint Alias "EndPaint" (ByVal hwnd As Integer, lpPaint As PAINTSTRUCT) As Integer
+Declare Function EndPaint Alias "EndPaint" (ByVal hwnd As Integer, ByRef lpPaint As PAINTSTRUCT) As Integer
 Declare Function EnumChildWindows Alias "EnumChildWindows" (ByVal hWndParent As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
 Declare Function EnumClipboardFormats Alias "EnumClipboardFormats" (ByVal wFormat As Integer) As Integer
 Declare Function EnumDesktops Alias "EnumDesktopsA" (ByVal hwinsta As Integer, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
@@ -2588,7 +2589,7 @@ Declare Function GetClassInfoEx Alias "GetClassInfoExA" (ByVal hinstance As Inte
 Declare Function GetClassLong Alias "GetClassLongA" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Integer
 Declare Function GetClassName Alias "GetClassNameA" (ByVal hwnd As Integer, ByVal lpClassName As String, ByVal nMaxCount As Integer) As Integer
 Declare Function GetClassWord Alias "GetClassWord" (ByVal hwnd As Integer, ByVal nIndex As Integer) As Integer
-Declare Function GetClientRect Alias "GetClientRect" (ByVal hwnd As Integer, lpRect as RECT) As Integer
+Declare Function GetClientRect Alias "GetClientRect" (ByVal hwnd As Integer, ByRef lpRect as RECT) As Integer
 Declare Function GetClipboardData Alias "GetClipboardData" (ByVal wFormat As Integer) As Integer
 Declare Function GetClipboardFormatName Alias "GetClipboardFormatNameA" (ByVal wFormat As Integer, ByVal lpString As String, ByVal nMaxCount As Integer) As Integer
 Declare Function GetClipboardOwner Alias "GetClipboardOwner" () As Integer
@@ -2632,10 +2633,10 @@ Declare Function GetMenuInfo Alias "GetMenuInfo" (ByVal hmenu As Integer, ByRef 
 Declare Function GetMenuItemCount Alias "GetMenuItemCount" (ByVal hMenu As Integer) As Integer
 Declare Function GetMenuItemID Alias "GetMenuItemID" (ByVal hMenu As Integer, ByVal nPos As Integer) As Integer
 Declare Function GetMenuItemInfo Alias "GetMenuItemInfoA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal b As Short, ByRef lpMenuItemInfo As MENUITEMINFO) As Integer
-Declare Function GetMenuItemRect Alias "GetMenuItemRect" (ByVal hWnd As Integer, ByVal hMenu As Integer, ByVal uItem As Integer,  ByRef lprcItem As RECT) As Integer
+Declare Function GetMenuItemRect Alias "GetMenuItemRect" (ByVal hWnd As Integer, ByVal hMenu As Integer, ByVal uItem As Integer, ByRef lprcItem As RECT) As Integer
 Declare Function GetMenuState Alias "GetMenuState" (ByVal hMenu As Integer, ByVal wID As Integer, ByVal wFlags As Integer) As Integer
 Declare Function GetMenuString Alias "GetMenuStringA" (ByVal hMenu As Integer, ByVal wIDItem As Integer, ByVal lpString As String, ByVal nMaxCount As Integer, ByVal wFlag As Integer) As Integer
-Declare Function GetMessage Alias "GetMessageA" (lpMsg as MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer) As Integer
+Declare Function GetMessage Alias "GetMessageA" ( ByRef lpMsg as MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer) As Integer
 Declare Function GetMessageExtraInfo Alias "GetMessageExtraInfo" () As Integer
 Declare Function GetMessagePos Alias "GetMessagePos" () As Integer
 Declare Function GetMessageTime Alias "GetMessageTime" () As Integer
@@ -2671,7 +2672,7 @@ Declare Function GetWindowDC Alias "GetWindowDC" (ByVal hwnd As Integer) As Inte
 Declare Function GetWindowLong Alias "GetWindowLongA" (ByVal hWnd As Integer, ByVal nIndex As Integer) As Integer
 Declare Function GetWindowModuleFileName Alias "GetWindowModuleFileNameA" (ByVal hwnd As Integer, ByVal pszFileName As String, ByVal cchFileNameMax As Integer) As Integer
 Declare Function GetWindowPlacement Alias "GetWindowPlacement" (ByVal hwnd As Integer, ByRef lpwndpl As WINDOWPLACEMENT) As Integer
-Declare Function GetWindowRect Alias "GetWindowRect" (ByVal hWnd As Integer, lpRect As RECT) As Integer
+Declare Function GetWindowRect Alias "GetWindowRect" (ByVal hWnd As Integer, ByRef lpRect As RECT) As Integer
 Declare Function GetWindowRgn Alias "GetWindowRgn" (ByVal hWnd As Integer, ByVal hRgn As Integer) As Integer
 Declare Function GetWindowText Alias "GetWindowTextA" (ByVal hwnd As Integer, ByVal lpString As String, ByVal cch As Integer) As Integer
 Declare Function GetWindowTextLength Alias "GetWindowTextLengthA" (ByVal hwnd As Integer) As Integer
@@ -2683,8 +2684,8 @@ Declare Function HiliteMenuItem Alias "HiliteMenuItem" (ByVal hwnd As Integer, B
 Declare Function ImpersonateDdeClientWindow Alias "ImpersonateDdeClientWindow" (ByVal hWndClient As Integer, ByVal hWndServer As Integer) As Integer
 Declare Function InflateRect Alias "InflateRect" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function InSendMessage Alias "InSendMessage" () As Integer
-Declare Function InSendMessageEx Alias "InSendMessageEx" (lpReserved As Any) As Integer
-Declare Function InsertMenu Alias "InsertMenuA" (ByVal hMenu As UInteger, ByVal nPosition As UInteger, ByVal wFlags As UInteger, ByVal wIDNewItem As UInteger, lpNewItem As Any) As Integer
+Declare Function InSendMessageEx Alias "InSendMessageEx" ( ByRef lpReserved As Any) As Integer
+Declare Function InsertMenu Alias "InsertMenuA" (ByVal hMenu As UInteger, ByVal nPosition As UInteger, ByVal wFlags As UInteger, ByVal wIDNewItem As UInteger, ByRef lpNewItem As Any) As Integer
 Declare Function InsertMenuItem Alias "InsertMenuItemA" (ByVal hMenu As Integer, ByVal un As Integer, ByVal bool As Short, ByRef lpcMenuItemInfo As MENUITEMINFO) As Integer
 Declare Function IntersectRect Alias "IntersectRect" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Integer
 Declare Function InvalidateRect Alias "InvalidateRect" (ByVal hwnd As Integer, ByRef lpRect As RECT, ByVal bErase As Integer) As Integer
@@ -2744,15 +2745,15 @@ Declare Function OpenDesktop Alias "OpenDesktopA" (ByVal lpszDesktop As String, 
 Declare Function OpenIcon Alias "OpenIcon" (ByVal hwnd As Integer) As Integer
 Declare Function PackDDElParam Alias "PackDDElParam" (ByVal msg As Integer, ByVal uiLo As Integer, ByVal uiHi As Integer) As Integer
 Declare Function PaintDesktop Alias "PaintDesktop" (ByVal hdc As Integer) As Integer
-Declare Function PeekMessage Alias "PeekMessageA" (lpMsg As MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer, ByVal wRemoveMsg As Integer) As Integer
+Declare Function PeekMessage Alias "PeekMessageA" ( ByRef lpMsg As MSG, ByVal hwnd As Integer, ByVal wMsgFilterMin As Integer, ByVal wMsgFilterMax As Integer, ByVal wRemoveMsg As Integer) As Integer
 Declare Function PostMessage Alias "PostMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
 Declare sub PostQuitMessage Alias "PostQuitMessage" (ByVal nExitCode As Integer)
 Declare Function PtInRect Alias "PtInRect" (ByRef lpRect As RECT, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function RealChildWindowFromPoint Alias "RealChildWindowFromPoint" (ByVal hwndParent As Integer, Byref ptParentClientCoords As POINTAPI) As Integer
 Declare Function RealGetWindowClass Alias "RealGetWindowClass" (ByVal hwnd As Integer, ByVal pszType As String, ByVal cchType As Integer) As Integer
 Declare Function RedrawWindow Alias "RedrawWindow" (ByVal hwnd As Integer, ByRef lprcUpdate As RECT, ByVal hrgnUpdate As Integer, ByVal fuRedraw As Integer) As Integer
-Declare Function RegisterClass Alias "RegisterClassA" (Class As WNDCLASS) As Integer
-Declare Function RegisterClassEx Alias "RegisterClassExA" (pcWndClassEx As WNDCLASSEX) As Integer
+Declare Function RegisterClass Alias "RegisterClassA" ( ByRef Class As WNDCLASS) As Integer
+Declare Function RegisterClassEx Alias "RegisterClassExA" ( ByRef pcWndClassEx As WNDCLASSEX) As Integer
 Declare Function RegisterClipboardFormat Alias "RegisterClipboardFormatA" (ByVal lpString As String) As Integer
 Declare Function RegisterHotKey Alias "RegisterHotKey" (ByVal hwnd As Integer, ByVal id As Integer, ByVal fsModifiers As Integer, ByVal vk As Integer) As Integer
 Declare Function RegisterWindowMessage Alias "RegisterWindowMessageA" (ByVal lpString As String) As Integer
@@ -2843,7 +2844,7 @@ Declare Function TrackPopupMenu Alias "TrackPopupMenu" (ByVal hMenu As Integer, 
 Declare Function TrackPopupMenuEx Alias "TrackPopupMenuEx" (ByVal hMenu As Integer, ByVal un As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByVal hWnd As Integer, ByRef lpTPMParams As TPMPARAMS) As Integer
 Declare Function TranslateAccelerator Alias "TranslateAcceleratorA" (ByVal hwnd As Integer, ByVal hAccTable As Integer, ByRef lpMsg As MSG) As Integer
 Declare Function TranslateMDISysAccel Alias "TranslateMDISysAccel" (ByVal hWndClient As Integer, ByRef lpMsg As MSG) As Integer
-Declare Function TranslateMessage Alias "TranslateMessage" (lpMsg As MSG) As Integer
+Declare Function TranslateMessage Alias "TranslateMessage" ( ByRef lpMsg As MSG) As Integer
 Declare Function UnhookWinEvent Alias "UnhookWinEvent" (ByRef hWinEventHook As Integer) As Integer
 Declare Function UnhookWindowsHook Alias "UnhookWindowsHook" (ByVal nCode As Integer, ByVal pfnFilterProc As Integer) As Integer
 Declare Function UnhookWindowsHookEx Alias "UnhookWindowsHookEx" (ByVal hHook As Integer) As Integer

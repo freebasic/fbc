@@ -297,14 +297,14 @@ End Type
 '| API FUNCTIONS |
 '-----------------
 
-Declare Function ChooseColor Alias "ChooseColorA" (pChoosecolor As CHOOSECOLORS) As Integer
+Declare Function ChooseColor Alias "ChooseColorA" (ByRef pChoosecolor As CHOOSECOLORS) As Integer
 Declare Function ChooseFont Alias "ChooseFontA" (ByRef pChoosefont As CHOOSEFONTS) As Integer
 Declare Function CommDlgExtendedError Alias "CommDlgExtendedError" () As Integer
 Declare Function FindText Alias "FindTextA" (ByRef pFindreplace As FINDREPLACE) As Integer
 Declare Function GetFileTitle Alias "GetFileTitleA" (ByVal lpszFile As String, ByVal lpszTitle As String, ByVal cbBuf As Short) As Short
-Declare Function GetOpenFileName Alias "GetOpenFileNameA" (pOpenfilename As OPENFILENAME) As Integer
-Declare Function GetSaveFileName Alias "GetSaveFileNameA" (pOpenfilename As OPENFILENAME) As Integer
+Declare Function GetOpenFileName Alias "GetOpenFileNameA" (ByRef pOpenfilename As OPENFILENAME) As Integer
+Declare Function GetSaveFileName Alias "GetSaveFileNameA" (ByRef pOpenfilename As OPENFILENAME) As Integer
 Declare Function PageSetupDlg Alias "PageSetupDlgA" (ByRef pPagesetupdlg As PAGESETUPDLGS) As Integer
-Declare Function PrintDlg Alias "PrintDlgA" (pPrintdlg As PRINTDLGS) As Integer
+Declare Function PrintDlg Alias "PrintDlgA" (ByRef pPrintdlg As PRINTDLGS) As Integer
 Declare Function ReplaceText Alias "ReplaceTextA" (ByRef pFindreplace As FINDREPLACE) As Integer
 #endif 'COMMDLG32_BI

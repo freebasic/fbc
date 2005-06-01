@@ -1571,7 +1571,7 @@ Declare Function AbortDoc Alias "AbortDoc" (ByVal hdc As Integer) As Integer
 Declare Function AbortPath Alias "AbortPath" (ByVal hdc As Integer) As Integer
 Declare Function AddFontResource Alias "AddFontResourceA" (byval lpFileName As String) As Integer
 Declare Function AngleArc Alias "AngleArc" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dwRadius As Integer, ByVal eStartAngle As Double, ByVal eSweepAngle As Double) As Integer
-Declare Function AnimatePalette Alias "AnimatePaletteA" (ByVal hPalette As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, lpPaletteColors As PALETTEENTRY) As Integer
+Declare Function AnimatePalette Alias "AnimatePaletteA" (ByVal hPalette As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, ByRef lpPaletteColors As PALETTEENTRY) As Integer
 Declare Function Arc Alias "Arc" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer, ByVal X4 As Integer, ByVal Y4 As Integer) As Integer
 Declare Function ArcTo Alias "ArcTo" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer, ByVal X4 As Integer, ByVal Y4 As Integer) As Integer
 
@@ -1579,8 +1579,8 @@ Declare Function BeginPath Alias "BeginPath" (ByVal hdc As Integer) As Integer
 Declare Function BitBlt Alias "BitBlt" (ByVal hDestDC As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hSrcDC As Integer, ByVal xSrc As Integer, ByVal ySrc As Integer, ByVal dwRop As Integer) As Integer
 
 Declare Function CancelDC Alias "CancelDC" (ByVal hdc As Integer) As Integer
-Declare Function CheckColorsInGamut Alias "CheckColorsInGamut" (ByVal hdc As Integer, lpv As ANY, lpv2 As ANY, ByVal dw As Integer) As Integer
-Declare Function ChoosePixelFormat Alias "ChoosePixelFormat" (ByVal hdc As Integer, pPixelFormatDescriptor As PIXELFORMATDESCRIPTOR) As Integer
+Declare Function CheckColorsInGamut Alias "CheckColorsInGamut" (ByVal hdc As Integer, ByRef lpv As ANY, ByRef lpv2 As ANY, ByVal dw As Integer) As Integer
+Declare Function ChoosePixelFormat Alias "ChoosePixelFormat" (ByVal hdc As Integer, ByRef pPixelFormatDescriptor As PIXELFORMATDESCRIPTOR) As Integer
 Declare Function Chord Alias "Chord" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer, ByVal X4 As Integer, ByVal Y4 As Integer) As Integer
 Declare Function CloseEnhMetaFile Alias "CloseEnhMetaFile" (ByVal hdc As Integer) As Integer
 Declare Function CloseFigure Alias "CloseFigure" (ByVal hdc As Integer) As Integer
@@ -1588,38 +1588,38 @@ Declare Function CloseMetaFile Alias "CloseMetaFile" (ByVal hMF As Integer) As I
 Declare Function ColorCorrectPalette Alias "ColorCorrectPalette" (ByVal hdc As Integer, ByVal hpalette As Integer, ByVal dwFirstEntry As Integer, ByVal dwNumOfEntries As Integer) As Integer
 Declare Function ColorMatchToTarget Alias "ColorMatchToTarget" (ByVal hdc As Integer, ByVal hdc2 As Integer, ByVal dw As Integer) As Integer
 Declare Function CombineRgn Alias "CombineRgn" (ByVal hDestRgn As Integer, ByVal hSrcRgn1 As Integer, ByVal hSrcRgn2 As Integer, ByVal nCombineMode As Integer) As Integer
-Declare Function CombineTransform Alias "CombineTransform" (lpXFORMResult As XFORM, lpXFORM1 As XFORM, lpXFORM2 As XFORM) As Integer
+Declare Function CombineTransform Alias "CombineTransform" ( ByRef lpXFORMResult As XFORM, ByRef lpXFORM1 As XFORM, ByRef lpXFORM2 As XFORM) As Integer
 Declare Function CopyEnhMetaFile Alias "CopyEnhMetaFileA" (ByVal hemfSrc As Integer, byval lpszFile As String) As Integer
 Declare Function CopyMetaFile Alias "CopyMetaFileA" (ByVal hMF As Integer, byval lpFileName As String) As Integer
-Declare Function CreateBitmap Alias "CreateBitmap" (ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal nPlanes As Integer, ByVal nBitCount As Integer, lpBits As ANY) As Integer
-Declare Function CreateBitmapIndirect Alias "CreateBitmapIndirect" (lpBitmap As BITMAP) As Integer
-Declare Function CreateBrushIndirect Alias "CreateBrushIndirect" (lpLogBrush As LOGBRUSH) As Integer
-Declare Function CreateColorSpace Alias "CreateColorSpaceA" (lplogcolorspace As LOGCOLORSPACE) As Integer
+Declare Function CreateBitmap Alias "CreateBitmap" (ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal nPlanes As Integer, ByVal nBitCount As Integer, ByRef lpBits As ANY) As Integer
+Declare Function CreateBitmapIndirect Alias "CreateBitmapIndirect" ( ByRef lpBitmap As BITMAP) As Integer
+Declare Function CreateBrushIndirect Alias "CreateBrushIndirect" ( ByRef lpLogBrush As LOGBRUSH) As Integer
+Declare Function CreateColorSpace Alias "CreateColorSpaceA" ( ByRef lplogcolorspace As LOGCOLORSPACE) As Integer
 Declare Function CreateCompatibleBitmap Alias "CreateCompatibleBitmap" (ByVal hdc As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
 Declare Function CreateCompatibleDC Alias "CreateCompatibleDC" (ByVal hdc As Integer) As Integer
-Declare Function CreateDC Alias "CreateDCA" (byval lpDriverName As String, byval lpDeviceName As String, byval lpOutput As String, lpInitData As DEVMODE) As Integer
+Declare Function CreateDC Alias "CreateDCA" (byval lpDriverName As String, byval lpDeviceName As String, byval lpOutput As String, ByRef lpInitData As DEVMODE) As Integer
 Declare Function CreateDIBPatternBrush Alias "CreateDIBPatternBrush" (ByVal hPackedDIB As Integer, ByVal wUsage As Integer) As Integer
-Declare Function CreateDIBPatternBrushPt Alias "CreateDIBPatternBrushPt" (lpPackedDIB As ANY, ByVal iUsage As Integer) As Integer
-Declare Function CreateDIBSection Alias "CreateDIBSection" (ByVal hdc As Integer, pBitmapInfo As BITMAPINFO, ByVal un As Integer, ByVal lplpVoid As Integer, ByVal xHandle As Integer, ByVal dw As Integer) As Integer
-Declare Function CreateDIBitmap Alias "CreateDIBitmap" (ByVal hdc As Integer, lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Integer, lpInitBits As ANY, lpInitInfo As BITMAPINFO, ByVal wUsage As Integer) As Integer
+Declare Function CreateDIBPatternBrushPt Alias "CreateDIBPatternBrushPt" ( ByRef lpPackedDIB As ANY, ByVal iUsage As Integer) As Integer
+Declare Function CreateDIBSection Alias "CreateDIBSection" (ByVal hdc As Integer, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Integer, ByVal lplpVoid As Integer, ByVal xHandle As Integer, ByVal dw As Integer) As Integer
+Declare Function CreateDIBitmap Alias "CreateDIBitmap" (ByVal hdc As Integer, ByRef lpInfoHeader As BITMAPINFOHEADER, ByVal dwUsage As Integer, ByRef lpInitBits As ANY, ByRef lpInitInfo As BITMAPINFO, ByVal wUsage As Integer) As Integer
 Declare Function CreateDiscardableBitmap Alias "CreateDiscardableBitmap" (ByVal hdc As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
 Declare Function CreateEllipticRgn Alias "CreateEllipticRgn" (ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
-Declare Function CreateEllipticRgnIndirect Alias "CreateEllipticRgnIndirect" (lpRect As RECT) As Integer
-Declare Function CreateEnhMetaFile Alias "CreateEnhMetaFileA" (ByVal hdcRef As Integer, byval lpFileName As String, lpRect As RECT, byval lpDescription As String) As Integer
+Declare Function CreateEllipticRgnIndirect Alias "CreateEllipticRgnIndirect" ( ByRef lpRect As RECT) As Integer
+Declare Function CreateEnhMetaFile Alias "CreateEnhMetaFileA" (ByVal hdcRef As Integer, byval lpFileName As String, ByRef lpRect As RECT, byval lpDescription As String) As Integer
 Declare Function CreateFont Alias "CreateFontA" (ByVal H As Integer, ByVal W As Integer, ByVal E As Integer, ByVal O As Integer, ByVal W As Integer, ByVal I As Integer, ByVal u As Integer, ByVal S As Integer, ByVal C As Integer, ByVal OP As Integer, ByVal CP As Integer, ByVal Q As Integer, ByVal PAF As Integer, byval F As String) As Integer
-Declare Function CreateFontIndirect Alias "CreateFontIndirectA" (lpLogFont As LOGFONT) As Integer
+Declare Function CreateFontIndirect Alias "CreateFontIndirectA" ( ByRef lpLogFont As LOGFONT) As Integer
 Declare Function CreateHalftonePalette Alias "CreateHalftonePalette" (ByVal hdc As Integer) As Integer
 Declare Function CreateHatchBrush Alias "CreateHatchBrush" (ByVal nIndex As Integer, ByVal crColor As Integer) As Integer
-Declare Function CreateIC Alias "CreateICA" (byval lpDriverName As String, byval lpDeviceName As String, byval lpOutput As String, lpInitData As DEVMODE) As Integer
+Declare Function CreateIC Alias "CreateICA" (byval lpDriverName As String, byval lpDeviceName As String, byval lpOutput As String, ByRef lpInitData As DEVMODE) As Integer
 Declare Function CreateMetaFile Alias "CreateMetaFileA" (byval lpString As String) As Integer
-Declare Function CreatePalette Alias "CreatePalette" (lpLogPalette As LOGPALETTE) As Integer
+Declare Function CreatePalette Alias "CreatePalette" ( ByRef lpLogPalette As LOGPALETTE) As Integer
 Declare Function CreatePatternBrush Alias "CreatePatternBrush" (ByVal hBitmap As Integer) As Integer
 Declare Function CreatePen Alias "CreatePen" (ByVal nPenStyle As Integer, ByVal nWidth As Integer, ByVal crColor As Integer) As Integer
-Declare Function CreatePenIndirect Alias "CreatePenIndirect" (lpLogPen As LOGPEN) As Integer
-Declare Function CreatePolyPolygonRgn Alias "CreatePolyPolygonRgn" (lpPoint As POINTAPI, lpPolyCounts As Integer, ByVal nCount As Integer, ByVal nPolyFillMode As Integer) As Integer
-Declare Function CreatePolygonRgn Alias "CreatePolygonRgn" (lpPoint As POINTAPI, ByVal nCount As Integer, ByVal nPolyFillMode As Integer) As Integer
+Declare Function CreatePenIndirect Alias "CreatePenIndirect" ( ByRef lpLogPen As LOGPEN) As Integer
+Declare Function CreatePolyPolygonRgn Alias "CreatePolyPolygonRgn" ( ByRef lpPoint As POINTAPI, ByRef lpPolyCounts As Integer, ByVal nCount As Integer, ByVal nPolyFillMode As Integer) As Integer
+Declare Function CreatePolygonRgn Alias "CreatePolygonRgn" ( ByRef lpPoint As POINTAPI, ByVal nCount As Integer, ByVal nPolyFillMode As Integer) As Integer
 Declare Function CreateRectRgn Alias "CreateRectRgn" (ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
-Declare Function CreateRectRgnIndirect Alias "CreateRectRgnIndirect" (lpRect As RECT) As Integer
+Declare Function CreateRectRgnIndirect Alias "CreateRectRgnIndirect" ( ByRef lpRect As RECT) As Integer
 Declare Function CreateRoundRectRgn Alias "CreateRoundRectRgn" (ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer) As Integer
 Declare Function CreateScalableFontResource Alias "CreateScalableFontResourceA" (ByVal fHidden As Integer, byval lpszResourceFile As String, byval lpszFontFile As String, byval lpszCurrentPath As String) As Integer
 Declare Function CreateSolidBrush Alias "CreateSolidBrush" (ByVal crColor As Integer) As Integer
@@ -1629,204 +1629,204 @@ Declare Function DeleteDC Alias "DeleteDC" (ByVal hdc As Integer) As Integer
 Declare Function DeleteEnhMetaFile Alias "DeleteEnhMetaFile" (ByVal hemf As Integer) As Integer
 Declare Function DeleteMetaFile Alias "DeleteMetaFile" (ByVal hMF As Integer) As Integer
 Declare Function DeleteObject Alias "DeleteObject" (ByVal hObject As Integer) As Integer
-Declare Function DescribePixelFormat Alias "DescribePixelFormat" (ByVal hdc As Integer, ByVal n As Integer, ByVal un As Integer, lpPixelFormatDescriptor As PIXELFORMATDESCRIPTOR) As Integer
-Declare Function DPtoLP Alias "DPtoLP" (ByVal hdc As Integer, lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
+Declare Function DescribePixelFormat Alias "DescribePixelFormat" (ByVal hdc As Integer, ByVal n As Integer, ByVal un As Integer, ByRef lpPixelFormatDescriptor As PIXELFORMATDESCRIPTOR) As Integer
+Declare Function DPtoLP Alias "DPtoLP" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
 Declare Function DrawEscape Alias "DrawEscape" (ByVal hdc As Integer, ByVal nEscape As Integer, ByVal cbInput As Integer, byval lpszInData As String) As Integer
 
 Declare Function Ellipse Alias "Ellipse" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
 Declare Function EndDoc Alias "EndDoc" (ByVal hdc As Integer) As Integer
 Declare Function EndPage Alias "EndPage" (ByVal hdc As Integer) As Integer
 Declare Function EndPath Alias "EndPath" (ByVal hdc As Integer) As Integer
-Declare Function EnumEnhMetaFile Alias "EnumEnhMetaFile" (ByVal hdc As Integer, ByVal hemf As Integer, ByVal lpEnhMetaFunc As Integer, lpData As ANY, lpRect As RECT) As Integer
+Declare Function EnumEnhMetaFile Alias "EnumEnhMetaFile" (ByVal hdc As Integer, ByVal hemf As Integer, ByVal lpEnhMetaFunc As Integer, ByRef lpData As ANY, ByRef lpRect As RECT) As Integer
 Declare Function EnumFontFamilies Alias "EnumFontFamiliesA" (ByVal hdc As Integer, byval lpszFamily As String, ByVal lpEnumFontFamProc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumFontFamiliesEx Alias "EnumFontFamiliesExA" (ByVal hdc As Integer, lpLogFont As LOGFONT, ByVal lpEnumFontProc As Integer, ByVal lParam As Integer, ByVal dw As Integer) As Integer
+Declare Function EnumFontFamiliesEx Alias "EnumFontFamiliesExA" (ByVal hdc As Integer, ByRef lpLogFont As LOGFONT, ByVal lpEnumFontProc As Integer, ByVal lParam As Integer, ByVal dw As Integer) As Integer
 Declare Function EnumFonts Alias "EnumFontsA" (ByVal hdc As Integer, byval lpsz As String, ByVal lpFontEnumProc As Integer, ByVal lParam As Integer) As Integer
 Declare Function EnumICMProfiles Alias "EnumICMProfilesA" (ByVal hdc As Integer, ByVal icmEnumProc As Integer, ByVal lParam As Integer) As Integer
 Declare Function EnumMetaFile Alias "EnumMetaFile" (ByVal hdc As Integer, ByVal hMetafile As Integer, ByVal lpMFEnumProc As Integer, ByVal lParam As Integer) As Integer
-Declare Function EnumObjects Alias "EnumObjects" (ByVal hdc As Integer, ByVal n As Integer, ByVal lpGOBJEnumProc As Integer, lpVoid As ANY) As Integer
+Declare Function EnumObjects Alias "EnumObjects" (ByVal hdc As Integer, ByVal n As Integer, ByVal lpGOBJEnumProc As Integer, ByRef lpVoid As ANY) As Integer
 Declare Function EqualRgn Alias "EqualRgn" (ByVal hSrcRgn1 As Integer, ByVal hSrcRgn2 As Integer) As Integer
-Declare Function Escape Alias "Escape" (ByVal hdc As Integer, ByVal nEscape As Integer, ByVal nCount As Integer, byval lpInData As String, lpOutData As ANY) As Integer
+Declare Function Escape Alias "Escape" (ByVal hdc As Integer, ByVal nEscape As Integer, ByVal nCount As Integer, byval lpInData As String, ByRef lpOutData As ANY) As Integer
 Declare Function ExcludeClipRect Alias "ExcludeClipRect" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
-Declare Function ExtCreatePen Alias "ExtCreatePen" (ByVal dwPenStyle As Integer, ByVal dwWidth As Integer, lplb As LOGBRUSH, ByVal dwStyleCount As Integer, lpStyle As Integer) As Integer
-Declare Function ExtCreateRegion Alias "ExtCreateRegion" (lpXform As XFORM, ByVal nCount As Integer, lpRgnData As RGNDATA) As Integer
+Declare Function ExtCreatePen Alias "ExtCreatePen" (ByVal dwPenStyle As Integer, ByVal dwWidth As Integer, ByRef lplb As LOGBRUSH, ByVal dwStyleCount As Integer, ByRef lpStyle As Integer) As Integer
+Declare Function ExtCreateRegion Alias "ExtCreateRegion" ( ByRef lpXform As XFORM, ByVal nCount As Integer, ByRef lpRgnData As RGNDATA) As Integer
 Declare Function ExtEscape Alias "ExtEscape" (ByVal hdc As Integer, ByVal nEscape As Integer, ByVal cbInput As Integer, byval lpszInData As String, ByVal cbOutput As Integer, byval lpszOutData As String) As Integer
 Declare Function ExtFloodFill Alias "ExtFloodFill" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal crColor As Integer, ByVal wFillType As Integer) As Integer
 Declare Function ExtSelectClipRgn Alias "ExtSelectClipRgn" (ByVal hdc As Integer, ByVal hRgn As Integer, ByVal fnMode As Integer) As Integer
-Declare Function ExtTextOut Alias "ExtTextOutA" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal wOptions As Integer, lpRect As RECT, byval lpString As String, ByVal nCount As Integer, lpDx As Integer) As Integer
+Declare Function ExtTextOut Alias "ExtTextOutA" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal wOptions As Integer, ByRef lpRect As RECT, byval lpString As String, ByVal nCount As Integer, ByRef lpDx As Integer) As Integer
 
 Declare Function FillPath Alias "FillPath" (ByVal hdc As Integer) As Integer
 Declare Function FillRgn Alias "FillRgn" (ByVal hdc As Integer, ByVal hRgn As Integer, ByVal hBrush As Integer) As Integer
-Declare Function FixBrushOrgEx Alias "FixBrushOrgEx" (ByVal hdc As Integer, ByVal n1 As Integer, ByVal n2 As Integer, lpPoint As POINTAPI) As Integer
+Declare Function FixBrushOrgEx Alias "FixBrushOrgEx" (ByVal hdc As Integer, ByVal n1 As Integer, ByVal n2 As Integer, ByRef lpPoint As POINTAPI) As Integer
 Declare Function FlattenPath Alias "FlattenPath" (ByVal hdc As Integer) As Integer
 Declare Function FloodFill Alias "FloodFill" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal crColor As Integer) As Integer
 Declare Function FrameRgn Alias "FrameRgn" (ByVal hdc As Integer, ByVal hRgn As Integer, ByVal hBrush As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer) As Integer
 
-Declare Function GdiComment Alias "GdiComment" (ByVal hdc As Integer, ByVal cbSize As Integer, lpData As Byte) As Integer
+Declare Function GdiComment Alias "GdiComment" (ByVal hdc As Integer, ByVal cbSize As Integer, ByRef lpData As Byte) As Integer
 Declare Function GdiFlush Alias "GdiFlush" () As Integer
 Declare Function GdiGetBatchLimit Alias "GdiGetBatchLimit" () As Integer
 Declare Function GdiSetBatchLimit Alias "GdiSetBatchLimit" (ByVal dwLimit As Integer) As Integer
 Declare Function GetArcDirection Alias "GetArcDirection" (ByVal hdc As Integer) As Integer
-Declare Function GetAspectRatioFilterEx Alias "GetAspectRatioFilterEx" (ByVal hdc As Integer, lpAspectRatio As SIZEL) As Integer
-Declare Function GetBitmapBits Alias "GetBitmapBits" (ByVal hBitmap As Integer, ByVal dwCount As Integer, lpBits As ANY) As Integer
-Declare Function GetBitmapDimensionEx Alias "GetBitmapDimensionEx" (ByVal hBitmap As Integer, lpDimension As SIZEL) As Integer
+Declare Function GetAspectRatioFilterEx Alias "GetAspectRatioFilterEx" (ByVal hdc As Integer, ByRef lpAspectRatio As SIZEL) As Integer
+Declare Function GetBitmapBits Alias "GetBitmapBits" (ByVal hBitmap As Integer, ByVal dwCount As Integer, ByRef lpBits As ANY) As Integer
+Declare Function GetBitmapDimensionEx Alias "GetBitmapDimensionEx" (ByVal hBitmap As Integer, ByRef lpDimension As SIZEL) As Integer
 Declare Function GetBkColor Alias "GetBkColor" (ByVal hdc As Integer) As Integer
 Declare Function GetBkMode Alias "GetBkMode" (ByVal hdc As Integer) As Integer
-Declare Function GetBoundsRect Alias "GetBoundsRect" (ByVal hdc As Integer, lprcBounds As RECT, ByVal flags As Integer) As Integer
-Declare Function GetBrushOrgEx Alias "GetBrushOrgEx" (ByVal hdc As Integer, lpPoint As POINTAPI) As Integer
-Declare Function GetCharABCWidths Alias "GetCharABCWidthsA" (ByVal hdc As Integer, ByVal uFirstChar As Integer, ByVal uLastChar As Integer, lpabc As ABC) As Integer
-Declare Function GetCharABCWidthsFloat Alias "GetCharABCWidthsFloatA" (ByVal hdc As Integer, ByVal iFirstChar As Integer, ByVal iLastChar As Integer, lpABCF As ABCFLOAT) As Integer
-Declare Function GetCharWidth Alias "GetCharWidthA" (ByVal hdc As Integer, ByVal un1 As Integer, ByVal un2 As Integer, lpn As Integer) As Integer
-Declare Function GetCharWidth32 Alias "GetCharWidth32A" (ByVal hdc As Integer, ByVal iFirstChar As Integer, ByVal iLastChar As Integer, lpBuffer As Integer) As Integer
-Declare Function GetCharWidthFloat Alias "GetCharWidthFloatA" (ByVal hdc As Integer, ByVal iFirstChar As Integer, ByVal iLastChar As Integer, pxBuffer As Double) As Integer
-Declare Function GetCharacterPlacement Alias "GetCharacterPlacementA" (ByVal hdc As Integer, byval lpsz As String, ByVal n1 As Integer, ByVal n2 As Integer, lpGcpResults As GCP_RESULTS, ByVal dw As Integer) As Integer
-Declare Function GetClipBox Alias "GetClipBox" (ByVal hdc As Integer, lpRect As RECT) As Integer
+Declare Function GetBoundsRect Alias "GetBoundsRect" (ByVal hdc As Integer, ByRef lprcBounds As RECT, ByVal flags As Integer) As Integer
+Declare Function GetBrushOrgEx Alias "GetBrushOrgEx" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetCharABCWidths Alias "GetCharABCWidthsA" (ByVal hdc As Integer, ByVal uFirstChar As Integer, ByVal uLastChar As Integer, ByRef lpabc As ABC) As Integer
+Declare Function GetCharABCWidthsFloat Alias "GetCharABCWidthsFloatA" (ByVal hdc As Integer, ByVal iFirstChar As Integer, ByVal iLastChar As Integer, ByRef lpABCF As ABCFLOAT) As Integer
+Declare Function GetCharWidth Alias "GetCharWidthA" (ByVal hdc As Integer, ByVal un1 As Integer, ByVal un2 As Integer, ByRef lpn As Integer) As Integer
+Declare Function GetCharWidth32 Alias "GetCharWidth32A" (ByVal hdc As Integer, ByVal iFirstChar As Integer, ByVal iLastChar As Integer, ByRef lpBuffer As Integer) As Integer
+Declare Function GetCharWidthFloat Alias "GetCharWidthFloatA" (ByVal hdc As Integer, ByVal iFirstChar As Integer, ByVal iLastChar As Integer, ByRef pxBuffer As Double) As Integer
+Declare Function GetCharacterPlacement Alias "GetCharacterPlacementA" (ByVal hdc As Integer, byval lpsz As String, ByVal n1 As Integer, ByVal n2 As Integer, ByRef lpGcpResults As GCP_RESULTS, ByVal dw As Integer) As Integer
+Declare Function GetClipBox Alias "GetClipBox" (ByVal hdc As Integer, ByRef lpRect As RECT) As Integer
 Declare Function GetClipRgn Alias "GetClipRgn" (ByVal hdc As Integer, ByVal hRgn As Integer) As Integer
-Declare Function GetColorAdjustment Alias "GetColorAdjustment" (ByVal hdc As Integer, lpca As COLORADJUSTMENT) As Integer
+Declare Function GetColorAdjustment Alias "GetColorAdjustment" (ByVal hdc As Integer, ByRef lpca As COLORADJUSTMENT) As Integer
 Declare Function GetColorSpace Alias "GetColorSpace" (ByVal hdc As Integer) As Integer
 Declare Function GetCurrentObject Alias "GetCurrentObject" (ByVal hdc As Integer, ByVal uObjectType As Integer) As Integer
-Declare Function GetCurrentPositionEx Alias "GetCurrentPositionEx" (ByVal hdc As Integer, lpPoint As POINTAPI) As Integer
-Declare Function GetDCOrgEx Alias "GetDCOrgEx" (ByVal hdc As Integer, lpPoint As POINTAPI) As Integer
-Declare Function GetDIBColorTable Alias "GetDIBColorTable" (ByVal hdc As Integer, ByVal un1 As Integer, ByVal un2 As Integer, pRGBQuad As RGBQUAD) As Integer
-Declare Function GetDIBits Alias "GetDIBits" (ByVal aHDC As Integer, ByVal hBitmap As Integer, ByVal nStartScan As Integer, ByVal nNumScans As Integer, lpBits As ANY, lpBI As BITMAPINFO, ByVal wUsage As Integer) As Integer
+Declare Function GetCurrentPositionEx Alias "GetCurrentPositionEx" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetDCOrgEx Alias "GetDCOrgEx" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetDIBColorTable Alias "GetDIBColorTable" (ByVal hdc As Integer, ByVal un1 As Integer, ByVal un2 As Integer, ByRef pRGBQuad As RGBQUAD) As Integer
+Declare Function GetDIBits Alias "GetDIBits" (ByVal aHDC As Integer, ByVal hBitmap As Integer, ByVal nStartScan As Integer, ByVal nNumScans As Integer, ByRef lpBits As ANY, ByRef lpBI As BITMAPINFO, ByVal wUsage As Integer) As Integer
 Declare Function GetDeviceCaps Alias "GetDeviceCaps" (ByVal hdc As Integer, ByVal nIndex As Integer) As Integer
-Declare Function GetDeviceGammaRamp Alias "GetDeviceGammaRamp" (ByVal hdc As Integer, lpv As ANY) As Integer
+Declare Function GetDeviceGammaRamp Alias "GetDeviceGammaRamp" (ByVal hdc As Integer, ByRef lpv As ANY) As Integer
 Declare Function GetEnhMetaFile Alias "GetEnhMetaFileA" (byval lpszMetaFile As String) As Integer
-Declare Function GetEnhMetaFileBits Alias "GetEnhMetaFileBits" (ByVal hemf As Integer, ByVal cbBuffer As Integer, lpbBuffer As Byte) As Integer
+Declare Function GetEnhMetaFileBits Alias "GetEnhMetaFileBits" (ByVal hemf As Integer, ByVal cbBuffer As Integer, ByRef lpbBuffer As Byte) As Integer
 Declare Function GetEnhMetaFileDescription Alias "GetEnhMetaFileDescriptionA" (ByVal hemf As Integer, ByVal cchBuffer As Integer, byval lpszDescription As String) As Integer
-Declare Function GetEnhMetaFileHeader Alias "GetEnhMetaFileHeader" (ByVal hemf As Integer, ByVal cbBuffer As Integer, lpemh As ENHMETAHEADER) As Integer
-Declare Function GetEnhMetaFilePaletteEntries Alias "GetEnhMetaFilePaletteEntries" (ByVal hemf As Integer, ByVal cEntries As Integer, lppe As PALETTEENTRY) As Integer
-Declare Function GetFontData Alias "GetFontData" (ByVal hdc As Integer, ByVal dwTable As Integer, ByVal dwOffset As Integer, lpvBuffer As ANY, ByVal cbData As Integer) As Integer
+Declare Function GetEnhMetaFileHeader Alias "GetEnhMetaFileHeader" (ByVal hemf As Integer, ByVal cbBuffer As Integer, ByRef lpemh As ENHMETAHEADER) As Integer
+Declare Function GetEnhMetaFilePaletteEntries Alias "GetEnhMetaFilePaletteEntries" (ByVal hemf As Integer, ByVal cEntries As Integer, ByRef lppe As PALETTEENTRY) As Integer
+Declare Function GetFontData Alias "GetFontData" (ByVal hdc As Integer, ByVal dwTable As Integer, ByVal dwOffset As Integer, ByRef lpvBuffer As ANY, ByVal cbData As Integer) As Integer
 Declare Function GetFontLanguageInfo Alias "GetFontLanguageInfo" (ByVal hdc As Integer) As Integer
-Declare Function GetGlyphOutline Alias "GetGlyphOutlineA" (ByVal hdc As Integer, ByVal uChar As Integer, ByVal fuFormat As Integer, lpgm As GLYPHMETRICS, ByVal cbBuffer As Integer, lpBuffer As ANY, lpmat2 As MAT2) As Integer
+Declare Function GetGlyphOutline Alias "GetGlyphOutlineA" (ByVal hdc As Integer, ByVal uChar As Integer, ByVal fuFormat As Integer, ByRef lpgm As GLYPHMETRICS, ByVal cbBuffer As Integer, ByRef lpBuffer As ANY, ByRef lpmat2 As MAT2) As Integer
 Declare Function GetGraphicsMode Alias "GetGraphicsMode" (ByVal hdc As Integer) As Integer
 Declare Function GetICMProfile Alias "GetICMProfileA" (ByVal hdc As Integer, ByVal dw As Integer, byval lpStr As String) As Integer
-Declare Function GetKerningPairs Alias "GetKerningPairsA" (ByVal hdc As Integer, ByVal cPairs As Integer, lpkrnpair As KERNINGPAIR) As Integer
+Declare Function GetKerningPairs Alias "GetKerningPairsA" (ByVal hdc As Integer, ByVal cPairs As Integer, ByRef lpkrnpair As KERNINGPAIR) As Integer
 Declare Function GetLayout Alias "GetLayout" (ByVal hdc As Integer) As Integer
-Declare Function GetLogColorSpace Alias "GetLogColorSpaceA" (ByVal hcolorspace As Integer, lplogcolorspace As LOGCOLORSPACE, ByVal dw As Integer) As Integer
+Declare Function GetLogColorSpace Alias "GetLogColorSpaceA" (ByVal hcolorspace As Integer, ByRef lplogcolorspace As LOGCOLORSPACE, ByVal dw As Integer) As Integer
 Declare Function GetMapMode Alias "GetMapMode" (ByVal hdc As Integer) As Integer
 Declare Function GetMetaFile Alias "GetMetaFileA" (byval lpFileName As String) As Integer
-Declare Function GetMetaFileBitsEx Alias "GetMetaFileBitsEx" (ByVal hMF As Integer, ByVal nSize As Integer, lpvData As ANY) As Integer
+Declare Function GetMetaFileBitsEx Alias "GetMetaFileBitsEx" (ByVal hMF As Integer, ByVal nSize As Integer, ByRef lpvData As ANY) As Integer
 Declare Function GetMetaRgn Alias "GetMetaRgn" (ByVal hdc As Integer, ByVal hRgn As Integer) As Integer
-Declare Function GetMiterLimit Alias "GetMiterLimit" (ByVal hdc As Integer, peLimit As Double) As Integer
+Declare Function GetMiterLimit Alias "GetMiterLimit" (ByVal hdc As Integer, ByRef peLimit As Double) As Integer
 Declare Function GetNearestColor Alias "GetNearestColor" (ByVal hdc As Integer, ByVal crColor As Integer) As Integer
 Declare Function GetNearestPaletteIndex Alias "GetNearestPaletteIndex" (ByVal hPalette As Integer, ByVal crColor As Integer) As Integer
-Declare Function GetObject Alias "GetObjectA" (ByVal hObject As Integer, ByVal nCount As Integer, lpObject As ANY) As Integer
+Declare Function GetObject Alias "GetObjectA" (ByVal hObject As Integer, ByVal nCount As Integer, ByRef lpObject As ANY) As Integer
 Declare Function GetObjectType Alias "GetObjectType" (ByVal hgdiobj As Integer) As Integer
-Declare Function GetOutlineTextMetrics Alias "GetOutlineTextMetricsA" (ByVal hdc As Integer, ByVal cbData As Integer, lpotm As OUTLINETEXTMETRIC) As Integer
-Declare Function GetPaletteEntries Alias "GetPaletteEntries" (ByVal hPalette As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, lpPaletteEntries As PALETTEENTRY) As Integer
-Declare Function GetPath Alias "GetPath" (ByVal hdc As Integer, lpPoint As POINTAPI, lpTypes As Byte, ByVal nSize As Integer) As Integer
+Declare Function GetOutlineTextMetrics Alias "GetOutlineTextMetricsA" (ByVal hdc As Integer, ByVal cbData As Integer, ByRef lpotm As OUTLINETEXTMETRIC) As Integer
+Declare Function GetPaletteEntries Alias "GetPaletteEntries" (ByVal hPalette As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, ByRef lpPaletteEntries As PALETTEENTRY) As Integer
+Declare Function GetPath Alias "GetPath" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI, ByRef lpTypes As Byte, ByVal nSize As Integer) As Integer
 Declare Function GetPixel Alias "GetPixel" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function GetPixelFormat Alias "GetPixelFormat" (ByVal hdc As Integer) As Integer
 Declare Function GetPolyFillMode Alias "GetPolyFillMode" (ByVal hdc As Integer) As Integer
 Declare Function GetROP2 Alias "GetROP2" (ByVal hdc As Integer) As Integer
 Declare Function GetRandomRgn Alias "GetRandomRgn" (ByVal hdc As Integer, ByVal hrgn As Integer, ByValt As Integer) As Integer
-Declare Function GetRasterizerCaps Alias "GetRasterizerCaps" (lpraststat As RASTERIZER_STATUS, ByVal cb As Integer) As Integer
-Declare Function GetRegionData Alias "GetRegionDataA" (ByVal hRgn As Integer, ByVal dwCount As Integer, lpRgnData As RgnData) As Integer
-Declare Function GetRgnBox Alias "GetRgnBox" (ByVal hRgn As Integer, lpRect As RECT) As Integer
+Declare Function GetRasterizerCaps Alias "GetRasterizerCaps" ( ByRef lpraststat As RASTERIZER_STATUS, ByVal cb As Integer) As Integer
+Declare Function GetRegionData Alias "GetRegionDataA" (ByVal hRgn As Integer, ByVal dwCount As Integer, ByRef lpRgnData As RgnData) As Integer
+Declare Function GetRgnBox Alias "GetRgnBox" (ByVal hRgn As Integer, ByRef lpRect As RECT) As Integer
 Declare Function GetStockObject Alias "GetStockObject" (ByVal nIndex As Integer) As Integer
 Declare Function GetStretchBltMode Alias "GetStretchBltMode" (ByVal hdc As Integer) As Integer
-Declare Function GetSystemPaletteEntries Alias "GetSystemPaletteEntries" (ByVal hdc As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, lpPaletteEntries As PALETTEENTRY) As Integer
+Declare Function GetSystemPaletteEntries Alias "GetSystemPaletteEntries" (ByVal hdc As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, ByRef lpPaletteEntries As PALETTEENTRY) As Integer
 Declare Function GetSystemPaletteUse Alias "GetSystemPaletteUse" (ByVal hdc As Integer) As Integer
 Declare Function GetTextAlign Alias "GetTextAlign" (ByVal hdc As Integer) As Integer
 Declare Function GetTextCharacterExtra Alias "GetTextCharacterExtra" (ByVal hdc As Integer) As Integer
 Declare Function GetTextCharset Alias "GetTextCharset" (ByVal hdc As Integer) As Integer
-Declare Function GetTextCharsetInfo Alias "GetTextCharsetInfo" (ByVal hdc As Integer, lpSig As FONTSIGNATURE, ByVal dwFlags As Integer) As Integer
+Declare Function GetTextCharsetInfo Alias "GetTextCharsetInfo" (ByVal hdc As Integer, ByRef lpSig As FONTSIGNATURE, ByVal dwFlags As Integer) As Integer
 Declare Function GetTextColor Alias "GetTextColor" (ByVal hdc As Integer) As Integer
-Declare Function GetTextExtentExPoint Alias "GetTextExtentExPointA" (ByVal hdc As Integer, byval lpszStr As String, ByVal cchString As Integer, ByVal nMaxExtent As Integer, lpnFit As Integer, alpDx As Integer, lpSize As SIZEL) As Integer
-Declare Function GetTextExtentPoint Alias "GetTextExtentPointA" (ByVal hdc As Integer, byval lpszString As String, ByVal cbString As Integer, lpSize As SIZEL) As Integer
-Declare Function GetTextExtentPoint32 Alias "GetTextExtentPoint32A" (ByVal hdc As Integer, byval lpsz As String, ByVal cbString As Integer, lpSize As SIZEL) As Integer
+Declare Function GetTextExtentExPoint Alias "GetTextExtentExPointA" (ByVal hdc As Integer, byval lpszStr As String, ByVal cchString As Integer, ByVal nMaxExtent As Integer, ByRef lpnFit As Integer, ByRef alpDx As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function GetTextExtentPoint Alias "GetTextExtentPointA" (ByVal hdc As Integer, byval lpszString As String, ByVal cbString As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function GetTextExtentPoint32 Alias "GetTextExtentPoint32A" (ByVal hdc As Integer, byval lpsz As String, ByVal cbString As Integer, ByRef lpSize As SIZEL) As Integer
 Declare Function GetTextFace Alias "GetTextFaceA" (ByVal hdc As Integer, ByVal nCount As Integer, byval lpFacename As String) As Integer
-Declare Function GetTextMetrics Alias "GetTextMetricsA" (ByVal hdc As Integer, lpMetrics As TEXTMETRIC) As Integer
-Declare Function GetViewportExtEx Alias "GetViewportExtEx" (ByVal hdc As Integer, lpSize As SIZEL) As Integer
-Declare Function GetViewportOrgEx Alias "GetViewportOrgEx" (ByVal hdc As Integer, lpPoint As POINTAPI) As Integer
-Declare Function GetWinMetaFileBits Alias "GetWinMetaFileBits" (ByVal hemf As Integer, ByVal cbBuffer As Integer, lpbBuffer As Byte, ByVal fnMapMode As Integer, ByVal hdcRef As Integer) As Integer
-Declare Function GetWindowExtEx Alias "GetWindowExtEx" (ByVal hdc As Integer, lpSize As SIZEL) As Integer
-Declare Function GetWindowOrgEx Alias "GetWindowOrgEx" (ByVal hdc As Integer, lpPoint As POINTAPI) As Integer
-Declare Function GetWorldTransform Alias "GetWorldTransform" (ByVal hdc As Integer, lpXform As XFORM) As Integer
+Declare Function GetTextMetrics Alias "GetTextMetricsA" (ByVal hdc As Integer, ByRef lpMetrics As TEXTMETRIC) As Integer
+Declare Function GetViewportExtEx Alias "GetViewportExtEx" (ByVal hdc As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function GetViewportOrgEx Alias "GetViewportOrgEx" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetWinMetaFileBits Alias "GetWinMetaFileBits" (ByVal hemf As Integer, ByVal cbBuffer As Integer, ByRef lpbBuffer As Byte, ByVal fnMapMode As Integer, ByVal hdcRef As Integer) As Integer
+Declare Function GetWindowExtEx Alias "GetWindowExtEx" (ByVal hdc As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function GetWindowOrgEx Alias "GetWindowOrgEx" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function GetWorldTransform Alias "GetWorldTransform" (ByVal hdc As Integer, ByRef lpXform As XFORM) As Integer
 
 Declare Function IntersectClipRect Alias "IntersectClipRect" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
 Declare Function InvertRgn Alias "InvertRgn" (ByVal hdc As Integer, ByVal hRgn As Integer) As Integer
 
-Declare Function LPtoDP Alias "LPtoDP" (ByVal hdc As Integer, lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
+Declare Function LPtoDP Alias "LPtoDP" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
 Declare Function LineDDA Alias "LineDDA" (ByVal n1 As Integer, ByVal n2 As Integer, ByVal n3 As Integer, ByVal n4 As Integer, ByVal lpLineDDAProc As Integer, ByVal lParam As Integer) As Integer
 Declare Function LineTo Alias "LineTo" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
 
 Declare Function MaskBlt Alias "MaskBlt" (ByVal hdcDest As Integer, ByVal nXDest As Integer, ByVal nYDest As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hdcSrc As Integer, ByVal nXSrc As Integer, ByVal nYSrc As Integer, ByVal hbmMask As Integer, ByVal xMask As Integer, ByVal yMask As Integer, ByVal dwRop As Integer) As Integer
-Declare Function ModifyWorldTransform Alias "ModifyWorldTransform" (ByVal hdc As Integer, lpXform As XFORM, ByVal iMode As Integer) As Integer
-Declare Function MoveToEx Alias "MoveToEx" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, lpPoint As POINTAPI) As Integer
+Declare Function ModifyWorldTransform Alias "ModifyWorldTransform" (ByVal hdc As Integer, ByRef lpXform As XFORM, ByVal iMode As Integer) As Integer
+Declare Function MoveToEx Alias "MoveToEx" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByRef lpPoint As POINTAPI) As Integer
 
 Declare Function OffsetClipRgn Alias "OffsetClipRgn" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function OffsetRgn Alias "OffsetRgn" (ByVal hRgn As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function OffsetViewportOrgEx Alias "OffsetViewportOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, lpPoint As POINTAPI) As Integer
-Declare Function OffsetWindowOrgEx Alias "OffsetWindowOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, lpPoint As POINTAPI) As Integer
+Declare Function OffsetViewportOrgEx Alias "OffsetViewportOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function OffsetWindowOrgEx Alias "OffsetWindowOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpPoint As POINTAPI) As Integer
 
 Declare Function PaintRgn Alias "PaintRgn" (ByVal hdc As Integer, ByVal hRgn As Integer) As Integer
 Declare Function PatBlt Alias "PatBlt" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal dwRop As Integer) As Integer
 Declare Function PathToRegion Alias "PathToRegion" (ByVal hdc As Integer) As Integer
 Declare Function Pie Alias "Pie" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer, ByVal X4 As Integer, ByVal Y4 As Integer) As Integer
-Declare Function PlayEnhMetaFile Alias "PlayEnhMetaFile" (ByVal hdc As Integer, ByVal hemf As Integer, lpRect As RECT) As Integer
-Declare Function PlayEnhMetaFileRecord Alias "PlayEnhMetaFileRecord" (ByVal hdc As Integer, lpHandletable As HANDLETABLE, lpEnhMetaRecord As ENHMETARECORD, ByVal nHandles As Integer) As Integer
+Declare Function PlayEnhMetaFile Alias "PlayEnhMetaFile" (ByVal hdc As Integer, ByVal hemf As Integer, ByRef lpRect As RECT) As Integer
+Declare Function PlayEnhMetaFileRecord Alias "PlayEnhMetaFileRecord" (ByVal hdc As Integer, ByRef lpHandletable As HANDLETABLE, ByRef lpEnhMetaRecord As ENHMETARECORD, ByVal nHandles As Integer) As Integer
 Declare Function PlayMetaFile Alias "PlayMetaFile" (ByVal hdc As Integer, ByVal hMF As Integer) As Integer
-Declare Function PlayMetaFileRecord Alias "PlayMetaFileRecord" (ByVal hdc As Integer, lpHandletable As HANDLETABLE, lpMetaRecord As METARECORD, ByVal nHandles As Integer) As Integer
-Declare Function PlgBlt Alias "PlgBlt" (ByVal hdcDest As Integer, lpPoint As POINTAPI, ByVal hdcSrc As Integer, ByVal nXSrc As Integer, ByVal nYSrc As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hbmMask As Integer, ByVal xMask As Integer, ByVal yMask As Integer) As Integer
-Declare Function PolyBezier Alias "PolyBezier" (ByVal hdc As Integer, lppt As POINTAPI, ByVal cPoints As Integer) As Integer
-Declare Function PolyBezierTo Alias "PolyBezierTo" (ByVal hdc As Integer, lppt As POINTAPI, ByVal cCount As Integer) As Integer
-Declare Function PolyDraw Alias "PolyDraw" (ByVal hdc As Integer, lppt As POINTAPI, lpbTypes As Byte, ByVal cCount As Integer) As Integer
-Declare Function PolyPolygon Alias "PolyPolygon" (ByVal hdc As Integer, lpPoint As POINTAPI, lpPolyCounts As Integer, ByVal nCount As Integer) As Integer
-Declare Function PolyPolyline Alias "PolyPolyline" (ByVal hdc As Integer, lppt As POINTAPI, lpdwPolyPoints As Integer, ByVal cCount As Integer) As Integer
-Declare Function PolyTextOut Alias "PolyTextOutA" (ByVal hdc As Integer, pptxt As POLYTEXT, cStrings As Integer) As Integer
-Declare Function Polygon Alias "Polygon" (ByVal hdc As Integer, lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
-Declare Function Polyline Alias "Polyline" (ByVal hdc As Integer, lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
-Declare Function PolylineTo Alias "PolylineTo" (ByVal hdc As Integer, lppt As POINTAPI, ByVal cCount As Integer) As Integer
+Declare Function PlayMetaFileRecord Alias "PlayMetaFileRecord" (ByVal hdc As Integer, ByRef lpHandletable As HANDLETABLE, ByRef lpMetaRecord As METARECORD, ByVal nHandles As Integer) As Integer
+Declare Function PlgBlt Alias "PlgBlt" (ByVal hdcDest As Integer, ByRef lpPoint As POINTAPI, ByVal hdcSrc As Integer, ByVal nXSrc As Integer, ByVal nYSrc As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hbmMask As Integer, ByVal xMask As Integer, ByVal yMask As Integer) As Integer
+Declare Function PolyBezier Alias "PolyBezier" (ByVal hdc As Integer, ByRef lppt As POINTAPI, ByVal cPoints As Integer) As Integer
+Declare Function PolyBezierTo Alias "PolyBezierTo" (ByVal hdc As Integer, ByRef lppt As POINTAPI, ByVal cCount As Integer) As Integer
+Declare Function PolyDraw Alias "PolyDraw" (ByVal hdc As Integer, ByRef lppt As POINTAPI, ByRef lpbTypes As Byte, ByVal cCount As Integer) As Integer
+Declare Function PolyPolygon Alias "PolyPolygon" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI, ByRef lpPolyCounts As Integer, ByVal nCount As Integer) As Integer
+Declare Function PolyPolyline Alias "PolyPolyline" (ByVal hdc As Integer, ByRef lppt As POINTAPI, ByRef lpdwPolyPoints As Integer, ByVal cCount As Integer) As Integer
+Declare Function PolyTextOut Alias "PolyTextOutA" (ByVal hdc As Integer, ByRef pptxt As POLYTEXT, ByRef cStrings As Integer) As Integer
+Declare Function Polygon Alias "Polygon" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
+Declare Function Polyline Alias "Polyline" (ByVal hdc As Integer, ByRef lpPoint As POINTAPI, ByVal nCount As Integer) As Integer
+Declare Function PolylineTo Alias "PolylineTo" (ByVal hdc As Integer, ByRef lppt As POINTAPI, ByVal cCount As Integer) As Integer
 Declare Function PtInRegion Alias "PtInRegion" (ByVal hRgn As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Function PtVisible Alias "PtVisible" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
 
 Declare Function RealizePalette Alias "RealizePalette" (ByVal hdc As Integer) As Integer
-Declare Function RectInRegion Alias "RectInRegion" (ByVal hRgn As Integer, lpRect As RECT) As Integer
-Declare Function RectVisible Alias "RectVisible" (ByVal hdc As Integer, lpRect As RECT) As Integer
+Declare Function RectInRegion Alias "RectInRegion" (ByVal hRgn As Integer, ByRef lpRect As RECT) As Integer
+Declare Function RectVisible Alias "RectVisible" (ByVal hdc As Integer, ByRef lpRect As RECT) As Integer
 Declare Function Rectangle Alias "Rectangle" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer) As Integer
 Declare Function RemoveFontResource Alias "RemoveFontResourceA" (byval lpFileName As String) As Integer
-Declare Function ResetDC Alias "ResetDCA" (ByVal hdc As Integer, lpInitData As DEVMODE) As Integer
+Declare Function ResetDC Alias "ResetDCA" (ByVal hdc As Integer, ByRef lpInitData As DEVMODE) As Integer
 Declare Function ResizePalette Alias "ResizePalette" (ByVal hPalette As Integer, ByVal nNumEntries As Integer) As Integer
 Declare Function RestoreDC Alias "RestoreDC" (ByVal hdc As Integer, ByVal nSavedDC As Integer) As Integer
 Declare Function RoundRect Alias "RoundRect" (ByVal hdc As Integer, ByVal X1 As Integer, ByVal Y1 As Integer, ByVal X2 As Integer, ByVal Y2 As Integer, ByVal X3 As Integer, ByVal Y3 As Integer) As Integer
 
 Declare Function SaveDC Alias "SaveDC" (ByVal hdc As Integer) As Integer
-Declare Function ScaleViewportExtEx Alias "ScaleViewportExtEx" (ByVal hdc As Integer, ByVal nXnum As Integer, ByVal nXdenom As Integer, ByVal nYnum As Integer, ByVal nYdenom As Integer, lpSize As SIZEL) As Integer
-Declare Function ScaleWindowExtEx Alias "ScaleWindowExtEx" (ByVal hdc As Integer, ByVal nXnum As Integer, ByVal nXdenom As Integer, ByVal nYnum As Integer, ByVal nYdenom As Integer, lpSize As SIZEL) As Integer
+Declare Function ScaleViewportExtEx Alias "ScaleViewportExtEx" (ByVal hdc As Integer, ByVal nXnum As Integer, ByVal nXdenom As Integer, ByVal nYnum As Integer, ByVal nYdenom As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function ScaleWindowExtEx Alias "ScaleWindowExtEx" (ByVal hdc As Integer, ByVal nXnum As Integer, ByVal nXdenom As Integer, ByVal nYnum As Integer, ByVal nYdenom As Integer, ByRef lpSize As SIZEL) As Integer
 Declare Function SelectClipPath Alias "SelectClipPath" (ByVal hdc As Integer, ByVal iMode As Integer) As Integer
 Declare Function SelectClipRgn Alias "SelectClipRgn" (ByVal hdc As Integer, ByVal hRgn As Integer) As Integer
 Declare Function SelectObject Alias "SelectObject" (ByVal hdc As Integer, ByVal hObject As Integer) As Integer
 Declare Function SelectPalette Alias "SelectPalette" (ByVal hdc As Integer, ByVal hPalette As Integer, ByVal bForceBackground As Integer) As Integer
 Declare Function SetAbortProc Alias "SetAbortProc" (ByVal hdc As Integer, ByVal lpAbortProc As Integer) As Integer
 Declare Function SetArcDirection Alias "SetArcDirection" (ByVal hdc As Integer, ByVal ArcDirection As Integer) As Integer
-Declare Function SetBitmapBits Alias "SetBitmapBits" (ByVal hBitmap As Integer, ByVal dwCount As Integer, lpBits As ANY) As Integer
-Declare Function SetBitmapDimensionEx Alias "SetBitmapDimensionEx" (ByVal hbm As Integer, ByVal nX As Integer, ByVal nY As Integer, lpSize As SIZEL) As Integer
+Declare Function SetBitmapBits Alias "SetBitmapBits" (ByVal hBitmap As Integer, ByVal dwCount As Integer, ByRef lpBits As ANY) As Integer
+Declare Function SetBitmapDimensionEx Alias "SetBitmapDimensionEx" (ByVal hbm As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpSize As SIZEL) As Integer
 Declare Function SetBkColor Alias "SetBkColor" (ByVal hdc As Integer, ByVal crColor As Integer) As Integer
 Declare Function SetBkMode Alias "SetBkMode" (ByVal hdc As Integer, ByVal nBkMode As Integer) As Integer
-Declare Function SetBoundsRect Alias "SetBoundsRect" (ByVal hdc As Integer, lprcBounds As RECT, ByVal flags As Integer) As Integer
-Declare Function SetBrushOrgEx Alias "SetBrushOrgEx" (ByVal hdc As Integer, ByVal nXOrg As Integer, ByVal nYOrg As Integer, lppt As POINTAPI) As Integer
-Declare Function SetColorAdjustment Alias "SetColorAdjustment" (ByVal hdc As Integer, lpca As COLORADJUSTMENT) As Integer
+Declare Function SetBoundsRect Alias "SetBoundsRect" (ByVal hdc As Integer, ByRef lprcBounds As RECT, ByVal flags As Integer) As Integer
+Declare Function SetBrushOrgEx Alias "SetBrushOrgEx" (ByVal hdc As Integer, ByVal nXOrg As Integer, ByVal nYOrg As Integer, ByRef lppt As POINTAPI) As Integer
+Declare Function SetColorAdjustment Alias "SetColorAdjustment" (ByVal hdc As Integer, ByRef lpca As COLORADJUSTMENT) As Integer
 Declare Function SetColorSpace Alias "SetColorSpace" (ByVal hdc As Integer, ByVal hcolorspace As Integer) As Integer
 Declare Function SetDCBrushColor Alias "SetDCBrushColor" (ByVal hdc As Integer, ByVal crColor As Integer) As Integer
 Declare Function SetDCPenColor Alias "SetDCPenColor" (ByVal hdc As Integer, ByVal crColor As Integer) As Integer
-Declare Function SetDIBColorTable Alias "SetDIBColorTable" (ByVal hdc As Integer, ByVal un1 As Integer, ByVal un2 As Integer, pcRGBQuad As RGBQUAD) As Integer
-Declare Function SetDIBits Alias "SetDIBits" (ByVal hdc As Integer, ByVal hBitmap As Integer, ByVal nStartScan As Integer, ByVal nNumScans As Integer, lpBits As ANY, lpBI As BITMAPINFO, ByVal wUsage As Integer) As Integer
-Declare Function SetDIBitsToDevice Alias "SetDIBitsToDevice" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal SrcX As Integer, ByVal SrcY As Integer, ByVal xScan As Integer, ByVal NumScans As Integer, xBits As ANY, BitsInfo As BITMAPINFO, ByVal wUsage As Integer) As Integer
-Declare Function SetDeviceGammaRamp Alias "SetDeviceGammaRamp" (ByVal hdc As Integer, lpv As ANY) As Integer
-Declare Function SetEnhMetaFileBits Alias "SetEnhMetaFileBits" (ByVal cbBuffer As Integer, lpData As Byte) As Integer
+Declare Function SetDIBColorTable Alias "SetDIBColorTable" (ByVal hdc As Integer, ByVal un1 As Integer, ByVal un2 As Integer, ByRef pcRGBQuad As RGBQUAD) As Integer
+Declare Function SetDIBits Alias "SetDIBits" (ByVal hdc As Integer, ByVal hBitmap As Integer, ByVal nStartScan As Integer, ByVal nNumScans As Integer, ByRef lpBits As ANY, ByRef lpBI As BITMAPINFO, ByVal wUsage As Integer) As Integer
+Declare Function SetDIBitsToDevice Alias "SetDIBitsToDevice" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal SrcX As Integer, ByVal SrcY As Integer, ByVal xScan As Integer, ByVal NumScans As Integer, ByRef xBits As ANY, BitsInfo As BITMAPINFO, ByVal wUsage As Integer) As Integer
+Declare Function SetDeviceGammaRamp Alias "SetDeviceGammaRamp" (ByVal hdc As Integer, ByRef lpv As ANY) As Integer
+Declare Function SetEnhMetaFileBits Alias "SetEnhMetaFileBits" (ByVal cbBuffer As Integer, ByRef lpData As Byte) As Integer
 Declare Function SetGraphicsMode Alias "SetGraphicsMode" (ByVal hdc As Integer, ByVal iMode As Integer) As Integer
 Declare Function SetICMMode Alias "SetICMMode" (ByVal hdc As Integer, ByVal n As Integer) As Integer
 Declare Function SetICMProfile Alias "SetICMProfileA" (ByVal hdc As Integer, byval lpStr As String) As Integer
 Declare Function SetLayout Alias "SetLayout" (ByVal hdc As Integer, ByVal dwLayout As Integer) As Integer
 Declare Function SetMapMode Alias "SetMapMode" (ByVal hdc As Integer, ByVal nMapMode As Integer) As Integer
 Declare Function SetMapperFlags Alias "SetMapperFlags" (ByVal hdc As Integer, ByVal dwFlag As Integer) As Integer
-Declare Function SetMetaFileBitsEx Alias "SetMetaFileBitsEx" (ByVal nSize As Integer, lpData As Byte) As Integer
+Declare Function SetMetaFileBitsEx Alias "SetMetaFileBitsEx" (ByVal nSize As Integer, ByRef lpData As Byte) As Integer
 Declare Function SetMetaRgn Alias "SetMetaRgn" (ByVal hdc As Integer) As Integer
-Declare Function SetMiterLimit Alias "SetMiterLimit" (ByVal hdc As Integer, ByVal eNewLimit As Double, peOldLimit As Double) As Integer
-Declare Function SetPaletteEntries Alias "SetPaletteEntries" (ByVal hPalette As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, lpPaletteEntries As PALETTEENTRY) As Integer
+Declare Function SetMiterLimit Alias "SetMiterLimit" (ByVal hdc As Integer, ByVal eNewLimit As Double, ByRef peOldLimit As Double) As Integer
+Declare Function SetPaletteEntries Alias "SetPaletteEntries" (ByVal hPalette As Integer, ByVal wStartIndex As Integer, ByVal wNumEntries As Integer, ByRef lpPaletteEntries As PALETTEENTRY) As Integer
 Declare Function SetPixel Alias "SetPixel" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal crColor As Integer) As Integer
-Declare Function SetPixelFormat Alias "SetPixelFormat" (ByVal hdc As Integer, ByVal n As Integer, pcPixelFormatDescriptor As PIXELFORMATDESCRIPTOR) As Integer
+Declare Function SetPixelFormat Alias "SetPixelFormat" (ByVal hdc As Integer, ByVal n As Integer, ByRef pcPixelFormatDescriptor As PIXELFORMATDESCRIPTOR) As Integer
 Declare Function SetPixelV Alias "SetPixelV" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal crColor As Integer) As Integer
 Declare Function SetPolyFillMode Alias "SetPolyFillMode" (ByVal hdc As Integer, ByVal nPolyFillMode As Integer) As Integer
 Declare Function SetROP2 Alias "SetROP2" (ByVal hdc As Integer, ByVal nDrawMode As Integer) As Integer
@@ -1837,22 +1837,22 @@ Declare Function SetTextAlign Alias "SetTextAlign" (ByVal hdc As Integer, ByVal 
 Declare Function SetTextCharacterExtra Alias "SetTextCharacterExtra" (ByVal hdc As Integer, ByVal nCharExtra As Integer) As Integer
 Declare Function SetTextColor Alias "SetTextColor" (ByVal hdc As Integer, ByVal crColor As Integer) As Integer
 Declare Function SetTextJustification Alias "SetTextJustification" (ByVal hdc As Integer, ByVal nBreakExtra As Integer, ByVal nBreakCount As Integer) As Integer
-Declare Function SetViewportExtEx Alias "SetViewportExtEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, lpSize As SIZEL) As Integer
-Declare Function SetViewportOrgEx Alias "SetViewportOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, lpPoint As POINTAPI) As Integer
-Declare Function SetWinMetaFileBits Alias "SetWinMetaFileBits" (ByVal cbBuffer As Integer, lpbBuffer As Byte, ByVal hdcRef As Integer, lpmfp As METAFILEPICT) As Integer
-Declare Function SetWindowExtEx Alias "SetWindowExtEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, lpSize As SIZEL) As Integer
-Declare Function SetWindowOrgEx Alias "SetWindowOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, lpPoint As POINTAPI) As Integer
-Declare Function SetWorldTransform Alias "SetWorldTransform" (ByVal hdc As Integer, lpXform As XFORM) As Integer
-Declare Function StartDoc Alias "StartDocA" (ByVal hdc As Integer, lpdi As DOCINFO) As Integer
+Declare Function SetViewportExtEx Alias "SetViewportExtEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function SetViewportOrgEx Alias "SetViewportOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function SetWinMetaFileBits Alias "SetWinMetaFileBits" (ByVal cbBuffer As Integer, ByRef lpbBuffer As Byte, ByVal hdcRef As Integer, ByRef lpmfp As METAFILEPICT) As Integer
+Declare Function SetWindowExtEx Alias "SetWindowExtEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpSize As SIZEL) As Integer
+Declare Function SetWindowOrgEx Alias "SetWindowOrgEx" (ByVal hdc As Integer, ByVal nX As Integer, ByVal nY As Integer, ByRef lpPoint As POINTAPI) As Integer
+Declare Function SetWorldTransform Alias "SetWorldTransform" (ByVal hdc As Integer, ByRef lpXform As XFORM) As Integer
+Declare Function StartDoc Alias "StartDocA" (ByVal hdc As Integer, ByRef lpdi As DOCINFO) As Integer
 Declare Function StartPage Alias "StartPage" (ByVal hdc As Integer) As Integer
 Declare Function StretchBlt Alias "StretchBlt" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal nWidth As Integer, ByVal nHeight As Integer, ByVal hSrcDC As Integer, ByVal xSrc As Integer, ByVal ySrc As Integer, ByVal nSrcWidth As Integer, ByVal nSrcHeight As Integer, ByVal dwRop As Integer) As Integer
-Declare Function StretchDIBits Alias "StretchDIBits" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal SrcX As Integer, ByVal SrcY As Integer, ByVal wSrcWidth As Integer, ByVal wSrcHeight As Integer, lpBits As ANY, lpBitsInfo As BITMAPINFO, ByVal wUsage As Integer, ByVal dwRop As Integer) As Integer
+Declare Function StretchDIBits Alias "StretchDIBits" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, ByVal dx As Integer, ByVal dy As Integer, ByVal SrcX As Integer, ByVal SrcY As Integer, ByVal wSrcWidth As Integer, ByVal wSrcHeight As Integer, ByRef lpBits As ANY, ByRef lpBitsInfo As BITMAPINFO, ByVal wUsage As Integer, ByVal dwRop As Integer) As Integer
 Declare Function StrokeAndFillPath Alias "StrokeAndFillPath" (ByVal hdc As Integer) As Integer
 Declare Function StrokePath Alias "StrokePath" (ByVal hdc As Integer) As Integer
 Declare Function SwapBuffers Alias "SwapBuffers" (ByVal hdc As Integer) As Integer
 
 Declare Function TextOut Alias "TextOutA" (ByVal hdc As Integer, ByVal x As Integer, ByVal y As Integer, byval lpString As String, ByVal nCount As Integer) As Integer
-Declare Function TranslateCharsetInfo Alias "TranslateCharsetInfo" (lpSrc As Integer, lpcs As CHARSETINFO, ByVal dwFlags As Integer) As Integer
+Declare Function TranslateCharsetInfo Alias "TranslateCharsetInfo" ( ByRef lpSrc As Integer, ByRef lpcs As CHARSETINFO, ByVal dwFlags As Integer) As Integer
 
 Declare Function UnrealizeObject Alias "UnrealizeObject" (ByVal hObject As Integer) As Integer
 Declare Function UpdateColors Alias "UpdateColors" (ByVal hdc As Integer) As Integer
@@ -1862,4 +1862,5 @@ Declare Function WidenPath Alias "WidenPath" (ByVal hdc As Integer) As Integer
 Declare Function wglMakeCurrent Alias "wglMakeCurrent" (Byval hdc As Integer, Byval hglrc As Integer) As Integer 
 Declare Function wglDeleteContext Alias "wglDeleteContext" (Byval hglrc As Integer) As Integer 
 Declare Function wglCreateContext Alias "wglCreateContext" (Byval hdc As Integer) As Integer 
+
 #endif 'GDI32

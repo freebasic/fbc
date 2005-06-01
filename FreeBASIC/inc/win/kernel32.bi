@@ -1762,57 +1762,57 @@ Declare Function AddAtom Alias "AddAtomA" (ByVal lpString As String) As Integer
 Declare Function AllocConsole Alias "AllocConsole" () As Integer
 Declare Function AreFileApisANSI Alias "AreFileApisANSI" () As Integer
 
-Declare Function BackupRead Alias "BackupRead" (ByVal hFile As Integer, lpBuffer As BYTE, ByVal nNumberOfBytesToRead As Integer, lpNumberOfBytesRead As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, lpContext As ANY) As Integer
-Declare Function BackupSeek Alias "BackupSeek" (ByVal hFile As Integer, ByVal dwLowBytesToSeek As Integer, ByVal dwHighBytesToSeek As Integer, lpdwLowByteSeeked As Integer, lpdwHighByteSeeked As Integer, lpContext As Integer) As Integer
-Declare Function BackupWrite Alias "BackupWrite" (ByVal hFile As Integer, lpBuffer As BYTE, ByVal nNumberOfBytesToWrite As Integer, lpNumberOfBytesWritten As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, lpContext As Integer) As Integer
+Declare Function BackupRead Alias "BackupRead" (ByVal hFile As Integer, byref lpBuffer As BYTE, ByVal nNumberOfBytesToRead As Integer, byref lpNumberOfBytesRead As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, byref lpContext As ANY) As Integer
+Declare Function BackupSeek Alias "BackupSeek" (ByVal hFile As Integer, ByVal dwLowBytesToSeek As Integer, ByVal dwHighBytesToSeek As Integer, byref lpdwLowByteSeeked As Integer, byref lpdwHighByteSeeked As Integer, byref lpContext As Integer) As Integer
+Declare Function BackupWrite Alias "BackupWrite" (ByVal hFile As Integer, byref lpBuffer As BYTE, ByVal nNumberOfBytesToWrite As Integer, ByRef lpNumberOfBytesWritten As Integer, ByVal bAbort As Integer, ByVal bProcessSecurity As Integer, ByRef lpContext As Integer) As Integer
 'Declare Function Beep Alias "Beep" (ByVal dwFreq As Integer, ByVal dwDuration As Integer) As Integer
 Declare Function BeginUpdateResource Alias "BeginUpdateResourceA" (ByVal pFileName As String, ByVal bDeleteExistingResources As Integer) As Integer
-Declare Function BuildCommDCB Alias "BuildCommDCBA" (ByVal lpDef As String, lpDCB As DCB) As Integer
-Declare Function BuildCommDCBAndTimeouts Alias "BuildCommDCBAndTimeoutsA" (ByVal lpDef As String, lpDCB As DCB, lpCommTimeouts As COMMTIMEOUTS) As Integer
+Declare Function BuildCommDCB Alias "BuildCommDCBA" (ByVal lpDef As String, ByRef lpDCB As DCB) As Integer
+Declare Function BuildCommDCBAndTimeouts Alias "BuildCommDCBAndTimeoutsA" (ByVal lpDef As String, ByRef lpDCB As DCB, ByRef lpCommTimeouts As COMMTIMEOUTS) As Integer
 
-Declare Function CallNamedPipe Alias "CallNamedPipeA" (ByVal lpNamedPipeName As String, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesRead As Integer, ByVal nTimeOut As Integer) As Integer
+Declare Function CallNamedPipe Alias "CallNamedPipeA" (ByVal lpNamedPipeName As String, ByRef lpInBuffer As ANY, ByVal nInBufferSize As Integer, ByRef lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, ByRef lpBytesRead As Integer, ByVal nTimeOut As Integer) As Integer
 Declare Function ClearCommBreak Alias "ClearCommBreak" (ByVal nCid As Integer) As Integer
-Declare Function ClearCommError Alias "ClearCommError" (ByVal hFile As Integer, lpErrors As Integer, lpStat As COMSTAT) As Integer
+Declare Function ClearCommError Alias "ClearCommError" (ByVal hFile As Integer, ByRef lpErrors As Integer, ByRef lpStat As COMSTAT) As Integer
 Declare Function CloseHandle Alias "CloseHandle" (ByVal hObject As Integer) As Integer
-Declare Function CommConfigDialog Alias "CommConfigDialogA" (ByVal lpszName As String, ByVal hwnd As Integer, lpCC As COMMCONFIG) As Integer
-Declare Function CompareFileTime Alias "CompareFileTime" (lpFileTime1 As FILETIME, lpFileTime2 As FILETIME) As Integer
+Declare Function CommConfigDialog Alias "CommConfigDialogA" (ByVal lpszName As String, ByVal hwnd As Integer, ByRef lpCC As COMMCONFIG) As Integer
+Declare Function CompareFileTime Alias "CompareFileTime" ( ByRef lpFileTime1 As FILETIME, ByRef lpFileTime2 As FILETIME) As Integer
 Declare Function CompareString Alias "CompareStringA" (ByVal Locale As Integer, ByVal dwCmpFlags As Integer, ByVal lpString1 As String, ByVal cchCount1 As Integer, ByVal lpString2 As String, ByVal cchCount2 As Integer) As Integer
-Declare Function ConnectNamedPipe Alias "ConnectNamedPipe" (ByVal hNamedPipe As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function ConnectNamedPipe Alias "ConnectNamedPipe" (ByVal hNamedPipe As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
 Declare Function ContinueDebugEvent Alias "ContinueDebugEvent" (ByVal dwProcessId As Integer, ByVal dwThreadId As Integer, ByVal dwContinueStatus As Integer) As Integer
 Declare Function ConvertDefaultLocale Alias "ConvertDefaultLocale" (ByVal Locale As Integer) As Integer
 Declare Function CopyFile Alias "CopyFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String, ByVal bFailIfExists As Integer) As Integer
-Declare Function CreateConsoleScreenBuffer Alias "CreateConsoleScreenBuffer" (ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwFlags As Integer, ByVal lpScreenBufferData As Integer) As Integer
-Declare Function CreateDirectory Alias "CreateDirectoryA" (ByVal lpPathName As String, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateDirectoryEx Alias "CreateDirectoryExA" (ByVal lpTemplateDirectory As String, ByVal lpNewDirectory As String, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateEvent Alias "CreateEventA" (lpEventAttributes As SECURITY_ATTRIBUTES, ByVal bManualReset As Integer, ByVal bInitialState As Integer, ByVal lpName As String) As Integer
-Declare Function CreateFile Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwCreationDisposition As Integer, ByVal dwFlagsAndAttributes As Integer, ByVal hTemplateFile As Integer) As Integer
-Declare Function CreateFileMapping Alias "CreateFileMappingA" (ByVal hFile As Integer, lpFileMappigAttributes As SECURITY_ATTRIBUTES, ByVal flProtect As Integer, ByVal dwMaximumSizeHigh As Integer, ByVal dwMaximumSizeLow As Integer, ByVal lpName As String) As Integer
+Declare Function CreateConsoleScreenBuffer Alias "CreateConsoleScreenBuffer" (ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, ByRef lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwFlags As Integer, ByVal lpScreenBufferData As Integer) As Integer
+Declare Function CreateDirectory Alias "CreateDirectoryA" (ByVal lpPathName As String, ByRef lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateDirectoryEx Alias "CreateDirectoryExA" (ByVal lpTemplateDirectory As String, ByVal lpNewDirectory As String, ByRef lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateEvent Alias "CreateEventA" ( ByRef lpEventAttributes As SECURITY_ATTRIBUTES, ByVal bManualReset As Integer, ByVal bInitialState As Integer, ByVal lpName As String) As Integer
+Declare Function CreateFile Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Integer, ByVal dwShareMode As Integer, ByRef lpSecurityAttributes As SECURITY_ATTRIBUTES, ByVal dwCreationDisposition As Integer, ByVal dwFlagsAndAttributes As Integer, ByVal hTemplateFile As Integer) As Integer
+Declare Function CreateFileMapping Alias "CreateFileMappingA" (ByVal hFile As Integer, ByRef lpFileMappigAttributes As SECURITY_ATTRIBUTES, ByVal flProtect As Integer, ByVal dwMaximumSizeHigh As Integer, ByVal dwMaximumSizeLow As Integer, ByVal lpName As String) As Integer
 Declare Function CreateIoCompletionPort Alias "CreateIoCompletionPort" (ByVal FileHandle As Integer, ByVal ExistingCompletionPort As Integer, ByVal CompletionKey As Integer, ByVal NumberOfConcurrentThreads As Integer) As Integer
-Declare Function CreateMailslot Alias "CreateMailslotA" (ByVal lpName As String, ByVal nMaxMessageSize As Integer, ByVal lReadTimeout As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreateMutex Alias "CreateMutexA" (lpMutexAttributes As SECURITY_ATTRIBUTES, ByVal bInitialOwner As Integer, ByVal lpName As String) As Integer
-Declare Function CreateNamedPipe Alias "CreateNamedPipeA" (ByVal lpName As String, ByVal dwOpenMode As Integer, ByVal dwPipeMode As Integer, ByVal nMaxInstances As Integer, ByVal nOutBufferSize As Integer, ByVal nInBufferSize As Integer, ByVal nDefaultTimeOut As Integer, lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
-Declare Function CreatePipe Alias "CreatePipe" (phReadPipe As Integer, phWritePipe As Integer, lpPipeAttributes As SECURITY_ATTRIBUTES, ByVal nSize As Integer) As Integer
-Declare Function CreateProcess Alias "CreateProcessA" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As SECURITY_ATTRIBUTES, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, lpEnvironment As ANY, ByVal lpCurrentDriectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Integer
-Declare Function CreateProcessAsUser Alias "CreateProcessAsUserA" (ByVal hToken As Integer, ByVal lpApplicationName As String, ByVal lpCommandLine As String, lpProcessAttributes As SECURITY_ATTRIBUTES, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, ByVal lpEnvironment As String, ByVal lpCurrentDirectory As String, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Integer
-Declare Function CreateRemoteThread Alias "CreateRemoteThread" (ByVal hProcess As Integer, lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal lpStartAddress As Integer, lpParameter As ANY, ByVal dwCreationFlags As Integer, lpThreadId As Integer) As Integer
-Declare Function CreateSemaphore Alias "CreateSemaphoreA" (lpSemaphoreAttributes As SECURITY_ATTRIBUTES, ByVal lInitialCount As Integer, ByVal lMaximumCount As Integer, ByVal lpName As String) As Integer
+Declare Function CreateMailslot Alias "CreateMailslotA" (ByVal lpName As String, ByVal nMaxMessageSize As Integer, ByVal lReadTimeout As Integer, ByRef lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreateMutex Alias "CreateMutexA" ( ByRef lpMutexAttributes As SECURITY_ATTRIBUTES, ByVal bInitialOwner As Integer, ByVal lpName As String) As Integer
+Declare Function CreateNamedPipe Alias "CreateNamedPipeA" (ByVal lpName As String, ByVal dwOpenMode As Integer, ByVal dwPipeMode As Integer, ByVal nMaxInstances As Integer, ByVal nOutBufferSize As Integer, ByVal nInBufferSize As Integer, ByVal nDefaultTimeOut As Integer, ByRef lpSecurityAttributes As SECURITY_ATTRIBUTES) As Integer
+Declare Function CreatePipe Alias "CreatePipe" ( ByRef phReadPipe As Integer, ByRef phWritePipe As Integer, ByRef lpPipeAttributes As SECURITY_ATTRIBUTES, ByVal nSize As Integer) As Integer
+Declare Function CreateProcess Alias "CreateProcessA" (ByVal lpApplicationName As String, ByVal lpCommandLine As String, ByRef lpProcessAttributes As SECURITY_ATTRIBUTES, ByRef lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, ByRef lpEnvironment As ANY, ByVal lpCurrentDriectory As String, ByRef lpStartupInfo As STARTUPINFO, ByRef lpProcessInformation As PROCESS_INFORMATION) As Integer
+Declare Function CreateProcessAsUser Alias "CreateProcessAsUserA" (ByVal hToken As Integer, ByVal lpApplicationName As String, ByVal lpCommandLine As String, ByRef lpProcessAttributes As SECURITY_ATTRIBUTES, ByRef lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal bInheritHandles As Integer, ByVal dwCreationFlags As Integer, ByVal lpEnvironment As String, ByVal lpCurrentDirectory As String, ByRef lpStartupInfo As STARTUPINFO, ByRef lpProcessInformation As PROCESS_INFORMATION) As Integer
+Declare Function CreateRemoteThread Alias "CreateRemoteThread" (ByVal hProcess As Integer, ByRef lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal lpStartAddress As Integer, ByRef lpParameter As ANY, ByVal dwCreationFlags As Integer, ByRef lpThreadId As Integer) As Integer
+Declare Function CreateSemaphore Alias "CreateSemaphoreA" ( ByRef lpSemaphoreAttributes As SECURITY_ATTRIBUTES, ByVal lInitialCount As Integer, ByVal lMaximumCount As Integer, ByVal lpName As String) As Integer
 Declare Function CreateTapePartition Alias "CreateTapePartition" (ByVal hDevice As Integer, ByVal dwPartitionMethod As Integer, ByVal dwCount As Integer, ByVal dwSize As Integer) As Integer
-Declare Function CreateThread Alias "CreateThread" (lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal StartAddress As Integer, ByVal lpParameter As Integer, ByVal dwCreationFlags As Integer, lpThreadId As Integer) As Integer
+Declare Function CreateThread Alias "CreateThread" ( ByRef lpThreadAttributes As SECURITY_ATTRIBUTES, ByVal dwStackSize As Integer, ByVal StartAddress As Integer, ByVal lpParameter As Integer, ByVal dwCreationFlags As Integer, ByRef lpThreadId As Integer) As Integer
 
 Declare Function DebugActiveProcess Alias "DebugActiveProcess" (ByVal dwProcessId As Integer) As Integer
 Declare Sub DebugBreak Alias "DebugBreak" ()
 Declare Function DefineDosDevice Alias "DefineDosDeviceA" (ByVal dwFlags As Integer, ByVal lpDeviceName As String, ByVal lpTargetPath As String) As Integer
 Declare Function DeleteAtom Alias "DeleteAtom" (ByVal nAtom As Integer) As Integer
-Declare Sub DeleteCriticalSection Alias "DeleteCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Sub DeleteCriticalSection Alias "DeleteCriticalSection" ( ByRef lpCriticalSection As CRITICAL_SECTION)
 Declare Function DeleteFile Alias "DeleteFileA" (ByVal lpFileName As String) As Integer
-Declare Function DeviceIoControl Alias "DeviceIoControl" (ByVal hDevice As Integer, ByVal dwIoControlCode As Integer, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesReturned As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function DeviceIoControl Alias "DeviceIoControl" (ByVal hDevice As Integer, ByVal dwIoControlCode As Integer, ByRef lpInBuffer As ANY, ByVal nInBufferSize As Integer, ByRef lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, ByRef lpBytesReturned As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
 Declare Function DisableThreadLibraryCalls Alias "DisableThreadLibraryCalls" (ByVal hLibModule As Integer) As Integer
 Declare Function DisconnectNamedPipe Alias "DisconnectNamedPipe" (ByVal hNamedPipe As Integer) As Integer
-Declare Function DosDateTimeToFileTime Alias "DosDateTimeToFileTime" (ByVal wFatDate As Integer, ByVal wFatTime As Integer, lpFileTime As FILETIME) As Integer
-Declare Function DuplicateHandle Alias "DuplicateHandle" (ByVal hSourceProcessHandle As Integer, ByVal hSourceHandle As Integer, ByVal hTargetProcessHandle As Integer, lpTargetHandle As Integer, ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwOptions As Integer) As Integer
+Declare Function DosDateTimeToFileTime Alias "DosDateTimeToFileTime" (ByVal wFatDate As Integer, ByVal wFatTime As Integer, ByRef lpFileTime As FILETIME) As Integer
+Declare Function DuplicateHandle Alias "DuplicateHandle" (ByVal hSourceProcessHandle As Integer, ByVal hSourceHandle As Integer, ByVal hTargetProcessHandle As Integer, ByRef lpTargetHandle As Integer, ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwOptions As Integer) As Integer
 
 Declare Function EndUpdateResource Alias "EndUpdateResourceA" (ByVal hUpdate As Integer, ByVal fDiscard As Integer) As Integer
-Declare Sub EnterCriticalSection Alias "EnterCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Sub EnterCriticalSection Alias "EnterCriticalSection" ( ByRef lpCriticalSection As CRITICAL_SECTION)
 Declare Function EnumCalendarInfo Alias "EnumCalendarInfoA" (ByVal lpCalInfoEnumProc As Integer, ByVal Locale As Integer, ByVal Calendar As Integer, ByVal CalType As Integer) As Integer
 Declare Function EnumDateFormats Alias "EnumDateFormats" (ByVal lpDateFmtEnumProc As Integer, ByVal Locale As Integer, ByVal dwFlags As Integer) As Integer
 Declare Function EnumResourceLanguages Alias "EnumResourceLanguagesA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpName As String, ByVal lpEnumFunc As Integer, ByVal lParam As Integer) As Integer
@@ -1829,26 +1829,26 @@ Declare Function ExpandEnvironmentStrings Alias "ExpandEnvironmentStringsA" (ByV
 
 Declare Sub FatalAppExit Alias "FatalAppExitA" (ByVal uAction As Integer, ByVal lpMessageText As String)
 Declare Sub FatalExit Alias "FatalExit" (ByVal code As Integer)
-Declare Function FileTimeToDosDateTime Alias "FileTimeToDosDateTime" (lpFileTime As FILETIME, lpFatDate As SHORT, lpFatTime As SHORT) As Integer
-Declare Function FileTimeToLocalFileTime Alias "FileTimeToLocalFileTime" (lpFileTime As FILETIME, lpLocalFileTime As FILETIME) As Integer
-Declare Function FileTimeToSystemTime Alias "FileTimeToSystemTime" (lpFileTime As FILETIME, lpSystemTime As SYSTEMTIME) As Integer
-Declare Function FillConsoleOutputAttribute Alias "FillConsoleOutputAttribute" (ByVal hConsoleOutput As Integer, ByVal dwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfAttrsWritten As Integer) As Integer
-Declare Function FillConsoleOutputCharacter Alias "FillConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfCharsWritten As Integer) As Integer
+Declare Function FileTimeToDosDateTime Alias "FileTimeToDosDateTime" ( ByRef lpFileTime As FILETIME, ByRef lpFatDate As SHORT, ByRef lpFatTime As SHORT) As Integer
+Declare Function FileTimeToLocalFileTime Alias "FileTimeToLocalFileTime" ( ByRef lpFileTime As FILETIME, ByRef lpLocalFileTime As FILETIME) As Integer
+Declare Function FileTimeToSystemTime Alias "FileTimeToSystemTime" ( ByRef lpFileTime As FILETIME, ByRef lpSystemTime As SYSTEMTIME) As Integer
+Declare Function FillConsoleOutputAttribute Alias "FillConsoleOutputAttribute" (ByVal hConsoleOutput As Integer, ByVal dwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, ByRef lpNumberOfAttrsWritten As Integer) As Integer
+Declare Function FillConsoleOutputCharacter Alias "FillConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, ByRef lpNumberOfCharsWritten As Integer) As Integer
 Declare Function FindAtom Alias "FindAtomA" (ByVal lpString As String) As Integer
 Declare Function FindClose Alias "FindClose" (ByVal hFindFile As Integer) As Integer
 Declare Function FindCloseChangeNotification Alias "FindCloseChangeNotification" (ByVal hChangeHandle As Integer) As Integer
 Declare Function FindFirstChangeNotification Alias "FindFirstChangeNotificationA" (ByVal lpPathName As String, ByVal bWatchSubtree As Integer, ByVal dwNotifyFilter As Integer) As Integer
-Declare Function FindFirstFile Alias "FindFirstFileA" (ByVal lpFileName As String, lpFindFileData As WIN32_FIND_DATA) As Integer
+Declare Function FindFirstFile Alias "FindFirstFileA" (ByVal lpFileName As String, ByRef lpFindFileData As WIN32_FIND_DATA) As Integer
 Declare Function FindNextChangeNotification Alias "FindNextChangeNotification" (ByVal hChangeHandle As Integer) As Integer
-Declare Function FindNextFile Alias "FindNextFileA" (ByVal hFindFile As Integer, lpFindFileData As WIN32_FIND_DATA) As Integer
+Declare Function FindNextFile Alias "FindNextFileA" (ByVal hFindFile As Integer, ByRef lpFindFileData As WIN32_FIND_DATA) As Integer
 Declare Function FindResource Alias "FindResourceA" (ByVal hInstance As Integer, ByVal lpName As String, ByVal lpType As String) As Integer
 Declare Function FindResourceEx Alias "FindResourceExA" (ByVal hModule As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer) As Integer
 Declare Function FlushConsoleInputBuffer Alias "FlushConsoleInputBuffer" (ByVal hConsoleInput As Integer) As Integer
 Declare Function FlushFileBuffers Alias "FlushFileBuffers" (ByVal hFile As Integer) As Integer
-Declare Function FlushInstructionCache Alias "FlushInstructionCache" (ByVal hProcess As Integer, lpBaseAddress As ANY, ByVal dwSize As Integer) As Integer
-Declare Function FlushViewOfFile Alias "FlushViewOfFile" (lpBaseAddress As ANY, ByVal dwNumberOfBytesToFlush As Integer) As Integer
+Declare Function FlushInstructionCache Alias "FlushInstructionCache" (ByVal hProcess As Integer, ByRef lpBaseAddress As ANY, ByVal dwSize As Integer) As Integer
+Declare Function FlushViewOfFile Alias "FlushViewOfFile" ( ByRef lpBaseAddress As ANY, ByVal dwNumberOfBytesToFlush As Integer) As Integer
 Declare Function FoldString Alias "FoldStringA" (ByVal dwMapFlags As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByVal lpDestStr As String, ByVal cchDest As Integer) As Integer
-Declare Function FormatMessage Alias "FormatMessageA" (ByVal dwFlags As Integer, lpSource As ANY, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, ByVal lpBuffer As String, ByVal nSize As Integer, Arguments As Integer) As Integer
+Declare Function FormatMessage Alias "FormatMessageA" (ByVal dwFlags As Integer, ByRef lpSource As ANY, ByVal dwMessageId As Integer, ByVal dwLanguageId As Integer, ByVal lpBuffer As String, ByVal nSize As Integer, ByRef Arguments As Integer) As Integer
 Declare Function FreeConsole Alias "FreeConsole" () As Integer
 Declare Function FreeEnvironmentStrings Alias "FreeEnvironmentStringsA" (ByVal lpsz As String) As Integer
 Declare Function FreeLibrary Alias "FreeLibrary" (ByVal hLibModule As Integer) As Integer
@@ -1858,109 +1858,109 @@ Declare Function FreeResource Alias "FreeResource" (ByVal hResData As Integer) A
 Declare Function GenerateConsoleCtrlEvent Alias "GenerateConsoleCtrlEvent" (ByVal dwCtrlEvent As Integer, ByVal dwProcessGroupId As Integer) As Integer
 Declare Function GetACP Alias "GetACP" () As Integer
 Declare Function GetAtomName Alias "GetAtomNameA" (ByVal nAtom As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GetBinaryType Alias "GetBinaryTypeA" (ByVal lpApplicationName As String, lpBinaryType As Integer) As Integer
-Declare Function GetCPInfo Alias "GetCPInfo" (ByVal CodePage As Integer, lpCPInfo As CPINFO) As Integer
-Declare Function GetCommConfig Alias "GetCommConfig" (ByVal hCommDev As Integer, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
-Declare Function GetCommMask Alias "GetCommMask" (ByVal hFile As Integer, lpEvtMask As Integer) As Integer
-Declare Function GetCommModemStatus Alias "GetCommModemStatus" (ByVal hFile As Integer, lpModemStat As Integer) As Integer
-Declare Function GetCommProperties Alias "GetCommProperties" (ByVal hFile As Integer, lpCommProp As COMMPROP) As Integer
-Declare Function GetCommState Alias "GetCommState" (ByVal nCid As Integer, lpDCB As DCB) As Integer
-Declare Function GetCommTimeouts Alias "GetCommTimeouts" (ByVal hFile As Integer, lpCommTimeouts As COMMTIMEOUTS) As Integer
+Declare Function GetBinaryType Alias "GetBinaryTypeA" (ByVal lpApplicationName As String, ByRef lpBinaryType As Integer) As Integer
+Declare Function GetCPInfo Alias "GetCPInfo" (ByVal CodePage As Integer, ByRef lpCPInfo As CPINFO) As Integer
+Declare Function GetCommConfig Alias "GetCommConfig" (ByVal hCommDev As Integer, ByRef lpCC As COMMCONFIG, ByRef lpdwSize As Integer) As Integer
+Declare Function GetCommMask Alias "GetCommMask" (ByVal hFile As Integer, ByRef lpEvtMask As Integer) As Integer
+Declare Function GetCommModemStatus Alias "GetCommModemStatus" (ByVal hFile As Integer, ByRef lpModemStat As Integer) As Integer
+Declare Function GetCommProperties Alias "GetCommProperties" (ByVal hFile As Integer, ByRef lpCommProp As COMMPROP) As Integer
+Declare Function GetCommState Alias "GetCommState" (ByVal nCid As Integer, ByRef lpDCB As DCB) As Integer
+Declare Function GetCommTimeouts Alias "GetCommTimeouts" (ByVal hFile As Integer, ByRef lpCommTimeouts As COMMTIMEOUTS) As Integer
 Declare Function GetCommandLine Alias "GetCommandLineA" () As Integer
-Declare Function GetCompressedFileSize Alias "GetCompressedFileSizeA" (ByVal lpFileName As String, lpFileSizeHigh As Integer) As Integer
-Declare Function GetComputerName Alias "GetComputerNameA" (ByVal lpBuffer As String, nSize As Integer) As Integer
+Declare Function GetCompressedFileSize Alias "GetCompressedFileSizeA" (ByVal lpFileName As String, ByRef lpFileSizeHigh As Integer) As Integer
+Declare Function GetComputerName Alias "GetComputerNameA" (ByVal lpBuffer As String, ByRef nSize As Integer) As Integer
 Declare Function GetConsoleCP Alias "GetConsoleCP" () As Integer
-Declare Function GetConsoleCursorInfo Alias "GetConsoleCursorInfo" (ByVal hConsoleOutput As Integer, lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
-Declare Function GetConsoleMode Alias "GetConsoleMode" (ByVal hConsoleHandle As Integer, lpMode As Integer) As Integer
+Declare Function GetConsoleCursorInfo Alias "GetConsoleCursorInfo" (ByVal hConsoleOutput As Integer, ByRef lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
+Declare Function GetConsoleMode Alias "GetConsoleMode" (ByVal hConsoleHandle As Integer, ByRef lpMode As Integer) As Integer
 Declare Function GetConsoleOutputCP Alias "GetConsoleOutputCP" () As Integer
-Declare Function GetConsoleScreenBufferInfo Alias "GetConsoleScreenBufferInfo" (ByVal hConsoleOutput As Integer, lpConsoleScreenBufferInfo As CONSOLE_SCREEN_BUFFER_INFO) As Integer
+Declare Function GetConsoleScreenBufferInfo Alias "GetConsoleScreenBufferInfo" (ByVal hConsoleOutput As Integer, ByRef lpConsoleScreenBufferInfo As CONSOLE_SCREEN_BUFFER_INFO) As Integer
 Declare Function GetConsoleTitle Alias "GetConsoleTitleA" (ByVal lpConsoleTitle As String, ByVal nSize As Integer) As Integer
-Declare Function GetCurrencyFormat Alias "GetCurrencyFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, lpFormat As CURRENCYFMT, ByVal lpCurrencyStr As String, ByVal cchCurrency As Integer) As Integer
+Declare Function GetCurrencyFormat Alias "GetCurrencyFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, ByRef lpFormat As CURRENCYFMT, ByVal lpCurrencyStr As String, ByVal cchCurrency As Integer) As Integer
 Declare Function GetCurrentDirectory Alias "GetCurrentDirectoryA" (ByVal nBufferLength As Integer, ByVal lpBuffer As String) As Integer
 Declare Function GetCurrentProcess Alias "GetCurrentProcess" () As Integer
 Declare Function GetCurrentProcessId Alias "GetCurrentProcessId" () As Integer
 Declare Function GetCurrentThread Alias "GetCurrentThread" () As Integer
 Declare Function GetCurrentThreadId Alias "GetCurrentThreadId" () As Integer
-Declare Function GetDateFormat Alias "GetDateFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpDate As SYSTEMTIME, ByVal lpFormat As String, ByVal lpDateStr As String, ByVal cchDate As Integer) As Integer
-Declare Function GetDefaultCommConfig Alias "GetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, lpdwSize As Integer) As Integer
-Declare Function GetDiskFreeSpace Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, lpSectorsPerCluster As Integer, lpBytesPerSector As Integer, lpNumberOfFreeClusters As Integer, lpTotalNumberOfClusters As Integer) As Integer
-Declare Function GetDiskFreeSpaceEx Alias "GetDiskFreeSpaceExA" (ByVal lpPathName As String, lpFreeBytesAvailableToCaller As INT64, lpTotalNumberOfBytes As INT64, lpTotalNumberOfFreeBytes As INT64) As Integer
+Declare Function GetDateFormat Alias "GetDateFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByRef lpDate As SYSTEMTIME, ByVal lpFormat As String, ByVal lpDateStr As String, ByVal cchDate As Integer) As Integer
+Declare Function GetDefaultCommConfig Alias "GetDefaultCommConfigA" (ByVal lpszName As String, ByRef lpCC As COMMCONFIG, ByRef lpdwSize As Integer) As Integer
+Declare Function GetDiskFreeSpace Alias "GetDiskFreeSpaceA" (ByVal lpRootPathName As String, ByRef lpSectorsPerCluster As Integer, ByRef lpBytesPerSector As Integer, ByRef lpNumberOfFreeClusters As Integer, ByRef lpTotalNumberOfClusters As Integer) As Integer
+Declare Function GetDiskFreeSpaceEx Alias "GetDiskFreeSpaceExA" (ByVal lpPathName As String, ByRef lpFreeBytesAvailableToCaller As INT64, ByRef lpTotalNumberOfBytes As INT64, ByRef lpTotalNumberOfFreeBytes As INT64) As Integer
 Declare Function GetDriveType Alias "GetDriveTypeA" (ByVal nDrive As String) As Integer
 Declare Function GetEnvironmentStrings Alias "GetEnvironmentStringsA" () As Integer
 Declare Function GetEnvironmentVariable Alias "GetEnvironmentVariableA" (ByVal lpName As String, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GetExitCodeProcess Alias "GetExitCodeProcess" (ByVal hProcess As Integer, lpExitCode As Integer) As Integer
-Declare Function GetExitCodeThread Alias "GetExitCodeThread" (ByVal hThread As Integer, lpExitCode As Integer) As Integer
+Declare Function GetExitCodeProcess Alias "GetExitCodeProcess" (ByVal hProcess As Integer, ByRef lpExitCode As Integer) As Integer
+Declare Function GetExitCodeThread Alias "GetExitCodeThread" (ByVal hThread As Integer, ByRef lpExitCode As Integer) As Integer
 Declare Function GetFileAttributes Alias "GetFileAttributesA" (ByVal lpFileName As String) As Integer
-Declare Function GetFileInformationByHandle Alias "GetFileInformationByHandle" (ByVal hFile As Integer, lpFileInformation As BY_HANDLE_FILE_INFORMATION) As Integer
-Declare Function GetFileSize Alias "GetFileSize" (ByVal hFile As Integer, lpFileSizeHigh As Integer) As Integer
-Declare Function GetFileTime Alias "GetFileTime" (ByVal hFile As Integer, lpCreationTime As FILETIME, lpLastAccessTime As FILETIME, lpLastWriteTime As FILETIME) As Integer
+Declare Function GetFileInformationByHandle Alias "GetFileInformationByHandle" (ByVal hFile As Integer, ByRef lpFileInformation As BY_HANDLE_FILE_INFORMATION) As Integer
+Declare Function GetFileSize Alias "GetFileSize" (ByVal hFile As Integer, ByRef lpFileSizeHigh As Integer) As Integer
+Declare Function GetFileTime Alias "GetFileTime" (ByVal hFile As Integer, ByRef lpCreationTime As FILETIME, ByRef lpLastAccessTime As FILETIME, ByRef lpLastWriteTime As FILETIME) As Integer
 Declare Function GetFileType Alias "GetFileType" (ByVal hFile As Integer) As Integer
 Declare Function GetFullPathName Alias "GetFullPathNameA" (ByVal lpFileName As String, ByVal nBufferLength As Integer, ByVal lpBuffer As String, ByVal lpFilePart As Integer) As Integer
-Declare Function GetHandleInformation Alias "GetHandleInformation" (ByVal hObject As Integer, lpdwFlags As Integer) As Integer
+Declare Function GetHandleInformation Alias "GetHandleInformation" (ByVal hObject As Integer, ByRef lpdwFlags As Integer) As Integer
 Declare Function GetLargestConsoleWindowSize Alias "GetLargestConsoleWindowSize" (ByVal hConsoleOutput As Integer) As Integer
 Declare Function GetLastError Alias "GetLastError" () As Integer
 Declare Function GetLocaleInfo Alias "GetLocaleInfoA" (ByVal Locale As Integer, ByVal LCType As Integer, ByVal lpLCData As String, ByVal cchData As Integer) As Integer
-Declare Sub GetLocalTime Alias "GetLocalTime" (lpSystemTime As SYSTEMTIME)
-Declare Function GetLogicalDriveStrings Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Integer, lpBuffer As ANY) As Integer
+Declare Sub GetLocalTime Alias "GetLocalTime" ( ByRef lpSystemTime As SYSTEMTIME)
+Declare Function GetLogicalDriveStrings Alias "GetLogicalDriveStringsA" (ByVal nBufferLength As Integer, ByRef lpBuffer As ANY) As Integer
 Declare Function GetLogicalDrives Alias "GetLogicalDrives" () As Integer
-Declare Function GetMailslotInfo Alias "GetMailslotInfo" (ByVal hMailslot As Integer, lpMaxMessageSize As Integer, lpNextSize As Integer, lpMessageCount As Integer, lpReadTimeout As Integer) As Integer
+Declare Function GetMailslotInfo Alias "GetMailslotInfo" (ByVal hMailslot As Integer, ByRef lpMaxMessageSize As Integer, ByRef lpNextSize As Integer, ByRef lpMessageCount As Integer, ByRef lpReadTimeout As Integer) As Integer
 Declare Function GetModuleFileName Alias "GetModuleFileNameA" (ByVal hModule As Integer, ByVal lpFileName As String, ByVal nSize As Integer) As Integer
 Declare Function GetModuleHandle Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Integer
-Declare Function GetNamedPipeHandleState Alias "GetNamedPipeHandleStateA" (ByVal hNamedPipe As Integer, lpState As Integer, lpCurInstances As Integer, lpMaxCollectionCount As Integer, lpCollectDataTimeout As Integer, ByVal lpUserName As String, ByVal nMaxUserNameSize As Integer) As Integer
-Declare Function GetNamedPipeInfo Alias "GetNamedPipeInfo" (ByVal hNamedPipe As Integer, lpFlags As Integer, lpOutBufferSize As Integer, lpInBufferSize As Integer, lpMaxInstances As Integer) As Integer
-Declare Function GetNumberFormat Alias "GetNumberFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, lpFormat As NUMBERFMT, ByVal lpNumberStr As String, ByVal cchNumber As Integer) As Integer
-Declare Function GetNumberOfConsoleInputEvents Alias "GetNumberOfConsoleInputEvents" (ByVal hConsoleInput As Integer, lpNumberOfEvents As Integer) As Integer
-Declare Function GetNumberOfConsoleMouseButtons Alias "GetNumberOfConsoleMouseButtons" (lpNumberOfMouseButtons As Integer) As Integer
+Declare Function GetNamedPipeHandleState Alias "GetNamedPipeHandleStateA" (ByVal hNamedPipe As Integer, ByRef lpState As Integer, ByRef lpCurInstances As Integer, ByRef lpMaxCollectionCount As Integer, ByRef lpCollectDataTimeout As Integer, ByVal lpUserName As String, ByVal nMaxUserNameSize As Integer) As Integer
+Declare Function GetNamedPipeInfo Alias "GetNamedPipeInfo" (ByVal hNamedPipe As Integer, ByRef lpFlags As Integer, ByRef lpOutBufferSize As Integer, ByRef lpInBufferSize As Integer, ByRef lpMaxInstances As Integer) As Integer
+Declare Function GetNumberFormat Alias "GetNumberFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByVal lpValue As String, ByRef lpFormat As NUMBERFMT, ByVal lpNumberStr As String, ByVal cchNumber As Integer) As Integer
+Declare Function GetNumberOfConsoleInputEvents Alias "GetNumberOfConsoleInputEvents" (ByVal hConsoleInput As Integer, ByRef lpNumberOfEvents As Integer) As Integer
+Declare Function GetNumberOfConsoleMouseButtons Alias "GetNumberOfConsoleMouseButtons" ( ByRef lpNumberOfMouseButtons As Integer) As Integer
 Declare Function GetOEMCP Alias "GetOEMCP" () As Integer
-Declare Function GetOverlappedResult Alias "GetOverlappedResult" (ByVal hFile As Integer, lpOverlapped As OVERLAPPED, lpNumberOfBytesTransferred As Integer, ByVal bWait As Integer) As Integer
+Declare Function GetOverlappedResult Alias "GetOverlappedResult" (ByVal hFile As Integer, ByRef lpOverlapped As OVERLAPPED, ByRef lpNumberOfBytesTransferred As Integer, ByVal bWait As Integer) As Integer
 Declare Function GetPriorityClass Alias "GetPriorityClass" (ByVal hProcess As Integer) As Integer
 Declare Function GetPrivateProfileInt Alias "GetPrivateProfileIntA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal nDefault As Integer, ByVal lpFileName As String) As Integer
 Declare Function GetPrivateProfileSection Alias "GetPrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
 Declare Function GetPrivateProfileSectionNames Alias "GetPrivateProfileSectionNamesA" (ByVal lpszReturnBuffer As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
 Declare Function GetPrivateProfileString Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer, ByVal lpFileName As String) As Integer
 Declare Function GetProcAddress Alias "GetProcAddress" (ByVal hModule As Integer, ByVal lpProcName As String) As Integer
-Declare Function GetProcessAffinityMask Alias "GetProcessAffinityMask" (ByVal hProcess As Integer, lpProcessAffinityMask As Integer, SystemAffinityMask As Integer) As Integer
+Declare Function GetProcessAffinityMask Alias "GetProcessAffinityMask" (ByVal hProcess As Integer, ByRef lpProcessAffinityMask As Integer, SystemAffinityMask As Integer) As Integer
 Declare Function GetProcessHeap Alias "GetProcessHeap" () As Integer
-Declare Function GetProcessHeaps Alias "GetProcessHeaps" (ByVal NumberOfHeaps As Integer, ProcessHeaps As Integer) As Integer
-Declare Function GetProcessShutdownParameters Alias "GetProcessShutdownParameters" (lpdwLevel As Integer, lpdwFlags As Integer) As Integer
-Declare Function GetProcessTimes Alias "GetProcessTimes" (ByVal hProcess As Integer, lpCreationTime As FILETIME, lpExitTime As FILETIME, lpKernelTime As FILETIME, lpUserTime As FILETIME) As Integer
-Declare Function GetProcessWorkingSetSize Alias "GetProcessWorkingSetSize" (ByVal hProcess As Integer, lpMinimumWorkingSetSize As Integer, lpMaximumWorkingSetSize As Integer) As Integer
+Declare Function GetProcessHeaps Alias "GetProcessHeaps" (ByVal NumberOfHeaps As Integer, ByRef ProcessHeaps As Integer) As Integer
+Declare Function GetProcessShutdownParameters Alias "GetProcessShutdownParameters" ( ByRef lpdwLevel As Integer, ByRef lpdwFlags As Integer) As Integer
+Declare Function GetProcessTimes Alias "GetProcessTimes" (ByVal hProcess As Integer, ByRef lpCreationTime As FILETIME, ByRef lpExitTime As FILETIME, ByRef lpKernelTime As FILETIME, ByRef lpUserTime As FILETIME) As Integer
+Declare Function GetProcessWorkingSetSize Alias "GetProcessWorkingSetSize" (ByVal hProcess As Integer, ByRef lpMinimumWorkingSetSize As Integer, ByRef lpMaximumWorkingSetSize As Integer) As Integer
 Declare Function GetProfileInt Alias "GetProfileIntA" (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal nDefault As Integer) As Integer
 Declare Function GetProfileSection Alias "GetProfileSectionA" (ByVal lpAppName As String, ByVal lpReturnedString As String, ByVal nSize As Integer) As Integer
 Declare Function GetProfileString Alias "GetProfileStringA" (ByVal lpAppName As String, ByVal lpKeyName As String, ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Integer) As Integer
-Declare Function GetQueuedCompletionStatus Alias "GetQueuedCompletionStatus" (ByVal CompletionPort As Integer, lpNumberOfBytesTransferred As Integer, lpCompletionKey As Integer, lpOverlapped As Integer, ByVal dwMilliseconds As Integer) As Integer
+Declare Function GetQueuedCompletionStatus Alias "GetQueuedCompletionStatus" (ByVal CompletionPort As Integer, ByRef lpNumberOfBytesTransferred As Integer, ByRef lpCompletionKey As Integer, ByRef lpOverlapped As Integer, ByVal dwMilliseconds As Integer) As Integer
 Declare Function GetShortPathName Alias "GetShortPathNameA" (ByVal lpszLongPath As String, ByVal lpszShortPath As String, ByVal cchBuffer As Integer) As Integer
-Declare Sub GetStartupInfo Alias "GetStartupInfoA" (lpStartupInfo As STARTUPINFO)
+Declare Sub GetStartupInfo Alias "GetStartupInfoA" ( ByRef lpStartupInfo As STARTUPINFO)
 Declare Function GetStdHandle Alias "GetStdHandle" (ByVal nStdHandle As Integer) As Integer
-Declare Function GetStringTypeA Alias "GetStringTypeA" (ByVal lcid As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
-Declare Function GetStringTypeEx Alias "GetStringTypeEx" (ByVal Locale As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
-Declare Function GetStringTypeW Alias "GetStringTypeW" (ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, lpCharType As Integer) As Integer
+Declare Function GetStringTypeA Alias "GetStringTypeA" (ByVal lcid As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByRef lpCharType As Integer) As Integer
+Declare Function GetStringTypeEx Alias "GetStringTypeEx" (ByVal Locale As Integer, ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByRef lpCharType As Integer) As Integer
+Declare Function GetStringTypeW Alias "GetStringTypeW" (ByVal dwInfoType As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByRef lpCharType As Integer) As Integer
 Declare Function GetSystemDefaultLCID Alias "GetSystemDefaultLCID" () As Integer
 Declare Function GetSystemDefaultLangID Alias "GetSystemDefaultLangID" () As Integer
 Declare Function GetSystemDirectory Alias "GetSystemDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Sub GetSystemInfo Alias "GetSystemInfo" (lpSystemInfo As SYSTEM_INFO)
-Declare Function GetSystemPowerStatus Alias "GetSystemPowerStatus" (lpSystemPowerStatus As SYSTEM_POWER_STATUS) As Integer
-Declare Sub GetSystemTime Alias "GetSystemTime" (lpSystemTime As SYSTEMTIME)
-Declare Function GetSystemTimeAdjustment Alias "GetSystemTimeAdjustment" (lpTimeAdjustment As Integer, lpTimeIncrement As Integer, lpTimeAdjustmentDisabled As Integer) As Integer
-Declare Sub GetSystemTimeAsFileTime Alias "GetSystemTimeAsFileTime" (lpFileTime As FILETIME)
-Declare Function GetTapeParameters Alias "GetTapeParameters" (ByVal hDevice As Integer, ByVal dwOperation As Integer, lpdwSize As Integer, lpTapeInformation As ANY) As Integer
-Declare Function GetTapePosition Alias "GetTapePosition" (ByVal hDevice As Integer, ByVal dwPositionType As Integer, lpdwPartition As Integer, lpdwOffsetLow As Integer, lpdwOffsetHigh As Integer) As Integer
+Declare Sub GetSystemInfo Alias "GetSystemInfo" ( ByRef lpSystemInfo As SYSTEM_INFO)
+Declare Function GetSystemPowerStatus Alias "GetSystemPowerStatus" ( ByRef lpSystemPowerStatus As SYSTEM_POWER_STATUS) As Integer
+Declare Sub GetSystemTime Alias "GetSystemTime" ( ByRef lpSystemTime As SYSTEMTIME)
+Declare Function GetSystemTimeAdjustment Alias "GetSystemTimeAdjustment" ( ByRef lpTimeAdjustment As Integer, ByRef lpTimeIncrement As Integer, ByRef lpTimeAdjustmentDisabled As Integer) As Integer
+Declare Sub GetSystemTimeAsFileTime Alias "GetSystemTimeAsFileTime" ( ByRef lpFileTime As FILETIME)
+Declare Function GetTapeParameters Alias "GetTapeParameters" (ByVal hDevice As Integer, ByVal dwOperation As Integer, ByRef lpdwSize As Integer, ByRef lpTapeInformation As ANY) As Integer
+Declare Function GetTapePosition Alias "GetTapePosition" (ByVal hDevice As Integer, ByVal dwPositionType As Integer, ByRef lpdwPartition As Integer, ByRef lpdwOffsetLow As Integer, ByRef lpdwOffsetHigh As Integer) As Integer
 Declare Function GetTapeStatus Alias "GetTapeStatus" (ByVal hDevice As Integer) As Integer
 Declare Function GetTempFileName Alias "GetTempFileNameA" (ByVal lpszPath As String, ByVal lpPrefixString As String, ByVal wUnique As Integer, ByVal lpTempFileName As String) As Integer
 Declare Function GetTempPath Alias "GetTempPathA" (ByVal nBufferLength As Integer, ByVal lpBuffer As String) As Integer
-Declare Function GetThreadContext Alias "GetThreadContext" (ByVal hThread As Integer, lpContext As CONTEXT) As Integer
+Declare Function GetThreadContext Alias "GetThreadContext" (ByVal hThread As Integer, ByRef lpContext As CONTEXT) As Integer
 Declare Function GetThreadLocale Alias "GetThreadLocale" () As Integer
 Declare Function GetThreadPriority Alias "GetThreadPriority" (ByVal hThread As Integer) As Integer
-Declare Function GetThreadSelectorEntry Alias "GetThreadSelectorEntry" (ByVal hThread As Integer, ByVal dwSelector As Integer, lpSelectorEntry As LDT_ENTRY) As Integer
-Declare Function GetThreadTimes Alias "GetThreadTimes" (ByVal hThread As Integer, lpCreationTime As FILETIME, lpExitTime As FILETIME, lpKernelTime As FILETIME, lpUserTime As FILETIME) As Integer
+Declare Function GetThreadSelectorEntry Alias "GetThreadSelectorEntry" (ByVal hThread As Integer, ByVal dwSelector As Integer, ByRef lpSelectorEntry As LDT_ENTRY) As Integer
+Declare Function GetThreadTimes Alias "GetThreadTimes" (ByVal hThread As Integer, ByRef lpCreationTime As FILETIME, ByRef lpExitTime As FILETIME, ByRef lpKernelTime As FILETIME, ByRef lpUserTime As FILETIME) As Integer
 Declare Function GetTickCount Alias "GetTickCount" () As Integer
-Declare Function GetTimeFormat Alias "GetTimeFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, lpTime As SYSTEMTIME, ByVal lpFormat As String, ByVal lpTimeStr As String, ByVal cchTime As Integer) As Integer
-Declare Function GetTimeZoneInformation Alias "GetTimeZoneInformation" (lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
+Declare Function GetTimeFormat Alias "GetTimeFormatA" (ByVal Locale As Integer, ByVal dwFlags As Integer, ByRef lpTime As SYSTEMTIME, ByVal lpFormat As String, ByVal lpTimeStr As String, ByVal cchTime As Integer) As Integer
+Declare Function GetTimeZoneInformation Alias "GetTimeZoneInformation" ( ByRef lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
 Declare Function GetUserDefaultLCID Alias "GetUserDefaultLCID" () As Integer
 Declare Function GetUserDefaultLangID Alias "GetUserDefaultLangID" () As Integer
 Declare Function GetVersion Alias "GetVersion" () As Integer
-Declare Function GetVersionEx Alias "GetVersionExA" (lpVersionInformation As OSVERSIONINFO) As Integer
-Declare Function GetVolumeInformation Alias "GetVolumeInformationA" (ByVal lpRootPathName As String, ByVal lpVolumeNameBuffer As String, ByVal nVolumeNameSize As Integer, lpVolumeSerialNumber As Integer, lpMaximumComponentLength As Integer, lpFileSystemFlags As Integer, ByVal lpFileSystemNameBuffer As String, ByVal nFileSystemNameSize As Integer) As Integer
+Declare Function GetVersionEx Alias "GetVersionExA" ( ByRef lpVersionInformation As OSVERSIONINFO) As Integer
+Declare Function GetVolumeInformation Alias "GetVolumeInformationA" (ByVal lpRootPathName As String, ByVal lpVolumeNameBuffer As String, ByVal nVolumeNameSize As Integer, ByRef lpVolumeSerialNumber As Integer, ByRef lpMaximumComponentLength As Integer, ByRef lpFileSystemFlags As Integer, ByVal lpFileSystemNameBuffer As String, ByVal nFileSystemNameSize As Integer) As Integer
 Declare Function GetWindowsDirectory Alias "GetWindowsDirectoryA" (ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
 Declare Function GlobalAddAtom Alias "GlobalAddAtomA" (ByVal lpString As String) As Integer
 Declare Function GlobalAlloc Alias "GlobalAlloc" (ByVal wFlags As Integer, ByVal dwBytes As Integer) As Integer
@@ -1971,10 +1971,10 @@ Declare Sub GlobalFix Alias "GlobalFix" (ByVal hMem As Integer)
 Declare Function GlobalFlags Alias "GlobalFlags" (ByVal hMem As Integer) As Integer
 Declare Function GlobalFree Alias "GlobalFree" (ByVal hMem As Integer) As Integer
 Declare Function GlobalGetAtomName Alias "GlobalGetAtomNameA" (ByVal nAtom As Integer, ByVal lpBuffer As String, ByVal nSize As Integer) As Integer
-Declare Function GlobalHandle Alias "GlobalHandle" (wMem As ANY) As Integer
+Declare Function GlobalHandle Alias "GlobalHandle" ( ByRef wMem As ANY) As Integer
 Declare Function GlobalLock Alias "GlobalLock" (ByVal hMem As Integer) As Integer
-Declare Sub GlobalMemoryStatus Alias "GlobalMemoryStatus" (lpBuffer As MEMORYSTATUS)
-Declare Function GlobalMemoryStatusEx Alias "GlobalMemoryStatusEx" (lpBuffer As MEMORYSTATUSEX) As Integer
+Declare Sub GlobalMemoryStatus Alias "GlobalMemoryStatus" ( ByRef lpBuffer As MEMORYSTATUS)
+Declare Function GlobalMemoryStatusEx Alias "GlobalMemoryStatusEx" ( ByRef lpBuffer As MEMORYSTATUSEX) As Integer
 Declare Function GlobalReAlloc Alias "GlobalReAlloc" (ByVal hMem As Integer, ByVal dwBytes As Integer, ByVal wFlags As Integer) As Integer
 Declare Function GlobalSize Alias "GlobalSize" (ByVal hMem As Integer) As Integer
 Declare Sub GlobalUnfix Alias "GlobalUnfix" (ByVal hMem As Integer)
@@ -1998,14 +1998,14 @@ Declare Function hwrite Alias "_hwrite" (ByVal hFile As Integer, ByVal lpBuffer 
 
 Declare Function ImpersonateLoggedOnUser Alias "ImpersonateLoggedOnUser" (ByVal hToken As Integer) As Integer
 Declare Function InitAtomTable Alias "InitAtomTable" (ByVal nSize As Integer) As Integer
-Declare Sub InitializeCriticalSection Alias "InitializeCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
-Declare Function InitializeCriticalSectionAndSpinCount Alias "InitializeCriticalSectionAndSpinCount" (lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
-Declare Function InterlockedDecrement Alias "InterlockedDecrement" (lpAddend As Integer) As Integer
-Declare Function InterlockedExchange Alias "InterlockedExchange" (xTarget As Integer, ByVal xValue As Integer) As Integer
-Declare Function InterlockedIncrement Alias "InterlockedIncrement" (lpAddend As Integer) As Integer
+Declare Sub InitializeCriticalSection Alias "InitializeCriticalSection" ( ByRef lpCriticalSection As CRITICAL_SECTION)
+Declare Function InitializeCriticalSectionAndSpinCount Alias "InitializeCriticalSectionAndSpinCount" ( ByRef lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
+Declare Function InterlockedDecrement Alias "InterlockedDecrement" ( ByRef lpAddend As Integer) As Integer
+Declare Function InterlockedExchange Alias "InterlockedExchange" ( ByRef xTarget As Integer, ByVal xValue As Integer) As Integer
+Declare Function InterlockedIncrement Alias "InterlockedIncrement" ( ByRef lpAddend As Integer) As Integer
 Declare Function IsBadCodePtr Alias "IsBadCodePtr" (ByVal lpfn As Integer) As Integer
-Declare Function IsBadHugeReadPtr Alias "IsBadHugeReadPtr" (lp As ANY, ByVal ucb As Integer) As Integer
-Declare Function IsBadHugeWritePtr Alias "IsBadHugeWritePtr" (lp As ANY, ByVal ucb As Integer) As Integer
+Declare Function IsBadHugeReadPtr Alias "IsBadHugeReadPtr" ( ByRef lp As ANY, ByVal ucb As Integer) As Integer
+Declare Function IsBadHugeWritePtr Alias "IsBadHugeWritePtr" ( ByRef lp As ANY, ByVal ucb As Integer) As Integer
 Declare Function IsBadReadPtr Alias "IsBadReadPtr" (ByVal lp As Integer, ByVal ucb As Integer) As Integer
 Declare Function IsBadStringPtr Alias "IsBadStringPtrA" (ByVal lpsz As String, ByVal ucchMax As Integer) As Integer
 Declare Function IsBadWritePtr Alias "IsBadWritePtr" (ByVal lp As Integer, ByVal ucb As Integer) As Integer
@@ -2017,28 +2017,28 @@ Declare Function lclose Alias "_lclose" (ByVal hFile As Integer) As Integer
 Declare Function LCMapString Alias "LCMapStringA" (ByVal Locale As Integer, ByVal dwMapFlags As Integer, ByVal lpSrcStr As String, ByVal cchSrc As Integer, ByVal lpDestStr As String, ByVal cchDest As Integer) As Integer
 Declare Function lcreat Alias "_lcreat" (ByVal lpPathName As String, ByVal iAttribute As Integer) As Integer
 Declare Function llseek Alias "_llseek" (ByVal hFile As Integer, ByVal lOffset As Integer, ByVal iOrigin As Integer) As Integer
-Declare Sub LeaveCriticalSection Alias "LeaveCriticalSection" (lpCriticalSection As CRITICAL_SECTION)
+Declare Sub LeaveCriticalSection Alias "LeaveCriticalSection" ( ByRef lpCriticalSection As CRITICAL_SECTION)
 Declare Function LoadLibrary Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Integer
 Declare Function LoadLibraryEx Alias "LoadLibraryExA" (ByVal lpLibFileName As String, ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
-Declare Function LoadModule Alias "LoadModule" (ByVal lpModuleName As String, lpParameterBlock As ANY) As Integer
+Declare Function LoadModule Alias "LoadModule" (ByVal lpModuleName As String, ByRef lpParameterBlock As ANY) As Integer
 Declare Function LoadResource Alias "LoadResource" (ByVal hInstance As Integer, ByVal hResInfo As Integer) As Integer
 Declare Function LocalAlloc Alias "LocalAlloc" (ByVal wFlags As Integer, ByVal wBytes As Integer) As Integer
 Declare Function LocalCompact Alias "LocalCompact" (ByVal uMinFree As Integer) As Integer
-Declare Function LocalFileTimeToFileTime Alias "LocalFileTimeToFileTime" (lpLocalFileTime As FILETIME, lpFileTime As FILETIME) As Integer
+Declare Function LocalFileTimeToFileTime Alias "LocalFileTimeToFileTime" ( ByRef lpLocalFileTime As FILETIME, ByRef lpFileTime As FILETIME) As Integer
 Declare Function LocalFlags Alias "LocalFlags" (ByVal hMem As Integer) As Integer
 Declare Function LocalFree Alias "LocalFree" (ByVal hMem As Integer) As Integer
-Declare Function LocalHandle Alias "LocalHandle" (wMem As ANY) As Integer
+Declare Function LocalHandle Alias "LocalHandle" ( ByRef wMem As ANY) As Integer
 Declare Function LocalLock Alias "LocalLock" (ByVal hMem As Integer) As Integer
 Declare Function LocalReAlloc Alias "LocalReAlloc" (ByVal hMem As Integer, ByVal wBytes As Integer, ByVal wFlags As Integer) As Integer
 Declare Function LocalShrink Alias "LocalShrink" (ByVal hMem As Integer, ByVal cbNewSize As Integer) As Integer
 Declare Function LocalSize Alias "LocalSize" (ByVal hMem As Integer) As Integer
 Declare Function LocalUnlock Alias "LocalUnlock" (ByVal hMem As Integer) As Integer
 Declare Function LockFile Alias "LockFile" (ByVal hFile As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwFileOffsetHigh As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer) As Integer
-Declare Function LockFileEx Alias "LockFileEx" (ByVal hFile As Integer, ByVal dwFlags As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function LockFileEx Alias "LockFileEx" (ByVal hFile As Integer, ByVal dwFlags As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToLockLow As Integer, ByVal nNumberOfBytesToLockHigh As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
 Declare Function LockResource Alias "LockResource" (ByVal hResData As Integer) As Integer
-Declare Function LogonUser Alias "LogonUserA" (ByVal lpszUsername As String, ByVal lpszDomain As String, ByVal lpszPassword As String, ByVal dwLogonType As Integer, ByVal dwLogonProvider As Integer, phToken As Integer) As Integer
+Declare Function LogonUser Alias "LogonUserA" (ByVal lpszUsername As String, ByVal lpszDomain As String, ByVal lpszPassword As String, ByVal dwLogonType As Integer, ByVal dwLogonProvider As Integer, ByRef phToken As Integer) As Integer
 Declare Function lopen Alias "_lopen" (ByVal lpPathName As String, ByVal iReadWrite As Integer) As Integer
-Declare Function lread Alias "_lread" (ByVal hFile As Integer, lpBuffer As ANY, ByVal wBytes As Integer) As Integer
+Declare Function lread Alias "_lread" (ByVal hFile As Integer, ByRef lpBuffer As ANY, ByVal wBytes As Integer) As Integer
 Declare Function lstrcat Alias "lstrcatA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
 Declare Function lstrcmp Alias "lstrcmpA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
 Declare Function lstrcmpi Alias "lstrcmpiA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
@@ -2048,23 +2048,23 @@ Declare Function lstrlen Alias "lstrlenA" (ByVal lpString As String) As Integer
 Declare Function lwrite Alias "_lwrite" (ByVal hFile As Integer, ByVal lpBuffer As String, ByVal wBytes As Integer) As Integer
 
 Declare Function MapViewOfFile Alias "MapViewOfFile" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer) As Integer
-Declare Function MapViewOfFileEx Alias "MapViewOfFileEx" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer, lpBaseAddress As ANY) As Integer
+Declare Function MapViewOfFileEx Alias "MapViewOfFileEx" (ByVal hFileMappingObject As Integer, ByVal dwDesiredAccess As Integer, ByVal dwFileOffsetHigh As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwNumberOfBytesToMap As Integer, ByRef lpBaseAddress As ANY) As Integer
 Declare Function MoveFile Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
 Declare Function MoveFileEx Alias "MoveFileExA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String, ByVal dwFlags As Integer) As Integer
-Declare Sub MoveMemory Alias "RtlMoveMemory" (pDestination As ANY, pSource As ANY, ByVal cbLength As Integer)
+Declare Sub MoveMemory Alias "RtlMoveMemory" ( ByRef pDestination As ANY, ByRef pSource As ANY, ByVal cbLength As Integer)
 Declare Function MulDiv Alias "MulDiv" (ByVal nNumber As Integer, ByVal nNumerator As Integer, ByVal nDenominator As Integer) As Integer
 Declare Function MultiByteToWideChar Alias "MultiByteToWideChar" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer) As Integer
 
-'Declare Function ObjectOpenAuditAlarm Alias "ObjectOpenAuditAlarmA" (ByVal SubsystemName As String, ByRef HandleId As Any, ByVal ObjectTypeName As String, ByVal ObjectName As String, pSecurityDescriptor As SECURITY_DESCRIPTOR, ByVal ClientToken As Integer, ByVal DesiredAccess As Integer, ByVal GrantedAccess As Integer, Privileges As PRIVILEGE_SET, ByVal ObjectCreation As Integer, ByVal AccessGranted As Integer, ByVal GenerateOnClose As Integer) As Integer
+'Declare Function ObjectOpenAuditAlarm Alias "ObjectOpenAuditAlarmA" (ByVal SubsystemName As String, ByRef HandleId As Any, ByVal ObjectTypeName As String, ByVal ObjectName As String, ByRef pSecurityDescriptor As SECURITY_DESCRIPTOR, ByVal ClientToken As Integer, ByVal DesiredAccess As Integer, ByVal GrantedAccess As Integer, ByRef Privileges As PRIVILEGE_SET, ByVal ObjectCreation As Integer, ByVal AccessGranted As Integer, ByVal GenerateOnClose As Integer) As Integer
 Declare Function OpenEvent Alias "OpenEventA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
-Declare Function OpenFile Alias "OpenFile" (ByVal lpFileName As String, lpReOpenBuff As OFSTRUCT, ByVal wStyle As Integer) As Integer
+Declare Function OpenFile Alias "OpenFile" (ByVal lpFileName As String, ByRef lpReOpenBuff As OFSTRUCT, ByVal wStyle As Integer) As Integer
 Declare Function OpenFileMapping Alias "OpenFileMappingA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
 Declare Function OpenMutex Alias "OpenMutexA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
 Declare Function OpenProcess Alias "OpenProcess" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal dwProcessId As Integer) As Integer
 Declare Function OpenSemaphore Alias "OpenSemaphoreA" (ByVal dwDesiredAccess As Integer, ByVal bInheritHandle As Integer, ByVal lpName As String) As Integer
 Declare Sub OutputDebugString Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 
-Declare Function PeekNamedPipe Alias "PeekNamedPipe" (ByVal hNamedPipe As Integer, lpBuffer As ANY, ByVal nBufferSize As Integer, lpBytesRead As Integer, lpTotalBytesAvail As Integer, lpBytesLeftThisMessage As Integer) As Integer
+Declare Function PeekNamedPipe Alias "PeekNamedPipe" (ByVal hNamedPipe As Integer, ByRef lpBuffer As ANY, ByVal nBufferSize As Integer, ByRef lpBytesRead As Integer, ByRef lpTotalBytesAvail As Integer, ByRef lpBytesLeftThisMessage As Integer) As Integer
 Declare Function PrepareTape Alias "PrepareTape" (ByVal hDevice As Integer, ByVal dwOperation As Integer, ByVal bimmediate As Integer) As Integer
 Declare Function PulseEvent Alias "PulseEvent" (ByVal hEvent As Integer) As Integer
 Declare Function PurgeComm Alias "PurgeComm" (ByVal hFile As Integer, ByVal dwFlags As Integer) As Integer
@@ -2072,46 +2072,46 @@ Declare Function PurgeComm Alias "PurgeComm" (ByVal hFile As Integer, ByVal dwFl
 Declare Function PeekConsoleInput alias "PeekConsoleInputA" ( byval hConsoleInput as integer, byref pirBuffer as INPUT_RECORD, byval cInRecords as integer, byref lpcRead as integer ) as integer
 
 Declare Function QueryDosDevice Alias "QueryDosDeviceA" (ByVal lpDeviceName As String, ByVal lpTargetPath As String, ByVal ucchMax As Integer) As Integer
-Declare Function QueryPerformanceCounter Alias "QueryPerformanceCounter" (lpPerformanceCount As INT64) As Integer
-Declare Function QueryPerformanceFrequency Alias "QueryPerformanceFrequency" (lpFrequency As INT64) As Integer
+Declare Function QueryPerformanceCounter Alias "QueryPerformanceCounter" ( ByRef lpPerformanceCount As INT64) As Integer
+Declare Function QueryPerformanceFrequency Alias "QueryPerformanceFrequency" ( ByRef lpFrequency As INT64) As Integer
 
-Declare Sub RaiseException Alias "RaiseException" (ByVal dwExceptionCode As Integer, ByVal dwExceptionFlags As Integer, ByVal nNumberOfArguments As Integer, lpArguments As Integer)
-Declare Function ReadConsole Alias "ReadConsoleA" (ByVal hConsoleInput As Integer, lpBuffer As ANY, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer, lpReserved As ANY) As Integer
-Declare Function ReadConsoleInput Alias "ReadConsoleInputA" (ByVal hConsoleInput As Integer, byref lpBuffer As INPUT_RECORD, ByVal nNumberOfCharsToRead As Integer, lpNumberOfCharsRead As Integer) As Integer
-Declare Function ReadConsoleOutput Alias "ReadConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpReadRegion As SMALL_RECT) As Integer
-Declare Function ReadConsoleOutputAttribute Alias "ReadConsoleOutputAttribute" (ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfAttrsRead As Integer) As Integer
-Declare Function ReadConsoleOutputCharacter Alias "ReadConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwReadCoord As Integer, lpNumberOfCharsRead As Integer) As Integer
-Declare Function ReadFile Alias "ReadFile" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, lpNumberOfBytesRead As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function ReadFileEx Alias "ReadFileEx" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
-Declare Function ReadProcessMemory Alias "ReadProcessMemory" (ByVal hProcess As Integer, ByVal lpBaseAddress As Integer, lpBuffer As ANY, ByVal nSize As Integer, lpNumberOfBytesWritten As Integer) As Integer
+Declare Sub RaiseException Alias "RaiseException" (ByVal dwExceptionCode As Integer, ByVal dwExceptionFlags As Integer, ByVal nNumberOfArguments As Integer, ByRef lpArguments As Integer)
+Declare Function ReadConsole Alias "ReadConsoleA" (ByVal hConsoleInput As Integer, ByRef lpBuffer As ANY, ByVal nNumberOfCharsToRead As Integer, ByRef lpNumberOfCharsRead As Integer, ByRef lpReserved As ANY) As Integer
+Declare Function ReadConsoleInput Alias "ReadConsoleInputA" (ByVal hConsoleInput As Integer, byref lpBuffer As INPUT_RECORD, ByVal nNumberOfCharsToRead As Integer, ByRef lpNumberOfCharsRead As Integer) As Integer
+Declare Function ReadConsoleOutput Alias "ReadConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, ByRef lpReadRegion As SMALL_RECT) As Integer
+Declare Function ReadConsoleOutputAttribute Alias "ReadConsoleOutputAttribute" (ByVal hConsoleOutput As Integer, ByRef lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwReadCoord As Integer, ByRef lpNumberOfAttrsRead As Integer) As Integer
+Declare Function ReadConsoleOutputCharacter Alias "ReadConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwReadCoord As Integer, ByRef lpNumberOfCharsRead As Integer) As Integer
+Declare Function ReadFile Alias "ReadFile" (ByVal hFile As Integer, ByRef lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, ByRef lpNumberOfBytesRead As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
+Declare Function ReadFileEx Alias "ReadFileEx" (ByVal hFile As Integer, ByRef lpBuffer As ANY, ByVal nNumberOfBytesToRead As Integer, ByRef lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
+Declare Function ReadProcessMemory Alias "ReadProcessMemory" (ByVal hProcess As Integer, ByVal lpBaseAddress As Integer, ByRef lpBuffer As ANY, ByVal nSize As Integer, ByRef lpNumberOfBytesWritten As Integer) As Integer
 Declare Function ReleaseMutex Alias "ReleaseMutex" (ByVal hMutex As Integer) As Integer
-Declare Function ReleaseSemaphore Alias "ReleaseSemaphore" (ByVal hSemaphore As Integer, ByVal lReleaseCount As Integer, lpPreviousCount As Integer) As Integer
+Declare Function ReleaseSemaphore Alias "ReleaseSemaphore" (ByVal hSemaphore As Integer, ByVal lReleaseCount As Integer, ByRef lpPreviousCount As Integer) As Integer
 Declare Function RemoveDirectory Alias "RemoveDirectoryA" (ByVal lpPathName As String) As Integer
 Declare Function ResetEvent Alias "ResetEvent" (ByVal hEvent As Integer) As Integer
 Declare Function ResumeThread Alias "ResumeThread" (ByVal hThread As Integer) As Integer
 
-Declare Function ScrollConsoleScreenBuffer Alias "ScrollConsoleScreenBufferA" (ByVal hConsoleOutput As Integer, lpScrollRectangle As SMALL_RECT, lpClipRectangle As SMALL_RECT, ByVal dwDestinationOrigin As Integer, lpFill As CHAR_INFO) As Integer
+Declare Function ScrollConsoleScreenBuffer Alias "ScrollConsoleScreenBufferA" (ByVal hConsoleOutput As Integer, ByRef lpScrollRectangle As SMALL_RECT, ByRef lpClipRectangle As SMALL_RECT, ByVal dwDestinationOrigin As Integer, ByRef lpFill As CHAR_INFO) As Integer
 Declare Function SearchPath Alias "SearchPathA" (ByVal lpPath As String, ByVal lpFileName As String, ByVal lpExtension As String, ByVal nBufferLength As Integer, ByVal lpBuffer As String, ByVal lpFilePart As String) As Integer
 Declare Function SetCommBreak Alias "SetCommBreak" (ByVal nCid As Integer) As Integer
-Declare Function SetCommConfig Alias "SetCommConfig" (ByVal hCommDev As Integer, lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
+Declare Function SetCommConfig Alias "SetCommConfig" (ByVal hCommDev As Integer, ByRef lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
 Declare Function SetCommMask Alias "SetCommMask" (ByVal hFile As Integer, ByVal dwEvtMask As Integer) As Integer
-Declare Function SetCommState Alias "SetCommState" (ByVal hCommDev As Integer, lpDCB As DCB) As Integer
-Declare Function SetCommTimeouts Alias "SetCommTimeouts" (ByVal hFile As Integer, lpCommTimeouts As COMMTIMEOUTS) As Integer
+Declare Function SetCommState Alias "SetCommState" (ByVal hCommDev As Integer, ByRef lpDCB As DCB) As Integer
+Declare Function SetCommTimeouts Alias "SetCommTimeouts" (ByVal hFile As Integer, ByRef lpCommTimeouts As COMMTIMEOUTS) As Integer
 Declare Function SetComputerName Alias "SetComputerNameA" (ByVal lpComputerName As String) As Integer
 Declare Function SetConsoleActiveScreenBuffer Alias "SetConsoleActiveScreenBuffer" (ByVal hConsoleOutput As Integer) As Integer
 Declare Function SetConsoleCP Alias "SetConsoleCP" (ByVal wCodePageID As Integer) As Integer
 Declare Function SetConsoleCtrlHandler Alias "SetConsoleCtrlHandler" (ByVal HandlerRoutine As Integer, ByVal nAdd As Integer) As Integer
-Declare Function SetConsoleCursorInfo Alias "SetConsoleCursorInfo" (ByVal hConsoleOutput As Integer, lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
+Declare Function SetConsoleCursorInfo Alias "SetConsoleCursorInfo" (ByVal hConsoleOutput As Integer, ByRef lpConsoleCursorInfo As CONSOLE_CURSOR_INFO) As Integer
 Declare Function SetConsoleCursorPosition Alias "SetConsoleCursorPosition" (ByVal hConsoleOutput As Integer, ByVal dwCursorPosition As Integer) As Integer
 Declare Function SetConsoleMode Alias "SetConsoleMode" (ByVal hConsoleHandle As Integer, ByVal dwMode As Integer) As Integer
 Declare Function SetConsoleOutputCP Alias "SetConsoleOutputCP" (ByVal wCodePageID As Integer) As Integer
 Declare Function SetConsoleScreenBufferSize Alias "SetConsoleScreenBufferSize" (ByVal hConsoleOutput As Integer, ByVal dwSize As Integer) As Integer
 Declare Function SetConsoleTextAttribute Alias "SetConsoleTextAttribute" (ByVal hConsoleOutput As Integer, ByVal dwAttributes As Integer) As Integer
 Declare Function SetConsoleTitle Alias "SetConsoleTitleA" (ByVal lpConsoleTitle As String) As Integer
-Declare Function SetConsoleWindowInfo Alias "SetConsoleWindowInfo" (ByVal hConsoleOutput As Integer, ByVal bAbsolute As Integer, lpConsoleWindow As SMALL_RECT) As Integer
-Declare Function SetCriticalSectionSpinCount Alias "SetCriticalSectionSpinCount" (lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
+Declare Function SetConsoleWindowInfo Alias "SetConsoleWindowInfo" (ByVal hConsoleOutput As Integer, ByVal bAbsolute As Integer, ByRef lpConsoleWindow As SMALL_RECT) As Integer
+Declare Function SetCriticalSectionSpinCount Alias "SetCriticalSectionSpinCount" ( ByRef lpCriticalSection As CRITICAL_SECTION, ByVal dwSpinCount As Integer) As Integer
 Declare Function SetCurrentDirectory Alias "SetCurrentDirectoryA" (ByVal lpPathName As String) As Integer
-Declare Function SetDefaultCommConfig Alias "SetDefaultCommConfigA" (ByVal lpszName As String, lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
+Declare Function SetDefaultCommConfig Alias "SetDefaultCommConfigA" (ByVal lpszName As String, ByRef lpCC As COMMCONFIG, ByVal dwSize As Integer) As Integer
 Declare Function SetEndOfFile Alias "SetEndOfFile" (ByVal hFile As Integer) As Integer
 Declare Function SetEnvironmentVariable Alias "SetEnvironmentVariableA" (ByVal lpName As String, ByVal lpValue As String) As Integer
 Declare Function SetErrorMode Alias "SetErrorMode" (ByVal wMode As Integer) As Integer
@@ -2119,85 +2119,85 @@ Declare Function SetEvent Alias "SetEvent" (ByVal hEvent As Integer) As Integer
 Declare Sub SetFileApisToANSI Alias "SetFileApisToANSI" ()
 Declare Sub SetFileApisToOEM Alias "SetFileApisToOEM" ()
 Declare Function SetFileAttributes Alias "SetFileAttributesA" (ByVal lpFileName As String, ByVal dwFileAttributes As Integer) As Integer
-Declare Function SetFilePointer Alias "SetFilePointer" (ByVal hFile As Integer, ByVal lDistanceToMove As Integer, lpDistanceToMoveHigh As Integer, ByVal dwMoveMethod As Integer) As Integer
-Declare Function SetFileTime Alias "SetFileTime" (ByVal hFile As Integer, lpCreationTime As FILETIME, lpLastAccessTime As FILETIME, lpLastWriteTime As FILETIME) As Integer
+Declare Function SetFilePointer Alias "SetFilePointer" (ByVal hFile As Integer, ByVal lDistanceToMove As Integer, ByRef lpDistanceToMoveHigh As Integer, ByVal dwMoveMethod As Integer) As Integer
+Declare Function SetFileTime Alias "SetFileTime" (ByVal hFile As Integer, ByRef lpCreationTime As FILETIME, ByRef lpLastAccessTime As FILETIME, ByRef lpLastWriteTime As FILETIME) As Integer
 Declare Function SetHandleCount Alias "SetHandleCount" (ByVal wNumber As Integer) As Integer
 Declare Function SetHandleInformation Alias "SetHandleInformation" (ByVal hObject As Integer, ByVal dwMask As Integer, ByVal dwFlags As Integer) As Integer
 Declare Sub SetLastError Alias "SetLastError" (ByVal dwErrCode As Integer)
-Declare Function SetLocalTime Alias "SetLocalTime" (lpSystemTime As SYSTEMTIME) As Integer
+Declare Function SetLocalTime Alias "SetLocalTime" ( ByRef lpSystemTime As SYSTEMTIME) As Integer
 Declare Function SetLocaleInfo Alias "SetLocaleInfoA" (ByVal Locale As Integer, ByVal LCType As Integer, ByVal lpLCData As String) As Integer
 Declare Function SetMailslotInfo Alias "SetMailslotInfo" (ByVal hMailslot As Integer, ByVal lReadTimeout As Integer) As Integer
-Declare Function SetNamedPipeHandleState Alias "SetNamedPipeHandleState" (ByVal hNamedPipe As Integer, lpMode As Integer, lpMaxCollectionCount As Integer, lpCollectDataTimeout As Integer) As Integer
+Declare Function SetNamedPipeHandleState Alias "SetNamedPipeHandleState" (ByVal hNamedPipe As Integer, ByRef lpMode As Integer, ByRef lpMaxCollectionCount As Integer, ByRef lpCollectDataTimeout As Integer) As Integer
 Declare Function SetPriorityClass Alias "SetPriorityClass" (ByVal hProcess As Integer, ByVal dwPriorityClass As Integer) As Integer
 Declare Function SetProcessShutdownParameters Alias "SetProcessShutdownParameters" (ByVal dwLevel As Integer, ByVal dwFlags As Integer) As Integer
 Declare Function SetProcessWorkingSetSize Alias "SetProcessWorkingSetSize" (ByVal hProcess As Integer, ByVal dwMinimumWorkingSetSize As Integer, ByVal dwMaximumWorkingSetSize As Integer) As Integer
 Declare Function SetStdHandle Alias "SetStdHandle" (ByVal nStdHandle As Integer, ByVal nHandle As Integer) As Integer
 Declare Function SetSystemPowerState Alias "SetSystemPowerState" (ByVal fSuspend As Integer, ByVal fForce As Integer) As Integer
-Declare Function SetSystemTime Alias "SetSystemTime" (lpSystemTime As SYSTEMTIME) As Integer
+Declare Function SetSystemTime Alias "SetSystemTime" ( ByRef lpSystemTime As SYSTEMTIME) As Integer
 Declare Function SetSystemTimeAdjustment Alias "SetSystemTimeAdjustment" (ByVal dwTimeAdjustment As Integer, ByVal bTimeAdjustmentDisabled As Integer) As Integer
-Declare Function SetTapeParameters Alias "SetTapeParameters" (ByVal hDevice As Integer, ByVal dwOperation As Integer, lpTapeInformation As ANY) As Integer
+Declare Function SetTapeParameters Alias "SetTapeParameters" (ByVal hDevice As Integer, ByVal dwOperation As Integer, ByRef lpTapeInformation As ANY) As Integer
 Declare Function SetTapePosition Alias "SetTapePosition" (ByVal hDevice As Integer, ByVal dwPositionMethod As Integer, ByVal dwPartition As Integer, ByVal dwOffsetLow As Integer, ByVal dwOffsetHigh As Integer, ByVal bimmediate As Integer) As Integer
 Declare Function SetThreadAffinityMask Alias "SetThreadAffinityMask" (ByVal hThread As Integer, ByVal dwThreadAffinityMask As Integer) As Integer
-Declare Function SetThreadContext Alias "SetThreadContext" (ByVal hThread As Integer, lpContext As CONTEXT) As Integer
+Declare Function SetThreadContext Alias "SetThreadContext" (ByVal hThread As Integer, ByRef lpContext As CONTEXT) As Integer
 Declare Function SetThreadLocale Alias "SetThreadLocale" (ByVal Locale As Integer) As Integer
 Declare Function SetThreadPriority Alias "SetThreadPriority" (ByVal hThread As Integer, ByVal nPriority As Integer) As Integer
-Declare Function SetTimeZoneInformation Alias "SetTimeZoneInformation" (lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
+Declare Function SetTimeZoneInformation Alias "SetTimeZoneInformation" ( ByRef lpTimeZoneInformation As TIME_ZONE_INFORMATION) As Integer
 Declare Function SetUnhandledExceptionFilter Alias "SetUnhandledExceptionFilter" (ByVal lpTopLevelExceptionFilter As Integer) As Integer
-Declare Function SetVolumeLabel Alias "SetVolumeLabelA" (ByVal lpRootPathName As String, lpVolumeName As String) As Integer
+Declare Function SetVolumeLabel Alias "SetVolumeLabelA" (ByVal lpRootPathName As String, ByRef lpVolumeName As String) As Integer
 Declare Function SetupComm Alias "SetupComm" (ByVal hFile As Integer, ByVal dwInQueue As Integer, ByVal dwOutQueue As Integer) As Integer
 Declare Function SizeofResource Alias "SizeofResource" (ByVal hInstance As Integer, ByVal hResInfo As Integer) As Integer
 'Declare Sub Sleep Alias "Sleep" (ByVal dwMilliseconds As Integer)
 Declare Function SleepEx Alias "SleepEx" (ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
 Declare Function SuspendThread Alias "SuspendThread" (ByVal hThread As Integer) As Integer
-Declare Function SystemTimeToFileTime Alias "SystemTimeToFileTime" (lpSystemTime As SYSTEMTIME, lpFileTime As FILETIME) As Integer
-Declare Function SystemTimeToTzSpecificLocalTime Alias "SystemTimeToTzSpecificLocalTime" (lpTimeZoneInformation As TIME_ZONE_INFORMATION, lpUniversalTime As SYSTEMTIME, lpLocalTime As SYSTEMTIME) As Integer
+Declare Function SystemTimeToFileTime Alias "SystemTimeToFileTime" ( ByRef lpSystemTime As SYSTEMTIME, ByRef lpFileTime As FILETIME) As Integer
+Declare Function SystemTimeToTzSpecificLocalTime Alias "SystemTimeToTzSpecificLocalTime" ( ByRef lpTimeZoneInformation As TIME_ZONE_INFORMATION, ByRef lpUniversalTime As SYSTEMTIME, ByRef lpLocalTime As SYSTEMTIME) As Integer
 
 Declare Function TerminateProcess Alias "TerminateProcess" (ByVal hProcess As Integer, ByVal uExitCode As Integer) As Integer
 Declare Function TerminateThread Alias "TerminateThread" (ByVal hThread As Integer, ByVal dwExitCode As Integer) As Integer
 Declare Function TlsAlloc Alias "TlsAlloc" () As Integer
 Declare Function TlsFree Alias "TlsFree" (ByVal dwTlsIndex As Integer) As Integer
 Declare Function TlsGetValue Alias "TlsGetValue" (ByVal dwTlsIndex As Integer) As Integer
-Declare Function TlsSetValue Alias "TlsSetValue" (ByVal dwTlsIndex As Integer, lpTlsValue As ANY) As Integer
-Declare Function TransactNamedPipe Alias "TransactNamedPipe" (ByVal hNamedPipe As Integer, lpInBuffer As ANY, ByVal nInBufferSize As Integer, lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, lpBytesRead As Integer, lpOverlapped As OVERLAPPED) As Integer
+Declare Function TlsSetValue Alias "TlsSetValue" (ByVal dwTlsIndex As Integer, ByRef lpTlsValue As ANY) As Integer
+Declare Function TransactNamedPipe Alias "TransactNamedPipe" (ByVal hNamedPipe As Integer, ByRef lpInBuffer As ANY, ByVal nInBufferSize As Integer, ByRef lpOutBuffer As ANY, ByVal nOutBufferSize As Integer, ByRef lpBytesRead As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
 Declare Function TransmitCommChar Alias "TransmitCommChar" (ByVal nCid As Integer, ByVal cChar As BYTE) As Integer
 
-Declare Function UnhandledExceptionFilter Alias "UnhandledExceptionFilter" (ExceptionInfo As EXCEPTION_POINTERS) As Integer
+Declare Function UnhandledExceptionFilter Alias "UnhandledExceptionFilter" ( ByRef ExceptionInfo As EXCEPTION_POINTERS) As Integer
 Declare Function UnlockFile Alias "UnlockFile" (ByVal hFile As Integer, ByVal dwFileOffsetLow As Integer, ByVal dwFileOffsetHigh As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer) As Integer
-Declare Function UnlockFileEx Alias "UnlockFileEx" (ByVal hFile As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function UnmapViewOfFile Alias "UnmapViewOfFile" (lpBaseAddress As ANY) As Integer
-Declare Function UpdateResource Alias "UpdateResourceA" (ByVal hUpdate As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer, lpData As ANY, ByVal cbData As Integer) As Integer
+Declare Function UnlockFileEx Alias "UnlockFileEx" (ByVal hFile As Integer, ByVal dwReserved As Integer, ByVal nNumberOfBytesToUnlockLow As Integer, ByVal nNumberOfBytesToUnlockHigh As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
+Declare Function UnmapViewOfFile Alias "UnmapViewOfFile" ( ByRef lpBaseAddress As ANY) As Integer
+Declare Function UpdateResource Alias "UpdateResourceA" (ByVal hUpdate As Integer, ByVal lpType As String, ByVal lpName As String, ByVal wLanguage As Integer, ByRef lpData As ANY, ByVal cbData As Integer) As Integer
 
 Declare Function VerLanguageName Alias "VerLanguageNameA" (ByVal wLang As Integer, ByVal szLang As String, ByVal nSize As Integer) As Integer
-Declare Function VirtualAlloc Alias "VirtualAlloc" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
-Declare Function VirtualAllocEx Alias "VirtualAllocEx" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
-Declare Function VirtualFree Alias "VirtualFree" (lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
-Declare Function VirtualFreeEx Alias "VirtualFreeEx" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
-Declare Function VirtualLock Alias "VirtualLock" (lpAddress As ANY, ByVal dwSize As Integer) As Integer
-Declare Function VirtualProtect Alias "VirtualProtect" (lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
-Declare Function VirtualProtectEx Alias "VirtualProtectEx" (ByVal hProcess As Integer, lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, lpflOldProtect As Integer) As Integer
-Declare Function VirtualQuery Alias "VirtualQuery" (ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
-Declare Function VirtualQueryEx Alias "VirtualQueryEx" (ByVal hProcess As Integer, ByRef lpAddress As Any, lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
+Declare Function VirtualAlloc Alias "VirtualAlloc" ( ByRef lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
+Declare Function VirtualAllocEx Alias "VirtualAllocEx" (ByVal hProcess As Integer, ByRef lpAddress As ANY, ByVal dwSize As Integer, ByVal flAllocationType As Integer, ByVal flProtect As Integer) As Integer
+Declare Function VirtualFree Alias "VirtualFree" ( ByRef lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
+Declare Function VirtualFreeEx Alias "VirtualFreeEx" (ByVal hProcess As Integer, ByRef lpAddress As ANY, ByVal dwSize As Integer, ByVal dwFreeType As Integer) As Integer
+Declare Function VirtualLock Alias "VirtualLock" ( ByRef lpAddress As ANY, ByVal dwSize As Integer) As Integer
+Declare Function VirtualProtect Alias "VirtualProtect" ( ByRef lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, ByRef lpflOldProtect As Integer) As Integer
+Declare Function VirtualProtectEx Alias "VirtualProtectEx" (ByVal hProcess As Integer, ByRef lpAddress As ANY, ByVal dwSize As Integer, ByVal flNewProtect As Integer, ByRef lpflOldProtect As Integer) As Integer
+Declare Function VirtualQuery Alias "VirtualQuery" (ByRef lpAddress As Any, ByRef lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
+Declare Function VirtualQueryEx Alias "VirtualQueryEx" (ByVal hProcess As Integer, ByRef lpAddress As Any, ByRef lpBuffer As MEMORY_BASIC_INFORMATION, ByVal dwLength As Integer) As Integer
 Declare Function VirtualUnlock Alias "VirtualUnlock" (ByRef lpAddress As Any, ByVal dwSize As Integer) As Integer
 
-Declare Function WaitCommEvent Alias "WaitCommEvent" (ByVal hFile As Integer, lpEvtMask As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function WaitForDebugEvent Alias "WaitForDebugEvent" (lpde As DEBUG_EVENT, ByVal dwTimeOut As Integer) As Integer
-Declare Function WaitForMultipleObjects Alias "WaitForMultipleObjects" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer) As Integer
-Declare Function WaitForMultipleObjectsEx Alias "WaitForMultipleObjectsEx" (ByVal nCount As Integer, lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
+Declare Function WaitCommEvent Alias "WaitCommEvent" (ByVal hFile As Integer, ByRef lpEvtMask As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
+Declare Function WaitForDebugEvent Alias "WaitForDebugEvent" ( ByRef lpde As DEBUG_EVENT, ByVal dwTimeOut As Integer) As Integer
+Declare Function WaitForMultipleObjects Alias "WaitForMultipleObjects" (ByVal nCount As Integer, ByRef lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer) As Integer
+Declare Function WaitForMultipleObjectsEx Alias "WaitForMultipleObjectsEx" (ByVal nCount As Integer, ByRef lpHandles As Integer, ByVal bWaitAll As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
 Declare Function WaitForSingleObject Alias "WaitForSingleObject" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer) As Integer
 Declare Function WaitForSingleObjectEx Alias "WaitForSingleObjectEx" (ByVal hHandle As Integer, ByVal dwMilliseconds As Integer, ByVal bAlertable As Integer) As Integer
 Declare Function WaitNamedPipe Alias "WaitNamedPipeA" (ByVal lpNamedPipeName As String, ByVal nTimeOut As Integer) As Integer
 Declare Function WideCharToMultiByte Alias "WideCharToMultiByte" (ByVal CodePage As Integer, ByVal dwFlags As Integer, ByVal lpWideCharStr As String, ByVal cchWideChar As Integer, ByVal lpMultiByteStr As String, ByVal cchMultiByte As Integer, ByVal lpDefaultChar As String, ByVal lpUsedDefaultChar As Integer) As Integer
 Declare Function WinExec Alias "WinExec" (ByVal lpCmdLine As String, ByVal nCmdShow As Integer) As Integer
-Declare Function WriteConsole Alias "WriteConsoleA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As String, ByVal nNumberOfCharsToWrite As Integer, lpNumberOfCharsWritten As Integer, ByVal lpReserved As Integer) As Integer
-Declare Function WriteConsoleInput Alias "WriteConsoleInputA" (ByVal hConsoleInput As Integer, lpBuffer As INPUT_RECORD, ByVal nLength As Integer, lpNumberOfEventsWritten As Integer) As Integer
-Declare Function WriteConsoleOutput Alias "WriteConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, lpWriteRegion As SMALL_RECT) As Integer
-Declare Function WriteConsoleOutputAttribute Alias "WriteConsoleOutputAttribute"(ByVal hConsoleOutput As Integer, lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfAttrsWritten As Integer) As Integer
-Declare Function WriteConsoleOutputCharacter Alias "WriteConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, lpNumberOfCharsWritten As Integer) As Integer
-Declare Function WriteFile Alias "WriteFile" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, lpNumberOfBytesWritten As Integer, lpOverlapped As OVERLAPPED) As Integer
-Declare Function WriteFileEx Alias "WriteFileEx" (ByVal hFile As Integer, lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
+Declare Function WriteConsole Alias "WriteConsoleA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As String, ByVal nNumberOfCharsToWrite As Integer, ByRef lpNumberOfCharsWritten As Integer, ByVal lpReserved As Integer) As Integer
+Declare Function WriteConsoleInput Alias "WriteConsoleInputA" (ByVal hConsoleInput As Integer, ByRef lpBuffer As INPUT_RECORD, ByVal nLength As Integer, ByRef lpNumberOfEventsWritten As Integer) As Integer
+Declare Function WriteConsoleOutput Alias "WriteConsoleOutputA" (ByVal hConsoleOutput As Integer, ByVal lpBuffer As Integer, ByVal dwBufferSize As Integer, ByVal dwBufferCoord As Integer, ByRef lpWriteRegion As SMALL_RECT) As Integer
+Declare Function WriteConsoleOutputAttribute Alias "WriteConsoleOutputAttribute"(ByVal hConsoleOutput As Integer, ByRef lpdwAttribute As Integer, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, ByRef lpNumberOfAttrsWritten As Integer) As Integer
+Declare Function WriteConsoleOutputCharacter Alias "WriteConsoleOutputCharacterA" (ByVal hConsoleOutput As Integer, ByVal szCharacter As String, ByVal nLength As Integer, ByVal dwWriteCoord As Integer, ByRef lpNumberOfCharsWritten As Integer) As Integer
+Declare Function WriteFile Alias "WriteFile" (ByVal hFile As Integer, ByRef lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, ByRef lpNumberOfBytesWritten As Integer, ByRef lpOverlapped As OVERLAPPED) As Integer
+Declare Function WriteFileEx Alias "WriteFileEx" (ByVal hFile As Integer, ByRef lpBuffer As ANY, ByVal nNumberOfBytesToWrite As Integer, ByRef lpOverlapped As OVERLAPPED, ByVal lpCompletionRoutine As Integer) As Integer
 Declare Function WritePrivateProfileSection Alias "WritePrivateProfileSectionA" (ByVal lpAppName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
 Declare Function WritePrivateProfileString Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As String, ByVal lpString As String, ByVal lpFileName As String) As Integer
-Declare Function WriteProcessMemory Alias "WriteProcessMemory"(ByVal hProcess As Integer, lpBaseAddress As ANY, lpBuffer As ANY, ByVal nSize As Integer, lpNumberOfBytesWritten As Integer) As Integer
+Declare Function WriteProcessMemory Alias "WriteProcessMemory"(ByVal hProcess As Integer, ByRef lpBaseAddress As ANY, ByRef lpBuffer As ANY, ByVal nSize As Integer, ByRef lpNumberOfBytesWritten As Integer) As Integer
 Declare Function WriteProfileSection Alias "WriteProfileSectionA" (ByVal lpAppName As String, ByVal lpString As String) As Integer
 Declare Function WriteProfileString Alias "WriteProfileStringA" (ByVal lpszSection As String, ByVal lpszKeyName As String, ByVal lpszString As String) As Integer
 Declare Function WriteTapemark Alias "WriteTapemark" (ByVal hDevice As Integer, ByVal dwTapemarkType As Integer, ByVal dwTapemarkCount As Integer, ByVal bimmediate As Integer) As Integer

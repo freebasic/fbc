@@ -441,11 +441,11 @@ Declare Function auxGetVolume Lib "winmm" (ByVal uDeviceID As Integer, ByRef lpd
 Declare Function auxOutMessage Lib "winmm" (ByVal uDeviceID As Integer, ByVal msg As Integer, ByVal dw1 As Integer, ByVal dw2 As Integer) As Integer
 Declare Function auxSetVolume Lib "winmm" (ByVal uDeviceID As Integer, ByVal dwVolume As Integer) As Integer
 Declare Function GetDriverModuleHandle Lib "winmm" (ByVal hDriver As Integer) As Integer
-Declare Function joyGetDevCaps Lib "winmm" Alias "joyGetDevCapsA" (ByVal id As Integer, lpCaps As JOYCAPS, ByVal uSize As Integer) As Integer
+Declare Function joyGetDevCaps Lib "winmm" Alias "joyGetDevCapsA" (ByVal id As Integer, ByRef lpCaps As JOYCAPS, ByVal uSize As Integer) As Integer
 Declare Function joyGetNumDevs Lib "winmm" Alias "joyGetNumDevs" () As Integer
-Declare Function joyGetPos Lib "winmm" (ByVal uJoyID As Integer, pji As JOYINFO) As Integer
-Declare Function joyGetPosEx Lib "winmm" (ByVal uJoyID As Integer, pji As JOYINFOEX) As Integer
-Declare Function joyGetThreshold Lib "winmm" (ByVal id As Integer, lpuThreshold As Integer) As Integer
+Declare Function joyGetPos Lib "winmm" (ByVal uJoyID As Integer, ByRef pji As JOYINFO) As Integer
+Declare Function joyGetPosEx Lib "winmm" (ByVal uJoyID As Integer, ByRef pji As JOYINFOEX) As Integer
+Declare Function joyGetThreshold Lib "winmm" (ByVal id As Integer, ByRef lpuThreshold As Integer) As Integer
 Declare Function joyReleaseCapture Lib "winmm" (ByVal id As Integer) As Integer
 Declare Function joySetCapture Lib "winmm" (ByVal hwnd As Integer, ByVal uID As Integer, ByVal uPeriod As Integer, ByVal bChanged As Integer) As Integer
 Declare Function joySetThreshold Lib "winmm" (ByVal id As Integer, ByVal uThreshold As Integer) As Integer
@@ -455,7 +455,7 @@ Declare Function mciGetDeviceID Lib "winmm" Alias "mciGetDeviceIDA" (ByVal lpstr
 Declare Function mciGetDeviceIDFromElementID Lib "winmm" Alias "mciGetDeviceIDFromElementIDA" (ByVal dwElementID As Integer, ByVal lpstrType As String) As Integer
 Declare Function mciGetErrorString Lib "winmm" Alias "mciGetErrorStringA" (ByVal dwError As Integer, ByVal lpstrBuffer As String, ByVal uLength As Integer) As Integer
 Declare Function mciGetYieldProc Lib "winmm" (ByVal mciId As Integer, ByRef pdwYieldData As Integer) As Integer
-Declare Function mciSendCommand Lib "winmm" Alias "mciSendCommandA" (ByVal wDeviceID As Integer, ByVal uMessage As Integer, ByVal dwParam1 As Integer, dwParam2 As Any) As Integer
+Declare Function mciSendCommand Lib "winmm" Alias "mciSendCommandA" (ByVal wDeviceID As Integer, ByVal uMessage As Integer, ByVal dwParam1 As Integer, ByRef dwParam2 As Any) As Integer
 Declare Function mciSendString Lib "winmm" Alias "mciSendStringA" (ByVal lpstrCommand As String, ByVal lpstrReturnString As String, ByVal uReturnLength As Integer, ByVal hwndCallback As Integer) As Integer
 Declare Function mciSetYieldProc Lib "winmm" (ByVal mciId As Integer, ByVal fpYieldProc As Integer, ByVal dwYieldData As Integer) As Integer
 Declare Function midiConnect Lib "winmm" (ByVal hmi As Integer, ByVal hmo As Integer, ByRef pReserved As Any) As Integer
