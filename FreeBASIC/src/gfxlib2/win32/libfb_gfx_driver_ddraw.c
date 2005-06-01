@@ -469,7 +469,6 @@ static int *driver_fetch_modes(int depth, int *size)
 	if (IDirectDraw2_EnumDisplayModes(dd2, DDEDM_STANDARDVGAMODES, NULL, (LPVOID)&modes, fetch_modes_callback) != DD_OK)
 		modes.data = NULL;
 	
-	
 	if (!lpDD) {
 		IDirectDraw_Release(dd2);
 		FreeLibrary(library);
