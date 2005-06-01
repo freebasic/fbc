@@ -43,6 +43,7 @@ enum ASTNODECLASS_ENUM
 	AST.NODECLASS.BRANCH
 	AST.NODECLASS.IIF
 	AST.NODECLASS.OFFSET
+	AST.NODECLASS.STACK
 end enum
 
 type ASTNODE_ as ASTNODE
@@ -215,9 +216,9 @@ declare function 	astNewCONST64		( byval value as longint, _
 declare function 	astLoadCONST		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
-										  byval elm as FBSYMBOL ptr, _
-										  byval ofs as integer, _
-										  byval dtype as integer, _
+										  byval elm as FBSYMBOL ptr = NULL, _
+										  byval ofs as integer = 0, _
+										  byval dtype as integer = IR.DATATYPE.INTEGER, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astLoadVAR			( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -284,6 +285,11 @@ declare function 	astNewLINK			( byval l as ASTNODE ptr, _
 					 					  byval r as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	astLoadLINK			( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	astNewSTACK			( byval op as integer, _
+					  					  byval l as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	astLoadSTACK		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _

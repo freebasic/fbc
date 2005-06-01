@@ -1422,7 +1422,7 @@ data "imagedestroy", "fb_GfxImageDestroy", _
 	 @hGfxlib_cb, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.ARGMODE.BYVAL, FALSE
-	 
+
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -4083,15 +4083,14 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 	'' simple type?
 	if( (astGetDataType( dst ) <> IR.DATATYPE.USERDEF) and (astIsVAR( dst )) ) then
 
-		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		'' push src
-		irEmitPUSH( astFlush( astCloneTree( src ) )  )
+		astFlush( astNewSTACK( IR.OP.PUSH, astCloneTree( src ) ) )
 
 		'' src = dst
 		astFlush( astNewASSIGN( src, astCloneTree( dst ) ) )
 
 		'' pop dst
-		irEmitPOP( astFlush( dst ) )
+		astFlush( astNewSTACK( IR.OP.POP, dst ) )
 
 		exit sub
 	end if
@@ -5708,7 +5707,7 @@ function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
 
     f = ifuncTB( iif( isget, FB.RTL.GFXPALETTEGET, FB.RTL.GFXPALETTE ) )
 	proc = astNewFUNCT( f, symbGetType( f ) )
-	
+
 	if( isget ) then
 		targetmode = FB.ARGMODE.BYREF
 		defval = 0
@@ -5851,7 +5850,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
  	if( astNewPARAM( proc, alphaexpr ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
  	if( funcexpr = NULL ) then
  		funcexpr = astNewCONSTi(0, IR.DATATYPE.INTEGER )

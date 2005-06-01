@@ -362,11 +362,13 @@ declare sub 		irXchgTOS			( byval reg as integer )
 
 #define irEmitLOAD(op,v1) irEmit( op, v1, NULL, NULL )
 
-#define irEmitPUSH(v1) irEmit( IR.OP.PUSH, v1, NULL, NULL )
+#define irEmitSTACK(op,v1) irEmit( op, v1, NULL, NULL )
+
+#define irEmitPUSH(v1) irEmitSTACK( IR.OP.PUSH, v1 )
+
+#define irEmitPOP(v1) irEmitSTACK( IR.OP.POP, v1 )
 
 #define irEmitPUSHUDT(v1,lgt) irEmit( IR.OP.PUSHUDT, v1, NULL, NULL, NULL, lgt )
-
-#define irEmitPOP(v1) irEmit( IR.OP.POP, v1, NULL, NULL )
 
 #define irEmitADDR(op,v1,vr) irEmit( op, v1, NULL, vr )
 

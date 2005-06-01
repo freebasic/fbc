@@ -1396,28 +1396,28 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
     expr = astNewIDX( astNewVAR( tbsym, NULL, -1*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
     				  IR.DATATYPE.UINT, NULL )
 
-    if( isgoto ) then
-    	astFlush( astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ) )
-    else
-    	astFlush( astNewBRANCH( IR.OP.CALLPTR, NULL, expr ) )
+    if( not isgoto ) then
+    	astFlush( astNewSTACK( IR.OP.PUSH, astNewADDR( IR.OP.ADDROF, astNewVAR( exitlabel ) ) ) )
     end if
 
+    astFlush( astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ) )
+
     '' emit table
-    irEmitLABEL tbsym, FALSE
+    irEmitLABEL( tbsym, FALSE )
 
     ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    irFlush
+    irFlush( )
 
     ''
     for i = 0 to l-1
-    	emitTYPE IR.DATATYPE.UINT, symbGetName( labelTB(i) )
+    	emitTYPE( IR.DATATYPE.UINT, symbGetName( labelTB(i) ) )
     next
 
     '' the table is not needed anymore
-    symbDelVar tbsym
+    symbDelVar( tbsym )
 
     '' emit exit label
-    irEmitLABEL exitlabel, FALSE
+    irEmitLABEL( exitlabel, FALSE )
 
     function = TRUE
 

@@ -1025,8 +1025,8 @@ function cAddrOfExpression( addrofexpr as ASTNODE ptr, _
 					exit function
 				end if
 			end if
-			sym = astGetSymbol( expr )
 		end if
+		sym = astGetSymbol( expr )
 
 		dtype = astGetDataType( expr )
 		if( not hIsString( dtype ) ) then

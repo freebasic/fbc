@@ -4351,6 +4351,7 @@ sub emitPOP( byval sname as string, _
 			 byval svreg as IRVREG ptr ) static
     dim src as string
     dim ostr as string
+    dim ssize as integer
 
 	'' longint?
 	if( (svreg->dtype = IR.DATATYPE.LONGINT) or (svreg->dtype = IR.DATATYPE.ULONGINT) ) then
@@ -4360,9 +4361,11 @@ sub emitPOP( byval sname as string, _
 
 	hPrepOperand( sname, svreg->ofs, svreg->dtype, svreg->typ, src )
 
+	ssize = irGetDataSize( svreg->dtype )
+
 	select case irGetDataClass( svreg->dtype )
 	case IR.DATACLASS.INTEGER
-		if( irGetDataSize( svreg->dtype ) > 1  ) then
+		if( ssize = FB.INTEGERSIZE ) then
 			ostr = "pop " + src
 			outp ostr
 
@@ -4374,7 +4377,13 @@ sub emitPOP( byval sname as string, _
 			else
 
 				outp "xchg eax, [esp]"
-				emithMOV src, "al"
+
+				if( ssize = 1 ) then
+					emithMOV src, "al"
+				else
+					emithMOV src, "ax"
+				end if
+
 				if( not regTB(IR.DATACLASS.INTEGER)->isFree( regTB(IR.DATACLASS.INTEGER), EMIT.INTREG.EAX ) ) then
 					emithPOP "eax"
 				else
@@ -4400,7 +4409,7 @@ sub emitPOP( byval sname as string, _
 			ostr = "fld " + dtypeTB(svreg->dtype).mname + " [esp]"
 			outp ostr
 
-			ostr = "add esp," + str$( irGetDataSize( svreg->dtype ) )
+			ostr = "add esp," + str$( ssize )
 			outp ostr
 		end if
 	end select

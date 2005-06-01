@@ -2191,6 +2191,9 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
     case AST.NODECLASS.IIF
     	return astLoadIIF( n )
+
+    case AST.NODECLASS.STACK
+    	return astLoadSTACK( n )
     end select
 
 end function
@@ -5200,7 +5203,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' IIF
+'' IIF (l = true expression, r = false expression)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
@@ -5294,3 +5297,50 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = vr
 
 end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' stack ops (l = expression; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewSTACK( byval op as integer, _
+					  byval l as ASTNODE ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	if( l = NULL ) then
+		return NULL
+	end if
+
+	'' alloc new node
+	n = astNew( AST.NODECLASS.STACK, l->dtype, NULL )
+	if( n = NULL ) then
+		exit function
+	end if
+
+	n->op 		= op
+	n->l  		= l
+
+	function = n
+
+end function
+
+'':::::
+function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l
+    dim as IRVREG ptr vr
+
+	l  = n->l
+	if( l = NULL ) then
+		return NULL
+	end if
+
+	vr = astLoad( l )
+
+	irEmitSTACK( n->op, vr )
+
+	astDel( l )
+
+	function = vr
+
+end function
+
