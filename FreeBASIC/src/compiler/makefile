@@ -44,6 +44,9 @@ endif
 
 OSDEPPATH :=
 FBCFLAGS := -e -c -arch 486
+ifdef DEBUG
+FBCFLAGS += -g
+endif
 
 ifeq ($(HOST),win32)
     FBC := ../../fbc.exe
@@ -62,7 +65,7 @@ ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     EXE := .exe
     FBCFLAGS += -d TARGET_WIN32
-    LDFLAGS := -T ../../bin/win32/i386pe.x -s -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e fb_fbc_entry --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
     LD := ../../bin/win32/ld.exe
     AS := ../../bin/win32/as.exe
@@ -74,11 +77,11 @@ ifeq ($(TARGET),linux)
     FBCFLAGS += -d TARGET_LINUX
     LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -\)
 	ifeq ($(HOST),win32)
-    	LDFLAGS := -T ../../bin/linux/elf_i386.x -s -e fb_fbc_entry
+    	LDFLAGS := -T ../../bin/linux/elf_i386.x -e fb_fbc_entry
     	LD := ../../bin/linux/ld.exe
     	AS := ../../bin/linux/as.exe
 	else
-    	LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -s -e fb_fbc_entry
+    	LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -e fb_fbc_entry
     	LD := ld
     	AS := as
 	endif
@@ -88,10 +91,14 @@ ifeq ($(TARGET),dos)
     OSDEPPATH := dos
     EXE := .exe
     FBCFLAGS += -d TARGET_DOS
-    LDFLAGS := -T ../../bin/dos/i386go32.x -s ../../lib/dos/crt0.o
+    LDFLAGS := -T ../../bin/dos/i386go32.x ../../lib/dos/crt0.o
     LDLIBS := -L../../lib/dos -( -lfb -lc -)
     LD := ../../bin/dos/ld.exe
     AS := ../../bin/dos/as.exe
+endif
+
+ifndef DEBUG
+	LDFLAGS += -s
 endif
 
 ifneq ($(TARGET),$(HOST))
