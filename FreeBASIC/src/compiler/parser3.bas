@@ -705,6 +705,10 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 
         '' next
         d = d->r
+    	if( d = NULL ) then
+			hReportError FB.ERRMSG.WRONGDIMENSIONS
+			exit function
+    	end if
 
     	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, IR.DATATYPE.INTEGER )
     	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
