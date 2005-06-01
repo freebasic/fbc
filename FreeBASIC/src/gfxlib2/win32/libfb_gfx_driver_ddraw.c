@@ -467,7 +467,7 @@ static int *driver_fetch_modes(int depth, int *size)
 		dd2 = lpDD;
 	}
 	if (IDirectDraw2_EnumDisplayModes(dd2, DDEDM_STANDARDVGAMODES, NULL, (LPVOID)&modes, fetch_modes_callback) != DD_OK)
-		return NULL;
+		modes.data = NULL;
 	
 	
 	if (!lpDD) {
