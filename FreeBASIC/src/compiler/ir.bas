@@ -671,12 +671,21 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 		if( pmode = FB.ARGMODE.BYVAL ) then
 
     		'' another quirk: BYVAL strings passed to BYREF ANY args..
-    		if( (pdclass = IR.DATACLASS.STRING) or _
-    			(pdtype = IR.DATATYPE.CHAR) ) then
+    		if( pdclass = IR.DATACLASS.STRING ) then
     			'' not a pointer yet?
     			if( pclass <> IR.VREGTYPE.PTR ) then
     				amode = FB.ARGMODE.BYVAL
     			else
+    				amode = FB.ARGMODE.BYREF
+    			end if
+
+    		'' zstring?
+    		elseif( pdtype = IR.DATATYPE.CHAR ) then
+    			'' not a pointer yet?
+    			if( pclass <> IR.VREGTYPE.PTR ) then
+    				amode = FB.ARGMODE.BYVAL
+    			else
+    				pmode = INVALID
     				amode = FB.ARGMODE.BYREF
     			end if
 
