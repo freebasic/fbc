@@ -32,6 +32,7 @@
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
 static void driver_flip(void);
+static int *driver_fetch_modes(int depth, int *size);
 static int opengl_init(void);
 static void opengl_exit(void);
 
@@ -47,7 +48,7 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
-	NULL,			/* int *(*fetch_modes)(void); */
+	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
 	driver_flip		/* void (*flip)(void); */
 };
 
@@ -247,4 +248,27 @@ static void driver_flip(void)
 	}
 	
 	SwapBuffers(hdc);
+}
+
+
+/*:::::*/
+static int *driver_fetch_modes(int depth, int *size)
+{
+	DEVMODE devmode;
+	int *modes = NULL, index = 0;
+	
+	*size = 0;
+	
+	for (;;) {
+		if (!EnumDisplaySettings(NULL, index, &devmode))
+			break;
+		index++;
+		if (devmode.dmBitsPerPel == depth) {
+			(*size)++;
+			modes = (int *)realloc(modes, *size * sizeof(int));
+			modes[(*size) - 1] = (devmode.dmPelsWidth << 16) | devmode.dmPelsHeight;
+		}
+	}
+	
+	return modes;
 }

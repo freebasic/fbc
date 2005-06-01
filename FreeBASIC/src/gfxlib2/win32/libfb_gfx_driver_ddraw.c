@@ -41,6 +41,7 @@ DX_GUID( GUID_SysKeyboard, 0x6F1D2B61,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x5
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_wait_vsync(void);
+static int *driver_fetch_modes(int depth, int *size);
 
 
 GFXDRIVER fb_gfxDriverDirectDraw =
@@ -55,9 +56,16 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
-	NULL,			/* int *(*fetch_modes)(void); */
+	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
 	NULL			/* void (*flip)(void); */
 };
+
+
+typedef struct MODESLIST {
+	int depth;
+	int size;
+	int *data;
+} MODESLIST;
 
 
 /* We don't want to directly link with DDRAW.DLL and DINPUT.DLL,
@@ -76,7 +84,7 @@ static DIOBJECTDATAFORMAT c_rgodfDIKeyboard[256];
 static const DIDATAFORMAT c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, c_rgodfDIKeyboard };
 static HMODULE dd_library;
 static HMODULE di_library;
-static LPDIRECTDRAW2 lpDD;
+static LPDIRECTDRAW2 lpDD = NULL;
 static LPDIRECTDRAWSURFACE lpDDS;
 static LPDIRECTDRAWSURFACE lpDDS_back;
 static LPDIRECTDRAWPALETTE lpDDP;
@@ -408,4 +416,65 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 static void driver_wait_vsync(void)
 {
 	IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+}
+
+
+/*:::::*/
+static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
+{
+	MODESLIST *modes = (MODESLIST *)data;
+	int depth = desc->ddpfPixelFormat.dwRGBBitCount;
+	
+	if ((depth == 16) && (desc->ddpfPixelFormat.dwGBitMask == 0x03E0))
+		depth = 15;
+	if (depth == modes->depth) {
+		modes->size++;
+		modes->data = (int *)realloc(modes->data, modes->size * sizeof(int));
+		modes->data[modes->size - 1] = (desc->dwWidth << 16) | desc->dwHeight;
+	}
+	
+	return DDENUMRET_OK;
+}
+
+
+/*:::::*/
+static int *driver_fetch_modes(int depth, int *size)
+{
+	MODESLIST modes = { depth, 0, NULL };
+	LPDIRECTDRAW dd1;
+	LPDIRECTDRAW2 dd2;
+	DIRECTDRAWCREATE DirectDrawCreate;
+	HMODULE library = NULL;
+	HRESULT res;
+	
+	if (!lpDD) {
+		library = (HMODULE)LoadLibrary("ddraw.dll");
+		if (!library)
+			return NULL;
+		DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(library, "DirectDrawCreate");
+		if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &dd1, NULL) != DD_OK)) {
+			FreeLibrary(library);
+			return NULL;
+		}
+		res = IDirectDraw_QueryInterface(dd1, &IID_IDirectDraw2, (LPVOID)&dd2);
+		IDirectDraw_Release(dd1);
+		if (res != DD_OK) {
+			FreeLibrary(library);
+			return NULL;
+		}
+	}
+	else {
+		dd2 = lpDD;
+	}
+	if (IDirectDraw2_EnumDisplayModes(dd2, DDEDM_STANDARDVGAMODES, NULL, (LPVOID)&modes, fetch_modes_callback) != DD_OK)
+		return NULL;
+	
+	
+	if (!lpDD) {
+		IDirectDraw_Release(dd2);
+		FreeLibrary(library);
+	}
+	
+	*size = modes.size;
+	return modes.data;
 }
