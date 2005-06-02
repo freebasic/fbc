@@ -31,6 +31,10 @@
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
+static void driver_lock(void);
+static void driver_unlock(void);
+static void driver_set_palette(int index, int r, int g, int b);
+static void driver_wait_vsync(void);
 static void driver_flip(void);
 static int *driver_fetch_modes(int depth, int *size);
 static int opengl_init(void);
@@ -41,10 +45,10 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	"OpenGL",		/* char *name; */
 	driver_init,		/* int (*init)(int w, int h, char *title, int fullscreen); */
 	driver_exit,		/* void (*exit)(void); */
-	fb_hWin32Lock,		/* void (*lock)(void); */
-	fb_hWin32Unlock,	/* void (*unlock)(void); */
-	fb_hWin32SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	fb_hWin32WaitVSync,	/* void (*wait_vsync)(void); */
+	driver_lock,		/* void (*lock)(void); */
+	driver_unlock,		/* void (*unlock)(void); */
+	driver_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
+	driver_wait_vsync,	/* void (*wait_vsync)(void); */
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
@@ -111,6 +115,7 @@ static int opengl_init(void)
 		     SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 	SetForegroundWindow(fb_win32.wnd);
 	UpdateWindow(fb_win32.wnd);
+	fb_win32.is_active = TRUE;
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	
 	return 0;
@@ -123,20 +128,6 @@ static void opengl_exit(void)
 	if (fb_win32.fullscreen)
 		ChangeDisplaySettings(NULL, 0);
 	ShowWindow(fb_win32.wnd, SW_HIDE);
-}
-
-
-/*:::::*/
-static void opengl_thread(HANDLE running_event)
-{
-	SetEvent(running_event);
-	fb_win32.is_active = TRUE;
-	
-	while (fb_win32.is_running)
-	{
-		Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
-		SetEvent(fb_win32.vsync_event);
-	}
 }
 
 
@@ -158,7 +149,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_win32.init = opengl_init;
 	fb_win32.exit = opengl_exit;
 	fb_win32.paint = opengl_paint;
-	fb_win32.thread = opengl_thread;
 	gl_options = flags & DRIVER_OPENGL_OPTIONS;
 	
 	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags))
@@ -223,6 +213,31 @@ static void driver_exit(void)
 	}
 	
 	fb_hWin32Exit();
+}
+
+
+/*:::::*/
+static void driver_lock(void)
+{
+}
+
+
+/*:::::*/
+static void driver_unlock(void)
+{
+}
+
+
+/*:::::*/
+static void driver_set_palette(int index, int r, int g, int b)
+{
+}
+
+
+/*:::::*/
+static void driver_wait_vsync(void)
+{
+	Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 }
 
 

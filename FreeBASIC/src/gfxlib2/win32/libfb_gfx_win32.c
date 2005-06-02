@@ -250,21 +250,24 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	mouse_buttons = mouse_wheel = 0;
 	fb_win32.is_running = TRUE;
 
-	InitializeCriticalSection(&update_lock);
-	fb_win32.vsync_event = CreateEvent(NULL, FALSE, FALSE, NULL);
-	events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	events[1] = (HANDLE)_beginthread(fb_win32.thread, 0, events[0]);
-	result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
-	CloseHandle(events[0]);
-	handle = events[1];
-	if (result != WAIT_OBJECT_0) {
-		DeleteCriticalSection(&update_lock);
-		return -1;
-	}
+	if (!(flags & DRIVER_OPENGL)) {
+		InitializeCriticalSection(&update_lock);
+		fb_win32.vsync_event = CreateEvent(NULL, FALSE, FALSE, NULL);
+		events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
+		events[1] = (HANDLE)_beginthread(fb_win32.thread, 0, events[0]);
+		result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
+		CloseHandle(events[0]);
+		handle = events[1];
+		if (result != WAIT_OBJECT_0) {
+			DeleteCriticalSection(&update_lock);
+			return -1;
+		}
 	
-	if (!(flags & DRIVER_OPENGL))
 		SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
-
+	}
+	else
+		handle = NULL;
+	
 	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
 	
@@ -278,9 +281,11 @@ void fb_hWin32Exit(void)
 	if (!fb_win32.is_running)
 		return;
 	fb_win32.is_running = FALSE;
-	WaitForSingleObject(handle, INFINITE);
-	CloseHandle(fb_win32.vsync_event);
-	DeleteCriticalSection(&update_lock);
+	if (handle) {
+		WaitForSingleObject(handle, INFINITE);
+		CloseHandle(fb_win32.vsync_event);
+		DeleteCriticalSection(&update_lock);
+	}
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
 	UnregisterClass(fb_win32.window_class, fb_win32.hinstance);
 }
