@@ -41,7 +41,19 @@ end type
 
 	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
 
-	dim shared suffixTB( 0 to FB.SYMBOLTYPES-1 ) as zstring * 1+1
+	dim shared suffixTB( 0 to FB.SYMBOLTYPES-1 ) as zstring * 1+1 => { _
+				"v", _							'' void
+				"b", "a", _                     '' byte, ubyte
+				"c", _                          '' char
+				"s", "S", _                     '' short, ushort
+				"i", "j", _                     '' integer, uinteger
+				"l", "m", _                     '' longint, ulongint
+				"f", "d", _                     '' single, double
+				"t", "x", _                     '' var-len string, fix-len string
+				"u", _                     		'' udt
+				"n", _							'' function
+				"z", _                          '' fwd-ref
+				"p" }                           '' pointer
 
 
 ''warning msgs (level, msg)
@@ -148,7 +160,9 @@ sub hlpInit
 
 	''
 	for i = 0 to FB.SYMBOLTYPES-1
-		suffixTB(i) = chr$( CHAR_ALOW + i )
+		if( len( suffixTB(i) ) = 0 ) then
+			suffixTB(i) = chr$( CHAR_ALOW + i )
+		end if
 	next i
 
 	''
@@ -690,9 +704,10 @@ function hCreateOvlProcAlias( byval symbol as string, _
     	aname += "_"
 
     	typ = argtail->typ
-    	if( typ > FB.SYMBTYPE.POINTER ) then
-    		typ = FB.SYMBTYPE.POINTER
-    	end if
+    	do while( typ >= FB.SYMBTYPE.POINTER )
+    		aname += "p"
+    		typ -= FB.SYMBTYPE.POINTER
+    	loop
 
     	aname += suffixTB( typ )
 
