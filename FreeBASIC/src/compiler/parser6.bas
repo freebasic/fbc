@@ -697,7 +697,7 @@ function cLineInputStmt as integer
 	function = FALSE
 
 	'' LINE
-	if( lexCurrentToken <> FB.TK.LINE ) then
+	if( lexCurrentToken( ) <> FB.TK.LINE ) then
 		exit function
 	end if
 
@@ -706,8 +706,8 @@ function cLineInputStmt as integer
 		exit function
 	end if
 
-	lexSkipToken
-	lexSkipToken
+	lexSkipToken( )
+	lexSkipToken( )
 
 	'' ';'?
 	if( hMatch( CHAR_SEMICOLON ) ) then
@@ -725,7 +725,7 @@ function cLineInputStmt as integer
 	'' Expression?
 	if( not cExpression( expr ) ) then
 		if( isfile ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
 			exit function
 		end if
 		expr = NULL
@@ -737,7 +737,7 @@ function cLineInputStmt as integer
 		if( not hMatch( CHAR_SEMICOLON ) ) then
 			issep = FALSE
 			if( (expr = NULL) or (isfile) ) then
-				hReportError FB.ERRMSG.EXPECTEDCOMMA
+				hReportError( FB.ERRMSG.EXPECTEDCOMMA )
 				exit function
 			end if
 		end if
@@ -746,16 +746,22 @@ function cLineInputStmt as integer
     '' Variable?
 	if( not cVarOrDeref( dstexpr ) ) then
        	if( (expr = NULL) or (isfile) ) then
-       		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+       		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
        		exit function
        	end if
        	dstexpr = expr
        	expr = NULL
     else
     	if( issep = FALSE ) then
-			hReportError FB.ERRMSG.EXPECTEDCOMMA
+			hReportError( FB.ERRMSG.EXPECTEDCOMMA )
 			exit function
     	end if
+    end if
+
+    '' not a string?
+    if( not hIsString( astGetDataType( dstexpr ) ) ) then
+		hReportError( FB.ERRMSG.INVALIDDATATYPES )
+		exit function
     end if
 
     function = rtlFileLineInput( isfile, expr, dstexpr, FALSE, addnewline )
