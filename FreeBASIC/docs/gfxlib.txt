@@ -1800,8 +1800,11 @@ Example:
 
 SCREEN 15, 32
 ' Obtain info about current mode
-SCREENINFO w, h, depth,,,,driver_name$
+SCREENINFO w, h, depth,,,refresh,driver_name$
 PRINT STR$(w) + "x" + STR$(h) + "x" + STR$(depth);
+IF (refresh > 0) THEN
+	PRINT " @ " + STR$(refresh) + " Hz";
+END IF
 PRINT " using " + driver_name$ + " driver"
 SLEEP
 ' Quit gfx mode and obtain info about desktop
