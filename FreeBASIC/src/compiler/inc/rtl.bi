@@ -352,6 +352,7 @@ declare function	rtlPrintUsingEnd	( byval fileexpr as ASTNODE ptr ) as integer
 
 declare function	rtlPrintUsing		( byval fileexpr as ASTNODE ptr, _
 										  byval expr as ASTNODE ptr, _
+										  byval iscomma as integer, _
 										  byval issemicolon as integer ) as integer
 
 declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _

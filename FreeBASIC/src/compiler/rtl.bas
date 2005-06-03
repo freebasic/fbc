@@ -3969,6 +3969,7 @@ end function
 '':::::
 function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 						byval expr as ASTNODE ptr, _
+						byval iscomma as integer, _
 						byval issemicolon as integer ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim mask as integer
@@ -3996,9 +3997,10 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
  	end if
 
     '' byval mask as integer
-	mask = 0
-	if( not issemicolon ) then
-		mask = mask or FB.PRINTMASK.NEWLINE or FB.PRINTMASK.ISLAST
+	if( iscomma or issemicolon ) then
+		mask = 0
+	else
+		mask = FB.PRINTMASK.NEWLINE or FB.PRINTMASK.ISLAST
 	end if
 
     if( astNewPARAM( proc, astNewCONSTi( mask, IR.DATATYPE.INTEGER ), IR.DATATYPE.INTEGER ) = NULL ) then

@@ -609,7 +609,7 @@ function cPrintStmt as integer
     		end if
 
     	else
-    		if( not rtlPrintUsing( filexprcopy, expr, issemicolon ) ) then
+    		if( not rtlPrintUsing( filexprcopy, expr, iscomma, issemicolon ) ) then
     			hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
 			end if
