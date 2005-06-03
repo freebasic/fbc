@@ -1796,7 +1796,6 @@ the corresponding variable passed by reference.
 
 Example:
 
-' Assuming you have declared SCREENINFOTYPE as above...
 SCREEN 15, 32
 ' Obtain info about current mode
 SCREENINFO w, h, depth,,,driver_name$
