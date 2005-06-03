@@ -20,21 +20,6 @@
 #endif
 
 
-'' Structure whose pointer to is returned by SCREENINFO
-type ScreenInfoType
-	driver_name as string
-	w as integer
-	h as integer
-	depth as integer
-	pitch as integer
-	bpp as integer
-	refresh_rate as integer
-	mask_color as integer
-	num_pages as integer
-	flags as integer
-end type
-
-
 '' Flags accepted by SCREEN and SCREENRES
 ''
 '' Usage examples:

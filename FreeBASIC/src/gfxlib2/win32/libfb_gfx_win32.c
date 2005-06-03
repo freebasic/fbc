@@ -384,3 +384,17 @@ void fb_hWin32SetWindowTitle(char *title)
 {
 	SetWindowText(fb_win32.wnd, title);
 }
+
+
+/*:::::*/
+void fb_hScreenInfo(int *width, int *height, int *depth)
+{
+	HDC hdc;
+	
+	hdc = GetDC(NULL);
+	*width = GetDeviceCaps(hdc, HORZRES);
+	*height = GetDeviceCaps(hdc, VERTRES);
+	*depth = GetDeviceCaps(hdc, BITSPIXEL);
+	ReleaseDC(NULL, hdc);
+}
+

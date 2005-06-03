@@ -26,32 +26,23 @@
 
 #include "fb_gfx.h"
 
-static GFXDRIVERINFO none = { { "none", 4 }, 0 };
-static GFXDRIVERINFO info;
-
 
 /*:::::*/
-FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void)
+FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, FBSTRING *driver)
 {
-	if (!fb_mode)
-		return &none;
-	
-	info.driver_name.data = fb_mode->driver->name;
-	info.driver_name.len = strlen(fb_mode->driver->name);
-	info.w = fb_mode->w;
-	info.h = fb_mode->h;
-	info.depth = fb_mode->depth;
-	info.pitch = fb_mode->pitch;
-	info.bpp = fb_mode->bpp;
-	info.refresh_rate = fb_mode->refresh_rate;
-	if (fb_mode->depth <= 8)
-		info.mask_color = 0;
-	else if (fb_mode->depth <= 16)
-		info.mask_color = MASK_COLOR_16;
-	else
-		info.mask_color = MASK_COLOR_32;
-	info.num_pages = fb_mode->num_pages;
-	info.flags = fb_mode->driver_flags;
-	
-	return &info;
+	if (!fb_mode) {
+		fb_hStrRealloc(driver, 0, FB_FALSE);
+		driver->data[0] = '\0';
+		*bpp = *pitch = 0;
+		fb_hScreenInfo(width, height, depth);
+	}
+	else {
+		fb_hStrRealloc(driver, strlen(fb_mode->driver->name), FB_FALSE);
+		strcpy(driver->data, fb_mode->driver->name);
+		*width = fb_mode->w;
+		*height = fb_mode->h;
+		*depth = fb_mode->depth;
+		*bpp = fb_mode->bpp;
+		*pitch = fb_mode->pitch;
+	}
 }

@@ -15,19 +15,6 @@ const PI = 3.141593                     'PI for rotation
 
 option explicit                         'Force declaration
 
-TYPE SCREENINFOTYPE						'FBgfx screen information structure
-	driver_name AS STRING
-	w AS INTEGER
-	h AS INTEGER
-	depth AS INTEGER
-	pitch AS INTEGER
-	bpp AS INTEGER
-	mask_color AS INTEGER
-	num_pages AS INTEGER
-	flags AS INTEGER
-END TYPE
-
-
 '$include: "GL/gl.bi"                  'OpenGL funks and consts
 '$include: "GL/glu.bi"                 'GL standard utility lib
 
@@ -143,22 +130,21 @@ DATA 0.0, 1.0
 SUB Init_GL_SCREEN()
 
 	'screen information
-	dim screen_info as  SCREENINFOTYPE ptr
+	dim w as integer, h as integer
     'OpenGL params for gluerspective
 	dim FOVy as double            'Field of view angle in Y
 	dim Aspect as double          'Aspect of screen
 	dim znear as double           'z-near clip distance
 	dim zfar as double            'z-far clip distance
 
-
     'Set 640*480*32 OpenGL
     screen 18, 32, ,&h2
 
 	'get info of current screen
-	screen_info = SCREENINFO
+	screeninfo w, h
     'Set OpenGL ViewPort to screen dimensions
     'using screen info w and h as params
-	glViewport 0, 0, screen_info->w, screen_info->h
+	glViewport 0, 0, w, h
 
 	'Set current Mode to projection(ie: 3d)
 	glMatrixMode GL_PROJECTION
@@ -168,7 +154,7 @@ SUB Init_GL_SCREEN()
 
     'Set gluPerspective params
     FOVy = 80/2                                     '45 deg fovy
-    Aspect = screen_info->w /  screen_info->h       'aspect = x/y
+    Aspect = w / h                                  'aspect = x/y
     znear = 1                                       'Near clip
     zfar = 200                                      'far clip
 

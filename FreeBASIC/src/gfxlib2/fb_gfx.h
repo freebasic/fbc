@@ -168,20 +168,6 @@ typedef struct MODE
 } MODE;
 
 
-typedef struct GFXDRIVERINFO
-{
-	FBSTRING driver_name;
-	int w, h;
-	int depth;
-	int pitch;
-	int bpp;
-	int refresh_rate;
-	int mask_color;
-	int num_pages;
-	int flags;
-} GFXDRIVERINFO;
-
-
 typedef struct GFXDRIVER
 {
 	char *name;
@@ -249,6 +235,7 @@ extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
 extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full);
+extern void fb_hScreenInfo(int *width, int *height, int *depth);
 extern int fb_hHasMMX(void);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
@@ -256,7 +243,7 @@ extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 /* Public API */
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
 extern FBCALL int fb_GfxScreenRes(int width, int height, int depth, int num_pages, int flags, int refresh_rate);
-extern FBCALL GFXDRIVERINFO *fb_GfxScreenInfo(void);
+extern FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, FBSTRING *driver);
 extern FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color);
 extern FBCALL void fb_GfxImageDestroy(void *image);
 extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);

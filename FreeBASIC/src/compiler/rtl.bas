@@ -1394,11 +1394,18 @@ data "getjoystick", "fb_GfxGetJoystick", _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0, _
 	 FB.SYMBTYPE.SINGLE,FB.ARGMODE.BYREF, TRUE,0
 
-'' fb_GfxScreenInfo ( ) as any ptr
+'' fb_GfxScreenInfo ( byref w as integer, byref h as integer, byref depth as integer, _
+''					  byref bpp as integer, byref pitch as integer, byref driver_name as string ) as void
 data "screeninfo", "fb_GfxScreenInfo", _
-	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 @hGfxlib_cb, FALSE, FALSE, _
-	 0
+	 6, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYREF, TRUE,0, _
+	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, TRUE,""
 
 '' fb_GfxScreenList ( byval depth as integer ) as integer
 data "screenlist", "fb_GfxScreenList", _

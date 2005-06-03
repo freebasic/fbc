@@ -58,7 +58,7 @@ Functions reference:
 	RGBA		macro
 	SCREEN		statement
 	SCREENCOPY	statement
-	SCREENINFO	function
+	SCREENINFO	statement
 	SCREENLIST	function
 	SCREENLOCK	statement
 	SCREENPTR	function
@@ -1762,63 +1762,51 @@ SCREEN, SCREENSET.
 | SCREENINFO |
 +------------+
 
-Function to retrieve information about current video mode.
+Statement to retrieve information about current video mode.
 
 
 Syntax:
-	SCREENINFO
+	SCREENINFO [width][,[height][,[depth][,[bpp][,[pitch][,driver]]]]
+
+
+Argument:	Description:
+
+width,height	Resolution in pixels.
+
+depth		Color depth in bits per pixel.
+
+bpp		Bytes per pixel.
+
+pitch		Bytes per row.
+
+driver		Name of the gfx driver being used.
 
 
 Insights:
 
-This function can be useful to get current mode informations like gfx driver
-name, color depth, screen size and more. It returns a pointer to a read-only
-variable of type SCREENINFOTYPE, defined as follows:
-
-TYPE SCREENINFOTYPE
-	driver_name AS STRING
-	w AS INTEGER
-	h AS INTEGER
-	depth AS INTEGER
-	pitch AS INTEGER
-	bpp AS INTEGER
-	refresh_rate AS INTEGER
-	mask_color AS INTEGER
-	num_pages AS INTEGER
-	flags AS INTEGER
-END TYPE
-
-Here's a description of available fields:
-
-driver_name	Name of current gfx driver in use, like "DirectX" or "X11".
-w		Width of the screen in pixels.
-h		Height of the screen in pixels.
-depth		Current pixel format bits per pixel: this can be 1, 2, 4, 8,
-		16 or 32. See appendix C for details.
-pitch		Size of a framebuffer row in bytes.
-bpp		Bytes per pixel.
-refresh_rate	Current screen refresh rate in Hertz.
-mask_color	Color value for transparent pixels in current mode.
-num_pages	Number of available pages.
-flags		Mode flags. Same as the flags you specify to SCREEN.
-
-If no gfx mode is set when you call this function, the returned structure will
-report "none" as driver_name and 0 to all other fields. If you change video
-mode via SCREEN, the informations returned by previous calls to SCREENINFO are
-invalidated, and you have to recall SCREENINFO to obtain the updated new
-settings. You never have to deallocate the returned structure.
+SCREENINFO can be used to retrieve informations on the current gfx mode; if
+no mode is set when this statement is called, informations on the system
+desktop will be returned.
+Driver name is the internal gfxlib driver name being used (for example: "GDI",
+"DirectX", "X11"). If querying the desktop, the empty string will be stored
+in driver.
+If SCREENINFO fails to query for a specific information, 0 will be stored in
+the corresponding variable passed by reference.
 
 
 Example:
 
 ' Assuming you have declared SCREENINFOTYPE as above...
-DIM info AS SCREENINFOTYPE PTR
 SCREEN 15, 32
 ' Obtain info about current mode
-info = SCREENINFO
-PRINT STR$(info->w) + "x" + STR$(info->h) + "x" + STR$(info->depth);
-PRINT " using " + info->driver_name + " driver"
+SCREENINFO w, h, depth,,,driver_name$
+PRINT STR$(w) + "x" + STR$(h) + "x" + STR$(depth);
+PRINT " using " + driver_name$ + " driver"
 SLEEP
+' Quit gfx mode and obtain info about desktop
+SCREEN 0
+SCREENINFO w, h, depth
+PRINT "Desktop running at " + STR$(w) + "x" + STR$(h) + "x" + STR$(depth);
 
 
 Differences from QB:
@@ -1828,7 +1816,7 @@ Function new in FB.
 
 See also:
 
-SCREEN, Appendix C.
+SCREEN, SCREENLIST.
 
 
 

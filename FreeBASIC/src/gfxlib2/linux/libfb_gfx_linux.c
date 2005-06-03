@@ -639,3 +639,23 @@ int *fb_hX11FetchModes(int depth, int *size)
 	
 	return sizes;
 }
+
+
+/*:::::*/
+void fb_hScreenInfo(int *width, int *height, int *depth)
+{
+	Display *dpy;
+	
+	dpy = XOpenDisplay(NULL);
+	if (!dpy) {
+		*width = *height = *depth = 0;
+		return;
+	}
+
+	*width = XDisplayWidth(dpy, XDefaultScreen(dpy));
+	*height = XDisplayHeight(dpy, XDefaultScreen(dpy));
+	*depth = XDefaultDepth(dpy, XDefaultScreen(dpy));
+	
+	XCloseDisplay(dpy);
+}
+
