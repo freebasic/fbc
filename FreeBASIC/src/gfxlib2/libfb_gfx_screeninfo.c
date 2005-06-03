@@ -30,19 +30,26 @@
 /*:::::*/
 FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, FBSTRING *driver)
 {
+	char *name;
+	
 	if (!fb_mode) {
-		fb_hStrRealloc(driver, 0, FB_FALSE);
-		driver->data[0] = '\0';
-		*bpp = *pitch = 0;
+		name = "";
 		fb_hScreenInfo(width, height, depth);
+		*bpp = *pitch = 0;
 	}
 	else {
-		fb_hStrRealloc(driver, strlen(fb_mode->driver->name), FB_FALSE);
-		strcpy(driver->data, fb_mode->driver->name);
+		name = fb_mode->driver->name;
 		*width = fb_mode->w;
 		*height = fb_mode->h;
 		*depth = fb_mode->depth;
 		*bpp = fb_mode->bpp;
 		*pitch = fb_mode->pitch;
+	}
+	
+	if (FB_ISTEMP(driver))
+		fb_hStrDelTemp(driver);
+	else {
+		fb_hStrRealloc(driver, strlen(name), FB_FALSE);
+		strcpy(driver->data, name);
 	}
 }
