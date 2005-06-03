@@ -38,7 +38,7 @@ static int fb_PrintUsingFmtStr( int fnum );
 FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 {
 	FBSTRING s;
-	
+
 	s.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
 	s.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
 	s.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
@@ -58,7 +58,7 @@ FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 FBCALL int fb_PrintUsingEnd( int fnum )
 {
 	FBSTRING s;
-	
+
 	fb_PrintUsingFmtStr( fnum );
 
 	s.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
@@ -309,7 +309,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	while( (int)FB_TLSGET( fb_printusgctx.chars ) > 0 )
 	{
-	
+
 		ptr = (char *)FB_TLSGET( fb_printusgctx.ptr );
 		c = *ptr;
 
@@ -387,7 +387,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	if( isexp )
 	{
     	sprintf( buffer, "%e", value );
-        
+
         p = strchr( buffer, 'e' );
         strcpy( expbuff, p );
         *p = '\0';
@@ -529,7 +529,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			len = strlen( expbuff );
 			if( len > expdigs )
 			{
-				if( expdigs > 2 ) 
+				if( expdigs > 2 )
 					memmove( &expbuff[2], &expbuff[len-(expdigs-2)], expdigs-2+1 );
 				else
 					expbuff[expdigs] = '\0';
@@ -539,8 +539,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 				memmove( &expbuff[(2+expdigs)-len], &expbuff[2], len-2+1 );
 				memset( &expbuff[2], '0', (expdigs-2) - len );
 			}
-		}	
-			
+		}
+
 		strcat( buffer, expbuff );
 	}
 
