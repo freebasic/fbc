@@ -642,10 +642,11 @@ int *fb_hX11FetchModes(int depth, int *size)
 
 
 /*:::::*/
-void fb_hScreenInfo(int *width, int *height, int *depth)
+void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	Display *dpy;
 	
+	*refresh = 0;
 	dpy = XOpenDisplay(NULL);
 	if (!dpy) {
 		*width = *height = *depth = 0;

@@ -28,13 +28,13 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, FBSTRING *driver)
+FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int *pitch, int *refresh, FBSTRING *driver)
 {
 	char *name;
 	
 	if (!fb_mode) {
 		name = "";
-		fb_hScreenInfo(width, height, depth);
+		fb_hScreenInfo(width, height, depth, refresh);
 		*bpp = *pitch = 0;
 	}
 	else {
@@ -44,6 +44,7 @@ FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int 
 		*depth = fb_mode->depth;
 		*bpp = fb_mode->bpp;
 		*pitch = fb_mode->pitch;
+		*refresh = fb_mode->refresh_rate;
 	}
 	
 	if (FB_ISTEMP(driver))

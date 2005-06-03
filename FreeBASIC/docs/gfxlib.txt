@@ -1766,18 +1766,20 @@ Statement to retrieve information about current video mode.
 
 
 Syntax:
-	SCREENINFO [width][,[height][,[depth][,[bpp][,[pitch][,driver]]]]
+	SCREENINFO [w][,[h][,[depth][,[bpp][,[pitch][,[rate][,driver]]]]]
 
 
 Argument:	Description:
 
-width,height	Resolution in pixels.
+w,h		Width and height of gfx mode in pixels.
 
 depth		Color depth in bits per pixel.
 
 bpp		Bytes per pixel.
 
 pitch		Bytes per row.
+
+rate		Refresh rate in Hertz.
 
 driver		Name of the gfx driver being used.
 
@@ -1798,7 +1800,7 @@ Example:
 
 SCREEN 15, 32
 ' Obtain info about current mode
-SCREENINFO w, h, depth,,,driver_name$
+SCREENINFO w, h, depth,,,,driver_name$
 PRINT STR$(w) + "x" + STR$(h) + "x" + STR$(depth);
 PRINT " using " + driver_name$ + " driver"
 SLEEP

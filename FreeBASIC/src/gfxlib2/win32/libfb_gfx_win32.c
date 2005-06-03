@@ -387,7 +387,7 @@ void fb_hWin32SetWindowTitle(char *title)
 
 
 /*:::::*/
-void fb_hScreenInfo(int *width, int *height, int *depth)
+void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	HDC hdc;
 	
@@ -395,6 +395,7 @@ void fb_hScreenInfo(int *width, int *height, int *depth)
 	*width = GetDeviceCaps(hdc, HORZRES);
 	*height = GetDeviceCaps(hdc, VERTRES);
 	*depth = GetDeviceCaps(hdc, BITSPIXEL);
+	*refresh = GetDeviceCaps(hdc, VREFRESH);
 	ReleaseDC(NULL, hdc);
 }
 
