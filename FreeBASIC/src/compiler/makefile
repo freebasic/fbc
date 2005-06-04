@@ -101,9 +101,9 @@ ifndef DEBUG
 	LDFLAGS += -s
 endif
 
-ifneq ($(TARGET),$(HOST))
+#ifneq ($(TARGET),$(HOST))
  	FBCFLAGS += -target $(TARGET)
-endif
+#endif
 
 ifndef OSDEPPATH
 	CHECKTARGET_MSG := $(error error: TARGET not supported)  
