@@ -2690,7 +2690,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 			'' for each arg..
 			farg = f->proc.argtail
-			for p = 0 to params-1
+			for p = params-1 to 0 step -1
 
 				'' optional?
 				if( exprTB(p) = NULL ) then
@@ -2743,7 +2743,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 			next
 
 			'' all params okay?
-			if( p = params ) then
+			if( farg = NULL ) then
 				'' no preview matches?
 				if( match = NULL ) then
 					match = f
