@@ -34,6 +34,13 @@
 #define MAX_CHILDREN		257
 #define BIN_SIZE			1024
 
+#ifdef TARGET_LINUX
+#define PATH_SEP		"/"
+#else
+#define PATH_SEP		"\\"
+#endif
+
+
 typedef struct _FBPROC {
 	const char *name;
 	struct _FBPROC *parent;
@@ -249,7 +256,7 @@ FBCALL void fb_ProfileInit( void )
 /*:::::*/
 FBCALL void fb_ProfileEnd( void )
 {
-	char exename[256];
+	char buffer[MAX_PATH], *p;
 	int i, j, len, skip_proc;
 	BIN *bin;
 	FILE *f;
@@ -266,11 +273,36 @@ FBCALL void fb_ProfileEnd( void )
 #endif
 #endif
 	
-	f = fopen( PROFILE_FILE, "w" );
+	p = fb_hGetExePath( buffer, MAX_PATH-1 );
+	if( !p )
+		p = PROFILE_FILE;
+	else {
+		strcat( buffer, PATH_SEP PROFILE_FILE );
+		p = buffer;
+	}
+	f = fopen( p, "w" );
 	fprintf( f, "Profiling results:\n"
 			    "------------------\n\n" );
-	fb_hGetExeName( exename, 255 );
-	fprintf( f, "Executable name: %s\n", exename );
+	fb_hGetExeName( buffer, MAX_PATH-1 );
+	fprintf( f, "Executable name: %s\n", buffer );
+	p = fb_hGetCommandLine( );
+#ifdef TARGET_WIN32
+	/* exe paths with white-spaces are quoted on Windows */
+	if( p[0] == '"' )
+	{
+		p = strchr( &p[1], '"' );
+		if( p )
+			p++;
+	}
+#endif
+	if( p ) {
+		/* skip argv[0] */
+		p = strchr( p, ' ' );
+		if( p )
+			p++;
+	}
+	if( ( p ) && ( *p ) )
+		fprintf( f, "Passed argument(s): %s\n", p );
 	fprintf( f, "Launched on: %s\n", launch_time );
 	fprintf( f, "Total program execution time: %5.4g seconds\n\n", main_proc->total_time );
 
