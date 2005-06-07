@@ -82,8 +82,9 @@ Requirements:
       Win32 system installed yet. 
       
     - The msvcrt.dll (the Microsoft's C runtime library) must be present (note: 
-      it didn't use to come with Windows 95, but is installed by many applications 
-      and can be also found on the Internet).
+      it didn't use to come with Windows 95, but it's installed by many applications 
+      and can be also downloaded at: 
+      http://support.microsoft.com/default.aspx?scid=kb;en-us;259403 ).
       
     - The gfx routines will use DirectX 5.0 or later if found on the host system,
       otherwise they'll fall back on standard Win32 GDI which will work on any
@@ -524,6 +525,7 @@ Credits (in alphabetic order):
       
   o Garvan O'Keeffe (sisophon2001@yahoo.com):
     - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
+    - Wrote the PDFlib demonstration, at examples/pdflib
 
   o Randy Keeling (randy@keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
