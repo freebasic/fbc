@@ -1631,8 +1631,8 @@ The num_pages parameter specifies the number of "pages" supported by the
 video mode: a page is either the visible screen or an offscreen buffer the
 same size of the screen. You can show a page while working on another one;
 see the SCREENSET statement for details. You can request any number of pages
-for any video mode; if you omit num_pages, only the visible page (number 0)
-will be available.
+for any video mode; if you omit num_pages, 1 will be assumed, and only the
+visible page (number 0) will be available.
 The flags parameter can be an OR combination of the following values:
 
 Value:		Option description:
