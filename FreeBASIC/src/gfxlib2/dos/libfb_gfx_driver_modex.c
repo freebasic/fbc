@@ -26,22 +26,18 @@
  *
  */
 
-#include "gfx_dos.h"
+#include "fb_gfx_dos.h"
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
-static void driver_exit(void);
-static void driver_lock(void);
-static void driver_unlock(void);
-
-static void draw_mouse(void);
+static void driver_update(void);
 
 GFXDRIVER fb_gfxDriverModeX =
 {
 	"ModeX",		/* char *name; */
 	driver_init,		/* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
-	driver_exit,		/* void (*exit)(void); */
-	driver_lock,		/* void (*lock)(void); */
-	driver_unlock,		/* void (*unlock)(void); */
+	fb_dos_exit,		/* void (*exit)(void); */
+	fb_dos_lock,		/* void (*lock)(void); */
+	fb_dos_unlock,		/* void (*unlock)(void); */
 	fb_dos_vga_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	fb_dos_vga_wait_vsync,	/* void (*wait_vsync)(void); */
 	fb_dos_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
@@ -67,7 +63,7 @@ static unsigned short CRTParams[] = {	0x0D06,	/* vertical total */
 
 					};
 
-#define CRT_PARM_LENGTH 10
+#define CRT_PARM_LENGTH sizeof(CRTParams) / sizeof(short)
 
 
 /*:::::*/
@@ -80,11 +76,9 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (flags & DRIVER_OPENGL)
 		return -1;
 	
-	if ((w != 320) || (h != 240) || (depth > 8)) {
+	if ((w != 320) || (h != 240) || (depth != 8)) {
 		return -1;
 	}
-	
-	fb_dos_save_video_mode();
 	
 	/* set base video mode */
 	fb_dos.regs.x.ax = 0x13;
@@ -106,35 +100,25 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	
 	outportw(SC_INDEX, 0x0F02);	/* enable writes to all four planes */
 	
-	fb_dos_init(title, w, h, depth, refresh_rate, flags);
+	fb_dos.update = driver_update;
 	
-	fb_dos.mouse_draw = draw_mouse;
+	fb_dos_init(title, w, h, depth, 60, flags);
 	
 	return 0;
 
 }
 
 /*:::::*/
-static void driver_exit(void)
-{
-	fb_dos_restore_video_mode();
-	
-	fb_dos_exit();
-}
-
-/*:::::*/
-static void driver_lock(void)
-{
-	/* */
-}
-
-/*:::::*/
-static void driver_unlock(void)
+static void driver_update(void)
 {
 	int plane;
 	unsigned long screen;
 	unsigned char *buffer;
 	int x, y;
+	
+	fb_dos_update_mouse();
+	
+	fb_dos.draw_mouse();
 	
 	_farsetsel(_dos_ds);
 	for (plane = 0; plane < 4; plane++) {
@@ -152,14 +136,8 @@ static void driver_unlock(void)
 			buffer += fb_dos.w;
 		}
 	}
-	
+
 	fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
-}
-
-
-
-/*:::::*/
-static void draw_mouse(void)
-{
-	/* */
+	
+	fb_dos.undraw_mouse();
 }
