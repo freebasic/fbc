@@ -30,6 +30,8 @@
 /*:::::*/
 FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, unsigned int border_color, int screen)
 {
+	unsigned int old_bg_color;
+	
 	if (!fb_mode)
 		return;
 	
@@ -41,8 +43,10 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 	fb_mode->view_w = fb_mode->w;
 	fb_mode->view_h = fb_mode->h;
 	
-	if (border_color != DEFAULT_COLOR)
+	if (border_color != DEFAULT_COLOR) {
+		border_color = fb_hFixColor(border_color);
 		fb_hGfxBox(x1 - 1, y1 - 1, x2 + 1, y2 + 1, border_color & fb_mode->color_mask, FALSE);
+	}
 	
 	if ((x1 | y1 | x2 | y2) != 0xFFFF8000) {
 		fb_mode->view_x = MID(0, x1, fb_mode->w);
@@ -55,6 +59,10 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 	else
 		fb_mode->flags &= ~VIEW_SCREEN;
 	
-	if (fill_color != DEFAULT_COLOR)
-		fb_GfxClear(0);
+	if (fill_color != DEFAULT_COLOR) {
+		old_bg_color = fb_mode->bg_color;
+		fb_mode->bg_color = fb_hFixColor(fill_color);
+		fb_GfxClear(1);
+		fb_mode->bg_color = old_bg_color;
+	}
 }

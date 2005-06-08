@@ -75,6 +75,8 @@ Version 0.14 Beta:
 - byval string params were not passed correctly to byref as any arguments when the byval clause was used (v1c)
 - wrong number of dimensions in a static array would generate an exception (v1c)
 - LINE INPUT was allowing any data type as argument, not strings only (v1c)
+- VIEW in gfx mode was not filling the area if a fill color was specified, and border color had problems if in
+  truecolor mode (lillo)
 
 
 Version 0.13 Beta:
