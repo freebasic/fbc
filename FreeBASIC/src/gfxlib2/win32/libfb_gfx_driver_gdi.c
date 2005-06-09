@@ -76,7 +76,7 @@ static int gdi_init(void)
 	rect.left = rect.top = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
-	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
+	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX, 0);
 	rect.right -= rect.left;
 	rect.bottom -= rect.top;
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
