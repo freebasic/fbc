@@ -42,6 +42,8 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 							  "./lib%s.so",
 							  NULL };
 
+	FB_STRLOCK();
+	
 	libname[1023] = '\0';
 	if( (library) && (library->data) ) {
 		for( i = 0; libnameformat[i]; i++ ) {
@@ -55,6 +57,8 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	/* del if temp */
 	fb_hStrDelTemp( library );
 
+	FB_STRUNLOCK();
+	
 	return res;
 }
 
@@ -63,6 +67,8 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 {
 	void *proc = NULL;
 
+	FB_STRLOCK();
+	
 	if( library == NULL )
 		library = dlopen( NULL, RTLD_LAZY );
 
@@ -72,5 +78,14 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 	/* del if temp */
 	fb_hStrDelTemp( symbol );
 
+	FB_STRUNLOCK();
+	
 	return proc;
+}
+
+
+/*:::::*/
+FBCALL void fb_DylibFree( void *library )
+{
+	dlclose( library );
 }

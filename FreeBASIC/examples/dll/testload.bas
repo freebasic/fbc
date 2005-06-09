@@ -32,3 +32,12 @@
 	y = rnd * 10
 	
 	print x; " +"; y; " ="; addnumbers( x, y )
+	
+	'' Done with the library; the OS will automatically unload libraries loaded by a process
+	'' when it terminates, but we can also force unloading during our program execution to
+	'' save resources; this is what the next line does. Remember that once you unload a
+	'' previously loaded library, all the symbols you got from it via dylibsymbol will become
+	'' invalid, and accessing them will cause the application to crash.
+	''
+	dylibfree library
+	

@@ -2020,13 +2020,20 @@ data "dylibload","fb_DylibLoad", _
 	 1, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
 
-'' dylibsymbol( byval library as integer, symbol as string) as any ptr
+'' dylibsymbol ( byval library as integer, symbol as string) as any ptr
 data "dylibsymbol","fb_DylibSymbol", _
 	 FB.SYMBTYPE.POINTER+FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE, _
 	 FB.SYMBTYPE.STRING,FB.ARGMODE.BYREF, FALSE
+
+'' dylibfree ( byval library as integer ) as void
+data "dylibfree","fb_DylibFree", _
+	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, FALSE
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 

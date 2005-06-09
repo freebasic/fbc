@@ -39,6 +39,7 @@ Version 0.14 Beta:
   do "PALETTE GET index, r, g, b" or "PALETTE GET USING pal" instead of using the old INP/OUT tricks (lillo)
 - added SCREENSYNC to wait for vertical blank, so you can use it instead of the old WAIT &h3DA,8 trick (lillo)
 - added SCREENLIST to fetch available screen modes (lillo)
+- added DYLIBFREE to unload a dynamic link library previously loaded at runtime by DYLIBLOAD (lillo)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
