@@ -38,6 +38,8 @@
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
+[ ] INPUT should check for runtime errors (EOF)
+
 [ ] function overloading:
     - check arglist with optionals with different types at the same arg num (?)
     - check different modes and types if they are working

@@ -101,10 +101,14 @@ end enum
 
 '' some chars
 const CHAR_NULL   	= 00, _
-      CHAR_CR  	  	= 13, _
-      CHAR_LF  	  	= 10, _
-      CHAR_SPACE  	= 32, _
+      CHAR_BELL		= 07, _
+      CHAR_BKSPC	= 08, _
       CHAR_TAB    	= 09, _
+      CHAR_LF  	  	= 10, _
+      CHAR_VTAB 	= 11, _
+      CHAR_FORMFEED = 12, _
+      CHAR_CR  	  	= 13, _
+      CHAR_SPACE  	= 32, _
       CHAR_0   		= 48, _
       CHAR_1    	= 49, _
       CHAR_7  		= 56, _

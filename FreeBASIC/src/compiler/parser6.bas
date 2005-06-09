@@ -1798,7 +1798,9 @@ private function cStrASC( funcexpr as ASTNODE ptr ) as integer
 				end if
 
 				if( p >= 0 ) then
-					funcexpr = astNewCONSTi( asc( symbGetVarText( sym ), p ), IR.DATATYPE.INTEGER )
+
+					funcexpr = astNewCONSTi( asc( hEscapeToChar( symbGetVarText( sym ) ) , p ), _
+											 IR.DATATYPE.INTEGER )
 
 					'' delete var if it was never accessed before
 					if( symbGetAccessCnt( sym ) = 0 ) then

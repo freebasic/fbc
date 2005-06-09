@@ -471,18 +471,17 @@ end sub
 
 '':::::
 function hEscapeStr( byval text as string ) as string static
-    dim as integer c, l
-    dim as byte ptr s, d
+    dim as integer c, octlen, lgt
     dim as string res
-    dim as integer octlen
+    dim as byte ptr s, d, l
 
 	s = strptr( text )
-	l = len( text )
+	lgt = len( text )
 
-	res = space$( l * 2 )
+	res = space( lgt * 2 )
 	d = strptr( res )
 
-	l += s
+	l = s + lgt
 	octlen = 0
 
 	do while( s < l )
@@ -497,8 +496,8 @@ function hEscapeStr( byval text as string ) as string static
 		case FB.INTSCAPECHAR
 			*d = CHAR_RSLASH
 			d += 1
-			if( s >= l ) then exit do
 
+			if( s >= l ) then exit do
 			c = *s
 			s += 1
 
@@ -525,18 +524,18 @@ function hEscapeStr( byval text as string ) as string static
 		end if
 	loop
 
-	function = left$( res, d - strptr( res ) )
+	function = left( res, d - strptr( res ) )
 
 end function
 
 '':::::
 function hUnescapeStr( byval text as string ) as string static
-    dim c as integer, l as byte ptr, s as byte ptr
-    dim res as string, d as byte ptr
+    dim as integer c
+    dim as string res
+    dim as byte ptr s, d, l
 
 	if( not env.optescapestr ) then
-    	function = text
-    	exit function
+    	return text
     end if
 
 	res = text
@@ -558,6 +557,76 @@ function hUnescapeStr( byval text as string ) as string static
 	loop
 
 	function = res
+
+end function
+
+'':::::
+function hEscapeToChar( byval text as string ) as string static
+    dim as integer c
+    dim as string res, octval
+    dim as byte ptr s, d, l
+
+	if( not env.optescapestr ) then
+    	return text
+    end if
+
+	res = text
+
+	s = strptr( text )
+	d = strptr( res )
+
+	l = s + len( text )
+	do while( s < l )
+		c = *s
+		s += 1
+
+		if( c = FB.INTSCAPECHAR ) then
+
+			if( s >= l ) then exit do
+			c = *s
+			s += 1
+
+			'' octagonal?
+			if( c >= 1 and c <= 3 ) then
+
+				octval = "&o"
+				do while( c > 0 )
+					octval += chr$( *s )
+					s += 1
+					c -= 1
+				loop
+
+				c = valint( octval )
+
+			else
+			    '' remap char
+			    select case as const c
+			    case asc( "r" )
+			    	c = CHAR_CR
+			    case asc( "l" ), asc( "n" )
+			    	c = CHAR_LF
+			    case asc( "t" )
+			    	c = CHAR_TAB
+			    case asc( "b" )
+			    	c = CHAR_BKSPC
+			    case asc( "a" )
+			    	c = CHAR_BELL
+			    case asc( "f" )
+			    	c = CHAR_FORMFEED
+			    case asc( "v" )
+			    	c = CHAR_VTAB
+			    end select
+
+			end if
+
+		end if
+
+		*d = c
+		d += 1
+
+	loop
+
+	function = left( res, d - strptr( res ) )
 
 end function
 

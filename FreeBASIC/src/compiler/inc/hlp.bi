@@ -66,6 +66,8 @@ declare function 	hEscapeStr				( byval text as string ) as string
 
 declare function 	hUnescapeStr			( byval text as string ) as string
 
+declare function 	hEscapeToChar			( byval text as string ) as string
+
 declare sub 		hClearName				( byval src as string )
 
 declare sub 		hUcase					( byval src as string, _
