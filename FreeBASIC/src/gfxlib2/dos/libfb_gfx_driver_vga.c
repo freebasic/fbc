@@ -28,6 +28,7 @@
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_update(void);
+static void end_of_driver_update(void);
 
 GFXDRIVER fb_gfxDriverVGA =
 {
@@ -36,7 +37,7 @@ GFXDRIVER fb_gfxDriverVGA =
 	fb_dos_exit,		/* void (*exit)(void); */
 	fb_dos_lock,		/* void (*lock)(void); */
 	fb_dos_unlock,		/* void (*unlock)(void); */
-	fb_dos_vga_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
+	fb_dos_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	fb_dos_vga_wait_vsync,	/* void (*wait_vsync)(void); */
 	fb_dos_get_mouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_dos_set_mouse,	/* void (*set_mouse)(int x, int y, int cursor); */
@@ -61,6 +62,8 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	__dpmi_int(0x10, &fb_dos.regs);
 	
 	fb_dos.update = driver_update;
+	fb_dos.update_len = (unsigned int)end_of_driver_update - (unsigned int)driver_update;
+	fb_dos.set_palette = fb_dos_vga_set_palette;
 	
 	fb_dos_init(title, w, h, depth, 75, flags);
 	
@@ -77,17 +80,12 @@ static void driver_update(void)
 	unsigned int buffer = (unsigned int)fb_mode->framebuffer;
 	unsigned int screen = 0xA0000;
 	
-	fb_dos_update_mouse();
-	
-	fb_dos.draw_mouse();
-	
 	for (y = 0; y < fb_dos.h; y++, buffer += fb_dos.w, screen += fb_dos.w) {
 		if (fb_mode->dirty[y]) {
 			movedata(_my_ds(), buffer, _dos_ds, screen, fb_dos.w);
 		}
 	}
-	
-	fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
-	
-	fb_dos.undraw_mouse();
 }
+
+static void end_of_driver_update(void) { /* do not remove */ }
+

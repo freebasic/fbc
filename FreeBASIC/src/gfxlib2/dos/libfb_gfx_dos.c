@@ -26,6 +26,8 @@
 
 #include "fb_gfx_dos.h"
 
+#include <limits.h>
+
 
 
 
@@ -59,11 +61,12 @@ const GFXDRIVER *fb_gfx_driver_list[] = {
 
 fb_dos_t fb_dos;
 
-#define MOUSE_WIDTH	12
-#define MOUSE_HEIGHT	21
+#define MOUSE_WIDTH     12
+#define MOUSE_HEIGHT    21
 
 /* 12x21 */
-unsigned char fb_dos_mouse_image[] = {	2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+unsigned char fb_dos_mouse_image[] = {
+					2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 					2, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -143,7 +146,6 @@ static void fb_dos_kb_init(void)
 static void fb_dos_kb_exit(void)
 {
 	_go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.old_kb_int);
-	//_go32_dpmi_free_iret_wrapper(&fb_dos.new_kb_int);
 }
 
 
@@ -267,13 +269,17 @@ static void fb_dos_timer_handler(void)
 	
 	fb_dos.in_interrupt = TRUE;
 	
+	fb_dos.set_palette();
+	fb_dos_update_mouse();
+	fb_dos.draw_mouse();
 	fb_dos.update();
+	fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
+	fb_dos.undraw_mouse();
 	
 	fb_dos.in_interrupt = FALSE;
 }
 
 static void end_fb_dos_timer_handler(void) { /* do not remove */ }
-
 
 /*:::::*/
 static void fb_dos_timer_set_rate(int freq)
@@ -302,17 +308,63 @@ static void fb_dos_timer_init(void)
 static void fb_dos_timer_exit(void)
 {
 	_go32_dpmi_set_protected_mode_interrupt_vector(0x8, &fb_dos.old_timer_int);
-	//_go32_dpmi_free_iret_wrapper(&fb_dos.new_timer_int);
 }
 
 
 /*:::::*/
-void fb_dos_vga_set_palette(int idx, int r, int g, int b)
+void fb_dos_set_palette(int idx, int r, int g, int b)
 {
-	outportb(0x3C8, idx);
-	outportb(0x3C9, r >> 2);
-	outportb(0x3C9, g >> 2);
-	outportb(0x3C9, b >> 2);
+	fb_dos.pal_dirty = TRUE;
+	fb_dos.pal[idx].r = r;
+	fb_dos.pal[idx].g = g;
+	fb_dos.pal[idx].b = b;
+}
+
+/*:::::*/
+static int fb_dos_find_nearest_color(unsigned char r, unsigned char g, unsigned char b)
+{
+	int i, curr_idx;
+	int dr, dg, db;
+	int err, curr_err;
+	
+	curr_idx = -1;
+	curr_err = INT_MAX;
+	
+	/* find nearest color with least-squares */
+	
+	for (i = 0; i < 256; i++) {
+		dr = abs(fb_dos.pal[i].r - r);
+		dg = abs(fb_dos.pal[i].g - g);
+		db = abs(fb_dos.pal[i].b - b);
+		err = (dr * dr) + (dg * dg) + (db * db);
+		
+		if (err < curr_err) {
+			curr_idx = i;
+			curr_err = err;
+		}
+	}
+	
+	return curr_idx;
+}
+
+
+/*:::::*/
+void fb_dos_vga_set_palette(void)
+{
+	int i;
+	
+	if (!fb_dos.pal_dirty) return;
+	
+	/* find best colors for mouse pointer */
+	mouse_color[1] = fb_dos_find_nearest_color(255, 255, 255);
+	mouse_color[2] = fb_dos_find_nearest_color(0, 0, 0);
+	
+	for (i = 0; i < 256; i++) {
+		outportb(0x3C8, i);
+		outportb(0x3C9, fb_dos.pal[i].r >> 2);
+		outportb(0x3C9, fb_dos.pal[i].g >> 2);
+		outportb(0x3C9, fb_dos.pal[i].b >> 2);
+	}
 }
 
 /*:::::*/
@@ -337,7 +389,7 @@ void fb_dos_detect(void)
 		_farnspokeb(MASK_LINEAR(__tb) + i, 0);
 	}
 	
-	dosmemput("VBE2", 4, MASK_LINEAR(__tb));
+	dosmemput("VBE2", 4, MASK_LINEAR(__tb));	/* get VESA 2 info if available */
 	
 	fb_dos.regs.x.ax = 0x4F00;
 	fb_dos.regs.x.di = RM_OFFSET(__tb);
@@ -366,6 +418,8 @@ void fb_dos_detect(void)
 	__dpmi_int(0x33, &fb_dos.regs);
 	fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
 	
+	/* save current video mode */
+	
 	fb_dos_save_video_mode();
 	
 }
@@ -377,7 +431,7 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 {
 	__dpmi_meminfo mi;
 	
-	/* lock code and data */
+	/* lock code and data accessed in int handlers */
 	
 	mi.address = (unsigned int)fb_mode;
 	mi.size = sizeof(MODE);
@@ -399,11 +453,14 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 	mi.size = (unsigned int)end_fb_dos_timer_handler;
 	__dpmi_lock_linear_region(&mi);
 	
+	mi.address = (unsigned int)fb_dos.update;
+	mi.size = fb_dos.update_len;
+	__dpmi_lock_linear_region(&mi);
+	
 	fb_dos.w = w;
 	fb_dos.h = h;
 	fb_dos.depth = depth;
 	fb_dos.Bpp = depth / 8;
-	fb_dos.size = fb_dos.w * fb_dos.h * fb_dos.Bpp;
 	
 	switch (depth) {
 		case 8: fb_dos.draw_mouse = fb_dos_draw_mouse_8;
@@ -411,14 +468,9 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 			break;
 	}
 	
-
-	
 	fb_dos_kb_init();
-	
 	fb_dos_mouse_init();
-	
 	fb_dos_timer_init();
-	
 	fb_dos_timer_set_rate(refresh_rate);
 	
 	fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, 1);
@@ -435,11 +487,8 @@ void fb_dos_exit(void)
 	if (!fb_dos.inited) return;
 	
 	fb_dos_timer_exit();
-	
 	fb_dos_mouse_exit();
-	
 	fb_dos_kb_exit();
-	
 	fb_dos_restore_video_mode();
 	
 	/* unlock code and data */
@@ -462,6 +511,10 @@ void fb_dos_exit(void)
 	
 	mi.address = (unsigned int)fb_dos_timer_handler;
 	mi.size = (unsigned int)end_fb_dos_timer_handler;
+	__dpmi_unlock_linear_region(&mi);
+	
+	mi.address = (unsigned int)fb_dos.update;
+	mi.size = fb_dos.update_len;
 	__dpmi_unlock_linear_region(&mi);
 	
 	fb_dos.inited = FALSE;
@@ -491,7 +544,6 @@ static void fb_dos_save_video_mode(void)
 	fb_dos.old_rows = ScreenRows();
 	fb_dos.old_cols = ScreenCols();
 }
-
 
 /*:::::*/
 static void fb_dos_restore_video_mode(void)
