@@ -23,7 +23,8 @@ Installing:
   o Windows version:
 
     - Unpack the zip archive to any folder of your preference -- C:\ is a good 
-      idea if you are not going to use an IDE later.
+      idea if you are not going to use an IDE later. The directory structure
+      as used inside the archive must be preserved.
 
     - Run the INSTALL.BAT file to generate the import libraries -- they are 
       needed to call any function on DLL's and to create the executables.
@@ -39,10 +40,11 @@ Installing:
   o DOS:
 
     - Unpack the zip archive to any folder you want, but give preference to one 
-      with no white-spaces on its name and not longer than 8 characters.
+      with no white-spaces on its name and not longer than 8 characters. The 
+      directory structure as used inside the archive must be preserved.
 
   
-  (Note: if ynou are installing the DOS version over the Windows one or vice-versa, 
+  (Note: if you are installing the DOS version over the Windows one or vice-versa, 
    rename the fbc.exe file of the preview installation to fbc-win.exe or such, or 
    it will be overwritten by the new one.)
 
