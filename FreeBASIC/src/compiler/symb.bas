@@ -1239,11 +1239,16 @@ function symbAddTempVar( byval typ as integer, _
 	sname = *hMakeTmpStr( )
 
 	alloctype = FB.ALLOCTYPE.TEMP
-	if( (env.scope > 0) and (env.isprocstatic) ) then
-		alloctype = alloctype or FB.ALLOCTYPE.STATIC
+	if( env.scope > 0 ) then
+		if( env.isprocstatic ) then
+			alloctype or= FB.ALLOCTYPE.STATIC
+		end if
 	end if
 
-	function = symbAddVar( sname, typ, subtype, 0, 0, dTB(), alloctype )
+	function = symbAddVarEx( sname, sname, typ, subtype, 0, _
+							 0, 0, dTB(), _
+							 alloctype, _
+							 FALSE, FALSE, FALSE )
 
 end function
 

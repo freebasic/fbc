@@ -578,6 +578,11 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 		exit sub
 	end if
 
+	'' temporary?
+	if( symbIsTemp( sym ) ) then
+		exit sub
+	end if
+
 	'' depends on section
 	select case section
 	case EMIT.SECTYPE.CONST
@@ -588,15 +593,14 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 		t = STAB_TYPE_LCSYM
 	end select
 
-    '' alloc type
-    alloctype = symbGetAllocType( sym )
-
+    '' allocation type (static, global, etc)
     if( sym->hashitem = NULL ) then
     	desc = symbGetName( sym )
     else
     	desc = symbGetOrgName( sym )
     end if
 
+    alloctype = symbGetAllocType( sym )
     if( (alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.COMMON)) > 0 ) then
     	desc += ":G"
     elseif( (sym->scope = 0) or (alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then

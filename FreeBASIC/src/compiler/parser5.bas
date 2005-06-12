@@ -420,8 +420,6 @@ function cProcStatement static
 	end if
 
 	''
-	env.scope = 1
-
 	env.currproc = proc
 	env.compoundcnt += 1
 
@@ -431,7 +429,6 @@ function cProcStatement static
 		env.isprocstatic = FALSE
 	end if
 
-	''
 	'' add end and exit labels (will be used by any EXIT SUB/FUNCTION)
 	endlabel  = symbAddLabel( "" )
 	exitlabel = symbAddLabel( "" )
@@ -448,6 +445,10 @@ function cProcStatement static
 
 	'' emit proc setup
 	irEmitPROCBEGIN( proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0 )
+
+	'' scope can only change after the IR is flushed because
+	'' the temporary vars that can be created by IR
+	env.scope = 1
 
     '' alloc args
     if( not hDeclareArgs( proc ) ) then
@@ -524,22 +525,22 @@ function cProcStatement static
 		exit function
 	end if
 
-
-	'' deallocations
-	'''''symbDelLabel initlabel
-	'''''symbDelLabel exitlabel
-	'''''symbDelLabel endlabel
-	''
+	'' free all local symbols
 	symbDelLocalSymbols( )
 
 	'' back to old state
+	env.scope 				= 0
 	env.procerrorhnd 		= NULL
 	env.currproc 			= NULL
 	env.compoundcnt 		-= 1
 	env.isprocstatic 	 	= FALSE
 	env.procstmt.cmplabel 	= NULL
 	env.procstmt.endlabel 	= NULL
-	env.scope 				= 0
+
+	'' del labels (they were created when scope was 0)
+	symbDelLabel( initlabel )
+	symbDelLabel( exitlabel )
+	symbDelLabel( endlabel )
 
 	''
 	function = TRUE
