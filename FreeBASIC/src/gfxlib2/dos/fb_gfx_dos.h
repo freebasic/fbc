@@ -59,6 +59,7 @@ typedef struct fb_dos_t {
 	int w;
 	int h;
 	int depth;
+	int refresh;
 	
 	fb_dos_pal_t pal[256];
 	int pal_dirty;
