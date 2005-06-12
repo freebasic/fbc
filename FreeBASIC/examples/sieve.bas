@@ -38,5 +38,6 @@ const INTERATIONS = 1000
   
   x = timer - x
   
-  print "msecs taken: " + str$( x )
+  print "msecs taken:"; x
+  print "count:"; count
   sleep
