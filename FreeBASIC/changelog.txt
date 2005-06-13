@@ -78,6 +78,7 @@ Version 0.14 Beta:
 - LINE INPUT was allowing any data type as argument, not strings only (v1c)
 - VIEW in gfx mode was not filling the area if a fill color was specified, and border color had problems if in
   truecolor mode (lillo)
+- using CLS in Linux console was forcing screen clear on program exit (lillo)
 
 
 Version 0.13 Beta:

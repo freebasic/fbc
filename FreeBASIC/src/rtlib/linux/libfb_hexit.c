@@ -36,7 +36,7 @@ void fb_hExitConsole( void )
 	if (fb_con.inited) {
 		bottom = fb_ConsoleGetMaxRow();
 		if (((fb_viewTopRow != -1) || (fb_viewBotRow != -1)) &&
-		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom))) {
+		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom - 1))) {
 			/* Restore scrolling region to whole screen and clear */
 			fprintf(fb_con.f_out, "\e[1;%dr", bottom);
 			fputs("\e[2J", fb_con.f_out);
