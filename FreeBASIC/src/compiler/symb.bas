@@ -1245,7 +1245,7 @@ function symbAddTempVar( byval typ as integer, _
 		end if
 	end if
 
-	function = symbAddVarEx( sname, sname, typ, subtype, 0, _
+	function = symbAddVarEx( sname, "", typ, subtype, 0, _
 							 0, 0, dTB(), _
 							 alloctype, _
 							 FALSE, FALSE, FALSE )
