@@ -129,7 +129,6 @@ void fb_hResize()
 int fb_hInitConsole ( int init )
 {
 	struct termios term_out, term_in;
-	char *tty_name;
 	int i;
 	
 	/* Init terminal I/O */
@@ -150,10 +149,7 @@ int fb_hInitConsole ( int init )
 	
 	/* Input setup */
 	if (init != INIT_CONSOLE) {
-		tty_name = ttyname(fb_con.h_in);
-		if (!tty_name)
-			return -1;
-		fb_con.f_in = fopen(tty_name, "r+b");
+		fb_con.f_in = fopen("/dev/tty", "r+b");
 		if (!fb_con.f_in)
 			return -1;
 		fb_con.h_in = fileno(fb_con.f_in);
