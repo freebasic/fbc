@@ -192,7 +192,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (!(info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs)))
 		return -1;
 	context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
-	if (!context)
+	if (context <= 0)
 		return -1;
 	fb_glXMakeCurrent(fb_linux.display, fb_linux.window, context);
 	XSync(fb_linux.display, False);
@@ -206,7 +206,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 /*:::::*/
 static void driver_exit(void)
 {
-	if (context) {
+	if (context > 0) {
 		fb_glXMakeCurrent(fb_linux.display, None, NULL);
 		fb_glXDestroyContext(fb_linux.display, context);
 	}
