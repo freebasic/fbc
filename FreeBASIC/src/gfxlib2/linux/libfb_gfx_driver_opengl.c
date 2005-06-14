@@ -192,6 +192,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (!(info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs)))
 		return -1;
 	context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
+	XFree(info);
 	if (context <= 0)
 		return -1;
 	fb_glXMakeCurrent(fb_linux.display, fb_linux.window, context);
