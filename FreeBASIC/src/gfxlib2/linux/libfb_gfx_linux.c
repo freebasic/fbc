@@ -52,7 +52,7 @@ static int orig_size, target_size, current_size;
 static int orig_rate, target_rate;
 static Rotation orig_rotation;
 static Cursor blank_cursor, arrow_cursor;
-static int is_running, has_focus, cursor_shown, xlib_inited = FALSE;
+static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 
 static const struct

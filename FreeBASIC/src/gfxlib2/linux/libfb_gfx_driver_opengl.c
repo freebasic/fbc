@@ -151,11 +151,11 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 			     GLX_DEPTH_SIZE, 16 };
 	int *gl_attr, result;
 	
+	context = NULL;
+	
 	if (!(flags & DRIVER_OPENGL))
 		return -1;
 
-	context = NULL;
-	
 	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));
 	fb_linux.init = opengl_window_init;
 	fb_linux.exit = opengl_window_exit;
@@ -169,6 +169,9 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (!fb_glXChooseVisual)
 		if (load_library())
 			return -1;
+	
+	if (fb_linux.depth > 16)
+		gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 8;
 	
 	gl_attr = &gl_attrs[10];
 	if (gl_options & HAS_STENCIL_BUFFER) {
@@ -192,6 +195,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (!context)
 		return -1;
 	fb_glXMakeCurrent(fb_linux.display, fb_linux.window, context);
+	XSync(fb_linux.display, False);
 	
 	return 0;
 }
