@@ -47,9 +47,7 @@ FBCALL void fb_GfxScreenInfo(int *width, int *height, int *depth, int *bpp, int 
 		*refresh = fb_mode->refresh_rate;
 	}
 	
-	if (FB_ISTEMP(driver))
-		fb_hStrDelTemp(driver);
-	else {
+	if (fb_hStrDelTemp(driver)) {
 		fb_hStrRealloc(driver, strlen(name), FB_FALSE);
 		strcpy(driver->data, name);
 	}

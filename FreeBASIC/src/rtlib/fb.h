@@ -174,10 +174,10 @@ typedef struct _FB_STR_TMPDESC {
 extern    FBSTRING 	fb_strNullDesc;
 
 FB_STR_TMPDESC 		*fb_hStrAllocTmpDesc	( void );
-		  void 		fb_hStrDelTempDesc		( FBSTRING *str );
+		  int 		fb_hStrDelTempDesc		( FBSTRING *str );
 		  void 		fb_hStrRealloc			( FBSTRING *str, int size, int preserve );
 		  void 		fb_hStrAllocTemp		( FBSTRING *str, int size );
-		  void 		fb_hStrDelTemp			( FBSTRING *str );
+		  int 		fb_hStrDelTemp			( FBSTRING *str );
 		  void 		fb_hStrCopy				( char *dst, char *src, int bytes );
 		  char 		*fb_hStrSkipChar		( char *s, int len, int c );
 		  char 		*fb_hStrSkipCharRev		( char *s, int len, int c );

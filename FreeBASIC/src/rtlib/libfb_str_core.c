@@ -82,14 +82,15 @@ void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 }
 
 /*:::::*/
-void fb_hStrDelTempDesc( FBSTRING *str )
+int fb_hStrDelTempDesc( FBSTRING *str )
 {
 	/* is this really a temp descriptor? */
 	if( ((FB_STR_TMPDESC *)str < &fb_tmpdsTB[0]) ||
 	    ((FB_STR_TMPDESC *)str > &fb_tmpdsTB[FB_STR_TMPDESCRIPTORS-1]) )
-		return;
+		return -1;
 
 	fb_hStrFreeTmpDesc( (FB_STR_TMPDESC *)str );
+	return 0;
 }
 
 /**********
@@ -154,17 +155,16 @@ void fb_hStrAllocTemp( FBSTRING *str, int size )
 }
 
 /*:::::*/
-void fb_hStrDelTemp( FBSTRING *str )
+int fb_hStrDelTemp( FBSTRING *str )
 {
 	if( str == NULL )
-		return ;
+		return -1;
 
 	/* is it really a temp? */
 	if( !FB_ISTEMP( str ) )
 	{
 		/* even not being a temp, the desc can be */
-		fb_hStrDelTempDesc( str );
-		return;
+		return fb_hStrDelTempDesc( str );
 	}
 
     /* del data */
@@ -175,7 +175,7 @@ void fb_hStrDelTemp( FBSTRING *str )
 #endif
 
     /* del descriptor (must be done by last as it will be cleared) */
-    fb_hStrDelTempDesc( str );
+    return fb_hStrDelTempDesc( str );
 }
 
 /*:::::*/
