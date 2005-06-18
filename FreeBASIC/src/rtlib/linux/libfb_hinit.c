@@ -182,15 +182,6 @@ int fb_hInitConsole ( int init )
 	/* Set IBM PC 437 charset */
 	fputs("\e(U", fb_con.f_out);
 	
-	signal(SIGABRT, signal_handler);
-	signal(SIGFPE,  signal_handler);
-	signal(SIGILL,  signal_handler);
-	signal(SIGSEGV, signal_handler);
-	signal(SIGTERM, signal_handler);
-	signal(SIGINT,  signal_handler);
-	signal(SIGQUIT, signal_handler);
-	signal(SIGWINCH,console_resize);
-	
 	return 0;
 }
 

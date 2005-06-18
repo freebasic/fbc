@@ -64,6 +64,8 @@ ifeq ($(TARGET),linux)
 	AFLAGS += -DTARGET_LINUX
 endif
 
+objpath = obj/$(OSDEPPATH)
+
 libpath = ../../lib/$(TARGET)
 
 lib = $(libpath)/libfbgfx.a
@@ -85,23 +87,28 @@ headers += $(wildcard $(OSDEPPATH)/*.h)
 
 ##################################################################
 
-all : checkhost checktarget $(objects) $(osdepobjs) $(lib)
+all : checkhost checktarget checkdirs $(objects) $(osdepobjs) $(lib)
 
-obj/$(OSDEPPATH)/%.o : %.c $(headers)
+$(objpath)/%.o : %.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/$(OSDEPPATH)/%.o : %.s $(headers)
+$(objpath)/%.o : %.s $(headers)
 	$(CC) -c $(AFLAGS) $< -o $@
 
-obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.c $(headers)
+$(objpath)/%.o : $(OSDEPPATH)/%.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.s $(headers)
+$(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
 	$(CC) -c $(AFLAGS) $< -o $@
-
 
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
+
+$(libpath) :
+	mkdir -p $(libpath)
+
+$(objpath) :
+	mkdir -p $(objpath)
 
 
 .PHONY: checktarget
@@ -110,6 +117,8 @@ checktarget : ; $(CHECKTARGET_MSG)
 .PHONY: checkhost
 checkhost : ; $(CHECKHOST_MSG)
 
+.PHONY: checkdirs
+checkdirs : $(libpath) $(objpath)
 
 .PHONY : clean
 clean :

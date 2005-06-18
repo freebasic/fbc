@@ -86,7 +86,7 @@ headers := $(wildcard *.h)
 
 ##################################################################
 
-all : checkhost checktarget $(objects) $(osdepobjs) $(lib)
+all : checkhost checktarget checkdirs $(objects) $(osdepobjs) $(lib)
 
 $(objpath)/%.o : %.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -103,6 +103,12 @@ $(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
 
+$(libpath) :
+	mkdir -p $(libpath)
+
+$(objpath) :
+	mkdir -p $(objpath)
+
 
 .PHONY: checktarget
 checktarget : ; $(CHECKTARGET_MSG)
@@ -110,6 +116,8 @@ checktarget : ; $(CHECKTARGET_MSG)
 .PHONY: checkhost
 checkhost : ; $(CHECKHOST_MSG)
 
+.PHONY: checkdirs
+checkdirs : $(libpath) $(objpath)
 
 .PHONY : clean
 clean :

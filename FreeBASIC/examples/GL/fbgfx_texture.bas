@@ -142,6 +142,7 @@ SUB Init_GL_SCREEN()
 
 	'get info of current screen
 	screeninfo w, h
+	
     'Set OpenGL ViewPort to screen dimensions
     'using screen info w and h as params
 	glViewport 0, 0, w, h
