@@ -36,7 +36,8 @@
   CHDIR Statement
   CLS Statement
   CSRLIN Function
-  COLOR Statement       (diff: there's no border argument)
+  COLOR Statement       (diff: there's no border argument; 
+                               the current color pair is returned as (backcolor shl 16) or forecolor))
   CLOSE Statement
   CLEAR Statement       (diff: completely different mean: used to fill a memory block with some value, args are:
                          byref dst as any, byval value as integer = 0, byval bytes as integer)
@@ -209,7 +210,8 @@
 
   WEND
   WHILE...WEND Statement
-  WIDTH Statements      (diff: only works for console, no file or printer)
+  WIDTH Statements      (diff: only works for console, no file or printer; 
+                               the current dimensions are returned as: (width or (height shl 16)))
   WRITE (Screen) Statement
   WRITE (File) Statement
 

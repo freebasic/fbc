@@ -13,6 +13,8 @@ Version 0.14 Beta:
 - the compiler is now a bit easier to be cross-compiled using the Win32 version (v1c)
 - SCREENINFO does not return a pointer to an internal structure anymore, and if called before a gfx mode has
   been set, it returns infos on the desktop resolution/depth. See gfxlib.txt for more info (lillo)
+- COLOR will now return the current/last color attributes as: (forecolor or (backcolor shl 16))
+- WIDTH will now return the current/last dimensions as: (width or (height shl 16))
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
