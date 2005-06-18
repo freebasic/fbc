@@ -27,16 +27,18 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Width( int cols, int rows )
+FBCALL int fb_Width( int cols, int rows )
 {
-
+	int cur;
+	
 	FB_LOCK();
 
 	if( fb_hooks.widthproc )
-		fb_hooks.widthproc( cols, rows );
+		cur = fb_hooks.widthproc( cols, rows );
 	else
-		fb_ConsoleWidth( cols, rows );
+		cur = fb_ConsoleWidth( cols, rows );
 
 	FB_UNLOCK();
-
+	
+	return cur;
 }

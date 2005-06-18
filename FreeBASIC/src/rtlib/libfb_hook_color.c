@@ -27,16 +27,18 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Color( int fc, int bc )
+FBCALL int fb_Color( int fc, int bc )
 {
+	int cur;
 
 	FB_LOCK();
 
 	if( fb_hooks.colorproc )
-		fb_hooks.colorproc( fc, bc );
+		cur = fb_hooks.colorproc( fc, bc );
 	else
-		fb_ConsoleColor( fc, bc );
+		cur = fb_ConsoleColor( fc, bc );
 
 	FB_UNLOCK();
 
+	return cur;
 }

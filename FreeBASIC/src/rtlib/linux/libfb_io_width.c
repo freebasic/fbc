@@ -25,10 +25,14 @@
  */
 
 #include "fb.h"
+#include "fb_linux.h"
 
 /*:::::*/
-void fb_ConsoleWidth( int cols, int rows )
+int fb_ConsoleWidth( int cols, int rows )
 {
+	int cur = (fb_con.inited? fb_con.w | (fb_con.h << 16) : 80 | (25 << 16));
+	
 	/* Changing console size isn't allowed in linux */
 
+	return cur;
 }

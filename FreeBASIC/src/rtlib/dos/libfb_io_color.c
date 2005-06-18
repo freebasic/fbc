@@ -33,8 +33,10 @@ int fb_last_bc = FB_COLOR_BLACK,
 	fb_last_fc = FB_COLOR_WHITE;
 
 /*:::::*/
-void fb_ConsoleColor( int fc, int bc )
+int fb_ConsoleColor( int fc, int bc )
 {
+	int cur = fb_last_fc | (fb_last_bc << 16);
+	
 	if( fc >= 0 )
 		fb_last_fc = fc & 15;
 
@@ -43,6 +45,7 @@ void fb_ConsoleColor( int fc, int bc )
 
 	ScreenAttrib = fb_last_fc | (fb_last_bc << 4);
 
+	return cur;
 }
 
 /*:::::*/

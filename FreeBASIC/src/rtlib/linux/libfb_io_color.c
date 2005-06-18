@@ -30,9 +30,10 @@
 
 
 /*:::::*/
-void fb_ConsoleColor( int fc, int bc )
+int fb_ConsoleColor( int fc, int bc )
 {
 	const char map[8] = { 0, 4, 2, 6, 1, 5, 3, 7 };
+	int cur = fb_con.fg_color | (fb_con.bg_color << 16);
 	
 	if (!fb_con.inited)
 		return;
@@ -53,6 +54,8 @@ void fb_ConsoleColor( int fc, int bc )
 		fprintf(fb_con.f_out, "\e[%d;%d;25;%dm",
 			(fb_con.fg_color > 7 ? 1 : 22), 30 + map[fb_con.fg_color & 0x7],
 			40 + map[fb_con.bg_color & 0x7]);
+
+	return cur;
 }
 
 /*:::::*/

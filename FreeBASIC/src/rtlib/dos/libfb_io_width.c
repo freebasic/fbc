@@ -27,10 +27,16 @@
 #include "fb.h"
 
 #include <conio.h>
+#include <pc.h>
 
 /*:::::*/
-void fb_ConsoleWidth( int cols, int rows )
+int fb_ConsoleWidth( int cols, int rows )
 {
-	_set_screen_lines(rows);
+	int cur = ScreenCols() | (ScreenRows() << 16);
+	
+	if( rows > 0 )
+		_set_screen_lines(rows);
+	
+	return cur;
 }
 

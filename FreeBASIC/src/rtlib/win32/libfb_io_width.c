@@ -33,16 +33,19 @@
 
 
 /*:::::*/
-void fb_ConsoleWidth( int cols, int rows )
+int fb_ConsoleWidth( int cols, int rows )
 {
    	COORD size, max;
    	SMALL_RECT rect;
    	CONSOLE_SCREEN_BUFFER_INFO info;
     HANDLE hnd = GetStdHandle( STD_OUTPUT_HANDLE );
+    int cur;
 
    	max = GetLargestConsoleWindowSize( hnd );
 
    	GetConsoleScreenBufferInfo( hnd, &info );
+   	
+   	cur = info.dwSize.X | (info.dwSize.Y << 16);
 
    	if( cols > 0 )
    		size.X = cols;
@@ -77,5 +80,5 @@ void fb_ConsoleWidth( int cols, int rows )
 
    	SetConsoleActiveScreenBuffer( hnd );
 
-
+	return cur;
 }
