@@ -1764,16 +1764,16 @@ data "locate", "fb_Locate", _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
-'' color( byval fc as integer = -1, byval bc as integer = -1 ) as void
+'' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer
 data "color", "fb_Color", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,-1
-'' width( byval cols as integer = 0, byval rows as integer = 0 ) as void
+'' width( byval cols as integer = 0, byval rows as integer = 0 ) as integer
 data "width", "fb_Width", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _

@@ -280,9 +280,9 @@ extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, 
 int fb_GfxGetkey(void);
 FBSTRING *fb_GfxInkey(void);
 int fb_GfxKeyHit(void);
-void fb_GfxColor(int fg_color, int bg_color);
+int fb_GfxColor(int fg_color, int bg_color);
 void fb_GfxClear(int mode);
-void fb_GfxWidth(int w, int h);
+int fb_GfxWidth(int w, int h);
 void fb_GfxLocate(int y, int x, int cursor);
 int fb_GfxGetX(void);
 int fb_GfxGetY(void);

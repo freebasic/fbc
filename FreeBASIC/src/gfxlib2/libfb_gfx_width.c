@@ -28,30 +28,40 @@
 
 
 /*:::::*/
-void fb_GfxWidth(int w, int h)
+int fb_GfxWidth(int w, int h)
 {
 	int font_w, font_h;
 	const FONT *font = NULL;
+	int cur = fb_mode->w | (fb_mode->h << 16);
 	
-	if (w)
+	if( (w == 0) && (h == 0) )
+		return cur;
+	
+	if (w > 0)
 		font_w = fb_mode->w / w;
 	else
 		font_w = 8;
-	if (h)
+	
+	if (h > 0)
 		font_h = fb_mode->h / h;
 	else
 		font_h = fb_mode->font->h;
+	
 	if (font_w != 8)
-		return;
+		return cur;
+	
 	switch (font_h) {
 		case 8: font = &fb_font_8x8; break;
 		case 14: font = &fb_font_8x14; break;
 		case 16: font = &fb_font_8x16; break;
 	}
+	
 	if (font) {
 		fb_mode->text_w = w;
 		fb_mode->text_h = h;
 		fb_mode->font = font;
 		fb_GfxClear(-1);
 	}
+
+	return cur;
 }

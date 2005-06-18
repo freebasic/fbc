@@ -28,8 +28,10 @@
 
 
 /*:::::*/
-void fb_GfxColor(int fg, int bg)
+int fb_GfxColor(int fg, int bg)
 {
+	int cur = fb_mode->fg_color | (fb_mode->bg_color << 16);
+	
 	switch (fb_mode->mode_num) {
 	
 		case 1:
@@ -63,4 +65,6 @@ void fb_GfxColor(int fg, int bg)
 			}
 			break;
 	}
+
+	return cur;
 }
