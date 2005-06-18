@@ -134,7 +134,7 @@ Most Important Features:
     - Only a small number of keywords have been added. All functions are 
       implemented as libraries, so for the most part, there are no new intrinsic 
       routines, and therefore there is a low chance of having name duplication 
-      with old code. If you want to show up a message box in Windows, simply do:
+      with old code. If you want to show a message box in Windows, simply do:
 
       '$include: 'win\user32.bi'
       MessageBox NULL, "Title", "Text", MB_ICONASTERISK
@@ -456,7 +456,7 @@ What FreeBASIC Isn't:
       old and deprecated statements, that are seldom used today, were not 
       implemented, read the docs/keywords.txt file for a list of differences. 
       
-    - While FB is certainly the BASIC compiler that most reassembles the Microsoft 
+    - While FB is certainly the BASIC compiler that most resembles the Microsoft 
       BASIC compilers for DOS, don't expect to compile old source-codes filled 
       with unsupported statements or external libraries, that won't work.
 
