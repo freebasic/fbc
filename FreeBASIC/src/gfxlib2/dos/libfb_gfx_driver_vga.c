@@ -65,7 +65,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_dos.update_len = (unsigned int)end_of_driver_update - (unsigned int)driver_update;
 	fb_dos.set_palette = fb_dos_vga_set_palette;
 	
-	fb_dos_init(title, w, h, depth, 75, flags);
+	fb_dos_init(title, w, h, depth, 70, flags);
 	
 	return 0;
 
