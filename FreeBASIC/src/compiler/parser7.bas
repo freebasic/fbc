@@ -58,15 +58,17 @@ const FBGFX_PUTMODE_CUSTOM = 7
 '':::::
 private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 								  byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
-    dim as ASTNODE ptr idxexpr
+    dim as ASTNODE ptr idxexpr, temp
 
     ''  argument passed by descriptor?
     if( symbIsArgByDesc( sym ) ) then
 
     	astDelTree( arrayexpr )
+
+    	temp	  = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
+    	idxexpr   = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, temp, IR.DATATYPE.INTEGER, NULL )
+    	idxexpr   = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
     	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
-    	idxexpr = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, arrayexpr, IR.DATATYPE.INTEGER, NULL )
-    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
@@ -547,7 +549,7 @@ function cGfxPalette as integer
     dim as integer isget
 
 	function = FALSE
-	
+
 	if( hMatch( FB.TK.GET ) ) then
 		isget = TRUE
 	else
@@ -640,7 +642,7 @@ function cGfxPut as integer
     dim as FBSYMBOL ptr s, target, arg1, arg2
 
 	function = FALSE
-	
+
 	alphaexpr = NULL
 	funcexpr = NULL
 
