@@ -15,7 +15,7 @@ Version 0.14 Beta:
   been set, it returns infos on the desktop resolution/depth. See gfxlib.txt for more info (lillo)
 - COLOR will now return the current/last color attributes as: (forecolor or (backcolor shl 16)) (v1c)
 - WIDTH will now return the current/last dimensions as: (width or (height shl 16)) (v1c)
-- LOCATE will now return the current/last cursor state as: (width or (height shl 8) or (visible shl 16)) (lillo)
+- LOCATE will now return the current/last cursor state as: (x or (y shl 8) or (visible shl 16)) (lillo)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
