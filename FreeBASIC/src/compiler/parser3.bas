@@ -352,7 +352,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 		dtype -= FB.SYMBTYPE.POINTER
 
 		'' incomplete type?
-		if( dtype = FB.SYMBTYPE.FWDREF ) then
+		if( (dtype = FB.SYMBTYPE.VOID) or (dtype = FB.SYMBTYPE.FWDREF) ) then
 			hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
 			return FALSE
 		end if
@@ -394,7 +394,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			dtype -= FB.SYMBTYPE.POINTER
 
 			'' incomplete type?
-			if( dtype = FB.SYMBTYPE.FWDREF ) then
+			if( (dtype = FB.SYMBTYPE.VOID) or (dtype = FB.SYMBTYPE.FWDREF) ) then
 				hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
 				return FALSE
 			end if

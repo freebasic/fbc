@@ -634,7 +634,7 @@ private function hDoDeref( byval cnt as integer, _
 		dtype -= IR.DATATYPE.POINTER
 
 		'' incomplete type?
-		if( dtype = FB.SYMBTYPE.FWDREF ) then
+		if( (dtype = FB.SYMBTYPE.VOID) or (dtype = FB.SYMBTYPE.FWDREF) ) then
 			hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
 			exit function
 		end if
@@ -652,7 +652,7 @@ private function hDoDeref( byval cnt as integer, _
     dtype -= FB.SYMBTYPE.POINTER
 
 	'' incomplete type?
-	if( dtype = FB.SYMBTYPE.FWDREF ) then
+	if( (dtype = FB.SYMBTYPE.VOID) or (dtype = FB.SYMBTYPE.FWDREF) ) then
 		hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
 		exit function
 	end if
