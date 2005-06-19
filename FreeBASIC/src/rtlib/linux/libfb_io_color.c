@@ -36,7 +36,7 @@ int fb_ConsoleColor( int fc, int bc )
 	int cur = fb_con.fg_color | (fb_con.bg_color << 16);
 	
 	if (!fb_con.inited)
-		return;
+		return cur;
 	
 	if (fc >= 0)
 		fb_con.fg_color = (fc & 0xF);

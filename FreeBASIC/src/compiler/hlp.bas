@@ -144,9 +144,10 @@ data "Too many parameters"
 data "Macro text too long"
 data "Invalid command-line option"
 data "Cannot initialize dynamic strings"
+data "Recursive TYPE or UNION not allowed"
 
 
-const FB.ERRMSGS = 80
+const FB.ERRMSGS = 81
 
 
 '':::::

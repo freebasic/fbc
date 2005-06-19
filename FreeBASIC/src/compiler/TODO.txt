@@ -47,8 +47,6 @@
 
 [ ] allow FB functions to return UDT's - must follow the GCC 3.x ABI
 
-[ ] check for references to self on TYPE fields (field AS parent)
-
 [ ] better pointers checking - only when pointer type-casting is added
 
 *** *** *** *** ***

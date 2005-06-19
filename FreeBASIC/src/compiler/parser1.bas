@@ -884,6 +884,13 @@ declfield:
 			exit function
 		end if
 
+		if( typ = FB.SYMBTYPE.USERDEF ) then
+			if( subtype = env.typectx.symbol ) then
+				hReportError( FB.ERRMSG.RECURSIVEUDT )
+				exit function
+			end if
+		end if
+
 		env.typectx.elements += 1
 
 		if( symbAddUDTElement( env.typectx.symbol, ename, _
