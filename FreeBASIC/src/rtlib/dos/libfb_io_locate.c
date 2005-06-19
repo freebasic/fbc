@@ -31,9 +31,10 @@
 #include <sys/farptr.h>
 
 /*:::::*/
-void fb_ConsoleLocate( int row, int col, int cursor )
+int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	int x, y;
+	static int visible = 0x10000;
 	
   	if( col > 0 )
   		x = col;
@@ -48,11 +49,14 @@ void fb_ConsoleLocate( int row, int col, int cursor )
 	if (fb_viewTopRow >= 0)
 		y = y - fb_viewTopRow;
 
-	if (cursor >= 0)
+	if (cursor >= 0) {
+		visible = cursor ? 0x10000 : 0;
 		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
+	}
 	
 	gotoxy(x, y);
-
+	
+	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
 }
 
 

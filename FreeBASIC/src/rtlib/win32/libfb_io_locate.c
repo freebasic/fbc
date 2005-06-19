@@ -30,7 +30,7 @@
 #include <windows.h>
 
 /*:::::*/
-void fb_ConsoleLocate( int row, int col, int cursor )
+int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	HANDLE handle;
 	COORD c;
@@ -47,14 +47,15 @@ void fb_ConsoleLocate( int row, int col, int cursor )
   		c.Y = fb_ConsoleGetY() - 1;
 
   	handle = GetStdHandle( STD_OUTPUT_HANDLE );
+	GetConsoleCursorInfo( handle, &info );
   	if( cursor >= 0 ) {
-  		GetConsoleCursorInfo( handle, &info );
   		info.bVisible = ( cursor ? TRUE : FALSE );
   		SetConsoleCursorInfo( handle, &info );
   	}
 
   	SetConsoleCursorPosition( handle, c );
 
+	return ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
 }
 
 

@@ -283,7 +283,7 @@ int fb_GfxKeyHit(void);
 int fb_GfxColor(int fg_color, int bg_color);
 void fb_GfxClear(int mode);
 int fb_GfxWidth(int w, int h);
-void fb_GfxLocate(int y, int x, int cursor);
+int fb_GfxLocate(int y, int x, int cursor);
 int fb_GfxGetX(void);
 int fb_GfxGetY(void);
 void fb_GfxPrintBuffer(char *buffer, int mask);

@@ -122,12 +122,13 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 
 
 /*:::::*/
-void fb_GfxLocate(int y, int x, int cursor)
+int fb_GfxLocate(int y, int x, int cursor)
 {
 	if (x > 0)
 		fb_mode->cursor_x = x - 1;
 	if (y > 0)
 		fb_mode->cursor_y = y - 1;
+	return ((fb_mode->cursor_x + 1) & 0xFF) | (((fb_mode->cursor_y + 1) & 0xFF) << 8);
 }
 
 

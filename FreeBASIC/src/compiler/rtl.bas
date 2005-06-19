@@ -1756,9 +1756,9 @@ data "cls", "fb_Cls", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,&hFFFF0000
-'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as void
+'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
 data "locate", "fb_Locate", _
-	 FB.SYMBTYPE.VOID,FB.FUNCMODE.STDCALL, _
+	 FB.SYMBTYPE.INTEGER,FB.FUNCMODE.STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
 	 FB.SYMBTYPE.INTEGER,FB.ARGMODE.BYVAL, TRUE,0, _

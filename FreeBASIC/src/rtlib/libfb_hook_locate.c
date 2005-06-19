@@ -27,16 +27,18 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_Locate( int row, int col, int cursor )
+FBCALL int fb_Locate( int row, int col, int cursor )
 {
-
+	int res;
+	
 	FB_LOCK();
 	
 	if( fb_hooks.locateproc )
-		fb_hooks.locateproc( row, col, cursor );
+		res = fb_hooks.locateproc( row, col, cursor );
 	else
-		fb_ConsoleLocate( row, col, cursor );
+		res = fb_ConsoleLocate( row, col, cursor );
 
 	FB_UNLOCK();
 
+	return res;
 }

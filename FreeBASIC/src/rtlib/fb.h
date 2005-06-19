@@ -366,7 +366,7 @@ extern FB_PRINTUSGCTX fb_printusgctx;
 	   int 			fb_ConsoleWidth		( int cols, int rows );
 	   void 		fb_ConsoleClear		( int mode );
 
-	   void 		fb_ConsoleLocate	( int row, int col, int cursor );
+	   int	 		fb_ConsoleLocate	( int row, int col, int cursor );
 	   int 			fb_ConsoleGetY		( void );
        int 			fb_ConsoleGetX		( void );
 FBCALL void 		fb_ConsoleGetSize	( int *cols, int *rows );
@@ -604,9 +604,9 @@ typedef int	  		(*FB_COLORPROC)		( int fc, int bc );
 
 FBCALL int 			fb_Color			( int fc, int bc );
 
-typedef void	  	(*FB_LOCATEPROC)	( int row, int col, int cursor );
+typedef int		  	(*FB_LOCATEPROC)	( int row, int col, int cursor );
 
-FBCALL void 		fb_Locate			( int row, int col, int cursor );
+FBCALL int 			fb_Locate			( int row, int col, int cursor );
 
 typedef int	  		(*FB_WIDTHPROC)		( int cols, int rows );
 

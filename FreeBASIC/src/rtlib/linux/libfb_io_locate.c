@@ -30,9 +30,10 @@
 
 
 /*:::::*/
-void fb_ConsoleLocate( int row, int col, int cursor )
+int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	int x, y;
+	static int visible = 0x10000;
 
 	if (!fb_con.inited)
 		return;
@@ -56,10 +57,15 @@ void fb_ConsoleLocate( int row, int col, int cursor )
 	else
 		fb_con.cur_y = fb_con.h;
 	fprintf(fb_con.f_out, "\e[%d;%dH", y, x);
-	if (cursor == 0)
+	if (cursor == 0) {
 		fputs("\e[?25l", fb_con.f_out);
-	else if (cursor == 1)
+		visible = 0;
+	}
+	else if (cursor == 1) {
 		fputs("\e[?25h", fb_con.f_out);
+		visible = 0x10000;
+	}
+	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
 }
 
 
