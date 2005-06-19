@@ -28,23 +28,6 @@
 
 #include <limits.h>
 
-
-
-
-
-/*
-
-
-TODO:
-
-
-inkey$
-
-lock all code and data accessed in interrupt handlers
-
-*/
-
-
 /* driver list */
 
 extern GFXDRIVER fb_gfxDriverVGA;
@@ -58,6 +41,8 @@ const GFXDRIVER *fb_gfx_driver_list[] = {
 
 fb_dos_t fb_dos;
 
+/* special externs for locking code */
+extern void fb_hPostKey_End(void);
 
 #define MOUSE_WIDTH     12
 #define MOUSE_HEIGHT    21
@@ -191,7 +176,34 @@ static void fb_dos_restore_video_mode(void);
 static void fb_dos_kb_init(void);
 static void fb_dos_kb_exit(void);
 
-/*:::::*/				
+static void _lock_mem(unsigned int address, size_t size)
+{
+	static __dpmi_meminfo mi;
+	mi.address = address;
+	mi.size = size;
+	__dpmi_lock_linear_region(&mi);
+}
+
+#define lock_mem(addr, size) _lock_mem( (unsigned int)(addr), (size_t)(size) )
+#define lock_var(var)        lock_mem( &(var), sizeof(var) )
+#define lock_array(array)    lock_mem( (array), sizeof(array) )
+#define lock_proc(proc)      lock_mem( proc, end_##proc )
+
+static void _unlock_mem(unsigned int address, size_t size)
+{
+	static __dpmi_meminfo mi;
+	mi.address = address;
+	mi.size = size;
+	__dpmi_unlock_linear_region(&mi);
+}
+
+#define unlock_mem(addr, size) _unlock_mem( (unsigned int)(addr), (size_t)(size) )
+#define unlock_var(var)        unlock_mem( &(var), sizeof(var) )
+#define unlock_array(array)    unlock_mem( (array), sizeof(array) )
+#define unlock_proc(proc)      unlock_mem( proc, end_##proc )
+
+
+/*:::::*/
 static void kb_handler(void)
 /* keyboard interrupt handler - 
    all accessed code and data must be locked! */
@@ -201,21 +213,29 @@ static void kb_handler(void)
 	unsigned short ascii;
 	
 	/* read the raw scan code from the keyboard */
-	scan = inportb(0x60);		/* read scan code */
-	status = inportb(0x61);		/* read keyboard status */
-	outportb(0x61, status | 0x80);	/* set bit 7 and write */
-	outportb(0x61, status);		/* write again, bit 7 clear */
-	outportb(0x20, 0x20);		/* reset PIC */
+	scan = inportb(0x60);           /* read scan code */
+	status = inportb(0x61);         /* read keyboard status */
+	outportb(0x61, status | 0x80);  /* set bit 7 and write */
+	outportb(0x61, status);         /* write again, bit 7 clear */
+	outportb(0x20, 0x20);           /* reset PIC */
 	
 	/* TODO: handle extended keys */
 	
-	if (scan & 0x80) {		/* release */
+	if (scan & 0x80) {              /* release */
 		fb_mode->key[scan & ~0x80] = FALSE;
-	} else {			/* press */
+	} else {                        /* press */
 		fb_mode->key[scan] = TRUE;
 		
-		/* TODO: check state of shift and ctrl keys*/
-		ascii = kb_scan_to_ascii[scan][0];
+		/* TODO: check state of CapsLock */
+		
+		if ((fb_mode->key[SC_LSHIFT]) || (fb_mode->key[SC_RSHIFT])) {
+			ascii = kb_scan_to_ascii[scan][1];
+		} else if (fb_mode->key[SC_CONTROL]) {
+			ascii = kb_scan_to_ascii[scan][2];
+		} else {
+			ascii = kb_scan_to_ascii[scan][0];
+		}
+		
 		if (ascii) fb_hPostKey(ascii);
 	}
 }
@@ -309,6 +329,8 @@ void fb_dos_update_mouse(void)
 	
 }
 
+static void end_fb_dos_update_mouse(void) {}
+
 /*:::::*/
 static void fb_dos_mouse_exit(void)
 {
@@ -343,6 +365,8 @@ static void fb_dos_draw_mouse_8(void)
 	}
 }
 
+static void end_fb_dos_draw_mouse_8(void) {}
+
 /*:::::*/
 static void fb_dos_undraw_mouse_8(void)
 {
@@ -355,6 +379,8 @@ static void fb_dos_undraw_mouse_8(void)
 		fb_hMemCpy(&fb_mode->framebuffer[dst_y * fb_dos.w + fb_dos.mouse_x], &mouse_save[src_y * MOUSE_WIDTH], MOUSE_WIDTH);
 	}
 }
+
+static void end_fb_dos_undraw_mouse_8(void) {}
 
 /*:::::*/
 static void fb_dos_timer_handler(void)
@@ -523,33 +549,27 @@ void fb_dos_detect(void)
 /*:::::*/
 void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
-	__dpmi_meminfo mi;
-	
 	/* lock code and data accessed in int handlers */
 	
-	mi.address = (unsigned int)fb_mode;
-	mi.size = sizeof(MODE);
-	__dpmi_lock_linear_region(&mi);
+	lock_var(fb_mode);
+	lock_var(fb_dos);
 	
-	mi.address = (int)&fb_mode->key;
-	mi.size = 128;
-	__dpmi_lock_linear_region(&mi);
+	lock_mem(fb_mode->key, 128);
 	
-	mi.address = (unsigned int)&fb_dos;
-	mi.size = sizeof(fb_dos);
-	__dpmi_lock_linear_region(&mi);
+	lock_array(fb_dos_mouse_image);
+	lock_array(mouse_color);
+	lock_array(mouse_save);
+	lock_array(kb_scan_to_ascii);
 	
-	mi.address = (unsigned int)kb_handler;
-	mi.size = (unsigned int)end_kb_handler - (unsigned int)kb_handler;
-	__dpmi_lock_linear_region(&mi);
+	lock_proc(kb_handler);
+	lock_proc(fb_dos_timer_handler);
+	lock_proc(fb_dos_update_mouse);
+	lock_proc(fb_dos_draw_mouse_8);
+	lock_proc(fb_dos_undraw_mouse_8);
+	lock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
+	lock_mem(fb_dos.update, fb_dos.update_len);
 	
-	mi.address = (unsigned int)fb_dos_timer_handler;
-	mi.size = (unsigned int)end_fb_dos_timer_handler;
-	__dpmi_lock_linear_region(&mi);
-	
-	mi.address = (unsigned int)fb_dos.update;
-	mi.size = fb_dos.update_len;
-	__dpmi_lock_linear_region(&mi);
+	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
 	
 	fb_dos.w = w;
 	fb_dos.h = h;
@@ -568,17 +588,20 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 	fb_dos_timer_init();
 	fb_dos_timer_set_rate(refresh_rate);
 	
-	fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, 1);
-	fb_dos.mouse_z = fb_dos.mouse_wheel_ok ? 0 : -1;
+	if (fb_dos.mouse_ok) {
+		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE);
+	} else {
+		fb_dos.mouse_cursor = FALSE;
+	}
 	
+	fb_dos.mouse_z = fb_dos.mouse_wheel_ok ? 0 : -1;
+		
 	fb_dos.inited = TRUE;
 }
 
 /*:::::*/
 void fb_dos_exit(void)
 {
-	__dpmi_meminfo mi;
-	
 	if (!fb_dos.inited) return;
 	
 	fb_dos_timer_exit();
@@ -586,33 +609,27 @@ void fb_dos_exit(void)
 	fb_dos_kb_exit();
 	fb_dos_restore_video_mode();
 	
-	fb_dos.w = fb_dos.h = fb_dos.depth = fb_dos.rate = 0;
+	fb_dos.w = fb_dos.h = fb_dos.depth = fb_dos.refresh = 0;
 	
 	/* unlock code and data */
 	
-	mi.address = (unsigned int)fb_mode;
-	mi.size = sizeof(MODE);
-	__dpmi_unlock_linear_region(&mi);
+	unlock_var(fb_mode);
+	unlock_var(fb_dos);
 	
-	mi.address = (int)&fb_mode->key;
-	mi.size = 128;
-	__dpmi_unlock_linear_region(&mi);
+	unlock_mem(fb_mode->key, 128);
 	
-	mi.address = (unsigned int)&fb_dos;
-	mi.size = sizeof(fb_dos);
-	__dpmi_unlock_linear_region(&mi);
+	unlock_array(fb_dos_mouse_image);
+	unlock_array(mouse_color);
+	unlock_array(mouse_save);
+	unlock_array(kb_scan_to_ascii);
 	
-	mi.address = (unsigned int)kb_handler;
-	mi.size = (unsigned int)end_kb_handler - (unsigned int)kb_handler;
-	__dpmi_unlock_linear_region(&mi);
-	
-	mi.address = (unsigned int)fb_dos_timer_handler;
-	mi.size = (unsigned int)end_fb_dos_timer_handler;
-	__dpmi_unlock_linear_region(&mi);
-	
-	mi.address = (unsigned int)fb_dos.update;
-	mi.size = fb_dos.update_len;
-	__dpmi_unlock_linear_region(&mi);
+	unlock_proc(kb_handler);
+	unlock_proc(fb_dos_timer_handler);
+	unlock_proc(fb_dos_update_mouse);
+	unlock_proc(fb_dos_draw_mouse_8);
+	unlock_proc(fb_dos_undraw_mouse_8);
+	unlock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
+	unlock_mem(fb_dos.update, fb_dos.update_len);
 	
 	fb_dos.inited = FALSE;
 }
