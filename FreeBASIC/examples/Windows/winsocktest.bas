@@ -72,7 +72,7 @@ declare function resolveHost	( hostname as string ) as integer
 				 "Host: " + hostname + NEWLINE + _
 				 "Connection: close" + NEWLINE + _
 				 "User-Agent: GetHTTP 0.0" + NEWLINE + _
-				 + NEWLINE
+				 NEWLINE
 				 
     if( send( s, strptr( sendBuffer ), len( sendBuffer ), 0 ) = SOCKET_ERROR ) then
 		print "Error:"; WSAGetLastError; " Calling: send()"

@@ -53,7 +53,7 @@ declare sub gethostandpath( src as string, hostname as string, path as string )
 				 "Host: " + hostname + NEWLINE + _
 				 "Connection: close" + NEWLINE + _
 				 "User-Agent: GetHTTP 0.0" + NEWLINE + _
-				 + NEWLINE
+				 NEWLINE
 				 
     if( SDLNet_TCP_Send( socket, strptr( sendbuffer ), len( sendbuffer ) ) < len( sendbuffer ) ) then
 		print "Error: SDLNet_TCP_Send failed"

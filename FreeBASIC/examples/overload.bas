@@ -49,6 +49,8 @@ declare sub foo ( byval bar as longint ptr )
 	foo( cdbl( intvar ) )
 	foo( intvar + dblvar )
 	
+	sleep
+	
 '':::::
 sub foo ( byval bar as integer )
 

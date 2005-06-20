@@ -228,7 +228,7 @@ function WinMain ( byval hInstance as long, _
 
 	dim hAccelTable as long
 	
-	hAccelTable = LoadAccelerators(hInstance, IDC_MAINMENU)
+	hAccelTable = LoadAccelerators(hInstance, byval IDC_MAINMENU)
 
     ''
     '' Process windows messages
