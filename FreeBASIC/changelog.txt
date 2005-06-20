@@ -82,6 +82,10 @@ Version 0.14 Beta:
 - VIEW in gfx mode was not filling the area if a fill color was specified, and border color had problems if in
   truecolor mode (lillo)
 - using CLS in Linux console was forcing screen clear on program exit (lillo)
+- passing by desc arguments to GFX function w/o explicit indexes given would crash the compiler (v1c)
+- dereference of void types was been allowed (v1c)
+- a field referencing the parent UDT would put the compiler into an infinite loop (v1c)
+- ASM inline in the RT lib would not generate what was expected in GCC 4.x, as it's more restrict than 3.x (v1c)
 
 
 Version 0.13 Beta:
