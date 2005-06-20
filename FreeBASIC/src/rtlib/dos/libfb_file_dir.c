@@ -52,8 +52,10 @@ static char *find_next ( void )
 
 	if (findnext(&dir_data.f) == 0)
 		return dir_data.f.ff_name;
-	else
-		close_dir();
+		
+	close_dir();
+	
+	return NULL;
 }
 
 
