@@ -36,7 +36,7 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 	static int visible = 0x10000;
 
 	if (!fb_con.inited)
-		return;
+		return 0;
 	
 	fb_hResize();
 	

@@ -246,7 +246,7 @@ void fb_hInit ( int argc, char **argv )
 		init = INIT_CONSOLE;
 	if ((term) && (!strncmp(term, "xterm", 5)))
 		init = INIT_XTERM;
-	if ((term) && (!strncmp(term, "Eterm", 5)))
+	if ((term) && (!strncasecmp(term, "eterm", 5)))
 		init = INIT_ETERM;
 	if (!init)
 		return;
