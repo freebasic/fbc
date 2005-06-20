@@ -43,8 +43,13 @@ endif
 
 OSDEPPATH :=
 CC := gcc
-CFLAGS := -O2 -ffast-math -Wall -I .
+CFLAGS := -ffast-math -Wall -I .
 AFLAGS := -x assembler-with-cpp
+ifdef DEBUG
+CFLAGS += -g -O0
+else
+CFLAGS += -O2
+endif
 
 ifeq ($(TARGET),win32)
     OSDEPPATH := win32
@@ -62,6 +67,10 @@ ifeq ($(TARGET),linux)
     OSDEPPATH := linux
 	CFLAGS += -DTARGET_LINUX -DTARGET_X86
 	AFLAGS += -DTARGET_LINUX
+endif
+
+ifndef DEBUG
+	LDFLAGS += -s
 endif
 
 objpath = obj/$(OSDEPPATH)

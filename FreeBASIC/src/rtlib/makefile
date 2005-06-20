@@ -43,7 +43,12 @@ endif
 
 OSDEPPATH :=
 CC := gcc
-CFLAGS := -O2 -ffast-math -Wall -Wno-format -I .
+CFLAGS := -ffast-math -Wall -Wno-format -I .
+ifdef DEBUG
+CFLAGS += -O0 -g
+else
+CFLAGS += -O2
+endif
 
 ifeq ($(TARGET),win32)
     OSDEPPATH := win32
@@ -58,6 +63,10 @@ endif
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
 	CFLAGS += -DTARGET_LINUX -DTARGET_X86
+endif
+
+ifndef DEBUG
+	LDFLAGS += -s
 endif
 
 libpath = ../../lib/$(TARGET)
