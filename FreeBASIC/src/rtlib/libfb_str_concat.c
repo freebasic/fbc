@@ -54,7 +54,7 @@ static void fb_hStrConcat( char *dst, char *str1, int len1, char *str2, int len2
 			"andl $3,%%ecx\n"
 			"rep\n"
 			"movsb"
-			: /* */
+			: "=D" (dst)
 			: "c" (len1), "S" (str1), "D" (dst) );
 	}
 
@@ -69,7 +69,7 @@ static void fb_hStrConcat( char *dst, char *str1, int len1, char *str2, int len2
 			"andl $3,%%ecx\n"
 			"rep\n"
 			"movsb"
-			: /* */
+			: "=D" (dst)
 			: "c" (len2), "S" (str2), "D" (dst) );
 	}
 

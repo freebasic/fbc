@@ -197,26 +197,29 @@ void fb_hStrCopy( char *dst, char *src, int bytes )
 		/* remainder */
 		for( i = 0; i < (bytes & 3); i++ )
 			*dst++ = *src++;
+			
+		*dst = '\0';
 
 #else
 
-	asm (
-		"pushl %%ecx\n"
-		"shrl $2,%%ecx\n"
-		"rep\n"
-		"movsd\n"
-		"popl %%ecx\n"
-		"andl $3,%%ecx\n"
-		"rep\n"
-		"movsb"
-		: /* */
-		: "c" (bytes), "S" (src), "D" (dst) );
+		asm (
+			"pushl %%ecx\n"
+			"shrl $2,%%ecx\n"
+			"rep\n"
+			"movsd\n"
+			"popl %%ecx\n"
+			"andl $3,%%ecx\n"
+			"rep\n"
+			"movsb\n"
+			"movb $0, (%%edi)"
+			: /* */
+			: "c" (bytes), "S" (src), "D" (dst) );
 
 #endif
 
 	}
-
-	*dst = '\0';
+	else	
+		*dst = '\0';
 
 }
 
