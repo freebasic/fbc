@@ -17,6 +17,10 @@ ifndef FBCFLAGS
 FBCFLAGS=-e -ex -g
 endif
 
+ifdef FIXIT
+FBCFLAGS+= -d FIXIT=1
+endif
+
 HOST :=
 ifeq ($(OS),DOS)
 	HOST := dos
@@ -60,7 +64,7 @@ ifeq ($(TARGET),dos)
 endif
 
 
-TESTS=file/text_in$(EXEEXT)
+TESTS=file/text_in$(EXEEXT) dim/submod$(EXEEXT)
 
 all: $(TESTS) run_tests
 
@@ -69,9 +73,16 @@ clean:
 
 run_tests:
 	file/text_in
+	dim/submod
 
 file/text_in$(EXEEXT): file/text_in.o
 	$(FBC) $(FBCFLAGS) -x $@ $^
+
+dim/submod$(EXEEXT): dim/submod_a.o dim/submod_b.o
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+dim/submod_a.bas: dim/submod_c.bi
+dim/submod_b.bas: dim/submod_c.bi
 
 %.o: %.bas
 	$(FBC) $(FBCFLAGS) -c -o $@ $^
