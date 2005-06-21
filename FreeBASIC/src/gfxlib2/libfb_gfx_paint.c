@@ -88,16 +88,19 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 
 	fb_hTranslateCoord(fx, fy, &x, &y);
 
+	fb_hMemSet(data, 0, sizeof(data));
+	if ((mode == PAINT_TYPE_PATTERN) && (pattern))
+		fb_hMemCpy(data, pattern->data, MIN(256, FB_STRSIZE(pattern)));
+
+	/* del if temp */
+	fb_hStrDelTemp( pattern );
+
 	if ((x < fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
 	    (y < fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
 		return;
 
 	if (fb_hGetPixel(x, y) == border_color)
 		return;
-
-	fb_hMemSet(data, 0, sizeof(data));
-	if ((mode == PAINT_TYPE_PATTERN) && (pattern))
-		fb_hMemCpy(data, pattern->data, MIN(256, FB_STRSIZE(pattern)));
 
 	size = sizeof(SPAN *) * fb_mode->h;
 	span = (SPAN **)malloc(size);
@@ -168,8 +171,5 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	free(span);
 
 	DRIVER_UNLOCK();
-
-	/* del if temp */
-	fb_hStrDelTemp( pattern );
 
 }
