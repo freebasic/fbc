@@ -50,7 +50,6 @@ FBCALL int fb_FileEof( int fnum )
 		{
 		case FB_FILE_MODE_BINARY:
 		case FB_FILE_MODE_RANDOM:
-		case FB_FILE_MODE_INPUT:
 			if( ftell( fb_fileTB[fnum-1].f ) >= fb_fileTB[fnum-1].size ) {
 				FB_UNLOCK();
 	        	return FB_TRUE;
