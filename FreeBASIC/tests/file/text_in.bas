@@ -91,6 +91,68 @@ file_access_failed:
     return 0
 end function
 
+function TestInputContentsEOF3 as integer
+	dim i as integer
+	dim l as string
+  
+    on local error goto file_access_failed
+	open exepath() + "/../data/threebin.txt" for input as #1
+	i=0
+	while not eof(1)
+    	line input #1, l
+        select case i
+        case 0
+        	if l<>"1" then return 0
+        case 1
+        	if l<>"2" then return 0
+        case 2
+        	if l<>"" then return 0
+        case else
+            return 0
+        end select
+		i+=1
+	wend
+	close #1
+
+	' we cannot check for i=2 because on some platforms we can only detect
+	' the EOF after a read access (e.g. line input statement)
+	return i>=2 and i<=3
+
+file_access_failed:
+    return 0
+end function
+
+function TestInputContentsEOF4 as integer
+	dim i as integer
+	dim l as string
+  
+    on local error goto file_access_failed
+	open exepath() + "/../data/fourbin.txt" for input as #1
+	i=0
+	while not eof(1)
+    	line input #1, l
+        select case i
+        case 0
+        	if l<>"1" then return 0
+        case 1
+        	if l<>"2" then return 0
+        case 2
+        	if l<>"" then return 0
+        case else
+            return 0
+        end select
+		i+=1
+	wend
+	close #1
+
+	' we cannot check for i=2 because on some platforms we can only detect
+	' the EOF after a read access (e.g. line input statement)
+	return i>=2 and i<=3
+
+file_access_failed:
+    return 0
+end function
+
 function TestBinaryEOF as integer
 	dim i as integer
 	dim l as string
@@ -102,7 +164,7 @@ function TestBinaryEOF as integer
     	line input #1, l
         select case i
         case 0
-        	if l<>"" and l<>chr$(26) then return 0
+        	if l<>chr$(26) then return 0
         case else
             return 0
         end select
@@ -110,9 +172,7 @@ function TestBinaryEOF as integer
 	wend
 	close #1
 
-	' we cannot check for i=0 because on some platforms we can only detect
-	' the EOF after a read access (e.g. line input statement)
-	return i>=0 and i<=1
+	return i=1
 
 file_access_failed:
     return 0
@@ -131,7 +191,7 @@ function TestBinaryContentsEOF1 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2" and l<>"2"+chr$(26) then return 0
+        	if l<>"2"+chr$(26) then return 0
         case else
             return 0
         end select
@@ -160,7 +220,7 @@ function TestBinaryContentsEOF2 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>"" and l<>chr$(26) then return 0
+        	if l<>chr$(26) then return 0
         case else
             return 0
         end select
@@ -168,14 +228,71 @@ function TestBinaryContentsEOF2 as integer
 	wend
 	close #1
 
-	' we cannot check for i=2 because on some platforms we can only detect
-	' the EOF after a read access (e.g. line input statement)
-	return i>=2 and i<=3
+	return i=3
 
 file_access_failed:
     return 0
 end function
 
+function TestBinaryContentsEOF3 as integer
+	dim i as integer
+	dim l as string
+  
+    on local error goto file_access_failed
+	open exepath() + "/../data/threebin.txt" for binary access read as #1
+	i=0
+	while not eof(1)
+    	line input #1, l
+        select case i
+        case 0
+        	if l<>"1" then return 0
+        case 1
+        	if l<>"2"+chr$(26) then return 0
+        case 2
+        	if l<>"3" then return 0
+        case else
+            return 0
+        end select
+		i+=1
+	wend
+	close #1
+
+	return i=3
+
+file_access_failed:
+    return 0
+end function
+
+function TestBinaryContentsEOF4 as integer
+	dim i as integer
+	dim l as string
+  
+    on local error goto file_access_failed
+	open exepath() + "/../data/fourbin.txt" for binary access read as #1
+	i=0
+	while not eof(1)
+    	line input #1, l
+        select case i
+        case 0
+        	if l<>"1" then return 0
+        case 1
+        	if l<>"2" then return 0
+        case 2
+        	if l<>chr$(26)+"3" then return 0
+        case 3
+        	if l<>"4" then return 0
+        case else
+            return 0
+        end select
+		i+=1
+	wend
+	close #1
+
+	return i=4
+
+file_access_failed:
+    return 0
+end function
 
 
 
@@ -232,9 +349,13 @@ end function
 RunTest("INPUT_EOF", @TestInputEOF())
 RunTest("INPUT_CONTENTS_EOF_01", @TestInputContentsEOF1())
 RunTest("INPUT_CONTENTS_EOF_02", @TestInputContentsEOF2())
+RunTest("INPUT_CONTENTS_EOF_03", @TestInputContentsEOF3())
+RunTest("INPUT_CONTENTS_EOF_04", @TestInputContentsEOF4())
 RunTest("BINARY_EOF", @TestBinaryEOF())
 RunTest("BINARY_CONTENTS_EOF_01", @TestBinaryContentsEOF1())
 RunTest("BINARY_CONTENTS_EOF_02", @TestBinaryContentsEOF2())
+RunTest("BINARY_CONTENTS_EOF_03", @TestBinaryContentsEOF3())
+RunTest("BINARY_CONTENTS_EOF_04", @TestBinaryContentsEOF4())
 
 if error_count<>0 then
     end 1
