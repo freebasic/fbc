@@ -86,7 +86,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 	DRIVER_LOCK();
 
 	flags = fb_mode->flags;
-	fb_mode->flags = VIEW_SCREEN;
+	fb_mode->flags |= VIEW_SCREEN;
 
 	while (*c) {
 		switch (toupper(*c)) {
@@ -138,7 +138,9 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				 * resides at location NAN (0x80000000) */
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
+				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
+				DRIVER_LOCK();
 				break;
 
 			case 'P':

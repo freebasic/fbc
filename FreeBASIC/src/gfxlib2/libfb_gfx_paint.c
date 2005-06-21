@@ -89,11 +89,11 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	fb_hTranslateCoord(fx, fy, &x, &y);
 
 	fb_hMemSet(data, 0, sizeof(data));
-	if ((mode == PAINT_TYPE_PATTERN) && (pattern))
+	if ((mode == PAINT_TYPE_PATTERN) && (pattern)) {
 		fb_hMemCpy(data, pattern->data, MIN(256, FB_STRSIZE(pattern)));
-
-	/* del if temp */
-	fb_hStrDelTemp( pattern );
+		/* del if temp */
+		fb_hStrDelTemp( pattern );
+	}
 
 	if ((x < fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
 	    (y < fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
