@@ -6,19 +6,19 @@
 
 private function _my_cs ( ) as integer
 	asm
-		mov [_my_cs], cs
+		mov [ebp - 4], cs     ' FIXME: There must be a better way
 	end asm
 end function
 
 private function _my_ds ( ) as integer
 	asm
-		mov [_my_ds], ds
+		mov [ebp - 4], ds     ' FIXME: There must be a better way
 	end asm
 end function
 
 private function _my_ss ( ) as integer
 	asm
-		mov [_my_ss], ss
+		mov [ebp - 4], ss     ' FIXME: There must be a better way
 	end asm
 end function
 
