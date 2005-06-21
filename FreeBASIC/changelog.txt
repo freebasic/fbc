@@ -86,6 +86,8 @@ Version 0.14 Beta:
 - dereference of void types was been allowed (v1c)
 - a field referencing the parent UDT would put the compiler into an infinite loop (v1c)
 - ASM inline in the RT lib would not generate what was expected in GCC 4.x, as it's more restrict than 3.x (v1c)
+- EOF didn't work with INPUT files on DOS (DJGPP, GCC 4.0)
+- The _get_cs(), _get_ds(), _get_ss() implementations didn't work
 
 
 Version 0.13 Beta:
