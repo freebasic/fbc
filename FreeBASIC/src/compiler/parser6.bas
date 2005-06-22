@@ -1697,6 +1697,18 @@ private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
 		if( not astIsCONST( exprtb(i) ) ) then
 			isconst = FALSE
 			exit for
+        else
+
+            '' when the constant value is 0, we must not handle this as a
+            '' constant string
+  			expr = exprtb(i)
+  			v = astGetValueAsInt( expr )
+
+			if( v = 0 ) then
+				isconst = FALSE
+				exit for
+			end if
+
 		end if
 	next i
 
