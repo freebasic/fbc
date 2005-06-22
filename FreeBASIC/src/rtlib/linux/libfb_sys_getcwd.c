@@ -35,6 +35,8 @@
 int fb_hGetCurrentDir ( char *dst, int maxlen )
 {
 
-	return strlen( getcwd( dst, maxlen ) );
+    if ( getcwd( dst, maxlen ) != NULL )
+        return strlen( dst );
+    return 0;
 
 }

@@ -88,6 +88,8 @@ Version 0.14 Beta:
 - ASM inline in the RT lib would not generate what was expected in GCC 4.x, as it's more restrict than 3.x (v1c)
 - EOF didn't work with INPUT files on DOS (DJGPP, GCC 4.0)
 - The _get_cs(), _get_ds(), _get_ss() implementations didn't work
+- curdir$ didn't work for DOS and might have caused SIGSEGV on Linux
+- curdir$ now returns path with backslashes instead of slashes
 
 
 Version 0.13 Beta:
