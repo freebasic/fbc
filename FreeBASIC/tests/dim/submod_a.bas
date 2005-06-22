@@ -18,7 +18,7 @@ color_data:
 
 dim ext_array_ptr as any ptr
 ext_array_ptr = varptr(ext_array(1,1))
-print "Ptr to array: ", ext_array_ptr
+print "Ptr to array: ", ext_array_ptr, get_array_ptr()
 
 print "Step 1"
 read ext_array(1,1)
