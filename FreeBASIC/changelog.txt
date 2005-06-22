@@ -18,7 +18,7 @@ Version 0.14 Beta:
 - LOCATE will now return the current/last cursor state as: (x or (y shl 8) or (visible shl 16)) (lillo)
 - ENUM's now are much restrict, warnings will be shown if they are passed or assigned to other types than 
   integers, but now its possible to overload functions where the enum argument is the main one (v1c)
-- curdir$ now returns path with backslashes instead of slashes
+- curdir$ now returns path with backslashes instead of slashes (mjs)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -48,7 +48,7 @@ Version 0.14 Beta:
 - added DYLIBFREE to unload a dynamic link library previously loaded at runtime by DYLIBLOAD (lillo)
 - labels already defined can now be referenced in inline ASM (v1c)
 - #DEFINE macros can now be empty too, as the argument-less ones used to (v1c)
-- '##'s can be used now to delimit macro arguments as in C: #define makefuncname(name) func_##name##
+- '##'s can be used now to delimit macro arguments as in C: #define makefuncname(name) func_##name## (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -92,11 +92,12 @@ Version 0.14 Beta:
 - dereference of void types was been allowed (v1c)
 - a field referencing the parent UDT would put the compiler into an infinite loop (lillo)
 - ASM inline in the RT lib would not generate what was expected in GCC 4.x, as it's more restrict than 3.x (v1c)
-- EOF didn't work with INPUT files on DOS (DJGPP, GCC 4.0)
-- The _get_cs(), _get_ds(), _get_ss() implementations didn't work
-- curdir$ didn't work for DOS and might have caused SIGSEGV on Linux
+- EOF didn't work with INPUT files on DOS (DJGPP, GCC 4.0) (mjs)
+- The _get_cs(), _get_ds(), _get_ss() implementations didn't work (mjs)
+- curdir$ didn't work for DOS and might have caused SIGSEGV on Linux (mjs)
 - the ANY type was been allowed in DIM/REDIM (v1c)
 - redimension of array fields was not resulting in a compile-time error (v1c)
+- include files are now searched for in current dir, then the source file dir, then the system include dirs (lillo)
 
 
 Version 0.13 Beta:

@@ -40,6 +40,13 @@ defint a-z
 	dim shared incfileTB( ) as zstring * FB.MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB.MAXPATHLEN+1
 
+'' const
+#if defined(TARGET_WIN32) or defined(TARGET_DOS)
+	const PATHDIV = "\\"
+#else
+	const PATHDIV = "/"
+#endif
+
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
@@ -62,12 +69,6 @@ data ""
 
 '':::::
 sub fbAddIncPath( byval path as string )
-
-#if defined(TARGET_WIN32) or defined(TARGET_DOS)
-	const PATHDIV = "\\"
-#else
-	const PATHDIV = "/"
-#endif
 
 	if( env.incpaths < FB.MAXINCPATHS ) then
 		if( right$( path, 1 ) <> PATHDIV ) then
@@ -486,15 +487,20 @@ function fbIncludeFile( byval filename as string, _
 	'' open include file
 	if( not hFileExists( filename ) ) then
 
-		'' try finding it at the inc paths
-		for i = env.incpaths-1 to 0 step -1
+		'' try finding it at same path as env.infile
+		incfile = hStripFilename( env.infile ) + PATHDIV + hStripPath( filename )
+		if( not hFileExists( incfile ) ) then
 
-			incfile = incpathTB(i) + filename
-			if( hFileExists( incfile ) ) then
-				exit for
-			end if
+			'' try finding it at the inc paths
+			for i = env.incpaths-1 to 0 step -1
 
-		next i
+				incfile = incpathTB(i) + filename
+				if( hFileExists( incfile ) ) then
+					exit for
+				end if
+
+			next i
+		end if
 
 	else
 		incfile = filename
