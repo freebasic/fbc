@@ -1432,16 +1432,8 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				exit function
 			end if
 
-			select case as const astGetDataType( expr1 )
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-				value = astGetValue64( expr1 )
-			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-				value = astGetValueF( expr1 )
-			case else
-				value = astGetValueI( expr1 )
-			end select
-
-			astDel expr1
+			value = astGetValueAsInt( expr1 )
+			astDel( expr1 )
 
 			'' TO?
 			if( hMatch( FB.TK.TO ) ) then
@@ -1455,16 +1447,8 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 					exit function
 				end if
 
-				select case as const astGetDataType( expr2 )
-				case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-					tovalue = astGetValue64( expr2 )
-				case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-					tovalue = astGetValueF( expr2 )
-				case else
-					tovalue = astGetValueI( expr2 )
-				end select
-
-				astDel expr2
+				tovalue = astGetValueAsInt( expr2 )
+				astDel( expr2 )
 
 				for value = value to tovalue
 					if( value < minval ) then minval = value
@@ -1556,7 +1540,7 @@ function cSelectConstStmt as integer
 	end if
 
 	if( astGetDataType( expr ) <> IR.DATATYPE.UINT ) then
-		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
+		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr )
 	end if
 
 	'' Comment?

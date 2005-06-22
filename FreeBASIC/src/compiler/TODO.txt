@@ -1,13 +1,6 @@
-
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
       that will keep track of what wasn't initialized to fill 'em with 0's
-
-[ ] Enum's shouldn't become integer's, or it won't be possible to use overloading with
-    parameters where only the enum's are different
-    - AST will have to deal with that, on BOP, UOP, ASSIGN, IIF and anything else, they should
-      be seen as integers to IR
-    - with the change, AST can check for different enums and show warnings
 
 [ ] rewrite the emit module, using pseudo-opcode lists (as in IR), never emit any text
     - keep track of functions
@@ -30,9 +23,8 @@
     - GDB is getting nuts with the "main" function overlapping the real ones, so the main module can't be
       emited until all real functions are. Emit will have to use a buffer or such. Include files CAN'T
       be part of the main module either
-    - add include files - module level code won't be supported, only sub-routines, it's bad practic anyways..
     - add dynamic arrays - can't get GDB to use Fortran-like arrays
-    - add enums (sym tb must link the elements with the parent enum)
+    - each overloaded function will show the locals of ALL functions
 
 [ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
 
@@ -51,6 +43,7 @@
 
 *** *** *** *** ***
 [ ] pointer type casting
+    - ()'s should be supported, to allow macros as in GTK to work: GTK_COMBO(widget)->entry
 
 [ ] parser should never call IR directly, or no inline functions can be added (or never-called
     private functions eliminated). For that be done, all labels must be handled by AST, ASM,
@@ -67,7 +60,10 @@
 
 [ ] make the emiter modules modular (duh), so multiple cpu targets could be supported.. some day
 
-[ ] classes  -- single inheritance, plus interfaces -- Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
+[ ] classes
+    - single inheritance, plus interfaces
+    - Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
+    - MUST follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
 
 *** yet another optimizations ***
 [ ] reuse temp vars (or just strings), so less mem is used

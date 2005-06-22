@@ -2276,7 +2276,7 @@ private sub hAddIntrinsicMacros
         	arg = arg->r
         loop
 
-        symbAddDefine( mname, mtext, args, arghead )
+        symbAddDefine( mname, mtext, len( mtext ), args, arghead )
 
 	loop
 
@@ -2850,7 +2850,7 @@ function rtlStrChr( byval args as integer, _
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
-    		expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )
+    		expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, expr )
     	end if
 
     	if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = NULL ) then
@@ -2921,7 +2921,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
-    		expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )
+    		expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, expr )
     	end if
 
 		if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = NULL ) then
@@ -2933,7 +2933,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 
     	'' convert to int
     	if( astGetDataType( expr ) <> IR.DATATYPE.INTEGER ) then
-    		expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )
+    		expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, expr )
     	end if
 
 		if( astNewPARAM( proc, expr, IR.DATATYPE.INTEGER ) = NULL ) then
@@ -3242,7 +3242,7 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 		f = ifuncTB(FB.RTL.DATAREADSHORT)
 	case IR.DATATYPE.USHORT
 		f = ifuncTB(FB.RTL.DATAREADUSHORT)
-	case IR.DATATYPE.INTEGER
+	case IR.DATATYPE.INTEGER, IR.DATATYPE.ENUM
 		f = ifuncTB(FB.RTL.DATAREADINT)
 	case IR.DATATYPE.UINT
 		f = ifuncTB(FB.RTL.DATAREADUINT)
@@ -3529,7 +3529,7 @@ private function hCalcExprLen( byval expr as ASTNODE ptr, _
 	case IR.DATATYPE.SHORT, IR.DATATYPE.USHORT
 		lgt = 2
 
-	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
+	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT, IR.DATATYPE.ENUM
 		lgt = FB.INTEGERSIZE
 
 	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
@@ -3735,7 +3735,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 			f = ifuncTB(FB.RTL.PRINTSHORT)
 		case IR.DATATYPE.USHORT
 			f = ifuncTB(FB.RTL.PRINTUSHORT)
-		case IR.DATATYPE.INTEGER
+		case IR.DATATYPE.INTEGER, IR.DATATYPE.ENUM
 			f = ifuncTB(FB.RTL.PRINTINT)
 		case IR.DATATYPE.UINT
 			f = ifuncTB(FB.RTL.PRINTUINT)
@@ -3874,7 +3874,7 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 			f = ifuncTB(FB.RTL.WRITESHORT)
 		case IR.DATATYPE.USHORT
 			f = ifuncTB(FB.RTL.WRITEUSHORT)
-		case IR.DATATYPE.INTEGER
+		case IR.DATATYPE.INTEGER, IR.DATATYPE.ENUM
 			f = ifuncTB(FB.RTL.WRITEINT)
 		case IR.DATATYPE.UINT
 			f = ifuncTB(FB.RTL.WRITEUINT)
@@ -5051,7 +5051,7 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 		f = ifuncTB(FB.RTL.INPUTBYTE)
 	case IR.DATATYPE.SHORT, IR.DATATYPE.USHORT
 		f = ifuncTB(FB.RTL.INPUTSHORT)
-	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT
+	case IR.DATATYPE.INTEGER, IR.DATATYPE.UINT, IR.DATATYPE.ENUM
 		f = ifuncTB(FB.RTL.INPUTINT)
 	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
 		f = ifuncTB(FB.RTL.INPUTLONGINT)

@@ -60,19 +60,6 @@ declare function 	cSymbolDecl             ( ) as integer
 declare function 	cSymbolDef 				( byval alloctype as integer, _
 											  byval dopreserve as integer = FALSE ) as integer
 
-declare function 	cDynArrayDef			( byval id as string, _
-											  byval idlias as string, _
-											  byval typ as integer, _
-											  byval subtype as FBSYMBOL ptr, _
-											  byval ptrcnt as integer, _
-											  byval istypeless as integer, _
-											  byval lgt as integer, _
-											  byval addsuffix as integer, _
-											  byval alloctype as integer, _
-											  byval dopreserve as integer, _
-											  byval dimensions as integer, _
-											  exprTB() as ASTNODE ptr ) as FBSYMBOL ptr
-
 declare function 	cStaticArrayDecl 		( dimensions as integer, _
 											  dTB() as FBARRAYDIM ) as integer
 

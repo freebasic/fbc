@@ -457,6 +457,7 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.INTEGER
 	FB.SYMBTYPE.LONG			= FB.SYMBTYPE.INTEGER
 	FB.SYMBTYPE.UINT
+	FB.SYMBTYPE.ENUM
 	FB.SYMBTYPE.LONGINT
 	FB.SYMBTYPE.ULONGINT
 	FB.SYMBTYPE.SINGLE
@@ -469,7 +470,7 @@ enum FBSYMBTYPE_ENUM
 	FB.SYMBTYPE.POINTER            				'' must be the last
 end enum
 
-const FB.SYMBOLTYPES			= 18
+const FB.SYMBOLTYPES			= 19
 
 
 '' allocation types mask
@@ -603,10 +604,6 @@ type FBSARRAY
 	desc			as FBSYMBOL_ ptr
 end type
 
-type FBSCONST
-	text			as string
-end type
-
 ''
 type FBSUDT
 	isunion			as integer
@@ -628,6 +625,23 @@ type FBSUDTELM
 
 	l				as FBSYMBOL_ ptr			'' left
 	r				as FBSYMBOL_ ptr			'' right
+end type
+
+''
+type FBSENUM
+	elements		as integer
+	head			as FBSYMBOL_ ptr			'' first element
+	tail			as FBSYMBOL_ ptr			'' last  /
+end type
+
+type FBSENUMELM
+	nxt				as FBSENUMELM ptr			'' next element
+end type
+
+''
+type FBSCONST
+	text			as string
+	eelm			as FBSENUMELM
 end type
 
 ''
@@ -716,6 +730,7 @@ type FBSYMBOL
 		def			as FBSDEFINE
 		key			as FBSKEYWORD
 		fwd			as FBSFWDREF
+		enum		as FBSENUM
 	end union
 
 	dbg				as FBDBG
@@ -739,6 +754,7 @@ type FBCMPSTMT
 end type
 
 type FBENUMCTX
+    sym				as FBSYMBOL ptr
     value 			as integer
     elements 		as integer
 end type

@@ -69,7 +69,7 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
+			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
@@ -280,7 +280,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			'' if index isn't an integer, convert
 			if( (astGetDataClass( idxexpr ) <> IR.DATACLASS.INTEGER) or _
 				(astGetDataSize( idxexpr ) <> FB.POINTERSIZE) ) then
-				idxexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, idxexpr )
+				idxexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, idxexpr )
 				if( idxexpr = NULL ) then
 					hReportError FB.ERRMSG.INVALIDDATATYPES
 					exit function
@@ -519,7 +519,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
+			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
@@ -593,7 +593,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
+			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
@@ -683,7 +683,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, dimexpr )
+			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
@@ -817,8 +817,8 @@ function cVariable( varexpr as ASTNODE ptr, _
 
 	else
 
-		'' it can be also an UDT, as dots can be part of symbol names..
-		sym = symbLookupUDTVar( *id, lexTokenDotPos, typ, ofs, elm, subtype )
+		'' it can be also an UDT, as periods can be part of symbol names..
+		sym = symbLookupUDTElm( *id, lexTokenDotPos( ), typ, ofs, elm, subtype )
 		if( sym = NULL ) then
 			'' add undeclared variable
 			if( hGetLastError( ) <> FB.ERRMSG.OK ) then

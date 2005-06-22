@@ -594,7 +594,7 @@ function cTypeConvExpr( tconvexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	tconvexpr = astNewCONV( op, totype, tconvexpr )
+	tconvexpr = astNewCONV( op, totype, NULL, tconvexpr )
 
     if( tconvexpr = NULL ) Then
     	hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
@@ -729,7 +729,7 @@ function cParentDeref( derefexpr as ASTNODE ptr, _
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( expr ) <> IR.DATACLASS.INTEGER) or _
 			(astGetDataSize( expr ) <> FB.POINTERSIZE) ) then
-			expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, expr )
+			expr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, expr )
 			if( expr = NULL ) then
 				hReportError FB.ERRMSG.INVALIDDATATYPES
 				exit function
@@ -1143,6 +1143,8 @@ function cConstant( constexpr as ASTNODE ptr ) as integer static
 
   		else
   			select case as const typ
+  			case IR.DATATYPE.ENUM
+  				constexpr = astNewENUM( valint( text ), symbGetSubType( s ) )
   			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
   				constexpr = astNewCONST64( val64( text ), typ )
   			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE

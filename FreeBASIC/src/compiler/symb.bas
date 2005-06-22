@@ -355,7 +355,7 @@ sub symbInitDefines static
     	end if
     	read proc
 
-    	symbAddDefine( def, value, 0, NULL, FALSE, proc )
+    	symbAddDefine( def, value, len( value ), 0, NULL, FALSE, proc )
     loop
 
 end sub
@@ -805,6 +805,7 @@ end function
 '':::::
 function symbAddDefine( byval symbol as string, _
 						byval text as string, _
+						byval lgt as integer, _
 						byval args as integer = 0, _
 						byval arghead as FBDEFARG ptr = NULL, _
 						byval isargless as integer = FALSE, _
@@ -822,6 +823,7 @@ function symbAddDefine( byval symbol as string, _
 	''
 	ZEROSTRDESC( d->def.text )
 	d->def.text 	= text
+	d->lgt			= lgt
 	d->def.args		= args
 	d->def.arghead	= arghead
 	d->def.isargless= isargless
@@ -1343,6 +1345,7 @@ end function
 '':::::
 function symbAddConst( byval symbol as string, _
 					   byval typ as integer, _
+					   byval subtype as FBSYMBOL ptr, _
 					   byval text as string, _
 					   byval lgt as integer ) as FBSYMBOL ptr static
     dim c as FBSYMBOL ptr
@@ -1350,7 +1353,7 @@ function symbAddConst( byval symbol as string, _
     function = NULL
 
     ''
-    c = hNewSymbol( FB.SYMBCLASS.CONST, TRUE, symbol, "", env.scope > 0, typ )
+    c = hNewSymbol( FB.SYMBCLASS.CONST, TRUE, symbol, "", env.scope > 0, typ, subtype )
 	if( c = NULL ) then
 		exit function
 	end if
@@ -1734,6 +1737,9 @@ function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
 		exit function
 	end if
 
+	e->enum.elements = 0
+	e->enum.head 	 = NULL
+	e->enum.tail 	 = NULL
 	e->dbg.typenum = INVALID
 
 	'' check for forward references
@@ -1744,6 +1750,39 @@ function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
 	function = e
 
 end function
+
+'':::::
+function symbAddEnumElement( byval symbol as string, _
+					         byval parent as FBSYMBOL ptr, _
+					         byval value as integer ) as FBSYMBOL ptr static
+
+	dim as FBSYMBOL ptr elm, tail
+
+	elm = symbAddConst( symbol, FB.SYMBTYPE.ENUM, parent, str( value ), 0 )
+
+	if( elm = NULL ) then
+		return NULL
+	end if
+
+	parent->enum.elements += 1
+
+	'' add element to parent's linked-list
+	tail = parent->enum.tail
+	if( tail <> NULL ) then
+		tail->con.eelm.nxt = elm
+	else
+		parent->enum.head = elm
+	end if
+
+	parent->enum.tail = elm
+
+	elm->con.eelm.nxt = NULL
+
+	''
+	function = elm
+
+end function
+
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' procs
@@ -2440,14 +2479,10 @@ end function
 
 '':::::
 function symbLookupUDTVar( byval symbol as string, _
-						   byval dotpos as integer, _
-						   typ as integer, _
-						   ofs as integer, _
-					       elm as FBSYMBOL ptr, _
-					       subtype as FBSYMBOL ptr ) as FBSYMBOL ptr static
+						   byval dotpos as integer ) as FBSYMBOL ptr static
 
     static as zstring * FB.MAXNAMELEN+1 sname
-    dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s
 
     function = NULL
 
@@ -2459,6 +2494,7 @@ function symbLookupUDTVar( byval symbol as string, _
 	'' check if it's an UDT field
     sname = symbol
     sname[dotpos-1] = 0 						'' left$( symbol, dotpos-1 )
+
     s = symbFindByNameAndClass( sname, FB.SYMBCLASS.VAR )
 	if( s = NULL ) then
 		exit function
@@ -2468,15 +2504,36 @@ function symbLookupUDTVar( byval symbol as string, _
 		exit function
 	end if
 
+	function = s
+
+end function
+
+'':::::
+function symbLookupUDTElm( byval symbol as string, _
+						   byval dotpos as integer, _
+						   typ as integer, _
+						   ofs as integer, _
+					       elm as FBSYMBOL ptr, _
+					       subtype as FBSYMBOL ptr ) as FBSYMBOL ptr static
+
+    dim as FBSYMBOL ptr s
+
+    function = NULL
+
+    s = symbLookupUDTVar( symbol, dotpos )
+    if( s = NULL ) then
+    	exit function
+    end if
+
     ''
     elm	    = NULL
     subtype	= s->subtype
     typ 	= s->typ
 
 	'' find the offset
-	ofs = symbGetUDTElmOffset( elm, typ, subtype, byval @sname[dotpos] )	'' mid$( symbol, dotpos+1 )
+	ofs = symbGetUDTElmOffset( elm, typ, subtype, byval @symbol[dotpos] )	'' mid$( symbol, dotpos+1 )
 	if( ofs < 0 ) then
-		hReportError FB.ERRMSG.ELEMENTNOTDEFINED
+		hReportError( FB.ERRMSG.ELEMENTNOTDEFINED )
     	exit function
 	end if
 
@@ -2833,7 +2890,7 @@ function symbCalcLen( byval typ as integer, _
 	case FB.SYMBTYPE.SHORT, FB.SYMBTYPE.USHORT
 		lgt = 2
 
-	case FB.SYMBTYPE.INTEGER, FB.SYMBTYPE.LONG, FB.SYMBTYPE.UINT
+	case FB.SYMBTYPE.INTEGER, FB.SYMBTYPE.LONG, FB.SYMBTYPE.UINT, FB.SYMBTYPE.ENUM
 		lgt = FB.INTEGERSIZE
 
 	case FB.SYMBTYPE.LONGINT, FB.SYMBTYPE.ULONGINT

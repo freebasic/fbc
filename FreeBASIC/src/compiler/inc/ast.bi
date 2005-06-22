@@ -30,9 +30,10 @@ enum ASTNODECLASS_ENUM
 	AST.NODECLASS.LINK
 	AST.NODECLASS.CONST
 	AST.NODECLASS.VAR
+	AST.NODECLASS.IDX
+	AST.NODECLASS.ENUM
 	AST.NODECLASS.BOP
 	AST.NODECLASS.UOP
-	AST.NODECLASS.IDX
 	AST.NODECLASS.FUNCT
 	AST.NODECLASS.PARAM
 	AST.NODECLASS.PTR
@@ -65,6 +66,7 @@ type ASTTEMPARRAY
 	left			as ASTTEMPARRAY ptr
 end type
 
+''
 type FUNCTNode
 	sym				as FBSYMBOL ptr					'' symbol
 	isrtl			as integer
@@ -120,7 +122,7 @@ type ASTNODE
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
 
 	dtype			as integer
-	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF
+	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF or ENUM
 
 	defined 		as integer						'' only true for constants
 	v				as FBVALUE
@@ -169,6 +171,10 @@ declare sub 		astConvertValue     ( byval n as ASTNODE ptr, _
 					       				  byval v as FBVALUE ptr, _
 					       				  byval todtype as integer )
 
+declare function 	astGetValueAsInt	( byval n as ASTNODE ptr ) as integer
+
+declare function 	astGetValueAsStr	( byval n as ASTNODE ptr ) as string
+
 declare function	astLoad				( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function	astFlush			( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -184,6 +190,7 @@ declare function 	astLoadASSIGN		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewCONV			( byval op as integer, _
 										  byval dtype as integer, _
+										  byval subtype as FBSYMBOL ptr, _
 										  byval l as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	astLoadCONV			( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -291,6 +298,11 @@ declare function 	astNewSTACK			( byval op as integer, _
 
 declare function 	astLoadSTACK		( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	astNewENUM			( byval value as integer, _
+					 					  byval enum as FBSYMBOL ptr ) as ASTNODE ptr
+
+declare function 	astLoadENUM			( byval n as ASTNODE ptr ) as IRVREG ptr
+
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _
 										  byval isleft as integer, _
@@ -303,7 +315,7 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 ''
 #define astGetClass(n) iif( n <> NULL, n->class, INVALID )
 
-#define astIsCONST(n) (n->class = AST.NODECLASS.CONST)
+#define astIsCONST(n) n->defined
 
 #define astIsVAR(n) (n->class = AST.NODECLASS.VAR)
 

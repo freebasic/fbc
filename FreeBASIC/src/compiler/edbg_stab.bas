@@ -51,13 +51,14 @@ type EDBGCTX
 end type
 
 declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
+declare sub 	 hDeclENUM				( byval sym as FBSYMBOL ptr )
 
 declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 
 '' globals
 	dim shared ctx as EDBGCTX
 
-	dim shared remapTB(0 to FB.SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 9, 10, 11, 12, 13, 14 }
+	dim shared remapTB(0 to FB.SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 }
 
 
 stabstdef:
@@ -458,7 +459,7 @@ end sub
 private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 	dim as integer dtype
 	dim as FBVARDIM ptr d
-	dim as FBSYMBOL ptr udt
+	dim as FBSYMBOL ptr subtype
 	dim as string desc
 
     if( sym = NULL ) then
@@ -498,14 +499,23 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     select case dtype
     '' UDT?
     case FB.SYMBTYPE.USERDEF
-    	udt = sym->subtype
-    	if( udt <> FB.DESCTYPE.ARRAY ) then
-    		if( udt->dbg.typenum = INVALID ) then
-    			hDeclUDT( udt )
+    	subtype = sym->subtype
+    	if( subtype <> FB.DESCTYPE.ARRAY ) then
+    		if( subtype->dbg.typenum = INVALID ) then
+    			hDeclUDT( subtype )
     		end if
 
-    		desc += str$( udt->dbg.typenum )
+    		desc += str$( subtype->dbg.typenum )
     	end if
+
+    '' ENUM?
+    case FB.SYMBTYPE.ENUM
+    	subtype = sym->subtype
+    	if( subtype->dbg.typenum = INVALID ) then
+    		hDeclENUM( subtype )
+    	end if
+
+    	desc += str$( subtype->dbg.typenum )
 
     '' function pointer?
     case FB.SYMBTYPE.FUNCTION
@@ -549,6 +559,35 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
         desc += "," + str$( symbGetUDTElmBitOfs( e ) ) + "," + str$( symbGetUDTElmBitLen( e ) ) + ";"
 
 		e = symbGetUDTNextElm( e )
+	loop
+
+	desc += ";"
+
+	hEmitSTABS( STAB_TYPE_LSYM, desc, 0, 0, "0" )
+
+end sub
+
+'':::::
+private sub hDeclENUM( byval sym as FBSYMBOL ptr )
+    dim as FBSYMBOL ptr e
+    dim as string desc
+
+	sym->dbg.typenum = ctx.typecnt
+	ctx.typecnt += 1
+
+    if( sym->hashitem = NULL ) then
+    	desc = symbGetName( sym )
+    else
+		desc = symbGetOrgName( sym )
+	end if
+
+	desc += ":T" + str$( sym->dbg.typenum ) + "=e"
+
+	e = symbGetENUMFirstElm( sym )
+	do while( e <> NULL )
+        desc += symbGetName( e ) + ":" + symbGetConstText( e ) + ","
+
+		e = symbGetENUMNextElm( e )
 	loop
 
 	desc += ";"

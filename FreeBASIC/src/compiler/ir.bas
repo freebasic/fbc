@@ -134,6 +134,7 @@ declare sub 		irDump				( byval op as integer, _
 			(IR.DATACLASS.INTEGER, 2			 	, 8*2				, FALSE, "ushort"	), _
 			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, TRUE , "integer"	), _
 			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, FALSE, "uint"		), _
+			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE	, 8*FB.INTEGERSIZE	, TRUE , "enum"		), _
 			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, TRUE , "quad"		), _
 			(IR.DATACLASS.INTEGER, FB.INTEGERSIZE*2	, 8*FB.INTEGERSIZE*2, FALSE, "uquad"	), _
 			(IR.DATACLASS.FPOINT , 4             	, 8*4				, TRUE , "single"	), _
@@ -272,13 +273,17 @@ function irMaxDataType( byval dtype1 as integer, _
 
     if( dtype1 >= IR.DATATYPE.POINTER ) then
     	dtype1 = IR.DATATYPE.UINT
+    elseif( dtype1 = IR.DATATYPE.ENUM ) then
+    	dtype1 = IR.DATATYPE.INTEGER
     end if
 
     if( dtype2 >= IR.DATATYPE.POINTER ) then
     	dtype2 = IR.DATATYPE.UINT
+    elseif( dtype2 = IR.DATATYPE.ENUM ) then
+    	dtype2 = IR.DATATYPE.INTEGER
     end if
 
-    ''
+    '' don't convert beetween zstring's and (u)byte's
     if( dtype2 = IR.DATATYPE.CHAR ) then
  		select case dtype1
  		case IR.DATATYPE.BYTE, IR.DATATYPE.UBYTE
@@ -390,6 +395,8 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 		dtype = dtype + 1						'' hack! assuming sign/unsig are in pairs
 	case IR.DATATYPE.CHAR
 		dtype = IR.DATATYPE.BYTE
+	case IR.DATATYPE.ENUM
+		dtype = IR.DATATYPE.UINT
 	end select
 
 	function = dtype

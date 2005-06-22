@@ -36,6 +36,12 @@ type FBERRCTX
 	tmpcnt		as uinteger
 end type
 
+type FBWARNING
+	level		as integer
+	text		as zstring * 64
+end type
+
+
 ''globals
 	dim shared ctx as FBERRCTX
 
@@ -47,6 +53,7 @@ end type
 				"c", _                          '' char
 				"s", "S", _                     '' short, ushort
 				"i", "j", _                     '' integer, uinteger
+				"e", _                          '' enum
 				"l", "m", _                     '' longint, ulongint
 				"f", "d", _                     '' single, double
 				"t", "x", _                     '' var-len string, fix-len string
@@ -56,98 +63,96 @@ end type
 				"p" }                           '' pointer
 
 
-''warning msgs (level, msg)
-warningdata:
-data 0, "Passing scalar as pointer"
-data 0, "Suspicious pointer assignment"
-data -1
+	dim shared warningMsgs( 1 to FB.WARNINGMSGS-1 ) as FBWARNING = { _
+		( 0, "Passing scalar as pointer" ), _
+		( 0, "Suspicious pointer assignment" ), _
+		( 0, "Implicit convertion" ) _
+	}
 
-'' error msgs
-errordata:
-data "Argument count mismatch"
-data "Expected End-of-File"
-data "Expected End-of-Line"
-data "Duplicated definition"
-data "Expected 'AS'"
-data "Expected '('"
-data "Expected ')'"
-data "Undefined symbol"
-data "Expected expression"
-data "Expected '='"
-data "Expected constant"
-data "Expected 'TO'"
-data "Expected 'NEXT'"
-data "Expected identifier"
-data "Internal: Tables Full!"
-data "Expected '-'"
-data "Expected ','"
-data "Syntax error"
-data "Element not defined"
-data "Expected 'END TYPE' or 'END UNION'"
-data "Type mismatch"
-data "Internal!"
-data "Parameter type mismatch"
-data "File not found"
-data "Illegal outside of FOR, DO, SUB or FUNCTION"
-data "Invalid data types"
-data "Invalid character"
-data "File access error"
-data "Recursion level too depth"
-data "Expected pointer"
-data "Expected 'LOOP'"
-data "Expected 'WEND'"
-data "Expected 'THEN'"
-data "Expected 'END IF'"
-data "'END' without IF, SELECT, SUB or FUNCTION"
-data "Expected 'CASE'"
-data "Expected 'END SELECT'"
-data "Wrong number of dimensions"
-data "'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'"
-data "Expected 'END SUB' or 'END FUNCTION'"
-data "Illegal parameter specification"
-data "Variable not declared"
-data "Variable required"
-data "Illegal outside a compound statement"
-data "Expected 'END ASM'"
-data "SUB or FUNCTION not declared"
-data "Expected ';'"
-data "Undefined label"
-data "Too many array dimensions"
-data "Expected scalar counter"
-data "Illegal outside a SUB or FUNCTION"
-data "Expected dynamic array"
-data "Cannot return TYPE's or UNION's from FB functions"
-data "Cannot return fixed-len strings from functions"
-data "Array already dimensioned"
-data "Literal string too big, split it"
-data "Identifier's name too big"
-data "Illegal without the -ex option"
-data "Type mismatch"
-data "Illegal specification"
-data "Expected 'END WITH'"
-data "Illegal inside a SUB or FUNCTION"
-data "Expected array"
-data "Expected '{'"
-data "Expected '}'"
-data "Too many expressions"
-data "Expected explicit result type"
-data "Range too large"
-data "Forward references not allowed"
-data "Incomplete type"
-data "Array not dimensioned"
-data "Array access, index expected"
-data "Expected 'END ENUM'"
-data "Cannot initialize dynamic arrays"
-data "Invalid bitfield"
-data "Literal number too big"
-data "Too many parameters"
-data "Macro text too long"
-data "Invalid command-line option"
-data "Cannot initialize dynamic strings"
-data "Recursive TYPE or UNION not allowed"
-
-
-const FB.ERRMSGS = 81
+	dim shared errorMsgs( 1 to FB.ERRMSGS-1 ) as zstring * 128 => { _
+		"Argument count mismatch", _
+		"Expected End-of-File", _
+		"Expected End-of-Line", _
+		"Duplicated definition", _
+		"Expected 'AS'", _
+		"Expected '('", _
+		"Expected ')'", _
+		"Undefined symbol", _
+		"Expected expression", _
+		"Expected '='", _
+		"Expected constant", _
+		"Expected 'TO'", _
+		"Expected 'NEXT'", _
+		"Expected identifier", _
+		"Internal: Tables Full!", _
+		"Expected '-'", _
+		"Expected ','", _
+		"Syntax error", _
+		"Element not defined", _
+		"Expected 'END TYPE' or 'END UNION'", _
+		"Type mismatch", _
+		"Internal!", _
+		"Parameter type mismatch", _
+		"File not found", _
+		"Illegal outside of FOR, DO, SUB or FUNCTION", _
+		"Invalid data types", _
+		"Invalid character", _
+		"File access error", _
+		"Recursion level too depth", _
+		"Expected pointer", _
+		"Expected 'LOOP'", _
+		"Expected 'WEND'", _
+		"Expected 'THEN'", _
+		"Expected 'END IF'", _
+		"'END' without IF, SELECT, SUB or FUNCTION", _
+		"Expected 'CASE'", _
+		"Expected 'END SELECT'", _
+		"Wrong number of dimensions", _
+		"'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'", _
+		"Expected 'END SUB' or 'END FUNCTION'", _
+		"Illegal parameter specification", _
+		"Variable not declared", _
+		"Variable required", _
+		"Illegal outside a compound statement", _
+		"Expected 'END ASM'", _
+		"SUB or FUNCTION not declared", _
+		"Expected ';'", _
+		"Undefined label", _
+		"Too many array dimensions", _
+		"Expected scalar counter", _
+		"Illegal outside a SUB or FUNCTION", _
+		"Expected dynamic array", _
+		"Cannot return TYPE's or UNION's from FB functions", _
+		"Cannot return fixed-len strings from functions", _
+		"Array already dimensioned", _
+		"Literal string too big, split it", _
+		"Identifier's name too big", _
+		"Illegal without the -ex option", _
+		"Type mismatch", _
+		"Illegal specification", _
+		"Expected 'END WITH'", _
+		"Illegal inside a SUB or FUNCTION", _
+		"Expected array", _
+		"Expected '{'", _
+		"Expected '}'", _
+		"Too many expressions", _
+		"Expected explicit result type", _
+		"Range too large", _
+		"Forward references not allowed", _
+		"Incomplete type", _
+		"Array not dimensioned", _
+		"Array access, index expected", _
+		"Expected 'END ENUM'", _
+		"Cannot initialize dynamic arrays", _
+		"Invalid bitfield", _
+		"Literal number too big", _
+		"Too many parameters", _
+		"Macro text too long", _
+		"Invalid command-line option", _
+		"Cannot initialize dynamic strings", _
+		"Recursive TYPE or UNION not allowed", _
+		"Array fields cannot be redimensioned" _
+	}
 
 
 '':::::
@@ -191,7 +196,7 @@ end function
 sub hReportErrorEx( byval errnum as integer, _
 					byval msgex as string, _
 					byval linenum as integer = 0 )
-    dim i as integer, msg as string
+    dim msg as string
     dim token_pos as string
 
 	if( linenum = 0 ) then
@@ -205,14 +210,10 @@ sub hReportErrorEx( byval errnum as integer, _
 		ctx.lastline  = linenum
 	end if
 
-	if( errnum >= 0 ) then
-		restore errordata
-		for i = 0 to FB.ERRMSGS-1
-			read msg
-			if( (i+1) = errnum ) then
-				exit for
-			end if
-		next i
+	if( (errnum < 1) or (errnum >= FB.ERRMSGS) ) then
+		msg = ""
+	else
+		msg = errorMsgs(errnum)
 	end if
 
 	if( len( env.infile ) > 0 ) then
@@ -277,25 +278,12 @@ end function
 '':::::
 sub hReportWarning( byval msgnum as integer, _
 				 	byval msgex as string = "" )
-    dim i as integer
-    dim level as integer, msg as string
 
-	restore warningdata
-	i = 1
-	do
-		read level
-		if( level = -1 ) then
-			exit do
-		end if
-		read msg
+	if( (msgnum < 1) or (msgnum >= FB.WARNINGMSGS) ) then
+		exit sub
+	end if
 
-		if( i = msgnum ) then
-			exit do
-		end if
-		i = i + 1
-	loop
-
-	if( level < env.clopt.warninglevel ) then
+	if( warningMsgs(msgnum).level < env.clopt.warninglevel ) then
 		exit sub
 	end if
 
@@ -303,8 +291,8 @@ sub hReportWarning( byval msgnum as integer, _
 	if( lexLineNum( ) > 0 ) then
 		print str$( lexLineNum( ) );
 	end if
-	print ") : warning level"; level;
-	print ": "; msg;
+	print ") : warning level"; warningMsgs(msgnum).level;
+	print ": "; warningMsgs(msgnum).text;
 	if( len( msgex ) > 0 ) then
 		print ", "; msgex
 	else
@@ -780,7 +768,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
     	loop
 
     	aname += suffixTB( typ )
-    	if( typ = FB.SYMBTYPE.USERDEF ) then
+    	if( (typ = FB.SYMBTYPE.USERDEF) or (typ = FB.SYMBTYPE.ENUM) ) then
     		aname += symbGetName( argtail->subtype )
     	end if
 
@@ -944,14 +932,14 @@ end function
 function hToPow2( byval value as uinteger ) as uinteger static
     dim n as uinteger
 
-	static pow2tb(0 to 63) as uinteger = { 0, 0,  0, 15,  0,  1, 28, 0, _
-										  16, 0,  0,  0,  2, 21, 29, 0, _
-    									   0, 0, 19, 17, 10,  0, 12, 0, _
-    									   0, 3,  0,  6,  0, 22, 30, 0, _
-    									  14, 0, 27,  0,  0, 0, 20,  0, _
-    									  18, 9, 11,  0,  5, 0,  0, 13, _
-    									  26, 0,  0,  8,  0, 4,  0, 25, _
-    									  0,  7, 24,  0, 23, 0, 31,  0 }
+	static pow2tb(0 to 63) as uinteger = {  0,  0,  0, 15,  0,  1, 28,  0, _
+										   16,  0,  0,  0,  2, 21, 29,  0, _
+    									    0,  0, 19, 17, 10,  0, 12,  0, _
+    									    0,  3,  0,  6,  0, 22, 30,  0, _
+    									   14,  0, 27,  0,  0,  0, 20,  0, _
+    									   18,  9, 11,  0,  5,  0,  0, 13, _
+    									   26,  0,  0,  8,  0,  4,  0, 25, _
+    									   0,   7, 24,  0, 23,  0, 31,  0 }
 
 	'' don't check if it's zero
 	if( value = 0 ) then

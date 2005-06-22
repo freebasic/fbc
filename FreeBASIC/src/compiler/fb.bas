@@ -85,7 +85,7 @@ end sub
 sub fbAddDefine( byval dname as string, _
 				 byval dtext as string )
 
-    symbAddDefine( dname, dtext )
+    symbAddDefine( dname, dtext, len( dtext ) )
 
 end sub
 

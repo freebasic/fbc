@@ -288,6 +288,11 @@ function cDirective as integer static
 			function = fbAddLibPath( incfile )
 		end select
 
+	case else
+		if( lexCurrentTokenClass( ) = FB.TKCLASS.KEYWORD ) then
+			hReportError( FB.ERRMSG.SYNTAXERROR )
+			exit function
+		end if
 	end select
 
 	do until( (lexCurrentToken( ) = FB.TK.EOL) or (lexCurrentToken( ) = FB.TK.EOF) )
@@ -533,7 +538,8 @@ function cConstAssign as integer static
 		astDel( expr )
 
 		lgt = symbGetLen( sym ) - 1 			'' less the null-char
-		if( symbAddConst( id, FB.SYMBTYPE.STRING, symbGetVarText( sym ), lgt ) = NULL ) then
+		if( symbAddConst( id, FB.SYMBTYPE.STRING, NULL, _
+						  symbGetVarText( sym ), lgt ) = NULL ) then
     		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     		exit function
 		end if
@@ -549,19 +555,12 @@ function cConstAssign as integer static
 			exit function
 		end if
 
-		typ = astGetDataType( expr )
-		select case as const typ
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			valtext = str$( astGetValue64( expr ) )
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			valtext = str$( astGetValuef( expr ) )
-		case else
-			valtext = str$( astGetValuei( expr ) )
-        end select
-
+		typ 	= astGetDataType( expr )
+		subtype = astGetSubtype( expr )
+		valtext = astGetValueAsStr( expr )
 		astDel( expr )
 
-		if( symbAddConst( id, typ, valtext, 0 ) = NULL ) then
+		if( symbAddConst( id, typ, subtype, valtext, 0 ) = NULL ) then
     		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
     		exit function
 		end if
@@ -979,21 +978,13 @@ function cTypeDecl as integer static
 			exit function
 		end if
 
-  		select case as const astGetDataType( expr )
-  		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-  		    align = astGetValue64( expr )
-  		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-  			align = astGetValuef( expr )
-  		case else
-  			align = astGetValuei( expr )
-  		end select
-
+  		align = astGetValueAsInt( expr )
+  		astDel( expr )
   		if( align < 0 ) then
   			align = FB.INTEGERSIZE
   		elseif( align > FB.INTEGERSIZE*4 ) then
   			align = FB.INTEGERSIZE*4
   		end if
-  		astDel( expr )
 
 	case else
 		align = FB.INTEGERSIZE
@@ -1080,15 +1071,12 @@ function cEnumConstDecl( byval id as string ) as integer
 			end if
 		end if
 
-		select case as const astGetDataType( expr )
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			env.enumctx.value = astGetValue64( expr )
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			env.enumctx.value = astGetValuef( expr )
-		case else
-			env.enumctx.value = astGetValuei( expr )
-		end select
+		'' not an integer?
+		if( astGetDataClass( expr ) <> IR.DATACLASS.INTEGER ) then
+			hReportWarning( FB.WARNINGMSG.IMPLICITCONVERTION, id )
+		end if
 
+		env.enumctx.value = astGetValueAsInt( expr )
 		astDel( expr )
 
     end if
@@ -1118,7 +1106,7 @@ function cEnumLine as integer
 
 			env.enumctx.elements += 1
 
-			if( symbAddConst( ename, FB.SYMBTYPE.INTEGER, str$( env.enumctx.value ), 0 ) = NULL ) then
+			if( symbAddEnumElement( ename, env.enumctx.sym, env.enumctx.value ) = NULL ) then
 				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, ename )
 				exit function
 			end if
@@ -1152,7 +1140,7 @@ end function
 ''					  END ENUM .
 function cEnumDecl as integer static
     static as zstring * FB.MAXNAMELEN+1 id
-    dim as integer e
+    dim as FBSYMBOL ptr e
 
 	function = FALSE
 
@@ -1181,6 +1169,7 @@ function cEnumDecl as integer static
 	end if
 
 	'' EnumLine+
+	env.enumctx.sym = e
 	env.enumctx.elements = 0
 	env.enumctx.value = 0
 	do
@@ -1196,7 +1185,8 @@ function cEnumDecl as integer static
 	if( not hMatch( FB.TK.END ) ) then
     	hReportError( FB.ERRMSG.EXPECTEDENDENUM )
     	exit function
-	elseif( not hMatch( FB.TK.ENUM ) ) then
+	end if
+	if( not hMatch( FB.TK.ENUM ) ) then
     	hReportError( FB.ERRMSG.EXPECTEDENDENUM )
     	exit function
 	end if
@@ -1321,8 +1311,8 @@ function cSymbolDecl as integer
 end function
 
 '':::::
-function hIsDynamic( byval dimensions as integer, _
-					 exprTB() as ASTNODE ptr ) as integer
+private function hIsDynamic( byval dimensions as integer, _
+					 		 exprTB() as ASTNODE ptr ) as integer
     dim i as integer
 
 	function = TRUE
@@ -1344,9 +1334,9 @@ function hIsDynamic( byval dimensions as integer, _
 end function
 
 ''::::
-sub hMakeArrayDimTB( byval dimensions as integer, _
-					 exprTB() as ASTNODE ptr, _
-					 dTB() as FBARRAYDIM )
+private sub hMakeArrayDimTB( byval dimensions as integer, _
+					 		 exprTB() as ASTNODE ptr, _
+					 		 dTB() as FBARRAYDIM )
     static as integer i
     static as ASTNODE ptr expr
 
@@ -1387,13 +1377,13 @@ sub hMakeArrayDimTB( byval dimensions as integer, _
 end sub
 
 '':::::
-function hDeclExternVar( byval id as string, _
-						 byval typ as integer, _
-						 byval subtype as FBSYMBOL ptr, _
-						 byval alloctype as integer, _
-						 byval addsuffix as integer, _
-						 byval dimensions as integer, _
-					   	 dTB() as FBARRAYDIM ) as FBSYMBOL ptr
+private function hDeclExternVar( byval id as string, _
+						 		 byval typ as integer, _
+						 		 byval subtype as FBSYMBOL ptr, _
+						 		 byval alloctype as integer, _
+						 		 byval addsuffix as integer, _
+						 		 byval dimensions as integer, _
+					   	 		 dTB() as FBARRAYDIM ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
 
     function = NULL
@@ -1461,6 +1451,212 @@ function hDeclExternVar( byval id as string, _
 end function
 
 '':::::
+private function hStaticSymbDef( byval id as string, _
+					     		 byval dotpos as integer, _
+					     		 byval idalias as string, _
+					     		 byval typ as integer, _
+					     		 byval subtype as FBSYMBOL ptr, _
+					     		 byval ptrcnt as integer, _
+					     		 byval lgt as integer, _
+					     		 byval addsuffix as integer, _
+					     		 byval alloctype as integer, _
+					     		 byval dimensions as integer, _
+					     		 exprTB() as ASTNODE ptr ) as FBSYMBOL ptr static
+
+    dim as FBSYMBOL ptr s
+    dim as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
+
+    hMakeArrayDimTB( dimensions, exprTB(), dTB() )
+
+    alloctype and= (not FB.ALLOCTYPE.DYNAMIC)
+
+    '' symbol with periods? double-check..
+    if( dotpos > 0 ) then
+    	'' any UDT var already allocated?
+    	if( symbLookupUDTVar( id, dotpos ) <> NULL ) then
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+    		exit function
+    	end if
+    end if
+
+    ''
+    s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
+    				  lgt, dimensions, dTB(), _
+    				  alloctype, addsuffix, FALSE, TRUE )
+
+    if( s = NULL ) then
+    	s = hDeclExternVar( id, typ, subtype, alloctype, _
+    						addsuffix, dimensions, dTB() )
+
+		if( s = NULL ) then
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+    		return NULL
+    	end if
+
+	end if
+
+	'' another quirk: if array is local (ie, inside a proc) and it's not dynamic, it's
+	'' descriptor won't will be filled ever, so a call to another rtl routine is needed,
+	'' or that array coulnd't be passed by descriptor to other procs (allocating a static
+	'' descriptor won't help, as that would break recursion)
+	if( env.scope > 0 ) then
+		if( dimensions > 0 ) then
+			if( (alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
+				if( not rtlArraySetDesc( s, lgt, dimensions, dTB() ) ) then
+					return NULL
+				end if
+			end if
+		end if
+	end if
+
+	function = s
+
+end function
+
+'':::::
+private function hDynArrayDef( byval id as string, _
+							   byval dotpos as integer, _
+					   		   byval idalias as string, _
+					   		   byval typ as integer, _
+					   		   byval subtype as FBSYMBOL ptr, _
+					   		   byval ptrcnt as integer, _
+					   		   byval istypeless as integer, _
+					   		   byval lgt as integer, _
+					   		   byval addsuffix as integer, _
+					   		   byval alloctype as integer, _
+					   		   byval dopreserve as integer, _
+					   		   byval dimensions as integer, _
+					   		   exprTB() as ASTNODE ptr ) as FBSYMBOL ptr static
+
+    dim as FBSYMBOL ptr s
+    dim as integer atype, isrealloc
+    dim as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
+
+    function = NULL
+
+    atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
+
+    '' symbol with periods? double-check..
+    if( dotpos > 0 ) then
+    	'' any UDT var already allocated?
+    	if( symbLookupUDTVar( id, dotpos ) <> NULL ) then
+    		hReportErrorEx( FB.ERRMSG.CANTREDIMARRAYFIELDS, id )
+    		exit function
+    	end if
+    end if
+
+    ''
+  	isrealloc = TRUE
+  	s = symbFindByNameAndSuffix( id, typ )
+   	if( s = NULL ) then
+
+   		'' typeless REDIM's?
+   		if( istypeless ) then
+   			'' try to find a var with the same name
+   			s = symbFindByNameAndClass( id, FB.SYMBCLASS.VAR )
+   			'' copy type
+   			if( s <> NULL ) then
+   				typ 	= s->typ
+   				subtype = s->subtype
+   				lgt		= s->lgt
+   			end if
+   		end if
+
+   		if( s = NULL ) then
+   			isrealloc = FALSE
+   			s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
+   							  lgt, dimensions, dTB(), _
+   							  atype, addsuffix, FALSE, TRUE )
+   			if( s = NULL ) then
+   				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+   				exit function
+   			end if
+   		end if
+
+   	end if
+
+	'' check reallocation
+	if( isrealloc ) then
+		'' not dynamic?
+		if( not symbGetIsDynamic( s ) ) then
+
+   			'' could be an external..
+   			s = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
+   								dimensions, dTB() )
+   			if( s = NULL ) then
+   				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+				exit function
+			end if
+
+		else
+
+			'' external?
+			if( symbIsExtern( s ) ) then
+				if( (atype and FB.ALLOCTYPE.EXTERN) > 0 ) then
+   					hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+					exit function
+				end if
+
+				symbSetAllocType( s, (atype and not FB.ALLOCTYPE.EXTERN) or _
+    					             FB.ALLOCTYPE.PUBLIC or _
+    					             FB.ALLOCTYPE.SHARED )
+			end if
+		end if
+	end if
+
+	alloctype = symbGetAllocType( s )
+
+	'' external? don't do any checks
+	if( (alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
+		return s
+	end if
+
+	'' not an argument passed by descriptor or a common array?
+	if( (alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or FB.ALLOCTYPE.COMMON)) = 0 ) then
+
+		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+    		exit function
+		end if
+
+		if( symbGetArrayDimensions( s ) > 0 ) then
+			if( dimensions <> symbGetArrayDimensions( s ) ) then
+    			hReportErrorEx( FB.ERRMSG.WRONGDIMENSIONS, id )
+    			exit function
+    		end if
+		end if
+
+	'' else, can't check it's dimensions at compile-time
+	else
+		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
+    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
+    		exit function
+		end if
+	end if
+
+	'' if dimensions not = -1 (COMMON or DIM|REDIM array()), redim it
+	if( dimensions > 0 ) then
+		if( not rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) ) then
+			exit function
+		end if
+	end if
+
+	'' if COMMON, check for max dimensions used
+	if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
+		if( dimensions > symbGetArrayDimensions( s ) ) then
+			symbSetArrayDimensions( s, dimensions )
+		end if
+
+	'' or if dims = -1 (cause of "DIM|REDIM array()")
+	elseif( symbGetArrayDimensions( s ) = -1 ) then
+		symbSetArrayDimensions( s, dimensions )
+	end if
+
+    function = s
+
+end function
+
+'':::::
 ''SymbolDef       =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
@@ -1469,9 +1665,8 @@ function cSymbolDef( byval alloctype as integer, _
 
     static as zstring * FB.MAXNAMELEN+1 id, idalias
     dim as FBSYMBOL ptr symbol, subtype
-    dim as integer addsuffix, atype, isdynamic, ismultdecl, istypeless
-    dim as integer typ, lgt, ofs, ptrcnt
-    dim as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
+    dim as integer addsuffix, isdynamic, ismultdecl, istypeless
+    dim as integer typ, lgt, ofs, ptrcnt, dotpos
     dim as integer dimensions
     dim as ASTNODE ptr exprTB(0 to FB.MAXARRAYDIMS-1, 0 to 1)
 
@@ -1484,6 +1679,12 @@ function cSymbolDef( byval alloctype as integer, _
 
     	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
     		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
+    		exit function
+    	end if
+
+    	'' ANY?
+    	if( typ = FB.SYMBTYPE.VOID ) then
+    		hReportError( FB.ERRMSG.INVALIDDATATYPES )
     		exit function
     	end if
 
@@ -1511,6 +1712,7 @@ function cSymbolDef( byval alloctype as integer, _
     		end if
     	end if
 
+    	dotpos = lexTokenDotPos( )
     	lexEatToken( id )
     	idalias		= ""
     	istypeless	= FALSE
@@ -1583,6 +1785,12 @@ function cSymbolDef( byval alloctype as integer, _
     				exit function
     			end if
 
+    			'' ANY?
+    			if( typ = FB.SYMBTYPE.VOID ) then
+    				hReportError( FB.ERRMSG.INVALIDDATATYPES )
+    				exit function
+    			end if
+
     			addsuffix = FALSE
 
     		else
@@ -1598,51 +1806,20 @@ function cSymbolDef( byval alloctype as integer, _
 
     	''
     	if( isdynamic ) then
-
-    		symbol = cDynArrayDef( id, idalias, typ, subtype, ptrcnt, istypeless, _
+    		symbol = hDynArrayDef( id, dotpos, idalias, _
+    							   typ, subtype, ptrcnt, istypeless, _
     							   lgt, addsuffix, alloctype, dopreserve, _
     							   dimensions, exprTB() )
-
-    		if( symbol = NULL ) then
-    			exit function
-    		end if
-
     	else
-
-            hMakeArrayDimTB( dimensions, exprTB(), dTB() )
-
-            atype = alloctype and (not FB.ALLOCTYPE.DYNAMIC)
-
-    		symbol = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
-    							   lgt, dimensions, dTB(), _
-    							   atype, addsuffix, FALSE, TRUE )
-
-    		if( symbol = NULL ) then
-
-                symbol = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
-                						 dimensions, dTB() )
-
-    			if( symbol = NULL ) then
-    				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
-    				exit function
-    			end if
-			end if
-
-			'' another quirk: if array is local (ie, inside a proc) and it's not dynamic, it's
-			'' descriptor won't will be filled ever, so a call to another rtl routine is needed,
-			'' or that array coulnd't be passed by descriptor to other procs (allocating a static
-			'' descriptor won't help, as that would break recursion)
-			if( env.scope > 0 ) then
-				if( dimensions > 0 ) then
-					if( (alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
-						if( not rtlArraySetDesc( symbol, lgt, dimensions, dTB() ) ) then
-							exit function
-						end if
-					end if
-				end if
-			end if
-
+			symbol = hStaticSymbDef( id, dotpos, idalias, _
+									 typ, subtype, ptrcnt, _
+    							     lgt, addsuffix, alloctype, _
+    							     dimensions, exprTB() )
 		end if
+
+    	if( symbol = NULL ) then
+    		exit function
+    	end if
 
 		'' ('=' SymbolInitializer)?
 		select case lexCurrentToken( )
@@ -1663,140 +1840,6 @@ function cSymbolDef( byval alloctype as integer, _
     loop
 
     function = TRUE
-
-end function
-
-'':::::
-function cDynArrayDef( byval id as string, _
-					   byval idalias as string, _
-					   byval typ as integer, _
-					   byval subtype as FBSYMBOL ptr, _
-					   byval ptrcnt as integer, _
-					   byval istypeless as integer, _
-					   byval lgt as integer, _
-					   byval addsuffix as integer, _
-					   byval alloctype as integer, _
-					   byval dopreserve as integer, _
-					   byval dimensions as integer, _
-					   exprTB() as ASTNODE ptr ) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr s
-    dim as integer atype, isrealloc
-    dim as FBARRAYDIM dTB(0 to FB.MAXARRAYDIMS-1)
-
-    function = NULL
-
-    atype = (alloctype or FB.ALLOCTYPE.DYNAMIC) and (not FB.ALLOCTYPE.STATIC)
-
-    ''
-  	isrealloc = TRUE
-  	s = symbFindByNameAndSuffix( id, typ )
-   	if( s = NULL ) then
-
-   		'' typeless REDIM's?
-   		if( istypeless ) then
-   			'' try to find a var with the same name
-   			s = symbFindByNameAndClass( id, FB.SYMBCLASS.VAR )
-   			'' copy type
-   			if( s <> NULL ) then
-   				typ 	= s->typ
-   				subtype = s->subtype
-   				lgt		= s->lgt
-   			end if
-   		end if
-
-   		if( s = NULL ) then
-   			isrealloc = FALSE
-   			s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
-   							  lgt, dimensions, dTB(), _
-   							  atype, addsuffix, FALSE, TRUE )
-   			if( s = NULL ) then
-   				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
-   				exit function
-   			end if
-   		end if
-
-   	end if
-
-	'' check reallocation
-	if( isrealloc ) then
-		'' not dynamic?
-		if( not symbGetIsDynamic( s ) ) then
-
-   			'' could be an external..
-   			s = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
-   								dimensions, dTB() )
-   			if( s = NULL ) then
-   				hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
-				exit function
-			end if
-
-		else
-
-			'' external?
-			if( symbIsExtern( s ) ) then
-				if( (atype and FB.ALLOCTYPE.EXTERN) > 0 ) then
-   					hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
-					exit function
-				end if
-
-				symbSetAllocType( s, (atype and not FB.ALLOCTYPE.EXTERN) or _
-    					             FB.ALLOCTYPE.PUBLIC or _
-    					             FB.ALLOCTYPE.SHARED )
-			end if
-		end if
-	end if
-
-	alloctype = symbGetAllocType( s )
-
-	'' external? don't do any checks
-	if( (alloctype and FB.ALLOCTYPE.EXTERN) > 0 ) then
-		cDynArrayDef = TRUE
-		exit function
-	end if
-
-	'' not an argument passed by descriptor or a common array?
-	if( (alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or FB.ALLOCTYPE.COMMON)) = 0 ) then
-
-		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
-    		exit function
-		end if
-
-		if( symbGetArrayDimensions( s ) > 0 ) then
-			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			hReportErrorEx( FB.ERRMSG.WRONGDIMENSIONS, id )
-    			exit function
-    		end if
-		end if
-
-	'' else, can't check it's dimensions at compile-time
-	else
-		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx( FB.ERRMSG.DUPDEFINITION, id )
-    		exit function
-		end if
-	end if
-
-	'' if dimensions not = -1 (COMMON or DIM|REDIM array()), redim it
-	if( dimensions > 0 ) then
-		if( not rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) ) then
-			exit function
-		end if
-	end if
-
-	'' if COMMON, check for max dimensions used
-	if( (alloctype and FB.ALLOCTYPE.COMMON) > 0 ) then
-		if( dimensions > symbGetArrayDimensions( s ) ) then
-			symbSetArrayDimensions( s, dimensions )
-		end if
-
-	'' or if dims = -1 (cause of "DIM|REDIM array()")
-	elseif( symbGetArrayDimensions( s ) = -1 ) then
-		symbSetArrayDimensions( s, dimensions )
-	end if
-
-    function = s
 
 end function
 
@@ -1861,7 +1904,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 				'' different types?
 				if( dtype <> sym->typ ) then
-					expr = astNewCONV( INVALID, sym->typ, expr )
+					expr = astNewCONV( INVALID, sym->typ, sym->subtype, expr )
 				end if
 
 				select case as const sym->typ
@@ -2245,15 +2288,7 @@ function cStaticArrayDecl( dimensions as integer, _
 				end if
 			end if
 
-			select case as const astGetDataType( expr )
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-				dTB(i).upper = astGetValue64( expr )
-			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-				dTB(i).upper = astGetValuef( expr )
-			case else
-				dTB(i).upper = astGetValuei( expr )
-			end select
-
+			dTB(i).upper = astGetValueAsInt( expr )
 			astDel( expr )
 
     	else
@@ -2377,15 +2412,7 @@ function cConstExprValue( value as integer ) as integer
 		exit function
 	end if
 
-	select case as const astGetDataType( expr )
-	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-		value = cint( astGetValue64( expr ) )
-	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-		value = cint( astGetValuef( expr ) )
-	case else
-		value = astGetValuei( expr )
-  	end select
-
+	value = astGetValueAsInt( expr )
   	astDel( expr )
 
   	function = TRUE
@@ -2514,10 +2541,10 @@ function cSymbolType( typ as integer, _
 
 	function = FALSE
 
-	lgt = 0
-	typ = INVALID
+	lgt 	= 0
+	typ 	= INVALID
 	subtype = NULL
-	ptrcnt = 0
+	ptrcnt	= 0
 
 	allowptr = TRUE
 
@@ -2634,20 +2661,21 @@ function cSymbolType( typ as integer, _
 	case else
 		s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.UDT )
 		if( s <> NULL ) then
-			lexSkipToken
+			lexSkipToken( )
 			typ 	= FB.SYMBTYPE.USERDEF
 			subtype = s
 			lgt 	= s->lgt
 		else
 			s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.ENUM )
 			if( s <> NULL ) then
-				lexSkipToken
-				typ = FB.SYMBTYPE.UINT
-				lgt = FB.INTEGERSIZE
+				lexSkipToken( )
+				typ 	= FB.SYMBTYPE.ENUM
+				subtype = s
+				lgt 	= FB.INTEGERSIZE
 			else
 				s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.TYPEDEF )
 				if( s <> NULL ) then
-					lexSkipToken
+					lexSkipToken( )
 					typ 	= s->typ
 					subtype = s->subtype
 					lgt 	= s->lgt
@@ -3170,37 +3198,8 @@ function cArgDecl( byval procmode as integer, _
     	select case as const atype
     	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR
     		optval.valuestr = sym
-
-    	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-			select case as const dtype
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-    			optval.value64 = astGetValue64( expr )
-    		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-    			optval.value64 = astGetValuef( expr )
-    		case else
-    			optval.value64 = astGetValuei( expr )
-    		end select
-
-    	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-			select case as const dtype
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-    			optval.valuef = astGetValue64( expr )
-    		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-    			optval.valuef = astGetValuef( expr )
-    		case else
-    			optval.valuef = astGetValuei( expr )
-    		end select
-
     	case else
-			select case as const dtype
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-    			optval.valuei = astGetValue64( expr )
-    		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-    			optval.valuei = astGetValuef( expr )
-    		case else
-    			optval.valuei = astGetValuei( expr )
-    		end select
-
+    		astConvertValue( expr, @optval, atype )
     	end select
 
     	astDel( expr )
@@ -4370,6 +4369,12 @@ function cAsmCode as integer static
 						s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.VAR )
 						if( s <> NULL ) then
 							text = emitGetVarName( s )
+						else
+							'' label?
+							s = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+							if( s <> NULL ) then
+								text = symbGetName( s )
+							end if
 						end if
 					end if
 				end if

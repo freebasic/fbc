@@ -140,12 +140,11 @@ sub lexEnd
 end sub
 
 ''::::
-private sub hLoadDefine( byval s as FBSYMBOL ptr, _
-						 byval lgt as integer )
+private sub hLoadDefine( byval s as FBSYMBOL ptr )
     dim as FBDEFARG ptr a
     dim as string text, oldtext, newtext
     dim as FBTOKEN t
-    dim as integer prntcnt
+    dim as integer prntcnt, lgt
 
 	'' define has args?
 	if( s->def.args > 0 ) then
@@ -202,11 +201,13 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, _
     			end if
             loop
 
-            '' replace pattern with new text
-            oldtext = "\27"
-            oldtext += hex$( a->id )
-            oldtext += "\27"
-            hReplace( text, oldtext, newtext )
+            if( symbGetLen( s ) > 0 ) then
+            	'' replace pattern with new text
+            	oldtext = "\27"
+            	oldtext += hex$( a->id )
+            	oldtext += "\27"
+            	hReplace( text, oldtext, newtext )
+            end if
 
 			'' closing parent?
 			if( prntcnt = 0 ) then
@@ -235,8 +236,9 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, _
 			'' call function
 			s->def.text = "\"" + s->def.proc( ) + "\""
 			lgt = len( s->def.text )
+
+		'' just load text as-is
 		else
-			'' just load text as-is
 			if( s->def.isargless ) then
 				'' '(' ')'?
 				if( lexCurrentChar( ) = CHAR_LPRNT ) then
@@ -246,6 +248,8 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr, _
 					end if
 				end if
 			end if
+
+			lgt = symbGetLen( s )
 		end if
 
 		if( ctx.deflen = 0 ) then
@@ -493,12 +497,22 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
+		'' '%' or '&'?
 		case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
 			typ = FB.SYMBTYPE.INTEGER
+
+		'' '!'?
 		case FB.TK.SGNTYPECHAR
 			typ = FB.SYMBTYPE.SINGLE
+
+		'' '#'?
 		case FB.TK.DBLTYPECHAR
-			typ = FB.SYMBTYPE.DOUBLE
+			'' isn't it a '##'?
+			if( lexLookAheadChar( ) <> FB.TK.DBLTYPECHAR ) then
+				typ = FB.SYMBTYPE.DOUBLE
+			end if
+
+		'' '$'?
 		case FB.TK.STRTYPECHAR
 			typ = FB.SYMBTYPE.STRING
 		end select
@@ -905,8 +919,12 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 
 			'' '#' | 'D' | 'd'
 			case FB.TK.DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
-				lexEatChar( )
-				typ = FB.SYMBTYPE.DOUBLE
+				'' isn't it a '##'?
+				if( lexLookAheadChar( ) <> FB.TK.DBLTYPECHAR ) then
+					lexEatChar( )
+					typ = FB.SYMBTYPE.DOUBLE
+				end if
+
 			end select
 
 		end if
@@ -1192,13 +1210,8 @@ readid:
 			'' is it a define?
 			s = symbFindByClass( t.sym, FB.SYMBCLASS.DEFINE )
 			if( s <> NULL ) then
-
-				lgt = symbGetDefineLen( s )
-				if( ( lgt > 0 ) or ( s->def.proc <> NULL ) ) then
-					hLoadDefine( s, lgt )
-				end if
+				hLoadDefine( s  )
 				goto reread
-
         	end if
         end if
 

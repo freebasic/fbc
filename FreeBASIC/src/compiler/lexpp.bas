@@ -103,8 +103,19 @@ const QUOTE = "\""
     			text += token
 
     		else
+
     			'' not and identifier? read as-is
     			if( lexCurrentToken( ) <> FB.TK.ID ) then
+
+    				'' '##'?
+    				if( lexCurrentToken( ) = CHAR_SHARP ) then
+    					if( lexLookAhead( 1 ) = CHAR_SHARP ) then
+    						lexSkipToken( )
+    						lexSkipToken( )
+    						continue do
+    					end if
+    				end if
+
     				lexEatToken( token, flags )
     				text += token
 
@@ -157,7 +168,7 @@ const QUOTE = "\""
 end function
 
 '':::::
-'' PreProcess    =   '#'DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
+'' PreProcess    =   '#'DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL*
 ''               |   '#'UNDEF ID
 ''               |   '#'IFDEF ID
 ''               |   '#'IFNDEF ID
@@ -306,7 +317,7 @@ end function
 private function ppDefine( ) as integer
 	static as zstring * FB.MAXNAMELEN+1 defname, argname
 	dim as zstring ptr text
-	dim as integer args, isargless
+	dim as integer args, isargless, textlen
 	dim as FBDEFARG ptr arghead, lastarg
 	dim as FBSYMBOL ptr s
 
@@ -368,11 +379,12 @@ private function ppDefine( ) as integer
     	end select
     end if
 
-    '' LITERAL+
+    '' LITERAL*
     text = hLiteral( args, arghead )
 
     '' check len, use the sentinel as "text" is a static zstring
-    if( len( *text ) = FB.MAXINTDEFINELEN+1 ) then
+    textlen = len( *text )
+    if( textlen = FB.MAXINTDEFINELEN+1 ) then
 		hReportError( FB.ERRMSG.MACROTEXTTOOLONG )
 		exit function
     end if
@@ -385,7 +397,7 @@ private function ppDefine( ) as integer
     	end if
 
     else
-    	symbAddDefine( defname, text, args, arghead, isargless )
+    	symbAddDefine( defname, text, textlen, args, arghead, isargless )
     end if
 
 	function = TRUE

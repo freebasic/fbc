@@ -519,9 +519,9 @@ sub astOptConstAccum2( byval n as ASTNODE ptr )
 			dtype = irMaxDataType( l->dtype, r->dtype )
 			if( dtype <> INVALID ) then
 				if( dtype <> l->dtype ) then
-					n->l = astNewCONV( INVALID, dtype, l )
+					n->l = astNewCONV( INVALID, dtype, r->subtype, l )
 				else
-					n->r = astNewCONV( INVALID, dtype, r )
+					n->r = astNewCONV( INVALID, dtype, l->subtype, r )
 				end if
 				n->dtype = dtype
 			else
@@ -794,7 +794,7 @@ sub astOptConstIDX( byval n as ASTNODE ptr )
 			'' convert to integer if needed
 			if( (irGetDataClass( l->dtype ) <> IR.DATACLASS.INTEGER) or _
 			    (irGetDataSize( l->dtype ) <> FB.POINTERSIZE) ) then
-				n->l = astNewCONV( INVALID, IR.DATATYPE.INTEGER, l )
+				n->l = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, l )
 			end if
 
         end if
@@ -1291,9 +1291,11 @@ function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
 		end if
 
 		'' try to optimize if a constant is being assigned to a float var
-  		if( r->class = AST.NODECLASS.CONST ) then
+  		if( r->defined ) then
   			if( dclass = IR.DATACLASS.FPOINT ) then
-				r->dtype = dtype
+				if( irGetDataClass( r->dtype ) <> IR.DATACLASS.FPOINT ) then
+					n->r = astNewCONV( INVALID, dtype, NULL, r )
+				end if
 			end if
 		end if
 
@@ -1441,7 +1443,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 		end if
 
 		'' CONST?
-		if( n->class = AST.NODECLASS.CONST ) then
+		if( n->defined ) then
 			if( not isinverse ) then
 				'' branch if false
 				select case as const dtype
@@ -1853,6 +1855,11 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 			end if
 		end select
 
+	case AST.NODECLASS.ENUM
+		if( l->v.valuei <> r->v.valuei ) then
+			exit function
+		end if
+
 	case AST.NODECLASS.PTR
 		if( l->ptr.sym <> r->ptr.sym ) then
 			exit function
@@ -2101,6 +2108,34 @@ private function astGetUDTElm( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
+function astGetValueAsInt( byval n as ASTNODE ptr ) as integer
+
+  	select case as const astGetDataType( n )
+  	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+  	    return cint( astGetValue64( n ) )
+  	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+  		return cint( astGetValuef( n ) )
+  	case else
+  		return cint( astGetValuei( n ) )
+  	end select
+
+end function
+
+'':::::
+function astGetValueAsStr( byval n as ASTNODE ptr ) as string
+
+  	select case as const astGetDataType( n )
+  	case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+  	    return str$( astGetValue64( n ) )
+  	case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+  		return str$( astGetValuef( n ) )
+  	case else
+  		return str$( astGetValuei( n ) )
+  	end select
+
+end function
+
+'':::::
 sub astConvertValue( byval n as ASTNODE ptr, _
 					 byval v as FBVALUE ptr, _
 					 byval todtype as integer ) static
@@ -2162,14 +2197,17 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 	case AST.NODECLASS.VAR
 		return astLoadVAR( n )
 
+	case AST.NODECLASS.IDX
+		return astLoadIDX( n )
+
+	case AST.NODECLASS.ENUM
+		return astLoadENUM( n )
+
 	case AST.NODECLASS.BOP
 		return astLoadBOP( n )
 
 	case AST.NODECLASS.UOP
 		return astLoadUOP( n )
-
-	case AST.NODECLASS.IDX
-		return astLoadIDX( n )
 
 	case AST.NODECLASS.FUNCT
 		return astLoadFUNCT( n )
@@ -2584,7 +2622,7 @@ function astNewBOP( byval op as integer, _
     dim as integer dt1, dt2, dtype
     dim as integer dc1, dc2
     dim as integer doconv
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s, subtype
 
 	function = NULL
 
@@ -2592,10 +2630,10 @@ function astNewBOP( byval op as integer, _
 		exit function
 	end if
 
-	dt1 = l->dtype
-	dt2 = r->dtype
-	dc1 = irGetDataClass( dt1 )
-	dc2 = irGetDataClass( dt2 )
+	dt1 	= l->dtype
+	dt2 	= r->dtype
+	dc1 	= irGetDataClass( dt1 )
+	dc2 	= irGetDataClass( dt2 )
 
 	'' UDT's? can't operate
 	if( (dt1 = IR.DATATYPE.USERDEF) or (dt2 = IR.DATATYPE.USERDEF) ) then
@@ -2603,6 +2641,16 @@ function astNewBOP( byval op as integer, _
     end if
 
 	''::::::
+
+    '' enums?
+    if( (dt1 = IR.DATATYPE.ENUM) or (dt2 = IR.DATATYPE.ENUM) ) then
+    	'' not the same?
+    	if( dt1 <> dt2 ) then
+    		if( (dc1 <> IR.DATACLASS.INTEGER) or (dc2 <> IR.DATACLASS.INTEGER) ) then
+    			hReportWarning( FB.WARNINGMSG.IMPLICITCONVERTION )
+    		end if
+    	end if
+    end if
 
 	'' longints?
 	if( (dt1 = IR.DATATYPE.LONGINT) or (dt1 = IR.DATATYPE.ULONGINT) or _
@@ -2640,19 +2688,16 @@ function astNewBOP( byval op as integer, _
 		end if
     end if
 
-    ''::::::
-    '' zstrings?
-    if( (dt1 = IR.DATATYPE.CHAR) or (dt2 = IR.DATATYPE.CHAR) ) then
-    	'' same? treat as string..
-    	if( dt1 = dt2 ) then
-    		dc1 = IR.DATACLASS.STRING
-    		dc2 = dc1
-    	end if
+    '' both zstrings? treat as string..
+    if( (dt1 = IR.DATATYPE.CHAR) and (dt2 = IR.DATATYPE.CHAR) ) then
+    	dc1 = IR.DATACLASS.STRING
+    	dc2 = dc1
     end if
 
     '' strings?
     if( (dc1 = IR.DATACLASS.STRING) or (dc2 = IR.DATACLASS.STRING) ) then
 
+		'' both aren't strings?
 		if( dc1 <> dc2 ) then
 			if( dc1 = IR.DATACLASS.STRING ) then
 				'' not a zstring?
@@ -2713,7 +2758,7 @@ function astNewBOP( byval op as integer, _
 		else
 			dt1 = IR.DATATYPE.UINT
 		end if
-		l = astNewCONV( INVALID, dt1, l )
+		l = astNewCONV( INVALID, dt1, NULL, l )
 	end if
 
 	if( irGetDataSize( dt2 ) = 1 ) then
@@ -2722,7 +2767,7 @@ function astNewBOP( byval op as integer, _
 		else
 			dt2 = IR.DATATYPE.UINT
 		end if
-		r = astNewCONV( INVALID, dt2, r )
+		r = astNewCONV( INVALID, dt2, NULL, r )
 	end if
 
     '' convert types
@@ -2732,7 +2777,7 @@ function astNewBOP( byval op as integer, _
 
 		if( dc1 <> IR.DATACLASS.FPOINT ) then
 			dt1 = IR.DATATYPE.DOUBLE
-			l = astNewCONV( INVALID, dt1, l )
+			l = astNewCONV( INVALID, dt1, NULL, l )
 			dc1 = IR.DATACLASS.FPOINT
 		end if
 
@@ -2742,7 +2787,7 @@ function astNewBOP( byval op as integer, _
 				dt2 = IR.DATATYPE.DOUBLE
 			else
 				dt2 = IR.DATATYPE.DOUBLE
-				r = astNewCONV( INVALID, dt2, r )
+				r = astNewCONV( INVALID, dt2, NULL, r )
 			end if
 			dc2 = IR.DATACLASS.FPOINT
 		end if
@@ -2753,13 +2798,13 @@ function astNewBOP( byval op as integer, _
 
 		if( dc1 <> IR.DATACLASS.INTEGER ) then
 			dt1 = IR.DATATYPE.INTEGER
-			l = astNewCONV( INVALID, dt1, l )
+			l = astNewCONV( INVALID, dt1, NULL, l )
 			dc1 = IR.DATACLASS.INTEGER
 		end if
 
 		if( dc2 <> IR.DATACLASS.INTEGER ) then
 			dt2 = IR.DATATYPE.INTEGER
-			r = astNewCONV( INVALID, dt2, r )
+			r = astNewCONV( INVALID, dt2, NULL, r )
 			dc2 = IR.DATACLASS.INTEGER
 		end if
 
@@ -2768,22 +2813,25 @@ function astNewBOP( byval op as integer, _
 
 		if( dc1 <> IR.DATACLASS.FPOINT ) then
 			dt1 = IR.DATATYPE.DOUBLE
-			l = astNewCONV( INVALID, dt1, l )
+			l = astNewCONV( INVALID, dt1, NULL, l )
 			dc1 = IR.DATACLASS.FPOINT
 		end if
 
 		if( dc2 <> IR.DATACLASS.FPOINT ) then
 			dt2 = IR.DATATYPE.DOUBLE
-			r = astNewCONV( INVALID, dt2, r )
+			r = astNewCONV( INVALID, dt2, NULL, r )
 			dc2 = IR.DATACLASS.FPOINT
 		end if
 
 	end select
 
+    ''::::::
+
     '' convert types to the most precise if needed
 	if( dt1 <> dt2 ) then
+		dtype 	= irMaxDataType( dt1, dt2 )
+		subtype = l->subtype
 
-		dtype = irMaxDataType( dt1, dt2 )
 		'' don't convert?
 		if( dtype = -1 ) then
 			'' as type are different, if class is fp,
@@ -2797,12 +2845,15 @@ function astNewBOP( byval op as integer, _
 		else
 			'' convert the l operand?
 			if( dtype <> dt1 ) then
-				l = astNewCONV( INVALID, dtype, l )
+				subtype = r->subtype
+				l = astNewCONV( INVALID, dtype, subtype, l )
 				dt1 = dtype
 				dc1 = dc2
 
 			'' convert the r operand..
 			else
+				subtype = l->subtype
+
 				'' if it's the src-operand of a shift operation, do nothing
 				if( (op = IR.OP.SHL) or (op = IR.OP.SHR) ) then
 					'' it's already an integer
@@ -2825,18 +2876,19 @@ function astNewBOP( byval op as integer, _
 					end if
 
 					if( doconv ) then
-						r = astNewCONV( INVALID, dtype, r )
+						r = astNewCONV( INVALID, dtype, subtype, r )
 					end if
 				end if
+
 				dt2 = dtype
 				dc2 = dc1
-
 			end if
 		end if
 
 	'' no conversion, type's are the same
 	else
 		dtype = dt1
+		subtype = l->subtype
 	end if
 
 	'' post check
@@ -2844,13 +2896,14 @@ function astNewBOP( byval op as integer, _
 	'' relative ops, the result is always an integer
 	case IR.OP.EQ, IR.OP.GT, IR.OP.LT, IR.OP.NE, IR.OP.LE, IR.OP.GE
 		dtype = IR.DATATYPE.INTEGER
+		subtype = NULL
 
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case IR.OP.SHL, IR.OP.SHR
 		if( dt2 <> IR.DATATYPE.INTEGER ) then
 			if( dt2 <> IR.DATATYPE.UINT ) then
 				dt2 = IR.DATATYPE.INTEGER
-				r = astNewCONV( INVALID, dt2, r )
+				r = astNewCONV( INVALID, dt2, NULL, r )
 				dc2 = IR.DATACLASS.INTEGER
 			end if
 		end if
@@ -2867,10 +2920,12 @@ function astNewBOP( byval op as integer, _
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
 			hBOPConstFoldFlt( op, l, r )
 		case else
+			'' byte's, short's, int's and enum's
 			hBOPConstFoldInt( op, l, r )
 		end select
 
-		l->dtype = dtype
+		l->dtype 	= dtype
+		l->subtype  = subtype
 
 		''
 		astDel( r )
@@ -2939,7 +2994,7 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST.NODECLASS.BOP, dtype )
+	n = astNew( AST.NODECLASS.BOP, dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -3106,7 +3161,7 @@ function astNewUOP( byval op as integer, _
 		exit function
 	end if
 
-	dtype = o->dtype
+	dtype 	= o->dtype
 
     '' string? can't operate
     dclass = irGetDataClass( dtype )
@@ -3126,7 +3181,7 @@ function astNewUOP( byval op as integer, _
 		else
 			dtype = IR.DATATYPE.UINT
 		end if
-		o = astNewCONV( INVALID, dtype, o )
+		o = astNewCONV( INVALID, dtype, NULL, o )
 	end if
 
 	select case as const op
@@ -3134,7 +3189,7 @@ function astNewUOP( byval op as integer, _
 	case IR.OP.NOT
 		if( dclass <> IR.DATACLASS.INTEGER ) then
 			dtype = IR.DATATYPE.INTEGER
-			o = astNewCONV( INVALID, dtype, o )
+			o = astNewCONV( INVALID, dtype, NULL, o )
 		end if
 
 	'' with SGN the result is always signed integer
@@ -3150,7 +3205,7 @@ function astNewUOP( byval op as integer, _
 		 IR.OP.TAN, IR.OP.ATAN, IR.OP.SQRT, IR.OP.LOG, IR.OP.FLOOR
 		if( dclass <> IR.DATACLASS.FPOINT ) then
 			dtype = IR.DATATYPE.DOUBLE
-			o = astNewCONV( INVALID, dtype, o )
+			o = astNewCONV( INVALID, dtype, NULL, o )
 		end if
 	end select
 
@@ -3163,6 +3218,7 @@ function astNewUOP( byval op as integer, _
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
 			hUOPConstFoldFlt( op, o )
 		case else
+			'' byte's, short's, int's and enum's
 			hUOPConstFoldInt( op, o )
 		end select
 
@@ -3179,7 +3235,7 @@ function astNewUOP( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST.NODECLASS.UOP, dtype )
+	n = astNew( AST.NODECLASS.UOP, dtype, o->subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -3252,7 +3308,7 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 		case IR.DATATYPE.USHORT
 			v->v.valuei = cushort( v->v.value64 )
 
-		case IR.DATATYPE.INTEGER
+		case IR.DATATYPE.INTEGER, IR.DATATYPE.ENUM
 			v->v.valuei = cint( v->v.value64 )
 
 		case IR.DATATYPE.UINT
@@ -3274,7 +3330,7 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 		case IR.DATATYPE.USHORT
 			v->v.valuei = cushort( v->v.valuef )
 
-		case IR.DATATYPE.INTEGER
+		case IR.DATATYPE.INTEGER, IR.DATATYPE.ENUM
 			v->v.valuei = cint( v->v.valuef )
 
 		case IR.DATATYPE.UINT
@@ -3358,6 +3414,7 @@ end sub
 '':::::
 function astNewCONV( byval op as integer, _
 					 byval dtype as integer, _
+					 byval subtype as FBSYMBOL ptr, _
 					 byval l as ASTNODE ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
     dim as integer dclass, ldtype
@@ -3404,7 +3461,8 @@ function astNewCONV( byval op as integer, _
 	if( (dclass = irGetDataClass( dtype )) and _
 		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
 
-		l->dtype = dtype
+		l->dtype   = dtype
+		l->subtype = subtype
 
 		return l
 	end if
@@ -3418,10 +3476,12 @@ function astNewCONV( byval op as integer, _
 		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
 			hCONVConstEvalFlt( dtype, l )
 		case else
+			'' byte's, short's, int's and enum's
 			hCONVConstEvalInt( dtype, l )
 		end select
 
-		l->dtype = dtype
+		l->dtype   = dtype
+		l->subtype = subtype
 
 		return l
 	end if
@@ -3434,7 +3494,7 @@ function astNewCONV( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST.NODECLASS.CONV, dtype )
+	n = astNew( AST.NODECLASS.CONV, dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -3768,6 +3828,35 @@ function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' enums (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewENUM( byval value as integer, _
+					 byval sym as FBSYMBOL ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = astNew( AST.NODECLASS.ENUM, IR.DATATYPE.ENUM, sym )
+	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
+
+	n->v.valuei = value
+	n->defined	= TRUE
+
+end function
+
+'':::::
+function astLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
+
+	function = irAllocVRIMM( IR.DATATYPE.INTEGER, n->v.valuei )
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' addressing operations (l = expression to call the address of; r = NULL)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -4094,7 +4183,17 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 
 		'' one is not a string, nor a udt, treat as numeric type, let emit
-		'' convert then if needed..
+		'' convert them if needed..
+
+    '' enums?
+    elseif( (dt1 = IR.DATATYPE.ENUM) or (dt2 = IR.DATATYPE.ENUM) ) then
+
+    	'' not the same?
+    	if( dt1 <> dt2 ) then
+    		if( (dc1 <> IR.DATACLASS.INTEGER) or (dc2 <> IR.DATACLASS.INTEGER) ) then
+    			hReportWarning( FB.WARNINGMSG.IMPLICITCONVERTION )
+    		end if
+    	end if
 
 	end if
 
@@ -4102,7 +4201,11 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 	if( dt1 <> dt2 ) then
 		'' don't convert strings
 		if( dc2 <> IR.DATACLASS.STRING ) then
-			r = astNewCONV( INVALID, dt1, r )
+			'' x86 assumption: let the fpu do the convertion if any operand is a float
+			if( (dc1 <> IR.DATACLASS.FPOINT) and _
+				(dc2 <> IR.DATACLASS.FPOINT) ) then
+				r = astNewCONV( INVALID, dt1, NULL, r )
+			end if
 		end if
 	end if
 
@@ -4541,7 +4644,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	s = astGetSymbol( p )
 
 	if( s = NULL ) then
-		hReportParamError f
+		hReportParamError( f )
 		return FALSE
 	end if
 
@@ -4549,7 +4652,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	if( not f->proc.isrtl ) then
 		if( (adclass <> irGetDataClass( s->typ ) ) or _
 			(irGetDataSize( adtype ) <> irGetDataSize( s->typ )) ) then
-			hReportParamError f
+			hReportParamError( f )
 			return FALSE
 		end if
 	end if
@@ -4557,13 +4660,13 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	if( s->class = FB.SYMBCLASS.UDTELM ) then
 		'' not an array?
 		if( symbGetArrayDimensions( s ) = 0 ) then
-			hReportParamError f
+			hReportParamError( f )
 			return FALSE
 		end if
 
 		'' address of?
 		if( astIsADDR( p ) ) then
-			hReportParamError f
+			hReportParamError( f )
 			return FALSE
 		end if
 
@@ -4584,7 +4687,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 			'' not an array?
 			d = s->var.array.desc
 			if( d = NULL ) then
-				hReportParamError f
+				hReportParamError( f )
 				return FALSE
 			end if
 
@@ -4694,7 +4797,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			    		'' the BYVAL modifier was not used?
 			    		if( pmode <> FB.ARGMODE.BYVAL ) then
 							'' const? only accept if it's NULL
-			    			if( pclass = AST.NODECLASS.CONST ) then
+			    			if( p->defined ) then
 			    				if( p->v.valuei <> NULL ) then
 									hReportParamError( f )
 									exit function
@@ -4756,7 +4859,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			if( (pmode = FB.ARGMODE.BYVAL) and (amode = FB.ARGMODE.BYREF) ) then
 				if( (pdclass <> IR.DATACLASS.INTEGER) or _
 					(irGetDataSize( pdtype ) <> FB.POINTERSIZE) ) then
-					hReportParamError f
+					hReportParamError( f )
 					exit function
 				end if
 
@@ -4764,13 +4867,13 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			elseif( adtype = IR.DATATYPE.USERDEF ) then
 				if( pdtype <> IR.DATATYPE.USERDEF ) then
 					if( pclass <> AST.NODECLASS.FUNCT ) then
-						hReportParamError f
+						hReportParamError( f )
 						exit function
 					end if
 
 					s = p->proc.sym
 					if( s->typ <> FB.SYMBTYPE.USERDEF ) then
-						hReportParamError f
+						hReportParamError( f )
 						exit function
 					end if
 
@@ -4787,7 +4890,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
                 '' check for invalid UDT's (different subtypes)
 				if( symbGetSubtype( arg ) <> s ) then
-					hReportParamError f
+					hReportParamError( f )
 					exit function
 				end if
 
@@ -4802,7 +4905,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			else
 				'' can't convert strings/UDT's to other types
 				if( (pdclass = IR.DATACLASS.STRING) or (pdtype = IR.DATATYPE.USERDEF) ) then
-					hReportParamError f
+					hReportParamError( f )
 					exit function
 				end if
 
@@ -4810,16 +4913,23 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 				if( (adclass <> pdclass) or _
 					(irGetDataSize( adtype ) <> irGetDataSize( pdtype )) ) then
 
+					'' enum args are only allowed to be passed enum or int params
+					if( (adtype = IR.DATATYPE.ENUM) or (pdtype = IR.DATATYPE.ENUM) ) then
+						if( adclass <> pdclass ) then
+							hReportParamWarning( f, FB.WARNINGMSG.IMPLICITCONVERTION )
+						end if
+					end if
+
 					if( amode = FB.ARGMODE.BYREF ) then
 						'' param diff than arg can't passed by ref if it's a var/array/ptr
 						select case as const pclass
 						case AST.NODECLASS.VAR, AST.NODECLASS.IDX, AST.NODECLASS.PTR
-							hReportParamError f
+							hReportParamError( f )
 							exit function
 						end select
 					end if
 
-					p = astNewCONV( INVALID, adtype, p )
+					p = astNewCONV( INVALID, adtype, symbGetSubtype( arg ), p )
 					n->dtype = p->dtype
 					n->l     = p
 

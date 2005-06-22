@@ -45,6 +45,7 @@ enum IRDATATYPE_ENUM
 	IR.DATATYPE.INTEGER
 	IR.DATATYPE.LONG		= IR.DATATYPE.INTEGER
 	IR.DATATYPE.UINT
+	IR.DATATYPE.ENUM
 	IR.DATATYPE.LONGINT
 	IR.DATATYPE.ULONGINT
 	IR.DATATYPE.SINGLE
@@ -57,7 +58,7 @@ enum IRDATATYPE_ENUM
 	IR.DATATYPE.POINTER							'' ptr must be the last!
 end enum
 
-const IR.MAXDATATYPES 		= 18-1				'' pointer not taken into account
+const IR.MAXDATATYPES 		= 19-1				'' pointer not taken into account
 
 ''
 enum IRVREGTYPE_ENUM

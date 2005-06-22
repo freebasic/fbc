@@ -467,15 +467,7 @@ function cDataStmt as integer static
 						exit function
 					end if
 
-  					select case as const astGetDataType( expr )
-  					case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-  						littext = str$( astGetValue64( expr ) )
-  					case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-  						littext = str$( astGetValueF( expr ) )
-  					case else
-  						littext = str$( astGetValueI( expr ) )
-  					end select
-
+  					littext = astGetValueAsStr( expr )
   					litlen = len( littext )
 
             		if( not rtlDataStore( littext, litlen, IR.DATATYPE.FIXSTR ) ) then
@@ -484,7 +476,7 @@ function cDataStmt as integer static
 
   				end if
 
-  				astDel expr
+  				astDel( expr )
 
 		    end if
 
@@ -929,7 +921,7 @@ function cPokeStmt as integer
     	hReportError FB.ERRMSG.INVALIDDATATYPES
         exit function
 	case IR.DATACLASS.FPOINT
-    	expr1 = astNewCONV( INVALID, IR.DATATYPE.UINT, expr1 )
+    	expr1 = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr1 )
 	case else
         if( astGetDataSize( expr1 ) <> FB.POINTERSIZE ) then
         	hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -1346,7 +1338,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 
 	'' convert to uinteger if needed
 	if( astGetDataType( expr ) <> IR.DATATYPE.UINT ) then
-		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
+		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr )
 	end if
 
 	'' store expression into a temp var
@@ -1713,14 +1705,8 @@ private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
 
 		for i = 0 to cnt-1
   			expr = exprtb(i)
-  			select case as const astGetDataType( expr )
-  			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-  				v = astGetValue64( expr )
-			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-				v = astGetValueF( expr )
-			case else
-				v = astGetValueI( expr )
-			end select
+  			v = astGetValueAsInt( expr )
+  			astDel( expr )
 
 			if( (v < CHAR_SPACE) or (v > 127) ) then
 				s += "\27"
@@ -1730,8 +1716,6 @@ private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
 			else
 				s += chr$( v )
 			end if
-
-			astDel( expr )
 		next i
 
 		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR.DATATYPE.FIXSTR )
@@ -1777,19 +1761,12 @@ private function cStrASC( funcexpr as ASTNODE ptr ) as integer
 				if( posexpr <> NULL ) then
 					if( astIsCONST( posexpr ) ) then
 
-  						select case as const astGetDataType( posexpr )
-  						case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
-							p = astGetValue64( posexpr )
-						case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
-							p = astGetValueF( posexpr )
-						case else
-							p = astGetValueI( posexpr )
-						end select
+						p = astGetValueAsInt( posexpr )
+						astDel( posexpr )
 
 						if( p < 0 ) then
 							p = 0
 						end if
-						astDel posexpr
 					else
 						p = -1
 					end if
@@ -2132,7 +2109,7 @@ function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
     	hReportError FB.ERRMSG.INVALIDDATATYPES
 		exit function
 	case IR.DATACLASS.FPOINT
-		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, expr )
+		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr )
 	case else
 		if( astGetDataSize( expr ) <> FB.POINTERSIZE ) then
         	hReportError FB.ERRMSG.INVALIDDATATYPES
@@ -2144,7 +2121,7 @@ function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
 
 	'' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
     if( peektype = IR.DATATYPE.BYTE ) then
-    	funcexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, funcexpr )
+    	funcexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, funcexpr )
 	end if
 
     function = TRUE

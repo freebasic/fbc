@@ -56,6 +56,9 @@ declare function 	symbFindClosestOvlProc	( byval proc as FBSYMBOL ptr, _
 					   		    			  modeTB() as integer ) as FBSYMBOL ptr
 
 declare function 	symbLookupUDTVar		( byval symbol as string, _
+											  byval dotpos as integer ) as FBSYMBOL ptr
+
+declare function 	symbLookupUDTElm		( byval symbol as string, _
 											  byval dotpos as integer, _
 											  suffix as integer, _
 											  ofs as integer, _
@@ -105,6 +108,7 @@ declare function 	symbAddKeyword			( byval symbol as string, byval id as integer
 
 declare function 	symbAddDefine			( byval symbol as string, _
 											  byval text as string, _
+											  byval lgt as integer, _
 											  byval args as integer = 0, _
 											  byval arghead as FBDEFARG ptr = NULL, _
 											  byval isargless as integer = FALSE, _
@@ -151,6 +155,7 @@ declare function 	symbAddTempVar			( byval typ as integer, _
 
 declare function 	symbAddConst			( byval symbol as string, _
 											  byval typ as integer, _
+											  byval subtype as FBSYMBOL ptr, _
 											  byval text as string, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
@@ -170,6 +175,10 @@ declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, _
 											  byval isinnerunion as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddEnum				( byval symbol as string ) as FBSYMBOL ptr
+
+declare function 	symbAddEnumElement		( byval symbol as string, _
+					         				  byval parent as FBSYMBOL ptr, _
+					         				  byval value as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddArg				( byval symbol as string, _
 											  byval tail as FBSYMBOL ptr, _
@@ -307,8 +316,6 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetDefineText(d) d->def.text
 
-#define symbGetDefineLen(d) len( d->def.text )
-
 #define symbGetVarInitialized(s) s->var.initialized
 
 #define symbGetVarEmited(s) s->var.emited
@@ -342,6 +349,10 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 #define symbGetUDTElmBitOfs(e) (e->var.elm.ofs * 8 + e->var.elm.bitpos)
 
 #define symbGetUDTElmBitLen(e) iif( e->var.elm.bits <> 0, e->var.elm.bits, e->lgt * e->var.array.elms * 8 )
+
+#define symbGetENUMFirstElm(s) s->enum.head
+
+#define symbGetENUMNextElm(e) e->con.eelm.nxt
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
