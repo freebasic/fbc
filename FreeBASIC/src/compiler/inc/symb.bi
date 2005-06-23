@@ -20,7 +20,7 @@
 '' symbol table protos
 ''
 
-'$include once:'inc\ast.bi'
+#include once "inc\ast.bi"
 
 declare sub 		symbInit				( )
 
@@ -286,29 +286,29 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetClass(s) s->class
 
-#define symbIsVar(s) (s->class = FB.SYMBCLASS.VAR)
+#define symbIsVar(s) (s->class = FB_SYMBCLASS_VAR)
 
-#define symbIsConst(s) (s->class = FB.SYMBCLASS.CONST)
+#define symbIsConst(s) (s->class = FB_SYMBCLASS_CONST)
 
-#define symbIsProc(s) (s->class = FB.SYMBCLASS.PROC)
+#define symbIsProc(s) (s->class = FB_SYMBCLASS_PROC)
 
-#define symbIsProcArg(s) (s->class = FB.SYMBCLASS.PROCARG)
+#define symbIsProcArg(s) (s->class = FB_SYMBCLASS_PROCARG)
 
-#define symbIsDefine(s) (s->class = FB.SYMBCLASS.DEFINE)
+#define symbIsDefine(s) (s->class = FB_SYMBCLASS_DEFINE)
 
-#define symbIsKeyword(s) (s->class = FB.SYMBCLASS.KEYWORD)
+#define symbIsKeyword(s) (s->class = FB_SYMBCLASS_KEYWORD)
 
-#define symbIsLabel(s) (s->class = FB.SYMBCLASS.LABEL)
+#define symbIsLabel(s) (s->class = FB_SYMBCLASS_LABEL)
 
-#define symbIsEnum(s) (s->class = FB.SYMBCLASS.ENUM)
+#define symbIsEnum(s) (s->class = FB_SYMBCLASS_ENUM)
 
-#define symbIsUDT(s) (s->class = FB.SYMBCLASS.UDT)
+#define symbIsUDT(s) (s->class = FB_SYMBCLASS_UDT)
 
-#define symbIsUDTElm(s) (s->class = FB.SYMBCLASS.UDTELM)
+#define symbIsUDTElm(s) (s->class = FB_SYMBCLASS_UDTELM)
 
-#define symbIsTypedef(s) (s->class = FB.SYMBCLASS.TYPEDEF)
+#define symbIsTypedef(s) (s->class = FB_SYMBCLASS_TYPEDEF)
 
-#define symbIsFwdRef(s) (s->class = FB.SYMBCLASS.FWDREF)
+#define symbIsFwdRef(s) (s->class = FB_SYMBCLASS_FWDREF)
 
 #define symbGetAllocType(s) s->alloctype
 
@@ -360,9 +360,9 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbSetProcIsDeclared(f,d) f->proc.isdeclared = d
 
-#define symbGetProcFirstArg(f) iif( f->proc.mode = FB.FUNCMODE.PASCAL, f->proc.arghead, f->proc.argtail )
+#define symbGetProcFirstArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.arghead, f->proc.argtail )
 
-#define symbGetProcLastArg(f) iif( f->proc.mode = FB.FUNCMODE.PASCAL, f->proc.argtail, f->proc.arghead )
+#define symbGetProcLastArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtail, f->proc.arghead )
 
 #define symbGetProcHeadArg(f) f->proc.arghead
 
@@ -380,7 +380,7 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbSetProcErrorCheck(f,v) f->proc.errorcheck = v
 
-#define symbGetProcIsOverloaded(f) ((f->alloctype and FB.ALLOCTYPE.OVERLOADED) > 0)
+#define symbGetProcIsOverloaded(f) ((f->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
 
 #define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
 
@@ -398,40 +398,40 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 
 #define symbGetArgOptvalStr(f,a) a->arg.optval.valuestr
 
-#define symbGetIsDynamic(s) iif( s->class = FB.SYMBCLASS.UDTELM, FALSE, (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0 )
+#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0 )
 
-#define symbIsArray(s) iif( (s->alloctype and (FB.ALLOCTYPE.DYNAMIC or FB.ALLOCTYPE.ARGUMENTBYDESC)) > 0, TRUE, s->var.array.dims > 0 )
+#define symbIsArray(s) iif( (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0, TRUE, s->var.array.dims > 0 )
 
-#define symbIsShared(s) ((s->alloctype and FB.ALLOCTYPE.SHARED) > 0)
+#define symbIsShared(s) ((s->alloctype and FB_ALLOCTYPE_SHARED) > 0)
 
-#define symbIsStatic(s) ((s->alloctype and FB.ALLOCTYPE.STATIC) > 0)
+#define symbIsStatic(s) ((s->alloctype and FB_ALLOCTYPE_STATIC) > 0)
 
-#define symbIsDynamic(s) ((s->alloctype and FB.ALLOCTYPE.DYNAMIC) > 0)
+#define symbIsDynamic(s) ((s->alloctype and FB_ALLOCTYPE_DYNAMIC) > 0)
 
-#define symbIsCommon(s) ((s->alloctype and FB.ALLOCTYPE.COMMON) > 0)
+#define symbIsCommon(s) ((s->alloctype and FB_ALLOCTYPE_COMMON) > 0)
 
-#define symbIsTemp(s) ((s->alloctype and FB.ALLOCTYPE.TEMP) > 0)
+#define symbIsTemp(s) ((s->alloctype and FB_ALLOCTYPE_TEMP) > 0)
 
-#define symbIsArgByDesc(s) ((s->alloctype and FB.ALLOCTYPE.ARGUMENTBYDESC) > 0)
+#define symbIsArgByDesc(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYDESC) > 0)
 
-#define symbIsArgByVal(s) ((s->alloctype and FB.ALLOCTYPE.ARGUMENTBYVAL) > 0)
+#define symbIsArgByVal(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYVAL) > 0)
 
-#define symbIsArgByRef(s) ((s->alloctype and FB.ALLOCTYPE.ARGUMENTBYREF) > 0)
+#define symbIsArgByRef(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYREF) > 0)
 
-#define symbIsPublic(s) ((s->alloctype and FB.ALLOCTYPE.PUBLIC) > 0)
+#define symbIsPublic(s) ((s->alloctype and FB_ALLOCTYPE_PUBLIC) > 0)
 
-#define symbIsPrivate(s) ((s->alloctype and FB.ALLOCTYPE.PRIVATE) > 0)
+#define symbIsPrivate(s) ((s->alloctype and FB_ALLOCTYPE_PRIVATE) > 0)
 
-#define symbIsExtern(s) ((s->alloctype and FB.ALLOCTYPE.EXTERN) > 0)
+#define symbIsExtern(s) ((s->alloctype and FB_ALLOCTYPE_EXTERN) > 0)
 
-#define symbIsExport(s) ((s->alloctype and FB.ALLOCTYPE.EXPORT) > 0)
+#define symbIsExport(s) ((s->alloctype and FB_ALLOCTYPE_EXPORT) > 0)
 
-#define symbIsImport(s) ((s->alloctype and FB.ALLOCTYPE.IMPORT) > 0)
+#define symbIsImport(s) ((s->alloctype and FB_ALLOCTYPE_IMPORT) > 0)
 
-#define symbIsOverloaded(s) ((s->alloctype and FB.ALLOCTYPE.OVERLOADED) > 0)
+#define symbIsOverloaded(s) ((s->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
 
 
-#define hIsString(t) ((t = IR.DATATYPE.STRING) or (t = IR.DATATYPE.FIXSTR) or (t = IR.DATATYPE.CHAR))
+#define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR))
 
 
 

@@ -27,7 +27,7 @@ option escape
 
 const NULL = 0
 
-'$include once: 'inc\list.bi'
+#include once "inc\list.bi"
 
 
 '':::::

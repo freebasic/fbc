@@ -24,12 +24,12 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\parser.bi'
-'$include once: 'inc\rtl.bi'
-'$include once: 'inc\ast.bi'
-'$include once: 'inc\ir.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
+#include once "inc\ir.bi"
 
 const FBGFX_LINETYPE_LINE = 0
 const FBGFX_LINETYPE_B    = 1
@@ -65,21 +65,21 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 
     	astDelTree( arrayexpr )
 
-    	temp	  = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
-    	idxexpr   = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, temp, IR.DATATYPE.INTEGER, NULL )
-    	idxexpr   = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
-    	arrayexpr = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
+    	temp	  = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
+    	idxexpr   = astNewPTR( sym, NULL, FB_ARRAYDESC_DATAOFFS, temp, IR_DATATYPE_INTEGER, NULL )
+    	idxexpr   = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
+    	arrayexpr = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
 
-    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), NULL, FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
-    	idxexpr = astNewLOAD( idxexpr, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), NULL, FB_ARRAYDESC_DATAOFFS, IR_DATATYPE_INTEGER )
+    	idxexpr = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
 
     '' static array
     else
 
-    	idxexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+    	idxexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 
     end if
 
@@ -112,7 +112,7 @@ private function hGetTarget( targetexpr as ASTNODE ptr, _
 		isptr = TRUE
 	else
 		'' pointer?
-		if( symbGetType( s ) >= FB.SYMBTYPE.POINTER ) then
+		if( symbGetType( s ) >= FB_SYMBTYPE_POINTER ) then
 			isptr = TRUE
 		'' array?
 		elseif( symbIsArray( s ) ) then
@@ -148,7 +148,7 @@ function cGfxPset as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
 	else
 		coordtype = FBGFX_COORDTYPE_A
@@ -169,7 +169,7 @@ function cGfxPset as integer
 	if( hMatch( CHAR_COMMA ) ) then
 		hMatchExpression( cexpr )
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 	end if
 
 	''
@@ -194,7 +194,7 @@ function cGfxLine as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
 	else
 		coordtype = FBGFX_COORDTYPE_A
@@ -213,18 +213,18 @@ function cGfxLine as integer
 
 	else
 		coordtype = FBGFX_COORDTYPE_R
-		x1expr = astNewCONSTf( 0, IR.DATATYPE.SINGLE )
-		y1expr = astNewCONSTf( 0, IR.DATATYPE.SINGLE )
+		x1expr = astNewCONSTf( 0, IR_DATATYPE_SINGLE )
+		y1expr = astNewCONSTf( 0, IR_DATATYPE_SINGLE )
 	end if
 
 	'' '-'
 	if( not hMatch( CHAR_MINUS ) ) then
-		hReportError FB.ERRMSG.EXPECTEDMINUS
+		hReportError FB_ERRMSG_EXPECTEDMINUS
 		exit function
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		if( coordtype = FBGFX_COORDTYPE_R ) then
 			coordtype = FBGFX_COORDTYPE_RR
 		else
@@ -255,7 +255,7 @@ function cGfxLine as integer
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( cexpr ) ) then
-			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 		end if
 
 		'' ',' LIT_STRING? - linetype
@@ -275,7 +275,7 @@ function cGfxLine as integer
 			end if
 		end if
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 	end if
 
 	''
@@ -301,7 +301,7 @@ function cGfxCircle as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
 	else
 		coordtype = FBGFX_COORDTYPE_A
@@ -331,7 +331,7 @@ function cGfxCircle as integer
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
 		if( not cExpression( cexpr ) ) then
-			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 		end if
 
         '' (',' Expr? )? - iniarc
@@ -355,7 +355,7 @@ function cGfxCircle as integer
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
             			if( ucase$( *lexTokenText( ) ) <> "F" ) then
-							hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+							hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 							exit function
 						end if
 						lexSkipToken( )
@@ -366,7 +366,7 @@ function cGfxCircle as integer
         end if
 
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 	end if
 
 	''
@@ -392,7 +392,7 @@ function cGfxPaint as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		coord_type = FBGFX_COORDTYPE_R
 	else
 		coord_type = FBGFX_COORDTYPE_A
@@ -425,11 +425,11 @@ function cGfxPaint as integer
 	end if
 
 	if( pexpr = NULL ) then
-		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 	end if
 
 	if( bexpr = NULL ) then
-		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR.DATATYPE.UINT )
+		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 	end if
 
 	function = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )
@@ -451,7 +451,7 @@ function cGfxDraw as integer
 	if( lexLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
 		if( target = NULL ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
 		hMatch( CHAR_COMMA )
@@ -473,7 +473,7 @@ function cGfxView( byval isview as integer ) as integer
 	function = FALSE
 
 	'' SCREEN?
-	if( lexCurrentToken() = FB.TK.SCREEN ) then
+	if( lexCurrentToken() = FB_TK_SCREEN ) then
 		lexSkipToken
 		screenflag = TRUE
 	else
@@ -500,7 +500,7 @@ function cGfxView( byval isview as integer ) as integer
 
 		'' '-'
 		if( not hMatch( CHAR_MINUS ) ) then
-			hReportError FB.ERRMSG.EXPECTEDMINUS
+			hReportError FB_ERRMSG_EXPECTEDMINUS
 			exit function
 		end if
 
@@ -550,22 +550,22 @@ function cGfxPalette as integer
 
 	function = FALSE
 
-	if( hMatch( FB.TK.GET ) ) then
+	if( hMatch( FB_TK_GET ) ) then
 		isget = TRUE
 	else
 		isget = FALSE
 	end if
 
-	if( hMatch( FB.TK.USING ) ) then
+	if( hMatch( FB_TK_USING ) ) then
 
 		if( not cVarOrDeref( arrayexpr, FALSE, TRUE ) ) then
-            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
             exit function
         end if
 
 		s = astGetSymbol( arrayexpr )
 		if( s = NULL ) then
-            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
             exit function
         end if
 
@@ -573,8 +573,8 @@ function cGfxPalette as integer
 			if( not astIsIDX( arrayexpr ) ) then
 				arrayexpr = hMakeArrayIndex( s, arrayexpr )
 			end if
-		elseif( symbGetType( s ) < FB.SYMBTYPE.POINTER ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		elseif( symbGetType( s ) < FB_SYMBTYPE_POINTER ) then
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			exit function
 		end if
 
@@ -592,7 +592,7 @@ function cGfxPalette as integer
 
 			if( isget ) then
 				if( not cVarOrDeref( rexpr, FALSE, TRUE ) ) then
-		            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		            exit function
 		        end if
 	        else
@@ -602,7 +602,7 @@ function cGfxPalette as integer
 			if( hMatch( CHAR_COMMA ) ) then
 				if( isget ) then
 					if( not cVarOrDeref( gexpr, FALSE, TRUE ) ) then
-			            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			            exit function
 			        end if
 				else
@@ -613,7 +613,7 @@ function cGfxPalette as integer
 
 				if( isget ) then
 					if( not cVarOrDeref( bexpr, FALSE, TRUE ) ) then
-			            hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			            exit function
 			        end if
 				else
@@ -622,7 +622,7 @@ function cGfxPalette as integer
 			end if
 		else
 			if( isget ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 		end if
@@ -653,7 +653,7 @@ function cGfxPut as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
 	else
 		coordtype = FBGFX_COORDTYPE_A
@@ -675,7 +675,7 @@ function cGfxPut as integer
 
 	s = hGetTarget( arrayexpr, isptr )
 	if( s = NULL ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		exit function
 	end if
 
@@ -684,23 +684,23 @@ function cGfxPut as integer
 	if( hMatch( CHAR_COMMA ) ) then
 		select case as const lexCurrentToken
 
-		case FB.TK.PSET
+		case FB_TK_PSET
 			lexSkipToken
 			mode = FBGFX_PUTMODE_PSET
 
-		case FB.TK.PRESET
+		case FB_TK_PRESET
 			lexSkipToken
 			mode = FBGFX_PUTMODE_PRESET
 
-		case FB.TK.AND
+		case FB_TK_AND
 			lexSkipToken
 			mode = FBGFX_PUTMODE_AND
 
-		case FB.TK.OR
+		case FB_TK_OR
 			lexSkipToken
 			mode = FBGFX_PUTMODE_OR
 
-		case FB.TK.XOR
+		case FB_TK_XOR
 			lexSkipToken
 			mode = FBGFX_PUTMODE_XOR
 
@@ -721,29 +721,29 @@ function cGfxPut as integer
 				hMatchExpression( funcexpr )
 				s = astGetSymbol( funcexpr )
 				if( s = NULL ) then
-					hReportError FB.ERRMSG.TYPEMISMATCH
+					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
 				if( not symbIsProc( s ) ) then
-					hReportError FB.ERRMSG.TYPEMISMATCH
+					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
-				if( ( symbGetType( s ) <> FB.SYMBTYPE.UINT ) or _
+				if( ( symbGetType( s ) <> FB_SYMBTYPE_UINT ) or _
 					( symbGetProcArgs( s ) <> 2 ) ) then
-					hReportError FB.ERRMSG.TYPEMISMATCH
+					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
 				arg1 = symbGetProcHeadArg( s )
 				arg2 = symbGetProcNextArg( s, arg1, FALSE )
-				if( ( symbGetType( arg1 ) <> FB.SYMBTYPE.UINT ) or _
-					( symbGetType( arg2 ) <> FB.SYMBTYPE.UINT ) or _
-					( arg1->arg.mode <> FB.ARGMODE.BYVAL ) or _
-					( arg2->arg.mode <> FB.ARGMODE.BYVAL ) ) then
-					hReportError FB.ERRMSG.TYPEMISMATCH
+				if( ( symbGetType( arg1 ) <> FB_SYMBTYPE_UINT ) or _
+					( symbGetType( arg2 ) <> FB_SYMBTYPE_UINT ) or _
+					( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
+					( arg2->arg.mode <> FB_ARGMODE_BYVAL ) ) then
+					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
 			else
-				hReportError FB.ERRMSG.SYNTAXERROR
+				hReportError FB_ERRMSG_SYNTAXERROR
 				exit function
 			end if
 		end select
@@ -771,7 +771,7 @@ function cGfxGet as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		coordtype = FBGFX_COORDTYPE_R
 	else
 		coordtype = FBGFX_COORDTYPE_A
@@ -790,12 +790,12 @@ function cGfxGet as integer
 
 	'' '-'
 	if( not hMatch( CHAR_MINUS ) ) then
-		hReportError FB.ERRMSG.EXPECTEDMINUS
+		hReportError FB_ERRMSG_EXPECTEDMINUS
 		exit function
 	end if
 
 	'' STEP?
-	if( hMatch( FB.TK.STEP ) ) then
+	if( hMatch( FB_TK_STEP ) ) then
 		if( coordtype = FBGFX_COORDTYPE_R ) then
 			coordtype = FBGFX_COORDTYPE_RR
 		else
@@ -825,7 +825,7 @@ function cGfxGet as integer
 
 	s = hGetTarget( arrayexpr, isptr )
 	if( s = NULL ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		exit function
 	end if
 
@@ -941,51 +941,51 @@ function cGfxStmt as integer
 	function = FALSE
 
 	select case as const lexCurrentToken
-	case FB.TK.PSET, FB.TK.PRESET
+	case FB_TK_PSET, FB_TK_PRESET
 		lexSkipToken
 		function = cGfxPSet
 
-	case FB.TK.LINE
+	case FB_TK_LINE
 		lexSkipToken
 		function = cGfxLine
 
-	case FB.TK.CIRCLE
+	case FB_TK_CIRCLE
 		lexSkipToken
 		function = cGfxCircle
 
-	case FB.TK.PAINT
+	case FB_TK_PAINT
 		lexSkipToken
 		function = cGfxPaint
 
-	case FB.TK.DRAW
+	case FB_TK_DRAW
 		lexSkipToken
 		function = cGfxDraw
 
-	case FB.TK.VIEW
+	case FB_TK_VIEW
 		lexSkipToken
 		function = cGfxView( TRUE )
 
-	case FB.TK.WINDOW
+	case FB_TK_WINDOW
 		lexSkipToken
 		function = cGfxView( FALSE )
 
-	case FB.TK.PALETTE
+	case FB_TK_PALETTE
 		lexSkipToken
 		function = cGfxPalette
 
-	case FB.TK.PUT
+	case FB_TK_PUT
 		lexSkipToken
 		function = cGfxPut
 
-	case FB.TK.GET
+	case FB_TK_GET
 		lexSkipToken
 		function = cGfxGet
 
-	case FB.TK.SCREEN
+	case FB_TK_SCREEN
 		lexSkipToken
 		function = cGfxScreen
 
-	case FB.TK.SCREENRES
+	case FB_TK_SCREENRES
 		lexSkipToken
 		function = cGfxScreenRes
 
@@ -1016,7 +1016,7 @@ function cGfxPoint( funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
 			if( target = NULL ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 		end if
@@ -1066,11 +1066,11 @@ function cGfxFunct ( funcexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	select case lexCurrentToken
-	case FB.TK.POINT
+	case FB_TK_POINT
 		lexSkipToken
 		function = cGfxPoint( funcexpr )
 
-	case FB.TK.SCREEN
+	case FB_TK_SCREEN
 		lexSkipToken
 		function = cConsoleReadXY( funcexpr )
 

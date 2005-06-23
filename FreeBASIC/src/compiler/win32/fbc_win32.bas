@@ -25,9 +25,9 @@ option explicit
 option private
 option escape
 
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbc.bi'
-'$include once: 'inc\hlp.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbc.bi"
+#include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
 declare function _archiveFiles			( byval cmdline as string ) as integer
@@ -126,7 +126,7 @@ function _linkFiles as integer
 		ldcline += " --dll --enable-stdcall-fixup"
 
 		'' add aliases for functions without @nn
-		if( fbGetOption( FB.COMPOPT.NOSTDCALL ) ) then
+		if( fbGetOption( FB_COMPOPT_NOSTDCALL ) ) then
 	   		ldcline += " --add-stdcall-alias"
     	end if
 
@@ -138,7 +138,7 @@ function _linkFiles as integer
 
     else
     	'' tell LD to add all symbols declared as EXPORT to the symbol table
-    	if( fbGetOption( FB.COMPOPT.EXPORT ) ) then
+    	if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
     		ldcline += " --export-dynamic"
     	end if
 
@@ -349,11 +349,11 @@ function _processCompOptions( byval argv as string ) as integer
 
 	select case mid$( argv, 2 )
 	case "nostdcall"
-		fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
+		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 		return TRUE
 
 	case "nounderscore"
-		fbSetOption( FB.COMPOPT.NOUNDERPREFIX, TRUE )
+		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
 		return TRUE
 
 	case else
@@ -368,10 +368,10 @@ function _setCompOptions( ) as integer
 
 	select case fbc.target
 	case FB_COMPTARGET_LINUX
-		fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
-		fbSetOption( FB.COMPOPT.NOUNDERPREFIX, TRUE )
+		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
+		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
 	case FB_COMPTARGET_DOS
-		fbSetOption( FB.COMPOPT.NOSTDCALL, TRUE )
+		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 	end select
 
 	function = TRUE

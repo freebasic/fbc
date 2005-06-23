@@ -26,7 +26,7 @@ defint a-z
 option explicit
 option escape
 
-'$include once: 'inc\flist.bi'
+#include once "inc\flist.bi"
 
 const NULL = 0
 

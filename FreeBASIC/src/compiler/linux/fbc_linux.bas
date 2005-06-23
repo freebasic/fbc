@@ -25,9 +25,9 @@ option explicit
 option private
 option escape
 
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbc.bi'
-'$include once: 'inc\hlp.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbc.bi"
+#include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
 declare function _archiveFiles			( byval cmdline as string ) as integer
@@ -105,7 +105,7 @@ function _linkFiles as integer
 
     else
     	'' tell LD to add all symbols declared as EXPORT to the symbol table
-    	if( fbGetOption( FB.COMPOPT.EXPORT ) ) then
+    	if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
     		ldcline += " --export-dynamic"
     	end if
     end if

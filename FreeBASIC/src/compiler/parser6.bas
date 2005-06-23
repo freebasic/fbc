@@ -25,13 +25,13 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\parser.bi'
-'$include once: 'inc\rtl.bi'
-'$include once: 'inc\ast.bi'
-'$include once: 'inc\ir.bi'
-'$include once: 'inc\emit.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
+#include once "inc\ir.bi"
+#include once "inc\emit.bi"
 
 
 '':::::
@@ -41,7 +41,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
     function = FALSE
 
 	if( (env.currproc = NULL) or (env.procstmt.endlabel = NULL) ) then
-		hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+		hReportError FB_ERRMSG_ILLEGALOUTSIDEASUB
 		exit function
 	end if
 
@@ -54,7 +54,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
 	end if
 
 	'' do an implicit exit function
-	astFlush( astNewBRANCH( IR.OP.JMP, env.procstmt.endlabel ) )
+	astFlush( astNewBRANCH( IR_OP_JMP, env.procstmt.endlabel ) )
 
 	function = TRUE
 
@@ -74,13 +74,13 @@ function cGotoStmt as integer
 
 	select case as const lexCurrentToken( )
 	'' GOTO LABEL
-	case FB.TK.GOTO
+	case FB_TK_GOTO
 		lexSkipToken( )
 
-		if( lexCurrentTokenClass( ) = FB.TKCLASS.NUMLITERAL ) then
-			l = symbFindByNameAndClass( *lexTokenText( ), FB.SYMBCLASS.LABEL )
+		if( lexCurrentTokenClass( ) = FB_TKCLASS_NUMLITERAL ) then
+			l = symbFindByNameAndClass( *lexTokenText( ), FB_SYMBCLASS_LABEL )
 		else
-			l = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
+			l = symbFindByClass( lexTokenSymbol( ), FB_SYMBCLASS_LABEL )
 		end if
 
 		if( l = NULL ) then
@@ -88,18 +88,18 @@ function cGotoStmt as integer
 		end if
 		lexSkipToken( )
 
-		astFlush( astNewBRANCH( IR.OP.JMP, l ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, l ) )
 
 		function = TRUE
 
 	'' GOSUB LABEL
-	case FB.TK.GOSUB
+	case FB_TK_GOSUB
 		lexSkipToken( )
 
-		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-			l = symbFindByNameAndClass( *lexTokenText( ), FB.SYMBCLASS.LABEL )
+		if( lexCurrentTokenClass = FB_TKCLASS_NUMLITERAL ) then
+			l = symbFindByNameAndClass( *lexTokenText( ), FB_SYMBCLASS_LABEL )
 		else
-			l = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
+			l = symbFindByClass( lexTokenSymbol( ), FB_SYMBCLASS_LABEL )
 		end if
 
 		if( l = NULL ) then
@@ -107,17 +107,17 @@ function cGotoStmt as integer
 		end if
 		lexSkipToken( )
 
-		astFlush( astNewBRANCH( IR.OP.CALL, l ) )
+		astFlush( astNewBRANCH( IR_OP_CALL, l ) )
 
 		function = TRUE
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
-	case FB.TK.RETURN
+	case FB_TK_RETURN
 		lexSkipToken( )
 
 		'' Comment|StmtSep|EOF? just return
 		select case lexCurrentToken( )
-		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 
 			'' try to guess here.. if inside a proc currently and no user label was
 			'' emited, it's probably a FUNCTION return, no a GOSUB return
@@ -144,18 +144,18 @@ function cGotoStmt as integer
 
 			'' Comment|StmtSep|EOF following? check if it's not an already defined label
 			select case lexLookAhead( 1 )
-			case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
-				if( lexCurrentTokenClass( ) = FB.TKCLASS.NUMLITERAL ) then
-					l = symbFindByNameAndClass( *lexTokenText( ), FB.SYMBCLASS.LABEL )
+			case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+				if( lexCurrentTokenClass( ) = FB_TKCLASS_NUMLITERAL ) then
+					l = symbFindByNameAndClass( *lexTokenText( ), FB_SYMBCLASS_LABEL )
 				else
-					l = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
+					l = symbFindByClass( lexTokenSymbol( ), FB_SYMBCLASS_LABEL )
 				end if
 			end select
 
 			'' label?
 			if( l <> NULL ) then
 				lexSkipToken( )
-				astFlush( astNewBRANCH( IR.OP.JMP, l ) )
+				astFlush( astNewBRANCH( IR_OP_JMP, l ) )
 				function = TRUE
 
 			'' must be a function return then
@@ -167,16 +167,16 @@ function cGotoStmt as integer
 
 
 	'' RESUME NEXT?
-	case FB.TK.RESUME
+	case FB_TK_RESUME
 
 		if( not env.clopt.resumeerr ) then
-			hReportError( FB.ERRMSG.ILLEGALRESUMEERROR )
+			hReportError( FB_ERRMSG_ILLEGALRESUMEERROR )
 			exit function
 		end if
 
 		lexSkipToken( )
 
-		if( hMatch( FB.TK.NEXT ) ) then
+		if( hMatch( FB_TK_NEXT ) ) then
 			isnext = TRUE
 		else
 			isnext = FALSE
@@ -200,19 +200,19 @@ function cArrayStmt as integer
 	function = FALSE
 
 	select case lexCurrentToken
-	case FB.TK.ERASE
+	case FB_TK_ERASE
 		lexSkipToken
 
 		do
 			if( not cVarOrDeref( expr1, FALSE ) ) then
-				hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+				hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 				exit function
 			end if
 
 			'' array?
     		s = astGetSymbol( expr1 )
     		if( not symbIsArray( s ) ) then
-				hReportError FB.ERRMSG.EXPECTEDARRAY
+				hReportError FB_ERRMSG_EXPECTEDARRAY
 				exit function
 			end if
 
@@ -232,23 +232,23 @@ function cArrayStmt as integer
 		function = TRUE
 
 	'' SWAP Variable, Variable
-	case FB.TK.SWAP
+	case FB_TK_SWAP
 		lexSkipToken
 
 		if( not cVarOrDeref( expr1 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			exit function
 		end if
 
 		hMatchCOMMA( )
 
 		if( not cVarOrDeref( expr2 ) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			exit function
 		end if
 
 		select case astGetDataType( expr1 )
-		case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR
+		case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
 			function = rtlStrSwap( expr1, expr2 )
 		case else
 			function = rtlMemSwap( expr1, expr2 )
@@ -266,7 +266,7 @@ function cMidStmt as integer
 
 	function = FALSE
 
-	if( hMatch( FB.TK.MID ) ) then
+	if( hMatch( FB_TK_MID ) ) then
 
 		hMatchLPRNT()
 
@@ -279,13 +279,13 @@ function cMidStmt as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpression( expr3 )
 		else
-			expr3 = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
+			expr3 = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )
 
-		if( not hMatch( FB.TK.ASSIGN ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEQ
+		if( not hMatch( FB_TK_ASSIGN ) ) then
+			hReportError FB_ERRMSG_EXPECTEDEQ
 			exit function
 		end if
 
@@ -310,15 +310,15 @@ function cLSetStmt( ) as integer
 
 	'' Expression
 	if( not cVarOrDeref( dstexpr ) ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		exit function
 	end if
 
 	dtype1 = astGetDataType( dstexpr )
 	select case dtype1
-	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR, IR.DATATYPE.USERDEF
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR, IR_DATATYPE_USERDEF
 	case else
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end select
 
@@ -330,23 +330,23 @@ function cLSetStmt( ) as integer
 
 	dtype2 = astGetDataType( srcexpr )
 	select case dtype2
-	case IR.DATATYPE.STRING, IR.DATATYPE.FIXSTR, IR.DATATYPE.CHAR, IR.DATATYPE.USERDEF
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR, IR_DATATYPE_USERDEF
 	case else
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end select
 
-	if( (dtype1 = IR.DATATYPE.USERDEF) or (dtype2 = IR.DATATYPE.USERDEF) ) then
+	if( (dtype1 = IR_DATATYPE_USERDEF) or (dtype2 = IR_DATATYPE_USERDEF) ) then
 
 		if( dtype1 <> dtype2 ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end if
 
 		dst = astGetSymbol( dstexpr )
 		src = astGetSymbol( srcexpr )
 		if( (dst = NULL) or (src = NULL) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			exit function
 		end if
 
@@ -367,20 +367,20 @@ function cDataStmt as integer static
 	dim as ASTNODE ptr expr
 	dim as integer typ, litlen
 	dim as FBSYMBOL ptr s
-	static as zstring * FB.MAXLITLEN+1 littext
+	static as zstring * FB_MAXLITLEN+1 littext
 
 	function = FALSE
 
 	select case lexCurrentToken( )
 	'' RESTORE LABEL?
-	case FB.TK.RESTORE
+	case FB_TK_RESTORE
 		lexSkipToken( )
 
 		'' LABEL?
 		s = NULL
 		select case lexCurrentTokenClass( )
-		case FB.TKCLASS.IDENTIFIER, FB.TKCLASS.NUMLITERAL
-			s = symbFindByClass( lexTokenSymbol( ), FB.SYMBCLASS.LABEL )
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_NUMLITERAL
+			s = symbFindByClass( lexTokenSymbol( ), FB_SYMBCLASS_LABEL )
 			if( s = NULL ) then
 				s = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 			end if
@@ -390,12 +390,12 @@ function cDataStmt as integer static
 		function = rtlDataRestore( s )
 
 	'' READ Variable{int|flt|str} (',' Variable{int|flt|str})*
-	case FB.TK.READ
+	case FB_TK_READ
 		lexSkipToken( )
 
 		do
 		    if( not cVarOrDeref( expr ) ) then
-		    	hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		    	hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		    	exit function
 		    end if
 
@@ -408,11 +408,11 @@ function cDataStmt as integer static
 		function = TRUE
 
 	'' DATA literal|constant expr (',' literal|constant expr)*
-	case FB.TK.DATA
+	case FB_TK_DATA
 
 		'' not allowed inside procs
 		if( env.scope > 0 ) then
-			hReportError FB.ERRMSG.ILLEGALINSIDEASUB
+			hReportError FB_ERRMSG_ILLEGALINSIDEASUB
 			exit function
 		end if
 
@@ -428,7 +428,7 @@ function cDataStmt as integer static
 
 			'' check if it's an string
 			s = NULL
-			if( astGetDataType( expr ) = IR.DATATYPE.FIXSTR ) then
+			if( astGetDataType( expr ) = IR_DATATYPE_FIXSTR ) then
 				if( astIsVAR( expr ) ) then
 					s = astGetSymbol( expr )
 					if( not symbGetVarInitialized( s ) ) then
@@ -441,7 +441,7 @@ function cDataStmt as integer static
 			if( s <> NULL ) then
 				astDel expr
 
-                typ = FB.SYMBTYPE.FIXSTR
+                typ = FB_SYMBTYPE_FIXSTR
 				litlen  = symbGetLen( s ) - 1 				'' less the null-char
 				littext = symbGetVarText( s )
 
@@ -463,14 +463,14 @@ function cDataStmt as integer static
 				else
 
 					if( not astIsCONST( expr ) ) then
-						hReportError FB.ERRMSG.EXPECTEDCONST
+						hReportError FB_ERRMSG_EXPECTEDCONST
 						exit function
 					end if
 
   					littext = astGetValueAsStr( expr )
   					litlen = len( littext )
 
-            		if( not rtlDataStore( littext, litlen, IR.DATATYPE.FIXSTR ) ) then
+            		if( not rtlDataStore( littext, litlen, IR_DATATYPE_FIXSTR ) ) then
 	            		exit function
     	        	end if
 
@@ -500,7 +500,7 @@ function cPrintStmt as integer
 	function = FALSE
 
 	'' (PRINT|'?')
-	if( not hMatch( FB.TK.PRINT ) ) then
+	if( not hMatch( FB_TK_PRINT ) ) then
 		if( not hMatch( CHAR_QUESTION ) ) then
 			exit function
 		end if
@@ -513,16 +513,16 @@ function cPrintStmt as integer
 		hMatchCOMMA( )
 
     else
-    	filexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+    	filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 	end if
 
 	'' (USING Expression{str} ';')?
 	usingexpr = NULL
-	if( hMatch( FB.TK.USING ) ) then
+	if( hMatch( FB_TK_USING ) ) then
 		hMatchExpression( usingexpr )
 
 		if( not hMatch( CHAR_SEMICOLON ) ) then
-			hReportError FB.ERRMSG.EXPECTEDSEMICOLON
+			hReportError FB_ERRMSG_EXPECTEDSEMICOLON
 			exit function
 		end if
 
@@ -537,7 +537,7 @@ function cPrintStmt as integer
         '' (Expression?|SPC(Expression)|TAB(Expression)
         isspc = FALSE
         istab = FALSE
-        if( hMatch( FB.TK.SPC ) ) then
+        if( hMatch( FB_TK_SPC ) ) then
         	isspc = TRUE
 			hMatchLPRNT( )
 
@@ -545,7 +545,7 @@ function cPrintStmt as integer
 
 			hMatchRPRNT( )
 
-        elseif( hMatch( FB.TK.TAB ) ) then
+        elseif( hMatch( FB_TK_TAB ) ) then
             istab = TRUE
 			hMatchLPRNT( )
 
@@ -595,14 +595,14 @@ function cPrintStmt as integer
 				end if
     		else
     			if( not rtlPrint( filexprcopy, iscomma, issemicolon, expr ) ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
+					hReportError FB_ERRMSG_INVALIDDATATYPES
 					exit function
 				end if
     		end if
 
     	else
     		if( not rtlPrintUsing( filexprcopy, expr, iscomma, issemicolon ) ) then
-    			hReportError FB.ERRMSG.INVALIDDATATYPES
+    			hReportError FB_ERRMSG_INVALIDDATATYPES
 				exit function
 			end if
     	end if
@@ -627,7 +627,7 @@ function cWriteStmt as integer
 	function = FALSE
 
 	'' WRITE
-	if( not hMatch( FB.TK.WRITE ) ) then
+	if( not hMatch( FB_TK_WRITE ) ) then
 		exit function
 	end if
 
@@ -638,7 +638,7 @@ function cWriteStmt as integer
 		hMatchCOMMA( )
 
     else
-    	filexpr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+    	filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 	end if
 
     '' (Expression? "," )*
@@ -665,7 +665,7 @@ function cWriteStmt as integer
     	end if
 
     	if( not rtlWrite( filexprcopy, iscomma, expr ) ) then
-    		hReportError FB.ERRMSG.INVALIDDATATYPES
+    		hReportError FB_ERRMSG_INVALIDDATATYPES
     		exit function
     	end if
 
@@ -689,12 +689,12 @@ function cLineInputStmt as integer
 	function = FALSE
 
 	'' LINE
-	if( lexCurrentToken( ) <> FB.TK.LINE ) then
+	if( lexCurrentToken( ) <> FB_TK_LINE ) then
 		exit function
 	end if
 
 	'' INPUT
-	if( lexLookahead(1) <> FB.TK.INPUT ) then
+	if( lexLookahead(1) <> FB_TK_INPUT ) then
 		exit function
 	end if
 
@@ -717,7 +717,7 @@ function cLineInputStmt as integer
 	'' Expression?
 	if( not cExpression( expr ) ) then
 		if( isfile ) then
-			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 		expr = NULL
@@ -729,7 +729,7 @@ function cLineInputStmt as integer
 		if( not hMatch( CHAR_SEMICOLON ) ) then
 			issep = FALSE
 			if( (expr = NULL) or (isfile) ) then
-				hReportError( FB.ERRMSG.EXPECTEDCOMMA )
+				hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 				exit function
 			end if
 		end if
@@ -738,21 +738,21 @@ function cLineInputStmt as integer
     '' Variable?
 	if( not cVarOrDeref( dstexpr ) ) then
        	if( (expr = NULL) or (isfile) ) then
-       		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
+       		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
        		exit function
        	end if
        	dstexpr = expr
        	expr = NULL
     else
     	if( issep = FALSE ) then
-			hReportError( FB.ERRMSG.EXPECTEDCOMMA )
+			hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 			exit function
     	end if
     end if
 
     '' not a string?
     if( not hIsString( astGetDataType( dstexpr ) ) ) then
-		hReportError( FB.ERRMSG.INVALIDDATATYPES )
+		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
     end if
 
@@ -770,7 +770,7 @@ function cInputStmt as integer
 	function = FALSE
 
 	'' INPUT
-	if( not hMatch( FB.TK.INPUT ) ) then
+	if( not hMatch( FB_TK_INPUT ) ) then
 		exit function
 	end if
 
@@ -790,10 +790,10 @@ function cInputStmt as integer
     else
     	isfile = FALSE
     	'' STRING_LIT?
-    	if( lexCurrentTokenClass = FB.TKCLASS.STRLITERAL ) then
+    	if( lexCurrentTokenClass = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexTokenTextLen( )
 			filestrexpr = astNewVAR( hAllocStringConst( *lexTokenText( ), lgt ), _
-									 NULL, 0, IR.DATATYPE.FIXSTR )
+									 NULL, 0, IR_DATATYPE_FIXSTR )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
@@ -805,7 +805,7 @@ function cInputStmt as integer
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( not hMatch( CHAR_COMMA ) ) then
 			if( not hMatch( CHAR_SEMICOLON ) ) then
-				hReportError FB.ERRMSG.EXPECTEDCOMMA
+				hReportError FB_ERRMSG_EXPECTEDCOMMA
 				exit function
 			else
 				addquestion = TRUE
@@ -821,7 +821,7 @@ function cInputStmt as integer
     '' Variable (',' Variable)*
     do
 		if( not cVarOrDeref( dstexpr ) ) then
-       		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+       		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
        		exit function
        	end if
 
@@ -848,12 +848,12 @@ function cViewStmt as integer
 	function = FALSE
 
 	'' VIEW
-	if( lexCurrentToken <> FB.TK.VIEW ) then
+	if( lexCurrentToken <> FB_TK_VIEW ) then
 		exit function
 	end if
 
 	'' PRINT
-	if( lexLookAhead(1) <> FB.TK.PRINT ) then
+	if( lexLookAhead(1) <> FB_TK_PRINT ) then
 		exit function
 	end if
 
@@ -862,16 +862,16 @@ function cViewStmt as integer
 
 	'' (Expression TO Expression)?
 	if( cExpression( expr1 ) ) then
-		if( not hMatch( FB.TK.TO ) ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
+		if( not hMatch( FB_TK_TO ) ) then
+			hReportError FB_ERRMSG_SYNTAXERROR
 			exit function
 		end if
 
 		hMatchExpression( expr2 )
 
 	else
-		expr1 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
-		expr2 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+		expr1 = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+		expr2 = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 	end if
 
     function = rtlConsoleView( expr1, expr2 )
@@ -896,8 +896,8 @@ function cPokeStmt as integer
 
 		'' check for invalid types
 		select case poketype
-		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.FIXSTR
-			hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+			hReportError FB_ERRMSG_INVALIDDATATYPES, TRUE
 			exit function
 		end select
 
@@ -905,7 +905,7 @@ function cPokeStmt as integer
 		hMatchCOMMA( )
 
 	else
-		poketype = IR.DATATYPE.BYTE
+		poketype = IR_DATATYPE_BYTE
 		subtype  = NULL
 	end if
 
@@ -917,14 +917,14 @@ function cPokeStmt as integer
 	hMatchExpression( expr2 )
 
     select case astGetDataClass( expr1 )
-    case IR.DATACLASS.STRING
-    	hReportError FB.ERRMSG.INVALIDDATATYPES
+    case IR_DATACLASS_STRING
+    	hReportError FB_ERRMSG_INVALIDDATATYPES
         exit function
-	case IR.DATACLASS.FPOINT
-    	expr1 = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr1 )
+	case IR_DATACLASS_FPOINT
+    	expr1 = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr1 )
 	case else
-        if( astGetDataSize( expr1 ) <> FB.POINTERSIZE ) then
-        	hReportError FB.ERRMSG.INVALIDDATATYPES
+        if( astGetDataSize( expr1 ) <> FB_POINTERSIZE ) then
+        	hReportError FB_ERRMSG_INVALIDDATATYPES
         	exit function
         end if
 	end select
@@ -960,9 +960,9 @@ private function hFileClose( byval isfunc as integer ) as ASTNODE ptr
 
     	if( not cExpression( filenum ) ) then
 			if( cnt = 0 ) then
-				filenum = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+				filenum = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 			else
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 		end if
@@ -1017,7 +1017,7 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
 	'' don't allow literal values, due the way "byref as
 	'' any" args work (ie, the VB-way: literals are passed by value)
 	if( astIsCONST( expr2 ) or astIsOFFSET( expr2 ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER, TRUE )
+		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 		exit function
 	end if
 
@@ -1067,7 +1067,7 @@ private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
 	hMatchCOMMA( )
 
 	if( not cVarOrDeref( expr2 ) ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		exit function
 	end if
 
@@ -1112,28 +1112,28 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
 	'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
-	if( hMatch( FB.TK.FOR ) ) then
+	if( hMatch( FB_TK_FOR ) ) then
 		select case lexCurrentToken
-		case FB.TK.INPUT
-			mode = FB.FILE.MODE.INPUT
-		case FB.TK.OUTPUT
-			mode = FB.FILE.MODE.OUTPUT
-		case FB.TK.BINARY
-			mode = FB.FILE.MODE.BINARY
-		case FB.TK.RANDOM
-			mode = FB.FILE.MODE.RANDOM
-		case FB.TK.APPEND
-			mode = FB.FILE.MODE.APPEND
+		case FB_TK_INPUT
+			mode = FB_FILE_MODE_INPUT
+		case FB_TK_OUTPUT
+			mode = FB_FILE_MODE_OUTPUT
+		case FB_TK_BINARY
+			mode = FB_FILE_MODE_BINARY
+		case FB_TK_RANDOM
+			mode = FB_FILE_MODE_RANDOM
+		case FB_TK_APPEND
+			mode = FB_FILE_MODE_APPEND
 		case else
 			exit function
 		end select
 		lexSkipToken
 
 	else
-		mode = FB.FILE.MODE.RANDOM
+		mode = FB_FILE_MODE_RANDOM
 	end if
 
-	fmode = astNewCONSTi( mode, IR.DATATYPE.INTEGER )
+	fmode = astNewCONSTi( mode, IR_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -1141,21 +1141,21 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
 	'' (ACCESS (READ|WRITE|READ WRITE))?
-	if( hMatch( FB.TK.ACCESS ) ) then
+	if( hMatch( FB_TK_ACCESS ) ) then
 		select case lexCurrentToken
-		case FB.TK.WRITE
+		case FB_TK_WRITE
 			lexSkipToken
-			faccess = astNewCONSTi( FB.FILE.ACCESS.WRITE, IR.DATATYPE.INTEGER )
-		case FB.TK.READ
+			faccess = astNewCONSTi( FB_FILE_ACCESS_WRITE, IR_DATATYPE_INTEGER )
+		case FB_TK_READ
 			lexSkipToken
-			if( hMatch( FB.TK.WRITE ) ) then
-				faccess = astNewCONSTi( FB.FILE.ACCESS.READWRITE, IR.DATATYPE.INTEGER )
+			if( hMatch( FB_TK_WRITE ) ) then
+				faccess = astNewCONSTi( FB_FILE_ACCESS_READWRITE, IR_DATATYPE_INTEGER )
 			else
-				faccess = astNewCONSTi( FB.FILE.ACCESS.READ, IR.DATATYPE.INTEGER )
+				faccess = astNewCONSTi( FB_FILE_ACCESS_READ, IR_DATATYPE_INTEGER )
 			end if
 		end select
 	else
-		faccess = astNewCONSTi( FB.FILE.ACCESS.ANY, IR.DATATYPE.INTEGER )
+		faccess = astNewCONSTi( FB_FILE_ACCESS_ANY, IR_DATATYPE_INTEGER )
 	end if
 
 	if( isfunc ) then
@@ -1164,23 +1164,23 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
 	'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
-	if( hMatch( FB.TK.SHARED ) ) then
-		flock = astNewCONSTi( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
-	elseif( hMatch( FB.TK.LOCK ) ) then
+	if( hMatch( FB_TK_SHARED ) ) then
+		flock = astNewCONSTi( FB_FILE_LOCK_SHARED, IR_DATATYPE_INTEGER )
+	elseif( hMatch( FB_TK_LOCK ) ) then
 		select case lexCurrentToken
-		case FB.TK.WRITE
+		case FB_TK_WRITE
 			lexSkipToken
-			flock = astNewCONSTi( FB.FILE.LOCK.WRITE, IR.DATATYPE.INTEGER )
-		case FB.TK.READ
+			flock = astNewCONSTi( FB_FILE_LOCK_WRITE, IR_DATATYPE_INTEGER )
+		case FB_TK_READ
 			lexSkipToken
-			if( hMatch( FB.TK.WRITE ) ) then
-				flock = astNewCONSTi( FB.FILE.LOCK.READWRITE, IR.DATATYPE.INTEGER )
+			if( hMatch( FB_TK_WRITE ) ) then
+				flock = astNewCONSTi( FB_FILE_LOCK_READWRITE, IR_DATATYPE_INTEGER )
 			else
-				flock = astNewCONSTi( FB.FILE.LOCK.READ, IR.DATATYPE.INTEGER )
+				flock = astNewCONSTi( FB_FILE_LOCK_READ, IR_DATATYPE_INTEGER )
 			end if
 		end select
 	else
-		flock = astNewCONSTi( FB.FILE.LOCK.SHARED, IR.DATATYPE.INTEGER )
+		flock = astNewCONSTi( FB_FILE_LOCK_SHARED, IR_DATATYPE_INTEGER )
 	end if
 
 	if( isfunc ) then
@@ -1189,8 +1189,8 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
 	'' AS '#'? Expression
-	if( not hMatch( FB.TK.AS ) ) then
-		hReportError FB.ERRMSG.EXPECTINGAS
+	if( not hMatch( FB_TK_AS ) ) then
+		hReportError FB_ERRMSG_EXPECTINGAS
 		exit function
 	end if
 
@@ -1204,14 +1204,14 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
 	'' (LEN '=' Expression)?
-	if( hMatch( FB.TK.LEN ) ) then
-		if( not hMatch( FB.TK.ASSIGN ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEQ
+	if( hMatch( FB_TK_LEN ) ) then
+		if( not hMatch( FB_TK_ASSIGN ) ) then
+			hReportError FB_ERRMSG_EXPECTEDEQ
 			exit function
 		end if
 		hMatchExpression( flen )
 	else
-		flen = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+		flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 	end if
 
 	if( isfunc ) then
@@ -1242,19 +1242,19 @@ function cFileStmt as integer
 	select case as const lexCurrentToken
 	'' OPEN Expression{str} (FOR Expression)? (ACCESS Expression)?
 	'' (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
-	case FB.TK.OPEN
+	case FB_TK_OPEN
 		lexSkipToken
 
 		function = (hFileOpen( FALSE ) <> NULL)
 
 
 	'' CLOSE ('#'? Expression)*
-	case FB.TK.CLOSE
+	case FB_TK_CLOSE
 
 		function = (hFileClose( FALSE ) <> NULL)
 
 	'' SEEK '#'? Expression ',' Expression
-	case FB.TK.SEEK
+	case FB_TK_SEEK
 		lexSkipToken
 		hMatch( CHAR_SHARP )
 
@@ -1267,7 +1267,7 @@ function cFileStmt as integer
 		function = rtlFileSeek( filenum, expr1 )
 
 	'' PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
-	case FB.TK.PUT
+	case FB_TK_PUT
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
 		end if
@@ -1277,7 +1277,7 @@ function cFileStmt as integer
         function = (hFilePut( FALSE ) <> NULL)
 
 	'' GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
-	case FB.TK.GET
+	case FB_TK_GET
 		if( lexLookAhead(1) <> CHAR_SHARP ) then
 			exit function
 		end if
@@ -1287,8 +1287,8 @@ function cFileStmt as integer
 		function = (hFileGet( FALSE ) <> NULL)
 
 	'' (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)?
-	case FB.TK.LOCK, FB.TK.UNLOCK
-		if( lexCurrentToken = FB.TK.LOCK ) then
+	case FB_TK_LOCK, FB_TK_UNLOCK
+		if( lexCurrentToken = FB_TK_LOCK ) then
 			islock = TRUE
 		else
 			islock = FALSE
@@ -1303,10 +1303,10 @@ function cFileStmt as integer
 
 		hMatchExpression( expr1 )
 
-		if( hMatch( FB.TK.TO ) ) then
+		if( hMatch( FB_TK_TO ) ) then
 			hMatchExpression( expr2 )
 		else
-			expr2 = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+			expr2 = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 		end if
 
 		function = rtlFileLock( islock, filenum, expr1, expr2 )
@@ -1316,13 +1316,13 @@ end function
 
 '':::::
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
-	static as zstring * FB.MAXNAMELEN+1 sname
+	static as zstring * FB_MAXNAMELEN+1 sname
 	dim as FBARRAYDIM dTB(0)
 
 	sname = *hMakeTmpStr( )
 
-	hSelConstAllocTbSym = symbAddVarEx( sname, "", FB.SYMBTYPE.UINT, NULL, 0, _
-										FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
+	hSelConstAllocTbSym = symbAddVarEx( sname, "", FB_SYMBTYPE_UINT, NULL, 0, _
+										FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED, _
 										FALSE, FALSE, FALSE )
 
 end function
@@ -1332,22 +1332,22 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 					byval isgoto as integer ) as integer
     dim as ASTNODE ptr idxexpr
 	dim as integer l, i
-	dim as FBSYMBOL ptr sym, exitlabel, tbsym, labelTB(0 to FB.MAXGOTBITEMS-1)
+	dim as FBSYMBOL ptr sym, exitlabel, tbsym, labelTB(0 to FB_MAXGOTBITEMS-1)
 
 	function = FALSE
 
 	'' convert to uinteger if needed
-	if( astGetDataType( expr ) <> IR.DATATYPE.UINT ) then
-		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr )
+	if( astGetDataType( expr ) <> IR_DATATYPE_UINT ) then
+		expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 	end if
 
 	'' store expression into a temp var
-	sym = symbAddTempVar( FB.SYMBTYPE.UINT )
+	sym = symbAddTempVar( FB_SYMBTYPE_UINT )
 	if( sym = NULL ) then
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
@@ -1356,14 +1356,14 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	'' read labels
 	l = 0
 	do
-		if( (lexCurrentTokenClass <> FB.TKCLASS.NUMLITERAL) and _
-			(lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+		if( (lexCurrentTokenClass <> FB_TKCLASS_NUMLITERAL) and _
+			(lexCurrentTokenClass <> FB_TKCLASS_IDENTIFIER) ) then
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			exit function
 		end if
 
 		'' Label
-		labelTB(l) = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+		labelTB(l) = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_LABEL )
 		if( labelTB(l) = NULL ) then
 			labelTB(l) = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 		end if
@@ -1376,29 +1376,29 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	exitlabel = symbAddLabel( "" )
 
 	'' < 1?
-	expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-					  astNewCONSTi( 1, IR.DATATYPE.UINT ), exitlabel, FALSE )
+	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+					  astNewCONSTi( 1, IR_DATATYPE_UINT ), exitlabel, FALSE )
 	astFlush( expr )
 
 	'' > labels?
-	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-					  astNewCONSTi( l, IR.DATATYPE.UINT ), exitlabel, FALSE )
+	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+					  astNewCONSTi( l, IR_DATATYPE_UINT ), exitlabel, FALSE )
 	astFlush( expr )
 
     '' jump to table[idx]
     tbsym = hSelConstAllocTbSym( )
 
-	idxexpr = astNewBOP( IR.OP.MUL, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-    				  			    astNewCONSTi( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
+	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+    				  			    astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, NULL, -1*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
-    				  IR.DATATYPE.UINT, NULL )
+    expr = astNewIDX( astNewVAR( tbsym, NULL, -1*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
+    				  IR_DATATYPE_UINT, NULL )
 
     if( not isgoto ) then
-    	astFlush( astNewSTACK( IR.OP.PUSH, astNewADDR( IR.OP.ADDROF, astNewVAR( exitlabel ) ) ) )
+    	astFlush( astNewSTACK( IR_OP_PUSH, astNewADDR( IR_OP_ADDROF, astNewVAR( exitlabel ) ) ) )
     end if
 
-    astFlush( astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ) )
+    astFlush( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
 
     '' emit table
     irEmitLABEL( tbsym, FALSE )
@@ -1408,7 +1408,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 
     ''
     for i = 0 to l-1
-    	emitTYPE( IR.DATATYPE.UINT, symbGetName( labelTB(i) ) )
+    	emitTYPE( IR_DATATYPE_UINT, symbGetName( labelTB(i) ) )
     next
 
     '' the table is not needed anymore
@@ -1432,14 +1432,14 @@ function cOnStmt as integer
 	function = FALSE
 
 	'' ON
-	if( not hMatch( FB.TK.ON ) ) then
+	if( not hMatch( FB_TK_ON ) ) then
 		exit function
 	end if
 
 	'' LOCAL?
-	if( hMatch( FB.TK.LOCAL ) ) then
+	if( hMatch( FB_TK_LOCAL ) ) then
 		if( env.scope = 0 ) then
-			hReportError FB.ERRMSG.SYNTAXERROR, TRUE
+			hReportError FB_ERRMSG_SYNTAXERROR, TRUE
 			exit function
 		end if
 		islocal = TRUE
@@ -1450,24 +1450,24 @@ function cOnStmt as integer
 	'' ERROR | Expression
 	expr = NULL
 	select case lexCurrentToken( )
-	case FB.TK.ERROR
+	case FB_TK_ERROR
 		lexSkipToken( )
 	case else
 		hMatchExpression( expr )
 	end select
 
 	'' GOTO|GOSUB
-	if( hMatch( FB.TK.GOTO ) ) then
+	if( hMatch( FB_TK_GOTO ) ) then
 		isgoto = TRUE
-	elseif( hMatch( FB.TK.GOSUB ) ) then
+	elseif( hMatch( FB_TK_GOSUB ) ) then
 	    '' can't do GOSUB with ON ERROR
 	    if( expr = NULL ) then
-	    	hReportError FB.ERRMSG.SYNTAXERROR
+	    	hReportError FB_ERRMSG_SYNTAXERROR
 	    	exit function
 	    end if
 	    isgoto = FALSE
 	else
-		hReportError FB.ERRMSG.SYNTAXERROR
+		hReportError FB_ERRMSG_SYNTAXERROR
 		exit function
 	end if
 
@@ -1475,7 +1475,7 @@ function cOnStmt as integer
 	if( expr = NULL ) then
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
-		if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
+		if( lexCurrentTokenClass = FB_TKCLASS_NUMLITERAL ) then
 			if( *lexTokenText( ) = "0" ) then
 				lexSkipToken( )
 				isrestore = TRUE
@@ -1484,18 +1484,18 @@ function cOnStmt as integer
 
 		if( not isrestore ) then
 			'' Label
-			label = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+			label = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_LABEL )
 			if( label = NULL ) then
 				label = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 			end if
 			lexSkipToken( )
 
-			expr = astNewVAR( label, NULL, 0, IR.DATATYPE.UINT )
-			expr = astNewADDR( IR.OP.ADDROF, expr, label )
+			expr = astNewVAR( label, NULL, 0, IR_DATATYPE_UINT )
+			expr = astNewADDR( IR_OP_ADDROF, expr, label )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else
-        	rtlErrorSetHandler( astNewCONSTi( NULL, IR.DATATYPE.UINT ), (islocal = TRUE) )
+        	rtlErrorSetHandler( astNewCONSTi( NULL, IR_DATATYPE_UINT ), (islocal = TRUE) )
 		end if
 
 		function = TRUE
@@ -1519,7 +1519,7 @@ function cErrorStmt as integer
 	select case lexCurrentToken
 
 	'' ERROR
-	case FB.TK.ERROR
+	case FB_TK_ERROR
 		lexSkipToken
 
 		'' Expression
@@ -1530,12 +1530,12 @@ function cErrorStmt as integer
 		function = TRUE
 
 	'' ERR '=' Expression
-	case FB.TK.ERR
+	case FB_TK_ERR
 		lexSkipToken
 
 		'' '='
-		if( not hMatch( FB.TK.ASSIGN ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEQ
+		if( not hMatch( FB_TK_ASSIGN ) ) then
+			hReportError FB_ERRMSG_EXPECTEDEQ
 			exit function
 		end if
 
@@ -1563,7 +1563,7 @@ function cQuirkStmt as integer
 
 	function = FALSE
 
-	if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+	if( lexCurrentTokenClass <> FB_TKCLASS_KEYWORD ) then
 		if( lexCurrentToken = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
 			function = cPrintStmt
 		end if
@@ -1573,38 +1573,38 @@ function cQuirkStmt as integer
 	res = FALSE
 
 	select case as const lexCurrentToken
-	case FB.TK.GOTO, FB.TK.GOSUB, FB.TK.RETURN, FB.TK.RESUME
+	case FB_TK_GOTO, FB_TK_GOSUB, FB_TK_RETURN, FB_TK_RESUME
 		res = cGotoStmt
-	case FB.TK.PRINT
+	case FB_TK_PRINT
 		res = cPrintStmt
-	case FB.TK.RESTORE, FB.TK.READ, FB.TK.DATA
+	case FB_TK_RESTORE, FB_TK_READ, FB_TK_DATA
 		res = cDataStmt
-	case FB.TK.ERASE, FB.TK.SWAP
+	case FB_TK_ERASE, FB_TK_SWAP
 		res = cArrayStmt
-	case FB.TK.LINE
+	case FB_TK_LINE
 		res = cLineInputStmt
-	case FB.TK.INPUT
+	case FB_TK_INPUT
 		res = cInputStmt
-	case FB.TK.POKE
+	case FB_TK_POKE
 		res = cPokeStmt
-	case FB.TK.OPEN, FB.TK.CLOSE, FB.TK.SEEK, FB.TK.PUT, FB.TK.GET, FB.TK.LOCK, FB.TK.UNLOCK
+	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, FB_TK_LOCK, FB_TK_UNLOCK
 		res = cFileStmt
-	case FB.TK.ON
+	case FB_TK_ON
 		res = cOnStmt
-	case FB.TK.WRITE
+	case FB_TK_WRITE
 		res = cWriteStmt
-	case FB.TK.ERROR, FB.TK.ERR
+	case FB_TK_ERROR, FB_TK_ERR
 		res = cErrorStmt
-	case FB.TK.VIEW
+	case FB_TK_VIEW
 		res = cViewStmt
-	case FB.TK.MID
+	case FB_TK_MID
 		res = cMidStmt
-	case FB.TK.LSET
+	case FB_TK_LSET
 		res = cLSetStmt
 	end select
 
 	if( res = FALSE ) then
-		if( hGetLastError = FB.ERRMSG.OK ) then
+		if( hGetLastError = FB_ERRMSG_OK ) then
 			res = cGfxStmt
 		end if
 	end if
@@ -1627,8 +1627,8 @@ function cArrayFunct( funcexpr as ASTNODE ptr ) as integer
 	select case lexCurrentToken
 
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
-	case FB.TK.LBOUND, FB.TK.UBOUND
-		if( lexCurrentToken = FB.TK.LBOUND ) then
+	case FB_TK_LBOUND, FB_TK_UBOUND
+		if( lexCurrentToken = FB_TK_LBOUND ) then
 			islbound = TRUE
 		else
 			islbound = FALSE
@@ -1640,14 +1640,14 @@ function cArrayFunct( funcexpr as ASTNODE ptr ) as integer
 
 		'' ID
 		if( not cVarOrDeref( sexpr, FALSE ) ) then
-			hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 			exit function
 		end if
 
 		'' array?
 		s = astGetSymbol( sexpr )
 		if( not symbIsArray( s ) ) then
-			hReportError FB.ERRMSG.EXPECTEDARRAY, TRUE
+			hReportError FB_ERRMSG_EXPECTEDARRAY, TRUE
 			exit function
 		end if
 
@@ -1655,7 +1655,7 @@ function cArrayFunct( funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpression( expr )
 		else
-			expr = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+			expr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 		end if
 
 		'' ')'
@@ -1730,7 +1730,7 @@ private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
 			end if
 		next i
 
-		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR.DATATYPE.FIXSTR )
+		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR_DATATYPE_FIXSTR )
 
     else
 
@@ -1765,7 +1765,7 @@ private function cStrASC( funcexpr as ASTNODE ptr ) as integer
 
 	'' constant? evaluate at compile-time
 	if( astIsVAR( expr1 ) ) then
-		if( astGetDataType( expr1 ) = IR.DATATYPE.FIXSTR ) then
+		if( astGetDataType( expr1 ) = IR_DATATYPE_FIXSTR ) then
 			sym = astGetSymbol( expr1 )
 			if( symbGetVarInitialized( sym ) ) then
 
@@ -1789,7 +1789,7 @@ private function cStrASC( funcexpr as ASTNODE ptr ) as integer
 				if( p >= 0 ) then
 
 					funcexpr = astNewCONSTi( asc( hEscapeToChar( symbGetVarText( sym ) ) , p ), _
-											 IR.DATATYPE.INTEGER )
+											 IR_DATATYPE_INTEGER )
 
 					'' delete var if it was never accessed before
 					if( symbGetAccessCnt( sym ) = 0 ) then
@@ -1824,7 +1824,7 @@ function cStringFunct( funcexpr as ASTNODE ptr ) as integer
 
 	select case lexCurrentToken
 	'' STR$ '(' Expression{int|float|double} ')'
-	case FB.TK.STR
+	case FB_TK_STR
 		lexSkipToken
 		hMatchLPRNT( )
 
@@ -1837,7 +1837,7 @@ function cStringFunct( funcexpr as ASTNODE ptr ) as integer
 		function = funcexpr <> NULL
 
 	'' MID$ '(' Expression ',' Expression (',' Expression)? ')'
-	case FB.TK.MID
+	case FB_TK_MID
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -1851,7 +1851,7 @@ function cStringFunct( funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpression( expr3 )
 		else
-			expr3 = astNewCONSTi( -1, IR.DATATYPE.INTEGER )
+			expr3 = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )
@@ -1862,7 +1862,7 @@ function cStringFunct( funcexpr as ASTNODE ptr ) as integer
 
 
 	'' STRING$ '(' Expression ',' Expression{int|str} ')'
-	case FB.TK.STRING
+	case FB_TK_STRING
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -1880,13 +1880,13 @@ function cStringFunct( funcexpr as ASTNODE ptr ) as integer
 		function = funcexpr <> NULL
 
 	'' CHR$ '(' Expression (',' Expression )* ')'
-	case FB.TK.CHR
+	case FB_TK_CHR
 		lexSkipToken
 
 		function = cStrCHR( funcexpr )
 
 	'' ASC '(' Expression (',' Expression)? ')'
-	case FB.TK.ASC
+	case FB_TK_ASC
 		lexSkipToken
 
 		function = cStrASC( funcexpr )
@@ -1911,7 +1911,7 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 
 	select case as const lexCurrentToken
 	'' ABS( Expression )
-	case FB.TK.ABS
+	case FB_TK_ABS
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -1921,16 +1921,16 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( IR.OP.ABS, expr )
+		funcexpr = astNewUOP( IR_OP_ABS, expr )
 		if( funcexpr = NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end if
 
 		function = TRUE
 
 	'' SGN( Expression )
-	case FB.TK.SGN
+	case FB_TK_SGN
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -1940,16 +1940,16 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( IR.OP.SGN, expr )
+		funcexpr = astNewUOP( IR_OP_SGN, expr )
 		if( funcexpr = NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end if
 
 		function = TRUE
 
 	'' FIX( Expression )
-	case FB.TK.FIX
+	case FB_TK_FIX
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -1960,35 +1960,35 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 
 		funcexpr = rtlMathFIX( expr )
 		if( funcexpr = NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end if
 
 		function = TRUE
 
 	'' SIN/COS/...( Expression )
-	case FB.TK.SIN, FB.TK.ASIN, FB.TK.COS, FB.TK.ACOS, FB.TK.TAN, FB.TK.ATN, _
-		 FB.TK.SQR, FB.TK.LOG, FB.TK.INT
+	case FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
+		 FB_TK_SQR, FB_TK_LOG, FB_TK_INT
 
 		select case as const lexCurrentToken( )
-		case FB.TK.SIN
-			op = IR.OP.SIN
-		case FB.TK.ASIN
-			op = IR.OP.ASIN
-		case FB.TK.COS
-			op = IR.OP.COS
-		case FB.TK.ACOS
-			op = IR.OP.ACOS
-		case FB.TK.TAN
-			op = IR.OP.TAN
-		case FB.TK.ATN
-			op = IR.OP.ATAN
-		case FB.TK.SQR
-			op = IR.OP.SQRT
-		case FB.TK.LOG
-			op = IR.OP.LOG
-		case FB.TK.INT
-			op = IR.OP.FLOOR
+		case FB_TK_SIN
+			op = IR_OP_SIN
+		case FB_TK_ASIN
+			op = IR_OP_ASIN
+		case FB_TK_COS
+			op = IR_OP_COS
+		case FB_TK_ACOS
+			op = IR_OP_ACOS
+		case FB_TK_TAN
+			op = IR_OP_TAN
+		case FB_TK_ATN
+			op = IR_OP_ATAN
+		case FB_TK_SQR
+			op = IR_OP_SQRT
+		case FB_TK_LOG
+			op = IR_OP_LOG
+		case FB_TK_INT
+			op = IR_OP_FLOOR
 		end select
 
 		lexSkipToken( )
@@ -2002,14 +2002,14 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( op, expr )
 		if( funcexpr = NULL ) then
-			hReportError( FB.ERRMSG.INVALIDDATATYPES )
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 
 		function = TRUE
 
 	'' ATAN2( Expression ',' Expression )
-	case FB.TK.ATAN2
+	case FB_TK_ATAN2
 		lexSkipToken( )
 
 		hMatchLPRNT( )
@@ -2023,17 +2023,17 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 		'' hack! implemented as Binary OP for better speed on x86's
-		funcexpr = astNewBOP( IR.OP.ATAN2, expr, expr2 )
+		funcexpr = astNewBOP( IR_OP_ATAN2, expr, expr2 )
 		if( funcexpr = NULL ) then
-			hReportError( FB.ERRMSG.INVALIDDATATYPES )
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 
 		function = TRUE
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
-	case FB.TK.LEN, FB.TK.SIZEOF
-		islen = (lexCurrentToken = FB.TK.LEN)
+	case FB_TK_LEN, FB_TK_SIZEOF
+		islen = (lexCurrentToken = FB_TK_LEN)
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -2043,7 +2043,7 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 			env.varcheckarray = FALSE
 			if( not cExpression( expr ) ) then
 				env.varcheckarray = TRUE
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 			env.varcheckarray = TRUE
@@ -2052,9 +2052,9 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 		'' string expressions with SIZEOF() are not allowed
 		if( expr <> NULL ) then
 			if( not islen ) then
-				if( astGetDataClass( expr ) = IR.DATACLASS.STRING ) then
+				if( astGetDataClass( expr ) = IR_DATACLASS_STRING ) then
 					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
-						hReportError FB.ERRMSG.EXPECTEDIDENTIFIER, TRUE
+						hReportError FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE
 						exit function
 					end if
 				end if
@@ -2066,7 +2066,7 @@ function cMathFunct( funcexpr as ASTNODE ptr ) as integer
 		if( expr <> NULL ) then
 			funcexpr = rtlMathLen( expr, islen )
 		else
-			funcexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
+			funcexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -2096,8 +2096,8 @@ function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
 
 		'' check for invalid types
 		select case peektype
-		case FB.SYMBTYPE.VOID, FB.SYMBTYPE.FIXSTR
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end select
 
@@ -2105,7 +2105,7 @@ function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
 		hMatchCOMMA( )
 
 	else
-		peektype = IR.DATATYPE.BYTE
+		peektype = IR_DATATYPE_BYTE
 		subtype = NULL
 	end if
 
@@ -2117,14 +2117,14 @@ function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
 
     ''
     select case astGetDataClass( expr )
-    case IR.DATACLASS.STRING
-    	hReportError FB.ERRMSG.INVALIDDATATYPES
+    case IR_DATACLASS_STRING
+    	hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
-	case IR.DATACLASS.FPOINT
-		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr )
+	case IR_DATACLASS_FPOINT
+		expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 	case else
-		if( astGetDataSize( expr ) <> FB.POINTERSIZE ) then
-        	hReportError FB.ERRMSG.INVALIDDATATYPES
+		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then
+        	hReportError FB_ERRMSG_INVALIDDATATYPES
         	exit function
 		end if
 	end select
@@ -2132,8 +2132,8 @@ function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
     funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, subtype )
 
 	'' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
-    if( peektype = IR.DATATYPE.BYTE ) then
-    	funcexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, funcexpr )
+    if( peektype = IR_DATATYPE_BYTE ) then
+    	funcexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, funcexpr )
 	end if
 
     function = TRUE
@@ -2151,7 +2151,7 @@ function cFileFunct( funcexpr as ASTNODE ptr ) as integer
 
 	'' SEEK '(' Expression ')'
 	select case as const lexCurrentToken
-	case FB.TK.SEEK
+	case FB_TK_SEEK
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -2165,7 +2165,7 @@ function cFileFunct( funcexpr as ASTNODE ptr ) as integer
 		function = funcexpr <> NULL
 
 	'' INPUT '(' Expr (',' '#'? Expr)? ')'
-	case FB.TK.INPUT
+	case FB_TK_INPUT
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -2177,7 +2177,7 @@ function cFileFunct( funcexpr as ASTNODE ptr ) as integer
 
 			hMatchExpression( filenum )
 		else
-			filenum = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+			filenum = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )
@@ -2187,20 +2187,20 @@ function cFileFunct( funcexpr as ASTNODE ptr ) as integer
 		function = funcexpr <> NULL
 
 	'' OPEN '(' ... ')'
-	case FB.TK.OPEN
+	case FB_TK_OPEN
 		lexSkipToken
 
 		funcexpr = hFileOpen( TRUE )
 		function = funcexpr <> NULL
 
 	'' CLOSE '(' '#'? Expr? ')'
-	case FB.TK.CLOSE
+	case FB_TK_CLOSE
 
 		funcexpr = hFileClose( TRUE )
 		function = funcexpr <> NULL
 
 	'' PUT '(' '#'? Expr, Expr?, Expr ')'
-	case FB.TK.PUT
+	case FB_TK_PUT
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -2211,7 +2211,7 @@ function cFileFunct( funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 	'' GET '(' '#'? Expr, Expr?, Expr ')'
-	case FB.TK.GET
+	case FB_TK_GET
 		lexSkipToken
 
 		hMatchLPRNT( )
@@ -2232,7 +2232,7 @@ function cErrorFunct( funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	if( hMatch( FB.TK.ERR ) ) then
+	if( hMatch( FB_TK_ERR ) ) then
 
 		funcexpr = rtlErrorGetNum
 
@@ -2277,7 +2277,7 @@ function cIIFFunct( funcexpr as ASTNODE ptr ) as integer
 	funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
 
 	if( funcexpr = NULL ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+		hReportError FB_ERRMSG_INVALIDDATATYPES, TRUE
 		exit function
 	end if
 
@@ -2300,7 +2300,7 @@ function cVAFunct( funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	if( proc->proc.mode <> FB.FUNCMODE.CDECL ) then
+	if( proc->proc.mode <> FB_FUNCMODE_CDECL ) then
 		exit function
 	end if
 
@@ -2310,7 +2310,7 @@ function cVAFunct( funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	sym = symbFindByNameAndClass( arg->alias, FB.SYMBCLASS.VAR )
+	sym = symbFindByNameAndClass( arg->alias, FB_SYMBCLASS_VAR )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -2325,13 +2325,13 @@ function cVAFunct( funcexpr as ASTNODE ptr ) as integer
 
 	'' @arg
 	expr = astNewVAR( sym, NULL, 0, symbGetType( sym ), NULL )
-	expr = astNewADDR( IR.OP.ADDROF, expr, sym )
+	expr = astNewADDR( IR_OP_ADDROF, expr, sym )
 
 	'' + arglen( arg )
-	funcexpr = astNewBOP( IR.OP.ADD, _
+	funcexpr = astNewBOP( IR_OP_ADD, _
 						  expr, _
 						  astNewCONSTi( symbCalcArgLen( arg->typ, arg->subtype, arg->arg.mode ), _
-						  				IR.DATATYPE.UINT ) )
+						  				IR_DATATYPE_UINT ) )
 
 
 
@@ -2347,35 +2347,35 @@ function cQuirkFunction( funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	if( lexCurrentTokenClass <> FB.TKCLASS.KEYWORD ) then
+	if( lexCurrentTokenClass <> FB_TKCLASS_KEYWORD ) then
 		exit function
 	end if
 
 	res = FALSE
 
 	select case as const lexCurrentToken
-	case FB.TK.STR, FB.TK.MID, FB.TK.STRING, FB.TK.CHR, FB.TK.ASC
+	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC
 		res = cStringFunct( funcexpr )
-	case FB.TK.ABS, FB.TK.SGN, FB.TK.FIX, FB.TK.LEN, FB.TK.SIZEOF, _
-		 FB.TK.SIN, FB.TK.ASIN, FB.TK.COS, FB.TK.ACOS, FB.TK.TAN, FB.TK.ATN, _
-		 FB.TK.SQR, FB.TK.LOG, FB.TK.ATAN2, FB.TK.INT
+	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _
+		 FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
+		 FB_TK_SQR, FB_TK_LOG, FB_TK_ATAN2, FB_TK_INT
 		res = cMathFunct( funcexpr )
-	case FB.TK.PEEK
+	case FB_TK_PEEK
 		res = cPeekFunct( funcexpr )
-	case FB.TK.LBOUND, FB.TK.UBOUND
+	case FB_TK_LBOUND, FB_TK_UBOUND
 		res = cArrayFunct( funcexpr )
-	case FB.TK.SEEK, FB.TK.INPUT, FB.TK.OPEN, FB.TK.CLOSE, FB.TK.GET, FB.TK.PUT
+	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, FB_TK_GET, FB_TK_PUT
 		res = cFileFunct( funcexpr )
-	case FB.TK.ERR
+	case FB_TK_ERR
 		res = cErrorFunct( funcexpr )
-	case FB.TK.IIF
+	case FB_TK_IIF
 		res = cIIFFunct( funcexpr )
-	case FB.TK.VA_FIRST
+	case FB_TK_VA_FIRST
 		res = cVAFunct( funcexpr )
 	end select
 
 	if( not res ) then
-		if( hGetLastError = FB.ERRMSG.OK ) then
+		if( hGetLastError = FB_ERRMSG_OK ) then
 			res = cGfxFunct( funcexpr )
 		end if
 	end if

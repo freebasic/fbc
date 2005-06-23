@@ -20,8 +20,8 @@
 '' parser protos
 ''
 
-'$include once:'inc\lex.bi'
-'$include once:'inc\ast.bi'
+#include once "inc\lex.bi"
+#include once "inc\ast.bi"
 
 declare sub 		parser4Init				( )
 
@@ -230,28 +230,28 @@ declare function 	cGfxFunct				( funcexpr as ASTNODE ptr ) as integer
 '':::::
 #define hMatchLPRNT()											 _
 	if( not hMatch( CHAR_LPRNT ) ) then							:_
-		hReportError FB.ERRMSG.EXPECTEDLPRNT                    :_
+		hReportError FB_ERRMSG_EXPECTEDLPRNT                    :_
 		exit function											:_
 	end if
 
 '':::::
 #define hMatchRPRNT()											 _
 	if( not hMatch( CHAR_RPRNT ) ) then							:_
-		hReportError FB.ERRMSG.EXPECTEDRPRNT                    :_
+		hReportError FB_ERRMSG_EXPECTEDRPRNT                    :_
 		exit function											:_
 	end if
 
 '':::::
 #define hMatchCOMMA()											 _
 	if( not hMatch( CHAR_COMMA ) ) then							:_
-		hReportError FB.ERRMSG.EXPECTEDCOMMA                    :_
+		hReportError FB_ERRMSG_EXPECTEDCOMMA                    :_
 		exit function											:_
 	end if
 
 '':::::
 #define hMatchExpression(e)										 _
 	if( not cExpression( e ) ) then                         	:_
-		hReportError FB.ERRMSG.EXPECTEDEXPRESSION				:_
+		hReportError FB_ERRMSG_EXPECTEDEXPRESSION				:_
 		exit function											:_
 	end if
 

@@ -26,17 +26,17 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\lex.bi'
-'$include once: 'inc\emit.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\lex.bi"
+#include once "inc\emit.bi"
 
 ''
-const FB.LEX.MAXK%	= 1
+const FB_LEX_MAXK	= 1
 
 ''
 type LEXCTX
-	tokenTB(0 to FB.LEX.MAXK) as FBTOKEN
+	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
 
 	currchar		as uinteger					'' current char
@@ -49,12 +49,12 @@ type LEXCTX
 	reclevel 		as integer					'' PP recursion
 
 	'' last #define's text
-	deftext			as zstring * FB.MAXINTDEFINELEN+1
+	deftext			as zstring * FB_MAXINTDEFINELEN+1
 	defptr 			as ubyte ptr
 	deflen 			as integer
 
 	'' last WITH's text
-	withtext		as zstring * FB.MAXWITHLEN+1
+	withtext		as zstring * FB_MAXWITHLEN+1
 	withptr 		as ubyte ptr
 	withlen 		as integer
 
@@ -76,7 +76,7 @@ declare sub 		lexNextToken 			( t as FBTOKEN, _
 	dim shared curline as string
 	dim shared lastfilepos as integer
 
-	dim shared ctxcopyTB( 0 TO FB.MAXINCRECLEVEL-1 ) as LEXCTX
+	dim shared ctxcopyTB( 0 TO FB_MAXINCRECLEVEL-1 ) as LEXCTX
 
 '':::::
 sub lexSaveCtx( byval level as integer )
@@ -98,7 +98,7 @@ sub lexInit
 
 	ctx.k = 0
 
-	for i = 0 to FB.LEX.MAXK
+	for i = 0 to FB_LEX_MAXK
 		ctx.tokenTB(i).id = INVALID
 	next i
 
@@ -152,7 +152,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 		'' '('
 		lexNextToken( t, LEXCHECK_NOSUFFIX )
 		if( t.id <> CHAR_LPRNT ) then
-			hReportError( FB.ERRMSG.EXPECTEDLPRNT )
+			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit sub
 		end if
 
@@ -184,13 +184,13 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 						exit do
 					end if
 				''
-				case FB.TK.EOL, FB.TK.EOF
-					hReportError( FB.ERRMSG.EXPECTEDRPRNT )
+				case FB_TK_EOL, FB_TK_EOF
+					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 					exit sub
 				end select
 
                 '' not a literal string?
-    			if( t.class <> FB.TKCLASS.STRLITERAL ) then
+    			if( t.class <> FB_TKCLASS_STRLITERAL ) then
     				newtext += t.text
 
     			'' lit string, add quotes
@@ -265,9 +265,9 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 	ctx.defptr = @ctx.deftext
 	ctx.deflen += lgt
 
-	if( ctx.deflen > FB.MAXINTDEFINELEN ) then
-		ctx.deflen = FB.MAXINTDEFINELEN
-		hReportError( FB.ERRMSG.MACROTEXTTOOLONG )
+	if( ctx.deflen > FB_MAXINTDEFINELEN ) then
+		ctx.deflen = FB_MAXINTDEFINELEN
+		hReportError( FB_ERRMSG_MACROTEXTTOOLONG )
 	end if
 
 	'' force a re-read
@@ -291,10 +291,10 @@ private function lexReadChar as uinteger static
 
 		'' buffer empty?
 		if( ctx.bufflen = 0 ) then
-			if( not eof( env.inf ) ) then
-				ctx.filepos = seek( env.inf )
-				if( get( #env.inf, , ctx.buff ) = 0 ) then
-					ctx.bufflen = seek( env.inf ) - ctx.filepos
+			if( not eof( env.inf.num ) ) then
+				ctx.filepos = seek( env.inf.num )
+				if( get( #env.inf.num, , ctx.buff ) = 0 ) then
+					ctx.bufflen = seek( env.inf.num ) - ctx.filepos
 					ctx.buffptr = @ctx.buff
 					ctx.filepos += ctx.bufflen
 				end if
@@ -474,9 +474,9 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 		end select
 
 		tlen += 1
-		if( tlen > FB.MAXNUMLEN ) then
+		if( tlen > FB_MAXNUMLEN ) then
  			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 				hReportError( FB.ERRMSG.IDNAMETOOBIG, TRUE )
+ 				hReportError( FB_ERRMSG_IDNAMETOOBIG, TRUE )
 				exit function
 			else
 				tlen -= 1
@@ -498,23 +498,23 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
 		'' '%' or '&'?
-		case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
-			typ = FB.SYMBTYPE.INTEGER
+		case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
+			typ = FB_SYMBTYPE_INTEGER
 
 		'' '!'?
-		case FB.TK.SGNTYPECHAR
-			typ = FB.SYMBTYPE.SINGLE
+		case FB_TK_SGNTYPECHAR
+			typ = FB_SYMBTYPE_SINGLE
 
 		'' '#'?
-		case FB.TK.DBLTYPECHAR
+		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
-			if( lexLookAheadChar( ) <> FB.TK.DBLTYPECHAR ) then
-				typ = FB.SYMBTYPE.DOUBLE
+			if( lexLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
+				typ = FB_SYMBTYPE_DOUBLE
 			end if
 
 		'' '$'?
-		case FB.TK.STRTYPECHAR
-			typ = FB.SYMBTYPE.STRING
+		case FB_TK_STRTYPECHAR
+			typ = FB_SYMBTYPE_STRING
 		end select
 
 		if( typ <> INVALID ) then
@@ -685,7 +685,7 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
     dim c as uinteger
     dim llen as integer
 
-	typ = FB.SYMBTYPE.DOUBLE
+	typ = FB_SYMBTYPE_DOUBLE
 
 	llen = tlen
 
@@ -701,9 +701,9 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 			exit do
 		end select
 
-		if( tlen > FB.MAXNUMLEN ) then
+		if( tlen > FB_MAXNUMLEN ) then
  			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 				hReportError( FB.ERRMSG.NUMBERTOOBIG, TRUE )
+ 				hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
 				exit function
 			else
 				tlen -= 1
@@ -716,13 +716,13 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
 	select case as const lexCurrentChar( )
 	'' '!' | 'F' | 'f'
-	case FB.TK.SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
+	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 		c = lexEatChar( )
-		typ = FB.SYMBTYPE.SINGLE
+		typ = FB_SYMBTYPE_SINGLE
 	'' '#'
-	case FB.TK.DBLTYPECHAR
+	case FB_TK_DBLTYPECHAR
 		c = lexEatChar( )
-		typ = FB.SYMBTYPE.DOUBLE
+		typ = FB_SYMBTYPE_DOUBLE
 
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
@@ -831,9 +831,9 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				exit do
 			end select
 
-			if( tlen > FB.MAXNUMLEN ) then
+			if( tlen > FB_MAXNUMLEN ) then
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 					hReportError( FB.ERRMSG.NUMBERTOOBIG, TRUE )
+ 					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
 					exit function
 				else
 					tlen -= 1
@@ -875,54 +875,54 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			select case lexCurrentChar( )
 			case CHAR_UUPP, CHAR_ULOW
 				lexEatChar( )
-				typ = FB.SYMBTYPE.UINT
+				typ = FB_SYMBTYPE_UINT
 			end select
 
 			select case as const lexCurrentChar( )
 			'' 'L' | 'l'
 			case CHAR_LUPP, CHAR_LLOW
 				lexEatChar( )
-				if( typ <> FB.SYMBTYPE.UINT ) then
-					typ = FB.SYMBTYPE.INTEGER
+				if( typ <> FB_SYMBTYPE_UINT ) then
+					typ = FB_SYMBTYPE_INTEGER
 				end if
 
 				'' 'LL'?
 				c = lexCurrentChar( )
 				if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 					lexEatChar( )
-					if( typ <> FB.SYMBTYPE.UINT ) then
-						typ = FB.SYMBTYPE.LONGINT
+					if( typ <> FB_SYMBTYPE_UINT ) then
+						typ = FB_SYMBTYPE_LONGINT
 					else
-						typ = FB.SYMBTYPE.ULONGINT
+						typ = FB_SYMBTYPE_ULONGINT
 					end if
 				end if
 
 			'' '%' | '&'
-			case FB.TK.INTTYPECHAR, FB.TK.LNGTYPECHAR
+			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
 				lexEatChar( )
 
-				typ = FB.SYMBTYPE.INTEGER
+				typ = FB_SYMBTYPE_INTEGER
 				if( not isneg ) then
 					if( tlen > 10 ) then
-						typ = FB.SYMBTYPE.LONGINT
+						typ = FB_SYMBTYPE_LONGINT
 					end if
 				else
 					if( tlen > 11 ) then
-						typ = FB.SYMBTYPE.LONGINT
+						typ = FB_SYMBTYPE_LONGINT
 					end if
 				end if
 
 			'' '!' | 'F' | 'f'
-			case FB.TK.SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
+			case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 				lexEatChar( )
-				typ = FB.SYMBTYPE.SINGLE
+				typ = FB_SYMBTYPE_SINGLE
 
 			'' '#' | 'D' | 'd'
-			case FB.TK.DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
+			case FB_TK_DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
 				'' isn't it a '##'?
-				if( lexLookAheadChar( ) <> FB.TK.DBLTYPECHAR ) then
+				if( lexLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 					lexEatChar( )
-					typ = FB.SYMBTYPE.DOUBLE
+					typ = FB_SYMBTYPE_DOUBLE
 				end if
 
 			end select
@@ -932,18 +932,18 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 
 	if( typ = INVALID ) then
 		if( not isfloat ) then
-			typ = FB.SYMBTYPE.INTEGER
+			typ = FB_SYMBTYPE_INTEGER
 			if( not isneg ) then
 				if( tlen > 10 ) then
-					typ = FB.SYMBTYPE.LONGINT
+					typ = FB_SYMBTYPE_LONGINT
 				end if
 			else
 				if( tlen > 11 ) then
-					typ = FB.SYMBTYPE.LONGINT
+					typ = FB_SYMBTYPE_LONGINT
 				end if
 			end if
 		else
-			typ = FB.SYMBTYPE.DOUBLE
+			typ = FB_SYMBTYPE_DOUBLE
 		end if
 	end if
 
@@ -981,11 +981,11 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 		case CHAR_RSLASH
 			'' process the scape sequence
-			if( env.optescapestr ) then
+			if( env.opt.escapestr ) then
 
 				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar( )
-				*ps = FB.INTSCAPECHAR
+				*ps = FB_INTSCAPECHAR
 				ps += 1
 				rlen += 1
 
@@ -1018,9 +1018,9 @@ private sub lexReadString ( byval ps as zstring ptr, _
 		end select
 
 		rlen += 1
-		if( rlen > FB.MAXLITLEN ) then
+		if( rlen > FB_MAXLITLEN ) then
 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				hReportError( FB.ERRMSG.LITSTRINGTOOBIG, TRUE )
+				hReportError( FB_ERRMSG_LITSTRINGTOOBIG, TRUE )
 				exit function
 			else
 				rlen -= 1
@@ -1069,8 +1069,8 @@ reread:
 		select case as const char
 		'' EOF?
 		case 0
-			t.id    = FB.TK.EOF
-			t.class = FB.TKCLASS.DELIMITER
+			t.id    = FB_TK_EOF
+			t.class = FB_TKCLASS_DELIMITER
 			exit sub
 
 		'' line continuation?
@@ -1115,8 +1115,8 @@ reread:
 			end if
 
 			if( not islinecont ) then
-				t.id    = FB.TK.EOL
-				t.class = FB.TKCLASS.DELIMITER
+				t.id    = FB_TK_EOL
+				t.class = FB_TKCLASS_DELIMITER
 				exit sub
 			else
 				ctx.linenum += 1
@@ -1196,7 +1196,7 @@ reread:
 	case CHAR_AMP, CHAR_0 to CHAR_9
 readnumber:
 		lexReadNumber( @t.text, t.id, t.tlen, flags )
-		t.class 	= FB.TKCLASS.NUMLITERAL
+		t.class 	= FB_TKCLASS_NUMLITERAL
 		t.typ		= t.id
 
 	'':::::
@@ -1208,7 +1208,7 @@ readid:
 
 		if( (flags and LEXCHECK_NODEFINE) = 0 ) then
 			'' is it a define?
-			s = symbFindByClass( t.sym, FB.SYMBCLASS.DEFINE )
+			s = symbFindByClass( t.sym, FB_SYMBCLASS_DEFINE )
 			if( s <> NULL ) then
 				hLoadDefine( s  )
 				goto reread
@@ -1229,9 +1229,9 @@ readid:
 
 	'':::::
 	case CHAR_QUOTE
-		t.id		= FB.TK.STRLIT
+		t.id		= FB_TK_STRLIT
 		lexReadString( @t.text, t.tlen, flags )
-		t.class 	= FB.TKCLASS.STRLITERAL
+		t.class 	= FB_TKCLASS_STRLITERAL
 		t.typ		= t.id
 
 	'':::::
@@ -1246,7 +1246,7 @@ readid:
 		select case as const char
 		'':::
 		case CHAR_LT, CHAR_GT, CHAR_EQ
-			t.class = FB.TKCLASS.OPERATOR
+			t.class = FB_TKCLASS_OPERATOR
 
 			select case char
 			case CHAR_LT
@@ -1257,7 +1257,7 @@ readid:
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
-					t.id   = FB.TK.LE
+					t.id   = FB_TK_LE
 
 				'' '<>'?
 				case CHAR_GT
@@ -1265,10 +1265,10 @@ readid:
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
-					t.id   = FB.TK.NE
+					t.id   = FB_TK_NE
 
 				case else
-					t.id = FB.TK.LT
+					t.id = FB_TK_LT
 				end select
 
 			case CHAR_GT
@@ -1278,9 +1278,9 @@ readid:
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
-					t.id   = FB.TK.GE
+					t.id   = FB_TK_GE
 				else
-					t.id = FB.TK.GT
+					t.id = FB_TK_GT
 				end if
 
 			case CHAR_EQ
@@ -1290,15 +1290,15 @@ readid:
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
-					t.id   = FB.TK.DBLEQ
+					t.id   = FB_TK_DBLEQ
 				else
-					t.id = FB.TK.EQ
+					t.id = FB_TK_EQ
 				end if
 			end select
 
 		'':::
 		case CHAR_PLUS, CHAR_MINUS, CHAR_TIMES, CHAR_SLASH, CHAR_RSLASH
-			t.class = FB.TKCLASS.OPERATOR
+			t.class = FB_TKCLASS_OPERATOR
 
 			'' check for type-field dereference
 			if( char = CHAR_MINUS ) then
@@ -1307,17 +1307,17 @@ readid:
 					t.text[t.tlen+0] = lexEatChar( )
 					t.text[t.tlen+1] = 0
 					t.tlen += 1
-					t.id   = FB.TK.FIELDDEREF
+					t.id   = FB_TK_FIELDDEREF
 				end if
 			end if
 
 		'':::
 		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, CHAR_COLON, CHAR_SEMICOLON, CHAR_AT
-			t.class	= FB.TKCLASS.DELIMITER
+			t.class	= FB_TKCLASS_DELIMITER
 
 		'':::
 		case CHAR_SPACE, CHAR_TAB
-			t.class	= FB.TKCLASS.DELIMITER
+			t.class	= FB_TKCLASS_DELIMITER
 
 			do
 				select case as const lexCurrentChar( )
@@ -1332,7 +1332,7 @@ readid:
 
 		'':::
 		case else
-			t.class = FB.TKCLASS.UNKNOWN
+			t.class = FB_TKCLASS_UNKNOWN
 		end select
 
 	end select
@@ -1348,12 +1348,12 @@ private sub hCheckPP( )
 		'' '#' char?
 		if( ctx.tokenTB(0).id = CHAR_SHARP ) then
 			'' at beginning of line (or top of source-file)?
-			if( (ctx.lasttoken = FB.TK.EOL) or (ctx.lasttoken = INVALID) ) then
+			if( (ctx.lasttoken = FB_TK_EOL) or (ctx.lasttoken = INVALID) ) then
                 ctx.reclevel += 1
                 lexSkipToken( )
 
        			'' not a keyword? error, parser will catch it..
-       			if( ctx.tokenTB(0).class <> FB.TKCLASS.KEYWORD ) then
+       			if( ctx.tokenTB(0).class <> FB_TKCLASS_KEYWORD ) then
        				ctx.reclevel -= 1
        				exit sub
        			end if
@@ -1398,7 +1398,7 @@ end function
 '':::::
 function lexLookAhead( byval k as integer ) as integer static
 
-    if( k > FB.LEX.MAXK ) then
+    if( k > FB_LEX_MAXK ) then
     	exit function
     end if
 
@@ -1417,7 +1417,7 @@ end function
 '':::::
 function lexLookAheadClass( byval k as integer ) as integer static
 
-    if( k > FB.LEX.MAXK ) then
+    if( k > FB_LEX_MAXK ) then
     	exit function
     end if
 
@@ -1455,7 +1455,7 @@ sub lexEatToken( byval token as string, _
     token = ctx.tokenTB(0).text
 
     ''
-    if( ctx.tokenTB(0).id = FB.TK.EOL ) then
+    if( ctx.tokenTB(0).id = FB_TK_EOL ) then
     	ctx.linenum += 1
     	ctx.colnum  = 1
     end if
@@ -1475,7 +1475,7 @@ end sub
 '':::::
 sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
-    if( ctx.tokenTB(0).id = FB.TK.EOL ) then
+    if( ctx.tokenTB(0).id = FB_TK_EOL ) then
     	ctx.linenum += 1
     	ctx.colnum  = 1
     end if
@@ -1507,7 +1507,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
     '' check look ahead tokens if any
     do while( ctx.k > 0 )
     	select case ctx.tokenTB(0).id
-    	case FB.TK.EOF, FB.TK.EOL, endchar
+    	case FB_TK_EOF, FB_TK_EOL, endchar
     		exit sub
     	case else
     		if( not skipline ) then
@@ -1520,7 +1520,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 
    	'' check current token
     select case ctx.tokenTB(0).id
-    case FB.TK.EOF, FB.TK.EOL, endchar
+    case FB_TK_EOF, FB_TK_EOL, endchar
    		exit sub
    	case else
    		if( not skipline ) then
@@ -1546,8 +1546,8 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 		'' EOF?
 		select case as const char
 		case 0
-			ctx.tokenTB(0).id = FB.TK.EOF
-			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
+			ctx.tokenTB(0).id = FB_TK_EOF
+			ctx.tokenTB(0).class = FB_TKCLASS_DELIMITER
 			exit sub
 
 		'' EOL?
@@ -1558,15 +1558,15 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 				if( lexCurrentChar( ) = CHAR_LF ) then lexEatChar
 			end if
 
-			ctx.tokenTB(0).id 	 = FB.TK.EOL
-			ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
+			ctx.tokenTB(0).id 	 = FB_TK_EOL
+			ctx.tokenTB(0).class = FB_TKCLASS_DELIMITER
 			exit sub
 
 		case else
 			'' closing char?
 			if( char = endchar ) then
 				ctx.tokenTB(0).id 	 = endchar
-				ctx.tokenTB(0).class = FB.TKCLASS.DELIMITER
+				ctx.tokenTB(0).class = FB_TKCLASS_DELIMITER
 				exit sub
 			end if
 		end select
@@ -1656,15 +1656,15 @@ function lexPeekCurrentLine( token_pos as string ) as string
 	function = ""
 
 	'' get file contents around current token
-	old_p = seek( env.inf )
+	old_p = seek( env.inf.num )
 	p = lastfilepos - 512
 	start = 512
 	if( p < 0 ) then
 		start += p
 		p = 0
 	end if
-	get #env.inf, p + 1, buffer
-	seek #env.inf, old_p
+	get #env.inf.num, p + 1, buffer
+	seek #env.inf.num, old_p
 
 	'' find source line start
 	c = sadd(buffer) + start

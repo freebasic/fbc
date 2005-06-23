@@ -25,16 +25,16 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\hash.bi'
-'$include once: 'inc\list.bi'
-'$include once: 'inc\rtl.bi'
-'$include once: 'inc\ast.bi'
-'$include once: 'inc\ir.bi'
-'$include once: 'inc\emit.bi'
-'$include once: 'inc\emitdbg.bi'
-'$include once: 'inc\lex.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\hash.bi"
+#include once "inc\list.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
+#include once "inc\ir.bi"
+#include once "inc\emit.bi"
+#include once "inc\emitdbg.bi"
+#include once "inc\lex.bi"
 
 
 type SYMBCTX
@@ -77,8 +77,8 @@ declare function	hDefTime_cb		( ) as string
 
 '' predefined #defines: name, value, proc
 definesdata:
-data "__FB_VERSION__",			FB.VERSION,		NULL
-data "__FB_SIGNATURE__",		FB.SIGN,		NULL
+data "__FB_VERSION__",			FB_VERSION,		NULL
+data "__FB_SIGNATURE__",		FB_SIGN,		NULL
 #ifdef TARGET_WIN32
 data "__FB_WIN32__",			"",				NULL
 #elseif defined(TARGET_LINUX)
@@ -96,196 +96,196 @@ data ""
 
 '' keywords: name, id (token), class
 keyworddata:
-data "AND"		, FB.TK.AND			, FB.TKCLASS.OPERATOR
-data "OR"		, FB.TK.OR			, FB.TKCLASS.OPERATOR
-data "XOR"		, FB.TK.XOR			, FB.TKCLASS.OPERATOR
-data "EQV"		, FB.TK.EQV			, FB.TKCLASS.OPERATOR
-data "IMP"		, FB.TK.IMP			, FB.TKCLASS.OPERATOR
-data "NOT"		, FB.TK.NOT			, FB.TKCLASS.OPERATOR
-data "MOD"		, FB.TK.MOD			, FB.TKCLASS.OPERATOR
-data "SHL"		, FB.TK.SHL			, FB.TKCLASS.OPERATOR
-data "SHR"		, FB.TK.SHR			, FB.TKCLASS.OPERATOR
-data "REM"		, FB.TK.REM			, FB.TKCLASS.KEYWORD
-data "DIM"		, FB.TK.DIM			, FB.TKCLASS.KEYWORD
-data "STATIC"	, FB.TK.STATIC		, FB.TKCLASS.KEYWORD
-data "SHARED"	, FB.TK.SHARED		, FB.TKCLASS.KEYWORD
-data "INTEGER"	, FB.TK.INTEGER		, FB.TKCLASS.KEYWORD
-data "LONG"		, FB.TK.LONG		, FB.TKCLASS.KEYWORD
-data "SINGLE"	, FB.TK.SINGLE		, FB.TKCLASS.KEYWORD
-data "DOUBLE"	, FB.TK.DOUBLE		, FB.TKCLASS.KEYWORD
-data "STRING"	, FB.TK.STRING		, FB.TKCLASS.KEYWORD
-data "CALL"		, FB.TK.CALL		, FB.TKCLASS.KEYWORD
-data "BYVAL"	, FB.TK.BYVAL		, FB.TKCLASS.KEYWORD
-data "INCLUDE"	, FB.TK.INCLUDE		, FB.TKCLASS.KEYWORD
-data "DYNAMIC"	, FB.TK.DYNAMIC		, FB.TKCLASS.KEYWORD
-data "AS"		, FB.TK.AS			, FB.TKCLASS.KEYWORD
-data "DECLARE"	, FB.TK.DECLARE		, FB.TKCLASS.KEYWORD
-data "GOTO"		, FB.TK.GOTO		, FB.TKCLASS.KEYWORD
-data "GOSUB"	, FB.TK.GOSUB		, FB.TKCLASS.KEYWORD
-data "DEFBYTE"	, FB.TK.DEFBYTE		, FB.TKCLASS.KEYWORD
-data "DEFUBYTE"	, FB.TK.DEFUBYTE	, FB.TKCLASS.KEYWORD
-data "DEFSHORT"	, FB.TK.DEFSHORT	, FB.TKCLASS.KEYWORD
-data "DEFUSHORT", FB.TK.DEFUSHORT	, FB.TKCLASS.KEYWORD
-data "DEFINT"	, FB.TK.DEFINT		, FB.TKCLASS.KEYWORD
-data "DEFUINT"	, FB.TK.DEFUINT		, FB.TKCLASS.KEYWORD
-data "DEFLNG"	, FB.TK.DEFLNG		, FB.TKCLASS.KEYWORD
-data "DEFLONGINT", FB.TK.DEFLNGINT	, FB.TKCLASS.KEYWORD
-data "DEFULONGINT", FB.TK.DEFULNGINT, FB.TKCLASS.KEYWORD
-data "DEFSNG"	, FB.TK.DEFSNG		, FB.TKCLASS.KEYWORD
-data "DEFDBL"	, FB.TK.DEFDBL		, FB.TKCLASS.KEYWORD
-data "DEFSTR"	, FB.TK.DEFSTR		, FB.TKCLASS.KEYWORD
-data "CONST"	, FB.TK.CONST		, FB.TKCLASS.KEYWORD
-data "FOR"		, FB.TK.FOR			, FB.TKCLASS.KEYWORD
-data "STEP"		, FB.TK.STEP		, FB.TKCLASS.KEYWORD
-data "NEXT"		, FB.TK.NEXT		, FB.TKCLASS.KEYWORD
-data "TO"		, FB.TK.TO			, FB.TKCLASS.KEYWORD
-data "TYPE"		, FB.TK.TYPE		, FB.TKCLASS.KEYWORD
-data "END"		, FB.TK.END			, FB.TKCLASS.KEYWORD
-data "SUB"		, FB.TK.SUB			, FB.TKCLASS.KEYWORD
-data "FUNCTION"	, FB.TK.FUNCTION	, FB.TKCLASS.KEYWORD
-data "CDECL"	, FB.TK.CDECL		, FB.TKCLASS.KEYWORD
-data "STDCALL"	, FB.TK.STDCALL		, FB.TKCLASS.KEYWORD
-data "ALIAS"	, FB.TK.ALIAS		, FB.TKCLASS.KEYWORD
-data "LIB"		, FB.TK.LIB			, FB.TKCLASS.KEYWORD
-data "LET"		, FB.TK.LET			, FB.TKCLASS.KEYWORD
-data "BYTE"		, FB.TK.BYTE		, FB.TKCLASS.KEYWORD
-data "UBYTE"	, FB.TK.UBYTE		, FB.TKCLASS.KEYWORD
-data "SHORT"	, FB.TK.SHORT		, FB.TKCLASS.KEYWORD
-data "USHORT"	, FB.TK.USHORT		, FB.TKCLASS.KEYWORD
-data "UINTEGER"	, FB.TK.UINT		, FB.TKCLASS.KEYWORD
-data "EXIT"		, FB.TK.EXIT		, FB.TKCLASS.KEYWORD
-data "DO"		, FB.TK.DO			, FB.TKCLASS.KEYWORD
-data "LOOP"		, FB.TK.LOOP		, FB.TKCLASS.KEYWORD
-data "RETURN"	, FB.TK.RETURN		, FB.TKCLASS.KEYWORD
-data "ANY"		, FB.TK.ANY			, FB.TKCLASS.KEYWORD
-data "PTR"		, FB.TK.PTR			, FB.TKCLASS.KEYWORD
-data "POINTER"	, FB.TK.POINTER		, FB.TKCLASS.KEYWORD
-data "VARPTR"	, FB.TK.VARPTR		, FB.TKCLASS.KEYWORD
-data "WHILE"	, FB.TK.WHILE		, FB.TKCLASS.KEYWORD
-data "UNTIL"	, FB.TK.UNTIL		, FB.TKCLASS.KEYWORD
-data "WEND"		, FB.TK.WEND		, FB.TKCLASS.KEYWORD
-data "CONTINUE"	, FB.TK.CONTINUE	, FB.TKCLASS.KEYWORD
-data "CBYTE"	, FB.TK.CBYTE		, FB.TKCLASS.KEYWORD
-data "CSHORT"	, FB.TK.CSHORT		, FB.TKCLASS.KEYWORD
-data "CINT"		, FB.TK.CINT		, FB.TKCLASS.KEYWORD
-data "CLNG"		, FB.TK.CLNG		, FB.TKCLASS.KEYWORD
-data "CLNGINT"	, FB.TK.CLNGINT		, FB.TKCLASS.KEYWORD
-data "CUBYTE"	, FB.TK.CUBYTE		, FB.TKCLASS.KEYWORD
-data "CUSHORT"	, FB.TK.CUSHORT		, FB.TKCLASS.KEYWORD
-data "CUINT"	, FB.TK.CUINT		, FB.TKCLASS.KEYWORD
-data "CULNGINT"	, FB.TK.CULNGINT	, FB.TKCLASS.KEYWORD
-data "CSNG"		, FB.TK.CSNG		, FB.TKCLASS.KEYWORD
-data "CDBL"		, FB.TK.CDBL		, FB.TKCLASS.KEYWORD
-data "CSIGN"	, FB.TK.CSIGN		, FB.TKCLASS.KEYWORD
-data "CUNSG"	, FB.TK.CUNSG		, FB.TKCLASS.KEYWORD
-data "IF"		, FB.TK.IF			, FB.TKCLASS.KEYWORD
-data "THEN"		, FB.TK.THEN		, FB.TKCLASS.KEYWORD
-data "ELSE"		, FB.TK.ELSE		, FB.TKCLASS.KEYWORD
-data "ELSEIF"	, FB.TK.ELSEIF		, FB.TKCLASS.KEYWORD
-data "SELECT"	, FB.TK.SELECT		, FB.TKCLASS.KEYWORD
-data "CASE"		, FB.TK.CASE		, FB.TKCLASS.KEYWORD
-data "IS"		, FB.TK.IS			, FB.TKCLASS.KEYWORD
-data "UNSIGNED"	, FB.TK.UNSIGNED	, FB.TKCLASS.KEYWORD
-data "REDIM"	, FB.TK.REDIM		, FB.TKCLASS.KEYWORD
-data "ERASE"	, FB.TK.ERASE		, FB.TKCLASS.KEYWORD
-data "LBOUND"	, FB.TK.LBOUND		, FB.TKCLASS.KEYWORD
-data "UBOUND"	, FB.TK.UBOUND		, FB.TKCLASS.KEYWORD
-data "UNION"	, FB.TK.UNION		, FB.TKCLASS.KEYWORD
-data "PUBLIC"	, FB.TK.PUBLIC		, FB.TKCLASS.KEYWORD
-data "PRIVATE"	, FB.TK.PRIVATE		, FB.TKCLASS.KEYWORD
-data "STR"		, FB.TK.STR			, FB.TKCLASS.KEYWORD
-data "MID"		, FB.TK.MID			, FB.TKCLASS.KEYWORD
-data "BYREF"	, FB.TK.BYREF		, FB.TKCLASS.KEYWORD
-data "OPTION"	, FB.TK.OPTION		, FB.TKCLASS.KEYWORD
-data "BASE"		, FB.TK.BASE		, FB.TKCLASS.KEYWORD
-data "EXPLICIT"	, FB.TK.EXPLICIT	, FB.TKCLASS.KEYWORD
-data "PASCAL"	, FB.TK.PASCAL		, FB.TKCLASS.KEYWORD
-data "PROCPTR"	, FB.TK.PROCPTR		, FB.TKCLASS.KEYWORD
-data "SADD"		, FB.TK.SADD		, FB.TKCLASS.KEYWORD
-data "RESTORE"	, FB.TK.RESTORE		, FB.TKCLASS.KEYWORD
-data "READ"		, FB.TK.READ		, FB.TKCLASS.KEYWORD
-data "DATA"		, FB.TK.DATA		, FB.TKCLASS.KEYWORD
-data "ABS"		, FB.TK.ABS			, FB.TKCLASS.KEYWORD
-data "SGN"		, FB.TK.SGN			, FB.TKCLASS.KEYWORD
-data "FIX"		, FB.TK.FIX			, FB.TKCLASS.KEYWORD
-data "PRINT"	, FB.TK.PRINT		, FB.TKCLASS.KEYWORD
-data "USING"	, FB.TK.USING		, FB.TKCLASS.KEYWORD
-data "LEN"		, FB.TK.LEN			, FB.TKCLASS.KEYWORD
-data "PEEK"		, FB.TK.PEEK		, FB.TKCLASS.KEYWORD
-data "POKE"		, FB.TK.POKE		, FB.TKCLASS.KEYWORD
-data "SWAP"		, FB.TK.SWAP		, FB.TKCLASS.KEYWORD
-data "COMMON"	, FB.TK.COMMON		, FB.TKCLASS.KEYWORD
-data "OPEN"		, FB.TK.OPEN		, FB.TKCLASS.KEYWORD
-data "CLOSE"	, FB.TK.CLOSE		, FB.TKCLASS.KEYWORD
-data "SEEK"		, FB.TK.SEEK		, FB.TKCLASS.KEYWORD
-data "PUT"		, FB.TK.PUT			, FB.TKCLASS.KEYWORD
-data "GET"		, FB.TK.GET			, FB.TKCLASS.KEYWORD
-data "ACCESS"	, FB.TK.ACCESS		, FB.TKCLASS.KEYWORD
-data "WRITE"	, FB.TK.WRITE		, FB.TKCLASS.KEYWORD
-data "LOCK"		, FB.TK.LOCK		, FB.TKCLASS.KEYWORD
-data "INPUT"	, FB.TK.INPUT		, FB.TKCLASS.KEYWORD
-data "OUTPUT"	, FB.TK.OUTPUT		, FB.TKCLASS.KEYWORD
-data "BINARY"	, FB.TK.BINARY		, FB.TKCLASS.KEYWORD
-data "RANDOM"	, FB.TK.RANDOM		, FB.TKCLASS.KEYWORD
-data "APPEND"	, FB.TK.APPEND		, FB.TKCLASS.KEYWORD
-data "PRESERVE"	, FB.TK.PRESERVE	, FB.TKCLASS.KEYWORD
-data "ON"		, FB.TK.ON			, FB.TKCLASS.KEYWORD
-data "ERROR"	, FB.TK.ERROR		, FB.TKCLASS.KEYWORD
-data "ENUM"		, FB.TK.ENUM		, FB.TKCLASS.KEYWORD
-data "INCLIB"	, FB.TK.INCLIB		, FB.TKCLASS.KEYWORD
-data "ASM"		, FB.TK.ASM			, FB.TKCLASS.KEYWORD
-data "SPC"		, FB.TK.SPC			, FB.TKCLASS.KEYWORD
-data "TAB"		, FB.TK.TAB			, FB.TKCLASS.KEYWORD
-data "LINE"		, FB.TK.LINE		, FB.TKCLASS.KEYWORD
-data "VIEW"		, FB.TK.VIEW		, FB.TKCLASS.KEYWORD
-data "UNLOCK"	, FB.TK.UNLOCK		, FB.TKCLASS.KEYWORD
-data "FIELD"	, FB.TK.FIELD		, FB.TKCLASS.KEYWORD
-data "LOCAL"	, FB.TK.LOCAL		, FB.TKCLASS.KEYWORD
-data "ERR"		, FB.TK.ERR			, FB.TKCLASS.KEYWORD
-data "DEFINE"	, FB.TK.DEFINE		, FB.TKCLASS.KEYWORD
-data "UNDEF"	, FB.TK.UNDEF		, FB.TKCLASS.KEYWORD
-data "IFDEF"	, FB.TK.IFDEF		, FB.TKCLASS.KEYWORD
-data "IFNDEF"	, FB.TK.IFNDEF		, FB.TKCLASS.KEYWORD
-data "ENDIF"	, FB.TK.ENDIF		, FB.TKCLASS.KEYWORD
-data "DEFINED"	, FB.TK.DEFINED		, FB.TKCLASS.KEYWORD
-data "RESUME"	, FB.TK.RESUME		, FB.TKCLASS.KEYWORD
-data "PSET"		, FB.TK.PSET		, FB.TKCLASS.KEYWORD
-data "PRESET"	, FB.TK.PRESET		, FB.TKCLASS.KEYWORD
-data "POINT"	, FB.TK.POINT		, FB.TKCLASS.KEYWORD
-data "CIRCLE"	, FB.TK.CIRCLE		, FB.TKCLASS.KEYWORD
-data "WINDOW"	, FB.TK.WINDOW		, FB.TKCLASS.KEYWORD
-data "PALETTE"	, FB.TK.PALETTE		, FB.TKCLASS.KEYWORD
-data "SCREEN"	, FB.TK.SCREEN		, FB.TKCLASS.KEYWORD
-data "SCREENRES", FB.TK.SCREENRES	, FB.TKCLASS.KEYWORD
-data "PAINT"	, FB.TK.PAINT		, FB.TKCLASS.KEYWORD
-data "DRAW"		, FB.TK.DRAW		, FB.TKCLASS.KEYWORD
-data "EXTERN"	, FB.TK.EXTERN		, FB.TKCLASS.KEYWORD
-data "STRPTR"	, FB.TK.STRPTR		, FB.TKCLASS.KEYWORD
-data "WITH"		, FB.TK.WITH		, FB.TKCLASS.KEYWORD
-data "EXPORT"	, FB.TK.EXPORT		, FB.TKCLASS.KEYWORD
-data "IMPORT"	, FB.TK.IMPORT		, FB.TKCLASS.KEYWORD
-data "LIBPATH"	, FB.TK.LIBPATH		, FB.TKCLASS.KEYWORD
-data "CHR"		, FB.TK.CHR			, FB.TKCLASS.KEYWORD
-data "ASC"		, FB.TK.ASC			, FB.TKCLASS.KEYWORD
-data "LSET"		, FB.TK.LSET		, FB.TKCLASS.KEYWORD
-data "IIF"		, FB.TK.IIF			, FB.TKCLASS.KEYWORD
-data "..."		, FB.TK.VARARG		, FB.TKCLASS.KEYWORD
-data "VA_FIRST"	, FB.TK.VA_FIRST	, FB.TKCLASS.KEYWORD
-data "LONGINT"	, FB.TK.LONGINT		, FB.TKCLASS.KEYWORD
-data "ULONGINT" , FB.TK.ULONGINT	, FB.TKCLASS.KEYWORD
-data "ZSTRING"	, FB.TK.ZSTRING		, FB.TKCLASS.KEYWORD
-data "SIZEOF"	, FB.TK.SIZEOF		, FB.TKCLASS.KEYWORD
-data "OVERLOAD"	, FB.TK.OVERLOAD	, FB.TKCLASS.KEYWORD
-data "SIN"		, FB.TK.SIN			, FB.TKCLASS.KEYWORD
-data "ASIN"		, FB.TK.ASIN		, FB.TKCLASS.KEYWORD
-data "COS"		, FB.TK.COS			, FB.TKCLASS.KEYWORD
-data "ACOS"		, FB.TK.ACOS		, FB.TKCLASS.KEYWORD
-data "TAN"		, FB.TK.TAN			, FB.TKCLASS.KEYWORD
-data "ATN"		, FB.TK.ATN			, FB.TKCLASS.KEYWORD
-data "SQR"		, FB.TK.SQR			, FB.TKCLASS.KEYWORD
-data "LOG"		, FB.TK.LOG			, FB.TKCLASS.KEYWORD
-data "INT"		, FB.TK.INT			, FB.TKCLASS.KEYWORD
-data "ATAN2"	, FB.TK.ATAN2		, FB.TKCLASS.KEYWORD
+data "AND"		, FB_TK_AND			, FB_TKCLASS_OPERATOR
+data "OR"		, FB_TK_OR			, FB_TKCLASS_OPERATOR
+data "XOR"		, FB_TK_XOR			, FB_TKCLASS_OPERATOR
+data "EQV"		, FB_TK_EQV			, FB_TKCLASS_OPERATOR
+data "IMP"		, FB_TK_IMP			, FB_TKCLASS_OPERATOR
+data "NOT"		, FB_TK_NOT			, FB_TKCLASS_OPERATOR
+data "MOD"		, FB_TK_MOD			, FB_TKCLASS_OPERATOR
+data "SHL"		, FB_TK_SHL			, FB_TKCLASS_OPERATOR
+data "SHR"		, FB_TK_SHR			, FB_TKCLASS_OPERATOR
+data "REM"		, FB_TK_REM			, FB_TKCLASS_KEYWORD
+data "DIM"		, FB_TK_DIM			, FB_TKCLASS_KEYWORD
+data "STATIC"	, FB_TK_STATIC		, FB_TKCLASS_KEYWORD
+data "SHARED"	, FB_TK_SHARED		, FB_TKCLASS_KEYWORD
+data "INTEGER"	, FB_TK_INTEGER		, FB_TKCLASS_KEYWORD
+data "LONG"		, FB_TK_LONG		, FB_TKCLASS_KEYWORD
+data "SINGLE"	, FB_TK_SINGLE		, FB_TKCLASS_KEYWORD
+data "DOUBLE"	, FB_TK_DOUBLE		, FB_TKCLASS_KEYWORD
+data "STRING"	, FB_TK_STRING		, FB_TKCLASS_KEYWORD
+data "CALL"		, FB_TK_CALL		, FB_TKCLASS_KEYWORD
+data "BYVAL"	, FB_TK_BYVAL		, FB_TKCLASS_KEYWORD
+data "INCLUDE"	, FB_TK_INCLUDE		, FB_TKCLASS_KEYWORD
+data "DYNAMIC"	, FB_TK_DYNAMIC		, FB_TKCLASS_KEYWORD
+data "AS"		, FB_TK_AS			, FB_TKCLASS_KEYWORD
+data "DECLARE"	, FB_TK_DECLARE		, FB_TKCLASS_KEYWORD
+data "GOTO"		, FB_TK_GOTO		, FB_TKCLASS_KEYWORD
+data "GOSUB"	, FB_TK_GOSUB		, FB_TKCLASS_KEYWORD
+data "DEFBYTE"	, FB_TK_DEFBYTE		, FB_TKCLASS_KEYWORD
+data "DEFUBYTE"	, FB_TK_DEFUBYTE	, FB_TKCLASS_KEYWORD
+data "DEFSHORT"	, FB_TK_DEFSHORT	, FB_TKCLASS_KEYWORD
+data "DEFUSHORT", FB_TK_DEFUSHORT	, FB_TKCLASS_KEYWORD
+data "DEFINT"	, FB_TK_DEFINT		, FB_TKCLASS_KEYWORD
+data "DEFUINT"	, FB_TK_DEFUINT		, FB_TKCLASS_KEYWORD
+data "DEFLNG"	, FB_TK_DEFLNG		, FB_TKCLASS_KEYWORD
+data "DEFLONGINT", FB_TK_DEFLNGINT	, FB_TKCLASS_KEYWORD
+data "DEFULONGINT", FB_TK_DEFULNGINT, FB_TKCLASS_KEYWORD
+data "DEFSNG"	, FB_TK_DEFSNG		, FB_TKCLASS_KEYWORD
+data "DEFDBL"	, FB_TK_DEFDBL		, FB_TKCLASS_KEYWORD
+data "DEFSTR"	, FB_TK_DEFSTR		, FB_TKCLASS_KEYWORD
+data "CONST"	, FB_TK_CONST		, FB_TKCLASS_KEYWORD
+data "FOR"		, FB_TK_FOR			, FB_TKCLASS_KEYWORD
+data "STEP"		, FB_TK_STEP		, FB_TKCLASS_KEYWORD
+data "NEXT"		, FB_TK_NEXT		, FB_TKCLASS_KEYWORD
+data "TO"		, FB_TK_TO			, FB_TKCLASS_KEYWORD
+data "TYPE"		, FB_TK_TYPE		, FB_TKCLASS_KEYWORD
+data "END"		, FB_TK_END			, FB_TKCLASS_KEYWORD
+data "SUB"		, FB_TK_SUB			, FB_TKCLASS_KEYWORD
+data "FUNCTION"	, FB_TK_FUNCTION	, FB_TKCLASS_KEYWORD
+data "CDECL"	, FB_TK_CDECL		, FB_TKCLASS_KEYWORD
+data "STDCALL"	, FB_TK_STDCALL		, FB_TKCLASS_KEYWORD
+data "ALIAS"	, FB_TK_ALIAS		, FB_TKCLASS_KEYWORD
+data "LIB"		, FB_TK_LIB			, FB_TKCLASS_KEYWORD
+data "LET"		, FB_TK_LET			, FB_TKCLASS_KEYWORD
+data "BYTE"		, FB_TK_BYTE		, FB_TKCLASS_KEYWORD
+data "UBYTE"	, FB_TK_UBYTE		, FB_TKCLASS_KEYWORD
+data "SHORT"	, FB_TK_SHORT		, FB_TKCLASS_KEYWORD
+data "USHORT"	, FB_TK_USHORT		, FB_TKCLASS_KEYWORD
+data "UINTEGER"	, FB_TK_UINT		, FB_TKCLASS_KEYWORD
+data "EXIT"		, FB_TK_EXIT		, FB_TKCLASS_KEYWORD
+data "DO"		, FB_TK_DO			, FB_TKCLASS_KEYWORD
+data "LOOP"		, FB_TK_LOOP		, FB_TKCLASS_KEYWORD
+data "RETURN"	, FB_TK_RETURN		, FB_TKCLASS_KEYWORD
+data "ANY"		, FB_TK_ANY			, FB_TKCLASS_KEYWORD
+data "PTR"		, FB_TK_PTR			, FB_TKCLASS_KEYWORD
+data "POINTER"	, FB_TK_POINTER		, FB_TKCLASS_KEYWORD
+data "VARPTR"	, FB_TK_VARPTR		, FB_TKCLASS_KEYWORD
+data "WHILE"	, FB_TK_WHILE		, FB_TKCLASS_KEYWORD
+data "UNTIL"	, FB_TK_UNTIL		, FB_TKCLASS_KEYWORD
+data "WEND"		, FB_TK_WEND		, FB_TKCLASS_KEYWORD
+data "CONTINUE"	, FB_TK_CONTINUE	, FB_TKCLASS_KEYWORD
+data "CBYTE"	, FB_TK_CBYTE		, FB_TKCLASS_KEYWORD
+data "CSHORT"	, FB_TK_CSHORT		, FB_TKCLASS_KEYWORD
+data "CINT"		, FB_TK_CINT		, FB_TKCLASS_KEYWORD
+data "CLNG"		, FB_TK_CLNG		, FB_TKCLASS_KEYWORD
+data "CLNGINT"	, FB_TK_CLNGINT		, FB_TKCLASS_KEYWORD
+data "CUBYTE"	, FB_TK_CUBYTE		, FB_TKCLASS_KEYWORD
+data "CUSHORT"	, FB_TK_CUSHORT		, FB_TKCLASS_KEYWORD
+data "CUINT"	, FB_TK_CUINT		, FB_TKCLASS_KEYWORD
+data "CULNGINT"	, FB_TK_CULNGINT	, FB_TKCLASS_KEYWORD
+data "CSNG"		, FB_TK_CSNG		, FB_TKCLASS_KEYWORD
+data "CDBL"		, FB_TK_CDBL		, FB_TKCLASS_KEYWORD
+data "CSIGN"	, FB_TK_CSIGN		, FB_TKCLASS_KEYWORD
+data "CUNSG"	, FB_TK_CUNSG		, FB_TKCLASS_KEYWORD
+data "IF"		, FB_TK_IF			, FB_TKCLASS_KEYWORD
+data "THEN"		, FB_TK_THEN		, FB_TKCLASS_KEYWORD
+data "ELSE"		, FB_TK_ELSE		, FB_TKCLASS_KEYWORD
+data "ELSEIF"	, FB_TK_ELSEIF		, FB_TKCLASS_KEYWORD
+data "SELECT"	, FB_TK_SELECT		, FB_TKCLASS_KEYWORD
+data "CASE"		, FB_TK_CASE		, FB_TKCLASS_KEYWORD
+data "IS"		, FB_TK_IS			, FB_TKCLASS_KEYWORD
+data "UNSIGNED"	, FB_TK_UNSIGNED	, FB_TKCLASS_KEYWORD
+data "REDIM"	, FB_TK_REDIM		, FB_TKCLASS_KEYWORD
+data "ERASE"	, FB_TK_ERASE		, FB_TKCLASS_KEYWORD
+data "LBOUND"	, FB_TK_LBOUND		, FB_TKCLASS_KEYWORD
+data "UBOUND"	, FB_TK_UBOUND		, FB_TKCLASS_KEYWORD
+data "UNION"	, FB_TK_UNION		, FB_TKCLASS_KEYWORD
+data "PUBLIC"	, FB_TK_PUBLIC		, FB_TKCLASS_KEYWORD
+data "PRIVATE"	, FB_TK_PRIVATE		, FB_TKCLASS_KEYWORD
+data "STR"		, FB_TK_STR			, FB_TKCLASS_KEYWORD
+data "MID"		, FB_TK_MID			, FB_TKCLASS_KEYWORD
+data "BYREF"	, FB_TK_BYREF		, FB_TKCLASS_KEYWORD
+data "OPTION"	, FB_TK_OPTION		, FB_TKCLASS_KEYWORD
+data "BASE"		, FB_TK_BASE		, FB_TKCLASS_KEYWORD
+data "EXPLICIT"	, FB_TK_EXPLICIT	, FB_TKCLASS_KEYWORD
+data "PASCAL"	, FB_TK_PASCAL		, FB_TKCLASS_KEYWORD
+data "PROCPTR"	, FB_TK_PROCPTR		, FB_TKCLASS_KEYWORD
+data "SADD"		, FB_TK_SADD		, FB_TKCLASS_KEYWORD
+data "RESTORE"	, FB_TK_RESTORE		, FB_TKCLASS_KEYWORD
+data "READ"		, FB_TK_READ		, FB_TKCLASS_KEYWORD
+data "DATA"		, FB_TK_DATA		, FB_TKCLASS_KEYWORD
+data "ABS"		, FB_TK_ABS			, FB_TKCLASS_KEYWORD
+data "SGN"		, FB_TK_SGN			, FB_TKCLASS_KEYWORD
+data "FIX"		, FB_TK_FIX			, FB_TKCLASS_KEYWORD
+data "PRINT"	, FB_TK_PRINT		, FB_TKCLASS_KEYWORD
+data "USING"	, FB_TK_USING		, FB_TKCLASS_KEYWORD
+data "LEN"		, FB_TK_LEN			, FB_TKCLASS_KEYWORD
+data "PEEK"		, FB_TK_PEEK		, FB_TKCLASS_KEYWORD
+data "POKE"		, FB_TK_POKE		, FB_TKCLASS_KEYWORD
+data "SWAP"		, FB_TK_SWAP		, FB_TKCLASS_KEYWORD
+data "COMMON"	, FB_TK_COMMON		, FB_TKCLASS_KEYWORD
+data "OPEN"		, FB_TK_OPEN		, FB_TKCLASS_KEYWORD
+data "CLOSE"	, FB_TK_CLOSE		, FB_TKCLASS_KEYWORD
+data "SEEK"		, FB_TK_SEEK		, FB_TKCLASS_KEYWORD
+data "PUT"		, FB_TK_PUT			, FB_TKCLASS_KEYWORD
+data "GET"		, FB_TK_GET			, FB_TKCLASS_KEYWORD
+data "ACCESS"	, FB_TK_ACCESS		, FB_TKCLASS_KEYWORD
+data "WRITE"	, FB_TK_WRITE		, FB_TKCLASS_KEYWORD
+data "LOCK"		, FB_TK_LOCK		, FB_TKCLASS_KEYWORD
+data "INPUT"	, FB_TK_INPUT		, FB_TKCLASS_KEYWORD
+data "OUTPUT"	, FB_TK_OUTPUT		, FB_TKCLASS_KEYWORD
+data "BINARY"	, FB_TK_BINARY		, FB_TKCLASS_KEYWORD
+data "RANDOM"	, FB_TK_RANDOM		, FB_TKCLASS_KEYWORD
+data "APPEND"	, FB_TK_APPEND		, FB_TKCLASS_KEYWORD
+data "PRESERVE"	, FB_TK_PRESERVE	, FB_TKCLASS_KEYWORD
+data "ON"		, FB_TK_ON			, FB_TKCLASS_KEYWORD
+data "ERROR"	, FB_TK_ERROR		, FB_TKCLASS_KEYWORD
+data "ENUM"		, FB_TK_ENUM		, FB_TKCLASS_KEYWORD
+data "INCLIB"	, FB_TK_INCLIB		, FB_TKCLASS_KEYWORD
+data "ASM"		, FB_TK_ASM			, FB_TKCLASS_KEYWORD
+data "SPC"		, FB_TK_SPC			, FB_TKCLASS_KEYWORD
+data "TAB"		, FB_TK_TAB			, FB_TKCLASS_KEYWORD
+data "LINE"		, FB_TK_LINE		, FB_TKCLASS_KEYWORD
+data "VIEW"		, FB_TK_VIEW		, FB_TKCLASS_KEYWORD
+data "UNLOCK"	, FB_TK_UNLOCK		, FB_TKCLASS_KEYWORD
+data "FIELD"	, FB_TK_FIELD		, FB_TKCLASS_KEYWORD
+data "LOCAL"	, FB_TK_LOCAL		, FB_TKCLASS_KEYWORD
+data "ERR"		, FB_TK_ERR			, FB_TKCLASS_KEYWORD
+data "DEFINE"	, FB_TK_DEFINE		, FB_TKCLASS_KEYWORD
+data "UNDEF"	, FB_TK_UNDEF		, FB_TKCLASS_KEYWORD
+data "IFDEF"	, FB_TK_IFDEF		, FB_TKCLASS_KEYWORD
+data "IFNDEF"	, FB_TK_IFNDEF		, FB_TKCLASS_KEYWORD
+data "ENDIF"	, FB_TK_ENDIF		, FB_TKCLASS_KEYWORD
+data "DEFINED"	, FB_TK_DEFINED		, FB_TKCLASS_KEYWORD
+data "RESUME"	, FB_TK_RESUME		, FB_TKCLASS_KEYWORD
+data "PSET"		, FB_TK_PSET		, FB_TKCLASS_KEYWORD
+data "PRESET"	, FB_TK_PRESET		, FB_TKCLASS_KEYWORD
+data "POINT"	, FB_TK_POINT		, FB_TKCLASS_KEYWORD
+data "CIRCLE"	, FB_TK_CIRCLE		, FB_TKCLASS_KEYWORD
+data "WINDOW"	, FB_TK_WINDOW		, FB_TKCLASS_KEYWORD
+data "PALETTE"	, FB_TK_PALETTE		, FB_TKCLASS_KEYWORD
+data "SCREEN"	, FB_TK_SCREEN		, FB_TKCLASS_KEYWORD
+data "SCREENRES", FB_TK_SCREENRES	, FB_TKCLASS_KEYWORD
+data "PAINT"	, FB_TK_PAINT		, FB_TKCLASS_KEYWORD
+data "DRAW"		, FB_TK_DRAW		, FB_TKCLASS_KEYWORD
+data "EXTERN"	, FB_TK_EXTERN		, FB_TKCLASS_KEYWORD
+data "STRPTR"	, FB_TK_STRPTR		, FB_TKCLASS_KEYWORD
+data "WITH"		, FB_TK_WITH		, FB_TKCLASS_KEYWORD
+data "EXPORT"	, FB_TK_EXPORT		, FB_TKCLASS_KEYWORD
+data "IMPORT"	, FB_TK_IMPORT		, FB_TKCLASS_KEYWORD
+data "LIBPATH"	, FB_TK_LIBPATH		, FB_TKCLASS_KEYWORD
+data "CHR"		, FB_TK_CHR			, FB_TKCLASS_KEYWORD
+data "ASC"		, FB_TK_ASC			, FB_TKCLASS_KEYWORD
+data "LSET"		, FB_TK_LSET		, FB_TKCLASS_KEYWORD
+data "IIF"		, FB_TK_IIF			, FB_TKCLASS_KEYWORD
+data "..."		, FB_TK_VARARG		, FB_TKCLASS_KEYWORD
+data "VA_FIRST"	, FB_TK_VA_FIRST	, FB_TKCLASS_KEYWORD
+data "LONGINT"	, FB_TK_LONGINT		, FB_TKCLASS_KEYWORD
+data "ULONGINT" , FB_TK_ULONGINT	, FB_TKCLASS_KEYWORD
+data "ZSTRING"	, FB_TK_ZSTRING		, FB_TKCLASS_KEYWORD
+data "SIZEOF"	, FB_TK_SIZEOF		, FB_TKCLASS_KEYWORD
+data "OVERLOAD"	, FB_TK_OVERLOAD	, FB_TKCLASS_KEYWORD
+data "SIN"		, FB_TK_SIN			, FB_TKCLASS_KEYWORD
+data "ASIN"		, FB_TK_ASIN		, FB_TKCLASS_KEYWORD
+data "COS"		, FB_TK_COS			, FB_TKCLASS_KEYWORD
+data "ACOS"		, FB_TK_ACOS		, FB_TKCLASS_KEYWORD
+data "TAN"		, FB_TK_TAN			, FB_TKCLASS_KEYWORD
+data "ATN"		, FB_TK_ATN			, FB_TKCLASS_KEYWORD
+data "SQR"		, FB_TK_SQR			, FB_TKCLASS_KEYWORD
+data "LOG"		, FB_TK_LOG			, FB_TKCLASS_KEYWORD
+data "INT"		, FB_TK_INT			, FB_TKCLASS_KEYWORD
+data "ATAN2"	, FB_TK_ATAN2		, FB_TKCLASS_KEYWORD
 data ""
 
 
@@ -297,12 +297,12 @@ data ""
 sub symbInitSymbols static
 
 	'' globals/module-level
-	listNew( @ctx.symlist, FB.INITSYMBOLNODES, len( FBSYMBOL ), FALSE )
+	listNew( @ctx.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), FALSE )
 
-	hashNew( @ctx.symhash, FB.INITSYMBOLNODES )
+	hashNew( @ctx.symhash, FB_INITSYMBOLNODES )
 
 	'' locals
-	listNew( @ctx.loclist, FB.INITLOCSYMBOLNODES, len( FBLOCSYMBOL ), FALSE )
+	listNew( @ctx.loclist, FB_INITLOCSYMBOLNODES, len( FBLOCSYMBOL ), FALSE )
 
 	ctx.lastlbl = NULL
 
@@ -311,7 +311,7 @@ end sub
 '':::::
 sub symbInitFwdRef static
 
-	listNew( @ctx.fwdlist, FB.INITFWDREFNODES, len( FBFWDREF ), FALSE )
+	listNew( @ctx.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), FALSE )
 
 	ctx.fwdrefcnt = 0
 
@@ -320,16 +320,16 @@ end sub
 '':::::
 sub symbInitDims static
 
-	listNew( @ctx.dimlist, FB.INITDIMNODES, len( FBVARDIM ), FALSE )
+	listNew( @ctx.dimlist, FB_INITDIMNODES, len( FBVARDIM ), FALSE )
 
 end sub
 
 '':::::
 sub symbInitLibs static
 
-	listNew( @ctx.liblist, FB.INITLIBNODES, len( FBLIBRARY ), FALSE )
+	listNew( @ctx.liblist, FB_INITLIBNODES, len( FBLIBRARY ), FALSE )
 
-    hashNew( @ctx.libhash, FB.INITLIBNODES )
+    hashNew( @ctx.libhash, FB_INITLIBNODES )
 
 end sub
 
@@ -338,7 +338,7 @@ sub symbInitDefines static
 	dim as string def, value
 	dim as DEFCALLBACK proc
 
-    listNew( @ctx.defarglist, FB.INITDEFARGNODES, len( FBDEFARG ), FALSE )
+    listNew( @ctx.defarglist, FB_INITDEFARGNODES, len( FBDEFARG ), FALSE )
 
     ctx.defargcnt = 0
 
@@ -458,7 +458,7 @@ end sub
 '':::::
 function hDefFile_cb( ) as string static
 
-	function = env.infile
+	function = env.inf.name
 
 end function
 
@@ -468,7 +468,7 @@ function hDefFunction_cb( ) as string static
 	if( env.currproc = NULL ) then
 		function = "(main)"
 	else
-		function = symbGetName( env.currproc )
+		function = symbGetOrgName( env.currproc )
 	end if
 
 end function
@@ -476,7 +476,7 @@ end function
 '':::::
 function hDefLine_cb( ) as string static
 
-	function = str$( lexLineNum )
+	function = str$( lexLineNum( ) )
 
 end function
 
@@ -504,21 +504,21 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 
 	select case as const s->class
 	'' adding a define or keyword? no dups can exist
-	case FB.SYMBCLASS.DEFINE, FB.SYMBCLASS.KEYWORD
+	case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD
 		return FALSE
 
 	'' adding a type field? anything is allowed (udt elms are not added to a hash tb)
-	case FB.SYMBCLASS.UDTELM, FB.SYMBCLASS.PROCARG
+	case FB_SYMBCLASS_UDTELM, FB_SYMBCLASS_PROCARG
 
 	'' adding a label or forward ref? anything but a define and keyword is allowed,
 	'' if the same class doesn't exist yet
-	case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.FWDREF
+	case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_FWDREF
 
 		function = FALSE
 
 		do
 			select case as const n->class
-			case FB.SYMBCLASS.DEFINE, FB.SYMBCLASS.KEYWORD
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD
 				exit function
 
 			case else
@@ -532,14 +532,14 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 
 	'' adding an udt, enum or typedef? anything but a define, keyword or
 	'' themselves is allowed
-	case FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, FB.SYMBCLASS.TYPEDEF
+	case FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF
 
 		function = FALSE
 
 		do
 			select case as const n->class
-			case FB.SYMBCLASS.DEFINE, FB.SYMBCLASS.KEYWORD, _
-				 FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, FB.SYMBCLASS.TYPEDEF
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, _
+				 FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF
 				exit function
 			end select
 
@@ -547,14 +547,14 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 		loop while( n <> NULL )
 
 	'' adding a constant or proc? only dup allowed are labels, udts or enums
-	case FB.SYMBCLASS.CONST, FB.SYMBCLASS.PROC
+	case FB_SYMBCLASS_CONST, FB_SYMBCLASS_PROC
 
 		function = FALSE
 
 		do
 			select case as const n->class
-			case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, _
-				 FB.SYMBCLASS.TYPEDEF, FB.SYMBCLASS.FWDREF
+			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, _
+				 FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
 			case else
 				exit function
@@ -566,16 +566,16 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 	'' adding a variable? labels, udts or enums are allowed as dups AND
 	'' other vars if they have different suffixes -- if any with suffix
 	'' exists, a suffix-less will not be accepted (and vice-versa)
-	case FB.SYMBCLASS.VAR
+	case FB_SYMBCLASS_VAR
 
 		function = FALSE
 
 		do
 			select case as const n->class
-			case FB.SYMBCLASS.LABEL, FB.SYMBCLASS.UDT, FB.SYMBCLASS.ENUM, _
-				 FB.SYMBCLASS.TYPEDEF, FB.SYMBCLASS.FWDREF
+			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, _
+				 FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
-			case FB.SYMBCLASS.VAR
+			case FB_SYMBCLASS_VAR
 				if( s->scope = n->scope ) then
 					if( (s->var.suffix = INVALID) or (n->var.suffix = INVALID) ) then
 	    				exit function
@@ -610,13 +610,13 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
     dim as integer typ, ptrcnt
 
 	select case as const class
-	case FB.SYMBCLASS.UDT
-		typ 	= FB.SYMBTYPE.USERDEF
+	case FB_SYMBCLASS_UDT
+		typ 	= FB_SYMBTYPE_USERDEF
 		ptrcnt 	= 0
-	case FB.SYMBCLASS.ENUM
-		typ 	= FB.SYMBTYPE.UINT
+	case FB_SYMBCLASS_ENUM
+		typ 	= FB_SYMBTYPE_UINT
 		ptrcnt 	= 0
-	case FB.SYMBCLASS.TYPEDEF
+	case FB_SYMBCLASS_TYPEDEF
 		typ 	= sym->typ
 		ptrcnt 	= sym->ptrcnt
 		sym 	= sym->subtype
@@ -628,7 +628,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 
 		ref = n->ref
 
-		ref->typ     = typ + (ref->ptrcnt * FB.SYMBTYPE.POINTER)
+		ref->typ     = typ + (ref->ptrcnt * FB_SYMBTYPE_POINTER)
 		ref->subtype = sym
 		ref->ptrcnt  = ptrcnt
 		ref->lgt	 = symbCalcLen( ref->typ, sym )
@@ -670,7 +670,7 @@ function hNewSymbol( byval class as integer, _
 					 byval suffix as integer = INVALID, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 sname
+    static as zstring * FB_MAXINTNAMELEN+1 sname
     dim as FBLOCSYMBOL ptr l
     dim as FBSYMBOL ptr s, n
     dim as integer slen
@@ -693,7 +693,7 @@ function hNewSymbol( byval class as integer, _
     s->lgt			= 0
     s->ofs			= 0
 
-    if( class = FB.SYMBCLASS.VAR ) then
+    if( class = FB_SYMBCLASS_VAR ) then
     	s->var.suffix = suffix
     	s->var.emited = FALSE
     end if
@@ -773,8 +773,8 @@ function hNewSymbol( byval class as integer, _
 	end if
 
 	''
-	typ -= ptrcnt * FB.SYMBTYPE.POINTER
-	if( typ = FB.SYMBTYPE.FWDREF ) then
+	typ -= ptrcnt * FB_SYMBTYPE_POINTER
+	if( typ = FB_SYMBTYPE_FWDREF ) then
 		hAddToFwdRef( subtype, s )
 	end if
 
@@ -789,7 +789,7 @@ function symbAddKeyword( byval symbol as string, _
 						 byval class as integer ) as FBSYMBOL ptr
     dim k as FBSYMBOL ptr
 
-    k = hNewSymbol( FB.SYMBCLASS.KEYWORD, TRUE, symbol, "" )
+    k = hNewSymbol( FB_SYMBCLASS_KEYWORD, TRUE, symbol, "" )
     if( k = NULL ) then
     	return NULL
     end if
@@ -815,7 +815,7 @@ function symbAddDefine( byval symbol as string, _
     function = NULL
 
     '' allocate new node
-    d = hNewSymbol( FB.SYMBCLASS.DEFINE, TRUE, symbol, "", env.scope > 0 )
+    d = hNewSymbol( FB_SYMBCLASS_DEFINE, TRUE, symbol, "", env.scope > 0 )
     if( d = NULL ) then
     	exit function
     end if
@@ -872,7 +872,7 @@ private sub hCheckFwdRef( byval s as FBSYMBOL ptr, _
 		n = n->left
 	loop
 
-	f = symbFindByClass( n, FB.SYMBCLASS.FWDREF )
+	f = symbFindByClass( n, FB_SYMBCLASS_FWDREF )
 	if( f <> NULL ) then
 		hFixForwardRef( f, s, class )
 	end if
@@ -890,7 +890,7 @@ function symbAddTypedef( byval symbol as string, _
     function = NULL
 
     '' allocate new node
-    t = hNewSymbol( FB.SYMBCLASS.TYPEDEF, TRUE, symbol, "", env.scope > 0, typ, subtype, ptrcnt )
+    t = hNewSymbol( FB_SYMBCLASS_TYPEDEF, TRUE, symbol, "", env.scope > 0, typ, subtype, ptrcnt )
     if( t = NULL ) then
     	exit function
     end if
@@ -901,7 +901,7 @@ function symbAddTypedef( byval symbol as string, _
 
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
-		hCheckFwdRef( t, FB.SYMBCLASS.TYPEDEF )
+		hCheckFwdRef( t, FB_SYMBCLASS_TYPEDEF )
 	end if
 
 	''
@@ -916,7 +916,7 @@ function symbAddFwdRef( byval symbol as string ) as FBSYMBOL ptr static
     function = NULL
 
     '' allocate new node
-    f = hNewSymbol( FB.SYMBCLASS.FWDREF, TRUE, symbol, "", env.scope > 0 )
+    f = hNewSymbol( FB_SYMBCLASS_FWDREF, TRUE, symbol, "", env.scope > 0 )
     if( f = NULL ) then
     	exit function
     end if
@@ -935,7 +935,7 @@ end function
 function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 						   byval dimensions as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 sname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 sname, aname
     dim as FBSYMBOL ptr d
     dim as integer lgt, ofs
     dim as integer isshared, isstatic, isdynamic, iscommon, ispubext
@@ -946,7 +946,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	isstatic 	= symbIsStatic( s )
 	isdynamic	= symbIsDynamic( s )
 	iscommon 	= symbIsCommon( s )
-	ispubext 	= (s->alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.EXTERN)) > 0
+	ispubext 	= (s->alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_EXTERN)) > 0
 
 	if( (iscommon) or (ispubext and isdynamic) ) then
 		sname = symbGetName( s )
@@ -958,21 +958,21 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 		aname = sname
 		ofs = 0
 	else
-		lgt = FB.ARRAYDESCSIZE + dimensions * (FB.INTEGERSIZE+FB.INTEGERSIZE)
+		lgt = FB_ARRAYDESCSIZE + dimensions * (FB_INTEGERSIZE+FB_INTEGERSIZE)
 		aname = *emitAllocLocal( lgt, ofs )
 	end if
 
-	d = hNewSymbol( FB.SYMBCLASS.VAR, FALSE, "", aname, (env.scope > 0) and (not isshared), _
-					FB.SYMBTYPE.USERDEF, FB.DESCTYPE.ARRAY, 0 )
+	d = hNewSymbol( FB_SYMBCLASS_VAR, FALSE, "", aname, (env.scope > 0) and (not isshared), _
+					FB_SYMBTYPE_USERDEF, FB_DESCTYPE_ARRAY, 0 )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
 	if( isshared ) then
-		d->alloctype	= FB.ALLOCTYPE.SHARED
+		d->alloctype	= FB_ALLOCTYPE_SHARED
 	elseif( isstatic ) then
-		d->alloctype	= FB.ALLOCTYPE.STATIC
+		d->alloctype	= FB_ALLOCTYPE_STATIC
 	else
 		d->alloctype	= 0
 	end if
@@ -1118,7 +1118,7 @@ function symbAddVarEx( byval symbol as string, _
 				       byval preservecase as integer, _
 				       byval clearname as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 aname
+    static as zstring * FB_MAXINTNAMELEN+1 aname
     dim as FBSYMBOL ptr s
     dim as integer elms, suffix, arglen
     dim as integer isshared, isstatic, ispublic, isextern
@@ -1127,13 +1127,13 @@ function symbAddVarEx( byval symbol as string, _
     function = NULL
 
     ''
-    isshared = (alloctype and FB.ALLOCTYPE.SHARED) > 0
-    isstatic = (alloctype and FB.ALLOCTYPE.STATIC) > 0
-    ispublic = (alloctype and FB.ALLOCTYPE.PUBLIC) > 0
-    isextern = (alloctype and FB.ALLOCTYPE.EXTERN) > 0
-    isarg    = (alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
-    						   FB.ALLOCTYPE.ARGUMENTBYVAL or _
-    						   FB.ALLOCTYPE.ARGUMENTBYREF)) > 0
+    isshared = (alloctype and FB_ALLOCTYPE_SHARED) > 0
+    isstatic = (alloctype and FB_ALLOCTYPE_STATIC) > 0
+    ispublic = (alloctype and FB_ALLOCTYPE_PUBLIC) > 0
+    isextern = (alloctype and FB_ALLOCTYPE_EXTERN) > 0
+    isarg    = (alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
+    						   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+    						   FB_ALLOCTYPE_ARGUMENTBYREF)) > 0
 	islocal  = FALSE
 
     ''
@@ -1180,10 +1180,10 @@ function symbAddVarEx( byval symbol as string, _
 					islocal = TRUE
 
 				else
-        			if( alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL ) then
+        			if( alloctype = FB_ALLOCTYPE_ARGUMENTBYVAL ) then
         				arglen = lgt
         			else
-        				arglen = FB.POINTERSIZE
+        				arglen = FB_POINTERSIZE
         			end if
 					aname = *emitAllocArg( arglen, ofs )
 				end if
@@ -1192,7 +1192,7 @@ function symbAddVarEx( byval symbol as string, _
 	end if
 
 	''
-	s = hNewSymbol( FB.SYMBCLASS.VAR, TRUE, symbol, aname, _
+	s = hNewSymbol( FB_SYMBCLASS_VAR, TRUE, symbol, aname, _
 					(env.scope > 0) and (not isshared), _
 					typ, subtype, ptrcnt, suffix, preservecase )
 
@@ -1234,16 +1234,16 @@ end function
 function symbAddTempVar( byval typ as integer, _
 						 byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr static
 
-	static as zstring * FB.MAXINTNAMELEN+1 sname
+	static as zstring * FB_MAXINTNAMELEN+1 sname
 	dim as integer alloctype
     dim as FBARRAYDIM dTB(0)
 
 	sname = *hMakeTmpStr( )
 
-	alloctype = FB.ALLOCTYPE.TEMP
+	alloctype = FB_ALLOCTYPE_TEMP
 	if( env.scope > 0 ) then
 		if( env.isprocstatic ) then
-			alloctype or= FB.ALLOCTYPE.STATIC
+			alloctype or= FB_ALLOCTYPE_STATIC
 		end if
 	end if
 
@@ -1258,7 +1258,7 @@ end function
 function hAllocNumericConst( byval sname as string, _
 							 byval typ as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 cname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
     dim as integer p
@@ -1276,11 +1276,11 @@ function hAllocNumericConst( byval sname as string, _
 	aname = *hMakeTmpStr( )
 
 	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, 0, dTB(), _
-					  FB.ALLOCTYPE.SHARED, TRUE, FALSE, FALSE )
+					  FB_ALLOCTYPE_SHARED, TRUE, FALSE, FALSE )
 
 	s->var.initialized = TRUE
 
-	if( typ = FB.SYMBTYPE.DOUBLE ) then
+	if( typ = FB_SYMBTYPE_DOUBLE ) then
 		p = instr( sname, "D" )
 		if( p <> 0 ) then
 			sname[p-1] = asc( "E" )
@@ -1298,7 +1298,7 @@ end function
 function hAllocStringConst( byval sname as string, _
 							byval lgt as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 cname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
 
@@ -1309,7 +1309,7 @@ function hAllocStringConst( byval sname as string, _
 		lgt = len( sname )
 	end if
 
-	if( lgt <= FB.MAXNAMELEN-6 ) then
+	if( lgt <= FB_MAXNAMELEN-6 ) then
 		cname = "_fbsc_"
 		cname += sname
 	else
@@ -1317,7 +1317,7 @@ function hAllocStringConst( byval sname as string, _
 	end if
 
 	''
-	s = symbFindByNameAndClass( cname, FB.SYMBCLASS.VAR, TRUE )
+	s = symbFindByNameAndClass( cname, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
 		return s 's->var.array.desc
 	end if
@@ -1327,8 +1327,8 @@ function hAllocStringConst( byval sname as string, _
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
 
-	s = symbAddVarEx( cname, aname, FB.SYMBTYPE.FIXSTR, NULL, 0, lgt, 0, dTB(), _
-					  FB.ALLOCTYPE.SHARED, FALSE, TRUE, FALSE )
+	s = symbAddVarEx( cname, aname, FB_SYMBTYPE_FIXSTR, NULL, 0, lgt, 0, dTB(), _
+					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
 	s->var.initialized = TRUE
 
@@ -1353,7 +1353,7 @@ function symbAddConst( byval symbol as string, _
     function = NULL
 
     ''
-    c = hNewSymbol( FB.SYMBCLASS.CONST, TRUE, symbol, "", env.scope > 0, typ, subtype )
+    c = hNewSymbol( FB_SYMBCLASS_CONST, TRUE, symbol, "", env.scope > 0, typ, subtype )
 	if( c = NULL ) then
 		exit function
 	end if
@@ -1378,7 +1378,7 @@ function symbAddLabel( byval symbol as string, _
 
     if( len( symbol ) > 0 ) then
     	'' check if label already exists
-    	l = symbFindByNameAndClass( symbol, FB.SYMBCLASS.LABEL )
+    	l = symbFindByNameAndClass( symbol, FB_SYMBCLASS_LABEL )
     	if( l <> NULL ) then
     		if( declaring ) then
     			if( l->lbl.declared ) then
@@ -1406,7 +1406,7 @@ function symbAddLabel( byval symbol as string, _
 		aname = lname
 	end if
 
-    l = hNewSymbol( FB.SYMBCLASS.LABEL, TRUE, lname, aname, env.scope > 0 )
+    l = hNewSymbol( FB_SYMBCLASS_LABEL, TRUE, lname, aname, env.scope > 0 )
     if( l = NULL ) then
     	exit function
     end if
@@ -1426,7 +1426,7 @@ function symbAddUDT( byval symbol as string, _
 
     function = NULL
 
-    t = hNewSymbol( FB.SYMBCLASS.UDT, TRUE, symbol, "", env.scope > 0 )
+    t = hNewSymbol( FB_SYMBCLASS_UDT, TRUE, symbol, "", env.scope > 0 )
 	if( t = NULL ) then
 		exit function
 	end if
@@ -1463,12 +1463,12 @@ function hCalcALign( byval lgt as integer, _
 	end if
 
 	'' if field is another UDT, loop until a non-UDT header field is found
-	if( typ = FB.SYMBTYPE.USERDEF ) then
+	if( typ = FB_SYMBTYPE_USERDEF ) then
 		do
 			e = subtype->udt.head
     		typ = e->typ
     		subtype = e->subtype
-		loop while( typ = FB.SYMBTYPE.USERDEF )
+		loop while( typ = FB_SYMBTYPE_USERDEF )
 
 		lgt = e->lgt
 
@@ -1481,7 +1481,7 @@ function hCalcALign( byval lgt as integer, _
 
 	select case typ
 	'' don't align strings
-	case FB.SYMBTYPE.CHAR, FB.SYMBTYPE.FIXSTR
+	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
 
 	case else
 		select case as const lgt
@@ -1511,7 +1511,7 @@ function symbCheckBitField( byval udt as FBSYMBOL ptr, _
 
 	if( (bits <= 0) or _
 		(bits > lgt*8) or _
-		(typ >= FB.SYMBTYPE.SINGLE) ) then
+		(typ >= FB_SYMBTYPE_SINGLE) ) then
 		return FALSE
 	end if
 
@@ -1531,7 +1531,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 						    byval bits as integer, _
 						    byval isinner as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 ename
+    static as zstring * FB_MAXINTNAMELEN+1 ename
     dim as FBSYMBOL ptr e, tail
     dim as integer align, i, updateudt
 
@@ -1557,7 +1557,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     '' field (the packed len w/o padding is needed); for array of UDT's
     '' fields, the padded len will be used to be GCC 3.x compatible
 	if( (lgt <= 0) or _
-		((typ = FB.SYMBTYPE.USERDEF) and (dimensions = 0)) ) then
+		((typ = FB_SYMBTYPE_USERDEF) and (dimensions = 0)) ) then
 		lgt	= symbCalcLen( typ, subtype, TRUE )
 	end if
 
@@ -1587,7 +1587,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     end if
 
 	''
-    e = hNewSymbol( FB.SYMBCLASS.UDTELM, FALSE, ename, "", FALSE, typ, subtype, ptrcnt )
+    e = hNewSymbol( FB_SYMBCLASS_UDTELM, FALSE, ename, "", FALSE, typ, subtype, ptrcnt )
     if( e = NULL ) then
     	exit function
     end if
@@ -1697,7 +1697,7 @@ sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
 
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
-		hCheckFwdRef( t, FB.SYMBCLASS.UDT )
+		hCheckFwdRef( t, FB_SYMBCLASS_UDT )
 	end if
 
 end sub
@@ -1732,7 +1732,7 @@ function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
     function = NULL
 
     ''
-    e = hNewSymbol( FB.SYMBCLASS.ENUM, TRUE, symbol, "", env.scope > 0 )
+    e = hNewSymbol( FB_SYMBCLASS_ENUM, TRUE, symbol, "", env.scope > 0 )
 	if( e = NULL ) then
 		exit function
 	end if
@@ -1744,7 +1744,7 @@ function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
 
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
-		hCheckFwdRef( e, FB.SYMBCLASS.ENUM )
+		hCheckFwdRef( e, FB_SYMBCLASS_ENUM )
 	end if
 
 	function = e
@@ -1758,7 +1758,7 @@ function symbAddEnumElement( byval symbol as string, _
 
 	dim as FBSYMBOL ptr elm, tail
 
-	elm = symbAddConst( symbol, FB.SYMBTYPE.ENUM, parent, str( value ), 0 )
+	elm = symbAddConst( symbol, FB_SYMBTYPE_ENUM, parent, str( value ), 0 )
 
 	if( elm = NULL ) then
 		return NULL
@@ -1822,11 +1822,11 @@ function hCalcProcArgsLen( byval args as integer, _
 	lgt	= 0
 	do while( argtail <> NULL )
 		select case argtail->arg.mode
-		case FB.ARGMODE.BYVAL
+		case FB_ARGMODE_BYVAL
 			lgt	+= ((argtail->lgt + 3) and not 3)			'' x86 assumption!
 
-		case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
-			lgt	+= FB.POINTERSIZE
+		case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
+			lgt	+= FB_POINTERSIZE
 		end select
 
 		argtail = argtail->arg.l
@@ -1851,7 +1851,7 @@ function symbAddArg( byval symbol as string, _
 
     function = NULL
 
-    a = hNewSymbol( FB.SYMBCLASS.PROCARG, FALSE, "", _
+    a = hNewSymbol( FB_SYMBCLASS_PROCARG, FALSE, "", _
     				symbol, FALSE, typ, subtype, ptrcnt, INVALID, TRUE )
     if( a = NULL ) then
     	exit function
@@ -1871,11 +1871,11 @@ function symbAddArg( byval symbol as string, _
 
 	if( optional ) then
 		select case as const typ
-		case IR.DATATYPE.FIXSTR, IR.DATATYPE.STRING, IR.DATATYPE.CHAR
+		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 			a->arg.optval.valuestr = optval->valuestr
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			a->arg.optval.value64 = optval->value64
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			a->arg.optval.valuef = optval->valuef
 		case else
 			a->arg.optval.valuei = optval->valuei
@@ -1892,39 +1892,39 @@ private function hGetProcRealType( byval typ as integer, _
 
     select case typ
     '' string? it's actually a pointer to a string descriptor
-    case FB.SYMBTYPE.STRING
-    	 return FB.SYMBTYPE.POINTER + FB.SYMBTYPE.STRING
+    case FB_SYMBTYPE_STRING
+    	 return FB_SYMBTYPE_POINTER + FB_SYMBTYPE_STRING
 
     '' UDT? follow GCC 3.x's ABI
-    case FB.SYMBTYPE.USERDEF
+    case FB_SYMBTYPE_USERDEF
 
 		'' use the un-padded UDT len
 		select case as const symbGetUDTLen( subtype )
 		case 1
-			return FB.SYMBTYPE.BYTE
+			return FB_SYMBTYPE_BYTE
 
 		case 2
-			return FB.SYMBTYPE.SHORT
+			return FB_SYMBTYPE_SHORT
 
 		case 3
 			'' return as int only if first is a short
 			if( subtype->udt.head->lgt = 2 ) then
 				'' and if the struct is not packed
-				if( subtype->lgt >= FB.INTEGERSIZE ) then
-					return FB.SYMBTYPE.INTEGER
+				if( subtype->lgt >= FB_INTEGERSIZE ) then
+					return FB_SYMBTYPE_INTEGER
 				end if
 			end if
 
-		case FB.INTEGERSIZE
+		case FB_INTEGERSIZE
 
 			'' return in ST(0) if there's only one element and it's a SINGLE
 			if( subtype->udt.elements = 1 ) then
 				do
-					if( subtype->udt.head->typ = FB.SYMBTYPE.SINGLE ) then
-						return FB.SYMBTYPE.SINGLE
+					if( subtype->udt.head->typ = FB_SYMBTYPE_SINGLE ) then
+						return FB_SYMBTYPE_SINGLE
 					end if
 
-					if( subtype->udt.head->typ <> FB.SYMBTYPE.USERDEF ) then
+					if( subtype->udt.head->typ <> FB_SYMBTYPE_USERDEF ) then
 						exit do
 					end if
 
@@ -1936,28 +1936,28 @@ private function hGetProcRealType( byval typ as integer, _
 				loop
 			end if
 
-			return FB.SYMBTYPE.INTEGER
+			return FB_SYMBTYPE_INTEGER
 
-		case FB.INTEGERSIZE + 1, FB.INTEGERSIZE + 2, FB.INTEGERSIZE + 3
+		case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
 
 			'' return as longint only if first is a int
-			if( subtype->udt.head->lgt = FB.INTEGERSIZE ) then
+			if( subtype->udt.head->lgt = FB_INTEGERSIZE ) then
 				'' and if the struct is not packed
-				if( subtype->lgt >= FB.INTEGERSIZE*2 ) then
-					return FB.SYMBTYPE.LONGINT
+				if( subtype->lgt >= FB_INTEGERSIZE*2 ) then
+					return FB_SYMBTYPE_LONGINT
 				end if
 			end if
 
-		case FB.INTEGERSIZE*2
+		case FB_INTEGERSIZE*2
 
 			'' return in ST(0) if there's only one element and it's a DOUBLE
 			if( subtype->udt.elements = 1 ) then
 				do
-					if( subtype->udt.head->typ = FB.SYMBTYPE.DOUBLE ) then
-						return FB.SYMBTYPE.DOUBLE
+					if( subtype->udt.head->typ = FB_SYMBTYPE_DOUBLE ) then
+						return FB_SYMBTYPE_DOUBLE
 					end if
 
-					if( subtype->udt.head->typ <> FB.SYMBTYPE.USERDEF ) then
+					if( subtype->udt.head->typ <> FB_SYMBTYPE_USERDEF ) then
 						exit do
 					end if
 
@@ -1969,12 +1969,12 @@ private function hGetProcRealType( byval typ as integer, _
 				loop
 			end if
 
-			return FB.SYMBTYPE.LONGINT
+			return FB_SYMBTYPE_LONGINT
 
 		end select
 
 		'' if nothing matched, it's the pointer that was passed as the 1st arg
-		return FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF
+		return FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF
 
 	'' type is the same
 	case else
@@ -2006,7 +2006,7 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 	end if
 
 	'' can't be vararg..
-	if( argtail->arg.mode = FB.ARGMODE.VARARG ) then
+	if( argtail->arg.mode = FB_ARGMODE_VARARG ) then
 		exit function
 	end if
 
@@ -2061,7 +2061,7 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 
 
     '' add the new proc symbol, w/o adding it to the hash table
-	f = hNewSymbol( FB.SYMBCLASS.PROC, FALSE, symbol, aname, FALSE, _
+	f = hNewSymbol( FB_SYMBCLASS_PROC, FALSE, symbol, aname, FALSE, _
 					typ, subtype, ptrcnt, INVALID, preservecase )
 
 	if( f = NULL ) then
@@ -2094,7 +2094,7 @@ private function hSetupProc( byval symbol as string, _
 			                 byval declaring as integer, _
 			                 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXINTNAMELEN+1 aname
+    static as zstring * FB_MAXINTNAMELEN+1 aname
     dim as integer lgt, i, realtype
     dim as FBSYMBOL ptr f, ovlf
 
@@ -2120,7 +2120,7 @@ private function hSetupProc( byval symbol as string, _
     	end if
 
     	'' overloaded?
-		if( (alloctype and FB.ALLOCTYPE.OVERLOADED) > 0 ) then
+		if( (alloctype and FB_ALLOCTYPE_OVERLOADED) > 0 ) then
 			aname = *hCreateOvlProcAlias( aname, argc, argtail )
 		end if
 
@@ -2141,13 +2141,13 @@ private function hSetupProc( byval symbol as string, _
     end if
 
 
-	f = hNewSymbol( FB.SYMBCLASS.PROC, TRUE, symbol, aname, FALSE, _
+	f = hNewSymbol( FB_SYMBCLASS_PROC, TRUE, symbol, aname, FALSE, _
 					typ, subtype, ptrcnt, INVALID, preservecase )
 
 	'' dup def?
 	if( f = NULL ) then
 		'' is the dup a proc symbol?
-		ovlf = symbFindByNameAndClass( symbol, FB.SYMBCLASS.PROC, preservecase )
+		ovlf = symbFindByNameAndClass( symbol, FB_SYMBCLASS_PROC, preservecase )
 		if( ovlf = NULL ) then
 			exit function
 		end if
@@ -2159,7 +2159,7 @@ private function hSetupProc( byval symbol as string, _
 
     	'' no alias?
     	if( len( aliasname ) = 0 ) then
-			if( (alloctype and FB.ALLOCTYPE.OVERLOADED) = 0 ) then
+			if( (alloctype and FB_ALLOCTYPE_OVERLOADED) = 0 ) then
     			if( len( libname ) = 0 ) then
     				hUcase( symbol, aname )
     			else
@@ -2179,19 +2179,19 @@ private function hSetupProc( byval symbol as string, _
 			exit function
 		end if
 
-		alloctype or= FB.ALLOCTYPE.OVERLOADED
+		alloctype or= FB_ALLOCTYPE_OVERLOADED
 
 	else
 		ovlf = NULL
 	end if
 
     ''
-	f->alloctype		= alloctype or FB.ALLOCTYPE.SHARED
+	f->alloctype		= alloctype or FB_ALLOCTYPE_SHARED
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-    if( typ = FB.SYMBTYPE.USERDEF ) then
-    	if( realtype = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.USERDEF ) then
-    		lgt += FB.POINTERSIZE
+    if( typ = FB_SYMBTYPE_USERDEF ) then
+    	if( realtype = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
+    		lgt += FB_POINTERSIZE
     	end if
     end if
 
@@ -2224,7 +2224,7 @@ private function hSetupProc( byval symbol as string, _
 	f->proc.arghead		= argtail
 
 	'' if overloading, update the linked-list
-	if( (alloctype and FB.ALLOCTYPE.OVERLOADED) > 0 ) then
+	if( (alloctype and FB_ALLOCTYPE_OVERLOADED) > 0 ) then
 		if( ovlf <> NULL ) then
 			f->proc.ovl.nxt	= ovlf->proc.ovl.nxt
 			ovlf->proc.ovl.nxt = f
@@ -2309,20 +2309,20 @@ function symbAddArgAsVar( byval symbol as string, _
 	typ = arg->typ
 
 	select case as const arg->arg.mode
-    case FB.ARGMODE.BYVAL
+    case FB_ARGMODE_BYVAL
     	'' byval string? it's actually an pointer to a zstring
-    	if( typ = FB.SYMBTYPE.STRING ) then
-    		alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
-    		typ = FB.SYMBTYPE.CHAR
+    	if( typ = FB_SYMBTYPE_STRING ) then
+    		alloctype = FB_ALLOCTYPE_ARGUMENTBYREF
+    		typ = FB_SYMBTYPE_CHAR
     	else
-    		alloctype = FB.ALLOCTYPE.ARGUMENTBYVAL
+    		alloctype = FB_ALLOCTYPE_ARGUMENTBYVAL
     	end if
 
-	case FB.ARGMODE.BYREF
-	    alloctype = FB.ALLOCTYPE.ARGUMENTBYREF
+	case FB_ARGMODE_BYREF
+	    alloctype = FB_ALLOCTYPE_ARGUMENTBYREF
 
-	case FB.ARGMODE.BYDESC
-    	alloctype = FB.ALLOCTYPE.ARGUMENTBYDESC
+	case FB_ARGMODE_BYDESC
+    	alloctype = FB_ALLOCTYPE_ARGUMENTBYDESC
 
 	case else
     	exit function
@@ -2338,7 +2338,7 @@ function symbAddArgAsVar( byval symbol as string, _
 	'' debug..
 	if( env.clopt.debug ) then
 		if( typ <> arg->typ ) then
-			mode = FB.ARGMODE.BYREF
+			mode = FB_ARGMODE_BYREF
 		else
 			mode = arg->arg.mode
 		end if
@@ -2352,7 +2352,7 @@ end function
 
 '':::::
 function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
-	static as zstring * FB.MAXINTNAMELEN+1 rname
+	static as zstring * FB_MAXINTNAMELEN+1 rname
 	dim as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s
 
@@ -2376,7 +2376,7 @@ function symbLookup( byval symbol as string, _
 					 class as integer, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXNAMELEN+1 sname
+    static as zstring * FB_MAXNAMELEN+1 sname
     dim as FBSYMBOL ptr s
 
     if( not preservecase ) then
@@ -2387,12 +2387,12 @@ function symbLookup( byval symbol as string, _
     end if
 
 	'' assume it's an unknown identifier
-	id 	  = FB.TK.ID
-	class = FB.TKCLASS.IDENTIFIER
+	id 	  = FB_TK_ID
+	class = FB_TKCLASS_IDENTIFIER
 
 	if( s <> NULL ) then
 		'' if it's a keyword, return id and class
-		if( s->class = FB.SYMBCLASS.KEYWORD ) then
+		if( s->class = FB_SYMBCLASS_KEYWORD ) then
 			id 	  = s->key.id
 			class = s->key.class
 		end if
@@ -2408,7 +2408,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
 							  subtype as FBSYMBOL ptr, _
 							  byval fields as string ) as integer
 
-	static as zstring * FB.MAXNAMELEN+1 ename
+	static as zstring * FB_MAXNAMELEN+1 ename
 	dim as FBSYMBOL ptr e
 	dim as integer p, ofs, res
 	dim as integer flen
@@ -2447,7 +2447,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
         	typ 		= e->typ
         	subtype 	= e->subtype
 
-        	if( typ <> FB.SYMBTYPE.USERDEF ) then
+        	if( typ <> FB_SYMBTYPE_USERDEF ) then
 				if( p < flen ) then
         			return -1
         		else
@@ -2481,7 +2481,7 @@ end function
 function symbLookupUDTVar( byval symbol as string, _
 						   byval dotpos as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB.MAXNAMELEN+1 sname
+    static as zstring * FB_MAXNAMELEN+1 sname
 	dim as FBSYMBOL ptr s
 
     function = NULL
@@ -2495,12 +2495,12 @@ function symbLookupUDTVar( byval symbol as string, _
     sname = symbol
     sname[dotpos-1] = 0 						'' left$( symbol, dotpos-1 )
 
-    s = symbFindByNameAndClass( sname, FB.SYMBCLASS.VAR )
+    s = symbFindByNameAndClass( sname, FB_SYMBCLASS_VAR )
 	if( s = NULL ) then
 		exit function
 	end if
 
-	if( s->typ <> FB.SYMBTYPE.USERDEF ) then
+	if( s->typ <> FB_SYMBTYPE_USERDEF ) then
 		exit function
 	end if
 
@@ -2533,7 +2533,7 @@ function symbLookupUDTElm( byval symbol as string, _
 	'' find the offset
 	ofs = symbGetUDTElmOffset( elm, typ, subtype, byval @symbol[dotpos] )	'' mid$( symbol, dotpos+1 )
 	if( ofs < 0 ) then
-		hReportError( FB.ERRMSG.ELEMENTNOTDEFINED )
+		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
     	exit function
 	end if
 
@@ -2546,7 +2546,7 @@ end function
 
 '':::::
 function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
-	static as zstring * FB.MAXINTNAMELEN+1 rname
+	static as zstring * FB_MAXINTNAMELEN+1 rname
 
 	if( f = NULL ) then
 		return NULL
@@ -2555,7 +2555,7 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	rname = "_fbpr_"
 	rname += f->alias
 
-	function = symbFindByNameAndClass( rname, FB.SYMBCLASS.VAR, TRUE )
+	function = symbFindByNameAndClass( rname, FB_SYMBCLASS_VAR, TRUE )
 
 end function
 
@@ -2572,11 +2572,11 @@ function symbFindByClass( byval s as FBSYMBOL ptr, _
     loop
 
 	'' check if symbol isn't a non-shared module level one
-	if( class = FB.SYMBCLASS.VAR ) then
+	if( class = FB_SYMBCLASS_VAR ) then
 		if( env.scope > 0 ) then
 			if( s <> NULL ) then
 				if( s->scope = 0 ) then
-					if( (s->alloctype and FB.ALLOCTYPE.SHARED) = 0 ) then
+					if( (s->alloctype and FB_ALLOCTYPE_SHARED) = 0 ) then
 						s = NULL
 					end if
 				end if
@@ -2601,7 +2601,7 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
     '' symbol has a suffix? lookup a symbol with the same type, suffixed or not
     if( suffix <> INVALID ) then
     	do while( s <> NULL )
-    		if( s->class = FB.SYMBCLASS.VAR ) then
+    		if( s->class = FB_SYMBCLASS_VAR ) then
      			if( s->typ = suffix ) then
      				exit do
      			end if
@@ -2612,7 +2612,7 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
     '' symbol has no suffix, lookup a symbol w/o suffix or with the same type as deftyp
     else
     	do while( s <> NULL )
-    		if( s->class = FB.SYMBCLASS.VAR ) then
+    		if( s->class = FB_SYMBCLASS_VAR ) then
      			if( s->var.suffix = INVALID ) then
      				exit do
      			elseif( s->typ = deftyp ) then
@@ -2627,7 +2627,7 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 	if( env.scope > 0 ) then
 		if( s <> NULL ) then
 			if( s->scope = 0 ) then
-				if( (s->alloctype and FB.ALLOCTYPE.SHARED) = 0 ) then
+				if( (s->alloctype and FB_ALLOCTYPE_SHARED) = 0 ) then
 					s = NULL
 				end if
 			end if
@@ -2765,7 +2765,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 					''
 					pdtype = astGetDataType( exprTB(p) )
-					if( pdtype >= IR.DATATYPE.POINTER ) then
+					if( pdtype >= IR_DATATYPE_POINTER ) then
 						psubtype = NULL
 					else
 						psubtype = astGetSubtype( exprTB(p) )
@@ -2773,7 +2773,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 					''
 					fdtype = farg->typ
-					if( fdtype >= IR.DATATYPE.POINTER ) then
+					if( fdtype >= IR_DATATYPE_POINTER ) then
 						fsubtype = NULL
 					else
 						fsubtype = farg->subtype
@@ -2784,13 +2784,13 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					pdclass = irGetDataClass( pdtype )
 					if( fdclass <> pdclass ) then
 						'' could be a float passed to an int arg or vice-versa
-						if( fdclass >= IR.DATACLASS.STRING ) then
+						if( fdclass >= IR_DATACLASS_STRING ) then
 							'' zstring?
-							if( pdtype <> IR.DATATYPE.CHAR ) then
+							if( pdtype <> IR_DATATYPE_CHAR ) then
 								exit for
 							end if
 						else
-							if( pdclass >= IR.DATACLASS.STRING ) then
+							if( pdclass >= IR_DATACLASS_STRING ) then
 								exit for
 							end if
 						end if
@@ -2881,34 +2881,34 @@ function symbCalcLen( byval typ as integer, _
 	lgt = 0
 
 	select case as const typ
-	case FB.SYMBTYPE.FWDREF
+	case FB_SYMBTYPE_FWDREF
 		lgt = 0
 
-	case FB.SYMBTYPE.BYTE, FB.SYMBTYPE.UBYTE, FB.SYMBTYPE.CHAR
+	case FB_SYMBTYPE_BYTE, FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_CHAR
 		lgt = 1
 
-	case FB.SYMBTYPE.SHORT, FB.SYMBTYPE.USHORT
+	case FB_SYMBTYPE_SHORT, FB_SYMBTYPE_USHORT
 		lgt = 2
 
-	case FB.SYMBTYPE.INTEGER, FB.SYMBTYPE.LONG, FB.SYMBTYPE.UINT, FB.SYMBTYPE.ENUM
-		lgt = FB.INTEGERSIZE
+	case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_LONG, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
+		lgt = FB_INTEGERSIZE
 
-	case FB.SYMBTYPE.LONGINT, FB.SYMBTYPE.ULONGINT
-		lgt = FB.INTEGERSIZE*2
+	case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
+		lgt = FB_INTEGERSIZE*2
 
-	case FB.SYMBTYPE.SINGLE
+	case FB_SYMBTYPE_SINGLE
 		lgt = 4
 
-	case FB.SYMBTYPE.DOUBLE
+	case FB_SYMBTYPE_DOUBLE
     	lgt = 8
 
-	case FB.SYMBTYPE.FIXSTR
+	case FB_SYMBTYPE_FIXSTR
 		lgt = 0									'' 0-len literal-strings
 
-	case FB.SYMBTYPE.STRING
-		lgt = FB.STRSTRUCTSIZE
+	case FB_SYMBTYPE_STRING
+		lgt = FB_STRSTRUCTSIZE
 
-	case FB.SYMBTYPE.USERDEF
+	case FB_SYMBTYPE_USERDEF
 		if( not realsize ) then
 			lgt = subtype->lgt
 
@@ -2924,8 +2924,8 @@ function symbCalcLen( byval typ as integer, _
 		end if
 
 	case else
-		if( typ >= FB.SYMBTYPE.POINTER ) then
-			lgt = FB.POINTERSIZE
+		if( typ >= FB_SYMBTYPE_POINTER ) then
+			lgt = FB_POINTERSIZE
 		end if
 	end select
 
@@ -2940,11 +2940,11 @@ function symbCalcArgLen( byval typ as integer, _
     dim lgt as integer
 
 	select case mode
-	case FB.ARGMODE.BYREF, FB.ARGMODE.BYDESC
-		lgt = FB.POINTERSIZE
+	case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
+		lgt = FB_POINTERSIZE
 	case else
-		if( typ = FB.SYMBTYPE.STRING ) then
-			lgt = FB.POINTERSIZE
+		if( typ = FB_SYMBTYPE_STRING ) then
+			lgt = FB_POINTERSIZE
 		else
 			lgt = symbCalcLen( typ, subtype )
 		end if
@@ -3124,7 +3124,7 @@ function symbGetProcPrevArg( byval f as FBSYMBOL ptr, _
 	end if
 
 	if( checkconv ) then
-		if( f->proc.mode = FB.FUNCMODE.PASCAL ) then
+		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
 			function = a->arg.l
 		else
 			function = a->arg.r
@@ -3145,7 +3145,7 @@ function symbGetProcNextArg( byval f as FBSYMBOL ptr, _
 	end if
 
 	if( checkconv ) then
-		if( f->proc.mode = FB.FUNCMODE.PASCAL ) then
+		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
 			function = a->arg.r
 		else
 			function = a->arg.l
@@ -3208,7 +3208,7 @@ function symbDelKeyword( byval s as FBSYMBOL ptr ) as integer
     function = FALSE
 
 	'' exists?
-	s = symbFindByClass( s, FB.SYMBCLASS.KEYWORD )
+	s = symbFindByClass( s, FB_SYMBCLASS_KEYWORD )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -3240,7 +3240,7 @@ function symbDelDefine( byval s as FBSYMBOL ptr ) as integer static
     function = FALSE
 
 	'' exists?
-	s = symbFindByClass( s, FB.SYMBCLASS.DEFINE )
+	s = symbFindByClass( s, FB_SYMBCLASS_DEFINE )
     if( s = NULL ) then
     	exit function
     end if
@@ -3261,7 +3261,7 @@ end function
 '':::::
 sub symbDelLabel( byval s as FBSYMBOL ptr ) static
 
-    s = symbFindByClass( s, FB.SYMBCLASS.LABEL )
+    s = symbFindByClass( s, FB_SYMBCLASS_LABEL )
     if( s = NULL ) then
     	exit sub
     end if
@@ -3273,7 +3273,7 @@ end sub
 '':::::
 sub symbDelConst( byval s as FBSYMBOL ptr )
 
-    s = symbFindByClass( s, FB.SYMBCLASS.CONST )
+    s = symbFindByClass( s, FB_SYMBCLASS_CONST )
     if( s = NULL ) then
     	exit sub
     end if
@@ -3288,7 +3288,7 @@ end sub
 '':::::
 sub symbDelUDT( byval s as FBSYMBOL ptr )
 
-    s = symbFindByClass( s, FB.SYMBCLASS.UDT )
+    s = symbFindByClass( s, FB_SYMBCLASS_UDT )
     if( s = NULL ) then
     	exit sub
     end if
@@ -3303,7 +3303,7 @@ end sub
 '':::::
 sub symbDelEnum( byval s as FBSYMBOL ptr )
 
-    s = symbFindByClass( s, FB.SYMBCLASS.ENUM )
+    s = symbFindByClass( s, FB_SYMBCLASS_ENUM )
     if( s = NULL ) then
     	exit sub
     end if
@@ -3332,7 +3332,7 @@ end sub
 sub symbDelPrototype( byval s as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr n
 
-    s = symbFindByClass( s, FB.SYMBCLASS.PROC )
+    s = symbFindByClass( s, FB_SYMBCLASS_PROC )
     if( s = NULL ) then
     	exit sub
     end if
@@ -3441,15 +3441,15 @@ sub symbDelLocalSymbols static
     	if( not symbIsShared( s ) ) then
 
     		select case as const s->class
-    		case FB.SYMBCLASS.VAR
+    		case FB_SYMBCLASS_VAR
     			symbDelVar( s )
-    		case FB.SYMBCLASS.CONST
+    		case FB_SYMBCLASS_CONST
     			symbDelConst( s )
-    		case FB.SYMBCLASS.UDT
+    		case FB_SYMBCLASS_UDT
     			symbDelUDT( s )
-    		case FB.SYMBCLASS.ENUM
+    		case FB_SYMBCLASS_ENUM
     			symbDelEnum( s )
-    		case FB.SYMBCLASS.LABEL
+    		case FB_SYMBCLASS_LABEL
     			symbDelLabel( s )
     		end select
 
@@ -3479,26 +3479,26 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 	node = ctx.loclist.head
     do while( node <> NULL )
     	s = node->s
-    	if( s->class = FB.SYMBCLASS.VAR ) then
-    		if( (s->alloctype and (FB.ALLOCTYPE.SHARED or FB.ALLOCTYPE.STATIC)) = 0 ) then
+    	if( s->class = FB_SYMBCLASS_VAR ) then
+    		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC)) = 0 ) then
 
 				'' not an argument?
-    			if( (s->alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
-    				  				   FB.ALLOCTYPE.ARGUMENTBYVAL or _
-    				  				   FB.ALLOCTYPE.ARGUMENTBYREF or _
-    				  				   FB.ALLOCTYPE.TEMP)) = 0 ) then
+    			if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
+    				  				   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+    				  				   FB_ALLOCTYPE_ARGUMENTBYREF or _
+    				  				   FB_ALLOCTYPE_TEMP)) = 0 ) then
 
 					if( s->var.array.dims > 0 ) then
 						if( symbIsDynamic( s ) ) then
 							rtlArrayErase( astNewVAR( s, NULL, 0, s->typ ) )
-						elseif( s->typ = FB.SYMBTYPE.STRING ) then
+						elseif( s->typ = FB_SYMBTYPE_STRING ) then
 							rtlArrayStrErase( s )
 						end if
 
-					elseif( s->typ = FB.SYMBTYPE.STRING ) then
+					elseif( s->typ = FB_SYMBTYPE_STRING ) then
 						'' not funct's result?
 						if( s <> fres ) then
-							strg = astNewVAR( s, NULL, 0, IR.DATATYPE.STRING )
+							strg = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
 							astFlush( rtlStrDelete( strg ) )
 						end if
 					end if
@@ -3539,7 +3539,7 @@ function symbCheckLabels as FBSYMBOL ptr
     do while( s <> NULL )
 
     	if( s->scope = env.scope ) then
-    		if( s->class = FB.SYMBCLASS.LABEL ) then
+    		if( s->class = FB_SYMBCLASS_LABEL ) then
     			if( not s->lbl.declared ) then
     				return s
     			end if

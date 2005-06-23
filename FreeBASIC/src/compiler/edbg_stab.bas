@@ -24,21 +24,21 @@ defint a-z
 option explicit
 option escape
 
-'$include once:'inc\fb.bi'
-'$include once:'inc\fbint.bi'
-'$include once:'inc\lex.bi'
-'$include once:'inc\emit.bi'
-'$include once:'inc\emitdbg.bi'
-'$include once:'inc\stabs.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\lex.bi"
+#include once "inc\emit.bi"
+#include once "inc\emitdbg.bi"
+#include once "inc\stabs.bi"
 
 type EDBGCTX
 	asmf			as integer
-	modulename		as zstring * FB.MAXNAMELEN+1
-	entryname		as zstring * FB.MAXNAMELEN+1
+	modulename		as zstring * FB_MAXNAMELEN+1
+	entryname		as zstring * FB_MAXNAMELEN+1
 
 	mainopened		as integer
 	mainclosed		as integer
-	mainininame		as zstring * FB.MAXNAMELEN+1
+	mainininame		as zstring * FB_MAXNAMELEN+1
 
 	procinitline 	as integer
 
@@ -58,7 +58,7 @@ declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 '' globals
 	dim shared ctx as EDBGCTX
 
-	dim shared remapTB(0 to FB.SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 }
+	dim shared remapTB(0 to FB_SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 }
 
 
 stabstdef:
@@ -177,7 +177,7 @@ sub edbgHeader( byval asmf as integer, _
     hEmitSTABS( STAB_TYPE_SO, fname, 0, 0, "__stabini" )
 
 	''
-	emitSECTION( EMIT.SECTYPE.CODE )
+	emitSECTION( EMIT_SECTYPE_CODE )
 	emitLABEL( "__stabini" )
 
 	'' (known) type defs
@@ -207,7 +207,7 @@ sub edbgFooter( )
 		exit sub
 	end if
 
-	emitSECTION( EMIT.SECTYPE.CODE )
+	emitSECTION( EMIT_SECTYPE_CODE )
 
 	edgbMainEnd( )
 
@@ -386,7 +386,7 @@ private sub edbgLocalVars( byval proc as FBSYMBOL ptr ) static
 	dim as FBLOCSYMBOL ptr l
 	dim as FBSYMBOL ptr s, funcres
 
-	if( proc->typ <> FB.SYMBTYPE.VOID ) then
+	if( proc->typ <> FB_SYMBTYPE_VOID ) then
 		funcres = symbLookupProcResult( proc )
 	else
 		funcres = NULL
@@ -398,10 +398,10 @@ private sub edbgLocalVars( byval proc as FBSYMBOL ptr ) static
     	s = l->s
     	if( symbIsVar( s ) ) then
 			'' not an argument?
-    		if( (s->alloctype and (FB.ALLOCTYPE.ARGUMENTBYDESC or _
-    			  				   FB.ALLOCTYPE.ARGUMENTBYVAL or _
-    			  				   FB.ALLOCTYPE.ARGUMENTBYREF or _
-    			  				   FB.ALLOCTYPE.TEMP)) = 0 ) then
+    		if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
+    			  				   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+    			  				   FB_ALLOCTYPE_ARGUMENTBYREF or _
+    			  				   FB_ALLOCTYPE_TEMP)) = 0 ) then
 
 				if( s <> funcres ) then
 					edbgLocalVar( s )
@@ -463,7 +463,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 	dim as string desc
 
     if( sym = NULL ) then
-    	return str$( remapTB(FB.SYMBTYPE.VOID) )
+    	return str$( remapTB(FB_SYMBTYPE_VOID) )
     end if
 
     '' array?
@@ -490,17 +490,17 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     dtype = symbGetType( sym )
 
     '' pointer?
-    do while( dtype >= FB.SYMBTYPE.POINTER )
-    	dtype -= FB.SYMBTYPE.POINTER
+    do while( dtype >= FB_SYMBTYPE_POINTER )
+    	dtype -= FB_SYMBTYPE_POINTER
     	desc += str$( ctx.typecnt ) + "=*"
     	ctx.typecnt += 1
     loop
 
     select case dtype
     '' UDT?
-    case FB.SYMBTYPE.USERDEF
+    case FB_SYMBTYPE_USERDEF
     	subtype = sym->subtype
-    	if( subtype <> FB.DESCTYPE.ARRAY ) then
+    	if( subtype <> FB_DESCTYPE_ARRAY ) then
     		if( subtype->dbg.typenum = INVALID ) then
     			hDeclUDT( subtype )
     		end if
@@ -509,7 +509,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     	end if
 
     '' ENUM?
-    case FB.SYMBTYPE.ENUM
+    case FB_SYMBTYPE_ENUM
     	subtype = sym->subtype
     	if( subtype->dbg.typenum = INVALID ) then
     		hDeclENUM( subtype )
@@ -518,14 +518,14 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     	desc += str$( subtype->dbg.typenum )
 
     '' function pointer?
-    case FB.SYMBTYPE.FUNCTION
+    case FB_SYMBTYPE_FUNCTION
     	desc += str$( ctx.typecnt ) + "=f"
     	ctx.typecnt += 1
     	desc += hGetDataType( sym->subtype )
 
     '' forward reference?
-    case FB.SYMBTYPE.FWDREF
-    	desc += str$( remapTB(FB.SYMBTYPE.VOID) )
+    case FB_SYMBTYPE_FWDREF
+    	desc += str$( remapTB(FB_SYMBTYPE_VOID) )
 
     '' ordinary type..
     case else
@@ -624,11 +624,11 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 
 	'' depends on section
 	select case section
-	case EMIT.SECTYPE.CONST
+	case EMIT_SECTYPE_CONST
 		t = STAB_TYPE_FUN
-	case EMIT.SECTYPE.DATA
+	case EMIT_SECTYPE_DATA
 		t = STAB_TYPE_STSYM
-	case EMIT.SECTYPE.BSS
+	case EMIT_SECTYPE_BSS
 		t = STAB_TYPE_LCSYM
 	end select
 
@@ -640,9 +640,9 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
     end if
 
     alloctype = symbGetAllocType( sym )
-    if( (alloctype and (FB.ALLOCTYPE.PUBLIC or FB.ALLOCTYPE.COMMON)) > 0 ) then
+    if( (alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_COMMON)) > 0 ) then
     	desc += ":G"
-    elseif( (sym->scope = 0) or (alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then
+    elseif( (sym->scope = 0) or (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
         desc += ":S"
     else
     	desc += ":"
@@ -715,13 +715,13 @@ sub edbgProcArg( byval sym as FBSYMBOL ptr, _
     desc = symbGetOrgName( sym ) + ":"
 
     select case mode
-    case FB.ARGMODE.BYVAL
+    case FB_ARGMODE_BYVAL
 	    desc += "p"
 
-	case FB.ARGMODE.BYREF
+	case FB_ARGMODE_BYREF
 		desc += "v"
 
-	case FB.ARGMODE.BYDESC
+	case FB_ARGMODE_BYDESC
     	desc += "v"
 	end select
 
@@ -749,7 +749,7 @@ sub edbgIncludeBegin ( byval incfile as string ) static
 
 	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
 
-	emitSECTION( EMIT.SECTYPE.CODE )
+	emitSECTION( EMIT_SECTYPE_CODE )
 
 	lname = *hMakeTmpStr( )
 

@@ -24,9 +24,9 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\parser.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
 
 declare function ppInclude					( ) as integer
 
@@ -54,7 +54,7 @@ declare function ppParentExpr				( parexpr as integer, _
 											  atom as string, _
 											  isnumber as integer ) as integer
 
-const FB.PP.MAXRECLEVEL = 64
+const FB_PP_MAXRECLEVEL = 64
 
 type FBPPCTX
 	level 		as integer
@@ -67,30 +67,31 @@ end type
 
 '' globals
 	dim shared ctx as FBPPCTX
-	dim shared pptb(1 to FB.PP.MAXRECLEVEL) as FBPPREC
+	dim shared pptb(1 to FB_PP_MAXRECLEVEL) as FBPPREC
 
 '':::::
 private function hLiteral( byval args as integer = 0, _
 						   byval arghead as FBDEFARG ptr = NULL ) as zstring ptr
 
-	static as zstring * FB.MAXNAMELEN+1 token
-	static as zstring * FB.MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
-    dim as integer dpos, flags
+	static as zstring * FB_MAXNAMELEN+1 token
+	static as zstring * FB_MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
+    dim as integer dpos, flags, addquotes
     dim as FBDEFARG ptr a
 
 const QUOTE = "\""
 
-	flags = LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX
+	flags = LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE
 
+    addquotes = FALSE
     text = ""
     do
     	select case lexCurrentToken( flags )
-		case FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
+		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 			exit do
 		end select
 
     	'' preserve quotes if it's a string literal
-    	if( lexCurrentTokenClass( ) = FB.TKCLASS.STRLITERAL ) then
+    	if( lexCurrentTokenClass( ) = FB_TKCLASS_STRLITERAL ) then
     		text += QUOTE
     		lexEatToken( token )
     		text += hUnescapeStr( token )
@@ -104,29 +105,36 @@ const QUOTE = "\""
 
     		else
 
-    			'' not and identifier? read as-is
-    			if( lexCurrentToken( ) <> FB.TK.ID ) then
-
+    			'' '#'?
+    			if( lexCurrentToken( ) = CHAR_SHARP ) then
+    				select case lexLookAhead( 1 )
     				'' '##'?
-    				if( lexCurrentToken( ) = CHAR_SHARP ) then
-    					if( lexLookAhead( 1 ) = CHAR_SHARP ) then
-    						lexSkipToken( )
-    						lexSkipToken( )
-    						continue do
-    					end if
-    				end if
+    				case CHAR_SHARP
+    					lexSkipToken( )
+    					lexSkipToken( )
+    					continue do
 
+    				'' '#' id?
+    				case FB_TK_ID
+    				    lexSkipToken( )
+    				    text += QUOTE
+    				    addquotes = TRUE
+    				end select
+    			end if
+
+    			'' not and identifier? read as-is
+    			if( lexCurrentToken( ) <> FB_TK_ID ) then
     				lexEatToken( token, flags )
     				text += token
 
     			'' otherwise, check if it's an argument and replace it
     			'' with an unique pattern
     			else
-    				token = ucase$( *lexTokenText( ) )
+    				token = ucase( *lexTokenText( ) )
     				'' contains a dot? assume it's an udt access
     				dpos = lexTokenDotPos( )
     				if( dpos > 1 ) then
-    					token = left$( token, dpos-1 )
+    					token = left( token, dpos-1 )
     				end if
 
     				a = arghead
@@ -135,12 +143,12 @@ const QUOTE = "\""
     					if( token = a->name ) then
     						'' replace
     						text += "\27"
-    						text += hex$( a->id )
+    						text += hex( a->id )
     						text += "\27"
     						'' add the remainder if it's an udt access
     						if( dpos > 1 ) then
     							lexEatToken( token, flags )
-    							text += mid$( token, dpos )
+    							text += mid( token, dpos )
     						else
     							lexSkipToken( flags )
     						end if
@@ -156,6 +164,12 @@ const QUOTE = "\""
     					lexEatToken( token, flags )
     					text += token
     				end if
+    			end if
+
+    			''
+    			if( addquotes ) then
+    				addquotes = FALSE
+    				text += QUOTE
     			end if
 
     		end if
@@ -189,17 +203,17 @@ function lexPreProcessor as integer
     select case as const lexCurrentToken( )
 
     '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
-    case FB.TK.DEFINE
+    case FB_TK_DEFINE
     	lexSkipToken( LEXCHECK_NODEFINE )
 
     	function = ppDefine( )
 
 	'' UNDEF ID
-    case FB.TK.UNDEF
+    case FB_TK_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
     	if( not symbDelDefine( lexTokenSymbol ) ) then
-    	'''''hReportError FB.ERRMSG.VARIABLENOTDECLARED
+    	'''''hReportError FB_ERRMSG_VARIABLENOTDECLARED
 		'''''exit function
     	end if
 
@@ -210,46 +224,46 @@ function lexPreProcessor as integer
 	'' IFDEF ID
 	'' IFNDEF ID
 	'' IF ID '=' LITERAL
-    case FB.TK.IFDEF, FB.TK.IFNDEF, FB.TK.IF
+    case FB_TK_IFDEF, FB_TK_IFNDEF, FB_TK_IF
     	function = ppIf( )
 
 	'' ELSE
-	case FB.TK.ELSE, FB.TK.ELSEIF
+	case FB_TK_ELSE, FB_TK_ELSEIF
     	function = ppElse( )
 
 	'' ENDIF
-	case FB.TK.ENDIF
+	case FB_TK_ENDIF
 		function = ppEndIf( )
 
 	'' PRINT LITERAL*
-	case FB.TK.PRINT
+	case FB_TK_PRINT
 		lexSkipToken( )
 		print *hLiteral( )
 		function = TRUE
 
 	'' ERROR LITERAL*
-	case FB.TK.ERROR
+	case FB_TK_ERROR
 		lexSkipToken( )
 		hReportErrorEx( -1, *hLiteral( ) )
 		exit function
 
 	'' INCLUDE ONCE? LIT_STR
-	case FB.TK.INCLUDE
+	case FB_TK_INCLUDE
 		lexSkipToken( )
 		function = ppInclude( )
 
 	'' INCLIB LIT_STR
-	case FB.TK.INCLIB
+	case FB_TK_INCLIB
 		lexSkipToken( )
         function = ppIncLib( )
 
 	'' LIBPATH LIT_STR
-	case FB.TK.LIBPATH
+	case FB_TK_LIBPATH
 		lexSkipToken
 		function = ppLibPath( )
 
 	case else
-		hReportError( FB.ERRMSG.SYNTAXERROR )
+		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end select
 
@@ -257,9 +271,9 @@ function lexPreProcessor as integer
 	cComment( )
 
 	'' EOL
-	if( lexCurrentToken( ) <> FB.TK.EOL ) then
-		if( lexCurrentToken( ) <> FB.TK.EOF ) then
-			hReportError( FB.ERRMSG.EXPECTEDEOL )
+	if( lexCurrentToken( ) <> FB_TK_EOL ) then
+		if( lexCurrentToken( ) <> FB_TK_EOF ) then
+			hReportError( FB_ERRMSG_EXPECTEDEOL )
 			return FALSE
 		end if
 	end if
@@ -268,14 +282,14 @@ end function
 
 '':::::
 private function ppInclude( ) as integer
-    static as zstring * FB.MAXPATHLEN+1 incfile
+    static as zstring * FB_MAXPATHLEN+1 incfile
     dim as integer isonce
 
 	function = FALSE
 
 	'' ONCE?
 	isonce = FALSE
-	if( lexCurrentTokenClass( ) = FB.TKCLASS.IDENTIFIER ) then
+	if( lexCurrentTokenClass( ) = FB_TKCLASS_IDENTIFIER ) then
 		if( ucase$( *lexTokenText( ) ) = "ONCE" ) then
 			lexSkipToken( )
 			isonce = TRUE
@@ -290,7 +304,7 @@ end function
 
 '':::::
 private function ppIncLib( ) as integer
-    static as zstring * FB.MAXPATHLEN+1 libfile
+    static as zstring * FB_MAXPATHLEN+1 libfile
 
 	lexEatToken( libfile )
 
@@ -300,12 +314,12 @@ end function
 
 '':::::
 private function ppLibPath( ) as integer
-    static as zstring * FB.MAXPATHLEN+1 path
+    static as zstring * FB_MAXPATHLEN+1 path
 
 	lexEatToken( path )
 
 	if( not fbAddLibPath( hUnescapeStr( path ) ) ) then
-		hReportError( FB.ERRMSG.SYNTAXERROR, TRUE )
+		hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 		return FALSE
 	end if
 
@@ -315,7 +329,7 @@ end function
 
 '':::::
 private function ppDefine( ) as integer
-	static as zstring * FB.MAXNAMELEN+1 defname, argname
+	static as zstring * FB_MAXNAMELEN+1 defname, argname
 	dim as zstring ptr text
 	dim as integer args, isargless, textlen
 	dim as FBDEFARG ptr arghead, lastarg
@@ -326,8 +340,8 @@ private function ppDefine( ) as integer
     '' ID
     s = lexTokenSymbol( )
     if( s <> NULL ) then
-    	if( s->class <> FB.SYMBCLASS.DEFINE ) then
-    		hReportError( FB.ERRMSG.DUPDEFINITION )
+    	if( s->class <> FB_SYMBCLASS_DEFINE ) then
+    		hReportError( FB_ERRMSG_DUPDEFINITION )
     		exit function
     	end if
     end if
@@ -367,7 +381,7 @@ private function ppDefine( ) as integer
 
     	'' ')'
     	if( not hMatch( CHAR_RPRNT ) ) then
-    		hReportError( FB.ERRMSG.EXPECTEDRPRNT )
+    		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     		exit function
     	end if
 
@@ -384,15 +398,15 @@ private function ppDefine( ) as integer
 
     '' check len, use the sentinel as "text" is a static zstring
     textlen = len( *text )
-    if( textlen = FB.MAXINTDEFINELEN+1 ) then
-		hReportError( FB.ERRMSG.MACROTEXTTOOLONG )
+    if( textlen = FB_MAXINTDEFINELEN+1 ) then
+		hReportError( FB_ERRMSG_MACROTEXTTOOLONG )
 		exit function
     end if
 
     '' already defined? if there are no differences, do nothing..
     if( s <> NULL ) then
     	if( (s->def.args <> args) or (s->def.text <> *text) ) then
-    		hReportError( FB.ERRMSG.DUPDEFINITION )
+    		hReportError( FB_ERRMSG_DUPDEFINITION )
     		exit function
     	end if
 
@@ -415,7 +429,7 @@ private function ppIf as integer
 
 	select case as const lexCurrenttoken
 	'' IFDEF ID
-	case FB.TK.IFDEF
+	case FB_TK_IFDEF
         lexSkipToken LEXCHECK_NODEFINE
 
 		d = lexTokenSymbol
@@ -426,7 +440,7 @@ private function ppIf as integer
 		lexSkipToken
 
 	'' IFNDEF ID
-	case FB.TK.IFNDEF
+	case FB_TK_IFNDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
 		d = lexTokenSymbol
@@ -437,7 +451,7 @@ private function ppIf as integer
 		lexSkipToken
 
 	'' IF Expression
-	case FB.TK.IF
+	case FB_TK_IF
         lexSkipToken
 
 		if( not ppLogExpression( istrue ) ) then
@@ -447,8 +461,8 @@ private function ppIf as integer
 	end select
 
 	ctx.level += 1
-	if( ctx.level > FB.PP.MAXRECLEVEL ) then
-		hReportError FB.ERRMSG.RECLEVELTOODEPTH
+	if( ctx.level > FB_PP_MAXRECLEVEL ) then
+		hReportError FB_ERRMSG_RECLEVELTOODEPTH
 		exit function
 	end if
 
@@ -472,16 +486,16 @@ private function ppElse as integer
    	istrue = FALSE
 
 	if( ctx.level = 0 ) then
-        hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+        hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 		exit function
 	end if
 
     if( pptb(ctx.level).elsecnt > 0 ) then
-	   	hReportError FB.ERRMSG.SYNTAXERROR
+	   	hReportError FB_ERRMSG_SYNTAXERROR
        	exit function
     end if
 
-	if( lexCurrentToken = FB.TK.ELSEIF ) then
+	if( lexCurrentToken = FB_TK_ELSEIF ) then
 		'' ELSEIF
 
         lexSkipToken
@@ -522,7 +536,7 @@ private function ppEndIf as integer
    	function = FALSE
 
 	if( ctx.level = 0 ) then
-        hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+        hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 		exit function
 	end if
 
@@ -543,8 +557,8 @@ private function ppSkip as integer
 	cComment
 
 	'' EOL
-	if( not hMatch( FB.TK.EOL ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+	if( not hMatch( FB_TK_EOL ) ) then
+		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
@@ -559,35 +573,35 @@ private function ppSkip as integer
         	lexSkipToken
 
         	select case as const lexCurrentToken
-        	case FB.TK.IF, FB.TK.IFDEF, FB.TK.IFNDEF
+        	case FB_TK_IF, FB_TK_IFDEF, FB_TK_IFNDEF
         		iflevel += 1
 
-        	case FB.TK.ELSE, FB.TK.ELSEIF
+        	case FB_TK_ELSE, FB_TK_ELSEIF
         		if( iflevel = ctx.level ) then
         			return ppElse( )
 				elseif( iflevel = 0 ) then
-            		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+            		hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 					exit function
         		end if
 
-        	case FB.TK.ENDIF
+        	case FB_TK_ENDIF
         		if( iflevel = ctx.level ) then
         			return ppEndIf( )
 				elseif( iflevel = 0 ) then
-	          		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+	          		hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 					exit function
 				else
         			iflevel -= 1
         		end if
         	end select
 
-       	case FB.TK.EOF
+       	case FB_TK_EOF
        		function = TRUE
        		exit do
        	end select
 
 		lexSkipLine
-		if( lexCurrentToken = FB.TK.EOL ) then
+		if( lexCurrentToken = FB_TK_EOL ) then
 			lexSkipToken
 		end if
 	loop
@@ -606,7 +620,7 @@ private function ppLogExpression( logexpr as integer )
 
     '' NOT?
     donot = FALSE
-    if( hMatch( FB.TK.NOT ) ) then
+    if( hMatch( FB_TK_NOT ) ) then
     	donot = TRUE
     end if
 
@@ -627,7 +641,7 @@ private function ppLogExpression( logexpr as integer )
     	'' Logical operator
     	op = lexCurrentToken
     	select case op
-    	case FB.TK.AND, FB.TK.OR
+    	case FB_TK_AND, FB_TK_OR
  			lexSkipToken
     	case else
       		exit do
@@ -635,7 +649,7 @@ private function ppLogExpression( logexpr as integer )
 
     	'' NOT?
     	donot = FALSE
-    	if( hMatch( FB.TK.NOT ) ) then
+    	if( hMatch( FB_TK_NOT ) ) then
     		donot = TRUE
     	end if
 
@@ -651,9 +665,9 @@ private function ppLogExpression( logexpr as integer )
 
     	'' do operation
     	select case op
-    	case FB.TK.AND
+    	case FB_TK_AND
     		logexpr = logexpr and relexpr
-    	case FB.TK.OR
+    	case FB_TK_OR
     		logexpr = logexpr or relexpr
     	end select
     loop
@@ -680,7 +694,7 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
     	'' Relational operator
     	op = lexCurrentToken
     	select case as const op
-    	case FB.TK.EQ, FB.TK.GT, FB.TK.LT, FB.TK.NE, FB.TK.LE, FB.TK.GE
+    	case FB_TK_EQ, FB_TK_GT, FB_TK_LT, FB_TK_NE, FB_TK_LE, FB_TK_GE
  			lexSkipToken
     	case else
       		exit do
@@ -693,7 +707,7 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
 
    		'' same type?
    		if( (relisnum xor parisnum) = -1 ) then
-   			hReportError FB.ERRMSG.SYNTAXERROR
+   			hReportError FB_ERRMSG_SYNTAXERROR
    			exit function
    		end if
 
@@ -701,33 +715,33 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
    		if( relisnum ) then
    			'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
    			select case as const op
-   			case FB.TK.EQ
+   			case FB_TK_EQ
    				relexpr = val( rellit ) = val( parlit )
-   			case FB.TK.GT
+   			case FB_TK_GT
    				relexpr = val( rellit ) > val( parlit )
-   			case FB.TK.LT
+   			case FB_TK_LT
    				relexpr = val( rellit ) < val( parlit )
-   			case FB.TK.NE
+   			case FB_TK_NE
    				relexpr = val( rellit ) <> val( parlit )
-   			case FB.TK.LE
+   			case FB_TK_LE
    				relexpr = val( rellit ) <= val( parlit )
-   			case FB.TK.GE
+   			case FB_TK_GE
    				relexpr = val( rellit ) >= val( parlit )
    			end select
 
    		else
    			select case as const op
-   			case FB.TK.EQ
+   			case FB_TK_EQ
    				relexpr = rellit = parlit
-   			case FB.TK.GT
+   			case FB_TK_GT
    				relexpr = rellit > parlit
-   			case FB.TK.LT
+   			case FB_TK_LT
    				relexpr = rellit < parlit
-   			case FB.TK.NE
+   			case FB_TK_NE
    				relexpr = rellit <> parlit
-   			case FB.TK.LE
+   			case FB_TK_LE
    				relexpr = rellit <= parlit
-   			case FB.TK.GE
+   			case FB_TK_GE
    				relexpr = rellit >= parlit
    			end select
    		end if
@@ -766,21 +780,21 @@ private function ppParentExpr( parexpr as integer, _
   		lexSkipToken
 
   		if( not ppLogExpression( parexpr ) ) then
-  			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+  			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
   			exit function
   		end if
 
   		if( not hMatch( CHAR_RPRNT ) ) then
-  			hReportError FB.ERRMSG.EXPECTEDRPRNT
+  			hReportError FB_ERRMSG_EXPECTEDRPRNT
   			exit function
   		end if
 
   	'' DEFINED'(' ID ')'
-  	case FB.TK.DEFINED
+  	case FB_TK_DEFINED
   		lexSkipToken
 
     	if( lexCurrentToken <> CHAR_LPRNT ) then
-    		hReportError FB.ERRMSG.EXPECTEDLPRNT
+    		hReportError FB_ERRMSG_EXPECTEDLPRNT
     		exit function
     	else
     		lexSkipToken LEXCHECK_NODEFINE
@@ -789,14 +803,14 @@ private function ppParentExpr( parexpr as integer, _
 		d = lexTokenSymbol
 		parexpr = FALSE
 		if( d <> NULL ) then
-			if( d->class = FB.SYMBCLASS.DEFINE ) then
+			if( d->class = FB_SYMBCLASS_DEFINE ) then
 				parexpr = TRUE
 			end if
 		end if
 		lexSkipToken
 
   		if( not hMatch( CHAR_RPRNT ) ) then
-  			hReportError FB.ERRMSG.EXPECTEDRPRNT
+  			hReportError FB_ERRMSG_EXPECTEDRPRNT
   			exit function
   		end if
 
@@ -807,7 +821,7 @@ private function ppParentExpr( parexpr as integer, _
   		if( not ppParentExpr( parexpr, atom, isnumber ) ) then
   			exit function
   		elseif( not isnumber ) then
-  			hReportError FB.ERRMSG.SYNTAXERROR
+  			hReportError FB_ERRMSG_SYNTAXERROR
   			exit function
   		end if
 
@@ -816,14 +830,14 @@ private function ppParentExpr( parexpr as integer, _
 
   	'' LITERAL
   	case else
-  		if( lexCurrentTokenClass <> FB.TKCLASS.STRLITERAL ) then
+  		if( lexCurrentTokenClass <> FB_TKCLASS_STRLITERAL ) then
   			isnumber = TRUE
   		end if
 
   		atom = *lexTokenText( )
   		lexSkipToken( )
   		if( len( atom ) = 0 ) then
-  			hReportError( FB.ERRMSG.SYNTAXERROR )
+  			hReportError( FB_ERRMSG_SYNTAXERROR )
   			exit function
   		end if
 

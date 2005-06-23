@@ -24,17 +24,17 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\parser.bi'
-'$include once: 'inc\rtl.bi'
-'$include once: 'inc\ast.bi'
-'$include once: 'inc\ir.bi'
-'$include once: 'inc\emit.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
+#include once "inc\ir.bi"
+#include once "inc\emit.bi"
 
 '':::::
 private sub hReportParamError( byval argnum as integer, _
-							   byval errnum as integer = FB.ERRMSG.PARAMTYPEMISMATCHAT )
+							   byval errnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
 
 	hReportErrorEx( errnum, "at parameter: " + str$( argnum ) )
 
@@ -53,19 +53,19 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
 
 	'' check arg count
 	if( argc <> symbGetProcArgs( proc ) ) then
-		hReportError FB.ERRMSG.ARGCNTMISMATCH, TRUE
+		hReportError FB_ERRMSG_ARGCNTMISMATCH, TRUE
 		exit function
 	end if
 
 	'' check return type
 	if( proctyp <> symbGetType( proc ) ) then
-		hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
+		hReportError FB_ERRMSG_TYPEMISMATCH, TRUE
 		exit function
 	end if
 
 	'' and sub type
 	if( procsubtype <> symbGetSubtype( proc ) ) then
-        hReportError FB.ERRMSG.TYPEMISMATCH, TRUE
+        hReportError FB_ERRMSG_TYPEMISMATCH, TRUE
         exit function
     end if
 
@@ -76,7 +76,7 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
         typ = symbGetType( arg )
 
     	'' convert any AS ANY arg to the final one
-    	if( typ = FB.SYMBTYPE.VOID ) then
+    	if( typ = FB_SYMBTYPE_VOID ) then
     		arg->typ = argtail->typ
     		arg->subtype = argtail->subtype
 
@@ -99,7 +99,7 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
     	end if
 
     	'' check names and change to the new one if needed
-    	if( argtail->arg.mode <> FB.ARGMODE.VARARG ) then
+    	if( argtail->arg.mode <> FB_ARGMODE_VARARG ) then
     		arg->alias = argtail->alias
 
     		'' as both have the same type, re-set the suffix, because for example
@@ -131,9 +131,9 @@ private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
 	arg = symbGetProcHeadArg( proc )
 	do while( arg <> NULL )
 
-		if( arg->arg.mode <> FB.ARGMODE.VARARG ) then
+		if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
 			if( symbAddArgAsVar( arg->alias, arg ) = NULL ) then
-				hReportParamError( a, FB.ERRMSG.DUPDEFINITION )
+				hReportParamError( a, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if
 		end if
@@ -154,15 +154,15 @@ function cSubOrFuncHeader( byval issub as integer, _
 						   proc as FBSYMBOL ptr, _
 						   alloctype as integer ) static
 
-    static as zstring * FB.MAXNAMELEN+1 id, aliasid
+    static as zstring * FB_MAXNAMELEN+1 id, aliasid
     dim as integer typ, mode, lgt, ptrcnt, argc
     dim as FBSYMBOL ptr subtype, argtail
 
 	function = FALSE
 
 	'' ID
-	if( lexCurrentTokenClass <> FB.TKCLASS.IDENTIFIER ) then
-		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+	if( lexCurrentTokenClass <> FB_TKCLASS_IDENTIFIER ) then
+		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		exit function
 	end if
 
@@ -173,33 +173,33 @@ function cSubOrFuncHeader( byval issub as integer, _
 	ptrcnt  = 0
 
 	if( (isSub) and (typ <> INVALID) ) then
-    	hReportError FB.ERRMSG.INVALIDCHARACTER
+    	hReportError FB_ERRMSG_INVALIDCHARACTER
     	exit function
 	end if
 
 	'' (CDECL|STDCALL|PASCAL)?
 	select case as const lexCurrentToken
-	case FB.TK.CDECL
-		mode = FB.FUNCMODE.CDECL
+	case FB_TK_CDECL
+		mode = FB_FUNCMODE_CDECL
 		lexSkipToken
-	case FB.TK.STDCALL
-		mode = FB.FUNCMODE.STDCALL
+	case FB_TK_STDCALL
+		mode = FB_FUNCMODE_STDCALL
 		lexSkipToken
-	case FB.TK.PASCAL
-		mode = FB.FUNCMODE.PASCAL
+	case FB_TK_PASCAL
+		mode = FB_FUNCMODE_PASCAL
 		lexSkipToken
 	case else
-		mode = FB.DEFAULT.FUNCMODE
+		mode = FB_DEFAULT_FUNCMODE
 	end select
 
 	'' OVERLOAD?
-	if( lexCurrentToken = FB.TK.OVERLOAD ) then
+	if( lexCurrentToken = FB_TK_OVERLOAD ) then
 		lexSkipToken
-		alloctype or= FB.ALLOCTYPE.OVERLOADED
+		alloctype or= FB_ALLOCTYPE_OVERLOADED
 	end if
 
 	'' (ALIAS LIT_STRING)?
-	if( lexCurrentToken = FB.TK.ALIAS ) then
+	if( lexCurrentToken = FB_TK_ALIAS ) then
 		lexSkipToken
 		lexEatToken( aliasid )
 	else
@@ -212,8 +212,8 @@ function cSubOrFuncHeader( byval issub as integer, _
 
 		argtail = cArguments( mode, argc, argtail, FALSE )
 
-		if( not hMatch( CHAR_RPRNT ) or (hGetLastError <> FB.ERRMSG.OK) ) then
-			hReportError FB.ERRMSG.EXPECTEDRPRNT
+		if( not hMatch( CHAR_RPRNT ) or (hGetLastError <> FB_ERRMSG_OK) ) then
+			hReportError FB_ERRMSG_EXPECTEDRPRNT
 			exit function
 		end if
 	else
@@ -222,50 +222,50 @@ function cSubOrFuncHeader( byval issub as integer, _
 	end if
 
     '' (AS SymbolType)?
-    if( lexCurrentToken = FB.TK.AS ) then
+    if( lexCurrentToken = FB_TK_AS ) then
     	lexSkipToken
 
     	if( (typ <> INVALID) or (isSub) ) then
-    		hReportError FB.ERRMSG.SYNTAXERROR
+    		hReportError FB_ERRMSG_SYNTAXERROR
     		exit function
     	end if
 
     	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+    		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
     		exit function
     	end if
 
     	'' check for invalid types
     	select case typ
-    	case FB.SYMBTYPE.USERDEF
-    		hReportError FB.ERRMSG.CANNOTRETURNSTRUCTSFROMFUNCTS
+    	case FB_SYMBTYPE_USERDEF
+    		hReportError FB_ERRMSG_CANNOTRETURNSTRUCTSFROMFUNCTS
     		exit function
-    	case FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
-    		hReportError FB.ERRMSG.CANNOTRETURNFIXLENFROMFUNCTS
+    	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
+    		hReportError FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS
     		exit function
     	end select
     end if
 
     if( issub ) then
-    	typ = FB.SYMBTYPE.VOID
+    	typ = FB_SYMBTYPE_VOID
     	subtype = NULL
     end if
 
-    if( (alloctype and FB.ALLOCTYPE.STATIC) = 0 ) then
+    if( (alloctype and FB_ALLOCTYPE_STATIC) = 0 ) then
     	'' STATIC?
-    	if( hMatch( FB.TK.STATIC ) ) then
-    		alloctype or= FB.ALLOCTYPE.STATIC
+    	if( hMatch( FB_TK_STATIC ) ) then
+    		alloctype or= FB_ALLOCTYPE_STATIC
     	end if
     end if
 
     '' EXPORT?
-    if( hMatch( FB.TK.EXPORT ) ) then
+    if( hMatch( FB_TK_EXPORT ) ) then
     	'' private?
-    	if( (alloctype and FB.ALLOCTYPE.PRIVATE) > 0 ) then
-    		hReportError FB.ERRMSG.SYNTAXERROR
+    	if( (alloctype and FB_ALLOCTYPE_PRIVATE) > 0 ) then
+    		hReportError FB_ERRMSG_SYNTAXERROR
     		exit function
     	end if
-    	alloctype or= FB.ALLOCTYPE.EXPORT or FB.ALLOCTYPE.PUBLIC
+    	alloctype or= FB_ALLOCTYPE_EXPORT or FB_ALLOCTYPE_PUBLIC
     end if
 
 	''
@@ -275,14 +275,14 @@ function cSubOrFuncHeader( byval issub as integer, _
 
     '' symbol found?
     if( proc <> NULL ) then
-    	proc = symbFindByClass( proc, FB.SYMBCLASS.PROC )
+    	proc = symbFindByClass( proc, FB_SYMBCLASS_PROC )
     end if
 
     if( proc = NULL ) then
     	proc = symbAddProc( id, aliasid, "", typ, subtype, ptrcnt, _
     						alloctype, mode, argc, argtail )
     	if( proc = NULL ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
+    		hReportError FB_ERRMSG_DUPDEFINITION, TRUE
     		exit function
     	end if
     else
@@ -299,19 +299,19 @@ function cSubOrFuncHeader( byval issub as integer, _
     								alloctype, mode, argc, argtail )
     			'' dup def?
     			if( proc = NULL ) then
-    				hReportError FB.ERRMSG.DUPDEFINITION, TRUE
+    				hReportError FB_ERRMSG_DUPDEFINITION, TRUE
     				exit function
     			else
     				return TRUE
     			end if
     		end if
 
-    		alloctype or= FB.ALLOCTYPE.OVERLOADED
+    		alloctype or= FB_ALLOCTYPE_OVERLOADED
     	end if
 
     	''
     	if( symbGetProcIsDeclared( proc ) ) then
-    		hReportError FB.ERRMSG.DUPDEFINITION, TRUE
+    		hReportError FB_ERRMSG_DUPDEFINITION, TRUE
     		exit function
     	end if
 
@@ -322,7 +322,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 
     	'' check calling convention
     	if( symbGetFuncMode( proc ) <> mode ) then
-    		hReportError FB.ERRMSG.ILLEGALPARAMSPEC, TRUE
+    		hReportError FB_ERRMSG_ILLEGALPARAMSPEC, TRUE
     		exit function
     	end if
 
@@ -350,14 +350,14 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignament or when passed as parameter to another proc
 	'' will deallocate this string)
-	if( typ = FB.SYMBTYPE.STRING ) then
-		t = astNewVAR( s, NULL, 0, IR.DATATYPE.STRING )
+	if( typ = FB_SYMBTYPE_STRING ) then
+		t = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
 		n = rtlStrAllocTmpResult( t )
 		astFlush( n )
 	else
 		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
 		vr = irAllocVRVAR( typ, s, s->ofs )
-		irEmitLOAD( IR.OP.LOADRESULT, vr )
+		irEmitLOAD( IR_OP_LOADRESULT, vr )
 	end if
 
 end sub
@@ -377,30 +377,30 @@ function cProcStatement static
 
 	'' (PRIVATE|PUBLIC)?
 	select case lexCurrentToken( )
-	case FB.TK.PRIVATE
+	case FB_TK_PRIVATE
 		lexSkipToken( )
-		alloctype = FB.ALLOCTYPE.PRIVATE
-	case FB.TK.PUBLIC
+		alloctype = FB_ALLOCTYPE_PRIVATE
+	case FB_TK_PUBLIC
 		lexSkipToken( )
-		alloctype = FB.ALLOCTYPE.PUBLIC
+		alloctype = FB_ALLOCTYPE_PUBLIC
 	case else
-		if( env.optprocpublic ) then
-			alloctype = FB.ALLOCTYPE.PUBLIC
+		if( env.opt.procpublic ) then
+			alloctype = FB_ALLOCTYPE_PUBLIC
 		else
-			alloctype = FB.ALLOCTYPE.PRIVATE
+			alloctype = FB_ALLOCTYPE_PRIVATE
 		end if
 	end select
 
     '' STATIC?
-    if( hMatch( FB.TK.STATIC ) ) then
-    	alloctype = alloctype or FB.ALLOCTYPE.STATIC
+    if( hMatch( FB_TK_STATIC ) ) then
+    	alloctype = alloctype or FB_ALLOCTYPE_STATIC
     end if
 
 	'' SUB | FUNCTION
 	select case lexCurrentToken( )
-	case FB.TK.SUB
+	case FB_TK_SUB
 		issub = TRUE
-	case FB.TK.FUNCTION
+	case FB_TK_FUNCTION
 		issub = FALSE
 	case else
 		exit function
@@ -410,7 +410,7 @@ function cProcStatement static
 
 	''
 	if( env.scope > 0 ) then
-        hReportError( FB.ERRMSG.INNERPROCNOTALLOWED )
+        hReportError( FB_ERRMSG_INNERPROCNOTALLOWED )
         exit function
 	end if
 
@@ -423,7 +423,7 @@ function cProcStatement static
 	env.currproc = proc
 	env.compoundcnt += 1
 
-	if( (alloctype and FB.ALLOCTYPE.STATIC) > 0 ) then
+	if( (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
 		env.isprocstatic = TRUE
 	else
 		env.isprocstatic = FALSE
@@ -444,7 +444,7 @@ function cProcStatement static
 	env.procerrorhnd 	  = NULL
 
 	'' emit proc setup
-	irEmitPROCBEGIN( proc, initlabel, endlabel, (alloctype and FB.ALLOCTYPE.PUBLIC) > 0 )
+	irEmitPROCBEGIN( proc, initlabel, endlabel, (alloctype and FB_ALLOCTYPE_PUBLIC) > 0 )
 
 	'' scope can only change after the IR is flushed because
 	'' the temporary vars that can be created by IR
@@ -466,32 +466,32 @@ function cProcStatement static
 
 	'' SttSeparator
 	if( not cSttSeparator( ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDEOL )
+		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
 	'' proc body
 	do
-	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB.TK.EOF) )
+	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB_TK_EOF) )
 
 	'' END (SUB | FUNCTION)
-	if( not hMatch( FB.TK.END ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDENDSUBORFUNCT )
+	if( not hMatch( FB_TK_END ) ) then
+		hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
 		exit function
 	else
 		res = FALSE
-		if( hMatch( FB.TK.SUB ) ) then
+		if( hMatch( FB_TK_SUB ) ) then
 			if( issub ) then
 				res = TRUE
 			end if
-		elseif( hMatch( FB.TK.FUNCTION ) ) then
+		elseif( hMatch( FB_TK_FUNCTION ) ) then
 			if( not issub ) then
 				res = TRUE
 			end if
 		end if
 
 		if( not res ) then
-			hReportError( FB.ERRMSG.EXPECTEDENDSUBORFUNCT )
+			hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
 			exit function
 		end if
 	end if
@@ -501,7 +501,7 @@ function cProcStatement static
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
-        expr = astNewVAR( env.procerrorhnd, NULL, 0, IR.DATATYPE.UINT )
+        expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_UINT )
         rtlErrorSetHandler( expr, FALSE )
 	end if
 
@@ -521,7 +521,7 @@ function cProcStatement static
 	'' check undefined labels
 	l = symbCheckLabels( )
 	if( l <> NULL ) then
-		'''''hReportErrorEx FB.ERRMSG.UNDEFINEDLABEL, symbGetOrgName( l ), -1
+		'''''hReportErrorEx FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( l ), -1
 		exit function
 	end if
 

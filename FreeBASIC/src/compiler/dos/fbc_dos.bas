@@ -25,9 +25,9 @@ option explicit
 option private
 option escape
 
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbc.bi'
-'$include once: 'inc\hlp.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbc.bi"
+#include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
 declare function _archiveFiles			( byval cmdline as string ) as integer

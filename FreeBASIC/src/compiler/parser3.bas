@@ -26,12 +26,12 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\parser.bi'
-'$include once: 'inc\ast.bi'
-'$include once: 'inc\ir.bi'
-'$include once: 'inc\emit.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
+#include once "inc\ast.bi"
+#include once "inc\ir.bi"
+#include once "inc\emit.bi"
 
 
 '':::::
@@ -56,22 +56,22 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			hReportError FB.ERRMSG.WRONGDIMENSIONS
+			hReportError FB_ERRMSG_WRONGDIMENSIONS
 			exit function
     	end if
 
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
+		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError FB_ERRMSG_INVALIDDATATYPES
 				exit function
 			end if
 		end if
@@ -79,11 +79,11 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
+    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
-    	if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
+    	if( lexCurrentToken <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
     		lexSkipToken
@@ -92,35 +92,35 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
         '' next
         d = d->r
 
-    	constexpr = astNewCONSTi( (d->upper - d->lower)+1, IR.DATATYPE.INTEGER )
-    	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
+    	constexpr = astNewCONSTi( (d->upper - d->lower)+1, IR_DATATYPE_INTEGER )
+    	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 	loop
 
 
     ''
     if( dims < maxdims ) then
-		hReportError FB.ERRMSG.WRONGDIMENSIONS
+		hReportError FB_ERRMSG_WRONGDIMENSIONS
 		exit function
     end if
 
 
 	'' times length
 	lgt = symbGetLen( elm )
-	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
-	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
+	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' plus difference
     diff = symbGetArrayDiff( elm )
     if( diff <> 0 ) then
-    	constexpr = astNewCONSTi( diff, IR.DATATYPE.INTEGER )
-    	expr = astNewBOP( IR.OP.ADD, expr, constexpr )
+    	constexpr = astNewCONSTi( diff, IR_DATATYPE_INTEGER )
+    	expr = astNewBOP( IR_OP_ADD, expr, constexpr )
     end if
 
     '' plus initial expression
     if( idxexpr = NULL ) then
     	idxexpr = expr
     else
-    	idxexpr = astNewBOP( IR.OP.ADD, idxexpr, expr )
+    	idxexpr = astNewBOP( IR_OP_ADD, idxexpr, expr )
     end if
 
     ''
@@ -147,7 +147,7 @@ function cTypeField( elm as FBSYMBOL ptr, _
 	do
 		if( lexCurrentToken( ) <> CHAR_LPRNT ) then
 
-			if( typ <> FB.SYMBTYPE.USERDEF ) then
+			if( typ <> FB_SYMBTYPE_USERDEF ) then
 				exit function
 			end if
 
@@ -170,18 +170,18 @@ function cTypeField( elm as FBSYMBOL ptr, _
 
     		ofs = symbGetUDTElmOffset( elm, typ, subtype, *fields )
     		if( ofs < 0 ) then
-    			hReportError( FB.ERRMSG.ELEMENTNOTDEFINED )
+    			hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
     			return FALSE
     		else
 				lexSkipToken( )
     		end if
 
     		if( ofs <> 0 ) then
-    			constexpr = astNewCONSTi( ofs, IR.DATATYPE.INTEGER )
+    			constexpr = astNewCONSTi( ofs, IR_DATATYPE_INTEGER )
     			if( idxexpr = NULL ) then
     				idxexpr = constexpr
     			else
-	    			idxexpr = astNewBOP( IR.OP.ADD, idxexpr, constexpr )
+	    			idxexpr = astNewBOP( IR_OP_ADD, idxexpr, constexpr )
     			end if
     		end if
 
@@ -211,7 +211,7 @@ function cTypeField( elm as FBSYMBOL ptr, _
 			'' array and no index?
 			if( symbGetArrayDimensions( elm ) <> 0 ) then
     			if( checkarray ) then
-    				hReportError FB.ERRMSG.EXPECTEDINDEX
+    				hReportError FB_ERRMSG_EXPECTEDINDEX
    					return FALSE
     			end if
 			end if
@@ -224,7 +224,7 @@ function cTypeField( elm as FBSYMBOL ptr, _
     	end if
 
     	if( not hMatch( CHAR_RPRNT ) ) then
-    		hReportError FB.ERRMSG.EXPECTEDRPRNT
+    		hReportError FB_ERRMSG_EXPECTEDRPRNT
    			return FALSE
     	end if
 
@@ -257,12 +257,12 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
         select case lexCurrentToken
         '' (FIELDDEREF DREF* TypeField)*
-        case FB.TK.FIELDDEREF
+        case FB_TK_FIELDDEREF
         	lexSkipToken
         	isfieldderef = TRUE
 
         	'' DREF*
-			do while( lexCurrentToken = FB.TK.DEREFCHAR )
+			do while( lexCurrentToken = FB_TK_DEREFCHAR )
 				lexSkipToken
 				cnt += 1
 			loop
@@ -273,68 +273,68 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 			'' Expression
 			if( not cExpression( idxexpr ) ) then
-				hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 
 			'' if index isn't an integer, convert
-			if( (astGetDataClass( idxexpr ) <> IR.DATACLASS.INTEGER) or _
-				(astGetDataSize( idxexpr ) <> FB.POINTERSIZE) ) then
-				idxexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, idxexpr )
+			if( (astGetDataClass( idxexpr ) <> IR_DATACLASS_INTEGER) or _
+				(astGetDataSize( idxexpr ) <> FB_POINTERSIZE) ) then
+				idxexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, idxexpr )
 				if( idxexpr = NULL ) then
-					hReportError FB.ERRMSG.INVALIDDATATYPES
+					hReportError FB_ERRMSG_INVALIDDATATYPES
 					exit function
 				end if
 			end if
 
 			'' ']'
 			if( not hMatch( CHAR_RBRACKET ) ) then
-				hReportError FB.ERRMSG.SYNTAXERROR
+				hReportError FB_ERRMSG_SYNTAXERROR
 				return FALSE
 			end if
 
 			'' string, fixstr, zstring?
-			if( dtype < FB.SYMBTYPE.POINTER ) then
+			if( dtype < FB_SYMBTYPE_POINTER ) then
 
 				select case dtype
-				case FB.SYMBTYPE.STRING, FB.SYMBTYPE.FIXSTR, FB.SYMBTYPE.CHAR
+				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
 
-					if( dtype = FB.SYMBTYPE.STRING ) then
+					if( dtype = FB_SYMBTYPE_STRING ) then
 						'' deref
-						varexpr = astNewADDR( IR.OP.DEREF, varexpr, sym, elm )
+						varexpr = astNewADDR( IR_OP_DEREF, varexpr, sym, elm )
 					else
 						'' address of
-						varexpr = astNewADDR( IR.OP.ADDROF, varexpr, sym, elm )
+						varexpr = astNewADDR( IR_OP_ADDROF, varexpr, sym, elm )
 					end if
 
 					'' add index
-					varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
+					varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 					'' make a pointer
-					varexpr = astNewPTR( NULL, NULL, 0, varexpr, IR.DATATYPE.UBYTE, NULL )
+					varexpr = astNewPTR( NULL, NULL, 0, varexpr, IR_DATATYPE_UBYTE, NULL )
 
 					'' reset type
-					dtype = IR.DATATYPE.UBYTE
+					dtype = IR_DATATYPE_UBYTE
 					subtype = NULL
 					elm = NULL
 
 					return TRUE
 
 				case else
-					hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+					hReportError FB_ERRMSG_EXPECTEDPOINTER, TRUE
 					return FALSE
 				end select
 
 			end if
 
 			'' times length
-			lgt = symbCalcLen( dtype - FB.SYMBTYPE.POINTER, subtype )
+			lgt = symbCalcLen( dtype - FB_SYMBTYPE_POINTER, subtype )
 
 			if( lgt = 0 ) then
-				hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
+				hReportError FB_ERRMSG_INCOMPLETETYPE, TRUE
 				exit function
 			end if
 
-			idxexpr = astNewBOP( IR.OP.MUL, idxexpr, astNewCONSTi( lgt, IR.DATATYPE.INTEGER ) )
+			idxexpr = astNewBOP( IR_OP_MUL, idxexpr, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
 
 		case else
 
@@ -344,16 +344,16 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 		end select
 
-		if( dtype < FB.SYMBTYPE.POINTER ) then
-			hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+		if( dtype < FB_SYMBTYPE_POINTER ) then
+			hReportError FB_ERRMSG_EXPECTEDPOINTER, TRUE
 			return FALSE
 		end if
 
-		dtype -= FB.SYMBTYPE.POINTER
+		dtype -= FB_SYMBTYPE_POINTER
 
 		'' incomplete type?
-		if( (dtype = FB.SYMBTYPE.VOID) or (dtype = FB.SYMBTYPE.FWDREF) ) then
-			hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
+		if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
+			hReportError FB_ERRMSG_INCOMPLETETYPE, TRUE
 			return FALSE
 		end if
 
@@ -362,23 +362,23 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 		if( not cTypeField( elm, dtype, subtype, expr, isfieldderef, checkarray ) ) then
 			if( idxexpr = NULL ) then
 				if( not isderef ) then
-					hReportError FB.ERRMSG.EXPECTEDIDENTIFIER
+					hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 					return FALSE
 				end if
 
-				dtype += FB.SYMBTYPE.POINTER
+				dtype += FB_SYMBTYPE_POINTER
 				exit function
 			end if
 		end if
 
 		'' this should be optimized by AST, when expr is a constant and varexpr is a scalar var
 		if( expr <> NULL ) then
-			varexpr = astNewBOP( IR.OP.ADD, varexpr, expr )
+			varexpr = astNewBOP( IR_OP_ADD, varexpr, expr )
 		end if
 
 		''
 		if( idxexpr <> NULL ) then
-			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
+			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 		end if
 
 		''
@@ -386,16 +386,16 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 		''
 		do while( cnt > 0 )
-			if( dtype < FB.SYMBTYPE.POINTER ) then
-				hReportError FB.ERRMSG.EXPECTEDPOINTER, TRUE
+			if( dtype < FB_SYMBTYPE_POINTER ) then
+				hReportError FB_ERRMSG_EXPECTEDPOINTER, TRUE
 				return FALSE
 			end if
 
-			dtype -= FB.SYMBTYPE.POINTER
+			dtype -= FB_SYMBTYPE_POINTER
 
 			'' incomplete type?
-			if( (dtype = FB.SYMBTYPE.VOID) or (dtype = FB.SYMBTYPE.FWDREF) ) then
-				hReportError FB.ERRMSG.INCOMPLETETYPE, TRUE
+			if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
+				hReportError FB_ERRMSG_INCOMPLETETYPE, TRUE
 				return FALSE
 			end if
 
@@ -431,13 +431,13 @@ function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
 		'' DerefFields?
 		cDerefFields( sym, elm, typ, subtype, varexpr, FALSE, checkarray )
 
-		if( hGetLastError <> FB.ERRMSG.OK ) then
+		if( hGetLastError <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
    		'' check for calling functions through pointers
    		if( lexCurrentToken = CHAR_LPRNT ) then
-   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+   			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -456,7 +456,7 @@ function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
 		subtype = sym->subtype
 
 		''
-		if( symbGetType( sym ) <> FB.SYMBTYPE.VOID ) then
+		if( symbGetType( sym ) <> FB_SYMBTYPE_VOID ) then
 			if( not cFunctionCall( sym, elm, funcexpr, varexpr ) ) then
 				exit function
 			end if
@@ -505,23 +505,23 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	'' check dimensions, if not common
     	if( maxdims <> INVALID ) then
     		if( dims > maxdims ) then
-				hReportError FB.ERRMSG.WRONGDIMENSIONS
+				hReportError FB_ERRMSG_WRONGDIMENSIONS
 				exit function
     		end if
     	end if
 
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
+		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError FB_ERRMSG_INVALIDDATATYPES
 				exit function
 			end if
 		end if
@@ -529,11 +529,11 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
+    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
-    	if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
+    	if( lexCurrentToken <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
     		lexSkipToken
@@ -541,26 +541,26 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 
     	i += 1
 
-    	varexpr = astNewVAR( d, NULL, FB.ARRAYDESCSIZE + i*(FB.INTEGERSIZE*2), IR.DATATYPE.INTEGER )
-    	expr = astNewBOP( IR.OP.MUL, expr, varexpr )
+    	varexpr = astNewVAR( d, NULL, FB_ARRAYDESCSIZE + i*(FB_INTEGERSIZE*2), IR_DATATYPE_INTEGER )
+    	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
 	lgt = symbGetLen( sym )
-	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
-	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
+	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' check dimensions, if not common
     if( maxdims <> INVALID ) then
     	if( dims < maxdims ) then
-			hReportError FB.ERRMSG.WRONGDIMENSIONS
+			hReportError FB_ERRMSG_WRONGDIMENSIONS
 			exit function
     	end if
     end if
 
    	'' plus dsc->data (= ptr + diff)
-    varexpr = astNewVAR( d, NULL, FB.ARRAYDESC.DATAOFFS, IR.DATATYPE.INTEGER )
-    expr = astNewBOP( IR.OP.ADD, expr, varexpr )
+    varexpr = astNewVAR( d, NULL, FB_ARRAYDESC_DATAOFFS, IR_DATATYPE_INTEGER )
+    expr = astNewBOP( IR_OP_ADD, expr, varexpr )
 
     idxexpr = expr
 
@@ -586,16 +586,16 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     do
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
+		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError FB_ERRMSG_INVALIDDATATYPES
 				exit function
 			end if
 		end if
@@ -603,11 +603,11 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
+    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
-    	if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
+    	if( lexCurrentToken <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
     		lexSkipToken
@@ -616,20 +616,20 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	i += 1
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
-    	t = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
-    	varexpr = astNewPTR( sym, NULL, FB.ARRAYDESCSIZE + i*(FB.INTEGERSIZE*2), t, IR.DATATYPE.INTEGER, NULL )
-    	expr = astNewBOP( IR.OP.MUL, expr, varexpr )
+    	t = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
+    	varexpr = astNewPTR( sym, NULL, FB_ARRAYDESCSIZE + i*(FB_INTEGERSIZE*2), t, IR_DATATYPE_INTEGER, NULL )
+    	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
 	lgt = symbGetLen( sym )
-	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
-	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
+	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
    	'' plus dsc->data (= ptr + diff)
-    t = astNewVAR( sym, NULL, 0, IR.DATATYPE.INTEGER )
-    varexpr = astNewPTR( sym, NULL, FB.ARRAYDESC.DATAOFFS, t, IR.DATATYPE.INTEGER, NULL )
-    expr = astNewBOP( IR.OP.ADD, expr, varexpr )
+    t = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
+    varexpr = astNewPTR( sym, NULL, FB_ARRAYDESC_DATAOFFS, t, IR_DATATYPE_INTEGER, NULL )
+    expr = astNewBOP( IR_OP_ADD, expr, varexpr )
 
     idxexpr = expr
 
@@ -670,22 +670,22 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			hReportError FB.ERRMSG.WRONGDIMENSIONS
+			hReportError FB_ERRMSG_WRONGDIMENSIONS
 			exit function
     	end if
 
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB.ERRMSG.EXPECTEDEXPRESSION
+			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR.DATACLASS.INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB.POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR.DATATYPE.INTEGER, NULL, dimexpr )
+		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES
+				hReportError FB_ERRMSG_INVALIDDATATYPES
 				exit function
 			end if
 		end if
@@ -693,11 +693,11 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR.OP.ADD, expr, dimexpr )
+    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
-    	if( lexCurrentToken <> FB.TK.DECLSEPCHAR ) then
+    	if( lexCurrentToken <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
     		lexSkipToken
@@ -706,24 +706,24 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
         '' next
         d = d->r
     	if( d = NULL ) then
-			hReportError FB.ERRMSG.WRONGDIMENSIONS
+			hReportError FB_ERRMSG_WRONGDIMENSIONS
 			exit function
     	end if
 
-    	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, IR.DATATYPE.INTEGER )
-    	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
+    	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, IR_DATATYPE_INTEGER )
+    	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 	loop
 
     ''
     if( dims < maxdims ) then
-		hReportError FB.ERRMSG.WRONGDIMENSIONS
+		hReportError FB_ERRMSG_WRONGDIMENSIONS
 		exit function
     end if
 
 	'' times length (this will be optimized if len < 10 and there's no arrays on following fields)
 	lgt = symbGetLen( s )
-	constexpr = astNewCONSTi( lgt, IR.DATATYPE.INTEGER )
-	expr = astNewBOP( IR.OP.MUL, expr, constexpr )
+	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
 	idxexpr = expr
 
@@ -742,7 +742,7 @@ function hVarAddUndecl( byval id as string, _
 	function = NULL
 
 	if( env.isprocstatic ) then
-		alloctype = FB.ALLOCTYPE.STATIC
+		alloctype = FB_ALLOCTYPE_STATIC
 	else
 		alloctype = 0
 	end if
@@ -773,7 +773,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 	function = FALSE
 
 	'' ID
-	if( lexCurrentToken( ) <> FB.TK.ID ) then
+	if( lexCurrentToken( ) <> FB_TK_ID ) then
 		exit function
 	end if
 
@@ -795,18 +795,18 @@ function cVariable( varexpr as ASTNODE ptr, _
 	sym = symbFindBySuffix( lexTokenSymbol( ), typ, deftyp )
 	if( sym = NULL ) then
 		'' QB quirk: fixed-len strings referenced using '$' as suffix..
-		if( typ = FB.SYMBTYPE.STRING ) then
-			sym = symbFindBySuffix( lexTokenSymbol( ), FB.SYMBTYPE.FIXSTR, deftyp )
+		if( typ = FB_SYMBTYPE_STRING ) then
+			sym = symbFindBySuffix( lexTokenSymbol( ), FB_SYMBTYPE_FIXSTR, deftyp )
 			'' check zstrings too..
 			if( sym = NULL ) then
-				sym = symbFindBySuffix( lexTokenSymbol( ), FB.SYMBTYPE.CHAR, deftyp )
+				sym = symbFindBySuffix( lexTokenSymbol( ), FB_SYMBTYPE_CHAR, deftyp )
 			end if
 
-		elseif( deftyp = FB.SYMBTYPE.STRING ) then
-			sym = symbFindBySuffix( lexTokenSymbol( ), INVALID, FB.SYMBTYPE.FIXSTR )
+		elseif( deftyp = FB_SYMBTYPE_STRING ) then
+			sym = symbFindBySuffix( lexTokenSymbol( ), INVALID, FB_SYMBTYPE_FIXSTR )
 			'' check zstrings too..
 			if( sym = NULL ) then
-				sym = symbFindBySuffix( lexTokenSymbol( ), INVALID, FB.SYMBTYPE.CHAR )
+				sym = symbFindBySuffix( lexTokenSymbol( ), INVALID, FB_SYMBTYPE_CHAR )
 			end if
 		end if
 	end if
@@ -821,24 +821,24 @@ function cVariable( varexpr as ASTNODE ptr, _
 		sym = symbLookupUDTElm( *id, lexTokenDotPos( ), typ, ofs, elm, subtype )
 		if( sym = NULL ) then
 			'' add undeclared variable
-			if( hGetLastError( ) <> FB.ERRMSG.OK ) then
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
 			'' add undeclared var
-			if( not env.optexplicit ) then
+			if( not env.opt.explicit ) then
 				if( typ = INVALID ) then
 					typ = hGetDefType( *id )
 				end if
 
 				sym = hVarAddUndecl( *id, typ )
 				if( sym = NULL ) then
-					hReportError FB.ERRMSG.DUPDEFINITION
+					hReportError FB_ERRMSG_DUPDEFINITION
 					exit function
 				end if
 				subtype = symbGetSubtype( sym )
 			else
-				hReportError FB.ERRMSG.VARIABLENOTDECLARED
+				hReportError FB_ERRMSG_VARIABLENOTDECLARED
 				exit function
 			end if
 		end if
@@ -878,20 +878,20 @@ function cVariable( varexpr as ASTNODE ptr, _
 
 				'' ')'
     			if( not hMatch( CHAR_RPRNT ) ) then
-    				hReportError FB.ERRMSG.EXPECTEDRPRNT
+    				hReportError FB_ERRMSG_EXPECTEDRPRNT
     				exit function
     			end if
 
     		else
    				'' check if calling functions through pointers
-   				if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+   				if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
 	   				isfuncptr = TRUE
     			end if
 
     			'' using (...) w/ scalars?
     			if( elm = NULL ) then
     				if( not isarray and not isfuncptr ) then
-    					hReportError FB.ERRMSG.ARRAYNOTALLOCATED, TRUE
+    					hReportError FB_ERRMSG_ARRAYNOTALLOCATED, TRUE
     					exit function
     				end if
     			end if
@@ -909,13 +909,13 @@ function cVariable( varexpr as ASTNODE ptr, _
    		'' TypeField?
    		cTypeField( elm, typ, subtype, idxexpr, FALSE, checkarray )
 
-		if( hGetLastError <> FB.ERRMSG.OK ) then
+		if( hGetLastError <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
    		'' check for calling functions through pointers
    		if( lexCurrentToken = CHAR_LPRNT ) then
-   			if( typ = FB.SYMBTYPE.POINTER + FB.SYMBTYPE.FUNCTION ) then
+   			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
 	   			isfuncptr = TRUE
    			end if
    		end if
@@ -927,7 +927,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 	'' AST will handle descriptor pointers
 	if( isbyref or isimport ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
-		varexpr = astNewVAR( sym, elm, 0, IR.DATATYPE.UINT, NULL )
+		varexpr = astNewVAR( sym, elm, 0, IR_DATATYPE_UINT, NULL )
 	else
 		varexpr = astNewVAR( sym, elm, ofs, dtype, subtype )
 	end if
@@ -936,7 +936,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 	if( idxexpr <> NULL ) then
 		'' byref or import's are already pointers
 		if( isbyref or isimport ) then
-			varexpr = astNewBOP( IR.OP.ADD, varexpr, idxexpr )
+			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 		else
 			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
 		end if
@@ -945,7 +945,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 		if( not isbydesc ) then
   			if( isarray ) then
   				if( checkarray ) then
-   					hReportError FB.ERRMSG.EXPECTEDINDEX, TRUE
+   					hReportError FB_ERRMSG_EXPECTEDINDEX, TRUE
    					exit function
    				end if
    			end if
@@ -960,7 +960,7 @@ function cVariable( varexpr as ASTNODE ptr, _
     '' FuncPtrOrDerefFields?
 	cFuncPtrOrDerefFields( sym, elm, typ, subtype, varexpr, isfuncptr, checkarray )
 
-	function = (hGetLastError() = FB.ERRMSG.OK)
+	function = (hGetLastError() = FB_ERRMSG_OK)
 
 end function
 

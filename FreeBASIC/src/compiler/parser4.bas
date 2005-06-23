@@ -24,22 +24,22 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\parser.bi'
-'$include once: 'inc\rtl.bi'
-'$include once: 'inc\ast.bi'
-'$include once: 'inc\ir.bi'
-'$include once: 'inc\emit.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
+#include once "inc\ir.bi"
+#include once "inc\emit.bi"
 
-const FB.CASETYPE.RANGE = 1
-const FB.CASETYPE.IS    = 2
-const FB.CASETYPE.ELSE  = 3
+const FB_CASETYPE_RANGE = 1
+const FB_CASETYPE_IS    = 2
+const FB_CASETYPE_ELSE  = 3
 
-const FB.MAXCASEEXPR 	= 1024
-const FB.MAXSWTCASEEXPR = 8192
+const FB_MAXCASEEXPR 	= 1024
+const FB_MAXSWTCASEEXPR = 8192
 
-const FB.MAXSWTCASERANGE= 4096
+const FB_MAXSWTCASERANGE= 4096
 
 type FBCASECTX
 	typ 		as integer
@@ -50,7 +50,7 @@ end type
 
 type FBSELECTCTX
 	base		as integer
-	caseTB(0 to FB.MAXCASEEXPR-1) as FBCASECTX
+	caseTB(0 to FB_MAXCASEEXPR-1) as FBCASECTX
 end type
 
 type FBSWTCASECTX
@@ -60,7 +60,7 @@ end type
 
 type FBSWITCHCTX
 	base		as integer
-	caseTB(0 to FB.MAXSWTCASEEXPR-1) as FBSWTCASECTX
+	caseTB(0 to FB_MAXSWTCASEEXPR-1) as FBSWTCASECTX
 end type
 
 type FBCTX
@@ -106,25 +106,25 @@ function cCompoundStmt as integer
     env.compoundcnt += 1
 
 	select case as const lexCurrentToken
-	case FB.TK.IF
+	case FB_TK_IF
 		function = cIfStatement( )
-	case FB.TK.FOR
+	case FB_TK_FOR
 		function = cForStatement( )
-	case FB.TK.DO
+	case FB_TK_DO
 		function = cDoStatement( )
-	case FB.TK.WHILE
+	case FB_TK_WHILE
 		function = cWhileStatement( )
-	case FB.TK.ELSE, FB.TK.ELSEIF, FB.TK.CASE, FB.TK.LOOP, FB.TK.NEXT, FB.TK.WEND
+	case FB_TK_ELSE, FB_TK_ELSEIF, FB_TK_CASE, FB_TK_LOOP, FB_TK_NEXT, FB_TK_WEND
 		function = cCompoundStmtElm( )
-	case FB.TK.SELECT
+	case FB_TK_SELECT
 		function = cSelectStatement( )
-	case FB.TK.EXIT
+	case FB_TK_EXIT
 		function = cExitStatement( )
-	case FB.TK.CONTINUE
+	case FB_TK_CONTINUE
 		function = cContinueStatement( )
-	case FB.TK.END
+	case FB_TK_END
 		function = cEndStatement( )
-	case FB.TK.WITH
+	case FB_TK_WITH
 		function = cWithStatement( )
 	case else
 		function = FALSE
@@ -146,7 +146,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	'' !COMMENT|NEWLINE
 	select case lexCurrentToken
-	case FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOL
+	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL
 		exit function
 	end select
 
@@ -156,38 +156,38 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	''
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.IF
+	env.lastcompound = FB_TK_IF
 
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = NULL ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end if
 
 	astFlush( expr )
 
 	'' NUM_LIT | SimpleStatement*
-	if( lexCurrentTokenClass = FB.TKCLASS.NUMLITERAL ) then
-		l = symbFindByClass( lexTokenSymbol, FB.SYMBCLASS.LABEL )
+	if( lexCurrentTokenClass = FB_TKCLASS_NUMLITERAL ) then
+		l = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_LABEL )
 		if( l = NULL ) then
 			l = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
 		end if
 		lexSkipToken( )
 
-		astFlush( astNewBRANCH( IR.OP.JMP, l ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, l ) )
 
 	elseif( not cSimpleStatement ) then
-		if( hGetLastError <> FB.ERRMSG.OK ) then
+		if( hGetLastError <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 	end if
 
 	'' (ELSE SimpleStatement*)?
-	if( hMatch( FB.TK.ELSE ) ) then
+	if( hMatch( FB_TK_ELSE ) ) then
 
 		'' exit if stmt
-		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
 
 		'' emit next label
 		irEmitLABEL nl, FALSE
@@ -206,8 +206,8 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	end if
 
 	'' END IF? -- added to make complex macros easier to be done
-	if( lexCurrentToken = FB.TK.END ) then
-		if( lexLookahead(1) = FB.TK.IF ) then
+	if( lexCurrentToken = FB_TK_END ) then
+		if( lexLookahead(1) = FB_TK_IF ) then
 			lexSkipToken
 			lexSkipToken
 		end if
@@ -235,7 +235,7 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = NULL ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end if
 	astFlush( expr )
@@ -246,16 +246,16 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 
 		'' separator
 		if( not cSttSeparator ) then
-			hReportError FB.ERRMSG.EXPECTEDEOL
+			hReportError FB_ERRMSG_EXPECTEDEOL
 			exit function
 		end if
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
 
-	if( hGetLastError = FB.ERRMSG.OK ) then
+	if( hGetLastError = FB_ERRMSG_OK ) then
 		function = TRUE
 	end if
 
@@ -278,7 +278,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	'' COMMENT|NEWLINE
 	select case lexCurrentToken
-	case FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOL
+	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL
 	case else
 		exit function
 	end select
@@ -291,17 +291,17 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	''
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.IF
+	env.lastcompound = FB_TK_IF
 
 	if( not cIfStmtBody( expr, nl, el ) ) then
 		exit function
 	end if
 
 	'' (ELSEIF Expression THEN SimpleLine*)?
-    do while( hMatch( FB.TK.ELSEIF ) )
+    do while( hMatch( FB_TK_ELSEIF ) )
 
 		'' exit last if stmt
-		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
 
 		'' emit next label
 		irEmitLABEL nl, FALSE
@@ -312,13 +312,13 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	    '' Expression
     	if( not cExpression( expr ) ) then
-    		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
 		'' THEN
-		if( not hMatch( FB.TK.THEN ) ) then
-			hReportError FB.ERRMSG.EXPECTEDTHEN
+		if( not hMatch( FB_TK_THEN ) ) then
+			hReportError FB_ERRMSG_EXPECTEDTHEN
 			exit function
 		end if
 
@@ -329,10 +329,10 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
     loop
 
 	'' (ELSE SimpleLine*)?
-	if( hMatch( FB.TK.ELSE ) ) then
+	if( hMatch( FB_TK_ELSE ) ) then
 
 		'' exit last if stmt
-		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
 
 		'' emit next label
 		irEmitLABEL nl, FALSE
@@ -340,7 +340,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 		'' loop body
 		do
-		loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
+		loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
 
 	else
 		'' emit next label
@@ -352,8 +352,8 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	'''''symbDelLabel el
 
 	'' END IF
-	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.IF )) ) then
-		hReportError FB.ERRMSG.EXPECTEDENDIF
+	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_IF )) ) then
+		hReportError FB_ERRMSG_EXPECTEDENDIF
 		exit function
 	end if
 
@@ -377,18 +377,18 @@ function cIfStatement as integer
 
     '' Expression
     if( not cExpression( expr ) ) then
-    	hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+    	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     	exit function
     end if
 
 	'' THEN
-	if( hMatch( FB.TK.THEN ) ) then
+	if( hMatch( FB_TK_THEN ) ) then
 
 		'' (BlockIfStatement | SingleIfStatement)
 		if( not cBlockIfStatement( expr ) ) then
-			if( hGetLastError = FB.ERRMSG.OK ) then
+			if( hGetLastError = FB_ERRMSG_OK ) then
 				if( not cSingleIfStatement( expr ) ) then
-					hReportError FB.ERRMSG.SYNTAXERROR
+					hReportError FB_ERRMSG_SYNTAXERROR
 					exit function
 				end if
 			end if
@@ -397,13 +397,13 @@ function cIfStatement as integer
 	else
 
 		'' GOTO
-		if( lexCurrentToken <> FB.TK.GOTO ) then
-			hReportError FB.ERRMSG.EXPECTEDTHEN
+		if( lexCurrentToken <> FB_TK_GOTO ) then
+			hReportError FB_ERRMSG_EXPECTEDTHEN
 			exit function
 		end if
 
 		if( not cSingleIfStatement( expr ) ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
+			hReportError FB_ERRMSG_SYNTAXERROR
 			exit function
 		end if
 
@@ -450,9 +450,9 @@ private sub cFlushBOP( byval op as integer, _
 		expr1 = astNewVAR( v1, NULL, 0, dtype )
 	else
 		select case as const dtype
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			expr1 = astNewCONST64( val1->value64, dtype )
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			expr1 = astNewCONSTf( val1->valuef, dtype )
 		case else
 			expr1 = astNewCONSTi( val1->valuei, dtype )
@@ -463,9 +463,9 @@ private sub cFlushBOP( byval op as integer, _
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
 		select case as const dtype
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			expr2 = astNewCONST64( val2->value64, dtype )
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			expr2 = astNewCONSTf( val2->valuef, dtype )
 		case else
 			expr2 = astNewCONSTi( val2->valuei, dtype )
@@ -495,9 +495,9 @@ private sub cFlushSelfBOP( byval op as integer, _
 		expr2 = astNewVAR( v2, NULL, 0, dtype )
 	else
 		select case as const dtype
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			expr2 = astNewCONST64( val2->value64, dtype )
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			expr2 = astNewCONSTf( val2->valuef, dtype )
 		case else
 			expr2 = astNewCONSTi( val2->valuei, dtype )
@@ -537,25 +537,25 @@ function cForStatement as integer
 
 	'' ID
 	if( not cVariable( idexpr, cnt, elm ) ) then
-		hReportError FB.ERRMSG.EXPECTEDVAR
+		hReportError FB_ERRMSG_EXPECTEDVAR
 		exit function
 	end if
 
 	if( (not astIsVAR( idexpr )) or (elm <> NULL) ) then
-		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
+		hReportError FB_ERRMSG_EXPECTEDSCALAR, TRUE
 		exit function
 	end if
 
 	typ = symbGetType( cnt )
 
-	if( (typ < FB.SYMBTYPE.BYTE) or (typ > FB.SYMBTYPE.DOUBLE) ) then
-		hReportError FB.ERRMSG.EXPECTEDSCALAR, TRUE
+	if( (typ < FB_SYMBTYPE_BYTE) or (typ > FB_SYMBTYPE_DOUBLE) ) then
+		hReportError FB_ERRMSG_EXPECTEDSCALAR, TRUE
 		exit function
 	end if
 
 	'' =
-	if( not hMatch( FB.TK.ASSIGN ) ) then
-		hReportError FB.ERRMSG.EXPECTEDEQ
+	if( not hMatch( FB_TK_ASSIGN ) ) then
+		hReportError FB_ERRMSG_EXPECTEDEQ
 		exit function
 	end if
 
@@ -566,7 +566,7 @@ function cForStatement as integer
 
     '' Expression
     if( not cExpression( expr ) ) then
-    	hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+    	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     	exit function
     end if
 
@@ -581,14 +581,14 @@ function cForStatement as integer
 	astFlush( expr )
 
 	'' TO
-	if( not hMatch( FB.TK.TO ) ) then
-		hReportError FB.ERRMSG.EXPECTEDTO
+	if( not hMatch( FB_TK_TO ) ) then
+		hReportError FB_ERRMSG_EXPECTEDTO
 		exit function
 	end if
 
 	'' end condition (Expression)
 	if( not cExpression( expr ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
 
@@ -607,19 +607,19 @@ function cForStatement as integer
 	'' STEP
 	ispositive 	= TRUE
 	iscomplex 	= FALSE
-	if( lexCurrentToken( ) = FB.TK.STEP ) then
+	if( lexCurrentToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
 		if( not cExpression( expr ) ) then
-			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
 		'' store step into a temp var
 		if( astIsCONST( expr ) ) then
 			select case as const astGetDataType( expr )
-			case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 				ispositive = (astGetValue64( expr ) >= 0)
-			case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 				ispositive = (astGetValueF( expr ) >= 0)
 			case else
 				ispositive = (astGetValueI( expr ) >= 0)
@@ -647,9 +647,9 @@ function cForStatement as integer
 
 	else
 		select case as const dtype
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			sval.value64 = 1
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			sval.valuef = 1.0
 		case else
 			sval.valuei = 1
@@ -669,19 +669,19 @@ function cForStatement as integer
     if( isconst = 3 ) then
 
 		if( ispositive ) then
-			op = IR.OP.LE
+			op = IR_OP_LE
     	else
-			op = IR.OP.GE
+			op = IR_OP_GE
     	end if
 
     	expr = astNewBOP( op, astNewCONST( @ival, dtype ), astNewCONST( @eval, dtype ) )
     	if( not astGetValueI( expr ) ) then
-    		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
+    		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
     	end if
     	astDel expr
 
     else
-    	astFlush( astNewBRANCH( IR.OP.JMP, tl ) )
+    	astFlush( astNewBRANCH( IR_OP_JMP, tl ) )
     end if
 
 	'' add start label
@@ -696,35 +696,35 @@ function cForStatement as integer
 
 	''
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.FOR
+	env.lastcompound = FB_TK_FOR
 
 	'' Comment?
 	cComment
 
 	'' separator
 	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
 
 	'' NEXT
-	if( not hMatch( FB.TK.NEXT ) ) then
-		hReportError FB.ERRMSG.EXPECTEDNEXT
+	if( not hMatch( FB_TK_NEXT ) ) then
+		hReportError FB_ERRMSG_EXPECTEDNEXT
 		exit function
 	end if
 
 	'' counter?
-	if( lexCurrentTokenClass = FB.TKCLASS.IDENTIFIER ) then
+	if( lexCurrentTokenClass = FB_TKCLASS_IDENTIFIER ) then
 		lexSkipToken
 
 		'' ( ',' counter? )*
 		if( lexCurrentToken = CHAR_COMMA ) then
 			'' hack to handle multiple identifiers...
-			lexSetCurrentToken FB.TK.NEXT, FB.TKCLASS.KEYWORD
+			lexSetCurrentToken FB_TK_NEXT, FB_TKCLASS_KEYWORD
 		end if
 	end if
 
@@ -732,7 +732,7 @@ function cForStatement as integer
 	irEmitLABEL cl, FALSE
 
 	'' counter += step
-	cFlushSelfBOP IR.OP.ADD, dtype, cnt, stp, @sval
+	cFlushSelfBOP IR_OP_ADD, dtype, cnt, stp, @sval
 
 	'' test label
 	irEmitLABEL tl, FALSE
@@ -740,9 +740,9 @@ function cForStatement as integer
     if( not iscomplex ) then
 
 		if( ispositive ) then
-			op = IR.OP.LE
+			op = IR_OP_LE
     	else
-			op = IR.OP.GE
+			op = IR_OP_GE
     	end if
 
     	'' counter <= or >= end cond?
@@ -754,24 +754,24 @@ function cForStatement as integer
 
     	'' test step sign and branch
 		select case as const dtype
-		case IR.DATATYPE.LONGINT, IR.DATATYPE.ULONGINT
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			ival.value64 = 0
-		case IR.DATATYPE.SINGLE, IR.DATATYPE.DOUBLE
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			ival.valuef = 0.0
 		case else
 			ival.valuei = 0
 		end select
 
-		cFlushBOP IR.OP.GE, dtype, stp, @sval, NULL, @ival, c2l
+		cFlushBOP IR_OP_GE, dtype, stp, @sval, NULL, @ival, c2l
 
     	'' negative, loop if >=
-		cFlushBOP IR.OP.GE, dtype, cnt, NULL, endc, @eval, il
+		cFlushBOP IR_OP_GE, dtype, cnt, NULL, endc, @eval, il
 		'' exit loop
-		astFlush( astNewBRANCH( IR.OP.JMP, el ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
     	'' control label
     	irEmitLABELNF( c2l )
     	'' positive, loop if <=
-		cFlushBOP IR.OP.LE, dtype, cnt, NULL, endc, @eval, il
+		cFlushBOP IR_OP_LE, dtype, cnt, NULL, endc, @eval, il
     end if
 
     '' end label (loop exit)
@@ -823,9 +823,9 @@ function cDoStatement as integer
 	isuntil = fALSE
 
 	select case lexCurrentToken
-	case FB.TK.WHILE
+	case FB_TK_WHILE
 		iswhile = TRUE
-	case FB.TK.UNTIL
+	case FB_TK_UNTIL
 		isuntil = TRUE
 	end select
 
@@ -834,7 +834,7 @@ function cDoStatement as integer
 
 		'' Expression
 		if( not cExpression( expr ) ) then
-			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -847,7 +847,7 @@ function cDoStatement as integer
 
 		expr = astUpdComp2Branch( expr, el, isinverse )
 		if( expr = NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end if
 
@@ -867,24 +867,24 @@ function cDoStatement as integer
 
 	''
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.DO
+	env.lastcompound = FB_TK_DO
 
 	'' Comment?
 	cComment
 
 	'' separator
 	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
 
 	'' LOOP
-	if( not hMatch( FB.TK.LOOP ) ) then
-		hReportError FB.ERRMSG.EXPECTEDLOOP
+	if( not hMatch( FB_TK_LOOP ) ) then
+		hReportError FB_ERRMSG_EXPECTEDLOOP
 		exit function
 	end if
 
@@ -893,14 +893,14 @@ function cDoStatement as integer
 	isuntil = fALSE
 
 	select case lexCurrentToken
-	case FB.TK.WHILE
+	case FB_TK_WHILE
 		iswhile = TRUE
-	case FB.TK.UNTIL
+	case FB_TK_UNTIL
 		isuntil = TRUE
 	end select
 
 	if( (iswhile or isuntil) and (vr <> NULL) ) then
-		hReportError FB.ERRMSG.SYNTAXERROR
+		hReportError FB_ERRMSG_SYNTAXERROR
 		exit function
 	end if
 
@@ -914,7 +914,7 @@ function cDoStatement as integer
 
 		'' Expression
 		if( not cExpression( expr ) ) then
-			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -927,13 +927,13 @@ function cDoStatement as integer
 
 		expr = astUpdComp2Branch( expr, il, isinverse )
 		if( expr = NULL ) then
-			hReportError FB.ERRMSG.INVALIDDATATYPES
+			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end if
 		astFlush( expr )
 
 	else
-		astFlush( astNewBRANCH( IR.OP.JMP, il ) )
+		astFlush( astNewBRANCH( IR_OP_JMP, il ) )
 	end if
 
     '' end label (loop exit)
@@ -983,21 +983,21 @@ function cWhileStatement as integer
 
 	''
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.WHILE
+	env.lastcompound = FB_TK_WHILE
 
 	'' emit ini label
 	irEmitLABEL il, FALSE
 
 	'' Expression
 	if( not cExpression( expr ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
 
 	'' branch
 	expr = astUpdComp2Branch( expr, el, FALSE )
 	if( expr = NULL ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end if
 	astFlush( expr )
@@ -1007,21 +1007,21 @@ function cWhileStatement as integer
 
 	'' separator
 	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
 
 	'' WEND
-	if( not hMatch( FB.TK.WEND ) ) then
-		hReportError FB.ERRMSG.EXPECTEDWEND
+	if( not hMatch( FB_TK_WEND ) ) then
+		hReportError FB_ERRMSG_EXPECTEDWEND
 		exit function
 	end if
 
-    astFlush( astNewBRANCH( IR.OP.JMP, il ) )
+    astFlush( astNewBRANCH( IR_OP_JMP, il ) )
 
     '' end label (loop exit)
     irEmitLABEL el, FALSE
@@ -1058,31 +1058,31 @@ function cSelectStatement as integer
 	lexSkipToken
 
 	'' CASE
-	if( not hMatch( FB.TK.CASE ) ) then
-		hReportError FB.ERRMSG.EXPECTEDCASE
+	if( not hMatch( FB_TK_CASE ) ) then
+		hReportError FB_ERRMSG_EXPECTEDCASE
 		exit function
 	end if
 
 	'' AS?
-	if( hMatch( FB.TK.AS ) ) then
+	if( hMatch( FB_TK_AS ) ) then
 		'' CONST?
-		if( hMatch( FB.TK.CONST ) ) then
+		if( hMatch( FB_TK_CONST ) ) then
 			function = cSelectConstStmt( )
 		else
-			hReportError FB.ERRMSG.SYNTAXERROR
+			hReportError FB_ERRMSG_SYNTAXERROR
 		end if
 		exit function
 	end if
 
 	'' Expression
 	if( not cExpression( expr ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
 
 	'' can't be an UDT
-	if( astGetDataType( expr ) = IR.DATATYPE.USERDEF ) then
-		hReportError FB.ERRMSG.INVALIDDATATYPES
+	if( astGetDataType( expr ) = IR_DATATYPE_USERDEF ) then
+		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end if
 
@@ -1091,21 +1091,21 @@ function cSelectStatement as integer
 
 	'' separator
 	if( not cSttSeparator ) then
-		hReportError FB.ERRMSG.EXPECTEDEOL
+		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' save current context
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.SELECT
+	env.lastcompound = FB_TK_SELECT
 
 	'' add exit label
 	elabel = symbAddLabel( "" )
 
 	'' store expression into a temp var
 	dtype  = astGetDataType( expr )
-	if( (dtype = FB.SYMBTYPE.FIXSTR) or (dtype = FB.SYMBTYPE.CHAR) ) then
-		dtype = FB.SYMBTYPE.STRING
+	if( (dtype = FB_SYMBTYPE_FIXSTR) or (dtype = FB_SYMBTYPE_CHAR) ) then
+		dtype = FB_SYMBTYPE_STRING
 	end if
 
 	symbol = symbAddTempVar( dtype )
@@ -1131,20 +1131,20 @@ function cSelectStatement as integer
 	    	exit do
     	end if
 
-	loop while( lexCurrentToken <> FB.TK.EOF )
+	loop while( lexCurrentToken <> FB_TK_EOF )
 
     '' emit exit label
     irEmitLABEL elabel, FALSE
     '''''symbDelLabel elabel
 
 	'' END SELECT
-	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.SELECT )) ) then
-		hReportError FB.ERRMSG.EXPECTEDENDSELECT
+	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SELECT )) ) then
+		hReportError FB_ERRMSG_EXPECTEDENDSELECT
 		exit function
 	end if
 
 	'' if a temp string was allocated, delete it
-	if( dtype = FB.SYMBTYPE.STRING ) then
+	if( dtype = FB_SYMBTYPE_STRING ) then
 		expr = rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) )
 		astFlush( expr )
 	end if
@@ -1163,36 +1163,36 @@ function cCaseExpression( casectx as FBCASECTX ) as integer
 
 	function = FALSE
 
-	casectx.op 	= IR.OP.EQ
+	casectx.op 	= IR_OP_EQ
 
 	'' IS REL_OP Expression
-	if( hMatch( FB.TK.IS ) ) then
+	if( hMatch( FB_TK_IS ) ) then
 		casectx.op = hFBrelop2IRrelop( lexCurrentToken )
 		lexSkipToken
-		casectx.typ = FB.CASETYPE.IS
+		casectx.typ = FB_CASETYPE_IS
 	else
 		casectx.typ = 0
 	end if
 
 	'' Expression
 	if( not cExpression( casectx.expr1 ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
 
 	'' TO Expression
-	if( hMatch( FB.TK.TO ) ) then
+	if( hMatch( FB_TK_TO ) ) then
 		if( casectx.typ <> 0 ) then
-			hReportError FB.ERRMSG.SYNTAXERROR
+			hReportError FB_ERRMSG_SYNTAXERROR
 			exit function
 		end if
 
 		if( not cExpression( casectx.expr2 ) ) then
-			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
-		casectx.typ =  FB.CASETYPE.RANGE
+		casectx.typ =  FB_CASETYPE_RANGE
 	end if
 
 	function = TRUE
@@ -1209,7 +1209,7 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 
 	dim as ASTNODE ptr expr, v
 
-	if( casectx.typ <> FB.CASETYPE.RANGE ) then
+	if( casectx.typ <> FB_CASETYPE_RANGE ) then
 		v = astNewVAR( s, NULL, 0, sdtype )
 
 		if( not inverselogic ) then
@@ -1222,7 +1222,7 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 
 	else
 		v = astNewVAR( s, NULL, 0, sdtype )
-		expr = astNewBOP( IR.OP.LT, v, casectx.expr1, nextlabel, FALSE )
+		expr = astNewBOP( IR_OP_LT, v, casectx.expr1, nextlabel, FALSE )
 		astFlush( expr )
 
 		if( expr = NULL ) then
@@ -1231,9 +1231,9 @@ private function hExecCaseExpr( casectx as FBCASECTX, _
 
 		v = astNewVAR( s, NULL, 0, sdtype )
 		if( not inverselogic ) then
-			expr = astNewBOP( IR.OP.LE, v, casectx.expr2, initlabel, FALSE )
+			expr = astNewBOP( IR_OP_LE, v, casectx.expr2, initlabel, FALSE )
 		else
-			expr = astNewBOP( IR.OP.GT, v, casectx.expr2, nextlabel, FALSE )
+			expr = astNewBOP( IR_OP_GT, v, casectx.expr2, nextlabel, FALSE )
 		end if
 		astFlush( expr )
 	end if
@@ -1258,7 +1258,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	function = FALSE
 
 	'' CASE
-	if( not hMatch( FB.TK.CASE ) ) then
+	if( not hMatch( FB_TK_CASE ) ) then
 		exit function
 	end if
 
@@ -1271,15 +1271,15 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 
 	do
 		if( cnt = 0 ) then
-			if( hMatch( FB.TK.ELSE ) ) then
-				ctx.sel.caseTB(cntbase + cnt).typ = FB.CASETYPE.ELSE
+			if( hMatch( FB_TK_ELSE ) ) then
+				ctx.sel.caseTB(cntbase + cnt).typ = FB_CASETYPE_ELSE
 				cnt = 1
 				exit do
 			end if
 		end if
 
 		if( not cCaseExpression( ctx.sel.caseTB(cntbase + cnt) ) ) then
-			hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -1295,7 +1295,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 		exit function
 	end if
 
-	if( hGetLastError( ) <> FB.ERRMSG.OK ) then
+	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
 
@@ -1307,9 +1307,9 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 		'' add next label
 		nl = symbAddLabel( "" )
 
-		if( ctx.sel.caseTB(i).typ <> FB.CASETYPE.ELSE ) then
+		if( ctx.sel.caseTB(i).typ <> FB_CASETYPE_ELSE ) then
 			if( not hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
-				hReportError FB.ERRMSG.INVALIDDATATYPES, TRUE
+				hReportError FB_ERRMSG_INVALIDDATATYPES, TRUE
 				exit function
 			end if
 		end if
@@ -1322,14 +1322,14 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 			'' SimpleLine*
 			do
 				res = cSimpleLine
-			loop while( (res) and (lexCurrentToken <> FB.TK.EOF) )
+			loop while( (res) and (lexCurrentToken <> FB_TK_EOF) )
 
-			if( ctx.sel.caseTB(i).typ = FB.CASETYPE.ELSE ) then
+			if( ctx.sel.caseTB(i).typ = FB_CASETYPE_ELSE ) then
 				exit for
 			end if
 
 			'' break from block
-			astFlush( astNewBRANCH( IR.OP.JMP, exitlabel ) )
+			astFlush( astNewBRANCH( IR_OP_JMP, exitlabel ) )
 
 		end if
 
@@ -1354,7 +1354,7 @@ private function hSelConstAddCase( byval swtbase as integer, _
 	dim v as uinteger, i as integer
 
 	'' nothing left?
-	if( ctx.swt.base >= FB.MAXSWTCASEEXPR ) then
+	if( ctx.swt.base >= FB_MAXSWTCASEEXPR ) then
 		return FALSE
 	end if
 
@@ -1406,12 +1406,12 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	function = FALSE
 
 	'' CASE
-	if( not hMatch( FB.TK.CASE ) ) then
+	if( not hMatch( FB_TK_CASE ) ) then
 		exit function
 	end if
 
 	'' ELSE
-	if( hMatch( FB.TK.ELSE ) ) then
+	if( hMatch( FB_TK_ELSE ) ) then
 		deflabel = symbAddLabel( "" )
 		irEmitLABEL deflabel, FALSE
 
@@ -1423,12 +1423,12 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
 		do
 			if( not cExpression( expr1 ) ) then
-				hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
 
 			if( not astIsCONST( expr1 ) ) then
-				hReportError FB.ERRMSG.EXPECTEDCONST
+				hReportError FB_ERRMSG_EXPECTEDCONST
 				exit function
 			end if
 
@@ -1436,14 +1436,14 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 			astDel( expr1 )
 
 			'' TO?
-			if( hMatch( FB.TK.TO ) ) then
+			if( hMatch( FB_TK_TO ) ) then
 				if( not cExpression( expr2 ) ) then
-					hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+					hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 					exit function
 				end if
 
 				if( not astIsCONST( expr2 ) ) then
-					hReportError FB.ERRMSG.EXPECTEDCONST
+					hReportError FB_ERRMSG_EXPECTEDCONST
 					exit function
 				end if
 
@@ -1488,14 +1488,14 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 
 	'' SimpleLine*
 	do
-	loop while( cSimpleLine and (lexCurrentToken <> FB.TK.EOF) )
+	loop while( cSimpleLine and (lexCurrentToken <> FB_TK_EOF) )
 
-	if( hGetLastError <> FB.ERRMSG.OK ) then
+	if( hGetLastError <> FB_ERRMSG_OK ) then
 		exit function
 	end if
 
 	'' break from block
-	astFlush( astNewBRANCH( IR.OP.JMP, exitlabel ) )
+	astFlush( astNewBRANCH( IR_OP_JMP, exitlabel ) )
 
 	function = TRUE
 
@@ -1503,13 +1503,13 @@ end function
 
 '':::::
 private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
-	static as zstring * FB.MAXNAMELEN+1 sname
+	static as zstring * FB_MAXNAMELEN+1 sname
 	dim dTB(0) as FBARRAYDIM
 
 	sname = *hMakeTmpStr( )
 
-	function = symbAddVarEx( sname, "", FB.SYMBTYPE.UINT, NULL, 0, _
-							 FB.INTEGERSIZE, 1, dTB(), FB.ALLOCTYPE.SHARED, _
+	function = symbAddVarEx( sname, "", FB_SYMBTYPE_UINT, NULL, 0, _
+							 FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED, _
 							 FALSE, FALSE, FALSE )
 
 end function
@@ -1530,17 +1530,17 @@ function cSelectConstStmt as integer
 
 	'' Expression
 	if( not cExpression( expr ) ) then
-		hReportError( FB.ERRMSG.EXPECTEDEXPRESSION )
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
 
-	if( astGetDataClass( expr ) <> IR.DATACLASS.INTEGER ) then
-		hReportError( FB.ERRMSG.INVALIDDATATYPES )
+	if( astGetDataClass( expr ) <> IR_DATACLASS_INTEGER ) then
+		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
 	end if
 
-	if( astGetDataType( expr ) <> IR.DATATYPE.UINT ) then
-		expr = astNewCONV( INVALID, IR.DATATYPE.UINT, NULL, expr )
+	if( astGetDataType( expr ) <> IR_DATATYPE_UINT ) then
+		expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 	end if
 
 	'' Comment?
@@ -1548,32 +1548,32 @@ function cSelectConstStmt as integer
 
 	'' separator
 	if( not cSttSeparator ) then
-		hReportError( FB.ERRMSG.EXPECTEDEOL )
+		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
 	'' save current context
 	lastcompstmt = env.lastcompound
-	env.lastcompound = FB.TK.SELECT
+	env.lastcompound = FB_TK_SELECT
 
 	'' add labels
 	exitlabel = symbAddLabel( "" )
 	complabel = symbAddLabel( "" )
 
 	'' store expression into a temp var
-	sym = symbAddTempVar( FB.SYMBTYPE.UINT )
+	sym = symbAddTempVar( FB_SYMBTYPE_UINT )
 	if( sym = NULL ) then
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
 	astFlush( expr )
 
 	'' skip the statements
-	astFlush( astNewBRANCH( IR.OP.JMP, complabel ) )
+	astFlush( astNewBRANCH( IR_OP_JMP, complabel ) )
 
 	'' SwitchLine*
 	swtbase = ctx.swt.base
@@ -1590,11 +1590,11 @@ function cSelectConstStmt as integer
 	    	exit do
     	end if
 
-	loop while( lexCurrentToken <> FB.TK.EOF )
+	loop while( lexCurrentToken <> FB_TK_EOF )
 
     '' too large?
-    if( (minval > maxval) or (maxval - minval > FB.MAXSWTCASERANGE) ) then
-    	hReportError( FB.ERRMSG.RANGETOOLARGE )
+    if( (minval > maxval) or (maxval - minval > FB_MAXSWTCASERANGE) ) then
+    	hReportError( FB_ERRMSG_RANGETOOLARGE )
     	exit function
     end if
 
@@ -1608,26 +1608,26 @@ function cSelectConstStmt as integer
 
 	'' check min val
 	if( minval > 0 ) then
-		expr = astNewBOP( IR.OP.LT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-						  astNewCONSTi( minval, IR.DATATYPE.UINT ), deflabel, FALSE )
+		expr = astNewBOP( IR_OP_LT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+						  astNewCONSTi( minval, IR_DATATYPE_UINT ), deflabel, FALSE )
 		astFlush( expr )
 	end if
 
 	'' check max val
-	expr = astNewBOP( IR.OP.GT, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-					  astNewCONSTi( maxval, IR.DATATYPE.UINT ), deflabel, FALSE )
+	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+					  astNewCONSTi( maxval, IR_DATATYPE_UINT ), deflabel, FALSE )
 	astFlush( expr )
 
     '' jump to table[idx]
     tbsym = hSelConstAllocTbSym( )
 
-	idxexpr = astNewBOP( IR.OP.MUL, astNewVAR( sym, NULL, 0, IR.DATATYPE.UINT ), _
-    				  			    astNewCONSTi( FB.INTEGERSIZE, IR.DATATYPE.UINT ) )
+	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+    				  			    astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB.INTEGERSIZE, IR.DATATYPE.UINT ), idxexpr, _
-    				  IR.DATATYPE.UINT, NULL )
+    expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
+    				  IR_DATATYPE_UINT, NULL )
 
-    astFlush( astNewBRANCH( IR.OP.JUMPPTR, NULL, expr ) )
+    astFlush( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
 
     '' emit table
     irEmitLABEL tbsym, FALSE
@@ -1639,10 +1639,10 @@ function cSelectConstStmt as integer
     l = swtbase
     for value = minval to maxval
     	if( value = ctx.swt.caseTB(l).value ) then
-    		emitTYPE( IR.DATATYPE.UINT, symbGetName( ctx.swt.caseTB(l).label ) )
+    		emitTYPE( IR_DATATYPE_UINT, symbGetName( ctx.swt.caseTB(l).label ) )
     		l += 1
     	else
-    		emitTYPE( IR.DATATYPE.UINT, symbGetName( deflabel ) )
+    		emitTYPE( IR_DATATYPE_UINT, symbGetName( deflabel ) )
     	end if
     next value
 
@@ -1656,8 +1656,8 @@ function cSelectConstStmt as integer
     '''''symbDelLabel exitlabel
 
 	'' END SELECT
-	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.SELECT )) ) then
-		hReportError FB.ERRMSG.EXPECTEDENDSELECT
+	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SELECT )) ) then
+		hReportError FB_ERRMSG_EXPECTEDENDSELECT
 		exit function
 	end if
 
@@ -1680,38 +1680,38 @@ function cExitStatement as integer
 
 	'' (FOR | DO | WHILE | SUB | FUNCTION)
 	select case as const lexCurrentToken
-	case FB.TK.FOR
+	case FB_TK_FOR
 		label = env.forstmt.endlabel
 
-	case FB.TK.DO
+	case FB_TK_DO
 		label = env.dostmt.endlabel
 
-	case FB.TK.WHILE
+	case FB_TK_WHILE
 		label = env.whilestmt.endlabel
 
-	case FB.TK.SUB, FB.TK.FUNCTION
+	case FB_TK_SUB, FB_TK_FUNCTION
 		label = env.procstmt.endlabel
 
 		if( label = NULL ) then
-			hReportError FB.ERRMSG.ILLEGALOUTSIDEASUB
+			hReportError FB_ERRMSG_ILLEGALOUTSIDEASUB
 			exit function
 		end if
 
 	case else
-		hReportError FB.ERRMSG.ILLEGALOUTSIDEASTMT
+		hReportError FB_ERRMSG_ILLEGALOUTSIDEASTMT
 		exit function
 	end select
 
 	''
 	if( label = NULL ) then
-		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+		hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 		exit function
 	end if
 
 	lexSkipToken
 
 	''
-	astFlush( astNewBRANCH( IR.OP.JMP, label ) )
+	astFlush( astNewBRANCH( IR_OP_JMP, label ) )
 
 	function = TRUE
 
@@ -1730,29 +1730,29 @@ function cContinueStatement as integer
 
 	'' (FOR | DO | WHILE)
 	select case as const lexCurrentToken
-	case FB.TK.FOR
+	case FB_TK_FOR
 		label = env.forstmt.cmplabel
 
-	case FB.TK.DO
+	case FB_TK_DO
 		label = env.dostmt.cmplabel
 
-	case FB.TK.WHILE
+	case FB_TK_WHILE
 		label = env.whilestmt.cmplabel
 
 	case else
-		hReportError FB.ERRMSG.ILLEGALOUTSIDEASTMT
+		hReportError FB_ERRMSG_ILLEGALOUTSIDEASTMT
 		exit function
 	end select
 
 	if( label = NULL ) then
-		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+		hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 		exit function
 	end if
 
 	lexSkipToken
 
 	''
-	astFlush( astNewBRANCH( IR.OP.JMP, label ) )
+	astFlush( astNewBRANCH( IR_OP_JMP, label ) )
 
 	function = TRUE
 
@@ -1766,15 +1766,15 @@ function cEndStatement as integer
 
 	function = FALSE
 
-	if( lexCurrentToken <> FB.TK.END ) then
+	if( lexCurrentToken <> FB_TK_END ) then
 		exit function
 	end if
 
 	'' any compound END will be parsed by the compound stmt
-	if( lexLookAheadClass(1) = FB.TKCLASS.KEYWORD ) then
+	if( lexLookAheadClass(1) = FB_TKCLASS_KEYWORD ) then
 
 		if( env.compoundcnt = 1 ) then
-			hReportError FB.ERRMSG.ILLEGALEND
+			hReportError FB_ERRMSG_ILLEGALEND
 			exit function
 		end if
 
@@ -1786,8 +1786,8 @@ function cEndStatement as integer
 
   	'' (Expression | )
   	select case lexCurrentToken
-  	case FB.TK.STATSEPCHAR, FB.TK.EOL, FB.TK.EOF, FB.TK.COMMENTCHAR, FB.TK.REM
-  		errlevel = astNewCONSTi( 0, IR.DATATYPE.INTEGER )
+  	case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+  		errlevel = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
   	case else
   		if( not cExpression( errlevel ) ) then
   			errlevel = NULL
@@ -1810,22 +1810,22 @@ function cCompoundStmtElm as integer
 
 	'' WEND | LOOP | NEXT | CASE | ELSE | ELSEIF
 	select case as const lexCurrentToken
-	case FB.TK.WEND
-		comp = FB.TK.WHILE
-	case FB.TK.LOOP
-		comp = FB.TK.DO
-	case FB.TK.NEXT
-		comp = FB.TK.FOR
-	case FB.TK.CASE
-		comp = FB.TK.SELECT
-	case FB.TK.ELSE, FB.TK.ELSEIF
-		comp = FB.TK.IF
+	case FB_TK_WEND
+		comp = FB_TK_WHILE
+	case FB_TK_LOOP
+		comp = FB_TK_DO
+	case FB_TK_NEXT
+		comp = FB_TK_FOR
+	case FB_TK_CASE
+		comp = FB_TK_SELECT
+	case FB_TK_ELSE, FB_TK_ELSEIF
+		comp = FB_TK_IF
 	case else
 		exit function
 	end select
 
 	if( comp <> env.lastcompound ) then
-		hReportError FB.ERRMSG.ILLEGALOUTSIDECOMP
+		hReportError FB_ERRMSG_ILLEGALOUTSIDECOMP
 		exit function
 	end if
 
@@ -1835,7 +1835,7 @@ end function
 
 '':::::
 private function hReadWithText( byval text as string ) as integer
-    static as zstring * FB.MAXNAMELEN+1 id
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as FBSYMBOL ptr sym
     dim as integer dpos
 
@@ -1847,14 +1847,14 @@ private function hReadWithText( byval text as string ) as integer
     	id[dpos-1] = 0 							'' left$( id, dpos-1 )
     end if
 
-    sym = symbFindByNameAndClass( id, FB.SYMBCLASS.VAR )
+    sym = symbFindByNameAndClass( id, FB_SYMBCLASS_VAR )
     if( sym = NULL ) then
-    	hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
+    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	return FALSE
     end if
 
-	if( sym->typ <> FB.SYMBTYPE.USERDEF ) then
-		hReportError( FB.ERRMSG.EXPECTEDIDENTIFIER )
+	if( sym->typ <> FB_SYMBTYPE_USERDEF ) then
+		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		return FALSE
 	end if
 
@@ -1863,7 +1863,7 @@ private function hReadWithText( byval text as string ) as integer
 
     do
     	select case lexCurrentToken( )
-		case FB.TK.EOL, FB.TK.STATSEPCHAR, FB.TK.COMMENTCHAR, FB.TK.REM, FB.TK.EOF
+		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOF
 			exit do
 		end select
 
@@ -1881,13 +1881,13 @@ end function
 ''					  END WITH .
 ''
 function cWithStatement as integer
-    dim as zstring * FB.MAXWITHLEN+1 oldwithtext
+    dim as zstring * FB_MAXWITHLEN+1 oldwithtext
     dim as integer lastcompstmt
 
 	function = FALSE
 
-	if( ctx.withcnt >= FB.MAXWITHLEVELS ) then
-		hReportError( FB.ERRMSG.RECLEVELTOODEPTH )
+	if( ctx.withcnt >= FB_MAXWITHLEVELS ) then
+		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
 		exit function
 	end if
 
@@ -1909,19 +1909,19 @@ function cWithStatement as integer
 	'' separator
 	if( not cSttSeparator ) then
 		env.withtext = oldwithtext
-		hReportError FB.ERRMSG.EXPECTEDEOL
+		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	''
 	lastcompstmt     = env.lastcompound
-	env.lastcompound = FB.TK.WITH
+	env.lastcompound = FB_TK_WITH
 
 	ctx.withcnt += 1
 
 	'' loop body
 	do
-	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB.TK.EOF) )
+	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB_TK_EOF) )
 
 	'' restore old
 	env.withtext = oldwithtext
@@ -1932,8 +1932,8 @@ function cWithStatement as integer
 	env.lastcompound = lastcompstmt
 
 	'' END WITH
-	if( (not hMatch( FB.TK.END )) or (not hMatch( FB.TK.WITH )) ) then
-		hReportError( FB.ERRMSG.EXPECTEDENDWITH )
+	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_WITH )) ) then
+		hReportError( FB_ERRMSG_EXPECTEDENDWITH )
 		exit function
 	end if
 

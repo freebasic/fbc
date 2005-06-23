@@ -27,9 +27,9 @@ option escape
 
 const NULL = 0
 
-'$include once: 'inc\hash.bi'
-'$include once: 'inc\list.bi'
-'$include once: 'inc\hlp.bi'
+#include once "inc\hash.bi"
+#include once "inc\list.bi"
+#include once "inc\hlp.bi"
 
 type HASHCTX
 	itemlist    as TLIST
@@ -48,7 +48,7 @@ declare sub 		hashDelItem	( byval list as HASHLIST ptr, _
 sub hashInit static
 
 	'' allocate the initial item list pool
-	listNew( @ctx.itemlist, HASH.INITITEMNODES, len( HASHITEM ), FALSE )
+	listNew( @ctx.itemlist, HASH_INITITEMNODES, len( HASHITEM ), FALSE )
 
 end sub
 

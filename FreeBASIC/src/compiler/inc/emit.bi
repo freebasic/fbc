@@ -19,31 +19,31 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'$include once: 'inc\reg.bi'
-'$include once: 'inc\ir.bi'
+#include once "inc\reg.bi"
+#include once "inc\ir.bi"
 
 
 const EMIT_MAINPROC			= "fb_modulemain"
 const EMIT_LOCALPREFIX		= "L"
 
-const EMIT.REGCLASSES		= 2					'' assuming IR.DATACLASS. will start at 0!
+const EMIT_REGCLASSES		= 2					'' assuming IR_DATACLASS_ will start at 0!
 
-enum EMITINTREG
-	EMIT.INTREG.EDX
-	EMIT.INTREG.EDI
-	EMIT.INTREG.ESI
-	EMIT.INTREG.ECX
-	EMIT.INTREG.EBX
-	EMIT.INTREG.EAX
+enum EMITINTREG_ENUM
+	EMIT_INTREG_EDX
+	EMIT_INTREG_EDI
+	EMIT_INTREG_ESI
+	EMIT_INTREG_ECX
+	EMIT_INTREG_EBX
+	EMIT_INTREG_EAX
 end enum
 
 '' section types
 enum EMITSECTYPE
-	EMIT.SECTYPE.CONST
-	EMIT.SECTYPE.DATA
-	EMIT.SECTYPE.BSS
-	EMIT.SECTYPE.CODE
-	EMIT.SECTYPE.DIRECTIVE
+	EMIT_SECTYPE_CONST
+	EMIT_SECTYPE_DATA
+	EMIT_SECTYPE_BSS
+	EMIT_SECTYPE_CODE
+	EMIT_SECTYPE_DIRECTIVE
 end enum
 
 

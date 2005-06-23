@@ -19,140 +19,140 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-const IR.INITVREGNODES		= 1024
+const IR_INITVREGNODES		= 1024
 
-const IR.INITADDRNODES		= 2048
+const IR_INITADDRNODES		= 2048
 
-const IR.MAXDIST			= 65536
+const IR_MAXDIST			= 65536
 
 enum IRDATACLASS_ENUM
-	IR.DATACLASS.INTEGER                        '' must be the first
-	IR.DATACLASS.FPOINT
-	IR.DATACLASS.STRING							'' /    /  /   last
-	IR.DATACLASS.UDT
-	IR.DATACLASS.FUNCT
-	IR.DATACLASS.UNKNOWN
+	IR_DATACLASS_INTEGER                        '' must be the first
+	IR_DATACLASS_FPOINT
+	IR_DATACLASS_STRING							'' /    /  /   last
+	IR_DATACLASS_UDT
+	IR_DATACLASS_FUNCT
+	IR_DATACLASS_UNKNOWN
 end enum
 
 '' data types (must be in order of precision and in the other signed/non-signed!)
 enum IRDATATYPE_ENUM
-	IR.DATATYPE.VOID
-	IR.DATATYPE.BYTE
-	IR.DATATYPE.UBYTE
-	IR.DATATYPE.CHAR
-	IR.DATATYPE.SHORT
-	IR.DATATYPE.USHORT
-	IR.DATATYPE.INTEGER
-	IR.DATATYPE.LONG		= IR.DATATYPE.INTEGER
-	IR.DATATYPE.UINT
-	IR.DATATYPE.ENUM
-	IR.DATATYPE.LONGINT
-	IR.DATATYPE.ULONGINT
-	IR.DATATYPE.SINGLE
-	IR.DATATYPE.DOUBLE
-	IR.DATATYPE.STRING
-	IR.DATATYPE.FIXSTR
-	IR.DATATYPE.USERDEF
-	IR.DATATYPE.FUNCTION
-	IR.DATATYPE.FWDREF
-	IR.DATATYPE.POINTER							'' ptr must be the last!
+	IR_DATATYPE_VOID
+	IR_DATATYPE_BYTE
+	IR_DATATYPE_UBYTE
+	IR_DATATYPE_CHAR
+	IR_DATATYPE_SHORT
+	IR_DATATYPE_USHORT
+	IR_DATATYPE_INTEGER
+	IR_DATATYPE_LONG		= IR_DATATYPE_INTEGER
+	IR_DATATYPE_UINT
+	IR_DATATYPE_ENUM
+	IR_DATATYPE_LONGINT
+	IR_DATATYPE_ULONGINT
+	IR_DATATYPE_SINGLE
+	IR_DATATYPE_DOUBLE
+	IR_DATATYPE_STRING
+	IR_DATATYPE_FIXSTR
+	IR_DATATYPE_USERDEF
+	IR_DATATYPE_FUNCTION
+	IR_DATATYPE_FWDREF
+	IR_DATATYPE_POINTER							'' ptr must be the last!
 end enum
 
-const IR.MAXDATATYPES 		= 19-1				'' pointer not taken into account
+const IR_MAXDATATYPES 		= 19-1				'' pointer not taken into account
 
 ''
 enum IRVREGTYPE_ENUM
-	IR.VREGTYPE.OPER							'' used by DAG only
-	IR.VREGTYPE.IMM
-	IR.VREGTYPE.VAR
-	IR.VREGTYPE.IDX
-	IR.VREGTYPE.PTR
-	IR.VREGTYPE.TMPVAR
-	IR.VREGTYPE.REG
-	IR.VREGTYPE.OFS
+	IR_VREGTYPE_OPER							'' used by DAG only
+	IR_VREGTYPE_IMM
+	IR_VREGTYPE_VAR
+	IR_VREGTYPE_IDX
+	IR_VREGTYPE_PTR
+	IR_VREGTYPE_TMPVAR
+	IR_VREGTYPE_REG
+	IR_VREGTYPE_OFS
 end enum
 
 ''
 enum IROPTYPE_ENUM
-	IR.OPTYPE.BINARY
-	IR.OPTYPE.UNARY
-	IR.OPTYPE.LOAD
-	IR.OPTYPE.STORE
-	IR.OPTYPE.BRANCH
-	IR.OPTYPE.COMP
-	IR.OPTYPE.CONVERT
-	IR.OPTYPE.CALL
-	IR.OPTYPE.STACK
-	IR.OPTYPE.ADDRESSING
+	IR_OPTYPE_BINARY
+	IR_OPTYPE_UNARY
+	IR_OPTYPE_LOAD
+	IR_OPTYPE_STORE
+	IR_OPTYPE_BRANCH
+	IR_OPTYPE_COMP
+	IR_OPTYPE_CONVERT
+	IR_OPTYPE_CALL
+	IR_OPTYPE_STACK
+	IR_OPTYPE_ADDRESSING
 end enum
 
 ''
-const IR.OP.NOP			= 255
+const IR_OP_NOP			= 255
 
 enum IROP_ENUM
-	IR.OP.LOAD
-	IR.OP.LOADRESULT
-	IR.OP.STORE
-	IR.OP.ADD
-	IR.OP.SUB
-	IR.OP.MUL
-	IR.OP.DIV
-	IR.OP.MOD
-	IR.OP.AND
-	IR.OP.OR
-	IR.OP.XOR
-	IR.OP.SHL
-	IR.OP.SHR
-	IR.OP.POW
-	IR.OP.EQV
-	IR.OP.IMP
-	IR.OP.MOV
-	IR.OP.EQ
-	IR.OP.GT
-	IR.OP.LT
-	IR.OP.NE
-	IR.OP.LE
-	IR.OP.GE
-	IR.OP.JEQ
-	IR.OP.JGT
-	IR.OP.JLT
-	IR.OP.JNE
-	IR.OP.JLE
-	IR.OP.JGE
-	IR.OP.NOT
-	IR.OP.NEG
-	IR.OP.ABS
-	IR.OP.SGN
-	IR.OP.JMP
-	IR.OP.CALL
-	IR.OP.LABEL
-	IR.OP.PUSH
-	IR.OP.POP
-	IR.OP.PUSHUDT
-	IR.OP.INTDIV
-	IR.OP.TOINT
-	IR.OP.TOFLT
-	IR.OP.ADDROF
-	IR.OP.DEREF
-	IR.OP.CALLFUNCT
-	IR.OP.CALLPTR
-	IR.OP.STACKALIGN
-	IR.OP.JUMPPTR
-	IR.OP.SIN
-	IR.OP.ASIN
-	IR.OP.COS
-	IR.OP.ACOS
-	IR.OP.TAN
-	IR.OP.ATAN
-	IR.OP.SQRT
-	IR.OP.LOG
-	IR.OP.FLOOR
-	IR.OP.ATAN2
+	IR_OP_LOAD
+	IR_OP_LOADRESULT
+	IR_OP_STORE
+	IR_OP_ADD
+	IR_OP_SUB
+	IR_OP_MUL
+	IR_OP_DIV
+	IR_OP_MOD
+	IR_OP_AND
+	IR_OP_OR
+	IR_OP_XOR
+	IR_OP_SHL
+	IR_OP_SHR
+	IR_OP_POW
+	IR_OP_EQV
+	IR_OP_IMP
+	IR_OP_MOV
+	IR_OP_EQ
+	IR_OP_GT
+	IR_OP_LT
+	IR_OP_NE
+	IR_OP_LE
+	IR_OP_GE
+	IR_OP_JEQ
+	IR_OP_JGT
+	IR_OP_JLT
+	IR_OP_JNE
+	IR_OP_JLE
+	IR_OP_JGE
+	IR_OP_NOT
+	IR_OP_NEG
+	IR_OP_ABS
+	IR_OP_SGN
+	IR_OP_JMP
+	IR_OP_CALL
+	IR_OP_LABEL
+	IR_OP_PUSH
+	IR_OP_POP
+	IR_OP_PUSHUDT
+	IR_OP_INTDIV
+	IR_OP_TOINT
+	IR_OP_TOFLT
+	IR_OP_ADDROF
+	IR_OP_DEREF
+	IR_OP_CALLFUNCT
+	IR_OP_CALLPTR
+	IR_OP_STACKALIGN
+	IR_OP_JUMPPTR
+	IR_OP_SIN
+	IR_OP_ASIN
+	IR_OP_COS
+	IR_OP_ACOS
+	IR_OP_TAN
+	IR_OP_ATAN
+	IR_OP_SQRT
+	IR_OP_LOG
+	IR_OP_FLOOR
+	IR_OP_ATAN2
 end enum
 
 '' operations below won't reach IR, used by AST
-const IR.OP.TOSIGNED		= 253
-const IR.OP.TOUNSIGNED		= 254
+const IR_OP_TOSIGNED		= 253
+const IR_OP_TOUNSIGNED		= 254
 
 ''
 type IRVREG_ as IRVREG
@@ -301,7 +301,7 @@ declare function 	irGetVRDataClass	( byval vreg as IRVREG ptr ) as integer
 declare function 	irGetVRDataSize		( byval vreg as IRVREG ptr ) as integer
 
 declare sub 		irGetVRNameEx		( byval vreg as IRVREG ptr, _
-										  byval typ as integer, _
+										  byval vtype as integer, _
 										  vname as string )
 
 declare function 	irMaxDataType		( byval dtype1 as integer, _
@@ -341,9 +341,9 @@ declare sub 		irXchgTOS			( byval reg as integer )
 ''
 '' macros
 ''
-#define irIsREG(v) iif( v->typ = IR.VREGTYPE.REG, TRUE, FALSE )
+#define irIsREG(v) iif( v->typ = IR_VREGTYPE_REG, TRUE, FALSE )
 
-#define irIsIMM(v) iif( v->typ = IR.VREGTYPE.IMM, TRUE, FALSE )
+#define irIsIMM(v) iif( v->typ = IR_VREGTYPE_IMM, TRUE, FALSE )
 
 
 #define irGetVRType(v) v->typ
@@ -359,29 +359,29 @@ declare sub 		irXchgTOS			( byval reg as integer )
 
 #define irEmitUOP(op,v1,vr) irEmit( op, v1, NULL, vr )
 
-#define irEmitSTORE(v1,v2) irEmit( IR.OP.STORE, v1, v2, NULL )
+#define irEmitSTORE(v1,v2) irEmit( IR_OP_STORE, v1, v2, NULL )
 
 #define irEmitLOAD(op,v1) irEmit( op, v1, NULL, NULL )
 
 #define irEmitSTACK(op,v1) irEmit( op, v1, NULL, NULL )
 
-#define irEmitPUSH(v1) irEmitSTACK( IR.OP.PUSH, v1 )
+#define irEmitPUSH(v1) irEmitSTACK( IR_OP_PUSH, v1 )
 
-#define irEmitPOP(v1) irEmitSTACK( IR.OP.POP, v1 )
+#define irEmitPOP(v1) irEmitSTACK( IR_OP_POP, v1 )
 
-#define irEmitPUSHUDT(v1,lgt) irEmit( IR.OP.PUSHUDT, v1, NULL, NULL, NULL, lgt )
+#define irEmitPUSHUDT(v1,lgt) irEmit( IR_OP_PUSHUDT, v1, NULL, NULL, NULL, lgt )
 
 #define irEmitADDR(op,v1,vr) irEmit( op, v1, NULL, vr )
 
-#define irEmitLABELNF(l) irEmit( IR.OP.LABEL, NULL, NULL, NULL, l )
+#define irEmitLABELNF(l) irEmit( IR_OP_LABEL, NULL, NULL, NULL, l )
 
-#define irEmitCALLFUNCT(proc,bytestopop,vr) irEmit( IR.OP.CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
+#define irEmitCALLFUNCT(proc,bytestopop,vr) irEmit( IR_OP_CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
 
-#define irEmitCALLPTR(v1,vr,bytestopop) irEmit( IR.OP.CALLPTR, v1, NULL, vr, NULL, bytestopop )
+#define irEmitCALLPTR(v1,vr,bytestopop) irEmit( IR_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )
 
-#define irEmitSTACKALIGN(bytes) irEmit( IR.OP.STACKALIGN, NULL, NULL, NULL, NULL, bytes )
+#define irEmitSTACKALIGN(bytes) irEmit( IR_OP_STACKALIGN, NULL, NULL, NULL, NULL, bytes )
 
-#define irEmitBRANCHPTR(v1) irEmit( IR.OP.JUMPPTR, v1, NULL, NULL, NULL )
+#define irEmitBRANCHPTR(v1) irEmit( IR_OP_JUMPPTR, v1, NULL, NULL, NULL )
 
 #define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
 

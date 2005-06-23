@@ -18,8 +18,8 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-const HASH.INITENTRYNODES	= 1000
-const HASH.INITITEMNODES	= HASH.INITENTRYNODES*8
+const HASH_INITENTRYNODES	= 1000
+const HASH_INITITEMNODES	= HASH_INITENTRYNODES*8
 
 type HASHITEM
 	prv			as HASHITEM ptr			'' linked-list nodes

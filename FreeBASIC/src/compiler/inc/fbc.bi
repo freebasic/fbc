@@ -64,9 +64,9 @@ type FBCCTX
 	inclist(0 to FB_MAXARGS-1) 	as string
 	pthlist(0 to FB_MAXARGS-1) 	as string
 
-	outname 					as zstring * FB.MAXPATHLEN+1
-	entrypoint 					as zstring * 3+FB.MAXNAMELEN+6+1
-	subsystem					as zstring * FB.MAXNAMELEN+1
+	outname 					as zstring * FB_MAXPATHLEN+1
+	entrypoint 					as zstring * 3+FB_MAXNAMELEN+6+1
+	subsystem					as zstring * FB_MAXNAMELEN+1
 end type
 
 

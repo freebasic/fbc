@@ -1,3 +1,4 @@
+
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
       that will keep track of what wasn't initialized to fill 'em with 0's
@@ -61,9 +62,15 @@
 [ ] make the emiter modules modular (duh), so multiple cpu targets could be supported.. some day
 
 [ ] classes
-    - single inheritance, plus interfaces
-    - Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
     - MUST follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
+    - Java/Php5-ish: CLASS EXTENDS IMPLEMENTS THROWS
+    - single inheritance, plus interfaces
+    - operator overloading
+    - pure virtual methods
+    - down casting
+    - name space
+    - static constructors and destructors
+    - some support for RTTI
 
 *** yet another optimizations ***
 [ ] reuse temp vars (or just strings), so less mem is used

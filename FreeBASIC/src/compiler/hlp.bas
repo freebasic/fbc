@@ -24,10 +24,10 @@ option explicit
 option escape
 
 defint a-z
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbint.bi'
-'$include once: 'inc\ir.bi'
-'$include once: 'inc\lex.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\ir.bi"
+#include once "inc\lex.bi"
 
 type FBERRCTX
 	lasterror 	as integer
@@ -47,7 +47,7 @@ end type
 
 	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
 
-	dim shared suffixTB( 0 to FB.SYMBOLTYPES-1 ) as zstring * 1+1 => { _
+	dim shared suffixTB( 0 to FB_SYMBOLTYPES-1 ) as zstring * 1+1 => { _
 				"v", _							'' void
 				"b", "a", _                     '' byte, ubyte
 				"c", _                          '' char
@@ -63,13 +63,13 @@ end type
 				"p" }                           '' pointer
 
 
-	dim shared warningMsgs( 1 to FB.WARNINGMSGS-1 ) as FBWARNING = { _
+	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = { _
 		( 0, "Passing scalar as pointer" ), _
 		( 0, "Suspicious pointer assignment" ), _
 		( 0, "Implicit convertion" ) _
 	}
 
-	dim shared errorMsgs( 1 to FB.ERRMSGS-1 ) as zstring * 128 => { _
+	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => { _
 		"Argument count mismatch", _
 		"Expected End-of-File", _
 		"Expected End-of-Line", _
@@ -161,11 +161,11 @@ sub hlpInit
 
 	''
 	for i = 0 to (90-65+1)-1
-		deftypeTB(i) = FB.SYMBTYPE.INTEGER
+		deftypeTB(i) = FB_SYMBTYPE_INTEGER
 	next i
 
 	''
-	for i = 0 to FB.SYMBOLTYPES-1
+	for i = 0 to FB_SYMBOLTYPES-1
 		if( len( suffixTB(i) ) = 0 ) then
 			suffixTB(i) = chr$( CHAR_ALOW + i )
 		end if
@@ -210,14 +210,14 @@ sub hReportErrorEx( byval errnum as integer, _
 		ctx.lastline  = linenum
 	end if
 
-	if( (errnum < 1) or (errnum >= FB.ERRMSGS) ) then
+	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
 		msg = ""
 	else
 		msg = errorMsgs(errnum)
 	end if
 
-	if( len( env.infile ) > 0 ) then
-		print env.infile; "(";
+	if( len( env.inf.name ) > 0 ) then
+		print env.inf.name; "(";
 		if( linenum > 0 ) then
 			print str$( linenum );
 		end if
@@ -279,7 +279,7 @@ end function
 sub hReportWarning( byval msgnum as integer, _
 				 	byval msgex as string = "" )
 
-	if( (msgnum < 1) or (msgnum >= FB.WARNINGMSGS) ) then
+	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
 		exit sub
 	end if
 
@@ -287,7 +287,7 @@ sub hReportWarning( byval msgnum as integer, _
 		exit sub
 	end if
 
-	print env.infile; "(";
+	print env.inf.name; "(";
 	if( lexLineNum( ) > 0 ) then
 		print str$( lexLineNum( ) );
 	end if
@@ -398,18 +398,18 @@ end sub
 function hFBrelop2IRrelop( byval op as integer ) as integer static
 
     select case as const op
-    case FB.TK.EQ
-    	op = IR.OP.EQ
-    case FB.TK.GT
-    	op = IR.OP.GT
-    case FB.TK.LT
-    	op = IR.OP.LT
-    case FB.TK.NE
-    	op = IR.OP.NE
-    case FB.TK.LE
-    	op = IR.OP.LE
-    case FB.TK.GE
-    	op = IR.OP.GE
+    case FB_TK_EQ
+    	op = IR_OP_EQ
+    case FB_TK_GT
+    	op = IR_OP_GT
+    case FB_TK_LT
+    	op = IR_OP_LT
+    case FB_TK_NE
+    	op = IR_OP_NE
+    case FB_TK_LE
+    	op = IR_OP_LE
+    case FB_TK_GE
+    	op = IR_OP_GE
     end select
 
     function = op
@@ -482,7 +482,7 @@ function hEscapeStr( byval text as string ) as string static
 			*d = CHAR_RSLASH
 			d += 1
 
-		case FB.INTSCAPECHAR
+		case FB_INTSCAPECHAR
 			*d = CHAR_RSLASH
 			d += 1
 
@@ -523,7 +523,7 @@ function hUnescapeStr( byval text as string ) as string static
     dim as string res
     dim as byte ptr s, d, l
 
-	if( not env.optescapestr ) then
+	if( not env.opt.escapestr ) then
     	return text
     end if
 
@@ -538,7 +538,7 @@ function hUnescapeStr( byval text as string ) as string static
 		c = *s
 		s += 1
 
-		if( c = FB.INTSCAPECHAR ) then
+		if( c = FB_INTSCAPECHAR ) then
 			*d = CHAR_RSLASH
 		end if
 
@@ -555,7 +555,7 @@ function hEscapeToChar( byval text as string ) as string static
     dim as string res, octval
     dim as byte ptr s, d, l
 
-	if( not env.optescapestr ) then
+	if( not env.opt.escapestr ) then
     	return text
     end if
 
@@ -569,7 +569,7 @@ function hEscapeToChar( byval text as string ) as string static
 		c = *s
 		s += 1
 
-		if( c = FB.INTSCAPECHAR ) then
+		if( c = FB_INTSCAPECHAR ) then
 
 			if( s >= l ) then exit do
 			c = *s
@@ -677,7 +677,7 @@ function hCreateName( byval symbol as string, _
 					  byval addunderscore as integer = TRUE, _
 					  byval clearname as integer = TRUE ) as zstring ptr static
 
-    static sname as zstring * FB.MAXINTNAMELEN+1
+    static sname as zstring * FB_MAXINTNAMELEN+1
 
 	if( addunderscore ) then
 		sname = "_"
@@ -695,8 +695,8 @@ function hCreateName( byval symbol as string, _
     end if
 
     if( typ <> INVALID ) then
-    	if( typ > FB.SYMBTYPE.POINTER ) then
-    		typ = FB.SYMBTYPE.POINTER
+    	if( typ > FB_SYMBTYPE_POINTER ) then
+    		typ = FB_SYMBTYPE_POINTER
     	end if
     	sname += suffixTB( typ )
     end if
@@ -710,7 +710,7 @@ function hCreateProcAlias( byval symbol as string, _
 						   byval argslen as integer, _
 						   byval mode as integer ) as zstring ptr static
 
-    static sname as zstring * FB.MAXINTNAMELEN+1
+    static sname as zstring * FB_MAXINTNAMELEN+1
 
 #ifdef TARGET_WIN32
     dim addat as integer
@@ -725,7 +725,7 @@ function hCreateProcAlias( byval symbol as string, _
     if( env.clopt.nostdcall ) then
     	addat = FALSE
     else
-    	addat = (mode = FB.FUNCMODE.STDCALL)
+    	addat = (mode = FB_FUNCMODE_STDCALL)
     end if
 
 	if( addat ) then
@@ -753,7 +753,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
 					    	  byval argc as integer, _
 					    	  byval argtail as FBSYMBOL ptr ) as zstring ptr static
     dim as integer i, typ
-    static as zstring * FB.MAXINTNAMELEN+1 aname
+    static as zstring * FB_MAXINTNAMELEN+1 aname
 
     aname = symbol
     aname += "__ovl_"
@@ -762,13 +762,13 @@ function hCreateOvlProcAlias( byval symbol as string, _
     	aname += "_"
 
     	typ = argtail->typ
-    	do while( typ >= FB.SYMBTYPE.POINTER )
+    	do while( typ >= FB_SYMBTYPE_POINTER )
     		aname += "p"
-    		typ -= FB.SYMBTYPE.POINTER
+    		typ -= FB_SYMBTYPE_POINTER
     	loop
 
     	aname += suffixTB( typ )
-    	if( (typ = FB.SYMBTYPE.USERDEF) or (typ = FB.SYMBTYPE.ENUM) ) then
+    	if( (typ = FB_SYMBTYPE_USERDEF) or (typ = FB_SYMBTYPE_ENUM) ) then
     		aname += symbGetName( argtail->subtype )
     	end if
 

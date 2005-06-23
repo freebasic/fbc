@@ -20,11 +20,11 @@
 
 
 '#ifdef TARGET_X86
-const REG.MAXREGS	= 8
+const REG_MAXREGS	= 8
 '#else
 '#endif
 
-'$include once:'inc\ir.bi'
+#include once "inc\ir.bi"
 
 
 type REGCLASS
@@ -69,16 +69,16 @@ type REGCLASS
 	isstack						as integer
 	regs						as integer
 
-	vregTB(0 to REG.MAXREGS-1) 	as IRVREG ptr	'' virtual register name (index)
+	vregTB(0 to REG_MAXREGS-1) 	as IRVREG ptr	'' virtual register name (index)
 
 	'' f/ non-stack sets only
-	nextTB(0 to REG.MAXREGS-1) 	as uinteger		'' distance of next vreg usage
-	freeTB(0 to REG.MAXREGS-1) 	as integer      '' true or false
-	fstack(0 to REG.MAXREGS-1) 	as integer		'' free regs stack
+	nextTB(0 to REG_MAXREGS-1) 	as uinteger		'' distance of next vreg usage
+	freeTB(0 to REG_MAXREGS-1) 	as integer      '' true or false
+	fstack(0 to REG_MAXREGS-1) 	as integer		'' free regs stack
     sp							as integer      '' stack pointer
 
 	'' f/ stack sets only
-	regTB(0 to REG.MAXREGS-1)	as integer		'' real register (st(#))
+	regTB(0 to REG_MAXREGS-1)	as integer		'' real register (st(#))
 	fregs						as integer      '' free regs
 end type
 

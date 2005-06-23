@@ -19,32 +19,32 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'$include once: 'inc\ir.bi'
+#include once "inc\ir.bi"
 
-const AST.INITTEMPSTRINGS		= 32*4
-const AST.INITTEMPARRAYS		= 32*4
+const AST_INITTEMPSTRINGS		= 32*4
+const AST_INITTEMPARRAYS		= 32*4
 
-const AST.INITNODES				= 8192
+const AST_INITNODES				= 8192
 
 enum ASTNODECLASS_ENUM
-	AST.NODECLASS.LINK
-	AST.NODECLASS.CONST
-	AST.NODECLASS.VAR
-	AST.NODECLASS.IDX
-	AST.NODECLASS.ENUM
-	AST.NODECLASS.BOP
-	AST.NODECLASS.UOP
-	AST.NODECLASS.FUNCT
-	AST.NODECLASS.PARAM
-	AST.NODECLASS.PTR
-	AST.NODECLASS.ADDR
-	AST.NODECLASS.ASSIGN
-	AST.NODECLASS.CONV
-	AST.NODECLASS.LOAD
-	AST.NODECLASS.BRANCH
-	AST.NODECLASS.IIF
-	AST.NODECLASS.OFFSET
-	AST.NODECLASS.STACK
+	AST_NODECLASS_LINK
+	AST_NODECLASS_CONST
+	AST_NODECLASS_VAR
+	AST_NODECLASS_IDX
+	AST_NODECLASS_ENUM
+	AST_NODECLASS_BOP
+	AST_NODECLASS_UOP
+	AST_NODECLASS_FUNCT
+	AST_NODECLASS_PARAM
+	AST_NODECLASS_PTR
+	AST_NODECLASS_ADDR
+	AST_NODECLASS_ASSIGN
+	AST_NODECLASS_CONV
+	AST_NODECLASS_LOAD
+	AST_NODECLASS_BRANCH
+	AST_NODECLASS_IIF
+	AST_NODECLASS_OFFSET
+	AST_NODECLASS_STACK
 end enum
 
 type ASTNODE_ as ASTNODE
@@ -150,7 +150,7 @@ declare sub 		astInit				( )
 
 declare sub 		astEnd				( )
 
-declare function 	astNew				( byval typ as integer, _
+declare function 	astNew				( byval class as integer, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
@@ -225,7 +225,7 @@ declare function 	astLoadCONST		( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
 										  byval elm as FBSYMBOL ptr = NULL, _
 										  byval ofs as integer = 0, _
-										  byval dtype as integer = IR.DATATYPE.INTEGER, _
+										  byval dtype as integer = IR_DATATYPE_INTEGER, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astLoadVAR			( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -317,15 +317,15 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 
 #define astIsCONST(n) n->defined
 
-#define astIsVAR(n) (n->class = AST.NODECLASS.VAR)
+#define astIsVAR(n) (n->class = AST_NODECLASS_VAR)
 
-#define astIsIDX(n) (n->class = AST.NODECLASS.IDX)
+#define astIsIDX(n) (n->class = AST_NODECLASS_IDX)
 
-#define astIsFUNCT(n) (n->class = AST.NODECLASS.FUNCT)
+#define astIsFUNCT(n) (n->class = AST_NODECLASS_FUNCT)
 
-#define astIsPTR(n) (n->class = AST.NODECLASS.PTR)
+#define astIsPTR(n) (n->class = AST_NODECLASS_PTR)
 
-#define astIsOFFSET(n) (n->class = AST.NODECLASS.OFFSET)
+#define astIsOFFSET(n) (n->class = AST_NODECLASS_OFFSET)
 
 #define astGetValuei(n) n->v.valuei
 

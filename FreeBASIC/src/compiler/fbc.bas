@@ -28,9 +28,9 @@ option explicit
 option private
 option escape
 
-'$include once: 'inc\fb.bi'
-'$include once: 'inc\fbc.bi'
-'$include once: 'inc\hlp.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbc.bi"
+#include once "inc\hlp.bi"
 
 declare sub 	 parseCmd 				( argc as integer, argv() as string )
 
@@ -91,7 +91,7 @@ declare function delFiles 				( ) as integer
 
     ''
     if( fbc.verbose or fbc.showversion ) then
-    	print "FreeBASIC Compiler - Version " + FB.VERSION
+    	print "FreeBASIC Compiler - Version " + FB_VERSION
     	print "Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
     	print
     	if( fbc.showversion ) then
@@ -394,9 +394,9 @@ sub setDefaultOptions
 	fbc.debug 		= FALSE
 	fbc.stacksize	= FB_DEFSTACKSIZE
 	fbc.outtype 	= FB_OUTTYPE_EXECUTABLE
-	fbc.target		= fbGetOption( FB.COMPOPT.TARGET )
-	fbc.cputype		= fbGetOption( FB.COMPOPT.CPUTYPE )
-	fbc.warnlevel	= fbGetOption( FB.COMPOPT.WARNINGLEVEL )
+	fbc.target		= fbGetOption( FB_COMPOPT_TARGET )
+	fbc.cputype		= fbGetOption( FB_COMPOPT_CPUTYPE )
+	fbc.warnlevel	= fbGetOption( FB_COMPOPT_WARNINGLEVEL )
 
 end sub
 
@@ -430,13 +430,13 @@ function processOptions as integer
 			case "arch"
 				select case argv(i+1)
 				case "386"
-					fbc.cputype = FB.CPUTYPE.386
+					fbc.cputype = FB_CPUTYPE_386
 				case "486"
-					fbc.cputype = FB.CPUTYPE.486
+					fbc.cputype = FB_CPUTYPE_486
 				case "586"
-					fbc.cputype = FB.CPUTYPE.586
+					fbc.cputype = FB_CPUTYPE_586
 				case "686"
-					fbc.cputype = FB.CPUTYPE.686
+					fbc.cputype = FB_CPUTYPE_686
 				case else
 					exit function
 				end select
@@ -600,7 +600,7 @@ function processOptions as integer
 
 			case else
 				if( not fbc.processOptions( argv(i), argv(i+1) ) ) then
-					hReportErrorEx( FB.ERRMSG.INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
+					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
 					exit function
 				end if
 
@@ -639,26 +639,26 @@ function processCompOptions as integer
 
 			select case mid$( argv(i), 2 )
 			case "e"
-				fbSetOption( FB.COMPOPT.ERRORCHECK, TRUE )
+				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 
 			case "ex"
-				fbSetOption( FB.COMPOPT.ERRORCHECK, TRUE )
-				fbSetOption( FB.COMPOPT.RESUMEERROR, TRUE )
+				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
 
 			case "mt"
-				fbSetOption( FB.COMPOPT.MULTITHREADED, TRUE )
+				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
 
 			case "profile"
-				fbSetOption( FB.COMPOPT.PROFILE, TRUE )
+				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
 
 			case "noerrline"
-				fbSetOption( FB.COMPOPT.SHOWERROR, FALSE )
+				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
 
 			case "nodeflibs"
-				fbSetOption( FB.COMPOPT.NODEFLIBS, TRUE )
+				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
 
 			case "noexport"
-				fbSetOption( FB.COMPOPT.EXPORT, FALSE )
+				fbSetOption( FB_COMPOPT_EXPORT, FALSE )
 
 			case else
 				fbc.processCompOptions( argv(i) )
@@ -666,7 +666,7 @@ function processCompOptions as integer
 			end select
 
 		else
-			hReportErrorEx( FB.ERRMSG.INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
+			hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
 			exit function
 		end if
 
@@ -675,11 +675,11 @@ function processCompOptions as integer
 	''
 	fbc.setCompOptions( )
 
-	fbSetOption( FB.COMPOPT.TARGET, fbc.target )
-	fbSetOption( FB.COMPOPT.DEBUG, fbc.debug )
-	fbSetOption( FB.COMPOPT.OUTTYPE, fbc.outtype )
-	fbSetOption( FB.COMPOPT.CPUTYPE, fbc.cputype )
-	fbSetOption( FB.COMPOPT.WARNINGLEVEL, fbc.warnlevel )
+	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
+	fbSetOption( FB_COMPOPT_DEBUG, fbc.debug )
+	fbSetOption( FB_COMPOPT_OUTTYPE, fbc.outtype )
+	fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
+	fbSetOption( FB_COMPOPT_WARNINGLEVEL, fbc.warnlevel )
 
 	function = TRUE
 

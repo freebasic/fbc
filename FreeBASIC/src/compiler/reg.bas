@@ -27,10 +27,10 @@ defint a-z
 option explicit
 option escape
 
-'$include once:'inc\fb.bi'
-'$include once:'inc\fbint.bi'
-'$include once:'inc\ir.bi'
-'$include once:'inc\reg.bi'
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\ir.bi"
+#include once "inc\reg.bi"
 
 '' internals
 
