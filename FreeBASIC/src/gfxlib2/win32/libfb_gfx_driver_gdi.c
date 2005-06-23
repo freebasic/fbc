@@ -132,7 +132,6 @@ static void gdi_exit(void)
 /*:::::*/
 static void gdi_thread(HANDLE running_event)
 {
-	MSG message;
 	int i, y1, y2, h;
 	unsigned char *source, keystate[256];
 	
@@ -184,14 +183,11 @@ static void gdi_thread(HANDLE running_event)
 				fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
 		}
 		
-		while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
+		fb_hHandleMessages();
 		
 		fb_hWin32Unlock();
 		
-		Sleep(1000 / 60);
+		Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 		SetEvent(fb_win32.vsync_event);
 	}
 	

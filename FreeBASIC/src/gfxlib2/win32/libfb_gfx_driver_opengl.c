@@ -84,6 +84,8 @@ static int opengl_init(void)
 	HWND root;
 	int x, y;
 	
+	ShowWindow(fb_win32.wnd, SW_HIDE);
+	
 	if (fb_win32.fullscreen) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
@@ -98,7 +100,7 @@ static int opengl_init(void)
 		root = HWND_TOPMOST;
 	}
 	else {
-		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 		root = HWND_NOTOPMOST;
 	}
 	SetWindowLong(fb_win32.wnd, GWL_STYLE, style);
@@ -114,7 +116,6 @@ static int opengl_init(void)
 	SetWindowPos(fb_win32.wnd, root, x, y, rect.right - rect.left, rect.bottom - rect.top,
 		     SWP_NOCOPYBITS | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 	SetForegroundWindow(fb_win32.wnd);
-	UpdateWindow(fb_win32.wnd);
 	fb_win32.is_active = TRUE;
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	
@@ -127,7 +128,6 @@ static void opengl_exit(void)
 {
 	if (fb_win32.fullscreen)
 		ChangeDisplaySettings(NULL, 0);
-	ShowWindow(fb_win32.wnd, SW_HIDE);
 }
 
 
@@ -165,8 +165,9 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-				    WS_OVERLAPPEDWINDOW, 0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
-	if (!fb_win32.wnd)
+				    WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
+				    0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
+	if ((!fb_win32.wnd) || (opengl_init()))
 		return -1;
 	
 	fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
@@ -191,7 +192,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	fb_wglMakeCurrent(hdc, hglrc);
 	
-	return opengl_init();
+	return 0;
 }
 
 
@@ -246,7 +247,6 @@ static void driver_flip(void)
 {
 	int i;
 	unsigned char keystate[256];
-	MSG message;
 	
 	GetKeyboardState(keystate);
 	for (i = 0; fb_keytable[i][0]; i++) {
@@ -257,11 +257,8 @@ static void driver_flip(void)
 			fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
 	}
 		
-	while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
-		TranslateMessage(&message);
-		DispatchMessage(&message);
-	}
-	
+	fb_hHandleMessages();
+		
 	SwapBuffers(hdc);
 }
 

@@ -215,6 +215,18 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 
 /*:::::*/
+void fb_hHandleMessages(void)
+{
+	MSG message;
+
+	while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+	}
+}
+
+
+/*:::::*/
 int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	OSVERSIONINFO info;
@@ -319,7 +331,7 @@ void fb_hWin32SetPalette(int index, int r, int g, int b)
 /*:::::*/
 void fb_hWin32WaitVSync(void)
 {
-	WaitForSingleObject(fb_win32.vsync_event, 1000/60);
+	WaitForSingleObject(fb_win32.vsync_event, 1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 }
 
 

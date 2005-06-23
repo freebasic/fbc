@@ -338,7 +338,6 @@ static void directx_exit(void)
 static void directx_thread(HANDLE running_event)
 {
 	DDSURFACEDESC desc;
-	MSG message;
 	HRESULT result;
 	unsigned char keystate[256];
 	int i;
@@ -381,14 +380,12 @@ static void directx_thread(HANDLE running_event)
 				fb_mode->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
 		}
 		
-		while (PeekMessage(&message, fb_win32.wnd, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
-
+		fb_hHandleMessages();
+		
 		fb_hWin32Unlock();
 
-		Sleep(10);
+		if (WaitForSingleObject(fb_win32.vsync_event, 1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60)) != WAIT_TIMEOUT)
+			IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
 	}
 
 error:
@@ -415,7 +412,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 /*:::::*/
 static void driver_wait_vsync(void)
 {
-	IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+	SetEvent(fb_win32.vsync_event);
 }
 
 
