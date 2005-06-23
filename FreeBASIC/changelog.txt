@@ -98,8 +98,8 @@ Version 0.14 Beta:
 - the ANY type was been allowed in DIM/REDIM (v1c)
 - redimension of array fields was not resulting in a compile-time error (v1c)
 - include files are now searched for in current dir, then the source file dir, then the system include dirs (lillo)
-- curdir$ now returns path with backslashes instead of slashes
-- Quick fix for the problem where "s$ = chr$(0): print len(s$)" returns 0
+- curdir$ now returns path with backslashes instead of slashes (mjs)
+- Quick fix for the problem where "s$ = chr$(0): print len(s$)" returns 0 (mjs)
 
 
 Version 0.13 Beta:
