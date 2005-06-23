@@ -17,8 +17,13 @@ ifndef FBCFLAGS
 FBCFLAGS=-e -ex -g
 endif
 
+# sorry, but FIXME sounds much better
+ifdef FIXME
+FBCFLAGS+= -d FIXME=1
+else
 ifdef FIXIT
-FBCFLAGS+= -d FIXIT=1
+FBCFLAGS+= -d FIXME=1
+endif
 endif
 
 HOST :=

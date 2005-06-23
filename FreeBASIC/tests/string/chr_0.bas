@@ -1,103 +1,27 @@
 defint a-z
 
-'
-'
-' Test cases
-'
-'
+dim null_value as integer
 
-function TestLenChr0 as integer
-	dim null_value as integer
-	dim test_dyn_str as string
-    dim test_const_str as string
+dim dyn_str_0 as string
+dim const_str_0 as string
 
-	null_value = 0
-	test_dyn_str = chr$(null_value)
-    test_const_str = chr$(0)
+dim dyn_str_0123 as string
+dim const_str_0123 as string
 
-	return len(test_dyn_str) = len(test_const_str)
-end function
+dim dyn_str_3210 as string
+dim const_str_3210 as string
 
-function TestLenChr0123 as integer
-	dim null_value as integer
-	dim test_dyn_str as string
-    dim test_const_str as string
+null_value = 0
 
-	null_value = 0
-	test_dyn_str = chr$(null_value, 1, 2, 3)
-    test_const_str = chr$(0, 1, 2, 3)
+dyn_str_0 = chr$(null_value)
+const_str_0 = chr$(0)
 
-	return len(test_dyn_str) = len(test_const_str)
-end function
+dyn_str_0123 = chr$(null_value, 1, 2, 3)
+const_str_0123 = chr$(0, 1, 2, 3)
 
-function TestLenChr3210 as integer
-	dim null_value as integer
-	dim test_dyn_str as string
-    dim test_const_str as string
+dyn_str_3210 = chr$(3, 2, 1, null_value)
+const_str_3210 = chr$(3, 2, 1, 0)
 
-	null_value = 0
-	test_dyn_str = chr$(3, 2, 1, null_value)
-    test_const_str = chr$(3, 2, 1, 0)
-
-	return len(test_dyn_str) = len(test_const_str)
-end function
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'
-'
-' Code that executes all tests
-'
-'
-
-dim shared error_count as integer
-
-type FnTest as function() as integer
-
-function RunTest(byval description as string, byval pfnTest as FnTest) as integer
-    print description + ": ";
-    if not pfnTest() then
-        print "ERR"
-        error_count+=1
-        function = 0
-    else
-        print "OK"
-        function = -1
-    end if
-end function
-
-
-
-
-'
-'
-' Add more test calls here
-'
-'
-
-RunTest("LEN_CHR_0", @TestLenChr0)
-RunTest("LEN_CHR_0123", @TestLenChr0123)
-RunTest("LEN_CHR_3210", @TestLenChr3210)
-
-if error_count<>0 then
-    end 1
-end if
-end 0
+ASSERT( dyn_str_0 = const_str_0 )
+ASSERT( dyn_str_0123 = const_str_0123 )
+ASSERT( dyn_str_3210 = const_str_3210 )

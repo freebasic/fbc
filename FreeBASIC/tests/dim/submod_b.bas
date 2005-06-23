@@ -1,3 +1,5 @@
+'$dynamic
+
 option explicit
 option private
 
@@ -8,6 +10,14 @@ defint a-z
 	dim shared ext_statarray(1 to 21, 1 to 2)
 
 public sub init_b( )
+
+	on local error goto expected_err
+
+    dim access_test as any ptr
+    access_test = @ext_dynarray(1,1)
+    ASSERT( access_test<>access_test )
+
+expected_err:
 
 	redim ext_dynarray(1 to 21, 1 to 2)
 

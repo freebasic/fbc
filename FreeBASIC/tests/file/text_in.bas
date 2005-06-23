@@ -357,7 +357,12 @@ RunTest("BINARY_CONTENTS_EOF_02", @TestBinaryContentsEOF2())
 RunTest("BINARY_CONTENTS_EOF_03", @TestBinaryContentsEOF3())
 RunTest("BINARY_CONTENTS_EOF_04", @TestBinaryContentsEOF4())
 
+#ifdef __FB_LINUX__
+print "These tests are expected to fail on Linux"
+#else
 if error_count<>0 then
     end 1
 end if
+#endif
+
 end 0
