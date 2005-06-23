@@ -1,29 +1,36 @@
-'$dynamic
-
 option explicit
 option private
 
 defint a-z
 
-'$include once: "dim/submod_c.bi"
+'$include once: "submod_c.bi"
 
-#ifdef FIXIT
-dim shared ext_array(1 to 21, 1 to 2) as integer
-#endif
+declare sub test_extdyn( )
+declare sub test_extstat( )
 
-declare function get_array_ptr as any ptr
+''
+	init_b( )
+	
+	test_extdyn( )
+	
+	test_extstat( )
 
-color_data:
- data "11", "1"
 
-dim ext_array_ptr as any ptr
-ext_array_ptr = varptr(ext_array(1,1))
-print "Ptr to array: ", ext_array_ptr, get_array_ptr()
+''
+sub test_extdyn( )
+	
+	ASSERT( ext_dynarray(1,1) = 1 )
 
-print "Step 1"
-read ext_array(1,1)
-print "Step 2"
-read ext_array(1,2)
-print "Step 3"
+	ASSERT( ext_dynarray(1,2) = 2 )
+	
+end sub
 
-end get_array_ptr() <> ext_array_ptr
+''
+sub test_extstat( )
+
+	ASSERT( ext_statarray(1,1) = 3 )
+
+	ASSERT( ext_statarray(1,2) = 4 )
+	
+end sub
+
