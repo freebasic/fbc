@@ -19,6 +19,7 @@ Version 0.14 Beta:
 - ENUM's now are much restrict, warnings will be shown if they are passed or assigned to other types than 
   integers, but now its possible to overload functions where the enum argument is the main one (v1c)
 - curdir$ now returns path with backslashes instead of slashes (mjs)
+- OPTION's will now be used too in the context of the file that included a header if it changed the default OPTION's (v1c)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -49,6 +50,8 @@ Version 0.14 Beta:
 - labels already defined can now be referenced in inline ASM (v1c)
 - #DEFINE macros can now be empty too, as the argument-less ones used to (v1c)
 - '##'s can be used now to delimit macro arguments as in C: #define makefuncname(name) func_##name## (v1c)
+- the '#' prefix can now be used in macros when the text representation of a macro argument is wanted (v1c)
+- ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -98,8 +101,7 @@ Version 0.14 Beta:
 - the ANY type was been allowed in DIM/REDIM (v1c)
 - redimension of array fields was not resulting in a compile-time error (v1c)
 - include files are now searched for in current dir, then the source file dir, then the system include dirs (lillo)
-- curdir$ now returns path with backslashes instead of slashes (mjs)
-- Quick fix for the problem where "s$ = chr$(0): print len(s$)" returns 0 (mjs)
+- chr$(0) will not be evaluated at compile-time, to circumvent the null-terminator limitation with strings (mjs)
 
 
 Version 0.13 Beta:
