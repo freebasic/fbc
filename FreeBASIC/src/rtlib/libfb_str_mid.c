@@ -89,11 +89,14 @@ FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
     if( (dst == NULL) || (dst->data == NULL) || (FB_STRSIZE( dst ) == 0) )
     {
     	fb_hStrDelTemp( src );
+    	fb_hStrDelTemp( dst );
     	FB_STRUNLOCK();
     	return;
     }
 
     if(	(src == NULL) || (src->data == NULL) || (FB_STRSIZE( src ) == 0) ) {
+        fb_hStrDelTemp( src );
+    	fb_hStrDelTemp( dst );
     	FB_STRUNLOCK();
     	return ;
     }
@@ -117,6 +120,7 @@ FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+    fb_hStrDelTemp( dst );
 
    	FB_STRUNLOCK();
 }
