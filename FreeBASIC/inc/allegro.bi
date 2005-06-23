@@ -1054,7 +1054,7 @@ Type SYSTEM_DRIVER
 	set_window_close_button as function(byval enable as integer) as integer
 	set_window_close_hook as sub(byval proc as sub())
 	message as sub(byval msg as byte ptr)
-	assert as sub(byval msg as byte ptr)
+	assert_ as sub(byval msg as byte ptr)
 	save_console_state as sub()
 	restore_console_state as sub()
 	create_bitmap as function(byval color_depth as integer, byval width as integer, byval height as integer) as BITMAP ptr
