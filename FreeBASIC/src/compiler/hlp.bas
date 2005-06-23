@@ -151,7 +151,8 @@ end type
 		"Invalid command-line option", _
 		"Cannot initialize dynamic strings", _
 		"Recursive TYPE or UNION not allowed", _
-		"Array fields cannot be redimensioned" _
+		"Array fields cannot be redimensioned", _
+		"Identifier cannot include periods" _
 	}
 
 
@@ -200,7 +201,7 @@ sub hReportErrorEx( byval errnum as integer, _
     dim token_pos as string
 
 	if( linenum = 0 ) then
-		linenum = lexLineNum
+		linenum = lexLineNum( )
 
 		if( linenum = ctx.lastline ) then
 			exit sub

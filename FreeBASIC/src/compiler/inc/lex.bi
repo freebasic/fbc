@@ -59,7 +59,7 @@ declare function 	lexTokenType 			( ) as integer
 
 declare function 	lexTokenSymbol 			( ) as FBSYMBOL ptr
 
-declare function 	lexTokenDotPos 			( ) as integer
+declare function 	lexTokenPeriodPos 		( ) as integer
 
 declare sub 		lexEatToken 			( byval token as string, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )

@@ -1840,7 +1840,7 @@ private function hReadWithText( byval text as string ) as integer
     dim as integer dpos
 
     ''
-    dpos = lexTokenDotpos( )
+    dpos = lexTokenPeriodPos( )
     id = *lexTokenText( )
 
     if( dpos > 0 ) then

@@ -818,7 +818,7 @@ function cVariable( varexpr as ASTNODE ptr, _
 	else
 
 		'' it can be also an UDT, as periods can be part of symbol names..
-		sym = symbLookupUDTElm( *id, lexTokenDotPos( ), typ, ofs, elm, subtype )
+		sym = symbLookupUDTElm( *id, lexTokenPeriodPos( ), typ, ofs, elm, subtype )
 		if( sym = NULL ) then
 			'' add undeclared variable
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then

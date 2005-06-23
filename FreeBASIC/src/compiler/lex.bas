@@ -451,16 +451,20 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 							   byval flags as LEXCHECK_ENUM ) static
 	dim c as uinteger
 
-	'' (ALPHA | '_')
+	'' (ALPHA | '_' | '.' )
 	*pid = lexEatChar( )
+	if( pid[0] = CHAR_DOT ) then
+		dpos = 1
+	else
+		dpos = 0
+	end if
 	pid += 1
 
 	tlen = 1
-	dpos = 0
 
 	'' { [ALPHADIGIT | '_' | '.'] }
 	do
-		c = lexCurrentChar
+		c = lexCurrentChar( )
 		select case as const c
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
 
@@ -1630,7 +1634,7 @@ function lexTokenSymbol( ) as FBSYMBOL ptr
 end function
 
 ''::::
-function lexTokenDotPos( ) as integer
+function lexTokenPeriodPos( ) as integer
 
 	function = ctx.tokenTB(0).dotpos
 

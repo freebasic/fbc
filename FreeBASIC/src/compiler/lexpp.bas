@@ -131,8 +131,8 @@ const QUOTE = "\""
     			'' with an unique pattern
     			else
     				token = ucase( *lexTokenText( ) )
-    				'' contains a dot? assume it's an udt access
-    				dpos = lexTokenDotPos( )
+    				'' contains a period? assume it's an udt access
+    				dpos = lexTokenPeriodPos( )
     				if( dpos > 1 ) then
     					token = left( token, dpos-1 )
     				end if

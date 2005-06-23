@@ -654,6 +654,12 @@ function cElementDecl( byval id as string, _
     	end if
     end if
 
+    '' contains a period?
+    if( lexTokenPeriodPos( ) > 0 ) then
+    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    	exit function
+    end if
+
 	'' ID
 	typ = lexTokenType( )
 	subtype = NULL
@@ -723,6 +729,12 @@ function cAsElementDecl( ) as integer static
     			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     			exit function
     		end if
+    	end if
+
+    	'' contains a period?
+    	if( lexTokenPeriodPos( ) > 0 ) then
+    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    		exit function
     	end if
 
 	    lexEatToken( id )
@@ -939,7 +951,7 @@ function cTypeDecl as integer static
 	end select
 
 	'' ID
-	if( lexCurrentTokenClass <> FB_TKCLASS_IDENTIFIER ) then
+	if( lexCurrentTokenClass( ) <> FB_TKCLASS_IDENTIFIER ) then
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	exit function
     end if
@@ -1008,7 +1020,10 @@ function cTypeDecl as integer static
 	env.typectx.elements = 0
 	env.typectx.innercnt = 0
 	do
-	loop while( (cTypeLine) and (lexCurrentToken <> FB_TK_EOF) )
+		if( not cTypeLine( ) ) then
+			exit do
+		end if
+	loop while( lexCurrentToken( ) <> FB_TK_EOF )
 
 	if( hGetLastError() <> FB_ERRMSG_OK ) then
 		exit function
@@ -1025,12 +1040,12 @@ function cTypeDecl as integer static
 
 	'' END
 	if( not hMatch( FB_TK_END ) ) then
-    	hReportError FB_ERRMSG_EXPECTEDENDTYPE
+    	hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
     	exit function
 	end if
 
 	'' TYPE | UNION
-	select case lexCurrentToken
+	select case lexCurrentToken( )
 	case FB_TK_TYPE, FB_TK_UNION
 		lexSkipToken( )
 	case else
@@ -1712,7 +1727,7 @@ function cSymbolDef( byval alloctype as integer, _
     		end if
     	end if
 
-    	dotpos = lexTokenDotPos( )
+    	dotpos = lexTokenPeriodPos( )
     	lexEatToken( id )
     	idalias		= ""
     	istypeless	= FALSE
@@ -1801,6 +1816,14 @@ function cSymbolDef( byval alloctype as integer, _
 				end if
     			lgt	= symbCalcLen( typ, subtype )
 
+    		end if
+    	end if
+
+    	'' contains a period?
+    	if( dotpos > 0 ) then
+    		if( typ = FB_SYMBTYPE_USERDEF ) then
+    			hReportErrorEx( FB_ERRMSG_CANTINCLUDEPERIODS, id )
+    			exit function
     		end if
     	end if
 
@@ -2970,7 +2993,7 @@ function cArgDecl( byval procmode as integer, _
 	static as integer arglevel = 0
 	dim as zstring ptr id
 	dim as ASTNODE ptr expr
-	dim as integer dclass, dtype, readid, mode
+	dim as integer dclass, dtype, readid, mode, dotpos
 	dim as integer atype, amode, alen, asuffix, optional, ptrcnt
 	dim as FBVALUE optval
 	dim as FBSYMBOL ptr subtype, sym
@@ -3040,7 +3063,8 @@ function cArgDecl( byval procmode as integer, _
 	''
 	if( readid ) then
 		'' ID
-		atype = lexTokenType
+		atype  = lexTokenType( )
+		dotpos = lexTokenPeriodPos( )
 		lexEatToken( *id )
 
 		'' ('('')')
@@ -3062,7 +3086,8 @@ function cArgDecl( byval procmode as integer, _
 
 	'' no id
 	else
-		atype = INVALID
+		atype  = INVALID
+		dotpos = 0
 
 		if( mode = INVALID ) then
 			amode = env.opt.argmode
@@ -3143,6 +3168,16 @@ function cArgDecl( byval procmode as integer, _
     		alen = symbCalcLen( atype, subtype, TRUE )
     	end select
     end select
+
+    if( not isproto ) then
+    	'' contains a period?
+    	if( dotpos > 0 ) then
+    		if( atype = FB_SYMBTYPE_USERDEF ) then
+    			hReportParamError( argc, *id )
+    			exit function
+    		end if
+    	end if
+    end if
 
     '' ('=' (NUM_LIT|STR_LIT))?
     if( hMatch( FB_TK_ASSIGN ) ) then
