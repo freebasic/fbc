@@ -104,7 +104,8 @@ Version 0.14 Beta:
 - chr$(0) will not be evaluated at compile-time, to circumvent the null-terminator limitation with strings (mjs)
 - MID$()= (assigning MID) didn't release temporary strings (1x src and 3x dst) (mjs)
 - Win32 OpenGL driver had problems with fullscreen modes on some machines (lillo)
-- Made all Win32 gfx drivers more vsync friendly (lillo)
+- made all Win32 gfx drivers more vsync friendly (lillo)
+- now using SetDIBitsToDevice instead of StretchDIBits in GDI gfx driver, solving some drawing problems (lillo)
 
 
 Version 0.13 Beta:

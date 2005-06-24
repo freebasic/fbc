@@ -34,7 +34,6 @@ static void driver_exit(void);
 static void driver_lock(void);
 static void driver_unlock(void);
 static void driver_set_palette(int index, int r, int g, int b);
-static void driver_wait_vsync(void);
 static void driver_flip(void);
 static int *driver_fetch_modes(int depth, int *size);
 static int opengl_init(void);
@@ -48,7 +47,7 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	driver_lock,		/* void (*lock)(void); */
 	driver_unlock,		/* void (*unlock)(void); */
 	driver_set_palette,	/* void (*set_palette)(int index, int r, int g, int b); */
-	driver_wait_vsync,	/* void (*wait_vsync)(void); */
+	fb_hWin32WaitVSync,	/* void (*wait_vsync)(void); */
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
@@ -232,13 +231,6 @@ static void driver_unlock(void)
 /*:::::*/
 static void driver_set_palette(int index, int r, int g, int b)
 {
-}
-
-
-/*:::::*/
-static void driver_wait_vsync(void)
-{
-	Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 }
 
 

@@ -39,7 +39,6 @@ typedef struct WIN32DRIVER
 	HINSTANCE hinstance;
 	WNDCLASS wndclass;
 	HWND wnd;
-	HANDLE vsync_event;
 	PALETTEENTRY palette[256];
 	BLITTER *blitter;
 	int is_running, is_palette_changed, is_active;

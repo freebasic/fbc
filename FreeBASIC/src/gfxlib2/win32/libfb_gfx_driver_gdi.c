@@ -49,7 +49,6 @@ GFXDRIVER fb_gfxDriverGDI =
 
 
 static BITMAPINFO *bitmap_info;
-static HDC hdc;
 static RECT rect;
 static unsigned char *buffer;
 
@@ -57,10 +56,7 @@ static unsigned char *buffer;
 /*:::::*/
 static void gdi_paint(void)
 {
-	unsigned char *source = (fb_win32.blitter ? buffer : fb_mode->framebuffer);
-	
-	StretchDIBits(hdc, 0, 0, fb_win32.w, fb_win32.h, 0, 0, fb_win32.w, fb_win32.h,
-	      source, bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+	memset(fb_mode->dirty, TRUE, fb_mode->h);
 }
 
 
@@ -69,6 +65,7 @@ static int gdi_init(void)
 {
 	bitmap_info = NULL;
 	buffer = NULL;
+	HDC hdc;
 	
 	if (fb_win32.fullscreen)
 		return -1;
@@ -110,6 +107,7 @@ static int gdi_init(void)
 	SetForegroundWindow(fb_win32.wnd);
 	hdc = GetDC(fb_win32.wnd);
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
+	ReleaseDC(fb_win32.wnd, hdc);
 	
 	return 0;
 }
@@ -122,8 +120,6 @@ static void gdi_exit(void)
 		free(buffer);
 	if (bitmap_info)
 		free(bitmap_info);
-	if (hdc)
-		ReleaseDC(fb_win32.wnd, hdc);
 	if (fb_win32.wnd)
 		DestroyWindow(fb_win32.wnd);
 }
@@ -134,6 +130,7 @@ static void gdi_thread(HANDLE running_event)
 {
 	int i, y1, y2, h;
 	unsigned char *source, keystate[256];
+	HDC hdc;
 	
 	if (gdi_init())
 		goto error;
@@ -154,24 +151,25 @@ static void gdi_thread(HANDLE running_event)
 			}
 			fb_win32.is_palette_changed = FALSE;
 		}
-		if (fb_win32.blitter) {
-			fb_win32.blitter(buffer, (fb_mode->pitch + 3) & ~3);
-			source = buffer;
-		}
-		else
-			source = fb_mode->framebuffer;
-		/* Only do a single StretchDIBits call per frame */
+		/* Only do a single SetDIBitsToDevice call per frame */
+		hdc = GetDC(fb_win32.wnd);
 		for (y1 = 0; y1 < fb_win32.h; y1++) {
 			if (fb_mode->dirty[y1]) {
 				for (y2 = fb_win32.h - 1; !fb_mode->dirty[y2]; y2--)
 					;
 				h = y2 - y1 + 1;
-				y1 = fb_win32.h - y1 - h;
-				StretchDIBits(hdc, 0, y1, fb_win32.w, h, 0, y1, fb_win32.w, h,
-					      source, bitmap_info, DIB_RGB_COLORS, SRCCOPY);
+				if (fb_win32.blitter) {
+					fb_win32.blitter(buffer, (fb_mode->pitch + 3) & ~3);
+					source = buffer + (y1 * ((fb_mode->pitch + 3) & ~0x3));
+				}
+				else
+					source = fb_mode->framebuffer + (y1 * fb_mode->pitch);
+				SetDIBitsToDevice(hdc, 0, y1, fb_win32.w, h, 0, 0, 0, h, source, bitmap_info, DIB_RGB_COLORS);
 				break;
 			}
 		}
+		ReleaseDC(fb_win32.wnd, hdc);
+		
 		fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
 		
 		GetKeyboardState(keystate);
@@ -187,8 +185,7 @@ static void gdi_thread(HANDLE running_event)
 		
 		fb_hWin32Unlock();
 		
-		Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
-		SetEvent(fb_win32.vsync_event);
+		Sleep(10);
 	}
 	
 error:

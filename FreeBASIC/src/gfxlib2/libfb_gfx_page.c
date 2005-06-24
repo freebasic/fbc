@@ -66,7 +66,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	size = fb_mode->view_w * fb_mode->bpp;
 	
 	if (lock)
-		fb_mode->driver->lock();
+		DRIVER_LOCK();
 	for (i = fb_mode->view_h; i; i--) {
 		fb_hMemCpy(dest, src, size);
 		dest += fb_mode->pitch;
@@ -74,7 +74,7 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	}
 	if (lock) {
 		fb_hMemSet(fb_mode->dirty + fb_mode->view_y, TRUE, fb_mode->view_h);
-		fb_mode->driver->unlock();
+		DRIVER_UNLOCK();
 	}
 }
 

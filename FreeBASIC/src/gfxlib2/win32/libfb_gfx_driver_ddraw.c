@@ -384,8 +384,7 @@ static void directx_thread(HANDLE running_event)
 		
 		fb_hWin32Unlock();
 
-		if (WaitForSingleObject(fb_win32.vsync_event, 1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60)) != WAIT_TIMEOUT)
-			IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+		Sleep(10);
 	}
 
 error:
@@ -412,7 +411,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 /*:::::*/
 static void driver_wait_vsync(void)
 {
-	SetEvent(fb_win32.vsync_event);
+	IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
 }
 
 

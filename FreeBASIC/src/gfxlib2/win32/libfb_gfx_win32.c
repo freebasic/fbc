@@ -264,7 +264,6 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	if (!(flags & DRIVER_OPENGL)) {
 		InitializeCriticalSection(&update_lock);
-		fb_win32.vsync_event = CreateEvent(NULL, FALSE, FALSE, NULL);
 		events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
 		events[1] = (HANDLE)_beginthread(fb_win32.thread, 0, events[0]);
 		result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
@@ -295,7 +294,6 @@ void fb_hWin32Exit(void)
 	fb_win32.is_running = FALSE;
 	if (handle) {
 		WaitForSingleObject(handle, INFINITE);
-		CloseHandle(fb_win32.vsync_event);
 		DeleteCriticalSection(&update_lock);
 	}
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
@@ -331,7 +329,7 @@ void fb_hWin32SetPalette(int index, int r, int g, int b)
 /*:::::*/
 void fb_hWin32WaitVSync(void)
 {
-	WaitForSingleObject(fb_win32.vsync_event, 1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
+	Sleep(1000 / (fb_mode->refresh_rate ? fb_mode->refresh_rate : 60));
 }
 
 
