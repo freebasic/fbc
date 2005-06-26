@@ -20,6 +20,9 @@
 #ifndef __FB_H__
 #define __FB_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define FB_TRUE -1
 #define FB_FALSE 0
@@ -120,6 +123,7 @@ void				fb_hListFreeElem		( FB_LIST *list, FB_LISTELEM *elem );
  **************************************************************************************************/
 
 #include <string.h>
+#include <stdio.h>
 
 #define FB_TEMPSTRBIT 0x80000000L
 
@@ -194,7 +198,9 @@ FBCALL FBSTRING		*fb_StrConcat 			( FBSTRING *dst, void *str1, int str1_size, vo
 FBCALL void 		*fb_StrConcatAssign 	( void *dst, int dst_size, void *src, int src_size, int fillrem );
 FBCALL int 			fb_StrCompare 			( void *str1, int str1_size, void *str2, int str2_size );
 FBCALL FBSTRING		*fb_StrAllocTempResult 	( FBSTRING *src );
-FBCALL FBSTRING		*fb_StrAllocTempDesc	( void *str, int str_size );
+FBCALL FBSTRING     *fb_StrAllocTempDescF   ( char *str, int str_size );
+FBCALL FBSTRING     *fb_StrAllocTempDescV   ( FBSTRING *str );
+FBCALL FBSTRING     *fb_StrAllocTempDescZ   ( char *str );
 FBCALL int 			fb_StrLen				( void *str, int str_size );
 
 FBCALL FBSTRING 	*fb_IntToStr 			( int num );
@@ -341,7 +347,13 @@ typedef struct _FB_PRINTUSGCTX {
 
 #define FB_PRINT_NEWLINE 0x00000001
 #define FB_PRINT_PAD 	 0x00000002
-#define FB_PRINT_ISLAST  0x80000000
+#define FB_PRINT_ISLAST  0x80000000     /* only for print using ? */
+
+/** masked bits for "high level" flags
+ *
+ * I.e. flags that are set by the BASIC PRINT command directly.
+ */
+#define FB_PRINT_HLMASK  0x00000003
 
 #define FB_PRINTNUM(fnum, val, mask, fmt, type)			\
     char buffer[80];									\
@@ -383,6 +395,7 @@ FBCALL void 		fb_ConsoleView		( int toprow, int botrow );
 
 	   void 		fb_ConsoleScroll	( int nrows );
 
+FBCALL void         fb_PrintTab         ( int fnum, int mask );
 FBCALL void 		fb_PrintVoid 		( int fnum, int mask );
 FBCALL void 		fb_PrintByte 		( int fnum, char val, int mask );
 FBCALL void 		fb_PrintUByte 		( int fnum, unsigned char val, int mask );
@@ -393,7 +406,7 @@ FBCALL void 		fb_PrintUInt 		( int fnum, unsigned int val, int mask );
 FBCALL void 		fb_PrintSingle 		( int fnum, float val, int mask );
 FBCALL void 		fb_PrintDouble 		( int fnum, double val, int mask );
 FBCALL void 		fb_PrintString 		( int fnum, FBSTRING *s, int mask );
-FBCALL void 		fb_PrintFixString 	( int fnum, char *s, int mask );
+FBCALL void 		fb_PrintFixString 	( int fnum, const char *s, int mask );
 
 FBCALL void 		fb_PrintTab			( int fnum, int newcol );
 FBCALL void 		fb_PrintSPC			( int fnum, int n );
@@ -414,7 +427,8 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 	   FBSTRING 	*fb_ConsoleInkey	( void );
 	   int 			fb_ConsoleKeyHit	( void );
 
-	   void 		fb_ConsolePrintBuffer( char *buffer, int mask );
+	   void 		fb_ConsolePrintBuffer( const char *buffer, int mask );
+	   void 		fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
 
 	   char 		*fb_ConsoleReadStr	( char *buffer, int len );
 
@@ -495,7 +509,8 @@ FBCALL FBSTRING 	*fb_FileStrInput	( int bytes, int fnum );
 FBCALL int 			fb_FileLineInput	( int fnum, void *dst, int dst_len, int fillrem );
 FBCALL int 			fb_LineInput		( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
 
-	   int 			fb_hFilePrintBuffer	( int fnum, char *buffer );
+	   int 			fb_hFilePrintBuffer	( int fnum, const char *buffer );
+       int          fb_hFilePrintBufferEx( int fnum, const void *buffer, size_t len );
 
 	   int 			fb_hFileLock		( FILE *f, unsigned int inipos, unsigned int endpos );
 	   int 			fb_hFileUnlock		( FILE *f, unsigned int inipos, unsigned int endpos );
@@ -618,9 +633,10 @@ typedef int	  		(*FB_GETYPROC)		( void );
 FBCALL int 			fb_GetX				( void );
 FBCALL int 			fb_GetY				( void );
 
-typedef void	  	(*FB_PRINTBUFFPROC)	( char *buffer, int mask );
+typedef void	  	(*FB_PRINTBUFFPROC)	( const void *buffer, size_t len, int mask );
 
-FBCALL void 		fb_PrintBuffer		( char *buffer, int mask );
+FBCALL void 		fb_PrintBuffer		( const char *buffer, int mask );
+FBCALL void 		fb_PrintBufferEx	( const void *buffer, size_t len, int mask );
 
 typedef char 		*(*FB_READSTRPROC)	( char *buffer, int len );
 		char 		*fb_ReadString		( char *buffer, int len, FILE *f );
@@ -640,5 +656,9 @@ typedef struct _FB_HOOKSTB {
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB fb_hooks;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /*__FB_H__*/

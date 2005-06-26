@@ -63,11 +63,13 @@ static void check_scroll(int *dirty_start, int *dirty_len)
 
 
 /*:::::*/
-void fb_GfxPrintBuffer(char *buffer, int mask)
+void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 {
-	int i, j, new_x;
+    size_t i;
+	int j, new_x;
 	int dirty_start = fb_mode->cursor_y, dirty_len = 0;
-	unsigned char *dest;
+    unsigned char *dest;
+    const char *pachText = (const char *) buffer;
 	
 	fb_hPrepareTarget(NULL);
 	
@@ -75,7 +77,7 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 	
 	check_scroll(&dirty_start, &dirty_len);
 	
-	for (i = 0; i < strlen(buffer); i++) {
+	for (i = 0; i != len; ++i) {
 		
 		if (fb_mode->cursor_x >= fb_mode->text_w) {
 			fb_mode->cursor_y++;
@@ -86,7 +88,7 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 			check_scroll(&dirty_start, &dirty_len);
 		}
 		
-		switch (buffer[i]) {
+		switch (pachText[i]) {
 			case '\t':
 				new_x = (fb_mode->cursor_x + 8) & ~0x7;
 				dest = fb_mode->line[fb_mode->cursor_y * fb_mode->font->h] + ((fb_mode->cursor_x << 3) * fb_mode->bpp);
@@ -98,7 +100,7 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 				break;
 			
 			case '\r':
-				if (buffer[i+1] == '\n')
+				if (pachText[i+1] == '\n')
 					i++;
 			case '\n':
 				fb_mode->cursor_x = 0;
@@ -108,7 +110,7 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 				break;
 			
 			default:
-				print_char((unsigned char)buffer[i]);
+				print_char((unsigned char)pachText[i]);
 				fb_mode->cursor_x++;
 				if (!dirty_len)
 					dirty_len = 1;
@@ -118,6 +120,13 @@ void fb_GfxPrintBuffer(char *buffer, int mask)
 	SET_DIRTY(dirty_start * fb_mode->font->h, dirty_len * fb_mode->font->h);
 	
 	DRIVER_UNLOCK();
+}
+
+
+/*:::::*/
+void fb_GfxPrintBuffer(const char *buffer, int mask)
+{
+    fb_GfxPrintBufferEx(buffer, strlen(buffer), mask);
 }
 
 

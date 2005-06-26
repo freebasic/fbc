@@ -115,7 +115,7 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
     	array->dimensions  = dimensions;
 
     	array->ptr 	= arraydata;
-    	array->data = array->ptr + diff;
+    	array->data = ((unsigned char *) array->ptr) + diff;
     	array->size	= elements * element_len;
     	
     }

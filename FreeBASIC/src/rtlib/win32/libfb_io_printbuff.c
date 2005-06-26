@@ -32,15 +32,14 @@
 #include <windows.h>
 
 /*:::::*/
-void fb_ConsolePrintBuffer( char *buffer, int mask )
+void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
     int col, row;
     int toprow, botrow;
 	int cols, rows;
-	int len, scrolloff = FALSE;
-	int rowsleft, rowstoscroll;
-
-	len = strlen( buffer );
+	int scrolloff = FALSE;
+    int rowsleft, rowstoscroll;
+    const char *pachText = (const char *) buffer;
 
 	fb_ConsoleGetSize( &cols, &rows );
 	fb_ConsoleGetView( &toprow, &botrow );
@@ -86,9 +85,9 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 	}
 
     /* */
-	while( WriteFile( hnd, buffer, len, &byteswritten, NULL ) == TRUE )
+	while( WriteFile( hnd, pachText, len, &byteswritten, NULL ) == TRUE )
 	{
-		buffer += byteswritten;
+		pachText += byteswritten;
 		len -= byteswritten;
 		if( len <= 0 )
 			break;
@@ -97,5 +96,11 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 	if( scrolloff )
 		SetConsoleMode( hnd, mode );
 
+}
+
+/*:::::*/
+void fb_ConsolePrintBuffer( const char *buffer, int mask )
+{
+    return fb_ConsolePrintBufferEx( buffer, strlen(buffer), mask );
 }
 

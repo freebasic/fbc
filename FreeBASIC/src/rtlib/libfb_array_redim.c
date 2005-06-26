@@ -90,7 +90,7 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, 
     	}
 
         if( size > array->size )
-        	memset( array->ptr + array->size, 0, size - array->size );
+        	memset( ((unsigned char*) array->ptr) + array->size, 0, size - array->size );
     }
 
     array->element_len = element_len;
@@ -98,7 +98,7 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, 
     array->size		   = size;
 
     if( array->ptr != NULL )
-    	array->data = array->ptr + diff;
+    	array->data = ((unsigned char*) array->ptr) + diff;
     else
     	array->data = NULL;
 

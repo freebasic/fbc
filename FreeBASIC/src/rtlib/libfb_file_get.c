@@ -33,7 +33,8 @@
 /*:::::*/
 FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 {
-	int i, rlen, result;
+    size_t i, rlen, result;
+    char *pachData = (char*) value;
 
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -62,13 +63,13 @@ FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
 	}
 
 	/* do read */
-	rlen = fread( value, 1, valuelen, fb_fileTB[fnum-1].f );
+	rlen = fread( pachData, 1, valuelen, fb_fileTB[fnum-1].f );
 	if( rlen != valuelen )
 	{
 		/* fill with nulls if at eof */
-		value = (unsigned char *)value + rlen;
+		pachData += rlen;
 		for( i = rlen; i < valuelen; i++ )
-			*(char *)value++ = 0;
+			*pachData++ = 0;
 		/*return FB_FALSE*/;						/* do nothing, not an error */
 	}
 

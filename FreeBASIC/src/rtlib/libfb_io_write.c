@@ -58,20 +58,13 @@
 /*:::::*/
 FBCALL void fb_WriteVoid ( int fnum, int mask )
 {
-    char *buffer;
-#ifndef WIN32
-	char nl[2] = { '\n', '\0' };
-#endif
+    const char *buffer;
 
     if( mask & FB_PRINT_NEWLINE )
-#ifndef WIN32
-		buffer = nl;
-#else
     	buffer = FB_NEWLINE;
-#endif
 
     else if( mask & FB_PRINT_PAD )
-    	buffer = "              ";
+    	buffer = "\t";
 
     else
     	buffer = NULL;

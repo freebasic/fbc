@@ -39,6 +39,8 @@ typedef struct _FBTHREAD
 static FBTHREAD thdTB[FB_MAXTHREADS];
 static FB_LIST thdList = { 0 };
 
+typedef void( __cdecl *ThreadStartFn )( void * );
+
 
 /*:::::*/
 FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
@@ -52,7 +54,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
 	if( !thread )
 		return NULL;
 
-	thread->id = (HANDLE)_beginthread( proc, 0, (void *)param );
+	thread->id = (HANDLE)_beginthread( (ThreadStartFn) proc, 0, (void *)param );
 
 	return thread;
 }

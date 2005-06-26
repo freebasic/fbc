@@ -42,7 +42,9 @@ endif
 ##################################################################
 
 OSDEPPATH :=
+ifndef CC
 CC := gcc
+endif
 CFLAGS := -ffast-math -Wall -I .
 AFLAGS := -x assembler-with-cpp
 ifdef DEBUG

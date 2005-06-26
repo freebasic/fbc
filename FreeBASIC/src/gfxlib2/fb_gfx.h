@@ -27,7 +27,12 @@
 #ifndef __FB_GFX_H__
 #define __FB_GFX_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 
@@ -286,7 +291,12 @@ int fb_GfxWidth(int w, int h);
 int fb_GfxLocate(int y, int x, int cursor);
 int fb_GfxGetX(void);
 int fb_GfxGetY(void);
-void fb_GfxPrintBuffer(char *buffer, int mask);
+void fb_GfxPrintBuffer(const char *buffer, int mask);
+void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask);
 char *fb_GfxReadStr(char *buffer, int maxlen);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

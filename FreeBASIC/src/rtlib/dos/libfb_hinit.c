@@ -37,9 +37,9 @@ char **	fb_argv;
 
 extern char fb_commandline[];
 
-extern void (*fb_ConsolePrintBufferProc) (char *buffer, int mask);
-extern void fb_ConsolePrintBufferConio(char * buffer, int mask);
-extern void fb_ConsolePrintBufferPrintf(char *buffer, int mask);
+extern void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
+extern void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask);
+extern void fb_ConsolePrintBufferPrintfEx(const void *buffer, size_t len, int mask);
 
 
 /*:::::*/
@@ -67,7 +67,7 @@ void fb_hInit ( int argc, char **argv )
 	/* use cprintf() if STDOUT is the console; 
 	   otherwise (with shell I/O redirection) use printf() */
 	fb_ConsolePrintBufferProc = (isatty(1) ?
-					fb_ConsolePrintBufferConio :
-					fb_ConsolePrintBufferPrintf);
+					fb_ConsolePrintBufferConioEx :
+					fb_ConsolePrintBufferPrintfEx);
 
 }

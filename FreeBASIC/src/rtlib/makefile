@@ -42,7 +42,9 @@ endif
 ##################################################################
 
 OSDEPPATH :=
+ifndef CC
 CC := gcc
+endif
 CFLAGS := -ffast-math -Wall -Wno-format -I .
 ifdef DEBUG
 CFLAGS += -O0 -g

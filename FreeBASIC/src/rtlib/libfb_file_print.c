@@ -30,28 +30,30 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_hFilePrintBuffer( int fnum, char *buffer )
+int fb_hFilePrintBufferEx( int fnum, const void *buffer, size_t len )
 {
-    int len;
-
 	if( fnum < 1 || fnum > FB_MAX_FILES )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	FB_LOCK();
+    FB_LOCK();
 
 	if( fb_fileTB[fnum-1].f == NULL ) {
-		FB_UNLOCK();
+        FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	len = strlen( buffer );
-
 	if( fwrite( buffer, 1, len, fb_fileTB[fnum-1].f ) != len ) {
-		FB_UNLOCK();
+        FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}
 	
 	FB_UNLOCK();
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+/*:::::*/
+int fb_hFilePrintBuffer( int fnum, const char *buffer )
+{
+    return fb_hFilePrintBufferEx( fnum, buffer, strlen( buffer ) );
 }

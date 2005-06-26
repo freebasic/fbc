@@ -34,27 +34,28 @@
 
 
 /*:::::*/
-void fb_ConsolePrintBuffer( char *buffer, int mask )
+void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
-	int len, avail;
-	unsigned char *c = buffer;
+	size_t avail, avail_len;
+	const unsigned char *c = (const unsigned char *) buffer;
 	
-	if (!fb_con.inited) {
-		printf("%s", buffer);
+    if (!fb_con.inited) {
+        fwrite(buffer, len, 1, stdout);
+        fflush(stdout);
 		return;
 	}
 	
 	fb_hResize();
 	
 	/* ToDo: handle scrolling for internal characters/attributes buffer? */
-	len = strlen(buffer);
-	avail = (fb_con.w * fb_con.h) - (((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1);
-	if (avail < len)
-		len = avail;
-	memcpy(fb_con.char_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, buffer, len);
-	memset(fb_con.attr_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, fb_con.fg_color | (fb_con.bg_color << 4), len);
+    avail = (fb_con.w * fb_con.h) - (((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1);
+    avail_len = len;
+	if (avail < avail_len)
+		avail_len = avail;
+	memcpy(fb_con.char_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, buffer, avail_len);
+	memset(fb_con.attr_buffer + ((fb_con.cur_y - 1) * fb_con.w) + fb_con.cur_x - 1, fb_con.fg_color | (fb_con.bg_color << 4), avail_len);
 	
-	for (len = strlen(buffer); len; len--, c++) {
+	for (; len; len--, c++) {
 		if (fb_con.inited == INIT_CONSOLE) {
 			if ((*c < 32) && ((CTRL_ALWAYS >> *c) & 0x1)) {
 				/* This character can't be printed, we must use unicode
@@ -86,5 +87,11 @@ void fb_ConsolePrintBuffer( char *buffer, int mask )
 		}
 	}
 	fflush(fb_con.f_out);
+}
+
+/*:::::*/
+void fb_ConsolePrintBuffer( const char *buffer, int mask )
+{
+    return fb_ConsolePrintBufferEx( buffer, strlen(buffer), mask );
 }
 

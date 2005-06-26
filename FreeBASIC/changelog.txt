@@ -20,6 +20,8 @@ Version 0.14 Beta:
   integers, but now its possible to overload functions where the enum argument is the main one (v1c)
 - curdir$ now returns path with backslashes instead of slashes (mjs)
 - OPTION's will now be used too in the context of the file that included a header if it changed the default OPTION's (v1c)
+- chr$(0) can now be output with PRINT too (mjs)
+- Some cleanup to make most part of the library compilable with C++ too (mjs)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -52,6 +54,8 @@ Version 0.14 Beta:
 - '##'s can be used now to delimit macro arguments as in C: #define makefuncname(name) func_##name## (v1c)
 - the '#' prefix can now be used in macros when the text representation of a macro argument is wanted (v1c)
 - ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
+- fb_*PrintBuffer*Ex() functions that take an additional "len" parameter (mjs)
+- fb_PrintTab function to hide the implementation for TAB widths <>8 (mjs)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)

@@ -28,45 +28,65 @@
 #include <stdio.h>
 #include "fb.h"
 
+#define FB_PRINT_EX(fnum, s, len, mask)           \
+    do {                                          \
+        if( fnum == 0 ) {                         \
+            fb_PrintBufferEx( s, len, mask );     \
+        } else {                                  \
+            fb_hFilePrintBufferEx( fnum, s, len ); \
+        }                                         \
+    } while (0)
+
+#define FB_PRINT(fnum, s, mask)           \
+    FB_PRINT_EX(fnum, s, strlen(s), mask)
+
+#define FB_TAB_WIDTH   14
+#define USE_NATIVE_TAB (FB_TAB_WIDTH == 8)
+#define FB_PRINT_BUFFER_SIZE 4096
+
+#include <stdlib.h>
+
+/*:::::*/
+FBCALL void fb_PrintTab ( int fnum, int mask )
+{
+#if USE_NATIVE_TAB==1
+    FB_PRINT_EX(fnum, "\t", 1, mask);
+#else
+    if (fnum==0) {
+        int con_width, con_height;
+        int new_x = ((fb_ConsoleGetX() + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
+        fb_ConsoleGetSize( &con_width, &con_height );
+        if (new_x > con_width) {
+            FB_PRINT(fnum, FB_NEWLINE, mask);
+        } else {
+            fb_ConsoleLocate(0, new_x, -1);
+        }
+    } else {
+        FB_PRINT_EX(fnum, "\t", 1, mask);
+    }
+#endif
+}
 
 /*:::::*/
 FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
-    char *buffer;
-#ifndef WIN32
-	char nl[2] = { '\n', '\0' };
-#endif
-
     if( mask & FB_PRINT_NEWLINE )
-#ifndef WIN32
-		buffer = nl;
-#else
-    	buffer = FB_NEWLINE;
-#endif
+        FB_PRINT(fnum, FB_NEWLINE, mask);
 
     else if( mask & FB_PRINT_PAD )
-    	buffer = "              ";
-    else
-    	buffer = NULL;
+        fb_PrintTab( fnum, mask & ~FB_PRINT_HLMASK );
 
-    if( buffer != NULL )
-    {
-    	if( fnum == 0 )
-    		fb_PrintBuffer( buffer, mask );
-    	else
-    		fb_hFilePrintBuffer( fnum, buffer );
-    }
 }
 
-
-
-#define BUFFLEN 80*25
-
 /*:::::*/
-static void fb_hPrintStr( int fnum, char *s, int len, int mask )
+static void fb_hPrintStr( int fnum, const char *s, size_t len, int mask )
 {
-    char buffer[BUFFLEN+14+1+1], *p;
-    int chars, rmask;
+    int simple_mask = mask & ~FB_PRINT_HLMASK;
+#if USE_NATIVE_TAB!=1
+    char OutputBuffer[FB_PRINT_BUFFER_SIZE];
+    size_t iCurrentChar, iBufferSize;
+    int iDoPrint;
+#endif
 
     if( len == 0 )
     {
@@ -74,45 +94,48 @@ static void fb_hPrintStr( int fnum, char *s, int len, int mask )
     	return;
     }
 
-    rmask = mask;
-    mask = 0;
+#if USE_NATIVE_TAB==1
 
-    while( len > 0 )
-    {
-    	if( len > BUFFLEN )
-    		chars = BUFFLEN;
-    	else
-    		chars = len;
+    FB_PRINT_EX(fnum, s, len, simple_mask);
 
-    	p = &buffer[0];
-    	if( len == chars )
-    	{
-    		mask = rmask;
+#else
 
-    		if( mask & FB_PRINT_NEWLINE )
-    			sprintf( buffer, "%s" FB_NEWLINE, s );
-    		else if( mask & FB_PRINT_PAD )
-    			sprintf( buffer, "%-14s", s );
-    		else
-    			p = s;
-    	}
-    	else
-    	{
-    		memcpy( buffer, s, chars );
-    		buffer[chars] = '\0';
-    	}
+    if (fnum==0) {
 
+        iBufferSize = 0;
+        for (iCurrentChar=0; iCurrentChar!=len; ++iCurrentChar) {
+            char ch = s[iCurrentChar];
+            if (ch=='\t') {
+                iDoPrint = TRUE;
+            } else {
+                OutputBuffer[iBufferSize++] = ch;
+                iDoPrint = iBufferSize==FB_PRINT_BUFFER_SIZE;
+            }
 
-    	if( fnum == 0 )
-    		fb_PrintBuffer( p, mask );
-    	else
-    		fb_hFilePrintBuffer( fnum, p );
+            if (iDoPrint) {
+                FB_PRINT_EX(fnum, OutputBuffer, iBufferSize, simple_mask);
+                iBufferSize = 0;
+                iDoPrint = FALSE;
 
-    	s += chars;
-    	len -= chars;
+                if (ch=='\t') {
+                    fb_PrintTab( fnum, simple_mask );
+                }
+            }
+        }
+
+        if (iBufferSize!=0) {
+            FB_PRINT_EX(fnum, OutputBuffer, iBufferSize, simple_mask);
+        }
+
+    } else {
+        FB_PRINT_EX(fnum, s, len, simple_mask);
     }
-}
 
+#endif
+
+    fb_PrintVoid( fnum, mask );
+
+}
 
 /*:::::*/
 FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
@@ -131,7 +154,7 @@ FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 }
 
 /*:::::*/
-FBCALL void fb_PrintFixString ( int fnum, char *s, int mask )
+FBCALL void fb_PrintFixString ( int fnum, const char *s, int mask )
 {
     if( s == NULL )
     	fb_PrintVoid( fnum, mask );

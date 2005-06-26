@@ -63,12 +63,12 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 	
 	if( (symbol) && (symbol->data) )
 	{
-		proc = GetProcAddress( library, symbol->data );
+		proc = (void*) GetProcAddress( (HINSTANCE) library, symbol->data );
 		if( (!proc) && (!strchr( symbol->data, '@' )) ) {
 			procname[1023] = '\0';
 			for( i = 0; i < 256; i += 4 ) {
 				_snprintf( procname, 1023, "%s@%d", symbol->data, i );
-				proc = GetProcAddress( library, procname );
+				proc = (void*) GetProcAddress( (HINSTANCE) library, procname );
 				if( proc )
 					break;
 			}
@@ -87,5 +87,5 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 /*:::::*/
 FBCALL void fb_DylibFree( void *library )
 {
-	FreeLibrary(library);
+	FreeLibrary((HINSTANCE) library);
 }

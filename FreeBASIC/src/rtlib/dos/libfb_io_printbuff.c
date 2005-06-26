@@ -33,25 +33,29 @@
 
 #define TEXT_ADDR	ScreenPrimary
 
-void (*fb_ConsolePrintBufferProc) (char *buffer, int mask);
+void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
 
 /*:::::*/
-void fb_ConsolePrintBuffer( char *buffer, int mask )
+void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
-	fb_ConsolePrintBufferProc(buffer, mask);
+	fb_ConsolePrintBufferProc(buffer, len, mask);
 }
 
 /*:::::*/
-void fb_ConsolePrintBufferConio(char * buffer, int mask)
+void fb_ConsolePrintBuffer( const char *buffer, int mask )
+{
+	fb_ConsolePrintBufferProc(buffer, strlen(buffer), mask);
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 {
 	int col, row;
 	int toprow, botrow;
 	int cols, rows;
 	int no_scroll = FALSE;
-	int len;
-	unsigned short end_char = 0;
-
-	len = strlen( buffer );
+    unsigned short end_char = 0;
+    const char *pachText = (const char *) buffer;
 
 	fb_ConsoleGetSize( &cols, &rows );
 	fb_ConsoleGetView( &toprow, &botrow );
@@ -62,12 +66,13 @@ void fb_ConsolePrintBufferConio(char * buffer, int mask)
 		if( row == botrow )
 			if( col + len - 1 == cols )
 			{
-				end_char = ((unsigned char *)buffer)[len - 1];
-				buffer[len - 1] = '\0';
+                --len;
+                end_char = (unsigned short) (pachText[len]);
 				no_scroll = TRUE;
 			}
 
-	cprintf( "%s", buffer );
+    fwrite(buffer, len, 1, stdout);
+    fflush(stdout);
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,
@@ -82,8 +87,21 @@ void fb_ConsolePrintBufferConio(char * buffer, int mask)
 }
 
 /*:::::*/
-void fb_ConsolePrintBufferPrintf(char *buffer, int mask)
+void fb_ConsolePrintBufferConio(const char * buffer, int mask)
 {
-	printf(buffer);
+    fb_ConsolePrintBufferConioEx(buffer, strlen(buffer), mask);
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferPrintfEx(const void *buffer, size_t len, int mask)
+{
+    fwrite(buffer, len, 1, stdout);
+    fflush(stdout);
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferPrintf(const char *buffer, int mask)
+{
+    fb_ConsolePrintBufferPrintfEx(buffer, strlen(buffer), mask);
 }
 
