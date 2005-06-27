@@ -1006,15 +1006,17 @@ data "fb_ErrorResumeNext", "", _
 
 
 ''
-'' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, byval coordType as integer)
+'' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, _
+''				byval coordType as integer, byval ispreset as integer ) as void
 data "fb_GfxPset", "", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 @hGfxlib_cb, FALSE, FALSE, _
-	 5, _
+	 6, _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_UINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_GfxPoint ( byref target as any, byval x as single, byval y as single ) as integer
@@ -5215,13 +5217,14 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
 					 byval xexpr as ASTNODE ptr, _
 					 byval yexpr as ASTNODE ptr, _
 					 byval cexpr as ASTNODE ptr, _
-					 byval coordtype as integer ) as integer
+					 byval coordtype as integer, _
+					 byval ispreset as integer ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim targetmode as integer
 
 	function = FALSE
 
-	f = ifuncTB(FB_RTL_GFXPSET)
+	f = ifuncTB( FB_RTL_GFXPSET )
     proc = astNewFUNCT( f, symbGetType( f ) )
 
  	'' byref target as any
@@ -5256,6 +5259,11 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
 
  	'' byval coordtype as integer
  	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR_DATATYPE_INTEGER ) ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval ispreset as integer
+ 	if( astNewPARAM( proc, astNewCONSTi( ispreset, IR_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
 

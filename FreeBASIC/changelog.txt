@@ -110,6 +110,8 @@ Version 0.14 Beta:
 - Win32 OpenGL driver had problems with fullscreen modes on some machines (lillo)
 - made all Win32 gfx drivers more vsync friendly (lillo)
 - now using SetDIBitsToDevice instead of StretchDIBits in GDI gfx driver, solving some drawing problems (lillo)
+- the 8bit TRANS mode MMX PUT routine produced wrong results (lillo)
+- PRESET did not behave as it was supposed to (lillo)
 
 
 Version 0.13 Beta:

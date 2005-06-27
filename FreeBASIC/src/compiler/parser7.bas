@@ -134,7 +134,7 @@ end function
 '':::::
 '' GfxPset     =   PSET ( Expr ',' )? STEP? '(' Expr ',' Expr ')' (',' Expr )?
 ''
-function cGfxPset as integer
+function cGfxPset( byval ispreset as integer ) as integer
     dim as integer coordtype, tisptr
     dim as ASTNODE ptr xexpr, yexpr, cexpr, texpr
     dim as FBSYMBOL ptr target
@@ -173,7 +173,7 @@ function cGfxPset as integer
 	end if
 
 	''
-	function = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, coordtype )
+	function = rtlGfxPset( texpr, tisptr, xexpr, yexpr, cexpr, coordtype, ispreset )
 
 end function
 
@@ -941,9 +941,13 @@ function cGfxStmt as integer
 	function = FALSE
 
 	select case as const lexCurrentToken
-	case FB_TK_PSET, FB_TK_PRESET
+	case FB_TK_PSET
 		lexSkipToken
-		function = cGfxPSet
+		function = cGfxPSet( FALSE )
+
+	case FB_TK_PRESET
+		lexSkipToken
+		function = cGfxPSet( TRUE )
 
 	case FB_TK_LINE
 		lexSkipToken

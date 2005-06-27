@@ -28,15 +28,19 @@
 
 
 /*:::::*/
-FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int coord_type)
+FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int coord_type, int ispreset)
 {
 	int x, y;
 	
 	if (!fb_mode)
 		return;
 	
-	if (color == DEFAULT_COLOR)
-		color = fb_mode->fg_color;
+	if (color == DEFAULT_COLOR) {
+		if (ispreset)
+			color = fb_mode->bg_color;
+		else
+			color = fb_mode->fg_color;
+	}
 	else
 		color = fb_hFixColor(color);
 	

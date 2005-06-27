@@ -257,7 +257,7 @@ extern FBCALL void fb_GfxPaletteGet(int index, int *r, int *g, int *b);
 extern FBCALL void fb_GfxPaletteGetUsing(int *data);
 extern FBCALL void fb_GfxPaletteOut(int port, int value);
 extern FBCALL int fb_GfxPaletteInp(int port);
-extern FBCALL void fb_GfxPset(void *target, float x, float y, unsigned int color, int coord_type);
+extern FBCALL void fb_GfxPset(void *target, float x, float y, unsigned int color, int coord_type, int ispreset);
 extern FBCALL int fb_GfxPoint(void *target, float x, float y);
 extern FBCALL float fb_GfxPMap(float coord, int func);
 extern FBCALL float fb_GfxCursor(int func);
