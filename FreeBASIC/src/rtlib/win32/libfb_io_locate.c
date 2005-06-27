@@ -55,6 +55,8 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 
   	SetConsoleCursorPosition( handle, c );
 
+    fb_stdoutTB.line_length = c.X;
+
 	return ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
 }
 

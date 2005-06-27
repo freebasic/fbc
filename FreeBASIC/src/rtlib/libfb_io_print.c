@@ -27,42 +27,63 @@
 
 #include <stdio.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
-#define FB_PRINT_EX(fnum, s, len, mask)           \
-    do {                                          \
-        if( fnum == 0 ) {                         \
-            fb_PrintBufferEx( s, len, mask );     \
-        } else {                                  \
-            fb_hFilePrintBufferEx( fnum, s, len ); \
-        }                                         \
-    } while (0)
-
-#define FB_PRINT(fnum, s, mask)           \
-    FB_PRINT_EX(fnum, s, strlen(s), mask)
-
-#define FB_TAB_WIDTH   14
-#define USE_NATIVE_TAB (FB_TAB_WIDTH == 8)
 #define FB_PRINT_BUFFER_SIZE 4096
 
 #include <stdlib.h>
 
+static
+FBCALL void fb_hPrintPad ( int fnum, int mask, int current_x, int new_x )
+{
+#if FB_NATIVE_TAB==1
+    FB_PRINT_EX(fnum, "\t", 1, mask);
+#else
+    char tab_char_buffer[FB_TAB_WIDTH+1];
+    if (new_x <= current_x) {
+        FB_PRINT_EX(fnum, FB_NEWLINE, strlen(FB_NEWLINE), mask);
+    } else {
+        int i;
+        for (i=current_x; i!=new_x; ++i)
+            tab_char_buffer[i-current_x] = 32;
+        /* the terminating NUL shouldn't be required but it makes
+         * debugging easier */
+        tab_char_buffer[new_x-current_x] = 0;
+        FB_PRINT_EX(fnum, tab_char_buffer, new_x-current_x, mask);
+    }
+#endif
+}
+
 /*:::::*/
-FBCALL void fb_PrintTab ( int fnum, int mask )
+FBCALL void fb_PrintPad ( int fnum, int mask )
 {
 #if USE_NATIVE_TAB==1
     FB_PRINT_EX(fnum, "\t", 1, mask);
 #else
     if (fnum==0) {
-        int con_width, con_height;
-        int new_x = ((fb_ConsoleGetX() + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
-        fb_ConsoleGetSize( &con_width, &con_height );
-        if (new_x > con_width) {
-            FB_PRINT(fnum, FB_NEWLINE, mask);
-        } else {
-            fb_ConsoleLocate(0, new_x, -1);
+        int con_width;
+        int old_x = fb_stdoutTB.line_length + 1;
+        int new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
+        fb_ConsoleGetSize( &con_width, NULL );
+        if (new_x > (con_width - FB_TAB_WIDTH)) {
+            new_x = 1;
         }
+        fb_hPrintPad(fnum, mask, old_x, new_x);
     } else {
-        FB_PRINT_EX(fnum, "\t", 1, mask);
+        FB_LOCK();
+
+        if( fnum < 1 || fnum > FB_MAX_FILES ) {
+            fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+            return;
+        }
+
+        {
+            int old_x = fb_fileTB[fnum-1].line_length + 1;
+            int new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
+            fb_hPrintPad(fnum, mask, old_x, new_x);
+        }
+
+        FB_UNLOCK();
     }
 #endif
 }
@@ -70,71 +91,27 @@ FBCALL void fb_PrintTab ( int fnum, int mask )
 /*:::::*/
 FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
-    if( mask & FB_PRINT_NEWLINE )
+    if( mask & FB_PRINT_NEWLINE ) {
+
         FB_PRINT(fnum, FB_NEWLINE, mask);
 
-    else if( mask & FB_PRINT_PAD )
-        fb_PrintTab( fnum, mask & ~FB_PRINT_HLMASK );
+    } else if( mask & FB_PRINT_PAD ) {
 
+        fb_PrintPad( fnum, mask & ~FB_PRINT_HLMASK );
+
+    }
 }
 
 /*:::::*/
 static void fb_hPrintStr( int fnum, const char *s, size_t len, int mask )
 {
     int simple_mask = mask & ~FB_PRINT_HLMASK;
-#if USE_NATIVE_TAB!=1
-    char OutputBuffer[FB_PRINT_BUFFER_SIZE];
-    size_t iCurrentChar, iBufferSize;
-    int iDoPrint;
-#endif
 
-    if( len == 0 )
-    {
-    	fb_PrintVoid( fnum, mask );
-    	return;
-    }
-
-#if USE_NATIVE_TAB==1
-
-    FB_PRINT_EX(fnum, s, len, simple_mask);
-
-#else
-
-    if (fnum==0) {
-
-        iBufferSize = 0;
-        for (iCurrentChar=0; iCurrentChar!=len; ++iCurrentChar) {
-            char ch = s[iCurrentChar];
-            if (ch=='\t') {
-                iDoPrint = TRUE;
-            } else {
-                OutputBuffer[iBufferSize++] = ch;
-                iDoPrint = iBufferSize==FB_PRINT_BUFFER_SIZE;
-            }
-
-            if (iDoPrint) {
-                FB_PRINT_EX(fnum, OutputBuffer, iBufferSize, simple_mask);
-                iBufferSize = 0;
-                iDoPrint = FALSE;
-
-                if (ch=='\t') {
-                    fb_PrintTab( fnum, simple_mask );
-                }
-            }
-        }
-
-        if (iBufferSize!=0) {
-            FB_PRINT_EX(fnum, OutputBuffer, iBufferSize, simple_mask);
-        }
-
-    } else {
+    if( len != 0 ) {
         FB_PRINT_EX(fnum, s, len, simple_mask);
     }
 
-#endif
-
     fb_PrintVoid( fnum, mask );
-
 }
 
 /*:::::*/

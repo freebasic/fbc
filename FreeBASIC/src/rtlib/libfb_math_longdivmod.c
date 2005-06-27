@@ -58,8 +58,15 @@ const UQItype __clz_tab[] =
 /*:::::*/
 UDWtype __udivmoddi4 (UDWtype n, UDWtype d, UDWtype *rp)
 {
-  const DWunion nn = {.ll = n};
-  const DWunion dd = {.ll = d};
+#ifdef __cplusplus
+    DWunion nn;
+    DWunion dd;
+    nn.ll = n;
+    dd.ll = d;
+#else
+    const DWunion nn = { .ll = n };
+    const DWunion dd = { .ll = d };
+#endif
   DWunion rr;
   UWtype d0, d1, n0, n1, n2;
   UWtype q0, q1;
@@ -264,7 +271,14 @@ UDWtype __udivmoddi4 (UDWtype n, UDWtype d, UDWtype *rp)
 	}
     }
 
+#ifdef __cplusplus
+  DWunion ww;
+  ww.s.low = q0;
+  ww.s.high = q1;
+#else
   const DWunion ww = {{.low = q0, .high = q1}};
+#endif
+
   return ww.ll;
 }
 
@@ -272,9 +286,16 @@ UDWtype __udivmoddi4 (UDWtype n, UDWtype d, UDWtype *rp)
 DWtype __divdi3 (DWtype u, DWtype v)
 {
   word_type c = 0;
+  DWtype w;
+#ifdef __cplusplus
+  DWunion uu;
+  DWunion vv;
+  uu.ll = u;
+  vv.ll = v;
+#else
   DWunion uu = {.ll = u};
   DWunion vv = {.ll = v};
-  DWtype w;
+#endif
 
   if (uu.s.high < 0)
     c = ~c,
@@ -294,9 +315,16 @@ DWtype __divdi3 (DWtype u, DWtype v)
 DWtype __moddi3 (DWtype u, DWtype v)
 {
   word_type c = 0;
+  DWtype w;
+#ifdef __cplusplus
+  DWunion uu;
+  DWunion vv;
+  uu.ll = u;
+  vv.ll = v;
+#else
   DWunion uu = {.ll = u};
   DWunion vv = {.ll = v};
-  DWtype w;
+#endif
 
   if (uu.s.high < 0)
     c = ~c,

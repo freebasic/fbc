@@ -229,8 +229,32 @@ sub fbSetDefaultOptions
 	env.clopt.multithreaded	= FALSE
 	env.clopt.profile       = FALSE
 	env.clopt.target		= FB_DEFAULTTARGET
+	env.clopt.naming		= FB_COMPNAMING_DEFAULT
 
 end sub
+
+public function fbGetNaming ( ) as integer
+    dim naming_type as integer
+    naming_type = fbGetOption(FB_COMPOPT_NAMING)
+    if naming_type = FB_COMPNAMING_DEFAULT then
+        select case fbGetOption(FB_COMPOPT_TARGET)
+        case FB_COMPTARGET_WIN32
+            naming_type = FB_COMPNAMING_WIN32
+
+		case FB_COMPTARGET_LINUX
+            naming_type = FB_COMPNAMING_LINUX
+
+		case FB_COMPTARGET_DOS
+            naming_type = FB_COMPNAMING_DOS
+
+        case else
+            print "Internal compiler error (1)"
+            end 1
+
+        end select
+    end if
+    return naming_type
+end function
 
 '':::::
 sub fbSetOption ( byval opt as integer, _
@@ -265,6 +289,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.profile = value
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
+	case FB_COMPOPT_NAMING
+		env.clopt.naming = value
 	end select
 
 end sub
@@ -301,6 +327,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		function = env.clopt.profile
 	case FB_COMPOPT_TARGET
 		function = env.clopt.target
+	case FB_COMPOPT_NAMING
+		function = env.clopt.naming
 	case else
 		function = FALSE
 	end select

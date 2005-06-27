@@ -25,6 +25,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "fb.h"
 
 
@@ -32,6 +33,7 @@
 FB_HOOKSTB fb_hooks = { NULL };
 FBSTRING fb_strNullDesc = { NULL, 0 };
 FB_FILE fb_fileTB[FB_MAX_FILES];
+FB_FILE fb_stdoutTB;
 int fb_viewTopRow = -1;
 int fb_viewBotRow = -1;
 
@@ -45,10 +47,22 @@ FBCALL void fb_Init ( int argc, char **argv )
 {
 
 	/* initialize files table */
-	memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
+    memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
+
+    /* initialize handle for STDOUT */
+    memset( &fb_stdoutTB, 0, sizeof(fb_stdoutTB) );
+    fb_stdoutTB.f = stdout;
+    fb_stdoutTB.mode = FB_FILE_MODE_OUTPUT;
+    fb_stdoutTB.len = 128;
+    fb_stdoutTB.type = FB_FILE_TYPE_CONSOLE;
+    fb_stdoutTB.access = FB_FILE_ACCESS_WRITE;
 
 	/* os-dep initialization */
 	fb_hInit( argc, argv );
+
+    /* change line length to current cursor position - 1 to ensure that
+     * the "," for a PRINT statement works correctly */
+    fb_stdoutTB.line_length = fb_GetX() - 1;
 
 	/////atexit( &fb_End );
 

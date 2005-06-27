@@ -366,6 +366,7 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	fb_fileTB[fnum-1].mode 	 = mode;
 	fb_fileTB[fnum-1].type 	 = type;
 	fb_fileTB[fnum-1].access = accesstype;
+	fb_fileTB[fnum-1].line_length = 0;
 
 	/* reclen */
 	switch( mode )

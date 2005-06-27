@@ -65,6 +65,9 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		fputs("\e[?25h", fb_con.f_out);
 		visible = 0x10000;
 	}
+
+    fb_stdoutTB.line_length = x - 1;
+
 	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
 }
 

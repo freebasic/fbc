@@ -48,6 +48,10 @@ ifdef DEBUG
 FBCFLAGS += -g
 endif
 
+ifndef LDLIBS_EXT
+LDLIBS_EXT :=
+endif
+
 ifeq ($(HOST),win32)
     FBC := ../../fbc.exe
 endif
@@ -66,7 +70,7 @@ ifeq ($(TARGET),win32)
     EXE := .exe
     FBCFLAGS += -d TARGET_WIN32
     LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e fb_fbc_entry --stack 2097152,2097152
-    LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 -\)
+    LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 $(LDLIBS_EXT) -\)
     LD := ../../bin/win32/ld.exe
     AS := ../../bin/win32/as.exe
 endif
@@ -75,7 +79,7 @@ ifeq ($(TARGET),linux)
     OSDEPPATH := linux
     EXE :=
     FBCFLAGS += -d TARGET_LINUX
-    LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -\)
+    LDLIBS := -L../../lib/linux -\( -lc -lm -lfb $(LDLIBS_EXT) -\)
 	ifeq ($(HOST),win32)
     	LDFLAGS := -T ../../bin/linux/elf_i386.x -e fb_fbc_entry
     	LD := ../../bin/linux/ld.exe
@@ -92,7 +96,7 @@ ifeq ($(TARGET),dos)
     EXE := .exe
     FBCFLAGS += -d TARGET_DOS
     LDFLAGS := -T ../../bin/dos/i386go32.x ../../lib/dos/crt0.o
-    LDLIBS := -L../../lib/dos -( -lfb -lc -)
+    LDLIBS := -L../../lib/dos -( -lfb -lc $(LDLIBS_EXT) -)
     LD := ../../bin/dos/ld.exe
     AS := ../../bin/dos/as.exe
 endif
@@ -109,6 +113,10 @@ ifndef OSDEPPATH
 	CHECKTARGET_MSG := $(error error: TARGET not supported)  
 else
 	CHECKTARGET_MSG :=
+endif
+
+ifdef FBCFLAGS_EXT
+FBCFLAGS += $(FBCFLAGS_EXT)
 endif
 
 ##################################################################

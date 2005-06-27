@@ -29,13 +29,39 @@
 /*:::::*/
 FBCALL void fb_PrintBufferEx( const void *buffer, size_t len, int mask )
 {
+#if FB_NATIVE_TAB==0
+    const char *pachText = (const char *) buffer;
+    int con_width;
+    size_t i;
+    fb_ConsoleGetSize( &con_width, NULL );
+#endif
 
 	FB_LOCK();
-	
-	if( fb_hooks.printbuffproc )
-		fb_hooks.printbuffproc( buffer, len, mask );
-	else
-		fb_ConsolePrintBufferEx( buffer, len, mask );
+
+    if( fb_hooks.printbuffproc ) {
+        fb_hooks.printbuffproc( buffer, len, mask );
+    } else {
+        fb_ConsolePrintBufferEx( buffer, len, mask );
+        /* fb_stdoutTB.line_length = fb_GetX() - 1; */
+    }
+
+#if FB_NATIVE_TAB==0
+    /* search for last printed CR or LF */
+    i=len;
+    while (i--) {
+        char ch = pachText[i];
+        if (ch=='\n' || ch=='\r') {
+            break;
+        }
+    }
+    ++i;
+    if (i==0) {
+        fb_stdoutTB.line_length += len;
+    } else {
+        fb_stdoutTB.line_length = len - i;
+    }
+    fb_stdoutTB.line_length %= con_width;
+#endif
 
 	FB_UNLOCK();
 

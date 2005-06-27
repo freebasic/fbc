@@ -337,6 +337,19 @@ function _processOptions( byval opt as string, _
 		end select
 		return TRUE
 
+	case "naming"
+		select case argv
+		case "win32"
+			fbc.naming = FB_COMPNAMING_WIN32
+		case "linux"
+			fbc.naming = FB_COMPNAMING_LINUX
+		case "dos"
+			fbc.naming = FB_COMPNAMING_DOS
+		case else
+			return FALSE
+		end select
+		return TRUE
+
 	case else
 		return FALSE
 
@@ -352,8 +365,16 @@ function _processCompOptions( byval argv as string ) as integer
 		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 		return TRUE
 
+	case "stdcall"
+		fbSetOption( FB_COMPOPT_NOSTDCALL, FALSE )
+		return TRUE
+
 	case "nounderscore"
 		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
+		return TRUE
+
+	case "underscore"
+		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, FALSE )
 		return TRUE
 
 	case else

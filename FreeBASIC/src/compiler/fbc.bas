@@ -207,12 +207,16 @@ function assembleFiles as integer
 
 	function = FALSE
 
-    ''
+    '' get path to assembler
+    aspath = environ$("AS") '' check the environment variable first
+    if len(aspath)=0 then
+        '' when not set, then simply use some default value
 #if defined(TARGET_WIN32) or defined(TARGET_DOS)
-    aspath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe"
+		aspath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe"
 #elseif defined(TARGET_LINUX)
-	aspath = "as"
+		aspath = "as"
 #endif
+    end if
 
     '' set input files (.asm's) and output files (.o's)
     for i = 0 to fbc.inps-1
@@ -228,7 +232,7 @@ function assembleFiles as integer
 
     	'' invoke as
     	if( fbc.verbose ) then
-    		print "assembling: ", ascline
+    		print "assembling: ", aspath + " " + ascline
     	end if
 
     	if( exec( aspath, ascline ) <> 0 ) then
@@ -395,6 +399,7 @@ sub setDefaultOptions
 	fbc.stacksize	= FB_DEFSTACKSIZE
 	fbc.outtype 	= FB_OUTTYPE_EXECUTABLE
 	fbc.target		= fbGetOption( FB_COMPOPT_TARGET )
+	fbc.naming		= fbGetOption( FB_COMPOPT_NAMING )
 	fbc.cputype		= fbGetOption( FB_COMPOPT_CPUTYPE )
 	fbc.warnlevel	= fbGetOption( FB_COMPOPT_WARNINGLEVEL )
 
@@ -424,7 +429,7 @@ function processOptions as integer
 			'' compiler options, will be processed by processCompOptions
 			case "e", "ex", "mt", "profile", _
 				 "nodeflibs", "noerrline", "nostdcall", _
-				 "nounderscore", "noexport"
+				 "nounderscore", "noexport", "underscore", "stdcall"
 
 			'' cpu type
 			case "arch"
@@ -676,6 +681,7 @@ function processCompOptions as integer
 	fbc.setCompOptions( )
 
 	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
+	fbSetOption( FB_COMPOPT_NAMING, fbc.naming )
 	fbSetOption( FB_COMPOPT_DEBUG, fbc.debug )
 	fbSetOption( FB_COMPOPT_OUTTYPE, fbc.outtype )
 	fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )

@@ -44,6 +44,7 @@ type FBCCTX
 	outtype						as integer
 	showversion					as integer
 	target						as integer
+	naming						as integer
 	cputype						as integer
 	warnlevel					as integer
 

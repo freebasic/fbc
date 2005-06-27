@@ -2130,13 +2130,15 @@ private function hSetupProc( byval symbol as string, _
     else
     	aname = aliasname
 
-#ifdef TARGET_WIN32
-   		if( instr( aname, "@" ) = 0 ) then
-   			aname = *hCreateProcAlias( aname, lgt, mode )
-   		end if
-#else
-		aname = *hCreateProcAlias( aname, lgt, mode )
-#endif
+		select case fbGetNaming()
+	    case FB_COMPNAMING_WIN32:
+	   		if( instr( aname, "@" ) = 0 ) then
+	   			aname = *hCreateProcAlias( aname, lgt, mode )
+	   		end if
+
+        case else
+			aname = *hCreateProcAlias( aname, lgt, mode )
+        end select
 
     end if
 

@@ -713,37 +713,37 @@ function hCreateProcAlias( byval symbol as string, _
 
     static sname as zstring * FB_MAXINTNAMELEN+1
 
-#ifdef TARGET_WIN32
-    dim addat as integer
 
-	if( env.clopt.nounderprefix ) then
+	select case fbGetNaming()
+    case FB_COMPNAMING_WIN32:
+        dim addat as integer
+    
+        if( env.clopt.nounderprefix ) then
+            sname = symbol
+        else
+            sname = "_"
+            sname += symbol
+        end if
+    
+        if( env.clopt.nostdcall ) then
+            addat = FALSE
+        else
+            addat = (mode = FB_FUNCMODE_STDCALL)
+        end if
+    
+        if( addat ) then
+            sname += "@"
+            sname += str$( argslen )
+        end if
+
+	case FB_COMPNAMING_LINUX:
 		sname = symbol
-	else
-		sname = "_"
-		sname += symbol
-	end if
 
-    if( env.clopt.nostdcall ) then
-    	addat = FALSE
-    else
-    	addat = (mode = FB_FUNCMODE_STDCALL)
-    end if
+	case FB_COMPNAMING_DOS:
+        sname = "_"
+        sname += symbol
 
-	if( addat ) then
-		sname += "@"
-		sname += str$( argslen )
-	end if
-
-#elseif defined(TARGET_DOS)
-
-	sname = "_"
-	sname += symbol
-
-#else
-
-	sname = symbol
-
-#endif
+    end select
 
 	function = @sname
 
@@ -785,40 +785,42 @@ end function
 function hCreateDataAlias( byval symbol as string, _
 						   byval isimport as integer ) as string static
 
-#if defined(TARGET_WIN32)
-	if( isimport ) then
-		function = "__imp__" + symbol
-	else
+	select case fbGetNaming()
+    case FB_COMPNAMING_WIN32:
+        if( isimport ) then
+            function = "__imp__" + symbol
+        else
+            function = "_" + symbol
+        end if
+
+    case FB_COMPNAMING_DOS:
 		function = "_" + symbol
-	end if
 
-#elseif defined(TARGET_DOS)
-	function = "_" + symbol
+    case FB_COMPNAMING_LINUX:
+		function = symbol
 
-#else
-	function = symbol
-
-#endif
+    end select
 
 end function
 
 '':::::
 function hStripUnderscore( byval symbol as string ) as string static
 
-#ifdef TARGET_WIN32
-    if( not env.clopt.nostdcall ) then
-		function = mid$( symbol, 2 )
-	else
-		function = symbol
-	end if
+	select case fbGetNaming()
+    case FB_COMPNAMING_WIN32:
+	    if( not env.clopt.nostdcall ) then
+			function = mid$( symbol, 2 )
+		else
+			function = symbol
+		end if
 
-#elseif defined(TARGET_DOS)
-    function = mid$( symbol, 2 )
+    case FB_COMPNAMING_DOS:
+    	function = mid$( symbol, 2 )
 
-#else
-	function = symbol
+    case FB_COMPNAMING_LINUX:
+    	function = symbol
 
-#endif
+    end select
 
 end function
 

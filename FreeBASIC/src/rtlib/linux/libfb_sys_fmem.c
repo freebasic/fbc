@@ -26,13 +26,27 @@
 
 #include "fb.h"
 
+#ifdef __CYGWIN__
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
 #include <sys/sysinfo.h>
+#endif
 
 /*:::::*/
 FBCALL unsigned int fb_GetMemAvail ( int mode )
 {
 
-	return get_avphys_pages() * 4096;
+#ifdef __CYGWIN__
+	MEMORYSTATUS ms;
+
+	ms.dwLength = sizeof( MEMORYSTATUS );
+	GlobalMemoryStatus( &ms );
+
+	return ms.dwAvailPhys;
+#else
+    return get_avphys_pages() * 4096;
+#endif
 
 }
 

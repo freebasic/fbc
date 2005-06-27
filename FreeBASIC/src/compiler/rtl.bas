@@ -6115,13 +6115,16 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		s = hAllocStringConst( "(??)", -1 )
 	else
 		procname = symbGetName( proc )
-#ifdef TARGET_WIN32
-		procname = mid$( procname, 2)
-		at = instr( procname, "@" )
-		if( at ) then
-			procname = mid$( procname, 1, at - 1 )
-		end if
-#endif
+
+		select case fbGetNaming()
+	    case FB_COMPNAMING_WIN32:
+			procname = mid$( procname, 2)
+			at = instr( procname, "@" )
+			if( at ) then
+				procname = mid$( procname, 1, at - 1 )
+			end if
+        end select
+
 		if( len( procname ) and 3 ) then
 			procname += string$( 4 - ( len( procname ) and 3 ), 32 )
 		end if

@@ -55,7 +55,8 @@ Version 0.14 Beta:
 - the '#' prefix can now be used in macros when the text representation of a macro argument is wanted (v1c)
 - ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
 - fb_*PrintBuffer*Ex() functions that take an additional "len" parameter (mjs)
-- fb_PrintTab function to hide the implementation for TAB widths <>8 (mjs)
+- fb_PrintPad function to hide the implementation for PAD widths <>8 (mjs)
+- Allow to compile the "linux" version with CYGWIN (mjs)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -112,6 +113,7 @@ Version 0.14 Beta:
 - now using SetDIBitsToDevice instead of StretchDIBits in GDI gfx driver, solving some drawing problems (lillo)
 - the 8bit TRANS mode MMX PUT routine produced wrong results (lillo)
 - PRESET did not behave as it was supposed to (lillo)
+- Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 
 
 Version 0.13 Beta:

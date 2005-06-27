@@ -54,6 +54,8 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
 	}
 	
+    fb_stdoutTB.line_length = x - 1;
+
 	gotoxy(x, y);
 	
 	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;

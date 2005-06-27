@@ -65,6 +65,7 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_MULTITHREADED
 	FB_COMPOPT_PROFILE
 	FB_COMPOPT_TARGET
+	FB_COMPOPT_NAMING
 end enum
 
 type FBCMMLINEOPT
@@ -82,6 +83,7 @@ type FBCMMLINEOPT
 	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
 	profile			as integer					'' build profiling code (def= false)
 	target			as integer					'' target platform
+	naming			as integer					'' target naming
 end type
 
 
@@ -206,6 +208,14 @@ enum FB_COMPTARGET_ENUM
 	FB_COMPTARGET_DOS
 end enum
 
+'' target naming
+enum FB_COMPNAMING_ENUM
+    FB_COMPNAMING_DEFAULT
+	FB_COMPNAMING_WIN32
+	FB_COMPNAMING_LINUX
+	FB_COMPNAMING_DOS
+end enum
+
 #if defined(TARGET_WIN32)
 const FB_DEFAULTTARGET = FB_COMPTARGET_WIN32
 #elseif defined(TARGET_LINUX)
@@ -250,6 +260,8 @@ declare sub 		fbAddDefine		( byval dname as string, _
 
 declare function 	fbIncludeFile	( byval filename as string, _
 									  byval isonce as integer ) as integer
+
+declare function    fbGetNaming     ( ) as integer
 
 declare sub 		fbAddDefaultLibs( )
 

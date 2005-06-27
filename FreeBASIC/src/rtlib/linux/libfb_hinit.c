@@ -62,9 +62,9 @@ static void signal_handler(int sig)
 	signal(SIGTERM, old_sigterm);
 	signal(SIGINT,  old_sigint);
 	signal(SIGQUIT, old_sigquit);
-	
+
 	fb_hEnd(1);
-	
+
 	raise(sig);
 }
 
@@ -83,7 +83,7 @@ void fb_hResize()
 	unsigned char *char_buffer, *attr_buffer;
 	struct winsize win;
 	int r, c, w, h;
-	
+
 	if ((!fb_con.inited) || (!fb_con.resized))
 		return;
 
@@ -100,7 +100,7 @@ void fb_hResize()
 			win.ws_col = 80;
 		}
 	}
-	
+
 	char_buffer = calloc(1, win.ws_row * win.ws_col * 2);
 	attr_buffer = char_buffer + (win.ws_row * win.ws_col);
 	if (fb_con.char_buffer) {
@@ -116,11 +116,11 @@ void fb_hResize()
 	fb_con.attr_buffer = attr_buffer;
 	fb_con.h = win.ws_row;
 	fb_con.w = win.ws_col;
-	
+
 	fflush(stdin);
 	fputs("\e[6n", fb_con.f_out);
 	fscanf(stdin, "\e[%d;%dR", &fb_con.cur_y, &fb_con.cur_x);
-	
+
 	fb_con.resized = FALSE;
 }
 
@@ -130,7 +130,7 @@ int fb_hInitConsole ( int init )
 {
 	struct termios term_out, term_in;
 	int i;
-	
+
 	/* Init terminal I/O */
 	fb_con.h_out = fileno(stdout);
 	fb_con.h_in = fileno(stdin);
@@ -138,7 +138,7 @@ int fb_hInitConsole ( int init )
 	fb_con.f_in = stdin;
 	if (!isatty(fb_con.h_out) || !isatty(fb_con.h_in))
 		return -1;
-	
+
 	/* Output setup */
 	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
 		return -1;
@@ -146,7 +146,7 @@ int fb_hInitConsole ( int init )
 	term_out.c_oflag |= OPOST;
 	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
 		return -1;
-	
+
 	/* Input setup */
 	if (init != INIT_CONSOLE) {
 		fb_con.f_in = fopen("/dev/tty", "r+b");
@@ -172,7 +172,7 @@ int fb_hInitConsole ( int init )
 	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
 	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
 	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
-	
+
 	if (init == INIT_CONSOLE) {
 		/* Set our default palette */
 		for (i = 0; i < 16; i++)
@@ -181,7 +181,7 @@ int fb_hInitConsole ( int init )
 	fb_con.fg_color = 0x7;
 	/* Set IBM PC 437 charset */
 	fputs("\e(U", fb_con.f_out);
-	
+
 	return 0;
 }
 
@@ -189,16 +189,19 @@ int fb_hInitConsole ( int init )
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
 {
+#ifdef MULTITHREADED
+    pthread_mutexattr_t attr;
+#endif
 	int init = FALSE;
 	char *term;
 	int i;
-	
+
 	/* rebuild command line from argv */
 	fb_commandline[0] = '\0';
-	for( i = 0; i < argc; i++ ) 
+	for( i = 0; i < argc; i++ )
 	{
 		strncat( fb_commandline, argv[i], 1024 );
-		if( i != argc-1 ) 
+		if( i != argc-1 )
 			strncat( fb_commandline, " ", 1024 );
 	}
 
@@ -214,16 +217,20 @@ void fb_hInit ( int argc, char **argv )
 #endif
 
 #ifdef MULTITHREADED
+    /* make mutex recursive to behave the same on Win32 and Linux */
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+
 	/* Init multithreading support */
-	pthread_mutex_init(&fb_global_mutex, NULL);
-	pthread_mutex_init(&fb_string_mutex, NULL);
-	
+	pthread_mutex_init(&fb_global_mutex, &attr);
+	pthread_mutex_init(&fb_string_mutex, &attr);
+
 	/* allocate thread local storage vars for runtime error handling */
 	pthread_key_create(&fb_errctx.handler,   NULL);
 	pthread_key_create(&fb_errctx.num,       NULL);
 	pthread_key_create(&fb_errctx.reslbl,    NULL);
 	pthread_key_create(&fb_errctx.resnxtlbl, NULL);
-	
+
 	/* allocate thread local storage vars for input context */
 	pthread_key_create(&fb_inpctx.f,         NULL);
 	pthread_key_create(&fb_inpctx.i,         NULL);
@@ -238,9 +245,9 @@ void fb_hInit ( int argc, char **argv )
 	pthread_key_create(&fb_printusgctx.fmtstr.len,  NULL);
 	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
 #endif
-	
+
 	memset(&fb_con, 0, sizeof(fb_con));
-	
+
 	term = getenv("TERM");
 	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
 		init = INIT_CONSOLE;
@@ -250,7 +257,7 @@ void fb_hInit ( int argc, char **argv )
 		init = INIT_ETERM;
 	if (!init)
 		return;
-	
+
 	if (fb_hInitConsole(init))
 		return;
 	fb_con.inited = init;
