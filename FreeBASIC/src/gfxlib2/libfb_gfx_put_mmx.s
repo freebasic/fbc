@@ -472,7 +472,7 @@ FUNC(fb_hPutTrans1MMX)
 	movl %edx, LOCAL1
 	movl GLOBL(fb_mode), %eax
 	movl ARG1, %esi
-	movl MODE_W(%eax), %edx
+	movl TARGET_PITCH(%eax), %edx
 	movl ARG2, %edi
 	subl %ebx, %edx
 	pxor %mm1, %mm1
