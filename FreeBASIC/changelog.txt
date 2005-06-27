@@ -22,6 +22,7 @@ Version 0.14 Beta:
 - OPTION's will now be used too in the context of the file that included a header if it changed the default OPTION's (v1c)
 - chr$(0) can now be output with PRINT too (mjs)
 - Some cleanup to make most part of the library compilable with C++ too (mjs)
+- On Linux the locks are recursive (posix-compliant) (mjs)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -56,7 +57,7 @@ Version 0.14 Beta:
 - ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
 - fb_*PrintBuffer*Ex() functions that take an additional "len" parameter (mjs)
 - fb_PrintPad function to hide the implementation for PAD widths <>8 (mjs)
-- Allow to compile the "linux" version with CYGWIN (mjs)
+- Allow to compile the "linux" version with CYGWIN (non-functional yet) (mjs)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)

@@ -28,16 +28,25 @@
 #include <string.h>
 #include "fb.h"
 
+#ifdef __CYGWIN__
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#else
 #include <unistd.h>
 
 /* global */
 char fb_commandline[1024];
+#endif
 
 
 /*:::::*/
 char *fb_hGetCommandLine( void )
 {
 
-	return fb_commandline;
+#ifdef __CYGWIN__
+	return GetCommandLine( );
+#else
+    return fb_commandline;
+#endif
 
 }

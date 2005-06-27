@@ -28,7 +28,9 @@
 #include "fb.h"
 #include "fb_linux.h"
 
+#ifndef __CYGWIN__
 extern char fb_commandline[];
+#endif
 
 #ifdef MULTITHREADED
 pthread_mutex_t fb_global_mutex;
@@ -193,9 +195,12 @@ void fb_hInit ( int argc, char **argv )
     pthread_mutexattr_t attr;
 #endif
 	int init = FALSE;
-	char *term;
-	int i;
+    char *term;
+#ifndef __CYGWIN__
+    int i;
+#endif
 
+#ifndef __CYGWIN__
 	/* rebuild command line from argv */
 	fb_commandline[0] = '\0';
 	for( i = 0; i < argc; i++ )
@@ -203,7 +208,8 @@ void fb_hInit ( int argc, char **argv )
 		strncat( fb_commandline, argv[i], 1024 );
 		if( i != argc-1 )
 			strncat( fb_commandline, " ", 1024 );
-	}
+    }
+#endif
 
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;
