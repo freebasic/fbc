@@ -35,6 +35,10 @@ extern char fb_commandline[];
 #ifdef MULTITHREADED
 pthread_mutex_t fb_global_mutex;
 pthread_mutex_t fb_string_mutex;
+#ifndef PTHREAD_MUTEX_RECURSIVE
+#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+#endif
+extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 #endif
 
 FBCONSOLE fb_con;
@@ -223,9 +227,9 @@ void fb_hInit ( int argc, char **argv )
 #endif
 
 #ifdef MULTITHREADED
-    /* make mutex recursive to behave the same on Win32 and Linux */
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+	/* make mutex recursive to behave the same on Win32 and Linux */
+	pthread_mutexattr_init(&attr);
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 
 	/* Init multithreading support */
 	pthread_mutex_init(&fb_global_mutex, &attr);
