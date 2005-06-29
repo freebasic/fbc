@@ -82,7 +82,7 @@
 #define MODE_H			68
 #define DEPTH			72
 #define COLOR_MASK		76
-#define DEFAULT_PALETTE		80
+#define DEFAULT_PAL			80
 #define SCANLINE_SIZE		84
 #define FG_COLOR		88
 #define BG_COLOR		92

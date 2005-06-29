@@ -38,12 +38,11 @@ int fb_ConsoleWidth( int cols, int rows )
    	COORD size, max;
    	SMALL_RECT rect;
    	CONSOLE_SCREEN_BUFFER_INFO info;
-    HANDLE hnd = GetStdHandle( STD_OUTPUT_HANDLE );
     int cur;
 
-   	max = GetLargestConsoleWindowSize( hnd );
+   	max = GetLargestConsoleWindowSize( fb_out_handle );
 
-   	GetConsoleScreenBufferInfo( hnd, &info );
+   	GetConsoleScreenBufferInfo( fb_out_handle, &info );
    	
    	cur = info.dwSize.X | (info.dwSize.Y << 16);
 
@@ -71,14 +70,14 @@ int fb_ConsoleWidth( int cols, int rows )
 	fb_viewBotRow = rect.Bottom;
     /* */
 
-   	SetConsoleScreenBufferSize( hnd, size );
-   	SetConsoleWindowInfo( hnd, TRUE, &rect );
+   	SetConsoleScreenBufferSize( fb_out_handle, size );
+   	SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
 
    	/* repeat or the window will be only resized */
-   	SetConsoleScreenBufferSize( hnd, size );
-   	SetConsoleWindowInfo( hnd, TRUE, &rect );
+   	SetConsoleScreenBufferSize( fb_out_handle, size );
+   	SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
 
-   	SetConsoleActiveScreenBuffer( hnd );
+   	SetConsoleActiveScreenBuffer( fb_out_handle );
 
 	return cur;
 }

@@ -56,7 +56,7 @@ void fb_ConsoleScroll( int nrows )
     cinf.Char.AsciiChar	= ' ';
     cinf.Attributes 	= fb_ConsoleGetColorAtt( );
 
-    ScrollConsoleScreenBuffer( GetStdHandle( STD_OUTPUT_HANDLE ), &srec, NULL, dcoord, &cinf );
+    ScrollConsoleScreenBuffer( fb_out_handle, &srec, NULL, dcoord, &cinf );
 
 	fb_ConsoleLocate( botrow - (nrows-1), -1, -1 );
 

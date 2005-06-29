@@ -54,7 +54,7 @@ int fb_ConsoleColor( int fc, int bc )
     if( bc >= 0 )
     	fb_last_bc = colorlut[bc & 15];
 
-    SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), fb_last_fc + (fb_last_bc << 4) );
+    SetConsoleTextAttribute( fb_out_handle, fb_last_fc + (fb_last_bc << 4) );
 
 	return cur;
 }
@@ -64,7 +64,7 @@ int fb_ConsoleGetColorAtt( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
-	GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info );
+	GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
 	return info.wAttributes;
 

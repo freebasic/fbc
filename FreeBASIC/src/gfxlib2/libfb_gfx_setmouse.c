@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL int fb_GfxSetMouse(int x, int y, int cursor)
+int fb_GfxSetMouse(int x, int y, int cursor)
 {
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);

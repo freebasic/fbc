@@ -35,15 +35,12 @@
 void fb_ConsoleClear( int mode )
 {
 
-    HANDLE 	hnd;
     DWORD 	written;
     CONSOLE_SCREEN_BUFFER_INFO info;
     int		chars, toprow, botrow;
     COORD	startcoord;
 
-    hnd = GetStdHandle( STD_OUTPUT_HANDLE );
-
-    GetConsoleScreenBufferInfo( hnd, &info );
+    GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
     fb_ConsoleGetView( &toprow, &botrow );
 
@@ -64,9 +61,9 @@ void fb_ConsoleClear( int mode )
     }
 
 
-    FillConsoleOutputAttribute( hnd, info.wAttributes, chars, startcoord, &written);
+    FillConsoleOutputAttribute( fb_out_handle, info.wAttributes, chars, startcoord, &written);
 
-    FillConsoleOutputCharacter( hnd, ' ', chars, startcoord, &written );
+    FillConsoleOutputCharacter( fb_out_handle, ' ', chars, startcoord, &written );
 
     fb_ConsoleLocate( toprow, 1, -1 );
 

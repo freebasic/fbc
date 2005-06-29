@@ -42,6 +42,18 @@
 #define INIT_XTERM	2
 #define INIT_ETERM	3
 
+#ifdef MULTITHREADED
+# include <pthread.h>
+extern pthread_mutex_t fb_global_mutex;
+extern pthread_mutex_t fb_string_mutex;
+# define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
+# define FB_UNLOCK()				pthread_mutex_unlock(&fb_global_mutex)
+# define FB_STRLOCK()				pthread_mutex_lock(&fb_string_mutex)
+# define FB_STRUNLOCK()				pthread_mutex_unlock(&fb_string_mutex)
+# define FB_TLSENTRY				pthread_key_t
+# define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
+# define FB_TLSGET(key)				pthread_getspecific((key))
+#endif
 
 typedef struct FBCONSOLE
 {

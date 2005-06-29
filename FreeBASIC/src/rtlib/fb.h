@@ -52,46 +52,31 @@ extern "C" {
 #define MAX_PATH	1024
 #endif
 
-#ifdef MULTITHREADED
-# ifdef TARGET_WIN32
-#  define WIN32_LEAN_AND_MEAN
-#  include <windows.h>
-extern CRITICAL_SECTION fb_global_mutex;
-extern CRITICAL_SECTION fb_string_mutex;
-#  define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
-#  define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
-#  define FB_STRLOCK()				EnterCriticalSection(&fb_string_mutex)
-#  define FB_STRUNLOCK()			LeaveCriticalSection(&fb_string_mutex)
-#  define FB_TLSENTRY				DWORD
-#  define FB_TLSSET(key,value)		TlsSetValue((key), (LPVOID)(value))
-#  define FB_TLSGET(key)			TlsGetValue((key))
-# elif defined(TARGET_LINUX)
-#  include <pthread.h>
-extern pthread_mutex_t fb_global_mutex;
-extern pthread_mutex_t fb_string_mutex;
-#  define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
-#  define FB_UNLOCK()				pthread_mutex_unlock(&fb_global_mutex)
-#  define FB_STRLOCK()				pthread_mutex_lock(&fb_string_mutex)
-#  define FB_STRUNLOCK()			pthread_mutex_unlock(&fb_string_mutex)
-#  define FB_TLSENTRY				pthread_key_t
-#  define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
-#  define FB_TLSGET(key)			pthread_getspecific((key))
-# else
-#  define FB_LOCK()
-#  define FB_UNLOCK()
-#  define FB_STRLOCK()
-#  define FB_STRUNLOCK()
-#  define FB_TLSENTRY				unsigned int
-#  define FB_TLSSET(key,value)		key = (unsigned int)value
-#  define FB_TLSGET(key)			key
-# endif
-#else
+#ifdef TARGET_WIN32
+#include "win32/fb_win32.h"
+#elif defined(TARGET_LINUX)
+#include "linux/fb_linux.h"
+#endif
+
+#ifndef FB_LOCK
 # define FB_LOCK()
+#endif
+#ifndef FB_UNLOCK
 # define FB_UNLOCK()
+#endif
+#ifndef FB_STRLOCK
 # define FB_STRLOCK()
+#endif
+#ifndef FB_STRUNLOCK
 # define FB_STRUNLOCK()
+#endif
+#ifndef FB_TLSENTRY
 # define FB_TLSENTRY				unsigned int
+#endif
+#ifndef FB_TLSSET
 # define FB_TLSSET(key,value)		key = (unsigned int)value
+#endif
+#ifndef FB_TLSGET
 # define FB_TLSGET(key)				key
 #endif
 
@@ -439,6 +424,10 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 	   FBSTRING 	*fb_ConsoleInkey	( void );
 	   int 			fb_ConsoleKeyHit	( void );
 
+	   int			fb_ConsoleMultikey	( int scancode );
+	   int			fb_ConsoleGetMouse	( int *x, int *y, int *z, int *buttons );
+	   int			fb_ConsoleSetMouse	( int x, int y, int cursor );
+
 	   void 		fb_ConsolePrintBuffer( const char *buffer, int mask );
 	   void 		fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
 
@@ -656,6 +645,14 @@ FBCALL void 		fb_PrintBufferEx	( const void *buffer, size_t len, int mask );
 typedef char 		*(*FB_READSTRPROC)	( char *buffer, int len );
 		char 		*fb_ReadString		( char *buffer, int len, FILE *f );
 
+FBCALL int			fb_Multikey			( int scancode );
+FBCALL int			fb_GetMouse			( int *x, int *y, int *z, int *buttons );
+FBCALL int			fb_SetMouse			( int x, int y, int cursor );
+typedef int			(*FB_MULTIKEYPROC)	( int scancode );
+typedef int			(*FB_GETMOUSEPROC)	( int *x, int *y, int *z, int *buttons );
+typedef int			(*FB_SETMOUSEPROC)	( int x, int y, int cursor );
+
+
 typedef struct _FB_HOOKSTB {
 	FB_INKEYPROC		inkeyproc;
 	FB_GETKEYPROC		getkeyproc;
@@ -668,6 +665,9 @@ typedef struct _FB_HOOKSTB {
 	FB_GETYPROC			getyproc;
 	FB_PRINTBUFFPROC	printbuffproc;
 	FB_READSTRPROC		readstrproc;
+	FB_MULTIKEYPROC		multikeyproc;
+	FB_GETMOUSEPROC		getmouseproc;
+	FB_SETMOUSEPROC		setmouseproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB fb_hooks;

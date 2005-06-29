@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons)
+int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons)
 {
 	int failure = TRUE;
 	int temp_z, temp_buttons;

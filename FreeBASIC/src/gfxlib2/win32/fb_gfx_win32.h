@@ -56,7 +56,6 @@ extern WIN32DRIVER fb_win32;
 extern GFXDRIVER fb_gfxDriverDirectDraw;
 extern GFXDRIVER fb_gfxDriverGDI;
 extern GFXDRIVER fb_gfxDriverOpenGL;
-extern const unsigned char fb_keytable[][3];
 
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

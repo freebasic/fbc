@@ -18,38 +18,27 @@
  */
 
 /*
- * io_getsize.c -- get size (console, no gfx) function for Windows
+ * hook_multikey.c -- multikey entrypoint, default to console mode
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: jun/2005 written [lillo]
  *
  */
 
 #include "fb.h"
-#include <stdio.h>
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 
 /*:::::*/
-FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
+FBCALL int fb_Multikey( int scancode )
 {
-    int toprow, botrow;
+	int res;
+	
+	FB_LOCK();
+	
+	if( fb_hooks.multikeyproc )
+		res = fb_hooks.multikeyproc( scancode );
+	else
+		res = fb_ConsoleMultikey( scancode );
 
-    CONSOLE_SCREEN_BUFFER_INFO info;
-
-    if( cols != NULL )
-    {
-    	if( !GetConsoleScreenBufferInfo( fb_out_handle, &info ) )
-    		*cols = 80;
-    	else
-    		*cols = info.dwSize.X;
-    }
-
-    if( rows != NULL )
-    {
-    	fb_ConsoleGetView( &toprow, &botrow );
-
-    	*rows = botrow - toprow + 1;
-    }
+	FB_UNLOCK();
+	
+	return res;
 }

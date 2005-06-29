@@ -60,13 +60,12 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 				scrolloff = TRUE;
 	}
 
-	HANDLE hnd = GetStdHandle( STD_OUTPUT_HANDLE );
 	DWORD  mode, byteswritten;
 
 	if( scrolloff )
 	{
-		GetConsoleMode( hnd, &mode );
-		SetConsoleMode( hnd, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
+		GetConsoleMode( fb_out_handle, &mode );
+		SetConsoleMode( fb_out_handle, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
 	}
 
 	/* scrolling if VIEW was set */
@@ -85,7 +84,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	}
 
     /* */
-	while( WriteFile( hnd, pachText, len, &byteswritten, NULL ) == TRUE )
+	while( WriteFile( fb_out_handle, pachText, len, &byteswritten, NULL ) == TRUE )
 	{
 		pachText += byteswritten;
 		len -= byteswritten;
@@ -94,7 +93,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	}
 
 	if( scrolloff )
-		SetConsoleMode( hnd, mode );
+		SetConsoleMode( fb_out_handle, mode );
 
 }
 

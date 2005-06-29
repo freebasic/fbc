@@ -27,14 +27,15 @@
 #include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
+#include "fb_win32.h"
 #include <float.h>
 
 #ifdef MULTITHREADED
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 CRITICAL_SECTION fb_global_mutex;
 CRITICAL_SECTION fb_string_mutex;
 #endif
+
+HANDLE fb_in_handle, fb_out_handle;
 
 
 /*:::::*/
@@ -43,6 +44,9 @@ void fb_hInit ( int argc, char **argv )
 
     /* set FPU precision to 64-bit and round to nearest (as in QB) */
 	_controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
+
+	fb_in_handle = GetStdHandle( STD_INPUT_HANDLE );
+	fb_out_handle = GetStdHandle( STD_OUTPUT_HANDLE );
 
 #ifdef MULTITHREADED
 	InitializeCriticalSection(&fb_global_mutex);

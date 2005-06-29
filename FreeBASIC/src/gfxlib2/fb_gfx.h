@@ -36,7 +36,7 @@ extern "C" {
 #include <string.h>
 #include <math.h>
 
-#include "fb_gfx_scancodes.h"
+#include "../rtlib/fb_scancodes.h"
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_rterr.h"
 
@@ -276,9 +276,6 @@ extern FBCALL void fb_GfxLock(void);
 extern FBCALL void fb_GfxUnlock(int start_line, int end_line);
 extern FBCALL void *fb_GfxScreenPtr(void);
 extern FBCALL void fb_GfxSetWindowTitle(FBSTRING *title);
-extern FBCALL int fb_GfxMultikey(int scancode);
-extern FBCALL int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
-extern FBCALL int fb_GfxSetMouse(int x, int y, int cursor);
 extern FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6);
 
 /* Runtime library hooks */
@@ -294,6 +291,9 @@ int fb_GfxGetY(void);
 void fb_GfxPrintBuffer(const char *buffer, int mask);
 void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask);
 char *fb_GfxReadStr(char *buffer, int maxlen);
+int fb_GfxMultikey(int scancode);
+int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
+int fb_GfxSetMouse(int x, int y, int cursor);
 
 #ifdef __cplusplus
 }

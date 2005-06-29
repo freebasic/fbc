@@ -32,7 +32,6 @@
 /*:::::*/
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
-	HANDLE handle;
 	COORD c;
 	CONSOLE_CURSOR_INFO info;
 
@@ -46,14 +45,13 @@ int fb_ConsoleLocate( int row, int col, int cursor )
   	else
   		c.Y = fb_ConsoleGetY() - 1;
 
-  	handle = GetStdHandle( STD_OUTPUT_HANDLE );
-	GetConsoleCursorInfo( handle, &info );
+	GetConsoleCursorInfo( fb_out_handle, &info );
   	if( cursor >= 0 ) {
   		info.bVisible = ( cursor ? TRUE : FALSE );
-  		SetConsoleCursorInfo( handle, &info );
+  		SetConsoleCursorInfo( fb_out_handle, &info );
   	}
 
-  	SetConsoleCursorPosition( handle, c );
+  	SetConsoleCursorPosition( fb_out_handle, c );
 
     fb_stdoutTB.line_length = c.X;
 
@@ -66,7 +64,7 @@ int fb_ConsoleGetX( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
-    GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info );
+    GetConsoleScreenBufferInfo( fb_out_handle, &info );
     return info.dwCursorPosition.X + 1;
 
 }
@@ -76,7 +74,7 @@ int fb_ConsoleGetY( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
-    GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info );
+    GetConsoleScreenBufferInfo( fb_out_handle, &info );
     return info.dwCursorPosition.Y + 1;
 
 }
@@ -86,7 +84,7 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
-    GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &info );
+    GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
     if( col != NULL )
     	*col = info.dwCursorPosition.X + 1;
@@ -106,11 +104,11 @@ FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
     coord.Y = row - 1;
     
     if( colorflag ) {
-        ReadConsoleOutputAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), &attribute, 1, coord, &res);
+        ReadConsoleOutputAttribute( fb_out_handle, &attribute, 1, coord, &res);
         return attribute;
     }
     else {
-    	ReadConsoleOutputCharacter( GetStdHandle( STD_OUTPUT_HANDLE ), &character, 1, coord, &res);
+    	ReadConsoleOutputCharacter( fb_out_handle, &character, 1, coord, &res);
     	return character;
     }
 }

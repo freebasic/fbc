@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-FBCALL int fb_GfxMultikey(int scancode)
+int fb_GfxMultikey(int scancode)
 {
 	int result = 0;
 	

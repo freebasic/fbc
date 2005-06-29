@@ -18,38 +18,32 @@
  */
 
 /*
- * io_getsize.c -- get size (console, no gfx) function for Windows
+ * fb_win32.h -- common Win32 definitions.
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: jun/2005 written [lillo]
  *
  */
 
-#include "fb.h"
-#include <stdio.h>
+#ifndef __FB_WIN32_H__
+#define __FB_WIN32_H__
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#ifdef MULTITHREADED
+extern CRITICAL_SECTION fb_global_mutex;
+extern CRITICAL_SECTION fb_string_mutex;
+# define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
+# define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
+# define FB_STRLOCK()				EnterCriticalSection(&fb_string_mutex)
+# define FB_STRUNLOCK()				LeaveCriticalSection(&fb_string_mutex)
+# define FB_TLSENTRY				DWORD
+# define FB_TLSSET(key,value)		TlsSetValue((key), (LPVOID)(value))
+# define FB_TLSGET(key)				TlsGetValue((key))
+#endif
 
-/*:::::*/
-FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
-{
-    int toprow, botrow;
+extern HANDLE fb_in_handle, fb_out_handle;
+extern const unsigned char fb_keytable[][3];
 
-    CONSOLE_SCREEN_BUFFER_INFO info;
 
-    if( cols != NULL )
-    {
-    	if( !GetConsoleScreenBufferInfo( fb_out_handle, &info ) )
-    		*cols = 80;
-    	else
-    		*cols = info.dwSize.X;
-    }
-
-    if( rows != NULL )
-    {
-    	fb_ConsoleGetView( &toprow, &botrow );
-
-    	*rows = botrow - toprow + 1;
-    }
-}
+#endif

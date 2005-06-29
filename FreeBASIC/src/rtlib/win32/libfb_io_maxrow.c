@@ -32,7 +32,7 @@
 /*:::::*/
 int fb_ConsoleGetMaxRow( void )
 {
-	COORD max = GetLargestConsoleWindowSize( GetStdHandle( STD_OUTPUT_HANDLE ) );
+	COORD max = GetLargestConsoleWindowSize( fb_out_handle );
 
 	return max.Y + 1;
 }
