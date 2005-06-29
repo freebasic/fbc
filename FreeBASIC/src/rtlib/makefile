@@ -10,46 +10,46 @@
 ##################################################################
 
 HOST :=
-ifeq ($(OS),DOS)
-	HOST := dos
+ifdef DJGPP
+    HOST := dos
 else
-	ifeq ($(OS),Windows_NT)
-   		HOST := win32
-	else
-   		ifdef WINDIR
-   			HOST := win32
-		else
-       		ifdef windir
-       			HOST := win32
-		else
-		ifdef HOME
-			HOST := linux
-		endif
-       		endif
-   		endif
-	endif
+    ifeq ($(OS),Windows_NT)
+        HOST := win32
+    else
+        ifdef WINDIR
+            HOST := win32
+        else
+            ifdef windir
+                HOST := win32
+            else
+                ifdef HOME
+                    HOST := linux
+                endif
+            endif
+        endif
+    endif
 endif
 
 ifndef TARGET
-	ifndef HOST
-		CHECKHOST_MSG := $(error error: TARGET not defined and HOST couldn't be guessed)
-	else
-		CHECKHOST_MSG :=
-	endif
-	TARGET := $(HOST)
+    ifndef HOST
+        CHECKHOST_MSG := $(error error: TARGET not defined and HOST couldn't be guessed)
+    else
+        CHECKHOST_MSG :=
+    endif
+    TARGET := $(HOST)
 endif
 
 ##################################################################
 
 OSDEPPATH :=
 ifndef CC
-CC := gcc
+    CC := gcc
 endif
 CFLAGS := -ffast-math -Wall -Wno-format -I .
 ifdef DEBUG
-CFLAGS += -O0 -g
+    CFLAGS += -O0 -g
 else
-CFLAGS += -O2
+    CFLAGS += -O2
 endif
 
 ifeq ($(TARGET),win32)
