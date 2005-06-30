@@ -28,7 +28,7 @@
 #include "fb_rterr.h"
 
 static int inited = -1;
-static int last_x = 0, last_y = 0, last_buttons = 0;
+static int last_x = 0, last_y = 0, last_z = 0, last_buttons = 0;
 
 
 /*:::::*/
@@ -53,15 +53,20 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 		if( dwRead > 0 ) {
 			ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
 			if( ir.EventType == MOUSE_EVENT ) {
-				last_x = ir.Event.MouseEvent.dwMousePosition.X;
-				last_y = ir.Event.MouseEvent.dwMousePosition.Y;
-				last_buttons = ir.Event.MouseEvent.dwButtonState & 0x7;
+				if( ir.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED ) {
+					last_z += ( ( ir.Event.MouseEvent.dwButtonState & 0xFF000000 ) ? -1 : 1 );
+				}
+				else {
+					last_x = ir.Event.MouseEvent.dwMousePosition.X;
+					last_y = ir.Event.MouseEvent.dwMousePosition.Y;
+					last_buttons = ir.Event.MouseEvent.dwButtonState & 0x7;
+				}
 			}
 		}
 	}
 	*x = last_x;
 	*y = last_y;
-	*z = 0;
+	*z = last_z;
 	*buttons = last_buttons;
 	
 	return FB_RTERROR_OK;
