@@ -272,9 +272,7 @@ static void fb_MultikeyHandler(void)
 	unsigned char scan;
 	unsigned char status;
 	unsigned short ascii;
-	
-	while (locked);	/* spin until get_key is done */
-	
+		
 	/* read the raw scan code from the keyboard */
 	scan = inportb(0x60);           /* read scan code */
 	status = inportb(0x61);         /* read keyboard status */
