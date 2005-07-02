@@ -288,6 +288,8 @@ int fb_GfxWidth(int w, int h);
 int fb_GfxLocate(int y, int x, int cursor);
 int fb_GfxGetX(void);
 int fb_GfxGetY(void);
+void fb_GfxGetXY(int *col, int *row);
+void fb_GfxGetSize(int *cols, int *rows);
 void fb_GfxPrintBuffer(const char *buffer, int mask);
 void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask);
 char *fb_GfxReadStr(char *buffer, int maxlen);

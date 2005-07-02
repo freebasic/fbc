@@ -137,6 +137,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_hooks.widthproc = fb_GfxWidth;
 		fb_hooks.getxproc = fb_GfxGetX;
 		fb_hooks.getyproc = fb_GfxGetY;
+		fb_hooks.getxyproc = fb_GfxGetXY;
+		fb_hooks.getsizeproc = fb_GfxGetSize;
 		fb_hooks.printbuffproc = fb_GfxPrintBufferEx;
 		fb_hooks.readstrproc = fb_GfxReadStr;
 		fb_hooks.multikeyproc = fb_GfxMultikey;
@@ -246,7 +248,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate)
 {
 	const MODEINFO *info = NULL;
-	
+
 	if ((mode < 0) || (mode > NUM_MODES))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
@@ -263,7 +265,7 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refre
 FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, int refresh_rate)
 {
 	MODEINFO info;
-	
+
 	if ((w <= 0) || (h <= 0))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	if ((depth != 8) && (depth != 15) && (depth != 16) && (depth != 24) && (depth != 32))
@@ -276,7 +278,7 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 	info.font = &fb_font_8x8;
 	info.text_w = w / 8;
 	info.text_h = h / 8;
-	
+
 	return set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
 }
 

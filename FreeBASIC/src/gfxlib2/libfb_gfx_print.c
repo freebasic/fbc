@@ -33,7 +33,7 @@ static void print_char(unsigned char ch)
 	int bit, x, y, text_x, text_y;
 	unsigned int color;
 	const unsigned char *src;
-	
+
 	text_x = fb_mode->cursor_x << 3;
 	text_y = fb_mode->cursor_y * fb_mode->font->h;
 	src = &fb_mode->font->data[ch * fb_mode->font->h];
@@ -70,15 +70,15 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 	int dirty_start = fb_mode->cursor_y, dirty_len = 0;
     unsigned char *dest;
     const char *pachText = (const char *) buffer;
-	
+
 	fb_hPrepareTarget(NULL);
-	
+
 	DRIVER_LOCK();
-	
+
 	check_scroll(&dirty_start, &dirty_len);
-	
+
 	for (i = 0; i != len; ++i) {
-		
+
 		if (fb_mode->cursor_x >= fb_mode->text_w) {
 			fb_mode->cursor_y++;
 			if (i == 0)
@@ -87,7 +87,7 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 			fb_mode->cursor_x = 0;
 			check_scroll(&dirty_start, &dirty_len);
 		}
-		
+
 		switch (pachText[i]) {
 			case '\t':
 				new_x = (fb_mode->cursor_x + 8) & ~0x7;
@@ -98,7 +98,7 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 				}
 				fb_mode->cursor_x = new_x;
 				break;
-			
+
 			case '\r':
 				if (pachText[i+1] == '\n')
 					i++;
@@ -108,7 +108,7 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 				dirty_len++;
 				check_scroll(&dirty_start, &dirty_len);
 				break;
-			
+
 			default:
 				print_char((unsigned char)pachText[i]);
 				fb_mode->cursor_x++;
@@ -118,7 +118,7 @@ void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask)
 		}
 	}
 	SET_DIRTY(dirty_start * fb_mode->font->h, dirty_len * fb_mode->font->h);
-	
+
 	DRIVER_UNLOCK();
 }
 
@@ -137,6 +137,9 @@ int fb_GfxLocate(int y, int x, int cursor)
 		fb_mode->cursor_x = x - 1;
 	if (y > 0)
 		fb_mode->cursor_y = y - 1;
+
+	fb_FileSetLineLen( 0, fb_mode->cursor_x );
+
 	return ((fb_mode->cursor_x + 1) & 0xFF) | (((fb_mode->cursor_y + 1) & 0xFF) << 8);
 }
 
@@ -153,3 +156,26 @@ int fb_GfxGetY(void)
 {
 	return fb_mode->cursor_y + 1;
 }
+
+/*:::::*/
+void fb_GfxGetXY( int *col, int *row )
+{
+	if( col != NULL )
+		*col = fb_GfxGetX( );
+
+	if( row != NULL )
+		*row = fb_GfxGetY( );
+
+}
+
+/*:::::*/
+void fb_GfxGetSize( int *cols, int *rows )
+{
+	if( cols != NULL )
+		*cols = fb_mode->text_w;
+
+	if( rows != NULL )
+		*rows = fb_mode->text_h;
+
+}
+
