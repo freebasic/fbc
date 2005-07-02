@@ -79,7 +79,7 @@ ifeq ($(TARGET),linux)
     OSDEPPATH := linux
     EXE :=
     FBCFLAGS += -d TARGET_LINUX
-    LDLIBS := -L../../lib/linux -\( -lc -lm -lfb $(LDLIBS_EXT) -\)
+    LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -lpthread $(LDLIBS_EXT) -\)
 	ifeq ($(HOST),win32)
     	LDFLAGS := -T ../../bin/linux/elf_i386.x -e fb_fbc_entry
     	LD := ../../bin/linux/ld.exe

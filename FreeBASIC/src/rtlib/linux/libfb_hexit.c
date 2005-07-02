@@ -34,6 +34,11 @@ void fb_hExitConsole( void )
 	int bottom;
 	
 	if (fb_con.inited) {
+		pthread_mutex_lock(&fb_con.bg_mutex);
+		if (fb_con.keyboard_exit)
+			fb_con.keyboard_exit();
+		pthread_mutex_unlock(&fb_con.bg_mutex);
+		
 		bottom = fb_ConsoleGetMaxRow();
 		if (((fb_viewTopRow != -1) || (fb_viewBotRow != -1)) &&
 		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom - 1))) {
@@ -62,6 +67,8 @@ void fb_hEnd ( int errlevel )
 {
 	fb_hExitConsole();
 	fb_con.inited = FALSE;
+	pthread_join(fb_con.bg_thread, NULL);
+	pthread_mutex_destroy(&fb_con.bg_mutex);
 
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */

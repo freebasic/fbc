@@ -68,10 +68,32 @@ static void signal_handler(int sig)
 	signal(SIGTERM, old_sigterm);
 	signal(SIGINT,  old_sigint);
 	signal(SIGQUIT, old_sigquit);
-
+	
 	fb_hEnd(1);
 
 	raise(sig);
+}
+
+
+/*:::::*/
+static void *bg_thread(void *arg)
+{
+	while (fb_con.inited) {
+		pthread_mutex_lock(&fb_con.bg_mutex);
+		if (fb_con.keyboard_handler)
+			fb_con.keyboard_handler();
+		
+		pthread_mutex_unlock(&fb_con.bg_mutex);
+		usleep(30000);
+	}
+	return NULL;
+}
+
+
+/*:::::*/
+static int default_getch(void)
+{
+	return fgetc(fb_con.f_in);
 }
 
 
@@ -165,13 +187,16 @@ int fb_hInitConsole ( int init )
 	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
 	/* Ignore breaks */
 	term_in.c_iflag |= (IGNBRK | BRKINT);
-	/* Disable Xon/off */
+	/* Disable Xon/off and 8th bit stripping */
 	term_in.c_iflag &= ~(IXOFF | IXON);
-	/* Character oriented, no echo */
+	/* Character oriented, no echo, no signals */
 	term_in.c_lflag &= ~(ICANON | ECHO);
+	if (init == INIT_CONSOLE)
+		term_in.c_lflag &= ~ISIG;
 	/* No timeout, just don't block */
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;
+	
 	if (tcsetattr(fb_con.h_in, TCSAFLUSH, &term_in))
 		return -1;
 	/* Don't block */
@@ -187,7 +212,13 @@ int fb_hInitConsole ( int init )
 	fb_con.fg_color = 0x7;
 	/* Set IBM PC 437 charset */
 	fputs("\e(U", fb_con.f_out);
-
+	
+	/* Initialize keyboard handler if set */
+	pthread_mutex_lock(&fb_con.bg_mutex);
+	if (fb_con.keyboard_init)
+		fb_con.keyboard_init();
+	pthread_mutex_unlock(&fb_con.bg_mutex);
+	
 	return 0;
 }
 
@@ -202,9 +233,7 @@ void fb_hInit ( int argc, char **argv )
     char *term;
 #ifndef __CYGWIN__
     int i;
-#endif
 
-#ifndef __CYGWIN__
 	/* rebuild command line from argv */
 	fb_commandline[0] = '\0';
 	for( i = 0; i < argc; i++ )
@@ -259,18 +288,25 @@ void fb_hInit ( int argc, char **argv )
 	memset(&fb_con, 0, sizeof(fb_con));
 
 	term = getenv("TERM");
-	if ((term) && ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5))))
-		init = INIT_CONSOLE;
-	if ((term) && (!strncmp(term, "xterm", 5)))
-		init = INIT_XTERM;
-	if ((term) && (!strncasecmp(term, "eterm", 5)))
-		init = INIT_ETERM;
+	if (term) {
+		if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
+			init = INIT_CONSOLE;
+		if (!strncmp(term, "xterm", 5))
+			init = INIT_XTERM;
+		if (!strncasecmp(term, "eterm", 5))
+			init = INIT_ETERM;
+	}
 	if (!init)
 		return;
+
+	pthread_mutex_init( &fb_con.bg_mutex, NULL );
 
 	if (fb_hInitConsole(init))
 		return;
 	fb_con.inited = init;
+	fb_con.keyboard_getch = default_getch;
+
+	pthread_create( &fb_con.bg_thread, NULL, bg_thread, NULL );
 
 	/* Install signal handlers to quietly shut down */
 	old_sigabrt = signal(SIGABRT, signal_handler);

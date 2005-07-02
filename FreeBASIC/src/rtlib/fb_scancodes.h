@@ -110,6 +110,7 @@
 #define SC_DELETE	0x53
 #define SC_F11		0x57
 #define SC_F12		0x58
+#define SC_ALTGR	0x64
 
 #define SC_LWIN		0x7D
 #define SC_RWIN		0x7E

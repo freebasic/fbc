@@ -96,7 +96,7 @@ int fb_hGetCh()
 	NODE *node;
 	int k;
 
-	k = fgetc(fb_con.f_in);
+	k = fb_con.keyboard_getch();
 	if (k == -1)
 		return -1;
 	if (k == 0x7F)

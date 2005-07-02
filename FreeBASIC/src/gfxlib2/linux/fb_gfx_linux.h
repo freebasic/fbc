@@ -59,6 +59,7 @@ extern GFXDRIVER fb_gfxDriverX11;
 extern GFXDRIVER fb_gfxDriverOpenGL;
 
 extern void *fb_program_icon;
+extern const struct { KeySym keysym; int scancode; } fb_keysym_to_scancode[];
 
 extern int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 extern void fb_hX11Exit(void);

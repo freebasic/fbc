@@ -35,15 +35,15 @@
 #include <signal.h>
 #include <termios.h>
 #include <dlfcn.h>
+#include <pthread.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
-#define INIT_CONSOLE	1
-#define INIT_XTERM	2
-#define INIT_ETERM	3
+#define INIT_CONSOLE		1
+#define INIT_XTERM			2
+#define INIT_ETERM			3
 
 #ifdef MULTITHREADED
-# include <pthread.h>
 extern pthread_mutex_t fb_global_mutex;
 extern pthread_mutex_t fb_string_mutex;
 # define FB_LOCK()					pthread_mutex_lock(&fb_global_mutex)
@@ -66,10 +66,15 @@ typedef struct FBCONSOLE
 	int cur_x, cur_y;
 	int w, h, resized;
 	unsigned char *char_buffer, *attr_buffer;
+	pthread_t bg_thread;
+	pthread_mutex_t bg_mutex;
+	int (*keyboard_getch)(void);
+	int (*keyboard_init)(void);
+	void (*keyboard_exit)(void);
+	void (*keyboard_handler)(void);
 } FBCONSOLE;
 
 extern FBCONSOLE fb_con;
-
 
 extern int fb_hGetCh(void);
 extern void fb_hResize(void);
