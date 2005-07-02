@@ -29,38 +29,36 @@
 /*:::::*/
 FBCALL void fb_PrintBufferEx( const void *buffer, size_t len, int mask )
 {
-#if FB_NATIVE_TAB==0
+#ifndef FB_NATIVE_TAB
     const char *pachText = (const char *) buffer;
     int con_width;
     size_t i;
-    fb_ConsoleGetSize( &con_width, NULL );
+    fb_GetSize( &con_width, NULL );
 #endif
 
 	FB_LOCK();
 
-    if( fb_hooks.printbuffproc ) {
+    if( fb_hooks.printbuffproc )
         fb_hooks.printbuffproc( buffer, len, mask );
-    } else {
+    else
         fb_ConsolePrintBufferEx( buffer, len, mask );
-        /* fb_stdoutTB.line_length = fb_GetX() - 1; */
-    }
 
-#if FB_NATIVE_TAB==0
+#ifndef FB_NATIVE_TAB
     /* search for last printed CR or LF */
-    i=len;
-    while (i--) {
+    i = len;
+    while( i-- )
+    {
         char ch = pachText[i];
-        if (ch=='\n' || ch=='\r') {
+        if (ch == '\n' || ch == '\r')
             break;
-        }
     }
     ++i;
-    if (i==0) {
-        fb_stdoutTB.line_length += len;
-    } else {
-        fb_stdoutTB.line_length = len - i;
-    }
-    fb_stdoutTB.line_length %= con_width;
+    if( i == 0 )
+        len += fb_FileGetLineLen( 0 );
+    else
+        len -= i;
+
+    fb_FileSetLineLen( 0, len % con_width );
 #endif
 
 	FB_UNLOCK();
@@ -71,6 +69,6 @@ FBCALL void fb_PrintBufferEx( const void *buffer, size_t len, int mask )
 FBCALL void fb_PrintBuffer( const char *buffer, int mask )
 {
 
-    return fb_PrintBufferEx(buffer, strlen(buffer), mask);
+    return fb_PrintBufferEx( buffer, strlen( buffer ), mask );
 
 }

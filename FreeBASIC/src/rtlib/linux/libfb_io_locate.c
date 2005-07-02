@@ -37,12 +37,12 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 
 	if (!fb_con.inited)
 		return 0;
-	
+
 	fb_hResize();
-	
+
 	if ((row <= 0) || (col <= 0))
 		fb_ConsoleGetXY(&x, &y);
-	
+
 	if (col > 0)
 		x = col;
 	if (row > 0)
@@ -66,7 +66,7 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		visible = 0x10000;
 	}
 
-    fb_stdoutTB.line_length = x - 1;
+    fb_FileSetLineLen( 0, x - 1 );
 
 	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
 }
@@ -76,7 +76,7 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 int fb_ConsoleGetX( void )
 {
 	int x;
-	
+
 	fb_ConsoleGetXY(&x, NULL);
 	return x;
 }
@@ -85,7 +85,7 @@ int fb_ConsoleGetX( void )
 int fb_ConsoleGetY( void )
 {
 	int y;
-	
+
 	fb_ConsoleGetXY(NULL, &y);
 	return y;
 }
@@ -94,7 +94,7 @@ int fb_ConsoleGetY( void )
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
 	int x = 0, y = 0;
-	
+
 	if (fb_con.inited) {
 		/* Note we read reply from stdin, NOT from fb_con.f_in */
 		fflush(stdin);
@@ -112,12 +112,12 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 FBCALL int fb_ConsoleReadXY( int x, int y, int colorflag )
 {
 	unsigned char *buffer;
-	
+
 	fb_hResize();
-	
+
 	if ((!fb_con.inited) || (x < 1) || (x > fb_con.w) || (y < 1) || (y > fb_con.h))
 		return 0;
-	
+
 	if (colorflag)
 		buffer = fb_con.attr_buffer;
 	else

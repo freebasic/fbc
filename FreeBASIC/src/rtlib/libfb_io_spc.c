@@ -33,8 +33,8 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 
 	if( fnum == 0 )
 	{
-		fb_ConsoleGetXY( &col, &row );
-		fb_ConsoleGetSize( &cols, &rows );
+		fb_GetXY( &col, &row );
+		fb_GetSize( &cols, &rows );
 
     	if( newcol > cols )
     		newcol %= cols;
@@ -61,8 +61,8 @@ FBCALL void fb_PrintSPC( int fnum, int n )
 		if( n == 0 )
 			return;
 
-		fb_ConsoleGetXY( &col, &row );
-		fb_ConsoleGetSize( &cols, &rows );
+		fb_GetXY( &col, &row );
+		fb_GetSize( &cols, &rows );
 
     	newcol = col + n;
     	if( newcol > cols )

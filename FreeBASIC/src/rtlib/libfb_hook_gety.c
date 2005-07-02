@@ -18,45 +18,27 @@
  */
 
 /*
- * io_locate.c -- locate (console, no gfx) function for Windows
+ * hook_gety.c -- gety entrypoint, default to console mode
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: dec/2004 written [v1ctor]
  *
  */
 
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+FBCALL int fb_GetY( void )
 {
-	COORD c;
-	CONSOLE_CURSOR_INFO info;
+	int res;
 
-  	if( col > 0 )
-  		c.X = col - 1;
-  	else
-  		c.X = fb_ConsoleGetX() - 1;
+	FB_LOCK();
 
-  	if( row > 0 )
-  		c.Y = row - 1;
-  	else
-  		c.Y = fb_ConsoleGetY() - 1;
+	if( fb_hooks.getyproc )
+		res = fb_hooks.getyproc( );
+	else
+		res = fb_ConsoleGetY( );
 
-	GetConsoleCursorInfo( fb_out_handle, &info );
-  	if( cursor >= 0 ) {
-  		info.bVisible = ( cursor ? TRUE : FALSE );
-  		SetConsoleCursorInfo( fb_out_handle, &info );
-  	}
+	FB_UNLOCK();
 
-  	SetConsoleCursorPosition( fb_out_handle, c );
-
-    fb_FileSetLineLen( 0, c.X );
-
-	return ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
+	return res;
 }
-
-
-

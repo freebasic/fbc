@@ -30,10 +30,8 @@
 FBCALL int fb_Locate( int row, int col, int cursor )
 {
 	int res;
-	
-    FB_LOCK();
 
-    fb_stdoutTB.line_length = col - 1;
+    FB_LOCK();
 
 	if( fb_hooks.locateproc )
 		res = fb_hooks.locateproc( row, col, cursor );

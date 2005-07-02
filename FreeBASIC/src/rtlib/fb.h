@@ -331,11 +331,13 @@ typedef struct _FB_PRINTUSGCTX {
 
 
 #define FB_TAB_WIDTH     14
-#define FB_NATIVE_TAB    (FB_TAB_WIDTH == 8)
+#if FB_TAB_WIDTH == 8
+#define FB_NATIVE_TAB
+#endif
 
 #define FB_PRINT_NEWLINE 0x00000001
 #define FB_PRINT_PAD 	 0x00000002
-#define FB_PRINT_ISLAST  0x80000000     /* only for print using ? */
+#define FB_PRINT_ISLAST  0x80000000     /* only for USING */
 
 /** masked bits for "high level" flags
  *
@@ -343,16 +345,16 @@ typedef struct _FB_PRINTUSGCTX {
  */
 #define FB_PRINT_HLMASK  0x00000003
 
-#define FB_PRINT_EX(fnum, s, len, mask)           \
-    do {                                          \
-        if( fnum == 0 ) {                         \
-            fb_PrintBufferEx( s, len, mask );     \
-        } else {                                  \
-            fb_hFilePrintBufferEx( fnum, s, len ); \
-        }                                         \
-    } while (0)
+#define FB_PRINT_EX(fnum, s, len, mask)           		\
+    {                                          			\
+        if( fnum == 0 ) {                       	  	\
+            fb_PrintBufferEx( s, len, mask );     		\
+        } else {                                  		\
+            fb_hFilePrintBufferEx( fnum, s, len ); 		\
+        }                                         		\
+    }
 
-#define FB_PRINT(fnum, s, mask)           \
+#define FB_PRINT(fnum, s, mask)           				\
     FB_PRINT_EX(fnum, s, strlen(s), mask)
 
 #define FB_PRINTNUM(fnum, val, mask, fmt, type)			\
@@ -465,7 +467,6 @@ typedef struct _FB_INPCTX {
 
 extern FB_FILE fb_fileTB[];
 extern FB_INPCTX fb_inpctx;
-extern FB_FILE fb_stdoutTB;
 
 
 #define FB_FILE_MODE_BINARY			0
@@ -511,6 +512,9 @@ FBCALL FBSTRING 	*fb_FileStrInput	( int bytes, int fnum );
 
 FBCALL int 			fb_FileLineInput	( int fnum, void *dst, int dst_len, int fillrem );
 FBCALL int 			fb_LineInput		( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
+
+FBCALL void 		fb_FileSetLineLen	( int fnum, int len );
+FBCALL int 			fb_FileGetLineLen	( int fnum );
 
 	   int 			fb_hFilePrintBuffer	( int fnum, const char *buffer );
        int          fb_hFilePrintBufferEx( int fnum, const void *buffer, size_t len );
@@ -633,9 +637,13 @@ FBCALL int 			fb_Width			( int cols, int rows );
 
 typedef int	  		(*FB_GETXPROC)		( void );
 typedef int	  		(*FB_GETYPROC)		( void );
+typedef void  		(*FB_GETXYPROC)		( int *col, int *row );
+typedef void  		(*FB_GETSIZEPROC)	( int *cols, int *rows );
 
 FBCALL int 			fb_GetX				( void );
 FBCALL int 			fb_GetY				( void );
+FBCALL void 		fb_GetXY			( int *col, int *row );
+FBCALL void 		fb_GetSize			( int *cols, int *rows );
 
 typedef void	  	(*FB_PRINTBUFFPROC)	( const void *buffer, size_t len, int mask );
 
@@ -663,6 +671,8 @@ typedef struct _FB_HOOKSTB {
 	FB_WIDTHPROC		widthproc;
 	FB_GETXPROC			getxproc;
 	FB_GETYPROC			getyproc;
+	FB_GETXYPROC		getxyproc;
+	FB_GETSIZEPROC		getsizeproc;
 	FB_PRINTBUFFPROC	printbuffproc;
 	FB_READSTRPROC		readstrproc;
 	FB_MULTIKEYPROC		multikeyproc;

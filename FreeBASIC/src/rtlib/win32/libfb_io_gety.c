@@ -18,7 +18,7 @@
  */
 
 /*
- * io_locate.c -- locate (console, no gfx) function for Windows
+ * io_gety.c -- GetY function for Windows
  *
  * chng: jan/2005 written [v1ctor]
  *
@@ -30,33 +30,12 @@
 #include <windows.h>
 
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+int fb_ConsoleGetY( void )
 {
-	COORD c;
-	CONSOLE_CURSOR_INFO info;
+    CONSOLE_SCREEN_BUFFER_INFO info;
 
-  	if( col > 0 )
-  		c.X = col - 1;
-  	else
-  		c.X = fb_ConsoleGetX() - 1;
+    GetConsoleScreenBufferInfo( fb_out_handle, &info );
+    return info.dwCursorPosition.Y + 1;
 
-  	if( row > 0 )
-  		c.Y = row - 1;
-  	else
-  		c.Y = fb_ConsoleGetY() - 1;
-
-	GetConsoleCursorInfo( fb_out_handle, &info );
-  	if( cursor >= 0 ) {
-  		info.bVisible = ( cursor ? TRUE : FALSE );
-  		SetConsoleCursorInfo( fb_out_handle, &info );
-  	}
-
-  	SetConsoleCursorPosition( fb_out_handle, c );
-
-    fb_FileSetLineLen( 0, c.X );
-
-	return ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
 }
-
-
 

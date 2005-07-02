@@ -18,7 +18,7 @@
  */
 
 /*
- * hook_getxy.c -- getx|y entrypoint, default to console mode
+ * hook_getxy.c -- getxy entrypoint, default to console mode
  *
  * chng: dec/2004 written [v1ctor]
  *
@@ -27,35 +27,15 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_GetX( void )
+FBCALL void fb_GetXY( int *col, int *row )
 {
-	int res;
-
 	FB_LOCK();
 
-	if( fb_hooks.getxproc )
-		res = fb_hooks.getxproc( );
+	if( fb_hooks.getxyproc )
+		fb_hooks.getxyproc( col, row );
 	else
-		res = fb_ConsoleGetX( );
-	
+		fb_ConsoleGetXY( col, row );
+
 	FB_UNLOCK();
-	
-	return res;
 }
 
-/*:::::*/
-FBCALL int fb_GetY( void )
-{
-	int res;
-	
-	FB_LOCK();
-	
-	if( fb_hooks.getyproc )
-		res = fb_hooks.getyproc( );
-	else
-		res = fb_ConsoleGetY( );
-	
-	FB_UNLOCK();
-	
-	return res;
-}

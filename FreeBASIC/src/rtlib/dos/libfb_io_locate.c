@@ -41,7 +41,7 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	int x, y;
 	static int visible = 0x10000;
-	
+
   	if( col > 0 )
   		x = col;
   	else
@@ -60,11 +60,11 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
 		fb_AtExit(fb_RestoreCursor);
 	}
-	
-    fb_stdoutTB.line_length = x - 1;
+
+    fb_FileSetLineLen( 0, x - 1 );
 
 	gotoxy(x, y);
-	
+
 	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
 }
 
@@ -85,12 +85,12 @@ int fb_ConsoleGetY( void )
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
 	int r, c;
-	
+
 	ScreenGetCursor(&r, &c);
 
 	if( col != NULL )
 		*col = c + 1;
-	
+
 	if( row != NULL )
 		*row = r + 1;
 }
@@ -99,9 +99,9 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
 	unsigned short word;
-	
+
 	word = _farpeekw(_dos_ds, ScreenPrimary + (((row - 1) * ScreenCols() + (col - 1)) << 1));
-	
+
 	if (colorflag) {
 		return (word >> 8) & 0xFF;
 	} else {

@@ -32,7 +32,7 @@
 #define BUFFER_LEN 1024
 
 /*:::::*/
-static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len, int fillrem, 
+static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len, int fillrem,
 					          int addquestion, int addnewline )
 {
 	FILE 		*f;
@@ -73,7 +73,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len, 
 		}
 
 		if( addnewline == FB_FALSE )
-			fb_ConsoleGetXY( &lastcol, NULL );
+			fb_GetXY( &lastcol, NULL );
 	}
 
 
@@ -121,7 +121,7 @@ static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len, 
 	if( fnum == 0 )
 		if( addnewline == FB_FALSE )
 		{
-			fb_ConsoleGetSize( &cols, NULL );
+			fb_GetSize( &cols, NULL );
 			fb_Locate( fb_GetY( ) - 1, lastcol + (FB_STRSIZE( dst ) % cols), -1 );
 		}
 
@@ -141,7 +141,7 @@ FBCALL int fb_FileLineInput( int fnum, void *dst, int dst_len, int fillrem )
 	FB_LOCK();
 	res = fb_hFileLineInput( fnum, NULL, dst, dst_len, fillrem, FB_FALSE, FB_FALSE );
 	FB_UNLOCK();
-	
+
 	return res;
 }
 

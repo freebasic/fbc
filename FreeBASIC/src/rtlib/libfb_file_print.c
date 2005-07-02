@@ -47,7 +47,7 @@ int fb_hFilePrintBufferUnlocked( int fnum, const void *buffer, size_t len )
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
     }
 
-#if FB_NATIVE_TAB==0
+#ifndef FB_NATIVE_TAB
     /* search for last printed CR or LF */
     i=len;
     while (i--) {
