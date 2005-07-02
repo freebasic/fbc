@@ -248,7 +248,7 @@
 *****************************************************************************
 
   #DEFINE
-  #DEFINE(args)         (note: between "#define" and "(", no spaces are allowed, as in C)
+  #DEFINE name(args)    (note: between "name" and "(", no spaces are allowed, as in C)
   #UNDEF
   #IFDEF
   #IFNDEF
@@ -289,6 +289,8 @@
   CURDIR Function
   CVLONGINT Function
   CVSHORT Function
+  CPTR			(used to do pointer type-casting: 
+			 cptr(type, expression) (where "type" is a pointer type))
   
   DEALLOCATE Statement  (sub( byval src as any ptr ))
   DEFBYTE Statement
@@ -337,8 +339,8 @@
   PEEKI Statement
   PROCPTR Function
   PASCAL
-  PTR
-  POINTER
+  PTR					(type-modifier)
+  POINTER				(same as PTR)
   PUBLIC Statement
   PRIVATE Statement
 
@@ -360,14 +362,8 @@
   SHR
   STRPTR Function       (returns the pointer to string data, not to descriptor as VARPTR will with var-len strings)
   SIZEOF Function       (returns the size of a variable or data type (with strings it will return the descriptor size,
-                         with fixed-len and zstring's it will be the allocated size )
+                         with fixed-len and zstring's it will be the allocated size))
   
-  STRCAT, STRCHR, 
-  STRCMP, STRCPY, 
-  STRLEN, STRNCAT, 
-  STRNCMP, STRNCPY, 
-  STRRCHR, STRSTR       (C string functions, can operate on byte ptr's and on ordinary FB strings)
-
   THREADCREATE Function
   THREADWAIT Statement
   TRIM$ Function
@@ -382,13 +378,13 @@
   VA_ARG(a,t) macro     (returns the current var-arg, a= argument, t= argument type)
   VA_NEXT(a,t) macro    (returns a pointer to the next var-arg, a= current argument, t= current argument type)
   VAL64()               (converts a string to a long integer (64 bits))
-  VALINT()		(converts a string to an integer (32 bits))
+  VALINT()		        (converts a string to an integer (32 bits))
 
   WINDOWTITLE Statement
   WITH..END WITH        (compound statement -- won't work with field dereference "->")
   
   ZSTRING               (a null-terminated string with a fixed size (known or not) that can be concatenated, 
-                         comparated against or assigned to/from other strings and also comparated and assigned
+                         compared against or assigned to/from other strings and also compared and assigned
                          to/from numeric types, making it really powerful if proper used -- btw, if the size
                          is known as compile time (that is, the zstring is not a pointer), zstrings are
                          safer than char strings in C, as the max size won't ever be overflowed)
