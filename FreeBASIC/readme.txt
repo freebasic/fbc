@@ -275,7 +275,7 @@ Most Important Features:
          Result = ArgumentA * ArgumentB
       END SUB
 
-    - pointer indexing:
+    - Indexing:
     
       DIM foo AS INTEGER PTR
       
@@ -285,16 +285,22 @@ Most Important Features:
         foo[i] = bar            '' same as *(foo + i) = bar         
       NEXT
       
-    - string indexing:
+    - String Indexing:
     
       DIM text AS STRING
       
       text = "BAR"
       print text[0]             '' output will be 66 = ASC("B")
 
-    - function dereferencing:
+    - Function dereferencing:
 
       value = somefunc( )->somefuncptr( )->somefield
+
+    - Type Casting:
+
+      cptr(byte ptr, intptr) += 1
+
+      cptr(myudt1 ptr, @udt2)->foo = *cptr(integer ptr, bar)
 
   o Variable initializers, for static, module-level or local variables, arrays 
     and UDT's:
@@ -474,8 +480,6 @@ What FreeBASIC Isn't:
 Possible Additions to Next Versions:
 
   o Full debug support using GDB/Insight
-
-  o Pointer type casting
 
   o CLASS data structure (for object-oriented programming):
 

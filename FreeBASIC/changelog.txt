@@ -1,6 +1,9 @@
 Version 0.14 Beta:
 
 [changed]
+- IMPORTANT: to fully support pointer type-casting, now every time a pointer is updated, the expression will be 
+  multiplied by the pointer type, as done in C, so if you had: "dim p as integer ptr:" "p += len( integer )", now it
+  must be changed to "p += 1"
 - to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not 
   passing pointers or numeric values such as NULL or 0, the BYVAL modifier will have to be used now (v1c)
 - Some internal changes to reduce final executables size (lillo)
@@ -21,11 +24,11 @@ Version 0.14 Beta:
 - curdir$ now returns path with backslashes instead of slashes (mjs)
 - OPTION's will now be used too in the context of the file that included a header if it changed the default OPTION's (v1c)
 - chr$(0) can now be output with PRINT too (mjs)
-- Some cleanup to make most part of the library compilable with C++ too (mjs)
-- On Linux the locks are recursive (posix-compliant) (mjs)
+- Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
+- pointer type-casting: CPTR( DataType, Expression ), as in: "*cptr(byte ptr, somePointer) = 255"
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 - uniform alpha blending support for PUT: pass ALPHA,value to specify an unique alpha with which to blend sprite with
   background. Works in 15, 16, 24 and 32bit color depth (lillo)
@@ -55,8 +58,6 @@ Version 0.14 Beta:
 - '##'s can be used now to delimit macro arguments as in C: #define makefuncname(name) func_##name## (v1c)
 - the '#' prefix can now be used in macros when the text representation of a macro argument is wanted (v1c)
 - ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
-- fb_*PrintBuffer*Ex() functions that take an additional "len" parameter (mjs)
-- fb_PrintPad function to hide the implementation for PAD widths <>8 (mjs)
 - Allow to compile the "linux" version with CYGWIN (non-functional yet) (mjs)
 
 [fixed]
@@ -114,7 +115,6 @@ Version 0.14 Beta:
 - now using SetDIBitsToDevice instead of StretchDIBits in GDI gfx driver, solving some drawing problems (lillo)
 - the 8bit TRANS mode MMX PUT routine produced wrong results (lillo)
 - PRESET did not behave as it was supposed to (lillo)
-- Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 
 
 Version 0.13 Beta:
