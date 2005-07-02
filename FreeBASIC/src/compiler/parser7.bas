@@ -97,12 +97,16 @@ private function hGetTarget( targetexpr as ASTNODE ptr, _
 
 	if( fetchexpr ) then
 		targetexpr = NULL
-		if( not cVarOrDeref( targetexpr, FALSE, TRUE ) ) then
+		if( lexGetToken( ) <> CHAR_LPRNT ) then
+			if( not cVarOrDeref( targetexpr, FALSE, TRUE ) ) then
+				exit function
+			end if
+		else
 			exit function
 		end if
 	end if
 
-	s = astGetSymbol( targetexpr )
+	s = astGetSymbolOrElm( targetexpr )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -260,7 +264,7 @@ function cGfxLine as integer
 
 		'' ',' LIT_STRING? - linetype
 		if( hMatch( CHAR_COMMA ) ) then
-			select case ucase$( *lexTokenText( ) )
+			select case ucase$( *lexGetText( ) )
 			case "B"
 				lexSkipToken( )
 				linetype = FBGFX_LINETYPE_B
@@ -354,7 +358,7 @@ function cGfxCircle as integer
 
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
-            			if( ucase$( *lexTokenText( ) ) <> "F" ) then
+            			if( ucase$( *lexGetText( ) ) <> "F" ) then
 							hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 							exit function
 						end if
@@ -448,7 +452,7 @@ function cGfxDraw as integer
 
 	texpr = NULL
 
-	if( lexLookAhead( 1 ) = CHAR_COMMA ) then
+	if( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
 		if( target = NULL ) then
 			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
@@ -473,7 +477,7 @@ function cGfxView( byval isview as integer ) as integer
 	function = FALSE
 
 	'' SCREEN?
-	if( lexCurrentToken() = FB_TK_SCREEN ) then
+	if( lexGetToken() = FB_TK_SCREEN ) then
 		lexSkipToken
 		screenflag = TRUE
 	else
@@ -563,7 +567,7 @@ function cGfxPalette as integer
             exit function
         end if
 
-		s = astGetSymbol( arrayexpr )
+		s = astGetSymbolOrElm( arrayexpr )
 		if( s = NULL ) then
             hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
             exit function
@@ -682,7 +686,7 @@ function cGfxPut as integer
 	'' (',' Mode)?
 	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
-		select case as const lexCurrentToken
+		select case as const lexGetToken
 
 		case FB_TK_PSET
 			lexSkipToken
@@ -705,36 +709,48 @@ function cGfxPut as integer
 			mode = FBGFX_PUTMODE_XOR
 
 		case else
-			if (ucase$( *lexTokenText( ) ) = "TRANS") then
+			if (ucase$( *lexGetText( ) ) = "TRANS") then
 				lexSkipToken( )
 				mode = FBGFX_PUTMODE_TRANS
-			elseif (ucase$( *lexTokenText( ) ) = "ALPHA") then
+
+			elseif (ucase$( *lexGetText( ) ) = "ALPHA") then
 				lexSkipToken( )
 				mode = FBGFX_PUTMODE_ALPHA
+
 				if( hMatch( CHAR_COMMA ) ) then
 					hMatchExpression( alphaexpr )
 				end if
-			elseif (ucase$( *lexTokenText( ) ) = "CUSTOM") then
+
+			elseif (ucase$( *lexGetText( ) ) = "CUSTOM") then
 				lexSkipToken( )
+
 				mode = FBGFX_PUTMODE_CUSTOM
+
 				hMatchCOMMA( )
+
 				hMatchExpression( funcexpr )
-				s = astGetSymbol( funcexpr )
+
+				s = astGetSymbolOrElm( funcexpr )
 				if( s = NULL ) then
 					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
+
 				if( not symbIsProc( s ) ) then
 					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
+
 				if( ( symbGetType( s ) <> FB_SYMBTYPE_UINT ) or _
 					( symbGetProcArgs( s ) <> 2 ) ) then
 					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
+
 				arg1 = symbGetProcHeadArg( s )
+
 				arg2 = symbGetProcNextArg( s, arg1, FALSE )
+
 				if( ( symbGetType( arg1 ) <> FB_SYMBTYPE_UINT ) or _
 					( symbGetType( arg2 ) <> FB_SYMBTYPE_UINT ) or _
 					( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
@@ -742,6 +758,7 @@ function cGfxPut as integer
 					hReportError FB_ERRMSG_TYPEMISMATCH
 					exit function
 				end if
+
 			else
 				hReportError FB_ERRMSG_SYNTAXERROR
 				exit function
@@ -750,7 +767,8 @@ function cGfxPut as integer
 	end if
 
 	''
-	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, mode, alphaexpr, funcexpr, coordtype )
+	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, _
+						  mode, alphaexpr, funcexpr, coordtype )
 
 end function
 
@@ -940,58 +958,58 @@ function cGfxStmt as integer
 
 	function = FALSE
 
-	select case as const lexCurrentToken
+	select case as const lexGetToken( )
 	case FB_TK_PSET
-		lexSkipToken
+		lexSkipToken( )
 		function = cGfxPSet( FALSE )
 
 	case FB_TK_PRESET
-		lexSkipToken
+		lexSkipToken( )
 		function = cGfxPSet( TRUE )
 
 	case FB_TK_LINE
-		lexSkipToken
-		function = cGfxLine
+		lexSkipToken( )
+		function = cGfxLine( )
 
 	case FB_TK_CIRCLE
-		lexSkipToken
-		function = cGfxCircle
+		lexSkipToken( )
+		function = cGfxCircle( )
 
 	case FB_TK_PAINT
-		lexSkipToken
-		function = cGfxPaint
+		lexSkipToken( )
+		function = cGfxPaint( )
 
 	case FB_TK_DRAW
-		lexSkipToken
-		function = cGfxDraw
+		lexSkipToken( )
+		function = cGfxDraw( )
 
 	case FB_TK_VIEW
-		lexSkipToken
+		lexSkipToken( )
 		function = cGfxView( TRUE )
 
 	case FB_TK_WINDOW
-		lexSkipToken
+		lexSkipToken( )
 		function = cGfxView( FALSE )
 
 	case FB_TK_PALETTE
-		lexSkipToken
-		function = cGfxPalette
+		lexSkipToken( )
+		function = cGfxPalette( )
 
 	case FB_TK_PUT
-		lexSkipToken
-		function = cGfxPut
+		lexSkipToken( )
+		function = cGfxPut( )
 
 	case FB_TK_GET
-		lexSkipToken
-		function = cGfxGet
+		lexSkipToken( )
+		function = cGfxGet( )
 
 	case FB_TK_SCREEN
-		lexSkipToken
-		function = cGfxScreen
+		lexSkipToken( )
+		function = cGfxScreen( )
 
 	case FB_TK_SCREENRES
-		lexSkipToken
-		function = cGfxScreenRes
+		lexSkipToken( )
+		function = cGfxScreenRes( )
 
 	end select
 
@@ -1069,7 +1087,7 @@ function cGfxFunct ( funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	select case lexCurrentToken
+	select case lexGetToken
 	case FB_TK_POINT
 		lexSkipToken
 		function = cGfxPoint( funcexpr )

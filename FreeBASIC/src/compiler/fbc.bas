@@ -523,7 +523,11 @@ function processOptions as integer
 
 			'' warning level
 			case "w"
-				fbc.warnlevel = valint( argv(i+1) )
+				if( argv(i+1) = "all" ) then
+					fbc.warnlevel = 0
+				else
+					fbc.warnlevel = valint( argv(i+1) )
+				end if
 
 				argv(i) = ""
 				argv(i+1) = ""
@@ -811,7 +815,7 @@ end sub
 '':::::
 sub getLibList
 
-	fbc.libs += fbListLibs( fbc.liblist(), fbc.libs )
+	fbc.libs = fbListLibs( fbc.liblist(), fbc.libs )
 
 end sub
 

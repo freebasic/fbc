@@ -105,7 +105,7 @@ function cCompoundStmt as integer
 
     env.compoundcnt += 1
 
-	select case as const lexCurrentToken
+	select case as const lexGetToken
 	case FB_TK_IF
 		function = cIfStatement( )
 	case FB_TK_FOR
@@ -145,7 +145,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' !COMMENT|NEWLINE
-	select case lexCurrentToken
+	select case lexGetToken
 	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL
 		exit function
 	end select
@@ -168,10 +168,10 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	astFlush( expr )
 
 	'' NUM_LIT | SimpleStatement*
-	if( lexCurrentTokenClass = FB_TKCLASS_NUMLITERAL ) then
-		l = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_LABEL )
+	if( lexGetClass = FB_TKCLASS_NUMLITERAL ) then
+		l = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_LABEL )
 		if( l = NULL ) then
-			l = symbAddLabel( *lexTokenText( ), FALSE, TRUE )
+			l = symbAddLabel( *lexGetText( ), FALSE, TRUE )
 		end if
 		lexSkipToken( )
 
@@ -206,8 +206,8 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	end if
 
 	'' END IF? -- added to make complex macros easier to be done
-	if( lexCurrentToken = FB_TK_END ) then
-		if( lexLookahead(1) = FB_TK_IF ) then
+	if( lexGetToken = FB_TK_END ) then
+		if( lexGetLookAhead(1) = FB_TK_IF ) then
 			lexSkipToken
 			lexSkipToken
 		end if
@@ -245,7 +245,7 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 		cComment
 
 		'' separator
-		if( not cSttSeparator ) then
+		if( not cStmtSeparator ) then
 			hReportError FB_ERRMSG_EXPECTEDEOL
 			exit function
 		end if
@@ -253,7 +253,7 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
+	loop while( (cSimpleLine) and (lexGetToken <> FB_TK_EOF) )
 
 	if( hGetLastError = FB_ERRMSG_OK ) then
 		function = TRUE
@@ -277,7 +277,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' COMMENT|NEWLINE
-	select case lexCurrentToken
+	select case lexGetToken
 	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL
 	case else
 		exit function
@@ -340,7 +340,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 		'' loop body
 		do
-		loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
+		loop while( (cSimpleLine) and (lexGetToken <> FB_TK_EOF) )
 
 	else
 		'' emit next label
@@ -397,7 +397,7 @@ function cIfStatement as integer
 	else
 
 		'' GOTO
-		if( lexCurrentToken <> FB_TK_GOTO ) then
+		if( lexGetToken <> FB_TK_GOTO ) then
 			hReportError FB_ERRMSG_EXPECTEDTHEN
 			exit function
 		end if
@@ -607,7 +607,7 @@ function cForStatement as integer
 	'' STEP
 	ispositive 	= TRUE
 	iscomplex 	= FALSE
-	if( lexCurrentToken( ) = FB_TK_STEP ) then
+	if( lexGetToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
 		if( not cExpression( expr ) ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
@@ -702,14 +702,14 @@ function cForStatement as integer
 	cComment
 
 	'' separator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
+	loop while( (cSimpleLine) and (lexGetToken <> FB_TK_EOF) )
 
 	'' NEXT
 	if( not hMatch( FB_TK_NEXT ) ) then
@@ -718,13 +718,13 @@ function cForStatement as integer
 	end if
 
 	'' counter?
-	if( lexCurrentTokenClass = FB_TKCLASS_IDENTIFIER ) then
+	if( lexGetClass = FB_TKCLASS_IDENTIFIER ) then
 		lexSkipToken
 
 		'' ( ',' counter? )*
-		if( lexCurrentToken = CHAR_COMMA ) then
+		if( lexGetToken = CHAR_COMMA ) then
 			'' hack to handle multiple identifiers...
-			lexSetCurrentToken FB_TK_NEXT, FB_TKCLASS_KEYWORD
+			lexSetToken FB_TK_NEXT, FB_TKCLASS_KEYWORD
 		end if
 	end if
 
@@ -822,7 +822,7 @@ function cDoStatement as integer
 	iswhile = FALSE
 	isuntil = fALSE
 
-	select case lexCurrentToken
+	select case lexGetToken
 	case FB_TK_WHILE
 		iswhile = TRUE
 	case FB_TK_UNTIL
@@ -873,14 +873,14 @@ function cDoStatement as integer
 	cComment
 
 	'' separator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
+	loop while( (cSimpleLine) and (lexGetToken <> FB_TK_EOF) )
 
 	'' LOOP
 	if( not hMatch( FB_TK_LOOP ) ) then
@@ -892,7 +892,7 @@ function cDoStatement as integer
 	iswhile = FALSE
 	isuntil = fALSE
 
-	select case lexCurrentToken
+	select case lexGetToken
 	case FB_TK_WHILE
 		iswhile = TRUE
 	case FB_TK_UNTIL
@@ -1006,14 +1006,14 @@ function cWhileStatement as integer
 	cComment
 
 	'' separator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
 
 	'' loop body
 	do
-	loop while( (cSimpleLine) and (lexCurrentToken <> FB_TK_EOF) )
+	loop while( (cSimpleLine) and (lexGetToken <> FB_TK_EOF) )
 
 	'' WEND
 	if( not hMatch( FB_TK_WEND ) ) then
@@ -1043,7 +1043,7 @@ end function
 
 '':::::
 ''SelectStatement =   SELECT CASE (AS CONST)? Expression Comment? SttSeparator
-''					   cComment? cSttSeparator? CaseStatement*
+''					   cComment? cStmtSeparator? CaseStatement*
 ''				      END SELECT .
 ''
 function cSelectStatement as integer
@@ -1090,7 +1090,7 @@ function cSelectStatement as integer
 	cComment
 
 	'' separator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
 	end if
@@ -1123,7 +1123,7 @@ function cSelectStatement as integer
 	do
 
     	'' Comment? SttSeparator?
-    	do while( cComment or cSttSeparator )
+    	do while( cComment or cStmtSeparator )
     	loop
 
     	'' CaseStatement
@@ -1131,7 +1131,7 @@ function cSelectStatement as integer
 	    	exit do
     	end if
 
-	loop while( lexCurrentToken <> FB_TK_EOF )
+	loop while( lexGetToken <> FB_TK_EOF )
 
     '' emit exit label
     irEmitLABEL elabel, FALSE
@@ -1167,7 +1167,7 @@ function cCaseExpression( casectx as FBCASECTX ) as integer
 
 	'' IS REL_OP Expression
 	if( hMatch( FB_TK_IS ) ) then
-		casectx.op = hFBrelop2IRrelop( lexCurrentToken )
+		casectx.op = hFBrelop2IRrelop( lexGetToken )
 		lexSkipToken
 		casectx.typ = FB_CASETYPE_IS
 	else
@@ -1291,7 +1291,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	cComment
 
 	'' SttSeparator
-	if( not cSttSeparator( ) ) then
+	if( not cStmtSeparator( ) ) then
 		exit function
 	end if
 
@@ -1322,7 +1322,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 			'' SimpleLine*
 			do
 				res = cSimpleLine
-			loop while( (res) and (lexCurrentToken <> FB_TK_EOF) )
+			loop while( (res) and (lexGetToken <> FB_TK_EOF) )
 
 			if( ctx.sel.caseTB(i).typ = FB_CASETYPE_ELSE ) then
 				exit for
@@ -1482,13 +1482,13 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	cComment
 
 	'' SttSeparator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		exit function
 	end if
 
 	'' SimpleLine*
 	do
-	loop while( cSimpleLine and (lexCurrentToken <> FB_TK_EOF) )
+	loop while( cSimpleLine and (lexGetToken <> FB_TK_EOF) )
 
 	if( hGetLastError <> FB_ERRMSG_OK ) then
 		exit function
@@ -1516,7 +1516,7 @@ end function
 
 '':::::
 ''SelectConstStmt =   SELECT CASE AS CONST Expression{int} Comment? SttSeparator
-''					   cComment? cSttSeparator? SelConstCaseStmt*
+''					   cComment? cStmtSeparator? SelConstCaseStmt*
 ''				      END SELECT .
 ''
 function cSelectConstStmt as integer
@@ -1547,7 +1547,7 @@ function cSelectConstStmt as integer
 	cComment( )
 
 	'' separator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
@@ -1582,7 +1582,7 @@ function cSelectConstStmt as integer
 	maxval = 0
 	do
     	'' Comment? SttSeparator?
-    	do while( cComment or cSttSeparator )
+    	do while( cComment or cStmtSeparator )
     	loop
 
     	'' SelConstCaseStmt
@@ -1590,7 +1590,7 @@ function cSelectConstStmt as integer
 	    	exit do
     	end if
 
-	loop while( lexCurrentToken <> FB_TK_EOF )
+	loop while( lexGetToken <> FB_TK_EOF )
 
     '' too large?
     if( (minval > maxval) or (maxval - minval > FB_MAXSWTCASERANGE) ) then
@@ -1679,7 +1679,7 @@ function cExitStatement as integer
 	lexSkipToken
 
 	'' (FOR | DO | WHILE | SUB | FUNCTION)
-	select case as const lexCurrentToken
+	select case as const lexGetToken
 	case FB_TK_FOR
 		label = env.forstmt.endlabel
 
@@ -1729,7 +1729,7 @@ function cContinueStatement as integer
 	lexSkipToken
 
 	'' (FOR | DO | WHILE)
-	select case as const lexCurrentToken
+	select case as const lexGetToken
 	case FB_TK_FOR
 		label = env.forstmt.cmplabel
 
@@ -1766,12 +1766,12 @@ function cEndStatement as integer
 
 	function = FALSE
 
-	if( lexCurrentToken <> FB_TK_END ) then
+	if( lexGetToken <> FB_TK_END ) then
 		exit function
 	end if
 
 	'' any compound END will be parsed by the compound stmt
-	if( lexLookAheadClass(1) = FB_TKCLASS_KEYWORD ) then
+	if( lexGetLookAheadClass(1) = FB_TKCLASS_KEYWORD ) then
 
 		if( env.compoundcnt = 1 ) then
 			hReportError FB_ERRMSG_ILLEGALEND
@@ -1785,7 +1785,7 @@ function cEndStatement as integer
 	end if
 
   	'' (Expression | )
-  	select case lexCurrentToken
+  	select case lexGetToken
   	case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
   		errlevel = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
   	case else
@@ -1809,7 +1809,7 @@ function cCompoundStmtElm as integer
 	function = FALSE
 
 	'' WEND | LOOP | NEXT | CASE | ELSE | ELSEIF
-	select case as const lexCurrentToken
+	select case as const lexGetToken
 	case FB_TK_WEND
 		comp = FB_TK_WHILE
 	case FB_TK_LOOP
@@ -1840,8 +1840,8 @@ private function hReadWithText( byval text as string ) as integer
     dim as integer dpos
 
     ''
-    dpos = lexTokenPeriodPos( )
-    id = *lexTokenText( )
+    dpos = lexGetPeriodPos( )
+    id = *lexGetText( )
 
     if( dpos > 0 ) then
     	id[dpos-1] = 0 							'' left$( id, dpos-1 )
@@ -1862,12 +1862,12 @@ private function hReadWithText( byval text as string ) as integer
     lexEatToken( text )
 
     do
-    	select case lexCurrentToken( )
+    	select case lexGetToken( )
 		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOF
 			exit do
 		end select
 
-    	text += *lexTokenText( )
+    	text += *lexGetText( )
     	lexSkipToken( )
     loop
 
@@ -1907,7 +1907,7 @@ function cWithStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cSttSeparator ) then
+	if( not cStmtSeparator ) then
 		env.withtext = oldwithtext
 		hReportError FB_ERRMSG_EXPECTEDEOL
 		exit function
@@ -1921,7 +1921,7 @@ function cWithStatement as integer
 
 	'' loop body
 	do
-	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB_TK_EOF) )
+	loop while( (cSimpleLine( )) and (lexGetToken( ) <> FB_TK_EOF) )
 
 	'' restore old
 	env.withtext = oldwithtext

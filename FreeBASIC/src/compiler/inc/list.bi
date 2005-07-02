@@ -42,8 +42,8 @@ type TLIST
 	nodes 	as integer
 	nodelen	as integer
 	fhead	as TLISTNODE ptr
-	head	as TLISTNODE ptr
-	tail	as TLISTNODE ptr
+	head	as any ptr
+	tail	as any ptr
 	clear	as integer
 end type
 
@@ -55,7 +55,7 @@ declare function listNew		( byval list as TLIST ptr, _
 
 declare function listFree		( byval list as TLIST ptr ) as integer
 
-declare function listNewNode	( byval list as TLIST ptr ) as TLISTNODE ptr
+declare function listNewNode	( byval list as TLIST ptr ) as any ptr
 
 declare function listDelNode	( byval list as TLIST ptr, _
 								  byval node as TLISTNODE ptr ) as integer

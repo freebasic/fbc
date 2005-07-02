@@ -165,7 +165,11 @@ declare function 	astIsTreeEqual		( byval l as ASTNODE ptr, _
 
 declare function 	astIsADDR			( byval n as ASTNODE ptr ) as integer
 
+declare function 	astGetSymbolOrElm	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
+
 declare function 	astGetSymbol		( byval n as ASTNODE ptr ) as FBSYMBOL ptr
+
+declare function 	astGetElm			( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 declare sub 		astConvertValue     ( byval n as ASTNODE ptr, _
 					       				  byval v as FBVALUE ptr, _
@@ -197,7 +201,7 @@ declare function 	astLoadCONV			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewBOP			( byval op as integer, _
 										  byval l as ASTNODE ptr, _
-										  r as ASTNODE ptr, _
+										  byval r as ASTNODE ptr, _
 					  					  byval ex as FBSYMBOL ptr = NULL, _
 					  					  byval allocres as integer = TRUE ) as ASTNODE ptr
 
@@ -240,14 +244,13 @@ declare function 	astLoadIDX			( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, _
 										  byval elm as FBSYMBOL ptr, _
 										  byval ofs as integer, _
-										  byval expr as ASTNODE ptr, _
+										  byval l as ASTNODE ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function 	astLoadPTR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, _
-										  byval dtype as integer, _
 										  byval ptrexpr as ASTNODE ptr = NULL, _
 										  byval isprofiler as integer = FALSE ) as ASTNODE ptr
 
@@ -342,5 +345,7 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 #define astGetDataSize(n) iif( n <> NULL, irGetDataSize( n->dtype ), INVALID )
 
 #define astSetDataType(n,t) if( n <> NULL ) then n->dtype = t end if
+
+#define astSetSubType(n,t) if( n <> NULL ) then n->subtype = t end if
 
 #endif '' __AST_BI__

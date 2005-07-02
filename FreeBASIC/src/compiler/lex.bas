@@ -50,24 +50,24 @@ type LEXCTX
 
 	'' last #define's text
 	deftext			as zstring * FB_MAXINTDEFINELEN+1
-	defptr 			as ubyte ptr
+	defptr 			as zstring ptr
 	deflen 			as integer
 
 	'' last WITH's text
 	withtext		as zstring * FB_MAXWITHLEN+1
-	withptr 		as ubyte ptr
+	withptr 		as zstring ptr
 	withlen 		as integer
 
 	'' input buffer
 	bufflen			as integer
-	buffptr			as ubyte ptr
+	buffptr			as zstring ptr
 	buff			as zstring * 8192+1
 	filepos			as integer
 end type
 
 declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as uinteger
 declare function 	lexEatChar              ( ) as uinteger
-declare function 	lexLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as uinteger
+declare function 	lexGetLookAheadChar        ( byval skipwhitespc as integer = FALSE ) as uinteger
 declare sub 		lexNextToken 			( t as FBTOKEN, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
@@ -225,7 +225,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 			ctx.deftext = text
 		else
 			ctx.deftext = text + _
-					  	  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
+					  	  mid$( ctx.deftext, 1 + cuint(ctx.defptr) - cuint(@ctx.deftext), ctx.deflen )
 		end if
 
 	'' no args
@@ -242,7 +242,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 			if( s->def.isargless ) then
 				'' '(' ')'?
 				if( lexCurrentChar( ) = CHAR_LPRNT ) then
-					if( lexLookAheadChar( TRUE ) = CHAR_RPRNT ) then
+					if( lexGetLookAheadChar( TRUE ) = CHAR_RPRNT ) then
 						lexEatChar( )
 						lexEatChar( )
 					end if
@@ -256,7 +256,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 			ctx.deftext = s->def.text
 		else
 			ctx.deftext = s->def.text + _
-					  	  mid$( ctx.deftext, 1 + ctx.defptr - @ctx.deftext, ctx.deflen )
+					  	  mid$( ctx.deftext, 1 + cuint(ctx.defptr) - cuint(@ctx.deftext), ctx.deflen )
 		end if
 
 	end if
@@ -404,7 +404,7 @@ private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as uint
 end function
 
 '':::::
-private function lexLookAheadChar( byval skipwhitespc as integer = FALSE ) as uinteger
+private function lexGetLookAheadChar( byval skipwhitespc as integer = FALSE ) as uinteger
 
 	if( ctx.lahdchar = INVALID ) then
 		lexSkipChar( )
@@ -512,7 +512,7 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 		'' '#'?
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
-			if( lexLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
+			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 				typ = FB_SYMBTYPE_DOUBLE
 			end if
 
@@ -924,7 +924,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			'' '#' | 'D' | 'd'
 			case FB_TK_DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
 				'' isn't it a '##'?
-				if( lexLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
+				if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 					lexEatChar( )
 					typ = FB_SYMBTYPE_DOUBLE
 				end if
@@ -1090,7 +1090,7 @@ reread:
 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 
 				'' is next char a valid identifier char? then, read it
-				select case as const lexLookAheadChar( )
+				select case as const lexGetLookAheadChar( )
 				case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, _
 					 CHAR_0 to CHAR_9, CHAR_UNDER
                 	goto readid
@@ -1162,7 +1162,7 @@ reread:
 	    '' only check for fpoint literals if not inside a comment or parsing an $include
 	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 
-	    	select case as const lexLookAheadChar( TRUE )
+	    	select case as const lexGetLookAheadChar( TRUE )
 	    	'' 0 .. 9
 	    	case CHAR_0 to CHAR_9
 				isnumber = TRUE
@@ -1376,7 +1376,7 @@ private sub hCheckPP( )
 end sub
 
 '':::::
-function lexCurrentToken( byval flags as LEXCHECK_ENUM ) as integer static
+function lexGetToken( byval flags as LEXCHECK_ENUM ) as integer static
 
     if( ctx.tokenTB(0).id = INVALID ) then
     	lexNextToken( ctx.tokenTB(0), flags )
@@ -1388,7 +1388,7 @@ function lexCurrentToken( byval flags as LEXCHECK_ENUM ) as integer static
 end function
 
 '':::::
-function lexCurrentTokenClass( byval flags as LEXCHECK_ENUM ) as integer static
+function lexGetClass( byval flags as LEXCHECK_ENUM ) as integer static
 
     if( ctx.tokenTB(0).id = INVALID ) then
     	lexNextToken( ctx.tokenTB(0), flags )
@@ -1400,7 +1400,7 @@ function lexCurrentTokenClass( byval flags as LEXCHECK_ENUM ) as integer static
 end function
 
 '':::::
-function lexLookAhead( byval k as integer ) as integer static
+function lexGetLookAhead( byval k as integer ) as integer static
 
     if( k > FB_LEX_MAXK ) then
     	exit function
@@ -1419,7 +1419,7 @@ function lexLookAhead( byval k as integer ) as integer static
 end function
 
 '':::::
-function lexLookAheadClass( byval k as integer ) as integer static
+function lexGetLookAheadClass( byval k as integer ) as integer static
 
     if( k > FB_LEX_MAXK ) then
     	exit function
@@ -1606,42 +1606,42 @@ function lexColNum( ) as integer
 end function
 
 ''::::
-function lexTokenText( ) as zstring ptr
+function lexGetText( ) as zstring ptr
 
     function = @ctx.tokenTB(0).text
 
 end function
 
 ''::::
-function lexTokenTextLen( ) as integer
+function lexGetTextLen( ) as integer
 
 	function = ctx.tokenTB(0).tlen
 
 end function
 
 ''::::
-function lexTokenType( ) as integer
+function lexGetType( ) as integer
 
 	function = ctx.tokenTB(0).typ
 
 end function
 
 ''::::
-function lexTokenSymbol( ) as FBSYMBOL ptr
+function lexGetSymbol( ) as FBSYMBOL ptr
 
 	function = ctx.tokenTB(0).sym
 
 end function
 
 ''::::
-function lexTokenPeriodPos( ) as integer
+function lexGetPeriodPos( ) as integer
 
 	function = ctx.tokenTB(0).dotpos
 
 end function
 
 '':::::
-sub lexSetCurrentToken( byval id as integer, _
+sub lexSetToken( byval id as integer, _
 						byval class as integer )
 
 	ctx.tokenTB(0).tlen 	= 0
@@ -1655,7 +1655,7 @@ function lexPeekCurrentLine( token_pos as string ) as string
 	static as zstring * 1024+1 buffer
 	dim as string res
 	dim as integer p, old_p, start, token_len
-	dim as ubyte ptr c
+	dim as zstring ptr c
 
 	function = ""
 

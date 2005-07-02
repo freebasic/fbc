@@ -161,13 +161,13 @@ function cSubOrFuncHeader( byval issub as integer, _
 	function = FALSE
 
 	'' ID
-	if( lexCurrentTokenClass <> FB_TKCLASS_IDENTIFIER ) then
+	if( lexGetClass <> FB_TKCLASS_IDENTIFIER ) then
 		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
 		exit function
 	end if
 
-	typ 	= lexTokenType
-	proc    = lexTokenSymbol
+	typ 	= lexGetType
+	proc    = lexGetSymbol
 	lexEatToken( id )
 	subtype = NULL
 	ptrcnt  = 0
@@ -178,7 +178,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 	end if
 
 	'' (CDECL|STDCALL|PASCAL)?
-	select case as const lexCurrentToken
+	select case as const lexGetToken
 	case FB_TK_CDECL
 		mode = FB_FUNCMODE_CDECL
 		lexSkipToken
@@ -193,13 +193,13 @@ function cSubOrFuncHeader( byval issub as integer, _
 	end select
 
 	'' OVERLOAD?
-	if( lexCurrentToken = FB_TK_OVERLOAD ) then
+	if( lexGetToken = FB_TK_OVERLOAD ) then
 		lexSkipToken
 		alloctype or= FB_ALLOCTYPE_OVERLOADED
 	end if
 
 	'' (ALIAS LIT_STRING)?
-	if( lexCurrentToken = FB_TK_ALIAS ) then
+	if( lexGetToken = FB_TK_ALIAS ) then
 		lexSkipToken
 		lexEatToken( aliasid )
 	else
@@ -207,7 +207,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 	end if
 
 	'' ('(' Arguments? ')')?
-	if( lexCurrentToken = CHAR_LPRNT ) then
+	if( lexGetToken = CHAR_LPRNT ) then
 		lexSkipToken
 
 		argtail = cArguments( mode, argc, argtail, FALSE )
@@ -222,7 +222,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 	end if
 
     '' (AS SymbolType)?
-    if( lexCurrentToken = FB_TK_AS ) then
+    if( lexGetToken = FB_TK_AS ) then
     	lexSkipToken
 
     	if( (typ <> INVALID) or (isSub) ) then
@@ -376,7 +376,7 @@ function cProcStatement static
 	function = FALSE
 
 	'' (PRIVATE|PUBLIC)?
-	select case lexCurrentToken( )
+	select case lexGetToken( )
 	case FB_TK_PRIVATE
 		lexSkipToken( )
 		alloctype = FB_ALLOCTYPE_PRIVATE
@@ -397,7 +397,7 @@ function cProcStatement static
     end if
 
 	'' SUB | FUNCTION
-	select case lexCurrentToken( )
+	select case lexGetToken( )
 	case FB_TK_SUB
 		issub = TRUE
 	case FB_TK_FUNCTION
@@ -465,14 +465,14 @@ function cProcStatement static
 	cComment( )
 
 	'' SttSeparator
-	if( not cSttSeparator( ) ) then
+	if( not cStmtSeparator( ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
 	'' proc body
 	do
-	loop while( (cSimpleLine( )) and (lexCurrentToken( ) <> FB_TK_EOF) )
+	loop while( (cSimpleLine( )) and (lexGetToken( ) <> FB_TK_EOF) )
 
 	'' END (SUB | FUNCTION)
 	if( not hMatch( FB_TK_END ) ) then

@@ -178,6 +178,7 @@ data "CSNG"		, FB_TK_CSNG		, FB_TKCLASS_KEYWORD
 data "CDBL"		, FB_TK_CDBL		, FB_TKCLASS_KEYWORD
 data "CSIGN"	, FB_TK_CSIGN		, FB_TKCLASS_KEYWORD
 data "CUNSG"	, FB_TK_CUNSG		, FB_TKCLASS_KEYWORD
+data "CPTR"		, FB_TK_CPTR		, FB_TKCLASS_KEYWORD
 data "IF"		, FB_TK_IF			, FB_TKCLASS_KEYWORD
 data "THEN"		, FB_TK_THEN		, FB_TKCLASS_KEYWORD
 data "ELSE"		, FB_TK_ELSE		, FB_TKCLASS_KEYWORD
@@ -1511,7 +1512,7 @@ function symbCheckBitField( byval udt as FBSYMBOL ptr, _
 
 	if( (bits <= 0) or _
 		(bits > lgt*8) or _
-		(typ >= FB_SYMBTYPE_SINGLE) ) then
+		(typ >= FB_SYMBTYPE_ENUM) ) then
 		return FALSE
 	end if
 
@@ -2131,7 +2132,7 @@ private function hSetupProc( byval symbol as string, _
     	aname = aliasname
 
 		select case fbGetNaming()
-	    case FB_COMPNAMING_WIN32:
+	    case FB_COMPNAMING_WIN32
 	   		if( instr( aname, "@" ) = 0 ) then
 	   			aname = *hCreateProcAlias( aname, lgt, mode )
 	   		end if
@@ -3061,14 +3062,14 @@ function symbGetNextNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbGetFirstLocalNode as FBSYMBOL ptr static
+function symbGetFirstLocalNode as FBLOCSYMBOL ptr static
 
 	function = ctx.loclist.head
 
 end function
 
 '':::::
-function symbGetNextLocalNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbGetNextLocalNode( byval n as FBLOCSYMBOL ptr ) as FBLOCSYMBOL ptr static
 
 	if( n <> NULL ) then
 		function = n->nxt
@@ -3598,3 +3599,97 @@ function symbListLibs( namelist() as string, _
 
 end function
 
+'':::::
+function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
+					  byval sym2 as FBSYMBOL ptr ) as integer
+
+	dim as FBSYMBOL ptr argl, argr
+
+	function = FALSE
+
+	'' same?
+	if( sym1 = sym2 ) then
+		return TRUE
+	end if
+
+	'' NULL?
+	if( (sym1 = NULL) or (sym2 = NULL) ) then
+		exit function
+	end if
+
+	'' different classes?
+    if( sym1->class <> sym2->class ) then
+    	exit function
+    end if
+
+	'' different types?
+    if( sym1->typ <> sym2->typ ) then
+    	exit function
+    end if
+
+    select case sym1->class
+    case FB_SYMBCLASS_UDT
+    	''
+    	if( sym1->udt.isunion <> sym2->udt.isunion ) then
+    		exit function
+    	end if
+
+    	''
+    	if( sym1->udt.elements <> sym2->udt.elements ) then
+    		exit function
+    	end if
+
+    	''
+    	if( sym1->udt.head <> sym2->udt.head ) then
+    		exit function
+    	end if
+
+    	''
+    	if( sym1->udt.tail <> sym2->udt.tail ) then
+    		exit function
+    	end if
+
+    case FB_SYMBCLASS_PROC
+    	'' not the same number of args?
+    	if( symbGetProcArgs( sym1 ) <> symbGetProcArgs( sym2 ) ) then
+    		exit function
+    	end if
+
+    	'' check calling convention
+    	if( symbGetFuncMode( sym1 ) <> symbGetFuncMode( sym2 ) ) then
+    		exit function
+    	end if
+
+    	argl = symbGetProcHeadArg( sym1 )
+    	argr = symbGetProcHeadArg( sym2 )
+
+    	do while( argr <> NULL )
+    		'' different types?
+    		if( argl->typ <> argr->typ ) then
+         		exit function
+        	end if
+
+        	'' sub-types?
+        	if( argl->subtype <> argr->subtype ) then
+            	exit function
+			end if
+
+    		'' mode?
+    		if( argl->arg.mode <> argr->arg.mode ) then
+            	exit function
+    		end if
+
+    		'' next arg..
+    		argl = argl->arg.r
+    		argr = argr->arg.r
+    	loop
+    end select
+
+	'' and sub type
+	if( sym1->subtype <> sym2->subtype ) then
+        function = symbIsEqual( sym1->subtype, sym2->subtype )
+    else
+    	function = TRUE
+    end if
+
+end function

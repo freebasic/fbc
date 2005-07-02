@@ -71,9 +71,9 @@ declare	function 	symbGetFirstNode 		( ) as FBSYMBOL ptr
 
 declare	function 	symbGetNextNode			( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare	function 	symbGetFirstLocalNode 	( ) as FBSYMBOL ptr
+declare	function 	symbGetFirstLocalNode 	( ) as FBLOCSYMBOL ptr
 
-declare	function 	symbGetNextLocalNode	( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare	function 	symbGetNextLocalNode	( byval n as FBLOCSYMBOL ptr ) as FBLOCSYMBOL ptr
 
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 
@@ -271,6 +271,8 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 											  byval lgt as integer, _
 											  byval bits as integer ) as integer
 
+declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
+					  						  byval sym2 as FBSYMBOL ptr ) as integer
 
 ''
 '' getters and setters as macros

@@ -3,7 +3,7 @@
 #
 # needed: GNU make, GAS, LD and FBC itself
 #
-# set TARGET to dos, win32 or linux -- if not defined, it will 
+# set TARGET to dos, win32 or linux -- if not defined, it will
 # be the same as HOST, if the later could be guessed
 #
 
@@ -45,7 +45,10 @@ endif
 OSDEPPATH :=
 FBCFLAGS := -e -c -arch 486
 ifdef DEBUG
-FBCFLAGS += -g
+    FBCFLAGS += -g
+endif
+ifdef PROFILE
+    FBCFLAGS += -profile
 endif
 
 ifndef LDLIBS_EXT
@@ -110,7 +113,7 @@ ifeq ($(HOST),win32)
 endif
 
 ifndef OSDEPPATH
-	CHECKTARGET_MSG := $(error error: TARGET not supported)  
+	CHECKTARGET_MSG := $(error error: TARGET not supported)
 else
 	CHECKTARGET_MSG :=
 endif

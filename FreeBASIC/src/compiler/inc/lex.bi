@@ -47,28 +47,28 @@ declare sub 		lexSaveCtx				( byval level as integer )
 
 declare sub 		lexRestoreCtx			( byval level as integer )
 
-declare function 	lexCurrentToken 		( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexGetToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
-declare function 	lexCurrentTokenClass 	( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexGetClass 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
-declare function 	lexTokenText 			( ) as zstring ptr
+declare function 	lexGetText 				( ) as zstring ptr
 
-declare function 	lexTokenTextLen 		( ) as integer
+declare function 	lexGetTextLen 			( ) as integer
 
-declare function 	lexTokenType 			( ) as integer
+declare function 	lexGetType 				( ) as integer
 
-declare function 	lexTokenSymbol 			( ) as FBSYMBOL ptr
+declare function 	lexGetSymbol 			( ) as FBSYMBOL ptr
 
-declare function 	lexTokenPeriodPos 		( ) as integer
+declare function 	lexGetPeriodPos 		( ) as integer
 
 declare sub 		lexEatToken 			( byval token as string, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
-declare function 	lexLookAheadClass 		( byval k as integer ) as integer
+declare function 	lexGetLookAheadClass 	( byval k as integer ) as integer
 
-declare function 	lexLookAhead 			( byval k as integer ) as integer
+declare function 	lexGetLookAhead 		( byval k as integer ) as integer
 
 declare function 	lexLineNum 				( ) as integer
 
@@ -80,7 +80,7 @@ declare sub 		lexReadLine				( byval endchar as uinteger = INVALID, _
 
 declare sub 		lexSkipLine				( )
 
-declare sub 		lexSetCurrentToken		( byval id as integer, _
+declare sub 		lexSetToken				( byval id as integer, _
 											  byval class as integer )
 
 declare function 	lexPreProcessor 		( ) as integer

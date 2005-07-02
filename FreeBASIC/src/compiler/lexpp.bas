@@ -85,13 +85,13 @@ const QUOTE = "\""
     addquotes = FALSE
     text = ""
     do
-    	select case lexCurrentToken( flags )
+    	select case lexGetToken( flags )
 		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 			exit do
 		end select
 
     	'' preserve quotes if it's a string literal
-    	if( lexCurrentTokenClass( ) = FB_TKCLASS_STRLITERAL ) then
+    	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
     		text += QUOTE
     		lexEatToken( token )
     		text += hUnescapeStr( token )
@@ -106,8 +106,8 @@ const QUOTE = "\""
     		else
 
     			'' '#'?
-    			if( lexCurrentToken( ) = CHAR_SHARP ) then
-    				select case lexLookAhead( 1 )
+    			if( lexGetToken( ) = CHAR_SHARP ) then
+    				select case lexGetLookAhead( 1 )
     				'' '##'?
     				case CHAR_SHARP
     					lexSkipToken( )
@@ -123,16 +123,16 @@ const QUOTE = "\""
     			end if
 
     			'' not and identifier? read as-is
-    			if( lexCurrentToken( ) <> FB_TK_ID ) then
+    			if( lexGetToken( ) <> FB_TK_ID ) then
     				lexEatToken( token, flags )
     				text += token
 
     			'' otherwise, check if it's an argument and replace it
     			'' with an unique pattern
     			else
-    				token = ucase( *lexTokenText( ) )
+    				token = ucase( *lexGetText( ) )
     				'' contains a period? assume it's an udt access
-    				dpos = lexTokenPeriodPos( )
+    				dpos = lexGetPeriodPos( )
     				if( dpos > 1 ) then
     					token = left( token, dpos-1 )
     				end if
@@ -200,7 +200,7 @@ function lexPreProcessor as integer
 
 	function = FALSE
 
-    select case as const lexCurrentToken( )
+    select case as const lexGetToken( )
 
     '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
     case FB_TK_DEFINE
@@ -212,7 +212,7 @@ function lexPreProcessor as integer
     case FB_TK_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
-    	if( not symbDelDefine( lexTokenSymbol ) ) then
+    	if( not symbDelDefine( lexGetSymbol ) ) then
     	'''''hReportError FB_ERRMSG_VARIABLENOTDECLARED
 		'''''exit function
     	end if
@@ -271,8 +271,8 @@ function lexPreProcessor as integer
 	cComment( )
 
 	'' EOL
-	if( lexCurrentToken( ) <> FB_TK_EOL ) then
-		if( lexCurrentToken( ) <> FB_TK_EOF ) then
+	if( lexGetToken( ) <> FB_TK_EOL ) then
+		if( lexGetToken( ) <> FB_TK_EOF ) then
 			hReportError( FB_ERRMSG_EXPECTEDEOL )
 			return FALSE
 		end if
@@ -289,8 +289,8 @@ private function ppInclude( ) as integer
 
 	'' ONCE?
 	isonce = FALSE
-	if( lexCurrentTokenClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		if( ucase$( *lexTokenText( ) ) = "ONCE" ) then
+	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
+		if( ucase$( *lexGetText( ) ) = "ONCE" ) then
 			lexSkipToken( )
 			isonce = TRUE
 		end if
@@ -338,7 +338,7 @@ private function ppDefine( ) as integer
 	function = FALSE
 
     '' ID
-    s = lexTokenSymbol( )
+    s = lexGetSymbol( )
     if( s <> NULL ) then
     	if( s->class <> FB_SYMBCLASS_DEFINE ) then
     		hReportError( FB_ERRMSG_DUPDEFINITION )
@@ -353,11 +353,11 @@ private function ppDefine( ) as integer
     isargless = FALSE
 
     '' '('?
-    if( lexCurrentToken( ) = CHAR_LPRNT ) then
+    if( lexGetToken( ) = CHAR_LPRNT ) then
     	lexSkipToken( LEXCHECK_NODEFINE )
 
 		'' not arg-less?
-		if( lexCurrentToken( ) <> CHAR_RPRNT ) then
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
 			lastarg = NULL
 			do
 		    	lexEatToken( argname, LEXCHECK_NODEFINE )
@@ -369,7 +369,7 @@ private function ppDefine( ) as integer
 		    	end if
 
 				'' ','?
-				if( lexCurrentToken( ) <> CHAR_COMMA ) then
+				if( lexGetToken( ) <> CHAR_COMMA ) then
 					exit do
 				end if
 		    	lexSkipToken( LEXCHECK_NODEFINE )
@@ -386,7 +386,7 @@ private function ppDefine( ) as integer
     	end if
 
     else
-    	select case lexCurrentToken
+    	select case lexGetToken
     	case CHAR_SPACE, CHAR_TAB
     		'' skip white-space
     		lexSkipToken( )
@@ -427,12 +427,12 @@ private function ppIf as integer
 
 	istrue = FALSE
 
-	select case as const lexCurrenttoken
+	select case as const lexGetToken
 	'' IFDEF ID
 	case FB_TK_IFDEF
         lexSkipToken LEXCHECK_NODEFINE
 
-		d = lexTokenSymbol
+		d = lexGetSymbol
 		if( d <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
 			istrue = TRUE
@@ -443,7 +443,7 @@ private function ppIf as integer
 	case FB_TK_IFNDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		d = lexTokenSymbol
+		d = lexGetSymbol
 		if( d = NULL ) then
 			'' ditto
 			istrue = TRUE
@@ -495,7 +495,7 @@ private function ppElse as integer
        	exit function
     end if
 
-	if( lexCurrentToken = FB_TK_ELSEIF ) then
+	if( lexGetToken = FB_TK_ELSEIF ) then
 		'' ELSEIF
 
         lexSkipToken
@@ -568,11 +568,11 @@ private function ppSkip as integer
 	'' skip lines until a #ENDIF or #ELSE at same level is found
     do
 
-		select case lexCurrentToken
+		select case lexGetToken
         case CHAR_SHARP
         	lexSkipToken
 
-        	select case as const lexCurrentToken
+        	select case as const lexGetToken
         	case FB_TK_IF, FB_TK_IFDEF, FB_TK_IFNDEF
         		iflevel += 1
 
@@ -601,7 +601,7 @@ private function ppSkip as integer
        	end select
 
 		lexSkipLine
-		if( lexCurrentToken = FB_TK_EOL ) then
+		if( lexGetToken = FB_TK_EOL ) then
 			lexSkipToken
 		end if
 	loop
@@ -639,7 +639,7 @@ private function ppLogExpression( logexpr as integer )
     '' ( ... )*
     do
     	'' Logical operator
-    	op = lexCurrentToken
+    	op = lexGetToken
     	select case op
     	case FB_TK_AND, FB_TK_OR
  			lexSkipToken
@@ -692,7 +692,7 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
     ops = 0
     do
     	'' Relational operator
-    	op = lexCurrentToken
+    	op = lexGetToken
     	select case as const op
     	case FB_TK_EQ, FB_TK_GT, FB_TK_LT, FB_TK_NE, FB_TK_LE, FB_TK_GE
  			lexSkipToken
@@ -775,7 +775,7 @@ private function ppParentExpr( parexpr as integer, _
   	isnumber = FALSE
 
   	'' '(' Expression ')'
-  	select case lexCurrentToken
+  	select case lexGetToken
   	case CHAR_LPRNT
   		lexSkipToken
 
@@ -793,14 +793,14 @@ private function ppParentExpr( parexpr as integer, _
   	case FB_TK_DEFINED
   		lexSkipToken
 
-    	if( lexCurrentToken <> CHAR_LPRNT ) then
+    	if( lexGetToken <> CHAR_LPRNT ) then
     		hReportError FB_ERRMSG_EXPECTEDLPRNT
     		exit function
     	else
     		lexSkipToken LEXCHECK_NODEFINE
     	end if
 
-		d = lexTokenSymbol
+		d = lexGetSymbol
 		parexpr = FALSE
 		if( d <> NULL ) then
 			if( d->class = FB_SYMBCLASS_DEFINE ) then
@@ -830,11 +830,11 @@ private function ppParentExpr( parexpr as integer, _
 
   	'' LITERAL
   	case else
-  		if( lexCurrentTokenClass <> FB_TKCLASS_STRLITERAL ) then
+  		if( lexGetClass <> FB_TKCLASS_STRLITERAL ) then
   			isnumber = TRUE
   		end if
 
-  		atom = *lexTokenText( )
+  		atom = *lexGetText( )
   		lexSkipToken( )
   		if( len( atom ) = 0 ) then
   			hReportError( FB_ERRMSG_SYNTAXERROR )

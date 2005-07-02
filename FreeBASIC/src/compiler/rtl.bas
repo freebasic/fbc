@@ -2125,7 +2125,7 @@ data "VA_ARG", _
 data "VA_NEXT", _
 	 FALSE, _
 	 2, "A", "T", _
-	 "(!A! + len( !T! ))"
+	 "(cptr( !T! ptr, !A! ) + 1)"
 
 ''#define ASSERT(e) if not (e) then print __FILE__; ":"; __LINE__; " ("; __FUNCTION__; "): assertion failed: "; trim(#e)
 data "ASSERT", _
@@ -2365,9 +2365,9 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-#define FIXSTRGETLEN(e) symbGetLen( astGetSymbol( e ) )
+#define FIXSTRGETLEN(e) symbGetLen( astGetSymbolOrElm( e ) )
 
-#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen( astGetSymbol( e ) ) )
+#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen( astGetSymbolOrElm( e ) ) )
 
 #define STRGETLEN(e,t,l)												_
 	select case as const t                                              :_
@@ -2395,7 +2395,7 @@ function rtlStrCompare ( byval str1 as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRCOMPARE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
    	''
    	STRGETLEN( str1, sdtype1, str1len )
@@ -2437,7 +2437,7 @@ function rtlStrConcat( byval str1 as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRCONCAT)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' dst as string
     tstr = symbAddTempVar( FB_SYMBTYPE_STRING )
@@ -2482,7 +2482,7 @@ function rtlStrConcatAssign( byval dst as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRCONCATASSIGN)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
    	ddtype = astGetDataType( dst )
@@ -2535,7 +2535,7 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRASSIGN)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc =  astNewFUNCT( f )
 
     ''
    	ddtype = astGetDataType( dst )
@@ -2586,7 +2586,7 @@ function rtlStrDelete( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 
 	''
 	f = ifuncTB(FB_RTL_STRDELETE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' str as ANY
     if( astNewPARAM( proc, strg, IR_DATATYPE_STRING ) = NULL ) then
@@ -2606,7 +2606,7 @@ function rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 
 	''
 	f = ifuncTB(FB_RTL_STRALLOCTMPRES)
-    proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
+    proc = astNewFUNCT( f, NULL, TRUE )
 
     '' src as string
     if( astNewPARAM( proc, strg, IR_DATATYPE_STRING ) = NULL ) then
@@ -2630,7 +2630,7 @@ function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 	select case dtype
 	case IR_DATATYPE_STRING
 		f = ifuncTB(FB_RTL_STRALLOCTMPDESCV)
-    	proc = astNewFUNCT( f, symbGetType( f ) )
+    	proc = astNewFUNCT( f )
 
     	'' str as string
     	if( astNewPARAM( proc, strg ) = NULL ) then
@@ -2639,7 +2639,7 @@ function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 
 	case IR_DATATYPE_CHAR
 		f = ifuncTB(FB_RTL_STRALLOCTMPDESCZ)
-    	proc = astNewFUNCT( f, symbGetType( f ) )
+    	proc = astNewFUNCT( f )
 
     	'' byval str as string
     	if( astNewPARAM( proc, strg ) = NULL ) then
@@ -2648,7 +2648,7 @@ function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 
 	case IR_DATATYPE_FIXSTR
 		f = ifuncTB(FB_RTL_STRALLOCTMPDESCF)
-    	proc = astNewFUNCT( f, symbGetType( f ) )
+    	proc = astNewFUNCT( f )
 
     	'' str as any
     	if( astNewPARAM( proc, strg ) = NULL ) then
@@ -2703,7 +2703,7 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 	end select
 
 	''
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -2725,7 +2725,7 @@ function rtlStrMid( byval expr1 as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRMID)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, expr1 ) = NULL ) then
@@ -2756,7 +2756,7 @@ function rtlStrAssignMid( byval expr1 as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRASSIGNMID)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, expr1 ) = NULL ) then
@@ -2792,7 +2792,7 @@ function rtlStrLSet( byval dstexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRLSET)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' dst as string
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
@@ -2826,7 +2826,7 @@ function rtlStrFill( byval expr1 as ASTNODE ptr, _
 		f = ifuncTB(FB_RTL_STRFILL2)
 	end select
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, expr1 ) = NULL ) then
@@ -2850,7 +2850,7 @@ function rtlStrAsc( byval expr as ASTNODE ptr, _
 	function = NULL
 
 	f = ifuncTB(FB_RTL_STRASC)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' src as string
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -2879,7 +2879,7 @@ function rtlStrChr( byval args as integer, _
 	function = NULL
 
 	f = ifuncTB(FB_RTL_STRCHR)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval args as integer
     if( astNewPARAM( proc, astNewCONSTi( args, IR_DATATYPE_INTEGER ) ) = NULL ) then
@@ -2930,7 +2930,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_ARRAYREDIM)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' array() as ANY
     dtype =  symbGetType( s )
@@ -3011,7 +3011,7 @@ function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as integer static
 
 	''
 	f = ifuncTB(FB_RTL_ARRAYERASE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' array() as ANY
     if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = NULL ) then
@@ -3041,7 +3041,7 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
 
 	''
 	f = ifuncTB(FB_RTL_ARRAYCLEAR)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' array() as ANY
     if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = NULL ) then
@@ -3049,7 +3049,7 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
     end if
 
 	'' byval isvarlen as integer
-	s = astGetSymbol( arrayexpr )
+	s = astGetSymbolOrElm( arrayexpr )
 	dtype = symbGetType( s )
 
     isvarlen = (dtype = IR_DATATYPE_STRING)
@@ -3073,7 +3073,7 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
 
 	''
 	f = ifuncTB(FB_RTL_ARRAYSTRERASE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' array() as ANY
     dtype = symbGetType( s )
@@ -3102,7 +3102,7 @@ function rtlArrayBound( byval sexpr as ASTNODE ptr, _
 	else
 		f = ifuncTB(FB_RTL_ARRAYUBOUND)
 	end if
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' array() as ANY
     if( astNewPARAM( proc, sexpr ) = NULL ) then
@@ -3132,7 +3132,7 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
     function = FALSE
 
 	f = ifuncTB(FB_RTL_ARRAYSETDESC)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' array() as ANY
     dtype =  symbGetType( s )
@@ -3192,12 +3192,12 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 
 	function = NULL
 
-	s = astGetSymbol( arrayexpr )
+	s = astGetSymbolOrElm( arrayexpr )
 
 	dimensions = symbGetArrayDimensions( s )
 
 	f = ifuncTB(FB_RTL_ARRAYALLOCTMPDESC)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byref pdesc as any ptr
 	expr = astNewVAR( pdesc, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
@@ -3253,7 +3253,7 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 	function = NULL
 
 	f = ifuncTB(FB_RTL_ARRAYFREETMPDESC)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval pdesc as any ptr
 	expr = astNewVAR( pdesc, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
@@ -3312,7 +3312,7 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
     	exit function
     end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byref var as any
     if( astNewPARAM( proc, varexpr ) = NULL ) then
@@ -3343,14 +3343,14 @@ end function
 '':::::
 function rtlDataRestore( byval label as FBSYMBOL ptr, _
 						 byval isprofiler as integer = FALSE ) as integer static
-    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
-    dim lname as string
-    dim s as FBSYMBOL ptr
+    dim as ASTNODE ptr proc, expr
+    dim as FBSYMBOL ptr s, f
+    dim as string lname
 
     function = FALSE
 
 	f = ifuncTB(FB_RTL_DATARESTORE)
-    proc = astNewFUNCT( f, symbGetType( f ), NULL, isprofiler )
+    proc = astNewFUNCT( f, NULL, isprofiler )
 
     '' begin of data or start from label?
     if( label <> NULL ) then
@@ -3366,9 +3366,8 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
     end if
 
     '' byval labeladdrs as void ptr
-    label = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_UINT ), s )
-
-    if( astNewPARAM( proc, label ) = NULL ) then
+    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_UINT ), s )
+    if( astNewPARAM( proc, expr ) = NULL ) then
  		exit function
  	end if
 
@@ -3485,7 +3484,7 @@ function rtlMathPow	( byval xexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_POW)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval x as double
     if( astNewPARAM( proc, xexpr ) = NULL ) then
@@ -3515,7 +3514,7 @@ function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		f = ifuncTB(FB_RTL_SGNDOUBLE)
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval x as single|double
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -3549,7 +3548,7 @@ function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		exit function
 	end select
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval x as single|double
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -3602,12 +3601,16 @@ private function hCalcExprLen( byval expr as ASTNODE ptr, _
 		end if
 
 	case IR_DATATYPE_USERDEF
-		s = astGetSymbol( expr )
-		'' if it's a type field that's an udt, no pad is ever added, realsize is always TRUE
-		if( s->class = FB_SYMBCLASS_UDTELM ) then
-			realsize = TRUE
+		s = astGetSymbolOrElm( expr )
+		if( s <> NULL ) then
+			'' if it's a type field that's an udt, no pad is ever added, realsize is always TRUE
+			if( s->class = FB_SYMBCLASS_UDTELM ) then
+				realsize = TRUE
+			end if
+			lgt = symbGetUDTLen( symbGetSubtype( s ), realsize )
+		else
+			lgt = 0
 		end if
-		lgt = symbGetUDTLen( symbGetSubtype( s ), realsize )
 
 	case else
 		if( dtype >= IR_DATATYPE_POINTER ) then
@@ -3634,7 +3637,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 		'' dyn-len or zstring?
 		if( (dtype = IR_DATATYPE_STRING) or (dtype = IR_DATATYPE_CHAR) ) then
 			f = ifuncTB(FB_RTL_STRLEN)
-    		proc = astNewFUNCT( f, symbGetType( f ) )
+    		proc = astNewFUNCT( f )
 
     		'' str as any
     		if( astNewPARAM( proc, expr, IR_DATATYPE_STRING ) = NULL ) then
@@ -3686,7 +3689,7 @@ function rtlMathLongintDIV( byval dtype as integer, _
 		f = ifuncTB(FB_RTL_ULONGINTDIV)
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, lexpr, ldtype ) = NULL ) then
@@ -3717,7 +3720,7 @@ function rtlMathLongintMOD( byval dtype as integer, _
 		f = ifuncTB(FB_RTL_ULONGINTMOD)
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, lexpr, ldtype ) = NULL ) then
@@ -3740,7 +3743,7 @@ function rtlMathFp2ULongint( byval expr as ASTNODE ptr, _
 	function = NULL
 
 	f = ifuncTB(FB_RTL_DBL2ULONGINT)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     if( astNewPARAM( proc, expr, dtype ) = NULL ) then
@@ -3807,7 +3810,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 	end if
 
     ''
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, fileexpr ) = NULL ) then
@@ -3850,7 +3853,7 @@ function rtlPrintSPC( byval fileexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_PRINTSPC)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, fileexpr ) = NULL ) then
@@ -3877,7 +3880,7 @@ function rtlPrintTab( byval fileexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_PRINTTAB)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, fileexpr ) = NULL ) then
@@ -3946,7 +3949,7 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 	end if
 
     ''
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, fileexpr ) = NULL ) then
@@ -3987,7 +3990,7 @@ function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr ) as integer static
 
 	''
 	f = ifuncTB(FB_RTL_PRINTUSGINIT)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' fmtstr as string
     if( astNewPARAM( proc, usingexpr ) = NULL ) then
@@ -4008,7 +4011,7 @@ function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr ) as integer static
 
 	''
 	f = ifuncTB(FB_RTL_PRINTUSGEND)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, fileexpr ) = NULL ) then
@@ -4039,7 +4042,7 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 	end select
 
     ''
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, fileexpr ) = NULL ) then
@@ -4082,13 +4085,13 @@ function rtlExit( byval errlevel as ASTNODE ptr ) as integer static
 	'' exit profiling?
 	if( env.clopt.profile ) then
 		f = ifuncTB(FB_RTL_PROFILEEND)
-		proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
+		proc = astNewFUNCT( f, NULL, TRUE )
 		astFlush( proc )
 	end if
 
 	''
 	f = ifuncTB(FB_RTL_END)
-    proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
+    proc = astNewFUNCT( f, NULL, TRUE )
 
     '' errlevel
     if( errlevel = NULL ) then
@@ -4114,7 +4117,7 @@ function rtlMemCopy( byval dst as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_MEMCOPY)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' dst as any
     if( astNewPARAM( proc, dst ) = NULL ) then
@@ -4162,7 +4165,7 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_MEMSWAP)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' dst as any
     if( astNewPARAM( proc, dst ) = NULL ) then
@@ -4197,7 +4200,7 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_STRSWAP)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' str1 as any
     if( astNewPARAM( proc, str1, IR_DATATYPE_STRING ) = NULL ) then
@@ -4241,7 +4244,7 @@ function rtlMemCopyClear( byval dstexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_MEMCOPYCLEAR)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' dst as any
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
@@ -4279,7 +4282,7 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_CONSOLEVIEW)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval toprow as integer
     if( astNewPARAM( proc, topexpr ) = NULL ) then
@@ -4307,7 +4310,7 @@ function rtlConsoleReadXY ( byval rowexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_CONSOLEREADXY)
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
 	'' byval column as integer
 	if( astNewPARAM( proc, columnexpr ) = NULL ) then
@@ -4359,7 +4362,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_ERRORTHROW)
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
 	''
 	nxtlabel = symbAddLabel( "" )
@@ -4414,7 +4417,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
 
 	''
 	f = ifuncTB(FB_RTL_ERRORTHROWEX)
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
 	''
     reslabel = symbAddLabel( "" )
@@ -4470,7 +4473,7 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_ERRORSETHANDLER)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval newhandler as uint
     if( astNewPARAM( proc, newhandler ) = NULL ) then
@@ -4501,7 +4504,7 @@ function rtlErrorGetNum as ASTNODE ptr static
 
 	''
 	f = ifuncTB(FB_RTL_ERRORGETNUM)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     ''
     function = proc
@@ -4514,7 +4517,7 @@ sub rtlErrorSetNum( byval errexpr as ASTNODE ptr ) static
 
 	''
 	f = ifuncTB(FB_RTL_ERRORSETNUM)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval errnum as integer
     if( astNewPARAM( proc, errexpr ) = NULL ) then
@@ -4538,7 +4541,7 @@ sub rtlErrorResume( byval isnext as integer )
 		f = ifuncTB(FB_RTL_ERRORRESUMENEXT)
 	end if
 
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
     ''
     dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
@@ -4566,7 +4569,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_FILEOPEN)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' filename as string
     if( astNewPARAM( proc, filename ) = NULL ) then
@@ -4625,7 +4628,7 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_FILECLOSE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4659,7 +4662,7 @@ function rtlFileSeek( byval filenum as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_FILESEEK)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4692,7 +4695,7 @@ function rtlFileTell( byval filenum as ASTNODE ptr ) as ASTNODE ptr static
 
 	''
 	f = ifuncTB(FB_RTL_FILETELL)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4725,7 +4728,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
 		f = ifuncTB(FB_RTL_FILEPUT)
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4786,7 +4789,7 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_FILEPUTARRAY)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4844,7 +4847,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
 		f = ifuncTB(FB_RTL_FILEGET)
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4905,7 +4908,7 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_FILEGETARRAY)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -4951,7 +4954,7 @@ function rtlFileStrInput( byval bytesexpr as ASTNODE ptr, _
 
 	''
 	f = ifuncTB(FB_RTL_FILESTRINPUT)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval bytes as integer
     if( astNewPARAM( proc, bytesexpr ) = NULL ) then
@@ -4988,7 +4991,7 @@ function rtlFileLineInput( byval isfile as integer, _
 		args = 6
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
@@ -5052,7 +5055,7 @@ function rtlFileInput( byval isfile as integer, _
 		args = 3
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
@@ -5115,7 +5118,7 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 		end if
 	end select
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' dst as any
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
@@ -5157,7 +5160,7 @@ function rtlFileLock( byval islock as integer, _
 		f = ifuncTB(FB_RTL_FILEUNLOCK)
 	end if
 
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
     '' byval filenum as integer
     if( astNewPARAM( proc, filenum ) = NULL ) then
@@ -5224,8 +5227,8 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
 
 	function = FALSE
 
-	f = ifuncTB( FB_RTL_GFXPSET )
-    proc = astNewFUNCT( f, symbGetType( f ) )
+	f = ifuncTB(FB_RTL_GFXPSET)
+    proc = astNewFUNCT( f, )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -5261,7 +5264,7 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
  	if( astNewPARAM( proc, astNewCONSTi( coordtype, IR_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval ispreset as integer
  	if( astNewPARAM( proc, astNewCONSTi( ispreset, IR_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
@@ -5285,7 +5288,7 @@ function rtlGfxPoint( byval target as ASTNODE ptr, _
 	function = NULL
 
 	f = ifuncTB(FB_RTL_GFXPOINT)
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
 	'' byref target as any
 	if( target = NULL ) then
@@ -5337,7 +5340,7 @@ function rtlGfxLine( byval target as ASTNODE ptr, _
 	function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXLINE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -5423,7 +5426,7 @@ function rtlGfxCircle( byval target as ASTNODE ptr, _
 	function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXCIRCLE)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -5517,7 +5520,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
     function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXPAINT)
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -5602,7 +5605,7 @@ function rtlGfxDraw( byval target as ASTNODE ptr, _
 	function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXDRAW)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -5645,7 +5648,7 @@ function rtlGfxView( byval x1expr as ASTNODE ptr, _
 	function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXVIEW)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byval x1 as integer
  	if( x1expr = NULL ) then
@@ -5719,7 +5722,7 @@ function rtlGfxWindow( byval x1expr as ASTNODE ptr, _
 	function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXWINDOW)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byval x1 as single
  	if( x1expr = NULL ) then
@@ -5777,7 +5780,7 @@ function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
 	function = FALSE
 
     f = ifuncTB( iif( isget, FB_RTL_GFXPALETTEGET, FB_RTL_GFXPALETTE ) )
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
 	if( isget ) then
 		targetmode = FB_ARGMODE_BYREF
@@ -5835,7 +5838,7 @@ function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
 	function = FALSE
 
     f = ifuncTB( iif( isget, FB_RTL_GFXPALETTEGETUSING, FB_RTL_GFXPALETTEUSING ) )
-	proc = astNewFUNCT( f, symbGetType( f ) )
+	proc = astNewFUNCT( f )
 
  	'' byref array as integer
  	if( astNewPARAM( proc, arrayexpr ) = NULL ) then
@@ -5867,7 +5870,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
     function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXPUT)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -5957,7 +5960,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
     function = FALSE
 
 	f = ifuncTB(FB_RTL_GFXGET)
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byref target as any
  	if( target = NULL ) then
@@ -6044,7 +6047,7 @@ function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
 	function = FALSE
 
 	f = ifuncTB( iif( hexpr = NULL, FB_RTL_GFXSCREENSET, FB_RTL_GFXSCREENRES ) )
-    proc = astNewFUNCT( f, symbGetType( f ) )
+    proc = astNewFUNCT( f )
 
  	'' byval m as integer
  	if( astNewPARAM( proc, wexpr ) = NULL ) then
@@ -6116,14 +6119,13 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 	else
 		procname = symbGetName( proc )
 
-		select case fbGetNaming()
-	    case FB_COMPNAMING_WIN32:
+		if( fbGetNaming() = FB_COMPNAMING_WIN32 ) then
 			procname = mid$( procname, 2)
 			at = instr( procname, "@" )
 			if( at ) then
 				procname = mid$( procname, 1, at - 1 )
 			end if
-        end select
+        end if
 
 		if( len( procname ) and 3 ) then
 			procname += string$( 4 - ( len( procname ) and 3 ), 32 )
@@ -6145,7 +6147,7 @@ function rtlProfileBeginCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 	function = NULL
 
 	f = ifuncTB(FB_RTL_PROFILEBEGINCALL)
-	proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
+	proc = astNewFUNCT( f, NULL, TRUE )
 
 	expr = hGetProcName( symbol )
 	if( astNewPARAM( proc, expr, INVALID, FB_ARGMODE_BYVAL ) = NULL ) then
@@ -6164,7 +6166,7 @@ function rtlProfileEndCall( ) as ASTNODE ptr
 	function = NULL
 
 	f = ifuncTB(FB_RTL_PROFILEENDCALL)
-    proc = astNewFUNCT( f, symbGetType( f ), NULL, TRUE )
+    proc = astNewFUNCT( f, NULL, TRUE )
 
   	function = proc
 

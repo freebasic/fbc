@@ -320,6 +320,7 @@ enum FBTK_ENUM
 	FB_TK_CUSHORT
 	FB_TK_CLNGINT
 	FB_TK_CULNGINT
+	FB_TK_CPTR
 
 	FB_TK_LSET
 	FB_TK_ASC
@@ -635,7 +636,7 @@ type FBSENUM
 end type
 
 type FBSENUMELM
-	nxt				as FBSENUMELM ptr			'' next element
+	nxt				as FBSYMBOL_ ptr			'' next element
 end type
 
 ''
@@ -815,7 +816,7 @@ type FBENV
 	'' hacks
 	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
 	prntopt			as integer					'' /
-	varcheckarray	as integer					'' used by LEN() to handle expr's and ()-less arrays
+	checkarray		as integer					'' used by LEN() to handle expr's and ()-less arrays
 
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 

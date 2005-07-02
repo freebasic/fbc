@@ -126,24 +126,25 @@ declare sub 		irDump				( byval op as integer, _
 	dim shared opTB( 0 to 255 ) as IROPCODE
 
 	dim shared dtypeTB( 0 to IR_MAXDATATYPES-1 ) as IRDATATYPE = { _
-			(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, "void"		), _
-			(IR_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , "byte"		), _
-			(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, "ubyte"	), _
-			(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, "char"		), _
-			(IR_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , "short"	), _
-			(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, "ushort"	), _
-			(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , "integer"	), _
-			(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, "uint"		), _
-			(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , "enum"		), _
-			(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , "quad"		), _
-			(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, "uquad"	), _
-			(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , "single"	), _
-			(IR_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , "double"	), _
-			(IR_DATACLASS_STRING , FB_STRSTRUCTSIZE	, 0					, FALSE, "string"	), _
-			(IR_DATACLASS_STRING , 1			 	, 8*1				, FALSE, "fixstr"	), _
-			(IR_DATACLASS_UDT	 , 0			 	, 0					, FALSE, "udt"		), _
-			(IR_DATACLASS_FUNCT	 , 0			 	, 0					, FALSE, "func"		), _
-			(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, "typedef"	) }
+	(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID    ), _
+	(IR_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , IR_DATATYPE_BYTE    ), _
+	(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE   ), _
+	(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_CHAR	 ), _ '' zstring
+	(IR_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , IR_DATATYPE_SHORT 	 ), _
+	(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT 	 ), _
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _ '' enum
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , IR_DATATYPE_LONGINT ), _
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, IR_DATATYPE_ULONGINT), _
+	(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , IR_DATATYPE_SINGLE	 ), _
+	(IR_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , IR_DATATYPE_DOUBLE	 ), _
+	(IR_DATACLASS_STRING , FB_STRSTRUCTSIZE	, 0					, FALSE, IR_DATATYPE_STRING	 ), _
+	(IR_DATACLASS_STRING , 1			 	, 8*1				, FALSE, IR_DATATYPE_FIXSTR	 ), _
+	(IR_DATACLASS_UDT	 , 0			 	, 0					, FALSE, IR_DATATYPE_USERDEF ), _
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ), _ '' func
+	(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID	 ), _ '' fwdref
+	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ) }  '' ptr
 
 ''op, type(binary=0,unary=1,...), cummutative, name
 opcodedata:
@@ -257,8 +258,8 @@ end sub
 '':::::
 function irGetDataClass( byval dtype as integer ) as integer static
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	function = dtypeTB(dtype).class
@@ -266,24 +267,26 @@ function irGetDataClass( byval dtype as integer ) as integer static
 end function
 
 '':::::
-function irMaxDataType( byval dtype1 as integer, _
-						byval dtype2 as integer ) as integer static
+function irMaxDataType( byval ldtype as integer, _
+						byval rdtype as integer ) as integer static
+
+    dim as integer dtype1, dtype2
 
     function = INVALID
 
-    if( dtype1 >= IR_DATATYPE_POINTER ) then
-    	dtype1 = IR_DATATYPE_UINT
-    elseif( dtype1 = IR_DATATYPE_ENUM ) then
-    	dtype1 = IR_DATATYPE_INTEGER
+    if( ldtype > IR_DATATYPE_POINTER ) then
+    	dtype1 = IR_DATATYPE_UINT				'' can't be POINTER, due the -1 +1 hacks below
+    else
+    	dtype1 = dtypeTB(ldtype).remaptype
     end if
 
-    if( dtype2 >= IR_DATATYPE_POINTER ) then
-    	dtype2 = IR_DATATYPE_UINT
-    elseif( dtype2 = IR_DATATYPE_ENUM ) then
-    	dtype2 = IR_DATATYPE_INTEGER
+    if( rdtype > IR_DATATYPE_POINTER ) then
+    	dtype2 = IR_DATATYPE_UINT               '' ditto
+    else
+    	dtype2 = dtypeTB(rdtype).remaptype
     end if
 
-    '' don't convert beetween zstring's and (u)byte's
+    '' don't convert between zstring's and (u)byte's
     if( dtype2 = IR_DATATYPE_CHAR ) then
  		select case dtype1
  		case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
@@ -320,9 +323,9 @@ function irMaxDataType( byval dtype1 as integer, _
 
     '' assuming DATATYPE's are in order of precision
     if( dtype1 > dtype2 ) then
-    	function = dtype1
+    	function = ldtype
     else
-    	function = dtype2
+    	function = rdtype
     end if
 
 end function
@@ -330,8 +333,8 @@ end function
 '':::::
 function irIsSigned( byval dtype as integer ) as integer static
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	function = dtypeTB(dtype).signed
@@ -341,8 +344,8 @@ end function
 '':::::
 function irGetDataSize( byval dtype as integer ) as integer static
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	function = dtypeTB(dtype).size
@@ -352,8 +355,8 @@ end function
 '':::::
 function irGetDataBits( byval dtype as integer ) as integer static
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	function = dtypeTB(dtype).bits
@@ -365,8 +368,8 @@ function irGetSignedType( byval dtype as integer ) as integer static
 	dim as integer dt
 
 	dt = dtype
-	if( dt >= IR_DATATYPE_POINTER ) then
-		dt = IR_DATATYPE_UINT
+	if( dt > IR_DATATYPE_POINTER ) then
+		dt = IR_DATATYPE_POINTER
 	end if
 
 	if( dtypeTB(dt).class <> IR_DATACLASS_INTEGER ) then
@@ -375,7 +378,9 @@ function irGetSignedType( byval dtype as integer ) as integer static
 
 	select case as const dt
 	case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT, IR_DATATYPE_ULONGINT
-		dtype = dtype - 1						'' hack! assuming sign/unsig are in pairs
+		dtype -= 1							'' hack! assuming sign/unsig are in pairs
+	case IR_DATATYPE_POINTER
+		dtype = IR_DATATYPE_INTEGER
 	end select
 
 	function = dtype
@@ -387,8 +392,8 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 	dim as integer dt
 
 	dt = dtype
-	if( dt >= IR_DATATYPE_POINTER ) then
-		dt = IR_DATATYPE_UINT
+	if( dt > IR_DATATYPE_POINTER ) then
+		dt = IR_DATATYPE_POINTER
 	end if
 
 	if( dtypeTB(dt).class <> IR_DATACLASS_INTEGER ) then
@@ -539,8 +544,8 @@ sub irEmitCONVERT( byval v1 as IRVREG ptr, _
 				   byval v2 as IRVREG ptr, _
 				   byval dtype2 as integer ) static
 
-	if( dtype1 >= IR_DATATYPE_POINTER ) then
-		dtype1 = IR_DATATYPE_UINT
+	if( dtype1 > IR_DATATYPE_POINTER ) then
+		dtype1 = IR_DATATYPE_POINTER
 	end if
 
 	select case dtypeTB(dtype1).class
@@ -895,8 +900,8 @@ function irNewVR( byval dtype as integer, _
 				  byval vtype as integer ) as IRVREG ptr static
 	dim as IRVREG ptr v
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	v = flistNewItem( @ctx.vregTB )
@@ -1085,8 +1090,8 @@ function irGetVRDataClass( byval vreg as IRVREG ptr ) as integer static
 
 	dtype = vreg->dtype
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	function = dtypeTB(dtype).class
@@ -1099,8 +1104,8 @@ function irGetVRDataSize( byval vreg as IRVREG ptr ) as integer static
 
 	dtype = vreg->dtype
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype > IR_DATATYPE_POINTER ) then
+		dtype = IR_DATATYPE_POINTER
 	end if
 
 	function = dtypeTB(dtype).size

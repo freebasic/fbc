@@ -82,7 +82,12 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 	end if
 
 	''
+		'' !!!REMOVEME!!!
+#ifdef cptr
+	item = cptr(TFLISTITEM ptr, cptr(byte ptr, flist->itemtb) + (flist->index * flist->list.nodelen))
+#else
 	item = flist->itemtb + (flist->index * flist->list.nodelen)
+#endif
 	flist->index += 1
 	flist->items -= 1
 

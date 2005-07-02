@@ -123,9 +123,10 @@ data IR_DATACLASS_FPOINT , 4			 , 3, "dword ptr"
 data IR_DATACLASS_FPOINT , 8			 , 3, "qword ptr"
 data IR_DATACLASS_STRING , 8             , 0, ""
 data IR_DATACLASS_STRING , 1             , 0, "byte ptr"
-data IR_DATACLASS_INTEGER, FB_INTEGERSIZE, 0, "dword ptr"
-data IR_DATACLASS_INTEGER, FB_INTEGERSIZE, 0, "dword ptr"
+data IR_DATACLASS_INTEGER, FB_INTEGERSIZE, 2, "dword ptr"
+data IR_DATACLASS_INTEGER, FB_INTEGERSIZE, 2, "dword ptr"
 data IR_DATACLASS_INTEGER, 1			 , 0, "byte ptr"
+data IR_DATACLASS_INTEGER, FB_INTEGERSIZE, 2, "dword ptr"
 
 '' class,reg,name
 regdata:

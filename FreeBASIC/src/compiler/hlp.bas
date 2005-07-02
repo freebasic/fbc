@@ -186,7 +186,7 @@ end sub
 function hMatch( byval token as integer ) as integer
 
 	function = FALSE
-	if( lexCurrentToken = token ) then
+	if( lexGetToken = token ) then
 		function = TRUE
 		lexSkipToken
 	end if
@@ -251,7 +251,7 @@ sub hReportError( byval errnum as integer, _
 				  byval isbefore as integer = FALSE )
     dim token as string, msgex as string
 
-	token = *lexTokenText( )
+	token = *lexGetText( )
 	if( len( token ) > 0 ) then
 		if( isbefore ) then
 			msgex = "before: '"
@@ -352,7 +352,7 @@ end function
 '':::::
 function hGetDefType( byval symbol as string ) as integer static
     dim c as integer
-    dim p as byte ptr
+    dim p as zstring ptr
 
     p = strptr( symbol )
 
@@ -463,7 +463,7 @@ end sub
 function hEscapeStr( byval text as string ) as string static
     dim as integer c, octlen, lgt
     dim as string res
-    dim as byte ptr s, d, l
+    dim as zstring ptr s, d, l
 
 	s = strptr( text )
 	lgt = len( text )
@@ -514,7 +514,7 @@ function hEscapeStr( byval text as string ) as string static
 		end if
 	loop
 
-	function = left( res, d - strptr( res ) )
+	function = left( res, cuint(d) - cuint(strptr( res )) )
 
 end function
 
@@ -522,7 +522,7 @@ end function
 function hUnescapeStr( byval text as string ) as string static
     dim as integer c
     dim as string res
-    dim as byte ptr s, d, l
+    dim as zstring ptr s, d, l
 
 	if( not env.opt.escapestr ) then
     	return text
@@ -554,7 +554,7 @@ end function
 function hEscapeToChar( byval text as string ) as string static
     dim as integer c
     dim as string res, octval
-    dim as byte ptr s, d, l
+    dim as zstring ptr s, d, l
 
 	if( not env.opt.escapestr ) then
     	return text
@@ -616,7 +616,7 @@ function hEscapeToChar( byval text as string ) as string static
 
 	loop
 
-	function = left( res, d - strptr( res ) )
+	function = left( res, cuint(d) - cuint(strptr( res )) )
 
 end function
 
@@ -625,7 +625,7 @@ sub hUcase( byval src as string, _
 		    byval dst as string ) static
 
     dim as integer i, c
-    dim as ubyte ptr s, d
+    dim as zstring ptr s, d
 
 	s = strptr( src )
 	d = strptr( dst )
@@ -653,7 +653,7 @@ end sub
 '':::::
 sub hClearName( byval src as string ) static
     dim i as integer
-    dim p as byte ptr
+    dim p as zstring ptr
 
 	p = strptr( src )
 
@@ -715,7 +715,7 @@ function hCreateProcAlias( byval symbol as string, _
 
 
 	select case fbGetNaming()
-    case FB_COMPNAMING_WIN32:
+    case FB_COMPNAMING_WIN32
         dim addat as integer
     
         if( env.clopt.nounderprefix ) then
@@ -736,10 +736,10 @@ function hCreateProcAlias( byval symbol as string, _
             sname += str$( argslen )
         end if
 
-	case FB_COMPNAMING_LINUX:
+	case FB_COMPNAMING_LINUX
 		sname = symbol
 
-	case FB_COMPNAMING_DOS:
+	case FB_COMPNAMING_DOS
         sname = "_"
         sname += symbol
 
@@ -786,17 +786,17 @@ function hCreateDataAlias( byval symbol as string, _
 						   byval isimport as integer ) as string static
 
 	select case fbGetNaming()
-    case FB_COMPNAMING_WIN32:
+    case FB_COMPNAMING_WIN32
         if( isimport ) then
             function = "__imp__" + symbol
         else
             function = "_" + symbol
         end if
 
-    case FB_COMPNAMING_DOS:
+    case FB_COMPNAMING_DOS
 		function = "_" + symbol
 
-    case FB_COMPNAMING_LINUX:
+    case FB_COMPNAMING_LINUX
 		function = symbol
 
     end select
@@ -807,17 +807,17 @@ end function
 function hStripUnderscore( byval symbol as string ) as string static
 
 	select case fbGetNaming()
-    case FB_COMPNAMING_WIN32:
+    case FB_COMPNAMING_WIN32
 	    if( not env.clopt.nostdcall ) then
 			function = mid$( symbol, 2 )
 		else
 			function = symbol
 		end if
 
-    case FB_COMPNAMING_DOS:
+    case FB_COMPNAMING_DOS
     	function = mid$( symbol, 2 )
 
-    case FB_COMPNAMING_LINUX:
+    case FB_COMPNAMING_LINUX
     	function = symbol
 
     end select

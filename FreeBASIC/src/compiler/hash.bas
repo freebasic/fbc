@@ -67,7 +67,12 @@ sub hashNew( byval hash as THASH ptr, _
 	for i = 0 to nodes-1
 		list->head = NULL
 		list->tail = NULL
+		'' !!!REMOVEME!!!
+#ifdef cptr
+		list += 1
+#else
 		list += len( HASHLIST )
+#endif
 	next i
 
 end sub
@@ -90,7 +95,12 @@ sub hashFree( byval hash as THASH ptr ) static
 
 			item = nxt
 		loop
+		'' !!!REMOVEME!!!
+#ifdef cptr
+		list += 1
+#else
 		list += len( HASHLIST )
+#endif
 	next i
 
 	deallocate( hash->list )
@@ -124,7 +134,7 @@ function hashLookupEx( byval hash as THASH ptr, _
     index = index mod hash->nodes
 
 	'' get the start of list
-	list = hash->list + (index * len( HASHLIST ))
+	list = @hash->list[index]
 	item = list->head
 	if( item = NULL ) then
 		exit function
@@ -212,7 +222,7 @@ function hashAdd( byval hash as THASH ptr, _
     index = hashHash( symbol ) mod hash->nodes
 
     '' allocate a new node
-    item = hashNewItem( hash->list + (index * len( HASHLIST )) )
+    item = hashNewItem( @hash->list[index] )
 
     function = item
     if( item = NULL ) then
@@ -237,32 +247,13 @@ sub hashDel( byval hash as THASH ptr, _
 	end if
 
 	'' get start of list
-	list = hash->list + (index * len( HASHLIST ))
+	list = @hash->list[index]
 
 	''
 	item->name = ""
 	item->idx  = NULL
 
 	hashDelItem( list, item )
-
-end sub
-
-
-''::::::
-sub hashDump( byval hash as THASH ptr ) static
-    dim as integer i
-    dim as HASHITEM ptr item
-    dim as HASHLIST ptr list
-
-    list = hash->list
-    for i = 0 to hash->nodes-1
-		item = list->head
-		do while( item <> NULL )
-			print item->name; " ";
-			item = item->r
-		loop
-		list += len( HASHLIST )
-	next i
 
 end sub
 

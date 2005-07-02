@@ -43,7 +43,7 @@ declare function 	cStatement              ( ) as integer
 
 declare function 	cSimpleStatement        ( ) as integer
 
-declare function 	cSttSeparator 			( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	cStmtSeparator 			( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
 declare function 	cDeclaration            ( ) as integer
 
@@ -151,13 +151,13 @@ declare function 	cExpExpression 			( expexpr as ASTNODE ptr ) as integer
 
 declare function 	cNegNotExpression		( negexpr as ASTNODE ptr ) as integer
 
-declare function 	cHighestPresExpr		( highexpr as ASTNODE ptr ) as integer
+declare function 	cHighestPrecExpr		( highexpr as ASTNODE ptr ) as integer
+
+declare function 	cPtrTypeCastingExpr		( castexpr as ASTNODE ptr ) as integer
 
 declare function 	cDerefExpression		( derefexpr as ASTNODE ptr ) as integer
 
-declare function 	cAddrOfExpression		( addrofexpr as ASTNODE ptr, _
-											  sym as FBSYMBOL ptr, _
-											  elm as FBSYMBOL ptr ) as integer
+declare function 	cAddrOfExpression		( addrofexpr as ASTNODE ptr ) as integer
 
 declare function 	cTypeConvExpr			( tconvexpr as ASTNODE ptr ) as integer
 
@@ -208,7 +208,6 @@ declare function 	cDerefFields			( byval sym as FBSYMBOL ptr, _
 											  typ as integer, _
 											  subtype as FBSYMBOL ptr, _
 					   						  varexpr as ASTNODE ptr, _
-					   						  byval isderef as integer, _
 					   						  byval checkarray as integer ) as integer
 
 declare function    cFuncPtrOrDerefFields	( sym as FBSYMBOL ptr, _
@@ -218,6 +217,10 @@ declare function    cFuncPtrOrDerefFields	( sym as FBSYMBOL ptr, _
 					      					  varexpr as ASTNODE ptr, _
 					      					  byval isfuncptr as integer, _
 					      					  byval checkarray as integer ) as integer
+
+declare function 	cUpdPointer				( byval op as integer, _
+					  						  byval p as ASTNODE ptr, _
+					  						  byval e as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, _
 											  byval expr as ASTNODE ptr ) as integer

@@ -32,6 +32,56 @@ defint a-z
 #include once "inc\emit.bi"
 
 '':::::
+function cUpdPointer( byval op as integer, _
+					  byval p as ASTNODE ptr, _
+					  byval e as ASTNODE ptr ) as ASTNODE ptr static
+
+    dim as integer edtype
+    dim as integer lgt
+
+    edtype = astGetDataType( e )
+
+    '' not int?
+    if( irGetDataClass( edtype ) <> IR_DATACLASS_INTEGER ) then
+    	return NULL
+    end if
+
+    '' another pointer?
+    if( edtype >= IR_DATATYPE_POINTER ) then
+    	return NULL
+    end if
+
+    '' not integer? convert
+    if( edtype <> IR_DATATYPE_INTEGER ) then
+    	e = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, e )
+    end if
+
+    '' any op but +|-?
+    select case op
+    case IR_OP_ADD, IR_OP_SUB
+    	'' multiple dt1 - POINTER
+		lgt = symbCalcLen( astGetDataType( p ) - FB_SYMBTYPE_POINTER, astGetSubType( p ) )
+		if( lgt = 0 ) then
+			'' void ptr? pretend it's a byte ptr
+			if( astGetDataType( p ) = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
+				return e
+			else
+				return NULL
+			end if
+		end if
+
+		e = astNewBOP( IR_OP_MUL, e, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+
+    case else
+    	'' allow AND and OR??
+    	return NULL
+    end select
+
+    function = e
+
+end function
+
+'':::::
 ''Expression      =   LogExpression .
 ''
 function cExpression( expr as ASTNODE ptr ) as integer
@@ -57,13 +107,22 @@ function cLogExpression( logexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' Logical operator
-    	op = lexCurrentToken
-    	select case as const op
-    	case FB_TK_AND, FB_TK_OR, FB_TK_XOR, FB_TK_EQV, FB_TK_IMP
- 			lexSkipToken
+    	select case as const lexGetToken( )
+    	case FB_TK_AND
+    	    op = IR_OP_AND
+    	case FB_TK_OR
+    	    op = IR_OP_OR
+    	case FB_TK_XOR
+    		op = IR_OP_XOR
+    	case FB_TK_EQV
+    		op = IR_OP_EQV
+    	case FB_TK_IMP
+ 			op = IR_OP_IMP
     	case else
       		exit do
     	end select
+
+    	lexSkipToken( )
 
     	'' RelExpression
     	if( not cRelExpression( relexpr ) ) then
@@ -72,18 +131,7 @@ function cLogExpression( logexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	select case as const op
-    	case FB_TK_AND
-    		logexpr = astNewBOP( IR_OP_AND, logexpr, relexpr )
-    	case FB_TK_OR
-    		logexpr = astNewBOP( IR_OP_OR, logexpr, relexpr )
-    	case FB_TK_XOR
-    		logexpr = astNewBOP( IR_OP_XOR, logexpr, relexpr )
-    	case FB_TK_EQV
-    		logexpr = astNewBOP( IR_OP_EQV, logexpr, relexpr )
-    	case FB_TK_IMP
-    		logexpr = astNewBOP( IR_OP_IMP, logexpr, relexpr )
-    	end select
+    	logexpr = astNewBOP( op, logexpr, relexpr )
 
         if( logexpr = NULL ) then
 			hReportError FB_ERRMSG_TYPEMISMATCH
@@ -113,13 +161,24 @@ function cRelExpression( relexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' Relational operator
-    	op = lexCurrentToken
-    	select case as const op
-    	case FB_TK_EQ, FB_TK_GT, FB_TK_LT, FB_TK_NE, FB_TK_LE, FB_TK_GE
- 			lexSkipToken
+    	select case as const lexGetToken( )
+    	case FB_TK_EQ
+    		op = IR_OP_EQ
+    	case FB_TK_GT
+    		op = IR_OP_GT
+    	case FB_TK_LT
+    		op = IR_OP_LT
+    	case FB_TK_NE
+    		op = IR_OP_NE
+    	case FB_TK_LE
+    		op = IR_OP_LE
+    	case FB_TK_GE
+ 			op = IR_OP_GE
     	case else
       		exit do
     	end select
+
+    	lexSkipToken( )
 
     	'' AddExpression
     	if( not cAddExpression( addexpr ) ) then
@@ -128,20 +187,7 @@ function cRelExpression( relexpr as ASTNODE ptr ) as integer
     	end if
 
    		'' do operation
-   		select case as const op
-   		case FB_TK_EQ
-   			relexpr = astNewBOP( IR_OP_EQ, relexpr, addexpr )
-   		case FB_TK_GT
-   			relexpr = astNewBOP( IR_OP_GT, relexpr, addexpr )
-   		case FB_TK_LT
-   			relexpr = astNewBOP( IR_OP_LT, relexpr, addexpr )
-   		case FB_TK_NE
-   			relexpr = astNewBOP( IR_OP_NE, relexpr, addexpr )
-   		case FB_TK_LE
-   			relexpr = astNewBOP( IR_OP_LE, relexpr, addexpr )
-   		case FB_TK_GE
-   			relexpr = astNewBOP( IR_OP_GE, relexpr, addexpr )
-   		end select
+   		relexpr = astNewBOP( op, relexpr, addexpr )
 
     	if( relexpr = NULL ) Then
     		hReportError FB_ERRMSG_TYPEMISMATCH
@@ -170,13 +216,16 @@ function cAddExpression( addexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' Add operator
-    	op = lexCurrentToken
-    	select case op
-    	case CHAR_PLUS, CHAR_MINUS
- 			lexSkipToken
+    	select case lexGetToken( )
+    	case CHAR_PLUS
+    		op = IR_OP_ADD
+    	case CHAR_MINUS
+ 			op = IR_OP_SUB
     	case else
       		exit do
     	end select
+
+    	lexSkipToken( )
 
     	'' ShiftExpression
     	if( not cShiftExpression( shiftexpr ) ) then
@@ -184,13 +233,24 @@ function cAddExpression( addexpr as ASTNODE ptr ) as integer
     		exit do
     	end if
 
+    	'' check pointers
+    	if( astGetDataType( addexpr ) >= IR_DATATYPE_POINTER ) then
+    		shiftexpr = cUpdPointer( op, addexpr, shiftexpr )
+    		if( shiftexpr = NULL ) then
+    			hReportError( FB_ERRMSG_TYPEMISMATCH )
+    			exit function
+    		end if
+
+    	elseif( astGetDataType( shiftexpr ) >= IR_DATATYPE_POINTER ) then
+    		addexpr = cUpdPointer( op, shiftexpr, addexpr )
+    		if( addexpr = NULL ) then
+    			hReportError( FB_ERRMSG_TYPEMISMATCH )
+    			exit function
+    		end if
+    	end if
+
     	'' do operation
-    	select case op
-    	case CHAR_PLUS
-    		addexpr = astNewBOP( IR_OP_ADD, addexpr, shiftexpr )
-    	case CHAR_MINUS
-    		addexpr = astNewBOP( IR_OP_SUB, addexpr, shiftexpr )
-    	end select
+    	addexpr = astNewBOP( op, addexpr, shiftexpr )
 
     	if( addexpr = NULL ) Then
     		hReportError FB_ERRMSG_TYPEMISMATCH
@@ -219,13 +279,16 @@ function cShiftExpression( shiftexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' Shift operator
-    	op = lexCurrentToken
-    	select case op
-    	case FB_TK_SHL, FB_TK_SHR
- 			lexSkipToken
+    	select case lexGetToken( )
+    	case FB_TK_SHL
+    		op = IR_OP_SHL
+    	case FB_TK_SHR
+ 			op = IR_OP_SHR
     	case else
       		exit do
     	end select
+
+    	lexSkipToken( )
 
     	'' ModExpression
     	if( not cModExpression( modexpr ) ) then
@@ -234,12 +297,7 @@ function cShiftExpression( shiftexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	select case op
-    	case FB_TK_SHL
-    		shiftexpr = astNewBOP( IR_OP_SHL, shiftexpr, modexpr )
-    	case FB_TK_SHR
-    		shiftexpr = astNewBOP( IR_OP_SHR, shiftexpr, modexpr )
-    	end select
+    	shiftexpr = astNewBOP( op, shiftexpr, modexpr )
 
     	if( shiftexpr = NULL ) Then
     		hReportError FB_ERRMSG_TYPEMISMATCH
@@ -267,8 +325,8 @@ function cModExpression( modexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' Add operator
-    	if( lexCurrentToken = FB_TK_MOD ) then
- 			lexSkipToken
+    	if( lexGetToken( ) = FB_TK_MOD ) then
+ 			lexSkipToken( )
     	else
       		exit do
     	end if
@@ -308,8 +366,8 @@ function cIntDivExpression( idivexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' '\'
-    	if( lexCurrentToken = CHAR_RSLASH ) then
- 			lexSkipToken
+    	if( lexGetToken( ) = CHAR_RSLASH ) then
+ 			lexSkipToken( )
     	else
       		exit do
     	end if
@@ -350,13 +408,16 @@ function cMultExpression( mulexpr as ASTNODE ptr ) as integer
     '' ( ... )*
     do
     	'' Mult operator
-    	op = lexCurrentToken
-    	select case op
-    	case CHAR_CARET, CHAR_SLASH
- 			lexSkipToken
+    	select case lexGetToken( )
+    	case CHAR_CARET
+    		op = IR_OP_MUL
+    	case CHAR_SLASH
+ 			op = IR_OP_DIV
     	case else
       		exit do
     	end select
+
+    	lexSkipToken( )
 
     	'' ExpExpression
     	if( not cExpExpression( expexpr ) ) then
@@ -365,12 +426,7 @@ function cMultExpression( mulexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	select case op
-    	case CHAR_CARET
-    		mulexpr = astNewBOP( IR_OP_MUL, mulexpr, expexpr )
-    	case CHAR_SLASH
-    		mulexpr = astNewBOP( IR_OP_DIV, mulexpr, expexpr )
-    	end select
+    	mulexpr = astNewBOP( op, mulexpr, expexpr )
 
     	if( mulexpr = NULL ) Then
     		hReportError FB_ERRMSG_TYPEMISMATCH
@@ -397,10 +453,10 @@ function cExpExpression( expexpr as ASTNODE ptr ) as integer
 
     '' ( '^' NegNotExpression )*
     do
-    	if( lexCurrentToken <> CHAR_CART ) then
+    	if( lexGetToken( ) <> CHAR_CART ) then
     		exit do
     	else
-    		lexSkipToken
+    		lexSkipToken( )
     	end if
 
     	'' NegNotExpression
@@ -431,10 +487,10 @@ function cNegNotExpression( negexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	select case lexCurrentToken
+	select case lexGetToken( )
 	'' '-'
 	case CHAR_MINUS
-		lexSkipToken
+		lexSkipToken( )
 
 		'' ExpExpression
 		if( not cExpExpression( negexpr ) ) then
@@ -452,7 +508,7 @@ function cNegNotExpression( negexpr as ASTNODE ptr ) as integer
 
 	'' '+'
 	case CHAR_PLUS
-		lexSkipToken
+		lexSkipToken( )
 
 		'' ExpExpression
 		if( not cExpExpression( negexpr ) ) then
@@ -469,7 +525,8 @@ function cNegNotExpression( negexpr as ASTNODE ptr ) as integer
 
 	'' NOT
 	case FB_TK_NOT
-		lexSkipToken
+		lexSkipToken( )
+
 		'' RelExpression
 		if( not cRelExpression( negexpr ) ) then
 			exit function
@@ -485,46 +542,50 @@ function cNegNotExpression( negexpr as ASTNODE ptr ) as integer
 		return TRUE
 	end select
 
-	function = cHighestPresExpr( negexpr )
+	function = cHighestPrecExpr( negexpr )
 
 end function
 
 ''::::
-'' HighestPresExpr=   AddrOfExpression
-''				  |	  DerefExpr
-''                |   TypeConvExpr
-''				  |   ParentExpression
+'' HighestPrecExpr=   AddrOfExpression
+''				  |	  DerefExpr FuncPtrOrDerefFields?
+''				  |	  PtrTypeCastingExpr FuncPtrOrDerefFields?
+''				  |   ParentExpression FuncPtrOrDerefFields?
 ''				  |   Atom .
 ''
-function cHighestPresExpr( highexpr as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr sym, elm
+function cHighestPrecExpr( highexpr as ASTNODE ptr ) as integer
+	dim as FBSYMBOL ptr sym, elm, subtype
+	dim as integer isfuncptr, dtype
 
-	select case lexCurrentToken
+	select case lexGetToken( )
 	'' AddrOfExpression
 	case FB_TK_ADDROFCHAR
-		return cAddrOfExpression( highexpr, sym, elm )
+		return cAddrOfExpression( highexpr )
 
 	'' DerefExpr
 	case FB_TK_DEREFCHAR
-		return cDerefExpression( highexpr )
+		if( not cDerefExpression( highexpr ) ) then
+			exit function
+		end if
 
 	'' ParentExpression
 	case CHAR_LPRNT
-		return cParentExpression( highexpr )
+		if( not cParentExpression( highexpr ) ) then
+			exit function
+		end if
 
 	case else
 
-		select case as const lexCurrentToken
+		select case as const lexGetToken( )
 		'' AddrOfExpression
 		case FB_TK_VARPTR, FB_TK_PROCPTR, FB_TK_SADD, FB_TK_STRPTR
-			return cAddrOfExpression( highexpr, sym, elm )
+			return cAddrOfExpression( highexpr )
 
-		'' TypeConvExpr
-		case FB_TK_CBYTE, FB_TK_CSHORT, FB_TK_CINT, FB_TK_CLNG, FB_TK_CLNGINT, _
-			 FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNGINT, _
-			 FB_TK_CSNG, FB_TK_CDBL, _
-         	 FB_TK_CSIGN, FB_TK_CUNSG
-			return cTypeConvExpr( highexpr )
+		'' PtrTypeCastingExpr
+		case FB_TK_CPTR
+			if( not cPtrTypeCastingExpr( highexpr ) ) then
+				exit function
+			end if
 
 		'' Atom
 		case else
@@ -534,79 +595,92 @@ function cHighestPresExpr( highexpr as ASTNODE ptr ) as integer
 
 	end select
 
+    '' FuncPtrOrDerefFields?
+	dtype = astGetDataType( highexpr )
+	if( dtype >= IR_DATATYPE_POINTER ) then
+		isfuncptr = FALSE
+		if( dtype = IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
+			if( lexGetToken( ) = CHAR_LPRNT ) then
+				isfuncptr = TRUE
+			end if
+		end if
+
+		sym 	= astGetSymbol( highexpr )
+		elm 	= astGetElm( highexpr )
+		subtype = astGetSubType( highexpr )
+
+		cFuncPtrOrDerefFields( sym, elm, dtype, subtype, highexpr, isfuncptr, TRUE )
+	end if
+
+	function = (hGetLastError() = FB_ERRMSG_OK)
+
 end function
 
 '':::::
-''TypeConvExpr		=    (C### '(' expression ')') .
+'' PtrTypeCastingExpr	=   CPTR '(' SymbolType ',' Expression{int|uint|ptr} ')'
 ''
-function cTypeConvExpr( tconvexpr as ASTNODE ptr ) as integer
-    dim totype as integer, op as integer
+function cPtrTypeCastingExpr( castexpr as ASTNODE ptr ) as integer
+	dim as integer dtype, lgt, ptrcnt
+	dim as FBSYMBOL ptr subtype
+	dim as ASTNODE ptr expr
 
 	function = FALSE
 
-	totype = INVALID
-	op = INVALID
+	'' CPTR
+	if( lexGetToken( ) <> FB_TK_CPTR ) then
+		exit function
+	end if
 
-	select case as const lexCurrentToken
-	case FB_TK_CBYTE
-		totype = IR_DATATYPE_BYTE
-	case FB_TK_CSHORT
-		totype = IR_DATATYPE_SHORT
-	case FB_TK_CINT, FB_TK_CLNG
-		totype = IR_DATATYPE_INTEGER
-	case FB_TK_CLNGINT
-		totype = IR_DATATYPE_LONGINT
+	lexSkipToken( )
 
-	case FB_TK_CUBYTE
-		totype = IR_DATATYPE_UBYTE
-	case FB_TK_CUSHORT
-		totype = IR_DATATYPE_USHORT
-	case FB_TK_CUINT
-		totype = IR_DATATYPE_UINT
-	case FB_TK_CULNGINT
-		totype = IR_DATATYPE_ULONGINT
+	'' '('
+	if( not hMatch( CHAR_LPRNT ) ) then
+		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
+		exit function
+	end if
 
-	case FB_TK_CSNG
-		totype = IR_DATATYPE_SINGLE
-	case FB_TK_CDBL
-		totype = IR_DATATYPE_DOUBLE
+	'' SymbolType
+	if( not cSymbolType( dtype, subtype, lgt, ptrcnt ) ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
+		exit function
+	end if
 
-	case FB_TK_CSIGN
-		totype = IR_DATATYPE_VOID				'' hack! AST will handle that
-		op = IR_OP_TOSIGNED
-	case FB_TK_CUNSG
-		totype = IR_DATATYPE_VOID				'' hack! /
-		op = IR_OP_TOUNSIGNED
+	'' check if it's a pointer
+	if( dtype < IR_DATATYPE_POINTER ) then
+		hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+		exit function
+	end if
+
+	'' ','
+	if( not hMatch( CHAR_COMMA ) ) then
+		hReportError( FB_ERRMSG_EXPECTEDCOMMA )
+		exit function
+	end if
+
+	'' Expression
+	if( not cExpression( expr ) ) then
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+		exit function
+	end if
+
+	select case astGetDataType( expr )
+	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, is >= IR_DATATYPE_POINTER
+
+	case else
+		hReportError( FB_ERRMSG_EXPECTEDPOINTER )
+		exit function
 	end select
 
-	if( totype = INVALID ) then
-		exit function
-	else
-		lexSkipToken
-	end if
-
-	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError FB_ERRMSG_EXPECTEDLPRNT
-		exit function
-	end if
-
-	if( not cExpression( tconvexpr ) ) then
-		exit function
-	end if
-
-	tconvexpr = astNewCONV( op, totype, NULL, tconvexpr )
-
-    if( tconvexpr = NULL ) Then
-    	hReportError FB_ERRMSG_TYPEMISMATCH, TRUE
-    	exit function
-    end if
-
+	'' ')'
 	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB_ERRMSG_EXPECTEDRPRNT
+		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 		exit function
 	end if
 
-	function = TRUE
+	'' convert to new type
+	castexpr = astNewCONV( IR_OP_TOPOINTER, dtype, subtype, expr )
+
+	function = (castexpr <> NULL)
 
 end function
 
@@ -627,7 +701,7 @@ private function hDoDeref( byval cnt as integer, _
 	do while( cnt > 1 )
 		'' not a pointer?
 		if( dtype < IR_DATATYPE_POINTER ) then
-			hReportError FB_ERRMSG_EXPECTEDPOINTER, TRUE
+			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 			exit function
 		end if
 
@@ -635,7 +709,7 @@ private function hDoDeref( byval cnt as integer, _
 
 		'' incomplete type?
 		if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
-			hReportError FB_ERRMSG_INCOMPLETETYPE, TRUE
+			hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 			exit function
 		end if
 
@@ -645,7 +719,7 @@ private function hDoDeref( byval cnt as integer, _
 
 	'' not a pointer?
 	if( dtype < IR_DATATYPE_POINTER ) then
-		hReportError FB_ERRMSG_EXPECTEDPOINTER, TRUE
+		hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 		exit function
 	end if
 
@@ -653,7 +727,7 @@ private function hDoDeref( byval cnt as integer, _
 
 	'' incomplete type?
 	if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
-		hReportError FB_ERRMSG_INCOMPLETETYPE, TRUE
+		hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 		exit function
 	end if
 
@@ -665,118 +739,7 @@ private function hDoDeref( byval cnt as integer, _
 end function
 
 '':::::
-''ParentDeref	= 	'(' (AddrOfExpression|Variable) ('+'|'-' Expression)? ')')
-''
-function cParentDeref( derefexpr as ASTNODE ptr, _
-					   sym as FBSYMBOL ptr, _
-					   elm as FBSYMBOL ptr, _
-					   derefcnt as integer, _
-					   dtype as integer, _
-					   subtype as FBSYMBOL ptr ) as integer
-
-    dim as FBSYMBOL ptr s
-    dim as integer lgt, op
-    dim as ASTNODE ptr expr
-
-	function = FALSE
-
-	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
-		exit function
-	end if
-
-  	'' AddrOfExpression
-	if( cAddrOfExpression( derefexpr, sym, elm ) ) then
-
-		if( elm <> NULL ) then
-			dtype   = IR_DATATYPE_POINTER + symbGetType( elm )
-			subtype = symbGetSubtype( elm )
-		else
-			dtype   = IR_DATATYPE_POINTER + symbGetType( sym )
-			subtype = symbGetSubtype( sym )
-		end if
-
-	else
-		'' Variable
-  		if( not cVariable( derefexpr, sym, elm ) ) then
-			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
-		    exit function
-		end if
-
-  		dtype   = astGetDataType( derefexpr )
-		subtype = astGetSubType( derefexpr )
-  	end if
-
-
-	'' '-' | '+'
-	select case lexCurrentToken
-	case CHAR_MINUS
-		lexSkipToken
-		op = IR_OP_SUB
-	case CHAR_PLUS
-		lexSkipToken
-		op = IR_OP_ADD
-	case else
-		op = INVALID
-	end select
-
-	if( op <> INVALID ) then
-		if( not cExpression( expr ) ) then
-			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
-			exit function
-		end if
-
-		'' if index isn't an integer, convert
-		if( (astGetDataClass( expr ) <> IR_DATACLASS_INTEGER) or _
-			(astGetDataSize( expr ) <> FB_POINTERSIZE) ) then
-			expr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, expr )
-			if( expr = NULL ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES
-				exit function
-			end if
-		end if
-
-		'' times length
-		lgt = symbCalcLen( dtype - FB_SYMBTYPE_POINTER, subtype )
-
-		if( lgt = 0 ) then
-			hReportError FB_ERRMSG_INCOMPLETETYPE, TRUE
-			exit function
-		end if
-
-		expr = astNewBOP( IR_OP_MUL, expr, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
-
-	end if
-
-	'' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
-		hReportError FB_ERRMSG_EXPECTEDRPRNT
-		exit function
-	end if
-
-	''
-	if( op <> INVALID ) then
-		derefexpr = astNewBOP( op, derefexpr, expr )
-	end if
-
-    ''
-	if( cDerefFields( sym, elm, dtype, subtype, derefexpr, TRUE, FALSE ) ) then
-		derefcnt -= 1
-	else
-		if( hGetLastError <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-''DerefExpression	= 	DREF+ ( AddrOfExpression
-''							  | Function
-''							  | Variable
-''							  | ParentDeref) .
+''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
 function cDerefExpression( derefexpr as ASTNODE ptr ) as integer
     dim as FBSYMBOL ptr sym, elm, subtype
@@ -786,7 +749,7 @@ function cDerefExpression( derefexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' DREF?
-	if( lexCurrentToken <> FB_TK_DEREFCHAR ) then
+	if( lexGetToken( ) <> FB_TK_DEREFCHAR ) then
 		exit function
 	end if
 
@@ -795,82 +758,24 @@ function cDerefExpression( derefexpr as ASTNODE ptr ) as integer
 	do
 		lexSkipToken( )
 		derefcnt += 1
-	loop while( lexCurrentToken( ) = FB_TK_DEREFCHAR )
+	loop while( lexGetToken( ) = FB_TK_DEREFCHAR )
 
-	'' AddrOfExpression
-	if(  cAddrOfExpression( derefexpr, sym, elm ) ) then
-
-		if( elm <> NULL ) then
-			dtype   = IR_DATATYPE_POINTER + symbGetType( elm )
-			subtype = symbGetSubtype( elm )
-		else
-			dtype   = IR_DATATYPE_POINTER + symbGetType( sym )
-			subtype = symbGetSubtype( sym )
-		end if
-
-	else
-
-  		sym = NULL
-  		elm = NULL
-
-        '' ParentDeref
-  		if( not cParentDeref( derefexpr, sym, elm, derefcnt, dtype, subtype ) ) then
-
-			if( hGetLastError <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-
-  			'' can be PEEK() or VA_ARG()..
-  			if( not cQuirkFunction( derefexpr ) ) then
-  				'' Function
-  				if( not cFunction( derefexpr, sym, elm ) ) then
-  					'' Variable
-  					if( not cVariable( derefexpr, sym, elm ) ) then
-  						exit function
-		    		end if
-				end if
-			end if
-
-			dtype   = astGetDataType( derefexpr )
-			subtype = astGetSubType( derefexpr )
-
-		end if
-
+	'' HighestPresExpr
+	if( not cHighestPrecExpr( derefexpr ) ) then
+        hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+        exit function
 	end if
 
 	''
-	if( derefcnt > 0 ) then
-		dtype = hDoDeref( derefcnt, derefexpr, sym, elm, dtype, subtype )
-		if( dtype = INVALID ) then
-			exit function
-		end if
-	end if
+	sym		= astGetSymbol( derefexpr )
+	elm		= astGetElm( derefexpr )
+	dtype   = astGetDataType( derefexpr )
+	subtype = astGetSubType( derefexpr )
 
-	'' function ptr?
-	if( dtype = IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
-		if( lexCurrentToken = CHAR_LPRNT ) then
-
-			if( elm <> NULL ) then
-				sym = elm
-			end if
-
-			sym = symbGetSubtype( sym )
-			elm = NULL
-
-			''
-			if( symbGetType( sym ) <> FB_SYMBTYPE_VOID ) then
-				if( not cFunctionCall( sym, elm, funcexpr, derefexpr ) ) then
-					exit function
-				end if
-				derefexpr = funcexpr
-
-			else
-				if( not cProcCall( sym, funcexpr, derefexpr ) ) then
-					exit function
-				end if
-		    	derefexpr = funcexpr
-			end if
-		end if
+	''
+	dtype = hDoDeref( derefcnt, derefexpr, sym, elm, dtype, subtype )
+	if( dtype = INVALID ) then
+		exit function
 	end if
 
 	function = TRUE
@@ -881,98 +786,95 @@ end function
 private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 							   addrofexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr expr
-	dim as integer dtype
 
 	function = FALSE
 
 	'' '('')'?
 	if( hMatch( CHAR_LPRNT ) ) then
 		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDRPRNT
+			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
 	end if
 
-	expr = astNewVAR( proc, NULL, 0, IR_DATATYPE_UINT )
+	expr = astNewVAR( proc, NULL, 0, IR_DATATYPE_FUNCTION, proc )
 	addrofexpr = astNewADDR( IR_OP_ADDROF, expr, proc )
 
-	function = TRUE
+	function = (addrofexpr <> NULL)
 
 end function
 
 '':::::
-private function hVarPtrBody( addrofexpr as ASTNODE ptr, _
-							  sym as FBSYMBOL ptr, _
-							  elm as FBSYMBOL ptr ) as integer
+private function hVarPtrBody( addrofexpr as ASTNODE ptr) as integer
 
 	function = FALSE
 
-	if( not cVariable( addrofexpr, sym, elm ) ) then
+	if( not cHighestPrecExpr( addrofexpr ) ) then
 		exit function
 	end if
 
-	addrofexpr = astNewADDR( IR_OP_ADDROF, addrofexpr, sym, elm )
+	select case as const astGetClass( addrofexpr )
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
 
-    function = TRUE
+	case else
+		hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, "for @ or VARPTR" )
+		exit function
+	end select
+
+	addrofexpr = astNewADDR( IR_OP_ADDROF, addrofexpr, _
+						 	 astGetSymbol( addrofexpr ), astGetElm( addrofexpr ) )
+
+    function = (addrofexpr <> NULL)
 
 end function
 
 '':::::
-''AddrOfExpression  =   VARPTR '(' Variable ')'
+''AddrOfExpression  =   VARPTR '(' HighPrecExpr ')'
 ''					|   PROCPTR '(' Proc ('('')')? ')'
-'' 					| 	'@' (Proc ('('')')? | Variable)
+'' 					| 	'@' (Proc ('('')')? | HighPrecExpr)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression( addrofexpr as ASTNODE ptr, _
-							sym as FBSYMBOL ptr, _
-							elm as FBSYMBOL ptr ) as integer
-
+function cAddrOfExpression( addrofexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr
     dim as integer dtype
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr sym, elm
 
 	function = FALSE
 
 	'' '@' (Proc ('('')')? | Variable)
-	if( lexCurrentToken = FB_TK_ADDROFCHAR ) then
-		lexSkipToken
+	if( lexGetToken( ) = FB_TK_ADDROFCHAR ) then
+		lexSkipToken( )
 
 		'' proc?
-		s = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_PROC )
-		if( s <> NULL ) then
-			lexSkipToken
-
-			if( not hProcPtrBody( s, addrofexpr ) ) then
-				exit function
+		if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
+			sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+			if( sym <> NULL ) then
+				lexSkipToken( )
+				return hProcPtrBody( sym, addrofexpr )
 			end if
-			sym = s
-			elm = NULL
+        end if
 
-		else
-			if( not hVarPtrBody( addrofexpr, sym, elm ) ) then
-				exit function
-			end if
-		end if
-
-		return TRUE
+		return hVarPtrBody( addrofexpr )
 	end if
 
-	select case as const lexCurrentToken
+	select case as const lexGetToken( )
 	'' VARPTR '(' Variable ')'
 	case FB_TK_VARPTR
-		lexSkipToken
+		lexSkipToken( )
 
+		'' '('
 		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDLPRNT
+			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
 
-		if( not hVarPtrBody( addrofexpr, sym, elm ) ) then
+		if( not hVarPtrBody( addrofexpr ) ) then
 			exit function
 		end if
 
+		'' ')'
 		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDRPRNT
+			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
 
@@ -980,45 +882,45 @@ function cAddrOfExpression( addrofexpr as ASTNODE ptr, _
 
 	'' PROCPTR '(' Proc ('('')')? ')'
 	case FB_TK_PROCPTR
-		lexSkipToken
+		lexSkipToken( )
 
+		'' '('
 		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDLPRNT
+			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
 
 		'' proc?
-		s = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_PROC )
-		if( s = NULL ) then
-			hReportError FB_ERRMSG_UNDEFINEDSYMBOL
+		sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+		if( sym = NULL ) then
+			hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
 			exit function
 		else
-			lexSkipToken
+			lexSkipToken( )
 		end if
 
-		if( not hProcPtrBody( s, addrofexpr ) ) then
+		if( not hProcPtrBody( sym, addrofexpr ) ) then
 			exit function
 		end if
 
+		'' ')'
 		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDRPRNT
+			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
-		sym = s
-		elm	= NULL
 
 		return TRUE
 
 	'' SADD|STRPTR '(' Variable{str} ')'
 	case FB_TK_SADD, FB_TK_STRPTR
-		lexSkipToken
+		lexSkipToken( )
 
+		'' '('
 		if( not hMatch( CHAR_LPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDLPRNT
+			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
 
-		elm = NULL
 		if( not cLiteral( expr ) ) then
 			if( not cConstant( expr ) ) then
 				if( not cVariable( expr, sym, elm ) ) then
@@ -1026,26 +928,31 @@ function cAddrOfExpression( addrofexpr as ASTNODE ptr, _
 				end if
 			end if
 		end if
+
 		sym = astGetSymbol( expr )
+		elm = astGetElm( expr )
 
 		dtype = astGetDataType( expr )
 		if( not hIsString( dtype ) ) then
-			hReportError FB_ERRMSG_INVALIDDATATYPES
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+		end if
+
+		'' ')'
+		if( not hMatch( CHAR_RPRNT ) ) then
+			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
 
 		if( dtype = IR_DATATYPE_STRING ) then
-			addrofexpr = astNewADDR( IR_OP_DEREF, expr, sym, elm )
+			expr = astNewADDR( IR_OP_DEREF, expr, sym, elm )
 		else
-			addrofexpr = astNewADDR( IR_OP_ADDROF, expr, sym, elm )
+			expr = astNewADDR( IR_OP_ADDROF, expr, sym, elm )
 		end if
 
-		if( not hMatch( CHAR_RPRNT ) ) then
-			hReportError FB_ERRMSG_EXPECTEDRPRNT
-			exit function
-		end if
+		addrofexpr = astNewCONV( IR_OP_TOPOINTER, IR_DATATYPE_POINTER+IR_DATATYPE_CHAR, NULL, expr )
 
-		return TRUE
+		return (addrofexpr <> NULL)
 	end select
 
 end function
@@ -1068,7 +975,7 @@ function cParentExpression( parexpr as ASTNODE ptr ) as integer
   	if( not cExpression( parexpr ) ) then
   		'' calling a SUB? it can be a BYVAL or nothing due the optional ()'s
   		if( not env.prntopt ) then
-  			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+  			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
   			exit function
   		end if
 
@@ -1080,7 +987,7 @@ function cParentExpression( parexpr as ASTNODE ptr ) as integer
   		else
   			'' not calling a SUB or parent cnt = 0?
   			if( (not env.prntopt) or (env.prntcnt = 0) ) then
-  				hReportError FB_ERRMSG_EXPECTEDRPRNT
+  				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
   				exit function
   			end if
   		end if
@@ -1099,7 +1006,7 @@ function cAtom( atom as ASTNODE ptr ) as integer
 
   	atom = NULL
 
-  	select case lexCurrentTokenClass
+  	select case lexGetClass
   	case FB_TKCLASS_KEYWORD
   		return cQuirkFunction( atom )
 
@@ -1108,7 +1015,7 @@ function cAtom( atom as ASTNODE ptr ) as integer
   		if( not res ) then
   			res = cFunction( atom, sym, elm )
   			if( not res ) then
-  				res = cVariable( atom, sym, elm, env.varcheckarray )
+  				res = cVariable( atom, sym, elm, env.checkarray )
   			end if
   		end if
 
@@ -1121,7 +1028,7 @@ function cAtom( atom as ASTNODE ptr ) as integer
 end function
 
 '':::::
-'' Constant       = ID .                                    !!ambiguity w/ var!!
+'' Constant       = ID .
 ''
 function cConstant( constexpr as ASTNODE ptr ) as integer static
 	static as zstring * FB_MAXLITLEN+1 text
@@ -1130,7 +1037,7 @@ function cConstant( constexpr as ASTNODE ptr ) as integer static
 
 	function = FALSE
 
-	s = symbFindByClass( lexTokenSymbol( ), FB_SYMBCLASS_CONST )
+	s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_CONST )
 	if( s <> NULL ) then
 
   		text = symbGetConstText( s )
@@ -1169,23 +1076,23 @@ function cLiteral( litexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	select case lexCurrentTokenClass( )
+	select case lexGetClass( )
 	case FB_TKCLASS_NUMLITERAL
-  		typ = lexTokenType( )
+  		typ = lexGetType( )
   		select case as const typ
   		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			litexpr = astNewCONST64( val64( *lexTokenText( ) ), typ )
+			litexpr = astNewCONST64( val64( *lexGetText( ) ), typ )
   		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			litexpr = astNewCONSTf( val( *lexTokenText( ) ), typ )
+			litexpr = astNewCONSTf( val( *lexGetText( ) ), typ )
 		case else
-			litexpr = astNewCONSTi( valint( *lexTokenText( ) ), typ )
+			litexpr = astNewCONSTi( valint( *lexGetText( ) ), typ )
   		end select
 
   		lexSkipToken( )
   		function = TRUE
 
   	case FB_TKCLASS_STRLITERAL
-		tc = hAllocStringConst( *lexTokenText( ), lexTokenTextLen( ) )
+		tc = hAllocStringConst( *lexGetText( ), lexGetTextLen( ) )
 		litexpr = astNewVAR( tc, NULL, 0, IR_DATATYPE_FIXSTR )
 
 		lexSkipToken( )
@@ -1213,13 +1120,13 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 
 	'' is it really a function?
 	if( typ = FB_SYMBTYPE_VOID ) then
-		hReportError FB_ERRMSG_SYNTAXERROR
+		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end if
 
 	'' '('?
-	if( lexCurrentToken = CHAR_LPRNT ) then
-		lexSkipToken
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
 
 		'' ProcParamList
 		funcexpr = cProcParamList( sym, ptrexpr, TRUE, FALSE )
@@ -1247,7 +1154,7 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
     	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
-   		if( lexCurrentToken = CHAR_LPRNT ) then
+   		if( lexGetToken( ) = CHAR_LPRNT ) then
    			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
@@ -1256,7 +1163,7 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 		'' FuncPtrOrDerefFields?
 		cFuncPtrOrDerefFields( sym, elm, typ, subtype, funcexpr, isfuncptr, TRUE )
 
-		if( hGetLastError <> FB_ERRMSG_OK ) then
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 	end if
@@ -1266,7 +1173,7 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-''Function        =   ID ('(' ProcParamList ')')? .	 			//ambiguity w/ var!!
+''Function        =   ID ('(' ProcParamList ')')? FuncPtrOrDerefFields? .
 ''
 function cFunction( funcexpr as ASTNODE ptr, _
 					sym as FBSYMBOL ptr, _
@@ -1275,7 +1182,7 @@ function cFunction( funcexpr as ASTNODE ptr, _
 	function = FALSE
 
 	'' ID
-	sym = symbFindByClass( lexTokenSymbol, FB_SYMBCLASS_PROC )
+	sym = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_PROC )
 	if( sym = NULL ) then
 		exit function
 	end if

@@ -58,7 +58,7 @@ enum IRDATATYPE_ENUM
 	IR_DATATYPE_POINTER							'' ptr must be the last!
 end enum
 
-const IR_MAXDATATYPES 		= 19-1				'' pointer not taken into account
+const IR_MAXDATATYPES 		= 19
 
 ''
 enum IRVREGTYPE_ENUM
@@ -151,6 +151,7 @@ enum IROP_ENUM
 end enum
 
 '' operations below won't reach IR, used by AST
+const IR_OP_TOPOINTER		= 252
 const IR_OP_TOSIGNED		= 253
 const IR_OP_TOUNSIGNED		= 254
 
@@ -204,7 +205,7 @@ type IRDATATYPE
 	size		as integer						'' in bytes
 	bits		as integer						'' number of bits
 	signed		as integer						'' TRUE or FALSE
-	dname		as string * 7
+	remaptype	as integer						'' remapped type for ENUM, POINTER, etc
 end type
 
 ''

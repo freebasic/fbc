@@ -147,7 +147,7 @@ private sub hSetCtx
 
 	env.prntcnt				= 0
 	env.prntopt				= FALSE
-	env.varcheckarray		= TRUE
+	env.checkarray		= TRUE
 
 	''
 	env.forstmt.endlabel	= NULL
@@ -233,29 +233,6 @@ sub fbSetDefaultOptions
 
 end sub
 
-public function fbGetNaming ( ) as integer
-    dim naming_type as integer
-    naming_type = fbGetOption(FB_COMPOPT_NAMING)
-    if naming_type = FB_COMPNAMING_DEFAULT then
-        select case fbGetOption(FB_COMPOPT_TARGET)
-        case FB_COMPTARGET_WIN32
-            naming_type = FB_COMPNAMING_WIN32
-
-		case FB_COMPTARGET_LINUX
-            naming_type = FB_COMPNAMING_LINUX
-
-		case FB_COMPTARGET_DOS
-            naming_type = FB_COMPNAMING_DOS
-
-        case else
-            print "Internal compiler error (1)"
-            end 1
-
-        end select
-    end if
-    return naming_type
-end function
-
 '':::::
 sub fbSetOption ( byval opt as integer, _
 				  byval value as integer )
@@ -332,6 +309,31 @@ function fbGetOption ( byval opt as integer ) as integer
 	case else
 		function = FALSE
 	end select
+
+end function
+
+'':::::
+function fbGetNaming ( ) as integer
+    static as integer target = INVALID
+
+    if( target = INVALID ) then
+	    if env.clopt.naming <> FB_COMPNAMING_DEFAULT then
+	    	target = env.clopt.naming
+	    else
+		    select case env.clopt.naming
+		    case FB_COMPTARGET_WIN32
+		    	target = FB_COMPNAMING_WIN32
+
+			case FB_COMPTARGET_LINUX
+		    	target = FB_COMPNAMING_LINUX
+
+			case FB_COMPTARGET_DOS
+		        target = FB_COMPNAMING_DOS
+		    end select
+		end if
+	end if
+
+    function = target
 
 end function
 
@@ -465,7 +467,7 @@ end function
 function fbListLibs( namelist() as string, byval index as integer ) as integer
 	dim i as integer
 
-	function = symbListLibs( namelist(), index )
+	index += symbListLibs( namelist(), index )
 
 	if( env.clopt.multithreaded ) then
 		for i = 0 to index-1
@@ -475,6 +477,8 @@ function fbListLibs( namelist() as string, byval index as integer ) as integer
 			end if
 		next i
 	end if
+
+	function = index
 
 end function
 
