@@ -20,7 +20,10 @@ option private
 const SCR_WIDTH 		= 320
 const SCR_HEIGHT 		= 240
 const SCR_SIZE 			= (SCR_WIDTH * SCR_HEIGHT)
-const SCR_BPP 			= 16					'' changing BPP and doRendering has to be updated too
+const SCR_BPP 			= 16					'' \
+#define SCR_TYPE		ushort					'' /
+
+#define VAL2RGB(v) (((v) shl 11) or ((v) shl 5) or (v))
 
 declare function WinMain( byval hInstance as integer, byval hPrevInst as integer, lpszCmdLine AS string, byval lCmdShow as integer ) as integer
 
@@ -42,7 +45,7 @@ declare function WinMain( byval hInstance as integer, byval hPrevInst as integer
 function InitDirectDraw( byval hWnd as integer ) as integer	
 	dim ddscaps as DDSCAPS
 
-	InitDirectDraw = FALSE	
+	function = FALSE	
 	
 	' create an interface to DDraw
 	if( DirectDrawCreate( NULL, @pDD, NULL ) <> DD_OK ) then
@@ -78,14 +81,14 @@ function InitDirectDraw( byval hWnd as integer ) as integer
 		exit function
 	end if
 
-	InitDirectDraw = TRUE
+	function = TRUE
 	
 end function
 
 '':::::
 sub doRendering	
-	static seed as integer
-	dim dst as ushort ptr
+	static seed as integer = &h12345
+	dim dst as SCR_TYPE ptr
 	dim noise as integer, carry as integer
 	dim x as integer, y as integer
 	
@@ -93,8 +96,6 @@ sub doRendering
 	if( IDirectDrawSurface_Lock( pDDSBack, NULL, @ddsd, DDLOCK_WAIT, NULL ) <> DD_OK ) then
 		exit function
 	end if
-	
-	if( seed = 0 ) then seed = &h12345
 	
 	'' get pointer to back-buffer
 	dst = ddsd.lpSurface
@@ -106,10 +107,10 @@ sub doRendering
        		carry = noise and 1
        		seed = (seed shr 1) or (carry shl 30)
        		noise = (noise shr 1) and &hFF
-			*dst = (noise shl 11) or (noise shl 5) or noise
-			dst = dst + len( ushort )
+			*dst = VAL2RGB(noise)
+			dst += 1
 		next x
-		dst += ddsd.lPitch - (SCR_WIDTH * len( ushort ))
+		cptr(byte ptr, dst) += ddsd.lPitch - (SCR_WIDTH * len( SCR_TYPE ))
    	next y
 	
 	'' unlock it, no more needed
@@ -144,7 +145,7 @@ end sub
 function ProcessIdle
     dim hRet as integer
     
-    ProcessIdle = FALSE
+    function = FALSE
 
 	'' buffers were not allocated? exit
 	if( (pDDSBack = NULL) or (pDDSFront = NULL) ) then
@@ -172,14 +173,14 @@ function ProcessIdle
     	end if
     loop
 
-	ProcessIdle = TRUE
+	function = TRUE
 
 end function
 
 '':::::
 function WndProc(byval hWnd as integer, byval uMsg as integer, byval wParam as integer, byval lParam as integer) as integer
 
-	WndProc = 0
+	function = 0
 	
 	'' process messages
 	select case uMsg
@@ -199,7 +200,7 @@ function WndProc(byval hWnd as integer, byval uMsg as integer, byval wParam as i
 		end if
 
 	case else
-		WndProc = DefWindowProc( hWnd, uMsg, wParam, lParam )
+		function = DefWindowProc( hWnd, uMsg, wParam, lParam )
 	end select
 
 end function
@@ -264,7 +265,7 @@ function WinMain( byval hInstance as integer, byval hPrevInst as integer, lpszCm
 	loop
 
 	''
-	WinMain = msg.wParam
+	function = msg.wParam
 	
 end function
 

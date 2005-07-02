@@ -151,14 +151,14 @@ private sub draw_blob(buffer() as integer, light() as integer,_
 
 
 
-    dim as integer ptr erroradd 
+    dim as integer erroradd 
     dim as integer nx, ny 
     dim as integer c, oc 
     dim as integer lr, lg, lb, br, bg, bb
     dim as integer r, g, b 
 
-    erroradd = (SCR_WIDTH - wid) * len(integer)
-	offset = @buffer(0)+ ((y * SCR_WIDTH + x)* len(integer))
+    erroradd = SCR_WIDTH - wid
+	offset = @buffer(0) + (y * SCR_WIDTH + x)
 
     for ny = 0 to hei -1
         for nx = 0 to wid -1
@@ -185,7 +185,7 @@ private sub draw_blob(buffer() as integer, light() as integer,_
                 *offset = rgb( r, g, b )
             end if
 
-            offset = offset + len(integer)
+            offset = offset + 1
         next nx
             offset = offset + erroradd
     next ny
@@ -211,8 +211,8 @@ private sub pcopy_ ( dest() as integer, source() as integer)
     offset2 = @source(0)
     for i = 0 to  SCR_SIZE -1
         *offset1 = *offset2
-        offset1 = offset1 + len(integer)
-        offset2 = offset2 + len(integer)
+        offset1 = offset1 + 1
+        offset2 = offset2 + 1
     next offset
 
 end sub
@@ -223,7 +223,7 @@ private sub cls_(buffer())
     offset = @buffer(0)
     for i = 0 to  SCR_SIZE -1
         *offset = 0
-        offset = offset + len(integer)
+        offset = offset + 1
     next offset
 
 end sub

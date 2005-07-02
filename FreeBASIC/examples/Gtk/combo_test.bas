@@ -50,10 +50,7 @@ end sub
 
    button = gtk_button_new_with_label("Write it")
    
-   '' while there's no pointer typecasting..
-   dim as GtkCombo ptr pcombo: pcombo = combo   				
-   gtk_signal_connect( button, "clicked", @act, _
-             		   gtk_entry_get_text( pcombo->entry ) )	'' GTK_COMBO(combo)->entry
+   gtk_signal_connect( button, "clicked", @act, gtk_entry_get_text( GTK_COMBO(combo)->entry ) )
    
    gtk_box_pack_start( box, button, 1, 1, 1 )
 

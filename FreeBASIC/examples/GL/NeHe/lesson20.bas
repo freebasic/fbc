@@ -6,7 +6,7 @@
 ''  Visit My Site At nehe.gamedev.net
 ''
 
-'' compile as: fbc -s gui lesson20.bas bmpload.bas
+'' compile as: fbc -s gui lesson20.bas
 
 ''------------------------------------------------------------------------------
 '' Use Space Bar to toggle bitmaps and M on keybpard to toggle masking
@@ -162,7 +162,11 @@ function LoadGLTextures() as integer
   TextureImage(3)=LoadBMP("data/Mask2.bmp")               '' Second Mask
   TextureImage(4)=LoadBMP("data/Image2.bmp")              '' Second Image
 
-  if (TextureImage(0) and TextureImage(1) and TextureImage(2) and TextureImage(3) and TextureImage(4)) then
+  if (TextureImage(0) <> NULL and _
+  	  TextureImage(1) <> NULL and _
+  	  TextureImage(2) <> NULL and _
+  	  TextureImage(3) <> NULL and _
+  	  TextureImage(4) <> NULL) then
     LoadGLTextures = true
     glGenTextures(5, @texture(0))     '' Create Five Textures
 

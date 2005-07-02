@@ -195,8 +195,8 @@ do
             pixel = rgb( red, grn, blu )
             *p_buffer = pixel
             *p_bufferl = pixel
-            p_buffer = p_buffer + Len(integer)
-            p_bufferl = p_bufferl - Len(integer)
+            p_buffer = p_buffer + 1
+            p_bufferl = p_bufferl - 1
         next px
     next py
 

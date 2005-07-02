@@ -10,7 +10,7 @@ declare sub doQuit ( )
 declare sub doMain ( )
 declare sub exitError ( msg as string )
 
-dim video as SDL_Surface ptr
+dim shared video as SDL_Surface ptr
 
 doInit
 doMain

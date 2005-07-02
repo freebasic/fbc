@@ -30,11 +30,9 @@ sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 	
 	dim w as integer, h as integer, x as integer, y as integer, i as integer
 	dim c0 as integer, c1 as integer, c2 as integer, c3 as integer
-	dim header as short ptr
 	
-	header = buffer
-	w = header[0] shr 3
-	h = header[1]
+	w = cptr(short ptr, buffer)[0] shr 3
+	h = cptr(short ptr, buffer)[1]
 	
 	if new then
 		line buffer, (0, 0)-(w-1, h-1), 0, bf

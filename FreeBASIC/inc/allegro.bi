@@ -1115,8 +1115,10 @@ extern import _system_none alias "system_none" as SYSTEM_DRIVER
 extern import system_driver alias "system_driver" as SYSTEM_DRIVER ptr
 extern import _system_driver_list alias "_system_driver_list" as _DRIVER_INFO
 
-Extern Import allegro_id Alias "allegro_id" As Byte Ptr
-Extern Import fb_allegro_error Alias "allegro_error" As Byte
+#define ALLEGRO_ERROR_SIZE 256
+
+Extern Import allegro_id Alias "allegro_id" As zstring * ALLEGRO_ERROR_SIZE
+Extern Import allegro_error Alias "allegro_error" As zstring * ALLEGRO_ERROR_SIZE
 
 Extern Import os_type Alias "os_type" As Integer
 Extern Import os_version Alias "os_version" As Integer
@@ -1866,10 +1868,6 @@ dim shared errno as integer
 
 ' AL_MID is the fb equivalent of Allegro's MID
 #define AL_MID(x,y,z) AL_MAX(x, AL_MIN(y, z))
-
-private function allegro_error () as string
-	allegro_error = *(@fb_allegro_error)
-end function
 
 ' -- random hacks --
 

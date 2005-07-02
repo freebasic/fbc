@@ -10,7 +10,8 @@ declare sub myprintf cdecl (fmtstr as string, ...)
 	
 	s = "bar"
 	
-	myprintf "integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s", 1, 1LL shl 32, 2.2!, 3.3#, "foo", s
+	myprintf( "integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s", _
+			  1, 1LL shl 32, 2.2!, 3.3#, "foo", s )
 	
 	print
 	sleep
@@ -18,7 +19,7 @@ declare sub myprintf cdecl (fmtstr as string, ...)
 '':::::	
 sub myprintf cdecl (fmtstr as string, ...)
 	dim as any ptr arg
-	dim as byte ptr p
+	dim as zstring ptr p
 	dim as integer i, char
 	
 	'' get the pointer to the first var-arg

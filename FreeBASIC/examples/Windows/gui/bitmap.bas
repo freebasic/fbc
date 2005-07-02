@@ -43,11 +43,15 @@ function WndProc ( byval hWnd as long, _
 		dim logo as BITMAPFILEHEADER ptr = @fblogo_data(0) 
 
 		'' pointer to bitmap header
-  		logoinfo = logo + len( BITMAPFILEHEADER ) 
+  		logoinfo = cptr(BITMAPINFO ptr, logo + 1)
 
   		'' create a DIB
-  		logodib = CreateDIBitmap( GetDC( hWnd ), byval @logoinfo->bmiHeader, _
-  								  CBM_INIT, byval logo + logo->bfOffBits, byval logoinfo, DIB_RGB_COLORS ) 
+  		logodib = CreateDIBitmap( GetDC( hWnd ), _
+  								  byval @logoinfo->bmiHeader, _
+  								  CBM_INIT, _
+  								  byval cptr(byte ptr, logo) + logo->bfOffBits, _
+  								  byval logoinfo, _
+  								  DIB_RGB_COLORS ) 
   	
         return 0
         

@@ -2074,29 +2074,29 @@ End Type
 
 Type WNDCLASS
   style         As Integer
-  lpfnwndproc   As Integer
+  lpfnwndproc   As any ptr
   cbClsextra    As Integer
   cbWndExtra    As Integer
   hInstance     As Integer
   hIcon         As Integer
   hCursor       As Integer
   hbrBackground As Integer
-  lpszMenuName  As byte Ptr
-  lpszClassName As byte Ptr
+  lpszMenuName  As zstring Ptr
+  lpszClassName As zstring Ptr
 End Type
 
 Type WNDCLASSEX
   cbSize        As Integer
   style         As Integer
-  lpfnWndProc   As Integer
+  lpfnWndProc   As any ptr
   cbClsExtra    As Integer
   cbWndExtra    As Integer
   hInstance     As Integer
   hIcon         As Integer
   hCursor       As Integer
   hbrBackground As Integer
-  lpszMenuName  As byte ptr
-  lpszClassName As byte ptr
+  lpszMenuName  As zstring ptr
+  lpszClassName As zstring ptr
   hIconSm       As Integer
 End Type
 
@@ -2279,12 +2279,12 @@ Type MSGBOXPARAMS
   cbSize             As Integer
   hwndOwner          As Integer
   hInstance          As Integer
-  lpszText           As byte ptr
-  lpszCaption        As byte ptr
+  lpszText           As zstring ptr
+  lpszCaption        As zstring ptr
   dwStyle            As Integer
-  lpszIcon           As byte ptr
+  lpszIcon           As zstring ptr
   dwContextHelpId    As Integer
-  lpfnMsgBoxCallback As Integer
+  lpfnMsgBoxCallback As any ptr
   dwLanguageId       As Integer
 End Type 
 

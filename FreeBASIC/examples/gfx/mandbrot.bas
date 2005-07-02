@@ -33,7 +33,7 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
 
    	dim starttime as uinteger, tottime as uinteger
    	dim hwnd as long
-   	hwnd = GetActiveWindow
+   	hwnd = GetActiveWindow( )
    	
    	dim sectimer as uinteger
    	dim frames as integer
@@ -53,7 +53,8 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
       	ystart = ystart * fac
       	xzoom = (xend - xstart) / SCR_WIDTH
       	yzoom = (yend - ystart) / SCR_HEIGHT
-      	mandelbrot
+      	
+      	mandelbrot( )
       	
       	tottime = tottime + (GetTickCount - starttime)
       	frames = frames + 1
@@ -71,13 +72,13 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
    			yend = EY
       	end if      	
       
-      	ptc_update @buffer(0)
+      	ptc_update( @buffer(0) )
       	
-      	if( GetTickCount - sectimer >= 1000 ) then
+      	if( GetTickCount( ) - sectimer >= 1000 ) then
 
-      		SetWindowText hwnd, str$( (SCR_WIDTH * SCR_HEIGHT * frames) \ tottime )  + " kpixels p/ sec "
+      		SetWindowText( hwnd, str$( (SCR_WIDTH * SCR_HEIGHT * frames) \ tottime )  + " kpixels p/ sec " )
 
-      		sectimer = GetTickCount
+      		sectimer = GetTickCount( )
       		frames = 0
 			tottime = 0      		
     	end if
@@ -90,9 +91,14 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
 ' -=  Mandelbrot  =-
 ' -------------------------------------------------------------
 ' calculate all points
-private sub mandelbrot
+private sub mandelbrot static
    dim x as integer, y as integer
    dim col as integer   
+   dim p as integer ptr
+   
+   p = @buffer(0)
+   old = 0
+   col = 0
    
    FOR y = 0 TO SCR_HEIGHT-1
    	FOR x = 0 TO SCR_WIDTH-1
@@ -103,7 +109,10 @@ private sub mandelbrot
             col = HSBtoRGB( h, 0.8, 1.0 - h * h )
             old = h
          END IF
-         buffer( y * SCR_WIDTH + x ) = col
+         
+         'buffer( y * SCR_WIDTH + x ) = col
+         *p = col
+         p += 1
       
       NEXT x
    NEXT y
@@ -114,9 +123,10 @@ end sub
 ' -=  DotsColor  =-
 ' ------------------------------------------------------------- '
 ' color value from 0.0 to 1.0 by iterations
-private function DotsColor( byval xval, byval yval )
+private function DotsColor( byval xval, byval yval ) static
    dim j as integer
 
+   j = 0 : m = 0 : r = 0 : i = 0
    do WHILE (j < _MAX) AND (m < 4.0)
       j = j + 1
       m = r * r - i * i
@@ -124,7 +134,7 @@ private function DotsColor( byval xval, byval yval )
       r = m + xval
    loop
 
-   DotsColor = j / _MAX
+   function = j / _MAX
 
 end function
 
@@ -137,11 +147,11 @@ private function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
    dim red, green, blue, domainOffset
 
    IF brightness = 0.0 THEN 
-   		HSBtoRGB = 0
+   		function = 0
    		exit function
    end if
    'IF saturation = 0.0 THEN 
-   '		HSBtoRGB = CINT(brightness*255) shl 16 + CINT(brightness*255) shl 8 + CINT(brightness*255)
+   '		function = CINT(brightness*255) shl 16 + CINT(brightness*255) shl 8 + CINT(brightness*255)
    '		exit function
    'end if
 
@@ -189,7 +199,7 @@ private function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
       blue  = red - (brightness - green) * domainOffset * 6.0
    ENd select
    
-   HSBtoRGB = rgb( red*255.0, green*255.0, blue*255.0 )
+   function = rgb( red*255.0, green*255.0, blue*255.0 )
 
 end function
 

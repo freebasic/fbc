@@ -83,13 +83,10 @@ sub initGL
 		shutdown		
 	end if
 
-	glActiveTextureARB = glfwGetProcAddress("glActiveTextureARB")
-	glMultiTexCoord2iARB = glfwGetProcAddress("glMultiTexCoord2iARB")
+	glActiveTextureARB = cptr(PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ))
+	glMultiTexCoord2iARB = cptr(PFNGLMULTITEXCOORD2IARBPROC, glfwGetProcAddress( "glMultiTexCoord2iARB" ))
 
 	'shouldn't be necessary, but can't be too careful
-	'when i accidentally had one of these set to 0, my CPU executed code at mem address
-	'0 and created a few problems in my BIOS.
-	'but, as long as the GL advertises the extension, you shouldn't have a problem
 	if (glActiveTextureARB = NULL) or (glMultiTexCoord2iARB = NULL) then 
 		shutdown
 	end if

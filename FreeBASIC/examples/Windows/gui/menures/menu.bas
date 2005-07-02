@@ -190,7 +190,7 @@ function WinMain ( byval hInstance as long, _
      	.hIcon         = LoadIcon( null, byval IDI_APPLICATION )
      	.hCursor       = LoadCursor( null, byval IDC_ARROW )
      	.hbrBackground = GetStockObject( byval WHITE_BRUSH )
-     	.lpszMenuName  = IDC_MAINMENU
+     	.lpszMenuName  = cptr(zstring ptr, IDC_MAINMENU)
      	.lpszClassName = strptr( szAppName )
      end with
      

@@ -195,8 +195,8 @@ End Type
 Type BROWSEINFO Field = 1
   hOwner         As Integer
   pidlRoot       As Integer
-  pszDisplayName As byte ptr
-  lpszTitle      As byte ptr
+  pszDisplayName As zstring ptr
+  lpszTitle      As zstring ptr
   ulFlags        As Integer
   lpfn           As Integer
   lparam         As Integer

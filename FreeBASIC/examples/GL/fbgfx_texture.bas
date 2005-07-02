@@ -137,8 +137,8 @@ SUB Init_GL_SCREEN()
 	dim znear as double           'z-near clip distance
 	dim zfar as double            'z-far clip distance
 
-    'Set 640*480*32 OpenGL
-    screen 18, 32, ,&h2
+    'Set 640*480*16 OpenGL
+    screen 18, 16, ,&h2
 
 	'get info of current screen
 	screeninfo w, h
@@ -351,17 +351,16 @@ End Sub
 
 	FUNCTION CreateTexture( BYVAL buffer AS ANY PTR, BYVAL flags AS INTEGER _
 							= 0 ) AS GLuint
-		REDIM dat(0) AS UBYTE
-		DIM p AS UINTEGER PTR, s AS USHORT PTR
+		REDIM dat(0) AS UINTEGER
+		DIM p AS UINTEGER PTR
 		DIM AS INTEGER w, h, x, y, col
 		DIM tex AS GLuint
 		DIM AS GLenum format, minfilter, magfilter
 		
 		CreateTexture = 0
 		
-		s = buffer
-		w = s[0] SHR 3
-		h = s[1]
+		w = cptr(short ptr, buffer)[0] SHR 3
+		h = cptr(short ptr, buffer)[1]
 		
 		IF( (w < 64) OR (h < 64) ) THEN
 			EXIT FUNCTION
@@ -371,7 +370,7 @@ End Sub
 			EXIT FUNCTION
 		END IF
 		
-		REDIM dat(w * h * 4) AS UBYTE
+		REDIM dat(w * h) AS UINTEGER
 		p = @dat(0)
 		
 		glGenTextures 1, @tex
@@ -395,7 +394,7 @@ End Sub
 						*p = col OR &hFF000000
 					END IF
 				END IF
-				p += 4
+				p += 1
 			NEXT x
 		NEXT y
 		

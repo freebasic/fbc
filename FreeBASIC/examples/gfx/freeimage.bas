@@ -208,7 +208,7 @@ sub fipal2sdlpal( byval dib as FIBITMAP Ptr, byval surface as SDL_Surface ptr )
 		intpal(i).r = pal->rgbRed
 		intpal(i).g = pal->rgbGreen
 		intpal(i).b = pal->rgbBlue
-		pal = pal + len( RGBQUAD )
+		pal += 1
 	next i
 		
 	SDL_SetColors( surface, @intpal(0), 0, colors )

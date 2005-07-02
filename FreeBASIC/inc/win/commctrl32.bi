@@ -1433,7 +1433,7 @@ type TVITEM
 	Item		as uinteger
 	State		as uinteger
 	StateMask	as uinteger
-	Text		as byte ptr
+	Text		as zstring ptr
 	TextMax		as integer
 	Image		as integer
 	SelectedImage	as integer
@@ -1446,7 +1446,7 @@ type TVITEMEX
 	Item		as uinteger
 	State		as uinteger
 	StateMask	as uinteger
-	Text		as byte ptr
+	Text		as zstring ptr
 	TextMax		as integer
 	Image		as integer
 	SelectedImage as integer

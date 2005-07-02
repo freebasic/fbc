@@ -23,12 +23,14 @@
 ''
 ''  glfw code for lesson22
 ''
-'' compile as: fbc -s gui lesson22.bas bmpload.bas
+'' compile as: fbc -s gui lesson22.bas
 ''
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
 #include once "GL/glfw.bi"
+#include once "GL/glext.bi"
+#include once "fbgfx.bi"            '' for Scan code constants
 #include once "bmpload.bi"
 
 const false = 0
@@ -38,12 +40,6 @@ const null = 0
 #define __ARB_ENABLE 1              '' Used To Disable ARB Extensions Entirely
 #define EXT_INFO 0
 ''#define EXT_INFO 1                '' Do You Want To See Your Extensions At Start-Up (windows only)?
-
-#include once "GL/gl.bi"
-#include once "GL/glu.bi"
-#include once "GL/glext.bi"
-#include once "fbgfx.bi"            '' for Scan code constants
-#include once "bmpload.bi"
 
 #if EXT_INFO
 '$include once: 'win\user32.bi'     '' Needed by messagebox
@@ -245,21 +241,24 @@ function initMultitexture() as integer
 	MessageBox (0,extensions, "supported GL extensions", MB_OK or MB_ICONINFORMATION)
 	#endif
 
-	if (glfwExtensionSupported( "GL_ARB_multitexture" ) = GL_TRUE _                   '' Is Multitexturing Supported?
-			and __ARB_ENABLE = 1 _                                                    '' Override-Flag
-			and glfwExtensionSupported("GL_EXT_texture_env_combine") = GL_TRUE) then  '' Is texture_env_combining Supported?
+	if (glfwExtensionSupported( "GL_ARB_multitexture" ) = GL_TRUE and _       '' Is Multitexturing Supported?
+		__ARB_ENABLE = 1 and _                                                '' Override-Flag
+		glfwExtensionSupported("GL_EXT_texture_env_combine") = GL_TRUE) then  '' Is texture_env_combining Supported?
 
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB,@maxTexelUnits)
+		
 		'' Set addresses of functions we will use
-		glMultiTexCoord1fARB = glfwGetProcAddress("glMultiTexCoord1fARB")
-		glMultiTexCoord2fARB = glfwGetProcAddress("glMultiTexCoord2fARB")
-		glMultiTexCoord3fARB = glfwGetProcAddress("glMultiTexCoord3fARB")
-		glMultiTexCoord4fARB = glfwGetProcAddress("glMultiTexCoord4fARB")
-		glActiveTextureARB = glfwGetProcAddress("glActiveTextureARB")
-		glClientActiveTextureARB = glfwGetProcAddress("glClientActiveTextureARB")
+		glMultiTexCoord1fARB = cptr( PFNGLMULTITEXCOORD1FARBPROC, glfwGetProcAddress( "glMultiTexCoord1fARB" ) )
+		glMultiTexCoord2fARB = cptr( PFNGLMULTITEXCOORD2FARBPROC, glfwGetProcAddress( "glMultiTexCoord2fARB" ) )
+		glMultiTexCoord3fARB = cptr( PFNGLMULTITEXCOORD3FARBPROC, glfwGetProcAddress( "glMultiTexCoord3fARB" ) )
+		glMultiTexCoord4fARB = cptr( PFNGLMULTITEXCOORD4FARBPROC, glfwGetProcAddress( "glMultiTexCoord4fARB" ) )
+		glActiveTextureARB   = cptr( PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ) )
+		glClientActiveTextureARB = cptr( PFNGLCLIENTACTIVETEXTUREARBPROC, glfwGetProcAddress( "glClientActiveTextureARB" ) )
+		
 		#if EXT_INFO
 		MessageBox(0,"The GL_ARB_multitexture extension will be used.","feature supported!",MB_OK or MB_ICONINFORMATION)
 		#endif
+		
 		return true
 	end if
 	useMultitexture=false                                      '' We Can't Use It If It Isn't Supported!

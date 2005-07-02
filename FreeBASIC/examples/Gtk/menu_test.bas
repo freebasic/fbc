@@ -101,9 +101,8 @@ declare sub menuitem_response cdecl (byval s as zstring ptr )
 function button_press cdecl ( byval widget as GtkWidget ptr, byval event as GdkEvent ptr ) as gint 
     
     if( event->type = GDK_BUTTON_PRESS ) then
-        dim as GdkEventButton ptr bevent
-        bevent = event 
-        gtk_menu_popup( widget, NULL, NULL, NULL, NULL, bevent->button, bevent->time )
+        gtk_menu_popup( widget, NULL, NULL, NULL, NULL, _
+        				cptr(GdkEventButton ptr, event)->button, cptr(GdkEventButton ptr, event)->time )
         '' Tell calling code that we have handled this event the buck
         '' stops here.
         return TRUE

@@ -1359,12 +1359,12 @@ End Type
 
 Type GCP_RESULTS
   lStructSize As Integer
-  lpOutString As byte ptr
+  lpOutString As zstring ptr
   lpOrder     As Integer
   lpDX        As Integer
   lpCaretPos  As Integer
-  lpClass     As byte ptr
-  lpGlyphs    As byte ptr
+  lpClass     As zstring ptr
+  lpGlyphs    As zstring ptr
   nGlyphs     As Integer
   nMaxFit     As Integer
 End Type
@@ -1501,10 +1501,10 @@ Type OUTLINETEXTMETRIC Field = 1
   otmsStrikeoutPosition  As Integer
   otmsUnderscorePosition As Integer
   otmsUnderscoreSize     As Integer
-  otmpFamilyName         As byte ptr
-  otmpFaceName           As byte ptr
-  otmpStyleName          As byte ptr
-  otmpFullName           As byte ptr
+  otmpFamilyName         As zstring ptr
+  otmpFaceName           As zstring ptr
+  otmpStyleName          As zstring ptr
+  otmpFullName           As zstring ptr
 End Type
 
 Type RASTERIZER_STATUS Field = 1
@@ -1538,7 +1538,7 @@ Type POLYTEXT Field = 1
   x       As Integer
   y       As Integer
   n       As Integer
-  lpStr   As byte ptr
+  lpStr   As zstring ptr
   uiFlags As Integer
   rcl     As RECT
   pdx     As Integer
@@ -1553,8 +1553,8 @@ End Type
 
 Type DOCINFO Field = 1
   cbSize      As Integer
-  lpszDocName As byte ptr
-  lpszOutput  As byte ptr
+  lpszDocName As zstring ptr
+  lpszOutput  As zstring ptr
 End Type
 
 Type CHARSETINFO Field = 1

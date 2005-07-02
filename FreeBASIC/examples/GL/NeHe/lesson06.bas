@@ -5,7 +5,7 @@
 ''    If You've Found This Code Useful, Please Let Me Know.
 ''    Visit My Site At nehe.gamedev.net
 
-'' compile as: fbc -s gui lesson06.bas bmpload.bas
+'' compile as: fbc -s gui lesson06.bas
 
 option explicit
 

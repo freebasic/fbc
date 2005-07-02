@@ -68,11 +68,11 @@ end type
               	col = (Lsin3(x + Rot) + Lsin1(x + Rot + Counter) + Lsin2(y + Rot)) and 255
               	
               	*p = rgb( Lcols(col).r, Lcols(col).g, Lcols(col).b )
-              	p = p + len( integer )
+              	p += 1
           	NEXT x
       	NEXT y
     
-		ptc_update varptr( buffer(0) )
+		ptc_update @buffer(0)
 	loop until( inkey$ = chr$( 27 ) )
 
 	ptc_close

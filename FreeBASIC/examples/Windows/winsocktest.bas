@@ -135,12 +135,12 @@ function resolveHost( hostname as string ) as integer
 			exit function
 		end if
 		
-		resolveHost = **hostentry->h_addr_list
+		function = **hostentry->h_addr_list
 		
 	else
 	
 		'' just return the address
-		resolveHost = ia.S_addr
+		function = ia.S_addr
 	
 	end if
 	

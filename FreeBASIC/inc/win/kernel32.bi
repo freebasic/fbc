@@ -1460,8 +1460,8 @@ Type NUMBERFMT
   NumDigits     As uinteger       'number of decimal digits       
   LeadingZero   As uinteger       'if leading zero in decimal fields
   Grouping      As uinteger       'group size left of decimal
-  lpDecimalSep  As byte ptr       'ptr to decimal separator string
-  lpThousandSep As byte ptr       'ptr to thousand separator string
+  lpDecimalSep  As zstring ptr    'ptr to decimal separator string
+  lpThousandSep As zstring ptr    'ptr to thousand separator string
   NegativeOrder As uinteger       'negative number ordering
 End Type
 
@@ -1469,8 +1469,8 @@ Type CURRENCYFMT
   NumDigits           As uinteger       'number of decimal digits
   LeadingZero         As uinteger       'if leading zero in decimal fields
   Grouping            As uinteger       'group size left of decimal
-  lpDecimalSep        As byte ptr       'ptr to decimal separator string
-  lpThousandSep       As byte ptr       'ptr to thousand separator string
+  lpDecimalSep        As zstring ptr       'ptr to decimal separator string
+  lpThousandSep       As zstring ptr       'ptr to thousand separator string
   NegativeOrder       As uinteger       'negative currency ordering
   PositiveOrder       As uinteger       'positive currency ordering
   lpCurrencySymbol    As uinteger       'ptr to currency symbol string
@@ -1717,7 +1717,7 @@ Type UNLOAD_DLL_DEBUG_INFO
 End Type
 
 Type OUTPUT_DEBUG_STRING_INFO
-  lpDebugStringData  As byte ptr
+  lpDebugStringData  As zstring ptr
   fUnicode           As Short
   nDebugStringLength As Short
 End Type

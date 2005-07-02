@@ -33,21 +33,21 @@ const MAXVTX = 100
     ''........
     print f.vtxTB[a].x, f.vtxTB[a].y, f.vtxTB[a].z
     
-    print *(f.vtxTB + a).x, *(f.vtxTB + a).y, *(f.vtxTB + a).z
+    print (f.vtxTB + a)->x, (f.vtxTB + a)->y, (f.vtxTB + a)->z
     
     ''........
     v = f.vtxTB[a]
     
     print v.x, v.y, v.z
     
-    print *(@v).x, *(@v).y, *(@v).z
+    print (@v)->x, (@v)->y, (@v)->z
     
     ''........
-    pv = @f.vtxTB[a]
+    pv = (@f.vtxTB[a] + 1)
     
-    print pv->x, pv->y, pv->z
+    print pv[-1].x, pv[-1].y, pv[-1].z
     
-    print *(pv).x, *(pv).y, *(pv).z
+    print (pv-1)->x, (pv-1)->y, (pv-1)->z
     
     ''........
     sleep

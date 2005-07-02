@@ -98,7 +98,7 @@ const SPR_SIZE = SPR_WID * SPR_HEI
         put_sprite buffer(), -x+ ((SCR_WIDTH  \ 2) - 32), y+ ((SCR_HEIGHT \ 2) - 32), sprite() 
         put_sprite buffer(), x+ ((SCR_WIDTH  \ 2) - 32), -y+ ((SCR_HEIGHT \ 2) - 32), sprite() 
         put_sprite buffer(), -x+ ((SCR_WIDTH  \ 2) - 32), -y+ ((SCR_HEIGHT \ 2) - 32), sprite() 
-        ptc_update varptr( buffer(0) ) 
+        ptc_update @buffer(0)
 
     loop until( inkey$ = chr$( 27 ) )
 
@@ -117,7 +117,7 @@ private sub cls_sprite(buffer())
     b = @buffer(0)
 	for i = 0 to SCR_SIZE - 1
 		*b = 0
-		b = b + len( integer )
+		b = b + 1
 	next i
 end sub 
 
@@ -228,7 +228,7 @@ private sub draw_line_h ( buffer(), byval x1 as integer, byval y as integer, byv
 
    for counter = 0 to  (wid - 1) 
        buffer( offset ) = col 
-       offset = offset + 1 
+       offset += 1 
    next counter 
 
 end sub 
@@ -272,7 +272,7 @@ private sub draw_line_v ( buffer(), byval x as integer, byval y1 as integer, byv
 
    for counter = 0 to  (hite - 1) 
        buffer( offset ) = col 
-       offset = offset + SCR_WIDTH 
+       offset += SCR_WIDTH 
    next counter 
 
 end sub 
@@ -430,11 +430,11 @@ private sub put_sprite (buffer(), byval x as integer, byval y as integer, sprite
    		s = @sprite( soffset )
       	for wcounter = 1 to wid
 			*b = *s
-			b = b + len( integer )
-			s = s + len( integer )
+			b = b + 1
+			s = s + 1
 		next wcounter 
-		offset = offset + SCR_WIDTH 
-		soffset = soffset + owid 
+		offset += SCR_WIDTH 
+		soffset += owid 
 	next hcounter 
 
 
@@ -506,11 +506,11 @@ private sub put_sprite_mask (buffer(), byval x as integer, byval y as integer, s
       	for wcounter = 1 to wid
             pixel = *s
            	if pixel <> 0 then *b = pixel 
-			b = b + len( integer )
-			s = s + len( integer )
+			b += 1
+			s += 1
       next wcounter 
-      offset = offset + SCR_WIDTH 
-      soffset = soffset + owid 
+      offset += SCR_WIDTH 
+      soffset += owid 
    next hcounter 
 
 
@@ -588,11 +588,11 @@ private sub get_sprite( buffer() as integer, byval x1 as integer, byval y1 as in
    		s = @sprite( soffset )
     	for xcounter = 1 to wid
 			*s = *b
-			b = b + len( integer )
-			s = s + len( integer )
+			b += 1
+			s += 1
         next xcounter 
-		offset = offset + SCR_WIDTH 
-        soffset = soffset + wid 
+		offset += SCR_WIDTH 
+        soffset += wid 
    	next ycounter 
 
 end sub 

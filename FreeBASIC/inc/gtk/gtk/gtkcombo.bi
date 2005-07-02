@@ -51,4 +51,6 @@ declare sub gtk_combo_set_item_string cdecl alias "gtk_combo_set_item_string" (b
 declare sub gtk_combo_set_popdown_strings cdecl alias "gtk_combo_set_popdown_strings" (byval combo as GtkCombo ptr, byval strings as GList ptr)
 declare sub gtk_combo_disable_activate cdecl alias "gtk_combo_disable_activate" (byval combo as GtkCombo ptr)
 
+#define GTK_COMBO(p) cptr(GtkCombo ptr, p)
+
 #endif

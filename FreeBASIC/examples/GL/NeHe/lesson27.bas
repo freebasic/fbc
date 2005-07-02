@@ -30,7 +30,7 @@ const null = false
 #include once "fbgfx.bi"                '' for Scan code constants
 #include once "crt.bi"
 
-#include once "3Dobject.bas"            '' Header File For 3D Object Handling
+#include once "3Dobject.bi"            '' Header File For 3D Object Handling
 
 
 ''------------------------------------------------------------------------------

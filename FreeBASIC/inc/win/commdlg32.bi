@@ -147,29 +147,29 @@ Type OPENFILENAME Field = 1
 	lStructSize 		As Integer
     hwndOwner 			As Integer
     hInstance 			As Integer
-    lpstrFilter 		As byte ptr
-    lpstrCustomFilter 	As byte ptr
+    lpstrFilter 		As zstring ptr
+    lpstrCustomFilter 	As zstring ptr
     nMaxCustFilter 		As Integer
     nFilterIndex 		As Integer
-    lpstrFile 			As byte ptr
+    lpstrFile 			As zstring ptr
     nMaxFile 			As Integer
-    lpstrFileTitle 		As byte ptr
+    lpstrFileTitle 		As zstring ptr
     nMaxFileTitle 		As Integer
-    lpstrInitialDir 	As byte ptr
-    lpstrTitle 			As byte ptr
+    lpstrInitialDir 	As zstring ptr
+    lpstrTitle 			As zstring ptr
     flags 				As Integer
     nFileOffset 		As short
     nFileExtension 		As short
-    lpstrDefExt 		As byte ptr
+    lpstrDefExt 		As zstring ptr
     lCustData 			As Integer
     lpfnHook 			As Integer
-    lpTemplateName 		As byte ptr
+    lpTemplateName 		As zstring ptr
 End Type
 
 Type OFNOTIFY
   hdr     As NMHDR
   lpOFN   As OPENFILENAME
-  pszFile As byte ptr
+  pszFile As zstring ptr
 End Type
 
 Type CHOOSECOLORS
@@ -181,7 +181,7 @@ Type CHOOSECOLORS
   flags          As Integer
   lCustData      As Integer
   lpfnHook       As Integer
-  lpTemplateName As byte ptr
+  lpTemplateName As zstring ptr
 End Type
 
 Type CHOOSEFONTS
@@ -194,10 +194,10 @@ Type CHOOSEFONTS
   rgbColors         As Integer ' returned text color
   lCustData         As Integer ' data passed to hook fn.
   lpfnHook          As Integer ' ptr. to hook function
-  lpTemplateName    As byte ptr' custom template name
+  lpTemplateName    As zstring ptr' custom template name
   hInstance         As Integer ' stance handle of.EXE that
                                ' contains cust. dlg. template
-  pszStyle          As byte ptr' return the style field here
+  pszStyle          As zstring ptr' return the style field here
                                ' must be LF_FACESIZE or bigger
   nFonType          As Short   ' same value reported to the EnumFonts
                                ' call back with the extra FONTTYPE_
@@ -224,8 +224,8 @@ Type PRINTDLGS
   lCustData 		As Integer
   lpfnPrintHook 	As Integer
   lpfnSetupHook 	As Integer
-  lpPrintTemplateName As byte ptr
-  lpSetupTemplateName As byte ptr
+  lpPrintTemplateName As zstring ptr
+  lpSetupTemplateName As zstring ptr
   hPrintTemplate 	As Integer
   hSetupTemplate 	As Integer
 End Type
@@ -239,8 +239,8 @@ End Type
 
 Type SelectedFile Field = 1
   nFilesSelected As Short
-  sFiles         As byte ptr
-  sLastDirectory As byte ptr
+  sFiles         As zstring ptr
+  sLastDirectory As zstring ptr
   bCanceled      As Short 'should be Boolean
 End Type
 
@@ -250,7 +250,7 @@ End Type
 'End Type
 
 Type SelectedFont
-  sSelectedFont As byte ptr
+  sSelectedFont As zstring ptr
   bCanceled     As Short 'should be Boolean
   bBold         As Short 'should be Boolean
   bItalic       As Short 'should be Boolean
@@ -258,7 +258,7 @@ Type SelectedFont
   bUnderline    As Short 'should be Boolean
   bStrikeOut    As Short 'should be Boolean
   lColor        As Integer
-  sFaceName     As byte ptr
+  sFaceName     As zstring ptr
 End Type
 
 Type FINDREPLACE Field = 1
@@ -267,13 +267,13 @@ Type FINDREPLACE Field = 1
   hInstance        As Integer ' stance handle of.EXE that
                               ' contains cust. dlg. template
   flags            As Integer ' one or more of the FR_??
-  lpstrFindWhat    As byte ptr' ptr. to search string
-  lpstrReplaceWith As byte ptr' ptr. to replace string
+  lpstrFindWhat    As zstring ptr' ptr. to search string
+  lpstrReplaceWith As zstring ptr' ptr. to replace string
   wFindWhatLen     As Short   ' size of find buffer
   wReplaceWithLen  As Short   ' size of replace buffer
   lCustData        As Integer ' data passed to hook fn.
   lpfnHook         As Integer ' ptr. to hook fn. or NULL
-  lpTemplateName   As byte ptr' custom template name
+  lpTemplateName   As zstring ptr' custom template name
 End Type
 
 Type PAGESETUPDLGS Field = 1
@@ -289,7 +289,7 @@ Type PAGESETUPDLGS Field = 1
   lCustData               As Integer
   lpfnPageSetupHook       As Integer
   lpfnPagePaintHook       As Integer
-  lpPageSetupTemplateName As byte ptr
+  lpPageSetupTemplateName As zstring ptr
   hPageSetupTemplate      As Integer
 End Type
 

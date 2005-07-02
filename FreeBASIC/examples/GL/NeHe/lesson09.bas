@@ -6,7 +6,7 @@
 '' Visit My Site At nehe.gamedev.net
 ''
 
-'' compile as: fbc -s gui lesson09.bas bmpload.bas
+'' compile as: fbc -s gui lesson09.bas
 
 ''------------------------------------------------------------------------------
 '' Use ESC key to quit
