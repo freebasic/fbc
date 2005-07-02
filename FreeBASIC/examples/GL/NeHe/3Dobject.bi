@@ -37,7 +37,7 @@ type glObject
 end type
 
 '' read in a line from the data file
-sub readstr(byval f as integer, sstring as string)
+private sub readstr(byval f as integer, sstring as string)
 	sstring = ""
 	do
 		line input #f, sstring    '' Gets A String Of 255 Chars Max From f (File)
@@ -45,7 +45,7 @@ sub readstr(byval f as integer, sstring as string)
 end sub
 
 '' load object
-function ReadObject(st as string, byval o as glObject ptr) as integer
+private function ReadObject(st as string, byval o as glObject ptr) as integer
 	dim as integer file
 	dim as uinteger i
 	dim oneline as string * 256
@@ -84,7 +84,7 @@ end function
 
 '' connectivity procedure - based on Gamasutra's article
 '' hard to explain here
-sub SetConnectivity(byval o as glObject ptr)
+private sub SetConnectivity(byval o as glObject ptr)
 	dim as uinteger p1i, p2i, p1j, p2j
 	dim as uinteger b1i, b2i, b1j, b2j
 	dim as uinteger i,j,ki,kj
@@ -121,7 +121,7 @@ sub SetConnectivity(byval o as glObject ptr)
 end sub
 
 '' function for computing a plane equation given 3 points
-sub CalcPlane(byval o as glObject ptr, byval plane as sPlane ptr)
+private sub CalcPlane(byval o as glObject ptr, byval plane as sPlane ptr)
 	dim as sPoint v(0 to 3)
 	dim as integer i
 
@@ -139,7 +139,7 @@ sub CalcPlane(byval o as glObject ptr, byval plane as sPlane ptr)
 end sub
 
 '' procedure for drawing the object - very simple
-sub DrawGLObject(byval o as glObject ptr)
+private sub DrawGLObject(byval o as glObject ptr)
 	dim as uinteger i, j
 
 	glBegin(GL_TRIANGLES)
@@ -156,7 +156,7 @@ sub DrawGLObject(byval o as glObject ptr)
 	glEnd()
 end sub
 
-sub  CastShadow(byval o as glObject ptr, byval lp as single ptr)
+private sub  CastShadow(byval o as glObject ptr, byval lp as single ptr)
 	dim as uinteger	i, j, k, jj
 	dim as uinteger	p1, p2
 	dim as sPoint v1, v2
