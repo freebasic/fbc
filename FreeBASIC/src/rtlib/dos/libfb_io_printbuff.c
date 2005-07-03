@@ -55,7 +55,6 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 	int cols, rows;
 	int no_scroll = FALSE;
     unsigned short end_char = 0;
-    const char *pachText = (const char *) buffer;
 
 	fb_ConsoleGetSize( &cols, &rows );
 	fb_ConsoleGetView( &toprow, &botrow );
@@ -66,13 +65,12 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 		if( row == botrow )
 			if( col + len - 1 == cols )
 			{
-                --len;
-                end_char = (unsigned short) (pachText[len]);
+				end_char = ((unsigned char *)buffer)[len - 1];
+				((unsigned char *)buffer)[len - 1] = '\0';
 				no_scroll = TRUE;
 			}
 
-    fwrite(buffer, len, 1, stdout);
-    fflush(stdout);
+    cprintf( "%s", buffer );
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,
