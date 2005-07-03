@@ -10,7 +10,7 @@
 ##################################################################
 
 HOST :=
-ifeq ($(OS),DOS)
+ifdef DJGPP
 	HOST := dos
 else
 	ifeq ($(OS),Windows_NT)
@@ -21,10 +21,10 @@ else
 		else
        		ifdef windir
        			HOST := win32
-		else
-		ifdef HOME
-			HOST := linux
-		endif
+			else
+				ifdef HOME
+					HOST := linux
+				endif
        		endif
    		endif
 	endif
@@ -43,14 +43,14 @@ endif
 
 OSDEPPATH :=
 ifndef CC
-CC := gcc
+	CC := gcc
 endif
 CFLAGS := -ffast-math -Wall -I .
 AFLAGS := -x assembler-with-cpp
 ifdef DEBUG
-CFLAGS += -g -O0
+	CFLAGS += -g -O0
 else
-CFLAGS += -O2
+	CFLAGS += -O2
 endif
 
 ifeq ($(TARGET),win32)

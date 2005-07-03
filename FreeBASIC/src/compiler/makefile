@@ -10,7 +10,7 @@
 ##################################################################
 
 HOST :=
-ifeq ($(OS),DOS)
+ifdef DJGPP
 	HOST := dos
 else
 	ifeq ($(OS),Windows_NT)
@@ -21,10 +21,10 @@ else
 		else
        		ifdef windir
        			HOST := win32
-		else
-		ifdef HOME
-			HOST := linux
-		endif
+			else
+				ifdef HOME
+					HOST := linux
+				endif
        		endif
    		endif
 	endif
@@ -52,7 +52,7 @@ ifdef PROFILE
 endif
 
 ifndef LDLIBS_EXT
-LDLIBS_EXT :=
+	LDLIBS_EXT :=
 endif
 
 ifeq ($(HOST),win32)
@@ -119,7 +119,7 @@ else
 endif
 
 ifdef FBCFLAGS_EXT
-FBCFLAGS += $(FBCFLAGS_EXT)
+	FBCFLAGS += $(FBCFLAGS_EXT)
 endif
 
 ##################################################################
