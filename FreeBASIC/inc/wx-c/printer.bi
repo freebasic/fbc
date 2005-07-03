@@ -17,7 +17,7 @@ declare function wxPrinter_CreateAbortWindow cdecl alias "wxPrinter_CreateAbortW
 declare sub wxPrinter_ReportError cdecl alias "wxPrinter_ReportError" (byval self as wxPrinter ptr, byval parent as wxWindow ptr, byval printout as wxPrintout ptr, byval message as string)
 declare function wxPrinter_GetPrintDialogData cdecl alias "wxPrinter_GetPrintDialogData" (byval self as wxPrinter ptr) as wxPrintDialogData ptr
 declare function wxPrinter_GetAbort cdecl alias "wxPrinter_GetAbort" (byval self as wxPrinter ptr) as integer
-declare function wxPrinter_GetLastError cdecl alias "wxPrinter_GetLastError" (byval self as wxPrinter ptr) as wxPrinterError
+declare function wxPrinter_GetLastError cdecl alias "wxPrinter_GetLastError" (byval self as wxPrinter ptr) as wxPrinterError ptr
 declare function wxPrinter_Setup cdecl alias "wxPrinter_Setup" (byval self as wxPrinter ptr, byval parent as wxWindow ptr) as integer
 declare function wxPrinter_Print cdecl alias "wxPrinter_Print" (byval self as wxPrinter ptr, byval parent as wxWindow ptr, byval printout as wxPrintout ptr, byval prompt as integer) as integer
 declare function wxPrinter_PrintDialog cdecl alias "wxPrinter_PrintDialog" (byval self as wxPrinter ptr, byval parent as wxWindow ptr) as wxDC ptr

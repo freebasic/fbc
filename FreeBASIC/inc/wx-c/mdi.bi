@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-type Virtual_OnCreateClient as function ( ) as wxMDIClientWindow
+type Virtual_OnCreateClient as function ( ) as wxMDIClientWindow ptr
 
 declare function wxMDIParentFrame cdecl alias "wxMDIParentFrame_ctor" () as wxMDIParentFrame ptr
 declare sub wxMDIParentFrame_RegisterVirtual cdecl alias "wxMDIParentFrame_RegisterVirtual" (byval self as _MDIParentFrame ptr, byval onCreateClient as Virtual_OnCreateClient)

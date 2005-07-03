@@ -33,10 +33,10 @@ declare function wxRegion_SubtractRegion cdecl alias "wxRegion_SubtractRegion" (
 declare function wxRegion_Xor cdecl alias "wxRegion_Xor" (byval self as wxRegion ptr, byval x as wxCoord, byval y as wxCoord, byval width as wxCoord, byval height as wxCoord) as integer
 declare function wxRegion_XorRect cdecl alias "wxRegion_XorRect" (byval self as wxRegion ptr, byval rect as wxRect ptr) as integer
 declare function wxRegion_XorRegion cdecl alias "wxRegion_XorRegion" (byval self as wxRegion ptr, byval region as wxRegion ptr) as integer
-declare function wxRegion_ContainsCoords cdecl alias "wxRegion_ContainsCoords" (byval self as wxRegion ptr, byval x as integer, byval y as integer) as wxRegionContain
-declare function wxRegion_ContainsPoint cdecl alias "wxRegion_ContainsPoint" (byval self as wxRegion ptr, byval pt as wxPoint ptr) as wxRegionContain
-declare function wxRegion_ContainsRectCoords cdecl alias "wxRegion_ContainsRectCoords" (byval self as wxRegion ptr, byval x as integer, byval y as integer, byval width as integer, byval height as integer) as wxRegionContain
-declare function wxRegion_ContainsRect cdecl alias "wxRegion_ContainsRect" (byval self as wxRegion ptr, byval rect as wxRect ptr) as wxRegionContain
+declare function wxRegion_ContainsCoords cdecl alias "wxRegion_ContainsCoords" (byval self as wxRegion ptr, byval x as integer, byval y as integer) as wxRegionContain ptr
+declare function wxRegion_ContainsPoint cdecl alias "wxRegion_ContainsPoint" (byval self as wxRegion ptr, byval pt as wxPoint ptr) as wxRegionContain ptr
+declare function wxRegion_ContainsRectCoords cdecl alias "wxRegion_ContainsRectCoords" (byval self as wxRegion ptr, byval x as integer, byval y as integer, byval width as integer, byval height as integer) as wxRegionContain ptr
+declare function wxRegion_ContainsRect cdecl alias "wxRegion_ContainsRect" (byval self as wxRegion ptr, byval rect as wxRect ptr) as wxRegionContain ptr
 declare sub wxRegion_GetBox cdecl alias "wxRegion_GetBox" (byval self as wxRegion ptr, byval rect as wxRect ptr)
 declare function wxRegion_IsEmpty cdecl alias "wxRegion_IsEmpty" (byval self as wxRegion ptr) as integer
 declare function wxRegion_ConvertToBitmap cdecl alias "wxRegion_ConvertToBitmap" (byval self as wxRegion ptr) as wxBitmap ptr
