@@ -3,7 +3,7 @@
 #
 # needed: GNU make, GCC and AR
 #
-# set TARGET to dos, win32 or linux -- if not defined, it will 
+# set TARGET to dos, win32, linux, or xbox -- if not defined, it will 
 # be the same as HOST, if the later could be guessed
 #
 
@@ -11,23 +11,23 @@
 
 HOST :=
 ifdef DJGPP
-	HOST := dos
+    HOST := dos
 else
-	ifeq ($(OS),Windows_NT)
-   		HOST := win32
+    ifeq ($(OS),Windows_NT)
+        HOST := win32
 	else
-   		ifdef WINDIR
-   			HOST := win32
+        ifdef WINDIR
+            HOST := win32
 		else
-       		ifdef windir
-       			HOST := win32
-			else
-				ifdef HOME
-					HOST := linux
-				endif
-       		endif
-   		endif
-	endif
+            ifdef windir
+                HOST := win32
+            else
+                ifdef HOME
+                    HOST := linux
+                endif
+            endif
+        endif
+    endif
 endif
 
 ifndef TARGET
@@ -43,14 +43,14 @@ endif
 
 OSDEPPATH :=
 ifndef CC
-	CC := gcc
+    CC := gcc
 endif
 CFLAGS := -ffast-math -Wall -I .
 AFLAGS := -x assembler-with-cpp
 ifdef DEBUG
-	CFLAGS += -g -O0
+    CFLAGS += -g -O0
 else
-	CFLAGS += -O2
+    CFLAGS += -O2
 endif
 
 ifeq ($(TARGET),win32)
@@ -61,18 +61,27 @@ endif
     
 ifeq ($(TARGET),dos)
     OSDEPPATH := dos
-	CFLAGS += -DTARGET_DOS -DTARGET_X86
-	AFLAGS += -DTARGET_DOS
+    CFLAGS += -DTARGET_DOS -DTARGET_X86
+    AFLAGS += -DTARGET_DOS
 endif
     
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
-	CFLAGS += -DTARGET_LINUX -DTARGET_X86
-	AFLAGS += -DTARGET_LINUX
+    CFLAGS += -DTARGET_LINUX -DTARGET_X86
+    AFLAGS += -DTARGET_LINUX
+endif
+
+ifeq ($(TARGET),xbox)
+    OSDEPPATH := xbox
+    CFLAGS += -DTARGET_XBOX -DTARGET_X86
+    SDLFLAGS := -DENABLE_XBOX -DDISABLE_CDROM
+    CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 $(SDLFLAGS)
+    CFLAGS += -I../rtlib/xbox/inc -I../rtlib/xbox/inc/SDL
+    AFLAGS += -DTARGET_XBOX
 endif
 
 ifndef DEBUG
-	LDFLAGS += -s
+    LDFLAGS += -s
 endif
 
 objpath = obj/$(OSDEPPATH)
