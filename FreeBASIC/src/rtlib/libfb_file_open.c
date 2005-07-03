@@ -336,6 +336,9 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 		/* check mode */
 		switch( mode )
 		{
+		
+#ifndef TARGET_XBOX
+
 		case FB_FILE_MODE_INPUT:
 			if( (f = popen( pfname, "r" )) == NULL )
 			{
@@ -350,7 +353,9 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 				FB_UNLOCK();
 				return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 			}
-			break;
+			break;			
+			
+#endif /* ifndef TARGET_XBOX */
 
 		default:
 			FB_UNLOCK();
@@ -431,7 +436,13 @@ FBCALL int fb_FileClose( int fnum )
 			break;
 	
 		case FB_FILE_TYPE_PIPE:
+		
+#ifndef TARGET_XBOX		
+
 			pclose( fb_fileTB[fnum-1].f );
+			
+#endif /* ifndef TARGET_XBOX */
+
 			break;
 		}
 
