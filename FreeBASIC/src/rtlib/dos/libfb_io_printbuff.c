@@ -70,7 +70,7 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 				no_scroll = TRUE;
 			}
 
-    cprintf( "%s", buffer );
+    cputs( buffer );
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,
