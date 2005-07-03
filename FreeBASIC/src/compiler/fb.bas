@@ -320,7 +320,7 @@ function fbGetNaming ( ) as integer
 	    if env.clopt.naming <> FB_COMPNAMING_DEFAULT then
 	    	target = env.clopt.naming
 	    else
-		    select case env.clopt.naming
+		    select case env.clopt.target
 		    case FB_COMPTARGET_WIN32
 		    	target = FB_COMPNAMING_WIN32
 
