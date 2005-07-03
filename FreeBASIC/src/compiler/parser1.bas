@@ -2923,7 +2923,10 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
     	'' check for invalid types
     	select case typ
     	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
-    		hReportError FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS
+    		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
+    		exit function
+    	case FB_SYMBTYPE_VOID
+    		hReportError( FB_ERRMSG_INVALIDDATATYPES )
     		exit function
     	end select
     end if
