@@ -47,7 +47,7 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 		fb_hStrAllocTemp( dst, sizeof( long long ) * 3 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_i64toa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%lld", num );
@@ -78,7 +78,7 @@ FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 		fb_hStrAllocTemp( dst, sizeof( long long ) * 3 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_ui64toa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%llu", num );

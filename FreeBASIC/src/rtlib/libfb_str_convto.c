@@ -47,7 +47,7 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_itoa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%d", num );
@@ -78,7 +78,7 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_ultoa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%u", num );

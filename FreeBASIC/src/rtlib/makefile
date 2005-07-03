@@ -67,6 +67,14 @@ ifeq ($(TARGET),linux)
 	CFLAGS += -DTARGET_LINUX -DTARGET_X86
 endif
 
+ifeq ($(TARGET),xbox)
+    OSDEPPATH := xbox
+    CFLAGS += -DTARGET_XBOX -DTARGET_X86
+    SDLFLAGS := -DENABLE_XBOX -DDISABLE_CDROM
+    CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 $(SDLFLAGS)
+    CFLAGS += -I./xbox/inc -I./xbox/inc/SDL
+endif
+
 ifndef DEBUG
 	LDFLAGS += -s
 endif

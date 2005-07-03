@@ -43,7 +43,7 @@ static FBSTRING *hOCT ( unsigned int num, int len )
 		fb_hStrAllocTemp( dst, len * 4 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_itoa( num, dst->data, 8 );
 #else
 		sprintf( dst->data, "%o", num );

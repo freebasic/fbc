@@ -29,10 +29,10 @@ extern "C" {
 
 
 #ifdef WIN32
-# ifndef NOSTDCALL
-#  define FBCALL __stdcall
-# else
+# if defined(NOSTDCALL) || defined(TARGET_XBOX)
 #  define FBCALL __cdecl
+# else
+#  define FBCALL __stdcall
 # endif
 #else /* WIN32 */
 # define FBCALL
@@ -56,6 +56,8 @@ extern "C" {
 #include "win32/fb_win32.h"
 #elif defined(TARGET_LINUX)
 #include "linux/fb_linux.h"
+#elif defined(TARGET_XBOX)
+#include "xbox/fb_xbox.h"
 #endif
 
 #ifndef FB_LOCK

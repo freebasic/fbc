@@ -50,7 +50,7 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 	{
 		/* why not use always %f? because it will print dizima's,
 		   123467.9 will become 123467.89999999999 for example */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_gcvt( val, digits, p );
 #else
 		sprintf( fmtstr, "%%.%dg", digits );

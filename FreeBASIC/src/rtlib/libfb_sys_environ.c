@@ -74,7 +74,7 @@ FBCALL int fb_SetEnviron ( FBSTRING *str )
 
 	if( (str != NULL) && (str->data != NULL) )
 	{
-#if WIN32
+#if TARGET_WIN32
 		res = _putenv( str->data );
 #else
 		res = putenv( str->data );

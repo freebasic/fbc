@@ -45,7 +45,7 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 		fb_hStrAllocTemp( dst, len * 2 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_itoa( num, dst->data, 16 );
 #else
 		sprintf( dst->data, "%X", num );

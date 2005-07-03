@@ -47,7 +47,7 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 		fb_hStrAllocTemp( dst, 8+8 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_gcvt( (double)num, 8, dst->data );
 #else
 		sprintf( dst->data, "%.8g", num );
@@ -88,7 +88,7 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 		fb_hStrAllocTemp( dst, 16+8 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_gcvt( (double)num, 16, dst->data );
 #else
 		sprintf( dst->data, "%.16g", num);

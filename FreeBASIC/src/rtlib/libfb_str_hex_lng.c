@@ -43,7 +43,7 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 		fb_hStrAllocTemp( dst, sizeof( long long ) * 2 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_i64toa( num, dst->data, 16 );
 #else
 		sprintf( dst->data, "%llX", num );

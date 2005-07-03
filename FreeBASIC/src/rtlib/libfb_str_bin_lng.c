@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include "fb.h"
 
-#ifndef WIN32
+#ifndef TARGET_WIN32
 /*:::::*/
 static void hToBin( unsigned long long num, char *dst )
 {
@@ -66,7 +66,7 @@ FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 		fb_hStrAllocTemp( dst, sizeof( long long ) * 8 );
 
 		/* convert */
-#ifdef WIN32
+#ifdef TARGET_WIN32
 		_i64toa( num, dst->data, 2 );
 #else
 		hToBin( num, dst->data );
