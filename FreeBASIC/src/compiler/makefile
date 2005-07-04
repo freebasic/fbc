@@ -11,23 +11,23 @@
 
 HOST :=
 ifdef DJGPP
-	HOST := dos
+    HOST := dos
 else
-	ifeq ($(OS),Windows_NT)
-   		HOST := win32
-	else
-   		ifdef WINDIR
-   			HOST := win32
-		else
-       		ifdef windir
-       			HOST := win32
-			else
-				ifdef HOME
-					HOST := linux
-				endif
-       		endif
-   		endif
-	endif
+    ifeq ($(OS),Windows_NT)
+        HOST := win32
+    else
+        ifdef WINDIR
+            HOST := win32
+        else
+            ifdef windir
+                HOST := win32
+            else
+                ifdef HOME
+                    HOST := linux
+                endif
+            endif
+        endif
+    endif
 endif
 
 ifndef TARGET
@@ -52,7 +52,7 @@ ifdef PROFILE
 endif
 
 ifndef LDLIBS_EXT
-	LDLIBS_EXT :=
+    LDLIBS_EXT :=
 endif
 
 ifeq ($(HOST),win32)
@@ -102,6 +102,16 @@ ifeq ($(TARGET),dos)
     LDLIBS := -L../../lib/dos -( -lfb -lc $(LDLIBS_EXT) -)
     LD := ../../bin/dos/ld.exe
     AS := ../../bin/dos/as.exe
+endif
+
+ifeq ($(TARGET),xbox)
+    OSDEPPATH := xbox
+    EXE := .exe
+    FBCFLAGS += -d TARGET_XBOX
+    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 $(LDLIBS_EXT) -\)
+    LD := ../../bin/win32/ld.exe
+    AS := ../../bin/win32/as.exe
 endif
 
 ifndef DEBUG
