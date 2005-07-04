@@ -634,7 +634,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 		ref->ptrcnt  = ptrcnt
 		ref->lgt	 = symbCalcLen( ref->typ, sym )
 
-		listDelNode( @ctx.fwdlist, n )
+		listDelNode( @ctx.fwdlist, cptr( TLISTNODE ptr, n ) )
 		n = p
 	loop
 
@@ -741,9 +741,9 @@ function hNewSymbol( byval class as integer, _
 			'' can be duplicated?
 			if( not hCanDuplicate( n, s ) ) then
 				if( islocal ) then
-					listDelNode( @ctx.loclist, l )
+					listDelNode( @ctx.loclist, cptr( TLISTNODE ptr, l ) )
 				end if
-				listDelNode( @ctx.symlist, s )
+				listDelNode( @ctx.symlist, cptr( TLISTNODE ptr, s ) )
 				exit function
 			end if
 
@@ -964,7 +964,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	end if
 
 	d = hNewSymbol( FB_SYMBCLASS_VAR, FALSE, "", aname, (env.scope > 0) and (not isshared), _
-					FB_SYMBTYPE_USERDEF, FB_DESCTYPE_ARRAY, 0 )
+					FB_SYMBTYPE_USERDEF, cptr( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0 )
     if( d = NULL ) then
     	exit function
     end if
@@ -3197,7 +3197,7 @@ sub hFreeSymbol( byval s as FBSYMBOL ptr, _
 
     '' remove from symbol list
     if( freeup ) then
-    	listDelNode( @ctx.symlist, s )
+    	listDelNode( @ctx.symlist, cptr( TLISTNODE ptr, s ) )
     else
     	s->hashitem  = NULL
     	s->hashindex = 0
@@ -3230,7 +3230,7 @@ private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
     do while( a <> NULL )
     	n = a->r
     	a->name = ""
-    	listDelNode( @ctx.defarglist, a )
+    	listDelNode( @ctx.defarglist, cptr( TLISTNODE ptr, a ) )
     	a = n
     loop
 
@@ -3369,7 +3369,7 @@ sub hDelVarDims( byval s as FBSYMBOL ptr ) static
     do while( n <> NULL )
     	nxt = n->r
 
-    	listDelNode( @ctx.dimlist, n )
+    	listDelNode( @ctx.dimlist, cptr( TLISTNODE ptr, n ) )
 
     	n = nxt
     loop
@@ -3426,7 +3426,7 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 
 	l->name = ""
 
-    listDelNode( @ctx.liblist, l )
+    listDelNode( @ctx.liblist, cptr( TLISTNODE ptr, l ) )
 
 end sub
 
@@ -3458,7 +3458,7 @@ sub symbDelLocalSymbols static
 
     	end if
 
-		listDelNode( @ctx.loclist, node )
+		listDelNode( @ctx.loclist, cptr( TLISTNODE ptr, node ) )
 
 		node = nxt
     loop
@@ -3650,20 +3650,45 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
     	end if
 
     case FB_SYMBCLASS_PROC
-    	'' not the same number of args?
-    	if( symbGetProcArgs( sym1 ) <> symbGetProcArgs( sym2 ) ) then
-    		exit function
-    	end if
-
     	'' check calling convention
     	if( symbGetFuncMode( sym1 ) <> symbGetFuncMode( sym2 ) ) then
     		exit function
     	end if
 
+    	'' not the same number of args?
+    	if( symbGetProcArgs( sym1 ) <> symbGetProcArgs( sym2 ) ) then
+
+    		'' no args?
+    		if( symbGetProcArgs( sym1 ) = 0 ) then
+    			exit function
+    		end if
+
+    		'' not vararg?
+    		if( symbGetProcTailArg( sym1 )->arg.mode <> FB_ARGMODE_VARARG ) then
+    			exit function
+    		end if
+
+    		'' not enough args?
+    		if( (symbGetProcArgs( sym2 ) - symbGetProcArgs( sym1 )) < -1 ) then
+    			exit function
+    		end if
+    	end if
+
+    	'' check each arg
     	argl = symbGetProcHeadArg( sym1 )
     	argr = symbGetProcHeadArg( sym2 )
 
-    	do while( argr <> NULL )
+    	do while( argl <> NULL )
+            '' vararg?
+            if( argl->arg.mode = FB_ARGMODE_VARARG ) then
+            	exit do
+            end if
+
+    		'' mode?
+    		if( argl->arg.mode <> argr->arg.mode ) then
+            	exit function
+    		end if
+
     		'' different types?
     		if( argl->typ <> argr->typ ) then
          		exit function
@@ -3673,11 +3698,6 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
         	if( argl->subtype <> argr->subtype ) then
             	exit function
 			end if
-
-    		'' mode?
-    		if( argl->arg.mode <> argr->arg.mode ) then
-            	exit function
-    		end if
 
     		'' next arg..
     		argl = argl->arg.r

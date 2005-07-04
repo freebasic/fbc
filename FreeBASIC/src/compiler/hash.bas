@@ -67,12 +67,7 @@ sub hashNew( byval hash as THASH ptr, _
 	for i = 0 to nodes-1
 		list->head = NULL
 		list->tail = NULL
-		'' !!!REMOVEME!!!
-#ifdef cptr
 		list += 1
-#else
-		list += len( HASHLIST )
-#endif
 	next i
 
 end sub
@@ -95,12 +90,7 @@ sub hashFree( byval hash as THASH ptr ) static
 
 			item = nxt
 		loop
-		'' !!!REMOVEME!!!
-#ifdef cptr
 		list += 1
-#else
-		list += len( HASHLIST )
-#endif
 	next i
 
 	deallocate( hash->list )
@@ -207,7 +197,7 @@ private sub hashDelItem( byval list as HASHLIST ptr, _
 	end if
 
 	'' remove node
-	listDelNode( @ctx.itemlist, item )
+	listDelNode( @ctx.itemlist, cptr( TLISTNODE ptr, item ) )
 
 end sub
 

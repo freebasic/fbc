@@ -187,6 +187,14 @@ declare function	astUpdComp2Branch	( byval n as ASTNODE ptr, _
 										  byval label as FBSYMBOL ptr, _
 						    			  byval isinverse as integer ) as ASTNODE ptr
 
+declare function 	astPtrCheck			( byval pdtype as integer, _
+					  					  byval psubtype as FBSYMBOL ptr, _
+					  					  byval expr as ASTNODE ptr ) as integer
+
+declare function 	astFuncPtrCheck		( byval pdtype as integer, _
+					      				  byval psubtype as FBSYMBOL ptr, _
+					      				  byval expr as ASTNODE ptr ) as integer
+
 declare function 	astNewASSIGN		( byval l as ASTNODE ptr, _
 										  byval r as ASTNODE ptr ) as ASTNODE ptr
 
@@ -216,7 +224,8 @@ declare function 	astNewCONST			( byval v as FBVALUE ptr, _
 					  					  byval dtype as integer ) as ASTNODE ptr
 
 declare function 	astNewCONSTi		( byval value as integer, _
-										  byval dtype as integer ) as ASTNODE ptr
+										  byval dtype as integer, _
+										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astNewCONSTf		( byval value as double, _
 										  byval dtype as integer ) as ASTNODE ptr

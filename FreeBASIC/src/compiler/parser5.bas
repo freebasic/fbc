@@ -151,8 +151,8 @@ end function
 ''                     ('(' Arguments? ')')? (AS SymbolType)? STATIC? EXPORT?
 ''
 function cSubOrFuncHeader( byval issub as integer, _
-						   proc as FBSYMBOL ptr, _
-						   alloctype as integer ) static
+						   byref proc as FBSYMBOL ptr, _
+						   byref alloctype as integer ) static
 
     static as zstring * FB_MAXNAMELEN+1 id, aliasid
     dim as integer typ, mode, lgt, ptrcnt, argc
@@ -504,7 +504,7 @@ function cProcStatement static
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
-        expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_UINT )
+        expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
         rtlErrorSetHandler( expr, FALSE )
 	end if
 

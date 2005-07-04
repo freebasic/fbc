@@ -39,7 +39,7 @@ defint a-z
 ''
 function cFieldArray( byval elm as FBSYMBOL ptr, _
 					  byval typ as integer, _
-					  idxexpr as ASTNODE ptr ) as integer
+					  byref idxexpr as ASTNODE ptr ) as integer
 
     dim as FBVARDIM ptr d
     dim as integer maxdims, dims
@@ -131,10 +131,10 @@ end function
 '':::::
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
-function cTypeField( elm as FBSYMBOL ptr, _
-					 typ as integer, _
-					 subtype as FBSYMBOL ptr, _
-					 idxexpr as ASTNODE ptr, _
+function cTypeField( byref elm as FBSYMBOL ptr, _
+					 byref typ as integer, _
+					 byref subtype as FBSYMBOL ptr, _
+					 byref idxexpr as ASTNODE ptr, _
 					 byval isderef as integer, _
 					 byval checkarray as integer ) as integer
 
@@ -236,10 +236,10 @@ end function
 ''DerefFields	=   ((FIELDDEREF DREF* | '[' Expression ']') TypeField)* .
 ''
 function cDerefFields( byval sym as FBSYMBOL ptr, _
-					   elm as FBSYMBOL ptr, _
-					   dtype as integer, _
-					   subtype as FBSYMBOL ptr, _
-					   varexpr as ASTNODE ptr, _
+					   byref elm as FBSYMBOL ptr, _
+					   byref dtype as integer, _
+					   byref subtype as FBSYMBOL ptr, _
+					   byref varexpr as ASTNODE ptr, _
 					   byval checkarray as integer ) as integer
 
 	dim as integer cnt, lgt
@@ -405,11 +405,11 @@ end function
 ''FuncPtrOrDeref	=   FuncPtr '(' Args? ')'
 ''					|   DerefFields .
 ''
-function cFuncPtrOrDerefFields( sym as FBSYMBOL ptr, _
-					      		elm as FBSYMBOL ptr, _
+function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
+					      		byref elm as FBSYMBOL ptr, _
 					      		byval typ as integer, _
 					      		byval subtype as FBSYMBOL ptr, _
-					      		varexpr as ASTNODE ptr, _
+					      		byref varexpr as ASTNODE ptr, _
 					      		byval isfuncptr as integer, _
 					      		byval checkarray as integer ) as integer
 
@@ -470,7 +470,7 @@ end function
 ''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
-					   idxexpr as ASTNODE ptr ) as integer
+					   byref idxexpr as ASTNODE ptr ) as integer
 
     dim as FBSYMBOL ptr d
     dim as integer lgt, i, dims, maxdims
@@ -564,7 +564,7 @@ end function
 ''ArgArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
-					   idxexpr as ASTNODE ptr ) as integer
+					   byref idxexpr as ASTNODE ptr ) as integer
 
     dim as integer i, lgt
     dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr, t
@@ -633,7 +633,7 @@ end function
 ''ArrayIdx        =   '(' Expression (',' Expression)* ')' .
 ''
 function cArrayIdx( byval s as FBSYMBOL ptr, _
-					idxexpr as ASTNODE ptr ) as integer
+					byref idxexpr as ASTNODE ptr ) as integer
 
     dim as FBVARDIM ptr d
     dim as integer dtype, lgt, dims, maxdims
@@ -750,9 +750,9 @@ end function
 '':::::
 ''Variable        =   ID ArrayIdx? TypeField? FuncPtrOrDerefFields? .
 ''
-function cVariable( varexpr as ASTNODE ptr, _
-					sym as FBSYMBOL ptr, _
-					elm as FBSYMBOL ptr, _
+function cVariable( byref varexpr as ASTNODE ptr, _
+					byref sym as FBSYMBOL ptr, _
+					byref elm as FBSYMBOL ptr, _
 					byval checkarray as integer = TRUE ) as integer
 
 	dim as zstring ptr id
@@ -958,7 +958,7 @@ end function
 '':::::
 ''cVarOrDeref		= 	Deref | PtrTypeCasting | AddrOf | Variable
 ''
-function cVarOrDeref( varexpr as ASTNODE ptr, _
+function cVarOrDeref( byref varexpr as ASTNODE ptr, _
 					  byval checkarray as integer, _
 					  byval checkaddrof as integer ) as integer
 

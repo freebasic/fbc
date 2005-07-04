@@ -36,11 +36,11 @@ defint a-z
 #include once "inc\emit.bi"
 #include once "inc\emitdbg.bi"
 
-declare function cConstExprValue			( value as integer ) as integer
+declare function cConstExprValue			( byref value as integer ) as integer
 
 declare function cSymbUDTInit				( byval basesym as FBSYMBOL ptr, _
 											  byval sym as FBSYMBOL ptr, _
-											  ofs as integer, _
+											  byref ofs as integer, _
 					   						  byval islocal as integer ) as integer
 
 '':::::
@@ -638,12 +638,12 @@ end function
 ''ElementDecl     =   ID ArrayDecl? AS SymbolType
 ''
 function cElementDecl( byval id as string, _
-					   typ as integer, _
-					   subtype as FBSYMBOL ptr, _
-					   ptrcnt as integer, _
-					   lgt as integer, _
-					   bits as integer, _
-					   dimensions as integer, _
+					   byref typ as integer, _
+					   byref subtype as FBSYMBOL ptr, _
+					   byref ptrcnt as integer, _
+					   byref lgt as integer, _
+					   byref bits as integer, _
+					   byref dimensions as integer, _
 					   dTB() as FBARRAYDIM ) as integer
 
 	function = FALSE
@@ -1090,7 +1090,7 @@ function cEnumConstDecl( byval id as string ) as integer
 
 		'' not an integer?
 		if( astGetDataClass( expr ) <> IR_DATACLASS_INTEGER ) then
-			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERTION, id )
+			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION, id )
 		end if
 
 		env.enumctx.value = astGetValueAsInt( expr )
@@ -1874,7 +1874,7 @@ end function
 '':::::
 function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 					   byval sym as FBSYMBOL ptr, _
-					   ofs as integer, _
+					   byref ofs as integer, _
 					   byval islocal as integer ) as integer static
 
 	dim as integer dtype
@@ -1997,7 +1997,7 @@ end function
 '':::::
 function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 						 byval sym as FBSYMBOL ptr, _
-					     ofs as integer, _
+					     byref ofs as integer, _
 					     byval islocal as integer, _
 					     byval isarray as integer ) as integer
 
@@ -2110,7 +2110,7 @@ end function
 '':::::
 function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 					   byval sym as FBSYMBOL ptr, _
-					   ofs as integer, _
+					   byref ofs as integer, _
 					   byval islocal as integer ) as integer
 
 	dim as integer elements, elmcnt, isarray, elmofs, lgt, pad
@@ -2264,7 +2264,7 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cStaticArrayDecl( dimensions as integer, _
+function cStaticArrayDecl( byref dimensions as integer, _
 						   dTB() as FBARRAYDIM ) as integer
 
     static as integer i
@@ -2357,7 +2357,7 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cArrayDecl( dimensions as integer, _
+function cArrayDecl( byref dimensions as integer, _
 					 exprTB() as ASTNODE ptr ) as integer
 
     dim as integer i
@@ -2427,7 +2427,7 @@ function cArrayDecl( dimensions as integer, _
 end function
 
 ''::::
-function cConstExprValue( value as integer ) as integer
+function cConstExprValue( byref value as integer ) as integer
     dim as ASTNODE ptr expr
 
     function = FALSE
@@ -2479,10 +2479,14 @@ function hMangleFuncPtrName( byval sname as string, _
     mname += "@"
 
 	if( subtype = NULL ) then
-		mname += hex$( typ * mode )
+		mname += hex$( typ )
 	else
 		mname += hex$( subtype )
 	end if
+
+    mname += "@"
+
+    mname += hex$( mode )
 
 	function = @mname
 
@@ -2561,10 +2565,10 @@ end function
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
 ''				      (PTR|POINTER)* .
 ''
-function cSymbolType( typ as integer, _
-					  subtype as FBSYMBOL ptr, _
-					  lgt as integer, _
-					  ptrcnt as integer ) as integer
+function cSymbolType( byref typ as integer, _
+					  byref subtype as FBSYMBOL ptr, _
+					  byref lgt as integer, _
+					  byref ptrcnt as integer ) as integer
 
     dim as integer isunsigned, isfunction, allowptr
     dim s as FBSYMBOL ptr
@@ -2957,7 +2961,7 @@ end function
 ''Arguments       =   ArgDecl (',' ArgDecl)* .
 ''
 function cArguments( byval procmode as integer, _
-					 argc as integer, _
+					 byref argc as integer, _
 					 byval argtail as FBSYMBOL ptr, _
 					 byval isproto as integer ) as FBSYMBOL ptr
 
@@ -3200,17 +3204,16 @@ function cArgDecl( byval procmode as integer, _
 
     	dclass = irGetDataClass( atype )
 
-    	if( dclass <> IR_DATACLASS_INTEGER ) then
-    		if( dclass <> IR_DATACLASS_FPOINT ) then
-    			if( dclass <> IR_DATACLASS_STRING ) then
- 	   				hReportParamError( argc, *id )
-    				exit function
-    			end if
-    		end if
-    	end if
+    	'' not int, float or string?
+    	select case dclass
+    	case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT, IR_DATACLASS_STRING
+    	case else
+ 	   		hReportParamError( argc, *id )
+    		exit function
+    	end select
 
     	if( not cExpression( expr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDCONST
+    		hReportError( FB_ERRMSG_EXPECTEDCONST )
     		exit function
     	end if
 
@@ -3219,21 +3222,21 @@ function cArgDecl( byval procmode as integer, _
     	if( not astIsCONST( expr ) ) then
     		'' not a literal string?
     		if( (not astIsVAR( expr )) or (dtype <> IR_DATATYPE_FIXSTR) ) then
-				hReportError FB_ERRMSG_EXPECTEDCONST
+				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			end if
 
 			sym = astGetSymbolOrElm( expr )
 			'' diff types or isn't it a literal string?
 			if( (dclass <> IR_DATACLASS_STRING) or (not symbGetVarInitialized( sym )) ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 
 		else
 			'' diff types?
 			if( dclass = IR_DATACLASS_STRING ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -3466,8 +3469,8 @@ end function
 function cProcParam( byval proc as FBSYMBOL ptr, _
 					 byval arg as FBSYMBOL ptr, _
 					 byval param as integer, _
-					 expr as ASTNODE ptr, _
-					 pmode as integer, _
+					 byref expr as ASTNODE ptr, _
+					 byref pmode as integer, _
 					 byval isfunc as integer, _
 					 byval optonly as integer ) as integer
 
@@ -3527,6 +3530,8 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 		'' create an arg
 		typ = symbGetType( arg )
 		select case as const typ
+  		case IR_DATATYPE_ENUM
+  			expr = astNewENUM( symbGetArgOptvalI( proc, arg ), symbGetSubType( arg ) )
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 			expr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -3534,7 +3539,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			expr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), typ )
 		case else
-			expr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), typ )
+			expr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), typ, symbGetSubType( arg ) )
 		end select
 
 	else
@@ -3579,8 +3584,8 @@ end function
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
 function cOvlProcParam( byval param as integer, _
-					    expr as ASTNODE ptr, _
-					    pmode as integer, _
+					    byref expr as ASTNODE ptr, _
+					    byref pmode as integer, _
 					    byval isfunc as integer, _
 					    byval optonly as integer ) as integer
 
@@ -3873,7 +3878,7 @@ end function
 
 '':::::
 function cProcCall( byval sym as FBSYMBOL ptr, _
-					procexpr as ASTNODE ptr, _
+					byref procexpr as ASTNODE ptr, _
 					byval ptrexpr as ASTNODE ptr, _
 					byval checkprnts as integer = FALSE ) as integer
 	dim as integer typ, isfuncptr, doflush
@@ -4003,93 +4008,6 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hCheckPtrAssign( byval l as ASTNODE ptr, _
-								  byval r as ASTNODE ptr ) as integer static
-
-	dim as integer ldtype, rdtype
-
-	function = FALSE
-
-	ldtype = astGetDataType( l )
-	rdtype = astGetDataType( r )
-
-	select case astGetClass( r )
-	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
-    	'' not a pointer?
-    	if( rdtype < IR_DATATYPE_POINTER ) then
-    		'' not NULL?
-    		if( astGetValuei( r ) <> NULL ) then
-    			exit function
-    		else
-    			return TRUE
-    		end if
-    	end if
-
-	case else
-    	'' not a pointer?
-    	if( rdtype < IR_DATATYPE_POINTER ) then
-    		exit function
-    	end if
-	end select
-
-	'' different types?
-	if( ldtype <> rdtype ) then
-    	'' same level of indirections?
-    	'''''if( abs( ldtype - rdtype ) < IR_DATATYPE_POINTER ) then
-    		'' one of them is a ANY PTR?
-    		if( ldtype mod IR_DATATYPE_POINTER = IR_DATATYPE_VOID ) then
-    			return TRUE
-    		elseif( rdtype mod IR_DATATYPE_POINTER = IR_DATATYPE_VOID ) then
-    			return TRUE
-    		end if
-    	'''''end if
-
-    	exit function
-    end if
-
-	'' check sub types
-	function = symbIsEqual( astGetSubType( l ), astGetSubType( r ) )
-
-end function
-
-'':::::
-private function hCheckFuncPtrAssign( byval l as ASTNODE ptr, _
-									  byval r as ASTNODE ptr ) as integer static
-
-	dim as FBSYMBOL ptr procl, procr
-
-	function = FALSE
-
-    procl = astGetSubType( l )
-    if( procl = NULL ) then
-    	exit function
-    end if
-
-	select case as const astGetClass( r )
-	'' address, func, var, ..
-	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
-		 AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FUNCT, AST_NODECLASS_PTR
-
-    	'' not a function pointer?
-    	if( astGetDataType( r ) <> IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
-    		return hCheckPtrAssign( l, r )
-    	end if
-
-    	procr = astGetSubType( r )
-    	if( procr = NULL ) then
-    		exit function
-    	end if
-
-    	function = symbIsEqual( procl, procr )
-
-	'' const, expression, ..
-	case else
-		function = hCheckPtrAssign( l, r )
-	end select
-
-end function
-
-'':::::
 private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr expr
 	dim as integer op, dtype
@@ -4159,7 +4077,7 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
     if( op <> INVALID ) then
     	'' pointer?
     	if( astGetDataType( assgexpr ) >= IR_DATATYPE_POINTER ) then
-    		expr = cUpdPointer( op, assgexpr, expr )
+    		cUpdPointer( op, assgexpr, expr )
     		if( expr = NULL ) then
     			hReportError( FB_ERRMSG_TYPEMISMATCH )
     			exit function
@@ -4177,17 +4095,17 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
     dtype = astGetDataType( assgexpr )
     if( dtype >= IR_DATATYPE_POINTER ) then
     	if( dtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
-    		if( not hCheckFuncPtrAssign( assgexpr, expr ) ) then
+    		if( not astFuncPtrCheck( dtype, astGetSubType( assgexpr ), expr ) ) then
    				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
     		end if
     	else
-			if( not hCheckPtrAssign( assgexpr, expr ) ) then
+			if( not astPtrCheck( dtype, astGetSubType( assgexpr ), expr ) ) then
 				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 			end if
 		end if
 
     elseif( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
-    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERTION )
+    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
     end if
 
     '' do assign

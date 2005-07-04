@@ -1159,7 +1159,7 @@ end function
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-function cCaseExpression( casectx as FBCASECTX ) as integer
+function cCaseExpression( byref casectx as FBCASECTX ) as integer
 
 	function = FALSE
 
@@ -1200,7 +1200,7 @@ function cCaseExpression( casectx as FBCASECTX ) as integer
 end function
 
 '':::::
-private function hExecCaseExpr( casectx as FBCASECTX, _
+private function hExecCaseExpr( byref casectx as FBCASECTX, _
 				           	    byval s as FBSYMBOL ptr, _
 				           	    byval sdtype as integer, _
 				           	    byval initlabel as FBSYMBOL ptr, _
@@ -1395,9 +1395,9 @@ end function
 function cSelConstCaseStmt( byval swtbase as integer, _
 						    byval sym as FBSYMBOL ptr, _
 						    byval exitlabel as FBSYMBOL ptr, _
-						    minval as uinteger, _
-						    maxval as uinteger, _
-						    deflabel as FBSYMBOL ptr ) as integer
+						    byref minval as uinteger, _
+						    byref maxval as uinteger, _
+						    byref deflabel as FBSYMBOL ptr ) as integer
 
 	dim as ASTNODE ptr expr1, expr2
 	dim as uinteger value, tovalue

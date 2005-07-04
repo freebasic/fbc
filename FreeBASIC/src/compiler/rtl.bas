@@ -363,7 +363,7 @@ data "fb_DataRestore","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_UINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 '' fb_DataReadStr ( byref dst as any, byval dst_size as integer, _
 ''                  byval fillrem as integer = 1 ) as void
 data "fb_DataReadStr","", _
@@ -957,18 +957,18 @@ data "fb_FileUnlock","", _
 
 
 ''
-'' fb_ErrorThrow cdecl ( byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
+'' fb_ErrorThrow cdecl ( byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
 data "fb_ErrorThrow","", _
-	 FB_SYMBTYPE_UINT,FB_FUNCMODE_CDECL, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 ''
 '' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval reslabel as any ptr, _
-''                        byval resnxtlabel as any ptr ) as any ptr
+''                         byval resnxtlabel as any ptr ) as any ptr
 data "fb_ErrorThrowEx","", _
-	 FB_SYMBTYPE_UINT,FB_FUNCMODE_CDECL, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
@@ -976,10 +976,10 @@ data "fb_ErrorThrowEx","", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 '' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
 data "fb_ErrorSetHandler","", _
-	 FB_SYMBTYPE_UINT,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_UINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ErrorGetNum( ) as integer
 data "fb_ErrorGetNum", "", _
@@ -1165,8 +1165,8 @@ data "fb_GfxPut", "", _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_GfxGet ( byref target as any, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
 ''			   byref array as any, byval coordType as integer, array() as any ) as integer
@@ -2194,7 +2194,8 @@ private sub hAddIntrinsicProcs
 	dim as string pname, aname, optstr
 	dim as integer p, ptype, pmode, pargs, palloctype
 	dim as integer a, atype, alen, amode, optional, ptrcnt, errorcheck, overloaded
-	dim as FBSYMBOL ptr proc, argtail, pcallback
+	dim as FBSYMBOL ptr proc, argtail
+	dim as FBRTLCALLBACK pcallback
 	dim as FBVALUE optval
 
 	''
@@ -3366,7 +3367,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
     end if
 
     '' byval labeladdrs as void ptr
-    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_UINT ), s )
+    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ), s )
     if( astNewPARAM( proc, expr ) = NULL ) then
  		exit function
  	end if
@@ -3803,6 +3804,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 		case else
 			if( dtype >= IR_DATATYPE_POINTER ) then
 				f = ifuncTB(FB_RTL_PRINTUINT)
+				expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 			end if
 		end select
 
@@ -3942,6 +3944,7 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 		case else
 			if( dtype >= IR_DATATYPE_POINTER ) then
 				f = ifuncTB(FB_RTL_WRITEUINT)
+				expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 			end if
 		end select
 
@@ -4376,7 +4379,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_UINT ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -4386,7 +4389,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_UINT ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -4434,7 +4437,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_UINT ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -4444,7 +4447,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_UINT ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -4485,8 +4488,8 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     if( savecurrent ) then
     	if( env.scope > 0 ) then
     		if( env.procerrorhnd = NULL ) then
-				env.procerrorhnd = symbAddTempVar( IR_DATATYPE_UINT )
-                expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_UINT )
+				env.procerrorhnd = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID )
+                expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
                 astFlush( astNewASSIGN( expr, proc ) )
     		end if
 		end if
@@ -5113,8 +5116,9 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 	case IR_DATATYPE_USERDEF
 		exit function							'' illegal
 	case else
-		if( dtype >= IR_DATATYPE_POINTER ) then
+		if( dtype >= IR_DATATYPE_POINTER ) then	'' non-sense but..
 			f = ifuncTB(FB_RTL_INPUTINT)
+			dstexpr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, dstexpr )
 		end if
 	end select
 
@@ -6016,7 +6020,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
  	if( not isptr ) then
  		arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
  	else
- 		arrayexpr = astNewCONSTi( NULL, IR_DATATYPE_UINT )
+ 		arrayexpr = astNewCONSTi( NULL, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
  	end if
  	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = NULL ) then
  		exit function

@@ -127,12 +127,7 @@ function listAllocTB( byval list as TLIST ptr, _
 
 		for i = 1 to nodes-1
 			node->prv	= prv
-		'' !!!REMOVEME!!!
-#ifdef cptr
 			node->nxt	= cptr(TLISTNODE ptr, cptr(byte ptr, node) + list->nodelen)
-#else
-			node->nxt	= node + list->nodelen
-#endif
 
 			prv 	   	= node
 			node 		= node->nxt
@@ -207,12 +202,7 @@ function listDelNode( byval list as TLIST ptr, _
 
 	'' node can contain strings descriptors, so, erase it..
 	if( list->clear ) then
-		'' !!!REMOVEME!!!
-#ifdef cptr
-		clear( byval cptr(any ptr, node) + 2, 0, list->nodelen - (len( any ptr ) * 2) )
-#else
-		clear( byval node + (len( any ptr ) * 2), 0, list->nodelen - (len( any ptr ) * 2) )
-#endif
+		clear( byval cptr(any ptr ptr, node) + 2, 0, list->nodelen - (len( any ptr ) * 2) )
 	end if
 
 end function

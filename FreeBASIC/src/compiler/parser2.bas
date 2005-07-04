@@ -32,23 +32,32 @@ defint a-z
 #include once "inc\emit.bi"
 
 '':::::
-function cUpdPointer( byval op as integer, _
-					  byval p as ASTNODE ptr, _
-					  byval e as ASTNODE ptr ) as ASTNODE ptr static
+sub cUpdPointer( byval op as integer, _
+				 byref p as ASTNODE ptr, _
+				 byref e as ASTNODE ptr ) static
 
     dim as integer edtype
     dim as integer lgt
 
     edtype = astGetDataType( e )
 
-    '' not int?
+    '' not integer class?
     if( irGetDataClass( edtype ) <> IR_DATACLASS_INTEGER ) then
-    	return NULL
+    	e = NULL
+    	exit sub
     end if
 
     '' another pointer?
     if( edtype >= IR_DATATYPE_POINTER ) then
-    	return NULL
+    	'' if sub, convert both to uint
+    	if( op = IR_OP_SUB ) then
+    		p = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, p )
+    		e = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, e )
+    	else
+    		e = NULL
+    	end if
+
+    	exit sub
     end if
 
     '' not integer? convert
@@ -59,32 +68,31 @@ function cUpdPointer( byval op as integer, _
     '' any op but +|-?
     select case op
     case IR_OP_ADD, IR_OP_SUB
-    	'' multiple dt1 - POINTER
+    	'' multiple by pdtype - POINTER
 		lgt = symbCalcLen( astGetDataType( p ) - FB_SYMBTYPE_POINTER, astGetSubType( p ) )
+		'' incomplete type?
 		if( lgt = 0 ) then
 			'' void ptr? pretend it's a byte ptr
-			if( astGetDataType( p ) = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
-				return e
-			else
-				return NULL
+			if( astGetDataType( p ) <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
+				e = NULL
 			end if
+			exit sub
 		end if
 
 		e = astNewBOP( IR_OP_MUL, e, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
 
     case else
     	'' allow AND and OR??
-    	return NULL
+    	e = NULL
+    	exit sub
     end select
 
-    function = e
-
-end function
+end sub
 
 '':::::
 ''Expression      =   LogExpression .
 ''
-function cExpression( expr as ASTNODE ptr ) as integer
+function cExpression( byref expr as ASTNODE ptr ) as integer
 
 	function = cLogExpression( expr )
 
@@ -93,7 +101,7 @@ end function
 '':::::
 ''LogExpression      =   RelExpression ( (AND | OR | XOR | EQV | IMP) RelExpression )* .
 ''
-function cLogExpression( logexpr as ASTNODE ptr ) as integer
+function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
     dim as integer op
     dim as ASTNODE ptr relexpr
 
@@ -147,7 +155,7 @@ end function
 '':::::
 ''RelExpression   =   AddExpression ( (EQ | GT | LT | NE | LE | GE) AddExpression )* .
 ''
-function cRelExpression( relexpr as ASTNODE ptr ) as integer
+function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
     dim as integer op
     dim as ASTNODE ptr addexpr
 
@@ -202,7 +210,7 @@ end function
 '':::::
 ''AddExpression   =   ShiftExpression ( ('+' | '-') ShiftExpression )* .
 ''
-function cAddExpression( addexpr as ASTNODE ptr ) as integer
+function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     dim as integer op
     dim as ASTNODE ptr shiftexpr
 
@@ -235,14 +243,14 @@ function cAddExpression( addexpr as ASTNODE ptr ) as integer
 
     	'' check pointers
     	if( astGetDataType( addexpr ) >= IR_DATATYPE_POINTER ) then
-    		shiftexpr = cUpdPointer( op, addexpr, shiftexpr )
+    		cUpdPointer( op, addexpr, shiftexpr )
     		if( shiftexpr = NULL ) then
     			hReportError( FB_ERRMSG_TYPEMISMATCH )
     			exit function
     		end if
 
     	elseif( astGetDataType( shiftexpr ) >= IR_DATATYPE_POINTER ) then
-    		addexpr = cUpdPointer( op, shiftexpr, addexpr )
+    		cUpdPointer( op, shiftexpr, addexpr )
     		if( addexpr = NULL ) then
     			hReportError( FB_ERRMSG_TYPEMISMATCH )
     			exit function
@@ -265,7 +273,7 @@ end function
 '':::::
 ''ShiftExpression  =   ModExpression ( (SHL | SHR) ModExpression )* .
 ''
-function cShiftExpression( shiftexpr as ASTNODE ptr ) as integer
+function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
     dim as integer op
     dim as ASTNODE ptr modexpr
 
@@ -312,7 +320,7 @@ end function
 '':::::
 ''ModExpression   =   IntDivExpression ( MOD IntDivExpression )* .
 ''
-function cModExpression( modexpr as ASTNODE ptr ) as integer
+function cModExpression( byref modexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr idivexpr
 
     function = FALSE
@@ -353,7 +361,7 @@ end function
 '':::::
 ''IntDivExpression=   MultExpression ( '\' MultExpression )* .
 ''
-function cIntDivExpression( idivexpr as ASTNODE ptr ) as integer
+function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr mulexpr
 
     function = FALSE
@@ -394,7 +402,7 @@ end function
 '':::::
 ''MultExpression  =   ExpExpression ( ('*' | '/') ExpExpression )* .
 ''
-function cMultExpression( mulexpr as ASTNODE ptr ) as integer
+function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
     dim as integer op
     dim as ASTNODE ptr expexpr
 
@@ -441,7 +449,7 @@ end function
 '':::::
 ''ExpExpression   =   NegNotExpression ( '^' NegNotExpression )* .
 ''
-function cExpExpression( expexpr as ASTNODE ptr ) as integer
+function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr negexpr
 
     function = FALSE
@@ -483,7 +491,7 @@ end function
 ''				  |   NOT RelExpression
 ''				  |   HighestPresExpr .
 ''
-function cNegNotExpression( negexpr as ASTNODE ptr ) as integer
+function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
@@ -553,7 +561,7 @@ end function
 ''				  |   ParentExpression FuncPtrOrDerefFields?
 ''				  |   Atom .
 ''
-function cHighestPrecExpr( highexpr as ASTNODE ptr ) as integer
+function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 	dim as FBSYMBOL ptr sym, elm, subtype
 	dim as integer isfuncptr, dtype
 
@@ -619,7 +627,7 @@ end function
 '':::::
 '' PtrTypeCastingExpr	=   CPTR '(' SymbolType ',' Expression{int|uint|ptr} ')'
 ''
-function cPtrTypeCastingExpr( castexpr as ASTNODE ptr ) as integer
+function cPtrTypeCastingExpr( byref castexpr as ASTNODE ptr ) as integer
 	dim as integer dtype, lgt, ptrcnt
 	dim as FBSYMBOL ptr subtype
 	dim as ASTNODE ptr expr
@@ -686,7 +694,7 @@ end function
 
 '':::::
 private function hDoDeref( byval cnt as integer, _
-						   expr as ASTNODE ptr, _
+						   byref expr as ASTNODE ptr, _
 					       byval sym as FBSYMBOL ptr, _
 					       byval elm as FBSYMBOL ptr, _
 					       byval dtype as integer, _
@@ -741,7 +749,7 @@ end function
 '':::::
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
-function cDerefExpression( derefexpr as ASTNODE ptr ) as integer
+function cDerefExpression( byref derefexpr as ASTNODE ptr ) as integer
     dim as FBSYMBOL ptr sym, elm, subtype
     dim as integer derefcnt, dtype
     dim as ASTNODE ptr funcexpr
@@ -784,7 +792,7 @@ end function
 
 '':::::
 private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
-							   addrofexpr as ASTNODE ptr ) as integer
+							   byref addrofexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr expr
 
 	function = FALSE
@@ -805,7 +813,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hVarPtrBody( addrofexpr as ASTNODE ptr) as integer
+private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 
 	function = FALSE
 
@@ -834,7 +842,7 @@ end function
 '' 					| 	'@' (Proc ('('')')? | HighPrecExpr)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression( addrofexpr as ASTNODE ptr ) as integer
+function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr
     dim as integer dtype
     dim as FBSYMBOL ptr sym, elm
@@ -960,7 +968,7 @@ end function
 '':::::
 ''ParentExpression=   '(' Expression ')' .
 ''
-function cParentExpression( parexpr as ASTNODE ptr ) as integer
+function cParentExpression( byref parexpr as ASTNODE ptr ) as integer
 
   	function = FALSE
 
@@ -1000,7 +1008,7 @@ end function
 '':::::
 ''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
 ''
-function cAtom( atom as ASTNODE ptr ) as integer
+function cAtom( byref atom as ASTNODE ptr ) as integer
     dim as FBSYMBOL ptr sym, elm
     dim as integer res
 
@@ -1030,7 +1038,7 @@ end function
 '':::::
 '' Constant       = ID .
 ''
-function cConstant( constexpr as ASTNODE ptr ) as integer static
+function cConstant( byref constexpr as ASTNODE ptr ) as integer static
 	static as zstring * FB_MAXLITLEN+1 text
 	dim as FBSYMBOL ptr s
 	dim as integer typ
@@ -1057,7 +1065,7 @@ function cConstant( constexpr as ASTNODE ptr ) as integer static
   			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
   				constexpr = astNewCONSTf( val( text ), typ )
   			case else
-  				constexpr = astNewCONSTi( valint( text ), typ )
+  				constexpr = astNewCONSTi( valint( text ), typ, symbGetSubType( s ) )
   			end select
   		end if
 
@@ -1070,7 +1078,7 @@ end function
 '':::::
 ''Literal		  = NUM_LITERAL | STR_LITERAL .
 ''
-function cLiteral( litexpr as ASTNODE ptr ) as integer
+function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 	dim as FBSYMBOL ptr tc
 	dim as integer typ
 
@@ -1103,8 +1111,8 @@ end function
 
 '':::::
 function cFunctionCall( byval sym as FBSYMBOL ptr, _
-						elm as FBSYMBOL ptr, _
-						funcexpr as ASTNODE ptr, _
+						byref elm as FBSYMBOL ptr, _
+						byref funcexpr as ASTNODE ptr, _
 						byval ptrexpr as ASTNODE ptr ) as integer
 
 	dim as integer typ, isfuncptr
@@ -1175,9 +1183,9 @@ end function
 '':::::
 ''Function        =   ID ('(' ProcParamList ')')? FuncPtrOrDerefFields? .
 ''
-function cFunction( funcexpr as ASTNODE ptr, _
-					sym as FBSYMBOL ptr, _
-					elm as FBSYMBOL ptr ) as integer
+function cFunction( byref funcexpr as ASTNODE ptr, _
+					byref sym as FBSYMBOL ptr, _
+					byref elm as FBSYMBOL ptr ) as integer
 
 	function = FALSE
 

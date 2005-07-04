@@ -60,25 +60,25 @@ declare function 	cSymbolDecl             ( ) as integer
 declare function 	cSymbolDef 				( byval alloctype as integer, _
 											  byval dopreserve as integer = FALSE ) as integer
 
-declare function 	cStaticArrayDecl 		( dimensions as integer, _
+declare function 	cStaticArrayDecl 		( byref dimensions as integer, _
 											  dTB() as FBARRAYDIM ) as integer
 
-declare function 	cArrayDecl				( dimensions as integer, _
+declare function 	cArrayDecl				( byref dimensions as integer, _
 											  exprTB() as ASTNODE ptr ) as integer
 
 declare function 	cSymbolInit				( byval s as FBSYMBOL ptr ) as integer
 
-declare function 	cSymbolType 			( typ as integer, _
-											  subtype as FBSYMBOL ptr, _
-											  lgt as integer, _
-											  ptrcnt as integer ) as integer
+declare function 	cSymbolType 			( byref typ as integer, _
+											  byref subtype as FBSYMBOL ptr, _
+											  byref lgt as integer, _
+											  byref ptrcnt as integer ) as integer
 
 declare function 	cProcDecl               ( ) as integer
 
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
 
 declare function 	cArguments              ( byval procmode as integer, _
-											  argc as integer, _
+											  byref argc as integer, _
 											  byval argtail as FBSYMBOL ptr, _
 											  byval isproto as integer ) as FBSYMBOL ptr
 
@@ -131,58 +131,58 @@ declare function 	cWithStatement          ( ) as integer
 
 declare function 	cAssignmentOrPtrCall	( ) as integer
 
-declare function 	cExpression				( expr as ASTNODE ptr ) as integer
+declare function 	cExpression				( byref expr as ASTNODE ptr ) as integer
 
-declare function 	cLogExpression			( logexpr as ASTNODE ptr ) as integer
+declare function 	cLogExpression			( byref logexpr as ASTNODE ptr ) as integer
 
-declare function 	cRelExpression			( relexpr as ASTNODE ptr ) as integer
+declare function 	cRelExpression			( byref relexpr as ASTNODE ptr ) as integer
 
-declare function 	cAddExpression			( addexpr as ASTNODE ptr ) as integer
+declare function 	cAddExpression			( byref addexpr as ASTNODE ptr ) as integer
 
-declare function 	cShiftExpression		( shiftexpr as ASTNODE ptr ) as integer
+declare function 	cShiftExpression		( byref shiftexpr as ASTNODE ptr ) as integer
 
-declare function 	cModExpression			( modexpr as ASTNODE ptr ) as integer
+declare function 	cModExpression			( byref modexpr as ASTNODE ptr ) as integer
 
-declare function 	cIntDivExpression		( idivexpr as ASTNODE ptr ) as integer
+declare function 	cIntDivExpression		( byref idivexpr as ASTNODE ptr ) as integer
 
-declare function 	cMultExpression			( mulexpr as ASTNODE ptr ) as integer
+declare function 	cMultExpression			( byref mulexpr as ASTNODE ptr ) as integer
 
-declare function 	cExpExpression 			( expexpr as ASTNODE ptr ) as integer
+declare function 	cExpExpression 			( byref expexpr as ASTNODE ptr ) as integer
 
-declare function 	cNegNotExpression		( negexpr as ASTNODE ptr ) as integer
+declare function 	cNegNotExpression		( byref negexpr as ASTNODE ptr ) as integer
 
-declare function 	cHighestPrecExpr		( highexpr as ASTNODE ptr ) as integer
+declare function 	cHighestPrecExpr		( byref highexpr as ASTNODE ptr ) as integer
 
-declare function 	cPtrTypeCastingExpr		( castexpr as ASTNODE ptr ) as integer
+declare function 	cPtrTypeCastingExpr		( byref castexpr as ASTNODE ptr ) as integer
 
-declare function 	cDerefExpression		( derefexpr as ASTNODE ptr ) as integer
+declare function 	cDerefExpression		( byref derefexpr as ASTNODE ptr ) as integer
 
-declare function 	cAddrOfExpression		( addrofexpr as ASTNODE ptr ) as integer
+declare function 	cAddrOfExpression		( byref addrofexpr as ASTNODE ptr ) as integer
 
-declare function 	cTypeConvExpr			( tconvexpr as ASTNODE ptr ) as integer
+declare function 	cTypeConvExpr			( byref tconvexpr as ASTNODE ptr ) as integer
 
-declare function 	cParentExpression		( parexpr as ASTNODE ptr ) as integer
+declare function 	cParentExpression		( byref parexpr as ASTNODE ptr ) as integer
 
-declare function 	cAtom					( atom as ASTNODE ptr ) as integer
+declare function 	cAtom					( byref atom as ASTNODE ptr ) as integer
 
-declare function 	cVariable				( varexpr as ASTNODE ptr, _
-											  sym as FBSYMBOL ptr, _
-											  elm as FBSYMBOL ptr, _
+declare function 	cVariable				( byref varexpr as ASTNODE ptr, _
+											  byref sym as FBSYMBOL ptr, _
+											  byref elm as FBSYMBOL ptr, _
 											  byval checkarray as integer = TRUE ) as integer
 
-declare function 	cVarOrDeref				( varexpr as ASTNODE ptr, _
+declare function 	cVarOrDeref				( byref varexpr as ASTNODE ptr, _
 											  byval checkarray as integer = TRUE, _
 											  byval checkaddrof as integer = FALSE ) as integer
 
-declare function 	cFunction				( funcexpr as ASTNODE ptr, _
-											  sym as FBSYMBOL ptr, _
-											  elm as FBSYMBOL ptr ) as integer
+declare function 	cFunction				( byref funcexpr as ASTNODE ptr, _
+											  byref sym as FBSYMBOL ptr, _
+											  byref elm as FBSYMBOL ptr ) as integer
 
-declare function 	cQuirkFunction			( funcexpr as ASTNODE ptr ) as integer
+declare function 	cQuirkFunction			( byref funcexpr as ASTNODE ptr ) as integer
 
-declare function 	cConstant				( constexpr as ASTNODE ptr ) as integer
+declare function 	cConstant				( byref constexpr as ASTNODE ptr ) as integer
 
-declare function 	cLiteral 				( litexpr as ASTNODE ptr ) as integer
+declare function 	cLiteral 				( byref litexpr as ASTNODE ptr ) as integer
 
 declare function 	cProcParamList			( byval proc as FBSYMBOL ptr, _
 						 					  byval ptrexpr as ASTNODE ptr, _
@@ -194,40 +194,40 @@ declare function 	cAsmBlock				( ) as integer
 declare function 	cFunctionMode 			( ) as integer
 
 declare function 	cFunctionCall			( byval sym as FBSYMBOL ptr, _
-											  elm as FBSYMBOL ptr, _
-											  funcexpr as ASTNODE ptr, _
+											  byref elm as FBSYMBOL ptr, _
+											  byref funcexpr as ASTNODE ptr, _
 											  byval ptrexpr as ASTNODE ptr ) as integer
 
 declare function 	cProcCall				( byval sym as FBSYMBOL ptr, _
-											  procexpr as ASTNODE ptr, _
+											  byref procexpr as ASTNODE ptr, _
 											  byval ptrexpr as ASTNODE ptr, _
 											  byval checkparents as integer = FALSE ) as integer
 
 declare function 	cDerefFields			( byval sym as FBSYMBOL ptr, _
-											  elm as FBSYMBOL ptr, _
-											  typ as integer, _
-											  subtype as FBSYMBOL ptr, _
-					   						  varexpr as ASTNODE ptr, _
+											  byref elm as FBSYMBOL ptr, _
+											  byref typ as integer, _
+											  byref subtype as FBSYMBOL ptr, _
+					   						  byref varexpr as ASTNODE ptr, _
 					   						  byval checkarray as integer ) as integer
 
-declare function    cFuncPtrOrDerefFields	( sym as FBSYMBOL ptr, _
-					      					  elm as FBSYMBOL ptr, _
+declare function    cFuncPtrOrDerefFields	( byref sym as FBSYMBOL ptr, _
+					      					  byref elm as FBSYMBOL ptr, _
 					      					  byval typ as integer, _
 					      					  byval subtype as FBSYMBOL ptr, _
-					      					  varexpr as ASTNODE ptr, _
+					      					  byref varexpr as ASTNODE ptr, _
 					      					  byval isfuncptr as integer, _
 					      					  byval checkarray as integer ) as integer
 
-declare function 	cUpdPointer				( byval op as integer, _
-					  						  byval p as ASTNODE ptr, _
-					  						  byval e as ASTNODE ptr ) as ASTNODE ptr
+declare sub 		cUpdPointer				( byval op as integer, _
+					  						  byref p as ASTNODE ptr, _
+					  						  byref e as ASTNODE ptr )
 
 declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, _
 											  byval expr as ASTNODE ptr ) as integer
 
 declare function 	cGfxStmt 				( ) as integer
 
-declare function 	cGfxFunct				( funcexpr as ASTNODE ptr ) as integer
+declare function 	cGfxFunct				( byref funcexpr as ASTNODE ptr ) as integer
 
 
 '':::::

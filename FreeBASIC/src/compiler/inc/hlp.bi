@@ -114,17 +114,9 @@ declare function 	hMakeEntryPointName		( byval entrypoint as string ) as string
 
 
 '':::::
-		'' !!!REMOVEME!!!
-#ifdef cptr
 #define ZEROSTRDESC(s)	                                _
 	cptr(integer ptr, @s)[0] = NULL 					:_
 	cptr(integer ptr, @s)[1] = NULL						:_
 	cptr(integer ptr, @s)[2] = NULL
-#else
-#define ZEROSTRDESC(s)	                                _
-	poke integer, @s + len( integer )*0, NULL 			:_
-	poke integer, @s + len( integer )*1, NULL			:_
-	poke integer, @s + len( integer )*2, NULL
-#endif
 
 #endif ''__HELP_BI__

@@ -65,8 +65,9 @@ end type
 
 	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = { _
 		( 0, "Passing scalar as pointer" ), _
+		( 0, "Passing different pointer types" ), _
 		( 0, "Suspicious pointer assignment" ), _
-		( 0, "Implicit convertion" ) _
+		( 0, "Implicit conversion" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => { _
@@ -717,20 +718,20 @@ function hCreateProcAlias( byval symbol as string, _
 	select case fbGetNaming()
     case FB_COMPNAMING_WIN32
         dim addat as integer
-    
+
         if( env.clopt.nounderprefix ) then
             sname = symbol
         else
             sname = "_"
             sname += symbol
         end if
-    
+
         if( env.clopt.nostdcall ) then
             addat = FALSE
         else
             addat = (mode = FB_FUNCMODE_STDCALL)
         end if
-    
+
         if( addat ) then
             sname += "@"
             sname += str$( argslen )

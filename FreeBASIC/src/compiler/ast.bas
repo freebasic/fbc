@@ -1570,6 +1570,109 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 end function
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' misc
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astPtrCheck( byval pdtype as integer, _
+					  byval psubtype as FBSYMBOL ptr, _
+					  byval expr as ASTNODE ptr ) as integer static
+
+	dim as integer edtype
+
+	function = FALSE
+
+	edtype = astGetDataType( expr )
+
+	select case astGetClass( expr )
+	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
+    	'' expr not a pointer?
+    	if( edtype < IR_DATATYPE_POINTER ) then
+    		'' not NULL?
+    		if( astGetValuei( expr ) <> NULL ) then
+    			exit function
+    		else
+    			return TRUE
+    		end if
+    	end if
+
+	case else
+    	'' expr not a pointer?
+    	if( edtype < IR_DATATYPE_POINTER ) then
+    		exit function
+    	end if
+	end select
+
+	'' different types?
+	if( pdtype <> edtype ) then
+    	'' same level of indirection?
+    	'''if( abs( pdtype - dtype ) >= IR_DATATYPE_POINTER ) then
+    	''	exit function
+    	'''end if
+
+    	'' one of them is a ANY PTR?
+    	pdtype mod= IR_DATATYPE_POINTER
+    	edtype mod= IR_DATATYPE_POINTER
+    	if( pdtype = IR_DATATYPE_VOID ) then
+    		return TRUE
+    	elseif( edtype = IR_DATATYPE_VOID ) then
+    		return TRUE
+    	end if
+
+    	'' same size?
+    	if( (pdtype <= IR_DATATYPE_DOUBLE) and _
+    		(edtype <= IR_DATATYPE_DOUBLE) ) then
+    		if( irGetDataSize( pdtype ) = irGetDataSize( edtype ) ) then
+    			return TRUE
+    		end if
+    	end if
+
+    	exit function
+    end if
+
+	'' check sub types
+	function = symbIsEqual( psubtype, astGetSubType( expr ) )
+
+end function
+
+'':::::
+function astFuncPtrCheck( byval pdtype as integer, _
+					      byval psubtype as FBSYMBOL ptr, _
+					      byval expr as ASTNODE ptr ) as integer static
+
+	dim as FBSYMBOL ptr esubtype
+
+	function = FALSE
+
+    if( psubtype = NULL ) then
+    	exit function
+    end if
+
+	select case as const astGetClass( expr )
+	'' address, func, var, ..
+	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
+		 AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FUNCT, AST_NODECLASS_PTR
+
+    	'' not a function pointer?
+    	if( astGetDataType( expr ) <> IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    		return astPtrCheck( pdtype, psubtype, expr )
+    	end if
+
+    	esubtype = astGetSubType( expr )
+    	if( esubtype = NULL ) then
+    		exit function
+    	end if
+
+    	function = symbIsEqual( psubtype, esubtype )
+
+	'' const, expression, ..
+	case else
+		function = astPtrCheck( pdtype, psubtype, expr )
+	end select
+
+end function
+
 #if 0
 '':::::
 sub astDump ( byval p as ASTNODE ptr, _
@@ -2018,7 +2121,7 @@ sub astDel( byval n as ASTNODE ptr ) static
 		exit sub
 	end if
 
-	listDelNode( @ctx.astTB, n )
+	listDelNode( @ctx.astTB, cptr( TLISTNODE ptr, n ) )
 
 end sub
 
@@ -2715,7 +2818,7 @@ function astNewBOP( byval op as integer, _
     	'' not the same?
     	if( ldtype <> rdtype ) then
     		if( (ldclass <> IR_DATACLASS_INTEGER) or (rdclass <> IR_DATACLASS_INTEGER) ) then
-    			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERTION )
+    			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
     		end if
     	end if
     end if
@@ -3646,11 +3749,12 @@ end function
 
 '':::::
 function astNewCONSTi( byval value as integer, _
-					   byval dtype as integer ) as ASTNODE ptr static
+					   byval dtype as integer, _
+					   byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_CONST, dtype )
+	n = astNew( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -4381,7 +4485,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
     	'' not the same?
     	if( ldtype <> rdtype ) then
     		if( (ldclass <> IR_DATACLASS_INTEGER) or (rdclass <> IR_DATACLASS_INTEGER) ) then
-    			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERTION )
+    			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
     		end if
     	end if
 
@@ -4906,7 +5010,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 							  byval n as ASTNODE ptr ) as integer
 
     dim as FBSYMBOL ptr proc, arg, s
-    dim as integer adtype, adclass, amode
+    dim as integer adtype, adclass, amode, iswarning
     dim as ASTNODE ptr p
     dim as integer pdtype, pdclass, pmode, pclass
 
@@ -5114,7 +5218,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 					'' enum args are only allowed to be passed enum or int params
 					if( (adtype = IR_DATATYPE_ENUM) or (pdtype = IR_DATATYPE_ENUM) ) then
 						if( adclass <> pdclass ) then
-							hReportParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERTION )
+							hReportParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
 					end if
 
@@ -5135,12 +5239,27 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 				'' pointer checking
 				if( adtype >= IR_DATATYPE_POINTER ) then
-					if( p->dtype < IR_DATATYPE_POINTER ) then
-						select case as const pclass
-						case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
-							hReportParamWarning( f, FB_WARNINGMSG_INVALIDPOINTER )
-						end select
+    				iswarning = FALSE
+    				if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    					if( not astFuncPtrCheck( adtype, symbGetSubtype( arg ), p ) ) then
+					        iswarning = TRUE
+					    end if
+					else
+						if( not astPtrCheck( adtype, symbGetSubtype( arg ), p ) ) then
+					        iswarning = TRUE
+					    end if
 					end if
+
+					if( iswarning ) then
+						if( p->dtype < IR_DATATYPE_POINTER ) then
+							hReportParamWarning( f, FB_WARNINGMSG_PASSINGSCALARASPTR )
+						else
+							hReportParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+						end if
+					end if
+
+    			'''''elseif( p->dtype >= IR_DATATYPE_POINTER ) then
+    			'''''	hReportParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
 				end if
 
 			end if
@@ -5322,7 +5441,7 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 		astDel( t )
 
 		p = n->left
-		listDelNode( @ctx.tempstr, n )
+		listDelNode( @ctx.tempstr, cptr( TLISTNODE ptr, n ) )
 		n = p
 	loop
 
@@ -5343,7 +5462,7 @@ private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
 		end if
 
 		p = n->left
-		listDelNode( @ctx.temparray, n )
+		listDelNode( @ctx.temparray, cptr( TLISTNODE ptr, n ) )
 		n = p
 	loop
 
@@ -5651,4 +5770,5 @@ function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = vr
 
 end function
+
 

@@ -1626,7 +1626,7 @@ end function
 '':::::
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
-function cArrayFunct( funcexpr as ASTNODE ptr ) as integer
+function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr sexpr, expr
 	dim as integer islbound
 	dim as FBSYMBOL ptr s
@@ -1684,7 +1684,7 @@ function cArrayFunct( funcexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
+private function cStrCHR( byref funcexpr as ASTNODE ptr ) as integer
 	static as zstring * 32*6+1 s
 	static as zstring * 8+1 o
 	dim as integer v, i, cnt, isconst
@@ -1757,7 +1757,7 @@ private function cStrCHR( funcexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-private function cStrASC( funcexpr as ASTNODE ptr ) as integer
+private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr1, posexpr
     dim as integer p
     dim as FBSYMBOL ptr sym
@@ -1832,7 +1832,7 @@ end function
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''
-function cStringFunct( funcexpr as ASTNODE ptr ) as integer
+function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr1, expr2, expr3
     dim as integer dclass, dtype
 
@@ -1918,7 +1918,7 @@ end function
 ''				|   INT( Expression )
 ''				|	LEN( data type | Expression ) .
 ''
-function cMathFunct( funcexpr as ASTNODE ptr ) as integer
+function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr, expr2
     dim as integer islen, typ, lgt, ptrcnt, op
     dim as FBSYMBOL ptr sym, subtype
@@ -2094,7 +2094,7 @@ end function
 '':::::
 '' PeekFunct =   PEEK '(' (SymbolType ',')? Expression ')' .
 ''
-function cPeekFunct( funcexpr as ASTNODE ptr ) as integer
+function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr expr
 	dim as integer peektype, lgt, ptrcnt
 	dim as FBSYMBOL ptr subtype
@@ -2160,7 +2160,7 @@ end function
 '' FileFunct =   SEEK '(' Expression ')' |
 ''				 INPUT '(' Expr, (',' '#'? Expr)? ')'.
 ''
-function cFileFunct( funcexpr as ASTNODE ptr ) as integer
+function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr filenum, expr
 
 	function = FALSE
@@ -2244,7 +2244,7 @@ end function
 '':::::
 ''cErrorFunct =   ERR .
 ''
-function cErrorFunct( funcexpr as ASTNODE ptr ) as integer
+function cErrorFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
@@ -2260,7 +2260,7 @@ end function
 '':::::
 ''cIIFFunct =   IIF '(' condexpr ',' truexpr ',' falsexpr ')' .
 ''
-function cIIFFunct( funcexpr as ASTNODE ptr ) as integer
+function cIIFFunct( byref funcexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr condexpr, truexpr, falsexpr
 
 	function = FALSE
@@ -2304,7 +2304,7 @@ end function
 '':::::
 ''cVAFunct =     VA_FIRST ('(' ')')? .
 ''
-function cVAFunct( funcexpr as ASTNODE ptr ) as integer
+function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr arg, proc, sym
 
@@ -2358,7 +2358,7 @@ end function
 '':::::
 ''TypeConvExpr		=    (C### '(' expression ')') .
 ''
-function cTypeConvExpr( tconvexpr as ASTNODE ptr ) as integer
+function cTypeConvExpr( byref tconvexpr as ASTNODE ptr ) as integer
     dim totype as integer, op as integer
 
 	function = FALSE
@@ -2434,7 +2434,7 @@ end function
 '':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
-function cQuirkFunction( funcexpr as ASTNODE ptr ) as integer
+function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	dim as integer res
 
 	function = FALSE

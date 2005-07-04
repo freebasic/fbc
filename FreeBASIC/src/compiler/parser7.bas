@@ -88,8 +88,8 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hGetTarget( targetexpr as ASTNODE ptr, _
-							 isptr as integer, _
+private function hGetTarget( byref targetexpr as ASTNODE ptr, _
+							 byref isptr as integer, _
 							 byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
 
@@ -1018,7 +1018,7 @@ end function
 '':::::
 '' GfxPoint    =   POINT '(' Expr ( ',' ( Expr )? ( ',' Expr )? )? ')'
 ''
-function cGfxPoint( funcexpr as ASTNODE ptr ) as integer
+function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr xexpr, yexpr, texpr
     dim as integer tisptr
     dim as FBSYMBOL ptr target
@@ -1056,7 +1056,7 @@ end function
 '':::::
 '' ConsoleReadXY   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
-function cConsoleReadXY( funcexpr as ASTNODE ptr ) as integer
+function cConsoleReadXY( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr yexpr, xexpr, fexpr
 
 	function = FALSE
@@ -1083,7 +1083,7 @@ function cConsoleReadXY( funcexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function cGfxFunct ( funcexpr as ASTNODE ptr ) as integer
+function cGfxFunct ( byref funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 

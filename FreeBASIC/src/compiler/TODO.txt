@@ -1,6 +1,5 @@
 
 [ ] pointers
-    - pointer subtracting should be allowed, result is an uint
     - is it okay to * ptr.type if ptr is at the right-side?
 
 [ ] convert WITH to ptr and remove the lex hacking
