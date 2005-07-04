@@ -1,7 +1,6 @@
 ''
 '' wxWindows-c example, by dumbledore
 ''
-
 option explicit
 
 #include once "wx-c/wx.bi"
@@ -26,6 +25,7 @@ declare function app_onexit_cb () as integer
 ''
 '' globals
 ''
+	dim shared as wxApp ptr app
 	dim shared as wxFrame ptr frame
    	dim shared as wxDialog ptr dialog
 
@@ -33,7 +33,8 @@ declare function app_onexit_cb () as integer
 ''
 '' main  
 ''
-  	wxApp_RegisterVirtual( wxApp( ), @app_oninit_cb, @app_onexit_cb )
+  	app = wxApp( )
+  	wxApp_RegisterVirtual( app, @app_oninit_cb, @app_onexit_cb )
   	wxApp_Run( 0, 0 )
   	
 	end 0
@@ -165,7 +166,8 @@ function app_oninit_cb () as integer
    	'' show window
    	wxWindow_Show( frame, 1 )
 
-	return 1
+	function = wxApp_OnInit( app )
+	
 end function
 
 '':::::
@@ -176,5 +178,6 @@ function app_onexit_cb () as integer
 
 	wxMsgBox( 0, "Bye Bye...", "Window Closed!", 0, wxSize( -1, -1 ) )
 
-	return 1
+	function = wxApp_OnExit( app )
+	
 end function

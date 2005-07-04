@@ -23,16 +23,16 @@ declare function on_darea_expose cdecl( byval widget as GtkWidget ptr, _
 	
 	'' create a window
 	win = gtk_window_new( GTK_WINDOW_TOPLEVEL ) 
-	gtk_window_set_title( win, "RGB Test" )
-	gtk_signal_connect( win, "delete_event", @gtk_main_quit, NULL ) 
+	gtk_window_set_title( GTK_WINDOW(win), "RGB Test" )
+	gtk_signal_connect( GTK_OBJECT(win), "delete_event", GTK_SIGNAL_FUNC(@gtk_main_quit), NULL ) 
 
 	'' create a drawable area on it
 	drawarea = gtk_drawing_area_new( ) 
 	gtk_widget_set_size_request( drawarea, IMAGE_WIDTH, IMAGE_HEIGHT ) 
-	gtk_container_add( win, drawarea ) 
+	gtk_container_add( GTK_CONTAINER(win), drawarea ) 
 	
 	'' set the callback for when the window is redrawn
-	gtk_signal_connect( drawarea, "expose-event", @on_darea_expose, NULL ) 
+	gtk_signal_connect( GTK_OBJECT(drawarea), "expose-event", GTK_SIGNAL_FUNC(@on_darea_expose), NULL ) 
 	gtk_widget_show_all( win ) 
 
 	'' create an 24-bit RGB image

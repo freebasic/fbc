@@ -15,7 +15,7 @@ const FALSE = 0
 const TRUE = not FALSE
 
 type EXPLOSION_TYPE
-	sprite(((MAX_EXPLOSION_SIZE * MAX_EXPLOSION_SIZE)+4)\2) as short
+	sprite as ubyte ptr
 	x as integer
 	y as integer
 	used as integer
@@ -56,75 +56,75 @@ sub animate_fire(byval buffer as ubyte ptr, byval new as integer = 0)
 end sub
 
 
-dim pal(256) as integer, r as integer, g as integer, b as integer
-dim i as integer, j as integer, size as integer
-dim pixel as byte ptr
-dim explosion(MAX_EXPLOSIONS) as EXPLOSION_TYPE
-dim work_page as integer
-
-screen 14, 8, 3
-randomize timer
-
-'' load image and get palette
-''
-screenset 2
-bload "fblogo.bmp"
-palette get using pal
-
-'' image uses first 64 colors; since we need colors 0-191, we need to move
-'' these 64 colors into colors 192-255.
-''
-screenlock
-pixel = screenptr
-for i = 0 to (320*240)-1
-	pixel[i] = 192 + pixel[i]
-next i
-screenunlock
-for i = 0 to 63
-	pal(192+i) = pal(i)
-next i
-
-'' create fire palette
-''
-for i = 0 to 63
-	pal(i) = i
-	pal(64+i) = &h3F or (i shl 8)
-	pal(128+i) = &h3F3F or (i shl 16)
-next i
-palette using pal
-
-'' start demo
-''
-screenset 1, 0
-work_page = 1
-do
-	screencopy 2, work_page
-	for i = 0 to MAX_EXPLOSIONS-1
-		if ((explosion(i).used = FALSE) and ((rnd*50) < 1)) then
-			size = (MAX_EXPLOSION_SIZE\4) + (rnd*((MAX_EXPLOSION_SIZE*3)/4))
-			with explosion(i)
-				.sprite(0) = size shl 3
-				.sprite(1) = size
-				.x = rnd*320
-				.y = rnd*240
-				.used = TRUE
-				.count = 192
-			end with
-			animate_fire @explosion(i).sprite(0), TRUE
-		end if
-		
-		if (explosion(i).used = TRUE) then
-			animate_fire @explosion(i).sprite(0)
-			put (explosion(i).x, explosion(i).y), explosion(i).sprite, trans	
-			explosion(i).count = explosion(i).count - 1
-			if (explosion(i).count <= 0) then
-				explosion(i).used = FALSE
-			end if
-		end if
-		
-	next i
-	screensync
-	work_page xor= 1
-	screenset work_page, work_page xor 1
+	dim pal(256) as integer, r as integer, g as integer, b as integer
+	dim i as integer, j as integer, size as integer
+	dim pixel as byte ptr
+	dim explosion(MAX_EXPLOSIONS) as EXPLOSION_TYPE
+	dim work_page as integer
 	
-loop while inkey$ = ""
+	screen 14, 8, 3
+	randomize timer
+	
+	'' load image and get palette
+	''
+	screenset 2
+	bload "fblogo.bmp"
+	palette get using pal
+	
+	'' image uses first 64 colors; since we need colors 0-191, we need to move
+	'' these 64 colors into colors 192-255.
+	''
+	screenlock
+	pixel = screenptr
+	for i = 0 to (320*240)-1
+		pixel[i] = 192 + pixel[i]
+	next i
+	screenunlock
+	for i = 0 to 63
+		pal(192+i) = pal(i)
+	next i
+	
+	'' create fire palette
+	''
+	for i = 0 to 63
+		pal(i) = i
+		pal(64+i) = &h3F or (i shl 8)
+		pal(128+i) = &h3F3F or (i shl 16)
+	next i
+	palette using pal
+	
+	'' start demo
+	''
+	screenset 1, 0
+	work_page = 1
+	do
+		screencopy 2, work_page
+		for i = 0 to MAX_EXPLOSIONS-1
+			if ((explosion(i).used = FALSE) and ((rnd*50) < 1)) then
+				size = (MAX_EXPLOSION_SIZE\4) + (rnd*((MAX_EXPLOSION_SIZE*3)/4))
+				
+				with explosion(i)
+					.sprite = imagecreate( size, size )
+					.x = rnd*320
+					.y = rnd*240
+					.used = TRUE
+					.count = 192
+				end with
+				animate_fire explosion(i).sprite, TRUE
+			end if
+			
+			if (explosion(i).used = TRUE) then
+				animate_fire explosion(i).sprite
+				put (explosion(i).x, explosion(i).y), explosion(i).sprite, trans	
+				explosion(i).count = explosion(i).count - 1
+				if (explosion(i).count <= 0) then
+					explosion(i).used = FALSE
+				end if
+			end if
+			
+		next i
+		screensync
+		work_page xor= 1
+		screenset work_page, work_page xor 1
+		
+	loop while inkey$ = ""

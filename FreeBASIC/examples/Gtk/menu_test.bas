@@ -21,8 +21,8 @@ declare sub menuitem_response cdecl (byval s as zstring ptr )
     '' create a new window
     win = gtk_window_new( GTK_WINDOW_TOPLEVEL)
     gtk_widget_set_usize( win, 200, 100 )
-    gtk_window_set_title( win, "GTK Menu Test" )
-    gtk_signal_connect( win , "delete_event", @gtk_main_quit, NULL )
+    gtk_window_set_title( GTK_WINDOW(win), "GTK Menu Test" )
+    gtk_signal_connect( GTK_OBJECT(win), "delete_event", GTK_SIGNAL_FUNC(@gtk_main_quit), NULL )
 
     '' Init the menu-widget, and remember -- never
     '' gtk_show_widget() the menu widget!! 
@@ -47,7 +47,7 @@ declare sub menuitem_response cdecl (byval s as zstring ptr )
         gtk_menu_append( menu, menu_items )
 
         '' Do something interesting when the menuitem is selected
-        gtk_signal_connect_object( menu_items, "activate", @menuitem_response, g_strdup( buf ) )
+        gtk_signal_connect_object( GTK_OBJECT(menu_items), "activate", GTK_SIGNAL_FUNC(@menuitem_response), g_strdup( buf ) )
 
         '' Show the widget
         gtk_widget_show( menu_items )
@@ -62,27 +62,27 @@ declare sub menuitem_response cdecl (byval s as zstring ptr )
 
     '' Now we specify that we want our newly created "menu" to be the menu
     '' for the "root menu"
-    gtk_menu_item_set_submenu( root_menu, menu )
+    gtk_menu_item_set_submenu( GTK_MENU_ITEM(root_menu), menu )
 
     '' A vbox to put a menu and a button in:
     vbox = gtk_vbox_new( FALSE, 0 )
-    gtk_container_add( win, vbox )
+    gtk_container_add( GTK_CONTAINER(win), vbox )
     gtk_widget_show( vbox )
 
     '' Create a menu-bar to hold the menus and add it to our main win
     menu_bar = gtk_menu_bar_new( )
-    gtk_box_pack_start( vbox, menu_bar, FALSE, FALSE, 2 )
+    gtk_box_pack_start( GTK_BOX(vbox), menu_bar, FALSE, FALSE, 2 )
     gtk_widget_show( menu_bar )
 
     '' Create a button to which to attach menu as a popup
     button = gtk_button_new_with_label( "press me" )
-    gtk_signal_connect_object( button, "event", @button_press, menu )
-    gtk_box_pack_end( vbox, button, TRUE, TRUE, 2 )
+    gtk_signal_connect_object( GTK_OBJECT(button), "event", GTK_SIGNAL_FUNC(@button_press), menu )
+    gtk_box_pack_end( GTK_BOX(vbox), button, TRUE, TRUE, 2 )
     gtk_widget_show( button )
 
     '' And finally we append the menu-item to the menu-bar -- this is the
     '' "root" menu-item I have been raving about =)
-    gtk_menu_bar_append( menu_bar, root_menu )
+    gtk_menu_bar_append( GTK_MENU_BAR(menu_bar), root_menu )
 
     '' always display the win as the last step so it all splashes on
     '' the screen at once.
@@ -101,7 +101,7 @@ declare sub menuitem_response cdecl (byval s as zstring ptr )
 function button_press cdecl ( byval widget as GtkWidget ptr, byval event as GdkEvent ptr ) as gint 
     
     if( event->type = GDK_BUTTON_PRESS ) then
-        gtk_menu_popup( widget, NULL, NULL, NULL, NULL, _
+        gtk_menu_popup( GTK_MENU(widget), NULL, NULL, NULL, NULL, _
         				cptr(GdkEventButton ptr, event)->button, cptr(GdkEventButton ptr, event)->time )
         '' Tell calling code that we have handled this event the buck
         '' stops here.

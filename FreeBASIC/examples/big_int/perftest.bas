@@ -38,7 +38,7 @@ sub print_num (byval tpl as string, byval num as big_int ptr)
         exit sub
     end if
     
-    print tpl; s->str
+    print tpl; *s->str
     
     big_int_str_destroy( s )
     

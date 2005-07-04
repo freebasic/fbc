@@ -139,7 +139,7 @@ function expose_event cdecl (byval widget as GtkWidget ptr, _
   return TRUE
 end function
 
-function timeout cdecl (byval widget as GtkWidget ptr) as gboolean
+function timeout cdecl (byval widget as gpointer) as gboolean
   dim as GLfloat t
 
   angle += 3.0
@@ -155,10 +155,10 @@ function timeout cdecl (byval widget as GtkWidget ptr) as gboolean
   pos_y = 2.0 * (sin (t) + 0.4 * sin (3.0*t)) - 1.0
 
   '' Invalidate the whole window.
-  gdk_window_invalidate_rect (widget->window, @widget->allocation, FALSE)
+  gdk_window_invalidate_rect (GTK_WIDGET(widget)->window, @GTK_WIDGET(widget)->allocation, FALSE)
 
   '' Update synchronously (fast).
-  gdk_window_process_updates (widget->window, FALSE)
+  gdk_window_process_updates (GTK_WIDGET(widget)->window, FALSE)
 
   return TRUE
 end function
@@ -242,28 +242,28 @@ function create_gl_toggle_button (byval glconfig as GdkGLConfig ptr) as GtkWidge
   ''
 
   vbox = gtk_vbox_new (FALSE, 0)
-  gtk_container_set_border_width (vbox, 10)
+  gtk_container_set_border_width (GTK_CONTAINER(vbox), 10)
 
   ''
   '' Drawing area for drawing OpenGL scene.
   ''
 
   drawing_area = gtk_drawing_area_new ()
-  gtk_widget_set_size_request (drawing_area, 200, 200)
+  gtk_widget_set_size_request(drawing_area, 200, 200)
 
   '' Set OpenGL-capability to the widget.
-  gtk_widget_set_gl_capability (drawing_area, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE)
+  gtk_widget_set_gl_capability(drawing_area, glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE)
 
-  g_signal_connect_after (drawing_area, "realize", @realize, NULL)
-  g_signal_connect (drawing_area, "configure_event", @configure_event, NULL)
-  g_signal_connect (drawing_area, "expose_event", @expose_event, NULL)
-  g_signal_connect (drawing_area, "unrealize", @unrealize, NULL)
+  g_signal_connect_after(GTK_OBJECT(drawing_area), "realize", GTK_SIGNAL_FUNC(@realize), NULL)
+  g_signal_connect(GTK_OBJECT(drawing_area), "configure_event", GTK_SIGNAL_FUNC(@configure_event), NULL)
+  g_signal_connect(GTK_OBJECT(drawing_area), "expose_event", GTK_SIGNAL_FUNC(@expose_event), NULL)
+  g_signal_connect(GTK_OBJECT(drawing_area), "unrealize", GTK_SIGNAL_FUNC(@unrealize), NULL)
 
-  g_signal_connect (drawing_area, "map_event", @map_event, NULL)
-  g_signal_connect (drawing_area, "unmap_event", @unmap_event, NULL)
-  g_signal_connect (drawing_area, "visibility_notify_event", @visibility_notify_event, NULL)
+  g_signal_connect(GTK_OBJECT(drawing_area), "map_event", GTK_SIGNAL_FUNC(@map_event), NULL)
+  g_signal_connect(GTK_OBJECT(drawing_area), "unmap_event", GTK_SIGNAL_FUNC(@unmap_event), NULL)
+  g_signal_connect(GTK_OBJECT(drawing_area), "visibility_notify_event", GTK_SIGNAL_FUNC(@visibility_notify_event), NULL)
 
-  gtk_box_pack_start (vbox, drawing_area, TRUE, TRUE, 0)
+  gtk_box_pack_start (GTK_BOX(vbox), drawing_area, TRUE, TRUE, 0)
   gtk_widget_show (drawing_area)
 
   ''
@@ -271,7 +271,7 @@ function create_gl_toggle_button (byval glconfig as GdkGLConfig ptr) as GtkWidge
   ''
 
   label = gtk_label_new ("Toggle Animation")
-  gtk_box_pack_start (vbox, label, FALSE, FALSE, 10)
+  gtk_box_pack_start (GTK_BOX(vbox), label, FALSE, FALSE, 10)
   gtk_widget_show (label)
 
   ''
@@ -280,11 +280,11 @@ function create_gl_toggle_button (byval glconfig as GdkGLConfig ptr) as GtkWidge
 
   button = gtk_toggle_button_new ()
 
-  g_signal_connect_swapped (button, "toggled", @toggle_animation, drawing_area)
+  g_signal_connect_swapped(GTK_OBJECT(button), "toggled", GTK_SIGNAL_FUNC(@toggle_animation), drawing_area)
 
   '' Add VBox.
   gtk_widget_show (vbox)
-  gtk_container_add (button, vbox)
+  gtk_container_add (GTK_CONTAINER(button), vbox)
 
   return button
 end function
@@ -332,14 +332,14 @@ end function
   ''
 
   win = gtk_window_new (GTK_WINDOW_TOPLEVEL)
-  gtk_window_set_title (win, "button")
+  gtk_window_set_title (GTK_WINDOW(win), "button")
 
   '' Get automatically redrawn if any of their children changed allocation.
-  gtk_container_set_reallocate_redraws (win, TRUE)
+  gtk_container_set_reallocate_redraws (GTK_CONTAINER(win), TRUE)
   '' Set border width.
-  gtk_container_set_border_width (win, 10)
+  gtk_container_set_border_width (GTK_CONTAINER(win), 10)
 
-  g_signal_connect (win, "delete_event", @gtk_main_quit, NULL)
+  g_signal_connect(GTK_OBJECT(win), "delete_event", GTK_SIGNAL_FUNC(@gtk_main_quit), NULL)
 
   '' 
   '' Toggle button which contains an OpenGL scene.
@@ -347,7 +347,7 @@ end function
 
   button = create_gl_toggle_button (glconfig)
   gtk_widget_show (button)
-  gtk_container_add (win, button)
+  gtk_container_add(GTK_CONTAINER(win), button)
 
   '' 
   '' Show window.
