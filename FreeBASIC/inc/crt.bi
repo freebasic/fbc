@@ -121,7 +121,7 @@ declare function atan cdecl alias "atan" ( byval x as double) as double
 
 ' atan2() already declared
 
-declare sub atexit cdecl alias "atexit" ( )
+declare function atexit cdecl alias "atexit" ( byval as sub cdecl() ) as integer
 
 declare function atof cdecl alias "atof" ( byval s as string ) as double
 

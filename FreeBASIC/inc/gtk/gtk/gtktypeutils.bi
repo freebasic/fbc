@@ -18,6 +18,12 @@ type GtkTypeClass as GTypeClass
 type GtkClassInitFunc as GBaseInitFunc
 type GtkObjectInitFunc as GInstanceInitFunc
 
+#define	GTK_CHECK_CAST(instance, g_type, c_type) _G_TYPE_CIC( instance, g_type, c_type )
+#define	GTK_CHECK_CLASS_CAST(g_class, g_type, c_type) _G_TYPE_CCC( g_class, g_type, c_type )
+#define GTK_CHECK_GET_CLASS(instance, g_type, c_type) _G_TYPE_IGC( instance, g_type, c_type )
+#define	GTK_CHECK_TYPE(instance, g_type) _G_TYPE_CIT( instance, g_type )
+#define	GTK_CHECK_CLASS_TYPE(g_class, g_type) _G_TYPE_CCT( g_class, g_type )
+
 #include once "gtk/gtk/gtktypebuiltins.bi"
 
 declare function gtk_identifier_get_type cdecl alias "gtk_identifier_get_type" () as GType
@@ -30,6 +36,8 @@ type GtkCallbackMarshal as sub cdecl(byval as GtkObject ptr, byval as gpointer, 
 type GtkSignalFunc as sub cdecl()
 type GtkTypeInfo as _GtkTypeInfo
 type GtkSignalMarshaller as GSignalCMarshaller
+
+#define GTK_SIGNAL_FUNC(f) cptr(GtkSignalFunc, f)
 
 type _GtkArg_d_signal_data
 	f as GtkSignalFunc

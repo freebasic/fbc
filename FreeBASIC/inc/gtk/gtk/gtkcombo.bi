@@ -12,6 +12,13 @@
 #include once "gtk/gtk/gtkhbox.bi"
 #include once "gtk/gtk/gtkitem.bi"
 
+#define GTK_TYPE_COMBO              gtk_combo_get_type()
+#define GTK_COMBO(obj)              G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_COMBO, GtkCombo)
+#define GTK_COMBO_CLASS(klass)      G_TYPE_CHECK_CLASS_CAST(klass, GTK_TYPE_COMBO, GtkComboClass)
+#define GTK_IS_COMBO(obj)           G_TYPE_CHECK_INSTANCE_TYPE(obj, GTK_TYPE_COMBO)
+#define GTK_IS_COMBO_CLASS(klass)   G_TYPE_CHECK_CLASS_TYPE(klass, GTK_TYPE_COMBO)
+#define GTK_COMBO_GET_CLASS(obj)    G_TYPE_INSTANCE_GET_CLASS(obj, GTK_TYPE_COMBO, GtkComboClass)
+
 type GtkCombo as _GtkCombo
 type GtkComboClass as _GtkComboClass
 
@@ -50,7 +57,5 @@ declare sub gtk_combo_set_case_sensitive cdecl alias "gtk_combo_set_case_sensiti
 declare sub gtk_combo_set_item_string cdecl alias "gtk_combo_set_item_string" (byval combo as GtkCombo ptr, byval item as GtkItem ptr, byval item_value as string)
 declare sub gtk_combo_set_popdown_strings cdecl alias "gtk_combo_set_popdown_strings" (byval combo as GtkCombo ptr, byval strings as GList ptr)
 declare sub gtk_combo_disable_activate cdecl alias "gtk_combo_disable_activate" (byval combo as GtkCombo ptr)
-
-#define GTK_COMBO(p) cptr(GtkCombo ptr, p)
 
 #endif

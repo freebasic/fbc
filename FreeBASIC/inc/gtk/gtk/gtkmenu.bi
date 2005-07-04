@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtkaccelgroup.bi"
 #include once "gtk/gtk/gtkmenushell.bi"
 
+#define GTK_TYPE_MENU			gtk_menu_get_type()
+#define GTK_MENU(obj)			G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_MENU, GtkMenu)
+#define GTK_MENU_CLASS(klass)	G_TYPE_CHECK_CLASS_CAST(klass, GTK_TYPE_MENU, GtkMenuClass)
+#define GTK_IS_MENU(obj)		G_TYPE_CHECK_INSTANCE_TYPE(obj, GTK_TYPE_MENU)
+#define GTK_IS_MENU_CLASS(klass)	G_TYPE_CHECK_CLASS_TYPE(klass, GTK_TYPE_MENU)
+#define GTK_MENU_GET_CLASS(obj)     G_TYPE_INSTANCE_GET_CLASS(obj, GTK_TYPE_MENU, GtkMenuClass)
+
 type GtkMenu as _GtkMenu
 type GtkMenuClass as _GtkMenuClass
 type GtkMenuPositionFunc as sub cdecl(byval as GtkMenu ptr, byval as gint ptr, byval as gint ptr, byval as gboolean ptr, byval as gpointer)
@@ -81,8 +88,8 @@ declare sub gtk_menu_attach cdecl alias "gtk_menu_attach" (byval menu as GtkMenu
 declare sub gtk_menu_set_monitor cdecl alias "gtk_menu_set_monitor" (byval menu as GtkMenu ptr, byval monitor_num as gint)
 declare function gtk_menu_get_for_attach_widget cdecl alias "gtk_menu_get_for_attach_widget" (byval widget as GtkWidget ptr) as GList ptr
 
-#define gtk_menu_append(menu,child)	gtk_menu_shell_append(menu,child)
-#define gtk_menu_prepend(menu,child) gtk_menu_shell_prepend(menu,child)
-#define gtk_menu_insert(menu,child,pos)	gtk_menu_shell_insert(menu,child,pos)
+#define gtk_menu_append(menu,child)	gtk_menu_shell_append(cptr(GtkMenuShell ptr, menu), child)
+#define gtk_menu_prepend(menu,child) gtk_menu_shell_prepend(cptr(GtkMenuShell ptr, menu), child)
+#define gtk_menu_insert(menu,child,pos)	gtk_menu_shell_insert(cptr(GtkMenuShell ptr, menu), child, pos)
 
 #endif

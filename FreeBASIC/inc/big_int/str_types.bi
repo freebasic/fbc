@@ -10,7 +10,7 @@
 #define __str_types_bi__
 
 type big_int_str
-	str as byte ptr
+	str as zstring ptr
 	len as integer
 	len_allocated as integer
 end type

@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtktypeutils.bi"
 #include once "gtk/gtk/gtkdebug.bi"
 
+#define	GTK_TYPE_OBJECT			gtk_object_get_type()
+#define GTK_OBJECT(object)		GTK_CHECK_CAST(object, GTK_TYPE_OBJECT, GtkObject)
+#define GTK_OBJECT_CLASS(klass)		GTK_CHECK_CLASS_CAST(klass, GTK_TYPE_OBJECT, GtkObjectClass)
+#define GTK_IS_OBJECT(object)		GTK_CHECK_TYPE(object, GTK_TYPE_OBJECT)
+#define GTK_IS_OBJECT_CLASS(klass)	GTK_CHECK_CLASS_TYPE(klass, GTK_TYPE_OBJECT)
+#define	GTK_OBJECT_GET_CLASS(object)	GTK_CHECK_GET_CLASS(object, GTK_TYPE_OBJECT, GtkObjectClass)
+
 enum GtkObjectFlags
 	GTK_IN_DESTRUCTION = 1 shl 0
 	GTK_FLOATING = 1 shl 1

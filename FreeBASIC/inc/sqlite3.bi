@@ -23,7 +23,7 @@ type sqlite_uint64 as ulongint
 
 declare function sqlite3_close cdecl alias "sqlite3_close" (byval as sqlite3 ptr) as integer
 
-type sqlite3_callback as integer ptr
+type sqlite3_callback as function cdecl (byval userdata as any ptr, byval argc as integer, byval argv as zstring ptr ptr, byval colname as zstring ptr ptr) as integer
 
 declare function sqlite3_exec cdecl alias "sqlite3_exec" (byval as sqlite3 ptr, byval sql as string, byval as sqlite3_callback, byval as any ptr, byval errmsg as byte ptr ptr) as integer
 

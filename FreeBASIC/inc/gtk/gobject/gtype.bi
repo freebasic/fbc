@@ -163,13 +163,13 @@ declare sub g_type_class_unref_uncached cdecl alias "g_type_class_unref_uncached
 declare sub g_type_add_interface_check cdecl alias "g_type_add_interface_check" (byval check_data as gpointer, byval check_func as GTypeInterfaceCheckFunc)
 declare sub g_type_remove_interface_check cdecl alias "g_type_remove_interface_check" (byval check_data as gpointer, byval check_func as GTypeInterfaceCheckFunc)
 declare function g_type_value_table_peek cdecl alias "g_type_value_table_peek" (byval type as GType) as GTypeValueTable ptr
-declare function g_type_check_instance cdecl alias "g_type_check_instance" (byval instance as GTypeInstance ptr) as gboolean
-declare function g_type_check_instance_cast cdecl alias "g_type_check_instance_cast" (byval instance as GTypeInstance ptr, byval iface_type as GType) as GTypeInstance ptr
+declare function g_type_check_instance_ cdecl alias "g_type_check_instance" (byval instance as GTypeInstance ptr) as gboolean
+declare function g_type_check_instance_cast_ cdecl alias "g_type_check_instance_cast" (byval instance as GTypeInstance ptr, byval iface_type as GType) as GTypeInstance ptr
 declare function g_type_check_instance_is_a cdecl alias "g_type_check_instance_is_a" (byval instance as GTypeInstance ptr, byval iface_type as GType) as gboolean
-declare function g_type_check_class_cast cdecl alias "g_type_check_class_cast" (byval g_class as GTypeClass ptr, byval is_a_type as GType) as GTypeClass ptr
+declare function g_type_check_class_cast_ cdecl alias "g_type_check_class_cast" (byval g_class as GTypeClass ptr, byval is_a_type as GType) as GTypeClass ptr
 declare function g_type_check_class_is_a cdecl alias "g_type_check_class_is_a" (byval g_class as GTypeClass ptr, byval is_a_type as GType) as gboolean
 declare function g_type_check_is_value_type cdecl alias "g_type_check_is_value_type" (byval type as GType) as gboolean
-declare function g_type_check_value cdecl alias "g_type_check_value" (byval value as GValue ptr) as gboolean
+declare function g_type_check_value_ cdecl alias "g_type_check_value" (byval value as GValue ptr) as gboolean
 declare function g_type_check_value_holds cdecl alias "g_type_check_value_holds" (byval value as GValue ptr, byval type as GType) as gboolean
 declare function g_type_test_flags cdecl alias "g_type_test_flags" (byval type as GType, byval flags as guint) as gboolean
 declare function g_type_name_from_instance cdecl alias "g_type_name_from_instance" (byval instance as GTypeInstance ptr) as zstring ptr
@@ -183,5 +183,31 @@ declare sub g_object_type_init cdecl alias "g_object_type_init" ()
 declare sub g_param_spec_types_init cdecl alias "g_param_spec_types_init" ()
 declare sub g_value_transforms_init cdecl alias "g_value_transforms_init" ()
 declare sub g_signal_init cdecl alias "g_signal_init" ()
+
+#ifndef G_DISABLE_CAST_CHECKS
+#  define _G_TYPE_CIC(ip, gt, ct) cptr(ct ptr, g_type_check_instance_cast_( cptr(GTypeInstance ptr, ip), gt ))
+#  define _G_TYPE_CCC(cp, gt, ct) cptr(ct ptr, g_type_check_class_cast_( cptr(GTypeClass ptr, cp), gt ))
+#else
+#  define _G_TYPE_CIC(ip, gt, ct) cptr(ct ptr, ip)
+#  define _G_TYPE_CCC(cp, gt, ct) cptr(ct ptr, cp)
+#endif
+
+#define _G_TYPE_CHI(ip)	g_type_check_instance_( cptr(GTypeInstance ptr, ip) )
+#define _G_TYPE_CHV(vl)	g_type_check_value_( cptr(GValue ptr, vl) )
+#define _G_TYPE_IGC(ip, gt, ct) cptr(ct ptr, cptr(GTypeInstance ptr, ip)->g_class )
+#define _G_TYPE_IGI(ip, gt, ct) cptr(ct ptr, g_type_interface_peek( cptr(GTypeInstance ptr, ip)->g_class, gt ))
+
+#define G_TYPE_CHECK_INSTANCE(instance)	_G_TYPE_CHI( cptr(GTypeInstance ptr, instance) )
+#define G_TYPE_CHECK_INSTANCE_CAST(instance, g_type, c_type) _G_TYPE_CIC( instance, g_type, c_type )
+#define G_TYPE_CHECK_INSTANCE_TYPE(instance, g_type) _G_TYPE_CIT( instance, g_type )
+#define G_TYPE_INSTANCE_GET_CLASS(instance, g_type, c_type) _G_TYPE_IGC( instance, g_type, c_type )
+#define G_TYPE_INSTANCE_GET_INTERFACE(instance, g_type, c_type) _G_TYPE_IGI( instance, g_type, c_type )
+#define G_TYPE_CHECK_CLASS_CAST(g_class, g_type, c_type) _G_TYPE_CCC( g_class, g_type, c_type )
+#define G_TYPE_CHECK_CLASS_TYPE(g_class, g_type) _G_TYPE_CCT( g_class, g_type )
+#define G_TYPE_CHECK_VALUE(value) _G_TYPE_CHV( value )
+#define G_TYPE_CHECK_VALUE_TYPE(value, g_type) _G_TYPE_CVH( value, g_type )
+#define G_TYPE_FROM_INSTANCE(instance) G_TYPE_FROM_CLASS( cptr(GTypeInstance ptr, instance)->g_class )
+#define G_TYPE_FROM_CLASS(g_class) cptr(GTypeClass ptr, g_class)->g_type
+#define G_TYPE_FROM_INTERFACE(g_iface) cptr(GTypeInterface ptr, g_iface)->g_type
 
 #endif

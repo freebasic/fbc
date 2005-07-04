@@ -32,15 +32,15 @@
 
 type lua_State as any
 
-#define lua_CFunction function(byval L as lua_State ptr) as integer
+type lua_CFunction as function cdecl(byval L as lua_State ptr) as integer
 
 
 ''
 '' functions that read/write blocks when loading/dumping Lua chunks
 ''
-#define lua_Chunkreader function(byval L as lua_State ptr, byval ud as any ptr, byval sz as integer ptr) as zstring ptr
+type lua_Chunkreader as function cdecl(byval L as lua_State ptr, byval ud as any ptr, byval sz as integer ptr) as zstring ptr
 
-#define lua_Chunkwriter function(byval L as lua_State ptr, byval p as any ptr, byval sz as integer, byval ud as any ptr ) as integer
+type lua_Chunkwriter as function cdecl(byval L as lua_State ptr, byval p as any ptr, byval sz as integer, byval ud as any ptr ) as integer
 
 
 ''
@@ -279,7 +279,7 @@ type lua_Debug
   i_ci		as integer
 end type
 
-type lua_Hook as sub(byval L as lua_State ptr, byval ar as lua_Debug ptr)
+type lua_Hook as sub cdecl(byval L as lua_State ptr, byval ar as lua_Debug ptr)
 
 declare function lua_getstack LUA_API alias "lua_getstack" (byval L as lua_State ptr, byval level as integer, byval ar as lua_Debug ptr) as integer
 declare function lua_getinfo LUA_API alias "lua_getinfo" (byval L as lua_State ptr, byval what as string, byval ar as lua_Debug ptr) as integer

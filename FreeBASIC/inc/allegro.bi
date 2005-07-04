@@ -684,28 +684,28 @@ type GFX_DRIVER
    name as byte ptr
    desc as byte ptr
    ascii_name as byte ptr
-   init as sub
-   exit as sub
-   scroll as sub
-   vsync as sub
-   set_palette as sub
-   request_scroll as sub
-   poll_scroll as sub
-   enable_triple_buffer as sub
-   create_video_bitmap as sub
-   destroy_video_bitmap as sub
-   show_video_bitmap as sub
-   request_video_bitmap as sub
-   create_system_bitmap as sub
-   destroy_system_bitmap as sub
-   set_mouse_sprite as sub
-   show_mouse as sub
-   hide_mouse as sub
-   move_mouse as sub
-   drawing_mode as sub
-   save_video_state as sub
-   restore_video_state as sub
-   fetch_mode_list as sub
+   init as sub cdecl
+   exit as sub cdecl
+   scroll as sub cdecl
+   vsync as sub cdecl
+   set_palette as sub cdecl
+   request_scroll as sub cdecl
+   poll_scroll as sub cdecl
+   enable_triple_buffer as sub cdecl
+   create_video_bitmap as sub cdecl
+   destroy_video_bitmap as sub cdecl
+   show_video_bitmap as sub cdecl
+   request_video_bitmap as sub cdecl
+   create_system_bitmap as sub cdecl
+   destroy_system_bitmap as sub cdecl
+   set_mouse_sprite as sub cdecl
+   show_mouse as sub cdecl
+   hide_mouse as sub cdecl
+   move_mouse as sub cdecl
+   drawing_mode as sub cdecl
+   save_video_state as sub cdecl
+   restore_video_state as sub cdecl
+   fetch_mode_list as sub cdecl
    w as integer
    h as integer
    linear as integer
@@ -918,7 +918,7 @@ Type QUAT
 End Type
 
 Type DIALOG
-	proc as sub(msg As Integer, d As DIALOG Ptr, c As Integer)
+	proc as sub cdecl(msg As Integer, d As DIALOG Ptr, c As Integer)
 	x As Integer				' position and size of the object
 	y As Integer
 	w As Integer
@@ -936,7 +936,7 @@ End Type
 
 Type MENU					' a popup menu
 	text As UByte Ptr			' menu item text
-	proc as sub()			' callback function
+	proc as sub cdecl()			' callback function
 	child As MENU Ptr			' to allow nested menus
 	flags As Integer			' flags about the menu state
 	dp As UByte Ptr				' any data the menu might require
@@ -965,7 +965,7 @@ Type MENU_PLAYER				' stored information about the state of an active GUI menu
 	y As Integer
 	w As Integer
 	h As Integer
-	proc as sub()			' callback function
+	proc as sub cdecl()			' callback function
 	saved As BITMAP Ptr			' saved what was underneath it
 
 	mouse_button_was_pressed As Integer	' set if mouse button pressed on last iteration
@@ -1046,39 +1046,39 @@ Type SYSTEM_DRIVER
 	name as byte ptr
 	desc as byte ptr
 	ascii_name as byte ptr
-	init as function() as integer
-	exit as sub()
-	get_executable_name as sub(byval output as byte ptr, byval size as integer)
-	find_resource as function(byval dest as byte ptr, byval resource as byte ptr, byval size as integer) as integer
-	set_window_title as sub(byval name as byte ptr)
-	set_window_close_button as function(byval enable as integer) as integer
-	set_window_close_hook as sub(byval proc as sub())
-	message as sub(byval msg as byte ptr)
-	assert_ as sub(byval msg as byte ptr)
-	save_console_state as sub()
-	restore_console_state as sub()
-	create_bitmap as function(byval color_depth as integer, byval width as integer, byval height as integer) as BITMAP ptr
-	created_bitmap as sub(byval bmp as BITMAP ptr)
-	create_sub_bitmap as function(byval parent as BITMAP ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer) as BITMAP ptr
-	created_sub_bitmap as sub(byval bmp as BITMAP ptr, byval parent as BITMAP ptr)
-	destroy_bitmap as function(byval bmp as BITMAP ptr) as integer
-	read_hardware_palette as sub()
-	set_palette_range as sub(byval p as RGB ptr, byval _from as integer, byval _to as integer, byval retracesync as integer)
-	get_vtable as function(byval color_depth as integer) as GFX_VTABLE ptr
-	set_display_switch_mode as function(byval mode as integer) as integer
-	set_display_switch_callback as function(byval _dir as integer, byval cb as sub()) as integer
-	remove_display_switch_callback as sub(byval cb as sub())
-	display_switch_lock as sub(byval _lock as integer, byval foreground as integer)
-	desktop_color_depth as function() as integer
-	get_desktop_resolution as function(byval width as integer ptr, byval height as integer ptr) as integer
-	yield_timeslice as sub()
-	gfx_drivers as function() as _DRIVER_INFO ptr
-	digi_drivers as function() as _DRIVER_INFO ptr
-	midi_drivers as function() as _DRIVER_INFO ptr
-	keyboard_drivers as function() as _DRIVER_INFO ptr
-	mouse_drivers as function() as _DRIVER_INFO ptr
-	joystick_drivers as function() as _DRIVER_INFO ptr
-	timer_drivers as function() as _DRIVER_INFO ptr
+	init as function cdecl() as integer
+	exit as sub cdecl()
+	get_executable_name as sub cdecl(byval output as byte ptr, byval size as integer)
+	find_resource as function cdecl(byval dest as byte ptr, byval resource as byte ptr, byval size as integer) as integer
+	set_window_title as sub cdecl(byval name as byte ptr)
+	set_window_close_button as function cdecl(byval enable as integer) as integer
+	set_window_close_hook as sub cdecl(byval proc as sub cdecl())
+	message as sub cdecl(byval msg as byte ptr)
+	assert_ as sub cdecl(byval msg as byte ptr)
+	save_console_state as sub cdecl()
+	restore_console_state as sub cdecl()
+	create_bitmap as function cdecl(byval color_depth as integer, byval width as integer, byval height as integer) as BITMAP ptr
+	created_bitmap as sub cdecl(byval bmp as BITMAP ptr)
+	create_sub_bitmap as function cdecl(byval parent as BITMAP ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer) as BITMAP ptr
+	created_sub_bitmap as sub cdecl(byval bmp as BITMAP ptr, byval parent as BITMAP ptr)
+	destroy_bitmap as function cdecl(byval bmp as BITMAP ptr) as integer
+	read_hardware_palette as sub cdecl()
+	set_palette_range as sub cdecl(byval p as RGB ptr, byval _from as integer, byval _to as integer, byval retracesync as integer)
+	get_vtable as function cdecl(byval color_depth as integer) as GFX_VTABLE ptr
+	set_display_switch_mode as function cdecl(byval mode as integer) as integer
+	set_display_switch_callback as function cdecl(byval _dir as integer, byval cb as sub cdecl()) as integer
+	remove_display_switch_callback as sub cdecl(byval cb as sub cdecl())
+	display_switch_lock as sub cdecl(byval _lock as integer, byval foreground as integer)
+	desktop_color_depth as function cdecl() as integer
+	get_desktop_resolution as function cdecl(byval width as integer ptr, byval height as integer ptr) as integer
+	yield_timeslice as sub cdecl()
+	gfx_drivers as function cdecl() as _DRIVER_INFO ptr
+	digi_drivers as function cdecl() as _DRIVER_INFO ptr
+	midi_drivers as function cdecl() as _DRIVER_INFO ptr
+	keyboard_drivers as function cdecl() as _DRIVER_INFO ptr
+	mouse_drivers as function cdecl() as _DRIVER_INFO ptr
+	joystick_drivers as function cdecl() as _DRIVER_INFO ptr
+	timer_drivers as function cdecl() as _DRIVER_INFO ptr
 end type
 
 type TIMER_DRIVER
@@ -1086,15 +1086,15 @@ type TIMER_DRIVER
 	name as byte ptr
 	desc as byte ptr
 	ascii_name as byte ptr
-	init as function() as integer
-	exit as sub()
-	install_int as function(byval proc as sub(), byval speed as integer) as integer
-	remove_int as sub(byval proc as sub())
-	install_param_int as function(byval proc as sub(byval param as any ptr), byval _param as any ptr, byval speed as integer) as integer
-	remove_param_int as sub(byval proc as sub(byval param as any ptr), byval _param as any ptr)
-	can_simulate_retrace as function() as integer
-	simulate_retrace as sub(byval enable as integer)
-	rest as sub(byval time_ as integer, byval callback as sub())
+	init as function cdecl() as integer
+	exit as sub cdecl()
+	install_int as function cdecl(byval proc as sub cdecl(), byval speed as integer) as integer
+	remove_int as sub cdecl(byval proc as sub cdecl())
+	install_param_int as function cdecl(byval proc as sub cdecl(byval param as any ptr), byval _param as any ptr, byval speed as integer) as integer
+	remove_param_int as sub cdecl(byval proc as sub cdecl(byval param as any ptr), byval _param as any ptr)
+	can_simulate_retrace as function cdecl() as integer
+	simulate_retrace as sub cdecl(byval enable as integer)
+	rest as sub cdecl(byval time_ as integer, byval callback as sub cdecl())
 end type
 
 type _VTABLE_INFO
@@ -1102,7 +1102,7 @@ type _VTABLE_INFO
 	vtable as GFX_VTABLE ptr
 end type
 
-type DIALOG_PROC as function(byval msg as integer, byval d as DIALOG ptr, byval c as integer) as integer
+type DIALOG_PROC as function cdecl(byval msg as integer, byval d as DIALOG ptr, byval c as integer) as integer
 
 ' -- externs --
 
@@ -1139,17 +1139,17 @@ Extern Import mouse_sprite  Alias "mouse_sprite" As BITMAP Ptr
 Extern Import mouse_x_focus Alias "mouse_x_focus" As Integer
 Extern Import mouse_y_focus Alias "mouse_y_focus" As Integer
 Extern Import freeze_mouse_flag Alias "freeze_mouse_flag" As Integer
-Extern Import mouse_callback Alias "mouse_callback" As Sub(ByVal flags As Integer)
+Extern Import mouse_callback Alias "mouse_callback" As Sub cdecl(ByVal flags As Integer)
 
 Extern Import retrace_count Alias "retrace_count" As Integer
-Extern Import retrace_proc Alias "retrace_proc" As Sub()
+Extern Import retrace_proc Alias "retrace_proc" As Sub cdecl()
 
 Extern Import keyboard_needs_poll Alias "keyboard_needs_poll" As Integer
 Extern Import key(0 to KEY_MAX-1) Alias "key" As Byte
 Extern Import key_shifts Alias "key_shifts" As Integer
-Extern Import keyboard_callback Alias "keyboard_callback" As Function(ByVal key As Integer) As Integer
-Extern Import keyboard_ucallback Alias "keyboard_ucallback" As Function(ByVal key As Integer, ByVal scancode As Integer Ptr) As Integer
-Extern Import keyboard_lowlevel_callback Alias "keyboard_lowlevel_callback" As Function(ByVal key As Integer) As Integer
+Extern Import keyboard_callback Alias "keyboard_callback" As Function cdecl(ByVal key As Integer) As Integer
+Extern Import keyboard_ucallback Alias "keyboard_ucallback" As Function cdecl(ByVal key As Integer, ByVal scancode As Integer Ptr) As Integer
+Extern Import keyboard_lowlevel_callback Alias "keyboard_lowlevel_callback" As Function cdecl(ByVal key As Integer) As Integer
 Extern Import three_finger_flag Alias "three_finger_flag" As Integer
 Extern Import key_led_flag Alias "key_led_flag" As Integer
 
@@ -1173,12 +1173,12 @@ Extern Import color_map Alias "color_map" As COLOR_MAP Ptr
 Extern Import midi_pos Alias "midi_pos" As Integer
 Extern Import midi_loop_start Alias "midi_loop_start" As Integer
 Extern Import midi_loop_end Alias "midi_loop_end" As Integer
-Extern Import midi_msg_callback Alias "midi_msg_callback" As Sub()
-Extern Import midi_meta_callback Alias "midi_meta_callback" As Sub()
-Extern Import midi_sysex_callback Alias "midi_sysex_callback" As Sub()
+Extern Import midi_msg_callback Alias "midi_msg_callback" As Sub cdecl()
+Extern Import midi_meta_callback Alias "midi_meta_callback" As Sub cdecl()
+Extern Import midi_sysex_callback Alias "midi_sysex_callback" As Sub cdecl()
 
-Extern Import digi_recorder Alias "digi_recorder" As Sub()
-Extern Import midi_recorder Alias "midi_recorder" As Sub()
+Extern Import digi_recorder Alias "digi_recorder" As Sub cdecl()
+Extern Import midi_recorder Alias "midi_recorder" As Sub cdecl()
 
 Extern Import fli_bitmap Alias "fli_bitmap" As BITMAP Ptr
 Extern Import fli_palette Alias "fli_palette" As RGB Ptr
@@ -1248,22 +1248,22 @@ extern import gui_fg_color as integer
 extern import gui_mg_color as integer
 extern import gui_bg_color as integer
 extern import gui_font_baseline as integer
-extern import gui_mouse_x as function() as integer
-extern import gui_mouse_y as function() as integer
-extern import gui_mouse_z as function() as integer
-extern import gui_mouse_b as function() as integer
-extern import gui_menu_draw_menu as sub(byval x as integer, byval y as integer, byval w as integer, byval h as integer)
-extern import gui_menu_draw_menu_item as sub(byval m as MENU ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval bar as integer, byval sel as integer)
+extern import gui_mouse_x as function cdecl() as integer
+extern import gui_mouse_y as function cdecl() as integer
+extern import gui_mouse_z as function cdecl() as integer
+extern import gui_mouse_b as function cdecl() as integer
+extern import gui_menu_draw_menu as sub cdecl(byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+extern import gui_menu_draw_menu_item as sub cdecl(byval m as MENU ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer, byval bar as integer, byval sel as integer)
 
 ' -- prototypes --
 
 ' system
-Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByVal errno_ptr As Integer Ptr, ByVal atexit_ptr as sub()) As Integer
+Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByVal errno_ptr As Integer Ptr, ByVal atexit_ptr as function cdecl( byval as sub cdecl() ) as integer) As Integer
 Declare Sub allegro_exit CDecl Alias "allegro_exit" ()
 Declare Sub allegro_message CDecl Alias "allegro_message" (ByVal s As String)
 Declare Sub set_window_title CDecl Alias "set_window_title" (ByVal name As String)
 Declare Function set_close_button CDecl Alias "set_close_button" (ByVal enable As Integer) As Integer
-Declare Sub set_window_close_hook CDecl Alias "set_window_close_hook" (ByVal proc As Sub)
+Declare Sub set_window_close_hook CDecl Alias "set_window_close_hook" (ByVal proc As Sub cdecl())
 Declare Function desktop_color_depth CDecl Alias "desktop_color_depth" () As Integer
 Declare Function get_desktop_resolution CDecl Alias "get_desktop_resolution" (ByRef width As Integer, ByRef height As Integer) As Integer
 Declare Sub yield_timeslice CDecl Alias "yield_timeslice" ()
@@ -1280,7 +1280,7 @@ Declare Sub push_config_state CDecl Alias "push_config_state" ()
 Declare Sub pop_config_state CDecl Alias "pop_config_state" ()
 Declare Sub flush_config_file CDecl Alias "flush_config_file" ()
 Declare Sub reload_config_texts CDecl Alias "reload_config_texts" (ByVal new_language As String)
-Declare Sub hook_config_section CDecl Alias "hook_config_section" (ByVal section As String, ByVal intgetter As Function(ByVal name As String, ByVal idef As Integer) As Integer, ByVal stringgetter As Function(ByVal name As String, ByVal sdef As String) As Integer, ByVal stringsetter As Sub (ByVal name As String, ByVal value As String))
+Declare Sub hook_config_section CDecl Alias "hook_config_section" (ByVal section As String, ByVal intgetter As Function cdecl(ByVal name As String, ByVal idef As Integer) As Integer, ByVal stringgetter As Function cdecl(ByVal name As String, ByVal sdef As String) As Integer, ByVal stringsetter As Sub cdecl (ByVal name As String, ByVal value As String))
 Declare Function config_is_hooked CDecl Alias "config_is_hooked" (ByVal section As String) As Integer
 Declare Function get_config_string CDecl Alias "get_config_string" (ByVal section As String, ByVal name As String, Byval sdef As String) as zstring ptr
 Declare Function get_config_int CDecl Alias "get_config_int" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
@@ -1310,27 +1310,27 @@ Declare Sub set_mouse_range CDecl Alias "set_mouse_range" (ByVal x1 As Integer, 
 Declare Sub set_mouse_speed CDecl Alias "set_mouse_speed" (ByVal xspeed As Integer, ByVal yspeed As Integer)
 Declare Sub set_mouse_sprite CDecl Alias "set_mouse_sprite" (ByVal sprite As BITMAP Ptr)
 Declare Sub set_mouse_sprite_focus CDecl Alias "set_mouse_sprite_focus" (ByVal x As Integer, ByVal y As Integer)
-Declare Sub get_mouse_mickeys CDecl Alias "get_mouse_mickeys" (ByRef mickeyx As Integer, ByRef mickeyy As Integer)
+Declare Sub get_mouse_mickeys CDecl Alias "get_mouse_mickeys" (Byval mickeyx As Integer ptr, Byval mickeyy As Integer ptr)
 
 ' timer routines
 Declare Function install_timer CDecl Alias "install_timer" () As Integer
 Declare Sub remove_timer CDecl Alias "remove_timer" ()
-Declare Function install_int CDecl Alias "install_int" (ByVal proc As Sub(), ByVal speed As Integer) As Integer
-Declare Function install_int_ex CDecl Alias "install_int_ex" (ByVal proc As Sub(), ByVal speed As Integer) As Integer
-Declare Sub remove_int CDecl Alias "remove_int" (ByVal proc As Sub())
-Declare Function install_param_int CDecl Alias "install_param_int" (ByVal proc As Sub(ByVal p As Integer), ByVal param As Integer, ByVal speed As Integer) As Integer
-Declare Function install_param_int_ex CDecl Alias "install_param_int_ex" (ByVal proc As Sub(ByVal p As Integer), ByVal param As Integer, ByVal speed As Integer) As Integer
-Declare Sub remove_param_int CDecl Alias "remove_param_int" (ByVal proc As Sub(ByVal p As Integer), ByVal param As Integer)
+Declare Function install_int CDecl Alias "install_int" (ByVal proc As Sub cdecl(), ByVal speed As Integer) As Integer
+Declare Function install_int_ex CDecl Alias "install_int_ex" (ByVal proc As Sub cdecl(), ByVal speed As Integer) As Integer
+Declare Sub remove_int CDecl Alias "remove_int" (ByVal proc As Sub cdecl())
+Declare Function install_param_int CDecl Alias "install_param_int" (ByVal proc As Sub cdecl(ByVal p As Integer), ByVal param As Integer, ByVal speed As Integer) As Integer
+Declare Function install_param_int_ex CDecl Alias "install_param_int_ex" (ByVal proc As Sub cdecl(ByVal p As Integer), ByVal param As Integer, ByVal speed As Integer) As Integer
+Declare Sub remove_param_int CDecl Alias "remove_param_int" (ByVal proc As Sub cdecl(ByVal p As Integer), ByVal param As Integer)
 Declare Function timer_can_simulate_retrace CDecl Alias "timer_can_simulate_retrace" () As Integer
 Declare Sub timer_simulate_retrace CDecl Alias "timer_simulate_retrace" (ByVal enable As Integer)
 Declare Function timer_is_using_retrace CDecl Alias "timer_is_using_retrace" () As Integer
 Declare Sub rest CDecl Alias "rest" (ByVal time As Long)
-Declare Sub rest_callback CDecl Alias "rest_callback" (ByVal time As Long, ByVal callback As Sub())
+Declare Sub rest_callback CDecl Alias "rest_callback" (ByVal time As Long, ByVal callback As Sub cdecl())
 
 ' keyboard routines
 Declare Function install_keyboard CDecl Alias "install_keyboard" () As Integer
 Declare Sub remove_keyboard CDecl Alias "remove_keyboard" ()
-Declare Sub install_keyboard_hooks CDecl Alias "install_keyboard_hooks" (ByVal keypressed As Function() As Integer, ByVal readkey As Function() As Integer)
+Declare Sub install_keyboard_hooks CDecl Alias "install_keyboard_hooks" (ByVal keypressed As Function cdecl() As Integer, ByVal readkey As Function cdecl() As Integer)
 Declare Function poll_keyboard CDecl Alias "poll_keyboard" () As Integer
 Declare Function keypressed CDecl Alias "keypressed" () As Integer
 Declare Function readkey CDecl Alias "readkey" () As Integer
@@ -1360,8 +1360,8 @@ Declare Function get_gfx_mode_list CDecl Alias "get_gfx_mode_list" (ByVal card A
 Declare Sub destroy_gfx_mode_list CDecl Alias "destroy_gfx_mode_list" (ByVal mode_list As GFX_MODE_LIST Ptr)
 Declare Function set_gfx_mode CDecl Alias "set_gfx_mode" (ByVal card As Integer, ByVal w As Integer, ByVal h As Integer, ByVal v_w As Integer, ByVal v_h As Integer)
 Declare Function set_display_switch_mode CDecl Alias "set_display_switch_mode" (ByVal mode As Integer) As Integer
-Declare Function set_display_switch_callback CDecl Alias "set_display_switch_callback" (ByVal dir As Integer, ByVal cb As Sub()) As Integer
-Declare Sub remove_display_switch_callback CDecl Alias "remove_display_switch_callback" (ByVal cb As Sub())
+Declare Function set_display_switch_callback CDecl Alias "set_display_switch_callback" (ByVal dir As Integer, ByVal cb As Sub cdecl()) As Integer
+Declare Sub remove_display_switch_callback CDecl Alias "remove_display_switch_callback" (ByVal cb As Sub cdecl())
 Declare Function get_display_switch_mode CDecl Alias "get_display_switch_mode" () As Integer
 Declare Function enable_triple_buffer CDecl Alias "enable_triple_buffer" () As Integer
 Declare Function scroll_screen CDecl Alias "scroll_screen" (ByVal x As Integer, ByVal y As Integer) As Integer
@@ -1410,7 +1410,7 @@ Declare Function save_bitmap CDecl Alias "save_bitmap" (ByVal filename As String
 Declare Function save_bmp CDecl Alias "save_bmp" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
 Declare Function save_pcx CDecl Alias "save_pcx" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
 Declare Function save_tga CDecl Alias "save_tga" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
-Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function(ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr, ByVal save As sub(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr))
+Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function cdecl(ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr, ByVal save As sub cdecl(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr))
 Declare Sub set_color_conversion CDecl Alias "set_color_conversion" (ByVal mode As Integer)
 Declare Function get_color_conversion CDecl Alias "get_color_conversion" () As Integer
 
@@ -1486,20 +1486,20 @@ Declare Function getpixel24 CDecl Alias "_getpixel24" (ByVal bmp As BITMAP Ptr, 
 Declare Function getpixel32 CDecl Alias "_getpixel32" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer) As Integer
 Declare Sub vline CDecl Alias "vline" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y1 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub hline CDecl Alias "hline" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y As Integer, ByVal x2 As Integer, ByVal c As Integer)
-Declare Sub do_line CDecl Alias "do_line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
+Declare Sub do_line CDecl Alias "do_line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal d As Integer, ByVal proc As Sub cdecl(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
 Declare Sub line CDecl Alias "line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub fastline CDecl Alias "fastline" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub triangle CDecl Alias "triangle" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal x3 As Integer, ByVal y3 As Integer, ByVal c As Integer)
 Declare Sub polygon CDecl Alias "polygon" (ByVal bmp As BITMAP Ptr, ByVal vertices As Integer, ByVal points As Integer Ptr, ByVal c As Integer)
 Declare Sub rect CDecl Alias "rect" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
 Declare Sub rectfill CDecl Alias "rectfill" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
-Declare Sub do_circle CDecl Alias "do_circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
+Declare Sub do_circle CDecl Alias "do_circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal d As Integer, ByVal proc As Sub cdecl(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
 Declare Sub circle CDecl Alias "circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer) ' note: this is called 'circle' in Allegro docs
 Declare Sub circlefill CDecl Alias "circlefill" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer)
-Declare Sub do_ellipse CDecl Alias "do_ellipse" (ByVal bmp As BITMAP Ptr, BYVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
+Declare Sub do_ellipse CDecl Alias "do_ellipse" (ByVal bmp As BITMAP Ptr, BYVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal d As Integer, ByVal proc As Sub cdecl(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
 Declare Sub ellipse CDecl Alias "ellipse" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal c As Integer)
 Declare Sub ellipsefill CDecl Alias "ellipsefill" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal c As Integer)
-Declare Sub do_arc CDecl Alias "do_arc" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal a1 As fixed, ByVal a2 As fixed, ByVal r As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
+Declare Sub do_arc CDecl Alias "do_arc" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal a1 As fixed, ByVal a2 As fixed, ByVal r As Integer, ByVal d As Integer, ByVal proc As Sub cdecl(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
 Declare Sub arc CDecl Alias "arc" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal ang1 As fixed, ByVal ang2 As fixed, ByVal r As Integer, ByVal c As Integer)
 Declare Sub calc_spline CDecl Alias "calc_spline" (ByVal points As Integer Ptr, ByVal npts As Integer, ByRef x As Integer, ByRef y As Integer)
 Declare Sub spline CDecl Alias "spline" (ByVal bmp As BITMAP Ptr, ByVal points As Integer Ptr, ByVal c As Integer)
@@ -1580,10 +1580,10 @@ Declare Sub render_scene CDecl Alias "render_scene" ()
 Declare Sub drawing_mode CDecl Alias "drawing_mode" ( byval mode as integer, byval pattern as BITMAP ptr, byval x_anchor as integer, byval y_anchor as integer )
 Declare Sub xor_mode CDecl Alias "xor_mode" (ByVal iOn As Integer)
 Declare Sub solid_mode CDecl Alias "solid_mode" ()
-Declare Sub create_trans_table CDecl Alias "create_trans_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_color_table CDecl Alias "create_color_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal blend As Sub(ByVal pal As RGB Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As RGB Ptr), ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_blender_table CDecl Alias "create_blender_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_trans_table CDecl Alias "create_trans_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub cdecl(ByVal ipos As Integer))
+Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub cdecl(ByVal ipos As Integer))
+Declare Sub create_color_table CDecl Alias "create_color_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal blend As Sub cdecl(ByVal pal As RGB Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As RGB Ptr), ByVal callback As Sub cdecl(ByVal ipos As Integer))
+Declare Sub create_blender_table CDecl Alias "create_blender_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub cdecl(ByVal ipos As Integer))
 Declare Sub set_trans_blender CDecl Alias "set_trans_blender" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 Declare Sub set_alpha_blender CDecl Alias "set_alpha_blender" ()
 Declare Sub set_write_alpha_blender CDecl Alias "set_write_alpha_blender" ()
@@ -1599,12 +1599,12 @@ Declare Sub set_luminance_blender CDecl Alias "set_luminance_blender" (byVal r A
 Declare Sub set_multiply_blender CDecl Alias "set_multiply_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 Declare Sub set_saturation_blender CDecl Alias "set_saturation_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 Declare Sub set_screen_blender CDecl Alias "set_screen_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_blender_mode CDecl Alias "set_blender_mode" (ByVal b15 As sub(), ByVal b16 as sub(), ByVal b24 as sub(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 as sub(), ByVal b16 as sub(), ByVal b24 as sub(), ByVal b32 as sub(), ByVal b15x as sub(), ByVal b16x as sub(), ByVal b24x as sub(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
+Declare Sub set_blender_mode CDecl Alias "set_blender_mode" (ByVal b15 As sub cdecl(), ByVal b16 as sub cdecl(), ByVal b24 as sub cdecl(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
+Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 as sub cdecl(), ByVal b16 as sub cdecl(), ByVal b24 as sub cdecl(), ByVal b32 as sub cdecl(), ByVal b15x as sub cdecl(), ByVal b16x as sub cdecl(), ByVal b24x as sub cdecl(), ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
 
 ' converting between color formats
 Declare Function bestfit_color CDecl Alias "bestfit_color" (ByVal pal As RGB ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
-Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
+Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub cdecl(ByVal ipos As Integer))
 Declare Sub hsv_to_rgb CDecl Alias "hsv_to_rgb" (ByVal h As Single, ByVal s As Single, ByVal v As Single, ByRef r As Integer, ByRef g As Integer, ByRef b As Integer)
 Declare Sub rgb_to_hsv CDecl Alias "rgb_to_hsv" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef h As Single, ByRef s As Single, ByRef v As Single)
 
@@ -1614,8 +1614,8 @@ Declare Function bmp_read_line CDecl Alias "bmp_read_line" (ByVal bmp As BITMAP 
 Declare Function bmp_unwrite_line CDecl Alias "bmp_unwrite_line" (ByVal bmp As BITMAP Ptr) As unsigned Integer
 
 ' FLIC routines
-Declare Function play_fli CDecl Alias "play_fli" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
-Declare Function play_memory_fli CDecl Alias "play_memory_fli" (ByVal fli_data As Integer, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
+Declare Function play_fli CDecl Alias "play_fli" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function cdecl() As Integer) As Integer
+Declare Function play_memory_fli CDecl Alias "play_memory_fli" (ByVal fli_data As Integer, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function cdecl() As Integer) As Integer
 Declare Function open_fli CDecl Alias "open_fli" (ByVal filename As String) As Integer
 Declare Function open_memory_fli CDecl Alias "open_memory_fli" (ByVal fli_data As Integer) As Integer
 Declare Sub close_fli CDecl Alias "close_fli" ()
@@ -1705,13 +1705,13 @@ Declare Function read_sound_input CDecl Alias "read_sound_input" (ByVal buffer A
 
 ' datafile routines
 Declare Function load_datafile CDecl Alias "load_datafile" (ByVal filename As String) As DATAFILE Ptr
-Declare Function load_datafile_callback CDecl Alias "load_datafile_callback" (ByVal filename As String, ByVal callback As Sub(ByVal d As DATAFILE Ptr)) As DATAFILE Ptr
+Declare Function load_datafile_callback CDecl Alias "load_datafile_callback" (ByVal filename As String, ByVal callback As Sub cdecl(ByVal d As DATAFILE Ptr)) As DATAFILE Ptr
 Declare Sub unload_datafile CDecl Alias "unload_datafile" (ByVal dat As DATAFILE Ptr)
 Declare Function load_datafile_object CDecl Alias "load_datafile_object" (ByVal filename As String, ByVal objectname As String) As DATAFILE Ptr
 Declare Sub unload_datafile_object CDecl Alias "unload_datafile_object" (ByVal dat As DATAFILE Ptr)
 Declare Function find_datafile_object CDecl Alias "find_datafile_object" (ByVal dat As DATAFILE Ptr, ByVal objectname As String) As DATAFILE Ptr
 Declare Function get_datafile_property CDecl Alias "get_datafile_property" (ByVal dat As DATAFILE Ptr, ByVal typ As Integer) as zstring ptr
-Declare Sub register_datafile_object CDecl Alias "register_datafile_object" (ByVal id As Integer, ByVal load As Sub(ByVal f As PACKFILE Ptr, ByVal size As Long), ByVal destroy As Sub(ByVal dat As Integer))
+Declare Sub register_datafile_object CDecl Alias "register_datafile_object" (ByVal id As Integer, ByVal load As Sub cdecl(ByVal f As PACKFILE Ptr, ByVal size As Long), ByVal destroy As Sub cdecl(ByVal dat As Integer))
 Declare Sub fixup_datafile CDecl Alias "fixup_datafile" (ByVal dat As DATAFILE Ptr)
 
 ' fixed point math routines
@@ -1836,8 +1836,8 @@ Declare Function gfx_mode_select_ex CDecl Alias "gfx_mode_select_ex" (ByVal card
 ' debug facilities
 declare sub al_assert cdecl alias "al_assert" ( byval file as string, byval _line as integer )
 declare sub al_trace cdecl alias "al_trace" ( byval msg as string, ... )
-declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function(byval msg as byte ptr) as integer)
-declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function(byval msg as byte ptr) as integer)
+declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function cdecl(byval msg as byte ptr) as integer)
+declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function cdecl(byval msg as byte ptr) as integer)
 
 ' ---
 

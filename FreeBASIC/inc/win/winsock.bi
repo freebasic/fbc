@@ -212,14 +212,17 @@ end union
 #define INADDR_LOOPBACK	 &h7f000001
 #define INADDR_BROADCAST	&hffffffff
 #define INADDR_NONE	&hffffffff
+
 type sockaddr_in
 	sin_family		as short
 	sin_port		as u_short
 	sin_addr		as in_addr
 	sin_zero(0 to 7) as byte
 end type
+
 #define WSADESCRIPTION_LEN	256
 #define WSASYS_STATUS_LEN	128
+
 type WSAData
 	wVersion		as short
 	wHighVersion	as short
@@ -265,10 +268,12 @@ type LPWSADATA as WSADATA ptr
 #define IP_DEFAULT_MULTICAST_TTL   1
 #define IP_DEFAULT_MULTICAST_LOOP  1
 #define IP_MAX_MEMBERSHIPS	 20
+
 type ip_mreq
 	imr_multiaddr		as in_addr
 	imr_interface		as in_addr
 end type
+
 #define INVALID_SOCKET (not 0)
 #define SOCKET_ERROR	(-1)
 #define SOCK_STREAM	1
@@ -303,18 +308,18 @@ end type
 #define	AF_BAN	21
 #define AF_ATM	22
 #define AF_INET6	23
-
 #define AF_MAX	24
+
 type sockaddr
 	sa_family		as u_short
 	sa_data(0 to 13) as byte
 end type
 
-
 type sockproto
 	sp_family		as u_short
 	sp_protocol		as u_short
 end type
+
 #define PF_UNSPEC	AF_UNSPEC
 #define PF_UNIX	AF_UNIX
 #define PF_INET	AF_INET

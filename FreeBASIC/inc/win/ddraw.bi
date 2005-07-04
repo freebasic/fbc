@@ -19,6 +19,13 @@ end type
 #endif
 
 
+type IDirectDraw_ as IDirectDraw
+type IDirectDrawSurface_ as IDirectDrawSurface
+type IDirectDrawPalette_ as IDirectDrawPalette
+type IDirectDrawClipper_ as IDirectDrawClipper
+type IDirectDrawGammaControl_ as IDirectDrawGammaControl
+
+
 type IUnknown_VTBL
 	QueryInterface 			as function (byval this as any ptr, byval riid as integer ptr, byval ppvObj as any ptr) as integer
 	AddRef 					as function (byval this as any ptr) as integer
@@ -376,23 +383,23 @@ type IDirectDraw_VTBL
 	' IDirectDraw methods
 	Compact 				as function (byval this as any ptr) as integer
 	CreateClipper 			as function (byval this as any ptr, byval dwFlags as uinteger, byval lplpDDClipper as any ptr, byval pUnkOuter as IUnknown ptr) as integer
-	CreatePalette 			as function (byval this as any ptr, byval dwFlags as uinteger, byval lpColorTable as PALETTEENTRY ptr, lplpDDPalette as any ptr, pUnkOuter as IUnknown ptr) as integer
-	CreateSurface 			as function (byval this as any ptr, byval arg1 as integer, byval arg2 as integer, byval arg3 as integer) as integer
-	DuplicateSurface 		as function (byval this as any ptr, byval lpDDSurface as any ptr, byval lplpDupDDSurface as any ptr) as integer
+	CreatePalette 			as function (byval this as any ptr, byval dwFlags as uinteger, byval lpColorTable as PALETTEENTRY ptr, byval lplpDDPalette as any ptr, byval pUnkOuter as IUnknown ptr) as integer
+	CreateSurface 			as function (byval this as any ptr, byval lpDDSurfaceDesc as DDSURFACEDESC ptr, byval lplpDDSurface as IDirectDrawSurface_ ptr ptr, byval pUnkOuter as IUnknown ptr) as integer
+	DuplicateSurface 		as function (byval this as any ptr, byval lpDDSurface as any ptr, byval lplpDupDDSurface as any ptr ptr) as integer
 	EnumDisplayModes 		as function (byval this as any ptr, byval dwFlags as uinteger, byval lpDDSurfaceDesc as DDSURFACEDESC ptr, byval lpContext as any ptr, byval lpEnumCallback as sub) as integer
 	EnumSurfaces 			as function (byval this as any ptr, byval dwFlags as uinteger, byval lpDDSD as DDSURFACEDESC ptr, byval lpContext as any ptr, byval lpEnumCallback as sub) as integer
 	FlipToGDISurface 		as function (byval this as any ptr) as integer
 	GetCaps 				as function (byval this as any ptr, byval lpDDDriverCaps as DDCAPS ptr, byval lpDDHELCaps as DDCAPS ptr) as integer
 	GetDisplayMode 			as function (byval this as any ptr, byval lpDDSurfaceDesc as DDSURFACEDESC ptr) as integer
 	GetFourCCCodes 			as function (byval this as any ptr, byval lpNumCodes as uinteger ptr, byval lpCodes as uinteger ptr) as integer
-	GetGDISurface 			as function (byval this as any ptr, byval lplpGDIDDSurface as any ptr) as integer
+	GetGDISurface 			as function (byval this as any ptr, byval lplpGDIDDSurface as any ptr ptr) as integer
 	GetMonitorFequency 		as function (byval this as any ptr, byval lpdwFrequency as uinteger ptr) as integer
 	GetScanLine 			as function (byval this as any ptr, byval lpdwScanLine as uinteger ptr) as integer
 	GetVerticalBlankStatus 	as function (byval this as any ptr, byval lpbIsInV as integer ptr) as integer
 	Initialize 				as function (byval this as any ptr, byval lpGUID as GUID ptr) as integer
 	RestoreDisplayMode 		as function (byval this as any ptr) as integer
-	SetCooperativeLevel 	as function (byval this as any ptr, byval arg1 as integer, byval arg2 as integer) as integer
-	SetDisplayMode 			as function (byval this as any ptr, byval arg1 as integer, byval arg2 as integer, byval arg3 as integer) as integer
+	SetCooperativeLevel 	as function (byval this as any ptr, byval hwnd_ as integer, byval dword_ as integer) as integer
+	SetDisplayMode 			as function (byval this as any ptr, byval dword_ as integer, byval dword_ as integer, byval dword_ as integer) as integer
 	WaitForVerticalBlank 	as function (byval this as any ptr, byval dwFlags as uinteger, byval hEvent as uinteger) as integer
 end type
 
@@ -474,20 +481,20 @@ type IDirectDrawSurface_VTBL
 	EnumAttachedSurfaces 	as function (byval this as any ptr, byval lpContext as any ptr, byval lpEnumSurfacesCallback as sub) as integer
 	EnumOverlayZOrders 		as function (byval this as any ptr, byval dwFlags as uinteger, byval lpContext as any ptr, byval lpfnCallback as sub) as integer
 	Flip 					as function (byval this as any ptr, byval arg1 as integer, byval arg2 as integer) as integer
-	GetAttachedSurface 		as function (byval this as any ptr, byval arg1 as integer, byval arg2 as integer) as integer
+	GetAttachedSurface 		as function (byval this as any ptr, byval lpDDCaps as DDSCAPS ptr, byval lplpDDSurface as IDirectDrawSurface_ ptr ptr) as integer
 	GetBltStatus 			as function (byval this as any ptr, byval dwFlags as uinteger) as integer
 	GetCaps 				as function (byval this as any ptr, byval lpDDSCaps as DDSCAPS ptr) as integer
-	GetClipper 				as function (byval this as any ptr, byval lplpDDClipper as any ptr) as integer
+	GetClipper 				as function (byval this as any ptr, byval lplpDDClipper as any ptr ptr) as integer
 	GetColorKey 			as function (byval this as any ptr, byval dwFlags as uinteger, byval lpDDColorKey as DDCOLORKEY ptr) as integer
 	GetDC 					as function (byval this as any ptr, byval lphDC as any ptr) as integer
 	GetFlipStatus 			as function (byval this as any ptr, byval dwFlags as uinteger) as integer
 	GetOverlayPosition 		as function (byval this as any ptr, byval lplX as integer ptr, byval lplY as integer ptr) as integer
-	GetPalette 				as function (byval this as any ptr, byval lplpDDPalette as any ptr) as integer
+	GetPalette 				as function (byval this as any ptr, byval lplpDDPalette as any ptr ptr) as integer
 	GetPixelFormat 			as function (byval this as any ptr, byval lpDDPixelFormat as DDPIXELFORMAT ptr) as integer
 	GetSurfaceDesc 			as function (byval this as any ptr, byval lpDDSurfaceDesc as DDSURFACEDESC ptr) as integer
 	Initialize 				as function (byval this as any ptr, byval lpDD as any ptr, byval lpDDSurfaceDesc as DDSURFACEDESC ptr) as integer
 	IsLost 					as function (byval this as any ptr) as integer
-	Lock 					as function (byval this as any ptr, byval r as RECT ptr, byval arg1 as integer, byval arg2 as integer, byval arg3 as integer) as integer
+	Lock 					as function (byval this as any ptr, byval r as RECT ptr, byval lpDDSurfaceDesc as DDSURFACEDESC ptr, byval dword_ as integer, byval handle_ as integer) as integer
 	ReleaseDC 				as function (byval this as any ptr, byval hDC as uinteger) as integer
 	Restore 				as function (byval this as any ptr) as integer
 	SetClipper 				as function (byval this as any ptr, byval lpDDClipper as any ptr) as integer
@@ -1169,7 +1176,7 @@ const DDENUMRET_OK%                           = 1
 
 
 declare function DirectDrawCreate lib "ddraw" alias "DirectDrawCreate" (byval lpGUID as GUID ptr, _
-																 		byval lpDD as IDirectDraw ptr, _
+																 		byval lplpDD as IDirectDraw ptr ptr, _
 																 		byval pUnkOuter as IUnknown ptr) as integer
 
 declare function DirectDrawEnumerate lib "ddraw" alias "DirectDrawEnumerateA" ( byval lpCallback as sub, _
@@ -1180,12 +1187,12 @@ declare function DirectDrawEnumerateEx lib "ddraw" alias "DirectDrawEnumerateExA
 																					byval dwFlags as uinteger) as integer
 
 declare function DirectDrawCreateEx lib "ddraw" alias "DirectDrawCreateEx" ( byval lpGuid as GUID ptr, _
-				 									  					   	 byval lplpDD as any ptr, _
+				 									  					   	 byval lplpDD as any ptr ptr, _
 																			 byval iid as GUID ptr, _
 																			 byval pUnkOuter as IUnknown ptr) as integer
 
 declare function DirectDrawCreateClipper lib "ddraw" alias "DirectDrawCreateClipper" ( byval dwFlags as uinteger, _
-				 						 	 		 	   							   byval lplpDDClipper as any ptr, _
+				 						 	 		 	   							   byval lplpDDClipper as any ptr ptr, _
 																					   byval pUnkOuter as IUnknown ptr) as integer
 
 #endif ''DDRAW_BI
