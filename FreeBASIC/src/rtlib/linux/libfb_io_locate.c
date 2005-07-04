@@ -43,6 +43,8 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 	if ((row <= 0) || (col <= 0))
 		fb_ConsoleGetXY(&x, &y);
 
+	BG_LOCK();
+	
 	if (col > 0)
 		x = col;
 	if (row > 0)
@@ -65,6 +67,8 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		fputs("\e[?25h", fb_con.f_out);
 		visible = 0x10000;
 	}
+	
+	BG_UNLOCK();
 
     fb_FileSetLineLen( 0, x - 1 );
 

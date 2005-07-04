@@ -41,7 +41,7 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 	fb_ConsoleGetSize(&cols, NULL);
 	
 	do {
-		while (((k = fb_hGetCh()) == -1) || (k & 0x100))
+		while (((k = fb_hGetCh(TRUE)) == -1) || (k & 0x100))
 			;
 		
 		fb_ConsoleGetXY(&x, &y);

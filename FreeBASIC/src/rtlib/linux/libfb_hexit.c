@@ -34,10 +34,12 @@ void fb_hExitConsole( void )
 	int bottom;
 	
 	if (fb_con.inited) {
-		pthread_mutex_lock(&fb_con.bg_mutex);
+		BG_LOCK();
 		if (fb_con.keyboard_exit)
 			fb_con.keyboard_exit();
-		pthread_mutex_unlock(&fb_con.bg_mutex);
+		if (fb_con.mouse_exit)
+			fb_con.mouse_exit();
+		BG_UNLOCK();
 		
 		bottom = fb_ConsoleGetMaxRow();
 		if (((fb_viewTopRow != -1) || (fb_viewBotRow != -1)) &&

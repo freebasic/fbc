@@ -43,6 +43,9 @@
 #define INIT_XTERM			2
 #define INIT_ETERM			3
 
+#define BG_LOCK()			pthread_mutex_lock(&fb_con.bg_mutex);
+#define BG_UNLOCK()			pthread_mutex_unlock(&fb_con.bg_mutex);
+
 #ifdef MULTITHREADED
 extern pthread_mutex_t fb_global_mutex;
 extern pthread_mutex_t fb_string_mutex;
@@ -54,6 +57,7 @@ extern pthread_mutex_t fb_string_mutex;
 # define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
 # define FB_TLSGET(key)				pthread_getspecific((key))
 #endif
+
 
 typedef struct FBCONSOLE
 {
@@ -72,11 +76,15 @@ typedef struct FBCONSOLE
 	int (*keyboard_init)(void);
 	void (*keyboard_exit)(void);
 	void (*keyboard_handler)(void);
+	int (*mouse_init)(void);
+	void (*mouse_exit)(void);
+	void (*mouse_handler)(void);
+	void (*mouse_update)(int cb, int cx, int cy);
 } FBCONSOLE;
 
 extern FBCONSOLE fb_con;
 
-extern int fb_hGetCh(void);
+extern int fb_hGetCh(int remove);
 extern void fb_hResize(void);
 extern int fb_hInitConsole(int);
 extern void fb_hExitConsole(void);

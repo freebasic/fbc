@@ -143,12 +143,14 @@ static int keyboard_console_getch(void)
 {
 	int key = -1;
 	
-	pthread_mutex_lock(&fb_con.bg_mutex);
+	BG_LOCK();
+	
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
 	}
-	pthread_mutex_unlock(&fb_con.bg_mutex);
+	
+	BG_UNLOCK();
 	
 	return key;
 }

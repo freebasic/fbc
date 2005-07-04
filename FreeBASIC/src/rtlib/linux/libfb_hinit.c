@@ -79,11 +79,14 @@ static void signal_handler(int sig)
 static void *bg_thread(void *arg)
 {
 	while (fb_con.inited) {
-		pthread_mutex_lock(&fb_con.bg_mutex);
+		
+		BG_LOCK();
 		if (fb_con.keyboard_handler)
 			fb_con.keyboard_handler();
+		if (fb_con.mouse_handler)
+			fb_con.mouse_handler();
+		BG_UNLOCK();
 		
-		pthread_mutex_unlock(&fb_con.bg_mutex);
 		usleep(30000);
 	}
 	return NULL;
@@ -213,11 +216,13 @@ int fb_hInitConsole ( int init )
 	/* Set IBM PC 437 charset */
 	fputs("\e(U", fb_con.f_out);
 	
-	/* Initialize keyboard handler if set */
-	pthread_mutex_lock(&fb_con.bg_mutex);
+	/* Initialize keyboard and mouse handlers if set */
+	BG_LOCK();
 	if (fb_con.keyboard_init)
 		fb_con.keyboard_init();
-	pthread_mutex_unlock(&fb_con.bg_mutex);
+	if (fb_con.mouse_init)
+		fb_con.mouse_init();
+	BG_UNLOCK();
 	
 	return 0;
 }
