@@ -67,10 +67,12 @@ void fb_hExitConsole( void )
 void fb_hEnd ( int errlevel )
 {
 	fb_hExitConsole();
-	fb_con.inited = FALSE;
-	pthread_join(fb_con.bg_thread, NULL);
-	pthread_mutex_destroy(&fb_con.bg_mutex);
-
+	if (fb_con.inited) {
+		fb_con.inited = FALSE;
+		pthread_join(fb_con.bg_thread, NULL);
+		pthread_mutex_destroy(&fb_con.bg_mutex);
+	}
+	
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&fb_global_mutex);
