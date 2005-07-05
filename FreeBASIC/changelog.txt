@@ -26,6 +26,8 @@ Version 0.14 Beta:
 - chr$(0) can now be output with PRINT too (mjs)
 - Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 
+
+
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - pointer type-casting: CPTR( DataType, Expression ), as in: "*cptr(byte ptr, somePointer) = 255"
@@ -59,6 +61,8 @@ Version 0.14 Beta:
 - the '#' prefix can now be used in macros when the text representation of a macro argument is wanted (v1c)
 - ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
 - Allow to compile the "linux" version with CYGWIN (non-functional yet) (mjs)
+- signals and some exceptions like seg. violation and div by 0 can now be handled by users in standard ON ERROR handlers 
+  if compiling with error checking on (using the -e or -ex cmd-line options) (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
