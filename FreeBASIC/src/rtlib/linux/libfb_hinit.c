@@ -110,7 +110,7 @@ void fb_hResize()
 	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
 	if (win.ws_row == 0xFFFF) {
 		fputs("\e[18t", fb_con.f_out);
-		if (fscanf(fb_con.f_in, "\e[8;%d;%dt", &r, &c) == 2) {
+		if (fscanf(stdin, "\e[8;%d;%dt", &r, &c) == 2) {
 			win.ws_row = r;
 			win.ws_col = c;
 		}
