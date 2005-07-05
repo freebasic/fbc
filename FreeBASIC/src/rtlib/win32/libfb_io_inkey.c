@@ -24,9 +24,8 @@
  *
  */
 
-#include "fb.h"
-
 #include <conio.h>
+#include "fb.h"
 
 /*:::::*/
 FBSTRING *fb_ConsoleInkey( void )

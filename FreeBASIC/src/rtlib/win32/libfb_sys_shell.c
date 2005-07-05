@@ -25,23 +25,22 @@
  */
 
 #include <stdlib.h>
-
 #include "fb.h"
 
 /*:::::*/
 FBCALL int fb_Shell ( FBSTRING *program )
 {
 	int errcode = -1;
-	
+
 	FB_STRLOCK();
-	
+
 	if( (program) && (program->data))
 		errcode = system( program->data );
-	
+
 	/* del if temp */
 	fb_hStrDelTemp( program );
 
 	FB_STRUNLOCK();
-	
+
 	return errcode;
 }

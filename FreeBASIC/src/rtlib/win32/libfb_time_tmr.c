@@ -24,11 +24,8 @@
  *
  */
 
-#include <malloc.h>
 #include <time.h>
 #include "fb.h"
-
-#include <windows.h>
 
 #define TIMER_NONE		0
 #define TIMER_NORMAL	1
@@ -43,7 +40,7 @@ static double frequency;
 FBCALL double fb_Timer ( void )
 {
 	LARGE_INTEGER count;
-	
+
 	if( timer == TIMER_NONE ) {
 		if( QueryPerformanceFrequency( &count ) ) {
 			frequency = 1.0 / (double)count.QuadPart;
@@ -52,7 +49,7 @@ FBCALL double fb_Timer ( void )
 		else
 			timer = TIMER_NORMAL;
 	}
-	
+
 	if( timer == TIMER_NORMAL )
 		return (double)GetTickCount( ) * 0.001;
 	else {

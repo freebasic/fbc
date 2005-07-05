@@ -25,9 +25,6 @@
  */
 
 #include <string.h>
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <io.h>
 #include "fb.h"
 
@@ -81,7 +78,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	char		*name;
 
 	FB_STRLOCK();
-	
+
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
@@ -134,7 +131,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		res = &fb_strNullDesc;
 
 	fb_hStrDelTemp( filespec );
-	
+
 	FB_STRUNLOCK();
 
 	return res;

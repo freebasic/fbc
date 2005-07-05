@@ -24,13 +24,7 @@
  *
  */
 
-#include <malloc.h>
 #include <string.h>
-
-#include <process.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "fb.h"
 
 /*:::::*/

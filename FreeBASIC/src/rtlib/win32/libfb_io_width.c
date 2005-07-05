@@ -28,10 +28,6 @@
 
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
-
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )
 {
@@ -43,7 +39,7 @@ int fb_ConsoleWidth( int cols, int rows )
    	max = GetLargestConsoleWindowSize( fb_out_handle );
 
    	GetConsoleScreenBufferInfo( fb_out_handle, &info );
-   	
+
    	cur = info.dwSize.X | (info.dwSize.Y << 16);
 
    	if( cols > 0 )
@@ -66,9 +62,7 @@ int fb_ConsoleWidth( int cols, int rows )
       	rect.Bottom = max.Y;
 
 	/* */
-	fb_viewTopRow = rect.Top;
-	fb_viewBotRow = rect.Bottom;
-    /* */
+	fb_ConsoleSetTopBotRows( rect.Top, rect.Bottom );
 
    	SetConsoleScreenBufferSize( fb_out_handle, size );
    	SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );

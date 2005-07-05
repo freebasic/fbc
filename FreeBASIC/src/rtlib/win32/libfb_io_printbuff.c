@@ -28,9 +28,6 @@
 #include <stdio.h>
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {

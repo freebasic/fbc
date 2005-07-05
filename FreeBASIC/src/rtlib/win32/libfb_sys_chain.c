@@ -26,11 +26,7 @@
 
 #include <malloc.h>
 #include <string.h>
-
 #include <process.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 #include "fb.h"
 
 /*:::::*/
@@ -41,7 +37,7 @@ FBCALL int fb_Chain ( FBSTRING *program )
     int		res = 0;
 
 	FB_STRLOCK();
-	
+
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		res = _spawnl( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
@@ -49,7 +45,7 @@ FBCALL int fb_Chain ( FBSTRING *program )
 
 	/* del if temp */
 	fb_hStrDelTemp( program );
-	
+
 	FB_STRUNLOCK();
 
 	return res;

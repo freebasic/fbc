@@ -27,9 +27,6 @@
 #include "fb.h"
 #include "fb_colors.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /* globals */
 int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
 					 FB_COLOR_GREEN, FB_COLOR_CYAN,

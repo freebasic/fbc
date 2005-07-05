@@ -24,12 +24,8 @@
  *
  */
 
-#include "fb.h"
 #include <stdio.h>
-
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
+#include "fb.h"
 
 /*:::::*/
 FBCALL void *fb_DylibLoad( FBSTRING *library )
@@ -37,7 +33,7 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	void *res = NULL;
 
 	FB_STRLOCK();
-	
+
 	if( (library) && (library->data) )
 		res = LoadLibrary( library->data );
 
@@ -45,7 +41,7 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	fb_hStrDelTemp( library );
 
 	FB_STRUNLOCK();
-	
+
 	return res;
 }
 
@@ -60,7 +56,7 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 		library = GetModuleHandle( NULL );
 
 	FB_STRLOCK();
-	
+
 	if( (symbol) && (symbol->data) )
 	{
 		proc = (void*) GetProcAddress( (HINSTANCE) library, symbol->data );
@@ -79,7 +75,7 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 	fb_hStrDelTemp( symbol );
 
 	FB_STRUNLOCK();
-	
+
 	return proc;
 }
 

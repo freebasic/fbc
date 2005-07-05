@@ -26,9 +26,6 @@
 
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /*:::::*/
 void fb_hSleep ( int msecs )
 {

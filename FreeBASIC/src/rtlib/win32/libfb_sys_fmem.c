@@ -26,9 +26,6 @@
 
 #include "fb.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 /*:::::*/
 FBCALL unsigned int fb_GetMemAvail ( int mode )
 {
