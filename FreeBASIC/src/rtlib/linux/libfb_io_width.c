@@ -30,9 +30,19 @@
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )
 {
+	char buffer[16];
 	int cur = (fb_con.inited? fb_con.w | (fb_con.h << 16) : 80 | (25 << 16));
 	
-	/* Changing console size isn't allowed in linux */
+	if ((fb_con.inited == INIT_XTERM) || (fb_con.inited == INIT_ETERM)) {
+		if (cols <= 0)
+			cols = fb_con.w;
+		if (rows <= 0)
+			rows = fb_con.h;
+		sprintf(buffer, "\e[8;%d;%dt", rows, cols);
+		fputs(buffer, fb_con.f_out);
+		fb_con.resized = TRUE;
+		fb_hResize();
+	}
 
 	return cur;
 }
