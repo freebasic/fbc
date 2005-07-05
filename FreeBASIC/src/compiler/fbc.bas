@@ -104,7 +104,7 @@ declare function delFiles 				( ) as integer
     	print "xbox";
     	#endif
     	
-    	print " HOST=";
+    	print ", HOST=";
     	#ifdef __FB_WIN32__
     	print "win32"
     	#elseif defined(__FB_LINUX__)
@@ -379,6 +379,7 @@ sub printOptions
 	print "-e", "Add error checking"
 	print "-entry <name>", "Set a non-standard entry point, see -m"
 	print "-ex", "Add error checking with RESUME support"
+	print "-export", "Export symbols for dynamic linkage"
 	print "-g", "Add debug info (testing)"
 	print "-i <name>", "Add a path to search for include files"
 	print "-l <name>", "Add a library file to linker's list"
@@ -387,7 +388,6 @@ sub printOptions
 	print "-mt", "Link with thread-safe runtime library for multithreaded apps"
 	print "-nodeflibs", "Do not include the default libraries"
 	print "-noerrline", "Do not show source line where error occured"
-	print "-noexport", "Do not export any symbol for dynamic linkage"
 #ifdef TARGET_WIN32
 	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
 	'''''print "-nounderscore", "Don't add the underscore prefix to function names"
@@ -454,7 +454,7 @@ function processOptions as integer
 			'' compiler options, will be processed by processCompOptions
 			case "e", "ex", "mt", "profile", _
 				 "nodeflibs", "noerrline", "nostdcall", _
-				 "nounderscore", "noexport", "underscore", "stdcall"
+				 "nounderscore", "export", "underscore", "stdcall"
 
 			'' cpu type
 			case "arch"
@@ -691,8 +691,8 @@ function processCompOptions as integer
 			case "nodeflibs"
 				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
 
-			case "noexport"
-				fbSetOption( FB_COMPOPT_EXPORT, FALSE )
+			case "export"
+				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 
 			case else
 				fbc.processCompOptions( argv(i) )

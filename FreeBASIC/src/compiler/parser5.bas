@@ -268,6 +268,9 @@ function cSubOrFuncHeader( byval issub as integer, _
     		hReportError FB_ERRMSG_SYNTAXERROR
     		exit function
     	end if
+    	if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
+    		hReportWarning( FB_WARNINGMSG_CANNOTEXPORT )
+    	end if
     	alloctype or= FB_ALLOCTYPE_EXPORT or FB_ALLOCTYPE_PUBLIC
     end if
 

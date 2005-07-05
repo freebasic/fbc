@@ -234,7 +234,7 @@ sub fbSetDefaultOptions
 	env.clopt.nounderprefix	= FALSE
 	env.clopt.outtype		= FB_OUTTYPE_EXECUTABLE
 	env.clopt.warninglevel 	= 0
-	env.clopt.export		= TRUE
+	env.clopt.export		= FALSE
 	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE

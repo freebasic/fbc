@@ -25,8 +25,7 @@ Version 0.14 Beta:
 - OPTION's will now be used too in the context of the file that included a header if it changed the default OPTION's (v1c)
 - chr$(0) can now be output with PRINT too (mjs)
 - Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
-
-
+- Replaced -noexport with -export command-line option, compiler will now warn if EXPORT is used without -export (lillo)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)

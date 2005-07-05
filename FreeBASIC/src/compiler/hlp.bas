@@ -67,7 +67,8 @@ end type
 		( 0, "Passing scalar as pointer" ), _
 		( 0, "Passing different pointer types" ), _
 		( 0, "Suspicious pointer assignment" ), _
-		( 0, "Implicit conversion" ) _
+		( 0, "Implicit conversion" ), _
+		( 0, "Cannot export symbol without -export option" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => { _
