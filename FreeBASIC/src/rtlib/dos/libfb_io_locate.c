@@ -52,8 +52,7 @@ int fb_ConsoleLocate( int row, int col, int cursor )
   	else
   		y = wherey();
 
-	if (fb_viewTopRow >= 0)
-		y = y - fb_viewTopRow;
+	y -= fb_ConsoleGetTopRow( );
 
 	if (cursor >= 0) {
 		visible = cursor ? 0x10000 : 0;

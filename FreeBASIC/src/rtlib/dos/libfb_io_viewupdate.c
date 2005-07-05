@@ -34,17 +34,19 @@ void fb_ConsoleViewUpdate( void )
 {
 	int top, bot;
 
-	if (fb_viewTopRow >= 0)
-		top = fb_viewTopRow + 1;
+	top = fb_ConsoleGetTopRow( );
+	if( top >= 0 )
+		++top;
 	else
 		top = 1;
 
-	if (fb_viewBotRow >= 0)
-		bot = fb_viewBotRow + 1;
+	bot = fb_ConsoleGetBotRow( );
+	if( bot >= 0 )
+		++bot;
 	else
-		bot = ScreenRows();
+		bot = ScreenRows( );
 
 	/* left, top, right, bottom */
-	window(1, top, ScreenCols(), bot);
+	window( 1, top, ScreenCols( ), bot );
 
 }

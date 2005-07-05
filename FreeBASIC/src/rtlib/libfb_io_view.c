@@ -32,46 +32,21 @@ FBCALL void fb_ConsoleView( int toprow, int botrow )
 {
    	int maxrow = fb_ConsoleGetMaxRow( ) - 1;
 
-	FB_LOCK();
-
    	if( toprow > 0 )
-   	{
-   		fb_viewTopRow = toprow - 1;
-   		if( fb_viewTopRow < 0 )
-      		fb_viewTopRow = 0;
-    }
+   		--toprow;
     else
-    	fb_viewTopRow = 0;
+    	toprow = 0;
 
    	if( botrow > 0 )
-   	{
-   		fb_viewBotRow = botrow - 1;
-   		if( fb_viewBotRow > maxrow )
-      		fb_viewBotRow = maxrow;
-    }
+   		--botrow;
     else
-    	fb_viewBotRow = maxrow;
+    	botrow = maxrow;
 
-	FB_UNLOCK();
+    fb_ConsoleSetTopBotRows( toprow, botrow );
 
     fb_ConsoleViewUpdate( );
 
     /* to top row */
-    fb_ConsoleLocate( fb_viewTopRow + 1, 1, -1 );
+    fb_ConsoleLocate( toprow + 1, 1, -1 );
 }
-
-/*:::::*/
-void fb_ConsoleGetView( int *toprow, int *botrow )
-{
-
-	if( fb_viewTopRow == -1 || fb_viewBotRow == -1 )
-	{
-	    fb_viewTopRow = 0;
-	    fb_viewBotRow = fb_ConsoleGetMaxRow( ) - 1;
-	}
-
-	*toprow = fb_viewTopRow + 1;
-    *botrow = fb_viewBotRow + 1;
-}
-
 

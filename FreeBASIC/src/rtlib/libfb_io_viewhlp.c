@@ -18,22 +18,46 @@
  */
 
 /*
- * libfb_io_viewupdate.c -- view print update (console, no gfx) for Linux
+ * io_getview.c -- view print helpers (console, no gfx)
  *
- * chng: jan/2005 written [DrV]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
 #include "fb.h"
-#include "fb_linux.h"
 
+static int view_toprow = -1, view_botrow = -1;
 
 /*:::::*/
-void fb_ConsoleViewUpdate(void)
+int fb_ConsoleGetTopRow( void )
 {
-	if (!fb_con.inited)
-		return;
+	if( view_toprow == -1 )
+		view_toprow = 0;
 
-	fprintf(fb_con.f_out, "\e[%d;%dr", fb_ConsoleGetTopRow() + 1, fb_ConsoleGetBotRow() + 1);
+	return view_toprow;
 }
+
+/*:::::*/
+int fb_ConsoleGetBotRow( void )
+{
+	if( view_botrow == -1 )
+		view_botrow = fb_ConsoleGetMaxRow( ) - 1;
+
+	return view_botrow;
+}
+
+/*:::::*/
+void fb_ConsoleSetTopBotRows( int top, int bot )
+{
+    view_toprow = top;
+    view_botrow = bot;
+}
+
+/*:::::*/
+void fb_ConsoleGetView( int *toprow, int *botrow )
+{
+	*toprow = fb_ConsoleGetTopRow( ) + 1;
+    *botrow = fb_ConsoleGetBotRow( ) + 1;
+}
+
+
