@@ -32,7 +32,7 @@
 void fb_hExitConsole( void )
 {
 	int bottom;
-	
+
 	if (fb_con.inited) {
 		BG_LOCK();
 		if (fb_con.keyboard_exit)
@@ -42,8 +42,7 @@ void fb_hExitConsole( void )
 		BG_UNLOCK();
 		
 		bottom = fb_ConsoleGetMaxRow();
-		if (((fb_viewTopRow != -1) || (fb_viewBotRow != -1)) &&
-		    ((fb_viewTopRow != 0) || (fb_viewBotRow != bottom - 1))) {
+		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
 			/* Restore scrolling region to whole screen and clear */
 			fprintf(fb_con.f_out, "\e[1;%dr", bottom);
 			fputs("\e[2J", fb_con.f_out);
@@ -56,7 +55,7 @@ void fb_hExitConsole( void )
 		fputs("\e[?25h", fb_con.f_out);
 		fflush(fb_con.f_out);
 		tcsetattr(fb_con.h_out, TCSAFLUSH, &fb_con.old_term_out);
-		
+
 		/* Restore old console keyboard state */
 		fflush(fb_con.f_in);
 		fcntl(fb_con.h_in, F_SETFL, fb_con.old_in_flags);
@@ -76,13 +75,13 @@ void fb_hEnd ( int errlevel )
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&fb_global_mutex);
 	pthread_mutex_destroy(&fb_string_mutex);
-	
+
 	/* allocate thread local storage vars for runtime error handling */
 	pthread_key_delete(fb_errctx.handler);
 	pthread_key_delete(fb_errctx.num);
 	pthread_key_delete(fb_errctx.reslbl);
 	pthread_key_delete(fb_errctx.resnxtlbl);
-	
+
 	/* allocate thread local storage vars for input context */
 	pthread_key_delete(fb_inpctx.f);
 	pthread_key_delete(fb_inpctx.i);

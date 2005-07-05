@@ -25,16 +25,12 @@
  */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include "fb.h"
-
 
 /* globals */
 FB_HOOKSTB fb_hooks = { NULL };
 FBSTRING fb_strNullDesc = { NULL, 0 };
 FB_FILE fb_fileTB[FB_MAX_FILES];
-int fb_viewTopRow = -1;
-int fb_viewBotRow = -1;
 
 FB_ERRORCTX fb_errctx = { 0 };
 FB_INPCTX fb_inpctx = { 0 };
@@ -54,3 +50,5 @@ FBCALL void fb_Init ( int argc, char **argv )
 	/////atexit( &fb_End );
 
 }
+
+

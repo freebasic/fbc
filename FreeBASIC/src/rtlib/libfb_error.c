@@ -31,12 +31,19 @@
 #include "fb_rterr.h"
 
 static const char *error_msg[] = {
-	"",				/* FB_RTERROR_OK */
-	"illegal function call",	/* FB_RTERROR_ILLEGALFUNCTIONCALL */
-	"file not found",		/* FB_RTERROR_FILENOTFOUND */
-	"file I/O error",		/* FB_RTERROR_FILEIO */
-	"out of memory",		/* FB_RTERROR_OUTOFMEM */
-	"illegal resume"		/* FB_RTERROR_ILLEGALRESUME */
+	"",									/* FB_RTERROR_OK */
+	"illegal function call",			/* FB_RTERROR_ILLEGALFUNCTIONCALL */
+	"file not found",					/* FB_RTERROR_FILENOTFOUND */
+	"file I/O error",					/* FB_RTERROR_FILEIO */
+	"out of memory",					/* FB_RTERROR_OUTOFMEM */
+	"illegal resume",					/* FB_RTERROR_ILLEGALRESUME */
+	"\"interactive attention\" signal",
+	"\"illegal instruction\" signal",
+	"\"floating point error\" signal",
+	"\"segmentation violation\" signal",
+	"\"termination request\" signal",
+	"\"control-break\" signal",
+	"\"abnormal termination\" signal"
 };
 
 /*:::::*/
@@ -52,7 +59,7 @@ static void fb_Die( int errnum )
 }
 
 /*:::::*/
-void *fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
 {
 
     if( FB_TLSGET( fb_errctx.handler ) )
@@ -61,7 +68,7 @@ void *fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
     	FB_TLSSET( fb_errctx.reslbl, res_label );
     	FB_TLSSET( fb_errctx.resnxtlbl, resnext_label );
 
-    	return (void *)FB_TLSGET( fb_errctx.handler );
+    	return (FB_ERRHANDLER)FB_TLSGET( fb_errctx.handler );
     }
 
 	/* if no user handler defined, die */
@@ -71,7 +78,7 @@ void *fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
 }
 
 /*:::::*/
-void *fb_ErrorThrow ( void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrow ( void *res_label, void *resnext_label )
 {
 
 	return fb_ErrorThrowEx( (int)FB_TLSGET( fb_errctx.num ), res_label, resnext_label );
@@ -79,11 +86,11 @@ void *fb_ErrorThrow ( void *res_label, void *resnext_label )
 }
 
 /*:::::*/
-FBCALL void *fb_ErrorSetHandler ( void *newhandler )
+FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
 {
-	void *oldhandler;
+	FB_ERRHANDLER oldhandler;
 
-    oldhandler = (void *)FB_TLSGET( fb_errctx.handler );
+    oldhandler = (FB_ERRHANDLER)FB_TLSGET( fb_errctx.handler );
 
     FB_TLSSET( fb_errctx.handler, newhandler );
 
@@ -104,7 +111,6 @@ void *fb_ErrorResume ( void )
 	FB_TLSSET( fb_errctx.resnxtlbl, NULL );
 
 	return label;
-
 }
 
 /*:::::*/
@@ -121,6 +127,5 @@ void *fb_ErrorResumeNext ( void )
 	FB_TLSSET( fb_errctx.resnxtlbl, NULL );
 
 	return label;
-
 }
 

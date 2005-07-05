@@ -371,8 +371,6 @@ typedef struct _FB_PRINTUSGCTX {
     													\
     FB_PRINT( fnum, buffer, mask );
 
-extern int fb_viewTopRow;
-extern int fb_viewBotRow;
 extern FB_PRINTUSGCTX fb_printusgctx;
 
 
@@ -436,6 +434,10 @@ FBCALL void 		fb_WriteFixString 	( int fnum, char *s, int mask );
 	   void 		fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
 
 	   char 		*fb_ConsoleReadStr	( char *buffer, int len );
+
+	   int 			fb_ConsoleGetTopRow	( void );
+	   int 			fb_ConsoleGetBotRow	( void );
+	   void 		fb_ConsoleSetTopBotRows( int top, int bot );
 
 /**************************************************************************************************
  * files
@@ -555,9 +557,11 @@ typedef struct _FB_ERRORCTX {
 
 extern FB_ERRORCTX fb_errctx;
 
-	   void 		*fb_ErrorThrowEx	( int errnum, void *res_label, void *resnext_label );
-	   void 		*fb_ErrorThrow 		( void *res_label, void *resnext_label );
-FBCALL void 		*fb_ErrorSetHandler ( void *newhandler );
+typedef void (*FB_ERRHANDLER) (void);
+
+	   FB_ERRHANDLER fb_ErrorThrowEx	( int errnum, void *res_label, void *resnext_label );
+	   FB_ERRHANDLER fb_ErrorThrow 		( void *res_label, void *resnext_label );
+FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler );
 FBCALL int 			fb_ErrorGetNum 		( void );
 FBCALL int 			fb_ErrorSetNum 		( int errnum );
 	   void 		*fb_ErrorResume		( void );
@@ -597,12 +601,14 @@ FBCALL void 		fb_AtExit 			( void (*proc)(void) );
 
 FBCALL void 		fb_Init 			( int argc, char **argv );
 FBCALL void 		fb_End 				( int errlevel );
+FBCALL void 		fb_InitSignals		( void );
 
 FBCALL void			fb_MemSwap			( unsigned char *dst, unsigned char *src, int bytes );
 FBCALL void			fb_StrSwap			( void *str1, int str1_size, void *str2, int str2_size );
 
 	   void 		fb_hInit 			( int argc, char **argv );
 	   void 		fb_hEnd 			( int errlevel );
+	   void			fb_hInitSignals		( void );
 
 FBCALL void			fb_ProfileInit		( void );
 FBCALL void			fb_ProfileEnd		( void );

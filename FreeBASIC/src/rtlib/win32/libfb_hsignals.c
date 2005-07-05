@@ -18,41 +18,41 @@
  */
 
 /*
- *	file_hlock - low-level lock and unlock functions for Windows
+ * signal.c -- low-level signal handlers for Windows
  *
- *  chng: jan/2005 written [v1ctor]
+ * chng: jul/2005 written [v1ctor]
  *
  */
 
-
-#include <io.h>
+#include <signal.h>
 #include "fb.h"
-#include "fb_rterr.h"
+
+static LPTOP_LEVEL_EXCEPTION_FILTER old_excpfilter;
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
+static __stdcall LONG exception_filter( LPEXCEPTION_POINTERS info )
 {
-    int res;
 
-    res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
+	switch( info->ExceptionRecord->ExceptionCode )
+	{
+	case EXCEPTION_ACCESS_VIOLATION:
+		raise( SIGSEGV );
+	    break;
 
-	return fb_ErrorSetNum( res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO );
+	case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+		raise( SIGFPE );
+		break;
 
+	case EXCEPTION_INT_DIVIDE_BY_ZERO:
+		raise( SIGABRT );
+		break;
+	}
+
+	return old_excpfilter( info );
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
+void fb_hInitSignals( void )
 {
-    int res;
-
-    res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
-
-	return fb_ErrorSetNum( res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO );
-
+	old_excpfilter = SetUnhandledExceptionFilter( exception_filter );
 }
-
-
-
-
-
-

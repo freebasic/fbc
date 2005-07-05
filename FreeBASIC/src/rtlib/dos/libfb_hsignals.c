@@ -18,41 +18,16 @@
  */
 
 /*
- *	file_hlock - low-level lock and unlock functions for Windows
+ * signal.c -- low-level signal handlers for DOS
  *
- *  chng: jan/2005 written [v1ctor]
+ * chng: jul/2005 written []
  *
  */
 
-
-#include <io.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
+void fb_hInitSignals( void )
 {
-    int res;
-
-    res = LockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
-
-	return fb_ErrorSetNum( res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO );
-
+	/* install the expection handlers */
 }
-
-/*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
-{
-    int res;
-
-    res = UnlockFile( (HANDLE)_get_osfhandle( _fileno( f ) ), inipos, 0, endpos, 0 );
-
-	return fb_ErrorSetNum( res == TRUE? FB_RTERROR_OK: FB_RTERROR_FILEIO );
-
-}
-
-
-
-
-
-

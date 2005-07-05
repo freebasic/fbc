@@ -43,36 +43,11 @@ extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 
 FBCONSOLE fb_con;
 
-
-static void (*old_sigabrt)(int);
-static void (*old_sigfpe) (int);
-static void (*old_sigill) (int);
-static void (*old_sigsegv)(int);
-static void (*old_sigterm)(int);
-static void (*old_sigint) (int);
-static void (*old_sigquit)(int);
 static const char color_map[16]= { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
 static const unsigned char color[] =  { 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0x00, 0x00, 0xA8, 0xA8,
 					0xA8, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0xA8, 0x54, 0x00, 0xA8, 0xA8, 0xA8,
 					0x54, 0x54, 0x54, 0x54, 0x54, 0xFC, 0x54, 0xFC, 0x54, 0x54, 0xFC, 0xFC,
 					0xFC, 0x54, 0x54, 0xFC, 0x54, 0xFC, 0xFC, 0xFC, 0x54, 0xFC, 0xFC, 0xFC };
-
-
-/*:::::*/
-static void signal_handler(int sig)
-{
-	signal(SIGABRT, old_sigabrt);
-	signal(SIGFPE,  old_sigfpe);
-	signal(SIGILL,  old_sigill);
-	signal(SIGSEGV, old_sigsegv);
-	signal(SIGTERM, old_sigterm);
-	signal(SIGINT,  old_sigint);
-	signal(SIGQUIT, old_sigquit);
-	
-	fb_hEnd(1);
-
-	raise(sig);
-}
 
 
 /*:::::*/
@@ -313,14 +288,6 @@ void fb_hInit ( int argc, char **argv )
 
 	pthread_create( &fb_con.bg_thread, NULL, bg_thread, NULL );
 
-	/* Install signal handlers to quietly shut down */
-	old_sigabrt = signal(SIGABRT, signal_handler);
-	old_sigfpe  = signal(SIGFPE,  signal_handler);
-	old_sigill  = signal(SIGILL,  signal_handler);
-	old_sigsegv = signal(SIGSEGV, signal_handler);
-	old_sigterm = signal(SIGTERM, signal_handler);
-	old_sigint  = signal(SIGINT,  signal_handler);
-	old_sigquit = signal(SIGQUIT, signal_handler);
 	signal(SIGWINCH, console_resize);
 
 	fb_con.char_buffer = NULL;
