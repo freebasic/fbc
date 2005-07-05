@@ -40,7 +40,7 @@ defint a-z
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 
 '' const
-#if defined(TARGET_WIN32) or defined(TARGET_DOS)
+#if defined(TARGET_WIN32) or defined(TARGET_DOS) or defined(TARGET_XBOX)
 	const PATHDIV = "\\"
 #else
 	const PATHDIV = "/"
@@ -63,6 +63,17 @@ data "pthread"
 data "dl"
 #elseif defined(TARGET_DOS)
 data "c"
+#elseif defined(TARGET_XBOX)
+data "fbgfx"
+data "SDL"
+data "openxdk"
+data "hal"
+data "c"
+data "hal"
+data "usb"
+data "c"
+data "xboxkrnl"
+data "m"
 #endif
 data ""
 
@@ -329,6 +340,8 @@ function fbGetNaming ( ) as integer
 
 			case FB_COMPTARGET_DOS
 		        target = FB_COMPNAMING_DOS
+		    case FB_COMPTARGET_XBOX
+		    	target = FB_COMPNAMING_XBOX
 		    end select
 		end if
 	end if
@@ -359,6 +372,10 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_INC)	= "/usr/share/freebasic/inc/"
 		pathTB(FB_PATH_LIB)	= "/usr/share/freebasic/lib"
 #endif
+	case FB_COMPTARGET_XBOX
+		pathTB(FB_PATH_BIN) = "\\bin\\xbox\\"
+		pathTB(FB_PATH_INC) = "\\inc\\"
+		pathTB(FB_PATH_LIB) = "\\lib\\xbox"
 	end select
 
 end sub

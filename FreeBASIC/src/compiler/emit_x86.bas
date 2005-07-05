@@ -4866,6 +4866,9 @@ private sub hEmitInitProc( ) static
 		hWriteStr( env.outf.num, TRUE, "lea  eax, [esp+8] " )
 		hWriteStr( env.outf.num, TRUE, "push eax	    #argv" )
 		hWriteStr( env.outf.num, TRUE, "push [esp+8]	#argc" )
+	case FB_COMPTARGET_XBOX
+		hWriteStr( env.outf.num, TRUE, "push 0			#argv" )
+		hWriteStr( env.outf.num, TRUE, "push 0			#argc" )
 	end select
 
     id = hCreateProcAlias( "fb_Init", 8, FB_FUNCMODE_STDCALL )

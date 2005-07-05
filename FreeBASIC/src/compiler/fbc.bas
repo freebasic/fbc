@@ -55,7 +55,6 @@ declare function delFiles 				( ) as integer
 
 	dim shared argc as integer, argv(0 to FB_MAXARGS-1) as string
 
-
     ''
     parseCmd( argc, argv() )
 
@@ -93,6 +92,29 @@ declare function delFiles 				( ) as integer
     if( fbc.verbose or fbc.showversion ) then
     	print "FreeBASIC Compiler - Version " + FB_VERSION
     	print "Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
+    	
+    	print "Built with TARGET=";
+    	#ifdef TARGET_WIN32
+    	print "win32";
+    	#elseif defined(TARGET_LINUX)
+    	print "linux";
+    	#elseif defined(TARGET_DOS)
+    	print "dos";
+    	#elseif defined(TARGET_XBOX)
+    	print "xbox";
+    	#endif
+    	
+    	print " HOST=";
+    	#ifdef __FB_WIN32__
+    	print "win32"
+    	#elseif defined(__FB_LINUX__)
+    	print "linux"
+    	#elseif defined(__FB_DOS__)
+    	print "dos"
+    	#elseif defined(__FB_XBOX__)
+    	print "xbox"
+    	#endif
+    	
     	print
     	if( fbc.showversion ) then
     		end 0
@@ -211,7 +233,7 @@ function assembleFiles as integer
     aspath = environ$("AS") '' check the environment variable first
     if len(aspath)=0 then
         '' when not set, then simply use some default value
-#if defined(TARGET_WIN32) or defined(TARGET_DOS)
+#if defined(TARGET_WIN32) or defined(TARGET_DOS) or defined(TARGET_XBOX)
 		aspath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe"
 #elseif defined(TARGET_LINUX)
 		aspath = "as"
@@ -346,7 +368,7 @@ sub printOptions
 	print "-b <name>", "Add a source file to compilation"
 	print "-c", "Compile only, do not link"
 	print "-d <name=val>", "Add a preprocessor's define"
-#ifndef TARGET_DOS
+#if defined(TARGET_WIN32) or defined(TARGET_LINUX)
 	print "-dll", "Same as -dylib"
 #endif
 #ifdef TARGET_WIN32
@@ -378,6 +400,9 @@ sub printOptions
 	print "-s <name>", "Set subsystem (gui, console)"
 	print "-t <value>", "Set stack size in kbytes (default: 1M)"
 	'''''print "-target <name>", "Change the default target platform (dos, win32 or linux)"
+#endif
+#ifdef TARGET_XBOX
+	print "-title <name>", "Set XBE display title"
 #endif
 	print "-v", "Be verbose"
 	print "-version", "Show compiler version"

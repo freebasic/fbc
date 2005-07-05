@@ -743,6 +743,9 @@ function hCreateProcAlias( byval symbol as string, _
 	case FB_COMPNAMING_DOS
         sname = "_"
         sname += symbol
+    case FB_COMPNAMING_XBOX
+    	sname = "_"
+    	sname += symbol
 
     end select
 
@@ -799,6 +802,8 @@ function hCreateDataAlias( byval symbol as string, _
 
     case FB_COMPNAMING_LINUX
 		function = symbol
+	case FB_COMPNAMING_XBOX
+		function = "_" + symbol
 
     end select
 
@@ -820,7 +825,9 @@ function hStripUnderscore( byval symbol as string ) as string static
 
     case FB_COMPNAMING_LINUX
     	function = symbol
-
+    	
+    case FB_COMPNAMING_XBOX
+		function = mid$(symbol, 2)
     end select
 
 end function

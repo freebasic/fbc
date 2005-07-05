@@ -85,6 +85,8 @@ data "__FB_WIN32__",			"",				NULL
 data "__FB_LINUX__",			"",				NULL
 #elseif defined(TARGET_DOS)
 data "__FB_DOS__",			    "",				NULL
+#elseif defined(TARGET_XBOX)
+data "__FB_XBOX__",				"",				NULL
 #endif
 data "__FILE__",				"",				@hDefFile_cb
 data "__FUNCTION__",			"",				@hDefFunction_cb
