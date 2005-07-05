@@ -4841,6 +4841,23 @@ sub hSaveAsmHeader( )
 end sub
 
 '':::::
+private sub hCall( byval fname as string, _
+				   byval argslen as integer, _
+				   byval callconv as integer )
+
+    dim as zstring ptr id
+
+    id = hCreateProcAlias( fname, argslen, callconv )
+    hWriteStr( env.outf.num, TRUE,  "call" + TABCHAR + *id )
+    if( argslen > 0 ) then
+    	if( (callconv = FB_FUNCMODE_CDECL) or (env.clopt.nostdcall) ) then
+    		hWriteStr( env.outf.num, TRUE,  "add esp, " + str$( argslen ) )
+    	end if
+    end if
+
+end sub
+
+'':::::
 private sub hEmitInitProc( ) static
     dim as zstring ptr id
 
@@ -4855,6 +4872,7 @@ private sub hEmitInitProc( ) static
 
     hWriteStr( env.outf.num, TRUE,  "finit" )
 
+	'' call fb_Init
 	select case env.clopt.target
 	case FB_COMPTARGET_WIN32
 		hWriteStr( env.outf.num, TRUE, "push 0			#argv" )
@@ -4871,10 +4889,11 @@ private sub hEmitInitProc( ) static
 		hWriteStr( env.outf.num, TRUE, "push 0			#argc" )
 	end select
 
-    id = hCreateProcAlias( "fb_Init", 8, FB_FUNCMODE_STDCALL )
-    hWriteStr( env.outf.num, TRUE,  "call" + TABCHAR + *id )
-    if( env.clopt.nostdcall ) then
-    	hWriteStr( env.outf.num, TRUE,  "add esp, 8" )
+    hCall( "fb_Init", 8, FB_FUNCMODE_STDCALL )
+
+    '' if error checking is on, call fb_InitSignals
+    if( env.clopt.errorcheck ) then
+    	hCall( "fb_InitSignals", 0, FB_FUNCMODE_STDCALL )
     end if
 
     '' set default data label (def label isn't global as it could clash with other
