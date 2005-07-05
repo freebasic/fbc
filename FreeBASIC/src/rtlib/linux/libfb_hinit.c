@@ -43,6 +43,8 @@ extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
 
 FBCONSOLE fb_con;
 
+typedef void (*SIGHANDLER)(int);
+static SIGHANDLER old_sighandler[NSIG];
 static const char color_map[16]= { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
 static const unsigned char color[] =  { 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0x00, 0x00, 0xA8, 0xA8,
 					0xA8, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0xA8, 0x54, 0x00, 0xA8, 0xA8, 0xA8,
@@ -72,6 +74,17 @@ static void *bg_thread(void *arg)
 static int default_getch(void)
 {
 	return fgetc(fb_con.f_in);
+}
+
+
+/*:::::*/
+static void signal_handler(int sig)
+{
+	signal(sig, old_sighandler[sig]);
+	
+	fb_hEnd(1);
+	
+	raise(sig);
 }
 
 
@@ -206,6 +219,7 @@ int fb_hInitConsole ( int init )
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
 {
+	int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
 #ifdef MULTITHREADED
     pthread_mutexattr_t attr;
 #endif
@@ -287,6 +301,10 @@ void fb_hInit ( int argc, char **argv )
 	fb_con.keyboard_getch = default_getch;
 
 	pthread_create( &fb_con.bg_thread, NULL, bg_thread, NULL );
+
+	/* Install signal handlers to quietly shut down */
+	for (i = 0; sigs[i] >= 0; i++)
+		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler); 	 
 
 	signal(SIGWINCH, console_resize);
 

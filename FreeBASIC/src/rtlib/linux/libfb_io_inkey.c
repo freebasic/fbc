@@ -224,7 +224,7 @@ int fb_ConsoleGetkey( void )
 
 	while ((k = fb_hGetCh(TRUE)) < 0)
 		;
-	
+
 	return k & 0xFF;
 }
 
@@ -232,5 +232,8 @@ int fb_ConsoleGetkey( void )
 /*:::::*/
 int fb_ConsoleKeyHit( void )
 {
-	return (feof(stdin) ? 0: 1);
+	if (!fb_con.inited)
+		return (feof(fb_con.f_in) ? 0: 1);
+	
+	return (fb_hGetCh(FALSE) < 0) ? 0 : 1;
 }

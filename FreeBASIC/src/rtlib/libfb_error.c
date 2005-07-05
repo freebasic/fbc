@@ -37,13 +37,13 @@ static const char *error_msg[] = {
 	"file I/O error",					/* FB_RTERROR_FILEIO */
 	"out of memory",					/* FB_RTERROR_OUTOFMEM */
 	"illegal resume",					/* FB_RTERROR_ILLEGALRESUME */
-	"\"interactive attention\" signal",
+	"\"interrupted\" signal",
 	"\"illegal instruction\" signal",
 	"\"floating point error\" signal",
 	"\"segmentation violation\" signal",
 	"\"termination request\" signal",
-	"\"control-break\" signal",
-	"\"abnormal termination\" signal"
+	"\"abnormal termination\" signal",
+	"\"quit request\" signal"
 };
 
 /*:::::*/

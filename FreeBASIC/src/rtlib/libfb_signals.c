@@ -64,6 +64,8 @@ static void gen_handler( int sig )
 /*:::::*/
 FBCALL void fb_InitSignals( void )
 {
+	memset( sigTb, 0, sizeof(sigTb) );
+	
 	FB_SETUPSIGNAL(SIGABRT, gen_handler)
 	FB_SETUPSIGNAL(SIGFPE, gen_handler)
 	FB_SETUPSIGNAL(SIGILL, gen_handler)

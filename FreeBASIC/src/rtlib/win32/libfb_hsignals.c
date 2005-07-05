@@ -44,7 +44,7 @@ static __stdcall LONG exception_filter( LPEXCEPTION_POINTERS info )
 		break;
 
 	case EXCEPTION_INT_DIVIDE_BY_ZERO:
-		raise( SIGABRT );
+		raise( SIGFPE );
 		break;
 	}
 
