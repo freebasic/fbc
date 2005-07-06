@@ -340,6 +340,7 @@ function fbGetNaming ( ) as integer
 
 			case FB_COMPTARGET_DOS
 		        target = FB_COMPNAMING_DOS
+
 		    case FB_COMPTARGET_XBOX
 		    	target = FB_COMPNAMING_XBOX
 		    end select
@@ -358,10 +359,12 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
 		pathTB(FB_PATH_LIB) = "\\lib\\win32"
+
 	case FB_COMPTARGET_DOS
 		pathTB(FB_PATH_BIN)	= "\\bin\\dos\\"
 		pathTB(FB_PATH_INC)	= "\\inc\\"
 		pathTB(FB_PATH_LIB)	= "\\lib\\dos"
+
 	case FB_COMPTARGET_LINUX
 #ifdef TARGET_WIN32
 		pathTB(FB_PATH_BIN) = "\\bin\\linux\\"
@@ -372,6 +375,7 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_INC)	= "/usr/share/freebasic/inc/"
 		pathTB(FB_PATH_LIB)	= "/usr/share/freebasic/lib"
 #endif
+
 	case FB_COMPTARGET_XBOX
 		pathTB(FB_PATH_BIN) = "\\bin\\xbox\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
@@ -417,8 +421,8 @@ end sub
 '':::::
 function fbCompile ( byval infname as string, _
 				     byval outfname as string ) as integer
-    dim res as integer, l as FBSYMBOL ptr
-	dim tmr as double
+    dim as integer res
+	dim as double tmr
 
 	function = FALSE
 
@@ -449,7 +453,7 @@ function fbCompile ( byval infname as string, _
 
 	parser4Init( )
 
-	res = cProgram
+	res = cProgram( )
 
 	parser4End( )
 
@@ -467,13 +471,8 @@ function fbCompile ( byval infname as string, _
 
 	'' check if any label undefined was used
 	if( res = TRUE ) then
-		l = symbCheckLabels
-		if( l <> NULL ) then
-			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( l ), -1 )
-			function = FALSE
-		else
-			function = TRUE
-		end if
+		symbCheckLabels( )
+		function = (hGetErrorCnt( ) = 0)
 	else
 		function = FALSE
 	end if

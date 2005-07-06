@@ -99,7 +99,7 @@ private sub hEmitSTABS( byval _type as integer, _
 	ostr += ","
 	ostr += _value
 
-	hWriteStr( ctx.asmf, TRUE, ostr )
+	hWriteStr( TRUE, ostr )
 
 end sub
 
@@ -120,7 +120,7 @@ private sub hEmitSTABN( byval _type as integer, _
 	ostr += ","
 	ostr += _value
 
-	hWriteStr( ctx.asmf, TRUE, ostr )
+	hWriteStr( TRUE, ostr )
 
 end sub
 
@@ -138,7 +138,7 @@ private sub hEmitSTABD( byval _type as integer, _
 	ostr += ","
 	ostr += str$( _desc )
 
-	hWriteStr( ctx.asmf, TRUE, ostr )
+	hWriteStr( TRUE, ostr )
 
 end sub
 
@@ -169,7 +169,7 @@ sub edbgHeader( byval asmf as integer, _
 
 	'' emit source file
     fname = hRevertSlash( filename )
-    hWriteStr( asmf, TRUE, ".file \"" + fname + "\"" )
+    hWriteStr( TRUE, ".file \"" + fname + "\"" )
     if( instr( fname, "/" ) = 0 ) then
     	hEmitSTABS( STAB_TYPE_SO, hRevertSlash( curdir$ + "/" ), 0, 0, "__stabini" )
     end if
@@ -191,7 +191,7 @@ sub edbgHeader( byval asmf as integer, _
 		ctx.typecnt += 1
 	loop
 
-	hWriteStr( asmf, FALSE, "" )
+	hWriteStr( FALSE, "" )
 
 	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
 

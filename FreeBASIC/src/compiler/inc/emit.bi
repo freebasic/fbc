@@ -105,15 +105,6 @@ declare sub 		emitVARINISTR		( byval lgt as integer, _
 
 declare sub 		emitVARINIPAD		( byval bytes as integer )
 
-declare sub 		emitGetRegName		( byval dtype as integer, _
-										  byval dclass as integer, _
-										  byval reg as integer, _
-										  rname as string )
-
-declare sub 		emitGetIDXName		( byval mult as integer, _
-										  sname as string, _
-										  idxname as string )
-
 declare function 	emitGetVarName		( byval s as FBSYMBOL ptr ) as string
 
 declare function 	emitIsRegPreserved 	( byval dtype as integer, _
@@ -152,12 +143,11 @@ declare sub 		emitFreeArg			( byval lgt as integer )
 declare sub 		emitCALL			( byval pname as string, _
 										  byval bytestopop as integer )
 
-declare sub 		emitCALLPTR			( byval dname as string, _
-										  byval svreg as IRVREG ptr, _
+declare sub 		emitCALLPTR			( byval svreg as IRVREG ptr, _
 										  byval bytestopop as integer )
 
-declare sub 		emitBRANCHPTR		( byval dname as string, _
-										  byval svreg as IRVREG ptr )
+declare sub 		emitBRANCHPTR		( byval svreg as IRVREG ptr )
+
 declare sub 		emitLABEL			( byval label as string )
 
 declare sub 		emitJMP				( byval label as string )
@@ -169,212 +159,135 @@ declare sub 		emitPUBLIC			( byval label as string )
 declare sub 		emitBRANCH			( byval op as integer, _
 										  byval label as string )
 
-declare sub 		emitFXCHG			( byval dname as string, _
-										  byval svreg as IRVREG ptr )
+declare sub 		emitFXCHG			( byval svreg as IRVREG ptr )
 
-declare sub 		emitMOV				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitMOV				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitSTORE			( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitSTORE			( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitLOAD			( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitLOAD			( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitADD				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitADD				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitSUB				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitSUB				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitMUL				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitMUL				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitDIV				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-		     							  byval sname as string, _
+declare sub 		emitDIV				( byval dvreg as IRVREG ptr, _
 		     							  byval svreg as IRVREG ptr )
 
-declare sub 		emitINTDIV			( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-		     							  byval sname as string, _
+declare sub 		emitINTDIV			( byval dvreg as IRVREG ptr, _
 		     							  byval svreg as IRVREG ptr )
 
-declare sub 		emitMOD				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-		     							  byval sname as string, _
+declare sub 		emitMOD				( byval dvreg as IRVREG ptr, _
 		     							  byval svreg as IRVREG ptr )
 
-
-declare sub 		emitSHL				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  	 	  byval sname as string, _
+declare sub 		emitSHL				( byval dvreg as IRVREG ptr, _
 			 					  	 	  byval svreg as IRVREG ptr )
 
-declare sub 		emitSHR				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitSHR				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitAND				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitAND				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitOR				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitOR				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitXOR				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitXOR				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitEQV				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitEQV				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitIMP				( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
+declare sub 		emitIMP				( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitADDROF			( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			    						  byval sname as string, _
+declare sub 		emitADDROF			( byval dvreg as IRVREG ptr, _
 			    						  byval svreg as IRVREG ptr )
 
-declare sub 		emitDEREF			( byval dname as string, _
-										  byval dvreg as IRVREG ptr, _
-			    						  byval sname as string, _
+declare sub 		emitDEREF			( byval dvreg as IRVREG ptr, _
 			    						  byval svreg as IRVREG ptr )
 
-declare sub 		emitGT				( byval rname as string, _
-										  byval rvreg as IRVREG ptr, _
+declare sub 		emitGT				( byval rvreg as IRVREG ptr, _
 										  byval label as string, _
-								  		  byval dname as string, _
 								  		  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitLT				( byval rname as string, _
-										  byval rvreg as IRVREG ptr, _
+declare sub 		emitLT				( byval rvreg as IRVREG ptr, _
 										  byval label as string, _
-								  		  byval dname as string, _
 								  		  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitEQ				( byval rname as string, _
-										  byval rvreg as IRVREG ptr, _
+declare sub 		emitEQ				( byval rvreg as IRVREG ptr, _
 										  byval label as string, _
-								  		  byval dname as string, _
 								  		  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitNE				( byval rname as string, _
-										  byval rvreg as IRVREG ptr, _
+declare sub 		emitNE				( byval rvreg as IRVREG ptr, _
 										  byval label as string, _
-								  		  byval dname as string, _
 								  		  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitLE				( byval rname as string, _
-										  byval rvreg as IRVREG ptr, _
+declare sub 		emitLE				( byval rvreg as IRVREG ptr, _
 										  byval label as string, _
-								  		  byval dname as string, _
 								  		  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitGE				( byval rname as string, _
-										  byval rvreg as IRVREG ptr, _
+declare sub 		emitGE				( byval rvreg as IRVREG ptr, _
 										  byval label as string, _
-								  		  byval dname as string, _
 								  		  byval dvreg as IRVREG ptr, _
-			 					  		  byval sname as string, _
 			 					  		  byval svreg as IRVREG ptr )
 
-declare sub 		emitATAN2			( byval dname as string, _
-			   							  byval dvreg as IRVREG ptr, _
-			   							  byval sname as string, _
+declare sub 		emitATAN2			( byval dvreg as IRVREG ptr, _
 			   							  byval svreg as IRVREG ptr )
 
-declare sub 		emitPOW				( byval dname as string, _
-			   							  byval dvreg as IRVREG ptr, _
-			   							  byval sname as string, _
+declare sub 		emitPOW				( byval dvreg as IRVREG ptr, _
 			   							  byval svreg as IRVREG ptr )
 
-declare sub 		emitNEG				( byval dname as string, _
-										  byval dvreg as IRVREG ptr )
+declare sub 		emitNEG				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitNOT				( byval dname as string, _
-										  byval dvreg as IRVREG ptr )
+declare sub 		emitNOT				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitABS				( byval dname as string, _
-										  byval dvreg as IRVREG ptr )
+declare sub 		emitABS				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitSGN				( byval dname as string, _
-										  byval dvreg as IRVREG ptr )
+declare sub 		emitSGN				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitSIN				( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitSIN				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitASIN			( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitASIN			( byval dvreg as IRVREG ptr )
 
-declare sub 		emitCOS				( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitCOS				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitACOS			( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitACOS			( byval dvreg as IRVREG ptr )
 
-declare sub 		emitTAN				( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitTAN				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitATAN			( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitATAN			( byval dvreg as IRVREG ptr )
 
-declare sub 		emitSQRT			( byval dname as string, _
-			  							  byval dvreg as IRVREG ptr )
+declare sub 		emitSQRT			( byval dvreg as IRVREG ptr )
 
-declare sub 		emitLOG				( byval dname as string, _
-			 							  byval dvreg as IRVREG ptr )
+declare sub 		emitLOG				( byval dvreg as IRVREG ptr )
 
-declare sub 		emitFLOOR			( byval dname as string, _
-			   							  byval dvreg as IRVREG ptr )
+declare sub 		emitFLOOR			( byval dvreg as IRVREG ptr )
 
-declare sub 		emitPUSH			( byval sname as string, _
-										  byval svreg as IRVREG ptr )
+declare sub 		emitPUSH			( byval svreg as IRVREG ptr )
 
-declare sub 		emitPUSHUDT			( byval sname as string, _
-										  byval svreg as IRVREG ptr, _
+declare sub 		emitPUSHUDT			( byval svreg as IRVREG ptr, _
 										  byval sdsize as integer )
 
-declare sub 		emitPOP				( byval sname as string, _
-										  byval svreg as IRVREG ptr )
+declare sub 		emitPOP				( byval svreg as IRVREG ptr )
 
 declare	function 	emitGetPos 			( ) as integer
 
 
-declare sub 		hWriteStr			( byval f as integer, _
-										  byval addtab as integer, _
+declare sub 		hWriteStr			( byval addtab as integer, _
 										  byval s as string )
 
 #endif '' __EMIT_BI__

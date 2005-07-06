@@ -732,7 +732,7 @@ function cForStatement as integer
 	irEmitLABEL cl, FALSE
 
 	'' counter += step
-	cFlushSelfBOP IR_OP_ADD, dtype, cnt, stp, @sval
+	cFlushSelfBOP( IR_OP_ADD, dtype, cnt, stp, @sval )
 
 	'' test label
 	irEmitLABEL tl, FALSE
@@ -746,7 +746,7 @@ function cForStatement as integer
     	end if
 
     	'' counter <= or >= end cond?
-		cFlushBOP op, dtype, cnt, NULL, endc, @eval, il
+		cFlushBOP( op, dtype, cnt, NULL, endc, @eval, il )
 
 		c2l = NULL
     else
@@ -762,16 +762,16 @@ function cForStatement as integer
 			ival.valuei = 0
 		end select
 
-		cFlushBOP IR_OP_GE, dtype, stp, @sval, NULL, @ival, c2l
+		cFlushBOP( IR_OP_GE, dtype, stp, @sval, NULL, @ival, c2l )
 
     	'' negative, loop if >=
-		cFlushBOP IR_OP_GE, dtype, cnt, NULL, endc, @eval, il
+		cFlushBOP( IR_OP_GE, dtype, cnt, NULL, endc, @eval, il )
 		'' exit loop
 		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
     	'' control label
     	irEmitLABELNF( c2l )
     	'' positive, loop if <=
-		cFlushBOP IR_OP_LE, dtype, cnt, NULL, endc, @eval, il
+		cFlushBOP( IR_OP_LE, dtype, cnt, NULL, endc, @eval, il )
     end if
 
     '' end label (loop exit)

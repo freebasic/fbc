@@ -47,7 +47,7 @@ option escape
 type IROPCODE
 	typ			as integer
 	cummutative as integer
-	name		as string * 3
+	name		as zstring * 3+1
 end type
 
 type IRCTX
@@ -58,60 +58,56 @@ type IRCTX
 	vregTB			as TFLIST
 end type
 
-
-declare sub 		irCreateTMPVAR		( byval vreg as IRVREG ptr, _
-										  vname as string )
-
-declare sub 		irFlushUOP			( byval op as integer, _
+declare sub 		hFlushUOP			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval vr as IRVREG ptr )
 
-declare sub 		irFlushBOP			( byval op as integer, _
+declare sub 		hFlushBOP			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr, _
 										  byval vr as IRVREG ptr )
 
-declare sub 		irFlushCOMP			( byval op as integer, _
+declare sub 		hFlushCOMP			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr, _
 										  byval vr as IRVREG ptr, _
 										  byval label as FBSYMBOL ptr )
 
-declare sub 		irFlushSTORE		( byval op as integer, _
+declare sub 		hFlushSTORE			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr )
 
-declare sub 		irFlushLOAD			( byval op as integer, _
+declare sub 		hFlushLOAD			( byval op as integer, _
 										  byval v1 as IRVREG ptr )
 
-declare sub 		irFlushCONVERT		( byval op as integer, _
+declare sub 		hFlushCONVERT		( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr )
 
-declare sub 		irFlushCALL			( byval op as integer, _
+declare sub 		hFlushCALL			( byval op as integer, _
 										  byval proc as FBSYMBOL ptr, _
 										  byval bytestopop as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval vr as IRVREG ptr )
 
-declare sub 		irFlushBRANCH		( byval op as integer, _
+declare sub 		hFlushBRANCH		( byval op as integer, _
 										  byval label as FBSYMBOL ptr )
 
-declare sub 		irFlushSTACK		( byval op as integer, _
+declare sub 		hFlushSTACK			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval ex as integer )
 
-declare sub 		irFlushADDR			( byval op as integer, _
+declare sub 		hFlushADDR			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval vr as IRVREG ptr )
 
-declare sub 		irhFreeIDX			( byval vreg as IRVREG ptr, _
+declare sub 		hFreeIDX			( byval vreg as IRVREG ptr, _
 										  byval force as integer = FALSE )
 
-declare sub 		irhFreeREG			( byval vreg as IRVREG ptr, _
+declare sub 		hFreeREG			( byval vreg as IRVREG ptr, _
 										  byval force as integer = FALSE )
 
-declare sub 		irOptimize			( )
+declare sub 		hCreateTMPVAR		( byval vreg as IRVREG ptr )
 
 declare sub 		irDump				( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
@@ -123,110 +119,102 @@ declare sub 		irDump				( byval op as integer, _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-	dim shared opTB( 0 to 255 ) as IROPCODE
+	'' same order as IRDATATYPE_ENUM
+	dim shared dtypeTB( 0 to IR_MAXDATATYPES-1 ) as IRDATATYPE => _
+	{ _
+		(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID    ), _
+		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , IR_DATATYPE_BYTE    ), _
+		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE   ), _
+		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_CHAR	 ), _ '' zstring
+		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , IR_DATATYPE_SHORT 	 ), _
+		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT 	 ), _
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _ '' enum
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , IR_DATATYPE_LONGINT ), _
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, IR_DATATYPE_ULONGINT), _
+		(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , IR_DATATYPE_SINGLE	 ), _
+		(IR_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , IR_DATATYPE_DOUBLE	 ), _
+		(IR_DATACLASS_STRING , FB_STRSTRUCTSIZE	, 0					, FALSE, IR_DATATYPE_STRING	 ), _
+		(IR_DATACLASS_STRING , 1			 	, 8*1				, FALSE, IR_DATATYPE_FIXSTR	 ), _
+		(IR_DATACLASS_UDT	 , 0			 	, 0					, FALSE, IR_DATATYPE_USERDEF ), _
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ), _ '' func
+		(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID	 ), _ '' fwdref
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 )  _ '' ptr
+	}
 
-	dim shared dtypeTB( 0 to IR_MAXDATATYPES-1 ) as IRDATATYPE = { _
-	(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID    ), _
-	(IR_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , IR_DATATYPE_BYTE    ), _
-	(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE   ), _
-	(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_CHAR	 ), _ '' zstring
-	(IR_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , IR_DATATYPE_SHORT 	 ), _
-	(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT 	 ), _
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _ '' enum
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , IR_DATATYPE_LONGINT ), _
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, IR_DATATYPE_ULONGINT), _
-	(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , IR_DATATYPE_SINGLE	 ), _
-	(IR_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , IR_DATATYPE_DOUBLE	 ), _
-	(IR_DATACLASS_STRING , FB_STRSTRUCTSIZE	, 0					, FALSE, IR_DATATYPE_STRING	 ), _
-	(IR_DATACLASS_STRING , 1			 	, 8*1				, FALSE, IR_DATATYPE_FIXSTR	 ), _
-	(IR_DATACLASS_UDT	 , 0			 	, 0					, FALSE, IR_DATATYPE_USERDEF ), _
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ), _ '' func
-	(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID	 ), _ '' fwdref
-	(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ) }  '' ptr
-
-''op, type(binary=0,unary=1,...), cummutative, name
-opcodedata:
-data IR_OP_LOAD		, IR_OPTYPE_LOAD	, FALSE, "ld"
-data IR_OP_STORE	, IR_OPTYPE_STORE	, FALSE, ":="
-data IR_OP_ADD		, IR_OPTYPE_BINARY	, TRUE , "+"
-data IR_OP_SUB		, IR_OPTYPE_BINARY	, FALSE, "-"
-data IR_OP_MUL		, IR_OPTYPE_BINARY	, TRUE , "*"
-data IR_OP_DIV		, IR_OPTYPE_BINARY	, FALSE, "/"
-data IR_OP_MOD		, IR_OPTYPE_BINARY	, FALSE, "%"
-data IR_OP_AND		, IR_OPTYPE_BINARY	, TRUE , "&"
-data IR_OP_OR		, IR_OPTYPE_BINARY	, TRUE , "|"
-data IR_OP_XOR		, IR_OPTYPE_BINARY	, TRUE , "~"
-data IR_OP_EQ		, IR_OPTYPE_COMP	, TRUE , "=="
-data IR_OP_GT		, IR_OPTYPE_COMP	, FALSE, ">"
-data IR_OP_LT		, IR_OPTYPE_COMP	, FALSE, "<"
-data IR_OP_NE		, IR_OPTYPE_COMP	, TRUE , "<>"
-data IR_OP_LE		, IR_OPTYPE_COMP	, FALSE, "<="
-data IR_OP_GE		, IR_OPTYPE_COMP	, FALSE, ">="
-data IR_OP_PUSH		, IR_OPTYPE_STACK	, FALSE, "psh"
-data IR_OP_POP		, IR_OPTYPE_STACK	, FALSE, "pop"
-data IR_OP_NOT		, IR_OPTYPE_UNARY 	, FALSE, "!"
-data IR_OP_NEG		, IR_OPTYPE_UNARY	, FALSE, "-"
-data IR_OP_CALLFUNCT, IR_OPTYPE_CALL	, FALSE, "caf"
-data IR_OP_JMP		, IR_OPTYPE_BRANCH	, FALSE, "jmp"
-data IR_OP_CALL		, IR_OPTYPE_BRANCH	, FALSE, "cal"
-data IR_OP_JEQ		, IR_OPTYPE_BRANCH	, FALSE, "jeq"
-data IR_OP_JGT		, IR_OPTYPE_BRANCH	, FALSE, "jgt"
-data IR_OP_JLT		, IR_OPTYPE_BRANCH	, FALSE, "jlt"
-data IR_OP_JNE		, IR_OPTYPE_BRANCH	, FALSE, "jne"
-data IR_OP_JLE		, IR_OPTYPE_BRANCH	, FALSE, "jle"
-data IR_OP_JGE		, IR_OPTYPE_BRANCH	, FALSE, "jge"
-data IR_OP_INTDIV	, IR_OPTYPE_BINARY	, FALSE, "\\"
-data IR_OP_TOINT	, IR_OPTYPE_CONVERT	, FALSE, "2i"
-data IR_OP_TOFLT	, IR_OPTYPE_CONVERT	, FALSE, "2f"
-data IR_OP_LABEL	, IR_OPTYPE_BRANCH	, FALSE, "lbl"
-data IR_OP_MOV		, IR_OPTYPE_BINARY	, FALSE, "mov"
-data IR_OP_ADDROF	, IR_OPTYPE_ADDRESSING, FALSE, "@"
-data IR_OP_DEREF	, IR_OPTYPE_ADDRESSING, FALSE, "*"
-data IR_OP_SHL		, IR_OPTYPE_BINARY	, FALSE, "<<"
-data IR_OP_SHR		, IR_OPTYPE_BINARY	, FALSE, ">>"
-data IR_OP_POW		, IR_OPTYPE_BINARY	, FALSE, "^"
-data IR_OP_EQV		, IR_OPTYPE_BINARY	, FALSE, "eqv"
-data IR_OP_IMP		, IR_OPTYPE_BINARY	, FALSE, "imp"
-data IR_OP_LOADRESULT, IR_OPTYPE_LOAD	, FALSE, "ldr"
-data IR_OP_ABS		, IR_OPTYPE_UNARY	, FALSE, "abs"
-data IR_OP_SGN		, IR_OPTYPE_UNARY	, FALSE, "sgn"
-data IR_OP_CALLPTR	, IR_OPTYPE_CALL	, FALSE, "ca@"
-data IR_OP_JUMPPTR	, IR_OPTYPE_CALL	, FALSE, "jm@"
-data IR_OP_PUSHUDT	, IR_OPTYPE_STACK	, FALSE, "psh"
-data IR_OP_STACKALIGN, IR_OPTYPE_STACK	, FALSE, "alg"
-data IR_OP_SIN		, IR_OPTYPE_UNARY	, FALSE, "sin"
-data IR_OP_ASIN		, IR_OPTYPE_UNARY	, FALSE, "asn"
-data IR_OP_COS		, IR_OPTYPE_UNARY	, FALSE, "cos"
-data IR_OP_ACOS		, IR_OPTYPE_UNARY	, FALSE, "acs"
-data IR_OP_TAN		, IR_OPTYPE_UNARY	, FALSE, "tan"
-data IR_OP_ATAN		, IR_OPTYPE_UNARY	, FALSE, "atn"
-data IR_OP_SQRT		, IR_OPTYPE_UNARY	, FALSE, "sqr"
-data IR_OP_LOG		, IR_OPTYPE_UNARY	, FALSE, "log"
-data IR_OP_FLOOR	, IR_OPTYPE_UNARY	, FALSE, "flo"
-data IR_OP_ATAN2	, IR_OPTYPE_BINARY	, FALSE, "at2"
-data -1
+	'' same order as IROP_ENUM
+	dim shared opTB( 0 to IR_OPS-1 ) as IROPCODE => _
+	{ _
+		( IR_OPTYPE_LOAD	, FALSE, "ld"  ), _ '' IR_OP_LOAD
+		( IR_OPTYPE_LOAD	, FALSE, "ldr" ), _ '' IR_OP_LOADRESULT
+		( IR_OPTYPE_STORE	, FALSE, ":="  ), _	'' IR_OP_STORE
+		( IR_OPTYPE_BINARY	, TRUE , "+"   ), _	'' IR_OP_ADD
+		( IR_OPTYPE_BINARY	, FALSE, "-"   ), _	'' IR_OP_SUB
+		( IR_OPTYPE_BINARY	, TRUE , "*"   ), _	'' IR_OP_MUL
+		( IR_OPTYPE_BINARY	, FALSE, "/"   ), _	'' IR_OP_DIV
+		( IR_OPTYPE_BINARY	, FALSE, "\\"  ), _	'' IR_OP_INTDIV
+		( IR_OPTYPE_BINARY	, FALSE, "%"   ), _	'' IR_OP_MOD
+		( IR_OPTYPE_BINARY	, TRUE , "&"   ), _	'' IR_OP_AND
+		( IR_OPTYPE_BINARY	, TRUE , "|"   ), _	'' IR_OP_OR
+		( IR_OPTYPE_BINARY	, TRUE , "~"   ), _	'' IR_OP_XOR
+		( IR_OPTYPE_BINARY	, FALSE, "eqv" ), _	'' IR_OP_EQV
+		( IR_OPTYPE_BINARY	, FALSE, "imp" ), _	'' IR_OP_IMP
+		( IR_OPTYPE_BINARY	, FALSE, "<<"  ), _	'' IR_OP_SHL
+		( IR_OPTYPE_BINARY	, FALSE, ">>"  ), _	'' IR_OP_SHR
+		( IR_OPTYPE_BINARY	, FALSE, "^"   ), _	'' IR_OP_POW
+		( IR_OPTYPE_BINARY	, FALSE, "mov" ), _	'' IR_OP_MOV
+		( IR_OPTYPE_BINARY	, FALSE, "at2" ), _	'' IR_OP_ATN2
+		( IR_OPTYPE_COMP	, TRUE , "=="  ), _	'' IR_OP_EQ
+		( IR_OPTYPE_COMP	, FALSE, ">"   ), _	'' IR_OP_GT
+		( IR_OPTYPE_COMP	, FALSE, "<"   ), _	'' IR_OP_LT
+		( IR_OPTYPE_COMP	, TRUE , "<>"  ), _	'' IR_OP_NE
+		( IR_OPTYPE_COMP	, FALSE, ">="  ), _	'' IR_OP_GE
+		( IR_OPTYPE_COMP	, FALSE, "<="  ), _	'' IR_OP_LE
+		( IR_OPTYPE_UNARY 	, FALSE, "!"   ), _	'' IR_OP_NOT
+		( IR_OPTYPE_UNARY	, FALSE, "-"   ), _	'' IR_OP_NEG
+		( IR_OPTYPE_UNARY	, FALSE, "abs" ), _	'' IR_OP_ABS
+		( IR_OPTYPE_UNARY	, FALSE, "sgn" ), _	'' IR_OP_SGN
+		( IR_OPTYPE_UNARY	, FALSE, "sin" ), _	'' IR_OP_SIN
+		( IR_OPTYPE_UNARY	, FALSE, "asn" ), _	'' IR_OP_ASIN
+		( IR_OPTYPE_UNARY	, FALSE, "cos" ), _	'' IR_OP_COS
+		( IR_OPTYPE_UNARY	, FALSE, "acs" ), _	'' IR_OP_ACOS
+		( IR_OPTYPE_UNARY	, FALSE, "tan" ), _	'' IR_OP_TAN
+		( IR_OPTYPE_UNARY	, FALSE, "atn" ), _	'' IR_OP_ATAN
+		( IR_OPTYPE_UNARY	, FALSE, "sqr" ), _	'' IR_OP_SQRT
+		( IR_OPTYPE_UNARY	, FALSE, "log" ), _	'' IR_OP_LOG
+		( IR_OPTYPE_UNARY	, FALSE, "flo" ), _	'' IR_OP_FLOOR
+		( IR_OPTYPE_ADDRESS , FALSE, "@"   ), _	'' IR_OP_ADDROF
+		( IR_OPTYPE_ADDRESS , FALSE, "*"   ), _	'' IR_OP_DEREF
+		( IR_OPTYPE_CONVERT	, FALSE, "2i"  ), _	'' IR_OP_TOINT
+		( IR_OPTYPE_CONVERT	, FALSE, "2f"  ), _	'' IR_OP_TOFLT
+		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' IR_OP_PUSH
+		( IR_OPTYPE_STACK	, FALSE, "pop" ), _	'' IR_OP_POP
+		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' IR_OP_PUSHUDT
+		( IR_OPTYPE_STACK	, FALSE, "alg" ), _	'' IR_OP_STACKALIGN
+		( IR_OPTYPE_BRANCH	, FALSE, "jeq" ), _	'' IR_OP_JEQ
+		( IR_OPTYPE_BRANCH	, FALSE, "jgt" ), _	'' IR_OP_JGT
+		( IR_OPTYPE_BRANCH	, FALSE, "jlt" ), _	'' IR_OP_JLT
+		( IR_OPTYPE_BRANCH	, FALSE, "jne" ), _	'' IR_OP_JNE
+		( IR_OPTYPE_BRANCH	, FALSE, "jge" ), _	'' IR_OP_JGE
+		( IR_OPTYPE_BRANCH	, FALSE, "jle" ), _	'' IR_OP_JLE
+		( IR_OPTYPE_BRANCH	, FALSE, "jmp" ), _	'' IR_OP_JMP
+		( IR_OPTYPE_BRANCH	, FALSE, "cal" ), _	'' IR_OP_CALL
+		( IR_OPTYPE_BRANCH	, FALSE, "lbl" ), _	'' IR_OP_LABEL
+		( IR_OPTYPE_CALL	, FALSE, "caf" ), _	'' IR_OP_CALLFUNC
+		( IR_OPTYPE_CALL	, FALSE, "ca@" ), _	'' IR_OP_CALLPTR
+		( IR_OPTYPE_CALL	, FALSE, "jm@" )  _	'' IR_OP_JUMPPTR
+	}
 
 '':::::
 sub irInit
-	dim as integer i, op
+	dim as integer i
 
 	''
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
 
 	flistNew( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
-
-	''
-	restore opcodedata
-	do
-		read op
-		if( op = -1 ) then exit do
-		read opTB(op).typ
-		read opTB(op).cummutative
-		read opTB(op).name
-	loop
 
 	''
 	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
@@ -402,7 +390,7 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 
 	select case as const dt
 	case IR_DATATYPE_BYTE, IR_DATATYPE_SHORT, IR_DATATYPE_INTEGER, IR_DATATYPE_LONGINT
-		dtype = dtype + 1						'' hack! assuming sign/unsig are in pairs
+		dtype = dtype + 1					'' hack! assuming sign/unsig are in pairs
 	case IR_DATATYPE_CHAR
 		dtype = IR_DATATYPE_BYTE
 	case IR_DATATYPE_ENUM
@@ -414,8 +402,8 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 end function
 
 '':::::
-sub irhLoadIDX( byval vreg as IRVREG ptr, _
-				byval vtype as integer )
+private sub hLoadIDX( byval vreg as IRVREG ptr, _
+					  byval vtype as integer )
     dim as IRVREG ptr vi
 
 	if( vreg = NULL ) then
@@ -434,23 +422,23 @@ sub irhLoadIDX( byval vreg as IRVREG ptr, _
 		exit sub
 	end if
 
-	'' hack! x86 optimization, don't load immediates to registers
+	'' x86 assumption: don't load immediates to registers
 	if( vi->typ = IR_VREGTYPE_IMM ) then
 		exit sub
 	end if
 
-	vi->reg = regTB(IR_DATACLASS_INTEGER)->ensure( regTB(IR_DATACLASS_INTEGER), vi )
+	regTB(IR_DATACLASS_INTEGER)->ensure( regTB(IR_DATACLASS_INTEGER), vi )
 
 end sub
 
 '':::::
-#define irhGetVREG(vreg,dt,dc,t) 					_
+#define hGetVREG(vreg,dt,dc,t) 						_
 	if( vreg <> NULL ) then 						: _
 		t = vreg->typ 								: _
                                                 	: _
 		dt = vreg->dtype							: _
 		if( dt >= IR_DATATYPE_POINTER ) then		: _
-			dt  = IR_DATATYPE_UINT					: _
+			dt = IR_DATATYPE_UINT					: _
 			dc = IR_DATACLASS_INTEGER				: _
 		else										: _
 			dc = dtypeTB(dt).class					: _
@@ -931,7 +919,7 @@ function irAllocVREG( byval dtype as integer ) as IRVREG ptr static
 	function = vr
 
 	'' longint?
-	if( (dtype = IR_DATATYPE_LONGINT) or (dtype = IR_DATATYPE_ULONGINT) ) then
+	if( ISLONGINT( dtype ) ) then
 		 vr->vaux = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_REG )
 	end if
 
@@ -949,7 +937,7 @@ function irAllocVRIMM( byval dtype as integer, _
 	vr->value = value
 
 	'' longint?
-	if( (dtype = IR_DATATYPE_LONGINT) or (dtype = IR_DATATYPE_ULONGINT) ) then
+	if( ISLONGINT( dtype ) ) then
 		 vr->vaux = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
 		 vr->vaux->value = 0
 	end if
@@ -988,7 +976,7 @@ function irAllocVRVAR( byval dtype as integer, _
 	vr->ofs 	= ofs
 
 	'' longint?
-	if( (dtype = IR_DATATYPE_LONGINT) or (dtype = IR_DATATYPE_ULONGINT) ) then
+	if( ISLONGINT( dtype ) ) then
 		va = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_VAR )
 		vr->vaux = va
 		va->ofs = ofs + FB_INTEGERSIZE
@@ -1014,7 +1002,7 @@ function irAllocVRIDX( byval dtype as integer, _
 	vr->vidx	= vidx
 
 	'' longint?
-	if( (dtype = IR_DATATYPE_LONGINT) or (dtype = IR_DATATYPE_ULONGINT) ) then
+	if( ISLONGINT( dtype ) ) then
 		va = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
 		vr->vaux= va
 		va->ofs = ofs + FB_INTEGERSIZE
@@ -1037,7 +1025,7 @@ function irAllocVRPTR( byval dtype as integer, _
 	vr->vidx	= vidx
 
 	'' longint?
-	if( (dtype = IR_DATATYPE_LONGINT) or (dtype = IR_DATATYPE_ULONGINT) ) then
+	if( ISLONGINT( dtype ) ) then
 		va = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
 		vr->vaux= va
 		va->ofs = ofs + FB_INTEGERSIZE
@@ -1065,7 +1053,7 @@ function irIsVAR( byval vreg as IRVREG ptr ) as integer static
 	function = FALSE
 
 	select case vreg->typ
-	case IR_VREGTYPE_VAR, IR_VREGTYPE_TMPVAR
+	case IR_VREGTYPE_VAR
 		function = TRUE
 	end select
 
@@ -1112,71 +1100,11 @@ function irGetVRDataSize( byval vreg as IRVREG ptr ) as integer static
 
 end function
 
-'':::::
-sub irGetVRIndexName( byval vreg as IRVREG ptr, _
-					  vname as string )
-
-    dim as FBSYMBOL ptr sym
-    dim as IRVREG ptr vi
-    dim as string sname
-
-	if( vreg = NULL ) then
-		vname = "NULL"
-		exit sub
-	end if
-
-    vi = vreg->vidx
-	if( vi <> NULL ) then
-		irGetVRName( vi, vname )
-	else
-		vname = ""
-	end if
-
-	sym = vreg->sym
-	if( sym <> NULL ) then
-		sname = symbGetName( sym )
-	else
-		sname = ""
-	end if
-
-	emitGetIDXName( vreg->mult, sname, vname )
-
-end sub
-
-'':::::
-sub irGetVRNameEx( byval vreg as IRVREG ptr, _
-				   byval vtype as integer, _
-				   vname as string )
-    dim as integer dtype, dclass
-
-	if( vreg = NULL ) then
-		vname = "NULL"
-		exit function
-	end if
-
-	select case as const vtype
-	case IR_VREGTYPE_VAR, IR_VREGTYPE_TMPVAR, IR_VREGTYPE_OFS
-		vname = symbGetName( vreg->sym )
-
-	case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-	    irGetVRIndexName( vreg, vname )
-
-	case IR_VREGTYPE_IMM
-		vname = str$( vreg->value )
-
-	case IR_VREGTYPE_REG
-		irhGetVREG( vreg, dtype, dclass, vtype )
-		emitGetRegName( dtype, dclass, vreg->reg, vname )
-
-	end select
-
-end sub
-
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irRename( byval vold as IRVREG ptr, _
-			  byval vnew as IRVREG ptr ) static
+private sub hRename( byval vold as IRVREG ptr, _
+			  		 byval vnew as IRVREG ptr ) static
 
     dim as IRTACVREG ptr t
     dim as IRVREG ptr v
@@ -1214,13 +1142,13 @@ sub irRename( byval vold as IRVREG ptr, _
 end sub
 
 '':::::
-sub irReuse( byval t as IRTAC ptr ) static
+private sub hReuse( byval t as IRTAC ptr ) static
     dim as IRVREG ptr v1
     dim as IRVREG ptr v2
     dim as IRVREG ptr vr
-    dim as integer dt1, dc1, t1
-    dim as integer dt2, dc2, t2
-    dim as integer dtr, dcr, tr
+    dim as integer v1_dtype, v1_dclass, v1_typ
+    dim as integer v2_dtype, v2_dclass, v2_typ
+    dim as integer vr_dtype, vr_dclass, vr_typ
     dim as integer op, v1rename, v2rename
     dim as IRTACVREG ptr tmp
 
@@ -1229,16 +1157,16 @@ sub irReuse( byval t as IRTAC ptr ) static
 	v2   = t->arg2.vreg
 	vr   = t->res.vreg
 
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( v2, dt2, dc2, t2 )
-    irhGetVREG( vr, dtr, dcr, tr )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
+    hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
 	select case opTB(op).typ
 	case IR_OPTYPE_UNARY
 		if( vr <> v1 ) then
-			if( dtr = dt1 ) then
+			if( vr_dtype = v1_dtype ) then
            		if( irGetDistance( v1 ) = IR_MAXDIST ) then
-           			irRename( vr, v1 )
+           			hRename( vr, v1 )
            		end if
            	end if
 		end if
@@ -1250,13 +1178,13 @@ sub irReuse( byval t as IRTAC ptr ) static
 		end if
 
 		'' check if operands have the same class (can happen 'cause the x86 FPU hacks)
-		if( dc1 <> dc2 ) then
+		if( v1_dclass <> v2_dclass ) then
 			exit sub
 		end if
 
 		v1rename = FALSE
 		if( vr <> v1 ) then
-			if( dtr = dt1 ) then
+			if( vr_dtype = v1_dtype ) then
            		if( irGetDistance( v1 ) = IR_MAXDIST ) then
            			v1rename = TRUE
            		end if
@@ -1266,8 +1194,8 @@ sub irReuse( byval t as IRTAC ptr ) static
 		v2rename = FALSE
 		if( opTB(op).cummutative ) then
 			if( vr <> v2 ) then
-				if( dtr = dt2 ) then
-					if( t2 <> IR_VREGTYPE_IMM ) then
+				if( vr_dtype = v2_dtype ) then
+					if( v2_typ <> IR_VREGTYPE_IMM ) then
            				if( irGetDistance( v2 ) = IR_MAXDIST ) then
            					v2rename = TRUE
            				end if
@@ -1283,7 +1211,7 @@ sub irReuse( byval t as IRTAC ptr ) static
 		end if
 
 		if( v1rename ) then
-           	irRename( vr, v1 )
+           	hRename( vr, v1 )
 
 		elseif( v2rename ) then
 			'' swap t->arg1, t->arg2
@@ -1294,7 +1222,7 @@ sub irReuse( byval t as IRTAC ptr ) static
 			t->arg2.next = t->arg1.next
 			t->arg1.next = tmp
 
-			irRename( vr, v2 )
+			hRename( vr, v2 )
 		end if
 
 	end select
@@ -1310,14 +1238,13 @@ sub irFlush static
 		exit sub
 	end if
 
-	'irOptimize
+	'hOptimize
 
 	t = flistGetHead( @ctx.tacTB )
 	do
 		ctx.tacidx = t
 
-
-		irReuse( t )
+		hReuse( t )
 
 		op = t->op
 
@@ -1327,34 +1254,34 @@ sub irFlush static
         ''
 		select case as const opTB(op).typ
 		case IR_OPTYPE_UNARY
-			irFlushUOP( op, t->arg1.vreg, t->res.vreg )
+			hFlushUOP( op, t->arg1.vreg, t->res.vreg )
 
 		case IR_OPTYPE_BINARY
-			irFlushBOP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
+			hFlushBOP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
 
 		case IR_OPTYPE_COMP
-			irFlushCOMP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg, t->ex1 )
+			hFlushCOMP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg, t->ex1 )
 
 		case IR_OPTYPE_STORE
-			irFlushSTORE( op, t->arg1.vreg, t->arg2.vreg )
+			hFlushSTORE( op, t->arg1.vreg, t->arg2.vreg )
 
 		case IR_OPTYPE_LOAD
-			irFlushLOAD( op, t->arg1.vreg )
+			hFlushLOAD( op, t->arg1.vreg )
 
 		case IR_OPTYPE_CONVERT
-			irFlushCONVERT( op, t->arg1.vreg, t->arg2.vreg )
+			hFlushCONVERT( op, t->arg1.vreg, t->arg2.vreg )
 
 		case IR_OPTYPE_STACK
-			irFlushSTACK( op, t->arg1.vreg, t->ex2 )
+			hFlushSTACK( op, t->arg1.vreg, t->ex2 )
 
 		case IR_OPTYPE_CALL
-			irFlushCALL( op, t->ex1, t->ex2, t->arg1.vreg, t->res.vreg )
+			hFlushCALL( op, t->ex1, t->ex2, t->arg1.vreg, t->res.vreg )
 
 		case IR_OPTYPE_BRANCH
-			irFlushBRANCH( op, t->ex1 )
+			hFlushBRANCH( op, t->ex1 )
 
-		case IR_OPTYPE_ADDRESSING
-			irFlushADDR( op, t->arg1.vreg, t->res.vreg )
+		case IR_OPTYPE_ADDRESS
+			hFlushADDR( op, t->arg1.vreg, t->res.vreg )
 		end select
 
 		''
@@ -1374,8 +1301,8 @@ sub irFlush static
 end sub
 
 '':::::
-sub irFlushBRANCH( byval op as integer, _
-				   byval label as FBSYMBOL ptr ) static
+private sub hFlushBRANCH( byval op as integer, _
+				   		  byval label as FBSYMBOL ptr ) static
     dim lname as string
 
 	lname = symbGetName( label )
@@ -1397,31 +1324,32 @@ sub irFlushBRANCH( byval op as integer, _
 end sub
 
 '':::::
-private sub irhPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
+private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
     dim as IRVREG ptr vr
-    dim as integer r
-    dim as integer dclass, dtype, typ
+    dim as IRVREG tr
+    dim as integer reg
+    dim as integer vr_dclass, vr_dtype, vr_typ
     dim as string dname, sname
-    dim as integer fr 							'' free reg
-    dim as integer npr 							'' don't preserve reg (used with CALLPTR)
+    dim as integer freg							'' free reg
+    dim as integer npreg						'' don't preserve reg (used with CALLPTR)
     dim as integer class
 
 	'' for each reg class
 	for class = 0 to EMIT_REGCLASSES-1
 
     	'' set the register that shouldn't be preserved (used for CALLPTR only)
-    	npr = INVALID
+    	npreg = INVALID
     	if( class = IR_DATACLASS_INTEGER ) then
     		if( ptrvreg <> NULL ) then
 
     			select case ptrvreg->typ
     			case IR_VREGTYPE_REG
-    				npr = ptrvreg->reg
+    				npreg = ptrvreg->reg
 
     			case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
     				ptrvreg = ptrvreg->vidx
     				if( ptrvreg <> NULL ) then
-    					npr = ptrvreg->reg
+    					npreg = ptrvreg->reg
     				end if
     			end select
 
@@ -1430,58 +1358,55 @@ private sub irhPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
     	end if
 
 		'' for each register on that class
-		r = regTB(class)->getFirst( regTB(class) )
-		do until( r = INVALID )
+		reg = regTB(class)->getFirst( regTB(class) )
+		do until( reg = INVALID )
 			'' if not free
-			if( (not regTB(class)->isFree( regTB(class), r )) and (r <> npr) ) then
+			if( (not regTB(class)->isFree( regTB(class), reg )) and (reg <> npreg) ) then
 
 				'' get the attached vreg
-				vr = regTB(class)->getVreg( regTB(class), r )
-                irhGetVREG( vr, dtype, dclass, typ )
+				vr = regTB(class)->getVreg( regTB(class), reg )
+                hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
         		'' if reg is not preserved between calls
-        		if( not emitIsRegPreserved( dtype, dclass, r ) ) then
+        		if( not emitIsRegPreserved( vr_dtype, vr_dclass, reg ) ) then
 
         			'' find a preserved reg to copy to
-        			fr = emitGetFreePreservedReg( dtype, dclass )
+        			freg = emitGetFreePreservedReg( vr_dtype, vr_dclass )
 
         			'' if none free, spill reg
-        			if( fr = INVALID ) then
-        				irStoreVR( vr, r )
+        			if( freg = INVALID ) then
+        				irStoreVR( vr, reg )
 
         			'' else, copy it to a preserved reg
         			else
-        				fr = regTB(dclass)->allocateReg( regTB(dclass), fr, vr )
-        				vr->reg = fr
-        				''!!!FIXME!!! assumming emitMOV won't check the src and dst reg's
-        				emitGetRegName( dtype, dclass, fr, dname )
-        				emitGetRegName( dtype, dclass, r, sname )
-        				emitMOV( dname, vr, sname, vr )
+        				tr = *vr
+        				vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), freg, vr )
+        				emitMOV( vr, @tr )
 
         			end if
 
         			'' free reg
-        			regTB(dclass)->free( regTB(dclass), r )
+        			regTB(vr_dclass)->free( regTB(vr_dclass), reg )
         		end if
         	end if
 
         	'' next reg
-        	r = regTB(class)->getNext( regTB(class), r )
+        	reg = regTB(class)->getNext( regTB(class), reg )
 		loop
 
-	next class
+	next
 
 end sub
 
 '':::::
-sub irFlushCALL( byval op as integer, _
-				 byval proc as FBSYMBOL ptr, _
-				 byval bytes2pop as integer, _
-				 byval v1 as IRVREG ptr, _
-				 byval vr as IRVREG ptr ) static
+private sub hFlushCALL( byval op as integer, _
+				 		byval proc as FBSYMBOL ptr, _
+				 		byval bytes2pop as integer, _
+				 		byval v1 as IRVREG ptr, _
+				 		byval vr as IRVREG ptr ) static
 
-    dim as string pname
-    dim as integer rr, rr2, rdclass, rdtype, rtyp, mode
+    dim as integer mode
+    dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
     dim as IRVREG ptr va
 
 	'' call function
@@ -1497,7 +1422,7 @@ sub irFlushCALL( byval op as integer, _
 		end if
 
     	'' save used registers and free the FPU stack
-    	irhPreserveRegs( )
+    	hPreserveRegs( )
 
 		emitCALL( symbGetName( proc ), bytes2pop )
 
@@ -1506,58 +1431,56 @@ sub irFlushCALL( byval op as integer, _
 
     	'' if it's a CALL, save used registers and free the FPU stack
     	if( op = IR_OP_CALLPTR ) then
-    		irhPreserveRegs( v1 )
+    		hPreserveRegs( v1 )
     	end if
 
 		'' load pointer
-		irhGetVREG( v1, rdtype, rdclass, rtyp )
-		irhLoadIDX( v1, rtyp )
-		if( rtyp = IR_VREGTYPE_REG ) then
-			rr = regTB(rdclass)->ensure( regTB(rdclass), v1 )
+		hGetVREG( v1, vr_dtype, vr_dclass, vr_typ )
+		hLoadIDX( v1, vr_typ )
+		if( vr_typ = IR_VREGTYPE_REG ) then
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), v1 )
 		end if
-
-		irGetVRName( v1, pname )
 
 		'' CALLPTR
 		if( op = IR_OP_CALLPTR ) then
-			emitCALLPTR( pname, v1, bytes2pop )
+			emitCALLPTR( v1, bytes2pop )
 		'' JUMPPTR
 		else
-			emitBRANCHPTR( pname, v1 )
+			emitBRANCHPTR( v1 )
 		end if
 
 		'' free pointer
-		irhFreeREG( v1 )
+		hFreeREG( v1 )
 	end if
 
 	'' load result
 	if( vr <> NULL ) then
-		irhGetVREG( vr, rdtype, rdclass, rtyp )
+		hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-		emitGetResultReg( rdtype, rdclass, rr, rr2 )
+		emitGetResultReg( vr_dtype, vr_dclass, vr_reg, vr_reg2 )
 
 		'' longints..
-		if( (rdtype = IR_DATATYPE_LONGINT) or (rdtype = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( vr_dtype ) ) then
 			va = vr->vaux
-			va->reg = regTB(rdclass)->allocateReg( regTB(rdclass), rr2, va )
+			va->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg2, va )
 			va->typ = IR_VREGTYPE_REG
 		end if
 
-		vr->reg = regTB(rdclass)->allocateReg( regTB(rdclass), rr, vr )
+		vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg, vr )
 		vr->typ = IR_VREGTYPE_REG
 
     	'' fb allows function calls w/o saving the result
-		irhFreeREG( vr )
+		hFreeREG( vr )
 	end if
 
 end sub
 
 '':::::
-sub irFlushSTACK( byval op as integer, _
-				  byval v1 as IRVREG ptr, _
-				  byval ex as integer ) static
-	dim as string dst
-	dim as integer r1, t1, dt1, dc1
+private sub hFlushSTACK( byval op as integer, _
+				  		 byval v1 as IRVREG ptr, _
+				  		 byval ex as integer ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as IRVREG ptr va
 
 	''
@@ -1567,236 +1490,212 @@ sub irFlushSTACK( byval op as integer, _
 	end if
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
-	irhLoadIDX( v1, t1 )
+	hLoadIDX( v1, v1_typ )
 
-	'' only load fp's, if they are on the fpu stack (x86 assumption)
-	'if( dc1 = IR_DATACLASS_FPOINT )  then
-		if( t1 = IR_VREGTYPE_REG ) then
-			'' handle longint
-			if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
-				va = v1->vaux
-				va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
-			end if
-
-			r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
+	'' load only if it's a reg (x86 assumption)
+	if( v1_typ = IR_VREGTYPE_REG ) then
+		'' handle longint
+		if( ISLONGINT( v1_dtype ) ) then
+			va = v1->vaux
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, FALSE )
 		end if
-	'end if
 
-	''
-	irGetVRName( v1, dst )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
+	end if
 
 	''
 	select case op
 	case IR_OP_PUSH
-		emitPUSH( dst, v1 )
+		emitPUSH( v1 )
 	case IR_OP_PUSHUDT
-		emitPUSHUDT( dst, v1, ex )
+		emitPUSHUDT( v1, ex )
 	case IR_OP_POP
-		emitPOP( dst, v1 )
+		emitPOP( v1 )
 	end select
 
     ''
-	irhFreeREG( v1 )
+	hFreeREG( v1 )
 
 end sub
 
 '':::::
-sub irFlushUOP( byval op as integer, _
-			    byval v1 as IRVREG ptr, _
-			    byval vr as IRVREG ptr ) static
-	dim as string dst, res
-	dim as integer r1, t1, dt1, dc1
-	dim as integer rr, tr, dtr, dcr
+private sub hFlushUOP( byval op as integer, _
+			    	   byval v1 as IRVREG ptr, _
+			    	   byval vr as IRVREG ptr ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass
+	dim as integer vr_typ, vr_dtype, vr_dclass
 	dim as IRVREG ptr va
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( vr, dtr, dcr, tr )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	irhLoadIDX( v1, t1 )
-	irhLoadIDX( vr, tr )
-
-
-	r1 = INVALID
-	rr = INVALID
+	hLoadIDX( v1, v1_typ )
+	hLoadIDX( vr, vr_typ )
 
     ''
     if ( vr <> NULL ) then
 		if( v1 <> vr ) then
 			'' handle longint
-			if( (dtr = IR_DATATYPE_LONGINT) or (dtr = IR_DATATYPE_ULONGINT) ) then
+			if( ISLONGINT( vr_dtype ) ) then
 				va = vr->vaux
-				va->reg = regTB(dcr)->ensure( regTB(dcr), va, FALSE )
+				regTB(vr_dclass)->ensure( regTB(vr_dclass), va, FALSE )
 			end if
 
-			rr = regTB(dcr)->ensure( regTB(dcr), vr )
-			tr = IR_VREGTYPE_REG
-			emitGetRegName( dtr, dcr, rr, res )
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), vr )
 		end if
 	end if
 
 	'' UOP to self? x86 assumption at AST
 	if( vr <> NULL ) then
 		'' handle longint
-		if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, FALSE )
 		end if
 
-		r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
-		t1 = IR_VREGTYPE_REG
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 	end if
 
 	''
-	irGetVRName( v1, dst )
-
 	select case as const op
 	case IR_OP_NEG
-		emitNEG( dst, v1 )
+		emitNEG( v1 )
 	case IR_OP_NOT
-		emitNOT( dst, v1 )
+		emitNOT( v1 )
 
 	case IR_OP_ABS
-		emitABS( dst, v1 )
+		emitABS( v1 )
 	case IR_OP_SGN
-		emitSGN( dst, v1 )
+		emitSGN( v1 )
 
 	case IR_OP_SIN
-		emitSIN( dst, v1 )
+		emitSIN( v1 )
 	case IR_OP_ASIN
-		emitASIN( dst, v1 )
+		emitASIN( v1 )
 	case IR_OP_COS
-		emitCOS( dst, v1 )
+		emitCOS( v1 )
 	case IR_OP_ACOS
-		emitACOS( dst, v1 )
+		emitACOS( v1 )
 	case IR_OP_TAN
-		emitTAN( dst, v1 )
+		emitTAN( v1 )
 	case IR_OP_ATAN
-		emitATAN( dst, v1 )
+		emitATAN( v1 )
 	case IR_OP_SQRT
-		emitSQRT( dst, v1 )
+		emitSQRT( v1 )
 	case IR_OP_LOG
-		emitLOG( dst, v1 )
+		emitLOG( v1 )
 	case IR_OP_FLOOR
-		emitFLOOR( dst, v1 )
+		emitFLOOR( v1 )
 	end select
 
     ''
     if ( vr <> NULL ) then
 		if( v1 <> vr ) then
-			emitMOV( res, vr, dst, v1 )
+			emitMOV( vr, v1 )
 		end if
 	end if
 
     ''
-	irhFreeREG( v1 )
-	irhFreeREG( vr )
+	hFreeREG( v1 )
+	hFreeREG( vr )
 
 end sub
 
 '':::::
-sub irFlushBOP( byval op as integer, _
-				byval v1 as IRVREG ptr, _
-				byval v2 as IRVREG ptr, _
-				byval vr as IRVREG ptr ) static
-	dim as string dst, src, res
-	dim as integer r1, t1, dt1, dc1
-	dim as integer r2, t2, dt2, dc2
-	dim as integer rr, tr, dtr, dcr
+private sub hFlushBOP( byval op as integer, _
+					   byval v1 as IRVREG ptr, _
+					   byval v2 as IRVREG ptr, _
+					   byval vr as IRVREG ptr ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass
+	dim as integer v2_typ, v2_dtype, v2_dclass
+	dim as integer vr_typ, vr_dtype, vr_dclass
 	dim as IRVREG ptr va
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( v2, dt2, dc2, t2 )
-	irhGetVREG( vr, dtr, dcr, tr )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
+	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	irhLoadIDX( v1, t1 )
-	irhLoadIDX( v2, t2 )
-	irhLoadIDX( vr, tr )
-
-	r1 = INVALID
-	r2 = INVALID
-	rr = INVALID
+	hLoadIDX( v1, v1_typ )
+	hLoadIDX( v2, v2_typ )
+	hLoadIDX( vr, vr_typ )
 
 	'' BOP to self? (x86 assumption at AST)
 	if( vr = NULL ) then
-		if( t2 <> IR_VREGTYPE_IMM ) then		'' x86 assumption
+		if( v2_typ <> IR_VREGTYPE_IMM ) then		'' x86 assumption
 			'' handle longint
-			if( (dt2 = IR_DATATYPE_LONGINT) or (dt2 = IR_DATATYPE_ULONGINT) ) then
+			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
-				va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
+				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, FALSE )
 			end if
 
-			r2 = regTB(dc2)->ensure( regTB(dc2), v2 )
-			t2 = IR_VREGTYPE_REG
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2 )
 		end if
 
 	else
-		if( t2 = IR_VREGTYPE_REG ) then			'' x86 assumption
+		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
 			'' handle longint
-			if( (dt2 = IR_DATATYPE_LONGINT) or (dt2 = IR_DATATYPE_ULONGINT) ) then
+			if( ISLONGINT( v2_dtype ) ) then
 				va = v2->vaux
-				va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
+				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, FALSE )
 			end if
 
-			r2 = regTB(dc2)->ensure( regTB(dc2), v2 )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2 )
 		end if
 
-		'' destine allocation comes *after* source, 'cause the FPU stack
+		'' destine allocation comes *after* source, 'cause the x86 FPU stack
 		'' handle longint
-		if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, FALSE )
 		end if
 
-		r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
-		t1 = IR_VREGTYPE_REG
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 	end if
-
-	''
-	irGetVRName( v2, src )
-	irGetVRName( v1, dst )
 
     ''
 	select case as const op
 	case IR_OP_ADD
-		emitADD( dst, v1, src, v2 )
+		emitADD( v1, v2 )
 	case IR_OP_SUB
-		emitSUB( dst, v1, src, v2 )
+		emitSUB( v1, v2 )
 	case IR_OP_MUL
-		emitMUL( dst, v1, src, v2 )
+		emitMUL( v1, v2 )
 	case IR_OP_DIV
-        emitDIV( dst, v1, src, v2 )
+        emitDIV( v1, v2 )
 	case IR_OP_INTDIV
-        emitINTDIV( dst, v1, src, v2 )
+        emitINTDIV( v1, v2 )
 	case IR_OP_MOD
-		emitMOD( dst, v1, src, v2 )
+		emitMOD( v1, v2 )
 
 	case IR_OP_SHL
-		emitSHL( dst, v1, src, v2 )
+		emitSHL( v1, v2 )
 	case IR_OP_SHR
-		emitSHR( dst, v1, src, v2 )
+		emitSHR( v1, v2 )
 
 	case IR_OP_AND
-		emitAND( dst, v1, src, v2 )
+		emitAND( v1, v2 )
 	case IR_OP_OR
-		emitOR( dst, v1, src, v2 )
+		emitOR( v1, v2 )
 	case IR_OP_XOR
-		emitXOR( dst, v1, src, v2 )
+		emitXOR( v1, v2 )
 	case IR_OP_EQV
-		emitEQV( dst, v1, src, v2 )
+		emitEQV( v1, v2 )
 	case IR_OP_IMP
-		emitIMP( dst, v1, src, v2 )
+		emitIMP( v1, v2 )
 
 	case IR_OP_MOV
-		emitMOV( dst, v1, src, v2 )
+		emitMOV( v1, v2 )
 
 	case IR_OP_ATAN2
-        emitATAN2( dst, v1, src, v2 )
+        emitATAN2( v1, v2 )
     case IR_OP_POW
-    	emitPOW( dst, v1, src, v2 )
+    	emitPOW( v1, v2 )
 	end select
 
     '' not BOP to self?
@@ -1804,122 +1703,100 @@ sub irFlushBOP( byval op as integer, _
 		'' result not equal destine? (can happen with DAG optimizations)
 		if( (v1 <> vr) ) then
 			'' handle longint
-			if( (dtr = IR_DATATYPE_LONGINT) or (dtr = IR_DATATYPE_ULONGINT) ) then
+			if( ISLONGINT( vr_dtype ) ) then
 				va = vr->vaux
-				va->reg = regTB(dcr)->ensure( regTB(dcr), va, FALSE )
+				regTB(vr_dclass)->ensure( regTB(vr_dclass), va, FALSE )
 			end if
 
-			rr = regTB(dcr)->ensure( regTB(dcr), vr )
+			regTB(vr_dclass)->ensure( regTB(vr_dclass), vr )
 
-			emitGetRegName( dtr, dcr, rr, res )
-			emitMOV( res, vr, dst, v1 )
+			emitMOV( vr, v1 )
 		end if
 	end if
 
     ''
-	irhFreeREG( v1 )
-	irhFreeREG( v2 )
-	irhFreeREG( vr )
+	hFreeREG( v1 )
+	hFreeREG( v2 )
+	hFreeREG( vr )
 
 end sub
 
 '':::::
-sub irFlushCOMP( byval op as integer, _
-				 byval v1 as IRVREG ptr, _
-				 byval v2 as IRVREG ptr, _
-				 byval vr as IRVREG ptr, _
-				 byval label as FBSYMBOL ptr ) static
-	dim as string dst, src, res, lname
-	dim as integer r1, t1, dt1, dc1
-	dim as integer r2, t2, dt2, dc2
-	dim as integer rr, tr, dtr, dcr
+private sub hFlushCOMP( byval op as integer, _
+				 		byval v1 as IRVREG ptr, _
+				 		byval v2 as IRVREG ptr, _
+				 		byval vr as IRVREG ptr, _
+				 		byval label as FBSYMBOL ptr ) static
+
+	dim as string lname
+	dim as integer v1_typ, v1_dtype, v1_dclass
+	dim as integer v2_typ, v2_dtype, v2_dclass
+	dim as integer vr_typ, vr_dtype, vr_dclass
 	dim as IRVREG ptr va
 	dim as integer doload
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( v2, dt2, dc2, t2 )
-	irhGetVREG( vr, dtr, dcr, tr )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
+	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	irhLoadIDX( v1, t1 )
-	irhLoadIDX( v2, t2 )
-	irhLoadIDX( vr, tr )
-
-	r1 = INVALID
-	r2 = INVALID
-	rr = INVALID
+	hLoadIDX( v1, v1_typ )
+	hLoadIDX( v2, v2_typ )
+	hLoadIDX( vr, vr_typ )
 
 	'' load source if it's a reg, or if result was not allocated
 	doload = FALSE
-	if( vr = NULL ) then						'' x86 assumption
-		if( dc2 = IR_DATACLASS_INTEGER ) then	'' /
-			if( t2 <> IR_VREGTYPE_IMM ) then	'' /
-				if( dc1 <> IR_DATACLASS_FPOINT ) then
+	if( vr = NULL ) then							'' x86 assumption
+		if( v2_dclass = IR_DATACLASS_INTEGER ) then	'' /
+			if( v2_typ <> IR_VREGTYPE_IMM ) then	'' /
+				if( v1_dclass <> IR_DATACLASS_FPOINT ) then
 					doload = TRUE
 				end if
 			end if
 		end if
 	end if
 
-	if( (t2 = IR_VREGTYPE_REG) or doload ) then
+	if( (v2_typ = IR_VREGTYPE_REG) or doload ) then
 		'' handle longint
-		if( (dt2 = IR_DATATYPE_LONGINT) or (dt2 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v2_dtype ) ) then
 			va = v2->vaux
-			va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), va, FALSE )
 		end if
 
-		r2 = regTB(dc2)->ensure( regTB(dc2), v2 )
-		t2 = IR_VREGTYPE_REG
+		regTB(v2_dclass)->ensure( regTB(v2_dclass), v2 )
+		v2_typ = IR_VREGTYPE_REG
 	end if
 
 	'' destine allocation comes *after* source, 'cause the FPU stack
 	doload = FALSE
-	if( (vr <> NULL) and (vr = v1) ) then		'' x86 assumption
+	if( (vr <> NULL) and (vr = v1) ) then			'' x86 assumption
 		doload = TRUE
-	elseif( dc1 = IR_DATACLASS_FPOINT ) then	'' /
+	elseif( v1_dclass = IR_DATACLASS_FPOINT ) then	'' /
 		doload = TRUE
-	elseif( t1 = IR_VREGTYPE_IMM) then          '' /
+	elseif( v1_typ = IR_VREGTYPE_IMM) then          '' /
 		doload = TRUE
-	elseif( t2 <> IR_VREGTYPE_REG ) then        '' /
-		if( t2 <> IR_VREGTYPE_IMM ) then
+	elseif( v2_typ <> IR_VREGTYPE_REG ) then        '' /
+		if( v2_typ <> IR_VREGTYPE_IMM ) then
 			doload = TRUE
 		end if
 	end if
 
-	if( (t1 = IR_VREGTYPE_REG) or doload ) then
+	if( (v1_typ = IR_VREGTYPE_REG) or doload ) then
 		'' handle longint
-		if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, FALSE )
 		end if
 
-		r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 	end if
 
 	'' result not equal destine? (can happen with DAG optimizations and floats comparations)
 	if( vr <> NULL ) then
 		if( vr <> v1 ) then
-			rr = regTB(dcr)->allocate( regTB(dcr), vr )
-			tr = IR_VREGTYPE_REG
-			vr->reg = rr
-			vr->typ = tr
-			emitGetRegName( dtr, dcr, rr, res )
+			vr->reg = regTB(vr_dclass)->allocate( regTB(vr_dclass), vr )
+			vr->typ = IR_VREGTYPE_REG
 		end if
-	end if
-
-    ''
-	if( v2 <> NULL ) then					'' yet another FOR..LOOP optimization..
-		irGetVRName( v2, src )
-	else
-		src = ""
-	end if
-
-	irGetVRName( v1, dst )
-
-	if( vr = v1 ) then
-		res = dst
-	elseif( vr = NULL ) then
-		res = ""
 	end if
 
 	''
@@ -1929,296 +1806,270 @@ sub irFlushCOMP( byval op as integer, _
 		lname = symbGetName( label )
 	end if
 
-	if( vr = NULL ) then
-		vr = v1
-	end if
-
 	''
 	select case as const op
 	case IR_OP_EQ
-		emitEQ( res, vr, lname, dst, v1, src, v2 )
+		emitEQ( vr, lname, v1, v2 )
 	case IR_OP_NE
-		emitNE( res, vr, lname, dst, v1, src, v2 )
+		emitNE( vr, lname, v1, v2 )
 	case IR_OP_GT
-		emitGT( res, vr, lname, dst, v1, src, v2 )
+		emitGT( vr, lname, v1, v2 )
 	case IR_OP_LT
-		emitLT( res, vr, lname, dst, v1, src, v2 )
+		emitLT( vr, lname, v1, v2 )
 	case IR_OP_LE
-		emitLE( res, vr, lname, dst, v1, src, v2 )
+		emitLE( vr, lname, v1, v2 )
 	case IR_OP_GE
-		emitGE( res, vr, lname, dst, v1, src, v2 )
+		emitGE( vr, lname, v1, v2 )
 	end select
 
     ''
-	irhFreeREG( v1 )
-	irhFreeREG( v2 )
-	if( vr <> v1 ) then
-		irhFreeREG( vr )
+	hFreeREG( v1 )
+	hFreeREG( v2 )
+	if( vr <> NULL ) then
+		hFreeREG( vr )
 	end if
 
 end sub
 
 '':::::
-sub irFlushSTORE( byval op as integer, _
-				  byval v1 as IRVREG ptr, _
-				  byval v2 as IRVREG ptr ) static
-	dim as string dst, src
-	dim as integer r1, t1, dt1, dc1
-	dim as integer r2, t2, dt2, dc2
+private sub hFlushSTORE( byval op as integer, _
+				  		 byval v1 as IRVREG ptr, _
+				  		 byval v2 as IRVREG ptr ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass
+	dim as integer v2_typ, v2_dtype, v2_dclass
 	dim as IRVREG ptr va
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( v2, dt2, dc2, t2 )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
 
-	irhLoadIDX( v1, t1 )
-	irhLoadIDX( v2, t2 )
-
-	r1 = INVALID
-	r2 = INVALID
+	hLoadIDX( v1, v1_typ )
+	hLoadIDX( v2, v2_typ )
 
     '' if dst is a fpoint, only load src if its a reg (x86 assumption)
-	if( (t2 = IR_VREGTYPE_REG) or ((t2 <> IR_VREGTYPE_IMM) and (dc1 = IR_DATACLASS_INTEGER)) ) then
+	if( (v2_typ = IR_VREGTYPE_REG) or _
+		((v2_typ <> IR_VREGTYPE_IMM) and (v1_dclass = IR_DATACLASS_INTEGER)) ) then
+
 		'' handle longint
-		if( (dt2 = IR_DATATYPE_LONGINT) or (dt2 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v2_dtype ) ) then
 			va = v2->vaux
-			va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), va, FALSE )
 		end if
 
-		r2 = regTB(dc2)->ensure( regTB(dc2), v2 )
+		regTB(v2_dclass)->ensure( regTB(v2_dclass), v2 )
 	end if
 
 	''
-	irGetVRName( v2, src )
-	irGetVRName( v1, dst )
-
-	emitSTORE( dst, v1, src, v2 )
+	emitSTORE( v1, v2 )
 
     ''
-	irhFreeREG( v1 )
-	irhFreeREG( v2 )
+	hFreeREG( v1 )
+	hFreeREG( v2 )
 
 end sub
 
 '':::::
-sub irFlushLOAD( byval op as integer, _
-				 byval v1 as IRVREG ptr ) static
-	dim as string src, dst
-	dim as integer r1, t1, dt1, dc1
-	dim as integer rr, rr2
+private sub hFlushLOAD( byval op as integer, _
+				 		byval v1 as IRVREG ptr ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass, v1_reg
+	dim as integer vr_reg, vr_reg2
 	dim as IRVREG ptr va, vr
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
-	irhLoadIDX( v1, t1 )
-
-	r1 = INVALID
+	hLoadIDX( v1, v1_typ )
 
 	''
 	select case op
 	case IR_OP_LOAD
 		'' handle longint
-		if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
+			regTB(v1_dclass)->ensure( regTB(v1_dclass), va, FALSE )
 		end if
 
-		r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 
 	case IR_OP_LOADRESULT
-		if( t1 = IR_VREGTYPE_REG ) then
+		if( v1_typ = IR_VREGTYPE_REG ) then
 			'' handle longint
-			if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+			if( ISLONGINT( v1_dtype ) ) then
 				va = v1->vaux
-				va->reg = regTB(dc1)->ensure( regTB(dc1), va, FALSE )
+				regTB(v1_dclass)->ensure( regTB(v1_dclass), va, FALSE )
 			end if
 
-			r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
-
+			v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
+		else
+			v1_reg = INVALID
 		end if
 
-		emitGetResultReg( dt1, dc1, rr, rr2 )
-		if( rr <> r1 ) then
-			vr = irAllocVREG( dt1 )
+		emitGetResultReg( v1_dtype, v1_dclass, vr_reg, vr_reg2 )
+		if( vr_reg <> v1_reg ) then
+			vr = irAllocVREG( v1_dtype )
 
 			'' handle longint
-			if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+			if( ISLONGINT( v1_dtype ) ) then
 				va = vr->vaux
-				va->reg = regTB(dc1)->allocateReg( regTB(dc1), rr2, va )
+				va->reg = regTB(v1_dclass)->allocateReg( regTB(v1_dclass), vr_reg2, va )
 				va->typ = IR_VREGTYPE_REG
 			end if
 
-			vr->reg = regTB(dc1)->allocateReg( regTB(dc1), rr, vr )
+			vr->reg = regTB(v1_dclass)->allocateReg( regTB(v1_dclass), vr_reg, vr )
 			vr->typ = IR_VREGTYPE_REG
 
 			''
-			irGetVRName( v1, src )
-			irGetVRName( vr, dst )
-
-			emitLOAD( dst, vr, src, v1 )
+			emitLOAD( vr, v1 )
 
 			''
-			irhFreeREG( vr )						'' <-- assuming this is the last operation!!!
+			hFreeREG( vr )						'' assuming this is the last operation
 		end if
     end select
 
-
 	''
-	irhFreeREG( v1 )
+	hFreeREG( v1 )
 
 end sub
 
 '':::::
-sub irFlushCONVERT( byval op as integer, _
-					byval v1 as IRVREG ptr, _
-					byval v2 as IRVREG ptr ) static
-	dim as string dst, src
-	dim as integer r1, t1, dt1, dc1
-	dim as integer r2, t2, dt2, dc2
+private sub hFlushCONVERT( byval op as integer, _
+				   		   byval v1 as IRVREG ptr, _
+				   		   byval v2 as IRVREG ptr ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass
+	dim as integer v2_typ, v2_dtype, v2_dclass
 	dim as integer reuse
 	dim as IRVREG ptr va
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( v2, dt2, dc2, t2 )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
 
-	irhLoadIDX( v1, t1 )
-	irhLoadIDX( v2, t2 )
+	hLoadIDX( v1, v1_typ )
+	hLoadIDX( v2, v2_typ )
 
-	r1 = INVALID
-	r2 = INVALID
-
-    '' hack! if src is a reg and if classes are the same and src won't be used (DAG?), reuse src
+    '' x86 assumption: if src is a reg and if classes are the same and
+    ''                 src won't be used (DAG?), reuse src
 	reuse = FALSE
-	if( (dc1 = dc2) and (t2 = IR_VREGTYPE_REG) ) then
+	if( (v1_dclass = v2_dclass) and (v2_typ = IR_VREGTYPE_REG) ) then
 
 		'' fp to fp conversion with source already on stack? do nothing..
-		if( dc2 = IR_DATACLASS_FPOINT ) then
-			r1 			= v2->reg
-			v1->reg 	= r1
-			v1->typ 	= IR_VREGTYPE_REG
-			regTB(dc1)->setOwner( regTB(dc1), r1, v1 )
+		if( v2_dclass = IR_DATACLASS_FPOINT ) then
+			v1->reg 	= v2->reg
 			v2->reg 	= INVALID
+			v1->typ 	= IR_VREGTYPE_REG
+			regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1 )
 			exit sub
 		end if
 
 		'' it's an integer, check if used again
 		if( irGetDistance( v2 ) = IR_MAXDIST ) then
 			'' don't reuse if it's a longint
-			if( (irGetDataSize( dt1 ) <> FB_INTEGERSIZE*2) and _
-				(irGetDataSize( dt2 ) <> FB_INTEGERSIZE*2) ) then
+			if( (irGetDataSize( v1_dtype ) <> FB_INTEGERSIZE*2) and _
+				(irGetDataSize( v2_dtype ) <> FB_INTEGERSIZE*2) ) then
 				reuse = TRUE
 			end if
 		end if
 	end if
 
 	if( reuse ) then
-		r1 = v2->reg
-		t1 = IR_VREGTYPE_REG
-		v1->reg = r1
-		v1->typ = t1
-		regTB(dc1)->setOwner( regTB(dc1), r1, v1 )
+		v1->reg = v2->reg
+		v1->typ = IR_VREGTYPE_REG
+		regTB(v1_dclass)->setOwner( regTB(v1_dclass), v1->reg, v1 )
 
 	else
-		if( t2 = IR_VREGTYPE_REG ) then			'' x86 assumption
+		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
 			'' handle longint
-			if( (dt2 = IR_DATATYPE_LONGINT) or (dt2 = IR_DATATYPE_ULONGINT) ) then
+			if( (v2_dtype = IR_DATATYPE_LONGINT) or (v2_dtype = IR_DATATYPE_ULONGINT) ) then
 				va = v2->vaux
-				va->reg = regTB(dc2)->ensure( regTB(dc2), va, FALSE )
+				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, FALSE )
 			end if
 
-			r2 = regTB(dc2)->ensure( regTB(dc2), v2 )
+			regTB(v2_dclass)->ensure( regTB(v2_dclass), v2 )
 		end if
 
 		'' handle longint
-		if( (dt1 = IR_DATATYPE_LONGINT) or (dt1 = IR_DATATYPE_ULONGINT) ) then
+		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(dc1)->allocate( regTB(dc1), va )
+			va->reg = regTB(v1_dclass)->allocate( regTB(v1_dclass), va )
 			va->typ = IR_VREGTYPE_REG
 		end if
 
-		v1->reg = regTB(dc1)->allocate( regTB(dc1), v1 )
+		v1->reg = regTB(v1_dclass)->allocate( regTB(v1_dclass), v1 )
 		v1->typ = IR_VREGTYPE_REG
 	end if
 
 	''
-	irGetVRName( v2, src )
-	irGetVRName( v1, dst )
+	emitLOAD( v1, v2 )
 
 	''
-	emitLOAD( dst, v1, src, v2 )
-
 	if( not reuse ) then
-		irhFreeREG( v2 )
+		hFreeREG( v2 )
 	else
 		v2->reg = INVALID
 	end if
 
 	''
-	irhFreeREG( v1 )
+	hFreeREG( v1 )
 
 end sub
 
 '':::::
-sub irFlushADDR( byval op as integer, _
-				 byval v1 as IRVREG ptr, _
-				 byval vr as IRVREG ptr ) static
-	dim as string src, dst
-	dim as integer r1, t1, dt1, dc1
-	dim as integer rr, tr, dtr, dcr
+private sub hFlushADDR( byval op as integer, _
+						byval v1 as IRVREG ptr, _
+						byval vr as IRVREG ptr ) static
+
+	dim as integer v1_typ, v1_dtype, v1_dclass
+	dim as integer vr_typ, vr_dtype, vr_dclass
 
 	''
-	irhGetVREG( v1, dt1, dc1, t1 )
-	irhGetVREG( vr, dtr, dcr, tr )
+	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
+	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	irhLoadIDX( v1, t1 )
-	irhLoadIDX( vr, tr )
-
-	r1 = INVALID
-	rr = INVALID
+	hLoadIDX( v1, v1_typ )
+	hLoadIDX( vr, vr_typ )
 
 	''
-	if( t1 = IR_VREGTYPE_REG ) then				'' x86 assumption
-		r1 = regTB(dc1)->ensure( regTB(dc1), v1 )
+	if( v1_typ = IR_VREGTYPE_REG ) then				'' x86 assumption
+		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 	end if
 
-	if( tr = IR_VREGTYPE_REG ) then             '' x86 assumption
-		rr  = regTB(dcr)->ensure( regTB(dcr), vr )
+	if( vr_typ = IR_VREGTYPE_REG ) then             '' x86 assumption
+		regTB(vr_dclass)->ensure( regTB(vr_dclass), vr )
 	end if
 
 	''
-	irGetVRName( v1, src )
-	irGetVRName( vr, dst )
-
 	select case op
 	case IR_OP_ADDROF
-		emitADDROF( dst, vr, src, v1 )
+		emitADDROF( vr, v1 )
 	case IR_OP_DEREF
-		emitDEREF( dst, vr, src, v1 )
+		emitDEREF( vr, v1 )
 	end select
 
     ''
-	irhFreeREG( v1 )
-	irhFreeREG( vr )
+	hFreeREG( v1 )
+	hFreeREG( vr )
 
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub irhFreeIDX( byval vreg as IRVREG ptr, _
-				byval force as integer = FALSE )
-	dim as IRVREG ptr vi
+private sub hFreeIDX( byval vreg as IRVREG ptr, _
+			  		  byval force as integer = FALSE )
+
+	dim as IRVREG ptr vidx
 
 	if( vreg = NULL ) then
 		exit sub
 	end if
 
-	vi = vreg->vidx
-    if( vi <> NULL ) then
-    	if( vi->reg <> INVALID ) then
-    		irhFreeREG( vi, force )				'' recursively
+	vidx = vreg->vidx
+    if( vidx <> NULL ) then
+    	if( vidx->reg <> INVALID ) then
+    		hFreeREG( vidx, force )				'' recursively
     		vreg->vidx = NULL
 		end if
 	end if
@@ -2226,48 +2077,45 @@ sub irhFreeIDX( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub irhFreeREG( byval vreg as IRVREG ptr, _
-				byval force as integer = FALSE )
-	dim as integer reg
-	dim as integer rdtype, rdclass, rtyp
-	dim as integer freereg
-	dim as IRVREG ptr va
+private sub hFreeREG( byval vreg as IRVREG ptr, _
+					  byval force as integer = FALSE )
+
+	dim as integer dclass, dist
+	dim as IRVREG ptr vaux
 
 	if( vreg = NULL ) then
 		exit sub
 	end if
 
 	'' free any attached index
-	irhFreeIDX( vreg, force )
+	hFreeIDX( vreg, force )
 
     ''
 	if( vreg->typ <> IR_VREGTYPE_REG ) then
 		exit sub
 	end if
 
-	reg = vreg->reg
-	if( reg = INVALID ) then
+	if( vreg->reg = INVALID ) then
 		exit sub
 	end if
 
 	''
+	dist = IR_MAXDIST
 	if( not force ) then
-		freereg = (irGetDistance( vreg ) = IR_MAXDIST)
-	else
-		freereg = TRUE
+		dist = irGetDistance( vreg )
 	end if
 
-	if( freereg ) then
+	if( dist = IR_MAXDIST ) then
 		'' aux?
 		if( vreg->vaux <> NULL ) then
-			va = vreg->vaux
-			if( va->reg <> INVALID ) then
-				irhFreeREG( va, TRUE )
+			vaux = vreg->vaux
+			if( vaux->reg <> INVALID ) then
+				hFreeREG( vaux, TRUE )
 			end if
 		end if
 
-    	irhGetVREG( vreg, rdtype, rdclass, rtyp )
-		regTB(rdclass)->free( regTB(rdclass), reg )
+    	dclass = irGetVRDataClass( vreg )
+		regTB(dclass)->free( regTB(dclass), vreg->reg )
 		vreg->reg = INVALID
 	end if
 
@@ -2283,14 +2131,18 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 		return IR_MAXDIST
 	end if
 
-	'' skipping the current tac
+	'' skip the current tac
 	t = ctx.tacidx->nxt
+
+	'' eol?
 	if( t = NULL ) then
 		return IR_MAXDIST
 	end if
 
 	''
 	dist = vreg->taclast->pos - t->pos
+
+	'' not used anymore?
 	if( dist < 0 ) then
 		function = IR_MAXDIST
 	else
@@ -2303,26 +2155,22 @@ end function
 sub irLoadVR( byval reg as integer, _
 			  byval vreg as IRVREG ptr, _
 			  byval doload as integer ) static
-	dim as string vname, rname
+
 	dim as IRVREG rvreg
 
 	if( vreg->typ <> IR_VREGTYPE_REG ) then
 
 		if( doload ) then
-			irGetVRName( vreg, vname )
-
 			rvreg.typ 	= IR_VREGTYPE_REG
 			rvreg.dtype = vreg->dtype
 			rvreg.reg	= reg
 			rvreg.vaux	= vreg->vaux
 
-			emitGetRegName( vreg->dtype, irGetDataClass( vreg->dtype ), reg, rname )
-
-			emitLOAD( rname, @rvreg, vname, vreg )
+			emitLOAD( @rvreg, vreg )
 		end if
 
     	'' free any attached reg, forcing if needed
-    	irhFreeIDX( vreg, TRUE )
+    	hFreeIDX( vreg, TRUE )
 
     	vreg->typ = IR_VREGTYPE_REG
     end if
@@ -2332,24 +2180,21 @@ sub irLoadVR( byval reg as integer, _
 end sub
 
 '':::::
-sub irCreateTMPVAR( byval vreg as IRVREG ptr, _
-					vname as string ) static
+private sub hCreateTMPVAR( byval vreg as IRVREG ptr ) static
 
-	if( vreg->typ <> IR_VREGTYPE_TMPVAR ) then
-		vreg->typ	= IR_VREGTYPE_TMPVAR
-		vreg->sym	= symbAddTempVar( vreg->dtype )
-		vreg->ofs 	= vreg->sym->ofs
-		vreg->reg	= INVALID
+	if( vreg->typ <> IR_VREGTYPE_VAR ) then
+		vreg->typ = IR_VREGTYPE_VAR
+		vreg->sym = symbAddTempVar( vreg->dtype )
+		vreg->ofs = vreg->sym->ofs
+		vreg->reg = INVALID
 	end if
-
-	irGetVRNameEx( vreg, vreg->typ, vname )
 
 end sub
 
 '':::::
 sub irStoreVR( byval vreg as IRVREG ptr, _
 			   byval reg as integer ) static
-	dim as string vname, rname
+
     dim as IRVREG rvreg
 	dim as IRVREG ptr vareg
 
@@ -2362,19 +2207,17 @@ sub irStoreVR( byval vreg as IRVREG ptr, _
 	rvreg.reg		= reg
 	rvreg.vaux		= vreg->vaux
 
-	irCreateTMPVAR( vreg, vname )
+	hCreateTMPVAR( vreg )
 
-	emitGetRegName( rvreg.dtype, dtypeTB(rvreg.dtype).class, reg, rname )
-
-	emitSTORE( vname, vreg, rname, @rvreg )
+	emitSTORE( vreg, @rvreg )
 
 	'' handle longints
-	if( (vreg->dtype = IR_DATATYPE_LONGINT) or (vreg->dtype = IR_DATATYPE_ULONGINT) ) then
+	if( ISLONGINT( vreg->dtype ) ) then
 		vareg = vreg->vaux
-		if( vareg->typ <> IR_VREGTYPE_TMPVAR ) then
+		if( vareg->typ <> IR_VREGTYPE_VAR ) then
 			regTB(IR_DATACLASS_INTEGER)->free( regTB(IR_DATACLASS_INTEGER), vareg->reg )
 			vareg->reg = INVALID
-			vareg->typ = IR_VREGTYPE_TMPVAR
+			vareg->typ = IR_VREGTYPE_VAR
 			vareg->ofs = vreg->ofs + FB_INTEGERSIZE
 		end if
 	end if
@@ -2383,20 +2226,17 @@ end sub
 
 '':::::
 sub irXchgTOS( byval reg as integer ) static
-    dim as string rname
     dim as IRVREG rvreg
-
-	emitGetRegName( IR_DATATYPE_DOUBLE, IR_DATACLASS_FPOINT, reg, rname )
 
 	rvreg.typ 	= IR_VREGTYPE_REG
 	rvreg.dtype = IR_DATATYPE_DOUBLE
 	rvreg.reg	= reg
 
-	emitFXCHG( rname, @rvreg )
+	emitFXCHG( @rvreg )
 
 end sub
 
-'#if 0
+#if 0
 '':::::
 sub irDump( byval op as integer, _
 			byval v1 as IRVREG ptr, _
@@ -2425,7 +2265,7 @@ sub irDump( byval op as integer, _
 	end if
 
 end sub
-'#endif
+#endif
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -2440,7 +2280,7 @@ function irGetVRRealValue( byval vreg as IRVREG ptr ) as integer static
 	end if
 
 	select case as const vreg->typ
-	case IR_VREGTYPE_VAR, IR_VREGTYPE_TMPVAR
+	case IR_VREGTYPE_VAR
 		rval = vreg->sym
 
 	case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR

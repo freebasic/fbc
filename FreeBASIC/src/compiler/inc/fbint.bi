@@ -61,8 +61,8 @@ const FB_DESCTYPE_ARRAY 	= -2
 const FB_DESCTYPE_STR 		= -3
 
 ''
-const FB_DATALABELNAME 		= "_fbdata_begin"
-const FB_DATALABELPREFIX	= "_fbdata_"
+const FB_DATALABELNAME 		= "_{fbdata}_begin"
+const FB_DATALABELPREFIX	= "_{fbdata}_"
 
 
 '' print modes (same as in rtlib/fb.h)

@@ -90,31 +90,8 @@ declare function delFiles 				( ) as integer
 
     ''
     if( fbc.verbose or fbc.showversion ) then
-    	print "FreeBASIC Compiler - Version " + FB_VERSION
+    	print "FreeBASIC Compiler - Version "; FB_VERSION; " for "; FB_HOST; " (target:"; FB_TARGET; ")"
     	print "Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
-    	
-    	print "Built with TARGET=";
-    	#ifdef TARGET_WIN32
-    	print "win32";
-    	#elseif defined(TARGET_LINUX)
-    	print "linux";
-    	#elseif defined(TARGET_DOS)
-    	print "dos";
-    	#elseif defined(TARGET_XBOX)
-    	print "xbox";
-    	#endif
-    	
-    	print ", HOST=";
-    	#ifdef __FB_WIN32__
-    	print "win32"
-    	#elseif defined(__FB_LINUX__)
-    	print "linux"
-    	#elseif defined(__FB_DOS__)
-    	print "dos"
-    	#elseif defined(__FB_XBOX__)
-    	print "xbox"
-    	#endif
-    	
     	print
     	if( fbc.showversion ) then
     		end 0

@@ -376,7 +376,7 @@ end sub
 function cProcStatement static
 	dim as integer res, issub, alloctype
     dim as FBCMPSTMT oldprocstmt
-    dim as FBSYMBOL ptr proc, endlabel, exitlabel, initlabel, l
+    dim as FBSYMBOL ptr proc, endlabel, exitlabel, initlabel
     dim as ASTNODE ptr expr
 
 	function = FALSE
@@ -524,12 +524,8 @@ function cProcStatement static
 
 	irEmitLABEL( endlabel, FALSE )
 
-	'' check undefined labels
-	l = symbCheckLabels( )
-	if( l <> NULL ) then
-		'''''hReportErrorEx FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( l ), -1
-		exit function
-	end if
+	'' check undefined local labels
+	function = (symbCheckLocalLabels( ) = 0)
 
 	'' free all local symbols
 	symbDelLocalSymbols( )
@@ -547,9 +543,6 @@ function cProcStatement static
 	symbDelLabel( initlabel )
 	symbDelLabel( exitlabel )
 	symbDelLabel( endlabel )
-
-	''
-	function = TRUE
 
 end function
 

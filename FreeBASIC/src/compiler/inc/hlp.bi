@@ -53,6 +53,8 @@ declare sub 		hReportError			( byval errnum as integer, _
 
 declare function 	hGetLastError 			( ) as integer
 
+declare function 	hGetErrorCnt 			( ) as integer
+
 declare sub 		hReportWarning			( byval msgnum as integer, _
 											  byval msgex as string = "" )
 

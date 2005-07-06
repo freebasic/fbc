@@ -2514,17 +2514,25 @@ private sub hBOPConstFoldInt( byval op as integer, _
 		end if
 
 	case IR_OP_INTDIV
-		if( issigned ) then
-			l->v.valuei = l->v.valuei \ r->v.valuei
+		if( r->v.valuei <> 0 ) then
+			if( issigned ) then
+				l->v.valuei = l->v.valuei \ r->v.valuei
+			else
+				l->v.valuei = cunsg( l->v.valuei ) \ cunsg( r->v.valuei )
+			end if
 		else
-			l->v.valuei = cunsg( l->v.valuei ) \ cunsg( r->v.valuei )
+			l->v.valuei = 0
 		end if
 
 	case IR_OP_MOD
-		if( issigned ) then
-			l->v.valuei = l->v.valuei mod r->v.valuei
+		if( r->v.valuei <> 0 ) then
+			if( issigned ) then
+				l->v.valuei = l->v.valuei mod r->v.valuei
+			else
+				l->v.valuei = cunsg( l->v.valuei ) mod cunsg( r->v.valuei )
+			end if
 		else
-			l->v.valuei = cunsg( l->v.valuei ) mod cunsg( r->v.valuei )
+			l->v.valuei = 0
 		end if
 
 	case IR_OP_SHL
@@ -2662,17 +2670,25 @@ private sub hBOPConstFold64( byval op as integer, _
 		end if
 
 	case IR_OP_INTDIV
-		if( issigned ) then
-			l->v.value64 = l->v.value64 \ r->v.value64
+		if( r->v.value64 <> 0 ) then
+			if( issigned ) then
+				l->v.value64 = l->v.value64 \ r->v.value64
+			else
+				l->v.value64 = cunsg( l->v.value64 ) \ cunsg( r->v.value64 )
+			end if
 		else
-			l->v.value64 = cunsg( l->v.value64 ) \ cunsg( r->v.value64 )
+			l->v.value64 = 0
 		end if
 
 	case IR_OP_MOD
-		if( issigned ) then
-			l->v.value64 = l->v.value64 mod r->v.value64
+		if( r->v.value64 <> 0 ) then
+			if( issigned ) then
+				l->v.value64 = l->v.value64 mod r->v.value64
+			else
+				l->v.value64 = cunsg( l->v.value64 ) mod cunsg( r->v.value64 )
+			end if
 		else
-			l->v.value64 = cunsg( l->v.value64 ) mod cunsg( r->v.value64 )
+			l->v.value64 = 0
 		end if
 
 	case IR_OP_SHL

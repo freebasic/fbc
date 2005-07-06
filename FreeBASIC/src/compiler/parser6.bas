@@ -388,6 +388,10 @@ function cDataStmt as integer static
 			s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 			if( s = NULL ) then
 				s = symbAddLabel( *lexGetText( ), FALSE, TRUE )
+				if( s = NULL ) then
+					hReportError( FB_ERRMSG_DUPDEFINITION )
+					exit function
+				end if
 			end if
 			lexSkipToken( )
 		end select
@@ -421,9 +425,9 @@ function cDataStmt as integer static
 			exit function
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
-		rtlDataStoreBegin
+		rtlDataStoreBegin( )
 
 		do
 			littext = ""

@@ -29,9 +29,10 @@ defint a-z
 #include once "inc\ir.bi"
 #include once "inc\lex.bi"
 
-type FBERRCTX
+type FBHLPCTX
 	lasterror 	as integer
 	lastline	as integer
+	errcnt		as integer
 
 	tmpcnt		as uinteger
 end type
@@ -43,7 +44,7 @@ end type
 
 
 ''globals
-	dim shared ctx as FBERRCTX
+	dim shared ctx as FBHLPCTX
 
 	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
 
@@ -175,6 +176,8 @@ sub hlpInit
 	next i
 
 	''
+	ctx.lastline= -1
+	ctx.errcnt	= 0
 	ctx.tmpcnt	= 0
 
 end sub
@@ -212,6 +215,8 @@ sub hReportErrorEx( byval errnum as integer, _
 		ctx.lasterror = errnum
 		ctx.lastline  = linenum
 	end if
+
+	ctx.errcnt += 1
 
 	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
 		msg = ""
@@ -277,6 +282,12 @@ function hGetLastError as integer
 
 end function
 
+'':::::
+function hGetErrorCnt as integer
+
+	function = ctx.errcnt
+
+end function
 
 '':::::
 sub hReportWarning( byval msgnum as integer, _
@@ -826,7 +837,7 @@ function hStripUnderscore( byval symbol as string ) as string static
 
     case FB_COMPNAMING_LINUX
     	function = symbol
-    	
+
     case FB_COMPNAMING_XBOX
 		function = mid$(symbol, 2)
     end select

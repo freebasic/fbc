@@ -1,4 +1,6 @@
 
+[ ] test the new EMIT and IR, mostly rel ops (FOR too), longint's and load/stores
+
 [ ] pointers
     - is it okay to * ptr.type if ptr is at the right-side?
 

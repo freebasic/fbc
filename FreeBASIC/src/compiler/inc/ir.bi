@@ -34,7 +34,7 @@ enum IRDATACLASS_ENUM
 	IR_DATACLASS_UNKNOWN
 end enum
 
-'' data types (must be in order of precision and in the other signed/non-signed!)
+'' data types (must be in order of precision and in the signed/non-signed order!)
 enum IRDATATYPE_ENUM
 	IR_DATATYPE_VOID
 	IR_DATATYPE_BYTE
@@ -67,7 +67,6 @@ enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_VAR
 	IR_VREGTYPE_IDX
 	IR_VREGTYPE_PTR
-	IR_VREGTYPE_TMPVAR
 	IR_VREGTYPE_REG
 	IR_VREGTYPE_OFS
 end enum
@@ -83,61 +82,40 @@ enum IROPTYPE_ENUM
 	IR_OPTYPE_CONVERT
 	IR_OPTYPE_CALL
 	IR_OPTYPE_STACK
-	IR_OPTYPE_ADDRESSING
+	IR_OPTYPE_ADDRESS
 end enum
 
 ''
-const IR_OP_NOP			= 255
-
-enum IROP_ENUM
-	IR_OP_LOAD
+enum IROP_ENUM									'' if order is changed, update the opTB array
+	IR_OP_LOAD				= 0
 	IR_OP_LOADRESULT
 	IR_OP_STORE
 	IR_OP_ADD
 	IR_OP_SUB
 	IR_OP_MUL
 	IR_OP_DIV
+	IR_OP_INTDIV
 	IR_OP_MOD
 	IR_OP_AND
 	IR_OP_OR
 	IR_OP_XOR
+	IR_OP_EQV
+	IR_OP_IMP
 	IR_OP_SHL
 	IR_OP_SHR
 	IR_OP_POW
-	IR_OP_EQV
-	IR_OP_IMP
 	IR_OP_MOV
+	IR_OP_ATAN2
 	IR_OP_EQ
 	IR_OP_GT
 	IR_OP_LT
 	IR_OP_NE
-	IR_OP_LE
 	IR_OP_GE
-	IR_OP_JEQ
-	IR_OP_JGT
-	IR_OP_JLT
-	IR_OP_JNE
-	IR_OP_JLE
-	IR_OP_JGE
+	IR_OP_LE
 	IR_OP_NOT
 	IR_OP_NEG
 	IR_OP_ABS
 	IR_OP_SGN
-	IR_OP_JMP
-	IR_OP_CALL
-	IR_OP_LABEL
-	IR_OP_PUSH
-	IR_OP_POP
-	IR_OP_PUSHUDT
-	IR_OP_INTDIV
-	IR_OP_TOINT
-	IR_OP_TOFLT
-	IR_OP_ADDROF
-	IR_OP_DEREF
-	IR_OP_CALLFUNCT
-	IR_OP_CALLPTR
-	IR_OP_STACKALIGN
-	IR_OP_JUMPPTR
 	IR_OP_SIN
 	IR_OP_ASIN
 	IR_OP_COS
@@ -147,7 +125,28 @@ enum IROP_ENUM
 	IR_OP_SQRT
 	IR_OP_LOG
 	IR_OP_FLOOR
-	IR_OP_ATAN2
+	IR_OP_ADDROF
+	IR_OP_DEREF
+	IR_OP_TOINT
+	IR_OP_TOFLT
+	IR_OP_PUSH
+	IR_OP_POP
+	IR_OP_PUSHUDT
+	IR_OP_STACKALIGN
+	IR_OP_JEQ
+	IR_OP_JGT
+	IR_OP_JLT
+	IR_OP_JNE
+	IR_OP_JGE
+	IR_OP_JLE
+	IR_OP_JMP
+	IR_OP_CALL
+	IR_OP_LABEL
+	IR_OP_CALLFUNCT
+	IR_OP_CALLPTR
+	IR_OP_JUMPPTR
+
+	IR_OPS										'' total
 end enum
 
 '' operations below won't reach IR, used by AST
@@ -301,10 +300,6 @@ declare function 	irGetVRDataClass	( byval vreg as IRVREG ptr ) as integer
 
 declare function 	irGetVRDataSize		( byval vreg as IRVREG ptr ) as integer
 
-declare sub 		irGetVRNameEx		( byval vreg as IRVREG ptr, _
-										  byval vtype as integer, _
-										  vname as string )
-
 declare function 	irMaxDataType		( byval dtype1 as integer, _
 										  byval dtype2 as integer ) as integer
 
@@ -351,8 +346,6 @@ declare sub 		irXchgTOS			( byval reg as integer )
 
 #define irGetVRDataType(v) v->dtype
 
-#define irGetVRName(v,n) irGetVRNameEx( v, v->typ, n )
-
 
 #define irEmitBOP(op,v1,v2,vr) irEmit( op, v1, v2, vr )
 
@@ -385,6 +378,9 @@ declare sub 		irXchgTOS			( byval reg as integer )
 #define irEmitBRANCHPTR(v1) irEmit( IR_OP_JUMPPTR, v1, NULL, NULL, NULL )
 
 #define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
+
+
+#define ISLONGINT(t) ((t = IR_DATATYPE_LONGINT) or (t = IR_DATATYPE_ULONGINT))
 
 
 #endif '' __IR_BI__

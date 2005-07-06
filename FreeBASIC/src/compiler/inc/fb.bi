@@ -49,6 +49,27 @@ const INVALID		= -1
 #define FB_VERSION				"0.14"
 #define FB_SIGN					"FreeBASIC v0.14b"
 
+#ifdef TARGET_WIN32
+#define FB_TARGET				"win32"
+#elseif defined(TARGET_LINUX)
+#define FB_TARGET				"linux"
+#elseif defined(TARGET_DOS)
+#define FB_TARGET				"dos"
+#elseif defined(TARGET_XBOX)
+#define FB_TARGET				"xbox"
+#endif
+
+#ifdef __FB_WIN32__
+#define FB_HOST					"win32"
+#elseif defined(__FB_LINUX__)
+#define FB_HOST					"linux"
+#elseif defined(__FB_DOS__)
+#define FB_HOST					"dos"
+#elseif defined(__FB_XBOX__)
+#define FB_HOST					"xbox"
+#endif
+
+
 '' compiler options
 enum FBCOMPOPT_ENUM
 	FB_COMPOPT_DEBUG
@@ -226,6 +247,8 @@ const FB_DEFAULTTARGET = FB_COMPTARGET_WIN32
 const FB_DEFAULTTARGET = FB_COMPTARGET_LINUX
 #elseif defined(TARGET_DOS)
 const FB_DEFAULTTARGET = FB_COMPTARGET_DOS
+#elseif defined(TARGET_XBOX)
+const FB_DEFAULTTARGET = FB_COMPTARGET_XBOX
 #else
 #error Unsupported target
 #endif

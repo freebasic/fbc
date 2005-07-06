@@ -1268,7 +1268,7 @@ function hAllocNumericConst( byval sname as string, _
 
 	function = NULL
 
-	cname = "_fbnc_"
+	cname = "_{fbnc}_"
 	cname += sname
 
 	s = symbFindByNameAndSuffix( cname, typ, FALSE )
@@ -1313,7 +1313,7 @@ function hAllocStringConst( byval sname as string, _
 	end if
 
 	if( lgt <= FB_MAXNAMELEN-6 ) then
-		cname = "_fbsc_"
+		cname = "_{fbsc}_"
 		cname += sname
 	else
 		cname = *hMakeTmpStr( )
@@ -2361,8 +2361,8 @@ function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	dim as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s
 
-	rname = "_fbpr_"
-	rname += f->alias
+	rname = "_{fbpr}_"
+	rname += symbGetOrgName( f )
 
 	s = symbAddVarEx( rname, "", f->typ, f->subtype, 0, 0, 0, _
 					  dTB(), 0, TRUE, TRUE, FALSE )
@@ -2557,8 +2557,8 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 		return NULL
 	end if
 
-	rname = "_fbpr_"
-	rname += f->alias
+	rname = "_{fbpr}_"
+	rname += symbGetOrgName( f )
 
 	function = symbFindByNameAndClass( rname, FB_SYMBCLASS_VAR, TRUE )
 
@@ -3053,6 +3053,13 @@ function symbGetFirstNode as FBSYMBOL ptr static
 end function
 
 '':::::
+function symbGetFirstLocalNode as FBLOCSYMBOL ptr static
+
+	function = ctx.loclist.head
+
+end function
+
+'':::::
 function symbGetNextNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	if( n <> NULL ) then
@@ -3060,13 +3067,6 @@ function symbGetNextNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	else
 		function = NULL
 	end if
-
-end function
-
-'':::::
-function symbGetFirstLocalNode as FBLOCSYMBOL ptr static
-
-	function = ctx.loclist.head
 
 end function
 
@@ -3537,24 +3537,53 @@ sub symbSetLastLabel( byval l as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-function symbCheckLabels as FBSYMBOL ptr
-    dim s as FBSYMBOL ptr
+function symbCheckLabels( ) as integer
+    dim as FBSYMBOL ptr s
+    dim as integer cnt
 
-    s = symbGetFirstNode
+	cnt = 0
+
+    s = symbGetFirstNode( )
     do while( s <> NULL )
 
-    	if( s->scope = env.scope ) then
-    		if( s->class = FB_SYMBCLASS_LABEL ) then
-    			if( not s->lbl.declared ) then
-    				return s
+    	if( s->class = FB_SYMBCLASS_LABEL ) then
+    		if( not s->lbl.declared ) then
+    			if( s->scope = 0 ) then
+    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
+    				cnt += 1
     			end if
     		end if
     	end if
 
-    	s = symbGetNextNode( s )
+    	s = s->nxt
     loop
 
-	function = NULL
+	function = cnt
+
+end function
+
+'':::::
+function symbCheckLocalLabels(  ) as integer
+    dim as FBLOCSYMBOL ptr l
+    dim as FBSYMBOL ptr s
+    dim as integer cnt
+
+    cnt = 0
+
+    l = symbGetFirstLocalNode( )
+    do while( l <> NULL )
+    	s = l->s
+    	if( s->class = FB_SYMBCLASS_LABEL ) then
+    		if( not s->lbl.declared ) then
+    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
+    			cnt += 1
+    		end if
+    	end if
+
+    	l = l->nxt
+    loop
+
+	function = cnt
 
 end function
 

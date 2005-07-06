@@ -540,10 +540,10 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 								 byval flags as LEXCHECK_ENUM ) static
 	dim as uinteger value, c
 	dim as ulongint value64
-	dim as integer tb(0 to 15), i, lgt, islongint
+	dim as integer tb(0 to 15), i, lgt, islong
 
 	isneg = FALSE
-	islongint = FALSE
+	islong = FALSE
 	value = 0
 	lgt = 0
 
@@ -566,7 +566,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 					lgt += 1
 					if( lgt > 8 ) then
 						if( lgt = 9 ) then
-							islongint = TRUE
+							islong = TRUE
 				    		value64 = (culngint( value ) * 16) + c
 				    	else
 				    		value64 = (value64 * 16) + c
@@ -591,7 +591,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 				lgt += 1
 				if( lgt > 8 ) then
 					if( lgt = 9 ) then
-						islongint = TRUE
+						islong = TRUE
 						value64 = (culngint( value ) * 8) + c
 					else
 						value64 = (value64 * 8) + c
@@ -615,7 +615,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 				lgt += 1
 				if( lgt > 32 ) then
 					if( lgt = 33 ) then
-						islongint = TRUE
+						islong = TRUE
 				    	value64 = (culngint( value ) * 2) + c
 				    else
 				    	value64 = (value64 * 2) + c
@@ -634,7 +634,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 
 	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
 
-	if( not islongint ) then
+	if( not islong ) then
 		'' int to ascii
 		if( value = 0 ) then
 			*pnum = CHAR_0

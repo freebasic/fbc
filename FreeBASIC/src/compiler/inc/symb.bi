@@ -264,7 +264,9 @@ declare function 	hAllocStringConst		( byval sname as string, _
 declare function 	hCalcElements 			( byval s as FBSYMBOL ptr, _
 											  byval n as FBVARDIM ptr = NULL ) as integer
 
-declare function 	symbCheckLabels 		( ) as FBSYMBOL ptr
+declare function 	symbCheckLabels 		( ) as integer
+
+declare function 	symbCheckLocalLabels 	( ) as integer
 
 declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 											  byval typ as integer, _
