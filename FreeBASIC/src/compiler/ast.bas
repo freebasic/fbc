@@ -3690,6 +3690,14 @@ function astNewCONV( byval op as integer, _
 	if( (dclass = irGetDataClass( dtype )) and _
 		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
 
+		if( l->defined ) then
+			if( dtype <> IR_DATATYPE_ENUM ) then
+				l->class = AST_NODECLASS_CONST
+			else
+				l->class = AST_NODECLASS_ENUM
+			end if
+		end if
+		
 		l->dtype   = dtype
 		l->subtype = subtype
 
@@ -3709,6 +3717,12 @@ function astNewCONV( byval op as integer, _
 			hCONVConstEvalInt( dtype, l )
 		end select
 
+		if( dtype <> IR_DATATYPE_ENUM ) then
+			l->class = AST_NODECLASS_CONST
+		else
+			l->class = AST_NODECLASS_ENUM
+		end if
+		
 		l->dtype   = dtype
 		l->subtype = subtype
 
