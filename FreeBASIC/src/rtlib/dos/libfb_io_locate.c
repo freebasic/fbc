@@ -31,12 +31,6 @@
 #include <sys/farptr.h>
 
 /*:::::*/
-void fb_RestoreCursor(void)
-{
-	_setcursortype(_NORMALCURSOR);
-}
-
-/*:::::*/
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	int x, y;
@@ -57,7 +51,6 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 	if (cursor >= 0) {
 		visible = cursor ? 0x10000 : 0;
 		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
-		fb_AtExit(fb_RestoreCursor);
 	}
 
     fb_FileSetLineLen( 0, x - 1 );
