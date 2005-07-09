@@ -18,7 +18,7 @@
  */
 
 /*
- * data.c -- generic read
+ * data_double.c -- read stmt for double's
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -28,27 +28,30 @@
 #include "fb.h"
 
 /*:::::*/
-short fb_DataRead( void )
+FBCALL void fb_DataReadDouble( double *dst )
 {
 	short len;
 
-	if( fb_DataPtr == NULL )
-		return 0;
+	FB_LOCK();
 
-	len = *((short *)fb_DataPtr);
-	fb_DataPtr += sizeof(short);
+	len = fb_DataRead();
 
-	/* link? */
-	while ( len == FB_DATATYPE_LINK )
+	if( len == 0 )
 	{
-		fb_DataPtr = (char *)(*(int *)fb_DataPtr);
-		if( fb_DataPtr == NULL )
-			return 0;
+		*dst = 0.0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_DataPtr;
+		fb_DataPtr += sizeof( unsigned int );
+	}
+	else
+	{
+        *dst = fb_hStr2Double( (char *)fb_DataPtr, len );
 
-		len = *((short *)fb_DataPtr);
-		fb_DataPtr += sizeof(short);
+		fb_DataPtr += len + 1;
 	}
 
-	return len;
+	FB_UNLOCK();
 }
 

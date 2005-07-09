@@ -18,37 +18,24 @@
  */
 
 /*
- * data.c -- generic read
+ * data.c -- RESTORE stmt
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 
+
+char *fb_DataPtr = NULL;
+
+
 /*:::::*/
-short fb_DataRead( void )
+FBCALL void fb_DataRestore( char *labeladdr )
 {
-	short len;
+	FB_LOCK();
 
-	if( fb_DataPtr == NULL )
-		return 0;
+	fb_DataPtr = labeladdr;
 
-	len = *((short *)fb_DataPtr);
-	fb_DataPtr += sizeof(short);
-
-	/* link? */
-	while ( len == FB_DATATYPE_LINK )
-	{
-		fb_DataPtr = (char *)(*(int *)fb_DataPtr);
-		if( fb_DataPtr == NULL )
-			return 0;
-
-		len = *((short *)fb_DataPtr);
-		fb_DataPtr += sizeof(short);
-	}
-
-	return len;
+	FB_UNLOCK();
 }
-

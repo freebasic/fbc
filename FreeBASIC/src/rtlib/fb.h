@@ -310,12 +310,19 @@ FBCALL double 		fb_FIXDouble		( double x );
  * data
  **************************************************************************************************/
 
+extern char 		*fb_DataPtr;
+
+#define FB_DATATYPE_LINK -1
+#define FB_DATATYPE_OFS  -2
+
 FBCALL void 		fb_DataReadStr		( void *dst, int dst_size, int fillrem );
 FBCALL void 		fb_DataReadByte		( char *dst );
 FBCALL void 		fb_DataReadShort	( short *dst );
 FBCALL void 		fb_DataReadInt		( int *dst );
 FBCALL void 		fb_DataReadSingle	( float *dst );
 FBCALL void 		fb_DataReadDouble	( double *dst );
+
+	   short 		fb_DataRead			( void );
 
 /**************************************************************************************************
  * console

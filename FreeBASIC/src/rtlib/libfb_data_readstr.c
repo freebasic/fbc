@@ -18,7 +18,7 @@
  */
 
 /*
- * data.c -- generic read
+ * data_str.c -- read stmt for string's
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -28,27 +28,26 @@
 #include "fb.h"
 
 /*:::::*/
-short fb_DataRead( void )
+FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 {
 	short len;
 
-	if( fb_DataPtr == NULL )
-		return 0;
+	FB_LOCK();
 
-	len = *((short *)fb_DataPtr);
-	fb_DataPtr += sizeof(short);
+	len = fb_DataRead();
 
-	/* link? */
-	while ( len == FB_DATATYPE_LINK )
+	if( len == FB_DATATYPE_OFS )
 	{
-		fb_DataPtr = (char *)(*(int *)fb_DataPtr);
-		if( fb_DataPtr == NULL )
-			return 0;
+		/* !!!WRITEME!!! */
+		fb_DataPtr += sizeof( unsigned int );
+	}
+	else
+	{
+		fb_StrAssign( dst, dst_size, (void *)fb_DataPtr, 0, fillrem );
 
-		len = *((short *)fb_DataPtr);
-		fb_DataPtr += sizeof(short);
+		fb_DataPtr += len + 1;
 	}
 
-	return len;
+	FB_UNLOCK();
 }
 
