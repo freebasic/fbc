@@ -26,6 +26,7 @@ Version 0.14 Beta:
 - chr$(0) can now be output with PRINT too (mjs)
 - Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 - Replaced -noexport with -export command-line option, compiler will now warn if EXPORT is used without -export (lillo)
+- MULTIKEY, GETMOUSE and SETMOUSE will now also work in plain console text mode (lillo)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -120,6 +121,7 @@ Version 0.14 Beta:
 - PRESET did not behave as it was supposed to (lillo)
 - overloaded functions could not use the function name to assign results (v1c)
 - local undefined labels were silently ignored (v1c)
+- BLOADing a BMP with 16 or less colors was changing the whole 256 colors palette if in 8bit mode (lillo)
 
 
 Version 0.13 Beta:

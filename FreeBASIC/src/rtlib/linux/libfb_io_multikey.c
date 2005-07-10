@@ -273,7 +273,7 @@ static void keyboard_x11_handler(void)
 	unsigned char keymap[32];
 	int i;
 
-	XQueryKeymap(display, keymap);
+	fb_XQueryKeymap(display, keymap);
 	memset(key_state, FALSE, 128);
 	for (i = 0; i < 256; i++) {
 		if (keymap[i / 8] & (1 << (i & 0x7)))

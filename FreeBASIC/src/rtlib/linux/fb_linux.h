@@ -59,6 +59,13 @@ extern pthread_mutex_t fb_string_mutex;
 #endif
 
 
+typedef struct FB_DYNSYMBOL
+{
+	char *name;
+	void *symbol;
+} FB_DYNSYMBOL;
+
+
 typedef struct FBCONSOLE
 {
 	int inited;
@@ -84,6 +91,8 @@ typedef struct FBCONSOLE
 
 extern FBCONSOLE fb_con;
 
+extern void *fb_hDynLoad(char *libname, FB_DYNSYMBOL what[]);
+extern void fb_hDynFree(void *lib);
 extern int fb_hGetCh(int remove);
 extern void fb_hResize(void);
 extern int fb_hInitConsole(int);
