@@ -25,6 +25,7 @@
  */
 
 #include "fb.h"
+#include "fb_win32.h"
 #include "fb_scancodes.h"
 
 
@@ -77,9 +78,32 @@ const unsigned char fb_keytable[][3] = {
 
 
 /*:::::*/
+static HWND find_window()
+{
+	TCHAR old_title[MAX_PATH];
+	TCHAR title[MAX_PATH];
+	static HWND hwnd = NULL;
+	
+	if (hwnd)
+		return hwnd;
+	
+	if (GetConsoleTitle(old_title, MAX_PATH)) {
+		sprintf(title, "_fb_console_title %f", fb_Timer());
+		SetConsoleTitle(title);
+		hwnd = FindWindow(NULL, title);
+		SetConsoleTitle(old_title);
+	}
+	return hwnd;
+}
+
+
+/*:::::*/
 int fb_ConsoleMultikey( int scancode )
 {
 	int i;
+	
+	if ( find_window() != GetForegroundWindow() )
+		return FALSE;
 	
 	for( i = 0; fb_keytable[i][0]; i++ ) {
 		if( fb_keytable[i][0] == scancode ) {
