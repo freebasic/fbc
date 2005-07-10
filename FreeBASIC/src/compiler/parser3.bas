@@ -437,14 +437,8 @@ function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
 	'' function pointer dref? call it
 	if( isfuncptr ) then
 
-		if( elm <> NULL ) then
-			sym = elm
-		end if
-
-		sym 	= sym->subtype
+		sym 	= subtype
 		elm 	= NULL
-		typ 	= sym->typ
-		subtype = sym->subtype
 
 		'' function?
 		if( symbGetType( sym ) <> FB_SYMBTYPE_VOID ) then
