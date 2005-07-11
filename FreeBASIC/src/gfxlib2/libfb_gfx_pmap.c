@@ -39,12 +39,12 @@ FBCALL float fb_GfxPMap(float coord, int func)
 		
 		case 0:
 			if (fb_mode->flags & WINDOW_ACTIVE)
-				coord = (coord - fb_mode->win_x) * (fb_mode->view_w - 1) / fb_mode->win_w;
+				coord = ((coord - fb_mode->win_x) * fb_mode->view_w) / (fb_mode->win_w - 1);
 			return coord;
 		
 		case 1:
 			if (fb_mode->flags & WINDOW_ACTIVE) {
-				coord = (coord - fb_mode->win_y) * (fb_mode->view_h - 1) / fb_mode->win_h;
+				coord = ((coord - fb_mode->win_y) * fb_mode->view_h) / (fb_mode->win_h - 1);
 				if ((fb_mode->flags & WINDOW_SCREEN) == 0)
 					coord = fb_mode->view_h - 1 - coord;
 			}
@@ -52,15 +52,14 @@ FBCALL float fb_GfxPMap(float coord, int func)
 		
 		case 2:
 			if (fb_mode->flags & WINDOW_ACTIVE)
-				coord = ((coord * fb_mode->win_w) / (fb_mode->view_w - 1)) + fb_mode->win_x;
+				coord = ((coord * (fb_mode->win_w - 1)) / fb_mode->view_w) + fb_mode->win_x;
 			return coord;
 		
 		case 3:
 			if (fb_mode->flags & WINDOW_ACTIVE) {
-				coord = (coord * fb_mode->win_h) / (fb_mode->view_h - 1);
 				if ((fb_mode->flags & WINDOW_SCREEN) == 0)
-					coord = fb_mode->win_h - coord;
-				coord += fb_mode->win_y;
+					coord = fb_mode->view_h - 1 - coord;
+				coord = ((coord * (fb_mode->win_h - 1)) / fb_mode->view_h) + fb_mode->win_y;
 			}
 			return coord;
 	}
