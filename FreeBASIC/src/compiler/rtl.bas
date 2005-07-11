@@ -5688,7 +5688,7 @@ function rtlGfxView( byval x1expr as ASTNODE ptr, _
 
  	'' byval fillcolor as uinteger
  	if( fillexpr = NULL ) then
- 		fillexpr = astNewCONSTi( &hffff0000, IR_DATATYPE_UINT )
+ 		fillexpr = astNewCONSTi( &hFEFF00FF, IR_DATATYPE_UINT )
  	end if
  	if( astNewPARAM( proc, fillexpr ) = NULL ) then
  		exit function
@@ -5696,7 +5696,7 @@ function rtlGfxView( byval x1expr as ASTNODE ptr, _
 
  	'' byval bordercolor as uinteger
  	if( bordexpr = NULL ) then
- 		bordexpr = astNewCONSTi( &hffff0000, IR_DATATYPE_UINT )
+ 		bordexpr = astNewCONSTi( &hFEFF00FF, IR_DATATYPE_UINT )
  	end if
  	if( astNewPARAM( proc, bordexpr ) = NULL ) then
  		exit function
