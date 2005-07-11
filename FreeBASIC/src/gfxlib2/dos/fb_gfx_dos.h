@@ -36,6 +36,7 @@
 #include <sys/farptr.h>
 #include <sys/movedata.h>
 
+#include "vga.h"
 #include "vesa.h"
 
 /* macros */
@@ -44,6 +45,9 @@
 #define RM_TO_LINEAR(addr)  ((((addr) & 0xFFFF0000) >> 12) + ((addr) & 0xFFFF))
 #define RM_OFFSET(addr)     ((addr) & 0xF)
 #define RM_SEGMENT(addr)    (((addr) >> 4) & 0xFFFF)
+
+#define SCREENLIST(w, h) ((h) | (w) << 16)
+
 
 /* globals */
 
@@ -65,6 +69,7 @@ typedef struct fb_dos_t {
 	int pal_dirty;
 	
 	int inited;
+	int detected;
 	int locked;
 	int in_interrupt;
 	
@@ -96,6 +101,10 @@ typedef struct fb_dos_t {
 	int vesa_ok;
 	VbeInfoBlock vesa_info;
 	VesaModeInfo vesa_mode_info;
+	VesaModeInfo *vesa_modes;
+	int num_vesa_modes;
+	
+	int nearptr_ok;
 	
 	int Bpp; /* **bytes** per pixel */
 	unsigned int w_bytes;	/* bytes per scanline */

@@ -27,13 +27,16 @@
 #include "fb_gfx_dos.h"
 
 #include <limits.h>
+#include <sys/nearptr.h>
 
 /* driver list */
 
+extern GFXDRIVER fb_gfxDriverVESA;
 extern GFXDRIVER fb_gfxDriverVGA;
 extern GFXDRIVER fb_gfxDriverModeX;
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
+	&fb_gfxDriverVESA,
 	&fb_gfxDriverVGA,
 	&fb_gfxDriverModeX,
 	NULL
@@ -467,7 +470,6 @@ static int fb_dos_find_nearest_color(unsigned char r, unsigned char g, unsigned 
 	return curr_idx;
 }
 
-
 /*:::::*/
 void fb_dos_vga_set_palette(void)
 {
@@ -488,55 +490,130 @@ void fb_dos_vga_set_palette(void)
 }
 
 /*:::::*/
-void fb_dos_vga_wait_vsync(void)
+static inline void wait(int port, int and, int xor)
 {
-	while (inportb(0x3DA) & 8) {
-		__dpmi_yield();
-	}
+	while (((inportb(port) ^ (xor)) & (and)) == 0) { }
 }
 
+/*:::::*/
+void fb_dos_vga_wait_vsync(void)
+{
+	wait(0x3DA, 8, 0);
+}
+
+/*:::::*/
+static int fb_dos_vesa_get_mode_info(int mode)
+{
+	int i;
+	
+	_farsetsel(_dos_ds);
+	
+	for (i = 0; i < sizeof(fb_dos.vesa_mode_info); i++) {
+		_farnspokeb(MASK_LINEAR(__tb) + i, 0);
+	}
+	
+	fb_dos.regs.x.ax = 0x4F01;
+	fb_dos.regs.x.di = RM_OFFSET(__tb);
+	fb_dos.regs.x.es = RM_SEGMENT(__tb);
+	fb_dos.regs.x.cx = mode;
+	__dpmi_int(0x10, &fb_dos.regs);
+	if (fb_dos.regs.h.ah)
+		return -1;
+	
+	dosmemget(MASK_LINEAR(__tb), sizeof(fb_dos.vesa_mode_info), &fb_dos.vesa_mode_info);
+	return 0;
+}
 
 /*:::::*/
 void fb_dos_detect(void)
 {
 	int i;
+	int mode_list[256];
+	int number_of_modes;
+	long mode_ptr;
+	int c;
 	
-	/* detect VESA */
-	
-	_farsetsel(_dos_ds);
-	
-	for (i = 4; i < (int)sizeof(VbeInfoBlock); i++) {
-		_farnspokeb(MASK_LINEAR(__tb) + i, 0);
-	}
-	
-	dosmemput("VBE2", 4, MASK_LINEAR(__tb));	/* get VESA 2 info if available */
-	
-	fb_dos.regs.x.ax = 0x4F00;
-	fb_dos.regs.x.di = RM_OFFSET(__tb);
-	fb_dos.regs.x.es = RM_SEGMENT(__tb);
-	__dpmi_int(0x10, &fb_dos.regs);
-	
-	if (fb_dos.regs.h.ah != 0x00) {
-		fb_dos.vesa_ok = FALSE;
-	} else {
-		dosmemget(MASK_LINEAR(__tb), sizeof(VbeInfoBlock), &fb_dos.vesa_info);
+	if (!fb_dos.detected) {
+		fb_dos.detected = TRUE;
+		/* detect VESA */
 		
-		if (strncmp(fb_dos.vesa_info.vbe_signature, "VESA", 4) != 0) {
+		_farsetsel(_dos_ds);
+		
+		for (i = 4; i < (int)sizeof(VbeInfoBlock); i++) {
+			_farnspokeb(MASK_LINEAR(__tb) + i, 0);
+		}
+		
+		dosmemput("VBE2", 4, MASK_LINEAR(__tb));	/* get VESA 2 info if available */
+		
+		fb_dos.regs.x.ax = 0x4F00;
+		fb_dos.regs.x.di = RM_OFFSET(__tb);
+		fb_dos.regs.x.es = RM_SEGMENT(__tb);
+		__dpmi_int(0x10, &fb_dos.regs);
+		
+		if (fb_dos.regs.h.ah != 0x00) {
 			fb_dos.vesa_ok = FALSE;
 		} else {
-			fb_dos.vesa_ok = TRUE;
+			dosmemget(MASK_LINEAR(__tb), sizeof(VbeInfoBlock), &fb_dos.vesa_info);
+			
+			if (strncmp(fb_dos.vesa_info.vbe_signature, "VESA", 4) != 0) {
+				fb_dos.vesa_ok = FALSE;
+			} else {
+				fb_dos.vesa_ok = TRUE;
+			}
 		}
+		
+		/* get VESA modes */
+		if (fb_dos.vesa_ok) {
+			
+			mode_ptr = ((fb_dos.vesa_info.video_mode_ptr & 0xFFFF0000) >> 12) + (fb_dos.vesa_info.video_mode_ptr & 0xFFFF);
+			
+			number_of_modes = 0;
+			
+			while (_farpeekw(_dos_ds, mode_ptr) != 0xFFFF) {
+				mode_list[number_of_modes] = _farpeekw(_dos_ds, mode_ptr);
+				number_of_modes++;
+				mode_ptr += 2;
+			}
+			
+			fb_dos.num_vesa_modes = number_of_modes;
+			
+			fb_dos.vesa_modes = (VesaModeInfo *)malloc(number_of_modes * sizeof(VesaModeInfo));
+			
+			for (c = 0; c < number_of_modes; c++) {
+				if (fb_dos_vesa_get_mode_info(mode_list[c]) != 0)
+					continue;
+				
+				/* color graphics mode and supported */
+				if ((fb_dos.vesa_mode_info.ModeAttributes & 0x19) != 0x19)
+					continue;
+				
+				if (fb_dos.vesa_mode_info.NumberOfPlanes != 1)
+					continue;
+				
+				if ((fb_dos.vesa_mode_info.MemoryModel != VMI_MM_PACK) && (fb_dos.vesa_mode_info.MemoryModel != VMI_MM_DIR))
+					continue;
+			
+				/* clobber WinFuncPtr to hold mode number */
+				fb_dos.vesa_mode_info.WinFuncPtr = mode_list[c];
+				
+				/* add to list */
+				memcpy(&fb_dos.vesa_modes[c], &fb_dos.vesa_mode_info, sizeof(VesaModeInfo));
+			}
+		}
+		
+		/* detect mouse */
+		
+		fb_dos.regs.x.ax = 0x0;
+		__dpmi_int(0x33, &fb_dos.regs);
+		fb_dos.mouse_ok = (fb_dos.regs.x.ax == 0) ? FALSE : TRUE;
+		
+		fb_dos.regs.x.ax = 0x11;
+		__dpmi_int(0x33, &fb_dos.regs);
+		fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
+		
+		/* detect nearptr */
+		fb_dos.nearptr_ok = __djgpp_nearptr_enable();
 	}
-	
-	/* detect mouse */
-	
-	fb_dos.regs.x.ax = 0x0;
-	__dpmi_int(0x33, &fb_dos.regs);
-	fb_dos.mouse_ok = (fb_dos.regs.x.ax == 0) ? FALSE : TRUE;
-	
-	fb_dos.regs.x.ax = 0x11;
-	__dpmi_int(0x33, &fb_dos.regs);
-	fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
 	
 	/* save current video mode */
 	
@@ -544,11 +621,10 @@ void fb_dos_detect(void)
 	
 }
 
-
-
 /*:::::*/
 void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
+	
 	/* lock code and data accessed in int handlers */
 	
 	lock_var(fb_mode);
@@ -575,7 +651,7 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 	fb_dos.h = h;
 	fb_dos.depth = depth;
 	fb_dos.Bpp = depth / 8;
-	fb_dos.refresh = refresh_rate;
+	fb_mode->refresh_rate = fb_dos.refresh = refresh_rate;
 	
 	switch (depth) {
 		case 8: fb_dos.draw_mouse = fb_dos_draw_mouse_8;
@@ -602,12 +678,14 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 /*:::::*/
 void fb_dos_exit(void)
 {
+	fb_dos_restore_video_mode();
+	
 	if (!fb_dos.inited) return;
 	
 	fb_dos_timer_exit();
 	fb_dos_mouse_exit();
 	fb_dos_kb_exit();
-	fb_dos_restore_video_mode();
+	
 	
 	fb_dos.w = fb_dos.h = fb_dos.depth = fb_dos.refresh = 0;
 	
@@ -675,3 +753,157 @@ void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 	*depth = fb_dos.depth;
 	*refresh = fb_dos.refresh;
 }
+
+
+#if 0
+/* find_vesa_mode:
+ *  Tries to find a VESA mode number for the specified screen size.
+ *  Searches the mode list from the VESA info block, and if that doesn't
+ *  work, uses the standard VESA mode numbers.
+ */
+ 
+ /* **** to be rewritten !!!! **** */
+int find_vesa_mode(int w, int h, int color_depth, int vbe_version)
+{
+   #define MAX_VESA_MODES 1024
+
+   unsigned short mode[MAX_VESA_MODES];
+   int memorymodel, bitsperpixel;
+   int redmasksize, greenmasksize, bluemasksize;
+   int greenmaskpos;
+   int reservedmasksize, reservedmaskpos;
+   int rs, gs, bs, gp, rss, rsp;
+   int c, modes;
+   long mode_ptr;
+   
+   VesaModeInfo mode_info;
+
+	if (!fb_dos.vesa_ok) return 0;
+	
+	
+   if (fb_dos.vesa_info.vbe_version < (vbe_version<<8)) {
+      return 0;
+   }
+
+   mode_ptr = RM_TO_LINEAR(fb_dos.vesa_info.video_mode_ptr);
+   modes = 0;
+
+   _farsetsel(_dos_ds);
+
+   while ((mode[modes] = _farnspeekw(mode_ptr)) != 0xFFFF) {
+      modes++;
+      mode_ptr += 2;
+   }
+
+   switch (color_depth) {
+
+	 case 8:
+	    memorymodel = 4;
+	    bitsperpixel = 8;
+	    redmasksize = greenmasksize = bluemasksize = 0;
+	    greenmaskpos = 0;
+	    reservedmasksize = 0;
+	    reservedmaskpos = 0;
+	    break;
+
+	 case 15:
+	    memorymodel = 6;
+	    bitsperpixel = 15;
+	    redmasksize = greenmasksize = bluemasksize = 5;
+	    greenmaskpos = 5;
+	    reservedmasksize = 1;
+	    reservedmaskpos = 15;
+	    break;
+
+	 case 16:
+	    memorymodel = 6;
+	    bitsperpixel = 16;
+	    redmasksize = bluemasksize = 5;
+	    greenmasksize = 6;
+	    greenmaskpos = 5;
+	    reservedmasksize = 0;
+	    reservedmaskpos = 0;
+	    break;
+	    
+	 case 24:
+	    memorymodel = 6;
+	    bitsperpixel = 24;
+	    redmasksize = bluemasksize = greenmasksize = 8;
+	    greenmaskpos = 8;
+	    reservedmasksize = 0;
+	    reservedmaskpos = 0;
+	    break;
+
+	 case 32:
+	    memorymodel = 6;
+	    bitsperpixel = 32;
+	    redmasksize = greenmasksize = bluemasksize = 8;
+	    greenmaskpos = 8;
+	    reservedmasksize = 8;
+	    reservedmaskpos = 24;
+	    break;
+
+      default:
+		return 0;
+   }
+
+   #define MEM_MATCH(mem, wanted_mem) \
+      ((mem == wanted_mem) || ((mem == 4) && (wanted_mem == 6)))
+
+   #define BPP_MATCH(bpp, wanted_bpp) \
+      ((bpp == wanted_bpp) || ((bpp == 16) && (wanted_bpp == 15)))
+
+   #define RES_SIZE_MATCH(size, wanted_size, bpp) \
+      ((size == wanted_size) || ((size == 0) && ((bpp == 15) || (bpp == 32))))
+
+   #define RES_POS_MATCH(pos, wanted_pos, bpp) \
+      ((pos == wanted_pos) || ((pos == 0) && ((bpp == 15) || (bpp == 32))))
+
+   /* search the list of modes */
+   for (c=0; c<modes; c++) {
+      if (fb_dos_vesa_get_mode_info(mode[c]) == 0) {
+      mode_info = fb_dos.vesa_mode_info;
+	    rs = mode_info.red_mask_size;
+	    gs = mode_info.green_mask_size;
+	    bs = mode_info.blue_mask_size;
+	    gp = mode_info.green_field_pos;
+	    rss = mode_info.rsvd_mask_size;
+	    rsp = mode_info.rsvd_field_pos;
+
+	 if (((mode_info.mode_attributes & 25) == 25) &&
+	     (mode_info.x_res == w) && 
+	     (mode_info.y_res == h) && 
+	     (mode_info.number_of_planes == 1) && 
+	     MEM_MATCH(mode_info.mem_model, memorymodel) &&
+	     BPP_MATCH(mode_info.bits_per_pixel, bitsperpixel) &&
+	     (rs == redmasksize) && (gs == greenmasksize) && 
+	     (bs == bluemasksize) && (gp == greenmaskpos) &&
+	     RES_SIZE_MATCH(rss, reservedmasksize, mode_info.bits_per_pixel) &&
+	     RES_POS_MATCH(rsp, reservedmaskpos, mode_info.bits_per_pixel))
+
+	    /* looks like this will do... */
+	    return mode[c];
+      } 
+   }
+
+   /* try the standard mode numbers */
+   if ((w == 640) && (h == 400) && (color_depth == 8))
+      c = 0x100;
+   else if ((w == 640) && (h == 480) && (color_depth == 8))
+      c = 0x101;
+   else if ((w == 800) && (h == 600) && (color_depth == 8)) 
+      c = 0x103;
+   else if ((w == 1024) && (h == 768) && (color_depth == 8))
+      c = 0x105;
+   else if ((w == 1280) && (h == 1024) && (color_depth == 8))
+      c = 0x107;
+   else {
+         return 0; 
+   }
+
+   if (fb_dos_vesa_get_mode_info(c) == 0)
+      return c;
+
+   return 0;
+}
+#endif

@@ -27,45 +27,42 @@ enum
 
 
 /* Info block for a VESA video mode */
-typedef struct VesaModeInfo
-{
-	/* Mandatory information for all VBE revisions */
-	unsigned short	mode_attributes;        /* See enumerated flags below                 */
-	unsigned char	window_attributes[2];   /* See enumerated flags below                 */
-	unsigned short	window_granularity;     /* KiB boundary for frame buffer placement    */
-	unsigned short	window_size;            /* Window size in KiB                         */
-	unsigned short	window_segment[2];      /* Real-mode segments for the two windows     */
-	unsigned short	window_function_ptr;    /* Real-mode pointer to windowing function    */
-	unsigned short	bytes_per_scanline;
-	/* Mandatory information for VBE 1.2 and above */
-	unsigned short	x_res;                  /* horizontal resolution in pixels or chars   */
-	unsigned short	y_res;                  /* vertical resolution in pixels or chars     */
-	unsigned char	x_char_size;            /* character cell width in pixels             */
-	unsigned char	y_char_size;            /* character cell height in pixels            */
-	unsigned char	number_of_planes;       /* number of memory planes                    */
-	unsigned char	bits_per_pixel;
-	unsigned char	number_of_banks;
-	unsigned char	mem_model;              /* memory model type                          */
-	unsigned char	bank_size;              /* bank size in KiB                           */
-	unsigned char	number_of_image_pages;
-	unsigned char	reserved;               /* reserved for page function                 */
-	/* Direct Color fields (required for direct/6 and YUV/7 memory models) */
-	unsigned char	red_mask_size;          /* size of direct color red mask in bits      */
-	unsigned char	red_field_pos;          /* bit position of lsb of red mask            */
-	unsigned char	green_mask_size;        /* size of direct color green mask in bits    */
-	unsigned char	green_field_pos;        /* bit position of lsb of green mask          */
-	unsigned char	blue_mask_size;         /* size of direct color blue mask in bits     */
-	unsigned char	blue_field_pos;         /* bit position of lsb of blue mask           */
-	unsigned char	rsvd_mask_size;         /* size of direct color reserved mask in bits */
-	unsigned char	rsvd_field_pos;         /* bit position of lsb of reserved mask       */
-	unsigned char	direct_color_mode_info; /* direct color mode attributes               */
-	/* Mandatory information for VBE 2.0 and above */
-	unsigned int	phys_base_ptr;          /* physical address for flat frame buffer     */
-	unsigned int	off_screen_memoffset;   /* pointer to start of off screen memory      */
-	unsigned short	off_screen_memsize;     /* amount of off screen memory in 1k units    */
-	unsigned char	__Reserved[206];        /* pads VesaModeInfo to 512 bytes             */
-}
-__attribute__ ((packed)) VesaModeInfo;
+   typedef struct VesaModeInfo
+   {
+      unsigned short ModeAttributes       __attribute__ ((packed));
+      unsigned char  WinAAttributes       __attribute__ ((packed));
+      unsigned char  WinBAttributes       __attribute__ ((packed));
+      unsigned short WinGranularity       __attribute__ ((packed));
+      unsigned short WinSize              __attribute__ ((packed));
+      unsigned short WinASegment          __attribute__ ((packed));
+      unsigned short WinBSegment          __attribute__ ((packed));
+      unsigned long  WinFuncPtr           __attribute__ ((packed));
+      unsigned short BytesPerScanLine     __attribute__ ((packed));
+      unsigned short XResolution          __attribute__ ((packed));
+      unsigned short YResolution          __attribute__ ((packed));
+      unsigned char  XCharSize            __attribute__ ((packed));
+      unsigned char  YCharSize            __attribute__ ((packed));
+      unsigned char  NumberOfPlanes       __attribute__ ((packed));
+      unsigned char  BitsPerPixel         __attribute__ ((packed));
+      unsigned char  NumberOfBanks        __attribute__ ((packed));
+      unsigned char  MemoryModel          __attribute__ ((packed));
+      unsigned char  BankSize             __attribute__ ((packed));
+      unsigned char  NumberOfImagePages   __attribute__ ((packed));
+      unsigned char  Reserved_page        __attribute__ ((packed));
+      unsigned char  RedMaskSize          __attribute__ ((packed));
+      unsigned char  RedMaskPos           __attribute__ ((packed));
+      unsigned char  GreenMaskSize        __attribute__ ((packed));
+      unsigned char  GreenMaskPos         __attribute__ ((packed));
+      unsigned char  BlueMaskSize         __attribute__ ((packed));
+      unsigned char  BlueMaskPos          __attribute__ ((packed));
+      unsigned char  ReservedMaskSize     __attribute__ ((packed));
+      unsigned char  ReservedMaskPos      __attribute__ ((packed));
+      unsigned char  DirectColorModeInfo  __attribute__ ((packed));
+      unsigned long  PhysBasePtr          __attribute__ ((packed));
+      unsigned long  OffScreenMemOffset   __attribute__ ((packed));
+      unsigned short OffScreenMemSize     __attribute__ ((packed));
+      unsigned char  Reserved[206]        __attribute__ ((packed));
+   } VesaModeInfo;
 
 
 /* Mnemonics for VesaModeInfo.mode_attributes flags */

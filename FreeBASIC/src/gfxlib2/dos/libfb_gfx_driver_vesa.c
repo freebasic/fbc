@@ -18,9 +18,7 @@
 */
 
 /*
- * vga.c -- Mode X gfx driver
- *
- * Mode X setting code derived from original Michael Abrash article in Dr. Dobb's Journal/Graphics Programming Black Book
+ * vesa2.c -- VESA 2 linear gfx driver
  *
  * chng: apr/2005 written [DrV]
  *
@@ -33,9 +31,11 @@ static void driver_update(void);
 static void end_of_driver_update(void);
 static int *driver_fetch_modes(int depth, int *size);
 
-GFXDRIVER fb_gfxDriverModeX =
+extern int find_vesa_mode(int w, int h, int color_depth, int vbe_version);
+
+GFXDRIVER fb_gfxDriverVESA =
 {
-	"ModeX",                 /* char *name; */
+	"VESA",                 /* char *name; */
 	driver_init,             /* int (*init)(char *title, int w, int h, int depth, int refresh_rate, int flags); */
 	fb_dos_exit,             /* void (*exit)(void); */
 	fb_dos_lock,             /* void (*lock)(void); */
@@ -49,56 +49,48 @@ GFXDRIVER fb_gfxDriverModeX =
 	NULL                     /* void (*flip)(void); */
 };
 
-static int modes[] = {
-	SCREENLIST(320, 240),
-	};
-
-static unsigned short CRTParams[] = {
-					0x0D06, /* vertical total */
-					0x3E07, /* overflow (bit 8 of vertical counts) */
-					0x4109, /* cell height (2 to double scan) */
-					0xEA10, /* v sync start */
-					0xAC11, /* v sync end and protect cr0-cr7 */
-					0xDF12, /* vertical displayed */
-					0x0014, /* turn off dword mode */
-					0xE715, /* v blank start */
-					0x0616, /* v blank end */
-					0xE317  /* turn on byte mode */
-					};
-
-#define CRT_PARM_LENGTH 10
-
-
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
-	int i;
+	int i, mode;
 	
 	fb_dos_detect();
 	
 	if (flags & DRIVER_OPENGL)
 		return -1;
+		
+	/*
+	if (!fb_dos.nearptr_ok)
+		return -1;
+	*/
 	
-	if ((w != 320) || (h != 240) || (depth != 8)) {
+	if (!fb_dos.vesa_ok)
+		return -1;
+	
+	mode = 0;	
+	for (i = 0; i < fb_dos.num_vesa_modes; i++) {
+		if ((fb_dos.vesa_modes[i].XResolution == w) && (fb_dos.vesa_modes[i].YResolution == h)) {
+			/* !!!TODO!!! check bpp here!!!! */
+			mode = fb_dos.vesa_modes[i].WinFuncPtr;
+			memcpy(&fb_dos.vesa_mode_info, &fb_dos.vesa_modes[i], sizeof(VesaModeInfo));
+			break;
+		}
+	}
+	
+	if (mode == 0) {
 		return -1;
 	}
 	
-	/* set base video mode */
+	/* set video mode */
 	fb_dos.regs.x.ax = 0x13;
 	__dpmi_int(0x10, &fb_dos.regs);
 	
-	/* tweak to Mode X */
-	outportw(SC_INDEX, 0x0604);  /* disable chain4 */
+	fb_dos.regs.x.ax = 0x4F02;
+	fb_dos.regs.x.bx = mode;
+	__dpmi_int(0x10, &fb_dos.regs);
 	
-	outportw(SC_INDEX, 0x0100);  /* synchronous reset */
-	outportb(MISC_OUTPUT, 0xE3); /* select 25 MHz dot clock & 60 Hz scanning rate */
-	outportw(SC_INDEX, 0x0300);  /* undo reset (restart sequencer) */
-	
-	outportb(CRTC_INDEX, 0x11);  /* VSync End reg contains register write protect bit */
-	outportb(CRTC_INDEX+1, inportb(CRTC_INDEX+1) & 0x7F);	/* remove write protect on various CRTC registers */
-	
-	for (i = 0; i < CRT_PARM_LENGTH; i++) {
-		outportw(CRTC_INDEX, CRTParams[i]);
+	if (fb_dos.regs.h.ah) {
+		return -1;
 	}
 	
 	refresh_rate = 60;
@@ -110,42 +102,89 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_dos_init(title, w, h, depth, refresh_rate, flags);
 	
 	return 0;
-	
+
 }
+
+
+   void set_vesa_bank(int bank_number)
+   {
+      __dpmi_regs r;
+
+      r.x.ax = 0x4F05;
+      r.x.bx = 0;
+      r.x.dx = bank_number;
+      __dpmi_int(0x10, &r);
+   }
+
 
 /*:::::*/
 static void driver_update(void)
 {
-	int plane;
-	unsigned long screen;
-	unsigned char *buffer;
-	int x, y;
+/*
+	int y;
+	unsigned int buffer = (unsigned int)fb_mode->framebuffer;
+	unsigned int screen = 0xA0000;
 	
-	_farsetsel(_dos_ds);
-	for (plane = 0; plane < 4; plane++) {
-		buffer = (unsigned char *)fb_mode->framebuffer + plane;
-		outportw(SC_INDEX, (0x100 << plane) | 0x02);		/* set write plane */
-		screen = 0xA0000;
-		for (y = 0; y < fb_dos.h; y++) {
-			if (fb_mode->dirty[y]) {
-				for (x = 0; x < fb_dos.w; x += 4, screen++) {
-					_farnspokeb(screen, buffer[x]);
-				}
-			} else {
-				screen += fb_dos.w / 4;
-			}
-			buffer += fb_dos.w;
+	for (y = 0; y < fb_dos.h; y++, buffer += fb_dos.w, screen += fb_dos.w) {
+		if (fb_mode->dirty[y]) {
+			movedata(_my_ds(), buffer, _dos_ds, screen, fb_dos.w);
 		}
 	}
+*/
+
+      	char *memory_buffer;
+	int screen_size;
+	
+	memory_buffer = fb_mode->framebuffer;
+	screen_size = fb_dos.w * fb_dos.h; /* TODO : mul by bytes per pixel or mul bpl * h */
+
+      int bank_size = fb_dos.vesa_mode_info.WinSize*1024;
+      int bank_granularity = fb_dos.vesa_mode_info.WinGranularity*1024;
+      int bank_number = 0;
+      int todo = screen_size;
+      int copy_size;
+      
+
+	
+	
+
+      while (todo > 0) {
+	 /* select the appropriate bank */
+	 set_vesa_bank(bank_number);
+
+	 /* how much can we copy in one go? */
+	 if (todo > bank_size)
+	    copy_size = bank_size;
+	 else
+	    copy_size = todo;
+
+	 /* copy a bank of data to the screen */
+	 dosmemput(memory_buffer, copy_size, 0xA0000);
+
+	 /* move on to the next bank of data */
+	 todo -= copy_size;
+	 memory_buffer += copy_size;
+	 bank_number += bank_size/bank_granularity;
+      }
 }
 
 static void end_of_driver_update(void) { /* do not remove */ }
 
-/*:::::*/
 static int *driver_fetch_modes(int depth, int *size)
 {
-	if (depth != 8) return NULL;
+	int *modes;
+	int count, i;
 	
-	*size = sizeof(modes) / sizeof(int);
-	return memcpy((void*)malloc(sizeof(modes)), modes, sizeof(modes));
+	if (!fb_dos.detected) fb_dos_detect();
+	
+	modes = (int *)malloc(sizeof(VesaModeInfo) * fb_dos.num_vesa_modes);
+	
+	for (i = 0, count = 0; i < fb_dos.num_vesa_modes; i++) {
+		if ((fb_dos.vesa_modes[i].XResolution != 0) && (fb_dos.vesa_modes[i].BitsPerPixel == depth)) {
+			modes[count++] = SCREENLIST(fb_dos.vesa_modes[i].XResolution, fb_dos.vesa_modes[i].YResolution);
+		}
+	}
+	*size = count;
+	return modes;
 }
+
