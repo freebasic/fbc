@@ -279,6 +279,8 @@ void fb_hInit ( int argc, char **argv )
 	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
 #endif
 
+	pthread_mutex_init( &fb_con.bg_mutex, NULL );
+
 	memset(&fb_con, 0, sizeof(fb_con));
 
 	term = getenv("TERM");
@@ -292,8 +294,6 @@ void fb_hInit ( int argc, char **argv )
 	}
 	if (!init)
 		return;
-
-	pthread_mutex_init( &fb_con.bg_mutex, NULL );
 
 	if (fb_hInitConsole(init))
 		return;

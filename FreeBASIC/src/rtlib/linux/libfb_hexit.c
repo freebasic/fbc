@@ -70,8 +70,8 @@ void fb_hEnd ( int errlevel )
 	if (fb_con.inited) {
 		fb_con.inited = FALSE;
 		pthread_join(fb_con.bg_thread, NULL);
-		pthread_mutex_destroy(&fb_con.bg_mutex);
 	}
+	pthread_mutex_destroy(&fb_con.bg_mutex);
 	
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */

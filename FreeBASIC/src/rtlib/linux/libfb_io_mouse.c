@@ -45,6 +45,9 @@ static int mouse_x = 0, mouse_y = 0, mouse_z = 0, mouse_buttons = 0;
 /*:::::*/
 static void mouse_update(int cb, int cx, int cy)
 {
+	if (!fb_hXTermHasFocus())
+		return;
+	
 	cb &= ~0x1C;
 	if (cb >= 0x60) {
 		if (cb - 0x60)
@@ -128,6 +131,7 @@ static int mouse_init(void)
 	else {
 		fputs("\e[?1003h", fb_con.f_out);
 		fb_con.mouse_update = mouse_update;
+		fb_hXTermInitFocus();
 	}
 	return 0;
 }
@@ -143,6 +147,7 @@ static void mouse_exit(void)
 	else {
 		fputs("\e[?1003l", fb_con.f_out);
 		fb_con.mouse_update = NULL;
+		fb_hXTermExitFocus();
 	}
 	fb_con.mouse_handler = NULL;
 }

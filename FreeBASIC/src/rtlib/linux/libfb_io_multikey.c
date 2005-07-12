@@ -272,7 +272,9 @@ static void keyboard_x11_handler(void)
 {
 	unsigned char keymap[32];
 	int i;
-
+	
+	if (!fb_hXTermHasFocus())
+		return;
 	fb_XQueryKeymap(display, keymap);
 	memset(key_state, FALSE, 128);
 	for (i = 0; i < 256; i++) {
@@ -325,7 +327,7 @@ static int keyboard_init(void)
 		display = fb_XOpenDisplay(NULL);
 		if (!display)
 			return -1;
-	
+
 		fb_XDisplayKeycodes(display, &keycode_min, &keycode_max);
 		if (keycode_min < 0) keycode_min = 0;
 		if (keycode_max > 255) keycode_max = 255;
@@ -338,6 +340,8 @@ static int keyboard_init(void)
 				scancode[i] = fb_keysym_to_scancode[j].scancode;
 			}
 		}
+		
+		fb_hXTermInitFocus();
 		
 		keyboard_handler = keyboard_x11_handler;
 	}
@@ -355,6 +359,7 @@ static void keyboard_exit(void)
 	}
 	else {
 		fb_XCloseDisplay(display);
+		fb_hXTermExitFocus();
 	}
 	fb_con.keyboard_getch = old_getch;
 	fb_con.keyboard_handler = NULL;
