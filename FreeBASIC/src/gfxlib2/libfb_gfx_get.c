@@ -55,7 +55,7 @@ FBCALL int fb_GfxGet(void *target, float fx1, float fy1, float fx2, float fy2, u
 		if ((array->size > 0) && ((int)dest + 4 + (w * h) > (int)array->ptr + array->size))
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
-	*(unsigned short *)dest = w << 3;
+	*(unsigned short *)dest = (w << 3) | fb_mode->bpp;
 	*(unsigned short *)(dest + 2) = h;
 	dest += 4;
 

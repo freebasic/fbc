@@ -1154,9 +1154,9 @@ data "fb_GfxPaletteGetUsing", "", _
 
 '' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
 ''			   byval coordType as integer, byval mode as integer, byval alpha as integer = -1, _
-''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 )  as void
+''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 ) as integer
 data "fb_GfxPut", "", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @hGfxlib_cb, FALSE, FALSE, _
 	 8, _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
@@ -5870,6 +5870,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim targetmode as integer
     dim argmode as integer
+    dim reslabel as FBSYMBOL ptr
 
     function = FALSE
 
@@ -5937,10 +5938,15 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
  		exit function
  	end if
 
- 	''
- 	astFlush( proc )
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( "" )
+    	irEmitLABEL reslabel, FALSE
+    else
+    	reslabel = NULL
+    end if
 
-	function = TRUE
+	function = rtlErrorCheck( proc, reslabel )
 
 end function
 

@@ -49,7 +49,7 @@ FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color)
 	size = width * height;
 	image = (unsigned short *)malloc((size * fb_mode->bpp) + 4);
 	fb_hPixelSet(&image[2], color, size);
-	image[0] = width << 3;
+	image[0] = (width << 3) | fb_mode->bpp;
 	image[1] = height;
 	
 	return (void *)image;

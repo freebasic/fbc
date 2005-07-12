@@ -502,13 +502,13 @@ static void init_put(void)
 
 
 /*:::::*/
-FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode, int alpha, BLENDER *func)
+FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode, int alpha, BLENDER *func)
 {
-	int x, y, w, h, pitch;
+	int x, y, w, h, pitch, bpp;
 	void (*put)(unsigned char *, unsigned char *, int, int, int, int);
 	
 	if (!fb_mode)
-		return;
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	fb_hPrepareTarget(target);
 	
@@ -516,14 +516,19 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 	
 	fb_hTranslateCoord(fx, fy, &x, &y);
 	
-	w = pitch = (int)*(unsigned short *)src >> 3;
+	bpp = (int)*(unsigned short *)src;
+	w = pitch = bpp >> 3;
 	h = (int)*(unsigned short *)(src + 2);
 	src += 4;
+	
+	bpp &= 0x7;
+	if ((bpp) && (bpp != fb_mode->bpp))
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	if ((w == 0) || (h == 0) ||
 	    (x + w <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
 	    (y + h <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
-		return;
+		return FB_RTERROR_OK;
 	
 	if (fb_mode->depth > 8) {
 		pitch <<= 1;
@@ -558,7 +563,7 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 		case PUT_MODE_ALPHA:	if (alpha < 0)
 						put = fb_hPutAlpha;
 					else if (alpha == 0)
-						return;
+						return FB_RTERROR_OK;
 					else {
 						alpha &= 0xFF;
 						if (alpha == 0xFF)
@@ -578,4 +583,6 @@ FBCALL void fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int 
 	put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch, alpha);
 	SET_DIRTY(y, h);
 	DRIVER_UNLOCK();
+	
+	return FB_RTERROR_OK;
 }
