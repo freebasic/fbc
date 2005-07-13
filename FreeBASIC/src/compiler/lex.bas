@@ -215,7 +215,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 			end if
 
 			'' next
-			a = a->r
+			a = a->next
 		loop while( a <> NULL )
 
 		lgt = len( text )
@@ -225,7 +225,9 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 			ctx.deftext = text
 		else
 			ctx.deftext = text + _
-					  	  mid$( ctx.deftext, 1 + cuint(ctx.defptr) - cuint(@ctx.deftext), ctx.deflen )
+					  	  mid( ctx.deftext, _
+					  	  	  1 + cuint(ctx.defptr) - cuint(@ctx.deftext), _
+					  	  	  ctx.deflen )
 		end if
 
 	'' no args
@@ -256,7 +258,9 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 			ctx.deftext = s->def.text
 		else
 			ctx.deftext = s->def.text + _
-					  	  mid$( ctx.deftext, 1 + cuint(ctx.defptr) - cuint(@ctx.deftext), ctx.deflen )
+					  	  mid( ctx.deftext, _
+					  	  	   1 + cuint(ctx.defptr) - cuint(@ctx.deftext), _
+					  	  	   ctx.deflen )
 		end if
 
 	end if
@@ -316,7 +320,7 @@ private function lexReadChar as uinteger static
 			select case char
 			case 0, 13, 10
 			case else
-				curline += chr$( char )
+				curline += chr( char )
 			end select
 		end if
 	end if
@@ -1577,7 +1581,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 
 		lexEatChar( )
 		if( not skipline ) then
-			dst += chr$( char )
+			dst += chr( char )
 		end if
 	loop
 
@@ -1671,7 +1675,7 @@ function lexPeekCurrentLine( token_pos as string ) as string
 	seek #env.inf.num, old_p
 
 	'' find source line start
-	c = sadd(buffer) + start
+	c = strptr(buffer) + start
 	token_len = 0
 	if( start > 0 ) then
 		c = c - 1
@@ -1689,9 +1693,9 @@ function lexPeekCurrentLine( token_pos as string ) as string
 		c += 1
 	end if
 	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
-		res += chr$(*c)
+		res += chr(*c)
 		if( token_len > 0 ) then
-			token_pos += chr$( iif( *c = 9, 9, 32 ) )
+			token_pos += chr( iif( *c = 9, 9, 32 ) )
 			token_len -= 1
 		end if
 		c += 1

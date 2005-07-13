@@ -90,7 +90,7 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     	end if
 
         '' next
-        d = d->r
+        d = d->next
 
     	constexpr = astNewCONSTi( (d->upper - d->lower)+1, IR_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
@@ -426,7 +426,7 @@ function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
 			exit function
 		end if
 
-   		'' check for calling functions through pointers
+   		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
    			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
 				isfuncptr = TRUE
@@ -689,7 +689,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     	end if
 
         '' next
-        d = d->r
+        d = d->next
     	if( d = NULL ) then
 			hReportError FB_ERRMSG_WRONGDIMENSIONS
 			exit function
@@ -750,7 +750,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 					byval checkarray as integer = TRUE ) as integer
 
 	dim as zstring ptr id
-	dim as integer typ, deftyp, ofs, dtype
+	dim as integer typ, deftyp, ofs
 	dim as ASTNODE ptr idxexpr
 	dim as FBSYMBOL ptr subtype
 	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
@@ -906,15 +906,12 @@ function cVariable( byref varexpr as ASTNODE ptr, _
    		end if
    	end if
 
-   	''
-	dtype = typ
-
 	'' AST will handle descriptor pointers
 	if( isbyref or isimport ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
 		varexpr = astNewVAR( sym, elm, 0, IR_DATATYPE_POINTER, NULL )
 	else
-		varexpr = astNewVAR( sym, elm, ofs, dtype, subtype )
+		varexpr = astNewVAR( sym, elm, ofs, typ, subtype )
 	end if
 
 	'' has index?
@@ -923,7 +920,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 		if( isbyref or isimport ) then
 			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 		else
-			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
+			varexpr = astNewIDX( varexpr, idxexpr, typ, subtype )
 		end if
 	else
 		'' array and no index?
@@ -939,7 +936,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( isbyref or isimport ) then
-   		varexpr = astNewPTR( sym, elm, ofs, varexpr, dtype, subtype )
+   		varexpr = astNewPTR( sym, elm, ofs, varexpr, typ, subtype )
 	end if
 
     '' FuncPtrOrDerefFields?

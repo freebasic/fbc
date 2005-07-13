@@ -42,7 +42,9 @@ type SYMBCTX
 
 	symlist			as TLIST					'' symbols (VAR, CONST, FUNCTION, UDT, ENUM, LABEL, etc)
 	symhash			as THASH
-	loclist			as TLIST					'' local symbols (/)
+
+	globtb			as FBSYMBOLTB
+	loctb			as FBSYMBOLTB ptr
 
 	liblist 		as TLIST					'' libraries
 	libhash			as THASH
@@ -57,11 +59,17 @@ type SYMBCTX
 	defargcnt		as integer
 end type
 
-declare sub 		hFreeSymbol		( byval s as FBSYMBOL ptr, byval freeup as integer = TRUE )
+declare sub			symbDelGlobalTb ( )
 
-declare function 	hCalcDiff		( byval dimensions as integer, dTB() as FBARRAYDIM, byval lgt as integer ) as integer
+declare sub 		hFreeSymbol		( byval s as FBSYMBOL ptr, _
+									  byval movetoglob as integer = FALSE )
 
-declare function 	hCalcElements2	( byval dimensions as integer, dTB() as FBARRAYDIM ) as integer
+declare function 	hCalcDiff		( byval dimensions as integer, _
+									  dTB() as FBARRAYDIM, _
+									  byval lgt as integer ) as integer
+
+declare function 	hCalcElements2	( byval dimensions as integer, _
+									  dTB() as FBARRAYDIM ) as integer
 
 type DEFCALLBACK as function() as string
 
@@ -304,8 +312,8 @@ sub symbInitSymbols static
 
 	hashNew( @ctx.symhash, FB_INITSYMBOLNODES )
 
-	'' locals
-	listNew( @ctx.loclist, FB_INITLOCSYMBOLNODES, len( FBLOCSYMBOL ), FALSE )
+	ctx.globtb.head = NULL
+	ctx.globtb.tail = NULL
 
 	ctx.lastlbl = NULL
 
@@ -392,36 +400,36 @@ sub symbInit
 
 
 	''
-	hashInit
+	hashInit( )
 
 	''
 	'' vars, arrays, procs & consts
 	''
-	symbInitSymbols
+	symbInitSymbols( )
 
 	''
 	'' keywords
-	symbInitKeywords
+	symbInitKeywords( )
 
 	''
 	'' defines
 	''
-	symbInitDefines
+	symbInitDefines( )
 
 	''
 	'' forward refs
 	''
-	symbInitFwdRef
+	symbInitFwdRef( )
 
 	''
 	'' arrays dim tb
 	''
-	symbInitDims
+	symbInitDims( )
 
 	''
 	'' libraries
 	''
-	symbInitLibs
+	symbInitLibs( )
 
     ''
     ctx.inited 	= TRUE
@@ -434,6 +442,12 @@ sub symbEnd
     if( not ctx.inited ) then
     	exit sub
     end if
+
+	''
+	symbDelGlobalTb( )
+
+	ctx.globtb.head = NULL
+	ctx.globtb.tail = NULL
 
     ''
 	hashFree( @ctx.libhash )
@@ -448,8 +462,6 @@ sub symbEnd
 	listFree( @ctx.fwdlist )
 
 	listFree( @ctx.defarglist )
-
-	listFree( @ctx.loclist )
 
 	listFree( @ctx.symlist )
 
@@ -627,7 +639,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 
 	n = f->fwd.reftail
 	do while( n <> NULL )
-		p = n->l
+		p = n->prev
 
 		ref = n->ref
 
@@ -637,6 +649,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 		ref->lgt	 = symbCalcLen( ref->typ, sym )
 
 		listDelNode( @ctx.fwdlist, cptr( TLISTNODE ptr, n ) )
+
 		n = p
 	loop
 
@@ -654,7 +667,7 @@ private sub hAddToFwdRef( byval f as FBSYMBOL ptr, _
 	n = listNewNode( @ctx.fwdlist )
 
 	n->ref 	= ref
-	n->l 	= f->fwd.reftail
+	n->prev	= f->fwd.reftail
 	f->fwd.reftail = n
 
 	f->fwd.refs += 1
@@ -673,10 +686,9 @@ function hNewSymbol( byval class as integer, _
 					 byval suffix as integer = INVALID, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 sname
-    dim as FBLOCSYMBOL ptr l
     dim as FBSYMBOL ptr s, n
     dim as integer slen
+    dim as FBSYMBOLTB ptr tb
 
     function = NULL
 
@@ -687,7 +699,7 @@ function hNewSymbol( byval class as integer, _
 
     ''
     s->class		= class
-    s->scope		= env.scope
+    s->scope		= iif( islocal, 1, 0 )
     s->typ			= typ
     s->subtype		= subtype
     s->ptrcnt		= ptrcnt
@@ -702,13 +714,16 @@ function hNewSymbol( byval class as integer, _
     end if
 
     ''
+    ZEROSTRDESC( s->name )
     slen = len( symbol )
     if( slen > 0 ) then
     	if( not preservecase ) then
-    		hUcase( symbol, sname )
+    		s->name = ucase( symbol )
     	else
-    	    sname = symbol
+    	    s->name = symbol
 		end if
+    else
+    	dohash = FALSE
     end if
 
     ZEROSTRDESC( s->alias )
@@ -716,36 +731,29 @@ function hNewSymbol( byval class as integer, _
     	s->alias = aliasname
     else
     	if( slen > 0 ) then
-    		s->alias = sname
-    	else
-    		s->alias = ""
+    		s->alias = s->name
     	end if
     end if
-
-	'' add node to local symbol table for fast deletion later
-	if( islocal ) then
-		l = listNewNode( @ctx.loclist )
-		l->s = s
-	end if
 
 	s->left  = NULL
 	s->right = NULL
 
+	''
 	if( dohash ) then
 
 		'' doesn't exist yet?
-		n = hashLookup( @ctx.symhash, sname )
+		n = hashLookup( @ctx.symhash, strptr( s->name ) )
 		if( n = NULL ) then
 			'' add to hash table
-			s->hashitem = hashAdd( @ctx.symhash, sname, s, s->hashindex )
+			s->hashitem = hashAdd( @ctx.symhash, strptr( s->name ), s, s->hashindex )
 
 		else
 			'' can be duplicated?
 			if( not hCanDuplicate( n, s ) ) then
-				if( islocal ) then
-					listDelNode( @ctx.loclist, cptr( TLISTNODE ptr, l ) )
-				end if
+				s->name = ""
+				s->alias = ""
 				listDelNode( @ctx.symlist, cptr( TLISTNODE ptr, s ) )
+
 				exit function
 			end if
 
@@ -763,7 +771,8 @@ function hNewSymbol( byval class as integer, _
 
 			else
 				'' add to head
-				n->hashitem->idx = s
+				n->hashitem->idx  = s
+				n->hashitem->name = strptr( s->name )
 			    n->left	 = s
 			    s->right = n
 
@@ -780,6 +789,23 @@ function hNewSymbol( byval class as integer, _
 	if( typ = FB_SYMBTYPE_FWDREF ) then
 		hAddToFwdRef( subtype, s )
 	end if
+
+	'' add to symbol table (local or global)
+	if( not islocal ) then
+		tb = @ctx.globtb
+	else
+		tb = ctx.loctb
+	end if
+
+	if( tb->tail <> NULL ) then
+		tb->tail->next = s
+	else
+		tb->head = s
+	end if
+
+	s->prev = tb->tail
+	s->next = NULL
+	tb->tail = s
 
     ''
     function = s
@@ -850,13 +876,13 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
     end if
 
 	if( lastarg <> NULL ) then
-		lastarg->r = a
+		lastarg->next = a
 	end if
 
 	''
     ZEROSTRDESC( a->name )
-    a->name 	= ucase$( symbol )
-    a->r		= NULL
+    a->name 	= ucase( symbol )
+    a->next		= NULL
     a->id		= ctx.defargcnt
     ctx.defargcnt += 1
 
@@ -945,6 +971,11 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	function = NULL
 
+    '' don't add if it's a jump table
+    if( symbIsJumpTb( s ) ) then
+    	exit function
+    end if
+
 	isshared 	= symbIsShared( s )
 	isstatic 	= symbIsStatic( s )
 	isdynamic	= symbIsDynamic( s )
@@ -962,7 +993,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 		ofs = 0
 	else
 		lgt = FB_ARRAYDESCSIZE + dimensions * (FB_INTEGERSIZE+FB_INTEGERSIZE)
-		aname = *emitAllocLocal( lgt, ofs )
+		aname = *emitAllocLocal( env.currproc, lgt, ofs )
 	end if
 
 	d = hNewSymbol( FB_SYMBCLASS_VAR, FALSE, "", aname, (env.scope > 0) and (not isshared), _
@@ -1011,10 +1042,10 @@ function hNewDim( head as FBVARDIM ptr, _
     d->upper = upper
 
 	n = tail
-	d->r = NULL
+	d->next = NULL
 	tail = d
 	if( n <> NULL ) then
-		n->r = d
+		n->next = d
 	else
 		head = d
 	end if
@@ -1047,7 +1078,7 @@ sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
 			for i = 0 to dimensions-1
 				d->lower = dTB(i).lower
 				d->upper = dTB(i).upper
-				d = d->r
+				d = d->next
 			next i
 		end if
 
@@ -1179,7 +1210,7 @@ function symbAddVarEx( byval symbol as string, _
 			else
 				if( not isarg ) then
 					elms = hCalcElements2( dimensions, dTB() )
-					aname = *emitAllocLocal( lgt * elms, ofs )
+					aname = *emitAllocLocal( env.currproc, lgt * elms, ofs )
 					islocal = TRUE
 
 				else
@@ -1188,7 +1219,7 @@ function symbAddVarEx( byval symbol as string, _
         			else
         				arglen = FB_POINTERSIZE
         			end if
-					aname = *emitAllocArg( arglen, ofs )
+					aname = *emitAllocArg( env.currproc, arglen, ofs )
 				end if
 			end if
 		end if
@@ -1202,9 +1233,9 @@ function symbAddVarEx( byval symbol as string, _
 	if( s = NULL ) then
 		'' remove a local or arg or else emit will reserve unused space for it..
 		if( islocal ) then
-			emitFreeLocal( lgt * elms )
+			emitFreeLocal( env.currproc, lgt * elms )
 		elseif( isarg ) then
-			emitFreeArg( arglen )
+			emitFreeArg( env.currproc, arglen )
 		end if
 
 		exit function
@@ -1268,7 +1299,7 @@ function hAllocNumericConst( byval sname as string, _
 
 	function = NULL
 
-	cname = "_{fbnc}_"
+	cname = "{fbnc}"
 	cname += sname
 
 	s = symbFindByNameAndSuffix( cname, typ, FALSE )
@@ -1281,6 +1312,7 @@ function hAllocNumericConst( byval sname as string, _
 	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, TRUE, FALSE, FALSE )
 
+	''
 	s->var.initialized = TRUE
 
 	if( typ = FB_SYMBTYPE_DOUBLE ) then
@@ -1313,7 +1345,7 @@ function hAllocStringConst( byval sname as string, _
 	end if
 
 	if( lgt <= FB_MAXNAMELEN-6 ) then
-		cname = "_{fbsc}_"
+		cname = "{fbsc}"
 		cname += sname
 	else
 		cname = *hMakeTmpStr( )
@@ -1333,6 +1365,7 @@ function hAllocStringConst( byval sname as string, _
 	s = symbAddVarEx( cname, aname, FB_SYMBTYPE_FIXSTR, NULL, 0, lgt, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
+	''
 	s->var.initialized = TRUE
 
 	ZEROSTRDESC( s->var.inittext )
@@ -1476,7 +1509,7 @@ function hCalcALign( byval lgt as integer, _
 		lgt = e->lgt
 
 		'' len = field's len + pad from current field to the next field, if any
-		e = e->var.elm.r
+		e = e->var.elm.next
 		if( e <> NULL ) then
 			lgt += (e->var.elm.ofs - lgt)
 		end if
@@ -1551,7 +1584,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     	end if
 
     	'' next
-    	e = e->var.elm.r
+    	e = e->var.elm.next
     loop
 
 	tail = t->udt.tail
@@ -1596,12 +1629,12 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     end if
 
 	'' add to parent's linked-list
-	e->var.elm.l 		= tail
-	e->var.elm.r 		= NULL
+	e->var.elm.prev 	= tail
+	e->var.elm.next		= NULL
     e->var.elm.parent	= t
 	t->udt.tail 		= e
 	if( tail <> NULL ) then
-		tail->var.elm.r = e
+		tail->var.elm.next = e
 	else
 		t->udt.head 	= e
 	end if
@@ -1798,7 +1831,7 @@ function symbAddLib( byval libname as string ) as FBLIBRARY ptr static
     function = NULL
 
     '' check if not already declared
-    l = hashLookup( @ctx.libhash, libname )
+    l = hashLookup( @ctx.libhash, strptr( libname ) )
     if( l <> NULL ) then
     	return l
     end if
@@ -1811,7 +1844,7 @@ function symbAddLib( byval libname as string ) as FBLIBRARY ptr static
 	''
 	l->name		= libname
 
-	l->hashitem = hashAdd( @ctx.libhash, libname, l, l->hashindex )
+	l->hashitem = hashAdd( @ctx.libhash, strptr( l->name ), l, l->hashindex )
 
 	function = l
 
@@ -1832,7 +1865,7 @@ function hCalcProcArgsLen( byval args as integer, _
 			lgt	+= FB_POINTERSIZE
 		end select
 
-		argtail = argtail->arg.l
+		argtail = argtail->arg.prev
 	loop
 
 	function = lgt
@@ -1860,10 +1893,10 @@ function symbAddArg( byval symbol as string, _
     	exit function
     end if
 
-	a->arg.l = tail
-	a->arg.r = NULL
+	a->arg.prev = tail
+	a->arg.next = NULL
 	if( tail <> NULL ) then
-		tail->arg.r = a
+		tail->arg.next = a
 	end if
 
 	''
@@ -2020,7 +2053,7 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 		if( parg->arg.optional ) then
 			optcnt += 1
 		end if
-		parg = parg->arg.l
+		parg = parg->arg.prev
 	loop
 
 	if( optcnt = argc ) then
@@ -2048,8 +2081,8 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 					exit do
 				end if
 
-				parg = parg->arg.l
-				farg = farg->arg.l
+				parg = parg->arg.prev
+				farg = farg->arg.prev
 			loop
 
 			'' all args equal? can't overload..
@@ -2095,7 +2128,8 @@ private function hSetupProc( byval symbol as string, _
 				             byval argc as integer, _
 				             byval argtail as FBSYMBOL ptr, _
 			                 byval declaring as integer, _
-			                 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+			                 byval preservecase as integer, _
+			                 byval domangle as integer ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 aname
     dim as integer lgt, i, realtype
@@ -2127,25 +2161,20 @@ private function hSetupProc( byval symbol as string, _
 			aname = *hCreateOvlProcAlias( aname, argc, argtail )
 		end if
 
-		aname = *hCreateProcAlias( aname, lgt, mode )
+		if( domangle ) then
+			aname = *hCreateProcAlias( aname, lgt, mode )
+		end if
 
     '' alias given..
     else
-    	aname = aliasname
-
-		select case fbGetNaming()
-	    case FB_COMPNAMING_WIN32
-	   		if( instr( aname, "@" ) = 0 ) then
-	   			aname = *hCreateProcAlias( aname, lgt, mode )
-	   		end if
-
-        case else
-			aname = *hCreateProcAlias( aname, lgt, mode )
-        end select
-
+	   	if( domangle ) then
+	   		aname = *hCreateProcAlias( aliasname, lgt, mode )
+	   	else
+	   		aname = aliasname
+	   	end if
     end if
 
-
+    ''
 	f = hNewSymbol( FB_SYMBCLASS_PROC, TRUE, symbol, aname, FALSE, _
 					typ, subtype, ptrcnt, INVALID, preservecase )
 
@@ -2173,7 +2202,9 @@ private function hSetupProc( byval symbol as string, _
 
 				aname = *hCreateOvlProcAlias( aname, argc, argtail )
 
-				aname = *hCreateProcAlias( aname, lgt, mode )
+				if( domangle ) then
+					aname = *hCreateProcAlias( aname, lgt, mode )
+				end if
 			end if
 		end if
 
@@ -2203,12 +2234,14 @@ private function hSetupProc( byval symbol as string, _
 	f->lgt				= lgt
 
 	f->proc.isdeclared 	= declaring
+	f->proc.iscalled	= FALSE
+	f->proc.isrtl		= FALSE
+	f->proc.doerrorcheck= FALSE
+
 	f->proc.mode		= mode
 	f->proc.realtype	= realtype
 
-	f->proc.isrtl		= FALSE
 	f->proc.rtlcallback = NULL
-	f->proc.errorcheck	= FALSE
 
 	if( len( libname ) > 0 ) then
 		f->proc.lib 	= symbAddLib( libname )
@@ -2221,8 +2254,8 @@ private function hSetupProc( byval symbol as string, _
 	f->proc.argtail		= argtail
 
 	if( argtail <> NULL ) then
-		do while( argtail->arg.l <> NULL )
-			argtail = argtail->arg.l
+		do while( argtail->arg.prev <> NULL )
+			argtail = argtail->arg.prev
 		loop
 	end if
 
@@ -2265,8 +2298,8 @@ function symbAddPrototype( byval symbol as string, _
 
     function = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, alloctype, mode, _
-					argc, argtail, isexternal, preservecase )
+	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
+					alloctype, mode, argc, argtail, isexternal, preservecase, TRUE )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -2285,14 +2318,15 @@ function symbAddProc( byval symbol as string, _
 					  byval alloctype as integer, _
 					  byval mode as integer, _
 					  byval argc as integer, _
-					  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
+					  byval argtail as FBSYMBOL ptr, _
+					  byval domangle as integer ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     function = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, alloctype, mode, _
-					argc, argtail, TRUE, FALSE )
+	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
+					alloctype, mode, argc, argtail, TRUE, FALSE, domangle )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -2307,7 +2341,7 @@ function symbAddArgAsVar( byval symbol as string, _
 
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
-    dim as integer alloctype, typ, mode
+    dim as integer alloctype, typ
 
 	function = NULL
 
@@ -2340,17 +2374,6 @@ function symbAddArgAsVar( byval symbol as string, _
     	exit function
     end if
 
-	'' debug..
-	if( env.clopt.debug ) then
-		if( typ <> arg->typ ) then
-			mode = FB_ARGMODE_BYREF
-		else
-			mode = arg->arg.mode
-		end if
-
-		edbgProcArg( s, typ, mode )
-	end if
-
 	function = s
 
 end function
@@ -2361,7 +2384,7 @@ function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	dim as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s
 
-	rname = "_{fbpr}_"
+	rname = "{fbpr}"
 	rname += symbGetOrgName( f )
 
 	s = symbAddVarEx( rname, "", f->typ, f->subtype, 0, 0, 0, _
@@ -2386,9 +2409,9 @@ function symbLookup( byval symbol as string, _
 
     if( not preservecase ) then
     	hUcase( symbol, sname )
-    	s = hashLookup( @ctx.symhash, sname )
+    	s = hashLookup( @ctx.symhash, strptr( sname ) )
     else
-    	s = hashLookup( @ctx.symhash, symbol )
+    	s = hashLookup( @ctx.symhash, strptr( symbol ) )
     end if
 
 	'' assume it's an unknown identifier
@@ -2475,7 +2498,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
         end if
 
 		'' next
-		e = e->var.elm.r
+		e = e->var.elm.next
     loop
 
     function = -1
@@ -2557,7 +2580,7 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 		return NULL
 	end if
 
-	rname = "_{fbpr}_"
+	rname = "{fbpr}"
 	rname += symbGetOrgName( f )
 
 	function = symbFindByNameAndClass( rname, FB_SYMBCLASS_VAR, TRUE )
@@ -2719,8 +2742,8 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 					exit do
 				end if
 
-				parg = parg->arg.l
-				farg = farg->arg.l
+				parg = parg->arg.prev
+				farg = farg->arg.prev
 			loop
 
 			'' all args equal?
@@ -2806,7 +2829,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					end if
 				end if
 
-				farg = farg->arg.l
+				farg = farg->arg.prev
 			next
 
 			'' all params okay?
@@ -2846,8 +2869,8 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 								end if
 							end if
 
-		                	farg = farg->arg.l
-		                	marg = marg->arg.l
+		                	farg = farg->arg.prev
+		                	marg = marg->arg.prev
 		                next
 
 		                '' proc has more args close to the final?
@@ -2997,7 +3020,7 @@ function hCalcElements( byval s as FBSYMBOL ptr, _
 	do while( n <> NULL )
 		d = (n->upper - n->lower) + 1
 		e = e * d
-		n = n->r
+		n = n->next
 	loop
 
 	function = e
@@ -3046,37 +3069,19 @@ end function
 
 
 '':::::
-function symbGetFirstNode as FBSYMBOL ptr static
+function symbGetGlobalHead( ) as FBSYMBOL ptr static
 
-	function = ctx.symlist.head
-
-end function
-
-'':::::
-function symbGetFirstLocalNode as FBLOCSYMBOL ptr static
-
-	function = ctx.loclist.head
+	function = ctx.globtb.head
 
 end function
 
 '':::::
-function symbGetNextNode( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbGetLocalHead( ) as FBSYMBOL ptr static
 
-	if( n <> NULL ) then
-		function = n->nxt
-	else
+	if( ctx.loctb = NULL ) then
 		function = NULL
-	end if
-
-end function
-
-'':::::
-function symbGetNextLocalNode( byval n as FBLOCSYMBOL ptr ) as FBLOCSYMBOL ptr static
-
-	if( n <> NULL ) then
-		function = n->nxt
 	else
-		function = NULL
+		function = ctx.loctb->head
 	end if
 
 end function
@@ -3130,12 +3135,12 @@ function symbGetProcPrevArg( byval f as FBSYMBOL ptr, _
 
 	if( checkconv ) then
 		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
-			function = a->arg.l
+			function = a->arg.prev
 		else
-			function = a->arg.r
+			function = a->arg.next
 		end if
 	else
-		function = a->arg.l
+		function = a->arg.prev
 	end if
 
 end function
@@ -3151,12 +3156,12 @@ function symbGetProcNextArg( byval f as FBSYMBOL ptr, _
 
 	if( checkconv ) then
 		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
-			function = a->arg.r
+			function = a->arg.next
 		else
-			function = a->arg.l
+			function = a->arg.prev
 		end if
 	else
-		function = a->arg.r
+		function = a->arg.next
 	end if
 
 end function
@@ -3166,54 +3171,110 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub hFreeSymbol( byval s as FBSYMBOL ptr, _
-				 byval freeup as integer = TRUE )
-    dim prv as FBSYMBOL ptr, nxt as FBSYMBOL ptr
+private sub hDelFromHash( byval s as FBSYMBOL ptr ) static
+    dim as FBSYMBOL ptr prv, nxt
 
-    '' del from string pool
-    if( freeup ) then
-    	s->alias = ""
+	if( s->hashitem = NULL ) then
+		exit sub
+	end if
+
+    '' relink
+    prv = s->left
+    nxt = s->right
+    if( prv <> NULL ) then
+    	prv->right = nxt
+    end if
+    if( nxt <> NULL ) then
+    	nxt->left = prv
     end if
 
-	if( s->hashitem <> NULL ) then
-    	'' relink
-    	prv = s->left
-    	nxt = s->right
-    	if( prv <> NULL ) then
-    		prv->right = nxt
-    	end if
-    	if( nxt <> NULL ) then
-    		nxt->left = prv
-    	end if
-
+    '' symbol was the head node?
+    if( prv = NULL ) then
     	'' nothing left? remove from hash table
-    	if( (prv = NULL) and (nxt = NULL) ) then
+    	if( nxt = NULL ) then
     		hashDel( @ctx.symhash, s->hashitem, s->hashindex )
+
+    	'' update list head
     	else
-    		'' update list head
-    		if( prv = NULL ) then
-        		s->hashitem->idx = nxt
-    		end if
+       		s->hashitem->idx  = nxt
+       		s->hashitem->name = strptr( nxt->name )
     	end if
+    end if
+
+    s->hashitem  = NULL
+    s->hashindex = 0
+    s->left 	 = NULL
+    s->right 	 = NULL
+
+end sub
+
+'':::::
+private sub hFreeSymbol( byval s as FBSYMBOL ptr, _
+				 		 byval movetoglob as integer ) static
+
+    dim as FBSYMBOLTB ptr tb
+    dim as FBSYMBOL ptr prv, nxt
+
+	hDelFromHash( s )
+
+    '' del from table
+    if( s->scope = 0 ) then
+    	tb = @ctx.globtb
+    else
+    	tb = ctx.loctb
+    end if
+
+    prv = s->prev
+    nxt = s->next
+    if( prv <> NULL ) then
+    	prv->next = nxt
+    else
+    	tb->head = nxt
+    end if
+
+    if( nxt <> NULL ) then
+    	nxt->prev = prv
+    else
+    	tb->tail = prv
     end if
 
     '' remove from symbol list
-    if( freeup ) then
+    if( not movetoglob ) then
+    	s->prev  = NULL
+    	s->next  = NULL
+    	s->name  = ""
+    	s->alias = ""
+
     	listDelNode( @ctx.symlist, cptr( TLISTNODE ptr, s ) )
+
+    '' move from local to global table
     else
-    	s->hashitem  = NULL
-    	s->hashindex = 0
+		if( ctx.globtb.tail <> NULL ) then
+			ctx.globtb.tail->next = s
+		else
+			ctx.globtb.head = s
+		end if
+
+		s->prev = ctx.globtb.tail
+		s->next = NULL
+		ctx.globtb.tail = s
+
+		s->scope = 0
+
     end if
 
 end sub
 
 '':::::
-function symbDelKeyword( byval s as FBSYMBOL ptr ) as integer
+function symbDelKeyword( byval s as FBSYMBOL ptr, _
+				         byval dolookup as integer ) as integer
 
     function = FALSE
 
-	'' exists?
-	s = symbFindByClass( s, FB_SYMBCLASS_KEYWORD )
+	if( dolookup ) then
+		s = symbFindByClass( s, FB_SYMBCLASS_KEYWORD )
+	end if
+
 	if( s = NULL ) then
 		exit function
 	end if
@@ -3230,7 +3291,7 @@ private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
 
     a = s->def.arghead
     do while( a <> NULL )
-    	n = a->r
+    	n = a->next
     	a->name = ""
     	listDelNode( @ctx.defarglist, cptr( TLISTNODE ptr, a ) )
     	a = n
@@ -3239,13 +3300,16 @@ private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-function symbDelDefine( byval s as FBSYMBOL ptr ) as integer static
+function symbDelDefine( byval s as FBSYMBOL ptr, _
+				        byval dolookup as integer ) as integer static
     dim arg as FBDEFARG ptr, narg as FBDEFARG ptr
 
     function = FALSE
 
-	'' exists?
-	s = symbFindByClass( s, FB_SYMBCLASS_DEFINE )
+	if( dolookup ) then
+		s = symbFindByClass( s, FB_SYMBCLASS_DEFINE )
+	end if
+
     if( s = NULL ) then
     	exit function
     end if
@@ -3264,9 +3328,13 @@ function symbDelDefine( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-sub symbDelLabel( byval s as FBSYMBOL ptr ) static
+sub symbDelLabel( byval s as FBSYMBOL ptr, _
+				  byval dolookup as integer ) static
 
-    s = symbFindByClass( s, FB_SYMBCLASS_LABEL )
+    if( dolookup ) then
+    	s = symbFindByClass( s, FB_SYMBCLASS_LABEL )
+    end if
+
     if( s = NULL ) then
     	exit sub
     end if
@@ -3276,9 +3344,13 @@ sub symbDelLabel( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub symbDelConst( byval s as FBSYMBOL ptr )
+sub symbDelConst( byval s as FBSYMBOL ptr, _
+				  byval dolookup as integer )
 
-    s = symbFindByClass( s, FB_SYMBCLASS_CONST )
+    if( dolookup ) then
+    	s = symbFindByClass( s, FB_SYMBCLASS_CONST )
+    end if
+
     if( s = NULL ) then
     	exit sub
     end if
@@ -3291,30 +3363,52 @@ sub symbDelConst( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub symbDelUDT( byval s as FBSYMBOL ptr )
+sub symbDelUDT( byval s as FBSYMBOL ptr, _
+				byval dolookup as integer )
 
-    s = symbFindByClass( s, FB_SYMBCLASS_UDT )
+    dim as FBSYMBOL ptr e, nxt
+
+    if( dolookup ) then
+    	s = symbFindByClass( s, FB_SYMBCLASS_UDT )
+    end if
+
     if( s = NULL ) then
     	exit sub
     end if
 
-    ''
-    ''!!!FIXME!!! del all udt elements
+    '' del all udt elements
+    e = s->udt.head
+    do while( e <> NULL )
+        nxt = e->var.elm.next
+    	hFreeSymbol( e )
+    	e = nxt
+    loop
 
 	hFreeSymbol( s )
 
 end sub
 
 '':::::
-sub symbDelEnum( byval s as FBSYMBOL ptr )
+sub symbDelEnum( byval s as FBSYMBOL ptr, _
+				 byval dolookup as integer )
 
-    s = symbFindByClass( s, FB_SYMBCLASS_ENUM )
+	dim as FBSYMBOL ptr e, nxt
+
+    if( dolookup ) then
+    	s = symbFindByClass( s, FB_SYMBCLASS_ENUM )
+    end if
+
     if( s = NULL ) then
     	exit sub
     end if
 
-    ''
-    ''!!!FIXME!!! del all enum constants
+    '' del all enum constants
+	e = s->enum.head
+    do while( e <> NULL )
+        nxt = e->con.eelm.nxt
+		hFreeSymbol( e )
+		e = nxt
+	loop
 
 	hFreeSymbol( s )
 
@@ -3322,11 +3416,11 @@ end sub
 
 '':::::
 private sub hDelArgs( byval f as FBSYMBOL ptr )
-	dim a as FBSYMBOL ptr, n as FBSYMBOL ptr
+	dim as FBSYMBOL ptr a, n
 
     a = f->proc.arghead
     do while( a <> NULL )
-    	n = a->arg.r
+    	n = a->arg.next
     	hFreeSymbol( a )
     	a = n
     loop
@@ -3334,10 +3428,14 @@ private sub hDelArgs( byval f as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub symbDelPrototype( byval s as FBSYMBOL ptr )
+sub symbDelPrototype( byval s as FBSYMBOL ptr, _
+				      byval dolookup as integer )
 	dim as FBSYMBOL ptr n
 
-    s = symbFindByClass( s, FB_SYMBCLASS_PROC )
+    if( dolookup ) then
+    	s = symbFindByClass( s, FB_SYMBCLASS_PROC )
+    end if
+
     if( s = NULL ) then
     	exit sub
     end if
@@ -3365,11 +3463,11 @@ end sub
 
 '':::::
 sub hDelVarDims( byval s as FBSYMBOL ptr ) static
-    dim n as FBVARDIM ptr, nxt as FBVARDIM ptr
+    dim as FBVARDIM ptr n, nxt
 
     n = s->var.array.dimhead
     do while( n <> NULL )
-    	nxt = n->r
+    	nxt = n->next
 
     	listDelNode( @ctx.dimlist, cptr( TLISTNODE ptr, n ) )
 
@@ -3383,24 +3481,26 @@ sub hDelVarDims( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub symbDelVar( byval s as FBSYMBOL ptr )
-    dim freeup as integer
+sub symbDelVar( byval s as FBSYMBOL ptr, _
+				byval dolookup as integer )
+
+    dim movetoglob as integer
 
     if( s = NULL ) then
     	exit sub
     end if
 
-	freeup = TRUE
+	movetoglob = FALSE
 
 	'' local?
 	if( s->scope > 0 ) then
-    	'' static? don't remove node or EMIT won't output it
+    	'' static? move it to global list
     	if( symbIsStatic( s ) ) then
-    		freeup = FALSE
+    		movetoglob = TRUE
     	end if
 	end if
 
-	if( freeup ) then
+	if( not movetoglob ) then
     	if( s->var.array.dims > 0 ) then
     		hDelVarDims( s )
     		'' del the array descriptor, recursively
@@ -3413,7 +3513,7 @@ sub symbDelVar( byval s as FBSYMBOL ptr )
     	s->var.inittext = ""
     end if
 
-    hFreeSymbol( s, freeup )
+    hFreeSymbol( s, movetoglob )
 
 end sub
 
@@ -3432,45 +3532,121 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 
 end sub
 
-
 '':::::
-sub symbDelLocalSymbols static
-    dim node as FBLOCSYMBOL ptr, nxt as FBLOCSYMBOL ptr
-    dim s as FBSYMBOL ptr
+sub symbDelGlobalTb( ) static
+    dim as FBSYMBOL ptr s
 
-	node = ctx.loclist.head
-    do while( node <> NULL )
-    	nxt = node->nxt
-
-    	s = node->s
-    	if( not symbIsShared( s ) ) then
-
-    		select case as const s->class
-    		case FB_SYMBCLASS_VAR
-    			symbDelVar( s )
-    		case FB_SYMBCLASS_CONST
-    			symbDelConst( s )
-    		case FB_SYMBCLASS_UDT
-    			symbDelUDT( s )
-    		case FB_SYMBCLASS_ENUM
-    			symbDelEnum( s )
-    		case FB_SYMBCLASS_LABEL
-    			symbDelLabel( s )
-    		end select
-
+    do
+    	s = ctx.globtb.head
+    	if( s = NULL ) then
+    		exit do
     	end if
 
-		listDelNode( @ctx.loclist, cptr( TLISTNODE ptr, node ) )
+	   	select case as const s->class
+    	case FB_SYMBCLASS_VAR
+    		symbDelVar( s, FALSE )
 
-		node = nxt
+    	case FB_SYMBCLASS_CONST
+	   		symbDelConst( s, FALSE )
+
+    	case FB_SYMBCLASS_PROC
+    		symbDelPrototype( s, FALSE )
+
+		case FB_SYMBCLASS_DEFINE
+			symbDelDefine( s, FALSE )
+
+		case FB_SYMBCLASS_KEYWORD
+			symbDelKeyword( s, FALSE )
+
+    	case FB_SYMBCLASS_LABEL
+    		symbDelLabel( s, FALSE )
+
+    	case FB_SYMBCLASS_ENUM
+	   		symbDelEnum( s, FALSE )
+
+    	case FB_SYMBCLASS_UDT
+    		symbDelUDT( s, FALSE )
+
+		case else
+			hFreeSymbol( s )
+
+    	end select
     loop
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' locals
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub symbSetLocalTb( byval tb as FBSYMBOLTB ptr )
+
+	ctx.loctb = tb
+
+end sub
+
+'':::::
+sub symbDelLocalTb( byval hashonly as integer ) static
+    dim as FBSYMBOL ptr s
+
+    '' del from hash tb only?
+    if( hashonly ) then
+
+    	s = ctx.loctb->head
+    	do while( s <> NULL )
+
+	    	select case as const s->class
+    		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST, FB_SYMBCLASS_UDT, _
+    			 FB_SYMBCLASS_ENUM, FB_SYMBCLASS_LABEL
+
+    			hDelFromHash( s )
+
+    		end select
+
+    		s = s->next
+    	loop
+
+    '' del from hash and symbol tb's
+    else
+
+    	do
+    	    s = ctx.loctb->head
+    		if( s = NULL ) then
+    			exit do
+    		end if
+
+	    	select case as const s->class
+    		case FB_SYMBCLASS_VAR
+    			symbDelVar( s, FALSE )
+
+    		case FB_SYMBCLASS_CONST
+	    		symbDelConst( s, FALSE )
+
+    		case FB_SYMBCLASS_UDT
+    			symbDelUDT( s, FALSE )
+
+    		case FB_SYMBCLASS_ENUM
+	    		symbDelEnum( s, FALSE )
+
+    		case FB_SYMBCLASS_LABEL
+    			symbDelLabel( s, FALSE )
+
+    		case else
+    			hFreeSymbol( s )
+    		end select
+    	loop
+
+    end if
+
+    ctx.loctb = NULL
 
 end sub
 
 '':::::
 sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 						  byval issub as integer ) static
-    dim as FBLOCSYMBOL ptr node
+
     dim as FBSYMBOL ptr s, fres
     dim as ASTNODE ptr strg
 
@@ -3481,9 +3657,9 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     	fres = symbLookupProcResult( proc )
 	end if
 
-	node = ctx.loclist.head
-    do while( node <> NULL )
-    	s = node->s
+	s = ctx.loctb->head
+    do while( s <> NULL )
+
     	if( s->class = FB_SYMBCLASS_VAR ) then
     		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC)) = 0 ) then
 
@@ -3504,7 +3680,7 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 						'' not funct's result?
 						if( s <> fres ) then
 							strg = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
-							astFlush( rtlStrDelete( strg ) )
+							astAdd( rtlStrDelete( strg ) )
 						end if
 					end if
 
@@ -3513,10 +3689,34 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     		end if
     	end if
 
-    	node = node->nxt
+    	s = s->next
     loop
 
 end sub
+
+'':::::
+function symbCheckLocalLabels(  ) as integer
+    dim as FBSYMBOL ptr s
+    dim as integer cnt
+
+    cnt = 0
+
+    s = ctx.loctb->head
+    do while( s <> NULL )
+
+    	if( s->class = FB_SYMBCLASS_LABEL ) then
+    		if( not s->lbl.declared ) then
+    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
+    			cnt += 1
+    		end if
+    	end if
+
+    	s = s->next
+    loop
+
+	function = cnt
+
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
@@ -3543,36 +3743,8 @@ function symbCheckLabels( ) as integer
 
 	cnt = 0
 
-    s = symbGetFirstNode( )
+    s = ctx.globtb.head
     do while( s <> NULL )
-
-    	if( s->class = FB_SYMBCLASS_LABEL ) then
-    		if( not s->lbl.declared ) then
-    			if( s->scope = 0 ) then
-    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
-    				cnt += 1
-    			end if
-    		end if
-    	end if
-
-    	s = s->nxt
-    loop
-
-	function = cnt
-
-end function
-
-'':::::
-function symbCheckLocalLabels(  ) as integer
-    dim as FBLOCSYMBOL ptr l
-    dim as FBSYMBOL ptr s
-    dim as integer cnt
-
-    cnt = 0
-
-    l = symbGetFirstLocalNode( )
-    do while( l <> NULL )
-    	s = l->s
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( not s->lbl.declared ) then
     			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
@@ -3580,7 +3752,7 @@ function symbCheckLocalLabels(  ) as integer
     		end if
     	end if
 
-    	l = l->nxt
+    	s = s->next
     loop
 
 	function = cnt
@@ -3623,7 +3795,7 @@ function symbListLibs( namelist() as string, _
 			cnt += 1
 		end if
 
-		node = node->nxt
+		node = node->ll_nxt
 	loop
 
 	function = cnt - index
@@ -3731,8 +3903,8 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
 			end if
 
     		'' next arg..
-    		argl = argl->arg.r
-    		argr = argr->arg.r
+    		argl = argl->arg.next
+    		argr = argr->arg.next
     	loop
     end select
 
@@ -3744,3 +3916,5 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
     end if
 
 end function
+
+

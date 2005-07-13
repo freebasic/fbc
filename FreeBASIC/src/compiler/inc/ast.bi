@@ -19,12 +19,14 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
+#include once "inc\list.bi"
 #include once "inc\ir.bi"
 
 const AST_INITTEMPSTRINGS		= 32*4
 const AST_INITTEMPARRAYS		= 32*4
 
 const AST_INITNODES				= 8192
+const AST_INITPROCNODES			= 128
 
 enum ASTNODECLASS_ENUM
 	AST_NODECLASS_LINK
@@ -45,29 +47,33 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_IIF
 	AST_NODECLASS_OFFSET
 	AST_NODECLASS_STACK
+	AST_NODECLASS_LABEL
+	AST_NODECLASS_ASM
+	AST_NODECLASS_JMPTB
+	AST_NODECLASS_DBG
 end enum
 
 type ASTNODE_ as ASTNODE
 
 type ASTTEMPSTR
-	prv				as ASTTEMPSTR ptr				'' linked-list nodes
-	nxt				as ASTTEMPSTR ptr				'' /
+	ll_prv			as ASTTEMPSTR ptr				'' linked-list nodes
+	ll_nxt			as ASTTEMPSTR ptr				'' /
 
 	tmpsym			as FBSYMBOL ptr
 	srctree			as ASTNODE_ ptr
-	left			as ASTTEMPSTR ptr
+	prev			as ASTTEMPSTR ptr
 end type
 
 type ASTTEMPARRAY
-	prv				as ASTTEMPARRAY ptr				'' linked-list nodes
-	nxt				as ASTTEMPARRAY ptr				'' /
+	ll_prv			as ASTTEMPARRAY ptr				'' linked-list nodes
+	ll_nxt			as ASTTEMPARRAY ptr				'' /
 
 	pdesc			as FBSYMBOL ptr
-	left			as ASTTEMPARRAY ptr
+	prev			as ASTTEMPARRAY ptr
 end type
 
 ''
-type FUNCTNode
+type AST_FUNCT
 	sym				as FBSYMBOL ptr					'' symbol
 	isrtl			as integer
 
@@ -82,42 +88,63 @@ type FUNCTNode
 	profend			as ASTNODE_ ptr
 end type
 
-type PARAMNode
+type AST_PARAM
 	mode			as integer						'' to pass NULL's to byref args, etc
 	lgt				as integer						'' length, used to push UDT's by value
 end type
 
-type VARNode
+type AST_VAR
 	sym				as FBSYMBOL ptr					'' symbol
 	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 	ofs				as integer						'' offset
 end type
 
-type IDXNode
+type AST_IDX
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
 end type
 
-type PTRNode
+type AST_PTR
 	sym				as FBSYMBOL ptr					'' symbol
 	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 	ofs				as integer						'' offset
 end type
 
-type ADDRNode
+type AST_ADDR
 	sym				as FBSYMBOL ptr					'' symbol
 	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 end type
 
-type IIFNode
+type AST_IIF
 	cond			as ASTNODE_ ptr					'' conditonal expression
 	falselabel 		as FBSYMBOL ptr
 end type
 
+type AST_LOAD
+	isres			as integer
+end type
+
+type AST_LABEL
+	sym				as FBSYMBOL ptr					'' symbol
+	flush			as integer
+end type
+
+type AST_ASM
+	line			as string
+end type
+
+type AST_JMPTB
+	label			as FBSYMBOL ptr
+end type
+
+type AST_DBG
+	ex				as integer
+end type
+
 ''
 type ASTNODE
-	prv				as ASTNODE ptr					'' 'pointers' used by the allocator,
-	nxt				as ASTNODE ptr					'' /  (can't be swapped/copied!)
+	ll_prv			as ASTNODE ptr					'' linked-list nodes
+	ll_nxt			as ASTNODE ptr					'' /  (can't be swapped/copied!)
 
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
 
@@ -133,26 +160,48 @@ type ASTNODE
 	chkbitfld		as integer
 
 	union
-		var			as VARNode
-		idx			as IDXNode
-		ptr			as PTRNode
-		proc		as FUNCTNode
-		param		as PARAMNode
-		addr		as ADDRNode
-		iif			as IIFNode
+		var			as AST_VAR
+		idx			as AST_IDX
+		ptr			as AST_PTR
+		proc		as AST_FUNCT
+		param		as AST_PARAM
+		addr		as AST_ADDR
+		iif			as AST_IIF
+		lod			as AST_LOAD
+		lbl			as AST_LABEL
+		asm			as AST_ASM
+		jtb			as AST_JMPTB
+		dbg			as AST_DBG
 	end union
+
+	prev			as ASTNODE ptr					'' used by Add
+	next			as ASTNODE ptr					'' /
 
 	l				as ASTNODE ptr					'' left node, index of ast tb
 	r				as ASTNODE ptr					'' right /     /
 end type
 
+''
+type ASTPROCNODE
+	ll_prv			as ASTPROCNODE ptr				'' linked-list nodes
+	ll_nxt			as ASTPROCNODE ptr				'' /
+
+	proc			as FBSYMBOL ptr
+	ismain			as integer
+
+	initlabel		as FBSYMBOL ptr
+	exitlabel		as FBSYMBOL ptr
+
+	loctb			as FBSYMBOLTB					'' local symbols list
+
+	head			as ASTNODE ptr					'' first node
+	tail			as ASTNODE ptr					'' last node
+end type
+
+
 declare sub 		astInit				( )
 
 declare sub 		astEnd				( )
-
-declare function 	astNew				( byval class as integer, _
-										  byval dtype as integer, _
-										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare sub 		astDel				( byval n as ASTNODE ptr )
 
@@ -179,9 +228,17 @@ declare function 	astGetValueAsInt	( byval n as ASTNODE ptr ) as integer
 
 declare function 	astGetValueAsStr	( byval n as ASTNODE ptr ) as string
 
-declare function	astLoad				( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
+					   					  byval initlabel as FBSYMBOL ptr, _
+					   					  byval exitlabel as FBSYMBOL ptr, _
+					   					  byval ismain as integer = FALSE ) as ASTPROCNODE ptr
 
-declare function	astFlush			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare sub 		astProcEnd			( byval p as ASTPROCNODE ptr )
+
+declare sub			astAdd				( byval n as ASTNODE ptr )
+
+declare sub 		astAddAfter			( byval n as ASTNODE ptr, _
+										  byval p as ASTNODE ptr )
 
 declare function	astUpdComp2Branch	( byval n as ASTNODE ptr, _
 										  byval label as FBSYMBOL ptr, _
@@ -198,14 +255,10 @@ declare function 	astFuncPtrCheck		( byval pdtype as integer, _
 declare function 	astNewASSIGN		( byval l as ASTNODE ptr, _
 										  byval r as ASTNODE ptr ) as ASTNODE ptr
 
-declare function 	astLoadASSIGN		( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewCONV			( byval op as integer, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr, _
 										  byval l as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	astLoadCONV			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewBOP			( byval op as integer, _
 										  byval l as ASTNODE ptr, _
@@ -213,12 +266,8 @@ declare function 	astNewBOP			( byval op as integer, _
 					  					  byval ex as FBSYMBOL ptr = NULL, _
 					  					  byval allocres as integer = TRUE ) as ASTNODE ptr
 
-declare function 	astLoadBOP			( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewUOP			( byval op as integer, _
 										  byval o as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	astLoadUOP			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewCONST			( byval v as FBVALUE ptr, _
 					  					  byval dtype as integer ) as ASTNODE ptr
@@ -233,22 +282,16 @@ declare function 	astNewCONSTf		( byval value as double, _
 declare function 	astNewCONST64		( byval value as longint, _
 										  byval dtype as integer ) as ASTNODE ptr
 
-declare function 	astLoadCONST		( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
 										  byval elm as FBSYMBOL ptr = NULL, _
 										  byval ofs as integer = 0, _
 										  byval dtype as integer = IR_DATATYPE_INTEGER, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
-declare function 	astLoadVAR			( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewIDX			( byval v as ASTNODE ptr, _
 										  byval i as ASTNODE ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
-
-declare function 	astLoadIDX			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, _
 										  byval elm as FBSYMBOL ptr, _
@@ -256,8 +299,6 @@ declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, _
 										  byval l as ASTNODE ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
-
-declare function 	astLoadPTR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, _
 										  byval ptrexpr as ASTNODE ptr = NULL, _
@@ -268,52 +309,46 @@ declare function 	astNewPARAM			( byval f as ASTNODE ptr, _
 										  byval dtype as integer = INVALID, _
 										  byval mode as integer = INVALID ) as ASTNODE ptr
 
-declare function 	astLoadFUNCT		( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewADDR			( byval op as integer, _
 										  byval p as ASTNODE ptr, _
 										  byval sym as FBSYMBOL ptr = NULL, _
 										  byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
-declare function 	astLoadADDR			( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewLOAD			( byval l as ASTNODE ptr, _
-										  byval dtype as integer ) as ASTNODE ptr
-
-declare function 	astLoadLOAD			( byval n as ASTNODE ptr ) as IRVREG ptr
+										  byval dtype as integer, _
+										  byval isresult as integer = FALSE ) as ASTNODE ptr
 
 declare function 	astNewBRANCH		( byval op as integer, _
 										  byval label as FBSYMBOL ptr, _
 										  byval l as ASTNODE ptr = NULL ) as ASTNODE ptr
 
-declare function 	astLoadBRANCH		( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewIIF			( byval condexpr as ASTNODE ptr, _
 										  byval truexpr as ASTNODE ptr, _
 										  byval falsexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	astLoadIIF			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewOFFSET		( byval v as ASTNODE ptr, _
 					   					  byval sym as FBSYMBOL ptr = NULL, _
 					   					  byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
-declare function 	astLoadOFFSET		( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewLINK			( byval l as ASTNODE ptr, _
 					 					  byval r as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	astLoadLINK			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astNewSTACK			( byval op as integer, _
 					  					  byval l as ASTNODE ptr ) as ASTNODE ptr
 
-declare function 	astLoadSTACK		( byval n as ASTNODE ptr ) as IRVREG ptr
-
 declare function 	astNewENUM			( byval value as integer, _
 					 					  byval enum as FBSYMBOL ptr ) as ASTNODE ptr
 
-declare function 	astLoadENUM			( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astNewLABEL			( byval sym as FBSYMBOL ptr, _
+					  					  byval doflush as integer = TRUE ) as ASTNODE ptr
+
+declare function 	astNewASM			( byval asmline as string ) as ASTNODE ptr
+
+declare function 	astNewJMPTB			( byval dtype as integer, _
+					   					  byval label as FBSYMBOL ptr ) as ASTNODE ptr
+
+declare function 	astNewDBG			( byval op as integer, _
+					   					  byval ex as integer = 0 ) as ASTNODE ptr
 
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _

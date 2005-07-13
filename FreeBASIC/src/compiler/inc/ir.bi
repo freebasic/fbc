@@ -142,6 +142,7 @@ enum IROP_ENUM									'' if order is changed, update the opTB array
 	IR_OP_JMP
 	IR_OP_CALL
 	IR_OP_LABEL
+	IR_OP_RET
 	IR_OP_CALLFUNCT
 	IR_OP_CALLPTR
 	IR_OP_JUMPPTR
@@ -150,6 +151,8 @@ enum IROP_ENUM									'' if order is changed, update the opTB array
 end enum
 
 '' operations below won't reach IR, used by AST
+const IR_OP_DBG_LINEINI		= 250
+const IR_OP_DBG_LINEEND		= 251
 const IR_OP_TOPOINTER		= 252
 const IR_OP_TOSIGNED		= 253
 const IR_OP_TOUNSIGNED		= 254
@@ -164,7 +167,7 @@ type IRTACVREG
 end type
 
 type IRTAC
-	nxt			as IRTAC ptr					'' linked-list field
+	next		as IRTAC ptr					'' linked-list field
 
 	pos			as integer
 
@@ -179,7 +182,7 @@ type IRTAC
 end type
 
 type IRVREG
-	nxt			as IRVREG ptr					'' linked-list field
+	next		as IRVREG ptr					'' linked-list field
 
 	typ			as integer						'' VAR, IMM, IDX, etc
 	dtype		as integer						'' CHAR, INTEGER, ...
@@ -239,6 +242,10 @@ declare function 	irAllocVRPTR		( byval dtype as integer, _
 declare function 	irAllocVROFS		( byval dtype as integer, _
 					   					  byval symbol as FBSYMBOL ptr ) as IRVREG ptr
 
+declare sub 		irProcBegin			( byval proc as FBSYMBOL ptr )
+
+declare sub 		irProcEnd			( byval proc as FBSYMBOL ptr )
+
 declare sub 		irEmit				( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr, _
@@ -247,9 +254,7 @@ declare sub 		irEmit				( byval op as integer, _
 										  byval ex2 as integer = 0 )
 
 declare sub 		irEmitPROCBEGIN		( byval proc as FBSYMBOL ptr, _
-										  byval initlabel as FBSYMBOL ptr, _
-										  byval endlabel as FBSYMBOL ptr, _
-										  byval ispublic as integer )
+					 					  byval initlabel as FBSYMBOL ptr )
 
 declare sub 		irEmitPROCEND		( byval proc as FBSYMBOL ptr, _
 										  byval initlabel as FBSYMBOL ptr, _
@@ -281,8 +286,7 @@ declare sub 		irEmitCONVERT		( byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr, _
 										  byval dtype2 as integer )
 
-declare sub 		irEmitLABEL			( byval label as FBSYMBOL ptr, _
-										  byval isglobal as integer )
+declare sub 		irEmitLABEL			( byval label as FBSYMBOL ptr )
 
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
 
@@ -291,6 +295,15 @@ declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, _
 										  byval vr as IRVREG ptr, _
 										  byval pmode as integer, _
 										  byval plen as integer ) as integer
+
+declare sub 		irEmitASM			( byval asmline as string )
+
+declare sub 		irEmitJMPTB			( byval dtype as integer, _
+				 						  byval label as FBSYMBOL ptr )
+
+declare sub 		irEmitDBG			( byval proc as FBSYMBOL ptr, _
+										  byval op as integer, _
+			   							  byval ex as integer )
 
 declare function 	irIsVAR				( byval vreg as IRVREG ptr ) as integer
 
@@ -355,7 +368,9 @@ declare sub 		irXchgTOS			( byval reg as integer )
 
 #define irEmitSTORE(v1,v2) irEmit( IR_OP_STORE, v1, v2, NULL )
 
-#define irEmitLOAD(op,v1) irEmit( op, v1, NULL, NULL )
+#define irEmitLOAD(v1) irEmit( IR_OP_LOAD, v1, NULL, NULL )
+
+#define irEmitLOADRES(v1,vr) irEmit( IR_OP_LOADRESULT, v1, NULL, vr )
 
 #define irEmitSTACK(op,v1) irEmit( op, v1, NULL, NULL )
 
@@ -375,7 +390,7 @@ declare sub 		irXchgTOS			( byval reg as integer )
 
 #define irEmitSTACKALIGN(bytes) irEmit( IR_OP_STACKALIGN, NULL, NULL, NULL, NULL, bytes )
 
-#define irEmitBRANCHPTR(v1) irEmit( IR_OP_JUMPPTR, v1, NULL, NULL, NULL )
+#define irEmitJUMPPTR(v1) irEmit( IR_OP_JUMPPTR, v1, NULL, NULL, NULL )
 
 #define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
 

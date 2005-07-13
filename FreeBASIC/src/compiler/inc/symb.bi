@@ -67,13 +67,9 @@ declare function 	symbLookupUDTElm		( byval symbol as string, _
 
 declare function 	symbLookupProcResult	( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare	function 	symbGetFirstNode 		( ) as FBSYMBOL ptr
+declare	function 	symbGetGlobalHead 		( ) as FBSYMBOL ptr
 
-declare	function 	symbGetNextNode			( byval n as FBSYMBOL ptr ) as FBSYMBOL ptr
-
-declare	function 	symbGetFirstLocalNode 	( ) as FBLOCSYMBOL ptr
-
-declare	function 	symbGetNextLocalNode	( byval n as FBLOCSYMBOL ptr ) as FBLOCSYMBOL ptr
+declare	function 	symbGetLocalHead 		( ) as FBSYMBOL ptr
 
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 
@@ -213,7 +209,8 @@ declare function 	symbAddProc				( byval symbol as string, _
 					  						  byval alloctype as integer, _
 					  						  byval mode as integer, _
 					  						  byval argc as integer, _
-					  						  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr
+					  						  byval argtail as FBSYMBOL ptr, _
+					  						  byval domangle as integer = TRUE ) as FBSYMBOL ptr
 
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
@@ -234,20 +231,36 @@ declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 					  						  byval dimensions as integer, _
 					  						  dTB() as FBARRAYDIM )
 
+declare sub 		symbSetLocalTb			( byval tb as FBSYMBOLTB ptr )
+
 declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
 											  byval issub as integer )
 
-declare sub 		symbDelLocalSymbols		( )
+declare sub 		symbDelLocalTb			( byval hashonly as integer )
 
-declare function 	symbDelKeyword			( byval s as FBSYMBOL ptr ) as integer
+declare function 	symbDelKeyword			( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE ) as integer
 
-declare function 	symbDelDefine			( byval s as FBSYMBOL ptr ) as integer
+declare function 	symbDelDefine			( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE ) as integer
 
-declare sub 		symbDelLabel			( byval s as FBSYMBOL ptr )
+declare sub 		symbDelLabel			( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE )
 
-declare sub 		symbDelVar				( byval s as FBSYMBOL ptr )
+declare sub			symbDelVar				( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE )
 
-declare sub 		symbDelPrototype		( byval s as FBSYMBOL ptr )
+declare sub 		symbDelPrototype		( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE )
+
+declare sub 		symbDelEnum				( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE )
+
+declare sub 		symbDelUDT				( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE )
+
+declare sub 		symbDelConst			( byval s as FBSYMBOL ptr, _
+				  							  byval dolookup as integer = TRUE )
 
 declare sub 		symbDelLib				( byval l as FBLIBRARY ptr )
 
@@ -324,6 +337,8 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetVarEmited(s) s->var.emited
 
+#define symbSetVarEmited(s,v) s->var.emited = v
+
 #define symbGetArrayDiff(s) s->var.array.dif
 
 #define symbGetArrayDimensions(s) s->var.array.dims
@@ -332,13 +347,15 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetArrayDescriptor(s) s->var.array.desc
 
-#define symbGetProcArgs(f) f->proc.args
+#define symbGetArrayOffset(s) s->var.array.dif
 
 #define symbGetArrayFirstDim(s) s->var.array.dimhead
 
+#define symbGetProcArgs(f) f->proc.args
+
 #define symbGetFuncMode(f) f->proc.mode
 
-#define symbGetOrgName(s) s->hashitem->name
+#define symbGetOrgName(s) s->name
 
 #define symbGetName(s) s->alias
 
@@ -348,7 +365,7 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetUDTFirstElm(s) s->udt.head
 
-#define symbGetUDTNextElm(e) e->var.elm.r
+#define symbGetUDTNextElm(e) e->var.elm.next
 
 #define symbGetUDTElmBitOfs(e) (e->var.elm.ofs * 8 + e->var.elm.bitpos)
 
@@ -380,13 +397,21 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbSetProcIsRTL(f,v) f->proc.isrtl = v
 
-#define symbGetProcErrorCheck(f) f->proc.errorcheck
+#define symbGetProcErrorCheck(f) f->proc.doerrorcheck
 
-#define symbSetProcErrorCheck(f,v) f->proc.errorcheck = v
+#define symbSetProcErrorCheck(f,v) f->proc.doerrorcheck = v
 
 #define symbGetProcIsOverloaded(f) ((f->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
 
 #define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
+
+#define symbGetProcIsCalled(f) f->proc.iscalled
+
+#define symbSetProcIsCalled(f,v) f->proc.iscalled = v
+
+#define symbGetProcIncFile(f) f->proc.dbg.incfile
+
+#define symbSetProcIncFile(f,v) f->proc.dbg.incfile = v
 
 #define symbGetArgMode(f,a) iif( a = NULL, INVALID, a->arg.mode )
 
@@ -433,6 +458,10 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 #define symbIsImport(s) ((s->alloctype and FB_ALLOCTYPE_IMPORT) > 0)
 
 #define symbIsOverloaded(s) ((s->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
+
+#define symbIsJumpTb(s) ((s->alloctype and FB_ALLOCTYPE_JUMPTB) > 0)
+
+#define symbIsMainProc(s) ((s->alloctype and FB_ALLOCTYPE_MAINPROC) > 0)
 
 
 #define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR))

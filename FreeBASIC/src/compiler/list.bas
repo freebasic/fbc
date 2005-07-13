@@ -58,7 +58,7 @@ function listFree( byval list as TLIST ptr ) as integer
 	'' for each pool, free the mem block and the pool ctrl struct
 	tb = list->tbhead
 	do while( tb <> NULL )
-		nxt = tb->nxt
+		nxt = tb->next
 		deallocate( tb->nodetb )
 		deallocate( tb )
 		tb = nxt
@@ -108,11 +108,11 @@ function listAllocTB( byval list as TLIST ptr, _
 		list->tbhead = tb
 	end if
 	if( list->tbtail <> NULL ) then
-		list->tbtail->nxt = tb
+		list->tbtail->next = tb
 	end if
 	list->tbtail = tb
 
-	tb->nxt 	= NULL
+	tb->next 	= NULL
 	tb->nodetb 	= nodetb
 	tb->nodes 	= nodes
 
@@ -126,15 +126,15 @@ function listAllocTB( byval list as TLIST ptr, _
 		node = list->fhead
 
 		for i = 1 to nodes-1
-			node->prv	= prv
-			node->nxt	= cptr(TLISTNODE ptr, cptr(byte ptr, node) + list->nodelen)
+			node->prev	= prv
+			node->next	= cptr(TLISTNODE ptr, cptr(byte ptr, node) + list->nodelen)
 
 			prv 	   	= node
-			node 		= node->nxt
+			node 		= node->next
 		next
 
-		node->prv = prv
-		node->nxt = NULL
+		node->prev = prv
+		node->next = NULL
 	end if
 
 	''
@@ -148,24 +148,24 @@ function listNewNode( byval list as TLIST ptr ) as any ptr static
 
 	'' alloc new node list if there are no free nodes
 	if( list->fhead = NULL ) Then
-		listAllocTB( list, list->nodes \ 2 )
+		listAllocTB( list, list->nodes \ 4 )
 	end if
 
 	'' take from free list
 	node = list->fhead
-	list->fhead = node->nxt
+	list->fhead = node->next
 
 	'' add to used list
 	tail = list->tail
 	list->tail = node
 	if( tail <> NULL ) then
-		tail->nxt = node
+		tail->next = node
 	else
 		list->head = node
 	end If
 
-	node->prv	= tail
-	node->nxt	= NULL
+	node->prev	= tail
+	node->next	= NULL
 
 	''
 	function = node
@@ -182,22 +182,22 @@ function listDelNode( byval list as TLIST ptr, _
 	end if
 
 	'' remove from used list
-	prv = node->prv
-	nxt = node->nxt
+	prv = node->prev
+	nxt = node->next
 	if( prv <> NULL ) then
-		prv->nxt = nxt
+		prv->next = nxt
 	else
 		list->head = nxt
 	end If
 
 	if( nxt <> NULL ) then
-		nxt->prv = prv
+		nxt->prev = prv
 	else
 		list->tail = prv
 	end If
 
 	'' add to free list
-	node->nxt = list->fhead
+	node->next = list->fhead
 	list->fhead = node
 
 	'' node can contain strings descriptors, so, erase it..
@@ -206,4 +206,5 @@ function listDelNode( byval list as TLIST ptr, _
 	end if
 
 end function
+
 

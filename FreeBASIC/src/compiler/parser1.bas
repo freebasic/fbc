@@ -71,8 +71,10 @@ end function
 ''
 function cLine as integer
 
-	edbgLineBegin( )
+	''
+	astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
 
+    '' Label? Statement? Comment?
     cLabel( )
     cStatement( )
     cComment( )
@@ -88,7 +90,8 @@ function cLine as integer
 		end if
     end if
 
-    edbgLineEnd( )
+	''
+	astAdd( astNewDBG( IR_OP_DBG_LINEEND, lexLineNum( ) ) )
 
     function = TRUE
 
@@ -100,8 +103,10 @@ end function
 function cSimpleLine as integer
     dim res as integer
 
-    edbgLineBegin( )
+	''
+	astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
 
+    '' Label? SimpleStatement? Comment?
     cLabel( )
     res = cSimpleStatement( )
     cComment( )
@@ -121,7 +126,8 @@ function cSimpleLine as integer
 		end if
 	end if
 
-    edbgLineEnd( )
+	''
+	astAdd( astNewDBG( IR_OP_DBG_LINEEND, lexLineNum( ) ) )
 
     function = TRUE
 
@@ -178,8 +184,7 @@ function cLabel as integer
 
     if( l <> NULL ) then
 
-    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irEmitLABEL( l, (env.scope = 0) )
+    	astAdd( astNewLABEL( l ) )
 
     	symbSetLastLabel( l )
 
@@ -800,7 +805,7 @@ function cTypeLine as integer static
 	function = FALSE
 
 	'' Comment? SttSeparator?
-	do while( (cComment( ) <> FALSE) or (cStmtSeparator( ) <> FALSE) )
+	do while( cComment( ) or cStmtSeparator( ) )
 	loop
 
 	select case as const lexGetToken( )
@@ -1111,7 +1116,7 @@ function cEnumLine as integer
 	function = FALSE
 
 	'' Comment? SttSeparator?
-	do while( (cComment( ) <> FALSE) or (cStmtSeparator( ) <> FALSE) )
+	do while( cComment( ) or cStmtSeparator( ) )
 	loop
 
 	if( lexGetToken( ) = FB_TK_END ) then
@@ -1237,7 +1242,7 @@ function cSymbolDecl as integer
 		'' REDIM
 		case FB_TK_REDIM
 			lexSkipToken( )
-			alloctype = alloctype or FB_ALLOCTYPE_DYNAMIC
+			alloctype or= FB_ALLOCTYPE_DYNAMIC
 
 			'' PRESERVE?
 			if( hMatch( FB_TK_PRESERVE ) ) then
@@ -1254,7 +1259,7 @@ function cSymbolDecl as integer
 
 			lexSkipToken( )
 
-			alloctype = alloctype or FB_ALLOCTYPE_COMMON or FB_ALLOCTYPE_DYNAMIC
+			alloctype or= FB_ALLOCTYPE_COMMON or FB_ALLOCTYPE_DYNAMIC
 
 		'' EXTERN
 		case FB_TK_EXTERN
@@ -1266,7 +1271,7 @@ function cSymbolDecl as integer
 
 			lexSkipToken( )
 
-			alloctype = alloctype or FB_ALLOCTYPE_EXTERN or FB_ALLOCTYPE_SHARED
+			alloctype or= FB_ALLOCTYPE_EXTERN or FB_ALLOCTYPE_SHARED
 
 		case else
 			lexSkipToken( )
@@ -1274,7 +1279,7 @@ function cSymbolDecl as integer
 
 		''
 		if( env.opt.dynamic ) then
-			alloctype = alloctype or FB_ALLOCTYPE_DYNAMIC
+			alloctype or= FB_ALLOCTYPE_DYNAMIC
 		end if
 
 		if( (alloctype and FB_ALLOCTYPE_EXTERN) = 0 ) then
@@ -1287,20 +1292,20 @@ function cSymbolDecl as integer
 				end if
 
 				lexSkipToken( )
-				alloctype = alloctype or FB_ALLOCTYPE_SHARED
+				alloctype or= FB_ALLOCTYPE_SHARED
 			end if
 
 		else
 			'' IMPORT?
 			if( hMatch( FB_TK_IMPORT ) ) then
-				alloctype = alloctype or FB_ALLOCTYPE_IMPORT
+				alloctype or= FB_ALLOCTYPE_IMPORT
 			end if
 		end if
 
 		''
 		if( env.isprocstatic ) then
 			if( (alloctype and FB_ALLOCTYPE_DYNAMIC) = 0 ) then
-				alloctype = alloctype or FB_ALLOCTYPE_STATIC
+				alloctype or= FB_ALLOCTYPE_STATIC
 			end if
 		end if
 
@@ -1984,7 +1989,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
             return FALSE
         end if
 
-        astFlush( assgexpr )
+        astAdd( assgexpr )
 
 	end if
 
@@ -2031,7 +2036,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 				end if
 
 				ld = d
-				d = d->r
+				d = d->next
 
 				isopen = TRUE
 			end if
@@ -2135,7 +2140,6 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' for each UDT element..
 	do
-
 		elmcnt += 1
 		if( elmcnt > elements ) then
 			hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS )
@@ -2174,7 +2178,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 		'' next
 		lelm = elm
-		elm = elm->var.elm.r
+		elm = elm->var.elm.next
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
@@ -2223,7 +2227,7 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 		exit function
 	end if
 
-	sym->var.emited = TRUE
+	symbSetVarEmited( sym, TRUE )
 
 	islocal = (not symbIsStatic( sym )) and (env.scope > 0)
 
@@ -2473,7 +2477,7 @@ function hMangleFuncPtrName( byval sname as string, _
 
     	mname += aname
 
-    	argtail = argtail->arg.l
+    	argtail = argtail->arg.prev
     next i
 
     mname += "@"
@@ -2539,7 +2543,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 		ptrcnt = 0
 	end if
 
-	sname = *hMangleFuncPtrName( "_fbfp_", typ, subtype, mode, argc, argtail )
+	sname = *hMangleFuncPtrName( "{fbfp}", typ, subtype, mode, argc, argtail )
 
 	s = symbFindByNameAndClass( sname, FB_SYMBCLASS_PROC, TRUE )
 	if( s = NULL ) then
@@ -3870,7 +3874,7 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, _
     	exit function
     end if
 
-    astFlush( assg )
+    astAdd( assg )
 
     function = TRUE
 
@@ -3987,7 +3991,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			if( symbGetProcErrorCheck( sym ) ) then
     			if( env.clopt.resumeerr ) then
 					reslabel = symbAddLabel( "" )
-    				irEmitLABEL( reslabel, FALSE )
+    				astAdd( astNewLABEL( reslabel ) )
     			else
     				reslabel = NULL
     			end if
@@ -3999,7 +4003,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 		end if
 
 		astSetDataType( procexpr, IR_DATATYPE_VOID )
-		astFlush( procexpr )
+		astAdd( procexpr )
 		procexpr = NULL
 	end if
 
@@ -4116,7 +4120,7 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
         exit function
 	end if
 
-    astFlush( assgexpr )
+    astAdd( assgexpr )
 
     function = TRUE
 
@@ -4157,7 +4161,7 @@ function cAssignmentOrPtrCall as integer
 			end if
 
     		'' flush the call
-    		astFlush( assgexpr )
+    		astAdd( assgexpr )
     		function = TRUE
 
     	'' ordinary assignament..
@@ -4340,9 +4344,7 @@ function cAsmCode as integer static
 
 	''
 	if( len( asmline ) > 0 ) then
-		''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-		irFlush( )
-		emitASM( asmline )
+		astAdd( astNewASM( asmline ) )
 	end if
 
 	function = TRUE

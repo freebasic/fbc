@@ -78,7 +78,8 @@ declare sub 		hFlushSTORE			( byval op as integer, _
 										  byval v2 as IRVREG ptr )
 
 declare sub 		hFlushLOAD			( byval op as integer, _
-										  byval v1 as IRVREG ptr )
+										  byval v1 as IRVREG ptr, _
+										  byval vr as IRVREG ptr )
 
 declare sub 		hFlushCONVERT		( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
@@ -201,6 +202,7 @@ declare sub 		irDump				( byval op as integer, _
 		( IR_OPTYPE_BRANCH	, FALSE, "jmp" ), _	'' IR_OP_JMP
 		( IR_OPTYPE_BRANCH	, FALSE, "cal" ), _	'' IR_OP_CALL
 		( IR_OPTYPE_BRANCH	, FALSE, "lbl" ), _	'' IR_OP_LABEL
+		( IR_OPTYPE_BRANCH	, FALSE, "ret" ), _	'' IR_OP_RET
 		( IR_OPTYPE_CALL	, FALSE, "caf" ), _	'' IR_OP_CALLFUNC
 		( IR_OPTYPE_CALL	, FALSE, "ca@" ), _	'' IR_OP_CALLPTR
 		( IR_OPTYPE_CALL	, FALSE, "jm@" )  _	'' IR_OP_JUMPPTR
@@ -546,15 +548,11 @@ sub irEmitCONVERT( byval v1 as IRVREG ptr, _
 end sub
 
 '':::::
-sub irEmitLABEL( byval label as FBSYMBOL ptr, _
-				 byval isglobal as integer ) static
-    dim as string lname
+sub irEmitLABEL( byval label as FBSYMBOL ptr ) static
 
 	irFlush( )
 
-	lname = symbGetName( label )
-
-	emitLABEL( lname )
+	emitLABEL( label )
 
 end sub
 
@@ -568,35 +566,30 @@ sub irEmitRETURN( byval bytestopop as integer ) static
 end sub
 
 '':::::
+sub irProcBegin( byval proc as FBSYMBOL ptr ) static
+
+	emitProcBegin( proc )
+
+	edbgProcBegin( proc )
+
+end sub
+
+'':::::
+sub irProcEnd( byval proc as FBSYMBOL ptr ) static
+
+	emitProcEnd( proc )
+
+	edbgProcEnd( proc )
+
+end sub
+
+'':::::
 sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, _
-					 byval initlabel as FBSYMBOL ptr, _
-					 byval endlabel as FBSYMBOL ptr, _
-					 byval ispublic as integer ) static
-    dim as string id
+					 byval initlabel as FBSYMBOL ptr ) static
 
-    id = symbGetName( proc )
+    irFlush( )
 
-	''
-	irEMITBRANCH( IR_OP_JMP, endlabel )
-
-	irFlush( )
-
-	edbgProcBegin( proc, ispublic, -1 )
-
-	''
-	if( env.clopt.debug ) then
-		emitASM( ".asciz \"" + id + "\"" )
-	end if
-
-	emitALIGN( 16 )
-
-	if( ispublic ) then
-		emitPUBLIC( id )
-	end if
-
-	emitLABEL( id )
-
-	emitPROCBEGIN( proc, initlabel, ispublic )
+	emitPROCHEADER( proc, initlabel )
 
 end sub
 
@@ -606,6 +599,8 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 				   byval exitlabel as FBSYMBOL ptr ) static
     dim as integer bytestopop, mode
 
+    irFlush( )
+
     mode = symbGetFuncMode( proc )
     if( (mode = FB_FUNCMODE_CDECL) or _
     	((mode = FB_FUNCMODE_STDCALL) and (env.clopt.nostdcall)) ) then
@@ -614,9 +609,7 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 		bytestopop = symbGetLen( proc )
 	end if
 
-	irFlush( )
-
-	emitPROCEND( proc, bytestopop, initlabel, exitlabel )
+	emitPROCFOOTER( proc, bytestopop, initlabel, exitlabel )
 
 end sub
 
@@ -798,9 +791,45 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
+sub irEmitASM( byval asmline as string ) static
 
 	irFlush( )
+
+	emitASM( asmline )
+
+end sub
+
+''::::
+sub irEmitJMPTB( byval dtype as integer, _
+				 byval label as FBSYMBOL ptr ) static
+
+	irFlush( )
+
+	emitJMPTB( dtype, symbGetName( label ) )
+
+end sub
+
+''::::
+sub irEmitDBG( byval proc as FBSYMBOL ptr, _
+			   byval op as integer, _
+			   byval ex as integer ) static
+
+	irFlush( )
+
+	select case op
+	case IR_OP_DBG_LINEINI
+		edbgLineBegin( proc, ex )
+	case IR_OP_DBG_LINEEND
+		edbgLineEnd( proc )
+	end select
+
+end sub
+
+
+'':::::
+sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
+
+	'' no flush, all var-ini go to data sections
 
 	emitVARINIBEGIN( sym )
 
@@ -1134,7 +1163,7 @@ private sub hRename( byval vold as IRVREG ptr, _
 			v->vaux = vnew
 		end if
 
-		v = v->nxt
+		v = flistGetNext( v )
 	loop
 
 	vnew->taclast = vold->taclast
@@ -1266,7 +1295,7 @@ sub irFlush static
 			hFlushSTORE( op, t->arg1.vreg, t->arg2.vreg )
 
 		case IR_OPTYPE_LOAD
-			hFlushLOAD( op, t->arg1.vreg )
+			hFlushLOAD( op, t->arg1.vreg, t->res.vreg )
 
 		case IR_OPTYPE_CONVERT
 			hFlushCONVERT( op, t->arg1.vreg, t->arg2.vreg )
@@ -1287,7 +1316,7 @@ sub irFlush static
 		''
 		'irDump( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
 
-		t = t->nxt
+		t = flistGetNext( t )
 	loop while( t <> NULL )
 
 	''
@@ -1303,22 +1332,23 @@ end sub
 '':::::
 private sub hFlushBRANCH( byval op as integer, _
 				   		  byval label as FBSYMBOL ptr ) static
-    dim lname as string
-
-	lname = symbGetName( label )
 
 	''
 	select case as const op
 	case IR_OP_LABEL
-		emitLABEL( lname )
+		emitLABEL( label )
 
 	case IR_OP_JMP
-		emitJMP( lname )
+		emitJUMP( label )
+
 	case IR_OP_CALL
-		emitCALL( lname, 0 )
+		emitCALL( label, 0 )
+
+	case IR_OP_RET
+		emitRET( 0 )
 
 	case else
-		emitBRANCH( op, lname )
+		emitBRANCH( op, label )
 	end select
 
 end sub
@@ -1424,7 +1454,7 @@ private sub hFlushCALL( byval op as integer, _
     	'' save used registers and free the FPU stack
     	hPreserveRegs( )
 
-		emitCALL( symbGetName( proc ), bytes2pop )
+		emitCALL( proc, bytes2pop )
 
 	'' call or jump to pointer
 	else
@@ -1446,7 +1476,7 @@ private sub hFlushCALL( byval op as integer, _
 			emitCALLPTR( v1, bytes2pop )
 		'' JUMPPTR
 		else
-			emitBRANCHPTR( v1 )
+			emitJUMPPTR( v1 )
 		end if
 
 		'' free pointer
@@ -1693,7 +1723,7 @@ private sub hFlushBOP( byval op as integer, _
 		emitMOV( v1, v2 )
 
 	case IR_OP_ATAN2
-        emitATAN2( v1, v2 )
+        emitATN2( v1, v2 )
     case IR_OP_POW
     	emitPOW( v1, v2 )
 	end select
@@ -1800,26 +1830,19 @@ private sub hFlushCOMP( byval op as integer, _
 	end if
 
 	''
-	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
-	else
-		lname = symbGetName( label )
-	end if
-
-	''
 	select case as const op
 	case IR_OP_EQ
-		emitEQ( vr, lname, v1, v2 )
+		emitEQ( vr, label, v1, v2 )
 	case IR_OP_NE
-		emitNE( vr, lname, v1, v2 )
+		emitNE( vr, label, v1, v2 )
 	case IR_OP_GT
-		emitGT( vr, lname, v1, v2 )
+		emitGT( vr, label, v1, v2 )
 	case IR_OP_LT
-		emitLT( vr, lname, v1, v2 )
+		emitLT( vr, label, v1, v2 )
 	case IR_OP_LE
-		emitLE( vr, lname, v1, v2 )
+		emitLE( vr, label, v1, v2 )
 	case IR_OP_GE
-		emitGE( vr, lname, v1, v2 )
+		emitGE( vr, label, v1, v2 )
 	end select
 
     ''
@@ -1871,11 +1894,12 @@ end sub
 
 '':::::
 private sub hFlushLOAD( byval op as integer, _
-				 		byval v1 as IRVREG ptr ) static
+				 		byval v1 as IRVREG ptr, _
+				 		byval vr as IRVREG ptr ) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass, v1_reg
 	dim as integer vr_reg, vr_reg2
-	dim as IRVREG ptr va, vr
+	dim as IRVREG ptr va
 
 	''
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
@@ -1907,9 +1931,8 @@ private sub hFlushLOAD( byval op as integer, _
 		end if
 
 		emitGetResultReg( v1_dtype, v1_dclass, vr_reg, vr_reg2 )
-		if( vr_reg <> v1_reg ) then
-			vr = irAllocVREG( v1_dtype )
 
+		if( vr_reg <> v1_reg ) then
 			'' handle longint
 			if( ISLONGINT( v1_dtype ) ) then
 				va = vr->vaux
@@ -2132,7 +2155,7 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 	end if
 
 	'' skip the current tac
-	t = ctx.tacidx->nxt
+	t = ctx.tacidx->next
 
 	'' eol?
 	if( t = NULL ) then
@@ -2232,7 +2255,7 @@ sub irXchgTOS( byval reg as integer ) static
 	rvreg.dtype = IR_DATATYPE_DOUBLE
 	rvreg.reg	= reg
 
-	emitFXCHG( @rvreg )
+	emitXchgTOS( @rvreg )
 
 end sub
 

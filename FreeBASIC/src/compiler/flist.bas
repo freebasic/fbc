@@ -66,7 +66,7 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 	'' alloc new item flist if there are no free items
 	if( flist->items <= 0 ) Then
 
-		flist->listtb = flist->listtb->nxt
+		flist->listtb = flist->listtb->next
 
 		if( flist->listtb = NULL ) then
 			flist->items = flist->totitems \ 2
@@ -88,11 +88,11 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 
 	''
 	if( flist->lastitem	<> NULL ) then
-		flist->lastitem->nxt = item
+		flist->lastitem->next = item
 	end if
 
 	flist->lastitem	= item
-	item->nxt = NULL
+	item->next = NULL
 
 	''
 	function = item

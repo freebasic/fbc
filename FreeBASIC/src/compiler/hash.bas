@@ -83,9 +83,9 @@ sub hashFree( byval hash as THASH ptr ) static
     for i = 0 to hash->nodes-1
 		item = list->head
 		do while( item <> NULL )
-			nxt = item->r
+			nxt = item->next
 
-			item->name = ""
+			item->name = NULL
 			hashDelItem( list, item )
 
 			item = nxt
@@ -98,13 +98,13 @@ sub hashFree( byval hash as THASH ptr ) static
 end sub
 
 '':::::
-function hashHash( byval symbol as string ) as uinteger static
+function hashHash( byval symbol as zstring ptr ) as uinteger static
 	dim as uinteger index
 	dim as integer i
 
 	index = 0
 
-	for i = 0 to len( symbol )-1
+	for i = 0 to len( *symbol )-1
 		index = symbol[i] + (index shl 5) - index
 	next
 
@@ -114,7 +114,7 @@ end function
 
 ''::::::
 function hashLookupEx( byval hash as THASH ptr, _
-					   byval symbol as string, _
+					   byval symbol as zstring ptr, _
 					   byval index as uinteger ) as any ptr static
     dim as HASHITEM ptr item
     dim as HASHLIST ptr list
@@ -132,17 +132,17 @@ function hashLookupEx( byval hash as THASH ptr, _
 
 	'' loop until end of list or if item was found
 	do while( item <> NULL )
-		if( item->name = symbol ) then
+		if( *item->name = *symbol ) then
 			return item->idx
 		end if
-		item = item->r
+		item = item->next
 	loop
 
 end function
 
 ''::::::
 function hashLookup( byval hash as THASH ptr, _
-					 byval symbol as string ) as any ptr static
+					 byval symbol as zstring ptr ) as any ptr static
 
     function = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
@@ -157,13 +157,13 @@ private function hashNewItem( byval list as HASHLIST ptr ) as HASHITEM ptr stati
 
 	'' add it to the internal linked-list
 	if( list->tail <> NULL ) then
-		list->tail->r = item
+		list->tail->next = item
 	else
 		list->head = item
 	end if
 
-	item->l	= list->tail
-	item->r	= NULL
+	item->prev = list->tail
+	item->next = NULL
 
 	list->tail = item
 
@@ -182,16 +182,16 @@ private sub hashDelItem( byval list as HASHLIST ptr, _
 	end If
 
 	'' remove from internal linked-list
-	prv  = item->l
-	nxt  = item->r
+	prv  = item->prev
+	nxt  = item->next
 	if( prv <> NULL ) then
-		prv->r = nxt
+		prv->next = nxt
 	else
 		list->head = nxt
 	end If
 
 	if( nxt <> NULL ) then
-		nxt->l = prv
+		nxt->prev = prv
 	else
 		list->tail = prv
 	end if
@@ -203,7 +203,7 @@ end sub
 
 ''::::::
 function hashAdd( byval hash as THASH ptr, _
-				  byval symbol as string, _
+				  byval symbol as zstring ptr, _
 				  byval idx as any ptr, _
 			 	  index as uinteger ) as HASHITEM ptr static
     dim as HASHITEM ptr item
@@ -220,7 +220,6 @@ function hashAdd( byval hash as THASH ptr, _
 	end if
 
     '' fill node
-    ZEROSTRDESC( item->name )
     item->name 	  = symbol
     item->idx	  = idx
 
@@ -240,7 +239,7 @@ sub hashDel( byval hash as THASH ptr, _
 	list = @hash->list[index]
 
 	''
-	item->name = ""
+	item->name = NULL
 	item->idx  = NULL
 
 	hashDelItem( list, item )

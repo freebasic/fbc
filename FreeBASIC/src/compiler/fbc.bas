@@ -515,7 +515,7 @@ function processOptions as integer
 
 			'' main module
 			case "m"
-				fbc.entrypoint = hMakeEntryPointName( hStripPath( hStripExt( argv(i+1) ) ) )
+				fbc.entrypoint = hCreateMainAlias( hStripPath( hStripExt( argv(i+1) ) ) )
 				if( len( fbc.entrypoint ) = 0 ) then
 					exit function
 				end if

@@ -54,7 +54,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
 	end if
 
 	'' do an implicit exit function
-	astFlush( astNewBRANCH( IR_OP_JMP, env.procstmt.endlabel ) )
+	astAdd( astNewBRANCH( IR_OP_JMP, env.procstmt.endlabel ) )
 
 	function = TRUE
 
@@ -88,7 +88,7 @@ function cGotoStmt as integer
 		end if
 		lexSkipToken( )
 
-		astFlush( astNewBRANCH( IR_OP_JMP, l ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, l ) )
 
 		function = TRUE
 
@@ -107,7 +107,7 @@ function cGotoStmt as integer
 		end if
 		lexSkipToken( )
 
-		astFlush( astNewBRANCH( IR_OP_CALL, l ) )
+		astAdd( astNewBRANCH( IR_OP_CALL, l ) )
 
 		function = TRUE
 
@@ -132,8 +132,8 @@ function cGotoStmt as integer
 			end if
 
 			if( (env.scope = 0) or (l <> NULL) ) then
-				''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-				irEmitRETURN( 0 )
+				'' return 0
+				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
 			else
 				function = cFuncReturn( FALSE )
 			end if
@@ -155,7 +155,7 @@ function cGotoStmt as integer
 			'' label?
 			if( l <> NULL ) then
 				lexSkipToken( )
-				astFlush( astNewBRANCH( IR_OP_JMP, l ) )
+				astAdd( astNewBRANCH( IR_OP_JMP, l ) )
 				function = TRUE
 
 			'' must be a function return then
@@ -944,7 +944,7 @@ function cPokeStmt as integer
 
     expr1 = astNewASSIGN( expr1, expr2 )
 
-	astFlush( expr1 )
+	astAdd( expr1 )
 
     function = TRUE
 
@@ -1328,19 +1328,6 @@ function cFileStmt as integer
 end function
 
 '':::::
-private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
-	static as zstring * FB_MAXNAMELEN+1 sname
-	dim as FBARRAYDIM dTB(0)
-
-	sname = *hMakeTmpStr( )
-
-	hSelConstAllocTbSym = symbAddVarEx( sname, "", FB_SYMBTYPE_UINT, NULL, 0, _
-										FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED, _
-										FALSE, FALSE, FALSE )
-
-end function
-
-'':::::
 function cGOTBStmt( byval expr as ASTNODE ptr, _
 					byval isgoto as integer ) as integer
     dim as ASTNODE ptr idxexpr
@@ -1364,7 +1351,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	if( expr = NULL ) then
 		exit function
 	end if
-	astFlush( expr )
+	astAdd( expr )
 
 	'' read labels
 	l = 0
@@ -1391,15 +1378,15 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	'' < 1?
 	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
 					  astNewCONSTi( 1, IR_DATATYPE_UINT ), exitlabel, FALSE )
-	astFlush( expr )
+	astAdd( expr )
 
 	'' > labels?
 	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
 					  astNewCONSTi( l, IR_DATATYPE_UINT ), exitlabel, FALSE )
-	astFlush( expr )
+	astAdd( expr )
 
     '' jump to table[idx]
-    tbsym = hSelConstAllocTbSym( )
+    tbsym = hJumpTbAllocSym( )
 
 	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
     				  			    astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
@@ -1408,27 +1395,21 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
     				  IR_DATATYPE_UINT, NULL )
 
     if( not isgoto ) then
-    	astFlush( astNewSTACK( IR_OP_PUSH, astNewADDR( IR_OP_ADDROF, astNewVAR( exitlabel ) ) ) )
+    	astAdd( astNewSTACK( IR_OP_PUSH, astNewADDR( IR_OP_ADDROF, astNewVAR( exitlabel ) ) ) )
     end if
 
-    astFlush( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
+    astAdd( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
 
     '' emit table
-    irEmitLABEL( tbsym, FALSE )
-
-    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    irFlush( )
+    astAdd( astNewLABEL( tbsym ) )
 
     ''
     for i = 0 to l-1
-    	emitTYPE( IR_DATATYPE_UINT, symbGetName( labelTB(i) ) )
+    	astAdd( astNewJMPTB( IR_DATATYPE_UINT, labelTB(i) ) )
     next
 
-    '' the table is not needed anymore
-    symbDelVar( tbsym )
-
     '' emit exit label
-    irEmitLABEL( exitlabel, FALSE )
+    astAdd( astNewLABEL( exitlabel ) )
 
     function = TRUE
 

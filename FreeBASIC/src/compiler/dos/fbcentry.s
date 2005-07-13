@@ -28,5 +28,5 @@ movl 8(%esp), %edx
 movl 4(%esp), %eax
 pushl %edx
 pushl %eax
-call fb_fbc_entry
+call _fb_Main_fbc
 

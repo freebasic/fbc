@@ -36,18 +36,17 @@ type EDBGCTX
 	modulename		as zstring * FB_MAXNAMELEN+1
 	entryname		as zstring * FB_MAXNAMELEN+1
 
-	mainopened		as integer
-	mainclosed		as integer
-	mainininame		as zstring * FB_MAXNAMELEN+1
-
-	procinitline 	as integer
-
 	typecnt			as uinteger
 
-	lname 			as zstring * 32+1
+	label 			as FBSYMBOL ptr
 	lnum 			as integer
 	pos 			as integer
 	isnewline		as integer
+
+	firstline		as integer					'' first non-decl line
+	lastline		as integer					'' last  /
+
+	incfile			as integer
 end type
 
 declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
@@ -91,11 +90,11 @@ private sub hEmitSTABS( byval _type as integer, _
 	ostr = ".stabs \""
 	ostr += _string
 	ostr += "\","
-	ostr += str$( _type )
+	ostr += str( _type )
 	ostr += ","
-	ostr += str$( _other )
+	ostr += str( _other )
 	ostr += ","
-	ostr += str$( _desc )
+	ostr += str( _desc )
 	ostr += ","
 	ostr += _value
 
@@ -104,23 +103,34 @@ private sub hEmitSTABS( byval _type as integer, _
 end sub
 
 '':::::
+private function hMakeSTABN( byval _type as integer, _
+							 byval _other as integer = 0, _
+							 byval _desc as integer = 0, _
+							 byval _value as string ) as zstring ptr static
+
+	static as string ostr
+
+	ostr = ".stabn "
+	ostr += str( _type )
+	ostr += ","
+	ostr += str( _other )
+	ostr += ","
+	ostr += str( _desc )
+	ostr += ","
+	ostr += _value
+
+	function = strptr( ostr )
+
+end function
+
+'':::::
 private sub hEmitSTABN( byval _type as integer, _
 						byval _other as integer = 0, _
 						byval _desc as integer = 0, _
 						byval _value as string = "0" ) static
 
-	dim as string ostr
 
-	ostr = ".stabn "
-	ostr += str$( _type )
-	ostr += ","
-	ostr += str$( _other )
-	ostr += ","
-	ostr += str$( _desc )
-	ostr += ","
-	ostr += _value
-
-	hWriteStr( TRUE, ostr )
+	hWriteStr( TRUE, byval hMakeSTABN( _type, _other, _desc, _value ) )
 
 end sub
 
@@ -132,22 +142,31 @@ private sub hEmitSTABD( byval _type as integer, _
 	dim as string ostr
 
 	ostr = ".stabd "
-	ostr += str$( _type )
+	ostr += str( _type )
 	ostr += ","
-	ostr += str$( _other )
+	ostr += str( _other )
 	ostr += ","
-	ostr += str$( _desc )
+	ostr += str( _desc )
 
 	hWriteStr( TRUE, ostr )
 
 end sub
 
+'':::::
+private sub hLABEL( byval label as string ) static
+    dim ostr as string
+
+	ostr = label + ":"
+	hWriteStr( FALSE, ostr )
+
+end sub
+
 
 '':::::
-sub edbgHeader( byval asmf as integer, _
-				byval filename as string, _
-				byval modulename as string, _
-				byval entryname as string ) static
+sub edbgEmitHeader( byval asmf as integer, _
+					byval filename as string, _
+					byval modulename as string, _
+					byval entryname as string ) static
     dim as integer i
     dim as string fname, stab
 
@@ -159,13 +178,13 @@ sub edbgHeader( byval asmf as integer, _
 	ctx.asmf 		= asmf
 	ctx.entryname 	= entryname
 	ctx.modulename 	= modulename
-	ctx.mainopened	= FALSE
-	ctx.mainclosed	= FALSE
 	ctx.typecnt 	= 1
 
-	ctx.lname 		= ""
+	ctx.label 		= NULL
 	ctx.lnum 		= 0
 	ctx.isnewline 	= TRUE
+
+	ctx.incfile 	= INVALID
 
 	'' emit source file
     fname = hRevertSlash( filename )
@@ -178,9 +197,9 @@ sub edbgHeader( byval asmf as integer, _
 
 	''
 	emitSECTION( EMIT_SECTYPE_CODE )
-	emitLABEL( "__stabini" )
+	hLABEL( "__stabini" )
 
-	'' (known) type defs
+	'' (known) type definitions
 	restore stabstdef
 	do
 		read stab
@@ -195,13 +214,10 @@ sub edbgHeader( byval asmf as integer, _
 
 	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
 
-	'' main proc (the entry point)
-	hEmitSTABS( STAB_TYPE_MAIN, ctx.modulename, 0, 1, ctx.entryname )
-
 end sub
 
 '':::::
-sub edbgFooter( )
+sub edbgEmitFooter( )
 
 	if( not env.clopt.debug ) then
 		exit sub
@@ -209,96 +225,50 @@ sub edbgFooter( )
 
 	emitSECTION( EMIT_SECTYPE_CODE )
 
-	edgbMainEnd( )
-
 	'' no checkings after this
 	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, "__stabend" )
 
-	emitLABEL( "__stabend" )
+	hLABEL( "__stabend" )
 
 end sub
 
 '':::::
-sub edbgMainBegin( byval lnum as integer, _
-			       byval lname as string ) static
-
-	ctx.mainopened = TRUE
-	ctx.mainclosed = FALSE
-	ctx.mainininame = lname
-
-	edbgProcBegin( NULL, FALSE, lnum )
-
-end sub
-
-'':::::
-sub edgbMainEnd( )
-    dim as integer currpos
-    dim as string lname
-
-	if( not env.clopt.debug ) then
-		exit sub
-	end if
-
-	if( not ctx.mainopened or ctx.mainclosed ) then
-		exit sub
-	end if
-
-    '' set entry line
-    hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.procinitline )
-
-    ''
-    lname = *hMakeTmpStr( )
-    emitLABEL( lname )
-
-    '' close main()
-    edbgProcEnd( NULL, ctx.mainininame, lname )
-
-	ctx.mainclosed = TRUE
-
-end sub
-
-'':::::
-sub edbgLineBegin( )
+sub edbgLineBegin( byval proc as FBSYMBOL ptr, _
+				   byval lnum as integer )
 
     if( not env.clopt.debug ) then
     	exit sub
     end if
 
     if( ctx.lnum > 0 ) then
-    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irFlush( )
     	ctx.pos = emitGetPos( ) - ctx.pos
     	if( ctx.pos > 0 ) then
-    		edbgLine( ctx.lnum, ctx.lname )
+    		edbgEmitLine( proc, ctx.lnum, ctx.label )
     		ctx.isnewline = TRUE
     	end if
     end if
 
-    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    irFlush( )
     ctx.pos	 = emitGetPos( )
-    ctx.lnum  = lexLineNum( )
+    ctx.lnum = lnum
     if( ctx.isnewline ) then
-    	ctx.lname = *hMakeTmpStr( )
-    	emitLABEL( ctx.lname )
+    	ctx.label = symbAddLabel( "" )
+    	emitLABEL( ctx.label )
     	ctx.isnewline = FALSE
     end if
 
 end sub
 
 '':::::
-sub edbgLineEnd( )
+sub edbgLineEnd( byval proc as FBSYMBOL ptr )
 
     if( not env.clopt.debug ) then
     	exit sub
     end if
 
     if( ctx.lnum > 0 ) then
-    	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    	irFlush( )
     	ctx.pos = emitGetPos( ) - ctx.pos
     	if( ctx.pos > 0 ) then
-   			edbgLine( ctx.lnum, ctx.lname )
+   			edbgEmitLine( proc, ctx.lnum, ctx.label )
    			ctx.isnewline = TRUE
    		end if
     	ctx.lnum = 0
@@ -307,83 +277,155 @@ sub edbgLineEnd( )
 end sub
 
 '':::::
-sub edbgLine( byval lnum as integer, _
-			  byval lname as string ) static
-
-    dim as string procname
+sub edbgEmitLine( byval proc as FBSYMBOL ptr, _
+				  byval lnum as integer, _
+			  	  byval label as FBSYMBOL ptr ) static
+    dim as zstring ptr s
 
 	if( not env.clopt.debug ) then
 		exit sub
 	end if
 
-	if( not ctx.mainopened ) then
-		edbgMainBegin( lnum, lname )
+	if( ctx.firstline = -1 ) then
+		ctx.firstline = lnum
 	end if
 
-	'' not at module level?
-	if( env.currproc <> NULL ) then
-		procname = symbGetName( env.currproc )
-
-	'' module level..
-	else
-		procname = ctx.entryname
-	end if
+	ctx.lastline = lnum
 
 	'' emit current line
-	hEmitSTABN( STAB_TYPE_SLINE, 0, lnum, lname + "-" + procname )
+	s = hMakeSTABN( STAB_TYPE_SLINE, 0, lnum, symbGetName( label ) + "-" + symbGetName( proc ) )
+
+	emitLIT( byval s )
 
 end sub
 
 '':::::
-sub edbgProcBegin ( byval proc as FBSYMBOL ptr, _
-					byval ispublic as integer, _
-					byval lnum as integer ) static
-
-    dim as string desc, procname
+sub edbgEmitLineFlush( byval proc as FBSYMBOL ptr, _
+				  	   byval lnum as integer, _
+			  	  	   byval label as FBSYMBOL ptr ) static
 
 	if( not env.clopt.debug ) then
 		exit sub
 	end if
 
-	'' not at module level?
-	if( proc <> NULL ) then
-		'' main() not closed yet?
-		if( ctx.mainopened and not ctx.mainclosed ) then
-			edgbMainEnd( )
+	hEmitSTABN( STAB_TYPE_SLINE, 0, lnum, symbGetName( label ) + "-" + symbGetName( proc ) )
+
+end sub
+
+'':::::
+sub edbgProcBegin( byval proc as FBSYMBOL ptr ) static
+
+	'' called by ir->ast
+
+	proc->proc.dbg.iniline = lexLineNum( )
+
+end sub
+
+'':::::
+sub edbgProcEnd( byval proc as FBSYMBOL ptr ) static
+
+	'' called by ir->ast
+
+	proc->proc.dbg.endline = lexLineNum( )
+
+end sub
+
+'':::::
+sub edbgProcEmitBegin( byval proc as FBSYMBOL ptr ) static
+
+	'' called by emit->ir
+
+	ctx.firstline = -1
+	ctx.lastline  = -1
+
+end sub
+
+'':::::
+private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
+	dim as FBSYMBOL ptr s
+
+	s = symbGetLocalHead( )
+	do while( s <> NULL )
+
+    	if( symbIsVar( s ) ) then
+			'' an argument?
+    		if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
+    			  				   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+    			  				   FB_ALLOCTYPE_ARGUMENTBYREF)) <> 0 ) then
+
+				edbgEmitProcArg( s )
+			end if
 		end if
 
-		desc = symbGetOrgName( proc )
-		procname = symbGetName( proc )
+		s = s->next
+	loop
 
-	'' module-level..
-	else
-		desc = ctx.modulename
-		procname = ctx.entryname
+end sub
+
+'':::::
+sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
+    dim as string desc, procname
+    dim as integer incfile
+
+	if( not env.clopt.debug ) then
+		exit sub
 	end if
 
-	if( ispublic ) then
+	'' procs defined in include files must be declared inside the proper blocks
+	incfile = symbGetProcIncFile( proc )
+	if( incfile <> ctx.incfile ) then
+
+        edbgIncludeEnd( )
+
+		if( incfile <> INVALID ) then
+			edbgIncludeBegin( fbGetIncFile( incfile ), incfile )
+		end if
+
+		ctx.incfile = incfile
+
+	end if
+
+	'' main?
+	if( symbIsMainProc( proc ) ) then
+		'' main proc (the entry point)
+		hEmitSTABS( STAB_TYPE_MAIN, ctx.modulename, 0, ctx.firstline, symbGetName( proc ) )
+
+    	'' set the entry line
+    	hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.firstline )
+
+    	'' also correct the end and start lines
+    	proc->proc.dbg.iniline = ctx.firstline
+    	proc->proc.dbg.endline = ctx.lastline
+    end if
+
+	desc = symbGetOrgName( proc )
+	if( len( desc ) = 0 ) then
+		desc = ctx.entryname
+	end if
+
+	procname = symbGetName( proc )
+
+	if( symbIsPublic( proc ) ) then
 		desc += ":F"
 	else
 		desc += ":f"
 	end if
 
-	if( lnum = -1 ) then
-		ctx.procinitline = lexLineNum( )
-	else
-		ctx.procinitline = lnum
-	end if
-
 	desc += hGetDataType( proc )
 
-	hEmitSTABS( STAB_TYPE_FUN, desc, 0, ctx.procinitline, procname )
+	hEmitSTABS( STAB_TYPE_FUN, desc, 0, proc->proc.dbg.iniline, procname )
 
+	hDeclArgs( proc )
+
+	''
 	ctx.isnewline = TRUE
+	ctx.lnum	  = 0
+	ctx.label	  = NULL
 
 end sub
 
 '':::::
-private sub edbgLocalVars( byval proc as FBSYMBOL ptr ) static
-	dim as FBLOCSYMBOL ptr l
+private sub hDeclLocalVars( byval proc as FBSYMBOL ptr ) static
 	dim as FBSYMBOL ptr s, funcres
 
 	if( proc->typ <> FB_SYMBTYPE_VOID ) then
@@ -392,10 +434,9 @@ private sub edbgLocalVars( byval proc as FBSYMBOL ptr ) static
 		funcres = NULL
 	end if
 
-	l = symbGetFirstLocalNode( )
-	do while( l <> NULL )
+	s = symbGetLocalHead( )
+	do while( s <> NULL )
 
-    	s = l->s
     	if( symbIsVar( s ) ) then
 			'' not an argument?
     		if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
@@ -404,54 +445,50 @@ private sub edbgLocalVars( byval proc as FBSYMBOL ptr ) static
     			  				   FB_ALLOCTYPE_TEMP)) = 0 ) then
 
 				if( s <> funcres ) then
-					edbgLocalVar( s )
+					edbgEmitLocalVar( s )
 				end if
 			end if
 		end if
 
-		l = symbGetNextLocalNode( l )
+		s = s->next
 	loop
 
 end sub
 
 '':::::
-sub edbgProcEnd ( byval proc as FBSYMBOL ptr, _
-				  byval ininame as string, _
-				  byval endname as string ) static
+sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
+			     	  	byval initlabel as FBSYMBOL ptr, _
+			      		byval exitlabel as FBSYMBOL ptr ) static
 
     dim as string procname, lname
-    dim as integer iniline, endline
 
 	if( not env.clopt.debug ) then
 		exit sub
 	end if
 
-	iniline = ctx.procinitline
-	endline = lexLineNum( )
+	''
+	procname = symbGetName( proc )
 
-	'' not at module level?
-	if( proc <> NULL ) then
-		procname = symbGetName( proc )
+    ''
+    hDeclLocalVars( proc )
 
-		edbgLocalVars( proc )
-
-	'' module level..
-	else
-		procname = ctx.entryname
-		endline -= 1
+	'' main?
+	if( not symbIsMainProc( proc ) ) then
+		'' emit block (change the scope)
+		hEmitSTABN( STAB_TYPE_LBRAC, 0, 0, symbGetName( initlabel ) + "-" + procname )
+		hEmitSTABN( STAB_TYPE_RBRAC, 0, 0, symbGetName( exitlabel ) + "-" + procname )
 	end if
 
-	'' emit block (change the scope)
-	hEmitSTABN( STAB_TYPE_LBRAC, 0, iniline, ininame + "-" + procname )
-	hEmitSTABN( STAB_TYPE_RBRAC, 0, endline, endname + "-" + procname )
-
 	lname = *hMakeTmpStr( )
-	emitLABEL( lname )
+	hLABEL( lname )
 
 	'' emit end proc (FUN with a null string)
 	hEmitSTABS( STAB_TYPE_FUN, "", 0, 0, lname + "-" + procname )
 
+	''
 	ctx.isnewline = TRUE
+	ctx.lnum	  = 0
+	ctx.label	  = NULL
 
 end sub
 
@@ -463,25 +500,25 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 	dim as string desc
 
     if( sym = NULL ) then
-    	return str$( remapTB(FB_SYMBTYPE_VOID) )
+    	return str( remapTB(FB_SYMBTYPE_VOID) )
     end if
 
     '' array?
     if( symbGetArrayDimensions( sym ) > 0 ) then
-    	desc = str$( ctx.typecnt ) + "="
+    	desc = str( ctx.typecnt ) + "="
     	ctx.typecnt += 1
 
     	if( symbIsDynamic( sym ) ) then
-    		desc += str$( ctx.typecnt ) + "=*"
+    		desc += str( ctx.typecnt ) + "=*"
     		ctx.typecnt += 1
     	end if
 
     	d = symbGetArrayFirstDim( sym )
     	do while( d <> NULL )
     		desc += "ar1;"
-    		desc += str$( d->lower ) + ";"
-    		desc += str$( d->upper ) + ";"
-    		d = d->r
+    		desc += str( d->lower ) + ";"
+    		desc += str( d->upper ) + ";"
+    		d = d->next
     	loop
     else
     	desc = ""
@@ -492,7 +529,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     '' pointer?
     do while( dtype >= FB_SYMBTYPE_POINTER )
     	dtype -= FB_SYMBTYPE_POINTER
-    	desc += str$( ctx.typecnt ) + "=*"
+    	desc += str( ctx.typecnt ) + "=*"
     	ctx.typecnt += 1
     loop
 
@@ -505,7 +542,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     			hDeclUDT( subtype )
     		end if
 
-    		desc += str$( subtype->dbg.typenum )
+    		desc += str( subtype->dbg.typenum )
     	end if
 
     '' ENUM?
@@ -515,21 +552,21 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     		hDeclENUM( subtype )
     	end if
 
-    	desc += str$( subtype->dbg.typenum )
+    	desc += str( subtype->dbg.typenum )
 
     '' function pointer?
     case FB_SYMBTYPE_FUNCTION
-    	desc += str$( ctx.typecnt ) + "=f"
+    	desc += str( ctx.typecnt ) + "=f"
     	ctx.typecnt += 1
     	desc += hGetDataType( sym->subtype )
 
     '' forward reference?
     case FB_SYMBTYPE_FWDREF
-    	desc += str$( remapTB(FB_SYMBTYPE_VOID) )
+    	desc += str( remapTB(FB_SYMBTYPE_VOID) )
 
     '' ordinary type..
     case else
-    	desc += str$( remapTB(dtype) )
+    	desc += str( remapTB(dtype) )
 
     end select
 
@@ -545,18 +582,14 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 	sym->dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-    if( sym->hashitem = NULL ) then
-    	desc = symbGetName( sym )
-    else
-		desc = symbGetOrgName( sym )
-	end if
+	desc = symbGetOrgName( sym )
 
-	desc += ":T" + str$( sym->dbg.typenum ) + "=s" + str$( symbGetUDTLen( sym ) )
+	desc += ":T" + str( sym->dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
         desc += symbGetName( e ) + ":" + hGetDataType( e )
-        desc += "," + str$( symbGetUDTElmBitOfs( e ) ) + "," + str$( symbGetUDTElmBitLen( e ) ) + ";"
+        desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + str( symbGetUDTElmBitLen( e ) ) + ";"
 
 		e = symbGetUDTNextElm( e )
 	loop
@@ -575,11 +608,7 @@ private sub hDeclENUM( byval sym as FBSYMBOL ptr )
 	sym->dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-    if( sym->hashitem = NULL ) then
-    	desc = symbGetName( sym )
-    else
-		desc = symbGetOrgName( sym )
-	end if
+	desc = symbGetOrgName( sym )
 
 	desc += ":T" + str$( sym->dbg.typenum ) + "=e"
 
@@ -597,8 +626,8 @@ private sub hDeclENUM( byval sym as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
-				   byval section as integer ) static
+sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
+				   	   byval section as integer ) static
 
 	dim as integer t, alloctype
 	dim as string desc, sname
@@ -633,11 +662,7 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 	end select
 
     '' allocation type (static, global, etc)
-    if( sym->hashitem = NULL ) then
-    	desc = symbGetName( sym )
-    else
-    	desc = symbGetOrgName( sym )
-    end if
+    desc = symbGetOrgName( sym )
 
     alloctype = symbGetAllocType( sym )
     if( (alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_COMMON)) > 0 ) then
@@ -664,7 +689,7 @@ sub edbgGlobalVar( byval sym as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
+sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr ) static
 	dim as integer t
 	dim as string desc, value
 
@@ -672,11 +697,7 @@ sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
 		exit sub
 	end if
 
-    if( sym->hashitem = NULL ) then
-    	desc = symbGetName( sym )
-    else
-    	desc = symbGetOrgName( sym )
-    end if
+    desc = symbGetOrgName( sym )
 
     ''
     if( symbIsStatic( sym ) ) then
@@ -690,7 +711,7 @@ sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
     else
     	t = STAB_TYPE_LSYM
     	desc += ":"
-    	value = str$( symbGetVarOfs( sym ) )
+    	value = str( symbGetVarOfs( sym ) )
     end if
 
     '' data type
@@ -702,9 +723,7 @@ sub edbgLocalVar( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgProcArg( byval sym as FBSYMBOL ptr, _
-				 byval typ as integer, _
-				 byval mode as integer ) static
+sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
 
 	dim as string desc
 
@@ -714,38 +733,36 @@ sub edbgProcArg( byval sym as FBSYMBOL ptr, _
 
     desc = symbGetOrgName( sym ) + ":"
 
-    select case mode
-    case FB_ARGMODE_BYVAL
+    if( symbIsArgByVal( sym ) ) then
 	    desc += "p"
 
-	case FB_ARGMODE_BYREF
+	elseif( symbIsArgByRef( sym ) ) then
 		desc += "v"
 
-	case FB_ARGMODE_BYDESC
+	elseif( symbIsArgByDesc( sym ) ) then
     	desc += "v"
-	end select
+	end if
 
     '' data type
-    if( typ <> sym->typ ) then
-    	desc += str$( remapTB(typ) )
-    else
-    	desc += hGetDataType( sym )
-    end if
+    desc += hGetDataType( sym )
 
     ''
-    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str$( symbGetVarOfs( sym ) ) )
+    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetVarOfs( sym ) ) )
 
 end sub
 
 '':::::
-sub edbgIncludeBegin ( byval incfile as string ) static
+sub edbgIncludeBegin ( byval incname as string, _
+					   byval incfile as integer ) static
 	dim as string fname, lname
 
 	if( not env.clopt.debug ) then
 		exit sub
 	end if
 
-	fname = hRevertSlash( incfile )
+	ctx.incfile = incfile
+
+	fname = hRevertSlash( incname )
 
 	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
 
@@ -755,9 +772,7 @@ sub edbgIncludeBegin ( byval incfile as string ) static
 
 	hEmitSTABS( STAB_TYPE_SOL, fname, 0, 0, lname )
 
-	emitLABEL( lname )
-
-	ctx.isnewline = TRUE
+	hLABEL( lname )
 
 end sub
 
@@ -768,9 +783,13 @@ sub edbgIncludeEnd ( ) static
 		exit sub
 	end if
 
+	if( ctx.incfile = INVALID ) then
+		exit sub
+	end if
+
 	hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
 
-	ctx.isnewline = TRUE
+	ctx.incfile = INVALID
 
 end sub
 

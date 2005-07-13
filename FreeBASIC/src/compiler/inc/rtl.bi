@@ -61,6 +61,9 @@ enum FBRTL_ENUM
 	FB_RTL_STRASC
 	FB_RTL_STRCHR
 
+	FB_RTL_INIT
+	FB_RTL_INITSIGNALS
+	FB_RTL_INITPROFILE
 	FB_RTL_END
 
 	FB_RTL_DATARESTORE
@@ -262,6 +265,7 @@ declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE
 
 
 declare function	rtlDataRestore		( byval label as FBSYMBOL ptr, _
+										  byval afternode as ASTNODE ptr = NULL, _
 										  byval isprofiler as integer = FALSE ) as integer
 
 declare function	rtlDataRead			( byval varexpr as ASTNODE ptr ) as integer
@@ -314,7 +318,10 @@ declare function 	rtlMathLongintMOD	( byval dtype as integer, _
 declare function 	rtlMathFp2ULongint	( byval expr as ASTNODE ptr, _
 										  byval dtype as integer ) as ASTNODE ptr
 
-declare function	rtlExit				( byval errlevel as ASTNODE ptr ) as integer
+declare function 	rtlInitRt			( byval argc as ASTNODE ptr, _
+										  byval argv as ASTNODE ptr ) as ASTNODE ptr
+
+declare function	rtlExitRt			( byval errlevel as ASTNODE ptr ) as integer
 
 declare function 	rtlMemCopy			( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr, _

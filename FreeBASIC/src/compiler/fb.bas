@@ -101,24 +101,24 @@ sub fbAddDefine( byval dname as string, _
 end sub
 
 '':::::
-function fbFindIncFile( byval filename as string ) as integer static
+private function hFindIncFile( byval filename as string ) as integer static
 	static as zstring * FB_MAXPATHLEN+1 fname
 	dim as integer i
 
-	fname = ucase$( filename )
+	fname = ucase( filename )
 
 	for i = 0 to env.incfiles-1
 		if( incfileTB( i ) = fname ) then
-			return TRUE
+			return i
 		end if
-	next i
+	next
 
-	function = FALSE
+	function = -1
 
 end function
 
 '':::::
-sub fbAddIncFile( byval filename as string ) static
+private function hAddIncFile( byval filename as string ) as integer static
     static as zstring * FB_MAXPATHLEN+1 fname
     dim as integer i
 
@@ -129,15 +129,30 @@ sub fbAddIncFile( byval filename as string ) static
 		redim preserve incfileTB(0 to (i + (i \ 2))-1)
 	end if
 
-	if( not fbFindIncFile( fname ) ) then
-		incfileTB( env.incfiles ) = fname
+	i = hFindIncFile( fname )
+	if( i = -1 ) then
+		i = env.incfiles
+		incfileTB( i ) = fname
 		env.incfiles += 1
 	end if
 
-end sub
+	function = i
+
+end function
 
 '':::::
-private sub hSetCtx
+function fbGetIncFile( byval index as integer ) as string static
+
+	if( (index >= 0) and (index <= ubound( incfileTB )) ) then
+		function = incfileTB( index )
+	else
+		function = ""
+	end if
+
+end function
+
+'':::::
+private sub hSetCtx( )
 
 	env.scope				= 0
 	env.reclevel			= 0
@@ -184,7 +199,7 @@ private sub hSetCtx
 end sub
 
 '':::::
-function fbInit as integer static
+function fbInit( ) as integer static
 
 	''
 	function = FALSE
@@ -220,7 +235,7 @@ function fbInit as integer static
 end function
 
 '':::::
-sub fbSetDefaultOptions
+sub fbSetDefaultOptions( )
 
 	env.clopt.debug			= FALSE
 	env.clopt.cputype 		= FB_DEFAULTCPUTYPE
@@ -428,6 +443,8 @@ function fbCompile ( byval infname as string, _
 
 	''
 	env.inf.name	= infname
+	env.inf.incfile	= INVALID
+
 	env.outf.name	= outfname
 
 	'' open source file
@@ -458,8 +475,6 @@ function fbCompile ( byval infname as string, _
 	parser4End( )
 
 	tmr = timer - tmr
-
-	irFlush( )
 
 	'' save
 	emitClose( tmr )
@@ -524,7 +539,7 @@ function fbIncludeFile( byval filename as string, _
 						byval isonce as integer ) as integer
 
     static as zstring * FB_MAXPATHLEN incfile
-    dim as integer i
+    dim as integer i, fileidx
 
 	function = FALSE
 
@@ -548,7 +563,7 @@ function fbIncludeFile( byval filename as string, _
 					exit for
 				end if
 
-			next i
+			next
 		end if
 
 	else
@@ -563,20 +578,21 @@ function fbIncludeFile( byval filename as string, _
 
 		''
 		if( isonce ) then
-        	if( fbFindIncFile( filename ) ) then
+        	if( hFindIncFile( filename ) <> -1 ) then
         		return TRUE
         	end if
 		end if
 
 		''
-		fbAddIncFile( filename )
+		fileidx = hAddIncFile( filename )
 
 		''
 		infileTb(env.reclevel) = env.inf
 		lexSaveCtx( env.reclevel )
     	env.reclevel += 1
 
-		env.inf.name = filename
+		env.inf.name 	= filename
+		env.inf.incfile = fileidx
 
 		''
 		lexInit( )
@@ -590,8 +606,8 @@ function fbIncludeFile( byval filename as string, _
 
 		''
 		if( env.clopt.debug ) then
-			irFlush( )
-			edbgIncludeBegin( incfile )
+			'' !!!FIXEME!!!
+			'' edbgIncludeBegin( fileidx )
 		end if
 
 		'' parse
@@ -599,8 +615,8 @@ function fbIncludeFile( byval filename as string, _
 
 		''
 		if( env.clopt.debug ) then
-			irFlush( )
-			edbgIncludeEnd( )
+			'' !!!FIXEME!!!
+			'' edbgIncludeEnd( )
 		end if
 
 		'' close it

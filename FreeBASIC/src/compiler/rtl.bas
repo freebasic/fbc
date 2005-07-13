@@ -350,6 +350,23 @@ data "fb_CHR", "", _
 	 INVALID,FB_ARGMODE_VARARG, FALSE
 
 ''
+'' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr ) as void
+data "fb_Init","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+'' fb_InitSignals ( ) as void
+data "fb_InitSignals","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
+'' fb_InitProfile ( ) as void
+data "fb_InitProfile","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
 '' fb_END ( byval errlevel as integer ) as void
 data "fb_End","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -2321,7 +2338,7 @@ private sub hAddIntrinsicMacros
 
         		hReplace( mtext, oldname, newname )
 
-        		arg = arg->r
+        		arg = arg->next
         	loop
         end if
 
@@ -2777,7 +2794,7 @@ function rtlStrAssignMid( byval expr1 as ASTNODE ptr, _
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = proc
 
@@ -2806,7 +2823,7 @@ function rtlStrLSet( byval dstexpr as ASTNODE ptr, _
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -2993,7 +3010,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( "" )
-    	irEmitLABEL reslabel, FALSE
+    	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
     end if
@@ -3026,7 +3043,7 @@ function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as integer static
     end if
 
     ''
-	astFlush( proc )
+	astAdd( proc )
 
 	function = TRUE
 
@@ -3059,7 +3076,7 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
     end if
 
     ''
-	astFlush( proc )
+	astAdd( proc )
 
 	function = TRUE
 
@@ -3083,7 +3100,7 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
     end if
 
     ''
-	astFlush( proc )
+	astAdd( proc )
 
 	function = TRUE
 
@@ -3176,7 +3193,7 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 	next i
 
     ''
-	astFlush( proc )
+	astAdd( proc )
 
 	function = TRUE
 
@@ -3239,7 +3256,7 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
     	end if
 
 		'' next
-		d = d->r
+		d = d->next
 	loop
 
 	function = proc
@@ -3335,7 +3352,7 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -3343,6 +3360,7 @@ end function
 
 '':::::
 function rtlDataRestore( byval label as FBSYMBOL ptr, _
+						 byval afternode as ASTNODE ptr, _
 						 byval isprofiler as integer = FALSE ) as integer static
     dim as ASTNODE ptr proc, expr
     dim as FBSYMBOL ptr s, f
@@ -3373,7 +3391,11 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
  	end if
 
 	''
-	astFlush( proc )
+	if( afternode = NULL ) then
+		astAdd( proc )
+	else
+		astAddAfter( proc, afternode )
+	end if
 
 	function = TRUE
 
@@ -3384,11 +3406,8 @@ sub rtlDataStoreBegin static
     dim as string lname
     dim as FBSYMBOL ptr l, label, s
 
-	''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-	irFlush
-
 	'' switch section, can't be code coz it will screw up debugging
-	emitSECTION EMIT_SECTYPE_CONST
+	emitSECTION( EMIT_SECTYPE_CONST )
 
 	'' emit default label if not yet emited
 	if( not ctx.datainited ) then
@@ -3400,7 +3419,7 @@ sub rtlDataStoreBegin static
 		end if
 
 		lname = symbGetName( l )
-		emitLABEL lname
+		emitDATALABEL( lname )
 
 	else
 		s = symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
@@ -3409,7 +3428,7 @@ sub rtlDataStoreBegin static
 
 	'' emit last label as a label in const section
 	'' if any defined already, otherwise it will be the default
-	label = symbGetLastLabel
+	label = symbGetLastLabel( )
 	if( label <> NULL ) then
     	''
     	lname = FB_DATALABELPREFIX + symbGetName( label )
@@ -3423,20 +3442,20 @@ sub rtlDataStoreBegin static
     	'' stills the same label as before? incrase counter to link DATA's
     	if( ctx.lastlabel = label ) then
     		ctx.labelcnt = ctx.labelcnt + 1
-    		lname = lname + "_" + ltrim$( str$( ctx.labelcnt ) )
+    		lname += "_" + str( ctx.labelcnt )
     	else
     		ctx.lastlabel = label
     		ctx.labelcnt = 0
     	end if
 
-    	emitLABEL lname
+    	emitDATALABEL( lname )
 
     else
-    	symbSetLastLabel symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
+    	symbSetLastLabel( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) )
     end if
 
 	'' emit will link the last DATA with this one if any exists
-	emitDATABEGIN lname
+	emitDATABEGIN( lname )
 
 end sub
 
@@ -3464,11 +3483,8 @@ end function
 '':::::
 sub rtlDataStoreEnd static
 
-	'' emit end of data (will be repatched be emit if more DATA stmts follow)
-	emitDATAEND
-
-	'' back to code section
-	emitSECTION EMIT_SECTYPE_CODE
+	'' emit end of data (will be repatched by emit if more DATA stmts follow)
+	emitDATAEND( )
 
 end sub
 
@@ -3840,7 +3856,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
  	end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -3867,7 +3883,7 @@ function rtlPrintSPC( byval fileexpr as ASTNODE ptr, _
  		exit function
  	end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -3894,7 +3910,7 @@ function rtlPrintTab( byval fileexpr as ASTNODE ptr, _
  		exit function
  	end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -3979,7 +3995,7 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
  	end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4000,7 +4016,7 @@ function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr ) as integer static
  		exit function
  	end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4021,7 +4037,7 @@ function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr ) as integer static
  		exit function
  	end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4069,7 +4085,7 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
  	end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4080,7 +4096,82 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function rtlExit( byval errlevel as ASTNODE ptr ) as integer static
+function rtlInitSignals( ) as integer static
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = FALSE
+
+	'' init( )
+	f = ifuncTB(FB_RTL_INITSIGNALS)
+    proc = astNewFUNCT( f, NULL, TRUE )
+
+    astAdd( proc )
+
+    function = TRUE
+
+end function
+
+'':::::
+function rtlInitProfile( ) as integer static
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = FALSE
+
+	'' init( )
+	f = ifuncTB(FB_RTL_INITPROFILE)
+    proc = astNewFUNCT( f, NULL, TRUE )
+
+    astAdd( proc )
+
+    function = TRUE
+
+end function
+
+'':::::
+function rtlInitRt( byval argc as ASTNODE ptr, _
+					byval argv as ASTNODE ptr ) as ASTNODE ptr static
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = NULL
+
+	'' init( argc, argv )
+	f = ifuncTB(FB_RTL_INIT)
+    proc = astNewFUNCT( f, NULL, TRUE )
+
+    '' argc
+    if( argc = NULL ) then
+    	argc = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    end if
+    if( astNewPARAM( proc, argc ) = NULL ) then
+    	exit function
+    end if
+
+    '' argv
+    if( argv = NULL ) then
+    	argv = astNewCONSTi( 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+    end if
+    if( astNewPARAM( proc, argv ) = NULL ) then
+    	exit function
+    end if
+
+    astAdd( proc )
+
+    '' if error checking is on, call initSignals
+    if( env.clopt.errorcheck ) then
+    	rtlInitSignals( )
+    end if
+
+    '' start profiling if requested
+    if( env.clopt.profile ) then
+	    rtlInitProfile( )
+    end if
+
+    function = proc
+
+end function
+
+'':::::
+function rtlExitRt( byval errlevel as ASTNODE ptr ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = FALSE
@@ -4089,7 +4180,7 @@ function rtlExit( byval errlevel as ASTNODE ptr ) as integer static
 	if( env.clopt.profile ) then
 		f = ifuncTB(FB_RTL_PROFILEEND)
 		proc = astNewFUNCT( f, NULL, TRUE )
-		astFlush( proc )
+		astAdd( proc )
 	end if
 
 	''
@@ -4104,7 +4195,7 @@ function rtlExit( byval errlevel as ASTNODE ptr ) as integer static
     	exit function
     end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4155,13 +4246,13 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 	if( (astGetDataType( dst ) <> IR_DATATYPE_USERDEF) and (astIsVAR( dst )) ) then
 
 		'' push src
-		astFlush( astNewSTACK( IR_OP_PUSH, astCloneTree( src ) ) )
+		astAdd( astNewSTACK( IR_OP_PUSH, astCloneTree( src ) ) )
 
 		'' src = dst
-		astFlush( astNewASSIGN( src, astCloneTree( dst ) ) )
+		astAdd( astNewASSIGN( src, astCloneTree( dst ) ) )
 
 		'' pop dst
-		astFlush( astNewSTACK( IR_OP_POP, dst ) )
+		astAdd( astNewSTACK( IR_OP_POP, dst ) )
 
 		exit sub
 	end if
@@ -4187,7 +4278,7 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4230,7 +4321,7 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4270,7 +4361,7 @@ function rtlMemCopyClear( byval dstexpr as ASTNODE ptr, _
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4297,7 +4388,7 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
     	exit function
     end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -4359,7 +4450,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	function = FALSE
 
 	if( not env.clopt.errorcheck ) then
-		astFlush( resexpr )
+		astAdd( resexpr )
 		return TRUE
 	end if
 
@@ -4373,7 +4464,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	'' result == FB_RTERROR_OK? skip..
 	resexpr = astNewBOP( IR_OP_EQ, resexpr, astNewCONSTi( 0, IR_DATATYPE_INTEGER ), nxtlabel, FALSE )
 
-	astFlush( resexpr )
+	astAdd( resexpr )
 
 	'' else, fb_ErrorThrow( reslabel, resnxtlabel ); -- CDECL
 
@@ -4400,10 +4491,10 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
     '' dst
     dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
 
-    astFlush( dst )
+    astAdd( dst )
 
 	''
-	irEmitLABEL nxtlabel, FALSE
+	astAdd( astNewLABEL( nxtlabel ) )
 
 	'''''symbDelLabel nxtlabel
 	'''''symbDelLabel reslabel
@@ -4424,7 +4515,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
 
 	''
     reslabel = symbAddLabel( "" )
-    irEmitLABEL reslabel, FALSE
+    astAdd( astNewLABEL( reslabel ) )
 
 	nxtlabel = symbAddLabel( "" )
 
@@ -4458,10 +4549,10 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
     '' dst
     dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
 
-    astFlush( dst )
+    astAdd( dst )
 
 	''
-	irEmitLABEL nxtlabel, FALSE
+	astAdd( astNewLABEL( nxtlabel ) )
 
 	'''''symbDelLabel nxtlabel
 	'''''symbDelLabel reslabel
@@ -4490,13 +4581,13 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     		if( env.procerrorhnd = NULL ) then
 				env.procerrorhnd = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID )
                 expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
-                astFlush( astNewASSIGN( expr, proc ) )
+                astAdd( astNewASSIGN( expr, proc ) )
     		end if
 		end if
     end if
 
     if( expr = NULL ) then
-    	astFlush( proc )
+    	astAdd( proc )
     end if
 
 end sub
@@ -4528,7 +4619,7 @@ sub rtlErrorSetNum( byval errexpr as ASTNODE ptr ) static
     end if
 
     ''
-    astFlush( proc )
+    astAdd( proc )
 
 end sub
 
@@ -4549,7 +4640,7 @@ sub rtlErrorResume( byval isnext as integer )
     ''
     dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
 
-    astFlush( dst )
+    astAdd( dst )
 
 end sub
 
@@ -4608,7 +4699,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( "" )
-    		irEmitLABEL reslabel, FALSE
+    		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
     	end if
@@ -4642,7 +4733,7 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( "" )
-    		irEmitLABEL reslabel, FALSE
+    		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
     	end if
@@ -4680,7 +4771,7 @@ function rtlFileSeek( byval filenum as ASTNODE ptr, _
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( "" )
-    	irEmitLABEL reslabel, FALSE
+    	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
     end if
@@ -4766,7 +4857,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( "" )
-    		irEmitLABEL reslabel, FALSE
+    		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
     	end if
@@ -4816,7 +4907,7 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( "" )
-    		irEmitLABEL reslabel, FALSE
+    		astAdd( astNewLABEL( reslabel ) )
     	else
 	    	reslabel = NULL
     	end if
@@ -4885,7 +4976,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( "" )
-    		irEmitLABEL reslabel, FALSE
+    		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
     	end if
@@ -4935,7 +5026,7 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( "" )
-    		irEmitLABEL reslabel, FALSE
+    		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
     	end if
@@ -5034,7 +5125,7 @@ function rtlFileLineInput( byval isfile as integer, _
  		end if
     end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -5081,7 +5172,7 @@ function rtlFileInput( byval isfile as integer, _
  		end if
     end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -5142,7 +5233,7 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
     	end if
     end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -5181,7 +5272,7 @@ function rtlFileLock( byval islock as integer, _
  		exit function
  	end if
 
-    astFlush( proc )
+    astAdd( proc )
 
     function = TRUE
 
@@ -5275,7 +5366,7 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5405,7 +5496,7 @@ function rtlGfxLine( byval target as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5502,7 +5593,7 @@ function rtlGfxCircle( byval target as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5593,7 +5684,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5632,7 +5723,7 @@ function rtlGfxDraw( byval target as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5708,7 +5799,7 @@ function rtlGfxView( byval x1expr as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5766,7 +5857,7 @@ function rtlGfxWindow( byval x1expr as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5828,7 +5919,7 @@ function rtlGfxPalette ( byval attexpr as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5850,7 +5941,7 @@ function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
  	end if
 
  	''
- 	astFlush( proc )
+ 	astAdd( proc )
 
 	function = TRUE
 
@@ -5941,7 +6032,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( "" )
-    	irEmitLABEL reslabel, FALSE
+    	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
     end if
@@ -6035,7 +6126,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( "" )
-    	irEmitLABEL reslabel, FALSE
+    	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
     end if
@@ -6105,7 +6196,7 @@ function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
     ''
     if( env.clopt.resumeerr ) then
     	reslabel = symbAddLabel( "" )
-    	irEmitLABEL reslabel, FALSE
+    	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
     end if

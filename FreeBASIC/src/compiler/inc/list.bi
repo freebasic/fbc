@@ -25,13 +25,13 @@ const TRUE  = -1
 
 
 type TLISTNODE
-	prv		as TLISTNODE ptr
-	nxt		as TLISTNODE ptr
+	prev	as TLISTNODE ptr
+	next	as TLISTNODE ptr
 	'' ...
 end type
 
 type TLISTTB
-	nxt		as TLISTTB ptr
+	next	as TLISTTB ptr
 	nodetb	as any ptr
 	nodes	as integer
 end type
@@ -41,10 +41,10 @@ type TLIST
 	tbtail	as TLISTTB ptr
 	nodes 	as integer
 	nodelen	as integer
-	fhead	as TLISTNODE ptr
-	head	as any ptr
-	tail	as any ptr
-	clear	as integer
+	fhead	as TLISTNODE ptr					'' free list
+	head	as any ptr							'' used list
+	tail	as any ptr							'' /
+	clear	as integer							'' clear nodes?
 end type
 
 declare function listNew		( byval list as TLIST ptr, _
@@ -63,4 +63,15 @@ declare function listDelNode	( byval list as TLIST ptr, _
 declare function listAllocTB	( byval list as TLIST ptr, _
 					  			  byval nodes as integer, _
 					  			  byval relink as integer = TRUE ) as integer
+
+'':::::
+#define listGetHead(l) cptr(TLIST ptr, l)->head
+
+#define listGetTail(l) cptr(TLIST ptr, l)->tail
+
+#define listGetPrev(n) cptr(any ptr, cptr(TLISTNODE ptr, n)->prev)
+
+#define listGetNext(n) cptr(any ptr, cptr(TLISTNODE ptr, n)->next)
+
+
 #endif '' __LIST_BI__

@@ -33,31 +33,8 @@ option escape
 #include once "inc\emit.bi"
 #include once "inc\emitdbg.bi"
 #include once "inc\hash.bi"
+#include once "inc\symb.bi"
 
-type EMITCTX
-	inited			as integer
-
-	pos				as integer
-
-	procstksetup 	as integer
-	procstkcleanup 	as integer
-
-	dataend			as integer
-
-	lastsection		as integer
-
-	localptr		as integer
-	argptr			as integer
-
-	keyinited		as integer
-	keyhash			as THASH
-
-    '' header flags, TRUE= emited already
-    bssheader		as integer
-    conheader		as integer
-    datheader		as integer
-    expheader       as integer
-end type
 
 type EMITDATATYPE
 	class			as integer
@@ -67,14 +44,12 @@ type EMITDATATYPE
 end type
 
 ''
-const TABCHAR = "\t"
-const NEWLINE = "\r\n"
 const QUOTE   = "\""
 const COMMA   = ", "
 
 
-const EMIT_MAXRNAMES  = 8
-const EMIT_MAXRTABLES = 4
+const EMIT_MAXRNAMES  = REG_MAXREGS
+const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
 
 
 ''
@@ -87,14 +62,13 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 
 ''
 ''globals
-	dim shared ctx as EMITCTX
-	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
+	'' same order as EMITREG_ENUM
 	dim shared rnameTB(0 to EMIT_MAXRTABLES-1, 0 to EMIT_MAXRNAMES-1) as zstring * 7+1 => _
 	{ _
-		{    "dl",   "di",   "si",   "cl",   "bl",   "al",     "",     "" }, _
-		{    "dx",   "di",   "si",   "cx",   "bx",   "ax",     "",     "" }, _
-		{   "edx",  "edi",  "esi",  "ecx",  "ebx",  "eax",     "",     "" }, _
+		{    "dl",   "di",   "si",   "cl",   "bl",   "al",   "bp",   "sp" }, _
+		{    "dx",   "di",   "si",   "cx",   "bx",   "ax",   "bp",   "sp" }, _
+		{   "edx",  "edi",  "esi",  "ecx",  "ebx",  "eax",  "ebp",  "esp" }, _
 		{ "st(0)","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)" } _
 	}
 
@@ -122,116 +96,107 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _
 	}
 
+const EMIT_MAXKEYWORDS = 600
 
-''
-keywordata:
-data "ebp", "esp", "st", "cs", "ds", "es", "fs", "gs", "ss"
-data "mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7"
-data "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"
-data "byte", "word", "dword", "qword"
-data "ptr", "offset"
-''
-'' IA-32 instruction set, including MMX/SSE/SSE2
-''
-data "aaa", "aad", "aam", "aas", "adc", "add", "addpd", "addps", "addsd", "addss", "and", "andpd", "andps"
-data "andnpd", "andnps", "arpl", "bound", "bsf", "bsr", "bswap", "bt", "btc", "btr", "bts", "call", "cbw"
-data "cwde", "cdq", "clc", "cld", "clflush", "cli", "clts", "cmc", "cmova", "cmovae", "cmovb", "cmovbe"
-data "cmovc", "cmove", "cmovg", "cmovge", "cmovl", "cmovle", "cmovna", "cmovnae", "cmovnb", "cmovnbe"
-data "cmovnc", "cmovne", "cmovng", "cmovnge", "cmovnl", "cmovnle", "cmovno", "cmovnp", "cmovns", "cmovnz"
-data "cmovo", "cmovp", "cmovpe", "cmovpe", "cmovpo", "cmovs", "cmovz", "cmp", "cmppd", "cmpps", "cmps"
-data "cmpsb", "cmpsw", "cmpsd", "cmpss", "cmpxchg", "cmpxchg8b", "comisd", "comiss", "cpuid", "cvtdq2pd"
-data "cvtdq2ps", "cvtpd2dq", "cvtpd2pi", "cvtpd2ps", "cvtpi2pd", "cvtpi2ps", "cvtps2dq", "cvtps2pd"
-data "cvtps2pi", "cvtsd2si", "cvtsd2ss", "cvtsi2sd", "cvtsi2ss", "cvtss2sd", "cvtss2si", "cvttpd2pi"
-data "cvttpd2dq", "cvttps2dq", "cvttps2pi", "cvttsd2si", "cvttss2si", "cwd", "daa", "das", "dec", "div"
-data "divpd", "divps", "divss", "emms", "enter", "f2xm1", "fabs", "fadd", "faddp", "fiadd", "fbld"
-data "fbstp", "fchs", "fclex", "fnclex", "fcmovb", "fcmove", "fcmovbe", "fcmovu", "fcmovnb", "fcmovne"
-data "fcmovnbe", "fcmovnu", "fcom", "fcomp", "fcompp", "fcomi", "fcomip", "fucomi", "fucomip", "fcos"
-data "fdecstp", "fdiv", "fdivp", "fidiv", "fdivr", "fdivrp", "fidivr", "ffree", "ficom", "ficomp"
-data "fild", "fincstp", "finit", "fninit", "fist", "fistp", "fld", "fld1", "fldl2t", "fldl2e", "fldpi"
-data "fldlg2", "fldln2", "fldz", "fldcw", "fldenv", "fmul", "fmulp", "fimul", "fnop", "fpatan", "fprem"
-data "fprem1", "fptan", "frndint", "frstor", "fsave", "fnsave", "fscale", "fsin", "fsincos", "fsqrt"
-data "fst", "fstp", "fstcw", "fnstcw", "fstenv", "fnstenv", "fstsw", "fnstsw", "fsub", "fsubp", "fisub"
-data "fsubr", "fsubrp", "fisubr", "ftst", "fucom", "fucomp", "fucompp", "fwait", "fxam", "fxch", "fxrstor"
-data "fxsave", "fxtract", "fyl2x", "fyl2xp1", "hlt", "idiv", "imul", "in", "inc", "ins", "insb", "insw"
-data "insd", "int", "into", "invd", "invlpg", "iret", "iretd", "ja", "jae", "jb", "jbe", "jc", "jcxz"
-data "jecxz", "je", "jg", "jge", "jl", "jle", "jna", "jnae", "jnb", "jnbe", "jnc", "jne", "jng", "jnge"
-data "jnl", "jnle", "jno", "jnp", "jns", "jnz", "jo", "jp", "jpe", "jpo", "js", "jz", "jmp", "lahf", "lar"
-data "ldmxcsr", "lds", "les", "lfs", "lgs", "lss", "lea", "leave", "lfence", "lgdt", "lidt", "lldt", "lmsw"
-data "lock", "lods", "lodsb", "lodsw", "lodsd", "loop", "loope", "loopz", "loopne", "loopnz", "lsl", "ltr"
-data "maskmovdqu", "maskmovq", "maxpd", "maxps", "maxsd", "maxss", "mfence", "minpd", "minps", "minsd"
-data "minss", "mov", "movapd", "movaps", "movd", "movdqa", "movdqu", "movdq2q", "movhlps", "movhpd"
-data "movhps", "movlhps", "movlpd", "movlps", "movmskpd", "movmskps", "movntdq", "movnti", "movntpd"
-data "movntps", "movntq", "movq", "movq2dq", "movs", "movsb", "movsw", "movsd", "movss", "movsx", "movupd"
-data "movups", "movzx", "mul", "mulpd", "mulps", "mulsd", "mulss", "neg", "nop", "not", "or", "orpd"
-data "orps", "out", "outs", "outsb", "outsw", "outsd", "packsswb", "packssdw", "packuswb", "paddb"
-data "paddw", "paddd", "paddq", "paddsb", "paddsw", "paddusb", "paddusw", "pand", "pandn", "pause"
-data "pavgb", "pavgw", "pcmpeqb", "pcmpeqw", "pcmpeqd", "pcmpgtb", "pcmpgtw", "pcmpgtd", "pextrw"
-data "pinsrw", "pmaddwd", "pmaxsw", "pmaxub", "pminsw", "pminub", "pmovmskb", "pmulhuv", "pmulhw"
-data "pmullw", "pmuludq", "pop", "popa", "popad", "popf", "popfd", "por", "prefetcht0", "prefetcht1"
-data "prefetcht2", "prefetchnta", "psadbw", "pshufd", "pshufhw", "pshuflw", "pshufw", "psllw", "pslld"
-data "psllq", "psraw", "psrad", "psrldq", "psrlw", "psrld", "psrlq", "psubb", "psubw", "psubd", "psubq"
-data "psubsb", "psubsw", "psubusb", "psubusw", "punpckhbw", "punpckhwd", "punpckhdq", "punpckhqdq"
-data "punpcklbw", "punpcklwd", "punpckldq", "punpcklqdq", "push", "pusha", "pushad", "pushf", "pushfd"
-data "pxor", "rcl", "rcr", "rol", "ror", "rcpps", "rcpss", "rdmsr", "rdpmc", "rdtsc", "rep", "repe"
-data "repz", "repne", "repnz", "ret", "rsm", "rsqrtps", "rsqrtss", "sahf", "sal", "sar", "shl", "shr"
-data "sbb", "scas", "scasb", "scasw", "scasd", "seta", "setae", "setb", "setbe", "setc", "sete", "setg"
-data "setge", "setl", "setle", "setna", "setnae", "setnb", "setnbe", "setnc", "setne", "setng", "setnge"
-data "setnl", "setnle", "setno", "setnp", "setns", "setnz", "seto", "setp", "setpe", "setpo", "sets"
-data "setz", "sfence", "sgdt", "sidt", "shld", "shrd", "shufpd", "shufps", "sldt", "smsw", "sqrtpd"
-data "sqrtps", "sqrtsd", "sqrtss", "stc", "std", "sti", "stmxcsr", "stos", "stosb", "stosw", "stosd"
-data "str", "sub", "subpd", "subps", "subsd", "subss", "sysenter", "sysexit", "test", "ucomisd"
-data "ucomiss", "ud2", "unpckhpd", "unpckhps", "unpcklpd", "unpcklps", "verr", "verw", "wait", "wbinvd"
-data "wrmsr", "xadd", "xchg", "xlat", "xlatb", "xor", "xorpd", "xorps"
-''
-'' AMD x86 additions, including 3DNow!/Ext.3DNow!
-''
-data "pavgusb", "pfadd", "pfsub", "pfsubr", "pfacc", "pfcmpge", "pfcmpgt", "pfcmpeq", "pfmin", "pfmax"
-data "pi2fw", "pi2fd", "pf2iw", "pf2id", "pfrcp", "pfrsqrt", "pfmul", "pfrcpit1", "pfrsqit1", "pfrcpit2"
-data "pmulhrw", "pswapw", "femms", "prefetch", "prefetchw", "pfnacc", "pfpnacc", "pswapd", "pmulhuw"
-data ""
+	dim shared keywordTb(0 to EMIT_MAXKEYWORDS-1) as zstring * 15+1 => _
+	{ _
+		"st", "cs", "ds", "es", "fs", "gs", "ss", _
+		"mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7", _
+		"xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", _
+		"byte", "word", "dword", "qword", _
+		"ptr", "offset", _
+		"aaa", "aad", "aam", "aas", "adc", "add", "addpd", "addps", "addsd", "addss", "and", "andpd", "andps", _
+		"andnpd", "andnps", "arpl", "bound", "bsf", "bsr", "bswap", "bt", "btc", "btr", "bts", "call", "cbw", _
+		"cwde", "cdq", "clc", "cld", "clflush", "cli", "clts", "cmc", "cmova", "cmovae", "cmovb", "cmovbe", _
+		"cmovc", "cmove", "cmovg", "cmovge", "cmovl", "cmovle", "cmovna", "cmovnae", "cmovnb", "cmovnbe", _
+		"cmovnc", "cmovne", "cmovng", "cmovnge", "cmovnl", "cmovnle", "cmovno", "cmovnp", "cmovns", "cmovnz", _
+		"cmovo", "cmovp", "cmovpe", "cmovpe", "cmovpo", "cmovs", "cmovz", "cmp", "cmppd", "cmpps", "cmps", _
+		"cmpsb", "cmpsw", "cmpsd", "cmpss", "cmpxchg", "cmpxchg8b", "comisd", "comiss", "cpuid", "cvtdq2pd", _
+		"cvtdq2ps", "cvtpd2dq", "cvtpd2pi", "cvtpd2ps", "cvtpi2pd", "cvtpi2ps", "cvtps2dq", "cvtps2pd", _
+		"cvtps2pi", "cvtsd2si", "cvtsd2ss", "cvtsi2sd", "cvtsi2ss", "cvtss2sd", "cvtss2si", "cvttpd2pi", _
+		"cvttpd2dq", "cvttps2dq", "cvttps2pi", "cvttsd2si", "cvttss2si", "cwd", "daa", "das", "dec", "div", _
+		"divpd", "divps", "divss", "emms", "enter", "f2xm1", "fabs", "fadd", "faddp", "fiadd", "fbld", _
+		"fbstp", "fchs", "fclex", "fnclex", "fcmovb", "fcmove", "fcmovbe", "fcmovu", "fcmovnb", "fcmovne", _
+		"fcmovnbe", "fcmovnu", "fcom", "fcomp", "fcompp", "fcomi", "fcomip", "fucomi", "fucomip", "fcos", _
+		"fdecstp", "fdiv", "fdivp", "fidiv", "fdivr", "fdivrp", "fidivr", "ffree", "ficom", "ficomp", _
+		"fild", "fincstp", "finit", "fninit", "fist", "fistp", "fld", "fld1", "fldl2t", "fldl2e", "fldpi", _
+		"fldlg2", "fldln2", "fldz", "fldcw", "fldenv", "fmul", "fmulp", "fimul", "fnop", "fpatan", "fprem", _
+		"fprem1", "fptan", "frndint", "frstor", "fsave", "fnsave", "fscale", "fsin", "fsincos", "fsqrt", _
+		"fst", "fstp", "fstcw", "fnstcw", "fstenv", "fnstenv", "fstsw", "fnstsw", "fsub", "fsubp", "fisub", _
+		"fsubr", "fsubrp", "fisubr", "ftst", "fucom", "fucomp", "fucompp", "fwait", "fxam", "fxch", "fxrstor", _
+		"fxsave", "fxtract", "fyl2x", "fyl2xp1", "hlt", "idiv", "imul", "in", "inc", "ins", "insb", "insw", _
+		"insd", "int", "into", "invd", "invlpg", "iret", "iretd", "ja", "jae", "jb", "jbe", "jc", "jcxz", _
+		"jecxz", "je", "jg", "jge", "jl", "jle", "jna", "jnae", "jnb", "jnbe", "jnc", "jne", "jng", "jnge", _
+		"jnl", "jnle", "jno", "jnp", "jns", "jnz", "jo", "jp", "jpe", "jpo", "js", "jz", "jmp", "lahf", "lar", _
+		"ldmxcsr", "lds", "les", "lfs", "lgs", "lss", "lea", "leave", "lfence", "lgdt", "lidt", "lldt", "lmsw", _
+		"lock", "lods", "lodsb", "lodsw", "lodsd", "loop", "loope", "loopz", "loopne", "loopnz", "lsl", "ltr", _
+		"maskmovdqu", "maskmovq", "maxpd", "maxps", "maxsd", "maxss", "mfence", "minpd", "minps", "minsd", _
+		"minss", "mov", "movapd", "movaps", "movd", "movdqa", "movdqu", "movdq2q", "movhlps", "movhpd", _
+		"movhps", "movlhps", "movlpd", "movlps", "movmskpd", "movmskps", "movntdq", "movnti", "movntpd", _
+		"movntps", "movntq", "movq", "movq2dq", "movs", "movsb", "movsw", "movsd", "movss", "movsx", "movupd", _
+		"movups", "movzx", "mul", "mulpd", "mulps", "mulsd", "mulss", "neg", "nop", "not", "or", "orpd", _
+		"orps", "out", "outs", "outsb", "outsw", "outsd", "packsswb", "packssdw", "packuswb", "paddb", _
+		"paddw", "paddd", "paddq", "paddsb", "paddsw", "paddusb", "paddusw", "pand", "pandn", "pause", _
+		"pavgb", "pavgw", "pcmpeqb", "pcmpeqw", "pcmpeqd", "pcmpgtb", "pcmpgtw", "pcmpgtd", "pextrw", _
+		"pinsrw", "pmaddwd", "pmaxsw", "pmaxub", "pminsw", "pminub", "pmovmskb", "pmulhuv", "pmulhw", _
+		"pmullw", "pmuludq", "pop", "popa", "popad", "popf", "popfd", "por", "prefetcht0", "prefetcht1", _
+		"prefetcht2", "prefetchnta", "psadbw", "pshufd", "pshufhw", "pshuflw", "pshufw", "psllw", "pslld", _
+		"psllq", "psraw", "psrad", "psrldq", "psrlw", "psrld", "psrlq", "psubb", "psubw", "psubd", "psubq", _
+		"psubsb", "psubsw", "psubusb", "psubusw", "punpckhbw", "punpckhwd", "punpckhdq", "punpckhqdq", _
+		"punpcklbw", "punpcklwd", "punpckldq", "punpcklqdq", "push", "pusha", "pushad", "pushf", "pushfd", _
+		"pxor", "rcl", "rcr", "rol", "ror", "rcpps", "rcpss", "rdmsr", "rdpmc", "rdtsc", "rep", "repe", _
+		"repz", "repne", "repnz", "ret", "rsm", "rsqrtps", "rsqrtss", "sahf", "sal", "sar", "shl", "shr", _
+		"sbb", "scas", "scasb", "scasw", "scasd", "seta", "setae", "setb", "setbe", "setc", "sete", "setg", _
+		"setge", "setl", "setle", "setna", "setnae", "setnb", "setnbe", "setnc", "setne", "setng", "setnge", _
+		"setnl", "setnle", "setno", "setnp", "setns", "setnz", "seto", "setp", "setpe", "setpo", "sets", _
+		"setz", "sfence", "sgdt", "sidt", "shld", "shrd", "shufpd", "shufps", "sldt", "smsw", "sqrtpd", _
+		"sqrtps", "sqrtsd", "sqrtss", "stc", "std", "sti", "stmxcsr", "stos", "stosb", "stosw", "stosd", _
+		"str", "sub", "subpd", "subps", "subsd", "subss", "sysenter", "sysexit", "test", "ucomisd", _
+		"ucomiss", "ud2", "unpckhpd", "unpckhps", "unpcklpd", "unpcklps", "verr", "verw", "wait", "wbinvd", _
+		"wrmsr", "xadd", "xchg", "xlat", "xlatb", "xor", "xorpd", "xorps", _
+		"pavgusb", "pfadd", "pfsub", "pfsubr", "pfacc", "pfcmpge", "pfcmpgt", "pfcmpeq", "pfmin", "pfmax", _
+		"pi2fw", "pi2fd", "pf2iw", "pf2id", "pfrcp", "pfrsqrt", "pfmul", "pfrcpit1", "pfrsqit1", "pfrcpit2", _
+		"pmulhrw", "pswapw", "femms", "prefetch", "prefetchw", "pfnacc", "pfpnacc", "pswapd", "pmulhuw" _
+	}
 
-
-const EMIT_MAXKEYWORDS = 512
 
 '':::::
 private sub hInitKeywordsTB
     dim t as integer, i as integer, idx as uinteger
     dim keyword as string
 
-	hashNew( @ctx.keyhash, EMIT_MAXKEYWORDS )
+	hashNew( @emit.keyhash, EMIT_MAXKEYWORDS )
 
 	'' add reg names
 	for t = 0 to EMIT_MAXRTABLES-1
 		for i = 0 to EMIT_MAXRNAMES-1
 			if( len( rnameTB(t,i) ) > 0 ) then
-				hashAdd( @ctx.keyhash, rnameTB(t,i), @idx, idx )
+				hashAdd( @emit.keyhash, @rnameTB(t,i), @idx, idx )
 			end if
 		next i
 	next t
 
 	'' add asm keywords
-	restore keywordata
-	do
-		read keyword
-		if( len( keyword ) = 0 ) then
-			exit do
+	for i = 0 to EMIT_MAXKEYWORDS-1
+		if( len( keywordTb(i) ) = 0 ) then
+			exit for
 		end if
 
-		hashAdd( @ctx.keyhash, keyword, @idx, idx )
-	loop
+		hashAdd( @emit.keyhash, @keywordTb(i), @idx, idx )
+	next
 
-	ctx.keyinited = TRUE
+	emit.keyinited = TRUE
 
 end sub
 
 '':::::
 private sub hEndKeywordsTB
 
-	if( ctx.keyinited ) then
-		hashFree( @ctx.keyhash )
+	if( emit.keyinited ) then
+		hashFree( @emit.keyhash )
 	end if
 
-	ctx.keyinited = FALSE
+	emit.keyinited = FALSE
 
 end sub
 
@@ -247,6 +212,7 @@ private sub hInitRegTB
 		IR_DATACLASS_INTEGER, _ '' ecx
 		IR_DATACLASS_INTEGER, _ '' ebx
 		IR_DATACLASS_INTEGER, _ '' eax
+							  _ '' ebp and esp are reserved
 		IR_DATACLASS_FPOINT , _ '' st(0)
 		IR_DATACLASS_FPOINT , _ '' st(1)
 		IR_DATACLASS_FPOINT , _ '' st(2)
@@ -264,7 +230,7 @@ private sub hInitRegTB
 	do
 		if( lastclass <> regclass(i) ) then
 			if( lastclass <> INVALID ) then
-				regTB(lastclass) = regNewClass( lastclass, regs, lastclass = IR_DATACLASS_FPOINT )
+				emit.regTB(lastclass) = regNewClass( lastclass, regs, lastclass = IR_DATACLASS_FPOINT )
 			end if
 			regs = 0
 			lastclass = regclass(i)
@@ -285,60 +251,42 @@ private sub hEndRegTB
     dim i as integer
 
 	for i = 0 to EMIT_REGCLASSES-1
-		regDelClass( regTB(i) )
+		regDelClass( emit.regTB(i) )
 	next i
 
 end sub
 
 '':::::
-sub emitInit
-	dim i as integer, t as integer
-
-	if( ctx.inited ) then
-		exit sub
-	end if
+sub emitSubInit
 
 	''
 	hInitRegTB( )
 
 	''
-	ctx.keyinited 	= FALSE
+	emit.keyinited 	= FALSE
 
 	''
-	ctx.inited 		= TRUE
-	ctx.dataend 	= 0
-	ctx.pos			= 0
-	ctx.lastsection = INVALID
+	emit.dataend 	= 0
+	emit.lastsection = INVALID
 
-	ctx.bssheader	= FALSE
-	ctx.conheader	= FALSE
-	ctx.datheader	= FALSE
-	ctx.expheader	= FALSE
+	emit.bssheader	= FALSE
+	emit.conheader	= FALSE
+	emit.datheader	= FALSE
+	emit.expheader	= FALSE
 
 end sub
 
 '':::::
-sub emitEnd
-
-	if( not ctx.inited ) then
-		exit sub
-	end if
+sub emitSubEnd
 
 	''
 	hEndRegTB( )
 
     hEndKeywordsTB( )
 
-	ctx.inited = FALSE
-
 end sub
 
-'':::::
-function emitGetRegClass( byval dclass as integer ) as REGCLASS ptr
-
-	function = regTB(dclass)
-
-end function
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
@@ -376,7 +324,7 @@ function emitIsRegPreserved ( byval dtype as integer, _
     end if
 
     select case as const reg
-    case EMIT_INTREG_EAX, EMIT_INTREG_ECX, EMIT_INTREG_EDX
+    case EMIT_REG_EAX, EMIT_REG_ECX, EMIT_REG_EDX
     	return FALSE
     case else
     	return TRUE
@@ -395,9 +343,9 @@ sub emitGetResultReg( byval dtype as integer, _
 	end if
 
 	if( dclass = IR_DATACLASS_INTEGER ) then
-		r1 = EMIT_INTREG_EAX
+		r1 = EMIT_REG_EAX
 		if( ISLONGINT( dtype ) ) then
-			r2 = EMIT_INTREG_EDX
+			r2 = EMIT_REG_EDX
 		else
 			r2 = INVALID
 		end if
@@ -424,21 +372,60 @@ function emitGetFreePreservedReg( byval dtype as integer, _
 	end if
 
 	'' try to reuse regs that are preserved between calls
-	if( regTB(dclass)->isFree( regTB(dclass), EMIT_INTREG_EBX ) ) then
-		function = EMIT_INTREG_EBX
+	if( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EBX ) ) then
+		function = EMIT_REG_EBX
 
-	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT_INTREG_ESI ) ) then
-		function = EMIT_INTREG_ESI
+	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_ESI ) ) then
+		function = EMIT_REG_ESI
 
-	elseif( regTB(dclass)->isFree( regTB(dclass), EMIT_INTREG_EDI ) ) then
-		function = EMIT_INTREG_EDI
+	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EDI ) ) then
+		function = EMIT_REG_EDI
 	end if
 
 end function
 
 '':::::
-function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
-							   byval noSIDI as integer = FALSE ) as integer static
+function emitIsKeyword( byval text as string ) as integer static
+
+	if( not emit.keyinited ) then
+		hInitKeywordsTB( )
+	end if
+
+	if( hashLookup( @emit.keyhash, strptr( text ) ) <> NULL ) then
+		function = TRUE
+	else
+		function = FALSE
+	end if
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private function hIsRegFree( byval dclass as integer, _
+							 byval reg as integer ) as integer static
+
+	'' if EBX, EDI or ESI and if they weren't ever used, return false,
+	'' because hCreateFrame didn't preserve them
+	if( dclass = IR_DATACLASS_INTEGER ) then
+		select case reg
+		case EMIT_REG_EBX, EMIT_REG_ESI, EMIT_REG_EDI
+			if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, reg ) ) then
+				return FALSE
+			end if
+		end select
+	end if
+
+	'' assume it will be trashed
+	EMIT_REGSETUSED( dclass, reg )
+
+	function = REG_ISFREE( emit.curnode->regFreeTB(dclass), reg )
+
+end function
+
+'':::::
+private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
+							   		byval noSIDI as integer = FALSE ) as integer static
 
     dim as integer r, reg, reg2, dclass
 
@@ -473,30 +460,30 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 
 		if( not noSIDI ) then
 
-			for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
+			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 				if( r <> reg ) then
 					function = r
-					if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
+					if( hIsRegFree( dclass, r ) ) then
 						exit function
 					end if
 				end if
-			next r
+			next
 
 		'' SI/DI as byte..
 		else
 
-			for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
+			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 				if( r <> reg ) then
-					if( r <> EMIT_INTREG_ESI ) then
-						if( r <> EMIT_INTREG_EDI ) then
+					if( r <> EMIT_REG_ESI ) then
+						if( r <> EMIT_REG_EDI ) then
 							function = r
-							if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
-							exit function
+							if( hIsRegFree( dclass, r ) ) then
+								exit function
 							end if
 						end if
 					end if
 				end if
-			next r
+			next
 
 		end if
 
@@ -505,30 +492,30 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 
 		if( not noSIDI ) then
 
-			for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
+			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					function = r
-					if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
+					if( hIsRegFree( dclass, r ) ) then
 						exit function
 					end if
 				end if
-			next r
+			next
 
 		'' SI/DI as byte..
 		else
 
-			for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
+			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
-					if( r <> EMIT_INTREG_ESI ) then
-						if( r <> EMIT_INTREG_EDI ) then
+					if( r <> EMIT_REG_ESI ) then
+						if( r <> EMIT_REG_EDI ) then
 							function = r
-							if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
+							if( hIsRegFree( dclass, r ) ) then
 								exit function
 							end if
 						end if
 					end if
 				end if
-			next r
+			next
 
 		end if
 
@@ -537,23 +524,23 @@ function emitFindRegNotInVreg( byval vreg as IRVREG ptr, _
 end function
 
 '':::::
-function emitFindFreeReg( byval dclass as integer ) as integer static
+private function hFindFreeReg( byval dclass as integer ) as integer static
     dim as integer r
 
 	function = INVALID
 
-	for r = regTB(dclass)->getMaxRegs( regTB(dclass) )-1 to 0 step -1
+	for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
 		function = r
-		if( regTB(dclass)->isFree( regTB(dclass), r ) ) then
+		if( hIsRegFree( dclass, r ) ) then
 			exit function
 		end if
-	next r
+	next
 
 end function
 
 '':::::
-function emitIsRegInVreg( byval vreg as IRVREG ptr, _
-						  byval reg as integer ) as integer static
+private function hIsRegInVreg( byval vreg as IRVREG ptr, _
+						  	   byval reg as integer ) as integer static
 
 	function = FALSE
 
@@ -588,7 +575,7 @@ end function
 private function hGetRegName( byval dtype as integer, _
 						 	  byval reg as integer ) as zstring ptr static
 
-    dim as integer tb, dclass
+    dim as integer tb
 
 	if( dtype >= IR_DATATYPE_POINTER ) then
 		dtype = IR_DATATYPE_UINT
@@ -598,12 +585,6 @@ private function hGetRegName( byval dtype as integer, _
 		function = NULL
 	else
 		tb = dtypeTB(dtype).rnametb
-
-		'' with fp, reg isn't the real reg num
-		dclass = irGetDataClass( dtype )
-		if( dclass = IR_DATACLASS_FPOINT ) then
-			reg = regTB(dclass)->getRealReg( regTB(dclass), reg )
-		end if
 
 		function = @rnameTB(tb, reg)
 	end if
@@ -741,45 +722,32 @@ private sub hPrepOperand64( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-function emitIsKeyword( byval text as string ) as integer static
-
-	if( not ctx.keyinited ) then
-		hInitKeywordsTB( )
-	end if
-
-	if( hashLookup( @ctx.keyhash, text ) <> NULL ) then
-		function = TRUE
-	else
-		function = FALSE
-	end if
-
-end function
-
-'':::::
 private sub outEx( byval s as string, _
 				   byval updpos as integer ) static
 
 	if( put( #env.outf.num, , s ) = 0 ) then
-		if( updpos ) then
-			ctx.pos += 1
-		end if
 	end if
 
 end sub
 
 '':::::
 private sub outp( byval s as string ) static
-    dim p as integer
-    dim ostr as string
+    dim as integer p, char
+    dim as string ostr
 
 	if( env.clopt.debug ) then
 		p = instr( s, " " )
 		if( p > 0 ) then
+			char = s[p-1]
 			s[p-1] = CHAR_TAB			'' unsafe with constants..
 		end if
 
-		ostr = TABCHAR + s + NEWLINE
+		ostr = "\t" + s + NEWLINE
 		outEX( ostr, TRUE )
+
+		if( p > 0 ) then
+			s[p-1] = char
+		end if
 
 	else
 
@@ -790,17 +758,56 @@ private sub outp( byval s as string ) static
 
 end sub
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'':::::
+private sub hBRANCH( byval mnemonic as string, _
+			 		 byval label as string ) static
+    dim ostr as string
+
+	ostr = mnemonic + " " + label
+	outp( ostr )
+
+end sub
 
 '':::::
-function emitGetPos as integer static
+private sub hPUSH( byval rname as string ) static
+    dim ostr as string
 
-	function = ctx.pos
+	ostr = "push " + rname
+	outp( ostr )
 
-end function
+end sub
 
 '':::::
-sub emitCOMMENT( byval s as string ) static
+private sub hPOP( byval rname as string ) static
+    dim ostr as string
+
+    ostr = "pop " + rname
+	outp( ostr )
+
+end sub
+
+'':::::
+private sub hMOV( byval dname as string, _
+		  		  byval sname as string ) static
+    dim ostr as string
+
+	ostr = "mov " + dname + ", " + sname
+	outp( ostr )
+
+end sub
+
+'':::::
+private sub hXCHG( byval dname as string, _
+		   		   byval sname as string ) static
+    dim ostr as string
+
+	ostr = "xchg " + dname + ", " + sname
+	outp( ostr )
+
+end sub
+
+'':::::
+private sub hCOMMENT( byval s as string ) static
     dim ostr as string
 
     ostr = "\t\35" + s + NEWLINE
@@ -809,31 +816,62 @@ sub emitCOMMENT( byval s as string ) static
 end sub
 
 '':::::
-sub emitASM( byval s as string ) static
+private sub hPUBLIC( byval label as string ) static
     dim ostr as string
 
-    ostr = "\t" + s + NEWLINE
-	outEX( ostr, TRUE )
+	ostr = "\r\n.globl " + label + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
 '':::::
-sub emitALIGN( byval bytes as integer ) static
+private sub hLABEL( byval label as string ) static
     dim ostr as string
 
-    ostr = ".balign " + str$( bytes )
+	ostr = label + ":\r\n"
+	outEx( ostr, FALSE )
+
+end sub
+
+'':::::
+private sub hALIGN( byval bytes as integer ) static
+    dim ostr as string
+
+    ostr = ".balign " + str( bytes ) +  "\r\n"
+	outEx( ostr, FALSE )
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' implementation
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private sub _emitLIT( byval s as string )
+    dim ostr as string
+
+    ostr = s + NEWLINE
+	outEX( ostr, FALSE )
+
+end sub
+
+'':::::
+private sub _emitALIGN( byval vreg as IRVREG ptr ) static
+    dim ostr as string
+
+    ostr = ".balign " + str( vreg->value )
 	outp( ostr )
 
 end sub
 
 '':::::
-sub emitSTACKALIGN( byval bytes as integer ) static
+private sub _emitSTKALIGN( byval vreg as IRVREG ptr ) static
     dim ostr as string
 
-    if( bytes > 0 ) then
-    	ostr = "sub esp, " + str$( bytes )
+    if( vreg->value > 0 ) then
+    	ostr = "sub esp, " + str( vreg->value )
     else
-    	ostr = "add esp, " + str$( -bytes )
+    	ostr = "add esp, " + str( -vreg->value )
     end if
 
 	outp( ostr )
@@ -841,31 +879,35 @@ sub emitSTACKALIGN( byval bytes as integer ) static
 end sub
 
 '':::::
-sub emitTYPE( byval typ as integer, _
-			  byval text as string ) static
+private sub _emitJMPTB( byval dtype as integer, _
+			  		    byval text as string ) static
+    dim ostr as string
 
-	outp( hGetTypeString( typ ) + " " + text )
+	ostr = hGetTypeString( dtype ) + " " + text
+	outp( ostr )
 
 end sub
 
 '':::::
-sub emitCALL( byval pname as string, _
-			  byval bytestopop as integer ) static
+private sub _emitCALL( byval unused as IRVREG ptr, _
+			  		   byval label as FBSYMBOL ptr, _
+			  		   byval bytestopop as integer ) static
     dim ostr as string
 
-	ostr = "call " + pname
+	ostr = "call " + symbGetName( label )
 	outp( ostr )
 
     if( bytestopop <> 0 ) then
-    	ostr = "add esp, " + str$( bytestopop )
+    	ostr = "add esp, " + str( bytestopop )
     	outp( ostr )
     end if
 
 end sub
 
 '':::::
-sub emitCALLPTR( byval svreg as IRVREG ptr, _
-				 byval bytestopop as integer ) static
+private sub _emitCALLPTR( byval svreg as IRVREG ptr, _
+				 		  byval unused as FBSYMBOL ptr, _
+				 		  byval bytestopop as integer ) static
     dim src as string
     dim ostr as string
 
@@ -875,15 +917,16 @@ sub emitCALLPTR( byval svreg as IRVREG ptr, _
 	outp( ostr )
 
     if( bytestopop <> 0 ) then
-    	ostr = "add esp, " + str$( bytestopop )
+    	ostr = "add esp, " + str( bytestopop )
     	outp( ostr )
     end if
 
 end sub
 
 '':::::
-sub emitBRANCH( byval op as integer, _
-		 		byval label as string ) static
+private sub _emitBRANCH( byval unused as IRVREG ptr, _
+						 byval label as FBSYMBOL ptr, _
+						 byval op as integer ) static
     dim ostr as string
 
 	select case as const op
@@ -901,14 +944,26 @@ sub emitBRANCH( byval op as integer, _
 		ostr = "jne "
 	end select
 
-	ostr += label
+	ostr += symbGetName( label )
 	outp( ostr )
 
 end sub
 
+'':::::
+private sub _emitJUMP( byval unused1 as IRVREG ptr, _
+				 	   byval label as FBSYMBOL ptr, _
+				 	   byval unused2 as integer ) static
+    dim ostr as string
+
+	ostr = "jmp " + symbGetName( label )
+	outp( ostr )
+
+end sub
 
 '':::::
-sub emitBRANCHPTR( byval svreg as IRVREG ptr ) static
+private sub _emitJUMPPTR( byval svreg as IRVREG ptr, _
+				 		  byval unused1 as FBSYMBOL ptr, _
+				 		  byval unused2 as integer ) static
     dim src as string
     dim ostr as string
 
@@ -920,110 +975,91 @@ sub emitBRANCHPTR( byval svreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitPUBLIC( byval label as string ) static
+private sub _emitRET( byval vreg as IRVREG ptr ) static
     dim ostr as string
 
-	ostr = "\r\n.globl " + label + NEWLINE
-	outEx( ostr, FALSE )
-
-end sub
-
-'':::::
-sub emitLABEL( byval label as string ) static
-    dim ostr as string
-
-	ostr = label + ":\r\n"
-	outEx( ostr, FALSE )
-
-end sub
-
-'':::::
-sub emitJMP( byval label as string ) static
-    dim ostr as string
-
-	ostr = "jmp " + label
-	outp( ostr )
-
-end sub
-
-'':::::
-sub emitRET( byval bytestopop as integer ) static
-    dim ostr as string
-
-    ostr = "ret " + str$( bytestopop )
+    ostr = "ret " + str( vreg->value )
     outp( ostr )
 
 end sub
 
 '':::::
-private sub emithBRANCH( byval mnemonic as string, _
-		 		 		 byval label as string ) static
+private sub _emitPUBLIC( byval label as FBSYMBOL ptr ) static
     dim ostr as string
 
-	ostr = mnemonic + " " + label
-	outp( ostr )
+	ostr = "\r\n.globl " + symbGetName( label ) + NEWLINE
+	outEx( ostr, FALSE )
 
 end sub
 
 '':::::
-sub emithPUSH( byval rname as string ) static
+private sub _emitLABEL( byval label as FBSYMBOL ptr ) static
     dim ostr as string
 
-	ostr = "push " + rname
-	outp( ostr )
+	ostr = symbGetName( label ) + ":\r\n"
+	outEx( ostr, FALSE )
 
 end sub
 
 '':::::
-sub emithPOP( byval rname as string ) static
-    dim ostr as string
-
-    ostr = "pop " + rname
-	outp( ostr )
-
-end sub
-
-'':::::
-sub emithMOV( byval dname as string, _
-			  byval sname as string ) static
-    dim ostr as string
-
-	ostr = "mov " + dname + ", " + sname
-	outp( ostr )
-
-end sub
-
-'':::::
-sub emithXCHG( byval dname as string, _
-			   byval sname as string ) static
-    dim ostr as string
-
-	ostr = "xchg " + dname + ", " + sname
-	outp( ostr )
-
-end sub
-
-'':::::
-sub emitFXCHG( byval svreg as IRVREG ptr ) static
-    dim as string src
+sub emitSECTION( byval section as integer ) static
     dim as string ostr
 
-	hPrepOperand( svreg, src )
+    if( section = emit.lastsection ) then
+    	exit sub
+    end if
 
-	ostr = "fxch " + src
-	outp( ostr )
+	ostr = NEWLINE + ".section ."
+
+	select case as const section
+	case EMIT_SECTYPE_CONST
+		ostr += "rodata" + NEWLINE
+	case EMIT_SECTYPE_DATA
+		ostr += "data" + NEWLINE
+	case EMIT_SECTYPE_BSS
+		ostr += "bss" + NEWLINE
+	case EMIT_SECTYPE_CODE
+		ostr += "text" + NEWLINE
+	case EMIT_SECTYPE_DIRECTIVE
+		ostr += "drectve" + NEWLINE
+	end select
+
+	outEx( ostr, FALSE )
+
+	emit.lastsection = section
 
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' load & store
+'' store
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitMOV64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
-    dim dst1 as string, dst2 as string, src1 as string, src2 as string
-    dim ostr as string
+private sub hULONG2DBL( byval svreg as IRVREG ptr ) static
+	dim as string label, src, ostr
+
+	label = *hMakeTmpStr( )
+
+	hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
+	ostr = "cmp " +  src + ", 0"
+
+	outp ostr
+	ostr = "jns " + label
+	outp ostr
+	hPUSH( "16447" )
+	hPUSH( "-2147483648" )
+	hPUSH( "0" )
+	outp "fldt [esp]"
+	outp "add esp, 12"
+	outp "faddp"
+	hLABEL( label )
+
+end sub
+
+'':::::
+private sub _emitSTORL2L( byval dvreg as IRVREG ptr, _
+			           	  byval svreg as IRVREG ptr ) static
+    dim as string dst1, dst2, src1, src2, ostr
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand64( svreg, src1, src2 )
@@ -1037,62 +1073,25 @@ sub emitMOV64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitMOV( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string
-    dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitMOV64( dvreg, svreg )
-		exit sub
-	end if
-
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		ostr = "mov " + dst + COMMA + src
-		outp ostr
-	end if
-
-end sub
-
-'':::::
-sub emitSTORETOINT64 ( byval dvreg as IRVREG ptr, _
-			           byval svreg as IRVREG ptr ) static
-    dim dst1 as string, dst2 as string, src1 as string, src2 as string, ext as string
-    dim ostr as string
+private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
+			           	  byval svreg as IRVREG ptr ) static
+    dim as string dst1, dst2, src1, ext, ostr
     dim sdsize as integer
 
 	sdsize = irGetDataSize( svreg->dtype )
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
-    '' dst size = src size
-	if( sdsize = FB_INTEGERSIZE*2 ) then
-
-		hPrepOperand64( svreg, src1, src2 )
-
-		ostr = "mov " + dst1 + COMMA + src1
-		outp ostr
-
-		ostr = "mov " + dst2 + COMMA + src2
-		outp ostr
-
-		exit sub
-	end if
-
 	hPrepOperand( svreg, src1 )
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
-		emithMOV dst1, src1
+		hMOV dst1, src1
 
 		if( svreg->value < -1 ) then
-			emithMOV dst2, "-1"
+			hMOV dst2, "-1"
 		else
-			emithMOV dst2, "0"
+			hMOV dst2, "0"
 		end if
 
 		exit sub
@@ -1119,7 +1118,7 @@ sub emitSTORETOINT64 ( byval dvreg as IRVREG ptr, _
 
 	if( irIsSigned( svreg->dtype ) ) then
 
-		emithPUSH ext
+		hPUSH ext
 
 		ostr = "sar " + ext + ", 31"
 		outp ostr
@@ -1127,7 +1126,7 @@ sub emitSTORETOINT64 ( byval dvreg as IRVREG ptr, _
 		ostr = "mov " + dst2 + COMMA + ext
 		outp ostr
 
-		emithPOP ext
+		hPOP ext
 
 	else
 		ostr = "mov " + dst2 + ", 0"
@@ -1137,195 +1136,121 @@ sub emitSTORETOINT64 ( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitSTORE2INT ( byval dvreg as IRVREG ptr, _
-					byval ddclass as integer, _
-			        byval svreg as IRVREG ptr, _
-			        byval sdclass as integer ) static
+private sub _emitSTORF2L( byval dvreg as IRVREG ptr, _
+						  byval svreg as IRVREG ptr ) static
+    dim as string dst
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+
+	'' signed?
+	if( irIsSigned( dvreg->dtype ) ) then
+		ostr = "fistp " + dst
+		outp ostr
+
+	'' unsigned.. try a bigger type
+	else
+
+		'' handled by AST already
+
+	end if
+
+end sub
+
+'':::::
+private sub _emitSTORI2I( byval dvreg as IRVREG ptr, _
+						  byval svreg as IRVREG ptr ) static
     dim as string dst, src, aux, aux8, aux16
-    dim as integer ddsize, sdsize, reg, isfree
+    dim as integer ddsize, reg, isfree
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
 	ddsize = irGetDataSize( dvreg->dtype )
-	sdsize = irGetDataSize( svreg->dtype )
 
-	'' fpoint source
-	if( sdclass = IR_DATACLASS_FPOINT ) then
+	if( ddsize = 1 ) then
+		if( svreg->typ = IR_VREGTYPE_IMM ) then
+			ddsize = 4
+		end if
+	end if
 
-		'' byte destine? damn..
+	'' dst size = src size
+	if( (svreg->typ = IR_VREGTYPE_IMM) or _
+		(dvreg->dtype = svreg->dtype) or _
+		(irMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
+
+		'' handle SI/DI as byte
 		if( ddsize = 1 ) then
-
-			outp "sub esp, 4"
-			outp "fistp dword ptr [esp]"
-
-            '' destine is a reg?
-            if( dvreg->typ = IR_VREGTYPE_REG ) then
-
-            	'' handle DI/SI as destine
-            	if( (dvreg->reg = EMIT_INTREG_ESI) or (dvreg->reg = EMIT_INTREG_EDI) ) then
-
-            		if( irIsSigned( dvreg->dtype ) ) then
-	            		ostr = "movsx "
-            		else
-            			ostr = "movzx "
-            		end if
-            		ostr += dst + ", byte ptr [esp]"
-            		outp ostr
-
-            	else
-            		emithMOV dst, "byte ptr [esp]"
-            	end if
-
-            	outp "add esp, 4"
-
-			'' destine is a var/idx/ptr
-			else
-
-				reg = emitFindRegNotInVreg( dvreg, TRUE )
-
-				aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
-				aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
-
-				isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
-
-				if( not isfree ) then
-					emithXCHG aux, "dword ptr [esp]"
-				else
-					emithMOV aux8, "byte ptr [esp]"
-				end if
-
-				emithMOV dst, aux8
-
-				if( not isfree ) then
-					emithPOP aux
-				else
-					outp "add esp, 4"
-				end if
-
-			end if
-
-        else
-			'' signed?
-			if( irIsSigned( dvreg->dtype ) ) then
-				ostr = "fistp " + dst
-				outp ostr
-
-			'' unsigned.. try a bigger type
-			else
-
-				select case ddsize
-				'' ulongint? handled by AST already
-				case FB_INTEGERSIZE*2
-                	hReportError FB_ERRMSG_INTERNAL
-				'' uint..
-				case FB_INTEGERSIZE
-					outp "sub esp, 8"
-					outp "fistp qword ptr [esp]"
-					emithPOP dst
-					outp  "add esp, 4"
-
-				'' ushort..
-				case else
-					outp "sub esp, 4"
-					outp "fistp dword ptr [esp]"
-					emithPOP dst
-					outp  "add esp, 2"
-				end select
-
-			end if
-		end if
-
-	'' integer source
-	else
-
-		if( ddsize = FB_INTEGERSIZE*2 ) then
-			emitSTORETOINT64( dvreg, svreg )
-			exit sub
-		end if
-
-		if( ddsize = 1 ) then
-			if( svreg->typ = IR_VREGTYPE_IMM ) then
-				ddsize = 4
-			end if
-		end if
-
-		'' dst size = src size
-		if( (svreg->typ = IR_VREGTYPE_IMM) or _
-			(dvreg->dtype = svreg->dtype) or _
-			(irMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
-
-			'' handle SI/DI as byte
-			if( ddsize = 1 ) then
-				if( (svreg->reg = EMIT_INTREG_ESI) or (svreg->reg = EMIT_INTREG_EDI) ) then
+			if( svreg->typ = IR_VREGTYPE_REG ) then
+				if( (svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI) ) then
 					aux = *hGetRegName( dvreg->dtype, svreg->reg )
 					goto storeSIDI
 				end if
 			end if
+		end if
 
-			ostr = "mov " + dst + COMMA + src
+		ostr = "mov " + dst + COMMA + src
+		outp ostr
+
+	'' sizes are different..
+	else
+
+		aux = *hGetRegName( dvreg->dtype, svreg->reg )
+
+		'' dst size > src size
+		if( dvreg->dtype > svreg->dtype ) then
+			if( irIsSigned( svreg->dtype ) ) then
+				ostr = "movsx "
+			else
+				ostr = "movzx "
+			end if
+			ostr += aux + COMMA + src
 			outp ostr
 
-		'' sizes are different..
+			ostr = "mov " + dst + COMMA + aux
+			outp ostr
+
+		'' dst size < src size
 		else
+			'' handle DI/SI as byte
+			if( (ddsize = 1) and _
+				((svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI)) ) then
 
-			aux = *hGetRegName( dvreg->dtype, svreg->reg )
+storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
 
-			'' dst size > src size
-			if( dvreg->dtype > svreg->dtype ) then
-				if( irIsSigned( svreg->dtype ) ) then
-					ostr = "movsx "
-				else
-					ostr = "movzx "
+				aux8  = *hGetRegName( IR_DATATYPE_BYTE, reg )
+				aux16 = *hGetRegName( IR_DATATYPE_SHORT, reg )
+
+				isfree = hIsRegFree(IR_DATACLASS_INTEGER, reg )
+
+				if( not isfree ) then
+					hPUSH aux16
 				end if
-				ostr += aux + COMMA + src
-				outp ostr
 
+				hMOV aux16, aux
+
+            	'' handle DI/SI as destine
+            	if( (dvreg->typ = IR_VREGTYPE_REG) and _
+            		((dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI)) ) then
+					if( irIsSigned( dvreg->dtype ) ) then
+						ostr = "movsx "
+					else
+						ostr = "movzx "
+					end if
+					ostr += dst + COMMA + aux8
+					outp ostr
+				else
+					hMOV dst, aux8
+				end if
+
+				if( not isfree ) then
+					hPOP aux16
+				end if
+
+			else
 				ostr = "mov " + dst + COMMA + aux
 				outp ostr
-
-			'' dst size < src size
-			else
-				'' handle DI/SI as byte
-				if( (ddsize = 1) and _
-					((svreg->reg = EMIT_INTREG_ESI) or (svreg->reg = EMIT_INTREG_EDI)) ) then
-
-storeSIDI:			reg = emitFindRegNotInVreg( dvreg, TRUE )
-
-					aux8  = *hGetRegName( IR_DATATYPE_BYTE, reg )
-					aux16 = *hGetRegName( IR_DATATYPE_SHORT, reg )
-
-					isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
-
-					if( not isfree ) then
-						emithPUSH aux16
-					end if
-
-					emithMOV aux16, aux
-
-            		'' handle DI/SI as destine
-            		if( (dvreg->typ = IR_VREGTYPE_REG) and _
-            			((dvreg->reg = EMIT_INTREG_ESI) or (dvreg->reg = EMIT_INTREG_EDI)) ) then
-						if( irIsSigned( dvreg->dtype ) ) then
-							ostr = "movsx "
-						else
-							ostr = "movzx "
-						end if
-						ostr += dst + COMMA + aux8
-						outp ostr
-					else
-						emithMOV dst, aux8
-					end if
-
-					if( not isfree ) then
-						emithPOP aux16
-					end if
-
-				else
-					ostr = "mov " + dst + COMMA + aux
-					outp ostr
-				end if
 			end if
 		end if
 	end if
@@ -1333,32 +1258,165 @@ storeSIDI:			reg = emitFindRegNotInVreg( dvreg, TRUE )
 end sub
 
 '':::::
-private sub emithULONG2DBL( byval svreg as IRVREG ptr ) static
-	dim as string label, src, ostr
+private sub _emitSTORL2I( byval dvreg as IRVREG ptr, _
+						  byval svreg as IRVREG ptr ) static
 
-	label = *hMakeTmpStr( )
-
-	hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
-	ostr = "cmp " +  src + ", 0"
-
-	outp ostr
-	ostr = "jns " + label
-	outp ostr
-	emithPUSH( "16447" )
-	emithPUSH( "-2147483648" )
-	emithPUSH( "0" )
-	outp "fldt [esp]"
-	outp "add esp, 12"
-	outp "faddp"
-	emitLABEL( label )
+	'' been too complex due the SI/DI crap, leave it to I2I
+	_emitSTORL2I( dvreg, svreg )
 
 end sub
 
 '':::::
-sub emitSTORE2FLT ( byval dvreg as IRVREG ptr, _
-					byval ddclass as integer, _
-			        byval svreg as IRVREG ptr, _
-			        byval sdclass as integer ) static
+private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
+						  byval svreg as IRVREG ptr ) static
+    dim as string dst, src, aux, aux8, aux16
+    dim as integer ddsize, reg, isfree
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	ddsize = irGetDataSize( dvreg->dtype )
+
+	'' byte destine? damn..
+	if( ddsize = 1 ) then
+
+		outp "sub esp, 4"
+		outp "fistp dword ptr [esp]"
+
+        '' destine is a reg?
+        if( dvreg->typ = IR_VREGTYPE_REG ) then
+
+           	'' handle DI/SI as destine
+           	if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
+
+           		if( irIsSigned( dvreg->dtype ) ) then
+	           		ostr = "movsx "
+           		else
+           			ostr = "movzx "
+           		end if
+           		ostr += dst + ", byte ptr [esp]"
+           		outp ostr
+
+           	else
+           		hMOV dst, "byte ptr [esp]"
+           	end if
+
+           	outp "add esp, 4"
+
+		'' destine is a var/idx/ptr
+		else
+
+			reg = hFindRegNotInVreg( dvreg, TRUE )
+
+			aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
+			aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+
+			isfree = hIsRegFree( IR_DATATYPE_INTEGER, reg )
+
+			if( not isfree ) then
+				hXCHG aux, "dword ptr [esp]"
+			else
+				hMOV aux8, "byte ptr [esp]"
+			end if
+
+			hMOV dst, aux8
+
+			if( not isfree ) then
+				hPOP aux
+			else
+				outp "add esp, 4"
+			end if
+
+		end if
+
+	else
+		'' signed?
+		if( irIsSigned( dvreg->dtype ) ) then
+			ostr = "fistp " + dst
+			outp ostr
+
+		'' unsigned.. try a bigger type
+		else
+			'' uint?
+			if( ddsize = FB_INTEGERSIZE ) then
+				outp "sub esp, 8"
+				outp "fistp qword ptr [esp]"
+				hPOP dst
+				outp  "add esp, 4"
+
+			'' ushort..
+			else
+				outp "sub esp, 4"
+				outp "fistp dword ptr [esp]"
+				hPOP dst
+				outp  "add esp, 2"
+			end if
+		end if
+
+	end if
+
+end sub
+
+'':::::
+private sub _emitSTORL2F( byval dvreg as IRVREG ptr, _
+			        	  byval svreg as IRVREG ptr ) static
+    dim as string dst, src, aux
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
+
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+
+			hPrepOperand64( svreg, src, aux )
+
+			hPUSH( aux )
+			hPUSH( src )
+
+			ostr = "fild " + dtypeTB(svreg->dtype).mname + " [esp]"
+			outp ostr
+
+			outp "add esp, 8"
+
+		'' unsigned..
+		else
+			hPrepOperand64( svreg, src, aux )
+			hPUSH aux
+			hPUSH src
+			outp "fild qword ptr [esp]"
+			outp "add esp, 8"
+			hULONG2DBL( svreg )
+
+		end if
+
+	'' not a reg or imm
+	else
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+			ostr = "fild " + src
+			outp ostr
+
+		'' unsigned, try a bigger type..
+		else
+			ostr = "fild " + src
+			outp ostr
+			hULONG2DBL( svreg )
+
+		end if
+	end if
+
+	ostr = "fstp " + dst
+	outp ostr
+
+end sub
+
+'':::::
+private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
+			        	  byval svreg as IRVREG ptr ) static
     dim as string dst, src, aux
     dim as integer ddsize, sdsize, reg, isfree
     dim as string ostr
@@ -1372,14 +1430,14 @@ sub emitSTORE2FLT ( byval dvreg as IRVREG ptr, _
 	'' byte source? damn..
 	if( sdsize = 1 ) then
 
-		reg = emitFindRegNotInVreg( svreg )
+		reg = hFindRegNotInVreg( svreg )
 
 		aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
 
-		isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
+		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
 		if( not isfree ) then
-			emithPUSH aux
+			hPUSH aux
 		end if
 
 		if( irIsSigned( svreg->dtype ) ) then
@@ -1390,195 +1448,176 @@ sub emitSTORE2FLT ( byval dvreg as IRVREG ptr, _
 		ostr += aux + COMMA + src
 		outp ostr
 
-		emithPUSH aux
+		hPUSH aux
 		outp "fild dword ptr [esp]"
 		outp "add esp, 4"
 
 		if( not isfree ) then
-			emithPOP aux
+			hPOP aux
 		end if
 
 		ostr = "fstp " + dst
 		outp ostr
 
-	else
-		'' integer source
-		if( sdclass <> IR_DATACLASS_FPOINT ) then
-			if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
+		exit sub
+	end if
 
-				'' signed?
-				if( irIsSigned( svreg->dtype ) ) then
+	''
+	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
-					'' longint?
-					if( sdsize = FB_INTEGERSIZE*2 ) then
-						hPrepOperand64( svreg, src, aux )
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
 
-						emithPUSH( aux )
-						emithPUSH( src )
+			'' not an integer? make it
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+				src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+			end if
 
-					else
-						'' not an integer? make it
-						if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
-							src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
-						end if
+			hPUSH src
 
-						emithPUSH src
+			ostr = "fild " + dtypeTB(svreg->dtype).mname + " [esp]"
+			outp ostr
 
-					end if
+			outp "add esp, 4"
 
-					ostr = "fild " + dtypeTB(svreg->dtype).mname + " [esp]"
-					outp ostr
+		'' unsigned..
+		else
 
-					'' longint?
-					if( sdsize = FB_INTEGERSIZE*2 ) then
-						outp "add esp, 8"
-					else
-						outp "add esp, 4"
-					end if
+			'' uint..
+			if( sdsize = FB_INTEGERSIZE ) then
+				hPUSH "0"
+				hPUSH src
+				outp "fild qword ptr [esp]"
+				outp "add esp, 8"
 
-				'' unsigned..
-				else
-
-					select case sdsize
-					'' ulongint? damn..
-					case FB_INTEGERSIZE*2
-						hPrepOperand64( svreg, src, aux )
-						emithPUSH aux
-						emithPUSH src
-						outp "fild qword ptr [esp]"
-						outp "add esp, 8"
-						emithULONG2DBL( svreg )
-
-					'' uint..
-					case FB_INTEGERSIZE
-						emithPUSH "0"
-						emithPUSH src
-						outp "fild qword ptr [esp]"
-						outp "add esp, 8"
-
-					'' ushort..
-					case else
-						if( svreg->typ <> IR_VREGTYPE_IMM ) then
-							emithPUSH "0"
-						end if
-
-						emithPUSH src
-						outp "fild dword ptr [esp]"
-
-						if( svreg->typ <> IR_VREGTYPE_IMM ) then
-							outp "add esp, 6"
-						else
-							outp "add esp, 4"
-						end if
-					end select
-
+			'' ushort..
+			else
+				if( svreg->typ <> IR_VREGTYPE_IMM ) then
+					hPUSH "0"
 				end if
 
-			'' not a reg or imm
-			else
+				hPUSH src
+				outp "fild dword ptr [esp]"
 
-				'' signed?
-				if( irIsSigned( svreg->dtype ) ) then
-					ostr = "fild " + src
-					outp ostr
-
-				'' unsigned, try a bigger type..
+				if( svreg->typ <> IR_VREGTYPE_IMM ) then
+					outp "add esp, 6"
 				else
-
-					select case sdsize
-					'' ulongint? damn..
-					case FB_INTEGERSIZE*2
-						ostr = "fild " + src
-						outp ostr
-						emithULONG2DBL( svreg )
-
-					'' uint..
-					case FB_INTEGERSIZE
-						emithPUSH "0"
-						emithPUSH src
-						outp "fild qword ptr [esp]"
-						outp "add esp, 8"
-
-					'' ushort..
-					case else
-						emithPUSH "0"
-						emithPUSH src
-						outp "fild dword ptr [esp]"
-						outp "add esp, 6"
-					end select
-
+					outp "add esp, 4"
 				end if
 			end if
+
+		end if
+
+	'' not a reg or imm
+	else
+
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+			ostr = "fild " + src
+			outp ostr
+
+		'' unsigned, try a bigger type..
+		else
+			'' uint..
+			if( sdsize = FB_INTEGERSIZE ) then
+				hPUSH "0"
+				hPUSH src
+				outp "fild qword ptr [esp]"
+				outp "add esp, 8"
+
+			'' ushort..
+			else
+				hPUSH "0"
+				hPUSH src
+				outp "fild dword ptr [esp]"
+				outp "add esp, 6"
+			end if
+
+		end if
+	end if
+
+	ostr = "fstp " + dst
+	outp ostr
+
+end sub
+
+'':::::
+private sub _emitSTORF2F( byval dvreg as IRVREG ptr, _
+			        	  byval svreg as IRVREG ptr ) static
+    dim as string dst, src
+    dim as integer ddsize, sdsize
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	ddsize = irGetDataSize( dvreg->dtype )
+	sdsize = irGetDataSize( svreg->dtype )
+
+	'' on fpu stack?
+	if( svreg->typ = IR_VREGTYPE_REG ) then
+		ostr = "fstp " + dst
+		outp ostr
+
+	else
+		'' same size? just copy..
+		if( sdsize = ddsize ) then
+
+			hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 0 )
+			ostr = "push " + src
+			outp ostr
+
+			if( sdsize > 4 ) then
+				hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
+				ostr = "push " + src
+				outp ostr
+
+				hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 4 )
+				ostr = "pop " + dst
+				outp ostr
+			end if
+
+			hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 0 )
+			ostr = "pop " + dst
+			outp ostr
+
+		'' diff sizes, convert..
+		else
+			ostr = "fld " + src
+			outp ostr
 
 			ostr = "fstp " + dst
 			outp ostr
-
-		'' fpoint source
-		else
-			'' on fpu stack?
-			if( svreg->typ = IR_VREGTYPE_REG ) then
-				ostr = "fstp " + dst
-				outp ostr
-
-			else
-				'' same size? just copy..
-				if( sdsize = ddsize ) then
-
-					hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 0 )
-					ostr = "push " + src
-					outp ostr
-
-					if( sdsize > 4 ) then
-						hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
-						ostr = "push " + src
-						outp ostr
-
-						hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 4 )
-						ostr = "pop " + dst
-						outp ostr
-					end if
-
-					hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 0 )
-					ostr = "pop " + dst
-					outp ostr
-
-				'' diff sizes, convert..
-				else
-					ostr = "fld " + src
-					outp ostr
-
-					ostr = "fstp " + dst
-					outp ostr
-				end if
-			end if
 		end if
 	end if
 
 end sub
 
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' load
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 '':::::
-sub emitSTORE( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
-    dim ddclass as integer, sdclass as integer
+private sub _emitLOADL2L( byval dvreg as IRVREG ptr, _
+			              byval svreg as IRVREG ptr ) static
+    dim dst1 as string, dst2 as string, src1 as string, src2 as string
+    dim ostr as string
 
-	ddclass = irGetDataClass( dvreg->dtype )
-	sdclass = irGetDataClass( svreg->dtype )
+	hPrepOperand64( dvreg, dst1, dst2 )
+	hPrepOperand64( svreg, src1, src2 )
 
-	'' integer destine
-	if( ddclass = IR_DATACLASS_INTEGER ) then
-		emitSTORE2INT( dvreg, ddclass, svreg, sdclass )
+	ostr = "mov " + dst1 + COMMA + src1
+	outp ostr
 
-	'' fpoint destine
-	else
-		emitSTORE2FLT( dvreg, ddclass, svreg, sdclass )
-	end if
+	ostr = "mov " + dst2 + COMMA + src2
+	outp ostr
 
 end sub
 
 '':::::
-sub emitLOADTOINT64( byval dvreg as IRVREG ptr, _
-			         byval svreg as IRVREG ptr ) static
-    dim dst1 as string, dst2 as string, src1 as string, src2 as string, ext as string
+private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
+			              byval svreg as IRVREG ptr ) static
+    dim dst1 as string, dst2 as string, src1 as string
     dim sdsize as integer
     dim ostr as string
 
@@ -1586,31 +1625,17 @@ sub emitLOADTOINT64( byval dvreg as IRVREG ptr, _
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
-    '' dst size = src size
-	if( sdsize = FB_INTEGERSIZE*2 ) then
-
-		hPrepOperand64( svreg, src1, src2 )
-
-		ostr = "mov " + dst1 + COMMA + src1
-		outp ostr
-
-		ostr = "mov " + dst2 + COMMA + src2
-		outp ostr
-
-		exit sub
-	end if
-
 	hPrepOperand( svreg, src1 )
 
 	'' immediate?
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
 
-        emithMOV dst1, src1
+        hMOV dst1, src1
 
 		if( svreg->value < -1 ) then
-			emithMOV dst2, "-1"
+			hMOV dst2, "-1"
 		else
-			emithMOV dst2, "0"
+			hMOV dst2, "0"
 		end if
 
 		exit sub
@@ -1623,10 +1648,10 @@ sub emitLOADTOINT64( byval dvreg as IRVREG ptr, _
 			ostr = "movsx " + dst1 + COMMA + src1
 			outp ostr
 		else
-			emithMOV dst1, src1
+			hMOV dst1, src1
 		end if
 
-		emithMOV dst2, dst1
+		hMOV dst2, dst1
 
 		ostr = "sar " + dst2 + ", 31"
 		outp ostr
@@ -1637,273 +1662,359 @@ sub emitLOADTOINT64( byval dvreg as IRVREG ptr, _
 			ostr = "movzx " + dst1 + COMMA + src1
 			outp ostr
 		else
-			emithMOV dst1, src1
+			hMOV dst1, src1
 		end if
 
-		emithMOV dst2, "0"
+		hMOV dst2, "0"
 
 	end if
 
 end sub
 
 '':::::
-sub emitLOAD2INT( byval dvreg as IRVREG ptr, _
-				  byval ddclass as integer, _
-			      byval svreg as IRVREG ptr, _
-			      byval sdclass as integer ) static
-    dim as string dst, src, aux, aux8, aux16
-    dim as integer ddsize, sdsize, reg, isfree
+private sub _emitLOADF2L( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
+
+    dim as string dst, src, aux
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    sdsize = irGetDataSize( svreg->dtype )
+	if( svreg->typ <> IR_VREGTYPE_REG ) then
+		ostr = "fld " + src
+		outp ostr
+	end if
+
+	'' signed?
+	if( irIsSigned( dvreg->dtype ) ) then
+
+		outp "sub esp, 8"
+
+		ostr = "fistp " + dtypeTB(dvreg->dtype).mname + " [esp]"
+		outp ostr
+
+		hPrepOperand64( dvreg, dst, aux )
+
+		hPOP( dst )
+		hPOP( aux )
+
+
+	'' unsigned.. try a bigger type
+	else
+
+		'' handled by AST already..
+
+	end if
+
+end sub
+
+'':::::
+private sub _emitLOADI2I( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
+
+    dim as string dst, src, aux, aux8, aux16
+    dim as integer ddsize, reg, isfree
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
 	ddsize = irGetDataSize( dvreg->dtype )
 
-	'' integer source
-	if( sdclass = IR_DATACLASS_INTEGER ) then
-
-		if( ddsize = FB_INTEGERSIZE*2 ) then
-			emitLOADTOINT64( dvreg, svreg )
-			exit sub
+	if( ddsize = 1 ) then
+		if( svreg->typ = IR_VREGTYPE_IMM ) then
+			ddsize = 4
 		end if
+	end if
 
+	'' dst size = src size
+	if( (dvreg->dtype = svreg->dtype) or _
+		(irMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
+
+		'' handle SI/DI as byte destine and source
 		if( ddsize = 1 ) then
-			if( svreg->typ = IR_VREGTYPE_IMM ) then
-				ddsize = 4
-			end if
-		end if
-
-		'' dst size = src size
-		if( (dvreg->dtype = svreg->dtype) or _
-			(irMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
-
-			'' handle SI/DI as byte destine and source
-			if( ddsize = 1 ) then
-				if( (dvreg->reg = EMIT_INTREG_ESI) or (dvreg->reg = EMIT_INTREG_EDI) ) then
+			if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
+				goto loadSIDI
+			elseif( svreg->typ = IR_VREGTYPE_REG ) then
+				if( (svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI) ) then
 					goto loadSIDI
-				elseif( (svreg->reg = EMIT_INTREG_ESI) or (svreg->reg = EMIT_INTREG_EDI) ) then
-					goto loadSIDI
-				end if
-			end if
-
-			ostr = "mov " + dst + COMMA + src
-			outp ostr
-
-		else
-			'' dst size > src size
-			if( dvreg->dtype > svreg->dtype ) then
-				if( irIsSigned( svreg->dtype ) ) then
-					ostr = "movsx "
-				else
-					ostr = "movzx "
-				end if
-				ostr += dst + COMMA + src
-				outp ostr
-
-			'' dst dize < src size
-			else
-				'' is src a reg too?
-				if( svreg->typ = IR_VREGTYPE_REG ) then
-					if( svreg->reg <> dvreg->reg ) then
-						aux = *hGetRegName( dvreg->dtype, svreg->reg )
-						ostr = "mov " + dst + COMMA + aux
-						outp ostr
-					end if
-
-				'' src is not a reg
-				else
-					'' handle DI/SI as byte
-					if( (ddsize = 1) and _
-						((dvreg->reg = EMIT_INTREG_ESI) or (dvreg->reg = EMIT_INTREG_EDI)) ) then
-
-loadSIDI:				reg = emitFindRegNotInVreg( dvreg, TRUE )
-
-						aux8  = *hGetRegName( IR_DATATYPE_BYTE, reg )
-						aux16 = *hGetRegName( IR_DATATYPE_SHORT, reg )
-
-						isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
-
-						if( not isfree ) then
-							emithPUSH aux16
-						end if
-
-						hPrepOperand( svreg, src, dvreg->dtype )
-
-						'' handle SI/DI as source
-						if( (svreg->typ = IR_VREGTYPE_REG) and _
-            				((svreg->reg = EMIT_INTREG_ESI) or (svreg->reg = EMIT_INTREG_EDI)) ) then
-							emithMOV aux16, src
-						else
-							emithMOV aux8, src
-						end if
-
-						if( irIsSigned( svreg->dtype ) ) then
-							ostr = "movsx "
-						else
-							ostr = "movzx "
-						end if
-						ostr += dst + COMMA + aux8
-						outp ostr
-
-						if( not isfree ) then
-							emithPOP aux16
-						end if
-
-					'' SI/DI not used as byte
-					else
-						hPrepOperand( svreg, src, dvreg->dtype )
-						ostr = "mov " + dst + COMMA + src
-						outp ostr
-					end if
 				end if
 			end if
 		end if
 
-	'' fpoint source
+		ostr = "mov " + dst + COMMA + src
+		outp ostr
+
 	else
-		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			ostr = "fld " + src
+		'' dst size > src size
+		if( dvreg->dtype > svreg->dtype ) then
+			if( irIsSigned( svreg->dtype ) ) then
+				ostr = "movsx "
+			else
+				ostr = "movzx "
+			end if
+			ostr += dst + COMMA + src
 			outp ostr
-		end if
 
-		'' byte destine? damn..
-		if( ddsize = 1 ) then
+		'' dst dize < src size
+		else
+			'' is src a reg too?
+			if( svreg->typ = IR_VREGTYPE_REG ) then
+				if( svreg->reg <> dvreg->reg ) then
+					aux = *hGetRegName( dvreg->dtype, svreg->reg )
+					ostr = "mov " + dst + COMMA + aux
+					outp ostr
+				end if
 
-			outp "sub esp, 4"
-            outp "fistp dword ptr [esp]"
+			'' src is not a reg
+			else
+				'' handle DI/SI as byte
+				if( (ddsize = 1) and _
+					((dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI)) ) then
 
-            '' destine is a reg
-            if( dvreg->typ = IR_VREGTYPE_REG ) then
-            	'' handle DI/SI as destine
-            	if( (dvreg->reg = EMIT_INTREG_ESI) or (dvreg->reg = EMIT_INTREG_EDI) ) then
-					if( irIsSigned( dvreg->dtype ) ) then
+loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
+
+					aux8  = *hGetRegName( IR_DATATYPE_BYTE, reg )
+					aux16 = *hGetRegName( IR_DATATYPE_SHORT, reg )
+
+					isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+
+					if( not isfree ) then
+						hPUSH aux16
+					end if
+
+					hPrepOperand( svreg, src, dvreg->dtype )
+
+					'' handle SI/DI as source
+					if( (svreg->typ = IR_VREGTYPE_REG) and _
+           				((svreg->reg = EMIT_REG_ESI) or (svreg->reg = EMIT_REG_EDI)) ) then
+						hMOV aux16, src
+					else
+						hMOV aux8, src
+					end if
+
+					if( irIsSigned( svreg->dtype ) ) then
 						ostr = "movsx "
 					else
 						ostr = "movzx "
 					end if
-					ostr += dst + ", byte ptr [esp]"
+					ostr += dst + COMMA + aux8
 					outp ostr
 
-				else
-					emithMOV dst, "byte ptr [esp]"
-				end if
-
-				outp "add esp, 4"
-
-            '' destine is a var/idx/ptr
-            else
-
-				reg = emitFindRegNotInVreg( dvreg, TRUE )
-
-				aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
-				aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
-
-				isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
-
-				if( not isfree ) then
-					emithXCHG aux, "dword ptr [esp]"
-				else
-					emithMOV aux8, "byte ptr [esp]"
-				end if
-
-				emithMOV dst, aux8
-
-				if( not isfree ) then
-					emithPOP aux
-				else
-					outp "add esp, 4"
-				end if
-
-            end if
-
-		else
-
-			'' signed?
-			if( irIsSigned( dvreg->dtype ) ) then
-
-				'' longint?
-				if( ddsize = FB_INTEGERSIZE*2 ) then
-					outp "sub esp, 8"
-				else
-					outp "sub esp, 4"
-				end if
-
-				ostr = "fistp " + dtypeTB(dvreg->dtype).mname + " [esp]"
-				outp ostr
-
-				'' longint?
-				if( ddsize = FB_INTEGERSIZE*2 ) then
-			    	hPrepOperand64( dvreg, dst, aux )
-
-					emithPOP( dst )
-					emithPOP( aux )
-
-				else
-					'' not an integer? make it
-					if( ddsize < FB_INTEGERSIZE ) then
-						dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
+					if( not isfree ) then
+						hPOP aux16
 					end if
 
-					emithPOP dst
+				'' SI/DI not used as byte
+				else
+					hPrepOperand( svreg, src, dvreg->dtype )
+					ostr = "mov " + dst + COMMA + src
+					outp ostr
 				end if
-
-			'' unsigned.. try a bigger type
-			else
-
-				select case ddsize
-				'' ulongint? handled by AST already..
-				case FB_INTEGERSIZE*2
-                    hReportError FB_ERRMSG_INTERNAL
-				'' uint..
-				case FB_INTEGERSIZE
-					outp "sub esp, 8"
-					outp "fistp qword ptr [esp]"
-					emithPOP dst
-					outp  "add esp, 4"
-
-				'' ushort..
-				case else
-					outp "sub esp, 4"
-					outp "fistp dword ptr [esp]"
-					emithPOP dst
-					outp  "add esp, 2"
-				end select
-
 			end if
-
 		end if
 	end if
 
 end sub
 
 '':::::
-sub emitLOAD2FLT( byval dvreg as IRVREG ptr, _
-				  byval ddclass as integer, _
-			      byval svreg as IRVREG ptr, _
-			      byval sdclass as integer ) static
+private sub _emitLOADL2I( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
+
+	'' been too complex due the SI/DI crap, leave it to I2I
+	_emitLOADI2I( dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
+
+    dim as string dst, src, aux, aux8
+    dim as integer ddsize, reg, isfree
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	ddsize = irGetDataSize( dvreg->dtype )
+
+	if( svreg->typ <> IR_VREGTYPE_REG ) then
+		ostr = "fld " + src
+		outp ostr
+	end if
+
+	'' byte destine? damn..
+	if( ddsize = 1 ) then
+
+		outp "sub esp, 4"
+        outp "fistp dword ptr [esp]"
+
+    	'' destine is a reg
+    	if( dvreg->typ = IR_VREGTYPE_REG ) then
+    		'' handle DI/SI as destine
+        	if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
+				if( irIsSigned( dvreg->dtype ) ) then
+					ostr = "movsx "
+				else
+					ostr = "movzx "
+				end if
+				ostr += dst + ", byte ptr [esp]"
+				outp ostr
+
+			else
+				hMOV dst, "byte ptr [esp]"
+			end if
+
+			outp "add esp, 4"
+
+		'' destine is a var/idx/ptr
+        else
+
+			reg = hFindRegNotInVreg( dvreg, TRUE )
+
+			aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
+			aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+
+			isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+
+			if( not isfree ) then
+				hXCHG aux, "dword ptr [esp]"
+			else
+				hMOV aux8, "byte ptr [esp]"
+			end if
+
+			hMOV dst, aux8
+
+			if( not isfree ) then
+				hPOP aux
+			else
+				outp "add esp, 4"
+			end if
+
+        end if
+
+	else
+
+		'' signed?
+		if( irIsSigned( dvreg->dtype ) ) then
+
+			outp "sub esp, 4"
+
+			ostr = "fistp " + dtypeTB(dvreg->dtype).mname + " [esp]"
+			outp ostr
+
+			'' not an integer? make it
+			if( ddsize < FB_INTEGERSIZE ) then
+				dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
+			end if
+
+			hPOP dst
+
+		'' unsigned.. try a bigger type
+		else
+
+			'' uint?
+			if( ddsize = FB_INTEGERSIZE ) then
+				outp "sub esp, 8"
+				outp "fistp qword ptr [esp]"
+				hPOP dst
+				outp  "add esp, 4"
+
+			'' ushort..
+			else
+				outp "sub esp, 4"
+				outp "fistp dword ptr [esp]"
+				hPOP dst
+				outp  "add esp, 2"
+			end if
+
+		end if
+
+	end if
+
+end sub
+
+'':::::
+private sub _emitLOADL2F( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
     dim as string dst, src, aux
-    dim as integer ddsize, sdsize, reg, isfree
+    dim as string ostr
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
+
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+
+			hPrepOperand64( svreg, src, aux )
+
+			hPUSH( aux )
+			hPUSH( src )
+
+			ostr = "fild " + dtypeTB(svreg->dtype).mname + " [esp]"
+			outp ostr
+
+			outp "add esp, 8"
+
+		'' unsigned, try a bigger type..
+		else
+
+			hPrepOperand64( svreg, src, aux )
+			hPUSH aux
+			hPUSH src
+			outp "fild qword ptr [esp]"
+			outp "add esp, 8"
+			hULONG2DBL( svreg )
+
+		end if
+
+	'' not a reg or imm
+	else
+
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+			ostr = "fild " + src
+			outp ostr
+
+		'' unsigned, try a bigger type..
+		else
+			ostr = "fild " + src
+			outp ostr
+			hULONG2DBL( svreg )
+
+		end if
+
+	end if
+
+end sub
+
+'':::::
+private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
+    dim as string dst, src, aux
+    dim as integer sdsize, isfree, reg
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
     sdsize = irGetDataSize( svreg->dtype )
-	ddsize = irGetDataSize( dvreg->dtype )
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
 
-		reg = emitFindRegNotInVreg( svreg )
+		reg = hFindRegNotInVreg( svreg )
 
 		aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
 
-		isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
+		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
 		if( not isfree ) then
-			emithPUSH aux
+			hPUSH aux
 		end if
 
 		if( irIsSigned( svreg->dtype ) ) then
@@ -1914,147 +2025,103 @@ sub emitLOAD2FLT( byval dvreg as IRVREG ptr, _
 			outp ostr
 		end if
 
-		emithPUSH aux
+		hPUSH aux
 		outp "fild dword ptr [esp]"
 		outp "add esp, 4"
 
 		if( not isfree ) then
-			emithPOP aux
+			hPOP aux
 		end if
 
-	else
-		'' fpoint source
-		if( sdclass = IR_DATACLASS_FPOINT ) then
-			ostr = "fld " + src
+		exit sub
+	end if
+
+	''
+	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
+
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+
+			'' not an integer? make it
+			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
+				src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+			end if
+
+			hPUSH src
+
+			ostr = "fild " + dtypeTB(svreg->dtype).mname + " [esp]"
 			outp ostr
 
-		'' integer source
+			outp "add esp, 4"
+
+		'' unsigned, try a bigger type..
 		else
-			if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
-				'' signed?
-				if( irIsSigned( svreg->dtype ) ) then
+			'' uint?
+			if( sdsize = FB_INTEGERSIZE ) then
+				hPUSH "0"
+				hPUSH src
+				outp "fild qword ptr [esp]"
+				outp "add esp, 8"
 
-					'' longint?
-					if( sdsize = FB_INTEGERSIZE*2 ) then
-						hPrepOperand64( svreg, src, aux )
-
-						emithPUSH( aux )
-						emithPUSH( src )
-
-					else
-						'' not an integer? make it
-						if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
-							src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
-						end if
-
-						emithPUSH src
-					end if
-
-					ostr = "fild " + dtypeTB(svreg->dtype).mname + " [esp]"
-					outp ostr
-
-					'' longint?
-					if( sdsize = FB_INTEGERSIZE*2 ) then
-						outp "add esp, 8"
-					else
-						outp "add esp, 4"
-					end if
-
-				'' unsigned, try a bigger type..
-				else
-
-					select case sdsize
-					'' ulongint? damn..
-					case FB_INTEGERSIZE*2
-						hPrepOperand64( svreg, src, aux )
-						emithPUSH aux
-						emithPUSH src
-						outp "fild qword ptr [esp]"
-						outp "add esp, 8"
-						emithULONG2DBL( svreg )
-
-					'' uint..
-					case FB_INTEGERSIZE
-						emithPUSH "0"
-						emithPUSH src
-						outp "fild qword ptr [esp]"
-						outp "add esp, 8"
-
-					'' ushort..
-					case else
-						if( svreg->typ <> IR_VREGTYPE_IMM ) then
-							emithPUSH "0"
-						end if
-
-						emithPUSH src
-						outp "fild dword ptr [esp]"
-
-						if( svreg->typ <> IR_VREGTYPE_IMM ) then
-							outp "add esp, 6"
-						else
-							outp "add esp, 4"
-						end if
-					end select
-
-				end if
-
-			'' not a reg or imm
+			'' ushort..
 			else
-
-				'' signed?
-				if( irIsSigned( svreg->dtype ) ) then
-					ostr = "fild " + src
-					outp ostr
-
-				'' unsigned, try a bigger type..
-				else
-					select case sdsize
-					'' ulongint? damn..
-					case FB_INTEGERSIZE*2
-						ostr = "fild " + src
-						outp ostr
-						emithULONG2DBL( svreg )
-
-					'' uint..
-					case FB_INTEGERSIZE
-						emithPUSH "0"
-						emithPUSH src
-						outp "fild qword ptr [esp]"
-						outp "add esp, 8"
-
-					'' ushort..
-					case else
-						emithPUSH "0"
-						emithPUSH src
-						outp "fild dword ptr [esp]"
-						outp "add esp, 6"
-					end select
+				if( svreg->typ <> IR_VREGTYPE_IMM ) then
+					hPUSH "0"
 				end if
 
+				hPUSH src
+				outp "fild dword ptr [esp]"
+
+				if( svreg->typ <> IR_VREGTYPE_IMM ) then
+					outp "add esp, 6"
+				else
+					outp "add esp, 4"
+				end if
+			end if
+
+		end if
+
+	'' not a reg or imm
+	else
+
+		'' signed?
+		if( irIsSigned( svreg->dtype ) ) then
+			ostr = "fild " + src
+			outp ostr
+
+		'' unsigned, try a bigger type..
+		else
+			'' uint..
+			if( sdsize = FB_INTEGERSIZE ) then
+				hPUSH "0"
+				hPUSH src
+				outp "fild qword ptr [esp]"
+				outp "add esp, 8"
+
+			'' ushort..
+			else
+				hPUSH "0"
+				hPUSH src
+				outp "fild dword ptr [esp]"
+				outp "add esp, 6"
 			end if
 		end if
+
 	end if
 
 end sub
 
 '':::::
-sub emitLOAD( byval dvreg as IRVREG ptr, _
-			  byval svreg as IRVREG ptr ) static
-    dim ddclass as integer, sdclass as integer
+private sub _emitLOADF2F( byval dvreg as IRVREG ptr, _
+			      		  byval svreg as IRVREG ptr ) static
+    dim as string src
+    dim as string ostr
 
-	ddclass = irGetDataClass( dvreg->dtype )
-	sdclass = irGetDataClass( svreg->dtype )
+	hPrepOperand( svreg, src )
 
-	'' integer destine
-	if( ddclass = IR_DATACLASS_INTEGER ) then
-		emitLOAD2INT( dvreg, ddclass, svreg, sdclass )
-
-	'' fpoint destine
-	else
-	    emitLOAD2FLT( dvreg, ddclass, svreg, sdclass )
-
-	end if
+	ostr = "fld " + src
+	outp ostr
 
 end sub
 
@@ -2063,8 +2130,47 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitADD64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitMOVL( byval dvreg as IRVREG ptr, _
+			   		   byval svreg as IRVREG ptr ) static
+    dim dst1 as string, dst2 as string, src1 as string, src2 as string
+    dim ostr as string
+
+	hPrepOperand64( dvreg, dst1, dst2 )
+	hPrepOperand64( svreg, src1, src2 )
+
+	ostr = "mov " + dst1 + COMMA + src1
+	outp ostr
+
+	ostr = "mov " + dst2 + COMMA + src2
+	outp ostr
+
+end sub
+
+'':::::
+private sub _emitMOVI( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
+    dim dst as string, src as string
+    dim ostr as string
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	ostr = "mov " + dst + COMMA + src
+	outp ostr
+
+end sub
+
+'':::::
+private sub _emitMOVF( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
+
+	'' do nothing, both are regs
+
+end sub
+
+'':::::
+private sub _emitADDL( byval dvreg as IRVREG ptr, _
+			    	   byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -2080,65 +2186,65 @@ sub emitADD64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitADD( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitADDI( byval dvreg as IRVREG ptr, _
+			  		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim doinc as integer, dodec as integer
     dim ostr as string
 
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitADD64( dvreg, svreg )
-		exit sub
-	end if
-
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	select case irGetDataClass( dvreg->dtype )
-	case IR_DATACLASS_INTEGER
-		doinc = FALSE
-		dodec = FALSE
-		if( svreg->typ = IR_VREGTYPE_IMM ) then
-			select case svreg->value
-			case 1
-				doinc = TRUE
-			case -1
-				dodec = TRUE
-			end select
-		end if
+	doinc = FALSE
+	dodec = FALSE
+	if( svreg->typ = IR_VREGTYPE_IMM ) then
+		select case svreg->value
+		case 1
+			doinc = TRUE
+		case -1
+			dodec = TRUE
+		end select
+	end if
 
-		if( doinc ) then
-			ostr = "inc " + dst
-			outp ostr
-		elseif( dodec ) then
-			ostr = "dec " + dst
-			outp ostr
-		else
-			ostr = "add " + dst + COMMA + src
-			outp ostr
-		end if
-
-	case IR_DATACLASS_FPOINT
-		if( svreg->typ = IR_VREGTYPE_REG ) then
-			ostr = "faddp"
-			outp ostr
-		else
-			if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
-				ostr = "fadd " + src
-				outp ostr
-			else
-				ostr = "fiadd " + src
-				outp ostr
-			end if
-		end if
-	end select
+	if( doinc ) then
+		ostr = "inc " + dst
+		outp ostr
+	elseif( dodec ) then
+		ostr = "dec " + dst
+		outp ostr
+	else
+		ostr = "add " + dst + COMMA + src
+		outp ostr
+	end if
 
 end sub
 
 '':::::
-sub emitSUB64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitADDF( byval dvreg as IRVREG ptr, _
+			  		   byval svreg as IRVREG ptr ) static
+    dim src as string
+    dim ostr as string
+
+	hPrepOperand( svreg, src )
+
+	if( svreg->typ = IR_VREGTYPE_REG ) then
+		ostr = "faddp"
+		outp ostr
+	else
+		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+			ostr = "fadd " + src
+			outp ostr
+		else
+			ostr = "fiadd " + src
+			outp ostr
+		end if
+	end if
+
+end sub
+
+'':::::
+private sub _emitSUBL( byval dvreg as IRVREG ptr, _
+			   		   byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -2154,78 +2260,81 @@ sub emitSUB64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitSUB( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitSUBI( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim doinc as integer, dodec as integer
     dim ostr as string
 
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitSUB64( dvreg, svreg )
-		exit sub
-	end if
-
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	select case irGetDataClass( dvreg->dtype )
-	case IR_DATACLASS_INTEGER
-		doinc = FALSE
-		dodec = FALSE
-		if( svreg->typ = IR_VREGTYPE_IMM ) then
-			select case svreg->value
-			case 1
-				dodec = TRUE
-			case -1
-				doinc = TRUE
-			end select
+	doinc = FALSE
+	dodec = FALSE
+	if( svreg->typ = IR_VREGTYPE_IMM ) then
+		select case svreg->value
+		case 1
+			dodec = TRUE
+		case -1
+			doinc = TRUE
+		end select
+	end if
 
-		end if
-		if( dodec ) then
-			ostr = "dec " + dst
-			outp ostr
-		elseif( doinc ) then
-			ostr = "inc " + dst
-			outp ostr
-		else
-			ostr = "sub " + dst + COMMA + src
-			outp ostr
-		end if
-
-	case IR_DATACLASS_FPOINT
-		if( svreg->typ = IR_VREGTYPE_REG ) then
-			outp "fsubrp"
-		else
-			if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
-				ostr = "fsub " + src
-				outp ostr
-			else
-				ostr = "fisub " + src
-				outp ostr
-			end if
-		end if
-	end select
+	if( dodec ) then
+		ostr = "dec " + dst
+		outp ostr
+	elseif( doinc ) then
+		ostr = "inc " + dst
+		outp ostr
+	else
+		ostr = "sub " + dst + COMMA + src
+		outp ostr
+	end if
 
 end sub
 
 '':::::
-sub emithINTMUL( byval dst as string, _
-				 byval dvreg as IRVREG ptr, _
-			     byval src as string, _
-			     byval svreg as IRVREG ptr ) static
+private sub _emitSUBF( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
+    dim src as string
+    dim doinc as integer, dodec as integer
+    dim ostr as string
+
+	hPrepOperand( svreg, src )
+
+	if( svreg->typ = IR_VREGTYPE_REG ) then
+		outp "fsubrp"
+	else
+		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+			ostr = "fsub " + src
+			outp ostr
+		else
+			ostr = "fisub " + src
+			outp ostr
+		end if
+	end if
+
+end sub
+
+'':::::
+private sub _emitMULI( byval dvreg as IRVREG ptr, _
+			      	   byval svreg as IRVREG ptr ) static
     dim eaxfree as integer, edxfree as integer
     dim edxtrashed as integer
     dim eaxinsource as integer, eaxindest as integer, edxindest as integer
     dim eax as string, edx as string
     dim ostr as string
+    dim dst as string, src as string
 
-	eaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-	edxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
 
-	eaxinsource  = emitIsRegInVreg( svreg, EMIT_INTREG_EAX )
-	eaxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EAX )
-	edxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EDX )
+	eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+	edxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+
+	eaxinsource = hIsRegInVreg( svreg, EMIT_REG_EAX )
+	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
+	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
 
     if( dtypeTB(dvreg->dtype).size = 4 ) then
     	eax = "eax"
@@ -2238,16 +2347,16 @@ sub emithINTMUL( byval dst as string, _
 	if( (eaxinsource) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 		edxtrashed = TRUE
 		if( edxindest ) then
-			emithPUSH( "edx" )
+			hPUSH( "edx" )
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
-				emithPUSH( ostr )
+				hPUSH( ostr )
 			end if
 		elseif( not edxfree ) then
-			emithPUSH( "edx" )
+			hPUSH( "edx" )
 		end if
 
-		emithMOV( edx, src )
+		hMOV( edx, src )
 		src = edx
 	else
 		edxtrashed = FALSE
@@ -2258,13 +2367,13 @@ sub emithINTMUL( byval dst as string, _
 			if( not eaxfree ) then
 				outp "xchg eax, [esp]"
 			else
-				emithPOP "eax"
+				hPOP "eax"
 			end if
 		else
 			if( not eaxfree ) then
-				emithPUSH "eax"
+				hPUSH "eax"
 			end if
-			emithMOV eax, dst
+			hMOV eax, dst
 		end if
 	end if
 
@@ -2273,34 +2382,34 @@ sub emithINTMUL( byval dst as string, _
 
 	if( not eaxindest ) then
 		if( edxindest and dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPOP "edx"					'' edx= tos (eax)
+			hPOP "edx"					'' edx= tos (eax)
 			outp "xchg edx, [esp]"			'' tos= edx; edx= dst
 		end if
 
-		emithMOV dst, eax
+		hMOV dst, eax
 
 		if( not eaxfree ) then
-			emithPOP eax
+			hPOP eax
 		end if
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithMOV "edx", "eax"			'' edx= eax
-			emithPOP "eax"					'' restore eax
-			emithMOV dst, edx				'' [eax+...] = edx
+			hMOV "edx", "eax"			'' edx= eax
+			hPOP "eax"					'' restore eax
+			hMOV dst, edx				'' [eax+...] = edx
 		end if
 	end if
 
 	if( edxtrashed ) then
 		if( (not edxfree) and (not edxindest) ) then
-			emithPOP edx
+			hPOP edx
 		end if
 	end if
 
 end sub
 
 '':::::
-sub emitINTMUL64( byval dvreg as IRVREG ptr, _
-			      byval svreg as IRVREG ptr ) static
+private sub _emitMULL( byval dvreg as IRVREG ptr, _
+			      	   byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim iseaxfree as integer, isedxfree as integer
     dim eaxindest as integer, edxindest as integer
@@ -2309,41 +2418,40 @@ sub emitINTMUL64( byval dvreg as IRVREG ptr, _
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand64( svreg, src1, src2 )
 
-	iseaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-	isedxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
+	iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+	isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
 
-	eaxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EAX )
+	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
+	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
 
-	edxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EDX )
-
-	emithPUSH( src2 )
-	emithPUSH( src1 )
-	emithPUSH( dst2 )
-	emithPUSH( dst1 )
+	hPUSH( src2 )
+	hPUSH( src1 )
+	hPUSH( dst2 )
+	hPUSH( dst1 )
 
 	ofs = 0
 
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			ofs += 4
-			emithPUSH( "edx" )
+			hPUSH( "edx" )
 		end if
 	else
 		if( not isedxfree ) then
 			ofs += 4
-			emithPUSH( "edx" )
+			hPUSH( "edx" )
 		end if
 	end if
 
 	if( eaxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			ofs += 4
-			emithPUSH "eax"
+			hPUSH "eax"
 		end if
 	else
 		if( not iseaxfree ) then
 			ofs += 4
-			emithPUSH "eax"
+			hPUSH "eax"
 		end if
 	end if
 
@@ -2365,28 +2473,28 @@ sub emitINTMUL64( byval dvreg as IRVREG ptr, _
 
 	if( eaxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPOP "eax"
+			hPOP "eax"
 		end if
 	else
 		if( not iseaxfree ) then
-			emithPOP "eax"
+			hPOP "eax"
 		end if
 	end if
 
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPOP "edx"
+			hPOP "edx"
 		end if
 	else
 		if( not isedxfree ) then
-			emithPOP "edx"
+			hPOP "edx"
 		end if
 	end if
 
 	'' low(dst) = low(res)
-	emithPOP dst1
+	hPOP dst1
 	'' high(dst) = hres
-	emithPOP dst2
+	hPOP dst2
 
 	outp "add esp, 8"
 
@@ -2405,31 +2513,34 @@ sub emitINTMUL64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emithINTIMUL( byval dst as string, _
-				  byval dvreg as IRVREG ptr, _
-			      byval src as string, _
-			      byval svreg as IRVREG ptr ) static
+private sub _emitSMULI( byval dvreg as IRVREG ptr, _
+			      		byval svreg as IRVREG ptr ) static
+
     dim reg as integer, isfree as integer, rname as string
     dim ostr as string
+    dim dst as string, src as string
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
 
 	if( dvreg->typ <> IR_VREGTYPE_REG ) then
 
-		reg = emitFindRegNotInVreg( svreg )
+		reg = hFindRegNotInVreg( svreg )
 		rname = *hGetRegName( svreg->dtype, reg )
 
-		isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
+		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
 		if( not isfree ) then
-			emithPUSH rname
+			hPUSH rname
 		end if
 
-		emithMOV rname, dst
+		hMOV rname, dst
 		ostr = "imul " + rname + COMMA + src
 		outp ostr
-		emithMOV dst, rname
+		hMOV dst, rname
 
 		if( not isfree ) then
-			emithPOP rname
+			hPOP rname
 		end if
 
 	else
@@ -2440,51 +2551,34 @@ sub emithINTIMUL( byval dst as string, _
 end sub
 
 '':::::
-sub emitMUL( byval dvreg as IRVREG ptr, _
-		     byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string
+private sub _emitMULF( byval dvreg as IRVREG ptr, _
+		     		   byval svreg as IRVREG ptr ) static
+    dim src as string
     dim ostr as string
 
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitINTMUL64( dvreg, svreg )
-		exit sub
-	end if
-
-	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	select case irGetDataClass( dvreg->dtype )
-	case IR_DATACLASS_INTEGER
-		if( irIsSigned( dvreg->dtype ) ) then
-        	emithINTIMUL( dst, dvreg, src, svreg )
+	if( svreg->typ = IR_VREGTYPE_REG ) then
+		outp "fmulp"
+	else
+		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+			ostr = "fmul " + src
+			outp ostr
 		else
-			emithINTMUL( dst, dvreg, src, svreg )
+			ostr = "fimul " + src
+			outp ostr
 		end if
-
-	case IR_DATACLASS_FPOINT
-		if( svreg->typ = IR_VREGTYPE_REG ) then
-			outp "fmulp"
-		else
-			if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
-				ostr = "fmul " + src
-				outp ostr
-			else
-				ostr = "fimul " + src
-				outp ostr
-			end if
-		end if
-	end select
+	end if
 
 end sub
 
+
 '':::::
-sub emitDIV( byval dvreg as IRVREG ptr, _
-		     byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string
+private sub _emitDIVF( byval dvreg as IRVREG ptr, _
+		     		   byval svreg as IRVREG ptr ) static
+    dim src as string
     dim ostr as string
 
-	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
 	if( svreg->typ = IR_VREGTYPE_REG ) then
@@ -2502,8 +2596,8 @@ sub emitDIV( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitINTDIV( byval dvreg as IRVREG ptr, _
-		        byval svreg as IRVREG ptr ) static
+private sub _emitDIVI( byval dvreg as IRVREG ptr, _
+		               byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ecxtrashed as integer
     dim eaxfree as integer, ecxfree as integer, edxfree as integer
@@ -2527,28 +2621,28 @@ sub emitINTDIV( byval dvreg as IRVREG ptr, _
 
 	ecxtrashed = FALSE
 
-	eaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-	ecxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_ECX )
-	edxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
+	eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+	ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
 
-	eaxinsource  = emitIsRegInVreg( svreg, EMIT_INTREG_EAX )
-	edxinsource  = emitIsRegInVreg( svreg, EMIT_INTREG_EDX )
-	eaxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EAX )
-	edxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EDX )
-	ecxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_ECX )
+	eaxinsource = hIsRegInVreg( svreg, EMIT_REG_EAX )
+	edxinsource = hIsRegInVreg( svreg, EMIT_REG_EDX )
+	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
+	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
+	ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
 
 	if( (eaxinsource) or (edxinsource) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 		ecxtrashed = TRUE
 		if( ecxindest ) then
-			emithPUSH( "ecx" )
+			hPUSH( "ecx" )
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
-				emithPUSH( ostr )
+				hPUSH( ostr )
 			end if
 		elseif( not ecxfree ) then
-			emithPUSH( "ecx" )
+			hPUSH( "ecx" )
 		end if
-		emithMOV( ecx, src )
+		hMOV( ecx, src )
 		src = ecx
 	end if
 
@@ -2557,28 +2651,28 @@ sub emitINTDIV( byval dvreg as IRVREG ptr, _
 			if( not eaxfree ) then
 				outp "xchg eax, [esp]"
 			else
-				emithPOP "eax"
+				hPOP "eax"
 			end if
 		else
 			if( not eaxfree ) then
-				emithPUSH "eax"
+				hPUSH "eax"
 			end if
-			emithMOV eax, dst
+			hMOV eax, dst
 		end if
 
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPUSH "eax"
-			emithMOV eax, dst
+			hPUSH "eax"
+			hMOV eax, dst
 		end if
 	end if
 
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPUSH "edx"
+			hPUSH "edx"
 		end if
 	elseif( not edxfree ) then
-		emithPUSH "edx"
+		hPUSH "edx"
 	end if
 
 	if( irIsSigned( dvreg->dtype ) ) then
@@ -2601,24 +2695,24 @@ sub emitINTDIV( byval dvreg as IRVREG ptr, _
 
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPOP "edx"
+			hPOP "edx"
 		end if
 	elseif( not edxfree ) then
-		emithPOP "edx"
+		hPOP "edx"
 	end if
 
 	if( not eaxindest ) then
 		if( ecxindest ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				emithPOP "ecx"					'' ecx= tos (eax)
+				hPOP "ecx"					'' ecx= tos (eax)
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
 			end if
 		end if
 
-		emithMOV dst, eax
+		hMOV dst, eax
 
 		if( not eaxfree ) then
-			emithPOP "eax"
+			hPOP "eax"
 		end if
 
 	else
@@ -2627,29 +2721,29 @@ sub emitINTDIV( byval dvreg as IRVREG ptr, _
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
 				outp "xchg ecx, eax"			'' ecx= res; eax= dst
 			else
-				emithMOV "ecx", "eax"			'' ecx= eax
-				emithPOP "eax"					'' restore eax
+				hMOV "ecx", "eax"			'' ecx= eax
+				hPOP "eax"					'' restore eax
 			end if
 
-			emithMOV dst, ecx					'' [eax+...] = ecx
+			hMOV dst, ecx					'' [eax+...] = ecx
 
 			if( (not ecxfree) and (not ecxtrashed) ) then
-				emithPOP "ecx"
+				hPOP "ecx"
 			end if
 		end if
 	end if
 
 	if( ecxtrashed ) then
 		if( (not ecxfree) and (not ecxindest) ) then
-			emithPOP "ecx"
+			hPOP "ecx"
 		end if
 	end if
 
 end sub
 
 '':::::
-sub emitMOD( byval dvreg as IRVREG ptr, _
-		     byval svreg as IRVREG ptr ) static
+private sub _emitMODI( byval dvreg as IRVREG ptr, _
+		     		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ecxtrashed as integer
     dim eaxfree as integer, ecxfree as integer, edxfree as integer
@@ -2673,28 +2767,28 @@ sub emitMOD( byval dvreg as IRVREG ptr, _
 
 	ecxtrashed = FALSE
 
-	eaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-	ecxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_ECX )
-	edxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
+	eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+	ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
 
-	eaxinsource  = emitIsRegInVreg( svreg, EMIT_INTREG_EAX )
-	edxinsource  = emitIsRegInVreg( svreg, EMIT_INTREG_EDX )
-	eaxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EAX )
-	edxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EDX )
-	ecxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_ECX )
+	eaxinsource = hIsRegInVreg( svreg, EMIT_REG_EAX )
+	edxinsource = hIsRegInVreg( svreg, EMIT_REG_EDX )
+	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
+	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
+	ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
 
 	if( (eaxinsource) or (edxinsource) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 		ecxtrashed = TRUE
 		if( ecxindest ) then
-			emithPUSH( "ecx" )
+			hPUSH( "ecx" )
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
-				emithPUSH( ostr )
+				hPUSH( ostr )
 			end if
 		elseif( not ecxfree ) then
-			emithPUSH( "ecx" )
+			hPUSH( "ecx" )
 		end if
-		emithMOV( ecx, src )
+		hMOV( ecx, src )
 		src = ecx
 	end if
 
@@ -2703,28 +2797,28 @@ sub emitMOD( byval dvreg as IRVREG ptr, _
 			if( not eaxfree ) then
 				outp "xchg eax, [esp]"
 			else
-				emithPOP "eax"
+				hPOP "eax"
 			end if
 		else
 			if( not eaxfree ) then
-				emithPUSH "eax"
+				hPUSH "eax"
 			end if
-			emithMOV eax, dst
+			hMOV eax, dst
 		end if
 
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPUSH "eax"
-			emithMOV eax, dst
+			hPUSH "eax"
+			hMOV eax, dst
 		end if
 	end if
 
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPUSH "edx"
+			hPUSH "edx"
 		end if
 	elseif( not edxfree ) then
-		emithPUSH "edx"
+		hPUSH "edx"
 	end if
 
 	if( irIsSigned( dvreg->dtype ) ) then
@@ -2745,28 +2839,28 @@ sub emitMOD( byval dvreg as IRVREG ptr, _
 		outp ostr
 	end if
 
-	emithMOV eax, edx
+	hMOV eax, edx
 
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPOP "edx"
+			hPOP "edx"
 		end if
 	elseif( not edxfree ) then
-		emithPOP "edx"
+		hPOP "edx"
 	end if
 
 	if( not eaxindest ) then
 		if( ecxindest ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				emithPOP "ecx"					'' ecx= tos (eax)
+				hPOP "ecx"					'' ecx= tos (eax)
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
 			end if
 		end if
 
-		emithMOV dst, eax
+		hMOV dst, eax
 
 		if( not eaxfree ) then
-			emithPOP "eax"
+			hPOP "eax"
 		end if
 
 	else
@@ -2775,53 +2869,69 @@ sub emitMOD( byval dvreg as IRVREG ptr, _
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
 				outp "xchg ecx, eax"			'' ecx= res; eax= dst
 			else
-				emithMOV "ecx", "eax"			'' ecx= eax
-				emithPOP "eax"					'' restore eax
+				hMOV "ecx", "eax"			'' ecx= eax
+				hPOP "eax"					'' restore eax
 			end if
 
-			emithMOV dst, ecx					'' [eax+...] = ecx
+			hMOV dst, ecx					'' [eax+...] = ecx
 
 			if( (not ecxfree) and (not ecxtrashed) ) then
-				emithPOP "ecx"
+				hPOP "ecx"
 			end if
 		end if
 	end if
 
 	if( ecxtrashed ) then
 		if( (not ecxfree) and (not ecxindest) ) then
-			emithPOP "ecx"
+			hPOP "ecx"
 		end if
 	end if
 
 end sub
 
 '':::::
-sub emitSHIFT64( byval op as integer, mnemonic as string, _
-				 byval dvreg as IRVREG ptr, _
-			     byval svreg as IRVREG ptr ) static
-    dim as string dst1, dst2, src, ostr, label
+private sub hSHIFTL( byval op as integer, _
+				 	 byval dvreg as IRVREG ptr, _
+			     	 byval svreg as IRVREG ptr ) static
+    dim as string dst1, dst2, src, ostr, label, mnemonic
     dim as integer iseaxfree, isedxfree, isecxfree
     dim as integer eaxindest, edxindest, ecxindest
     dim as integer ofs
 
+	''
+	if( irIsSigned( dvreg->dtype ) ) then
+		if( op = IR_OP_SHL ) then
+			mnemonic = "sal"
+		else
+			mnemonic = "sar"
+		end if
+	else
+		if( op = IR_OP_SHL ) then
+			mnemonic = "shl"
+		else
+			mnemonic = "shr"
+		end if
+	end if
+
+    ''
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand( svreg, src, IR_DATATYPE_INTEGER )
 
-	iseaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-	isedxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
-	isecxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_ECX )
+	iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+	isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+	isecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
 
-	eaxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EAX )
-	edxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_EDX )
-	ecxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_ECX )
+	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
+	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
+	ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
 
-	emithPUSH( dst2 )
-	emithPUSH( dst1 )
+	hPUSH( dst2 )
+	hPUSH( dst1 )
 	ofs = 0
 
 	'' load src to cl
 	if( svreg->typ <> IR_VREGTYPE_IMM ) then
-		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_INTREG_ECX) ) then
+		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
 			if( irGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
 				'' if it's not a reg, the right size was already set at the hPrepOperand() above
@@ -2832,15 +2942,15 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 
 			if( not isecxfree ) then
 				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
-					emithMOV( "ecx", src )
+					hMOV( "ecx", src )
 					isecxfree = TRUE
 				else
-					emithPUSH( src )
+					hPUSH( src )
 					outp "xchg ecx, [esp]"
 					ofs += 4
 				end if
 			else
-				emithMOV( "ecx", src )
+				hMOV( "ecx", src )
 			end if
 		else
 			isecxfree = TRUE
@@ -2890,7 +3000,7 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 		end if
 
 		outp "test cl, 32"
-		emithBRANCH( "jz", label )
+		hBRANCH( "jz", label )
 
 		if( op = IR_OP_SHL ) then
 			outp "mov edx, eax"
@@ -2904,10 +3014,10 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 			end if
 		end if
 
-		emitLABEL label
+		hLABEL( label )
 
 		if( not isecxfree ) then
-			emithPOP "ecx"
+			hPOP "ecx"
 		end if
 
 	'' immediate
@@ -2967,22 +3077,38 @@ sub emitSHIFT64( byval op as integer, mnemonic as string, _
 		end if
 	end if
 
-	emithPOP( dst1 )
-	emithPOP( dst2 )
+	hPOP( dst1 )
+	hPOP( dst2 )
 
 end sub
 
 '':::::
-sub emitSHIFT( byval mnemonic as string, _
-			   byval dvreg as IRVREG ptr, _
-		       byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string, tmp as string
+private sub hSHIFTI( byval op as integer, _
+			   		 byval dvreg as IRVREG ptr, _
+		       		 byval svreg as IRVREG ptr ) static
+
     dim eaxpreserved as integer, ecxpreserved as integer
     dim eaxfree as integer, ecxfree as integer
     dim reg as integer
     dim ecxindest as integer
-    dim ostr as string
+    dim as string ostr, dst, src, tmp, mnemonic
 
+	''
+	if( irIsSigned( dvreg->dtype ) ) then
+		if( op = IR_OP_SHL ) then
+			mnemonic = "sal"
+		else
+			mnemonic = "sar"
+		end if
+	else
+		if( op = IR_OP_SHL ) then
+			mnemonic = "shl"
+		else
+			mnemonic = "shr"
+		end if
+	end if
+
+    ''
 	hPrepOperand( dvreg, dst )
 
 	ecxindest = FALSE
@@ -2994,8 +3120,8 @@ sub emitSHIFT( byval mnemonic as string, _
 		tmp = dst
 
 	else
-		eaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-		ecxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_ECX )
+		eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+		ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
 
 		if( svreg->typ = IR_VREGTYPE_REG ) then
 			reg = svreg->reg
@@ -3003,32 +3129,32 @@ sub emitSHIFT( byval mnemonic as string, _
 			reg = INVALID
 		end if
 
-        ecxindest = emitIsRegInVreg( dvreg, EMIT_INTREG_ECX )
+        ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
 
 		'' ecx in destine?
 		if( ecxindest ) then
 			'' preserve
-			emithPUSH "ecx"
+			hPUSH "ecx"
 			'' not a reg?
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
-				emithPUSH ostr
+				hPUSH ostr
 			end if
 
 		'' ecx not free?
-		elseif( (reg <> EMIT_INTREG_ECX) and (not ecxfree) ) then
+		elseif( (reg <> EMIT_REG_ECX) and (not ecxfree) ) then
 			ecxpreserved = TRUE
-			emithPUSH "ecx"
+			hPUSH "ecx"
 		end if
 
 		'' source not a reg?
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			hPrepOperand( svreg, ostr, IR_DATATYPE_BYTE )
-			emithMOV "cl", ostr
+			hMOV "cl", ostr
 		else
 			'' source not ecx?
-			if( reg <> EMIT_INTREG_ECX ) then
-				emithMOV "ecx", rnameTB(dtypeTB(IR_DATATYPE_INTEGER).rnametb, reg)
+			if( reg <> EMIT_REG_ECX ) then
+				hMOV "ecx", rnameTB(dtypeTB(IR_DATATYPE_INTEGER).rnametb, reg)
 			end if
 		end if
 
@@ -3039,10 +3165,10 @@ sub emitSHIFT( byval mnemonic as string, _
 				eaxpreserved = TRUE
 				outp "xchg eax, [esp]"		'' eax= dst; push eax
 			else
-				emithPOP "eax"				'' eax= dst; pop tos
+				hPOP "eax"				'' eax= dst; pop tos
 			end if
 
-			tmp = rnameTB(dtypeTB(dvreg->dtype).rnametb, EMIT_INTREG_EAX )
+			tmp = rnameTB(dtypeTB(dvreg->dtype).rnametb, EMIT_REG_EAX )
 
 		else
 			tmp = dst
@@ -3057,67 +3183,59 @@ sub emitSHIFT( byval mnemonic as string, _
 
 	if( ecxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			emithPOP "ecx"
+			hPOP "ecx"
 			if( eaxpreserved ) then
 				outp "xchg ecx, [esp]"		'' ecx= tos; tos= eax
 			end if
 		end if
-		emithMOV dst, rnameTB(dtypeTB(dvreg->dtype).rnametb, EMIT_INTREG_EAX)
+		hMOV dst, rnameTB(dtypeTB(dvreg->dtype).rnametb, EMIT_REG_EAX)
 	end if
 
 	if( eaxpreserved ) then
-		emithPOP "eax"
+		hPOP "eax"
 	end if
 
 	if( ecxpreserved ) then
-		emithPOP "ecx"
+		hPOP "ecx"
 	end if
 
 end sub
 
 '':::::
-sub emitSHL( byval dvreg as IRVREG ptr, _
-		     byval svreg as IRVREG ptr ) static
-    dim inst as string
+private sub _emitSHLL( byval dvreg as IRVREG ptr, _
+		       		   byval svreg as IRVREG ptr ) static
 
-	if( irIsSigned( dvreg->dtype ) ) then
-		inst = "sal"
-	else
-		inst = "shl"
-	end if
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitSHIFT64( IR_OP_SHL, inst, dvreg, svreg )
-	else
-		emitSHIFT( inst, dvreg, svreg )
-	end if
+	hSHIFTL( IR_OP_SHL, dvreg, svreg )
 
 end sub
 
 '':::::
-sub emitSHR( byval dvreg as IRVREG ptr, _
-		     byval svreg as IRVREG ptr ) static
-    dim inst as string
+private sub _emitSHLI( byval dvreg as IRVREG ptr, _
+		       		   byval svreg as IRVREG ptr ) static
 
-	if( irIsSigned( dvreg->dtype ) ) then
-		inst = "sar"
-	else
-		inst = "shr"
-	end if
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitSHIFT64( IR_OP_SHR, inst, dvreg, svreg )
-	else
-		emitSHIFT( inst, dvreg, svreg )
-	end if
+	hSHIFTI( IR_OP_SHL, dvreg, svreg )
 
 end sub
 
 '':::::
-sub emitAND64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitSHRL( byval dvreg as IRVREG ptr, _
+		       		   byval svreg as IRVREG ptr ) static
+
+	hSHIFTL( IR_OP_SHR, dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitSHRI( byval dvreg as IRVREG ptr, _
+		       		   byval svreg as IRVREG ptr ) static
+
+	hSHIFTI( IR_OP_SHR, dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitANDL( byval dvreg as IRVREG ptr, _
+			   			   byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3133,16 +3251,10 @@ sub emitAND64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitAND( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitANDI( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitAND64( dvreg, svreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3153,8 +3265,8 @@ sub emitAND( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitOR64( byval dvreg as IRVREG ptr, _
-			  byval svreg as IRVREG ptr ) static
+private sub _emitORL( byval dvreg as IRVREG ptr, _
+			  		  byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3170,16 +3282,10 @@ sub emitOR64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitOR( byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
+private sub _emitORI( byval dvreg as IRVREG ptr, _
+					  byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitOR64( dvreg, svreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3190,8 +3296,8 @@ sub emitOR( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitXOR64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitXORL( byval dvreg as IRVREG ptr, _
+			   			byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3207,16 +3313,10 @@ sub emitXOR64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitXOR( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitXORI( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitXOR64( dvreg, svreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3227,8 +3327,8 @@ sub emitXOR( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitEQV64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitEQVL( byval dvreg as IRVREG ptr, _
+			   		   byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3250,16 +3350,10 @@ sub emitEQV64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitEQV( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitEQVI( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitEQV64( dvreg, svreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3273,8 +3367,8 @@ sub emitEQV( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitIMP64( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitIMPL( byval dvreg as IRVREG ptr, _
+			   		   byval svreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string, src1 as string, src2 as string
     dim ostr as string
 
@@ -3296,16 +3390,10 @@ sub emitIMP64( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitIMP( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitIMPI( byval dvreg as IRVREG ptr, _
+			 		   byval svreg as IRVREG ptr ) static
     dim dst as string, src as string
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitIMP64( dvreg, svreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3318,443 +3406,9 @@ sub emitIMP( byval dvreg as IRVREG ptr, _
 
 end sub
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' comps
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 '':::::
-sub emitICMP64( byval rvreg as IRVREG ptr, _
-			    byval label as string, _
-			    byval mnemonic as string, _
-			    byval rev_mnemonic as string, _
-			    byval usg_mnemonic as string, _
-			    byval dvreg as IRVREG ptr, _
-			    byval svreg as IRVREG ptr, _
-			    byval isinverse as integer = FALSE ) static
-
-    dim as string dst1, dst2, src1, src2, rname, ostr, falselabel
-
-	hPrepOperand64( dvreg, dst1, dst2 )
-	hPrepOperand64( svreg, src1, src2 )
-
-	'' check high
-	ostr = "cmp " + dst2 + COMMA + src2
-	outp ostr
-
-	falselabel = *hMakeTmpStr( )
-
-	'' set the boolean result?
-	if( rvreg <> NULL ) then
-		hPrepOperand( rvreg, rname )
-		emithMOV( rname, "-1" )
-	end if
-
-	ostr = "j" + mnemonic
-	if( not isinverse ) then
-		emithBRANCH( ostr, label )
-	else
-		emithBRANCH( ostr, falselabel )
-	end if
-
-	if( len( rev_mnemonic ) > 0 ) then
-		ostr = "j" + rev_mnemonic
-		emithBRANCH( ostr, falselabel )
-	end if
-
-	'' check low
-	ostr = "cmp " + dst1 + COMMA + src1
-	outp ostr
-
-	ostr = "j" + usg_mnemonic
-	emithBRANCH( ostr, label )
-
-	emitLabel( falselabel )
-
-	if( rvreg <> NULL ) then
-		ostr = "xor " + rname + COMMA + rname
-		outp ostr
-
-		emitLabel( label )
-	end if
-
-end sub
-
-'':::::
-sub emithICMP( byval rvreg as IRVREG ptr, _
-			   byval label as string, _
-			   byval mnemonic as string, _
-			   byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
-
-    dim as string rname, rname8, dst, src, ostr
-    dim as integer isedxfree, dotest
-
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-
-	'' optimize "cmp" to "test"
-	dotest = FALSE
-	if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_REG) ) then
-		if( svreg->value = 0 ) then
-			dotest = TRUE
-		end if
-	end if
-
-	if( dotest ) then
-		ostr = "test " + dst + COMMA + dst
-		outp ostr
-	else
-		ostr = "cmp " + dst + COMMA + src
-		outp ostr
-	end if
-
-	'' no result to be set? just branch
-	if( rvreg = NULL ) then
-		ostr = "j" + mnemonic
-		emithBRANCH( ostr, label )
-		exit sub
-	end if
-
-	hPrepOperand( rvreg, rname )
-
-	'' can it be optimized?
-	if( (env.clopt.cputype >= FB_CPUTYPE_486) and (rvreg->typ = IR_VREGTYPE_REG) ) then
-
-		rname8 = *hGetRegName( IR_DATATYPE_BYTE, rvreg->reg )
-
-		'' handle EDI and ESI
-		if( (rvreg->reg = EMIT_INTREG_ESI) or (rvreg->reg = EMIT_INTREG_EDI) ) then
-
-			isedxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
-			if( not isedxfree ) then
-				ostr = "xchg edx, " + rname
-				outp ostr
-			end if
-
-			ostr = "set" + mnemonic + " dl"
-			outp ostr
-
-			if( not isedxfree ) then
-				ostr = "xchg edx, " + rname
-				outp ostr
-			else
-				emithMOV rname, "edx"
-			end if
-
-		else
-			ostr = "set" + mnemonic + " " + rname8
-			outp ostr
-		end if
-
-		'' convert 1 to -1 (TRUE in QB/FB)
-		ostr = "shr " + rname + ", 1"
-		outp ostr
-
-		ostr = "sbb " + rname + COMMA + rname
-		outp ostr
-
-	'' old (and slow) boolean set
-	else
-
-		ostr = "mov " + rname + ", -1"
-		outp ostr
-
-		ostr = "j" + mnemonic
-		emithBRANCH( ostr, label )
-
-		ostr = "xor " + rname + COMMA + rname
-		outp ostr
-
-		emitLabel label
-	end if
-
-end sub
-
-'':::::
-sub emithFCMP( byval rvreg as IRVREG ptr, _
-			   byval label as string, _
-			   byval mnemonic as string, _
-			   byval mask as string, _
-			   byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
-
-	dim as string rname, rname8, dst, src, ostr
-    dim as integer iseaxfree, isedxfree
-
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
-
-	'' do comp
-	if( svreg->typ = IR_VREGTYPE_REG ) then
-		outp "fcompp"
-	else
-		'' can it be optimized to ftst?
-		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
-			ostr = "fcomp " + src
-			outp ostr
-		else
-			ostr = "ficomp " + src
-			outp ostr
-		end if
-	end if
-
-    iseaxfree = TRUE
-    if( rvreg <> NULL ) then
-    	if( rvreg->reg <> EMIT_INTREG_EAX ) then
-    		iseaxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX )
-    		if( not iseaxfree ) then
-    			emithPUSH( "eax" )
-    		end if
-    	end if
-	end if
-
-    '' load fpu flags
-    outp "fnstsw ax"
-	if( len( mask ) > 0 ) then
-		ostr = "test ah, " + mask
-		outp ostr
-	else
-		outp "sahf"
-	end if
-
-	if( not iseaxfree ) then
-		emithPOP( "eax" )
-	end if
-
-    '' no result to be set? just branch
-    if( rvreg = NULL ) then
-    	ostr = "j" + mnemonic
-    	emithBRANCH( ostr, label )
-    	exit sub
-    end if
-
-    hPrepOperand( rvreg, rname )
-
-	'' can it be optimized?
-	if( env.clopt.cputype >= FB_CPUTYPE_486 ) then
-		rname8 = *hGetRegName( IR_DATATYPE_BYTE, rvreg->reg )
-
-		'' handle EDI and ESI
-		if( (rvreg->reg = EMIT_INTREG_ESI) or (rvreg->reg = EMIT_INTREG_EDI) ) then
-
-			isedxfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EDX )
-			if( not isedxfree ) then
-				ostr = "xchg edx, " + rname
-				outp ostr
-			end if
-
-			ostr = "set" + mnemonic + "\tdl"
-			outp ostr
-
-			if( not isedxfree ) then
-				ostr = "xchg edx, " + rname
-				outp ostr
-			else
-				emithMOV rname, "edx"
-			end if
-		else
-			ostr = "set" + mnemonic + " " + rname8
-			outp ostr
-		end if
-
-		'' convert 1 to -1 (TRUE in QB/FB)
-		ostr = "shr " + rname + ", 1"
-		outp ostr
-
-		ostr = "sbb " + rname + COMMA + rname
-		outp ostr
-
-	'' old (and slow) boolean set
-	else
-    	ostr = "mov " + rname + ", -1"
-    	outp ostr
-
-    	ostr = "j" + mnemonic
-    	emithBRANCH ostr, label
-
-		ostr = "xor " + rname + COMMA + rname
-		outp ostr
-
-		emitLabel label
-	end if
-
-end sub
-
-'':::::
-sub emitGT( byval rvreg as IRVREG ptr, _
-			byval label as string, _
-			byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
-	dim jmp as string, rjmp as string
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		if( irIsSigned( dvreg->dtype ) ) then
-			jmp = "g"
-		else
-			jmp = "a"
-		end if
-
-		'' longint?
-		if( ISLONGINT( dvreg->dtype ) ) then
-			if( irIsSigned( dvreg->dtype ) ) then
-				rjmp = "l"
-			else
-				rjmp = "b"
-			end if
-			emitICMP64( rvreg, label, jmp, rjmp, "a", dvreg, svreg )
-
-		else
-			emithICMP( rvreg, label, jmp, dvreg, svreg )
-		end if
-
-	else
-		emithFCMP( rvreg, label, "z", "0b01000001", dvreg, svreg )
-	end if
-
-end sub
-
-'':::::
-sub emitLT( byval rvreg as IRVREG ptr, _
-			byval label as string, _
-			byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
-	dim jmp as string, rjmp as string
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		if( irIsSigned( dvreg->dtype ) ) then
-			jmp = "l"
-		else
-			jmp = "b"
-		end if
-
-		'' longint?
-		if( ISLONGINT( dvreg->dtype ) ) then
-			if( irIsSigned( dvreg->dtype ) ) then
-				rjmp = "g"
-			else
-				rjmp = "a"
-			end if
-			emitICMP64( rvreg, label, jmp, rjmp, "b", dvreg, svreg )
-
-    	else
-			emithICMP( rvreg, label, jmp, dvreg, svreg )
-		end if
-
-	else
-		emithFCMP( rvreg, label, "nz", "0b00000001", dvreg, svreg )
-	end if
-
-end sub
-
-'':::::
-sub emitEQ( byval rvreg as IRVREG ptr, _
-			byval label as string, _
-			byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitICMP64( rvreg, label, "ne", "", "e", dvreg, svreg, TRUE )
-		exit sub
-	end if
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		emithICMP( rvreg, label, "e", dvreg, svreg )
-	else
-		emithFCMP( rvreg, label, "nz", "0b01000000", dvreg, svreg )
-	end if
-
-end sub
-
-'':::::
-sub emitNE( byval rvreg as IRVREG ptr, _
-			byval label as string, _
-			byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitICMP64( rvreg, label, "ne", "", "ne", dvreg, svreg )
-		exit sub
-	end if
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		emithICMP( rvreg, label, "ne", dvreg, svreg )
-	else
-		emithFCMP( rvreg, label, "z", "0b01000000", dvreg, svreg )
-	end if
-
-end sub
-
-'':::::
-sub emitLE( byval rvreg as IRVREG ptr, _
-			byval label as string, _
-			byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
-	dim jmp as string, rjmp as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		if( irIsSigned( dvreg->dtype ) ) then
-			jmp = "l"
-			rjmp = "g"
-		else
-			jmp = "b"
-			rjmp = "a"
-		end if
-		emitICMP64( rvreg, label, jmp, rjmp, "be", dvreg, svreg )
-		exit sub
-	end if
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		if( irIsSigned( dvreg->dtype ) ) then
-			jmp = "le"
-		else
-			jmp = "be"
-		end if
-		emithICMP( rvreg, label, jmp, dvreg, svreg )
-	else
-		emithFCMP( rvreg, label, "nz", "0b01000001", dvreg, svreg )
-	end if
-
-end sub
-
-'':::::
-sub emitGE( byval rvreg as IRVREG ptr, _
-			byval label as string, _
-			byval dvreg as IRVREG ptr, _
-			byval svreg as IRVREG ptr ) static
-	dim jmp as string, rjmp as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		if( irIsSigned( dvreg->dtype ) ) then
-			jmp = "g"
-			rjmp = "l"
-		else
-			jmp = "a"
-			rjmp = "b"
-		end if
-		emitICMP64( rvreg, label, jmp, rjmp, "ae", dvreg, svreg )
-		exit sub
-	end if
-
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
-		if( irIsSigned( dvreg->dtype ) ) then
-			jmp = "ge"
-		else
-			jmp = "ae"
-		end if
-		emithICMP( rvreg, label, jmp, dvreg, svreg )
-	else
-		emithFCMP( rvreg, label, "ae", "", dvreg, svreg )
-	end if
-
-end sub
-
-'':::::
-sub emitATAN2( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitATN2( byval dvreg as IRVREG ptr, _
+			    	   byval svreg as IRVREG ptr ) static
 
     dim src as string
     dim ostr as string
@@ -3772,8 +3426,8 @@ sub emitATAN2( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitPOW( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+private sub _emitPOW( byval dvreg as IRVREG ptr, _
+			  		  byval svreg as IRVREG ptr ) static
 
 	dim src as string
 	dim ostr as string
@@ -3801,11 +3455,538 @@ sub emitPOW( byval dvreg as IRVREG ptr, _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' relational
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private sub hCMPL( byval rvreg as IRVREG ptr, _
+			       byval label as FBSYMBOL ptr, _
+			       byval mnemonic as string, _
+			       byval rev_mnemonic as string, _
+			       byval usg_mnemonic as string, _
+			       byval dvreg as IRVREG ptr, _
+			       byval svreg as IRVREG ptr, _
+			       byval isinverse as integer = FALSE ) static
+
+    dim as string dst1, dst2, src1, src2, rname, ostr, lname, falselabel
+
+	hPrepOperand64( dvreg, dst1, dst2 )
+	hPrepOperand64( svreg, src1, src2 )
+
+	if( label = NULL ) then
+		lname = *hMakeTmpStr( )
+	else
+		lname = symbGetName( label )
+	end if
+
+	'' check high
+	ostr = "cmp " + dst2 + COMMA + src2
+	outp ostr
+
+	falselabel = *hMakeTmpStr( )
+
+	'' set the boolean result?
+	if( rvreg <> NULL ) then
+		hPrepOperand( rvreg, rname )
+		hMOV( rname, "-1" )
+	end if
+
+	ostr = "j" + mnemonic
+	if( not isinverse ) then
+		hBRANCH( ostr, lname )
+	else
+		hBRANCH( ostr, falselabel )
+	end if
+
+	if( len( rev_mnemonic ) > 0 ) then
+		ostr = "j" + rev_mnemonic
+		hBRANCH( ostr, falselabel )
+	end if
+
+	'' check low
+	ostr = "cmp " + dst1 + COMMA + src1
+	outp ostr
+
+	ostr = "j" + usg_mnemonic
+	hBRANCH( ostr, lname )
+
+	hLabel( falselabel )
+
+	if( rvreg <> NULL ) then
+		ostr = "xor " + rname + COMMA + rname
+		outp ostr
+
+		hLabel( lname )
+	end if
+
+end sub
+
+'':::::
+private sub hCMPI( byval rvreg as IRVREG ptr, _
+		   		   byval label as FBSYMBOL ptr, _
+		   		   byval mnemonic as string, _
+		   		   byval dvreg as IRVREG ptr, _
+		   		   byval svreg as IRVREG ptr ) static
+
+    dim as string rname, rname8, dst, src, ostr, lname
+    dim as integer isedxfree, dotest
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	if( label = NULL ) then
+		lname = *hMakeTmpStr( )
+	else
+		lname = symbGetName( label )
+	end if
+
+	'' optimize "cmp" to "test"
+	dotest = FALSE
+	if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_REG) ) then
+		if( svreg->value = 0 ) then
+			dotest = TRUE
+		end if
+	end if
+
+	if( dotest ) then
+		ostr = "test " + dst + COMMA + dst
+		outp ostr
+	else
+		ostr = "cmp " + dst + COMMA + src
+		outp ostr
+	end if
+
+	'' no result to be set? just branch
+	if( rvreg = NULL ) then
+		ostr = "j" + mnemonic
+		hBRANCH( ostr, lname )
+		exit sub
+	end if
+
+	hPrepOperand( rvreg, rname )
+
+	'' can it be optimized?
+	if( (env.clopt.cputype >= FB_CPUTYPE_486) and (rvreg->typ = IR_VREGTYPE_REG) ) then
+
+		rname8 = *hGetRegName( IR_DATATYPE_BYTE, rvreg->reg )
+
+		'' handle EDI and ESI
+		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) ) then
+
+			isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+			if( not isedxfree ) then
+				ostr = "xchg edx, " + rname
+				outp ostr
+			end if
+
+			ostr = "set" + mnemonic + " dl"
+			outp ostr
+
+			if( not isedxfree ) then
+				ostr = "xchg edx, " + rname
+				outp ostr
+			else
+				hMOV rname, "edx"
+			end if
+
+		else
+			ostr = "set" + mnemonic + " " + rname8
+			outp ostr
+		end if
+
+		'' convert 1 to -1 (TRUE in QB/FB)
+		ostr = "shr " + rname + ", 1"
+		outp ostr
+
+		ostr = "sbb " + rname + COMMA + rname
+		outp ostr
+
+	'' old (and slow) boolean set
+	else
+
+		ostr = "mov " + rname + ", -1"
+		outp ostr
+
+		ostr = "j" + mnemonic
+		hBRANCH( ostr, lname )
+
+		ostr = "xor " + rname + COMMA + rname
+		outp ostr
+
+		hLabel( lname )
+	end if
+
+end sub
+
+'':::::
+private sub hCMPF( byval rvreg as IRVREG ptr, _
+		   		   byval label as FBSYMBOL ptr, _
+		   		   byval mnemonic as string, _
+		   		   byval mask as string, _
+		   		   byval dvreg as IRVREG ptr, _
+		   		   byval svreg as IRVREG ptr ) static
+
+	dim as string rname, rname8, dst, src, ostr, lname
+    dim as integer iseaxfree, isedxfree
+
+	hPrepOperand( dvreg, dst )
+	hPrepOperand( svreg, src )
+
+	if( label = NULL ) then
+		lname = *hMakeTmpStr( )
+	else
+		lname = symbGetName( label )
+	end if
+
+	'' do comp
+	if( svreg->typ = IR_VREGTYPE_REG ) then
+		outp "fcompp"
+	else
+		'' can it be optimized to ftst?
+		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+			ostr = "fcomp " + src
+			outp ostr
+		else
+			ostr = "ficomp " + src
+			outp ostr
+		end if
+	end if
+
+    iseaxfree = TRUE
+    if( rvreg <> NULL ) then
+    	if( rvreg->reg <> EMIT_REG_EAX ) then
+    		iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+    		if( not iseaxfree ) then
+    			hPUSH( "eax" )
+    		end if
+    	end if
+	end if
+
+    '' load fpu flags
+    outp "fnstsw ax"
+	if( len( mask ) > 0 ) then
+		ostr = "test ah, " + mask
+		outp ostr
+	else
+		outp "sahf"
+	end if
+
+	if( not iseaxfree ) then
+		hPOP( "eax" )
+	end if
+
+    '' no result to be set? just branch
+    if( rvreg = NULL ) then
+    	ostr = "j" + mnemonic
+    	hBRANCH( ostr, lname )
+    	exit sub
+    end if
+
+    hPrepOperand( rvreg, rname )
+
+	'' can it be optimized?
+	if( env.clopt.cputype >= FB_CPUTYPE_486 ) then
+		rname8 = *hGetRegName( IR_DATATYPE_BYTE, rvreg->reg )
+
+		'' handle EDI and ESI
+		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) ) then
+
+			isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+			if( not isedxfree ) then
+				ostr = "xchg edx, " + rname
+				outp ostr
+			end if
+
+			ostr = "set" + mnemonic + "\tdl"
+			outp ostr
+
+			if( not isedxfree ) then
+				ostr = "xchg edx, " + rname
+				outp ostr
+			else
+				hMOV rname, "edx"
+			end if
+		else
+			ostr = "set" + mnemonic + " " + rname8
+			outp ostr
+		end if
+
+		'' convert 1 to -1 (TRUE in QB/FB)
+		ostr = "shr " + rname + ", 1"
+		outp ostr
+
+		ostr = "sbb " + rname + COMMA + rname
+		outp ostr
+
+	'' old (and slow) boolean set
+	else
+    	ostr = "mov " + rname + ", -1"
+    	outp ostr
+
+    	ostr = "j" + mnemonic
+    	hBRANCH( ostr, lname )
+
+		ostr = "xor " + rname + COMMA + rname
+		outp ostr
+
+		hLabel( lname )
+	end if
+
+end sub
+
+'':::::
+private sub _emitCGTL( byval rvreg as IRVREG ptr, _
+		      		   byval label as FBSYMBOL ptr, _
+		      		   byval dvreg as IRVREG ptr, _
+		      		   byval svreg as IRVREG ptr ) static
+	dim jmp as string, rjmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "g"
+		rjmp = "l"
+	else
+		jmp = "a"
+		rjmp = "b"
+	end if
+
+	hCMPL( rvreg, label, jmp, rjmp, "a", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCGTI( byval rvreg as IRVREG ptr, _
+		      		   byval label as FBSYMBOL ptr, _
+		      		   byval dvreg as IRVREG ptr, _
+		      		   byval svreg as IRVREG ptr ) static
+	dim jmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "g"
+	else
+		jmp = "a"
+	end if
+
+	hCMPI( rvreg, label, jmp, dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCGTF( byval rvreg as IRVREG ptr, _
+		      		   byval label as FBSYMBOL ptr, _
+		      		   byval dvreg as IRVREG ptr, _
+		      		   byval svreg as IRVREG ptr ) static
+
+	hCMPF( rvreg, label, "z", "0b01000001", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCLTL( byval rvreg as IRVREG ptr, _
+		      		   byval label as FBSYMBOL ptr, _
+		      		   byval dvreg as IRVREG ptr, _
+		      		   byval svreg as IRVREG ptr ) static
+	dim jmp as string, rjmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "l"
+		rjmp = "g"
+	else
+		jmp = "b"
+		rjmp = "a"
+	end if
+
+	hCMPL( rvreg, label, jmp, rjmp, "b", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCLTI( byval rvreg as IRVREG ptr, _
+		      		   byval label as FBSYMBOL ptr, _
+		      		   byval dvreg as IRVREG ptr, _
+		      		   byval svreg as IRVREG ptr ) static
+	dim jmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "l"
+	else
+		jmp = "b"
+	end if
+
+	hCMPI( rvreg, label, jmp, dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCLTF( byval rvreg as IRVREG ptr, _
+		      		   byval label as FBSYMBOL ptr, _
+		      		   byval dvreg as IRVREG ptr, _
+		      		   byval svreg as IRVREG ptr ) static
+
+	hCMPF( rvreg, label, "nz", "0b00000001", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCEQL( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPL( rvreg, label, "ne", "", "e", dvreg, svreg, TRUE )
+
+end sub
+
+'':::::
+private sub _emitCEQI( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPI( rvreg, label, "e", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCEQF( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPF( rvreg, label, "nz", "0b01000000", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCNEL( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPL( rvreg, label, "ne", "", "ne", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCNEI( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPI( rvreg, label, "ne", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCNEF( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPF( rvreg, label, "z", "0b01000000", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCLEL( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+	dim jmp as string, rjmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "l"
+		rjmp = "g"
+	else
+		jmp = "b"
+		rjmp = "a"
+	end if
+
+	hCMPL( rvreg, label, jmp, rjmp, "be", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCLEI( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+	dim jmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "le"
+	else
+		jmp = "be"
+	end if
+
+	hCMPI( rvreg, label, jmp, dvreg, svreg )
+
+end sub
+
+
+'':::::
+private sub _emitCLEF( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPF( rvreg, label, "nz", "0b01000001", dvreg, svreg )
+
+end sub
+
+
+'':::::
+private sub _emitCGEL( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+	dim jmp as string, rjmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "g"
+		rjmp = "l"
+	else
+		jmp = "a"
+		rjmp = "b"
+	end if
+
+	hCMPL( rvreg, label, jmp, rjmp, "ae", dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCGEI( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+	dim jmp as string
+
+	if( irIsSigned( dvreg->dtype ) ) then
+		jmp = "ge"
+	else
+		jmp = "ae"
+	end if
+
+	hCMPI( rvreg, label, jmp, dvreg, svreg )
+
+end sub
+
+'':::::
+private sub _emitCGEF( byval rvreg as IRVREG ptr, _
+					   byval label as FBSYMBOL ptr, _
+					   byval dvreg as IRVREG ptr, _
+					   byval svreg as IRVREG ptr ) static
+
+	hCMPF( rvreg, label, "ae", "", dvreg, svreg )
+
+end sub
+
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' unary ops
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitNEG64( byval dvreg as IRVREG ptr ) static
+private sub _emitNEGL( byval dvreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string
     dim ostr as string
 
@@ -3823,31 +4004,26 @@ sub emitNEG64( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitNEG( byval dvreg as IRVREG ptr ) static
+private sub _emitNEGI( byval dvreg as IRVREG ptr ) static
     dim dst as string
     dim ostr as string
 
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitNEG64( dvreg )
-		exit sub
-	end if
-
 	hPrepOperand( dvreg, dst )
 
-	select case irGetDataClass( dvreg->dtype )
-	case IR_DATACLASS_INTEGER
-		ostr = "neg " + dst
-		outp ostr
-
-	case IR_DATACLASS_FPOINT
-		outp "fchs"
-	end select
+	ostr = "neg " + dst
+	outp ostr
 
 end sub
 
 '':::::
-sub emitNOT64( byval dvreg as IRVREG ptr ) static
+private sub _emitNEGF( byval dvreg as IRVREG ptr ) static
+
+	outp "fchs"
+
+end sub
+
+'':::::
+private sub _emitNOTL( byval dvreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string
     dim ostr as string
 
@@ -3862,15 +4038,9 @@ sub emitNOT64( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitNOT( byval dvreg as IRVREG ptr ) static
+private sub _emitNOTI( byval dvreg as IRVREG ptr ) static
     dim dst as string
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitNOT64( dvreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 
@@ -3880,23 +4050,23 @@ sub emitNOT( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitABS64( byval dvreg as IRVREG ptr ) static
+private sub _emitABSL( byval dvreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string
     dim reg as integer, isfree as integer, rname as string
     dim ostr as string
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
-	reg = emitFindRegNotInVreg( dvreg )
+	reg = hFindRegNotInVreg( dvreg )
 	rname = *hGetRegName( IR_DATATYPE_INTEGER, reg )
 
-	isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
+	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
 	if( not isfree ) then
-		emithPUSH( rname )
+		hPUSH( rname )
 	end if
 
-	emithMOV( rname, dst2 )
+	hMOV( rname, dst2 )
 
 	ostr = "sar " + rname + ", 31"
 	outp ostr
@@ -3914,62 +4084,56 @@ sub emitABS64( byval dvreg as IRVREG ptr ) static
 	outp ostr
 
 	if( not isfree ) then
-		emithPOP( rname )
+		hPOP( rname )
 	end if
 
 end sub
 
 '':::::
-sub emitABS( byval dvreg as IRVREG ptr ) static
+private sub _emitABSI( byval dvreg as IRVREG ptr ) static
     dim dst as string
     dim reg as integer, isfree as integer, rname as string, bits as integer
     dim ostr as string
 
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitABS64( dvreg )
-		exit sub
-	end if
-
 	hPrepOperand( dvreg, dst )
 
-	select case irGetDataClass( dvreg->dtype )
-	case IR_DATACLASS_INTEGER
+	reg = hFindRegNotInVreg( dvreg )
+	rname = *hGetRegName( dvreg->dtype, reg )
 
-		reg = emitFindRegNotInVreg( dvreg )
-		rname = *hGetRegName( dvreg->dtype, reg )
+	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-		isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
+	if( not isfree ) then
+		hPUSH( rname )
+	end if
 
-		if( not isfree ) then
-			emithPUSH( rname )
-		end if
+	bits = (dtypeTB(dvreg->dtype).size * 8)-1
 
-		bits = (dtypeTB(dvreg->dtype).size * 8)-1
+	hMOV( rname, dst )
 
-		emithMOV( rname, dst )
+	ostr = "sar " + rname + COMMA + str( bits )
+	outp ostr
 
-		ostr = "sar " + rname + COMMA + str$( bits )
-		outp ostr
+	ostr = "xor " + dst + COMMA + rname
+	outp ostr
 
-		ostr = "xor " + dst + COMMA + rname
-		outp ostr
+	ostr = "sub " + dst + COMMA + rname
+	outp ostr
 
-		ostr = "sub " + dst + COMMA + rname
-		outp ostr
-
-		if( not isfree ) then
-			emithPOP( rname )
-		end if
-
-	case IR_DATACLASS_FPOINT
-		outp "fabs"
-	end select
+	if( not isfree ) then
+		hPOP( rname )
+	end if
 
 end sub
 
 '':::::
-sub emitSGN64( byval dvreg as IRVREG ptr ) static
+private sub _emitABSF( byval dvreg as IRVREG ptr ) static
+
+	outp "fabs"
+
+end sub
+
+'':::::
+private sub _emitSGNL( byval dvreg as IRVREG ptr ) static
     dim dst1 as string, dst2 as string
     dim ostr as string
     dim label1 as string, label2 as string
@@ -3981,66 +4145,61 @@ sub emitSGN64( byval dvreg as IRVREG ptr ) static
 
 	ostr = "cmp " + dst2 + ", 0"
 	outp ostr
-	emithBRANCH( "jne", label1 )
+	hBRANCH( "jne", label1 )
 
 	ostr = "cmp " + dst1 + ", 0"
 	outp ostr
-	emithBRANCH( "je", label2 )
+	hBRANCH( "je", label2 )
 
-	emitLABEL( label1 )
-	emithMOV( dst1, "1" )
-	emithMOV( dst2, "0" )
-	emithBRANCH( "jg", label2 )
-	emithMOV( dst1, "-1" )
-	emithMOV( dst2, "-1" )
+	hLABEL( label1 )
+	hMOV( dst1, "1" )
+	hMOV( dst2, "0" )
+	hBRANCH( "jg", label2 )
+	hMOV( dst1, "-1" )
+	hMOV( dst2, "-1" )
 
-	emitLABEL( label2 )
+	hLABEL( label2 )
 
 end sub
 
 '':::::
-sub emitSGN( byval dvreg as IRVREG ptr ) static
+private sub _emitSGNI( byval dvreg as IRVREG ptr ) static
     dim dst as string
     dim label as string
     dim ostr as string
 
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitSGN64( dvreg )
-		exit sub
-	end if
-
 	hPrepOperand( dvreg, dst )
 
-	if( irGetDataClass( dvreg->dtype ) = IR_DATACLASS_INTEGER ) then
+	label = *hMakeTmpStr( )
 
-		label = *hMakeTmpStr( )
+	ostr = "cmp " + dst + ", 0"
+	outp ostr
 
-		ostr = "cmp " + dst + ", 0"
-		outp ostr
+	hBRANCH( "je", label )
+	hMOV( dst, "1" )
+	hBRANCH( "jg", label )
+	hMOV( dst, "-1" )
 
-		emithBRANCH( "je", label )
-		emithMOV( dst, "1" )
-		emithBRANCH( "jg", label )
-		emithMOV( dst, "-1" )
+	hLABEL( label )
 
-		emitLABEL( label )
+end sub
 
-	end if
+'':::::
+private sub _emitSGNF( byval dvreg as IRVREG ptr ) static
 
 	'' hack! floating-point SGN is done by a rtlib function, called by AST
 
 end sub
 
 '':::::
-sub emitSIN( byval dvreg as IRVREG ptr ) static
+private sub _emitSIN( byval dvreg as IRVREG ptr ) static
 
 	outp "fsin"
 
 end sub
 
 '':::::
-sub emitASIN( byval dvreg as IRVREG ptr ) static
+private sub _emitASIN( byval dvreg as IRVREG ptr ) static
 
 	'' asin( x ) = atn( sqr( (x*x) / (1-x*x) ) )
 	outp "fld st(0)"
@@ -4056,14 +4215,14 @@ sub emitASIN( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitCOS( byval dvreg as IRVREG ptr ) static
+private sub _emitCOS( byval dvreg as IRVREG ptr ) static
 
 	outp "fcos"
 
 end sub
 
 '':::::
-sub emitACOS( byval dvreg as IRVREG ptr ) static
+private sub _emitACOS( byval dvreg as IRVREG ptr ) static
 
 	'' acos( x ) = atn( sqr( (1-x*x) / (x*x) ) )
 	outp "fld st(0)"
@@ -4079,7 +4238,7 @@ sub emitACOS( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitTAN( byval dvreg as IRVREG ptr ) static
+private sub _emitTAN( byval dvreg as IRVREG ptr ) static
 
 	outp "fptan"
 	outp "fstp st(0)"
@@ -4087,7 +4246,7 @@ sub emitTAN( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitATAN( byval dvreg as IRVREG ptr ) static
+private sub _emitATAN( byval dvreg as IRVREG ptr ) static
 
 	outp "fld1"
 	outp "fpatan"
@@ -4095,14 +4254,14 @@ sub emitATAN( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitSQRT( byval dvreg as IRVREG ptr ) static
+private sub _emitSQRT( byval dvreg as IRVREG ptr ) static
 
 	outp "fsqrt"
 
 end sub
 
 '':::::
-sub emitLOG( byval dvreg as IRVREG ptr ) static
+private sub _emitLOG( byval dvreg as IRVREG ptr ) static
 
 	'' log( x ) = log2( x ) / log2( e ).
 
@@ -4115,28 +4274,28 @@ sub emitLOG( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitFLOOR( byval dvreg as IRVREG ptr ) static
+private sub _emitFLOOR( byval dvreg as IRVREG ptr ) static
 
 	dim as integer reg, isfree
 	dim as string rname, ostr
 
-	reg = emitFindFreeReg( IR_DATACLASS_INTEGER )
+	reg = hFindFreeReg( IR_DATACLASS_INTEGER )
 	rname = *hGetRegName( IR_DATATYPE_INTEGER, reg )
 
-	isfree = regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), reg )
+	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
 	if( not isfree ) then
-		emithPUSH( rname )
+		hPUSH( rname )
 	end if
 
 	outp "sub esp, 4"
 	outp "fnstcw [esp]"
-	emithMOV rname, "[esp]"
+	hMOV rname, "[esp]"
 	ostr = "and " + rname + ", 0b1111001111111111"
 	outp ostr
 	ostr = "or " + rname +  ", 0b0000010000000000"
 	outp ostr
-	emithPUSH rname
+	hPUSH rname
 	outp "fldcw [esp]"
 	outp "add esp, 4"
 	outp "frndint"
@@ -4144,13 +4303,30 @@ sub emitFLOOR( byval dvreg as IRVREG ptr ) static
 	outp "add esp, 4"
 
 	if( not isfree ) then
-		emithPOP( rname )
+		hPOP( rname )
 	end if
 
 end sub
 
 '':::::
-sub emitPUSH64( byval svreg as IRVREG ptr ) static
+private sub _emitXchgTOS( byval svreg as IRVREG ptr ) static
+    dim as string src
+    dim as string ostr
+
+	hPrepOperand( svreg, src )
+
+	ostr = "fxch " + src
+	outp( ostr )
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' stack
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private sub _emitPUSHL( byval svreg as IRVREG ptr, _
+						byval unused as integer ) static
     dim src1 as string, src2 as string
     dim ostr as string
 
@@ -4165,64 +4341,67 @@ sub emitPUSH64( byval svreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitPUSH( byval svreg as IRVREG ptr ) static
+private sub _emitPUSHI( byval svreg as IRVREG ptr, _
+						byval unused as integer ) static
     dim src as string, sdsize as integer
     dim ostr as string
-
-	'' longint?
-	if( ISLONGINT( svreg->dtype ) ) then
-		emitPUSH64( svreg )
-		exit sub
-	end if
 
 	hPrepOperand( svreg, src )
 
 	sdsize = irGetDataSize( svreg->dtype )
 
-	select case irGetDataClass( svreg->dtype )
-	case IR_DATACLASS_INTEGER
-		if( svreg->typ = IR_VREGTYPE_REG ) then
-			if( sdsize < FB_INTEGERSIZE ) then
-				src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
-			end if
-		else
-			if( sdsize < FB_INTEGERSIZE ) then
-				'' !!!FIXME!!! assuming it's okay to push over the var if's not dword aligned
-				hPrepOperand( svreg, src, IR_DATATYPE_INTEGER )
-			end if
+	if( svreg->typ = IR_VREGTYPE_REG ) then
+		if( sdsize < FB_INTEGERSIZE ) then
+			src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
 		end if
-
-		ostr = "push " + src
-		outp ostr
-
-	case IR_DATACLASS_FPOINT
-		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			if( svreg->dtype = IR_DATATYPE_SINGLE ) then
-				ostr = "push " + src
-				outp ostr
-			else
-				hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
-				ostr = "push " + src
-				outp ostr
-
-				hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 0 )
-				ostr = "push " + src
-				outp ostr
-			end if
-		else
-			ostr = "sub esp," + str$( sdsize )
-			outp ostr
-
-			ostr = "fstp " + dtypeTB(svreg->dtype).mname + " [esp]"
-			outp ostr
+	else
+		if( sdsize < FB_INTEGERSIZE ) then
+			'' !!!FIXME!!! assuming it's okay to push over the var if's not dword aligned
+			hPrepOperand( svreg, src, IR_DATATYPE_INTEGER )
 		end if
-	end select
+	end if
+
+	ostr = "push " + src
+	outp ostr
 
 end sub
 
 '':::::
-sub emitPUSHUDT( byval svreg as IRVREG ptr, _
-				 byval sdsize as integer ) static
+private sub _emitPUSHF( byval svreg as IRVREG ptr, _
+						byval unused as integer ) static
+    dim src as string, sdsize as integer
+    dim ostr as string
+
+	hPrepOperand( svreg, src )
+
+	sdsize = irGetDataSize( svreg->dtype )
+
+	if( svreg->typ <> IR_VREGTYPE_REG ) then
+		if( svreg->dtype = IR_DATATYPE_SINGLE ) then
+			ostr = "push " + src
+			outp ostr
+		else
+			hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
+			ostr = "push " + src
+			outp ostr
+
+    		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 0 )
+			ostr = "push " + src
+			outp ostr
+		end if
+	else
+		ostr = "sub esp," + str( sdsize )
+		outp ostr
+
+		ostr = "fstp " + dtypeTB(svreg->dtype).mname + " [esp]"
+		outp ostr
+	end if
+
+end sub
+
+'':::::
+private sub _emitPUSHUDT( byval svreg as IRVREG ptr, _
+				 		  byval sdsize as integer ) static
     dim i as integer
     dim ostr as string
     dim src as string
@@ -4237,7 +4416,8 @@ sub emitPUSHUDT( byval svreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitPOP64( byval dvreg as IRVREG ptr ) static
+private sub _emitPOPL( byval dvreg as IRVREG ptr, _
+					   byval unused as integer ) static
     dim dst1 as string, dst2 as string
     dim ostr as string
 
@@ -4252,72 +4432,75 @@ sub emitPOP64( byval dvreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub emitPOP( byval dvreg as IRVREG ptr ) static
+private sub _emitPOPI( byval dvreg as IRVREG ptr, _
+					   byval unused as integer ) static
     dim as string dst, ostr
     dim as integer dsize
-
-	'' longint?
-	if( ISLONGINT( dvreg->dtype ) ) then
-		emitPOP64( dvreg )
-		exit sub
-	end if
 
 	hPrepOperand( dvreg, dst )
 
 	dsize = irGetDataSize( dvreg->dtype )
 
-	select case irGetDataClass( dvreg->dtype )
-	case IR_DATACLASS_INTEGER
-		if( dsize = FB_INTEGERSIZE ) then
+	if( dsize = FB_INTEGERSIZE ) then
+		ostr = "pop " + dst
+		outp ostr
+
+	else
+		if( dvreg->typ = IR_VREGTYPE_REG ) then
+			dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
+			ostr = "pop " + dst
+			outp ostr
+		else
+
+			outp "xchg eax, [esp]"
+
+			if( dsize = 1 ) then
+				hMOV dst, "al"
+			else
+				hMOV dst, "ax"
+			end if
+
+			if( not hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
+				hPOP "eax"
+			else
+				outp "add esp, 4"
+			end if
+		end if
+
+	end if
+
+end sub
+
+'':::::
+private sub _emitPOPF( byval dvreg as IRVREG ptr, _
+					   byval unused as integer ) static
+    dim as string dst, ostr
+    dim as integer dsize
+
+	hPrepOperand( dvreg, dst )
+
+	dsize = irGetDataSize( dvreg->dtype )
+
+	if( dvreg->typ <> IR_VREGTYPE_REG ) then
+		if( dvreg->dtype = IR_DATATYPE_SINGLE ) then
+			ostr = "pop " + dst
+			outp ostr
+		else
+			hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 0 )
 			ostr = "pop " + dst
 			outp ostr
 
-		else
-			if( dvreg->typ = IR_VREGTYPE_REG ) then
-				dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
-				ostr = "pop " + dst
-				outp ostr
-			else
-
-				outp "xchg eax, [esp]"
-
-				if( dsize = 1 ) then
-					emithMOV dst, "al"
-				else
-					emithMOV dst, "ax"
-				end if
-
-				if( not regTB(IR_DATACLASS_INTEGER)->isFree( regTB(IR_DATACLASS_INTEGER), EMIT_INTREG_EAX ) ) then
-					emithPOP "eax"
-				else
-					outp "add esp, 4"
-				end if
-			end if
-
-		end if
-
-	case IR_DATACLASS_FPOINT
-		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			if( dvreg->dtype = IR_DATATYPE_SINGLE ) then
-				ostr = "pop " + dst
-				outp ostr
-			else
-				hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 0 )
-				ostr = "pop " + dst
-				outp ostr
-
-				hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 4 )
-				ostr = "pop " + dst
-				outp ostr
-			end if
-		else
-			ostr = "fld " + dtypeTB(dvreg->dtype).mname + " [esp]"
-			outp ostr
-
-			ostr = "add esp," + str$( dsize )
+			hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 4 )
+			ostr = "pop " + dst
 			outp ostr
 		end if
-	end select
+	else
+		ostr = "fld " + dtypeTB(dvreg->dtype).mname + " [esp]"
+		outp ostr
+
+		ostr = "add esp," + str$( dsize )
+		outp ostr
+	end if
 
 end sub
 
@@ -4326,8 +4509,8 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitADDROF( byval dvreg as IRVREG ptr, _
-			    byval svreg as IRVREG ptr ) static
+private sub _emitADDROF( byval dvreg as IRVREG ptr, _
+			    		 byval svreg as IRVREG ptr ) static
 
 	dim as string dst, src
 	dim as string ostr
@@ -4341,8 +4524,8 @@ sub emitADDROF( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub emitDEREF( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+private sub _emitDEREF( byval dvreg as IRVREG ptr, _
+			   			byval svreg as IRVREG ptr ) static
 
 	dim as string dst, src
 	dim as string ostr
@@ -4360,159 +4543,223 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitPROCBEGIN( byval proc as FBSYMBOL ptr, _
-				   byval initlabel as FBSYMBOL ptr, _
-				   byval ispublic as integer ) static
-	dim as string id, lname
-	dim as integer oldpos
+private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
+    dim as string lname
+    dim as integer i, bytestoalloc
 
-	oldpos = ctx.pos
+    bytestoalloc = (-proc->proc.stk.localptr + 3) and (not 3)
 
-	id = symbGetName( proc )
-#ifdef TARGET_LINUX
-	outEx( ".type " + id + ", @function" + NEWLINE, FALSE )
-#endif
+    if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
+    	(proc->proc.stk.argptr <> EMIT_ARGSTART) ) then
 
-    emithPUSH( "ebp" )
-    outp( "mov ebp, esp" )
+    	hPUSH( "ebp" )
+    	outp( "mov ebp, esp" )
 
-    ctx.procstksetup = seek( env.outf.num )
-    outEx( space$( 32 ) + NEWLINE, FALSE )
+    	if( bytestoalloc > 0 ) then
+    		outp( "sub esp, " + str( bytestoalloc ) )
+    	end if
+    end if
 
-    emithPUSH( "ebx" )
-    emithPUSH( "esi" )
-    emithPUSH( "edi" )
-
-    ctx.procstkcleanup = seek( env.outf.num )
-   	outEx( space$( 180 ) + NEWLINE, FALSE )
-
-    lname = symbGetName( initlabel )
-    emitLABEL( lname)
-
-    ''
-    ctx.localptr = 0
-    ctx.argptr	 = FB_POINTERSIZE + FB_INTEGERSIZE	'' skip return address + pushed ebp
-    ctx.pos		 = oldpos
-
-end sub
-
-'':::::
-sub emitPROCEND( byval proc as FBSYMBOL ptr, _
-				 byval bytestopop as integer, _
-				 byval initlabel as FBSYMBOL ptr, _
-				 byval exitlabel as FBSYMBOL ptr ) static
-
-    dim as integer currpos, oldpos, bytestoalloc, i
-	dim as string id, lname
-
-	oldpos = ctx.pos
-
-	id = symbGetName( proc )
-
-    bytestoalloc = (-ctx.localptr + 3) and (not 3)
-
-    emithPOP( "edi" )
-    emithPOP( "esi" )
-    emithPOP( "ebx" )
-    outp( "mov esp, ebp" )
-    emithPOP( "ebp" )
-    outp( "ret " + str$( bytestopop ) )
-#ifdef TARGET_LINUX
-    outEx( ".size " + id + ", .-" + id + NEWLINE, FALSE )
-#endif
-
-    edbgProcEnd( proc, symbGetName( initlabel ), symbGetName( exitlabel ) )
+    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    	hPUSH( "ebx" )
+    end if
+    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    	hPUSH( "esi" )
+    end if
+    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    	hPUSH( "edi" )
+    end if
 
 	''
 	if( bytestoalloc > 0 ) then
-		currpos = seek( env.outf.num )
-
-		seek #env.outf.num, ctx.procstksetup
-		outEx( TABCHAR + "sub" + TABCHAR + "esp," + str$( bytestoalloc ), TRUE )
-
-		seek #env.outf.num, ctx.procstkcleanup
-
 		if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 			if( bytestoalloc \ 8 > 7 ) then
-				outp( "lea edi, [ebp-" + str$( bytestoalloc ) + "]" )
-				outp( "mov ecx," + str$( bytestoalloc \ 8 ) )
+
+		    	if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    				hPUSH( "edi" )
+    			end if
+
+				outp( "lea edi, [ebp-" + str( bytestoalloc ) + "]" )
+				outp( "mov ecx," + str( bytestoalloc \ 8 ) )
 				outp( "pxor mm0, mm0" )
-			    lname = symbGetName( initlabel ) + "_init"
-			    emitLABEL( lname )
+			    lname = *hMakeTmpStr( )
+			    hLABEL( lname )
 				outp( "movq [edi], mm0" )
 				outp( "add edi, 8" )
 				outp( "dec ecx" )
 				outp( "jnz " + lname )
 				outp( "emms" )
+
+    			if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    				hPOP( "edi" )
+    			end if
+
 			elseif( bytestoalloc \ 8 > 0 ) then
 				outp( "pxor mm0, mm0" )
 				for i = bytestoalloc\8 to 1 step -1
-					outp( "movq [ebp-" + str$( i*8 ) + "], mm0" )
-				next i
+					outp( "movq [ebp-" + str( i*8 ) + "], mm0" )
+				next
 				outp( "emms" )
+
 			end if
+
 			if( bytestoalloc and 4 ) then
-				outp( "mov dword ptr [ebp-" + str$( bytestoalloc ) + "], 0" )
+				outp( "mov dword ptr [ebp-" + str( bytestoalloc ) + "], 0" )
 			end if
+
 		else
-			if( bytestoalloc \ 4 > 4 ) then
-				outp( "lea edi, [ebp-" + str$( bytestoalloc ) + "]" )
-				outp( "mov ecx," + str$( bytestoalloc \ 4 ) )
+			if( bytestoalloc \ 4 > 6 ) then
+		    	if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    				hPUSH( "edi" )
+    			end if
+
+				outp( "lea edi, [ebp-" + str( bytestoalloc ) + "]" )
+				outp( "mov ecx," + str( bytestoalloc \ 4 ) )
 				outp( "xor eax, eax" )
-				outEx( TABCHAR + "rep stosd", TRUE )
+				outp( "rep stosd" )
+
+    			if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    				hPOP( "edi" )
+    			end if
+
 			else
-				for i = bytestoalloc\4 to 1 step -1
-					 outp( "mov dword ptr [ebp-" + str$( i*4 ) + "], 0" )
-				next i
+				for i = bytestoalloc \ 4 to 1 step -1
+					 outp( "mov dword ptr [ebp-" + str( i*4 ) + "], 0" )
+				next
 			end if
 		end if
 
-		seek #env.outf.num, currpos
 	end if
 
-	ctx.pos = oldpos
+end sub
+
+''::::
+private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
+						   byval bytestopop as integer ) static
+
+    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    	hPOP( "edi" )
+    end if
+    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    	hPOP( "esi" )
+    end if
+    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    	hPOP( "ebx" )
+    end if
+
+    if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
+    	(proc->proc.stk.argptr <> EMIT_ARGSTART) ) then
+    	outp( "mov esp, ebp" )
+    	hPOP( "ebp" )
+    end if
+
+    outp( "ret " + str( bytestopop ) )
+#ifdef TARGET_LINUX
+    outEx( ".size " + symbGetName( proc ) + ", .-" + id + NEWLINE, FALSE )
+#endif
 
 end sub
 
 '':::::
-function emitAllocLocal( byval lgt as integer, _
+sub emitPROCHEADER( byval proc as FBSYMBOL ptr, _
+				   	byval initlabel as FBSYMBOL ptr ) static
+
+	'' do nothing, proc will be only emitted at PROCEND
+
+	emitReset( )
+
+	edbgProcEmitBegin( proc )
+
+end sub
+
+'':::::
+sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
+			      	byval bytestopop as integer, _
+			      	byval initlabel as FBSYMBOL ptr, _
+			      	byval exitlabel as FBSYMBOL ptr ) static
+
+    dim as integer oldpos, ispublic
+
+    ispublic = symbIsPublic( proc )
+
+	emitSECTION( EMIT_SECTYPE_CODE )
+
+	''
+	edbgEmitProcHeader( proc )
+
+	''
+	hALIGN( 16 )
+
+	if( ispublic ) then
+		hPUBLIC( symbGetName( proc ) )
+	end if
+
+	hLABEL( symbGetName( proc ) )
+
+#ifdef TARGET_LINUX
+	outEx( ".type " + symbGetName( proc ) + ", @function" + NEWLINE, FALSE )
+#endif
+
+	'' frame
+	hCreateFrame( proc )
+
+    edbgEmitLineFlush( proc, proc->proc.dbg.iniline, proc )
+
+    ''
+    emitFlush( )
+
+	''
+	hDestroyFrame( proc, bytestopop )
+
+    edbgEmitLineFlush( proc, proc->proc.dbg.endline, exitlabel )
+
+    edbgEmitProcFooter( proc, initlabel, exitlabel )
+
+end sub
+
+'':::::
+function emitAllocLocal( byval proc as FBSYMBOL ptr, _
+						 byval lgt as integer, _
 						 ofs as integer ) as zstring ptr static
 
     static as zstring * 3+1 sname = "ebp"
 
-    ctx.localptr -= ((lgt + 3) and not 3)
+    proc->proc.stk.localptr -= ((lgt + 3) and not 3)
 
-	ofs = ctx.localptr
+	ofs = proc->proc.stk.localptr
 
 	function = @sname
 
 end function
 
 '':::::
-sub emitFreeLocal( byval lgt as integer ) static
+sub emitFreeLocal( byval proc as FBSYMBOL ptr, _
+				   byval lgt as integer ) static
 
-    ctx.localptr += ((lgt + 3) and not 3)
+    proc->proc.stk.localptr += ((lgt + 3) and not 3)
 
 end sub
 
 '':::::
-function emitAllocArg( byval lgt as integer, _
+function emitAllocArg( byval proc as FBSYMBOL ptr, _
+					   byval lgt as integer, _
 					   ofs as integer ) as zstring ptr static
 
     static as zstring * 3+1 sname = "ebp"
 
-	ofs = ctx.argptr
+	ofs = proc->proc.stk.argptr
 
-    ctx.argptr += ((lgt + 3) and not 3)
+    proc->proc.stk.argptr += ((lgt + 3) and not 3)
 
 	function = @sname
 
 end function
 
 '':::::
-sub emitFreeArg( byval lgt as integer ) static
+sub emitFreeArg( byval proc as FBSYMBOL ptr, _
+				 byval lgt as integer ) static
 
-    ctx.argptr -= ((lgt + 3) and not 3)
+    proc->proc.stk.argptr -= ((lgt + 3) and not 3)
 
 end sub
 
@@ -4521,31 +4768,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitSECTION( byval section as integer ) static
-    dim as string ostr
+sub emitDATALABEL( byval label as string ) static
+    dim ostr as string
 
-    if( section = ctx.lastsection ) then
-    	exit sub
-    end if
-
-	ostr = NEWLINE + ".section ."
-
-	select case as const section
-	case EMIT_SECTYPE_CONST
-		ostr += "rodata" + NEWLINE
-	case EMIT_SECTYPE_DATA
-		ostr += "data" + NEWLINE
-	case EMIT_SECTYPE_BSS
-		ostr += "bss" + NEWLINE
-	case EMIT_SECTYPE_CODE
-		ostr += "text" + NEWLINE
-	case EMIT_SECTYPE_DIRECTIVE
-		ostr += "drectve" + NEWLINE
-	end select
-
+	ostr = label + ":\r\n"
 	outEx( ostr, FALSE )
-
-	ctx.lastsection = section
 
 end sub
 
@@ -4554,10 +4781,10 @@ sub emitDATABEGIN( byval lname as string ) static
     dim as string ostr
     dim as integer currpos
 
-	if( ctx.dataend <> 0 ) then
+	if( emit.dataend <> 0 ) then
 		currpos = seek( env.outf.num )
 
-		seek #env.outf.num, ctx.dataend
+		seek #env.outf.num, emit.dataend
 
 		ostr = ".int " + lname + NEWLINE
 		outEx( ostr, FALSE )
@@ -4575,7 +4802,7 @@ sub emitDATAEND static
     '' link + NULL
     outEx( ".short 0xffff" + NEWLINE, FALSE )
 
-    ctx.dataend = seek( env.outf.num )
+    emit.dataend = seek( env.outf.num )
 
     ostr = ".int 0" + space$( FB_MAXNAMELEN ) + NEWLINE
     outEx( ostr, FALSE )
@@ -4625,27 +4852,25 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
 	emitSECTION( EMIT_SECTYPE_DATA )
 
-   	edbgGlobalVar( sym, EMIT_SECTYPE_DATA )
+   	edbgEmitGlobalVar( sym, EMIT_SECTYPE_DATA )
 
    	if( sym->typ = FB_SYMBTYPE_DOUBLE ) then
-    	outEx( ".balign 8" + NEWLINE, FALSE )
+    	hALIGN( 8 )
 	else
-    	outEx( ".balign 4" + NEWLINE, FALSE )
+    	hALIGN( 4 )
 	end if
 
 	'' public?
 	if( symbIsPublic( sym ) ) then
-		emitPUBLIC( sym->alias )
+		hPUBLIC( sym->alias )
 	end if
 
-	emitLABEL( sym->alias )
+	hLABEL( sym->alias )
 
 end sub
 
 '':::::
 sub emitVARINIEND( byval sym as FBSYMBOL ptr ) static
-
-	emitSECTION( EMIT_SECTYPE_CODE )
 
 end sub
 
@@ -4712,127 +4937,59 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub hSaveAsmHeader( )
-    dim as string entryname, modulename
-    dim maininitlabel as FBSYMBOL ptr
+sub emitWriteHeader( ) static
 
-   	modulename = hStripPath( hStripExt( env.inf.name ) )
-   	hClearName( modulename )
-   	entryname = hMakeEntryPointName( modulename )
+   	emit.modulename = hStripPath( hStripExt( env.inf.name ) )
+   	hClearName( emit.modulename )
+   	emit.entryname = hCreateMainAlias( emit.modulename )
 
-	edbgHeader( env.outf.num, env.inf.name, modulename, entryname )
+	''
+	edbgEmitHeader( env.outf.num, env.inf.name, emit.modulename, emit.entryname )
 
+	''
 	hWriteStr( TRUE,  ".intel_syntax noprefix" )
     hWriteStr( FALSE, "" )
-    hWriteStr( TRUE, "#'" + env.inf.name + "' compilation started at " + _
-    		   time$ + " (" + FB_SIGN + ")" )
-
-    emitSECTION( EMIT_SECTYPE_CODE )
-
-   	hWriteStr( FALSE, NEWLINE + "#entry point" )
-   	hWriteStr( TRUE,  ".balign 16" + NEWLINE )
-
-   	hWriteStr( FALSE, ".globl " + entryname )
-   	hWriteStr( FALSE, entryname + ":" )
-
-	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
-   		hWriteStr( TRUE, "call" + TABCHAR + "fb_moduleinit" )
-   	end if
-
-    ''
-    maininitlabel =  symbAddLabel( "" )
-
-   	emitLABEL( symbGetName( maininitlabel ) )
+    hCOMMENT( env.inf.name + "' compilation started at " + time + " (" + FB_SIGN + ")" )
 
 end sub
 
 '':::::
-private sub hCall( byval fname as string, _
-				   byval argslen as integer, _
-				   byval callconv as integer )
+sub emitWriteFooter( byval tottime as double ) static
 
-    dim as zstring ptr id
+	hCOMMENT( env.inf.name + "' compilation took " + str( tottime ) + " secs" )
 
-    id = hCreateProcAlias( fname, argslen, callconv )
-    hWriteStr( TRUE,  "call" + TABCHAR + *id )
-    if( argslen > 0 ) then
-    	if( (callconv = FB_FUNCMODE_CDECL) or (env.clopt.nostdcall) ) then
-    		hWriteStr( TRUE,  "add esp, " + str$( argslen ) )
-    	end if
-    end if
+	''
+	edbgIncludeEnd( )
 
 end sub
 
 '':::::
-private sub hEmitInitProc( ) static
+sub emitWriteRtInit( ) static
     dim as zstring ptr id
+    dim as ASTNODE ptr argc, argv
 
-    if( env.clopt.outtype <> FB_OUTTYPE_EXECUTABLE ) then
-    	exit sub
-    end if
-
-    emitSECTION( EMIT_SECTYPE_CODE )
-
-    hWriteStr( FALSE, "#initialization" )
-    hWriteStr( FALSE, "fb_moduleinit:" )
-
-    hWriteStr( TRUE,  "finit" )
+    '' finit
+    astAdd( astNewASM( "finit" ) )
 
 	'' call fb_Init
+	argc = NULL
+	argv = NULL
+
 	select case env.clopt.target
-	case FB_COMPTARGET_WIN32
-		hWriteStr( TRUE, "push 0			#argv" )
-		hWriteStr( TRUE, "push 0			#argc" )
 	case FB_COMPTARGET_DOS
-		hWriteStr( TRUE, "push [esp+12]	#argv" )
-		hWriteStr( TRUE, "push [esp+12]	#argc" )
+		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
+		argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
+
 	case FB_COMPTARGET_LINUX
-		hWriteStr( TRUE, "lea  eax, [esp+8] " )
-		hWriteStr( TRUE, "push eax	    #argv" )
-		hWriteStr( TRUE, "push [esp+8]	#argc" )
-	case FB_COMPTARGET_XBOX
-		hWriteStr( TRUE, "push 0			#argv" )
-		hWriteStr( TRUE, "push 0			#argc" )
+		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
+		argv = astNewADDR( IR_OP_ADDROF, _
+						   astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) ) )
 	end select
 
-    hCall( "fb_Init", 8, FB_FUNCMODE_STDCALL )
-
-    '' if error checking is on, call fb_InitSignals
-    if( env.clopt.errorcheck ) then
-    	hCall( "fb_InitSignals", 0, FB_FUNCMODE_STDCALL )
-    end if
-
-    '' set default data label (def label isn't global as it could clash with other
-    '' modules, so DataRestore alone can't figure out where to start)
-    if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
-    	rtlDataRestore( NULL, TRUE )
-    	irFlush( )
-    end if
-
-    '' start profiling if requested
-    if( env.clopt.profile ) then
-	    id = hCreateProcAlias( "fb_ProfileInit", 0, FB_FUNCMODE_STDCALL )
-	    hWriteStr( TRUE,  "call" + TABCHAR + *id )
-    end if
-
-    hWriteStr( TRUE,  "ret" )
+    '' init( argc, argv )
+    emit.main.proc = rtlInitRt( argc, argv )
 
 end sub
-
-'':::::
-private sub hEmitFooter( byval tottime as double )
-
-    hWriteStr( FALSE, "" )
-
-    '' end( 0 )
-    rtlExit( NULL )
-    irFlush( )
-
-    hWriteStr( FALSE, NEWLINE + TABCHAR + "#'" + env.inf.name + _
-    		   "' compilation took " + str$( tottime ) + " secs" )
-
-end sub
-
 
 '':::::
 private function hGetTypeString( byval typ as integer ) as string static
@@ -4867,40 +5024,40 @@ end function
 '':::::
 private sub hEmitBssHeader( )
 
-    if( ctx.bssheader ) then
+    if( emit.bssheader ) then
     	exit sub
     end if
 
-    hWriteStr( FALSE, NEWLINE + "#global non-initialized vars" )
+    hCOMMENT( "global non-initialized vars" )
     emitSECTION( EMIT_SECTYPE_BSS )
-    hWriteStr( TRUE,  ".balign 16" + NEWLINE )
+    hALIGN( 16 )
 
-    ctx.bssheader = TRUE
+    emit.bssheader = TRUE
 
 end sub
 
 
 '':::::
-private sub hEmitBss( ) static
+sub emitWriteBss( ) static
     dim as string alloc, ostr
     dim as FBSYMBOL ptr s
     dim as integer alloctype, elements, doemit
 
-    s = symbGetFirstNode( )
+    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
 		doemit = FALSE
 
 		'' var?
-		if( s->class = FB_SYMBCLASS_VAR ) then
+		if( symbIsVAR( s ) ) then
 			'' not initialized?
-			if( not s->var.initialized ) then
+			if( not symbGetVarInitialized( s ) ) then
 				'' not emited already?
-				if( not s->var.emited ) then
+				if( not symbGetVarEmited( s ) ) then
     				'' not extern?
     				if( not symbIsExtern( s ) ) then
     	    			'' not a string or array descriptor?
-    	    			if( s->lgt > 0 ) then
+    	    			if( symbGetLen( s ) > 0 ) then
     						'' not dynamic?
     						if( not symbGetIsDynamic( s ) ) then
     							doemit = TRUE
@@ -4912,39 +5069,44 @@ private sub hEmitBss( ) static
     	end if
 
     	if( doemit ) then
-    	    alloctype = s->alloctype
+    	    alloctype = symbGetAllocType( s )
 
 	    	elements = 1
-    	    if( s->var.array.dims > 0 ) then
+    	    if( symbGetArrayDimensions( s ) > 0 ) then
     	    	elements = hCalcElements( s )
     	    end if
 
     	    hEmitBssHeader( )
 
+    	    '' allocation modifier
     	    if( (alloctype and FB_ALLOCTYPE_COMMON) = 0 ) then
     	    	if( (alloctype and FB_ALLOCTYPE_PUBLIC) > 0 ) then
-    	    		emitPUBLIC( s->alias )
+    	    		hPUBLIC( symbGetName( s ) )
 				end if
     	    	alloc = ".lcomm"
 			else
-    	    	emitPUBLIC( s->alias )
+    	    	hPUBLIC( symbGetName( s ) )
     	    	alloc = ".comm"
     	    end if
 
-    	    if( s->typ = FB_SYMBTYPE_DOUBLE ) then
+    	    '' align
+    	    if( symbGetType( s ) = FB_SYMBTYPE_DOUBLE ) then
+    	    	hALIGN( 8 )
     	    	hWriteStr( TRUE, ".balign 8" )
     	    else
-    	    	hWriteStr( TRUE, ".balign 4" )
+    	    	hALIGN( 4 )
     	    end if
 
-    	    ostr = alloc + TABCHAR + s->alias + "," + str$( s->lgt * elements )
+    	    '' emit
+    	    ostr = alloc + "\t" + symbGetName( s ) + "," + str( s->lgt * elements )
     	    hWriteStr( TRUE, ostr )
 
-    	    edbgGlobalVar( s, EMIT_SECTYPE_BSS )
+    	    '' add dbg info
+    	    edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
 
     	end if
 
-    	s = s->nxt
+    	s = s->next
     loop
 
 end sub
@@ -4952,38 +5114,38 @@ end sub
 '':::::
 private sub hEmitConstHeader( )
 
-    if( ctx.conheader ) then
+    if( emit.conheader ) then
     	exit sub
     end if
 
-    hWriteStr( FALSE, NEWLINE + "#global initialized constants" )
+    hCOMMENT( "global initialized constants" )
 	emitSECTION( EMIT_SECTYPE_DATA )
-    hWriteStr( TRUE,  ".balign 16" + NEWLINE )
+    hALIGN( 16 )
 
-    ctx.conheader = TRUE
+    emit.conheader = TRUE
 
 end sub
 
 '':::::
-private sub hEmitConst( ) static
+sub emitWriteConst( ) static
     dim as string stext, stype, ostr
     dim as FBSYMBOL ptr s
-    dim as integer typ, doemit
+    dim as integer dtype, doemit
 
-    s = symbGetFirstNode( )
+    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
     	doemit = FALSE
 
     	'' var?
-    	if( s->class = FB_SYMBCLASS_VAR ) then
+    	if( symbIsVAR( s ) ) then
     		'' initialized?
-    		if( s->var.initialized ) then
-    	    	typ = s->typ
+    		if( symbGetVarInitialized( s ) ) then
+    	    	dtype = symbGetType( s )
     	    	'' not an udt?
-    	    	if( typ <> FB_SYMBTYPE_USERDEF ) then
+    	    	if( dtype <> FB_SYMBTYPE_USERDEF ) then
 					'' not string or array descriptors (fix-len's can be 0-len too)
-					if( (s->lgt > 0) or (typ = FB_SYMBTYPE_FIXSTR) ) then
+					if( (symbGetLen( s ) > 0) or (dtype = FB_SYMBTYPE_FIXSTR) ) then
                     	doemit = TRUE
     	    		end if
     	    	end if
@@ -4991,8 +5153,8 @@ private sub hEmitConst( ) static
 		end if
 
     	if( doemit ) then
-    		stype = hGetTypeString( typ )
-    	    if( typ = FB_SYMBTYPE_FIXSTR ) then
+    		stype = hGetTypeString( dtype )
+    	    if( dtype = FB_SYMBTYPE_FIXSTR ) then
     	    	stext = "\"" + hEscapeStr( s->var.inittext ) + "\\0\""
     	    else
     	    	stext = s->var.inittext
@@ -5000,20 +5162,20 @@ private sub hEmitConst( ) static
 
     	    hEmitConstHeader( )
 
-    	    if( typ = FB_SYMBTYPE_DOUBLE ) then
-    	    	hWriteStr( TRUE, ".balign 8" )
+    	    if( dtype = FB_SYMBTYPE_DOUBLE ) then
+    	    	hALIGN( 8 )
     	    else
-    	    	hWriteStr( TRUE, ".balign 4" )
+    	    	hALIGN( 4 )
     	    end if
 
-    	    ostr = s->alias + ":\t" + stype + TABCHAR + stext
+    	    ostr = symbGetName( s ) + ":\t" + stype + "\t" + stext
     	    hWriteStr( FALSE, ostr )
 
-    	    'edbgGlobalVar( s, EMIT_SECTYPE_CONST )
+    	    'edbgEmitGlobalVar( s, EMIT_SECTYPE_CONST )
 
     	end if
 
-    	s = s->nxt
+    	s = s->next
     loop
 
 end sub
@@ -5033,8 +5195,8 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     	end if
     end if
 
-    dims = s->var.array.dims
-    diff = s->var.array.dif
+    dims = symbGetArrayDimensions( s )
+    diff = symbGetArrayOffset( s )
     if( dims = 0 ) then
     	exit sub
     end if
@@ -5042,12 +5204,12 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     if( symbGetIsDynamic( s ) ) then
     	sname = "0"
 	else
-    	sname = s->alias
+    	sname = symbGetName( s )
 	end if
 
 	dname = symbGetVarDescName( s )
 
-    edbgGlobalVar( s, EMIT_SECTYPE_DATA )
+    edbgEmitGlobalVar( s, EMIT_SECTYPE_DATA )
 
     '' COMMON?
     if( symbIsCommon( s ) ) then
@@ -5055,11 +5217,11 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     		dims = 1
     	end if
 
-    	emitPUBLIC( dname )
+    	hPUBLIC( dname )
 
-    	hWriteStr( TRUE, ".balign 4" )
-    	hWriteStr( TRUE,  ".comm" + TABCHAR + dname + "," + _
-    			   str$( FB_ARRAYDESCSIZE + dims * FB_INTEGERSIZE*2 ) )
+    	hALIGN( 4 )
+    	hWriteStr( TRUE,  ".comm\t" + dname + "," + _
+    			   str( FB_ARRAYDESCSIZE + dims * FB_INTEGERSIZE*2 ) )
 
     	exit sub
     end if
@@ -5070,42 +5232,42 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     if( symbIsPublic( s ) ) then
     	'' don't make the descriptor global if it's a static array
     	if( symbGetIsDynamic( s ) ) then
-    		emitPUBLIC( dname )
+    		hPUBLIC( dname )
     	end if
     end if
 
-    hWriteStr( TRUE, ".balign 4" )
+    hALIGN( 4 )
     hWriteStr( FALSE, dname + ":" )
 
 	''	void		*data 	// ptr + diff
-	hWriteStr( TRUE,  ".int" + TABCHAR + sname + " +" + str$( diff ) )
+	hWriteStr( TRUE,  ".int\t" + sname + " +" + str( diff ) )
 	''	void		*ptr
-	hWriteStr( TRUE,  ".int" + TABCHAR + sname )
+	hWriteStr( TRUE,  ".int\t" + sname )
 	''	uint		size
-	hWriteStr( TRUE,  ".int" + TABCHAR + str$( s->lgt * hCalcElements( s ) ) )
+	hWriteStr( TRUE,  ".int\t" + str( s->lgt * hCalcElements( s ) ) )
 	''	uint		element_len
-    hWriteStr( TRUE,  ".int" + TABCHAR + str$( s->lgt ) )
+    hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
 	''	uint		dimensions
 	if( dims = -1 ) then dims = 1
-	hWriteStr( TRUE,  ".int" + TABCHAR + str$( dims ) )
+	hWriteStr( TRUE,  ".int\t" + str( dims ) )
 
     if( not symbGetIsDynamic( s ) ) then
-    	d = s->var.array.dimhead
+    	d = symbGetArrayFirstDim( s )
     	do while( d <> NULL )
 			''	uint	dim_elemts
-			hWriteStr( TRUE,  ".int" + TABCHAR + str$( d->upper - d->lower + 1 ) )
+			hWriteStr( TRUE,  ".int\t" + str( d->upper - d->lower + 1 ) )
 			''	int		dim_first
-			hWriteStr( TRUE,  ".int" + TABCHAR + str$( d->lower ) )
+			hWriteStr( TRUE,  ".int\t" + str( d->lower ) )
             '' next
-			d = d->r
+			d = d->next
     	loop
 
     else
         for i = 0 to dims-1
 			''	uint	dim_elemts
-			hWriteStr( TRUE,  ".int" + TABCHAR + "0"  )
+			hWriteStr( TRUE,  ".int\t0"  )
 			''	int		dim_first
-			hWriteStr( TRUE,  ".int" + TABCHAR + "0" )
+			hWriteStr( TRUE,  ".int\t0" )
         next i
     end if
 
@@ -5117,44 +5279,44 @@ private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
 
 	dname = symbGetVarDescName( s )
 
-    hWriteStr( TRUE, ".balign 4" )
+    hALIGN( 4 )
     hWriteStr( FALSE, dname + ":" )
 
 	''	void		*data
-	hWriteStr( TRUE,  ".int" + TABCHAR + s->alias )
+	hWriteStr( TRUE,  ".int\t" + s->alias )
 	''	int			len
-	hWriteStr( TRUE,  ".int" + TABCHAR + str$( s->lgt ) )
+	hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
 	''	int			size
-	hWriteStr( TRUE,  ".int" + TABCHAR + str$( s->lgt ) )
+	hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
 
 end sub
 
 '':::::
 private sub hEmitDataHeader( )
 
-    if( ctx.datheader ) then
+    if( emit.datheader ) then
     	exit sub
     end if
 
-    hWriteStr( FALSE, NEWLINE + "#global initialized vars" )
+    hCOMMENT( "global initialized vars" )
     emitSECTION( EMIT_SECTYPE_DATA )
-    hWriteStr( TRUE,  ".balign 16" + NEWLINE )
+    hALIGN( 16 )
 
-    ctx.datheader = TRUE
+    emit.datheader = TRUE
 
 end sub
 
 '':::::
-private sub hEmitData( ) static
+sub emitWriteData( ) static
     dim as FBSYMBOL ptr s, d
 
-    s = symbGetFirstNode( )
+    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
     	'' var?
-    	if( s->class = FB_SYMBCLASS_VAR ) then
+    	if( symbIsVAR( s ) ) then
     	    '' with descriptor?
-    	    d = s->var.array.desc
+    	    d = symbGetArrayDescriptor( s )
     	    if( d <> NULL ) then
     	    	'' subtype is an array or string descriptor?
     	    	select case d->subtype
@@ -5169,7 +5331,7 @@ private sub hEmitData( ) static
     	    end if
     	end if
 
-    	s = s->nxt
+    	s = s->next
     loop
 
 end sub
@@ -5177,26 +5339,26 @@ end sub
 '':::::
 private sub hEmitExportHeader( )
 
-    if( ctx.expheader ) then
+    if( emit.expheader ) then
     	exit sub
     end if
 
     hWriteStr( FALSE, NEWLINE + "#exported functions" )
     emitSECTION( EMIT_SECTYPE_DIRECTIVE )
 
-    ctx.expheader = TRUE
+    emit.expheader = TRUE
 
 end sub
 
 '':::::
-private sub hEmitExport( ) static
+sub emitWriteExport( ) static
     dim s as FBSYMBOL ptr
     dim sname as string
 
-    s = symbGetFirstNode( )
+    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
-    	if( symbGetClass( s ) = FB_SYMBCLASS_PROC ) then
+    	if( symbIsPROC( s ) ) then
     		if( symbGetProcIsDeclared( s ) ) then
     			if( symbIsExport( s ) ) then
     				hEmitExportHeader( )
@@ -5206,82 +5368,84 @@ private sub hEmitExport( ) static
     		end if
     	end if
 
-    	s = symbGetNextNode( s )
+    	s = s->next
     loop
 
 end sub
 
 
-'':::::
-function emitOpen( ) as integer
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' functions table
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-	if( hFileExists( env.outf.name ) ) then
-		kill env.outf.name
-	end if
+#define EMIT_CBENTRY(op) @_emit##op##
 
-	env.outf.num = freefile
-	if( open( env.outf.name, for binary, access read write, as #env.outf.num ) <> 0 ) then
-		return FALSE
-	end if
+	'' same order as EMIT_NODEOP_ENUM
+	dim shared emit_opfTB(0 to EMIT_MAXOPS-1) as any ptr => _
+	{ _
+		EMIT_CBENTRY(LOADI2I), EMIT_CBENTRY(LOADF2I), EMIT_CBENTRY(LOADL2I), _
+		EMIT_CBENTRY(LOADI2F), EMIT_CBENTRY(LOADF2F), EMIT_CBENTRY(LOADL2F), _
+		EMIT_CBENTRY(LOADI2L), EMIT_CBENTRY(LOADF2L), EMIT_CBENTRY(LOADL2L), _
+        _
+		EMIT_CBENTRY(STORI2I), EMIT_CBENTRY(STORF2I), EMIT_CBENTRY(STORL2I), _
+		EMIT_CBENTRY(STORI2F), EMIT_CBENTRY(STORF2F), EMIT_CBENTRY(STORL2F), _
+		EMIT_CBENTRY(STORI2L), EMIT_CBENTRY(STORF2L), EMIT_CBENTRY(STORL2L), _
+        _
+		EMIT_CBENTRY(MOVI), EMIT_CBENTRY(MOVF), EMIT_CBENTRY(MOVL), _
+		EMIT_CBENTRY(ADDI), EMIT_CBENTRY(ADDF), EMIT_CBENTRY(ADDL), _
+		EMIT_CBENTRY(SUBI), EMIT_CBENTRY(SUBF), EMIT_CBENTRY(SUBL), _
+		EMIT_CBENTRY(MULI), EMIT_CBENTRY(MULF), EMIT_CBENTRY(MULL), EMIT_CBENTRY(SMULI), _
+		EMIT_CBENTRY(DIVI), EMIT_CBENTRY(DIVF), NULL              , _
+		EMIT_CBENTRY(MODI), NULL              , NULL              , _
+		EMIT_CBENTRY(SHLI), EMIT_CBENTRY(SHLL), _
+		EMIT_CBENTRY(SHRI), EMIT_CBENTRY(SHRL), _
+		EMIT_CBENTRY(ANDI), EMIT_CBENTRY(ANDL), _
+		EMIT_CBENTRY(ORI) , EMIT_CBENTRY(ORL) , _
+		EMIT_CBENTRY(XORI), EMIT_CBENTRY(XORL), _
+		EMIT_CBENTRY(EQVI), EMIT_CBENTRY(EQVL), _
+		EMIT_CBENTRY(IMPI), EMIT_CBENTRY(IMPL), _
+		EMIT_CBENTRY(ATN2), _
+		EMIT_CBENTRY(POW), _
+		EMIT_CBENTRY(ADDROF), _
+		EMIT_CBENTRY(DEREF), _
+        _
+		EMIT_CBENTRY(CGTI), EMIT_CBENTRY(CGTF), EMIT_CBENTRY(CGTL), _
+		EMIT_CBENTRY(CLTI), EMIT_CBENTRY(CLTF), EMIT_CBENTRY(CLTL), _
+		EMIT_CBENTRY(CEQI), EMIT_CBENTRY(CEQF), EMIT_CBENTRY(CEQL), _
+		EMIT_CBENTRY(CNEI), EMIT_CBENTRY(CNEF), EMIT_CBENTRY(CNEL), _
+		EMIT_CBENTRY(CGEI), EMIT_CBENTRY(CGEF), EMIT_CBENTRY(CGEL), _
+		EMIT_CBENTRY(CLEI), EMIT_CBENTRY(CLEF), EMIT_CBENTRY(CLEL), _
+        _
+		EMIT_CBENTRY(NEGI), EMIT_CBENTRY(NEGF), EMIT_CBENTRY(NEGL), _
+		EMIT_CBENTRY(NOTI), EMIT_CBENTRY(NOTL), _
+		EMIT_CBENTRY(ABSI), EMIT_CBENTRY(ABSF), EMIT_CBENTRY(ABSL), _
+		EMIT_CBENTRY(SGNI), EMIT_CBENTRY(SGNF), EMIT_CBENTRY(SGNL), _
+        _
+		EMIT_CBENTRY(SIN), EMIT_CBENTRY(ASIN), _
+		EMIT_CBENTRY(COS), EMIT_CBENTRY(ACOS), _
+		EMIT_CBENTRY(TAN), EMIT_CBENTRY(ATAN), _
+		EMIT_CBENTRY(SQRT), _
+		EMIT_CBENTRY(LOG), _
+		EMIT_CBENTRY(FLOOR), _
+		EMIT_CBENTRY(XCHGTOS), _
+        _
+		EMIT_CBENTRY(ALIGN), _
+		EMIT_CBENTRY(STKALIGN), _
+        _
+		EMIT_CBENTRY(PUSHI), EMIT_CBENTRY(PUSHF), EMIT_CBENTRY(PUSHL), _
+		EMIT_CBENTRY(POPI), EMIT_CBENTRY(POPF), EMIT_CBENTRY(POPL), _
+		EMIT_CBENTRY(PUSHUDT), _
+        _
+		EMIT_CBENTRY(CALL), _
+		EMIT_CBENTRY(CALLPTR), _
+		EMIT_CBENTRY(BRANCH), _
+		EMIT_CBENTRY(JUMP), _
+		EMIT_CBENTRY(JUMPPTR), _
+		EMIT_CBENTRY(RET), _
+        _
+		EMIT_CBENTRY(LABEL), _
+		EMIT_CBENTRY(PUBLIC), _
+		EMIT_CBENTRY(LIT), _
+		EMIT_CBENTRY(JMPTB) _
+	}
 
-	'' header
-	hSaveAsmHeader( )
-
-	function = TRUE
-
-end function
-
-'':::::
-sub emitClose( byval tottime as double )
-
-    ''
-    irFlush( )
-    edgbMainEnd( )
-
-    '' footer
-    hEmitFooter( tottime )
-
-	'' const
-	hEmitConst( )
-
-	'' data
-	hEmitData( )
-
-	'' bss
-	hEmitBss( )
-
-	''
-	if( env.clopt.export ) then
-		hEmitExport( )
-	end if
-
-	''
-	edbgFooter( )
-
-    '' init proc must be the lastest or GDB will get confused
-    hEmitInitProc( )
-
-	''
-	if( close( #env.outf.num ) <> 0 ) then
-		'' ...
-	end if
-
-end sub
-
-'':::::
-sub hWriteStr( byval addtab as integer, byval s as string ) static
-    dim as string ostr
-
-	if( addtab ) then
-		ostr = TABCHAR + s
-	else
-		ostr = s
-	end if
-
-	ostr += NEWLINE
-
-	if( put( #env.outf.num, , ostr ) <> 0 ) then
-		'' ...
-	end if
-
-end sub

@@ -34,16 +34,21 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
-#include once "inc\rtl.bi"
-#include once "inc\ir.bi"
-#include once "inc\ast.bi"
 #include once "inc\list.bi"
+#include once "inc\emit.bi"
+#include once "inc\ir.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
 
 '''''#define DO_STACK_ALIGN
 
 type ASTCTX
 	astTB			as TLIST
 
+	proclist		as TLIST
+	curproc			as ASTPROCNODE ptr
+
+	doemit			as integer
 	isopt			as integer
 
 	tempstr			as TLIST
@@ -55,7 +60,61 @@ type ASTVALUE
 	v				as FBVALUE
 end type
 
-declare function	astUpdStrConcat		( byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	hNewProcNode	( byval proc as FBSYMBOL ptr ) as ASTPROCNODE ptr
+
+declare function 	hNewNode		( byval class as integer, _
+									  byval dtype as integer, _
+									  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
+
+declare sub 		hFlush			( byval n as ASTNODE ptr )
+
+declare function	hLoad			( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadASSIGN		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadCONV		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadBOP		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadUOP		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadCONST		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadVAR		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadIDX		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadPTR		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadFUNCT		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadADDR		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadLOAD		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadBRANCH		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadIIF		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadOFFSET		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadLINK		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadSTACK		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadENUM		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadLABEL		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadASM		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadJMPTB		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadDBG		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function	astUpdStrConcat	( byval n as ASTNODE ptr ) as ASTNODE ptr
+
 
 '' globals
 	dim shared ctx as ASTCTX
@@ -67,12 +126,237 @@ declare function	astUpdStrConcat		( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' proc handling
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+''::::
+private sub hInitProcList( )
+
+	''
+    listNew( @ctx.proclist, AST_INITPROCNODES, len( ASTPROCNODE ), FALSE )
+
+    ctx.curproc = NULL
+
+end sub
+
+''::::
+private sub hEndProcList( )
+
+	listFree( @ctx.proclist )
+
+	ctx.curproc = NULL
+
+end sub
+
+'':::::
+private function hNewProcNode( byval proc as FBSYMBOL ptr ) as ASTPROCNODE ptr static
+	dim as ASTPROCNODE ptr n
+
+	n = listNewNode( @ctx.proclist )
+
+	''
+	n->proc = proc
+	n->head = NULL
+	n->tail = NULL
+
+	function = n
+
+end function
+
+'':::::
+private sub hDelProcNode( byval n as ASTPROCNODE ptr ) static
+
+	n->head = NULL
+	n->tail = NULL
+
+	listDelNode( @ctx.proclist, cptr(TLISTNODE ptr, n) )
+
+end sub
+
+''::::
+private sub hProcFlush( byval p as ASTPROCNODE ptr, _
+						byval doemit as integer ) static
+    dim as ASTNODE ptr n, nxt
+
+	''
+	ctx.curproc = p
+	ctx.doemit 	= doemit
+
+	if( not p->ismain ) then
+		env.scope = 1
+	else
+		env.scope = 0
+	end if
+
+	env.currproc 	= p->proc
+	symbSetLocalTb( @p->loctb )
+
+	''
+	if( ctx.doemit ) then
+		irEmitPROCBEGIN( p->proc, p->initlabel )
+	end if
+
+	''
+	n = p->head
+	do while( n <> NULL )
+		nxt = n->next
+		hFlush( n )
+		n = nxt
+	loop
+
+    ''
+    if( ctx.doemit ) then
+    	irEmitPROCEND( p->proc, p->initlabel, p->exitlabel )
+    end if
+
+    '' del symbols from hash and symbol tb's
+    symbDelLocalTb( FALSE )
+
+	''
+	hDelProcNode( p )
+
+    ''
+    symbSetLocalTb( NULL )
+    env.scope = 0
+
+	ctx.doemit  = TRUE
+	ctx.curproc = NULL
+
+end sub
+
+''::::
+private sub hProcFlushAll( ) static
+    dim as ASTPROCNODE ptr p
+    dim as integer doemit
+
+	'' procs should be sorted by include file
+
+	do
+        p = listGetHead( @ctx.proclist )
+        if( p = NULL ) then
+        	exit do
+        end if
+
+		'' private and never called? skip
+		doemit = TRUE
+		if( symbIsPrivate( p->proc ) ) then
+			if( not symbGetProcIsCalled( p->proc ) ) then
+				doemit = FALSE
+			end if
+		end if
+
+		hProcFlush( p, doemit )
+	loop
+
+end sub
+
+''::::
+sub astAdd( byval n as ASTNODE ptr ) static
+
+	if( n = NULL ) then
+		exit sub
+	end if
+
+	''
+	if( ctx.curproc->tail <> NULL ) then
+		ctx.curproc->tail->next = n
+	else
+		ctx.curproc->head = n
+	end if
+
+	n->prev = ctx.curproc->tail
+	n->next = NULL
+	ctx.curproc->tail = n
+
+end sub
+
+''::::
+sub astAddAfter( byval n as ASTNODE ptr, _
+				 byval p as ASTNODE ptr ) static
+
+	if( (p = NULL) or (n = NULL) ) then
+		exit sub
+	end if
+
+	''
+	if( p->next = NULL ) then
+		ctx.curproc->tail = n
+	end if
+
+	n->prev = p
+	n->next = p->next
+	p->next = n
+
+end sub
+
+'':::::
+function astProcBegin( byval proc as FBSYMBOL ptr, _
+					   byval initlabel as FBSYMBOL ptr, _
+					   byval exitlabel as FBSYMBOL ptr, _
+					   byval ismain as integer ) as ASTPROCNODE ptr static
+
+    dim as ASTPROCNODE ptr p
+
+	'' alloc new node
+	p = hNewProcNode( proc )
+	if( p = NULL ) then
+		return NULL
+	end if
+
+	p->initlabel = initlabel
+	p->exitlabel = exitlabel
+	p->ismain	 = ismain
+
+	''
+	p->loctb.head = NULL
+	p->loctb.tail = NULL
+	symbSetLocalTb( @p->loctb )
+
+	ctx.curproc = p
+
+	''
+	irProcBegin( proc )
+
+	function = p
+
+end function
+
+'':::::
+sub astProcEnd( byval p as ASTPROCNODE ptr ) static
+
+	''
+	irProcEnd( p->proc )
+
+	if( not p->ismain ) then
+		'' not private or inline? flush it..
+		if( not symbIsPrivate( p->proc ) ) then
+			hProcFlush( p, TRUE )
+
+		'' remove from hash tb only
+		else
+			symbDelLocalTb( TRUE )
+		end if
+
+	'' main? flush all remaining, it's the latest
+	else
+		hProcFlushAll( )
+
+	end if
+
+	symbSetLocalTb( NULL )
+
+	'' back to main (or NULL)
+	ctx.curproc = listGetHead( @ctx.proclist )
+
+end sub
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' constant folding optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astOptConstRmNeg( byval n as ASTNODE ptr, _
-					  byval p as ASTNODE ptr )
+private sub hOptConstRmNeg( byval n as ASTNODE ptr, _
+					  		byval p as ASTNODE ptr )
 	static as ASTNODE ptr l, r
 
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
@@ -101,12 +385,12 @@ sub astOptConstRmNeg( byval n as ASTNODE ptr, _
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		astOptConstRmNeg( l, n )
+		hOptConstRmNeg( l, n )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		astOptConstRmNeg( r, n )
+		hOptConstRmNeg( r, n )
 	end if
 
 end sub
@@ -237,9 +521,9 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 end function
 
 '':::::
-function asthConstAccumADDSUB( byval n as ASTNODE ptr, _
-							   byval v as ASTVALUE ptr, _
-							   byval op as integer ) as ASTNODE ptr
+private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
+							   		byval v as ASTVALUE ptr, _
+							   		byval op as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr l, r
 	dim as integer o
 	static as integer dtype
@@ -300,17 +584,17 @@ function asthConstAccumADDSUB( byval n as ASTNODE ptr, _
 			astDel( n )
 
 			'' top node is now the left one
-			n = asthConstAccumADDSUB( l, v, op )
+			n = hConstAccumADDSUB( l, v, op )
 
 		else
 			'' walk
-			n->l = asthConstAccumADDSUB( l, v, op )
+			n->l = hConstAccumADDSUB( l, v, op )
 
 			if( o = IR_OP_SUB ) then
 				op = -op
 			end if
 
-			n->r = asthConstAccumADDSUB( r, v, op )
+			n->r = hConstAccumADDSUB( r, v, op )
 		end if
 	end select
 
@@ -319,8 +603,8 @@ function asthConstAccumADDSUB( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-function asthConstAccumMUL( byval n as ASTNODE ptr, _
-							byval v as ASTVALUE ptr ) as ASTNODE ptr
+private function hConstAccumMUL( byval n as ASTNODE ptr, _
+								 byval v as ASTVALUE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l, r
 	static as integer dtype
 
@@ -356,12 +640,12 @@ function asthConstAccumMUL( byval n as ASTNODE ptr, _
 			astDel( n )
 
 			'' top node is now the left one
-			n = asthConstAccumMUL( l, v )
+			n = hConstAccumMUL( l, v )
 
 		else
 			'' walk
-			n->l = asthConstAccumMUL( l, v )
-			n->r = asthConstAccumMUL( r, v )
+			n->l = hConstAccumMUL( l, v )
+			n->r = hConstAccumMUL( r, v )
 		end if
 	end if
 
@@ -370,7 +654,7 @@ function asthConstAccumMUL( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 	static as ASTNODE ptr l, r, nn
 	static as ASTVALUE v
 
@@ -388,7 +672,7 @@ function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 			select case as const n->op
 			case IR_OP_ADD
 				v.dtype = INVALID
-				n = asthConstAccumADDSUB( n, @v, 1 )
+				n = hConstAccumADDSUB( n, @v, 1 )
 
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -403,7 +687,7 @@ function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 			case IR_OP_MUL
 				v.dtype = INVALID
-				n = asthConstAccumMUL( n, @v )
+				n = hConstAccumMUL( n, @v )
 
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -418,7 +702,7 @@ function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
            	case IR_OP_SUB
 				v.dtype = INVALID
-				n = asthConstAccumADDSUB( n, @v, -1 )
+				n = hConstAccumADDSUB( n, @v, -1 )
 
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -437,12 +721,12 @@ function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		n->l = astOptConstAccum1( l )
+		n->l = hOptConstAccum1( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		n->r = astOptConstAccum1( r )
+		n->r = hOptConstAccum1( r )
 	end if
 
 	function = n
@@ -450,7 +734,7 @@ function astOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-sub astOptConstAccum2( byval n as ASTNODE ptr )
+private sub hOptConstAccum2( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r
 	static as integer dtype, checktype
 	static as ASTVALUE v
@@ -467,8 +751,8 @@ sub astOptConstAccum2( byval n as ASTNODE ptr )
 			if( irGetDataClass( n->dtype ) <> IR_DATACLASS_STRING ) then
 
 				v.dtype = INVALID
-				n->l = asthConstAccumADDSUB( n->l, @v, 1 )
-				n->r = asthConstAccumADDSUB( n->r, @v, 1 )
+				n->l = hConstAccumADDSUB( n->l, @v, 1 )
+				n->r = hConstAccumADDSUB( n->r, @v, 1 )
 
 				if( v.dtype <> INVALID ) then
 					n->l = astNewBOP( IR_OP_ADD, n->l, n->r )
@@ -486,8 +770,8 @@ sub astOptConstAccum2( byval n as ASTNODE ptr )
 
 		case IR_OP_MUL
 			v.dtype = INVALID
-			n->l = asthConstAccumMUL( n->l, @v )
-			n->r = asthConstAccumMUL( n->r, @v )
+			n->l = hConstAccumMUL( n->l, @v )
+			n->r = hConstAccumMUL( n->r, @v )
 
 			if( v.dtype <> INVALID ) then
 				n->l = astNewBOP( IR_OP_MUL, n->l, n->r )
@@ -529,19 +813,19 @@ sub astOptConstAccum2( byval n as ASTNODE ptr )
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		astOptConstAccum2( l )
+		hOptConstAccum2( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		astOptConstAccum2( r )
+		hOptConstAccum2( r )
 	end if
 
 end sub
 
 '':::::
-function asthConstDistMUL( byval n as ASTNODE ptr, _
-						   byval v as ASTVALUE ptr ) as ASTNODE ptr
+private function hConstDistMUL( byval n as ASTNODE ptr, _
+						 		byval v as ASTVALUE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l, r
 	static as integer dtype
 
@@ -577,11 +861,11 @@ function asthConstDistMUL( byval n as ASTNODE ptr, _
 			astDel( n )
 
 			'' top node is now the left one
-			n = asthConstDistMUL( l, v )
+			n = hConstDistMUL( l, v )
 
 		else
-			n->l = asthConstDistMUL( l, v )
-			n->r = asthConstDistMUL( r, v )
+			n->l = hConstDistMUL( l, v )
+			n->r = hConstDistMUL( r, v )
 		end if
 	end if
 
@@ -590,7 +874,7 @@ function asthConstDistMUL( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-function astOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 	static as ASTNODE ptr l, r
 	static as ASTVALUE v
 
@@ -608,7 +892,7 @@ function astOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 			if( n->op = IR_OP_MUL ) then
 
 				v.dtype = INVALID
-				n->l = asthConstDistMUL( n->l, @v )
+				n->l = hConstDistMUL( n->l, @v )
 
 				if( v.dtype <> INVALID ) then
 					select case as const v.dtype
@@ -679,12 +963,12 @@ function astOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		n->l = astOptConstDistMUL( l )
+		n->l = hOptConstDistMUL( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		n->r = astOptConstDistMUL( r )
+		n->r = hOptConstDistMUL( r )
 	end if
 
 	function = n
@@ -692,7 +976,7 @@ function astOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-sub astOptConstIDX( byval n as ASTNODE ptr )
+private sub hOptConstIDX( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r, lr
 	static as integer c
 	static as ASTVALUE v
@@ -707,7 +991,7 @@ sub astOptConstIDX( byval n as ASTNODE ptr )
 		l = n->l
 		if( l <> NULL ) then
 			v.dtype = INVALID
-			n->l = asthConstAccumADDSUB( l, @v, 1 )
+			n->l = hConstAccumADDSUB( l, @v, 1 )
 
         	if( v.dtype <> INVALID ) then
         		select case as const v.dtype
@@ -798,12 +1082,12 @@ sub astOptConstIDX( byval n as ASTNODE ptr )
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		astOptConstIDX( l )
+		hOptConstIDX( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		astOptConstIDX( r )
+		hOptConstIDX( r )
 	end if
 
 end sub
@@ -813,7 +1097,7 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astOptAssocADD( byval n as ASTNODE ptr )
+private sub hOptAssocADD( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r
 	static as integer op, rop
 
@@ -850,7 +1134,7 @@ sub astOptAssocADD( byval n as ASTNODE ptr )
 						n->op = op
 						r->op = rop
 
-						astOptAssocADD( n )
+						hOptAssocADD( n )
 						exit sub
 					end if
 				end if
@@ -861,18 +1145,18 @@ sub astOptAssocADD( byval n as ASTNODE ptr )
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		astOptAssocADD( l )
+		hOptAssocADD( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		astOptAssocADD( r )
+		hOptAssocADD( r )
 	end if
 
 end sub
 
 '':::::
-sub astOptAssocMUL( byval n as ASTNODE ptr )
+private sub hOptAssocMUL( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r
 
 	if( n = NULL ) then
@@ -889,7 +1173,7 @@ sub astOptAssocMUL( byval n as ASTNODE ptr )
 					r->r = r->l
 					r->l = n->l
 					n->l = r
-					astOptAssocMUL( n )
+					hOptAssocMUL( n )
 					Exit Sub
 				end if
 			end if
@@ -899,12 +1183,12 @@ sub astOptAssocMUL( byval n as ASTNODE ptr )
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		astOptAssocMUL( l )
+		hOptAssocMUL( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		astOptAssocMUL( r )
+		hOptAssocMUL( r )
 	end if
 
 end sub
@@ -914,7 +1198,7 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astOptToShift( byval n as ASTNODE ptr )
+private sub hOptToShift( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r
 	static as integer v, op
 
@@ -963,18 +1247,18 @@ sub astOptToShift( byval n as ASTNODE ptr )
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		astOptToShift( l )
+		hOptToShift( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		astOptToShift( r )
+		hOptToShift( r )
 	end if
 
 end sub
 
 ''::::
-function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
+private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	dim as ASTNODE ptr l, r
 	dim as integer v, op
 
@@ -1010,7 +1294,7 @@ function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 						elseif( v = 1 ) then
 							astDel( r )
 							astDel( n )
-							return astOptNullOp( l )
+							return hOptNullOp( l )
 						end if
 
 					case IR_OP_MOD
@@ -1025,21 +1309,21 @@ function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 						if( v = 1 ) then
 							astDel( r )
 							astDel( n )
-							return astOptNullOp( l )
+							return hOptNullOp( l )
 						end if
 
 					case IR_OP_ADD, IR_OP_SUB, IR_OP_SHR, IR_OP_SHL, IR_OP_OR, IR_OP_XOR
 						if( v = 0 ) then
 							astDel( r )
 							astDel( n )
-							return astOptNullOp( l )
+							return hOptNullOp( l )
 						end if
 
 					case IR_OP_AND
 						if( v = -1 ) then
 							astDel( r )
 							astDel( n )
-							return astOptNullOp( l )
+							return hOptNullOp( l )
 						end if
 					end select
 				end if
@@ -1050,12 +1334,12 @@ function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		n->l = astOptNullOp( l )
+		n->l = hOptNullOp( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		n->r = astOptNullOp( r )
+		n->r = hOptNullOp( r )
 	end if
 
 	function = n
@@ -1063,9 +1347,9 @@ function astOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function astOptStrMultConcat( byval lnk as ASTNODE ptr, _
-							  byval dst as ASTNODE ptr, _
-							  byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
+							  		byval dst as ASTNODE ptr, _
+							  		byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	if( n = NULL ) then
 		return NULL
@@ -1080,7 +1364,7 @@ function astOptStrMultConcat( byval lnk as ASTNODE ptr, _
 	'' lowest node first..
 	if( n->l <> NULL ) then
 		if( n->l->class = AST_NODECLASS_BOP ) then
-			lnk = astOptStrMultConcat( lnk, dst, n->l )
+			lnk = hOptStrMultConcat( lnk, dst, n->l )
 			n->l = NULL
 		end if
 	end if
@@ -1194,9 +1478,9 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 end function
 
 ''::::
-function astOptStrAssignament( byval n as ASTNODE ptr, _
-							   byval l as ASTNODE ptr, _
-							   byval r as ASTNODE ptr ) as ASTNODE ptr static
+private function hOptStrAssignament( byval n as ASTNODE ptr, _
+							   		 byval l as ASTNODE ptr, _
+							   		 byval r as ASTNODE ptr ) as ASTNODE ptr static
 
 	dim as integer optimize
 
@@ -1219,7 +1503,7 @@ function astOptStrAssignament( byval n as ASTNODE ptr, _
 		r = n->r
 
 		if( hIsMultStrConcat( l, r ) ) then
-			function = astOptStrMultConcat( l, l, r )
+			function = hOptStrMultConcat( l, l, r )
 
 		else
 			''	=            f() -- concatassign
@@ -1236,7 +1520,7 @@ function astOptStrAssignament( byval n as ASTNODE ptr, _
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
 		if( hIsMultStrConcat( l, r ) ) then
 
-			function = astOptStrMultConcat( NULL, l, r )
+			function = hOptStrMultConcat( NULL, l, r )
 
 		else
 			''	=            f() -- assign
@@ -1254,7 +1538,7 @@ function astOptStrAssignament( byval n as ASTNODE ptr, _
 end function
 
 ''::::
-function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
+private function hOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	dim as ASTNODE ptr l, r
 	dim as integer dtype, dclass
 	dim as FBSYMBOL ptr s
@@ -1282,7 +1566,7 @@ function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 		'' strings?
 		if( dclass = IR_DATACLASS_STRING ) then
-			return astOptStrAssignament( n, l, r )
+			return hOptStrAssignament( n, l, r )
 		end if
 
 		'' try to optimize if a constant is being assigned to a float var
@@ -1776,13 +2060,13 @@ sub astCopy( byval d as ASTNODE ptr, _
 
 	dim as ASTNODE ptr p, n
 
-	p = d->prv
-	n = d->nxt
+	p = d->ll_prv
+	n = d->ll_nxt
 
 	*d = *s
 
-	d->prv = p
-	d->nxt = n
+	d->ll_prv = p
+	d->ll_nxt = n
 
 end sub
 
@@ -1793,17 +2077,17 @@ sub astSwap( byval d as ASTNODE ptr, _
 	dim as ASTNODE ptr dp, dn
 	dim as ASTNODE ptr sp, sn
 
-	dp = d->prv
-	dn = d->nxt
-	sp = s->prv
-	sn = s->nxt
+	dp = d->ll_prv
+	dn = d->ll_nxt
+	sp = s->ll_prv
+	sn = s->ll_nxt
 
 	swap *d, *s
 
-	d->prv = dp
-	d->nxt = dn
-	s->prv = sp
-	s->nxt = sn
+	d->ll_prv = dp
+	d->ll_nxt = dn
+	s->ll_prv = sp
+	s->ll_nxt = sn
 
 end sub
 
@@ -1817,7 +2101,7 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	''
-	nn = astNew( INVALID, INVALID )
+	nn = hNewNode( INVALID, INVALID )
 	astCopy( nn, n )
 
 	'' walk
@@ -2076,7 +2360,11 @@ sub astInit static
     ''
     astInitTempLists( )
 
-    ctx.isopt = FALSE
+    ctx.doemit = TRUE
+    ctx.isopt  = FALSE
+
+    ''
+    hInitProcList( )
 
 end sub
 
@@ -2087,14 +2375,17 @@ sub astEnd static
 	astEndTempLists( )
 
 	''
+	hEndProcList( )
+
+	''
 	listFree( @ctx.astTB )
 
 end sub
 
 '':::::
-function astNew( byval class as integer, _
-				 byval dtype as integer, _
-				 byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+private function hNewNode( byval class as integer, _
+				 		   byval dtype as integer, _
+				 		   byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 
@@ -2301,7 +2592,7 @@ sub astConvertValue( byval n as ASTNODE ptr, _
 end sub
 
 ''::::
-function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( n = NULL ) then
 		return NULL
@@ -2309,82 +2600,94 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	select case as const n->class
 	case AST_NODECLASS_LINK
-		return astLoadLINK( n )
+		return hLoadLINK( n )
 
 	case AST_NODECLASS_ASSIGN
-		return astLoadASSIGN( n )
+		return hLoadASSIGN( n )
 
 	case AST_NODECLASS_CONV
-		return astLoadCONV( n )
+		return hLoadCONV( n )
 
 	case AST_NODECLASS_CONST
-		return astLoadCONST( n )
+		return hLoadCONST( n )
 
 	case AST_NODECLASS_VAR
-		return astLoadVAR( n )
+		return hLoadVAR( n )
 
 	case AST_NODECLASS_IDX
-		return astLoadIDX( n )
+		return hLoadIDX( n )
 
 	case AST_NODECLASS_ENUM
-		return astLoadENUM( n )
+		return hLoadENUM( n )
 
 	case AST_NODECLASS_BOP
-		return astLoadBOP( n )
+		return hLoadBOP( n )
 
 	case AST_NODECLASS_UOP
-		return astLoadUOP( n )
+		return hLoadUOP( n )
 
 	case AST_NODECLASS_FUNCT
-		return astLoadFUNCT( n )
+		return hLoadFUNCT( n )
 
 	case AST_NODECLASS_PTR
-		return astLoadPTR( n )
+		return hLoadPTR( n )
 
 	case AST_NODECLASS_ADDR
-		return astLoadADDR( n )
+		return hLoadADDR( n )
 
 	case AST_NODECLASS_OFFSET
-		return astLoadOFFSET( n )
+		return hLoadOFFSET( n )
 
 	case AST_NODECLASS_LOAD
-		return astLoadLOAD( n )
+		return hLoadLOAD( n )
 
 	case AST_NODECLASS_BRANCH
-		return astLoadBRANCH( n )
+		return hLoadBRANCH( n )
 
     case AST_NODECLASS_IIF
-    	return astLoadIIF( n )
+    	return hLoadIIF( n )
 
     case AST_NODECLASS_STACK
-    	return astLoadSTACK( n )
+    	return hLoadSTACK( n )
+
+    case AST_NODECLASS_LABEL
+    	return hLoadLABEL( n )
+
+    case AST_NODECLASS_ASM
+    	return hLoadASM( n )
+
+    case AST_NODECLASS_JMPTB
+    	return hLoadJMPTB( n )
+
+    case AST_NODECLASS_DBG
+    	return hLoadDBG( n )
     end select
 
 end function
 
 ''::::
-private function astOptimize( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hOptimize( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' calls must be done in the order below
     ctx.isopt = TRUE
 
-	astOptAssocADD( n )
+	hOptAssocADD( n )
 
-	astOptAssocMUL( n )
+	hOptAssocMUL( n )
 
-	n = astOptConstDistMUL( n )
+	n = hOptConstDistMUL( n )
 
-	n = astOptConstAccum1( n )
+	n = hOptConstAccum1( n )
 
-	astOptConstAccum2( n )
+	hOptConstAccum2( n )
 
-	astOptConstRmNeg( n, NULL )
+	hOptConstRmNeg( n, NULL )
 
-	astOptConstIDX( n )
+	hOptConstIDX( n )
 
-	astOptToShift( n )
+	hOptToShift( n )
 
-	n = astOptNullOp( n )
+	n = hOptNullOp( n )
 
 	ctx.isopt = FALSE
 
@@ -2393,26 +2696,26 @@ private function astOptimize( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 ''::::
-function astFlush( byval n as ASTNODE ptr ) as IRVREG ptr
+private sub hFlush( byval n as ASTNODE ptr )
 
 	''
 	if( n = NULL ) then
-		return NULL
+		exit sub
 	end if
 
 	''
-	n = astOptimize( n )
+	n = hOptimize( n )
 
-	n = astOptAssignament( n )					'' needed even when not optimizing
+	n = hOptAssignament( n )					'' needed even when not optimizing
 
 	n = astUpdStrConcat( n )
 
     ''
-	function = astLoad( n )
+	hLoad( n )
 
 	astDel( n )
 
-end function
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' link nodes (l = curr node; r = next link)
@@ -2425,7 +2728,7 @@ function astNewLINK( byval l as ASTNODE ptr, _
 	dim as ASTNODE ptr n
 
 	''
-	n = astNew( AST_NODECLASS_LINK, l->dtype )
+	n = hNewNode( AST_NODECLASS_LINK, l->dtype )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -2439,17 +2742,19 @@ function astNewLINK( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( n = NULL ) then
 		return NULL
 	end if
 
-	function = astLoad( n->l )
+	hLoad( n->l )
 	astDel( n->l )
 
-	astLoad( n->r )
+	hLoad( n->r )
 	astDel( n->r )
+
+	function = NULL
 
 end function
 
@@ -3138,6 +3443,9 @@ function astNewBOP( byval op as integer, _
 		case IR_OP_SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
 			r = astNewUOP( IR_OP_NEG, r )
+			if( r = NULL ) then
+				return NULL
+			end if
 			astSwap( r, l )
 			op = IR_OP_ADD
 		end select
@@ -3190,7 +3498,7 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_BOP, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_BOP, dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -3207,7 +3515,7 @@ function astNewBOP( byval op as integer, _
 end function
 
 '':::::
-function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l, r
     dim as integer op
     dim as IRVREG ptr v1, v2, vr
@@ -3223,32 +3531,34 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' need some other algo here to select which operand is better to evaluate
 	'' first - pay attention to logical ops, "func1(bar) OR func1(foo)" isn't
 	'' the same as the inverse if func1 depends on the order..
-	v1 = astLoad( l )
-	v2 = astLoad( r )
+	v1 = hLoad( l )
+	v2 = hLoad( r )
 
-	'' result type can be different, with boolean operations on floats
-	if( n->allocres ) then
-		vr = irAllocVREG( n->dtype )
-	else
-		vr = NULL
-	end if
+	if( ctx.doemit ) then
+		'' result type can be different, with boolean operations on floats
+		if( n->allocres ) then
+			vr = irAllocVREG( n->dtype )
+		else
+			vr = NULL
+		end if
 
-	'' execute the operation
-	if( n->ex <> NULL ) then
-		'' hack! ex=label, vr being NULL 'll gen better code at IR..
-		irEmitBOPEx( op, v1, v2, NULL, n->ex )
-	else
-		irEmitBOPEx( op, v1, v2, vr, NULL )
+		'' execute the operation
+		if( n->ex <> NULL ) then
+			'' hack! ex=label, vr being NULL 'll gen better code at IR..
+			irEmitBOPEx( op, v1, v2, NULL, n->ex )
+		else
+			irEmitBOPEx( op, v1, v2, vr, NULL )
+		end if
+
+		'' "var op= expr" optimizations
+		if( vr = NULL ) then
+			vr = v1
+		end if
 	end if
 
 	'' nodes not needed anymore
 	astDel( l )
 	astDel( r )
-
-	'' "var op= expr" optimizations
-	if( vr = NULL ) then
-		vr = v1
-	end if
 
 	function = vr
 
@@ -3439,7 +3749,7 @@ function astNewUOP( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_UOP, dtype, o->subtype )
+	n = hNewNode( AST_NODECLASS_UOP, dtype, o->subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -3455,7 +3765,7 @@ function astNewUOP( byval op as integer, _
 end function
 
 '':::::
-function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr o
     dim as integer op
     dim as IRVREG ptr v1, vr
@@ -3467,22 +3777,24 @@ function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	v1 = astLoad( o )
+	v1 = hLoad( o )
 
-	if( n->allocres ) then
-		vr = irAllocVREG( o->dtype )
-	else
-		vr = NULL
+	if( ctx.doemit ) then
+		if( n->allocres ) then
+			vr = irAllocVREG( o->dtype )
+		else
+			vr = NULL
+		end if
+
+		irEmitUOP( op, v1, vr )
+
+		'' "op var" optimizations
+		if( vr = NULL ) then
+			vr = v1
+		end if
 	end if
-
-	irEmitUOP( op, v1, vr )
 
 	astDel( o )
-
-	'' "op var" optimizations
-	if( vr = NULL ) then
-		vr = v1
-	end if
 
 	function = vr
 
@@ -3697,7 +4009,7 @@ function astNewCONV( byval op as integer, _
 				l->class = AST_NODECLASS_ENUM
 			end if
 		end if
-		
+
 		l->dtype   = dtype
 		l->subtype = subtype
 
@@ -3722,7 +4034,7 @@ function astNewCONV( byval op as integer, _
 		else
 			l->class = AST_NODECLASS_ENUM
 		end if
-		
+
 		l->dtype   = dtype
 		l->subtype = subtype
 
@@ -3737,7 +4049,7 @@ function astNewCONV( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_CONV, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_CONV, dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -3749,7 +4061,7 @@ function astNewCONV( byval op as integer, _
 end function
 
 '':::::
-function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
     dim as integer dtype
     dim as IRVREG ptr vs, vr
@@ -3760,12 +4072,14 @@ function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	vs = astLoad( l )
+	vs = hLoad( l )
 
 	dtype = n->dtype
 
-	vr = irAllocVREG( dtype )
-	irEmitCONVERT( vr, dtype, vs, INVALID )
+	if( ctx.doemit ) then
+		vr = irAllocVREG( dtype )
+		irEmitCONVERT( vr, dtype, vs, INVALID )
+	end if
 
 	astDel( l )
 
@@ -3784,7 +4098,7 @@ function astNewCONSTi( byval value as integer, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_CONST, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -3802,7 +4116,7 @@ function astNewCONSTf( byval value as double, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_CONST, dtype )
+	n = hNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
 
 	if( n = NULL ) then
@@ -3820,7 +4134,7 @@ function astNewCONST64( byval value as longint, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_CONST, dtype )
+	n = hNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
 
 	if( n = NULL ) then
@@ -3838,7 +4152,7 @@ function astNewCONST( byval v as FBVALUE ptr, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_CONST, dtype )
+	n = hNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
 
 	if( n = NULL ) then
@@ -3859,26 +4173,28 @@ function astNewCONST( byval v as FBVALUE ptr, _
 end function
 
 '':::::
-function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
+private function hLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 	dim as FBSYMBOL ptr s
 	dim as integer dtype
 
-	dtype = n->dtype
+	if( ctx.doemit ) then
+		dtype = n->dtype
 
-	select case dtype
-	'' longints?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		return irAllocVRIMM64( dtype, n->v.value64 )
+		select case dtype
+		'' longints?
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			return irAllocVRIMM64( dtype, n->v.value64 )
 
-	'' if node is a float, create a temp float var (x86 assumption)
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-		s = hAllocNumericConst( str$( n->v.valuef ), dtype )
-		return irAllocVRVAR( dtype, s, s->ofs )
+		'' if node is a float, create a temp float var (x86 assumption)
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			s = hAllocNumericConst( str$( n->v.valuef ), dtype )
+			return irAllocVRVAR( dtype, s, s->ofs )
 
-	''
-	case else
-		return irAllocVRIMM( dtype, n->v.valuei )
-	end select
+		''
+		case else
+			return irAllocVRIMM( dtype, n->v.valuei )
+		end select
+	end if
 
 end function
 
@@ -3895,7 +4211,7 @@ function astNewVAR( byval sym as FBSYMBOL ptr, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_VAR, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_VAR, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -3919,7 +4235,7 @@ private function hGetBitField( byval n as ASTNODE ptr, _
 	dim as ASTNODE ptr c
 
 	'' make a copy, the node itself can't be used or it will be deleted twice
-	c = astNew( INVALID, INVALID )
+	c = hNewNode( INVALID, INVALID )
 	astCopy( c, n )
 
 	if( s->var.elm.bitpos > 0 ) then
@@ -3937,7 +4253,7 @@ private function hGetBitField( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
+private function hLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
 
 	'' handle bitfields..
@@ -3947,14 +4263,16 @@ function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
 				n = hGetBitField( n, s )
-				function = astLoad( n )
+				function = hLoad( n )
 				astDel( n )
 				exit function
 			end if
 		end if
 	end if
 
-	function = irAllocVRVAR( n->dtype, n->var.sym, n->var.ofs )
+	if( ctx.doemit ) then
+		function = irAllocVRVAR( n->dtype, n->var.sym, n->var.ofs )
+	end if
 
 end function
 
@@ -3974,7 +4292,7 @@ function astNewIDX( byval v as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_IDX, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_IDX, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -4007,20 +4325,20 @@ private function hEmitIDX( byval v as ASTNODE ptr, _
 	end if
 
     ''
-	if( vi <> NULL ) then
+    if( ctx.doemit ) then
+		if( vi <> NULL ) then
+			if( (mult >= 10) or (mult = 6) or (mult = 7) ) then
+				mult = 1
+			end if
 
-		if( (mult >= 10) or (mult = 6) or (mult = 7) ) then
-			mult = 1
+			vd = irAllocVRIDX( v->dtype, s, ofs, mult, vi )
+
+			if( irIsIDX( vi ) or irIsVAR( vi ) ) then
+				irEmitLOAD( vi )
+			end if
+		else
+			vd = irAllocVRVAR( v->dtype, s, ofs )
 		end if
-
-		vd = irAllocVRIDX( v->dtype, s, ofs, mult, vi )
-
-		if( irIsIDX( vi ) or irIsVAR( vi ) ) then
-			irEmitLOAD( IR_OP_LOAD, vi )
-		end if
-
-	else
-		vd = irAllocVRVAR( v->dtype, s, ofs )
 	end if
 
 	function = vd
@@ -4028,7 +4346,7 @@ private function hEmitIDX( byval v as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
+function hLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr v, i
     dim as IRVREG ptr vi, vr
     dim as FBSYMBOL ptr s
@@ -4047,7 +4365,7 @@ function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 			if( s <> NULL ) then
 				if( s->var.elm.bits > 0 ) then
 					n = hGetBitField( n, s )
-					function = astLoad( n )
+					function = hLoad( n )
 					astDel( n )
 					exit function
 				end if
@@ -4057,12 +4375,14 @@ function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	i = n->l
 	if( i <> NULL ) then
-		vi = astLoad( i )
+		vi = hLoad( i )
 	else
 		vi = NULL
 	end if
 
-    vr = hEmitIDX( v, n->idx.ofs, n->idx.mult, vi )
+	if( ctx.doemit ) then
+    	vr = hEmitIDX( v, n->idx.ofs, n->idx.mult, vi )
+    end if
 
 	astDel( i )
 	astDel( v )
@@ -4081,7 +4401,7 @@ function astNewENUM( byval value as integer, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_ENUM, IR_DATATYPE_ENUM, sym )
+	n = hNewNode( AST_NODECLASS_ENUM, IR_DATATYPE_ENUM, sym )
 	function = n
 
 	if( n = NULL ) then
@@ -4094,9 +4414,11 @@ function astNewENUM( byval value as integer, _
 end function
 
 '':::::
-function astLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
+private function hLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
 
-	function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->v.valuei )
+	if( ctx.doemit ) then
+		function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->v.valuei )
+	end if
 
 end function
 
@@ -4115,7 +4437,7 @@ function astNewOFFSET( byval l as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_OFFSET, IR_DATATYPE_POINTER + l->dtype, l->subtype )
+	n = hNewNode( AST_NODECLASS_OFFSET, IR_DATATYPE_POINTER + l->dtype, l->subtype )
 
 	if( n = NULL ) then
 		return NULL
@@ -4131,7 +4453,7 @@ function astNewOFFSET( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr v
     dim as IRVREG ptr vr
 
@@ -4140,7 +4462,9 @@ function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	vr = irAllocVROFS( n->dtype, v->var.sym )
+	if( ctx.doemit ) then
+		vr = irAllocVROFS( n->dtype, v->var.sym )
+	end if
 
 	astDel( v )
 
@@ -4218,7 +4542,7 @@ function astNewADDR( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_ADDR, IR_DATATYPE_POINTER + dtype, subtype )
+	n = hNewNode( AST_NODECLASS_ADDR, IR_DATATYPE_POINTER + dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -4234,7 +4558,7 @@ function astNewADDR( byval op as integer, _
 end function
 
 '':::::
-function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr p
     dim as IRVREG ptr v1, vr
 
@@ -4243,18 +4567,20 @@ function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	v1 = astLoad( p )
+	v1 = hLoad( p )
 
-	'' src is not a reg?
-	if( (not irIsREG( v1 )) or _
-		(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
-		(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
+	if( ctx.doemit ) then
+		'' src is not a reg?
+		if( (not irIsREG( v1 )) or _
+			(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
+			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
-		vr = irAllocVREG( IR_DATATYPE_POINTER )
-		irEmitADDR( n->op, v1, vr )
+			vr = irAllocVREG( IR_DATATYPE_POINTER )
+			irEmitADDR( n->op, v1, vr )
 
-	else
-		vr = v1
+		else
+			vr = v1
+		end if
 	end if
 
 	astDel( p )
@@ -4279,7 +4605,7 @@ function astNewPTR( byval sym as FBSYMBOL ptr, _
     dim as integer delchild
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_PTR, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_PTR, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -4318,7 +4644,7 @@ function astNewPTR( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
     dim as integer dtype
     dim as IRVREG ptr v1, vp, vr
@@ -4336,30 +4662,32 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( s <> NULL ) then
 			if( s->var.elm.bits > 0 ) then
 				n = hGetBitField( n, s )
-				function = astLoad( n )
+				function = hLoad( n )
 				astDel( n )
 				exit function
 			end if
 		end if
 	end if
 
-	v1 = astLoad( l )
+	v1 = hLoad( l )
 
 	''
 	dtype = n->dtype
 
-	'' src is not a reg?
-	if( (not irIsREG( v1 )) or _
-		(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
-		(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
+	if( ctx.doemit ) then
+		'' src is not a reg?
+		if( (not irIsREG( v1 )) or _
+			(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
+			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
-		vp = irAllocVREG( IR_DATATYPE_POINTER )
-		irEmitADDR( IR_OP_DEREF, v1, vp )
-	else
-		vp = v1
+			vp = irAllocVREG( IR_DATATYPE_POINTER )
+			irEmitADDR( IR_OP_DEREF, v1, vp )
+		else
+			vp = v1
+		end if
+
+		vr = irAllocVRPTR( dtype, n->ptr.ofs, vp )
 	end if
-
-	vr = irAllocVRPTR( dtype, n->ptr.ofs, vp )
 
 	astDel( l )
 
@@ -4373,11 +4701,12 @@ end function
 
 '':::::
 function astNewLOAD( byval l as ASTNODE ptr, _
-					 byval dtype as integer ) as ASTNODE ptr static
+					 byval dtype as integer, _
+					 byval isresult as integer ) as ASTNODE ptr static
     dim n as ASTNODE ptr
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_LOAD, dtype )
+	n = hNewNode( AST_NODECLASS_LOAD, dtype )
 	function = n
 
 	if( n = NULL ) then
@@ -4385,26 +4714,34 @@ function astNewLOAD( byval l as ASTNODE ptr, _
 	end if
 
 	n->l  = l
+	n->lod.isres = isresult
 
 end function
 
 '':::::
-function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
-    dim as IRVREG ptr vr
+    dim as IRVREG ptr v1, vr
 
 	l = n->l
 	if( l = NULL ) then
 		return NULL
 	end if
 
-	vr = astLoad( l )
+	v1 = hLoad( l )
 
-	irEmitLOAD( IR_OP_LOAD, vr )
+	if( ctx.doemit ) then
+		if( n->lod.isres ) then
+			vr = irAllocVREG( irGetVRDataType( v1 ) )
+			irEmitLOADRES( v1, vr )
+		else
+			irEmitLOAD( v1 )
+		end if
+	end if
 
 	astDel( l )
 
-	function = vr
+	function = v1
 
 end function
 
@@ -4534,7 +4871,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_ASSIGN, ldtype )
+	n = hNewNode( AST_NODECLASS_ASSIGN, ldtype )
 
 	if( n = NULL ) then
 		return NULL
@@ -4566,7 +4903,7 @@ private function hSetBitField( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l, r
     dim as IRVREG ptr vs, vr
     dim as FBSYMBOL ptr s
@@ -4588,10 +4925,12 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	vs = astLoad( r )
-	vr = astLoad( l )
+	vs = hLoad( r )
+	vr = hLoad( l )
 
-	irEmitSTORE( vr, vs )
+	if( ctx.doemit ) then
+		irEmitSTORE( vr, vs )
+	end if
 
 	astDel( l )
 	astDel( r )
@@ -4618,7 +4957,7 @@ function astNewBRANCH( byval op as integer, _
     end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_BRANCH, dtype )
+	n = hNewNode( AST_NODECLASS_BRANCH, dtype )
 	function = n
 
 	if( n = NULL ) then
@@ -4632,29 +4971,37 @@ function astNewBRANCH( byval op as integer, _
 end function
 
 '':::::
-function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
     dim as IRVREG ptr vr
 
 	l  = n->l
 
 	if( l <> NULL ) then
-		vr = astLoad( l )
+		vr = hLoad( l )
 		astDel( l )
 	else
 		vr = NULL
 	end if
 
-	'' pointer?
-	if( n->ex = NULL ) then
-		'' jump or call?
-		if( n->op = IR_OP_JUMPPTR ) then
-			irEmitBRANCHPTR( vr )
+	if( ctx.doemit ) then
+		'' pointer?
+		if( n->ex = NULL ) then
+			'' jump or call?
+			select case n->op
+			case IR_OP_JUMPPTR
+				irEmitJUMPPTR( vr )
+
+			case IR_OP_CALLPTR
+				irEmitCALLPTR( vr, NULL, 0 )
+
+			case IR_OP_RET
+				irEmitRETURN( 0 )
+			end select
+
 		else
-			irEmitCALLPTR( vr, NULL, 0 )
+			irEmitBRANCH( n->op, n->ex )
 		end if
-	else
-		irEmitBRANCH( n->op, n->ex )
 	end if
 
 	function = vr
@@ -4685,6 +5032,10 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 				subtype = NULL
 			end if
 		end if
+
+		''
+		symbSetProcIsCalled( sym, TRUE )
+
 	else
 		if( ptrexpr = NULL ) then
 			return NULL
@@ -4694,7 +5045,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_FUNCT, dtype, subtype )
+	n = hNewNode( AST_NODECLASS_FUNCT, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -4758,7 +5109,7 @@ private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
 
 	'' alloc a node
 	t = listNewNode( @ctx.temparray )
-	t->left = f->proc.arraytail
+	t->prev = f->proc.arraytail
 	f->proc.arraytail = t
 
 	'' create a pointer
@@ -4780,7 +5131,7 @@ private function hAllocTmpString( byval f as ASTNODE ptr, _
 
 	'' alloc a node
 	t = listNewNode( @ctx.tempstr )
-	t->left = f->proc.strtail
+	t->prev = f->proc.strtail
 	f->proc.strtail = t
 
 	'' create temp string to pass as paramenter
@@ -5316,7 +5667,7 @@ function astNewPARAM( byval f as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_PARAM, dtype )
+	n = hNewNode( AST_NODECLASS_PARAM, dtype )
 	function = n
 
 	if( n = NULL ) then
@@ -5377,9 +5728,11 @@ private function hCallProc( byval n as ASTNODE ptr, _
 	'' ordinary pointer?
 	if( proc = NULL ) then
 		p = n->l
-		vr = astLoad( p )
+		vr = hLoad( p )
 		astDel( p )
-		irEmitCALLPTR( vr, NULL, 0 )
+		if( ctx.doemit ) then
+			irEmitCALLPTR( vr, NULL, 0 )
+		end if
 
 		return NULL
 	end if
@@ -5393,10 +5746,11 @@ private function hCallProc( byval n as ASTNODE ptr, _
 		dtype += IR_DATATYPE_POINTER
 	end select
 
-	if( dtype <> IR_DATATYPE_VOID ) then
-		vreg = irAllocVREG( dtype )
-	else
+	if( ctx.doemit ) then
 		vreg = NULL
+		if( dtype <> IR_DATATYPE_VOID ) then
+			vreg = irAllocVREG( dtype )
+		end if
 	end if
 
 	if( mode <> FB_FUNCMODE_CDECL ) then
@@ -5415,23 +5769,31 @@ private function hCallProc( byval n as ASTNODE ptr, _
 	'' call function or ptr
 	p = n->l
 	if( p = NULL ) then
-		irEmitCALLFUNCT( proc, bytestopop, vreg )
+		if( ctx.doemit ) then
+			irEmitCALLFUNCT( proc, bytestopop, vreg )
+		end if
 	else
-		vr = astLoad( p )
+		vr = hLoad( p )
 		astDel( p )
-		irEmitCALLPTR( vr, vreg, bytestopop )
+		if( ctx.doemit ) then
+			irEmitCALLPTR( vr, vreg, bytestopop )
+		end if
 	end if
 
 	if( bytesaligned > 0 ) then
-		irEmitSTACKALIGN( -bytesaligned )
+		if( ctx.doemit ) then
+			irEmitSTACKALIGN( -bytesaligned )
+		end if
 	end if
 
-	'' handle strings and UDT's returned by functions that are actually pointers to
-	'' string descriptors or the hidden pointer passed as the 1st argument
-	select case n->dtype
-	case IR_DATATYPE_STRING, IR_DATATYPE_USERDEF
-		vreg = irAllocVRPTR( n->dtype, 0, vreg )
-	end select
+	if( ctx.doemit ) then
+		'' handle strings and UDT's returned by functions that are actually pointers to
+		'' string descriptors or the hidden pointer passed as the 1st argument
+		select case n->dtype
+		case IR_DATATYPE_STRING, IR_DATATYPE_USERDEF
+			vreg = irAllocVRPTR( n->dtype, 0, vreg )
+		end select
+	end if
 
 	function = vreg
 
@@ -5460,17 +5822,17 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 
         	if( copyback ) then
 				t = rtlStrAssign( n->srctree, astNewVAR( n->tmpsym, NULL, 0, IR_DATATYPE_STRING ) )
-				astLoad( t )
-				astDel t
+				hLoad( t )
+				astDel( t )
 			end if
 		end if
 
 		'' delete the temp string
 		t = rtlStrDelete( astNewVAR( n->tmpsym, NULL, 0, IR_DATATYPE_STRING ) )
-		astLoad( t )
+		hLoad( t )
 		astDel( t )
 
-		p = n->left
+		p = n->prev
 		listDelNode( @ctx.tempstr, cptr( TLISTNODE ptr, n ) )
 		n = p
 	loop
@@ -5487,11 +5849,11 @@ private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
 
 		t = rtlArrayFreeTempDesc( n->pdesc )
 		if( t <> NULL ) then
-			astLoad( t )
+			hLoad( t )
 			astDel( t )
 		end if
 
-		p = n->left
+		p = n->prev
 		listDelNode( @ctx.temparray, cptr( TLISTNODE ptr, n ) )
 		n = p
 	loop
@@ -5512,18 +5874,20 @@ private sub hAllocTempStruct( byval n as ASTNODE ptr, _
 			'' create a temp struct and pass its address
 			v = symbAddTempVar( FB_SYMBTYPE_USERDEF, proc->subtype )
         	p = astNewVar( v, NULL, 0, IR_DATATYPE_USERDEF, proc->subtype )
-        	vr = astLoad( p )
+        	vr = hLoad( p )
 
         	a.typ = IR_DATATYPE_VOID
         	a.arg.mode = FB_ARGMODE_BYREF
-        	irEmitPUSHPARAM( proc, @a, vr, INVALID, FB_POINTERSIZE )
+        	if( ctx.doemit ) then
+        		irEmitPUSHPARAM( proc, @a, vr, INVALID, FB_POINTERSIZE )
+        	end if
 		end if
 	end if
 
 end sub
 
 '':::::
-function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr p, np, l, pstart, pend
     dim as FBSYMBOL ptr proc, arg, lastarg
     dim as integer mode, bytestopop, toalign
@@ -5531,9 +5895,10 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as integer args
     dim as IRVREG ptr vr, pcvr
 
-	'' execute each param and push the result
+	''
 	proc = n->proc.sym
 
+    ''
 	pstart = n->proc.profbegin
 	pend   = n->proc.profend
 
@@ -5542,7 +5907,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' signal function start for profiling
 		if( pstart <> NULL ) then
-			pcvr = astLoad( pstart )
+			pcvr = hLoad( pstart )
 			astDel( pstart )
 		end if
 
@@ -5550,7 +5915,9 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' signal function end for profiling
 		if( pend <> NULL ) then
-			irEmitPUSH( pcvr )
+			if( ctx.doemit ) then
+				irEmitPUSH( pcvr )
+			end if
 			proc = pend->proc.sym
 			hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 			astDel( pend )
@@ -5559,9 +5926,8 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 		return vr
 	end if
 
-    mode = proc->proc.mode
-
     ''
+    mode = proc->proc.mode
 	if( mode = FB_FUNCMODE_PASCAL ) then
 		params = 0
 		inc = 1
@@ -5588,7 +5954,9 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 #ifdef DO_STACK_ALIGN
 			toalign = (16 - (bytestopop and 15)) and 15
 			if( toalign > 0 ) then
-				irEmitSTACKALIGN( toalign )
+				if( ctx.doemit ) then
+					irEmitSTACKALIGN( toalign )
+				end if
 			end if
 #endif
 		end if
@@ -5597,6 +5965,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 		arg = lastarg
 	end if
 
+	'' for each param..
 	p = n->r
 	do while( p <> NULL )
 		np = p->r
@@ -5611,11 +5980,13 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 
 		'' flush the param expression
-		vr = astLoad( l )
+		vr = hLoad( l )
 		astDel( l )
 
-		if( not irEmitPUSHPARAM( proc, arg, vr, p->param.mode, p->param.lgt ) ) then
-			'''''return NULL
+		if( ctx.doemit ) then
+			if( not irEmitPUSHPARAM( proc, arg, vr, p->param.mode, p->param.lgt ) ) then
+				'''''return NULL
+			end if
 		end if
 
 		astDel( p )
@@ -5634,7 +6005,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' signal function start for profiling
 	if( pstart <> NULL ) then
-		pcvr = astLoad( pstart )
+		pcvr = hLoad( pstart )
 		astDel( pstart )
 	end if
 
@@ -5643,7 +6014,9 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' signal function end for profiling
 	if( pend <> NULL ) then
-		irEmitPUSH( pcvr )
+		if( ctx.doemit ) then
+			irEmitPUSH( pcvr )
+		end if
 		proc = pend->proc.sym
 		hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 		astDel( pend )
@@ -5709,7 +6082,7 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNew( AST_NODECLASS_IIF, truedtype, truexpr->subtype )
+	n = hNewNode( AST_NODECLASS_IIF, truedtype, truexpr->subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -5724,7 +6097,7 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l, r
     dim as IRVREG ptr vr
     dim as FBSYMBOL ptr exitlabel
@@ -5735,18 +6108,20 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	exitlabel  = symbAddLabel( "" )
 
 	''
-	astFlush( n->iif.cond )
+	hFLush( n->iif.cond )
 
 	''
-	irEmitPUSH( astLoad( l ) )
-	irEmitBRANCH( IR_OP_JMP, exitlabel )
+	if( ctx.doemit ) then
+		irEmitPUSH( hLoad( l ) )
+		irEmitBRANCH( IR_OP_JMP, exitlabel )
 
-    irEmitLABELNF( n->iif.falselabel )
-	irEmitPUSH( astLoad( r ) )
+    	irEmitLABELNF( n->iif.falselabel )
+		irEmitPUSH( hLoad( r ) )
 
-	irEmitLABELNF( exitlabel )
-	vr = irAllocVREG( n->dtype )
-	irEmitPOP( vr )
+		irEmitLABELNF( exitlabel )
+		vr = irAllocVREG( n->dtype )
+		irEmitPOP( vr )
+	end if
 
 	astDel( l )
 	astDel( r )
@@ -5764,25 +6139,25 @@ function astNewSTACK( byval op as integer, _
 					  byval l as ASTNODE ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
-	if( l = NULL ) then
+    if( l = NULL ) then
+    	return NULL
+    end if
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_STACK, l->dtype, NULL )
+	if( n = NULL ) then
 		return NULL
 	end if
 
-	'' alloc new node
-	n = astNew( AST_NODECLASS_STACK, l->dtype, NULL )
-	if( n = NULL ) then
-		exit function
-	end if
-
-	n->op 		= op
-	n->l  		= l
+	n->op = op
+	n->l  = l
 
 	function = n
 
 end function
 
 '':::::
-function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
     dim as IRVREG ptr vr
 
@@ -5791,9 +6166,11 @@ function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	vr = astLoad( l )
+	vr = hLoad( l )
 
-	irEmitSTACK( n->op, vr )
+	if( ctx.doemit ) then
+		irEmitSTACK( n->op, vr )
+	end if
 
 	astDel( l )
 
@@ -5801,4 +6178,140 @@ function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 end function
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' labels (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+'':::::
+function astNewLABEL( byval sym as FBSYMBOL ptr, _
+					  byval doflush as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_LABEL, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->lbl.sym	 = sym
+	n->lbl.flush = doflush
+
+	function = n
+
+end function
+
+'':::::
+private function hLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
+
+	if( ctx.doemit ) then
+		if( n->lbl.flush ) then
+			irEmitLABEL( n->lbl.sym )
+		else
+			irEmitLABELNF( n->lbl.sym )
+		end if
+	end if
+
+	function = NULL
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' ASM (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewASM( byval asmline as string ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_ASM, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	ZEROSTRDESC( n->asm.line )
+	n->asm.line = asmline
+
+	function = n
+
+end function
+
+'':::::
+private function hLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
+
+	if( ctx.doemit ) then
+		irEmitASM( n->asm.line )
+	end if
+
+	n->asm.line = ""
+
+	function = NULL
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' JMPTB (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewJMPTB( byval dtype as integer, _
+					  byval label as FBSYMBOL ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_JMPTB, dtype )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->jtb.label = label
+
+	function = n
+
+end function
+
+'':::::
+private function hLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
+
+	if( ctx.doemit ) then
+		irEmitJMPTB( n->dtype, n->jtb.label )
+	end if
+
+	function = NULL
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' DBG (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewDBG( byval op as integer, _
+				    byval ex as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	if( not env.clopt.debug ) then
+		exit sub
+	end if
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_DBG, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->op 	   = op
+	n->dbg.ex  = ex
+
+	function = n
+
+end function
+
+'':::::
+private function hLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
+
+	if( ctx.doemit ) then
+		irEmitDBG( ctx.curproc->proc, n->op, n->dbg.ex )
+	end if
+
+end function

@@ -745,19 +745,18 @@ function hCreateProcAlias( byval symbol as string, _
         end if
 
         if( addat ) then
-            sname += "@"
-            sname += str$( argslen )
+            if( instr( symbol, "@" ) = 0 ) then
+            	sname += "@"
+            	sname += str( argslen )
+            end if
         end if
 
 	case FB_COMPNAMING_LINUX
 		sname = symbol
 
-	case FB_COMPNAMING_DOS
+	case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
         sname = "_"
         sname += symbol
-    case FB_COMPNAMING_XBOX
-    	sname = "_"
-    	sname += symbol
 
     end select
 
@@ -789,7 +788,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
     		aname += symbGetName( argtail->subtype )
     	end if
 
-    	argtail = argtail->arg.l
+    	argtail = argtail->arg.prev
     next i
 
 	function = @aname
@@ -985,8 +984,28 @@ function hToPow2( byval value as uinteger ) as uinteger static
 end function
 
 '':::::
-function hMakeEntryPointName( byval entrypoint as string ) as string
+function hCreateMainAlias( byval modname as string ) as string
 
-	function = "fb_" + entrypoint + "_entry"
+	function = *hCreateProcAlias( "fb_Main_" + modname, 0, FB_FUNCMODE_CDECL )
 
 end function
+
+'':::::
+function hJumpTbAllocSym( ) as any ptr static
+	static as zstring * FB_MAXNAMELEN+1 sname
+	dim as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s
+
+	sname = *hMakeTmpStr( )
+
+	s = symbAddVarEx( sname, "", FB_SYMBTYPE_UINT, NULL, 0, _
+					  FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED+FB_ALLOCTYPE_JUMPTB, _
+					  FALSE, FALSE, FALSE )
+
+	symbSetVarEmited( s, TRUE )
+
+	function = s
+
+end function
+
+

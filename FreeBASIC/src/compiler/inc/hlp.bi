@@ -98,6 +98,8 @@ declare function 	hCreateName 			( byval symbol as string, _
 								      		  byval addunderscore as integer = TRUE, _
 								      		  byval clearname as integer  = TRUE) as zstring ptr
 
+declare function 	hCreateMainAlias		( byval modname as string ) as string
+
 declare function 	hStripUnderscore		( byval symbol as string ) as string
 
 declare function 	hStripExt				( byval filename as string ) as string
@@ -112,7 +114,7 @@ declare function 	hRevertSlash			( byval s as string ) as string
 
 declare function 	hToPow2					( byval value as uinteger ) as uinteger
 
-declare function 	hMakeEntryPointName		( byval entrypoint as string ) as string
+declare function 	hJumpTbAllocSym			( ) as any ptr
 
 
 '':::::

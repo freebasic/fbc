@@ -55,8 +55,11 @@ ifndef LDLIBS_EXT
     LDLIBS_EXT :=
 endif
 
+ENTRYPOINT := fb_Main_fbc  ### fb_fbc_entry
+
 ifeq ($(HOST),win32)
     FBC := ../../fbc.exe
+    ENTRYPOINT := _$(ENTRYPOINT)
 endif
 
 ifeq ($(HOST),linux)
@@ -65,6 +68,7 @@ endif
 
 ifeq ($(HOST),dos)
     FBC := ../../fbc.exe
+    ENTRYPOINT := _$(ENTRYPOINT)
 endif
 
 
@@ -72,7 +76,7 @@ ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     EXE := .exe
     FBCFLAGS += -d TARGET_WIN32
-    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e $(ENTRYPOINT) --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 $(LDLIBS_EXT) -\)
     LD := ../../bin/win32/ld.exe
     AS := ../../bin/win32/as.exe
@@ -84,11 +88,11 @@ ifeq ($(TARGET),linux)
     FBCFLAGS += -d TARGET_LINUX
     LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -lpthread $(LDLIBS_EXT) -\)
 	ifeq ($(HOST),win32)
-    	LDFLAGS := -T ../../bin/linux/elf_i386.x -e fb_fbc_entry
+    	LDFLAGS := -T ../../bin/linux/elf_i386.x -e $(ENTRYPOINT)
     	LD := ../../bin/linux/ld.exe
     	AS := ../../bin/linux/as.exe
 	else
-    	LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -e fb_fbc_entry
+    	LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -e $(ENTRYPOINT)
     	LD := ld
     	AS := as
 	endif
@@ -108,7 +112,7 @@ ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
     EXE := .exe
     FBCFLAGS += -d TARGET_XBOX
-    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e fb_fbc_entry --stack 2097152,2097152
+    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e $(ENTRYPOINT) --stack 2097152,2097152
     LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 $(LDLIBS_EXT) -\)
     LD := ../../bin/win32/ld.exe
     AS := ../../bin/win32/as.exe

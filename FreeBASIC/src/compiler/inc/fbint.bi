@@ -35,16 +35,15 @@ const FB_MAXINTDEFINELEN	= FB_MAXDEFINELEN + _
 const FB_MAXGOTBITEMS		= 64
 
 ''
-const FB_INITSYMBOLNODES	= 10000
-const FB_INITLOCSYMBOLNODES	= FB_INITSYMBOLNODES \ 20
+const FB_INITSYMBOLNODES	= 8000
 
 const FB_INITDEFARGNODES	= 400
 
 const FB_INITDIMNODES		= 400
 
-const FB_INITLIBNODES		= 50
+const FB_INITLIBNODES		= 20
 
-const FB_INITFWDREFNODES	= 200
+const FB_INITFWDREFNODES	= 500
 
 
 ''
@@ -401,7 +400,6 @@ enum FBTK_ENUM
 end enum
 
 '' single char tokens
-const FB_TK_TWOPOINTSCHAR		= CHAR_COLON	'' :
 const FB_TK_STATSEPCHAR			= CHAR_COLON	'' :
 const FB_TK_COMMENTCHAR			= CHAR_APOST	'' '
 const FB_TK_DIRECTIVECHAR		= CHAR_DOLAR	'' $
@@ -490,6 +488,8 @@ enum FBALLOCTYPE_ENUM
 	FB_ALLOCTYPE_EXPORT			= 2048
 	FB_ALLOCTYPE_IMPORT			= 4096
 	FB_ALLOCTYPE_OVERLOADED		= 8192			'' functions only
+	FB_ALLOCTYPE_JUMPTB			= 16384
+	FB_ALLOCTYPE_MAINPROC		= 32768
 end enum
 
 #include once "inc\hash.bi"
@@ -501,19 +501,19 @@ type FBARRAYDIM
 end type
 
 type FBVARDIM
-	prv				as FBVARDIM ptr				'' linked-list nodes
-	nxt				as FBVARDIM ptr				'' /
+	ll_prv			as FBVARDIM ptr				'' linked-list nodes
+	ll_nxt			as FBVARDIM ptr				'' /
 
 	lower			as integer
 	upper			as integer
 
-	r				as FBVARDIM ptr				'' right
+	next			as FBVARDIM ptr
 end type
 
 ''
 type FBLIBRARY
-	prv				as FBLIBRARY ptr			'' linked-list nodes
-	nxt				as FBLIBRARY ptr			'' /
+	ll_prv			as FBLIBRARY ptr			'' linked-list nodes
+	ll_nxt			as FBLIBRARY ptr			'' /
 
 	name			as zstring * FB_MAXPATHLEN+1
 
@@ -557,13 +557,13 @@ type FBSKEYWORD
 end type
 
 type FBDEFARG
-	prv				as FBDEFARG ptr				'' linked-list nodes
-	nxt				as FBDEFARG ptr				'' /
+	ll_prv			as FBDEFARG ptr				'' linked-list nodes
+	ll_nxt			as FBDEFARG ptr				'' /
 
 	name			as string
 	id				as short					'' unique id
 
-	r				as FBDEFARG ptr				'' right
+	next			as FBDEFARG ptr
 end type
 
 ''
@@ -577,11 +577,11 @@ end type
 
 ''
 type FBFWDREF
-	prv				as FBFWDREF ptr				'' linked-list nodes
-	nxt				as FBFWDREF ptr				'' /
+	ll_prv			as FBFWDREF ptr				'' linked-list nodes
+	ll_nxt			as FBFWDREF ptr				'' /
 
 	ref				as FBSYMBOL_ ptr
-	l				as FBFWDREF ptr				'' preview
+	prev			as FBFWDREF ptr
 end type
 
 type FBSFWDREF
@@ -624,8 +624,8 @@ type FBSUDTELM
 	bits			as integer
 	parent			as FBSYMBOL_ ptr
 
-	l				as FBSYMBOL_ ptr			'' left
-	r				as FBSYMBOL_ ptr			'' right
+	prev			as FBSYMBOL_ ptr
+	next			as FBSYMBOL_ ptr
 end type
 
 ''
@@ -653,8 +653,8 @@ type FBSPROCARG
 	optional		as integer					'' true or false
 	optval			as FBVALUE                  '' default value
 
-	l				as FBSYMBOL_ ptr			'' left
-	r				as FBSYMBOL_ ptr			'' right
+	prev			as FBSYMBOL_ ptr
+	next			as FBSYMBOL_ ptr
 end type
 
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
@@ -664,22 +664,39 @@ type FBPROCOVL
 	nxt				as FBSYMBOL_ ptr
 end type
 
+type FBPROCSTK
+	localptr		as integer
+	argptr			as integer					'' /
+end type
+
+type FBPROCDBG
+	iniline			as integer					'' sub|function
+	endline			as integer					'' end sub|function
+	incfile			as integer
+end type
+
 type FBSPROC
 	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
+
 	lib				as FBLIBRARY ptr
 
 	args			as integer
 	arghead 		as FBSYMBOL_ ptr
 	argtail			as FBSYMBOL_ ptr
 
-	isdeclared		as integer					'' FALSE = just the prototype
+	isdeclared		as byte						'' FALSE = just the prototype
+	iscalled		as byte
+	isrtl			as byte
+	doerrorcheck	as byte
 
-	isrtl			as integer
 	rtlcallback		as FBRTLCALLBACK
-	errorcheck		as integer
 
-	ovl				as FBPROCOVL				'' used for overloading
+	ovl				as FBPROCOVL				'' overloading
+
+	stk				as FBPROCSTK				'' to keep track of the stack frame
+
+	dbg				as FBPROCDBG				'' debugging
 end type
 
 type FBSVAR
@@ -700,8 +717,8 @@ end type
 
 ''
 type FBSYMBOL
-	prv				as FBSYMBOL ptr				'' linked-list nodes
-	nxt				as FBSYMBOL ptr				'' /
+	ll_prv			as FBSYMBOL ptr				'' linked-list nodes
+	ll_nxt			as FBSYMBOL ptr				'' /
 
 	class			as integer					'' VAR, CONST, PROC, ..
 	typ				as integer					'' integer, float, string, pointer, ..
@@ -709,7 +726,8 @@ type FBSYMBOL
 	ptrcnt 			as integer
 	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
 
-	alias			as string					'' original name is only at the hashtb
+	name			as string					'' original name, shared by hash tb
+	alias			as string
 
 	hashitem		as HASHITEM ptr
 	hashindex		as uinteger
@@ -736,15 +754,16 @@ type FBSYMBOL
 
 	dbg				as FBDBG
 
-	left			as FBSYMBOL ptr
-	right			as FBSYMBOL ptr
+	left			as FBSYMBOL ptr 			'' same name symbols list
+	right			as FBSYMBOL ptr				'' /
+
+	prev			as FBSYMBOL ptr				'' symbol tb list
+	next			as FBSYMBOL ptr             '' /
 end type
 
-type FBLOCSYMBOL
-	prv				as FBLOCSYMBOL ptr			'' linked-list nodes
-	nxt				as FBLOCSYMBOL ptr			'' /
-
-    s				as FBSYMBOL ptr
+type FBSYMBOLTB
+    head			as FBSYMBOL ptr				'' first node
+    tail			as FBSYMBOL ptr				'' last node
 end type
 
 
@@ -771,6 +790,7 @@ end type
 type FBFILE
 	num				as integer
 	name			as zstring * FB_MAXPATHLEN+1
+	incfile			as integer
 end type
 
 type FBOPTION

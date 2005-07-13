@@ -22,13 +22,14 @@ const HASH_INITENTRYNODES	= 1000
 const HASH_INITITEMNODES	= HASH_INITENTRYNODES*8
 
 type HASHITEM
-	prv			as HASHITEM ptr			'' linked-list nodes
-	nxt			as HASHITEM ptr			'' /
+	ll_prv		as HASHITEM ptr			'' linked-list nodes
+	ll_nxt		as HASHITEM ptr			'' /
 
-	name		as string
+	name		as zstring ptr			'' shared
 	idx			as any ptr
-	l			as HASHITEM ptr			'' left node
-	r			as HASHITEM ptr			'' right node
+
+	prev		as HASHITEM ptr
+	next		as HASHITEM ptr
 end type
 
 type HASHLIST
@@ -48,17 +49,17 @@ declare sub 		hashNew			( byval hash as THASH ptr, _
 
 declare sub 		hashFree		( byval hash as THASH ptr )
 
-declare function 	hashHash		( byval symbol as string ) as uinteger
+declare function 	hashHash		( byval symbol as zstring ptr ) as uinteger
 
 declare function 	hashLookup		( byval hash as THASH ptr, _
-									  byval symbol as string ) as any ptr
+									  byval symbol as zstring ptr ) as any ptr
 
 declare function 	hashLookupEx	( byval hash as THASH ptr, _
-									  byval symbol as string, _
+									  byval symbol as zstring ptr, _
 									  byval index as uinteger ) as any ptr
 
 declare function	hashAdd			( byval hash as THASH ptr, _
-									  byval symbol as string, _
+									  byval symbol as zstring ptr, _
 									  byval idx as any ptr, _
 									  index as uinteger ) as HASHITEM ptr
 

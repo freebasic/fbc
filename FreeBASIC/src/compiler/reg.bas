@@ -135,10 +135,10 @@ end sub
 private sub regClear( byval this_ as REGCLASS ptr ) static
     dim as integer r
 
-	this_->sp = this_->regs
+	this_->sp 	  = this_->regs
+	this_->freeTB = -1
 
 	for r = 0 to this_->regs - 1
-		this_->freeTB(r) = TRUE
 		this_->vregTB(r) = NULL
 		this_->nextTB(r) = 0
 		regPush( this_, r )
@@ -191,7 +191,7 @@ private function regAllocate( byval this_ as REGCLASS ptr, _
 	    irStoreVR( this_->vregTB(r), r )
 	end if
 
-	this_->freeTB(r)	= FALSE
+	REG_SETUSED( this_->freeTB, r )
 	this_->vregTB(r)	= vreg
 	this_->nextTB(r)	= irGetDistance( vreg )
 
@@ -204,9 +204,9 @@ private function regAllocateReg( byval this_ as REGCLASS ptr, _
 								 byval r as integer, _
 								 byval vreg as IRVREG ptr ) as integer static
 
-	if( this_->freeTB(r) ) then
+	if( REG_ISFREE( this_->freeTB, r ) ) then
 		regPopReg( this_, r )
-		this_->freeTB(r)= FALSE
+		REG_SETUSED( this_->freeTB, r )
 	end if
 
 	this_->vregTB(r)	= vreg
@@ -237,7 +237,7 @@ private sub regSetOwner( byval this_ as REGCLASS ptr, _
 						 byval r as integer, _
 						 byval vreg as IRVREG ptr )
 
-	this_->freeTB(r)	= FALSE
+	REG_SETUSED( this_->freeTB, r )
 	this_->vregTB(r)	= vreg
 	this_->nextTB(r)	= irGetDistance( vreg )
 
@@ -247,8 +247,8 @@ end sub
 private sub regFree( byval this_ as REGCLASS ptr, _
 					 byval r as integer ) static
 
-	if( not this_->freeTB(r) ) then
-		this_->freeTB(r) = TRUE
+	if( REG_ISUSED( this_->freeTB, r ) ) then
+		REG_SETFREE( this_->freeTB, r )
 		this_->vregTB(r) = NULL
 		this_->nextTB(r) = 0
 		regPush( this_, r )
@@ -260,7 +260,7 @@ end sub
 private function regIsFree( byval this_ as REGCLASS ptr, _
 							byval r as integer ) as integer static
 
-	function = this_->freeTB(r)
+	function = REG_ISFREE( this_->freeTB, r )
 
 end function
 

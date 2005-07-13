@@ -1,11 +1,25 @@
 
-[ ] test the new EMIT and IR, mostly rel ops (FOR too), longint's and load/stores
+[ ] full debug support
+    - when calling rt functions in module-level code, GDB will never step over them
+    - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
+    - each overloaded function will show the locals of *ALL* functions
+    - make ASSERT call a rtlib function (fb_Assert)
+    - add ASSERT_WARN (fb_AssertWarn)
+    - add bounds checking to all kinds of arrays - use IIF()
+    - add null pointer checking - IIF() too?
 
 [ ] pointers
+    - passing pointers to byval strings w/o BYVAL is been allowed, show a warning (or error?)
     - is it okay to * ptr.type if ptr is at the right-side?
+
+[ ] EMIT:
+    - optimize load after store
+    - re-ordering optimization if target cpu is +586
 
 [ ] convert WITH to ptr and remove the lex hacking
     - then allow '->' too (.xxx will have to be converted to ->xxx anyways)
+
+[ ] allow ENDIF too, it's supported by BC
 
 [ ] function overloading
     - check arglist with optionals with different types at the same arg num (?)
@@ -19,59 +33,16 @@
       that will keep track of what wasn't initialized to fill 'em with 0's - static only, locals
       are already cleared
 
-[ ] rewrite the emit module, using pseudo-opcode lists (as in IR), never emit any text
-    - keep track of functions
-    - the main module can be "updated" between functions, as that is allowed
-    - handle inline asm
-    - handle sections
-    - handle DATA's -- data, not code??
-    - handle static initializers - can include strings -- data, not code??
-    - handle jump-tables - emited by SELECT AS CONST -- code.. move to .const??
-    - handle debug info - can include strings
-    - handle labels - strings, can't use the symbol as it can be deleted
-    - handle variables - strings, offsets, but can't include the registers!
-    - handle comments - strings
-    - handle index registers, so pipelining optimizations would be possible
-    - optimize load after store
-    - check if ebx, esi and edi are trashed to preserve them - inlined asm can't be predicated
-    - re-ordering optimization if target cpu is +586
-
-[ ] full debug support
-    - GDB is getting nuts with the "main" function overlapping the real ones, so the main module
-      can't be emited until all real functions are. Emit will have to use a buffer or such. Include
-      files CAN'T be part of the main module either
-    - add dynamic arrays - can't get GDB to use Fortran-like arrays
-    - each overloaded function will show the locals of ALL functions
-    - make ASSERT call a rtlib (fb_Assert)
-    - add ASSERT_WARN (fb_AssertWarn)
-    - add bounds checking to all kinds of arrays
-    - add null pointer checking
-
 [ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
-[ ] INPUT should check for runtime errors (EOF)
-
 *** *** *** *** ***
-[ ] parser should never call IR directly, or no inline functions can be added (or never-called
-    private functions eliminated). For that to be done, all labels must be handled by AST, ASM,
-    jump tbs too, plus debugging info (var initializers and DATA go to data sections), all IR/AST
-    flush calls must be changed to astLink or such, that will add the new node to a list of nodes,
-    that will be flushed only when a new function is started or when the end of file is reached --
-    should it be better to be done as a CFG-like than handled at AST that is becoming more and
-    more complex (don't make the AST a parser tree!)?
-
 [ ] inline functions
-    - better than macros as they can be "turned off" when debugged (AST will
-      need some kind of "link" node to glue all nodes parsed, and they can't be
-      flushed by any part of the parser -- everything must be done at the AST then,
-      no IR calls at the parser.. quite hard to do due the var initializers, etc)
-
-[ ] make the emiter modules modular (duh), so multiple cpu targets could be supported.. some day
+    - better than macros as they can be "turned off" when debugged
 
 [ ] classes
-    - MUST follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
+    - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
     - Java/Php5-ish syntax: CLASS EXTENDS IMPLEMENTS THROWS
     - single inheritance, plus interfaces
     - exceptions - with unwind support
@@ -82,15 +53,12 @@
     - static constructors and destructors
     - some support for RTTI
 
-*** yet another optimizations ***
-[ ] reuse temp vars (or just strings), so less mem is used - take care if emit depends on them
-[ ] unreachable code removal
-
 *** future ***
 [ ] AndAlso and OrElse, short-circuit versions of And and Or
 
-[ ] use a DAG for common sub-expr opt (don't mess up w/ FPU??)
+[ ] unreachable code removal
 
+[ ] use a DAG for common sub-expr opt (don't mess up w/ FPU??)
 
 	a = b + c
 	b = a - d

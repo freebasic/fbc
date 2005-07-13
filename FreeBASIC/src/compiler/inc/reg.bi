@@ -21,7 +21,9 @@
 
 '#ifdef TARGET_X86
 const REG_MAXREGS	= 8
-'#else
+
+type REG_FREETB 	as integer
+
 '#endif
 
 #include once "inc\ir.bi"
@@ -71,18 +73,21 @@ type REGCLASS
 
 	vregTB(0 to REG_MAXREGS-1) 	as IRVREG ptr	'' virtual register name (index)
 
-	'' f/ non-stack sets only
+	'' f/ non-stacked sets only
+	freeTB 						as REG_FREETB 	'' bitmask
 	nextTB(0 to REG_MAXREGS-1) 	as uinteger		'' distance of next vreg usage
-	freeTB(0 to REG_MAXREGS-1) 	as integer      '' true or false
 	fstack(0 to REG_MAXREGS-1) 	as integer		'' free regs stack
     sp							as integer      '' stack pointer
 
-	'' f/ stack sets only
+	'' f/ stacked sets only
 	regTB(0 to REG_MAXREGS-1)	as integer		'' real register (st(#))
 	fregs						as integer      '' free regs
 end type
 
-
+#define REG_ISFREE(m,r) ((m and (1 shl r)) <> 0)
+#define REG_ISUSED(m,r) ((m and (1 shl r)) = 0)
+#define REG_SETFREE(m,r) m or= (1 shl r)
+#define REG_SETUSED(m,r) m and= not (1 shl r)
 
 ''
 ''

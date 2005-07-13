@@ -97,7 +97,7 @@ end type
 		end if                                                      	:_
 	end if                                                          	:_
                                                                     	:_
-	fbc.entrypoint = hMakeEntryPointName( fbc.entrypoint )
+	fbc.entrypoint = hCreateMainAlias( fbc.entrypoint )
 
 #define safeKill(f)														_
 	if( kill( f ) <> 0 ) then                                           :_

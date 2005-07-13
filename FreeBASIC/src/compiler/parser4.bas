@@ -165,7 +165,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	astFlush( expr )
+	astAdd( expr )
 
 	'' NUM_LIT | SimpleStatement*
 	if( lexGetClass = FB_TKCLASS_NUMLITERAL ) then
@@ -175,7 +175,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 		end if
 		lexSkipToken( )
 
-		astFlush( astNewBRANCH( IR_OP_JMP, l ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, l ) )
 
 	elseif( not cSimpleStatement ) then
 		if( hGetLastError <> FB_ERRMSG_OK ) then
@@ -187,10 +187,10 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	if( hMatch( FB_TK_ELSE ) ) then
 
 		'' exit if stmt
-		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
 
 		'' emit next label
-		irEmitLABEL nl, FALSE
+		astAdd( astNewLABEL( nl ) )
 
 		'' SimpleStatement|IF*
 		if( not cSimpleStatement ) then
@@ -198,11 +198,11 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 		end if
 
 		'' emit end label
-		irEmitLABEL el, FALSE
+		astAdd( astNewLABEL( el ) )
 
 	else
 		'' emit next label
-		irEmitLABEL nl, FALSE
+		astAdd( astNewLABEL( nl ) )
 	end if
 
 	'' END IF? -- added to make complex macros easier to be done
@@ -215,10 +215,6 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	''
 	env.lastcompound = lastcompstmt
-
-	''
-	'''''symbDelLabel el
-	'''''symbDelLabel nl
 
 	function = TRUE
 
@@ -238,7 +234,7 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end if
-	astFlush( expr )
+	astAdd( expr )
 
 	if( checkstmtsep ) then
 		'' Comment?
@@ -301,11 +297,10 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
     do while( hMatch( FB_TK_ELSEIF ) )
 
 		'' exit last if stmt
-		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
 
 		'' emit next label
-		irEmitLABEL nl, FALSE
-		'''''symbDelLabel nl
+		astAdd( astNewLABEL( nl ) )
 
 		'' add next label (at ELSE/ELSEIF)
 		nl = symbAddLabel( "" )
@@ -332,11 +327,10 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	if( hMatch( FB_TK_ELSE ) ) then
 
 		'' exit last if stmt
-		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
 
 		'' emit next label
-		irEmitLABEL nl, FALSE
-		'''''symbDelLabel nl
+		astAdd( astNewLABEL( nl ) )
 
 		'' loop body
 		do
@@ -344,12 +338,11 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 	else
 		'' emit next label
-		irEmitLABEL nl, FALSE
+		astAdd( astNewLABEL( nl ) )
 	end if
 
 	'' emit end label
-	irEmitLABEL el, FALSE
-	'''''symbDelLabel el
+	astAdd( astNewLABEL( el ) )
 
 	'' END IF
 	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_IF )) ) then
@@ -428,7 +421,7 @@ private function cStoreTemp( byval expr as ASTNODE ptr, _
 	end if
 
 	vexpr = astNewVAR( s, NULL, 0, dtype )
-	astFlush( astNewASSIGN( vexpr, expr ) )
+	astAdd( astNewASSIGN( vexpr, expr ) )
 
 	function = s
 
@@ -475,7 +468,7 @@ private sub cFlushBOP( byval op as integer, _
 	expr = astNewBOP( op, expr1, expr2, ex, FALSE )
 
 	''
-	astFlush( expr )
+	astAdd( expr )
 
 end sub
 
@@ -512,7 +505,7 @@ private sub cFlushSelfBOP( byval op as integer, _
 	expr = astNewASSIGN( expr1, expr )
 
 	''
-	astFlush( expr )
+	astAdd( expr )
 
 end sub
 
@@ -578,7 +571,7 @@ function cForStatement as integer
 
 	'' save initial condition into counter
 	expr = astNewASSIGN( idexpr, expr )
-	astFlush( expr )
+	astAdd( expr )
 
 	'' TO
 	if( not hMatch( FB_TK_TO ) ) then
@@ -635,7 +628,7 @@ function cForStatement as integer
 				exit function
 			end if
 
-			astFlush( astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ) )
+			astAdd( astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ) )
 
 		else
             '' get constant step
@@ -676,17 +669,17 @@ function cForStatement as integer
 
     	expr = astNewBOP( op, astNewCONST( @ival, dtype ), astNewCONST( @eval, dtype ) )
     	if( not astGetValueI( expr ) ) then
-    		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
+    		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
     	end if
     	astDel expr
 
     else
-    	astFlush( astNewBRANCH( IR_OP_JMP, tl ) )
+    	astAdd( astNewBRANCH( IR_OP_JMP, tl ) )
     end if
 
 	'' add start label
 	il = symbAddLabel( "" )
-	irEmitLABEL il, FALSE
+	astAdd( astNewLABEL( il ) )
 
 	'' save old for stmt info
 	oldforstmt = env.forstmt
@@ -729,13 +722,13 @@ function cForStatement as integer
 	end if
 
 	'' cmp label
-	irEmitLABEL cl, FALSE
+	astAdd( astNewLABEL( cl ) )
 
 	'' counter += step
 	cFlushSelfBOP( IR_OP_ADD, dtype, cnt, stp, @sval )
 
 	'' test label
-	irEmitLABEL tl, FALSE
+	astAdd( astNewLABEL( tl ) )
 
     if( not iscomplex ) then
 
@@ -767,28 +760,21 @@ function cForStatement as integer
     	'' negative, loop if >=
 		cFlushBOP( IR_OP_GE, dtype, cnt, NULL, endc, @eval, il )
 		'' exit loop
-		astFlush( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
     	'' control label
-    	irEmitLABELNF( c2l )
+    	astAdd( astNewLABEL( c2l, FALSE ) )
     	'' positive, loop if <=
 		cFlushBOP( IR_OP_LE, dtype, cnt, NULL, endc, @eval, il )
     end if
 
     '' end label (loop exit)
-    irEmitLABEL el, FALSE
+    astAdd( astNewLABEL( el ) )
 
 	'' restore old for stmt info
 	env.forstmt = oldforstmt
 
 	''
 	env.lastcompound = lastcompstmt
-
-    ''
-    '''''if( c2l <> NULL ) then symbDelLabel c2l
-    '''''symbDelLabel cl
-    '''''symbDelLabel el
-    '''''symbDelLabel il
-    '''''symbDelLabel tl
 
 	function = TRUE
 
@@ -801,7 +787,6 @@ end function
 ''
 function cDoStatement as integer
     dim as ASTNODE ptr expr
-    dim as IRVREG ptr vr
 	dim as integer iswhile, isuntil, isinverse, lastcompstmt, op
     dim as FBSYMBOL ptr il, el, cl
     dim as FBCMPSTMT olddostmt
@@ -816,7 +801,7 @@ function cDoStatement as integer
 	el = symbAddLabel( "" )
 
 	'' emit ini label
-	irEmitLABEL il, FALSE
+	astAdd( astNewLABEL( il ) )
 
 	'' ((WHILE | UNTIL) Expression)?
 	iswhile = FALSE
@@ -830,7 +815,7 @@ function cDoStatement as integer
 	end select
 
 	if( iswhile or isuntil ) then
-		lexSkipToken
+		lexSkipToken( )
 
 		'' Expression
 		if( not cExpression( expr ) ) then
@@ -847,15 +832,15 @@ function cDoStatement as integer
 
 		expr = astUpdComp2Branch( expr, el, isinverse )
 		if( expr = NULL ) then
-			hReportError FB_ERRMSG_INVALIDDATATYPES
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 
-		vr = astFlush( expr )
+		astAdd( expr )
 		cl = il
 
 	else
-		vr = NULL
+		expr = NULL
 		cl = symbAddLabel( "" )
 	end if
 
@@ -899,18 +884,18 @@ function cDoStatement as integer
 		isuntil = TRUE
 	end select
 
-	if( (iswhile or isuntil) and (vr <> NULL) ) then
-		hReportError FB_ERRMSG_SYNTAXERROR
+	if( (iswhile or isuntil) and (expr <> NULL) ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end if
 
 	'' emit comp label, if needed
 	if( cl <> il ) then
-		irEmitLABEL cl, FALSE
+		astAdd( astNewLABEL( cl ) )
 	end if
 
 	if( iswhile or isuntil ) then
-		lexSkipToken
+		lexSkipToken( )
 
 		'' Expression
 		if( not cExpression( expr ) ) then
@@ -927,29 +912,23 @@ function cDoStatement as integer
 
 		expr = astUpdComp2Branch( expr, il, isinverse )
 		if( expr = NULL ) then
-			hReportError FB_ERRMSG_INVALIDDATATYPES
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
-		astFlush( expr )
+		astAdd( expr )
 
 	else
-		astFlush( astNewBRANCH( IR_OP_JMP, il ) )
+		astAdd( astNewBRANCH( IR_OP_JMP, il ) )
 	end if
 
     '' end label (loop exit)
-    irEmitLABEL el, FALSE
+    astAdd( astNewLABEL( el ) )
 
 	'' restore old for stmt info
 	env.dostmt = olddostmt
 
 	''
 	env.lastcompound = lastcompstmt
-
-    ''
-    '''''if( cl <> il ) then symbDelLabel cl
-    '''''symbDelLabel el
-    '''''symbDelLabel il
-
 
 	function = TRUE
 
@@ -986,7 +965,7 @@ function cWhileStatement as integer
 	env.lastcompound = FB_TK_WHILE
 
 	'' emit ini label
-	irEmitLABEL il, FALSE
+	astAdd( astNewLABEL( il ) )
 
 	'' Expression
 	if( not cExpression( expr ) ) then
@@ -1000,7 +979,7 @@ function cWhileStatement as integer
 		hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
 	end if
-	astFlush( expr )
+	astAdd( expr )
 
 	'' Comment?
 	cComment
@@ -1021,21 +1000,16 @@ function cWhileStatement as integer
 		exit function
 	end if
 
-    astFlush( astNewBRANCH( IR_OP_JMP, il ) )
+    astAdd( astNewBRANCH( IR_OP_JMP, il ) )
 
     '' end label (loop exit)
-    irEmitLABEL el, FALSE
+    astAdd( astNewLABEL( el ) )
 
 	'' restore old while stmt info
 	env.whilestmt = oldwhilestmt
 
 	''
 	env.lastcompound = lastcompstmt
-
-    ''
-    '''''symbDelLabel el
-    '''''symbDelLabel il
-
 
 	function = TRUE
 
@@ -1117,7 +1091,7 @@ function cSelectStatement as integer
 	if( expr = NULL ) then
 		exit function
 	end if
-	astFlush( expr )
+	astAdd( expr )
 
 	'' SelectLine*
 	do
@@ -1134,8 +1108,7 @@ function cSelectStatement as integer
 	loop while( lexGetToken <> FB_TK_EOF )
 
     '' emit exit label
-    irEmitLABEL elabel, FALSE
-    '''''symbDelLabel elabel
+    astAdd( astNewLABEL( elabel ) )
 
 	'' END SELECT
 	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SELECT )) ) then
@@ -1146,7 +1119,7 @@ function cSelectStatement as integer
 	'' if a temp string was allocated, delete it
 	if( dtype = FB_SYMBTYPE_STRING ) then
 		expr = rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) )
-		astFlush( expr )
+		astAdd( expr )
 	end if
 
 	env.lastcompound = lastcompstmt
@@ -1218,12 +1191,12 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 			expr = astNewBOP( irGetInverseLogOp( casectx.op ), v, casectx.expr1, nextlabel, FALSE )
 		end if
 
-		astFlush( expr )
+		astAdd( expr )
 
 	else
 		v = astNewVAR( s, NULL, 0, sdtype )
 		expr = astNewBOP( IR_OP_LT, v, casectx.expr1, nextlabel, FALSE )
-		astFlush( expr )
+		astAdd( expr )
 
 		if( expr = NULL ) then
 			return FALSE
@@ -1235,7 +1208,7 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 		else
 			expr = astNewBOP( IR_OP_GT, v, casectx.expr2, nextlabel, FALSE )
 		end if
-		astFlush( expr )
+		astAdd( expr )
 	end if
 
 	function = expr <> NULL
@@ -1316,8 +1289,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 
 		if( i = cntbase ) then
 			''
-			irEmitLABEL il, FALSE
-			'''''symbDelLabel il
+			astAdd( astNewLABEL( il ) )
 
 			'' SimpleLine*
 			do
@@ -1329,13 +1301,12 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 			end if
 
 			'' break from block
-			astFlush( astNewBRANCH( IR_OP_JMP, exitlabel ) )
+			astAdd( astNewBRANCH( IR_OP_JMP, exitlabel ) )
 
 		end if
 
 		'' emit next label
-		irEmitLABEL nl, FALSE
-		'''''symbDelLabel nl
+		astAdd( astNewLABEL( nl ) )
 
 	next i
 
@@ -1413,7 +1384,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	'' ELSE
 	if( hMatch( FB_TK_ELSE ) ) then
 		deflabel = symbAddLabel( "" )
-		irEmitLABEL deflabel, FALSE
+		astAdd( astNewLABEL( deflabel ) )
 
 	else
 
@@ -1474,7 +1445,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 		loop while( hMatch( CHAR_COMMA ) )
 
 		''
-		irEmitLABEL label, FALSE
+		astAdd( astNewLABEL( label ) )
 
 	end if
 
@@ -1495,22 +1466,9 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	end if
 
 	'' break from block
-	astFlush( astNewBRANCH( IR_OP_JMP, exitlabel ) )
+	astAdd( astNewBRANCH( IR_OP_JMP, exitlabel ) )
 
 	function = TRUE
-
-end function
-
-'':::::
-private function hSelConstAllocTbSym( ) as FBSYMBOL ptr static
-	static as zstring * FB_MAXNAMELEN+1 sname
-	dim dTB(0) as FBARRAYDIM
-
-	sname = *hMakeTmpStr( )
-
-	function = symbAddVarEx( sname, "", FB_SYMBTYPE_UINT, NULL, 0, _
-							 FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED, _
-							 FALSE, FALSE, FALSE )
 
 end function
 
@@ -1570,10 +1528,10 @@ function cSelectConstStmt as integer
 	if( expr = NULL ) then
 		exit function
 	end if
-	astFlush( expr )
+	astAdd( expr )
 
 	'' skip the statements
-	astFlush( astNewBRANCH( IR_OP_JMP, complabel ) )
+	astAdd( astNewBRANCH( IR_OP_JMP, complabel ) )
 
 	'' SwitchLine*
 	swtbase = ctx.swt.base
@@ -1603,57 +1561,54 @@ function cSelectConstStmt as integer
     end if
 
     '' emit comp label
-    irEmitLABEL( complabel, FALSE )
-    '''''symbDelLabel complabel
+    astAdd( astNewLABEL( complabel ) )
 
 	'' check min val
 	if( minval > 0 ) then
-		expr = astNewBOP( IR_OP_LT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
-						  astNewCONSTi( minval, IR_DATATYPE_UINT ), deflabel, FALSE )
-		astFlush( expr )
+		expr = astNewBOP( IR_OP_LT, _
+						  astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+						  astNewCONSTi( minval, IR_DATATYPE_UINT ), _
+						  deflabel, FALSE )
+		astAdd( expr )
 	end if
 
 	'' check max val
-	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
-					  astNewCONSTi( maxval, IR_DATATYPE_UINT ), deflabel, FALSE )
-	astFlush( expr )
+	expr = astNewBOP( IR_OP_GT, _
+					  astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+					  astNewCONSTi( maxval, IR_DATATYPE_UINT ), _
+					  deflabel, FALSE )
+	astAdd( expr )
 
     '' jump to table[idx]
-    tbsym = hSelConstAllocTbSym( )
+    tbsym = hJumpTbAllocSym( )
 
-	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
-    				  			    astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
+	idxexpr = astNewBOP( IR_OP_MUL, _
+						 astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+    				  	 astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
-    				  IR_DATATYPE_UINT, NULL )
+    expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB_INTEGERSIZE, IR_DATATYPE_UINT ), _
+    				  idxexpr, IR_DATATYPE_UINT, NULL )
 
-    astFlush( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
+    astAdd( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
 
     '' emit table
-    irEmitLABEL tbsym, FALSE
-
-    ''!!!FIXME!!! parser shouldn't call IR directly, always use the AST
-    irFlush( )
+    astAdd( astNewLABEL( tbsym ) )
 
     ''
     l = swtbase
     for value = minval to maxval
     	if( value = ctx.swt.caseTB(l).value ) then
-    		emitTYPE( IR_DATATYPE_UINT, symbGetName( ctx.swt.caseTB(l).label ) )
+    		astAdd( astNewJMPTB( IR_DATATYPE_UINT, ctx.swt.caseTB(l).label ) )
     		l += 1
     	else
-    		emitTYPE( IR_DATATYPE_UINT, symbGetName( deflabel ) )
+    		astAdd( astNewJMPTB( IR_DATATYPE_UINT, deflabel ) )
     	end if
     next value
-
-    '' the table is not needed anymore
-    symbDelVar( tbsym )
 
     ctx.swt.base = swtbase
 
     '' emit exit label
-    irEmitLABEL( exitlabel, FALSE )
-    '''''symbDelLabel exitlabel
+    astAdd( astNewLABEL( exitlabel ) )
 
 	'' END SELECT
 	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SELECT )) ) then
@@ -1711,7 +1666,7 @@ function cExitStatement as integer
 	lexSkipToken
 
 	''
-	astFlush( astNewBRANCH( IR_OP_JMP, label ) )
+	astAdd( astNewBRANCH( IR_OP_JMP, label ) )
 
 	function = TRUE
 
@@ -1752,7 +1707,7 @@ function cContinueStatement as integer
 	lexSkipToken
 
 	''
-	astFlush( astNewBRANCH( IR_OP_JMP, label ) )
+	astAdd( astNewBRANCH( IR_OP_JMP, label ) )
 
 	function = TRUE
 
@@ -1795,7 +1750,7 @@ function cEndStatement as integer
   	end select
 
     ''
-	function = rtlExit( errlevel )
+	function = rtlExitRt( errlevel )
 
 end function
 

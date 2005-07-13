@@ -22,7 +22,7 @@
 #include once "inc\list.bi"
 
 type TFLISTITEM
-	nxt			as TFLISTITEM ptr
+	next		as TFLISTITEM ptr
 	'' ...
 end type
 
@@ -46,6 +46,8 @@ declare function flistNewItem	( byval flist as TFLIST ptr ) as any ptr
 
 declare function flistGetHead	( byval flist as TFLIST ptr ) as any ptr
 
-declare sub flistReset			( byval flist as TFLIST ptr )
+declare sub 	 flistReset		( byval flist as TFLIST ptr )
+
+#define flistGetNext(n) cptr(any ptr, cptr(TFLISTITEM ptr, n)->next)
 
 #endif '' __FLIST_BI__

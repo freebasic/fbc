@@ -16,40 +16,47 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub 		edbgHeader			( byval asmf as integer, _
+declare sub 		edbgEmitHeader		( byval asmf as integer, _
 										  byval filename as string, _
 										  byval modulename as string, _
 										  byval entryname as string )
 
-declare sub 		edgbMainEnd			( )
-
-declare sub 		edbgLineBegin		( )
-
-declare sub 		edbgLineEnd			( )
-
-declare sub 		edbgLine			( byval lnum as integer, _
-										  byval lname as string )
-
-declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr, _
-										  byval ispublic as integer, _
+declare sub 		edbgLineBegin		( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer )
 
-declare sub 		edbgProcEnd			( byval proc as FBSYMBOL ptr, _
-										  byval ininame as string, _
-										  byval endname as string )
+declare sub 		edbgLineEnd			( byval proc as FBSYMBOL ptr )
 
-declare sub 		edbgFooter			( )
+declare sub 		edbgEmitLine		( byval proc as FBSYMBOL ptr, _
+										  byval lnum as integer, _
+										  byval label as FBSYMBOL ptr )
 
-declare sub 		edbgGlobalVar		( byval sym as FBSYMBOL ptr, _
+declare sub 		edbgEmitLineFlush	( byval proc as FBSYMBOL ptr, _
+										  byval lnum as integer, _
+										  byval label as FBSYMBOL ptr )
+
+declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr )
+
+declare sub 		edbgProcEnd			( byval proc as FBSYMBOL ptr )
+
+declare sub			edbgProcEmitBegin	( byval proc as FBSYMBOL ptr )
+
+declare sub 		edbgEmitProcHeader	( byval proc as FBSYMBOL ptr )
+
+declare sub 		edbgEmitProcFooter	( byval proc as FBSYMBOL ptr, _
+										  byval initlabel as FBSYMBOL ptr, _
+			      						  byval exitlabel as FBSYMBOL ptr )
+
+declare sub 		edbgEmitFooter		( )
+
+declare sub 		edbgEmitGlobalVar	( byval sym as FBSYMBOL ptr, _
 				   						  byval section as integer )
 
-declare sub 		edbgLocalVar		( byval sym as FBSYMBOL ptr )
+declare sub 		edbgEmitLocalVar	( byval sym as FBSYMBOL ptr )
 
-declare sub 		edbgProcArg			( byval arg as FBSYMBOL ptr, _
-				 						  byval typ as integer, _
-				 						  byval mode as integer )
+declare sub 		edbgEmitProcArg		( byval sym as FBSYMBOL ptr )
 
-declare sub 		edbgIncludeBegin 	( byval incfile as string )
+declare sub 		edbgIncludeBegin 	( byval incname as string, _
+					   					  byval incfile as integer )
 
 declare sub 		edbgIncludeEnd 		( )
 

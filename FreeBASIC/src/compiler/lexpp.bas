@@ -156,7 +156,7 @@ const QUOTE = "\""
     					end if
 
     					'' next arg
-    					a = a->r
+    					a = a->next
     				loop while( a <> NULL )
 
     				'' if none matched, read as-is

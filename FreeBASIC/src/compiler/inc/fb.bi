@@ -288,6 +288,8 @@ declare sub 		fbAddDefine		( byval dname as string, _
 declare function 	fbIncludeFile	( byval filename as string, _
 									  byval isonce as integer ) as integer
 
+declare function 	fbGetIncFile	( byval index as integer ) as string
+
 declare function    fbGetNaming     ( ) as integer
 
 declare sub 		fbAddDefaultLibs( )
