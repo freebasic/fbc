@@ -479,8 +479,6 @@ What FreeBASIC Isn't:
 
 Possible Additions to Next Versions:
 
-  o Full debug support using GDB/Insight
-
   o CLASS data structure (for object-oriented programming):
 
     - GUI code would be much easier to write.
