@@ -35,9 +35,9 @@ FBCALL void fb_GfxPaletteGet(int index, int *r, int *g, int *b)
 		return;
 	
 	index &= (fb_mode->default_palette->colors - 1);
-	color = (fb_mode->device_palette[index] & 0xFCFCFC) >> 2;
+	color = fb_mode->device_palette[index];
 	if (!g) {
-		*r = color;
+		*r = (color & 0xFCFCFC) >> 2;
 	}
 	else {
 		*r = color & 0xFF;
