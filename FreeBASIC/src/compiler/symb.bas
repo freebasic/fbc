@@ -83,24 +83,28 @@ declare function	hDefTime_cb		( ) as string
 ''globals
 	dim shared ctx as SYMBCTX
 
-'' predefined #defines: name, value, proc
+'' predefined #defines: name, value, flags, proc
+'' for description flags, see FBSDEFINE
 definesdata:
-data "__FB_VERSION__",			FB_VERSION,		NULL
-data "__FB_SIGNATURE__",		FB_SIGN,		NULL
+data "__FB_VERSION__",			FB_VERSION,		  0, NULL
+data "__FB_VER_MAJOR__",		FB_VER_STR_MAJOR, 1, NULL
+data "__FB_VER_MINOR__",		FB_VER_STR_MINOR, 1, NULL
+data "__FB_VER_PATCH__",		FB_VER_STR_PATCH, 1, NULL
+data "__FB_SIGNATURE__",		FB_SIGN,		  0, NULL
 #ifdef TARGET_WIN32
-data "__FB_WIN32__",			"",				NULL
+data "__FB_WIN32__",			"",				  0, NULL
 #elseif defined(TARGET_LINUX)
-data "__FB_LINUX__",			"",				NULL
+data "__FB_LINUX__",			"",				  0, NULL
 #elseif defined(TARGET_DOS)
-data "__FB_DOS__",			    "",				NULL
+data "__FB_DOS__",			    "",				  0, NULL
 #elseif defined(TARGET_XBOX)
-data "__FB_XBOX__",				"",				NULL
+data "__FB_XBOX__",				"",				  0, NULL
 #endif
-data "__FILE__",				"",				@hDefFile_cb
-data "__FUNCTION__",			"",				@hDefFunction_cb
-data "__LINE__",				"",				@hDefLine_cb
-data "__DATE__",				"",				@hDefDate_cb
-data "__TIME__",				"",				@hDefTime_cb
+data "__FILE__",				"",				  0, @hDefFile_cb
+data "__FUNCTION__",			"",				  0, @hDefFunction_cb
+data "__LINE__",				"",				  1, @hDefLine_cb
+data "__DATE__",				"",				  0, @hDefDate_cb
+data "__TIME__",				"",				  0, @hDefTime_cb
 data ""
 
 
@@ -239,6 +243,7 @@ data "OUTPUT"	, FB_TK_OUTPUT		, FB_TKCLASS_KEYWORD
 data "BINARY"	, FB_TK_BINARY		, FB_TKCLASS_KEYWORD
 data "RANDOM"	, FB_TK_RANDOM		, FB_TKCLASS_KEYWORD
 data "APPEND"	, FB_TK_APPEND		, FB_TKCLASS_KEYWORD
+data "NAME"		, FB_TK_NAME		, FB_TKCLASS_KEYWORD
 data "PRESERVE"	, FB_TK_PRESERVE	, FB_TKCLASS_KEYWORD
 data "ON"		, FB_TK_ON			, FB_TKCLASS_KEYWORD
 data "ERROR"	, FB_TK_ERROR		, FB_TKCLASS_KEYWORD
@@ -347,6 +352,7 @@ end sub
 '':::::
 sub symbInitDefines static
 	dim as string def, value
+    dim as integer flags
 	dim as DEFCALLBACK proc
 
     listNew( @ctx.defarglist, FB_INITDEFARGNODES, len( FBDEFARG ), FALSE )
@@ -361,12 +367,16 @@ sub symbInitDefines static
     	end if
 
     	read value
-    	if( value <> "" ) then
-    		value = "\"" + value + "\""
-    	end if
+        read flags
     	read proc
 
-    	symbAddDefine( def, value, len( value ), 0, NULL, FALSE, proc )
+    	if( value <> "" ) then
+            if( not bit( flags, 0 ) )then
+    			value = "\"" + value + "\""
+            end if
+    	end if
+
+    	symbAddDefine( def, value, len( value ), 0, NULL, FALSE, proc, flags )
     loop
 
 end sub
@@ -838,7 +848,8 @@ function symbAddDefine( byval symbol as string, _
 						byval args as integer = 0, _
 						byval arghead as FBDEFARG ptr = NULL, _
 						byval isargless as integer = FALSE, _
-						byval proc as function( ) as string = NULL ) as FBSYMBOL ptr static
+						byval proc as function( ) as string = NULL, _
+                        byval flags as integer = 0) as FBSYMBOL ptr static
     dim d as FBSYMBOL ptr
 
     function = NULL
@@ -857,6 +868,7 @@ function symbAddDefine( byval symbol as string, _
 	d->def.arghead	= arghead
 	d->def.isargless= isargless
 	d->def.proc     = proc
+    d->def.flags    = flags
 
 	''
 	function = d

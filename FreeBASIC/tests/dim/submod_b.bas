@@ -1,4 +1,4 @@
-'$dynamic
+''$dynamic
 
 option explicit
 option private
@@ -11,19 +11,22 @@ defint a-z
 
 public sub init_b( )
 
+#ifndef FIXME
 	on local error goto expected_err
 
     dim access_test as any ptr
+    ' FIXME: This should give an error because ext_dynarray isn't created yet.
     access_test = @ext_dynarray(1,1)
     ASSERT( access_test<>access_test )
 
 expected_err:
+#endif
 
 	redim ext_dynarray(1 to 21, 1 to 2)
 
 	ext_dynarray(1,1) = 1
 	ext_dynarray(1,2) = 2
-	
+
 	ext_statarray(1,1) = 3
 	ext_statarray(1,2) = 4
 

@@ -236,7 +236,11 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 		'' should we call a function to get definition text?
 		if( s->def.proc <> NULL ) then
 			'' call function
-			s->def.text = "\"" + s->def.proc( ) + "\""
+            if( not bit( s->def.flags, 0 ) ) then
+				s->def.text = "\"" + s->def.proc( ) + "\""
+            else
+				s->def.text = s->def.proc( )
+            end if
 			lgt = len( s->def.text )
 
 		'' just load text as-is

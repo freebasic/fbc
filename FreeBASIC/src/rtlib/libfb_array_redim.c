@@ -60,7 +60,13 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int preserve, 
     for( i = 0; i < dimensions; i++ )
     {
     	lbTB[i] = va_arg( ap, int );
-    	ubTB[i] = va_arg( ap, int );
+        ubTB[i] = va_arg( ap, int );
+
+        if( lbTB[i] > ubTB[i] ) {
+            FB_UNLOCK();
+            /* should be: subscript out of range */
+            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
 
     	p->elements = (ubTB[i] - lbTB[i]) + 1;
     	p->lbound 	= lbTB[i];

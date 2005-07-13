@@ -500,6 +500,7 @@ extern FB_INPCTX fb_inpctx;
 #define FB_FILE_TYPE_CONSOLE		1
 #define FB_FILE_TYPE_ERR			2
 #define FB_FILE_TYPE_PIPE			3
+#define FB_FILE_TYPE_PRINTER        4
 
 FBCALL int 			fb_FileFree 		( void );
 FBCALL int 			fb_FileOpen			( FBSTRING *str, unsigned int mode, unsigned int access,

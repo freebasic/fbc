@@ -971,6 +971,14 @@ data "fb_FileUnlock","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
+'' rename ( byval oldname as string, byval newname as string ) as integer
+data "fb_FileRename","rename", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+
 
 
 ''
@@ -1816,14 +1824,6 @@ data "shell","fb_Shell", _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, TRUE,""
 
-'' name ( byval oldname as string, byval newname as string ) as integer
-data "name","rename", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 2, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
-
 '' system ( ) as void
 data "system","fb_End", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -2144,11 +2144,16 @@ data "VA_NEXT", _
 	 2, "A", "T", _
 	 "(cptr( !T! ptr, !A! ) + 1)"
 
-''#define ASSERT(e) if not (e) then print __FILE__; ":"; __LINE__; " ("; __FUNCTION__; "): assertion failed: "; trim(#e)
+''#define ASSERT(e) if not (e) then print __FILE__ + ":" + str$(__LINE__) + " (" + __FUNCTION__ + "): assertion failed: " + trim(#e)
 data "ASSERT", _
 	 TRUE, _
 	 1, "E", _
-	 "if not (!E!) then print __FILE__; \"(\"; __LINE__; \"): assertion failed at \"; __FUNCTION__; \": \"; trim(\"!E!\")"
+	 "if not (!E!) then print __FILE__ + \"(\" + str$(__LINE__) + \"): assertion failed at \" + __FUNCTION__ + \": \" + trim(\"!E!\")"
+
+data "__FB_MIN_VERSION__", _
+     FALSE, _
+     3, "MAJOR", "MINOR", "PATCH_LEVEL", _
+	 "((__FB_VER_MAJOR__ > (!MAJOR!)) or ((__FB_VER_MAJOR__ = (!MAJOR!)) and ((__FB_VER_MINOR__ > (!MINOR!)) or (__FB_VER_MINOR__ = (!MINOR!) and __FB_VER_PATCH__ >= (!PATCH_LEVEL!)))))"
 
 '#ifndef FB__BIGENDIAN
 ''#define LOWORD(x) (cuint(x) and &h0000FFFF)
@@ -5275,6 +5280,44 @@ function rtlFileLock( byval islock as integer, _
     astAdd( proc )
 
     function = TRUE
+
+end function
+
+'':::::
+function rtlFileRename( byval filename_new as ASTNODE ptr, _
+                        byval filename_old as ASTNODE ptr, _
+                        byval isfunc as integer ) as ASTNODE ptr static
+    dim proc as ASTNODE ptr
+    dim reslabel as FBSYMBOL ptr
+
+	function = NULL
+
+    proc = astNewFUNCT( ifuncTB(FB_RTL_FILERENAME) )
+
+    '' byval filename_old as string
+    if( astNewPARAM( proc, filename_old ) = NULL ) then
+ 		exit function
+ 	end if
+
+    '' byval filename_new as integer
+    if( astNewPARAM( proc, filename_new ) = NULL ) then
+ 		exit function
+ 	end if
+
+    ''
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( "" )
+    		astAdd( astNewLABEL( reslabel ) )
+    	else
+    		reslabel = NULL
+    	end if
+
+    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+
+    else
+    	function = proc
+    end if
 
 end function
 

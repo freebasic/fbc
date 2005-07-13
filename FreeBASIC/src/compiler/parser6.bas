@@ -302,7 +302,7 @@ function cMidStmt as integer
 end function
 
 '':::::
-'' LsetStmt		=	LSET String|UDT ',' Expression|UDT
+'' LsetStmt		=	LSET String|UDT (','|'=') Expression|UDT
 function cLSetStmt( ) as integer
     dim as ASTNODE ptr dstexpr, srcexpr
     dim as integer dtype1, dtype2
@@ -327,8 +327,13 @@ function cLSetStmt( ) as integer
 		exit function
 	end select
 
-	'' ','
-	hMatchCOMMA( )
+	'' ',' or '='
+	if( not hMatch( CHAR_COMMA ) ) then
+        if( not hMatch( CHAR_EQ ) ) then
+			hReportError FB_ERRMSG_EXPECTEDCOMMA
+			exit function
+        end if
+	end if
 
 	'' Expression
 	hMatchExpression( srcexpr )
@@ -1237,6 +1242,47 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 
 end function
 
+'':::::
+private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
+	dim as ASTNODE ptr filename_old, filename_new
+
+	function = NULL
+
+	'' '('
+    if( isfunc ) then
+        hMatchLPRNT( )
+    else
+        if( hMatch( CHAR_LPRNT ) ) then
+            isfunc = TRUE
+        end if
+    end if
+
+	hMatchExpression( filename_old )
+
+	if( isfunc ) then
+		'' ','?
+		hMatchToken( CHAR_COMMA )
+    else
+        if( not hMatch( FB_TK_AS ) ) then
+        	if( not hMatch( CHAR_COMMA ) ) then
+                hReportError FB_ERRMSG_EXPECTINGAS
+                exit function
+            end if
+        end if
+	end if
+
+	hMatchExpression( filename_new )
+
+	if( isfunc ) then
+		'' ')'
+		hMatchRPRNT( )
+	end if
+
+	''
+	function = rtlFileRename( filename_new, filename_old, isfunc )
+
+end function
+
 
 '':::::
 '' FileStmt		  =	   OPEN Expression{str} (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))? (ACCESS Expression)?
@@ -1323,6 +1369,13 @@ function cFileStmt as integer
 		end if
 
 		function = rtlFileLock( islock, filenum, expr1, expr2 )
+
+    '' NAME oldfilespec$ AS newfilespec$
+    case FB_TK_NAME
+		lexSkipToken
+
+		function = (hFileRename( FALSE ) <> NULL)
+
 	end select
 
 end function
@@ -1581,7 +1634,7 @@ function cQuirkStmt as integer
 		res = cInputStmt( )
 	case FB_TK_POKE
 		res = cPokeStmt( )
-	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, FB_TK_LOCK, FB_TK_UNLOCK
+	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, FB_TK_LOCK, FB_TK_UNLOCK, FB_TK_NAME
 		res = cFileStmt( )
 	case FB_TK_ON
 		res = cOnStmt( )
@@ -2222,6 +2275,13 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchRPRNT( )
 
+    '' NAME '(' oldfilespec$ ',' newfilespec$ ')'
+    case FB_TK_NAME
+		lexSkipToken
+
+		funcexpr = hFileRename( TRUE )
+		function = funcexpr <> NULL
+
 	end select
 
 end function
@@ -2445,7 +2505,7 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	case FB_TK_LBOUND, FB_TK_UBOUND
 		res = cArrayFunct( funcexpr )
 
-	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, FB_TK_GET, FB_TK_PUT
+	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, FB_TK_GET, FB_TK_PUT, FB_TK_NAME
 		res = cFileFunct( funcexpr )
 
 	case FB_TK_ERR

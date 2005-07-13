@@ -46,8 +46,36 @@ const NULL			= 0
 const INVALID		= -1
 
 ''
+#define FB_VER_MAJOR            0
+#define FB_VER_MINOR            14
+#define FB_VER_PATCH            3
 #define FB_VERSION				"0.14"
 #define FB_SIGN					"FreeBASIC v0.14b"
+
+#define FB_TO_STRING(v)         #v
+
+#define FB_VER_STR_MAJOR        FB_TO_STRING(FB_VER_MAJOR)
+#define FB_VER_STR_MINOR        FB_TO_STRING(FB_VER_MINOR)
+#define FB_VER_STR_PATCH        FB_TO_STRING(FB_VER_PATCH)
+
+#ifndef __FB_VER_MAJOR__
+#define __FB_VER_MAJOR__ 0
+#endif
+
+#ifndef __FB_VER_MINOR__
+#define __FB_VER_MINOR__ 14
+#endif
+
+#ifndef __FB_VER_PATCH__
+#define __FB_VER_PATCH__ 2
+#endif
+
+#ifndef __FB_MIN_VERSION__
+#define __FB_MIN_VERSION__(major,minor,patch_level) _
+	((__FB_VER_MAJOR__ > major) or _
+     ((__FB_VER_MAJOR__ = major) and ((__FB_VER_MINOR__ > minor) or _
+                                      (__FB_VER_MINOR__ = minor and __FB_VER_PATCH__ >= patch_level))))
+#endif
 
 #ifdef TARGET_WIN32
 #define FB_TARGET				"win32"

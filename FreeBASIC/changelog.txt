@@ -63,6 +63,7 @@ Version 0.14 Beta:
 - Allow to compile the "linux" version with CYGWIN (non-functional yet) (mjs)
 - signals and some exceptions like seg. violation and div by 0 can now be handled by users in standard ON ERROR handlers 
   if compiling with error checking on (using the -e or -ex cmd-line options) (v1c)
+- version macros __FB_VER_MAJOR__, __FB_VER_MINOR__, __FB_VER_PATCH__, __FB_MIN_VERSION__
 - graphical PUT will now fail and report a runtime error if an image GETed while in a mode with a certain depth is
   attempted to be drawn in a mode with a different color depth (lillo)
 - private functions will only be emitted if referenced (v1c)
@@ -125,8 +126,9 @@ Version 0.14 Beta:
 - overloaded functions could not use the function name to assign results (v1c)
 - local undefined labels were silently ignored (v1c)
 - BLOADing a BMP with 16 or less colors was changing the whole 256 colors palette if in 8bit mode (lillo)
+- __LINE__ now returns a number instead of a string
 - VIEW cleared the screen with a bad color if called without arguments, instead of just resetting the view (lillo)
-- coordinates translation with PMAP was giving back bad results (lillo)
+- coordinates translation with PMAP was returned bad results (lillo)
 
 
 Version 0.13 Beta:

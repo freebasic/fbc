@@ -362,6 +362,7 @@ enum FBTK_ENUM
 	FB_TK_BINARY
 	FB_TK_RANDOM
 	FB_TK_APPEND
+    FB_TK_NAME
 	FB_TK_SPC
 	FB_TK_TAB
 	FB_TK_LINE
@@ -572,6 +573,9 @@ type FBSDEFINE
 	args			as integer
 	arghead 		as FBDEFARG ptr
 	isargless		as integer
+    flags           as integer          '' flags:
+                                        '' bit    meaning
+                                        '' 0      1=numeric, 0=string
 	proc			as function( ) as string
 end type
 

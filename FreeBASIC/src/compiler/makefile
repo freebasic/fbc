@@ -10,24 +10,28 @@
 ##################################################################
 
 HOST :=
-ifdef DJGPP
-    HOST := dos
+ifeq ($(OS),Windows_NT)
+    HOST := win32
 else
-    ifeq ($(OS),Windows_NT)
+    ifdef WINDIR
         HOST := win32
     else
-        ifdef WINDIR
+        ifdef windir
             HOST := win32
         else
-            ifdef windir
-                HOST := win32
+            ifdef HOME
+                HOST := linux
             else
-                ifdef HOME
-                    HOST := linux
+            	ifdef DJGPP
+                    HOST := dos
                 endif
             endif
         endif
     endif
+endif
+
+ifdef DJGPP
+    TARGET := dos
 endif
 
 ifndef TARGET

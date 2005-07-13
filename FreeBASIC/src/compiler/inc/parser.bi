@@ -231,25 +231,23 @@ declare function 	cGfxFunct				( byref funcexpr as ASTNODE ptr ) as integer
 
 
 '':::::
-#define hMatchLPRNT()											 _
-	if( not hMatch( CHAR_LPRNT ) ) then							:_
-		hReportError FB_ERRMSG_EXPECTEDLPRNT                    :_
-		exit function											:_
-	end if
-
-'':::::
-#define hMatchRPRNT()											 _
-	if( not hMatch( CHAR_RPRNT ) ) then							:_
-		hReportError FB_ERRMSG_EXPECTEDRPRNT                    :_
-		exit function											:_
-	end if
-
-'':::::
-#define hMatchCOMMA()											 _
-	if( not hMatch( CHAR_COMMA ) ) then							:_
+#define hMatchToken(token)											 _
+	if( not hMatch( token ) ) then							:_
 		hReportError FB_ERRMSG_EXPECTEDCOMMA                    :_
 		exit function											:_
 	end if
+
+'':::::
+#define hMatchLPRNT()											 _
+    hMatchToken( CHAR_LPRNT )
+
+'':::::
+#define hMatchRPRNT()											 _
+    hMatchToken( CHAR_RPRNT )
+
+'':::::
+#define hMatchCOMMA()											 _
+    hMatchToken( CHAR_COMMA )
 
 '':::::
 #define hMatchExpression(e)										 _

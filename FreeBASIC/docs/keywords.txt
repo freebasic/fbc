@@ -127,7 +127,7 @@
 
   NOT Operator
   NEXT
-  NAME Statement        (diff: syntax is "NAME oldname, newname" not "NAME oldname AS newname")
+  NAME Statement
 
   OPTION BASE Statement
   OR Operator
@@ -137,6 +137,7 @@
   ON...GOTO Statement
   OPEN (File) Statement (diff: PIPE:, SCRN: and KEYB: aren't supported (yet))
   OUTPUT
+  OVERLOAD
 
   POKE Statement
   PEEK Function

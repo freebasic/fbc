@@ -229,12 +229,17 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 
 	/* check for special file names */
 	type = FB_FILE_TYPE_NORMAL;
-	if( strcasecmp( fname, "CONS:" ) == 0 )
+    if( strcasecmp( fname, "CONS:" ) == 0
+        || strcasecmp( fname, "CON:" ) == 0
+        || strcasecmp( fname, "\\DEV\\CON" ) == 0
+      )
+    {
 		type = FB_FILE_TYPE_CONSOLE;
-	else if( strcasecmp( fname, "ERR:" ) == 0 )
+    } else if( strcasecmp( fname, "ERR:" ) == 0 ) {
 		type = FB_FILE_TYPE_ERR;
-	else if( strncasecmp( fname, "PIPE:", 5 ) == 0 )
-		type = FB_FILE_TYPE_PIPE;
+    } else if( strncasecmp( fname, "PIPE:", 5 ) == 0 ) {
+        type = FB_FILE_TYPE_PIPE;
+    }
 
 	accesstype = (access != FB_FILE_ACCESS_ANY? access: FB_FILE_ACCESS_READWRITE);
 

@@ -108,7 +108,8 @@ declare function 	symbAddDefine			( byval symbol as string, _
 											  byval args as integer = 0, _
 											  byval arghead as FBDEFARG ptr = NULL, _
 											  byval isargless as integer = FALSE, _
-											  byval proc as function( ) as string = NULL ) as FBSYMBOL ptr
+											  byval proc as function( ) as string = NULL, _
+                                              byval flags as integer = 0) as FBSYMBOL ptr
 
 declare function 	symbAddDefineArg		( byval lastarg as FBDEFARG ptr, _
 											  byval symbol as string ) as FBDEFARG ptr

@@ -155,6 +155,8 @@ enum FBRTL_ENUM
 	FB_RTL_FILELOCK
 	FB_RTL_FILEUNLOCK
 
+    FB_RTL_FILERENAME
+
 	FB_RTL_ERRORTHROW
 	FB_RTL_ERRORTHROWEX
 	FB_RTL_ERRORSETHANDLER
@@ -369,6 +371,10 @@ declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
 										  byval filenum as ASTNODE ptr, _
 										  byval flen as ASTNODE ptr, _
 										  byval isfunc as integer ) as ASTNODE ptr
+
+declare function	rtlFileRename		( byval filename_new as ASTNODE ptr, _
+										  byval filename_old as ASTNODE ptr, _
+                                          byval isfunc as integer ) as ASTNODE ptr
 
 declare function	rtlFileClose		( byval filenum as ASTNODE ptr, _
 										  byval isfunc as integer ) as ASTNODE ptr
