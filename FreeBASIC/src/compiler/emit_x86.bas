@@ -4847,7 +4847,7 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
 
     outp( "ret " + str( bytestopop ) )
 #ifdef TARGET_LINUX
-    outEx( ".size " + symbGetName( proc ) + ", .-" + id + NEWLINE, FALSE )
+    outEx( ".size " + symbGetName( proc ) + ", .-" + symbGetName( proc ) + NEWLINE, FALSE )
 #endif
 
 end sub

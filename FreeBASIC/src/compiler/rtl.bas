@@ -1382,14 +1382,14 @@ data "windowtitle", "fb_GfxSetWindowTitle", _
 '' fb_Multikey ( scancode as integer ) as integer
 data "multikey", "fb_Multikey", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as integer
 data "getmouse", "fb_GetMouse", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 NULL, TRUE, FALSE, _
 	 4, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYREF, FALSE, _
@@ -1399,7 +1399,7 @@ data "getmouse", "fb_GetMouse", _
 '' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as integer
 data "setmouse", "fb_SetMouse", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 NULL, TRUE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _

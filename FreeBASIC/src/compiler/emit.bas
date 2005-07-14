@@ -121,7 +121,7 @@ private sub hMainBegin( )
 	''
 	proc = symbAddProc( "", emit.entryname, "", _
 						FB_SYMBTYPE_VOID, NULL, 0, FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_MAINPROC, _
-						FB_FUNCMODE_CDECL, argc, argtail, FALSE )
+						FB_FUNCMODE_CDECL, argc, argtail, FALSE, TRUE )
 
     symbSetProcIncFile( proc, INVALID )
 
@@ -335,7 +335,7 @@ end function
 sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
 
     proc->proc.stk.localptr = EMIT_LOCSTART
-    proc->proc.stk.argptr	= EMIT_ARGSTART
+    proc->proc.stk.argptr	= iif( proc->proc.ismain, EMIT_MAINARGSTART, EMIT_ARGSTART )
 
 end sub
 

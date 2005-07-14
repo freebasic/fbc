@@ -2143,7 +2143,8 @@ private function hSetupProc( byval symbol as string, _
 				             byval argtail as FBSYMBOL ptr, _
 			                 byval declaring as integer, _
 			                 byval preservecase as integer, _
-			                 byval domangle as integer ) as FBSYMBOL ptr static
+			                 byval domangle as integer, _
+			                 byval ismain as integer ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 aname
     dim as integer lgt, i, realtype
@@ -2250,6 +2251,7 @@ private function hSetupProc( byval symbol as string, _
 	f->proc.isdeclared 	= declaring
 	f->proc.iscalled	= FALSE
 	f->proc.isrtl		= FALSE
+	f->proc.ismain		= ismain
 	f->proc.doerrorcheck= FALSE
 
 	f->proc.mode		= mode
@@ -2313,7 +2315,7 @@ function symbAddPrototype( byval symbol as string, _
     function = NULL
 
 	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
-					alloctype, mode, argc, argtail, isexternal, preservecase, TRUE )
+					alloctype, mode, argc, argtail, isexternal, preservecase, TRUE, FALSE )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -2333,14 +2335,15 @@ function symbAddProc( byval symbol as string, _
 					  byval mode as integer, _
 					  byval argc as integer, _
 					  byval argtail as FBSYMBOL ptr, _
-					  byval domangle as integer ) as FBSYMBOL ptr static
+					  byval domangle as integer, _
+					  byval ismain as integer ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     function = NULL
 
 	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
-					alloctype, mode, argc, argtail, TRUE, FALSE, domangle )
+					alloctype, mode, argc, argtail, TRUE, FALSE, domangle, ismain )
 	if( f = NULL ) then
 		exit function
 	end if

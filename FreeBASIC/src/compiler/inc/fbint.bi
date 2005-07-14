@@ -692,6 +692,7 @@ type FBSPROC
 	isdeclared		as byte						'' FALSE = just the prototype
 	iscalled		as byte
 	isrtl			as byte
+	ismain			as byte
 	doerrorcheck	as byte
 
 	rtlcallback		as FBRTLCALLBACK

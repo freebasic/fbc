@@ -211,7 +211,8 @@ declare function 	symbAddProc				( byval symbol as string, _
 					  						  byval mode as integer, _
 					  						  byval argc as integer, _
 					  						  byval argtail as FBSYMBOL ptr, _
-					  						  byval domangle as integer = TRUE ) as FBSYMBOL ptr
+					  						  byval domangle as integer = TRUE, _
+					  						  byval ismain as integer = FALSE ) as FBSYMBOL ptr
 
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
