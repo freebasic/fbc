@@ -1,16 +1,16 @@
 Version 0.14 Beta:
 
 [changed]
-- IMPORTANT: to fully support pointer type-casting, now every time a pointer is updated, the expression will be 
+- IMPORTANT: to fully support pointer type-casting, now every time a pointer is updated, the expression will be
   multiplied by the pointer type, as done in C, so if you had: "dim p as integer ptr:" "p += len( integer )", now it
   must be changed to "p += 1"
-- to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not 
+- to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not
   passing pointers or numeric values such as NULL or 0, the BYVAL modifier will have to be used now (v1c)
 - Some internal changes to reduce final executables size (lillo)
 - macro text will be expanded on comments emited when the -g command-line option is used (v1c)
-- the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as 
+- the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as
   inline and will be evaluated at compile-time when constants are used as parameters (v1c)
-- multiple strings concatenation such as "a = b + c + d + ..." will be converted to 
+- multiple strings concatenation such as "a = b + c + d + ..." will be converted to
   "a = b: a += c: a += d: ...", giving a speed up, because no temporary dynamic strings will be used (v1c)
 - speeded up PUT routine when using PSET/PRESET/AND/OR/XOR drawing mode (lillo)
 - the compiler is now a bit easier to be cross-compiled using the Win32 version (v1c)
@@ -19,18 +19,19 @@ Version 0.14 Beta:
 - COLOR will now return the current/last color attributes as: (forecolor or (backcolor shl 16)) (v1c)
 - WIDTH will now return the current/last dimensions as: (width or (height shl 16)) (v1c)
 - LOCATE will now return the current/last cursor state as: (x or (y shl 8) or (visible shl 16)) (lillo)
-- ENUM's now are much restrict, warnings will be shown if they are passed or assigned to other types than 
-  integers, but now its possible to overload functions where the enum argument is the main one (v1c)
+- ENUM's are now much more restrict, warnings will be shown if they are passed or assigned to other types than
+  integers, but now it's possible to overload functions where the enum argument is the main one (v1c)
 - curdir$ now returns path with backslashes instead of slashes (mjs)
 - OPTION's will now be used too in the context of the file that included a header if it changed the default OPTION's (v1c)
 - chr$(0) can now be output with PRINT too (mjs)
 - Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
-- Replaced -noexport with -export command-line option, compiler will now warn if EXPORT is used without -export (lillo)
 - MULTIKEY, GETMOUSE and SETMOUSE will now also work in plain console text mode (lillo)
+- user defined type (UDT) assignaments are now done with inline code (v1c)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - pointer type-casting: CPTR( DataType, Expression ), as in: "*cptr(byte ptr, somePointer) = 255"
+- functions call now return structures (user defined types) too, only external functions could before (v1c)
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 - uniform alpha blending support for PUT: pass ALPHA,value to specify an unique alpha with which to blend sprite with
   background. Works in 15, 16, 24 and 32bit color depth (lillo)
@@ -44,7 +45,6 @@ Version 0.14 Beta:
 - FUNCTION can now be used inside inline assembly blocks to set the function's result (v1c)
 - error message when macro text is too long (v1c)
 - support for 16 background colors if in text mode under Xterm in Linux (lillo)
-- enabled -noexport command-line option forcing not to export any symbol for dynamic linkage (lillo)
 - added BMP saving capabilities to BSAVE, due to popular demand (lillo)
 - warning message for suspicious pointer assignaments (v1c)
 - include file and import lib for the CGUI library (v1c)
@@ -61,7 +61,7 @@ Version 0.14 Beta:
 - the '#' prefix can now be used in macros when the text representation of a macro argument is wanted (v1c)
 - ASSERT built-in macro, works like in C (it's only enabled when the module is compiled with debugging support (-g)) (v1c)
 - Allow to compile the "linux" version with CYGWIN (non-functional yet) (mjs)
-- signals and some exceptions like seg. violation and div by 0 can now be handled by users in standard ON ERROR handlers 
+- signals and some exceptions like seg. violation and div by 0 can now be handled by users in standard ON ERROR handlers
   if compiling with error checking on (using the -e or -ex cmd-line options) (v1c)
 - version macros __FB_VER_MAJOR__, __FB_VER_MINOR__, __FB_VER_PATCH__, __FB_MIN_VERSION__
 - graphical PUT will now fail and report a runtime error if an image GETed while in a mode with a certain depth is
@@ -83,7 +83,7 @@ Version 0.14 Beta:
 - Mouse wheel position was reset to 0 under Win32 when window was put out of focus (lillo)
 - non-numeric variables were been allowed in CHR$() (v1c)
 - the unary operator "+" was been allowed with string operands (v1c)
-- intrinsic string functions when used with "zstring *" arguments would operate on the full strings, not only until 
+- intrinsic string functions when used with "zstring *" arguments would operate on the full strings, not only until
   the null-terminators (v1c)
 - ENUM elements separated by commas would update the values twice (v1c)
 - Text mode colors now behave correctly under Eterm in Linux (lillo)
@@ -128,15 +128,15 @@ Version 0.14 Beta:
 - BLOADing a BMP with 16 or less colors was changing the whole 256 colors palette if in 8bit mode (lillo)
 - __LINE__ now returns a number instead of a string
 - VIEW cleared the screen with a bad color if called without arguments, instead of just resetting the view (lillo)
-- coordinates translation with PMAP was returned bad results (lillo)
+- coordinates translation with PMAP was giving back bad results (lillo)
 
 
 Version 0.13 Beta:
 
 [changed]
-- arrays and pointers will be optimized for shorthand when possible (before, only vars were), ie: 
+- arrays and pointers will be optimized for shorthand when possible (before, only vars were), ie:
   "foo(a+b-c) = foo(a+b-c) * expr" will become "foo(a+b-c) *= expr" when code is generated (v1c)
-- RETURN can now be used as a shortcut to function result set + EXIT FUNCTION (as in C); with this modification, 
+- RETURN can now be used as a shortcut to function result set + EXIT FUNCTION (as in C); with this modification,
   the LABEL's (if used) must have been defined already, no forward references are allowed anymore (v1c)
 - ASC now has an optional parameter to retrieve a char at a specific position as in "c = asc( "abc", 2 )" (v1c)
 - CHR$ now accepts multiple arguments as in "s = chr$( 65, 66, 67, 68 )" (v1c)
@@ -203,7 +203,7 @@ Version 0.13 Beta:
 - CUBYTE, CUSHORT and CUINT, same as CBYTE, CSHORT and CINT, but work with unsigned types (v1c)
 - DYLIBLOAD and DYLIBSYMBOL intrinsic functions to manage dynamic libraries at runtime (lillo)
 - nameless inner TYPE's on UNION's (v1c)
-- strings passed by value to FB functions, ie: "sub foo(byval bar as string)" -- note: they are not copied to stack, 
+- strings passed by value to FB functions, ie: "sub foo(byval bar as string)" -- note: they are not copied to stack,
   they are just a zstring with unknown size (v1c)
 - gfxlib internal data (default fonts and palettes) is now compressed in the EXE and decompressed on the fly using a tiny LZW codec,
   resulting in 5K smaller EXEs. Access to internal data without calling SCREEN first will return garbage (lillo)
@@ -282,14 +282,14 @@ Version 0.12 Beta:
 - IMPORTANT: now to declare functions on DLL's that will be exported, the EXPORT clause must be used, as global
   functions won't be automatically exported anymore, because that would make it hard to write DLL's with
   multiple modules where not all global functions should be exported (v1ctor)
-- IMPORTANT: the format of the internal string descriptor was modified to speed up concatenation of large strings, 
-  so you MUST recompile all the old code, don't reuse object files compiled with older versions (below v0.12b) and 
+- IMPORTANT: the format of the internal string descriptor was modified to speed up concatenation of large strings,
+  so you MUST recompile all the old code, don't reuse object files compiled with older versions (below v0.12b) and
   rebuild DLL's created in FB if they return or process STRING's passed to/from client EXE's (v1c)
 - Linux port does not use ncurses anymore, but its own internal lowlevel routines for console access.
   Apart from no ncurses dependency, this means faster console output (also under X11), no screen clearing
   at programs startup and proper colors support under X11. Compatibility issues may rise though, so
   feedback is welcome (lillo)
-- PEEKS, PEEKI, POKES, POKEI keywords removed, use now the new syntax as "PEEK( data type, expression )" or 
+- PEEKS, PEEKI, POKES, POKEI keywords removed, use now the new syntax as "PEEK( data type, expression )" or
   "POKE data ype, expression, expression" to peek/poke different data types than BYTE, that's the default one (v1c)
 - many Allegro's globals like al_screen, al_rgb had the "al_" prefix removed, they are now as the originals (v1c)
 - Gfx GET and PUT now support both arrays and generic pointers as data holders (lillo)
@@ -312,7 +312,7 @@ Version 0.12 Beta:
   If using gfxlib, this is automatically used to set the window icon (lillo)
 - built-in multiplatform threading functions (lillo)
 - "operator =" shorthand, as in "a += b * c" (v1ctor)
-- SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much 
+- SELECT CASE AS CONST statement, only integer constants are allowed and a jump table is generated making the it much
   faster than an ordinary SELECT when more than 4 CASE's have to be checked (v1c)
 - #DEFINE's with arguments (macros) as in "#DEFINE foo(a,b) ((a)*(b))" (v1c)
 - "CONS:" and "ERR:" special file names, to open the console for i/o access and the std error for output (v1c)
@@ -383,11 +383,11 @@ Version 0.11 Beta:
 
 [changed]
 - the internal GFX library is now the former alternative one written by lillo, many thanks to Sterling
-  for making the first version, he started working on it even before FB was released -- if you prefer to 
-  continue using it, the sources still on CVS at sf.net (src/gfxlib), just build the library and rewrite 
-  the libfbgfx.a file at \lib, it contains no PAINT or DRAW, nor low-res screen modes, but everything 
+  for making the first version, he started working on it even before FB was released -- if you prefer to
+  continue using it, the sources still on CVS at sf.net (src/gfxlib), just build the library and rewrite
+  the libfbgfx.a file at \lib, it contains no PAINT or DRAW, nor low-res screen modes, but everything
   else stills functional - the SCREEN arguments are different, pay attention
-- new OpenGL header translated by Rel to work better with pointers, there are no more BYREF arguments, 
+- new OpenGL header translated by Rel to work better with pointers, there are no more BYREF arguments,
   use @ or varptr() to get the address of variables and arrays when the argument is a BYVAL ... PTR (v1c)
 - fmod and BASS headers: all BYREF arguments changed to BYVAL ... PTR to work better with pointers (v1c)
 - new SDL headers translated by Edmond Leung, no changes needed on user's code (v1c)
@@ -397,10 +397,10 @@ Version 0.11 Beta:
 - pointers to pointers *MUST* now be declared as "ptr ptr ...", multiple dereferencing are only allowed on those (v1c)
 - -w cmm-line option changed to -nostd (v1c)
 - ERASE now accepts non-dynamic arrays and fills them with 0's (v1c)
-- the crt dll on Win32 is now msvcrt.dll instead of crtdll.dll, to be able to statically link to libs 
-  compiled with VC 5/6 and Mingw (crtdll is not supported by M$ anymore), you can use the new -nostdlibs 
-  option to set a different lib (like crtdll) if you really need that -- ie: plain vanilla Windows 95/osr2 
-  doesn't come with msvcrt.dll installed (it can be found at M$'s site) (v1c) 
+- the crt dll on Win32 is now msvcrt.dll instead of crtdll.dll, to be able to statically link to libs
+  compiled with VC 5/6 and Mingw (crtdll is not supported by M$ anymore), you can use the new -nostdlibs
+  option to set a different lib (like crtdll) if you really need that -- ie: plain vanilla Windows 95/osr2
+  doesn't come with msvcrt.dll installed (it can be found at M$'s site) (v1c)
 
 [added]
 - include file and import lib for the GLU library (thanks Rel for sending it) (v1c)
@@ -430,7 +430,7 @@ Version 0.11 Beta:
 - the --dllname cmm-line option to dlltool.exe should not contain the path (v1c)
 - udtptr.field was being accepted as valid -- it must to be udtptr->field (v1c)
 - PRINT/WRITE both have much more precision now when printing floating-point numbers (v1c)
-- #ELSEIF were not skipping to #ENDIF if and #IF or other #ELSEIF had already being true (v1c) 
+- #ELSEIF were not skipping to #ENDIF if and #IF or other #ELSEIF had already being true (v1c)
 - SHARED with DIM|REDIM was being allowed inside procs (v1c)
 - STATIC was was being allowed outside procs (v1c)
 - indexes as "byte|short var + constant expr" could gen bad code, as var wasn't been converted to int (v1c)
@@ -441,7 +441,7 @@ Version 0.11 Beta:
 
 Version 0.10 Beta:
 
-[changed] 
+[changed]
 - some param declarations on include files were changed, don't use the old ones with this version (v1ctor)
 - arrays can't no more be accessed w/o indexes (even at (0)) (v1c)
 - DirectDraw include file (ddraw.bi) completed by Drv (v1c)
@@ -484,7 +484,7 @@ Version 0.10 Beta:
 
 Version 0.09 Beta:
 
-[changed] 
+[changed]
 - FBC's command-line options are now case-sensitive, -b is NOT the same as -B anymore, pay attention (v1ctor)
 - all Windows-only include files were moved to the inc\win path, fix your sources please (v1c)
 - calling function pointers no more needs a * at beginning, () must now be used, even if proc has no args (v1c)
@@ -522,7 +522,7 @@ Version 0.09 Beta:
 
 Version 0.08 Beta:
 
-[added] 
+[added]
 - pre-processor: #DEFINE ID, #UNDEF ID, #IFDEF ID, #IFNDEF ID, #IF Expression, #ELSE, #ENDIF, #PRINT (v1ctor)
 - -d cmd-line option, to add compile-time pre-processor define's (v1c)
 - -w cmd-line option, to treat stdcall calling convention as cdecl even on Win32 (v1c)
@@ -595,7 +595,7 @@ Version 0.04 Beta:
 [changed]
 - fpu initialization is done at rtlib now, for better portability (v1c)
 
-[added] 
+[added]
 - LOCAL keyword to be used with ON ERROR statments, when inside sub-routines (v1c)
 - "ERR = expr" statement, for setting the error number (the ERR function already existed) (v1c)
 
