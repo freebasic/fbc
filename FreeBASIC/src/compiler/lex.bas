@@ -29,7 +29,7 @@ defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
-#include once "inc\emit.bi"
+#include once "inc\ast.bi"
 
 ''
 const FB_LEX_MAXK	= 1
@@ -93,7 +93,7 @@ sub lexRestoreCtx( byval level as integer )
 end sub
 
 '':::::
-sub lexInit
+sub lexInit( )
     dim i as integer
 
 	ctx.k = 0
@@ -131,7 +131,7 @@ sub lexInit
 end sub
 
 '':::::
-sub lexEnd
+sub lexEnd( )
 
 	if( env.reclevel = 0 ) then
 		curline = ""
@@ -1072,7 +1072,7 @@ reread:
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
 				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					emitCOMMENT( curline )
+					astAdd( astNewLIT( curline, FALSE ) )
 					curline = ""
 				end if
 			end if
@@ -1549,7 +1549,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
 				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					emitCOMMENT( curline )
+					astAdd( astNewLIT( curline, FALSE ) )
 					curline = ""
 				end if
 			end if

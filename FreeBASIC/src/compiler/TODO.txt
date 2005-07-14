@@ -8,10 +8,6 @@
     - add bounds checking to all kinds of arrays - use IIF()
     - add null pointer checking - IIF() too?
 
-[ ] pointers
-    - passing pointers to byval strings w/o BYVAL is been allowed, show a warning (or error?)
-    - is it okay to * ptr.type if ptr is at the right-side?
-
 [ ] EMIT:
     - optimize load after store
     - re-ordering optimization if target cpu is +586
@@ -19,14 +15,8 @@
 [ ] convert WITH to ptr and remove the lex hacking
     - then allow '->' too (.xxx will have to be converted to ->xxx anyways)
 
-[ ] allow ENDIF too, it's supported by BC
-
 [ ] function overloading
-    - check arglist with optionals with different types at the same arg num (?)
-    - check different modes and types if they are working
     - check optional args, this can be tricky
-
-[ ] allow FB functions to return UDT's - must follow the GCC 3.x ABI
 
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,

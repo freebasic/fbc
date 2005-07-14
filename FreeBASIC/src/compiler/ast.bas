@@ -107,11 +107,13 @@ declare function 	hLoadENUM		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	hLoadLABEL		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	hLoadASM		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	hLoadLIT		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	hLoadJMPTB		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	hLoadDBG		( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	hLoadMEM		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function	astUpdStrConcat	( byval n as ASTNODE ptr ) as ASTNODE ptr
 
@@ -2653,14 +2655,17 @@ private function hLoad( byval n as ASTNODE ptr ) as IRVREG ptr
     case AST_NODECLASS_LABEL
     	return hLoadLABEL( n )
 
-    case AST_NODECLASS_ASM
-    	return hLoadASM( n )
+    case AST_NODECLASS_LIT
+    	return hLoadLIT( n )
 
     case AST_NODECLASS_JMPTB
     	return hLoadJMPTB( n )
 
     case AST_NODECLASS_DBG
     	return hLoadDBG( n )
+
+    case AST_NODECLASS_MEM
+    	return hLoadMEM( n )
     end select
 
 end function
@@ -4832,7 +4837,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 		'' both are UDT's, do a mem copy..
 		else
-			return rtlMemCopy( l, r, symbGetUDTLen( l->subtype ) )
+			return astNewMEM( IR_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )
 		end if
 
     '' zstrings?
@@ -5490,6 +5495,14 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			    			elseif( pdtype < IR_DATATYPE_POINTER ) then
 								hReportParamError( f )
 								exit function
+
+			    			'' not a pointer to a zstring?
+			    			else
+								if( not astPtrCheck( IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+													 NULL, p ) ) then
+				        			hReportParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+				    			end if
+
 			    			end if
 			    		end if
 
@@ -5519,10 +5532,10 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			if( amode = FB_ARGMODE_BYVAL ) then
 				'' deref var-len (ptr at offset 0)
 				if( pdtype = IR_DATATYPE_STRING ) then
-					n->l     = astNewADDR( IR_OP_DEREF, p )
-					n->dtype = IR_DATATYPE_UINT
 					pdclass = IR_DATACLASS_INTEGER
-					pdtype  = IR_DATATYPE_UINT
+					pdtype  = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+					n->l     = astNewADDR( IR_OP_DEREF, p )
+					n->dtype = pdtype
 				end if
 			end if
 
@@ -5531,7 +5544,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 				'' descriptor or fixed-len? get the address of
 				if( (pdclass = IR_DATACLASS_STRING) or (pdtype = IR_DATATYPE_CHAR) ) then
 					n->l     = astNewADDR( IR_OP_ADDROF, p )
-					n->dtype = IR_DATATYPE_UINT
+					n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
 				end if
 			end if
 
@@ -5623,12 +5636,12 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     				iswarning = FALSE
     				if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
     					if( not astFuncPtrCheck( adtype, symbGetSubtype( arg ), p ) ) then
-					        iswarning = TRUE
-					    end if
+				        	iswarning = TRUE
+				    	end if
 					else
 						if( not astPtrCheck( adtype, symbGetSubtype( arg ), p ) ) then
-					        iswarning = TRUE
-					    end if
+				        	iswarning = TRUE
+				    	end if
 					end if
 
 					if( iswarning ) then
@@ -5696,7 +5709,7 @@ function astNewPARAM( byval f as ASTNODE ptr, _
 		n->r = NULL
 
 	else
-		'' non-pascal, the lastest param added will be the first pushed
+		'' non-pascal, the latest param added will be the first pushed
 		f->r = n
 		n->r = t
 	end if
@@ -6216,34 +6229,40 @@ private function hLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' ASM (l = NULL; r = NULL)
+'' lit (l = NULL; r = NULL)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewASM( byval asmline as string ) as ASTNODE ptr static
+function astNewLIT( byval text as string, _
+					byval isasm as integer ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = hNewNode( AST_NODECLASS_ASM, INVALID )
+	n = hNewNode( AST_NODECLASS_LIT, INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
 
-	ZEROSTRDESC( n->asm.line )
-	n->asm.line = asmline
+	ZEROSTRDESC( n->lit.text )
+	n->lit.text  = text
+	n->lit.isasm = isasm
 
 	function = n
 
 end function
 
 '':::::
-private function hLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ctx.doemit ) then
-		irEmitASM( n->asm.line )
+		if( n->lit.isasm ) then
+			irEmitASM( n->lit.text )
+		else
+			irEmitCOMMENT( n->lit.text )
+		end if
 	end if
 
-	n->asm.line = ""
+	n->lit.text = ""
 
 	function = NULL
 
@@ -6315,3 +6334,57 @@ private function hLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' memory (l = destine; r = source)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewMEM( byval op as integer, _
+					byval l as ASTNODE ptr, _
+					byval r as ASTNODE ptr, _
+					byval bytes as integer ) as ASTNODE ptr static
+
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_MEM, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->op 	   = op
+	n->l	   = l
+	n->r	   = r
+	n->mem.bytes = bytes
+
+	function = n
+
+end function
+
+'':::::
+private function hLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l, r
+    dim as IRVREG ptr v1, v2
+
+	l = n->l
+	r = n->r
+
+	if( (l = NULL) or (r = NULL) ) then
+		return NULL
+	end if
+
+	v1 = hLoad( l )
+	v2 = hLoad( r )
+
+	if( ctx.doemit ) then
+		irEmitMEM( n->op, v1, v2, n->mem.bytes )
+	end if
+
+	astDel( l )
+	astDel( r )
+
+	function = NULL
+
+end function
+

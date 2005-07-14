@@ -3862,15 +3862,23 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, _
 
     s = symbLookupProcResult( proc )
     if( s = NULL ) then
-    	hReportError FB_ERRMSG_SYNTAXERROR
+    	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
     end if
 
     assg = astNewVAR( s, NULL, 0, symbGetType( s ), symbGetSubtype( s ) )
 
+	'' proc returns an UDT?
+	if( symbGetType( proc ) = FB_SYMBTYPE_USERDEF ) then
+		'' pointer? deref
+		if( symbGetProcRealType( proc ) = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
+			assg = astNewPTR( s, NULL, 0, assg, FB_SYMBTYPE_USERDEF, symbGetSubType( proc ) )
+		end if
+	end if
+
     assg = astNewASSIGN( assg, expr )
     if( assg = NULL ) then
-    	hReportError FB_ERRMSG_INVALIDDATATYPES
+    	hReportError( FB_ERRMSG_INVALIDDATATYPES )
     	exit function
     end if
 
@@ -4344,7 +4352,7 @@ function cAsmCode as integer static
 
 	''
 	if( len( asmline ) > 0 ) then
-		astAdd( astNewASM( asmline ) )
+		astAdd( astNewLIT( asmline, TRUE ) )
 	end if
 
 	function = TRUE

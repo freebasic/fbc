@@ -156,7 +156,8 @@ const EMIT_MAXKEYWORDS = 600
 		"wrmsr", "xadd", "xchg", "xlat", "xlatb", "xor", "xorpd", "xorps", _
 		"pavgusb", "pfadd", "pfsub", "pfsubr", "pfacc", "pfcmpge", "pfcmpgt", "pfcmpeq", "pfmin", "pfmax", _
 		"pi2fw", "pi2fd", "pf2iw", "pf2id", "pfrcp", "pfrsqrt", "pfmul", "pfrcpit1", "pfrsqit1", "pfrcpit2", _
-		"pmulhrw", "pswapw", "femms", "prefetch", "prefetchw", "pfnacc", "pfpnacc", "pswapd", "pmulhuw" _
+		"pmulhrw", "pswapw", "femms", "prefetch", "prefetchw", "pfnacc", "pfpnacc", "pswapd", "pmulhuw", _
+		"" _
 	}
 
 
@@ -427,7 +428,7 @@ end function
 private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 							   		byval noSIDI as integer = FALSE ) as integer static
 
-    dim as integer r, reg, reg2, dclass
+    dim as integer r, reg, reg2, regs
 
 	function = INVALID
 
@@ -453,17 +454,17 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 		end if
 	end if
 
-	dclass = irGetDataClass( vreg->dtype )
+	regs = emit.regTB(IR_DATACLASS_INTEGER)->getMaxRegs( emit.regTB(IR_DATACLASS_INTEGER) )
 
 	''
 	if( reg2 = INVALID ) then
 
 		if( not noSIDI ) then
 
-			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
+			for r = regs-1 to 0 step -1
 				if( r <> reg ) then
 					function = r
-					if( hIsRegFree( dclass, r ) ) then
+					if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
 						exit function
 					end if
 				end if
@@ -472,12 +473,12 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 		'' SI/DI as byte..
 		else
 
-			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
+			for r = regs-1 to 0 step -1
 				if( r <> reg ) then
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
-							if( hIsRegFree( dclass, r ) ) then
+							if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
 								exit function
 							end if
 						end if
@@ -492,10 +493,10 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 
 		if( not noSIDI ) then
 
-			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
+			for r = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					function = r
-					if( hIsRegFree( dclass, r ) ) then
+					if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
 						exit function
 					end if
 				end if
@@ -504,12 +505,12 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 		'' SI/DI as byte..
 		else
 
-			for r = emit.regTB(dclass)->getMaxRegs( emit.regTB(dclass) )-1 to 0 step -1
+			for r = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
-							if( hIsRegFree( dclass, r ) ) then
+							if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
 								exit function
 							end if
 						end if
@@ -2598,13 +2599,13 @@ end sub
 '':::::
 private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 		               byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string
-    dim ecxtrashed as integer
-    dim eaxfree as integer, ecxfree as integer, edxfree as integer
-    dim eaxindest as integer, ecxindest as integer, edxindest as integer
-    dim eaxinsource as integer, edxinsource as integer
-    dim eax as string, ecx as string, edx as string
-    dim ostr as string
+    dim as string dst, src
+    dim as integer ecxtrashed
+    dim as integer eaxfree, ecxfree, edxfree
+    dim as integer eaxindest, ecxindest, edxindest
+    dim as integer eaxinsource, edxinsource
+    dim as string eax, ecx, edx
+    dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -2744,13 +2745,13 @@ end sub
 '':::::
 private sub _emitMODI( byval dvreg as IRVREG ptr, _
 		     		   byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string
-    dim ecxtrashed as integer
-    dim eaxfree as integer, ecxfree as integer, edxfree as integer
-    dim eaxindest as integer, ecxindest as integer, edxindest as integer
-    dim eaxinsource as integer, edxinsource as integer
-    dim eax as string, ecx as string, edx as string
-    dim ostr as string
+    dim as string dst, src
+    dim as integer ecxtrashed
+    dim as integer eaxfree, ecxfree, edxfree
+    dim as integer eaxindest, ecxindest, edxindest
+    dim as integer eaxinsource, edxinsource
+    dim as string eax, ecx, edx
+    dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -4539,6 +4540,197 @@ private sub _emitDEREF( byval dvreg as IRVREG ptr, _
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' memory
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
+			   		     byval svreg as IRVREG ptr, _
+			   		     byval bytes as integer ) static
+
+	dim as string dst, src
+	dim as string ostr
+	dim as integer ecxfree, edifree, esifree
+	dim as integer ediinsrc, ecxinsrc
+
+	hPrepOperand( dvreg, dst, , , , FALSE )
+	hPrepOperand( svreg, src, , , , FALSE )
+
+	ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edifree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ESI )
+	esifree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDI )
+
+	ediinsrc = hIsRegInVreg( svreg, EMIT_REG_EDI )
+	ecxinsrc = hIsRegInVreg( svreg, EMIT_REG_ECX )
+
+	if( not ecxfree ) then
+		hPUSH( "ecx" )
+	end if
+	if( not edifree ) then
+		hPUSH( "edi" )
+	end if
+	if( not esifree ) then
+		hPUSH( "esi" )
+	end if
+
+	if( not ediinsrc ) then
+		ostr = "lea edi, " + dst
+		outp ostr
+	else
+		if( ecxinsrc ) then
+			hPUSH( "ecx" )
+		end if
+		ostr = "lea ecx, " + dst
+		outp ostr
+		if( ecxinsrc ) then
+			outp "xchg ecx, [esp]"
+		end if
+	end if
+
+	ostr = "lea esi, " + src
+	outp ostr
+
+	if( ediinsrc ) then
+		if( not ecxinsrc ) then
+			hMOV( "edi", "ecx" )
+		else
+			hPOP( "edi" )
+		end if
+	end if
+
+	if( bytes > 4 ) then
+		ostr = "mov ecx, " + str( bytes \ 4 )
+		outp ostr
+		outp "rep movsd"
+
+	elseif( bytes = 4 ) then
+		outp "mov ecx, [esi]"
+		outp "mov [edi], ecx"
+		if( (bytes and 3) > 0 ) then
+			outp "add esi, 4"
+			outp "add edi, 4"
+		end if
+	end if
+
+	bytes and= 3
+	if( bytes > 0 ) then
+		if( bytes >= 2 ) then
+			outp "mov cx, [esi]"
+			outp "mov [edi], cx"
+			if( bytes = 3 ) then
+				outp "add esi, 2"
+				outp "add edi, 2"
+			end if
+		end if
+
+		if( (bytes and 1) <> 0 ) then
+			outp "mov cl, [esi]"
+			outp "mov [edi], cl"
+		end if
+	end if
+
+	if( not esifree ) then
+		hPOP( "esi" )
+	end if
+	if( not edifree ) then
+		hPOP( "edi" )
+	end if
+	if( not ecxfree ) then
+		hPOP( "ecx" )
+	end if
+
+end sub
+
+'':::::
+private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
+			   		     byval svreg as IRVREG ptr, _
+			   		     byval bytes as integer ) static
+
+	dim as string dst, src, aux
+	dim as integer i, ofs, reg, isfree
+
+	reg = hFindRegNotInVreg( dvreg )
+
+	'' no free regs left?
+	if( hIsRegInVreg( svreg, reg ) ) then
+		hMemMoveRep( dvreg, svreg, bytes )
+		exit sub
+	end if
+
+	aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+
+	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+	if( not isfree ) then
+		hPUSH( aux )
+	end if
+
+	ofs = 0
+	'' move dwords
+	for i = 1 to bytes \ 4
+		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, ofs )
+		hMOV( aux, src )
+		hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, ofs )
+		hMOV( dst, aux )
+		ofs += 4
+	next
+
+	'' a word left?
+	if( (bytes and 2) <> 0 ) then
+		aux = *hGetRegName( IR_DATATYPE_SHORT, reg )
+		hPrepOperand( svreg, src, IR_DATATYPE_SHORT, ofs )
+		hMOV( aux, src )
+		hPrepOperand( dvreg, dst, IR_DATATYPE_SHORT, ofs )
+		hMOV( dst, aux )
+		ofs += 2
+	end if
+
+	'' a byte left?
+	if( (bytes and 1) <> 0 ) then
+		aux = *hGetRegName( IR_DATATYPE_BYTE, reg )
+		hPrepOperand( svreg, src, IR_DATATYPE_BYTE, ofs )
+		hMOV( aux, src )
+		hPrepOperand( dvreg, dst, IR_DATATYPE_BYTE, ofs )
+		hMOV( dst, aux )
+	end if
+
+	if( not isfree ) then
+		hPOP( aux )
+	end if
+
+end sub
+
+'':::::
+private sub _emitMEMMOVE( byval dvreg as IRVREG ptr, _
+			   			  byval svreg as IRVREG ptr, _
+			   			  byval bytes as integer ) static
+
+	if( bytes > 16 ) then
+		hMemMoveRep( dvreg, svreg, bytes )
+	else
+		hMemMoveBlk( dvreg, svreg, bytes )
+	end if
+
+end sub
+
+'':::::
+private sub _emitMEMSWAP( byval dvreg as IRVREG ptr, _
+			   			  byval svreg as IRVREG ptr, _
+			   			  byval bytes as integer ) static
+
+	'' implemented as function
+
+end sub
+
+'':::::
+private sub _emitMEMCLEAR( byval dvreg as IRVREG ptr, _
+			   			   byval svreg as IRVREG ptr, _
+			   			   byval bytes as integer ) static
+
+	'' implemented as function
+
+end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' procs
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -4969,7 +5161,7 @@ sub emitWriteRtInit( ) static
     dim as ASTNODE ptr argc, argv
 
     '' finit
-    astAdd( astNewASM( "finit" ) )
+    astAdd( astNewLIT( "finit", TRUE ) )
 
 	'' call fb_Init
 	argc = NULL
@@ -5446,6 +5638,10 @@ end sub
 		EMIT_CBENTRY(LABEL), _
 		EMIT_CBENTRY(PUBLIC), _
 		EMIT_CBENTRY(LIT), _
-		EMIT_CBENTRY(JMPTB) _
+		EMIT_CBENTRY(JMPTB), _
+        _
+		EMIT_CBENTRY(MEMMOVE), _
+		EMIT_CBENTRY(MEMSWAP), _
+		EMIT_CBENTRY(MEMCLEAR) _
 	}
 

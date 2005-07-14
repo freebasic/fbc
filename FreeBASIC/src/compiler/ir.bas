@@ -102,6 +102,11 @@ declare sub 		hFlushADDR			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval vr as IRVREG ptr )
 
+declare sub 		hFlushMEM			( byval op as integer, _
+										  byval v1 as IRVREG ptr, _
+										  byval v2 as IRVREG ptr, _
+										  byval bytes as integer )
+
 declare sub 		hFreeIDX			( byval vreg as IRVREG ptr, _
 										  byval force as integer = FALSE )
 
@@ -205,7 +210,10 @@ declare sub 		irDump				( byval op as integer, _
 		( IR_OPTYPE_BRANCH	, FALSE, "ret" ), _	'' IR_OP_RET
 		( IR_OPTYPE_CALL	, FALSE, "caf" ), _	'' IR_OP_CALLFUNC
 		( IR_OPTYPE_CALL	, FALSE, "ca@" ), _	'' IR_OP_CALLPTR
-		( IR_OPTYPE_CALL	, FALSE, "jm@" )  _	'' IR_OP_JUMPPTR
+		( IR_OPTYPE_CALL	, FALSE, "jm@" ), _	'' IR_OP_JUMPPTR
+		( IR_OPTYPE_MEM		, FALSE, "mmv" ), _	'' IR_OP_MEMMOVE
+		( IR_OPTYPE_MEM		, FALSE, "msp" ), _	'' IR_OP_MEMSWAP
+		( IR_OPTYPE_MEM		, FALSE, "mcl" )  _	'' IR_OP_MEMCLEAR
 	}
 
 '':::::
@@ -404,15 +412,14 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 end function
 
 '':::::
-private sub hLoadIDX( byval vreg as IRVREG ptr, _
-					  byval vtype as integer )
+private sub hLoadIDX( byval vreg as IRVREG ptr )
     dim as IRVREG ptr vi
 
 	if( vreg = NULL ) then
 		exit sub
 	end if
 
-	select case vtype
+	select case vreg->typ
 	case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
 	case else
 		exit sub
@@ -791,11 +798,18 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub irEmitASM( byval asmline as string ) static
+sub irEmitASM( byval text as string ) static
 
 	irFlush( )
 
-	emitASM( asmline )
+	emitASM( text )
+
+end sub
+
+'':::::
+sub irEmitCOMMENT( byval text as string ) static
+
+	emitCOMMENT( text )
 
 end sub
 
@@ -825,6 +839,15 @@ sub irEmitDBG( byval proc as FBSYMBOL ptr, _
 
 end sub
 
+'':::::
+sub irEmitMEM( byval op as integer, _
+			   byval v1 as IRVREG ptr, _
+			   byval v2 as IRVREG ptr, _
+			   byval bytes as integer ) static
+
+	irEmit( op, v1, v2, NULL, 0, bytes )
+
+end sub
 
 '':::::
 sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
@@ -1311,6 +1334,9 @@ sub irFlush static
 
 		case IR_OPTYPE_ADDRESS
 			hFlushADDR( op, t->arg1.vreg, t->res.vreg )
+
+		case IR_OPTYPE_MEM
+			hFlushMEM( op, t->arg1.vreg, t->arg2.vreg, t->ex2 )
 		end select
 
 		''
@@ -1466,7 +1492,7 @@ private sub hFlushCALL( byval op as integer, _
 
 		'' load pointer
 		hGetVREG( v1, vr_dtype, vr_dclass, vr_typ )
-		hLoadIDX( v1, vr_typ )
+		hLoadIDX( v1 )
 		if( vr_typ = IR_VREGTYPE_REG ) then
 			regTB(vr_dclass)->ensure( regTB(vr_dclass), v1 )
 		end if
@@ -1522,7 +1548,7 @@ private sub hFlushSTACK( byval op as integer, _
 	''
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
-	hLoadIDX( v1, v1_typ )
+	hLoadIDX( v1 )
 
 	'' load only if it's a reg (x86 assumption)
 	if( v1_typ = IR_VREGTYPE_REG ) then
@@ -1563,8 +1589,8 @@ private sub hFlushUOP( byval op as integer, _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	hLoadIDX( v1, v1_typ )
-	hLoadIDX( vr, vr_typ )
+	hLoadIDX( v1 )
+	hLoadIDX( vr )
 
     ''
     if ( vr <> NULL ) then
@@ -1651,9 +1677,9 @@ private sub hFlushBOP( byval op as integer, _
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
 	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	hLoadIDX( v1, v1_typ )
-	hLoadIDX( v2, v2_typ )
-	hLoadIDX( vr, vr_typ )
+	hLoadIDX( v1 )
+	hLoadIDX( v2 )
+	hLoadIDX( vr )
 
 	'' BOP to self? (x86 assumption at AST)
 	if( vr = NULL ) then
@@ -1770,9 +1796,9 @@ private sub hFlushCOMP( byval op as integer, _
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
 	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	hLoadIDX( v1, v1_typ )
-	hLoadIDX( v2, v2_typ )
-	hLoadIDX( vr, vr_typ )
+	hLoadIDX( v1 )
+	hLoadIDX( v2 )
+	hLoadIDX( vr )
 
 	'' load source if it's a reg, or if result was not allocated
 	doload = FALSE
@@ -1867,8 +1893,8 @@ private sub hFlushSTORE( byval op as integer, _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
 
-	hLoadIDX( v1, v1_typ )
-	hLoadIDX( v2, v2_typ )
+	hLoadIDX( v1 )
+	hLoadIDX( v2 )
 
     '' if dst is a fpoint, only load src if its a reg (x86 assumption)
 	if( (v2_typ = IR_VREGTYPE_REG) or _
@@ -1904,7 +1930,7 @@ private sub hFlushLOAD( byval op as integer, _
 	''
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 
-	hLoadIDX( v1, v1_typ )
+	hLoadIDX( v1 )
 
 	''
 	select case op
@@ -1970,8 +1996,8 @@ private sub hFlushCONVERT( byval op as integer, _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
 
-	hLoadIDX( v1, v1_typ )
-	hLoadIDX( v2, v2_typ )
+	hLoadIDX( v1 )
+	hLoadIDX( v2 )
 
     '' x86 assumption: if src is a reg and if classes are the same and
     ''                 src won't be used (DAG?), reuse src
@@ -2051,8 +2077,8 @@ private sub hFlushADDR( byval op as integer, _
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	hLoadIDX( v1, v1_typ )
-	hLoadIDX( vr, vr_typ )
+	hLoadIDX( v1 )
+	hLoadIDX( vr )
 
 	''
 	if( v1_typ = IR_VREGTYPE_REG ) then				'' x86 assumption
@@ -2074,6 +2100,32 @@ private sub hFlushADDR( byval op as integer, _
     ''
 	hFreeREG( v1 )
 	hFreeREG( vr )
+
+end sub
+
+'':::::
+private sub hFlushMEM( byval op as integer, _
+					   byval v1 as IRVREG ptr, _
+					   byval v2 as IRVREG ptr, _
+					   byval bytes as integer ) static
+
+	''
+	hLoadIDX( v1 )
+	hLoadIDX( v2 )
+
+	''
+	select case op
+	case IR_OP_MEMMOVE
+		emitMEMMOVE( v1, v2, bytes )
+	case IR_OP_MEMSWAP
+		emitMEMSWAP( v1, v2, bytes )
+	case IR_OP_MEMCLEAR
+		emitMEMCLEAR( v1, v2, bytes )
+	end select
+
+    ''
+	hFreeREG( v1 )
+	hFreeREG( v2 )
 
 end sub
 

@@ -48,9 +48,10 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_OFFSET
 	AST_NODECLASS_STACK
 	AST_NODECLASS_LABEL
-	AST_NODECLASS_ASM
+	AST_NODECLASS_LIT
 	AST_NODECLASS_JMPTB
 	AST_NODECLASS_DBG
+	AST_NODECLASS_MEM
 end enum
 
 type ASTNODE_ as ASTNODE
@@ -129,8 +130,9 @@ type AST_LABEL
 	flush			as integer
 end type
 
-type AST_ASM
-	line			as string
+type AST_LIT
+	text			as string
+	isasm			as integer
 end type
 
 type AST_JMPTB
@@ -139,6 +141,10 @@ end type
 
 type AST_DBG
 	ex				as integer
+end type
+
+type AST_MEM
+	bytes			as integer
 end type
 
 ''
@@ -169,9 +175,10 @@ type ASTNODE
 		iif			as AST_IIF
 		lod			as AST_LOAD
 		lbl			as AST_LABEL
-		asm			as AST_ASM
+		lit			as AST_LIT
 		jtb			as AST_JMPTB
 		dbg			as AST_DBG
+		mem			as AST_MEM
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -342,13 +349,19 @@ declare function 	astNewENUM			( byval value as integer, _
 declare function 	astNewLABEL			( byval sym as FBSYMBOL ptr, _
 					  					  byval doflush as integer = TRUE ) as ASTNODE ptr
 
-declare function 	astNewASM			( byval asmline as string ) as ASTNODE ptr
+declare function 	astNewLIT			( byval text as string, _
+										  byval isasm as integer ) as ASTNODE ptr
 
 declare function 	astNewJMPTB			( byval dtype as integer, _
 					   					  byval label as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function 	astNewDBG			( byval op as integer, _
 					   					  byval ex as integer = 0 ) as ASTNODE ptr
+
+declare function 	astNewMEM			( byval op as integer, _
+										  byval l as ASTNODE ptr, _
+					 					  byval r as ASTNODE ptr, _
+					 					  byval bytes as integer ) as ASTNODE ptr
 
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _

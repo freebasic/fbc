@@ -215,6 +215,8 @@ declare function 	symbAddProc				( byval symbol as string, _
 
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
+declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+
 declare function 	symbAddLib				( byval libname as string ) as FBLIBRARY ptr
 
 declare function 	symbAddArgAsVar			( byval symbol as string, _
@@ -413,6 +415,8 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 #define symbGetProcIncFile(f) f->proc.dbg.incfile
 
 #define symbSetProcIncFile(f,v) f->proc.dbg.incfile = v
+
+#define symbGetProcRealType(f) f->proc.realtype
 
 #define symbGetArgMode(f,a) iif( a = NULL, INVALID, a->arg.mode )
 

@@ -36,6 +36,8 @@ defint a-z
 #include once "inc\emitdbg.bi"
 #include once "inc\lex.bi"
 
+const FBPREFIX_PROCRES = "{fbpr}"
+
 
 type SYMBCTX
 	inited			as integer
@@ -1863,8 +1865,8 @@ function symbAddLib( byval libname as string ) as FBLIBRARY ptr static
 end function
 
 '':::::
-function hCalcProcArgsLen( byval args as integer, _
-						   byval argtail as FBSYMBOL ptr ) as integer
+private function hCalcProcArgsLen( byval args as integer, _
+						   		   byval argtail as FBSYMBOL ptr ) as integer
 	dim i as integer, lgt as integer
 
 	lgt	= 0
@@ -2391,15 +2393,50 @@ function symbAddArgAsVar( byval symbol as string, _
 end function
 
 '':::::
-function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
+    static as zstring * FB_MAXINTNAMELEN+1 symbol
+    dim as FBARRAYDIM dTB(0)
+    dim as FBSYMBOL ptr s
+
+	'' UDT?
+	if( proc->typ <> FB_SYMBTYPE_USERDEF ) then
+		return NULL
+	end if
+
+	'' returning a ptr?
+	if( proc->proc.realtype <> FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF ) then
+		return NULL
+	end if
+
+	symbol = FBPREFIX_PROCRES
+	symbol += symbGetOrgName( proc )
+
+    s = symbAddVarEx( symbol, "", FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF, proc->subtype, 0, 0, _
+    				  0, dTB(), FB_ALLOCTYPE_ARGUMENTBYVAL, TRUE, TRUE, FALSE )
+
+	function = s
+
+end function
+
+'':::::
+function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	static as zstring * FB_MAXINTNAMELEN+1 rname
 	dim as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s, subtype
+	dim as integer dtype
 
-	rname = "{fbpr}"
-	rname += symbGetOrgName( f )
+	'' UDT?
+	if( proc->typ = FB_SYMBTYPE_USERDEF ) then
+		'' returning a ptr? result is at the hidden arg
+		if( proc->proc.realtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF ) then
+			return symbLookupProcResult( proc )
+		end if
+	end if
 
-	s = symbAddVarEx( rname, "", f->typ, f->subtype, 0, 0, 0, _
+	rname = FBPREFIX_PROCRES
+	rname += symbGetOrgName( proc )
+
+	s = symbAddVarEx( rname, "", proc->typ, proc->subtype, 0, 0, 0, _
 					  dTB(), 0, TRUE, TRUE, FALSE )
 
 	function = s
@@ -2592,7 +2629,7 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 		return NULL
 	end if
 
-	rname = "{fbpr}"
+	rname = FBPREFIX_PROCRES
 	rname += symbGetOrgName( f )
 
 	function = symbFindByNameAndClass( rname, FB_SYMBCLASS_VAR, TRUE )
@@ -2800,8 +2837,6 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 						exit for
 					end if
 				else
-
-					'' check mode............
 
 					''
 					pdtype = astGetDataType( exprTB(p) )

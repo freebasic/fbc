@@ -83,6 +83,7 @@ enum IROPTYPE_ENUM
 	IR_OPTYPE_CALL
 	IR_OPTYPE_STACK
 	IR_OPTYPE_ADDRESS
+	IR_OPTYPE_MEM
 end enum
 
 ''
@@ -146,6 +147,9 @@ enum IROP_ENUM									'' if order is changed, update the opTB array
 	IR_OP_CALLFUNCT
 	IR_OP_CALLPTR
 	IR_OP_JUMPPTR
+	IR_OP_MEMMOVE
+	IR_OP_MEMSWAP
+	IR_OP_MEMCLEAR
 
 	IR_OPS										'' total
 end enum
@@ -296,7 +300,9 @@ declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, _
 										  byval pmode as integer, _
 										  byval plen as integer ) as integer
 
-declare sub 		irEmitASM			( byval asmline as string )
+declare sub 		irEmitASM			( byval text as string )
+
+declare sub 		irEmitCOMMENT		( byval text as string )
 
 declare sub 		irEmitJMPTB			( byval dtype as integer, _
 				 						  byval label as FBSYMBOL ptr )
@@ -304,6 +310,11 @@ declare sub 		irEmitJMPTB			( byval dtype as integer, _
 declare sub 		irEmitDBG			( byval proc as FBSYMBOL ptr, _
 										  byval op as integer, _
 			   							  byval ex as integer )
+
+declare sub 		irEmitMEM			( byval op as integer, _
+			   							  byval v1 as IRVREG ptr, _
+			   							  byval v2 as IRVREG ptr, _
+			   							  byval bytes as integer )
 
 declare function 	irIsVAR				( byval vreg as IRVREG ptr ) as integer
 

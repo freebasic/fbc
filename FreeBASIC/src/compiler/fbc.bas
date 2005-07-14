@@ -357,7 +357,7 @@ sub printOptions
 	print "-entry <name>", "Set a non-standard entry point, see -m"
 	print "-ex", "Add error checking with RESUME support"
 	print "-export", "Export symbols for dynamic linkage"
-	print "-g", "Add debug info (testing)"
+	print "-g", "Add debug info"
 	print "-i <name>", "Add a path to search for include files"
 	print "-l <name>", "Add a library file to linker's list"
 	print "-lib", "Create a static library"

@@ -139,6 +139,11 @@ enum EMIT_NODEOP_ENUM
 	EMIT_OP_LIT
 	EMIT_OP_JMPTB
 
+	'' mem
+	EMIT_OP_MEMMOVE
+	EMIT_OP_MEMSWAP
+	EMIT_OP_MEMCLEAR
+
 	EMIT_MAXOPS
 end enum
 
@@ -151,6 +156,7 @@ enum EMIT_NODECLASS_ENUM
 	EMIT_NODECLASS_LIT
 	EMIT_NODECLASS_JTB
 	EMIT_NODECLASS_SOP
+	EMIT_NODECLASS_MEM
 end enum
 
 type EMIT_BOPNODE
@@ -199,6 +205,13 @@ type EMIT_JTBNODE
 	text		as string
 end type
 
+type EMIT_MEMNODE
+	op			as integer
+	dvreg		as IRVREG ptr
+	svreg		as IRVREG ptr
+	bytes		as integer
+end type
+
 type EMIT_NODE
 	ll_nxt							as EMIT_NODE ptr
 
@@ -213,6 +226,7 @@ type EMIT_NODE
 		sop							as EMIT_SOPNODE
 		lit							as EMIT_LITNODE
 		jtb							as EMIT_JTBNODE
+		mem							as EMIT_MEMNODE
 	end union
 
 	regFreeTB(EMIT_REGCLASSES-1) 	as REG_FREETB
@@ -235,6 +249,9 @@ type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 type EMIT_LITCB as sub( byval text as string )
 
 type EMIT_JTBCB as sub( byval dtype as integer, byval text as string )
+
+type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr, _
+						byval bytes as integer )
 
 
 type EMITMAIN
@@ -260,6 +277,9 @@ type EMITCTX
 
 	regUsedTB(EMIT_REGCLASSES-1) 		as REG_FREETB       '' keep track of register usage
 
+	''
+	main								as EMITMAIN
+
 	'' platform-dependent
 	dataend								as integer
 
@@ -276,8 +296,6 @@ type EMITCTX
 
     entryname 							as string
     modulename      					as string
-
-	main								as EMITMAIN
 end type
 
 ''
@@ -493,6 +511,18 @@ declare sub 		emitPUSHUDT			( byval svreg as IRVREG ptr, _
 										  byval sdsize as integer )
 
 declare sub 		emitPOP				( byval svreg as IRVREG ptr )
+
+declare sub 		emitMEMMOVE			( byval dvreg as IRVREG ptr, _
+			 					  		  byval svreg as IRVREG ptr, _
+			 					  		  byval bytes as integer )
+
+declare sub 		emitMEMSWAP			( byval dvreg as IRVREG ptr, _
+			 					  		  byval svreg as IRVREG ptr, _
+			 					  		  byval bytes as integer )
+
+declare sub 		emitMEMCLEAR		( byval dvreg as IRVREG ptr, _
+			 					  		  byval svreg as IRVREG ptr, _
+			 					  		  byval bytes as integer )
 
 declare sub 		emitSECTION			( byval section as integer )
 

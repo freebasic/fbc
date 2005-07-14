@@ -120,11 +120,17 @@ private function hCheckPrototype( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hDeclareArgs ( byval proc as FBSYMBOL ptr ) as integer static
+private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
     dim a as integer
     dim arg as FBSYMBOL ptr
 
 	function = FALSE
+
+	'' proc returns an UDT?
+	if( symbGetType( proc ) = FB_SYMBTYPE_USERDEF ) then
+		'' create an hidden arg if needed
+		symbAddProcResArg( proc )
+	end if
 
 	''
 	a = 0
@@ -237,9 +243,6 @@ function cSubOrFuncHeader( byval issub as integer, _
 
     	'' check for invalid types
     	select case typ
-    	case FB_SYMBTYPE_USERDEF
-    		hReportError( FB_ERRMSG_CANNOTRETURNSTRUCTSFROMFUNCTS )
-    		exit function
     	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
     		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
     		exit function
@@ -350,20 +353,29 @@ end function
 private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
     dim as FBSYMBOL ptr s
     dim as ASTNODE ptr n, t
-    dim as integer typ
+    dim as integer dtype
 
 	s = symbLookupProcResult( proc )
-	typ = symbGetType( s )
+	dtype = symbGetType( proc )
+    n = NULL
+
+	select case dtype
 
 	'' if result is a string, a temp descriptor is needed, as the current one (at stack)
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignament or when passed as parameter to another proc
 	'' will deallocate this string)
-	if( typ = FB_SYMBTYPE_STRING ) then
+	case FB_SYMBTYPE_STRING
 		t = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
 		n = rtlStrAllocTmpResult( t )
-	else
-		n = astNewLOAD( astNewVAR( s, NULL, 0, typ, NULL ), typ, TRUE )
+
+	'' UDT? use the real type
+	case FB_SYMBTYPE_USERDEF
+		dtype = symbGetProcRealType( proc )
+	end select
+
+	if( n = NULL ) then
+		n = astNewLOAD( astNewVAR( s, NULL, 0, dtype, NULL ), dtype, TRUE )
 	end if
 
 	astAdd( n )

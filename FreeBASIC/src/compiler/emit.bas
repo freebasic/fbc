@@ -303,12 +303,29 @@ sub emitFlush( ) static
 
 			n->jtb.text = ""
 
+		case EMIT_NODECLASS_MEM
+			cptr( EMIT_MEMCB, emit_opfTB(n->mem.op) )( n->mem.dvreg, n->mem.svreg, n->mem.bytes )
+
 		end select
 
 		n = flistGetNext( n )
 	loop
 
 end sub
+
+'':::::
+function emitGetRegClass( byval dclass as integer ) as REGCLASS ptr
+
+	function = emit.regTB(dclass)
+
+end function
+
+'':::::
+function emitGetPos as integer static
+
+	function = emit.pos
+
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' procs
@@ -517,6 +534,25 @@ private function hNewJMPTB( byval dtype as integer, _
 	n->jtb.dtype = dtype
 	ZEROSTRDESC( n->jtb.text )
 	n->jtb.text	 = text
+
+	function = n
+
+end function
+
+'':::::
+private function hNewMEM( byval op as integer, _
+					 	  byval dvreg as IRVREG ptr, _
+			 		 	  byval svreg as IRVREG ptr, _
+			 		 	  byval bytes as integer ) as EMIT_NODE ptr static
+
+	dim as EMIT_NODE ptr n
+
+	n = hNewNode( EMIT_NODECLASS_MEM )
+
+	n->mem.op	 = op
+	n->mem.dvreg = hNewVR( dvreg )
+	n->mem.svreg = hNewVR( svreg )
+	n->mem.bytes = bytes
 
 	function = n
 
@@ -1324,18 +1360,39 @@ sub emitPUBLIC( byval label as FBSYMBOL ptr ) static
 
 end sub
 
-'':::::
-function emitGetRegClass( byval dclass as integer ) as REGCLASS ptr
 
-	function = emit.regTB(dclass)
-
-end function
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' MEM
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitGetPos as integer static
+sub emitMEMMOVE( byval dvreg as IRVREG ptr, _
+			     byval svreg as IRVREG ptr, _
+			     byval bytes as integer ) static
 
-	function = emit.pos
+	hNewMEM( EMIT_OP_MEMMOVE, dvreg, svreg, bytes )
 
-end function
+end sub
+
+'':::::
+sub emitMEMSWAP( byval dvreg as IRVREG ptr, _
+			     byval svreg as IRVREG ptr, _
+			     byval bytes as integer ) static
+
+	hNewMEM( EMIT_OP_MEMSWAP, dvreg, svreg, bytes )
+
+end sub
+
+'':::::
+sub emitMEMCLEAR( byval dvreg as IRVREG ptr, _
+			      byval svreg as IRVREG ptr, _
+			      byval bytes as integer ) static
+
+	hNewMEM( EMIT_OP_MEMCLEAR, dvreg, svreg, bytes )
+
+end sub
+
+
+
 
 

@@ -125,7 +125,6 @@ end type
 		"Expected scalar counter", _
 		"Illegal outside a SUB or FUNCTION", _
 		"Expected dynamic array", _
-		"Cannot return TYPE's or UNION's from FB functions", _
 		"Cannot return fixed-len strings from functions", _
 		"Array already dimensioned", _
 		"Literal string too big, split it", _
