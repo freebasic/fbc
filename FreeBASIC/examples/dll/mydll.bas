@@ -10,41 +10,14 @@
 ''       they are useless to end-users
 ''
 
-option explicit
-#ifdef __FB_WIN32__
-'$include: 'win\kernel32.bi'
-#endif
+#include once "mydll.bi"
 
-'$include: 'mydll.bi'
-
-	dim shared hInstance as long
-	
 	''
 	'' note: do not add any executable code to the main module (ie: outside 
 	'' any function), because that code will never be executed as only DllMain 
 	'' is invoked by Windows at the initialization
 	''
 	
-#ifdef __FB_WIN32__
-''::::::
-''
-'' DllMain is the entry-point (ALWAYS needed with DLL's), don't change the prototype
-''
-function DllMain ( byval hModule as long, byval reason as long, byval lpReserved as long ) as integer
-
-    select case reason
-		case DLL_PROCESS_ATTACH
-			hInstance = hModule
-		
-		case DLL_THREAD_ATTACH, DLL_THREAD_DETACH, DLL_PROCESS_DETACH
-			
-    end select
-    
-    DllMain = TRUE
-
-end function
-#endif
-
 
 ''::::::
 ''
@@ -52,6 +25,6 @@ end function
 ''
 function AddNumbers ( byval operand1 as integer, byval operand2 as integer ) as integer export
 
-	AddNumbers = operand1 + operand2
+	function = operand1 + operand2
 	
 end function
