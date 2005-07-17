@@ -98,7 +98,7 @@ declare function 	hCreateName 			( byval symbol as string, _
 								      		  byval addunderscore as integer = TRUE, _
 								      		  byval clearname as integer  = TRUE) as zstring ptr
 
-declare function 	hCreateMainAlias		( byval modname as string ) as string
+declare function 	hCreateMainAlias		( ) as string
 
 declare function 	hStripUnderscore		( byval symbol as string ) as string
 

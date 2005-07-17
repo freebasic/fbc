@@ -36,10 +36,11 @@ declare sub 	 parseCmd 				( argc as integer, argv() as string )
 
 declare sub 	 setDefaultOptions		( )
 declare function processOptions			( ) as integer
-declare function processCompOptions  	( ) as integer
 declare function processCompLists 		( ) as integer
+declare function processTargetOptions  	( ) as integer
 declare sub 	 printOptions			( )
 declare sub 	 getLibList 			( )
+declare sub 	 initTarget				( )
 
 declare function listFiles 				( ) as integer
 declare function compileFiles 			( ) as integer
@@ -48,6 +49,8 @@ declare function linkFiles 				( ) as integer
 declare function archiveFiles 			( ) as integer
 declare function compileResFiles 		( ) as integer
 declare function delFiles 				( ) as integer
+declare sub 	 setMainModule			( )
+declare sub 	 setCompOptions			( )
 
 
 ''globals
@@ -64,15 +67,21 @@ declare function delFiles 				( ) as integer
     end if
 
     ''
-    fbcInit( )
+    setDefaultOptions( )
 
     ''
-    setDefaultOptions( )
+    processTargetOptions( )
+
+    ''
+    initTarget( )
 
     ''
     if( not processOptions( ) ) then
     	end 1
     end if
+
+    ''
+    setCompOptions( )
 
     '' list
     if( not listFiles( ) ) then
@@ -100,6 +109,9 @@ declare function delFiles 				( ) as integer
 
     ''
     fbSetPaths( fbc.target )
+
+    ''
+    setMainModule( )
 
     '' compile
     if( not compileFiles( ) ) then
@@ -143,17 +155,68 @@ declare function delFiles 				( ) as integer
     end 0
 
 '':::::
+sub initTarget( )
+
+	select case as const fbc.target
+#if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
+	case FB_COMPTARGET_WIN32
+		fbcInit_win32( )
+#endif
+
+#if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
+	case FB_COMPTARGET_LINUX
+		fbcInit_linux( )
+#endif
+
+#if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
+	case FB_COMPTARGET_DOS
+		fbcInit_dos( )
+#endif
+
+#if defined(TARGET_XBOX) or defined(CROSSCOMP_XBOX)
+	case FB_COMPTARGET_XBOX
+		fbcInit_xbox( )
+#endif
+	end select
+
+end sub
+
+'':::::
+sub setCompOptions( )
+
+	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
+	fbSetOption( FB_COMPOPT_NAMING, fbc.naming )
+
+	fbSetOption( FB_COMPOPT_DEBUG, fbc.debug )
+	fbSetOption( FB_COMPOPT_OUTTYPE, fbc.outtype )
+
+	select case fbc.target
+	case FB_COMPTARGET_LINUX
+		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
+		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
+	case FB_COMPTARGET_DOS
+		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
+	end select
+
+end sub
+
+'':::::
 function compileFiles as integer
-	dim i as integer
+	dim as integer i, checkmain, ismain
 
 	function = FALSE
 
-    for i = 0 to fbc.inps-1
+	''
+	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE ) then
+    	checkmain = TRUE
+    else
+    	checkmain = fbc.mainset
+    end if
 
-    	'' this must be done before Init coz rtlib initialization depends on nostdcall to be defined
-    	if( not processCompOptions( ) ) then
-    		exit function
-    	end if
+    ismain = FALSE
+
+    '' for each input file..
+    for i = 0 to fbc.inps-1
 
     	'' init the parser
     	if( not fbInit( ) ) then
@@ -175,7 +238,11 @@ function compileFiles as integer
     		print "compiling: ", fbc.inplist(i); " -o "; fbc.asmlist(i)
     	end if
 
-    	if( not fbCompile( fbc.inplist(i), fbc.asmlist(i) ) ) then
+    	if( checkmain ) then
+    		ismain = fbc.mainfile = hStripPath( hStripExt( fbc.inplist(i) ) )
+    	end if
+
+    	if( not fbCompile( fbc.inplist(i), fbc.asmlist(i), ismain ) ) then
     		exit function
     	end if
 
@@ -202,7 +269,7 @@ end function
 '':::::
 function assembleFiles as integer
 	dim i as integer, f as integer
-	dim aspath as string, ascline as string
+	dim as string aspath, ascline, binpath
 
 	function = FALSE
 
@@ -210,11 +277,25 @@ function assembleFiles as integer
     aspath = environ$("AS") '' check the environment variable first
     if len(aspath)=0 then
         '' when not set, then simply use some default value
-#if defined(TARGET_WIN32) or defined(TARGET_DOS) or defined(TARGET_XBOX)
-		aspath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe"
-#elseif defined(TARGET_LINUX)
-		aspath = "as"
+        binpath = exepath( ) + *fbGetPath( FB_PATH_BIN )
+
+		select case as const fbc.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+			aspath = binpath + "as.exe"
+
+		case FB_COMPTARGET_LINUX
+#ifdef TARGET_LINUX
+			aspath = "as"
+#else
+			aspath = binpath + "as.exe"
 #endif
+		end select
+    end if
+
+    ''
+    if( not hFileExists( aspath ) ) then
+		hReportErrorEx( FB_ERRMSG_EXEMISSING, aspath, -1 )
+		exit function
     end if
 
     '' set input files (.asm's) and output files (.o's)
@@ -250,23 +331,9 @@ function archiveFiles as integer
 
 	function = FALSE
 
-    '' if no exe file name given, assume "lib" + first source name + ".a"
-    '' ( exe filename is actually lib filename for static libs )
-    if( len( fbc.outname ) = 0 ) then
-
-		if( fbc.inps > 0 ) then
-			fbc.outname = hStripFilename( fbc.inplist(0) ) + "lib" + _
-										  hStripPath( hStripExt( fbc.inplist(0) ) ) + ".a"
-		else
-			if( fbc.objs > 0 ) then
-				fbc.outname = hStripFilename( fbc.objlist(0) ) + "lib" + _
-											  hStripPath( hStripExt( fbc.objlist(0) ) ) + ".a"
-			else
-				fbc.outname = "libnoname.a"
-			end if
-		end if
-
-    end if
+    '' if no executable name was defined, use the main module name
+    fbc.outname = hStripFilename( fbc.outname ) + "lib" + _
+				  hStripPath( hStripExt( fbc.outname ) ) + ".a"
 
     arcline = "-rsc "
 
@@ -328,33 +395,57 @@ function delFiles as integer
 end function
 
 '':::::
-sub printOptions
+sub setMainModule( )
+
+	if( len( fbc.mainfile ) = 0 ) then
+		if( fbc.inps > 0 ) then
+			fbc.mainfile = hStripPath( hStripExt( fbc.inplist(0) ) )
+			fbc.mainpath = hStripFilename( fbc.inplist(0) )
+		else
+			if( fbc.objs > 0 ) then
+				fbc.mainfile = hStripPath( hStripExt( fbc.objlist(0) ) )
+				fbc.mainpath = hStripFilename( fbc.inplist(0) )
+			else
+				fbc.mainfile = "undefined"
+				fbc.mainpath = ""
+			end if
+		end if
+	end if
+
+	'' if no executable name was defined, use the main module name
+	if( len( fbc.outname ) = 0 ) then
+		fbc.outname = fbc.mainpath + fbc.mainfile
+	end if
+
+end sub
+
+'':::::
+sub printOptions( )
 
 	print "Usage: fbc [options] inputlist"
 	print
 	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
-#ifdef TARGET_WIN32
-	print " "         , "xxx.rc = resource script, xxx.res = compiled resource"
-#elseif defined(TARGET_LINUX)
-	print " "         , "xxx.xpm = icon resource"
-#endif
+	if( fbc.target = FB_COMPTARGET_WIN32 ) then
+		print " "         , "xxx.rc = resource script, xxx.res = compiled resource"
+	elseif( fbc.target = FB_COMPTARGET_LINUX ) then
+		print " "         , "xxx.xpm = icon resource"
+	end if
 	print
 	print "options:"
 	print "-a <name>", "Add an object file to linker's list"
-	print "-arch <type>", "Set target architecture (def: 486)"
+	print "-arch <type>", "Set target architecture (default: 486)"
 	print "-b <name>", "Add a source file to compilation"
 	print "-c", "Compile only, do not link"
 	print "-d <name=val>", "Add a preprocessor's define"
-#if defined(TARGET_WIN32) or defined(TARGET_LINUX)
-	print "-dll", "Same as -dylib"
-#endif
-#ifdef TARGET_WIN32
-	print "-dylib", "Create a DLL, including the import library"
-#elseif defined(TARGET_LINUX)
-	print "-dylib", "Create a shared library"
-#endif
+	if( (fbc.target = FB_COMPTARGET_WIN32) or (fbc.target = FB_COMPTARGET_LINUX) ) then
+		print "-dll", "Same as -dylib"
+		if( fbc.target = FB_COMPTARGET_WIN32 ) then
+			print "-dylib", "Create a DLL, including the import library"
+		elseif( fbc.target = FB_COMPTARGET_LINUX ) then
+			print "-dylib", "Create a shared library"
+		end if
+	end if
 	print "-e", "Add error checking"
-	print "-entry <name>", "Set a non-standard entry point, see -m"
 	print "-ex", "Add error checking with RESUME support"
 	print "-export", "Export symbols for dynamic linkage"
 	print "-g", "Add debug info"
@@ -362,25 +453,45 @@ sub printOptions
 	print "-l <name>", "Add a library file to linker's list"
 	print "-lib", "Create a static library"
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
-	print "-mt", "Link with thread-safe runtime library for multithreaded apps"
+	if( fbc.target <> FB_COMPTARGET_DOS ) then
+		print "-mt", "Link with thread-safe runtime library"
+	end if
 	print "-nodeflibs", "Do not include the default libraries"
 	print "-noerrline", "Do not show source line where error occured"
-#ifdef TARGET_WIN32
 	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
 	'''''print "-nounderscore", "Don't add the underscore prefix to function names"
-#endif
 	print "-o <name>", "Set output name (in the same number as source files)"
 	print "-p <name>", "Add a path to search for libraries"
 	print "-profile", "Enable function profiling"
 	print "-r", "Do not delete the asm file(s)"
-#ifdef TARGET_WIN32
-	print "-s <name>", "Set subsystem (gui, console)"
-	print "-t <value>", "Set stack size in kbytes (default: 1M)"
-	'''''print "-target <name>", "Change the default target platform (dos, win32 or linux)"
+	if( fbc.target = FB_COMPTARGET_WIN32 ) then
+		print "-s <name>", "Set subsystem (gui, console)"
+		print "-t <value>", "Set stack size in kbytes (default: 1M)"
+	end if
+
+#if defined(CROSSCOMP_WIN32) or _
+	defined(CROSSCOMP_DOS) or _
+	defined(CROSSCOMP_LINUX) or _
+	defined(CROSSCOMP_XBOX)
+	print "-target <name>"; " Cross-compile to:";
+ #ifdef CROSSCOMP_DOS
+	print " dos";
+ #endif
+ #ifdef CROSSCOMP_LINUX
+	print " linux";
+ #endif
+ #ifdef CROSSCOMP_WIN32
+	print " win32";
+ #endif
+ #ifdef CROSSCOMP_XBOX
+	print " xbox";
+ #endif
+	print
 #endif
-#ifdef TARGET_XBOX
-	print "-title <name>", "Set XBE display title"
-#endif
+
+	if( fbc.target = FB_COMPTARGET_XBOX ) then
+		print "-title <name>", "Set XBE display title"
+	end if
 	print "-v", "Be verbose"
 	print "-version", "Show compiler version"
 	print "-x <name>", "Set executable/library name"
@@ -390,7 +501,7 @@ end sub
 
 
 '':::::
-sub setDefaultOptions
+sub setDefaultOptions( )
 
 	fbSetDefaultOptions( )
 
@@ -402,13 +513,15 @@ sub setDefaultOptions
 	fbc.outtype 	= FB_OUTTYPE_EXECUTABLE
 	fbc.target		= fbGetOption( FB_COMPOPT_TARGET )
 	fbc.naming		= fbGetOption( FB_COMPOPT_NAMING )
-	fbc.cputype		= fbGetOption( FB_COMPOPT_CPUTYPE )
-	fbc.warnlevel	= fbGetOption( FB_COMPOPT_WARNINGLEVEL )
+
+	fbc.mainfile	= ""
+	fbc.mainpath	= ""
+	fbc.mainset 	= FALSE
 
 end sub
 
 '':::::
-function processOptions as integer
+function processTargetOptions( ) as integer
     dim i as integer
 
 	function = FALSE
@@ -426,27 +539,161 @@ function processOptions as integer
 				exit function
 			end if
 
-			select case mid$( argv(i), 2 )
+			select case mid( argv(i), 2 )
+            ''
+			case "target"
+				select case argv(i+1)
+#if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
+				case "dos"
+					fbc.target = FB_COMPTARGET_DOS
+#endif
 
-			'' compiler options, will be processed by processCompOptions
-			case "e", "ex", "mt", "profile", _
-				 "nodeflibs", "noerrline", "nostdcall", _
-				 "nounderscore", "export", "underscore", "stdcall"
+#if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
+				case "linux"
+					fbc.target = FB_COMPTARGET_LINUX
+#endif
+
+#if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
+				case "win32"
+					fbc.target = FB_COMPTARGET_WIN32
+#endif
+
+#if defined(TARGET_XBOX) or defined(CROSSCOMP_XBOX)
+				case "xbox"
+					fbc.target = FB_COMPTARGET_XBOX
+#endif
+
+				case else
+					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i+1) + "\"", -1 )
+					return FALSE
+				end select
+
+				argv(i) = ""
+				argv(i+1) = ""
+
+			''
+			case "naming"
+				select case argv(i+1)
+				case "dos"
+					fbc.naming = FB_COMPNAMING_DOS
+
+				case "linux"
+					fbc.naming = FB_COMPNAMING_LINUX
+
+				case "win32"
+					fbc.naming = FB_COMPNAMING_WIN32
+
+				case "xbox"
+					fbc.naming = FB_COMPNAMING_XBOX
+
+				case else
+					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i+1) + "\"", -1 )
+					return FALSE
+				end select
+
+				argv(i) = ""
+				argv(i+1) = ""
+
+			end select
+
+		end if
+
+	next
+
+end function
+
+'':::::
+function processOptions( ) as integer
+    dim as integer i, value
+
+	function = FALSE
+
+	''
+	for i = 0 to argc-1
+
+		if( len( argv(i) ) = 0 ) then
+			continue for
+		end if
+
+		if( argv(i)[0] = asc( "-" ) ) then
+
+			if( len( argv(i) ) = 1 ) then
+				exit function
+			end if
+
+			select case mid( argv(i), 2 )
+			case "e"
+				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+
+				argv(i) = ""
+
+			case "ex"
+				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+
+				argv(i) = ""
+
+			case "mt"
+				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
+
+				argv(i) = ""
+
+			case "profile"
+				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
+
+				argv(i) = ""
+
+			case "noerrline"
+				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
+
+				argv(i) = ""
+
+			case "nodeflibs"
+				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
+
+				argv(i) = ""
+
+			case "export"
+				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+
+				argv(i) = ""
+
+			case "nostdcall"
+				fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
+
+				argv(i) = ""
+
+			case "stdcall"
+				fbSetOption( FB_COMPOPT_NOSTDCALL, FALSE )
+
+				argv(i) = ""
+
+			case "nounderscore"
+				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
+
+				argv(i) = ""
+
+			case "underscore"
+				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, FALSE )
+
+				argv(i) = ""
 
 			'' cpu type
 			case "arch"
 				select case argv(i+1)
 				case "386"
-					fbc.cputype = FB_CPUTYPE_386
+					value = FB_CPUTYPE_386
 				case "486"
-					fbc.cputype = FB_CPUTYPE_486
+					value = FB_CPUTYPE_486
 				case "586"
-					fbc.cputype = FB_CPUTYPE_586
+					value = FB_CPUTYPE_586
 				case "686"
-					fbc.cputype = FB_CPUTYPE_686
+					value = FB_CPUTYPE_686
 				case else
 					exit function
 				end select
+
+				fbSetOption( FB_COMPOPT_CPUTYPE, value )
 
 				argv(i) = ""
 				argv(i+1) = ""
@@ -459,6 +706,7 @@ function processOptions as integer
 
 			'' don't link
 			case "c"
+				fbc.outtype = FB_OUTTYPE_OBJECT
 				fbc.compileonly = TRUE
 
 				argv(i) = ""
@@ -468,16 +716,6 @@ function processOptions as integer
 				fbc.outtype = FB_OUTTYPE_DYNAMICLIB
 
 				argv(i) = ""
-
-			'' no std entry-point
-			case "entry"
-				fbc.entrypoint = argv(i+1)
-				if( len( fbc.entrypoint ) = 0 ) then
-					exit function
-				end if
-
-				argv(i) = ""
-				argv(i+1) = ""
 
 			'' static lib
 			case "lib"
@@ -515,10 +753,12 @@ function processOptions as integer
 
 			'' main module
 			case "m"
-				fbc.entrypoint = hCreateMainAlias( hStripPath( hStripExt( argv(i+1) ) ) )
-				if( len( fbc.entrypoint ) = 0 ) then
+				fbc.mainfile = hStripPath( hStripExt( argv(i+1) ) )
+				if( len( fbc.mainfile ) = 0 ) then
 					exit function
 				end if
+				fbc.mainpath = hStripFilename( argv(i+1) )
+				fbc.mainset = TRUE
 
 				argv(i) = ""
 				argv(i+1) = ""
@@ -526,10 +766,12 @@ function processOptions as integer
 			'' warning level
 			case "w"
 				if( argv(i+1) = "all" ) then
-					fbc.warnlevel = 0
+					value = 0
 				else
-					fbc.warnlevel = valint( argv(i+1) )
+					value = valint( argv(i+1) )
 				end if
+
+				fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
 
 				argv(i) = ""
 				argv(i+1) = ""
@@ -609,6 +851,7 @@ function processOptions as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' target-dependent options
 			case else
 				if( not fbc.processOptions( argv(i), argv(i+1) ) ) then
 					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
@@ -620,85 +863,14 @@ function processOptions as integer
 			end select
 		end if
 
-	next i
+	next
 
 	function = TRUE
 
 end function
 
 '':::::
-function processCompOptions as integer
-    dim i as integer
-
-	function = FALSE
-
-	'' reset options
-	fbSetDefaultOptions( )
-
-	''
-	for i = 0 to argc-1
-
-		if( len( argv(i) ) = 0 ) then
-			continue for
-		end if
-
-		if( argv(i)[0] = asc( "-" ) ) then
-
-			if( len( argv(i) ) = 1 ) then
-				exit function
-			end if
-
-			select case mid$( argv(i), 2 )
-			case "e"
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-
-			case "ex"
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
-
-			case "mt"
-				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
-
-			case "profile"
-				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
-
-			case "noerrline"
-				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
-
-			case "nodeflibs"
-				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
-
-			case "export"
-				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-
-			case else
-				fbc.processCompOptions( argv(i) )
-
-			end select
-
-		else
-			hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
-			exit function
-		end if
-
-	next i
-
-	''
-	fbc.setCompOptions( )
-
-	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
-	fbSetOption( FB_COMPOPT_NAMING, fbc.naming )
-	fbSetOption( FB_COMPOPT_DEBUG, fbc.debug )
-	fbSetOption( FB_COMPOPT_OUTTYPE, fbc.outtype )
-	fbSetOption( FB_COMPOPT_CPUTYPE, fbc.cputype )
-	fbSetOption( FB_COMPOPT_WARNINGLEVEL, fbc.warnlevel )
-
-	function = TRUE
-
-end function
-
-'':::::
-function processCompLists as integer
+function processCompLists( ) as integer
     dim i as integer, p as integer
     dim dname as string, dtext as string
 
@@ -716,10 +888,10 @@ function processCompLists as integer
     		p = len( fbc.deflist(i) ) + 1
     	end if
 
-    	dname = left$( fbc.deflist(i), p-1 )
+    	dname = left( fbc.deflist(i), p-1 )
 
 		if( p < len( fbc.deflist(i) ) ) then
-			dtext = mid$( fbc.deflist(i), p+1 )
+			dtext = mid( fbc.deflist(i), p+1 )
 		else
 			dtext = "1"
     	end if
@@ -732,7 +904,7 @@ function processCompLists as integer
 end function
 
 '':::::
-function listFiles as integer
+function listFiles( ) as integer
     dim i as integer
 
 	function = FALSE
@@ -815,7 +987,7 @@ sub parseCmd ( argc as integer, argv() as string )
 end sub
 
 '':::::
-sub getLibList
+sub getLibList( )
 
 	fbc.libs = fbListLibs( fbc.liblist(), fbc.libs )
 

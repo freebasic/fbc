@@ -22,7 +22,7 @@ else
             ifdef HOME
                 HOST := linux
             else
-            	ifdef DJGPP
+            	ifeq ($(OS),DOS)
                     HOST := dos
                 endif
             endif
@@ -36,7 +36,7 @@ endif
 
 ifndef TARGET
 	ifndef HOST
-		CHECKHOST_MSG := $(error error: TARGET not defined and HOST couldn't be guessed)
+		CHECKHOST_MSG := $(error Error: TARGET not defined and HOST couldn't be guessed)
 	else
 		CHECKHOST_MSG :=
 	endif
@@ -47,23 +47,22 @@ endif
 ##################################################################
 
 OSDEPPATH :=
-FBCFLAGS := -e -c -arch 486
+FBCMPFLAGS := -e -c -arch 486
+FBLNKFLAGS := -v
+
 ifdef DEBUG
-    FBCFLAGS += -g
+    FBCMPFLAGS += -g
 endif
 ifdef PROFILE
-    FBCFLAGS += -profile
+    FBCMPFLAGS += -profile
 endif
 
 ifndef LDLIBS_EXT
     LDLIBS_EXT :=
 endif
 
-ENTRYPOINT := fb_Main_fbc  ### fb_fbc_entry
-
 ifeq ($(HOST),win32)
     FBC := ../../fbc.exe
-    ENTRYPOINT := _$(ENTRYPOINT)
 endif
 
 ifeq ($(HOST),linux)
@@ -72,72 +71,55 @@ endif
 
 ifeq ($(HOST),dos)
     FBC := ../../fbc.exe
-    ENTRYPOINT := _$(ENTRYPOINT)
 endif
 
 
-ifeq ($(TARGET),win32)
-    OSDEPPATH := win32
+ifeq ($(TARGET),dos)
+    OSDEPPATH := dos
     EXE := .exe
-    FBCFLAGS += -d TARGET_WIN32
-    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e $(ENTRYPOINT) --stack 2097152,2097152
-    LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 $(LDLIBS_EXT) -\)
-    LD := ../../bin/win32/ld.exe
-    AS := ../../bin/win32/as.exe
+    FBLNKFLAGS += -d TARGET_DOS
+    FBCMPFLAGS += -d TARGET_DOS
+    osdepsrcs := fbc_dos.bas
 endif
 
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
     EXE :=
-    FBCFLAGS += -d TARGET_LINUX
-    LDLIBS := -L../../lib/linux -\( -lc -lm -lfb -lpthread $(LDLIBS_EXT) -\)
-	ifeq ($(HOST),win32)
-    	LDFLAGS := -T ../../bin/linux/elf_i386.x -e $(ENTRYPOINT)
-    	LD := ../../bin/linux/ld.exe
-    	AS := ../../bin/linux/as.exe
-	else
-    	LDFLAGS := -dynamic-linker /lib/ld-linux.so.2 -e $(ENTRYPOINT)
-    	LD := ld
-    	AS := as
-	endif
+    FBLNKFLAGS += -d TARGET_LINUX
+    FBCMPFLAGS += -d TARGET_LINUX
+    osdepsrcs := fbc_linux.bas
 endif
 
-ifeq ($(TARGET),dos)
-    OSDEPPATH := dos
+ifeq ($(TARGET),win32)
+    OSDEPPATH := win32
     EXE := .exe
-    FBCFLAGS += -d TARGET_DOS
-    LDFLAGS := -T ../../bin/dos/i386go32.x ../../lib/dos/crt0.o
-    LDLIBS := -L../../lib/dos -( -lfb -lc $(LDLIBS_EXT) -)
-    LD := ../../bin/dos/ld.exe
-    AS := ../../bin/dos/as.exe
+    FBLNKFLAGS += -d TARGET_WIN32 -t 2048
+    FBCMPFLAGS += -d TARGET_WIN32
+    FBCMPFLAGS += -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX
+    osdepsrcs := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas
 endif
 
 ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
     EXE := .exe
-    FBCFLAGS += -d TARGET_XBOX
-    LDFLAGS := -T ../../bin/win32/i386pe.x -subsystem console -e $(ENTRYPOINT) --stack 2097152,2097152
-    LDLIBS := -L../../lib/win32 -\( -lmsvcrt -lfb -lkernel32 $(LDLIBS_EXT) -\)
-    LD := ../../bin/win32/ld.exe
-    AS := ../../bin/win32/as.exe
+    FBLNKFLAGS += -d TARGET_XBOX
+    FBCMPFLAGS += -d TARGET_XBOX
+    osdepsrcs := fbc_xbox.bas
 endif
 
-ifndef DEBUG
-	LDFLAGS += -s
-endif
-
-ifeq ($(HOST),win32)
-	FBCFLAGS += -target $(TARGET)
+ifneq ($(HOST),$(TARGET))
+    FBCMPFLAGS += -target $(TARGET)
+    FBLNKFLAGS += -target $(TARGET)
 endif
 
 ifndef OSDEPPATH
-	CHECKTARGET_MSG := $(error error: TARGET not supported)
+    CHECKTARGET_MSG := $(error Error: TARGET not supported)
 else
-	CHECKTARGET_MSG :=
+    CHECKTARGET_MSG :=
 endif
 
-ifdef FBCFLAGS_EXT
-	FBCFLAGS += $(FBCFLAGS_EXT)
+ifdef FBCMPFLAGS_EXT
+    FBCMPFLAGS += $(FBCMPFLAGS_EXT)
 endif
 
 ##################################################################
@@ -147,31 +129,27 @@ main	:= fbc.bas
 exepath = ../..
 compiler = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 
-sources := $(wildcard *.bas)
+sources := $(main) ast.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas
+sources += flist.bas hash.bas hlp.bas ir.bas lex.bas lexpp.bas list.bas
+sources += parser1.bas parser2.bas parser3.bas parser4.bas parser5.bas parser6.bas parser7.bas
+sources += reg.bas rtl.bas symb.bas
+sources += $(osdepsrcs)
 
-objects := $(patsubst %.bas,obj/$(OSDEPPATH)/%.o,$(main) $(filter-out $(main),$(sources)))
-osdepobjs := $(patsubst $(OSDEPPATH)/%.bas,obj/$(OSDEPPATH)/%.o,$(wildcard $(OSDEPPATH)/*.bas))
-osdepobjs += $(patsubst $(OSDEPPATH)/%.s,obj/$(OSDEPPATH)/%.o,$(wildcard $(OSDEPPATH)/*.s))
+objects := $(patsubst %.bas,obj/$(OSDEPPATH)/%.o,$(sources))
 headers := $(wildcard inc/*.bi)
+
+
+FBCMPFLAGS += -m $(subst .bas,,$(main))
 
 ##################################################################
 
 all : checkhost checktarget $(compiler)
 
 obj/$(OSDEPPATH)/%.o : %.bas $(headers)
-	$(FBC) $(FBCFLAGS) $< -o $@
+	$(FBC) $(FBCMPFLAGS) $< -o $@
 
-obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.bas $(headers)
-	$(FBC) $(FBCFLAGS) $< -o $@
-
-obj/$(OSDEPPATH)/%.o : %.s $(headers)
-	$(AS) $< -o $@
-
-obj/$(OSDEPPATH)/%.o : $(OSDEPPATH)/%.s $(headers)
-	$(AS) $< -o $@
-
-$(compiler) : $(objects) $(osdepobjs)
-	$(LD) $(LDFLAGS) $(objects) $(osdepobjs) -o $@ $(LDLIBS)
+$(compiler) : $(objects)
+	$(FBC) $(FBLNKFLAGS) $(objects) -x $@ $(LDLIBS_EXT)
 
 
 .PHONY: checktarget
@@ -184,5 +162,4 @@ checkhost : ; $(CHECKHOST_MSG)
 .PHONY : clean
 clean :
 	rm -f $(objects)
-	rm -f $(osdepobjs)
 	rm -f $(compiler)

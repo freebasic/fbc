@@ -154,7 +154,8 @@ end type
 		"Cannot initialize dynamic strings", _
 		"Recursive TYPE or UNION not allowed", _
 		"Array fields cannot be redimensioned", _
-		"Identifier cannot include periods" _
+		"Identifier cannot include periods", _
+		"Executable not found" _
 	}
 
 
@@ -190,9 +191,9 @@ end sub
 function hMatch( byval token as integer ) as integer
 
 	function = FALSE
-	if( lexGetToken = token ) then
+	if( lexGetToken( ) = token ) then
 		function = TRUE
-		lexSkipToken
+		lexSkipToken( )
 	end if
 
 end function
@@ -983,9 +984,9 @@ function hToPow2( byval value as uinteger ) as uinteger static
 end function
 
 '':::::
-function hCreateMainAlias( byval modname as string ) as string
+function hCreateMainAlias( ) as string
 
-	function = *hCreateProcAlias( "fb_Main_" + modname, 0, FB_FUNCMODE_CDECL )
+	function = *hCreateProcAlias( fbGetEntryPoint( ), 0, FB_FUNCMODE_CDECL )
 
 end function
 

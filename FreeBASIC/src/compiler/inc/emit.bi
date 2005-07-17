@@ -294,9 +294,6 @@ type EMITCTX
     conheader							as integer
     datheader							as integer
     expheader       					as integer
-
-    entryname 							as string
-    modulename      					as string
 end type
 
 ''

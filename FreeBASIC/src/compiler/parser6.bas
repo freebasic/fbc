@@ -1245,16 +1245,16 @@ end function
 '':::::
 private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr filename_old, filename_new
+	dim as integer matchprnt
 
 	function = NULL
 
 	'' '('
     if( isfunc ) then
-        hMatchLPRNT( )
+		hMatchLPRNT( )
     else
-        if( hMatch( CHAR_LPRNT ) ) then
-            isfunc = TRUE
-        end if
+		'' '('?
+       	matchprnt = hMatch( CHAR_LPRNT )
     end if
 
 	hMatchExpression( filename_old )
@@ -1273,7 +1273,7 @@ private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
 
 	hMatchExpression( filename_new )
 
-	if( isfunc ) then
+	if( isfunc or matchprnt ) then
 		'' ')'
 		hMatchRPRNT( )
 	end if

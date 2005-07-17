@@ -692,7 +692,6 @@ type FBSPROC
 	isdeclared		as byte						'' FALSE = just the prototype
 	iscalled		as byte
 	isrtl			as byte
-	ismain			as byte
 	doerrorcheck	as byte
 
 	rtlcallback		as FBRTLCALLBACK
@@ -796,6 +795,7 @@ type FBFILE
 	num				as integer
 	name			as zstring * FB_MAXPATHLEN+1
 	incfile			as integer
+	ismain			as integer
 end type
 
 type FBOPTION

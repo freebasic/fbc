@@ -972,7 +972,7 @@ data "fb_FileUnlock","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 '' rename ( byval oldname as string, byval newname as string ) as integer
-data "fb_FileRename","rename", _
+data "rename","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
@@ -2056,62 +2056,30 @@ data "dylibfree","fb_DylibFree", _
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#ifdef TARGET_WIN32
-
 '' beep ( ) as void
-data "beep","_beep", _
+data "beep","fb_Beep", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
 '' mkdir ( byval path as string ) as integer
-data "mkdir","_mkdir", _
+data "mkdir","fb_MkDir", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 '' rmdir ( byval path as string ) as integer
-data "rmdir","_rmdir", _
+data "rmdir","fb_RmDir", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 '' chdir ( byval path as string ) as integer
-data "chdir","_chdir", _
+data "chdir","fb_ChDir", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
-
-#else
-
-'' beep ( ) as void
-data "beep","", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 0
-
-'' mkdir ( byval path as string, byval mode as integer = &o644 ) as integer
-data "mkdir","", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 2, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,&o644
-'' rmdir ( byval path as string ) as integer
-data "rmdir","", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
-'' chdir ( byval path as string ) as integer
-data "chdir","", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
-
-#endif
 
 
 '' EOL
@@ -2356,7 +2324,7 @@ end sub
 '':::::
 sub rtlInit static
 
-    ''
+	''
 	fbAddDefaultLibs( )
 
 	''
@@ -5333,20 +5301,26 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 		libsAdded = TRUE
 
 		symbAddLib( "fbgfx" )
-#ifdef TARGET_WIN32
-		symbAddLib( "user32" )
-		symbAddLib( "gdi32" )
-		symbAddLib( "winmm" )
-#elseif defined(TARGET_LINUX)
-		fbAddLibPath( "/usr/X11R6/lib" )
-		symbAddLib( "X11" )
-		symbAddLib( "Xext" )
-		symbAddLib( "Xpm" )
-		symbAddLib( "Xrandr" )
-		symbAddLib( "Xrender" )
-		symbAddLib( "pthread" )
+
+		select case as const env.clopt.target
+		case FB_COMPTARGET_WIN32
+			symbAddLib( "user32" )
+			symbAddLib( "gdi32" )
+			symbAddLib( "winmm" )
+
+		case FB_COMPTARGET_LINUX
+#ifdef TARGET_LINUX
+			fbAddLibPath( "/usr/X11R6/lib" )
 #endif
 
+			symbAddLib( "X11" )
+			symbAddLib( "Xext" )
+			symbAddLib( "Xpm" )
+			symbAddLib( "Xrandr" )
+			symbAddLib( "Xrender" )
+			symbAddLib( "pthread" )
+
+		end select
 	end if
 
 	return TRUE

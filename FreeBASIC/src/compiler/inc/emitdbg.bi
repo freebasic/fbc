@@ -16,10 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub 		edbgEmitHeader		( byval asmf as integer, _
-										  byval filename as string, _
-										  byval modulename as string, _
-										  byval entryname as string )
+declare sub 		edbgEmitHeader		( byval filename as string )
 
 declare sub 		edbgLineBegin		( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer )

@@ -32,10 +32,6 @@ option escape
 #include once "inc\stabs.bi"
 
 type EDBGCTX
-	asmf			as integer
-	modulename		as zstring * FB_MAXNAMELEN+1
-	entryname		as zstring * FB_MAXNAMELEN+1
-
 	typecnt			as uinteger
 
 	label 			as FBSYMBOL ptr
@@ -163,21 +159,15 @@ end sub
 
 
 '':::::
-sub edbgEmitHeader( byval asmf as integer, _
-					byval filename as string, _
-					byval modulename as string, _
-					byval entryname as string ) static
+sub edbgEmitHeader( byval filename as string ) static
     dim as integer i
-    dim as string fname, stab
+    dim as string fname, stab, lname
 
 	if( not env.clopt.debug ) then
 		exit sub
 	end if
 
 	''
-	ctx.asmf 		= asmf
-	ctx.entryname 	= entryname
-	ctx.modulename 	= modulename
 	ctx.typecnt 	= 1
 
 	ctx.label 		= NULL
@@ -187,17 +177,18 @@ sub edbgEmitHeader( byval asmf as integer, _
 	ctx.incfile 	= INVALID
 
 	'' emit source file
+    lname = *hMakeTmpStr( )
     fname = hRevertSlash( filename )
     hWriteStr( TRUE, ".file \"" + fname + "\"" )
     if( instr( fname, "/" ) = 0 ) then
-    	hEmitSTABS( STAB_TYPE_SO, hRevertSlash( curdir$ + "/" ), 0, 0, "__stabini" )
+    	hEmitSTABS( STAB_TYPE_SO, hRevertSlash( curdir$ + "/" ), 0, 0, lname )
     end if
 
-    hEmitSTABS( STAB_TYPE_SO, fname, 0, 0, "__stabini" )
+    hEmitSTABS( STAB_TYPE_SO, fname, 0, 0, lname )
 
 	''
 	emitSECTION( EMIT_SECTYPE_CODE )
-	hLABEL( "__stabini" )
+	hLABEL( lname )
 
 	'' (known) type definitions
 	restore stabstdef
@@ -217,7 +208,8 @@ sub edbgEmitHeader( byval asmf as integer, _
 end sub
 
 '':::::
-sub edbgEmitFooter( )
+sub edbgEmitFooter( ) static
+	dim as string lname
 
 	if( not env.clopt.debug ) then
 		exit sub
@@ -226,9 +218,10 @@ sub edbgEmitFooter( )
 	emitSECTION( EMIT_SECTYPE_CODE )
 
 	'' no checkings after this
-	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, "__stabend" )
+	lname = *hMakeTmpStr( )
+	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, lname )
 
-	hLABEL( "__stabend" )
+	hLABEL( lname )
 
 end sub
 
@@ -388,7 +381,7 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 	'' main?
 	if( symbIsMainProc( proc ) ) then
 		'' main proc (the entry point)
-		hEmitSTABS( STAB_TYPE_MAIN, ctx.modulename, 0, ctx.firstline, symbGetName( proc ) )
+		hEmitSTABS( STAB_TYPE_MAIN, fbGetEntryPoint( ), 0, ctx.firstline, symbGetName( proc ) )
 
     	'' set the entry line
     	hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.firstline )
@@ -396,13 +389,13 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
     	'' also correct the end and start lines
     	proc->proc.dbg.iniline = ctx.firstline
     	proc->proc.dbg.endline = ctx.lastline
+
+    	desc = fbGetEntryPoint( )
+    else
+    	desc = symbGetOrgName( proc )
     end if
 
-	desc = symbGetOrgName( proc )
-	if( len( desc ) = 0 ) then
-		desc = ctx.entryname
-	end if
-
+	''
 	procname = symbGetName( proc )
 
 	if( symbIsPublic( proc ) ) then

@@ -119,9 +119,9 @@ private sub hMainBegin( )
 	end select
 
 	''
-	proc = symbAddProc( "", emit.entryname, "", _
+	proc = symbAddProc( "", fbGetEntryPoint( ), "", _
 						FB_SYMBTYPE_VOID, NULL, 0, FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_MAINPROC, _
-						FB_FUNCMODE_CDECL, argc, argtail, FALSE, TRUE )
+						FB_FUNCMODE_CDECL, argc, argtail )
 
     symbSetProcIncFile( proc, INVALID )
 
@@ -133,21 +133,21 @@ private sub hMainBegin( )
 	emit.main.node = astProcBegin( proc, emit.main.initlabel, emit.main.exitlabel, TRUE )
 
 	''
-	env.scope = 1
-	env.currproc = proc
+	if( env.outf.ismain ) then
+		env.scope = 1
+		env.currproc = proc
 
-	if( argtail <> NULL ) then
-		arg = symbGetProcHeadArg( proc )
-		emit.main.argc = symbAddArgAsVar( arg->alias, arg )
-		arg = symbGetProcTailArg( proc )
-		emit.main.argv = symbAddArgAsVar( arg->alias, arg )
-	end if
+		if( argtail <> NULL ) then
+			arg = symbGetProcHeadArg( proc )
+			emit.main.argc = symbAddArgAsVar( arg->alias, arg )
+			arg = symbGetProcTailArg( proc )
+			emit.main.argv = symbAddArgAsVar( arg->alias, arg )
+		end if
 
-	env.currproc = NULL
-	env.scope = 0
+		env.currproc = NULL
+		env.scope = 0
 
-	''
-	if( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE ) then
+		''
    		emitWriteRtInit( )
    	end if
 
@@ -158,16 +158,18 @@ end sub
 '':::::
 private sub hMainEnd( )
 
-    astAdd( astNewLABEL( emit.main.exitlabel ) )
+    if( env.outf.ismain ) then
+    	astAdd( astNewLABEL( emit.main.exitlabel ) )
 
-    '' end( 0 )
-    rtlExitRt( NULL )
+    	'' end( 0 )
+    	rtlExitRt( NULL )
 
-    ''
-    '' set default data label (def label isn't global as it could clash with other
-    '' modules, so DataRestore alone can't figure out where to start)
-    if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
-    	rtlDataRestore( NULL, emit.main.proc, TRUE )
+    	''
+    	'' set default data label (def label isn't global as it could clash with other
+    	'' modules, so DataRestore alone can't figure out where to start)
+    	if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
+    		rtlDataRestore( NULL, emit.main.proc, TRUE )
+    	end if
     end if
 
 	''
@@ -335,7 +337,11 @@ end function
 sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
 
     proc->proc.stk.localptr = EMIT_LOCSTART
-    proc->proc.stk.argptr	= iif( proc->proc.ismain, EMIT_MAINARGSTART, EMIT_ARGSTART )
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+    	proc->proc.stk.argptr = iif( symbIsMainProc( proc ), EMIT_MAINARGSTART, EMIT_ARGSTART )
+	else
+		proc->proc.stk.argptr = EMIT_ARGSTART
+	end if
 
 end sub
 

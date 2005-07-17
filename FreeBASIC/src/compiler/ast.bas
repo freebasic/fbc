@@ -239,11 +239,21 @@ private sub hProcFlushAll( ) static
         	exit do
         end if
 
-		'' private and never called? skip
 		doemit = TRUE
+		'' private?
 		if( symbIsPrivate( p->proc ) ) then
+			'' never called? skip
 			if( not symbGetProcIsCalled( p->proc ) ) then
 				doemit = FALSE
+			end if
+
+		else
+			'' main?
+			if( p->ismain ) then
+				'' module is not the main one? skip
+				if( not env.inf.ismain ) then
+					doemit = FALSE
+				end if
 			end if
 		end if
 

@@ -4846,9 +4846,10 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     end if
 
     outp( "ret " + str( bytestopop ) )
-#ifdef TARGET_LINUX
-    outEx( ".size " + symbGetName( proc ) + ", .-" + symbGetName( proc ) + NEWLINE, FALSE )
-#endif
+
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+    	outEx( ".size " + symbGetName( proc ) + ", .-" + symbGetName( proc ) + NEWLINE, FALSE )
+	end if
 
 end sub
 
@@ -4888,9 +4889,9 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 
 	hLABEL( symbGetName( proc ) )
 
-#ifdef TARGET_LINUX
-	outEx( ".type " + symbGetName( proc ) + ", @function" + NEWLINE, FALSE )
-#endif
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+		outEx( ".type " + symbGetName( proc ) + ", @function" + NEWLINE, FALSE )
+	end if
 
 	'' frame
 	hCreateFrame( proc )
@@ -5131,12 +5132,8 @@ end sub
 '':::::
 sub emitWriteHeader( ) static
 
-   	emit.modulename = hStripPath( hStripExt( env.inf.name ) )
-   	hClearName( emit.modulename )
-   	emit.entryname = hCreateMainAlias( emit.modulename )
-
 	''
-	edbgEmitHeader( env.outf.num, env.inf.name, emit.modulename, emit.entryname )
+	edbgEmitHeader( env.inf.name )
 
 	''
 	hWriteStr( TRUE,  ".intel_syntax noprefix" )
@@ -5159,9 +5156,6 @@ end sub
 sub emitWriteRtInit( ) static
     dim as zstring ptr id
     dim as ASTNODE ptr argc, argv
-
-    '' finit
-    astAdd( astNewLIT( "finit", TRUE ) )
 
 	'' call fb_Init
 	argc = NULL

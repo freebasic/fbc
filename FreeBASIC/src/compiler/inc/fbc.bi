@@ -28,8 +28,6 @@ type FBCCTX
 	'' methods
 	processOptions				as function ( byval opt as string, byval argv as string ) as integer
 	listFiles					as function ( byval argv as string ) as integer
-	processCompOptions			as function ( byval argv as string ) as integer
-	setCompOptions				as function ( ) as integer
 	compileResFiles				as function ( ) as integer
 	linkFiles                   as function ( ) as integer
 	archiveFiles                as function ( byval cmdline as string ) as integer
@@ -45,8 +43,6 @@ type FBCCTX
 	showversion					as integer
 	target						as integer
 	naming						as integer
-	cputype						as integer
-	warnlevel					as integer
 
     libs						as integer
     objs						as integer
@@ -66,7 +62,9 @@ type FBCCTX
 	pthlist(0 to FB_MAXARGS-1) 	as string
 
 	outname 					as zstring * FB_MAXPATHLEN+1
-	entrypoint 					as zstring * 3+FB_MAXNAMELEN+6+1
+	mainpath					as zstring * FB_MAXPATHLEN+1
+	mainfile					as zstring * FB_MAXNAMELEN+1
+	mainset						as integer
 	subsystem					as zstring * FB_MAXNAMELEN+1
 end type
 
@@ -74,31 +72,6 @@ end type
 ''
 '' macros
 ''
-#define SETUP_OUTNAME()													_
-	if( fbc.inps > 0 ) then	                 							:_
-		fbc.outname = hStripExt( fbc.inplist(0) )                   	:_
-	else                                                            	:_
-		if( fbc.objs > 0 ) then                                     	:_
-			fbc.outname = hStripExt( fbc.objlist(0) )               	:_
-		else                                                        	:_
-			fbc.outname = "noname"                                  	:_
-		end if                                                      	:_
-	end if
-
-
-#define SETUP_ENTRYPOINT()												_
-	if( fbc.inps > 0 ) then                                         	:_
-		fbc.entrypoint = hStripPath( hStripExt( fbc.inplist(0) ) )		:_
-	else                                                            	:_
-		if( fbc.objs > 0 ) then                                     	:_
-			fbc.entrypoint = hStripPath( hStripExt( fbc.objlist(0) ) )  :_
-		else                                                        	:_
-			fbc.entrypoint = "noentry"                              	:_
-		end if                                                      	:_
-	end if                                                          	:_
-                                                                    	:_
-	fbc.entrypoint = hCreateMainAlias( fbc.entrypoint )
-
 #define safeKill(f)														_
 	if( kill( f ) <> 0 ) then                                           :_
 	end if
@@ -108,7 +81,10 @@ end type
 ''
 '' prototypes
 ''
-declare function fbcInit				( ) as integer
+declare function fbcInit_dos			( ) as integer
+declare function fbcInit_linux			( ) as integer
+declare function fbcInit_win32			( ) as integer
+declare function fbcInit_xbox			( ) as integer
 
 ''
 '' globals

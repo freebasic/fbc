@@ -93,15 +93,6 @@ data "__FB_VER_MAJOR__",		FB_VER_STR_MAJOR, 1, NULL
 data "__FB_VER_MINOR__",		FB_VER_STR_MINOR, 1, NULL
 data "__FB_VER_PATCH__",		FB_VER_STR_PATCH, 1, NULL
 data "__FB_SIGNATURE__",		FB_SIGN,		  0, NULL
-#ifdef TARGET_WIN32
-data "__FB_WIN32__",			"",				  0, NULL
-#elseif defined(TARGET_LINUX)
-data "__FB_LINUX__",			"",				  0, NULL
-#elseif defined(TARGET_DOS)
-data "__FB_DOS__",			    "",				  0, NULL
-#elseif defined(TARGET_XBOX)
-data "__FB_XBOX__",				"",				  0, NULL
-#endif
 data "__FILE__",				"",				  0, @hDefFile_cb
 data "__FUNCTION__",			"",				  0, @hDefFunction_cb
 data "__LINE__",				"",				  1, @hDefLine_cb
@@ -380,6 +371,20 @@ sub symbInitDefines static
 
     	symbAddDefine( def, value, len( value ), 0, NULL, FALSE, proc, flags )
     loop
+
+	''
+	select case as const env.clopt.target
+	case FB_COMPTARGET_WIN32
+		def = "__FB_WIN32__"
+	case FB_COMPTARGET_LINUX
+		def = "__FB_LINUX__"
+	case FB_COMPTARGET_DOS
+		def = "__FB_DOS__"
+	case FB_COMPTARGET_XBOX
+		def = "__FB_XBOX__"
+	end select
+
+	symbAddDefine( def, "", 0, 0, NULL, FALSE, NULL, 0 )
 
 end sub
 
@@ -2142,9 +2147,7 @@ private function hSetupProc( byval symbol as string, _
 				             byval argc as integer, _
 				             byval argtail as FBSYMBOL ptr, _
 			                 byval declaring as integer, _
-			                 byval preservecase as integer, _
-			                 byval domangle as integer, _
-			                 byval ismain as integer ) as FBSYMBOL ptr static
+			                 byval preservecase as integer ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 aname
     dim as integer lgt, i, realtype
@@ -2176,17 +2179,11 @@ private function hSetupProc( byval symbol as string, _
 			aname = *hCreateOvlProcAlias( aname, argc, argtail )
 		end if
 
-		if( domangle ) then
-			aname = *hCreateProcAlias( aname, lgt, mode )
-		end if
+		aname = *hCreateProcAlias( aname, lgt, mode )
 
     '' alias given..
     else
-	   	if( domangle ) then
-	   		aname = *hCreateProcAlias( aliasname, lgt, mode )
-	   	else
-	   		aname = aliasname
-	   	end if
+	   	aname = *hCreateProcAlias( aliasname, lgt, mode )
     end if
 
     ''
@@ -2217,9 +2214,7 @@ private function hSetupProc( byval symbol as string, _
 
 				aname = *hCreateOvlProcAlias( aname, argc, argtail )
 
-				if( domangle ) then
-					aname = *hCreateProcAlias( aname, lgt, mode )
-				end if
+				aname = *hCreateProcAlias( aname, lgt, mode )
 			end if
 		end if
 
@@ -2251,7 +2246,6 @@ private function hSetupProc( byval symbol as string, _
 	f->proc.isdeclared 	= declaring
 	f->proc.iscalled	= FALSE
 	f->proc.isrtl		= FALSE
-	f->proc.ismain		= ismain
 	f->proc.doerrorcheck= FALSE
 
 	f->proc.mode		= mode
@@ -2315,7 +2309,7 @@ function symbAddPrototype( byval symbol as string, _
     function = NULL
 
 	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
-					alloctype, mode, argc, argtail, isexternal, preservecase, TRUE, FALSE )
+					alloctype, mode, argc, argtail, isexternal, preservecase )
 	if( f = NULL ) then
 		exit function
 	end if
@@ -2334,16 +2328,14 @@ function symbAddProc( byval symbol as string, _
 					  byval alloctype as integer, _
 					  byval mode as integer, _
 					  byval argc as integer, _
-					  byval argtail as FBSYMBOL ptr, _
-					  byval domangle as integer, _
-					  byval ismain as integer ) as FBSYMBOL ptr static
+					  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
     dim f as FBSYMBOL ptr
 
     function = NULL
 
 	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
-					alloctype, mode, argc, argtail, TRUE, FALSE, domangle, ismain )
+					alloctype, mode, argc, argtail, TRUE, FALSE )
 	if( f = NULL ) then
 		exit function
 	end if

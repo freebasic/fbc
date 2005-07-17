@@ -839,11 +839,11 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     ''
     isbyref = symbIsArgByRef( sym )
 
-#ifdef TARGET_WIN32
-	isimport = symbIsImport( sym )
-#else
-	isimport = FALSE
-#endif
+	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		isimport = symbIsImport( sym )
+	else
+		isimport = FALSE
+	end if
 
     ''
     idxexpr  = NULL

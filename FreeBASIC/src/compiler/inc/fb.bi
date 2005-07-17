@@ -222,6 +222,7 @@ enum FBERRMSG_ENUM
 	FB_ERRMSG_RECURSIVEUDT
 	FB_ERRMSG_CANTREDIMARRAYFIELDS
 	FB_ERRMSG_CANTINCLUDEPERIODS
+	FB_ERRMSG_EXEMISSING
 	FB_ERRMSGS
 end enum
 
@@ -249,6 +250,7 @@ enum FBOUTTYPE_ENUM
 	FB_OUTTYPE_EXECUTABLE
 	FB_OUTTYPE_STATICLIB
 	FB_OUTTYPE_DYNAMICLIB
+	FB_OUTTYPE_OBJECT
 end enum
 
 '' target platform
@@ -295,7 +297,8 @@ end enum
 declare function 	fbInit			( ) as integer
 declare sub 		fbEnd			( )
 declare function 	fbCompile		( byval infname as string, _
-									  byval outfname as string ) as integer
+									  byval outfname as string, _
+									  byval ismain as integer ) as integer
 
 declare sub 		fbSetPaths		( byval target as integer )
 declare function 	fbGetPath		( byval path as integer ) as zstring ptr
@@ -318,6 +321,8 @@ declare function 	fbIncludeFile	( byval filename as string, _
 declare function 	fbGetIncFile	( byval index as integer ) as string
 
 declare function    fbGetNaming     ( ) as integer
+
+declare function 	fbGetEntryPoint ( ) as string
 
 declare sub 		fbAddDefaultLibs( )
 

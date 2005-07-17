@@ -51,32 +51,6 @@ defint a-z
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-deflibsdata:
-data "fb"
-#ifdef TARGET_WIN32
-data "msvcrt"
-data "kernel32"
-#elseif defined(TARGET_LINUX)
-data "c"
-data "m"
-data "pthread"
-data "dl"
-#elseif defined(TARGET_DOS)
-data "c"
-#elseif defined(TARGET_XBOX)
-data "fbgfx"
-data "SDL"
-data "openxdk"
-data "hal"
-data "c"
-data "hal"
-data "usb"
-data "c"
-data "xboxkrnl"
-data "m"
-#endif
-data ""
-
 '':::::
 sub fbAddIncPath( byval path as string )
 
@@ -173,7 +147,7 @@ private sub hSetCtx( )
 
 	env.prntcnt				= 0
 	env.prntopt				= FALSE
-	env.checkarray		= TRUE
+	env.checkarray			= TRUE
 
 	''
 	env.forstmt.endlabel	= NULL
@@ -381,14 +355,14 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_LIB)	= "\\lib\\dos"
 
 	case FB_COMPTARGET_LINUX
-#ifdef TARGET_WIN32
-		pathTB(FB_PATH_BIN) = "\\bin\\linux\\"
-		pathTB(FB_PATH_INC) = "\\inc\\"
-		pathTB(FB_PATH_LIB) = "\\lib\\linux"
-#else
+#ifdef TARGET_LINUX
 		pathTB(FB_PATH_BIN)	= "/usr/share/freebasic/bin/"
 		pathTB(FB_PATH_INC)	= "/usr/share/freebasic/inc/"
 		pathTB(FB_PATH_LIB)	= "/usr/share/freebasic/lib"
+#else
+		pathTB(FB_PATH_BIN) = "\\bin\\linux\\"
+		pathTB(FB_PATH_INC) = "\\inc\\"
+		pathTB(FB_PATH_LIB) = "\\lib\\linux"
 #endif
 
 	case FB_COMPTARGET_XBOX
@@ -403,6 +377,20 @@ end sub
 function fbGetPath( byval path as integer ) as zstring ptr static
 
 	function = @pathTB( path )
+
+end function
+
+'':::::
+function fbGetEntryPoint( ) as string static
+
+	select case env.clopt.target
+	case FB_COMPTARGET_XBOX
+		return "XBoxStartup2"
+
+	case else
+		return "main"
+
+	end select
 
 end function
 
@@ -434,8 +422,9 @@ sub fbEnd
 end sub
 
 '':::::
-function fbCompile ( byval infname as string, _
-				     byval outfname as string ) as integer
+function fbCompile( byval infname as string, _
+				    byval outfname as string, _
+				    byval ismain as integer ) as integer
     dim as integer res
 	dim as double tmr
 
@@ -444,8 +433,10 @@ function fbCompile ( byval infname as string, _
 	''
 	env.inf.name	= infname
 	env.inf.incfile	= INVALID
+	env.inf.ismain	= ismain
 
 	env.outf.name	= outfname
+	env.outf.ismain = ismain
 
 	'' open source file
 	if( not hFileExists( infname ) ) then
@@ -515,22 +506,43 @@ end function
 
 '':::::
 sub fbAddDefaultLibs( ) static
-    dim lname as string
 
 	if( env.clopt.nodeflibs ) then
 		exit sub
     end if
 
-	restore deflibsdata
+	symbAddLib( "fb" )
 
-	do
-		read lname
-		if( len( lname ) = 0 ) then
-			exit do
-		end if
+	select case as const env.clopt.target
+	case FB_COMPTARGET_WIN32
+		symbAddLib( "gcc" )
+		symbAddLib( "mingw32" )
+		symbAddLib( "moldname" )
+		symbAddLib( "msvcrt" )
+		symbAddLib( "kernel32" )
 
-		symbAddLib( lname )
-	loop
+	case FB_COMPTARGET_LINUX
+		symbAddLib( "c" )
+		symbAddLib( "m" )
+		symbAddLib( "pthread" )
+		symbAddLib( "dl" )
+
+	case FB_COMPTARGET_DOS
+		symbAddLib( "c" )
+
+	case FB_COMPTARGET_XBOX
+		symbAddLib( "fbgfx" )
+		symbAddLib( "SDL" )
+		symbAddLib( "openxdk" )
+		symbAddLib( "hal" )
+		symbAddLib( "c" )
+		symbAddLib( "hal" )
+		symbAddLib( "usb" )
+		symbAddLib( "c" )
+		symbAddLib( "xboxkrnl" )
+		symbAddLib( "m" )
+
+	end select
 
 end sub
 
