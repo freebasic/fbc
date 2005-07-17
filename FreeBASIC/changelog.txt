@@ -6,10 +6,15 @@ Version 0.14 Beta:
   must be changed to "p += 1"
 - to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not
   passing pointers or numeric values such as NULL or 0, the BYVAL modifier will have to be used now (v1c)
-- Some internal changes to reduce final executables size (lillo)
-- macro text will be expanded on comments emited when the -g command-line option is used (v1c)
+- _main will be always the entry-point from now, to be more compatible with statically linked C libraries and 
+  to remove the DOS and Xbox temporary object creation "hack". Because of that, if compiling and not linking 
+  objects files, the -m command-line option must be used to tell the compiler which module will be the main 
+  one (v1c)
+- the DllMain function is not needed anymore in the Windows version, just declare the exports and remove the 
+  DllMain function, it won't be called anymore (v1c)
 - the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as
   inline and will be evaluated at compile-time when constants are used as parameters (v1c)
+- macro text will be expanded on comments emited when the -g command-line option is used (v1c)
 - multiple strings concatenation such as "a = b + c + d + ..." will be converted to
   "a = b: a += c: a += d: ...", giving a speed up, because no temporary dynamic strings will be used (v1c)
 - speeded up PUT routine when using PSET/PRESET/AND/OR/XOR drawing mode (lillo)
