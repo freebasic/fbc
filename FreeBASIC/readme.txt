@@ -1,5 +1,5 @@
   
-  FreeBASIC - A 32-bit BASIC Compiler for DOS, Windows and Linux
+  FreeBASIC - A multi-platform 32-bit BASIC Compiler
   Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 
 
@@ -170,6 +170,17 @@ Most Important Features:
     - DirectX and the Windows API (W.I.P.)
 
     - more to come...
+
+  o Multi-platform:
+
+    - FreeBASIC currently runs on 32-bit Windows, Linux, and MS-DOS and also
+      creates applications for the Xbox console. More platforms to come.
+
+    - The run-time library was written with portability in mind. All third-party 
+      tools used exist on most operating systems already as they are from the 
+      GNU binutils. The compiler is written in 100% FreeBASIC code (that's it, 
+      FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it 
+      doesn't depend on non-portable tools.
 
   o A large number of variable types available, like BYTE, SHORT, INTEGER, 
     LONGINT, SINGLE, DOUBLE and STRING:
@@ -438,21 +449,6 @@ Most Important Features:
       software is used (but GoRC on Win32). The assembler, linker, archiver, and 
       other command-line applications come from the GNU binutil programming tools.
 
-  o Multi-platform:
-
-    - The run-time library is being written with portability in mind. Operating
-      system-dependent functions are separated to make porting the compiler
-      easy.
-
-    - The compiler is written in 100% FreeBASIC code (FreeBASIC compiles itself.)
-      As all modules are independent, porting to other operating systems on the
-      x86 platform won't be too difficult.
-
-    - All tools used in the creation of FreeBASIC exist on most operating systems
-      already as they are from the GNU binutils.
-
-    - FreeBASIC currently runs on 32-bit Windows, Linux, and MS-DOS.
-
 
 What FreeBASIC Isn't:
 
@@ -561,12 +557,15 @@ Credits (in alphabetic order):
     - Wrote many of the examples in the examples/Windows/gui directory.
 
 
-  o Third-party tools:
-    - Win32: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
-    - DOS32: DJGPP (http://www.delorie.com/)
+  o Third-party tools included:
+    - DOS version: DJGPP (http://www.delorie.com/)
 
-  o Many console routines used in the Win32 version of the run-time library were 
-    based on the CONIO implementation for Mingw32.
+    - Windows version: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
+
+    - Xbox version: ....................
+
+  o Many console routines used in the Win32 version of the run-time library 
+    were based on the CONIO implementation for Mingw32.
 
   o The long integers (64-bit) division and modulo routines are from the GCC's 
     libgcc2 sources.

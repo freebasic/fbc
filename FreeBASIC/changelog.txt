@@ -27,6 +27,8 @@ Version 0.14 Beta:
 - Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 - MULTIKEY, GETMOUSE and SETMOUSE will now also work in plain console text mode (lillo)
 - user defined type (UDT) assignaments are now done with inline code (v1c)
+- the Windows version of FBC can now compile and link DOS, Linux and Xbox applications if the proper cross-compiling 
+  versions of the GNU binutils are available and if all the libraries needed are installed (v1c)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
