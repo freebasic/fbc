@@ -562,7 +562,7 @@ Credits (in alphabetic order):
 
     - Windows version: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
 
-    - Xbox version: ....................
+    - Xbox version: OpenXDK (http://www.openxdk.org/)
 
   o Many console routines used in the Win32 version of the run-time library 
     were based on the CONIO implementation for Mingw32.
