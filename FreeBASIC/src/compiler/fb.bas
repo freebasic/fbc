@@ -366,7 +366,7 @@ sub fbSetPaths( byval target as integer ) static
 #endif
 
 	case FB_COMPTARGET_XBOX
-		pathTB(FB_PATH_BIN) = "\\bin\\xbox\\"
+		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
 		pathTB(FB_PATH_LIB) = "\\lib\\xbox"
 	end select
