@@ -36,19 +36,47 @@ FB_ERRORCTX fb_errctx = { 0 };
 FB_INPCTX fb_inpctx = { 0 };
 FB_PRINTUSGCTX fb_printusgctx = { 0 };
 
+/* prototypes for the FB constructors and destructors */
+typedef void (*FnCTOR)(void);
+typedef void (*FnDTOR)(void);
+
+/* variable pointing to the list of FB constructors/destructors */
+extern FnCTOR __FB_CTOR_LIST__;
+extern FnDTOR __FB_DTOR_LIST__;
+
+/* execute all constructors */
+void fb_CallCTORS(void)
+{
+    FnCTOR *pCTOR;
+    for (pCTOR=&__FB_CTOR_LIST__; (*pCTOR)!=NULL; ++pCTOR) {
+        (*pCTOR)();
+    }
+}
+
+/* execute all destructors */
+void fb_CallDTORS(void)
+{
+    FnDTOR *pDTOR;
+    for (pDTOR=&__FB_DTOR_LIST__; (*pDTOR)!=NULL; ++pDTOR) {
+        (*pDTOR)();
+    }
+}
 
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {
-
 	/* initialize files table */
     memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
 
 	/* os-dep initialization */
-	fb_hInit( argc, argv );
+    fb_hInit( argc, argv );
 
-	/////atexit( &fb_End );
+    fb_CallCTORS();
 
+    /* fb_End will be called implicitly by the main function */
+#if 0
+	atexit( &fb_End );
+#endif
 }
 
 

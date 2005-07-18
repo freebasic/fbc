@@ -2058,25 +2058,25 @@ data "dylibfree","fb_DylibFree", _
 
 '' beep ( ) as void
 data "beep","fb_Beep", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
 '' mkdir ( byval path as string ) as integer
 data "mkdir","fb_MkDir", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 '' rmdir ( byval path as string ) as integer
 data "rmdir","fb_RmDir", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 '' chdir ( byval path as string ) as integer
 data "chdir","fb_ChDir", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE

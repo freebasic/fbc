@@ -64,6 +64,7 @@ type FBCCTX
 	outname 					as zstring * FB_MAXPATHLEN+1
 	mainpath					as zstring * FB_MAXPATHLEN+1
 	mainfile					as zstring * FB_MAXNAMELEN+1
+	mapfile						as zstring * FB_MAXNAMELEN+1
 	mainset						as integer
 	subsystem					as zstring * FB_MAXNAMELEN+1
 end type

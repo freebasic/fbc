@@ -320,6 +320,8 @@ declare function 	rtlMathLongintMOD	( byval dtype as integer, _
 declare function 	rtlMathFp2ULongint	( byval expr as ASTNODE ptr, _
 										  byval dtype as integer ) as ASTNODE ptr
 
+declare function    rtlInitMain         ( ) as integer
+
 declare function 	rtlInitRt			( byval argc as ASTNODE ptr, _
 										  byval argv as ASTNODE ptr ) as ASTNODE ptr
 

@@ -91,6 +91,10 @@ function _linkFiles as integer
 	'' set script file and subsystem
 	ldcline = "-T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386pe.x\" -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
 
+    if( len( fbc.mapfile ) > 0) then
+        ldcline += " -Map " + fbc.mapfile
+    end if
+
 	if( not fbc.debug ) then
 		ldcline += " --strip-all"
 	end if

@@ -74,6 +74,10 @@ Version 0.14 Beta:
 - graphical PUT will now fail and report a runtime error if an image GETed while in a mode with a certain depth is
   attempted to be drawn in a mode with a different color depth (lillo)
 - private functions will only be emitted if referenced (v1c)
+- constructor and destructor functions (mjs)
+  - CONSTRUCTOR and DESTRUCTOR aren't keywords
+  - constructors will be executed *after* fb_Init
+- -map <filename> to create a map file (mjs)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -136,6 +140,7 @@ Version 0.14 Beta:
 - __LINE__ now returns a number instead of a string (mjs)
 - VIEW cleared the screen with a bad color if called without arguments, instead of just resetting the view (lillo)
 - coordinates translation with PMAP was giving back bad results (lillo)
+- argc and argv are now always passed to fb_Init (mjs)
 
 
 Version 0.13 Beta:

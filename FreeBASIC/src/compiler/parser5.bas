@@ -154,7 +154,7 @@ end function
 
 '':::::
 ''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) OVERLOAD? (ALIAS LIT_STRING)?
-''                     ('(' Arguments? ')')? (AS SymbolType)? STATIC? EXPORT?
+''                     ('(' Arguments? ')')? (AS SymbolType)? (CONSTRUCTOR|DESTRUCTOR)? STATIC? EXPORT?
 ''
 function cSubOrFuncHeader( byval issub as integer, _
 						   byref proc as FBSYMBOL ptr, _
@@ -226,6 +226,15 @@ function cSubOrFuncHeader( byval issub as integer, _
 		argc = 0
 		argtail = NULL
 	end if
+
+    select case ucase$( *lexGetText( ) )
+    case "CONSTRUCTOR"
+        lexSkipToken( )
+		alloctype or= FB_ALLOCTYPE_CONSTRUCTOR
+    case "DESTRUCTOR"
+        lexSkipToken( )
+		alloctype or= FB_ALLOCTYPE_DESTRUCTOR
+    end select
 
     '' (AS SymbolType)?
     if( lexGetToken( ) = FB_TK_AS ) then

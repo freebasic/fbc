@@ -94,8 +94,10 @@ private sub hMainBegin( )
 	argtail = NULL
 	argc = 0
 
+#if 0
 	select case env.clopt.target
 	case FB_COMPTARGET_DOS, FB_COMPTARGET_LINUX
+#endif
 
 		argc = 2
 		'' argc
@@ -104,6 +106,7 @@ private sub hMainBegin( )
 							  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 		'' argv
+#if 0
 		if( env.clopt.target = FB_COMPTARGET_DOS ) then
 			dtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID
 			ptrcnt = 2
@@ -111,12 +114,17 @@ private sub hMainBegin( )
 			dtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID
 			ptrcnt = 1
 		end if
+#else
+		dtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR
+		ptrcnt = 2
+#endif
 
 		argtail = symbAddArg( "{argv}", argtail, _
 							  dtype, NULL, ptrcnt, _
 							  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
-
+#if 0
 	end select
+#endif
 
 	''
 	proc = symbAddProc( "", fbGetEntryPoint( ), "", _

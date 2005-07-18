@@ -490,7 +490,9 @@ enum FBALLOCTYPE_ENUM
 	FB_ALLOCTYPE_IMPORT			= 4096
 	FB_ALLOCTYPE_OVERLOADED		= 8192			'' functions only
 	FB_ALLOCTYPE_JUMPTB			= 16384
-	FB_ALLOCTYPE_MAINPROC		= 32768
+	FB_ALLOCTYPE_MAINPROC		= &H08000
+    FB_ALLOCTYPE_CONSTRUCTOR    = &H10000       '' it can be either constructor
+    FB_ALLOCTYPE_DESTRUCTOR     = &H20000       '' or destructor, but not both ...
 end enum
 
 #include once "inc\hash.bi"

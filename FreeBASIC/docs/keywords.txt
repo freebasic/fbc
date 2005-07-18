@@ -41,6 +41,8 @@
   CLOSE Statement
   CLEAR Statement       (diff: completely different mean: used to fill a memory block with some value, args are:
                          byref dst as any, byval value as integer = 0, byval bytes as integer)
+  CONSTRUCTOR			this is not a keyword ... but it's recognized
+						 as part of a sub/function definition
 
   DATA Statement        (diff: string literals MUST be enclosed by quotes; Const's are evaluated before storing)
   DEFINT Statement
@@ -56,6 +58,8 @@
   DATE$ Function
   DATE$ Statement       (diff: called SETDATE now; syntax is "SETDATE newdate$", not "SETDATE$ = newdate$")
   DIR$ Function
+  DESTRUCTOR			this is not a keyword ... but it's recognized
+						 as part of a sub/function definition
 
   ELSE
   ELSEIF

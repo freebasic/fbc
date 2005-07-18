@@ -1023,6 +1023,12 @@ sub emitSECTION( byval section as integer ) static
 		ostr += "text" + NEWLINE
 	case EMIT_SECTYPE_DIRECTIVE
 		ostr += "drectve" + NEWLINE
+	case EMIT_SECTYPE_CONSTRUCTOR
+		''ostr += "ctors." + hStripExt(hStripPath(env.inf.name)) + NEWLINE
+		ostr += "fb_ctors" + NEWLINE
+	case EMIT_SECTYPE_DESTRUCTOR
+		''ostr += "dtors." + hStripExt(hStripPath(env.inf.name)) + NEWLINE
+		ostr += "fb_dtors" + NEWLINE
 	end select
 
 	outEx( ostr, FALSE )
@@ -4742,14 +4748,36 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     bytestoalloc = (-proc->proc.stk.localptr + 3) and (not 3)
 
     if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
-    	(proc->proc.stk.argptr <> EMIT_ARGSTART) ) then
+    	(proc->proc.stk.argptr <> EMIT_ARGSTART) or _
+        symbIsMainProc( proc ) ) then
 
     	hPUSH( "ebp" )
     	outp( "mov ebp, esp" )
 
+#if 0
+        if( symbIsMainProc( proc ) ) then
+            bytestoalloc += 4
+        end if
+#endif
+
     	if( bytestoalloc > 0 ) then
     		outp( "sub esp, " + str( bytestoalloc ) )
     	end if
+
+#if 0
+        if( symbIsMainProc( proc ) ) then
+            bytestoalloc -= 4
+    		outp( "and esp, 0xFFFFFFF0" )
+    		outp( "xor eax, eax" )
+    		outp( "add eax, 30" )
+    		outp( "and eax, 0xFFFFFFF0" )
+			outp( "mov [ebp - " + str( bytestoalloc + 4 ) + "], eax" )
+    		outp( "call __alloca" )
+    		outp( "call ___main" )
+        end if
+#else
+		outp( "and esp, 0xFFFFFFF0" )
+#endif
     end if
 
     if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
@@ -4840,12 +4868,17 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     end if
 
     if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
-    	(proc->proc.stk.argptr <> EMIT_ARGSTART) ) then
+    	(proc->proc.stk.argptr <> EMIT_ARGSTART) or _
+        symbIsMainProc( proc ) ) then
     	outp( "mov esp, ebp" )
     	hPOP( "ebp" )
     end if
 
-    outp( "ret " + str( bytestopop ) )
+    if( bytestopop > 0 ) then
+    	outp( "ret " + str( bytestopop ) )
+    else
+    	outp( "ret" )
+    end if
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
     	outEx( ".size " + symbGetName( proc ) + ", .-" + symbGetName( proc ) + NEWLINE, FALSE )
@@ -4871,7 +4904,7 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 			      	byval initlabel as FBSYMBOL ptr, _
 			      	byval exitlabel as FBSYMBOL ptr ) static
 
-    dim as integer oldpos, ispublic
+    dim as integer oldpos, ispublic, emit_cdtor_ptr
 
     ispublic = symbIsPublic( proc )
 
@@ -4907,6 +4940,19 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
     edbgEmitLineFlush( proc, proc->proc.dbg.endline, exitlabel )
 
     edbgEmitProcFooter( proc, initlabel, exitlabel )
+
+    emit_cdtor_ptr = TRUE
+    if( symbIsConstructor( proc ) ) then
+		emitSECTION( EMIT_SECTYPE_CONSTRUCTOR )
+    elseif( symbIsDestructor( proc ) ) then
+		emitSECTION( EMIT_SECTYPE_DESTRUCTOR )
+    else
+    	emit_cdtor_ptr = FALSE
+    end if
+
+    if( emit_cdtor_ptr ) then
+    	emitVARINIOFS( symbGetName( proc ) )
+    end if
 
 end sub
 
@@ -5161,16 +5207,19 @@ sub emitWriteRtInit( ) static
 	argc = NULL
 	argv = NULL
 
+#if 0
 	select case env.clopt.target
-	case FB_COMPTARGET_DOS
-		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
-		argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
-
 	case FB_COMPTARGET_LINUX
 		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
 		argv = astNewADDR( IR_OP_ADDROF, _
 						   astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) ) )
+	case else
+#endif
+		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
+		argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
+#if 0
 	end select
+#endif
 
     '' init( argc, argv )
     emit.main.proc = rtlInitRt( argc, argv )

@@ -453,6 +453,7 @@ sub printOptions( )
 	print "-l <name>", "Add a library file to linker's list"
 	print "-lib", "Create a static library"
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
+	print "-map <name>", "Map file name"
 	if( fbc.target <> FB_COMPTARGET_DOS ) then
 		print "-mt", "Link with thread-safe runtime library"
 	end if
@@ -516,6 +517,7 @@ sub setDefaultOptions( )
 
 	fbc.mainfile	= ""
 	fbc.mainpath	= ""
+    fbc.mapfile     = ""
 	fbc.mainset 	= FALSE
 
 end sub
@@ -759,6 +761,16 @@ function processOptions( ) as integer
 				end if
 				fbc.mainpath = hStripFilename( argv(i+1) )
 				fbc.mainset = TRUE
+
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' map file
+			case "map"
+				fbc.mapfile = argv(i+1)
+				if( len( fbc.mapfile ) = 0 ) then
+					exit function
+				end if
 
 				argv(i) = ""
 				argv(i+1) = ""

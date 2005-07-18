@@ -467,6 +467,10 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbIsMainProc(s) ((s->alloctype and FB_ALLOCTYPE_MAINPROC) > 0)
 
+#define symbIsConstructor(s) ((s->alloctype and FB_ALLOCTYPE_CONSTRUCTOR) > 0)
+
+#define symbIsDestructor(s) ((s->alloctype and FB_ALLOCTYPE_DESTRUCTOR) > 0)
+
 
 #define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR))
 

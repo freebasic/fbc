@@ -32,7 +32,7 @@ FBCALL void fb_Beep( )
 {
 
 #ifdef TARGET_WIN32
-	Beep( 8000, 25 );
+	Beep( 1000, 250 );
 #else
 	beep( 8000, 25 );
 #endif

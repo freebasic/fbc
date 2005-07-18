@@ -27,10 +27,13 @@
 #include <stdlib.h>
 #include "fb.h"
 
+/* defined in libfb_init.c */
+void fb_CallDTORS(void);
 
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
+    fb_CallDTORS();
 
 	/* os-dep termination */
 	fb_hEnd( errlevel );

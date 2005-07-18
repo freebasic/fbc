@@ -106,6 +106,10 @@ function _linkFiles as integer
 		ldcline = ""
 	end select
 
+    if( len( fbc.mapfile ) > 0) then
+        ldcline += " -Map " + fbc.mapfile
+    end if
+
 	if( not fbc.debug ) then
 		ldcline += " -s "
 	else
