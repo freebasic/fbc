@@ -36,6 +36,7 @@ CRITICAL_SECTION fb_string_mutex;
 
 HANDLE fb_in_handle, fb_out_handle;
 
+void __main(void);
 
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
@@ -73,4 +74,6 @@ void fb_hInit ( int argc, char **argv )
 
 #endif
 
+    /* call default CRT0 constructors (only required for Win32) */
+    __main();
 }
