@@ -41,29 +41,23 @@ typedef void (*FnCTOR)(void);
 typedef void (*FnDTOR)(void);
 
 /* variable pointing to the list of FB constructors/destructors */
-extern FnCTOR __FB_CTOR_LIST__ __attribute__ ((section (".fb_ctors")));
-extern FnDTOR __FB_DTOR_LIST__ __attribute__ ((section (".fb_dtors")));
-
-/* constructors/destructors list end markers */
-FnCTOR __FB_CTOR_END__ __attribute__ ((section (".fb_ctors"))) = NULL;
-FnDTOR __FB_DTOR_END__ __attribute__ ((section (".fb_dtors"))) = NULL;
+extern FnCTOR __FB_CTOR_BEGIN__, __FB_CTOR_END__;
+extern FnDTOR __FB_DTOR_BEGIN__, __FB_DTOR_END__;
 
 /* execute all constructors */
 void fb_CallCTORS(void)
 {
     FnCTOR *pCTOR;
-
-	for( pCTOR = &__FB_CTOR_LIST__; *pCTOR; pCTOR++ ) {
-		(*pCTOR)();
-	}
+    for (pCTOR=&__FB_CTOR_BEGIN__; pCTOR!=&__FB_CTOR_END__; ++pCTOR) {
+        (*pCTOR)();
+    }
 }
 
 /* execute all destructors */
 void fb_CallDTORS(void)
 {
     FnDTOR *pDTOR;
-
-    for( pDTOR = &__FB_DTOR_LIST__; *pDTOR; pDTOR++ ) {
+    for (pDTOR=&__FB_DTOR_BEGIN__; pDTOR!=&__FB_DTOR_END__; ++pDTOR) {
         (*pDTOR)();
     }
 }
@@ -77,6 +71,7 @@ FBCALL void fb_Init ( int argc, char **argv )
 	/* os-dep initialization */
     fb_hInit( argc, argv );
 
+    /* call all freebasic constructor functions */
     fb_CallCTORS();
 
 }

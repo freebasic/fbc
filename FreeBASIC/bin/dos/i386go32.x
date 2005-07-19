@@ -23,12 +23,12 @@ SECTIONS
     *(.dtor)
     djgpp_last_dtor = . ;
 
-    ___FB_CTOR_LIST__ = . ; __FB_CTOR_LIST__ = . ;
-    *(.fb_ctors)
-    LONG (0);
-    ___FB_DTOR_LIST__ = . ; __FB_DTOR_LIST__ = . ;
-    *(.fb_dtors)
-    LONG (0);
+    ___FB_CTOR_BEGIN__ = . ; __FB_CTOR_BEGIN__ = . ;
+    *(.fb_ctors);
+    ___FB_CTOR_END__ = . ; __FB_CTOR_END__ = . ;
+    ___FB_DTOR_BEGIN__ = . ; __FB_DTOR_BEGIN__ = . ;
+    *(.fb_dtors);
+    ___FB_DTOR_END__ = . ; __FB_DTOR_END__ = . ;
 
     *(.data)
     *(.data.*)
@@ -41,6 +41,7 @@ SECTIONS
     edata  =  . ; PROVIDE(_edata = .) ;
     . = ALIGN(0x200);
   }
+
   .bss  SIZEOF(.data) + ADDR(.data) :
   {
     *(.bss .bss.* .gnu.linkonce.b.*)
