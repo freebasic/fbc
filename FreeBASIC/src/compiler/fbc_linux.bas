@@ -69,7 +69,7 @@ function _linkFiles as integer
 
 	'' set path
 #ifdef TARGET_LINUX
-	ldpath = "ld"
+	ldpath = *fbGetPath( FB_PATH_BIN ) + "ld"
 #else
 	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
 #endif
@@ -102,6 +102,9 @@ function _linkFiles as integer
     		ldcline += " --export-dynamic"
     	end if
     end if
+
+	'' set script file
+	ldcline += " -T \"" + *fbGetPath( FB_PATH_BIN ) + "elf_i386.x\""
 
     if( len( fbc.mapfile ) > 0) then
         ldcline += " -Map " + fbc.mapfile
@@ -137,6 +140,11 @@ function _linkFiles as integer
     	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
     next i
 
+	'' crt init stuff
+	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crt1.o\""
+	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crti.o\""
+	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtbegin.o\""
+	
     '' init lib group
     ldcline += " -( "
 
@@ -149,6 +157,10 @@ function _linkFiles as integer
 
     '' end lib group
     ldcline += "-) "
+
+	'' crt end stuff
+	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtend.o\""
+	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtn.o\""
 
     '' invoke ld
     if( fbc.verbose ) then
@@ -165,8 +177,15 @@ end function
 
 '':::::
 function _archiveFiles( byval cmdline as string ) as integer
+	dim arcpath as string
 
-    if( exec( "ar", cmdline ) <> 0 ) then
+#ifdef TARGET_LINUX
+	arcpath = *fbGetPath( FB_PATH_BIN ) + "ar"
+#else
+	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
+#endif
+
+    if( exec( arcpath, cmdline ) <> 0 ) then
 		return FALSE
     end if
 

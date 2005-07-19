@@ -2,14 +2,14 @@ dim shared v as string
 
 print "Application start"
 
-function do_init constructor
+sub do_init constructor
     print "Before main"
 	v = "from_ctor"
-end function
+end sub
 
-function do_exit destructor
+sub do_exit destructor
     print "Bye !"
-end function
+end sub
 
 if( v <> "from_ctor" ) then
     ASSERT( false )

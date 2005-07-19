@@ -529,6 +529,7 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "kernel32" )
 
 	case FB_COMPTARGET_LINUX
+		symbAddLib( "gcc" )
 		symbAddLib( "c" )
 		symbAddLib( "m" )
 		symbAddLib( "pthread" )

@@ -59,15 +59,15 @@ declare sub 	 setCompOptions			( )
 	dim shared argc as integer, argv(0 to FB_MAXARGS-1) as string
 
     ''
+    setDefaultOptions( )
+
+    ''
     parseCmd( argc, argv() )
 
     if( argc = 0 ) then
     	printOptions( )
     	end 1
     end if
-
-    ''
-    setDefaultOptions( )
 
     ''
     processTargetOptions( )
@@ -285,7 +285,7 @@ function assembleFiles as integer
 
 		case FB_COMPTARGET_LINUX
 #ifdef TARGET_LINUX
-			aspath = "as"
+			aspath = *fbGetPath( FB_PATH_BIN ) + "as"
 #else
 			aspath = binpath + "as.exe"
 #endif
@@ -453,7 +453,7 @@ sub printOptions( )
 	print "-l <name>", "Add a library file to linker's list"
 	print "-lib", "Create a static library"
 	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
-	print "-map <name>", "Map file name"
+	print "-map <name>", "Save the linking map to file name"
 	if( fbc.target <> FB_COMPTARGET_DOS ) then
 		print "-mt", "Link with thread-safe runtime library"
 	end if

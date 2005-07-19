@@ -41,23 +41,29 @@ typedef void (*FnCTOR)(void);
 typedef void (*FnDTOR)(void);
 
 /* variable pointing to the list of FB constructors/destructors */
-extern FnCTOR __FB_CTOR_LIST__;
-extern FnDTOR __FB_DTOR_LIST__;
+extern FnCTOR __FB_CTOR_LIST__ __attribute__ ((section (".fb_ctors")));
+extern FnDTOR __FB_DTOR_LIST__ __attribute__ ((section (".fb_dtors")));
+
+/* constructors/destructors list end markers */
+FnCTOR __FB_CTOR_END__ __attribute__ ((section (".fb_ctors"))) = NULL;
+FnDTOR __FB_DTOR_END__ __attribute__ ((section (".fb_dtors"))) = NULL;
 
 /* execute all constructors */
 void fb_CallCTORS(void)
 {
     FnCTOR *pCTOR;
-    for (pCTOR=&__FB_CTOR_LIST__; (*pCTOR)!=NULL; ++pCTOR) {
-        (*pCTOR)();
-    }
+
+	for( pCTOR = &__FB_CTOR_LIST__; *pCTOR; pCTOR++ ) {
+		(*pCTOR)();
+	}
 }
 
 /* execute all destructors */
 void fb_CallDTORS(void)
 {
     FnDTOR *pDTOR;
-    for (pDTOR=&__FB_DTOR_LIST__; (*pDTOR)!=NULL; ++pDTOR) {
+
+    for( pDTOR = &__FB_DTOR_LIST__; *pDTOR; pDTOR++ ) {
         (*pDTOR)();
     }
 }
@@ -73,10 +79,6 @@ FBCALL void fb_Init ( int argc, char **argv )
 
     fb_CallCTORS();
 
-    /* fb_End will be called implicitly by the main function */
-#if 0
-	atexit( &fb_End );
-#endif
 }
 
 

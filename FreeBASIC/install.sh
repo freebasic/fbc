@@ -17,6 +17,7 @@ mkdir -p -m 0755 "$dest"/lib
 
 cp lib/linux/* "$dest"/lib
 cp -r inc/* "$dest"/inc
+cp bin/linux/* "$dest"/bin
 cp fbc "$dest"/bin
 rm -f /usr/bin/fbc
 (cd /usr/bin; ln -s "$dest"/bin/fbc fbc)
