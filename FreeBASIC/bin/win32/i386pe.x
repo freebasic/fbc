@@ -10,14 +10,14 @@ SECTIONS
     *(SORT(.text$*))
     *(.glue_7t)
     *(.glue_7)
-   	___CTOR_LIST__ = .; __CTOR_LIST__ = . ;
+    ___CTOR_LIST__ = .; __CTOR_LIST__ = . ;
 			LONG (-1);
 			*(EXCLUDE_FILE (*crtend.o) .ctors);
 			*(.ctor);
 			*(SORT(.ctors.*));
 			*crtend.o (.ctors);
 			LONG (0);
-    	___DTOR_LIST__ = .; __DTOR_LIST__ = . ;
+    ___DTOR_LIST__ = .; __DTOR_LIST__ = . ;
 			LONG (-1);
 			*(EXCLUDE_FILE (*crtend.o) .dtors);
 			*(.dtor);
@@ -25,10 +25,10 @@ SECTIONS
 			*crtend.o (.dtors);
 			LONG (0);
 
-        ___FB_CTOR_LIST__ = . ; __FB_CTOR_LIST__ = . ;
+    ___FB_CTOR_LIST__ = .; __FB_CTOR_LIST__ = . ;
         *(.fb_ctors)
         LONG (0);
-        ___FB_DTOR_LIST__ = . ; __FB_DTOR_LIST__ = . ;
+    ___FB_DTOR_LIST__ = .; __FB_DTOR_LIST__ = . ;
         *(.fb_dtors)
         LONG (0);
 

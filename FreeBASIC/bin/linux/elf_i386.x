@@ -1,215 +1,191 @@
 /* Default linker script, for normal executables */
-OUTPUT_FORMAT(pei-i386)
-SEARCH_DIR("lib");
+OUTPUT_FORMAT("elf32-i386", "elf32-i386",
+	      "elf32-i386")
+OUTPUT_ARCH(i386)
+ENTRY(_start)
+/* Do we need any of these for elf?
+   __DYNAMIC = 0;    */
 SECTIONS
 {
-  .text  __image_base__ + __section_alignment__  :
+  /* Read-only sections, merged into text segment: */
+  PROVIDE (__executable_start = 0x08048000); . = 0x08048000 + SIZEOF_HEADERS;
+  .interp         : { *(.interp) }
+  .hash           : { *(.hash) }
+  .dynsym         : { *(.dynsym) }
+  .dynstr         : { *(.dynstr) }
+  .gnu.version    : { *(.gnu.version) }
+  .gnu.version_d  : { *(.gnu.version_d) }
+  .gnu.version_r  : { *(.gnu.version_r) }
+  .rel.init       : { *(.rel.init) }
+  .rela.init      : { *(.rela.init) }
+  .rel.text       : { *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*) }
+  .rela.text      : { *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*) }
+  .rel.fini       : { *(.rel.fini) }
+  .rela.fini      : { *(.rela.fini) }
+  .rel.rodata     : { *(.rel.rodata .rel.rodata.* .rel.gnu.linkonce.r.*) }
+  .rela.rodata    : { *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*) }
+  .rel.data.rel.ro   : { *(.rel.data.rel.ro*) }
+  .rela.data.rel.ro   : { *(.rel.data.rel.ro*) }
+  .rel.data       : { *(.rel.data .rel.data.* .rel.gnu.linkonce.d.*) }
+  .rela.data      : { *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*) }
+  .rel.tdata	  : { *(.rel.tdata .rel.tdata.* .rel.gnu.linkonce.td.*) }
+  .rela.tdata	  : { *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*) }
+  .rel.tbss	  : { *(.rel.tbss .rel.tbss.* .rel.gnu.linkonce.tb.*) }
+  .rela.tbss	  : { *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*) }
+  .rel.ctors      : { *(.rel.ctors) }
+  .rela.ctors     : { *(.rela.ctors) }
+  .rel.dtors      : { *(.rel.dtors) }
+  .rela.dtors     : { *(.rela.dtors) }
+  .rel.got        : { *(.rel.got) }
+  .rela.got       : { *(.rela.got) }
+  .rel.bss        : { *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*) }
+  .rela.bss       : { *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*) }
+  .rel.plt        : { *(.rel.plt) }
+  .rela.plt       : { *(.rela.plt) }
+  .init           :
   {
-     *(.init)
-    *(.text)
-    *(SORT(.text$*))
-    *(.glue_7t)
-    *(.glue_7)
-   	___CTOR_LIST__ = .; __CTOR_LIST__ = . ;
-			LONG (-1);
-			*(EXCLUDE_FILE (*crtend.o) .ctors);
-			*(.ctor);
-			*(SORT(.ctors.*));
-			*crtend.o (.ctors);
-			LONG (0);
-    	___DTOR_LIST__ = .; __DTOR_LIST__ = . ;
-			LONG (-1);
-			*(EXCLUDE_FILE (*crtend.o) .dtors);
-			*(.dtor);
-			*(SORT(.dtors.*));
-			*crtend.o (.dtors);
-			LONG (0);
+    KEEP (*(.init))
+  } =0x90909090
+  .plt            : { *(.plt) }
+  .text           :
+  {
+    *(.text .stub .text.* .gnu.linkonce.t.*)
+    KEEP (*(.text.*personality*))
+    /* .gnu.warning sections are handled specially by elf32.em.  */
+    *(.gnu.warning)
+  } =0x90909090
+  .fini           :
+  {
+    KEEP (*(.fini))
+  } =0x90909090
+  PROVIDE (__etext = .);
+  PROVIDE (_etext = .);
+  PROVIDE (etext = .);
+  .rodata         : { *(.rodata .rodata.* .gnu.linkonce.r.*) }
+  .rodata1        : { *(.rodata1) }
+  .eh_frame_hdr : { *(.eh_frame_hdr) }
+  .eh_frame       : ONLY_IF_RO { KEEP (*(.eh_frame)) }
+  .gcc_except_table   : ONLY_IF_RO { KEEP (*(.gcc_except_table)) *(.gcc_except_table.*) }
+  /* Adjust the address for the data segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
+  . = ALIGN (0x1000) - ((0x1000 - .) & (0x1000 - 1)); . = DATA_SEGMENT_ALIGN (0x1000, 0x1000);
+  /* Exception handling  */
+  .eh_frame       : ONLY_IF_RW { KEEP (*(.eh_frame)) }
+  .gcc_except_table   : ONLY_IF_RW { KEEP (*(.gcc_except_table)) *(.gcc_except_table.*) }
+  /* Thread Local Storage sections  */
+  .tdata	  : { *(.tdata .tdata.* .gnu.linkonce.td.*) }
+  .tbss		  : { *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon) }
+  /* Ensure the __preinit_array_start label is properly aligned.  We
+     could instead move the label definition inside the section, but
+     the linker would then create the section even if it turns out to
+     be empty, which isn't pretty.  */
+  . = ALIGN(32 / 8);
+  PROVIDE (__preinit_array_start = .);
+  .preinit_array     : { KEEP (*(.preinit_array)) }
+  PROVIDE (__preinit_array_end = .);
+  PROVIDE (__init_array_start = .);
+  .init_array     : { KEEP (*(.init_array)) }
+  PROVIDE (__init_array_end = .);
+  PROVIDE (__fini_array_start = .);
+  .fini_array     : { KEEP (*(.fini_array)) }
+  PROVIDE (__fini_array_end = .);
+  .ctors          :
+  {
+    /* gcc uses crtbegin.o to find the start of
+       the constructors, so we make sure it is
+       first.  Because this is a wildcard, it
+       doesn't matter if the user does not
+       actually link against crtbegin.o; the
+       linker won't look for a file to match a
+       wildcard.  The wildcard also means that it
+       doesn't matter which directory crtbegin.o
+       is in.  */
+    KEEP (*crtbegin*.o(.ctors))
+    /* We don't want to include the .ctor section from
+       from the crtend.o file until after the sorted ctors.
+       The .ctor section from the crtend file contains the
+       end of ctors marker and it must be last */
+    KEEP (*(EXCLUDE_FILE (*crtend*.o ) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*(.ctors))
+  }
+  .dtors          :
+  {
+    KEEP (*crtbegin*.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend*.o ) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*(.dtors))
+  }
 
-        ___FB_CTOR_LIST__ = . ; __FB_CTOR_LIST__ = . ;
-        *(.fb_ctors)
-        LONG (0);
-        ___FB_DTOR_LIST__ = . ; __FB_DTOR_LIST__ = . ;
-        *(.fb_dtors)
-        LONG (0);
-    
-     *(.fini)
-    /* ??? Why is .gcc_exc here?  */
-     *(.gcc_exc)
-    PROVIDE (etext = .);
-    *(.gcc_except_table)
-  }
-  /* The Cygwin32 library uses a section to avoid copying certain data
-     on fork.  This used to be named ".data".  The linker used
-     to include this between __data_start__ and __data_end__, but that
-     breaks building the cygwin32 dll.  Instead, we name the section
-     ".data_cygwin_nocopy" and explictly include it after __data_end__. */
-  .data BLOCK(__section_alignment__) :
+  PROVIDE (___FB_CTOR_LIST__ = .);        
+  .fb_ctors     : { KEEP (*(.fb_ctors)) }
+  LONG (0);
+  PROVIDE (___FB_DTOR_LIST__ = .);        
+  .fb_dtors     : { KEEP (*(.fb_dtors)) }
+  LONG (0);
+
+  .jcr            : { KEEP (*(.jcr)) }
+  .data.rel.ro : { *(.data.rel.ro.local) *(.data.rel.ro*) }
+  .dynamic        : { *(.dynamic) }
+  .got            : { *(.got) }
+  . = DATA_SEGMENT_RELRO_END (12, .);
+  .got.plt        : { *(.got.plt) }
+  .data           :
   {
-    __data_start__ = . ;
-    *(.data)
-    *(.data2)
-    *(SORT(.data$*))
-    __data_end__ = . ;
-    *(.data_cygwin_nocopy)
+    *(.data .data.* .gnu.linkonce.d.*)
+    KEEP (*(.gnu.linkonce.d.*personality*))
+    SORT(CONSTRUCTORS)
   }
-  .rdata BLOCK(__section_alignment__) :
+  .data1          : { *(.data1) }
+  _edata = .;
+  PROVIDE (edata = .);
+  __bss_start = .;
+  .bss            :
   {
-    *(.rdata)
-    *(SORT(.rdata$*))
-    *(.eh_frame)
-    ___RUNTIME_PSEUDO_RELOC_LIST__ = .;
-    __RUNTIME_PSEUDO_RELOC_LIST__ = .;
-    *(.rdata_runtime_pseudo_reloc)
-    ___RUNTIME_PSEUDO_RELOC_LIST_END__ = .;
-    __RUNTIME_PSEUDO_RELOC_LIST_END__ = .;
+   *(.dynbss)
+   *(.bss .bss.* .gnu.linkonce.b.*)
+   *(COMMON)
+   /* Align here to ensure that the .bss section occupies space up to
+      _end.  Align after .bss to ensure correct alignment even if the
+      .bss section disappears because there are no input sections.  */
+   . = ALIGN(32 / 8);
   }
-  .pdata BLOCK(__section_alignment__) :
-  {
-    *(.pdata)
-  }
-  .bss BLOCK(__section_alignment__) :
-  {
-    __bss_start__ = . ;
-    *(.bss)
-    *(COMMON)
-    __bss_end__ = . ;
-  }
-  .edata BLOCK(__section_alignment__) :
-  {
-    *(.edata)
-  }
-  /DISCARD/ :
-  {
-    *(.debug$S)
-    *(.debug$T)
-    *(.debug$F)
-    *(.drectve)
-  }
-  .idata BLOCK(__section_alignment__) :
-  {
-    /* This cannot currently be handled with grouped sections.
-	See pe.em:sort_sections.  */
-    SORT(*)(.idata$2)
-    SORT(*)(.idata$3)
-    /* These zeroes mark the end of the import list.  */
-    LONG (0); LONG (0); LONG (0); LONG (0); LONG (0);
-    SORT(*)(.idata$4)
-    SORT(*)(.idata$5)
-    SORT(*)(.idata$6)
-    SORT(*)(.idata$7)
-  }
-  .CRT BLOCK(__section_alignment__) :
-  {
-    ___crt_xc_start__ = . ;
-    *(SORT(.CRT$XC*))  /* C initialization */
-    ___crt_xc_end__ = . ;
-    ___crt_xi_start__ = . ;
-    *(SORT(.CRT$XI*))  /* C++ initialization */
-    ___crt_xi_end__ = . ;
-    ___crt_xl_start__ = . ;
-    *(SORT(.CRT$XL*))  /* TLS callbacks */
-    /* ___crt_xl_end__ is defined in the TLS Directory support code */
-    ___crt_xp_start__ = . ;
-    *(SORT(.CRT$XP*))  /* Pre-termination */
-    ___crt_xp_end__ = . ;
-    ___crt_xt_start__ = . ;
-    *(SORT(.CRT$XT*))  /* Termination */
-    ___crt_xt_end__ = . ;
-  }
-  .tls BLOCK(__section_alignment__) :
-  {
-    ___tls_start__ = . ;
-    *(.tls)
-    *(.tls$)
-    *(SORT(.tls$*))
-    ___tls_end__ = . ;
-  }
-  .endjunk BLOCK(__section_alignment__) :
-  {
-    /* end is deprecated, don't use it */
-    PROVIDE (end = .);
-    PROVIDE ( _end = .);
-     __end__ = .;
-  }
-  .rsrc BLOCK(__section_alignment__) :
-  {
-    *(.rsrc)
-    *(SORT(.rsrc$*))
-  }
-  .reloc BLOCK(__section_alignment__) :
-  {
-    *(.reloc)
-  }
-  .stab BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.stab)
-  }
-  .stabstr BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.stabstr)
-  }
+  . = ALIGN(32 / 8);
+  _end = .;
+  PROVIDE (end = .);
+  . = DATA_SEGMENT_END (.);
+  /* Stabs debugging sections.  */
+  .stab          0 : { *(.stab) }
+  .stabstr       0 : { *(.stabstr) }
+  .stab.excl     0 : { *(.stab.excl) }
+  .stab.exclstr  0 : { *(.stab.exclstr) }
+  .stab.index    0 : { *(.stab.index) }
+  .stab.indexstr 0 : { *(.stab.indexstr) }
+  .comment       0 : { *(.comment) }
   /* DWARF debug sections.
      Symbols in the DWARF debugging sections are relative to the beginning
-     of the section.  Unlike other targets that fake this by putting the
-     section VMA at 0, the PE format will not allow it.  */
-  /* DWARF 1.1 and DWARF 2.  */
-  .debug_aranges BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_aranges)
-  }
-  .debug_pubnames BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_pubnames)
-  }
-  /* DWARF 2.  */
-  .debug_info BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_info) *(.gnu.linkonce.wi.*)
-  }
-  .debug_abbrev BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_abbrev)
-  }
-  .debug_line BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_line)
-  }
-  .debug_frame BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_frame)
-  }
-  .debug_str BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_str)
-  }
-  .debug_loc BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_loc)
-  }
-  .debug_macinfo BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_macinfo)
-  }
-  /* SGI/MIPS DWARF 2 extensions.  */
-  .debug_weaknames BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_weaknames)
-  }
-  .debug_funcnames BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_funcnames)
-  }
-  .debug_typenames BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_typenames)
-  }
-  .debug_varnames BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_varnames)
-  }
-  /* DWARF 3.  */
-  .debug_ranges BLOCK(__section_alignment__) (NOLOAD) :
-  {
-    *(.debug_ranges)
-  }
+     of the section so we begin them at 0.  */
+  /* DWARF 1 */
+  .debug          0 : { *(.debug) }
+  .line           0 : { *(.line) }
+  /* GNU DWARF 1 extensions */
+  .debug_srcinfo  0 : { *(.debug_srcinfo) }
+  .debug_sfnames  0 : { *(.debug_sfnames) }
+  /* DWARF 1.1 and DWARF 2 */
+  .debug_aranges  0 : { *(.debug_aranges) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  /* DWARF 2 */
+  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+  .debug_abbrev   0 : { *(.debug_abbrev) }
+  .debug_line     0 : { *(.debug_line) }
+  .debug_frame    0 : { *(.debug_frame) }
+  .debug_str      0 : { *(.debug_str) }
+  .debug_loc      0 : { *(.debug_loc) }
+  .debug_macinfo  0 : { *(.debug_macinfo) }
+  /* SGI/MIPS DWARF 2 extensions */
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames  0 : { *(.debug_varnames) }
+  /DISCARD/ : { *(.note.GNU-stack) }
 }
