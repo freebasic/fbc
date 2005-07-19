@@ -141,7 +141,9 @@ function _linkFiles as integer
     next i
 
 	'' crt init stuff
-	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crt1.o\""
+	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
+		ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crt1.o\""
+	end if
 	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crti.o\""
 	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtbegin.o\""
 	
