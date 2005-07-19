@@ -20,9 +20,8 @@
 /*
  * str_hex.c -- hex$ routines
  *
- * obs.: see str_convto.c about the fake len returned
- *
  * chng: oct/2004 written [v1ctor]
+ *       jul/2005 rewritten to use consistent case across platforms [DrV]
  *
  */
 
@@ -30,11 +29,14 @@
 #include <stdlib.h>
 #include "fb.h"
 
+static char hex_table[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
 
 /*:::::*/
 static FBSTRING *hHEX ( unsigned int num, int len )
 {
 	FBSTRING 	*dst;
+	char buf[9], *src;
 
 	FB_STRLOCK();
 
@@ -43,15 +45,24 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 	if( dst != NULL )
 	{
 		fb_hStrAllocTemp( dst, len * 2 );
-
+		
 		/* convert */
-#ifdef TARGET_WIN32
-		_itoa( num, dst->data, 16 );
-#else
-		sprintf( dst->data, "%X", num );
-#endif
-
-		dst->len = strlen( dst->data );				/* fake len */
+		buf[0] = hex_table[(num >> 28) & 0xF];
+		buf[1] = hex_table[(num >> 24) & 0xF];
+		buf[2] = hex_table[(num >> 20) & 0xF];
+		buf[3] = hex_table[(num >> 16) & 0xF];
+		buf[4] = hex_table[(num >> 12) & 0xF];
+		buf[5] = hex_table[(num >> 8) & 0xF];
+		buf[6] = hex_table[(num >> 4) & 0xF];
+		buf[7] = hex_table[num & 0xF];
+		buf[8] = '\0';
+		
+		/* find leftmost nonzero digit */
+		for (src = buf; *src == '0'; src++);
+		
+		memcpy(dst->data, src, 9 - (src - buf));
+		
+		dst->len = 8 - (src - buf);
 		dst->len |= FB_TEMPSTRBIT;
 	}
 	else
