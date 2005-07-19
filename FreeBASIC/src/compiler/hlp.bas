@@ -984,13 +984,6 @@ function hToPow2( byval value as uinteger ) as uinteger static
 end function
 
 '':::::
-function hCreateMainAlias( ) as string
-
-	function = *hCreateProcAlias( fbGetEntryPoint( ), 0, FB_FUNCMODE_CDECL )
-
-end function
-
-'':::::
 function hJumpTbAllocSym( ) as any ptr static
 	static as zstring * FB_MAXNAMELEN+1 sname
 	dim as FBARRAYDIM dTB(0)

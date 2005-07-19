@@ -98,8 +98,6 @@ declare function 	hCreateName 			( byval symbol as string, _
 								      		  byval addunderscore as integer = TRUE, _
 								      		  byval clearname as integer  = TRUE) as zstring ptr
 
-declare function 	hCreateMainAlias		( ) as string
-
 declare function 	hStripUnderscore		( byval symbol as string ) as string
 
 declare function 	hStripExt				( byval filename as string ) as string
