@@ -32,21 +32,24 @@
 /*:::::*/
 static void hToBin( unsigned long long num, char *dst )
 {
-	int i, iszero = 1;
+	int i;
 
-	for( i = 0; i < sizeof( long long )*8; i++ )
+	if( num == 0ULL )
+		*dst++ = '0';
+	else
 	{
-		if( num & 0x8000000000000000ULL )
-		{
-			*dst++ = '1';
-			iszero = 0;
-		}
-		else if( !iszero )
-			*dst++ = '0';
+		for( i = 0; i < sizeof( long long )*8; i++, num <<= 1 )
+			if( num & 0x8000000000000000ULL )
+				break;
 
-		num <<= 1;
+		for( ; i < sizeof( long long )*8; i++, num <<= 1 )
+			if( num & 0x8000000000000000ULL )
+				*dst++ = '1';
+			else
+				*dst++ = '0';
 	}
 
+	/* add null-term */
 	*dst = '\0';
 
 }

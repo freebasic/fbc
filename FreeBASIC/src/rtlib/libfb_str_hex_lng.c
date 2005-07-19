@@ -35,8 +35,8 @@ static char hex_table[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C'
 FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 {
 	FBSTRING 	*dst;
-	char buf[17], *src;
-	unsigned int lodw, hidw;
+	char		*buf;
+	int			i;
 
 	FB_STRLOCK();
 
@@ -46,34 +46,28 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 	{
 		fb_hStrAllocTemp( dst, sizeof( long long ) * 2 );
 		
-		lodw = (unsigned int)(num & 0xFFFFFFFF);
-		hidw = (unsigned int)(num >> 32);
-		
 		/* convert */
-		buf[0]  = hex_table[(hidw >> 28) & 0xF];
-		buf[1]  = hex_table[(hidw >> 24) & 0xF];
-		buf[2]  = hex_table[(hidw >> 20) & 0xF];
-		buf[3]  = hex_table[(hidw >> 16) & 0xF];
-		buf[4]  = hex_table[(hidw >> 12) & 0xF];
-		buf[5]  = hex_table[(hidw >> 8 ) & 0xF];
-		buf[6]  = hex_table[(hidw >> 4 ) & 0xF];
-		buf[7]  = hex_table[(hidw      ) & 0xF];		
-		buf[8]  = hex_table[(lodw >> 28) & 0xF];
-		buf[9]  = hex_table[(lodw >> 24) & 0xF];
-		buf[10] = hex_table[(lodw >> 20) & 0xF];
-		buf[11] = hex_table[(lodw >> 16) & 0xF];
-		buf[12] = hex_table[(lodw >> 12) & 0xF];
-		buf[13] = hex_table[(lodw >> 8 ) & 0xF];
-		buf[14] = hex_table[(lodw >> 4 ) & 0xF];
-		buf[15] = hex_table[(lodw      ) & 0xF];
-		buf[16] = '\0';
+		buf = dst->data;
 		
-		/* find leftmost nonzero digit */
-		for (src = buf; *src == '0'; src++);
+		if( num == 0ULL )
+			*buf++ = '0';
+		else
+		{
+			for( i = 0; i < sizeof( long long )*2; i++, num <<= 4 )
+				if( num > 0x0FFFFFFFFFFFFFFFULL )
+					break;
+	
+			for( ; i < sizeof( long long )*2; i++, num <<= 4 )
+				if( num > 0x0FFFFFFFFFFFFFFFULL )
+					*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
+				else
+					*buf++ = '0';
+		}
 		
-		memcpy(dst->data, src, 17 - (src - buf));
+		/* add null-term */
+		*buf = '\0';
 
-		dst->len = 16 - (src - buf);
+		dst->len = buf - dst->data;
 		dst->len |= FB_TEMPSTRBIT;
 	}
 	else

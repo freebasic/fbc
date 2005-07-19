@@ -33,21 +33,24 @@
 static void hToBin( unsigned int num, char *dst, int len )
 {
 	unsigned int mask = 1UL << ((len*8)-1);
-	int i, iszero = 1;
+	int i;
 
-	for( i = 0; i < len*8; i++ )
+	if( num == 0 )
+		*dst++ = '0';
+	else
 	{
-		if( num & mask )
-		{
-			*dst++ = '1';
-			iszero = 0;
-		}
-		else if( !iszero )
-			*dst++ = '0';
+		for( i = 0; i < len*8; i++, num <<= 1 )
+			if( num & mask )
+				break;
 
-		num <<= 1;
+		for( ; i < len*8; i++, num <<= 1 )
+			if( num & mask )
+				*dst++ = '1';
+			else
+				*dst++ = '0';
 	}
-
+	
+	/* add null-term */
 	*dst = '\0';
 
 }
