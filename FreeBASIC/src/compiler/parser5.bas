@@ -227,13 +227,29 @@ function cSubOrFuncHeader( byval issub as integer, _
 		argtail = NULL
 	end if
 
-    select case ucase$( *lexGetText( ) )
-    case "CONSTRUCTOR"
-        lexSkipToken( )
-		alloctype or= FB_ALLOCTYPE_CONSTRUCTOR
-    case "DESTRUCTOR"
-        lexSkipToken( )
-		alloctype or= FB_ALLOCTYPE_DESTRUCTOR
+    '' (CONSTRUCTOR | DESTRUCTOR)?
+    select case lexGetToken( )
+    case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
+
+        '' not a sub?
+        if( not isSub ) then
+        	hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
+        	exit function
+        end if
+
+        '' not argless?
+        if( argc <> 0 ) then
+        	hReportError( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+        	exit function
+        end if
+
+		if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
+			alloctype or= FB_ALLOCTYPE_CONSTRUCTOR
+		else
+			alloctype or= FB_ALLOCTYPE_DESTRUCTOR
+		end if
+
+		lexSkipToken( )
     end select
 
     '' (AS SymbolType)?

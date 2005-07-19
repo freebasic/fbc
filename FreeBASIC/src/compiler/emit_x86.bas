@@ -4754,30 +4754,13 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     	hPUSH( "ebp" )
     	outp( "mov ebp, esp" )
 
-#if 0
-        if( symbIsMainProc( proc ) ) then
-            bytestoalloc += 4
-        end if
-#endif
-
     	if( bytestoalloc > 0 ) then
     		outp( "sub esp, " + str( bytestoalloc ) )
     	end if
 
-#if 0
         if( symbIsMainProc( proc ) ) then
-            bytestoalloc -= 4
-    		outp( "and esp, 0xFFFFFFF0" )
-    		outp( "xor eax, eax" )
-    		outp( "add eax, 30" )
-    		outp( "and eax, 0xFFFFFFF0" )
-			outp( "mov [ebp - " + str( bytestoalloc + 4 ) + "], eax" )
-    		outp( "call __alloca" )
-    		outp( "call ___main" )
-        end if
-#else
-		outp( "and esp, 0xFFFFFFF0" )
-#endif
+			outp( "and esp, 0xFFFFFFF0" )
+	    end if
     end if
 
     if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
@@ -5200,26 +5183,11 @@ end sub
 
 '':::::
 sub emitWriteRtInit( ) static
-    dim as zstring ptr id
     dim as ASTNODE ptr argc, argv
 
 	'' call fb_Init
-	argc = NULL
-	argv = NULL
-
-#if 0
-	select case env.clopt.target
-	case FB_COMPTARGET_LINUX
-		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
-		argv = astNewADDR( IR_OP_ADDROF, _
-						   astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) ) )
-	case else
-#endif
-		argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
-		argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
-#if 0
-	end select
-#endif
+	argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
+	argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
 
     '' init( argc, argv )
     emit.main.proc = rtlInitRt( argc, argv )

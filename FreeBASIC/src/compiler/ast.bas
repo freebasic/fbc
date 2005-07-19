@@ -246,15 +246,6 @@ private sub hProcFlushAll( ) static
 			if( not symbGetProcIsCalled( p->proc ) ) then
 				doemit = FALSE
 			end if
-
-		else
-			'' main?
-			if( p->ismain ) then
-				'' module is not the main one? skip
-				if( not env.inf.ismain ) then
-					doemit = FALSE
-				end if
-			end if
 		end if
 
 		hProcFlush( p, doemit )
@@ -1809,7 +1800,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	''
 	op 	  = n->op
 
-	'' logical operator?
+	'' relational operator?
 	select case as const op
 	case IR_OP_EQ, IR_OP_NE, IR_OP_GT, IR_OP_LT, IR_OP_GE, IR_OP_LE
 

@@ -89,47 +89,20 @@ end sub
 ':::::
 private sub hMainBegin( )
     dim as FBSYMBOL ptr argtail, proc, arg
-    dim as integer argc, dtype, ptrcnt
 
-	argtail = NULL
-	argc = 0
+	'' argc
+	argtail = symbAddArg( "{argc}", NULL, _
+						  FB_SYMBTYPE_INTEGER, NULL, 0, _
+						  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
-#if 0
-	select case env.clopt.target
-	case FB_COMPTARGET_DOS, FB_COMPTARGET_LINUX
-#endif
-
-		argc = 2
-		'' argc
-		argtail = symbAddArg( "{argc}", argtail, _
-							  FB_SYMBTYPE_INTEGER, NULL, 0, _
-							  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
-
-		'' argv
-#if 0
-		if( env.clopt.target = FB_COMPTARGET_DOS ) then
-			dtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID
-			ptrcnt = 2
-		else
-			dtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID
-			ptrcnt = 1
-		end if
-#else
-		dtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR
-		ptrcnt = 2
-#endif
-
-		argtail = symbAddArg( "{argv}", argtail, _
-							  dtype, NULL, ptrcnt, _
-							  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
-#if 0
-	end select
-#endif
-
+	'' argv
+	argtail = symbAddArg( "{argv}", argtail, _
+						  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR, NULL, 2, _
+						  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 	''
 	proc = symbAddProc( "", fbGetEntryPoint( ), "", _
 						FB_SYMBTYPE_VOID, NULL, 0, FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_MAINPROC, _
-						FB_FUNCMODE_CDECL, argc, argtail )
+						FB_FUNCMODE_CDECL, 2, argtail )
 
     symbSetProcIncFile( proc, INVALID )
 
@@ -141,23 +114,21 @@ private sub hMainBegin( )
 	emit.main.node = astProcBegin( proc, emit.main.initlabel, emit.main.exitlabel, TRUE )
 
 	''
-	if( env.outf.ismain ) then
-		env.scope = 1
-		env.currproc = proc
+	env.scope = 1
+	env.currproc = proc
 
-		if( argtail <> NULL ) then
-			arg = symbGetProcHeadArg( proc )
-			emit.main.argc = symbAddArgAsVar( arg->alias, arg )
-			arg = symbGetProcTailArg( proc )
-			emit.main.argv = symbAddArgAsVar( arg->alias, arg )
-		end if
+	if( argtail <> NULL ) then
+		arg = symbGetProcHeadArg( proc )
+		emit.main.argc = symbAddArgAsVar( arg->alias, arg )
+		arg = symbGetProcTailArg( proc )
+		emit.main.argv = symbAddArgAsVar( arg->alias, arg )
+	end if
 
-		env.currproc = NULL
-		env.scope = 0
+	env.currproc = NULL
+	env.scope = 0
 
-		''
-   		emitWriteRtInit( )
-   	end if
+	''
+   	emitWriteRtInit( )
 
    	astAdd( astNewLABEL( emit.main.initlabel ) )
 
@@ -166,19 +137,49 @@ end sub
 '':::::
 private sub hMainEnd( )
 
-    if( env.outf.ismain ) then
-    	astAdd( astNewLABEL( emit.main.exitlabel ) )
+   	astAdd( astNewLABEL( emit.main.exitlabel ) )
 
-    	'' end( 0 )
-    	rtlExitRt( NULL )
+    '' end( 0 )
+    rtlExitRt( NULL )
 
-    	''
-    	'' set default data label (def label isn't global as it could clash with other
-    	'' modules, so DataRestore alone can't figure out where to start)
-    	if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
-    		rtlDataRestore( NULL, emit.main.proc, TRUE )
-    	end if
+    '' set default data label (def label isn't global as it could clash with other
+    '' modules, so DataRestore alone can't figure out where to start)
+    if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
+    	rtlDataRestore( NULL, emit.main.proc, TRUE )
     end if
+
+	''
+	astProcEnd( emit.main.node )
+
+end sub
+
+':::::
+private sub hModLevelBegin( )
+    dim as FBSYMBOL ptr proc
+
+	''
+	proc = symbAddProc( "{main}", fbGetModuleEntry( ), "", _
+						FB_SYMBTYPE_VOID, NULL, 0, FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR, _
+						FB_FUNCMODE_CDECL, 0, NULL )
+
+    symbSetProcIncFile( proc, INVALID )
+    symbSetProcIsCalled( proc, TRUE )
+
+    ''
+	emit.main.initlabel = symbAddLabel( "" )
+	emit.main.exitlabel = symbAddLabel( "" )
+
+    ''
+	emit.main.node = astProcBegin( proc, emit.main.initlabel, emit.main.exitlabel, TRUE )
+
+   	astAdd( astNewLABEL( emit.main.initlabel ) )
+
+end sub
+
+'':::::
+private sub hModLevelEnd( )
+
+   	astAdd( astNewLABEL( emit.main.exitlabel ) )
 
 	''
 	astProcEnd( emit.main.node )
@@ -201,7 +202,11 @@ function emitOpen( ) as integer
 	emitWriteHeader( )
 
 	''
-	hMainBegin( )
+	if( env.outf.ismain ) then
+		hMainBegin( )
+	else
+		hModLevelBegin( )
+	end if
 
 	function = TRUE
 
@@ -211,7 +216,11 @@ end function
 sub emitClose( byval tottime as double )
 
     ''
-    hMainEnd( )
+    if( env.outf.ismain ) then
+    	hMainEnd( )
+    else
+    	hModLevelEnd( )
+    end if
 
     ''
     emitWriteFooter( tottime )
@@ -345,11 +354,7 @@ end function
 sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
 
     proc->proc.stk.localptr = EMIT_LOCSTART
-	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-    	proc->proc.stk.argptr = iif( symbIsMainProc( proc ), EMIT_MAINARGSTART, EMIT_ARGSTART )
-	else
-		proc->proc.stk.argptr = EMIT_ARGSTART
-	end if
+	proc->proc.stk.argptr = EMIT_ARGSTART
 
 end sub
 

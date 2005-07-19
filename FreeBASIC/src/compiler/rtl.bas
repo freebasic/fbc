@@ -2081,6 +2081,27 @@ data "chdir","fb_ChDir", _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_Assert ( byval fname as string, byval linenum as integer, byval funcname as string, _
+''			   byval expression as string ) as void
+data "fb_Assert","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 4, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_AssertWarn ( byval fname as string, byval linenum as integer, byval funcname as string, _
+''			       byval expression as string ) as void
+data "fb_AssertWarn","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 4, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 
 '' EOL
 data ""
@@ -2112,11 +2133,17 @@ data "VA_NEXT", _
 	 2, "A", "T", _
 	 "(cptr( !T! ptr, !A! ) + 1)"
 
-''#define ASSERT(e) if not (e) then print __FILE__ + ":" + str$(__LINE__) + " (" + __FUNCTION__ + "): assertion failed: " + trim(#e)
+''#define ASSERT(e) if not (e) then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 data "ASSERT", _
 	 TRUE, _
 	 1, "E", _
-	 "if not (!E!) then print __FILE__ + \"(\" + str$(__LINE__) + \"): assertion failed at \" + __FUNCTION__ + \": \" + trim(\"!E!\")"
+	 "if not (!E!) then fb_Assert(__FILE__, __LINE__, __FUNCTION__, \"!E!\")"
+
+''#define ASSERTWARN(e) if not (e) then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e)
+data "ASSERTWARN", _
+	 TRUE, _
+	 1, "E", _
+	 "if not (!E!) then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, \"!E!\")"
 
 data "__FB_MIN_VERSION__", _
      FALSE, _

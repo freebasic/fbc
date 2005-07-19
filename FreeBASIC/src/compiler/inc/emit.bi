@@ -33,7 +33,6 @@ const EMIT_INITVREGNODES= EMIT_INITNODES*4
 const EMIT_REGCLASSES	= 2						'' assuming IR_DATACLASS_ will start at 0!
 const EMIT_LOCSTART 	= 0
 const EMIT_ARGSTART 	= FB_POINTERSIZE + FB_INTEGERSIZE '' skip return address + saved ebp
-const EMIT_MAINARGSTART = FB_INTEGERSIZE 		'' skip only saved ebp for main
 
 enum EMITREG_ENUM
 	EMIT_REG_FP0	= 0

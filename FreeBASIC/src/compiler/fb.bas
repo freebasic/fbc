@@ -395,6 +395,13 @@ function fbGetEntryPoint( ) as string static
 end function
 
 '':::::
+function fbGetModuleEntry( ) as string static
+
+	function = "fb_ctor__" + hStripPath( hStripExt( env.outf.name ) )
+
+end function
+
+'':::::
 sub fbEnd
 
 	''

@@ -324,6 +324,8 @@ declare function    fbGetNaming     ( ) as integer
 
 declare function 	fbGetEntryPoint ( ) as string
 
+declare function 	fbGetModuleEntry( ) as string
+
 declare sub 		fbAddDefaultLibs( )
 
 #endif '' __FB_BI__

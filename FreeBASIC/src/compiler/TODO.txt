@@ -1,31 +1,24 @@
 
 [ ] full debug support
-    - when calling rt functions in module-level code, GDB will never step over them
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
-    - make ASSERT call a rtlib function (fb_Assert)
-    - add ASSERT_WARN (fb_AssertWarn)
-    - add bounds checking to all kinds of arrays - use IIF()
+    - add bounds checking to all kinds of arrays - use IIF() or better: a new AST/IR/EMIT OP
     - add null pointer checking - IIF() too?
+
+[ ] AndAlso and OrElse, short-circuit versions of And and Or
+
+[ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
+
+[ ] add fix-len and zstring * support to arrays args passed by descriptor
 
 [ ] EMIT:
     - optimize load after store
     - re-ordering optimization if target cpu is +586
 
-[ ] convert WITH to ptr and remove the lex hacking
-    - then allow '->' too (.xxx will have to be converted to ->xxx anyways)
-
-[ ] function overloading
-    - check optional args, this can be tricky
-
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
       that will keep track of what wasn't initialized to fill 'em with 0's - static only, locals
       are already cleared
-
-[ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
-
-[ ] add fix-len and zstring * support to arrays args passed by descriptor
 
 *** *** *** *** ***
 [ ] inline functions
@@ -44,8 +37,6 @@
     - some support for RTTI
 
 *** future ***
-[ ] AndAlso and OrElse, short-circuit versions of And and Or
-
 [ ] unreachable code removal
 
 [ ] use a DAG for common sub-expr opt (don't mess up w/ FPU??)
