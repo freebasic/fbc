@@ -12,6 +12,9 @@ Version 0.14 Beta:
   one (v1c)
 - the DllMain function is not needed anymore in the Windows version, just declare the exports and remove the 
   DllMain function, it won't be called anymore (v1c)
+- the module-level code of non-main modules will now be always executed (before the main module), no REDIM's or 
+  such will be missed as it used to happen in QB. Implicit module intialization can now be done as in Pascal, 
+  just add any code to the module-level scope (ie: outside any function) (v1c)
 - the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as
   inline and will be evaluated at compile-time when constants are used as parameters (v1c)
 - macro text will be expanded on comments emited when the -g command-line option is used (v1c)
@@ -74,9 +77,7 @@ Version 0.14 Beta:
 - graphical PUT will now fail and report a runtime error if an image GETed while in a mode with a certain depth is
   attempted to be drawn in a mode with a different color depth (lillo)
 - private functions will only be emitted if referenced (v1c)
-- constructor and destructor functions (mjs)
-  - CONSTRUCTOR and DESTRUCTOR aren't keywords
-  - constructors will be executed *after* fb_Init
+- constructor and destructor functions - constructors will be executed *after* fb_Init (mjs)
 - -map <filename> to create a map file (mjs)
 
 [fixed]
@@ -140,7 +141,6 @@ Version 0.14 Beta:
 - __LINE__ now returns a number instead of a string (mjs)
 - VIEW cleared the screen with a bad color if called without arguments, instead of just resetting the view (lillo)
 - coordinates translation with PMAP was giving back bad results (lillo)
-- argc and argv are now always passed to fb_Init (mjs)
 
 
 Version 0.13 Beta:
