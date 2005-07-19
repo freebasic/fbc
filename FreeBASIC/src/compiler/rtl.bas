@@ -1247,8 +1247,8 @@ data "fb_ProfileEndCall", "", _
 	 1, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_ProfileEnd ( ) as void
-data "fb_ProfileEnd", "", _
+'' fb_EndProfile ( ) as void
+data "fb_EndProfile", "", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0

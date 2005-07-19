@@ -226,7 +226,7 @@ FBCALL void fb_ProfileEndCall( void *p )
 
 
 /*:::::*/
-FBCALL void fb_ProfileInit( void )
+FBCALL void fb_InitProfile( void )
 {
 	time_t rawtime = { 0 };
   	struct tm *ptm = { 0 };
@@ -254,7 +254,7 @@ FBCALL void fb_ProfileInit( void )
 
 
 /*:::::*/
-FBCALL void fb_ProfileEnd( void )
+FBCALL void fb_EndProfile( void )
 {
 	char buffer[MAX_PATH], *p;
 	int i, j, len, skip_proc;
