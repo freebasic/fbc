@@ -29,6 +29,15 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <io.h>
+
+typedef struct _FB_DIRCTX
+{
+	int in_use;
+	int attrib;
+	struct _finddata_t data;
+	long handle;
+} FB_DIRCTX;
 
 #ifdef MULTITHREADED
 extern CRITICAL_SECTION fb_global_mutex;

@@ -32,6 +32,9 @@
 void fb_hEnd ( int errlevel )
 {
 
+	if( fb_dirctx )
+		free( (FB_DIRCTX *)fb_dirctx );
+
 #ifdef MULTITHREADED
 	DeleteCriticalSection(&fb_global_mutex);
 	DeleteCriticalSection(&fb_string_mutex);
@@ -53,6 +56,8 @@ void fb_hEnd ( int errlevel )
 	TlsFree( fb_printusgctx.fmtstr.data );
 	TlsFree( fb_printusgctx.fmtstr.len );
 	TlsFree( fb_printusgctx.fmtstr.size );
+	
+	TlsFree( fb_dirctx );
 #endif
 
 }

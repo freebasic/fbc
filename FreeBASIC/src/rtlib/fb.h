@@ -491,7 +491,7 @@ typedef struct _FB_INPCTX {
 
 extern FB_FILE fb_fileTB[];
 extern FB_INPCTX fb_inpctx;
-
+extern FB_TLSENTRY fb_dirctx;
 
 #define FB_FILE_MODE_BINARY			0
 #define FB_FILE_MODE_RANDOM			1

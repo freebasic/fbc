@@ -24,28 +24,18 @@
  *
  */
 
+#include <stdlib.h>
 #include <string.h>
-#include <io.h>
 #include "fb.h"
-
-
-typedef struct DIR_DATA
-{
-	int in_use;
-	int attrib;
-	struct _finddata_t data;
-	long handle;
-} DIR_DATA;
-
-
-static DIR_DATA dir_data = { 0 };
 
 
 /*:::::*/
 static void close_dir ( void )
 {
-	_findclose( dir_data.handle );
-	dir_data.in_use = FALSE;
+	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	
+	_findclose( ctx->handle );
+	ctx->in_use = FALSE;
 }
 
 
@@ -53,18 +43,19 @@ static void close_dir ( void )
 static char *find_next ( void )
 {
 	char *name = NULL;
+	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
 
 	do
 	{
-		if( _findnext( dir_data.handle, &dir_data.data ) )
+		if( _findnext( ctx->handle, &ctx->data ) )
 		{
 			close_dir( );
 			name = NULL;
 			break;
 		}
-		name = dir_data.data.name;
+		name = ctx->data.name;
 	}
-	while( dir_data.data.attrib & ~dir_data.attrib );
+	while( ctx->data.attrib & ~ctx->attrib );
 
 	return name;
 }
@@ -73,8 +64,9 @@ static char *find_next ( void )
 /*:::::*/
 FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 {
+	FB_DIRCTX	*ctx;
 	FBSTRING	*res;
-	int		len;
+	int			len;
 	char		*name;
 
 	FB_STRLOCK();
@@ -82,34 +74,38 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
+	ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	if (!ctx) {
+		ctx = (FB_DIRCTX *)calloc(1, sizeof(FB_DIRCTX));
+		FB_TLSSET(fb_dirctx, ctx);
+	}
+		
 	if( len > 0 )
 	{
 		/* findfirst */
 
-		if( dir_data.in_use )
+		if( ctx->in_use )
 			close_dir( );
 
-		dir_data.handle = _findfirst( filespec->data, &dir_data.data );
-		if( dir_data.handle >= 0 )
+		ctx->handle = _findfirst( filespec->data, &ctx->data );
+		if( ctx->handle != -1 )
 		{
-			dir_data.attrib = attrib | 0xFFFFFF00;
+			ctx->attrib = attrib | 0xFFFFFF00;
 			if( (attrib & 0x10) == 0 )
-				dir_data.attrib |= 0x20;
-			if( dir_data.data.attrib & ~dir_data.attrib )
+				ctx->attrib |= 0x20;
+			if( ctx->data.attrib & ~ctx->attrib )
 				name = find_next( );
 			else
-				name = dir_data.data.name;
+				name = ctx->data.name;
 			if( name )
-				dir_data.in_use = TRUE;
+				ctx->in_use = TRUE;
 		}
 	}
 	else {
 
 		/* findnext */
 
-		if( !dir_data.in_use )
-			res = &fb_strNullDesc;
-		else
+		if( ctx->in_use )
 			name = find_next( );
 	}
 

@@ -72,6 +72,9 @@ void fb_hInit ( int argc, char **argv )
 	fb_printusgctx.fmtstr.data = TlsAlloc();
 	fb_printusgctx.fmtstr.len  = TlsAlloc();
 	fb_printusgctx.fmtstr.size = TlsAlloc();
+	
+	/* allocate thread local storage var for dir context */
+	fb_dirctx           = TlsAlloc();
 
 #endif
 

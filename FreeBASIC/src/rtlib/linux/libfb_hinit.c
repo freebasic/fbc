@@ -278,6 +278,9 @@ void fb_hInit ( int argc, char **argv )
 	pthread_key_create(&fb_printusgctx.fmtstr.data, NULL);
 	pthread_key_create(&fb_printusgctx.fmtstr.len,  NULL);
 	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
+	
+	/* allocate thread local storage var for dir context */
+	pthread_key_create(&fb_dirctx,           NULL);
 #endif
 
 	pthread_mutex_init( &fb_con.bg_mutex, NULL );

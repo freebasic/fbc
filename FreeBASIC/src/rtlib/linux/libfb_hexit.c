@@ -73,6 +73,9 @@ void fb_hEnd ( int errlevel )
 	}
 	pthread_mutex_destroy(&fb_con.bg_mutex);
 
+	if( fb_dirctx )
+		free( (FB_DIRCTX *)fb_dirctx );
+
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&fb_global_mutex);
@@ -98,5 +101,7 @@ void fb_hEnd ( int errlevel )
 	pthread_key_delete(fb_printusgctx.fmtstr.data);
 	pthread_key_delete(fb_printusgctx.fmtstr.len);
 	pthread_key_delete(fb_printusgctx.fmtstr.size);
+	
+	pthread_key_delete(fb_dirctx);
 #endif
 }

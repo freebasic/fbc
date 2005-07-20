@@ -34,6 +34,7 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <termios.h>
+#include <dirent.h>
 #include <dlfcn.h>
 #include <pthread.h>
 #include <sys/mman.h>
@@ -58,6 +59,14 @@ extern pthread_mutex_t fb_string_mutex;
 # define FB_TLSGET(key)				pthread_getspecific((key))
 #endif
 
+typedef struct _FB_DIRCTX
+{
+	int in_use;
+	int attrib;
+	DIR *dir;
+	char filespec[MAX_PATH];
+	char dirname[MAX_PATH];
+} FB_DIRCTX;
 
 typedef struct FBCONSOLE
 {

@@ -147,6 +147,7 @@ Version 0.14 Beta:
 - __LINE__ now returns a number instead of a string (mjs)
 - VIEW cleared the screen with a bad color if called without arguments, instead of just resetting the view (lillo)
 - coordinates translation with PMAP was giving back bad results (lillo)
+- thread-safetiness fixes to DIR$ (lillo)
 
 
 Version 0.13 Beta:

@@ -35,6 +35,7 @@ FB_FILE fb_fileTB[FB_MAX_FILES];
 FB_ERRORCTX fb_errctx = { 0 };
 FB_INPCTX fb_inpctx = { 0 };
 FB_PRINTUSGCTX fb_printusgctx = { 0 };
+FB_TLSENTRY fb_dirctx = 0;
 
 /* prototypes for the FB constructors and destructors */
 typedef void (*FnCTOR)(void);
