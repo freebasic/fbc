@@ -72,7 +72,10 @@ ifeq ($(TARGET),xbox)
     CFLAGS += -DTARGET_XBOX -DTARGET_X86
     SDLFLAGS := -DENABLE_XBOX -DDISABLE_CDROM
     CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 $(SDLFLAGS)
-    CFLAGS += -I./xbox/inc -I./xbox/inc/SDL
+    ifndef OPENXDK
+        CHECKHOST_MSG := $(error error: OPENXDK not defined - need path to OpenXDK for headers)
+    endif
+    CFLAGS += -I$(OPENXDK)/i386-pc-xbox/include -I$(OPENXDK)/include -I$(OPENXDK)/include/SDL
 endif
 
 ifndef DEBUG
