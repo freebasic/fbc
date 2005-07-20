@@ -41,8 +41,7 @@
   CLOSE Statement
   CLEAR Statement       (diff: completely different mean: used to fill a memory block with some value, args are:
                          byref dst as any, byval value as integer = 0, byval bytes as integer)
-  CONSTRUCTOR			this is not a keyword ... but it's recognized
-						 as part of a sub/function definition
+  CONSTRUCTOR
 
   DATA Statement        (diff: string literals MUST be enclosed by quotes; Const's are evaluated before storing)
   DEFINT Statement
@@ -58,8 +57,7 @@
   DATE$ Function
   DATE$ Statement       (diff: called SETDATE now; syntax is "SETDATE newdate$", not "SETDATE$ = newdate$")
   DIR$ Function
-  DESTRUCTOR			this is not a keyword ... but it's recognized
-						 as part of a sub/function definition
+  DESTRUCTOR
 
   ELSE
   ELSEIF
@@ -139,7 +137,7 @@
   ON ERROR Statement
   ON...GOSUB Statement
   ON...GOTO Statement
-  OPEN (File) Statement (diff: PIPE:, SCRN: and KEYB: aren't supported (yet))
+  OPEN (File) Statement (diff: SCRN: and KEYB: aren't supported (yet))
   OUTPUT
   OVERLOAD
 
@@ -383,7 +381,7 @@
   VA_ARG(a,t) macro     (returns the current var-arg, a= argument, t= argument type)
   VA_NEXT(a,t) macro    (returns a pointer to the next var-arg, a= current argument, t= current argument type)
   VAL64()               (converts a string to a long integer (64 bits))
-  VALINT()		        (converts a string to an integer (32 bits))
+  VALINT()		(converts a string to an integer (32 bits))
 
   WINDOWTITLE Statement
   WITH..END WITH        (compound statement -- won't work with field dereference "->")
@@ -405,12 +403,11 @@
   CVSMBF Function       (reason: old and useless proprietary format)
   CALLS Statement       (reason: same as CALL)
 
-  DEF FN Statement      (reason: use real functions instead, or macros when implemented)
+  DEF FN Statement      (reason: use real functions instead, or macros)
   DEF SEG Statement     (reason: segments are not needed in 32-bit flat mode)
 
   ERDEV Function        (reason: )
   ERDEV$ Function
-  ERL Function          (reason: can't store line numbers, use a debugger instead)
   
   FILEATTR Function     (reason: depends on internal tables)
   FILES Statement       (reason: use dir$ instead)
