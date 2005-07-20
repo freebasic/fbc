@@ -34,5 +34,5 @@ FBCALL double fb_Timer ( void )
 	
 	KeQuerySystemTime(&t);
 	
-	return (double)(t) * 100.0;
+	return ((double)(t.QuadPart) * 100.0);
 }
