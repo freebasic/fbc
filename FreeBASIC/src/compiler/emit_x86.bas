@@ -1025,10 +1025,10 @@ sub emitSECTION( byval section as integer ) static
 		ostr += "drectve" + NEWLINE
 	case EMIT_SECTYPE_CONSTRUCTOR
 		''ostr += "ctors." + hStripExt(hStripPath(env.inf.name)) + NEWLINE
-		ostr += "fb_ctors" + NEWLINE
+		ostr += "fb_ctors, \"aw\", @progbits" + NEWLINE
 	case EMIT_SECTYPE_DESTRUCTOR
 		''ostr += "dtors." + hStripExt(hStripPath(env.inf.name)) + NEWLINE
-		ostr += "fb_dtors" + NEWLINE
+		ostr += "fb_dtors, \"aw\", @progbits" + NEWLINE
 	end select
 
 	outEx( ostr, FALSE )
