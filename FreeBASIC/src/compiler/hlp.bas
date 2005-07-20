@@ -155,7 +155,8 @@ end type
 		"Recursive TYPE or UNION not allowed", _
 		"Array fields cannot be redimensioned", _
 		"Identifier cannot include periods", _
-		"Executable not found" _
+		"Executable not found", _
+		"Array out-of-bounds" _
 	}
 
 

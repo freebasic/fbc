@@ -2,8 +2,7 @@
 [ ] full debug support
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
-    - add bounds checking to all kinds of arrays - use IIF() or better: a new AST/IR/EMIT OP
-    - add null pointer checking - IIF() too?
+    - add null pointer checking - like done with bounds-checking
 
 [ ] AndAlso and OrElse, short-circuit versions of And and Or
 

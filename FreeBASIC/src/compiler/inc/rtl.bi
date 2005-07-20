@@ -36,6 +36,7 @@ enum FBRTL_ENUM
 	FB_RTL_DBL2ULONGINT
 
 	FB_RTL_ARRAYREDIM
+	FB_RTL_ARRAYREDIMPRESV
 	FB_RTL_ARRAYERASE
 	FB_RTL_ARRAYCLEAR
 	FB_RTL_ARRAYLBOUND
@@ -265,6 +266,7 @@ declare function 	rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 
 declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 
+declare function 	rtlArrayOutOfBounds	( byval linenum as integer ) as ASTNODE ptr
 
 declare function	rtlDataRestore		( byval label as FBSYMBOL ptr, _
 										  byval afternode as ASTNODE ptr = NULL, _
@@ -428,9 +430,11 @@ declare function	rtlFileLock			( byval islock as integer, _
 										  byval endexpr as ASTNODE ptr ) as integer
 
 declare function	rtlErrorCheck		( byval resexpr as ASTNODE ptr, _
-										  byval reslabel as FBSYMBOL ptr ) as integer
+										  byval reslabel as FBSYMBOL ptr, _
+										  byval linenum as integer ) as integer
 
-declare sub 		rtlErrorThrow		( byval errexpr as ASTNODE ptr )
+declare sub 		rtlErrorThrow		( byval errexpr as ASTNODE ptr, _
+										  byval linenum as integer )
 
 declare sub 		rtlErrorSetHandler	( byval newhandler as ASTNODE ptr, _
 										  byval savecurrent as integer )

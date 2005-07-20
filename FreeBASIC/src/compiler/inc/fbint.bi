@@ -50,9 +50,30 @@ const FB_INITFWDREFNODES	= 500
 const FB_POINTERSIZE		= 4
 const FB_INTEGERSIZE		= 4
 
-const FB_ARRAYDESCSIZE		= FB_INTEGERSIZE*5
+''
+type FB_ARRAYDESC
+    data			as any ptr
+	ptr				as any ptr
+    size			as integer
+    element_len		as integer
+    dimensions		as integer
+end type
+
+const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
+
+type FB_ARRAYDESCDIM
+	elements		as integer
+	lbound			as integer
+	ubound			as integer
+end type
+
+const FB_ARRAYDESC_DIMLEN	= len( FB_ARRAYDESCDIM )
+const FB_ARRAYDESC_LBOUNDOFS= FB_INTEGERSIZE
+const FB_ARRAYDESC_UBOUNDOFS= FB_INTEGERSIZE+FB_INTEGERSIZE
+
 const FB_ARRAYDESC_DATAOFFS = 0
 
+''
 const FB_STRSTRUCTSIZE		= FB_POINTERSIZE+FB_INTEGERSIZE+FB_INTEGERSIZE
 
 '' "fake" descriptors as UDT's

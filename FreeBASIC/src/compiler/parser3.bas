@@ -461,6 +461,24 @@ function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
 end function
 
 '':::::
+private function hDynArrayBoundChk( byval expr as ASTNODE ptr, _
+									byval desc as FBSYMBOL ptr, _
+									byval idx as integer ) as ASTNODE ptr
+
+    function = astNewBOUNDCHK( expr, _
+    						   astNewVAR( desc, _
+    						   			  NULL, _
+    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
+    								  	  IR_DATATYPE_INTEGER ), _
+    						   astNewVAR( desc, _
+    						   			  NULL, _
+    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
+    								  	  IR_DATATYPE_INTEGER ), _
+    						   lexLineNum( ) )
+
+end function
+
+'':::::
 ''DynArrayIdx     =   '(' Expression (',' Expression)* ')' .
 ''
 function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
@@ -511,6 +529,14 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 			end if
 		end if
 
+    	'' bounds checking
+    	if( env.clopt.debug ) then
+            dimexpr = hDynArrayBoundChk( dimexpr, d, i )
+			if( dimexpr = NULL ) then
+				exit function
+			end if
+    	end if
+
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
@@ -526,7 +552,8 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 
     	i += 1
 
-    	varexpr = astNewVAR( d, NULL, FB_ARRAYDESCSIZE + i*(FB_INTEGERSIZE*2), IR_DATATYPE_INTEGER )
+    	'' times desc(i).elements
+    	varexpr = astNewVAR( d, NULL, FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, IR_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
@@ -551,6 +578,29 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 
     ''
     function = TRUE
+
+end function
+
+'':::::
+private function hArgArrayBoundChk( byval expr as ASTNODE ptr, _
+									byval desc as FBSYMBOL ptr, _
+									byval idx as integer ) as ASTNODE ptr
+
+    function = astNewBOUNDCHK( expr, _
+    						   astNewPTR( desc, _
+    						   			  NULL, _
+    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
+    								  	  astNewVAR( desc, NULL, 0, IR_DATATYPE_INTEGER ), _
+    								  	  IR_DATATYPE_INTEGER, _
+    								  	  NULL ), _
+    						   astNewPTR( desc, _
+    						   			  NULL, _
+    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
+    								  	  astNewVAR( desc, NULL, 0, IR_DATATYPE_INTEGER ), _
+    								  	  IR_DATATYPE_INTEGER, _
+    								  	  NULL ), _
+    						   lexLineNum( ) )
+
 
 end function
 
@@ -585,6 +635,14 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 			end if
 		end if
 
+    	'' bounds checking
+    	if( env.clopt.debug ) then
+            dimexpr = hArgArrayBoundChk( dimexpr, sym, i )
+			if( dimexpr = NULL ) then
+				exit function
+			end if
+    	end if
+
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
@@ -602,7 +660,8 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
     	t = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
-    	varexpr = astNewPTR( sym, NULL, FB_ARRAYDESCSIZE + i*(FB_INTEGERSIZE*2), t, IR_DATATYPE_INTEGER, NULL )
+    	'' times desc[i].elements
+    	varexpr = astNewPTR( sym, NULL, FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, t, IR_DATATYPE_INTEGER, NULL )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
@@ -667,7 +726,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+			(astGetDataSize( dimexpr ) <> FB_INTEGERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
@@ -675,6 +734,20 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 			end if
 		end if
 
+    	'' bounds checking
+    	if( env.clopt.debug ) then
+    		dimexpr = astNewBOUNDCHK( dimexpr, _
+    								  astNewCONSTi( d->lower, IR_DATATYPE_INTEGER ), _
+    								  astNewCONSTi( d->upper, IR_DATATYPE_INTEGER ), _
+    								  lexLineNum( ) )
+
+			if( dimexpr = NULL ) then
+				hReportError( FB_ERRMSG_ARRAYOUTOFBOUNDS )
+				exit function
+			end if
+    	end if
+
+    	''
     	if( expr = NULL ) then
     		expr = dimexpr
     	else

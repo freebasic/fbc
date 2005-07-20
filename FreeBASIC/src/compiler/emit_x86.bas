@@ -5424,7 +5424,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 
     	hALIGN( 4 )
     	hWriteStr( TRUE,  ".comm\t" + dname + "," + _
-    			   str( FB_ARRAYDESCSIZE + dims * FB_INTEGERSIZE*2 ) )
+    			   str( FB_ARRAYDESCLEN + dims * FB_ARRAYDESC_DIMLEN ) )
 
     	exit sub
     end if
@@ -5457,19 +5457,23 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     if( not symbGetIsDynamic( s ) ) then
     	d = symbGetArrayFirstDim( s )
     	do while( d <> NULL )
-			''	uint	dim_elemts
+			''	uint	elements
 			hWriteStr( TRUE,  ".int\t" + str( d->upper - d->lower + 1 ) )
-			''	int		dim_first
+			''	int		lbound
 			hWriteStr( TRUE,  ".int\t" + str( d->lower ) )
+			''	int		ubound
+			hWriteStr( TRUE,  ".int\t" + str( d->upper ) )
             '' next
 			d = d->next
     	loop
 
     else
         for i = 0 to dims-1
-			''	uint	dim_elemts
+			''	uint	elements
 			hWriteStr( TRUE,  ".int\t0"  )
-			''	int		dim_first
+			''	int		lbound
+			hWriteStr( TRUE,  ".int\t0" )
+			''	int		ubound
 			hWriteStr( TRUE,  ".int\t0" )
         next i
     end if

@@ -1013,7 +1013,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 		aname = sname
 		ofs = 0
 	else
-		lgt = FB_ARRAYDESCSIZE + dimensions * (FB_INTEGERSIZE+FB_INTEGERSIZE)
+		lgt = FB_ARRAYDESCLEN + dimensions * FB_ARRAYDESC_DIMLEN
 		aname = *emitAllocLocal( env.currproc, lgt, ofs )
 	end if
 

@@ -1563,33 +1563,33 @@ function cErrorStmt as integer
 	function = FALSE
 
 
-	select case lexGetToken
+	select case lexGetToken( )
 
-	'' ERROR
+	'' ERROR Expression
 	case FB_TK_ERROR
-		lexSkipToken
+		lexSkipToken( )
 
 		'' Expression
 		hMatchExpression( expr )
 
-		rtlErrorThrow expr
+		rtlErrorThrow( expr, lexLineNum( ) )
 
 		function = TRUE
 
 	'' ERR '=' Expression
 	case FB_TK_ERR
-		lexSkipToken
+		lexSkipToken( )
 
 		'' '='
 		if( not hMatch( FB_TK_ASSIGN ) ) then
-			hReportError FB_ERRMSG_EXPECTEDEQ
+			hReportError( FB_ERRMSG_EXPECTEDEQ )
 			exit function
 		end if
 
 		'' Expression
 		hMatchExpression( expr )
 
-		rtlErrorSetnum expr
+		rtlErrorSetnum( expr )
 
 		function = TRUE
 

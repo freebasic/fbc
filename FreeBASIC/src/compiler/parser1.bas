@@ -4004,7 +4004,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
     				reslabel = NULL
     			end if
 
-				function = rtlErrorCheck( procexpr, reslabel )
+				function = rtlErrorCheck( procexpr, reslabel, lexLineNum( ) )
 				procexpr = NULL
 				exit function
 			end if

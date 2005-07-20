@@ -115,6 +115,8 @@ declare function 	hLoadDBG		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	hLoadMEM		( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	hLoadBOUNDCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
+
 declare function	astUpdStrConcat	( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 
@@ -2667,6 +2669,9 @@ private function hLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
     case AST_NODECLASS_MEM
     	return hLoadMEM( n )
+
+    case AST_NODECLASS_BOUNDCHK
+    	return hLoadBOUNDCHK( n )
     end select
 
 end function
@@ -2732,9 +2737,19 @@ function astNewLINK( byval l as ASTNODE ptr, _
 					 byval r as ASTNODE ptr ) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
+	dim as integer dtype
+
+	if( l = NULL ) then
+		if( r = NULL ) then
+			return NULL
+		end if
+		dtype =	r->dtype
+	else
+		dtype =	l->dtype
+	end if
 
 	''
-	n = hNewNode( AST_NODECLASS_LINK, l->dtype )
+	n = hNewNode( AST_NODECLASS_LINK, dtype )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -6386,6 +6401,121 @@ private function hLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 	astDel( r )
 
 	function = NULL
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' Bounds checking (l = index; r = link(lb, ub))
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewBOUNDCHK( byval l as ASTNODE ptr, _
+					     byval lb as ASTNODE ptr, _
+					     byval ub as ASTNODE ptr, _
+					     byval linenum as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' lbound is a const?
+	if( lb->defined ) then
+		'' ubound too?
+		if( ub->defined ) then
+			'' index also?
+			if( l->defined ) then
+				'' i < lbound?
+				if( l->v.valuei < lb->v.valuei ) then
+					return NULL
+				end if
+				'' i > ubound?
+				if( l->v.valuei > ub->v.valuei ) then
+					return NULL
+				end if
+			end if
+		end if
+
+		'' 0? del it
+		if( lb->v.valuei = 0 ) then
+			astDel( lb )
+			lb = NULL
+		end if
+	end if
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_BOUNDCHK, INVALID )
+	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
+
+	n->l 			= l
+	n->r 			= astNewLINK( lb, ub )
+	n->bchk.linenum = linenum
+
+end function
+
+'':::::
+private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l, r, c, f
+    dim as IRVREG ptr v1, v2
+    dim as FBSYMBOL ptr oklabel, errlabel
+
+	l = n->l
+	r = n->r
+
+	if( (l = NULL) or (r = NULL) ) then
+		return NULL
+	end if
+
+	oklabel = symbAddLabel( "" )
+	errlabel = symbAddLabel( "" )
+
+	'' make a copy, can't reuse the same vreg or registers would get out-of-sync
+	c = astCloneTree( l )
+
+	'' load index
+	v1 = hLoad( l )
+
+    '' lbound not 0?
+    if( r->l <> NULL ) then
+    	v2 = hLoad( r->l )
+    	if( ctx.doemit ) then
+    		'' i < lbound? goto errlabel
+    		irEmitBOPEx( IR_OP_LT, v1, v2, NULL, errlabel )
+    	end if
+    end if
+
+    '' ubound
+    v2 = hLoad( r->r )
+    if( ctx.doemit ) then
+    	'' lbound 0? do a single unsigned check
+    	if( r->l = NULL ) then
+    		v1->dtype = IR_DATATYPE_UINT
+    	end if
+
+    	'' i <= ubound? goto oklabel
+    	irEmitBOPEx( IR_OP_LE, v1, v2, NULL, oklabel )
+
+    	irEmitLABELNF( errlabel )
+
+    	'' throw error: out-of-bounds
+    	f = rtlArrayOutOfBounds( n->bchk.linenum )
+    	hLoad( f )
+    	astDel( f )
+
+    	irEmitLABELNF( oklabel )
+    end if
+
+	'' del LINK nodes
+	astDel( r->l )
+	astDel( r->r )
+
+	''
+	astDel( l )
+	astDel( r )
+
+	'' re-load, see above
+	function = hLoad( c )
+	astDel( c )
 
 end function
 

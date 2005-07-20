@@ -27,10 +27,11 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
-#include once "inc\rtl.bi"
+#include once "inc\lex.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
+#include once "inc\rtl.bi"
 
 type RTLCTX
 	datainited		as integer
@@ -176,14 +177,25 @@ data "__fixunsdfdi","", _
 	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ArrayRedim CDECL ( array() as ANY, byval elementlen as integer, _
-''					     byval isvarlen as integer, byval preserve as integer, _
+''					     byval isvarlen as integer, _
 ''						 byval dimensions as integer, ... ) as integer
 data "fb_ArrayRedim","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 6, _
+	 5, _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 INVALID,FB_ARGMODE_VARARG, FALSE
+'' fb_ArrayRedimPresv CDECL ( array() as ANY, byval elementlen as integer, _
+''					          byval isvarlen as integer, _
+''						      byval dimensions as integer, ... ) as integer
+data "fb_ArrayRedimPresv","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 5, _
+	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
@@ -980,22 +992,24 @@ data "rename","", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 
 
-
 ''
-'' fb_ErrorThrow cdecl ( byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
+'' fb_ErrorThrow cdecl ( byval linenum as integer, _
+''						 byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
 data "fb_ErrorThrow","", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 2, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 ''
-'' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval reslabel as any ptr, _
-''                         byval resnxtlabel as any ptr ) as any ptr
+'' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval linenum as integer, _
+''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
 data "fb_ErrorThrowEx","", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 3, _
+	 4, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
@@ -2103,6 +2117,12 @@ data "fb_AssertWarn","", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 
+'' ERL ( ) as integer
+data "erl", "fb_ErrorGetLineNum", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
+
 '' EOL
 data ""
 
@@ -2947,7 +2967,11 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     function = FALSE
 
 	''
-	f = ifuncTB(FB_RTL_ARRAYREDIM)
+	if( not dopreserve ) then
+		f = ifuncTB(FB_RTL_ARRAYREDIM)
+	else
+		f = ifuncTB(FB_RTL_ARRAYREDIMPRESV)
+	end if
     proc = astNewFUNCT( f )
 
     '' array() as ANY
@@ -2966,11 +2990,6 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 	'' byval isvarlen as integer
 	isvarlen = (dtype = IR_DATATYPE_STRING)
 	if( astNewPARAM( proc, astNewCONSTi( isvarlen, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval preserve as integer
-	if( astNewPARAM( proc, astNewCONSTi( dopreserve, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -3016,7 +3035,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     end if
 
     ''
-	function = rtlErrorCheck( proc, reslabel )
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
 
 end function
 
@@ -3280,6 +3299,41 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
     end if
 
     function = proc
+
+end function
+
+'':::::
+function rtlArrayOutOfBounds( byval linenum as integer ) as ASTNODE ptr
+    dim proc as ASTNODE ptr
+
+	function = NULL
+
+    proc = astNewFUNCT( ifuncTB(FB_RTL_ERRORTHROWEX) )
+
+	'' fb_ErrorThrowEx( errnum, reslabel, resnxtlabel );
+
+	'' errnum
+	if( astNewPARAM( proc, astNewCONSTi( FB_RTERROR_OUTOFBOUNDS, IR_DATATYPE_INTEGER ) ) = NULL ) then
+		exit function
+	end if
+
+    '' linenum
+	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
+
+	'' reslabel
+	if( astNewPARAM( proc, astNewCONSTi( NULL, IR_DATATYPE_UINT ) ) = NULL ) then
+		exit function
+	end if
+
+	'' resnxtlabel
+	if( astNewPARAM( proc, astNewCONSTi( NULL, IR_DATATYPE_UINT ) ) = NULL ) then
+		exit function
+	end if
+
+    ''
+    function = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
 
 end function
 
@@ -4442,7 +4496,8 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
-						byval reslabel as FBSYMBOL ptr ) as integer static
+						byval reslabel as FBSYMBOL ptr, _
+						byval linenum as integer ) as integer static
 	dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr
 	dim param as ASTNODE ptr, dst as ASTNODE ptr
@@ -4466,7 +4521,12 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	astAdd( resexpr )
 
-	'' else, fb_ErrorThrow( reslabel, resnxtlabel ); -- CDECL
+	'' else, fb_ErrorThrow( linenum, reslabel, resnxtlabel ); -- CDECL
+
+    '' linenum
+	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
 
 	'' reslabel
 	if( reslabel <> NULL ) then
@@ -4504,7 +4564,8 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 end function
 
 '':::::
-sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
+sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
+				   byval linenum as integer ) static
 	dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 	dim nxtlabel as FBSYMBOL ptr, reslabel as FBSYMBOL ptr
 	dim param as ASTNODE ptr, dst as ASTNODE ptr
@@ -4519,12 +4580,17 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr ) static
 
 	nxtlabel = symbAddLabel( "" )
 
-	'' fb_ErrorThrowEx( errnum, reslabel, resnxtlabel ); -- CDECL
+	'' fb_ErrorThrowEx( errnum, linenum, reslabel, resnxtlabel );
 
 	'' errnum
 	if( astNewPARAM( proc, errexpr ) = NULL ) then
 		exit sub
 	end if
+
+    '' linenum
+	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit sub
+    end if
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
@@ -4704,7 +4770,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
     		reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -4738,7 +4804,7 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
     		reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -4777,7 +4843,7 @@ function rtlFileSeek( byval filenum as ASTNODE ptr, _
     end if
 
     ''
-    function = rtlErrorCheck( proc, reslabel )
+    function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
 
 end function
 
@@ -4862,7 +4928,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     		reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -4912,7 +4978,7 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
 	    	reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -4981,7 +5047,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     		reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -5031,7 +5097,7 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
     		reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -5308,7 +5374,7 @@ function rtlFileRename( byval filename_new as ASTNODE ptr, _
     		reslabel = NULL
     	end if
 
-    	function = iif( rtlErrorCheck( proc, reslabel ), proc, NULL )
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
 
     else
     	function = proc
@@ -6081,7 +6147,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
     	reslabel = NULL
     end if
 
-	function = rtlErrorCheck( proc, reslabel )
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
 
 end function
 
@@ -6175,7 +6241,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
     	reslabel = NULL
     end if
 
-	function = rtlErrorCheck( proc, reslabel )
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
 
 end function
 
@@ -6245,7 +6311,7 @@ function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
     	reslabel = NULL
     end if
 
-	function = rtlErrorCheck( proc, reslabel )
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
 
 end function
 
