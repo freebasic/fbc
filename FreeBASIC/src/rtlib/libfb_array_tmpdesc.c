@@ -76,7 +76,7 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
     int			ubTB[FB_MAXDIMENSIONS];
 
 	FB_LOCK();
-	
+
     array = fb_hArrayAllocTmpDesc( );
 
     if( array != NULL )
@@ -86,12 +86,12 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
     		/* special case for GET temp arrays */
     		array->size = 0;
     		*pdesc = array;
-			
+
 			FB_UNLOCK();
-			
+
        		return array;
     	}
-    	
+
     	va_start( ap, dimensions );
 
     	p = &array->dimTB[0];
@@ -103,6 +103,7 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
 
     		p->elements = (ubTB[i] - lbTB[i]) + 1;
     		p->lbound 	= lbTB[i];
+    		p->ubound 	= ubTB[i];
     		++p;
     	}
 
@@ -111,15 +112,11 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
     	elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
     	diff 	 = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
-    	array->element_len = element_len;
-    	array->dimensions  = dimensions;
+    	array->ptr = arraydata;
 
-    	array->ptr 	= arraydata;
-    	array->data = ((unsigned char *) array->ptr) + diff;
-    	array->size	= elements * element_len;
-    	
+    	FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff )
     }
-    
+
     FB_UNLOCK();
 
     *pdesc = array;

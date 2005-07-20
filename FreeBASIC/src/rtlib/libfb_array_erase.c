@@ -25,7 +25,6 @@
  */
 
 #include <malloc.h>
-#include <stdarg.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -33,11 +32,11 @@
 FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen )
 {
 	FB_LOCK();
-	
+
     if( array->ptr != NULL )
     {
     	if( isvarlen != 0 )
-    		fb_hArrayFreeVarLenStrs( array );
+    		fb_hArrayFreeVarLenStrs( array, 0 );
 
     	free( array->ptr );
     	array->ptr  = NULL;

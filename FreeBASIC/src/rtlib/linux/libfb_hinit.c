@@ -56,14 +56,14 @@ static const unsigned char color[] =  { 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x00
 static void *bg_thread(void *arg)
 {
 	while (fb_con.inited) {
-		
+
 		BG_LOCK();
 		if (fb_con.keyboard_handler)
 			fb_con.keyboard_handler();
 		if (fb_con.mouse_handler)
 			fb_con.mouse_handler();
 		BG_UNLOCK();
-		
+
 		usleep(30000);
 	}
 	return NULL;
@@ -81,9 +81,9 @@ static int default_getch(void)
 static void signal_handler(int sig)
 {
 	signal(sig, old_sighandler[sig]);
-	
+
 	fb_hEnd(1);
-	
+
 	raise(sig);
 }
 
@@ -187,7 +187,7 @@ int fb_hInitConsole ( int init )
 	/* No timeout, just don't block */
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;
-	
+
 	if (tcsetattr(fb_con.h_in, TCSAFLUSH, &term_in))
 		return -1;
 	/* Don't block */
@@ -203,7 +203,7 @@ int fb_hInitConsole ( int init )
 	fb_con.fg_color = 0x7;
 	/* Set IBM PC 437 charset */
 	fputs("\e(U", fb_con.f_out);
-	
+
 	/* Initialize keyboard and mouse handlers if set */
 	BG_LOCK();
 	if (fb_con.keyboard_init)
@@ -211,7 +211,7 @@ int fb_hInitConsole ( int init )
 	if (fb_con.mouse_init)
 		fb_con.mouse_init();
 	BG_UNLOCK();
-	
+
 	return 0;
 }
 
@@ -261,6 +261,7 @@ void fb_hInit ( int argc, char **argv )
 	/* allocate thread local storage vars for runtime error handling */
 	pthread_key_create(&fb_errctx.handler,   NULL);
 	pthread_key_create(&fb_errctx.num,       NULL);
+	pthread_key_create(&fb_errctx.linenum,   NULL);
 	pthread_key_create(&fb_errctx.reslbl,    NULL);
 	pthread_key_create(&fb_errctx.resnxtlbl, NULL);
 
@@ -304,7 +305,7 @@ void fb_hInit ( int argc, char **argv )
 
 	/* Install signal handlers to quietly shut down */
 	for (i = 0; sigs[i] >= 0; i++)
-		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler); 	 
+		old_sighandler[sigs[i]] = signal(sigs[i],  signal_handler);
 
 	signal(SIGWINCH, console_resize);
 

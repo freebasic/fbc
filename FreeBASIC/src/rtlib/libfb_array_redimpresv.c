@@ -18,7 +18,7 @@
  */
 
 /*
- * array_redim.c -- redim function
+ * array_redimpresv.c -- redim preserve function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -30,7 +30,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions, ... )
+int fb_ArrayRedimPresv( FBARRAY *array, int element_len, int isvarlen, int dimensions, ... )
 {
     va_list 	ap;
     int			i;
@@ -41,21 +41,9 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
 
 	FB_LOCK();
 
-    /* free old */
-    if( array->ptr != NULL )
-    {
-    	if( isvarlen != 0 )
-    		fb_hArrayFreeVarLenStrs( array, 0 );
-    	free( array->ptr );
-
-    	array->ptr  = NULL;
-    	array->data = NULL;
-    }
-
     /* load bounds */
     va_start( ap, dimensions );
 
-    p = &array->dimTB[0];
     for( i = 0; i < dimensions; i++ )
     {
     	lbTB[i] = va_arg( ap, int );
@@ -67,11 +55,6 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
             /* should be: subscript out of range */
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
-
-    	p->elements = (ubTB[i] - lbTB[i]) + 1;
-    	p->lbound 	= lbTB[i];
-    	p->ubound 	= ubTB[i];
-    	++p;
     }
 
     va_end( ap );
@@ -81,19 +64,50 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
     diff 	 = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
     size	 = elements * element_len;
 
-    /* alloc new */
-    array->ptr = calloc( size, 1 );
+    /* new? */
     if( array->ptr == NULL )
     {
-    	FB_UNLOCK();
-    	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+    	array->ptr = calloc( size, 1 );
+    	if( array->ptr == NULL )
+    	{
+    		FB_UNLOCK();
+    		return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+    	}
+    }
+    else
+    {
+        /* var len and current array is bigger? free unused elements */
+        if( isvarlen != 0 )
+        	if( array->dimTB[0].elements > (ubTB[0] - lbTB[0] + 1) )
+        		fb_hArrayFreeVarLenStrs( array, ubTB[0] - lbTB[0] + 1 );
+
+        /* realloc */
+        array->ptr = realloc( array->ptr, size );
+    	if( array->ptr == NULL )
+    	{
+    		FB_UNLOCK();
+    		return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+    	}
+
+        /* clear remainder */
+        if( size > array->size )
+        	memset( ((unsigned char*) array->ptr) + array->size, 0, size - array->size );
     }
 
     /* set descriptor */
-    FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff )
+    p = &array->dimTB[0];
+    for( i = 0; i < dimensions; i++, p++ )
+    {
+    	p->elements = (ubTB[i] - lbTB[i]) + 1;
+    	p->lbound 	= lbTB[i];
+    	p->ubound 	= ubTB[i];
+    }
+
+	FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff )
 
 	FB_UNLOCK();
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
+
 

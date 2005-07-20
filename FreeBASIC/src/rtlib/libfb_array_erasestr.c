@@ -18,7 +18,7 @@
  */
 
 /*
- * array_core.c -- dynamic arrays core
+ * array_erasestr.c -- ERASE for dynamic arrays of var-len strings
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -28,37 +28,43 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_hArrayCalcElements( int dimensions, const int *lboundTB, const int *uboundTB )
+int fb_hArrayFreeVarLenStrs( FBARRAY *array, int base )
 {
-	int i;
-	int elements;
+	int			i;
+	int 		elements;
+	FBSTRING 	*p;
+	FBARRAYDIM	*d;
 
-    elements = (uboundTB[0] - lboundTB[0]) + 1;
-    for( i = 1; i < dimensions; i++ )
-    	elements *= (uboundTB[i] - lboundTB[i]) + 1;
+	p = (FBSTRING *)array->ptr;
+	if (p == NULL)
+		return FB_FALSE;
+	p += base;
 
-    return elements;
+    d = &array->dimTB[0];
+    elements = d->elements - base;
+    ++d;
+    for( i = 1; i < array->dimensions; i++, d++ )
+    	elements *= d->elements;
+
+	while( elements != 0 )
+	{
+		--elements;
+		if( p->data != NULL )
+			fb_StrDelete( p );
+		++p;
+	}
+
+	return FB_TRUE;
 }
 
 /*:::::*/
-int fb_hArrayCalcDiff( int dimensions, const int *lboundTB, const int *uboundTB )
+FBCALL void fb_ArrayStrErase( FBARRAY *array )
 {
-	int i;
-	int elements;
-	int diff = 0;
+	FB_LOCK();
 
-	if( dimensions <= 0 )
-		return 0;
+    if( array->ptr != NULL )
+    	fb_hArrayFreeVarLenStrs( array, 0 );
 
-    for( i = 0; i < dimensions-1; i++ )
-    {
-    	elements = (uboundTB[i+1] - lboundTB[i+1]) + 1;
-    	diff = (diff + lboundTB[i]) * elements;
-    }
-
-	diff += lboundTB[dimensions-1];
-
-	return -diff;
+    FB_UNLOCK();
 }
-
 

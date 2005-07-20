@@ -32,14 +32,14 @@
 FBCALL int fb_ArrayClear( FBARRAY *array, int isvarlen )
 {
 	FB_LOCK();
-	
+
     if( array->ptr != NULL )
     {
     	if( isvarlen == FB_FALSE )
     		memset( array->ptr, 0, array->size );
     	else
-    		fb_hArrayFreeVarLenStrs( array );
-    	
+    		fb_hArrayFreeVarLenStrs( array, 0 );
+
 		FB_UNLOCK();
     	return fb_ErrorSetNum( FB_RTERROR_OK );
     }

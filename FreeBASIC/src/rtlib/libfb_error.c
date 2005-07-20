@@ -37,6 +37,7 @@ static const char *error_msg[] = {
 	"file I/O error",					/* FB_RTERROR_FILEIO */
 	"out of memory",					/* FB_RTERROR_OUTOFMEM */
 	"illegal resume",					/* FB_RTERROR_ILLEGALRESUME */
+	"out of bounds array access",		/* FB_RTERROR_OUTOFBOUNDS */
 	"\"interrupted\" signal",
 	"\"illegal instruction\" signal",
 	"\"floating point error\" signal",
@@ -47,24 +48,29 @@ static const char *error_msg[] = {
 };
 
 /*:::::*/
-static void fb_Die( int errnum )
+static void fb_Die( int errnum, int linenum )
 {
-	printf( FB_NEWLINE "Aborting program due to runtime error %d", errnum );
-	if( (errnum < 0) || (errnum >= FB_RTERROR_MAX) )
-		printf( FB_NEWLINE );
+	printf( FB_NEWLINE "Aborting due to runtime error %d", errnum );
+
+	if( (errnum >= 0) && (errnum < FB_RTERROR_MAX) )
+		printf( " (%s)", error_msg[errnum] );
+
+	if( linenum > 0 )
+		printf( " at line: %d" FB_NEWLINE, linenum );
 	else
-		printf( " (%s)" FB_NEWLINE, error_msg[errnum] );
+		printf( FB_NEWLINE );
 
 	fb_End( errnum );
 }
 
 /*:::::*/
-FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *resnext_label )
 {
 
     if( FB_TLSGET( fb_errctx.handler ) )
     {
     	FB_TLSSET( fb_errctx.num, errnum );
+    	FB_TLSSET( fb_errctx.linenum, linenum );
     	FB_TLSSET( fb_errctx.reslbl, res_label );
     	FB_TLSSET( fb_errctx.resnxtlbl, resnext_label );
 
@@ -72,16 +78,16 @@ FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, void *res_label, void *resnext_label
     }
 
 	/* if no user handler defined, die */
-	fb_Die( errnum );
+	fb_Die( errnum, linenum );
 
 	return NULL;
 }
 
 /*:::::*/
-FB_ERRHANDLER fb_ErrorThrow ( void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
 {
 
-	return fb_ErrorThrowEx( (int)FB_TLSGET( fb_errctx.num ), res_label, resnext_label );
+	return fb_ErrorThrowEx( linenum, (int)FB_TLSGET( fb_errctx.num ), res_label, resnext_label );
 
 }
 
@@ -104,7 +110,7 @@ void *fb_ErrorResume ( void )
 
 	/* not defined? die */
 	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME );
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1 );
 
 	/* don't loop forever */
 	FB_TLSSET( fb_errctx.reslbl, NULL );
@@ -120,7 +126,7 @@ void *fb_ErrorResumeNext ( void )
 
 	/* not defined? die */
 	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME );
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1 );
 
 	/* don't loop forever */
 	FB_TLSSET( fb_errctx.reslbl, NULL );

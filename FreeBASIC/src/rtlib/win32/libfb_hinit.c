@@ -55,6 +55,7 @@ void fb_hInit ( int argc, char **argv )
 	/* allocate thread local storage vars for runtime error handling */
 	fb_errctx.handler   = TlsAlloc();
 	fb_errctx.num       = TlsAlloc();
+	fb_errctx.linenum   = TlsAlloc();
 	fb_errctx.reslbl    = TlsAlloc();
 	fb_errctx.resnxtlbl = TlsAlloc();
 

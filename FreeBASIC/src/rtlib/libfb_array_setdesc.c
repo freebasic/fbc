@@ -38,7 +38,7 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
     FBARRAYDIM	*p;
     int			lbTB[FB_MAXDIMENSIONS];
     int			ubTB[FB_MAXDIMENSIONS];
-    
+
     FB_LOCK();
 
     va_start( ap, dimensions );
@@ -52,6 +52,7 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
 
     	p->elements = (ubTB[i] - lbTB[i]) + 1;
     	p->lbound 	= lbTB[i];
+    	p->ubound 	= ubTB[i];
     	++p;
     }
 
@@ -60,13 +61,10 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
     elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
     diff 	 = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
-    array->element_len = element_len;
-    array->dimensions  = dimensions;
-
     array->ptr 	= ptr;
-    array->data = ((unsigned char *) array->ptr) + diff;
-    array->size	= elements * element_len;
-    
+
+    FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff )
+
     FB_UNLOCK();
 }
 

@@ -52,7 +52,7 @@ void __main(void);
 void fb_hInit ( int argc, char **argv )
 {
 
-    /* set FPU precision to 64-bit and round to nearest (as in QB) 
+    /* set FPU precision to 64-bit and round to nearest (as in QB)
 	Actually, we won't. It's just not a good idea at this point.
 */
 	/*_controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );*/
@@ -63,20 +63,21 @@ void fb_hInit ( int argc, char **argv )
 #ifdef MULTITHREADED
 	InitializeCriticalSection(&fb_global_mutex);
 	InitializeCriticalSection(&fb_string_mutex);
-	
+
 	/* allocate thread local storage vars for runtime error handling */
 	fb_errctx.handler   = TlsAlloc();
 	fb_errctx.num       = TlsAlloc();
+	fb_errctx.linenum   = TlsAlloc();
 	fb_errctx.reslbl    = TlsAlloc();
 	fb_errctx.resnxtlbl = TlsAlloc();
-	
+
 	/* allocate thread local storage vars for input context */
 	fb_inpctx.f         = TlsAlloc();
 	fb_inpctx.i         = TlsAlloc();
 	fb_inpctx.s.data    = TlsAlloc();
 	fb_inpctx.s.len     = TlsAlloc();
 	fb_inpctx.s.size    = TlsAlloc();
-	
+
 	/* allocate thread local storage vars for print using context */
 	fb_printusgctx.chars       = TlsAlloc();
 	fb_printusgctx.ptr         = TlsAlloc();
@@ -161,18 +162,18 @@ void drawScreen(int width, int height, int bpp)
 	int width = 640;
 	int height = 480;
 	int bpp = 32;
-	
+
 	SDL_Init(SDL_INIT_VIDEO);
 	drawScreen(width, height, 8);
 	//This is kept here so I don't have to worry about whether stuff is actually happening
-	//XBOXSTART ();		
+	//XBOXSTART ();
 
-	
+
 	//end stuff
 	drawScreen(width, height, 16);
-	
+
 	XSleep(5000);
-	
+
 #endif
 
 
@@ -182,9 +183,9 @@ void XBoxStartup()
 {
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-	
+
 	XBoxStartup2();
-	
+
 	while (1) { }
 	//XReboot();
 }

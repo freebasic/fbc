@@ -24,26 +24,16 @@
  *
  */
 
-#include <malloc.h>
-#include <stdarg.h>
 #include "fb.h"
 
 
 /*:::::*/
 FBCALL int fb_ArrayLBound( FBARRAY *array, int dimension )
 {
-	int res;
-
 	if( dimension > 0 )
 		--dimension;
 
-	FB_LOCK();
-
-    res = array->dimTB[dimension].lbound;
-
-    FB_UNLOCK();
-
-    return res;
+    return array->dimTB[dimension].lbound;
 }
 
 

@@ -40,7 +40,7 @@ void fb_hExitConsole( void )
 		if (fb_con.mouse_exit)
 			fb_con.mouse_exit();
 		BG_UNLOCK();
-		
+
 		bottom = fb_ConsoleGetMaxRow();
 		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
 			/* Restore scrolling region to whole screen and clear */
@@ -72,7 +72,7 @@ void fb_hEnd ( int errlevel )
 		pthread_join(fb_con.bg_thread, NULL);
 	}
 	pthread_mutex_destroy(&fb_con.bg_mutex);
-	
+
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&fb_global_mutex);
@@ -81,6 +81,7 @@ void fb_hEnd ( int errlevel )
 	/* allocate thread local storage vars for runtime error handling */
 	pthread_key_delete(fb_errctx.handler);
 	pthread_key_delete(fb_errctx.num);
+	pthread_key_delete(fb_errctx.linenum);
 	pthread_key_delete(fb_errctx.reslbl);
 	pthread_key_delete(fb_errctx.resnxtlbl);
 

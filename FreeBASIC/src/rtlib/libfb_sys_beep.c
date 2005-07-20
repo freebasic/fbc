@@ -33,8 +33,6 @@ FBCALL void fb_Beep( )
 
 #ifdef TARGET_WIN32
 	Beep( 1000, 250 );
-#elif defined(TARGET_DOS)
-	beep( 8000, 25 );
 #else
 	putc('\a', stdout);
 #endif

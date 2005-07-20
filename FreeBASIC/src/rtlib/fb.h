@@ -237,6 +237,7 @@ FBCALL void 		fb_StrAssignMid 		( FBSTRING *dst, int start, int len, FBSTRING *s
 typedef struct _FBARRAYDIM {
 	int				elements;
 	int				lbound;
+	int				ubound;
 } FBARRAYDIM;
 
 typedef struct _FBARRAY {
@@ -258,9 +259,21 @@ typedef struct _FB_ARRAY_TMPDESC {
 
 #define FB_ARRAY_TMPDESCRIPTORS (FB_STR_TMPDESCRIPTORS / 4)
 
+#define FB_ARRAY_SETDESC(_array, _elen, _dims, _size, _diff)		\
+    _array->element_len = _elen;									\
+    _array->dimensions  = _dims;                                  	\
+    _array->size		= _size;                                  	\
+                                                                	\
+    if( _array->ptr != NULL )                                    	\
+    	_array->data = ((unsigned char*) _array->ptr) + (_diff);	\
+    else                                                        	\
+    	_array->data = NULL;
+
+
 /* protos */
 
-	   int 			fb_ArrayRedim		( FBARRAY *array, int element_len, int isvarlen, int preserve, int dimensions, ... );
+	   int 			fb_ArrayRedim		( FBARRAY *array, int element_len, int preserve, int dimensions, ... );
+	   int 			fb_ArrayRedimPresv	( FBARRAY *array, int element_len, int preserve, int dimensions, ... );
 	   void 		fb_ArraySetDesc		( FBARRAY *array, void *ptr, int element_len, int dimensions, ... );
 FBCALL int 			fb_ArrayErase		( FBARRAY *array, int isvarlen );
 FBCALL void 		fb_ArrayStrErase	( FBARRAY *array );
@@ -269,7 +282,7 @@ FBCALL int 			fb_ArrayUBound		( FBARRAY *array, int dimension );
 
 	   int 			fb_hArrayCalcElements ( int dimensions, const int *lboundTB, const int *uboundTB );
 	   int 			fb_hArrayCalcDiff	( int dimensions, const int *lboundTB, const int *uboundTB );
-	   int 			fb_hArrayFreeVarLenStrs ( FBARRAY *array );
+	   int 			fb_hArrayFreeVarLenStrs ( FBARRAY *array, int base );
 
 
 /**************************************************************************************************
@@ -559,6 +572,7 @@ FBCALL void 		fb_Sleep 			( int msecs );
 typedef struct _FB_ERRORCTX {
 	FB_TLSENTRY		handler;
 	FB_TLSENTRY		num;
+	FB_TLSENTRY		linenum;
 	FB_TLSENTRY		reslbl;
 	FB_TLSENTRY		resnxtlbl;
 } FB_ERRORCTX;
@@ -567,8 +581,8 @@ extern FB_ERRORCTX fb_errctx;
 
 typedef void (*FB_ERRHANDLER) (void);
 
-	   FB_ERRHANDLER fb_ErrorThrowEx	( int errnum, void *res_label, void *resnext_label );
-	   FB_ERRHANDLER fb_ErrorThrow 		( void *res_label, void *resnext_label );
+	   FB_ERRHANDLER fb_ErrorThrowEx	( int errnum, int linenum, void *res_label, void *resnext_label );
+	   FB_ERRHANDLER fb_ErrorThrow 		( int linenum, void *res_label, void *resnext_label );
 FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler );
 FBCALL int 			fb_ErrorGetNum 		( void );
 FBCALL int 			fb_ErrorSetNum 		( int errnum );

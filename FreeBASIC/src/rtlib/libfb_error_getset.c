@@ -48,4 +48,10 @@ FBCALL int fb_ErrorSetNum ( int errnum )
 
 }
 
+/*:::::*/
+FBCALL int fb_ErrorGetLineNum ( void )
+{
 
+	return (int)FB_TLSGET( fb_errctx.linenum );
+
+}
