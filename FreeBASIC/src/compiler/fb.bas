@@ -385,7 +385,7 @@ function fbGetEntryPoint( ) as string static
 
 	select case env.clopt.target
 	case FB_COMPTARGET_XBOX
-		return "XBoxStartup2"
+		return "XBoxStartup"
 
 	case else
 		return "main"
