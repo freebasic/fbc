@@ -48,7 +48,7 @@ extern "C" {
 #define NULL 	0
 #endif
 
-#ifndef WIN32
+#ifndef TARGET_WIN32
 #define MAX_PATH	1024
 #endif
 
