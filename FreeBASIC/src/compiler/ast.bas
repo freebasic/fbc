@@ -6429,6 +6429,10 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 				if( l->v.valuei > ub->v.valuei ) then
 					return NULL
 				end if
+
+				astDel( lb )
+				astDel( ub )
+				return l
 			end if
 		end if
 
@@ -6456,8 +6460,6 @@ end function
 '':::::
 private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l, r, c, f
-    dim as IRVREG ptr v1, v2
-    dim as FBSYMBOL ptr oklabel, errlabel
 
 	l = n->l
 	r = n->r
@@ -6466,51 +6468,16 @@ private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	oklabel = symbAddLabel( "" )
-	errlabel = symbAddLabel( "" )
-
 	'' make a copy, can't reuse the same vreg or registers would get out-of-sync
 	c = astCloneTree( l )
 
-	'' load index
-	v1 = hLoad( l )
-
-    '' lbound not 0?
-    if( r->l <> NULL ) then
-    	v2 = hLoad( r->l )
-    	if( ctx.doemit ) then
-    		'' i < lbound? goto errlabel
-    		irEmitBOPEx( IR_OP_LT, v1, v2, NULL, errlabel )
-    	end if
-    end if
-
-    '' ubound
-    v2 = hLoad( r->r )
-    if( ctx.doemit ) then
-    	'' lbound 0? do a single unsigned check
-    	if( r->l = NULL ) then
-    		v1->dtype = IR_DATATYPE_UINT
-    	end if
-
-    	'' i <= ubound? goto oklabel
-    	irEmitBOPEx( IR_OP_LE, v1, v2, NULL, oklabel )
-
-    	irEmitLABELNF( errlabel )
-
-    	'' throw error: out-of-bounds
-    	f = rtlArrayOutOfBounds( n->bchk.linenum )
-    	hLoad( f )
-    	astDel( f )
-
-    	irEmitLABELNF( oklabel )
-    end if
-
-	'' del LINK nodes
-	astDel( r->l )
-	astDel( r->r )
+    '' check must be done using a function because calling ErrorThrow would spill
+    '' used regs only if it was called, causing wrong assumptions after the branches
+    f = rtlArrayBoundsCheck( l, r->l, r->r, n->bchk.linenum )
+    hLoad( f )
+    astDel( f )
 
 	''
-	astDel( l )
 	astDel( r )
 
 	'' re-load, see above

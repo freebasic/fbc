@@ -2,7 +2,7 @@
 [ ] full debug support
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
-    - add null pointer checking - like done with bounds-checking
+    - add null pointer checking - like done with bounds-checking (in a function too)
 
 [ ] AndAlso and OrElse, short-circuit versions of And and Or
 

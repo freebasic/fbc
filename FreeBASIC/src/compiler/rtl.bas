@@ -262,6 +262,24 @@ data "fb_ArrayFreeTempDesc","", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+'' fb_ArraySngBoundChk ( byval idx as integer, byval ubound as integer, byval linenum as integer ) as void
+data "fb_ArraySngBoundChk","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_ArrayBoundChk ( byval idx as integer, byval lbound as integer, byval ubound as integer, _
+''						byval linenum as integer ) as void
+data "fb_ArrayBoundChk","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 4, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 ''
 '' fb_IntToStr ( byval number as integer ) as string
@@ -3303,37 +3321,47 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function rtlArrayOutOfBounds( byval linenum as integer ) as ASTNODE ptr
-    dim proc as ASTNODE ptr
+function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
+							  byval lb as ASTNODE ptr, _
+							  byval rb as ASTNODE ptr, _
+							  byval linenum as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr proc
+    dim as FBSYMBOL ptr f
 
-	function = NULL
+   	function = NULL
 
-    proc = astNewFUNCT( ifuncTB(FB_RTL_ERRORTHROWEX) )
+   	'' lbound 0? do a single check
+   	if( lb = NULL ) then
+		f = ifuncTB(FB_RTL_ARRAYSNGBOUNDCHK)
+	else
+    	f = ifuncTB(FB_RTL_ARRAYBOUNDCHK)
+	end if
 
-	'' fb_ErrorThrowEx( errnum, reslabel, resnxtlabel );
+   	proc = astNewFUNCT( f )
 
-	'' errnum
-	if( astNewPARAM( proc, astNewCONSTi( FB_RTERROR_OUTOFBOUNDS, IR_DATATYPE_INTEGER ) ) = NULL ) then
+	'' idx
+	if( astNewPARAM( proc, idx, IR_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
-    '' linenum
+	'' lbound
+	if( lb <> NULL ) then
+		if( astNewPARAM( proc, lb, IR_DATATYPE_INTEGER ) = NULL ) then
+			exit function
+		end if
+	end if
+
+	'' rbound
+	if( astNewPARAM( proc, rb, IR_DATATYPE_INTEGER ) = NULL ) then
+		exit function
+	end if
+
+	'' linenum
 	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
-	'' reslabel
-	if( astNewPARAM( proc, astNewCONSTi( NULL, IR_DATATYPE_UINT ) ) = NULL ) then
-		exit function
-	end if
-
-	'' resnxtlabel
-	if( astNewPARAM( proc, astNewCONSTi( NULL, IR_DATATYPE_UINT ) ) = NULL ) then
-		exit function
-	end if
-
-    ''
-    function = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
+    function = proc
 
 end function
 
