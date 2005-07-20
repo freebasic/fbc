@@ -18,130 +18,33 @@
  */
 
 /*
- * init.c -- libfb initialization for Windows
+ * init.c -- libfb initialization for xbox
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: jul/2005 written [DrV]
  *
  */
 
-
-#include <hal/xbox.h>
-#include <hal/fileio.h>
-#include <openxdk/debug.h>
-#include <SDL.h>
-
-
-#include <stdlib.h>
 #include <stdlib.h>
 #include "../fb.h"
 #include "../fb_rterr.h"
 #include "fb_xbox.h"
-/*#include <float.h>	This isn't seen for some reason.*/
 
 #ifdef MULTITHREADED
 CRITICAL_SECTION fb_global_mutex;
 CRITICAL_SECTION fb_string_mutex;
 #endif
 
-HANDLE fb_in_handle, fb_out_handle;
-#define fbhandlesdefined
-
-void __main(void);
-
-/*:::::*/
-void fb_hInit ( int argc, char **argv )
-{
-
-    /* set FPU precision to 64-bit and round to nearest (as in QB)
-	Actually, we won't. It's just not a good idea at this point.
-*/
-	/*_controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );*/
-	//FIXME: THESE SEEM IMPORTANT!
-	//fb_in_handle = GetStdHandle( STD_INPUT_HANDLE );
-	//fb_out_handle = GetStdHandle( STD_OUTPUT_HANDLE );
-
-#ifdef MULTITHREADED
-	InitializeCriticalSection(&fb_global_mutex);
-	InitializeCriticalSection(&fb_string_mutex);
-
-	/* allocate thread local storage vars for runtime error handling */
-	fb_errctx.handler   = TlsAlloc();
-	fb_errctx.num       = TlsAlloc();
-	fb_errctx.linenum   = TlsAlloc();
-	fb_errctx.reslbl    = TlsAlloc();
-	fb_errctx.resnxtlbl = TlsAlloc();
-
-	/* allocate thread local storage vars for input context */
-	fb_inpctx.f         = TlsAlloc();
-	fb_inpctx.i         = TlsAlloc();
-	fb_inpctx.s.data    = TlsAlloc();
-	fb_inpctx.s.len     = TlsAlloc();
-	fb_inpctx.s.size    = TlsAlloc();
-
-	/* allocate thread local storage vars for print using context */
-	fb_printusgctx.chars       = TlsAlloc();
-	fb_printusgctx.ptr         = TlsAlloc();
-	fb_printusgctx.fmtstr.data = TlsAlloc();
-	fb_printusgctx.fmtstr.len  = TlsAlloc();
-	fb_printusgctx.fmtstr.size = TlsAlloc();
-
-#endif
-
-    /* call default CRT0 constructors (only required for Win32) */
-    __main();
-}
-
-
-#if 0
-  // Basic text output
-
 void DrawPixel(SDL_Surface *screen, int x, int y, unsigned char R, unsigned char G, unsigned char B)
 {
-  unsigned int color = SDL_MapRGB(screen->format, R, G, B);
-  switch (screen->format->BytesPerPixel)
-  {
-    case 1: // Assuming 8-bpp
-      {
-        unsigned char *bufp;
-        bufp = (unsigned char *)screen->pixels + y*screen->pitch + x;
-        *bufp = color;
-      }
-      break;
-    case 2: // Probably 15-bpp or 16-bpp
-      {
-        unsigned short *bufp;
-        bufp = (unsigned short *)screen->pixels + y*screen->pitch/2 + x;
-        *bufp = color;
-      }
-      break;
-    case 3: // Slow 24-bpp mode, usually not used
-      {
-        unsigned char *bufp;
-        bufp = (unsigned char *)screen->pixels + y*screen->pitch + x * 3;
-        if(SDL_BYTEORDER == SDL_LIL_ENDIAN)
-        {
-          bufp[0] = color;
-          bufp[1] = color >> 8;
-          bufp[2] = color >> 16;
-        } else {
-          bufp[2] = color;
-          bufp[1] = color >> 8;
-          bufp[0] = color >> 16;
-        }
-      }
-      break;
-    case 4: // Probably 32-bpp
-      {
-        unsigned int *bufp;
-        bufp = (unsigned int *)screen->pixels + y*screen->pitch/4 + x;
-        *bufp = color;
-      }
-      break;
-  }
+	unsigned int color = SDL_MapRGB(screen->format, R, G, B);
+	unsigned int *bufp;
+	bufp = (unsigned int *)screen->pixels + y*screen->pitch/4 + x;
+	*bufp = color;
 }
 
 void drawScreen(int width, int height, int bpp)
 {
+	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Surface *screen = SDL_SetVideoMode(width, height, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
 	for(int x=0; x<width; x++)
 	{
@@ -154,38 +57,50 @@ void drawScreen(int width, int height, int bpp)
 	XSleep(1000);
 }
 
-//extern FBCALL void XBOXSTART ();
-
-#endif
-
-#if 0
-	int width = 640;
-	int height = 480;
-	int bpp = 32;
-
-	SDL_Init(SDL_INIT_VIDEO);
-	drawScreen(width, height, 8);
-	//This is kept here so I don't have to worry about whether stuff is actually happening
-	//XBOXSTART ();
-
-
-	//end stuff
-	drawScreen(width, height, 16);
-
-	XSleep(5000);
-
-#endif
-
-
-extern void XBoxStartup2(void);
-
-void XBoxStartup()
+/*:::::*/
+void fb_hInit ( int argc, char **argv )
 {
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	unsigned int control_word;
+	
+	/* Get FPU control word */
+	__asm__ __volatile__( "fstcw %0" : "=m" (control_word) : );
+	/* Set 64-bit and round to nearest */
+	control_word = (control_word & 0xF0FF) | 0x300;
+	/* Write back FPU control word */
+	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
+	
+	
+#ifdef MULTITHREADED
 
-	XBoxStartup2();
+	/* !!!FIXME!!! replace with xbox/openxdk equivalents */
+	
+	InitializeCriticalSection(&fb_global_mutex);
+	InitializeCriticalSection(&fb_string_mutex);
+	
+	/* allocate thread local storage vars for runtime error handling */
+	fb_errctx.handler   = TlsAlloc();
+	fb_errctx.num       = TlsAlloc();
+	fb_errctx.reslbl    = TlsAlloc();
+	fb_errctx.resnxtlbl = TlsAlloc();
+	
+	/* allocate thread local storage vars for input context */
+	fb_inpctx.f         = TlsAlloc();
+	fb_inpctx.i         = TlsAlloc();
+	fb_inpctx.s.data    = TlsAlloc();
+	fb_inpctx.s.len     = TlsAlloc();
+	fb_inpctx.s.size    = TlsAlloc();
+	
+	/* allocate thread local storage vars for print using context */
+	fb_printusgctx.chars       = TlsAlloc();
+	fb_printusgctx.ptr         = TlsAlloc();
+	fb_printusgctx.fmtstr.data = TlsAlloc();
+	fb_printusgctx.fmtstr.len  = TlsAlloc();
+	fb_printusgctx.fmtstr.size = TlsAlloc();
 
-	while (1) { }
-	//XReboot();
+#endif
+
+    /* call default CRT0 constructors (only required for Win32) */
+    /* __main(); */
+    
+    drawScreen(640, 480, 8);
 }
