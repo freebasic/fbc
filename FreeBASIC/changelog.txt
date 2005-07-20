@@ -11,10 +11,12 @@ Version 0.14 Beta:
   objects files, the -m command-line option must be used to tell the compiler which module will be the main 
   one (v1c)
 - the DllMain function is not needed anymore in the Windows version, just declare the exports and remove the 
-  DllMain function, it won't be called anymore (v1c)
+  DllMain function, it won't be ever called (v1c)
 - the module-level code of non-main modules will now be always executed (before the main module), no REDIM's or 
   such will be missed as it used to happen in QB. Implicit module intialization can now be done as in Pascal, 
   just add any code to the module-level scope (ie: outside any function) (v1c)
+- the array descriptors had to be modified, if you have any DLL's compiled with old versions, please recompile
+  them with this new version if passing arrays by descriptor to functions (v1c)
 - the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as
   inline and will be evaluated at compile-time when constants are used as parameters (v1c)
 - macro text will be expanded on comments emited when the -g command-line option is used (v1c)
@@ -42,6 +44,9 @@ Version 0.14 Beta:
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - pointer type-casting: CPTR( DataType, Expression ), as in: "*cptr(byte ptr, somePointer) = 255"
 - functions call now return structures (user defined types) too, only external functions could before (v1c)
+- full debug support using GDB (the GNU debugger) or Insight (GDB's GUI frontent), only dynamic arrays can't
+  be watched at the moment, everything else works, including var-len strings and UDT's (v1c)
+- array bounds checking when -g (debug) cmd-line option is used (v1c)
 - alpha blending support for PUT; pass ALPHA as drawing mode. Only works if in 32bit color depth (lillo)
 - uniform alpha blending support for PUT: pass ALPHA,value to specify an unique alpha with which to blend sprite with
   background. Works in 15, 16, 24 and 32bit color depth (lillo)
@@ -79,6 +84,7 @@ Version 0.14 Beta:
 - private functions will only be emitted if referenced (v1c)
 - constructor and destructor functions - constructors will be executed *after* fb_Init (mjs)
 - -map <filename> to create a map file (mjs)
+- the ERL function - returns the line number where the runtime error happened, as in QB (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
