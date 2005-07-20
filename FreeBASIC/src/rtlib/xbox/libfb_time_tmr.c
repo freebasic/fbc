@@ -18,29 +18,21 @@
  */
 
 /*
- * time_tmr.c -- win32 timer# function
+ * time_tmr.c -- xbox timer function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written [DrV]
  *
  */
 
-#include <malloc.h>
-#include <time.h>
 #include "../fb.h"
-
-#define TIMER_NONE		0
-#define TIMER_NORMAL	1
-#define TIMER_HIGHRES	2
-
-
-static int timer = TIMER_NONE;
-static double frequency;
-static double timr = 0;
+#include "fb_xbox.h"
 
 /*:::::*/
 FBCALL double fb_Timer ( void )
 {
-	return timr + .01; //FIXME!!
+	LARGE_INTEGER t;
+	
+	KeQuerySystemTime(&t);
+	
+	return (double)(t) * 100.0;
 }
-
-

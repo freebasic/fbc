@@ -18,26 +18,22 @@
  */
 
 /*
- * thread_mutex.c -- Windows mutex handling routines
+ * thread_mutex.c -- xbox mutex handling routines
  *
- * chng: feb/2005 written [lillo]
+ * chng: jul/2005 written []
  *
  */
 
-#include "../fb.h"
-
+#include "fb.h"
 
 typedef struct _FBMUTEX
 {
-
 } FBMUTEX;
-
-
-
 
 /*:::::*/
 FBCALL FBMUTEX *fb_MutexCreate( void )
 {
+	return NULL;
 }
 
 /*:::::*/
@@ -48,11 +44,9 @@ FBCALL void fb_MutexDestroy( FBMUTEX *mutex )
 /*:::::*/
 FBCALL void fb_MutexLock( FBMUTEX *mutex )
 {
-	
 }
 
 /*:::::*/
 FBCALL void fb_MutexUnlock( FBMUTEX *mutex )
 {
-	
 }

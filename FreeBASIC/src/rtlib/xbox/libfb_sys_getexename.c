@@ -18,9 +18,9 @@
  */
 
 /*
- * sys_getexename.c -- get the executable's name for Windows
+ * sys_getexename.c -- get the executable's name for xbox
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: jul/2005 written []
  *
  */
 
@@ -28,9 +28,11 @@
 #include <string.h>
 #include "../fb.h"
 
+/* !!!FIXME!!! */
 
 /*:::::*/
 char *fb_hGetExeName( char *dst, int maxlen )
 {
-	return ""; /* !!!FIXME!!! */
+	dst[0] = '\0';
+	return dst;
 }

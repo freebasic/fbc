@@ -18,22 +18,17 @@
  */
 
 /*
- * time_settime.c -- set time function for Windows
+ * time_settime.c -- set time function for xbox
  *
- * chng: jan/2005 written [DrV]
+ * chng: jul/2005 written []
  *
  */
 
-
-
-
-#include <stdio.h>
-#include <stdlib.h>
 #include "../fb.h"
 
 /*:::::*/
 int fb_hSetTime( int h, int m, int s )
 {
-    	return 0;
+	/* TODO: use NtSetSystemTime */
+	return 0;
 }
-

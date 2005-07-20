@@ -18,19 +18,22 @@
  */
 
 /*
- * sys_fmem.c -- fre function for Windows
+ * sys_fmem.c -- fre function for xbox
  *
- * chng: dec/2004 written [v1ctor]
+ * chng: jul/2005 written [DrV]
  *
  */
 
 #include "../fb.h"
+#include "fb_xbox.h"
 
 /*:::::*/
 FBCALL unsigned int fb_GetMemAvail ( int mode )
 {
-	//FIXME: This is a tough one. Do we actually report the memory?
-	return 65535;
+	MM_STATISTICS ms;
+	
+	MmQueryStatistics(&ms);
+	
+	return ms.AvailablePages * 4096; /* !!!FIXME!! is this right - page size = 4k? */
 
 }
-

@@ -18,9 +18,9 @@
  */
 
 /*
- * sys_getexepath.c -- get the executable path for Windows
+ * sys_getexepath.c -- get the executable path for xbox
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written []
  *
  */
 
@@ -28,9 +28,9 @@
 #include <string.h>
 #include "../fb.h"
 
-
 /*:::::*/
 char *fb_hGetExePath( char *dst, int maxlen )
 {
-	return "";	/* !!!FIXME!!! */
+	dst[0] = '\0';
+	return dst;
 }

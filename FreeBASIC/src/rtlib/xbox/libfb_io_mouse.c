@@ -18,19 +18,14 @@
  */
 
 /*
- * io_mouse.c -- mouse functions for Windows console mode apps
+ * io_mouse.c -- mouse functions for xbox console mode apps
  *
- * chng: jun/2005 written [lillo]
+ * chng: jul/2005 written []
  *
  */
 
 #include "../fb.h"
 #include "../fb_rterr.h"
-#define INPUT_RECORD int
-
-static int inited = -1;
-static int last_x = 0, last_y = 0, last_z = 0, last_buttons = 0;
-
 
 /*:::::*/
 int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )

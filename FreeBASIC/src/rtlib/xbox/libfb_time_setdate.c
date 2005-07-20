@@ -18,20 +18,17 @@
  */
 
 /*
- * time_setdate.c -- set date function for Windows
+ * time_setdate.c -- set date function for xbox
  *
- * chng: jan/2005 written [DrV]
+ * chng: jul/2005 written []
  *
  */
 
-
-
-#include <stdio.h>
-#include <stdlib.h>
 #include "../fb.h"
 
 /*:::::*/
 int fb_hSetDate( int y, int m, int d )
 {
+	/* TODO: use NtSetSystemTime */
 	return 0;
 }

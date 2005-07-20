@@ -18,22 +18,17 @@
  */
 
 /*
- * io_multikey.c -- multikey function for Windows console mode apps
+ * io_multikey.c -- multikey function for xbox console mode apps
  *
- * chng: jun/2005 written [lillo]
+ * chng: jul/2005 written []
  *
  */
 
 #include "../fb.h"
 #include "../fb_scancodes.h"
 
-
-const unsigned char fb_keytable[][3];
-
-
 /*:::::*/
 int fb_ConsoleMultikey( int scancode )
 {
-
 	return FALSE;
 }

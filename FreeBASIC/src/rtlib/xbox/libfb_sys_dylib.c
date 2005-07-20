@@ -18,13 +18,11 @@
  */
 
 /*
- * sys_dylib.c -- Dynamic library loading and symbols retrieving
+ * sys_dylib.c -- Dynamic library loading and symbols retrieving (not available on xbox)
  *
- * chng: feb/2005 written [lillo]
+ * chng: jul/2005 written []
  *
  */
-
-//THE X-BOX HAS ***NO*** Support for dynamic libraries! Everything included in an app MUST be included at link-time!
 
 #include "../fb.h"
 #include <stdio.h>
@@ -33,17 +31,18 @@
 /*:::::*/
 FBCALL void *fb_DylibLoad( FBSTRING *library )
 {
-	return 0;
+	return NULL;
 }
 
 /*:::::*/
 FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 {
+	return NULL;
 }
 
 
 /*:::::*/
 FBCALL void fb_DylibFree( void *library )
 {
-
+	/* */
 }

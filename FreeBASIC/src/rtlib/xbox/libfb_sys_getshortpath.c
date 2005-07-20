@@ -18,31 +18,23 @@
  */
 
 /*
- * sys_getshorpath.c -- get short path for Windows
+ * sys_getshorpath.c -- get short path for xbox
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: jul/2005 written []
  *
  */
 
 #include <malloc.h>
 #include <string.h>
 
-#include <process.h>
 #include "../fb.h"
+
+/* !!!FIXME!!! */
 
 /*:::::*/
 char *fb_hGetShortPath( char *src, char *dst, int maxlen )
 {
-
-	if( strchr( src, 32 ) == NULL )
-	{
-		strcpy( dst, src );
-	}
-	else
-	{
-		strcpy( dst, src );	/* !!!FIXME!!! is this proc even needed? */
-    }
-
+	strncpy(dst, src, maxlen);	
 	return dst;
 }
 

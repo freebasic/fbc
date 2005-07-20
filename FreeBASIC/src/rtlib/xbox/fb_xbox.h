@@ -26,12 +26,13 @@
 
 #ifndef __FB_XBOX__
 #define __FB_XBOX__
-#ifndef HANDLE
-#define HANDLE int
-#endif
-extern HANDLE fb_in_handle, fb_out_handle;
-extern const unsigned char fb_keytable[][3];
 
 #include <hal/xbox.h>
+#include <hal/fileio.h>
+#include <openxdk/debug.h>
+#include <SDL.h>
+
+extern HANDLE fb_in_handle, fb_out_handle;
+extern const unsigned char fb_keytable[][3];
 
 #endif

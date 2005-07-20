@@ -18,21 +18,21 @@
  */
 
 /*
- * sys_getcwd.c -- get current dir for Windows
+ * sys_getcwd.c -- get current dir for xbox
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: jul/2005 written [DrV]
  *
  */
 
-#include <malloc.h>
-#include <string.h>
 #include "../fb.h"
 
+/* !!!FIXME!!! find nt/xbox kernel api */
 
 /*:::::*/
 int fb_hGetCurrentDir ( char *dst, int maxlen )
 {
-
-	return ".";
+	dst[0] = '.';
+	dst[1] = '\0';
 	
+	return 0;
 }

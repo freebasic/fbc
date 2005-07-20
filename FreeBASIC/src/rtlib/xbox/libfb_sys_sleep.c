@@ -18,18 +18,18 @@
  */
 
 /*
- * sys_sleep.c -- sleep function for Windows
+ * sys_sleep.c -- sleep function for xbox
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: jul/2005 written [DrV]
  *
  */
 
 #include "../fb.h"
+#include "fb_xbox.h"
 
 /*:::::*/
 void fb_hSleep ( int msecs )
 {
-
-	//Sleep( msecs );
+	XSleep( msecs );
 }
 

@@ -18,32 +18,26 @@
  */
 
 /*
- * thread_core.c -- Linux (pthreads) thread creation and destruction
+ * thread_core.c -- xbox thread creation and destruction
  *
- * chng: feb/2005 written [lillo]
+ * chng: jul/2005 written []
  *
  */
 
-
-#include <pthread.h>
-#include "../fb.h"
+#include "fb.h"
 
 
 typedef struct _FBTHREAD
 {
-
 } FBTHREAD;
-
-
 
 /*:::::*/
 FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
 {
-
+	return NULL;
 }
 
 /*:::::*/
 FBCALL void fb_ThreadWait( FBTHREAD *thread )
 {
-
 }

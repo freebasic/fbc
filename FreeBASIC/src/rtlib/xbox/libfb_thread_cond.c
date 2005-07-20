@@ -18,29 +18,23 @@
  */
 
 /*
- * thread_cond.c -- Linux (pthreads) condition variables handling routines
+ * thread_cond.c -- xbox condition variables handling routines
  *
- * chng: feb/2005 written [lillo]
+ * chng: jul/2005 written []
  *
  */
 
-//THIS IS IMPORTANT! THIS LIB IS CAPABLE OF DOING THREADS!
-
-#include <pthread.h>
-#include "../fb.h"
-
+#include "fb.h"
 
 typedef struct _FBCOND
 {
 } FBCOND;
 
-static FBCOND condTB[FB_MAXCONDS];
-static FB_LIST condList = { 0 };
-
 
 /*:::::*/
 FBCALL FBCOND *fb_CondCreate( void )
 {
+	return NULL;
 }
 
 /*:::::*/
