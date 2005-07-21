@@ -223,7 +223,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		CloseHandle(events[0]);
 		handle = events[1];
 		if (result != WAIT_OBJECT_0) {
-			DeleteCriticalSection(&update_lock);
+			//DeleteCriticalSection(&update_lock);
 			return -1;
 		}
 	
