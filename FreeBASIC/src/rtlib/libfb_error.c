@@ -38,6 +38,7 @@ static const char *error_msg[] = {
 	"out of memory",					/* FB_RTERROR_OUTOFMEM */
 	"illegal resume",					/* FB_RTERROR_ILLEGALRESUME */
 	"out of bounds array access",		/* FB_RTERROR_OUTOFBOUNDS */
+	"null pointer access",				/* FB_RTERROR_NULLPTR */
 	"\"interrupted\" signal",
 	"\"illegal instruction\" signal",
 	"\"floating point error\" signal",

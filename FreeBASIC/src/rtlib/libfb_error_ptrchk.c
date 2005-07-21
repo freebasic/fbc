@@ -18,9 +18,9 @@
  */
 
 /*
- * array_boundchk.c -- bound checking functions
+ * error_ptrchk.c -- null pointer checking function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written [v1ctor]
  *
  */
 
@@ -28,26 +28,10 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-static void *hThrowError( int linenum )
+FBCALL void *fb_NullPtrChk( void *ptr, int linenum )
 {
-	/* call user handler if any defined */
-    return (void *)fb_ErrorThrowEx( FB_RTERROR_OUTOFBOUNDS, linenum, NULL, NULL );
-}
-
-/*:::::*/
-FBCALL void *fb_ArrayBoundChk( int idx, int lbound, int ubound, int linenum )
-{
-	if( (idx < lbound) || (idx > ubound) )
-		return hThrowError( linenum );
-	else
-		return NULL;
-}
-
-/*:::::*/
-FBCALL void *fb_ArraySngBoundChk( unsigned int idx, unsigned int ubound, int linenum )
-{
-	if( idx > ubound )
-		return hThrowError( linenum );
+	if( ptr == NULL )
+		return (void *)fb_ErrorThrowEx( FB_RTERROR_NULLPTR, linenum, NULL, NULL );
 	else
 		return NULL;
 }
