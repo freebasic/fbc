@@ -232,6 +232,27 @@ Most Important Features:
          MyFunction AS FUNCTION (BYVAL ArgumentA AS INTEGER) AS INTEGER
       END TYPE
 
+    - Bit fields:
+
+      TYPE mytype
+          flag_0 : 1 as integer
+          flag_1 : 1 as integer
+          flag_2 : 1 as integer
+      END TYPE
+
+      DIM t AS mytype
+
+      t.flag_0 = 1
+      t.flag_1 = 0
+      t.flag_2 = 1
+
+      PRINT "All flags ON? ";
+      IF ( t.flag_0 AND t.flag_1 AND t.flag_2 ) THEN
+        PRINT "TRUE"
+      ELSE
+        PRINT "FALSE"
+      END IF
+
   o Enumerations (ENUM's):
 
       ENUM MyEnum
@@ -259,7 +280,7 @@ Most Important Features:
 
     - Pointers to any of the data types listed above, including UDT's and arrays.
 
-    - Uses the same syntax as C/C++. For example,
+    - Uses the same syntax as C. For example,
 
       TYPE Node
          PreviousNode AS Node POINTER
@@ -279,8 +300,8 @@ Most Important Features:
       DIM MyPointer AS SUB(BYVAL ArgumentA AS INTEGER, BYVAL ArgumentB AS DOUBLE)
       DIM OtherPointer AS FUNCTION(BYVAL ArgumentA AS INTEGER)
 
-      MyPointer = PROCPTR(RealSub)
-      MyPointer (1, 2)
+      MyPointer = @RealSub '' or PROCPTR(RealSub)
+      MyPointer(1, 2)
 
       SUB RealSub(BYVAL ArgumentA AS INTEGER, BYVAL ArgumentB AS DOUBLE)
          Result = ArgumentA * ArgumentB
@@ -313,7 +334,7 @@ Most Important Features:
 
       cptr(myudt1 ptr, @udt2)->foo = *cptr(integer ptr, bar)
 
-  o Variable initializers, for static, module-level or local variables, arrays 
+  o Variable initializers for static, module-level or local variables, arrays 
     and UDT's:
 
       DIM foo( 0 to 3 ) AS INTEGER = { 1, 2, 3, 4 }
@@ -326,27 +347,6 @@ Most Important Features:
       DIM mytypearray(0 to 1) as MYTYPE = { ( "a", 1, 2.0 ), ( "b", 3, 4.0 ) }
 
       DIM localvar AS INTEGER = a + b * d
-
-  o Bit fields:
-
-      TYPE mytype
-          flag_0 : 1 as integer
-          flag_1 : 1 as integer
-          flag_2 : 1 as integer
-      END TYPE
-
-      DIM t AS mytype
-
-      t.flag_0 = 1
-      t.flag_1 = 0
-      t.flag_2 = 1
-
-      PRINT "All flags ON? ";
-      IF ( t.flag_0 AND t.flag_1 AND t.flag_2 ) THEN
-    PRINT "TRUE"
-      ELSE
-        PRINT "FALSE"
-      END IF
 
   o Optional function arguments (numeric and strings):
 
@@ -407,7 +407,7 @@ Most Important Features:
            a   AS INTEGER
       END TYPE
 
-      DIM s AS SOMETYPE, b AS BAR
+      DIM s AS sometype, b AS bar
       
       b.st.f = @b
       s.f = @b
@@ -422,6 +422,14 @@ Most Important Features:
       OPTION ESCPAPE
       PRINT "\"Hello from FreeBASIC!\""
 
+  o Debug support:
+  
+    - Full debug support with GDB (the GNU debugger) or Insight (the GDB GUI frontend)
+
+    - Array bounds checking (only enabled by the -exx command-line option)
+    
+    - Null pointers checking (same as above)
+
   o Create OBJ's, LIB's, DLL's, and console or GUI EXE's:
 
     - You are in no way locked to an IDE or editor of any kind.
@@ -429,7 +437,7 @@ Most Important Features:
     - You can create static and dynamic libraries adding just one command-line
       option (-lib or -dll).
 
-  o As a 32-bit application:
+  o A a 32-bit application:
 
     - FreeBASIC can compile source code files up to 2 GB long.
 
@@ -486,8 +494,9 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
     - Added profiling support.
-    - Added build-in threads and dynlib support, made the rtlib thread-safe, 
-      besides many other runtime lib and compiler improvements.
+    - Added build-in threads and dynlib support.
+    - Made the rtlib thread-safe, besides many other runtime lib 
+      and compiler improvements.
 
   o Bryan Stoeberl (b_stoeberl@yahoo.com):
     - Translated the OpenGL Extensions header.
@@ -498,9 +507,8 @@ Credits (in alphabetic order):
     - Wrote the OpenAL demonstration in the examples/sound directory.
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
-    - Ported FreeBASIC to DOS; port maintainer.
+    - Ported FreeBASIC to DOS and Xbox; ports maintainer.
     - Translated the Allegro headers (W.I.P.).
-    - FreeBASIC Documentation project member.
     - Wrote the DLL and static library automation, plus resource scripts 
       support on Windows.
     - Completed the CRTDLL and DDRAW headers.
