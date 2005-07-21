@@ -2,7 +2,6 @@
 [ ] full debug support
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
-    - add null pointer checking - like done with bounds-checking (in a function too)
 
 [ ] AndAlso and OrElse, short-circuit versions of And and Or
 
@@ -10,14 +9,14 @@
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
 
-[ ] EMIT:
-    - optimize load after store
-    - re-ordering optimization if target cpu is +586
-
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
       that will keep track of what wasn't initialized to fill 'em with 0's - static only, locals
       are already cleared
+
+[ ] EMIT:
+    - optimize load after store
+    - re-ordering optimization if target cpu is +586
 
 *** *** *** *** ***
 [ ] inline functions
@@ -25,7 +24,7 @@
 
 [ ] classes
     - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
-    - Java/Php5-ish syntax: CLASS EXTENDS IMPLEMENTS THROWS
+    - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
     - single inheritance, plus interfaces
     - exceptions - with unwind support
     - operator overloading

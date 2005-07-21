@@ -115,6 +115,7 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_PROFILE
 	FB_COMPOPT_TARGET
 	FB_COMPOPT_NAMING
+	FB_COMPOPT_EXTRAERRCHECK
 end enum
 
 type FBCMMLINEOPT
@@ -133,6 +134,7 @@ type FBCMMLINEOPT
 	profile			as integer					'' build profiling code (def= false)
 	target			as integer					'' target platform
 	naming			as integer					'' target naming
+	extraerrchk		as integer					'' add bounds plus null pointer checking
 end type
 
 

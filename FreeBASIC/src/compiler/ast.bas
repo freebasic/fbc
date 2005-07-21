@@ -117,6 +117,8 @@ declare function 	hLoadMEM		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	hLoadBOUNDCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	hLoadPTRCHK		( byval n as ASTNODE ptr ) as IRVREG ptr
+
 declare function	astUpdStrConcat	( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 
@@ -2672,6 +2674,9 @@ private function hLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
     case AST_NODECLASS_BOUNDCHK
     	return hLoadBOUNDCHK( n )
+
+    case AST_NODECLASS_PTRCHK
+    	return hLoadPTRCHK( n )
     end select
 
 end function
@@ -6460,6 +6465,8 @@ end function
 '':::::
 private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l, r, c, f
+    dim as FBSYMBOL ptr label
+    dim as IRVREG ptr vr
 
 	l = n->l
 	r = n->r
@@ -6474,11 +6481,75 @@ private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     '' check must be done using a function because calling ErrorThrow would spill
     '' used regs only if it was called, causing wrong assumptions after the branches
     f = rtlArrayBoundsCheck( l, r->l, r->r, n->bchk.linenum )
-    hLoad( f )
+    vr = hLoad( f )
     astDel( f )
+
+    if( ctx.doemit ) then
+    	'' handler = boundchk( ... ): if handler <> NULL then handler( )
+    	label = symbAddLabel( "" )
+    	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( IR_DATATYPE_INTEGER, 0 ), NULL, label )
+    	irEmitJUMPPTR( vr )
+    	irEmitLABELNF( label )
+    end if
 
 	''
 	astDel( r )
+
+	'' re-load, see above
+	function = hLoad( c )
+	astDel( c )
+
+end function
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' null pointer checking (l = index; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewPTRCHK( byval l as ASTNODE ptr, _
+					   byval linenum as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = hNewNode( AST_NODECLASS_PTRCHK, INVALID )
+	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
+
+	n->l 			= l
+	n->pchk.linenum = linenum
+
+end function
+
+'':::::
+private function hLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l, c, f
+    dim as FBSYMBOL ptr label
+    dim as IRVREG ptr vr
+
+	l = n->l
+
+	if( l = NULL ) then
+		return NULL
+	end if
+
+	'' make a copy, can't reuse the same vreg or registers would get out-of-sync
+	c = astCloneTree( l )
+
+    '' check must be done using a function, see bounds checking
+    f = rtlNullPtrCheck( l, n->pchk.linenum )
+    vr = hLoad( f )
+    astDel( f )
+
+    if( ctx.doemit ) then
+    	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
+    	label = symbAddLabel( "" )
+    	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( IR_DATATYPE_INTEGER, 0 ), NULL, label )
+    	irEmitJUMPPTR( vr )
+    	irEmitLABELNF( label )
+    end if
 
 	'' re-load, see above
 	function = hLoad( c )

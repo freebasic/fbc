@@ -447,6 +447,7 @@ sub printOptions( )
 	end if
 	print "-e", "Add error checking"
 	print "-ex", "Add error checking with RESUME support"
+	print "-exx", "Same as above plus array bounds and null-pointer checking"
 	print "-export", "Export symbols for dynamic linkage"
 	print "-g", "Add debug info"
 	print "-i <name>", "Add a path to search for include files"
@@ -523,6 +524,13 @@ sub setDefaultOptions( )
 end sub
 
 '':::::
+sub printInvalidOpt( byval argn as integer )
+
+	hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(argn) + "\"", -1 )
+
+end sub
+
+'':::::
 function processTargetOptions( ) as integer
     dim i as integer
 
@@ -566,7 +574,7 @@ function processTargetOptions( ) as integer
 #endif
 
 				case else
-					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i+1) + "\"", -1 )
+					printInvalidOpt( i+1 )
 					return FALSE
 				end select
 
@@ -589,7 +597,7 @@ function processTargetOptions( ) as integer
 					fbc.naming = FB_COMPNAMING_XBOX
 
 				case else
-					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i+1) + "\"", -1 )
+					printInvalidOpt( i+1 )
 					return FALSE
 				end select
 
@@ -632,6 +640,13 @@ function processOptions( ) as integer
 			case "ex"
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+
+				argv(i) = ""
+
+			case "exx"
+				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+				fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
 
 				argv(i) = ""
 
@@ -692,6 +707,7 @@ function processOptions( ) as integer
 				case "686"
 					value = FB_CPUTYPE_686
 				case else
+					printInvalidOpt( i+1 )
 					exit function
 				end select
 
@@ -747,6 +763,7 @@ function processOptions( ) as integer
 			case "x"
 				fbc.outname = argv(i+1)
 				if( len( fbc.outname ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 
@@ -757,6 +774,7 @@ function processOptions( ) as integer
 			case "m"
 				fbc.mainfile = hStripPath( hStripExt( argv(i+1) ) )
 				if( len( fbc.mainfile ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.mainpath = hStripFilename( argv(i+1) )
@@ -769,6 +787,7 @@ function processOptions( ) as integer
 			case "map"
 				fbc.mapfile = argv(i+1)
 				if( len( fbc.mapfile ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 
@@ -791,6 +810,7 @@ function processOptions( ) as integer
 			'' library paths
 			case "p"
 				if( not fbAddLibPath( argv(i+1) ) ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 
@@ -801,6 +821,7 @@ function processOptions( ) as integer
 			case "i"
 				fbc.inclist(fbc.incs) = argv(i+1)
 				if( len( fbc.inclist(fbc.incs) ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.incs += 1
@@ -812,6 +833,7 @@ function processOptions( ) as integer
 			case "d"
 				fbc.deflist(fbc.defs) = argv(i+1)
 				if( len( fbc.deflist(fbc.defs) ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.defs += 1
@@ -823,6 +845,7 @@ function processOptions( ) as integer
 			case "b"
 				fbc.inplist(fbc.inps) = argv(i+1)
 				if( len( fbc.inplist(fbc.inps) ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.inps += 1
@@ -834,6 +857,7 @@ function processOptions( ) as integer
 			case "o"
 				fbc.outlist(fbc.outs) = argv(i+1)
 				if( len( fbc.outlist(fbc.outs) ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.outs += 1
@@ -845,6 +869,7 @@ function processOptions( ) as integer
 			case "a"
 				fbc.objlist(fbc.objs) = argv(i+1)
 				if( len( fbc.objlist(fbc.objs) ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.objs += 1
@@ -856,6 +881,7 @@ function processOptions( ) as integer
 			case "l"
 				fbc.liblist(fbc.libs) = argv(i+1)
 				if( len( fbc.liblist(fbc.libs) ) = 0 ) then
+					printInvalidOpt( i+1 )
 					exit function
 				end if
 				fbc.libs += 1
@@ -866,7 +892,7 @@ function processOptions( ) as integer
 			'' target-dependent options
 			case else
 				if( not fbc.processOptions( argv(i), argv(i+1) ) ) then
-					hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(i) + "\"", -1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 

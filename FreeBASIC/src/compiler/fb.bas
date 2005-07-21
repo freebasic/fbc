@@ -230,6 +230,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.profile       = FALSE
 	env.clopt.target		= FB_DEFAULTTARGET
 	env.clopt.naming		= FB_COMPNAMING_DEFAULT
+	env.clopt.extraerrchk	= FALSE
 
 end sub
 
@@ -268,6 +269,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.target = value
 	case FB_COMPOPT_NAMING
 		env.clopt.naming = value
+	case FB_COMPOPT_EXTRAERRCHECK
+		env.clopt.extraerrchk = value
 	end select
 
 end sub
@@ -306,6 +309,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		function = env.clopt.target
 	case FB_COMPOPT_NAMING
 		function = env.clopt.naming
+	case FB_COMPOPT_EXTRAERRCHECK
+		function = env.clopt.extraerrchk
 	case else
 		function = FALSE
 	end select

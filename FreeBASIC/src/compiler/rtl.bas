@@ -262,23 +262,33 @@ data "fb_ArrayFreeTempDesc","", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
-'' fb_ArraySngBoundChk ( byval idx as integer, byval ubound as integer, byval linenum as integer ) as void
+
+'' fb_ArraySngBoundChk ( byval idx as integer, byval ubound as integer, _
+''						 byval linenum as integer ) as any ptr
 data "fb_ArraySngBoundChk","", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 '' fb_ArrayBoundChk ( byval idx as integer, byval lbound as integer, byval ubound as integer, _
-''						byval linenum as integer ) as void
+''						byval linenum as integer ) as any ptr
 data "fb_ArrayBoundChk","", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer ) as any ptr
+data "fb_NullPtrChk","", _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 ''
@@ -3320,6 +3330,10 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 
 end function
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' bounds and null-pointer checks
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 '':::::
 function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
 							  byval lb as ASTNODE ptr, _
@@ -3353,6 +3367,29 @@ function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
 
 	'' rbound
 	if( astNewPARAM( proc, rb, IR_DATATYPE_INTEGER ) = NULL ) then
+		exit function
+	end if
+
+	'' linenum
+	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
+
+    function = proc
+
+end function
+
+'':::::
+function rtlNullPtrCheck( byval p as ASTNODE ptr, _
+						  byval linenum as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr proc
+
+   	function = NULL
+
+   	proc = astNewFUNCT( ifuncTB(FB_RTL_NULLPTRCHK) )
+
+	'' ptr
+	if( astNewPARAM( proc, p, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) = NULL ) then
 		exit function
 	end if
 

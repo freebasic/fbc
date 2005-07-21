@@ -53,6 +53,7 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_DBG
 	AST_NODECLASS_MEM
 	AST_NODECLASS_BOUNDCHK
+	AST_NODECLASS_PTRCHK
 end enum
 
 type ASTNODE_ as ASTNODE
@@ -152,6 +153,10 @@ type AST_BOUNDCHK
 	linenum			as integer
 end type
 
+type AST_PTRCHK
+	linenum			as integer
+end type
+
 ''
 type ASTNODE
 	ll_prv			as ASTNODE ptr					'' linked-list nodes
@@ -185,6 +190,7 @@ type ASTNODE
 		dbg			as AST_DBG
 		mem			as AST_MEM
 		bchk		as AST_BOUNDCHK
+		pchk		as AST_PTRCHK
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -373,6 +379,9 @@ declare function 	astNewBOUNDCHK		( byval l as ASTNODE ptr, _
 					     				  byval lb as ASTNODE ptr, _
 					     				  byval ub as ASTNODE ptr, _
 					     				  byval linenum as integer ) as ASTNODE ptr
+
+declare function 	astNewPTRCHK		( byval l as ASTNODE ptr, _
+					   					  byval linenum as integer ) as ASTNODE ptr
 
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _

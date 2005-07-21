@@ -721,6 +721,11 @@ private function hDoDeref( byval cnt as integer, _
 			exit function
 		end if
 
+		'' null pointer checking
+		if( env.clopt.extraerrchk ) then
+			expr = astNewPTRCHK( expr, lexLineNum( ) )
+		end if
+
 		expr = astNewPTR( NULL, NULL, 0, expr, dtype, NULL )
 		cnt -= 1
 	loop
@@ -739,7 +744,11 @@ private function hDoDeref( byval cnt as integer, _
 		exit function
 	end if
 
-    ''
+	'' null pointer checking
+	if( env.clopt.extraerrchk ) then
+		expr = astNewPTRCHK( expr, lexLineNum( ) )
+	end if
+
     expr = astNewPTR( sym, elm, 0, expr, dtype, subtype )
 
     function = dtype

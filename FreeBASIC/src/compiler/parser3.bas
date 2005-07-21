@@ -373,7 +373,11 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 		end if
 
-		''
+		'' null pointer checking
+		if( env.clopt.extraerrchk ) then
+			varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
+		end if
+
 		varexpr = astNewPTR( sym, elm, 0, varexpr, dtype, subtype )
 
 		''
@@ -389,6 +393,11 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
 				hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				return FALSE
+			end if
+
+			'' null pointer checking
+			if( env.clopt.extraerrchk ) then
+				varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
 			end if
 
 			varexpr = astNewPTR( sym, elm, 0, varexpr, dtype, subtype )
@@ -530,7 +539,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 		end if
 
     	'' bounds checking
-    	if( env.clopt.debug ) then
+    	if( env.clopt.extraerrchk ) then
             dimexpr = hDynArrayBoundChk( dimexpr, d, i )
 			if( dimexpr = NULL ) then
 				exit function
@@ -636,7 +645,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 		end if
 
     	'' bounds checking
-    	if( env.clopt.debug ) then
+    	if( env.clopt.extraerrchk ) then
             dimexpr = hArgArrayBoundChk( dimexpr, sym, i )
 			if( dimexpr = NULL ) then
 				exit function
@@ -735,7 +744,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 		end if
 
     	'' bounds checking
-    	if( env.clopt.debug ) then
+    	if( env.clopt.extraerrchk ) then
     		dimexpr = astNewBOUNDCHK( dimexpr, _
     								  astNewCONSTi( d->lower, IR_DATATYPE_INTEGER ), _
     								  astNewCONSTi( d->upper, IR_DATATYPE_INTEGER ), _

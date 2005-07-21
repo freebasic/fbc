@@ -45,8 +45,10 @@ enum FBRTL_ENUM
 	FB_RTL_ARRAYSTRERASE
 	FB_RTL_ARRAYALLOCTMPDESC
 	FB_RTL_ARRAYFREETMPDESC
+
 	FB_RTL_ARRAYSNGBOUNDCHK
     FB_RTL_ARRAYBOUNDCHK
+    FB_RTL_NULLPTRCHK
 
 	FB_RTL_INT2STR
 	FB_RTL_UINT2STR
@@ -271,6 +273,9 @@ declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE
 declare function 	rtlArrayBoundsCheck	( byval idx as ASTNODE ptr, _
 							  			  byval lb as ASTNODE ptr, _
 							  			  byval rb as ASTNODE ptr, _
+							  			  byval linenum as integer ) as ASTNODE ptr
+
+declare function 	rtlNullPtrCheck		( byval p as ASTNODE ptr, _
 							  			  byval linenum as integer ) as ASTNODE ptr
 
 declare function	rtlDataRestore		( byval label as FBSYMBOL ptr, _
