@@ -158,25 +158,8 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	int *gl_attr, result;
 	
 	context = NULL;
-	
-	if (!(flags & DRIVER_OPENGL))
-		return -1;
 
-	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));
-	fb_linux.init = opengl_window_init;
-	fb_linux.exit = opengl_window_exit;
-	fb_linux.update = opengl_window_update;
-	gl_options = flags & DRIVER_OPENGL_OPTIONS;
-	
-	result = fb_hX11Init(title, w, h, depth, refresh_rate, flags);
-	if (result)
-		return result;
-	
-	if (!fb_glXChooseVisual)
-		if (load_library())
-			return -1;
-	
-	if (fb_linux.depth > 16)
+	if (depth > 16)
 		gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 8;
 	
 	gl_attr = &gl_attrs[10];
@@ -195,19 +178,44 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		*gl_attr++ = 8;
 	}
 	*gl_attr = None;
+	
+	if (!(flags & DRIVER_OPENGL))
+		return -1;
+
+	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));
+	fb_linux.init = opengl_window_init;
+	fb_linux.exit = opengl_window_exit;
+	fb_linux.update = opengl_window_update;
+	gl_options = flags & DRIVER_OPENGL_OPTIONS;
+
+	fb_hXlibInit();
+	
+	fb_linux.display = XOpenDisplay(NULL);
+	if (!fb_linux.display)
+		return -1;
+	fb_linux.screen = XDefaultScreen(fb_linux.display);
+	
+	if (!fb_glXChooseVisual)
+		if (load_library())
+			return -1;
+	
 	if (!(info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs)))
 		return -1;
+	fb_linux.visual = info->visual;
+	
 	context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
 	XFree(info);
-	if (context <= 0)
+	if ((int)context <= 0)
 		return -1;
+
+	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
+	if (result)
+		return result;
+	
 	fb_glXMakeCurrent(fb_linux.display, fb_linux.window, context);
-	XSync(fb_linux.display, False);
 	
 	return 0;
 }
-
-
 
 
 /*:::::*/

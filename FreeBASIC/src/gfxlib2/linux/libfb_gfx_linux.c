@@ -246,7 +246,7 @@ int fb_hX11EnterFullscreen(int h)
 
 
 /*:::::*/
-void fb_hX11LeaveFullscreen()
+void fb_hX11LeaveFullscreen(void)
 {
 	if ((!config) || (target_size < 0))
 		return;
@@ -257,6 +257,16 @@ void fb_hX11LeaveFullscreen()
 		if (XRRSetScreenConfigAndRate(fb_linux.display, config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
 			return;
 		current_size = orig_size;
+	}
+}
+
+
+/*:::::*/
+void fb_hXlibInit(void)
+{
+	if (!xlib_inited) {
+		XInitThreads();
+		xlib_inited = TRUE;
 	}
 }
 
@@ -280,14 +290,10 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	KeySym keysym;
 	
 	is_running = FALSE;
-	if (!xlib_inited) {
-		XInitThreads();
-		xlib_inited = TRUE;
-	}
+	fb_hXlibInit();
 	
 	fb_linux.w = w;
 	fb_linux.h = h;
-	fb_linux.depth = depth;
 	fb_linux.fullscreen = (flags & DRIVER_FULLSCREEN) ? TRUE : FALSE;
 	fb_linux.refresh_rate = refresh_rate;
 	
@@ -296,32 +302,39 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	xim = NULL;
 	xic = NULL;
 	config = NULL;
-	fb_linux.display = XOpenDisplay(NULL);
-	if (!fb_linux.display)
-		return -1;
-	fb_linux.screen = XDefaultScreen(fb_linux.display);
-	root_window = XDefaultRootWindow(fb_linux.display);
 	
-	fb_linux.visual = XDefaultVisual(fb_linux.display, fb_linux.screen);
-	format = XListPixmapFormats(fb_linux.display, &num_formats);
-	for (i = 0; i < num_formats; i++) {
-		if (format[i].depth == XDefaultDepth(fb_linux.display, fb_linux.screen)) {
-			if (format[i].bits_per_pixel == 16)
-				fb_linux.visual_depth = format[i].depth;
-			else
-				fb_linux.visual_depth = format[i].bits_per_pixel;
-			break;
-		}
+	if (fb_linux.visual) {
+		fb_linux.depth = depth;
 	}
-	XFree(format);
+	else {
+		fb_linux.display = XOpenDisplay(NULL);
+		if (!fb_linux.display)
+			return -1;
+		fb_linux.screen = XDefaultScreen(fb_linux.display);
+		fb_linux.visual = XDefaultVisual(fb_linux.display, fb_linux.screen);
+		fb_linux.depth = XDefaultDepth(fb_linux.display, fb_linux.screen);
+		format = XListPixmapFormats(fb_linux.display, &num_formats);
+		for (i = 0; i < num_formats; i++) {
+			if (format[i].depth == fb_linux.depth) {
+				if (format[i].bits_per_pixel == 16)
+					fb_linux.visual_depth = format[i].depth;
+				else
+					fb_linux.visual_depth = format[i].bits_per_pixel;
+				break;
+			}
+		}
+		XFree(format);
+	}
+	root_window = XDefaultRootWindow(fb_linux.display);
 	
 	attribs.border_pixel = attribs.background_pixel = XBlackPixel(fb_linux.display, fb_linux.screen);
 	attribs.event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
 			     PointerMotionMask | FocusChangeMask | EnterWindowMask | LeaveWindowMask | ExposureMask | StructureNotifyMask;
 	attribs.backing_store = NotUseful;
+	attribs.colormap = XCreateColormap( fb_linux.display, root_window, fb_linux.visual, AllocNone);
 	fb_linux.window = XCreateWindow(fb_linux.display, root_window, 0, 0, fb_linux.w, fb_linux.h,
-					0, XDefaultDepth(fb_linux.display, fb_linux.screen), InputOutput, fb_linux.visual,
-					CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore, &attribs);
+					0, fb_linux.depth, InputOutput, fb_linux.visual,
+					CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore | CWColormap, &attribs);
 	if (!fb_linux.window)
 		return -1;
 	XStoreName(fb_linux.display, fb_linux.window, title);
