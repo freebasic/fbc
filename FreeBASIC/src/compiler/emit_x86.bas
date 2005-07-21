@@ -1014,22 +1014,28 @@ sub emitSECTION( byval section as integer ) static
 
 	select case as const section
 	case EMIT_SECTYPE_CONST
-		ostr += "rodata" + NEWLINE
+		ostr += "rodata"
 	case EMIT_SECTYPE_DATA
-		ostr += "data" + NEWLINE
+		ostr += "data"
 	case EMIT_SECTYPE_BSS
-		ostr += "bss" + NEWLINE
+		ostr += "bss"
 	case EMIT_SECTYPE_CODE
-		ostr += "text" + NEWLINE
+		ostr += "text"
 	case EMIT_SECTYPE_DIRECTIVE
-		ostr += "drectve" + NEWLINE
+		ostr += "drectve"
 	case EMIT_SECTYPE_CONSTRUCTOR
-		''ostr += "ctors." + hStripExt(hStripPath(env.inf.name)) + NEWLINE
-		ostr += "fb_ctors, \"aw\", @progbits" + NEWLINE
+		ostr += "fb_ctors"
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += ", \"aw\", @progbits"
+		end if
 	case EMIT_SECTYPE_DESTRUCTOR
-		''ostr += "dtors." + hStripExt(hStripPath(env.inf.name)) + NEWLINE
-		ostr += "fb_dtors, \"aw\", @progbits" + NEWLINE
+		ostr += "fb_dtors"
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			ostr += ", \"aw\", @progbits"
+		end if
 	end select
+
+	ostr += NEWLINE
 
 	outEx( ostr, FALSE )
 
