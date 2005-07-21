@@ -14,24 +14,24 @@
 #include once "gtk/gtk/gtkmarshal.bi"
 
 #define GTK_SIGNAL_OFFSET GTK_STRUCT_OFFSET
-#define	gtk_signal_lookup(name,object_type)	g_signal_lookup(name,object_type)
+#define	gtk_signal_lookup(name_,object_type)	g_signal_lookup(name_,object_type)
 #define	gtk_signal_name(signal_id) g_signal_name(signal_id)
 #define	gtk_signal_emit_stop(object,signal_id) g_signal_stop_emission(object,signal_id,0)
-#define	gtk_signal_connect(object,name,func,func_data) gtk_signal_connect_full(object,name,func,0,func_data,0,0,0)
-#define	gtk_signal_connect_after(object,name,func,func_data) gtk_signal_connect_full(object,name,func,0,func_data,0,0,1)
-#define	gtk_signal_connect_object(object,name,func,slot_object) gtk_signal_connect_full(object,name,func,0,slot_object,0,1,0)
-#define	gtk_signal_connect_object_after(object,name,func,slot_object) gtk_signal_connect_full(object,name,func,0,slot_object,0,1,1)
+#define	gtk_signal_connect(object,name_,func,func_data) gtk_signal_connect_full(object,name_,func,0,func_data,0,0,0)
+#define	gtk_signal_connect_after(object,name_,func,func_data) gtk_signal_connect_full(object,name_,func,0,func_data,0,0,1)
+#define	gtk_signal_connect_object(object,name_,func,slot_object) gtk_signal_connect_full(object,name_,func,0,slot_object,0,1,0)
+#define	gtk_signal_connect_object_after(object,name_,func,slot_object) gtk_signal_connect_full(object,name_,func,0,slot_object,0,1,1)
 #define	gtk_signal_disconnect(object,handler_id) g_signal_handler_disconnect(object,handler_id)
 #define	gtk_signal_handler_block(object,handler_id) g_signal_handler_block(object,handler_id)
 #define	gtk_signal_handler_unblock(object,handler_id) g_signal_handler_unblock(object,handler_id)
-#define	gtk_signal_disconnect_by_func(object,func,data) gtk_signal_compat_matched(object,func,data,(G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA),0)
-#define	gtk_signal_disconnect_by_data(object,data) gtk_signal_compat_matched(object,0,data,G_SIGNAL_MATCH_DATA,0)
-#define	gtk_signal_handler_block_by_func(object,func,data) gtk_signal_compat_matched(object,func,data,(G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA),1)
-#define	gtk_signal_handler_block_by_data(object,data) gtk_signal_compat_matched(object,0,data,G_SIGNAL_MATCH_DATA,1)
-#define	gtk_signal_handler_unblock_by_func(object,func,data) gtk_signal_compat_matched(object,func,data,(G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA), 2)
-#define	gtk_signal_handler_unblock_by_data(object,data) gtk_signal_compat_matched(object,0,data,G_SIGNAL_MATCH_DATA,2)
+#define	gtk_signal_disconnect_by_func(object,func,data_) gtk_signal_compat_matched(object,func,data_,(G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA),0)
+#define	gtk_signal_disconnect_by_data(object,data_) gtk_signal_compat_matched(object,0,data_,G_SIGNAL_MATCH_DATA,0)
+#define	gtk_signal_handler_block_by_func(object,func,data_) gtk_signal_compat_matched(object,func,data_,(G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA),1)
+#define	gtk_signal_handler_block_by_data(object,data_) gtk_signal_compat_matched(object,0,data_,G_SIGNAL_MATCH_DATA,1)
+#define	gtk_signal_handler_unblock_by_func(object,func,data_) gtk_signal_compat_matched(object,func,data_,(G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA), 2)
+#define	gtk_signal_handler_unblock_by_data(object,data_) gtk_signal_compat_matched(object,0,data_,G_SIGNAL_MATCH_DATA,2)
 #define	gtk_signal_handler_pending(object,signal_id,may_be_blocked) g_signal_has_handler_pending(object,signal_id,0,may_be_blocked)
-#define	gtk_signal_handler_pending_by_func(object,signal_id,may_be_blocked,func,data) (g_signal_handler_find (object,G_SIGNAL_MATCH_ID or G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA or iif(may_be_blocked, 0, G_SIGNAL_MATCH_UNBLOCKED),signal_id,0,0,func,data) <> 0)
+#define	gtk_signal_handler_pending_by_func(object,signal_id,may_be_blocked,func,data_) (g_signal_handler_find (object,G_SIGNAL_MATCH_ID or G_SIGNAL_MATCH_FUNC or G_SIGNAL_MATCH_DATA or iif(may_be_blocked, 0, G_SIGNAL_MATCH_UNBLOCKED),signal_id,0,0,func,data_) <> 0)
 
 declare function gtk_signal_newv cdecl alias "gtk_signal_newv" (byval name as string, byval signal_flags as GtkSignalRunType, byval object_type as GtkType, byval function_offset as guint, byval marshaller as GtkSignalMarshaller, byval return_val as GtkType, byval n_args as guint, byval args as GtkType ptr) as guint
 declare function gtk_signal_new cdecl alias "gtk_signal_new" (byval name as string, byval signal_flags as GtkSignalRunType, byval object_type as GtkType, byval function_offset as guint, byval marshaller as GtkSignalMarshaller, byval return_val as GtkType, byval n_args as guint, ...) as guint
