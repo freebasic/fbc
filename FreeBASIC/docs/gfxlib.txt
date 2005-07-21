@@ -2649,6 +2649,14 @@ Linux:
 		Supports windowed and fullscreen modes, but for fullscreen to
 		work the same conditions as those requested by the raw X11 driver
 		need to be satisfied.
+DOS:
+	VGA
+		Supported on any VGA-compatible adapter, this driver provides 256-
+		color modes 320x200, 320x100, 256x256, 160x120, and 80x80.
+	ModeX
+		Supported on any VGA-compatible adapter, this driver provides 256-
+		color modes 320x240.  It is based on the classic Mode X tweak by
+		Michael Abrash.
 
 gfxlib will always choose the best driver for your system when a new video
 mode is set via SCREEN. To override driver selection, you can set the FBGFX
