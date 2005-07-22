@@ -155,6 +155,7 @@ declare sub 		irDump				( byval op as integer, _
 		( IR_OPTYPE_LOAD	, FALSE, "ld"  ), _ '' IR_OP_LOAD
 		( IR_OPTYPE_LOAD	, FALSE, "ldr" ), _ '' IR_OP_LOADRESULT
 		( IR_OPTYPE_STORE	, FALSE, ":="  ), _	'' IR_OP_STORE
+		( IR_OPTYPE_STORE	, FALSE, ":P"  ), _	'' IR_OP_SPILLREGS
 		( IR_OPTYPE_BINARY	, TRUE , "+"   ), _	'' IR_OP_ADD
 		( IR_OPTYPE_BINARY	, FALSE, "-"   ), _	'' IR_OP_SUB
 		( IR_OPTYPE_BINARY	, TRUE , "*"   ), _	'' IR_OP_MUL
@@ -1881,6 +1882,39 @@ private sub hFlushCOMP( byval op as integer, _
 end sub
 
 '':::::
+private sub hSpillRegs( ) static
+    dim as IRVREG ptr vr
+    dim as integer reg
+    dim as integer class
+
+	'' for each reg class
+	for class = 0 to EMIT_REGCLASSES-1
+
+		'' for each register on that class
+		reg = regTB(class)->getFirst( regTB(class) )
+		do until( reg = INVALID )
+			'' if not free
+			if( not regTB(class)->isFree( regTB(class), reg ) ) then
+
+				'' get the attached vreg
+				vr = regTB(class)->getVreg( regTB(class), reg )
+
+        		'' spill
+        		irStoreVR( vr, reg )
+
+        		'' free reg
+        		regTB(class)->free( regTB(class), reg )
+        	end if
+
+        	'' next reg
+        	reg = regTB(class)->getNext( regTB(class), reg )
+		loop
+
+	next
+
+end sub
+
+'':::::
 private sub hFlushSTORE( byval op as integer, _
 				  		 byval v1 as IRVREG ptr, _
 				  		 byval v2 as IRVREG ptr ) static
@@ -1888,6 +1922,12 @@ private sub hFlushSTORE( byval op as integer, _
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as integer v2_typ, v2_dtype, v2_dclass
 	dim as IRVREG ptr va
+
+	''
+	if( op = IR_OP_SPILLREGS ) then
+		hSpillRegs( )
+		exit function
+	end if
 
 	''
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )

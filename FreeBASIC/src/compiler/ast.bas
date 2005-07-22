@@ -2122,23 +2122,14 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 		nn->r = astCloneTree( p )
 	end if
 
-	'' special nodes
-	select case n->class
-	'' IIF has a 3rd tree node..
-	case AST_NODECLASS_IIF
-		p = n->iif.cond
-		if( p <> NULL ) then
-			nn->iif.cond = astCloneTree( p )
-		end if
-
-	'' Profiled function have sub nodes
-	case AST_NODECLASS_FUNCT
+	'' profiled function have sub nodes
+	if( n->class = AST_NODECLASS_FUNCT ) then
 		p = n->proc.profbegin
 		if( p <> NULL ) then
 			nn->proc.profbegin = astCloneTree( p )
-			nn->proc.profend = astCloneTree( n->proc.profend )
+			nn->proc.profend   = astCloneTree( n->proc.profend )
 		end if
-	end select
+	end if
 
 	function = nn
 
@@ -2164,23 +2155,14 @@ sub astDelTree ( byval n as ASTNODE ptr )
 		astDelTree( p )
 	end if
 
-	'' special nodes
-	select case n->class
-	'' IIF has a 3rd tree node..
-	case AST_NODECLASS_IIF
-		p = n->iif.cond
-		if( p <> NULL ) then
-			astDelTree( p )
-		end if
-
-	'' Profiled functions have sub nodes
-	case AST_NODECLASS_FUNCT
+	'' profiled function have sub nodes
+	if( n->class = AST_NODECLASS_FUNCT ) then
 		p = n->proc.profbegin
 		if( p <> NULL ) then
 			astDelTree( p )
 			astDelTree( n->proc.profend )
 		end if
-	end select
+	end if
 
 	''
 	astDel( n )
@@ -2306,11 +2288,6 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 			exit function
 		end if
 
-	case AST_NODECLASS_IIF
-		if( not astIsTreeEqual( l->iif.cond, r->iif.cond ) ) then
-			exit function
-		end if
-
 	case AST_NODECLASS_CONV
 		'' do nothing, the l child will be checked below
 
@@ -2333,6 +2310,43 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 
     ''
 	function = TRUE
+
+end function
+
+'':::::
+function astIsClassOnTree( byval class as integer, _
+						   byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr m
+
+	''
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	if( n->class = class ) then
+		return n
+	end if
+
+	'' walk
+	m = astIsClassOnTree( class, n->l )
+	if( m <> NULL ) then
+		return m
+	end if
+
+	m = astIsClassOnTree( class, n->r )
+	if( m <> NULL ) then
+		return m
+	end if
+
+	'' profiled function have sub nodes
+	if( n->class = AST_NODECLASS_FUNCT ) then
+		m = astIsClassOnTree( class, n->proc.profbegin )
+		if( m <> NULL ) then
+			return m
+		end if
+	end if
+
+	function = NULL
 
 end function
 
@@ -6067,7 +6081,7 @@ private function hLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' IIF (l = true expression, r = false expression)
+'' IIF (l = cond expr, r = link(true expr, false expr))
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
@@ -6123,10 +6137,9 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 		exit function
 	end if
 
-	n->l  			= truexpr
-	n->r  			= falsexpr
+	n->l  			  = condexpr
+	n->r  			  = astNewLINK( truexpr, falsexpr )
 	n->iif.falselabel = falselabel
-	n->iif.cond		= condexpr
 
 end function
 
@@ -6139,25 +6152,51 @@ private function hLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	l = n->l
 	r = n->r
 
-	exitlabel  = symbAddLabel( "" )
-
-	''
-	hFLush( n->iif.cond )
+	if( (l = NULL) or (r = NULL) ) then
+		return NULL
+	end if
 
 	''
 	if( ctx.doemit ) then
-		irEmitPUSH( hLoad( l ) )
+		'' IR can't handle inter-blocks and live vregs atm, so any
+		'' register used must be spilled now or that could happen in a
+		'' function call done in any child trees and also if complex
+		'' expressions were used
+		'''''if( astIsClassOnTree( AST_NODECLASS_FUNCT, n ) <> NULL ) then
+		irEmitSPILLREGS( )
+		'''''end if
+	end if
+
+	''
+	hFLush( l )
+
+	''
+	exitlabel = symbAddLabel( "" )
+
+	'' true expr
+	vr = hLoad( r->l )
+	if( ctx.doemit ) then
+		irEmitPUSH( vr )
 		irEmitBRANCH( IR_OP_JMP, exitlabel )
+	end if
 
-    	irEmitLABELNF( n->iif.falselabel )
-		irEmitPUSH( hLoad( r ) )
+	'' false expr
+	if( ctx.doemit ) then
+		irEmitLABELNF( n->iif.falselabel )
+	end if
 
+	vr = hLoad( r->r )
+    if( ctx.doemit ) then
+		irEmitPUSH( vr )
+
+		'' exit
 		irEmitLABELNF( exitlabel )
 		vr = irAllocVREG( n->dtype )
 		irEmitPOP( vr )
 	end if
 
-	astDel( l )
+	astDel( r->l )
+	astDel( r->r )
 	astDel( r )
 
 	function = vr
@@ -6475,11 +6514,13 @@ private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	'' make a copy, can't reuse the same vreg or registers would get out-of-sync
+	'' make a copy, can't reuse the same vreg or registers could
+	'' be spilled as IR can't handle inter-blocks
 	c = astCloneTree( l )
 
-    '' check must be done using a function because calling ErrorThrow would spill
-    '' used regs only if it was called, causing wrong assumptions after the branches
+    '' check must be done using a function because calling ErrorThrow
+    '' would spill used regs only if it was called, causing wrong
+    '' assumptions after the branches
     f = rtlArrayBoundsCheck( l, r->l, r->r, n->bchk.linenum )
     vr = hLoad( f )
     astDel( f )
@@ -6535,7 +6576,8 @@ private function hLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	'' make a copy, can't reuse the same vreg or registers would get out-of-sync
+	'' make a copy, can't reuse the same vreg or registers could
+	'' be spilled as IR can't handle inter-blocks
 	c = astCloneTree( l )
 
     '' check must be done using a function, see bounds checking

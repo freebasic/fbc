@@ -91,6 +91,7 @@ enum IROP_ENUM									'' if order is changed, update the opTB array
 	IR_OP_LOAD				= 0
 	IR_OP_LOADRESULT
 	IR_OP_STORE
+	IR_OP_SPILLREGS
 	IR_OP_ADD
 	IR_OP_SUB
 	IR_OP_MUL
@@ -378,6 +379,8 @@ declare sub 		irXchgTOS			( byval reg as integer )
 #define irEmitUOP(op,v1,vr) irEmit( op, v1, NULL, vr )
 
 #define irEmitSTORE(v1,v2) irEmit( IR_OP_STORE, v1, v2, NULL )
+
+#define irEmitSPILLREGS() irEmit( IR_OP_SPILLREGS, NULL, NULL, NULL )
 
 #define irEmitLOAD(v1) irEmit( IR_OP_LOAD, v1, NULL, NULL )
 

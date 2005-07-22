@@ -119,7 +119,6 @@ type AST_ADDR
 end type
 
 type AST_IIF
-	cond			as ASTNODE_ ptr					'' conditonal expression
 	falselabel 		as FBSYMBOL ptr
 end type
 
