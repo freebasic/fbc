@@ -3577,6 +3577,41 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 end sub
 
 '':::::
+sub symbDelSymbol( byval s as FBSYMBOL ptr )
+
+	select case as const s->class
+    case FB_SYMBCLASS_VAR
+    	symbDelVar( s, FALSE )
+
+    case FB_SYMBCLASS_CONST
+		symbDelConst( s, FALSE )
+
+    case FB_SYMBCLASS_PROC
+    	symbDelPrototype( s, FALSE )
+
+	case FB_SYMBCLASS_DEFINE
+		symbDelDefine( s, FALSE )
+
+	case FB_SYMBCLASS_KEYWORD
+		symbDelKeyword( s, FALSE )
+
+    case FB_SYMBCLASS_LABEL
+    	symbDelLabel( s, FALSE )
+
+    case FB_SYMBCLASS_ENUM
+		symbDelEnum( s, FALSE )
+
+    case FB_SYMBCLASS_UDT
+    	symbDelUDT( s, FALSE )
+
+	case else
+		hFreeSymbol( s )
+
+    end select
+
+end sub
+
+'':::::
 sub symbDelGlobalTb( ) static
     dim as FBSYMBOL ptr s
 
@@ -3586,35 +3621,7 @@ sub symbDelGlobalTb( ) static
     		exit do
     	end if
 
-	   	select case as const s->class
-    	case FB_SYMBCLASS_VAR
-    		symbDelVar( s, FALSE )
-
-    	case FB_SYMBCLASS_CONST
-	   		symbDelConst( s, FALSE )
-
-    	case FB_SYMBCLASS_PROC
-    		symbDelPrototype( s, FALSE )
-
-		case FB_SYMBCLASS_DEFINE
-			symbDelDefine( s, FALSE )
-
-		case FB_SYMBCLASS_KEYWORD
-			symbDelKeyword( s, FALSE )
-
-    	case FB_SYMBCLASS_LABEL
-    		symbDelLabel( s, FALSE )
-
-    	case FB_SYMBCLASS_ENUM
-	   		symbDelEnum( s, FALSE )
-
-    	case FB_SYMBCLASS_UDT
-    		symbDelUDT( s, FALSE )
-
-		case else
-			hFreeSymbol( s )
-
-    	end select
+    	symbDelSymbol( s )
     loop
 
 end sub

@@ -1408,14 +1408,15 @@ function lexGetClass( byval flags as LEXCHECK_ENUM ) as integer static
 end function
 
 '':::::
-function lexGetLookAhead( byval k as integer ) as integer static
+function lexGetLookAhead( byval k as integer, _
+						  byval flags as LEXCHECK_ENUM ) as integer static
 
     if( k > FB_LEX_MAXK ) then
     	exit function
     end if
 
     if( ctx.tokenTB(k).id = INVALID ) then
-	    lexNextToken( ctx.tokenTB(k) )
+	    lexNextToken( ctx.tokenTB(k), flags )
 	end if
 
 	if( k > ctx.k ) then
@@ -1427,14 +1428,15 @@ function lexGetLookAhead( byval k as integer ) as integer static
 end function
 
 '':::::
-function lexGetLookAheadClass( byval k as integer ) as integer static
+function lexGetLookAheadClass( byval k as integer, _
+							   byval flags as LEXCHECK_ENUM ) as integer static
 
     if( k > FB_LEX_MAXK ) then
     	exit function
     end if
 
     if( ctx.tokenTB(k).id = INVALID ) then
-    	lexNextToken( ctx.tokenTB(k) )
+    	lexNextToken( ctx.tokenTB(k), flags )
     end if
 
 	if( k > ctx.k ) then

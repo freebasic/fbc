@@ -66,9 +66,11 @@ declare sub 		lexEatToken 			( byval token as string, _
 
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
-declare function 	lexGetLookAheadClass 	( byval k as integer ) as integer
+declare function 	lexGetLookAheadClass 	( byval k as integer, _
+											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
-declare function 	lexGetLookAhead 		( byval k as integer ) as integer
+declare function 	lexGetLookAhead 		( byval k as integer, _
+											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
 declare function 	lexLineNum 				( ) as integer
 

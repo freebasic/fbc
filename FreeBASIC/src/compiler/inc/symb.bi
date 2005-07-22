@@ -240,6 +240,8 @@ declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
 
 declare sub 		symbDelLocalTb			( byval hashonly as integer )
 
+declare sub 		symbDelSymbol			( byval s as FBSYMBOL ptr )
+
 declare function 	symbDelKeyword			( byval s as FBSYMBOL ptr, _
 				  							  byval dolookup as integer = TRUE ) as integer
 

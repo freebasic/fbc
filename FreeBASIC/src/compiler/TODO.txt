@@ -3,8 +3,6 @@
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
 
-[ ] AndAlso and OrElse, short-circuit versions of And and Or
-
 [ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
@@ -19,8 +17,14 @@
     - re-ordering optimization if target cpu is +586
 
 *** *** *** *** ***
+[ ] AndAlso and OrElse, short-circuit versions of And and Or
+    - pay attention to register spills if functions or complex expression are
+      used in left or right sides
+
 [ ] inline functions
     - better than macros as they can be "turned off" when debugged
+    - too hard to be added now due the register spills, IR must handle inter blocks and
+      keep track of live vregs
 
 [ ] classes
     - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC

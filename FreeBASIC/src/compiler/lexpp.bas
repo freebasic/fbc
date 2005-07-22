@@ -75,12 +75,12 @@ private function hLiteral( byval args as integer = 0, _
 
 	static as zstring * FB_MAXNAMELEN+1 token
 	static as zstring * FB_MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
-    dim as integer dpos, flags, addquotes
+    dim as integer dpos, addquotes
     dim as FBDEFARG ptr a
 
 const QUOTE = "\""
 
-	flags = LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE
+#define flags LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE
 
     addquotes = FALSE
     text = ""
@@ -91,9 +91,9 @@ const QUOTE = "\""
 		end select
 
     	'' preserve quotes if it's a string literal
-    	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+    	if( lexGetClass( flags ) = FB_TKCLASS_STRLITERAL ) then
     		text += QUOTE
-    		lexEatToken( token )
+    		lexEatToken( token, flags )
     		text += hUnescapeStr( token )
     		text += QUOTE
 
@@ -106,24 +106,24 @@ const QUOTE = "\""
     		else
 
     			'' '#'?
-    			if( lexGetToken( ) = CHAR_SHARP ) then
-    				select case lexGetLookAhead( 1 )
+    			if( lexGetToken( flags ) = CHAR_SHARP ) then
+    				select case lexGetLookAhead( 1, flags )
     				'' '##'?
     				case CHAR_SHARP
-    					lexSkipToken( )
-    					lexSkipToken( )
+    					lexSkipToken( flags )
+    					lexSkipToken( flags )
     					continue do
 
     				'' '#' id?
     				case FB_TK_ID
-    				    lexSkipToken( )
+    				    lexSkipToken( flags )
     				    text += QUOTE
     				    addquotes = TRUE
     				end select
     			end if
 
     			'' not and identifier? read as-is
-    			if( lexGetToken( ) <> FB_TK_ID ) then
+    			if( lexGetToken( flags ) <> FB_TK_ID ) then
     				lexEatToken( token, flags )
     				text += token
 
@@ -197,6 +197,7 @@ end function
 ''				 |	 '#'ERROR LIT_STR .
 ''
 function lexPreProcessor as integer
+    dim as FBSYMBOL ptr s
 
 	function = FALSE
 
@@ -212,9 +213,9 @@ function lexPreProcessor as integer
     case FB_TK_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
-    	if( not symbDelDefine( lexGetSymbol ) ) then
-    	'''''hReportError FB_ERRMSG_VARIABLENOTDECLARED
-		'''''exit function
+    	s = lexGetSymbol( )
+    	if( s <> NULL ) then
+    		symbDelSymbol( s )
     	end if
 
     	lexSkipToken( )
@@ -346,18 +347,18 @@ private function ppDefine( ) as integer
     	end if
     end if
 
-    lexEatToken( defname, LEXCHECK_NOWHITESPC )
+    lexEatToken( defname, LEXCHECK_NOWHITESPC or LEXCHECK_NODEFINE )
 
     args = 0
     arghead = NULL
     isargless = FALSE
 
     '' '('?
-    if( lexGetToken( ) = CHAR_LPRNT ) then
+    if( lexGetToken( LEXCHECK_NODEFINE ) = CHAR_LPRNT ) then
     	lexSkipToken( LEXCHECK_NODEFINE )
 
 		'' not arg-less?
-		if( lexGetToken( ) <> CHAR_RPRNT ) then
+		if( lexGetToken( LEXCHECK_NODEFINE ) <> CHAR_RPRNT ) then
 			lastarg = NULL
 			do
 		    	lexEatToken( argname, LEXCHECK_NODEFINE )
@@ -369,7 +370,7 @@ private function ppDefine( ) as integer
 		    	end if
 
 				'' ','?
-				if( lexGetToken( ) <> CHAR_COMMA ) then
+				if( lexGetToken( LEXCHECK_NODEFINE ) <> CHAR_COMMA ) then
 					exit do
 				end if
 		    	lexSkipToken( LEXCHECK_NODEFINE )
@@ -386,10 +387,10 @@ private function ppDefine( ) as integer
     	end if
 
     else
-    	select case lexGetToken
+    	select case lexGetToken( LEXCHECK_NOWHITESPC or LEXCHECK_NODEFINE )
     	case CHAR_SPACE, CHAR_TAB
     		'' skip white-space
-    		lexSkipToken( )
+    		lexSkipToken( LEXCHECK_NODEFINE )
     	end select
     end if
 
