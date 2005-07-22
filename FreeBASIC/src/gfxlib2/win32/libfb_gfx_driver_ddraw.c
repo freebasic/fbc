@@ -230,6 +230,8 @@ static int directx_init(void)
 			return -1;
 		display_offset = 0;
 	}
+	
+	fb_hMemSet(&desc, 0, sizeof(DDSURFACEDESC));
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = DDSD_CAPS;
 	desc.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
@@ -239,6 +241,8 @@ static int directx_init(void)
 	if (!fb_win32.fullscreen) {
 		if (IDirectDrawSurface_SetClipper(lpDDS, lpDDC) != DD_OK)
 			return -1;
+		fb_hMemSet(&desc, 0, sizeof(DDSURFACEDESC));
+		desc.dwSize = sizeof(desc);
 		desc.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
 		desc.dwWidth = fb_win32.w;
 		desc.dwHeight = fb_win32.h;

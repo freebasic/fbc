@@ -193,6 +193,9 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	msg_cursor = RegisterWindowMessage("FB mouse cursor");
 	cursor_shown = TRUE;
 	
+	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
+	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
+	
 	fb_win32.hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	fb_win32.window_title = title;
 	strcpy( fb_win32.window_class, WINDOW_CLASS_PREFIX );
@@ -222,18 +225,13 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
 		CloseHandle(events[0]);
 		handle = events[1];
-		if (result != WAIT_OBJECT_0) {
-			//DeleteCriticalSection(&update_lock);
+		if (result != WAIT_OBJECT_0)
 			return -1;
-		}
 	
 		SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
 	}
 	else
 		handle = NULL;
-	
-	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
-	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
 	
 	return 0;
 }
