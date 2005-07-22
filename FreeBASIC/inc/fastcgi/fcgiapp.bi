@@ -9,6 +9,8 @@
 #ifndef __fcgiapp_bi__
 #define __fcgiapp_bi__
 
+#inclib "fcgi"
+
 #define FCGX_UNSUPPORTED_VERSION -2
 #define FCGX_PROTOCOL_ERROR -3
 #define FCGX_PARAMS_ERROR -4
