@@ -643,7 +643,6 @@ EXPORTS
     asin                           @640 
     atan                           @641 
     atan2                          @642 
-    atexit                         @643 
     atof                           @644 
     atoi                           @645 
     atol                           @646 
