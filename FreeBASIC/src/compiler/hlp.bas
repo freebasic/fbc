@@ -882,7 +882,7 @@ function hStripPath( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		function = mid$( filename, lp+1 )
+		function = mid( filename, lp+1 )
 	else
 		function = filename
 	end if
@@ -906,7 +906,7 @@ function hStripFilename ( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		function = left$( filename, lp )
+		function = left( filename, lp )
 	else
 		function = ""
 	end if
@@ -915,7 +915,8 @@ end function
 
 '':::::
 function hGetFileExt( fname as string ) as string static
-    dim p as integer, lp as integer
+    dim as integer p, lp
+    dim as string res
 
 	lp = 0
 	do
@@ -929,7 +930,13 @@ function hGetFileExt( fname as string ) as string static
     if( lp = 0 ) then
     	function = ""
     else
-    	function = lcase$( mid$( fname, lp+1 ) )
+    	res = lcase( mid( fname, lp+1 ) )
+    	'' . or .. dirs?
+    	if( res[0] = asc( "\\" ) or res[0] = asc( "/" ) ) then
+    		function = ""
+    	else
+    		function = res
+    	end if
     end if
 
 end function
