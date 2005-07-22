@@ -26,6 +26,26 @@
 #define NULL 0
 #endif
 
+type UCHAR as ubyte
+type SCHAR as byte
+type SDWORD as integer
+type SWORD as short
+type UDWORD as uinteger
+type UWORD as ushort
+type SLONG as integer
+type SSHORT as short
+type ULONG as uinteger
+type SDOUBLE as double
+type LDOUBLE as double
+type SFLOAT as single
+type HENV as any ptr
+type HDBC as any ptr
+type HSTMT as any ptr
+type RETCODE as short
+type SQLHWND as SQLPOINTER
+type DWORD AS uinteger
+type WORD as ushort
+
 '-------------
 '| CONSTANTS |
 '-------------

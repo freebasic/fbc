@@ -152,6 +152,9 @@ Most Important Features:
       linear algebra, statistics, sorting, differential equations, and a dozen 
       other sub-libraries with mathematical routines
 
+    - GMP - GNU Multiple Precision Arithmetic Library: known as the fastest bignum 
+      library
+
     - SDL - Simple DirectMedia Layer: multimedia library for audio, user input, 
       3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
     
@@ -166,6 +169,8 @@ Most Important Features:
     - OpenAL, Fmod, BASS: 2D and 3D sound systems, with support for mod, mp3, ogg, etc
 
     - ODE and Newton - dynamics engines: rigid body dynamics simulation
+
+    - cgi-util and FastCGI: web development
 
     - DirectX and the Windows API (W.I.P.)
 
@@ -526,7 +531,10 @@ Credits (in alphabetic order):
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
     - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
 
-  o fsw:
+  o Florent Heyworth (florent.heyworth@swissonline.ch):
+    - Translated the Win API sql/obdc headers.
+
+  o fsw (fsw.fb@comcast.net):
     - Translated most of the Windows API headers.
     - Wrote the glade_gui demo at the examples/Gtk directory, besides the 
       wx-c GUI examples (not included).
@@ -631,6 +639,8 @@ Links:
     - cryptlib: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
 
     - DevIL: http://openil.sourceforge.net/
+
+    - FastCGI: http://www.fastcgi.com/
     
     - fmod: http://www.fmod.org/
 
@@ -643,6 +653,8 @@ Links:
     - GLFW: http://glfw.sourceforge.net/   
  
     - GLUT: http://www.xmission.com/~nate/glut.html
+
+    - GMP: http://www.swox.com/gmp/
 
     - GRX: http://grx.gnu.de/
 

@@ -39,6 +39,7 @@ Version 0.14 Beta:
 - user defined type (UDT) assignaments are now done with inline code (v1c)
 - the Windows version of FBC can now compile and link DOS, Linux and Xbox applications if the proper cross-compiling 
   versions of the GNU binutils are available and if all the libraries needed are installed (v1c)
+- #UNDEF will now work with any symbol kind, not defines only (v1c)
 
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
@@ -86,6 +87,8 @@ Version 0.14 Beta:
 - constructor and destructor functions - constructors will be executed *after* fb_Init (mjs)
 - -map <filename> to create a map file (mjs)
 - the ERL function - returns the line number where the runtime error happened, as in QB (v1c)
+- include file and import library for GMP (multi-precision lib) (v1c)
+- include file and import library for FastCGI (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
@@ -149,6 +152,7 @@ Version 0.14 Beta:
 - VIEW cleared the screen with a bad color if called without arguments, instead of just resetting the view (lillo)
 - coordinates translation with PMAP was giving back bad results (lillo)
 - thread-safetiness fixes to DIR$ (lillo)
+- "#define foo bar" now works too, where "bar" is a macro (v1c)
 
 
 Version 0.13 Beta:
