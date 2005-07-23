@@ -47,13 +47,18 @@ end type
 
 declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
 declare sub 	 hDeclENUM				( byval sym as FBSYMBOL ptr )
+declare function hDeclPointer			( byval dtype as integer ) as string
+declare function hDeclArrayDims			( byval sym as FBSYMBOL ptr ) as string
 
 declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 
 '' globals
 	dim shared ctx as EDBGCTX
 
-	dim shared remapTB(0 to FB_SYMBOLTYPES-1) = { 7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 }
+	dim shared remapTB(0 to FB_SYMBOLTYPES-1) = _
+	{ _
+		7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 _
+	}
 
 
 stabstdef:
@@ -486,9 +491,105 @@ sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
+private function hDeclUDTField( byval sname as string, _
+								byval stype as integer, _
+								byval soffs as integer, _
+								byval ssize as integer ) as string static
+
+	dim as string desc
+
+	desc = sname + ":" + str( remapTB(stype) ) + "," + str( soffs ) + "," + str( ssize ) + ";"
+
+	function = desc
+
+end function
+
+'':::::
+private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
+    dim as string desc, dimdesc
+    dim as FBVARDIM ptr d
+    dim as integer ofs, i
+
+	'' declare the array descriptor
+	desc = str( ctx.typecnt ) + "=s" + _
+		   str( (FB_ARRAYDESCLEN + FB_ARRAYDESC_DIMLEN * symbGetArrayDimensions( sym )) * 8 )
+	ctx.typecnt += 1
+
+	dimdesc = hDeclArrayDims( sym ) + str( remapTB(symbGetType( sym )) )
+
+	'' data	as any ptr
+	desc += "data:" + hDeclPointer( IR_DATATYPE_POINTER ) + dimdesc + ",0,32;"
+	'' ptr as any ptr
+	desc += "ptr:" + hDeclPointer( IR_DATATYPE_POINTER ) + dimdesc + ",32,32;"
+    '' size	as integer
+	desc += hDeclUDTField( "size", IR_DATATYPE_INTEGER, 64, 32 )
+    '' element_len as integer
+    desc += hDeclUDTField( "elen", IR_DATATYPE_INTEGER, 96, 32 )
+    '' dimensions as integer
+    desc += hDeclUDTField( "dims", IR_DATATYPE_INTEGER, 128, 32 )
+
+    '' dimension fields
+    ofs = 160
+    i = 1
+    d = symbGetArrayFirstDim( sym )
+    do while( d <> NULL )
+    	dimdesc = "dim" + str( i )
+
+    	'' elements as integer
+    	desc += hDeclUDTField( dimdesc + "_elemns", IR_DATATYPE_INTEGER, ofs+00, 32 )
+    	'' lbound as integer
+    	desc += hDeclUDTField( dimdesc + "_lbound", IR_DATATYPE_INTEGER, ofs+32, 32 )
+    	'' ubound as integer
+    	desc += hDeclUDTField( dimdesc + "_ubound", IR_DATATYPE_INTEGER, ofs+64, 32 )
+
+    	ofs += FB_ARRAYDESC_DIMLEN
+    	d = d->next
+    loop
+
+	desc += ";"
+
+	function = desc
+
+end function
+
+'':::::
+private function hDeclPointer( byval dtype as integer ) as string static
+    dim as string desc
+
+    desc = ""
+    do while( dtype >= FB_SYMBTYPE_POINTER )
+    	dtype -= FB_SYMBTYPE_POINTER
+    	desc += str( ctx.typecnt ) + "=*"
+    	ctx.typecnt += 1
+    loop
+
+    function = desc
+
+end function
+
+'':::::
+private function hDeclArrayDims( byval sym as FBSYMBOL ptr ) as string static
+	dim as FBVARDIM ptr d
+    dim as string desc
+
+    desc = str( ctx.typecnt ) + "="
+    ctx.typecnt += 1
+
+    d = symbGetArrayFirstDim( sym )
+    do while( d <> NULL )
+    	desc += "ar1;"
+    	desc += str( d->lower ) + ";"
+    	desc += str( d->upper ) + ";"
+    	d = d->next
+    loop
+
+    function = desc
+
+end function
+
+'':::::
 private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 	dim as integer dtype
-	dim as FBVARDIM ptr d
 	dim as FBSYMBOL ptr subtype
 	dim as string desc
 
@@ -497,22 +598,13 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     end if
 
     '' array?
-    if( symbGetArrayDimensions( sym ) > 0 ) then
-    	desc = str( ctx.typecnt ) + "="
-    	ctx.typecnt += 1
-
-    	if( symbIsDynamic( sym ) ) then
-    		desc += str( ctx.typecnt ) + "=*"
-    		ctx.typecnt += 1
-    	end if
-
-    	d = symbGetArrayFirstDim( sym )
-    	do while( d <> NULL )
-    		desc += "ar1;"
-    		desc += str( d->lower ) + ";"
-    		desc += str( d->upper ) + ";"
-    		d = d->next
-    	loop
+    if( symbIsArray( sym ) ) then
+    	'' dynamic?
+    	if( symbIsDynamic( sym ) or symbIsArgByDesc( sym ) ) then
+    		desc = hDeclDynArray( sym )
+    	else
+    		desc = hDeclArrayDims( sym )
+		end if
     else
     	desc = ""
     end if
@@ -520,11 +612,9 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     dtype = symbGetType( sym )
 
     '' pointer?
-    do while( dtype >= FB_SYMBTYPE_POINTER )
-    	dtype -= FB_SYMBTYPE_POINTER
-    	desc += str( ctx.typecnt ) + "=*"
-    	ctx.typecnt += 1
-    loop
+    if( dtype >= FB_SYMBTYPE_POINTER ) then
+    	desc += hDeclPointer( dtype )
+    end if
 
     select case dtype
     '' UDT?
@@ -582,7 +672,9 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
         desc += symbGetName( e ) + ":" + hGetDataType( e )
-        desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + str( symbGetUDTElmBitLen( e ) ) + ";"
+
+        desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
+        		str( symbGetUDTElmBitLen( e ) ) + ";"
 
 		e = symbGetUDTNextElm( e )
 	loop
