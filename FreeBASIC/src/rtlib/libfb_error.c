@@ -88,7 +88,7 @@ FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *
 FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
 {
 
-	return fb_ErrorThrowEx( linenum, (int)FB_TLSGET( fb_errctx.num ), res_label, resnext_label );
+	return fb_ErrorThrowEx( (int)FB_TLSGET( fb_errctx.num ), linenum, res_label, resnext_label );
 
 }
 
