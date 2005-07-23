@@ -47,7 +47,7 @@ end type
 
 declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
 declare sub 	 hDeclENUM				( byval sym as FBSYMBOL ptr )
-declare function hDeclPointer			( byval dtype as integer ) as string
+declare function hDeclPointer			( byref dtype as integer ) as string
 declare function hDeclArrayDims			( byval sym as FBSYMBOL ptr ) as string
 
 declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
@@ -553,7 +553,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 end function
 
 '':::::
-private function hDeclPointer( byval dtype as integer ) as string static
+private function hDeclPointer( byref dtype as integer ) as string static
     dim as string desc
 
     desc = ""
