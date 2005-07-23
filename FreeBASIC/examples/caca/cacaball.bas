@@ -140,7 +140,7 @@ dim p as integer, frame as integer
 
         ' Draw our virtual buffer to screen, letting libcaca resize it */
         caca_draw_bitmap 0, 0, caca_get_width() - 1, caca_get_height() - 1, _
-                         bitmap, @pixels(0) + (METASIZE / 2) * (1 + XSIZ)
+                         bitmap, @pixels(0) + (METASIZE \ 2) * (1 + XSIZ)
         caca_refresh
     loop
 
