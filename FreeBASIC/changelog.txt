@@ -89,6 +89,7 @@ Version 0.14 Beta:
 - the ERL function - returns the line number where the runtime error happened, as in QB (v1c)
 - include file and import library for GMP (multi-precision lib) (v1c)
 - include file and import library for FastCGI (v1c)
+- the OFFSETOF macro, to return the offset of an UDT field: ofs = offsetof(myudt, somefield) (v1c)
 
 [fixed]
 - EQV can't be optimized when used in compound stmts, because the NOT opcode doesn't update any flags on x86 (v1c)
