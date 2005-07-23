@@ -70,7 +70,9 @@ declare sub 	 setCompOptions			( )
     end if
 
     ''
-    processTargetOptions( )
+    if( not processTargetOptions( ) ) then
+    	end 1
+    end if
 
     ''
     initTarget( )
@@ -526,7 +528,11 @@ end sub
 '':::::
 sub printInvalidOpt( byval argn as integer )
 
-	hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(argn) + "\"", -1 )
+	if( len( argv(argn+1) ) > 0 ) then
+		hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(argn+1) + "\"", -1 )
+	else
+		hReportErrorEx( FB_ERRMSG_MISSINGCMDOPTION, "\"" + argv(argn) + "\"", -1 )
+	end if
 
 end sub
 
@@ -546,7 +552,7 @@ function processTargetOptions( ) as integer
 		if( argv(i)[0] = asc( "-" ) ) then
 
 			if( len( argv(i) ) = 1 ) then
-				exit function
+				continue for
 			end if
 
 			select case mid( argv(i), 2 )
@@ -574,7 +580,7 @@ function processTargetOptions( ) as integer
 #endif
 
 				case else
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					return FALSE
 				end select
 
@@ -597,7 +603,7 @@ function processTargetOptions( ) as integer
 					fbc.naming = FB_COMPNAMING_XBOX
 
 				case else
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					return FALSE
 				end select
 
@@ -609,6 +615,8 @@ function processTargetOptions( ) as integer
 		end if
 
 	next
+
+	function = TRUE
 
 end function
 
@@ -628,7 +636,7 @@ function processOptions( ) as integer
 		if( argv(i)[0] = asc( "-" ) ) then
 
 			if( len( argv(i) ) = 1 ) then
-				exit function
+				continue for
 			end if
 
 			select case mid( argv(i), 2 )
@@ -707,7 +715,7 @@ function processOptions( ) as integer
 				case "686"
 					value = FB_CPUTYPE_686
 				case else
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end select
 
@@ -763,7 +771,7 @@ function processOptions( ) as integer
 			case "x"
 				fbc.outname = argv(i+1)
 				if( len( fbc.outname ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 
@@ -774,7 +782,7 @@ function processOptions( ) as integer
 			case "m"
 				fbc.mainfile = hStripPath( hStripExt( argv(i+1) ) )
 				if( len( fbc.mainfile ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.mainpath = hStripFilename( argv(i+1) )
@@ -787,7 +795,7 @@ function processOptions( ) as integer
 			case "map"
 				fbc.mapfile = argv(i+1)
 				if( len( fbc.mapfile ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 
@@ -810,7 +818,7 @@ function processOptions( ) as integer
 			'' library paths
 			case "p"
 				if( not fbAddLibPath( argv(i+1) ) ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 
@@ -821,7 +829,7 @@ function processOptions( ) as integer
 			case "i"
 				fbc.inclist(fbc.incs) = argv(i+1)
 				if( len( fbc.inclist(fbc.incs) ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.incs += 1
@@ -833,7 +841,7 @@ function processOptions( ) as integer
 			case "d"
 				fbc.deflist(fbc.defs) = argv(i+1)
 				if( len( fbc.deflist(fbc.defs) ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.defs += 1
@@ -845,7 +853,7 @@ function processOptions( ) as integer
 			case "b"
 				fbc.inplist(fbc.inps) = argv(i+1)
 				if( len( fbc.inplist(fbc.inps) ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.inps += 1
@@ -857,7 +865,7 @@ function processOptions( ) as integer
 			case "o"
 				fbc.outlist(fbc.outs) = argv(i+1)
 				if( len( fbc.outlist(fbc.outs) ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.outs += 1
@@ -869,7 +877,7 @@ function processOptions( ) as integer
 			case "a"
 				fbc.objlist(fbc.objs) = argv(i+1)
 				if( len( fbc.objlist(fbc.objs) ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.objs += 1
@@ -881,7 +889,7 @@ function processOptions( ) as integer
 			case "l"
 				fbc.liblist(fbc.libs) = argv(i+1)
 				if( len( fbc.liblist(fbc.libs) ) = 0 ) then
-					printInvalidOpt( i+1 )
+					printInvalidOpt( i )
 					exit function
 				end if
 				fbc.libs += 1
