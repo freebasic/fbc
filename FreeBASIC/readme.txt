@@ -550,6 +550,9 @@ Credits (in alphabetic order):
     - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was 
       sent by Edmond Leung some days before) and wrote the SDL_ttf demonstration.
 
+  o Mark Junker (mjscod@gmx.de) - Project Member:
+    - Runtime library fixes and improvements.
+
   o Marzec:
     - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
     - Translated the first SDL headers (replaced by new ones since version 0.11b).
