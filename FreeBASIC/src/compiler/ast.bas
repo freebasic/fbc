@@ -4691,8 +4691,12 @@ private function hLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FBSYMBOL ptr s
 
 	l = n->l
+	'' no index? can happen with absolute addresses + ptr typecasting
 	if( l = NULL ) then
-		return NULL
+		if( ctx.doemit ) then
+			vr = irAllocVRPTR( n->dtype, n->ptr.ofs, NULL )
+		end if
+		return vr
 	end if
 
 	'' handle bitfields..
