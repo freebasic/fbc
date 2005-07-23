@@ -2186,12 +2186,17 @@ data "ASSERT", _
 	 TRUE, _
 	 1, "E", _
 	 "if not (!E!) then fb_Assert(__FILE__, __LINE__, __FUNCTION__, \"!E!\")"
-
 ''#define ASSERTWARN(e) if not (e) then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e)
 data "ASSERTWARN", _
 	 TRUE, _
 	 1, "E", _
 	 "if not (!E!) then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, \"!E!\")"
+
+''#define OFFSETOF(type_,field_) cint( @cptr( type_ ptr, 0 )->field_ )
+data "OFFSETOF", _
+	 FALSE, _
+	 2, "T", "F", _
+	 "cint( @cptr( !T! ptr, 0 )->!F! )"
 
 data "__FB_MIN_VERSION__", _
      FALSE, _
