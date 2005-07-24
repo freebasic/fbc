@@ -16,8 +16,6 @@ type dStopwatch
 	cc(0 to 2-1) as uinteger
 end type
 
-type dStopwatch as any
-
 declare sub dStopwatchReset cdecl alias "dStopwatchReset" (byval as dStopwatch ptr)
 declare sub dStopwatchStart cdecl alias "dStopwatchStart" (byval as dStopwatch ptr)
 declare sub dStopwatchStop cdecl alias "dStopwatchStop" (byval as dStopwatch ptr)

@@ -11,7 +11,11 @@
 
 #include once "ode/common.bi"
 
-type dMass as any
+type dMass
+	mass as dReal
+	c as dVector4
+	I as dMatrix3
+end type
 
 declare sub dMassSetZero cdecl alias "dMassSetZero" (byval as dMass ptr)
 declare sub dMassSetParameters cdecl alias "dMassSetParameters" (byval as dMass ptr, byval themass as dReal, byval cgx as dReal, byval cgy as dReal, byval cgz as dReal, byval I11 as dReal, byval I22 as dReal, byval I33 as dReal, byval I12 as dReal, byval I13 as dReal, byval I23 as dReal)
@@ -28,10 +32,5 @@ declare sub dMassTranslate cdecl alias "dMassTranslate" (byval as dMass ptr, byv
 declare sub dMassRotate cdecl alias "dMassRotate" (byval as dMass ptr, byval R as dMatrix3)
 declare sub dMassAdd cdecl alias "dMassAdd" (byval a as dMass ptr, byval b as dMass ptr)
 
-type dMass
-	mass as dReal
-	c as dVector4
-	I as dMatrix3
-end type
 
 #endif

@@ -116,8 +116,6 @@ type dGeomClass
 	dtor as dGeomDtorFn ptr
 end type
 
-type dGeomClass as any
-
 declare function dCreateGeomClass cdecl alias "dCreateGeomClass" (byval classptr as dGeomClass ptr) as integer
 declare function dGeomGetClassData cdecl alias "dGeomGetClassData" (byval as dGeomID) as any ptr
 declare function dCreateGeom cdecl alias "dCreateGeom" (byval classnum as integer) as dGeomID

@@ -41,8 +41,6 @@ type dSurfaceParameters
 	slip2 as dReal
 end type
 
-type dSurfaceParameters as any
-
 type dContactGeom
 	pos as dVector3
 	normal as dVector3
@@ -51,14 +49,10 @@ type dContactGeom
 	g2 as dGeomID
 end type
 
-type dContactGeom as any
-
 type dContact
 	surface as dSurfaceParameters
 	geom as dContactGeom
 	fdir1 as dVector3
 end type
-
-type dContact as any
 
 #endif

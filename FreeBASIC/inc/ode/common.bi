@@ -97,8 +97,6 @@ type dJointFeedback
 	t2 as dVector3
 end type
 
-type dJointFeedback as any
-
 declare sub dGeomMoved cdecl alias "dGeomMoved" (byval as dGeomID)
 declare function dGeomGetBodyNext cdecl alias "dGeomGetBodyNext" (byval as dGeomID) as dGeomID
 
