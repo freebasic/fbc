@@ -29,6 +29,9 @@ Installing:
     - Run the INSTALL.BAT file to generate the import libraries -- they are 
       needed to call any function on DLL's and to create the executables.
 
+    (Note: Do not install the Windows version over the old versions, unless the 
+     whole /lib/win32 directory is deleted first.)
+
   o Linux version:
 
     - Unpack the tar gzip archive to any folder.
@@ -115,6 +118,49 @@ Requirements:
       not a Windows 3x/9x/NT/XP/etc command-prompt), the CWSDPMI server
       (http://clio.rice.edu/cwsdpmi/csdpmi5b.zip) must be on your PATH 
       environment variable (note: FreeDOS comes with it already installed).
+
+
+Debugging:
+
+  o The debugger is in the bin\win32 or bin\dos directories (the GDB.EXE file), for 
+    the Windows and DOS versions respectively. It usually comes already installed 
+    in most Linux distros.
+
+    (Note: all commands should be typed without quotes and then [return] must be pressed.)
+
+    - Compile the sources using the -g cmd-line option to add debug support.
+
+    - Load it in GDB using: "gdb myapplicationname.exe"
+
+    - Set the arguments to the application been debugged using: 
+      "set args arg1 arg2 argn".
+   
+    - If the executable isn't in the same directory of the source files where it
+      was compiled, type: "directory path/to/my/application/sources".
+
+    - Place a breakpoint in the first line using: "b main".
+
+    - Type "r" to start the application.
+
+    - Type "n" to step over function calls. Keep pressing [return] to skip
+      
+to the next line.
+
+    - Type "s" to step into function calls. Same as above.
+
+    - Type "c" to continue execution until the next breakpoint.
+
+    - Use "disp ABC" to display the contents of a variable called "abc" 
+      (notes: 1> all in uppercase, GDB isn't case insensitive, 2> undeclared 
+       variables or the ones with suffixes like % & ! # $ can't be displayed).
+
+    - Use "watch ABC" to stop each time a variable called "abc" is changed.
+
+    - Type "q" to quit.
+
+    - Use "r" again to restart the application.
+
+    - Type "help" to see a list of commands.
 
       
 Most Important Features:
