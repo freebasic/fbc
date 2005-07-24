@@ -4540,7 +4540,13 @@ function astNewADDR( byval op as integer, _
 			end if
 
 		case AST_NODECLASS_PTR
-			if( l->ptr.ofs = 0 ) then
+			'' abs address?
+			if( l->l->class = AST_NODECLASS_CONST ) then
+				n = l->l
+				astDel( l )
+				return n
+			'' not local or field?
+			elseif( l->ptr.ofs = 0 ) then
 				delchild = TRUE
 			end if
 
