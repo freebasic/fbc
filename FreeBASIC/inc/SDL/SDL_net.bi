@@ -133,7 +133,7 @@ declare function SDLNet_DelSocket SDLCALL alias "SDLNet_DelSocket" (byval set as
 
 declare function SDLNet_CheckSockets SDLCALL alias "SDLNet_CheckSockets" (byval set as SDLNet_SocketSet, byval timeout as Uint32) as integer
 
-#define SDLNet_SocketReady(sock) ((sock <> NULL) and (sock->ready = 1))
+#define SDLNet_SocketReady(sock) iif( sock <> NULL, cptr(SDLNet_GenericSocket, sock)->ready = 1, 0 )
 
 declare sub SDLNet_FreeSocketSet SDLCALL alias "SDLNet_FreeSocketSet" (byval set as SDLNet_SocketSet)
 
