@@ -2104,24 +2104,24 @@ data "beep","fb_Beep", _
 	 NULL, FALSE, FALSE, _
 	 0
 
-'' mkdir ( byval path as string ) as integer
+'' mkdir ( byref path as string ) as integer
 data "mkdir","fb_MkDir", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
-'' rmdir ( byval path as string ) as integer
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' rmdir ( byref path as string ) as integer
 data "rmdir","fb_RmDir", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
-'' chdir ( byval path as string ) as integer
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' chdir ( byref path as string ) as integer
 data "chdir","fb_ChDir", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
 '' fb_Assert ( byval fname as string, byval linenum as integer, byval funcname as string, _
 ''			   byval expression as string ) as void
