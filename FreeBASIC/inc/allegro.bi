@@ -1869,24 +1869,33 @@ declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval 
 
 #ifdef __FB_LINUX__
 
-declare function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer
-declare function allegro_main alias "main" (byval argc as integer, byval argv as any ptr) as integer
-declare function rtlib_get_exename alias "fb_hGetExeName" (byval buffer as byte ptr, byval length as integer) as zstring ptr
+extern __crt0_argc alias "__crt0_argc" as integer
+extern __crt0_argv alias "__crt0_argv" as ubyte ptr ptr
+
+redim shared __crt0_argp(0) as zstring ptr
+redim shared __crt0_args(0) as string
+
+'':::::	
+private sub build_args constructor
+	dim i as integer
+	
+	__crt0_argc = 0
+	while (len(command(__crt0_argc)) > 0)
+		redim preserve __crt0_argp(__crt0_argc + 1)
+		redim preserve __crt0_args(__crt0_argc + 1)
+		__crt0_args(__crt0_argc) = command(__crt0_argc)
+		__crt0_argc += 1
+	wend
+	for i = 1 to __crt0_argc
+		__crt0_argp(i) = cptr(zstring ptr, @__crt0_args(i))
+	next i
+	__crt0_argv = @__crt0_argp(0)
+end sub
 
 '':::::
-function allegro_mangled_main(byval argc as integer, byval argv as byte ptr ptr) as integer
-end function
+public sub _mangled_main_address alias "_mangled_main_address"
 
+end sub
 
-extern allegro_mangled_main_address alias "_mangled_main_address" as any ptr
-dim allegro_mangled_main_address as any ptr
-dim allegro_argv as byte ptr, allegro_argv0 as string * 256
-
-
-allegro_mangled_main_address = procptr(allegro_mangled_main)
-rtlib_get_exename sadd(allegro_argv0), 256
-allegro_argv = sadd(allegro_argv0)
-
-allegro_main 1, @allegro_argv
 
 #endif

@@ -79,7 +79,7 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	if (j->caps.wCaps & JOYCAPS_HASU)
 		*a5 = CALCPOS(info.dwUpos, j->caps.wUmin, j->caps.wUmax);
 	if (j->caps.wCaps & JOYCAPS_HASV)
-		*a5 = CALCPOS(info.dwVpos, j->caps.wVmin, j->caps.wVmax);
+		*a6 = CALCPOS(info.dwVpos, j->caps.wVmin, j->caps.wVmax);
 	*buttons = info.dwButtons;
 	
 	return FB_RTERROR_OK;
