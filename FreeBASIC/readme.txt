@@ -143,8 +143,7 @@ Debugging:
     - Type "r" to start the application.
 
     - Type "n" to step over function calls. Keep pressing [return] to skip
-      
-to the next line.
+      to the next line.
 
     - Type "s" to step into function calls. Same as above.
 
