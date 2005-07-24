@@ -378,6 +378,12 @@ declare function vsprintf cdecl alias "vsprintf" (byval buffer as string, byval 
 '' globals
 ''
 
-extern import errno alias "errno" as integer
+#ifdef __FB_WIN32__
+declare function _errno cdecl alias "_errno" () as integer ptr
+#define	errno	(*_errno)
+
+#else
+	extern errno alias "errno" as integer
+#endif
 
 #endif ' CRT_BI

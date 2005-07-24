@@ -1839,12 +1839,8 @@ declare sub al_trace cdecl alias "al_trace" ( byval msg as string, ... )
 declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function cdecl(byval msg as byte ptr) as integer)
 declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function cdecl(byval msg as byte ptr) as integer)
 
-' ---
-
 
 ' -- misc --
-
-dim shared errno as integer
 
 #define allegro_init() install_allegro(SYSTEM_AUTODETECT, @errno, @atexit)
 
