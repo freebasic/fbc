@@ -14,8 +14,8 @@
 #define SQLITE_VERSION "3.1.3"
 #define SQLITE_VERSION_NUMBER 3001003
 
-declare function sqlite3_libversion cdecl alias "sqlite3_libversion" () as zstring ptr
-''''''' declare function sqlite3_libversion_number cdecl alias "sqlite3_libversion_number" () as integer
+declare function sqlite3_libversion        cdecl alias "sqlite3_libversion" () as zstring ptr
+declare function sqlite3_libversion_number cdecl alias "sqlite3_libversion_number" () as integer
 
 type sqlite3 as any
 type sqlite_int64 as longint
