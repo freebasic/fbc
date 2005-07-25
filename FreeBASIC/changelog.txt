@@ -1,3 +1,15 @@
+Version 0.15 Beta:
+
+[changed]
+
+
+[added]
+
+
+[fixed]
+- main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
+
+
 Version 0.14 Beta:
 
 [changed]
@@ -44,7 +56,7 @@ Version 0.14 Beta:
 [added]
 - function overloading, the return type is not taken into account, only the arguments (as in Java) (v1c)
 - pointer type-casting: CPTR( DataType, Expression ), as in: "*cptr(byte ptr, somePointer) = 255"
-- functions call now return structures (user defined types) too, only external functions could before (v1c)
+- functions can now return structures (user defined types) too, only external functions could before (v1c)
 - full debug support using GDB (the GNU debugger) or Insight (GDB's GUI frontent), only dynamic arrays can't
   be watched at the moment, everything else works, including var-len strings and UDT's (v1c)
 - array bounds checking when the -exx (extra error checking) cmd-line option is used (v1c)
