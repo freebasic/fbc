@@ -1,8 +1,4 @@
 
-[ ] full debug support
-    - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
-    - each overloaded function will show the locals of *ALL* functions
-
 [ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor
@@ -15,6 +11,10 @@
 [ ] EMIT:
     - optimize load after store
     - re-ordering optimization if target cpu is +586
+
+[ ] full debug support
+    - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
+    - each overloaded function will show the locals of *ALL* functions
 
 *** *** *** *** ***
 [ ] AndAlso and OrElse, short-circuit versions of And and Or

@@ -2021,26 +2021,20 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		function = TRUE
 
 	'' SIN/COS/...( Expression )
-	case FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
-		 FB_TK_SQR, FB_TK_LOG, FB_TK_INT
+	case FB_TK_SIN, FB_TK_COS, FB_TK_TAN, FB_TK_ATN, _
+		 FB_TK_SQR, FB_TK_INT
 
 		select case as const lexGetToken( )
 		case FB_TK_SIN
 			op = IR_OP_SIN
-		case FB_TK_ASIN
-			op = IR_OP_ASIN
 		case FB_TK_COS
 			op = IR_OP_COS
-		case FB_TK_ACOS
-			op = IR_OP_ACOS
 		case FB_TK_TAN
 			op = IR_OP_TAN
 		case FB_TK_ATN
 			op = IR_OP_ATAN
 		case FB_TK_SQR
 			op = IR_OP_SQRT
-		case FB_TK_LOG
-			op = IR_OP_LOG
 		case FB_TK_INT
 			op = IR_OP_FLOOR
 		end select
@@ -2495,8 +2489,8 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 		res = cStringFunct( funcexpr )
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _
-		 FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
-		 FB_TK_SQR, FB_TK_LOG, FB_TK_ATAN2, FB_TK_INT
+		 FB_TK_SIN, FB_TK_COS, FB_TK_TAN, FB_TK_ATN, _
+		 FB_TK_SQR, FB_TK_ATAN2, FB_TK_INT
 		res = cMathFunct( funcexpr )
 
 	case FB_TK_PEEK

@@ -2151,6 +2151,29 @@ data "erl", "fb_ErrorGetLineNum", _
 	 NULL, FALSE, FALSE, _
 	 0
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'' asin ( byval x as double ) as double
+data "asin","", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+
+'' acos ( byval x as double ) as double
+data "acos","", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+
+'' log ( byval x as double ) as double
+data "log","", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+
 '' EOL
 data ""
 
