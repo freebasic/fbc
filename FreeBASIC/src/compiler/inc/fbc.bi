@@ -62,6 +62,7 @@ type FBCCTX
 	pthlist(0 to FB_MAXARGS-1) 	as string
 
 	outname 					as zstring * FB_MAXPATHLEN+1
+	outaddext					as integer
 	mainpath					as zstring * FB_MAXPATHLEN+1
 	mainfile					as zstring * FB_MAXNAMELEN+1
 	mapfile						as zstring * FB_MAXNAMELEN+1

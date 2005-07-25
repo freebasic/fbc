@@ -333,9 +333,9 @@ function archiveFiles as integer
 
 	function = FALSE
 
-    '' if no executable name was defined, use the main module name
+    ''
     fbc.outname = hStripFilename( fbc.outname ) + "lib" + _
-				  hStripPath( hStripExt( fbc.outname ) ) + ".a"
+				  hStripPath( fbc.outname ) + ".a"
 
     arcline = "-rsc "
 
@@ -417,6 +417,7 @@ sub setMainModule( )
 	'' if no executable name was defined, use the main module name
 	if( len( fbc.outname ) = 0 ) then
 		fbc.outname = fbc.mainpath + fbc.mainfile
+		fbc.outaddext = TRUE
 	end if
 
 end sub
@@ -522,6 +523,8 @@ sub setDefaultOptions( )
 	fbc.mainpath	= ""
     fbc.mapfile     = ""
 	fbc.mainset 	= FALSE
+	fbc.outname		= ""
+	fbc.outaddext   = FALSE
 
 end sub
 
@@ -780,7 +783,7 @@ function processOptions( ) as integer
 
 			'' main module
 			case "m"
-				fbc.mainfile = hStripPath( hStripExt( argv(i+1) ) )
+				fbc.mainfile = hStripPath( argv(i+1) )
 				if( len( fbc.mainfile ) = 0 ) then
 					printInvalidOpt( i )
 					exit function

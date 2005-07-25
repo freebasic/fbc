@@ -80,7 +80,7 @@ function _linkFiles as integer
     end if
 
 	'' add extension
-	if( len( hGetFileExt( fbc.outname ) ) = 0 ) then
+	if( fbc.outaddext ) then
 		select case fbc.outtype
 		case FB_OUTTYPE_DYNAMICLIB
 			fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
@@ -146,7 +146,7 @@ function _linkFiles as integer
 	end if
 	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crti.o\""
 	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtbegin.o\""
-	
+
     '' init lib group
     ldcline += " -( "
 
