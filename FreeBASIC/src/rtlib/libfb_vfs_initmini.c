@@ -40,14 +40,6 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
 /* This is required to avoid that the printer gets opened on application
  * start-up.
  */
-static unsigned fb_hDevLptGetWidth( struct _FB_FILE *handle )
-{
-    int res = fb_DevLptOpen( handle, "LPT1:", 5 );
-    if( res!=FB_RTERROR_OK )
-        return 0;
-    return handle->hooks->pfnGetWidth( handle );
-}
-
 static int fb_hDevLptClose( struct _FB_FILE *handle )
 {
     int res = fb_DevLptOpen( handle, "LPT1:", 5 );
@@ -65,7 +57,6 @@ static int fb_hDevLptWrite( struct _FB_FILE *handle, const void* value, size_t v
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_lpt_fake = {
-    fb_hDevLptGetWidth,
     NULL,
     fb_hDevLptClose,
     NULL,
@@ -99,11 +90,11 @@ void fb_VfsInitMini(void)
     }
 
     if ( FB_HANDLE_PRINTER->hooks == NULL ) {
-        memset(FB_HANDLE_SCREEN, 0, sizeof(*FB_HANDLE_SCREEN));
+        memset(FB_HANDLE_PRINTER, 0, sizeof(*FB_HANDLE_PRINTER));
 
-        FB_HANDLE_SCREEN->mode = FB_FILE_MODE_APPEND;
-        FB_HANDLE_SCREEN->type = FB_FILE_TYPE_VFS;
-        FB_HANDLE_SCREEN->access = FB_FILE_ACCESS_WRITE;
+        FB_HANDLE_PRINTER->mode = FB_FILE_MODE_APPEND;
+        FB_HANDLE_PRINTER->type = FB_FILE_TYPE_VFS;
+        FB_HANDLE_PRINTER->access = FB_FILE_ACCESS_WRITE;
 
         FB_HANDLE_PRINTER->hooks = &fb_hooks_dev_lpt_fake;
     }
