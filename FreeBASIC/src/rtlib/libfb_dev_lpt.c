@@ -251,3 +251,39 @@ int fb_hSetPrinterWidth( const char *pszDevice, int width, int default_width )
     free(pszDev);
     return cur;
 }
+
+int fb_hGetPrinterOffset( const char *pszDevice )
+{
+    int cur = 0;
+    size_t i;
+    char *pszDev;
+
+    if( !fb_DevLptTestProtocol( NULL, pszDevice, strlen(pszDevice) ) )
+        return 0;
+
+    if( strcasecmp( pszDevice, "PRN:" ) == 0 ) {
+        pszDev = strdup("LPT1:");
+    } else {
+        pszDev = strdup(pszDevice);
+        memcpy(pszDev, "LPT", 3);
+    }
+    /* Test all printers. */
+    for( i=0;
+         i!=FB_MAX_FILES;
+         ++i )
+    {
+        FB_FILE *tmp_handle = fb_fileTB + i;
+        if( tmp_handle->hooks==&fb_hooks_dev_lpt
+            && tmp_handle->redirection_to==NULL )
+        {
+            DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
+            if( strcmp(tmp_info->pszDevice, pszDev)==0 ) {
+                cur = tmp_handle->line_length;
+                break;
+            }
+        }
+    }
+
+    free(pszDev);
+    return cur;
+}

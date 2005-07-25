@@ -868,6 +868,7 @@ FBCALL int          fb_FileGetLineLen   ( int fnum );
  **************************************************************************************************/
 
        int          fb_hSetPrinterWidth ( const char *pszDevice, int width, int default_width );
+       int          fb_hGetPrinterOffset( const char *pszDevice );
        int          fb_PrinterOpen      ( int iPort, const char *pszDevice, void **ppvHandle );
        int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
        int          fb_PrinterClose     ( void *pvHandle );

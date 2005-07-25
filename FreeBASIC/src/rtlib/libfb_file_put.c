@@ -32,6 +32,8 @@
 /*:::::*/
 int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length, int adjust_rec_pos)
 {
+    const char *pachText = (const char *) data;
+    size_t i;
 	int res;
 
     if( handle==NULL )
@@ -97,6 +99,32 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
             }
         }
     }
+
+#ifndef FB_NATIVE_TAB
+    if ( res == FB_RTERROR_OK ) {
+        /* search for last printed CR or LF */
+        i=length;
+        while (i--) {
+            char ch = pachText[i];
+            if (ch=='\n' || ch=='\r') {
+                break;
+            }
+        }
+        ++i;
+        handle = FB_HANDLE_DEREF(handle);
+        if (i==0) {
+            handle->line_length += length;
+        } else {
+            handle->line_length = length - i;
+        }
+        {
+            int iWidth = FB_HANDLE_DEREF(handle)->width;
+            if( iWidth!=0 ) {
+                handle->line_length %= iWidth;
+            }
+        }
+    }
+#endif
 
 	FB_UNLOCK();
 

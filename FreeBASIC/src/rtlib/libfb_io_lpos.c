@@ -18,37 +18,27 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ * io_lpos.c -- Returns the printers X position
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written [mjs]
  *
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+FBCALL int fb_LPos( int printer_index )
 {
-    int res;
-
-    if( handle==NULL )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
+    int cur;
+    char buffer[32];
+	
     FB_LOCK();
 
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE );
+    sprintf(buffer, "LPT%d:", (printer_index+1));
+    cur = fb_hGetPrinterOffset( buffer );
 
-    FB_UNLOCK();
-
-    return res;
-}
-
-/*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
-{
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+	FB_UNLOCK();
+	
+    return cur;
 }

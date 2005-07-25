@@ -2009,6 +2009,12 @@ data "loc","fb_FileLocation", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' lpos( int ) as integer
+data "lpos", "fb_LPos", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' rset ( dst as string, src as string ) as void
 data "rset","fb_StrRset", _

@@ -9,7 +9,6 @@ Version 0.15 Beta:
 - OPEN VFS as the "new" QB compatible OPEN (mjs)
   Supports CONS:, CON:, /DEV/CON, ERR:, PIPE:, LPTx:, SCRN:
 - LPRINT support (mjs)
-  Missing: - LPOS(n)
 - comfortable string input from SCRN: (mjs)
 - Doxygen file and started documentation of RTLIB (mjs)
 - Several macros to ease FB_FILE* handling, required for *Ex() functions (mjs)
@@ -17,6 +16,7 @@ Version 0.15 Beta:
 - fb_FilePutback function as a device-independent ungetc() function (mjs)
   Required for SCRN: support.
 - all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
+- LPOS(n) (mjs)
 
 
 [fixed]
