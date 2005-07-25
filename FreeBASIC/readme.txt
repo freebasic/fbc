@@ -155,9 +155,9 @@ Debugging:
 
     - Use "watch ABC" to stop each time a variable called "abc" is changed.
 
-    - Type "q" to quit.
+    - Use "r" again to restart the application when finished.
 
-    - Use "r" again to restart the application.
+    - Type "q" to quit.
 
     - Type "help" to see a list of commands.
 

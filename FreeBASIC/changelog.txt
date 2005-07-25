@@ -17,8 +17,8 @@ Version 0.14 Beta:
   just add any code to the module-level scope (ie: outside any function) (v1c)
 - the array descriptors had to be modified, if you have any DLL's compiled with old versions, please recompile
   them with this new version if passing arrays by descriptor to functions (v1c)
-- the intrinsic functions SIN, ASIN, COS, ACOS, TAN, ATN, SQR, LOG, INT and ATAN2 are now implemented as
-  inline and will be evaluated at compile-time when constants are used as parameters (v1c)
+- the intrinsic functions SIN, COS, TAN, ATN, SQR, INT and ATAN2 are now implemented as inline and will be 
+  evaluated at compile-time when constants are used as parameters (v1c)
 - macro text will be expanded on comments emited when the -g command-line option is used (v1c)
 - multiple strings concatenation such as "a = b + c + d + ..." will be converted to
   "a = b: a += c: a += d: ...", giving a speed up, because no temporary dynamic strings will be used (v1c)
