@@ -39,14 +39,6 @@ typedef struct _DEV_SCRN_INFO {
     unsigned        length;
 } DEV_SCRN_INFO;
 
-/*:::::*/
-static unsigned fb_DevScrnGetWidth( struct _FB_FILE *handle )
-{
-    int cols;
-    fb_GetSize( &cols, NULL );
-    return cols;
-}
-
 static void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
 {
     FBSTRING *str;
@@ -321,7 +313,6 @@ static int fb_DevScrnTestProtocol( struct _FB_FILE *handle, const char *filename
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_scrn = {
-    fb_DevScrnGetWidth,
     fb_DevScrnEof,
     fb_DevScrnClose,
     NULL,
@@ -345,10 +336,13 @@ int fb_DevScrnOpen( struct _FB_FILE *handle, const char *filename, size_t filena
 
     } else if( handle->hooks == NULL ) {
         DEV_SCRN_INFO *info = (DEV_SCRN_INFO*) malloc(sizeof(DEV_SCRN_INFO));
+        int cols;
+        fb_GetSize( &cols, NULL );
         info->length = 0;
         handle->hooks = &fb_hooks_dev_scrn;
         handle->opaque = info;
         handle->line_length = fb_GetX() - 1;
+        handle->width = cols;
     }
 
     FB_UNLOCK();

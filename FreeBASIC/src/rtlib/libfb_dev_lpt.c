@@ -40,13 +40,6 @@ typedef struct _DEV_LPT_INFO {
 } DEV_LPT_INFO;
 
 /*:::::*/
-static unsigned fb_DevLptGetWidth( struct _FB_FILE *handle )
-{
-    /* TODO: Return the value set by a WIDTH "LPT1:", 128 */
-    return 80;
-}
-
-/*:::::*/
 static int fb_DevLptClose( struct _FB_FILE *handle )
 {
     int res;
@@ -88,7 +81,7 @@ static int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t va
 }
 
 /*:::::*/
-static int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
     size_t i;
 
@@ -115,7 +108,6 @@ static int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename,
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_lpt = {
-    fb_DevLptGetWidth,
     NULL,
     fb_DevLptClose,
     NULL,
@@ -130,6 +122,7 @@ static const FB_FILE_HOOKS fb_hooks_dev_lpt = {
 /*:::::*/
 int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
+    FB_FILE *redir_handle = NULL;
     DEV_LPT_INFO *info;
     size_t i;
     int res;
@@ -160,13 +153,22 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
          i!=FB_MAX_FILES;
          ++i )
     {
-        FB_FILE *tmp_handle = handle;
+        FB_FILE *tmp_handle = fb_fileTB + i;
         if( tmp_handle->hooks==&fb_hooks_dev_lpt ) {
             DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
             if( strcmp(tmp_info->pszDevice, info->pszDevice)==0 ) {
                 free(info);
-                ++(info = tmp_info)->uiRefCount;
-                break;
+                if( tmp_handle!=FB_HANDLE_PRINTER
+                    && handle!=FB_HANDLE_PRINTER )
+                {
+                    FB_UNLOCK();
+                    return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+                } else {
+                    redir_handle = tmp_handle;
+                    info = tmp_info;
+                    ++info->uiRefCount;
+                    break;
+                }
             }
         }
     }
@@ -176,6 +178,18 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
         res = fb_PrinterOpen( info->iPort, info->pszDevice, &info->hPrinter );
     } else {
         res = fb_ErrorSetNum( FB_RTERROR_OK );
+        if( redir_handle!=NULL ) {
+            /* We only allow redirection between OPEN "LPT1:" and LPRINT */
+            if( handle==FB_HANDLE_PRINTER ) {
+                redir_handle->redirection_to = handle;
+                handle->width = redir_handle->width;
+                handle->line_length = redir_handle->line_length;
+            } else {
+                handle->redirection_to = redir_handle;
+            }
+        } else {
+            handle->width = 80;
+        }
     }
 
     if( res == FB_RTERROR_OK ) {
@@ -198,4 +212,42 @@ void fb_DevRegisterLPT(void)
     protocol->pfnTestProtocol = fb_DevLptTestProtocol;
     protocol->pfnOpen = fb_DevLptOpen;
     fb_ProtocolRegister ( protocol );
+}
+
+int fb_hSetPrinterWidth( const char *pszDevice, int width, int default_width )
+{
+    int cur = ((default_width==0) ? 80 : default_width);
+    size_t i;
+    char *pszDev;
+
+    if( !fb_DevLptTestProtocol( NULL, pszDevice, strlen(pszDevice) ) )
+        return 0;
+
+    if( strcasecmp( pszDevice, "PRN:" ) == 0 ) {
+        pszDev = strdup("LPT1:");
+    } else {
+        pszDev = strdup(pszDevice);
+        memcpy(pszDev, "LPT", 3);
+    }
+    /* Test all printers. */
+    for( i=0;
+         i!=FB_MAX_FILES;
+         ++i )
+    {
+        FB_FILE *tmp_handle = fb_fileTB + i;
+        if( tmp_handle->hooks==&fb_hooks_dev_lpt
+            && tmp_handle->redirection_to==NULL )
+        {
+            DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
+            if( strcmp(tmp_info->pszDevice, pszDev)==0 ) {
+                if( width!=0 )
+                    tmp_handle->width = width;
+                cur = tmp_handle->width;
+                break;
+            }
+        }
+    }
+
+    free(pszDev);
+    return cur;
 }

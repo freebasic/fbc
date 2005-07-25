@@ -1332,6 +1332,85 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 end function
 
 '':::::
+private function cWidth( byval isfunc as integer ) as ASTNODE ptr
+	dim as ASTNODE ptr fnum, width_arg, height_arg, dev_name
+    dim as ASTNODE ptr func
+
+	function = NULL
+
+	lexSkipToken( )
+
+	if( isfunc ) then
+		'' '('
+		hMatchLPRNT( )
+	end if
+
+    if( isfunc and hMatch( CHAR_RPRNT ) ) then
+        ' fb_Width function
+        width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+
+        function = rtlWidthScreen( width_arg, height_arg, isfunc )
+    else
+        if( hMatch( FB_TK_LPRINT ) ) then
+            ' fb_WidthDev
+            dev_name = astNewCONSTs( "LPT1:" )
+            hMatchExpression( width_arg )
+
+            function = rtlWidthDev( dev_name, width_arg, isfunc )
+
+        elseif( hMatch( CHAR_SHARP ) ) then
+            ' fb_WidthFile
+
+            hMatchExpression( fnum )
+
+            if( hMatch( CHAR_COMMA ) ) then
+                hMatchExpression( width_arg )
+            else
+                width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+            end if
+
+            function = rtlWidthFile( fnum, width_arg, isfunc )
+
+        elseif( hMatch( CHAR_COMMA ) ) then
+            ' fb_WidthScreen
+            width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+            hMatchExpression( height_arg )
+            function = rtlWidthScreen( width_arg, height_arg, isfunc )
+
+        else
+            hMatchExpression( dev_name )
+            select case astGetDataType( dev_name )
+            case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
+                ' fb_WidthDev
+    
+                if( hMatch( CHAR_COMMA ) ) then
+                    hMatchExpression( width_arg )
+                else
+                    width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+                end if
+                function = rtlWidthDev( dev_name, width_arg, isfunc )
+    
+            case else
+                ' fb_WidthScreen
+                width_arg = dev_name
+                dev_name = NULL
+    
+                if( hMatch( CHAR_COMMA ) ) then
+                    hMatchExpression( height_arg )
+                else
+                    height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+                end if
+                function = rtlWidthScreen( width_arg, height_arg, isfunc )
+    
+            end select
+        end if
+		if( isfunc ) then hMatchRPRNT( )
+    end if
+
+end function
+
+'':::::
 private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr filename_old, filename_new
 	dim as integer matchprnt
@@ -1743,6 +1822,8 @@ function cQuirkStmt as integer
 		res = cMidStmt( )
 	case FB_TK_LSET
 		res = cLSetStmt( )
+    case FB_TK_WIDTH
+        res = cWidth( FALSE ) <> NULL
 	end select
 
 	if( res = FALSE ) then
@@ -2620,6 +2701,10 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 
 	case FB_TK_VIEW
 		res = cViewStmt( TRUE, funcexpr )
+
+    case FB_TK_WIDTH
+        funcexpr = cWidth( TRUE )
+        res = funcexpr <> NULL
 
 	end select
 

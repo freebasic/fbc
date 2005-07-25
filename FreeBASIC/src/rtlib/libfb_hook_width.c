@@ -36,9 +36,12 @@ FBCALL int fb_Width( int cols, int rows )
 	if( fb_hooks.widthproc )
 		cur = fb_hooks.widthproc( cols, rows );
 	else
-		cur = fb_ConsoleWidth( cols, rows );
+        cur = fb_ConsoleWidth( cols, rows );
+
+    if( cols>0 )
+        FB_HANDLE_SCREEN->width = cols;
 
 	FB_UNLOCK();
 	
-	return cur;
+    return ((cols==0 && rows==0) ? cur : 0);
 }

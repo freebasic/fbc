@@ -1076,6 +1076,31 @@ data "rename","", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
 
 
+
+'' width( byval cols as integer = 0, byval width_arg as integer = 0 ) as integer
+data "fb_Width", "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
+'' width( dev as string, byval width_arg as integer = 0 ) as integer
+data "fb_WidthDev", "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, 0
+'' width( byval fnum as integer, byval width_arg as integer = 0 ) as integer
+data "fb_WidthFile", "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, 0
+
+
+
 ''
 '' fb_ErrorThrow cdecl ( byval linenum as integer, _
 ''						 byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
@@ -1896,14 +1921,6 @@ data "color", "fb_Color", _
 	 2, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
-'' width( byval cols as integer = 0, byval rows as integer = 0 ) as integer
-data "width", "fb_Width", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 2, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
-
 '' inkey ( ) as string
 data "inkey","fb_Inkey", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
@@ -4602,6 +4619,123 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
 
     function = proc
 
+end function
+
+'':::::
+function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
+					      byval height_arg as ASTNODE ptr, _
+                          byval isfunc as integer ) as ASTNODE ptr
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = NULL
+
+	''
+	f = ifuncTB(FB_RTL_WIDTH)
+    proc = astNewFUNCT( f )
+
+    '' byval width_arg as integer
+    if( astNewPARAM( proc, width_arg ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval height_arg as integer
+    if( astNewPARAM( proc, height_arg ) = NULL ) then
+    	exit function
+    end if
+
+    if( not isfunc ) then
+    	dim reslabel as FBSYMBOL ptr
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( "" )
+    		astAdd( astNewLABEL( reslabel ) )
+    	else
+    		reslabel = NULL
+    	end if
+
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+
+    else
+    	function = proc
+    end if
+end function
+
+'':::::
+function rtlWidthDev ( byval device as ASTNODE ptr, _
+					   byval width_arg as ASTNODE ptr, _
+                       byval isfunc as integer ) as ASTNODE ptr
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = NULL
+
+	''
+	f = ifuncTB(FB_RTL_WIDTHDEV)
+    proc = astNewFUNCT( f )
+
+    '' device as string
+    if( astNewPARAM( proc, device ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval width_arg as integer
+    if( astNewPARAM( proc, width_arg ) = NULL ) then
+    	exit function
+    end if
+
+    ''
+    if( not isfunc ) then
+    	dim reslabel as FBSYMBOL ptr
+
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( "" )
+    		astAdd( astNewLABEL( reslabel ) )
+    	else
+    		reslabel = NULL
+    	end if
+
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+
+    else
+    	function = proc
+    end if
+end function
+
+'':::::
+function rtlWidthFile ( byval fnum as ASTNODE ptr, _
+					    byval width_arg as ASTNODE ptr, _
+                        byval isfunc as integer ) as ASTNODE ptr
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = NULL
+
+	''
+	f = ifuncTB(FB_RTL_WIDTHFILE)
+    proc = astNewFUNCT( f )
+
+    '' byval fnum as integer
+    if( astNewPARAM( proc, fnum ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval width_arg as integer
+    if( astNewPARAM( proc, width_arg ) = NULL ) then
+    	exit function
+    end if
+
+    if( not isfunc ) then
+    	dim reslabel as FBSYMBOL ptr
+
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( "" )
+    		astAdd( astNewLABEL( reslabel ) )
+    	else
+    		reslabel = NULL
+    	end if
+
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+
+    else
+    	function = proc
+    end if
 end function
 
 '':::::

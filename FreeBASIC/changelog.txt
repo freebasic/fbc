@@ -10,13 +10,13 @@ Version 0.15 Beta:
   Supports CONS:, CON:, /DEV/CON, ERR:, PIPE:, LPTx:, SCRN:
 - LPRINT support (mjs)
   Missing: - LPOS(n)
-           - WIDTH "LPTx:",n
 - comfortable string input from SCRN: (mjs)
 - Doxygen file and started documentation of RTLIB (mjs)
 - Several macros to ease FB_FILE* handling, required for *Ex() functions (mjs)
 - VIEW PRINT() now returns the top and bottom row (mjs)
 - fb_FilePutback function as a device-independent ungetc() function (mjs)
   Required for SCRN: support.
+- all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
 
 
 [fixed]

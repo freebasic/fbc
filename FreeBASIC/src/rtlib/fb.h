@@ -670,7 +670,7 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
 struct _FB_FILE;
 
 typedef int (*FnFileTestProtocol)       ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
-typedef unsigned (*FnFileGetWidth)      ( struct _FB_FILE *handle );
+typedef int (*FnFileSetWidth)      ( struct _FB_FILE *handle, int new_width );
 typedef int (*FnFileOpen)     ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 typedef int (*FnFileEof)      ( struct _FB_FILE *handle );
 typedef int (*FnFileClose)    ( struct _FB_FILE *handle );
@@ -690,7 +690,6 @@ typedef struct _FB_VFS_PROTOCOL {
 } FB_VFS_PROTOCOL;
 
 typedef struct _FB_FILE_HOOKS {
-    FnFileGetWidth  pfnGetWidth;
     FnFileEof       pfnEof;
     FnFileClose     pfnClose;
     FnFileSeek      pfnSeek;
@@ -700,6 +699,7 @@ typedef struct _FB_FILE_HOOKS {
     FnFileLock      pfnLock;
     FnFileUnlock    pfnUnlock;
     FnFileReadLine  pfnReadLine;
+    FnFileSetWidth  pfnSetWidth;
 } FB_FILE_HOOKS;
 
 typedef struct _FB_FILE {
@@ -710,6 +710,7 @@ typedef struct _FB_FILE {
     int             type;
     int             access;
     unsigned        line_length;
+    unsigned        width;
 
     /* for a device-independent put back feature */
     char            putback_buffer[4];
@@ -866,6 +867,7 @@ FBCALL int          fb_FileGetLineLen   ( int fnum );
  * printer
  **************************************************************************************************/
 
+       int          fb_hSetPrinterWidth ( const char *pszDevice, int width, int default_width );
        int          fb_PrinterOpen      ( int iPort, const char *pszDevice, void **ppvHandle );
        int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
        int          fb_PrinterClose     ( void *pvHandle );
@@ -981,6 +983,7 @@ FBCALL int          fb_Locate           ( int row, int col, int cursor );
 typedef int         (*FB_WIDTHPROC)     ( int cols, int rows );
 
 FBCALL int          fb_Width            ( int cols, int rows );
+FBCALL int          fb_WidthDev         ( FBSTRING *dev, int width );
 
 typedef int         (*FB_GETXPROC)      ( void );
 typedef int         (*FB_GETYPROC)      ( void );

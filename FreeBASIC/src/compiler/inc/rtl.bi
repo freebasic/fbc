@@ -168,6 +168,10 @@ enum FBRTL_ENUM
 
     FB_RTL_FILERENAME
 
+    FB_RTL_WIDTH
+    FB_RTL_WIDTHDEV
+    FB_RTL_WIDTHFILE
+
 	FB_RTL_ERRORTHROW
 	FB_RTL_ERRORTHROWEX
 	FB_RTL_ERRORSETHANDLER
@@ -398,6 +402,16 @@ declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
 
 declare function	rtlFileRename		( byval filename_new as ASTNODE ptr, _
 										  byval filename_old as ASTNODE ptr, _
+                                          byval isfunc as integer ) as ASTNODE ptr
+
+declare function    rtlWidthScreen      ( byval width_arg as ASTNODE ptr, _
+                                          byval height_arg as ASTNODE ptr, _
+                                          byval isfunc as integer ) as ASTNODE ptr
+declare function    rtlWidthDev         ( byval device as ASTNODE ptr, _
+                                          byval width_arg as ASTNODE ptr, _
+                                          byval isfunc as integer ) as ASTNODE ptr
+declare function    rtlWidthFile        ( byval fnum as ASTNODE ptr, _
+                                          byval width_arg as ASTNODE ptr, _
                                           byval isfunc as integer ) as ASTNODE ptr
 
 declare function	rtlFileClose		( byval filenum as ASTNODE ptr, _

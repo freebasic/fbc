@@ -60,8 +60,11 @@ int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
         } else {
             handle->line_length = len - i;
         }
-        if( handle->hooks != NULL && handle->hooks->pfnGetWidth!=NULL ) {
-            handle->line_length %= handle->hooks->pfnGetWidth( handle );
+        {
+            int iWidth = FB_HANDLE_DEREF(handle)->width;
+            if( iWidth!=0 ) {
+                handle->line_length %= iWidth;
+            }
         }
     }
 #endif

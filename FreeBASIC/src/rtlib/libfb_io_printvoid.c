@@ -64,17 +64,16 @@ void fb_PrintPadEx ( FB_FILE *handle, int mask )
     FB_PRINT_EX(handle, "\t", 1, mask);
 
 #else
+    FB_FILE *tmp_handle = FB_HANDLE_DEREF(handle);
    	int old_x;
     int new_x;
 
-    old_x = FB_HANDLE_DEREF(handle)->line_length + 1;
+    old_x = tmp_handle->line_length + 1;
     new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
-    if (handle->hooks!=NULL) {
-        if (handle->hooks->pfnGetWidth!=NULL) {
-            unsigned dev_width = handle->hooks->pfnGetWidth(handle);
-            if (new_x > (dev_width - FB_TAB_WIDTH)) {
-                new_x = 1;
-            }
+    if (tmp_handle->width!=0) {
+        unsigned dev_width = tmp_handle->width;
+        if (new_x > (dev_width - FB_TAB_WIDTH)) {
+            new_x = 1;
         }
     }
     fb_hPrintPadEx(handle, mask, old_x, new_x);

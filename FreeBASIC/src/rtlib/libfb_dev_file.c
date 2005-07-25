@@ -360,7 +360,6 @@ static int fb_DevFileTestProtocol( struct _FB_FILE *handle, const char *filename
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_file = {
-    NULL,
     fb_DevFileEof,
     fb_DevFileClose,
     fb_DevFileSeek,
@@ -545,7 +544,6 @@ static int fb_DevStdIoClose( struct _FB_FILE *handle )
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_stdio = {
-    NULL,
     fb_DevFileEof,
     fb_DevStdIoClose,
     NULL,
@@ -675,7 +673,6 @@ static int fb_DevPipeClose( struct _FB_FILE *handle )
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_pipe = {
-    NULL,
     fb_DevFileEof,
     fb_DevPipeClose,
     NULL,
