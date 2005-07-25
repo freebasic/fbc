@@ -3781,12 +3781,16 @@ function astNewUOP( byval op as integer, _
 		return o
 	end if
 
-	if( op = IR_OP_SGN ) then
+	select case as const op
+	case IR_OP_SGN
 		'' hack! SGN with floats is handled by a function
 		if( dclass = IR_DATACLASS_FPOINT ) then
 			return rtlMathFSGN( o )
 		end if
-	end if
+
+	case IR_OP_ASIN, IR_OP_ACOS, IR_OP_LOG
+		return rtlMathTRANS( op, o )
+	end select
 
 	'' alloc new node
 	n = hNewNode( AST_NODECLASS_UOP, dtype, o->subtype )

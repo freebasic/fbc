@@ -89,6 +89,9 @@ enum FBRTL_ENUM
 	FB_RTL_SGNDOUBLE
 	FB_RTL_FIXSINGLE
 	FB_RTL_FIXDOUBLE
+	FB_RTL_ASIN
+	FB_RTL_ACOS
+	FB_RTL_LOG
 
 	FB_RTL_PRINTVOID
 	FB_RTL_PRINTBYTE
@@ -300,6 +303,9 @@ declare function 	rtlMathPow			( byval xexpr as ASTNODE ptr, _
 declare function 	rtlMathFSGN 		( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlMathFIX 			( byval expr as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	rtlMathTRANS		( byval op as integer, _
+					   					  byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlMathLen			( byval expr as ASTNODE ptr, _
 										  byval checkstrings as integer = TRUE ) as ASTNODE ptr

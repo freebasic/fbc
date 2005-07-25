@@ -523,6 +523,24 @@ data "fb_FIXDouble","", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+'' asin CDECL ( byval x as double ) as double
+data "{asin}","asin", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+'' acos CDECL ( byval x as double ) as double
+data "{acos}","acos", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+'' log CDECL ( byval x as double ) as double
+data "{log}","log", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 ''
 '' fb_PrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void
@@ -2151,29 +2169,6 @@ data "erl", "fb_ErrorGetLineNum", _
 	 NULL, FALSE, FALSE, _
 	 0
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'' asin ( byval x as double ) as double
-data "asin","", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
-
-'' acos ( byval x as double ) as double
-data "acos","", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
-
-'' log ( byval x as double ) as double
-data "log","", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
-
 '' EOL
 data ""
 
@@ -3689,6 +3684,36 @@ function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
     function = proc
 
 end function
+
+'':::::
+function rtlMathTRANS( byval op as integer, _
+					   byval expr as ASTNODE ptr ) as ASTNODE ptr static
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = NULL
+
+	''
+	select case op
+	case IR_OP_ASIN
+		f = ifuncTB(FB_RTL_ASIN)
+	case IR_OP_ACOS
+		f = ifuncTB(FB_RTL_ACOS)
+	case IR_OP_LOG
+		f = ifuncTB(FB_RTL_LOG)
+	end select
+
+    proc = astNewFUNCT( f )
+
+    '' byval x as double
+    if( astNewPARAM( proc, expr ) = NULL ) then
+ 		exit function
+ 	end if
+
+    ''
+    function = proc
+
+end function
+
 
 '':::::
 function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
