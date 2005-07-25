@@ -53,7 +53,7 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
 	}
 
-    fb_FileSetLineLen( 0, x - 1 );
+    FB_HANDLE_SCREEN->line_length = x - 1;
 
 	gotoxy(x, y);
 

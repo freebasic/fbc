@@ -31,8 +31,14 @@ static int view_toprow = -1, view_botrow = -1;
 /*:::::*/
 int fb_ConsoleGetTopRow( void )
 {
-	if( view_toprow == -1 )
-		view_toprow = 0;
+    if( view_toprow == -1 ) {
+#if FB_CON_BOUNDS==0 || FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+        view_toprow = 0;
+#else
+        fb_ConsoleGetWindow( NULL, &view_toprow, NULL, NULL );
+        --view_toprow;
+#endif
+    }
 
 	return view_toprow;
 }
@@ -40,8 +46,18 @@ int fb_ConsoleGetTopRow( void )
 /*:::::*/
 int fb_ConsoleGetBotRow( void )
 {
-	if( view_botrow == -1 )
-		view_botrow = fb_ConsoleGetMaxRow( ) - 1;
+    if( view_botrow == -1 ) {
+#if FB_CON_BOUNDS==0 || !defined(TARGET_WIN32)
+        view_botrow = fb_ConsoleGetMaxRow( );
+#elif FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+        fb_ConsoleGetWindow( NULL, NULL, NULL, &view_botrow );
+#else
+        int view_top;
+        fb_ConsoleGetWindow( NULL, &view_top, NULL, &view_botrow );
+        view_botrow += view_top - 1;
+#endif
+        --view_botrow;
+    }
 
 	return view_botrow;
 }

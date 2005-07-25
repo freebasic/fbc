@@ -32,7 +32,15 @@ int fb_ConsoleGetY( void )
     CONSOLE_SCREEN_BUFFER_INFO info;
 
     GetConsoleScreenBufferInfo( fb_out_handle, &info );
-    return info.dwCursorPosition.Y + 1;
-
+#if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+    {
+        int add_y;
+        fb_ConsoleGetWindow( NULL, &add_y, NULL, NULL );
+        info.dwCursorPosition.Y -= add_y - 2;
+    }
+#else
+    ++info.dwCursorPosition.Y;
+#endif
+    return info.dwCursorPosition.Y;
 }
 

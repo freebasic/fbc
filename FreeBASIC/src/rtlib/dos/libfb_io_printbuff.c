@@ -67,10 +67,12 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 			{
 				end_char = ((unsigned char *)buffer)[len - 1];
 				((unsigned char *)buffer)[len - 1] = '\0';
-				no_scroll = TRUE;
+                no_scroll = TRUE;
+                --len;
 			}
 
-    cputs( buffer );
+    fwrite( buffer, len, 1, stdout );
+    fflush( stdout );
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,

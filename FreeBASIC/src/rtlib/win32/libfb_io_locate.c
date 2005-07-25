@@ -30,17 +30,35 @@
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	COORD c;
-	CONSOLE_CURSOR_INFO info;
+    CONSOLE_CURSOR_INFO info;
+    int ret_val;
 
-  	if( col > 0 )
+    if( col > 0 ) {
   		c.X = col - 1;
-  	else
-  		c.X = fb_ConsoleGetX() - 1;
+    } else {
+        c.X = fb_ConsoleGetX() - 1;
+    }
 
-  	if( row > 0 )
+    if( row > 0 ) {
   		c.Y = row - 1;
-  	else
-  		c.Y = fb_ConsoleGetY() - 1;
+    } else {
+        c.Y = fb_ConsoleGetY() - 1;
+    }
+
+    ret_val =
+        ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
+
+#if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
+    {
+        int add_x, add_y;
+        fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
+#if FB_CON_BOUNDS==1
+        c.X += add_x - 1;
+#endif
+        c.Y += add_y - 1;
+    }
+#endif
+
 
 	GetConsoleCursorInfo( fb_out_handle, &info );
   	if( cursor >= 0 ) {
@@ -50,10 +68,5 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 
   	SetConsoleCursorPosition( fb_out_handle, c );
 
-    fb_FileSetLineLen( 0, c.X );
-
-	return ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
+	return ret_val;
 }
-
-
-

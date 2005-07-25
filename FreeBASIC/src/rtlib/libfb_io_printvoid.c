@@ -33,78 +33,78 @@
 #include <stdlib.h>
 
 static
-FBCALL void fb_hPrintPad ( int fnum, int mask, int current_x, int new_x )
+FBCALL void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x )
 {
 #ifdef FB_NATIVE_TAB
-    FB_PRINT_EX(fnum, "\t", 1, mask);
+    FB_PRINT_EX(handle, "\t", 1, mask);
 
 #else
     char tab_char_buffer[FB_TAB_WIDTH+1];
     if (new_x <= current_x) {
-        FB_PRINT_EX(fnum, FB_NEWLINE, strlen(FB_NEWLINE), mask);
+        FB_PRINT_EX(handle, FB_NEWLINE, sizeof(FB_NEWLINE)-1, mask);
     } else {
-        int i;
-        for (i=current_x; i!=new_x; ++i)
-            tab_char_buffer[i-current_x] = 32;
+        memset(tab_char_buffer, 32, new_x-current_x);
         /* the terminating NUL shouldn't be required but it makes
          * debugging easier */
         tab_char_buffer[new_x-current_x] = 0;
-        FB_PRINT_EX(fnum, tab_char_buffer, new_x-current_x, mask);
+        FB_PRINT_EX(handle, tab_char_buffer, new_x-current_x, mask);
     }
+#endif
+}
+
+/*:::::*/
+void fb_PrintPadEx ( FB_FILE *handle, int mask )
+{
+    if( handle==NULL) {
+        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        return;
+    }
+
+#ifdef FB_NATIVE_TAB
+    FB_PRINT_EX(handle, "\t", 1, mask);
+
+#else
+   	int old_x;
+    int new_x;
+
+    old_x = FB_HANDLE_DEREF(handle)->line_length + 1;
+    new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
+    if (handle->hooks!=NULL) {
+        if (handle->hooks->pfnGetWidth!=NULL) {
+            unsigned dev_width = handle->hooks->pfnGetWidth(handle);
+            if (new_x > (dev_width - FB_TAB_WIDTH)) {
+                new_x = 1;
+            }
+        }
+    }
+    fb_hPrintPadEx(handle, mask, old_x, new_x);
 #endif
 }
 
 /*:::::*/
 FBCALL void fb_PrintPad ( int fnum, int mask )
 {
-#ifdef FB_NATIVE_TAB
-    FB_PRINT_EX(fnum, "\t", 1, mask);
+    fb_PrintPadEx( FB_FILE_TO_HANDLE(fnum), mask );
+}
 
-#else
-   	int old_x;
-    int new_x;
-
-    if (fnum==0)
-    {
-        int con_width;
-        old_x = fb_FileGetLineLen( 0 ) + 1;
-        new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
-        fb_GetSize( &con_width, NULL );
-        if (new_x > (con_width - FB_TAB_WIDTH)) {
-            new_x = 1;
-        }
-        fb_hPrintPad(fnum, mask, old_x, new_x);
-
+/*:::::*/
+void fb_PrintVoidEx ( FB_FILE *handle, int mask )
+{
+    if( handle==NULL) {
+        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        return;
     }
-    else
-    {
-        FB_LOCK();
 
-        if( fnum < 1 || fnum > FB_MAX_FILES )
-        {
-            fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-            return;
-        }
-
-		old_x = fb_FileGetLineLen( fnum ) + 1;
-        new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
-        fb_hPrintPad(fnum, mask, old_x, new_x);
-
-        FB_UNLOCK();
+    if( mask & FB_PRINT_NEWLINE ) {
+        FB_PRINT_EX(handle, FB_NEWLINE, sizeof(FB_NEWLINE)-1, mask);
+    } else if( mask & FB_PRINT_PAD ) {
+        fb_PrintPadEx( handle, mask & ~FB_PRINT_HLMASK );
     }
-#endif
 }
 
 /*:::::*/
 FBCALL void fb_PrintVoid ( int fnum, int mask )
 {
-    if( mask & FB_PRINT_NEWLINE )
-    {
-        FB_PRINT(fnum, FB_NEWLINE, mask);
-    }
-    else if( mask & FB_PRINT_PAD )
-    {
-        fb_PrintPad( fnum, mask & ~FB_PRINT_HLMASK );
-    }
+    fb_PrintVoidEx( FB_FILE_TO_HANDLE(fnum), mask );
 }
 

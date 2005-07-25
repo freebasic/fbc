@@ -783,7 +783,7 @@ data "fb_PrintUsingEnd","", _
 
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
 data "fb_ConsoleView","", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
@@ -847,6 +847,44 @@ data "fb_FileOpen","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_FileOpenShort( mode as string, byval filenum as integer, 
+''                   filename as string, byval len as integer,
+''                   access_mode as string, lock_mode as string) as integer
+data "fb_FileOpenShort","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 6, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_FileOpenVfs( s as string, byval mode as integer, byval access as integer,
+''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+data "fb_FileOpenVfs","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 6, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_FileOpenVfsShort( mode as string, byval filenum as integer,
+''                      filename as string, byval len as integer,
+''                      access_mode as string, lock_mode as string) as integer
+data "fb_FileOpenVfsShort","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 6, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' fb_FileClose	( byval filenum as integer ) as integer
 data "fb_FileClose","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -4541,10 +4579,10 @@ end function
 
 '':::::
 function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
-						  byval botexpr as ASTNODE ptr ) as integer
+						  byval botexpr as ASTNODE ptr ) as ASTNODE ptr
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
-	function = FALSE
+	function = NULL
 
 	''
 	f = ifuncTB(FB_RTL_CONSOLEVIEW)
@@ -4560,9 +4598,9 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
     	exit function
     end if
 
-    astAdd( proc )
+'    astAdd( proc )
 
-    function = TRUE
+    function = proc
 
 end function
 
@@ -4839,45 +4877,92 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 				      byval flock as ASTNODE ptr, _
 				      byval filenum as ASTNODE ptr, _
 				      byval flen as ASTNODE ptr, _
-				      byval isfunc as integer ) as ASTNODE ptr static
+				      byval isfunc as integer, _
+                      byval want_vfs as integer) as ASTNODE ptr static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
 	function = NULL
 
-	''
-	f = ifuncTB(FB_RTL_FILEOPEN)
-    proc = astNewFUNCT( f )
+    select case astGetDataType( fmode )
+    case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
+        '' this is the short form of the OPEN command
+        if( want_vfs ) then
+        	f = ifuncTB(FB_RTL_FILEOPEN_VFS_SHORT)
+        else
+        	f = ifuncTB(FB_RTL_FILEOPEN_SHORT)
+        end if
+        proc = astNewFUNCT( f )
+    
+        '' mode as string
+        if( astNewPARAM( proc, fmode ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval filenum as integer
+        if( astNewPARAM( proc, filenum ) = NULL ) then
+            exit function
+        end if
+    
+        '' filename as string
+        if( astNewPARAM( proc, filename ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval len as integer
+        if( astNewPARAM( proc, flen ) = NULL ) then
+            exit function
+        end if
 
-    '' filename as string
-    if( astNewPARAM( proc, filename ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval mode as integer
-    if( astNewPARAM( proc, fmode ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval access as integer
-    if( astNewPARAM( proc, faccess ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval lock as integer
-    if( astNewPARAM( proc, flock ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval filenum as integer
-    if( astNewPARAM( proc, filenum ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval len as integer
-    if( astNewPARAM( proc, flen ) = NULL ) then
- 		exit function
- 	end if
+        '' faccess as string
+        if( astNewPARAM( proc, faccess ) = NULL ) then
+            exit function
+        end if
+    
+        '' flock as string
+        if( astNewPARAM( proc, flock ) = NULL ) then
+            exit function
+        end if
+    
+    case else
+        ''
+        if( want_vfs ) then
+        	f = ifuncTB(FB_RTL_FILEOPEN_VFS)
+        else
+        	f = ifuncTB(FB_RTL_FILEOPEN)
+        end if
+        proc = astNewFUNCT( f )
+    
+        '' filename as string
+        if( astNewPARAM( proc, filename ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval mode as integer
+        if( astNewPARAM( proc, fmode ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval access as integer
+        if( astNewPARAM( proc, faccess ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval lock as integer
+        if( astNewPARAM( proc, flock ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval filenum as integer
+        if( astNewPARAM( proc, filenum ) = NULL ) then
+            exit function
+        end if
+    
+        '' byval len as integer
+        if( astNewPARAM( proc, flen ) = NULL ) then
+            exit function
+        end if
+    end select
 
     ''
     if( not isfunc ) then

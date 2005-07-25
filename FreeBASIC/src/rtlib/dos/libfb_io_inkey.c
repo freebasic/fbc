@@ -50,7 +50,7 @@ FBSTRING *fb_ConsoleInkey( void )
 		fb_hStrAllocTemp( res, chars );
 
 		if( chars > 1 )
-			res->data[0] = 255;					/* note: can't use '\0' here as in qb */
+			res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
 
 		res->data[chars-1] = (unsigned char)k;
 		res->data[chars-0] = '\0';

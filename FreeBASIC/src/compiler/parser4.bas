@@ -344,11 +344,13 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	'' emit end label
 	astAdd( astNewLABEL( el ) )
 
-	'' END IF
-	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_IF )) ) then
-		hReportError FB_ERRMSG_EXPECTEDENDIF
-		exit function
-	end if
+	'' ENDIF or END IF
+    if( not hMatch( FB_TK_ENDIF ) ) then
+        if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_IF )) ) then
+            hReportError FB_ERRMSG_EXPECTEDENDIF
+            exit function
+        end if
+    end if
 
 	''
 	env.lastcompound = lastcompstmt

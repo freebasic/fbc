@@ -31,97 +31,40 @@
 
 
 /*:::::*/
-FBCALL int fb_FileGetStr( int fnum, long pos, void *str, int str_len )
+int fb_FileGetStrEx( FB_FILE *handle, long pos, void *str, int str_len )
 {
-	int result, len, rlen, i;
+    int res;
+    size_t len;
 	char *data;
 
-	if( fnum < 1 || fnum > FB_MAX_FILES )
+    if( handle==NULL )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-	FB_LOCK();
-
-	if( fb_fileTB[fnum-1].f == NULL ) {
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
-
-	/* seek to newpos */
-	if( pos > 0 )
-	{
-		/* if in random mode, seek in reclen's */
-		if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
-			pos = (pos-1) * fb_fileTB[fnum-1].len;
-		else
-			--pos;
-
-		result = fseek( fb_fileTB[fnum-1].f, pos, SEEK_SET );
-		if( result != 0 ) {
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-		}
-	}
 
 	FB_STRLOCK();
 
-	/* get string len */
-	if( str_len == -1 )
-	{
-		data = ((FBSTRING *)str)->data;
-		len = FB_STRSIZE( str );
-	}
-	else
-	{
-		data = (char *)str;
-		if( str_len > 0 )
-			len = str_len - 1;						/* less the null-term */
-		else
-		{
-			if( data != NULL )
-				len = strlen( data );
-			else
-				len = 0;
-		}
-	}
+    /* get string len */
+	FB_STRSETUP_DYN( str, str_len, data, len );
 
-	/* */
-	if( (data == NULL) || (len <= 0) )
-	{
-		/* del if temp */
-		if( str_len == -1 )
-			fb_hStrDelTemp( (FBSTRING *)str );
-
-		FB_STRUNLOCK();
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
-
-	/* do read */
-	rlen = fread( data, 1, len, fb_fileTB[fnum-1].f );
-	if( rlen != len )
-	{
-		/* fill with nulls if at eof */
-		for( i = rlen; i <= len; i++ )
-			data[i] = '\0';
-		/*return FB_FALSE*/;					/* do nothing, not an error */
-	}
-	else
-		data[len] = '\0';						/* add the null-term */
-
-    /* if in random mode, reads must be of reclen */
-	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
-	{
-		len = fb_fileTB[fnum-1].len - len;
-		if( len > 0 )
-			fseek( fb_fileTB[fnum-1].f, len, SEEK_CUR );
-	}
+	/* perform call ... but only if there's data ... */
+    if( (data != NULL) && (len > 0) ) {
+        res = fb_FileGetDataEx( handle, pos, data, &len, TRUE );
+    } else {
+		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
+    data[len] = 0;                                /* add the null-term */
 
 	/* del if temp */
 	if( str_len == -1 )
 		fb_hStrDelTemp( (FBSTRING *)str );		/* will free the temp desc if fix-len passed */
 
 	FB_STRUNLOCK();
-	FB_UNLOCK();
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+
+	return res;
+}
+
+/*:::::*/
+FBCALL int fb_FileGetStr( int fnum, long pos, void *str, int str_len )
+{
+	return fb_FileGetStrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
 

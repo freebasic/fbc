@@ -27,6 +27,8 @@
 #ifndef __FB_XBOX__
 #define __FB_XBOX__
 
+#define FBCALL __cdecl
+
 #include <hal/xbox.h>
 #include <hal/fileio.h>
 #include <openxdk/debug.h>

@@ -30,7 +30,7 @@
 #include <io.h>
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
+int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
 {
     
 	return fb_ErrorSetNum( FB_RTERROR_FILEIO );
@@ -38,7 +38,7 @@ int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
+int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int size )
 {
 
 

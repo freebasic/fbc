@@ -30,60 +30,50 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_hFilePrintBufferUnlocked( int fnum, const void *buffer, size_t len )
+int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
 {
+    int res;
     size_t i;
     const char *pachText = (const char *) buffer;
 
-	if( fnum < 1 || fnum > FB_MAX_FILES )
+    if( handle==NULL )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-	if( fb_fileTB[fnum-1].f == NULL ) {
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
-
-    /* writing all data at once might give a performance improvement */
-	if( fwrite( buffer, len, 1, fb_fileTB[fnum-1].f ) != 1 ) {
-		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-    }
-
-#ifndef FB_NATIVE_TAB
-    /* search for last printed CR or LF */
-    i=len;
-    while (i--) {
-        char ch = pachText[i];
-        if (ch=='\n' || ch=='\r') {
-            break;
-        }
-    }
-    ++i;
-    if (i==0) {
-        fb_fileTB[fnum-1].line_length += len;
-    } else {
-        fb_fileTB[fnum-1].line_length = len - i;
-    }
-    fb_fileTB[fnum-1].line_length %= FB_TAB_WIDTH;
-#endif
-
-    return fb_ErrorSetNum( FB_RTERROR_OK );
-}
-
-/*:::::*/
-int fb_hFilePrintBufferEx( int fnum, const void *buffer, size_t len )
-{
-    int result;
 
     FB_LOCK();
 
-    result = fb_hFilePrintBufferUnlocked( fnum, buffer, len );
+    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE );
+
+#ifndef FB_NATIVE_TAB
+    if ( res == FB_RTERROR_OK ) {
+        /* search for last printed CR or LF */
+        i=len;
+        while (i--) {
+            char ch = pachText[i];
+            if (ch=='\n' || ch=='\r') {
+                break;
+            }
+        }
+        ++i;
+        handle = FB_HANDLE_DEREF(handle);
+        if (i==0) {
+            handle->line_length += len;
+        } else {
+            handle->line_length = len - i;
+        }
+        if( handle->hooks != NULL && handle->hooks->pfnGetWidth!=NULL ) {
+            handle->line_length %= handle->hooks->pfnGetWidth( handle );
+        }
+    }
+#endif
 
     FB_UNLOCK();
 
-    return result;
+    return res;
 }
 
 /*:::::*/
 int fb_hFilePrintBuffer( int fnum, const char *buffer )
 {
-    return fb_hFilePrintBufferEx( fnum, buffer, strlen( buffer ) );
+    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
+                                  buffer, strlen( buffer ) );
 }

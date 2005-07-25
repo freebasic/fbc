@@ -26,28 +26,34 @@
 
 #include <stdlib.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
-static void fb_hPrintStr( int fnum, const char *s, size_t len, int mask )
+static void fb_hPrintStrEx( FB_FILE *handle, const char *s, size_t len, int mask )
 {
     int simple_mask = mask & ~FB_PRINT_HLMASK;
 
     if( len != 0 ) {
-        FB_PRINT_EX(fnum, s, len, simple_mask);
+        FB_PRINT_EX(handle, s, len, simple_mask);
     }
 
-    fb_PrintVoid( fnum, mask );
+    fb_PrintVoidEx( handle, mask );
 }
 
 /*:::::*/
-FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
+void fb_PrintStringEx ( FB_FILE *handle, FBSTRING *s, int mask )
 {
+    if( handle==NULL) {
+        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        return;
+    }
+
 	FB_STRLOCK();
 
     if( (s == NULL) || (s->data == NULL) )
-    	fb_PrintVoid( fnum, mask );
+    	fb_PrintVoidEx( handle, mask );
     else
-    	fb_hPrintStr( fnum, s->data, FB_STRSIZE(s), mask );
+    	fb_hPrintStrEx( handle, s->data, FB_STRSIZE(s), mask );
 
 	/* del if temp */
 	fb_hStrDelTemp( s );
@@ -56,10 +62,27 @@ FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 }
 
 /*:::::*/
+FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
+{
+    fb_PrintStringEx(FB_FILE_TO_HANDLE(fnum), s, mask);
+}
+
+/*:::::*/
+void fb_PrintFixStringEx ( FB_FILE *handle, const char *s, int mask )
+{
+    if( handle==NULL) {
+        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        return;
+    }
+
+    if( s == NULL )
+    	fb_PrintVoidEx( handle, mask );
+    else
+    	fb_hPrintStrEx( handle, s, strlen( s ), mask );
+}
+
+/*:::::*/
 FBCALL void fb_PrintFixString ( int fnum, const char *s, int mask )
 {
-    if( s == NULL )
-    	fb_PrintVoid( fnum, mask );
-    else
-    	fb_hPrintStr( fnum, s, strlen( s ), mask );
+    fb_PrintFixStringEx(FB_FILE_TO_HANDLE(fnum), s, mask);
 }

@@ -511,26 +511,34 @@ end function
 ''
 function cPrintStmt as integer
     dim as ASTNODE ptr usingexpr, filexpr, filexprcopy, expr
-    dim as integer expressions, issemicolon, iscomma, istab, isspc
+    dim as integer expressions, issemicolon, iscomma, istab, isspc, islprint
 
 	function = FALSE
 
 	'' (PRINT|'?')
 	if( not hMatch( FB_TK_PRINT ) ) then
 		if( not hMatch( CHAR_QUESTION ) ) then
-			exit function
+            if( not hMatch( FB_TK_LPRINT ) ) then
+				exit function
+            else
+                islprint = TRUE
+            end if
 		end if
 	end if
 
-	'' ('#' Expression)?
-	if( hMatch( CHAR_SHARP ) ) then
-		hMatchExpression( filexpr )
-
-		hMatchCOMMA( )
-
+    if( islprint ) then
+    	filexpr = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
     else
-    	filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-	end if
+        '' ('#' Expression)?
+        if( hMatch( CHAR_SHARP ) ) then
+            hMatchExpression( filexpr )
+    
+            hMatchCOMMA( )
+    
+        else
+            filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        end if
+    end if
 
 	'' (USING Expression{str} ';')?
 	usingexpr = NULL
@@ -700,7 +708,7 @@ end function
 ''
 function cLineInputStmt as integer
     dim as ASTNODE ptr expr, dstexpr
-    dim as integer isfile, addnewline, issep
+    dim as integer isfile, addnewline, issep, addquestion
 
 	function = FALSE
 
@@ -748,7 +756,11 @@ function cLineInputStmt as integer
 				hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 				exit function
 			end if
+        else
+        	addquestion = TRUE
 		end if
+    else
+        addquestion = FALSE
 	end if
 
     '' Variable?
@@ -772,7 +784,7 @@ function cLineInputStmt as integer
 		exit function
     end if
 
-    function = rtlFileLineInput( isfile, expr, dstexpr, FALSE, addnewline )
+    function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
 
 end function
 
@@ -858,10 +870,15 @@ end function
 '':::::
 '' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
 ''
-function cViewStmt as integer
+function cViewStmt(byval is_func as integer = FALSE, _
+                   byref funcexpr as ASTNODE ptr = NULL ) as integer
     dim as ASTNODE ptr expr1, expr2
+    dim as integer default_view, default_view_value
 
 	function = FALSE
+
+	default_view = is_func
+    default_view_value = iif(is_func,-1,0)
 
 	'' VIEW
 	if( lexGetToken <> FB_TK_VIEW ) then
@@ -877,20 +894,34 @@ function cViewStmt as integer
 	lexSkipToken
 
 	'' (Expression TO Expression)?
-	if( cExpression( expr1 ) ) then
-		if( not hMatch( FB_TK_TO ) ) then
-			hReportError FB_ERRMSG_SYNTAXERROR
-			exit function
-		end if
-
-		hMatchExpression( expr2 )
-
-	else
-		expr1 = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-		expr2 = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+	if( not is_func ) then
+    	if( cExpression( expr1 ) ) then
+            if( not hMatch( FB_TK_TO ) ) then
+                hReportError FB_ERRMSG_SYNTAXERROR
+                exit function
+            end if
+    
+            hMatchExpression( expr2 )
+        else
+            default_view = TRUE
+        end if
 	end if
 
-    function = rtlConsoleView( expr1, expr2 )
+    if( default_view ) then
+        if( is_func ) then
+            hMatchLPRNT()
+            hMatchRPRNT()
+        end if
+        expr1 = astNewCONSTi( default_view_value, IR_DATATYPE_INTEGER )
+        expr2 = astNewCONSTi( default_view_value, IR_DATATYPE_INTEGER )
+	end if
+
+	funcexpr = rtlConsoleView( expr1, expr2 )
+    function = funcexpr <> NULL
+
+    if( not is_func ) then
+    	astAdd( funcexpr )
+    end if
 
 end function
 
@@ -1111,134 +1142,192 @@ end function
 
 '':::::
 private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
-	dim as ASTNODE ptr filenum
-	dim as ASTNODE ptr filename, fmode, faccess, flock, flen
-	dim as integer mode
+	dim as ASTNODE ptr filenum, filename, fmode, faccess, flock, flen
+    dim as integer short_form
+	dim as integer file_mode, access_mode, lock_mode, record_len, want_vfs
 
 	function = NULL
+
+    want_vfs = FALSE
+    short_form = FALSE
 
 	if( isfunc ) then
 		'' '('
 		hMatchLPRNT( )
 	end if
 
+	if( ucase$( *lexGetText( ) ) = "VFS" ) then
+		lexSkipToken( )
+        want_vfs = TRUE
+    end if
+
 	hMatchExpression( filename )
 
 	if( isfunc ) then
 		'' ','?
 		hMatch( CHAR_COMMA )
+
+        select case lexGetToken
+        case FB_TK_FOR, FB_TK_ACCESS, FB_TK_AS
+        case else
+        	short_form = TRUE
+        end select
+    else
+        if( hMatch( CHAR_COMMA ) ) then
+            '' ',' -> indicates the short form
+            short_form = TRUE
+        end if
 	end if
 
-	'' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
-	if( hMatch( FB_TK_FOR ) ) then
-		select case lexGetToken
-		case FB_TK_INPUT
-			mode = FB_FILE_MODE_INPUT
-		case FB_TK_OUTPUT
-			mode = FB_FILE_MODE_OUTPUT
-		case FB_TK_BINARY
-			mode = FB_FILE_MODE_BINARY
-		case FB_TK_RANDOM
-			mode = FB_FILE_MODE_RANDOM
-		case FB_TK_APPEND
-			mode = FB_FILE_MODE_APPEND
-		case else
-			exit function
-		end select
-		lexSkipToken
+    if( short_form ) then
+        '' file mode ("I"|"O"|"A"|"B"|"R")
+        fmode = filename
+        filename = NULL
 
-	else
-		mode = FB_FILE_MODE_RANDOM
-	end if
+        '' '#'? file number
+        hMatch( CHAR_SHARP )
+        hMatchExpression( filenum )
 
-	fmode = astNewCONSTi( mode, IR_DATATYPE_INTEGER )
+        hMatchCOMMA( )
+        '' file name
+        hMatchExpression( filename )
 
-	if( isfunc ) then
-		'' ','?
-		hMatch( CHAR_COMMA )
-	end if
+        '' record length
+        if( hMatch( CHAR_COMMA ) ) then
+            if( lexGetToken <> CHAR_COMMA ) then
+            	hMatchExpression( flen )
+            end if
+            '' access mode
+            if( hMatch( CHAR_COMMA ) ) then
+                if( lexGetToken <> CHAR_COMMA ) then
+                    hMatchExpression( faccess )
+                end if
+                '' lock mode
+                if( hMatch( CHAR_COMMA ) ) then
+                	hMatchExpression( flock )
+                end if
+            end if
+        end if
+        if( flen = NULL ) then flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        if( faccess = NULL ) then faccess = astNewCONSTs( "" )
+        if( flock = NULL ) then flock = astNewCONSTs( "" )
+    else
+        '' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
+        if( hMatch( FB_TK_FOR ) ) then
+            select case lexGetToken
+            case FB_TK_INPUT
+                file_mode = FB_FILE_MODE_INPUT
+            case FB_TK_OUTPUT
+                file_mode = FB_FILE_MODE_OUTPUT
+            case FB_TK_BINARY
+                file_mode = FB_FILE_MODE_BINARY
+            case FB_TK_RANDOM
+                file_mode = FB_FILE_MODE_RANDOM
+            case FB_TK_APPEND
+                file_mode = FB_FILE_MODE_APPEND
+            case else
+                exit function
+            end select
+            lexSkipToken
+    
+        else
+            file_mode = FB_FILE_MODE_RANDOM
+        end if
+    
+        fmode = astNewCONSTi( file_mode, IR_DATATYPE_INTEGER )
+    
+        if( isfunc ) then
+            '' ','?
+            hMatch( CHAR_COMMA )
+        end if
+    
+        '' (ACCESS (READ|WRITE|READ WRITE))?
+        if( hMatch( FB_TK_ACCESS ) ) then
+            select case lexGetToken
+            case FB_TK_WRITE
+                lexSkipToken
+                access_mode = FB_FILE_ACCESS_WRITE
+            case FB_TK_READ
+                lexSkipToken
+                if( hMatch( FB_TK_WRITE ) ) then
+                    access_mode = FB_FILE_ACCESS_READWRITE
+                else
+                    access_mode = FB_FILE_ACCESS_READ
+                end if
+            end select
+        else
+            access_mode = FB_FILE_ACCESS_ANY
+        end if
 
-	'' (ACCESS (READ|WRITE|READ WRITE))?
-	if( hMatch( FB_TK_ACCESS ) ) then
-		select case lexGetToken
-		case FB_TK_WRITE
-			lexSkipToken
-			faccess = astNewCONSTi( FB_FILE_ACCESS_WRITE, IR_DATATYPE_INTEGER )
-		case FB_TK_READ
-			lexSkipToken
-			if( hMatch( FB_TK_WRITE ) ) then
-				faccess = astNewCONSTi( FB_FILE_ACCESS_READWRITE, IR_DATATYPE_INTEGER )
-			else
-				faccess = astNewCONSTi( FB_FILE_ACCESS_READ, IR_DATATYPE_INTEGER )
-			end if
-		end select
-	else
-		faccess = astNewCONSTi( FB_FILE_ACCESS_ANY, IR_DATATYPE_INTEGER )
-	end if
+        faccess = astNewCONSTi( access_mode, IR_DATATYPE_INTEGER )
+    
+        if( isfunc ) then
+            '' ','?
+            hMatch( CHAR_COMMA )
+        end if
+    
+        '' (SHARED|LOCK (READ|WRITE|READ WRITE))?
+        if( hMatch( FB_TK_SHARED ) ) then
+            lock_mode = FB_FILE_LOCK_SHARED
+        elseif( hMatch( FB_TK_LOCK ) ) then
+            select case lexGetToken
+            case FB_TK_WRITE
+                lexSkipToken
+                lock_mode = FB_FILE_LOCK_WRITE
+            case FB_TK_READ
+                lexSkipToken
+                if( hMatch( FB_TK_WRITE ) ) then
+                    lock_mode = FB_FILE_LOCK_READWRITE
+                else
+                    lock_mode = FB_FILE_LOCK_READ
+                end if
+            end select
+        else
+            lock_mode = FB_FILE_LOCK_SHARED
+        end if
+    
+        flock = astNewCONSTi( lock_mode, IR_DATATYPE_INTEGER )
 
-	if( isfunc ) then
-		'' ','?
-		hMatch( CHAR_COMMA )
-	end if
+        if( isfunc ) then
+            '' ','?
+            hMatch( CHAR_COMMA )
+        end if
+    
+        '' AS '#'? Expression
+        if( not hMatch( FB_TK_AS ) ) then
+            hReportError FB_ERRMSG_EXPECTINGAS
+            exit function
+        end if
+    
+        hMatch( CHAR_SHARP )
+    
+        hMatchExpression( filenum )
+    
+        if( isfunc ) then
+            '' ','?
+            hMatch( CHAR_COMMA )
+        end if
+    
+        '' (LEN '=' Expression)?
+        if( hMatch( FB_TK_LEN ) ) then
+            if( not hMatch( FB_TK_ASSIGN ) ) then
+                hReportError FB_ERRMSG_EXPECTEDEQ
+                exit function
+            end if
+            hMatchExpression( flen )
+        else
+            flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        end if
 
-	'' (SHARED|LOCK (READ|WRITE|READ WRITE))?
-	if( hMatch( FB_TK_SHARED ) ) then
-		flock = astNewCONSTi( FB_FILE_LOCK_SHARED, IR_DATATYPE_INTEGER )
-	elseif( hMatch( FB_TK_LOCK ) ) then
-		select case lexGetToken
-		case FB_TK_WRITE
-			lexSkipToken
-			flock = astNewCONSTi( FB_FILE_LOCK_WRITE, IR_DATATYPE_INTEGER )
-		case FB_TK_READ
-			lexSkipToken
-			if( hMatch( FB_TK_WRITE ) ) then
-				flock = astNewCONSTi( FB_FILE_LOCK_READWRITE, IR_DATATYPE_INTEGER )
-			else
-				flock = astNewCONSTi( FB_FILE_LOCK_READ, IR_DATATYPE_INTEGER )
-			end if
-		end select
-	else
-		flock = astNewCONSTi( FB_FILE_LOCK_SHARED, IR_DATATYPE_INTEGER )
-	end if
+    end if
 
-	if( isfunc ) then
-		'' ','?
-		hMatch( CHAR_COMMA )
-	end if
-
-	'' AS '#'? Expression
-	if( not hMatch( FB_TK_AS ) ) then
-		hReportError FB_ERRMSG_EXPECTINGAS
-		exit function
-	end if
-
-	hMatch( CHAR_SHARP )
-
-	hMatchExpression( filenum )
-
-	if( isfunc ) then
-		'' ','?
-		hMatch( CHAR_COMMA )
-	end if
-
-	'' (LEN '=' Expression)?
-	if( hMatch( FB_TK_LEN ) ) then
-		if( not hMatch( FB_TK_ASSIGN ) ) then
-			hReportError FB_ERRMSG_EXPECTEDEQ
-			exit function
-		end if
-		hMatchExpression( flen )
-	else
-		flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-	end if
-
-	if( isfunc ) then
-		'' ')'
-		hMatchRPRNT( )
-	end if
+    if( isfunc ) then
+        '' ')'
+        hMatchRPRNT( )
+    end if
 
 	''
-	function = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen, isfunc )
+	function = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen, isfunc, want_vfs )
 
 end function
 
@@ -1261,7 +1350,7 @@ private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
 
 	if( isfunc ) then
 		'' ','?
-		hMatchToken( CHAR_COMMA )
+		hMatchCOMMA( )
     else
         if( not hMatch( FB_TK_AS ) ) then
         	if( not hMatch( CHAR_COMMA ) ) then
@@ -1287,6 +1376,8 @@ end function
 '':::::
 '' FileStmt		  =	   OPEN Expression{str} (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))? (ACCESS Expression)?
 ''					   (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
+''                |    OPEN ("O"|"I"|"B"|"R"|"A")',' '#'? Expression{int} ',' Expression{str}
+''                     (',' Expression{int}? (',' Expression{str}? (',' Expression{str})? )? )?
 ''				  |	   CLOSE ('#'? Expression)*
 ''				  |	   SEEK '#'? Expression ',' Expression
 ''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
@@ -1301,6 +1392,10 @@ function cFileStmt as integer
 	select case as const lexGetToken
 	'' OPEN Expression{str} (FOR Expression)? (ACCESS Expression)?
 	'' (SHARED|LOCK (READ|WRITE|READ WRITE))? AS '#'? Expression (LEN '=' Expression)?
+    ''
+    '' or:
+    ''
+    '' OPEN ("O"|"I"|"B"|"R"|"A")',' '#'? Expression{int}',' Expression{str} (',' Expression{int})?
 	case FB_TK_OPEN
 		lexSkipToken
 
@@ -1622,7 +1717,7 @@ function cQuirkStmt as integer
 	select case as const lexGetToken( )
 	case FB_TK_GOTO, FB_TK_GOSUB, FB_TK_RETURN, FB_TK_RESUME
 		res = cGotoStmt( )
-	case FB_TK_PRINT
+	case FB_TK_PRINT, FB_TK_LPRINT
 		res = cPrintStmt( )
 	case FB_TK_RESTORE, FB_TK_READ, FB_TK_DATA
 		res = cDataStmt( )
@@ -2522,6 +2617,10 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 		 FB_TK_CSNG, FB_TK_CDBL, _
          FB_TK_CSIGN, FB_TK_CUNSG
 		res = cTypeConvExpr( funcexpr )
+
+	case FB_TK_VIEW
+		res = cViewStmt( TRUE, funcexpr )
+
 	end select
 
 	if( not res ) then

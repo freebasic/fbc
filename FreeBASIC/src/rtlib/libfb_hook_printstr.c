@@ -29,37 +29,12 @@
 /*:::::*/
 FBCALL void fb_PrintBufferEx( const void *buffer, size_t len, int mask )
 {
-#ifndef FB_NATIVE_TAB
-    const char *pachText = (const char *) buffer;
-    int con_width;
-    size_t i;
-    fb_GetSize( &con_width, NULL );
-#endif
-
 	FB_LOCK();
 
     if( fb_hooks.printbuffproc )
         fb_hooks.printbuffproc( buffer, len, mask );
     else
         fb_ConsolePrintBufferEx( buffer, len, mask );
-
-#ifndef FB_NATIVE_TAB
-    /* search for last printed CR or LF */
-    i = len;
-    while( i-- )
-    {
-        char ch = pachText[i];
-        if (ch == '\n' || ch == '\r')
-            break;
-    }
-    ++i;
-    if( i == 0 )
-        len += fb_FileGetLineLen( 0 );
-    else
-        len -= i;
-
-    fb_FileSetLineLen( 0, len % con_width );
-#endif
 
 	FB_UNLOCK();
 

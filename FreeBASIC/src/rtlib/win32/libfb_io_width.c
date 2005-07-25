@@ -32,44 +32,58 @@
 int fb_ConsoleWidth( int cols, int rows )
 {
    	COORD size, max;
-   	SMALL_RECT rect;
    	CONSOLE_SCREEN_BUFFER_INFO info;
-    int cur;
+    int cur, do_change = FALSE;
 
    	max = GetLargestConsoleWindowSize( fb_out_handle );
 
    	GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
-   	cur = info.dwSize.X | (info.dwSize.Y << 16);
+    if( cols > 0 ) {
+        size.X = cols;
+        do_change = TRUE;
+    } else {
+#if FB_CON_BOUNDS==1
+        size.X = info.srWindow.Right - info.srWindow.Left + 1;
+#else
+        size.X = info.dwSize.X;
+#endif
+    }
 
-   	if( cols > 0 )
-   		size.X = cols;
-   	else
-   		size.X = info.dwSize.X;
+    if( rows > 0 ) {
+        size.Y = rows;
+        do_change = TRUE;
+    } else {
+#if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
+        size.Y = info.srWindow.Bottom - info.srWindow.Top + 1;
+#else
+        size.Y = info.dwSize.Y;
+#endif
+    }
 
-   	if( rows > 0 )
-   		size.Y = rows;
-   	else
-   		size.Y = info.dwSize.Y;
+    cur = size.X | (size.Y << 16);
 
-   	rect.Left = rect.Top = 0;
-   	rect.Right = size.X - 1;
-   	if( rect.Right > max.X )
-      	rect.Right = max.X;
+    if( do_change ) {
+        SMALL_RECT rect;
+        rect.Left = rect.Top = 0;
+        rect.Right = size.X - 1;
+        if( rect.Right > max.X )
+            rect.Right = max.X;
 
-   	rect.Bottom = rect.Top + size.Y - 1;
-   	if( rect.Bottom > max.Y )
-      	rect.Bottom = max.Y;
+        rect.Bottom = rect.Top + size.Y - 1;
+        if( rect.Bottom > max.Y )
+            rect.Bottom = max.Y;
 
-	/* */
-	fb_ConsoleSetTopBotRows( rect.Top, rect.Bottom );
+        /* reset view */
+        fb_ConsoleSetTopBotRows( rect.Top, rect.Bottom );
 
-   	SetConsoleScreenBufferSize( fb_out_handle, size );
-   	SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
-
-   	/* repeat or the window will be only resized */
-   	SetConsoleScreenBufferSize( fb_out_handle, size );
-   	SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+        /* Execute this twice to handle the case where the
+         * screen buffer gets smaller than the window */
+        SetConsoleScreenBufferSize( fb_out_handle, size );
+        SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+        SetConsoleScreenBufferSize( fb_out_handle, size );
+        SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+    }
 
    	SetConsoleActiveScreenBuffer( fb_out_handle );
 

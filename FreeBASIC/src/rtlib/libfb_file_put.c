@@ -30,51 +30,87 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
+int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length, int adjust_rec_pos)
 {
-	int result;
+	int res;
 
-	if( fnum < 1 || fnum > FB_MAX_FILES )
+    if( handle==NULL )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	FB_LOCK();
-	
-	if( fb_fileTB[fnum-1].f == NULL ) {
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    FB_LOCK();
 
-	/* seek to newpos */
-	if( pos > 0 )
-	{
-		/* if in random mode, seek in reclen's */
-		if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
-			pos = (pos-1) * fb_fileTB[fnum-1].len;
-		else
-			--pos;
+    res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-		result = fseek( fb_fileTB[fnum-1].f, pos, SEEK_SET );
-		if( result != 0 ) {
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-		}
-	}
+    /* clear put back buffer for every modifying non-read operation */
+    handle->putback_size = 0;
 
-	/* do write */
-	if( fwrite( value, 1, valuelen, fb_fileTB[fnum-1].f ) != valuelen ) {
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-	}
+    /* seek to newpos */
+    if( pos > 0 ) {
+        res = fb_FileSeekEx( handle, pos );
+    }
 
-    /* if in random mode, writes must be of reclen */
-	if( fb_fileTB[fnum-1].mode == FB_FILE_MODE_RANDOM )
-	{
-		valuelen = fb_fileTB[fnum-1].len - valuelen;
-		if( valuelen > 0 )
-			fseek( fb_fileTB[fnum-1].f, valuelen, SEEK_CUR );
-	}
+    if (res==FB_RTERROR_OK) {
+        /* do write */
+        if( handle->hooks != NULL ) {
+            if( handle->hooks->pfnWrite != NULL ) {
+                res = handle->hooks->pfnWrite( handle, data, length );
+            } else {
+                res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+            }
+        } else if( handle->f != NULL ) {
+            if( fwrite( data, 1, length, handle->f ) != length ) {
+                res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+            }
+        } else {
+            /* file not open yet? */
+            res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
+    }
+
+    if (res==FB_RTERROR_OK && adjust_rec_pos) {
+        /* if in random mode, writes must be of reclen */
+        if( handle->mode == FB_FILE_MODE_RANDOM )
+        {
+            length %= handle->len;
+            length = handle->len - length;
+            if (length != 0) {
+                if( handle->hooks != NULL) {
+                    /* we use a write here because a seek might be unsupported
+                     * for the given device */
+                    int copylen;
+                    char achBuffer[512];
+                    memset(achBuffer, 0,
+                           ((length > sizeof(achBuffer)) ? sizeof(achBuffer) : length));
+                    for (;
+                         length != 0;
+                         length -= copylen)
+                    {
+                        copylen = (length < sizeof(achBuffer)) ? length : sizeof(achBuffer);
+                        res = handle->hooks->pfnWrite( handle, achBuffer, copylen );
+                        if( res!=0 )
+                            break;
+                    }
+                } else {
+                    /* otherwise, we'll simply seek to the next position */
+                    fseek( handle->f, length, SEEK_CUR );
+                }
+            }
+        }
+    }
 
 	FB_UNLOCK();
 
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+	return res;
+}
+
+/*:::::*/
+int fb_FilePutData( int fnum, long pos, const void *data, size_t length, int adjust_rec_pos)
+{
+    return fb_FilePutDataEx( FB_FILE_TO_HANDLE(fnum), pos, data, length, adjust_rec_pos );
+}
+
+/*:::::*/
+FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
+{
+	return fb_FilePutData( fnum, pos, value, valuelen, TRUE );
 }

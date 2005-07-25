@@ -1,13 +1,30 @@
 Version 0.15 Beta:
 
 [changed]
+- FBC for Win32 now automatically adds -l winspool (mjs)
+- LOCATE/CLS/WIDTH are now window-local (left/top of window = 1/1) on Win32 (mjs)
 
 
 [added]
+- OPEN VFS as the "new" QB compatible OPEN (mjs)
+  Supports CONS:, CON:, /DEV/CON, ERR:, PIPE:, LPTx:, SCRN:
+- LPRINT support (mjs)
+  Missing: - LPOS(n)
+           - WIDTH "LPTx:",n
+- comfortable string input from SCRN: (mjs)
+- Doxygen file and started documentation of RTLIB (mjs)
+- Several macros to ease FB_FILE* handling, required for *Ex() functions (mjs)
+- VIEW PRINT() now returns the top and bottom row (mjs)
+- fb_FilePutback function as a device-independent ungetc() function (mjs)
+  Required for SCRN: support.
 
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
+- "? " was never printer for LINE INPUT ""; a$ (mjs)
+- INPUT$(n) doesn't wait for a complete line any more (mjs)
+- WIDTH on Win32 returned a bad mix of Window/Screen buffer values (mjs)
+- hopefully fixed the PAD problem for PRINT, not sure though (mjs)
 
 
 Version 0.14 Beta:

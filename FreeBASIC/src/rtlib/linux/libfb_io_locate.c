@@ -70,8 +70,6 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 	
 	BG_UNLOCK();
 
-    fb_FileSetLineLen( 0, x - 1 );
-
 	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
 }
 

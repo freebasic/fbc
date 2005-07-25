@@ -25,45 +25,68 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
 #include "fb.h"
 
 
 /*:::::*/
 void fb_ConsoleClear( int mode )
 {
+   	CONSOLE_SCREEN_BUFFER_INFO info;
+    int     width, lines;
 
-    DWORD 	written;
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    int		chars, toprow, botrow;
-    COORD	startcoord;
+    /* This is the view in screen buffer coordinates (1-based) */
+    int		view_left, view_top, view_right, view_bottom;
+
+    /* This is the window in screen buffer coordinates (1-based) */
+    int     win_left, win_top, win_right, win_bottom;
 
     GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
-    fb_ConsoleGetView( &toprow, &botrow );
+    fb_ConsoleGetWindow( &win_left, &win_top, &win_right, &win_bottom );
+    win_right += win_left - 1;
+    win_bottom += win_top - 1;
 
 	if( (mode == 1) || (mode == 0xFFFF0000) )	/* same as gfxlib's DEFAULT_COLOR */
-	{
-    	startcoord.X = 0;
-    	startcoord.Y = toprow - 1;
-
-	    chars = info.dwSize.X * (botrow - toprow + 1);
-
-    }
-    else
     {
-    	startcoord.X = 0;
-    	startcoord.Y = 0;
+        /* Just fill the view */
 
-    	chars = info.dwSize.X * info.dwSize.Y;
+        fb_ConsoleGetView( &view_top, &view_bottom );
+
+        /* Translate the rows of the view to screen buffer coordinates (1-based) */
+#if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+        view_top += win_top - 1;
+        view_bottom += win_top - 1;
+#endif
+
+#if FB_CON_BOUNDS==1
+        view_left = win_left;
+        view_right = win_right;
+#else
+        view_left = 1;
+        view_right = info.dwSize.X;
+#endif
+
+    } else {
+        /* Fill the whole window? */
+        view_top = win_top;
+        view_left = win_left;
+        view_right = win_right;
+        view_bottom = win_bottom;
     }
 
+    assert(view_left <= view_right);
+    assert(view_top <= view_bottom);
 
-    FillConsoleOutputAttribute( fb_out_handle, info.wAttributes, chars, startcoord, &written);
+    width = view_right - view_left + 1;
+    lines = view_bottom - view_top + 1;
 
-    FillConsoleOutputCharacter( fb_out_handle, ' ', chars, startcoord, &written );
+    while (lines--) {
+        DWORD written;
+        COORD coord = { view_left - 1, view_top + lines - 1 };
+        FillConsoleOutputAttribute( fb_out_handle, info.wAttributes, width, coord, &written);
+        FillConsoleOutputCharacter( fb_out_handle, ' ', width, coord, &written );
+    }
 
-    fb_ConsoleLocate( toprow, 1, -1 );
-
+    fb_ConsoleLocate( view_top - win_top + 1, 1, -1 );
 }
-
-

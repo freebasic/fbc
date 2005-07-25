@@ -22,31 +22,56 @@
  *
  * chng: nov/2004 written [v1ctor]
  *
+ *
+ * Q: does this work in gfx mode too?
  */
 
 #include "fb.h"
 
-
 /*:::::*/
-FBCALL void fb_ConsoleView( int toprow, int botrow )
+FBCALL int fb_ConsoleView( int toprow, int botrow )
 {
-   	int maxrow = fb_ConsoleGetMaxRow( ) - 1;
+    int do_update = FALSE;
+    int maxrow, minrow;
 
-   	if( toprow > 0 )
-   		--toprow;
-    else
-    	toprow = 0;
 
-   	if( botrow > 0 )
-   		--botrow;
-    else
-    	botrow = maxrow;
+#if FB_CON_BOUNDS==0 || !defined(TARGET_WIN32)
+    minrow = 1;
+    maxrow = fb_ConsoleGetMaxRow( );
+#elif FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+    minrow = 1;
+    fb_ConsoleGetWindow( NULL, NULL, NULL, &maxrow );
+#else
+    fb_ConsoleGetWindow( NULL, &minrow, NULL, &maxrow );
+    maxrow += minrow - 1;
+#endif
 
-    fb_ConsoleSetTopBotRows( toprow, botrow );
+    if( toprow > 0 ) {
+        do_update = TRUE;
+    } else if ( toprow == 0 ) {
+        do_update = TRUE;
+        toprow = minrow;
+    } else {
+        toprow = fb_ConsoleGetTopRow() + 1;
+    }
 
-    fb_ConsoleViewUpdate( );
+    if( botrow > 0 ) {
+        do_update = TRUE;
+    } else if ( botrow == 0 ) {
+        do_update = TRUE;
+        botrow = maxrow;
+    } else {
+        botrow = fb_ConsoleGetBotRow() + 1;
+    }
 
-    /* to top row */
-    fb_ConsoleLocate( toprow + 1, 1, -1 );
+    fb_ConsoleSetTopBotRows( toprow - 1, botrow - 1 );
+
+    if( do_update ) {
+        /* to top row */
+        fb_ConsoleViewUpdate( );
+        fb_Locate( toprow, 1, -1 );
+    }
+
+    return toprow + (botrow << 16);
 }
 

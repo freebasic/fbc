@@ -135,6 +135,9 @@ enum FBRTL_ENUM
 	FB_RTL_MEMCOPYCLEAR
 
 	FB_RTL_FILEOPEN
+	FB_RTL_FILEOPEN_SHORT
+	FB_RTL_FILEOPEN_VFS
+	FB_RTL_FILEOPEN_VFS_SHORT
 	FB_RTL_FILECLOSE
 	FB_RTL_FILEPUT
 	FB_RTL_FILEPUTSTR
@@ -390,7 +393,8 @@ declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
 										  byval flock as ASTNODE ptr, _
 										  byval filenum as ASTNODE ptr, _
 										  byval flen as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
+										  byval isfunc as integer, _
+                                          byval want_vfs as integer) as ASTNODE ptr
 
 declare function	rtlFileRename		( byval filename_new as ASTNODE ptr, _
 										  byval filename_old as ASTNODE ptr, _
@@ -462,7 +466,7 @@ declare sub 		rtlErrorSetNum		( byval errexpr as ASTNODE ptr )
 declare sub 		rtlErrorResume		( byval isnext as integer )
 
 declare function	rtlConsoleView		( byval topexpr as ASTNODE ptr, _
-										  byval botexpr as ASTNODE ptr ) as integer
+										  byval botexpr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function	rtlConsoleReadXY	( byval rowexpr as ASTNODE ptr, _
 										  byval columnexpr as ASTNODE ptr, _

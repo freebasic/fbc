@@ -31,7 +31,7 @@
 
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
+int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
 {
 
 	return fb_ErrorSetNum( flock(fileno(f), LOCK_EX) ? FB_RTERROR_FILEIO : FB_RTERROR_OK );
@@ -39,7 +39,7 @@ int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
+int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int size )
 {
 
 	return fb_ErrorSetNum( flock(fileno(f), LOCK_UN) ? FB_RTERROR_FILEIO : FB_RTERROR_OK );

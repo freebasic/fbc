@@ -35,31 +35,34 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
 /*:::::*/
 FBCALL int fb_FileInput( int fnum )
 {
-	FBSTRING s;
-
-	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    FB_FILE *handle = NULL;
+    FBSTRING s;
+    int res = fb_ErrorSetNum( FB_RTERROR_OK );
 
 	FB_LOCK();
 
-	if( fb_fileTB[fnum-1].f == NULL ) {
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    handle = FB_FILE_TO_HANDLE(fnum);
+    if( handle==NULL || (handle->f == NULL && handle->hooks==NULL) ) {
+        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
-	FB_TLSSET(fb_inpctx.f, fb_fileTB[fnum-1].f);
+    if( res == FB_RTERROR_OK ) {
+        FB_TLSSET( fb_inpctx.handle, handle);
+        FB_TLSSET( fb_inpctx.status, 0);
 
-	s.data = (char *)FB_TLSGET( fb_inpctx.s.data );
-	s.len  = (int)FB_TLSGET( fb_inpctx.s.len );
-	s.size = (int)FB_TLSGET( fb_inpctx.s.size );
-	fb_StrDelete( &s );
-	FB_TLSSET( fb_inpctx.s.data, 0 );
-	FB_TLSSET( fb_inpctx.s.len, 0 );
-	FB_TLSSET( fb_inpctx.s.size, 0 );
+        s.data = (char *)FB_TLSGET( fb_inpctx.s.data );
+        s.len  = (int)FB_TLSGET( fb_inpctx.s.len );
+        s.size = (int)FB_TLSGET( fb_inpctx.s.size );
+        fb_StrDelete( &s );
+
+        FB_TLSSET( fb_inpctx.s.data, 0 );
+        FB_TLSSET( fb_inpctx.s.len, 0 );
+        FB_TLSSET( fb_inpctx.s.size, 0 );
+    }
 
 	FB_UNLOCK();
 
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+	return res;
 }
 
 /*:::::*/
@@ -68,7 +71,8 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 	FBSTRING s;
 	int res;
 
-	FB_TLSSET( fb_inpctx.f, 0 );
+	FB_TLSSET( fb_inpctx.handle, 0 );
+	FB_TLSSET( fb_inpctx.status, 0);
 	FB_TLSSET( fb_inpctx.i, 0 );
 	s.data = (char *)FB_TLSGET( fb_inpctx.s.data );
 	s.len  = (int)FB_TLSGET( fb_inpctx.s.len );
@@ -178,13 +182,20 @@ FBCALL int fb_InputString( void *dst, int strlen, int fillrem )
 /*:::::*/
 static int fb_hReadChar( void )
 {
+    FB_FILE *handle = (FB_FILE*) FB_TLSGET( fb_inpctx.handle );
 	char *data;
 	int i, res;
 
-	if( FB_TLSGET( fb_inpctx.f ) )
-		return fgetc( (FILE *)FB_TLSGET( fb_inpctx.f ) );
-	else
-	{
+    if( handle ) {
+        char ch;
+        size_t len = 1;
+        res = fb_FileGetDataEx( handle, 0, &ch, &len, FALSE );
+        if( res!=FB_RTERROR_OK || len==0) {
+            return EOF;
+        }
+        return ch;
+
+    } else {
 		if( (int)FB_TLSGET( fb_inpctx.i ) >= ( (int)FB_TLSGET( fb_inpctx.s.len ) & ~FB_TEMPSTRBIT ) )
 			return EOF;
 		else {
@@ -201,12 +212,13 @@ static int fb_hReadChar( void )
 /*:::::*/
 static int fb_hUnreadChar( int c )
 {
-	int i;
+    FB_FILE *handle = (FB_FILE*) FB_TLSGET( fb_inpctx.handle );
+    int i;
 
-	if( FB_TLSGET( fb_inpctx.f ) )
-		return ungetc( c, (FILE *)FB_TLSGET( fb_inpctx.f ) );
-	else
-	{
+    if( handle!=NULL ) {
+        char ch = (char) c;
+        return fb_FilePutBackEx( handle, &ch, 1 );
+    } else {
 		i = (int)FB_TLSGET( fb_inpctx.i );
 		if( i <= 0 )
 			return 0;
@@ -300,7 +312,8 @@ static void fb_hGetNextToken( char *buffer, int maxlen, int isstring )
 		default:
 savechar:
 			*p++ = (char)c;
-			++len;
+            ++len;
+            break;
 		}
 
 		if( len >= maxlen )
@@ -331,7 +344,8 @@ savechar:
 			break;
 
 		default:
-			fb_hUnreadChar( c );
+            fb_hUnreadChar( c );
+            break;
 		}
 	}
 }

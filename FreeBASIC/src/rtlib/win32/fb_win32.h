@@ -27,6 +27,12 @@
 #ifndef __FB_WIN32_H__
 #define __FB_WIN32_H__
 
+#if defined(NOSTDCALL)
+# define FBCALL __cdecl
+#else
+# define FBCALL __stdcall
+#endif
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <io.h>

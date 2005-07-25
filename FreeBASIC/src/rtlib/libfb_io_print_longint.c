@@ -32,9 +32,9 @@
 FBCALL void fb_PrintLongint ( int fnum, long long val, int mask )
 {
 #ifdef WIN32
-    FB_PRINTNUM( fnum, val, mask, "% ", "I64d" )
+    FB_PRINTNUM( fnum, val, mask, "% ", "I64d" );
 #else
-	FB_PRINTNUM( fnum, val, mask, "% ", "lld" )
+	FB_PRINTNUM( fnum, val, mask, "% ", "lld" );
 #endif
 }
 
@@ -42,8 +42,8 @@ FBCALL void fb_PrintLongint ( int fnum, long long val, int mask )
 FBCALL void fb_PrintULongint ( int fnum, unsigned long long val, int mask )
 {
 #ifdef WIN32
-	FB_PRINTNUM( fnum, val, mask, "%", "I64u" )
+	FB_PRINTNUM( fnum, val, mask, "%", "I64u" );
 #else
-    FB_PRINTNUM( fnum, val, mask, "%", "llu" )
+    FB_PRINTNUM( fnum, val, mask, "%", "llu" );
 #endif
 }

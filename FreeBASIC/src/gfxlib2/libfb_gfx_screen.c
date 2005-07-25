@@ -184,7 +184,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_mode->device_palette = (unsigned int *)calloc(1, sizeof(int) * 256);
 		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
 		fb_mode->color_association = (unsigned char *)malloc(16);
-		fb_mode->key = (unsigned char *)calloc(1, 128);
+		fb_mode->key = (char *)calloc(1, 128);
 		fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
 
 		fb_hSetupFuncs();
@@ -247,7 +247,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 /*:::::*/
 FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate)
 {
-	const MODEINFO *info = NULL;
+    const MODEINFO *info = NULL;
+    int res;
 
 	if ((mode < 0) || (mode > NUM_MODES))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -257,14 +258,18 @@ FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refre
 		if (info->w < 0)
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
-	return set_mode(info, mode, depth, num_pages, refresh_rate, flags);
+    res = set_mode(info, mode, depth, num_pages, refresh_rate, flags);
+    if( res==FB_RTERROR_OK )
+        FB_HANDLE_SCREEN->line_length = 0;
+    return res;
 }
 
 
 /*:::::*/
 FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, int refresh_rate)
 {
-	MODEINFO info;
+    MODEINFO info;
+    int res;
 
 	if ((w <= 0) || (h <= 0))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -279,7 +284,10 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 	info.text_w = w / 8;
 	info.text_h = h / 8;
 
-	return set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
+    res = set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
+    if( res==FB_RTERROR_OK )
+        FB_HANDLE_SCREEN->line_length = 0;
+    return res;
 }
 
 

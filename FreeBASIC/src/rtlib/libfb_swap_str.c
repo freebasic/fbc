@@ -57,8 +57,8 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
         return;
 	}
 
-	FB_STRSETUP( str1, str1_size, str1_ptr, str1_len )
-	FB_STRSETUP( str2, str2_size, str2_ptr, str2_len )
+	FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
+	FB_STRSETUP_FIX( str2, str2_size, str2_ptr, str2_len );
 
 	if( (str1_ptr == NULL) || (str2_ptr == NULL) )
 		return;

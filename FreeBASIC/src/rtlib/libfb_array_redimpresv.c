@@ -103,7 +103,7 @@ int fb_ArrayRedimPresv( FBARRAY *array, int element_len, int isvarlen, int dimen
     	p->ubound 	= ubTB[i];
     }
 
-	FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff )
+	FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff );
 
 	FB_UNLOCK();
 

@@ -31,19 +31,33 @@
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
-    int col, row;
+    int col, row, end_row;
     int toprow, botrow;
 	int cols, rows;
 	int scrolloff = FALSE;
     int rowsleft, rowstoscroll;
+    int win_top, win_left;
     const char *pachText = (const char *) buffer;
 
-	fb_ConsoleGetSize( &cols, &rows );
+	fb_ConsoleGetScreenSize( &cols, &rows );
 	fb_ConsoleGetView( &toprow, &botrow );
-	fb_ConsoleGetXY( &col, &row );
+    fb_ConsoleGetXY( &col, &row );
+
+#if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+    fb_ConsoleGetWindow( &win_left, &win_top, NULL, NULL );
+    end_row = rows;
+#else
+    win_left = win_top = 1;
+    end_row = fb_ConsoleGetMaxRow();
+#endif
+
+    row += win_top - 1;
+    col += win_left - 1;
+    toprow += win_top - 1;
+    botrow += win_top - 1;
 
 	/* scrolling */
-	if( (row > botrow) && (botrow != fb_ConsoleGetMaxRow( )) )
+	if( (row > botrow) && (botrow == end_row) )
 	{
 		fb_ConsoleScroll( 1 );
 		row = botrow;
@@ -66,7 +80,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	}
 
 	/* scrolling if VIEW was set */
-	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != fb_ConsoleGetMaxRow( )) )
+	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != end_row) )
 	{
     	rowsleft = (botrow - row) /*+ 1*/;
     	rowstoscroll = 1 + (len - (cols - col + 1)) / cols;

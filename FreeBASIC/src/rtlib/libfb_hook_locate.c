@@ -25,20 +25,28 @@
  */
 
 #include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_Locate( int row, int col, int cursor )
 {
-	int res;
+    int res, start_y, end_y;
+
+    fb_ConsoleGetView(&start_y, &end_y);
+    if( row>0 && (row<start_y || row>end_y) )
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();
 
-	if( fb_hooks.locateproc )
+    if( fb_hooks.locateproc ) {
 		res = fb_hooks.locateproc( row, col, cursor );
-	else
-		res = fb_ConsoleLocate( row, col, cursor );
+    } else {
+        res = fb_ConsoleLocate( row, col, cursor );
+    }
 
-	FB_UNLOCK();
+    FB_HANDLE_SCREEN->line_length = col - 1;
+
+    FB_UNLOCK();
 
 	return res;
 }

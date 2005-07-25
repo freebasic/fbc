@@ -45,7 +45,7 @@ void fb_hEnd ( int errlevel )
 	TlsFree( fb_errctx.reslbl );
 	TlsFree( fb_errctx.resnxtlbl );
 
-	TlsFree( fb_inpctx.f );
+	TlsFree( fb_inpctx.handle );
 	TlsFree( fb_inpctx.i );
 	TlsFree( fb_inpctx.s.data );
 	TlsFree( fb_inpctx.s.len );

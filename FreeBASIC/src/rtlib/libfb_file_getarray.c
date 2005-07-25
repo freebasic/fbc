@@ -33,7 +33,7 @@
 FBCALL int fb_FileGetArray( int fnum, long pos, FBARRAY *dst )
 {
 
-	return fb_FileGet( fnum, pos, dst->ptr, dst->size );
+	return fb_FileGetData( fnum, pos, dst->ptr, dst->size, TRUE );
 
 }
 

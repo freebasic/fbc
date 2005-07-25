@@ -30,18 +30,18 @@
 #include <io.h>
 
 /*:::::*/
-int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int endpos )
+int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
 {
 	int res;
-	res = _dos_lock(fileno(f), inipos, endpos - inipos );
+	res = _dos_lock(fileno(f), inipos, size );
 	return fb_ErrorSetNum( res == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 }
 
 /*:::::*/
-int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int endpos )
+int fb_hFileUnlock( FILE *f, unsigned int inipos, unsigned int size )
 {
 	int res;
-	res = _dos_unlock(fileno(f), inipos, endpos - inipos);
+	res = _dos_unlock(fileno(f), inipos, size);
 	return fb_ErrorSetNum( res == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
 }
 

@@ -237,7 +237,7 @@ function lexPreProcessor as integer
 		function = ppEndIf( )
 
 	'' PRINT LITERAL*
-	case FB_TK_PRINT
+	case FB_TK_PRINT, FB_TK_LPRINT
 		lexSkipToken( )
 		print *hLiteral( )
 		function = TRUE

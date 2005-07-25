@@ -35,7 +35,9 @@ FBCALL void fb_Cls( int mode )
 	if( fb_hooks.clsproc )
 		fb_hooks.clsproc( mode );
 	else
-		fb_ConsoleClear( mode );
+        fb_ConsoleClear( mode );
+
+    FB_HANDLE_SCREEN->line_length = 0;
 
 	FB_UNLOCK();
 

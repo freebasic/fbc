@@ -48,7 +48,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 	}
 
 	/* src */
-	FB_STRSETUP( src, src_size, src_ptr, src_len )
+	FB_STRSETUP_FIX( src, src_size, src_ptr, src_len );
 
 	/* is dst var-len? */
 	if( dst_size == -1 )

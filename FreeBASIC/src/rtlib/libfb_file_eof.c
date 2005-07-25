@@ -30,40 +30,62 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_FileEof( int fnum )
+int fb_FileEofEx( FB_FILE *handle )
 {
-	int res;
-	
-	if( fnum < 1 || fnum > FB_MAX_FILES )
-		return FB_TRUE;
+    int res;
 
-	FB_LOCK();
+    if( handle==NULL )
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( fb_fileTB[fnum-1].f == NULL ) {
+    FB_LOCK();
+
+    if( (handle->hooks == NULL || handle->hooks->pfnEof==NULL)
+        && handle->f == NULL )
+    {
 		FB_UNLOCK();
 		return FB_TRUE;
-	}
+    }
 
-	if( fb_fileTB[fnum-1].type == FB_FILE_TYPE_NORMAL )
-	{
-		switch( fb_fileTB[fnum-1].mode )
-		{
-		case FB_FILE_MODE_BINARY:
-		case FB_FILE_MODE_RANDOM:
-			if( ftell( fb_fileTB[fnum-1].f ) >= fb_fileTB[fnum-1].size ) {
-				FB_UNLOCK();
-	        	return FB_TRUE;
-	        }
-    	    else {
-    	    	FB_UNLOCK();
-        		return FB_FALSE;
-        	}
-		}
-	}
+    if( handle->putback_size != 0 ) {
+        FB_UNLOCK();
+        return FB_FALSE;
+    }
 
-	res = (feof( fb_fileTB[fnum-1].f ) == 0? FB_FALSE: FB_TRUE);
+    if( handle->hooks!=NULL ) {
+        if( handle->hooks->pfnEof != NULL ) {
+            res = handle->hooks->pfnEof( handle );
+        } else {
+            res = FB_TRUE;
+        }
+
+    } else {
+        if( handle->type == FB_FILE_TYPE_NORMAL ) {
+            switch( handle->mode )
+            {
+            case FB_FILE_MODE_BINARY:
+            case FB_FILE_MODE_RANDOM:
+                if( ftell( handle->f ) >= handle->size ) {
+                    FB_UNLOCK();
+                    return FB_TRUE;
+                }
+                else {
+                    FB_UNLOCK();
+                    return FB_FALSE;
+                }
+            }
+        }
+
+        res = (feof( handle->f ) == 0? FB_FALSE: FB_TRUE);
+    }
+
 	FB_UNLOCK();
 
 	return res;
+}
+
+/*:::::*/
+FBCALL int fb_FileEof( int fnum )
+{
+    return fb_FileEofEx(FB_FILE_TO_HANDLE(fnum));
 }
 

@@ -63,7 +63,7 @@ void fb_ArraySetDesc( FBARRAY *array, void *ptr, int element_len, int dimensions
 
     array->ptr 	= ptr;
 
-    FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff )
+    FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
 
     FB_UNLOCK();
 }

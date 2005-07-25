@@ -253,7 +253,7 @@ FBSTRING *fb_ConsoleInkey2(void)
 			key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
 			res = (FBSTRING *)fb_hStrAllocTmpDesc();
 			fb_hStrAllocTemp(res, 2);
-			res->data[0] = 0xFF;
+			res->data[0] = FB_EXT_CHAR;
 			res->data[1] = code[key];
 			res->data[2] = '\0';
 

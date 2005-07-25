@@ -114,7 +114,7 @@ FBARRAY *fb_ArrayAllocTempDesc( FBARRAY **pdesc, void *arraydata, int element_le
 
     	array->ptr = arraydata;
 
-    	FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff )
+    	FB_ARRAY_SETDESC( array, element_len, dimensions, elements * element_len, diff );
     }
 
     FB_UNLOCK();

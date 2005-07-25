@@ -60,7 +60,7 @@ void fb_hInit ( int argc, char **argv )
 	fb_errctx.resnxtlbl = TlsAlloc();
 
 	/* allocate thread local storage vars for input context */
-	fb_inpctx.f         = TlsAlloc();
+	fb_inpctx.handle    = TlsAlloc();
 	fb_inpctx.i         = TlsAlloc();
 	fb_inpctx.s.data    = TlsAlloc();
 	fb_inpctx.s.len     = TlsAlloc();
@@ -75,7 +75,6 @@ void fb_hInit ( int argc, char **argv )
 	
 	/* allocate thread local storage var for dir context */
 	fb_dirctx           = TlsAlloc();
-
 #endif
 
     /* call default CRT0 constructors (only required for Win32) */

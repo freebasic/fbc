@@ -31,8 +31,10 @@
 /*:::::*/
 FBCALL int fb_FilePutArray( int fnum, long pos, FBARRAY *src )
 {
+    /* Q @ v1ctor: is this valid for string arrays too?
+     */
 
-	return fb_FilePut( fnum, pos, src->ptr, src->size );
+	return fb_FilePutData( fnum, pos, src->ptr, src->size, TRUE );
 
 }
 

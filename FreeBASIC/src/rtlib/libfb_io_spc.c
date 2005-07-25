@@ -29,9 +29,14 @@
 /*:::::*/
 FBCALL void fb_PrintTab( int fnum, int newcol )
 {
-	int col, row, cols, rows;
+    FB_FILE *handle;
+    int col, row, cols, rows;
 
-	if( fnum == 0 )
+    FB_LOCK();
+
+    handle = FB_FILE_TO_HANDLE(fnum);
+
+	if( FB_HANDLE_IS_SCREEN(handle) )
 	{
 		fb_GetXY( &col, &row );
 		fb_GetSize( &cols, &rows );
@@ -48,15 +53,22 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
     	else
     		fb_Locate( -1, newcol, -1 );
     }
+
+    FB_UNLOCK();
 }
 
 
 /*:::::*/
 FBCALL void fb_PrintSPC( int fnum, int n )
 {
+    FB_FILE *handle;
 	int col, row, cols, rows, newcol;
 
-	if( fnum == 0 )
+    FB_LOCK();
+
+    handle = FB_FILE_TO_HANDLE(fnum);
+
+	if( FB_HANDLE_IS_SCREEN(handle) )
 	{
 		if( n == 0 )
 			return;

@@ -27,32 +27,37 @@
 #include <stdio.h>
 #include "fb.h"
 
-#define FB_WRITENUM(fnum, val, mask, type) 				\
-    char buffer[80];									\
-    													\
-    if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, type FB_NEWLINE, val );       	\
-    else												\
-    	sprintf( buffer, type ",", val );               \
-    													\
-    if( fnum == 0 )										\
-    	fb_PrintBuffer( buffer, mask );					\
-    else												\
-    	fb_hFilePrintBuffer( fnum, buffer );
+#define FB_WRITENUM_EX(handle, val, mask, type )            \
+    do {                                                    \
+        char buffer[80];									\
+        size_t len;                                         \
+                                                            \
+        if( mask & FB_PRINT_NEWLINE )           			\
+            len = sprintf( buffer, type FB_NEWLINE, val );  \
+        else												\
+            len = sprintf( buffer, type ",", val );         \
+                                                            \
+        fb_hFilePrintBufferEx( handle, buffer, len );	    \
+    } while (0)
 
+#define FB_WRITENUM(fnum, val, mask, type) 				    \
+    FB_WRITENUM_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
-#define FB_WRITESTR(fnum, val, mask, type) 				\
-    char buffer[80*25+1];								\
-    													\
-    if( mask & FB_PRINT_NEWLINE )           			\
-    	sprintf( buffer, type FB_NEWLINE, val );       	\
-    else												\
-    	sprintf( buffer, type ",", val );               \
-    													\
-    if( fnum == 0 )										\
-    	fb_PrintBuffer( buffer, mask );					\
-    else												\
-    	fb_hFilePrintBuffer( fnum, buffer );
+#define FB_WRITESTR_EX(handle, val, mask, type) 			\
+    do {                                                    \
+        char buffer[80*25+1];								\
+        size_t len;             							\
+                                                            \
+        if( mask & FB_PRINT_NEWLINE )           			\
+            len = sprintf( buffer, type FB_NEWLINE, val );  \
+        else												\
+            len = sprintf( buffer, type ",", val );         \
+                                                            \
+        fb_hFilePrintBufferEx( handle, buffer, len );       \
+    } while (0)
+
+#define FB_WRITESTR(fnum, val, mask, type) 				    \
+    FB_WRITESTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
 
 /*:::::*/
@@ -70,60 +75,63 @@ FBCALL void fb_WriteVoid ( int fnum, int mask )
     	buffer = NULL;
 
     if( buffer != NULL )
-    {
-    	if( fnum == 0 )
-    		fb_PrintBuffer( buffer, mask );
-    	else
-    		fb_hFilePrintBuffer( fnum, buffer );
-    }
+        FB_PRINT(fnum, buffer, mask);
 }
 
 /*:::::*/
 FBCALL void fb_WriteByte ( int fnum, char val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%d" )
+    FB_WRITENUM( fnum, val, mask, "%d" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteUByte ( int fnum, unsigned char val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%u" )
+    FB_WRITENUM( fnum, val, mask, "%u" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteShort ( int fnum, short val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%hd" )
+    FB_WRITENUM( fnum, val, mask, "%hd" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteUShort ( int fnum, unsigned short val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%hu" )
+    FB_WRITENUM( fnum, val, mask, "%hu" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteInt ( int fnum, int val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%d" )
+    FB_WRITENUM( fnum, val, mask, "%d" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteUInt ( int fnum, unsigned int val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%u" )
+    FB_WRITENUM( fnum, val, mask, "%u" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteLongint ( int fnum, long long val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%lld" )
+#ifdef TARGET_WIN32
+    FB_WRITENUM( fnum, val, mask, "%I64d" );
+#else
+    FB_WRITENUM( fnum, val, mask, "%lld" );
+#endif
 }
 
 /*:::::*/
 FBCALL void fb_WriteULongint ( int fnum, unsigned long long val, int mask )
 {
-    FB_WRITENUM( fnum, val, mask, "%llu" )
+#ifdef TARGET_WIN32
+    FB_WRITENUM( fnum, val, mask, "%I64u" );
+#else
+    FB_WRITENUM( fnum, val, mask, "%llu" );
+#endif
 }
 
 /*:::::*/
@@ -151,7 +159,7 @@ FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
     	fb_WriteVoid( fnum, mask );
     else
     {
-    	FB_WRITESTR( fnum, s->data, mask, "\"%s\"" )
+    	FB_WRITESTR( fnum, s->data, mask, "\"%s\"" );
     }
 
 	/* del if temp */
@@ -165,6 +173,6 @@ FBCALL void fb_WriteFixString ( int fnum, char *s, int mask )
     	fb_WriteVoid( fnum, mask );
     else
     {
-    	FB_WRITESTR( fnum, s, mask, "%s" )
+    	FB_WRITESTR( fnum, s, mask, "%s" );
     }
 }

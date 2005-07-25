@@ -90,10 +90,9 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
     }
 
     /* set descriptor */
-    FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff )
+    FB_ARRAY_SETDESC( array, element_len, dimensions, size, diff );
 
 	FB_UNLOCK();
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-

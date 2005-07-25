@@ -63,6 +63,10 @@ void fb_CallDTORS(void)
     }
 }
 
+/* the VFS init must not be declared globally ... only required during
+ * initialization */
+void fb_VfsInitMini(void);
+
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {
@@ -72,10 +76,8 @@ FBCALL void fb_Init ( int argc, char **argv )
 	/* os-dep initialization */
     fb_hInit( argc, argv );
 
-#if 0
-    /* initialize the file handle for direct screen/keyboard access */
-    fb_VfsInitScreen();
-#endif
+    /* initialize all the VFS stuff */
+    fb_VfsInitMini();
 
     /* call all freebasic constructor functions */
     fb_CallCTORS();
