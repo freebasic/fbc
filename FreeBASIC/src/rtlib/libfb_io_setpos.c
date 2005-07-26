@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_SetPos( FB_FILE *handle, int line_length )
