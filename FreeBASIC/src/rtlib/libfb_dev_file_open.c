@@ -54,7 +54,7 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     FB_LOCK();
 
     str_len = filename_len;
-    fname = (char*) alloca(str_len);
+    fname = (char*) alloca(str_len + 1);
     memcpy(fname, filename, str_len);
     fname[str_len] = 0;
 

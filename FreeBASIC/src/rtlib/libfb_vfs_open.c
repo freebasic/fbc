@@ -106,6 +106,8 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
             result = handle->hooks->pfnTell(handle, &handle->size);
             break;
         }
+    } else {
+        memset(handle, 0, sizeof(FB_FILE));
     }
 
     FB_UNLOCK();
