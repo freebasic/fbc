@@ -550,7 +550,7 @@ function cPrintStmt as integer
 			exit function
 		end if
 
-		if( not rtlPrintUsingInit( usingexpr ) ) then
+		if( not rtlPrintUsingInit( usingexpr, islprint ) ) then
 			exit function
 		end if
     end if
@@ -595,12 +595,12 @@ function cPrintStmt as integer
     	if( (not iscomma) and (not issemicolon) and (expr = NULL) ) then
     		if( usingexpr = NULL ) then
     			if( expressions = 0 ) then
-    				if( not rtlPrint( filexprcopy, FALSE, FALSE, NULL ) ) then
+    				if( not rtlPrint( filexprcopy, FALSE, FALSE, NULL, islprint ) ) then
 						exit function
 					end if
     			end if
     		else
-    			if( not rtlPrintUsingEnd( filexprcopy ) ) then
+    			if( not rtlPrintUsingEnd( filexprcopy, islprint ) ) then
 					exit function
 				end if
     		end if
@@ -610,22 +610,22 @@ function cPrintStmt as integer
 
     	if( usingexpr = NULL ) then
     		if( isspc ) then
-    			if( not rtlPrintSPC( filexprcopy, expr ) ) then
+    			if( not rtlPrintSPC( filexprcopy, expr, islprint ) ) then
 					exit function
 				end if
     		elseif( istab ) then
-    			if( not rtlPrintTab( filexprcopy, expr ) ) then
+    			if( not rtlPrintTab( filexprcopy, expr, islprint ) ) then
 					exit function
 				end if
     		else
-    			if( not rtlPrint( filexprcopy, iscomma, issemicolon, expr ) ) then
+    			if( not rtlPrint( filexprcopy, iscomma, issemicolon, expr, islprint ) ) then
 					hReportError FB_ERRMSG_INVALIDDATATYPES
 					exit function
 				end if
     		end if
 
     	else
-    		if( not rtlPrintUsing( filexprcopy, expr, iscomma, issemicolon ) ) then
+    		if( not rtlPrintUsing( filexprcopy, expr, iscomma, issemicolon, islprint ) ) then
     			hReportError FB_ERRMSG_INVALIDDATATYPES
 				exit function
 			end if
@@ -1144,40 +1144,71 @@ end function
 private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr filenum, filename, fmode, faccess, flock, flen
     dim as integer short_form
-	dim as integer file_mode, access_mode, lock_mode, record_len, want_vfs
+	dim as integer file_mode, access_mode, lock_mode, record_len
+    dim as FBOPENKIND open_kind
 
 	function = NULL
 
-    want_vfs = FALSE
+    open_kind = FB_FILE_TYPE_FILE
+
     short_form = FALSE
+
+	select case ucase$( *lexGetText( ) )
+    case "CONS"
+		lexSkipToken( )
+    	open_kind = FB_FILE_TYPE_CONS
+    case "ERR"
+		lexSkipToken( )
+        open_kind = FB_FILE_TYPE_ERR
+    case "PIPE"
+		lexSkipToken( )
+        open_kind = FB_FILE_TYPE_PIPE
+    case "SCRN"
+		lexSkipToken( )
+        open_kind = FB_FILE_TYPE_SCRN
+    case "LPT"
+		lexSkipToken( )
+    	open_kind = FB_FILE_TYPE_LPT
+    end select
 
 	if( isfunc ) then
 		'' '('
 		hMatchLPRNT( )
 	end if
 
-	if( ucase$( *lexGetText( ) ) = "VFS" ) then
-		lexSkipToken( )
-        want_vfs = TRUE
-    end if
+    select case open_kind
+    case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT
+        '' a filename is only valid for some file types
 
-	hMatchExpression( filename )
+		hMatchExpression( filename )
 
-	if( isfunc ) then
-		'' ','?
-		hMatch( CHAR_COMMA )
-
-        select case lexGetToken
-        case FB_TK_FOR, FB_TK_ACCESS, FB_TK_AS
-        case else
-        	short_form = TRUE
-        end select
-    else
-        if( hMatch( CHAR_COMMA ) ) then
-            '' ',' -> indicates the short form
-            short_form = TRUE
+        if( isfunc ) then
+            '' ','?
+            hMatch( CHAR_COMMA )
         end if
-	end if
+
+        ' only test for short OPEN form when using the "normal" OPEN
+        if open_kind = FB_FILE_TYPE_FILE then
+	        if( isfunc ) then
+                select case lexGetToken
+                case FB_TK_FOR, FB_TK_ACCESS, FB_TK_AS
+                case else
+                    short_form = TRUE
+                end select
+	        else
+	            if( hMatch( CHAR_COMMA ) ) then
+	                '' ',' -> indicates the short form
+	                short_form = TRUE
+	            end if
+            end if
+        end if
+    
+    case else
+
+        ' no file name provided for this kind of OPEN statmenets
+    	filename = astNewCONSTs( "" )
+
+    end select
 
     if( short_form ) then
         '' file mode ("I"|"O"|"A"|"B"|"R")
@@ -1327,7 +1358,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
     end if
 
 	''
-	function = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen, isfunc, want_vfs )
+	function = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen, isfunc, open_kind )
 
 end function
 

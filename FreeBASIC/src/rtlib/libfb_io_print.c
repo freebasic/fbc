@@ -66,23 +66,3 @@ FBCALL void fb_PrintString ( int fnum, FBSTRING *s, int mask )
 {
     fb_PrintStringEx(FB_FILE_TO_HANDLE(fnum), s, mask);
 }
-
-/*:::::*/
-void fb_PrintFixStringEx ( FB_FILE *handle, const char *s, int mask )
-{
-    if( handle==NULL) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return;
-    }
-
-    if( s == NULL )
-    	fb_PrintVoidEx( handle, mask );
-    else
-    	fb_hPrintStrEx( handle, s, strlen( s ), mask );
-}
-
-/*:::::*/
-FBCALL void fb_PrintFixString ( int fnum, const char *s, int mask )
-{
-    fb_PrintFixStringEx(FB_FILE_TO_HANDLE(fnum), s, mask);
-}

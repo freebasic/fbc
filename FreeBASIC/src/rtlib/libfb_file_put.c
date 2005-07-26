@@ -53,18 +53,9 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
 
     if (res==FB_RTERROR_OK) {
         /* do write */
-        if( handle->hooks != NULL ) {
-            if( handle->hooks->pfnWrite != NULL ) {
-                res = handle->hooks->pfnWrite( handle, data, length );
-            } else {
-                res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-            }
-        } else if( handle->f != NULL ) {
-            if( fwrite( data, 1, length, handle->f ) != length ) {
-                res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
-            }
+        if( handle->hooks->pfnWrite != NULL ) {
+            res = handle->hooks->pfnWrite( handle, data, length );
         } else {
-            /* file not open yet? */
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
@@ -76,25 +67,20 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
             length %= handle->len;
             length = handle->len - length;
             if (length != 0) {
-                if( handle->hooks != NULL) {
-                    /* we use a write here because a seek might be unsupported
-                     * for the given device */
-                    int copylen;
-                    char achBuffer[512];
-                    memset(achBuffer, 0,
-                           ((length > sizeof(achBuffer)) ? sizeof(achBuffer) : length));
-                    for (;
-                         length != 0;
-                         length -= copylen)
-                    {
-                        copylen = (length < sizeof(achBuffer)) ? length : sizeof(achBuffer);
-                        res = handle->hooks->pfnWrite( handle, achBuffer, copylen );
-                        if( res!=0 )
-                            break;
-                    }
-                } else {
-                    /* otherwise, we'll simply seek to the next position */
-                    fseek( handle->f, length, SEEK_CUR );
+                /* we use a write here because a seek might be unsupported
+                 * for the given device */
+                int copylen;
+                char achBuffer[512];
+                memset(achBuffer, 0,
+                       ((length > sizeof(achBuffer)) ? sizeof(achBuffer) : length));
+                for (;
+                     length != 0;
+                     length -= copylen)
+                {
+                    copylen = (length < sizeof(achBuffer)) ? length : sizeof(achBuffer);
+                    res = handle->hooks->pfnWrite( handle, achBuffer, copylen );
+                    if( res!=0 )
+                        break;
                 }
             }
         }

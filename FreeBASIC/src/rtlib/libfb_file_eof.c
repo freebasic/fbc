@@ -39,9 +39,7 @@ int fb_FileEofEx( FB_FILE *handle )
 
     FB_LOCK();
 
-    if( (handle->hooks == NULL || handle->hooks->pfnEof==NULL)
-        && handle->f == NULL )
-    {
+    if( handle->hooks == NULL || handle->hooks->pfnEof==NULL ) {
 		FB_UNLOCK();
 		return FB_TRUE;
     }
@@ -51,31 +49,10 @@ int fb_FileEofEx( FB_FILE *handle )
         return FB_FALSE;
     }
 
-    if( handle->hooks!=NULL ) {
-        if( handle->hooks->pfnEof != NULL ) {
-            res = handle->hooks->pfnEof( handle );
-        } else {
-            res = FB_TRUE;
-        }
-
+    if( handle->hooks->pfnEof != NULL ) {
+        res = handle->hooks->pfnEof( handle );
     } else {
-        if( handle->type == FB_FILE_TYPE_NORMAL ) {
-            switch( handle->mode )
-            {
-            case FB_FILE_MODE_BINARY:
-            case FB_FILE_MODE_RANDOM:
-                if( ftell( handle->f ) >= handle->size ) {
-                    FB_UNLOCK();
-                    return FB_TRUE;
-                }
-                else {
-                    FB_UNLOCK();
-                    return FB_FALSE;
-                }
-            }
-        }
-
-        res = (feof( handle->f ) == 0? FB_FALSE: FB_TRUE);
+        res = FB_TRUE;
     }
 
 	FB_UNLOCK();

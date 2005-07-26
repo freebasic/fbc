@@ -43,14 +43,10 @@ FBCALL void fb_FileReset ( void )
 
     for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) {
         FB_FILE *handle = FB_FILE_TO_HANDLE(i);
-        if (handle->hooks != NULL) {
+        if (handle->hooks!=NULL) {
             assert(handle->hooks->pfnClose!=NULL);
             handle->hooks->pfnClose( handle );
-        } else if( handle->f != NULL ) {
-			if( handle->type == FB_FILE_TYPE_NORMAL )
-				fclose( handle->f );
-			handle->f = NULL;
-		}
+        }
     }
     /* clear all file handles */
     memset(FB_FILE_TO_HANDLE(1),

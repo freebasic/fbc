@@ -50,19 +50,11 @@ int fb_FileLockEx( FB_FILE *handle, unsigned int inipos, unsigned int endpos )
         --endpos;
     }
 
-    if( handle->hooks != NULL) {
-        if( handle->hooks->pfnLock != NULL) {
-            res = handle->hooks->pfnLock( handle, inipos-1, endpos - inipos );
-        } else {
-            res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-
-    } else if ( handle->f != NULL ) {
-        res = fb_hFileLock( handle->f, inipos, endpos - inipos );
-
+    if( handle->hooks->pfnLock != NULL) {
+        res = handle->hooks->pfnLock( handle, inipos-1, endpos - inipos );
     } else {
-		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
 	FB_UNLOCK();
 
@@ -100,9 +92,6 @@ int fb_FileUnlockEx( FB_FILE *handle, unsigned int inipos, unsigned int endpos )
         } else {
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
-
-    } else if( handle->f != NULL ) {
-        res = fb_hFileUnlock( handle->f, inipos, endpos - inipos );
 
     } else {
 		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

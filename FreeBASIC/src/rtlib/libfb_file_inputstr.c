@@ -41,7 +41,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 	FB_LOCK();
 
     handle = FB_FILE_TO_HANDLE(fnum);
-	if( handle==NULL || (handle->f == NULL && handle->hooks==NULL) ) {
+	if( handle==NULL ) {
 		FB_UNLOCK();
 		return &fb_strNullDesc;
 	}

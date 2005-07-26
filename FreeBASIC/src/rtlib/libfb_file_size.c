@@ -41,25 +41,21 @@ unsigned int fb_FileSizeEx( FB_FILE *handle )
 
 	FB_LOCK();
 
-    if (handle->hooks!=NULL) {
-        if (handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL) {
-            long old_pos;
-            /* remember old position */
-            int result = handle->hooks->pfnTell(handle, &old_pos);
-            if (result==0) {
-                /* move to end of file */
-                result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
-            }
-            if (result==0) {
-                /* get size */
-                result = handle->hooks->pfnTell(handle, &res);
-                /* restore old position*/
-                handle->hooks->pfnSeek(handle, old_pos, SEEK_SET);
-            }
+    if (handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL) {
+        long old_pos;
+        /* remember old position */
+        int result = handle->hooks->pfnTell(handle, &old_pos);
+        if (result==0) {
+            /* move to end of file */
+            result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
         }
-    } else if( handle->f != NULL ) {
-        res = fb_hFileSize( handle->f );
-	}
+        if (result==0) {
+            /* get size */
+            result = handle->hooks->pfnTell(handle, &res);
+            /* restore old position*/
+            handle->hooks->pfnSeek(handle, old_pos, SEEK_SET);
+        }
+    }
 
 	FB_UNLOCK();
 

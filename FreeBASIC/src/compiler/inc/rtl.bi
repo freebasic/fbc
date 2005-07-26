@@ -17,6 +17,7 @@
 
 
 #include once "inc\ast.bi"
+#include once "inc\fbint.bi"
 
 enum FBRTL_ENUM
 	FB_RTL_STRCONCAT
@@ -105,6 +106,20 @@ enum FBRTL_ENUM
 	FB_RTL_PRINTSINGLE
 	FB_RTL_PRINTDOUBLE
 	FB_RTL_PRINTSTR
+
+	FB_RTL_LPRINTVOID
+	FB_RTL_LPRINTBYTE
+	FB_RTL_LPRINTUBYTE
+	FB_RTL_LPRINTSHORT
+	FB_RTL_LPRINTUSHORT
+	FB_RTL_LPRINTINT
+	FB_RTL_LPRINTUINT
+	FB_RTL_LPRINTLONGINT
+	FB_RTL_LPRINTULONGINT
+	FB_RTL_LPRINTSINGLE
+	FB_RTL_LPRINTDOUBLE
+	FB_RTL_LPRINTSTR
+
 	FB_RTL_PRINTSPC
 	FB_RTL_PRINTTAB
 
@@ -126,6 +141,8 @@ enum FBRTL_ENUM
 	FB_RTL_PRINTUSGVAL
 	FB_RTL_PRINTUSGEND
 
+	FB_RTL_LPRINTUSGINIT
+
 	FB_RTL_CONSOLEVIEW
 	FB_RTL_CONSOLEREADXY
 
@@ -136,8 +153,11 @@ enum FBRTL_ENUM
 
 	FB_RTL_FILEOPEN
 	FB_RTL_FILEOPEN_SHORT
-	FB_RTL_FILEOPEN_VFS
-	FB_RTL_FILEOPEN_VFS_SHORT
+	FB_RTL_FILEOPEN_CONS
+	FB_RTL_FILEOPEN_ERR
+	FB_RTL_FILEOPEN_PIPE
+	FB_RTL_FILEOPEN_SCRN
+	FB_RTL_FILEOPEN_LPT
 	FB_RTL_FILECLOSE
 	FB_RTL_FILEPUT
 	FB_RTL_FILEPUTSTR
@@ -370,26 +390,32 @@ declare function 	rtlMemCopyClear		( byval dstexpr as ASTNODE ptr, _
 declare function	rtlPrint			( byval fileexpr as ASTNODE ptr, _
 										  byval iscomma as integer, _
 										  byval issemicolon as integer, _
-										  byval expr as ASTNODE ptr ) as integer
+										  byval expr as ASTNODE ptr, _
+                                          byval islprint as integer = FALSE ) as integer
 
 declare function	rtlPrintSPC			( byval fileexpr as ASTNODE ptr, _
-										  byval expr as ASTNODE ptr ) as integer
+										  byval expr as ASTNODE ptr, _
+                                          byval islprint as integer = FALSE ) as integer
 
 declare function	rtlPrintTab			( byval fileexpr as ASTNODE ptr, _
-										  byval expr as ASTNODE ptr ) as integer
+										  byval expr as ASTNODE ptr, _
+                                          byval islprint as integer = FALSE ) as integer
 
 declare function	rtlWrite			( byval fileexpr as ASTNODE ptr, _
 										  byval iscomma as integer, _
 										  byval expr as ASTNODE ptr ) as integer
 
-declare function	rtlPrintUsingInit	( byval usingexpr as ASTNODE ptr ) as integer
+declare function	rtlPrintUsingInit	( byval usingexpr as ASTNODE ptr, _
+                                          byval islprint as integer = FALSE ) as integer
 
-declare function	rtlPrintUsingEnd	( byval fileexpr as ASTNODE ptr ) as integer
+declare function	rtlPrintUsingEnd	( byval fileexpr as ASTNODE ptr, _
+                                          byval islprint as integer = FALSE ) as integer
 
 declare function	rtlPrintUsing		( byval fileexpr as ASTNODE ptr, _
 										  byval expr as ASTNODE ptr, _
 										  byval iscomma as integer, _
-										  byval issemicolon as integer ) as integer
+										  byval issemicolon as integer, _
+                                          byval islprint as integer = FALSE ) as integer
 
 declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
 										  byval fmode as ASTNODE ptr, _
@@ -398,7 +424,7 @@ declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
 										  byval filenum as ASTNODE ptr, _
 										  byval flen as ASTNODE ptr, _
 										  byval isfunc as integer, _
-                                          byval want_vfs as integer) as ASTNODE ptr
+                                          byval openkind as FBOPENKIND ) as ASTNODE ptr
 
 declare function	rtlFileRename		( byval filename_new as ASTNODE ptr, _
 										  byval filename_old as ASTNODE ptr, _

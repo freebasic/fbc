@@ -34,33 +34,19 @@
 /*:::::*/
 int fb_FileCloseEx( FB_FILE *handle )
 {
-	FB_LOCK();
+    FB_LOCK();
 
-    if (handle->hooks != NULL) {
-        /* close VFS handle */
-        assert(handle->hooks->pfnClose != NULL);
-        int result = handle->hooks->pfnClose( handle );
-        if (result != 0) {
-            FB_UNLOCK();
-            return result;
-        }
-    } else if( handle->f != NULL ) {
-		switch( handle->type )
-		{
-		case FB_FILE_TYPE_NORMAL:
-			fclose( handle->f );
-			break;
+    if( handle==NULL ) {
+        FB_UNLOCK();
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
-		case FB_FILE_TYPE_PIPE:
-
-#ifndef TARGET_XBOX
-
-			pclose( handle->f );
-
-#endif /* ifndef TARGET_XBOX */
-
-			break;
-        }
+    /* close VFS handle */
+    assert(handle->hooks->pfnClose != NULL);
+    int result = handle->hooks->pfnClose( handle );
+    if (result != 0) {
+        FB_UNLOCK();
+        return result;
     }
 
     /* clear structure */
@@ -79,10 +65,6 @@ FBCALL int fb_FileClose( int fnum )
 		fb_FileReset( );
 		return fb_ErrorSetNum( FB_RTERROR_OK );
 	}
-
-    if( !FB_FILE_INDEX_VALID(fnum) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
     return fb_FileCloseEx( FB_FILE_TO_HANDLE(fnum) );
 }
 

@@ -32,8 +32,7 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-FB_VFS_PROTOCOL *fb_protocols = NULL;
-
+#if 0
 int fb_DevScrnOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 
@@ -74,6 +73,7 @@ static void close_printer_handle(void)
         return;
     FB_HANDLE_PRINTER->hooks->pfnClose( FB_HANDLE_PRINTER );
 }
+#endif
 
 void fb_VfsInitMini(void)
 {
@@ -89,6 +89,7 @@ void fb_VfsInitMini(void)
         fb_DevScrnOpen( FB_HANDLE_SCREEN, "SCRN:", 5 );
     }
 
+#if 0
     if ( FB_HANDLE_PRINTER->hooks == NULL ) {
         memset(FB_HANDLE_PRINTER, 0, sizeof(*FB_HANDLE_PRINTER));
 
@@ -100,30 +101,7 @@ void fb_VfsInitMini(void)
     }
 
     atexit(close_printer_handle);
+#endif
 
     FB_UNLOCK();
-}
-
-int fb_ProtocolRegister ( FB_VFS_PROTOCOL *protocol )
-{
-    FB_VFS_PROTOCOL *proto;
-
-    /* check for minimum requirements */
-    assert(protocol->next==NULL);
-    assert(protocol->pfnTestProtocol!=NULL);
-    assert(protocol->pfnOpen!=NULL);
-
-    for (proto = fb_protocols;
-         proto != NULL;
-         proto = proto->next)
-    {
-        if (strcmp(proto->id, protocol->id)==0)
-            return FALSE;
-    }
-
-    /* add to chain */
-    protocol->next = fb_protocols;
-    fb_protocols = protocol;
-
-    return TRUE;
 }

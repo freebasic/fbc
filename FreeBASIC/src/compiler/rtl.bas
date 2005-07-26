@@ -639,6 +639,103 @@ data "fb_PrintString","", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+''
+'' fb_LPrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void
+data "fb_LPrintVoid","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintByte ( byval filenum as integer = 0, byval x as byte, byval mask as integer ) as void
+data "fb_LPrintByte","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_BYTE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintUByte ( byval filenum as integer = 0, byval x as ubyte, byval mask as integer ) as void
+data "fb_LPrintUByte","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_UBYTE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintShort ( byval filenum as integer = 0, byval x as short, byval mask as integer ) as void
+data "fb_LPrintShort","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_SHORT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintUShort ( byval filenum as integer = 0, byval x as ushort, byval mask as integer ) as void
+data "fb_LPrintUShort","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintInt ( byval filenum as integer = 0, byval x as integer, byval mask as integer ) as void
+data "fb_LPrintInt","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintUInt ( byval filenum as integer = 0, byval x as uinteger, byval mask as integer ) as void
+data "fb_LPrintUInt","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_UINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintLongint ( byval filenum as integer = 0, byval x as longint, byval mask as integer ) as void
+data "fb_LPrintLongint","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintULongint ( byval filenum as integer = 0, byval x as ulongint, byval mask as integer ) as void
+data "fb_LPrintULongint","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintSingle ( byval filenum as integer = 0, byval x as single, byval mask as integer ) as void
+data "fb_LPrintSingle","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintDouble ( byval filenum as integer = 0, byval x as double, byval mask as integer ) as void
+data "fb_LPrintDouble","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintString ( byval filenum as integer = 0, x as string, byval mask as integer ) as void
+data "fb_LPrintString","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' spc ( byval filenum as integer = 0, byval n as integer ) as void
 data "fb_PrintSPC","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -779,6 +876,12 @@ data "fb_PrintUsingEnd","", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' fb_LPrintUsingInit ( fmtstr as string ) as integer
+data "fb_LPrintUsingInit","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
 
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
@@ -860,9 +963,10 @@ data "fb_FileOpenShort","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
-'' fb_FileOpenVfs( s as string, byval mode as integer, byval access as integer,
+
+'' fb_FileOpenCons( s as string, byval mode as integer, byval access as integer,
 ''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
-data "fb_FileOpenVfs","", _
+data "fb_FileOpenCons","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 6, _
@@ -872,19 +976,59 @@ data "fb_FileOpenVfs","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
-'' fb_FileOpenVfsShort( mode as string, byval filenum as integer,
-''                      filename as string, byval len as integer,
-''                      access_mode as string, lock_mode as string) as integer
-data "fb_FileOpenVfsShort","", _
+
+'' fb_FileOpenErr( s as string, byval mode as integer, byval access as integer,
+''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+data "fb_FileOpenErr","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 6, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_FileOpenPipe( s as string, byval mode as integer, byval access as integer,
+''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+data "fb_FileOpenPipe","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 6, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_FileOpenScrn( s as string, byval mode as integer, byval access as integer,
+''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+data "fb_FileOpenScrn","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 6, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_FileOpenLpt( s as string, byval mode as integer, byval access as integer,
+''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+data "fb_FileOpenLpt","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 6, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_FileClose	( byval filenum as integer ) as integer
 data "fb_FileClose","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -4028,47 +4172,50 @@ end sub
 function rtlPrint( byval fileexpr as ASTNODE ptr, _
 				   byval iscomma as integer, _
 				   byval issemicolon as integer, _
-				   byval expr as ASTNODE ptr ) as integer
+				   byval expr as ASTNODE ptr, _
+                   byval islprint as integer = FALSE ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim mask as integer, args as integer
     dim dtype as integer
 
     function = FALSE
+
+    if islprint then hAddPrinterLibs
     
 	if( expr = NULL ) then
-		f = ifuncTB(FB_RTL_PRINTVOID)
+		f = ifuncTB(IIf(islprint, FB_RTL_LPRINTVOID, FB_RTL_PRINTVOID))
 		args = 2
 	else
 
 		dtype = astGetDataType( expr )
 		select case as const dtype
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-			f = ifuncTB(FB_RTL_PRINTSTR)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTSTR, FB_RTL_PRINTSTR))
 		case IR_DATATYPE_BYTE
-			f = ifuncTB(FB_RTL_PRINTBYTE)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTBYTE, FB_RTL_PRINTBYTE))
 		case IR_DATATYPE_UBYTE
-			f = ifuncTB(FB_RTL_PRINTUBYTE)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTUBYTE, FB_RTL_PRINTUBYTE))
 		case IR_DATATYPE_SHORT
-			f = ifuncTB(FB_RTL_PRINTSHORT)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTSHORT, FB_RTL_PRINTSHORT))
 		case IR_DATATYPE_USHORT
-			f = ifuncTB(FB_RTL_PRINTUSHORT)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTUSHORT, FB_RTL_PRINTUSHORT))
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
-			f = ifuncTB(FB_RTL_PRINTINT)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTINT, FB_RTL_PRINTINT))
 		case IR_DATATYPE_UINT
-			f = ifuncTB(FB_RTL_PRINTUINT)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTUINT, FB_RTL_PRINTUINT))
 		case IR_DATATYPE_LONGINT
-			f = ifuncTB(FB_RTL_PRINTLONGINT)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTLONGINT, FB_RTL_PRINTLONGINT))
 		case IR_DATATYPE_ULONGINT
-			f = ifuncTB(FB_RTL_PRINTULONGINT)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTULONGINT, FB_RTL_PRINTULONGINT))
 		case IR_DATATYPE_SINGLE
-			f = ifuncTB(FB_RTL_PRINTSINGLE)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTSINGLE, FB_RTL_PRINTSINGLE))
 		case IR_DATATYPE_DOUBLE
-			f = ifuncTB(FB_RTL_PRINTDOUBLE)
+			f = ifuncTB(IIf(islprint, FB_RTL_LPRINTDOUBLE, FB_RTL_PRINTDOUBLE))
 		case IR_DATATYPE_USERDEF
 			exit function						'' illegal
 		case else
 			if( dtype >= IR_DATATYPE_POINTER ) then
-				f = ifuncTB(FB_RTL_PRINTUINT)
+				f = ifuncTB(IIf(islprint, FB_RTL_LPRINTUINT, FB_RTL_PRINTUINT))
 				expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 			end if
 		end select
@@ -4113,11 +4260,14 @@ end function
 
 '':::::
 function rtlPrintSPC( byval fileexpr as ASTNODE ptr, _
-					  byval expr as ASTNODE ptr ) as integer static
+					  byval expr as ASTNODE ptr, _
+                      byval islprint as integer = FALSE ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = FALSE
 
+    if islprint then hAddPrinterLibs
+    
 	''
 	f = ifuncTB(FB_RTL_PRINTSPC)
     proc = astNewFUNCT( f )
@@ -4140,11 +4290,14 @@ end function
 
 '':::::
 function rtlPrintTab( byval fileexpr as ASTNODE ptr, _
-					  byval expr as ASTNODE ptr ) as integer static
+					  byval expr as ASTNODE ptr, _
+                      byval islprint as integer = FALSE ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = FALSE
 
+    if islprint then hAddPrinterLibs
+    
 	''
 	f = ifuncTB(FB_RTL_PRINTTAB)
     proc = astNewFUNCT( f )
@@ -4251,13 +4404,16 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr ) as integer static
+function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr, _
+                            byval islprint as integer = FALSE ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = FALSE
 
+    if islprint then hAddPrinterLibs
+    
 	''
-	f = ifuncTB(FB_RTL_PRINTUSGINIT)
+	f = ifuncTB(IIf(islprint,FB_RTL_LPRINTUSGINIT, FB_RTL_PRINTUSGINIT))
     proc = astNewFUNCT( f )
 
     '' fmtstr as string
@@ -4272,11 +4428,14 @@ function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr ) as integer static
+function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr, _
+                           byval islprint as integer = FALSE ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = FALSE
 
+    if islprint then hAddPrinterLibs
+    
 	''
 	f = ifuncTB(FB_RTL_PRINTUSGEND)
     proc = astNewFUNCT( f )
@@ -4296,12 +4455,15 @@ end function
 function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 						byval expr as ASTNODE ptr, _
 						byval iscomma as integer, _
-						byval issemicolon as integer ) as integer
+						byval issemicolon as integer, _
+                        byval islprint as integer = FALSE ) as integer
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim mask as integer
 
 	function = FALSE
 
+    if islprint then hAddPrinterLibs
+    
 	select case astGetDataType( expr )
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		f = ifuncTB(FB_RTL_PRINTUSGSTR)
@@ -4689,6 +4851,9 @@ function rtlWidthDev ( byval device as ASTNODE ptr, _
 
 	function = NULL
 
+    '' printer libraries are always required for width on devices
+	hAddPrinterLibs
+
 	''
 	f = ifuncTB(FB_RTL_WIDTHDEV)
     proc = astNewFUNCT( f )
@@ -5034,7 +5199,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 				      byval filenum as ASTNODE ptr, _
 				      byval flen as ASTNODE ptr, _
 				      byval isfunc as integer, _
-                      byval want_vfs as integer) as ASTNODE ptr static
+                      byval openkind as FBOPENKIND ) as ASTNODE ptr static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
     dim reslabel as FBSYMBOL ptr
 
@@ -5043,11 +5208,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
     select case astGetDataType( fmode )
     case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
         '' this is the short form of the OPEN command
-        if( want_vfs ) then
-        	f = ifuncTB(FB_RTL_FILEOPEN_VFS_SHORT)
-        else
-        	f = ifuncTB(FB_RTL_FILEOPEN_SHORT)
-        end if
+        f = ifuncTB(FB_RTL_FILEOPEN_SHORT)
         proc = astNewFUNCT( f )
     
         '' mode as string
@@ -5082,11 +5243,22 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
     
     case else
         ''
-        if( want_vfs ) then
-        	f = ifuncTB(FB_RTL_FILEOPEN_VFS)
-        else
+        select case openkind
+        case FB_FILE_TYPE_FILE
         	f = ifuncTB(FB_RTL_FILEOPEN)
-        end if
+    	case FB_FILE_TYPE_CONS
+        	f = ifuncTB(FB_RTL_FILEOPEN_CONS)
+    	case FB_FILE_TYPE_ERR
+        	f = ifuncTB(FB_RTL_FILEOPEN_ERR)
+    	case FB_FILE_TYPE_PIPE
+        	f = ifuncTB(FB_RTL_FILEOPEN_PIPE)
+    	case FB_FILE_TYPE_SCRN
+        	f = ifuncTB(FB_RTL_FILEOPEN_SCRN)
+    	case FB_FILE_TYPE_LPT
+        	f = ifuncTB(FB_RTL_FILEOPEN_LPT)
+            hAddPrinterLibs
+        end select
+
         proc = astNewFUNCT( f )
     
         '' filename as string

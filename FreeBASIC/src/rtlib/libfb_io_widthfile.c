@@ -47,7 +47,7 @@ FBCALL int fb_WidthFile( int fnum, int width )
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if( handle->hooks==NULL && handle->f==NULL ) {
+    if( handle->hooks==NULL ) {
         /* not opened yet */
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -63,6 +63,8 @@ FBCALL int fb_WidthFile( int fnum, int width )
     } else {
         if( width!=0 ) {
             handle->width = width;
+            if( handle->hooks->pfnSetWidth!=NULL )
+                handle->hooks->pfnSetWidth( handle, width );
         }
         cur = handle->width;
     }

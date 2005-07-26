@@ -70,24 +70,11 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, i
 
     if ( (res==FB_RTERROR_OK) && (length != 0) ) {
         /* do read */
-        if (handle->hooks != NULL) {
-            if( handle->hooks->pfnRead!=NULL ) {
-                size_t rlen = length;
-                res = handle->hooks->pfnRead( handle, pachData, &rlen );
-                read_count += rlen;
-            } else {
-                res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-            }
-
-        } else if( handle->f != NULL ) {
-            size_t rlen = fread( pachData, 1, length, handle->f );
-            if( rlen != length ) {
-                /* fill with nulls if at eof */
-                memset(pachData + rlen, 0, length - rlen );
-            }
+        if( handle->hooks->pfnRead!=NULL ) {
+            size_t rlen = length;
+            res = handle->hooks->pfnRead( handle, pachData, &rlen );
             read_count += rlen;
         } else {
-            /* unused file handle */
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
@@ -112,23 +99,18 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, i
                 }
             }
             if (skip_size!=0) {
-                if (handle->hooks != NULL) {
-                    /* we use a read here because a seek might be unsupported
-                     * for the given device */
-                    size_t copylen;
-                    char achBuffer[512];
-                    for (;
-                         skip_size != 0;
-                         skip_size -= copylen)
-                    {
-                        copylen = (length < sizeof(achBuffer)) ? skip_size : sizeof(achBuffer);
-                        res = handle->hooks->pfnRead( handle, achBuffer, &copylen );
-                        if( res!=0 )
-                            break;
-                    }
-                } else {
-                    /* otherwise, we'll simply seek to the next position */
-                    fseek( handle->f, skip_size, SEEK_CUR );
+                /* we use a read here because a seek might be unsupported
+                 * for the given device */
+                size_t copylen;
+                char achBuffer[512];
+                for (;
+                     skip_size != 0;
+                     skip_size -= copylen)
+                {
+                    copylen = (length < sizeof(achBuffer)) ? skip_size : sizeof(achBuffer);
+                    res = handle->hooks->pfnRead( handle, achBuffer, &copylen );
+                    if( res!=0 )
+                        break;
                 }
             }
         }

@@ -139,6 +139,8 @@ static int fb_DevScrnWrite( struct _FB_FILE *handle, const void* value, size_t v
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+#if 0
+
 static void fb_ScrnSetCursorPos( int start_x, int start_y, int cols, size_t pos )
 {
     int x = start_x + pos;
@@ -147,8 +149,15 @@ static void fb_ScrnSetCursorPos( int start_x, int start_y, int cols, size_t pos 
     fb_Locate( y, x, -1 );
 }
 
+#else
+
+int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst );
+
+#endif
+
 static int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 {
+#if 0
     int start_x, start_y, cols;
     size_t pos, len, tmp_buffer_len = 0;
     int cursor_visible;
@@ -303,13 +312,10 @@ static int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 
     /* set cursor to end of line */
     fb_ScrnSetCursorPos( start_x, start_y, cols, len );
-
     return res;
-}
-
-static int fb_DevScrnTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
-{
-    return strcasecmp(filename, "scrn:")==0;
+#else
+    return fb_DevFileReadLineDumb( NULL, dst );
+#endif
 }
 
 static const FB_FILE_HOOKS fb_hooks_dev_scrn = {
@@ -348,14 +354,4 @@ int fb_DevScrnOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
-}
-
-void fb_DevRegisterSCRN(void)
-{
-    FB_VFS_PROTOCOL *protocol =
-        (FB_VFS_PROTOCOL*) calloc(1, sizeof(FB_VFS_PROTOCOL));
-    protocol->id = "scrn";
-    protocol->pfnTestProtocol = fb_DevScrnTestProtocol;
-    protocol->pfnOpen = fb_DevScrnOpen;
-    fb_ProtocolRegister ( protocol );
 }

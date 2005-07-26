@@ -32,6 +32,8 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+
 typedef struct _DEV_LPT_INFO {
     char  *pszDevice;
     void  *hPrinter;
@@ -80,33 +82,6 @@ static int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t va
 	return res;
 }
 
-/*:::::*/
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
-{
-    size_t i;
-
-    if( strcasecmp(filename, "PRN:")==0 )
-        return TRUE;
-
-    if( filename_len < 5 )
-        return FALSE;
-    if( strncasecmp(filename, "LPT", 3)!=0 )
-        return FALSE;
-    if( filename[filename_len-1]!=':' )
-        return FALSE;
-
-    for( i = 3;
-         i != (filename_len-1);
-         ++i )
-    {
-        char ch = filename[i];
-        if( ch<'0' || ch>'9')
-            return FALSE;
-    }
-
-    return TRUE;
-}
-
 static const FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
     fb_DevLptClose,
@@ -126,6 +101,9 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     DEV_LPT_INFO *info;
     size_t i;
     int res;
+
+    if (!fb_DevLptTestProtocol( handle, filename, filename_len ))
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();
 
@@ -202,16 +180,6 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     FB_UNLOCK();
 
 	return res;
-}
-
-void fb_DevRegisterLPT(void)
-{
-    FB_VFS_PROTOCOL *protocol =
-        (FB_VFS_PROTOCOL*) calloc(1, sizeof(FB_VFS_PROTOCOL));
-    protocol->id = "lpt";
-    protocol->pfnTestProtocol = fb_DevLptTestProtocol;
-    protocol->pfnOpen = fb_DevLptOpen;
-    fb_ProtocolRegister ( protocol );
 }
 
 int fb_hSetPrinterWidth( const char *pszDevice, int width, int default_width )

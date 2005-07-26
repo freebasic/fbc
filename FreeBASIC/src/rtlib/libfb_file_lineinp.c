@@ -34,7 +34,6 @@
 
 typedef enum _eInputMode {
     eIM_Invalid,
-    eIM_Legacy,
     eIM_ReadLine,
     eIM_Read
 } eInputMode;
@@ -44,7 +43,7 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
                                 FBSTRING *text, void *dst, int dst_len,
                                 int fillrem, int addquestion, int addnewline )
 {
-	int			c, len, readlen, is_console;
+	int			len, readlen, is_console;
 	char		buffer[BUFFER_LEN];
     FBSTRING   *str_result;
     eInputMode  mode = eIM_Invalid;
@@ -56,16 +55,12 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
 
     is_console = FB_HANDLE_IS_SCREEN(handle);
 
-    if( handle->hooks != NULL ) {
-        if( handle->hooks->pfnReadLine != NULL ) {
-            mode = eIM_ReadLine;
-        } else if( handle->hooks->pfnRead != NULL &&
-                   handle->hooks->pfnEof != NULL )
-        {
-            mode = eIM_Read;
-        }
-    } else if( handle->f != NULL ) {
-        mode = eIM_Legacy;
+    if( handle->hooks->pfnReadLine != NULL ) {
+        mode = eIM_ReadLine;
+    } else if( handle->hooks->pfnRead != NULL &&
+               handle->hooks->pfnEof != NULL )
+    {
+        mode = eIM_Read;
     }
 
     FB_UNLOCK();
@@ -99,47 +94,6 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
     FB_LOCK();
 
     switch( mode ) {
-    case eIM_Legacy:
-        /* this is the old way to read a line */
-        readlen = 0;
-        do
-        {
-            if( fb_ReadString( buffer, BUFFER_LEN, handle->f ) == NULL )
-            {
-                if( readlen == 0 )
-                {
-                    /* del destine string */
-                    if( dst_len == -1 )
-                        fb_StrDelete( (FBSTRING *)dst );
-                    else
-                        *(char *)dst = '\0';
-                }
-
-                break;
-            }
-
-            len = strlen( buffer );
-
-            c = buffer[len-1];
-            if( (c == 13) || (c == 10) )
-            {
-                --len;
-                if( (c == 10) && (len > 0) )
-                    if( buffer[len-1] == 13 )
-                        --len;
-            }
-
-            buffer[len] = '\0';
-
-            if( readlen == 0 )
-                fb_StrAssign( dst, dst_len, (void *)buffer, 0, fillrem );
-            else
-                fb_StrConcatAssign( dst, dst_len, (void *)buffer, 0, fillrem );
-
-            readlen += len;
-
-        } while( len == BUFFER_LEN-1 );
-        break;
     case eIM_Read:
         /* This is the VFS-compatible way to read a line ... but it's slow */
         len = readlen = 0;

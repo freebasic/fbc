@@ -31,53 +31,6 @@
 
 
 /*:::::*/
-long fb_FileTellEx( FB_FILE *handle )
-{
-	long pos;
-
-    if( handle==NULL )
-		return 0;
-
-	FB_LOCK();
-
-    if( handle->hooks != NULL ) {
-        if (handle->hooks->pfnTell != NULL) {
-            if (handle->hooks->pfnTell( handle, &pos )!=0) {
-                pos = -1;
-            }
-        } else {
-            pos = -1;
-        }
-
-    } else if( handle->f != NULL ) {
-        pos = ftell( handle->f );
-
-    } else {
-		pos = -1;
-    }
-
-    if (pos != -1) {
-        /* Adjust real position by number of characters in put back buffer */
-        pos -= handle->putback_size;
-
-        /* if in random mode, divide by reclen */
-        if( handle->mode == FB_FILE_MODE_RANDOM )
-            pos /= handle->len;
-
-    }
-
-	FB_UNLOCK();
-
-	return pos + 1;
-}
-
-/*:::::*/
-FBCALL long fb_FileTell( int fnum )
-{
-    return fb_FileTellEx( FB_FILE_TO_HANDLE(fnum) );
-}
-
-/*:::::*/
 int fb_FileSeekEx( FB_FILE *handle, long newpos )
 {
 	int res;
@@ -95,21 +48,11 @@ int fb_FileSeekEx( FB_FILE *handle, long newpos )
     if( handle->mode == FB_FILE_MODE_RANDOM )
         newpos = newpos * handle->len;
 
-    if( handle->hooks != NULL ) {
-        if (handle->hooks->pfnSeek!=NULL) {
-            res = handle->hooks->pfnSeek(handle, newpos, SEEK_SET );
-        } else {
-            res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-
-    } else if( handle->f != NULL ) {
-        /* if in random mode, mul by reclen */
-        res = fb_ErrorSetNum( fseek( handle->f, newpos, SEEK_SET ) == 0? FB_RTERROR_OK: FB_RTERROR_FILEIO );
-
+    if (handle->hooks->pfnSeek!=NULL) {
+        res = handle->hooks->pfnSeek(handle, newpos, SEEK_SET );
     } else {
-
-		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
 	FB_UNLOCK();
 
@@ -121,40 +64,3 @@ FBCALL int fb_FileSeek( int fnum, long newpos )
 {
     return fb_FileSeekEx( FB_FILE_TO_HANDLE(fnum), newpos );
 }
-
-/*:::::*/
-long fb_FileLocationEx( FB_FILE *handle )
-{
-    long pos;
-
-    if( handle==NULL )
-		return 0;
-
-    FB_LOCK();
-
-    pos = fb_FileTellEx( handle );
-
-    if (pos != 0) {
-        --pos;
-        switch( handle->mode )
-        {
-        case FB_FILE_MODE_INPUT:
-        case FB_FILE_MODE_OUTPUT:
-            /* if in seq mode, divide by 128 (QB quirk) */
-            pos /= 128;
-            break;
-        }
-        ++pos;
-    }
-
-	FB_UNLOCK();
-
-	return pos;
-}
-
-/*:::::*/
-FBCALL long fb_FileLocation( int fnum )
-{
-    return fb_FileLocationEx( FB_FILE_TO_HANDLE(fnum) );
-}
-
