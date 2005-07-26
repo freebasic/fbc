@@ -34,7 +34,7 @@
 void fb_hFileCtx ( int doinit );
 
 #ifdef MULTITHREADED
-static int is_exiting = FALSE;
+int __fb_is_exiting = FALSE;
 #endif
 
 /* don't use the coldnames symbols */
@@ -50,7 +50,7 @@ static void fb_hFileExit( void )
 {
 
 #ifdef MULTITHREADED
-	is_exiting = TRUE;
+	__fb_is_exiting = TRUE;
 #endif
 
 	fb_hFileCtx( 0 );

@@ -31,13 +31,17 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+#ifdef MULTITHREADED
+extern int __fb_is_exiting;
+#endif
+
 /*:::::*/
 FBCALL void fb_FileReset ( void )
 {
 	int i;
 
 #ifdef MULTITHREADED
-	if (!is_exiting)
+	if (!__fb_is_exiting)
 		FB_LOCK();
 #endif
 
@@ -54,7 +58,7 @@ FBCALL void fb_FileReset ( void )
            sizeof(FB_FILE) * (FB_MAX_FILES - FB_RESERVED_FILES));
 
 #ifdef MULTITHREADED
-	if (!is_exiting)
+	if (!__fb_is_exiting)
 		FB_UNLOCK();
 #endif
 }
