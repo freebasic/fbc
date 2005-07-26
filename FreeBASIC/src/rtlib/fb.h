@@ -90,6 +90,10 @@ extern "C" {
      */
 #define FB_MAXCONDS           256
 
+    /** Use QB compatible open
+     */
+#define FB_QB_COMPATIBLE_OPEN FALSE
+
 
     /* =================================================================
      * RTLIB default values
