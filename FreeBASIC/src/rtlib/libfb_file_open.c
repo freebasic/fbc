@@ -18,7 +18,7 @@
  */
 
 /*
- *	file_open - open, close and some misc file functions
+ * file_open - open and core file functions
  *
  * chng: oct/2004 written [marzec/v1ctor]
  *
@@ -85,58 +85,6 @@ void fb_hFileCtx ( int doinit )
 }
 
 /*:::::*/
-FBCALL void fb_FileReset ( void )
-{
-	int i;
-
-#ifdef MULTITHREADED
-	if (!is_exiting)
-		FB_LOCK();
-#endif
-
-    for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) {
-        FB_FILE *handle = FB_FILE_TO_HANDLE(i);
-        if (handle->hooks != NULL) {
-            assert(handle->hooks->pfnClose!=NULL);
-            handle->hooks->pfnClose( handle );
-        } else if( handle->f != NULL ) {
-			if( handle->type == FB_FILE_TYPE_NORMAL )
-				fclose( handle->f );
-			handle->f = NULL;
-		}
-    }
-    /* clear all file handles */
-    memset(FB_FILE_TO_HANDLE(1),
-           0,
-           sizeof(FB_FILE) * (FB_MAX_FILES - FB_RESERVED_FILES));
-
-#ifdef MULTITHREADED
-	if (!is_exiting)
-		FB_UNLOCK();
-#endif
-}
-
-/*:::::*/
-FBCALL int fb_FileFree ( void )
-{
-	int i;
-
-	FB_LOCK();
-
-    for( i = 1; i < (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) {
-        FB_FILE *handle = FB_FILE_TO_HANDLE(i);
-        if (handle->hooks==NULL && handle->f==NULL) {
-			FB_UNLOCK();
-			return i;
-        }
-    }
-
-	FB_UNLOCK();
-
-	return 0;
-}
-
-/*:::::*/
 long fb_hFileSize( FILE *f )
 {
 	long cpos, size;
@@ -151,46 +99,6 @@ long fb_hFileSize( FILE *f )
 	return size;
 }
 
-/*:::::*/
-unsigned int fb_FileSizeEx( FB_FILE *handle )
-{
-	long res = 0;
-
-    if( handle==NULL )
-		return res;
-
-	FB_LOCK();
-
-    if (handle->hooks!=NULL) {
-        if (handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL) {
-            long old_pos;
-            /* remember old position */
-            int result = handle->hooks->pfnTell(handle, &old_pos);
-            if (result==0) {
-                /* move to end of file */
-                result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
-            }
-            if (result==0) {
-                /* get size */
-                result = handle->hooks->pfnTell(handle, &res);
-                /* restore old position*/
-                handle->hooks->pfnSeek(handle, old_pos, SEEK_SET);
-            }
-        }
-    } else if( handle->f != NULL ) {
-        res = fb_hFileSize( handle->f );
-	}
-
-	FB_UNLOCK();
-
-	return res;
-}
-
-/*:::::*/
-FBCALL unsigned int fb_FileSize( int fnum )
-{
-    return fb_FileSizeEx(FB_FILE_TO_HANDLE(fnum));
-}
 
 /*:::::*/
 static void getaccessmask( char *dst, int type )
@@ -251,19 +159,24 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str, unsigned int mode,
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	/* check for special file names */
 	type = FB_FILE_TYPE_NORMAL;
-    if( strcasecmp( fname, "CONS:" ) == 0
-        || strcasecmp( fname, "CON:" ) == 0
-        || strcasecmp( fname, "\\DEV\\CON" ) == 0
-      )
+	/* check for special file names */
+    if( strchr( fname, ':' ) != NULL )
     {
-		type = FB_FILE_TYPE_CONSOLE;
-    } else if( strcasecmp( fname, "ERR:" ) == 0 ) {
-		type = FB_FILE_TYPE_ERR;
-    } else if( strncasecmp( fname, "PIPE:", 5 ) == 0 ) {
-        type = FB_FILE_TYPE_PIPE;
-    }
+	    if( strcasecmp( fname, "CONS:" ) == 0 || 
+	        strcasecmp( fname, "CON:" ) == 0 )
+	    {
+			type = FB_FILE_TYPE_CONSOLE;
+	    } 
+	    else if( strcasecmp( fname, "ERR:" ) == 0 ) 
+	    {
+			type = FB_FILE_TYPE_ERR;
+	    } 
+	    else if( strncasecmp( fname, "PIPE:", 5 ) == 0 ) 
+	    {
+	        type = FB_FILE_TYPE_PIPE;
+	    }
+	}
 
 	accesstype = (access != FB_FILE_ACCESS_ANY? access: FB_FILE_ACCESS_READWRITE);
 
@@ -401,7 +314,7 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str, unsigned int mode,
 	handle->f    	 = f;
 	handle->mode 	 = mode;
 	handle->type 	 = type;
-	handle->access = accesstype;
+	handle->access   = accesstype;
 	handle->line_length = 0;
 
 	/* reclen */
@@ -450,161 +363,3 @@ FBCALL int fb_FileOpen( FBSTRING *str, unsigned int mode, unsigned int access,
 	return fb_FileOpenEx( FB_FILE_TO_HANDLE(fnum), str, mode, access, lock, len );
 }
 
-/*:::::*/
-int fb_FileCloseEx( FB_FILE *handle )
-{
-	FB_LOCK();
-
-    if (handle->hooks != NULL) {
-        /* close VFS handle */
-        assert(handle->hooks->pfnClose != NULL);
-        int result = handle->hooks->pfnClose( handle );
-        if (result != 0) {
-            FB_UNLOCK();
-            return result;
-        }
-    } else if( handle->f != NULL ) {
-		switch( handle->type )
-		{
-		case FB_FILE_TYPE_NORMAL:
-			fclose( handle->f );
-			break;
-
-		case FB_FILE_TYPE_PIPE:
-
-#ifndef TARGET_XBOX
-
-			pclose( handle->f );
-
-#endif /* ifndef TARGET_XBOX */
-
-			break;
-        }
-    }
-
-    /* clear structure */
-    memset(handle, 0, sizeof(FB_FILE));
-
-	FB_UNLOCK();
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
-}
-
-/*:::::*/
-FBCALL int fb_FileClose( int fnum )
-{
-	/* QB quirk: CLOSE w/o arguments closes all files */
-	if( fnum == 0 ) {
-		fb_FileReset( );
-		return fb_ErrorSetNum( FB_RTERROR_OK );
-	}
-
-    if( !FB_FILE_INDEX_VALID(fnum) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    return fb_FileCloseEx( FB_FILE_TO_HANDLE(fnum) );
-}
-
-/*:::::*/
-FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
-                             int fnum,
-                             FBSTRING *filename,
-                             int len,
-                             FBSTRING *str_access_mode,
-                             FBSTRING *str_lock_mode)
-{
-    unsigned file_mode = 0;
-    int access_mode = -1, lock_mode = -1;
-    size_t file_mode_len, access_mode_len, lock_mode_len;
-
-	FB_STRLOCK();
-
-    file_mode_len = FB_STRSIZE( str_file_mode );
-    access_mode_len = FB_STRSIZE( str_access_mode );
-    lock_mode_len = FB_STRSIZE( str_lock_mode );
-
-    if( file_mode_len != 1 || access_mode_len>2 || lock_mode_len>2 ) {
-        FB_STRUNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
-    if( strcasecmp(str_file_mode->data, "B")==0 ) {
-        file_mode = FB_FILE_MODE_BINARY;
-    } else if( strcasecmp(str_file_mode->data, "I")==0 ) {
-        file_mode = FB_FILE_MODE_INPUT;
-    } else if( strcasecmp(str_file_mode->data, "O")==0 ) {
-        file_mode = FB_FILE_MODE_OUTPUT;
-    } else if( strcasecmp(str_file_mode->data, "A")==0 ) {
-        file_mode = FB_FILE_MODE_APPEND;
-    } else if( strcasecmp(str_file_mode->data, "R")==0 ) {
-        file_mode = FB_FILE_MODE_RANDOM;
-    } else {
-        FB_STRUNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
-    if( access_mode_len!=0 ) {
-        if ( strcasecmp(str_access_mode->data, "R")==0 ) {
-            access_mode = FB_FILE_ACCESS_READ;
-        } else if ( strcasecmp(str_access_mode->data, "W")==0 ) {
-            access_mode = FB_FILE_ACCESS_WRITE;
-        } else if ( strcasecmp(str_access_mode->data, "RW")==0 ) {
-            access_mode = FB_FILE_ACCESS_READWRITE;
-        } else {
-            FB_STRUNLOCK();
-            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-    }
-
-    if( lock_mode_len!=0 ) {
-        if ( strcasecmp(str_lock_mode->data, "S")==0 ) {
-            lock_mode = FB_FILE_LOCK_SHARED;
-        } else if ( strcasecmp(str_lock_mode->data, "R")==0 ) {
-            lock_mode = FB_FILE_LOCK_READ;
-        } else if ( strcasecmp(str_lock_mode->data, "W")==0 ) {
-            lock_mode = FB_FILE_LOCK_WRITE;
-        } else if ( strcasecmp(str_lock_mode->data, "RW")==0 ) {
-            lock_mode = FB_FILE_LOCK_READWRITE;
-        } else {
-            FB_STRUNLOCK();
-            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-    }
-
-    FB_STRUNLOCK();
-
-    if( access_mode == -1 ) {
-        /* determine the default access mode for a given file mode */
-        switch (file_mode) {
-        case FB_FILE_MODE_INPUT:
-            access_mode = FB_FILE_ACCESS_READ;
-            break;
-        case FB_FILE_MODE_OUTPUT:
-        case FB_FILE_MODE_APPEND:
-            access_mode = FB_FILE_ACCESS_WRITE;
-            break;
-        default:
-            access_mode = FB_FILE_ACCESS_ANY;
-            break;
-        }
-    }
-
-    if( lock_mode == -1 ) {
-        /* determine the default lock mode for a given file mode */
-        switch (file_mode) {
-        case FB_FILE_MODE_INPUT:
-            lock_mode = FB_FILE_LOCK_SHARED;
-            break;
-        default:
-            lock_mode = FB_FILE_LOCK_WRITE;
-            break;
-        }
-    }
-
-    return fb_FileOpen( filename,
-                        file_mode,
-                        access_mode,
-                        lock_mode,
-                        fnum,
-                        len );
-}
