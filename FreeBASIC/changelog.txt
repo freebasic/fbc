@@ -2,7 +2,7 @@ Version 0.15 Beta:
 
 [changed]
 - FBC for Win32 now automatically adds -l winspool (mjs)
-- LOCATE/CLS/WIDTH are now window-local (left/top of window = 1/1) on Win32 (mjs)
+- LOCATE/CLS/WIDTH/SCREEN are now window-local (left/top of window = 1/1) on Win32 (mjs)
 
 
 [added]

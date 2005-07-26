@@ -117,6 +117,8 @@
   LOF Function
   LOC Function
   LOCAL
+  LPOS Function         (diff: tries very hard to map a LPTx to a printer)
+  LPRINT Statements     (diff: tries very hard to map a LPTx to a printer)
 
   MOD
   MKL$ Function
@@ -420,8 +422,6 @@
   KEY Statement         (reason: ditto)
 
   LIST
-  LPOS Function         (reason: no direct printing, use proper API's instead)
-  LPRINT Statements     (reason: ditto)
 
   MKSMBF$ Function      (reason: old and useless proprietary format)
   MKDMBF$ Function      (reason: ditto)

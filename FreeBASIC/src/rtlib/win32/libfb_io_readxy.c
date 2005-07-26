@@ -37,6 +37,17 @@ FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
     coord.X = col - 1;
     coord.Y = row - 1;
 
+#if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
+    {
+        int add_x, add_y;
+        fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
+#if FB_CON_BOUNDS==1
+        coord.X += add_x - 1;
+#endif
+        coord.Y += add_y - 1;
+    }
+#endif
+
     if( colorflag ) {
         ReadConsoleOutputAttribute( fb_out_handle, &attribute, 1, coord, &res);
         return attribute;
