@@ -888,6 +888,8 @@ FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, int dst_len
        int          fb_hFileUnlock      ( FILE *f, unsigned int inipos, unsigned int size );
        char        *fb_hConvertPath     ( char *path, int len );
 
+FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
+
 /**************************************************************************************************
  * devices
  **************************************************************************************************/

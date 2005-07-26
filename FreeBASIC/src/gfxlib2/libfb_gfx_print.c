@@ -138,9 +138,7 @@ int fb_GfxLocate(int y, int x, int cursor)
 	if (y > 0)
 		fb_mode->cursor_y = y - 1;
 
-    FB_LOCK();
-    FB_HANDLE_SCREEN->line_length = fb_mode->cursor_x;
-    FB_UNLOCK();
+    fb_SetPos( FB_HANDLE_SCREEN , fb_mode->cursor_x );
 
 	return ((fb_mode->cursor_x + 1) & 0xFF) | (((fb_mode->cursor_y + 1) & 0xFF) << 8);
 }
