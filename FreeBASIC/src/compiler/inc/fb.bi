@@ -47,10 +47,10 @@ const INVALID		= -1
 
 ''
 #define FB_VER_MAJOR            0
-#define FB_VER_MINOR            14
-#define FB_VER_PATCH            3
-#define FB_VERSION				"0.14"
-#define FB_SIGN					"FreeBASIC v0.14b"
+#define FB_VER_MINOR            15
+#define FB_VER_PATCH            0
+#define FB_VERSION				"0.15"
+#define FB_SIGN					"FreeBASIC v0.15b"
 
 #define FB_TO_STRING(v)         #v
 
