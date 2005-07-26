@@ -82,8 +82,7 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst )
 
         if( !found ) {
             /* remember the real length */
-            tmp_buf_len = buffer_len + 1;
-            buffer_len = sizeof(buffer) - 1;
+            tmp_buf_len = buffer_len += 1;
 
             /* not found ... so simply add this to the result string */
 

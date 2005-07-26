@@ -83,19 +83,19 @@ run_tests:
 	string/mid_set
 	dim/submod
 
-file/text_in$(EXEEXT): file/text_in.o
+file/text_in$(EXEEXT): file/text_in.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
-dim/submod$(EXEEXT): dim/submod_a.o dim/submod_b.o
+dim/submod$(EXEEXT): dim/submod_a.bas dim/submod_b.o
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
-dim/cmmn_01$(EXEEXT): dim/cmmn_01.o
+dim/cmmn_01$(EXEEXT): dim/cmmn_01.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
-string/chr_0$(EXEEXT): string/chr_0.o
+string/chr_0$(EXEEXT): string/chr_0.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
-string/mid_set$(EXEEXT): string/mid_set.o
+string/mid_set$(EXEEXT): string/mid_set.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 dim/submod_a.bas: dim/submod_c.bi
