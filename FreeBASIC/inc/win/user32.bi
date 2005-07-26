@@ -6,9 +6,10 @@
 '
 'This header defines every obtainable user32 Function and related data types and structures.
 
-'VERSION: 1.08
+'VERSION: 1.09
 
 'Changelog:
+'  1.09: Fixed declaration of SendMessage as proposed by DrV
 '  1.08: NMHDR moved back, comdlg must include this header
 '        all constants copied from winuser.h, so nothing should be missing now -- many structs still left
 '  1.07: STRING types changed to BYTE PTR for structs fields and function results (v1ctor)
@@ -2770,7 +2771,7 @@ Declare Function ScrollWindowEx Alias "ScrollWindowEx" (ByVal hwnd As Integer, B
 Declare Function SendDlgItemMessage Alias "SendDlgItemMessageA" (ByVal hDlg As Integer, ByVal nIDDlgItem As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
 Declare Function SendIMEMessageEx Alias "SendIMEMessageExA" (ByVal hwnd As Integer, ByVal lparam As Integer) As Integer
 Declare Function SendInput Alias "SendInput" (ByVal cInputs As Integer, ByRef pInputs As TINPUT, ByVal cbSize As Integer) As Integer
-Declare Function SendMessage Alias "SendMessageA" (ByVal hwnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
+Declare Function SendMessage Alias "SendMessageA" (ByVal hwnd As Any Ptr, ByVal wMsg As UInteger, ByVal wParam As Integer, ByRef lParam As Any) As Integer
 Declare Function SendMessageCallback Alias "SendMessageCallbackA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal lpResultCallBack As Integer, ByVal dwData As Integer) As Integer
 Declare Function SendMessageTimeout Alias "SendMessageTimeoutA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer, ByVal fuFlags As Integer, ByVal uTimeout As Integer, ByRef lpdwResult As Integer) As Integer
 Declare Function SendNotifyMessage Alias "SendNotifyMessageA" (ByVal hwnd As Integer, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
