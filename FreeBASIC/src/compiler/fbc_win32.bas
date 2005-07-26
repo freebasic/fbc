@@ -191,9 +191,6 @@ function _linkFiles as integer
     	end if
     next i
 
-    '' library required for LPRINT support
-    ldcline += "-lwinspool "
-
     '' end lib group
     ldcline += "-) "
 

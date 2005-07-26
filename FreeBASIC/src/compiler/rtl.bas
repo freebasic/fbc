@@ -4009,6 +4009,22 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+private sub hAddPrinterLibs( )
+    
+    static as integer libsAdded = FALSE
+
+	if( not libsadded ) then
+
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32
+			symbAddLib( "winspool" )
+		end select
+		
+	end if
+		
+end sub
+
+'':::::
 function rtlPrint( byval fileexpr as ASTNODE ptr, _
 				   byval iscomma as integer, _
 				   byval issemicolon as integer, _
@@ -4018,7 +4034,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
     dim dtype as integer
 
     function = FALSE
-
+    
 	if( expr = NULL ) then
 		f = ifuncTB(FB_RTL_PRINTVOID)
 		args = 2
