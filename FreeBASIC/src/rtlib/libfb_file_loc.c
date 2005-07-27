@@ -52,7 +52,6 @@ long fb_FileLocationEx( FB_FILE *handle )
             pos /= 128;
             break;
         }
-        ++pos;
     }
 
 	FB_UNLOCK();

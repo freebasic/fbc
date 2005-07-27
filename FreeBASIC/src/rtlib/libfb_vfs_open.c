@@ -90,21 +90,23 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
     assert(result!=FB_RTERROR_OK || handle->hooks!=NULL);
 
     /* query the file size - only if supported */
-    if (result==0 && handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL) {
-        switch( mode )
-        {
-        case FB_FILE_MODE_BINARY:
-        case FB_FILE_MODE_RANDOM:
-        case FB_FILE_MODE_INPUT:
-            result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
-            if (result==0) {
+    if (result==0) {
+        if ( handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL) {
+            switch( mode )
+            {
+            case FB_FILE_MODE_BINARY:
+            case FB_FILE_MODE_RANDOM:
+            case FB_FILE_MODE_INPUT:
+                result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
+                if (result==0) {
+                    result = handle->hooks->pfnTell(handle, &handle->size);
+                    handle->hooks->pfnSeek(handle, 0, SEEK_SET);
+                }
+                break;
+            case FB_FILE_MODE_APPEND:
                 result = handle->hooks->pfnTell(handle, &handle->size);
-                handle->hooks->pfnSeek(handle, 0, SEEK_SET);
+                break;
             }
-            break;
-        case FB_FILE_MODE_APPEND:
-            result = handle->hooks->pfnTell(handle, &handle->size);
-            break;
         }
     } else {
         memset(handle, 0, sizeof(FB_FILE));

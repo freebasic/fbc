@@ -60,7 +60,18 @@ int fb_DevFileEof( struct _FB_FILE *handle )
         }
     }
 
-	res = (feof( fp ) == 0 ? FB_FALSE : FB_TRUE);
+    if( feof( fp ) ) {
+        res = FB_TRUE;
+    } else if( handle->mode==FB_FILE_MODE_INPUT ) {
+        int has_size = handle->hooks->pfnTell!=NULL && handle->hooks->pfnSeek!=NULL;
+        if( has_size && (ftell( fp ) >= handle->size) )  {
+            res = FB_TRUE;
+        } else {
+            res = FB_FALSE;
+        }
+    } else {
+        res = FB_FALSE;
+    }
 	FB_UNLOCK();
 
 	return res;

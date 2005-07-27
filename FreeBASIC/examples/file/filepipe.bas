@@ -6,7 +6,7 @@ const ls = "dir *.*"
 	
 	dim inpline as string
 	
-	OPEN "PIPE:" + ls for input as #1
+	OPEN PIPE ls for input as #1
 	
 	print string$( 60, "-" )
 	

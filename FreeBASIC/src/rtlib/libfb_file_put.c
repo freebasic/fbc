@@ -64,20 +64,19 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
         /* if in random mode, writes must be of reclen */
         if( handle->mode == FB_FILE_MODE_RANDOM )
         {
-            length %= handle->len;
-            length = handle->len - length;
-            if (length != 0) {
+            size_t skip_size = handle->len - (length % handle->len);
+            if (skip_size != 0) {
                 /* we use a write here because a seek might be unsupported
                  * for the given device */
                 int copylen;
                 char achBuffer[512];
                 memset(achBuffer, 0,
-                       ((length > sizeof(achBuffer)) ? sizeof(achBuffer) : length));
+                       ((skip_size > sizeof(achBuffer)) ? sizeof(achBuffer) : skip_size));
                 for (;
-                     length != 0;
-                     length -= copylen)
+                     skip_size != 0;
+                     skip_size -= copylen)
                 {
-                    copylen = (length < sizeof(achBuffer)) ? length : sizeof(achBuffer);
+                    copylen = (skip_size < sizeof(achBuffer)) ? skip_size : sizeof(achBuffer);
                     res = handle->hooks->pfnWrite( handle, achBuffer, copylen );
                     if( res!=0 )
                         break;

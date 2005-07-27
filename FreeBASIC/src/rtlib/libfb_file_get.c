@@ -87,7 +87,7 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, i
         /* if in random mode, reads must be of reclen */
         if( handle->mode == FB_FILE_MODE_RANDOM )
         {
-            size_t skip_size = handle->len - (length + read_count) % handle->len;
+            size_t skip_size = handle->len - (read_count % handle->len);
             if( skip_size != 0 ) {
                 /* don't forget the put back buffer */
                 if( skip_size > handle->putback_size ) {

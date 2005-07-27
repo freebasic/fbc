@@ -108,12 +108,12 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t filena
         if( (fp = fopen( fname, openmask )) == NULL )
         {
             /* if file was not found and in READ/WRITE mode, create it */
-            if( handle->access == FB_FILE_ACCESS_READWRITE )
+            if( handle->access == FB_FILE_ACCESS_ANY )
             {
                 fp = fopen( fname,  "w+b" );
 
                 /* if file could not be created and in ANY mode, try opening as read-only */
-                if( (fp == NULL) && (handle->access == FB_FILE_ACCESS_ANY) ) {
+                if( (fp == NULL) ) {
                     fp = fopen( fname,  "rb" );
                     if (fp != NULL) {
                         // don't forget to set the effective access mode ...

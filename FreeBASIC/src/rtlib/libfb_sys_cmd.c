@@ -63,7 +63,11 @@ FBCALL FBSTRING *fb_Command ( int argc )
 			return &fb_strNullDesc;
 		++cline;
 
-		len = strlen( cline );
+        len = strlen( cline );
+
+        /* remove spaces at end of line */
+        while( len!=0 && cline[len-1]==' ' )
+            --len;
 	}
 	else
 	{
