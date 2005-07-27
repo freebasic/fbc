@@ -35,7 +35,7 @@ type __mpz_struct
 end type
 
 type MP_INT as __mpz_struct
-type mpz_t as __mpz_struct ptr
+type mpz_t as __mpz_struct
 
 type __mpq_struct
 	_mp_num as __mpz_struct
@@ -43,7 +43,7 @@ type __mpq_struct
 end type
 
 type MP_RAT as __mpq_struct
-type mpq_t as __mpq_struct ptr
+type mpq_t as __mpq_struct
 
 type __mpf_struct
 	_mp_prec as integer
@@ -52,7 +52,7 @@ type __mpf_struct
 	_mp_d as mp_limb_t ptr
 end type
 
-type mpf_t as __mpf_struct ptr
+type mpf_t as __mpf_struct
 
 enum gmp_randalg_t
 	GMP_RAND_ALG_DEFAULT = 0
@@ -77,7 +77,7 @@ type __gmp_randstate_struct
 	_mp_algdata as _mp_algdata
 end type
 
-type gmp_randstate_t as __gmp_randstate_struct ptr
+type gmp_randstate_t as __gmp_randstate_struct
 type mpz_srcptr as __mpz_struct ptr
 type mpz_ptr as __mpz_struct ptr
 type mpf_srcptr as __mpf_struct ptr
