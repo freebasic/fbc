@@ -156,7 +156,7 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
         res = fb_PrinterOpen( info->iPort, info->pszDevice, &info->hPrinter );
     } else {
         res = fb_ErrorSetNum( FB_RTERROR_OK );
-        if( redir_handle!=NULL ) {
+        if( FB_HANDLE_USED(redir_handle) ) {
             /* We only allow redirection between OPEN "LPT1:" and LPRINT */
             if( handle==FB_HANDLE_PRINTER ) {
                 redir_handle->redirection_to = handle;

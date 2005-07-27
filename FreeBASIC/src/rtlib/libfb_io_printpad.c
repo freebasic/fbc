@@ -56,7 +56,7 @@ FBCALL void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x
 /*:::::*/
 void fb_PrintPadEx ( FB_FILE *handle, int mask )
 {
-    if( handle==NULL) {
+    if( !FB_HANDLE_USED(handle) ) {
         fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         return;
     }

@@ -43,7 +43,7 @@ static void fb_hPrintStrEx( FB_FILE *handle, const char *s, size_t len, int mask
 /*:::::*/
 void fb_PrintStringEx ( FB_FILE *handle, FBSTRING *s, int mask )
 {
-    if( handle==NULL) {
+    if( !FB_HANDLE_USED(handle) ) {
         fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         return;
     }

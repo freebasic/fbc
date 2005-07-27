@@ -35,7 +35,7 @@ int fb_FileSeekEx( FB_FILE *handle, long newpos )
 {
 	int res;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	FB_LOCK();

@@ -34,7 +34,7 @@ int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
 {
     int res;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();

@@ -35,7 +35,7 @@
 /*:::::*/
 void fb_PrintVoidEx ( FB_FILE *handle, int mask )
 {
-    if( handle==NULL) {
+    if( !FB_HANDLE_USED(handle) ) {
         fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         return;
     }

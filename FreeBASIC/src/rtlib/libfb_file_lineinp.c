@@ -48,7 +48,7 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
     FBSTRING   *str_result;
     eInputMode  mode = eIM_Invalid;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();

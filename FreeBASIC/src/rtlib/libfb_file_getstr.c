@@ -37,7 +37,7 @@ int fb_FileGetStrEx( FB_FILE *handle, long pos, void *str, int str_len )
     size_t len;
 	char *data;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	FB_STRLOCK();

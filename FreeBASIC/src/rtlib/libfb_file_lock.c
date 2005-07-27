@@ -36,7 +36,7 @@ int fb_FileLockEx( FB_FILE *handle, unsigned int inipos, unsigned int endpos )
 	if( inipos < 1 || endpos <= inipos )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	FB_LOCK();

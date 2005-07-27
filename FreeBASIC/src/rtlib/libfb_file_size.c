@@ -36,7 +36,7 @@ unsigned int fb_FileSizeEx( FB_FILE *handle )
 {
 	long res = 0;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return res;
 
 	FB_LOCK();

@@ -34,7 +34,7 @@ int fb_FileEofEx( FB_FILE *handle )
 {
     int res;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();

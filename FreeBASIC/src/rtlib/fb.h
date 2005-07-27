@@ -693,10 +693,13 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
     ((index)>=1 && ((index)<(FB_MAX_FILES-FB_RESERVED_FILES)))
 
 #define FB_INDEX_IS_SPECIAL(index) \
-    (((index) < 1) && ((index > (-FB_RESERVED_FILES))
+    (((index) < 1) && (((index) > (-FB_RESERVED_FILES))
 
 #define FB_HANDLE_IS_SCREEN(handle) \
-    (handle!=NULL && FB_HANDLE_DEREF(handle)==FB_HANDLE_SCREEN)
+    ((handle)!=NULL && FB_HANDLE_DEREF(handle)==FB_HANDLE_SCREEN)
+
+#define FB_HANDLE_USED(handle) \
+    ((handle)!=NULL && ((handle)->hooks!=NULL))
 
 #define FB_HANDLE_SCREEN    fb_fileTB
 #define FB_HANDLE_PRINTER   (fb_fileTB+1)
@@ -773,7 +776,7 @@ static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
         return FB_HANDLE_SCREEN;
     if( index==-1 )
         return FB_HANDLE_PRINTER;
-    if( index>0 )
+    if( FB_FILE_INDEX_VALID(index) )
         return fb_fileTB + index - 1 + FB_RESERVED_FILES;
     return NULL;
 }

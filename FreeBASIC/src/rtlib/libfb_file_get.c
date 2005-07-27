@@ -40,7 +40,7 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, i
 
     assert(pLength!=NULL);
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();

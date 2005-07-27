@@ -41,7 +41,7 @@ FBCALL int fb_WidthFile( int fnum, int width )
 
     handle = FB_HANDLE_DEREF(FB_FILE_TO_HANDLE(fnum));
 
-    if( handle==NULL ) {
+    if( !FB_HANDLE_USED(handle) ) {
         /* invalid file handle */
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

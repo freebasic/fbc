@@ -39,7 +39,7 @@ FBCALL int fb_FileInput( int fnum )
 	FB_LOCK();
 
     handle = FB_FILE_TO_HANDLE(fnum);
-    if( handle==NULL ) {
+    if( !FB_HANDLE_USED(handle) ) {
         res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 

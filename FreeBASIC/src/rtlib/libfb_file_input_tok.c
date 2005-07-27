@@ -40,7 +40,7 @@ static int fb_hReadChar( void )
 	char *data;
 	int i, res;
 
-    if( handle ) {
+    if( FB_HANDLE_USED(handle) ) {
         char ch;
         size_t len = 1;
         res = fb_FileGetDataEx( handle, 0, &ch, &len, FALSE );
@@ -69,7 +69,7 @@ static int fb_hUnreadChar( int c )
     FB_FILE *handle = (FB_FILE*) FB_TLSGET( fb_inpctx.handle );
     int i;
 
-    if( handle!=NULL ) {
+    if( FB_HANDLE_USED(handle) ) {
         char ch = (char) c;
         return fb_FilePutBackEx( handle, &ch, 1 );
     } else {

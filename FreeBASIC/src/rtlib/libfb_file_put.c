@@ -36,7 +36,7 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
     size_t i;
 	int res;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();

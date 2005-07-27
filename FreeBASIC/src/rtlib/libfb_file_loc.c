@@ -35,7 +35,7 @@ long fb_FileLocationEx( FB_FILE *handle )
 {
     long pos;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return 0;
 
     FB_LOCK();

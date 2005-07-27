@@ -36,7 +36,7 @@ int fb_FilePutStrEx( FB_FILE *handle, long pos, void *str, int str_len )
     long len;
     char *data;
 
-    if( handle==NULL )
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	FB_STRLOCK();

@@ -36,7 +36,7 @@ int fb_FileCloseEx( FB_FILE *handle )
 {
     FB_LOCK();
 
-    if( handle==NULL ) {
+    if( !FB_HANDLE_USED(handle) ) {
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
