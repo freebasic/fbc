@@ -56,13 +56,13 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			hReportError FB_ERRMSG_WRONGDIMENSIONS
+			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
 
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -71,11 +71,25 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
 
+    	'' bounds checking
+    	if( env.clopt.extraerrchk ) then
+    		dimexpr = astNewBOUNDCHK( dimexpr, _
+    								  astNewCONSTi( d->lower, IR_DATATYPE_INTEGER ), _
+    								  astNewCONSTi( d->upper, IR_DATATYPE_INTEGER ), _
+    								  lexLineNum( ) )
+
+			if( dimexpr = NULL ) then
+				hReportError( FB_ERRMSG_ARRAYOUTOFBOUNDS )
+				exit function
+			end if
+    	end if
+
+    	''
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
@@ -83,26 +97,28 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     	end if
 
     	'' separator
-    	if( lexGetToken <> FB_TK_DECLSEPCHAR ) then
+    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
-    		lexSkipToken
+    		lexSkipToken( )
     	end if
 
         '' next
         d = d->next
+    	if( d = NULL ) then
+			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+			exit function
+    	end if
 
     	constexpr = astNewCONSTi( (d->upper - d->lower)+1, IR_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 	loop
 
-
     ''
     if( dims < maxdims ) then
-		hReportError FB_ERRMSG_WRONGDIMENSIONS
+		hReportError( FB_ERRMSG_WRONGDIMENSIONS )
 		exit function
     end if
-
 
 	'' times length
 	lgt = symbGetLen( elm )
