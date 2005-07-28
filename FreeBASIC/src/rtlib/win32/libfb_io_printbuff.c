@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include "fb.h"
 
+int fb_ConsoleLocateRaw( int row, int col, int cursor );
+
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
@@ -44,6 +46,9 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     fb_ConsoleGetXY( &col, &row );
 
 #if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
+    fb_ConsoleGetWindow( &win_left, &win_top, NULL, &end_row );
+    end_row += win_top - 1;
+#elif FB_CON_BOUNDS==3
     fb_ConsoleGetWindow( &win_left, &win_top, NULL, NULL );
     end_row = rows;
 #else
@@ -90,7 +95,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
      	if( rowstoscroll - rowsleft > 0 )
      	{
      		fb_ConsoleScroll( rowstoscroll - rowsleft );
-     		fb_ConsoleLocate( botrow - (rowstoscroll - rowsleft), -1, -1 );
+     		fb_ConsoleLocateRaw( botrow - (rowstoscroll - rowsleft), -1, -1 );
      	}
 	}
 

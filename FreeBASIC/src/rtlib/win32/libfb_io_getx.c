@@ -27,22 +27,26 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_ConsoleGetX( void )
+int fb_ConsoleGetRawX( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
     GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
+    return info.dwCursorPosition.X+1;
+
+}
+
+/*:::::*/
+int fb_ConsoleGetX( void )
+{
 #if FB_CON_BOUNDS==1
-    {
-        int add_x;
-        fb_ConsoleGetWindow( &add_x, NULL, NULL, NULL );
-        info.dwCursorPosition.X -= add_x - 2;
-    }
+    int add_x;
+    fb_ConsoleGetWindow( &add_x, NULL, NULL, NULL );
+    return fb_ConsoleGetRawX() - add_x + 1;
 #else
-    ++info.dwCursorPosition.X;
+    return fb_ConsoleGetRawX();
 #endif
-    return info.dwCursorPosition.X;
 
 }
 

@@ -27,7 +27,7 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+int fb_ConsoleLocateEx( int row, int col, int cursor, int do_xyadjust )
 {
 	COORD c;
     CONSOLE_CURSOR_INFO info;
@@ -36,20 +36,28 @@ int fb_ConsoleLocate( int row, int col, int cursor )
     if( col > 0 ) {
   		c.X = col - 1;
     } else {
-        c.X = fb_ConsoleGetX() - 1;
+        if( do_xyadjust ) {
+            c.X = fb_ConsoleGetX() - 1;
+        } else {
+            c.X = fb_ConsoleGetRawX() - 1;
+        }
     }
 
     if( row > 0 ) {
   		c.Y = row - 1;
     } else {
-        c.Y = fb_ConsoleGetY() - 1;
+        if( do_xyadjust ) {
+            c.Y = fb_ConsoleGetY() - 1;
+        } else {
+            c.Y = fb_ConsoleGetRawY() - 1;
+        }
     }
 
     ret_val =
         ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
 
 #if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
-    {
+    if( do_xyadjust ) {
         int add_x, add_y;
         fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
 #if FB_CON_BOUNDS==1
@@ -58,7 +66,6 @@ int fb_ConsoleLocate( int row, int col, int cursor )
         c.Y += add_y - 1;
     }
 #endif
-
 
 	GetConsoleCursorInfo( fb_out_handle, &info );
   	if( cursor >= 0 ) {
@@ -70,3 +77,16 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 
 	return ret_val;
 }
+
+/*:::::*/
+int fb_ConsoleLocateRaw( int row, int col, int cursor )
+{
+	return fb_ConsoleLocateEx( row, col, cursor, FALSE );
+}
+
+/*:::::*/
+int fb_ConsoleLocate( int row, int col, int cursor )
+{
+	return fb_ConsoleLocateEx( row, col, cursor, TRUE );
+}
+

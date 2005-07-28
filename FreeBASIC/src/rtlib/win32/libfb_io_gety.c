@@ -27,20 +27,22 @@
 #include "fb.h"
 
 /*:::::*/
-int fb_ConsoleGetY( void )
+int fb_ConsoleGetRawY( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
-
     GetConsoleScreenBufferInfo( fb_out_handle, &info );
+    return info.dwCursorPosition.Y + 1;
+}
+
+/*:::::*/
+int fb_ConsoleGetY( void )
+{
 #if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
-    {
-        int add_y;
-        fb_ConsoleGetWindow( NULL, &add_y, NULL, NULL );
-        info.dwCursorPosition.Y -= add_y - 2;
-    }
+    int add_y;
+    fb_ConsoleGetWindow( NULL, &add_y, NULL, NULL );
+    return fb_ConsoleGetRawY() - add_y + 1;
 #else
-    ++info.dwCursorPosition.Y;
+    return fb_ConsoleGetRawY();
 #endif
-    return info.dwCursorPosition.Y;
 }
 

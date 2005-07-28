@@ -107,7 +107,8 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t filena
         /* try opening */
         if( (fp = fopen( fname, openmask )) == NULL )
         {
-            /* if file was not found and in READ/WRITE mode, create it */
+            /* if file was not found and in READ/WRITE (or ANY) mode,
+             * create it */
             if( handle->access == FB_FILE_ACCESS_ANY
                 || handle->access == FB_FILE_ACCESS_READWRITE )
             {
