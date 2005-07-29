@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,9 @@
  */
 
 #include "fb.h"
+
+int fb_ConsoleGetRawX( void );
+int fb_ConsoleGetRawY( void );
 
 /*:::::*/
 int fb_ConsoleLocateEx( int row, int col, int cursor, int do_xyadjust )
@@ -53,6 +56,8 @@ int fb_ConsoleLocateEx( int row, int col, int cursor, int do_xyadjust )
         }
     }
 
+	GetConsoleCursorInfo( fb_out_handle, &info );
+
     ret_val =
         ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
 
@@ -67,7 +72,6 @@ int fb_ConsoleLocateEx( int row, int col, int cursor, int do_xyadjust )
     }
 #endif
 
-	GetConsoleCursorInfo( fb_out_handle, &info );
   	if( cursor >= 0 ) {
   		info.bVisible = ( cursor ? TRUE : FALSE );
   		SetConsoleCursorInfo( fb_out_handle, &info );
