@@ -24,23 +24,34 @@
  *
  */
 
+#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
 void fb_ConsoleGetWindow( int *left, int *top, int *cols, int *rows )
 {
    	CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo( fb_out_handle, &info );
+    if( GetConsoleScreenBufferInfo( fb_out_handle, &info )==0 ) {
+        if( left != NULL )
+            *left = 0;
+        if( top != NULL )
+            *top = 0;
 
-    if( left != NULL )
-        *left = info.srWindow.Left + 1;
-    if( top != NULL )
-        *top = info.srWindow.Top + 1;
+        if( cols != NULL )
+            *cols = 0;
+        if( rows != NULL )
+            *rows = 0;
+    } else {
+        if( left != NULL )
+            *left = info.srWindow.Left + 1;
+        if( top != NULL )
+            *top = info.srWindow.Top + 1;
 
-    if( cols != NULL )
-        *cols = info.srWindow.Right - info.srWindow.Left + 1;
-    if( rows != NULL )
-        *rows = info.srWindow.Bottom - info.srWindow.Top + 1;
+        if( cols != NULL )
+            *cols = info.srWindow.Right - info.srWindow.Left + 1;
+        if( rows != NULL )
+            *rows = info.srWindow.Bottom - info.srWindow.Top + 1;
+    }
 }
 
 /*:::::*/

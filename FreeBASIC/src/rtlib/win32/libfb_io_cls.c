@@ -39,11 +39,17 @@ void fb_ConsoleClear( int mode )
     int		view_left, view_top, view_right, view_bottom;
 
     /* This is the window in screen buffer coordinates (1-based) */
-    int     win_left, win_top, win_right, win_bottom;
+    int     win_left = 0, win_top = 0, win_right = 0, win_bottom = 0;
 
     GetConsoleScreenBufferInfo( fb_out_handle, &info );
 
     fb_ConsoleGetWindow( &win_left, &win_top, &win_right, &win_bottom );
+
+    if( win_left==0 && win_top==0 && win_right==0 && win_bottom==0 ) {
+        /* redirection detected - no CLS allowed */
+        return;
+    }
+
     win_right += win_left - 1;
     win_bottom += win_top - 1;
 
