@@ -158,6 +158,8 @@ extern "C" {
 #include "win32/fb_win32.h"
 #elif defined(TARGET_LINUX)
 #include "linux/fb_linux.h"
+#elif defined(TARGET_DOS)
+#include "dos/fb_dos.h"
 #elif defined(TARGET_XBOX)
 #include "xbox/fb_xbox.h"
 #endif
