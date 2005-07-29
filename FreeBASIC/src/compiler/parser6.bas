@@ -120,7 +120,7 @@ function cGotoStmt as integer
 		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 
 			'' try to guess here.. if inside a proc currently and no user label was
-			'' emited, it's probably a FUNCTION return, no a GOSUB return
+			'' emitted, it's probably a FUNCTION return, not a GOSUB return
 			l = NULL
 			if( env.scope > 0 ) then
 				l = symbGetLastLabel( )
@@ -532,9 +532,9 @@ function cPrintStmt as integer
         '' ('#' Expression)?
         if( hMatch( CHAR_SHARP ) ) then
             hMatchExpression( filexpr )
-    
+
             hMatchCOMMA( )
-    
+
         else
             filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
         end if
@@ -900,7 +900,7 @@ function cViewStmt(byval is_func as integer = FALSE, _
                 hReportError FB_ERRMSG_SYNTAXERROR
                 exit function
             end if
-    
+
             hMatchExpression( expr2 )
         else
             default_view = TRUE
@@ -1069,14 +1069,19 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
     isarray = FALSE
-    if( lexGetToken = CHAR_LPRNT ) then
+    if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead(1) = CHAR_RPRNT ) then
     		s = astGetSymbolOrElm( expr2 )
     		if( s <> NULL ) then
     			isarray = symbIsArray( s )
     			if( isarray ) then
-    				lexSkipToken
-    				lexSkipToken
+    				'' don't allow var-len strings
+    				if( symbGetType( s ) = FB_SYMBTYPE_STRING ) then
+						hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						exit function
+    				end if
+    				lexSkipToken( )
+    				lexSkipToken( )
     			end if
     		end if
     	end if
@@ -1119,12 +1124,17 @@ private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
     isarray = FALSE
-    if( lexGetToken = CHAR_LPRNT ) then
+    if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead(1) = CHAR_RPRNT ) then
     		s = astGetSymbolOrElm( expr2 )
     		if( s <> NULL ) then
     			isarray = symbIsArray( s )
     			if( isarray ) then
+    				'' don't allow var-len strings
+    				if( symbGetType( s ) = FB_SYMBTYPE_STRING ) then
+						hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						exit function
+    				end if
     				lexSkipToken( )
     				lexSkipToken( )
     			end if
@@ -1153,22 +1163,39 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 
     short_form = FALSE
 
+	'' special devices
 	select case ucase$( *lexGetText( ) )
     case "CONS"
-		lexSkipToken( )
-    	open_kind = FB_FILE_TYPE_CONS
+		'' not a symbol?
+		if( lexGetSymbol( ) = NULL ) then
+			lexSkipToken( )
+    		open_kind = FB_FILE_TYPE_CONS
+    	end if
+
     case "ERR"
 		lexSkipToken( )
         open_kind = FB_FILE_TYPE_ERR
+
     case "PIPE"
-		lexSkipToken( )
-        open_kind = FB_FILE_TYPE_PIPE
+		'' not a symbol?
+		if( lexGetSymbol( ) = NULL ) then
+			lexSkipToken( )
+        	open_kind = FB_FILE_TYPE_PIPE
+        end if
+
     case "SCRN"
-		lexSkipToken( )
-        open_kind = FB_FILE_TYPE_SCRN
+		'' not a symbol?
+		if( lexGetSymbol( ) = NULL ) then
+			lexSkipToken( )
+        	open_kind = FB_FILE_TYPE_SCRN
+        end if
+
     case "LPT"
-		lexSkipToken( )
-    	open_kind = FB_FILE_TYPE_LPT
+		'' not a symbol?
+		if( lexGetSymbol( ) = NULL ) then
+			lexSkipToken( )
+    		open_kind = FB_FILE_TYPE_LPT
+    	end if
     end select
 
 	if( isfunc ) then
@@ -1202,7 +1229,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	            end if
             end if
         end if
-    
+
     case else
 
         ' no file name provided for this kind of OPEN statmenets
@@ -1260,18 +1287,18 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
                 exit function
             end select
             lexSkipToken
-    
+
         else
             file_mode = FB_FILE_MODE_RANDOM
         end if
-    
+
         fmode = astNewCONSTi( file_mode, IR_DATATYPE_INTEGER )
-    
+
         if( isfunc ) then
             '' ','?
             hMatch( CHAR_COMMA )
         end if
-    
+
         '' (ACCESS (READ|WRITE|READ WRITE))?
         if( hMatch( FB_TK_ACCESS ) ) then
             select case lexGetToken
@@ -1291,12 +1318,12 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
         end if
 
         faccess = astNewCONSTi( access_mode, IR_DATATYPE_INTEGER )
-    
+
         if( isfunc ) then
             '' ','?
             hMatch( CHAR_COMMA )
         end if
-    
+
         '' (SHARED|LOCK (READ|WRITE|READ WRITE))?
         if( hMatch( FB_TK_SHARED ) ) then
             lock_mode = FB_FILE_LOCK_SHARED
@@ -1316,29 +1343,29 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
         else
             lock_mode = FB_FILE_LOCK_SHARED
         end if
-    
+
         flock = astNewCONSTi( lock_mode, IR_DATATYPE_INTEGER )
 
         if( isfunc ) then
             '' ','?
             hMatch( CHAR_COMMA )
         end if
-    
+
         '' AS '#'? Expression
         if( not hMatch( FB_TK_AS ) ) then
             hReportError FB_ERRMSG_EXPECTINGAS
             exit function
         end if
-    
+
         hMatch( CHAR_SHARP )
-    
+
         hMatchExpression( filenum )
-    
+
         if( isfunc ) then
             '' ','?
             hMatch( CHAR_COMMA )
         end if
-    
+
         '' (LEN '=' Expression)?
         if( hMatch( FB_TK_LEN ) ) then
             if( not hMatch( FB_TK_ASSIGN ) ) then
@@ -1366,78 +1393,86 @@ end function
 private function cWidth( byval isfunc as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr fnum, width_arg, height_arg, dev_name
     dim as ASTNODE ptr func
+    dim as integer checkrprnt
 
 	function = NULL
 
 	lexSkipToken( )
 
 	if( isfunc ) then
-		'' '('
-		hMatchLPRNT( )
+		'' '('?
+		checkrprnt = hMatch( CHAR_LPRNT )
+	else
+		checkrprnt = FALSE
 	end if
 
-    if( isfunc and hMatch( CHAR_RPRNT ) ) then
-        ' fb_Width function
+    if( isfunc ) then
+    	' Width Screen?
+    	if( (not checkrprnt) or _                   '' !!!FIXME!!! change to OrElse
+    		hMatch( CHAR_RPRNT ) ) then
+    		return rtlWidthScreen( NULL, NULL, isfunc )
+    	end if
+
+	end if
+
+    if( hMatch( FB_TK_LPRINT ) ) then
+       ' fb_WidthDev
+       dev_name = astNewCONSTs( "LPT1:" )
+       hMatchExpression( width_arg )
+
+       function = rtlWidthDev( dev_name, width_arg, isfunc )
+
+	elseif( hMatch( CHAR_SHARP ) ) then
+    	' fb_WidthFile
+
+        hMatchExpression( fnum )
+
+        if( hMatch( CHAR_COMMA ) ) then
+        	hMatchExpression( width_arg )
+		else
+        	width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+		end if
+
+        function = rtlWidthFile( fnum, width_arg, isfunc )
+
+	elseif( hMatch( CHAR_COMMA ) ) then
+    	' fb_WidthScreen
         width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-        height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-
+        hMatchExpression( height_arg )
         function = rtlWidthScreen( width_arg, height_arg, isfunc )
-    else
-        if( hMatch( FB_TK_LPRINT ) ) then
-            ' fb_WidthDev
-            dev_name = astNewCONSTs( "LPT1:" )
-            hMatchExpression( width_arg )
 
+	else
+		hMatchExpression( dev_name )
+        select case astGetDataType( dev_name )
+        case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
+            ' fb_WidthDev
+
+        	if( hMatch( CHAR_COMMA ) ) then
+            	hMatchExpression( width_arg )
+			else
+            	width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+			end if
             function = rtlWidthDev( dev_name, width_arg, isfunc )
 
-        elseif( hMatch( CHAR_SHARP ) ) then
-            ' fb_WidthFile
-
-            hMatchExpression( fnum )
+		case else
+        	' fb_WidthScreen
+            width_arg = dev_name
+            dev_name = NULL
 
             if( hMatch( CHAR_COMMA ) ) then
-                hMatchExpression( width_arg )
-            else
-                width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-            end if
-
-            function = rtlWidthFile( fnum, width_arg, isfunc )
-
-        elseif( hMatch( CHAR_COMMA ) ) then
-            ' fb_WidthScreen
-            width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-            hMatchExpression( height_arg )
+            	hMatchExpression( height_arg )
+			else
+            	height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+			end if
             function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
-        else
-            hMatchExpression( dev_name )
-            select case astGetDataType( dev_name )
-            case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
-                ' fb_WidthDev
-    
-                if( hMatch( CHAR_COMMA ) ) then
-                    hMatchExpression( width_arg )
-                else
-                    width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-                end if
-                function = rtlWidthDev( dev_name, width_arg, isfunc )
-    
-            case else
-                ' fb_WidthScreen
-                width_arg = dev_name
-                dev_name = NULL
-    
-                if( hMatch( CHAR_COMMA ) ) then
-                    hMatchExpression( height_arg )
-                else
-                    height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-                end if
-                function = rtlWidthScreen( width_arg, height_arg, isfunc )
-    
-            end select
-        end if
-		if( isfunc ) then hMatchRPRNT( )
-    end if
+		end select
+	end if
+
+	if( checkrprnt ) then
+		'' ')'
+		hMatchRPRNT( )
+	end if
 
 end function
 
@@ -1536,7 +1571,7 @@ function cFileStmt as integer
 			exit function
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
         function = (hFilePut( FALSE ) <> NULL)
 
@@ -1839,7 +1874,8 @@ function cQuirkStmt as integer
 		res = cInputStmt( )
 	case FB_TK_POKE
 		res = cPokeStmt( )
-	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, FB_TK_LOCK, FB_TK_UNLOCK, FB_TK_NAME
+	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, _
+		 FB_TK_LOCK, FB_TK_UNLOCK, FB_TK_NAME
 		res = cFileStmt( )
 	case FB_TK_ON
 		res = cOnStmt( )
@@ -1855,6 +1891,7 @@ function cQuirkStmt as integer
 		res = cLSetStmt( )
     case FB_TK_WIDTH
         res = cWidth( FALSE ) <> NULL
+
 	end select
 
 	if( res = FALSE ) then

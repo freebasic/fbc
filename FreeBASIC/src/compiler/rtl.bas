@@ -950,7 +950,7 @@ data "fb_FileOpen","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
-'' fb_FileOpenShort( mode as string, byval filenum as integer, 
+'' fb_FileOpenShort( mode as string, byval filenum as integer,
 ''                   filename as string, byval len as integer,
 ''                   access_mode as string, lock_mode as string) as integer
 data "fb_FileOpenShort","", _
@@ -4154,7 +4154,7 @@ end function
 
 '':::::
 private sub hAddPrinterLibs( )
-    
+
     static as integer libsAdded = FALSE
 
 	if( not libsadded ) then
@@ -4163,9 +4163,9 @@ private sub hAddPrinterLibs( )
 		case FB_COMPTARGET_WIN32
 			symbAddLib( "winspool" )
 		end select
-		
+
 	end if
-		
+
 end sub
 
 '':::::
@@ -4181,7 +4181,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
     function = FALSE
 
     if islprint then hAddPrinterLibs
-    
+
 	if( expr = NULL ) then
 		f = ifuncTB(IIf(islprint, FB_RTL_LPRINTVOID, FB_RTL_PRINTVOID))
 		args = 2
@@ -4267,7 +4267,7 @@ function rtlPrintSPC( byval fileexpr as ASTNODE ptr, _
 	function = FALSE
 
     if islprint then hAddPrinterLibs
-    
+
 	''
 	f = ifuncTB(FB_RTL_PRINTSPC)
     proc = astNewFUNCT( f )
@@ -4297,7 +4297,7 @@ function rtlPrintTab( byval fileexpr as ASTNODE ptr, _
 	function = FALSE
 
     if islprint then hAddPrinterLibs
-    
+
 	''
 	f = ifuncTB(FB_RTL_PRINTTAB)
     proc = astNewFUNCT( f )
@@ -4411,7 +4411,7 @@ function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr, _
 	function = FALSE
 
     if islprint then hAddPrinterLibs
-    
+
 	''
 	f = ifuncTB(IIf(islprint,FB_RTL_LPRINTUSGINIT, FB_RTL_PRINTUSGINIT))
     proc = astNewFUNCT( f )
@@ -4435,7 +4435,7 @@ function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr, _
 	function = FALSE
 
     if islprint then hAddPrinterLibs
-    
+
 	''
 	f = ifuncTB(FB_RTL_PRINTUSGEND)
     proc = astNewFUNCT( f )
@@ -4463,7 +4463,7 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 	function = FALSE
 
     if islprint then hAddPrinterLibs
-    
+
 	select case astGetDataType( expr )
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		f = ifuncTB(FB_RTL_PRINTUSGSTR)
@@ -4818,11 +4818,17 @@ function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
     proc = astNewFUNCT( f )
 
     '' byval width_arg as integer
+    if( width_arg = NULL ) then
+    	width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    end if
     if( astNewPARAM( proc, width_arg ) = NULL ) then
     	exit function
     end if
 
     '' byval height_arg as integer
+    if( height_arg = NULL ) then
+        height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    end if
     if( astNewPARAM( proc, height_arg ) = NULL ) then
     	exit function
     end if
@@ -5210,22 +5216,22 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
         '' this is the short form of the OPEN command
         f = ifuncTB(FB_RTL_FILEOPEN_SHORT)
         proc = astNewFUNCT( f )
-    
+
         '' mode as string
         if( astNewPARAM( proc, fmode ) = NULL ) then
             exit function
         end if
-    
+
         '' byval filenum as integer
         if( astNewPARAM( proc, filenum ) = NULL ) then
             exit function
         end if
-    
+
         '' filename as string
         if( astNewPARAM( proc, filename ) = NULL ) then
             exit function
         end if
-    
+
         '' byval len as integer
         if( astNewPARAM( proc, flen ) = NULL ) then
             exit function
@@ -5235,12 +5241,12 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
         if( astNewPARAM( proc, faccess ) = NULL ) then
             exit function
         end if
-    
+
         '' flock as string
         if( astNewPARAM( proc, flock ) = NULL ) then
             exit function
         end if
-    
+
     case else
         ''
         select case openkind
@@ -5260,32 +5266,32 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
         end select
 
         proc = astNewFUNCT( f )
-    
+
         '' filename as string
         if( astNewPARAM( proc, filename ) = NULL ) then
             exit function
         end if
-    
+
         '' byval mode as integer
         if( astNewPARAM( proc, fmode ) = NULL ) then
             exit function
         end if
-    
+
         '' byval access as integer
         if( astNewPARAM( proc, faccess ) = NULL ) then
             exit function
         end if
-    
+
         '' byval lock as integer
         if( astNewPARAM( proc, flock ) = NULL ) then
             exit function
         end if
-    
+
         '' byval filenum as integer
         if( astNewPARAM( proc, filenum ) = NULL ) then
             exit function
         end if
-    
+
         '' byval len as integer
         if( astNewPARAM( proc, flen ) = NULL ) then
             exit function
