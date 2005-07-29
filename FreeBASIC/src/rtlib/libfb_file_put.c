@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,12 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length, int adjust_rec_pos)
+int fb_FilePutDataEx( FB_FILE *handle,
+					  long pos,
+					  const void *data,
+					  size_t length,
+					  int adjust_rec_pos,
+					  int checknewline )
 {
     const char *pachText = (const char *) data;
     size_t i;
@@ -47,68 +52,58 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
     handle->putback_size = 0;
 
     /* seek to newpos */
-    if( pos > 0 ) {
+    if( pos > 0 )
         res = fb_FileSeekEx( handle, pos );
-    }
 
-    if (res==FB_RTERROR_OK) {
+    if (res==FB_RTERROR_OK)
+    {
         /* do write */
-        if( handle->hooks->pfnWrite != NULL ) {
+        if( handle->hooks->pfnWrite != NULL )
             res = handle->hooks->pfnWrite( handle, data, length );
-        } else {
+        else
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
     }
 
-    if (res==FB_RTERROR_OK && adjust_rec_pos) {
+    if (res==FB_RTERROR_OK && adjust_rec_pos)
+    {
         /* if in random mode, writes must be of reclen */
         if( handle->mode == FB_FILE_MODE_RANDOM )
         {
             size_t skip_size = handle->len - (length % handle->len);
-            if (skip_size != 0) {
-                /* we use a write here because a seek might be unsupported
-                 * for the given device */
-                int copylen;
-                char achBuffer[512];
-                memset(achBuffer, 0,
-                       ((skip_size > sizeof(achBuffer)) ? sizeof(achBuffer) : skip_size));
-                for (;
-                     skip_size != 0;
-                     skip_size -= copylen)
-                {
-                    copylen = (skip_size < sizeof(achBuffer)) ? skip_size : sizeof(achBuffer);
-                    res = handle->hooks->pfnWrite( handle, achBuffer, copylen );
-                    if( res!=0 )
-                        break;
-                }
+            if (skip_size != 0)
+            {
+				/* devices that don't support seek should simulate it
+				   with write or never allow to be opened for random access */
+				handle->hooks->pfnSeek( handle, skip_size, SEEK_CUR );
             }
         }
     }
 
 #ifndef FB_NATIVE_TAB
-    if ( res == FB_RTERROR_OK ) {
-        /* search for last printed CR or LF */
-        i=length;
-        while (i--) {
-            char ch = pachText[i];
-            if (ch=='\n' || ch=='\r') {
-                break;
-            }
-        }
-        ++i;
-        handle = FB_HANDLE_DEREF(handle);
-        if (i==0) {
-            handle->line_length += length;
-        } else {
-            handle->line_length = length - i;
-        }
-        {
-            int iWidth = FB_HANDLE_DEREF(handle)->width;
-            if( iWidth!=0 ) {
-                handle->line_length %= iWidth;
-            }
-        }
-    }
+    if( checknewline )
+    	if ( res == FB_RTERROR_OK ) {
+        	/* search for last printed CR or LF */
+        	i=length;
+        	while (i--) {
+            	char ch = pachText[i];
+            	if (ch=='\n' || ch=='\r') {
+	                break;
+    	        }
+        	}
+        	++i;
+        	handle = FB_HANDLE_DEREF(handle);
+        	if (i==0) {
+	            handle->line_length += length;
+    	    } else {
+        	    handle->line_length = length - i;
+        	}
+        	{
+            	int iWidth = FB_HANDLE_DEREF(handle)->width;
+            	if( iWidth!=0 ) {
+                	handle->line_length %= iWidth;
+            	}
+        	}
+    	}
 #endif
 
 	FB_UNLOCK();
@@ -117,13 +112,19 @@ int fb_FilePutDataEx( FB_FILE *handle, long pos, const void *data, size_t length
 }
 
 /*:::::*/
-int fb_FilePutData( int fnum, long pos, const void *data, size_t length, int adjust_rec_pos)
+int fb_FilePutData( int fnum,
+					long pos,
+					const void *data,
+					size_t length,
+					int adjust_rec_pos,
+					int checknewline )
 {
-    return fb_FilePutDataEx( FB_FILE_TO_HANDLE(fnum), pos, data, length, adjust_rec_pos );
+    return fb_FilePutDataEx( FB_FILE_TO_HANDLE(fnum),
+    						 pos, data, length, adjust_rec_pos, checknewline );
 }
 
 /*:::::*/
 FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
 {
-	return fb_FilePutData( fnum, pos, value, valuelen, TRUE );
+	return fb_FilePutData( fnum, pos, value, valuelen, TRUE, FALSE );
 }

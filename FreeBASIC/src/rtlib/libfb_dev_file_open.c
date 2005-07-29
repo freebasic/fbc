@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2005 Mark Junker (mjscod@gmx.de)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -28,11 +28,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-static const FB_FILE_HOOKS fb_hooks_dev_file = {
+static FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
     fb_DevFileSeek,
@@ -44,39 +43,36 @@ static const FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileReadLine
 };
 
-int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_len )
 {
     FILE *fp = NULL;
-    char openmask[16];
+    char *openmask;
     char *fname;
-    size_t str_len;
 
     FB_LOCK();
 
-    str_len = filename_len;
-    fname = (char*) alloca(str_len + 1);
-    memcpy(fname, filename, str_len);
-    fname[str_len] = 0;
+    fname = (char*) alloca(fname_len + 1);
+    memcpy(fname, filename, fname_len);
+    fname[fname_len] = 0;
 
     /* Convert directory separators to whatever the current platform supports */
-    fb_hConvertPath( fname, str_len );
+    fb_hConvertPath( fname, fname_len );
 
     handle->hooks = &fb_hooks_dev_file;
 
-    openmask[0] = 0;
-
+    openmask = NULL;
     switch( handle->mode )
     {
     case FB_FILE_MODE_APPEND:
-        strcpy( openmask, "at" );		/* will create the file if it doesn't exist */
+        openmask = "at";				/* will create the file if it doesn't exist */
         break;
 
     case FB_FILE_MODE_INPUT:
-        strcpy( openmask, "rt" );		/* will fail if file doesn't exist */
+        openmask = "rt";				/* will fail if file doesn't exist */
         break;
 
     case FB_FILE_MODE_OUTPUT:
-        strcpy( openmask, "wt" );       /* will create the file if it doesn't exist */
+        openmask = "wt";       			/* will create the file if it doesn't exist */
         break;
 
     case FB_FILE_MODE_BINARY:
@@ -85,23 +81,25 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t filena
         switch( handle->access )
         {
         case FB_FILE_ACCESS_WRITE:
-            strcpy( openmask, "wb" );
+            openmask = "wb";
             break;
         case FB_FILE_ACCESS_READ:
-            strcpy( openmask, "rb" );
+            openmask = "rb";
             break;
         default:
-            strcpy( openmask, "r+b" );  /* w+ would erase the contents */
+            openmask = "r+b";  			/* w+ would erase the contents */
             break;
         }
     }
 
-    if (strlen(openmask)==0) {
+    if( openmask == NULL )
+    {
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    switch (handle->mode) {
+    switch (handle->mode)
+    {
     case FB_FILE_MODE_BINARY:
     case FB_FILE_MODE_RANDOM:
         /* try opening */
@@ -145,7 +143,7 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     setvbuf( fp, NULL, _IOFBF, FB_FILE_BUFSIZE );
 
     handle->opaque = fp;
-    if (handle->access==FB_FILE_ACCESS_ANY)
+    if (handle->access == FB_FILE_ACCESS_ANY)
         handle->access = FB_FILE_ACCESS_READWRITE;
 
     FB_UNLOCK();

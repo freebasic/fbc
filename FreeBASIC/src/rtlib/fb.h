@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *    Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *    Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -89,10 +89,6 @@ extern "C" {
     /** Maximum number of conditions.
      */
 #define FB_MAXCONDS           256
-
-    /** Use QB compatible open
-     */
-#define FB_QB_COMPATIBLE_OPEN FALSE
 
 
     /* =================================================================
@@ -749,7 +745,7 @@ typedef struct _FB_FILE {
     char            putback_buffer[4];
     size_t          putback_size;
 
-    const FB_FILE_HOOKS  *hooks;
+    FB_FILE_HOOKS   *hooks;
     /* an i/o handler might store additional (handler specific) data here */
     void *          opaque;
     /* used when opening SCRN: to create an redirection handle */
@@ -808,20 +804,25 @@ static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
 
 static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
 {
-    FB_LOCK();
     if( handle != NULL ) {
+        FB_LOCK();
         while( handle->redirection_to != NULL ) {
             handle = handle->redirection_to;
         }
+        FB_UNLOCK();
     }
-    FB_UNLOCK();
     return handle;
 }
 
-       int          fb_FilePutData      ( int fnum, long pos, const void *data, size_t length, int adjust_rec_pos);
-       int          fb_FilePutDataEx    ( FB_FILE *handle, long pos, const void *data, size_t length, int adjust_rec_pos);
-       int          fb_FileGetData      ( int fnum, long pos, void *data, size_t length, int adjust_rec_pos);
-       int          fb_FileGetDataEx    ( FB_FILE *handle, long pos, void *data, size_t *pLength, int adjust_rec_pos);
+       int          fb_FilePutData      ( int fnum, long pos, const void *data,
+       									  size_t length, int adjust_rec_pos, int checknewline );
+       int          fb_FilePutDataEx    ( FB_FILE *handle, long pos, const void *data,
+       									  size_t length, int adjust_rec_pos,
+       									  int checknewline );
+       int          fb_FileGetData      ( int fnum, long pos, void *data,
+                                          size_t length, int adjust_rec_pos );
+       int          fb_FileGetDataEx    ( FB_FILE *handle, long pos, void *data,
+       									  size_t *pLength, int adjust_rec_pos );
 
        int          fb_FileOpenVfsRawEx ( FB_FILE *handle, const char *filename,
                                           size_t filename_length,
@@ -926,7 +927,23 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
        int          fb_DevPipeClose     ( struct _FB_FILE *handle );
 
        /* SCRN */
+typedef struct _DEV_SCRN_INFO {
+    char            buffer[16];
+    unsigned        length;
+} DEV_SCRN_INFO;
+
+       void 		fb_DevScrnInit		( void );
+       void 		fb_DevScrnInit_NoOpen	( void );
+       void 		fb_DevScrnInit_Write	( void );
+       void 		fb_DevScrnInit_Read		( void );
+       void 		fb_DevScrnInit_ReadLine	( void );
        int          fb_DevScrnOpen      ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+       int 			fb_DevScrnClose		( struct _FB_FILE *handle );
+       int 			fb_DevScrnEof		( struct _FB_FILE *handle );
+       int 			fb_DevScrnRead		( struct _FB_FILE *handle, void* value, size_t *pLength );
+       int 			fb_DevScrnWrite		( struct _FB_FILE *handle, const void* value, size_t valuelen );
+       int 			fb_DevScrnReadLine	( struct _FB_FILE *handle, FBSTRING *dst );
+       void 		fb_DevScrnFillInput	( DEV_SCRN_INFO *info );
 
        /* STDIO */
        int          fb_DevStdIoClose    ( struct _FB_FILE *handle );
@@ -1009,8 +1026,6 @@ FBCALL void              fb_CondWait    ( struct _FBCOND *cond );
 /**************************************************************************************************
  * misc
  **************************************************************************************************/
-
-FBCALL void         fb_AtExit           ( void (*proc)(void) );
 
 FBCALL void         fb_Init             ( int argc, char **argv );
 FBCALL void         fb_End              ( int errlevel );

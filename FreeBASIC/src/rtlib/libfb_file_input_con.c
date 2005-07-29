@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,8 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 {
 	FBSTRING s;
 	int res;
+
+	fb_DevScrnInit_Read( );
 
 	FB_TLSSET( fb_inpctx.handle, 0 );
 	FB_TLSSET( fb_inpctx.status, 0);

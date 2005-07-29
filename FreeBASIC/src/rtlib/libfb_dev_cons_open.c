@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2005 Mark Junker (mjscod@gmx.de)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,7 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-static const FB_FILE_HOOKS fb_hooks_dev_cons = {
+static FB_FILE_HOOKS fb_hooks_dev_cons = {
     fb_DevFileEof,
     fb_DevStdIoClose,
     NULL,

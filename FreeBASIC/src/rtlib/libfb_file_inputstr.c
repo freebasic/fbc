@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,8 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 	FBSTRING  *dst;
     size_t 	   len;
     int        res = FB_RTERROR_OK;
+
+	fb_DevScrnInit_Read( );
 
 	FB_LOCK();
 

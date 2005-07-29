@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,13 +32,15 @@
 
 
 /*:::::*/
-int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, int adjust_rec_pos )
+int fb_FileGetDataEx( FB_FILE *handle,
+					  long pos,
+					  void* value,
+					  size_t *pLength,
+					  int adjust_rec_pos )
 {
-    size_t res;
+    int res;
     size_t length, read_count = 0;
     char *pachData = (char*) value;
-
-    assert(pLength!=NULL);
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -50,68 +52,70 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, i
     length = *pLength;
 
     /* seek to newpos */
-    if( pos > 0 ) {
+    if( pos > 0 )
         res = fb_FileSeekEx( handle, pos );
-    }
 
-    if( handle->putback_size != 0 ) {
+    if( handle->putback_size != 0 )
+    {
         size_t copy_size = (handle->putback_size > length) ? handle->putback_size : length;
         memcpy( pachData, handle->putback_buffer, copy_size );
         handle->putback_size -= copy_size;
         read_count = copy_size;
         length -= copy_size;
         pachData += copy_size;
-        if( handle->putback_size != 0 ) {
+        if( handle->putback_size != 0 )
+        {
             memmove( handle->putback_buffer,
                      handle->putback_buffer + copy_size,
                      handle->putback_size );
         }
     }
 
-    if ( (res==FB_RTERROR_OK) && (length != 0) ) {
+    if ( (res == FB_RTERROR_OK) && (length != 0) )
+    {
         /* do read */
-        if( handle->hooks->pfnRead!=NULL ) {
+        if( handle->hooks->pfnRead!=NULL )
+        {
             size_t rlen = length;
             res = handle->hooks->pfnRead( handle, pachData, &rlen );
             read_count += rlen;
-        } else {
+        }
+        else
+        {
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
 
-    if( res==FB_RTERROR_OK ) {
+    if( res == FB_RTERROR_OK ) {
         *pLength = read_count;
     }
 
-    if (res==FB_RTERROR_OK && adjust_rec_pos) {
+    if (res == FB_RTERROR_OK && adjust_rec_pos)
+    {
         /* if in random mode, reads must be of reclen */
         if( handle->mode == FB_FILE_MODE_RANDOM )
         {
             size_t skip_size = handle->len - (read_count % handle->len);
-            if( skip_size != 0 ) {
+            if( skip_size != 0 )
+            {
                 /* don't forget the put back buffer */
-                if( skip_size > handle->putback_size ) {
+                if( skip_size > handle->putback_size )
+                {
                     skip_size -= handle->putback_size;
                     handle->putback_size = 0;
-                } else {
+                }
+                else
+                {
                     handle->putback_size -= skip_size;
                     skip_size = 0;
                 }
             }
-            if (skip_size!=0) {
-                /* we use a read here because a seek might be unsupported
-                 * for the given device */
-                size_t copylen;
-                char achBuffer[512];
-                for (;
-                     skip_size != 0;
-                     skip_size -= copylen)
-                {
-                    copylen = (length < sizeof(achBuffer)) ? skip_size : sizeof(achBuffer);
-                    res = handle->hooks->pfnRead( handle, achBuffer, &copylen );
-                    if( res!=0 )
-                        break;
-                }
+
+            if (skip_size!=0)
+            {
+				/* devices that don't support seek should simulate it
+				   with read or never allow to be opened for random access */
+				handle->hooks->pfnSeek( handle, skip_size, SEEK_CUR );
             }
         }
     }
@@ -122,13 +126,20 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void* value, size_t *pLength, i
 }
 
 /*:::::*/
-int fb_FileGetData( int fnum, long pos, void* value, size_t length, int adjust_rec_pos )
+int fb_FileGetData( int fnum,
+					long pos,
+					void* value,
+					size_t length,
+					int adjust_rec_pos )
 {
     return fb_FileGetDataEx(FB_FILE_TO_HANDLE(fnum), pos, value, &length, adjust_rec_pos);
 }
 
 /*:::::*/
-FBCALL int fb_FileGet( int fnum, long pos, void* value, unsigned int valuelen )
+FBCALL int fb_FileGet( int fnum,
+					   long pos,
+					   void* value,
+					   unsigned int valuelen )
 {
 	return fb_FileGetData( fnum, pos, value, valuelen, TRUE );
 }

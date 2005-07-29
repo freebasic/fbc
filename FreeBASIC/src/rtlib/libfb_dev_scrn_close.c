@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,36 +18,27 @@
  */
 
 /*
- * atexit.c -- atexit() proc
+ *	dev_file - file device
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written [mjs]
  *
  */
 
-#include "fb.h"
-
-#ifdef WIN32
-
- /* can't include stdlib.h as Mingw32 will not import atexit() from crtdll, but
-    from it's static lib.. libcrtdll.dll.a can't come from Mingw32 package either
-    as it doesn't include the import for atexit() */
-
-#include <_mingw.h>
-
-_CRTIMP int __cdecl	atexit	(void (*proc)(void));
-
-#else
-
+#include <stdio.h>
 #include <stdlib.h>
-
-#endif
-
+#include "fb.h"
+#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL void fb_AtExit ( void (*proc)(void) )
+int fb_DevScrnClose( struct _FB_FILE *handle )
 {
+    FB_LOCK();
 
-	atexit( proc );
+    if( handle->opaque != NULL )
+        free(handle->opaque);
 
+    FB_UNLOCK();
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

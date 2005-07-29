@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -36,20 +36,16 @@ int fb_FilePutStrEx( FB_FILE *handle, long pos, void *str, int str_len )
     long len;
     char *data;
 
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
 	FB_STRLOCK();
 
     /* get string data len */
 	FB_STRSETUP_DYN( str, str_len, data, len );
 
 	/* perform call ... but only if there's data ... */
-    if( (data != NULL) && (len > 0) ) {
-        res = fb_FilePutDataEx( handle, pos, data, len, TRUE);
-    } else {
-		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    if( (data != NULL) && (len > 0) )
+        res = fb_FilePutDataEx( handle, pos, data, len, TRUE, TRUE );
+    else
+    	res = fb_ErrorSetNum( FB_RTERROR_OK );
 
     /* del if temp */
     if( str_len == -1 )

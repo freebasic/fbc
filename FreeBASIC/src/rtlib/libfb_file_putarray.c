@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -31,10 +31,8 @@
 /*:::::*/
 FBCALL int fb_FilePutArray( int fnum, long pos, FBARRAY *src )
 {
-    /* Q @ v1ctor: is this valid for string arrays too?
-     */
 
-	return fb_FilePutData( fnum, pos, src->ptr, src->size, TRUE );
+	return fb_FilePutData( fnum, pos, src->ptr, src->size, TRUE, FALSE );
 
 }
 

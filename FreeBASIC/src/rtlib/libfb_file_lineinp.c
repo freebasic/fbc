@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,8 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
 	char		buffer[BUFFER_LEN];
     FBSTRING   *str_result;
     eInputMode  mode = eIM_Invalid;
+
+    fb_DevScrnInit_ReadLine( );
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -170,7 +172,7 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
 	/* - */
     if( is_console ) {
         if( addnewline ) {
-            fb_FilePutDataEx( handle, 0, FB_NEWLINE, sizeof(FB_NEWLINE)-1, FALSE );
+            fb_FilePutDataEx( handle, 0, FB_NEWLINE, sizeof(FB_NEWLINE)-1, FALSE, TRUE );
         }
     }
 

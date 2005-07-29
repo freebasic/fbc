@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -33,8 +33,7 @@
 
 #include <stdlib.h>
 
-static
-FBCALL void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x )
+static void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x )
 {
 #ifdef FB_NATIVE_TAB
     FB_PRINT_EX(handle, "\t", 1, mask);
@@ -56,18 +55,17 @@ FBCALL void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x
 /*:::::*/
 void fb_PrintPadEx ( FB_FILE *handle, int mask )
 {
-    if( !FB_HANDLE_USED(handle) ) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return;
-    }
-
 #ifdef FB_NATIVE_TAB
     FB_PRINT_EX(handle, "\t", 1, mask);
 
 #else
-    FB_FILE *tmp_handle = FB_HANDLE_DEREF(handle);
+    FB_FILE *tmp_handle;
    	int old_x;
     int new_x;
+
+    fb_DevScrnInit_Write( );
+
+    tmp_handle = FB_HANDLE_DEREF(handle);
 
     old_x = tmp_handle->line_length + 1;
     new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;

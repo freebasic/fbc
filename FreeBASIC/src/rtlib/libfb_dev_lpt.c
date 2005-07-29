@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2005 Mark Junker (mjscod@gmx.de)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -82,7 +82,7 @@ static int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t va
 	return res;
 }
 
-static const FB_FILE_HOOKS fb_hooks_dev_lpt = {
+static FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
     fb_DevLptClose,
     NULL,

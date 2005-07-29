@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 #include "fb.h"
 #include "fb_scancodes.h"
 
+#include <stdlib.h>
 #include <dpmi.h>
 #include <go32.h>
 #include <pc.h>
@@ -198,16 +199,16 @@ END_OF_STATIC_FUNCTION(fb_hPostKey);
 static int get_key(void)
 {
 	int key = 0;
-	
+
 	locked = TRUE;
-	
+
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
-	
+
 	locked = FALSE;
-	
+
 	return key;
 }
 
@@ -215,12 +216,12 @@ static int get_key(void)
 static int fb_ConsoleGetkey2(void)
 {
 	int key = 0;
-	
+
 	do {
 		key = get_key();
 		fb_Sleep(20);
 	} while (key == 0);
-	
+
 	return key;
 }
 
@@ -228,13 +229,13 @@ static int fb_ConsoleGetkey2(void)
 static int fb_ConsoleKeyHit2(void)
 {
 	int res;
-	
+
 	locked = TRUE;
-	
+
 	res = (key_head != key_tail? 1: 0);
-	
+
 	locked = FALSE;
-	
+
 	return res;
 }
 
@@ -247,7 +248,7 @@ FBSTRING *fb_ConsoleInkey2(void)
 	};
 	FBSTRING *res;
 	int key;
-	
+
 	if ((key = get_key())) {
 		if (key > 0xFF) {
 			key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
@@ -262,7 +263,7 @@ FBSTRING *fb_ConsoleInkey2(void)
 		else
 			return fb_CHR( 1, key );
 	}
-	
+
 	return &fb_strNullDesc;
 }
 
@@ -272,23 +273,23 @@ static void fb_MultikeyHandler(void)
 	unsigned char scan;
 	unsigned char status;
 	unsigned short ascii;
-		
+
 	/* read the raw scan code from the keyboard */
 	scan = inportb(0x60);           /* read scan code */
 	status = inportb(0x61);         /* read keyboard status */
 	outportb(0x61, status | 0x80);  /* set bit 7 and write */
 	outportb(0x61, status);         /* write again, bit 7 clear */
 	outportb(0x20, 0x20);           /* reset PIC */
-	
+
 	/* TODO: handle extended keys */
-	
+
 	if (scan & 0x80) {              /* release */
 		key[scan & ~0x80] = FALSE;
 	} else {                        /* press */
 		key[scan] = TRUE;
-		
+
 		/* TODO: check state of CapsLock */
-		
+
 		if ((key[SC_LSHIFT]) || (key[SC_RSHIFT])) {
 			ascii = kb_scan_to_ascii[scan][1];
 		} else if (key[SC_CONTROL]) {
@@ -296,7 +297,7 @@ static void fb_MultikeyHandler(void)
 		} else {
 			ascii = kb_scan_to_ascii[scan][0];
 		}
-		
+
 		if (ascii) fb_hPostKey(ascii);
 	}
 }
@@ -306,7 +307,7 @@ END_OF_STATIC_FUNCTION(fb_MultikeyHandler);
 static void fb_ConsoleMultikeyExit(void)
 {
 	_go32_dpmi_set_protected_mode_interrupt_vector(0x9, &old_kb_int);
-	
+
 	unlock_proc(fb_MultikeyHandler);
 	unlock_proc(fb_hPostKey);
 	unlock_array(key);
@@ -318,23 +319,23 @@ int fb_ConsoleMultikey( int scancode )
 	if (!inited) {
 		inited = TRUE;
 		memset((void*)key, FALSE, sizeof(key));
-		
+
 		_go32_dpmi_get_protected_mode_interrupt_vector(0x9, &old_kb_int);
 		new_kb_int.pm_offset = (unsigned int)fb_MultikeyHandler;
 		new_kb_int.pm_selector = _go32_my_cs();
 		_go32_dpmi_allocate_iret_wrapper(&new_kb_int);
 		_go32_dpmi_set_protected_mode_interrupt_vector(0x9, &new_kb_int);
-		
+
 		lock_proc(fb_MultikeyHandler);
 		lock_proc(fb_hPostKey);
 		lock_array(key);
-		
-		fb_AtExit(fb_ConsoleMultikeyExit);
-		
+
+		atexit( fb_ConsoleMultikeyExit );
+
 		fb_hooks.inkeyproc = fb_ConsoleInkey2;
 		fb_hooks.getkeyproc = fb_ConsoleGetkey2;
 		fb_hooks.keyhitproc = fb_ConsoleKeyHit2;
 	}
-	
+
 	return (scancode < sizeof(key) ? key[scancode] : FALSE);
 }

@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -29,19 +29,18 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+
 /*:::::*/
 int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
 {
     int res;
 
+    fb_DevScrnInit_Write( );
+
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-    FB_LOCK();
-
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE );
-
-    FB_UNLOCK();
+    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE );
 
     return res;
 }

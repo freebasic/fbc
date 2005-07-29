@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,8 @@ FBCALL int          fb_FileOpenScrn     ( FBSTRING *str_filename, unsigned int m
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len )
 {
+    fb_DevScrnInit( );
+
     return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
                              str_filename, mode, access,
                              lock, len, fb_DevScrnOpen );

@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,9 @@
 FBCALL int fb_Width( int cols, int rows )
 {
 	int cur;
-	
+
+	fb_DevScrnInit_NoOpen( );
+
 	FB_LOCK();
 
 	if( fb_hooks.widthproc )
@@ -42,6 +44,6 @@ FBCALL int fb_Width( int cols, int rows )
         FB_HANDLE_SCREEN->width = cols;
 
 	FB_UNLOCK();
-	
+
     return ((cols==0 && rows==0) ? cur : 0);
 }

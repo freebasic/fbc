@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -31,6 +31,8 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 {
     FB_FILE *handle;
     int col, row, cols, rows;
+
+    fb_DevScrnInit_NoOpen( );
 
     FB_LOCK();
 
@@ -63,6 +65,8 @@ FBCALL void fb_PrintSPC( int fnum, int n )
 {
     FB_FILE *handle;
 	int col, row, cols, rows, newcol;
+
+    fb_DevScrnInit_NoOpen( );
 
     FB_LOCK();
 

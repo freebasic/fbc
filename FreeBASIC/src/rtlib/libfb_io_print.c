@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -43,11 +43,6 @@ static void fb_hPrintStrEx( FB_FILE *handle, const char *s, size_t len, int mask
 /*:::::*/
 void fb_PrintStringEx ( FB_FILE *handle, FBSTRING *s, int mask )
 {
-    if( !FB_HANDLE_USED(handle) ) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return;
-    }
-
 	FB_STRLOCK();
 
     if( (s == NULL) || (s->data == NULL) )
