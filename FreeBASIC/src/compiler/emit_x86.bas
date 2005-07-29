@@ -5188,7 +5188,7 @@ sub emitWriteFooter( byval tottime as double ) static
 end sub
 
 '':::::
-sub emitWriteRtInit( ) static
+sub emitWriteRtInit( byval isdllmain as integer ) static
     dim as ASTNODE ptr argc, argv
 
 	'' call fb_Init
@@ -5196,7 +5196,7 @@ sub emitWriteRtInit( ) static
 	argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
 
     '' init( argc, argv )
-    emit.main.proc = rtlInitRt( argc, argv )
+    emit.main.initnode = rtlInitRt( argc, argv, isdllmain )
 
 end sub
 

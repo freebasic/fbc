@@ -258,11 +258,12 @@ type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr, _
 
 type EMITMAIN
 	node			as ASTPROCNODE ptr
-	proc			as ASTNODE ptr
+	proc			as FBSYMBOL ptr
 	argc			as FBSYMBOL ptr
 	argv			as FBSYMBOL ptr
 	initlabel		as FBSYMBOL ptr
 	exitlabel		as FBSYMBOL ptr
+	initnode		as ASTNODE ptr
 end type
 
 type EMITCTX

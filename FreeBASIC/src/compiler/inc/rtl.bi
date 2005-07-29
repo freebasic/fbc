@@ -368,7 +368,8 @@ declare function 	rtlMathFp2ULongint	( byval expr as ASTNODE ptr, _
 declare function    rtlInitMain         ( ) as integer
 
 declare function 	rtlInitRt			( byval argc as ASTNODE ptr, _
-										  byval argv as ASTNODE ptr ) as ASTNODE ptr
+										  byval argv as ASTNODE ptr, _
+										  byval isdllmain as integer ) as ASTNODE ptr
 
 declare function	rtlExitRt			( byval errlevel as ASTNODE ptr ) as integer
 

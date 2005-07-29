@@ -4540,7 +4540,8 @@ end function
 
 '':::::
 function rtlInitRt( byval argc as ASTNODE ptr, _
-					byval argv as ASTNODE ptr ) as ASTNODE ptr static
+					byval argv as ASTNODE ptr, _
+					byval isdllmain as integer ) as ASTNODE ptr static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
 	function = NULL
@@ -4569,12 +4570,16 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 
     '' if error checking is on, call initSignals
     if( env.clopt.errorcheck ) then
-    	rtlInitSignals( )
+    	if( not isdllmain ) then
+    		rtlInitSignals( )
+    	end if
     end if
 
     '' start profiling if requested
     if( env.clopt.profile ) then
-	    rtlInitProfile( )
+	    if( not isdllmain ) then
+	    	rtlInitProfile( )
+	    end if
     end if
 
     function = proc

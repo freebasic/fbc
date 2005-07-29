@@ -38,7 +38,7 @@ declare sub 	 emitSubInit			( )
 declare sub 	 emitSubEnd				( )
 
 declare sub 	 emitWriteHeader		( )
-declare sub 	 emitWriteRtInit		( )
+declare sub 	 emitWriteRtInit		( byval isdllmain as integer )
 declare sub 	 emitWriteFooter		( byval tottime as double )
 declare sub 	 emitWriteBss			( )
 declare sub 	 emitWriteConst			( )
@@ -87,65 +87,164 @@ sub emitEnd static
 end sub
 
 ':::::
-private sub hMainBegin( )
-    dim as FBSYMBOL ptr argtail, proc, arg
+private sub hDllMainBegin( )
+    dim as FBSYMBOL ptr proc, arg, s, label, exitlabel, initlabel, argreason
+   	dim as ASTNODE ptr reason, main
+   	dim as ASTPROCNODE ptr procnode
+    dim as integer argn
 
-	'' argc
-	argtail = symbAddArg( "{argc}", NULL, _
-						  FB_SYMBTYPE_INTEGER, NULL, 0, _
-						  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	'' instance
+	arg = symbAddArg( "{dllmain_instance}", NULL, _
+					  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
+					  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
-	'' argv
-	argtail = symbAddArg( "{argv}", argtail, _
-						  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR, NULL, 2, _
-						  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	'' reason
+	arg = symbAddArg( "{dllmain_reason}", arg, _
+					  FB_SYMBTYPE_UINT, NULL, 0, _
+					  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+
+	'' reserved
+	arg = symbAddArg( "{dllmain_reserved}", arg, _
+					  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
+					  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 	''
-	proc = symbAddProc( "", fbGetEntryPoint( ), "", _
-						FB_SYMBTYPE_VOID, NULL, 0, FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_MAINPROC, _
-						FB_FUNCMODE_CDECL, 2, argtail )
+	proc = symbAddProc( "", "DllMain", "", _
+						FB_SYMBTYPE_INTEGER, NULL, 0, FB_ALLOCTYPE_PUBLIC, _
+						FB_FUNCMODE_STDCALL, 3, arg )
 
     symbSetProcIncFile( proc, INVALID )
+
+    ''
+	initlabel = symbAddLabel( "" )
+	exitlabel = symbAddLabel( "" )
+
+    ''
+	procnode = astProcBegin( proc, initlabel, exitlabel, FALSE )
+
+	''
+	env.scope = 1
+	env.currproc = proc
+
+	arg = symbGetProcHeadArg( proc )
+	argn = 1
+	do while( arg <> NULL )
+
+		s = symbAddArgAsVar( arg->alias, arg )
+		if( argn = 2 ) then
+			argreason = s
+		end if
+
+		arg = symbGetProcNextArg( proc, arg, FALSE )
+		argn += 1
+	loop
+
+	symbAddProcResult( proc )
+
+	''
+   	astAdd( astNewLABEL( initlabel ) )
+
+   	'' function = TRUE
+   	s = symbLookupProcResult( proc )
+   	astAdd( astNewASSIGN( astNewVAR( s, NULL, 0, symbGetType( proc ) ), _
+   						  astNewCONSTi( 1, symbGetType( proc ) ) ) )
+
+	'' if( reason = DLL_PROCESS_ATTACH ) then
+	reason = astNewVAR( argreason, NULL, 0, symbGetType( argreason ) )
+	label = symbAddLabel( "" )
+	astAdd( astNewBOP( IR_OP_NE, reason, astNewCONSTi( 1, IR_DATATYPE_UINT ), label, FALSE ) )
+
+	''	main( 0, NULL )
+    main = astNewFUNCT( emit.main.proc )
+    astNewPARAM( main, astNewCONSTi( 0, IR_DATATYPE_INTEGER ) )
+    astNewPARAM( main, astNewCONSTi( NULL, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
+    astAdd( main )
+
+	'' end if
+    astAdd( astNewLABEL( label ) )
+
+   	''
+   	astAdd( astNewLABEL( exitlabel ) )
+
+   	'' load result
+   	s = symbLookupProcResult( proc )
+   	astAdd( astNewLOAD( astNewVAR( s, NULL, 0, symbGetType( proc ) ), _
+   						symbGetType( proc ), _
+   						TRUE ) )
+
+   	astProcEnd( procnode )
+
+	env.currproc = NULL
+	env.scope = 0
+
+end sub
+
+':::::
+private sub hMainBegin( byval isdllmain as integer )
+    dim as FBSYMBOL ptr arg
+    dim as integer alloctype
+
+	'' argc
+	arg = symbAddArg( "{argc}", NULL, _
+					  FB_SYMBTYPE_INTEGER, NULL, 0, _
+					  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+
+	'' argv
+	arg = symbAddArg( "{argv}", arg, _
+					  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR, NULL, 2, _
+					  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	''
+	if( not isdllmain ) then
+		alloctype = FB_ALLOCTYPE_PUBLIC
+	else
+		alloctype = FB_ALLOCTYPE_PRIVATE
+	end if
+	emit.main.proc = symbAddProc( "", fbGetEntryPoint( ), "", _
+								  FB_SYMBTYPE_VOID, NULL, 0, alloctype or FB_ALLOCTYPE_MAINPROC, _
+								  FB_FUNCMODE_CDECL, 2, arg )
+
+    symbSetProcIncFile( emit.main.proc, INVALID )
 
     ''
 	emit.main.initlabel = symbAddLabel( "" )
 	emit.main.exitlabel = symbAddLabel( "" )
 
     ''
-	emit.main.node = astProcBegin( proc, emit.main.initlabel, emit.main.exitlabel, TRUE )
+	emit.main.node = astProcBegin( emit.main.proc, _
+								   emit.main.initlabel, emit.main.exitlabel, TRUE )
 
 	''
 	env.scope = 1
-	env.currproc = proc
+	env.currproc = emit.main.proc
 
-	if( argtail <> NULL ) then
-		arg = symbGetProcHeadArg( proc )
-		emit.main.argc = symbAddArgAsVar( arg->alias, arg )
-		arg = symbGetProcTailArg( proc )
-		emit.main.argv = symbAddArgAsVar( arg->alias, arg )
-	end if
+	arg = symbGetProcHeadArg( emit.main.proc )
+	emit.main.argc = symbAddArgAsVar( arg->alias, arg )
+	arg = symbGetProcTailArg( emit.main.proc )
+	emit.main.argv = symbAddArgAsVar( arg->alias, arg )
 
 	env.currproc = NULL
 	env.scope = 0
 
 	''
-   	emitWriteRtInit( )
+   	emitWriteRtInit( isdllmain )
 
    	astAdd( astNewLABEL( emit.main.initlabel ) )
 
 end sub
 
 '':::::
-private sub hMainEnd( )
+private sub hMainEnd( byval isdllmain as integer )
 
    	astAdd( astNewLABEL( emit.main.exitlabel ) )
 
     '' end( 0 )
-    rtlExitRt( NULL )
+    if( not isdllmain ) then
+    	rtlExitRt( NULL )
+    end if
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
     if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
-    	rtlDataRestore( NULL, emit.main.proc, TRUE )
+    	rtlDataRestore( NULL, emit.main.initnode, TRUE )
     end if
 
 	''
@@ -188,6 +287,7 @@ end sub
 
 '':::::
 function emitOpen( ) as integer
+    dim as integer isdllmain
 
 	if( hFileExists( env.outf.name ) ) then
 		kill env.outf.name
@@ -203,7 +303,18 @@ function emitOpen( ) as integer
 
 	''
 	if( env.outf.ismain ) then
-		hMainBegin( )
+		isdllmain = FALSE
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+				isdllmain = TRUE
+			end if
+		end if
+
+		hMainBegin( isdllmain )
+
+		if( isdllmain ) then
+			hDllMainBegin( )
+		end if
 	else
 		hModLevelBegin( )
 	end if
@@ -214,10 +325,18 @@ end function
 
 '':::::
 sub emitClose( byval tottime as double )
+	dim as integer isdllmain
 
     ''
     if( env.outf.ismain ) then
-    	hMainEnd( )
+		isdllmain = FALSE
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+				isdllmain = TRUE
+			end if
+		end if
+
+    	hMainEnd( isdllmain )
     else
     	hModLevelEnd( )
     end if

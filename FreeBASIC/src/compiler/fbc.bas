@@ -209,11 +209,12 @@ function compileFiles as integer
 	function = FALSE
 
 	''
-	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE ) then
+	select case fbc.outtype
+	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
     	checkmain = TRUE
-    else
+    case else
     	checkmain = fbc.mainset
-    end if
+    end select
 
     ismain = FALSE
 
