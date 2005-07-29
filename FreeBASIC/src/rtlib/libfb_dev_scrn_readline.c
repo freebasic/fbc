@@ -27,10 +27,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-#if 0
+#define FB_USE_COMFORTABLE_READLINE FALSE
+
+#if FB_USE_COMFORTABLE_READLINE
 
 static void fb_ScrnSetCursorPos( int start_x, int start_y, int cols, size_t pos )
 {
@@ -48,7 +51,7 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst );
 
 int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 {
-#if 0
+#if FB_USE_COMFORTABLE_READLINE
     int start_x, start_y, cols;
     size_t pos, len, tmp_buffer_len = 0;
     int cursor_visible;
@@ -205,7 +208,31 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     fb_ScrnSetCursorPos( start_x, start_y, cols, len );
     return res;
 #else
-    return fb_DevFileReadLineDumb( stdin, dst );
+    int old_x, old_y, rows, cols;
+    size_t len;
+    int res;
+
+    fb_GetSize( &cols, &rows );
+
+    fb_GetXY( &old_x, &old_y );
+    res = fb_DevFileReadLineDumb( stdin, dst );
+
+    FB_STRLOCK();
+    len = FB_STRSIZE(dst);
+    FB_STRUNLOCK();
+
+    assert(handle->width!=0);
+
+    old_x += len;
+    old_y += old_x / handle->width;
+    old_x %= handle->width;
+
+    if( old_y >= rows )
+        old_y = rows - 1;
+
+    fb_Locate( old_y, old_x, -1 );
+
+    return res;
 #endif
 }
 
@@ -216,5 +243,11 @@ void fb_DevScrnInit_ReadLine( void )
 	fb_DevScrnInit_NoOpen( );
 
     if( FB_HANDLE_SCREEN->hooks->pfnReadLine == NULL )
-    	FB_HANDLE_SCREEN->hooks->pfnReadLine = fb_DevScrnReadLine;
+        FB_HANDLE_SCREEN->hooks->pfnReadLine = fb_DevScrnReadLine;
+#if FB_USE_COMFORTABLE_READLINE
+    if( FB_HANDLE_SCREEN->hooks->pfnEof == NULL )
+        FB_HANDLE_SCREEN->hooks->pfnEof = fb_DevScrnEof;
+    if( FB_HANDLE_SCREEN->hooks->pfnRead == NULL )
+        FB_HANDLE_SCREEN->hooks->pfnRead = fb_DevScrnRead;
+#endif
 }

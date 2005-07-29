@@ -36,7 +36,8 @@ int fb_ConsoleGetTopRow( void )
         view_toprow = 0;
 #else
         fb_ConsoleGetWindow( NULL, &view_toprow, NULL, NULL );
-        --view_toprow;
+        if( view_toprow!=0 )
+            --view_toprow;
 #endif
     }
 
@@ -54,9 +55,11 @@ int fb_ConsoleGetBotRow( void )
 #else
         int view_top;
         fb_ConsoleGetWindow( NULL, &view_top, NULL, &view_botrow );
-        view_botrow += view_top - 1;
+        if( view_botrow!=0 )
+            view_botrow += view_top - 1;
 #endif
-        --view_botrow;
+        if( view_botrow!=0 )
+            --view_botrow;
     }
 
 	return view_botrow;

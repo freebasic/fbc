@@ -31,10 +31,13 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
 
-    GetConsoleScreenBufferInfo( fb_out_handle, &info );
-
+    if( GetConsoleScreenBufferInfo( fb_out_handle, &info ) == 0 ) {
+        if( col != NULL )
+            *col = 0;
+        if( row != NULL )
+            *row = 0;
+    } else {
 #if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
-    {
         int add_x, add_y;
         fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
 #if FB_CON_BOUNDS==1
@@ -46,12 +49,12 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 #endif
         if( row != NULL )
             *row = info.dwCursorPosition.Y - add_y + 2;
-    }
 #else
-    if( col != NULL )
-    	*col = info.dwCursorPosition.X + 1;
-    if( row != NULL )
-        *row = info.dwCursorPosition.Y + 1;
+        if( col != NULL )
+            *col = info.dwCursorPosition.X + 1;
+        if( row != NULL )
+            *row = info.dwCursorPosition.Y + 1;
 #endif
+    }
 }
 

@@ -39,8 +39,12 @@ FBCALL int fb_ConsoleView( int toprow, int botrow )
 #elif FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
     minrow = 1;
     fb_ConsoleGetWindow( NULL, NULL, NULL, &maxrow );
+    if( maxrow==0 )
+        return 0;
 #else
     fb_ConsoleGetWindow( NULL, &minrow, NULL, &maxrow );
+    if( maxrow==0 )
+        return 0;
     maxrow += minrow - 1;
 #endif
 
