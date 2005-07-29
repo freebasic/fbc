@@ -31,6 +31,7 @@
 FB_HOOKSTB fb_hooks = { NULL };
 FBSTRING fb_strNullDesc = { NULL, 0 };
 FB_FILE fb_fileTB[FB_MAX_FILES];
+extern int __fb_file_handles_cleared;
 
 FB_ERRORCTX fb_errctx = { 0 };
 FB_INPCTX fb_inpctx = { 0 };
@@ -68,6 +69,7 @@ FBCALL void fb_Init ( int argc, char **argv )
 {
 	/* initialize files table */
     memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
+    __fb_file_handles_cleared = TRUE;
 
 	/* os-dep initialization */
     fb_hInit( argc, argv );

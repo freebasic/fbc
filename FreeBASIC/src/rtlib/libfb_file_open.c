@@ -46,17 +46,24 @@ static void fb_hFileExit( void )
 
 }
 
+int __fb_file_handles_cleared = FALSE;
+
 /*::::: make it accessible for all VFS functions too */
 void fb_hFileCtx ( int doinit )
 {
 	static int inited = 0;
 
+    FB_LOCK();
 	//
 	if( doinit )
 	{
 		if( inited )
 			return;
 
+        if( !__fb_file_handles_cleared ) {
+            memset( fb_fileTB, 0, sizeof( FB_FILE ) * FB_MAX_FILES );
+            __fb_file_handles_cleared = TRUE;
+        }
 		atexit( &fb_hFileExit );
 
 		inited = 1;
@@ -71,6 +78,7 @@ void fb_hFileCtx ( int doinit )
 
 		inited = 0;
 	}
+    FB_UNLOCK();
 }
 
 /*:::::*/

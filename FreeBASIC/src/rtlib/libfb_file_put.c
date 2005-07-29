@@ -64,18 +64,19 @@ int fb_FilePutDataEx( FB_FILE *handle,
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if (res==FB_RTERROR_OK && adjust_rec_pos)
+    if (res==FB_RTERROR_OK && adjust_rec_pos
+        && handle->len!=0 && handle->hooks->pfnSeek!=NULL
+        && handle->mode == FB_FILE_MODE_RANDOM )
     {
-        /* if in random mode, writes must be of reclen */
-        if( handle->mode == FB_FILE_MODE_RANDOM )
+        /* if in random mode, writes must be of reclen.
+         * The device must also support the SEEK method and the length
+         * must be non-null */
+        size_t skip_size = handle->len - (length % handle->len);
+        if (skip_size != 0)
         {
-            size_t skip_size = handle->len - (length % handle->len);
-            if (skip_size != 0)
-            {
-				/* devices that don't support seek should simulate it
-				   with write or never allow to be opened for random access */
-				handle->hooks->pfnSeek( handle, skip_size, SEEK_CUR );
-            }
+            /* devices that don't support seek should simulate it
+             with write or never allow to be opened for random access */
+            handle->hooks->pfnSeek( handle, skip_size, SEEK_CUR );
         }
     }
 
