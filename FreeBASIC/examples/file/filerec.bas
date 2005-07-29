@@ -38,11 +38,5 @@ FOR i = 1 TO 10
    PRINT i, FileBuffer.NameField, str$( FileBuffer.ScoreField ), FileBuffer.ScoreField
 NEXT i
 
-
-
 CLOSE #1
-
-
-
-
 

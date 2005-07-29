@@ -1,20 +1,20 @@
-  
+
   FreeBASIC - A multi-platform 32-bit BASIC Compiler
   Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 
 
 License:
 
-  This program is free software; you can redistribute it and/or modify it under 
-  the terms of the GNU General Public License as published by the Free Software 
+  This program is free software; you can redistribute it and/or modify it under
+  the terms of the GNU General Public License as published by the Free Software
   Foundation; either version 2 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful, but WITHOUT 
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+  This program is distributed in the hope that it will be useful, but WITHOUT
+  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
   FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License along with 
-  this program; if not, write to the Free Software Foundation, Inc., 59 Temple 
+  You should have received a copy of the GNU General Public License along with
+  this program; if not, write to the Free Software Foundation, Inc., 59 Temple
   Place, Suite 330, Boston, MA 02111-1307 USA.
 
 
@@ -22,33 +22,33 @@ Installing:
 
   o Windows version:
 
-    - Unpack the zip archive to any folder of your preference -- C:\ is a good 
+    - Unpack the zip archive to any folder of your preference -- C:\ is a good
       idea if you are not going to use an IDE later. The directory structure
       as used inside the archive must be preserved.
 
-    - Run the INSTALL.BAT file to generate the import libraries -- they are 
+    - Run the INSTALL.BAT file to generate the import libraries -- they are
       needed to call any function on DLL's and to create the executables.
 
-    (Note: Do not install the Windows version over the old versions, unless the 
+    (Note: Do not install the Windows version over the old versions, unless the
      whole /lib/win32 directory is deleted first.)
 
   o Linux version:
 
     - Unpack the tar gzip archive to any folder.
 
-    - Login as root and run the install.sh script that will copy the binaries, 
-      libraries and include files to the usr/share/freebasic dir and create a 
+    - Login as root and run the install.sh script that will copy the binaries,
+      libraries and include files to the usr/share/freebasic dir and create a
       link at usr/bin/fbc.
 
   o DOS:
 
-    - Unpack the zip archive to any folder you want, but give preference to one 
-      with no white-spaces on its name and not longer than 8 characters. The 
+    - Unpack the zip archive to any folder you want, but give preference to one
+      with no white-spaces on its name and not longer than 8 characters. The
       directory structure as used inside the archive must be preserved.
 
-  
-  (Note: if you are installing the DOS version over the Windows one or vice-versa, 
-   rename the fbc.exe file of the preview installation to fbc-win.exe or such, or 
+
+  (Note: if you are installing the DOS version over the Windows one or vice-versa,
+   rename the fbc.exe file of the preview installation to fbc-win.exe or such, or
    it will be overwritten by the new one.)
 
 
@@ -56,23 +56,23 @@ Running:
 
   o Windows and DOS versions:
 
-    - Open the DOS/Command-Prompt/Console and change to the dir where the 
-      FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC" 
+    - Open the DOS/Command-Prompt/Console and change to the dir where the
+      FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC"
       (without quotes) and press Enter, if the archive was expanded to C:\.
 
-    - Type "fbc" (without quotes) to see a list of options. To compile the hello 
-      example type: "fbc examples\hello.bas", the hello.exe file will be created 
+    - Type "fbc" (without quotes) to see a list of options. To compile the hello
+      example type: "fbc examples\hello.bas", the hello.exe file will be created
       at the "examples" dir.
 
-    - You can also add the FreeBASIC dir to your PATH environment variable, so 
-      you will not have to switch to or type the FB's dir every time you want to 
+    - You can also add the FreeBASIC dir to your PATH environment variable, so
+      you will not have to switch to or type the FB's dir every time you want to
       compile your project's files.
- 
+
   o Linux version:
 
-    - After running the install.sh script, any user can invoke FreeBASIC by simply 
+    - After running the install.sh script, any user can invoke FreeBASIC by simply
       typing "fbc" on any dir the shell is currently at.
-    
+
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
       example type: "fbc examples/hello.bas", the hello executable file will be
       created at the "examples" dir.
@@ -81,62 +81,62 @@ Running:
 Requirements:
 
   o Windows version:
-  
-    - The FreeBASIC compiler (fbc.exe) and the executables generated by it need 
-      at least Windows 95 to run -- it was not tested in Windows 3.x with the 
-      Win32 system installed yet. 
-      
-    - The msvcrt.dll (the Microsoft's C runtime library) must be present (note: 
-      it didn't use to come with Windows 95, but it's installed by many applications 
-      and can be also downloaded at: 
+
+    - The FreeBASIC compiler (fbc.exe) and the executables generated by it need
+      at least Windows 95 to run -- it was not tested in Windows 3.x with the
+      Win32 system installed yet.
+
+    - The msvcrt.dll (the Microsoft's C runtime library) must be present (note:
+      it didn't use to come with Windows 95, but it's installed by many applications
+      and can be also downloaded at:
       http://support.microsoft.com/default.aspx?scid=kb;en-us;259403 ).
-      
+
     - The gfx routines will use DirectX 5.0 or later if found on the host system,
       otherwise they'll fall back on standard Win32 GDI which will work on any
       Windows system.
-      
+
   o Linux version:
-  
+
     - The FreeBASIC compiler (fbc) and the executable generated by it depend on
       libc, libm, libpthread and libdl. These are all standard Linux libraries
       and should be available by default on all modern distros.
-    
+
     - When using the gfx routines, the dependencies will increase. FreeBASIC gfx
       programs will also need libX11, libXext, libXpm, libXrender and libXrandr
       to be installed on the host system to be executed. This is usually not a
       problem as long as there's a recent X11 server installed in the system
       (at least XFree86 4.3.0 or any X.org version).
-    
+
     - If having a working X11 installation is enough to run FreeBASIC gfx programs,
       it may be not enough to compile them; you may need to install the X11
       development libraries from your Linux packages repository.
-      
+
   o DOS version:
-    
-    - A DPMI (DOS Protected-Mode Interface) server must be present to run 
-      fbc.exe and any executable generated by it. When running in raw DOS (ie: 
+
+    - A DPMI (DOS Protected-Mode Interface) server must be present to run
+      fbc.exe and any executable generated by it. When running in raw DOS (ie:
       not a Windows 3x/9x/NT/XP/etc command-prompt), the CWSDPMI server
-      (http://clio.rice.edu/cwsdpmi/csdpmi5b.zip) must be on your PATH 
+      (http://clio.rice.edu/cwsdpmi/csdpmi5b.zip) must be on your PATH
       environment variable (note: FreeDOS comes with it already installed).
 
 
 Debugging:
 
-  o The debugger is in the bin\win32 or bin\dos directories (the GDB.EXE file), for 
-    the Windows and DOS versions respectively. It usually comes already installed 
+  o The debugger is in the bin\win32 or bin\dos directories (the GDB.EXE file), for
+    the Windows and DOS versions respectively. It usually comes already installed
     in most Linux distros.
 
     (Note: all commands should be typed without quotes and then [return] must be pressed.)
 
-    - Compile the sources using the -g cmd-line option to add debug support.
+    - Compile the sources using the -g cmd-line option to add debugging support.
 
     - Load it in GDB using: "gdb myapplicationname.exe"
 
-    - Set the arguments to the application been debugged using: 
+    - Set the arguments to the application been debugged using:
       "set args arg1 arg2 argn".
-   
+
     - If the executable isn't in the same directory of the source files where it
-      was compiled, type: "directory path/to/my/application/sources".
+      was compiled, type: "dir path/to/my/application/sources".
 
     - Place a breakpoint in the first line using: "b main".
 
@@ -149,8 +149,8 @@ Debugging:
 
     - Type "c" to continue execution until the next breakpoint.
 
-    - Use "disp ABC" to display the contents of a variable called "abc" 
-      (notes: 1> all in uppercase, GDB isn't case insensitive, 2> undeclared 
+    - Use "disp ABC" to display the contents of a variable called "abc"
+      (notes: 1> all in uppercase, GDB isn't case insensitive, 2> undeclared
        variables or the ones with suffixes like % & ! # $ can't be displayed).
 
     - Use "watch ABC" to stop each time a variable called "abc" is changed.
@@ -161,24 +161,24 @@ Debugging:
 
     - Type "help" to see a list of commands.
 
-      
+
 Most Important Features:
 
   o BASIC Compatibility:
 
-    - FreeBASIC is not a "new" BASIC language. It is not required of you to 
+    - FreeBASIC is not a "new" BASIC language. It is not required of you to
       learn anything new if you are familiar with any Microsoft-BASIC variant.
 
-    - FreeBASIC is case-insensitive; scalar variables don't need to be 
-      dimensioned and suffix can be used; line numbers are supported; MAIN 
-      function is not required; most of the graphic and console statements and 
+    - FreeBASIC is case-insensitive; scalar variables don't need to be
+      dimensioned and suffix can be used; line numbers are supported; MAIN
+      function is not required; most of the graphic and console statements and
       functions found in MS-QuickBASIC were implemented, et cetera.
 
   o Clean Syntax:
 
-    - Only a small number of keywords have been added. All functions are 
-      implemented as libraries, so for the most part, there are no new intrinsic 
-      routines, and therefore there is a low chance of having name duplication 
+    - Only a small number of keywords have been added. All functions are
+      implemented as libraries, so for the most part, there are no new intrinsic
+      routines, and therefore there is a low chance of having name duplication
       with old code. If you want to show a message box in Windows, simply do:
 
       '$include: 'win\user32.bi'
@@ -186,29 +186,29 @@ Most Important Features:
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
-  o Most of the known C libraries and API's can be used without wrappers or helpers: 
+  o Most of the known C libraries and API's can be used without wrappers or helpers:
 
-    - GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including 
+    - GTK+ 2.0: cross-platform GUI Toolkit (over 1MB of headers, including
       support for Glade, libart and glGtk)
 
     - libxml and libxslt: defacto standard XML and XSL libraries
 
     - GSL - GNU Scientific library: complex numbers, vectors and matrices, FFT,
-      linear algebra, statistics, sorting, differential equations, and a dozen 
+      linear algebra, statistics, sorting, differential equations, and a dozen
       other sub-libraries with mathematical routines
 
-    - GMP - GNU Multiple Precision Arithmetic Library: known as the fastest bignum 
+    - GMP - GNU Multiple Precision Arithmetic Library: known as the fastest bignum
       library
 
-    - SDL - Simple DirectMedia Layer: multimedia library for audio, user input, 
+    - SDL - Simple DirectMedia Layer: multimedia library for audio, user input,
       3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
-    
-    - OpenGL: portable library for developing interactive 2D and 3D graphics games 
+
+    - OpenGL: portable library for developing interactive 2D and 3D graphics games
       and applications (including support for frameworks such as GLUT and GLFW, plus
       the GL Extensions)
 
     - Allegro: game programming library (graphics, sounds, player input, etc)
-    
+
     - GD, DevIL, FreeImage, GRX and other graphic-related libraries
 
     - OpenAL, Fmod, BASS: 2D and 3D sound systems, with support for mod, mp3, ogg, etc
@@ -226,18 +226,18 @@ Most Important Features:
     - FreeBASIC currently runs on 32-bit Windows, Linux, and MS-DOS and also
       creates applications for the Xbox console. More platforms to come.
 
-    - The run-time library was written with portability in mind. All third-party 
-      tools used exist on most operating systems already as they are from the 
-      GNU binutils. The compiler is written in 100% FreeBASIC code (that's it, 
-      FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it 
+    - The run-time library was written with portability in mind. All third-party
+      tools used exist on most operating systems already as they are from the
+      GNU binutils. The compiler is written in 100% FreeBASIC code (that's it,
+      FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it
       doesn't depend on non-portable tools.
 
-  o A large number of variable types available, like BYTE, SHORT, INTEGER, 
+  o A large number of variable types available, like BYTE, SHORT, INTEGER,
     LONGINT, SINGLE, DOUBLE and STRING:
 
     - All integer types have unsigned versions (UBYTE, USHORT, UINTEGER, ULONGINT).
 
-    - Strings can be fixed, variable-length or null-terminated (zstring's), up 
+    - Strings can be fixed, variable-length or null-terminated (zstring's), up
       to 2GB long.
 
     - The LONGINT and ULONGINT data types are 64-bit wide.
@@ -246,7 +246,7 @@ Most Important Features:
 
     - Unlimited nesting.
 
-    - BASIC's TYPE statement is supported, along with the new UNION statement 
+    - BASIC's TYPE statement is supported, along with the new UNION statement
       (including nameless nested UNION's).
 
       TYPE MyType
@@ -323,7 +323,7 @@ Most Important Features:
 
     - Any lower and upper boundaries.
 
-    - REDIM PRESERVE statement is supported to resize any dynamic array and 
+    - REDIM PRESERVE statement is supported to resize any dynamic array and
       keep its contents intact.
 
   o Pointers:
@@ -358,19 +358,19 @@ Most Important Features:
       END SUB
 
     - Indexing:
-    
+
       DIM foo AS INTEGER PTR
-      
+
       foo = CALLOCATE( 10 * len( integer ) )
-      
+
       FOR i = 0 to 9
-        foo[i] = bar            '' same as *(foo + i) = bar         
+        foo[i] = bar            '' same as *(foo + i) = bar
       NEXT
-      
+
     - String Indexing:
-    
+
       DIM text AS STRING
-      
+
       text = "BAR"
       print text[0]             '' output will be 66 = ASC("B")
 
@@ -384,7 +384,7 @@ Most Important Features:
 
       cptr(myudt1 ptr, @udt2)->foo = *cptr(integer ptr, bar)
 
-  o Variable initializers for static, module-level or local variables, arrays 
+  o Variable initializers for static, module-level or local variables, arrays
     and UDT's:
 
       DIM foo( 0 to 3 ) AS INTEGER = { 1, 2, 3, 4 }
@@ -458,10 +458,10 @@ Most Important Features:
       END TYPE
 
       DIM s AS sometype, b AS bar
-      
+
       b.st.f = @b
       s.f = @b
-      
+
       s.f->st.f->a = 1234
 
   o Escape characters inside literal strings:
@@ -472,12 +472,12 @@ Most Important Features:
       OPTION ESCPAPE
       PRINT "\"Hello from FreeBASIC!\""
 
-  o Debug support:
-  
-    - Full debug support with GDB (the GNU debugger) or Insight (the GDB GUI frontend)
+  o Debugging support:
+
+    - Full debugging support with GDB (the GNU debugger) or Insight (the GDB GUI frontend)
 
     - Array bounds checking (only enabled by the -exx command-line option)
-    
+
     - Null pointers checking (same as above)
 
   o Create OBJ's, LIB's, DLL's, and console or GUI EXE's:
@@ -491,33 +491,33 @@ Most Important Features:
 
     - FreeBASIC can compile source code files up to 2 GB long.
 
-    - The number of symbols (variables, constants, et cetera) is only limited 
-      by the total memory available during compile time. (You can, for example, 
+    - The number of symbols (variables, constants, et cetera) is only limited
+      by the total memory available during compile time. (You can, for example,
       include OpenGL, Gtk/SDL, BASS, simultaneously in your source code.)
 
   o Optimized code generation:
 
-    - While FreeBASIC is not an optimizing compiler, it does many kinds of 
-      general optimizations to generate the fastest possible code on x86 CPU's, 
+    - While FreeBASIC is not an optimizing compiler, it does many kinds of
+      general optimizations to generate the fastest possible code on x86 CPU's,
       not losing to other BASIC alternatives, including the commercial ones.
 
   o Completely free:
 
     - All third-party tools are also free. No piece of abandoned or copyrighted
-      software is used (but GoRC on Win32). The assembler, linker, archiver, and 
+      software is used (but GoRC on Win32). The assembler, linker, archiver, and
       other command-line applications come from the GNU binutil programming tools.
 
 
 What FreeBASIC Isn't:
 
   o FreeBASIC is not a QuickBASIC clone, neither an emulator.
-  
-    - DEF SEG, PEEK and POKE to absolute 16-bit memory locations and many 
-      old and deprecated statements, that are seldom used today, were not 
-      implemented, read the docs/keywords.txt file for a list of differences. 
-      
-    - While FB is certainly the BASIC compiler that most resembles the Microsoft 
-      BASIC compilers for DOS, don't expect to compile old source-codes filled 
+
+    - DEF SEG, PEEK and POKE to absolute 16-bit memory locations and many
+      old and deprecated statements, that are seldom used today, were not
+      implemented, read the docs/keywords.txt file for a list of differences.
+
+    - While FB is certainly the BASIC compiler that most resembles the Microsoft
+      BASIC compilers for DOS, don't expect to compile old source-codes filled
       with unsupported statements or external libraries, that won't work.
 
   o FreeBASIC is not a Visual Basic alternative.
@@ -527,9 +527,9 @@ What FreeBASIC Isn't:
 
   o FreeBASIC is most certainly not bug free, as with any other program.
 
-    - The FreeBASIC project was started in September 2004, and was not/is not 
+    - The FreeBASIC project was started in September 2004, and was not/is not
       tested enough.
-      
+
 
 Possible Additions to Next Versions:
 
@@ -545,7 +545,7 @@ Credits (in alphabetic order):
     - Developer of GFXLib2.
     - Added profiling support.
     - Added build-in threads and dynlib support.
-    - Made the rtlib thread-safe, besides many other runtime lib 
+    - Made the rtlib thread-safe, besides many other runtime lib
       and compiler improvements.
 
   o Bryan Stoeberl (b_stoeberl@yahoo.com):
@@ -559,7 +559,7 @@ Credits (in alphabetic order):
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS and Xbox; ports maintainer.
     - Translated the Allegro headers (W.I.P.).
-    - Wrote the DLL and static library automation, plus resource scripts 
+    - Wrote the DLL and static library automation, plus resource scripts
       support on Windows.
     - Completed the CRTDLL and DDRAW headers.
 
@@ -567,7 +567,7 @@ Credits (in alphabetic order):
     - Ported the wx-c header (later replaced by the SWIG FB wrapper version)
     - Wrote the wx demonstration in the examples/wx-c dir.
 
-  o Edmond Leung (leung.edmond@gmail.com): 
+  o Edmond Leung (leung.edmond@gmail.com):
     - Translated the SDL headers, including SDL_mixer and SDL_image.
     - Wrote/ported many of the examples in the examples/SDL dir.
 
@@ -581,9 +581,9 @@ Credits (in alphabetic order):
 
   o fsw (fsw.fb@comcast.net):
     - Translated most of the Windows API headers.
-    - Wrote the glade_gui demo at the examples/Gtk directory, besides the 
+    - Wrote the glade_gui demo at the examples/Gtk directory, besides the
       wx-c GUI examples (not included).
-      
+
   o Garvan O'Keeffe (sisophon2001@yahoo.com):
     - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
     - Wrote the PDFlib demonstration, at examples/pdflib
@@ -592,7 +592,7 @@ Credits (in alphabetic order):
     - Wrote the GSL matrix test at the examples/GSL directory.
 
   o Matthias Faust (matthias_faust@web.de):
-    - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was 
+    - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was
       sent by Edmond Leung some days before) and wrote the SDL_ttf demonstration.
 
   o Mark Junker (mjscod@gmx.de) - Project Member:
@@ -614,7 +614,7 @@ Credits (in alphabetic order):
     - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
 
   o Steven Hidy (subxero@phatcode.net):
-    - Rewrote this readme file, correcting v1ctor's mistakes (also re-edited by 
+    - Rewrote this readme file, correcting v1ctor's mistakes (also re-edited by
       KrisKhaos for version 0.12).
 
   o zydon:
@@ -628,39 +628,39 @@ Credits (in alphabetic order):
 
     - Xbox version: OpenXDK (http://www.openxdk.org/)
 
-  o Many console routines used in the Win32 version of the run-time library 
+  o Many console routines used in the Win32 version of the run-time library
     were based on the CONIO implementation for Mingw32.
 
-  o The long integers (64-bit) division and modulo routines are from the GCC's 
+  o The long integers (64-bit) division and modulo routines are from the GCC's
     libgcc2 sources.
 
 
 Greetings:
 
-  o Plasma: freebasic.net domain register and since mar/2005 hosts the main site 
+  o Plasma: freebasic.net domain register and since mar/2005 hosts the main site
     too, many thanks to him.
 
-  o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch 
+  o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch
     of kangaroos in the middle time.
 
-  o VonGodric: author of the first FreeBASIC IDE: FBIDE (download it here: 
+  o VonGodric: author of the first FreeBASIC IDE: FBIDE (download it here:
     http://www.hot.ee/fbide/ ).
 
   o Rel: Best beta tester ever, found loads of bugs.
 
-  o Wildcard: Created the biggest FB forum and helped making FB known even before 
+  o Wildcard: Created the biggest FB forum and helped making FB known even before
     it was released.
 
-  o Blitz: The first to see the compiler when it was just a toy (delete the 
-    sources!). Helped pointing me out the right paths to follow in order to 
+  o Blitz: The first to see the compiler when it was just a toy (delete the
+    sources!). Helped pointing me out the right paths to follow in order to
     generate better code. Helped finding bugs and wrote the first real apps.
 
   o Marzec: Loads of tests, besides giving many ideas.
 
-  o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of 
+  o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of
     bugs found.
 
-  o People at Qbasicnews (too many to list, thanks all!) for all the support and 
+  o People at Qbasicnews (too many to list, thanks all!) for all the support and
     feedback.
 
   o You, for giving it a try - you won't regret.. er.
@@ -668,8 +668,8 @@ Greetings:
 
 Links:
 
-  o Official site: http://www.freebasic.net/ or 
-                   http://fbc.sourceforge.net/ or 
+  o Official site: http://www.freebasic.net/ or
+                   http://fbc.sourceforge.net/ or
                    http://www.sourceforge.net/projects/fbc
 
   o IRC channel: irc://irc.freenode.net/freeBASIC
@@ -681,7 +681,7 @@ Links:
     - BASS and BASSMod: http://www.un4seen.com/
 
     - BIG_INT: http://chat.finalcombat.com/valyala/big_int/
- 
+
     - cgi-util: http://www.newbreedsoftware.com/cgi-util/
 
     - cryptlib: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
@@ -689,7 +689,7 @@ Links:
     - DevIL: http://openil.sourceforge.net/
 
     - FastCGI: http://www.fastcgi.com/
-    
+
     - fmod: http://www.fmod.org/
 
     - FreeImage: http://freeimage.sourceforge.net/
@@ -697,9 +697,9 @@ Links:
     - GD: http://www.boutell.com/gd/ or http://gnuwin32.sourceforge.net/packages/gd.htm
 
     - GDSL: http://www.nongnu.org/gdsl/
-    
-    - GLFW: http://glfw.sourceforge.net/   
- 
+
+    - GLFW: http://glfw.sourceforge.net/
+
     - GLUT: http://www.xmission.com/~nate/glut.html
 
     - GMP: http://www.swox.com/gmp/
@@ -709,7 +709,7 @@ Links:
     - GSL: http://www.gnu.org/software/gsl/ or http://gnuwin32.sourceforge.net/packages/gsl.htm
 
     - GTK+: http://www.gtk.org/ or http://gladewin32.sourceforge.net/modules.php?name=Downloads
-    
+
     - IUP: http://luaforge.net/projects/iup
 
     - JAPI: http://www.japi.de/
@@ -717,11 +717,11 @@ Links:
     - libcaca: http://sam.zoy.org/libcaca/
 
     - LibXML: http://xmlsoft.org/
-    
+
     - Lua: http://www.lua.org/
 
     - Mini-XML: http://www.easysw.com/~mike/mxml/
-    
+
     - MySQL: http://dev.mysql.com/
 
     - Newton: http://www.physicsengine.com/
@@ -739,11 +739,11 @@ Links:
     - SDL: http://www.libsdl.org/ (look under Libraries for SDL_net, SDL_image, SDL_ttf, etc)
 
     - SDL_gfx: http://www.ferzkopp.net/~aschiffler/Software/SDL_gfx-2.0/
-    
+
     - SQLite: http://www.sqlite.org/
 
     - TinyPTC: http://sourceforge.net/projects/tinyptc/
-    
+
     - TRE (Regular Expressions): http://laurikari.net/tre/
 
     - wx-c: http://wxnet.sourceforge.net/

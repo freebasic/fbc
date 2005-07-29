@@ -31,5 +31,5 @@ end function
 	end 0
 	
 errhandler:	
-	print "error number:"; err; " at line:"; erl
+	print "error number: " + str( err ) + " at line: " + str( erl )
 	resume next

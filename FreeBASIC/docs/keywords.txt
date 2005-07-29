@@ -215,8 +215,7 @@
 
   WEND
   WHILE...WEND Statement
-  WIDTH Statements      (diff: only works for console, no file or printer; 
-                               the current dimensions are returned as: (width or (height shl 16)))
+  WIDTH Statements      (diff: the current dimensions are returned as: (width or (height shl 16)))
   WRITE (Screen) Statement
   WRITE (File) Statement
 
@@ -267,6 +266,8 @@
   ACOS Function
   ASIN Function
   ATAN2 Function
+  ASSERT macro		(only emitted when debugging (-g) is used)
+  ASSERTWARN macro	(ditto, but won't end the application, just shows a warning message)
 
   BYTE
   BYREF

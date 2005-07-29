@@ -5,6 +5,7 @@
 	do until( eof(1) )
 		
 		line input #1, ln$
+		print ln$
 		print #2, ln$
 	
 	loop
