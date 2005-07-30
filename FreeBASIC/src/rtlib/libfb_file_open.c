@@ -46,7 +46,7 @@ static void fb_hFileExit( void )
 
 }
 
-int __fb_file_handles_cleared = FALSE;
+extern int __fb_file_handles_cleared;
 
 /*::::: make it accessible for all VFS functions too */
 void fb_hFileCtx ( int doinit )

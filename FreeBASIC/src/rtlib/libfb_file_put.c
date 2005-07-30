@@ -64,9 +64,11 @@ int fb_FilePutDataEx( FB_FILE *handle,
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if (res==FB_RTERROR_OK && adjust_rec_pos
-        && handle->len!=0 && handle->hooks->pfnSeek!=NULL
-        && handle->mode == FB_FILE_MODE_RANDOM )
+    if( handle->mode == FB_FILE_MODE_RANDOM &&
+    	res==FB_RTERROR_OK && 
+    	adjust_rec_pos &&
+        handle->len!=0 && 
+        handle->hooks->pfnSeek!=NULL )
     {
         /* if in random mode, writes must be of reclen.
          * The device must also support the SEEK method and the length

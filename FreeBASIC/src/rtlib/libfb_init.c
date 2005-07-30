@@ -29,14 +29,15 @@
 
 /* globals */
 FB_HOOKSTB fb_hooks = { NULL };
-FBSTRING fb_strNullDesc = { NULL, 0 };
 FB_FILE fb_fileTB[FB_MAX_FILES];
-extern int __fb_file_handles_cleared;
+int __fb_file_handles_cleared = FALSE;
 
 FB_ERRORCTX fb_errctx = { 0 };
 FB_INPCTX fb_inpctx = { 0 };
 FB_PRINTUSGCTX fb_printusgctx = { 0 };
 FB_TLSENTRY fb_dirctx = 0;
+
+FBSTRING fb_strNullDesc = { NULL, 0 };
 
 /* prototypes for the FB constructors and destructors */
 typedef void (*FnCTOR)(void);
