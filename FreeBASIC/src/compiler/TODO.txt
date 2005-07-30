@@ -1,4 +1,13 @@
 
+[ ] unicode strings (WSTRING type):
+    - not var-len, just like ZSTRING's (fixed-len + pointers)
+    - wide as the target platform (16-bit in Windows, 8-bit in Linux, etc)
+      no copy, no helper libs, just the wstr* function to help 
+    - maybe libutf8 when unicode is not supported by the platform
+    - how to express literal unicode strings? W""?
+    - to make it simpler to implement and to not bloat the str_ objects, don't allow
+      wstring's to be compared or concatenated to other string types, just copied/assigned or neither that
+
 [ ] add the concatenation operator (&) as in VB/... - any type must be implicitly converted to string
 
 [ ] add fix-len and zstring * support to arrays args passed by descriptor

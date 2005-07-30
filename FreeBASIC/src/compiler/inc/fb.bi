@@ -23,7 +23,6 @@
 const FB_MAXPATHLEN			= 260
 
 const FB_MAXINCRECLEVEL		= 16
-const FB_MAXWITHLEVELS		= 4
 const FB_MAXARGRECLEVEL		= 8
 
 const FB_MAXINCPATHS		= 16
@@ -36,7 +35,6 @@ const FB_MAXNAMELEN			= 96
 const FB_MAXLITLEN			= 1024				'' literal strings max length
 const FB_MAXNUMLEN			= 64
 const FB_MAXOPERANDLEN		= FB_MAXNAMELEN + 2 + 16 + 2 + 1
-const FB_MAXWITHLEN			= FB_MAXNAMELEN * FB_MAXWITHLEVELS
 const FB_MAXDEFINELEN		= FB_MAXLITLEN*4
 
 ''

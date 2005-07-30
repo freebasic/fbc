@@ -58,7 +58,7 @@ declare function 	hGetErrorCnt 			( ) as integer
 declare sub 		hReportWarning			( byval msgnum as integer, _
 											  byval msgex as string = "" )
 
-declare function 	hMakeTmpStr 			( ) as zstring ptr
+declare function 	hMakeTmpStr 			( byval islabel as integer = TRUE ) as zstring ptr
 
 declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
 

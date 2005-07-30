@@ -53,16 +53,15 @@ type LEXCTX
 	defptr 			as zstring ptr
 	deflen 			as integer
 
-	'' last WITH's text
-	withtext		as zstring * FB_MAXWITHLEN+1
-	withptr 		as zstring ptr
-	withlen 		as integer
+	'' last WITH
+	withcnt 		as integer
 
 	'' input buffer
 	bufflen			as integer
 	buffptr			as zstring ptr
 	buff			as zstring * 8192+1
 	filepos			as integer
+	lastfilepos 	as integer
 end type
 
 declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as uinteger
@@ -74,7 +73,6 @@ declare sub 		lexNextToken 			( t as FBTOKEN, _
 '' globals
 	dim shared ctx as LEXCTX
 	dim shared curline as string
-	dim shared lastfilepos as integer
 
 	dim shared ctxcopyTB( 0 TO FB_MAXINCRECLEVEL-1 ) as LEXCTX
 
@@ -115,13 +113,13 @@ sub lexInit( )
 	ctx.deflen		= 0
 	ctx.defptr		= NULL
 
-	ctx.withlen		= 0
-	ctx.withptr		= NULL
+	ctx.withcnt		= 0
 
 	ctx.bufflen		= 0
 	ctx.buffptr		= NULL
 
 	ctx.filepos		= 0
+	ctx.lastfilepos = 0
 
 	'' only if it's not on an inc file
 	if( env.reclevel = 0 ) then
@@ -141,8 +139,9 @@ end sub
 
 ''::::
 private sub hLoadDefine( byval s as FBSYMBOL ptr )
+    static as string oldtext
+    dim as string text, newtext
     dim as FBDEFARG ptr a
-    dim as string text, oldtext, newtext
     dim as FBTOKEN t
     dim as integer prntcnt, lgt
 
@@ -165,7 +164,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 		do
 			newtext = ""
 
-			'' read text until a comma or right-parent is found
+			'' read text until a comma or right-parentheses is found
 			do
 				lexNextToken( t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX )
 				select case t.id
@@ -204,12 +203,13 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
             if( symbGetLen( s ) > 0 ) then
             	'' replace pattern with new text
             	oldtext = "\27"
-            	oldtext += hex$( a->id )
+            	oldtext += hex( a->id )
             	oldtext += "\27"
+            	newtext = trim( newtext )
             	hReplace( text, oldtext, newtext )
             end if
 
-			'' closing parent?
+			'' closing parentheses?
 			if( prntcnt = 0 ) then
 				exit do
 			end if
@@ -287,13 +287,19 @@ end sub
 private function lexReadChar as uinteger static
     dim char as uinteger
 
-	'' any #define'd text?
-	if( ctx.deflen > 0 ) then
-		char = *ctx.defptr
+	'' WITH?
+	if( ctx.withcnt > 0 ) then
+		'' '>'?
+		if( ctx.withcnt = 2 ) then
+			char = CHAR_MINUS
+		'' '-'
+		else
+			char = CHAR_GT
+		end if
 
-	'' any WITH text?
-	elseif( ctx.withlen > 0 ) then
-		char = *ctx.withptr
+	'' any #define'd text?
+	elseif( ctx.deflen > 0 ) then
+		char = *ctx.defptr
 
 	else
 
@@ -344,15 +350,14 @@ private function lexEatChar as uinteger static
 	'' update if a look ahead char wasn't read already
 	if( ctx.lahdchar = INVALID ) then
 
+		'' WITH?
+		if( ctx.withcnt > 0 ) then
+			ctx.withcnt -= 1
+
 		'' #define'd text?
-		if( ctx.deflen > 0 ) then
+		elseif( ctx.deflen > 0 ) then
 			ctx.deflen -= 1
 			ctx.defptr += 1
-
-		'' WITH text?
-		elseif( ctx.withlen > 0 ) then
-			ctx.withlen -= 1
-			ctx.withptr += 1
 
 		'' input stream (not EOF?)
 		elseif( ctx.currchar <> 0 ) then
@@ -374,15 +379,14 @@ end function
 '':::::
 private sub lexSkipChar static
 
+	'' WITH?
+	if( ctx.withcnt > 0 ) then
+		ctx.withcnt -= 1
+
 	'' #define'd text?
-	if( ctx.deflen > 0 ) then
+	elseif( ctx.deflen > 0 ) then
 		ctx.deflen -= 1
 		ctx.defptr += 1
-
-	'' WITH text?
-	elseif( ctx.withlen > 0 ) then
-		ctx.withlen -= 1
-		ctx.withptr += 1
 
 	'' input stream (not EOF?)
 	elseif( ctx.currchar <> 0 ) then
@@ -416,7 +420,7 @@ private function lexGetLookAheadChar( byval skipwhitespc as integer = FALSE ) as
 
 	if( ctx.lahdchar = INVALID ) then
 		lexSkipChar( )
-		ctx.lahdchar = lexReadChar
+		ctx.lahdchar = lexReadChar( )
 	end if
 
     if( skipwhitespc ) then
@@ -1009,7 +1013,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 						nval[3] = 0
 					end if
 
-					nval = oct$( valint( nval ) )
+					nval = oct( valint( nval ) )
 					'' save the oct len, or concatenation would fail if number chars follow
 					*ps = len( nval )
 					ps += 1
@@ -1051,10 +1055,34 @@ private sub lexReadString ( byval ps as zstring ptr, _
 end sub
 
 '':::::
+private sub hLoadWith( t as FBTOKEN, _
+					   byval flags as LEXCHECK_ENUM ) static
+
+	'' skip the '.'
+	lexEatChar( )
+
+	'' fake an identifier
+	t.text   = "{fbwith}"
+	t.tlen   = 8
+	t.typ    = INVALID
+	t.dotpos = 0
+	t.sym    = env.withvar
+	t.id 	 = FB_TK_ID
+	t.class  = FB_TKCLASS_IDENTIFIER
+
+	'' tell readChar to return '-' followed by '>'
+	ctx.withcnt = 1 + 1
+
+	'' force a re-read
+	ctx.currchar = INVALID
+
+end sub
+
+'':::::
 private sub lexNextToken ( t as FBTOKEN, _
 						   byval flags as LEXCHECK_ENUM ) static
 	dim as uinteger char
-	dim as integer islinecont, isnumber, iswith, lgt
+	dim as integer islinecont, isnumber, lgt
 	dim as FBSYMBOL ptr s
 
 reread:
@@ -1157,9 +1185,7 @@ reread:
 
 	loop
 
-	iswith = FALSE
-
-	lastfilepos = ctx.filepos - ctx.bufflen - 1
+	ctx.lastfilepos = ctx.filepos - ctx.bufflen - 1
 
 	select case as const char
 	'':::::
@@ -1179,19 +1205,24 @@ reread:
 			case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 				if( ctx.lasttoken <> CHAR_RPRNT ) then
 					if( ctx.lasttoken <> CHAR_RBRACKET ) then
-						if( len( env.withtext ) = 0 ) then
+						'' not WITH?
+						if( env.withvar = NULL ) then
 							isnumber = TRUE
 						else
-							iswith = TRUE
+							hLoadWith( t, flags )
+							exit sub
 						end if
 					end if
 				end if
 
 			'' anything else
 			case else
-				if( (ctx.lasttoken <> CHAR_RPRNT) and (ctx.lasttoken <> CHAR_RBRACKET) ) then
-					if( len( env.withtext ) > 0 ) then
-						iswith = TRUE
+				if( (ctx.lasttoken <> CHAR_RPRNT) and _
+					(ctx.lasttoken <> CHAR_RBRACKET) ) then
+					'' WITH?
+					if( env.withvar <> NULL ) then
+						hLoadWith( t, flags )
+						exit sub
 					end if
 				end if
 			end select
@@ -1227,18 +1258,6 @@ readid:
         	end if
         end if
 
-       	'' WITH hack
-       	if( iswith ) then
-			ctx.withtext = env.withtext + t.text
-			ctx.withlen  = len( env.withtext ) + t.tlen
-			ctx.withptr  = @ctx.withtext
-
-			'' force a re-read
-			ctx.currchar = INVALID
-
-			goto reread
-       	end if
-
 	'':::::
 	case CHAR_QUOTE
 		t.id		= FB_TK_STRLIT
@@ -1248,7 +1267,7 @@ readid:
 
 	'':::::
 	case else
-		t.id		= lexEatChar
+		t.id		= lexEatChar( )
 		t.tlen		= 1
 		t.typ		= t.id
 
@@ -1348,7 +1367,6 @@ readid:
 		end select
 
 	end select
-
 
 end sub
 
@@ -1671,7 +1689,7 @@ function lexPeekCurrentLine( token_pos as string ) as string
 
 	'' get file contents around current token
 	old_p = seek( env.inf.num )
-	p = lastfilepos - 512
+	p = ctx.lastfilepos - 512
 	start = 512
 	if( p < 0 ) then
 		start += p

@@ -1072,12 +1072,30 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
   			select case as const typ
   			case IR_DATATYPE_ENUM
   				constexpr = astNewENUM( valint( text ), symbGetSubType( s ) )
+
+			'' !!!REMOVEME!!!
+#ifdef val64
   			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
   				constexpr = astNewCONST64( val64( text ), typ )
+#else
+  			case IR_DATATYPE_LONGINT
+  				constexpr = astNewCONST64( vallng( text ), typ )
+
+  			case IR_DATATYPE_ULONGINT
+  				constexpr = astNewCONST64( valulng( text ), typ )
+#endif
+
   			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
   				constexpr = astNewCONSTf( val( text ), typ )
+
+			'' !!!REMOVEME!!!
+#ifdef valuint
+			case IR_DATATYPE_UINT
+				constexpr = astNewCONSTi( valuint( text ), typ )
+#endif
   			case else
   				constexpr = astNewCONSTi( valint( text ), typ, symbGetSubType( s ) )
+
   			end select
   		end if
 
@@ -1100,10 +1118,27 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 	case FB_TKCLASS_NUMLITERAL
   		typ = lexGetType( )
   		select case as const typ
+
+		'' !!!REMOVEME!!!
+#ifdef val64
   		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			litexpr = astNewCONST64( val64( *lexGetText( ) ), typ )
+#else
+  		case IR_DATATYPE_LONGINT
+			litexpr = astNewCONST64( vallng( *lexGetText( ) ), typ )
+
+		case IR_DATATYPE_ULONGINT
+			litexpr = astNewCONST64( valulng( *lexGetText( ) ), typ )
+#endif
+
   		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			litexpr = astNewCONSTf( val( *lexGetText( ) ), typ )
+
+		'' !!!REMOVEME!!!
+#ifdef valuint
+		case IR_DATATYPE_UINT
+			litexpr = astNewCONSTi( valuint( *lexGetText( ) ), typ )
+#endif
 		case else
 			litexpr = astNewCONSTi( valint( *lexGetText( ) ), typ )
   		end select

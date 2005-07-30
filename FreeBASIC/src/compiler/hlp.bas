@@ -353,10 +353,14 @@ function hHexUInt( byval value as uinteger ) as zstring ptr static
 end function
 
 '':::::
-function hMakeTmpStr( ) as zstring ptr static
+function hMakeTmpStr( byval islabel as integer ) as zstring ptr static
 	static as zstring * 8 + 3 + 1 res
 
-	res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
+	if( islabel ) then
+		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
+	else
+		res = "Lt_" + *hHexUInt( ctx.tmpcnt )
+	end if
 
 	ctx.tmpcnt += 1
 
@@ -465,8 +469,8 @@ sub hReplace( text as string, _
 	    	exit do
 	    end if
 
-		remtext = mid$( text, p + oldlen )
-		text = left$( text, p-1 )
+		remtext = mid( text, p + oldlen )
+		text = left( text, p-1 )
 		text += newtext
 		text += remtext
 		p += newlen

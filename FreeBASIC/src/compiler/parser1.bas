@@ -1173,7 +1173,7 @@ function cEnumDecl as integer static
 	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
     	lexEatToken( id )
     else
-    	id = *hMakeTmpStr( )
+    	id = *hMakeTmpStr( FALSE )
     end if
 
 	e = symbAddEnum( id )

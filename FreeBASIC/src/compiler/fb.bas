@@ -143,7 +143,7 @@ private sub hSetCtx( )
 	env.lastcompound		= INVALID
 	env.isprocstatic		= FALSE
 	env.procerrorhnd 		= NULL
-	env.withtext			= ""
+	env.withvar				= NULL
 
 	env.prntcnt				= 0
 	env.prntopt				= FALSE

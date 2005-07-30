@@ -868,7 +868,7 @@ type FBENV
 	scope			as integer					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
-	withtext		as zstring * FB_MAXWITHLEN+1'' WITH's text
+	withvar			as FBSYMBOL ptr				'' current WITH var
 
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID

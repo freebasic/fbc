@@ -66,7 +66,6 @@ end type
 type FBCTX
 	sel 		as FBSELECTCTX
 	swt 		as FBSWITCHCTX
-	withcnt		as integer
 end type
 
 '' globals
@@ -76,11 +75,9 @@ end type
 '':::::
 sub parser4Init
 
-	ctx.sel.base 	= 0
+	ctx.sel.base = 0
 
-	ctx.swt.base 	= 0
-
-	ctx.withcnt		= 0
+	ctx.swt.base = 0
 
 end sub
 
@@ -1791,44 +1788,37 @@ function cCompoundStmtElm as integer
 end function
 
 '':::::
-private function hReadWithText( byval text as string ) as integer
-    static as zstring * FB_MAXNAMELEN+1 id
-    dim as FBSYMBOL ptr sym
-    dim as integer dpos
+private function hAllocWithVar( ) as FBSYMBOL ptr
+    static as FBARRAYDIM dTB(0)
+    dim as FBSYMBOL ptr sym, subtype
+    dim as ASTNODE ptr expr
+    dim as integer dtype
 
-    ''
-    dpos = lexGetPeriodPos( )
-    id = *lexGetText( )
-
-    if( dpos > 0 ) then
-    	id[dpos-1] = 0 							'' left$( id, dpos-1 )
-    end if
-
-    sym = symbFindByNameAndClass( id, FB_SYMBCLASS_VAR )
-    if( sym = NULL ) then
+    '' Variable
+    if( not cVarOrDeref( expr ) ) then
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	return FALSE
+    	return NULL
     end if
 
-	if( sym->typ <> FB_SYMBTYPE_USERDEF ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		return FALSE
+	'' not an UDT?
+	dtype = astGetDataType( expr )
+	if( dtype <> FB_SYMBTYPE_USERDEF ) then
+		hReportError( FB_ERRMSG_INVALIDDATATYPES )
+		return NULL
 	end if
 
-    ''
-    lexEatToken( text )
+    '' create a temporary pointer
+    dtype += FB_SYMBTYPE_POINTER
+    subtype = astGetSubType( expr )
 
-    do
-    	select case lexGetToken( )
-		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOF
-			exit do
-		end select
+    sym = symbAddTempVar( dtype, subtype )
 
-    	text += *lexGetText( )
-    	lexSkipToken( )
-    loop
+    '' load with the address of expr (sym = @expr)
+    astAdd( astNewASSIGN( astNewVAR( sym, NULL, 0, dtype, subtype ), _
+    			  		  astNewADDR( IR_OP_ADDROF, expr, NULL, NULL ) ) )
 
-	return TRUE
+
+	function = sym
 
 end function
 
@@ -1838,25 +1828,21 @@ end function
 ''					  END WITH .
 ''
 function cWithStatement as integer
-    dim as zstring * FB_MAXWITHLEN+1 oldwithtext
+    dim as FBSYMBOL ptr oldvar
     dim as integer lastcompstmt
 
 	function = FALSE
-
-	if( ctx.withcnt >= FB_MAXWITHLEVELS ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
-		exit function
-	end if
 
 	'' WITH
 	lexSkipToken( )
 
 	'' save old
-	oldwithtext = env.withtext
+	oldvar = env.withvar
 
 	'' Variable
-
-	if( not hReadWithText( env.withtext ) ) then
+	env.withvar = hAllocWithVar( )
+	if( env.withvar = NULL ) then
+		env.withvar = oldvar
 		exit function
 	end if
 
@@ -1864,9 +1850,9 @@ function cWithStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator ) then
-		env.withtext = oldwithtext
-		hReportError FB_ERRMSG_EXPECTEDEOL
+	if( not cStmtSeparator( ) ) then
+		env.withvar = oldvar
+		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
@@ -1874,16 +1860,12 @@ function cWithStatement as integer
 	lastcompstmt     = env.lastcompound
 	env.lastcompound = FB_TK_WITH
 
-	ctx.withcnt += 1
-
 	'' loop body
 	do
 	loop while( (cSimpleLine( )) and (lexGetToken( ) <> FB_TK_EOF) )
 
 	'' restore old
-	env.withtext = oldwithtext
-
-	ctx.withcnt -= 1
+	env.withvar = oldvar
 
 	''
 	env.lastcompound = lastcompstmt

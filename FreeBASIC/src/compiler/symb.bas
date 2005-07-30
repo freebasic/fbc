@@ -1008,7 +1008,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	if( (iscommon) or (ispubext and isdynamic) ) then
 		sname = symbGetName( s )
 	else
-		sname = *hMakeTmpStr( )
+		sname = *hMakeTmpStr( FALSE )
 	end if
 
 	if( (env.scope = 0) or (isshared) or (isstatic) ) then
@@ -1219,7 +1219,7 @@ function symbAddVarEx( byval symbol as string, _
 
 	else
 		if( (not isshared) and (isstatic) ) then
-			aname = *hMakeTmpStr( )
+			aname = *hMakeTmpStr( FALSE )
 
 		else
 			if( (ispublic) or (isextern) ) then
@@ -1295,7 +1295,7 @@ function symbAddTempVar( byval typ as integer, _
 	dim as integer alloctype
     dim as FBARRAYDIM dTB(0)
 
-	sname = *hMakeTmpStr( )
+	sname = *hMakeTmpStr( FALSE )
 
 	alloctype = FB_ALLOCTYPE_TEMP
 	if( env.scope > 0 ) then
@@ -1330,7 +1330,7 @@ function hAllocNumericConst( byval sname as string, _
 		return s
 	end if
 
-	aname = *hMakeTmpStr( )
+	aname = *hMakeTmpStr( FALSE )
 
 	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, TRUE, FALSE, FALSE )
@@ -1371,7 +1371,7 @@ function hAllocStringConst( byval sname as string, _
 		cname = "{fbsc}"
 		cname += sname
 	else
-		cname = *hMakeTmpStr( )
+		cname = *hMakeTmpStr( FALSE )
 	end if
 
 	''
@@ -1380,7 +1380,7 @@ function hAllocStringConst( byval sname as string, _
 		return s 's->var.array.desc
 	end if
 
-	aname = *hMakeTmpStr( )
+	aname = *hMakeTmpStr( FALSE )
 
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
@@ -1455,13 +1455,13 @@ function symbAddLabel( byval symbol as string, _
 		if( not createalias ) then
     		aname = strptr( symbol )
 		else
-			aname = hMakeTmpStr( )
+			aname = hMakeTmpStr( TRUE )
 		end if
 
 		lname = strptr( symbol )
 
 	else
-		lname = hMakeTmpStr( )
+		lname = hMakeTmpStr( TRUE )
 		aname = lname
 	end if
 

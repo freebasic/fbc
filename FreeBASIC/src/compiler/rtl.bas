@@ -1974,9 +1974,21 @@ data "valint","fb_VALINT", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
-'' fb_VAL64 ( str as string ) as longint
-data "val64","fb_VAL64", _
+'' fb_VALUINT ( str as string ) as uinteger
+data "valuint","fb_VALUINT", _
+	 FB_SYMBTYPE_UINT,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_VALLNG ( str as string ) as longint
+data "vallng","fb_VALLNG", _
 	 FB_SYMBTYPE_LONGINT,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_VALULNG ( str as string ) as ulongint
+data "valulng","fb_VALULNG", _
+	 FB_SYMBTYPE_ULONGINT,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
