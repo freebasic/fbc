@@ -2,6 +2,8 @@ Version 0.15 Beta:
 
 [changed]
 - LOCATE/CLS/WIDTH/SCREEN are now window-local (left/top of window = 1/1) on Win32 (mjs)
+- VAL64 function renamed to VALLNG as longint's can be wider than 64 bits in future ports (v1c)
+- WITH can now accepts dereferenced pointers as argument and the depth is became unlimited (v1c)
 
 [added]
 - Added: OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE, OPEN SCRN (mjs)
@@ -9,6 +11,7 @@ Version 0.15 Beta:
 - LPOS(n) (mjs)
 - VIEW PRINT() now returns the top and bottom row (mjs)
 - all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
+- VALUINT and VALULNG, unsigned versions of VALINT and VALUINT, respectively (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -17,6 +20,10 @@ Version 0.15 Beta:
 - WIDTH on Win32 returned a bad mix of Window/Screen buffer values (mjs)
 - the PAD problem for PRINT (mjs)
 - array fields were not been checked for wrong number of dimensions (v1c)
+- ##arg## was not working if white-spaces were around the macro argument (v1c)
+- the VALINT and VAL64 functions were saturating unsigned integers in DOS and Linux, making the compiler
+  for those versions to process wrongly unsigned integer literals above 2^31 (v1c)
+- comparing a null zstring to null var-len string would not return equal (v1c)
 
 
 Version 0.14 Beta:
