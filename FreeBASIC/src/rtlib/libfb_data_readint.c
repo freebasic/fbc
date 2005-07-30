@@ -75,7 +75,7 @@ FBCALL void fb_DataReadUInt( unsigned int *dst )
 	}
 	else
 	{
-        *dst = (unsigned int)fb_hStr2Int( (char *)fb_DataPtr, len );
+        *dst = (unsigned int)fb_hStr2UInt( (char *)fb_DataPtr, len );
 
 		fb_DataPtr += len + 1;
 	}

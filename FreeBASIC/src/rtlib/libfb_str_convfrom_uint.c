@@ -18,68 +18,74 @@
  */
 
 /*
- * data_short.c -- read stmt for short's
+ * str_convfrom_uint.c -- valuint function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: mar/2005 written [v1ctor]
  *
  */
 
+#include <malloc.h>
 #include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_DataReadShort( short *dst )
+FBCALL unsigned int fb_hStr2UInt( char *src, int len )
 {
-	short len;
+    char 	*p;
+    int 	radix;
 
-	FB_LOCK();
+	/* skip white spc */
+	p = fb_hStrSkipChar( src, len, 32 );
 
-	len = fb_DataRead();
+	len -= (int)(p - src);
+	if( len < 1 )
+		return 0;
 
-	if( len == 0 )
+	radix = 10;
+	if( (len >= 2) && (p[0] == '&') )
 	{
-		*dst = 0;
-	}
-	else if( len == FB_DATATYPE_OFS )
-	{
-		*dst = *(unsigned int *)fb_DataPtr;
-		fb_DataPtr += sizeof( unsigned int );
-	}
-	else
-	{
-        *dst = (short)fb_hStr2Int( (char *)fb_DataPtr, len );
+		switch( p[1] )
+		{
+			case 'h':
+			case 'H':
+				radix = 16;
+			break;
+			case 'o':
+			case 'O':
+				radix = 8;
+			break;
+			case 'b':
+			case 'B':
+				radix = 2;
+			break;
+		}
 
-		fb_DataPtr += len + 1;
+		if( radix != 10 )
+			p += 2;
 	}
 
-	FB_UNLOCK();
+	return strtoul( p, NULL, radix );
 }
 
 /*:::::*/
-FBCALL void fb_DataReadUShort( unsigned short *dst )
+FBCALL unsigned int fb_VALUINT ( FBSTRING *str )
 {
-	short len;
+    unsigned int	val;
 
-	FB_LOCK();
+	if( str == NULL )
+	    return 0;
 
-	len = fb_DataRead();
+	FB_STRLOCK();
 
-	if( len == 0 )
-	{
-		*dst = 0;
-	}
-	else if( len == FB_DATATYPE_OFS )
-	{
-		*dst = *(unsigned int *)fb_DataPtr;
-		fb_DataPtr += sizeof( unsigned int );
-	}
+	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
+		val = 0;
 	else
-	{
-        *dst = (unsigned short)fb_hStr2UInt( (char *)fb_DataPtr, len );
+		val = fb_hStr2UInt( str->data, FB_STRSIZE( str ) );
 
-		fb_DataPtr += len + 1;
-	}
+	/* del if temp */
+	fb_hStrDelTemp( str );
 
-	FB_UNLOCK();
+	FB_STRUNLOCK();
+
+	return val;
 }
-

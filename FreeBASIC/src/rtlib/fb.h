@@ -383,7 +383,9 @@ FBCALL FBSTRING     *fb_DoubleToStr     ( double num );
 
 FBCALL double       fb_hStr2Double      ( char *src, int len );
 FBCALL int          fb_hStr2Int         ( char *src, int len );
+FBCALL unsigned int fb_hStr2UInt        ( char *src, int len );
 FBCALL long long    fb_hStr2Longint     ( char *src, int len );
+FBCALL unsigned long long fb_hStr2ULongint ( char *src, int len );
 FBCALL int          fb_hStrRadix2Int    ( char *src, int len, int radix );
        char        *fb_hFloat2Str       ( double val, char *buffer, int digits, int mask );
 

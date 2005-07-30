@@ -18,7 +18,7 @@
  */
 
 /*
- * str_convfrom_lng.c -- vallng function
+ * str_convfrom_ulng.c -- valulng function
  *
  * chng: mar/2005 written [v1ctor]
  *
@@ -31,7 +31,7 @@
 FBCALL long long fb_hStrRadix2Longint( char *s, int len, int radix );
 
 /*:::::*/
-FBCALL long long fb_hStr2Longint( char *src, int len )
+FBCALL unsigned long long fb_hStr2ULongint( char *src, int len )
 {
     char 	*p;
     int 	radix;
@@ -72,16 +72,17 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 	}
 
 #ifdef TARGET_WIN32
+	/* atoll will not saturate the unsigned values in Windows */
 	return atoll( p );
 #else
-	return strtoll( p, NULL, radix );
+	return strtoull( p, NULL, radix );
 #endif
 }
 
 /*:::::*/
-FBCALL long long fb_VALLNG ( FBSTRING *str )
+FBCALL unsigned long long fb_VALULNG ( FBSTRING *str )
 {
-    long long val;
+    unsigned long long val;
 
 	if( str == NULL )
 	    return 0;
@@ -91,7 +92,7 @@ FBCALL long long fb_VALLNG ( FBSTRING *str )
 	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
 		val = 0;
 	else
-		val = fb_hStr2Longint( str->data, FB_STRSIZE( str ) );
+		val = fb_hStr2ULongint( str->data, FB_STRSIZE( str ) );
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
@@ -101,8 +102,4 @@ FBCALL long long fb_VALLNG ( FBSTRING *str )
 	return val;
 }
 
-/*!!!REMOVEME!!!*/
-FBCALL long long fb_VAL64 ( FBSTRING *str )
-{
-	return fb_VALLNG( str );
-}
+

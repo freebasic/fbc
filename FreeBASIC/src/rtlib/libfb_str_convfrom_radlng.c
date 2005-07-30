@@ -17,69 +17,45 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * data_short.c -- read stmt for short's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
-
 #include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_DataReadShort( short *dst )
+FBCALL long long fb_hStrRadix2Longint( char *s, int len, int radix )
 {
-	short len;
+	long long c, v;
 
-	FB_LOCK();
+	v = 0;
 
-	len = fb_DataRead();
-
-	if( len == 0 )
+	switch( radix )
 	{
-		*dst = 0;
-	}
-	else if( len == FB_DATATYPE_OFS )
-	{
-		*dst = *(unsigned int *)fb_DataPtr;
-		fb_DataPtr += sizeof( unsigned int );
-	}
-	else
-	{
-        *dst = (short)fb_hStr2Int( (char *)fb_DataPtr, len );
+		/* hex */
+		case 16:
+			while( --len >= 0 )
+			{
+				c = (long long)*s++ - 48;
+                if( c > 9 )
+                	c -= (65 - 57 - 1);
+				if( c > 16 )
+					c -= (97 - 65);
 
-		fb_DataPtr += len + 1;
-	}
+				v = (v * 16) + c;
+			}
+		break;
 
-	FB_UNLOCK();
-}
+		/* oct */
+		case 8:
+			while( --len >= 0 )
+				v = (v * 8) + ((long long)*s++ - 48);
+		break;
 
-/*:::::*/
-FBCALL void fb_DataReadUShort( unsigned short *dst )
-{
-	short len;
-
-	FB_LOCK();
-
-	len = fb_DataRead();
-
-	if( len == 0 )
-	{
-		*dst = 0;
-	}
-	else if( len == FB_DATATYPE_OFS )
-	{
-		*dst = *(unsigned int *)fb_DataPtr;
-		fb_DataPtr += sizeof( unsigned int );
-	}
-	else
-	{
-        *dst = (unsigned short)fb_hStr2UInt( (char *)fb_DataPtr, len );
-
-		fb_DataPtr += len + 1;
+		/* bin */
+		case 2:
+			while( --len >= 0 )
+				v = (v * 2) + ((long long)*s++ - 48);
+		break;
 	}
 
-	FB_UNLOCK();
+	return v;
 }
 
