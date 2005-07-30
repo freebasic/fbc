@@ -32,7 +32,7 @@
 static int fb_hStrComp( const char *str1, int len1, const char *str2, int len2 )
 {
     int len, res;
-    
+
     /* min */
     len = (len1 <= len2? len1: len2);
 
@@ -40,7 +40,7 @@ static int fb_hStrComp( const char *str1, int len1, const char *str2, int len2 )
 	for( ; len > 0; len--,str1++,str2++ )
 		if( *str1 != *str2 )
 			return (*str1 > *str2? 1: -1);
-			
+
 #else
 		asm (
 			"repe\n"
@@ -52,8 +52,8 @@ static int fb_hStrComp( const char *str1, int len1, const char *str2, int len2 )
 			"0:\n"
 			: "=c" (res)
 			: "c" (len), "S" (str1), "D" (str2) );
-		
-		if( res != 0 ) 
+
+		if( res != 0 )
 			return res;
 #endif
 
@@ -72,6 +72,7 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 
 	FB_STRLOCK();
 
+	/* both not null? */
 	if( (str1 != NULL) && (str2 != NULL) )
 	{
 		FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
@@ -79,16 +80,33 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 
     	res = fb_hStrComp( str1_ptr, str1_len, str2_ptr, str2_len );
 	}
+	/* left null? */
 	else if( str1 == NULL )
 	{
+		/* right also null? return = */
 		if( str2 == NULL )
 			res = 0;
 		else
-			res = -1;
+		{
+			/* right is a var-len? the desc ptr can be null, return = */
+			if( (str2_size == -1) && (((FBSTRING *)str2)->data == NULL) )
+				res = 0;
+			/* return < */
+			else
+				res = -1;
+		}
 	}
+	/* only right is null */
 	else
-		res = 1;
-	
+	{
+		/* left is a var-len? the desc ptr can be null, return = */
+		if( (str1_size == -1) && (((FBSTRING *)str1)->data == NULL) )
+			res = 0;
+		/* return > */
+		else
+			res = 1;
+	}
+
 	/* delete temps? */
 	if( str1_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)str1 );
