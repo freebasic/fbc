@@ -5951,7 +5951,6 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 
 		select case as const env.clopt.target
 		case FB_COMPTARGET_WIN32
-			symbAddLib( "user32" )
 			symbAddLib( "gdi32" )
 			symbAddLib( "winmm" )
 
