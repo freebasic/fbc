@@ -266,7 +266,7 @@ void fb_hInit ( int argc, char **argv )
 	pthread_key_create(&fb_errctx.resnxtlbl, NULL);
 
 	/* allocate thread local storage vars for input context */
-	pthread_key_create(&fb_inpctx.f,         NULL);
+	pthread_key_create(&fb_inpctx.handle,    NULL);
 	pthread_key_create(&fb_inpctx.i,         NULL);
 	pthread_key_create(&fb_inpctx.s.data,    NULL);
 	pthread_key_create(&fb_inpctx.s.len,     NULL);

@@ -89,7 +89,7 @@ void fb_hEnd ( int errlevel )
 	pthread_key_delete(fb_errctx.resnxtlbl);
 
 	/* allocate thread local storage vars for input context */
-	pthread_key_delete(fb_inpctx.f);
+	pthread_key_delete(fb_inpctx.handle);
 	pthread_key_delete(fb_inpctx.i);
 	pthread_key_delete(fb_inpctx.s.data);
 	pthread_key_delete(fb_inpctx.s.len);

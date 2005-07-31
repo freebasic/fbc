@@ -31,10 +31,8 @@
 /*:::::*/
 static void fb_hPrintStrEx( FB_FILE *handle, const char *s, size_t len, int mask )
 {
-    int simple_mask = mask & ~FB_PRINT_HLMASK;
-
     if( len != 0 ) {
-        FB_PRINT_EX(handle, s, len, simple_mask);
+        FB_PRINT_EX(handle, s, len, 0);
     }
 
     fb_PrintVoidEx( handle, mask );
