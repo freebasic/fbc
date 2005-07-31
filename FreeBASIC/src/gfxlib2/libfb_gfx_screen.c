@@ -237,7 +237,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_mode->text_w = info->text_w;
 		fb_mode->text_h = info->text_h;
 
-		fb_AtExit(exit_proc);
+		atexit(exit_proc);
 	}
 
 	return FB_RTERROR_OK;
