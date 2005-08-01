@@ -532,7 +532,6 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "moldname" )
 		symbAddLib( "msvcrt" )
 		symbAddLib( "kernel32" )
-		symbAddLib( "user32" )
 
 	case FB_COMPTARGET_LINUX
 		symbAddLib( "gcc" )

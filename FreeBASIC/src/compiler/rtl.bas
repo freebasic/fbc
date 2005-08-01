@@ -42,6 +42,7 @@ end type
 
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 declare function 	hGfxlib_cb			( byval sym as FBSYMBOL ptr ) as integer
+declare function 	hMultinput_cb		( byval sym as FBSYMBOL ptr ) as integer
 
 
 ''globals
@@ -1646,17 +1647,17 @@ data "windowtitle", "fb_GfxSetWindowTitle", _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' fb_Multikey ( scancode as integer ) as integer
+'' fb_Multikey ( byval scancode as integer ) as integer
 data "multikey", "fb_Multikey", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as integer
 data "getmouse", "fb_GetMouse", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, TRUE, FALSE, _
+	 @hMultinput_cb, TRUE, FALSE, _
 	 4, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYREF, FALSE, _
@@ -1666,7 +1667,7 @@ data "getmouse", "fb_GetMouse", _
 '' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as integer
 data "setmouse", "fb_SetMouse", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, TRUE, FALSE, _
+	 @hMultinput_cb, TRUE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _
@@ -5939,6 +5940,23 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' gfx
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+private function hMultinput_cb( byval sym as FBSYMBOL ptr ) as integer static
+    static as integer libsAdded = FALSE
+
+	if( not libsadded ) then
+		libsAdded = TRUE
+
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32
+			symbAddLib( "user32" )
+		end select
+	end if	
+	
+	function = TRUE	
+
+end function
 
 '':::::
 private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
