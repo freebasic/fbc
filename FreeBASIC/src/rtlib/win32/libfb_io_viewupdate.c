@@ -29,5 +29,5 @@
 /*:::::*/
 void fb_ConsoleViewUpdate( void )
 {
-	/* do nothing */
+    fb_hUpdateConsoleWindow( );
 }

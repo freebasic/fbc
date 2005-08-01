@@ -35,12 +35,32 @@
 
 #if FB_USE_COMFORTABLE_READLINE
 
-static void fb_ScrnSetCursorPos( int start_x, int start_y, int cols, size_t pos )
+void DoMove( FB_FILE *handle, int *x, int *y, int dx, int dy, int cols, int rows )
 {
-    int x = start_x + pos;
-    int y = start_y + (x - 1) / cols;
-    x = ((x - 1) % cols) + 1;
-    fb_Locate( y, x, -1 );
+    assert( x!=NULL && y!=NULL );
+
+    *x -= 1;
+    *y -= 1;
+
+    *x += dx;
+    if( *x < 0 ) {
+        *x = -*x + cols;
+        *y -= *x / cols;
+        *x = cols - (*x % cols);
+    }
+    *y += *x / cols;
+    *x %= cols;
+    *y += dy;
+
+    *x += 1;
+    *y += 1;
+
+    if( *y==(rows+1) && *x==1 ) {
+        fb_Locate( rows, cols, -1 );
+        handle->hooks->pfnWrite( handle, "\n", 1 );
+    } else {
+        fb_Locate( *y, *x, -1 );
+    }
 }
 
 #else
@@ -52,15 +72,15 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst );
 int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 {
 #if FB_USE_COMFORTABLE_READLINE
-    int start_x, start_y, cols;
+    int tmp_x, tmp_y;
+    int cols, rows;
     size_t pos, len, tmp_buffer_len = 0;
     int cursor_visible;
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
     int k;
-    char ch, tmp_buffer[9];
+    char ch, tmp_buffer[12];
 
-    fb_GetSize(&cols, NULL);
-    fb_GetXY(&start_x, &start_y);
+    fb_GetSize(&cols, &rows);
 
     cursor_visible = (fb_Locate( -1, -1, -1 ) & 0x10000) != 0;
     fb_Locate( -1, -1, 0 );
@@ -100,11 +120,14 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             k = FB_MAKE_KEY(ch);
         }
 
+        fb_GetXY(&tmp_x, &tmp_y);
+
         switch (k) {
         case 8:
             /* DEL */
 			if (pos!=0) {
-				--pos;
+                DoMove( handle, &tmp_x, &tmp_y, -1, 0, cols, rows );
+                --pos;
                 delete_char = TRUE;
             }
             break;
@@ -116,35 +139,47 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             break;
         case FB_MAKE_EXT_KEY(0x53):
             /* CLeaR */
-            delete_char = TRUE;
+            if( len!=pos ) {
+                delete_char = TRUE;
+            } else {
+                fb_Beep();
+            }
             break;
         case FB_MAKE_EXT_KEY(0x4B):
             /* Cursor LEFT */
-            if( pos != 0 )
+            if( pos != 0 ) {
+                DoMove( handle, &tmp_x, &tmp_y, -1, 0, cols, rows );
                 --pos;
+            }
             break;
         case FB_MAKE_EXT_KEY(0x4D):
             /* Cursor RIGHT */
-            if( pos != len )
+            if( pos != len ) {
+                DoMove( handle, &tmp_x, &tmp_y, 1, 0, cols, rows );
                 ++pos;
+            }
             break;
         case FB_MAKE_EXT_KEY(0x47):
             /* HOME */
+            DoMove( handle, &tmp_x, &tmp_y, -pos, 0, cols, rows );
             pos = 0;
             break;
         case FB_MAKE_EXT_KEY(0x4F):
             /* END */
+            DoMove( handle, &tmp_x, &tmp_y, len-pos, 0, cols, rows );
             pos = len;
             break;
         case FB_MAKE_EXT_KEY(0x48):
             /* Cursor UP */
             if( pos >= cols) {
+                DoMove( handle, &tmp_x, &tmp_y, -cols, 0, cols, rows );
                 pos -= cols;
             }
             break;
         case FB_MAKE_EXT_KEY(0x50):
             /* Cursor DOWN */
             if( ( pos + cols ) <= len ) {
+                DoMove( handle, &tmp_x, &tmp_y, cols, 0, cols, rows );
                 pos += cols;
             }
             break;
@@ -153,6 +188,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
                 tmp_buffer[0] = (char) k;
                 tmp_buffer_len = 1;
                 add_char = TRUE;
+                /* DoMove( &tmp_x, &tmp_y, 1, 0, cols ); */
             }
             break;
         }
@@ -166,12 +202,11 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             fb_StrConcatAssign( dst, -1, str_right, -1, FALSE );
             --len;
 
-            /* TODO: Optimize */
-            fb_Locate( start_y, start_x, FALSE );
             FB_STRLOCK();
-            handle->hooks->pfnWrite( handle, dst->data, len );
+            handle->hooks->pfnWrite( handle, dst->data + pos, len - pos );
             FB_STRUNLOCK();
             handle->hooks->pfnWrite( handle, " ", 1 );
+            fb_Locate( tmp_y, tmp_x, -1 );
         }
 
         if( add_char ) {
@@ -179,6 +214,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
         }
 
         if( add_char ) {
+            int old_x = tmp_x, old_y = tmp_y;
             FBSTRING *str_add = fb_StrAllocTempDescF( tmp_buffer, tmp_buffer_len + 1 );
             FBSTRING *str_tmp1 = fb_StrAllocTempDescV( dst );
             FBSTRING *str_tmp2 = fb_StrAllocTempDescV( dst );
@@ -187,17 +223,22 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             fb_StrAssign( dst, -1, str_left, -1, FALSE );
             fb_StrConcatAssign( dst, -1, str_add, -1, FALSE );
             fb_StrConcatAssign( dst, -1, str_right, -1, FALSE );
-            pos += tmp_buffer_len;
             len += tmp_buffer_len;
 
-            /* TODO: Optimize */
-            fb_Locate( start_y, start_x, FALSE );
             FB_STRLOCK();
-            handle->hooks->pfnWrite( handle, dst->data, len );
+            handle->hooks->pfnWrite( handle, dst->data + pos, len - pos );
             FB_STRUNLOCK();
+
+            pos += tmp_buffer_len;
+
+            fb_GetXY(&tmp_x, &tmp_y);
+            if( old_x==tmp_x && old_y==tmp_y ) {
+                handle->hooks->pfnWrite( handle, "\n", 1 );
+                fb_GetXY(&tmp_x, &tmp_y);
+            }
+            DoMove( handle, &tmp_x, &tmp_y, pos - len, 0, cols, rows );
         }
 
-        fb_ScrnSetCursorPos( start_x, start_y, cols, pos );
         fb_Locate( -1, -1, cursor_visible );
 
 	} while (k!='\r' && k!='\n');
@@ -205,17 +246,21 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     FB_UNLOCK();
 
     /* set cursor to end of line */
-    fb_ScrnSetCursorPos( start_x, start_y, cols, len );
+    fb_GetXY(&tmp_x, &tmp_y);
+    DoMove( handle, &tmp_x, &tmp_y, len - pos, 0, cols, rows );
     return res;
+
 #else
+
     int old_x, old_y, rows, cols;
     size_t len;
     int res;
 
     fb_GetSize( &cols, &rows );
 
-    fb_GetXY( &old_x, &old_y );
+    fb_GetXY( &old_x, NULL );
     res = fb_DevFileReadLineDumb( stdin, dst );
+    fb_GetXY( NULL, &old_y );
 
     FB_STRLOCK();
     len = FB_STRSIZE(dst);
@@ -223,12 +268,10 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 
     assert(handle->width!=0);
 
-    old_x += len;
-    old_y += old_x / handle->width;
+    old_x += len - 1;
     old_x %= handle->width;
-
-    if( old_y >= rows )
-        old_y = rows - 1;
+    old_x += 1;
+    old_y -= 1;
 
     fb_Locate( old_y, old_x, -1 );
 
@@ -249,5 +292,7 @@ void fb_DevScrnInit_ReadLine( void )
         FB_HANDLE_SCREEN->hooks->pfnEof = fb_DevScrnEof;
     if( FB_HANDLE_SCREEN->hooks->pfnRead == NULL )
         FB_HANDLE_SCREEN->hooks->pfnRead = fb_DevScrnRead;
+    if( FB_HANDLE_SCREEN->hooks->pfnWrite == NULL )
+        FB_HANDLE_SCREEN->hooks->pfnWrite = fb_DevScrnWrite;
 #endif
 }

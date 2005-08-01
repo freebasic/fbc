@@ -35,7 +35,8 @@ char *fb_hConvertPath( char *path, int len )
     if( path == NULL )
     	return NULL;
 
-	for (i = 0; i < strlen( path ); i++)
+    len = strlen( path );
+	for (i = 0; i < len; i++)
 	{
 		if ( path[i] == '\\' )
 			path[i] = '/';

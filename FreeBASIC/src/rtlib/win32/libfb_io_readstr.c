@@ -31,8 +31,10 @@
 /*:::::*/
 char *fb_ConsoleReadStr( char *buffer, int len )
 {
-
-	return fgets( buffer, len, stdin );
-
+    char *res;
+    fb_hRestoreConsoleWindow( );
+    res = fgets( buffer, len, stdin );
+    fb_hUpdateConsoleWindow( );
+    return res;
 }
 

@@ -78,8 +78,8 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
         FB_STRLOCK();
 		if( text != NULL )
 		{
-			if( text->data != NULL ) {
-				fb_PrintStringEx( handle, text, 0 );
+            if( text->data != NULL ) {
+                fb_PrintStringEx( handle, text, 0 );
 			}
 
 			if( addquestion != FB_FALSE )

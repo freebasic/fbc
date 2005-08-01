@@ -27,13 +27,18 @@
 #include "fb.h"
 
 /*:::::*/
-void fb_ConsoleGetScreenSize( int *cols, int *rows )
+void fb_ConsoleGetScreenSizeEx( HANDLE hConsole, int *cols, int *rows )
 {
    	CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo( fb_out_handle, &info );
-
+    GetConsoleScreenBufferInfo( hConsole, &info );
     if( cols != NULL )
         *cols = info.dwSize.X;
     if( rows != NULL )
         *rows = info.dwSize.Y;
+}
+
+/*:::::*/
+FBCALL void fb_ConsoleGetScreenSize( int *cols, int *rows )
+{
+    fb_ConsoleGetScreenSizeEx( fb_out_handle, cols, rows );
 }

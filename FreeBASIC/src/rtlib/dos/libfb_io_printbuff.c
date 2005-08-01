@@ -65,10 +65,12 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 		if( row == botrow )
 			if( col + len - 1 == cols )
 			{
-				end_char = ((unsigned char *)buffer)[len - 1];
-				((unsigned char *)buffer)[len - 1] = '\0';
-                no_scroll = TRUE;
-                --len;
+                end_char = ((unsigned char *)buffer)[len - 1];
+                if (end_char >= 32 ) {
+                    ((unsigned char *)buffer)[len - 1] = '\0';
+                    no_scroll = TRUE;
+                    --len;
+                }
 			}
 
     fwrite( buffer, len, 1, stdout );

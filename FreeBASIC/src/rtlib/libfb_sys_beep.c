@@ -28,7 +28,7 @@
 #include <stdlib.h>
 
 /*:::::*/
-FBCALL void fb_Beep( )
+FBCALL void fb_Beep( void )
 {
 
 #ifdef TARGET_WIN32

@@ -33,19 +33,14 @@ FBCALL int fb_ConsoleView( int toprow, int botrow )
     int maxrow, minrow;
 
 
-#if FB_CON_BOUNDS==0 || !defined(TARGET_WIN32)
+#if !defined(TARGET_WIN32)
     minrow = 1;
     maxrow = fb_ConsoleGetMaxRow( );
-#elif FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
-    minrow = 1;
-    fb_ConsoleGetWindow( NULL, NULL, NULL, &maxrow );
-    if( maxrow==0 )
-        return 0;
 #else
-    fb_ConsoleGetWindow( NULL, &minrow, NULL, &maxrow );
+    minrow = 1;
+    fb_hConsoleGetWindow( NULL, NULL, NULL, &maxrow );
     if( maxrow==0 )
-        return 0;
-    maxrow += minrow - 1;
+        maxrow = FB_SCRN_DEFAULT_HEIGHT;
 #endif
 
     if( toprow > 0 ) {

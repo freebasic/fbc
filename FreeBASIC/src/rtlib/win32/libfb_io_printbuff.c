@@ -26,57 +26,168 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
 #include "fb.h"
 
-int fb_ConsoleLocateRaw( int row, int col, int cursor );
+#define FB_USE_VIEW_BUFFER FALSE
+
+#if FB_USE_VIEW_BUFFER
+/** Copy the contents from one screen buffer to another.
+ */
+static void fb_hBufferCopy( HANDLE hDest, int dx, int dy,
+                        HANDLE hSource, int x1, int y1, int x2, int y2,
+                        int set_env)
+{
+    PCHAR_INFO lpBuffer;
+    COORD dwBufferSize;
+    COORD dwBufferCoord;
+    SMALL_RECT r;
+    size_t BufferSize;
+
+    assert(x1 <= x2);
+    assert(y1 <= y2);
+    assert( hDest != NULL );
+    assert( hSource != NULL );
+
+    dwBufferSize.X = (SHORT) (x2 - x1 + 1);
+    dwBufferSize.Y = (SHORT) (y2 - y1 + 1);
+
+    dwBufferCoord.X = dwBufferCoord.Y = 0;
+
+    /* Copy console contents */
+    BufferSize = (x2 - x1 + 1) * (y2 - y1 + 1) * sizeof(CHAR_INFO);
+    lpBuffer = (PCHAR_INFO) malloc(BufferSize);
+    r.Left = (SHORT) x1;
+    r.Top = (SHORT) y1;
+    r.Right = (SHORT) x2;
+    r.Bottom = (SHORT) y2;
+    ReadConsoleOutput( hSource, lpBuffer, dwBufferSize, dwBufferCoord, &r );
+    r.Left = (SHORT) dx;
+    r.Top = (SHORT) dy;
+    r.Right = (SHORT) (r.Left + dwBufferSize.X - 1);
+    r.Bottom = (SHORT) (r.Top + dwBufferSize.Y - 1);
+    WriteConsoleOutput( hDest, lpBuffer, dwBufferSize, dwBufferCoord, &r );
+    free(lpBuffer);
+
+    if( set_env ) {
+        int col, row;
+
+        /* Set console color */
+        SetConsoleTextAttribute( hDest, (WORD) fb_ConsoleGetColorAttEx( hSource ) );
+
+        /* Set cursor position */
+        fb_ConsoleGetRawXYEx( hSource, &col, &row );
+        if( col!=-1 && row!=-1 ) {
+            COORD cDest;
+
+            if( row > y2 ) {
+                fb_ConsoleScrollRawEx( hDest, r.Left, r.Top, r.Right, r.Bottom, row - y2 );
+                row = y2;
+            }
+
+            cDest.X = (SHORT) (col - x1 + dx);
+            cDest.Y = (SHORT) (row - y1 + dy);
+            SetConsoleCursorPosition( hDest, cDest );
+        }
+    }
+}
+
+/** Creates a new console screen buffer from a source buffer.
+ */
+static HANDLE fb_hBufferCreateCopy( HANDLE hSource, int x1, int y1, int x2, int y2 )
+{
+    CONSOLE_CURSOR_INFO cursor_info;
+    HANDLE hDest;
+    COORD dwSize;
+
+    assert(x1 <= x2);
+    assert(y1 <= y2);
+    assert( hSource != NULL );
+
+    hDest = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
+                                       0,
+                                       NULL,
+                                       CONSOLE_TEXTMODE_BUFFER,
+                                       NULL );
+    assert( hDest != NULL );
+
+    /* Always hide cursor in temporary buffer (otherwise we'll get some
+     * cursor "artifacts") */
+    memset(&cursor_info, 0, sizeof(CONSOLE_CURSOR_INFO) );
+    cursor_info.dwSize = 100;
+    SetConsoleCursorInfo( hDest, &cursor_info );
+
+    SetConsoleMode( hDest, ENABLE_PROCESSED_OUTPUT );
+    /* The following instruction might fail on Win9x/ME systems */
+    SetConsoleMode( hDest, ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT );
+
+    dwSize.X = x2 - x1 + 1;
+    dwSize.Y = y2 - y1 + 1;
+    SetConsoleScreenBufferSize( hDest, dwSize );
+
+    /* Copy screen buffer contents */
+    BufferCopy( hDest, 0, 0,
+                hSource, x1, y1, x2, y2,
+                TRUE );
+
+    return hDest;
+}
+
+/** Destroys a screen buffer.
+ */
+static void fb_hBufferFree( HANDLE hSource )
+{
+    assert( hSource != NULL );
+    CloseHandle( hSource );
+}
+#endif
 
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
-    int col, row, end_row;
-    int toprow, botrow;
-	int cols, rows;
-	int scrolloff = FALSE;
-    int rowsleft, rowstoscroll;
-    int win_top, win_left;
     const char *pachText = (const char *) buffer;
+    CONSOLE_CURSOR_INFO old_src_cursor_info, cursor_info;
+    int scrolloff = FALSE;
+    DWORD mode;
+    int is_view_set;
+    HANDLE hView = NULL;
 
-	fb_ConsoleGetScreenSize( &cols, &rows );
-	fb_ConsoleGetView( &toprow, &botrow );
+    int col, row;
+
+    int buf_cols, buf_rows;
+    int win_left, win_top, win_cols, win_rows;
+    int view_top, view_bottom;
+
+    GetConsoleCursorInfo( fb_out_handle, &old_src_cursor_info );
+    memcpy( &cursor_info, &old_src_cursor_info, sizeof(CONSOLE_CURSOR_INFO) );
+    cursor_info.bVisible = FALSE;
+    SetConsoleCursorInfo( fb_out_handle, &cursor_info );
+
+	fb_ConsoleGetScreenSize( &buf_cols, &buf_rows );
+	fb_ConsoleGetView( &view_top, &view_bottom );
     fb_ConsoleGetXY( &col, &row );
+    fb_hConsoleGetWindow( &win_left, &win_top, &win_cols, &win_rows );
 
-#if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
-    fb_ConsoleGetWindow( &win_left, &win_top, NULL, &end_row );
-    end_row += win_top - 1;
-#elif FB_CON_BOUNDS==3
-    fb_ConsoleGetWindow( &win_left, &win_top, NULL, NULL );
-    end_row = rows;
-#else
-    win_left = win_top = 1;
-    end_row = fb_ConsoleGetMaxRow();
-#endif
-
-    row += win_top - 1;
-    col += win_left - 1;
-    toprow += win_top - 1;
-    botrow += win_top - 1;
+    is_view_set = view_top!=1 || view_bottom!=win_rows;
 
 	/* scrolling */
-	if( (row > botrow) && (botrow == end_row) )
+	if( (row > view_bottom) && is_view_set )
 	{
 		fb_ConsoleScroll( 1 );
-		row = botrow;
+		row = view_bottom;
 	}
 
 	/* if no newline and row at bottom and col+string at right, disable scrolling */
 	if( (mask & FB_PRINT_NEWLINE) == 0 )
 	{
-		if( row == botrow )
-			if( col + len - 1 == cols )
-				scrolloff = TRUE;
+        if( row == view_bottom ) {
+            /* FIXME: This doesn't work when the line contains control characters. */
+            if( col + len - 1 == win_cols ) {
+                scrolloff = TRUE;
+            }
+        }
 	}
-
-	DWORD  mode, byteswritten;
 
 	if( scrolloff )
 	{
@@ -85,32 +196,62 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	}
 
 	/* scrolling if VIEW was set */
-	if( (!scrolloff) && (col + len - 1 > cols) && (botrow != end_row) )
-	{
-    	rowsleft = (botrow - row) /*+ 1*/;
-    	rowstoscroll = 1 + (len - (cols - col + 1)) / cols;
+    if( is_view_set ) {
+#if FB_USE_VIEW_BUFFER
+        hView = fb_hBufferCreateCopy( fb_out_handle,
+                                      win_left, win_top + view_top - 1,
+                                      win_left + win_cols - 1, win_top + view_bottom - 1 );
+#else
+    	int rowsleft = (view_bottom - row) /*+ 1*/;
+    	int rowstoscroll = 1 + ((int) len - (win_cols - col + 1)) / win_cols;
     	if( (mask & FB_PRINT_NEWLINE) != 0 )
     		++rowstoscroll;
 
      	if( rowstoscroll - rowsleft > 0 )
      	{
      		fb_ConsoleScroll( rowstoscroll - rowsleft );
-     		fb_ConsoleLocateRaw( botrow - (rowstoscroll - rowsleft), -1, -1 );
-     	}
-	}
+        }
+        hView = fb_out_handle;
+#endif
+    } else {
+        hView = fb_out_handle;
+    }
 
-    /* */
-	while( WriteFile( fb_out_handle, pachText, len, &byteswritten, NULL ) == TRUE )
-	{
-		pachText += byteswritten;
-		len -= byteswritten;
-		if( len <= 0 )
-			break;
-	}
+    {
+        DWORD  byteswritten;
 
-	if( scrolloff )
-		SetConsoleMode( fb_out_handle, mode );
+        if( hView==fb_out_handle ) {
+            /* Ensure that the user didn't do some scrolling/resizing
+             * of the window */
+            fb_hRestoreConsoleWindow( );
+        }
 
+        while( WriteFile( hView, pachText, len, &byteswritten, NULL ) == TRUE )
+        {
+            pachText += byteswritten;
+            len -= byteswritten;
+            if( len <= 0 )
+                break;
+        }
+
+        if( hView!=fb_out_handle ) {
+#if FB_USE_VIEW_BUFFER
+            /* copy back from view to normal screen buffer */
+            fb_hBufferCopy( fb_out_handle, win_left, win_top + view_top - 1,
+                            hView, 0, 0, win_cols - 1, view_bottom - view_top,
+                            TRUE );
+            fb_hBufferFree( hView );
+#endif
+        } else {
+            fb_hUpdateConsoleWindow( );
+        }
+    }
+
+    if( scrolloff ) {
+        SetConsoleMode( fb_out_handle, mode );
+    }
+
+    SetConsoleCursorInfo( fb_out_handle, &old_src_cursor_info );
 }
 
 /*:::::*/

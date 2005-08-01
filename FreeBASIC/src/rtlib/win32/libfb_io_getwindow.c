@@ -21,6 +21,7 @@
  * io_getwindow.c -- size of the console window
  *
  * chng: jul/2005 written [mjs]
+ *       jul/2005 mod: added convert*console functions [mjs]
  *
  */
 
@@ -28,38 +29,69 @@
 #include "fb.h"
 
 /*:::::*/
-void fb_ConsoleGetWindow( int *left, int *top, int *cols, int *rows )
+void fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows )
 {
-   	CONSOLE_SCREEN_BUFFER_INFO info;
-    if( GetConsoleScreenBufferInfo( fb_out_handle, &info )==0 ) {
+    if( FB_CONSOLE_WINDOW_EMPTY() ) {
         if( left != NULL )
             *left = 0;
         if( top != NULL )
             *top = 0;
-
         if( cols != NULL )
             *cols = 0;
         if( rows != NULL )
             *rows = 0;
     } else {
         if( left != NULL )
-            *left = info.srWindow.Left + 1;
+            *left = srConsoleWindow.Left;
         if( top != NULL )
-            *top = info.srWindow.Top + 1;
-
+            *top = srConsoleWindow.Top;
         if( cols != NULL )
-            *cols = info.srWindow.Right - info.srWindow.Left + 1;
+            *cols = srConsoleWindow.Right - srConsoleWindow.Left + 1;
         if( rows != NULL )
-            *rows = info.srWindow.Bottom - info.srWindow.Top + 1;
+            *rows = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
     }
 }
 
 /*:::::*/
 void fb_ConsoleGetMaxWindowSize( int *cols, int *rows )
 {
-   	COORD max = GetLargestConsoleWindowSize( fb_out_handle );
+    COORD max = GetLargestConsoleWindowSize( fb_out_handle );
     if( cols != NULL )
-        *cols = max.X;
+        *cols = (max.X==0 ? FB_SCRN_DEFAULT_WIDTH : max.X);
     if( rows != NULL )
-        *rows = max.Y;
+        *rows = (max.Y==0 ? FB_SCRN_DEFAULT_HEIGHT : max.Y);
+}
+
+FBCALL void fb_hConvertToConsole( int *left, int *top, int *right, int *bottom )
+{
+    int win_left, win_top;
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+        return;
+
+    fb_hConsoleGetWindow( &win_left, &win_top, NULL, NULL );
+    if( left != NULL )
+        *left += win_left - 1;
+    if( top != NULL )
+        *top += win_top - 1;
+    if( right != NULL )
+        *right += win_left - 1;
+    if( bottom != NULL )
+        *bottom += win_top - 1;
+}
+
+FBCALL void fb_hConvertFromConsole( int *left, int *top, int *right, int *bottom )
+{
+    int win_left, win_top;
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+        return;
+
+    fb_hConsoleGetWindow( &win_left, &win_top, NULL, NULL );
+    if( left != NULL )
+        *left -= win_left - 1;
+    if( top != NULL )
+        *top -= win_top - 1;
+    if( right != NULL )
+        *right -= win_left - 1;
+    if( bottom != NULL )
+        *bottom -= win_top - 1;
 }

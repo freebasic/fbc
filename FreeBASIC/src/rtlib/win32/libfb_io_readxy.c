@@ -21,6 +21,7 @@
  * io_readxy.c -- SCREEN() function for Windows
  *
  * chng: jan/2005 written [v1ctor]
+ *       jul/2005 mod: use convert*console functions [mjs]
  *
  */
 
@@ -34,19 +35,10 @@ FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
     DWORD res;
     COORD coord;
 
-    coord.X = col - 1;
-    coord.Y = row - 1;
+    fb_hConvertToConsole( &col, &row, NULL, NULL );
 
-#if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
-    {
-        int add_x, add_y;
-        fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
-#if FB_CON_BOUNDS==1
-        coord.X += add_x - 1;
-#endif
-        coord.Y += add_y - 1;
-    }
-#endif
+    coord.X = (SHORT) col;
+    coord.Y = (SHORT) row;
 
     if( colorflag ) {
         ReadConsoleOutputAttribute( fb_out_handle, &attribute, 1, coord, &res);

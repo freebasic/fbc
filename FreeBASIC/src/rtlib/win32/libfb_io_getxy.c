@@ -21,40 +21,50 @@
  * io_getxy.c -- GetXY function for Windows
  *
  * chng: jan/2005 written [v1ctor]
+ *       jul/2005 mod: use convert*console functions [mjs]
  *
  */
 
 #include "fb.h"
 
 /*:::::*/
+void fb_ConsoleGetRawXYEx( HANDLE hConsole, int *col, int *row )
+{
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    if( GetConsoleScreenBufferInfo( hConsole, &info ) == 0 ) {
+        if( col != NULL )
+            *col = -1;
+        if( row != NULL )
+            *row = -1;
+    } else {
+        if( col != NULL )
+            *col = info.dwCursorPosition.X;
+        if( row != NULL )
+            *row = info.dwCursorPosition.Y;
+    }
+}
+
+/*:::::*/
+void fb_ConsoleGetRawXY( int *col, int *row )
+{
+    fb_ConsoleGetRawXYEx( fb_out_handle, col, row );
+}
+
+/*:::::*/
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
-
     if( GetConsoleScreenBufferInfo( fb_out_handle, &info ) == 0 ) {
         if( col != NULL )
             *col = 0;
         if( row != NULL )
             *row = 0;
     } else {
-#if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
-        int add_x, add_y;
-        fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
-#if FB_CON_BOUNDS==1
         if( col != NULL )
-            *col = info.dwCursorPosition.X - add_x + 2;
-#else
-        if( col != NULL )
-            *col = info.dwCursorPosition.X + 1;
-#endif
+            *col = info.dwCursorPosition.X;
         if( row != NULL )
-            *row = info.dwCursorPosition.Y - add_y + 2;
-#else
-        if( col != NULL )
-            *col = info.dwCursorPosition.X + 1;
-        if( row != NULL )
-            *row = info.dwCursorPosition.Y + 1;
-#endif
+            *row = info.dwCursorPosition.Y;
+        fb_hConvertFromConsole( col, row, NULL, NULL );
     }
 }
 

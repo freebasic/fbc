@@ -21,32 +21,32 @@
  * io_getx.c -- GetX function for Windows
  *
  * chng: jan/2005 written [v1ctor]
+ *       jul/2005 mod: use convert*console functions [mjs]
  *
  */
 
 #include "fb.h"
 
 /*:::::*/
-int fb_ConsoleGetRawX( void )
+int fb_ConsoleGetRawXEx( HANDLE hConsole )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
+    if( GetConsoleScreenBufferInfo( hConsole, &info ) == 0 )
+        return 0;
+    return info.dwCursorPosition.X;
+}
 
-    GetConsoleScreenBufferInfo( fb_out_handle, &info );
-
-    return info.dwCursorPosition.X+1;
-
+/*:::::*/
+int fb_ConsoleGetRawX( void )
+{
+    return fb_ConsoleGetRawXEx( fb_out_handle );
 }
 
 /*:::::*/
 int fb_ConsoleGetX( void )
 {
-#if FB_CON_BOUNDS==1
-    int add_x;
-    fb_ConsoleGetWindow( &add_x, NULL, NULL, NULL );
-    return fb_ConsoleGetRawX() - add_x + 1;
-#else
-    return fb_ConsoleGetRawX();
-#endif
-
+    int x = fb_ConsoleGetRawX();
+    fb_hConvertFromConsole( &x, NULL, NULL, NULL );
+    return x;
 }
 

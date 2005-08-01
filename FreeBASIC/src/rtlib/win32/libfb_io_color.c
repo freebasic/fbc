@@ -41,28 +41,63 @@ int fb_last_bc = FB_COLOR_BLACK,
 	fb_last_fc = FB_COLOR_WHITE;
 
 /*:::::*/
-int fb_ConsoleColor( int fc, int bc )
+int fb_ConsoleGetColorAttEx( HANDLE hConsole )
 {
-	int cur = fb_last_fc | (fb_last_bc << 16);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    if( GetConsoleScreenBufferInfo( hConsole, &info )==0 )
+        return 7;
+	return info.wAttributes;
 
-    if( fc >= 0 )
-    	fb_last_fc = colorlut[fc & 15];
-
-    if( bc >= 0 )
-    	fb_last_bc = colorlut[bc & 15];
-
-    SetConsoleTextAttribute( fb_out_handle, fb_last_fc + (fb_last_bc << 4) );
-
-	return cur;
 }
 
 /*:::::*/
 int fb_ConsoleGetColorAtt( void )
 {
-    CONSOLE_SCREEN_BUFFER_INFO info;
-
-	GetConsoleScreenBufferInfo( fb_out_handle, &info );
-
-	return info.wAttributes;
-
+    return fb_ConsoleGetColorAttEx( fb_out_handle );
 }
+
+/*:::::*/
+void fb_ConsoleColorEx( HANDLE hConsole, int fc, int bc )
+{
+    int last_attr = fb_ConsoleGetColorAttEx( hConsole );
+    int last_bc = (last_attr >> 4) & 0xF, last_fc = (last_attr & 0xF);
+
+    if( fc >= 0 ) {
+        fc = colorlut[fc & 15];
+    } else {
+        fc = last_fc;
+    }
+
+    if( bc >= 0 ) {
+        bc = colorlut[bc & 15];
+    } else {
+        bc = last_bc;
+    }
+
+    SetConsoleTextAttribute( hConsole, fc + (bc << 4) );
+}
+
+/*:::::*/
+int fb_ConsoleColor( int fc, int bc )
+{
+    int cur = fb_last_fc | (fb_last_bc << 16);
+
+    if( fc >= 0 ) {
+        fb_last_fc = (fc & 0xF);
+        fc = colorlut[fb_last_fc];
+    } else {
+        fc = fb_last_fc;
+    }
+
+    if( bc >= 0 ) {
+        fb_last_bc = (bc & 0xF);
+        bc = colorlut[fb_last_bc];
+    } else {
+        bc = fb_last_bc;
+    }
+
+    SetConsoleTextAttribute( fb_out_handle, fc + (bc << 4) );
+
+	return cur;
+}
+

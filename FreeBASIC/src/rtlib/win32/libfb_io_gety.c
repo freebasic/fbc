@@ -21,28 +21,32 @@
  * io_gety.c -- GetY function for Windows
  *
  * chng: jan/2005 written [v1ctor]
+ *       jul/2005 mod: use convert*console functions [mjs]
  *
  */
 
 #include "fb.h"
 
 /*:::::*/
-int fb_ConsoleGetRawY( void )
+int fb_ConsoleGetRawYEx( HANDLE hConsole )
 {
     CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo( fb_out_handle, &info );
-    return info.dwCursorPosition.Y + 1;
+    if( GetConsoleScreenBufferInfo( hConsole, &info ) == 0 )
+        return 0;
+    return info.dwCursorPosition.Y;
+}
+
+/*:::::*/
+int fb_ConsoleGetRawY( void )
+{
+    return fb_ConsoleGetRawYEx( fb_out_handle );
 }
 
 /*:::::*/
 int fb_ConsoleGetY( void )
 {
-#if FB_CON_BOUNDS==1 || FB_CON_BOUNDS==2
-    int add_y;
-    fb_ConsoleGetWindow( NULL, &add_y, NULL, NULL );
-    return fb_ConsoleGetRawY() - add_y + 1;
-#else
-    return fb_ConsoleGetRawY();
-#endif
+    int y = fb_ConsoleGetRawY();
+    fb_hConvertFromConsole( NULL, &y, NULL, NULL );
+    return y;
 }
 

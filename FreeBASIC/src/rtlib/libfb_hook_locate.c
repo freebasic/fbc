@@ -46,7 +46,8 @@ FBCALL int fb_Locate( int row, int col, int cursor )
         res = fb_ConsoleLocate( row, col, cursor );
     }
 
-    FB_HANDLE_SCREEN->line_length = col - 1;
+    if( col > 0 )
+        FB_HANDLE_SCREEN->line_length = col - 1;
 
     FB_UNLOCK();
 

@@ -21,32 +21,28 @@
  * io_getsize.c -- get size (console, no gfx) function for Windows
  *
  * chng: jan/2005 written [v1ctor]
+ *       jul/2005 mod: use previously remembered console window size [mjs]
  *
  */
 
 #include <stdio.h>
 #include "fb.h"
 
-
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-    int toprow, botrow;
+    int nrows, ncols;
 
-    CONSOLE_SCREEN_BUFFER_INFO info;
+    if( FB_CONSOLE_WINDOW_EMPTY() ) {
+        ncols = FB_SCRN_DEFAULT_WIDTH;
+        nrows = FB_SCRN_DEFAULT_HEIGHT;
+    } else {
+        ncols = srConsoleWindow.Right - srConsoleWindow.Left + 1;
+        nrows = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
+    }
 
     if( cols != NULL )
-    {
-    	if( !GetConsoleScreenBufferInfo( fb_out_handle, &info ) )
-    		*cols = 80;
-    	else
-    		*cols = info.dwSize.X;
-    }
-
+        *cols = ncols;
     if( rows != NULL )
-    {
-    	fb_ConsoleGetView( &toprow, &botrow );
-
-    	*rows = botrow - toprow + 1;
-    }
+        *rows = nrows;
 }

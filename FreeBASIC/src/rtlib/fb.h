@@ -51,16 +51,17 @@ extern "C" {
      */
 #define FB_TAB_WIDTH          14
 
-    /** Specifies the behaviour of WIDTH / VIEW PRINT / LOCATE.
+    /** Screen width returned by default when native console function failed.
      *
-     * This variable specifies the behaviour of WIDTH / VIEW PRINT / LOCATE.
-     *
-     * - 0 = original behaviour
-     * - 1 = only the visible area
-     * - 2 = the visible height but the screen buffer width
-     * - 3 = screen buffer size but restricted by VIEW PRINT
+     * This is required when an applications output is redirected.
      */
-#define FB_CON_BOUNDS         1
+#define FB_SCRN_DEFAULT_WIDTH  80
+
+    /** Screen height returned by default when native console function failed.
+     *
+     * This is required when an applications output is redirected.
+     */
+#define FB_SCRN_DEFAULT_HEIGHT 25
 
     /** Number of reserved file handles.
      *
@@ -133,7 +134,7 @@ extern "C" {
     /** Macro to calculate a key code from a character.
      */
 #define FB_MAKE_KEY(ch) \
-    ((int) ((unsigned) (ch)))
+    ((int) ((unsigned) (unsigned char) (ch)))
 
     /** Macro to calculate an extended key code for a character.
      *
@@ -141,7 +142,7 @@ extern "C" {
      * returned by SCRN: (and INKEY$).
      */
 #define FB_MAKE_EXT_KEY(ch) \
-    ((int) (((unsigned) (ch) << 8) + (unsigned) (FB_EXT_CHAR)))
+    ((int) ((((unsigned) (unsigned char) (ch)) << 8) + (unsigned) (FB_EXT_CHAR)))
 
     /** Macro to test if the key code is an extended key code.
      *
@@ -554,23 +555,25 @@ typedef struct _FB_PRINTUSGCTX {
 #define FB_PRINT(fnum, s, mask)                                       \
     FB_PRINT_EX( FB_FILE_TO_HANDLE(fnum), s, strlen(s), 0 )
 
-#define FB_PRINTNUM_EX(handle, val, mask, fmt, type, width)           \
+#define FB_PRINTNUM_EX(handle, val, mask, fmt, type)                  \
     do {                                                              \
         char buffer[80];                                              \
         int len;                                                      \
                                                                       \
         if( mask & FB_PRINT_NEWLINE )                                 \
-            len = sprintf( buffer, fmt type FB_NEWLINE, val );        \
-        else if( mask & FB_PRINT_PAD )                                \
-            len = sprintf( buffer, fmt "-*" type, width, val );       \
+            len = sprintf( buffer, fmt type FB_NEWLINE, val );    \
         else                                                          \
-            len = sprintf( buffer, fmt type, val );                   \
+            len = sprintf( buffer, fmt type, val );               \
                                                                       \
         FB_PRINT_EX( handle, buffer, len, mask );                     \
+                                                                      \
+        if( mask & FB_PRINT_PAD )                                     \
+            fb_PrintPadEx ( handle, mask );                           \
+                                                                      \
     } while (0)
 
 #define FB_PRINTNUM(fnum, val, mask, fmt, type)                       \
-    FB_PRINTNUM_EX( FB_FILE_TO_HANDLE(fnum), val, mask, fmt, type, FB_TAB_WIDTH )
+    FB_PRINTNUM_EX( FB_FILE_TO_HANDLE(fnum), val, mask, fmt, type )
 
 #define FB_WRITENUM_EX(handle, val, mask, type )            \
     do {                                                    \
@@ -608,10 +611,7 @@ extern FB_PRINTUSGCTX fb_printusgctx;
 struct _FB_FILE;
 
 #ifdef TARGET_WIN32
-       /* not useful for other platforms (yet) */
-       void         fb_ConsoleGetWindow ( int *left, int *top, int *cols, int *rows );
-       void         fb_ConsoleGetMaxWindowSize ( int *cols, int *rows );
-       void         fb_ConsoleGetScreenSize ( int *cols, int *rows );
+       void         fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows );
 #endif
 
        int          fb_ConsoleWidth     ( int cols, int rows );
@@ -1044,6 +1044,7 @@ FBCALL void         fb_InitProfile      ( void );
 FBCALL void         fb_EndProfile       ( void );
 FBCALL void        *fb_ProfileBeginCall ( const char *procname );
 FBCALL void         fb_ProfileEndCall   ( void *call );
+FBCALL void         fb_Beep             ( void );
 
 /**************************************************************************************************
  * hooks

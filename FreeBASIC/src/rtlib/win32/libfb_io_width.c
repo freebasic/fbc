@@ -32,33 +32,25 @@
 int fb_ConsoleWidth( int cols, int rows )
 {
    	COORD size, max;
-   	CONSOLE_SCREEN_BUFFER_INFO info;
     int cur, do_change = FALSE;
 
-   	max = GetLargestConsoleWindowSize( fb_out_handle );
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+        return 0;
 
-   	GetConsoleScreenBufferInfo( fb_out_handle, &info );
+   	max = GetLargestConsoleWindowSize( fb_out_handle );
 
     if( cols > 0 ) {
         size.X = cols;
         do_change = TRUE;
     } else {
-#if FB_CON_BOUNDS==1
-        size.X = info.srWindow.Right - info.srWindow.Left + 1;
-#else
-        size.X = info.dwSize.X;
-#endif
+        size.X = srConsoleWindow.Right - srConsoleWindow.Left + 1;
     }
 
     if( rows > 0 ) {
         size.Y = rows;
         do_change = TRUE;
     } else {
-#if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
-        size.Y = info.srWindow.Bottom - info.srWindow.Top + 1;
-#else
-        size.Y = info.dwSize.Y;
-#endif
+        size.Y = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
     }
 
     cur = size.X | (size.Y << 16);
@@ -85,7 +77,9 @@ int fb_ConsoleWidth( int cols, int rows )
         SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
     }
 
-   	SetConsoleActiveScreenBuffer( fb_out_handle );
+    SetConsoleActiveScreenBuffer( fb_out_handle );
+
+    fb_hUpdateConsoleWindow( );
 
 	return cur;
 }

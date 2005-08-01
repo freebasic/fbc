@@ -21,6 +21,8 @@
  * io_locate.c -- locate (console, no gfx) function for Windows
  *
  * chng: jan/2005 written [v1ctor]
+ *       jul/2005 mod: use convert*console functions [mjs]
+ *                mod: fixed return and default values [mjs]
  *
  */
 
@@ -30,67 +32,53 @@ int fb_ConsoleGetRawX( void );
 int fb_ConsoleGetRawY( void );
 
 /*:::::*/
-int fb_ConsoleLocateEx( int row, int col, int cursor, int do_xyadjust )
+void fb_ConsoleLocateRawEx( HANDLE hConsole, int row, int col, int cursor )
 {
 	COORD c;
-    CONSOLE_CURSOR_INFO info;
-    int ret_val;
 
-    if( col > 0 ) {
-  		c.X = col - 1;
-    } else {
-        if( do_xyadjust ) {
-            c.X = fb_ConsoleGetX() - 1;
-        } else {
-            c.X = fb_ConsoleGetRawX() - 1;
-        }
-    }
+    if( col < 0 )
+        col = fb_ConsoleGetRawXEx( hConsole );
+    if( row < 0 )
+        row = fb_ConsoleGetRawYEx( hConsole );
 
-    if( row > 0 ) {
-  		c.Y = row - 1;
-    } else {
-        if( do_xyadjust ) {
-            c.Y = fb_ConsoleGetY() - 1;
-        } else {
-            c.Y = fb_ConsoleGetRawY() - 1;
-        }
-    }
-
-	GetConsoleCursorInfo( fb_out_handle, &info );
-
-    ret_val =
-        ((c.X + 1) & 0xFF) | (((c.Y + 1) & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
-
-#if (FB_CON_BOUNDS==1) || (FB_CON_BOUNDS==2)
-    if( do_xyadjust ) {
-        int add_x, add_y;
-        fb_ConsoleGetWindow( &add_x, &add_y, NULL, NULL );
-#if FB_CON_BOUNDS==1
-        c.X += add_x - 1;
-#endif
-        c.Y += add_y - 1;
-    }
-#endif
+    c.X = (SHORT) col;
+    c.Y = (SHORT) row;
 
   	if( cursor >= 0 ) {
+        CONSOLE_CURSOR_INFO info;
+        GetConsoleCursorInfo( fb_out_handle, &info );
   		info.bVisible = ( cursor ? TRUE : FALSE );
-  		SetConsoleCursorInfo( fb_out_handle, &info );
+  		SetConsoleCursorInfo( hConsole, &info );
   	}
 
-  	SetConsoleCursorPosition( fb_out_handle, c );
-
-	return ret_val;
+  	SetConsoleCursorPosition( hConsole, c );
 }
 
 /*:::::*/
-int fb_ConsoleLocateRaw( int row, int col, int cursor )
+FBCALL void fb_ConsoleLocateRaw( int row, int col, int cursor )
 {
-	return fb_ConsoleLocateEx( row, col, cursor, FALSE );
+	fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
 }
 
 /*:::::*/
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
-	return fb_ConsoleLocateEx( row, col, cursor, TRUE );
+    int ret_val;
+    CONSOLE_CURSOR_INFO info;
+
+    if( col < 1 )
+        col = fb_ConsoleGetX();
+    if( row < 1 )
+        row = fb_ConsoleGetY();
+
+    GetConsoleCursorInfo( fb_out_handle, &info );
+    ret_val =
+        (col & 0xFF) | ((row & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
+
+    fb_hConvertToConsole( &col, &row, NULL, NULL );
+
+    fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
+
+    return ret_val;
 }
 

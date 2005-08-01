@@ -60,5 +60,28 @@ extern CRITICAL_SECTION fb_string_mutex;
 extern HANDLE fb_in_handle, fb_out_handle;
 extern const unsigned char fb_keytable[][3];
 
+extern SMALL_RECT srConsoleWindow;
+
+FBCALL void fb_hRestoreConsoleWindow    ( void );
+FBCALL void fb_hUpdateConsoleWindow     ( void );
+FBCALL void fb_hConvertToConsole        ( int *left, int *top, int *right, int *bottom );
+FBCALL void fb_hConvertFromConsole      ( int *left, int *top, int *right, int *bottom );
+FBCALL void fb_ConsoleLocateRaw         ( int row, int col, int cursor );
+FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
+       void fb_ConsoleGetMaxWindowSize  ( int *cols, int *rows );
+
+       void fb_ConsoleGetScreenSizeEx   ( HANDLE hConsole, int *cols, int *rows );
+       int  fb_ConsoleGetRawYEx         ( HANDLE hConsole );
+       int  fb_ConsoleGetRawXEx         ( HANDLE hConsole );
+       void fb_ConsoleGetRawXYEx        ( HANDLE hConsole, int *col, int *row );
+       void fb_ConsoleLocateRawEx       ( HANDLE hConsole, int row, int col, int cursor );
+       int  fb_ConsoleGetColorAttEx     ( HANDLE hConsole );
+       void fb_ConsoleColorEx           ( HANDLE hConsole, int fc, int bc );
+       void fb_ConsoleScrollRawEx       ( HANDLE hConsole, int x1, int y1, int x2, int y2, int nrows );
+       void fb_ConsoleClearViewRawEx    ( HANDLE hConsole, int x1, int y1, int x2, int y2 );
+
+#define FB_CONSOLE_WINDOW_EMPTY() \
+    ((srConsoleWindow.Left==srConsoleWindow.Right) \
+    || (srConsoleWindow.Top==srConsoleWindow.Bottom))
 
 #endif
