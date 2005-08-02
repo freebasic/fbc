@@ -158,6 +158,9 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
 
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+        return;
+
     /* turn the cursor off */
     GetConsoleCursorInfo( fb_out_handle, &cursor_info );
     cursor_visible = cursor_info.bVisible;
