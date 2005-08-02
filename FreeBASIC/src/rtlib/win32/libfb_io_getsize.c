@@ -44,8 +44,7 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
     }
     else
     {
-        ncols = srConsoleWindow.Right - srConsoleWindow.Left + 1;
-        nrows = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
+        fb_hConsoleGetWindow( NULL, NULL, &ncols, &nrows );
     }
 
     if( cols != NULL )

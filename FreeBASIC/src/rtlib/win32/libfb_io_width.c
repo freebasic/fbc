@@ -35,6 +35,7 @@ int fb_ConsoleWidth( int cols, int rows )
 {
    	COORD size, max;
     int cur, do_change = FALSE;
+    int ncols, nrows;
 
     fb_InitConsoleWindow( );
 
@@ -42,6 +43,7 @@ int fb_ConsoleWidth( int cols, int rows )
         return 0;
 
    	max = GetLargestConsoleWindowSize( fb_out_handle );
+    fb_hConsoleGetWindow( NULL, NULL, &ncols, &nrows );
 
     if( cols > 0 )
     {
@@ -50,7 +52,7 @@ int fb_ConsoleWidth( int cols, int rows )
     }
     else
     {
-        size.X = srConsoleWindow.Right - srConsoleWindow.Left + 1;
+        size.X = (SHORT) ncols;
     }
 
     if( rows > 0 )
@@ -60,7 +62,7 @@ int fb_ConsoleWidth( int cols, int rows )
     }
     else
     {
-        size.Y = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
+        size.Y = (SHORT) nrows;
     }
 
     cur = size.X | (size.Y << 16);
