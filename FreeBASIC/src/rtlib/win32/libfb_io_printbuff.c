@@ -151,15 +151,14 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     BOOL cursor_visible;
     int scrolloff = FALSE;
     DWORD mode, byteswritten;
-    int is_view_set;
+    BOOL is_view_set, is_window_empty;
     HANDLE hView = NULL;
     int col, row;
     int buf_cols, buf_rows;
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
 
-    if( FB_CONSOLE_WINDOW_EMPTY() )
-        return;
+    is_window_empty = FB_CONSOLE_WINDOW_EMPTY();
 
     /* turn the cursor off */
     GetConsoleCursorInfo( fb_out_handle, &cursor_info );
@@ -174,60 +173,64 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 
     is_view_set = view_top != 1 || view_bottom != win_rows;
 
-	/* scrolling */
-	if( (row > view_bottom) && is_view_set )
-	{
-		fb_ConsoleScroll( 1 );
-		row = view_bottom;
-	}
+    if( !is_window_empty ) {
+        /* scrolling */
+        if( (row > view_bottom) && is_view_set )
+        {
+            fb_ConsoleScroll( 1 );
+            row = view_bottom;
+        }
 
-	/* if no newline and row at bottom and col+string at right, disable scrolling */
-	if( (mask & FB_PRINT_NEWLINE) == 0 )
-	{
-        if( row == view_bottom ) {
-            /* FIXME: This doesn't work when the line contains control characters. */
-            if( col + len - 1 == win_cols ) {
-                scrolloff = TRUE;
+        /* if no newline and row at bottom and col+string at right, disable scrolling */
+        if( (mask & FB_PRINT_NEWLINE) == 0 )
+        {
+            if( row == view_bottom ) {
+                /* FIXME: This doesn't work when the line contains control characters. */
+                if( col + len - 1 == win_cols ) {
+                    scrolloff = TRUE;
+                }
             }
         }
-	}
 
-	/* disable scrolling? */
-	if( scrolloff )
-	{
-		GetConsoleMode( fb_out_handle, &mode );
-		SetConsoleMode( fb_out_handle, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
-	}
+        /* disable scrolling? */
+        if( scrolloff )
+        {
+            GetConsoleMode( fb_out_handle, &mode );
+            SetConsoleMode( fb_out_handle, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
+        }
 
-	/* scrolling if VIEW was set */
-    if( is_view_set )
-    {
+        /* scrolling if VIEW was set */
+        if( is_view_set )
+        {
 #if FB_USE_VIEW_BUFFER
-        hView = fb_hBufferCreateCopy( fb_out_handle,
-                                      win_left, win_top + view_top - 1,
-                                      win_left + win_cols - 1, win_top + view_bottom - 1 );
+            hView = fb_hBufferCreateCopy( fb_out_handle,
+                                          win_left, win_top + view_top - 1,
+                                          win_left + win_cols - 1, win_top + view_bottom - 1 );
 #else
-    	int rowsleft = (view_bottom - row) /*+ 1*/;
-    	int rowstoscroll = 1 + ((int) len - (win_cols - col + 1)) / win_cols;
-    	if( (mask & FB_PRINT_NEWLINE) != 0 )
-    		++rowstoscroll;
+            int rowsleft = (view_bottom - row) /*+ 1*/;
+            int rowstoscroll = 1 + ((int) len - (win_cols - col + 1)) / win_cols;
+            if( (mask & FB_PRINT_NEWLINE) != 0 )
+                ++rowstoscroll;
 
-     	if( rowstoscroll - rowsleft > 0 )
-     		fb_ConsoleScroll( rowstoscroll - rowsleft );
-        hView = fb_out_handle;
+            if( rowstoscroll - rowsleft > 0 )
+                fb_ConsoleScroll( rowstoscroll - rowsleft );
+            hView = fb_out_handle;
 #endif
-    }
-    else
-    {
+        }
+        else
+        {
+            hView = fb_out_handle;
+        }
+
+        if( hView == fb_out_handle )
+        {
+            /* Ensure that the user didn't do some scrolling/resizing
+             * of the window */
+            fb_hRestoreConsoleWindow( );
+        }
+    } else {
         hView = fb_out_handle;
     }
-
-    if( hView == fb_out_handle )
-	{
-		/* Ensure that the user didn't do some scrolling/resizing
-		 * of the window */
-        fb_hRestoreConsoleWindow( );
-	}
 
     while( WriteFile( hView, pachText, len, &byteswritten, NULL ) == TRUE )
     {
@@ -237,21 +240,23 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         	break;
 	}
 
-    if( hView != fb_out_handle )
-	{
+    if( !is_window_empty ) {
+        if( hView != fb_out_handle )
+        {
 #if FB_USE_VIEW_BUFFER
-    	/* copy back from view to normal screen buffer */
-        fb_hBufferCopy( fb_out_handle, win_left, win_top + view_top - 1,
-        				hView, 0, 0, win_cols - 1, view_bottom - view_top,
-                        TRUE );
-		fb_hBufferFree( hView );
+            /* copy back from view to normal screen buffer */
+            fb_hBufferCopy( fb_out_handle, win_left, win_top + view_top - 1,
+                            hView, 0, 0, win_cols - 1, view_bottom - view_top,
+                            TRUE );
+            fb_hBufferFree( hView );
 #endif
-	}
-    else
-		fb_hUpdateConsoleWindow( );
+        }
+        else
+            fb_hUpdateConsoleWindow( );
 
-    if( scrolloff )
-        SetConsoleMode( fb_out_handle, mode );
+        if( scrolloff )
+            SetConsoleMode( fb_out_handle, mode );
+    }
 
     /* restore the old cursor mode */
     cursor_info.bVisible = cursor_visible;
