@@ -14,6 +14,8 @@ Version 0.15 Beta:
 - VALUINT and VALULNG, unsigned versions of VALINT and VALUINT, respectively (v1c)
 - IN/OUT/WAIT now work for real ports I/O; a runtime error is triggered if unable to access a port.
   VGA ports are still emulated if in gfx mode (lillo)
+- new null gfx driver: pass -1 as flags parameter to SCREEN to work with gfx without visual feedback.
+  Useful to produce gfx to be embedded in OS dependent contexts (GDI, Gtk, etc.) (lillo)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

@@ -6,7 +6,6 @@
 
 #inclib "fbgfx"
 #ifdef __FB_WIN32__
-	#inclib "user32"
 	#inclib "gdi32"
 	#inclib "winmm"
 #elseif defined(__FB_LINUX__)
@@ -26,6 +25,7 @@
 ''	SCREEN 14, 16,, GFX_FULLSCREEN
 ''	SCREEN 18, 32,, GFX_OPENGL OR GFX_STENCIL_BUFFER
 ''
+#define GFX_NULL		-1
 #define GFX_WINDOWED		&h00
 #define GFX_FULLSCREEN		&h01
 #define GFX_OPENGL		&h02

@@ -75,6 +75,7 @@ extern "C" {
 #define DRIVER_UNLOCK()		{ if (fb_mode->flags & SCREEN_AUTOLOCKED) { fb_mode->driver->unlock(); fb_mode->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
 #define SET_DIRTY(y,h)		{ if (fb_mode->framebuffer == fb_mode->line[0]) fb_hMemSet(fb_mode->dirty + (y), TRUE, (h)); }
 
+#define DRIVER_NULL		-1
 #define DRIVER_FULLSCREEN	0x00000001
 #define DRIVER_OPENGL		0x00000002
 #define DRIVER_OPENGL_OPTIONS	0x000000F0
@@ -167,7 +168,6 @@ typedef struct MODE
 	float win_x, win_y, win_w, win_h;		/* WINDOW coordinates */
 	int text_w, text_h;				/* Graphical text console size in characters */
 	char *key;					/* Keyboard states */
-	int driver_flags;				/* Driver initialization flags */
 	int refresh_rate;				/* Driver refresh rate */
 	int flags;					/* Status flags */
 } MODE;
@@ -210,6 +210,7 @@ typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int);
 /* Global variables */
 extern MODE *fb_mode;
 extern const GFXDRIVER *fb_gfx_driver_list[];
+extern const GFXDRIVER fb_gfxDriverNull;
 extern void *(*fb_hMemCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hMemSet)(void *dest, int value, size_t size);
 extern void (*fb_hPutPixel)(int x, int y, unsigned int color);

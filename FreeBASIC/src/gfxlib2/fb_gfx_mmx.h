@@ -102,9 +102,8 @@
 #define TEXT_W			148
 #define TEXT_H			152
 #define KEY			156
-#define DRIVER_FLAGS		160
-#define DRIVER_REFRESH_RATE	164
-#define FLAGS			168
+#define DRIVER_REFRESH_RATE	160
+#define FLAGS			164
 
 
 #endif

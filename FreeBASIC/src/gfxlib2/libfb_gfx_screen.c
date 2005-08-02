@@ -99,7 +99,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		num_pages = 1;
 
 	if (fb_mode) {
-		if (fb_mode->driver)
+		if ((fb_mode->driver) && (fb_mode->driver->exit))
 			fb_mode->driver->exit();
 		if (fb_mode->page) {
 			for (i = 0; i < fb_mode->num_pages; i++)
@@ -156,7 +156,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_mode->depth = info->depth;
 		if ((mode > 13) && ((depth == 8) || (depth == 15) || (depth == 16) || (depth == 24) || (depth == 32)))
 			fb_mode->depth = depth;
-		if (flags & DRIVER_OPENGL)
+		if ((flags >= 0) && (flags & DRIVER_OPENGL))
 			fb_mode->depth = MAX(16, fb_mode->depth);
 		fb_mode->default_palette = info->palette;
 		fb_mode->scanline_size = info->scanline_size;
@@ -200,24 +200,28 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		}
 
 		driver_name = getenv("FBGFX");
-		for (try = (driver_name ? 4 : 2); try; try--) {
-			for (i = 0; fb_gfx_driver_list[i >> 1]; i++) {
-				driver = fb_gfx_driver_list[i >> 1];
-				if ((driver_name) && !(try & 0x1) && (strcasecmp(driver_name, driver->name)))
-					continue;
-				if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), (i & 0x1) ? 0 : refresh_rate, flags))
+		if ((flags == DRIVER_NULL) || ((driver_name) && (!strcasecmp(driver_name, "null"))))
+			driver = &fb_gfxDriverNull;
+		else {
+			for (try = (driver_name ? 4 : 2); try; try--) {
+				for (i = 0; fb_gfx_driver_list[i >> 1]; i++) {
+					driver = fb_gfx_driver_list[i >> 1];
+					if ((driver_name) && !(try & 0x1) && (strcasecmp(driver_name, driver->name)))
+						continue;
+					if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), (i & 0x1) ? 0 : refresh_rate, flags))
+						break;
+					driver->exit();
+					driver = NULL;
+				}
+				if (driver)
 					break;
-				driver->exit();
-				driver = NULL;
-			}
-			if (driver)
-				break;
-			if (driver_name) {
-				if (try == 2)
+				if (driver_name) {
+					if (try == 2)
+						flags ^= DRIVER_FULLSCREEN;
+				}
+				else
 					flags ^= DRIVER_FULLSCREEN;
 			}
-			else
-				flags ^= DRIVER_FULLSCREEN;
 		}
 
 		if (!driver) {
@@ -225,7 +229,6 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 		}
 		fb_mode->driver = driver;
-		fb_mode->driver_flags = flags;
 
 		fb_GfxPalette(-1, 0, 0, 0);
 

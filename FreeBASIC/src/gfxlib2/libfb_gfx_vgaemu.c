@@ -53,7 +53,8 @@ FBCALL int fb_GfxIn(unsigned short port)
 			break;
 		
 		case 0x3DA:
-			fb_mode->driver->wait_vsync();
+			if (fb_mode->driver->wait_vsync)
+				fb_mode->driver->wait_vsync();
 			value = 8;
 			break;
 	}

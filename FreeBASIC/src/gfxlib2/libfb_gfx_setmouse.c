@@ -30,7 +30,7 @@
 /*:::::*/
 int fb_GfxSetMouse(int x, int y, int cursor)
 {
-	if (!fb_mode)
+	if ((!fb_mode) || (!fb_mode->driver->set_mouse))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
 	DRIVER_LOCK();
