@@ -29,6 +29,3 @@ function AddNumbers ( byval operand1 as integer, byval operand2 as integer ) as 
 	
 end function
 
-
-print "dll main"
-
