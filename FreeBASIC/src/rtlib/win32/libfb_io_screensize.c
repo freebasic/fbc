@@ -30,11 +30,17 @@
 void fb_ConsoleGetScreenSizeEx( HANDLE hConsole, int *cols, int *rows )
 {
    	CONSOLE_SCREEN_BUFFER_INFO info;
-    GetConsoleScreenBufferInfo( hConsole, &info );
-    if( cols != NULL )
-        *cols = info.dwSize.X;
-    if( rows != NULL )
-        *rows = info.dwSize.Y;
+    if( GetConsoleScreenBufferInfo( hConsole, &info )==0 ) {
+        if( cols != NULL )
+            *cols = FB_SCRN_DEFAULT_WIDTH;
+        if( rows != NULL )
+            *rows = FB_SCRN_DEFAULT_HEIGHT;
+    } else {
+        if( cols != NULL )
+            *cols = info.dwSize.X;
+        if( rows != NULL )
+            *rows = info.dwSize.Y;
+    }
 }
 
 /*:::::*/

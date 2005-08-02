@@ -662,6 +662,11 @@ function processOptions( ) as integer
 
 				argv(i) = ""
 
+            case "fforce-stackframe"
+				fbSetOption( FB_COMPOPT_FORCESTACKFRAME, TRUE )
+
+				argv(i) = ""
+
 			case "mt"
 				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
 

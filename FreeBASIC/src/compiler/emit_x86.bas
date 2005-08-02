@@ -4755,7 +4755,8 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 
     if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
     	(proc->proc.stk.argptr <> EMIT_ARGSTART) or _
-        symbIsMainProc( proc ) ) then
+        symbIsMainProc( proc ) or _
+        env.clopt.forcestackframe ) then
 
     	hPUSH( "ebp" )
     	outp( "mov ebp, esp" )
@@ -4858,7 +4859,8 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
 
     if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
     	(proc->proc.stk.argptr <> EMIT_ARGSTART) or _
-        symbIsMainProc( proc ) ) then
+        symbIsMainProc( proc ) or _
+        env.clopt.forcestackframe ) then
     	outp( "mov esp, ebp" )
     	hPOP( "ebp" )
     end if

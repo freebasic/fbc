@@ -160,12 +160,6 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 
     is_window_empty = FB_CONSOLE_WINDOW_EMPTY();
 
-    /* turn the cursor off */
-    GetConsoleCursorInfo( fb_out_handle, &cursor_info );
-    cursor_visible = cursor_info.bVisible;
-    cursor_info.bVisible = FALSE;
-    SetConsoleCursorInfo( fb_out_handle, &cursor_info );
-
 	fb_ConsoleGetScreenSize( &buf_cols, &buf_rows );
 	fb_ConsoleGetView( &view_top, &view_bottom );
     fb_ConsoleGetXY( &col, &row );
@@ -174,6 +168,12 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     is_view_set = view_top != 1 || view_bottom != win_rows;
 
     if( !is_window_empty ) {
+        /* turn the cursor off */
+        GetConsoleCursorInfo( fb_out_handle, &cursor_info );
+        cursor_visible = cursor_info.bVisible;
+        cursor_info.bVisible = FALSE;
+        SetConsoleCursorInfo( fb_out_handle, &cursor_info );
+
         /* scrolling */
         if( (row > view_bottom) && is_view_set )
         {
@@ -256,11 +256,11 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 
         if( scrolloff )
             SetConsoleMode( fb_out_handle, mode );
-    }
 
-    /* restore the old cursor mode */
-    cursor_info.bVisible = cursor_visible;
-    SetConsoleCursorInfo( fb_out_handle, &cursor_info );
+        /* restore the old cursor mode */
+        cursor_info.bVisible = cursor_visible;
+        SetConsoleCursorInfo( fb_out_handle, &cursor_info );
+    }
 }
 
 /*:::::*/

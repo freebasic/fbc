@@ -231,6 +231,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULTTARGET
 	env.clopt.naming		= FB_COMPNAMING_DEFAULT
 	env.clopt.extraerrchk	= FALSE
+    env.clopt.forcestackframe = FALSE
 
 end sub
 
@@ -271,6 +272,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.naming = value
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
+	case FB_COMPOPT_FORCESTACKFRAME
+		env.clopt.forcestackframe = value
 	end select
 
 end sub
@@ -311,6 +314,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		function = env.clopt.naming
 	case FB_COMPOPT_EXTRAERRCHECK
 		function = env.clopt.extraerrchk
+	case FB_COMPOPT_FORCESTACKFRAME
+		function = env.clopt.forcestackframe
 	case else
 		function = FALSE
 	end select
