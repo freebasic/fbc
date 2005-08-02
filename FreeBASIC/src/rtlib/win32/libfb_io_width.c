@@ -28,28 +28,38 @@
 
 #include "fb.h"
 
+void fb_InitConsoleWindow( void );
+
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )
 {
    	COORD size, max;
     int cur, do_change = FALSE;
 
+    fb_InitConsoleWindow( );
+
     if( FB_CONSOLE_WINDOW_EMPTY() )
         return 0;
 
    	max = GetLargestConsoleWindowSize( fb_out_handle );
 
-    if( cols > 0 ) {
+    if( cols > 0 )
+    {
         size.X = cols;
         do_change = TRUE;
-    } else {
+    }
+    else
+    {
         size.X = srConsoleWindow.Right - srConsoleWindow.Left + 1;
     }
 
-    if( rows > 0 ) {
+    if( rows > 0 )
+    {
         size.Y = rows;
         do_change = TRUE;
-    } else {
+    }
+    else
+    {
         size.Y = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
     }
 

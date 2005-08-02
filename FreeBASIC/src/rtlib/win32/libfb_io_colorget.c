@@ -18,35 +18,28 @@
  */
 
 /*
- * io_locate.c -- locate (console, no gfx) function for Windows
+ * io_color.c -- color (console, no gfx) function for Windows
  *
  * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *                mod: fixed return and default values [mjs]
  *
  */
 
 #include "fb.h"
+#include "fb_colors.h"
 
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+int fb_ConsoleGetColorAttEx( HANDLE hConsole )
 {
-    int ret_val;
-    CONSOLE_CURSOR_INFO info;
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    if( GetConsoleScreenBufferInfo( hConsole, &info )==0 )
+        return 7;
+	return info.wAttributes;
 
-    if( col < 1 )
-        col = fb_ConsoleGetX();
-    if( row < 1 )
-        row = fb_ConsoleGetY();
+}
 
-    GetConsoleCursorInfo( fb_out_handle, &info );
-    ret_val =
-        (col & 0xFF) | ((row & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
-
-    fb_hConvertToConsole( &col, &row, NULL, NULL );
-
-    fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
-
-    return ret_val;
+/*:::::*/
+int fb_ConsoleGetColorAtt( void )
+{
+    return fb_ConsoleGetColorAttEx( fb_out_handle );
 }
 

@@ -147,20 +147,20 @@ static void fb_hBufferFree( HANDLE hSource )
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
     const char *pachText = (const char *) buffer;
-    CONSOLE_CURSOR_INFO old_src_cursor_info, cursor_info;
+    CONSOLE_CURSOR_INFO cursor_info;
+    BOOL cursor_visible;
     int scrolloff = FALSE;
-    DWORD mode;
+    DWORD mode, byteswritten;
     int is_view_set;
     HANDLE hView = NULL;
-
     int col, row;
-
     int buf_cols, buf_rows;
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
 
-    GetConsoleCursorInfo( fb_out_handle, &old_src_cursor_info );
-    memcpy( &cursor_info, &old_src_cursor_info, sizeof(CONSOLE_CURSOR_INFO) );
+    /* turn the cursor off */
+    GetConsoleCursorInfo( fb_out_handle, &cursor_info );
+    cursor_visible = cursor_info.bVisible;
     cursor_info.bVisible = FALSE;
     SetConsoleCursorInfo( fb_out_handle, &cursor_info );
 
@@ -169,7 +169,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     fb_ConsoleGetXY( &col, &row );
     fb_hConsoleGetWindow( &win_left, &win_top, &win_cols, &win_rows );
 
-    is_view_set = view_top!=1 || view_bottom!=win_rows;
+    is_view_set = view_top != 1 || view_bottom != win_rows;
 
 	/* scrolling */
 	if( (row > view_bottom) && is_view_set )
@@ -189,6 +189,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         }
 	}
 
+	/* disable scrolling? */
 	if( scrolloff )
 	{
 		GetConsoleMode( fb_out_handle, &mode );
@@ -196,7 +197,8 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	}
 
 	/* scrolling if VIEW was set */
-    if( is_view_set ) {
+    if( is_view_set )
+    {
 #if FB_USE_VIEW_BUFFER
         hView = fb_hBufferCreateCopy( fb_out_handle,
                                       win_left, win_top + view_top - 1,
@@ -208,50 +210,49 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     		++rowstoscroll;
 
      	if( rowstoscroll - rowsleft > 0 )
-     	{
      		fb_ConsoleScroll( rowstoscroll - rowsleft );
-        }
         hView = fb_out_handle;
 #endif
-    } else {
-        hView = fb_out_handle;
     }
-
+    else
     {
-        DWORD  byteswritten;
+        hView = fb_out_handle;
+    }
 
-        if( hView==fb_out_handle ) {
-            /* Ensure that the user didn't do some scrolling/resizing
-             * of the window */
-            fb_hRestoreConsoleWindow( );
-        }
+    if( hView == fb_out_handle )
+	{
+		/* Ensure that the user didn't do some scrolling/resizing
+		 * of the window */
+        fb_hRestoreConsoleWindow( );
+	}
 
-        while( WriteFile( hView, pachText, len, &byteswritten, NULL ) == TRUE )
-        {
-            pachText += byteswritten;
-            len -= byteswritten;
-            if( len <= 0 )
-                break;
-        }
+    while( WriteFile( hView, pachText, len, &byteswritten, NULL ) == TRUE )
+    {
+    	pachText += byteswritten;
+        len -= byteswritten;
+        if( len <= 0 )
+        	break;
+	}
 
-        if( hView!=fb_out_handle ) {
+    if( hView != fb_out_handle )
+	{
 #if FB_USE_VIEW_BUFFER
-            /* copy back from view to normal screen buffer */
-            fb_hBufferCopy( fb_out_handle, win_left, win_top + view_top - 1,
-                            hView, 0, 0, win_cols - 1, view_bottom - view_top,
-                            TRUE );
-            fb_hBufferFree( hView );
+    	/* copy back from view to normal screen buffer */
+        fb_hBufferCopy( fb_out_handle, win_left, win_top + view_top - 1,
+        				hView, 0, 0, win_cols - 1, view_bottom - view_top,
+                        TRUE );
+		fb_hBufferFree( hView );
 #endif
-        } else {
-            fb_hUpdateConsoleWindow( );
-        }
-    }
+	}
+    else
+		fb_hUpdateConsoleWindow( );
 
-    if( scrolloff ) {
+    if( scrolloff )
         SetConsoleMode( fb_out_handle, mode );
-    }
 
-    SetConsoleCursorInfo( fb_out_handle, &old_src_cursor_info );
+    /* restore the old cursor mode */
+    cursor_info.bVisible = cursor_visible;
+    SetConsoleCursorInfo( fb_out_handle, &cursor_info );
 }
 
 /*:::::*/

@@ -36,49 +36,8 @@ CRITICAL_SECTION fb_string_mutex;
 
 HANDLE fb_in_handle, fb_out_handle;
 
-SMALL_RECT srConsoleWindow;
-
 void __main(void);
 
-/** Remembers the current console window coordinates.
- *
- * This function remembers the current console window coordinates. This is
- * required because some applications showing using a SAA interface doesn't
- * use WIDTH first to reduce the console screen buffer size which means that
- * the scroll bar of the console window is always visible/accessible which
- * also implies that the user might scroll up and down while the application
- * is running.
- *
- * When this library would always use the current console window coordinates,
- * the application might show trash when the user scrolled up or down the
- * buffer. But this is not what we want so we're only updating the console
- * window coordinates under the following conditions:
- *
- * - Initialization
- * - After screen buffer size change (using WIDTH)
- * - After printing text
- */
-FBCALL void fb_hUpdateConsoleWindow( void )
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    if( GetConsoleScreenBufferInfo( fb_out_handle, &info )==0 ) {
-        memset( &srConsoleWindow, 0, sizeof(SMALL_RECT) );
-    } else {
-#if 0
-        memcpy( &srConsoleWindow, &info.srWindow, sizeof(SMALL_RECT) );
-#else
-        srConsoleWindow.Left = 0;
-        srConsoleWindow.Top = info.srWindow.Top;
-        srConsoleWindow.Right = info.dwSize.X - 1;
-        srConsoleWindow.Bottom = info.srWindow.Bottom;
-#endif
-    }
-}
-
-FBCALL void fb_hRestoreConsoleWindow( void )
-{
-    SetConsoleWindowInfo( fb_out_handle, TRUE, &srConsoleWindow );
-}
 
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
@@ -122,6 +81,4 @@ void fb_hInit ( int argc, char **argv )
     /* call default CRT0 constructors (only required for Win32) */
     __main();
 
-    /* query the console window position/size only when needed */
-    fb_hUpdateConsoleWindow( );
 }

@@ -28,28 +28,7 @@
 #include <assert.h>
 #include "fb.h"
 
-
-/*:::::*/
-void fb_ConsoleClearViewRawEx( HANDLE hConsole, int x1, int y1, int x2, int y2 )
-{
-    WORD    attr = (WORD) fb_ConsoleGetColorAttEx( hConsole );
-    int     width = x2 - x1 + 1, lines = y2 - y1 + 1;
-
-    if( width==0 || lines==0 )
-        return;
-
-    assert(width > 0);
-    assert(lines > 0);
-
-    while (lines--) {
-        DWORD written;
-        COORD coord = { x1, y1 + lines };
-        FillConsoleOutputAttribute( hConsole, attr, width, coord, &written);
-        FillConsoleOutputCharacter( hConsole, ' ', width, coord, &written );
-    }
-
-    fb_ConsoleLocateRawEx( hConsole, y1, x1, -1 );
-}
+void fb_InitConsoleWindow( void );
 
 /*:::::*/
 void fb_ConsoleClear( int mode )
@@ -59,6 +38,8 @@ void fb_ConsoleClear( int mode )
 
     /* This is the window in screen buffer coordinates (0-based) */
     int     win_left, win_top, win_right, win_bottom;
+
+    fb_InitConsoleWindow();
 
     if( FB_CONSOLE_WINDOW_EMPTY() )
         return;

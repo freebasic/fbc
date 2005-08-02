@@ -18,35 +18,36 @@
  */
 
 /*
- * io_locate.c -- locate (console, no gfx) function for Windows
+ * io_cls.c -- cls (console, no gfx) function for Windows
  *
  * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *                mod: fixed return and default values [mjs]
  *
  */
 
+#include <stdio.h>
+#include <assert.h>
 #include "fb.h"
 
+
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+void fb_ConsoleClearViewRawEx( HANDLE hConsole, int x1, int y1, int x2, int y2 )
 {
-    int ret_val;
-    CONSOLE_CURSOR_INFO info;
+    WORD    attr = (WORD) fb_ConsoleGetColorAttEx( hConsole );
+    int     width = x2 - x1 + 1, lines = y2 - y1 + 1;
 
-    if( col < 1 )
-        col = fb_ConsoleGetX();
-    if( row < 1 )
-        row = fb_ConsoleGetY();
+    if( width==0 || lines==0 )
+        return;
 
-    GetConsoleCursorInfo( fb_out_handle, &info );
-    ret_val =
-        (col & 0xFF) | ((row & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
+    assert(width > 0);
+    assert(lines > 0);
 
-    fb_hConvertToConsole( &col, &row, NULL, NULL );
+    while (lines--) {
+        DWORD written;
+        COORD coord = { x1, y1 + lines };
+        FillConsoleOutputAttribute( hConsole, attr, width, coord, &written);
+        FillConsoleOutputCharacter( hConsole, ' ', width, coord, &written );
+    }
 
-    fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
-
-    return ret_val;
+    fb_ConsoleLocateRawEx( hConsole, y1, x1, -1 );
 }
 

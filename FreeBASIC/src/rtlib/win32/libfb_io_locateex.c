@@ -28,25 +28,36 @@
 
 #include "fb.h"
 
+int fb_ConsoleGetRawX( void );
+int fb_ConsoleGetRawY( void );
+
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+void fb_ConsoleLocateRawEx( HANDLE hConsole, int row, int col, int cursor )
 {
-    int ret_val;
-    CONSOLE_CURSOR_INFO info;
+	COORD c;
 
-    if( col < 1 )
-        col = fb_ConsoleGetX();
-    if( row < 1 )
-        row = fb_ConsoleGetY();
+    if( col < 0 )
+        col = fb_ConsoleGetRawXEx( hConsole );
+    if( row < 0 )
+        row = fb_ConsoleGetRawYEx( hConsole );
 
-    GetConsoleCursorInfo( fb_out_handle, &info );
-    ret_val =
-        (col & 0xFF) | ((row & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
+    c.X = (SHORT) col;
+    c.Y = (SHORT) row;
 
-    fb_hConvertToConsole( &col, &row, NULL, NULL );
+  	if( cursor >= 0 ) {
+        CONSOLE_CURSOR_INFO info;
+        GetConsoleCursorInfo( fb_out_handle, &info );
+  		info.bVisible = ( cursor ? TRUE : FALSE );
+  		SetConsoleCursorInfo( hConsole, &info );
+  	}
 
-    fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
-
-    return ret_val;
+  	SetConsoleCursorPosition( hConsole, c );
 }
+
+/*:::::*/
+FBCALL void fb_ConsoleLocateRaw( int row, int col, int cursor )
+{
+	fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
+}
+
 

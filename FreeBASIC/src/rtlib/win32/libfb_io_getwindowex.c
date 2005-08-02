@@ -18,35 +18,45 @@
  */
 
 /*
- * io_locate.c -- locate (console, no gfx) function for Windows
+ * io_getwindowex.c -- size of the console window
  *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *                mod: fixed return and default values [mjs]
+ * chng: jul/2005 written [mjs]
+ *       jul/2005 mod: added convert*console functions [mjs]
  *
  */
 
+#include <stdlib.h>
 #include "fb.h"
 
+void fb_InitConsoleWindow( void );
+
 /*:::::*/
-int fb_ConsoleLocate( int row, int col, int cursor )
+void fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows )
 {
-    int ret_val;
-    CONSOLE_CURSOR_INFO info;
+    fb_InitConsoleWindow( );
 
-    if( col < 1 )
-        col = fb_ConsoleGetX();
-    if( row < 1 )
-        row = fb_ConsoleGetY();
-
-    GetConsoleCursorInfo( fb_out_handle, &info );
-    ret_val =
-        (col & 0xFF) | ((row & 0xFF) << 8) | (info.bVisible ? 0x10000 : 0);
-
-    fb_hConvertToConsole( &col, &row, NULL, NULL );
-
-    fb_ConsoleLocateRawEx( fb_out_handle, row, col, cursor );
-
-    return ret_val;
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+    {
+        if( left != NULL )
+            *left = 0;
+        if( top != NULL )
+            *top = 0;
+        if( cols != NULL )
+            *cols = 0;
+        if( rows != NULL )
+            *rows = 0;
+    }
+    else
+    {
+        if( left != NULL )
+            *left = srConsoleWindow.Left;
+        if( top != NULL )
+            *top = srConsoleWindow.Top;
+        if( cols != NULL )
+            *cols = srConsoleWindow.Right - srConsoleWindow.Left + 1;
+        if( rows != NULL )
+            *rows = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
+    }
 }
+
 

@@ -41,22 +41,6 @@ int fb_last_bc = FB_COLOR_BLACK,
 	fb_last_fc = FB_COLOR_WHITE;
 
 /*:::::*/
-int fb_ConsoleGetColorAttEx( HANDLE hConsole )
-{
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    if( GetConsoleScreenBufferInfo( hConsole, &info )==0 )
-        return 7;
-	return info.wAttributes;
-
-}
-
-/*:::::*/
-int fb_ConsoleGetColorAtt( void )
-{
-    return fb_ConsoleGetColorAttEx( fb_out_handle );
-}
-
-/*:::::*/
 void fb_ConsoleColorEx( HANDLE hConsole, int fc, int bc )
 {
     int last_attr = fb_ConsoleGetColorAttEx( hConsole );

@@ -28,15 +28,22 @@
 #include <stdio.h>
 #include "fb.h"
 
+void fb_InitConsoleWindow( void );
+
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
     int nrows, ncols;
 
-    if( FB_CONSOLE_WINDOW_EMPTY() ) {
+    fb_InitConsoleWindow();
+
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+    {
         ncols = FB_SCRN_DEFAULT_WIDTH;
         nrows = FB_SCRN_DEFAULT_HEIGHT;
-    } else {
+    }
+    else
+    {
         ncols = srConsoleWindow.Right - srConsoleWindow.Left + 1;
         nrows = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
     }

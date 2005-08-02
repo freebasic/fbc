@@ -28,29 +28,7 @@
 #include <stdlib.h>
 #include "fb.h"
 
-/*:::::*/
-void fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows )
-{
-    if( FB_CONSOLE_WINDOW_EMPTY() ) {
-        if( left != NULL )
-            *left = 0;
-        if( top != NULL )
-            *top = 0;
-        if( cols != NULL )
-            *cols = 0;
-        if( rows != NULL )
-            *rows = 0;
-    } else {
-        if( left != NULL )
-            *left = srConsoleWindow.Left;
-        if( top != NULL )
-            *top = srConsoleWindow.Top;
-        if( cols != NULL )
-            *cols = srConsoleWindow.Right - srConsoleWindow.Left + 1;
-        if( rows != NULL )
-            *rows = srConsoleWindow.Bottom - srConsoleWindow.Top + 1;
-    }
-}
+void fb_InitConsoleWindow( void );
 
 /*:::::*/
 void fb_ConsoleGetMaxWindowSize( int *cols, int *rows )
@@ -65,6 +43,9 @@ void fb_ConsoleGetMaxWindowSize( int *cols, int *rows )
 FBCALL void fb_hConvertToConsole( int *left, int *top, int *right, int *bottom )
 {
     int win_left, win_top;
+
+    fb_InitConsoleWindow();
+
     if( FB_CONSOLE_WINDOW_EMPTY() )
         return;
 
@@ -82,6 +63,9 @@ FBCALL void fb_hConvertToConsole( int *left, int *top, int *right, int *bottom )
 FBCALL void fb_hConvertFromConsole( int *left, int *top, int *right, int *bottom )
 {
     int win_left, win_top;
+
+    fb_InitConsoleWindow();
+
     if( FB_CONSOLE_WINDOW_EMPTY() )
         return;
 
