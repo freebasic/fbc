@@ -39,6 +39,7 @@ static const char *error_msg[] = {
 	"illegal resume",					/* FB_RTERROR_ILLEGALRESUME */
 	"out of bounds array access",		/* FB_RTERROR_OUTOFBOUNDS */
 	"null pointer access",				/* FB_RTERROR_NULLPTR */
+	"no priviledges",					/* FB_RTERROR_NOPRIVILEDGES */
 	"\"interrupted\" signal",
 	"\"illegal instruction\" signal",
 	"\"floating point error\" signal",

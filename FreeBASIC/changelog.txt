@@ -12,6 +12,8 @@ Version 0.15 Beta:
 - VIEW PRINT() now returns the top and bottom row (mjs)
 - all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
 - VALUINT and VALULNG, unsigned versions of VALINT and VALUINT, respectively (v1c)
+- IN/OUT/WAIT now work for real ports I/O; a runtime error is triggered if unable to access a port.
+  VGA ports are still emulated if in gfx mode (lillo)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -24,7 +26,7 @@ Version 0.15 Beta:
 - the VALINT and VAL64 functions were saturating unsigned integers in DOS and Linux, making the compiler
   for those versions to process wrongly unsigned integer literals above 2^31 (v1c)
 - comparing a null zstring to null var-len string would not return equal (v1c)
-
+- WIDTH in gfx mode was returning the width/height in pixels instead of character cells (lillo)
 
 Version 0.14 Beta:
 

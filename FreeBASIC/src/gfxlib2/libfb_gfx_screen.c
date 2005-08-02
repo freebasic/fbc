@@ -144,6 +144,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_hooks.multikeyproc = fb_GfxMultikey;
 		fb_hooks.getmouseproc = fb_GfxGetMouse;
 		fb_hooks.setmouseproc = fb_GfxSetMouse;
+		fb_hooks.inproc = fb_GfxIn;
+		fb_hooks.outproc = fb_GfxOut;
 		fb_mode = (MODE *)calloc(1, sizeof(MODE));
 	}
 

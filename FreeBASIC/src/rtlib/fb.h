@@ -491,6 +491,10 @@ FBCALL void         fb_DylibFree        ( void *library );
        char        *fb_hGetExePath      ( char *dst, int maxlen );
        char        *fb_hGetExeName      ( char *dst, int maxlen );
 
+       int          fb_hIn              ( unsigned short port );
+       int          fb_hOut             ( unsigned short port, unsigned char value );
+       int          fb_Wait             ( unsigned short port, int and, int xor);
+
 /**************************************************************************************************
  * math
  **************************************************************************************************/
@@ -1097,6 +1101,10 @@ typedef int         (*FB_MULTIKEYPROC)  ( int scancode );
 typedef int         (*FB_GETMOUSEPROC)  ( int *x, int *y, int *z, int *buttons );
 typedef int         (*FB_SETMOUSEPROC)  ( int x, int y, int cursor );
 
+FBCALL int          fb_In               ( unsigned short port );
+FBCALL int          fb_Out              ( unsigned short port, unsigned char value );
+typedef int         (*FB_INPROC)        ( unsigned short port );
+typedef int         (*FB_OUTPROC)       ( unsigned short port, unsigned char value );
 
 typedef struct _FB_HOOKSTB {
     FB_INKEYPROC    inkeyproc;
@@ -1115,6 +1123,8 @@ typedef struct _FB_HOOKSTB {
     FB_MULTIKEYPROC multikeyproc;
     FB_GETMOUSEPROC getmouseproc;
     FB_SETMOUSEPROC setmouseproc;
+    FB_INPROC       inproc;
+    FB_OUTPROC      outproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;

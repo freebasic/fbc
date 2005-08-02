@@ -31,16 +31,18 @@ static int idx = 0, shift = 2, color = 0;
 
 
 /*:::::*/
-FBCALL int fb_GfxPaletteInp(int port)
+FBCALL int fb_GfxIn(unsigned short port)
 {
-	int value = 0;
+	int value = -1;
 
-	if ((!fb_mode) || (fb_mode->depth > 8))
-		return 0;
+	if (!fb_mode)
+		return -1;
 
 	switch (port) {
 
 		case 0x3C9:
+			if (fb_mode->depth > 8)
+				break;
 			value = (fb_mode->device_palette[idx] >> shift) & 0x3F;
 			shift += 8;
 			if (shift > 18) {
@@ -49,6 +51,11 @@ FBCALL int fb_GfxPaletteInp(int port)
 				idx &= (fb_mode->default_palette->colors - 1);
 			}
 			break;
+		
+		case 0x3DA:
+			fb_mode->driver->wait_vsync();
+			value = 8;
+			break;
 	}
 
 	return value;
@@ -56,12 +63,12 @@ FBCALL int fb_GfxPaletteInp(int port)
 
 
 /*:::::*/
-FBCALL void fb_GfxPaletteOut(int port, int value)
+FBCALL int fb_GfxOut(unsigned short port, unsigned char value)
 {
 	int i, r, g, b;
 
 	if ((!fb_mode) || (fb_mode->depth > 8))
-		return;
+		return -1;
 
 	switch (port) {
 
@@ -99,6 +106,10 @@ FBCALL void fb_GfxPaletteOut(int port, int value)
 				idx &= (fb_mode->default_palette->colors - 1);
 			}
 			break;
+		
+		default:
+			return -1;
 	}
 
+	return 0;
 }

@@ -27,8 +27,11 @@
 #include "fb_gfx.h"
 
 
-FBCALL void fb_GfxWaitVSync(int port, int and_mask, int xor_mask)
+FBCALL int fb_GfxWaitVSync(void)
 {
-	if ((port == 0x3DA) && (and_mask == 8) && (!xor_mask) && (fb_mode))
-			fb_mode->driver->wait_vsync();
+	if (!fb_mode)
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	fb_mode->driver->wait_vsync();
+	
+	return FB_RTERROR_OK;
 }

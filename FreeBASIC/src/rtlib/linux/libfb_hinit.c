@@ -287,6 +287,8 @@ void fb_hInit ( int argc, char **argv )
 
 	memset(&fb_con, 0, sizeof(fb_con));
 
+	fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
+	
 	term = getenv("TERM");
 	if (term) {
 		if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))

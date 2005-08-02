@@ -28,3 +28,7 @@ function AddNumbers ( byval operand1 as integer, byval operand2 as integer ) as 
 	function = operand1 + operand2
 	
 end function
+
+
+print "dll main"
+

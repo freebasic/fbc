@@ -255,8 +255,6 @@ extern FBCALL void fb_GfxPalette(int index, int r, int g, int b);
 extern FBCALL void fb_GfxPaletteUsing(int *data);
 extern FBCALL void fb_GfxPaletteGet(int index, int *r, int *g, int *b);
 extern FBCALL void fb_GfxPaletteGetUsing(int *data);
-extern FBCALL void fb_GfxPaletteOut(int port, int value);
-extern FBCALL int fb_GfxPaletteInp(int port);
 extern FBCALL void fb_GfxPset(void *target, float x, float y, unsigned int color, int coord_type, int ispreset);
 extern FBCALL int fb_GfxPoint(void *target, float x, float y);
 extern FBCALL float fb_GfxPMap(float coord, int func);
@@ -267,7 +265,7 @@ extern FBCALL void fb_GfxLine(void *target, float x1, float y1, float x2, float 
 extern FBCALL void fb_GfxEllipse(void *target, float x, float y, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type);
 extern FBCALL int fb_GfxGet(void *target, float x1, float y1, float x2, float y2, unsigned char *dest, int coord_type, FBARRAY *array);
 extern FBCALL int fb_GfxPut(void *target, float x, float y, unsigned char *src, int coord_type, int mode, int alpha, BLENDER *func);
-extern FBCALL void fb_GfxWaitVSync(int port, int and_mask, int xor_mask);
+extern FBCALL int fb_GfxWaitVSync(void);
 extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type);
 extern FBCALL void fb_GfxDraw(void *target, FBSTRING *command);
 extern FBCALL void fb_GfxFlip(int from_page, int to_page);
@@ -296,6 +294,8 @@ char *fb_GfxReadStr(char *buffer, int maxlen);
 int fb_GfxMultikey(int scancode);
 int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
 int fb_GfxSetMouse(int x, int y, int cursor);
+int fb_GfxOut(unsigned short port, unsigned char value);
+int fb_GfxIn(unsigned short port);
 
 #ifdef __cplusplus
 }

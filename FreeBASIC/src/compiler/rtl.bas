@@ -1579,38 +1579,35 @@ data "pmap", "fb_GfxPMap", _
 	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_GfxPaletteOut( byval port as integer, byval data as integer ) as void
-data "out", "fb_GfxPaletteOut", _
+'' fb_Out( byval port as ushort, byval data as ubyte ) as void
+data "out", "fb_Out", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 NULL, TRUE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_UBYTE,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_GfxPaletteInp( byval port as integer ) as integer
-data "inp", "fb_GfxPaletteInp", _
+'' fb_In( byval port as ushort ) as integer
+data "inp", "fb_In", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 NULL, TRUE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_GfxWaitVSync ( byval port as integer, byval and_mask as integer, byval xor_mask as integer = 0 )
-data "wait", "fb_GfxWaitVSync", _
+'' fb_Wait ( byval port as ushort, byval and_mask as integer, byval xor_mask as integer = 0 )
+data "wait", "fb_Wait", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 NULL, TRUE, FALSE, _
 	 3, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
-'' fb_GfxWaitVSync ( byval port as integer, byval and_mask as integer, byval xor_mask as integer = 0 )
+'' fb_GfxWaitVSync ( void ) as integer
 data "screensync", "fb_GfxWaitVSync", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
-	 3, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,&h3DA, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,8, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
+	 @hGfxlib_cb, TRUE, FALSE, _
+	 0
 
 '' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void
 data "screenset", "fb_GfxSetPage", _
@@ -5017,7 +5014,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	''
 	nxtlabel = symbAddLabel( "" )
 
-	'' result == FB_RTERROR_OK? skip..
+	'' result >= FB_RTERROR_OK? skip..
 	resexpr = astNewBOP( IR_OP_EQ, resexpr, astNewCONSTi( 0, IR_DATATYPE_INTEGER ), nxtlabel, FALSE )
 
 	astAdd( resexpr )

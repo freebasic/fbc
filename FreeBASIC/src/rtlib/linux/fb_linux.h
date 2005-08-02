@@ -38,6 +38,7 @@
 #include <dlfcn.h>
 #include <pthread.h>
 #include <sys/mman.h>
+#include <sys/io.h>
 #include <sys/ioctl.h>
 
 #define INIT_CONSOLE		1
@@ -81,6 +82,7 @@ typedef struct FBCONSOLE
 	unsigned char *char_buffer, *attr_buffer;
 	pthread_t bg_thread;
 	pthread_mutex_t bg_mutex;
+	int has_perm;
 	int (*keyboard_getch)(void);
 	int (*keyboard_init)(void);
 	void (*keyboard_exit)(void);
