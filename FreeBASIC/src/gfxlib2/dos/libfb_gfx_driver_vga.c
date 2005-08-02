@@ -69,18 +69,18 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_dos.regs.x.ax = 0x13;
 	
 	if ((w == 320) && (h == 200)) {
-		__dpmi_int(0x10, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 		
 		refresh_rate = 70;
 	} else if ((w == 320) && (h == 100)) {
-		__dpmi_int(0x10, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 		
 		outportb(0x3D4, 9);
 		outportb(0x3D5, inportb(0x3D5) | 0x80);
 		
 		refresh_rate = 70;
 	} else if ((w == 256) && (h == 256)) {
-		__dpmi_int(0x10, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 		
 		outportb(0x3D4, 0x11);
 		c = inportb(0x3D5) & 0x7F;
@@ -124,7 +124,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		refresh_rate = 70;
 	} else if ((w == 160) && (h == 120)) {
 		fb_dos.regs.x.ax = 0x0D;
-		__dpmi_int(0x10, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 
 		outportb(0x3D4, 0x11);
 		outportb(0x3D5, inportb(0x3D5)&0x7F);
@@ -189,7 +189,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		
 		refresh_rate = 70;
 	} else if ((w == 80) && (h == 80)) {
-		__dpmi_int(0x10, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 		
 		outportw(0x3C4, 0x0604);
 		outportw(0x3C4, 0x0F02);

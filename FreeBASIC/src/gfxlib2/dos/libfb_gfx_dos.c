@@ -275,13 +275,13 @@ static void fb_dos_mouse_init(void)
 	fb_dos.regs.x.ax = 0x7;
 	fb_dos.regs.x.cx = 0;
 	fb_dos.regs.x.dx = fb_dos.w - 1;
-	__dpmi_int(0x33, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 	
 	/* set vertical range */
 	fb_dos.regs.x.ax = 0x8;
 	fb_dos.regs.x.cx = 0;
 	fb_dos.regs.x.dx = fb_dos.h - 1;
-	__dpmi_int(0x33, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 	
 }
 
@@ -312,7 +312,7 @@ void fb_dos_set_mouse(int x, int y, int cursor)
 	fb_dos.regs.x.ax = 0x4;
 	fb_dos.regs.x.cx = fb_dos.mouse_x;
 	fb_dos.regs.x.dx = fb_dos.mouse_y;
-	__dpmi_int(0x33, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 }
 
 /*:::::*/
@@ -321,7 +321,7 @@ void fb_dos_update_mouse(void)
 	if (!fb_dos.mouse_ok) return;
 	
 	fb_dos.regs.x.ax = 0x3;
-	__dpmi_int(0x33, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 	
 	fb_dos.mouse_buttons = fb_dos.regs.h.bl;
 	
@@ -340,7 +340,7 @@ static void fb_dos_mouse_exit(void)
 	if (!fb_dos.mouse_ok) return;
 	
 	fb_dos.regs.x.ax = 0x0;
-	__dpmi_int(0x33, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 }
 
 /*:::::*/
@@ -513,7 +513,7 @@ static int fb_dos_vesa_get_mode_info(int mode)
 	fb_dos.regs.x.di = RM_OFFSET(__tb);
 	fb_dos.regs.x.es = RM_SEGMENT(__tb);
 	fb_dos.regs.x.cx = mode;
-	__dpmi_int(0x10, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 	if (fb_dos.regs.h.ah)
 		return -1;
 	
@@ -545,7 +545,7 @@ void fb_dos_detect(void)
 		fb_dos.regs.x.ax = 0x4F00;
 		fb_dos.regs.x.di = RM_OFFSET(__tb);
 		fb_dos.regs.x.es = RM_SEGMENT(__tb);
-		__dpmi_int(0x10, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 		
 		if (fb_dos.regs.h.ah != 0x00) {
 			fb_dos.vesa_ok = FALSE;
@@ -601,11 +601,11 @@ void fb_dos_detect(void)
 		/* detect mouse */
 		
 		fb_dos.regs.x.ax = 0x0;
-		__dpmi_int(0x33, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 		fb_dos.mouse_ok = (fb_dos.regs.x.ax == 0) ? FALSE : TRUE;
 		
 		fb_dos.regs.x.ax = 0x11;
-		__dpmi_int(0x33, &fb_dos.regs);
+		__dpmi_simulate_real_mode_interrupt(0x33, &fb_dos.regs);
 		fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
 		
 		/* detect nearptr */
@@ -738,7 +738,7 @@ static void fb_dos_save_video_mode(void)
 static void fb_dos_restore_video_mode(void)
 {
 	fb_dos.regs.x.ax = 3;
-	__dpmi_int(0x10, &fb_dos.regs);
+	__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
 	_set_screen_lines(fb_dos.old_rows);
 	intensevideo();	/* no blink */
 }
