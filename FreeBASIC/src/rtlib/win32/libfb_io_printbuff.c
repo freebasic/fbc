@@ -148,7 +148,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
     const char *pachText = (const char *) buffer;
     CONSOLE_CURSOR_INFO cursor_info;
-    BOOL cursor_visible;
+    BOOL cursor_visible = FALSE;
     int scrolloff = FALSE;
     DWORD mode, byteswritten;
     BOOL is_view_set, is_window_empty;

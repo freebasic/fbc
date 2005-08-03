@@ -1,0 +1,14 @@
+#include <windows.h>
+
+#include <ntverp.h>
+
+#define VER_FILETYPE				VFT_DRV
+#define VER_FILESUBTYPE				VFT2_DRV_SYSTEM
+#define VER_FILEDESCRIPTION_STR     	"FreeBASIC direct I/O ports access driver"
+#define VER_INTERNALNAME_STR        	"fbportio.sys"
+#define VER_ORIGINALFILENAME_STR    	"fbportio.sys"
+#define VER_LEGALCOPYRIGHT_STR      	"FreeBASIC development team"
+#define VER_COMPANYNAME_STR         	"FreeBASIC project, http://www.freebasic.net"
+#define VER_PRODUCTNAME_STR         	"FB Ports I/O driver 1.0"
+
+#include "common.ver"

@@ -1,0 +1,7 @@
+TARGETNAME=fbportio
+TARGETPATH=.
+TARGETTYPE=DRIVER
+
+INCLUDES=.\
+
+SOURCES=fbportio.c fbportio.rc
