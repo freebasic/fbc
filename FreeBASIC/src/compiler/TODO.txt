@@ -2,7 +2,7 @@
 [ ] unicode strings (WSTRING type):
     - not var-len, just like ZSTRING's (fixed-len + pointers)
     - wide as the target platform (16-bit in Windows, 8-bit in Linux, etc)
-      no copy, no helper libs, just the wstr* function to help 
+      no copy, no helper libs, just the wstr* functions to help
     - maybe libutf8 when unicode is not supported by the platform
     - how to express literal unicode strings? W""?
     - to make it simpler to implement and to not bloat the str_ objects, don't allow
@@ -27,7 +27,7 @@
 
 *** *** *** *** ***
 [ ] AndAlso and OrElse, short-circuit versions of And and Or
-    - pay attention to register spills if functions or complex expression are
+    - pay attention to register spills if functions or complex expressions are
       used in left or right sides
 
 [ ] inline functions
