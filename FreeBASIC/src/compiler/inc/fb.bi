@@ -114,7 +114,6 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_TARGET
 	FB_COMPOPT_NAMING
 	FB_COMPOPT_EXTRAERRCHECK
-    FB_COMPOPT_FORCESTACKFRAME
 end enum
 
 type FBCMMLINEOPT
@@ -134,7 +133,6 @@ type FBCMMLINEOPT
 	target			as integer					'' target platform
 	naming			as integer					'' target naming
 	extraerrchk		as integer					'' add bounds plus null pointer checking
-    forcestackframe as integer                  '' TRUE = always write a stack frame for a function (def= false)
 end type
 
 

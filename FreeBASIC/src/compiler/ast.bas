@@ -1044,7 +1044,8 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 	if( n->class = AST_NODECLASS_IDX ) then
 		l = n->l
 		if( l <> NULL ) then
-			'' x86 assumption: if top of tree = idx * lgt, and lgt < 10, save lgt and delete * node
+			'' x86 assumption: if top of tree = idx * lgt, and lgt < 10,
+			''                 save lgt and delete the * node
 			if( l->class = AST_NODECLASS_BOP ) then
 				if( l->op = IR_OP_MUL ) then
 					lr = l->r
@@ -1607,7 +1608,7 @@ private function hOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
 		exit function
 	end select
 
-	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a register
+	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a reg
 	select case as const r->op
 	case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
 		exit function
@@ -5165,7 +5166,8 @@ end function
 '':::::
 private sub hReportParamError( byval f as ASTNODE ptr )
 
-	hReportErrorEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str$( f->proc.params+1 ) )
+	hReportErrorEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, _
+					"at parameter: " + str( f->proc.params+1 ) )
 
 end sub
 
@@ -5173,7 +5175,8 @@ end sub
 private sub hReportParamWarning( byval f as ASTNODE ptr, _
 								 byval msgnum as integer )
 
-	hReportWarning( msgnum, "at parameter: " + str$( f->proc.params+1 ) )
+	hReportWarning( msgnum, _
+					"at parameter: " + str( f->proc.params+1 ) )
 
 end sub
 
