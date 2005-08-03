@@ -226,7 +226,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         {
             /* Ensure that the user didn't do some scrolling/resizing
              * of the window */
-            fb_hRestoreConsoleWindow( );
+            /************fb_hRestoreConsoleWindow( );******************/
         }
     } else {
         hView = fb_out_handle;
