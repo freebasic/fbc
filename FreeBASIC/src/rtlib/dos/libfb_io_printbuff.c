@@ -73,8 +73,7 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
                 }
 			}
 
-    fwrite( buffer, len, 1, stdout );
-    fflush( stdout );
+    cputs( buffer );
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,
