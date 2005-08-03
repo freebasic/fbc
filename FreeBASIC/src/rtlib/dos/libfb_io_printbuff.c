@@ -26,6 +26,8 @@
 
 #include "fb.h"
 #include <conio.h>
+#include <string.h>
+#include <malloc.h>
 #include <sys/farptr.h>
 #include <go32.h>
 #include <pc.h>
@@ -55,6 +57,8 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 	int cols, rows;
 	int no_scroll = FALSE;
     unsigned short end_char = 0;
+    const char *pachText = (const char *) buffer;
+    const char *pFoundLF, *pLast = pachText;
 
 	fb_ConsoleGetSize( &cols, &rows );
 	fb_ConsoleGetView( &toprow, &botrow );
@@ -73,7 +77,24 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
                 }
 			}
 
-    cputs( buffer );
+    /* s/o means that we can only use cputs ... too bad ... so we've
+     * to scan for LF and (optionally) insert a CR ourselves */
+    pFoundLF = (const char *) memchr( pLast, '\n', len );
+    while (pFoundLF!=NULL) {
+        int tmp_len = pFoundLF - pLast;
+        int has_cr = ((tmp_len > 0) ? (*(pFoundLF-1)=='\r') : FALSE);
+        char *tmp_buffer = alloca(tmp_len + 3);
+        memcpy(tmp_buffer, pLast, tmp_len);
+        if( !has_cr ) {
+            memcpy(tmp_buffer + tmp_len, "\r\n", 3);
+        } else {
+            memcpy(tmp_buffer + tmp_len, "\n", 2);
+        }
+        cputs( tmp_buffer );
+        pLast = pFoundLF + 1;
+        pFoundLF = (const char *) memchr( pLast, '\n', len );
+    }
+    cputs( pLast );
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,
