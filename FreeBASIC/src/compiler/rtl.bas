@@ -3627,6 +3627,7 @@ function rtlNullPtrCheck( byval p as ASTNODE ptr, _
    	proc = astNewFUNCT( ifuncTB(FB_RTL_NULLPTRCHK) )
 
 	'' ptr
+	p = astNewCONV( IR_OP_TOPOINTER, IR_DATATYPE_POINTER+IR_DATATYPE_VOID, NULL, p )
 	if( astNewPARAM( proc, p, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) = NULL ) then
 		exit function
 	end if
@@ -5949,9 +5950,9 @@ private function hMultinput_cb( byval sym as FBSYMBOL ptr ) as integer static
 		case FB_COMPTARGET_WIN32
 			symbAddLib( "user32" )
 		end select
-	end if	
-	
-	function = TRUE	
+	end if
+
+	function = TRUE
 
 end function
 
