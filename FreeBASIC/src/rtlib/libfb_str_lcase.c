@@ -25,6 +25,7 @@
  */
 
 #include <malloc.h>
+#include <ctype.h>
 #include "fb.h"
 
 
@@ -59,10 +60,17 @@ FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )
 		d = dst->data;
 		for( i = 0; i < len; i++ )
 		{
-			c = (int)*s++;
+            /* use this kind of strange conversion to ensure that
+             * character values > 127 are converted correctly (without sign) */
+			c = (int) (unsigned int) (unsigned char)*s++;
 
+#if 0
 			if( (c >= 65) && (c <= 90) )
-				c += 97 - 65;
+                c += 97 - 65;
+#else
+            if( isupper( c ) )
+                c = tolower( c );
+#endif
 
 			*d++ = (char)c;
 		}
