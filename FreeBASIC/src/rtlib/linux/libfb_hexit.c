@@ -73,8 +73,8 @@ void fb_hEnd ( int errlevel )
 	}
 	pthread_mutex_destroy(&fb_con.bg_mutex);
 
-	if( fb_dirctx )
-		free( (FB_DIRCTX *)fb_dirctx );
+	if( FB_TLSGET(fb_dirctx) )
+		free( (FB_DIRCTX *)FB_TLSGET(fb_dirctx) );
 
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */

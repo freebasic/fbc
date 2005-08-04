@@ -30,6 +30,8 @@ Version 0.15 Beta:
 - comparing a null zstring to null var-len string would not return equal (v1c)
 - WIDTH in gfx mode was returning the width/height in pixels instead of character cells (lillo)
 - INSTR can now handle strings with NULs - using a Boyer-Moore implementation (mjs)
+- apps using the multithreaded rtlib under Linux were crashing on exit (lillo)
+
 
 Version 0.14 Beta:
 
