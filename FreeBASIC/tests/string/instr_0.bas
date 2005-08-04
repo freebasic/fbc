@@ -1,0 +1,43 @@
+option explicit
+
+defint a-z
+
+dim as integer result
+
+result = instr("asd"+chr$(0), chr$(0))
+ASSERT( result = 4 )
+result = instr("asd"+chr$(0), "d")
+ASSERT( result = 3 )
+result = instr("asd"+chr$(0), "a")
+ASSERT( result = 1 )
+result = instr("asd"+chr$(0), "sd")
+ASSERT( result = 2 )
+result = instr("asd"+chr$(0), "")
+ASSERT( result = 1 )
+result = instr("asd"+chr$(0), "asdfg")
+ASSERT( result = 0 )
+result = instr("asd"+chr$(0), "qwe")
+ASSERT( result = 0 )
+result = instr("", "asdf")
+ASSERT( result = 0 )
+result = instr("", "")
+ASSERT( result = 0 )
+
+result = instr(2, "asd"+chr$(0), chr$(0))
+ASSERT( result = 4 )
+result = instr(2, "asd"+chr$(0), "d")
+ASSERT( result = 3 )
+result = instr(2, "asd"+chr$(0), "a")
+ASSERT( result = 0 )
+result = instr(2, "asd"+chr$(0), "sd")
+ASSERT( result = 2 )
+result = instr(2, "asd"+chr$(0), "")
+ASSERT( result = 2 )
+result = instr(2, "asd"+chr$(0), "asdfg")
+ASSERT( result = 0 )
+result = instr(2, "asd"+chr$(0), "qwe")
+ASSERT( result = 0 )
+result = instr(2, "", "asdf")
+ASSERT( result = 0 )
+result = instr(2, "", "")
+ASSERT( result = 0 )

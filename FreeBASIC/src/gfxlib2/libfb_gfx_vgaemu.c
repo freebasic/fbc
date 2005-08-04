@@ -31,7 +31,7 @@ static int idx = 0, shift = 2, color = 0;
 
 
 /*:::::*/
-FBCALL int fb_GfxIn(unsigned short port)
+int fb_GfxIn(unsigned short port)
 {
 	int value = -1;
 
@@ -64,7 +64,7 @@ FBCALL int fb_GfxIn(unsigned short port)
 
 
 /*:::::*/
-FBCALL int fb_GfxOut(unsigned short port, unsigned char value)
+int fb_GfxOut(unsigned short port, unsigned char value)
 {
 	int i, r, g, b;
 

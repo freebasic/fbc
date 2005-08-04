@@ -29,6 +29,7 @@ Version 0.15 Beta:
   for those versions to process wrongly unsigned integer literals above 2^31 (v1c)
 - comparing a null zstring to null var-len string would not return equal (v1c)
 - WIDTH in gfx mode was returning the width/height in pixels instead of character cells (lillo)
+- INSTR can now handle strings with NULs - using a Boyer-Moore implementation (mjs)
 
 Version 0.14 Beta:
 
