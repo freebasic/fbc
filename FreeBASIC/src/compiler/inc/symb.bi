@@ -453,6 +453,10 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbIsArgByRef(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYREF) > 0)
 
+#define symbIsArg(s) ((s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYREF or FB_ALLOCTYPE_ARGUMENTBYVAL or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0)
+
+#define symbIsLocal(s) (s->scope > 0)
+
 #define symbIsPublic(s) ((s->alloctype and FB_ALLOCTYPE_PUBLIC) > 0)
 
 #define symbIsPrivate(s) ((s->alloctype and FB_ALLOCTYPE_PRIVATE) > 0)
