@@ -155,7 +155,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	int gl_attrs[21] = { GLX_RGBA, GLX_DOUBLEBUFFER,
 			     GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
 			     GLX_DEPTH_SIZE, 16 };
-	int *gl_attr, result;
+	int *gl_attr, result, try;
 	
 	context = NULL;
 
@@ -199,15 +199,32 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		if (load_library())
 			return -1;
 	
-	if (!(info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs)))
-		return -1;
-	fb_linux.visual = info->visual;
+	for (try = 0; try < 3; try++) {
+		if ((info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
+			fb_linux.visual = info->visual;
+			context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
+			XFree(info);
+			if ((int)context > 0)
+				break;
+			else
+				fb_glXDestroyContext(fb_linux.display, context);
+		}
+		switch (try) {
+			case 0:
+				if (depth > 16)
+					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 4;
+				else
+					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 1;
+				break;
+			case 1:
+				if (depth == 16)
+					return -1;
+				gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 1;
+			case 2:
+				return -1;
+		}
+	}
 	
-	context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
-	XFree(info);
-	if ((int)context <= 0)
-		return -1;
-
 	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
 	if (result)
 		return result;
