@@ -985,8 +985,9 @@ end function
 '':::::
 private sub hOptConstIDX( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r, lr
-	static as integer c
+	static as integer c, delnode
 	static as ASTVALUE v
+	static as FBSYMBOL ptr s
 
 	if( n = NULL ) then
 		exit sub
@@ -1061,7 +1062,25 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 						end select
 
 						if( c < 10 ) then
-				    		if( (c <> 6) and (c <> 7) ) then
+							select case as const c
+							case 6, 7
+								delnode = FALSE
+							case 3, 5, 9
+								delnode = TRUE
+								'' not possible if there's already an index (EBP)
+								s = astGetSymbol( n->r )
+								if( symbIsArg( s ) ) then
+									delnode = FALSE
+								elseif( symbIsLocal( s ) ) then
+									if( not symbIsStatic( s ) ) then
+										delnode = FALSE
+									end if
+								end if
+							case else
+								delnode = TRUE
+							end select
+
+				    		if( delnode ) then
 				    			n->idx.mult = c
 
 								'' relink
@@ -4394,10 +4413,6 @@ private function hEmitIDX( byval v as ASTNODE ptr, _
     ''
     if( ctx.doemit ) then
 		if( vi <> NULL ) then
-			if( (mult >= 10) or (mult = 6) or (mult = 7) ) then
-				mult = 1
-			end if
-
 			vd = irAllocVRIDX( v->dtype, s, ofs, mult, vi )
 
 			if( irIsIDX( vi ) or irIsVAR( vi ) ) then
