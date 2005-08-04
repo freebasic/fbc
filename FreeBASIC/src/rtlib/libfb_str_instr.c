@@ -21,6 +21,8 @@
  * str_instr.c -- instr function
  *
  * chng: oct/2004 written [v1ctor]
+ * chng: aug/2005 added boyer-moore and quirck search algorithms [mjs]
+ *                added special search case with pattern length = 1 [mjs]
  *
  */
 
@@ -195,6 +197,9 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
                 r = pszEnd - src->data + 1;
             }
 #else
+            /* The assembler code is fully functional but it's not portable
+             * (of course). I don't know if there is a speed gain compared
+             * to calling memchr(). Tests are required. */
             const char *pszEnd;
             char status;
             __asm (" movl %2, %%ecx \n"
