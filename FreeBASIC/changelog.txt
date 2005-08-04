@@ -16,6 +16,8 @@ Version 0.15 Beta:
   VGA ports are still emulated if in gfx mode (lillo)
 - new null gfx driver: pass -1 as flags parameter to SCREEN to work with gfx without visual feedback.
   Useful to produce gfx to be embedded in OS dependent contexts (GDI, Gtk, etc.) (lillo)
+- PUT now supports specifying a sub area of the source buffer to be drawn. Use the new syntax:
+  PUT [dest,] [STEP](x,y), source [,(x1,y1)-(x2,y2)] [,mode [,(alpha|blender)]] (lillo)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

@@ -1446,16 +1446,22 @@ data "fb_GfxPaletteGetUsing", "", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYREF, FALSE
 
 '' fb_GfxPut ( byref target as any, byval x as single, byval y as single, byref array as any, _
+''			   byval x1 as integer = &hFFFF0000, byval y1 as integer = &hFFFF0000, _
+''			   byval x2 as integer = &hFFFF0000, byval y2 as integer = &hFFFF0000, _
 ''			   byval coordType as integer, byval mode as integer, byval alpha as integer = -1, _
 ''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 ) as integer
 data "fb_GfxPut", "", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @hGfxlib_cb, FALSE, FALSE, _
-	 8, _
+	 12, _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
@@ -6633,6 +6639,10 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 					byval yexpr as ASTNODE ptr, _
 			   		byval arrayexpr as ASTNODE ptr, _
 			   		byval isptr as integer, _
+					byval x1expr as ASTNODE ptr, _
+					byval x2expr as ASTNODE ptr, _
+					byval y1expr as ASTNODE ptr, _
+					byval y2expr as ASTNODE ptr, _
 			   		byval mode as integer, _
 			   		byval alphaexpr as ASTNODE ptr, _
 			   		byval funcexpr as ASTNODE ptr, _
@@ -6679,6 +6689,26 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 		argmode = INVALID
 	end if
  	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' area coordinates, if any
+ 	if( x1expr = NULL ) then
+ 		x1expr = astNewCONSTi( &hFFFF0000, IR_DATATYPE_INTEGER )
+ 		x2expr = astNewCONSTi( &hFFFF0000, IR_DATATYPE_INTEGER )
+ 		y1expr = astNewCONSTi( &hFFFF0000, IR_DATATYPE_INTEGER )
+ 		y2expr = astNewCONSTi( &hFFFF0000, IR_DATATYPE_INTEGER )
+ 	end if
+  	if( astNewPARAM( proc, x1expr ) = NULL ) then
+ 		exit function
+ 	end if
+  	if( astNewPARAM( proc, x2expr ) = NULL ) then
+ 		exit function
+ 	end if
+  	if( astNewPARAM( proc, y1expr ) = NULL ) then
+ 		exit function
+ 	end if
+  	if( astNewPARAM( proc, y2expr ) = NULL ) then
  		exit function
  	end if
 

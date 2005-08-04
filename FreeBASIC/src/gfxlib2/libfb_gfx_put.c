@@ -502,7 +502,7 @@ static void init_put(void)
 
 
 /*:::::*/
-FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int coord_type, int mode, int alpha, BLENDER *func)
+FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, int alpha, BLENDER *func)
 {
 	int x, y, w, h, pitch, bpp;
 	void (*put)(unsigned char *, unsigned char *, int, int, int, int);
@@ -520,21 +520,34 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int c
 	w = pitch = bpp >> 3;
 	h = (int)*(unsigned short *)(src + 2);
 	src += 4;
-	
+
 	bpp &= 0x7;
 	if ((bpp) && (bpp != fb_mode->bpp))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	
-	if ((w == 0) || (h == 0) ||
-	    (x + w <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
-	    (y + h <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
-		return FB_RTERROR_OK;
 	
 	if (fb_mode->depth > 8) {
 		pitch <<= 1;
 		if (fb_mode->depth > 16)
 			pitch <<= 1;
 	}
+	
+	if (x1 != 0xFFFF0000) {
+		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
+		
+		x1 = MID(0, x1, w-1);
+		x2 = MID(0, x2, w-1);
+		y1 = MID(0, y1, h-1);
+		y2 = MID(0, y2, h-1);
+		
+		w = x2 - x1 + 1;
+		h = y2 - y1 + 1;
+		src += (pitch * y1) + (x1 * fb_mode->bpp);
+	}
+	
+	if ((w == 0) || (h == 0) ||
+	    (x + w <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
+	    (y + h <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
+		return FB_RTERROR_OK;
 	
 	if (y < fb_mode->view_y) {
 		src += (pitch * (fb_mode->view_y - y));

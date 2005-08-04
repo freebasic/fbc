@@ -590,6 +590,10 @@ declare function 	rtlGfxPut			( byval target as ASTNODE ptr, _
 										  byval yexpr as ASTNODE ptr, _
 										  byval arrayexpr as ASTNODE ptr, _
 										  byval isptr as integer, _
+										  byval x1expr as ASTNODE ptr, _
+										  byval x2expr as ASTNODE ptr, _
+										  byval y1expr as ASTNODE ptr, _
+										  byval y2expr as ASTNODE ptr, _
 										  byval mode as integer, _
 										  byval alphaexpr as ASTNODE ptr, _
 										  byval funcexpr as ASTNODE ptr, _

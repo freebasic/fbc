@@ -638,17 +638,18 @@ function cGfxPalette as integer
 end function
 
 '':::::
-'' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Variable (',' Mode (',' Alpha)?)?
+'' GfxPut   =   PUT ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' ('(' Expr ',' Expr ')' '-' '(' Expr ',' Expr ')' ',')? Variable (',' Mode (',' Alpha)?)?
 ''
 function cGfxPut as integer
-    dim as integer coordtype, mode, isptr, tisptr
-    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, funcexpr
+    dim as integer coordtype, mode, isptr, tisptr, expectmode
+    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, funcexpr, x1expr, y1expr, x2expr, y2expr
     dim as FBSYMBOL ptr s, target, arg1, arg2
 
 	function = FALSE
 
 	alphaexpr = NULL
 	funcexpr = NULL
+	x1expr = NULL
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
@@ -686,88 +687,117 @@ function cGfxPut as integer
 	'' (',' Mode)?
 	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
-		select case as const lexGetToken
-
-		case FB_TK_PSET
-			lexSkipToken
-			mode = FBGFX_PUTMODE_PSET
-
-		case FB_TK_PRESET
-			lexSkipToken
-			mode = FBGFX_PUTMODE_PRESET
-
-		case FB_TK_AND
-			lexSkipToken
-			mode = FBGFX_PUTMODE_AND
-
-		case FB_TK_OR
-			lexSkipToken
-			mode = FBGFX_PUTMODE_OR
-
-		case FB_TK_XOR
-			lexSkipToken
-			mode = FBGFX_PUTMODE_XOR
-
-		case else
-			if (ucase$( *lexGetText( ) ) = "TRANS") then
-				lexSkipToken( )
-				mode = FBGFX_PUTMODE_TRANS
-
-			elseif (ucase$( *lexGetText( ) ) = "ALPHA") then
-				lexSkipToken( )
-				mode = FBGFX_PUTMODE_ALPHA
-
-				if( hMatch( CHAR_COMMA ) ) then
-					hMatchExpression( alphaexpr )
-				end if
-
-			elseif (ucase$( *lexGetText( ) ) = "CUSTOM") then
-				lexSkipToken( )
-
-				mode = FBGFX_PUTMODE_CUSTOM
-
-				hMatchCOMMA( )
-
-				hMatchExpression( funcexpr )
-
-				s = astGetSymbolOrElm( funcexpr )
-				if( s = NULL ) then
-					hReportError FB_ERRMSG_TYPEMISMATCH
-					exit function
-				end if
-
-				if( not symbIsProc( s ) ) then
-					hReportError FB_ERRMSG_TYPEMISMATCH
-					exit function
-				end if
-
-				if( ( symbGetType( s ) <> FB_SYMBTYPE_UINT ) or _
-					( symbGetProcArgs( s ) <> 2 ) ) then
-					hReportError FB_ERRMSG_TYPEMISMATCH
-					exit function
-				end if
-
-				arg1 = symbGetProcHeadArg( s )
-
-				arg2 = symbGetProcNextArg( s, arg1, FALSE )
-
-				if( ( symbGetType( arg1 ) <> FB_SYMBTYPE_UINT ) or _
-					( symbGetType( arg2 ) <> FB_SYMBTYPE_UINT ) or _
-					( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
-					( arg2->arg.mode <> FB_ARGMODE_BYVAL ) ) then
-					hReportError FB_ERRMSG_TYPEMISMATCH
-					exit function
-				end if
-
-			else
-				hReportError FB_ERRMSG_SYNTAXERROR
+		
+		expectmode = TRUE
+		
+		if( hMatch( CHAR_LPRNT ) ) then
+		
+			hMatchExpression( x1expr )
+			hMatchCOMMA( )
+			hMatchExpression( y1expr )
+			hMatchRPRNT( )
+			
+			if( not hMatch( CHAR_MINUS ) ) then
+				hReportError FB_ERRMSG_EXPECTEDMINUS
 				exit function
 			end if
-		end select
+			
+			hMatchLPRNT( )
+			hMatchExpression( x2expr )
+			hMatchCOMMA( )
+			hMatchExpression( y2expr )
+			hMatchRPRNT( )
+			
+			if( not hMatch( CHAR_COMMA ) ) then
+				expectmode = FALSE
+			end if
+		end if
+		
+		if( expectmode ) then
+			select case as const lexGetToken
+
+			case FB_TK_PSET
+				lexSkipToken
+				mode = FBGFX_PUTMODE_PSET
+
+			case FB_TK_PRESET
+				lexSkipToken
+				mode = FBGFX_PUTMODE_PRESET
+
+			case FB_TK_AND
+				lexSkipToken
+				mode = FBGFX_PUTMODE_AND
+
+			case FB_TK_OR
+				lexSkipToken
+				mode = FBGFX_PUTMODE_OR
+
+			case FB_TK_XOR
+				lexSkipToken
+				mode = FBGFX_PUTMODE_XOR
+
+			case else
+				if (ucase$( *lexGetText( ) ) = "TRANS") then
+					lexSkipToken( )
+					mode = FBGFX_PUTMODE_TRANS
+
+				elseif (ucase$( *lexGetText( ) ) = "ALPHA") then
+					lexSkipToken( )
+					mode = FBGFX_PUTMODE_ALPHA
+
+					if( hMatch( CHAR_COMMA ) ) then
+						hMatchExpression( alphaexpr )
+					end if
+
+				elseif (ucase$( *lexGetText( ) ) = "CUSTOM") then
+					lexSkipToken( )
+
+					mode = FBGFX_PUTMODE_CUSTOM
+
+					hMatchCOMMA( )
+
+					hMatchExpression( funcexpr )
+
+					s = astGetSymbolOrElm( funcexpr )
+					if( s = NULL ) then
+						hReportError FB_ERRMSG_TYPEMISMATCH
+						exit function
+					end if
+
+					if( not symbIsProc( s ) ) then
+						hReportError FB_ERRMSG_TYPEMISMATCH
+						exit function
+					end if
+
+					if( ( symbGetType( s ) <> FB_SYMBTYPE_UINT ) or _
+						( symbGetProcArgs( s ) <> 2 ) ) then
+						hReportError FB_ERRMSG_TYPEMISMATCH
+						exit function
+					end if
+
+					arg1 = symbGetProcHeadArg( s )
+
+					arg2 = symbGetProcNextArg( s, arg1, FALSE )
+
+					if( ( symbGetType( arg1 ) <> FB_SYMBTYPE_UINT ) or _
+						( symbGetType( arg2 ) <> FB_SYMBTYPE_UINT ) or _
+						( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
+						( arg2->arg.mode <> FB_ARGMODE_BYVAL ) ) then
+						hReportError FB_ERRMSG_TYPEMISMATCH
+						exit function
+					end if
+
+				else
+					hReportError FB_ERRMSG_SYNTAXERROR
+					exit function
+				end if
+			end select
+		end if
 	end if
 
 	''
 	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, _
+						  x1expr, y1expr, x2expr, y2expr, _
 						  mode, alphaexpr, funcexpr, coordtype )
 
 end function
