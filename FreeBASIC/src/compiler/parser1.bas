@@ -4026,6 +4026,7 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
+
 	'' BOP?
     op = INVALID
     if( lexGetToken( ) <> FB_TK_ASSIGN ) then
@@ -4118,6 +4119,22 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
 
     elseif( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
     	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    end if
+
+    if( dtype = IR_DATATYPE_FIXSTR ) then
+        '' for an assignment to a FIXSTR: assign into temporary string first
+        dim as FBSYMBOL ptr s
+        dim as ASTNODE ptr vexpr
+    
+        s = symbAddTempVar( FB_SYMBTYPE_STRING )
+        if( s = NULL ) then
+            exit function
+        end if
+    
+        vexpr = astNewVAR( s, NULL, 0, FB_SYMBTYPE_STRING )
+        astAdd( astNewASSIGN( vexpr, expr ) )
+
+        expr = vexpr
     end if
 
     '' do assign
