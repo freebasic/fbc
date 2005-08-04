@@ -4132,7 +4132,7 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
         end if
     
         vexpr = astNewVAR( s, NULL, 0, FB_SYMBTYPE_STRING )
-        astAdd( astNewASSIGN( vexpr, expr ) )
+        astAdd( astNewASSIGN( astCloneTree( vexpr ), expr ) )
 
         expr = vexpr
     end if
