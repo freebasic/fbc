@@ -212,6 +212,13 @@ extern "C" {
 #endif
 
 /**************************************************************************************************
+ * helpers
+ **************************************************************************************************/
+
+#define fb_hSign( x ) \
+    ( ( (x) < 0 ) ? -1 : 1 )
+
+/**************************************************************************************************
  * internal lists
  **************************************************************************************************/
 
@@ -975,12 +982,19 @@ typedef struct _DEV_SCRN_INFO {
  * data/time
  **************************************************************************************************/
 
+#define fb_hTimeDaysInYear( year ) \
+    (365 + fb_hTimeLeap( year ))
+
 FBCALL double       fb_Timer            ( void );
 FBCALL FBSTRING    *fb_Time             ( void );
 FBCALL int          fb_SetTime          ( FBSTRING *time );
 FBCALL FBSTRING    *fb_Date             ( void );
 FBCALL int          fb_SetDate          ( FBSTRING *date );
 FBCALL void         fb_Sleep            ( int msecs );
+
+       int          fb_hTimeLeap        ( int year );
+       int          fb_hTimeDaysInMonth ( int month, int year );
+       void         fb_hNormalizeDate   ( int *pDay, int *pMonth, int *pYear );
 
        int          fb_hSetTime         ( int h, int m, int s );
        int          fb_hSetDate         ( int y, int m, int d );

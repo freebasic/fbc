@@ -69,7 +69,7 @@ ifeq ($(TARGET),dos)
 endif
 
 
-TESTS=file/text_in$(EXEEXT) dim/submod$(EXEEXT) dim/cmmn_01$(EXEEXT) string/chr_0$(EXEEXT) string/mid_set$(EXEEXT) string/instr_0$(EXEEXT) string/instr_x$(EXEEXT) string/rtrim$(EXEEXT) string/ltrim$(EXEEXT) string/compare$(EXEEXT)
+TESTS=file/text_in$(EXEEXT) dim/submod$(EXEEXT) dim/cmmn_01$(EXEEXT) string/chr_0$(EXEEXT) string/mid_set$(EXEEXT) string/instr_0$(EXEEXT) string/instr_x$(EXEEXT) string/rtrim$(EXEEXT) string/ltrim$(EXEEXT) string/compare$(EXEEXT) datetime/date$(EXEEXT)
 
 all: $(TESTS) run_tests
 
@@ -79,6 +79,7 @@ clean:
 run_tests:
 	file/text_in
 	dim/cmmn_01
+	dim/submod
 	string/chr_0
 	string/mid_set
 	string/instr_0
@@ -86,7 +87,7 @@ run_tests:
 	string/rtrim
 	string/ltrim
 	string/compare
-	dim/submod
+	datetime/date
 
 file/text_in$(EXEEXT): file/text_in.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
@@ -116,6 +117,9 @@ string/ltrim$(EXEEXT): string/ltrim.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 string/compare$(EXEEXT): string/compare.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+datetime/date$(EXEEXT): datetime/date.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 dim/submod_a.bas: dim/submod_c.bi

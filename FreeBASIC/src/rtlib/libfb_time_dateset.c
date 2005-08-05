@@ -32,18 +32,20 @@
 #include "fb_rterr.h"
 
 
-/*:::::*/
+/** Sets the date to the specified value.
+ *
+ * Valid formats:
+ * - mm/dd/yy
+ * - mm/dd/yyyy
+ * - mm-dd-yy
+ * - mm-dd-yyyy
+ *
+ * VBDOS converts a 2-digit year by adding 1900.
+ *
+ * @see fb_Date()
+ */
 FBCALL int fb_SetDate( FBSTRING *date )
 {
-
-/* valid formats:
-   mm/dd/yy
-   mm/dd/yyy
-   mm-dd-yy
-   mm-dd-yyyy
-
-   assumes 2-digit years are 1900 + year - !!!FIXME!!! - not sure how QB handles these
-*/
 	FB_STRLOCK();
 
 	if( (date != NULL) && (date->data != NULL) )
