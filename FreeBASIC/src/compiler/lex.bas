@@ -567,25 +567,25 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 		do
 			select case lexCurrentChar( )
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
-				  c = lexEatChar( ) - CHAR_0
-                  if( c > 9 ) then
-                  	c -= (CHAR_AUPP - CHAR_9 - 1)
-                  end if
-                  if( c > 16 ) then
+				c = lexEatChar( ) - CHAR_0
+                if( c > 9 ) then
+					c -= (CHAR_AUPP - CHAR_9 - 1)
+                end if
+                if( c > 16 ) then
                   	c -= (CHAR_ALOW - CHAR_AUPP)
-                  end if
+                end if
 
-					lgt += 1
-					if( lgt > 8 ) then
-						if( lgt = 9 ) then
-							islong = TRUE
-				    		value64 = (culngint( value ) * 16) + c
-				    	else
-				    		value64 = (value64 * 16) + c
-				    	end if
-				    else
-                  		value = (value * 16) + c
-                  	end if
+				lgt += 1
+				if( lgt > 8 ) then
+					if( lgt = 9 ) then
+						islong = TRUE
+				    	value64 = (culngint( value ) * 16) + c
+					else
+				    	value64 = (value64 * 16) + c
+				    end if
+				else
+                	value = (value * 16) + c
+                end if
 			case else
 				exit do
 			end select

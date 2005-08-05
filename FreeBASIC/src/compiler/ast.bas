@@ -2570,11 +2570,11 @@ function astGetValueAsInt( byval n as ASTNODE ptr ) as integer
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    return cint( astGetValue64( n ) )
+  	    function = cint( astGetValue64( n ) )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		return cint( astGetValuef( n ) )
+  		function = cint( astGetValuef( n ) )
   	case else
-  		return cint( astGetValuei( n ) )
+  		function = astGetValuei( n )
   	end select
 
 end function
@@ -2584,11 +2584,39 @@ function astGetValueAsStr( byval n as ASTNODE ptr ) as string
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    return str$( astGetValue64( n ) )
+  	    function = str( astGetValue64( n ) )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		return str$( astGetValuef( n ) )
+  		function = str( astGetValuef( n ) )
   	case else
-  		return str$( astGetValuei( n ) )
+  		function = str( astGetValuei( n ) )
+  	end select
+
+end function
+
+'':::::
+function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
+
+  	select case as const astGetDataType( n )
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	    function = astGetValue64( n )
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		function = clngint( astGetValuef( n ) )
+  	case else
+  		function = clngint( astGetValuei( n ) )
+  	end select
+
+end function
+
+'':::::
+function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
+
+  	select case as const astGetDataType( n )
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	    function = cdbl( astGetValue64( n ) )
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		function = astGetValuef( n )
+  	case else
+  		function = cdbl( astGetValuei( n ) )
   	end select
 
 end function
@@ -3923,6 +3951,22 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 
 		end select
 
+	case else
+
+		select case as const dtype
+		case IR_DATATYPE_BYTE
+			v->v.valuei = cbyte( v->v.valuei )
+
+		case IR_DATATYPE_UBYTE
+			v->v.valuei = cubyte( v->v.valuei )
+
+		case IR_DATATYPE_SHORT
+			v->v.valuei = cshort( v->v.valuei )
+
+		case IR_DATATYPE_USHORT
+			v->v.valuei = cushort( v->v.valuei )
+		end select
+
 	end select
 
 end sub
@@ -3940,7 +3984,7 @@ private sub hCONVConstEvalFlt( byval dtype as integer, _
 
 	select case as const vdtype
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-	    '' do nothing..
+		'' do nothing..
 
 	case IR_DATATYPE_LONGINT
 
@@ -4061,25 +4105,6 @@ function astNewCONV( byval op as integer, _
 		return l
 	end if
 
-	'' only convert if the classes are different (ie, floating<->integer) or
-	'' if sizes are different (ie, byte<->int)
-	if( (dclass = irGetDataClass( dtype )) and _
-		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
-
-		if( l->defined ) then
-			if( dtype <> IR_DATATYPE_ENUM ) then
-				l->class = AST_NODECLASS_CONST
-			else
-				l->class = AST_NODECLASS_ENUM
-			end if
-		end if
-
-		l->dtype   = dtype
-		l->subtype = subtype
-
-		return l
-	end if
-
 	'' constant? evaluate at compile-time
 	if( l->defined ) then
 
@@ -4098,6 +4123,17 @@ function astNewCONV( byval op as integer, _
 		else
 			l->class = AST_NODECLASS_ENUM
 		end if
+
+		l->dtype   = dtype
+		l->subtype = subtype
+
+		return l
+	end if
+
+	'' only convert if the classes are different (ie, floating<->integer) or
+	'' if sizes are different (ie, byte<->int)
+	if( (dclass = irGetDataClass( dtype )) and _
+		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
 
 		l->dtype   = dtype
 		l->subtype = subtype
@@ -4842,6 +4878,86 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+private function hCheckConstAssign( byval l as ASTNODE ptr, _
+					   		   		byval r as ASTNODE ptr ) as ASTNODE ptr static
+
+	dim as integer ival, imin, imax
+	dim as longint lval, lmin, lmax
+	dim as double dval, dmin, dmax
+
+	if( irGetDataSize( l->dtype ) >= irGetDataSize( r->dtype ) ) then
+		return r
+	end if
+
+	'' x86 assumptions
+
+    select case l->dtype
+    case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+
+		if( l->dtype = IR_DATATYPE_SINGLE ) then
+			dmin = 1.175494351e-38
+			dmax = 3.402823466e+38
+		else
+			dmin = 2.2250738585072014e-308
+			dmax = 1.7976931348623147e+308
+		end if
+
+		dval = abs(astGetValueAsDouble( r ))
+    	if( dval <> 0 ) then
+    		if( (dval < dmin) or (dval > dmax) ) then
+    			hReportError( FB_ERRMSG_MATHOVERFLOW, TRUE )
+    			return NULL
+			end if
+		end if
+
+    case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT
+
+		if( l->dtype = IR_DATATYPE_INTEGER ) then
+			lmin = -2147483648LL
+			lmax = 2147483647LL
+		else
+			lmin = 0LL
+			lmax = 4294967296LL
+		end if
+
+		lval = astGetValueAsLongInt( r )
+    	if( (lval < lmin) or (lval > lmax) ) then
+    		r = astNewCONV( INVALID, l->dtype, NULL, r )
+    		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+		end if
+
+    case else
+
+    	select case as const l->dtype
+    	case IR_DATATYPE_BYTE
+    		imin = -128
+    		imax = 127
+
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_UBYTE
+    		imin = 0
+    		imax = 255
+
+    	case IR_DATATYPE_SHORT
+    		imin = -32678
+    		imax = 32767
+
+    	case IR_DATATYPE_USHORT
+    		imin = 0
+    		imax = 65535
+    	end select
+
+		ival = astGetValueAsInt( r )
+    	if( (ival < imin) or (ival > imax) ) then
+    		r = astNewCONV( INVALID, l->dtype, NULL, r )
+    		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+		end if
+	end select
+
+	function = r
+
+end function
+
+'':::::
 function astNewASSIGN( byval l as ASTNODE ptr, _
 					   byval r as ASTNODE ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
@@ -4954,10 +5070,19 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 	if( ldtype <> rdtype ) then
 		'' don't convert strings
 		if( rdclass <> IR_DATACLASS_STRING ) then
-			'' x86 assumption: let the fpu do the convertion if any operand is a float
-			if( (ldclass <> IR_DATACLASS_FPOINT) and _
-				(rdclass <> IR_DATACLASS_FPOINT) ) then
-				r = astNewCONV( INVALID, ldtype, NULL, r )
+			'' constant?
+			if( r->defined ) then
+				r = hCheckConstAssign( l, r )
+			else
+				'' x86 assumption: let the fpu do the convertion if any operand is a float
+				if( (ldclass <> IR_DATACLASS_FPOINT) and _
+					(rdclass <> IR_DATACLASS_FPOINT) ) then
+					r = astNewCONV( INVALID, ldtype, NULL, r )
+				end if
+			end if
+
+			if( r = NULL ) then
+				exit function
 			end if
 		end if
 	end if
