@@ -39,11 +39,11 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 {	
 	if (inited == -1) {
 		regs.x.ax = 0x0;	/* detect mouse driver and mouse existence */
-		__dpmi_simulate_real_mode_interrupt(0x33, &regs);
+		__dpmi_int(0x33, &regs);
 		inited = (regs.x.ax == 0) ? 0 : 1;
 		
 		regs.x.ax = 0x11;	/* detect CuteMouse 2.0+ wheel api */
-		__dpmi_simulate_real_mode_interrupt(0x33, &regs);
+		__dpmi_int(0x33, &regs);
 		wheel_ok = ((regs.x.ax == 0x574D) && (regs.x.cx & 1)) ? TRUE : FALSE;
 		
 		wheel_pos = wheel_ok ? 0 : -1;
@@ -58,7 +58,7 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	}
 	
 	regs.x.ax = 0x3;
-	__dpmi_simulate_real_mode_interrupt(0x33, &regs);
+	__dpmi_int(0x33, &regs);
 	
 	if (wheel_ok) wheel_pos -= (int)regs.h.bh;
 	
@@ -86,7 +86,7 @@ int fb_ConsoleSetMouse( int x, int y, int cursor )
 	regs.x.ax = 0x4;
 	regs.x.cx = mx;
 	regs.x.dx = my;
-	__dpmi_simulate_real_mode_interrupt(0x33, &regs);
+	__dpmi_int(0x33, &regs);
 	
 	return FB_RTERROR_OK;
 }

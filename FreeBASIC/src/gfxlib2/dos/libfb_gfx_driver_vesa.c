@@ -83,11 +83,11 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 
 	/* set video mode */
 	fb_dos.regs.x.ax = 0x13;
-	__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
+	__dpmi_int(0x10, &fb_dos.regs);
 
 	fb_dos.regs.x.ax = 0x4F02;
 	fb_dos.regs.x.bx = mode;
-	__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
+	__dpmi_int(0x10, &fb_dos.regs);
 
 	if (fb_dos.regs.h.ah) {
 		return -1;
@@ -113,7 +113,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
       r.x.ax = 0x4F05;
       r.x.bx = 0;
       r.x.dx = bank_number;
-      __dpmi_simulate_real_mode_interrupt(0x10, &r);
+      __dpmi_int(0x10, &r);
    }
 
 

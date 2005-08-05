@@ -85,7 +85,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	
 	/* set base video mode */
 	fb_dos.regs.x.ax = 0x13;
-	__dpmi_simulate_real_mode_interrupt(0x10, &fb_dos.regs);
+	__dpmi_int(0x10, &fb_dos.regs);
 	
 	/* tweak to Mode X */
 	outportw(SC_INDEX, 0x0604);  /* disable chain4 */
