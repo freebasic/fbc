@@ -2402,7 +2402,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 		hMOV dst, eax
 
 		if( not eaxfree ) then
-			hPOP eax
+			hPOP "eax"
 		end if
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -2414,7 +2414,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 
 	if( edxtrashed ) then
 		if( (not edxfree) and (not edxindest) ) then
-			hPOP edx
+			hPOP "edx"
 		end if
 	end if
 
