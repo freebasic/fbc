@@ -4,6 +4,9 @@ Version 0.15 Beta:
 - LOCATE/CLS/WIDTH/SCREEN are now window-local (left/top of window = 1/1) on Win32 (mjs)
 - VAL64 function renamed to VALLNG as longint's can be wider than 64 bits in future ports (v1c)
 - WITH can now accepts dereferenced pointers as argument and the depth is became unlimited (v1c)
+- INSTR([n,] s$, ANY p$) [mjs]
+- RTRIM$(s$[, ANY p$]) [mjs]
+- LTRIM$(s$[, ANY p$]) [mjs]
 
 [added]
 - Added: OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE, OPEN SCRN (mjs)

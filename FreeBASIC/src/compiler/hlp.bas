@@ -158,7 +158,8 @@ end type
 		"Executable not found", _
 		"Array out-of-bounds", _
 		"Missing command-line option for", _
-		"Math overflow" _
+		"Math overflow", _
+		"Expected 'ANY'" _
 	}
 
 

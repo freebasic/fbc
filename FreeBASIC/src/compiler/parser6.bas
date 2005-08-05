@@ -2113,6 +2113,8 @@ end function
 '' cStringFunct	=	STR$ '(' Expression{int|float|double} ')'
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
 '' 				|   STRING$ '(' Expression ',' Expression{int|str} ')' .
+''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
+''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'
 ''
 function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr1, expr2, expr3
@@ -2188,6 +2190,82 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 		lexSkipToken
 
 		function = cStrASC( funcexpr )
+
+    case FB_TK_INSTR
+        dim is_any as integer
+
+        lexSkipToken
+
+		hMatchLPRNT( )
+
+		hMatchExpression( expr1 )
+
+		hMatchCOMMA( )
+
+        is_any = hMatch( FB_TK_ANY )
+
+		hMatchExpression( expr2 )
+
+        if( not is_any ) then
+        	if( hMatch( CHAR_COMMA ) ) then
+                is_any = hMatch( FB_TK_ANY )
+                hMatchExpression( expr3 )
+            end if
+        end if
+
+        if( expr3 = NULL ) then
+            expr3 = expr2
+            expr2 = expr1
+			expr1 = astNewCONSTi( 1, IR_DATATYPE_INTEGER )
+        end if
+
+		hMatchRPRNT( )
+
+		funcexpr = rtlStrInstr( expr1, expr2, expr3, is_any )
+
+		function = funcexpr <> NULL
+
+    case FB_TK_RTRIM
+
+        lexSkipToken
+
+        hMatchLPRNT( )
+
+        hMatchExpression( expr1 )
+
+        if( hMatch( CHAR_COMMA ) ) then
+    		hMatchToken( FB_TK_ANY, FB_ERRMSG_EXPECTEDANY )
+	        hMatchExpression( expr2 )
+        else
+            expr2 = NULL
+        end if
+
+        hMatchRPRNT( )
+
+		funcexpr = rtlStrRTrim( expr1, expr2 )
+
+		function = funcexpr <> NULL
+
+    case FB_TK_LTRIM
+
+        lexSkipToken
+
+        hMatchLPRNT( )
+
+        hMatchExpression( expr1 )
+
+        if( hMatch( CHAR_COMMA ) ) then
+    		hMatchToken( FB_TK_ANY, FB_ERRMSG_EXPECTEDANY )
+	        hMatchExpression( expr2 )
+        else
+            expr2 = NULL
+        end if
+
+        hMatchRPRNT( )
+
+		funcexpr = rtlStrLTrim( expr1, expr2 )
+
+		function = funcexpr <> NULL
 
 	end select
 
@@ -2735,7 +2813,7 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	res = FALSE
 
 	select case as const lexGetToken( )
-	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC
+	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC, FB_TK_INSTR, FB_TK_RTRIM, FB_TK_LTRIM
 		res = cStringFunct( funcexpr )
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _

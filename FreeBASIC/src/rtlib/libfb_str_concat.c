@@ -29,54 +29,11 @@
 #include "fb.h"
 
 /*:::::*/
-static void fb_hStrConcat( char *dst, char *str1, int len1, char *str2, int len2 )
+static void fb_hStrConcat( char *dst, const char *str1, int len1, const char *str2, int len2 )
 {
-#ifndef TARGET_X86
-
-	if( str1 != NULL )
-		while( --len1 >= 0 )
-			*dst++ = *str1++;
-
-	if( str2 != NULL )
-		while( --len2 >= 0 )
-			*dst++ = *str2++;
-
-#else
-
-	if( (str1 != NULL) && (len1 > 0) )
-	{
-		asm (
-			"pushl %%ecx\n"
-			"shrl $2,%%ecx\n"
-			"rep\n"
-			"movsd\n"
-			"popl %%ecx\n"
-			"andl $3,%%ecx\n"
-			"rep\n"
-			"movsb"
-			: "=D" (dst)
-			: "c" (len1), "S" (str1), "D" (dst) );
-	}
-
-	if( (str2 != NULL) && (len2 > 0) )
-	{
-		asm (
-			"pushl %%ecx\n"
-			"shrl $2,%%ecx\n"
-			"rep\n"
-			"movsd\n"
-			"popl %%ecx\n"
-			"andl $3,%%ecx\n"
-			"rep\n"
-			"movsb"
-			: "=D" (dst)
-			: "c" (len2), "S" (str2), "D" (dst) );
-	}
-
-#endif
-
+    dst = FB_MEMCPYX( dst, str1, len1 );
+    dst = FB_MEMCPYX( dst, str2, len2 );
 	*dst = '\0';
-
 }
 
 /*:::::*/

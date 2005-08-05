@@ -91,7 +91,6 @@ extern "C" {
      */
 #define FB_MAXCONDS           256
 
-
     /* =================================================================
      * RTLIB default values
      * ================================================================= */
@@ -354,7 +353,7 @@ FB_STR_TMPDESC     *fb_hStrAllocTmpDesc ( void );
        void         fb_hStrRealloc      ( FBSTRING *str, int size, int preserve );
        void         fb_hStrAllocTemp    ( FBSTRING *str, int size );
        int          fb_hStrDelTemp      ( FBSTRING *str );
-       void         fb_hStrCopy         ( char *dst, char *src, int bytes );
+       void         fb_hStrCopy         ( char *dst, const char *src, int bytes );
        char        *fb_hStrSkipChar     ( char *s, int len, int c );
        char        *fb_hStrSkipCharRev  ( char *s, int len, int c );
 
@@ -406,12 +405,15 @@ FBCALL FBSTRING    *fb_RIGHT            ( FBSTRING *str, int chars );
 FBCALL FBSTRING    *fb_SPACE            ( int chars );
 FBCALL FBSTRING    *fb_LTRIM            ( FBSTRING *str );
 FBCALL FBSTRING    *fb_RTRIM            ( FBSTRING *str );
+FBCALL FBSTRING    *fb_RTrimAny         ( FBSTRING *str, FBSTRING *pattern );
 FBCALL FBSTRING    *fb_TRIM             ( FBSTRING *src );
+FBCALL FBSTRING    *fb_LTrimAny         ( FBSTRING *str, FBSTRING *pattern );
 FBCALL FBSTRING    *fb_LCASE            ( FBSTRING *str );
 FBCALL FBSTRING    *fb_UCASE            ( FBSTRING *str );
 FBCALL FBSTRING    *fb_StrFill1         ( int cnt, int fchar );
 FBCALL FBSTRING    *fb_StrFill2         ( int cnt, FBSTRING *src );
 FBCALL int          fb_StrInstr         ( int start, FBSTRING *src, FBSTRING *patt );
+FBCALL int          fb_StrInstrAny      ( int start, FBSTRING *src, FBSTRING *patt );
 FBCALL FBSTRING    *fb_StrMid           ( FBSTRING *src, int start, int len );
 FBCALL void         fb_StrAssignMid     ( FBSTRING *dst, int start, int len, FBSTRING *src );
 
@@ -1049,6 +1051,12 @@ FBCALL void         fb_EndProfile       ( void );
 FBCALL void        *fb_ProfileBeginCall ( const char *procname );
 FBCALL void         fb_ProfileEndCall   ( void *call );
 FBCALL void         fb_Beep             ( void );
+
+#ifdef TARGET_X86
+#include "fb_x86.h"
+#else
+#include "fb_port.h"
+#endif
 
 /**************************************************************************************************
  * hooks

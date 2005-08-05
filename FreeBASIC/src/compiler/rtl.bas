@@ -389,6 +389,49 @@ data "fb_CHR", "", _
 	 2, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 INVALID,FB_ARGMODE_VARARG, FALSE
+'' fb_StrInstr ( byval start as integer, srcstr as string, pattern as string ) as integer
+data "fb_StrInstr","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_StrInstrAny ( byval start as integer, srcstr as string, pattern as string ) as integer
+data "fb_StrInstrAny","", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_RTRIM ( str as string ) as string
+data "fb_RTRIM","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_RTrimAny ( str as string ) as string
+data "fb_RTrimAny","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_LTRIM ( str as string ) as string
+data "fb_LTRIM","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_LTrimAny ( str as string ) as string
+data "fb_LTrimAny","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+
 
 ''
 '' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr ) as void
@@ -1750,23 +1793,6 @@ data "kill", "fb_FileKill", _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' fb_StrInstrEx ( byval start as integer, srcstr as string, pattern as string ) as integer
-data "instr","fb_StrInstr", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
-	 3, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
-
-'' fb_StrInstr ( srcstr as string, pattern as string ) as integer
-data "instr","fb_StrInstrRe", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
-	 2, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
-
 '' fb_CVD ( str as string ) as double
 data "cvd","fb_CVD", _
 	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
@@ -1935,18 +1961,6 @@ data "space","fb_SPACE", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_LTRIM ( str as string ) as string
-data "ltrim","fb_LTRIM", _
-	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
-'' fb_RTRIM ( str as string ) as string
-data "rtrim","fb_RTRIM", _
-	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' fb_TRIM ( str as string ) as string
 data "trim","fb_TRIM", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
@@ -3215,6 +3229,103 @@ function rtlStrChr( byval args as integer, _
     		exit function
     	end if
     next i
+
+    function = proc
+
+end function
+
+'':::::
+function rtlStrInstr( byval nd_start as ASTNODE ptr, _
+					  byval nd_text as ASTNODE ptr, _
+					  byval nd_pattern as ASTNODE ptr, _
+                      byval search_any as integer ) as ASTNODE ptr static
+
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+    function = NULL
+
+	''
+    if( search_any ) then
+		f = ifuncTB(FB_RTL_STRINSTRANY)
+    else
+		f = ifuncTB(FB_RTL_STRINSTR)
+    end if
+    proc = astNewFUNCT( f )
+
+    ''
+    if( astNewPARAM( proc, nd_start ) = NULL ) then
+    	exit function
+    end if
+
+    if( astNewPARAM( proc, nd_text ) = NULL ) then
+    	exit function
+    end if
+
+    if( astNewPARAM( proc, nd_pattern ) = NULL ) then
+    	exit function
+    end if
+
+    function = proc
+
+end function
+
+'':::::
+function rtlStrRTrim( byval nd_text as ASTNODE ptr, _
+					  byval nd_pattern as ASTNODE ptr ) as ASTNODE ptr static
+
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+    function = NULL
+
+	''
+    if( nd_pattern<>NULL ) then
+		f = ifuncTB(FB_RTL_STRRTRIMANY)
+    else
+		f = ifuncTB(FB_RTL_STRRTRIM)
+    end if
+    proc = astNewFUNCT( f )
+
+    ''
+    if( astNewPARAM( proc, nd_text ) = NULL ) then
+    	exit function
+    end if
+
+    if( nd_pattern<>NULL ) then
+        if( astNewPARAM( proc, nd_pattern ) = NULL ) then
+            exit function
+        end if
+    end if
+
+    function = proc
+
+end function
+
+'':::::
+function rtlStrLTrim( byval nd_text as ASTNODE ptr, _
+					  byval nd_pattern as ASTNODE ptr ) as ASTNODE ptr static
+
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+    function = NULL
+
+	''
+    if( nd_pattern<>NULL ) then
+		f = ifuncTB(FB_RTL_STRLTRIMANY)
+    else
+		f = ifuncTB(FB_RTL_STRLTRIM)
+    end if
+    proc = astNewFUNCT( f )
+
+    ''
+    if( astNewPARAM( proc, nd_text ) = NULL ) then
+    	exit function
+    end if
+
+    if( nd_pattern<>NULL ) then
+        if( astNewPARAM( proc, nd_pattern ) = NULL ) then
+            exit function
+        end if
+    end if
 
     function = proc
 

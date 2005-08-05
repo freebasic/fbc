@@ -179,48 +179,12 @@ int fb_hStrDelTemp( FBSTRING *str )
 }
 
 /*:::::*/
-void fb_hStrCopy( char *dst, char *src, int bytes )
+void fb_hStrCopy( char *dst, const char *src, int bytes )
 {
-	if( (src != NULL) && (bytes > 0 ) )
-	{
-#ifndef TARGET_X86
-		int i;
-
-		/* words */
-		for( i = 0; i < (bytes >> 2); i++ )
-		{
-			*(unsigned int *)dst = *(unsigned int *)src;
-			src += sizeof(unsigned int);
-			dst += sizeof(unsigned int);
-		}
-
-		/* remainder */
-		for( i = 0; i < (bytes & 3); i++ )
-			*dst++ = *src++;
-			
-		*dst = '\0';
-
-#else
-
-		asm (
-			"pushl %%ecx\n"
-			"shrl $2,%%ecx\n"
-			"rep\n"
-			"movsd\n"
-			"popl %%ecx\n"
-			"andl $3,%%ecx\n"
-			"rep\n"
-			"movsb\n"
-			"movb $0, (%%edi)"
-			: /* */
-			: "c" (bytes), "S" (src), "D" (dst) );
-
-#endif
-
-	}
-	else	
-		*dst = '\0';
-
+    if( (src != NULL) && (bytes > 0 ) ) {
+        dst = FB_MEMCPYX( dst, src, bytes );
+    }
+    *dst = 0;
 }
 
 

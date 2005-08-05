@@ -189,37 +189,12 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
         } else if( size_patt==0 && size_src!=0 ) {
             r = start;
         } else if( size_patt==1 ) {
-#if 1
-            const char *pszEnd = memchr( src->data + start - 1, patt->data[0], size_src - start + 1);
+            const char *pszEnd = FB_MEMCHR( src->data + start - 1, patt->data[0], size_src - start + 1);
             if( pszEnd==NULL ) {
                 r = 0;
             } else {
                 r = pszEnd - src->data + 1;
             }
-#else
-            /* The assembler code is fully functional but it's not portable
-             * (of course). I don't know if there is a speed gain compared
-             * to calling memchr(). Tests are required. */
-            const char *pszEnd;
-            char status;
-            __asm (" movl %2, %%ecx \n"
-                   " movb %3, %%al \n"
-                   " movl %4, %%edi \n"
-                   " repnz \n"
-                   " scasb \n"
-                   " lahf \n"
-                   " movl %%edi, %0 \n"
-                   " movb %%ah, %1 \n"
-                   : "=g" (pszEnd), "=g" (status)
-                   : "g" (size_src - start + 1), "g" (patt->data[0]), "g" (src->data + start - 1)
-                   : "edi", "ecx", "al");
-            if( status & 0x40 ) {
-                /* success */
-                r = pszEnd - src->data;
-            } else {
-                r = 0;
-            }
-#endif
         } else {
             r = fb_hFindBM( start - 1,
                             src->data, size_src,
@@ -236,6 +211,7 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
     return r;
 }
 
+/* Not removed to avoid chicken/egg problem */
 /*:::::*/
 FBCALL int fb_StrInstrRe ( FBSTRING *src, FBSTRING *patt )
 {

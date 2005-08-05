@@ -69,7 +69,7 @@ ifeq ($(TARGET),dos)
 endif
 
 
-TESTS=file/text_in$(EXEEXT) dim/submod$(EXEEXT) dim/cmmn_01$(EXEEXT) string/chr_0$(EXEEXT) string/mid_set$(EXEEXT) string/instr_0$(EXEEXT)
+TESTS=file/text_in$(EXEEXT) dim/submod$(EXEEXT) dim/cmmn_01$(EXEEXT) string/chr_0$(EXEEXT) string/mid_set$(EXEEXT) string/instr_0$(EXEEXT) string/instr_x$(EXEEXT) string/rtrim$(EXEEXT) string/ltrim$(EXEEXT)
 
 all: $(TESTS) run_tests
 
@@ -82,6 +82,9 @@ run_tests:
 	string/chr_0
 	string/mid_set
 	string/instr_0
+	string/instr_x
+	string/rtrim
+	string/ltrim
 	dim/submod
 
 file/text_in$(EXEEXT): file/text_in.bas
@@ -100,6 +103,15 @@ string/mid_set$(EXEEXT): string/mid_set.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 string/instr_0$(EXEEXT): string/instr_0.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+string/instr_x$(EXEEXT): string/instr_x.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+string/rtrim$(EXEEXT): string/rtrim.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+string/ltrim$(EXEEXT): string/ltrim.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 dim/submod_a.bas: dim/submod_c.bi
