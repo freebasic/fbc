@@ -5973,6 +5973,7 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 
 		select case as const env.clopt.target
 		case FB_COMPTARGET_WIN32
+			symbAddLib( "user32" )
 			symbAddLib( "gdi32" )
 			symbAddLib( "winmm" )
 
@@ -6691,7 +6692,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
  	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' area coordinates, if any
  	if( x1expr = NULL ) then
  		x1expr = astNewCONSTi( &hFFFF0000, IR_DATATYPE_INTEGER )
