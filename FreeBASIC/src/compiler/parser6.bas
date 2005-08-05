@@ -2118,7 +2118,7 @@ end function
 ''
 function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr1, expr2, expr3
-    dim as integer dclass, dtype
+    dim as integer dclass, dtype, is_any
 
 	function = FALSE
 
@@ -2192,8 +2192,6 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 		function = cStrASC( funcexpr )
 
     case FB_TK_INSTR
-        dim is_any as integer
-
         lexSkipToken
 
 		hMatchLPRNT( )
@@ -2234,15 +2232,16 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
         hMatchExpression( expr1 )
 
         if( hMatch( CHAR_COMMA ) ) then
-    		hMatchToken( FB_TK_ANY, FB_ERRMSG_EXPECTEDANY )
+            is_any = hMatch( FB_TK_ANY )
 	        hMatchExpression( expr2 )
         else
+            is_any = FALSE
             expr2 = NULL
         end if
 
         hMatchRPRNT( )
 
-		funcexpr = rtlStrRTrim( expr1, expr2 )
+		funcexpr = rtlStrRTrim( expr1, expr2, is_any )
 
 		function = funcexpr <> NULL
 
@@ -2255,15 +2254,16 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
         hMatchExpression( expr1 )
 
         if( hMatch( CHAR_COMMA ) ) then
-    		hMatchToken( FB_TK_ANY, FB_ERRMSG_EXPECTEDANY )
+            is_any = hMatch( FB_TK_ANY )
 	        hMatchExpression( expr2 )
         else
+            is_any = FALSE
             expr2 = NULL
         end if
 
         hMatchRPRNT( )
 
-		funcexpr = rtlStrLTrim( expr1, expr2 )
+		funcexpr = rtlStrLTrim( expr1, expr2, is_any )
 
 		function = funcexpr <> NULL
 

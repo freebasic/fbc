@@ -70,8 +70,10 @@ enum FBRTL_ENUM
     FB_RTL_STRINSTRANY
     FB_RTL_STRRTRIM
     FB_RTL_STRRTRIMANY
+    FB_RTL_STRRTRIMEX
     FB_RTL_STRLTRIM
     FB_RTL_STRLTRIMANY
+    FB_RTL_STRLTRIMEX
 
 	FB_RTL_INIT
 	FB_RTL_INITSIGNALS
@@ -286,10 +288,12 @@ declare function    rtlStrInstr         ( byval nd_start as ASTNODE ptr, _
                                           byval search_any as integer ) as ASTNODE ptr
 
 declare function    rtlStrRTrim         ( byval nd_text as ASTNODE ptr, _
-					                      byval nd_pattern as ASTNODE ptr ) as ASTNODE ptr
+					                      byval nd_pattern as ASTNODE ptr, _
+                                          byval is_any as integer ) as ASTNODE ptr
 
 declare function    rtlStrLTrim         ( byval nd_text as ASTNODE ptr, _
-					                      byval nd_pattern as ASTNODE ptr ) as ASTNODE ptr
+					                      byval nd_pattern as ASTNODE ptr, _
+                                          byval is_any as integer ) as ASTNODE ptr
 
 declare function	rtlArrayRedim		( byval s as FBSYMBOL ptr, _
 										  byval elementlen as integer, _

@@ -32,8 +32,8 @@ extern "C" {
     /* We use memcmp from C because the compiler might replace this by a built-in
      * function which will definately be faster than our own implementation
      * in C. */
-#define FB_MEMCMP(p1, len1, p2, len2) \
-    memcmp(p1, len1, p2, len2)
+#define FB_MEMCMP(p1, p2, len) \
+    memcmp( p1, p2, len )
 
     /* We have to wrap memcpy here because our MEMCPYX should return the position
      * after the destination string. */

@@ -418,6 +418,13 @@ data "fb_RTrimAny","", _
 	 2, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_RTrimEx ( str as string, str as pattern ) as string
+data "fb_RTrimEx","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' fb_LTRIM ( str as string ) as string
 data "fb_LTRIM","", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
@@ -426,6 +433,13 @@ data "fb_LTRIM","", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' fb_LTrimAny ( str as string ) as string
 data "fb_LTrimAny","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_LTrimEx ( str as string, str as pattern ) as string
+data "fb_LTrimEx","", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
@@ -3271,15 +3285,18 @@ end function
 
 '':::::
 function rtlStrRTrim( byval nd_text as ASTNODE ptr, _
-					  byval nd_pattern as ASTNODE ptr ) as ASTNODE ptr static
+					  byval nd_pattern as ASTNODE ptr, _
+                      byval is_any as integer ) as ASTNODE ptr static
 
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
     function = NULL
 
 	''
-    if( nd_pattern<>NULL ) then
+    if( is_any ) then
 		f = ifuncTB(FB_RTL_STRRTRIMANY)
+    elseif( nd_pattern<>NULL ) then
+		f = ifuncTB(FB_RTL_STRRTRIMEX)
     else
 		f = ifuncTB(FB_RTL_STRRTRIM)
     end if
@@ -3290,7 +3307,7 @@ function rtlStrRTrim( byval nd_text as ASTNODE ptr, _
     	exit function
     end if
 
-    if( nd_pattern<>NULL ) then
+    if( nd_pattern<>NULL or is_any ) then
         if( astNewPARAM( proc, nd_pattern ) = NULL ) then
             exit function
         end if
@@ -3302,15 +3319,18 @@ end function
 
 '':::::
 function rtlStrLTrim( byval nd_text as ASTNODE ptr, _
-					  byval nd_pattern as ASTNODE ptr ) as ASTNODE ptr static
+					  byval nd_pattern as ASTNODE ptr, _
+                      byval is_any as integer ) as ASTNODE ptr static
 
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
     function = NULL
 
 	''
-    if( nd_pattern<>NULL ) then
+    if( is_any ) then
 		f = ifuncTB(FB_RTL_STRLTRIMANY)
+    elseif( nd_pattern<>NULL ) then
+		f = ifuncTB(FB_RTL_STRLTRIMEX)
     else
 		f = ifuncTB(FB_RTL_STRLTRIM)
     end if
@@ -3321,7 +3341,7 @@ function rtlStrLTrim( byval nd_text as ASTNODE ptr, _
     	exit function
     end if
 
-    if( nd_pattern<>NULL ) then
+    if( nd_pattern<>NULL or is_any ) then
         if( astNewPARAM( proc, nd_pattern ) = NULL ) then
             exit function
         end if

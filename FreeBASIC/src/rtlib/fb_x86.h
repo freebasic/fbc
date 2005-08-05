@@ -27,10 +27,9 @@
 extern "C" {
 #endif
 
-    static __inline__ int FB_MEMCMP( const void *p1, size_t len1,
-                                     const void *p2, size_t len2 )
+    static __inline__ int FB_MEMCMP( const void *p1, const void *p2, size_t len )
     {
-        int res, len = ((len1<len2) ? len1 : len2);
+        int res;
         __asm (
                " pushl %%esi      \n"
                " pushl %%edi      \n"
@@ -46,11 +45,7 @@ extern "C" {
                : "=c" (res)
                : "c" (len), "S" (p1), "D" (p2)
               );
-        if( res != 0 )
-            return res;
-        if( len1 != len2 )
-            return (len1 < len2? -1: 1);
-        return 0;
+        return res;
     }
 
     static __inline__ void *FB_MEMCPY( void *dest, const void *src, size_t n )
