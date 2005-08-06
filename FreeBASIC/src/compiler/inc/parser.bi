@@ -58,7 +58,8 @@ declare function 	cEnumDecl               ( ) as integer
 declare function 	cSymbolDecl             ( ) as integer
 
 declare function 	cSymbolDef 				( byval alloctype as integer, _
-											  byval dopreserve as integer = FALSE ) as integer
+											  byval dopreserve as integer = FALSE, _
+                                              byval is_dim as integer = FALSE) as integer
 
 declare function 	cStaticArrayDecl 		( byref dimensions as integer, _
 											  dTB() as FBARRAYDIM ) as integer

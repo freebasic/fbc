@@ -18,7 +18,7 @@
  */
 
 /*
- * time_datevalue.c -- datevalue function
+ * time_timeserial.c -- timeserial function
  *
  * chng: aug/2005 written [mjs]
  *
@@ -28,20 +28,13 @@
 #include <string.h>
 #include <time.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_DateValue ( FBSTRING *s )
+FBCALL double fb_TimeSerial ( int hour, int minute, int second )
 {
-    int year;
-    int month;
-    int day;
-
-    if( !fb_DateParse( s, &day, &month, &year ) ) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return 0;
-    }
-
-	return fb_DateSerial( year, month, day );
+    double dblHour = 1.0 * (double) hour / 24.0;
+    double dblMinute = 1.0 * minute / (24.0 * 60.0);
+    double dblSecond = 1.0 * second / (24.0 * 60.0 * 60.0);
+    return dblHour + dblMinute + dblSecond;
 }
 

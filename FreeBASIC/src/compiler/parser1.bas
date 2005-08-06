@@ -1229,6 +1229,7 @@ end function
 function cSymbolDecl as integer
 	dim alloctype as integer
 	dim dopreserve as integer
+    dim is_dim as integer
 
 	function = FALSE
 
@@ -1275,6 +1276,8 @@ function cSymbolDecl as integer
 
 		case else
 			lexSkipToken( )
+            is_dim = TRUE
+
 		end select
 
 		''
@@ -1310,7 +1313,7 @@ function cSymbolDecl as integer
 		end if
 
 		''
-		function = cSymbolDef( alloctype, dopreserve )
+		function = cSymbolDef( alloctype, dopreserve, is_dim )
 
 	'' STATIC
 	case FB_TK_STATIC
@@ -1686,10 +1689,11 @@ end function
 ''                       (',' SymbolDef)* .
 ''
 function cSymbolDef( byval alloctype as integer, _
-					 byval dopreserve as integer = FALSE ) as integer static
+					 byval dopreserve as integer = FALSE, _
+                     byval is_dim as integer = FALSE ) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, idalias
-    dim as FBSYMBOL ptr symbol, subtype
+    dim as FBSYMBOL ptr symbol, subtype, test_symbol
     dim as integer addsuffix, isdynamic, ismultdecl, istypeless
     dim as integer typ, lgt, ofs, ptrcnt, dotpos
     dim as integer dimensions
@@ -1768,6 +1772,22 @@ function cSymbolDef( byval alloctype as integer, _
     			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     			exit function
     		end if
+
+            '' QB quirk:
+            '' when the symbol was defined already by a preceeding COMMON
+            '' statement, then a DIM will work the same way as a REDIM
+            if( is_dim ) then
+                test_symbol = symbFindByNameAndClass( id, FB_SYMBCLASS_VAR )
+                if( test_symbol <> NULL ) then
+                    if( symbGetArrayDimensions(test_symbol) <> 0 ) and _
+                      ( (symbGetAllocType(test_symbol) and FB_ALLOCTYPE_COMMON) <> 0 ) _
+                    then
+                        alloctype and= not FB_ALLOCTYPE_STATIC
+                        alloctype or= FB_ALLOCTYPE_DYNAMIC
+                    end if
+                end if
+            end if
+
     	end if
 
 		'' ALIAS LIT_STR

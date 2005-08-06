@@ -2078,7 +2078,7 @@ data "date","fb_Date", _
 	 NULL, FALSE, FALSE, _
 	 0
 '' dateserial ( byval year as integer, byval month as integer, byval day as integer ) as integer
-data "dateserial","fb_DateSerial", _
+data "DateSerial","fb_DateSerial", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
      3, _
@@ -2086,11 +2086,61 @@ data "dateserial","fb_DateSerial", _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 '' datevalue ( s as string ) as integer
-data "datevalue","fb_DateValue", _
+data "DateValue","fb_DateValue", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, TRUE, FALSE, _
      1, _
      FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' year ( byval serial as integer ) as integer
+data "Year","fb_Year", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' month ( byval serial as integer ) as integer
+data "Month","fb_Month", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' day ( byval serial as integer ) as integer
+data "Day","fb_Day", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' weekday ( byval serial as integer ) as integer
+data "Weekday","fb_Weekday", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' timeserial ( byval hour as integer, byval minute as integer, byval second as integer ) as integer
+data "TimeSerial","fb_TimeSerial", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     3, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' hour ( byval serial as double ) as integer
+data "Hour","fb_Hour", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+'' minute ( byval serial as double ) as integer
+data "Minute","fb_Minute", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+'' second ( byval serial as double ) as integer
+data "Second","fb_Second", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+     1, _
+     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' pos( ) as integer
 data "pos", "fb_GetX", _
