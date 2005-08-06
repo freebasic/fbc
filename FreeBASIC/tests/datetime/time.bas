@@ -33,22 +33,35 @@ tests_timeserial:
     data 925686, 12, 55, 38570.2589699074
     data "."
 
-#if 0
 tests_timevalue:
-	data "Aug 5, 2005",       1, 5, 8, 2005
-	data "August 5, 2005",    1, 5, 8, 2005
-	data "5 Aug, 2005",       1, 5, 8, 2005
-	data "5 August, 2005",    1, 5, 8, 2005
-	data "5 Aug 2005",        1, 5, 8, 2005
-	data "5 August 2005",     1, 5, 8, 2005
-	data "August, 2005",      0
-	data "5, 2005",           0
-	data "5. August, 2005",   0
-	data "5 August- 2005",    0
-	data "5 August,, 2005",   0
-	data "08-05/2005",        0
+	data "01:00",             1,  1,  0,  0
+	data "03:00",             1,  3,  0,  0
+	data "12:00",             1, 12,  0,  0
+	data "01:00a",            1,  1,  0,  0
+	data "01:00am",           1,  1,  0,  0
+	data "01:00 am",          1,  1,  0,  0
+	data "01:00 AM",          1,  1,  0,  0
+	data "01:00 Am",          1,  1,  0,  0
+	data "01:00 pm",          1, 13,  0,  0
+	data "12:00 am",          1,  0,  0,  0
+	data "12:00 pm",          1, 12,  0,  0
+	data "00:01",             1,  0,  1,  0
+	data "00:15",             1,  0, 15,  0
+	data "00:00:01",          1,  0,  0,  1
+	data "00:00:15",          1,  0,  0, 15
+	data "Aug 5, 2005, 00:01",1,  0,  1,  0
+	data "Aug 5, 2005 00:01", 1,  0,  1,  0
+	data "5 Aug. 2005, 00:01",1,  0,  1,  0
+	data "5 Aug. 2005 00:01", 1,  0,  1,  0
+	data "00:01, Aug 5, 2005",1,  0,  1,  0
+	data "00:01 Aug 5, 2005", 1,  0,  1,  0
+	data "00:01, 5 Aug. 2005",1,  0,  1,  0
+	data "00:01 5 Aug. 2005", 1,  0,  1,  0
+	data "00",                0
+	data "24:00",             0
+	data "00:60",             0
+	data "00:00:60",          0
     data "."
-#endif
 
 sub test_timeserial
     dim as double serial_time, test_value
@@ -90,40 +103,38 @@ sub test_timeserial
     print "OK"
 end sub
 
-#if 0
 sub test_timevalue
-	dim as integer chk_day, chk_month, chk_year, serial_date, want_ok, is_ok
-    dim sDate as string
+    dim as double  serial_time
+	dim as integer chk_hour, chk_minute, chk_second
+    dim as integer want_ok, is_ok
+    dim sTime as string
 
-    print "Testing DATEVALUE ...";
+    print "Testing TIMEVALUE ...";
 
-    restore tests_datevalue
-    read sDate
-    while sDate<>"."
+    restore tests_timevalue
+    read sTime
+    while sTime<>"."
         read want_ok
         is_ok = 0
         on local error goto did_fail
-        serial_date = datevalue(sDate)
+        serial_time = timevalue(sTime)
 #ifdef FIXME
         is_ok = want_ok
 #else
         is_ok = 1
 #endif
         if want_ok=1 then
-            read chk_day, chk_month, chk_year
-	        ASSERT( serial_date = dateserial( chk_year, chk_month, chk_day ) )
+            read chk_hour, chk_minute, chk_second
+	        ASSERT( serial_time = timeserial( chk_hour, chk_minute, chk_second ) )
         end if
 did_fail:
         on local error goto 0
         ASSERT( is_ok = want_ok )
         print ".";
-    	read sDate
+    	read sTime
     wend
     print "OK"
 end sub
-#endif
 
 test_timeserial
-#if 0
 test_timevalue
-#endif

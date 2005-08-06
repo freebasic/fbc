@@ -140,12 +140,16 @@ int InlineSelect( int index, int num1, int num2, int num3 )
 }
 
 /*:::::*/
-int fb_hDateParse( FBSTRING *s, int *pDay, int *pMonth, int *pYear, size_t *pLength )
+int fb_hDateParse( const char *text, size_t text_len,
+                   int *pDay, int *pMonth, int *pYear,
+                   size_t *pLength )
 {
-    size_t length = 0;
+    size_t length = 0, len = text_len;
+    const char *text_start = text;
     int result = FALSE;
     int year = 1899, month = 12, day = 30;
     int order_year, order_month, order_day;
+    const char *end_month;
 
     if( !fb_hDateOrder( &order_day, &order_month, &order_year ) ) {
         /* switch to US date format */
@@ -154,156 +158,146 @@ int fb_hDateParse( FBSTRING *s, int *pDay, int *pMonth, int *pYear, size_t *pLen
         order_year = 2;
     }
 
-    FB_STRLOCK();
+    /* skip white spaces */
+    while ( isspace( *text ) )
+        ++text;
+    len = text_len - (text - text_start);
 
-    if( s!=NULL && s->data!=NULL ) {
-        const char *end_month;
-        const char *text = s->data;
-        size_t text_len = FB_STRSIZE( s ), len = text_len;
+    month = fb_hFindMonth( text, len, &end_month );
+    if( month != 0 ) {
+        /* The string has the form: (MMMM|MMM) (d|dd)"," (yy|yyyy)  */
+        char *endptr;
+        text = end_month;
+        day = strtol( text, &endptr, 10 );
+        if( day>0 ) {
 
-        /* skip white spaces */
-        while ( isspace( *text ) )
-            ++text;
-        len = text_len - (text - s->data);
+            /* skip white spaces */
+            text = endptr;
+            while ( isspace( *text ) )
+                ++text;
 
-        month = fb_hFindMonth( text, len, &end_month );
-        if( month != 0 ) {
-            /* The string has the form: (MMMM|MMM) (d|dd)"," (yy|yyyy)  */
-            char *endptr;
-            text = end_month;
-            day = strtol( text, &endptr, 10 );
-            if( day>0 ) {
+            if( *text==',' ) {
+                size_t year_size;
+                year = strtol( ++text, &endptr, 10 );
+                year_size = endptr - text;
+                if( year_size > 0 ) {
+                    if( year_size==2 )
+                        year += 1900;
 
-                /* skip white spaces */
-                text = endptr;
-                while ( isspace( *text ) )
-                    ++text;
-
-                if( *text==',' ) {
-                    size_t year_size;
-                    year = strtol( ++text, &endptr, 10 );
-                    year_size = endptr - text;
-                    if( year_size > 0 ) {
-                        if( year_size==2 )
-                            year += 1900;
-
-                        result = day <= fb_hTimeDaysInMonth( month, year );
-                        text = endptr;
-                    }
+                    result = day <= fb_hTimeDaysInMonth( month, year );
+                    text = endptr;
                 }
             }
-        } else {
-            /* The string can be in the short or long format.
-             *
-             * The short format can be
-             * [0-9]{1,2}(/|\-|\.)[0-9]{1,2}\1[0-9]{1,4}
-             *                              ^^ reference to first divider
-             *
-             * The long format can have the form:
-             * (d|dd) (MMMM|MM)"," (yy|yyyy)
-             */
-            char *endptr;
-            int valid_divider;
-            day = strtol( text, &endptr, 10 );
-            if( day > 0 ) {
-                char chDivider;
-                int is_short_form;
+        }
+    } else {
+        /* The string can be in the short or long format.
+         *
+         * The short format can be
+         * [0-9]{1,2}(/|\-|\.)[0-9]{1,2}\1[0-9]{1,4}
+         *                              ^^ reference to first divider
+         *
+         * The long format can have the form:
+         * (d|dd) (MMMM|MM)"," (yy|yyyy)
+         */
+        char *endptr;
+        int valid_divider;
+        day = strtol( text, &endptr, 10 );
+        if( day > 0 ) {
+            char chDivider;
+            int is_short_form;
 
+            /* skip white spaces */
+            text = endptr;
+            while ( isspace( *text ) )
+                ++text;
+
+            /* read month and additional dividers */
+            chDivider = *text;
+            valid_divider = chDivider=='-' || chDivider=='/' || chDivider=='.';
+            if( chDivider=='.' ) {
+                ++text;
                 /* skip white spaces */
-                text = endptr;
                 while ( isspace( *text ) )
                     ++text;
-
-                /* read month and additional dividers */
-                chDivider = *text;
-                valid_divider = chDivider=='-' || chDivider=='/' || chDivider=='.';
-                if( chDivider=='.' ) {
-                    ++text;
+                len = text_len - (text - text_start);
+                month = fb_hFindMonth( text, len, &end_month );
+                /* We found a dot but a month name ... so this date
+                 * is in LONG format. */
+                is_short_form = month==0;
+            } else if( valid_divider ) {
+                ++text;
+                is_short_form = TRUE;
+            } else {
+                is_short_form = FALSE;
+            }
+            if( is_short_form ) {
+                /* short date */
+                month = strtol( text, &endptr, 10 );
+                if( month > 0 && month < 13 ) {
+                    text = endptr;
                     /* skip white spaces */
                     while ( isspace( *text ) )
                         ++text;
-                    len = text_len - (text - s->data);
-                    month = fb_hFindMonth( text, len, &end_month );
-                    /* We found a dot but a month name ... so this date
-                     * is in LONG format. */
-                    is_short_form = month==0;
-                } else if( valid_divider ) {
-                    ++text;
-                    is_short_form = TRUE;
-                } else {
-                    is_short_form = FALSE;
-                }
-                if( is_short_form ) {
-                    /* short date */
-                    month = strtol( text, &endptr, 10 );
-                    if( month > 0 && month < 13 ) {
-                        text = endptr;
-                        /* skip white spaces */
-                        while ( isspace( *text ) )
-                            ++text;
-                        if( *text==chDivider ) {
-                            ++text;
-                            result = TRUE;
-                        }
-                    }
-                } else {
-                    /* long date */
-                    len = text_len - (text - s->data);
-                    month = fb_hFindMonth( text, len, &end_month );
-                    if( month != 0 ) {
-                        text = end_month;
-                        /* There might follow a dot directly after the
-                         * abbreviated month name */
-                        if( *text=='.' ) {
-                            ++text;
-                        }
-                        /* skip white spaces */
-                        while ( isspace( *text ) )
-                            ++text;
-                        /* this comma is optional */
-                        if( *text==',' ) {
-                            ++text;
-                        }
+                    if( *text==chDivider ) {
+                        ++text;
                         result = TRUE;
                     }
                 }
-                /* read year */
-                if( result ) {
-                    size_t year_size;
-                    year = strtol( text, &endptr, 10 );
-                    year_size = endptr - text;
-                    if( year_size > 0 ) {
-                        if( year_size==2 )
-                            year += 1900;
-
-                        /* adjust short form according to the date format */
-                        if( is_short_form ) {
-                            int tmp_day = InlineSelect( order_day, day, month, year );
-                            int tmp_month = InlineSelect( order_month, day, month, year );
-                            int tmp_year = InlineSelect( order_year, day, month, year );
-                            day = tmp_day;
-                            month = tmp_month;
-                            year = tmp_year;
-                            if( day < 1 || month < 1 || month > 12 )
-                                result = FALSE;
-                        }
-                        if( result )
-                            result = day <= fb_hTimeDaysInMonth( month, year );
-                        text = endptr;
-                    } else {
-                        result = FALSE;
+            } else {
+                /* long date */
+                len = text_len - (text - text_start);
+                month = fb_hFindMonth( text, len, &end_month );
+                if( month != 0 ) {
+                    text = end_month;
+                    /* There might follow a dot directly after the
+                     * abbreviated month name */
+                    if( *text=='.' ) {
+                        ++text;
                     }
+                    /* skip white spaces */
+                    while ( isspace( *text ) )
+                        ++text;
+                    /* this comma is optional */
+                    if( *text==',' ) {
+                        ++text;
+                    }
+                    result = TRUE;
+                }
+            }
+            /* read year */
+            if( result ) {
+                size_t year_size;
+                year = strtol( text, &endptr, 10 );
+                year_size = endptr - text;
+                if( year_size > 0 ) {
+                    if( year_size==2 )
+                        year += 1900;
+
+                    /* adjust short form according to the date format */
+                    if( is_short_form ) {
+                        int tmp_day = InlineSelect( order_day, day, month, year );
+                        int tmp_month = InlineSelect( order_month, day, month, year );
+                        int tmp_year = InlineSelect( order_year, day, month, year );
+                        day = tmp_day;
+                        month = tmp_month;
+                        year = tmp_year;
+                        if( day < 1 || month < 1 || month > 12 )
+                            result = FALSE;
+                    }
+                    if( result )
+                        result = day <= fb_hTimeDaysInMonth( month, year );
+                    text = endptr;
+                } else {
+                    result = FALSE;
                 }
             }
         }
-
-        if( result ) {
-            /* Update used length */
-            length = text - s->data;
-        }
     }
 
-    FB_STRUNLOCK();
+    if( result ) {
+        /* Update used length */
+        length = text - text_start;
+    }
 
     if( result ) {
         if( pDay )
@@ -315,31 +309,6 @@ int fb_hDateParse( FBSTRING *s, int *pDay, int *pMonth, int *pYear, size_t *pLen
         if( pLength )
             *pLength = length;
     }
-
-    return result;
-}
-
-/*:::::*/
-FBCALL int fb_DateParse( FBSTRING *s, int *pDay, int *pMonth, int *pYear )
-{
-    size_t length;
-    int result;
-
-    FB_STRLOCK();
-
-    result = fb_hDateParse( s, pDay, pMonth, pYear, &length );
-    if( result ) {
-        const char *text = s->data + length;
-        /* the rest of the text must consist of white spaces */
-        while( *text ) {
-            if( !isspace( *text++ ) ) {
-                result = FALSE;
-                break;
-            }
-        }
-    }
-
-    FB_STRUNLOCK();
 
     return result;
 }

@@ -23,7 +23,7 @@ Version 0.15 Beta:
 - LTRIM$(s$[, ANY p$]) and LTRIM$(s$, p$) [mjs]
 - DATESERIAL, DATEVALUE [mjs]
 - YEAR, MONTH, DAY, WEEKDAY [mjs]
-- TIMESERIAL [mjs]
+- TIMESERIAL, TIMEVALUE [mjs]
 - HOUR, MINUTE, SECOND [mjs]
 
 [fixed]

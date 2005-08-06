@@ -2123,6 +2123,12 @@ data "TimeSerial","fb_TimeSerial", _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' timevalue ( s as string ) as double
+data "TimeValue","fb_TimeValue", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
+	 NULL, TRUE, FALSE, _
+     1, _
+     FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' hour ( byval serial as double ) as integer
 data "Hour","fb_Hour", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _

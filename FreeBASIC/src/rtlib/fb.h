@@ -1015,12 +1015,27 @@ FBCALL int          fb_Second           ( double serial );
 
 FBCALL double       fb_Now              ( void );
 
-       int          fb_hDateParse       ( FBSTRING *s, int *pDay, int *pMonth, int *pYear, size_t *pLength );
-FBCALL int          fb_DateParse        ( FBSTRING *s, int *pDay, int *pMonth, int *pYear );
-FBCALL void         fb_hDateDecodeSerial( int serial, int *pYear, int *pMonth, int *pDay );
-       int          fb_hTimeParse       ( FBSTRING *s, int *pHour, int *pMinute, int *pSecond, size_t *pLength );
-FBCALL int          fb_TimeParse        ( FBSTRING *s, int *pHour, int *pMinute, int *pSecond );
-FBCALL void         fb_hTimeDecodeSerial( double serial, int *pHour, int *pMinute, int *pSecond );
+       int          fb_hDateParse       ( const char *text, size_t text_len,
+                                          int *pDay, int *pMonth, int *pYear,
+                                          size_t *pLength );
+FBCALL int          fb_DateParse        ( FBSTRING *s,
+                                          int *pDay, int *pMonth, int *pYear );
+FBCALL void         fb_hDateDecodeSerial( int serial,
+                                          int *pYear, int *pMonth, int *pDay );
+
+       int          fb_hTimeParse       ( const char *text, size_t text_len,
+                                          int *pHour, int *pMinute, int *pSecond,
+                                          size_t *pLength );
+FBCALL int          fb_TimeParse        ( FBSTRING *s,
+                                          int *pHour, int *pMinute, int *pSecond );
+FBCALL void         fb_hTimeDecodeSerial( double serial,
+                                          int *pHour, int *pMinute, int *pSecond );
+
+FBCALL int          fb_DateTimeParse    ( FBSTRING *s,
+                                          int *pDay, int *pMonth, int *pYear,
+                                          int *pHour, int *pMinute, int *pSecond,
+                                          int want_date, int want_time );
+
        int          fb_hTimeLeap        ( int year );
        int          fb_hTimeDaysInMonth ( int month, int year );
        void         fb_hNormalizeDate   ( int *pDay, int *pMonth, int *pYear );
