@@ -329,7 +329,7 @@ FBCALL int fb_DateParse( FBSTRING *s, int *pDay, int *pMonth, int *pYear )
 
     result = fb_hDateParse( s, pDay, pMonth, pYear, &length );
     if( result ) {
-        const char *text = s->data;
+        const char *text = s->data + length;
         /* the rest of the text must consist of white spaces */
         while( *text ) {
             if( !isspace( *text++ ) ) {
