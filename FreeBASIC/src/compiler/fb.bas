@@ -401,8 +401,13 @@ end function
 
 '':::::
 function fbGetModuleEntry( ) as string static
+    dim as string sname
 
-	function = "fb_ctor__" + hStripPath( hStripExt( env.outf.name ) )
+   	sname = hStripPath( hStripExt( env.outf.name ) )
+
+   	hClearName( sname )
+
+	function = "fb_ctor__" + sname
 
 end function
 
