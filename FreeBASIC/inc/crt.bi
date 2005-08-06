@@ -72,7 +72,7 @@ type size_t as uinteger
 	#define DBL_DIG   15
 	#define DBL_EPSILON   2.2204460492503131e-016
 	#define DBL_MANT_DIG   53
-	#define DBL_MAX   1.7976931348623158e+308
+	#define DBL_MAX   1.7976931348623147e+308
 	#define DBL_MAX_10_EXP   308
 	#define DBL_MAX_EXP   1024
 	#define DBL_MIN   2.2250738585072014e-308
