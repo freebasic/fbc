@@ -27,16 +27,19 @@
 #include <malloc.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_hDateDecodeSerial ( int serial,
+FBCALL void fb_hDateDecodeSerial ( double serial,
                                    int *pYear, int *pMonth, int *pDay )
 {
     int tmp_days;
     int cur_year = 1900;
     int cur_month = 1;
     int cur_day = 1;
+
+    serial = floor( serial );
 
     serial -= 2;
     while( serial < 0 ) {
@@ -65,21 +68,21 @@ FBCALL void fb_hDateDecodeSerial ( int serial,
         *pDay = cur_day;
 }
 
-FBCALL int fb_Year( int serial )
+FBCALL int fb_Year( double serial )
 {
     int year;
     fb_hDateDecodeSerial( serial, &year, NULL, NULL );
     return year;
 }
 
-FBCALL int fb_Month( int serial )
+FBCALL int fb_Month( double serial )
 {
     int month;
     fb_hDateDecodeSerial( serial, NULL, &month, NULL );
     return month;
 }
 
-FBCALL int fb_Day( int serial )
+FBCALL int fb_Day( double serial )
 {
     int day;
     fb_hDateDecodeSerial( serial, NULL, NULL, &day );
@@ -90,9 +93,9 @@ FBCALL int fb_Day( int serial )
  *
  * @return 1 = Sunday, ... 7 = Saturday
  */
-FBCALL int fb_Weekday( int serial )
+FBCALL int fb_Weekday( double serial )
 {
-    int dow = ((serial - 1) % 7);
+    int dow = ((int) (floor(serial) - 1) % 7);
     if( dow < 0 )
         dow += 7;
     return dow+1;

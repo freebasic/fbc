@@ -1002,10 +1002,10 @@ FBCALL void         fb_Sleep            ( int msecs );
 
 FBCALL int          fb_DateValue        ( FBSTRING *s );
 FBCALL int          fb_DateSerial       ( int year, int month, int day );
-FBCALL int          fb_Year             ( int serial );
-FBCALL int          fb_Month            ( int serial );
-FBCALL int          fb_Day              ( int serial );
-FBCALL int          fb_Weekday          ( int serial );
+FBCALL int          fb_Year             ( double serial );
+FBCALL int          fb_Month            ( double serial );
+FBCALL int          fb_Day              ( double serial );
+FBCALL int          fb_Weekday          ( double serial );
 
 FBCALL double       fb_TimeValue        ( FBSTRING *s );
 FBCALL double       fb_TimeSerial       ( int hour, int minute, int second );
@@ -1020,7 +1020,7 @@ FBCALL double       fb_Now              ( void );
                                           size_t *pLength );
 FBCALL int          fb_DateParse        ( FBSTRING *s,
                                           int *pDay, int *pMonth, int *pYear );
-FBCALL void         fb_hDateDecodeSerial( int serial,
+FBCALL void         fb_hDateDecodeSerial( double serial,
                                           int *pYear, int *pMonth, int *pDay );
 
        int          fb_hTimeParse       ( const char *text, size_t text_len,

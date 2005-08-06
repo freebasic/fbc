@@ -44,10 +44,12 @@ FBCALL FBSTRING *fb_Time ( void )
 	{
 		fb_hStrAllocTemp( dst, 2+1+2+1+2 );
 
+        /* guard by global lock because time/localtime might not be thread-safe */
+        FB_LOCK();
   		time( &rawtime );
   		ptm = localtime( &rawtime );
-
         sprintf( dst->data, "%02d:%02d:%02d", ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
+        FB_UNLOCK();
 	}
 	else
 		dst = &fb_strNullDesc;

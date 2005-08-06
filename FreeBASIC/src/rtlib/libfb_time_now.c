@@ -18,44 +18,30 @@
  */
 
 /*
- * time_data.c -- date$ function
+ * time_now.c -- NOW function
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: aug/2005 written [mjs]
  *
  */
 
-#include <malloc.h>
-#include <string.h>
+#include <stddef.h>
 #include <time.h>
 #include "fb.h"
 
 /*:::::*/
-FBCALL FBSTRING *fb_Date ( void )
+FBCALL double fb_Now( void )
 {
-	FBSTRING	*dst;
-	time_t 		rawtime = { 0 };
-  	struct tm	*ptm = { 0 };
+    double      dblTime, dblDate;
+	time_t 		rawtime;
+  	struct tm	*ptm;
 
-	FB_STRLOCK();
+    /* guard by global lock because time/localtime might not be thread-safe */
+    FB_LOCK();
+    time( &rawtime );
+    ptm = localtime( &rawtime );
+    dblDate = fb_DateSerial( 1900 + ptm->tm_year, 1 + ptm->tm_mon, ptm->tm_mday );
+    dblTime = fb_TimeSerial( ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
+    FB_UNLOCK();
 
-	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-	if( dst != NULL )
-	{
-		fb_hStrAllocTemp( dst, 2+1+2+1+4 );
-
-        /* guard by global lock because time/localtime might not be thread-safe */
-        FB_LOCK();
-  		time( &rawtime );
-  		ptm = localtime( &rawtime );
-        sprintf( dst->data, "%02d-%02d-%04d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year );
-        FB_UNLOCK();
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
-		
-	return dst;
+    return dblDate + dblTime;
 }
-

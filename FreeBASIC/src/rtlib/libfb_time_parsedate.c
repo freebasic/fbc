@@ -33,6 +33,7 @@
 /*:::::*/
 static int fb_hIsMonth( const char *text, size_t text_len, const char **end_text, int short_name, int localized )
 {
+    const char *txt_end = text;
     int month;
     for( month=1; month!=13; ++month ) {
         const char *pszMonthName = fb_hDateGetMonth( month, short_name, localized );
@@ -41,20 +42,28 @@ static int fb_hIsMonth( const char *text, size_t text_len, const char **end_text
         if( FB_MEMCMP( text, pszMonthName, len ) == 0 ) {
             if( text_len > len ) {
                 if( !isalpha( FB_CHAR_TO_INT(text[len]) ) ) {
-                    if( end_text!=NULL )
-                        *end_text = text + len;
-                    return month;
+                    txt_end = text + len;
+                    break;
                 }
             } else {
-                if( end_text!=NULL )
-                    *end_text = text + len;
-                return month;
+                txt_end = text + len;
+                break;
             }
         }
     }
+    if( month!=13 ) {
+        if( short_name ) {
+            /* There might follow a dot directly after the
+             * abbreviated month name */
+            if( *txt_end=='.' )
+                ++txt_end;
+        }
+    } else {
+        month = 0;
+    }
     if( end_text!=NULL )
-        *end_text = text;
-    return 0;
+        *end_text = txt_end;
+    return month;
 }
 
 /*:::::*/
@@ -249,11 +258,6 @@ int fb_hDateParse( const char *text, size_t text_len,
                 month = fb_hFindMonth( text, len, &end_month );
                 if( month != 0 ) {
                     text = end_month;
-                    /* There might follow a dot directly after the
-                     * abbreviated month name */
-                    if( *text=='.' ) {
-                        ++text;
-                    }
                     /* skip white spaces */
                     while ( isspace( *text ) )
                         ++text;

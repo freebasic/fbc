@@ -34,9 +34,22 @@ FBCALL void fb_hTimeDecodeSerial ( double serial,
                                    int *pHour, int *pMinute, int *pSecond )
 {
     int hour, minute, second;
+    double dblFixValue = fb_FIXDouble( serial );
+
+    serial -= dblFixValue;
+    if( fb_hSign( serial ) == -1 ) {
+        /* Test for both 0.0 and -0.0 because FPUs may handle this as
+         * different values ... */
+        if( dblFixValue==0.0 || dblFixValue==-0.0 ) {
+            /* QB quirk ! */
+            serial = -serial;
+        } else {
+            serial += 1.0l;
+        }
+    }
 
     /* The inaccuracies of the IEEE floating point data types ... */
-    serial += fb_hSign(serial) * 0.000000001l;
+    serial += 0.000000001l;
 
     serial *= 24.0l;
     hour = (int) serial;
@@ -59,7 +72,6 @@ FBCALL int fb_Hour( double serial )
 {
     int hour;
     fb_hTimeDecodeSerial( serial, &hour, NULL, NULL );
-    hour %= 24;
     return hour;
 }
 

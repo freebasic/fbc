@@ -94,6 +94,16 @@ sub test_timeserial
             chk_hour -= 1
         wend
         chk_hour mod= 24
+
+        '' special handling for VB quirk (when fix(serial_time)=0)
+        if( chk_hour < 0 and chk_minute >= 0 and chk_second >= 0 ) then
+            chk_hour = -chk_hour
+        elseif( chk_hour = 0 and chk_minute < 0 and chk_second >= 0 ) then
+            chk_minute = -chk_minute
+        elseif( chk_hour = 0 and chk_minute = 0 and chk_second < 0 ) then
+            chk_second = -chk_second
+        end if
+
         ASSERT( chk_hour = hour(serial_time) )
         ASSERT( chk_minute = minute(serial_time) )
         ASSERT( chk_second = second(serial_time) )

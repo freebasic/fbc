@@ -244,10 +244,12 @@ FBCALL void fb_InitProfile( void )
 	
 	FB_TLSSET( cur_proc, main_proc );
 
+    /* guard by global lock because time/localtime might not be thread-safe */
+    FB_LOCK();
   	time( &rawtime );
-  	ptm = localtime( &rawtime );
-
+    ptm = localtime( &rawtime );
 	sprintf( launch_time, "%02d-%02d-%04d, %02d:%02d:%02d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year, ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
+    FB_UNLOCK();
 
 	main_proc->time = fb_Timer();
 }
