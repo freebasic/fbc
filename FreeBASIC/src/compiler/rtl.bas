@@ -2085,6 +2085,12 @@ data "dateserial","fb_DateSerial", _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
      FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+'' datevalue ( s as string ) as integer
+data "datevalue","fb_DateValue", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, TRUE, FALSE, _
+     1, _
+     FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
 '' pos( ) as integer
 data "pos", "fb_GetX", _

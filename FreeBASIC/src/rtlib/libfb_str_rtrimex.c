@@ -49,7 +49,7 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
             if( len_pattern==1 ) {
                 p = fb_hStrSkipCharRev( src->data,
                                         len,
-                                        (unsigned) (unsigned char) pattern->data[0] );
+                                        FB_CHAR_TO_INT(pattern->data[0]) );
                 len = (int)(p - src->data) + 1;
             } else if( len_pattern != 0 ) {
                 size_t test_index = len - len_pattern;

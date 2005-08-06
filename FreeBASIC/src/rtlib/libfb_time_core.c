@@ -24,7 +24,10 @@
  *
  */
 
+#include <stddef.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 #include "fb.h"
 
 /*:::::*/
@@ -48,6 +51,7 @@ int fb_hTimeDaysInMonth( int month, int year )
     return days[month-1];
 }
 
+/*:::::*/
 void fb_hNormalizeDate( int *pDay, int *pMonth, int *pYear )
 {
     assert( pDay!=NULL );

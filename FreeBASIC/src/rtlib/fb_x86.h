@@ -30,6 +30,8 @@ extern "C" {
     static __inline__ int FB_MEMCMP( const void *p1, const void *p2, size_t len )
     {
         int res;
+        if( len==0 )
+            return 0;
         __asm (
                " pushl %%esi      \n"
                " pushl %%edi      \n"
@@ -97,6 +99,8 @@ extern "C" {
     static __inline__ const void *FB_MEMCHR( const void *s, int c, size_t n )
     {
         const void *dst;
+        if( n==0 )
+            return NULL;
         __asm (
                " pushl %%ecx            \n"
                " pushf                  \n"
@@ -122,6 +126,8 @@ extern "C" {
     static __inline__ size_t FB_MEMLEN( const void *s, int c, size_t n )
     {
         size_t len;
+        if( n==0 )
+            return 0;
         __asm (
                " pushl %%edi            \n"
                " pushf                  \n"

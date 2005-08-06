@@ -48,7 +48,7 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
             if( len_pattern==1 ) {
                 p = fb_hStrSkipChar( src->data,
                                      len,
-                                     (unsigned) (unsigned char) pattern->data[0] );
+                                     FB_CHAR_TO_INT(pattern->data[0]) );
                 len = FB_STRSIZE( src ) - (int)(p - src->data);
             } else if( len_pattern != 0 ) {
                 p = src->data;

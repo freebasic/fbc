@@ -130,6 +130,14 @@ extern "C" {
 #define MAX_PATH    1024
 #endif
 
+    /** Macro to convert a character to an integer.
+     *
+     * Use this macro to avoid sign-extension during conversion from char
+     * (implicitly signed) to int.
+     */
+#define FB_CHAR_TO_INT(ch) \
+    ((int) ((unsigned) (unsigned char) (ch)))
+
     /** Macro to calculate a key code from a character.
      */
 #define FB_MAKE_KEY(ch) \
@@ -992,10 +1000,16 @@ FBCALL FBSTRING    *fb_Date             ( void );
 FBCALL int          fb_SetDate          ( FBSTRING *date );
 FBCALL void         fb_Sleep            ( int msecs );
 
+FBCALL int          fb_DateValue        ( FBSTRING *s );
+FBCALL int          fb_DateSerial       ( int year, int month, int day );
+
+FBCALL int          fb_hDateParse       ( FBSTRING *s, int *pDay, int *pMonth, int *pYear );
        int          fb_hTimeLeap        ( int year );
        int          fb_hTimeDaysInMonth ( int month, int year );
        void         fb_hNormalizeDate   ( int *pDay, int *pMonth, int *pYear );
 
+       int          fb_hDateGetFormat   ( char *buffer, size_t len );
+       const char * fb_hDateGetMonth    ( int month, int short_name, int localized );
        int          fb_hSetTime         ( int h, int m, int s );
        int          fb_hSetDate         ( int y, int m, int d );
 

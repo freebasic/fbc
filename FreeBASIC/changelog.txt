@@ -8,6 +8,7 @@ Version 0.15 Beta:
 - RTRIM$(s$[, ANY p$]) and RTRIM$(s$, p$) [mjs]
 - LTRIM$(s$[, ANY p$]) and LTRIM$(s$, p$) [mjs]
 - DATESERIAL [mjs]
+- DATEVALUE [mjs]
 
 [added]
 - Added: OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE, OPEN SCRN (mjs)

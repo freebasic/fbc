@@ -60,9 +60,7 @@ FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )
 		d = dst->data;
 		for( i = 0; i < len; i++ )
 		{
-            /* use this kind of strange conversion to ensure that
-             * character values > 127 are converted correctly (without sign) */
-			c = (int) (unsigned int) (unsigned char)*s++;
+			c = FB_CHAR_TO_INT(*s++);
 
 #if 0
 			if( (c >= 65) && (c <= 90) )

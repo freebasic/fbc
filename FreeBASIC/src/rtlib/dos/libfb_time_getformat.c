@@ -18,71 +18,24 @@
  */
 
 /*
- * str_ucase.c -- ucase$ function
+ * time_getformat.c -- get short DATE/TIME format
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: aug/2005 written [mjs]
  *
  */
 
-#include <malloc.h>
-#include <ctype.h>
 #include "fb.h"
+#include <stddef.h>
+#include <string.h>
+#include <assert.h>
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
+int fb_hDateGetFormat( char *buffer, size_t len )
 {
-	FBSTRING 	*dst;
-	int 		i, c, len = 0;
-	char		*s, *d;
-
-	if( src == NULL )
-		return &fb_strNullDesc;
-
-	FB_STRLOCK();
-
-	if( src->data != NULL )
-	{
-		len = FB_STRSIZE( src );
-
-		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-	}
-	else
-		dst = NULL;
-
-	if( dst != NULL )
-	{
-		fb_hStrAllocTemp( dst, len );
-
-		/* to lower */
-		s = src->data;
-		d = dst->data;
-		for( i = 0; i < len; i++ )
-        {
-			c = FB_CHAR_TO_INT(*s++);
-
-#if 0
-			if( (c >= 97) && (c <= 122) )
-                c -= 97 - 65;
-#else
-            if( islower( c ) )
-                c = toupper( c );
-#endif
-
-			*d++ = (char)c;
-		}
-
-		/* null char */
-		*d = '\0';
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	/* del if temp */
-	fb_hStrDelTemp( src );
-
-	FB_STRUNLOCK();
-
-	return dst;
+    assert(buffer!=NULL);
+    if( len < 11 )
+        return FALSE;
+    memcpy(buffer, "MM/dd/yyyy", 11);
+    return TRUE;
 }

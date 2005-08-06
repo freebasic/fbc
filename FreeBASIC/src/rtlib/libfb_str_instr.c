@@ -58,12 +58,12 @@ static int fb_hFindQS( size_t start,
     for( i=0; i!=256; ++i)
         qs_bc[ i ] = len_pattern + 1;
     for( i=0; i!=len_pattern; ++i )
-        qs_bc[ (unsigned) (unsigned char) pachPattern[i] ] = len_pattern - i;
+        qs_bc[ FB_CHAR_TO_INT(pachPattern[i]) ] = len_pattern - i;
 
     /* search for string */
     for (i=start;
          i<max_size;
-         i+=qs_bc[ (unsigned) (unsigned char) pachText[ i + len_pattern ] ])
+         i+=qs_bc[ FB_CHAR_TO_INT(pachText[ i + len_pattern ]) ])
     {
         if( memcmp( pachPattern, pachText + i, len_pattern )==0 ) {
             return i + 1;
@@ -109,7 +109,7 @@ static int fb_hFindBM( size_t start,
     /* create "bad character" shifts */
     memset(bm_bc, -1, sizeof(bm_bc));
     for( i=0; i!=len_pattern; ++i )
-        bm_bc[ (unsigned) (unsigned char) pachPattern[i] ] = i;
+        bm_bc[ FB_CHAR_TO_INT(pachPattern[i]) ] = i;
 
     /* preprocessing for "good end strategy" case 1 */
     i = len_pattern; j=len_pattern+1;
@@ -145,7 +145,7 @@ static int fb_hFindBM( size_t start,
         } else {
             char chText = pachText[i+j-1];
             int shift_gc = bm_gc[j];
-            int shift_bc = j - 1 - bm_bc[ (unsigned) (unsigned char) chText ];
+            int shift_bc = j - 1 - bm_bc[ FB_CHAR_TO_INT(chText) ];
             i += ( (shift_gc > shift_bc) ? shift_gc : shift_bc );
         }
     }

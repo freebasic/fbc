@@ -14,7 +14,7 @@ FBC=../fbc
 endif
 
 ifndef FBCFLAGS
-FBCFLAGS=-e -ex -g
+FBCFLAGS=-e -exx -g -r
 endif
 
 # sorry, but FIXME sounds much better
