@@ -41,7 +41,6 @@
   CLOSE Statement
   CLEAR Statement       (diff: completely different mean: used to fill a memory block with some value, args are:
                          byref dst as any, byval value as integer = 0, byval bytes as integer)
-  CONSTRUCTOR
 
   DATA Statement        (diff: string literals MUST be enclosed by quotes; Const's are evaluated before storing)
   DEFINT Statement
@@ -57,7 +56,9 @@
   DATE$ Function
   DATE$ Statement       (diff: called SETDATE now; syntax is "SETDATE newdate$", not "SETDATE$ = newdate$")
   DIR$ Function
-  DESTRUCTOR
+  DAY
+  DATESERIAL
+  DATEVALUE
 
   ELSE
   ELSEIF
@@ -84,6 +85,7 @@
   GET (File) Statement  (diff: reads full arrays too, as in VB: "GET #f, , inarray()" )
 
   HEX$ Function
+  HOUR
 
   IF...THEN Statement
   $INCLUDE Metacommand
@@ -128,10 +130,13 @@
   MID$ Function
   MID$ Statement
   MKDIR Statement
+  MONTH
+  MINUTE
 
   NOT Operator
   NEXT
   NAME Statement
+  NOW
 
   OPTION BASE Statement
   OR Operator
@@ -141,7 +146,6 @@
   ON...GOTO Statement
   OPEN (File) Statement (diff: SCRN: and KEYB: aren't supported (yet))
   OUTPUT
-  OVERLOAD
 
   POKE Statement
   PEEK Function
@@ -194,6 +198,7 @@
   SPC Function
   SEEK Function
   SEEK Statement
+  SECOND
 
   TO
   THEN
@@ -203,6 +208,8 @@
   TIME$ Function
   TIME$ Statement       (diff: called SETTIME now; syntax is "SETTIME newtime$", not "SETTIME$ = newtime$")
   TAB Function
+  TIMESERIAL
+  TIMEVALUE
 
   UBOUND Function
   UNTIL
@@ -218,8 +225,11 @@
   WIDTH Statements      (diff: the current dimensions are returned as: (width or (height shl 16)))
   WRITE (Screen) Statement
   WRITE (File) Statement
+  WEEKDAY
 
   XOR Operator
+  
+  YEAR
 
 *****************************************************************************
 * Implemented GFX - all details in the docs/gfxlib.txt file                 * 
@@ -297,7 +307,9 @@
   CVSHORT Function
   CPTR			(used to do pointer type-casting: 
 			 cptr(type, expression) (where "type" is a pointer type))
-  
+  CONSTRUCTOR
+
+  DESTRUCTOR
   DEALLOCATE Statement  (sub( byval src as any ptr ))
   DEFBYTE Statement
   DEFUBYTE Statement
@@ -337,6 +349,8 @@
   MUTEXDESTROY Statement
   MUTEXLOCK Statement
   MUTEXUNLOCK Statement
+
+  OVERLOAD
 
   PRESERVE
   POKES Function
