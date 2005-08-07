@@ -98,17 +98,17 @@ data "__FUNCTION__",			"",				  0, @hDefFunction_cb
 data "__LINE__",				"",				  1, @hDefLine_cb
 data "__DATE__",				"",				  0, @hDefDate_cb
 data "__TIME__",				"",				  0, @hDefTime_cb
-data "vbUseSystem",				"0",			  1, NULL
-data "vbSunday",				"1",			  1, NULL
-data "vbMonday",				"2",			  1, NULL
-data "vbTuesday",				"3",			  1, NULL
-data "vbWednesday",				"4",			  1, NULL
-data "vbThursday",				"5",			  1, NULL
-data "vbFriday",				"6",			  1, NULL
-data "vbSaturday",				"7",			  1, NULL
-data "vbFirstJan1",				"1",			  1, NULL
-data "vbFirstFourDays",			"2",			  1, NULL
-data "vbFirstFullWeek",			"3",			  1, NULL
+data "fbUseSystem",				"0",			  1, NULL
+data "fbSunday",				"1",			  1, NULL
+data "fbMonday",				"2",			  1, NULL
+data "fbTuesday",				"3",			  1, NULL
+data "fbWednesday",				"4",			  1, NULL
+data "fbThursday",				"5",			  1, NULL
+data "fbFriday",				"6",			  1, NULL
+data "fbSaturday",				"7",			  1, NULL
+data "fbFirstJan1",				"1",			  1, NULL
+data "fbFirstFourDays",			"2",			  1, NULL
+data "fbFirstFullWeek",			"3",			  1, NULL
 data ""
 
 
