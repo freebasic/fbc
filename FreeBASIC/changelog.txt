@@ -47,6 +47,8 @@ Version 0.15 Beta:
 - module names were not been checked causing errors if invalid symbol characters were used (v1c)
 - unsigned short multiplications would leave the stack unpoped if a specific register wasn't free (v1c)
 - non-padded local non-static arrays of UDT's of sizes 3, 5 or 9 would generate bad indexes when referenced (v1c)
+- console programs running in vanilla Linux console were ignoring break condition (CTRL-C) (lillo)
+- INPUT in plain Linux console mode was entering infinite loop if certain keys were pressed (lillo)
 
 
 Version 0.14 Beta:

@@ -176,14 +176,12 @@ int fb_hInitConsole ( int init )
 	if (tcgetattr(fb_con.h_in, &fb_con.old_term_in))
 		return -1;
 	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
-	/* Ignore breaks */
-	term_in.c_iflag |= (IGNBRK | BRKINT);
-	/* Disable Xon/off and 8th bit stripping */
-	term_in.c_iflag &= ~(IXOFF | IXON);
+	/* Send SIGINT on control-C */
+	term_in.c_iflag |= BRKINT;
+	/* Disable Xon/off and input BREAK condition ignoring */
+	term_in.c_iflag &= ~(IXOFF | IXON | IGNBRK);
 	/* Character oriented, no echo, no signals */
 	term_in.c_lflag &= ~(ICANON | ECHO);
-	if (init == INIT_CONSOLE)
-		term_in.c_lflag &= ~ISIG;
 	/* No timeout, just don't block */
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;

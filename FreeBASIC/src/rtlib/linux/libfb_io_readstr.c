@@ -43,6 +43,11 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 	do {
 		while (((k = fb_hGetCh(TRUE)) == -1) || (k & 0x100))
 			;
+		/* drop subsequent keypresses, if any; this is needed to avoid escape
+		 * sequence parsing problems in the fb_ConsoleGetXY() call below.
+		 */
+		while (fb_hGetCh(TRUE) >= 0)
+			;
 		
 		fb_ConsoleGetXY(&x, &y);
 		
