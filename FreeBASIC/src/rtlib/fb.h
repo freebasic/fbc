@@ -1050,6 +1050,13 @@ FBCALL FBSTRING *   fb_WeekDayName      ( int weekday, int abbreviation,
 FBCALL double       fb_DateAdd          ( FBSTRING *interval,
                                           double interval_value_arg,
                                           double serial );
+FBCALL int          fb_DatePart         ( FBSTRING *interval, double serial,
+                                          int first_day_of_week,
+                                          int first_day_of_year );
+FBCALL long long    fb_DateDiff         ( FBSTRING *interval,
+                                          double serial1, double serial2,
+                                          int first_day_of_week,
+                                          int first_day_of_year );
 
        int          fb_hDateParse       ( const char *text, size_t text_len,
                                           int *pDay, int *pMonth, int *pYear,
@@ -1075,6 +1082,7 @@ FBCALL int          fb_DateTimeParse    ( FBSTRING *s,
 
        int          fb_hTimeLeap        ( int year );
        int          fb_hGetDayOfYear    ( double serial );
+       int          fb_hGetDayOfYearEx  ( int year, int month, int day );
        int          fb_hGetWeekOfYear   ( int ref_year, double serial, int first_day_of_year, int first_day_of_week );
        int          fb_hGetWeeksOfYear  ( int ref_year, int first_day_of_year, int first_day_of_week );
        int          fb_hTimeDaysInMonth ( int month, int year );

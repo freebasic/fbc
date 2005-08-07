@@ -38,7 +38,7 @@ void fb_hGetBeginOfWeek( int *pYear, int *pMonth, int *pDay,
 
     serial = fb_DateSerial( *pYear, *pMonth, *pDay );
     weekday = fb_Weekday( serial, first_day_of_week );
-    serial -= weekday;
+    serial -= weekday - 1;
 
     fb_hDateDecodeSerial( serial, pYear, pMonth, pDay );
 }

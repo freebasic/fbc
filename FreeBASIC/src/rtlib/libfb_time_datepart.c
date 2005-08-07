@@ -18,7 +18,7 @@
  */
 
 /*
- * time_dateadd.c -- dateadd function
+ * time_datepart.c -- datepart function
  *
  * chng: aug/2005 written [mjs]
  *
@@ -31,44 +31,55 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-FBCALL double fb_DateAdd( FBSTRING *interval, double interval_value_arg, double serial )
+FBCALL int fb_DatePart( FBSTRING *interval, double serial, int first_day_of_week, int first_day_of_year )
 {
+    int result = 0;
     int year, month, day, hour, minute, second;
-    int carry_value, test_value;
-    int interval_value = (int) fb_FIXDouble( interval_value_arg );
     int interval_type = fb_hTimeGetIntervalType( interval );
 
     fb_ErrorSetNum( FB_RTERROR_OK );
 
-    fb_hTimeDecodeSerial ( serial, &hour, &minute, &second, FALSE );
-    fb_hDateDecodeSerial ( serial, &year, &month, &day );
-
     switch ( interval_type ) {
     case FB_TIME_INTERVAL_YEAR:
-        year += interval_value;
+        fb_hDateDecodeSerial ( serial, &year, NULL, NULL );
+        result = year;
         break;
     case FB_TIME_INTERVAL_QUARTER:
-        month += interval_value * 3;
+        fb_hDateDecodeSerial ( serial, NULL, &month, NULL );
+        result = ((month - 1) / 3) + 1;
         break;
     case FB_TIME_INTERVAL_MONTH:
-        month += interval_value;
+        fb_hDateDecodeSerial ( serial, NULL, &month, NULL );
+        result = month;
         break;
     case FB_TIME_INTERVAL_DAY_OF_YEAR:
+        fb_hDateDecodeSerial ( serial, &year, &month, &day );
+        result = fb_hGetDayOfYearEx( year, month, day );
+        break;
     case FB_TIME_INTERVAL_DAY:
+        fb_hDateDecodeSerial ( serial, NULL, NULL, &day );
+        result = day;
+        break;
     case FB_TIME_INTERVAL_WEEKDAY:
-        day += interval_value;
+        result = fb_Weekday( serial, first_day_of_week );
         break;
     case FB_TIME_INTERVAL_WEEK_OF_YEAR:
-        day += interval_value * 7;
+        fb_hDateDecodeSerial ( serial, &year, NULL, NULL );
+        result = fb_hGetWeekOfYear( year, serial, first_day_of_year, first_day_of_week );
+        if( result < 0 )
+            result = fb_hGetWeekOfYear( year - 1, serial, first_day_of_year, first_day_of_week );
         break;
     case FB_TIME_INTERVAL_HOUR:
-        hour += interval_value;
+        fb_hTimeDecodeSerial ( serial, &hour, NULL, NULL, FALSE );
+        result = hour;
         break;
     case FB_TIME_INTERVAL_MINUTE:
-        minute += interval_value;
+        fb_hTimeDecodeSerial ( serial, NULL, &minute, NULL, FALSE );
+        result = minute;
         break;
     case FB_TIME_INTERVAL_SECOND:
-        second += interval_value;
+        fb_hTimeDecodeSerial ( serial, NULL, NULL, &second, FALSE );
+        result = second;
         break;
     case FB_TIME_INTERVAL_INVALID:
     default:
@@ -76,40 +87,5 @@ FBCALL double fb_DateAdd( FBSTRING *interval, double interval_value_arg, double 
         break;
     }
 
-    /* Normalize date/time */
-    switch ( interval_type ) {
-    case FB_TIME_INTERVAL_HOUR:
-    case FB_TIME_INTERVAL_MINUTE:
-    case FB_TIME_INTERVAL_SECOND:
-    case FB_TIME_INTERVAL_DAY_OF_YEAR:
-    case FB_TIME_INTERVAL_DAY:
-    case FB_TIME_INTERVAL_WEEKDAY:
-    case FB_TIME_INTERVAL_WEEK_OF_YEAR:
-        /* Nothing to do here because normalization will implicitly be done
-         * by the calculation of the new serial number. */
-        break;
-
-    case FB_TIME_INTERVAL_YEAR:
-    case FB_TIME_INTERVAL_QUARTER:
-    case FB_TIME_INTERVAL_MONTH:
-        /* Handle wrap-around for month */
-        if( month < 1 ) {
-            carry_value = (month - 12) / 12;
-        } else {
-            carry_value = (month - 1) / 12;
-        }
-        year += carry_value;
-        month -= carry_value * 12;
-        /* No wrap-around ... instead we must saturate the day */
-        test_value = fb_hTimeDaysInMonth( month, year );
-        if( day > test_value )
-            day = test_value;
-        break;
-
-    }
-
-    serial = fb_DateSerial( year, month, day ) +
-        fb_TimeSerial( hour, minute, second );
-
-    return serial;
+    return result;
 }

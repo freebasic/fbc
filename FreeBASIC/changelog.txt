@@ -27,7 +27,7 @@ Version 0.15 Beta:
 - HOUR, MINUTE, SECOND [mjs]
 - NOW [mjs]
 - MONTHNAME, WEEKDAYNAME [mjs]
-- DATEADD [mjs]
+- DATEADD, DATEPART, DATEDIFF [mjs]
 - compile-time check for math overflow in literal numbers when assigned or passed as parameter (v1c)
 
 [fixed]

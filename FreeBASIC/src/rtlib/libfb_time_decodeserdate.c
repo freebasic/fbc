@@ -112,13 +112,19 @@ FBCALL int fb_Weekday( double serial, int first_day_of_week )
 }
 
 /*:::::*/
-int fb_hGetDayOfYear( double serial )
+int fb_hGetDayOfYearEx( int year, int month, int day )
 {
     int result = 0;
-    int year, month, day;
     int cur_month;
-    fb_hDateDecodeSerial( serial, &year, &month, &day );
     for( cur_month=1; cur_month!=month; ++cur_month )
         result += fb_hTimeDaysInMonth( cur_month, year );
-    return result + day - 1;
+    return result + day;
+}
+
+/*:::::*/
+int fb_hGetDayOfYear( double serial )
+{
+    int year, month, day;
+    fb_hDateDecodeSerial( serial, &year, &month, &day );
+    return fb_hGetDayOfYearEx( year, month, day );
 }

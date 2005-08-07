@@ -129,7 +129,7 @@ int fb_hTimeGetIntervalType( FBSTRING *interval )
             result = FB_TIME_INTERVAL_WEEK_OF_YEAR;
         } else if( strcmp( interval->data, "h" )==0 ) {
             result = FB_TIME_INTERVAL_HOUR;
-        } else if( strcmp( interval->data, "m" )==0 ) {
+        } else if( strcmp( interval->data, "n" )==0 ) {
             result = FB_TIME_INTERVAL_MINUTE;
         } else if( strcmp( interval->data, "s" )==0 ) {
             result = FB_TIME_INTERVAL_SECOND;
