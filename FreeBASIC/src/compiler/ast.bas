@@ -4878,23 +4878,23 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hCheckConstAssign( byval l as ASTNODE ptr, _
-					   		   		byval r as ASTNODE ptr ) as ASTNODE ptr static
+private function hCheckConst( byval dtype as integer, _
+					   		  byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 	dim as integer ival, imin, imax
 	dim as longint lval, lmin, lmax
 	dim as double dval, dmin, dmax
 
-	if( irGetDataSize( l->dtype ) >= irGetDataSize( r->dtype ) ) then
-		return r
+	if( irGetDataSize( dtype ) >= irGetDataSize( n->dtype ) ) then
+		return n
 	end if
 
 	'' x86 assumptions
 
-    select case l->dtype
+    select case dtype
     case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 
-		if( l->dtype = IR_DATATYPE_SINGLE ) then
+		if( dtype = IR_DATATYPE_SINGLE ) then
 			dmin = 1.175494351e-38
 			dmax = 3.402823466e+38
 		else
@@ -4902,7 +4902,7 @@ private function hCheckConstAssign( byval l as ASTNODE ptr, _
 			dmax = 1.7976931348623147e+308
 		end if
 
-		dval = abs(astGetValueAsDouble( r ))
+		dval = abs(astGetValueAsDouble( n ))
     	if( dval <> 0 ) then
     		if( (dval < dmin) or (dval > dmax) ) then
     			hReportError( FB_ERRMSG_MATHOVERFLOW, TRUE )
@@ -4910,25 +4910,25 @@ private function hCheckConstAssign( byval l as ASTNODE ptr, _
 			end if
 		end if
 
-    case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT
+    case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
 
-		if( l->dtype = IR_DATATYPE_INTEGER ) then
-			lmin = -2147483648LL
-			lmax = 2147483647LL
-		else
+		if( dtype = IR_DATATYPE_UINT ) then
 			lmin = 0LL
 			lmax = 4294967296LL
+		else
+			lmin = -2147483648LL
+			lmax = 2147483647LL
 		end if
 
-		lval = astGetValueAsLongInt( r )
+		lval = astGetValueAsLongInt( n )
     	if( (lval < lmin) or (lval > lmax) ) then
-    		r = astNewCONV( INVALID, l->dtype, NULL, r )
+    		n = astNewCONV( INVALID, dtype, NULL, n )
     		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 
     case else
 
-    	select case as const l->dtype
+    	select case as const dtype
     	case IR_DATATYPE_BYTE
     		imin = -128
     		imax = 127
@@ -4946,14 +4946,14 @@ private function hCheckConstAssign( byval l as ASTNODE ptr, _
     		imax = 65535
     	end select
 
-		ival = astGetValueAsInt( r )
+		ival = astGetValueAsInt( n )
     	if( (ival < imin) or (ival > imax) ) then
-    		r = astNewCONV( INVALID, l->dtype, NULL, r )
+    		n = astNewCONV( INVALID, dtype, NULL, n )
     		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 	end select
 
-	function = r
+	function = n
 
 end function
 
@@ -5072,7 +5072,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		if( rdclass <> IR_DATACLASS_STRING ) then
 			'' constant?
 			if( r->defined ) then
-				r = hCheckConstAssign( l, r )
+				r = hCheckConst( l->dtype, r )
 			else
 				'' x86 assumption: let the fpu do the convertion if any operand is a float
 				if( (ldclass <> IR_DATACLASS_FPOINT) and _
@@ -5814,7 +5814,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			''
 			else
 				'' can't convert strings/UDT's to other types
-				if( (pdclass = IR_DATACLASS_STRING) or (pdtype = IR_DATATYPE_USERDEF) ) then
+				if( (pdclass = IR_DATACLASS_STRING) or _
+					(pdtype = IR_DATATYPE_USERDEF) ) then
 					hReportParamError( f )
 					exit function
 				end if
@@ -5824,7 +5825,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 					(irGetDataSize( adtype ) <> irGetDataSize( pdtype )) ) then
 
 					'' enum args are only allowed to be passed enum or int params
-					if( (adtype = IR_DATATYPE_ENUM) or (pdtype = IR_DATATYPE_ENUM) ) then
+					if( (adtype = IR_DATATYPE_ENUM) or _
+						(pdtype = IR_DATATYPE_ENUM) ) then
 						if( adclass <> pdclass ) then
 							hReportParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
@@ -5837,6 +5839,14 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 							hReportParamError( f )
 							exit function
 						end select
+					end if
+
+					'' const?
+					if( p->defined ) then
+						p = hCheckConst( adtype, p )
+						if( p = NULL ) then
+							exit function
+						end if
 					end if
 
 					p = astNewCONV( INVALID, adtype, symbGetSubtype( arg ), p )
