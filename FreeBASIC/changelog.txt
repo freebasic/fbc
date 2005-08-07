@@ -3,10 +3,10 @@ Version 0.15 Beta:
 [changed]
 - LOCATE/CLS/WIDTH/SCREEN are now window-local (left/top of window = 1/1) on Win32 (mjs)
 - VAL64 function renamed to VALLNG as longint's can be wider than 64 bits in future ports (v1c)
-- WITH can now accepts dereferenced pointers as argument and the depth is became unlimited (v1c)
+- WITH can now accepts dereferenced pointers as argument and the depth became unlimited (v1c)
 
 [added]
-- Added: OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE, OPEN SCRN (mjs)
+- OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
 - LPRINT support (mjs)
 - LPOS(n) (mjs)
 - VIEW PRINT() now returns the top and bottom row (mjs)
@@ -28,6 +28,7 @@ Version 0.15 Beta:
 - NOW [mjs]
 - MONTHNAME, WEEKDAYNAME [mjs]
 - DATEADD [mjs]
+- compile-time check for math overflow in literal numbers when assigned or passed as parameter (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -43,6 +44,9 @@ Version 0.15 Beta:
 - WIDTH in gfx mode was returning the width/height in pixels instead of character cells (lillo)
 - INSTR can now handle strings with NULs - using a Boyer-Moore implementation (mjs)
 - apps using the multithreaded rtlib under Linux were crashing on exit (lillo)
+- module names were not been checked causing errors if invalid symbol characters were used (v1c)
+- unsigned short multiplications would leave the stack unpoped if a specific register wasn't free (v1c)
+- non-padded local non-static arrays of UDT's of sizes 3, 5 or 9 would generate bad indexes when referenced (v1c)
 
 
 Version 0.14 Beta:
