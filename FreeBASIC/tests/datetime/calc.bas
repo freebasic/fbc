@@ -22,22 +22,26 @@ tests_datepart:
   DATA "."
 
 tests_dateadd:
-  DATA "Jan 1, 2006 12:13:14", "yyyy",  1,  2007
-  DATA "Jan 1, 2006 12:13:14", "q",     1,  2
-  DATA "Jan 1, 2006 12:13:14", "m",     1,  2
-  DATA "Jan 1, 2006 12:13:14", "y",     1,  2
-  DATA "Jan 1, 2006 12:13:14", "d",     1,  2
-  DATA "Jan 1, 2006 12:13:14", "w",     1,  1
-  DATA "Jan 1, 2006 12:13:14", "ww",    2,  2
-  DATA "Jan 1, 2006 12:13:14", "h",     1,  13
-  DATA "Jan 1, 2006 12:13:14", "n",     1,  14
-  DATA "Jan 1, 2006 12:13:14", "s",     1,  15
-  DATA "May 4, 2006 12:13:14", "q",     3,  1
-  DATA "May 4, 2006 12:13:14", "m",     5,  10
-  DATA "May 4, 2006 12:13:14", "y",     120,244
-  DATA "May 4, 2006 12:13:14", "d",     4,  8
-  DATA "May 4, 2006 12:13:14", "w",     1,  5
-  DATA "May 4, 2006 12:13:14", "ww",    10, 28
+  DATA "Jan  1, 2006 12:13:14", "yyyy", 1,  2007
+  DATA "Jan  1, 2006 12:13:14", "q",    1,  2
+  DATA "Jan  1, 2006 12:13:14", "m",    1,  2
+  DATA "Jan  1, 2006 12:13:14", "y",    1,  2
+  DATA "Jan  1, 2006 12:13:14", "d",    1,  2
+  DATA "Jan  1, 2006 12:13:14", "w",    1,  1
+  DATA "Jan  1, 2006 12:13:14", "ww",   2,  2
+  DATA "Jan  1, 2006 12:13:14", "h",    1,  13
+  DATA "Jan  1, 2006 12:13:14", "n",    1,  14
+  DATA "Jan  1, 2006 12:13:14", "s",    1,  15
+  DATA "May  4, 2006 12:13:14", "q",    3,  1
+  DATA "May  4, 2006 12:13:14", "m",    5,  10
+  DATA "May  4, 2006 12:13:14", "y",    120,244
+  DATA "May  4, 2006 12:13:14", "d",    4,  8
+  DATA "May  4, 2006 12:13:14", "w",    1,  5
+  DATA "May  4, 2006 12:13:14", "ww",   10, 28
+  DATA "."
+
+tests_dateadd2:
+  DATA "Jan 31, 2006 12:13:14", "m",    1,  "d",    28
   DATA "."
 
 tests_datediff:
@@ -86,6 +90,7 @@ sub test_datepart
 
     print "Testing DATEPART ...";
 
+    restore tests_datepart
     read sDate
     while sDate<>"."
         read sInterval, wanted
@@ -100,18 +105,31 @@ sub test_datepart
 end sub
 
 sub test_dateadd
-    dim as string sDate, sInterval
+    dim as string sDate, sInterval, sIntervalTest
     dim as integer addvalue, wanted, result
     dim as double serial, serial_result
 
     print "Testing DATEADD ...";
 
+    restore tests_dateadd
     read sDate
     while sDate<>"."
         read sInterval, addvalue, wanted
         serial = datevalue(sDate) + timevalue(sDate)
         serial_result = dateadd( sInterval, addvalue, serial )
         result = datepart( sInterval, serial_result, fbMonday, fbFirstFourDays )
+        ASSERT( result = wanted )
+        print ".";
+        read sDate
+    wend
+
+    restore tests_dateadd2
+    read sDate
+    while sDate<>"."
+        read sInterval, addvalue, sIntervalTest, wanted
+        serial = datevalue(sDate) + timevalue(sDate)
+        serial_result = dateadd( sInterval, addvalue, serial )
+        result = datepart( sIntervalTest, serial_result, fbMonday, fbFirstFourDays )
         ASSERT( result = wanted )
         print ".";
         read sDate
@@ -127,6 +145,7 @@ sub test_datediff
 
     print "Testing DATEDIFF ...";
 
+    restore tests_datediff
     read sDate1
     while sDate1<>"."
         read sDate2, sInterval, wanted
