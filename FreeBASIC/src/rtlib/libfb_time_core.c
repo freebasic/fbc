@@ -26,6 +26,7 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <ctype.h>
 #include "fb.h"
@@ -104,4 +105,36 @@ void fb_hNormalizeDate( int *pDay, int *pMonth, int *pYear )
         *pMonth = month;
         *pYear = year;
     }
+}
+
+/*:::::*/
+int fb_hTimeGetIntervalType( FBSTRING *interval )
+{
+    int result = FB_TIME_INTERVAL_INVALID;
+    FB_STRLOCK();
+    if( interval!=NULL && interval->data!=NULL ) {
+        if( strcmp( interval->data, "yyyy" )==0 ) {
+            result = FB_TIME_INTERVAL_YEAR;
+        } else if( strcmp( interval->data, "q" )==0 ) {
+            result = FB_TIME_INTERVAL_QUARTER;
+        } else if( strcmp( interval->data, "m" )==0 ) {
+            result = FB_TIME_INTERVAL_MONTH;
+        } else if( strcmp( interval->data, "y" )==0 ) {
+            result = FB_TIME_INTERVAL_DAY_OF_YEAR;
+        } else if( strcmp( interval->data, "d" )==0 ) {
+            result = FB_TIME_INTERVAL_DAY;
+        } else if( strcmp( interval->data, "w" )==0 ) {
+            result = FB_TIME_INTERVAL_WEEKDAY;
+        } else if( strcmp( interval->data, "ww" )==0 ) {
+            result = FB_TIME_INTERVAL_WEEK_OF_YEAR;
+        } else if( strcmp( interval->data, "h" )==0 ) {
+            result = FB_TIME_INTERVAL_HOUR;
+        } else if( strcmp( interval->data, "m" )==0 ) {
+            result = FB_TIME_INTERVAL_MINUTE;
+        } else if( strcmp( interval->data, "s" )==0 ) {
+            result = FB_TIME_INTERVAL_SECOND;
+        }
+    }
+    FB_STRUNLOCK();
+    return result;
 }

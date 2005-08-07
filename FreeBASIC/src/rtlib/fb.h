@@ -990,6 +990,34 @@ typedef struct _DEV_SCRN_INFO {
  * data/time
  **************************************************************************************************/
 
+#define FB_WEEK_FIRST_SYSTEM            0
+#define FB_WEEK_FIRST_JAN_1             1
+#define FB_WEEK_FIRST_FOUR_DAYS         2
+#define FB_WEEK_FIRST_FULL_WEEK         3
+#define FB_WEEK_FIRST_DEFAULT           FB_WEEK_FIRST_JAN_1
+
+#define FB_WEEK_DAY_SYSTEM              0
+#define FB_WEEK_DAY_SUNDAY              1
+#define FB_WEEK_DAY_MONDAY              2
+#define FB_WEEK_DAY_TUESDAY             3
+#define FB_WEEK_DAY_WEDNESDAY           4
+#define FB_WEEK_DAY_THURSDAY            5
+#define FB_WEEK_DAY_FRIDAY              6
+#define FB_WEEK_DAY_SATURDAY            7
+#define FB_WEEK_DAY_DEFAULT             FB_WEEK_DAY_SUNDAY
+
+#define FB_TIME_INTERVAL_INVALID        0
+#define FB_TIME_INTERVAL_YEAR           1
+#define FB_TIME_INTERVAL_QUARTER        2
+#define FB_TIME_INTERVAL_MONTH          3
+#define FB_TIME_INTERVAL_DAY_OF_YEAR    4
+#define FB_TIME_INTERVAL_DAY            5
+#define FB_TIME_INTERVAL_WEEKDAY        6
+#define FB_TIME_INTERVAL_WEEK_OF_YEAR   7
+#define FB_TIME_INTERVAL_HOUR           8
+#define FB_TIME_INTERVAL_MINUTE         9
+#define FB_TIME_INTERVAL_SECOND         10
+
 #define fb_hTimeDaysInYear( year ) \
     (365 + fb_hTimeLeap( year ))
 
@@ -1005,7 +1033,7 @@ FBCALL int          fb_DateSerial       ( int year, int month, int day );
 FBCALL int          fb_Year             ( double serial );
 FBCALL int          fb_Month            ( double serial );
 FBCALL int          fb_Day              ( double serial );
-FBCALL int          fb_Weekday          ( double serial );
+FBCALL int          fb_Weekday          ( double serial, int first_day_of_week );
 
 FBCALL double       fb_TimeValue        ( FBSTRING *s );
 FBCALL double       fb_TimeSerial       ( int hour, int minute, int second );
@@ -1014,6 +1042,14 @@ FBCALL int          fb_Minute           ( double serial );
 FBCALL int          fb_Second           ( double serial );
 
 FBCALL double       fb_Now              ( void );
+
+FBCALL FBSTRING *   fb_MonthName        ( int month, int abbreviation );
+FBCALL FBSTRING *   fb_WeekDayName      ( int weekday, int abbreviation,
+                                          int first_day_of_week );
+
+FBCALL double       fb_DateAdd          ( FBSTRING *interval,
+                                          double interval_value_arg,
+                                          double serial );
 
        int          fb_hDateParse       ( const char *text, size_t text_len,
                                           int *pDay, int *pMonth, int *pYear,
@@ -1037,11 +1073,16 @@ FBCALL int          fb_DateTimeParse    ( FBSTRING *s,
                                           int want_date, int want_time );
 
        int          fb_hTimeLeap        ( int year );
+       int          fb_hGetDayOfYear    ( double serial );
+       int          fb_hGetWeekOfYear   ( int ref_year, double serial, int first_day_of_year, int first_day_of_week );
+       int          fb_hGetWeeksOfYear  ( int ref_year, int first_day_of_year, int first_day_of_week );
        int          fb_hTimeDaysInMonth ( int month, int year );
        void         fb_hNormalizeDate   ( int *pDay, int *pMonth, int *pYear );
+       int          fb_hTimeGetIntervalType ( FBSTRING *interval );
 
        int          fb_hDateGetFormat   ( char *buffer, size_t len );
        const char * fb_hDateGetMonth    ( int month, int short_name, int localized );
+       const char * fb_hDateGetWeekDay  ( int weekday, int short_names, int localized );
        int          fb_hSetTime         ( int h, int m, int s );
        int          fb_hSetDate         ( int y, int m, int d );
 

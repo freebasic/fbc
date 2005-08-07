@@ -18,32 +18,48 @@
  */
 
 /*
- * time_datevalue.c -- datevalue function
+ * time_monthname.c -- returns the month name
  *
  * chng: aug/2005 written [mjs]
  *
  */
 
-#include <malloc.h>
 #include <string.h>
-#include <time.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-/*:::::*/
-FBCALL int fb_DateValue ( FBSTRING *s )
+FBCALL FBSTRING *fb_MonthName( int month, int abbreviation )
 {
-    int year;
-    int month;
-    int day;
+    FBSTRING *res;
+    const char *pszName;
 
-    if( !fb_DateParse( s, &day, &month, &year ) ) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return 0;
+    if( month < 1 || month > 12 ) {
+        fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+        return &fb_strNullDesc;
     }
 
     fb_ErrorSetNum( FB_RTERROR_OK );
 
-	return fb_DateSerial( year, month, day );
-}
+    pszName = fb_hDateGetMonth( month, abbreviation, TRUE );
+    if( pszName==NULL ) {
+        pszName = fb_hDateGetMonth( month, abbreviation, FALSE );
+        if( pszName==NULL ) {
+            fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+            return &fb_strNullDesc;
+        }
+    }
 
+    FB_STRLOCK();
+    res = (FBSTRING *)fb_hStrAllocTmpDesc( );
+	if( res ) {
+        size_t len = strlen( pszName );
+        fb_hStrAllocTemp( res, len );
+        fb_hStrCopy( res->data, pszName, len );
+    } else {
+        fb_ErrorSetNum(FB_RTERROR_OUTOFMEM);
+        res = &fb_strNullDesc;
+    }
+    FB_STRUNLOCK();
+
+    return res;
+}

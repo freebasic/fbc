@@ -24,7 +24,7 @@
  *
  */
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <math.h>
@@ -93,10 +93,32 @@ FBCALL int fb_Day( double serial )
  *
  * @return 1 = Sunday, ... 7 = Saturday
  */
-FBCALL int fb_Weekday( double serial )
+FBCALL int fb_Weekday( double serial, int first_day_of_week )
 {
     int dow = ((int) (floor(serial) - 1) % 7);
     if( dow < 0 )
         dow += 7;
-    return dow+1;
+    dow += 1;
+
+    if( first_day_of_week==FB_WEEK_DAY_SYSTEM ) {
+        /* FIXME: query system default */
+        first_day_of_week = FB_WEEK_DAY_DEFAULT;
+    }
+
+    dow -= first_day_of_week - 1;
+    if( dow < 1 )
+        dow += 7;
+    return dow;
+}
+
+/*:::::*/
+int fb_hGetDayOfYear( double serial )
+{
+    int result = 0;
+    int year, month, day;
+    int cur_month;
+    fb_hDateDecodeSerial( serial, &year, &month, &day );
+    for( cur_month=1; cur_month!=month; ++cur_month )
+        result += fb_hTimeDaysInMonth( cur_month, year );
+    return result + day - 1;
 }

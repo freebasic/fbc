@@ -42,6 +42,8 @@ FBCALL double fb_TimeValue ( FBSTRING *s )
         return 0;
     }
 
+    fb_ErrorSetNum( FB_RTERROR_OK );
+
 	return fb_TimeSerial( hour, minute, second );
 }
 

@@ -18,7 +18,7 @@
  */
 
 /*
- * time_getformat.c -- get short DATE/TIME format
+ * time_getmonthname.c -- get month name
  *
  * chng: aug/2005 written [mjs]
  *

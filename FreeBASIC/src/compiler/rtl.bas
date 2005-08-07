@@ -2109,12 +2109,13 @@ data "Day","fb_Day", _
 	 NULL, FALSE, FALSE, _
      1, _
      FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
-'' weekday ( byval serial as double ) as integer
+'' weekday ( byval serial as double, byval first_day_of_week as integer = 0 ) as integer
 data "Weekday","fb_Weekday", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-     1, _
-     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+     2, _
+     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, 0
 '' timeserial ( byval hour as integer, byval minute as integer, byval second as integer ) as integer
 data "TimeSerial","fb_TimeSerial", _
 	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
@@ -2152,6 +2153,29 @@ data "Now","fb_Now", _
 	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
      0
+'' dateadd ( interval as string, byval number as double, byval serial as double ) as double
+data "DateAdd","fb_DateAdd", _
+	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
+	 NULL, TRUE, FALSE, _
+     3, _
+     FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE, _
+     FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+'' monthname ( byval month as integer, byval abbreviate as integer=0 ) as string
+data "MonthName","fb_MonthName", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, TRUE, FALSE, _
+     2, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, 0
+'' weekdayname ( byval weekday as integer, byval abbreviate as integer=0, byval first_day_of_week as integer=0 ) as string
+data "WeekdayName","fb_WeekDayName", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, TRUE, FALSE, _
+     3, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, 0, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, 0
 
 '' pos( ) as integer
 data "pos", "fb_GetX", _

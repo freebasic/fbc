@@ -26,6 +26,8 @@ Version 0.15 Beta:
 - TIMESERIAL, TIMEVALUE [mjs]
 - HOUR, MINUTE, SECOND [mjs]
 - NOW [mjs]
+- MONTHNAME, WEEKDAYNAME [mjs]
+- DATEADD [mjs]
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

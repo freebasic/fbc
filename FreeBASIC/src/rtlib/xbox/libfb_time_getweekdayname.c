@@ -18,32 +18,43 @@
  */
 
 /*
- * time_datevalue.c -- datevalue function
+ * time_getweekdayname.c -- get weekday name
  *
  * chng: aug/2005 written [mjs]
  *
  */
 
-#include <malloc.h>
-#include <string.h>
-#include <time.h>
 #include "fb.h"
-#include "fb_rterr.h"
+#include <stddef.h>
+#include <string.h>
+#include <assert.h>
+
+static const char *pszWeekDayNamesLong[7] = {
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+};
+
+static const char *pszWeekDayNamesShort[7] = {
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat"
+};
 
 /*:::::*/
-FBCALL int fb_DateValue ( FBSTRING *s )
+const char *fb_hDateGetWeekDay( int weekday, int short_names, int localized )
 {
-    int year;
-    int month;
-    int day;
-
-    if( !fb_DateParse( s, &day, &month, &year ) ) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return 0;
-    }
-
-    fb_ErrorSetNum( FB_RTERROR_OK );
-
-	return fb_DateSerial( year, month, day );
+    if( weekday < 1 || weekday > 7 )
+        return NULL;
+    if( short_names )
+        return pszWeekDayNamesShort[weekday-1];
+    return pszWeekDayNamesLong[weekday-1];
 }
-

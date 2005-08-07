@@ -208,10 +208,13 @@ int fb_hDateParse( const char *text, size_t text_len,
          * The long format can have the form:
          * (d|dd) (MMMM|MM)"," (yy|yyyy)
          */
+        size_t day_size;
         char *endptr;
         int valid_divider;
         day = strtol( text, &endptr, 10 );
-        if( day > 0 ) {
+        day_size = endptr - text;
+        if( day_size ) {
+            size_t month_size = 0;
             char chDivider;
             int is_short_form;
 
@@ -241,8 +244,12 @@ int fb_hDateParse( const char *text, size_t text_len,
             }
             if( is_short_form ) {
                 /* short date */
+                /* skip white spaces */
+                while ( isspace( *text ) )
+                    ++text;
                 month = strtol( text, &endptr, 10 );
-                if( month > 0 && month < 13 ) {
+                month_size = endptr - text;
+                if( month_size ) {
                     text = endptr;
                     /* skip white spaces */
                     while ( isspace( *text ) )
@@ -271,25 +278,30 @@ int fb_hDateParse( const char *text, size_t text_len,
             /* read year */
             if( result ) {
                 size_t year_size;
+                /* skip white spaces */
+                while ( isspace( *text ) )
+                    ++text;
                 year = strtol( text, &endptr, 10 );
                 year_size = endptr - text;
                 if( year_size > 0 ) {
-                    if( year_size==2 )
-                        year += 1900;
-
                     /* adjust short form according to the date format */
                     if( is_short_form ) {
                         int tmp_day = InlineSelect( order_day, day, month, year );
                         int tmp_month = InlineSelect( order_month, day, month, year );
                         int tmp_year = InlineSelect( order_year, day, month, year );
+                        year_size = InlineSelect( order_year, day_size, month_size, year_size );
                         day = tmp_day;
                         month = tmp_month;
                         year = tmp_year;
                         if( day < 1 || month < 1 || month > 12 )
                             result = FALSE;
                     }
-                    if( result )
+
+                    if( result ) {
+                        if( year_size==2 )
+                            year += 1900;
                         result = day <= fb_hTimeDaysInMonth( month, year );
+                    }
                     text = endptr;
                 } else {
                     result = FALSE;
