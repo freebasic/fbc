@@ -40,7 +40,7 @@ FBCALL double fb_DateAdd( FBSTRING *interval, double interval_value_arg, double 
 
     fb_ErrorSetNum( FB_RTERROR_OK );
 
-    fb_hTimeDecodeSerial ( serial, &hour, &minute, &second );
+    fb_hTimeDecodeSerial ( serial, &hour, &minute, &second, FALSE );
     fb_hDateDecodeSerial ( serial, &year, &month, &day );
 
     switch ( interval_type ) {

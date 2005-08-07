@@ -1065,7 +1065,8 @@ FBCALL void         fb_hDateDecodeSerial( double serial,
 FBCALL int          fb_TimeParse        ( FBSTRING *s,
                                           int *pHour, int *pMinute, int *pSecond );
 FBCALL void         fb_hTimeDecodeSerial( double serial,
-                                          int *pHour, int *pMinute, int *pSecond );
+                                          int *pHour, int *pMinute, int *pSecond,
+                                          int use_qb_hack );
 
 FBCALL int          fb_DateTimeParse    ( FBSTRING *s,
                                           int *pDay, int *pMonth, int *pYear,
