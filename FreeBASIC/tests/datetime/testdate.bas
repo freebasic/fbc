@@ -1,5 +1,9 @@
 option explicit
 
+#include "vbcompat.bi"
+
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+
 defint a-z
 
 tests_dateserial:
@@ -93,5 +97,7 @@ did_fail:
     print "OK"
 end sub
 
+' Turn off I18N and L10N
+fb_I18nSet 0
 test_dateserial
 test_datevalue

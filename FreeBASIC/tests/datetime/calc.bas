@@ -1,5 +1,9 @@
 option explicit
 
+#include "vbcompat.bi"
+
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+
 defint a-z
 
 tests_datepart:
@@ -160,6 +164,8 @@ sub test_datediff
     print " OK"
 end sub
 
+' Turn off I18N and L10N
+fb_I18nSet 0
 test_datepart
 test_dateadd
 test_datediff

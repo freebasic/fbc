@@ -71,6 +71,7 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 			{
                 end_char = ((unsigned char *)buffer)[len - 1];
                 if (end_char >= 32 ) {
+                    /* WARNING: This might destroy a constant string */
                     ((unsigned char *)buffer)[len - 1] = '\0';
                     no_scroll = TRUE;
                     --len;
@@ -98,8 +99,10 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 
 	if (no_scroll) {
 		_farpokew(	_dos_ds,
-				TEXT_ADDR + (((wherey() + toprow - 2) * ScreenCols() + wherex() - 1) << 1),
-				 (((unsigned short)ScreenAttrib)<< 8) + end_char );
+                    TEXT_ADDR + (((wherey() + toprow - 2) * ScreenCols() + wherex() - 1) << 1),
+                    (((unsigned short)ScreenAttrib)<< 8) + end_char );
+        /* Restore the previously destroyed constant string */
+        ((unsigned char *)buffer)[len] = end_char;
 	}
 
 	if (mask & FB_PRINT_NEWLINE) {
