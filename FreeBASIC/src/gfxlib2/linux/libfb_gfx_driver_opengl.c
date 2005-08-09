@@ -26,12 +26,6 @@
 
 #include "fb_gfx.h"
 
-#ifdef __CYGWIN__
-
-#include "../win32/libfb_gfx_driver_opengl.c"
-
-#else
-
 #include "fb_gfx_linux.h"
 #include <GL/glx.h>
 #include <dlfcn.h>
@@ -253,5 +247,3 @@ static void driver_flip(void)
 	fb_glXSwapBuffers(fb_linux.display, fb_linux.window);
 	fb_hX11Unlock();
 }
-
-#endif

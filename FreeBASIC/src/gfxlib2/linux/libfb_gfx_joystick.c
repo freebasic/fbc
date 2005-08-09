@@ -26,12 +26,6 @@
 
 #include "fb_gfx.h"
 
-#ifdef __CYGWIN__
-
-#include "../win32/libfb_gfx_joystick.c"
-
-#else
-
 #include "fb_gfx_linux.h"
 
 #include <unistd.h>
@@ -143,4 +137,3 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	return FB_RTERROR_OK;
 }
 
-#endif
