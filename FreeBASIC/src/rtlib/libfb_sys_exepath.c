@@ -43,11 +43,10 @@ FBCALL FBSTRING *fb_ExePath ( void )
 		FB_STRLOCK();
 		
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        len = strlen( tmp );
+        dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
-			len = strlen( tmp );
-			fb_hStrAllocTemp( dst, len );
 			fb_hStrCopy( dst->data, tmp, len );
 		}
 		else

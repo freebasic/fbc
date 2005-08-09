@@ -42,11 +42,9 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, len * 2 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, len * 2 );
-		
 		/* convert */
 		buf = dst->data;
 

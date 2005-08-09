@@ -37,11 +37,9 @@ FBCALL FBSTRING *fb_SPACE ( int len )
     	FB_STRLOCK();
 
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
-			fb_hStrAllocTemp( dst, len );
-
 			/* fill it */
 			memset( dst->data, 32, len );
 

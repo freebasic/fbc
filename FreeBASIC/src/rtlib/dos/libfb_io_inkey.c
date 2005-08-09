@@ -26,6 +26,7 @@
 
 #include "fb.h"
 
+#include <assert.h>
 #include <conio.h>
 
 /*:::::*/
@@ -37,8 +38,6 @@ FBSTRING *fb_ConsoleInkey( void )
 
 	if( _conio_kbhit( ) )
 	{
-		res = (FBSTRING *)fb_hStrAllocTmpDesc( );
-
 		chars = 1;
 		k = (unsigned int)getch( );
 		if( k == 0x00 || k == 0xE0 )
@@ -47,14 +46,13 @@ FBSTRING *fb_ConsoleInkey( void )
 			chars = 2;
 		}
 
-		fb_hStrAllocTemp( res, chars );
+        res = fb_hStrAllocTemp( NULL, chars );
+        assert( res!=NULL );
+        if( chars > 1 )
+            res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
 
-		if( chars > 1 )
-			res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
-
-		res->data[chars-1] = (unsigned char)k;
-		res->data[chars-0] = '\0';
-
+        res->data[chars-1] = (unsigned char)k;
+        res->data[chars-0] = '\0';
     }
 	else
 		res = &fb_strNullDesc;

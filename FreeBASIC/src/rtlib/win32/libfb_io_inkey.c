@@ -36,8 +36,6 @@ FBSTRING *fb_ConsoleInkey( void )
 
 	if( _kbhit( ) )
 	{
-		res = (FBSTRING *)fb_hStrAllocTmpDesc( );
-
 		chars = 1;
 		k = (unsigned int)_getch( );
 		if( k == 0x00 || k == 0xE0 )
@@ -46,7 +44,7 @@ FBSTRING *fb_ConsoleInkey( void )
 			chars = 2;
 		}
 
-		fb_hStrAllocTemp( res, chars );
+		res = fb_hStrAllocTemp( NULL, chars );
 
 		if( chars > 1 )
 			res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */

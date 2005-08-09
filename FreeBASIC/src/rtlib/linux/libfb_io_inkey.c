@@ -25,6 +25,7 @@
  *
  */
 
+#include <assert.h>
 #include "fb.h"
 #include "fb_linux.h"
 
@@ -196,10 +197,10 @@ FBSTRING *fb_ConsoleInkey( void )
 		if (ch & 0x100) {
 			chars = 2;
 			ch &= 0xFF;
-		}
-		res = (FBSTRING *)fb_hStrAllocTmpDesc();
+        }
 
-		fb_hStrAllocTemp(res, chars);
+        res = fb_hStrAllocTemp( NULL, chars );
+        assert( res!=NULL );
 
 		if( chars > 1 )
 			res->data[0] = FB_EXT_CHAR;		/* note: can't use '\0' here as in qb */

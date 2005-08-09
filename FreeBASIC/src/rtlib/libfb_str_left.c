@@ -47,11 +47,9 @@ FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 			len = chars;
 
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
-			fb_hStrAllocTemp( dst, len );
-
 			/* simple copy */
 			fb_hStrCopy( dst->data, src->data, len );
 		}

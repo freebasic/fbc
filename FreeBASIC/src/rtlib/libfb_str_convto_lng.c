@@ -41,10 +41,9 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 3 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( long long ) * 3 );
 
 		/* convert */
 #ifdef TARGET_WIN32
@@ -71,11 +70,9 @@ FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 3 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( long long ) * 3 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_ui64toa( num, dst->data, 10 );

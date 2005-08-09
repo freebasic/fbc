@@ -35,8 +35,10 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 	size_t       len;
 	char		*p = NULL;
 
-	if( src == NULL )
-		return &fb_strNullDesc;
+    if( src == NULL ) {
+        fb_hStrDelTemp( pattern );
+        return &fb_strNullDesc;
+    }
 
 	FB_STRLOCK();
 
@@ -67,11 +69,9 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 	if( len > 0 )
 	{
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
-			fb_hStrAllocTemp( dst, len );
-
 			/* simple copy */
 			fb_hStrCopy( dst->data, p, len );
 		}
@@ -83,6 +83,7 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+    fb_hStrDelTemp( pattern );
 
 	FB_STRUNLOCK();
 

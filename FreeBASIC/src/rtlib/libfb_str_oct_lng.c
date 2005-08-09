@@ -37,11 +37,9 @@ FBCALL FBSTRING *fb_OCT_l ( unsigned long long num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 4 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( long long ) * 4 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_i64toa( num, dst->data, 8 );

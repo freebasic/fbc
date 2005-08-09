@@ -63,18 +63,15 @@ FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 8 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( long long ) * 8 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_i64toa( num, dst->data, 2 );
 #else
 		hToBin( num, dst->data );
 #endif
-
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else

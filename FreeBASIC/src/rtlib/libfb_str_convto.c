@@ -41,18 +41,15 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( int ) * 3 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_itoa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%d", num );
 #endif
-
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
@@ -71,18 +68,15 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( int ) * 3 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( int ) * 3 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_ultoa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%u", num );
 #endif
-
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else

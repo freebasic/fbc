@@ -80,6 +80,7 @@ declare function	hDefFunction_cb	( ) as string
 declare function	hDefLine_cb		( ) as string
 declare function	hDefDate_cb		( ) as string
 declare function	hDefTime_cb		( ) as string
+declare function    hDefMultithread_cb( ) as string
 
 
 ''globals
@@ -93,22 +94,12 @@ data "__FB_VER_MAJOR__",		FB_VER_STR_MAJOR, 1, NULL
 data "__FB_VER_MINOR__",		FB_VER_STR_MINOR, 1, NULL
 data "__FB_VER_PATCH__",		FB_VER_STR_PATCH, 1, NULL
 data "__FB_SIGNATURE__",		FB_SIGN,		  0, NULL
+data "__FB_MT__",				"",				  1, @hDefMultithread_cb
 data "__FILE__",				"",				  0, @hDefFile_cb
 data "__FUNCTION__",			"",				  0, @hDefFunction_cb
 data "__LINE__",				"",				  1, @hDefLine_cb
 data "__DATE__",				"",				  0, @hDefDate_cb
 data "__TIME__",				"",				  0, @hDefTime_cb
-data "fbUseSystem",				"0",			  1, NULL
-data "fbSunday",				"1",			  1, NULL
-data "fbMonday",				"2",			  1, NULL
-data "fbTuesday",				"3",			  1, NULL
-data "fbWednesday",				"4",			  1, NULL
-data "fbThursday",				"5",			  1, NULL
-data "fbFriday",				"6",			  1, NULL
-data "fbSaturday",				"7",			  1, NULL
-data "fbFirstJan1",				"1",			  1, NULL
-data "fbFirstFourDays",			"2",			  1, NULL
-data "fbFirstFullWeek",			"3",			  1, NULL
 data ""
 
 
@@ -543,6 +534,14 @@ function hDefTime_cb( ) as string static
 	function = time$
 
 end function
+
+'':::::
+function hDefMultithread_cb( ) as string static
+
+	function = str$( env.clopt.multithreaded )
+
+end function
+
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add

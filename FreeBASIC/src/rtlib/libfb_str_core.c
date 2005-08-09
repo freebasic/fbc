@@ -47,33 +47,30 @@ static FB_LIST tmpdsList = { 0 };
 static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
 /*:::::*/
-FB_STR_TMPDESC *fb_hStrAllocTmpDesc( void )
+FBSTRING *fb_hStrAllocTmpDesc( void )
 {
 	FB_STR_TMPDESC *dsc;
-	char *addr;
 
 	if( (tmpdsList.fhead == NULL) && (tmpdsList.head == NULL) )
-		fb_hListInit( &tmpdsList, (void *)((char *)fb_tmpdsTB + offsetof( FB_STR_TMPDESC, elem )), 
+		fb_hListInit( &tmpdsList, fb_tmpdsTB,
 					  sizeof(FB_STR_TMPDESC), FB_STR_TMPDESCRIPTORS );
 
-	addr = (char *)fb_hListAllocElem( &tmpdsList );
-	if( addr == NULL )
+	dsc = (FB_STR_TMPDESC *)fb_hListAllocElem( &tmpdsList );
+	if( dsc == NULL )
 		return NULL;
 
-	dsc = (FB_STR_TMPDESC *)( addr - offsetof( FB_STR_TMPDESC, elem ) );
-	
 	/*  */
 	dsc->desc.data = NULL;
 	dsc->desc.len  = 0;
 	dsc->desc.size = 0;
 
-	return dsc;
+	return &dsc->desc;
 }
 
 /*:::::*/
 void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 {
-	fb_hListFreeElem( &tmpdsList, (FB_LISTELEM *)((char *)dsc + offsetof( FB_STR_TMPDESC, elem )) );
+	fb_hListFreeElem( &tmpdsList,  &dsc->elem );
 	
 	/*  */
 	dsc->desc.data = NULL;
@@ -84,12 +81,15 @@ void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 /*:::::*/
 int fb_hStrDelTempDesc( FBSTRING *str )
 {
-	/* is this really a temp descriptor? */
-	if( ((FB_STR_TMPDESC *)str < &fb_tmpdsTB[0]) ||
-	    ((FB_STR_TMPDESC *)str > &fb_tmpdsTB[FB_STR_TMPDESCRIPTORS-1]) )
+    FB_STR_TMPDESC *item =
+        (FB_STR_TMPDESC*) ( (char*)str - offsetof( FB_STR_TMPDESC, desc ) );
+
+    /* is this really a temp descriptor? */
+	if( (item < fb_tmpdsTB+0) ||
+	    (item > fb_tmpdsTB+FB_STR_TMPDESCRIPTORS-1) )
 		return -1;
 
-	fb_hStrFreeTmpDesc( (FB_STR_TMPDESC *)str );
+	fb_hStrFreeTmpDesc( item );
 	return 0;
 }
 
@@ -98,7 +98,7 @@ int fb_hStrDelTempDesc( FBSTRING *str )
  **********/
 
 /*:::::*/
-void fb_hStrRealloc( FBSTRING *str, int size, int preserve )
+FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 {
 	int newsize;
 
@@ -125,33 +125,54 @@ void fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 		}
 		else
 		{
-			str->data = (char *)realloc( str->data, newsize + 1 );
+            char *pszOld = str->data;
+			str->data = (char *)realloc( pszOld, newsize + 1 );
 			/* failed? try the original request */
 			if( str->data == NULL )
 			{
-				str->data = (char *)realloc( str->data, size + 1 );
+				str->data = (char *)realloc( pszOld, size + 1 );
 				newsize = size;
-			}
+                if( str->data == NULL ) {
+                    /* Don't forget to restore the old memory block.
+                     *
+                     * Comment for realloc() from the posix spec:
+                     * If the space cannot be allocated, the object shall
+                     * remain unchanged. */
+                    str->data = pszOld;
+                    return NULL;
+                }
+            }
 		}
 
 		if( str->data == NULL )
-		{
-			str->size = str->len = 0;
-			return;
+        {
+            fb_hStrSetLength( str, str->size = 0 );
+			return NULL;
 		}
 
 		str->size = newsize;
 	}
 
-	str->len = size;
+    fb_hStrSetLength( str, size );
+    return str;
 }
 
 /*:::::*/
-void fb_hStrAllocTemp( FBSTRING *str, int size )
+FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
 {
-	fb_hStrRealloc( str, size, FB_FALSE );
-
-	str->len |= FB_TEMPSTRBIT;
+    int try_alloc = str==NULL;
+    if( try_alloc ) {
+        str = fb_hStrAllocTmpDesc( );
+        if( str==NULL )
+            return NULL;
+    }
+    if( fb_hStrRealloc( str, size, FB_FALSE )==NULL ) {
+        if( try_alloc ) {
+            fb_hStrDelTempDesc( str );
+        }
+        return NULL;
+    }
+    return str;
 }
 
 /*:::::*/

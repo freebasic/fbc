@@ -39,11 +39,9 @@ FBCALL FBSTRING *fb_Time ( void )
 	FB_STRLOCK();
 		
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, 2+1+2+1+2 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, 2+1+2+1+2 );
-
         /* guard by global lock because time/localtime might not be thread-safe */
         FB_LOCK();
   		time( &rawtime );

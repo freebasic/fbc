@@ -39,14 +39,11 @@ FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 		FB_STRLOCK();
 		
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        dst = fb_hStrAllocTemp( NULL, cnt );
 		if( dst != NULL )
 		{
-			fb_hStrAllocTemp( dst, cnt );
-
 			/* fill it */
 			memset( dst->data, fchar, cnt );
-
 			/* null char */
 			dst->data[cnt] = '\0';
 		}

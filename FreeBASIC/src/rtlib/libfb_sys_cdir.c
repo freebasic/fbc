@@ -44,11 +44,9 @@ FBCALL FBSTRING *fb_CurDir ( void )
 	{
 		FB_STRLOCK();
 		
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
-			fb_hStrAllocTemp( dst, len );
-
 			memcpy( dst->data, tmp, len + 1 );
 		}
 		else

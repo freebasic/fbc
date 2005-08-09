@@ -51,11 +51,9 @@ FBCALL FBSTRING *fb_LTRIM ( FBSTRING *src )
 	if( len > 0 )
 	{
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
-			fb_hStrAllocTemp( dst, len );
-
 			/* simple copy */
 			fb_hStrCopy( dst->data, p, len );
 		}

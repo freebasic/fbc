@@ -112,13 +112,11 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	/* store filename if found */
 	if( name )
 	{
-		res = (FBSTRING *)fb_hStrAllocTmpDesc( );
+        len = strlen( name );
+        res = fb_hStrAllocTemp( NULL, len );
 		if( res )
 		{
-			len = strlen( name );
-			fb_hStrAllocTemp( res, len );
 			fb_hStrCopy( res->data, name, len );
-
 		}
 		else
 			res = &fb_strNullDesc;

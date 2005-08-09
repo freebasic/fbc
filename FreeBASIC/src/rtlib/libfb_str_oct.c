@@ -37,18 +37,15 @@ static FBSTRING *hOCT ( unsigned int num, int len )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, len * 4 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, len * 4 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_itoa( num, dst->data, 8 );
 #else
 		sprintf( dst->data, "%o", num );
 #endif
-
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else

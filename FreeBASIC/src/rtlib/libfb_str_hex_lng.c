@@ -41,11 +41,9 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 2 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, sizeof( long long ) * 2 );
-		
 		/* convert */
 		buf = dst->data;
 		

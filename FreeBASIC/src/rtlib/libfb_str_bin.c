@@ -64,18 +64,15 @@ static FBSTRING *hBIN ( unsigned int num, int len )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, len * 8 );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, len * 8 );
-
 		/* convert */
 #ifdef TARGET_WIN32
 		_itoa( num, dst->data, 2 );
 #else
 		hToBin( num, dst->data, len );
 #endif
-
         fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else

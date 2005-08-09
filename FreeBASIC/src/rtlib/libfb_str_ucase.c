@@ -46,15 +46,13 @@ FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 		len = FB_STRSIZE( src );
 
 		/* alloc temp string */
-		dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+		dst = fb_hStrAllocTemp( NULL, len );
 	}
 	else
 		dst = NULL;
 
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, len );
-
 		/* to lower */
 		s = src->data;
 		d = dst->data;

@@ -52,12 +52,10 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
         		len = src_len - start;
 
 			/* alloc temp string */
-			dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+            dst = fb_hStrAllocTemp( NULL, len );
 			if( dst != NULL )
             {
-				fb_hStrAllocTemp( dst, len );
-
-				memcpy( dst->data, src->data + start, len );
+				FB_MEMCPY( dst->data, src->data + start, len );
 				/* null term */
 				dst->data[len] = '\0';
             }

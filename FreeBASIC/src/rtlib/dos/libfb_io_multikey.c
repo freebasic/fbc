@@ -28,6 +28,7 @@
 #include "fb_scancodes.h"
 
 #include <stdlib.h>
+#include <assert.h>
 #include <dpmi.h>
 #include <go32.h>
 #include <pc.h>
@@ -252,8 +253,8 @@ FBSTRING *fb_ConsoleInkey2(void)
 	if ((key = get_key())) {
 		if (key > 0xFF) {
 			key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
-			res = (FBSTRING *)fb_hStrAllocTmpDesc();
-			fb_hStrAllocTemp(res, 2);
+            res = fb_hStrAllocTemp( NULL, 2 );
+            assert( res!=NULL );
 			res->data[0] = FB_EXT_CHAR;
 			res->data[1] = code[key];
 			res->data[2] = '\0';

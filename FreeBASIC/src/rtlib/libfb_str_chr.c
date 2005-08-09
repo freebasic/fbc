@@ -44,18 +44,15 @@ FBSTRING *fb_CHR ( int args, ... )
 	FB_STRLOCK();
 
 	/* alloc temp string */
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
+    dst = fb_hStrAllocTemp( NULL, args );
 	if( dst != NULL )
 	{
-		fb_hStrAllocTemp( dst, args );
-
 		/* convert */
 		for( i = 0; i < args; i++ )
 		{
 			num = va_arg( ap, unsigned int );
 			dst->data[i] = (unsigned char)num;
 		}
-
 		dst->data[args] = '\0';
 	}
 	else

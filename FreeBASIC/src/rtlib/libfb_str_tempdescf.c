@@ -36,7 +36,7 @@ FBCALL FBSTRING *fb_StrAllocTempDescF( char *str, int str_size )
 	FB_STRLOCK();
 
  	/* alloc a temporary descriptor */
- 	dsc = (FBSTRING *)fb_hStrAllocTmpDesc( );
+ 	dsc = fb_hStrAllocTmpDesc( );
     if( dsc == NULL )
     {
     	FB_STRUNLOCK();

@@ -50,44 +50,37 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 
 	FB_STRLOCK();
 
-	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
-    if( dst != NULL ) {
-        /* resize the string */
-        fb_hStrAllocTemp( dst, bytes );
-        if( dst->data != NULL )
-        {
-            size_t read_count = 0;
-            if( FB_HANDLE_IS_SCREEN(handle) ) {
-                dst->data[0] = 0;
-                while( read_count!=bytes ) {
-                    len = bytes - read_count;
-                    res = fb_FileGetDataEx( handle,
-                                            0,
-                                            dst->data + read_count,
-                                            &len, TRUE );
-                    if( res!=FB_RTERROR_OK ) {
-                        break;
-                    }
-                    read_count += len;
-                    dst->data[read_count] = 0;
-                }
-            } else {
-                len = bytes;
+    dst = fb_hStrAllocTemp( NULL, bytes );
+    if( dst!=NULL ) {
+        size_t read_count = 0;
+        if( FB_HANDLE_IS_SCREEN(handle) ) {
+            dst->data[0] = 0;
+            while( read_count!=bytes ) {
+                len = bytes - read_count;
                 res = fb_FileGetDataEx( handle,
                                         0,
-                                        dst->data,
+                                        dst->data + read_count,
                                         &len, TRUE );
-                if( res==FB_RTERROR_OK ) {
-                    read_count += len;
+                if( res!=FB_RTERROR_OK ) {
+                    break;
                 }
-            }
-            if( read_count != bytes )
-            {
-                dst->data[read_count] = '\0';
-                fb_hStrSetLength( dst, read_count );
+                read_count += len;
+                dst->data[read_count] = 0;
             }
         } else {
-            res = FB_RTERROR_OUTOFMEM;
+            len = bytes;
+            res = fb_FileGetDataEx( handle,
+                                    0,
+                                    dst->data,
+                                    &len, TRUE );
+            if( res==FB_RTERROR_OK ) {
+                read_count += len;
+            }
+        }
+        if( read_count != bytes )
+        {
+            dst->data[read_count] = '\0';
+            fb_hStrSetLength( dst, read_count );
         }
     } else {
         res = FB_RTERROR_OUTOFMEM;
