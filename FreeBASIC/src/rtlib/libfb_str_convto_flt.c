@@ -43,7 +43,8 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 	/* alloc temp string */
 	dst = (FBSTRING *)fb_hStrAllocTmpDesc( );
 	if( dst != NULL )
-	{
+    {
+        size_t tmp_len;
 		fb_hStrAllocTemp( dst, 8+8 );
 
 		/* convert */
@@ -53,18 +54,18 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 		sprintf( dst->data, "%.8g", num );
 #endif
 
-		dst->len = strlen( dst->data );				/* fake len */
+		tmp_len = strlen( dst->data );				/* fake len */
 
 		/* skip the dot at end if any */
-		if( dst->len > 0 )
+		if( tmp_len > 0 )
 		{
-			if( dst->data[dst->len-1] == '.' )
+			if( dst->data[tmp_len-1] == '.' )
 			{
-				dst->data[dst->len-1] = '\0';
-				--dst->len;
+				dst->data[tmp_len-1] = '\0';
+				--tmp_len;
 			}
-		}
-		dst->len |= FB_TEMPSTRBIT;
+        }
+        fb_hStrSetLength( dst, tmp_len );
 	}
 	else
 		dst = &fb_strNullDesc;

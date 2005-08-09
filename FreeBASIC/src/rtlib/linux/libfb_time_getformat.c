@@ -28,14 +28,101 @@
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
+#include <langinfo.h>
 
 
 /*:::::*/
 int fb_hDateGetFormat( char *buffer, size_t len )
 {
+    char *pszDateFormat = nl_langinfo( D_FMT );
+    int set_default = TRUE;
+
     assert(buffer!=NULL);
-    if( len < 11 )
-        return FALSE;
-    memcpy(buffer, "MM/dd/yyyy", 11);
+    if( strcmp( pszDateFormat, "%D" ) == 0 ) {
+        /* set default */
+    } else if( strcmp( pszDateFormat, "%F" ) == 0 ) {
+        if( len < 11 )
+            return FALSE;
+        strcpy(buffer, "yyyy-MM-dd");
+        set_default = FALSE;
+    } else {
+        int do_esc = FALSE, do_fmt = FALSE;
+        char *pszOutput = buffer;
+        char achAddBuffer[2] = { 0 };
+        const char *pszAdd;
+        size_t remaining = len - 1, add_len = 0;
+        const char *pszStart = pszDateFormat;
+        while ( *pszStart!=0 ) {
+            char ch = *pszStart;
+            if( do_esc ) {
+                do_esc = FALSE;
+                achAddBuffer[0] = ch;
+                pszAdd = achAddBuffer;
+                add_len = 1;
+            } else if ( do_fmt ) {
+                int succeeded = TRUE;
+                do_fmt = FALSE;
+                switch (ch) {
+                case 'd':
+                case 'e':
+                    pszAdd = "dd";
+                    add_len = 2;
+                    break;
+                case 'm':
+                    pszAdd = "MM";
+                    add_len = 2;
+                    break;
+                case 'y':
+                    pszAdd = "yy";
+                    add_len = 2;
+                    break;
+                case 'Y':
+                    pszAdd = "yyyy";
+                    add_len = 4;
+                    break;
+                case '%':
+                    pszAdd = "%";
+                    add_len = 1;
+                    break;
+                default:
+                    /* Unsupported format */
+                    succeeded = FALSE;
+                    break;
+                }
+                if( !succeeded )
+                    break;
+            } else {
+                switch (ch) {
+                case '%':
+                    do_fmt = TRUE;
+                    break;
+                case '\\':
+                    do_esc = TRUE;
+                    break;
+                default:
+                    achAddBuffer[0] = ch;
+                    pszAdd = achAddBuffer;
+                    add_len = 1;
+                    break;
+                }
+            }
+            if( add_len!=0 ) {
+                if( remaining < add_len ) {
+                    return FALSE;
+                }
+                strcpy( pszOutput, pszAdd );
+                pszOutput += add_len;
+                remaining -= add_len;
+                add_len = 0;
+            }
+            ++pszStart;
+        }
+        set_default = *pszStart!=0;
+    }
+    if( set_default ) {
+        if( len < 11 )
+            return FALSE;
+        strcpy(buffer, "MM/dd/yyyy");
+    }
     return TRUE;
 }

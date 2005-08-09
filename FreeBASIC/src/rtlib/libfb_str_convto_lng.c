@@ -53,8 +53,7 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 		sprintf( dst->data, "%lld", num );
 #endif
 
-		dst->len = strlen( dst->data );				/* fake len */
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
 		dst = &fb_strNullDesc;
@@ -84,8 +83,7 @@ FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 		sprintf( dst->data, "%llu", num );
 #endif
 
-		dst->len = strlen( dst->data );				/* fake len */
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
 		dst = &fb_strNullDesc;

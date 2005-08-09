@@ -70,8 +70,7 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 		/* add null-term */
 		*buf = '\0';
 		
-		dst->len = buf - dst->data;
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, buf - dst->data );
 	}
 	else
 		dst = &fb_strNullDesc;

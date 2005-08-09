@@ -26,6 +26,7 @@
 
 #include "fb.h"
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
@@ -54,6 +55,26 @@ const char *fb_hDateGetWeekDay( int weekday, int short_names, int localized )
 {
     if( weekday < 1 || weekday > 7 )
         return NULL;
+
+    if( localized ) {
+        static char *pszName = NULL;
+        LCTYPE lctype;
+
+        if( pszName!=NULL ) {
+            free( pszName );
+            pszName = NULL;
+        }
+
+        if( short_names ) {
+            lctype = (LCTYPE) (LOCALE_SABBREVDAYNAME1 + weekday - 1);
+        } else {
+            lctype = (LCTYPE) (LOCALE_SDAYNAME1 + weekday - 1);
+        }
+
+        return pszName = fb_hGetLocaleInfo( LOCALE_USER_DEFAULT, lctype,
+                                            NULL, 0 );
+    }
+
     if( short_names )
         return pszWeekDayNamesShort[weekday-1];
     return pszWeekDayNamesLong[weekday-1];

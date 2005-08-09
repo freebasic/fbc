@@ -40,10 +40,13 @@ FBCALL FBSTRING *fb_MonthName( int month, int abbreviation )
 
     fb_ErrorSetNum( FB_RTERROR_OK );
 
+    FB_LOCK();
+
     pszName = fb_hDateGetMonth( month, abbreviation, TRUE );
     if( pszName==NULL ) {
         pszName = fb_hDateGetMonth( month, abbreviation, FALSE );
         if( pszName==NULL ) {
+            FB_UNLOCK();
             fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
             return &fb_strNullDesc;
         }
@@ -60,6 +63,8 @@ FBCALL FBSTRING *fb_MonthName( int month, int abbreviation )
         res = &fb_strNullDesc;
     }
     FB_STRUNLOCK();
+
+    FB_UNLOCK();
 
     return res;
 }

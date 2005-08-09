@@ -49,10 +49,13 @@ FBCALL FBSTRING *fb_WeekDayName( int weekday, int abbreviation, int first_day_of
     if( weekday > 7 )
         weekday -= 7;
 
+    FB_LOCK();
+
     pszName = fb_hDateGetWeekDay( weekday, abbreviation, TRUE );
     if( pszName==NULL ) {
         pszName = fb_hDateGetWeekDay( weekday, abbreviation, FALSE );
         if( pszName==NULL ) {
+            FB_UNLOCK();
             fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
             return &fb_strNullDesc;
         }
@@ -69,6 +72,8 @@ FBCALL FBSTRING *fb_WeekDayName( int weekday, int abbreviation, int first_day_of
         res = &fb_strNullDesc;
     }
     FB_STRUNLOCK();
+
+    FB_UNLOCK();
 
     return res;
 }

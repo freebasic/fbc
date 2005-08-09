@@ -89,9 +89,13 @@ static int fb_hDateOrder( int *pOrderDay, int *pOrderMonth, int *pOrderYear )
     int tmp, got_sep;
     char short_format[11];
 
+    FB_LOCK();
+
     tmp = fb_hDateGetFormat( short_format, sizeof(short_format) );
-    if( !tmp )
+    if( !tmp ) {
+        FB_UNLOCK();
         return FALSE;
+    }
 
     got_sep = TRUE;
     for( tmp=0; short_format[tmp]; ++tmp ) {
@@ -119,6 +123,8 @@ static int fb_hDateOrder( int *pOrderDay, int *pOrderMonth, int *pOrderYear )
             break;
         }
     }
+
+    FB_UNLOCK();
 
     if( order_day==order_month || order_day==order_year || order_month==order_year )
         return FALSE;

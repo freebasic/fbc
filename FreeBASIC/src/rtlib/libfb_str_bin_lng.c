@@ -75,8 +75,7 @@ FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 		hToBin( num, dst->data );
 #endif
 
-		dst->len = strlen( dst->data );				/* fake len */
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
 		dst = &fb_strNullDesc;

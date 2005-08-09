@@ -219,6 +219,15 @@ extern "C" {
 #define FB_NEWLINE "\n"
 #endif
 
+#ifndef FB_LL_FMTMOD
+    /** LONG LONG format modifier.
+     *
+     * This is the default "long long" format modifier for use with the
+     * *printf functions.
+     */
+#define FB_LL_FMTMOD "ll"
+#endif
+
 /**************************************************************************************************
  * helpers
  **************************************************************************************************/
@@ -362,6 +371,14 @@ typedef struct _FB_STR_TMPDESC {
  * v1ctor: please clarify.
  */
 extern    FBSTRING     fb_strNullDesc;
+
+/** Sets the length of a string (without reallocation).
+ *
+ * This function preserves any flags set for this string descriptor.
+ */
+static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
+    str->len = size | (str->len & FB_TEMPSTRBIT);
+}
 
 FB_STR_TMPDESC     *fb_hStrAllocTmpDesc ( void );
        int          fb_hStrDelTempDesc  ( FBSTRING *str );

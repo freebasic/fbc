@@ -67,8 +67,7 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 		/* add null-term */
 		*buf = '\0';
 
-		dst->len = buf - dst->data;
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, buf - dst->data );
 	}
 	else
 		dst = &fb_strNullDesc;

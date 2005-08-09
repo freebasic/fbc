@@ -30,19 +30,11 @@
 /*:::::*/
 FBCALL void fb_WriteLongint ( int fnum, long long val, int mask )
 {
-#ifdef TARGET_WIN32
-    FB_WRITENUM( fnum, val, mask, "%I64d" );
-#else
-    FB_WRITENUM( fnum, val, mask, "%lld" );
-#endif
+    FB_WRITENUM( fnum, val, mask, "%" FB_LL_FMTMOD "d" );
 }
 
 /*:::::*/
 FBCALL void fb_WriteULongint ( int fnum, unsigned long long val, int mask )
 {
-#ifdef TARGET_WIN32
-    FB_WRITENUM( fnum, val, mask, "%I64u" );
-#else
-    FB_WRITENUM( fnum, val, mask, "%llu" );
-#endif
+    FB_WRITENUM( fnum, val, mask, "%" FB_LL_FMTMOD "u" );
 }

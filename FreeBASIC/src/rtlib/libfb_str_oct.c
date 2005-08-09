@@ -49,8 +49,7 @@ static FBSTRING *hOCT ( unsigned int num, int len )
 		sprintf( dst->data, "%o", num );
 #endif
 
-		dst->len = strlen( dst->data );				/* fake len */
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
 		dst = &fb_strNullDesc;

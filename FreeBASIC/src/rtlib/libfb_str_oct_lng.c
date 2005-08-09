@@ -49,8 +49,7 @@ FBCALL FBSTRING *fb_OCT_l ( unsigned long long num )
 		sprintf( dst->data, "%llo", num );
 #endif
 
-		dst->len = strlen( dst->data );				/* fake len */
-		dst->len |= FB_TEMPSTRBIT;
+        fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
 	else
 		dst = &fb_strNullDesc;

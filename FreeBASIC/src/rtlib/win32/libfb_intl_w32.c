@@ -18,7 +18,7 @@
  */
 
 /*
- * time_getweekdayname.c -- get weekday name
+ * intl_w32.c -- Core Win32 i18n functions
  *
  * chng: aug/2005 written [mjs]
  *
@@ -26,45 +26,33 @@
 
 #include "fb.h"
 #include <stddef.h>
-#include <string.h>
-#include <assert.h>
-#include <langinfo.h>
+#include <stdlib.h>
 
-static const char *pszWeekDayNamesLong[7] = {
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-};
-
-static const char *pszWeekDayNamesShort[7] = {
-    "Sun",
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat"
-};
-
-/*:::::*/
-const char *fb_hDateGetWeekDay( int weekday, int short_names, int localized )
+char *fb_hGetLocaleInfo( LCID Locale,
+                         LCTYPE LCType,
+                         char *pszBuffer,
+                         size_t uiSize )
 {
-    if( weekday < 1 || weekday > 7 )
-        return NULL;
-    if( localized ) {
-        nl_item index;
-        if( short_names ) {
-            index = (nl_item) (ABDAY_1 + weekday - 1);
-        } else {
-            index = (nl_item) (DAY_1 + weekday - 1);
+    if( uiSize==0 ) {
+        uiSize = 64;
+        pszBuffer = NULL;
+        for(;;) {
+            pszBuffer = (char*) realloc( pszBuffer, uiSize <<= 1 );
+            if( pszBuffer==NULL )
+                break;
+            if( GetLocaleInfo( Locale, LCType, pszBuffer, uiSize - 1 )!=0 ) {
+                return pszBuffer;
+            }
+            if( GetLastError( ) != ERROR_INSUFFICIENT_BUFFER ) {
+                free( pszBuffer );
+                pszBuffer = NULL;
+                break;
+            }
         }
-        return nl_langinfo( index );
+    } else {
+        if( GetLocaleInfo( Locale, LCType, pszBuffer, uiSize )!=0 )
+            return pszBuffer;
     }
-    if( short_names )
-        return pszWeekDayNamesShort[weekday-1];
-    return pszWeekDayNamesLong[weekday-1];
+    return NULL;
 }
+

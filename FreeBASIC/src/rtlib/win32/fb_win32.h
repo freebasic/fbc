@@ -84,4 +84,9 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
     ((srConsoleWindow.Left==srConsoleWindow.Right) \
     || (srConsoleWindow.Top==srConsoleWindow.Bottom))
 
+       char *fb_hGetLocaleInfo          ( LCID Locale, LCTYPE LCType,
+                                          char *pszBuffer, size_t uiSize );
+
+#define FB_LL_FMTMOD "I64"
+
 #endif

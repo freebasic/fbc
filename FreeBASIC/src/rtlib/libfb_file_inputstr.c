@@ -84,7 +84,7 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
             if( read_count != bytes )
             {
                 dst->data[read_count] = '\0';
-                dst->len = read_count | FB_TEMPSTRBIT;   /* mark as temp */
+                fb_hStrSetLength( dst, read_count );
             }
         } else {
             res = FB_RTERROR_OUTOFMEM;

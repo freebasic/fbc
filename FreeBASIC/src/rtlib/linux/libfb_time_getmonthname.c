@@ -28,6 +28,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <assert.h>
+#include <langinfo.h>
 
 static const char *pszMonthNamesLong[12] = {
     "January",
@@ -64,6 +65,15 @@ const char *fb_hDateGetMonth( int month, int short_names, int localized )
 {
     if( month < 1 || month > 12 )
         return NULL;
+    if( localized ) {
+        nl_item index;
+        if( short_names ) {
+            index = (nl_item) (ABMON_1 + month - 1);
+        } else {
+            index = (nl_item) (MON_1 + month - 1);
+        }
+        return nl_langinfo( index );
+    }
     if( short_names )
         return pszMonthNamesShort[month-1];
     return pszMonthNamesLong[month-1];
