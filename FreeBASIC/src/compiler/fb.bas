@@ -358,9 +358,15 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_LIB) = "\\lib\\win32"
 
 	case FB_COMPTARGET_CYGWIN
+#ifdef TARGET_LINUX
 		pathTB(FB_PATH_BIN) = "/bin/cygwin/"
 		pathTB(FB_PATH_INC) = "/inc/"
 		pathTB(FB_PATH_LIB) = "/lib/cygwin"
+#else
+		pathTB(FB_PATH_BIN) = "\\bin\\cygwin\\"
+		pathTB(FB_PATH_INC) = "\\inc\\"
+		pathTB(FB_PATH_LIB) = "\\lib\\cygwin"
+#endif
 
 	case FB_COMPTARGET_DOS
 		pathTB(FB_PATH_BIN)	= "\\bin\\dos\\"

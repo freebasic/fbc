@@ -77,6 +77,8 @@ const INVALID		= -1
 
 #ifdef TARGET_WIN32
 #define FB_TARGET				"win32"
+#elseif defined(TARGET_CYGWIN)
+#define FB_TARGET				"cygwin"
 #elseif defined(TARGET_LINUX)
 #define FB_TARGET				"linux"
 #elseif defined(TARGET_DOS)
@@ -87,6 +89,8 @@ const INVALID		= -1
 
 #ifdef __FB_WIN32__
 #define FB_HOST					"win32"
+#elseif defined(__FB_CYGWIN__)
+#define FB_HOST					"cygwin"
 #elseif defined(__FB_LINUX__)
 #define FB_HOST					"linux"
 #elseif defined(__FB_DOS__)

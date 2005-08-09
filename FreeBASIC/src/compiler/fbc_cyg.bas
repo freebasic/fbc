@@ -153,12 +153,11 @@ function _linkFiles as integer
 
 	'' crt entry
 	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += " \"" + libdir + "\\dllcrt2.o\" "
+		ldcline += " \"" + libdir + "\\crt0.o\" "
 	else
-		ldcline += " \"" + libdir + "\\crt2.o\" "
+        '' FIXME
+		ldcline += " \"" + libdir + "\\crt0.o\" "
 	end if
-
-	ldcline += "\"" + libdir + "\\crtbegin.o\" "
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
@@ -195,8 +194,6 @@ function _linkFiles as integer
     ldcline += "-) "
 
 	'' crt end
-	ldcline += "\"" + libdir + "/crtend.o\""
-
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
         ldcline += " --output-def \"" + hStripFilename( fbc.outname ) + dllname + ".def\""

@@ -86,6 +86,7 @@ end type
 declare function fbcInit_dos			( ) as integer
 declare function fbcInit_linux			( ) as integer
 declare function fbcInit_win32			( ) as integer
+declare function fbcInit_cygwin			( ) as integer
 declare function fbcInit_xbox			( ) as integer
 
 ''

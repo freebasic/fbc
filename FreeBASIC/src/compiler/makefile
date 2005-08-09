@@ -100,8 +100,8 @@ ifeq ($(TARGET),win32)
     EXE := .exe
     FBLNKFLAGS += -d TARGET_WIN32 -t 2048 -l winspool
     FBCMPFLAGS += -d TARGET_WIN32
-    FBCMPFLAGS += -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX
-    osdepsrcs := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas
+    FBCMPFLAGS += -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX -d CROSSCOMP_CYGWIN
+    osdepsrcs := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas fbc_cyg.bas
 endif
 
 ifeq ($(TARGET),cygwin)

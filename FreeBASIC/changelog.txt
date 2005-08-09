@@ -30,7 +30,6 @@ Version 0.15 Beta:
 - DATEADD, DATEPART, DATEDIFF (mjs)
 - compile-time check for math overflow in literal numbers when assigned or passed as parameter (v1c)
 - FORMAT (mjs)
-- Cygwin support (without DirectX) (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
