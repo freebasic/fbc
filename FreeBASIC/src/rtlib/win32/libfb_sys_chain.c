@@ -29,6 +29,10 @@
 #include <process.h>
 #include "fb.h"
 
+#ifdef TARGET_CYGWIN
+#define _spawnl spawnl
+#endif
+
 /*:::::*/
 FBCALL int fb_Chain ( FBSTRING *program )
 {

@@ -29,6 +29,12 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+#ifdef TARGET_CYGWIN
+#include <stdio.h>
+#define _get_osfhandle get_osfhandle
+#define _fileno fileno
+#endif
+
 /*:::::*/
 int fb_hFileLock( FILE *f, unsigned int inipos, unsigned int size )
 {

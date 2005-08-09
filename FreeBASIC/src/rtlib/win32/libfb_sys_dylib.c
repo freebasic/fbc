@@ -27,6 +27,10 @@
 #include <stdio.h>
 #include "fb.h"
 
+#ifdef TARGET_CYGWIN
+#define _snprintf snprintf
+#endif
+
 /*:::::*/
 FBCALL void *fb_DylibLoad( FBSTRING *library )
 {

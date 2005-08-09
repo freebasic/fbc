@@ -329,6 +329,9 @@ function fbGetNaming ( ) as integer
 		    case FB_COMPTARGET_WIN32
 		    	target = FB_COMPNAMING_WIN32
 
+		    case FB_COMPTARGET_CYGWIN
+		    	target = FB_COMPNAMING_CYGWIN
+
 			case FB_COMPTARGET_LINUX
 		    	target = FB_COMPNAMING_LINUX
 
@@ -353,6 +356,11 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
 		pathTB(FB_PATH_LIB) = "\\lib\\win32"
+
+	case FB_COMPTARGET_CYGWIN
+		pathTB(FB_PATH_BIN) = "/bin/cygwin/"
+		pathTB(FB_PATH_INC) = "/inc/"
+		pathTB(FB_PATH_LIB) = "/lib/cygwin"
 
 	case FB_COMPTARGET_DOS
 		pathTB(FB_PATH_BIN)	= "\\bin\\dos\\"
@@ -536,6 +544,12 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "mingw32" )
 		symbAddLib( "moldname" )
 		symbAddLib( "msvcrt" )
+		symbAddLib( "kernel32" )
+		symbAddLib( "advapi32" )
+
+	case FB_COMPTARGET_CYGWIN
+		symbAddLib( "gcc" )
+		symbAddLib( "cygwin" )
 		symbAddLib( "kernel32" )
 		symbAddLib( "advapi32" )
 

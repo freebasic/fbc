@@ -736,7 +736,7 @@ function hCreateProcAlias( byval symbol as string, _
 
 
 	select case fbGetNaming()
-    case FB_COMPNAMING_WIN32
+    case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
         dim addat as integer
 
         if( env.clopt.nounderprefix ) then
@@ -809,7 +809,7 @@ function hCreateDataAlias( byval symbol as string, _
 						   byval isimport as integer ) as string static
 
 	select case fbGetNaming()
-    case FB_COMPNAMING_WIN32
+    case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
         if( isimport ) then
             function = "__imp__" + symbol
         else
@@ -832,7 +832,7 @@ end function
 function hStripUnderscore( byval symbol as string ) as string static
 
 	select case fbGetNaming()
-    case FB_COMPNAMING_WIN32
+    case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
 	    if( not env.clopt.nostdcall ) then
 			function = mid$( symbol, 2 )
 		else

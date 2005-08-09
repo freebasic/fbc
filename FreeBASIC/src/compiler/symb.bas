@@ -385,6 +385,8 @@ sub symbInitDefines static
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
 		def = "__FB_WIN32__"
+	case FB_COMPTARGET_CYGWIN
+		def = "__FB_CYGWIN__"
 	case FB_COMPTARGET_LINUX
 		def = "__FB_LINUX__"
 	case FB_COMPTARGET_DOS

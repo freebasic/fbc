@@ -14,7 +14,11 @@ ifeq ($(OS),Windows_NT)
     HOST := win32
 else
     ifdef WINDIR
-        HOST := win32
+        ifeq ($(OSTYPE),cygwin)
+            HOST := cygwin
+        else
+            HOST := win32
+        endif
     else
         ifdef windir
             HOST := win32
@@ -100,6 +104,15 @@ ifeq ($(TARGET),win32)
     osdepsrcs := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas
 endif
 
+ifeq ($(TARGET),cygwin)
+    OSDEPPATH := win32
+    OSOBJPATH := cygwin
+    EXE := .exe
+    FBLNKFLAGS += -d TARGET_CYGWIN
+    FBCMPFLAGS += -d TARGET_CYGWIN
+    osdepsrcs := fbc_cyg.bas
+endif
+
 ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
     EXE := .exe
@@ -111,6 +124,10 @@ endif
 ifneq ($(HOST),$(TARGET))
     FBCMPFLAGS += -target $(TARGET)
     FBLNKFLAGS += -target $(TARGET)
+endif
+
+ifndef OSOBJPATH
+    OSOBJPATH = $(OSDEPPATH)
 endif
 
 ifndef OSDEPPATH
@@ -136,7 +153,9 @@ sources += parser1.bas parser2.bas parser3.bas parser4.bas parser5.bas parser6.b
 sources += reg.bas rtl.bas symb.bas
 sources += $(osdepsrcs)
 
-objects := $(patsubst %.bas,obj/$(OSDEPPATH)/%.o,$(sources))
+objpath = obj/$(OSOBJPATH)
+
+objects := $(patsubst %.bas,$(objpath)/%.o,$(sources))
 headers := $(wildcard inc/*.bi)
 
 
@@ -146,7 +165,7 @@ FBCMPFLAGS += -m $(subst .bas,,$(main))
 
 all : checkhost checktarget $(compiler)
 
-obj/$(OSDEPPATH)/%.o : %.bas $(headers)
+$(objpath)/%.o : %.bas $(headers)
 	$(FBC) $(FBCMPFLAGS) $< -o $@
 
 $(compiler) : $(objects)

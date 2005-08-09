@@ -27,13 +27,15 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+#ifdef TARGET_WIN32
 static int inited = -1;
 static int last_x = 0, last_y = 0, last_z = 0, last_buttons = 0;
-
+#endif
 
 /*:::::*/
 int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 {
+#ifdef TARGET_WIN32
 	INPUT_RECORD ir;
 	DWORD dwRead, dwMode;
 	
@@ -68,7 +70,12 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	*y = last_y;
 	*z = last_z;
 	*buttons = last_buttons;
-	
+#else
+    if( !fb_ConsoleMouseAvailable() ) {
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
+    fb_ConsoleGetMouseData( x, y, z, buttons );
+#endif
 	return FB_RTERROR_OK;
 }
 

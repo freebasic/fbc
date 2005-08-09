@@ -121,7 +121,7 @@ extern "C" {
 #define NULL     0
 #endif
 
-#ifndef TARGET_WIN32
+#if !(defined(TARGET_WIN32) || defined(TARGET_CYGWIN))
     /** Maximum path length for Non-Win32 targets.
      *
      * For Win32 targets, this value will be set automatically by the
@@ -158,7 +158,7 @@ extern "C" {
 #define FB_IS_EXT_KEY(k) \
     ((int) (((((unsigned) (k)) & 0xFF)==FB_EXT_CHAR) && (((k) & 0xFF00)!=0)))
 
-#ifdef TARGET_WIN32
+#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
 #include "win32/fb_win32.h"
 #elif defined(TARGET_LINUX)
 #include "linux/fb_linux.h"
@@ -649,10 +649,6 @@ typedef struct _FB_PRINTUSGCTX {
 
 extern FB_PRINTUSGCTX fb_printusgctx;
 struct _FB_FILE;
-
-#ifdef TARGET_WIN32
-       void         fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows );
-#endif
 
        int          fb_ConsoleWidth     ( int cols, int rows );
        void         fb_ConsoleClear     ( int mode );

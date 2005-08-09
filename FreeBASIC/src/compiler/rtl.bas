@@ -4308,7 +4308,7 @@ private sub hAddPrinterLibs( )
 	if( not libsadded ) then
 
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			symbAddLib( "winspool" )
 		end select
 
@@ -6084,7 +6084,7 @@ private function hMultinput_cb( byval sym as FBSYMBOL ptr ) as integer static
 		libsAdded = TRUE
 
 		select case env.clopt.target
-		case FB_COMPTARGET_WIN32
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			symbAddLib( "user32" )
 		end select
 	end if
@@ -6103,7 +6103,7 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 		symbAddLib( "fbgfx" )
 
 		select case as const env.clopt.target
-		case FB_COMPTARGET_WIN32
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			symbAddLib( "user32" )
 			symbAddLib( "gdi32" )
 			symbAddLib( "winmm" )
@@ -7061,13 +7061,14 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 	else
 		procname = symbGetName( proc )
 
-		if( fbGetNaming() = FB_COMPNAMING_WIN32 ) then
+		select case ( fbGetNaming() )
+        case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
 			procname = mid$( procname, 2)
 			at = instr( procname, "@" )
 			if( at ) then
 				procname = mid$( procname, 1, at - 1 )
 			end if
-        end if
+        end select
 
 		if( len( procname ) and 3 ) then
 			procname += string$( 4 - ( len( procname ) and 3 ), 32 )

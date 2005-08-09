@@ -44,7 +44,7 @@ FBCALL FBSTRING *fb_Command ( int argc )
 	if( argc < 0 )
 	{
 
-#if WIN32
+#ifdef TARGET_WIN32
 		/* exe paths with white-spaces are quoted on Windows */
 		if( cline[0] == '"' )
 		{

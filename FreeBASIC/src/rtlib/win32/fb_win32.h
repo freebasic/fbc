@@ -40,9 +40,14 @@
 typedef struct _FB_DIRCTX
 {
 	int in_use;
-	int attrib;
+    int attrib;
+#ifdef TARGET_CYGWIN
+    WIN32_FIND_DATA data;
+    HANDLE handle;
+#else
 	struct _finddata_t data;
-	long handle;
+    long handle;
+#endif
 } FB_DIRCTX;
 
 #ifdef MULTITHREADED
@@ -79,6 +84,13 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        void fb_ConsoleColorEx           ( HANDLE hConsole, int fc, int bc );
        void fb_ConsoleScrollRawEx       ( HANDLE hConsole, int x1, int y1, int x2, int y2, int nrows );
        void fb_ConsoleClearViewRawEx    ( HANDLE hConsole, int x1, int y1, int x2, int y2 );
+       void fb_hConsoleGetWindow        ( int *left, int *top, int *cols, int *rows );
+
+       int       fb_ConsoleProcessEvents  ( void );
+struct _FBSTRING *fb_ConsoleGetKeyBuffer   ( void );
+       int       fb_ConsoleMouseAvailable ( void );
+       void      fb_ConsoleGetMouseData   ( int *x, int *y, int *z, int *buttons );
+       void      fb_ConsoleResetMouseData ( void );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
     ((srConsoleWindow.Left==srConsoleWindow.Right) \
@@ -87,6 +99,10 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        char *fb_hGetLocaleInfo          ( LCID Locale, LCTYPE LCType,
                                           char *pszBuffer, size_t uiSize );
 
+#ifdef TARGET_CYGWIN
+#define FB_LL_FMTMOD "ll"
+#else
 #define FB_LL_FMTMOD "I64"
+#endif
 
 #endif

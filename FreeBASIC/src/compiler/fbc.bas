@@ -165,6 +165,11 @@ sub initTarget( )
 		fbcInit_win32( )
 #endif
 
+#if defined(TARGET_CYGWIN) or defined(CROSSCOMP_CYGWIN)
+	case FB_COMPTARGET_CYGWIN
+		fbcInit_cygwin( )
+#endif
+
 #if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
 	case FB_COMPTARGET_LINUX
 		fbcInit_linux( )
@@ -283,7 +288,7 @@ function assembleFiles as integer
         binpath = exepath( ) + *fbGetPath( FB_PATH_BIN )
 
 		select case as const fbc.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX, FB_COMPTARGET_CYGWIN
 			aspath = binpath + "as.exe"
 
 		case FB_COMPTARGET_LINUX
@@ -429,7 +434,7 @@ sub printOptions( )
 	print "Usage: fbc [options] inputlist"
 	print
 	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
-	if( fbc.target = FB_COMPTARGET_WIN32 ) then
+	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
 		print " "         , "xxx.rc = resource script, xxx.res = compiled resource"
 	elseif( fbc.target = FB_COMPTARGET_LINUX ) then
 		print " "         , "xxx.xpm = icon resource"
@@ -470,7 +475,7 @@ sub printOptions( )
 	print "-p <name>", "Add a path to search for libraries"
 	print "-profile", "Enable function profiling"
 	print "-r", "Do not delete the asm file(s)"
-	if( fbc.target = FB_COMPTARGET_WIN32 ) then
+	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
 		print "-s <name>", "Set subsystem (gui, console)"
 		print "-t <value>", "Set stack size in kbytes (default: 1M)"
 	end if
@@ -568,6 +573,11 @@ function processTargetOptions( ) as integer
 					fbc.target = FB_COMPTARGET_DOS
 #endif
 
+#if defined(TARGET_CYGWIN) or defined(CROSSCOMP_CYGWIN)
+				case "cygwin"
+					fbc.target = FB_COMPTARGET_CYGWIN
+#endif
+
 #if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
 				case "linux"
 					fbc.target = FB_COMPTARGET_LINUX
@@ -596,6 +606,9 @@ function processTargetOptions( ) as integer
 				select case argv(i+1)
 				case "dos"
 					fbc.naming = FB_COMPNAMING_DOS
+
+				case "cygwin"
+					fbc.naming = FB_COMPNAMING_CYGWIN
 
 				case "linux"
 					fbc.naming = FB_COMPNAMING_LINUX

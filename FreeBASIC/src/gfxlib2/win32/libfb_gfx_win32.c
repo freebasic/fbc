@@ -27,12 +27,15 @@
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 #include <process.h>
+#include <assert.h>
 
 
 WIN32DRIVER fb_win32;
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
-	&fb_gfxDriverDirectDraw,
+#ifndef TARGET_CYGWIN
+    &fb_gfxDriverDirectDraw,
+#endif
 	&fb_gfxDriverGDI,
 	&fb_gfxDriverOpenGL,
 	NULL
@@ -220,8 +223,21 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 
 	if (!(flags & DRIVER_OPENGL)) {
 		InitializeCriticalSection(&update_lock);
-		events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
-		events[1] = (HANDLE)_beginthread(fb_win32.thread, 0, events[0]);
+        events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
+#ifdef TARGET_WIN32
+        events[1] = (HANDLE)_beginthread(fb_win32.thread, 0, events[0]);
+#else
+        {
+            DWORD dwThreadId;
+            events[1] = CreateThread( NULL,
+                                      0,
+                                      (LPTHREAD_START_ROUTINE) fb_win32.thread,
+                                      events[0],
+                                      0,
+                                      &dwThreadId );
+            assert( events[1]!=INVALID_HANDLE_VALUE );
+        }
+#endif
 		result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
 		CloseHandle(events[0]);
 		handle = events[1];

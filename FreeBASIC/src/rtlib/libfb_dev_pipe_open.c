@@ -34,7 +34,7 @@
 
 #ifndef TARGET_XBOX
 
-#if defined(WIN32) || defined(__WIN32__)
+#if defined(TARGET_WIN32)
 #undef popen
 #define popen(c,m) _popen(c,m)
 #endif

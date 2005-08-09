@@ -33,8 +33,11 @@
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
-	
-	_findclose( ctx->handle );
+#ifdef TARGET_WIN32
+    _findclose( ctx->handle );
+#else
+    FindClose( ctx->handle );
+#endif
 	ctx->in_use = FALSE;
 }
 
@@ -45,6 +48,7 @@ static char *find_next ( void )
 	char *name = NULL;
 	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
 
+#ifdef TARGET_WIN32
 	do
 	{
 		if( _findnext( ctx->handle, &ctx->data ) )
@@ -53,9 +57,19 @@ static char *find_next ( void )
 			name = NULL;
 			break;
 		}
-		name = ctx->data.name;
+        name = ctx->data.name;
 	}
 	while( ctx->data.attrib & ~ctx->attrib );
+#else
+    do {
+        if( !FindNextFile( ctx->handle, &ctx->data ) ) {
+            close_dir();
+            name = NULL;
+            break;
+        }
+        name = ctx->data.cFileName;
+    } while( ctx->data.dwFileAttributes & ~ctx->attrib );
+#endif
 
 	return name;
 }
@@ -67,7 +81,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	FB_DIRCTX	*ctx;
 	FBSTRING	*res;
 	int			len;
-	char		*name;
+    char		*name;
+    int         handle_ok;
 
 	FB_STRLOCK();
 
@@ -83,20 +98,32 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	if( len > 0 )
 	{
 		/* findfirst */
-
 		if( ctx->in_use )
 			close_dir( );
 
-		ctx->handle = _findfirst( filespec->data, &ctx->data );
-		if( ctx->handle != -1 )
+#ifdef TARGET_WIN32
+        ctx->handle = _findfirst( filespec->data, &ctx->data );
+        handle_ok = ctx->handle != -1;
+#else
+        ctx->handle = FindFirstFile( filespec->data, &ctx->data );
+        handle_ok = ctx->handle != INVALID_HANDLE_VALUE;
+#endif
+		if( handle_ok )
 		{
 			ctx->attrib = attrib | 0xFFFFFF00;
 			if( (attrib & 0x10) == 0 )
 				ctx->attrib |= 0x20;
+#ifdef TARGET_WIN32
 			if( ctx->data.attrib & ~ctx->attrib )
 				name = find_next( );
 			else
-				name = ctx->data.name;
+                name = ctx->data.name;
+#else
+			if( ctx->data.dwFileAttributes & ~ctx->attrib )
+				name = find_next( );
+			else
+                name = ctx->data.cFileName;
+#endif
 			if( name )
 				ctx->in_use = TRUE;
 		}
@@ -104,7 +131,6 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	else {
 
 		/* findnext */
-
 		if( ctx->in_use )
 			name = find_next( );
 	}

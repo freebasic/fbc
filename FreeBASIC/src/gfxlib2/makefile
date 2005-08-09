@@ -14,8 +14,12 @@ ifdef DJGPP
     HOST := dos
 else
     ifeq ($(OS),Windows_NT)
-        HOST := win32
-	else
+        ifeq ($(OSTYPE),cygwin)
+            HOST := cygwin
+        else
+            HOST := win32
+        endif
+    else
         ifdef WINDIR
             HOST := win32
 		else
@@ -71,6 +75,13 @@ ifeq ($(TARGET),linux)
     AFLAGS += -DTARGET_LINUX
 endif
 
+ifeq ($(TARGET),cygwin)
+    OSDEPPATH := win32
+    OSOBJPATH := cygwin
+    CFLAGS += -DTARGET_CYGWIN -DTARGET_X86
+    AFLAGS += -DTARGET_CYGWIN
+endif
+
 ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
     CFLAGS += -DTARGET_XBOX -DTARGET_X86
@@ -84,7 +95,11 @@ ifndef DEBUG
     LDFLAGS += -s
 endif
 
-objpath = obj/$(OSDEPPATH)
+ifndef OSOBJPATH
+	OSOBJPATH = $(OSDEPPATH)
+endif
+
+objpath = obj/$(OSOBJPATH)
 
 libpath = ../../lib/$(TARGET)
 
@@ -98,10 +113,10 @@ endif
 
 ##################################################################
 
-objects := $(patsubst %.c,obj/$(OSDEPPATH)/%.o,$(wildcard *.c))
-objects += $(patsubst %.s,obj/$(OSDEPPATH)/%.o,$(wildcard *.s))
-osdepobjs := $(patsubst $(OSDEPPATH)/%.c,obj/$(OSDEPPATH)/%.o,$(wildcard $(OSDEPPATH)/*.c))
-osdepobjs += $(patsubst $(OSDEPPATH)/%.s,obj/$(OSDEPPATH)/%.o,$(wildcard $(OSDEPPATH)/*.s))
+objects := $(patsubst %.c,$(objpath)/%.o,$(wildcard *.c))
+objects += $(patsubst %.s,$(objpath)/%.o,$(wildcard *.s))
+osdepobjs := $(patsubst $(OSDEPPATH)/%.c,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.c))
+osdepobjs += $(patsubst $(OSDEPPATH)/%.s,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.s))
 headers := $(wildcard *.h)
 headers += $(wildcard $(OSDEPPATH)/*.h)
 

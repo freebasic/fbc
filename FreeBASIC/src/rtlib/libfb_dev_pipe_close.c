@@ -34,7 +34,7 @@
 
 #ifndef TARGET_XBOX
 
-#if defined(WIN32) || defined(__WIN32__)
+#ifdef TARGET_WIN32
 #undef pclose
 #define pclose(f) _pclose(f)
 #endif

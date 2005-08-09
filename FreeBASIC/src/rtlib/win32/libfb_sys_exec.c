@@ -29,6 +29,9 @@
 #include <process.h>
 #include "fb.h"
 
+#ifdef TARGET_CYGWIN
+#define _spawnv spawnv
+#endif
 
 /*:::::*/
 FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )

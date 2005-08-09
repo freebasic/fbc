@@ -41,10 +41,10 @@ int fb_ConsoleGetTopRow( void )
 int fb_ConsoleGetBotRow( void )
 {
     if( view_botrow == -1 ) {
-#if !defined(TARGET_WIN32)
+#if defined(TARGET_LINUX)
         view_botrow = fb_ConsoleGetMaxRow( );
 #else
-        fb_hConsoleGetWindow( NULL, NULL, NULL, &view_botrow );
+        fb_ConsoleGetSize( NULL, &view_botrow );
 #endif
         if( view_botrow!=0 ) {
             --view_botrow;
