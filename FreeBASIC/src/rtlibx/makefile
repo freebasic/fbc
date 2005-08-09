@@ -14,7 +14,11 @@ ifdef DJGPP
     HOST := dos
 else
     ifeq ($(OS),Windows_NT)
-        HOST := win32
+        ifeq ($(OSTYPE),cygwin)
+            HOST := cygwin
+        else
+            HOST := win32
+        endif
     else
         ifdef WINDIR
             HOST := win32
@@ -67,6 +71,12 @@ ifeq ($(TARGET),linux)
     CFLAGS += -DTARGET_LINUX -DTARGET_X86
 endif
 
+ifeq ($(TARGET),cygwin)
+    OSDEPPATH := win32
+    OSOBJPATH := cygwin
+    CFLAGS += -DTARGET_CYGWIN -DTARGET_X86
+endif
+
 ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
     CFLAGS += -DTARGET_XBOX -DTARGET_X86
@@ -84,13 +94,17 @@ endif
 
 libpath = ../../lib/$(TARGET)
 
+ifndef OSOBJPATH
+	OSOBJPATH = $(OSDEPPATH)
+endif
+
 ifdef MULTITHREADED
 	CFLAGS += -DMULTITHREADED
 	lib = $(libpath)/libfbxmt.a
-	objpath = obj/$(OSDEPPATH)/mt
+	objpath = obj/$(OSOBJPATH)/mt
 else
 	lib = $(libpath)/libfbx.a
-	objpath = obj/$(OSDEPPATH)
+	objpath = obj/$(OSOBJPATH)
 endif
 
 ifndef OSDEPPATH

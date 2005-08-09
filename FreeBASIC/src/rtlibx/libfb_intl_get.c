@@ -29,8 +29,6 @@
 /*:::::*/
 const char *fb_IntlGet( eFbIntlIndex Index, int disallow_localized )
 {
-    static char achBuffer[2];
-
     if( fb_I18nGet() && !disallow_localized ) {
         const char *pszResult = fb_DrvIntlGet( Index );
         if( pszResult!=NULL ) {
@@ -40,19 +38,14 @@ const char *fb_IntlGet( eFbIntlIndex Index, int disallow_localized )
 
     switch ( Index ) {
     case eFIL_DateDivider:
-        strcpy( achBuffer, "/" );
-        break;
+        return "/";
     case eFIL_TimeDivider:
-        strcpy( achBuffer, ":" );
-        break;
+        return ":";
     case eFIL_NumDecimalPoint:
-        strcpy( achBuffer, "." );
-        break;
+        return ".";
     case eFIL_NumThousandsSeparator:
-        strcpy( achBuffer, "," );
-        break;
-    default:
-        return NULL;
+        return ",";
     }
-    return achBuffer;
+
+    return NULL;
 }

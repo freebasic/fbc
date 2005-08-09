@@ -37,15 +37,14 @@ int fb_DrvIntlDateGetFormat( char *buffer, size_t len )
     int do_esc = FALSE, do_fmt = FALSE;
     char *pszOutput = buffer;
     char achAddBuffer[2] = { 0 };
-    const char *pszAdd;
+    const char *pszAdd = NULL;
     size_t remaining = len - 1, add_len = 0;
-    char *pszDateFormat = nl_langinfo( D_FMT );
-    const char *pszStart = pszDateFormat;
+    const char *pszCurrent = nl_langinfo( D_FMT );
 
     assert(buffer!=NULL);
 
-    while ( *pszStart!=0 ) {
-        char ch = *pszStart;
+    while ( *pszCurrent!=0 ) {
+        char ch = *pszCurrent;
         if( do_esc ) {
             do_esc = FALSE;
             achAddBuffer[0] = ch;
@@ -142,7 +141,8 @@ int fb_DrvIntlDateGetFormat( char *buffer, size_t len )
             remaining -= add_len;
             add_len = 0;
         }
-        ++pszStart;
+        ++pszCurrent;
     }
+
     return TRUE;
 }

@@ -24,30 +24,22 @@
  *
  */
 
-#include "fbext.h"
 #include <stddef.h>
-#include <string.h>
-#include <assert.h>
+#include <langinfo.h>
+#include "fbext.h"
 
 /*:::::*/
 const char *fb_DrvIntlGet( eFbIntlIndex Index )
 {
-    static char achBuffer[128];
     switch ( Index ) {
     case eFIL_DateDivider:
-        strcpy( achBuffer, "/" );
-        break;
+        return "/";
     case eFIL_TimeDivider:
-        strcpy( achBuffer, ":" );
-        break;
+        return ":";
     case eFIL_NumDecimalPoint:
-        strcpy( achBuffer, "." );
-        break;
+        return nl_langinfo( RADIXCHAR );
     case eFIL_NumThousandsSeparator:
-        strcpy( achBuffer, "," );
-        break;
-    default:
-        return NULL;
+        return nl_langinfo( THOUSEP );
     }
-    return achBuffer;
+    return NULL;
 }
