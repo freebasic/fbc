@@ -28,7 +28,7 @@
 
 .section .data
 detected_cpu: .int 0  # bytes 0-2: low 24 bits of feature flags (CPUID eax = 1, edx)
-                      # byte    3: cpu family (04 = 486, 05 = 586, 06 = 686)
+                      # byte    3: cpu family (03 = 386, 04 = 486, 05 = 586, 06 = 686)
 
 .section .text
 #::::::::::::::
@@ -63,8 +63,25 @@ detect:
 	xor eax, edx
 	jnz cpuid_ok
 	
-	# no CPUID; assume 486 (could be 386) and no features
-	mov eax, 0x04000000
+	# no CPUID; assume 386 and check if 486
+	mov ebx, 0x03000000
+	pushf
+	pop eax
+	mov edx, eax
+	xor eax, 0x40000
+	push eax
+	popf
+	pushf
+	pop eax
+	cmp eax, edx
+	jnz cpu486_not_found
+
+	mov ebx, 0x04000000
+
+cpu486_not_found:
+	push edx
+	popf
+	mov eax, ebx
 	jmp cpudetect_exit
 	
 cpuid_ok:
