@@ -450,7 +450,7 @@ data "fb_LTrimEx","", _
 ''
 '' fb_CpuDetect ( ) as uinteger
 data "fb_CpuDetect","", _
-	 FB_SYMBTYPE_UINT,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_UINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 0
 '' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr ) as void

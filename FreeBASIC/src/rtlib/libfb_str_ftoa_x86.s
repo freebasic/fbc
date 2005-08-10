@@ -73,7 +73,7 @@ fb_f2a:
                 #            
                 # out: eax= asc string length
 
-                fnstcw  word ptr [old_cw]       # save control word
+                fnstcw  [old_cw]       # save control word
                 mov     ax, [old_cw]
                 mov     [cur_cw], ax
 
@@ -238,7 +238,7 @@ ffexit:         mov	byte ptr [edi], 0	# NULL-term
                 pop     edi                     # (0)
                 sub     eax, edi                # asc string length
 
-                fldcw   word ptr [old_cw]       # restore control word
+                fldcw   [old_cw]       # restore control word
 
                 pop	esi
                 pop	edi

@@ -39,7 +39,10 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
     char   *arguments;
     int		res = 0;
     int     got_program;
-    size_t  len_arguments, len_program;
+    size_t  len_arguments;
+#ifndef TARGET_WIN32
+    size_t  len_program;
+#endif
 
     FB_STRLOCK();
 
