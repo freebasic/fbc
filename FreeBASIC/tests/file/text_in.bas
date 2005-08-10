@@ -17,7 +17,7 @@ function TestInputEOF as integer
     	line input #1, l
         select case i
         case 0
-        	if l<>"" then return 0
+        	if l<>"" and l<>chr$(26) then return 0
         case else
             return 0
         end select
@@ -30,6 +30,7 @@ function TestInputEOF as integer
 	return i>=0 and i<=1
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -46,7 +47,7 @@ function TestInputContentsEOF1 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2" then return 0
+        	if l<>"2" and l<>"2"+chr$(26) then return 0
         case else
             return 0
         end select
@@ -57,6 +58,7 @@ function TestInputContentsEOF1 as integer
 	return i=2
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -75,7 +77,7 @@ function TestInputContentsEOF2 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>"" then return 0
+        	if l<>"" and l<>chr$(26) then return 0
         case else
             return 0
         end select
@@ -88,6 +90,7 @@ function TestInputContentsEOF2 as integer
 	return i>=2 and i<=3
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -104,9 +107,9 @@ function TestInputContentsEOF3 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2" then return 0
+        	if l<>"2" and l<>"2"+chr$(26) then return 0
         case 2
-        	if l<>"" then return 0
+        	if l<>"" and l<>"3" then return 0
         case else
             return 0
         end select
@@ -119,6 +122,7 @@ function TestInputContentsEOF3 as integer
 	return i>=2 and i<=3
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -137,7 +141,9 @@ function TestInputContentsEOF4 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>"" then return 0
+        	if l<>"" and l<>chr$(26)+"3" then return 0
+        case 3
+            if l<>"4" then return 0
         case else
             return 0
         end select
@@ -147,9 +153,10 @@ function TestInputContentsEOF4 as integer
 
 	' we cannot check for i=2 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
-	return i>=2 and i<=3
+	return i>=2 and i<=4
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -175,6 +182,7 @@ function TestBinaryEOF as integer
 	return i=1
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -202,6 +210,7 @@ function TestBinaryContentsEOF1 as integer
 	return i=2
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -231,6 +240,7 @@ function TestBinaryContentsEOF2 as integer
 	return i=3
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -260,6 +270,7 @@ function TestBinaryContentsEOF3 as integer
 	return i=3
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -291,6 +302,7 @@ function TestBinaryContentsEOF4 as integer
 	return i=4
 
 file_access_failed:
+    close 1
     return 0
 end function
 
@@ -357,12 +369,8 @@ RunTest("BINARY_CONTENTS_EOF_02", @TestBinaryContentsEOF2())
 RunTest("BINARY_CONTENTS_EOF_03", @TestBinaryContentsEOF3())
 RunTest("BINARY_CONTENTS_EOF_04", @TestBinaryContentsEOF4())
 
-#if defined(__FB_LINUX__) or defined(__FB_CYGWIN__)
-print "These tests are expected to fail on Linux and CYGWIN"
-#else
 if error_count<>0 then
     end 1
 end if
-#endif
 
 end 0

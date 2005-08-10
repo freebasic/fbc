@@ -82,7 +82,10 @@ void fb_hGetNumberParts( double number,
 
     /* Remove trailing zeroes and - if it completely consists of zeroes -
      * also remove the decimal point */
-    pszFracStart = pachFracPart + 1;
+    pszFracStart = pachFracPart;
+    if( *pszFracStart=='-' )
+        ++pszFracStart;       /* Required for -0.0 value */
+    ++pszFracStart;
     pszFracEnd = pachFracPart + len_frac;
     while( pszFracEnd!=pszFracStart ) {
         --pszFracEnd;

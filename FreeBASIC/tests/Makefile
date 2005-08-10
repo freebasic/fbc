@@ -69,7 +69,22 @@ ifeq ($(TARGET),dos)
 endif
 
 
-TESTS=file/text_in$(EXEEXT) dim/submod$(EXEEXT) dim/cmmn_01$(EXEEXT) string/chr_0$(EXEEXT) string/mid_set$(EXEEXT) string/instr_0$(EXEEXT) string/instr_x$(EXEEXT) string/rtrim$(EXEEXT) string/ltrim$(EXEEXT) string/compare$(EXEEXT) string/format$(EXEEXT) datetime/testdate$(EXEEXT) datetime/testtime$(EXEEXT) datetime/calc$(EXEEXT)
+TESTS = \
+	file/text_in$(EXEEXT) \
+        dim/submod$(EXEEXT) \
+        dim/cmmn_01$(EXEEXT) \
+        string/chr_0$(EXEEXT) \
+        string/mid_set$(EXEEXT) \
+        string/instr_0$(EXEEXT) \
+        string/instr_x$(EXEEXT) \
+        string/rtrim$(EXEEXT) \
+        string/ltrim$(EXEEXT) \
+        string/compare$(EXEEXT) \
+        string/format$(EXEEXT) \
+        datetime/testdate$(EXEEXT) \
+        datetime/testtime$(EXEEXT) \
+        datetime/calc$(EXEEXT) \
+        numbers/numbers$(EXEEXT)
 
 all: $(TESTS) run_tests
 
@@ -91,7 +106,7 @@ run_tests:
 	string/ltrim
 	string/compare
 	string/format
-	number/number
+	numbers/numbers
 
 file/text_in$(EXEEXT): file/text_in.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
@@ -135,7 +150,7 @@ datetime/testtime$(EXEEXT): datetime/testtime.bas
 datetime/calc$(EXEEXT): datetime/calc.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
-number/number$(EXEEXT): number/number.bas
+numbers/numbers$(EXEEXT): numbers/numbers.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 dim/submod_a.bas: dim/submod_c.bi

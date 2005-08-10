@@ -113,7 +113,9 @@ sub test_num
 	while sValue<>"."
 	    dblValue = val(sValue)
 	    read sMask, sWanted
+'        print sWanted,
 	    sResult = Format$(dblValue, sMask)
+'        print sResult
         ASSERT( sResult = sWanted )
         print ".";
         read sValue
