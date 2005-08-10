@@ -64,6 +64,10 @@ ifeq ($(TARGET),linux)
     EXEEXT :=
 endif
 
+ifeq ($(TARGET),cygwin)
+    EXEEXT := .exe
+endif
+
 ifeq ($(TARGET),dos)
     EXEEXT := .exe
 endif
