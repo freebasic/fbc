@@ -116,6 +116,7 @@ endif
 ##################################################################
 
 objects := $(patsubst %.c,$(objpath)/%.o,$(wildcard *.c))
+objects += $(patsubst %.s,$(objpath)/%.o,$(wildcard *.s))
 osdepobjs := $(patsubst $(OSDEPPATH)/%.c,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.c))
 osdepobjs += $(patsubst $(OSDEPPATH)/%.s,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.s))
 headers := $(wildcard *.h)

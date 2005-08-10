@@ -145,6 +145,9 @@ extern "C" {
         return len;
     }
 
+
+	extern int fb_CpuDetect( void );
+
 #ifdef __cplusplus
 }
 #endif

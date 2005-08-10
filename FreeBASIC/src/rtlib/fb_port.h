@@ -59,6 +59,11 @@ extern "C" {
         return 0;
     }
 
+	static __inline__ int fb_CpuDetect( void )
+	{
+		return 0;
+	}
+	
 #ifdef __cplusplus
 }
 #endif
