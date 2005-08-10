@@ -34,6 +34,7 @@
  */
 
 #include <malloc.h>
+#include <assert.h>
 #include <string.h>
 #include <stddef.h>
 #include "fb.h"
@@ -71,7 +72,7 @@ FBSTRING *fb_hStrAllocTmpDesc( void )
 void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 {
 	fb_hListFreeElem( &tmpdsList,  &dsc->elem );
-	
+
 	/*  */
 	dsc->desc.data = NULL;
 	dsc->desc.len  = 0;
@@ -103,7 +104,9 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 	int newsize;
 
 	newsize = (size + 31) & ~31;			/* alloc every 32-bytes */
-	newsize += (newsize >> 3);				/* plus 12.5% more */
+    newsize += (newsize >> 3);				/* plus 12.5% more */
+
+    /* assert( (str->data==0) || FB_ISTEMP( str ) ); */
 
 	if( (str->data == NULL) || (size > str->size) || (newsize < (str->size - (str->size >> 3))) )
 	{
@@ -146,7 +149,7 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 
 		if( str->data == NULL )
         {
-            fb_hStrSetLength( str, str->size = 0 );
+            str->len = str->size = 0;
 			return NULL;
 		}
 
@@ -171,6 +174,12 @@ FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
             fb_hStrDelTempDesc( str );
         }
         return NULL;
+    } else {
+        /* Whenever we allocate memory dynamically, we have to mark
+         * this string as "temporary". This name is really confusing ...
+         * because what's really meant is that the strings data was
+         * allocated dynamically. */
+        str->len |= FB_TEMPSTRBIT;
     }
     return str;
 }
@@ -182,18 +191,15 @@ int fb_hStrDelTemp( FBSTRING *str )
 		return -1;
 
 	/* is it really a temp? */
-	if( !FB_ISTEMP( str ) )
+	if( FB_ISTEMP( str ) )
 	{
-		/* even not being a temp, the desc can be */
-		return fb_hStrDelTempDesc( str );
-	}
-
-    /* del data */
+        /* del data */
 #ifdef MULTITHREADED
-	fb_hStrDeleteLocked( str );
+        fb_hStrDeleteLocked( str );
 #else
-    fb_StrDelete( str );
+        fb_StrDelete( str );
 #endif
+    }
 
     /* del descriptor (must be done by last as it will be cleared) */
     return fb_hStrDelTempDesc( str );

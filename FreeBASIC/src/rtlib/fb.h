@@ -272,6 +272,15 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #include <string.h>
 #include <stdio.h>
 
+/* We have four types of strings:
+ *
+ * DATA   DESC
+ * dyn    temp      -> FB_TEMPSTRBIT is only set for this case
+ * static temp
+ * dyn    static
+ * static static
+ */
+
 /** Flag to identify a string as a temporary string.
  *
  * This flag is stored in struct _FBSTRING::len so it's absolutely required
