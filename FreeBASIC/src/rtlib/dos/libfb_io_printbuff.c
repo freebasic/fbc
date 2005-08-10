@@ -50,6 +50,25 @@ void fb_ConsolePrintBuffer( const char *buffer, int mask )
 }
 
 /*:::::*/
+static const char *fb_hConsolePrintLine( const char *pLast, size_t len )
+{
+    const char *pFoundLF = (const char *) memchr( pLast, '\n', len );
+    if (pFoundLF!=NULL) {
+        int tmp_len = pFoundLF - pLast;
+        int has_cr = ((tmp_len > 0) ? (*(pFoundLF-1)=='\r') : FALSE);
+        char *tmp_buffer = alloca(tmp_len + 3);
+        memcpy(tmp_buffer, pLast, tmp_len);
+        if( !has_cr ) {
+            memcpy(tmp_buffer + tmp_len, "\r\n", 3);
+        } else {
+            memcpy(tmp_buffer + tmp_len, "\n", 2);
+        }
+        cputs( tmp_buffer );
+    }
+    return pFound;
+}
+
+/*:::::*/
 void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 {
 	int col, row;
@@ -80,21 +99,15 @@ void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
 
     /* s/o means that we can only use cputs ... too bad ... so we've
      * to scan for LF and (optionally) insert a CR ourselves */
-    pFoundLF = (const char *) memchr( pLast, '\n', len );
-    while (pFoundLF!=NULL) {
-        int tmp_len = pFoundLF - pLast;
-        int has_cr = ((tmp_len > 0) ? (*(pFoundLF-1)=='\r') : FALSE);
-        char *tmp_buffer = alloca(tmp_len + 3);
-        memcpy(tmp_buffer, pLast, tmp_len);
-        if( !has_cr ) {
-            memcpy(tmp_buffer + tmp_len, "\r\n", 3);
-        } else {
-            memcpy(tmp_buffer + tmp_len, "\n", 2);
-        }
-        cputs( tmp_buffer );
+    pFoundLF = fb_hConsolePrintLine( pLast, len );
+    while ( pFoundLF!=NULL ) {
+        size_t tmp_len = pFoundLF - pLast;
+        len -= tmp_len;
         pLast = pFoundLF + 1;
-        pFoundLF = (const char *) memchr( pLast, '\n', len );
+        pFoundLF = fb_hConsolePrintLine( pLast, len );
     }
+
+    /* Print the strings remainder */
     cputs( pLast );
 
 	if (no_scroll) {
