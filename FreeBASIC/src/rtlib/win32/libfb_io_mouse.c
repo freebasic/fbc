@@ -27,55 +27,67 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-#ifdef TARGET_WIN32
 static int inited = -1;
 static int last_x = 0, last_y = 0, last_z = 0, last_buttons = 0;
-#endif
+
+static
+void ProcessMouseEvent(const MOUSE_EVENT_RECORD *pEvent)
+{
+    if( pEvent->dwEventFlags == MOUSE_WHEELED ) {
+        last_z += ( ( pEvent->dwButtonState & 0xFF000000 ) ? -1 : 1 );
+    }
+    else {
+        last_x = pEvent->dwMousePosition.X;
+        last_y = pEvent->dwMousePosition.Y;
+        last_buttons = pEvent->dwButtonState & 0x7;
+    }
+}
 
 /*:::::*/
 int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 {
-#ifdef TARGET_WIN32
+#if 0
 	INPUT_RECORD ir;
-	DWORD dwRead, dwMode;
-	
+    DWORD dwRead;
+#endif
+    DWORD dwMode;
+
 	if( inited == -1 ) {
 		inited = GetSystemMetrics( SM_CMOUSEBUTTONS );
 		if( inited ) {
 			GetConsoleMode( fb_in_handle, &dwMode );
 			dwMode |= ENABLE_MOUSE_INPUT;
 			SetConsoleMode( fb_in_handle, dwMode );
+#if 1
+            MouseEventHook = ProcessMouseEvent;
+#endif
+            last_x = last_y = 1;
+            fb_hConvertToConsole( &last_x, &last_y, NULL, NULL );
 		}
 	}
 	if( inited == 0 ) {
 		*x = *y = *z = *buttons = -1;
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
+
+#if 0
 	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) ) {
 		if( dwRead > 0 ) {
 			ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
-			if( ir.EventType == MOUSE_EVENT ) {
-				if( ir.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED ) {
-					last_z += ( ( ir.Event.MouseEvent.dwButtonState & 0xFF000000 ) ? -1 : 1 );
-				}
-				else {
-					last_x = ir.Event.MouseEvent.dwMousePosition.X;
-					last_y = ir.Event.MouseEvent.dwMousePosition.Y;
-					last_buttons = ir.Event.MouseEvent.dwButtonState & 0x7;
-				}
+            if( ir.EventType == MOUSE_EVENT ) {
+                ProcessMouseEvent( &ir.Event.MouseEvent );
 			}
 		}
 	}
-	*x = last_x;
-	*y = last_y;
-	*z = last_z;
-	*buttons = last_buttons;
-#else
-    if( !fb_ConsoleMouseAvailable() ) {
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-    fb_ConsoleGetMouseData( x, y, z, buttons );
 #endif
+
+	*x = last_x - 1;
+	*y = last_y - 1;
+	*z = last_z;
+    *buttons = last_buttons;
+
+    fb_hConvertFromConsole( x, y, NULL, NULL );
+
 	return FB_RTERROR_OK;
 }
 

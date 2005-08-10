@@ -35,7 +35,7 @@
 FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING 	 *res;
-#ifdef TARGET_WIN32
+#if 0
 	int			 chars;
 	unsigned int k;
 
@@ -91,7 +91,7 @@ FBSTRING *fb_ConsoleInkey( void )
 int fb_ConsoleGetkey( void )
 {
 	int k = 0;
-#ifdef TARGET_WIN32
+#if 0
 	k = _getch( );
 	if( k == 0x00 || k == 0xE0 )
 		k = _getch( );
@@ -116,7 +116,7 @@ int fb_ConsoleGetkey( void )
 /*:::::*/
 int fb_ConsoleKeyHit( void )
 {
-#ifdef TARGET_WIN32
+#if 0
 	return _kbhit( );
 #else
     FBSTRING *buffer = fb_ConsoleGetKeyBuffer( );

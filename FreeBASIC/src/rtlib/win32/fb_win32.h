@@ -62,10 +62,17 @@ extern CRITICAL_SECTION fb_string_mutex;
 # define FB_TLSGET(key)				TlsGetValue((key))
 #endif
 
+struct _FBSTRING;
+typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);
+
 extern HANDLE fb_in_handle, fb_out_handle;
 extern const unsigned char fb_keytable[][3];
-
 extern SMALL_RECT srConsoleWindow;
+extern fb_FnProcessMouseEvent MouseEventHook;
+
+FBCALL int fb_hExec                     ( struct _FBSTRING *program,
+                                          struct _FBSTRING *args,
+                                          int do_wait );
 
 FBCALL void fb_hRestoreConsoleWindow    ( void );
 FBCALL void fb_hUpdateConsoleWindow     ( void );
@@ -88,9 +95,6 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
 
        int       fb_ConsoleProcessEvents  ( void );
 struct _FBSTRING *fb_ConsoleGetKeyBuffer   ( void );
-       int       fb_ConsoleMouseAvailable ( void );
-       void      fb_ConsoleGetMouseData   ( int *x, int *y, int *z, int *buttons );
-       void      fb_ConsoleResetMouseData ( void );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
     ((srConsoleWindow.Left==srConsoleWindow.Right) \

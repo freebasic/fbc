@@ -34,21 +34,13 @@
 /*:::::*/
 FBCALL int fb_Run ( FBSTRING *program )
 {
-    char	buffer[MAX_PATH+1];
-    char 	arg0[] = "";
-    int		res = 0;
-
-	FB_STRLOCK();
-
 	if( (program != NULL) && (program->data != NULL) )
 	{
-		res = _execl( fb_hGetShortPath( program->data, buffer, MAX_PATH ), arg0, NULL );
-	}
-
-	/* del if temp */
-	fb_hStrDelTemp( program );
-
-	FB_STRUNLOCK();
-
-	return res;
+        if( fb_hExec ( program, NULL, FALSE )!=-1 ) {
+            fb_End( 0 );
+        }
+    } else {
+        return 0;
+    }
+    return -1;
 }

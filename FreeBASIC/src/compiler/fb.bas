@@ -215,7 +215,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.cputype 		= FB_DEFAULTCPUTYPE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
-#ifdef TARGET_WIN32
+#if defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
 	env.clopt.nostdcall 	= FALSE
 #else
 	env.clopt.nostdcall 	= TRUE

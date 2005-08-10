@@ -27,26 +27,16 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-static int mouse_initialized = -1;
-static int last_x = 0, last_y = 0, last_z = 0, last_buttons = 0;
 static FBSTRING fb_strInput = { 0 };
+fb_FnProcessMouseEvent MouseEventHook = (fb_FnProcessMouseEvent) NULL;
 
 /*:::::*/
 int fb_ConsoleProcessEvents( void )
 {
     int got_event = FALSE;
 	INPUT_RECORD ir;
-    DWORD dwRead, dwMode;
+    DWORD dwRead;
     FBSTRING *CharBuffer = &fb_strInput;
-
-	if( mouse_initialized == -1 ) {
-		mouse_initialized = GetSystemMetrics( SM_CMOUSEBUTTONS );
-		if( mouse_initialized ) {
-			GetConsoleMode( fb_in_handle, &dwMode );
-			dwMode |= ENABLE_MOUSE_INPUT;
-			SetConsoleMode( fb_in_handle, dwMode );
-		}
-	}
 
 	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) ) {
 		if( dwRead > 0 ) {
@@ -60,7 +50,20 @@ int fb_ConsoleProcessEvents( void )
                     char chTemp[3];
                     size_t TempSize = 0;
                     if( ir.Event.KeyEvent.uChar.AsciiChar==0 ) {
-                        if( ir.Event.KeyEvent.wVirtualScanCode <= 254 ) {
+                        WORD wVkCode = ir.Event.KeyEvent.wVirtualKeyCode;
+                        WORD wVsCode = ir.Event.KeyEvent.wVirtualScanCode;
+                        int allow_key = ( wVkCode >= VK_SPACE )
+                            && ( wVkCode <= VK_NUMLOCK )
+                            && ( wVsCode > 0 )
+                            && ( wVsCode <= 254 );
+                        switch ( wVkCode ) {
+                        case VK_LWIN:
+                        case VK_RWIN:
+                        case VK_APPS:
+                            allow_key = FALSE;
+                            break;
+                        }
+                        if( allow_key ) {
                             chTemp[0] = 2;
                             chTemp[1] = FB_EXT_CHAR;
                             chTemp[2] = (char) (ir.Event.KeyEvent.wVirtualScanCode & 0xFF);
@@ -102,15 +105,8 @@ int fb_ConsoleProcessEvents( void )
                 }
                 break;
             case MOUSE_EVENT:
-                if( mouse_initialized ) {
-                    if( ir.Event.MouseEvent.dwEventFlags == MOUSE_WHEELED ) {
-                        last_z += ( ( ir.Event.MouseEvent.dwButtonState & 0xFF000000 ) ? -1 : 1 );
-                    }
-                    else {
-                        last_x = ir.Event.MouseEvent.dwMousePosition.X;
-                        last_y = ir.Event.MouseEvent.dwMousePosition.Y;
-                        last_buttons = ir.Event.MouseEvent.dwButtonState & 0x7;
-                    }
+                if( MouseEventHook != (fb_FnProcessMouseEvent) NULL ) {
+                    MouseEventHook( &ir.Event.MouseEvent );
                     got_event = TRUE;
                 }
                 break;
@@ -126,31 +122,6 @@ int fb_ConsoleProcessEvents( void )
 /*:::::*/
 FBSTRING *fb_ConsoleGetKeyBuffer( void )
 {
+    fb_ConsoleProcessEvents( );
     return &fb_strInput;
-}
-
-int fb_ConsoleMouseAvailable( void )
-{
-    if( mouse_initialized==-1 )
-        fb_ConsoleProcessEvents( );
-    return mouse_initialized!=0;
-}
-
-/*:::::*/
-void fb_ConsoleGetMouseData( int *x, int *y, int *z, int *buttons )
-{
-    if( x )
-        *x = last_x;
-    if( y )
-        *y = last_y;
-    if( z )
-        *z = last_z;
-    if( buttons )
-        *buttons = last_buttons;
-}
-
-/*:::::*/
-void fb_ConsoleResetMouseData( void )
-{
-    last_x = last_y = last_z = last_buttons = 0;
 }

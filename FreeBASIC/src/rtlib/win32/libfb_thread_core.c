@@ -52,7 +52,19 @@ FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
 	if( !thread )
 		return NULL;
 
-	thread->id = (HANDLE)_beginthread( (ThreadStartFn) proc, 0, (void *)param );
+#ifdef TARGET_WIN32
+    thread->id = (HANDLE)_beginthread( (ThreadStartFn) proc, 0, (void *)param );
+#else
+    {
+        DWORD dwThreadId;
+        thread->id = CreateThread( NULL,
+                                   0,
+                                   (LPTHREAD_START_ROUTINE) proc,
+                                   (void*) param,
+                                   0,
+                                   &dwThreadId );
+    }
+#endif
 
 	return thread;
 }

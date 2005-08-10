@@ -24,45 +24,113 @@
  *
  */
 
+#include <stdlib.h>
+#include <assert.h>
 #include <malloc.h>
 #include <string.h>
 #include <process.h>
 #include "fb.h"
 
-#ifdef TARGET_CYGWIN
-#define _spawnv spawnv
+/*:::::*/
+FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
+{
+    char	buffer[MAX_PATH+1];
+    char   *application;
+    char   *arguments;
+    int		res = 0;
+    int     got_program;
+    size_t  len_arguments, len_program;
+
+    FB_STRLOCK();
+
+    got_program = (program != NULL) && (program->data != NULL);
+
+    if( !got_program ) {
+        fb_hStrDelTemp( args );
+        fb_hStrDelTemp( program );
+        FB_STRUNLOCK();
+        return -1;
+    }
+
+    application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
+    assert( application!=NULL );
+    if( application==program->data ) {
+        application = buffer;
+        FB_MEMCPY(application, program->data, FB_STRSIZE( program ) );
+    }
+
+#ifdef TARGET_WIN32
+    if( args==NULL ) {
+        arguments = "";
+    } else {
+        len_arguments = FB_STRSIZE( args );
+        arguments = alloca( len_arguments + 1 );
+        assert( arguments!=NULL );
+        if( len_arguments )
+            FB_MEMCPY( arguments, args->data, len_arguments );
+        arguments[len_arguments] = 0;
+    }
+#else
+    len_program = strlen( buffer );
+    len_arguments = ( ( args==NULL ) ? 0 : FB_STRSIZE( args ) );
+
+    arguments = alloca( len_program + len_arguments + 2 );
+    assert( arguments!=NULL );
+
+    FB_MEMCPY( arguments, buffer, len_program );
+    arguments[len_program] = ' ';
+    if( len_arguments!=0 )
+        FB_MEMCPY( arguments + len_program + 1, args->data, len_arguments );
+    arguments[len_program + len_arguments + 1] = 0;
 #endif
+
+	fb_hStrDelTemp( args );
+    fb_hStrDelTemp( program );
+
+    FB_STRUNLOCK();
+
+	{
+#ifdef TARGET_WIN32
+        res = _spawnl( (do_wait ? _P_WAIT : _P_NOWAIT), buffer, buffer, arguments, NULL );
+#else
+        STARTUPINFO StartupInfo;
+        PROCESS_INFORMATION ProcessInfo;
+        memset( &StartupInfo, 0, sizeof(StartupInfo) );
+        StartupInfo.cb = sizeof(StartupInfo);
+
+        if( !CreateProcess( NULL,        /* application name - correct! */
+                            arguments,   /* command line */
+                            NULL, NULL,  /* default security descriptors */
+                            FALSE,       /* don't inherit handles */
+                            CREATE_DEFAULT_ERROR_MODE, /* do we really need this? */
+                            NULL,        /* default environment */
+                            NULL,        /* current directory */
+                            &StartupInfo,
+                            &ProcessInfo ) )
+        {
+            res = -1;
+        } else {
+            DWORD dwExitCode;
+            /* Release main thread handle - we're not interested in it */
+            CloseHandle( ProcessInfo.hThread );
+            WaitForSingleObject( ProcessInfo.hProcess,
+                                 INFINITE );
+            if( !GetExitCodeProcess( ProcessInfo.hProcess, &dwExitCode ) ) {
+                res = -1;
+            } else {
+                res = (int) dwExitCode;
+            }
+            CloseHandle( ProcessInfo.hProcess );
+        }
+#endif
+	}
+
+	return res;
+}
 
 /*:::::*/
 FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
-    char	buffer[MAX_PATH+1];
-    char	*argv[256];
-    int		res = 0;
-
-	FB_STRLOCK();
-
-	if( (program != NULL) && (program->data != NULL) )
-	{
-		char *argsdata;
-
-		if( (args == NULL) || (args->data == NULL) )
-			argsdata = "\0";
-		else
-			argsdata = args->data;
-
-		argv[0] = &buffer[0];
-		argv[1] = argsdata;
-		argv[2] = NULL;
-		res = _spawnv( _P_WAIT, fb_hGetShortPath( program->data, buffer, MAX_PATH ), (const char **)argv );
-	}
-
-	/* del if temp */
-	fb_hStrDelTemp( args );
-	fb_hStrDelTemp( program );
-
-	FB_STRUNLOCK();
-
-	return res;
+    return fb_hExec( program, args, TRUE );
 }
 
