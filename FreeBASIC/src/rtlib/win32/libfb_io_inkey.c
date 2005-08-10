@@ -27,7 +27,7 @@
 #include <assert.h>
 #include "fb.h"
 
-#ifdef TARGET_WIN32
+#if 0
 #include <conio.h>
 #endif
 
