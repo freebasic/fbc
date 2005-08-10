@@ -91,6 +91,7 @@ run_tests:
 	string/ltrim
 	string/compare
 	string/format
+	number/number
 
 file/text_in$(EXEEXT): file/text_in.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
@@ -132,6 +133,9 @@ datetime/testtime$(EXEEXT): datetime/testtime.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 datetime/calc$(EXEEXT): datetime/calc.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+number/number$(EXEEXT): number/number.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 dim/submod_a.bas: dim/submod_c.bi
