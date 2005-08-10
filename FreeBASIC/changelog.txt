@@ -31,6 +31,7 @@ Version 0.15 Beta:
 - compile-time check for math overflow in literal numbers when assigned or passed as parameter (v1c)
 - FORMAT (mjs)
 - compiler is now much more strict at reporting implicit numeric conversions (lillo)
+- programs compiled with -e will check if the host CPU is at least the one specified in -arch (lillo)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

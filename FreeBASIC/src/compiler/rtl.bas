@@ -448,6 +448,11 @@ data "fb_LTrimEx","", _
 
 
 ''
+'' fb_CpuDetect ( ) as uinteger
+data "fb_CpuDetect","", _
+	 FB_SYMBTYPE_UINT,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
 '' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr ) as void
 data "fb_Init","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -4655,6 +4660,43 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+function rtlCpuCheck( ) as integer static
+	dim as ASTNODE ptr proc, cpu
+	dim as FBSYMBOL ptr f, s, label
+	
+	function = FALSE
+	
+	''
+	f = ifuncTB(FB_RTL_CPUDETECT)
+	proc = astNewFUNCT( f, NULL, TRUE )
+	
+	'' cpu = fb_CpuDetect shr 24
+	cpu = astNewBOP( IR_OP_SHR, proc, astNewCONSTi( 24, IR_DATATYPE_UINT ) )
+	
+	'' if( cpu < env.clopt.cputype ) then
+	label = symbAddLabel( "" )
+	astAdd( astNewBOP( IR_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, IR_DATATYPE_UINT ), label, FALSE ) )
+	
+	'' print "This program requires at least a <cpu> to run."
+	s = hAllocStringConst( "This program requires at least a " + str( env.clopt.cputype ) + "86 to run.", -1 )
+	rtlPrint astNewCONSTi( 0, IR_DATATYPE_INTEGER ), FALSE, FALSE, astNewVAR( s, NULL, 0, IR_DATATYPE_FIXSTR )
+
+	'' end 1
+	f = ifuncTB(FB_RTL_END)
+    proc = astNewFUNCT( f, NULL, TRUE )
+    if( astNewPARAM( proc, astNewCONSTi( 1, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    	exit function
+    end if
+    astAdd( proc )
+	
+	'' end if
+	astAdd( astNewLABEL( label ) )
+	
+	function = TRUE
+	
+end function
+
+'':::::
 function rtlInitSignals( ) as integer static
     dim proc as ASTNODE ptr, f as FBSYMBOL ptr
 
@@ -4720,6 +4762,7 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
     if( env.clopt.errorcheck ) then
     	if( not isdllmain ) then
     		rtlInitSignals( )
+    		rtlCpuCheck( )
     	end if
     end if
 
