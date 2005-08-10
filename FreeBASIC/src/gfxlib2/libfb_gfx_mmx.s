@@ -31,32 +31,6 @@
 
 
 /*:::::*/
-FUNC(fb_hHasMMX)
-	pushl %ebx
-	
-	pushfl
-	popl %eax
-	movl %eax, %edx
-	xorl $0x200000, %eax
-	pushl %eax
-	popfl
-	pushfl
-	popl %eax
-	xorl %edx, %eax
-	jz no_mmx
-	
-	movl $1, %eax
-	cpuid
-	movl %edx, %eax
-	shrl $23, %eax
-	andl $1, %eax
-	
-no_mmx:
-	popl %ebx
-	ret
-
-
-/*:::::*/
 FUNC(fb_hMemCpyMMX)
 	pushl %ebp
 	movl %esp, %ebp

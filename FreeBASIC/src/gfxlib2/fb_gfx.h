@@ -242,7 +242,6 @@ extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, flo
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
 extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full);
 extern void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh);
-extern int fb_hHasMMX(void);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 
