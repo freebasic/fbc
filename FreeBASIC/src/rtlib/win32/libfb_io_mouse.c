@@ -78,7 +78,9 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
                 ProcessMouseEvent( &ir.Event.MouseEvent );
 			}
 		}
-	}
+    }
+#else
+    fb_ConsoleProcessEvents  ( );
 #endif
 
 	*x = last_x - 1;
