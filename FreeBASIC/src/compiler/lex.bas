@@ -35,6 +35,9 @@ defint a-z
 const FB_LEX_MAXK	= 1
 
 ''
+const UINVALID as uinteger = cuint( INVALID )
+
+''
 type LEXCTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
@@ -100,8 +103,8 @@ sub lexInit( )
 		ctx.tokenTB(i).id = INVALID
 	next i
 
-	ctx.currchar 	= INVALID
-	ctx.lahdchar	= INVALID
+	ctx.currchar 	= UINVALID
+	ctx.lahdchar	= UINVALID
 
 	ctx.linenum		= 1
 	ctx.colnum		= 1
@@ -279,7 +282,7 @@ private sub hLoadDefine( byval s as FBSYMBOL ptr )
 	end if
 
 	'' force a re-read
-	ctx.currchar = INVALID
+	ctx.currchar = UINVALID
 
 end sub
 
@@ -348,7 +351,7 @@ private function lexEatChar as uinteger static
     function = ctx.currchar
 
 	'' update if a look ahead char wasn't read already
-	if( ctx.lahdchar = INVALID ) then
+	if( ctx.lahdchar = UINVALID ) then
 
 		'' WITH?
 		if( ctx.withcnt > 0 ) then
@@ -366,12 +369,12 @@ private function lexEatChar as uinteger static
 
 		end if
 
-    	ctx.currchar = INVALID
+    	ctx.currchar = UINVALID
 
     '' current= lookahead; lookhead = INVALID
     else
     	ctx.currchar = ctx.lahdchar
-    	ctx.lahdchar = INVALID
+    	ctx.lahdchar = UINVALID
 	end if
 
 end function
@@ -400,7 +403,7 @@ end sub
 '':::::
 private function lexCurrentChar( byval skipwhitespc as integer = FALSE ) as uinteger static
 
-    if( ctx.currchar = INVALID ) then
+    if( ctx.currchar = UINVALID ) then
     	ctx.currchar = lexReadChar( )
     end if
 
@@ -418,7 +421,7 @@ end function
 '':::::
 private function lexGetLookAheadChar( byval skipwhitespc as integer = FALSE ) as uinteger
 
-	if( ctx.lahdchar = INVALID ) then
+	if( ctx.lahdchar = UINVALID ) then
 		lexSkipChar( )
 		ctx.lahdchar = lexReadChar( )
 	end if
@@ -549,10 +552,11 @@ end sub
 private sub lexReadNonDecNumber( pnum as zstring ptr, _
 								 tlen as integer, _
 								 isneg as integer, _
+								 islong as integer, _
 								 byval flags as LEXCHECK_ENUM ) static
-	dim as uinteger value, c
+	dim as uinteger value, c, first_c
 	dim as ulongint value64
-	dim as integer tb(0 to 15), i, lgt, islong
+	dim as integer tb(0 to 15), i, lgt
 
 	isneg = FALSE
 	islong = FALSE
@@ -563,7 +567,12 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	'' hex
 	case CHAR_HUPP, CHAR_HLOW
 		lexEatChar( )
-
+		
+		'' skip trailing zeroes
+		while( lexCurrentChar( ) = CHAR_0 )
+			lexEatChar( )
+		wend
+		
 		do
 			select case lexCurrentChar( )
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
@@ -580,6 +589,9 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 					if( lgt = 9 ) then
 						islong = TRUE
 				    	value64 = (culngint( value ) * 16) + c
+				    elseif( lgt = 17 ) then
+				    	hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				    	exit do
 					else
 				    	value64 = (value64 * 16) + c
 				    end if
@@ -595,19 +607,46 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	case CHAR_OUPP, CHAR_OLOW
 		lexEatChar( )
 
+		'' skip trailing zeroes
+		while( lexCurrentChar( ) = CHAR_0 )
+			lexEatChar( )
+		wend
+		
+		first_c = lexCurrentChar( )
 		do
 			select case lexCurrentChar( )
 			case CHAR_0 to CHAR_7
 				c = lexEatChar( ) - CHAR_0
 
 				lgt += 1
-				if( lgt > 8 ) then
-					if( lgt = 9 ) then
-						islong = TRUE
-						value64 = (culngint( value ) * 8) + c
-					else
+				if( lgt > 10 ) then
+					select case as const lgt
+					case 11
+						if( first_c > CHAR_3 ) then
+							islong = TRUE
+							value64 = (culngint( value ) * 8) + c
+						else
+							value = (value * 8) + c
+						end if
+					case 12
+						if( not islong ) then
+							islong = TRUE
+							value64 = culngint( value )
+						end if
 						value64 = (value64 * 8) + c
-					end if
+					case 22
+						if( first_c > CHAR_1 ) then
+							hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+							exit do
+						else
+							value64 = (value64 * 8) + c
+						end if
+					case 23
+						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+						exit do
+					case else
+						value64 = (value64 * 8) + c
+					end select
 				else
 					value = (value * 8) + c
 				end if
@@ -620,6 +659,11 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	case CHAR_BUPP, CHAR_BLOW
 		lexEatChar( )
 
+		'' skip trailing zeroes
+		while( lexCurrentChar( ) = CHAR_0 )
+			lexEatChar( )
+		wend
+		
 		do
 			select case lexCurrentChar( )
 			case CHAR_0, CHAR_1
@@ -629,6 +673,9 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 					if( lgt = 33 ) then
 						islong = TRUE
 				    	value64 = (culngint( value ) * 2) + c
+				    elseif( lgt = 65 ) then
+				    	hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				    	exit do
 				    else
 				    	value64 = (value64 * 2) + c
 				    end if
@@ -643,8 +690,6 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	case else
 		exit sub
 	end select
-
-	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
 
 	if( not islong ) then
 		'' int to ascii
@@ -795,14 +840,17 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 						   typ as integer, _
 						   tlen as integer, _
 				   		   byval flags as LEXCHECK_ENUM ) static
-	dim c as uinteger
-	dim isfloat as integer, isneg as integer
+	dim as uinteger c
+	dim as integer isfloat, issigned, islong
+	dim as zstring ptr pnum_start
 
-	isfloat = FALSE
-	isneg	= FALSE
-	typ 	= INVALID
-	*pnum 	= 0
-	tlen 	= 0
+	isfloat    = FALSE
+	issigned   = TRUE
+	islong     = FALSE
+	typ 	   = INVALID
+	*pnum 	   = 0
+	pnum_start = pnum
+	tlen 	   = 0
 
 	c = lexEatChar( )
 
@@ -846,7 +894,38 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case else
 				exit do
 			end select
-
+			
+			select case as const tlen
+			case 10
+				if( *pnum_start > "2147483647" ) then
+					issigned = FALSE
+					if( *pnum_start > "4294967295" ) then
+						issigned = TRUE
+						islong = TRUE
+					end if
+				end if
+			
+			case 11
+				islong = TRUE
+				issigned = TRUE
+			
+			case 19
+				if( *pnum_start > "9223372036854775807" ) then
+					issigned = FALSE
+				end if
+			
+			case 20
+				issigned = FALSE
+				if( *pnum_start > "18446744073709551615" ) then
+					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+					exit function
+				end if
+			
+			case 21
+				hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				exit function
+			end select
+			
 			if( tlen > FB_MAXNUMLEN ) then
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
  					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
@@ -877,7 +956,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	'' hex, oct, bin
 	case CHAR_AMP
 		tlen = 0
-		lexReadNonDecNumber( pnum, tlen, isneg, flags )
+		lexReadNonDecNumber( pnum, tlen, issigned, islong, flags )
 	end select
 
 	'' null-term
@@ -891,41 +970,31 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			select case lexCurrentChar( )
 			case CHAR_UUPP, CHAR_ULOW
 				lexEatChar( )
-				typ = FB_SYMBTYPE_UINT
+				issigned = FALSE
 			end select
 
 			select case as const lexCurrentChar( )
 			'' 'L' | 'l'
 			case CHAR_LUPP, CHAR_LLOW
 				lexEatChar( )
-				if( typ <> FB_SYMBTYPE_UINT ) then
-					typ = FB_SYMBTYPE_INTEGER
-				end if
-
 				'' 'LL'?
 				c = lexCurrentChar( )
 				if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 					lexEatChar( )
-					if( typ <> FB_SYMBTYPE_UINT ) then
-						typ = FB_SYMBTYPE_LONGINT
-					else
-						typ = FB_SYMBTYPE_ULONGINT
+					islong = TRUE
+				else
+					if( islong ) then
+						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+						exit function
 					end if
 				end if
 
 			'' '%' | '&'
 			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
 				lexEatChar( )
-
-				typ = FB_SYMBTYPE_INTEGER
-				if( not isneg ) then
-					if( tlen > 10 ) then
-						typ = FB_SYMBTYPE_LONGINT
-					end if
-				else
-					if( tlen > 11 ) then
-						typ = FB_SYMBTYPE_LONGINT
-					end if
+				if( islong ) then
+					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+					exit function
 				end if
 
 			'' '!' | 'F' | 'f'
@@ -948,22 +1017,23 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 
 	if( typ = INVALID ) then
 		if( not isfloat ) then
-			typ = FB_SYMBTYPE_INTEGER
-			if( not isneg ) then
-				if( tlen > 10 ) then
+			if( islong ) then
+				if( issigned ) then
 					typ = FB_SYMBTYPE_LONGINT
+				else
+					typ = FB_SYMBTYPE_ULONGINT
 				end if
 			else
-				if( tlen > 11 ) then
-					typ = FB_SYMBTYPE_LONGINT
+				if( issigned ) then
+					typ = FB_SYMBTYPE_INTEGER
+				else
+					typ = FB_SYMBTYPE_UINT
 				end if
 			end if
 		else
 			typ = FB_SYMBTYPE_DOUBLE
 		end if
 	end if
-
-	''!!!WRITEME!!! check too big numbers here !!!WRITEME!!!
 
 end sub
 
@@ -1074,7 +1144,7 @@ private sub hLoadWith( t as FBTOKEN, _
 	ctx.withcnt = 1 + 1
 
 	'' force a re-read
-	ctx.currchar = INVALID
+	ctx.currchar = UINVALID
 
 end sub
 

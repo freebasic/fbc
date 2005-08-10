@@ -1535,7 +1535,7 @@ function cSelectConstStmt as integer
 	'' SwitchLine*
 	swtbase = ctx.swt.base
 	deflabel = NULL
-	minval = &hFFFFFFFF
+	minval = &hFFFFFFFFu
 	maxval = 0
 	do
     	'' Comment? SttSeparator?

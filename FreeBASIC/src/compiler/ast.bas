@@ -130,6 +130,11 @@ declare function	astUpdStrConcat	( byval n as ASTNODE ptr ) as ASTNODE ptr
         131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, 33554431, _
         67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 }
 
+	dim shared minlimitTB(IR_DATATYPE_BYTE to IR_DATATYPE_ULONGINT) as longint = { _
+		-128LL, 0LL, 0LL, -32768LL, 0LL, -2147483648LL, 0LL, -2147483648LL, -9223372036854775808LL, 0LL }
+	dim shared maxlimitTB(IR_DATATYPE_BYTE to IR_DATATYPE_ULONGINT) as longint = { _
+		127LL, 255LL, 255LL, 32767LL, 65535LL, 2147483647LL, 4294967295LL, 2147483647LL, 9223372036854775807LL, 18446744073709551615LL }
+
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' proc handling
@@ -2602,7 +2607,11 @@ function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
   		function = clngint( astGetValuef( n ) )
   	case else
-  		function = clngint( astGetValuei( n ) )
+  		if( irIsSigned( astGetDataType( n ) ) ) then
+  			function = clngint( astGetValuei( n ) )
+  		else
+  			function = clngint( cuint( astGetValuei( n ) ) )
+  		end if
   	end select
 
 end function
@@ -3814,6 +3823,34 @@ function astNewUOP( byval op as integer, _
 	'' constant folding
 	if( o->defined ) then
 
+		if( op = IR_OP_NEG ) then
+			if( astGetDataClass( o ) = IR_DATACLASS_INTEGER ) then
+				select case dtype
+				case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
+					'' special case of integers/enums
+					if( astGetValueAsInt( o ) and &h80000000 ) then
+						if( astGetValueAsInt( o ) <> &h80000000 ) then
+							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+						end if
+					end if
+				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+					'' special case for longints
+					if( astGetValueAsLongInt( o ) and &h8000000000000000 ) then
+						if( astGetValueAsLongInt( o ) <> &h8000000000000000 ) then
+							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+						end if
+					end if
+				case else
+					if( -astGetValueAsLongInt( o ) < minlimitTB( astGetDataType( o ) ) ) then
+						hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+					end if
+				end select
+				if( not irIsSigned( dtype ) ) then
+					dtype = irGetSignedType( dtype )
+				end if
+			end if
+		end if
+
 		select case as const o->dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		    hUOPConstFold64( op, o )
@@ -4881,13 +4918,8 @@ end function
 private function hCheckConst( byval dtype as integer, _
 					   		  byval n as ASTNODE ptr ) as ASTNODE ptr static
 
-	dim as integer ival, imin, imax
-	dim as longint lval, lmin, lmax
+	dim as longint lval
 	dim as double dval, dmin, dmax
-
-	if( irGetDataSize( dtype ) >= irGetDataSize( n->dtype ) ) then
-		return n
-	end if
 
 	'' x86 assumptions
 
@@ -4910,46 +4942,27 @@ private function hCheckConst( byval dtype as integer, _
 			end if
 		end if
 
-    case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
-
-		if( dtype = IR_DATATYPE_UINT ) then
-			lmin = 0LL
-			lmax = 4294967296LL
-		else
-			lmin = -2147483648LL
-			lmax = 2147483647LL
+	case IR_DATATYPE_LONGINT
+	
+		if( culngint( astGetValueAsLongInt( n ) ) > 9223372036854775807ULL ) then
+			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
-
+	
+	case IR_DATATYPE_ULONGINT
+	
+		if( irIsSigned( astGetDataType( n ) ) ) then
+			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
+				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+			end if
+		end if
+		
+    case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR, IR_DATATYPE_SHORT, IR_DATATYPE_USHORT, _
+    	 IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
+    	
 		lval = astGetValueAsLongInt( n )
-    	if( (lval < lmin) or (lval > lmax) ) then
-    		n = astNewCONV( INVALID, dtype, NULL, n )
-    		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
-		end if
-
-    case else
-
-    	select case as const dtype
-    	case IR_DATATYPE_BYTE
-    		imin = -128
-    		imax = 127
-
-    	case IR_DATATYPE_CHAR, IR_DATATYPE_UBYTE
-    		imin = 0
-    		imax = 255
-
-    	case IR_DATATYPE_SHORT
-    		imin = -32678
-    		imax = 32767
-
-    	case IR_DATATYPE_USHORT
-    		imin = 0
-    		imax = 65535
-    	end select
-
-		ival = astGetValueAsInt( n )
-    	if( (ival < imin) or (ival > imax) ) then
-    		n = astNewCONV( INVALID, dtype, NULL, n )
-    		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+		if( (lval < minlimitTB( dtype )) or (lval > maxlimitTB( dtype )) ) then
+			n = astNewCONV( INVALID, dtype, NULL, n )
+			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 	end select
 
