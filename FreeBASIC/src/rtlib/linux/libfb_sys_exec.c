@@ -84,6 +84,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 		/* Launch */
 		fb_hExitConsole();
 		if ((pid = fork()) == 0) {
+			fb_hConvertPath( program->data, strlen( program->data ) );
 			exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
 		}
 		else {

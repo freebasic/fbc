@@ -287,17 +287,11 @@ function assembleFiles as integer
         '' when not set, then simply use some default value
         binpath = exepath( ) + *fbGetPath( FB_PATH_BIN )
 
-		select case as const fbc.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX, FB_COMPTARGET_CYGWIN
-			aspath = binpath + "as.exe"
-
-		case FB_COMPTARGET_LINUX
 #ifdef TARGET_LINUX
-			aspath = *fbGetPath( FB_PATH_BIN ) + "as"
+		aspath = binpath + "as"
 #else
-			aspath = binpath + "as.exe"
+		aspath = binpath + "as.exe"
 #endif
-		end select
     end if
 
     ''

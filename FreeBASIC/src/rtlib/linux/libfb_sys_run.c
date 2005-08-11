@@ -51,6 +51,7 @@ FBCALL int fb_Run ( FBSTRING *program )
 
 		fb_hExitConsole();
 		fb_hGetShortPath( program->data, buffer, MAX_PATH );
+		fb_hConvertPath( buffer, MAX_PATH );
 		res = execlp( buffer, buffer, NULL);
 		/* Ok, an error occured. Probably the file could not be found;
 	 	* as a last resort, let's try in current directory.

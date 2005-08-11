@@ -164,11 +164,7 @@ private sub hSetCtx( )
 	env.incpaths			= 0
 	env.incfiles			= 0
 
-#ifndef TARGET_LINUX
 	fbAddIncPath( exepath( ) + *fbGetPath( FB_PATH_INC ) )
-#else
-	fbAddIncPath( *fbGetPath( FB_PATH_INC ) )
-#endif
 
 end sub
 
@@ -358,15 +354,9 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_LIB) = "\\lib\\win32"
 
 	case FB_COMPTARGET_CYGWIN
-#ifdef TARGET_LINUX
-		pathTB(FB_PATH_BIN) = "/bin/cygwin/"
-		pathTB(FB_PATH_INC) = "/inc/"
-		pathTB(FB_PATH_LIB) = "/lib/cygwin"
-#else
 		pathTB(FB_PATH_BIN) = "\\bin\\cygwin\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
 		pathTB(FB_PATH_LIB) = "\\lib\\cygwin"
-#endif
 
 	case FB_COMPTARGET_DOS
 		pathTB(FB_PATH_BIN)	= "\\bin\\dos\\"
@@ -374,21 +364,21 @@ sub fbSetPaths( byval target as integer ) static
 		pathTB(FB_PATH_LIB)	= "\\lib\\dos"
 
 	case FB_COMPTARGET_LINUX
-#ifdef TARGET_LINUX
-		pathTB(FB_PATH_BIN)	= "/usr/share/freebasic/bin/"
-		pathTB(FB_PATH_INC)	= "/usr/share/freebasic/inc/"
-		pathTB(FB_PATH_LIB)	= "/usr/share/freebasic/lib"
-#else
 		pathTB(FB_PATH_BIN) = "\\bin\\linux\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
 		pathTB(FB_PATH_LIB) = "\\lib\\linux"
-#endif
 
 	case FB_COMPTARGET_XBOX
 		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"
 		pathTB(FB_PATH_LIB) = "\\lib\\xbox"
 	end select
+
+#ifdef TARGET_LINUX
+	pathTB(FB_PATH_BIN) = hRevertSlash( pathTB(FB_PATH_BIN) )
+	pathTB(FB_PATH_INC) = hRevertSlash( pathTB(FB_PATH_INC) )
+	pathTB(FB_PATH_LIB) = hRevertSlash( pathTB(FB_PATH_LIB) )
+#endif
 
 end sub
 

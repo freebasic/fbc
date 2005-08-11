@@ -68,11 +68,10 @@ function _linkFiles as integer
 	function = FALSE
 
 	'' set path
+	bindir = exepath( ) + *fbGetPath( FB_PATH_BIN )
 #ifdef TARGET_LINUX
-	bindir = *fbGetPath( FB_PATH_BIN )
 	ldpath = bindir + "ld"
 #else
-	bindir = exepath( ) + *fbGetPath( FB_PATH_BIN )
 	ldpath = bindir + "ld.exe"
 #endif
 
@@ -135,12 +134,7 @@ function _linkFiles as integer
     ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' default lib path
-#ifdef TARGET_LINUX
-    libdir = *fbGetPath( FB_PATH_LIB )
-#else
 	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-#endif
-
 	ldcline += " -L \"" + libdir + QUOTE
 
     '' and the current path to libs search list
@@ -193,7 +187,7 @@ function _archiveFiles( byval cmdline as string ) as integer
 	dim arcpath as string
 
 #ifdef TARGET_LINUX
-	arcpath = *fbGetPath( FB_PATH_BIN ) + "ar"
+	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar"
 #else
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
 #endif
@@ -222,10 +216,6 @@ function _compileResFiles as integer
 	redim outstr(0) as string
 
 	function = FALSE
-
-#ifndef TARGET_LINUX
-		return TRUE
-#endif
 
 	if( fbc.outtype <> FB_OUTTYPE_EXECUTABLE ) then
 		return TRUE
@@ -326,7 +316,11 @@ function _compileResFiles as integer
 	end if
 
 	'' compile icon source file
-	if( exec( "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+#ifdef TARGET_LINUX
+	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+#else
+	if( exec( exepath( ) + *fbGetPath( FB_PATH_BIN ) + "as.exe", iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+#endif
 		kill( iconsrc )
 		exit function
 	end if

@@ -33,7 +33,7 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 {
 	void *res = NULL;
 	int i;
-	char libname[1024];
+	char libname[MAX_PATH];
 	char *libnameformat[] = { "%s",
 							  "lib%s",
 							  "lib%s.so",
@@ -44,10 +44,11 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 
 	FB_STRLOCK();
 	
-	libname[1023] = '\0';
+	libname[MAX_PATH-1] = '\0';
 	if( (library) && (library->data) ) {
 		for( i = 0; libnameformat[i]; i++ ) {
-			snprintf( libname, 1023, libnameformat[i], library->data );
+			snprintf( libname, MAX_PATH-1, libnameformat[i], library->data );
+			fb_hConvertPath( libname, MAX_PATH-1 );
 			res = dlopen( libname, RTLD_LAZY );
 			if( res )
 				break;
