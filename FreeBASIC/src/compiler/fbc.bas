@@ -429,84 +429,91 @@ sub setMainModule( )
 end sub
 
 '':::::
+#define printOption(_opt,_desc) print _opt, " "; _desc
+
+'':::::
 sub printOptions( )
+	dim as string desc
 
 	print "Usage: fbc [options] inputlist"
 	print
-	print "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source"
+	printOption( "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source" )
 	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
-		print " "         , "xxx.rc = resource script, xxx.res = compiled resource"
+		printOption( "", "xxx.rc = resource script, xxx.res = compiled resource" )
 	elseif( fbc.target = FB_COMPTARGET_LINUX ) then
-		print " "         , "xxx.xpm = icon resource"
+		printOption( "", "xxx.xpm = icon resource" )
 	end if
 	print
 	print "options:"
-	print "-a <name>", "Add an object file to linker's list"
-	print "-arch <type>", "Set target architecture (default: 486)"
-	print "-b <name>", "Add a source file to compilation"
-	print "-c", "Compile only, do not link"
-	print "-d <name=val>", "Add a preprocessor's define"
+	printOption( "-a <name>", "Add an object file to linker's list" )
+	printOption( "-arch <type>", "Set target architecture (default: 486)" )
+	printOption( "-b <name>", "Add a source file to compilation" )
+	printOption( "-c", "Compile only, do not link" )
+	printOption( "-d <name=val>", "Add a preprocessor's define" )
 	if( (fbc.target = FB_COMPTARGET_WIN32) or (fbc.target = FB_COMPTARGET_LINUX) ) then
-		print "-dll", "Same as -dylib"
+		printOption( "-dll", "Same as -dylib" )
 		if( fbc.target = FB_COMPTARGET_WIN32 ) then
-			print "-dylib", "Create a DLL, including the import library"
+			printOption( "-dylib", "Create a DLL, including the import library" )
 		elseif( fbc.target = FB_COMPTARGET_LINUX ) then
-			print "-dylib", "Create a shared library"
+			printOption( "-dylib", "Create a shared library" )
 		end if
 	end if
-	print "-e", "Add error checking"
-	print "-ex", "Add error checking with RESUME support"
-	print "-exx", "Same as above plus array bounds and null-pointer checking"
-	print "-export", "Export symbols for dynamic linkage"
-	print "-g", "Add debug info"
-	print "-i <name>", "Add a path to search for include files"
-	print "-l <name>", "Add a library file to linker's list"
-	print "-lib", "Create a static library"
-	print "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)"
-	print "-map <name>", "Save the linking map to file name"
+	printOption( "-e", "Add error checking" )
+	printOption( "-ex", "Add error checking with RESUME support" )
+	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
+	printOption( "-export", "Export symbols for dynamic linkage" )
+	printOption( "-g", "Add debug info" )
+	printOption( "-i <name>", "Add a path to search for include files" )
+	printOption( "-l <name>", "Add a library file to linker's list" )
+	printOption( "-lib", "Create a static library" )
+	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
+	printOption( "-map <name>", "Save the linking map to file name" )
 	if( fbc.target <> FB_COMPTARGET_DOS ) then
-		print "-mt", "Link with thread-safe runtime library"
+		printOption( "-mt", "Link with thread-safe runtime library" )
 	end if
-	print "-nodeflibs", "Do not include the default libraries"
-	print "-noerrline", "Do not show source line where error occured"
-	'''''print "-nostdcall", "Treat stdcall calling convention as cdecl"
-	'''''print "-nounderscore", "Don't add the underscore prefix to function names"
-	print "-o <name>", "Set output name (in the same number as source files)"
-	print "-p <name>", "Add a path to search for libraries"
-	print "-profile", "Enable function profiling"
-	print "-r", "Do not delete the asm file(s)"
+	printOption( "-nodeflibs", "Do not include the default libraries" )
+	printOption( "-noerrline", "Do not show source line where error occured" )
+	printOption( "-o <name>", "Set output name (in the same number as source files)" )
+	printOption( "-p <name>", "Add a path to search for libraries" )
+	printOption( "-profile", "Enable function profiling" )
+	printOption( "-r", "Do not delete the asm file(s)" )
 	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
-		print "-s <name>", "Set subsystem (gui, console)"
-		print "-t <value>", "Set stack size in kbytes (default: 1M)"
+		printOption( "-s <name>", "Set subsystem (gui, console)" )
+		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
 	end if
 
 #if defined(CROSSCOMP_WIN32) or _
+	defined(CROSSCOMP_CYGWIN) or _
 	defined(CROSSCOMP_DOS) or _
 	defined(CROSSCOMP_LINUX) or _
 	defined(CROSSCOMP_XBOX)
-	print "-target <name>"; " Cross-compile to:";
+	desc = " Cross-compile to:"
+ #ifdef CROSSCOMP_CYGWIN
+	desc += " cygwin"
+ #endif
  #ifdef CROSSCOMP_DOS
-	print " dos";
+	desc += " dos"
  #endif
  #ifdef CROSSCOMP_LINUX
-	print " linux";
+	desc += " linux"
  #endif
  #ifdef CROSSCOMP_WIN32
-	print " win32";
+	desc += " win32"
  #endif
  #ifdef CROSSCOMP_XBOX
-	print " xbox";
+	desc += " xbox"
  #endif
-	print
+
+	print "-target <name>"; desc
 #endif
 
 	if( fbc.target = FB_COMPTARGET_XBOX ) then
-		print "-title <name>", "Set XBE display title"
+		printOption( "-title <name>", "Set XBE display title" )
 	end if
-	print "-v", "Be verbose"
-	print "-version", "Show compiler version"
-	print "-x <name>", "Set executable/library name"
-	print "-w <value>", "Set min warning level"
+	printOption( "-v", "Be verbose" )
+	printOption( "-version", "Show compiler version" )
+	printOption( "-x <name>", "Set executable/library name" )
+	printOption( "-w <value>", "Set min warning level" )
 
 end sub
 

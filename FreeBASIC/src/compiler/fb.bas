@@ -325,7 +325,7 @@ function fbGetNaming ( ) as integer
 	    if env.clopt.naming <> FB_COMPNAMING_DEFAULT then
 	    	target = env.clopt.naming
 	    else
-		    select case env.clopt.target
+		    select case as const env.clopt.target
 		    case FB_COMPTARGET_WIN32
 		    	target = FB_COMPNAMING_WIN32
 
@@ -351,7 +351,7 @@ end function
 '':::::
 sub fbSetPaths( byval target as integer ) static
 
-	select case target
+	select case as const target
 	case FB_COMPTARGET_WIN32
 		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
 		pathTB(FB_PATH_INC) = "\\inc\\"

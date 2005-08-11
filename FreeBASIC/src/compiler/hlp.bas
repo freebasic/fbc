@@ -735,7 +735,7 @@ function hCreateProcAlias( byval symbol as string, _
     static sname as zstring * FB_MAXINTNAMELEN+1
 
 
-	select case fbGetNaming()
+	select case as const fbGetNaming()
     case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
         dim addat as integer
 
@@ -808,7 +808,7 @@ end function
 function hCreateDataAlias( byval symbol as string, _
 						   byval isimport as integer ) as string static
 
-	select case fbGetNaming()
+	select case as const fbGetNaming()
     case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
         if( isimport ) then
             function = "__imp__" + symbol
@@ -816,13 +816,11 @@ function hCreateDataAlias( byval symbol as string, _
             function = "_" + symbol
         end if
 
-    case FB_COMPNAMING_DOS
+    case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
 		function = "_" + symbol
 
     case FB_COMPNAMING_LINUX
 		function = symbol
-	case FB_COMPNAMING_XBOX
-		function = "_" + symbol
 
     end select
 
@@ -831,22 +829,20 @@ end function
 '':::::
 function hStripUnderscore( byval symbol as string ) as string static
 
-	select case fbGetNaming()
+	select case as const fbGetNaming()
     case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
 	    if( not env.clopt.nostdcall ) then
-			function = mid$( symbol, 2 )
+			function = mid( symbol, 2 )
 		else
 			function = symbol
 		end if
 
-    case FB_COMPNAMING_DOS
-    	function = mid$( symbol, 2 )
+    case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
+    	function = mid( symbol, 2 )
 
     case FB_COMPNAMING_LINUX
     	function = symbol
 
-    case FB_COMPNAMING_XBOX
-		function = mid$(symbol, 2)
     end select
 
 end function
