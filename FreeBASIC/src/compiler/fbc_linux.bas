@@ -63,15 +63,17 @@ end function
 '':::::
 function _linkFiles as integer
 	dim as integer i
-	dim as string ldpath, ldcline
+	dim as string ldpath, ldcline, libdir, bindir
 
 	function = FALSE
 
 	'' set path
 #ifdef TARGET_LINUX
-	ldpath = *fbGetPath( FB_PATH_BIN ) + "ld"
+	bindir = *fbGetPath( FB_PATH_BIN )
+	ldpath = bindir + "ld"
 #else
-	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
+	bindir = exepath( ) + *fbGetPath( FB_PATH_BIN )
+	ldpath = bindir + "ld.exe"
 #endif
 
     if( not hFileExists( ldpath ) ) then
@@ -104,7 +106,7 @@ function _linkFiles as integer
     end if
 
 	'' set script file
-	ldcline += " -T \"" + *fbGetPath( FB_PATH_BIN ) + "elf_i386.x\""
+	ldcline += " -T \"" + bindir + "elf_i386.x\""
 
     if( len( fbc.mapfile ) > 0) then
         ldcline += " -Map " + fbc.mapfile
@@ -131,7 +133,14 @@ function _linkFiles as integer
     ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' default lib path
-    ldcline += " -L \"" + *fbGetPath( FB_PATH_LIB ) + QUOTE
+#ifdef TARGET_LINUX
+    libdir = *fbGetPath( FB_PATH_LIB )
+#else
+	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
+#endif
+
+	ldcline += " -L \"" + libdir + QUOTE
+
     '' and the current path to libs search list
     ldcline += " -L \"./\""
 
@@ -142,10 +151,10 @@ function _linkFiles as integer
 
 	'' crt init stuff
 	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
-		ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crt1.o\""
+		ldcline += " \"" + libdir + "/crt1.o\""
 	end if
-	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crti.o\""
-	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtbegin.o\""
+	ldcline += " \"" + libdir + "/crti.o\""
+	ldcline += " \"" + libdir + "/crtbegin.o\""
 
     '' init lib group
     ldcline += " -( "
@@ -161,8 +170,8 @@ function _linkFiles as integer
     ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtend.o\""
-	ldcline += " \"" + *fbGetPath( FB_PATH_LIB ) + "/crtn.o\""
+	ldcline += " \"" + libdir + "/crtend.o\""
+	ldcline += " \"" + libdir + "/crtn.o\""
 
     '' invoke ld
     if( fbc.verbose ) then
