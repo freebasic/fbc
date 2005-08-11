@@ -110,7 +110,9 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 #endif
 		if( handle_ok )
 		{
+			/* Handle any other possible bits different Windows versions could return */
 			ctx->attrib = attrib | 0xFFFFFF00;
+			
 			if( (attrib & 0x10) == 0 )
 				ctx->attrib |= 0x20;
 #ifdef TARGET_WIN32
