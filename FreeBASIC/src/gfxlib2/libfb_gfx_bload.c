@@ -115,6 +115,26 @@ static void convert_24to32(unsigned char *src, unsigned char *dest, int w)
 
 
 /*:::::*/
+static void convert_32to16(unsigned char *src, unsigned char *dest, int w)
+{
+	unsigned short *d = (unsigned short *)dest;
+	unsigned int *s = (unsigned int *)src;
+	
+	for (; w; w--) {
+		*d++ = (unsigned short)(((*s & 0xFF) >> 3) | ((*s >> 5) & 0x07E0) | ((*s >> 8) & 0xF800));
+		s++;
+	}
+}
+
+
+/*:::::*/
+static void convert_32to32(unsigned char *src, unsigned char *dest, int w)
+{
+	fb_hMemCpy(dest, src, w << 2);
+}
+
+
+/*:::::*/
 static int load_bmp(FILE *f, void *dest)
 {
 	BMP_HEADER header;
@@ -158,12 +178,20 @@ static int load_bmp(FILE *f, void *dest)
 			case 4: convert = convert_8to32; break;
 		}
 	}
-	else {
+	else if (header.biBitCount == 24) {
 		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = convert_24to16; break;
 			case 3:
 			case 4: convert = convert_24to32; break;
+		}
+	}
+	else {
+		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
+			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			case 2: convert = convert_32to16; break;
+			case 3:
+			case 4: convert = convert_32to32; break;
 		}
 	}
 

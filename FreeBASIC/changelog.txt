@@ -52,6 +52,7 @@ Version 0.15 Beta:
 - non-padded local non-static arrays of UDT's of sizes 3, 5 or 9 would generate bad indexes when referenced (v1c)
 - console programs running in vanilla Linux console were ignoring break condition (CTRL-C) (lillo)
 - INPUT in plain Linux console mode was entering infinite loop if certain keys were pressed (lillo)
+- BLOAD did not load 32bit BMP files correctly (lillo)
 
 
 Version 0.14 Beta:
