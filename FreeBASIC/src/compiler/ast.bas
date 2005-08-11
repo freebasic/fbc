@@ -4923,7 +4923,7 @@ private function hCheckConst( byval dtype as integer, _
 
 	'' x86 assumptions
 
-    select case dtype
+    select case as const dtype
     case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
@@ -4943,24 +4943,25 @@ private function hCheckConst( byval dtype as integer, _
 		end if
 
 	case IR_DATATYPE_LONGINT
-	
+
 		if( culngint( astGetValueAsLongInt( n ) ) > 9223372036854775807ULL ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
-	
+
 	case IR_DATATYPE_ULONGINT
-	
+
 		if( irIsSigned( astGetDataType( n ) ) ) then
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
 				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
-		
-    case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR, IR_DATATYPE_SHORT, IR_DATATYPE_USHORT, _
+
+    case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR, _
+    	 IR_DATATYPE_SHORT, IR_DATATYPE_USHORT, _
     	 IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
-    	
+
 		lval = astGetValueAsLongInt( n )
 		if( (lval < minlimitTB( dtype )) or (lval > maxlimitTB( dtype )) ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
