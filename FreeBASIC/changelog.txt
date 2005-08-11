@@ -21,17 +21,13 @@ Version 0.15 Beta:
 - INSTR([n,] s$, ANY p$) (mjs)
 - RTRIM$(s$[, ANY p$]) and RTRIM$(s$, p$) (mjs)
 - LTRIM$(s$[, ANY p$]) and LTRIM$(s$, p$) (mjs)
-- DATESERIAL, DATEVALUE (mjs)
-- YEAR, MONTH, DAY, WEEKDAY (mjs)
-- TIMESERIAL, TIMEVALUE (mjs)
-- HOUR, MINUTE, SECOND (mjs)
-- NOW (mjs)
-- MONTHNAME, WEEKDAYNAME (mjs)
-- DATEADD, DATEPART, DATEDIFF (mjs)
 - compile-time check for math overflow in literal numbers when assigned or passed as parameter (v1c)
-- FORMAT (mjs)
 - compiler is now much more strict at reporting implicit numeric conversions (lillo)
 - programs compiled with -e will check if the host CPU is at least the one specified in -arch (lillo)
+- FB extension library, the list of functions includes:
+  DATESERIAL, DATEVALUE, YEAR, MONTH, DAY, WEEKDAY, TIMESERIAL, TIMEVALUE, HOUR, MINUTE, 
+  SECOND, NOW, MONTHNAME, WEEKDAYNAME, DATEADD, DATEPART, DATEDIFF,
+  FORMAT (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -49,7 +45,7 @@ Version 0.15 Beta:
 - apps using the multithreaded rtlib under Linux were crashing on exit (lillo)
 - module names were not been checked causing errors if invalid symbol characters were used (v1c)
 - unsigned short multiplications would leave the stack unpoped if a specific register wasn't free (v1c)
-- non-padded local non-static arrays of UDT's of sizes 3, 5 or 9 would generate bad indexes when referenced (v1c)
+- packed local non-static arrays of UDT's of sizes 3, 5 or 9 would generate bad indexes when referenced (v1c)
 - console programs running in vanilla Linux console were ignoring break condition (CTRL-C) (lillo)
 - INPUT in plain Linux console mode was entering infinite loop if certain keys were pressed (lillo)
 - BLOAD did not load 32bit BMP files correctly (lillo)
