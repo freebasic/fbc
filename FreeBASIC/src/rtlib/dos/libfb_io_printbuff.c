@@ -65,7 +65,7 @@ static const char *fb_hConsolePrintLine( const char *pLast, size_t len )
         }
         cputs( tmp_buffer );
     }
-    return pFound;
+    return pFoundLF;
 }
 
 /*:::::*/
