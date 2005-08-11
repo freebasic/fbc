@@ -1,5 +1,5 @@
-#ifndef CRT_BI
-#define CRT_BI
+#ifndef __CRT_BI__
+#define __CRT_BI__
 ''
 '' crt (C runtime) prototypes
 '' ported by DrV (i_am_drv@yahoo.com)
@@ -386,4 +386,4 @@ declare function _errno cdecl alias "_errno" () as integer ptr
 	extern errno alias "errno" as integer
 #endif
 
-#endif ' CRT_BI
+#endif ' __CRT_BI__

@@ -1,5 +1,5 @@
-#ifndef FREEIMAGE_BI
-#define FREEIMAGE_BI
+#ifndef __FREEIMAGE_BI__
+#define __FREEIMAGE_BI__
 
 '' COVERED CODE IS PROVIDED UNDER THIS LICENSE ON AN "AS IS" BASIS, WITHOUT WARRANTY
 '' OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, WITHOUT LIMITATION, WARRANTIES
@@ -11,7 +11,7 @@
 '' PART OF THIS LICENSE. NO USE OF ANY COVERED CODE IS AUTHORIZED HEREUNDER EXCEPT UNDER
 '' THIS DISCLAIMER.
 
-'$inclib: "FreeImage"
+#inclib "FreeImage"
 
 
 #define FREEIMAGE_MAJOR_VERSION  3
@@ -518,4 +518,4 @@ Declare Function FreeImage_Copy Alias "FreeImage_Copy" (byval dib as FIBITMAP pt
 Declare Function FreeImage_Paste Alias "FreeImage_Paste" (ByVal dst As Integer, ByVal src As Integer, ByVal left As Integer, ByVal top As Integer, ByVal alpha As Integer) As Integer
 Declare Function FreeImage_Composite Alias "FreeImage_Composite" (ByVal fg As Integer, ByVal useFileBkg As Integer = 0, ByVal appBkColor As Integer = 0, ByVal bg As Integer = 0) As FIBITMAP ptr
 
-#endif
+#endif '' __FREEIMAGE_BI__
