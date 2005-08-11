@@ -228,6 +228,13 @@ extern "C" {
 #define FB_LL_FMTMOD "ll"
 #endif
 
+#ifdef DEBUG
+#include <assert.h>
+#define DBG_ASSERT(e) assert(e)
+#else
+#define DBG_ASSERT(e) ((void)0)
+#endif
+
 /**************************************************************************************************
  * helpers
  **************************************************************************************************/
@@ -271,15 +278,6 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 
 #include <string.h>
 #include <stdio.h>
-
-/* We have four types of strings:
- *
- * DATA   DESC
- * dyn    temp      -> FB_TEMPSTRBIT is only set for this case
- * static temp
- * dyn    static
- * static static
- */
 
 /** Flag to identify a string as a temporary string.
  *
@@ -352,11 +350,7 @@ do {                                                        \
  * required to allow BASIC-style strings that may contain NUL characters.
  */
 typedef struct _FBSTRING {
-    char           *data;    /**< pointer to the real string data.
-                              *
-                              * This must be the first member
-                              * for (I guess) the BYVAL mechanism.
-                              */
+    char           *data;    /**< pointer to the real string data */
     int             len;     /**< String length. */
     int             size;    /**< Size of allocated memory block. */
 } FBSTRING;
@@ -371,13 +365,9 @@ typedef struct _FB_STR_TMPDESC {
 /* protos */
 
 /* intern */
-/** Descriptor for an empty string.
- *
- * Whenever a string uses this NULL descriptor and the user modifies this
- * string, the RTL will automatically switch from this NULL descriptor to
- * a temporary(?) string.
- *
- * v1ctor: please clarify.
+/** Descriptor for an empty string, descriptors can't be NULL,
+ *  only the data field, or passing them to a BYVAL string
+ *  argument would cause an exception.
  */
 extern    FBSTRING     fb_strNullDesc;
 

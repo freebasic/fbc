@@ -24,7 +24,6 @@
  *
  */
 
-#include <assert.h>
 #include "fb.h"
 
 #if 0
@@ -50,7 +49,7 @@ FBSTRING *fb_ConsoleInkey( void )
 		}
 
         res = fb_hStrAllocTemp( NULL, chars );
-        assert( res != NULL );
+        DBG_ASSERT( res != NULL );
 
 		if( chars > 1 )
 			res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
@@ -61,26 +60,32 @@ FBSTRING *fb_ConsoleInkey( void )
     }
 	else
 		res = &fb_strNullDesc;
+
 #else
     FBSTRING *buffer = fb_ConsoleGetKeyBuffer( );
     size_t buffer_len;
+
     FB_STRLOCK();
+
     buffer_len = FB_STRSIZE( buffer );
-    if( buffer_len!=0 ) {
+    if( buffer_len!=0 )
+    {
         size_t chars = FB_CHAR_TO_INT(buffer->data[0]);
-        res = fb_StrMid ( buffer, 2, chars );
-        if( res!=NULL ) {
+        res = fb_StrMid( buffer, 2, chars );
+        if( res!=NULL )
+        {
             buffer_len -= chars + 1;
             memmove( buffer->data, buffer->data + chars + 1,
                      buffer_len );
             buffer->data[buffer_len] = 0;
             fb_hStrSetLength( buffer, buffer_len );
-        } else {
-            res = &fb_strNullDesc;
         }
-    } else {
-        res = &fb_strNullDesc;
+        else
+        	res = &fb_strNullDesc;
     }
+    else
+    	res = &fb_strNullDesc;
+
     FB_STRUNLOCK();
 #endif
 
@@ -98,8 +103,10 @@ int fb_ConsoleGetkey( void )
 #else
     FBSTRING *tmp;
     FB_STRLOCK();
+
     tmp = fb_ConsoleInkey( );
-    switch( FB_STRSIZE(tmp) ) {
+    switch( FB_STRSIZE(tmp) )
+    {
     case 1:
         k = FB_CHAR_TO_INT( tmp->data[0] );
         break;
@@ -107,7 +114,9 @@ int fb_ConsoleGetkey( void )
         k = FB_MAKE_EXT_KEY( tmp->data[1] );
         break;
     }
+
     fb_hStrDelTemp( tmp );
+
     FB_STRUNLOCK();
 #endif
 	return k;

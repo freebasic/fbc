@@ -3,7 +3,7 @@
 #
 # needed: GNU make, GCC and AR
 #
-# set TARGET to dos, win32 or linux -- if not defined, it will 
+# set TARGET to dos, win32 or linux -- if not defined, it will
 # be the same as HOST, if the later could be guessed
 #
 
@@ -51,7 +51,7 @@ ifndef CC
 endif
 CFLAGS := -ffast-math -Wall -Wno-format -I .
 ifdef DEBUG
-    CFLAGS += -O0 -g
+    CFLAGS += -O0 -g -DDEBUG
 else
     CFLAGS += -O2
 endif
@@ -60,12 +60,12 @@ ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     CFLAGS += -DTARGET_WIN32 -DTARGET_X86
 endif
-    
+
 ifeq ($(TARGET),dos)
     OSDEPPATH := dos
     CFLAGS += -DTARGET_DOS -DTARGET_X86
 endif
-    
+
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
     CFLAGS += -DTARGET_LINUX -DTARGET_X86
@@ -108,7 +108,7 @@ else
 endif
 
 ifndef OSDEPPATH
-	CHECKTARGET_MSG := $(error error: TARGET not supported)  
+	CHECKTARGET_MSG := $(error error: TARGET not supported)
 else
 	CHECKTARGET_MSG :=
 endif

@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -41,7 +40,7 @@ void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
 
     str = fb_Inkey( );
     len = FB_STRSIZE( str );
-    assert(len <= sizeof(info->buffer));
+    DBG_ASSERT(len <= sizeof(info->buffer));
     memcpy(info->buffer, str->data, len);
 
     fb_hStrDelTemp( str );

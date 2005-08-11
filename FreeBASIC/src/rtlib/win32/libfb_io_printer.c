@@ -29,7 +29,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -46,7 +45,7 @@ static PRINTER_INFO_5 *GetDefaultPrinters(size_t *pCount)
     PRINTER_INFO_5 *result = NULL;
     DWORD dwFlags = PRINTER_ENUM_DEFAULT;
 
-    assert(pCount!=NULL);
+    DBG_ASSERT(pCount!=NULL);
 
     *pCount = 0;
 
@@ -86,7 +85,7 @@ static PRINTER_INFO_2 *GetPrinters(size_t *pCount)
     PRINTER_INFO_2 *result = NULL;
     DWORD dwFlags = PRINTER_ENUM_LOCAL | PRINTER_ENUM_CONNECTIONS;
 
-    assert(pCount!=NULL);
+    DBG_ASSERT(pCount!=NULL);
 
     *pCount = 0;
 

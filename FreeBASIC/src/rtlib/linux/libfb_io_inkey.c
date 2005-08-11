@@ -25,7 +25,6 @@
  *
  */
 
-#include <assert.h>
 #include "fb.h"
 #include "fb_linux.h"
 
@@ -157,7 +156,7 @@ static int get_input()
 				return -1;
 		}
 	}
-	
+
 	return k;
 }
 
@@ -166,7 +165,7 @@ static int get_input()
 int fb_hGetCh(int remove)
 {
 	int k;
-	
+
 	k = get_input();
 	if (k >= 0) {
 		key_buffer[key_tail] = k;
@@ -178,7 +177,7 @@ int fb_hGetCh(int remove)
 		k = key_buffer[key_head];
 		if (remove)
 			key_head = (key_head + 1) & (MAX_BUFFER_LEN - 1);
-	}	
+	}
 	return k;
 }
 
@@ -200,7 +199,7 @@ FBSTRING *fb_ConsoleInkey( void )
         }
 
         res = fb_hStrAllocTemp( NULL, chars );
-        assert( res!=NULL );
+        DBG_ASSERT( res!=NULL );
 
 		if( chars > 1 )
 			res->data[0] = FB_EXT_CHAR;		/* note: can't use '\0' here as in qb */
@@ -219,7 +218,7 @@ FBSTRING *fb_ConsoleInkey( void )
 int fb_ConsoleGetkey( void )
 {
 	int k = 0;
-	
+
 	if (!fb_con.inited)
 		return fgetc(stdin);
 
@@ -235,6 +234,6 @@ int fb_ConsoleKeyHit( void )
 {
 	if (!fb_con.inited)
 		return (feof(fb_con.f_in) ? 0: 1);
-	
+
 	return (fb_hGetCh(FALSE) < 0) ? 0 : 1;
 }

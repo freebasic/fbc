@@ -26,7 +26,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -91,9 +90,9 @@ int fb_FileGetDataEx( FB_FILE *handle,
     }
 
     if( handle->mode == FB_FILE_MODE_RANDOM &&
-        res == FB_RTERROR_OK && 
-        adjust_rec_pos && 
-        handle->len!=0 && 
+        res == FB_RTERROR_OK &&
+        adjust_rec_pos &&
+        handle->len!=0 &&
         handle->hooks->pfnSeek!=NULL )
     {
         /* if in random mode, reads must be of reclen.

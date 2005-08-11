@@ -34,7 +34,6 @@
  */
 
 #include <malloc.h>
-#include <assert.h>
 #include <string.h>
 #include <stddef.h>
 #include "fb.h"
@@ -106,9 +105,9 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 	newsize = (size + 31) & ~31;			/* alloc every 32-bytes */
     newsize += (newsize >> 3);				/* plus 12.5% more */
 
-    /* assert( (str->data==0) || FB_ISTEMP( str ) ); */
-
-	if( (str->data == NULL) || (size > str->size) || (newsize < (str->size - (str->size >> 3))) )
+	if( (str->data == NULL) ||
+	    (size > str->size) ||
+	    (newsize < (str->size - (str->size >> 3))) )
 	{
 		if( preserve == FB_FALSE )
 		{
@@ -135,12 +134,9 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 			{
 				str->data = (char *)realloc( pszOld, size + 1 );
 				newsize = size;
-                if( str->data == NULL ) {
-                    /* Don't forget to restore the old memory block.
-                     *
-                     * Comment for realloc() from the posix spec:
-                     * If the space cannot be allocated, the object shall
-                     * remain unchanged. */
+                if( str->data == NULL )
+                {
+                    /* restore the old memory block */
                     str->data = pszOld;
                     return NULL;
                 }
@@ -156,7 +152,8 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 		str->size = newsize;
 	}
 
-    fb_hStrSetLength( str, size );
+	fb_hStrSetLength( str, size );
+
     return str;
 }
 
@@ -164,23 +161,23 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
 {
     int try_alloc = str==NULL;
-    if( try_alloc ) {
+
+    if( try_alloc )
+    {
         str = fb_hStrAllocTmpDesc( );
         if( str==NULL )
             return NULL;
     }
-    if( fb_hStrRealloc( str, size, FB_FALSE )==NULL ) {
-        if( try_alloc ) {
+
+    if( fb_hStrRealloc( str, size, FB_FALSE )==NULL )
+    {
+        if( try_alloc )
             fb_hStrDelTempDesc( str );
-        }
         return NULL;
-    } else {
-        /* Whenever we allocate memory dynamically, we have to mark
-         * this string as "temporary". This name is really confusing ...
-         * because what's really meant is that the strings data was
-         * allocated dynamically. */
-        str->len |= FB_TEMPSTRBIT;
     }
+    else
+        str->len |= FB_TEMPSTRBIT;
+
     return str;
 }
 

@@ -25,7 +25,6 @@
  */
 
 #include <stdio.h>
-#include <assert.h>
 #include "fb.h"
 
 
@@ -38,8 +37,8 @@ void fb_ConsoleClearViewRawEx( HANDLE hConsole, int x1, int y1, int x2, int y2 )
     if( width==0 || lines==0 )
         return;
 
-    assert(width > 0);
-    assert(lines > 0);
+    DBG_ASSERT(width > 0);
+    DBG_ASSERT(lines > 0);
 
     while (lines--) {
         DWORD written;

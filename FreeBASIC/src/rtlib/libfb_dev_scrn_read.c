@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -41,7 +40,7 @@ int fb_DevScrnRead( struct _FB_FILE *handle, void* value, size_t *pLength )
 
     FB_LOCK();
 
-    assert(pLength!=NULL);
+    DBG_ASSERT(pLength!=NULL);
     length = *pLength;
 
     info = (DEV_SCRN_INFO*) FB_HANDLE_DEREF(handle)->opaque;

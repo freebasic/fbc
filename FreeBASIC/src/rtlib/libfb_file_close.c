@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -42,7 +41,7 @@ int fb_FileCloseEx( FB_FILE *handle )
     }
 
     /* close VFS handle */
-    assert(handle->hooks->pfnClose != NULL);
+    DBG_ASSERT(handle->hooks->pfnClose != NULL);
     int result = handle->hooks->pfnClose( handle );
     if (result != 0) {
         FB_UNLOCK();

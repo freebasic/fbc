@@ -38,45 +38,58 @@ int fb_ConsoleProcessEvents( void )
     DWORD dwRead;
     FBSTRING *CharBuffer = &fb_strInput;
 
-	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) ) {
-		if( dwRead > 0 ) {
+	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
+	{
+		if( dwRead > 0 )
+		{
             ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
 
             FB_LOCK();
 
-            switch ( ir.EventType ) {
+            switch ( ir.EventType )
+            {
             case KEY_EVENT:
-                if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount!=0 ) {
+                if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount!=0 )
+                {
                     char chTemp[3];
                     size_t TempSize = 0;
-                    if( ir.Event.KeyEvent.uChar.AsciiChar==0 ) {
+                    if( ir.Event.KeyEvent.uChar.AsciiChar==0 )
+                    {
                         WORD wVkCode = ir.Event.KeyEvent.wVirtualKeyCode;
                         WORD wVsCode = ir.Event.KeyEvent.wVirtualScanCode;
                         int allow_key = ( wVkCode >= VK_SPACE )
                             && ( wVkCode <= VK_NUMLOCK )
                             && ( wVsCode > 0 )
                             && ( wVsCode <= 254 );
-                        switch ( wVkCode ) {
+                        switch ( wVkCode )
+                        {
                         case VK_LWIN:
                         case VK_RWIN:
                         case VK_APPS:
                             allow_key = FALSE;
                             break;
                         }
-                        if( allow_key ) {
+                        if( allow_key )
+                        {
                             chTemp[0] = 2;
                             chTemp[1] = FB_EXT_CHAR;
                             chTemp[2] = (char) (ir.Event.KeyEvent.wVirtualScanCode & 0xFF);
                             TempSize = 3;
-                        } else {
+                        }
+                        else
+                        {
                             chTemp[0] = 0;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         chTemp[0] = 1;
                         chTemp[1] = ir.Event.KeyEvent.uChar.AsciiChar;
                         TempSize = 2;
                     }
-                    if( chTemp[0]!=0 ) {
+
+                    if( chTemp[0]!=0 )
+                    {
                         size_t ElemSize = FB_CHAR_TO_INT(chTemp[0]) + 1;
                         size_t OldSize, NewSize;
 
@@ -90,8 +103,10 @@ int fb_ConsoleProcessEvents( void )
                                                      NewSize,
                                                      FB_TRUE );
 
-                        if( CharBuffer ) {
-                            while( ir.Event.KeyEvent.wRepeatCount-- ) {
+                        if( CharBuffer )
+                        {
+                            while( ir.Event.KeyEvent.wRepeatCount-- )
+                            {
                                 memcpy( CharBuffer->data + OldSize,
                                         chTemp,
                                         ElemSize );
@@ -104,8 +119,10 @@ int fb_ConsoleProcessEvents( void )
                     }
                 }
                 break;
+
             case MOUSE_EVENT:
-                if( MouseEventHook != (fb_FnProcessMouseEvent) NULL ) {
+                if( MouseEventHook != (fb_FnProcessMouseEvent) NULL )
+                {
                     MouseEventHook( &ir.Event.MouseEvent );
                     got_event = TRUE;
                 }

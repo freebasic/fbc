@@ -26,7 +26,6 @@
  */
 
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 #include "fb.h"
 
@@ -45,10 +44,10 @@ static void fb_hBufferCopy( HANDLE hDest, int dx, int dy,
     SMALL_RECT r;
     size_t BufferSize;
 
-    assert(x1 <= x2);
-    assert(y1 <= y2);
-    assert( hDest != NULL );
-    assert( hSource != NULL );
+    DBG_ASSERT(x1 <= x2);
+    DBG_ASSERT(y1 <= y2);
+    DBG_ASSERT( hDest != NULL );
+    DBG_ASSERT( hSource != NULL );
 
     dwBufferSize.X = (SHORT) (x2 - x1 + 1);
     dwBufferSize.Y = (SHORT) (y2 - y1 + 1);
@@ -101,16 +100,16 @@ static HANDLE fb_hBufferCreateCopy( HANDLE hSource, int x1, int y1, int x2, int 
     HANDLE hDest;
     COORD dwSize;
 
-    assert(x1 <= x2);
-    assert(y1 <= y2);
-    assert( hSource != NULL );
+    DBG_ASSERT(x1 <= x2);
+    DBG_ASSERT(y1 <= y2);
+    DBG_ASSERT( hSource != NULL );
 
     hDest = CreateConsoleScreenBuffer( GENERIC_READ | GENERIC_WRITE,
                                        0,
                                        NULL,
                                        CONSOLE_TEXTMODE_BUFFER,
                                        NULL );
-    assert( hDest != NULL );
+    DBG_ASSERT( hDest != NULL );
 
     /* Always hide cursor in temporary buffer (otherwise we'll get some
      * cursor "artifacts") */
@@ -138,7 +137,7 @@ static HANDLE fb_hBufferCreateCopy( HANDLE hSource, int x1, int y1, int x2, int 
  */
 static void fb_hBufferFree( HANDLE hSource )
 {
-    assert( hSource != NULL );
+    DBG_ASSERT( hSource != NULL );
     CloseHandle( hSource );
 }
 #endif

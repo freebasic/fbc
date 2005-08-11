@@ -26,7 +26,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -152,7 +151,7 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
         {
             /* create temporary string */
             str_result = fb_StrAllocTempDescZ( NULL );
-            assert(str_result != NULL);
+            DBG_ASSERT(str_result != NULL);
 
             /* read complete line (may include NULs) */
             handle->hooks->pfnReadLine( handle, str_result );

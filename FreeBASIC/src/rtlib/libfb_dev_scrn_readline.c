@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -37,7 +36,7 @@
 
 void DoMove( FB_FILE *handle, int *x, int *y, int dx, int dy, int cols, int rows )
 {
-    assert( x!=NULL && y!=NULL );
+    DBG_ASSERT( x!=NULL && y!=NULL );
 
     *x -= 1;
     *y -= 1;
@@ -266,7 +265,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     len = FB_STRSIZE(dst);
     FB_STRUNLOCK();
 
-    assert(handle->width!=0);
+    DBG_ASSERT(handle->width!=0);
 
     old_x += len - 1;
     old_x %= handle->width;

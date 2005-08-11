@@ -18,7 +18,7 @@
  */
 
 /*
- * str_mid.c -- mid$ function and mid$ statement.. ambiguity? no kidding!
+ * str_mid.c -- mid$ function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -36,7 +36,7 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
     int			src_len;
 
 	FB_STRLOCK();
-	
+
     if( (src != NULL) && (src->data != NULL) && (FB_STRSIZE( src ) > 0) )
 	{
         src_len = FB_STRSIZE( src );
@@ -72,53 +72,7 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 	fb_hStrDelTemp( src );
 
 	FB_STRUNLOCK();
-	
+
 	return dst;
 }
 
-
-/*:::::*/
-FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
-{
-    int 	src_len, dst_len;
-
-	FB_STRLOCK();
-	
-    if( (dst == NULL) || (dst->data == NULL) || (FB_STRSIZE( dst ) == 0) )
-    {
-    	fb_hStrDelTemp( src );
-    	fb_hStrDelTemp( dst );
-    	FB_STRUNLOCK();
-    	return;
-    }
-
-    if(	(src == NULL) || (src->data == NULL) || (FB_STRSIZE( src ) == 0) ) {
-        fb_hStrDelTemp( src );
-    	fb_hStrDelTemp( dst );
-    	FB_STRUNLOCK();
-    	return ;
-    }
-
-
-	src_len = FB_STRSIZE( src );
-	dst_len = FB_STRSIZE( dst );
-
-    if( (start > 0) && (start <= dst_len) )
-    {
-		--start;
-
-        if( (len < 1) || (len > src_len) )
-			len = src_len;
-
-        if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
-
-		memcpy( dst->data + start, src->data, len );
-    }
-
-	/* del if temp */
-	fb_hStrDelTemp( src );
-    fb_hStrDelTemp( dst );
-
-   	FB_STRUNLOCK();
-}

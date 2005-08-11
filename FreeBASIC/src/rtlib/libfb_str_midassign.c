@@ -18,46 +18,59 @@
  */
 
 /*
- * file_reset - RESET function
+ * str_midassign.c -- mid$ statement
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
-#ifdef MULTITHREADED
-extern int __fb_is_exiting;
-#endif
 
 /*:::::*/
-FBCALL void fb_FileReset ( void )
+FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
 {
-	int i;
+    int 	src_len, dst_len;
 
-#ifdef MULTITHREADED
-	if (!__fb_is_exiting)
-		FB_LOCK();
-#endif
+	FB_STRLOCK();
 
-    for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) {
-        FB_FILE *handle = FB_FILE_TO_HANDLE(i);
-        if (handle->hooks!=NULL) {
-            DBG_ASSERT(handle->hooks->pfnClose!=NULL);
-            handle->hooks->pfnClose( handle );
-        }
+    if( (dst == NULL) || (dst->data == NULL) || (FB_STRSIZE( dst ) == 0) )
+    {
+    	fb_hStrDelTemp( src );
+    	fb_hStrDelTemp( dst );
+    	FB_STRUNLOCK();
+    	return;
     }
-    /* clear all file handles */
-    memset(FB_FILE_TO_HANDLE(1),
-           0,
-           sizeof(FB_FILE) * (FB_MAX_FILES - FB_RESERVED_FILES));
 
-#ifdef MULTITHREADED
-	if (!__fb_is_exiting)
-		FB_UNLOCK();
-#endif
+    if(	(src == NULL) || (src->data == NULL) || (FB_STRSIZE( src ) == 0) ) {
+        fb_hStrDelTemp( src );
+    	fb_hStrDelTemp( dst );
+    	FB_STRUNLOCK();
+    	return ;
+    }
+
+
+	src_len = FB_STRSIZE( src );
+	dst_len = FB_STRSIZE( dst );
+
+    if( (start > 0) && (start <= dst_len) )
+    {
+		--start;
+
+        if( (len < 1) || (len > src_len) )
+			len = src_len;
+
+        if( start + len > dst_len )
+        	len = (dst_len - start) - 1;
+
+		memcpy( dst->data + start, src->data, len );
+    }
+
+	/* del if temp */
+	fb_hStrDelTemp( src );
+    fb_hStrDelTemp( dst );
+
+   	FB_STRUNLOCK();
 }

@@ -25,7 +25,6 @@
  */
 
 #include <malloc.h>
-#include <assert.h>
 #include <string.h>
 #include "fb.h"
 
@@ -62,7 +61,7 @@ FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *
 	{
 		/* alloc temp string */
         if( !fb_hStrAllocTemp( dst, str1_len+str2_len ) )
-            assert( FALSE );
+            DBG_ASSERT( FALSE );
 
 		/* do the concatenation */
 		fb_hStrConcat( dst->data, str1_ptr, str1_len, str2_ptr, str2_len );

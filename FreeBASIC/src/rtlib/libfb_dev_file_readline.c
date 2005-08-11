@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -41,7 +40,7 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst )
     int found;
     FBSTRING *src;
 
-    assert( dst!=NULL );
+    DBG_ASSERT( dst!=NULL );
 
 	FB_LOCK();
 

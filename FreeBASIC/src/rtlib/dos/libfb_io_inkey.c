@@ -26,7 +26,6 @@
 
 #include "fb.h"
 
-#include <assert.h>
 #include <conio.h>
 
 /*:::::*/
@@ -47,7 +46,7 @@ FBSTRING *fb_ConsoleInkey( void )
 		}
 
         res = fb_hStrAllocTemp( NULL, chars );
-        assert( res!=NULL );
+        DBG_ASSERT( res!=NULL );
         if( chars > 1 )
             res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
 

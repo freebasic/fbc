@@ -25,7 +25,6 @@
  */
 
 #include <stdlib.h>
-#include <assert.h>
 #include <malloc.h>
 #include <string.h>
 #include <process.h>
@@ -56,7 +55,7 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
     }
 
     application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
-    assert( application!=NULL );
+    DBG_ASSERT( application!=NULL );
     if( application==program->data ) {
         application = buffer;
         FB_MEMCPY(application, program->data, FB_STRSIZE( program ) );
@@ -68,7 +67,7 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
     } else {
         len_arguments = FB_STRSIZE( args );
         arguments = alloca( len_arguments + 1 );
-        assert( arguments!=NULL );
+        DBG_ASSERT( arguments!=NULL );
         if( len_arguments )
             FB_MEMCPY( arguments, args->data, len_arguments );
         arguments[len_arguments] = 0;
@@ -78,7 +77,7 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
     len_arguments = ( ( args==NULL ) ? 0 : FB_STRSIZE( args ) );
 
     arguments = alloca( len_program + len_arguments + 2 );
-    assert( arguments!=NULL );
+    DBG_ASSERT( arguments!=NULL );
 
     FB_MEMCPY( arguments, buffer, len_program );
     arguments[len_program] = ' ';

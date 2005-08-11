@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -87,7 +86,7 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
     }
 
     result = pfnOpen(handle, filename, filename_length);
-    assert(result!=FB_RTERROR_OK || handle->hooks!=NULL);
+    DBG_ASSERT(result!=FB_RTERROR_OK || handle->hooks!=NULL);
 
     /* query the file size - only if supported */
     if (result==0) {

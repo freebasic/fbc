@@ -28,7 +28,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 

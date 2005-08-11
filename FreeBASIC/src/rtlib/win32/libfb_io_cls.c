@@ -25,7 +25,6 @@
  */
 
 #include <stdio.h>
-#include <assert.h>
 #include "fb.h"
 
 void fb_InitConsoleWindow( void );
@@ -67,8 +66,8 @@ void fb_ConsoleClear( int mode )
         view_bottom = win_bottom;
     }
 
-    assert(view_left <= view_right);
-    assert(view_top <= view_bottom);
+    DBG_ASSERT(view_left <= view_right);
+    DBG_ASSERT(view_top <= view_bottom);
 
     fb_ConsoleClearViewRawEx( fb_out_handle, view_left, view_top, view_right, view_bottom );
 }
