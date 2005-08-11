@@ -11,7 +11,6 @@ defint a-z
 
 public sub init_b( )
 
-#ifndef FIXME
 	on local error goto expected_err
 
     dim access_test as any ptr
@@ -20,7 +19,6 @@ public sub init_b( )
     ASSERT( access_test<>access_test )
 
 expected_err:
-#endif
 
 	redim ext_dynarray(1 to 21, 1 to 2)
 

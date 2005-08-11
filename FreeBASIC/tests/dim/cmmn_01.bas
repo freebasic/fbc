@@ -1,8 +1,3 @@
-#ifdef FIXME
-'' It works without '$dynamic with QB .. do we want to keep it this way?
-'$dynamic
-#endif
-
 option explicit
 option private
 
