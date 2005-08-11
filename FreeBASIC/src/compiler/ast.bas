@@ -4945,6 +4945,7 @@ private function hCheckConst( byval dtype as integer, _
 	case IR_DATATYPE_LONGINT
 	
 		if( culngint( astGetValueAsLongInt( n ) ) > 9223372036854775807ULL ) then
+			n = astNewCONV( INVALID, dtype, NULL, n )
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 	
@@ -4952,6 +4953,7 @@ private function hCheckConst( byval dtype as integer, _
 	
 		if( irIsSigned( astGetDataType( n ) ) ) then
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
+				n = astNewCONV( INVALID, dtype, NULL, n )
 				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if

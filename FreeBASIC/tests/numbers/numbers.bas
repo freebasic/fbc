@@ -91,14 +91,10 @@ ASSERT( l_ub = test_l_lb )
 test_ul_lb = 0
 test_ul_ub = 18446744073709551615
 '' this should issue a warning
-#ifdef FIXME
-ul_lb = -1LL
-#else
 ul_lb = -1
-#endif
 #if 0
-'' this should issue an error if uncommented
-'' from mjs: really?
+'' this should issue an error if uncommented:
+'' the lexer will complain the number is too big
 ul = 18446744073709551616
 #endif
 ASSERT( ul_lb = test_ul_ub )
