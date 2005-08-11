@@ -29,6 +29,7 @@ Version 0.15 Beta:
   DATESERIAL, DATEVALUE, YEAR, MONTH, DAY, WEEKDAY, TIMESERIAL, TIMEVALUE, HOUR, MINUTE, 
   SECOND, NOW, MONTHNAME, WEEKDAYNAME, DATEADD, DATEPART, DATEDIFF,
   FORMAT (mjs)
+- the & operator, allowing to concatenate strings, automatically converting types to string if needed (lillo)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

@@ -30,6 +30,7 @@ defint a-z
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
 #include once "inc\emit.bi"
+#include once "inc\rtl.bi"
 
 '':::::
 sub cUpdPointer( byval op as integer, _
@@ -94,8 +95,74 @@ end sub
 ''
 function cExpression( byref expr as ASTNODE ptr ) as integer
 
-	function = cLogExpression( expr )
+	function = cCatExpression( expr )
 
+end function
+
+'':::::
+''CatExpression   =   LogExpression ( & LogExpression )* .
+''
+function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr logexpr
+	
+	function = FALSE
+	
+	'' LogExpression
+	if( not cLogExpression( catexpr ) ) then
+		exit function
+	end if
+	
+	'' &
+	if( lexGetToken( ) = CHAR_AMP ) then
+    	
+    	'' convert operand to string if needed
+    	if( irGetDataClass( astGetDataType( catexpr ) ) <> IR_DATACLASS_STRING ) then
+    		catexpr = rtlToStr( catexpr )
+    		
+   			if( catexpr = NULL ) then
+   				hReportError FB_ERRMSG_TYPEMISMATCH
+   				exit function
+    		end if
+    	end if
+	end if
+	
+	'' ( ... )*
+	do
+		'' &
+		if( lexGetToken( ) <> CHAR_AMP ) then
+			exit do
+		end if
+		
+		lexSkipToken( )
+		
+		'' LogExpression
+    	if( not cLogExpression( logexpr ) ) then
+    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    		exit function
+    	end if
+
+		'' convert operand to string if needed
+		if( irGetDataClass( astGetDataType( logexpr ) ) <> IR_DATACLASS_STRING ) then
+	   		logexpr = rtlToStr( logexpr )
+	   		
+	   		if( logexpr = NULL ) then
+	   			hReportError FB_ERRMSG_TYPEMISMATCH
+	   			exit function
+	   		end if
+    	end if
+    	
+    	'' concatenate
+    	catexpr = astNewBOP( IR_OP_ADD, catexpr, logexpr )
+
+        if( catexpr = NULL ) then
+			hReportError FB_ERRMSG_TYPEMISMATCH
+            exit function
+        end if
+        
+	loop
+	
+	function = TRUE
+	
 end function
 
 '':::::

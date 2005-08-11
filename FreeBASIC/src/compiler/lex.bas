@@ -1306,7 +1306,20 @@ reread:
 		end if
 
 	'':::::
-	case CHAR_AMP, CHAR_0 to CHAR_9
+	case CHAR_AMP
+		select case lexGetLookAheadChar( )
+		case CHAR_HUPP, CHAR_HLOW, CHAR_OUPP, CHAR_OLOW, CHAR_BUPP, CHAR_BLOW
+			goto readnumber
+		end select
+		t.class     = FB_TKCLASS_OPERATOR
+		t.id		= lexEatChar( )
+		t.tlen		= 1
+		t.typ		= t.id
+		t.text[0] = char                            '' t.text = chr$( char )
+		t.text[1] = 0                               '' /
+
+	'':::::
+	case CHAR_0 to CHAR_9
 readnumber:
 		lexReadNumber( @t.text, t.id, t.tlen, flags )
 		t.class 	= FB_TKCLASS_NUMLITERAL

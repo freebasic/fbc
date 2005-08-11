@@ -134,6 +134,8 @@ declare function 	cAssignmentOrPtrCall	( ) as integer
 
 declare function 	cExpression				( byref expr as ASTNODE ptr ) as integer
 
+declare function 	cCatExpression			( byref catexpr as ASTNODE ptr ) as integer
+
 declare function 	cLogExpression			( byref logexpr as ASTNODE ptr ) as integer
 
 declare function 	cRelExpression			( byref relexpr as ASTNODE ptr ) as integer
