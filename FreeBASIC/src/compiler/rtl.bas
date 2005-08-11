@@ -43,6 +43,7 @@ end type
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 declare function 	hGfxlib_cb			( byval sym as FBSYMBOL ptr ) as integer
 declare function 	hMultinput_cb		( byval sym as FBSYMBOL ptr ) as integer
+declare function 	hPorts_cb			( byval sym as FBSYMBOL ptr ) as integer
 
 
 ''globals
@@ -1650,7 +1651,7 @@ data "pmap", "fb_GfxPMap", _
 '' fb_Out( byval port as ushort, byval data as ubyte ) as void
 data "out", "fb_Out", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, TRUE, FALSE, _
+	 @hPorts_cb, TRUE, FALSE, _
 	 2, _
 	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_UBYTE,FB_ARGMODE_BYVAL, FALSE
@@ -1658,14 +1659,14 @@ data "out", "fb_Out", _
 '' fb_In( byval port as ushort ) as integer
 data "inp", "fb_In", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, TRUE, FALSE, _
+	 @hPorts_cb, TRUE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_Wait ( byval port as ushort, byval and_mask as integer, byval xor_mask as integer = 0 )
 data "wait", "fb_Wait", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, TRUE, FALSE, _
+	 @hPorts_cb, TRUE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
@@ -5167,6 +5168,23 @@ private function hMultithread_cb( byval sym as FBSYMBOL ptr ) as integer
 	env.clopt.multithreaded = TRUE
 
 	return TRUE
+
+end function
+
+'':::::
+private function hPorts_cb( byval sym as FBSYMBOL ptr ) as integer
+    static as integer libsAdded = FALSE
+
+	if( not libsadded ) then
+		libsAdded = TRUE
+
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			symbAddLib( "advapi32" )
+		end select
+	end if
+
+	function = TRUE
 
 end function
 

@@ -541,13 +541,11 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "moldname" )
 		symbAddLib( "msvcrt" )
 		symbAddLib( "kernel32" )
-		symbAddLib( "advapi32" )
 
 	case FB_COMPTARGET_CYGWIN
 		symbAddLib( "gcc" )
 		symbAddLib( "cygwin" )
 		symbAddLib( "kernel32" )
-		symbAddLib( "advapi32" )
 
 	case FB_COMPTARGET_LINUX
 		symbAddLib( "gcc" )
