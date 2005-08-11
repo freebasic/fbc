@@ -91,7 +91,9 @@ function _linkFiles as integer
 
 	''
 	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
+#ifdef TARGET_LINUX
 		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
+#endif
 	end if
 
     ''
