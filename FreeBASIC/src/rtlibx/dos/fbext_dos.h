@@ -27,23 +27,23 @@ extern "C" {
 #endif
 
     struct _DOS_COUNTRY_INFO_GENERAL {
-        unsigned char   info_id;
-        unsigned short  size_data;
-        unsigned short  country_id;
-        unsigned short  code_page;
-        unsigned short  date_format;
-        char            curr_symbol_string[5];
-        char            thousands_sep[2];
-        char            decimal_sep[2];
-        char            date_sep[2];
-        char            time_sep[2];
-        unsigned char   currency_format;
-        unsigned char   curr_frac_digits;
-        unsigned char   time_format;
-        unsigned long   far_ptr_case_map_routine;
-        char            data_list_sep[2];
-        char            reserved[10];
-    } __attribute__((aligned(1)));
+        unsigned char   info_id                   __attribute__((packed));
+        unsigned short  size_data                 __attribute__((packed));
+        unsigned short  country_id                __attribute__((packed));
+        unsigned short  code_page                 __attribute__((packed));
+        unsigned short  date_format               __attribute__((packed));
+        char            curr_symbol_string[5]     __attribute__((packed));
+        char            thousands_sep[2]          __attribute__((packed));
+        char            decimal_sep[2]            __attribute__((packed));
+        char            date_sep[2]               __attribute__((packed));
+        char            time_sep[2]               __attribute__((packed));
+        unsigned char   currency_format           __attribute__((packed));
+        unsigned char   curr_frac_digits          __attribute__((packed));
+        unsigned char   time_format               __attribute__((packed));
+        unsigned long   far_ptr_case_map_routine  __attribute__((packed));
+        char            data_list_sep[2]          __attribute__((packed));
+        char            reserved[10]              __attribute__((packed));
+    };
 
     typedef struct _DOS_COUNTRY_INFO_GENERAL DOS_COUNTRY_INFO_GENERAL;
 

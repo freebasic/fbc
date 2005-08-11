@@ -45,6 +45,8 @@ int fb_hIntlGetInfo( DOS_COUNTRY_INFO_GENERAL *pInfo )
     if( arg_seg==0 )
         return FALSE;
 
+    memset( &r, 0, sizeof(r) );
+
     r.x.ax = 0x6501;
     r.x.bx = 0xFFFF;
     r.x.dx = 0xFFFF;
