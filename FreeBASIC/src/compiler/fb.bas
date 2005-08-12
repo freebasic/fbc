@@ -643,20 +643,8 @@ function fbIncludeFile( byval filename as string, _
 			exit function
 		end if
 
-		''
-		if( env.clopt.debug ) then
-			'' !!!FIXEME!!!
-			'' edbgIncludeBegin( fileidx )
-		end if
-
 		'' parse
 		function = cProgram( )
-
-		''
-		if( env.clopt.debug ) then
-			'' !!!FIXEME!!!
-			'' edbgIncludeEnd( )
-		end if
 
 		'' close it
 		if( close( #env.inf.num ) <> 0 ) then
