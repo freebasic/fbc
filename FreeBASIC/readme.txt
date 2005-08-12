@@ -617,8 +617,9 @@ Credits (in alphabetic order):
     - Translated the FMOD and BASS headers.
     - Wrote the fmod.bas test in the examples/sound directory.
 
-  o Sterling Christensen (sterling@engineer.com) - Ex-Project Member:
-    - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
+  o Sterling Christensen (sterling@engineer.com):
+    - Ex-project member, developer of the QB-like graphics library (later replaced by 
+      GFXLib2 in 0.11b)
 
   o Steven Hidy (subxero@phatcode.net):
     - Rewrote this readme file, correcting v1ctor's mistakes (also re-edited by
