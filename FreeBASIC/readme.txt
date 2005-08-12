@@ -411,6 +411,13 @@ Most Important Features:
       Test ( )
 
       et cetera.
+      
+  o Function overloading:
+  
+  	DECLARE SUB Test OVERLOAD (a AS DOUBLE)
+  	DECLARE SUB Test (a AS SINGLE)
+  	DECLARE SUB Test (a AS INTEGER, b AS INTEGER = 1234)
+  	DECLARE SUB Test (a AS BYTE, b AS SHORT)
 
   o Inline Assembly:
 
@@ -610,7 +617,7 @@ Credits (in alphabetic order):
     - Translated the FMOD and BASS headers.
     - Wrote the fmod.bas test in the examples/sound directory.
 
-  o Sterling Christensen (sterling@engineer.com) - Project Member:
+  o Sterling Christensen (sterling@engineer.com) - Ex-Project Member:
     - Developer of the QB-like graphics library (later replaced by GFXLib2 in 0.11b)
 
   o Steven Hidy (subxero@phatcode.net):
