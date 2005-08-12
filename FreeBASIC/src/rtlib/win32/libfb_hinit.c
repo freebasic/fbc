@@ -35,6 +35,7 @@ CRITICAL_SECTION fb_string_mutex;
 #endif
 
 HANDLE fb_in_handle, fb_out_handle;
+int ConsoleSetByUser = FALSE;
 
 void __main(void);
 

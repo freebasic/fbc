@@ -30,6 +30,7 @@ Version 0.15 Beta:
   SECOND, NOW, MONTHNAME, WEEKDAYNAME, DATEADD, DATEPART, DATEDIFF,
   FORMAT (mjs)
 - the & operator, allowing to concatenate strings, automatically converting types to string if needed (lillo)
+- basic CYGWIN port (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

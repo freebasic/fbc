@@ -91,7 +91,14 @@ int fb_ConsoleWidth( int cols, int rows )
 
     SetConsoleActiveScreenBuffer( fb_out_handle );
 
-    fb_hUpdateConsoleWindow( );
+    if( do_change ) {
+        /* Re-enable updating */
+        ConsoleSetByUser = FALSE;
+
+        fb_hUpdateConsoleWindow( );
+
+        ConsoleSetByUser = TRUE;
+    }
 
 	return cur;
 }

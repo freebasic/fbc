@@ -30,7 +30,25 @@
 #include "fb_rterr.h"
 
 SMALL_RECT srConsoleWindow;
+static SMALL_RECT srRealConsoleWindow;
 
+static __inline__ void ReadConsoleRect( SMALL_RECT *pRect, int GetRealWindow )
+{
+    CONSOLE_SCREEN_BUFFER_INFO info;
+
+    if( GetConsoleScreenBufferInfo( fb_out_handle, &info )==0 ) {
+        memset( pRect, 0, sizeof(SMALL_RECT) );
+    } else {
+        if( GetRealWindow ) {
+            memcpy( pRect, &info.srWindow, sizeof(SMALL_RECT) );
+        } else {
+            pRect->Left = 0;
+            pRect->Top = info.srWindow.Top;
+            pRect->Right = info.dwSize.X - 1;
+            pRect->Bottom = info.srWindow.Bottom;
+        }
+    }
+}
 
 /** Remembers the current console window coordinates.
  *
@@ -52,19 +70,14 @@ SMALL_RECT srConsoleWindow;
  */
 FBCALL void fb_hUpdateConsoleWindow( void )
 {
-    CONSOLE_SCREEN_BUFFER_INFO info;
-    if( GetConsoleScreenBufferInfo( fb_out_handle, &info )==0 ) {
-        memset( &srConsoleWindow, 0, sizeof(SMALL_RECT) );
-    } else {
-#if 0
-        memcpy( &srConsoleWindow, &info.srWindow, sizeof(SMALL_RECT) );
-#else
-        srConsoleWindow.Left = 0;
-        srConsoleWindow.Top = info.srWindow.Top;
-        srConsoleWindow.Right = info.dwSize.X - 1;
-        srConsoleWindow.Bottom = info.srWindow.Bottom;
-#endif
-    }
+    /* Whenever the console was set by the user, we MUST NOT query this
+     * information again because this would cause a mess with SAA
+     * applications otherwise. */
+    if (ConsoleSetByUser)
+        return;
+
+    ReadConsoleRect( &srConsoleWindow, FALSE );
+    ReadConsoleRect( &srRealConsoleWindow, TRUE );
 }
 
 /*:::::*/
@@ -82,9 +95,28 @@ void fb_InitConsoleWindow( void )
 /*:::::*/
 FBCALL void fb_hRestoreConsoleWindow( void )
 {
+    SMALL_RECT sr;
+
+    /* Whenever the console was set by the user, there's no need to
+     * restore the original window console because we don't have to
+     * mess around with scrollable windows */
+    if (ConsoleSetByUser)
+        return;
+
     fb_InitConsoleWindow( );
 
-    SetConsoleWindowInfo( fb_out_handle, TRUE, &srConsoleWindow );
+    /* Update only when changed! */
+    ReadConsoleRect( &sr, TRUE );
+    if( (sr.Left != srRealConsoleWindow.Left)
+        || (sr.Top != srRealConsoleWindow.Top)
+        || (sr.Right != srRealConsoleWindow.Right)
+        || (sr.Bottom != srRealConsoleWindow.Bottom) )
+    {
+        /* Keep the left/right coordinate of the console */
+        sr.Top = srRealConsoleWindow.Top;
+        sr.Bottom = srRealConsoleWindow.Bottom;
+        SetConsoleWindowInfo( fb_out_handle, TRUE, &srRealConsoleWindow );
+    }
 }
 
 
