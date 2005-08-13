@@ -182,7 +182,7 @@ Most Important Features:
       with old code. If you want to show a message box in Windows, simply do:
 
       '$include: 'win\user32.bi'
-      MessageBox NULL, "Title", "Text", MB_ICONASTERISK
+      MessageBox NULL, "Text", "Title", MB_ICONASTERISK
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
 
@@ -473,10 +473,10 @@ Most Important Features:
 
   o Escape characters inside literal strings:
 
-    - Same as in C (except numbers are interpreted as decimal, not octagonal).
+    - Same as in C (except numbers are interpreted as decimal, not octal).
       Use the OPTION ESCAPE statement to turn this behavior on or off.
 
-      OPTION ESCPAPE
+      OPTION ESCAPE
       PRINT "\"Hello from FreeBASIC!\""
 
   o Debugging support:
