@@ -108,9 +108,7 @@ FBCALL void fb_hRestoreConsoleWindow( void )
     /* Update only when changed! */
     ReadConsoleRect( &sr, TRUE );
     if( (sr.Left != srRealConsoleWindow.Left)
-        || (sr.Top != srRealConsoleWindow.Top)
-        || (sr.Right != srRealConsoleWindow.Right)
-        || (sr.Bottom != srRealConsoleWindow.Bottom) )
+        || (sr.Right != srRealConsoleWindow.Right) )
     {
         /* Keep the left/right coordinate of the console */
         sr.Top = srRealConsoleWindow.Top;
