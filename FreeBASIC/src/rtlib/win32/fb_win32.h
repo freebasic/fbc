@@ -70,6 +70,7 @@ extern const unsigned char fb_keytable[][3];
 extern SMALL_RECT srConsoleWindow;
 extern fb_FnProcessMouseEvent MouseEventHook;
 extern int ConsoleSetByUser;
+extern int ScrollWasOff;
 
 FBCALL int fb_hExec                     ( struct _FBSTRING *program,
                                           struct _FBSTRING *args,

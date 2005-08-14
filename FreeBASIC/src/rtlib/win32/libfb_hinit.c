@@ -36,6 +36,7 @@ CRITICAL_SECTION fb_string_mutex;
 
 HANDLE fb_in_handle, fb_out_handle;
 int ConsoleSetByUser = FALSE;
+int ScrollWasOff = FALSE;
 
 void __main(void);
 

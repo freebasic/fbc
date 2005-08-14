@@ -157,6 +157,9 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
 
+    if( len==0 )
+        return;
+
     is_window_empty = FB_CONSOLE_WINDOW_EMPTY();
 
 	fb_ConsoleGetScreenSize( &buf_cols, &buf_rows );
@@ -174,10 +177,16 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         SetConsoleCursorInfo( fb_out_handle, &cursor_info );
 
         /* scrolling */
-        if( (row > view_bottom) && is_view_set )
+        if( ((row > view_bottom) && is_view_set) || ScrollWasOff )
         {
+            int TmpScrollWasOff = ScrollWasOff;
             fb_ConsoleScroll( 1 );
             row = view_bottom;
+            if( TmpScrollWasOff ) {
+                col = 1;
+                ScrollWasOff = FALSE;
+                fb_ConsoleLocate( row, col, -1 );
+            }
         }
 
         /* if no newline and row at bottom and col+string at right, disable scrolling */
@@ -253,12 +262,15 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         else
             fb_hUpdateConsoleWindow( );
 
-        if( scrolloff )
+        if( scrolloff ) {
             SetConsoleMode( fb_out_handle, mode );
+        }
 
         /* restore the old cursor mode */
         cursor_info.bVisible = cursor_visible;
         SetConsoleCursorInfo( fb_out_handle, &cursor_info );
+
+        ScrollWasOff = scrolloff;
     }
 }
 
