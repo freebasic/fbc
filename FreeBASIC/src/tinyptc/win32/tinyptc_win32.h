@@ -24,7 +24,10 @@ extern void ptc_close();
 //#define __PTC_VFW__
 
 // configuration
-/* #define __PTC_WINDOWED__ */
+#ifdef PTC_USE_WINDOW
+#  define __PTC_WINDOWED__
+#endif
+
 #define __PTC_CENTER_WINDOW__
 #define __PTC_RESIZE_WINDOW__
 #define __PTC_SYSTEM_MENU__

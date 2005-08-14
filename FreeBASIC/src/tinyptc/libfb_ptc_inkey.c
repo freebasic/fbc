@@ -18,9 +18,10 @@
 */
 
 /*
- * inkey.c -- inkey$ handling
+ * ptc_inkey.c -- inkey$ handling
  *
  * chng: jan/2005 written [lillo]
+ *       aug/2005 copied for use with TinyPTC [mjs]
  *
  */
 
@@ -32,10 +33,14 @@ static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
 /*:::::*/
 void fb_hTinyPtcPostKey(int key)
 {
+    FB_LOCK();
+
 	key_buffer[key_tail] = key;
 	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
-	key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+    key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+
+    FB_UNLOCK();
 }
 
 #ifdef __DJGPP__
@@ -51,14 +56,14 @@ static int get_key(void)
 {
 	int key = 0;
 
-	DRIVER_LOCK();
+	FB_LOCK();
 
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
 
-	DRIVER_UNLOCK();
+	FB_UNLOCK();
 
 	return key;
 }
@@ -82,11 +87,11 @@ int fb_TinyPtcKeyHit(void)
 {
 	int res;
 
-	DRIVER_LOCK();
+	FB_LOCK();
 
 	res = (key_head != key_tail? 1: 0);
 
-	DRIVER_UNLOCK();
+	FB_UNLOCK();
 
 	return res;
 }
@@ -94,7 +99,7 @@ int fb_TinyPtcKeyHit(void)
 /*:::::*/
 FBSTRING *fb_TinyPtcInkey(void)
 {
-	const unsigned char code[KEY_MAX_SPECIALS] = {
+	static const unsigned char code[KEY_MAX_SPECIALS] = {
 		'X', 'H', 'P', 'K', 'M', 'R', 'S', 'G', 'O', 'I', 'Q',
 		';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D'
 	};
@@ -103,12 +108,20 @@ FBSTRING *fb_TinyPtcInkey(void)
 
 	if ((key = get_key())!=0) {
 		if (key > 0xFF) {
-			key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
-			res = (FBSTRING *)fb_hStrAllocTmpDesc();
-			fb_hStrAllocTemp(res, 2);
-			res->data[0] = 0xFF;
-			res->data[1] = code[key];
-			res->data[2] = '\0';
+            key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
+
+            FB_STRLOCK();
+
+            res = fb_hStrAllocTemp(NULL, 2);
+            if( res ) {
+                res->data[0] = 0xFF;
+                res->data[1] = code[key];
+                res->data[2] = '\0';
+            } else {
+                res = &fb_strNullDesc;
+            }
+
+            FB_STRUNLOCK();
 
 			return res;
 		}

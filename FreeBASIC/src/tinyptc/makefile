@@ -57,9 +57,17 @@ else
     CFLAGS += -O2
 endif
 NASMFLAGS :=
+ifndef WINDOWED
+    WINDOWED := 0
+endif
+ifeq ($(WINDOWED),1)
+    ptc_win_ext :=-win
+    CFLAGS += -DPTC_USE_WINDOW=1
+else
+    ptc_win_ext :=
+endif
 
 ifeq ($(TARGET),win32)
-#    libname=tinyptc-win
     OSDEPPATH := win32
     CFLAGS += -DTARGET_WIN32 -DTARGET_X86
     AFLAGS += -DTARGET_WIN32
@@ -103,23 +111,23 @@ ifndef DEBUG
 endif
 
 ifndef OSOBJPATH
-	OSOBJPATH = $(OSDEPPATH)
+    OSOBJPATH = $(OSDEPPATH)
 endif
 
-objpath = obj/$(OSOBJPATH)
+objpath = obj/$(OSOBJPATH)$(ptc_win_ext)
 
 libpath = ../../lib/$(TARGET)
 
 ifndef libname
-libname=tinyptc
+libname=tinyptc$(ptc_win_ext)
 endif
 
 lib = $(libpath)/lib$(libname).a
 
 ifndef OSDEPPATH
-	CHECKTARGET_MSG := $(error error: TARGET not supported)  
+    CHECKTARGET_MSG := $(error error: TARGET not supported)  
 else
-	CHECKTARGET_MSG :=
+    CHECKTARGET_MSG :=
 endif
 
 ##################################################################
