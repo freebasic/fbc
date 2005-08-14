@@ -4228,26 +4228,16 @@ end function
 '' constants (l = NULL; r = NULL)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-function astNewCONSTs( v as string ) as ASTNODE ptr static
-#if 0
-    dim as ASTNODE ptr n
-
-	'' alloc new node
-	n = hNewNode( AST_NODECLASS_CONST, IR_DATATYPE_STRING, NULL )
-	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
-
-	n->v.valuestr = hAllocStringConst( v, len( v ) )
-	n->defined = TRUE
-#else
+function astNewCONSTs( byval v as string ) as ASTNODE ptr static
     dim as FBSYMBOL ptr tc
+
 	tc = hAllocStringConst( v, len( v ) )
-    if( tc = NULL ) then exit function
+    if( tc = NULL ) then
+    	exit function
+    end if
+
 	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_FIXSTR )
-#endif
+
 end function
 
 '':::::

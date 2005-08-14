@@ -3019,6 +3019,11 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 
     function = NULL
 
+    '' constant? evaluate
+    if( astIsCONST( expr ) ) then
+    	return astNewCONSTs( astGetValueAsStr( expr ) )
+    end if
+
     ''
 	select case astGetDataClass( expr )
 	case IR_DATACLASS_INTEGER
@@ -3028,10 +3033,14 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 			f = ifuncTB(FB_RTL_LONGINT2STR)
 		case IR_DATATYPE_ULONGINT
 			f = ifuncTB(FB_RTL_ULONGINT2STR)
-		case IR_DATATYPE_BYTE, IR_DATATYPE_SHORT, IR_DATATYPE_INTEGER
+		case IR_DATATYPE_BYTE, IR_DATATYPE_SHORT, IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
 			f = ifuncTB(FB_RTL_INT2STR)
 		case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT
 			f = ifuncTB(FB_RTL_UINT2STR)
+		'' zstring? do nothing
+		case IR_DATATYPE_CHAR
+			return expr
+		'' pointer..
 		case else
 			f = ifuncTB(FB_RTL_UINT2STR)
 		end select
@@ -3042,6 +3051,8 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		else
 			f = ifuncTB(FB_RTL_DBL2STR)
 		end if
+
+	'' anything else (UDT's, classes): can't print
 	case else
 		return NULL
 	end select
@@ -4664,20 +4675,20 @@ end function
 function rtlCpuCheck( ) as integer static
 	dim as ASTNODE ptr proc, cpu
 	dim as FBSYMBOL ptr f, s, label
-	
+
 	function = FALSE
-	
+
 	''
 	f = ifuncTB(FB_RTL_CPUDETECT)
 	proc = astNewFUNCT( f, NULL, TRUE )
-	
+
 	'' cpu = fb_CpuDetect shr 24
 	cpu = astNewBOP( IR_OP_SHR, proc, astNewCONSTi( 24, IR_DATATYPE_UINT ) )
-	
+
 	'' if( cpu < env.clopt.cputype ) then
 	label = symbAddLabel( "" )
 	astAdd( astNewBOP( IR_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, IR_DATATYPE_UINT ), label, FALSE ) )
-	
+
 	'' print "This program requires at least a <cpu> to run."
 	s = hAllocStringConst( "This program requires at least a " + str( env.clopt.cputype ) + "86 to run.", -1 )
 	rtlPrint astNewCONSTi( 0, IR_DATATYPE_INTEGER ), FALSE, FALSE, astNewVAR( s, NULL, 0, IR_DATATYPE_FIXSTR )
@@ -4689,12 +4700,12 @@ function rtlCpuCheck( ) as integer static
     	exit function
     end if
     astAdd( proc )
-	
+
 	'' end if
 	astAdd( astNewLABEL( label ) )
-	
+
 	function = TRUE
-	
+
 end function
 
 '':::::
