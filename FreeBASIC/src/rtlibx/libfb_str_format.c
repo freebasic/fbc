@@ -193,7 +193,7 @@ int fb_hProcessMask( FBSTRING *dst,
     int ExpValue = 0, ExpAdjust = 0, NumSkipFix = 0, NumSkipExp = 0;
     int do_skip = FALSE, do_exp = FALSE, do_string = FALSE;
     int did_sign = FALSE, did_exp = FALSE, did_hour = FALSE, did_thousandsep = FALSE;
-    int do_num_frac = FALSE, last_was_comma = FALSE;
+    int do_num_frac = FALSE, last_was_comma = FALSE, was_k_div = FALSE;
     int do_output = dst!=NULL;
     int do_add = FALSE;
     size_t LenOut;
@@ -382,9 +382,11 @@ int fb_hProcessMask( FBSTRING *dst,
                         } else {
                             LenAdd = -NumSkipFix;
                         }
-                        IndexFix += LenAdd;
                         do_add = TRUE;
-                        NumSkipFix = 0;
+                        if( !did_thousandsep ) {
+                            IndexFix += LenAdd;
+                            NumSkipFix += LenAdd;
+                        }
                     }
                     break;
                 }
@@ -430,6 +432,9 @@ int fb_hProcessMask( FBSTRING *dst,
                     }
                     break;
                 }
+
+
+                /* Here comes the real interpretation */
                 switch( chCurrent ) {
                 case '%':
                     if( !do_output ) {
@@ -450,6 +455,7 @@ int fb_hProcessMask( FBSTRING *dst,
                             pInfo->has_decimal_point = TRUE;
                             if( last_was_comma ) {
                                 pInfo->num_digits_omit += 3;
+                                was_k_div = TRUE;
                             } else if( pInfo->num_digits_omit!=0 ) {
                                 pInfo->num_digits_omit += 3;
                             }
@@ -465,7 +471,10 @@ int fb_hProcessMask( FBSTRING *dst,
                     if( !do_output ) {
                         if( last_was_comma ) {
                             pInfo->num_digits_omit += 3;
+                            was_k_div = TRUE;
                         }
+                    } else if( last_was_comma ) {
+                        was_k_div = TRUE;
                     }
                     last_was_comma = TRUE;
                     break;
@@ -906,10 +915,11 @@ int fb_hProcessMask( FBSTRING *dst,
             }
         }
         if( last_was_comma && (chCurrent!=',' || i==(mask_length-1)) ) {
-            if( !do_output ) {
+            if( !do_output && !was_k_div ) {
                 pInfo->has_thousand_sep = TRUE;
             }
             last_was_comma = FALSE;
+            was_k_div = FALSE;
         }
         if( do_add ) {
             do_add = FALSE;
