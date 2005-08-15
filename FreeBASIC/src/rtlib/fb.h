@@ -149,7 +149,7 @@ extern "C" {
      * returned by SCRN: (and INKEY$).
      */
 #define FB_MAKE_EXT_KEY(ch) \
-    ((int) ((((unsigned) (unsigned char) (ch)) << 8) + (unsigned) (FB_EXT_CHAR)))
+    ((int) ((((unsigned) (unsigned char) (ch)) << 8) + (unsigned) (unsigned char) (FB_EXT_CHAR)))
 
     /** Macro to test if the key code is an extended key code.
      *

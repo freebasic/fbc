@@ -126,7 +126,7 @@ int fb_ConsoleProcessEvents( void )
                         }
                         if( allow_key )
                         {
-                            KeyCode = FB_MAKE_EXT_KEY((char) (ir.Event.KeyEvent.wVirtualScanCode & 0xFF));
+                            KeyCode = FB_MAKE_EXT_KEY((char) (wVsCode & 0xFF));
                             AddKeyCode = TRUE;
                         }
                     }
