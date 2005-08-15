@@ -141,13 +141,13 @@ FBCALL int          fb_I18nGet          ( void );
        const char * fb_IntlGet          ( eFbIntlIndex index, int disallow_localized );
        int          fb_IntlGetDateFormat( char *buffer, size_t len, int disallow_localized );
        int          fb_IntlGetTimeFormat( char *buffer, size_t len, int disallow_localized );
-       const char * fb_IntlGetMonthName ( int month, int short_name, int disallow_localized );
+       FBSTRING   * fb_IntlGetMonthName ( int month, int short_name, int disallow_localized );
        const char * fb_IntlGetWeekdayName( int weekday, int short_names, int disallow_localized );
 
        const char * fb_DrvIntlGet       ( eFbIntlIndex index );
        int          fb_DrvIntlGetDateFormat ( char *buffer, size_t len );
        int          fb_DrvIntlGetTimeFormat ( char *buffer, size_t len );
-       const char * fb_DrvIntlGetMonthName  ( int month, int short_name );
+       FBSTRING   * fb_DrvIntlGetMonthName  ( int month, int short_name );
        const char * fb_DrvIntlGetWeekdayName( int weekday, int short_names );
 
 #ifdef __cplusplus

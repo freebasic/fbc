@@ -30,8 +30,6 @@
 FBCALL FBSTRING *fb_MonthName( int month, int abbreviation )
 {
     FBSTRING *res;
-    const char *pszName;
-    size_t len;
 
     if( month < 1 || month > 12 ) {
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -42,23 +40,12 @@ FBCALL FBSTRING *fb_MonthName( int month, int abbreviation )
 
     FB_LOCK();
 
-    pszName = fb_IntlGetMonthName( month, abbreviation, FALSE );
-    if( pszName==NULL ) {
+    res = fb_IntlGetMonthName( month, abbreviation, FALSE );
+    if( res==NULL ) {
         FB_UNLOCK();
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
         return &fb_strNullDesc;
     }
-    len = strlen( pszName );
-
-    FB_STRLOCK();
-    res = fb_hStrAllocTemp( NULL, len );
-	if( res ) {
-        fb_hStrCopy( res->data, pszName, len );
-    } else {
-        fb_ErrorSetNum(FB_RTERROR_OUTOFMEM);
-        res = &fb_strNullDesc;
-    }
-    FB_STRUNLOCK();
 
     FB_UNLOCK();
 

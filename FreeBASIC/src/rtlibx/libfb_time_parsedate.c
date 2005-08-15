@@ -34,10 +34,10 @@ static int fb_hIsMonth( const char *text, size_t text_len, const char **end_text
     const char *txt_end = text;
     int month;
     for( month=1; month!=13; ++month ) {
-        const char *pszMonthName = fb_IntlGetMonthName( month, short_name, !localized );
-        size_t month_len = strlen( pszMonthName );
+        FBSTRING *sMonthName = fb_IntlGetMonthName( month, short_name, !localized );
+        size_t month_len = FB_STRSIZE( sMonthName );
         size_t len = ((text_len < month_len) ? text_len : month_len );
-        if( FB_MEMCMP( text, pszMonthName, len ) == 0 ) {
+        if( FB_MEMCMP( text, sMonthName->data, len ) == 0 ) {
             if( text_len > len ) {
                 if( !isalpha( FB_CHAR_TO_INT(text[len]) ) ) {
                     txt_end = text + len;

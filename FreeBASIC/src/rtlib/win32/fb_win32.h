@@ -95,8 +95,10 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        void fb_ConsoleClearViewRawEx    ( HANDLE hConsole, int x1, int y1, int x2, int y2 );
        void fb_hConsoleGetWindow        ( int *left, int *top, int *cols, int *rows );
 
-       int       fb_ConsoleProcessEvents  ( void );
-struct _FBSTRING *fb_ConsoleGetKeyBuffer   ( void );
+       int  fb_ConsoleProcessEvents     ( void );
+       void fb_hConsolePostKey          ( int key );
+       int  fb_hConsoleGetKey           ( int full );
+       int  fb_hConsolePeekKey          ( int full );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
     ((srConsoleWindow.Left==srConsoleWindow.Right) \
@@ -104,6 +106,8 @@ struct _FBSTRING *fb_ConsoleGetKeyBuffer   ( void );
 
        char *fb_hGetLocaleInfo          ( LCID Locale, LCTYPE LCType,
                                           char *pszBuffer, size_t uiSize );
+       struct _FBSTRING *fb_hIntlConvertString  ( struct _FBSTRING *source,
+                                          int source_cp, int dest_cp );
 
 #ifdef TARGET_CYGWIN
 #define FB_LL_FMTMOD "ll"

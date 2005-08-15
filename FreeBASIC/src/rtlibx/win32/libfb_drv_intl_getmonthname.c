@@ -25,16 +25,19 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "fbext.h"
 
 /*:::::*/
-const char *fb_DrvIntlGetMonthName( int month, int short_names )
+FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
+    static char *pszName = NULL;
+    size_t name_len;
+    LCTYPE lctype;
+    FBSTRING *result;
+
     if( month < 1 || month > 12 )
         return NULL;
-
-    static char *pszName = NULL;
-    LCTYPE lctype;
 
     if( pszName!=NULL ) {
         free( pszName );
@@ -47,6 +50,24 @@ const char *fb_DrvIntlGetMonthName( int month, int short_names )
         lctype = (LCTYPE) (LOCALE_SMONTHNAME1 + month - 1);
     }
 
-    return pszName = fb_hGetLocaleInfo( LOCALE_USER_DEFAULT, lctype,
-                                        NULL, 0 );
+    pszName = fb_hGetLocaleInfo( LOCALE_USER_DEFAULT, lctype,
+                                 NULL, 0 );
+    if( pszName==NULL )
+        return NULL;
+
+    name_len = strlen(pszName);
+
+    FB_STRLOCK();
+
+    result = fb_hStrAllocTemp( NULL, name_len );
+    if( result!=NULL ) {
+        FB_MEMCPY( result->data, pszName, name_len + 1 );
+        result = fb_hIntlConvertString  ( result,
+                                          CP_ACP,
+                                          GetConsoleCP() );
+    }
+
+    FB_STRUNLOCK();
+
+    return result;
 }

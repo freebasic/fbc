@@ -29,7 +29,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL FBSTRING *fb_StrAllocTempDescZ( char *str )
+FBCALL FBSTRING *fb_StrAllocTempDescZ( const char *str )
 {
 	FBSTRING *dsc;
 

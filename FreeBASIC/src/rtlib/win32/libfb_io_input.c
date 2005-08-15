@@ -18,16 +18,73 @@
  */
 
 /*
- * io_mouse.c -- mouse functions for Windows console mode apps
+ * io_input.c -- console input functions for Windows console mode apps
  *
  * chng: jun/2005 written [lillo]
+ *       aug/2005 modified to read keyboard events [mjs]
  *
  */
 
 #include "fb.h"
 #include "fb_rterr.h"
 
-static FBSTRING fb_strInput = { 0 };
+#define KEY_BUFFER_LEN 512
+static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
+
+/*:::::*/
+void fb_hConsolePostKey(int key)
+{
+    FB_LOCK();
+
+	key_buffer[key_tail] = key;
+	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
+		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+    key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
+
+    FB_UNLOCK();
+}
+
+/*:::::*/
+int fb_hConsoleGetKeyEx(int full, int allow_remove)
+{
+    int key = -1;
+
+    fb_ConsoleProcessEvents( );
+
+	FB_LOCK();
+
+    if (key_head != key_tail) {
+        int do_remove = allow_remove;
+        key = key_buffer[key_head];
+        if( key > 255 ) {
+            if( !full ) {
+                key_buffer[key_head] = (key >> 8);
+                key = (unsigned) (unsigned char) FB_EXT_CHAR;
+                do_remove = FALSE;
+            }
+        }
+        if( do_remove )
+            key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+	}
+
+	FB_UNLOCK();
+
+	return key;
+}
+
+/*:::::*/
+int fb_hConsoleGetKey(int full)
+{
+    return fb_hConsoleGetKeyEx( full, TRUE );
+}
+
+/*:::::*/
+int fb_hConsolePeekKey(int full)
+{
+    return fb_hConsoleGetKeyEx( full, FALSE );
+}
+
+
 fb_FnProcessMouseEvent MouseEventHook = (fb_FnProcessMouseEvent) NULL;
 
 /*:::::*/
@@ -36,7 +93,6 @@ int fb_ConsoleProcessEvents( void )
     int got_event = FALSE;
 	INPUT_RECORD ir;
     DWORD dwRead;
-    FBSTRING *CharBuffer = &fb_strInput;
 
 	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
 	{
@@ -51,8 +107,7 @@ int fb_ConsoleProcessEvents( void )
             case KEY_EVENT:
                 if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount!=0 )
                 {
-                    char chTemp[3];
-                    size_t TempSize = 0;
+                    int KeyCode = 0, AddKeyCode = FALSE;
                     if( ir.Event.KeyEvent.uChar.AsciiChar==0 )
                     {
                         WORD wVkCode = ir.Event.KeyEvent.wVirtualKeyCode;
@@ -71,51 +126,19 @@ int fb_ConsoleProcessEvents( void )
                         }
                         if( allow_key )
                         {
-                            chTemp[0] = 2;
-                            chTemp[1] = FB_EXT_CHAR;
-                            chTemp[2] = (char) (ir.Event.KeyEvent.wVirtualScanCode & 0xFF);
-                            TempSize = 3;
-                        }
-                        else
-                        {
-                            chTemp[0] = 0;
+                            KeyCode = FB_MAKE_EXT_KEY((char) (ir.Event.KeyEvent.wVirtualScanCode & 0xFF));
+                            AddKeyCode = TRUE;
                         }
                     }
                     else
                     {
-                        chTemp[0] = 1;
-                        chTemp[1] = ir.Event.KeyEvent.uChar.AsciiChar;
-                        TempSize = 2;
+                        KeyCode = FB_MAKE_KEY((char) (ir.Event.KeyEvent.uChar.AsciiChar));
+                        AddKeyCode = TRUE;
                     }
 
-                    if( chTemp[0]!=0 )
+                    if( AddKeyCode )
                     {
-                        size_t ElemSize = FB_CHAR_TO_INT(chTemp[0]) + 1;
-                        size_t OldSize, NewSize;
-
-                        FB_STRLOCK();
-
-                        OldSize = FB_STRSIZE( CharBuffer );
-                        NewSize = OldSize +
-                            ElemSize * ir.Event.KeyEvent.wRepeatCount;
-
-                        CharBuffer = fb_hStrRealloc( CharBuffer,
-                                                     NewSize,
-                                                     FB_TRUE );
-
-                        if( CharBuffer )
-                        {
-                            while( ir.Event.KeyEvent.wRepeatCount-- )
-                            {
-                                memcpy( CharBuffer->data + OldSize,
-                                        chTemp,
-                                        ElemSize );
-                                OldSize += ElemSize;
-                            }
-                            got_event = TRUE;
-                        }
-
-                        FB_STRUNLOCK();
+                        fb_hConsolePostKey(KeyCode);
                     }
                 }
                 break;
@@ -134,11 +157,4 @@ int fb_ConsoleProcessEvents( void )
     }
 
 	return got_event;
-}
-
-/*:::::*/
-FBSTRING *fb_ConsoleGetKeyBuffer( void )
-{
-    fb_ConsoleProcessEvents( );
-    return &fb_strInput;
 }

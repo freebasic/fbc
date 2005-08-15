@@ -402,7 +402,7 @@ FBCALL int          fb_StrCompare       ( void *str1, int str1_size, void *str2,
 FBCALL FBSTRING    *fb_StrAllocTempResult ( FBSTRING *src );
 FBCALL FBSTRING    *fb_StrAllocTempDescF( char *str, int str_size );
 FBCALL FBSTRING    *fb_StrAllocTempDescV( FBSTRING *str );
-FBCALL FBSTRING    *fb_StrAllocTempDescZ( char *str );
+FBCALL FBSTRING    *fb_StrAllocTempDescZ( const char *str );
 FBCALL int          fb_StrLen           ( void *str, int str_size );
 
 FBCALL FBSTRING     *fb_IntToStr        ( int num );

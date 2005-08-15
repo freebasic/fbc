@@ -25,115 +25,48 @@
  */
 
 #include "fb.h"
-
-#if 0
 #include <conio.h>
-#endif
 
 /*:::::*/
 FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING 	 *res;
-#if 0
-	int			 chars;
-	unsigned int k;
-
-	if( _kbhit( ) )
-	{
-		chars = 1;
-		k = (unsigned int)_getch( );
-		if( k == 0x00 || k == 0xE0 )
-		{
-			k = (unsigned int)_getch( );
-			chars = 2;
-		}
-
-        res = fb_hStrAllocTemp( NULL, chars );
-        DBG_ASSERT( res != NULL );
-
-		if( chars > 1 )
-			res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
-
-		res->data[chars-1] = (unsigned char)k;
-		res->data[chars-0] = '\0';
-
-    }
-	else
-		res = &fb_strNullDesc;
-
-#else
-    FBSTRING *buffer = fb_ConsoleGetKeyBuffer( );
-    size_t buffer_len;
-
+    int  key = fb_hConsoleGetKey( TRUE );
     FB_STRLOCK();
-
-    buffer_len = FB_STRSIZE( buffer );
-    if( buffer_len!=0 )
-    {
-        size_t chars = FB_CHAR_TO_INT(buffer->data[0]);
-        res = fb_StrMid( buffer, 2, chars );
-        if( res!=NULL )
-        {
-            buffer_len -= chars + 1;
-            memmove( buffer->data, buffer->data + chars + 1,
-                     buffer_len );
-            buffer->data[buffer_len] = 0;
-            fb_hStrSetLength( buffer, buffer_len );
+    if( key==-1 ) {
+        res = &fb_strNullDesc;
+    } else if( key > 255 ) {
+        res = fb_hStrAllocTemp( NULL, 2 );
+        if( res!=NULL ) {
+            res->data[0] = FB_EXT_CHAR;
+            res->data[1] = (key >> 8) & 0xFF;
+            res->data[2] = 0;
         }
-        else
-        	res = &fb_strNullDesc;
+    } else {
+        res = fb_hStrAllocTemp( NULL, 1 );
+        if( res!=NULL ) {
+            res->data[0] = key & 0xFF;
+            res->data[1] = 0;
+        }
     }
-    else
-    	res = &fb_strNullDesc;
-
     FB_STRUNLOCK();
-#endif
-
+    if( res==NULL )
+        res = &fb_strNullDesc;
 	return res;
 }
 
 /*:::::*/
 int fb_ConsoleGetkey( void )
 {
-	int k = 0;
-#if 0
-	k = _getch( );
-	if( k == 0x00 || k == 0xE0 )
-		k = _getch( );
-#else
-    FBSTRING *tmp;
-    FB_STRLOCK();
-
-    tmp = fb_ConsoleInkey( );
-    switch( FB_STRSIZE(tmp) )
-    {
-    case 1:
-        k = FB_CHAR_TO_INT( tmp->data[0] );
-        break;
-    case 2:
-        k = FB_MAKE_EXT_KEY( tmp->data[1] );
-        break;
-    }
-
-    fb_hStrDelTemp( tmp );
-
-    FB_STRUNLOCK();
-#endif
-	return k;
+	int k = fb_hConsoleGetKey( TRUE );
+    if( k==-1 )
+        k = 0;
+    return k;
 }
 
 /*:::::*/
 int fb_ConsoleKeyHit( void )
 {
-#if 0
-	return _kbhit( );
-#else
-    FBSTRING *buffer = fb_ConsoleGetKeyBuffer( );
-    size_t buffer_len;
-    FB_STRLOCK();
-    buffer_len = FB_STRSIZE( buffer );
-    FB_STRUNLOCK();
-    return buffer_len!=0;
-#endif
+    return fb_hConsolePeekKey( TRUE ) != -1;
 }
 

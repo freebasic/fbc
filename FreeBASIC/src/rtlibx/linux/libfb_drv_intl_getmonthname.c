@@ -31,8 +31,11 @@
 #include <langinfo.h>
 
 /*:::::*/
-const char *fb_DrvIntlGetMonthName( int month, int short_names )
+FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
+    const char *pszName;
+    FBSTRING *result;
+    size_t name_len;
     nl_item index;
 
     if( month < 1 || month > 12 )
@@ -43,5 +46,21 @@ const char *fb_DrvIntlGetMonthName( int month, int short_names )
     } else {
         index = (nl_item) (MON_1 + month - 1);
     }
-    return nl_langinfo( index );
+
+    pszName = nl_langinfo( index );
+
+    if( pszName==NULL )
+        return NULL;
+    name_len = strlen( pszName );
+
+    FB_STRLOCK();
+
+    result = fb_hStrAllocTemp( NULL, name_len );
+    if( result!=NULL ) {
+        FB_MEMCPY( result->data, pszName, name_len + 1 );
+    }
+
+    FB_STRUNLOCK();
+
+    return result;
 }
