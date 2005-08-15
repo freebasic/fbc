@@ -163,7 +163,7 @@ FBCMPFLAGS += -m $(subst .bas,,$(main))
 
 ##################################################################
 
-all : checkhost checktarget $(compiler)
+all : checkhost checktarget checkdirs $(compiler)
 
 $(objpath)/%.o : %.bas $(headers)
 	$(FBC) $(FBCMPFLAGS) $< -o $@
@@ -171,12 +171,17 @@ $(objpath)/%.o : %.bas $(headers)
 $(compiler) : $(objects)
 	$(FBC) $(FBLNKFLAGS) $(objects) -x $@ $(LDLIBS_EXT)
 
+$(objpath) :
+	mkdir -p $(objpath)
 
 .PHONY: checktarget
 checktarget : ; $(CHECKTARGET_MSG)
 
 .PHONY: checkhost
 checkhost : ; $(CHECKHOST_MSG)
+
+.PHONY: checkdirs
+checkdirs : $(objpath)
 
 
 .PHONY : clean
