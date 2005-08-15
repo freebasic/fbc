@@ -31,7 +31,9 @@
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-	int toprow, botrow;
+#if 0
+    int toprow, botrow;
+#endif
 
 	if( cols != NULL ) {
 		*cols = ScreenCols();
