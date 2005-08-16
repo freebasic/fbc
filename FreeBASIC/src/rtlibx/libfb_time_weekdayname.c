@@ -30,8 +30,6 @@
 FBCALL FBSTRING *fb_WeekdayName( int weekday, int abbreviation, int first_day_of_week )
 {
     FBSTRING *res;
-    const char *pszName;
-    size_t len;
 
     if( weekday < 1 || weekday > 7 || first_day_of_week < 0 || first_day_of_week > 7 ) {
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -49,27 +47,11 @@ FBCALL FBSTRING *fb_WeekdayName( int weekday, int abbreviation, int first_day_of
     if( weekday > 7 )
         weekday -= 7;
 
-    FB_LOCK();
-
-    pszName = fb_IntlGetWeekdayName( weekday, abbreviation, FALSE );
-    if( pszName==NULL ) {
-        FB_UNLOCK();
+    res = fb_IntlGetWeekdayName( weekday, abbreviation, FALSE );
+    if( res==NULL ) {
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-        return &fb_strNullDesc;
-    }
-    len = strlen( pszName );
-
-    FB_STRLOCK();
-    res = fb_hStrAllocTemp( NULL, len );
-	if( res ) {
-        fb_hStrCopy( res->data, pszName, len );
-    } else {
-        fb_ErrorSetNum(FB_RTERROR_OUTOFMEM);
         res = &fb_strNullDesc;
     }
-    FB_STRUNLOCK();
-
-    FB_UNLOCK();
 
     return res;
 }

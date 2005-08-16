@@ -44,7 +44,7 @@ FBSTRING *fb_hIntlConvertToWC(FBSTRING *source, UINT source_cp )
                              NULL,
                              0 );
 
-    res = fb_hStrAllocTemp( NULL, CharsRequired * sizeof(WCHAR) + 1 );
+    res = fb_hStrAllocTemp( NULL, (CharsRequired + 1) * sizeof(WCHAR) - 1 );
     if( res==NULL )
         return &fb_strNullDesc;
 

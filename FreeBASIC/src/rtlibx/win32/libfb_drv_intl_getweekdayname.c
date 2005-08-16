@@ -25,21 +25,19 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "fbext.h"
 
 /*:::::*/
-const char *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
+FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
 {
-    static char *pszName = NULL;
+    char *pszName = NULL;
+    size_t name_len;
     LCTYPE lctype;
+    FBSTRING *result;
 
     if( weekday < 1 || weekday > 7 )
         return NULL;
-
-    if( pszName!=NULL ) {
-        free( pszName );
-        pszName = NULL;
-    }
 
     if( weekday==1 )
         weekday = 8;
@@ -50,6 +48,26 @@ const char *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
         lctype = (LCTYPE) (LOCALE_SDAYNAME1 + weekday - 2);
     }
 
-    return pszName = fb_hGetLocaleInfo( LOCALE_USER_DEFAULT, lctype,
-                                        NULL, 0 );
+    pszName = fb_hGetLocaleInfo( LOCALE_USER_DEFAULT, lctype,
+                                 NULL, 0 );
+    if( pszName==NULL )
+        return NULL;
+
+    name_len = strlen(pszName);
+
+    FB_STRLOCK();
+
+    result = fb_hStrAllocTemp( NULL, name_len );
+    if( result!=NULL ) {
+        FB_MEMCPY( result->data, pszName, name_len + 1 );
+        result = fb_hIntlConvertString( result,
+                                        CP_ACP,
+                                        GetConsoleCP() );
+    }
+
+    FB_STRUNLOCK();
+
+    free( pszName );
+
+    return result;
 }

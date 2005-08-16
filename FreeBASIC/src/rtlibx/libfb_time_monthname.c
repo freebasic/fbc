@@ -38,16 +38,11 @@ FBCALL FBSTRING *fb_MonthName( int month, int abbreviation )
 
     fb_ErrorSetNum( FB_RTERROR_OK );
 
-    FB_LOCK();
-
     res = fb_IntlGetMonthName( month, abbreviation, FALSE );
     if( res==NULL ) {
-        FB_UNLOCK();
         fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-        return &fb_strNullDesc;
+        res = &fb_strNullDesc;
     }
-
-    FB_UNLOCK();
 
     return res;
 }

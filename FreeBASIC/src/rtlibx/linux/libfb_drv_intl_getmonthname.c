@@ -47,10 +47,14 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
         index = (nl_item) (MON_1 + month - 1);
     }
 
-    pszName = nl_langinfo( index );
+    FB_LOCK();
 
-    if( pszName==NULL )
+    pszName = nl_langinfo( index );
+    if( pszName==NULL ) {
+        FB_UNLOCK();
         return NULL;
+    }
+
     name_len = strlen( pszName );
 
     FB_STRLOCK();
@@ -61,6 +65,8 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
     }
 
     FB_STRUNLOCK();
+
+    FB_UNLOCK();
 
     return result;
 }

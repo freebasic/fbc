@@ -31,8 +31,11 @@
 #include <langinfo.h>
 
 /*:::::*/
-const char *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
+FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
 {
+    const char *pszName;
+    FBSTRING *result;
+    size_t name_len;
     nl_item index;
 
     if( weekday < 1 || weekday > 7 )
@@ -43,5 +46,27 @@ const char *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
     } else {
         index = (nl_item) (DAY_1 + weekday - 1);
     }
-    return nl_langinfo( index );
+
+    FB_LOCK();
+
+    pszName = nl_langinfo( index );
+    if( pszName==NULL ) {
+        FB_UNLOCK();
+        return NULL;
+    }
+
+    name_len = strlen( pszName );
+
+    FB_STRLOCK();
+
+    result = fb_hStrAllocTemp( NULL, name_len );
+    if( result!=NULL ) {
+        FB_MEMCPY( result->data, pszName, name_len + 1 );
+    }
+
+    FB_STRUNLOCK();
+
+    FB_UNLOCK();
+
+    return result;
 }

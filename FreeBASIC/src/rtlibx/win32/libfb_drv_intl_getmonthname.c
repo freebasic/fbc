@@ -31,18 +31,13 @@
 /*:::::*/
 FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
-    static char *pszName = NULL;
+    char *pszName = NULL;
     size_t name_len;
     LCTYPE lctype;
     FBSTRING *result;
 
     if( month < 1 || month > 12 )
         return NULL;
-
-    if( pszName!=NULL ) {
-        free( pszName );
-        pszName = NULL;
-    }
 
     if( short_names ) {
         lctype = (LCTYPE) (LOCALE_SABBREVMONTHNAME1 + month - 1);
@@ -52,8 +47,9 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 
     pszName = fb_hGetLocaleInfo( LOCALE_USER_DEFAULT, lctype,
                                  NULL, 0 );
-    if( pszName==NULL )
+    if( pszName==NULL ) {
         return NULL;
+    }
 
     name_len = strlen(pszName);
 
@@ -62,12 +58,14 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
     result = fb_hStrAllocTemp( NULL, name_len );
     if( result!=NULL ) {
         FB_MEMCPY( result->data, pszName, name_len + 1 );
-        result = fb_hIntlConvertString  ( result,
-                                          CP_ACP,
-                                          GetConsoleCP() );
+        result = fb_hIntlConvertString( result,
+                                        CP_ACP,
+                                        GetConsoleCP() );
     }
 
     FB_STRUNLOCK();
+
+    free( pszName );
 
     return result;
 }

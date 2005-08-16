@@ -27,7 +27,7 @@
 #include "fbext.h"
 
 /*:::::*/
-const char *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
+FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
 {
     /* No localized weekday name available */
     return NULL;

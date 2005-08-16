@@ -26,6 +26,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "fbext.h"
 
 /*:::::*/
@@ -35,17 +36,22 @@ static int fb_hIsMonth( const char *text, size_t text_len, const char **end_text
     int month;
     for( month=1; month!=13; ++month ) {
         FBSTRING *sMonthName = fb_IntlGetMonthName( month, short_name, !localized );
-        size_t month_len = FB_STRSIZE( sMonthName );
-        size_t len = ((text_len < month_len) ? text_len : month_len );
-        if( FB_MEMCMP( text, sMonthName->data, len ) == 0 ) {
-            if( text_len > len ) {
-                if( !isalpha( FB_CHAR_TO_INT(text[len]) ) ) {
+        assert( sMonthName!=NULL );
+        {
+            size_t month_len = FB_STRSIZE( sMonthName );
+            size_t len = ((text_len < month_len) ? text_len : month_len );
+            int is_same = FB_MEMCMP( text, sMonthName->data, len ) == 0;
+            fb_hStrDelTemp( sMonthName );
+            if( is_same ) {
+                if( text_len > len ) {
+                    if( !isalpha( FB_CHAR_TO_INT(text[len]) ) ) {
+                        txt_end = text + len;
+                        break;
+                    }
+                } else {
                     txt_end = text + len;
                     break;
                 }
-            } else {
-                txt_end = text + len;
-                break;
             }
         }
     }
