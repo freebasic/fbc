@@ -55,9 +55,14 @@ defint a-z
 sub fbAddIncPath( byval path as string )
 
 	if( env.incpaths < FB_MAXINCPATHS ) then
-		if( right$( path, 1 ) <> PATHDIV ) then
+        ' test for both path dividers because a slash is also supported
+        ' under Win32 and DOS using DJGPP. However, the (back)slashes
+        ' will always be converted to the OS' preferred type of slash.
+		select case right$( path, 1 )
+        case "/","\\"
+        case else
 			path += PATHDIV
-		end if
+		end select
 
 		incpathTB( env.incpaths ) = path
 
@@ -591,7 +596,7 @@ function fbIncludeFile( byval filename as string, _
 	if( not hFileExists( filename ) ) then
 
 		'' try finding it at same path as env.infile
-		incfile = hStripFilename( env.inf.name ) + PATHDIV + hStripPath( filename )
+		incfile = hStripFilename( env.inf.name ) + hStripPath( filename )
 		if( not hFileExists( incfile ) ) then
 
 			'' try finding it at the inc paths
@@ -617,20 +622,24 @@ function fbIncludeFile( byval filename as string, _
 
 		''
 		if( isonce ) then
-        	if( hFindIncFile( filename ) <> -1 ) then
+            ' We should respect the path
+        	if( hFindIncFile( incfile ) <> -1 ) then
         		return TRUE
         	end if
 		end if
 
 		''
-		fileidx = hAddIncFile( filename )
+        ' We should respect the path here too
+		fileidx = hAddIncFile( incfile )
 
 		''
 		infileTb(env.reclevel) = env.inf
 		lexSaveCtx( env.reclevel )
     	env.reclevel += 1
 
-		env.inf.name 	= filename
+        ' We must remember the path - otherwise we'd be unable to
+        ' find header files in the same path ...
+		env.inf.name 	= incfile
 		env.inf.incfile = fileidx
 
 		''

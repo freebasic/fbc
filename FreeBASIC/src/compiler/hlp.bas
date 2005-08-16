@@ -870,18 +870,21 @@ end function
 
 '':::::
 function hStripPath( byval filename as string ) as string static
-    dim p as integer, lp as integer
+    dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
 	do
-		p = instr( lp+1, filename, "\\" )
-	    if( p = 0 ) then
-	    	p = instr( lp+1, filename, "/" )
-	    	if( p = 0 ) then
-	    		exit do
-	    	end if
+		p(1) = instr( lp+1, filename, "\\" )
+		p(2) = instr( lp+1, filename, "/" )
+        if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
+            p_found = p(2)
+        else
+            p_found = p(1)
+        end if
+	    if( p_found = 0 ) then
+	    	exit do
 	    end if
-	    lp = p
+	    lp = p_found
 	loop
 
 	if( lp > 0 ) then
@@ -894,18 +897,21 @@ end function
 
 '':::::
 function hStripFilename ( byval filename as string ) as string static
-    dim p as integer, lp as integer
+    dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
 	do
-		p = instr( lp+1, filename, "\\" )
-	    if( p = 0 ) then
-	    	p = instr( lp+1, filename, "/" )
-	    	if( p = 0 ) then
-	    		exit do
-	    	end if
+		p(1) = instr( lp+1, filename, "\\" )
+		p(2) = instr( lp+1, filename, "/" )
+        if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
+            p_found = p(2)
+        else
+            p_found = p(1)
+        end if
+	    if( p_found = 0 ) then
+	    	exit do
 	    end if
-	    lp = p
+	    lp = p_found
 	loop
 
 	if( lp > 0 ) then
