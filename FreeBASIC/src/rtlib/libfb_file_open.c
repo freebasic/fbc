@@ -90,7 +90,7 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
     FnFileOpen pfnFileOpen = NULL;
     if( fb_pfnDevOpenHook!=NULL ) {
         int res;
-        FBSTRING str_tmp;
+        FBSTRING str_tmp = { 0 };
 
         /* Create temporary string WITHOUT(!) FB_TEMPSTRBIT set */
         FB_STRLOCK();
