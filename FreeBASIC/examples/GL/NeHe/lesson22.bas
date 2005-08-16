@@ -284,7 +284,7 @@ function LoadGLTextures() as integer
 	dim as integer i, a
 
 	'' Load The Tile-Bitmap For Base-Texture
-	Image = LoadBMP("data/Base.bmp")
+	Image = LoadBMP(exepath + "/data/Base.bmp")
 	if (Image) then
 		glGenTextures(3, @texture(0))                 '' Create Three Textures
 
@@ -318,7 +318,7 @@ function LoadGLTextures() as integer
 	end if
 
 	'' Load The Bumpmaps
-	Image = LoadBMP("data/Bump.bmp")
+	Image = LoadBMP(exepath + "/data/Bump.bmp")
 	if (Image) then
 		glPixelTransferf(GL_RED_SCALE,0.5)                  '' Scale RGB By 50%, So That We Have Only
 		glPixelTransferf(GL_GREEN_SCALE,0.5)                '' Half Intenstity
@@ -388,14 +388,14 @@ function LoadGLTextures() as integer
 	'' sector1.triangle = new TRIANGLE(numtriangles)
 
 	'' Load The Logo-Bitmaps
-	Image=LoadBMP("data/OpenGL_Alpha.bmp")
+	Image=LoadBMP(exepath + "/data/OpenGL_Alpha.bmp")
 	if (Image) then
 		alpha = allocate( 4*Image->sizeX*Image->sizeY)      '' Create Memory For RGBA8-Texture
 		for a=0 to Image->sizeX*Image->sizeY - 1
 			alpha[4*a+3]=Image->buffer[a*3]                 '' Pick Only Red Value As Alpha!
 		next
 
-		Image=LoadBMP("data/OpenGL.bmp")
+		Image=LoadBMP(exepath + "/data/OpenGL.bmp")
 		if not (Image) then status=false
 		for a=0 to Image->sizeX*Image->sizeY - 1
 			alpha[4*a] = Image->buffer[a*3]                 '' R
@@ -422,13 +422,13 @@ function LoadGLTextures() as integer
 	end if
 
 	'' Load The "Extension Enabled"-Logo
-	Image=LoadBMP("data/Multi_On_Alpha.bmp")
+	Image=LoadBMP(exepath + "/data/Multi_On_Alpha.bmp")
 	if Image then
 		alpha = allocate(4*Image->sizeX*Image->sizeY)       '' Create Memory For RGBA8-Texture
 		for a=0 to Image->sizeX*Image->sizeY - 1
 			alpha[4*a+3] = Image->buffer[a*3]               '' Pick Only Red Value As Alpha!
 		next
-		Image=LoadBMP("data/Multi_On.bmp")
+		Image=LoadBMP(exepath + "/data/Multi_On.bmp")
 		if not (Image) then status=false
 		for a=0 to Image->sizeX*Image->sizeY -1
 			alpha[4*a] = Image->buffer[a*3]                 '' R

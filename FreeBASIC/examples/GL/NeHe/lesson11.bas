@@ -48,7 +48,7 @@ const TRUE  = not FALSE
 
 	'' Use BLOAD to load the bitmaps.
 	redim buffer(256*256*4+4) as ubyte             '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "data/Tim.bmp", @buffer(0)               '' BLOAD data from bitmap
+	bload exepath + "/data/Tim.bmp", @buffer(0)    '' BLOAD data from bitmap
 	texture(0) = CreateTexture(@buffer(0))         '' Tim Texture
 	if texture(0) = 0 then end 1                   '' Exit if error loading data file
 

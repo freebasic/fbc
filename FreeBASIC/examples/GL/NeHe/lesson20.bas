@@ -156,11 +156,11 @@ function LoadGLTextures() as integer
 
   dim TextureImage(5) as BITMAP_RGBImageRec ptr           '' Create Storage Space For The Textures
 
-  TextureImage(0)=LoadBMP("data/Logo.bmp")                '' Logo Texture
-  TextureImage(1)=LoadBMP("data/Mask1.bmp")               '' First Mask
-  TextureImage(2)=LoadBMP("data/Image1.bmp")              '' First Image
-  TextureImage(3)=LoadBMP("data/Mask2.bmp")               '' Second Mask
-  TextureImage(4)=LoadBMP("data/Image2.bmp")              '' Second Image
+  TextureImage(0)=LoadBMP(exepath + "/data/Logo.bmp")                '' Logo Texture
+  TextureImage(1)=LoadBMP(exepath + "/data/Mask1.bmp")               '' First Mask
+  TextureImage(2)=LoadBMP(exepath + "/data/Image1.bmp")              '' First Image
+  TextureImage(3)=LoadBMP(exepath + "/data/Mask2.bmp")               '' Second Mask
+  TextureImage(4)=LoadBMP(exepath + "/data/Image2.bmp")              '' Second Image
 
   if (TextureImage(0) <> NULL and _
   	  TextureImage(1) <> NULL and _

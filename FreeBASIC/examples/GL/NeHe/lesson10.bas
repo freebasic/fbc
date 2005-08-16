@@ -98,7 +98,7 @@ dim shared bp as integer                       '' B Pressed?
 
 	'' This Lesson is the first to demonstrate the use of BLOAD to load the bitmaps.
 	redim buffer(256*256*4+4) as ubyte                    '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "data/Mud.bmp", @buffer(0)                      '' BLOAD data from bitmap
+	bload exepath + "/data/Mud.bmp", @buffer(0)                      '' BLOAD data from bitmap
 	texture(0) = CreateTexture(@buffer(0),TEX_NOFILTER)   '' Nearest Texture
 	texture(1) = CreateTexture(@buffer(0))                '' Linear Texture (default)
 	texture(2) = CreateTexture(@buffer(0),TEX_MIPMAP)     '' MipMapped Texture
@@ -249,7 +249,7 @@ sub SetupWorld()
 
 	fp = freefile
 	'' File To Load World Data From, quit if file not found
-	if (open ("data\World.txt", for input, as #fp) <> 0) then end 1
+	if (open (exepath + "\data\World.txt", for input, as #fp) <> 0) then end 1
 	readstr(fp, oneline)                                      '' Get Single Line Of Data
 	if oneline = "" then end 1                                '' Data file error, exit
 	sscanf(strptr(oneline), "NUMPOLLIES %d\n", @numtriangles) '' Read In Number Of Triangles

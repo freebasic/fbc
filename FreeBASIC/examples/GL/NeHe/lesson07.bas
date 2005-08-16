@@ -169,7 +169,7 @@ function LoadGLTextures() as integer
   dim TextureImage(0) as BITMAP_RGBImageRec ptr     '' Create Storage Space For The Texture
 
   ' Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
-  TextureImage(0) = LoadBMP("data/Crate.bmp")
+  TextureImage(0) = LoadBMP(exepath + "/data/Crate.bmp")
   if TextureImage(0) then
     Status = true                                   '' Set The Status To TRUE
     glGenTextures 3, @texture(0)                    '' Create The Texture

@@ -61,7 +61,7 @@ const true  = not false
 
 	'' Use BLOAD to load the bitmaps.
 	redim buffer(256*256*4+4) as ubyte             '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "data/Crate.bmp", @buffer(0)
+	bload exepath + "/data/Crate.bmp", @buffer(0)
 	texture(0) = CreateTexture(@buffer(0),TEX_NOFILTER)  '' Nearest Texture
 	texture(1) = CreateTexture(@buffer(0))               '' Linear Texture (default)
 	texture(2) = CreateTexture(@buffer(0),TEX_MIPMAP)    '' MipMapped Texture

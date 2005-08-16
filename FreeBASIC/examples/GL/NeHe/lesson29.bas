@@ -262,13 +262,13 @@ end sub
 function InitGL() as integer
 	t1 = AllocateTextureBuffer(128, 128, 4)             '' Get An Image Structure
 	'' Fill The Image Structure With Data
-	if ReadTextureData("data/Monitor.raw", t1) = 0 then '' Nothing Read?
+	if ReadTextureData(exepath + "/data/Monitor.raw", t1) = 0 then '' Nothing Read?
 		InitGL = false
 		exit function
 	end if
 	t2 = AllocateTextureBuffer(128, 128, 4)             '' Second Image Structure
 	'' Fill The Image Structure With Data
-	if ReadTextureData("data/GL.raw", t2) = 0 then      '' Nothing Read?
+	if ReadTextureData(exepath + "/data/GL.raw", t2) = 0 then      '' Nothing Read?
 		InitGL = false
 		exit function
 	end if

@@ -68,7 +68,7 @@ dim shared gbase as uinteger                       '' Base Display List For The 
 
 	'' All Setup For OpenGL Goes Here
 
-	if (not LoadTGA(@textures(0),"data/Font.TGA")) then   '' Load The Font Texture
+	if (not LoadTGA(@textures(0), exepath + "/data/Font.tga")) then   '' Load The Font Texture
 		end 1                                  '' If Loading Failed, Quit
 	end if
 	

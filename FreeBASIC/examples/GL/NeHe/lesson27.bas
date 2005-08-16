@@ -229,7 +229,7 @@ end sub
 function InitGLObjects() as integer
 	dim as uinteger i
 
-	if (ReadObject("data/Object2.txt", @obj) = 0) then    '' Read Object2 Into obj
+	if (ReadObject(exepath + "/data/Object2.txt", @obj) = 0) then    '' Read Object2 Into obj
 		return FALSE                                      '' If Failed Return False
 	end if
 

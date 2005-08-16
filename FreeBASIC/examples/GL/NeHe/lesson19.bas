@@ -104,7 +104,7 @@ function LoadGLTextures( ) as integer
     dim as SDL_Surface ptr TextureImage(0)
 
     '' Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
-    TextureImage(0) = SDL_LoadBMP( "data/particle.bmp" )
+    TextureImage(0) = SDL_LoadBMP( exepath + "/data/particle.bmp" )
     if( TextureImage(0) <> 0 ) then
 	    '' Set the status to true
 	    Status = TRUE

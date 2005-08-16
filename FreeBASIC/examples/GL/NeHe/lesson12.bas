@@ -61,7 +61,7 @@ dim shared top as uinteger               '' Storage For The Top Display List
 
 	'' Use BLOAD to load the bitmaps.
 	redim buffer(128*128*4+4) as ubyte             '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "data/Cube.bmp", @buffer(0)
+	bload exepath + "/data/Cube.bmp", @buffer(0)
 	texture(0) = CreateTexture(@buffer(0))         '' Cube Texture
 	if texture(0) = 0 then end 1                   '' Exit if error loading data file
 

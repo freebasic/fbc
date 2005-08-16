@@ -76,7 +76,7 @@ dim shared as BEZIER_PATCH mybezier            '' The bezier patch we're going t
 
 	initBezier ()                              '' Initialize the Bezier's control grid
 	redim buffer(256*256*4+4) as ubyte         '' Size = Width x Height x 4 bytes per pixel + 4 bytes for header
-	bload "./data/NeHe.bmp", @buffer(0)        '' BLOAD data from bitmap
+	bload exepath + "/data/NeHe.bmp", @buffer(0)        '' BLOAD data from bitmap
 	mybezier.texture = CreateTexture(@buffer(0))           '' Linear Texture (default)
 	if mybezier.texture = 0 then end 1                     '' exit if texture did not load
 	mybezier.dlBPatch = genBezier (mybezier, divs)         '' Generate the patch
