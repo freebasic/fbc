@@ -33,9 +33,9 @@ FBSTRING *fb_hIntlConvertToWC(FBSTRING *source, UINT source_cp )
 {
     FBSTRING *res;
     int CharsRequired;
-    size_t idx;
 
     FB_STRLOCK();
+
     CharsRequired =
         MultiByteToWideChar( source_cp,
                              0,
@@ -45,19 +45,22 @@ FBSTRING *fb_hIntlConvertToWC(FBSTRING *source, UINT source_cp )
                              0 );
 
     res = fb_hStrAllocTemp( NULL, (CharsRequired + 1) * sizeof(WCHAR) - 1 );
-    if( res==NULL )
-        return &fb_strNullDesc;
+    if( res!=NULL ) {
+        size_t idx = CharsRequired * sizeof(WCHAR);
+        MultiByteToWideChar( source_cp,
+                             0,
+                             (LPCSTR) source->data,
+                             FB_STRSIZE(source),
+                             (LPWSTR) res->data,
+                             CharsRequired );
+        *((WCHAR*) (res->data + idx)) = 0;
+    } else {
+        res = &fb_strNullDesc;
+    }
 
-    MultiByteToWideChar( source_cp,
-                         0,
-                         (LPCSTR) source->data,
-                         FB_STRSIZE(source),
-                         (LPWSTR) res->data,
-                         CharsRequired );
+    fb_hStrDelTemp( source );
 
-    idx = CharsRequired * sizeof(WCHAR);
-    res->data[idx++] = 0;
-    res->data[idx++] = 0;
+    FB_STRUNLOCK();
 
     return res;
 }
@@ -80,19 +83,23 @@ FBSTRING *fb_hIntlConvertFromWC(FBSTRING *source, UINT dest_cp )
                              NULL );
 
     res = fb_hStrAllocTemp( NULL, CharsRequired );
-    if( res==NULL )
-        return &fb_strNullDesc;
+    if( res!=NULL ) {
+        WideCharToMultiByte( dest_cp,
+                             0,
+                             (LPCWSTR) source->data,
+                             FB_STRSIZE(source) / sizeof(WCHAR),
+                             (LPSTR) res->data,
+                             CharsRequired,
+                             NULL,
+                             NULL );
+        res->data[CharsRequired] = 0;
+    } else {
+        res = &fb_strNullDesc;
+    }
 
-    WideCharToMultiByte( dest_cp,
-                         0,
-                         (LPCWSTR) source->data,
-                         FB_STRSIZE(source) / sizeof(WCHAR),
-                         (LPSTR) res->data,
-                         CharsRequired,
-                         NULL,
-                         NULL );
+    fb_hStrDelTemp( source );
 
-    res->data[CharsRequired] = 0;
+    FB_STRUNLOCK();
 
     return res;
 }
@@ -101,7 +108,6 @@ FBSTRING *fb_hIntlConvertString( FBSTRING *source,
                                  int source_cp,
                                  int dest_cp )
 {
-    FBSTRING *res = fb_hIntlConvertToWC( source, source_cp );
-    res = fb_hIntlConvertFromWC( res, dest_cp );
-    return res;
+    return fb_hIntlConvertFromWC( fb_hIntlConvertToWC( source, source_cp ),
+                                  dest_cp );
 }
