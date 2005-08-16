@@ -31,15 +31,8 @@
 /*:::::*/
 FBCALL double fb_Timer( void )
 {
-	static long start_time = 0;
-    struct timeval tv;
+        struct timeval tv;
         
-    if( start_time == 0 )
-    {
-    	gettimeofday( &tv, NULL );
-        start_time = (tv.tv_sec * 1000000) + tv.tv_usec;
-	}
-        
-    gettimeofday( &tv, NULL );
-    return (double)(((tv.tv_sec * 1000000) + tv.tv_usec) - start_time) / 1000000.0;
+        gettimeofday(&tv, NULL);
+        return (double)(((tv.tv_sec % 86400) * 1000000) + tv.tv_usec) / 1000000.0;
 }
