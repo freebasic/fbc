@@ -486,7 +486,7 @@ int ptc_update(void *buffer)
 #ifndef __PTC_WINDOWED__
 
         // flip primary surface
-        IDirectDrawSurface_Flip(lpDDS,0,DDFLIP_WAIT);
+        IDirectDrawSurface_Flip(lpDDS,0,DDFLIP_DONOTWAIT | DDFLIP_NOVSYNC /*DDFLIP_WAIT*/);
 
 #else
 

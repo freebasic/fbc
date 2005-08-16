@@ -29,8 +29,8 @@ extern void ptc_close();
 #endif
 
 #define __PTC_CENTER_WINDOW__
-#define __PTC_RESIZE_WINDOW__
-#define __PTC_SYSTEM_MENU__
+/* #define __PTC_RESIZE_WINDOW__ */
+/* #define __PTC_SYSTEM_MENU__ */
 /* #define __PTC_ICON__ "IDI_MAIN" */
 /* #define __PTC_ALLOW_CLOSE__ */
 /* #define __PTC_CLOSE_ON_ESCAPE__ */
