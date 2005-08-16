@@ -34,7 +34,9 @@ type UDWORD as uinteger
 type UWORD as ushort
 type SLONG as integer
 type SSHORT as short
+#ifndef ulong
 type ULONG as uinteger
+#endif
 type SDOUBLE as double
 type LDOUBLE as double
 type SFLOAT as single
