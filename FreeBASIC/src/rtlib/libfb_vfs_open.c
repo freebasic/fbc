@@ -59,7 +59,7 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
     handle->size = 0;
     handle->type = FB_FILE_TYPE_VFS;
     handle->access = access;
-    /* lock mode not supported yet */
+    handle->lock = lock;      /* lock mode not supported yet */
     handle->line_length = 0;
 
 

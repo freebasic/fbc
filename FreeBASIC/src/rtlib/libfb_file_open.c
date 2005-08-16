@@ -30,6 +30,8 @@
 
 void fb_hFileCtx ( int doinit );
 
+FnDevOpenHook fb_pfnDevOpenHook = NULL;
+
 #ifdef MULTITHREADED
 int __fb_is_exiting = FALSE;
 #endif
@@ -85,9 +87,56 @@ void fb_hFileCtx ( int doinit )
 int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
                    unsigned int access, unsigned int lock, int len )
 {
+    FnFileOpen pfnFileOpen = NULL;
+    if( fb_pfnDevOpenHook!=NULL ) {
+        int res;
+        FBSTRING str_tmp;
+
+        /* Create temporary string WITHOUT(!) FB_TEMPSTRBIT set */
+        FB_STRLOCK();
+
+        if( fb_hStrRealloc( &str_tmp, FB_STRSIZE( str_filename ), FALSE )==NULL ) {
+            FB_STRUNLOCK();
+            return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+        }
+
+        fb_hStrCopy( str_tmp.data,
+                     str_filename->data,
+                     FB_STRSIZE( str_filename ) );
+
+        FB_STRUNLOCK();
+
+        /* Call the OPEN hook */
+        res = fb_pfnDevOpenHook( &str_tmp,
+                                 mode,
+                                 access,
+                                 lock,
+                                 len,
+                                 &pfnFileOpen );
+
+        /* Release temporary string */
+        FB_STRLOCK();
+
+        fb_StrAssign( str_filename, -1, &str_tmp, -1, FALSE );
+        if( str_tmp.data )
+            free( str_tmp.data );
+
+        FB_STRUNLOCK();
+
+        /* Set error to returned error number */
+        if( res!=0 )
+            return fb_ErrorSetNum( res );
+
+        if( pfnFileOpen==NULL ) {
+            /* Defaults to "normal" FILE OPEN function */
+            pfnFileOpen = fb_DevFileOpen;
+        }
+    } else {
+        pfnFileOpen = fb_DevFileOpen;
+    }
     return fb_FileOpenVfsEx( handle, str_filename,
                              mode, access,
-                             lock, len, fb_DevFileOpen );
+                             lock, len, pfnFileOpen );
 }
 
 /*:::::*/

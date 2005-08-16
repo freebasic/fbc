@@ -775,6 +775,7 @@ typedef struct _FB_FILE {
     long            size;
     int             type;
     int             access;
+    int             lock;
     unsigned        line_length;
     unsigned        width;
 
@@ -801,9 +802,17 @@ typedef struct _FB_INPCTX {
 } FB_INPCTX;
 
 
+typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
+                                     unsigned open_mode,
+                                     unsigned access_mode,
+                                     unsigned lock_mode,
+                                     int rec_len,
+                                     FnFileOpen *pfnFileOpen );
+
 extern FB_FILE                fb_fileTB[];
 extern FB_INPCTX              fb_inpctx;
 extern FB_TLSENTRY            fb_dirctx;
+extern FnDevOpenHook          fb_pfnDevOpenHook;
 
 static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
 {
