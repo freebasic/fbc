@@ -424,11 +424,15 @@ function cDataStmt as integer static
 	'' DATA literal|constant expr (',' literal|constant expr)*
 	case FB_TK_DATA
 
-		'' not allowed inside procs
-		if( env.scope > 0 ) then
-			hReportError FB_ERRMSG_ILLEGALINSIDEASUB
-			exit function
-		end if
+        '' it should be allowed inside procs to avoid global namespace
+        '' pollution - so I simply removed the check if we're inside
+        '' a proc.
+
+''		'' not allowed inside procs
+''		if( env.scope > 0 ) then
+''			hReportError FB_ERRMSG_ILLEGALINSIDEASUB
+''			exit function
+''		end if
 
 		lexSkipToken( )
 

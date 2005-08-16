@@ -5,6 +5,7 @@ Version 0.15 Beta:
 - VAL64 function renamed to VALLNG as longint's can be wider than 64 bits in future ports (v1c)
 - WITH can now accepts dereferenced pointers as argument and the depth became unlimited (v1c)
 - Linux version can now be installed in any directory (lillo)
+- DATA can now be used inside functions too (mjs)
 
 [added]
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
@@ -53,6 +54,7 @@ Version 0.15 Beta:
 - INPUT in plain Linux console mode was entering infinite loop if certain keys were pressed (lillo)
 - BLOAD did not load 32bit BMP files correctly (lillo)
 - TIMER was returning ticks since the application started in DOS (v1c)
+- INCLUDE for files INCLUDEd from a non-standard path (mjs)
 
 
 Version 0.14 Beta:
