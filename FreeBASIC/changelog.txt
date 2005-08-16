@@ -52,6 +52,7 @@ Version 0.15 Beta:
 - console programs running in vanilla Linux console were ignoring break condition (CTRL-C) (lillo)
 - INPUT in plain Linux console mode was entering infinite loop if certain keys were pressed (lillo)
 - BLOAD did not load 32bit BMP files correctly (lillo)
+- TIMER was returning ticks since the application started in DOS (v1c)
 
 
 Version 0.14 Beta:
