@@ -90,61 +90,54 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
                    unsigned int access, unsigned int lock, int len )
 {
     int res = 0;
-    FBSTRING str_tmp = { 0 };
+    FBSTRING *filename, str_tmp = { 0 };
     FnFileOpen pfnFileOpen = NULL;
 
-    /* Create a modifiable string.
-     *
-     * We have to copy it here because the hook might modify this string
-     * but this is an error when the string passed to OPEN is a temporary
-     * string created from static data (temp. decriptor, static data).
-     *
-     * This could be avoided if we'd have a string handle with a separate
-     * FLAGS member where we'd be able to store some kind of STATIC_DATA
-     * flag so that a call to fb_StrAssign wouldn't try to free this static
-     * data which is always a bad idea.
-     */
-    FB_STRLOCK();
-    if( fb_hStrRealloc( &str_tmp, FB_STRSIZE( str_filename ), FALSE )==NULL ) {
-        FB_STRUNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
-    }
-    fb_hStrCopy( str_tmp.data,
-                 str_filename->data,
-                 FB_STRSIZE( str_filename ) );
-    fb_hStrDelTemp( str_filename );
-    FB_STRUNLOCK();
+    if( fb_pfnDevOpenHook != NULL )
+    {
+    	/*
+     	 * We have to copy it here because the hook might modify this string
+     	 * and FB assumes no var-len string arg will be changed by the rtlib
+     	 */
+    	filename = &str_tmp;
+    	fb_StrAssign( (void *)filename, -1, (void *)str_filename, -1, FALSE );
 
-    if( fb_pfnDevOpenHook!=NULL ) {
         /* Call the OPEN hook */
-        res = fb_pfnDevOpenHook( &str_tmp,
+        res = fb_pfnDevOpenHook( filename,
                                  mode,
                                  access,
                                  lock,
                                  len,
                                  &pfnFileOpen );
-    }
 
-    if( res==0 ) {
-        if( pfnFileOpen==NULL ) {
+    }
+    else
+    	filename = str_filename;
+
+    if( res == 0 )
+    {
+        if( pfnFileOpen == NULL )
+        {
             /* Defaults to "normal" FILE OPEN function */
             pfnFileOpen = fb_DevFileOpen;
         }
 
-        res = fb_FileOpenVfsEx( handle, &str_tmp,
+        res = fb_FileOpenVfsEx( handle, filename,
                                 mode, access,
                                 lock, len, pfnFileOpen );
-    } else {
+    }
+    else
+    {
         /* Set error to the error number previously returned by the open
          * hook */
         fb_ErrorSetNum( res );
     }
 
-    /* Release temporary string */
-    FB_STRLOCK();
-    if( str_tmp.data )
-        free( str_tmp.data );
-    FB_STRUNLOCK();
+    if( fb_pfnDevOpenHook != NULL )
+    {
+    	/* Release temporary string */
+    	fb_StrDelete( &str_tmp );
+    }
 
     return res;
 }

@@ -138,6 +138,6 @@ int fb_FileOpenVfsEx( FB_FILE *handle,
 
     FB_STRUNLOCK();
 
-    return fb_FileOpenVfsRawEx(handle, filename, filename_length,
-                               mode, access, lock, len, pfnOpen );
+    return fb_FileOpenVfsRawEx( handle, filename, filename_length,
+                                mode, access, lock, len, pfnOpen );
 }
