@@ -6,8 +6,8 @@
 #ifndef __TINYPTC_H__
 #define __TINYPTC_H__
 
-#include "../rtlib/fb.h"
-#include "../gfxlib2/fb_gfx.h"
+#include "../../rtlib/fb.h"
+#include "../../gfxlib2/fb_gfx.h"
 
 #ifdef DRIVER_LOCK
 #undef DRIVER_LOCK

@@ -101,7 +101,7 @@ ifeq ($(TARGET),xbox)
     CFLAGS += -DTARGET_XBOX -DTARGET_X86
     SDLFLAGS := -DENABLE_XBOX -DDISABLE_CDROM
     CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 $(SDLFLAGS)
-    CFLAGS += -I../rtlib/xbox/inc -I../rtlib/xbox/inc/SDL
+    CFLAGS += -I../../rtlib/xbox/inc -I../../rtlib/xbox/inc/SDL
     AFLAGS += -DTARGET_XBOX
     NASMFLAGS += -f win32
 endif
@@ -116,7 +116,7 @@ endif
 
 objpath = obj/$(OSOBJPATH)$(ptc_win_ext)
 
-libpath = ../../lib/$(TARGET)
+libpath = ../../../lib/$(TARGET)
 
 ifndef libname
 libname=tinyptc$(ptc_win_ext)
