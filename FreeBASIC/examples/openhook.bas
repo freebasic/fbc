@@ -37,6 +37,7 @@ private function MyOpenHook( filename as string, _
     case else
         if ucase$(left$(filename,5))="PIPE:" then
             *pfnFileOpen = @fb_DevPipeOpen
+            filename = mid$(filename, 6)
         elseif ucase$(left$(filename,8))="FILE:///" then
             filename = mid$(filename, 9)
         elseif IsNumberedDevice(filename, "LPT") then
