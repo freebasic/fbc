@@ -19,7 +19,7 @@
 ''
 #define LUA_REGISTRYINDEX	(-10000)
 #define LUA_GLOBALSINDEX	(-10001)
-''#define lua_upvalueindex(i)	(LUA_GLOBALSINDEX-(i))
+#define lua_upvalueindex(i)	(LUA_GLOBALSINDEX-(i))
 
 
 '' error codes for `lua_load' and `lua_pcall'
