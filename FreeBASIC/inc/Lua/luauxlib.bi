@@ -110,9 +110,9 @@ declare sub luaL_pushresult LUALIB_API alias "luaL_pushresult"  (byval B as luaL
 '' Compatibility macros and functions
 ''
 
-declare function lua_dofile LUALIB_API alias "lua_dofile"  (byval L as lua_State ptr, byval filename as string)
-declare function lua_dostring LUALIB_API alias "lua_dostring"  (byval L as lua_State ptr, byval str as string)
-declare function lua_dobuffer LUALIB_API alias "lua_dobuffer"  (byval L as lua_State ptr, byval buff as string, byval sz as integer, byval n as string)
+declare function lua_dofile LUALIB_API alias "lua_dofile"  (byval L as lua_State ptr, byval filename as string) as integer
+declare function lua_dostring LUALIB_API alias "lua_dostring"  (byval L as lua_State ptr, byval str as string) as integer
+declare function lua_dobuffer LUALIB_API alias "lua_dobuffer"  (byval L as lua_State ptr, byval buff as string, byval sz as integer, byval n as string) as integer
 
 
 #define luaL_check_lstr 	luaL_checklstring
