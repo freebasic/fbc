@@ -3943,25 +3943,24 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 
 	select case as const v->dtype
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-
 		select case as const dtype
 		case IR_DATATYPE_BYTE
 			v->v.valuei = cbyte( v->v.value64 )
 
 		case IR_DATATYPE_UBYTE
-			v->v.valuei = cubyte( v->v.value64 )
+			v->v.valuei = cubyte( culngint( v->v.value64 ) )
 
 		case IR_DATATYPE_SHORT
 			v->v.valuei = cshort( v->v.value64 )
 
 		case IR_DATATYPE_USHORT
-			v->v.valuei = cushort( v->v.value64 )
+			v->v.valuei = cushort( culngint( v->v.value64 ) )
 
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
 			v->v.valuei = cint( v->v.value64 )
 
 		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-			v->v.valuei = cuint( v->v.value64 )
+			v->v.valuei = cuint( culngint( v->v.value64 ) )
 
 		end select
 
@@ -3989,19 +3988,18 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 		end select
 
 	case else
-
 		select case as const dtype
 		case IR_DATATYPE_BYTE
 			v->v.valuei = cbyte( v->v.valuei )
 
 		case IR_DATATYPE_UBYTE
-			v->v.valuei = cubyte( v->v.valuei )
+			v->v.valuei = cubyte( cuint( v->v.valuei ) )
 
 		case IR_DATATYPE_SHORT
 			v->v.valuei = cshort( v->v.valuei )
 
 		case IR_DATATYPE_USHORT
-			v->v.valuei = cushort( v->v.valuei )
+			v->v.valuei = cushort( cuint( v->v.valuei ) )
 		end select
 
 	end select
@@ -5486,15 +5484,18 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckStringParam( byval f as ASTNODE ptr, _
+private function hStrParamToPtrArg( byval f as ASTNODE ptr, _
 									byval n as ASTNODE ptr, _
 					   				byval pclass as integer, _
 					   				byval pdtype as integer, _
-					   				byval pdclass as integer ) as integer
+					   				byval pdclass as integer, _
+					   				byval checkrtl as integer = FALSE ) as integer
 
-	'' rtl? don't mess..
-	if( f->proc.isrtl ) then
-		return TRUE
+	if( not checkrtl ) then
+		'' rtl? don't mess..
+		if( f->proc.isrtl ) then
+			return TRUE
+		end if
 	end if
 
 	''
@@ -5503,31 +5504,35 @@ private function hCheckStringParam( byval f as ASTNODE ptr, _
 		'' if it's a function returning a STRING, it will have to be
 		'' deleted automagically when the proc been called return
 		if( pclass = AST_NODECLASS_FUNCT ) then
-			'' create temp string to pass as paramenter (no copy is
-			'' done at rtlib, as the returned string is a temp one)
+			'' create a temp string to pass as paramenter (no copy is
+			'' done at rtlib, as the returned string is a temp too)
 			n->l = hAllocTmpString( f, n->l, FALSE )
 			pdtype = IR_DATATYPE_STRING
-			pclass = AST_NODECLASS_PTR
-			n->dtype = pdtype
-		end if
+        end if
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
 		if( pdtype <> IR_DATATYPE_FIXSTR ) then
-    		n->l     = astNewADDR( IR_OP_DEREF, n->l )
-			n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+    		n->l = astNewCONV( IR_OP_TOPOINTER, _
+    						   IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+    						   NULL, _
+    						   astNewADDR( IR_OP_DEREF, n->l ) )
 
         '' fixed-len? get the address of
         elseif( pclass <> AST_NODECLASS_PTR ) then
-			n->l     = astNewADDR( IR_OP_ADDROF, n->l )
-			n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+			n->l = astNewCONV( IR_OP_TOPOINTER, _
+    						   IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+    						   NULL, _
+							   astNewADDR( IR_OP_ADDROF, n->l ) )
 		end if
+
+		n->dtype = n->l->dtype
 
 	else
     	'' zstring? if not a ptr yet, get the address of
     	if( pdtype = IR_DATATYPE_CHAR ) then
 			if( pclass <> AST_NODECLASS_PTR ) then
-				n->l     = astNewADDR( IR_OP_ADDROF, n->l )
-				n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+				n->l = astNewADDR( IR_OP_ADDROF, n->l )
+				n->dtype = n->l->dtype
 			end if
 		end if
 
@@ -5661,7 +5666,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     '' vararg?
     elseif( amode = FB_ARGMODE_VARARG ) then
 
-		return hCheckStringParam( f, n, pclass, pdtype, pdclass )
+		return hStrParamToPtrArg( f, n, pclass, pdtype, pdclass )
 
 	'' as any?
     elseif( adtype = IR_DATATYPE_VOID ) then
@@ -5669,22 +5674,22 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		if( pmode = FB_ARGMODE_BYVAL ) then
 
 			'' another quirk: BYVAL strings passed to BYREF ANY args..
-			return hCheckStringParam( f, n, pclass, pdtype, pdclass )
+			return hStrParamToPtrArg( f, n, pclass, pdtype, pdclass )
 
 		end if
 
     '' byval or byref (but as any)
     else
 
-		'' if it's a function returning a STRING, it's actually a pointer
-		if( pclass = AST_NODECLASS_FUNCT ) then
-			if( pdtype = FB_SYMBTYPE_STRING ) then
-				pclass = AST_NODECLASS_PTR
-			end if
-		end if
-
     	'' string argument?
     	if( adclass = IR_DATACLASS_STRING ) then
+
+			'' if it's a function returning a STRING, it's actually a pointer
+			if( pclass = AST_NODECLASS_FUNCT ) then
+				if( pdtype = FB_SYMBTYPE_STRING ) then
+					pclass = AST_NODECLASS_PTR
+				end if
+			end if
 
 			'' param not an string?
 			if( pdclass <> IR_DATACLASS_STRING ) then
@@ -5819,12 +5824,26 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 			''
 			else
-				'' can't convert strings/UDT's to other types
-				if( (pdclass = IR_DATACLASS_STRING) or _
-					(pdtype = IR_DATATYPE_USERDEF) ) then
+				'' can't convert UDT's to other types
+				if( pdtype = IR_DATATYPE_USERDEF ) then
 					hReportParamError( f )
 					exit function
 				end if
+
+				'' string param? handle z- and w-string ptr arguments
+				select case pdtype
+				case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+					'' arg not a zstring ptr?
+					if( adtype <> IR_DATATYPE_POINTER + IR_DATATYPE_CHAR ) then
+						hReportParamError( f )
+						exit function
+					end if
+
+					hStrParamToPtrArg( f, n, pclass, pdtype, pdclass, TRUE )
+					p 		= n->l
+					pdtype  = p->dtype
+					pdclass = irGetDataClass( pdtype )
+				end select
 
 				'' different types? convert..
 				if( (adclass <> pdclass) or _
