@@ -1000,13 +1000,13 @@ function cTypeDecl as integer static
   		align = astGetValueAsInt( expr )
   		astDel( expr )
   		if( align < 0 ) then
-  			align = FB_INTEGERSIZE
+  			align = 0
   		elseif( align > FB_INTEGERSIZE*4 ) then
   			align = FB_INTEGERSIZE*4
   		end if
 
 	case else
-		align = FB_INTEGERSIZE
+		align = 0
 	end select
 
 	env.typectx.symbol = symbAddUDT( id, env.typectx.isunion, align )
@@ -1042,7 +1042,7 @@ function cTypeDecl as integer static
 		exit function
 	end if
 
-	'' align to multiple of sizeof( int )
+	'' pad the UDT if needed
 	symbRoundUDTSize( env.typectx.symbol )
 
 	'' END

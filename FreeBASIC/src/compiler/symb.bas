@@ -1522,27 +1522,27 @@ function symbAddUDT( byval symbol as string, _
 end function
 
 '':::::
-function hCalcALign( byval lgt as integer, _
-					 byval ofs as integer, _
-					 byval align as integer, _
-					 byval typ as integer, _
-					 byval subtype as FBSYMBOL ptr ) as integer static
-    dim pad as integer
-    dim e as FBSYMBOL ptr
+private function hCalcALign( byval lgt as integer, _
+					 		 byval ofs as integer, _
+					 		 byval align as integer, _
+					 		 byval dtype as integer, _
+					 		 byval subtype as FBSYMBOL ptr ) as integer static
+
+    dim as FBSYMBOL ptr e
 
 	function = 0
 
-	if( align <= 1 ) then
+	if( align = 1 ) then
 		exit function
 	end if
 
 	'' if field is another UDT, loop until a non-UDT header field is found
-	if( typ = FB_SYMBTYPE_USERDEF ) then
+	if( dtype = FB_SYMBTYPE_USERDEF ) then
 		do
 			e = subtype->udt.head
-    		typ = e->typ
+    		dtype = e->typ
     		subtype = e->subtype
-		loop while( typ = FB_SYMBTYPE_USERDEF )
+		loop while( dtype = FB_SYMBTYPE_USERDEF )
 
 		lgt = e->lgt
 
@@ -1553,24 +1553,36 @@ function hCalcALign( byval lgt as integer, _
 		end if
 	end if
 
-	select case typ
+	select case dtype
 	'' don't align strings
 	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
 
 	case else
-		select case as const lgt
-		'' align byte, short, int's, float's and double's to the nearest boundary
-		case 1, 2, 4, 8
-			pad = lgt - 1
+		'' default?
+		if( align = 0 ) then
+			select case as const lgt
+			'' align byte, short, int's, float's and double's to the natural boundary
+			case 1
+				exit function
+			case 2
+				function = (2 - (ofs and (2-1))) mod 2
+			case 4
+				function = (4 - (ofs and (4-1))) mod 4
+			case 8
+				function = (8 - (ofs and (8-1))) mod 8
 
-		'' anything else to align given (default: sizeof( int ))
-		case else
-			pad = align - 1
-			lgt = align
-		end select
+			'' anything else, align to sizeof(int)
+			case else
+				function = (FB_INTEGERSIZE - (ofs and (FB_INTEGERSIZE-1))) mod FB_INTEGERSIZE
+			end select
 
-		if( pad > 0 ) then
-			function = (lgt - (ofs and pad)) mod lgt
+		'' packed..
+		else
+			if( lgt < align ) then
+				exit function
+			end if
+
+			function = (align - (ofs and (align - 1))) mod align
 		end if
 
 	end select
@@ -1607,7 +1619,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
     static as zstring * FB_MAXINTNAMELEN+1 ename
     dim as FBSYMBOL ptr e, tail
-    dim as integer align, i, updateudt
+    dim as integer pad, i, updateudt
 
     function = NULL
 
@@ -1681,9 +1693,9 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	''
 	if( updateudt ) then
-		align = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
-		if( align > 0 ) then
-			t->udt.ofs += align
+		pad = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
+		if( pad > 0 ) then
+			t->udt.ofs += pad
 		end if
 	end if
 
@@ -1707,7 +1719,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 			if( hNewDim( e->var.array.dimhead, e->var.array.dimtail, _
 						 dTB(i).lower, dTB(i).upper ) = NULL ) then
 			end if
-		next i
+		next
 	end if
 
 	e->var.array.elms 	= hCalcElements( e )
@@ -1755,18 +1767,19 @@ end function
 
 '':::::
 sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
-    dim round as integer, align as integer
+    dim as integer pad, align
 
 	align = t->udt.align
+	if( align = 0 ) then
+		align = FB_INTEGERSIZE
+	end if
 
 	if( align > 1 ) then
+		pad = (align - (t->lgt and (align-1))) and (align-1)
 
-		round = (align - (t->lgt and (align-1))) and (align-1)
-
-		if( round > 0 ) then
-			t->lgt += round
+		if( pad > 0 ) then
+			t->lgt += pad
 		end if
-
 	end if
 
 	'' check for forward references
@@ -1778,7 +1791,7 @@ end sub
 
 '':::::
 sub symbRecalcUDTSize( byval t as FBSYMBOL ptr ) static
-    dim lgt as integer
+    dim as integer lgt
 
 	lgt = t->udt.innerlgt
 	if( lgt > 0 ) then
@@ -1801,7 +1814,8 @@ end sub
 
 '':::::
 function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
-    dim i as integer, e as FBSYMBOL ptr
+    dim as integer i
+    dim as FBSYMBOL ptr e
 
     function = NULL
 
