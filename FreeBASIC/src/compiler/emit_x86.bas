@@ -1275,7 +1275,7 @@ private sub _emitSTORL2I( byval dvreg as IRVREG ptr, _
 						  byval svreg as IRVREG ptr ) static
 
 	'' been too complex due the SI/DI crap, leave it to I2I
-	_emitSTORL2I( dvreg, svreg )
+	_emitSTORI2I( dvreg, svreg )
 
 end sub
 
