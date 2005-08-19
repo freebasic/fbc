@@ -1,6 +1,9 @@
 Version 0.15 Beta:
 
 [changed]
+- alignament and padding of UDT's (TYPE's and UNION's) now fully follow the GCC 3.x ABI,
+  if DLL's were compiled with older versions and UDT's are passed by argument or returned
+  from functions, recompile the libraries if clients will be compiled with this version
 - LOCATE/CLS/WIDTH/SCREEN are now window-local (left/top of window = 1/1) on Win32 (mjs)
 - VAL64 function renamed to VALLNG as longint's can be wider than 64 bits in future ports (v1c)
 - WITH can now accepts dereferenced pointers as argument and the depth became unlimited (v1c)
