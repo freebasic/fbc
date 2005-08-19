@@ -471,7 +471,12 @@ data "fb_InitProfile","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0
-'' fb_END ( byval errlevel as integer ) as void
+'' __main CDECL ( ) as void
+data "__main","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 0
+'' fb_End ( byval errlevel as integer ) as void
 data "fb_End","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -4770,6 +4775,16 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 
     astAdd( proc )
 
+    function = proc
+
+    '' call default CRT0 constructors (only required for Win32) */
+	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		'' __main()
+		f = ifuncTB(FB_RTL_INITCTOR)
+    	proc = astNewFUNCT( f, NULL, TRUE )
+    	astAdd( proc )
+    end if
+
     '' if error checking is on, call initSignals
     if( env.clopt.errorcheck ) then
     	if( not isdllmain ) then
@@ -4784,8 +4799,6 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 	    	rtlInitProfile( )
 	    end if
     end if
-
-    function = proc
 
 end function
 
