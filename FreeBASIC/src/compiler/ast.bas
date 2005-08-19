@@ -4455,18 +4455,18 @@ function astNewIDX( byval v as ASTNODE ptr, _
 end function
 
 '':::::
-private function hEmitIDX( byval v as ASTNODE ptr, _
-					  	   byval ofs as integer, _
-					  	   byval mult as integer, _
+private function hEmitIDX( byval n as ASTNODE ptr, _
+						   byval v as ASTNODE ptr, _
 					  	   byval vi as IRVREG ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
     dim as IRVREG ptr vd
-
-    s = v->var.sym
+    dim as integer ofs
 
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
+    s = v->var.sym
+    ofs = n->idx.ofs
 	if( not symbGetIsDynamic( s ) ) then
-		ofs = ofs + symbGetArrayDiff( s ) + v->var.ofs
+		ofs += symbGetArrayDiff( s ) + v->var.ofs
 	else
 		s = NULL
 	end if
@@ -4474,13 +4474,13 @@ private function hEmitIDX( byval v as ASTNODE ptr, _
     ''
     if( ctx.doemit ) then
 		if( vi <> NULL ) then
-			vd = irAllocVRIDX( v->dtype, s, ofs, mult, vi )
+			vd = irAllocVRIDX( n->dtype, s, ofs, n->idx.mult, vi )
 
 			if( irIsIDX( vi ) or irIsVAR( vi ) ) then
 				irEmitLOAD( vi )
 			end if
 		else
-			vd = irAllocVRVAR( v->dtype, s, ofs )
+			vd = irAllocVRVAR( n->dtype, s, ofs )
 		end if
 	end if
 
@@ -4524,7 +4524,7 @@ function hLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	if( ctx.doemit ) then
-    	vr = hEmitIDX( v, n->idx.ofs, n->idx.mult, vi )
+    	vr = hEmitIDX( n, v, vi )
     end if
 
 	astDel( i )
