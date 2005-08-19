@@ -100,8 +100,5 @@ void fb_hInit ( int argc, char **argv )
 
 #endif
 
-    /* call default CRT0 constructors (only required for Win32) */
-    /* __main(); */
-    
     drawScreen(640, 480, 8);
 }

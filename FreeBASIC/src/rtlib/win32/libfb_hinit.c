@@ -38,8 +38,6 @@ HANDLE fb_in_handle, fb_out_handle;
 int ConsoleSetByUser = FALSE;
 int ScrollWasOff = FALSE;
 
-void __main(void);
-
 
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
@@ -91,8 +89,5 @@ void fb_hInit ( int argc, char **argv )
 	/* allocate thread local storage var for dir context */
 	fb_dirctx           = TlsAlloc();
 #endif
-
-    /* call default CRT0 constructors (only required for Win32) */
-    __main();
 
 }
