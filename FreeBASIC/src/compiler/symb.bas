@@ -1514,6 +1514,7 @@ function symbAddUDT( byval symbol as string, _
 	t->udt.lfldlen	= 0
 	t->udt.innerlgt	= 0
 	t->udt.bitpos	= 0
+	t->udt.unpadlgt = 0
 
 	t->dbg.typenum	= INVALID
 
@@ -1528,64 +1529,54 @@ private function hCalcALign( byval lgt as integer, _
 					 		 byval dtype as integer, _
 					 		 byval subtype as FBSYMBOL ptr ) as integer static
 
-    dim as FBSYMBOL ptr e
-
 	function = 0
 
+	'' do align?
 	if( align = 1 ) then
 		exit function
 	end if
 
-	'' if field is another UDT, loop until a non-UDT header field is found
-	if( dtype = FB_SYMBTYPE_USERDEF ) then
-		do
-			e = subtype->udt.head
-    		dtype = e->typ
-    		subtype = e->subtype
-		loop while( dtype = FB_SYMBTYPE_USERDEF )
-
-		lgt = e->lgt
-
-		'' len = field's len + pad from current field to the next field, if any
-		e = e->var.elm.next
-		if( e <> NULL ) then
-			lgt += (e->var.elm.ofs - lgt)
-		end if
-	end if
-
+	'' handle special types
 	select case dtype
-	'' don't align strings
+	'' another UDT? use its largest field len
+	case FB_SYMBTYPE_USERDEF
+		lgt = subtype->udt.lfldlen
+
+	'' zstring or fixed-len? size is actually sizeof(byte)
 	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
+		lgt = 1
 
-	case else
-		'' default?
-		if( align = 0 ) then
-			select case as const lgt
-			'' align byte, short, int's, float's and double's to the natural boundary
-			case 1
-				exit function
-			case 2
-				function = (2 - (ofs and (2-1))) mod 2
-			case 4
-				function = (4 - (ofs and (4-1))) mod 4
-			case 8
-				function = (8 - (ofs and (8-1))) mod 8
+	'' var-len string: first field is a pointer
+	case FB_SYMBTYPE_STRING
+		lgt = FB_POINTERSIZE
+	end select
 
-			'' anything else, align to sizeof(int)
-			case else
-				function = (FB_INTEGERSIZE - (ofs and (FB_INTEGERSIZE-1))) mod FB_INTEGERSIZE
-			end select
+	'' default?
+	if( align = 0 ) then
+		select case as const lgt
+		'' align byte, short, int, float, double and long long to the natural boundary
+		case 1
+			exit function
+		case 2
+			function = (2 - (ofs and (2-1))) and (2-1)
+		case 4
+			function = (4 - (ofs and (4-1))) and (4-1)
+		case 8
+			function = (8 - (ofs and (8-1))) and (8-1)
 
-		'' packed..
-		else
-			if( lgt < align ) then
-				exit function
-			end if
+		'' anything else (shouldn't happen), align to sizeof(int)
+		case else
+			function = (FB_INTEGERSIZE - (ofs and (FB_INTEGERSIZE-1))) and (FB_INTEGERSIZE-1)
+		end select
 
-			function = (align - (ofs and (align - 1))) mod align
+	'' packed..
+	else
+		if( lgt < align ) then
+			align = lgt
 		end if
 
-	end select
+		function = (align - (ofs and (align - 1))) and (align-1)
+	end if
 
 end function
 
@@ -1619,7 +1610,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
     static as zstring * FB_MAXINTNAMELEN+1 ename
     dim as FBSYMBOL ptr e, tail
-    dim as integer pad, i, updateudt
+    dim as integer pad, i, updateudt, elen
 
     function = NULL
 
@@ -1639,12 +1630,16 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	tail = t->udt.tail
 
-    '' calc length if it wasn't given or if it's a scalar UDT
-    '' field (the packed len w/o padding is needed); for array of UDT's
-    '' fields, the padded len will be used to be GCC 3.x compatible
-	if( (lgt <= 0) or _
-		((typ = FB_SYMBTYPE_USERDEF) and (dimensions = 0)) ) then
+    '' calc length if it wasn't given
+	if( lgt <= 0 ) then
 		lgt	= symbCalcLen( typ, subtype, TRUE )
+
+	'' or if it's a non-array UDT field (the len w/o padding) -- for array
+	'' of UDT's fields, the padded len will be used, to be GCC 3.x compatible
+	elseif( typ = FB_SYMBTYPE_USERDEF ) then
+		if( dimensions = 0 ) then
+			lgt = subtype->udt.unpadlgt
+		end if
 	end if
 
     '' check if the parent ofs must be updated
@@ -1697,6 +1692,31 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		if( pad > 0 ) then
 			t->udt.ofs += pad
 		end if
+
+		'' update largest field len
+		if( not isinner ) then
+
+			'' handle special types
+			select case as const typ
+			'' another UDT? use its largest field len
+			case FB_SYMBTYPE_USERDEF
+				elen = subtype->udt.lfldlen
+			'' zstring or fixed-len? size is actually sizeof(byte)
+			case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
+				elen = 1
+			'' var-len string? first field is a pointer
+			case FB_SYMBTYPE_STRING
+				elen = FB_POINTERSIZE
+			'' anything else..
+			case else
+				elen = lgt
+			end select
+
+			'' larger?
+			if( elen > t->udt.lfldlen ) then
+				t->udt.lfldlen = elen
+			end if
+		end if
 	end if
 
 	e->lgt 				= lgt
@@ -1724,27 +1744,34 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	e->var.array.elms 	= hCalcElements( e )
 
-	'' update UDT length
+	'' multiple len by all array elements (if any)
 	lgt *= e->var.array.elms
 
 	if( updateudt ) then
+		'' struct?
 		if( not t->udt.isunion ) then
+			'' not name-less inner?
 			if( not isinner ) then
 				t->udt.ofs += lgt
 				t->lgt = t->udt.ofs
+
+			'' inner.. parent is an union
 			else
 				if( lgt > t->udt.innerlgt ) then
 					t->udt.innerlgt = lgt
 				end if
 			end if
 
+		'' union..
 		else
+			'' not name-less inner?
 			if( not isinner ) then
 				t->udt.ofs = 0
 				if( lgt > t->lgt ) then
 					t->lgt = lgt
-					t->udt.lfldlen = lgt
 				end if
+
+			'' inner.. parent is a struct
 			else
 				t->udt.ofs += lgt
 				t->udt.innerlgt = t->udt.ofs
@@ -1767,16 +1794,28 @@ end function
 
 '':::::
 sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
-    dim as integer pad, align
+    dim as integer align, pad
 
 	align = t->udt.align
+
+	'' default?
 	if( align = 0 ) then
 		align = FB_INTEGERSIZE
 	end if
 
-	if( align > 1 ) then
-		pad = (align - (t->lgt and (align-1))) and (align-1)
+	'' save length w/o padding
+	t->udt.unpadlgt = t->lgt
 
+	'' do round?
+	if( align > 1 ) then
+		'' first pad with the alignament given
+		pad = (align - (t->lgt and (align-1))) and (align-1)
+		if( pad > 0 ) then
+			t->lgt += pad
+		end if
+
+		'' plus the largest scalar field size (GCC 3.x ABI)
+		pad = hCalcALign( t->udt.lfldlen, t->lgt, t->udt.align, FB_SYMBTYPE_VOID, NULL )
 		if( pad > 0 ) then
 			t->lgt += pad
 		end if
@@ -1796,14 +1835,16 @@ sub symbRecalcUDTSize( byval t as FBSYMBOL ptr ) static
 	lgt = t->udt.innerlgt
 	if( lgt > 0 ) then
 
+		'' struct?
 		if( not t->udt.isunion ) then
 			t->udt.ofs += lgt
 			t->lgt = t->udt.ofs
+
+		'' union..
 		else
 			t->udt.ofs = 0
 			if( lgt > t->lgt ) then
 				t->lgt = lgt
-				t->udt.lfldlen = lgt
 			end if
 		end if
 
@@ -3014,16 +3055,8 @@ function symbCalcLen( byval typ as integer, _
 	case FB_SYMBTYPE_USERDEF
 		if( not realsize ) then
 			lgt = subtype->lgt
-
 		else
-			if( not subtype->udt.isunion ) then
-				e = subtype->udt.tail
-				lgt = e->var.elm.ofs + (e->lgt * e->var.array.elms)
-
-			'' union, use the largest field len
-			else
-				lgt = subtype->udt.lfldlen
-			end if
+			lgt = subtype->udt.unpadlgt
 		end if
 
 	case else
@@ -3122,22 +3155,13 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbGetUDTLen( byval udt as FBSYMBOL ptr, _
+function symbGetUDTLen( byval s as FBSYMBOL ptr, _
 						byval realsize as integer = TRUE ) as integer static
-    dim e as FBSYMBOL ptr
 
 	if( not realsize ) then
-		function = udt->lgt
-
+		function = s->lgt
 	else
-		if( not udt->udt.isunion ) then
-			e = udt->udt.tail
-			function = e->var.elm.ofs + (e->lgt * e->var.array.elms)
-
-		'' union, use the largest field len
-		else
-			function = udt->udt.lfldlen
-		end if
+		function = s->udt.unpadlgt
 	end if
 
 end function

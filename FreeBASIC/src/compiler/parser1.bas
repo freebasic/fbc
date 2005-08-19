@@ -1001,8 +1001,10 @@ function cTypeDecl as integer static
   		astDel( expr )
   		if( align < 0 ) then
   			align = 0
-  		elseif( align > FB_INTEGERSIZE*4 ) then
-  			align = FB_INTEGERSIZE*4
+  		elseif( align > FB_INTEGERSIZE ) then
+  			align = 0
+  		elseif( align = 3 ) then
+  			align = 2
   		end if
 
 	case else

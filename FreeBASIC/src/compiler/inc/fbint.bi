@@ -658,9 +658,10 @@ type FBSUDT
 	tail			as FBSYMBOL_ ptr			'' last  /
 	ofs				as integer
 	align			as integer
-	lfldlen			as integer					'' largest field len (used with unions)
+	lfldlen			as integer					'' largest field len
 	innerlgt		as integer					'' used with inner nameless unions
 	bitpos			as uinteger
+	unpadlgt		as integer					'' unpadded len
 end type
 
 type FBSUDTELM
