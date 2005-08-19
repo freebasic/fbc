@@ -58,6 +58,8 @@ Version 0.15 Beta:
 - BLOAD did not load 32bit BMP files correctly (lillo)
 - TIMER was returning ticks since the application started in DOS (v1c)
 - INCLUDE for files INCLUDEd from a non-standard path (mjs)
+- storing a longint (64-bit) to a integer was causing a stack fault in the compiler (v1c)
+- assigning UDT's returned from functions to arrays was generating invalid code, depending on the UDT type (v1c)
 
 
 Version 0.14 Beta:
