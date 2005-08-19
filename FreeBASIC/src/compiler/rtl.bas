@@ -471,6 +471,11 @@ data "fb_InitProfile","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0
+'' fb_CallCTORS CDECL ( ) as void
+data "fb_CallCTORS","", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 NULL, FALSE, FALSE, _
+	 0
 '' __main CDECL ( ) as void
 data "__main","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
@@ -4753,6 +4758,14 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 
 	function = NULL
 
+    '' call default CRT0 constructors (only required for Win32) */
+	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		'' __main()
+		f = ifuncTB(FB_RTL_INITCRTCTOR)
+    	proc = astNewFUNCT( f, NULL, TRUE )
+    	astAdd( proc )
+    end if
+
 	'' init( argc, argv )
 	f = ifuncTB(FB_RTL_INIT)
     proc = astNewFUNCT( f, NULL, TRUE )
@@ -4777,13 +4790,11 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 
     function = proc
 
-    '' call default CRT0 constructors (only required for Win32) */
-	if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-		'' __main()
-		f = ifuncTB(FB_RTL_INITCTOR)
-    	proc = astNewFUNCT( f, NULL, TRUE )
-    	astAdd( proc )
-    end if
+    '' call all freebasic constructor functions
+    '' CallCTORS()
+	f = ifuncTB(FB_RTL_INITCTOR)
+    proc = astNewFUNCT( f, NULL, TRUE )
+    astAdd( proc )
 
     '' if error checking is on, call initSignals
     if( env.clopt.errorcheck ) then

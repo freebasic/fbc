@@ -18,7 +18,7 @@
  */
 
 /*
- * init.c -- libfb initialization
+ * ctor.c -- static constructors/destructors handling
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -27,28 +27,28 @@
 #include <stdlib.h>
 #include "fb.h"
 
-/* globals */
-FB_HOOKSTB fb_hooks = { NULL };
-FB_FILE fb_fileTB[FB_MAX_FILES];
-int __fb_file_handles_cleared = FALSE;
+/* prototypes for the FB constructors and destructors */
+typedef void (*FnCTOR)(void);
+typedef void (*FnDTOR)(void);
 
-FB_ERRORCTX fb_errctx = { 0 };
-FB_INPCTX fb_inpctx = { 0 };
-FB_PRINTUSGCTX fb_printusgctx = { 0 };
-FB_TLSENTRY fb_dirctx = 0;
+/* variable pointing to the list of FB constructors/destructors */
+extern FnCTOR __FB_CTOR_BEGIN__, __FB_CTOR_END__;
+extern FnDTOR __FB_DTOR_BEGIN__, __FB_DTOR_END__;
 
-FBSTRING fb_strNullDesc = { NULL, 0 };
-
-/*:::::*/
-FBCALL void fb_Init ( int argc, char **argv )
+/* execute all constructors */
+void fb_CallCTORS(void)
 {
-	/* initialize files table */
-    memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
-    __fb_file_handles_cleared = TRUE;
-
-	/* os-dep initialization */
-    fb_hInit( argc, argv );
-
+    FnCTOR *pCTOR;
+    for (pCTOR=&__FB_CTOR_BEGIN__; pCTOR!=&__FB_CTOR_END__; ++pCTOR) {
+        (*pCTOR)();
+    }
 }
 
-
+/* execute all destructors */
+void fb_CallDTORS(void)
+{
+    FnDTOR *pDTOR;
+    for (pDTOR=&__FB_DTOR_BEGIN__; pDTOR!=&__FB_DTOR_END__; ++pDTOR) {
+        (*pDTOR)();
+    }
+}
