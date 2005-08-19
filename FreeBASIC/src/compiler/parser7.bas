@@ -83,7 +83,8 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 
     end if
 
-    function = astNewIDX( arrayexpr, idxexpr, INVALID, NULL )
+    function = astNewIDX( arrayexpr, idxexpr, _
+    					  astGetDataType( arrayexpr ), astGetSubType( arrayexpr ) )
 
 end function
 
@@ -687,32 +688,32 @@ function cGfxPut as integer
 	'' (',' Mode)?
 	mode = FBGFX_PUTMODE_XOR
 	if( hMatch( CHAR_COMMA ) ) then
-		
+
 		expectmode = TRUE
-		
+
 		if( hMatch( CHAR_LPRNT ) ) then
-		
+
 			hMatchExpression( x1expr )
 			hMatchCOMMA( )
 			hMatchExpression( y1expr )
 			hMatchRPRNT( )
-			
+
 			if( not hMatch( CHAR_MINUS ) ) then
 				hReportError FB_ERRMSG_EXPECTEDMINUS
 				exit function
 			end if
-			
+
 			hMatchLPRNT( )
 			hMatchExpression( x2expr )
 			hMatchCOMMA( )
 			hMatchExpression( y2expr )
 			hMatchRPRNT( )
-			
+
 			if( not hMatch( CHAR_COMMA ) ) then
 				expectmode = FALSE
 			end if
 		end if
-		
+
 		if( expectmode ) then
 			select case as const lexGetToken
 
