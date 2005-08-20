@@ -66,7 +66,7 @@ static char launch_time[32];
 /*:::::*/
 static int strcmp4(const char *s1, const char *s2)
 {
-	
+
 	while ((*s1) && (*s2)) {
 		if (*(int *)s1 != *(int *)s2)
 			return -1;
@@ -84,13 +84,13 @@ static FBPROC *alloc_proc( void )
 {
 	BIN *bin;
 	FBPROC *proc;
-	
+
 	if ( ( !bin_head ) || ( bin_head->next_free >= BIN_SIZE ) ) {
 		bin = (BIN *)calloc( 1, sizeof(BIN) );
 		bin->next = bin_head;
 		bin_head = bin;
 	}
-	
+
 	proc = &bin_head->fbproc[bin_head->next_free];
 	bin_head->next_free++;
 
@@ -113,7 +113,7 @@ static int time_sorter( const void *e1, const void *e2 )
 {
 	FBPROC *p1 = *(FBPROC **)e1;
 	FBPROC *p2 = *(FBPROC **)e2;
-	
+
 	if ( p1->total_time > p2->total_time )
 		return -1;
 	else if ( p1->total_time < p2->total_time )
@@ -141,7 +141,7 @@ static void find_all_procs( FBPROC *proc, FBPROC ***array, int *size )
 	FBPROC *p, **a;
 	int add_self = TRUE;
 	int i;
-	
+
 	a = *array;
 	for ( i = 0; i < *size; i++ ) {
 		if ( !strcmp4( a[i]->name, proc->name ) )
@@ -164,11 +164,11 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
 	const char *p;
 	unsigned int i, hash = 0, offset = 1;
-	
+
 	orig_parent_proc = parent_proc = (FBPROC *)FB_TLSGET( cur_proc );
-	
+
 	FB_LOCK();
-	
+
 	for ( p = procname; *p; p += 4 )
 		hash = ( (hash << 3) | (hash >> 29) ) ^ ( *(unsigned int *)p );
 	hash %= MAX_CHILDREN;
@@ -198,11 +198,11 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 fill_proc:
 
 	FB_TLSSET( cur_proc, proc );
-	
+
 	proc->time = fb_Timer();
-	
+
 	FB_UNLOCK();
-	
+
 	return (void *)proc;
 }
 
@@ -212,15 +212,15 @@ FBCALL void fb_ProfileEndCall( void *p )
 {
 	FBPROC *proc;
 	double end_time;
-	
+
 	end_time = fb_Timer();
-	
+
 	FB_LOCK();
-	
+
 	proc = (FBPROC *)p;
 	proc->total_time += ( end_time - proc->time );
 	FB_TLSSET( cur_proc, proc->parent );
-	
+
 	FB_UNLOCK();
 }
 
@@ -241,7 +241,7 @@ FBCALL void fb_InitProfile( void )
 
 	main_proc = alloc_proc();
 	main_proc->name = MAIN_PROC_NAME;
-	
+
 	FB_TLSSET( cur_proc, main_proc );
 
     /* guard by global lock because time/localtime might not be thread-safe */
@@ -256,7 +256,7 @@ FBCALL void fb_InitProfile( void )
 
 
 /*:::::*/
-FBCALL void fb_EndProfile( void )
+FBCALL int fb_EndProfile( int errorlevel )
 {
 	char buffer[MAX_PATH], *p;
 	int i, j, len, skip_proc;
@@ -266,7 +266,7 @@ FBCALL void fb_EndProfile( void )
 	int parent_proc_size = 0, proc_size = 0;
 
 	main_proc->total_time = fb_Timer() - main_proc->time;
-	
+
 #ifdef MULTITHREADED
 #ifdef TARGET_WIN32
 	TlsFree( cur_proc );
@@ -274,7 +274,7 @@ FBCALL void fb_EndProfile( void )
 	pthread_key_delete( cur_proc );
 #endif
 #endif
-	
+
 	p = fb_hGetExePath( buffer, MAX_PATH-1 );
 	if( !p )
 		p = PROFILE_FILE;
@@ -351,7 +351,7 @@ FBCALL void fb_EndProfile( void )
 		proc_list = NULL;
 		proc_size = 0;
 	}
-	
+
 	fprintf( f, "\n\n\nGlobal timings:\n\n" );
 	qsort( parent_proc_list, parent_proc_size, sizeof(FBPROC *), time_sorter );
 	for( i = 0; i < parent_proc_size; i++ ) {
@@ -361,7 +361,7 @@ FBCALL void fb_EndProfile( void )
 			fprintf( f, " " );
 		fprintf( f, "%5.5f  (%03.2f%%)\n", proc->total_time, ( proc->total_time * 100.0 ) / main_proc->total_time );
 	}
-	
+
 	free( parent_proc_list );
 	fclose( f );
 
@@ -370,4 +370,6 @@ FBCALL void fb_EndProfile( void )
 		free( bin_head );
 		bin_head = bin;
 	}
+
+	return errorlevel;
 }

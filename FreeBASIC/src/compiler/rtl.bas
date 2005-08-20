@@ -1594,11 +1594,12 @@ data "fb_ProfileEndCall", "", _
 	 1, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_EndProfile ( ) as void
+'' fb_EndProfile ( byval errlevel as integer ) as integer
 data "fb_EndProfile", "", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 0
+	 1, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -4790,19 +4791,12 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 
     function = proc
 
-    '' call all freebasic constructor functions
-    '' CallCTORS()
-	f = ifuncTB(FB_RTL_INITCTOR)
-    proc = astNewFUNCT( f, NULL, TRUE )
-    astAdd( proc )
-
     '' if error checking is on, call initSignals
     if( env.clopt.errorcheck ) then
     	if( not isdllmain ) then
     		rtlInitSignals( )
-    		rtlCpuCheck( )
     	end if
-    end if
+	end if
 
     '' start profiling if requested
     if( env.clopt.profile ) then
@@ -4810,6 +4804,19 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 	    	rtlInitProfile( )
 	    end if
     end if
+
+    '' if error checking is on, check the CPU type
+    if( env.clopt.errorcheck ) then
+    	if( not isdllmain ) then
+    		rtlCpuCheck( )
+    	end if
+    end if
+
+    '' call all freebasic constructor functions
+    '' CallCTORS()
+	f = ifuncTB(FB_RTL_INITCTOR)
+    proc = astNewFUNCT( f, NULL, TRUE )
+    astAdd( proc )
 
 end function
 
@@ -4819,28 +4826,32 @@ function rtlExitRt( byval errlevel as ASTNODE ptr ) as integer static
 
 	function = FALSE
 
+    if( errlevel = NULL ) then
+    	errlevel = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    end if
+
 	'' exit profiling?
 	if( env.clopt.profile ) then
 		f = ifuncTB(FB_RTL_PROFILEEND)
 		proc = astNewFUNCT( f, NULL, TRUE )
-		astAdd( proc )
+    	'' errlevel
+    	if( astNewPARAM( proc, errlevel ) = NULL ) then
+    		exit function
+    	end if
+    	errlevel = proc
 	end if
 
-	''
+    '' end( level )
+	'' end( level )
 	f = ifuncTB(FB_RTL_END)
     proc = astNewFUNCT( f, NULL, TRUE )
 
     '' errlevel
-    if( errlevel = NULL ) then
-    	errlevel = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-    end if
     if( astNewPARAM( proc, errlevel ) = NULL ) then
     	exit function
     end if
 
     astAdd( proc )
-
-    function = TRUE
 
 end function
 
