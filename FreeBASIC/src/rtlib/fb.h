@@ -1084,10 +1084,6 @@ FBCALL void         fb_StrSwap          ( void *str1, int str1_size, void *str2,
        void         fb_hEnd             ( int errlevel );
        void         fb_hInitSignals     ( void );
 
-FBCALL void         fb_InitProfile      ( void );
-FBCALL void         fb_EndProfile       ( void );
-FBCALL void        *fb_ProfileBeginCall ( const char *procname );
-FBCALL void         fb_ProfileEndCall   ( void *call );
 FBCALL void         fb_Beep             ( void );
 
 #ifdef TARGET_X86
