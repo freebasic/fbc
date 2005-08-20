@@ -1493,7 +1493,8 @@ end function
 
 
 '':::::
-function symbAddUDT( byval symbol as string, _
+function symbAddUDT( byval parent as FBSYMBOL ptr, _
+					 byval symbol as string, _
 					 byval isunion as integer, _
 					 byval align as integer ) as FBSYMBOL ptr static
     dim t as FBSYMBOL ptr
@@ -1505,6 +1506,7 @@ function symbAddUDT( byval symbol as string, _
 		exit function
 	end if
 
+	t->udt.parent	= parent
 	t->udt.isunion	= isunion
 	t->udt.elements	= 0
 	t->udt.head 	= NULL
@@ -1512,7 +1514,6 @@ function symbAddUDT( byval symbol as string, _
 	t->udt.ofs		= 0
 	t->udt.align	= align
 	t->udt.lfldlen	= 0
-	t->udt.innerlgt	= 0
 	t->udt.bitpos	= 0
 	t->udt.unpadlgt = 0
 
@@ -1605,28 +1606,31 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 						    byval subtype as FBSYMBOL ptr, _
 						    byval ptrcnt as integer, _
 						    byval lgt as integer, _
-						    byval bits as integer, _
-						    byval isinner as integer ) as FBSYMBOL ptr static
+						    byval bits as integer ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 ename
-    dim as FBSYMBOL ptr e, tail
+    dim as FBSYMBOL ptr p, e, tail
     dim as integer pad, i, updateudt, elen
 
     function = NULL
 
     hUcase( elmname, ename )
 
-    '' check if element already exists in the current struct
-    e = t->udt.head
-    do while( e <> NULL )
+    '' check if element already exists in the current struct and parents
+    p = t
+    do
+    	e = p->udt.head
+    	do while( e <> NULL )
+    		if( e->alias = ename ) then
+    			exit function
+    		end if
 
-    	if( e->alias = ename ) then
-    		exit function
-    	end if
+    		'' next
+    		e = e->var.elm.next
+    	loop
 
-    	'' next
-    	e = e->var.elm.next
-    loop
+    	p = p->udt.parent
+    loop while( p <> NULL )
 
 	tail = t->udt.tail
 
@@ -1694,28 +1698,24 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		end if
 
 		'' update largest field len
-		if( not isinner ) then
+		select case as const typ
+		'' another UDT? use its largest field len
+		case FB_SYMBTYPE_USERDEF
+			elen = subtype->udt.lfldlen
+		'' zstring or fixed-len? size is actually sizeof(byte)
+		case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
+			elen = 1
+		'' var-len string? first field is a pointer
+		case FB_SYMBTYPE_STRING
+			elen = FB_POINTERSIZE
+		'' anything else..
+		case else
+			elen = lgt
+		end select
 
-			'' handle special types
-			select case as const typ
-			'' another UDT? use its largest field len
-			case FB_SYMBTYPE_USERDEF
-				elen = subtype->udt.lfldlen
-			'' zstring or fixed-len? size is actually sizeof(byte)
-			case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
-				elen = 1
-			'' var-len string? first field is a pointer
-			case FB_SYMBTYPE_STRING
-				elen = FB_POINTERSIZE
-			'' anything else..
-			case else
-				elen = lgt
-			end select
-
-			'' larger?
-			if( elen > t->udt.lfldlen ) then
-				t->udt.lfldlen = elen
-			end if
+		'' larger?
+		if( elen > t->udt.lfldlen ) then
+			t->udt.lfldlen = elen
 		end if
 	end if
 
@@ -1750,31 +1750,14 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	if( updateudt ) then
 		'' struct?
 		if( not t->udt.isunion ) then
-			'' not name-less inner?
-			if( not isinner ) then
-				t->udt.ofs += lgt
-				t->lgt = t->udt.ofs
-
-			'' inner.. parent is an union
-			else
-				if( lgt > t->udt.innerlgt ) then
-					t->udt.innerlgt = lgt
-				end if
-			end if
+			t->udt.ofs += lgt
+			t->lgt = t->udt.ofs
 
 		'' union..
 		else
-			'' not name-less inner?
-			if( not isinner ) then
-				t->udt.ofs = 0
-				if( lgt > t->lgt ) then
-					t->lgt = lgt
-				end if
-
-			'' inner.. parent is a struct
-			else
-				t->udt.ofs += lgt
-				t->udt.innerlgt = t->udt.ofs
+			t->udt.ofs = 0
+			if( lgt > t->lgt ) then
+				t->lgt = lgt
 			end if
 		end if
 	end if
@@ -1791,6 +1774,86 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     function = e
 
 end function
+
+'':::::
+sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
+						byval inner as FBSYMBOL ptr ) static
+
+    dim as FBSYMBOL ptr e
+    dim as integer pad
+
+	if( not t->udt.isunion ) then
+		'' calc padding (should be aligned like if an UDT field were been added)
+		pad = hCalcALign( inner->udt.lfldlen, t->udt.ofs, t->udt.align, FB_SYMBTYPE_VOID, NULL )
+		if( pad > 0 ) then
+			t->udt.ofs += pad
+		end if
+	end if
+
+    '' move the nodes from inner to parent
+    e = inner->udt.head
+
+    e->var.elm.prev = t->udt.tail
+    if( t->udt.tail = NULL ) then
+    	t->udt.head = e
+    else
+    	t->udt.tail->var.elm.next = e
+    end if
+
+    if( t->udt.isunion ) then
+    	'' link to parent
+    	do while( e <> NULL )
+    		e->var.elm.parent = t
+
+    		'' next
+    		e = e->var.elm.next
+    	loop
+
+    else
+    	'' link to parent
+    	do while( e <> NULL )
+    		e->var.elm.parent = t
+
+			'' update the offsets
+			t->udt.ofs += e->var.elm.ofs
+			e->var.elm.ofs = t->udt.ofs
+
+    		'' next
+    		e = e->var.elm.next
+    	loop
+    end if
+
+    t->udt.tail = inner->udt.tail
+
+    '' update elements
+    t->udt.elements	+= inner->udt.elements
+
+	'' struct? update ofs + len
+	if( not t->udt.isunion ) then
+		t->udt.ofs += inner->udt.unpadlgt
+		t->lgt = t->udt.ofs
+
+	'' union.. update len, if bigger
+	else
+		t->udt.ofs = 0
+		if( inner->udt.unpadlgt > t->lgt ) then
+			t->lgt = inner->udt.unpadlgt
+		end if
+	end if
+
+	'' update the largest field len
+	if( inner->udt.lfldlen > t->udt.lfldlen ) then
+		t->udt.lfldlen = inner->udt.lfldlen
+	end if
+
+    '' reset bitfield
+    t->udt.bitpos = 0
+
+    '' remove from inner udt list
+    inner->udt.head = NULL
+    inner->udt.tail = NULL
+
+end sub
 
 '':::::
 sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
@@ -1829,31 +1892,6 @@ sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub symbRecalcUDTSize( byval t as FBSYMBOL ptr ) static
-    dim as integer lgt
-
-	lgt = t->udt.innerlgt
-	if( lgt > 0 ) then
-
-		'' struct?
-		if( not t->udt.isunion ) then
-			t->udt.ofs += lgt
-			t->lgt = t->udt.ofs
-
-		'' union..
-		else
-			t->udt.ofs = 0
-			if( lgt > t->lgt ) then
-				t->lgt = lgt
-			end if
-		end if
-
-		t->udt.innerlgt = 0
-	end if
-
-end sub
-
-'':::::
 function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
     dim as integer i
     dim as FBSYMBOL ptr e
@@ -1881,8 +1919,8 @@ function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbAddEnumElement( byval symbol as string, _
-					         byval parent as FBSYMBOL ptr, _
+function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
+							 byval symbol as string, _
 					         byval value as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr elm, tail

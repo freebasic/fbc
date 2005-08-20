@@ -43,6 +43,9 @@ declare function cSymbUDTInit				( byval basesym as FBSYMBOL ptr, _
 											  byref ofs as integer, _
 					   						  byval islocal as integer ) as integer
 
+declare function cTypeBody					( byval s as FBSYMBOL ptr ) as integer
+
+
 '':::::
 ''Program         =   Line* EOF .
 ''
@@ -640,86 +643,13 @@ function cTypedefDecl( byval id as string ) as integer
 end function
 
 '':::::
-''ElementDecl     =   ID ArrayDecl? AS SymbolType
+''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? (',' ID (ArrayDecl | ':' NUMLIT)?)*
 ''
-function cElementDecl( byval id as string, _
-					   byref typ as integer, _
-					   byref subtype as FBSYMBOL ptr, _
-					   byref ptrcnt as integer, _
-					   byref lgt as integer, _
-					   byref bits as integer, _
-					   byref dimensions as integer, _
-					   dTB() as FBARRAYDIM ) as integer
-
-	function = FALSE
-
-	'' allow keywords as field names
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
-    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    		exit function
-    	end if
-    end if
-
-    '' contains a period?
-    if( lexGetPeriodPos( ) > 0 ) then
-    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	exit function
-    end if
-
-	'' ID
-	typ = lexGetType( )
-	subtype = NULL
-	lexEatToken( id )
-	bits = 0
-
-	'' ArrayDecl?
-	if( not cStaticArrayDecl( dimensions, dTB() ) ) then
-		'' ':' NUMLIT?
-		if( lexGetToken( ) = CHAR_COLON ) then
-			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
-				lexSkipToken( )
-				bits = valint( *lexGetText( ) )
-				lexSkipToken( )
-				if( bits <= 0 ) then
-    				hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
-    				exit function
-    			end if
-			end if
-		end if
-	end if
-
-    '' AS SymbolType
-    if( not hMatch( FB_TK_AS ) or (typ <> INVALID) ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
-    end if
-
-    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
-    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	exit function
-    end if
-
-	''
-	if( bits <> 0 ) then
-		if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
-    		hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
-    		exit function
-		end if
-	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-''AsElementDecl     =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? (',' ID (ArrayDecl | ':' NUMLIT)?)*
-''
-function cAsElementDecl( ) as integer static
+function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr subtype
-    dim as integer dimensions, typ, lgt, ptrcnt, bits
+    dim as integer dims, typ, lgt, ptrcnt, bits
 
     function = FALSE
 
@@ -748,7 +678,7 @@ function cAsElementDecl( ) as integer static
 	    bits = 0
 
 		'' ArrayDecl?
-		if( not cStaticArrayDecl( dimensions, dTB() ) ) then
+		if( not cStaticArrayDecl( dims, dTB() ) ) then
 
     		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -762,7 +692,7 @@ function cAsElementDecl( ) as integer static
 					lexSkipToken( )
 				end if
 
-				if( not symbCheckBitField( env.typectx.symbol, typ, lgt, bits ) ) then
+				if( not symbCheckBitField( s, typ, lgt, bits ) ) then
     				hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
     				exit function
 				end if
@@ -771,16 +701,13 @@ function cAsElementDecl( ) as integer static
 
 		end if
 
-
-		if( symbAddUDTElement( env.typectx.symbol, id, _
-							   dimensions, dTB(), _
-							   typ, subtype, ptrcnt, lgt, bits, _
-							   env.typectx.innercnt > 0 ) = NULL ) then
-				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-				exit function
+        ''
+		if( symbAddUDTElement( s, id, _
+							   dims, dTB(), _
+							   typ, subtype, ptrcnt, lgt, bits ) = NULL ) then
+			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
+			exit function
 		end if
-
-		env.typectx.elements += 1
 
 	'' ','?
 	loop while( hMatch( CHAR_COMMA ) )
@@ -790,144 +717,259 @@ function cAsElementDecl( ) as integer static
 end function
 
 '':::::
-''TypeLine      =   ( (UNION|TYPE Comment? SttSeparator
-''					   ElementDecl
-''					  END UNION|TYPE)
-''                  | ElementDecl
-''				    | AS AsElementDecl ) .
+'' TypeElementDecl	= ID (ArrayDecl| ':' NUMLIT)? AS SymbolType
 ''
-function cTypeLine as integer static
-    static as zstring * FB_MAXNAMELEN+1 ename
+function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
+    static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr subtype
-    dim as integer dimensions, typ, lgt, ptrcnt, bits
+    dim as integer dims, typ, lgt, ptrcnt, bits
 
 	function = FALSE
 
-	'' Comment? SttSeparator?
-	do while( cComment( ) or cStmtSeparator( ) )
-	loop
+	'' allow keywords as field names
+	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+		if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
+    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    		exit function
+    	end if
+    end if
 
-	select case as const lexGetToken( )
-	'' END?
-	case FB_TK_END
-		'' isn't it a field called "end"?
-		select case lexGetLookAhead( 1 )
-		case FB_TK_AS, CHAR_LPRNT, CHAR_COLON
-			goto declfield
+    '' contains a period?
+    if( lexGetPeriodPos( ) > 0 ) then
+    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    	exit function
+    end if
 
-		case else
-			if( env.typectx.innercnt = 0 ) then
-				exit function
-			else
+	'' ID
+	typ = lexGetType( )
+	subtype = NULL
+	lexEatToken( id )
+	bits = 0
+
+	'' ArrayDecl?
+	if( not cStaticArrayDecl( dims, dTB() ) ) then
+		'' ':' NUMLIT?
+		if( lexGetToken( ) = CHAR_COLON ) then
+			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
 				lexSkipToken( )
-			end if
-
-			if( env.typectx.isunion ) then
-				if( not hMatch( FB_TK_TYPE ) ) then
-	    			hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
+				bits = valint( *lexGetText( ) )
+				lexSkipToken( )
+				if( bits <= 0 ) then
+    				hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
     				exit function
-				end if
-			else
-				if( not hMatch( FB_TK_UNION ) ) then
-    				hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
-    				exit function
-				end if
+    			end if
 			end if
+		end if
+	end if
 
-			env.typectx.innercnt -= 1
+    '' AS
+    if( not hMatch( FB_TK_AS ) or (typ <> INVALID) ) then
+    	hReportError( FB_ERRMSG_SYNTAXERROR )
+    	exit function
+    end if
 
-			if( env.typectx.innercnt = 0 ) then
-				symbRecalcUDTSize( env.typectx.symbol )
-			end if
-		end select
+    '' SymbolType
+    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    	exit function
+    end if
 
-	'' UNION?
-	case FB_TK_UNION
-		'' isn't it a field called UNION?
-		select case lexGetLookAhead( 1 )
-		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
-			if( env.typectx.isunion ) then
-				hReportError( FB_ERRMSG_SYNTAXERROR )
-				exit function
-			end if
+	''
+	if( bits <> 0 ) then
+		if( not symbCheckBitField( s, typ, lgt, bits ) ) then
+    		hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
+    		exit function
+		end if
+	end if
 
-			lexSkipToken( )
-
-			env.typectx.innercnt += 1
-
-		case else
-			goto declfield
-
-		end select
-
-	'' TYPE?
-	case FB_TK_TYPE
-		'' isn't it a field called TYPE?
-		select case lexGetLookAhead( 1 )
-		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
-			if( not env.typectx.isunion ) then
-				hReportError( FB_ERRMSG_SYNTAXERROR )
-				exit function
-			end if
-
-			lexSkipToken( )
-
-			env.typectx.innercnt += 1
-
-		case else
-			goto declfield
-
-		end select
-
-	'' AS?
-	case FB_TK_AS
-		'' isn't it a field called "as"?
-		select case lexGetLookAhead( 1 )
-		case FB_TK_AS, CHAR_LPRNT, CHAR_COLON
-			goto declfield
-		end select
-
-		lexSkipToken( )
-
-		if( not cAsElementDecl( ) ) then
+	'' ref to self?
+	if( typ = FB_SYMBTYPE_USERDEF ) then
+		if( subtype = s ) then
+			hReportError( FB_ERRMSG_RECURSIVEUDT )
 			exit function
 		end if
+	end if
 
-	case else
-declfield:
+	if( symbAddUDTElement( s, id, _
+						   dims, dTB(), _
+						   typ, subtype, ptrcnt, lgt, bits ) = NULL ) then
+		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
+		exit function
+	end if
 
-		if( not cElementDecl( ename, typ, subtype, ptrcnt, _
-							  lgt, bits, dimensions, dTB() ) ) then
-			exit function
-		end if
+	function = TRUE
 
-		if( typ = FB_SYMBTYPE_USERDEF ) then
-			if( subtype = env.typectx.symbol ) then
-				hReportError( FB_ERRMSG_RECURSIVEUDT )
-				exit function
-			end if
-		end if
+end function
 
-		env.typectx.elements += 1
+'':::::
+private function hTypeAdd( byval parent as FBSYMBOL ptr, _
+						   byval id as string, _
+						   byval isunion as integer, _
+						   byval align as integer ) as FBSYMBOL ptr
 
-		if( symbAddUDTElement( env.typectx.symbol, ename, _
-							   dimensions, dTB(), _
-							   typ, subtype, ptrcnt, lgt, bits, _
-							   env.typectx.innercnt > 0 ) = NULL ) then
-			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, ename )
-			exit function
-		end if
+	dim as FBSYMBOL ptr s
 
-	end select
+	function = NULL
 
+	s = symbAddUDT( parent, id, isunion, align )
+	if( s = NULL ) then
+    	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
+    	exit function
+	end if
 
 	'' Comment? SttSeparator
 	cComment( )
 
-    if( not cStmtSeparator( ) ) then
+	if( not cStmtSeparator( ) ) then
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
+	end if
+
+	'' TypeBody
+	if( not cTypeBody( s ) ) then
+		exit function
+	end if
+
+	if( hGetLastError() <> FB_ERRMSG_OK ) then
+		exit function
+	end if
+
+	'' pad the UDT if needed
+	symbRoundUDTSize( s )
+
+	'' END TYPE|UNION
+	if( not hMatch( FB_TK_END ) ) then
+    	hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
+    	exit function
+	end if
+
+	if( not hMatch( iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) ) then
+		hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
+		exit function
+	end if
+
+	function = s
+
+end function
+
+'':::::
+''TypeBody      =   ( (UNION|TYPE Comment? SttSeparator
+''					   ElementDecl
+''					  END UNION|TYPE)
+''                  | ElementDecl
+''				    | AS AsElementDecl )+ .
+''
+function cTypeBody( byval s as FBSYMBOL ptr ) as integer
+	dim as integer istype
+	dim as FBSYMBOL ptr inner
+
+	function = FALSE
+
+	do
+		'' Comment? SttSeparator?
+		do while( cComment( ) or cStmtSeparator( ) )
+		loop
+
+		select case as const lexGetToken( )
+		'' EOF?
+		case FB_TK_EOF
+			exit do
+
+		'' END?
+		case FB_TK_END
+			'' isn't it a field called "end"?
+			select case lexGetLookAhead( 1 )
+			case FB_TK_AS, CHAR_LPRNT, CHAR_COLON
+				if( not cTypeElementDecl( s ) ) then
+					exit function
+				end if
+
+			'' it's not a field, exit
+			case else
+				exit do
+
+			end select
+
+		'' (TYPE|UNION)?
+		case FB_TK_TYPE, FB_TK_UNION
+			'' isn't it a field called TYPE|UNION?
+			select case lexGetLookAhead( 1 )
+			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+
+				'' it's an anonymous inner UDT
+				istype = lexGetToken( ) = FB_TK_TYPE
+				if( istype ) then
+					if( not symbGetUDTIsUnion( s ) ) then
+						hReportError( FB_ERRMSG_SYNTAXERROR )
+						exit function
+					end if
+				else
+					if( symbGetUDTIsUnion( s ) ) then
+						hReportError( FB_ERRMSG_SYNTAXERROR )
+						exit function
+					end if
+				end if
+
+				lexSkipToken( )
+
+				'' create a "temp" one
+				inner = hTypeAdd( s, hMakeTmpStr( ), not istype, symbGetUDTAlign( s ) )
+				if( inner = NULL ) then
+					exit function
+				end if
+
+				'' insert it into the parent UDT
+				symbInsertInnerUDT( s, inner )
+
+			'' it's a field, parse it
+			case else
+				if( not cTypeElementDecl( s ) ) then
+					exit function
+				end if
+
+			end select
+
+		'' AS?
+		case FB_TK_AS
+			'' isn't it a field called "as"?
+			select case lexGetLookAhead( 1 )
+			case FB_TK_AS, CHAR_LPRNT, CHAR_COLON
+				if( not cTypeElementDecl( s ) ) then
+					exit function
+				end if
+
+			'' it's a multi-declaration
+			case else
+				lexSkipToken( )
+
+				if( not cTypeMultElementDecl( s ) ) then
+					exit function
+				end if
+			end select
+
+		'' anything else, must be a field
+		case else
+			if( not cTypeElementDecl( s ) ) then
+				exit function
+			end if
+
+		end select
+
+		'' Comment? SttSeparator
+		cComment( )
+
+	    if( not cStmtSeparator( ) ) then
+	    	hReportError( FB_ERRMSG_SYNTAXERROR )
+	    	exit function
+		end if
+
+	loop
+
+	'' nothing added?
+	if( symbGetUDTElements( s ) = 0 ) then
+		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
+		exit function
 	end if
 
     function = TRUE
@@ -940,18 +982,19 @@ end function
 ''					  END (TYPE|UNION) .
 function cTypeDecl as integer static
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as integer align
     dim as ASTNODE ptr expr
+    dim as FBSYMBOL ptr s
+    dim as integer align, isunion
 
 	function = FALSE
 
 	'' TYPE | UNION
 	select case lexGetToken( )
 	case FB_TK_TYPE
-		env.typectx.isunion = FALSE
+		isunion = FALSE
 		lexSkipToken( )
 	case FB_TK_UNION
-		env.typectx.isunion = TRUE
+		isunion = TRUE
 		lexSkipToken( )
 	case else
 		exit function
@@ -969,7 +1012,7 @@ function cTypeDecl as integer static
 	select case lexGetToken( )
 	'' AS?
 	case FB_TK_AS
-		if( env.typectx.isunion ) then
+		if( isunion ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
@@ -997,6 +1040,7 @@ function cTypeDecl as integer static
 			exit function
 		end if
 
+  		'' follow the GCC 3.x ABI
   		align = astGetValueAsInt( expr )
   		astDel( expr )
   		if( align < 0 ) then
@@ -1011,88 +1055,36 @@ function cTypeDecl as integer static
 		align = 0
 	end select
 
-	env.typectx.symbol = symbAddUDT( id, env.typectx.isunion, align )
-	if( env.typectx.symbol = NULL ) then
-    	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-    	exit function
-	end if
-
-	'' Comment? SttSeparator
-	cComment( )
-
-	if( not cStmtSeparator( ) ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
-	end if
-
-	'' TypeLine+
-	env.typectx.elements = 0
-	env.typectx.innercnt = 0
-	do
-		if( not cTypeLine( ) ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	if( hGetLastError() <> FB_ERRMSG_OK ) then
-		exit function
-	end if
-
-	''
-	if( env.typectx.elements = 0 ) then
-		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
-		exit function
-	end if
-
-	'' pad the UDT if needed
-	symbRoundUDTSize( env.typectx.symbol )
-
-	'' END
-	if( not hMatch( FB_TK_END ) ) then
-    	hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
-    	exit function
-	end if
-
-	'' TYPE | UNION
-	select case lexGetToken( )
-	case FB_TK_TYPE, FB_TK_UNION
-		lexSkipToken( )
-	case else
-    	hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
-    	exit function
-    end select
-
     ''
-	function = TRUE
+	function = (hTypeAdd( NULL, id, isunion, align ) <> NULL)
 
 end function
 
 '':::
-''EnumConstDecl     =   ID (ASSIGN ConstExpression)? .
+''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-function cEnumConstDecl( byval id as string ) as integer
+function cEnumConstDecl( byval id as string, _
+						 byref value as integer ) as integer
     static as ASTNODE ptr expr
 
 	function = FALSE
 
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		exit function
-	end if
-
 	'' ID
 	lexEatToken( id )
 
-	'' ASSIGN
-	if( hMatch( FB_TK_ASSIGN ) ) then
+	'' '='?
+	if( lexGetToken( ) = FB_TK_ASSIGN ) then
+		lexSkipToken( )
 
+		'' ConstExpression
 		if( not cExpression( expr ) ) then
-			hReportError FB_ERRMSG_EXPECTEDCONST
+			hReportError( FB_ERRMSG_EXPECTEDCONST )
 			exit function
-		else
-			if( not astIsCONST( expr ) ) then
-				hReportError FB_ERRMSG_EXPECTEDCONST
-				exit function
-			end if
+		end if
+
+		if( not astIsCONST( expr ) ) then
+			hReportError( FB_ERRMSG_EXPECTEDCONST )
+			exit function
 		end if
 
 		'' not an integer?
@@ -1100,7 +1092,7 @@ function cEnumConstDecl( byval id as string ) as integer
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION, id )
 		end if
 
-		env.enumctx.value = astGetValueAsInt( expr )
+		value = astGetValueAsInt( expr )
 		astDel( expr )
 
     end if
@@ -1110,51 +1102,76 @@ function cEnumConstDecl( byval id as string ) as integer
 end function
 
 '':::::
-''EnumLine      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator) .
+''EnumBody      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator)+ .
 ''
-function cEnumLine as integer
+function cEnumBody( byval s as FBSYMBOL ptr ) as integer
 	static as zstring * FB_MAXNAMELEN+1 ename
+	dim as integer value
 
 	function = FALSE
 
-	'' Comment? SttSeparator?
-	do while( cComment( ) or cStmtSeparator( ) )
+	value = 0
+
+	do
+		'' Comment? SttSeparator?
+		do while( cComment( ) or cStmtSeparator( ) )
+		loop
+
+		select case lexGetToken( )
+		'' EOF?
+		case FB_TK_EOF
+			exit do
+
+		'' END?
+		case FB_TK_END
+			exit do
+
+		case else
+
+			'' ID ConstDecl (',' ID ConstDecl)*
+			do
+				'' ID?
+				if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+					exit do
+				end if
+
+				'' ConstDecl
+				if( not cEnumConstDecl( ename, value ) ) then
+					exit function
+				end if
+
+				if( symbAddEnumElement( s, ename, value ) = NULL ) then
+					hReportErrorEx( FB_ERRMSG_DUPDEFINITION, ename )
+					exit function
+				end if
+
+				value += 1
+
+				'' ','?
+				if( lexGetToken( ) <> CHAR_COMMA ) then
+					exit do
+				end if
+				lexSkipToken( )
+			loop
+
+			'' Comment? SttSeparator
+			cComment( )
+
+			if( not cStmtSeparator( ) ) then
+    			hReportError( FB_ERRMSG_EXPECTEDEOL )
+    			exit function
+			end if
+		end select
+
 	loop
 
-	if( lexGetToken( ) = FB_TK_END ) then
+	'' nothing added?
+	if( symbGetEnumElements( s ) = 0 ) then
+		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
 		exit function
 	end if
 
-	do
-		if( cEnumConstDecl( ename ) ) then
-
-			env.enumctx.elements += 1
-
-			if( symbAddEnumElement( ename, env.enumctx.sym, env.enumctx.value ) = NULL ) then
-				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, ename )
-				exit function
-			end if
-
-			env.enumctx.value += 1
-
-		end if
-
-		'' ','?
-		if( lexGetToken( ) <> CHAR_COMMA ) then
-			exit do
-		end if
-		lexSkipToken( )
-	loop
-
-	'' Comment? SttSeparator
-	cComment( )
-
-	if( not cStmtSeparator( ) ) then
-    	hReportError( FB_ERRMSG_EXPECTEDEOL )
-    	exit function
-	end if
-
-	function = TRUE
+    function = TRUE
 
 end function
 
@@ -1192,19 +1209,8 @@ function cEnumDecl as integer static
     	exit function
 	end if
 
-	'' EnumLine+
-	env.enumctx.sym = e
-	env.enumctx.elements = 0
-	env.enumctx.value = 0
-	do
-		if( not cEnumLine( ) ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	''
-	if( env.enumctx.elements = 0 ) then
-		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
+	'' EnumBody
+	if( not cEnumBody( e ) ) then
 		exit function
 	end if
 
@@ -1418,11 +1424,6 @@ private function hDeclExternVar( byval id as string, _
 
     function = NULL
 
-    '' dup extern?
-    if( (alloctype and FB_ALLOCTYPE_EXTERN) > 0 ) then
-    	exit function
-    end if
-
     s = symbFindByNameAndSuffix( id, typ )
     if( s <> NULL ) then
 
@@ -1457,6 +1458,11 @@ private function hDeclExternVar( byval id as string, _
     		end if
     	end if
 
+    	'' dup extern?
+    	if( (alloctype and FB_ALLOCTYPE_EXTERN) > 0 ) then
+    		return s
+    	end if
+
     	'' set type
     	symbSetAllocType( s, (alloctype and not FB_ALLOCTYPE_EXTERN) or _
     					      FB_ALLOCTYPE_PUBLIC or _
@@ -1473,6 +1479,12 @@ private function hDeclExternVar( byval id as string, _
 			symbSetArrayDims( s, dimensions, dTB() )
 
 		end if
+
+    else
+    	'' dup extern?
+    	if( (alloctype and FB_ALLOCTYPE_EXTERN) > 0 ) then
+    		exit function
+    	end if
 
     end if
 

@@ -156,7 +156,8 @@ declare function 	symbAddConst			( byval symbol as string, _
 											  byval text as string, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddUDT				( byval symbol as string, _
+declare function 	symbAddUDT				( byval parent as FBSYMBOL ptr, _
+											  byval symbol as string, _
 											  byval isunion as integer, _
 											  byval align as integer ) as FBSYMBOL ptr
 
@@ -168,13 +169,15 @@ declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _
 											  byval lgt as integer, _
-											  byval bits as integer, _
-											  byval isinnerunion as integer ) as FBSYMBOL ptr
+											  byval bits as integer ) as FBSYMBOL ptr
+
+declare sub 		symbInsertInnerUDT		( byval t as FBSYMBOL ptr, _
+							 				  byval inner as FBSYMBOL ptr )
 
 declare function 	symbAddEnum				( byval symbol as string ) as FBSYMBOL ptr
 
-declare function 	symbAddEnumElement		( byval symbol as string, _
-					         				  byval parent as FBSYMBOL ptr, _
+declare function 	symbAddEnumElement		( byval parent as FBSYMBOL ptr, _
+											  byval symbol as string, _
 					         				  byval value as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddArg				( byval symbol as string, _
@@ -375,9 +378,17 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetUDTElmBitLen(e) iif( e->var.elm.bits <> 0, e->var.elm.bits, e->lgt * e->var.array.elms * 8 )
 
+#define symbGetUDTIsUnion(s) s->udt.isunion
+
+#define symbGetUDTAlign(s) s->udt.align
+
+#define symbGetUDTElements(s) s->udt.elements
+
 #define symbGetENUMFirstElm(s) s->enum.head
 
 #define symbGetENUMNextElm(e) e->con.eelm.nxt
+
+#define symbGetEnumElements(s) s->enum.elements
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 

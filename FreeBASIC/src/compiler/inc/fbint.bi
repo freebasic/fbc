@@ -652,6 +652,7 @@ end type
 
 ''
 type FBSUDT
+	parent			as FBSYMBOL_ ptr
 	isunion			as integer
 	elements		as integer
 	head			as FBSYMBOL_ ptr			'' first element
@@ -659,7 +660,6 @@ type FBSUDT
 	ofs				as integer
 	align			as integer
 	lfldlen			as integer					'' largest field len
-	innerlgt		as integer					'' used with inner nameless unions
 	bitpos			as uinteger
 	unpadlgt		as integer					'' unpadded len
 end type
@@ -819,19 +819,6 @@ type FBCMPSTMT
     endlabel		as FBSYMBOL ptr
 end type
 
-type FBENUMCTX
-    sym				as FBSYMBOL ptr
-    value 			as integer
-    elements 		as integer
-end type
-
-type FBTYPECTX
-    innercnt		as integer
-    elements 		as integer
-    isunion			as integer
-    symbol			as FBSYMBOL ptr
-end type
-
 ''
 type FBFILE
 	num				as integer
@@ -862,12 +849,6 @@ type FBENV
 	dostmt			as FBCMPSTMT
 	whilestmt		as FBCMPSTMT
 	procstmt		as FBCMPSTMT
-
-	'' internal contexts
-	union
-		enumctx 	as FBENUMCTX
-		typectx 	as FBTYPECTX
-	end union
 
 	'' globals
 	scope			as integer					'' current scope (0=main module)
