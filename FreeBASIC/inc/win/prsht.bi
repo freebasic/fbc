@@ -139,7 +139,7 @@ type PROPSHEETPAGEW field=8
 	pszTitle as LPCWSTR
 	pfnDlgProc as DLGPROC
 	lParam as LPARAM
-	pfnCallback as function (byval as HWND, byval as UINT, byval as _PROPSHEETPAGEW ptr) as UINT
+	pfnCallback as function (byval as HWND, byval as UINT, byval as PROPSHEETPAGEW ptr) as UINT
 	pcRefParent as UINT ptr
 end type
 
