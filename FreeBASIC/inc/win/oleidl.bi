@@ -11,6 +11,8 @@
 
 #include once "win/objfwd.bi"
 
+#inclib "uuid"
+
 #define MK_ALT 32
 
 type LPPARSEDISPLAYNAME as IParseDisplayname ptr
@@ -106,7 +108,7 @@ type IEnumOLEVERBVtbl
 	Reset as function (byval as IEnumOLEVERB ptr) as HRESULT
 	Clone as function (byval as IEnumOLEVERB ptr, byval as IEnumOLEVERB ptr ptr) as HRESULT
 end type
-extern import IID_IParseDisplayName alias "IID_IParseDisplayName" as IID
+extern IID_IParseDisplayName alias "IID_IParseDisplayName" as IID
 
 type IParseDisplayNameVtbl_ as IParseDisplayNameVtbl
 
@@ -120,7 +122,7 @@ type IParseDisplayNameVtbl
 	Release as function (byval as IParseDisplayName ptr) as ULONG
 	ParseDisplayName as function (byval as IParseDisplayName ptr, byval as IBindCtx ptr, byval as LPOLESTR, byval as ULONG ptr, byval as IMoniker ptr ptr) as HRESULT
 end type
-extern import IID_IOleContainer alias "IID_IOleContainer" as IID
+extern IID_IOleContainer alias "IID_IOleContainer" as IID
 
 type IOleContainerVtbl_ as IOleContainerVtbl
 
@@ -136,7 +138,7 @@ type IOleContainerVtbl
 	EnumObjects as function (byval as IOleContainer ptr, byval as DWORD, byval as IEnumUnknown ptr ptr) as HRESULT
 	LockContainer as function (byval as IOleContainer ptr, byval as BOOL) as HRESULT
 end type
-extern import IID_IOleItemContainer alias "IID_IOleItemContainer" as IID
+extern IID_IOleItemContainer alias "IID_IOleItemContainer" as IID
 
 type IOleItemContainerVtbl_ as IOleItemContainerVtbl
 
@@ -155,7 +157,7 @@ type IOleItemContainerVtbl
 	GetObjectStorage as function (byval as IOleItemContainer ptr, byval as LPOLESTR, byval as IBindCtx ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	IsRunning as function (byval as IOleItemContainer ptr, byval as LPOLESTR) as HRESULT
 end type
-extern import IID_IOleClientSite alias "IID_IOleClientSite" as IID
+extern IID_IOleClientSite alias "IID_IOleClientSite" as IID
 
 type IOleClientSiteVtbl_ as IOleClientSiteVtbl
 
@@ -174,7 +176,7 @@ type IOleClientSiteVtbl
 	OnShowWindow as function (byval as IOleClientSite ptr, byval as BOOL) as HRESULT
 	RequestNewObjectLayout as function (byval as IOleClientSite ptr) as HRESULT
 end type
-extern import IID_IOleObject alias "IID_IOleObject" as IID
+extern IID_IOleObject alias "IID_IOleObject" as IID
 
 type IOleObjectVtbl_ as IOleObjectVtbl
 
@@ -208,7 +210,7 @@ type IOleObjectVtbl
 	GetMiscStatus as function (byval as IOleObject ptr, byval as DWORD, byval as PDWORD) as HRESULT
 	SetColorScheme as function (byval as IOleObject ptr, byval as LPLOGPALETTE) as HRESULT
 end type
-extern import IID_IOleWindow alias "IID_IOleWindow" as IID
+extern IID_IOleWindow alias "IID_IOleWindow" as IID
 
 type IOleWindowVtbl_ as IOleWindowVtbl
 
@@ -223,7 +225,7 @@ type IOleWindowVtbl
 	GetWindow as function (byval as IOleWindow ptr, byval as HWND ptr) as HRESULT
 	ContextSensitiveHelp as function (byval as IOleWindow ptr, byval as BOOL) as HRESULT
 end type
-extern import IID_IOleInPlaceUIWindow alias "IID_IOleInPlaceUIWindow" as IID
+extern IID_IOleInPlaceUIWindow alias "IID_IOleInPlaceUIWindow" as IID
 
 type IOleInPlaceUIWindowVtbl_ as IOleInPlaceUIWindowVtbl
 
@@ -242,7 +244,7 @@ type IOleInPlaceUIWindowVtbl
 	SetBorderSpace as function (byval as IOleInPlaceUIWindow ptr, byval as LPCBORDERWIDTHS) as HRESULT
 	SetActiveObject as function (byval as IOleInPlaceUIWindow ptr, byval as LPOLEINPLACEACTIVEOBJECT, byval as LPCOLESTR) as HRESULT
 end type
-extern import IID_IOleInPlaceObject alias "IID_IOleInPlaceObject" as IID
+extern IID_IOleInPlaceObject alias "IID_IOleInPlaceObject" as IID
 
 type IOleInPlaceObjectVtbl_ as IOleInPlaceObjectVtbl 
 
@@ -261,7 +263,7 @@ type IOleInPlaceObjectVtbl
 	SetObjectRects as function (byval as IOleInPlaceObject ptr, byval as LPCRECT, byval as LPCRECT) as HRESULT
 	ReactivateAndUndo as function (byval as IOleInPlaceObject ptr) as HRESULT
 end type
-extern import IID_IOleInPlaceActiveObject alias "IID_IOleInPlaceActiveObject" as IID
+extern IID_IOleInPlaceActiveObject alias "IID_IOleInPlaceActiveObject" as IID
 
 type IOleInPlaceActiveObjectVtbl_ as IOleInPlaceActiveObjectVtbl
 
@@ -281,7 +283,7 @@ type IOleInPlaceActiveObjectVtbl
 	ResizeBorder as function (byval as IOleInPlaceActiveObject ptr, byval as LPCRECT, byval as LPOLEINPLACEUIWINDOW, byval as BOOL) as HRESULT
 	EnableModeless as function (byval as IOleInPlaceActiveObject ptr, byval as BOOL) as HRESULT
 end type
-extern import IID_IOleInPlaceFrame alias "IID_IOleInPlaceFrame" as IID
+extern IID_IOleInPlaceFrame alias "IID_IOleInPlaceFrame" as IID
 
 type IOleInPlaceFrameVtbl_ as IOleInPlaceFrameVtbl
 
@@ -306,7 +308,7 @@ type IOleInPlaceFrameVtbl
 	EnableModeless as function (byval as IOleInPlaceFrame ptr, byval as BOOL) as HRESULT
 	TranslateAcceleratorA as function (byval as IOleInPlaceFrame ptr, byval as LPMSG, byval as WORD) as HRESULT
 end type
-extern import IID_IOleInPlaceSite alias "IID_IOleInPlaceSite" as IID
+extern IID_IOleInPlaceSite alias "IID_IOleInPlaceSite" as IID
 
 type IOleInPlaceSiteVtbl_ as IOleInPlaceSiteVtbl
 
@@ -331,7 +333,7 @@ type IOleInPlaceSiteVtbl
 	DeactivateAndUndo as function (byval as IOleInPlaceSite ptr) as HRESULT
 	OnPosRectChange as function (byval as IOleInPlaceSite ptr, byval as LPCRECT) as HRESULT
 end type
-extern import IID_IOleAdviseHolder alias "IID_IOleAdviseHolder" as IID
+extern IID_IOleAdviseHolder alias "IID_IOleAdviseHolder" as IID
 
 type IOleAdviseHolderVtbl_ as IOleAdviseHolderVtbl
 
@@ -350,7 +352,7 @@ type IOleAdviseHolderVtbl
 	SendOnSave as function (byval as IOleAdviseHolder ptr) as HRESULT
 	SendOnClose as function (byval as IOleAdviseHolder ptr) as HRESULT
 end type
-extern import IID_IDropSource alias "IID_IDropSource" as IID
+extern IID_IDropSource alias "IID_IDropSource" as IID
 
 type IDropSourceVtbl_ as IDropSourceVtbl
 
@@ -365,7 +367,7 @@ type IDropSourceVtbl
 	QueryContinueDrag as function (byval as IDropSource ptr, byval as BOOL, byval as DWORD) as HRESULT
 	GiveFeedback as function (byval as IDropSource ptr, byval as DWORD) as HRESULT
 end type
-extern import IID_IDropTarget alias "IID_IDropTarget" as IID
+extern IID_IDropTarget alias "IID_IDropTarget" as IID
 
 type IDropTargetVtbl_ as IDropTargetVtbl
 
@@ -382,7 +384,7 @@ type IDropTargetVtbl
 	DragLeave as function (byval as IDropTarget ptr) as HRESULT
 	Drop as function (byval as IDropTarget ptr, byval as LPDATAOBJECT, byval as DWORD, byval as POINTL, byval as PDWORD) as HRESULT
 end type
-extern import IID_IViewObject alias "IID_IViewObject" as IID
+extern IID_IViewObject alias "IID_IViewObject" as IID
 
 type __IView_pfncont as function (byval as DWORD) as BOOL
 
@@ -403,7 +405,7 @@ type IViewObjectVtbl
 	SetAdvise as function (byval as IViewObject ptr, byval as DWORD, byval as DWORD, byval as IAdviseSink ptr) as HRESULT
 	GetAdvise as function (byval as IViewObject ptr, byval as PDWORD, byval as PDWORD, byval as IAdviseSink ptr ptr) as HRESULT
 end type
-extern import IID_IViewObject2 alias "IID_IViewObject2" as IID
+extern IID_IViewObject2 alias "IID_IViewObject2" as IID
 
 type IViewObject2Vtbl_ as IViewObject2Vtbl
 

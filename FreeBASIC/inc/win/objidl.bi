@@ -498,9 +498,11 @@ type SOLE_AUTHENTICATION_LIST
 	aAuthInfo as SOLE_AUTHENTICATION_INFO ptr
 end type
 
-extern import FMTID_SummaryInformation alias "FMTID_SummaryInformation" as FMTID
-extern import FMTID_DocSummaryInformation alias "FMTID_DocSummaryInformation" as FMTID
-extern import FMTID_UserDefinedProperties alias "FMTID_UserDefinedProperties" as FMTID
+#inclib "uuid"
+
+extern FMTID_SummaryInformation alias "FMTID_SummaryInformation" as FMTID
+extern FMTID_DocSummaryInformation alias "FMTID_DocSummaryInformation" as FMTID
+extern FMTID_UserDefinedProperties alias "FMTID_UserDefinedProperties" as FMTID
 
 type IEnumFORMATETCVtbl_ as IEnumFORMATETCVtbl
 
@@ -647,7 +649,7 @@ type IEnumUnknownVtbl
 	Reset as function (byval as IEnumUnknown ptr) as HRESULT
 	Clone as function (byval as IEnumUnknown ptr, byval as IEnumUnknown ptr ptr) as HRESULT
 end type
-extern import IID_ISequentialStream alias "IID_ISequentialStream" as IID
+extern IID_ISequentialStream alias "IID_ISequentialStream" as IID
 
 type ISequentialStreamVtbl_ as ISequentialStreamVtbl
 
@@ -662,7 +664,7 @@ type ISequentialStreamVtbl
 	Read as function (byval as ISequentialStream ptr, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 	Write as function (byval as ISequentialStream ptr, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 end type
-extern import IID_IStream alias "IID_IStream" as IID
+extern IID_IStream alias "IID_IStream" as IID
 
 type IStreamVtbl_ as IStreamVtbl
 
@@ -686,7 +688,7 @@ type IStreamVtbl
 	Stat as function (byval as IStream ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
 	Clone as function (byval as IStream ptr, byval as LPSTREAM ptr) as HRESULT
 end type
-extern import IID_IMarshal alias "IID_IMarshal" as IID
+extern IID_IMarshal alias "IID_IMarshal" as IID
 
 type IMarshalVtbl_ as IMarshalVtbl
 
@@ -705,7 +707,7 @@ type IMarshalVtbl
 	ReleaseMarshalData as function (byval as IMarshal ptr, byval as IStream ptr) as HRESULT
 	DisconnectObject as function (byval as IMarshal ptr, byval as DWORD) as HRESULT
 end type
-extern import IID_IStdMarshalInfo alias "IID_IStdMarshalInfo" as IID
+extern IID_IStdMarshalInfo alias "IID_IStdMarshalInfo" as IID
 
 type IStdMarshalInfoVtbl_ as IStdMarshalInfoVtbl
 
@@ -719,7 +721,7 @@ type IStdMarshalInfoVtbl
 	Release as function (byval as IStdMarshalInfo ptr) as ULONG
 	GetClassForHandler as function (byval as IStdMarshalInfo ptr, byval as DWORD, byval as PVOID, byval as CLSID ptr) as HRESULT
 end type
-extern import IID_IMalloc alias "IID_IMalloc" as IID
+extern IID_IMalloc alias "IID_IMalloc" as IID
 
 type IMallocVtbl_ as IMallocVtbl
 
@@ -738,7 +740,7 @@ type IMallocVtbl
 	DidAlloc as function (byval as IMalloc ptr, byval as any ptr) as integer
 	HeapMinimize as sub (byval as IMalloc ptr)
 end type
-extern import IID_IMallocSpy alias "IID_IMallocSpy" as IID
+extern IID_IMallocSpy alias "IID_IMallocSpy" as IID
 
 type IMallocSpyVtbl_ as IMallocSpyVtbl
 
@@ -763,7 +765,7 @@ type IMallocSpyVtbl
 	PreHeapMinimize as sub (byval as IMallocSpy ptr)
 	PostHeapMinimize as sub (byval as IMallocSpy ptr)
 end type
-extern import IID_IMessageFilter alias "IID_IMessageFilter" as IID
+extern IID_IMessageFilter alias "IID_IMessageFilter" as IID
 
 type IMessageFilterVtbl_ as IMessageFilterVtbl
 
@@ -779,7 +781,7 @@ type IMessageFilterVtbl
 	RetryRejectedCall as function (byval as IMessageFilter ptr, byval as HTASK, byval as DWORD, byval as DWORD) as DWORD
 	MessagePending as function (byval as IMessageFilter ptr, byval as HTASK, byval as DWORD, byval as DWORD) as DWORD
 end type
-extern import IID_IPersist alias "IID_IPersist" as IID
+extern IID_IPersist alias "IID_IPersist" as IID
 
 type IPersistVtbl_ as IPersistVtbl
 
@@ -793,7 +795,7 @@ type IPersistVtbl
 	Release as function (byval as IPersist ptr) as ULONG
 	GetClassID as function (byval as IPersist ptr, byval as CLSID ptr) as HRESULT
 end type
-extern import IID_IPersistStream alias "IID_IPersistStream" as IID
+extern IID_IPersistStream alias "IID_IPersistStream" as IID
 
 type IPersistStreamVtbl_ as IPersistStreamVtbl
 
@@ -811,7 +813,7 @@ type IPersistStreamVtbl
 	Save as function (byval as IPersistStream ptr, byval as IStream ptr, byval as BOOL) as HRESULT
 	GetSizeMax as function (byval as IPersistStream ptr, byval as PULARGE_INTEGER) as HRESULT
 end type
-extern import IID_IRunningObjectTable alias "IID_IRunningObjectTable" as IID
+extern IID_IRunningObjectTable alias "IID_IRunningObjectTable" as IID
 
 type IRunningObjectTableVtbl_ as IRunningObjectTableVtbl
 
@@ -831,7 +833,7 @@ type IRunningObjectTableVtbl
 	GetTimeOfLastChange as function (byval as IRunningObjectTable ptr, byval as LPMONIKER, byval as LPFILETIME) as HRESULT
 	EnumRunning as function (byval as IRunningObjectTable ptr, byval as IEnumMoniker ptr ptr) as HRESULT
 end type
-extern import IID_IBindCtx alias "IID_IBindCtx" as IID
+extern IID_IBindCtx alias "IID_IBindCtx" as IID
 
 type IBindCtxVtbl_ as IBindCtxVtbl
 
@@ -854,7 +856,7 @@ type IBindCtxVtbl
 	EnumObjectParam as function (byval as IBindCtx ptr, byval as IEnumString ptr ptr) as HRESULT
 	RevokeObjectParam as function (byval as IBindCtx ptr, byval as LPOLESTR) as HRESULT
 end type
-extern import IID_IMoniker alias "IID_IMoniker" as IID
+extern IID_IMoniker alias "IID_IMoniker" as IID
 
 type IMonikerVtbl_ as IMonikerVtbl
 
@@ -887,7 +889,7 @@ type IMonikerVtbl
 	ParseDisplayName as function (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as LPOLESTR, byval as ULONG ptr, byval as IMoniker ptr ptr) as HRESULT
 	IsSystemMoniker as function (byval as IMoniker ptr, byval as PDWORD) as HRESULT
 end type
-extern import IID_IPersistStorage alias "IID_IPersistStorage" as IID
+extern IID_IPersistStorage alias "IID_IPersistStorage" as IID
 
 type IPersistStorageVtbl_ as IPersistStorageVtbl
 
@@ -907,7 +909,7 @@ type IPersistStorageVtbl
 	SaveCompleted as function (byval as IPersistStorage ptr, byval as LPSTORAGE) as HRESULT
 	HandsOffStorage as function (byval as IPersistStorage ptr) as HRESULT
 end type
-extern import IID_IPersistFile alias "IID_IPersistFile" as IID
+extern IID_IPersistFile alias "IID_IPersistFile" as IID
 
 type IPersistFileVtbl_ as IPersistFileVtbl
 
@@ -926,7 +928,7 @@ type IPersistFileVtbl
 	SaveCompleted as function (byval as IPersistFile ptr, byval as LPCOLESTR) as HRESULT
 	GetCurFile as function (byval as IPersistFile ptr, byval as LPOLESTR ptr) as HRESULT
 end type
-extern import IID_IAdviseSink alias "IID_IAdviseSink" as IID
+extern IID_IAdviseSink alias "IID_IAdviseSink" as IID
 
 type IAdviseSinkVtbl_ as IAdviseSinkVtbl 
 
@@ -944,7 +946,7 @@ type IAdviseSinkVtbl
 	OnSave as sub (byval as IAdviseSink ptr)
 	OnClose as sub (byval as IAdviseSink ptr)
 end type
-extern import IID_IAdviseSink2 alias "IID_IAdviseSink2" as IID
+extern IID_IAdviseSink2 alias "IID_IAdviseSink2" as IID
 
 type IAdviseSink2Vtbl_ as IAdviseSink2Vtbl
 
@@ -963,7 +965,7 @@ type IAdviseSink2Vtbl
 	OnClose as sub (byval as IAdviseSink2 ptr)
 	OnLinkSrcChange as sub (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
 end type
-extern import IID_IDataObject alias "IID_IDataObject" as IID
+extern IID_IDataObject alias "IID_IDataObject" as IID
 
 type IDataObjectVtbl_ as IDataObjectVtbl
 
@@ -985,7 +987,7 @@ type IDataObjectVtbl
 	DUnadvise as function (byval as IDataObject ptr, byval as DWORD) as HRESULT
 	EnumDAdvise as function (byval as IDataObject ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
 end type
-extern import IID_IDataAdviseHolder alias "IID_IDataAdviseHolder" as IID
+extern IID_IDataAdviseHolder alias "IID_IDataAdviseHolder" as IID
 
 type IDataAdviseHolderVtbl_ as IDataAdviseHolderVtbl
 
@@ -1002,7 +1004,7 @@ type IDataAdviseHolderVtbl
 	EnumAdvise as function (byval as IDataAdviseHolder ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
 	SendOnDataChange as function (byval as IDataAdviseHolder ptr, byval as IDataObject ptr, byval as DWORD, byval as DWORD) as HRESULT
 end type
-extern import IID_IStorage alias "IID_IStorage" as IID
+extern IID_IStorage alias "IID_IStorage" as IID
 
 type IStorageVtbl_ as IStorageVtbl
 
@@ -1030,7 +1032,7 @@ type IStorageVtbl
 	SetStateBits as function (byval as IStorage ptr, byval as DWORD, byval as DWORD) as HRESULT
 	Stat as function (byval as IStorage ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
 end type
-extern import IID_IRootStorage alias "IID_IRootStorage" as IID
+extern IID_IRootStorage alias "IID_IRootStorage" as IID
 
 type IRootStorageVtbl_ as IRootStorageVtbl
 
@@ -1044,7 +1046,7 @@ type IRootStorageVtbl
 	Release as function (byval as IRootStorage ptr) as ULONG
 	SwitchToFile as function (byval as IRootStorage ptr, byval as LPOLESTR) as HRESULT
 end type
-extern import IID_IRpcChannelBuffer alias "IID_IRpcChannelBuffer" as IID
+extern IID_IRpcChannelBuffer alias "IID_IRpcChannelBuffer" as IID
 
 type IRpcChannelBufferVtbl_ as IRpcChannelBufferVtbl
 
@@ -1062,7 +1064,7 @@ type IRpcChannelBufferVtbl
 	GetDestCtx as function (byval as IRpcChannelBuffer ptr, byval as PDWORD, byval as PVOID ptr) as HRESULT
 	IsConnected as function (byval as IRpcChannelBuffer ptr) as HRESULT
 end type
-extern import IID_IRpcProxyBuffer alias "IID_IRpcProxyBuffer" as IID
+extern IID_IRpcProxyBuffer alias "IID_IRpcProxyBuffer" as IID
 
 type IRpcProxyBufferVtbl_ as IRpcProxyBufferVtbl
 
@@ -1077,7 +1079,7 @@ type IRpcProxyBufferVtbl
 	Connect as function (byval as IRpcProxyBuffer ptr, byval as IRpcChannelBuffer ptr) as HRESULT
 	Disconnect as sub (byval as IRpcProxyBuffer ptr)
 end type
-extern import IID_IRpcStubBuffer alias "IID_IRpcStubBuffer" as IID
+extern IID_IRpcStubBuffer alias "IID_IRpcStubBuffer" as IID
 
 type IRpcStubBufferVtbl_ as IRpcStubBufferVtbl
 
@@ -1097,7 +1099,7 @@ type IRpcStubBufferVtbl
 	DebugServerQueryInterface as function (byval as IRpcStubBuffer ptr, byval as PVOID ptr) as HRESULT
 	DebugServerRelease as function (byval as IRpcStubBuffer ptr, byval as PVOID) as HRESULT
 end type
-extern import IID_IPSFactoryBuffer alias "IID_IPSFactoryBuffer" as IID
+extern IID_IPSFactoryBuffer alias "IID_IPSFactoryBuffer" as IID
 
 type IPSFactoryBufferVtbl_ as IPSFactoryBufferVtbl
 
@@ -1112,7 +1114,7 @@ type IPSFactoryBufferVtbl
 	CreateProxy as function (byval as IPSFactoryBuffer ptr, byval as LPUNKNOWN, byval as IID ptr, byval as LPRPCPROXYBUFFER ptr, byval as PVOID ptr) as HRESULT
 	CreateStub as function (byval as IPSFactoryBuffer ptr, byval as IID ptr, byval as LPUNKNOWN, byval as LPRPCSTUBBUFFER ptr) as HRESULT
 end type
-extern import IID_ILockBytes alias "IID_ILockBytes" as IID
+extern IID_ILockBytes alias "IID_ILockBytes" as IID
 
 type ILockBytesVtbl_ as ILockBytesVtbl
 
@@ -1132,7 +1134,7 @@ type ILockBytesVtbl
 	UnlockRegion as function (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
 	Stat as function (byval as ILockBytes ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
 end type
-extern import IID_IExternalConnection alias "IID_IExternalConnection" as IID
+extern IID_IExternalConnection alias "IID_IExternalConnection" as IID
 
 type IExternalConnectionVtbl_ as IExternalConnectionVtbl
 
@@ -1147,7 +1149,7 @@ type IExternalConnectionVtbl
 	AddConnection as function (byval as IExternalConnection ptr, byval as DWORD, byval as DWORD) as HRESULT
 	ReleaseConnection as function (byval as IExternalConnection ptr, byval as DWORD, byval as DWORD, byval as BOOL) as HRESULT
 end type
-extern import IID_IRunnableObject alias "IID_IRunnableObject" as IID
+extern IID_IRunnableObject alias "IID_IRunnableObject" as IID
 
 type IRunnableObjectVtbl_ as IRunnableObjectVtbl
 
@@ -1165,7 +1167,7 @@ type IRunnableObjectVtbl
 	LockRunning as function (byval as IRunnableObject ptr, byval as BOOL, byval as BOOL) as HRESULT
 	SetContainedObject as function (byval as IRunnableObject ptr, byval as BOOL) as HRESULT
 end type
-extern import IID_IROTData alias "IID_IROTData" as IID
+extern IID_IROTData alias "IID_IROTData" as IID
 
 type IROTDataVtbl_ as IROTDataVtbl
 
@@ -1179,7 +1181,7 @@ type IROTDataVtbl
 	Release as function (byval as IROTData ptr) as ULONG
 	GetComparisonData as function (byval as IROTData ptr, byval as PVOID, byval as ULONG, byval as PULONG) as HRESULT
 end type
-extern import IID_IChannelHook alias "IID_IChannelHook" as IID
+extern IID_IChannelHook alias "IID_IChannelHook" as IID
 
 type IChannelHookVtbl_ as IChannelHookVtbl
 
@@ -1198,7 +1200,7 @@ type IChannelHookVtbl
 	ServerGetSize as sub (byval as IChannelHook ptr, byval as GUID ptr, byval as IID ptr, byval as HRESULT, byval as PULONG)
 	ServerFillBuffer as sub (byval as IChannelHook ptr, byval as GUID ptr, byval as IID ptr, byval as PULONG, byval as PVOID, byval as HRESULT)
 end type
-extern import IID_IPropertyStorage alias "IID_IPropertyStorage" as IID
+extern IID_IPropertyStorage alias "IID_IPropertyStorage" as IID
 
 type IPropertyStorageVtbl_ as IPropertyStorageVtbl
 
@@ -1223,7 +1225,7 @@ type IPropertyStorageVtbl
 	Stat as function (byval as IPropertyStorage ptr, byval as STATPROPSTG ptr) as HRESULT
 	SetTimes as function (byval as IPropertyStorage ptr, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as HRESULT
 end type
-extern import IID_IPropertySetStorage alias "IID_IPropertySetStorage" as IID
+extern IID_IPropertySetStorage alias "IID_IPropertySetStorage" as IID
 
 type IPropertySetStorageVtbl_ as IPropertySetStorageVtbl
 
@@ -1240,7 +1242,7 @@ type IPropertySetStorageVtbl
 	Delete as function (byval as IPropertySetStorage ptr, byval as REFFMTID) as HRESULT
 	Enum as function (byval as IPropertySetStorage ptr, byval as IEnumSTATPROPSETSTG ptr ptr) as HRESULT
 end type
-extern import IID_IClientSecurity alias "IID_IClientSecurity" as IID
+extern IID_IClientSecurity alias "IID_IClientSecurity" as IID
 
 type IClientSecurityVtbl_ as IClientSecurityVtbl
 
@@ -1256,7 +1258,7 @@ type IClientSecurityVtbl
 	SetBlanket as function (byval as IClientSecurity ptr, byval as PVOID, byval as DWORD, byval as DWORD, byval as LPWSTR, byval as DWORD, byval as DWORD, byval as RPC_AUTH_IDENTITY_HANDLE ptr, byval as DWORD) as HRESULT
 	CopyProxy as function (byval as IClientSecurity ptr, byval as LPUNKNOWN, byval as LPUNKNOWN ptr) as HRESULT
 end type
-extern import IID_IServerSecurity alias "IID_IServerSecurity" as IID
+extern IID_IServerSecurity alias "IID_IServerSecurity" as IID
 
 type IServerSecurityVtbl_ as IServerSecurityVtbl
 
@@ -1273,7 +1275,7 @@ type IServerSecurityVtbl
 	RevertToSelf as function (byval as IServerSecurity ptr) as HRESULT
 	IsImpersonating as function (byval as IServerSecurity ptr) as HRESULT
 end type
-extern import IID_IClassActivator alias "IID_IClassActivator" as IID
+extern IID_IClassActivator alias "IID_IClassActivator" as IID
 
 type IClassActivatorVtbl_ as IClassActivatorVtbl
 
@@ -1287,7 +1289,7 @@ type IClassActivatorVtbl
 	Release as function (byval as IClassActivator ptr) as ULONG
 	GetClassObject as function (byval as IClassActivator ptr, byval as CLSID ptr, byval as DWORD, byval as LCID, byval as IID ptr, byval as PVOID ptr) as HRESULT
 end type
-extern import IID_IFillLockBytes alias "IID_IFillLockBytes" as IID
+extern IID_IFillLockBytes alias "IID_IFillLockBytes" as IID
 
 type IFillLockBytesVtbl_ as IFillLockBytesVtbl
 
@@ -1304,7 +1306,7 @@ type IFillLockBytesVtbl
 	SetFillSize as function (byval as IFillLockBytes ptr, byval as ULARGE_INTEGER) as HRESULT
 	Terminate as function (byval as IFillLockBytes ptr, byval as BOOL) as HRESULT
 end type
-extern import IID_IProgressNotify alias "IID_IProgressNotify" as IID
+extern IID_IProgressNotify alias "IID_IProgressNotify" as IID
 
 type IProgressNotifyVtbl_ as IProgressNotifyVtbl
 
@@ -1318,7 +1320,7 @@ type IProgressNotifyVtbl
 	Release as function (byval as IProgressNotify ptr) as ULONG
 	OnProgress as function (byval as IProgressNotify ptr, byval as DWORD, byval as DWORD, byval as BOOL, byval as BOOL) as HRESULT
 end type
-extern import IID_ILayoutStorage alias "IID_ILayoutStorage" as IID
+extern IID_ILayoutStorage alias "IID_ILayoutStorage" as IID
 
 type ILayoutStorageVtbl_ as ILayoutStorageVtbl
 

@@ -36,15 +36,15 @@ declare function ScreenSaverProc alias "ScreenSaverProc" (byval as HWND, byval a
 declare function DefScreenSaverProc alias "DefScreenSaverProc" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as LONG
 declare sub ScreenSaverChangePassword alias "ScreenSaverChangePassword" (byval as HWND)
 
-extern import hMainInstance alias "hMainInstance" as HINSTANCE
-extern import hMainWindow alias "hMainWindow" as HWND
-extern import fChildPreview alias "fChildPreview" as BOOL
-extern import szName alias "szName" as zstring ptr
-extern import szAppName alias "szAppName" as zstring ptr 
-extern import szIniFile alias "szIniFile" as zstring ptr 
-extern import szScreenSaver alias "szScreenSaver" as zstring ptr
-extern import szHelpFile alias "szHelpFile" as zstring ptr
-extern import szNoHelpMemory alias "szNoHelpMemory" as zstring ptr
-extern import MyHelpMessage alias "MyHelpMessage" as UINT
+extern hMainInstance alias "hMainInstance" as HINSTANCE
+extern hMainWindow alias "hMainWindow" as HWND
+extern fChildPreview alias "fChildPreview" as BOOL
+extern szName alias "szName" as zstring ptr
+extern szAppName alias "szAppName" as zstring ptr 
+extern szIniFile alias "szIniFile" as zstring ptr 
+extern szScreenSaver alias "szScreenSaver" as zstring ptr
+extern szHelpFile alias "szHelpFile" as zstring ptr
+extern szNoHelpMemory alias "szNoHelpMemory" as zstring ptr
+extern MyHelpMessage alias "MyHelpMessage" as UINT
 
 #endif

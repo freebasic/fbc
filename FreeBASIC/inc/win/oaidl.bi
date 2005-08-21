@@ -62,19 +62,21 @@ type LPCREATEERRORINFO as ICreateErrorInfo ptr
 type LPSUPPORTERRORINFO as ISupportErrorInfo ptr
 type LPRECORDINFO as IRecordInfo ptr
 
-extern import IID_ITypeLib alias "IID_ITypeLib" as IID
-extern import IID_ICreateTypeInfo alias "IID_ICreateTypeInfo" as IID
-extern import IID_ICreateTypeInfo2 alias "IID_ICreateTypeInfo2" as IID
-extern import IID_ICreateTypeLib alias "IID_ICreateTypeLib" as IID
-extern import IID_ICreateTypeLib2 alias "IID_ICreateTypeLib2" as IID
-extern import IID_ITypeInfo alias "IID_ITypeInfo" as IID
-extern import IID_IErrorInfo alias "IID_IErrorInfo" as IID
-extern import IID_IDispatch alias "IID_IDispatch" as IID
-extern import IID_IEnumVARIANT alias "IID_IEnumVARIANT" as IID
-extern import IID_ICreateErrorInfo alias "IID_ICreateErrorInfo" as IID
-extern import IID_ISupportErrorInfo alias "IID_ISupportErrorInfo" as IID
-extern import IID_IRecordInfo alias "IID_IRecordInfo" as IID
-extern import IID_ITypeMarshal alias "IID_ITypeMarshal" as IID
+#inclib "uuid"
+
+extern IID_ITypeLib alias "IID_ITypeLib" as IID
+extern IID_ICreateTypeInfo alias "IID_ICreateTypeInfo" as IID
+extern IID_ICreateTypeInfo2 alias "IID_ICreateTypeInfo2" as IID
+extern IID_ICreateTypeLib alias "IID_ICreateTypeLib" as IID
+extern IID_ICreateTypeLib2 alias "IID_ICreateTypeLib2" as IID
+extern IID_ITypeInfo alias "IID_ITypeInfo" as IID
+extern IID_IErrorInfo alias "IID_IErrorInfo" as IID
+extern IID_IDispatch alias "IID_IDispatch" as IID
+extern IID_IEnumVARIANT alias "IID_IEnumVARIANT" as IID
+extern IID_ICreateErrorInfo alias "IID_ICreateErrorInfo" as IID
+extern IID_ISupportErrorInfo alias "IID_ISupportErrorInfo" as IID
+extern IID_IRecordInfo alias "IID_IRecordInfo" as IID
+extern IID_ITypeMarshal alias "IID_ITypeMarshal" as IID
 
 enum SYSKIND
 	SYS_WIN16
@@ -673,7 +675,7 @@ type ITypeLibVtbl
 	FindName as function (byval as ITypeLib ptr, byval as LPOLESTR, byval as ULONG, byval as ITypeInfo ptr ptr, byval as MEMBERID ptr, byval as USHORT ptr) as HRESULT
 	ReleaseTLibAttr as sub (byval as ITypeLib ptr, byval as TLIBATTR ptr)
 end type
-extern import IID_IErrorInfo alias "IID_IErrorInfo" as IID
+extern IID_IErrorInfo alias "IID_IErrorInfo" as IID
 
 type IErrorInfoVtbl_ as IErrorInfoVtbl
 
@@ -691,7 +693,7 @@ type IErrorInfoVtbl
 	GetHelpFile as function (byval as IErrorInfo ptr, byval as BSTR ptr) as HRESULT
 	GetHelpContext as function (byval as IErrorInfo ptr, byval as DWORD ptr) as HRESULT
 end type
-extern import IID_ICreateErrorInfo alias "IID_ICreateErrorInfo" as IID
+extern IID_ICreateErrorInfo alias "IID_ICreateErrorInfo" as IID
 
 type ICreateErrorInfoVtbl_ as ICreateErrorInfoVtbl
 
@@ -709,7 +711,7 @@ type ICreateErrorInfoVtbl
 	SetHelpFile as function (byval as ICreateErrorInfo ptr, byval as LPOLESTR) as HRESULT
 	SetHelpContext as function (byval as ICreateErrorInfo ptr, byval as DWORD) as HRESULT
 end type
-extern import IID_ISupportErrorInfo alias "IID_ISupportErrorInfo" as IID
+extern IID_ISupportErrorInfo alias "IID_ISupportErrorInfo" as IID
 
 type ISupportErrorInfoVtbl_ as ISupportErrorInfoVtbl
 
@@ -723,7 +725,7 @@ type ISupportErrorInfoVtbl
 	Release as function (byval as ISupportErrorInfo ptr) as ULONG
 	InterfaceSupportsErrorInfo as function (byval as ISupportErrorInfo ptr, byval as IID ptr) as HRESULT
 end type
-extern import IID_IRecordInfo alias "IID_IRecordInfo" as IID
+extern IID_IRecordInfo alias "IID_IRecordInfo" as IID
 
 type IRecordInfoVtbl_ as IRecordInfoVtbl
 
@@ -752,7 +754,7 @@ type IRecordInfoVtbl
 	RecordCreateCopy as function (byval as IRecordInfo ptr, byval as PVOID, byval as PVOID ptr) as HRESULT
 	RecordDestroy as function (byval as IRecordInfo ptr, byval as PVOID) as HRESULT
 end type
-extern import IID_ITypeMarshal alias "IID_ITypeMarshal" as IID
+extern IID_ITypeMarshal alias "IID_ITypeMarshal" as IID
 
 type ITypeMarshalVtbl_ as ITypeMarshalVtbl
 

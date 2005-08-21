@@ -13,10 +13,12 @@
 #include once "win/objfwd.bi"
 #include once "win/wtypes.bi"
 
+#inclib "uuid"
+
 declare function MIDL_user_allocate alias "MIDL_user_allocate" (byval as size_t) as any ptr
 declare sub MIDL_user_free alias "MIDL_user_free" (byval as any ptr)
-extern import IID_IUnknown alias "IID_IUnknown" as IID
-extern import IID_IClassFactory alias "IID_IClassFactory" as IID
+extern IID_IUnknown alias "IID_IUnknown" as IID
+extern IID_IClassFactory alias "IID_IClassFactory" as IID
 
 #ifndef IUnknown
 type IUnknownVtbl_ as IUnknownVtbl
