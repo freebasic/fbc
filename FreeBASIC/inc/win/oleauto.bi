@@ -123,7 +123,7 @@ declare function SysReAllocStringLen alias "SysReAllocStringLen" (byval as BSTR 
 declare sub SysFreeString alias "SysFreeString" (byval as BSTR)
 declare function SysStringLen alias "SysStringLen" (byval as BSTR) as uinteger
 declare function SysStringByteLen alias "SysStringByteLen" (byval as BSTR) as uinteger
-declare function SysAllocStringByteLen alias "SysAllocStringByteLen" (byval as string, byval as uinteger) as BSTR
+declare function SysAllocStringByteLen alias "SysAllocStringByteLen" (byval as zstring ptr, byval as uinteger) as BSTR
 declare function DosDateTimeToVariantTime alias "DosDateTimeToVariantTime" (byval as ushort, byval as ushort, byval as double ptr) as integer
 declare function VariantTimeToDosDateTime alias "VariantTimeToDosDateTime" (byval as double, byval as ushort ptr, byval as ushort ptr) as integer
 declare function VariantTimeToSystemTime alias "VariantTimeToSystemTime" (byval as double, byval as LPSYSTEMTIME) as integer
@@ -237,7 +237,7 @@ declare function VarBoolFromCy alias "VarBoolFromCy" (byval as CY, byval as VARI
 declare function VarBoolFromStr alias "VarBoolFromStr" (byval as OLECHAR ptr, byval as LCID, byval as uinteger, byval as VARIANT_BOOL ptr) as HRESULT
 declare function VarBoolFromDisp alias "VarBoolFromDisp" (byval as LPDISPATCH ptr, byval as LCID, byval as VARIANT_BOOL ptr) as HRESULT
 declare function VarDecFromR8 alias "VarDecFromR8" (byval as double, byval as DECIMAL ptr) as HRESULT
-declare function LHashValOfNameSysA alias "LHashValOfNameSysA" (byval as SYSKIND, byval as LCID, byval as string) as ULONG
+declare function LHashValOfNameSysA alias "LHashValOfNameSysA" (byval as SYSKIND, byval as LCID, byval as zstring ptr) as ULONG
 declare function LHashValOfNameSys alias "LHashValOfNameSys" (byval as SYSKIND, byval as LCID, byval as OLECHAR ptr) as ULONG
 declare function LoadTypeLib alias "LoadTypeLib" (byval as OLECHAR ptr, byval as LPTYPELIB ptr) as HRESULT
 declare function LoadTypeLibEx alias "LoadTypeLibEx" (byval as LPCOLESTR, byval as REGKIND, byval as LPTYPELIB ptr) as HRESULT

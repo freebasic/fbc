@@ -75,12 +75,12 @@ declare sub double_array_from_ndr alias "double_array_from_ndr" (byval as PRPC_M
 declare sub hyper_from_ndr alias "hyper_from_ndr" (byval as PRPC_MESSAGE, byval as longint ptr)
 declare sub hyper_array_from_ndr alias "hyper_array_from_ndr" (byval as PRPC_MESSAGE, byval as uinteger, byval as uinteger, byval as longint ptr)
 declare sub hyper_from_ndr_temp alias "hyper_from_ndr_temp" (byval as ubyte ptr ptr, byval as longint ptr, byval as uinteger)
-declare sub data_from_ndr alias "data_from_ndr" (byval as PRPC_MESSAGE, byval as any ptr, byval as string, byval as ubyte)
-declare sub data_into_ndr alias "data_into_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as string, byval as ubyte)
-declare sub tree_into_ndr alias "tree_into_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as string, byval as ubyte)
-declare sub data_size_ndr alias "data_size_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as string, byval as ubyte)
-declare sub tree_size_ndr alias "tree_size_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as string, byval as ubyte)
-declare sub tree_peek_ndr alias "tree_peek_ndr" (byval as PRPC_MESSAGE, byval as ubyte ptr ptr, byval as string, byval as ubyte)
+declare sub data_from_ndr alias "data_from_ndr" (byval as PRPC_MESSAGE, byval as any ptr, byval as zstring ptr, byval as ubyte)
+declare sub data_into_ndr alias "data_into_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as zstring ptr, byval as ubyte)
+declare sub tree_into_ndr alias "tree_into_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as zstring ptr, byval as ubyte)
+declare sub data_size_ndr alias "data_size_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as zstring ptr, byval as ubyte)
+declare sub tree_size_ndr alias "tree_size_ndr" (byval as any ptr, byval as PRPC_MESSAGE, byval as zstring ptr, byval as ubyte)
+declare sub tree_peek_ndr alias "tree_peek_ndr" (byval as PRPC_MESSAGE, byval as ubyte ptr ptr, byval as zstring ptr, byval as ubyte)
 declare function midl_allocate alias "midl_allocate" (byval as integer) as any ptr
 
 type _MIDL_STUB_DESC as MIDL_STUB_DESC
