@@ -217,7 +217,8 @@ Most Important Features:
 
     - cgi-util and FastCGI: web development
 
-    - DirectX and the Windows API (W.I.P.)
+    - DirectX and the Windows API - the most complete headers set between the BASIC
+      compilers available
 
     - more to come...
 
