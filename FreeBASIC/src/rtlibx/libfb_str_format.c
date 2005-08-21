@@ -59,6 +59,8 @@ typedef struct _FormatMaskInfo {
 FBCALL FBSTRING *fb_hStrFormat ( double value,
                                  const char *mask, size_t mask_length );
 
+/** Splits a number into its fixed and fractional part.
+ */
 static
 void fb_hGetNumberParts( double number,
                          char *pachFixPart, size_t *pcchLenFix,
@@ -178,6 +180,18 @@ FBSTRING *fb_hBuildDouble ( double num,
 	return dst;
 }
 
+/** Processes a FORMAT mask.
+ *
+ * This function is used for two passes:
+ *
+ * - Determine the required size of the resulting string.
+ * - Build the resulting string.
+ *
+ * This function is a mess, but hey, it works ...
+ *
+ * When I've too much time, I'll simplify this function so that almost all
+ * queries of do_output will be removed.
+ */
 static
 int fb_hProcessMask( FBSTRING *dst,
                      const char *mask, size_t mask_length,
