@@ -4,6 +4,13 @@ option explicit
 const FALSE = 0
 const TRUE  = not FALSE
 
+type OPTIONS
+    show_help as integer
+    overwrite as integer
+    build_all as integer
+    platform  as string
+end type
+
 type OPTLIB
 	desc	as zstring * 64
 	dir		as zstring * 16
@@ -29,26 +36,76 @@ declare sub chkoptlibs( optTb() as OPTLIB, byval libs as integer )
 		( "SDL (Game library, 0.36MB)", "sdl", FALSE ), _
 		( "Wx-c (GUI library, 3.16MB)", "wx-c", FALSE ) _
 	}
-		
+
+    dim shared opt as OPTIONS
+    opt.platform = "win32"
+
+    dim as string arg_value
+    dim as integer arg_index
+    arg_index = 1
+    do while ( len(command$(arg_index))<>0 )
+        arg_value = command$(arg_index)
+        arg_index += 1
+        select case arg_value
+        case "-h", "--help"
+            opt.show_help = TRUE
+            exit do
+
+        case "-a", "--all"
+            opt.build_all = TRUE
+
+        case "-p", "--platform"
+            arg_value = command$(arg_index)
+            arg_index += 1
+            select case arg_value
+            case "win32", "cygwin"
+                opt.platform = arg_value
+
+            case else
+                print "Unknown platform"
+                end 1
+
+            end select
+
+        case "-f", "--force"
+            opt.overwrite = TRUE
+
+        case else
+	    	print "Unknown option"
+            end 1
+
+        end select
+    loop
+
+    print "Import library generator"
+
+    if opt.show_help then
+        print "genimplibs [-p win32|cygwin] [-f] [-a]"
+        end
+    end if
+
 	print "Generating the import libraries, please wait..."
 	print
-	
+
 	genlibs( "\winapi\", TRUE )
-	
+
 	genlibs( "\", FALSE )
-	
+
 	chkoptlibs( optTb(), OPTLIBS )
-	
+
 '':::::
 sub chkoptlibs( optTb() as OPTLIB, byval libs as integer )	
 	dim as integer i, dogen, isall
 	dim as string res
 	
+	isall = opt.build_all
+
+    if not isall then
+		print
+		print "Optional import libraries, type y or n and press Enter"
+	end if
 	print
-	print "Optional import libraries, type y or n and press Enter"
-	print
-	
-	isall = FALSE
+
 	for i = 0 to libs-1
 				
 		print "Install "; optTb(i).desc;
@@ -88,8 +145,8 @@ sub genlibs( byval path as string, byval killat as integer )
 	dim as string filename, deffile, libfile, options
 	dim as string bpath, lpath, dpath, dlltool
 	
-	bpath = exepath$ + "\..\..\..\bin\win32\"
-	lpath = exepath$ + "\..\"
+	bpath = exepath$ + "\..\..\..\bin\" + opt.platform + "\"
+	lpath = exepath$ + "\..\..\" + opt.platform + "\"
 	dpath = exepath$ + path
 
 	dlltool = bpath + "dlltool.exe"
@@ -132,6 +189,10 @@ end sub
 function hFileExists( byval filename as string ) as integer static
     dim f as integer
 
+    if opt.overwrite then
+        return FALSE
+    end if
+
     f = freefile
 
 	if( open( filename, for input, as #f ) = 0 ) then
@@ -145,17 +206,14 @@ end function
 	
 '':::::
 function hStripPath( byval filename as string ) as string static
-    dim p as integer, lp as integer
+    dim as integer p1, p2, p, lp
 
 	lp = 0
 	do
-		p = instr( lp+1, filename, "\" )
-	    if( p = 0 ) then
-	    	p = instr( lp+1, filename, "/" )
-	    	if( p = 0 ) then
-	    		exit do
-	    	end if
-	    end if
+		p1 = instr( lp+1, filename, "\" )
+		p2 = instr( lp+1, filename, "/" )
+        p = IIf( p2=0 or (p1 > 0 and p1 < p2), p1, p2 )
+	    if( p = 0 ) then exit do
 	    lp = p
 	loop
 
@@ -165,4 +223,4 @@ function hStripPath( byval filename as string ) as string static
 		function = filename
 	end if
 
-end function	
+end function
