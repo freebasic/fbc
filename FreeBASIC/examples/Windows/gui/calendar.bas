@@ -5,38 +5,37 @@
 option explicit
 option private
 
-'$include once: "win\kernel32.bi"
-'$include once: "win\user32.bi"
-'$include once: "win\commctrl32.bi"
-
-	dim shared hInstance as long 
-	dim shared szCalClass as string 
-	dim shared hCal as long 
+#include once "windows.bi"
+#include once "win/commctrl.bi"
 	
-    hInstance = GetModuleHandle( null )
-    szCalClass = "SysMonthCal32" 
+	dim shared hInstance as HINSTANCE
+	dim shared calClass as string 
+	dim shared hCal as HWND
+	
+    hInstance = GetModuleHandle( NULL )
+    calClass = MONTHCAL_CLASS 
 
 	dim iccx as INITCOMMONCONTROLSEX 
 	iccx.dwSize = len( iccx ) 
 	iccx.dwICC  = ICC_DATE_CLASSES 
-	InitCommonControlsEx iccx 
+	InitCommonControlsEx( @iccx )
 
 
 
 '' 
 '' Window Procedure Handler 
 '' 
-function WndProc ( byval hWnd as long, _ 
-                   byval uMsg as long, _ 
-                   byval wParam as long, _ 
-                   byval lParam as long ) as integer 
+function WndProc ( byval hWnd as HWND, _ 
+                   byval uMsg as UINT, _ 
+                   byval wParam as WPARAM, _ 
+                   byval lParam as LPARAM ) as integer 
 
-    WndProc = 0 
+    function = 0 
     
     select case ( uMsg ) 
     case WM_CREATE 
 		hCal = CreateWindowEx( 0, _ 
-                               szCalClass, "", _ 
+                               calClass, "", _ 
                                WS_CHILD or WS_VISIBLE, _ 
                                2, 2, 200, 160, _ 
                                hWnd, null, _ 
@@ -44,15 +43,16 @@ function WndProc ( byval hWnd as long, _
 	
 	case WM_KEYDOWN 
 		if( lobyte( wParam ) = 27 ) then 
-			PostMessage hWnd, WM_CLOSE, 0, 0 
+			PostMessage( hWnd, WM_CLOSE, 0, 0 )
         end if 
 	
 	case WM_DESTROY 
-    	PostQuitMessage 0            
+    	PostQuitMessage( 0 )
         exit function 
     end select 
     
-    WndProc = DefWindowProc( hWnd, uMsg, wParam, lParam )    
+    function = DefWindowProc( hWnd, uMsg, wParam, lParam )
+        
 end function 
 
 
@@ -61,33 +61,31 @@ end function
 	'' 
 	dim wMsg as MSG 
 	dim wcls as WNDCLASS      
-	dim hWnd as unsigned long 	
+	dim hWnd as HWND	
 
-	dim szAppName as string 
-    szAppName = "WinCal32" 
+	dim appName as string 
+    appName = "WinCal32" 
 
-    
 	with wcls
 		.style         = CS_HREDRAW or CS_VREDRAW 
 		.lpfnWndProc   = @WndProc
 		.cbClsExtra    = 0 
 		.cbWndExtra    = 0 
 		.hInstance     = hInstance 
-		.hIcon         = LoadIcon( null, byval IDI_APPLICATION ) 
-		.hCursor       = LoadCursor( null, byval IDC_ARROW ) 
-		.hbrBackground = 6  ' default color 
+		.hIcon         = LoadIcon( null, IDI_APPLICATION ) 
+		.hCursor       = LoadCursor( null, IDC_ARROW ) 
+		.hbrBackground = cptr( HGDIOBJ, 6 )  ' default color 
 		.lpszMenuName  = null 
-		.lpszClassName = strptr( szAppName ) 
+		.lpszClassName = strptr( appName ) 
 	end with
       
-      
-	if( RegisterClass( wcls ) = FALSE ) then 
-   		MessageBox null, "Failed to register wcls!", szAppName, MB_ICONERROR 
+	if( RegisterClass( @wcls ) = FALSE ) then 
+   		MessageBox( null, "Failed to register wcls!", appName, MB_ICONERROR )
    		end 1
 	end if 
     
 	hWnd = CreateWindowEx( 0, _ 
-        				   szAppName, "Calendar Demo [ESC to Quit]", _ 
+        				   appName, "Calendar Demo [ESC to Quit]", _ 
          				   WS_CLIPCHILDREN or WS_DLGFRAME or WS_BORDER or WS_VISIBLE, _ 
          				   200, 200, 210, 190, _ 
          				   null, null, hInstance, null ) 
@@ -96,9 +94,9 @@ end function
 	'' 
 	'' messages loop 
 	'' 
-	do until( GetMessage( wMsg, null, 0, 0 ) = FALSE )
-		TranslateMessage wMsg 
-		DispatchMessage wMsg 
+	do until( GetMessage( @wMsg, null, 0, 0 ) = FALSE )
+		TranslateMessage( @wMsg )
+		DispatchMessage( @wMsg )
 	loop
    
 	end 0

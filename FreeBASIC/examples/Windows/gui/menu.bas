@@ -2,19 +2,16 @@
 '' menu demo
 ''
 
-defint a-z
 option explicit
 option private
 
-'$include once:'win\kernel32.bi'
-'$include once:'win\user32.bi'
-'$include once:'win\gdi32.bi'
+#include once "windows.bi"
 
 ''
 '' internal structs
 ''
 type TMENU
-	hnd		as integer
+	hnd		as HMENU
 end type
 
 type TMENUITEM
@@ -48,11 +45,11 @@ const MAXMENUS			= 10
 const MAXMENUITEMS 		= 50
 
 
-declare sub init_menus( byval hWnd as integer )                                  
+declare sub init_menus( byval hWnd as HWND )                                  
                                   
 
-declare function        WinMain     ( byval hInstance as long, _
-                                      byval hPrevInstance as long, _
+declare function        WinMain     ( byval hInstance as HINSTANCE, _
+                                      byval hPrevInstance as HINSTANCE, _
                                       szCmdLine as string, _
                                       byval iCmdShow as integer ) as integer
 
@@ -76,20 +73,20 @@ declare function        WinMain     ( byval hInstance as long, _
 '' desc: Processes windows messages
 ''
 '' ::::::::
-defint a-z
-function WndProc ( byval hWnd as long, _
-                   byval message as long, _
-                   byval wParam as long, _
-                   byval lParam as long ) as integer
+function WndProc ( byval hWnd as HWND, _
+                   byval message as UINT, _
+                   byval wParam as WPARAM, _
+                   byval lParam as LPARAM ) as LRESULT
+    
     dim rct as RECT
     dim pnt as PAINTSTRUCT
-    dim hDC as long
+    dim hDC as HDC
     
-    static lastmenuid  as integer
+    static lastmenuid as integer
     dim wmId as integer, wmEvent as integer
-    dim menu as integer
+    dim menu as HMENU
     
-    WndProc = 0
+    function = 0
     
     ''
     '' Process message
@@ -101,7 +98,7 @@ function WndProc ( byval hWnd as long, _
         ''        
         case WM_CREATE            
             '' create and show the menus
-            init_menus hWnd
+            init_menus( hWnd )
             exit function
         
     	''
@@ -119,7 +116,7 @@ function WndProc ( byval hWnd as long, _
 			select case wmId
 			'' quit
 			case MENUID_FILE_EXIT
-				PostMessage hWnd, WM_CLOSE, 0, 0
+				PostMessage( hWnd, WM_CLOSE, 0, 0 )
 				exit function
 			end select
 			
@@ -127,24 +124,26 @@ function WndProc ( byval hWnd as long, _
 			lastmenuid = wmId
         
 			'' force a repaint so the menu id and title will be drawn
-			dim rc as RECT
-			GetClientRect hWnd, rc		
-			InvalidateRect hWnd, rc, TRUE
+			GetClientRect( hWnd, @rct )
+			InvalidateRect( hWnd, @rct, TRUE )
         
         ''
         '' Windows is being repainted
         ''
         case WM_PAINT
           
-            hDC = BeginPaint( hWnd, pnt )
-            GetClientRect hWnd, rct
+            hDC = BeginPaint( hWnd, @pnt )
+            GetClientRect( hWnd, @rct )
             
             if( lastmenuid <> 0 ) then
-            	DrawText hDC, "Last menu selected: id(" + str$( lastmenuid ) + ") title(" _
-            				  + menuitemTB(lastmenuid-MENUID_BASE).title + ")", -1, rct, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+            	DrawText( hDC, _
+            			  "Last menu selected: id(" & lastmenuid & ") title(" & menuitemTB(lastmenuid-MENUID_BASE).title & ")", _
+            			  -1, _
+            			  @rct, _
+            			  DT_SINGLELINE or DT_CENTER or DT_VCENTER )
             end if
             
-            EndPaint hWnd, pnt
+            EndPaint( hWnd, @pnt )
             
             exit function            
         
@@ -153,120 +152,110 @@ function WndProc ( byval hWnd as long, _
 		''
 		case WM_KEYDOWN
 			if( lobyte( wParam ) = 27 ) then
-				PostMessage hWnd, WM_CLOSE, 0, 0
+				PostMessage( hWnd, WM_CLOSE, 0, 0 )
 			end if
 
         ''
         '' Window was closed
         ''
         case WM_DESTROY
-            PostQuitMessage 0            
+            PostQuitMessage( 0 )
             exit function
     end select
     
     ''
     '' Message doesn't concern us, send it to the default handler
     ''
-    WndProc = DefWindowProc( hWnd, message, wParam, lParam )    
+    function = DefWindowProc( hWnd, message, wParam, lParam )    
     
 end function
-
-
-
 
 '' ::::::::
 '' name: WinMain
 '' desc: A win2 gui program entry point
 ''
 '' ::::::::
-defint a-z
-function WinMain ( byval hInstance as long, _
-                   byval hPrevInstance as long, _
+function WinMain ( byval hInstance as HINSTANCE, _
+                   byval hPrevInstance as HINSTANCE, _
                    szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
      
-     dim wMsg as MSG
-     dim wcls as WNDCLASS     
-     dim szAppName as string
-     dim hWnd as unsigned long
+    dim wMsg as MSG
+    dim wcls as WNDCLASS     
+    dim appName as string
+    dim hWnd as HWND
 
+    function = 0
      
-     WinMain = 0
+    ''
+    '' Setup window class
+    ''
+    appName = "Menu Test"
      
-     ''
-     '' Setup window class
-     ''
-     szAppName = "Menu Test"
-     
-     with wcls
+    with wcls
      	.style         = CS_HREDRAW or CS_VREDRAW
      	.lpfnWndProc   = @WndProc
      	.cbClsExtra    = 0
      	.cbWndExtra    = 0
      	.hInstance     = hInstance
-     	.hIcon         = LoadIcon( null, byval IDI_APPLICATION )
-     	.hCursor       = LoadCursor( null, byval IDC_ARROW )
-     	.hbrBackground = GetStockObject( byval WHITE_BRUSH )
+     	.hIcon         = LoadIcon( null, IDI_APPLICATION )
+     	.hCursor       = LoadCursor( null, IDC_ARROW )
+     	.hbrBackground = GetStockObject( WHITE_BRUSH )
      	.lpszMenuName  = null
-     	.lpszClassName = strptr( szAppName )
-     end with
+     	.lpszClassName = strptr( appName )
+    end with
      
-     
-     ''
-     '' Register the window class     
-     ''     
-     if ( RegisterClass( wcls ) = false ) then
-        MessageBox null, "Failed to register the window class", szAppName, MB_ICONERROR               
-        exit function
+    ''
+    '' Register the window class     
+    ''     
+    if ( RegisterClass( @wcls ) = false ) then
+       MessageBox( null, "Failed to register the window class", appName, MB_ICONERROR )
+       exit function
     end if
-    
-    
 
     ''
     '' Create the window and show it
     ''
     hWnd = CreateWindowEx( 0, _
-    			 szAppName, _
-                         "Menu test", _
-                          WS_OVERLAPPEDWINDOW, _
-                          CW_USEDEFAULT, _
-                          CW_USEDEFAULT, _
-                          CW_USEDEFAULT, _
-                          CW_USEDEFAULT, _
-                          null, _
-                          null, _
-                          hInstance, _
-                          null )
+    			 		   appName, _
+                           "Menu test", _
+                           WS_OVERLAPPEDWINDOW, _
+                           CW_USEDEFAULT, _
+                           CW_USEDEFAULT, _
+                           CW_USEDEFAULT, _
+                           CW_USEDEFAULT, _
+                           null, _
+                           null, _
+                           hInstance, _
+                           null )
                           
 
-    ShowWindow   hWnd, iCmdShow
-    UpdateWindow hWnd
-     
+    ShowWindow( hWnd, iCmdShow )
+    UpdateWindow( hWnd )
 
     ''
     '' Process windows messages
     ''
-    while ( GetMessage( wMsg, null, 0, 0 ) <> false )    
-        TranslateMessage wMsg
-        DispatchMessage  wMsg
+    while( GetMessage( @wMsg, null, 0, 0 ) <> false )    
+        TranslateMessage( @wMsg )
+        DispatchMessage( @wMsg )
     wend
-    
     
     ''
     '' Program has ended
     ''
-    WinMain = wMsg.wParam
+    function = wMsg.wParam
 
 end function
 
 '':::::
-sub menu_insert( byval hmenu as integer, byval submenu as integer, title as string, byval flags as integer = 0 )
+sub menu_insert( byval hmenu as HMENU, byval submenu as integer, title as string, byval flags as integer = 0 )
     
     with submenuTB(submenu)
     
-    	.hnd 	= CreatePopupMenu 
+    	.hnd 	= CreatePopupMenu( )
     
-    	InsertMenu hmenu, submenu, MF_BYPOSITION Or MF_POPUP Or MF_STRING or flags, .hnd, ByVal title
+    	InsertMenu( hmenu, submenu, MF_BYPOSITION Or MF_POPUP Or MF_STRING or flags, .hnd, title )
     	
     end with
     
@@ -280,7 +269,7 @@ sub menu_append( byval submenu as integer, byval id as integer, title as string,
     	.id = id
     	.title = title
     	
-    	AppendMenu submenuTB(submenu).hnd, MF_STRING or flags, id, Byval title
+    	AppendMenu( submenuTB(submenu).hnd, MF_STRING or flags, id, title )
     	
     end with
    
@@ -289,50 +278,50 @@ end sub
 '':::::
 sub menu_separator( byval submenu as integer )
 
-    AppendMenu submenuTB(submenu).hnd, MF_SEPARATOR, 0, Byval NULL
+    AppendMenu( submenuTB(submenu).hnd, MF_SEPARATOR, 0, NULL )
    
 end sub
 
 '':::::
-sub init_menus( byval hWnd as integer )
-	dim menu as integer
+sub init_menus( byval hWnd as HWND )
+	dim menu as HMENU
  	
- 	menu = CreateMenu 
+ 	menu = CreateMenu( )
  	
  	'' File
- 	menu_insert menu, 0, "&File"
+ 	menu_insert( menu, 0, "&File" )
     
-    menu_append 0, MENUID_FILE_NEW, "&New"
-    menu_append 0, MENUID_FILE_OPEN, "&Open..." 
+    menu_append( 0, MENUID_FILE_NEW, "&New" )
+    menu_append( 0, MENUID_FILE_OPEN, "&Open..." )
 
-	menu_insert submenuTB(0).hnd, 3, "&Project"
-    menu_append 3, MENUID_PROJECT_NEW, "&New" 
-	menu_append 3, MENUID_PROJECT_OPEN, "&Open..." 
+	menu_insert( submenuTB(0).hnd, 3, "&Project" )
+    menu_append( 3, MENUID_PROJECT_NEW, "&New" )
+	menu_append( 3, MENUID_PROJECT_OPEN, "&Open..." )
     
-    menu_append 0, MENUID_FILE_CLOSE, "&Close" 
-    menu_separator 0
-    menu_append 0, MENUID_FILE_EXIT, "&Exit"
+    menu_append( 0, MENUID_FILE_CLOSE, "&Close" )
+    menu_separator( 0 )
+    menu_append( 0, MENUID_FILE_EXIT, "&Exit" )
     
 	'' Edit
- 	menu_insert menu, 1, "&Edit"
+ 	menu_insert( menu, 1, "&Edit" )
  	
-    menu_append 1, MENUID_EDIT_UNDO, "&Undo" 
-    menu_append 1, MENUID_EDIT_REDO, "&Redo" 
-    menu_separator 1
-    menu_append 1, MENUID_EDIT_CUT, "&Cut" 
-    menu_append 1, MENUID_EDIT_COPY, "C&opy" 
+    menu_append( 1, MENUID_EDIT_UNDO, "&Undo" )
+    menu_append( 1, MENUID_EDIT_REDO, "&Redo" )
+    menu_separator( 1 )
+    menu_append( 1, MENUID_EDIT_CUT, "&Cut" )
+    menu_append( 1, MENUID_EDIT_COPY, "C&opy" )
 
  	'' Search
- 	menu_insert menu, 2, "&Search"
+ 	menu_insert( menu, 2, "&Search" )
 
-    menu_append 2, MENUID_SEARCH_FIND, "&Find"
-    menu_append 2, MENUID_SEARCH_FINDNEXT, "Find &Next"
-    menu_append 2, MENUID_SEARCH_FINDPREV, "Find &Prev"
-    menu_append 2, MENUID_SEARCH_REPLACE, "&Replace", MF_MENUBARBREAK
+    menu_append( 2, MENUID_SEARCH_FIND, "&Find" )
+    menu_append( 2, MENUID_SEARCH_FINDNEXT, "Find &Next" )
+    menu_append( 2, MENUID_SEARCH_FINDPREV, "Find &Prev" )
+    menu_append( 2, MENUID_SEARCH_REPLACE, "&Replace", MF_MENUBARBREAK )
 
     ''
-    SetMenu hWnd, menu 
+    SetMenu( hWnd, menu )
     
-    DrawMenuBar hWnd
+    DrawMenuBar( hWnd )
     
 end sub

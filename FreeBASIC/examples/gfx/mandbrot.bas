@@ -1,11 +1,14 @@
 defdbl a-z
-'$include: 'win\kernel32.bi'
-'$include: 'win\user32.bi'
-'$include: 'tinyptc.bi'
 
-const SCR_WIDTH% 	= 320*1
-const SCR_HEIGHT% 	= 240*1
-const SCR_SIZE% 	= SCR_WIDTH*SCR_HEIGHT
+#ifdef __FB_WIN32__
+#include once "windows.bi"
+#endif
+
+#include once "tinyptc.bi"
+
+const SCR_WIDTH 	= 320*1
+const SCR_HEIGHT 	= 240*1
+const SCR_SIZE	 	= SCR_WIDTH*SCR_HEIGHT
 
 const _MAX 			= 128\2
 const SX 			= -2.025 	' start value real
@@ -32,8 +35,10 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
    	yend = EY
 
    	dim starttime as uinteger, tottime as uinteger
-   	dim hwnd as long
+#ifdef __FB_WIN32__
+   	dim hwnd as HWND
    	hwnd = GetActiveWindow( )
+#endif
    	
    	dim sectimer as uinteger
    	dim frames as integer
@@ -74,14 +79,17 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
       
       	ptc_update( @buffer(0) )
       	
+#ifdef __FB_WIN32__
       	if( GetTickCount( ) - sectimer >= 1000 ) then
 
-      		SetWindowText( hwnd, str$( (SCR_WIDTH * SCR_HEIGHT * frames) \ tottime )  + " kpixels p/ sec " )
+      		SetWindowText( hwnd, (SCR_WIDTH * SCR_HEIGHT * frames) \ tottime & " kpixels p/ sec " )
 
       		sectimer = GetTickCount( )
       		frames = 0
 			tottime = 0      		
     	end if
+#endif
+
     	
 	loop until( inkey$ = chr$( 27 ) )
 
@@ -199,7 +207,7 @@ private function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
       blue  = red - (brightness - green) * domainOffset * 6.0
    ENd select
    
-   function = rgb( red*255.0, green*255.0, blue*255.0 )
+   function = rgb( blue*255.0, green*255.0, red*255.0 )
 
 end function
 

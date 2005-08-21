@@ -1,21 +1,23 @@
-; from DirectX 6.1
 LIBRARY DDRAW.dll
 EXPORTS
 D3DParseUnknownCommand@8
 DDHAL32_VidMemAlloc@16
 DDHAL32_VidMemFree@12
+DDGetAttachedSurfaceLcl@12
 DDInternalLock@8
 DDInternalUnlock@4
 DSoundHelp@12
 DirectDrawCreate@12
 DirectDrawCreateClipper@12
+DirectDrawCreateEx@16
 DirectDrawEnumerateA@8
 DirectDrawEnumerateExA@12
 DirectDrawEnumerateExW@12
 DirectDrawEnumerateW@8
+GetDDSurfaceLocal@12
+GetSurfaceFromDC@12
 GetAliasedVidMem
 GetNextMipMap
-GetSurfaceFromDC@12 
 HeapVidMemAllocAligned@20 
 InternalLock 
 InternalUnlock 

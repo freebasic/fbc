@@ -6,12 +6,10 @@
 '' 
 option explicit 
 
-#INCLUDE ONCE "win/kernel32.bi" 
-#INCLUDE ONCE "win/user32.bi" 
-
+#include once "windows.bi" 
 #include "dialog.bi"
 
-declare function DlgProc ( byval hWnd as long, byval uMsg as long, byval wParam as long, byval lParam as long ) as integer 
+declare function DlgProc (byval hwnd as HWND, byval umsg as UINT, byval wparam as WPARAM, byval lparam as LPARAM) as BOOL
                                 
 
 ''' 
@@ -21,13 +19,12 @@ declare function DlgProc ( byval hWnd as long, byval uMsg as long, byval wParam 
     '' 
     '' Create the Dialog 
     '' 
-    DialogBoxParam(GetModuleHandle (NULL), byval IDD_DLG1, NULL, @DlgProc, NULL) 
+    DialogBoxParam( GetModuleHandle( NULL ), cptr( LPCSTR, IDD_DLG1 ), NULL, @DlgProc, NULL ) 
     
     
     '' 
     '' Program has ended 
     '' 
-    ExitProcess (0) 
     end 
 
 ''' 
@@ -36,7 +33,7 @@ declare function DlgProc ( byval hWnd as long, byval uMsg as long, byval wParam 
 
                                   
 
-function DlgProc ( byval hDlg as long, byval uMsg as long, byval wParam as long, byval lParam as long ) as integer 
+function DlgProc (byval hwnd as HWND, byval umsg as UINT, byval wparam as WPARAM, byval lparam as LPARAM) as BOOL
     dim as long id, event
     
     '' 
@@ -49,7 +46,7 @@ function DlgProc ( byval hDlg as long, byval uMsg as long, byval wParam as long,
     '' Window was closed 
     '' 
     case WM_CLOSE
-        EndDialog( hDlg, 0 ) 
+    	EndDialog( hwnd, 0 ) 
 
     case WM_COMMAND
 		id    = loword( wParam )
@@ -57,13 +54,13 @@ function DlgProc ( byval hDlg as long, byval uMsg as long, byval wParam as long,
 
         select case id
         case IDC_BTN1
-        	EndDialog( hDlg, 0 )
+        	EndDialog( hwnd, 0 )
     	end select
         
     case else
-    	return 0 
+    	return FALSE
     
     end select
     
-   return 1 
+   return TRUE
 end function 

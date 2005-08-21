@@ -345,8 +345,8 @@ type _GR_colorInfo_ctable
 	r as ubyte
 	g as ubyte
 	b as ubyte
-	defined as uinteger
-	writable as uinteger
+	defined:1 as uinteger
+	writable:1 as uinteger
 	nused as uinteger
 end type
 

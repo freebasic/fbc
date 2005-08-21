@@ -4,35 +4,36 @@
 
 option explicit
 
-#include once "win\kernel32.bi"
-#include once "win\user32.bi"
-#include once "win\gdi32.bi"
+#include once "windows.bi"
 
-declare function        WinMain     ( byval hInstance as long, _
-                                      byval hPrevInstance as long, _
-                                      szCmdLine as string, _
-                                      byval iCmdShow as integer ) as integer
+declare function WinMain     ( byval hInstance as HINSTANCE, _
+                               byval hPrevInstance as HINSTANCE, _
+                               szCmdLine as string, _
+                               byval iCmdShow as integer ) as integer
 
 
 extern fblogo_data(0 to 3126-1) as ubyte
 
 	end WinMain( GetModuleHandle( NULL ), NULL, command$, SW_NORMAL )
-    
+
+#define SCALE_MULT 256
+#define SCALE_CALC(x,s) (((x) * (s)) \ SCALE_MULT)
 
 ''::::
 ''
 ''
-function WndProc ( byval hWnd as long, _
-                   byval message as long, _
-                   byval wParam as long, _
-                   byval lParam as long ) as integer
+function WndProc ( byval hWnd as HWND, _
+                   byval message as UINT, _
+                   byval wParam as WPARAM, _
+                   byval lParam as LPARAM ) as LRESULT
 
-    dim pnt as PAINTSTRUCT
-    dim hDC as long
+    dim as PAINTSTRUCT pnt 
+    dim as HDC hDC 
+    dim as RECT rct
   	
   	static logoinfo as BITMAPINFO ptr
-    static logodib as long
-    static x as integer = 0, y as integer = 0
+    static logodib as HBITMAP
+    static as integer x = 0, y = 0, scale = SCALE_MULT
     
     select case ( message )
        
@@ -47,10 +48,10 @@ function WndProc ( byval hWnd as long, _
 
   		'' create a DIB
   		logodib = CreateDIBitmap( GetDC( hWnd ), _
-  								  byval @logoinfo->bmiHeader, _
+  								  @logoinfo->bmiHeader, _
   								  CBM_INIT, _
-  								  byval cptr(byte ptr, logo) + logo->bfOffBits, _
-  								  byval logoinfo, _
+  								  cptr(byte ptr, logo) + logo->bfOffBits, _
+  								  logoinfo, _
   								  DIB_RGB_COLORS ) 
   	
         return 0
@@ -58,24 +59,34 @@ function WndProc ( byval hWnd as long, _
 	''
 	case WM_PAINT
           
-    	hDC = BeginPaint( hWnd, pnt )
+    	hDC = BeginPaint( hWnd, @pnt )
             
         '' load DIB into a compatible DC
-        dim memDC as long
+        dim memDC as HDC
         memDC = CreateCompatibleDC( hDC )
             
-        dim oldobj as long
+        dim oldobj as HGDIOBJ
         oldobj = SelectObject( memDC, logodib )
             
         '' blit the compatible DC to this window
-        BitBlt( hDC, x, y, logoinfo->bmiHeader.biWidth, logoinfo->bmiHeader.biHeight, _
-           		memDC, 0, 0, SRCCOPY )
+        if( scale = SCALE_MULT ) then
+        	BitBlt( hDC, _
+        			x, y, logoinfo->bmiHeader.biWidth, logoinfo->bmiHeader.biHeight, _
+           			memDC, 0, 0, _
+           			SRCCOPY )
+		
+		else
+        	StretchBlt( hDC, _
+        				x, y, SCALE_CALC( logoinfo->bmiHeader.biWidth, scale ), SCALE_CALC( logoinfo->bmiHeader.biHeight, scale ), _
+           				memDC, 0, 0, logoinfo->bmiHeader.biWidth, logoinfo->bmiHeader.biHeight, _
+           				SRCCOPY )
+		end if
             
         '' restore
         SelectObject( memDC, oldobj )
         DeleteDC( memDC )
             
-        EndPaint( hWnd, pnt )
+        EndPaint( hWnd, @pnt )
             
         return 0
         
@@ -86,7 +97,7 @@ function WndProc ( byval hWnd as long, _
 		
 		select case lobyte( wParam )
 		case VK_ESCAPE
-			PostMessage hWnd, WM_CLOSE, 0, 0
+			PostMessage( hWnd, WM_CLOSE, 0, 0 )
 			return 0
 		
 		case VK_UP
@@ -101,17 +112,30 @@ function WndProc ( byval hWnd as long, _
 		case VK_RIGHT
 			x += 8
 			doupdate = TRUE
+		case VK_ADD
+			scale += 8
+			doupdate = TRUE
+		case VK_SUBTRACT
+			scale -= 8
+			doupdate = TRUE
 		end select
 			
 		if( doupdate ) then
-			InvalidateRect( hwnd, byval NULL, TRUE )
+			with rct
+				.left 	= x - 8
+				.top 	= y - 8
+				.right  = .left + SCALE_CALC( logoinfo->bmiHeader.biWidth, scale ) + 8 + 8
+				.bottom = .top + SCALE_CALC( logoinfo->bmiHeader.biHeight, scale ) + 8 + 8
+			end with
+
+			InvalidateRect( hwnd, @rct, TRUE )
 			return 0
 		end if
         
 	''
 	case WM_DESTROY
     	
-    	PostQuitMessage 0            
+    	PostQuitMessage( 0 )
     	return 0
     
     end select
@@ -124,57 +148,51 @@ end function
 ''::::
 ''
 ''
-function WinMain ( byval hInstance as long, _
-                   byval hPrevInstance as long, _
+function WinMain ( byval hInstance as HINSTANCE, _
+                   byval hPrevInstance as HINSTANCE, _
                    szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
      
-     dim wMsg as MSG
-     dim wcls as WNDCLASS     
-     dim szAppName as string
-     dim hWnd as unsigned long
+    dim wMsg as MSG
+    dim wcls as WNDCLASS     
+    dim szAppName as string
+    dim hWnd as HWND
 
+    function = 0
      
-     WinMain = 0
+    szAppName = "BitmapTest"
      
-     szAppName = "BitmapTest"
-     
-     with wcls
-     	.style         = CS_HREDRAW or CS_VREDRAW
+	with wcls
+    	.style         = CS_HREDRAW or CS_VREDRAW
      	.lpfnWndProc   = @WndProc
      	.cbClsExtra    = 0
      	.cbWndExtra    = 0
      	.hInstance     = hInstance
-     	.hIcon         = LoadIcon( null, byval IDI_APPLICATION )
-     	.hCursor       = LoadCursor( null, byval IDC_ARROW )
-     	.hbrBackground = GetStockObject( byval WHITE_BRUSH )
+     	.hIcon         = LoadIcon( null, IDI_APPLICATION )
+     	.hCursor       = LoadCursor( null, IDC_ARROW )
+     	.hbrBackground = GetStockObject( WHITE_BRUSH )
      	.lpszMenuName  = null
      	.lpszClassName = strptr( szAppName )
-     end with
+    end with
      
-     
-    if ( RegisterClass( wcls ) = false ) then
+    if( RegisterClass( @wcls ) = false ) then
         exit function
     end if
-    
-    
 
     hWnd = CreateWindowEx( 0, szAppName, "Bitmap Test", WS_OVERLAPPEDWINDOW, _
-                          CW_USEDEFAULT, CW_USEDEFAULT, 320, 200, _
-                          null, null, hInstance, null )
+                           CW_USEDEFAULT, CW_USEDEFAULT, 320, 200, _
+                           null, null, hInstance, null )
                           
 
-    ShowWindow   hWnd, iCmdShow
-    UpdateWindow hWnd
+    ShowWindow( hWnd, iCmdShow )
+    UpdateWindow( hWnd )
      
-
-    while ( GetMessage( wMsg, null, 0, 0 ) <> false )    
-        TranslateMessage wMsg
-        DispatchMessage  wMsg
+    while ( GetMessage( @wMsg, null, 0, 0 ) <> false )    
+        TranslateMessage( @wMsg )
+        DispatchMessage( @wMsg )
     wend
     
-    
-    WinMain = wMsg.wParam
+    function = wMsg.wParam
 
 end function
 

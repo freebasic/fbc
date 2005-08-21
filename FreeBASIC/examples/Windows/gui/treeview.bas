@@ -6,142 +6,142 @@
 option explicit 
 option private 
 
-'$include once:'win\kernel32.bi' 
-'$include once:'win\user32.bi' 
-'$include once:'win\commctrl32.bi' 
-'$include once:'win\shellapi.bi'
+#include once "windows.bi"
+#include once "win/commctrl.bi"
+#include once "win/shellapi.bi"
 
-	dim shared hInstance as long 
+	dim shared hInstance as HINSTANCE
 	dim shared rc as RECT 
-	dim shared htv as long 
-	dim shared si1 as integer 
-	dim shared six as integer 
-	dim shared siy  as integer 
-	dim shared iclr as integer 
+	dim shared htv as HWND
+	dim shared ilist as HIMAGELIST
 	dim shared iccx as INITCOMMONCONTROLSEX 
 
     hInstance = GetModuleHandle( null ) 
-    six  = GetSystemMetrics(SM_CXSMICON) 
-    siy  = GetSystemMetrics(SM_CYSMICON) 
-    iclr = ILC_COLOR8 or ILC_MASK 
-    si1  = ImageList_Create(six,siy,iclr,1,1) 
     
-    iccx.dwSize = len(INITCOMMONCONTROLSEX) 
+    ilist  = ImageList_Create( GetSystemMetrics(SM_CXSMICON), _
+    						   GetSystemMetrics(SM_CYSMICON), _
+    						   ILC_COLOR8 or ILC_MASK, _
+    						   1, _
+    						   1 ) 
+    
+    iccx.dwSize = len( INITCOMMONCONTROLSEX ) 
     iccx.dwICC  = ICC_TREEVIEW_CLASSES or ICC_WIN95_CLASSES 
 
-    InitCommonControlsEx(iccx) 
+    InitCommonControlsEx( @iccx ) 
 
 
 '' 
 '' Window Procedure Handler 
 '' 
-function WndProc (byval hwnd as long, byval uMsg as long, byval wParam as long, byval lParam as long)  as integer 
+function WndProc ( byval hWnd as HWND, _ 
+                   byval uMsg as UINT, _ 
+                   byval wParam as WPARAM, _ 
+                   byval lParam as LPARAM ) as integer 
 
-	WndProc = 0 
+	function = 0 
 
   	select case ( uMsg ) 
 	case WM_CREATE 
 
        	dim tvis as TVINSERTSTRUCT 
 
-        dim i     as long,_ 
-            hico  as long,_ 
-            hPrev as long,_ 
+        dim i     as long, _ 
+            hico  as HICON, _ 
+            hPrev as HTREEITEM, _ 
             tlib  as long 
 
-        dim ico$, text$ 
+        dim as string ico, text
 
+        GetClientRect( hWnd, @rc )
 
-        GetClientRect hWnd, rc 
-
-        htv = CreateWindowEx( WS_EX_CLIENTEDGE,WC_TREEVIEW, "",_ 
+        htv = CreateWindowEx( WS_EX_CLIENTEDGE, WC_TREEVIEW, "",_ 
                               WS_CHILD or WS_VISIBLE or TVS_HASLINES _ 
                   			  or TVS_LINESATROOT or TVS_HASBUTTONS,_ 
-                  			  0,18,160,rc.nbottom-20,_ 
-                  			  hWnd,0,hInstance,0) 
+                  			  0, 18, 160, rc.bottom-20,_ 
+                  			  hWnd, 0, hInstance, 0 ) 
 
-        SendMessage(htv,TVM_SETBKCOLOR,0,&hfff0e1) 
+        SendMessage( htv, TVM_SETBKCOLOR, 0, &hfff0e1 ) 
 
-        for i=3 to 5 
-            ico$ = STR$(i) 
-            hico = ExtractIcon(0,"Shell32.DLL",i) 
-            ImageList_ReplaceIcon(si1,-1,hico) 
-            DestroyIcon(hico) 
+        for i = 3 to 5 
+            ico = STR( i ) 
+            hico = ExtractIcon( 0, "Shell32.DLL", i ) 
+            ImageList_ReplaceIcon( ilist, -1, hico ) 
+            DestroyIcon( hico ) 
         next i 
 
-        SendMessage(htv,TVM_SETIMAGELIST,TVSIL_NORMAL,byval si1) 
+        SendMessage( htv, TVM_SETIMAGELIST, TVSIL_NORMAL, ilist ) 
   
         clear tvis, 0, len(tvis)
         tvis.Item.Mask = TVIF_TEXT or TVIF_IMAGE or TVIF_SELECTEDIMAGE 
 
         '-- Root: tv.additem -> tv.item(0) 
-        text$                   = "FreeBasic" 
-        tvis.Item.Text          = strptr(text$) 
-        tvis.Item.textmax       = len(text$) 
-        tvis.Item.Image         = 0 
-        tvis.Item.SelectedImage = 1 
-        tvis.InsertAfter        = 0 
-        tvis.parent             = TVI_ROOT 
-        hPrev                   = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        text                    	= "FreeBasic" 
+        tvis.item.pszText          	= strptr(text) 
+        tvis.item.cchTextMax       	= len(text) 
+        tvis.item.iImage         	= 0 
+        tvis.item.iSelectedImage 	= 1 
+        tvis.hInsertAfter        	= 0 
+        tvis.hParent             	= TVI_ROOT 
+        hPrev                   	= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis) )
 
-          '-- tv.additem -> tv.item(1) | tv.children=0 
-          text$            = "Inc" 
-          tvis.Item.Text   = strptr(text$) 
-          tvis.Item.textmax= len(text$) 
-          tvis.parent      = hPrev 
-          hPrev            = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        '-- tv.additem -> tv.item(1) | tv.children=0 
+        text            	  		= "Inc" 
+        tvis.item.pszText   		= strptr(text) 
+        tvis.item.cchTextMax		= len(text) 
+        tvis.hParent        		= hPrev 
+        hPrev            	  		= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
 
-            '-- tv.additem -> tv.item(2) | tv.children=1 
-            text$            = "Win" 
-            tvis.Item.Text   = strptr(text$) 
-            tvis.Item.textmax= len(text$) 
-            tvis.parent      = hPrev 
-            hPrev            = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        '-- tv.additem -> tv.item(2) | tv.children=1 
+        text            			= "Win" 
+        tvis.item.pszText   		= strptr(text) 
+        tvis.item.cchTextMax		= len(text) 
+        tvis.hParent      			= hPrev 
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
 
-              '-- tv.additem -> tv.item(3) | tv.children=2 
-              text$            = "Gui" 
-              tvis.Item.Text   = strptr(text$) 
-              tvis.Item.textmax= len(text$) 
-              tvis.parent      = hPrev 
-              hPrev            = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        '-- tv.additem -> tv.item(3) | tv.children=2 
+        text            = "Gui" 
+        tvis.item.pszText   		= strptr(text) 
+        tvis.item.cchTextMax		= len(text) 
+        tvis.hParent      			= hPrev 
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
 
         '-- tv.additem -> tv.item(4) | tv.children=0 
-        text$            = "Assembler" 
-        tvis.Item.Text   = strptr(text$) 
-        tvis.Item.textmax= len(text$) 
-        tvis.parent      = TVI_ROOT 
-        hPrev            = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        text            			= "Assembler" 
+        tvis.item.pszText   		= strptr(text) 
+        tvis.item.cchTextMax		= len(text) 
+        tvis.hParent      			= TVI_ROOT 
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
 
         '-- tv.additem -> tv.item(5) | tv.children=0 
-        text$            = "Tutorials" 
-        tvis.Item.Text   = strptr(text$) 
-        tvis.Item.textmax= len(text$) 
-        hPrev            = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        text            			= "Tutorials" 
+        tvis.item.pszText   		= strptr(text) 
+        tvis.item.cchTextMax		= len(text) 
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
 
         '-- tv.additem -> tv.item(6) | tv.children=0 
-        text$            = "Object Oriented" 
-        tvis.Item.Text   = strptr(text$) 
-        tvis.Item.textmax= len(text$) 
-        hPrev            = SendMessage(htv,TVM_INSERTITEM,0,tvis) 
+        text            			= "Object Oriented" 
+        tvis.item.pszText   		= strptr(text) 
+        tvis.item.cchTextMax		= len(text) 
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
       
 	case WM_SIZE 
-        GetClientRect hWnd, rc 
+        GetClientRect( hWnd, @rc )
         if ( htv <> 0 ) then 
-        	MoveWindow(htv,0,18,160,rc.nBottom-rc.nTop-20,1) 
+        	MoveWindow( htv, 0, 18, 160, rc.bottom - rc.top - 20, 1 ) 
         end if
       
 	case WM_KEYDOWN 
 		if( lobyte( wParam ) = 27 ) then 
-          PostMessage hWnd, WM_CLOSE, 0, 0 
+          PostMessage( hWnd, WM_CLOSE, 0, 0 )
         end if 
       
 	case WM_DESTROY 
-        ImageList_Destroy(si1) 
-        PostQuitMessage 0 
+        ImageList_Destroy( ilist ) 
+        PostQuitMessage( 0 )
         exit function 
 	end select 
     
-  	WndProc = DefWindowProc( hWnd, uMsg, wParam, lParam )    
+  	function = DefWindowProc( hWnd, uMsg, wParam, lParam )    
 
 end function 
 
@@ -151,10 +151,10 @@ end function
   	'' 
   	dim wMsg as MSG 
   	dim wcls as WNDCLASS      
-  	dim hWnd as unsigned long 
+  	dim hWnd as HWND
         
-  	dim szAppName as string 
-  	szAppName = "WinTreeView" 
+  	dim appName as string 
+  	appName = "WinTreeView" 
     
     with wcls 
 		.style         = CS_HREDRAW or CS_VREDRAW 
@@ -162,19 +162,19 @@ end function
         .cbClsExtra    = 0 
         .cbWndExtra    = 0 
         .hInstance     = hInstance 
-        .hIcon         = LoadIcon( null, byval IDI_APPLICATION ) 
-        .hCursor       = LoadCursor( null, byval IDC_ARROW ) 
-        .hbrBackground = 16  ' btnface color 
+        .hIcon         = LoadIcon( null, IDI_APPLICATION ) 
+        .hCursor       = LoadCursor( null, IDC_ARROW ) 
+        .hbrBackground = cptr( HGDIOBJ, 16 ) ' btnface color 
         .lpszMenuName  = null 
-        .lpszClassName = strptr( szAppName ) 
+        .lpszClassName = strptr( appName ) 
     end with 
       
-	if ( RegisterClass( wcls ) = false ) then 
-		MessageBox null, "Failed to register wcls!",  szAppName, MB_ICONERROR 
+	if ( RegisterClass( @wcls ) = false ) then 
+		MessageBox( null, "Failed to register wcls!",  appName, MB_ICONERROR )
 		end 1 
 	end if 
     
-    hWnd = CreateWindowEx( 0, szAppName, "Treeview Demo", _ 
+    hWnd = CreateWindowEx( 0, appName, "Treeview Demo", _ 
                  		   WS_OVERLAPPEDWINDOW or WS_VISIBLE, _ 
                  		   100, 100, 420, 240, _ 
                  		   null, null, hInstance, null ) 
@@ -182,9 +182,9 @@ end function
 	'' 
     '' messages loop 
     '' 
-	do until( GetMessage( wMsg, null, 0, 0 ) = FALSE ) 
-		TranslateMessage wMsg 
-        DispatchMessage  wMsg 
+	do until( GetMessage( @wMsg, null, 0, 0 ) = FALSE ) 
+		TranslateMessage( @wMsg )
+        DispatchMessage( @wMsg )
 	loop 
         
     end

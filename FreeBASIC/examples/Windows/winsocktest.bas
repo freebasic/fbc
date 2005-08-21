@@ -4,7 +4,8 @@
 
 option explicit
 option escape
-'$include: "win/winsock.bi"
+
+#include once "win/winsock.bi"
 
 const RECVBUFFLEN = 8192
 const NEWLINE = "\r\n"
@@ -59,7 +60,7 @@ declare function resolveHost	( hostname as string ) as integer
 	sa.sin_family		= AF_INET
 	sa.sin_addr.S_addr	= ip
 	
-	if ( connect( s, @sa, len( sa )) = SOCKET_ERROR ) then
+	if ( connect( s, cptr( PSOCKADDR, @sa ), len( sa )) = SOCKET_ERROR ) then
 		print "Error:"; WSAGetLastError; " Calling: connect()"
 		closesocket( s )
 		end 1
@@ -74,7 +75,7 @@ declare function resolveHost	( hostname as string ) as integer
 				 "User-Agent: GetHTTP 0.0" + NEWLINE + _
 				 NEWLINE
 				 
-    if( send( s, strptr( sendBuffer ), len( sendBuffer ), 0 ) = SOCKET_ERROR ) then
+    if( send( s, sendBuffer, len( sendBuffer ), 0 ) = SOCKET_ERROR ) then
 		print "Error:"; WSAGetLastError; " Calling: send()"
 		closesocket( s )
 		end 1
@@ -85,7 +86,7 @@ declare function resolveHost	( hostname as string ) as integer
     dim bytes as integer
     
     do 
-    	bytes = recv( s, strptr( recvBuffer ), RECVBUFFLEN, 0 )
+    	bytes = recv( s, recvBuffer, RECVBUFFLEN, 0 )
     	if( bytes <= 0 ) then
     		exit do
     	end if
@@ -111,11 +112,11 @@ sub gethostandpath( src as string, hostname as string, path as string )
 	
 	p = instr( src, " " )
 	if( p = 0 or p = len( src ) ) then
-		hostname = trim$( src )
+		hostname = trim( src )
 		path = ""
 	else
-		hostname = trim$( left$( src, p-1 ) )
-		path = trim$( mid$( src, p+1 ) )
+		hostname = trim( left( src, p-1 ) )
+		path = trim( mid( src, p+1 ) )
 	end if
 		
 end sub
@@ -135,7 +136,7 @@ function resolveHost( hostname as string ) as integer
 			exit function
 		end if
 		
-		function = **hostentry->h_addr_list
+		function = *cptr( integer ptr, *hostentry->h_addr_list )
 		
 	else
 	

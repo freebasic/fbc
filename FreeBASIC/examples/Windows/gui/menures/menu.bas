@@ -4,20 +4,16 @@
 '' compile as: fbc menu.bas menures.rc -s gui
 ''
 
-defint a-z
 option explicit
 option private
 
-'$include once: 'win\kernel32.bi'
-'$include once: 'win\user32.bi'
-'$include once: 'win\gdi32.bi'
-
-'$include: "menures.bi"
+#include once "windows.bi"
+#include "menures.bi"
 
 declare sub 			init_menus	( )
 
-declare function        WinMain     ( byval hInstance as long, _
-                                      byval hPrevInstance as long, _
+declare function        WinMain     ( byval hInstance as HINSTANCE, _
+                                      byval hPrevInstance as HINSTANCE, _
                                       szCmdLine as string, _
                                       byval iCmdShow as integer ) as integer
 
@@ -41,20 +37,20 @@ declare function        WinMain     ( byval hInstance as long, _
 '' desc: Processes windows messages
 ''
 '' ::::::::
-defint a-z
-function WndProc ( byval hWnd as long, _
-                   byval message as long, _
-                   byval wParam as long, _
-                   byval lParam as long ) as integer
+function WndProc ( byval hWnd as HWND, _
+                   byval message as UINT, _
+                   byval wParam as WPARAM, _
+                   byval lParam as LPARAM ) as LRESULT
+    
     dim rct as RECT
     dim pnt as PAINTSTRUCT
-    dim hDC as long
+    dim hDC as HDC
     
     static lastmenuid as integer
     dim wmId as integer, wmEvent as integer
-    dim menu as integer
+    dim menu as HMENU
     
-    WndProc = 0
+    function = 0
     
     ''
     '' Process message
@@ -65,7 +61,7 @@ function WndProc ( byval hWnd as long, _
         ''
         ''        
         case WM_CREATE            
-            init_menus
+            init_menus( )
             exit function
         
     	''
@@ -83,7 +79,7 @@ function WndProc ( byval hWnd as long, _
 			select case wmId
 			'' quit
 			case IDM_FILE_EXIT
-				PostMessage hWnd, WM_CLOSE, 0, 0
+				PostMessage( hWnd, WM_CLOSE, 0, 0 )
 				exit function
 			end select
 			
@@ -91,24 +87,26 @@ function WndProc ( byval hWnd as long, _
 			lastmenuid = wmId
         
 			'' force a repaint so the menu id and title will be drawn
-			dim rc as RECT
-			GetClientRect hWnd, rc		
-			InvalidateRect hWnd, rc, TRUE
+			GetClientRect( hWnd, @rct )
+			InvalidateRect( hWnd, @rct, TRUE )
         
         ''
         '' Windows is being repainted
         ''
         case WM_PAINT
           
-            hDC = BeginPaint( hWnd, pnt )
-            GetClientRect hWnd, rct
+            hDC = BeginPaint( hWnd, @pnt )
+            GetClientRect( hWnd, @rct )
             
             if( lastmenuid <> 0 ) then
-            	DrawText hDC, "Last menu selected: id(" + str$( lastmenuid ) + ") title(" _
-            				  + menutitleTB(lastmenuid-IDM_BASE) + ")", -1, rct, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+            	DrawText( hDC, _
+            			 "Last menu selected: id(" & lastmenuid & ") title(" & menutitleTB(lastmenuid-IDM_BASE) & ")", _
+            			 -1, _
+            			 @rct, _
+            			 DT_SINGLELINE or DT_CENTER or DT_VCENTER )
             end if
             
-            EndPaint hWnd, pnt
+            EndPaint( hWnd, @pnt )
             
             exit function            
         
@@ -117,14 +115,14 @@ function WndProc ( byval hWnd as long, _
 		''
 		case WM_KEYDOWN
 			if( lobyte( wParam ) = 27 ) then
-				PostMessage hWnd, WM_CLOSE, 0, 0
+				PostMessage( hWnd, WM_CLOSE, 0, 0 )
 			end if
 
         ''
         '' Window was closed
         ''
         case WM_DESTROY
-            PostQuitMessage 0            
+            PostQuitMessage( 0 )
             exit function
     end select
     
@@ -132,11 +130,12 @@ function WndProc ( byval hWnd as long, _
     '' Message doesn't concern us, send it to the default handler
     '' and get result
     ''
-    WndProc = DefWindowProc( hWnd, message, wParam, lParam )    
+    function = DefWindowProc( hWnd, message, wParam, lParam )    
     
 end function
 
-sub init_menus()
+
+sub init_menus( )
 	''
 	'' create a table with menu titles 
 	''
@@ -162,54 +161,49 @@ end sub
 '' desc: A win2 gui program entry point
 ''
 '' ::::::::
-defint a-z
-function WinMain ( byval hInstance as long, _
-                   byval hPrevInstance as long, _
+function WinMain ( byval hInstance as HINSTANCE, _
+                   byval hPrevInstance as HINSTANCE, _
                    szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
      
-     dim wMsg as MSG
-     dim wcls as WNDCLASS     
-     dim szAppName as string
-     dim hWnd as unsigned long
-
+    dim wMsg as MSG
+    dim wcls as WNDCLASS     
+    dim appName as string
+    dim hWnd as HWND
+    
+	function = 0
      
-     WinMain = 0
+    ''
+    '' Setup window class
+    ''
+    appName = "MenuResource"
      
-     ''
-     '' Setup window class
-     ''
-     szAppName = "MenuResource"
-     
-     with wcls
+    with wcls
      	.style         = CS_HREDRAW or CS_VREDRAW
      	.lpfnWndProc   = @WndProc
      	.cbClsExtra    = 0
      	.cbWndExtra    = 0
      	.hInstance     = hInstance
-     	.hIcon         = LoadIcon( null, byval IDI_APPLICATION )
-     	.hCursor       = LoadCursor( null, byval IDC_ARROW )
-     	.hbrBackground = GetStockObject( byval WHITE_BRUSH )
+     	.hIcon         = LoadIcon( null, IDI_APPLICATION )
+     	.hCursor       = LoadCursor( null, IDC_ARROW )
+     	.hbrBackground = GetStockObject( WHITE_BRUSH )
      	.lpszMenuName  = cptr(zstring ptr, IDC_MAINMENU)
-     	.lpszClassName = strptr( szAppName )
-     end with
+     	.lpszClassName = strptr( appName )
+    end with
      
-     
-     ''
-     '' Register the window class     
-     ''     
-     if ( RegisterClass( wcls ) = false ) then
-        MessageBox null, "Could not register the window class", szAppName, MB_ICONERROR               
-        exit function
+    ''
+    '' Register the window class     
+    ''     
+    if ( RegisterClass( @wcls ) = false ) then
+		MessageBox( null, "Could not register the window class", appName, MB_ICONERROR )
+       	exit function
     end if
     
-    
-
     ''
     '' Create the window and show it
     ''
     hWnd = CreateWindowEx( 0, _
-    			 		   szAppName, _
+    			 		   appName, _
                            "Menu Resource Test", _
                            WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN, _
                            CW_USEDEFAULT, _
@@ -222,29 +216,27 @@ function WinMain ( byval hInstance as long, _
                            null )
                           
 
-    ShowWindow   hWnd, iCmdShow
-    UpdateWindow hWnd
+    ShowWindow( hWnd, iCmdShow )
+    UpdateWindow( hWnd )
      
-
-	dim hAccelTable as long
+	dim hAccelTable as HACCEL
 	
-	hAccelTable = LoadAccelerators(hInstance, byval IDC_MAINMENU)
+	hAccelTable = LoadAccelerators( hInstance, cptr( LPCSTR, IDC_MAINMENU ) )
 
     ''
     '' Process windows messages
     ''
-    while ( GetMessage( wMsg, null, 0, 0 ) <> false )    
-		if( TranslateAccelerator( wMsg.hwnd, hAccelTable, wMsg ) = 0 ) then
-        	TranslateMessage wMsg
-        	DispatchMessage  wMsg
+    while ( GetMessage( @wMsg, null, 0, 0 ) <> FALSE )    
+		if( TranslateAccelerator( wMsg.hwnd, hAccelTable, @wMsg ) = 0 ) then
+        	TranslateMessage( @wMsg )
+        	DispatchMessage( @wMsg )
         end if
     wend
-    
     
     ''
     '' Program has ended
     ''
-    WinMain = wMsg.wParam
+    function = wMsg.wParam
 
 end function
 

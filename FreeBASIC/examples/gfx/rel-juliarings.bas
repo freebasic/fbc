@@ -5,14 +5,13 @@
 ' Rel.BetterWebber.com
 '
 
-defint a - z
-'$include: 'TinyPTC.bi'
+option explicit
+
 #ifdef __FB_WIN32__
-'$include: 'win\user32.bi'
+#include once "windows.bi"
 #endif
 
-
-option explicit
+#include once "tinyptc.bi"
 
 const SCR_WIDTH = 320  * 1
 const SCR_HEIGHT = 240 * 1
@@ -83,9 +82,9 @@ for i = 0 to SCR_SIZE - 1
 next i
 
 
-dim hwnd as long
 #ifdef __FB_WIN32__
-hwnd = GetActiveWindow
+	dim hwnd as HWND
+	hwnd = GetActiveWindow( )
 #endif
 
 dim stime as integer, Fps as single, Fps2 as single
@@ -207,7 +206,7 @@ do
      fps = 0
      stime = timer
 #ifdef __FB_WIN32__
-     SetWindowText hwnd, "FreeBasic Julia Rings FPS:" + str$(Fps2)
+     SetWindowText( hwnd, "FreeBasic Julia Rings FPS:" & Fps2 )
 #endif
     end if
     ptc_update @buffer(0)

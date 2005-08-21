@@ -27,7 +27,7 @@ end union
 
 type _GValue
 	g_type as GType
-	data as _GValue_data ptr
+	data(0 to 2-1) as _GValue_data ptr
 end type
 
 declare function g_value_init cdecl alias "g_value_init" (byval value as GValue ptr, byval g_type as GType) as GValue ptr
