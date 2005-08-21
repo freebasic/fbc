@@ -9,7 +9,10 @@
 #ifndef __unknwn_bi__
 #define __unknwn_bi__
 
+#ifndef COM_NO_WINDOWS_H
 #include once "windows.bi"
+#endif
+
 #include once "win/objfwd.bi"
 #include once "win/wtypes.bi"
 
