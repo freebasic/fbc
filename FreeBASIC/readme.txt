@@ -36,9 +36,16 @@ Installing:
 
     - Unpack the tar gzip archive to any folder.
 
-    - Login as root and run the install.sh script that will copy the binaries,
-      libraries and include files to the usr/share/freebasic dir and create a
-      link at usr/bin/fbc.
+    - Run "sudo ./install.sh -i" from that directory to install the binaries,
+      libraries and include files into the system as root, at the default
+      location of /usr/share/freebasic. A link to the compiler binary will be
+      created at /usr/bin/fbc. If you don't have root priviledges, you can also
+      install into a custom directory; run the install.sh script with no
+      arguments for more info. Be warned though that installing with no root
+      priviledges will prevent the script from installing a link to the binary
+      into /usr/bin/fbc.
+    
+    (Note: to uninstall FreeBASIC, you can run "install.sh -u")
 
   o DOS:
 
@@ -70,8 +77,12 @@ Running:
 
   o Linux version:
 
-    - After running the install.sh script, any user can invoke FreeBASIC by simply
-      typing "fbc" on any dir the shell is currently at.
+    - If the install.sh script was successfully executed with enough priviledges,
+      a link to the compiler binary should have been created at /usr/bin/fbc.
+      This means that any user can invoke FreeBASIC by simply typing "fbc" on any
+      dir the shell is currently at. If it was not possible to create the link,
+      you may want to alter your PATH environmental variable to be able to invoke
+      the compiler from any directory.
 
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
       example type: "fbc examples/hello.bas", the hello executable file will be

@@ -30,18 +30,19 @@
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )
 {
-	char buffer[16];
-	int cur = (fb_con.inited? fb_con.w | (fb_con.h << 16) : 80 | (25 << 16));
+	int cur = (fb_con.inited ? (fb_con.w | (fb_con.h << 16)) : (80 | (25 << 16)));
 	
-	if ((fb_con.inited == INIT_XTERM) || (fb_con.inited == INIT_ETERM)) {
+	if (((fb_con.inited == INIT_XTERM) || (fb_con.inited == INIT_ETERM)) && ((cols > 0) || (rows > 0))) {
+		
+		BG_LOCK();
+		
 		if (cols <= 0)
 			cols = fb_con.w;
 		if (rows <= 0)
 			rows = fb_con.h;
-		sprintf(buffer, "\e[8;%d;%dt", rows, cols);
-		fputs(buffer, fb_con.f_out);
-		fb_con.resized = TRUE;
-		fb_hResize();
+		fprintf(fb_con.f_out, "\e[8;%d;%dt", rows, cols);
+
+		BG_UNLOCK();
 	}
 
 	return cur;

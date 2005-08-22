@@ -34,7 +34,7 @@
 
 	sleep
 	clearkey$ = inkey
-	
+
 	width oldwidth and &HFFFF, oldwidth shr 16
 	color oldcolor and &HFFFF, oldcolor shr 16
 	view print 1 to oldwidth shr 16

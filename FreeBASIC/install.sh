@@ -19,7 +19,8 @@ EOF
 install()
 {
 	dest="$INSTALLDIR/freebasic"
-
+	link="/usr/bin"
+	
 	mkdir -p -m 0755 "$dest"/bin/linux
 	mkdir -p -m 0755 "$dest"/bin/win32
 	mkdir -p -m 0755 "$dest"/inc
@@ -32,14 +33,20 @@ install()
 	cp bin/linux/* "$dest"/bin/linux
 	cp bin/win32/* "$dest"/bin/win32
 	cp fbc "$dest"
-	rm -f /usr/bin/fbc
-	(cd /usr/bin; ln -s "$dest"/fbc fbc)
+
+	if [ -w $link ]; then
+		rm -f "$link"/fbc
+		(cd $link; ln -s "$dest"/fbc fbc)
+		linkmsg="A link to the compiler binary has also been created as $link/fbc"
+	else
+		linkmsg="It was not possible to install a link to the compiler binary as $link/fbc"
+	fi
 
 	echo
-	echo "====================================================================="
+	echo "================================================================================"
 	echo "FreeBASIC compiler successfully installed in $dest"
-	echo "A link to the compiler binary has also been created as /usr/bin/fbc"
-	echo "====================================================================="
+	echo $linkmsg
+	echo "================================================================================"
 	echo
 }
 
@@ -47,14 +54,17 @@ install()
 uninstall()
 {
 	dest="$INSTALLDIR/freebasic"
+	link="/usr/bin"
 	
 	rm -fr $dest
-	rm -f /usr/bin/fbc
+	if [ -w $link ]; then
+		rm -f "$link"/fbc
+	fi
 
 	echo
-	echo "====================================================================="
+	echo "================================================================================"
 	echo "FreeBASIC compiler successfully uninstalled from $dest"
-	echo "====================================================================="
+	echo "================================================================================"
 	echo
 }
 

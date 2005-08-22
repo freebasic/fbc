@@ -101,9 +101,11 @@ void fb_hResize()
 	struct winsize win;
 	int r, c, w, h;
 
+	fflush(stdout);
+
 	if ((!fb_con.inited) || (!fb_con.resized))
 		return;
-
+	
 	win.ws_row = 0xFFFF;
 	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
 	if (win.ws_row == 0xFFFF) {
@@ -133,7 +135,6 @@ void fb_hResize()
 	fb_con.attr_buffer = attr_buffer;
 	fb_con.h = win.ws_row;
 	fb_con.w = win.ws_col;
-
 	fflush(stdin);
 	fputs("\e[6n", fb_con.f_out);
 	fscanf(stdin, "\e[%d;%dR", &fb_con.cur_y, &fb_con.cur_x);
@@ -207,7 +208,7 @@ int fb_hInitConsole ( int init )
 	if (fb_con.mouse_init)
 		fb_con.mouse_init();
 	BG_UNLOCK();
-
+	
 	return 0;
 }
 
@@ -215,7 +216,8 @@ int fb_hInitConsole ( int init )
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
 {
-	int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
+	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
+	           
 #ifdef MULTITHREADED
     pthread_mutexattr_t attr;
 #endif
@@ -287,7 +289,7 @@ void fb_hInit ( int argc, char **argv )
 	if (term) {
 		if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
 			init = INIT_CONSOLE;
-		if (!strncmp(term, "xterm", 5))
+		if ((!strncmp(term, "xterm", 5)) || (!strncmp(term, "rxvt", 4)))
 			init = INIT_XTERM;
 		if (!strncasecmp(term, "eterm", 5))
 			init = INIT_ETERM;

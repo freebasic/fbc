@@ -166,6 +166,8 @@ int fb_hGetCh(int remove)
 {
 	int k;
 
+	fb_hResize();
+	
 	k = get_input();
 	if (k >= 0) {
 		key_buffer[key_tail] = k;
@@ -233,7 +235,8 @@ int fb_ConsoleGetkey( void )
 int fb_ConsoleKeyHit( void )
 {
 	if (!fb_con.inited)
-		return (feof(fb_con.f_in) ? 0: 1);
+		return feof(stdin) ? FALSE : TRUE;
 
 	return (fb_hGetCh(FALSE) < 0) ? 0 : 1;
 }
+

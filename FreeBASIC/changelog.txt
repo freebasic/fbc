@@ -23,7 +23,7 @@ Version 0.15 Beta:
 - LPOS(n) (mjs)
 - VIEW PRINT() now returns the top and bottom row (mjs)
 - all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
-- VALUINT and VALULNG, unsigned versions of VALINT and VALUINT, respectively (v1c)
+- VALUINT and VALULNG, unsigned versions of VALINT and VALLNG, respectively (v1c)
 - IN/OUT/WAIT now work for real ports I/O; a runtime error is triggered if unable to access a port.
   VGA ports are still emulated if in gfx mode (lillo)
 - new null gfx driver: pass -1 as flags parameter to SCREEN to work with gfx without visual feedback.
@@ -67,6 +67,7 @@ Version 0.15 Beta:
 - INCLUDE for files INCLUDEd from a non-standard path (mjs)
 - storing a longint (64-bit) to a integer was causing a stack fault in the compiler (v1c)
 - assigning UDT's returned from functions to arrays was generating invalid code, depending on the UDT type (v1c)
+- profiling multithreaded apps caused a crash on program exit (lillo)
 
 
 Version 0.14 Beta:

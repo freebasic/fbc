@@ -34,6 +34,9 @@ void fb_hExitConsole( void )
 	int bottom;
 
 	if (fb_con.inited) {
+	
+		fb_hResize();
+		
 		BG_LOCK();
 		if (fb_con.keyboard_exit)
 			fb_con.keyboard_exit();

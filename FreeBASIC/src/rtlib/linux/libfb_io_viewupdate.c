@@ -35,5 +35,7 @@ void fb_ConsoleViewUpdate(void)
 	if (!fb_con.inited)
 		return;
 
+	fb_hResize();
+	
 	fprintf(fb_con.f_out, "\e[%d;%dr", fb_ConsoleGetTopRow() + 1, fb_ConsoleGetBotRow() + 1);
 }

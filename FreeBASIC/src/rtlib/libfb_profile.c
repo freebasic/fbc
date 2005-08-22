@@ -30,6 +30,7 @@
 #include "fb.h"
 
 #define MAIN_PROC_NAME		"(main)  "
+#define THREAD_PROC_NAME	"(thread)"
 #define PROFILE_FILE		"profile.txt"
 #define MAX_CHILDREN		257
 #define BIN_SIZE			1024
@@ -164,9 +165,15 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
 	const char *p;
 	unsigned int i, hash = 0, offset = 1;
-
-	orig_parent_proc = parent_proc = (FBPROC *)FB_TLSGET( cur_proc );
-
+	
+	parent_proc = (FBPROC *)FB_TLSGET( cur_proc );
+	if( !parent_proc ) {
+		/* First function call of a newly spawned thread has no parent proc set */
+		parent_proc = alloc_proc();
+		parent_proc->name = THREAD_PROC_NAME;
+	}
+	orig_parent_proc = parent_proc;
+	
 	FB_LOCK();
 
 	for ( p = procname; *p; p += 4 )
@@ -244,12 +251,9 @@ FBCALL void fb_InitProfile( void )
 
 	FB_TLSSET( cur_proc, main_proc );
 
-    /* guard by global lock because time/localtime might not be thread-safe */
-    FB_LOCK();
   	time( &rawtime );
     ptm = localtime( &rawtime );
 	sprintf( launch_time, "%02d-%02d-%04d, %02d:%02d:%02d", 1+ptm->tm_mon, ptm->tm_mday, 1900+ptm->tm_year, ptm->tm_hour, ptm->tm_min, ptm->tm_sec );
-    FB_UNLOCK();
 
 	main_proc->time = fb_Timer();
 }
@@ -310,7 +314,19 @@ FBCALL int fb_EndProfile( int errorlevel )
 
 	fprintf( f, "Per function timings:\n\n" );
 	fprintf( f, "        Function:                               Time:         Total%%:   Proc%%:" );
-	find_all_procs( main_proc, &parent_proc_list, &parent_proc_size );
+	for( bin = bin_head; bin; bin = bin->next ) {
+		for( i = 0; i < bin->next_free; i++ ) {
+			proc = &bin->fbproc[i];
+			if( !proc->parent ) {
+				/* no parent; either main proc or a thread proc */
+				if( !proc->total_time )
+					/* thread execution time unknown, assume total program execution time */
+					proc->total_time = main_proc->total_time;
+				add_proc( &parent_proc_list, &parent_proc_size, proc );
+				find_all_procs( proc, &parent_proc_list, &parent_proc_size );
+			}
+		}
+	}
 	qsort( parent_proc_list, parent_proc_size, sizeof(FBPROC *), name_sorter );
 	for( i = 0; i < parent_proc_size; i++ ) {
 		parent_proc = parent_proc_list[i];

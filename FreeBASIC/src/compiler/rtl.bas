@@ -6225,7 +6225,6 @@ private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
 			symbAddLib( "Xpm" )
 			symbAddLib( "Xrandr" )
 			symbAddLib( "Xrender" )
-			symbAddLib( "pthread" )
 
 		end select
 	end if
