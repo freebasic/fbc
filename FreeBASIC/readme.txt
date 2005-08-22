@@ -181,7 +181,7 @@ Most Important Features:
       routines, and therefore there is a low chance of having name duplication
       with old code. If you want to show a message box in Windows, simply do:
 
-      '$include: 'win\user32.bi'
+      '$include: 'windows.bi'
       MessageBox NULL, "Text", "Title", MB_ICONASTERISK
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
@@ -580,15 +580,18 @@ Credits (in alphabetic order):
     - Wrote/ported many of the examples in the examples/SDL dir.
 
   o Eric Lope (vic_viperph@yahoo.com):
-    - Translated the OpenGL and GLU headers
+    - Translated the OpenGL and GLU headers (later replaced by the SWIG FB 
+      wrapper version)
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
     - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
 
   o Florent Heyworth (florent.heyworth@swissonline.ch):
-    - Translated the Win API sql/obdc headers.
+    - Translated the Win API sql/obdc headers (later replaced by the SWIG FB 
+      wrapper version).
 
   o fsw (fsw.fb@comcast.net):
-    - Translated most of the Windows API headers.
+    - Translated most of the Windows API headers (later replaced by the SWIG FB 
+      wrapper version).
     - Wrote the glade_gui demo at the examples/Gtk directory, besides the
       wx-c GUI examples (not included).
 
@@ -612,7 +615,8 @@ Credits (in alphabetic order):
     - Wrote the first file routines for the run-time library.
 
   o Nek (dave@nodtveidt.net):
-    - Translated the Windows API headers, integrating parts of fsw's work.
+    - Translated the Windows API headers, integrating parts of fsw's work (later 
+      replaced by the SWIG FB wrapper version).
 
   o plasma:
     - Translated the FMOD and BASS headers.
