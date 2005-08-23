@@ -26,6 +26,23 @@
 extern "C" {
 #endif
 
+    /** Locale information not provided by DOS but that are useful too.
+     */
+    typedef struct _FB_LOCALE_INFOS {
+        int country_code;
+        const char *apszNamesMonthLong[12];
+        const char *apszNamesMonthShort[12];
+        const char *apszNamesWeekdayLong[7];
+        const char *apszNamesWeekdayShort[7];
+    } FB_LOCALE_INFOS;
+
+    /** Array of locale informations.
+     *
+     * The last entry contains a country_code of -1.
+     */
+    extern const FB_LOCALE_INFOS fb_locale_infos[];
+    extern const size_t          fb_locale_info_count;
+
     struct _DOS_COUNTRY_INFO_GENERAL {
         unsigned char   info_id                   __attribute__((packed));
         unsigned short  size_data                 __attribute__((packed));

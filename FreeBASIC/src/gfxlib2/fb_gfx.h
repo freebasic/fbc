@@ -297,6 +297,27 @@ int fb_GfxSetMouse(int x, int y, int cursor);
 int fb_GfxOut(unsigned short port, unsigned char value);
 int fb_GfxIn(unsigned short port);
 
+/** Returns TRUE if application is in graphics mode.
+ *
+ * This implementation is a hack until I found a better way to detect this.
+ */
+#define FB_GFX_ACTIVE() \
+    (fb_hooks.printbuffproc!=NULL)
+
+/** Returns the code page as integral value.
+ *
+ * This function returns the code page as integral value. When the code page
+ * cannot be expressed as an integral value (like UTF-8 or UCS-4), it returns
+ * -1 and the character set ID should be used instead.
+ */
+#define FB_GFX_GET_CODEPAGE() \
+    437
+
+/** Returns the character set as a string.
+ */
+#define FB_GFX_GET_CHARSET() \
+    "CP437"
+
 #ifdef __cplusplus
 }
 #endif

@@ -20,8 +20,9 @@
 #ifndef __FBEXT_H__
 #define __FBEXT_H__
 
-#include "fb.h"
-#include "fb_rterr.h"
+#include "../rtlib/fb.h"
+#include "../rtlib/fb_rterr.h"
+#include "../gfxlib2/fb_gfx.h"
 
 #ifdef __cplusplus
 extern "C" {

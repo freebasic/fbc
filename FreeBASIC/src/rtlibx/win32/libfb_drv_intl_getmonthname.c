@@ -57,10 +57,13 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 
     result = fb_hStrAllocTemp( NULL, name_len );
     if( result!=NULL ) {
-        FB_MEMCPY( result->data, pszName, name_len + 1 );
-        result = fb_hIntlConvertString( result,
-                                        CP_ACP,
-                                        GetConsoleCP() );
+        int target_cp = ( FB_GFX_ACTIVE() ? FB_GFX_GET_CODEPAGE() : GetConsoleCP() );
+        if( target_cp!=-1 ) {
+            FB_MEMCPY( result->data, pszName, name_len + 1 );
+            result = fb_hIntlConvertString( result,
+                                            CP_ACP,
+                                            target_cp );
+        }
     }
 
     FB_STRUNLOCK();
