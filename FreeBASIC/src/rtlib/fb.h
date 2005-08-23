@@ -209,6 +209,13 @@ extern "C" {
 # define FB_TLSGET(key)                key
 #endif
 
+#ifndef FB_BINARY_NEWLINE
+    /** The "NEW LINE" string required for printer I/O
+     *
+     * The printer always requires both CR and LF.
+     */
+#define FB_BINARY_NEWLINE "\r\n"
+#endif
 
 #ifndef FB_NEWLINE
     /** The "NEW LINE" character used for all I/O.
@@ -580,7 +587,20 @@ typedef struct _FB_PRINTUSGCTX {
 
 #define FB_PRINT_NEWLINE      0x00000001
 #define FB_PRINT_PAD          0x00000002
+#define FB_PRINT_BIN_NEWLINE  0x00000004
 #define FB_PRINT_ISLAST       0x80000000     /* only for USING */
+
+/** Small helper function that converts a TEXT new-line to a BINARY new-line.
+ *
+ * This is required for all the LPRINT functions.
+ */
+static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
+{
+    if( mask & FB_PRINT_NEWLINE ) {
+        mask = (mask & ~FB_PRINT_NEWLINE) | FB_PRINT_BIN_NEWLINE;
+    }
+    return mask;
+}
 
 /** masked bits for "high level" flags
  *
@@ -599,10 +619,12 @@ typedef struct _FB_PRINTUSGCTX {
         char buffer[80];                                              \
         int len;                                                      \
                                                                       \
-        if( mask & FB_PRINT_NEWLINE )                                 \
-            len = sprintf( buffer, fmt type FB_NEWLINE, val );    \
+        if( mask & FB_PRINT_BIN_NEWLINE )                             \
+            len = sprintf( buffer, fmt type FB_BINARY_NEWLINE, val ); \
+        else if( mask & FB_PRINT_NEWLINE )                            \
+            len = sprintf( buffer, fmt type FB_NEWLINE, val );        \
         else                                                          \
-            len = sprintf( buffer, fmt type, val );               \
+            len = sprintf( buffer, fmt type, val );                   \
                                                                       \
         FB_PRINT_EX( handle, buffer, len, mask );                     \
                                                                       \
@@ -614,33 +636,37 @@ typedef struct _FB_PRINTUSGCTX {
 #define FB_PRINTNUM(fnum, val, mask, fmt, type)                       \
     FB_PRINTNUM_EX( FB_FILE_TO_HANDLE(fnum), val, mask, fmt, type )
 
-#define FB_WRITENUM_EX(handle, val, mask, type )            \
-    do {                                                    \
-        char buffer[80];									\
-        size_t len;                                         \
-                                                            \
-        if( mask & FB_PRINT_NEWLINE )           			\
-            len = sprintf( buffer, type FB_NEWLINE, val );  \
-        else												\
-            len = sprintf( buffer, type ",", val );         \
-                                                            \
-        fb_hFilePrintBufferEx( handle, buffer, len );	    \
+#define FB_WRITENUM_EX(handle, val, mask, type )                      \
+    do {                                                              \
+        char buffer[80];									          \
+        size_t len;                                                   \
+                                                                      \
+        if( mask & FB_PRINT_BIN_NEWLINE )           		          \
+            len = sprintf( buffer, type FB_BINARY_NEWLINE, val );     \
+        else if( mask & FB_PRINT_NEWLINE )           		          \
+            len = sprintf( buffer, type FB_NEWLINE, val );            \
+        else												          \
+            len = sprintf( buffer, type ",", val );                   \
+                                                                      \
+        fb_hFilePrintBufferEx( handle, buffer, len );	              \
     } while (0)
 
 #define FB_WRITENUM(fnum, val, mask, type) 				    \
     FB_WRITENUM_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
-#define FB_WRITESTR_EX(handle, val, mask, type) 			\
-    do {                                                    \
-        char buffer[80*25+1];								\
-        size_t len;             							\
-                                                            \
-        if( mask & FB_PRINT_NEWLINE )           			\
-            len = sprintf( buffer, type FB_NEWLINE, val );  \
-        else												\
-            len = sprintf( buffer, type ",", val );         \
-                                                            \
-        fb_hFilePrintBufferEx( handle, buffer, len );       \
+#define FB_WRITESTR_EX(handle, val, mask, type) 			          \
+    do {                                                              \
+        char buffer[80*25+1];								          \
+        size_t len;             							          \
+                                                                      \
+        if( mask & FB_PRINT_BIN_NEWLINE )           		          \
+            len = sprintf( buffer, type FB_BINARY_NEWLINE, val );     \
+        else if( mask & FB_PRINT_NEWLINE )           			      \
+            len = sprintf( buffer, type FB_NEWLINE, val );            \
+        else												          \
+            len = sprintf( buffer, type ",", val );                   \
+                                                                      \
+        fb_hFilePrintBufferEx( handle, buffer, len );                 \
     } while (0)
 
 #define FB_WRITESTR(fnum, val, mask, type) 				    \

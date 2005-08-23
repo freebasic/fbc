@@ -38,7 +38,7 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     FILE *fp;
 
     sprintf(filename, "LPT%d", iPort);
-    fp = fopen(filename, "w");
+    fp = fopen(filename, "wb");
     if( fp==NULL ) {
         result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     } else {

@@ -940,12 +940,17 @@ function hGetFileExt( fname as string ) as string static
     	function = ""
     else
     	res = lcase( mid( fname, lp+1 ) )
-    	'' . or .. dirs?
-    	if( res[0] = asc( "\\" ) or res[0] = asc( "/" ) ) then
-    		function = ""
-    	else
-    		function = res
-    	end if
+        if instr( res, "\\" ) > 0 or instr( res, "/" ) > 0 then
+            '' We had a folder with a "." inside ...
+            function = ""
+        elseif( len(res) > 0 ) then
+	    	'' . or .. dirs?
+	    	if( res[0] = asc( "\\" ) or res[0] = asc( "/" ) ) then
+	    		function = ""
+	    	else
+	    		function = res
+	    	end if
+        end if
     end if
 
 end function
