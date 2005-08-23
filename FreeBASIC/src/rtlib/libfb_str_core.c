@@ -234,7 +234,18 @@ char *fb_hStrSkipCharRev( char *s, int len, int c )
 
 	p = &s[len-1];
 
-	while( (--len >= 0) && (((int)*p == c) || ((int)*p == 0)) )	/* strip nulls too */
+    while( (--len >= 0) && (((int)*p == c) || ((int)*p == 0) ) )
+        /* ??? strip nulls too ???
+         *
+         * This is an unexpected behaviour for dynamic strings which
+         * will cause problems in many applications ... the current
+         * work-around is to use RTRIM$(var, ANY "  ") but this is (IMHO)
+         * a very bad hack.
+         *
+         * This was - I guess - mainly be done because fixed-length strings
+         * are filled with NUL (in FB) instead of SPC (in QB).
+         *
+         * This function is only used by RTRIM */
 		--p;
 
     return p;
