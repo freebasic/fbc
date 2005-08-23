@@ -406,6 +406,26 @@ data "fb_StrInstrAny","", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_TRIM ( str as string ) as string
+data "fb_TRIM","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_TrimAny ( str as string ) as string
+data "fb_TrimAny","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+'' fb_TrimEx ( str as string, str as pattern ) as string
+data "fb_TrimEx","", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' fb_RTRIM ( str as string ) as string
 data "fb_RTRIM","", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
@@ -1992,12 +2012,6 @@ data "space","fb_SPACE", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_TRIM ( str as string ) as string
-data "trim","fb_TRIM", _
-	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 '' fb_LCASE ( str as string ) as string
 data "lcase","fb_LCASE", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
@@ -3305,6 +3319,40 @@ function rtlStrInstr( byval nd_start as ASTNODE ptr, _
 
     if( astNewPARAM( proc, nd_pattern ) = NULL ) then
     	exit function
+    end if
+
+    function = proc
+
+end function
+
+'':::::
+function rtlStrTrim( byval nd_text as ASTNODE ptr, _
+					  byval nd_pattern as ASTNODE ptr, _
+                      byval is_any as integer ) as ASTNODE ptr static
+
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+    function = NULL
+
+	''
+    if( is_any ) then
+		f = ifuncTB(FB_RTL_STRTRIMANY)
+    elseif( nd_pattern<>NULL ) then
+		f = ifuncTB(FB_RTL_STRTRIMEX)
+    else
+		f = ifuncTB(FB_RTL_STRTRIM)
+    end if
+    proc = astNewFUNCT( f )
+
+    ''
+    if( astNewPARAM( proc, nd_text ) = NULL ) then
+    	exit function
+    end if
+
+    if( nd_pattern<>NULL or is_any ) then
+        if( astNewPARAM( proc, nd_pattern ) = NULL ) then
+            exit function
+        end if
     end if
 
     function = proc

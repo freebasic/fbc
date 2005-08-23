@@ -44,14 +44,15 @@ FBCALL FBSTRING *fb_LTrimEx ( FBSTRING *src, FBSTRING *pattern )
 
 	if( src->data != NULL )
     {
+        size_t len_pattern = FB_STRSIZE( pattern );
         len = FB_STRSIZE( src );
-        if( len > 0 ) {
-            size_t len_pattern = FB_STRSIZE( pattern );
+        if( len >= len_pattern ) {
             if( len_pattern==1 ) {
                 p = fb_hStrSkipChar( src->data,
                                      len,
                                      FB_CHAR_TO_INT(pattern->data[0]) );
-                len = FB_STRSIZE( src ) - (int)(p - src->data);
+                len = len - (int)(p - src->data);
+
             } else if( len_pattern != 0 ) {
                 p = src->data;
                 while (len >= len_pattern ) {

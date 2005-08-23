@@ -2227,6 +2227,28 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		function = funcexpr <> NULL
 
+    case FB_TK_TRIM
+
+        lexSkipToken
+
+        hMatchLPRNT( )
+
+        hMatchExpression( expr1 )
+
+        if( hMatch( CHAR_COMMA ) ) then
+            is_any = hMatch( FB_TK_ANY )
+	        hMatchExpression( expr2 )
+        else
+            is_any = FALSE
+            expr2 = NULL
+        end if
+
+        hMatchRPRNT( )
+
+		funcexpr = rtlStrTrim( expr1, expr2, is_any )
+
+		function = funcexpr <> NULL
+
     case FB_TK_RTRIM
 
         lexSkipToken
@@ -2817,7 +2839,7 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	res = FALSE
 
 	select case as const lexGetToken( )
-	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC, FB_TK_INSTR, FB_TK_RTRIM, FB_TK_LTRIM
+	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC, FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
 		res = cStringFunct( funcexpr )
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _

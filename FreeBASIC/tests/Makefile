@@ -85,6 +85,7 @@ TESTS = \
         string/instr_x$(EXEEXT) \
         string/rtrim$(EXEEXT) \
         string/ltrim$(EXEEXT) \
+        string/trim$(EXEEXT) \
         string/compare$(EXEEXT) \
         string/format$(EXEEXT) \
         datetime/testdate$(EXEEXT) \
@@ -110,6 +111,7 @@ run_tests:
 	string/instr_x
 	string/rtrim
 	string/ltrim
+	string/trim
 	string/compare
 	string/format
 	numbers/numbers
@@ -139,6 +141,9 @@ string/rtrim$(EXEEXT): string/rtrim.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 string/ltrim$(EXEEXT): string/ltrim.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+string/trim$(EXEEXT): string/trim.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 string/compare$(EXEEXT): string/compare.bas

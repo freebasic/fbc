@@ -33,6 +33,7 @@ Version 0.15 Beta:
 - INSTR([n,] s$, ANY p$) (mjs)
 - RTRIM$(s$[, ANY p$]) and RTRIM$(s$, p$) (mjs)
 - LTRIM$(s$[, ANY p$]) and LTRIM$(s$, p$) (mjs)
+- TRIM$(s$[, ANY p$]) and TRIM$(s$, p$) (mjs)
 - compile-time check for math overflow in literal numbers when assigned or passed as parameter (v1c)
 - compiler is now much more strict at reporting implicit numeric conversions (lillo)
 - programs compiled with -e will check if the host CPU is at least the one specified in -arch (lillo)

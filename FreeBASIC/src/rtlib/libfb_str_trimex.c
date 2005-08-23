@@ -18,7 +18,7 @@
  */
 
 /*
- * str_rtrimex.c -- enhanced rtrim$ function
+ * str_trim.c -- enhanced trim$ function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -29,10 +29,10 @@
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
+FBCALL FBSTRING *fb_TrimEx ( FBSTRING *src, FBSTRING *pattern )
 {
 	FBSTRING 	*dst;
-	int 		len;
+	size_t       len;
 	char		*p = NULL;
 
     if( src == NULL ) {
@@ -40,22 +40,39 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
         return &fb_strNullDesc;
     }
 
-   	FB_STRLOCK();
+	FB_STRLOCK();
 
 	if( src->data != NULL )
-	{
+    {
         size_t len_pattern = FB_STRSIZE( pattern );
-		len = FB_STRSIZE( src );
-		if( len >= len_pattern )
-		{
+        len = FB_STRSIZE( src );
+        if( len >= len_pattern ) {
             if( len_pattern==1 ) {
-                p = fb_hStrSkipCharRev( src->data,
+                p = fb_hStrSkipChar( src->data,
+                                     len,
+                                     FB_CHAR_TO_INT(pattern->data[0]) );
+                len = len - (int)(p - src->data);
+
+            } else if( len_pattern != 0 ) {
+                p = src->data;
+                while (len >= len_pattern ) {
+                    if( FB_MEMCMP( p, pattern->data, len_pattern )!=0 )
+                        break;
+                    p += len_pattern;
+                    len -= len_pattern;
+                }
+            }
+        }
+        if( len >= len_pattern ) {
+            if( len_pattern==1 ) {
+                char *p_tmp =
+                    fb_hStrSkipCharRev( p,
                                         len,
                                         FB_CHAR_TO_INT(pattern->data[0]) );
-                len = (int)(p - src->data) + 1;
+                len = (int)(p_tmp - p) + 1;
+
             } else if( len_pattern != 0 ) {
                 size_t test_index = len - len_pattern;
-                p = src->data;
                 while (len >= len_pattern ) {
                     if( FB_MEMCMP( p + test_index,
                                    pattern->data,
@@ -64,11 +81,12 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
                     test_index -= len_pattern;
                 }
                 len = test_index + len_pattern;
+
             }
-		}
-    } else {
-        len = 0;
-    }
+        }
+	}
+	else
+		len = 0;
 
 	if( len > 0 )
 	{
@@ -77,7 +95,7 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
 		if( dst != NULL )
 		{
 			/* simple copy */
-			fb_hStrCopy( dst->data, src->data, len );
+			fb_hStrCopy( dst->data, p, len );
 		}
 		else
 			dst = &fb_strNullDesc;
@@ -87,10 +105,13 @@ FBCALL FBSTRING *fb_RTrimEx ( FBSTRING *src, FBSTRING *pattern )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
-	fb_hStrDelTemp( pattern );
+    fb_hStrDelTemp( pattern );
 
-   	FB_STRUNLOCK();
+	FB_STRUNLOCK();
 
 	return dst;
 }
+
+
+
 
