@@ -418,9 +418,11 @@ int fb_hProcessMask( FBSTRING *dst,
                 case 'e':
                     if( pInfo->mask_type==eMT_Unknown ) {
                         pInfo->mask_type = eMT_Number;
+#if 0
                     } else if( pInfo->mask_type!=eMT_Number ) {
                         fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
                         return FALSE;
+#endif
                     }
                     break;
                 case '-':
@@ -440,9 +442,11 @@ int fb_hProcessMask( FBSTRING *dst,
                 case '/':
                     if( pInfo->mask_type==eMT_Unknown ) {
                         pInfo->mask_type = eMT_DateTime;
+#if 0
                     } else if( pInfo->mask_type!=eMT_DateTime ) {
                         fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
                         return FALSE;
+#endif
                     }
                     break;
                 }
@@ -452,12 +456,16 @@ int fb_hProcessMask( FBSTRING *dst,
                 switch( chCurrent ) {
                 case '%':
                     if( !do_output ) {
-                        if( !pInfo->has_percent ) {
-                            pInfo->has_percent = TRUE;
-                            ++pInfo->length_min;
+                        if( pInfo->mask_type==eMT_Number ) {
+                            if( !pInfo->has_percent ) {
+                                pInfo->has_percent = TRUE;
+                                ++pInfo->length_min;
+                            } else {
+                                fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+                                return FALSE;
+                            }
                         } else {
-                            fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-                            return FALSE;
+                            ++pInfo->length_min;
                         }
                     } else {
                         do_add = TRUE;
@@ -465,119 +473,150 @@ int fb_hProcessMask( FBSTRING *dst,
                     break;
                 case '.':
                     if( !do_output ) {
-                        if( !pInfo->has_decimal_point ) {
-                            pInfo->has_decimal_point = TRUE;
-                            if( last_was_comma ) {
-                                pInfo->num_digits_omit += 3;
-                                was_k_div = TRUE;
-                            } else if( pInfo->num_digits_omit!=0 ) {
-                                pInfo->num_digits_omit += 3;
+                        if( pInfo->mask_type==eMT_Number ) {
+                            if( !pInfo->has_decimal_point ) {
+                                pInfo->has_decimal_point = TRUE;
+                                if( last_was_comma ) {
+                                    pInfo->num_digits_omit += 3;
+                                    was_k_div = TRUE;
+                                } else if( pInfo->num_digits_omit!=0 ) {
+                                    pInfo->num_digits_omit += 3;
+                                }
                             }
                         }
                         ++pInfo->length_min;
                     } else {
                         do_add = TRUE;
-                        pszAdd = &chDecimalPoint;
+                        if( pInfo->mask_type==eMT_Number ) {
+                            pszAdd = &chDecimalPoint;
+                        }
                     }
                     do_num_frac = TRUE;
                     break;
                 case ',':
                     if( !do_output ) {
-                        if( last_was_comma ) {
-                            pInfo->num_digits_omit += 3;
-                            was_k_div = TRUE;
-                        }
-                    } else if( last_was_comma ) {
-                        was_k_div = TRUE;
-                    }
-                    last_was_comma = TRUE;
-                    break;
-                case '#':
-                case '0':
-                    if( !do_output ) {
-                        if( do_num_frac ) {
-                            ++pInfo->num_digits_frac;
-                        } else if( did_exp ) {
-                            ++pInfo->exp_digits;
-                        } else {
-                            ++pInfo->num_digits_fix;
-                        }
-                        if( chCurrent=='#' ) {
-                            ++pInfo->length_opt;
+                        if( pInfo->mask_type==eMT_Number ) {
+                            if( last_was_comma ) {
+                                pInfo->num_digits_omit += 3;
+                                was_k_div = TRUE;
+                            }
+                            last_was_comma = TRUE;
                         } else {
                             ++pInfo->length_min;
                         }
                     } else {
-                        if( do_num_frac ) {
-                            if( IndexFrac!=LenFrac ) {
-                                pszAdd = FracPart + IndexFrac++;
-                                do_add = TRUE;
-                            } else if( chCurrent=='0' ) {
-                                do_add = TRUE;
+                        if( pInfo->mask_type==eMT_Number ) {
+                            if( last_was_comma ) {
+                                was_k_div = TRUE;
                             }
-                        } else if( did_exp ) {
-                            if( NumSkipExp > 0 ) {
-                                if( chCurrent=='0' ) {
+                            last_was_comma = TRUE;
+                        } else {
+                            do_add = TRUE;
+                        }
+                    }
+                    break;
+                case '#':
+                case '0':
+                    if( !do_output ) {
+                        if( pInfo->mask_type==eMT_Number ) {
+                            if( do_num_frac ) {
+                                ++pInfo->num_digits_frac;
+                            } else if( did_exp ) {
+                                ++pInfo->exp_digits;
+                            } else {
+                                ++pInfo->num_digits_fix;
+                            }
+                            if( chCurrent=='#' ) {
+                                ++pInfo->length_opt;
+                            } else {
+                                ++pInfo->length_min;
+                            }
+                        } else {
+                            ++pInfo->length_min;
+                        }
+                    } else {
+                        if( pInfo->mask_type==eMT_Number ) {
+                            if( do_num_frac ) {
+                                if( IndexFrac!=LenFrac ) {
+                                    pszAdd = FracPart + IndexFrac++;
+                                    do_add = TRUE;
+                                } else if( chCurrent=='0' ) {
                                     do_add = TRUE;
                                 }
-                                --NumSkipExp;
-                            } else if( IndexExp!=LenExp ) {
-                                pszAdd = ExpPart + IndexExp++;
-                                if( (IndexExp-ExpAdjust)>=pInfo->exp_digits
-                                    && ( IndexExp!=LenExp ) )
-                                {
-                                    --i;
-                                }
-                                do_add = TRUE;
-                            } else {
-                                assert( FALSE );
-                            }
-
-                        } else {
-                            if( pInfo->has_thousand_sep ) {
-                                size_t remaining = LenFix - IndexFix + NumSkipFix;
-                                if( (remaining % 3)==0 ) {
-                                    if( did_thousandsep ) {
-                                        did_thousandsep = FALSE;
-                                    } else {
-                                        did_thousandsep = TRUE;
-                                        pszAdd = &chThousandsSep;
-                                        LenAdd = 1;
+                            } else if( did_exp ) {
+                                if( NumSkipExp > 0 ) {
+                                    if( chCurrent=='0' ) {
                                         do_add = TRUE;
+                                    }
+                                    --NumSkipExp;
+                                } else if( IndexExp!=LenExp ) {
+                                    pszAdd = ExpPart + IndexExp++;
+                                    if( (IndexExp-ExpAdjust)>=pInfo->exp_digits
+                                        && ( IndexExp!=LenExp ) )
+                                    {
                                         --i;
                                     }
-                                }
-                            }
-
-                            if( !do_add ) {
-                                if( NumSkipFix ) {
-                                    if( chCurrent=='0' )
-                                        do_add = TRUE;
-                                    --NumSkipFix;
+                                    do_add = TRUE;
                                 } else {
-                                    if( IndexFix!=LenFix ) {
-                                        pszAdd = FixPart + IndexFix++;
-                                        do_add = TRUE;
-                                    } else if( chCurrent=='0' ) {
-                                        do_add = TRUE;
+                                    assert( FALSE );
+                                }
+
+                            } else {
+                                if( pInfo->has_thousand_sep ) {
+                                    size_t remaining = LenFix - IndexFix + NumSkipFix;
+                                    if( (remaining % 3)==0 ) {
+                                        if( did_thousandsep ) {
+                                            did_thousandsep = FALSE;
+                                        } else {
+                                            did_thousandsep = TRUE;
+                                            pszAdd = &chThousandsSep;
+                                            LenAdd = 1;
+                                            do_add = TRUE;
+                                            --i;
+                                        }
+                                    }
+                                }
+
+                                if( !do_add ) {
+                                    if( NumSkipFix ) {
+                                        if( chCurrent=='0' )
+                                            do_add = TRUE;
+                                        --NumSkipFix;
+                                    } else {
+                                        if( IndexFix!=LenFix ) {
+                                            pszAdd = FixPart + IndexFix++;
+                                            do_add = TRUE;
+                                        } else if( chCurrent=='0' ) {
+                                            do_add = TRUE;
+                                        }
                                     }
                                 }
                             }
+                        } else {
+                            do_add = TRUE;
                         }
                     }
                     break;
                 case 'E':
                 case 'e':
-                    if( !did_exp ) {
-                        do_exp = TRUE;
+                    if( pInfo->mask_type==eMT_Number ) {
+                        if( !did_exp ) {
+                            do_exp = TRUE;
+                            if( !do_output ) {
+                                ++pInfo->length_min;
+                            } else {
+                                do_add = TRUE;
+                            }
+                        } else {
+                            fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+                            return FALSE;
+                        }
+                    } else {
                         if( !do_output ) {
                             ++pInfo->length_min;
                         } else {
                             do_add = TRUE;
                         }
-                    } else {
-                        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-                        return FALSE;
                     }
                     break;
                 case '\\':
@@ -632,7 +671,7 @@ int fb_hProcessMask( FBSTRING *dst,
                     /* second */
                 case 't':
                     /* complete short time */
-                    {
+                    if( pInfo->mask_type==eMT_DateTime ) {
                         int old_did_hour = did_hour;
                         size_t count = 1;
                         while( mask[i+count]==chCurrent )
@@ -862,6 +901,12 @@ int fb_hProcessMask( FBSTRING *dst,
                                 do_add = TRUE;
                             }
                         }
+                    } else {
+                        if( !do_output ) {
+                            ++pInfo->length_min;
+                        } else {
+                            do_add = TRUE;
+                        }
                     }
                     break;
                 case '/':
@@ -869,7 +914,9 @@ int fb_hProcessMask( FBSTRING *dst,
                     if( !do_output ) {
                         ++pInfo->length_min;
                     } else {
-                        pszAdd = &chDateSep;
+                        if( pInfo->mask_type==eMT_DateTime ) {
+                            pszAdd = &chDateSep;
+                        }
                         do_add = TRUE;
                     }
                     break;
@@ -878,35 +925,45 @@ int fb_hProcessMask( FBSTRING *dst,
                     if( !do_output ) {
                         ++pInfo->length_min;
                     } else {
-                        pszAdd = &chTimeSep;
+                        if( pInfo->mask_type==eMT_DateTime ) {
+                            pszAdd = &chTimeSep;
+                        }
                         do_add = TRUE;
                     }
                     break;
                 case 'a':
                 case 'A':
                     /* AM/PM or A/P (in any combination of cases) */
-                    if( (strncasecmp( mask+i, "AM/PM", 5 )==0)
-                        || (strncasecmp( mask+i, "A/P", 3 )==0) )
-                    {
-                        if( !do_output ) {
-                            if( pInfo->mask_type==eMT_Unknown ) {
-                                pInfo->mask_type = eMT_DateTime;
-                            } else if( pInfo->mask_type!=eMT_DateTime ) {
-                                fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-                                return FALSE;
-                            }
-                            pInfo->has_ampm = TRUE;
-                        } else {
-                            int ampm_small = mask[i+1]=='/';
-                            LenAdd = ( ampm_small ? 1 : 2 );
-                            if( fb_Hour( value ) >= 12 ) {
-                                pszAdd = mask + i + LenAdd + 1;
+                    if( pInfo->mask_type==eMT_DateTime ) {
+                        if( (strncasecmp( mask+i, "AM/PM", 5 )==0)
+                            || (strncasecmp( mask+i, "A/P", 3 )==0) )
+                        {
+                            if( !do_output ) {
+                                if( pInfo->mask_type==eMT_Unknown ) {
+                                    pInfo->mask_type = eMT_DateTime;
+                                } else if( pInfo->mask_type!=eMT_DateTime ) {
+                                    fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+                                    return FALSE;
+                                }
+                                pInfo->has_ampm = TRUE;
                             } else {
-                                pszAdd = mask + i;
+                                int ampm_small = mask[i+1]=='/';
+                                LenAdd = ( ampm_small ? 1 : 2 );
+                                if( fb_Hour( value ) >= 12 ) {
+                                    pszAdd = mask + i + LenAdd + 1;
+                                } else {
+                                    pszAdd = mask + i;
+                                }
+                                do_add = TRUE;
                             }
-                            do_add = TRUE;
+                            i += ((mask[i+1]=='/') ? 2 : 4);
+                        } else {
+                            if( !do_output ) {
+                                ++pInfo->length_min;
+                            } else {
+                                do_add = TRUE;
+                            }
                         }
-                        i += ((mask[i+1]=='/') ? 2 : 4);
                     } else {
                         if( !do_output ) {
                             ++pInfo->length_min;
