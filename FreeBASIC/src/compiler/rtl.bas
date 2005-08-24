@@ -1199,7 +1199,7 @@ data "fb_FileSeek","", _
 '' fb_FileStrInput ( byval bytes as integer, byval filenum as integer = 0 ) as string
 data "fb_FileStrInput", "", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 2, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
@@ -2143,12 +2143,12 @@ data "color", "fb_Color", _
 '' inkey ( ) as string
 data "inkey","fb_Inkey", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 0
 '' getkey ( ) as integer
 data "getkey","fb_Getkey", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 0
 
 '' shell ( byval cmm as string = "" ) as integer
@@ -2207,7 +2207,7 @@ data "setenviron","fb_SetEnviron", _
 '' sleep ( byval msecs as integer ) as void
 data "sleep","fb_Sleep", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, -1
 
