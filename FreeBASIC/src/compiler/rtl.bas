@@ -1238,7 +1238,7 @@ data "fb_FileInput", "", _
 ''				     byval addnewline as integer ) as integer
 data "fb_ConsoleInput", "", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
