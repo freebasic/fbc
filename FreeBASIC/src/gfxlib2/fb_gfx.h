@@ -40,30 +40,26 @@ extern "C" {
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_rterr.h"
 
-#ifdef TRUE
-#undef TRUE
-#endif
-#define TRUE	-1
-#ifdef FALSE
-#undef FALSE
-#endif
-#define FALSE	0
 #ifdef PI
 #undef PI
 #endif
 #define PI			3.1415926535897932384626
+
 #ifdef MIN
 #undef MIN
 #endif
 #define MIN(a,b)		((a) < (b) ? (a) : (b))
+
 #ifdef MAX
 #undef MAX
 #endif
 #define MAX(a,b)		((a) > (b) ? (a) : (b))
+
 #ifdef MID
 #undef MID
 #endif
 #define MID(a,b,c)		MIN(MAX((a), (b)), (c))
+
 #ifdef SWAP
 #undef SWAP
 #endif
